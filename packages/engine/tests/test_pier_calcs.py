@@ -27,18 +27,23 @@ import pytest
 
 from typehaus.engineering.item import Status
 
-# The cages, as `params/sunken_garden.py` authors them (§4c of the note).
+# The cage, as `params/sunken_garden.py` authors it (§4c of the note).
 #
 # Since 2026-09-03 every cast column in the sunken garden carries the SAME cage: PT-SG-FCOL
 # came down from 20" round / (8) #6 to 12" round / (4) #5 when PT-SG-BF2 stopped standing on
-# its top, and the four balcony corner columns arrived at the same section. PT-SG-COL's cage
-# is authored as a literal; the other five read `SPEC.corner_column_cage`, which adds the
-# cover and the galvanizing the durability case asks for. Two strings, one section.
+# its top, and the four balcony corner columns arrived at the same section. Since 2026-09-12
+# PT-SG-COL reads `SPEC.corner_column_cage` too, so ALL SIX spell ONE string — the cage is a
+# fabricated part and the drawing names one part to order. `_COL_CAGE` survives only as a
+# `parse_cage` fixture: it is the bare form the north-entry pours still author.
 _COL_CAGE = '(4) #5 vertical, #3 ties @ 10" o.c.'
 _FCOL_CAGE = ('(4) #5 vertical, #3 ties @ 10" o.c., 2" cover, '
-              'hot-dip galvanized (ASTM A767 cl. 1 or A1094)')
-_COL_CAGE_SOURCE = "vertical_reinforcement='" + _COL_CAGE + "',"
-_UNREADABLE_CAGE_SOURCE = "vertical_reinforcement='rebar per engineer',"
+              'galvanized (ASTM A767 after fabrication, or A1094)')
+# PT-SG-COL's two cage lines, at its own 14-space indent — the ONE column the strip tests
+# break, and the reason they anchor on both lines together rather than on the shared struct
+# name, which now appears on PT-SG-FCOL as well.
+_COL_CAGE_SOURCE = ("              vertical_reinforcement=SPEC.corner_column_cage,\n"
+                    "              reinforcement=_CAST_COLUMN_CAGE,\n")
+_UNREADABLE_CAGE_SOURCE = "              vertical_reinforcement='rebar per engineer',\n"
 # The SPEC field the five 12" columns share. Mutating it moves all five at once, which is
 # what `test_an_under_minimum_cage_is_over_not_ok` wants.
 _SPEC_CAGE_SOURCE = "corner_column_cage: str = ('(4) #5 vertical, #3 ties @ 10\" o.c., 2\" cover, '"
@@ -50,10 +55,11 @@ _SPEC_SHORT_CAGE_SOURCE = "corner_column_cage: str = ('(3) #4 vertical, #3 ties 
 # the three "break it on purpose" tests below would have passed while testing nothing. Each
 # mutation therefore has to move both spellings. That is the same fact
 # `integrity.reinforcement_spec_agrees` polices in the house: two spellings, one steel.
-_STRUCT_CAGE_SOURCE = "reinforcement=_CAST_COLUMN_CAGE,"
-_STRUCT_CAGE_HDG_SOURCE = "reinforcement=_CAST_COLUMN_CAGE_HDG,"
-_STRUCT_BAR_SOURCE = 'BarSpec(role="vertical", bar=5, count=4, coating="hdg-a767"),'
-_STRUCT_SHORT_BAR_SOURCE = 'BarSpec(role="vertical", bar=4, count=3, coating="hdg-a767"),'
+# The galvanized twin struct went on 2026-09-12: the coating lives on `EXPOSED_MIX` and
+# `_pour_coating` reads it, so ONE `ReinforcementSpec` now feeds all six court columns and
+# carries no per-bar coating. Mutating its vertical BarSpec therefore moves all six at once.
+_STRUCT_BAR_SOURCE = 'BarSpec(role="vertical", bar=5, count=4),'
+_STRUCT_SHORT_BAR_SOURCE = 'BarSpec(role="vertical", bar=4, count=3),'
 
 # §2 and §4 of `notes/breezeway_piers.md`. All four piers are identical — same height,
 # section, tributary and cage — so one row covers them.
@@ -122,7 +128,7 @@ _ORACLE = {
         "bell_area_ft2": 7.069, "bearing_psf": 1192.0,
         "gross_in2": 113.1, "h_over_d": 10.68, "min_steel_in2": 1.131,
         # §4c / §4d / §4e of the note.
-        "cage": _COL_CAGE, "bars": 4, "steel_in2": 1.24,
+        "cage": _FCOL_CAGE, "bars": 4, "steel_in2": 1.24,
         # §4d: 5,000 psi, and both piers have read it since 2026-09-10. This column got
         # there first (PIER_CONCRETE_12 named EXPOSED_MIX on 2026-09-03) and its sibling
         # caught up when SUNKEN_GARDEN_COLUMN_12 was given the same spec — completing the
@@ -459,7 +465,7 @@ def test_a_column_with_no_cage_is_incomplete_and_names_the_field(tmp_path) -> No
     from typehaus.engineering import EngineeringContext, EngineeringResults
     from typehaus.resolve import resolve
 
-    plan = _mutated(tmp_path, [(_COL_CAGE_SOURCE, ""), (_STRUCT_CAGE_SOURCE, "")])
+    plan = _mutated(tmp_path, [(_COL_CAGE_SOURCE, "")])
     model, _ = resolve(plan)
     results = EngineeringResults(EngineeringContext(plan=plan, model=model, soil_class="GM"))
 
@@ -476,8 +482,7 @@ def test_a_cage_that_does_not_parse_reads_as_no_steel(tmp_path) -> None:
     from typehaus.engineering import EngineeringContext, EngineeringResults
     from typehaus.resolve import resolve
 
-    plan = _mutated(tmp_path, [(_COL_CAGE_SOURCE, _UNREADABLE_CAGE_SOURCE),
-                               (_STRUCT_CAGE_SOURCE, "")])
+    plan = _mutated(tmp_path, [(_COL_CAGE_SOURCE, _UNREADABLE_CAGE_SOURCE)])
     model, _ = resolve(plan)
     results = EngineeringResults(EngineeringContext(plan=plan, model=model, soil_class="GM"))
     assert results["deck_post/PT-SG-COL"].status is Status.INCOMPLETE
@@ -506,7 +511,7 @@ def test_an_under_minimum_cage_is_over_not_ok(tmp_path) -> None:
     assert steel.capacity == pytest.approx(0.60, abs=0.005)
     count = next(s for s in record.limit_states if s.name == "bar count")
     assert not count.ok
-    # And it takes the four corner columns with it — one SPEC field feeds all five.
+    # And it takes the four corner columns with it — one SPEC field feeds all six.
     for tag in _CORNER_PIERS:
         assert results[f"deck_post/{tag}"].status is Status.OVER
 

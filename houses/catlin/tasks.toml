@@ -22,7 +22,7 @@ checkpoints = [
   { id = "strip", label = "Strip and cure", cure_days = 3 },
 ]
 constraints = [
-  { label = "rebar fabricated, galvanized after fabrication, delivered and inspected" },
+  { label = "rebar fabricated, delivered and inspected — galvanized, A1094 stock or A767 after fabrication, route named on the order (includes the column cages, 12 off)" },
   { label = "thermal-break board on site — it is cast WITH the footing, not after" },
   { label = "pump or chute access confirmed for the whole pour" },
   { label = "approved plan set on site and current" },
@@ -287,7 +287,7 @@ materials = [
   { id = "erv", label = "Broan B210E75RT and its manifolds" },
   { id = "heat-pumps", label = "Gree FLEXX Ultra 24 air handler and outdoor units" },
   { id = "lvl-and-glulam", label = "RB-HOUSE 2-1.75x16 LVL in three 12' pieces; the three treated SYP glulams" },
-  { id = "galvanized-rebar", label = "Rebar, galvanized AFTER fabrication per A767 — say so on the order" },
+  { id = "galvanized-rebar", label = "Column cages, 12 off, galvanized — A1094 stock or A767 after fabrication, route named on the order" },
   { id = "cabinets", label = "Kitchen and bath casework" },
   { id = "metal-panel", label = "Board-and-batten and PBR wall panel, Metal Sales — the only verified open-girt report" },
 ]

@@ -1283,10 +1283,19 @@
 # PT-SG-BR1/BR3 (9.18 LF) and PT-SG-BF1/BF3 (9.01 LF) — 57.7 LF over six, all 12" round on
 # SUNKEN_GARDEN_COLUMN_12. **This is NOT the sonotube rate below**, and the difference is
 # the whole reason it is a separate key:
-#   * the CAGE is hot-dip galvanized (ASTM A767 cl. 1, galvanized AFTER fabrication — the
-#     class is a coating weight, not a bend order, and these are shop-bent), about +$0.30/lb
-#     over black bar, and it is a (4) #5 vertical + #3 tie cage at 2" cover with class B
-#     dowels lapped in. **Why galvanized, if the pier row is not:** it is, since
+#   * the CAGE IS A PURCHASED PART — quote it by name. 8" out-to-out of ties, (4) #5
+#     verticals + #3 rings @ 10" o.c. at 2" cover, class B dowels lapped in, **one
+#     cross-section and TWELVE OFF house-wide** (these six plus the six north-entry pours on
+#     the row below), lengths per pour, TIED not welded. Fabricators: Rebarfab Inc, New
+#     Brighton MN (651-633-3337), or a Bolsinger custom against their PASC stock format. The
+#     catalog STOCK 8" cage is (4) #4 at #3 @ 12" — $49-77 each black, 3-8 ft, 15-20 business
+#     days from Cascade IA — and is NOT a substitute (0.80 in2 is under ACI 318-19
+#     §10.6.1.1's 1.131 in2 floor, and 12" ties are over §25.7.2.1's 16d_b = 8" for a #4).
+#     Use $49-77 as the COST FLOOR and budget ~$90-140 each at (4) #5 with galvanizing;
+#   * the cage is galvanized — EITHER ASTM A767 (galvanize AFTER fabrication; the class is a
+#     coating weight, not a bend order) OR ASTM A1094 (coated stock, bent after coating),
+#     the fabricator's choice named on the order — about +$0.30/lb over black bar.
+#     **Why galvanized, if the pier row is not:** it is, since
 #     2026-09-11. The exposure argument for both is ACI 318-19 Table 19.3.1.1 class C2 —
 #     worked for the court in `params/sunken_garden.py` (salt arrives on boots and cannot
 #     leave a court with no outlet to daylight) and for the entry in
@@ -1345,8 +1354,9 @@
 # Labour-dominated, like every small-volume pour in this table.
 #
 # ** THE CAGE LINE IS RE-STRUCK 2026-09-11, AND THIS ONE IS A REAL RATE GAP, NOT PROSE. **
-# It read "a 4-bar cage with ties $3-7/LF" — black bar. `ENTRY_PIER_CAGE` is hot-dip
-# galvanized (ASTM A767 cl. 1) and has been since 2026-09-10, for the same reason the
+# It read "a 4-bar cage with ties $3-7/LF" — black bar. `ENTRY_PIER_CAGE` is galvanized
+# (A767 after fabrication or A1094 stock, named on the order) and has been since 2026-09-10,
+# for the same reason the
 # garden columns are: these stand up to 18 1/2" out of the ground at an entry that is
 # salted every winter, on an EXPOSED_MIX. The garden row charges about +$0.30/lb for
 # exactly that and this row charged nothing. A (4) #5 + #3 tie cage at 10" o.c. on a 12"
@@ -1360,6 +1370,12 @@
 # steel, and `takeoff/reinforcement.py` zeroes a lap length on purpose because a dowel's
 # length is a lap into the pour BELOW. The column CAGES do bill. notes/rebar_backout.md §4
 # separates the two laps and is the note to read before concluding a bar is missing.
+#
+# ** THE CAGE IS THE SAME PART THE GARDEN ROW BUYS. ** `ENTRY_PIER_CAGE` and the court's
+# cage are ONE 8" cross-section — (4) #5, #3 rings @ 10", 2" cover — so these six and the
+# court's six are TWELVE OFF of one fabricated unit, lengths per pour. Quote the 8-inch cage
+# by name, twelve off, rather than pricing six pier cages and six column cages separately;
+# the per-LF rate above already carries the galvanized premium.
 #
 # ** THE CAGE-STEP HISTORY THIS ROW CARRIED IS GONE (2026-09-11). ** Two paragraphs
 # recorded a #4 -> #5 correction on PT-SG-COL (+16 lb, 2026-08-30) and the same correction

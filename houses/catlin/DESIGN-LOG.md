@@ -1662,6 +1662,59 @@ pocket was possible there at all.
 
 ## Exterior colour, balcony and veneer
 
+### BLD-02 answered: the cage became a part, and the bar spec became a goal (2026-09-12)
+
+`plans/buildability.md` BLD-02 graded the freestanding sunken-garden concrete HIGH · OWNER
+CALL on four findings from outside the model. Two were rebutted and two were acted on. The
+owner's read: the engineering already checks out — every court column, wall and pier is a
+`draft` record with a published d/c, and the only thing a seal really adds is base fixity,
+which is already two named **deferred** items (`column_support/W-SG-W1`/`E1`).
+
+- **Findings 1 and 2 got an answer, not a change.** The permit/stamp cost is BLD-01a's line
+  item, not a second scope. And the "cantilevered-column system at R = 1.25" argument does
+  not reach this site at all: Minnesota's S_S ≈ 0.04 g / S_1 ≈ 0.02 g puts the lot in
+  **SDC A** under ASCE 7 §11.4.2, and §11.7 sends an SDC A structure to §1.4 alone —
+  F_x = 0.01 W ≈ **50 lb per column** against the **153 lb** wind shear already carried. No
+  R, no 15%-axial limit, no overstrength foundation case. *The mapped values are statewide;
+  the lot's own coordinates still have to be run through the ASCE Hazard Tool, and both the
+  buildability file and `balcony_moment_columns.md` §9 say so.*
+- **Finding 3 was right, and it turned into the win: the cage is now a PART.** Out-to-out of
+  ties the authored cage is **8.0"** (6.625" bar circle + 0.625" + 2 × 0.375", i.e. 12" less
+  2 × 2" cover) — the trade's "8-inch cage", not the 12-inch cage the finding priced (a 12"
+  cage in a 12" column is zero cover; wrong part). The catalog **stock** 8" cage was checked
+  and **fails twice**: (4) #4 = 0.80 in² against §10.6.1.1's 1.131 in² floor, and #3 ties @
+  12" against §25.7.2.1's 16d_b = 8.0" for a #4. The authored #3 @ 10" is *exactly* 16d_b
+  for a #5. So it is a **custom 8" cage in a stock format, one cross-section, TWELVE OFF** —
+  the six court columns and the six north-entry pours, which were already carrying the
+  identical cage. Cost floor $49–77 (the stock row); budget ~$90–140 each galvanized.
+  Rebarfab (New Brighton) or a Bolsinger custom.
+- **Finding 4 was exaggerated, and the fix was to restate the GOAL.** "HDG is an unpublished
+  special order" is wrong on both routes: **ASTM A1094** (CMC GalvaBar) is stocked and
+  **bends after coating**, and the **A767** after-fabrication route has two Minnesota plants
+  (AZZ Winsted, AZZ NE Minneapolis). ACI 318-19 §20.2.1.7.2 lists both; ψ_e = 1.0 either
+  way. The spec now leads with the **goal** — long-term durability of exposed concrete in
+  F3 + C2, which the mix meets on its own at w/cm ≤ 0.40 / 5,000 psi / 6% ± 1.5 air / 2"
+  cover — and puts the **ladder** under it: *galvanized either standard (fabricator's
+  choice, named on the order) → black bar at the stated cover and mix as a documented
+  written exception → epoxy and stainless refused.* Galvanizing is the owner's margin, not a
+  code requirement, so the spec can flex on schedule without losing what it was for.
+- **In the model, one struct replaced two.** `_CAST_COLUMN_CAGE_HDG` existed only because
+  `SUNKEN_GARDEN_COLUMN_12` once carried no `ConcreteSpec` for a coating to live on. It
+  carries `EXPOSED_MIX` now, `takeoff/reinforcement.py::_pour_coating` reads
+  `bar_coating` from it, and `ENTRY_PIER_CAGE`'s per-bar coating went the same way. **The
+  model literal stays `hdg-a767`** — the BOM key (`#5:hdg-a767`) and the BAR COATING line on
+  the structural notes are unchanged, `[reinforcement]` is empty, and no pound and no dollar
+  moved. The "either" lives in prose; the model states the heavier baseline. All six court
+  columns also now spell **one** cage string (`SPEC.corner_column_cage`), because one part
+  should read as one part on the drawing.
+- **Three of BLD-02's own numbers did not survive verification** and are corrected in place:
+  **six** cast columns not four (only the four balcony corners are saddle-collar formed;
+  `PT-SG-COL`/`PT-SG-FCOL` are tubes in a hole), **10'-4"** of retained height per
+  `sunken_garden_court_free_body.md`, and **twelve** identical cage sections not eight — all
+  six north-entry pours share `ENTRY_PIER_CAGE`, not only the two roof columns.
+- **Still open: BLD-12.** The belling precondition has no soils report behind it, and it
+  gates the two augered piers. It is cited, not folded in.
+
 - **Why `#1c1f24` and not the `#3a3d40` it started at.** An authored colour is
   an albedo. The viewer lights with 0.8 hemisphere + 0.9 key + 0.6 IBL, over
   unit irradiance, so a dark surface leaves the shader well above its albedo —

@@ -317,7 +317,7 @@ These have each been proposed, priced and killed. The reason is the row.
 | **Outer girt KDAT → plain SPF** | $2,968–4,452, settled the other way in the engineering note's Risks. That girt is a horizontal ledge inside the vent gap that wet-cycles for the life of the wall |
 | **Buy a proprietary clip-and-rail standoff** | $14,700–29,300 for clip and rail *alone*, against $16,028–26,118 for the entire current standoff **including window bucks.** Costs more and reintroduces a through-foam fastener |
 | **"Simplify" `RB-HOUSE` to one 36' stick** | The one place a well-meant simplification would put a crane on the job: 317 lb per ply landing at +32', against 106 lb as three 12-footers. Identical lineal feet, zero offcut |
-| **Precast the 16" garden column** | 1,656 lb. The disposable fibre tube is a wheelbarrow of concrete; precast is a crane pick and a delivery problem |
+| **Precast the 12" garden column** | ~1,260 lb (0.785 ft² x 10'-8 3/16" x 150 pcf). The disposable fibre tube is a wheelbarrow of concrete; precast is a crane pick and a delivery problem. *The 16" round this row named retired with `_COLUMN_20`; all six court columns are 12".* |
 | **Post bases: ABU66SS stainless → ZMAX** | ~$950–1,750, and the wrong $1,000 to save — one detail nobody re-does without jacking the structure |
 | **Basement interior 12" walls → 2x6 stud** | Ablation −$4,177/−$6,979, but the framing, gypsum and paint cost $2,100–3,700 back. Net ~$2,100–3,300, and it retires two-storey bearing lines and their footings |
 | **`struct-1-plywood` → OSB on the exterior walls** | $700–1,930 over 3,512 SF. Not worth the shear-value argument |

@@ -49,7 +49,7 @@ and its §2 geotechnical table is the one used here.
         BM-SG-BKW  ====================================  BM-SG-BKE      y = -2.25'
                               ||  PT-SG-COL
                               ||  12" round, 10'-8 3/16"
-                              ||  PIER_CONCRETE_12 — one concrete layer
+                              ||  SUNKEN_GARDEN_COLUMN_12 — one concrete layer
         BM-SG-FRW  ====================================  BM-SG-FRE      y = -9.50'
                               ||  PT-SG-FCOL
                               ||  12" round, 10'-8 3/16"
@@ -75,21 +75,19 @@ note was not worth 0.1 cy of shaft; the owner's instruction reverses that, and t
 is derived from the 42" rule again rather than held. Every self-weight, slenderness and
 pressure figure below is back at the height it had before any of this — the shaft is
 128.1875" again, exactly — and the geometry of the bell, the cage and the mix are untouched — the assemblies state a thickness and a material and nothing else. They
-carry different assemblies for a reason that is not the section — though as of 2026-09-03 it
-is no longer a reason about the concrete. `PIER_CONCRETE_12` now names `EXPOSED_MIX`,
-the same 5,000 psi F3+C2 galvanized-bar mix `SUNKEN_GARDEN_COLUMN_12` is specified from in
-prose. **What it named before was a mix that did not exist:** its source string said
-"4,000 psi ... ACI 318-19 class F2", and Table 19.3.2.1 asks 4,500 psi of class F2. Nothing
-could see that while the numbers were sentences.
+now carry the **same** assembly. `PT-SG-COL` moved onto `SUNKEN_GARDEN_COLUMN_12` on
+2026-09-10 — one tag for all six cast columns in the court — and that tag names `EXPOSED_MIX`,
+the 5,000 psi F3+C2 galvanized-bar mix. **What `PIER_CONCRETE_12` named before the migration
+was a mix that did not exist:** its source string said "4,000 psi ... ACI 318-19 class F2",
+and Table 19.3.2.1 asks 4,500 psi of class F2. Nothing could see that while the numbers were
+sentences.
 
-**The two assemblies now differ only in what the engine can READ, and that difference is
-live.** `PIER_CONCRETE_12` carries a `ConcreteSpec`; `SUNKEN_GARDEN_COLUMN_12` still carries
-only prose, so §4's calculations grade `PT-SG-FCOL` at the presumptive 3,000 psi while
-`PT-SG-COL` is graded at the 5,000 both are actually poured from. The front column therefore
-reads *weaker* than the back one, which is the opposite of the truth and is an artefact of
-the migration being unfinished rather than a finding. Attaching the mix to
-`SUNKEN_GARDEN_COLUMN_12` re-oracles `notes/balcony_moment_columns.md`, which is the reason
-it is a separate step. Retiring `PT-SG-COL`'s exposed grout island remains open.
+**The migration is finished, and the artefact it caused is gone.** There was a window in
+which `SUNKEN_GARDEN_COLUMN_12` carried only prose, so §4's calculations graded `PT-SG-FCOL`
+at the presumptive 3,000 psi while `PT-SG-COL` read the 5,000 both are actually poured from
+— the front column reading *weaker* than the back one, which was the opposite of the truth.
+Both now read 5,000 from the same `ConcreteSpec`. `PT-SG-COL`'s exposed grout island is
+retired too (2026-09-12): the assembly says CAST TO LINE, NO GROUT ISLAND.
 
 **BOTH columns carry a balcony pillar's share.** `PT-SG-BR2` stands on the porch deck 3"
 south of the back-beam line, and `PT-SG-BF2` stands on it 3" north of the front-beam line —
@@ -275,13 +273,13 @@ spirally reinforced.
 
 ### 4c. The cages, and the cheaper ones that were rejected
 
-**`PT-SG-COL`: (4) #5 vertical, #3 ties @ 10" o.c.**
+**`PT-SG-COL`: (4) #5 vertical, #3 ties @ 10" o.c., 2" cover, galvanized.**
 `A_st` = 4 × 0.31 = **1.24 in²**, ρ = **1.096%**, clearing the 1.131 in² floor by 9.6%.
 The only other cage that clears is 6-#4 at 1.20 in² — 4.01 lb/ft against 4.17, about a nickel
 of steel, and two extra bars to cut, bend and tie. Four #5 is both the Code's own floor for a
 circular tie and the cheaper cage once labour is counted.
 
-**`PT-SG-FCOL`: (4) #5 vertical, #3 ties @ 10" o.c., 2" cover, hot-dip galvanized.**
+**`PT-SG-FCOL`: (4) #5 vertical, #3 ties @ 10" o.c., 2" cover, galvanized.**
 The same cage, since 2026-09-03 — the column is the same section now, so the same six limits
 give the same answer. It carried **(8) #6 @ 12"** while it was a 20" round, against a
 3.142 in² floor, and two lighter cages were rejected then: **4-#8 = 3.16 in²** cleared by
@@ -291,8 +289,19 @@ anyone reverting to a 20" round will re-derive them.
 
 The galvanizing and the 2" cover come with the balcony redesign's F3+C2 durability case and
 are specified for every cast column in this structure; see `notes/balcony_moment_columns.md`
-§7. `PT-SG-COL` was aligned onto `EXPOSED_MIX` on 2026-09-03 (§2); its exposed grout
-island is still an open follow-up.
+§7 for the accepted ladder (A767 after fabrication **or** A1094 stock; black bar only as a
+written exception; epoxy and stainless refused). `PT-SG-COL` was aligned onto `EXPOSED_MIX`
+on 2026-09-03 (§2) and its exposed grout island was retired on 2026-09-12.
+
+**And this cage is a PART, not a field-bent detail.** Out-to-out of ties it is **8.0"**
+(6.625" bar circle + 0.625" + 2 × 0.375", which is also 12" less 2 × 2" cover) — the trade's
+**"8-inch cage"**. One cross-section serves **twelve pours house-wide**: the six court
+columns and the six north-entry pours, which carry the identical `ENTRY_PIER_CAGE`. Lengths
+per pour, **tied not welded**, quoted by name twelve off. The catalog **stock** 8" cage is
+(4) #4 with #3 ties @ 12" and is **not** a substitute: 0.80 in² is 29% under the 1.131 in²
+floor above, and 12" ties are 50% over §25.7.2.1's 16d_b = 8.0" for a #4 — where the
+authored #3 @ 10" is *exactly* 16d_b for a #5. See `notes/balcony_moment_columns.md` §7 for
+the comparison and the fabricators.
 
 Both cages are the **minimum the Code permits**, which is the answer the "cheapest concrete"
 brief asks for. There is no spare capacity being bought here — see §4d for how little of it

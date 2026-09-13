@@ -369,17 +369,24 @@ class SunkenGardenSpec:
     #
     # The round spelling is mandatory — see `balcony_beam` above for the same trap.
     corner_column_size: str = "12 round"
-    # Hot-dip galvanized bar (ASTM A767 class 1 chromate-passivated, or A1094 continuous),
-    # the owner's 2026-09-02 call over epoxy (delaminates) and stainless (4-6x, and an
-    # austenitic thermal coefficient that fights the concrete). Parsed by
-    # `engineering/deck_post.py::parse_cage`; the words around the four numbers are for the
-    # drawing. As 1.24 in2 on a 113.1 in2 gross is rho 1.10%, just over §10.6.1.1's 1% floor.
-    # The word order matters: ``parse_cage`` reads the tie group as "#<n> ties @ <spacing>"
-    # and an adjective wedged between the bar and the word "ties" makes the whole string
-    # unreadable — which it treats as NO STEEL, the conservative reading, so the column
-    # silently reports INCOMPLETE instead of failing loudly. Galvanizing rides at the end.
+    # ** THE GOAL IS LONG-TERM DURABILITY IN F3 + C2, AND THE COATING IS THE MARGIN. ** The
+    # mix meets the Code on its own (w/cm <= 0.40, f'c 5,000, 6% +/-1.5 air, 2" cover);
+    # galvanizing is the owner's margin on top (2026-09-02, ladder restated 2026-09-12):
+    # galvanized either standard — ASTM A767 (galvanize AFTER fabrication, A780 at any field
+    # cut, and a WELDED cage leaves A767 for A123) or ASTM A1094 (coated stock, bends after
+    # coating) — the fabricator's choice, NAMED ON THE ORDER; black bar at this cover and mix
+    # accepted only as a written exception when neither route can be supplied on schedule;
+    # epoxy (psi_e 1.2-1.5 lengthens every lap ~50%, and it delaminates) and stainless (4-6x,
+    # an austenitic thermal coefficient that fights the concrete) stay REFUSED.
+    #
+    # Parsed by `engineering/deck_post.py::parse_cage`; the words around the four numbers are
+    # for the drawing. As 1.24 in2 on a 113.1 in2 gross is rho 1.10%, just over §10.6.1.1's
+    # 1% floor. The word order matters: ``parse_cage`` reads the tie group as "#<n> ties @
+    # <spacing>" and an adjective wedged between the bar and the word "ties" makes the whole
+    # string unreadable — which it treats as NO STEEL, the conservative reading, so the column
+    # silently reports INCOMPLETE instead of failing loudly. The coating rides at the end.
     corner_column_cage: str = ('(4) #5 vertical, #3 ties @ 10" o.c., 2" cover, '
-                               'hot-dip galvanized (ASTM A767 cl. 1 or A1094)')
+                               'galvanized (ASTM A767 after fabrication, or A1094)')
     balcony_joist: str = "2x8"
     balcony_joist_oc_in: float = 16.0
     balcony_deck_thickness_in: float = 1.5  # aluminum plank
@@ -646,13 +653,21 @@ _veneer_beam_bottom = inch(-120.1875)
 # horizontal steel was never stated in the string and is stated here: ACI 318-19 §11.6.1
 # asks 0.0020 of the gross section for #5 and smaller, i.e. 0.288 in2/ft on a 12" wall,
 # and `#4 @ 8"` is 0.300.
-# The five cast columns' cage, structured — the same four bars and #3 ties @ 10" the string
-# states. Both spellings are kept: the string prints on the drawing and holds the prose the
-# struct cannot (the galvanizing callout), the struct is what `deck_post.cage_for` grades and
-# what `takeoff/reinforcement.py` bills, and `integrity.reinforcement_spec_agrees` raises an
-# ERROR if they drift apart. A COUNT and not a spacing, because ACI 318-19 §10.6.1.1 bounds a
-# column's steel by 0.01Ag and §10.7.3.1(b) sets its floor at four bars within circular ties,
-# and neither question can be asked of a spacing.
+# ** ONE STRUCT FOR ALL SIX COURT COLUMNS, AND THE CAGE IS A PART. ** The same four bars and
+# #3 ties @ 10" the string states. Both spellings are kept: the string prints on the drawing
+# and holds the prose the struct cannot (the coating ladder), the struct is what
+# `deck_post.cage_for` grades and what `takeoff/reinforcement.py` bills, and
+# `integrity.reinforcement_spec_agrees` raises an ERROR if they drift apart. A COUNT and not
+# a spacing, because ACI 318-19 §10.6.1.1 bounds a column's steel by 0.01Ag and §10.7.3.1(b)
+# sets its floor at four bars within circular ties, and neither question can be asked of a
+# spacing.
+#
+# ** NO PER-BAR COATING HERE, AND THE GALVANIZED TWIN IS GONE (2026-09-12). ** A second spec
+# carried `coating=` on both roles, for one reason only: the column assembly had no
+# `ConcreteSpec` for a coating to live on. It has one now — `SUNKEN_GARDEN_COLUMN_12` names
+# `EXPOSED_MIX`, whose `bar_coating` is what `takeoff/reinforcement.py::_pour_coating` reads
+# — so the BOM key is identical and the twin was pure duplication. A per-bar coating is for
+# the one case that is real: a dowel lapped into a black-bar pour below.
 _CAST_COLUMN_CAGE = ReinforcementSpec(
     bars=(
         BarSpec(role="vertical", bar=5, count=4),
@@ -660,26 +675,7 @@ _CAST_COLUMN_CAGE = ReinforcementSpec(
     ),
     cover=inch(2.0),
     lap_class="B",
-    source="verbatim from the cage string beside it; notes/sunken_garden_piers.md §4",
-)
-
-# ** THE SAME CAGE, GALVANIZED — AND THE COATING IS ON THE BARS RATHER THAN ON THE MIX. **
-# A coating normally belongs to the pour (`ConcreteSpec.bar_coating`), because it is a
-# property of the bar you buy for a pour and not of a role within it. It is stated per-bar
-# here for a reason worth writing down: `SUNKEN_GARDEN_COLUMN_12` does not yet carry a
-# `ConcreteSpec` at all — attaching one means giving it the real 5,000 psi F3+C2 mix, which
-# re-oracles `notes/balcony_moment_columns.md`, `notes/breezeway_piers.md` and
-# `test_pier_calcs.py`. Until that happens the galvanizing is an authored fact with nowhere
-# else to live, and leaving it unsaid would under-report the house's galvanized tonnage in
-# the estimate. Move it to the mix when the mix lands.
-_CAST_COLUMN_CAGE_HDG = ReinforcementSpec(
-    bars=(
-        BarSpec(role="vertical", bar=5, count=4, coating="hdg-a767"),
-        BarSpec(role="ties", bar=3, spacing=inch(10.0), coating="hdg-a767"),
-    ),
-    cover=inch(2.0),
-    lap_class="B",
-    source="verbatim from SPEC.corner_column_cage, including its ASTM A767 cl. 1 callout",
+    source='8" cage, (4) #5 + #3 rings @ 10", one of twelve house-wide; notes/sunken_garden_piers.md §4, balcony_moment_columns.md §7',
 )
 
 # The two BRACED porch walls' vertical steel, structured. `#6 @ 38"` is IRC Table
@@ -1198,7 +1194,9 @@ COLUMN = Post(uid="SGP001AAAA", tag="PT-SG-COL",
               # The column is at d/c 0.04 and NONE of that is why these bars are here — the
               # 1% floor is a creep/shrinkage/accidental-moment rule, indifferent to load.
               # See notes/sunken_garden_piers.md §4. Do not thin it to "save concrete".
-              vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
+              # Reads SPEC.corner_column_cage like the other five, so all six court columns
+              # spell ONE string and the drawing names ONE part to order.
+              vertical_reinforcement=SPEC.corner_column_cage,
               reinforcement=_CAST_COLUMN_CAGE,
               supported_by="FT-SG-COL")
 
@@ -1267,7 +1265,7 @@ FRONT_COLUMN = Post(uid="SGP002AAAA", tag="PT-SG-FCOL",
                     # within circular ties, so the count cannot come down either. Check any
                     # substitution against 1.131 in2 AND against four bars.
                     vertical_reinforcement=SPEC.corner_column_cage,
-                    reinforcement=_CAST_COLUMN_CAGE_HDG,
+                    reinforcement=_CAST_COLUMN_CAGE,
                     assembly="SUNKEN_GARDEN_COLUMN_12")
 
 # Wall footing uids are a literal map keyed on the wall tag, not ``enumerate(WALLS)``.
@@ -2776,7 +2774,7 @@ for _i, _x in enumerate(_PILLAR_X, start=1):
                             supported_by=_bears_on,
                             vertical_reinforcement=(SPEC.corner_column_cage
                                                     if _is_corner else None),
-                            reinforcement=(_CAST_COLUMN_CAGE_HDG if _is_corner else None),
+                            reinforcement=(_CAST_COLUMN_CAGE if _is_corner else None),
                             assembly=("SUNKEN_GARDEN_COLUMN_12" if _is_corner
                                       else "POST_WHITE_PAINT_DF")))
 

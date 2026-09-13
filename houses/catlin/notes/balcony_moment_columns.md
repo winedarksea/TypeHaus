@@ -473,14 +473,54 @@ f'c ≥ 5,000 psi, 6% ±1.5 air**, SCM caps per ACI 318-19 §19.3.3.4. IRC R402.
 of a salt-exposed porch. **Do not reuse the retired 20" column's 4,000 psi / w/cm 0.45 F2
 mix here.**
 
-**Bar protection: hot-dip galvanized (ASTM A767 class 1, chromate-passivated, or A1094
-continuous)** — the owner's 2026-09-02 call, house-wide. Epoxy delaminates. Stainless is the
-only coating that buys a century independent of cover, at 4-6× the cost and with an
-austenitic thermal coefficient (~16e-6/°C) fighting concrete's ~10-12e-6 (carbon steel is
-~12e-6). Galvanized already sacrifices zinc at any coating break. Sika/Vector Galvashield XPX
+**Bar protection: the GOAL is long-term durability in F3 + C2, and the coating is the margin
+on top of a mix that already meets the Code.** Restated 2026-09-12 (BLD-02 finding 4) as a
+ladder rather than a single product, so the spec can flex on schedule without losing what it
+is for:
+
+1. **Galvanized, either standard — preferred.** **ASTM A767**: galvanize AFTER fabrication
+   (A767's classes are COATING WEIGHTS, not a bend-order distinction, so naming a class
+   never settled the sequence); repair any field cut or bend per **ASTM A780**; a **welded**
+   cage leaves A767 for **ASTM A123**. Route exists locally: **AZZ Galvanizing, Winsted MN
+   (800 6th St S)** and **AZZ NE Minneapolis**. Or **ASTM A1094** — coated stock that
+   **bends and fabricates after coating without repair**, which removes the sequencing
+   question entirely; **CMC GalvaBar** (Catoosa OK) publishes it as stocked, shipping in
+   days. **ACI 318-19 §20.2.1.7.2 lists both**, and **ψ_e = 1.0 either way**. The
+   fabricator picks and **names the route on the order**.
+2. **Black bar at this cover and this mix — accepted only as a written exception**, when
+   neither galvanized route can be supplied on schedule. The 5,000 psi / w/cm 0.40 / 6% air
+   / 2" cover combination above is what meets the Code on its own; the zinc was always
+   margin.
+3. **Epoxy and stainless — refused.** Epoxy delaminates and takes ψ_e 1.2–1.5, which
+   lengthens every lap in this house by half. Stainless is the only coating that buys a
+   century independent of cover, at 4-6× the cost and with an austenitic thermal coefficient
+   (~16e-6/°C) fighting concrete's ~10-12e-6 (carbon steel is ~12e-6).
+
+Galvanized already sacrifices zinc at any coating break. Sika/Vector Galvashield XPX
 embedded zinc anodes (330 g zinc, 20+ yr, ~$1,400 per box of 20) are a possible
 sunken-garden-**wide** addition for the salt-splash walls; on these columns, over galvanized
 bar at 2" cover, they are a belt on braces and are not taken.
+
+**The cage is a PART, and the stock part does not fit.** Out-to-out of ties it is
+**8.0"** — 6.625" bar circle + 0.625" (one #5 diameter) + 2 × 0.375" (a #3 ring each side),
+which is also 12" less 2 × 2" cover. That is the trade's **"8-inch cage"**, and it is one
+cross-section repeated **twelve times house-wide** (the six court columns and the six
+north-entry pours, which carry the identical `ENTRY_PIER_CAGE`), lengths per pour, **tied
+not welded**.
+
+The **catalog stock 8" cage was evaluated and rejected**: Bolsinger's PASC-series stock 8"
+unit is **(4) #4 with #3 ties @ 12"**, 3–8 ft, $49–77 black, shipping Cascade IA to MN in
+15–20 business days. It fails on **two** counts, either of which is fatal:
+
+| stock 8" cage | authored 8" cage | limit |
+|---|---|---|
+| 4 #4 = **0.80 in²** | 4 #5 = **1.24 in²** | ACI 318-19 §10.6.1.1 floor is 0.01 A_g = **1.131 in²** on a 113.1 in² gross — the stock cage is **29% short** |
+| #3 ties @ **12"** | #3 ties @ **10"** | §25.7.2.1 caps tie spacing at 16d_b, which is **8.0"** for a #4 and **10.0"** for a #5 — the authored spacing is exactly the limit, the stock spacing is 50% over it |
+
+So the part to order is a **custom 8" cage in a stock format**, twelve off, from Rebarfab
+Inc (720 First St SW, New Brighton MN, 651-633-3337 — in-house detailing and fabrication) or
+a Bolsinger custom. The **$49–77** stock row is the cost floor; budget roughly **$90–140
+each** at (4) #5 with galvanizing.
 
 **Note on the lap:** ψ_e is **1.0** for galvanized bar (§25.4.2.5). It is EPOXY that takes
 1.2-1.5, and reading the epoxy row here would lengthen every lap in this house by half.
@@ -589,6 +629,14 @@ above comes from the manufacturer's instructions rather than from the report.
   term now, and it fires on any wall `retaining_wall` does enumerate; these two it does
   not, so they are assigned rather than computed. **A pilaster or a local thickening under
   each column is the likely answer** and is exactly what the deliverable asks for.
+- **Seismic, beyond the screening below.** The lot sits in **SDC A**: Minnesota's mapped
+  values (S_S ≈ 0.04 g, S_1 ≈ 0.02 g) satisfy ASCE 7 §11.4.2 on both counts (S_1 < 0.04 and
+  S_S ≤ 0.15), and §11.7 then sends an SDC A structure to **§1.4 alone** — F_x = 0.01 W,
+  about **50 lb per column**, against the **153 lb** wind shear §2b already carries. So no
+  R, no 15%-axial limit and no overstrength foundation case applies, and *wind governs*.
+  **The mapped values are statewide, not this lot's**: query the USGS/ASCE Hazard Tool at
+  the site's own coordinates and record the result before the calc package goes out. This is
+  a screening, not a seismic design.
 - **Shear in the column** (the section is enormous against a few hundred pounds, but
   "enormous" is a judgement), torsion, and the diaphragm claim that delivers storey shear to
   four corners rather than six posts.

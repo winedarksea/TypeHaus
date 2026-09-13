@@ -107,6 +107,13 @@ given a real `ConcreteSpec`, and `bar_coating` is a property of the POUR, so the
 house is now galvanized**, which is the 2026-09-02 owner call reaching the last exterior cage
 that black steel was still specified for.
 
+**"Galvanized" means either standard, as of 2026-09-12.** The BOM key stays `hdg-a767` — the
+model states the heavier baseline and `[reinforcement]` is empty, so no pound and no dollar
+moves — but the spec now accepts **ASTM A1094** (coated stock, bent after coating) equally
+with A767 after fabrication, the fabricator naming the route on the order
+(`notes/balcony_moment_columns.md` §7). A backout reading this table should not treat the
+key as a purchase decision.
+
 That is a durability result and not only a tidier table. Black and galvanized bar in
 electrical contact inside one pour is a dissimilar-metal couple — an anode, a cathode, and an
 electrolyte as soon as moisture reaches them — and the standard advice is to use one material

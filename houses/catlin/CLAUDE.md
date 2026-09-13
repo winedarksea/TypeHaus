@@ -1351,20 +1351,38 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - Four CORNER pillars: 12" round reinforced concrete, FIXED at the base,
   doweled into the 12" wall tops of `W-SG-W1`/`E1` — the balcony's entire
   lateral system in both plan directions.
+- **Durability intent (2026-09-12, BLD-02).** The goal is long-term durability of
+  exposed concrete in ACI 318-19 exposure **F3 + C2**, not any one coating. The
+  code baseline meets it on its own: w/cm <= 0.40, f'c >= 5,000 psi, 6% ±1.5 air,
+  2" cover. Galvanized bar is the owner's margin on top of that, not a code
+  requirement — which is what lets the spec flex without losing the goal.
+- **Bar ladder.** Galvanized, **either** ASTM **A767** (galvanize AFTER
+  fabrication — A767's classes are COATING WEIGHTS, not a bend-order distinction,
+  so naming cl. 1 never settled the sequence; A780 repair at any field cut or
+  bend; a WELDED cage leaves A767 for ASTM **A123**) **or** ASTM **A1094**
+  (coated stock, bends and fabricates after coating without repair). ACI 318-19
+  §20.2.1.7.2 lists both and ψ_e = 1.0 either way. **Fabricator's choice, named
+  on the order.** Black bar at the stated cover and mix is accepted only as a
+  **written exception**, when neither route can be supplied on schedule. Epoxy
+  (ψ_e 1.2–1.5 lengthens every lap ~50%; delaminates) and stainless (4–6×,
+  austenitic thermal mismatch) stay **refused**. Sources: AZZ Galvanizing,
+  Winsted MN and NE Minneapolis (the A767 after-fab route); CMC GalvaBar,
+  Catoosa OK (A1094, stocked). (→ `plans/buildability.md` BLD-02.)
+- **The cage is a part, not a field-bent detail.** 8" out-to-out of ties — a
+  6-5/8" bar circle + 0.625" (one #5 dia.) + 2 × 0.375" (a #3 ring each side) =
+  8.0", which is also 12" less 2 × 2" cover — (4) #5 verticals, #3 rings @ 10"
+  o.c., 2" cover, in a 12" round. **TWELVE identical sections house-wide**: six
+  court columns and the six north-entry pours (`params/north_entry_frame.py`
+  `ENTRY_PIER_CAGE`), lengths per pour, **tied not welded**. It is NOT the
+  catalog stock 8" cage (4 #4, #3 @ 12"): 0.80 in² is under §10.6.1.1's 1.131 in²
+  floor, and 12" ties exceed §25.7.2.1's 16d_b = 8" for #4. The authored #3 @ 10"
+  is exactly 16d_b for #5. Quote it by name, twelve off — Rebarfab (720 First St
+  SW, New Brighton MN, 651-633-3337) or a Bolsinger custom against their PASC
+  stock format.
 - 12", not 10": 2" cover on a #5 cage inside #3 ties needs a 6-5/8" bar circle,
   flush with both wall faces. `SUNKEN_GARDEN_COLUMN_12` serves all SIX cast
   columns in the court (`PT-SG-COL` joined them on 2026-09-10); `_COLUMN_20` is
   retired.
-- Exposure F3 + C2, not F2: w/cm <= 0.40, f'c >= 5,000 psi, 6% ±1.5 air. Bar is
-  hot-dip galvanized (ASTM A767 cl. 1 or A1094) — do not substitute epoxy or
-  stainless. **Galvanize AFTER fabrication, and say so on the order.** A767's
-  classes are COATING WEIGHTS, not a bend-order distinction, so naming cl. 1 does
-  not settle the sequence and these cages are shop-bent: #3 ties to a 6-5/8" bar
-  circle. Bending coated bar cracks the coating and needs repair per ASTM A780 —
-  which also applies to any field cut or bend. And a WELDED cage is outside A767
-  altogether: welding is fabrication of an assembly, which ASTM A123 governs.
-  Put "galvanize after fabrication per A767; repair cut/bent coating per A780" on
-  the rebar order (→ `plans/buildability.md` BLD-02).
 - Beam seat is CAST TO LINE, no grout island: screed the wash/drip lip, take
   tolerance in the `SS316-SHIM-35` shim pack (`CN-SG-STDF-*`), HGAM10 gusset +
   Titen Turbo at >=3" edge distance. `PIER_CONCRETE_12` says NO GROUT ISLAND too

@@ -341,10 +341,29 @@ the threshold.
 
 **The galvanizing is an owner decision and is recorded as one, not as a code requirement.**
 `plan/assemblies.py` is explicit about that, which is the right way round: C2 with a
-5,000 psi / w/cm ≤ 0.40 / 6% air mix satisfies the Code without it. ASTM A767 cl. 1, shop-
-bent then galvanized — the class is a coating weight, not a bend order. Stainless was
-considered for this house and rejected; **do not substitute epoxy**, whose ψ_e of 1.2-1.5
-would lengthen every lap here by half (galvanized bar reads ψ_e = 1.0, §25.4.2.5).
+5,000 psi / w/cm ≤ 0.40 / 6% air mix satisfies the Code without it, at the 2" cover these
+cages carry. The coating is the margin on top, and since 2026-09-12 it is stated as a
+**ladder** rather than as one product (BLD-02 finding 4; `notes/balcony_moment_columns.md`
+§7 is the full statement):
+
+- **Galvanized, either standard — preferred.** **ASTM A767**: galvanize AFTER fabrication
+  (the class is a coating weight, not a bend order, so naming one never settled the
+  sequence), A780 repair at any field cut or bend, and a welded cage leaves A767 for A123 —
+  **AZZ Winsted** and **AZZ NE Minneapolis** are the two local plants. Or **ASTM A1094**:
+  coated stock that bends after coating without repair, published by **CMC GalvaBar** as
+  stocked. ACI 318-19 §20.2.1.7.2 lists both; ψ_e = 1.0 either way. **The fabricator names
+  the route on the order.**
+- **Black bar at this cover and mix — a written exception only**, when neither route can be
+  supplied on schedule.
+- **Epoxy and stainless — refused.** Epoxy's ψ_e of 1.2-1.5 would lengthen every lap here by
+  half (galvanized bar reads ψ_e = 1.0, §25.4.2.5); stainless was considered for this house
+  and rejected.
+
+**These six cages are the same part as the court's six.** `ENTRY_PIER_CAGE` and the court's
+`_CAST_COLUMN_CAGE` are one cross-section — 8.0" out-to-out of ties, (4) #5, #3 rings @ 10",
+2" cover — so the house orders **one fabricated cage, twelve off**, lengths per pour, tied
+not welded. Not the catalog stock 8" cage, which is (4) #4 at #3 @ 12": under §10.6.1.1's
+1% floor and over §25.7.2.1's 16d_b.
 
 The court's own chloride reasoning is worked in `params/sunken_garden.py` and is a
 different argument reaching the same class: salt arrives there on boots and a shovel and

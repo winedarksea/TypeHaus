@@ -346,18 +346,24 @@ beam(10, "BM-BW-SCSILL", LANDING_WEST_FT, PIER_LINE_Y_FT,
 # to this house and exactly no pounds of steel, which `notes/rebar_backout.md`'s lb/cy ratio
 # is what noticed. Both spellings, always, and keep them saying the same thing.
 #
-# Galvanized, house-wide (ASTM A767 cl. 1): these piers stand up to 18 1/2" out of the ground
-# at a salted entry on an EXPOSED_MIX (ACI 318-19 class F3 + C2). Stainless was considered for
-# this house and rejected; do not substitute epoxy.
+# ** THE SAME 8" CAGE THE COURT COLUMNS CARRY — ONE CROSS-SECTION, TWELVE POURS HOUSE-WIDE
+# (six here, six in `params/sunken_garden.py`), LENGTHS PER POUR. ** That is the procurement
+# fact: it is a fabricated part, not a field-bent detail.
+#
+# The durability goal is long-term performance in F3 + C2 — these stand up to 18 1/2" out of
+# the ground at a salted entry. `PIER_CONCRETE_12` names EXPOSED_MIX, whose `bar_coating`
+# carries the ladder (galvanized either ASTM A767 after fabrication or ASTM A1094 stock, the
+# fabricator's choice named on the order; black bar at this cover and mix only as a written
+# exception). NO per-bar coating here: the coating belongs to the pour, and stating it twice
+# was the duplication struck on 2026-09-12. Epoxy and stainless stay refused.
 ENTRY_PIER_CAGE = ReinforcementSpec(
     bars=(
-        BarSpec(role="vertical", bar=5, count=4, coating="hdg-a767"),
-        BarSpec(role="ties", bar=3, spacing=inch(10.0), coating="hdg-a767"),
+        BarSpec(role="vertical", bar=5, count=4),
+        BarSpec(role="ties", bar=3, spacing=inch(10.0)),
     ),
     cover=inch(2.0),
     lap_class="B",
-    source=("notes/north_entry_piers.md §6 — the ACI 318-19 §10.6.1.1 1% floor, "
-            "four bars per §10.7.3.1(b)"),
+    source='8" cage, (4) #5 + #3 rings @ 10", one of twelve house-wide; notes/north_entry_piers.md §6 — the ACI 318-19 §10.6.1.1 1% floor, four bars per §10.7.3.1(b)',
 )
 
 PIERS = []

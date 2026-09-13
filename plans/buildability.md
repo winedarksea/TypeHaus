@@ -151,7 +151,7 @@ derived by hand from the design.
 
 | Trade | Distinct mobilisations | Why more than one |
 |---|---|---|
-| Concrete | **at least 5** | footings and basement walls · garage ICF stem (a different sub) · slabs · the cast deck over the LiteDeck form, which needs a pump after sill plates are set · sunken-garden walls, piers and the four cast columns · then the polished-concrete finish pass, which cannot happen until the building is closed |
+| Concrete | **at least 5** | footings and basement walls · garage ICF stem (a different sub) · slabs · the cast deck over the LiteDeck form, which needs a pump after sill plates are set · sunken-garden walls, piers and the six cast columns · then the polished-concrete finish pass, which cannot happen until the building is closed |
 | Envelope | **4, with an inspection hold** | framer lays blocks and girts flat before tilt · **hold: the 8-inch screws must be inspected before the sprayer arrives, because they are blind and invisible once foamed** · foam sub · panel sub · window sub, mounting outie on the girt plane |
 | Masonry | **2** | the five-element firebox with its steel lintel · the 129 sf sunken-court wythe, a minimum-mobilisation job needing scaffold |
 | Metals | **5+** | garage stem coil band on its vented standoff · six drip flashing runs · wall panels · roof panels · eave water chain · two guard systems with two different mounting details · snow guards and seam clamps |
@@ -178,7 +178,7 @@ is still the first thing to remove.
 | BLD-06 | Service load calc rests on unlisted devices | HIGH | **SIMPLIFY** | +$0 or +$10k–15k |
 | BLD-01b | The girt-and-block exterior wall | HIGH | **KEEP + ENGINEERED (2026-09-12)** | screw −$0.34/ea |
 | BLD-03 | Two floor systems on the main storey | HIGH | **SIMPLIFY** | **−$7,536 to −$13,486** |
-| BLD-02 | The freestanding concrete structure | HIGH | OWNER CALL | unpriced |
+| BLD-02 | The freestanding concrete structure | HIGH | **RESOLVED 2026-09-12 (BLD-12 still gates the piers)** | unpriced |
 | BLD-05 | Suite bathroom drain, 0.062" of slack | HIGH | **SIMPLIFY** | ~free if timed right |
 | BLD-13 | Conditions the engine does not grade | HIGH | KEEP as checklist | — |
 | BLD-08 | ERV radial scheme off-catalog; heat pumps fine | MED | split | unpriced |
@@ -208,8 +208,17 @@ item 4 — which is now graded, and caught four inverted drip runs nobody had fo
 Three claims in this file did not survive verification and are corrected in place: the
 baseline, the spa GFCI, and the trade-visit count.
 
-**If you do only three things:** authorise the soils report (BLD-12, it gates
-BLD-02 and is code-mandatory for the piers), get the foam's own E331/E2178 data for the
+**What 2026-09-12 closed on top of that:** BLD-01a (verdict reversed, the panel stays),
+BLD-01b (the girt screw is now a graded `girt_screw` register item), BLD-04 (measured,
+and the assemblies given provenance), and **BLD-02** — answered on all four findings, with
+the cage restated as one purchased part and the bar spec restated as a goal plus a ladder.
+BLD-02's own column count, retained height and cage count did not survive verification
+either, and are corrected in place: **six** cast columns not four, **10'-4"** retained, and
+**twelve** identical cage sections not eight.
+
+**If you do only three things:** authorise the soils report (BLD-12 — it is now the LAST
+thing gating BLD-02, whose other four findings are closed, and it is code-mandatory for the
+piers), get the foam's own E331/E2178 data for the
 WRB approval (BLD-01b finding 3), and
 put a listed Power Control System behind the service calculation or upsize the
 service (BLD-06).
@@ -476,15 +485,72 @@ wool and a batt at about $5.82. Worth stating plainly: **Minnesota's own minimum
 for a zone 6 or 7 wood-frame wall is R-20 cavity, or R-13 plus R-5 continuous.
 Everything above R-5 continuous here is voluntary.**
 
-### BLD-02 — The freestanding concrete structure. **HIGH · OWNER CALL**
+### BLD-02 — The freestanding concrete structure. **HIGH · RESOLVED 2026-09-12**
 
 | | |
 |---|---|
 | element | `params/sunken_garden.py` — retaining walls `W-SG-W2`/`E2`/`S`/`ARCH`, columns `PT-SG-BR1`/`BR3`/`BF1`/`BF3`/`COL`/`FCOL`, grade beam `W-SG-BRKBM`, piers `FT-SG-COL`/`FCOL` |
-| what a sub sees | Cantilever-T retaining walls up to 10'-3" of retained height, an arched load-bearing wall, two bell-bottom augered piers, a 19-foot buried grade beam, and four 12-inch round columns fixed at their bases with hot-dip galvanized cages in fiber tube |
+| what a sub sees | Cantilever-T retaining walls up to **10'-4"** of retained height (`notes/sunken_garden_court_free_body.md`), an arched load-bearing wall, two bell-bottom augered piers, a 19-foot buried grade beam, and **six** 12-inch round columns fixed at their bases with galvanized cages in fibre tube — only the **four balcony corners** are saddle-collar formed on a wall top; `PT-SG-COL` and `PT-SG-FCOL` are tubes in a hole |
 | risk | **HIGH** — structural, buried, and the largest remaining block of engineering once BLD-01a closes |
 | trade | Commercial cast-in-place concrete, not a residential foundation crew |
 | **delta** | `unpriced` — but see the four cost mechanisms below, none of which is in the model |
+
+**RESOLVED 2026-09-12 — two of the four were worth acting on, and the other two get an
+answer rather than a change.** The engineering is not the gap this finding took it for:
+every court item is a `draft` record with a published d/c, and the two things a seal really
+adds are already named as deferred items. What *was* real is procurement, and it is now
+stated as a part number and a ladder.
+
+1. **Permitted, engineered walls — agreed, and already the state.** Every court item is a
+   `draft` record in the register (`out/calcs/02-item-register.md`): `retaining_wall` at
+   d/c **0.92** on sliding, `deck_post` **0.02–0.26**, `spread_footing` **0.60**. The
+   finding's dollar figures are the cost of the stamp, and the stamp is BLD-01a's line item
+   — not a second scope. Nothing to change.
+2. **Cantilevered-column system at R = 1.25 — the ASCE 7 Ch. 12 framing does not reach this
+   site.** Minnesota's mapped values (S_S ≈ 0.04 g, S_1 ≈ 0.02 g) put the lot in **SDC A**
+   under ASCE 7 §11.4.2 (S_1 < 0.04 and S_S ≤ 0.15), and §11.7 then sends an SDC A structure
+   to §1.4 alone: F_x = 0.01 W, about **50 lb per column**, against the **153 lb** wind
+   shear these columns already carry. There is no R, no 15%-axial limit and no overstrength
+   foundation case to apply. **Values to be confirmed at the USGS/ASCE Hazard Tool for the
+   lot's own coordinates before the calc package goes out** — the site has not been
+   queried, only the statewide picture. The one *valid* residue of the finding is its last
+   sentence: base fixity is earned, not drawn. That is exactly the two **deferred** items
+   already on the register, `column_support/W-SG-W1` and `column_support/W-SG-E1`
+   (`out/calcs/03-open-items.md` §A). Cite them; nothing new is added.
+3. **Circular ties are a shop order — agreed, and it becomes the win.** The design had
+   already assumed a stock cage (`notes/balcony_moment_columns.md`), so the answer is to
+   make it **one purchased part**. The authored cage — (4) #5, #3 ties @ 10", 2" cover on a
+   6-5/8" bar circle — is **8.0" out-to-out of ties** (6.625 + 0.625 + 2 × 0.375), which is
+   the trade's "8-inch cage", not the 12-inch cage this finding priced. *A 12" cage in a 12"
+   column is zero cover; it was the wrong part.* Bolsinger's **stock** 8" cage (4 #4, #3 @
+   12", 3–8 ft, **$49–77** black, tied or welded, Cascade IA to MN in 15–20 business days)
+   is **not a drop-in**: 4 #4 = 0.80 in² against ACI 318-19 §10.6.1.1's 1.131 in² floor, and
+   12" ties exceed §25.7.2.1's 16d_b = 8" for a #4. The authored #3 @ 10" is exactly 16d_b
+   for a #5. So the part is a **custom 8" cage in a stock format**: **one cross-section,
+   twelve off** — six court columns and the six north-entry pours, which carry the same
+   cage — lengths per pour, **tied not welded**. Rebarfab Inc (720 First St SW, New
+   Brighton MN, 651-633-3337, in-house detailing and fabrication) or a Bolsinger custom.
+   Cost floor is the **$49–77** stock row; budget roughly **$90–140 each** at (4) #5 with
+   galvanizing. *(The finding said eight cages; twelve is the measured count — all six
+   north-entry pours share `ENTRY_PIER_CAGE`, not only the two roof columns.)*
+4. **"HDG bar is a special order with no published stock" — exaggerated, and the goal was
+   the thing worth restating.** The A767 *after-fabrication* sequence this file added is
+   only **one of two routes**. **ASTM A1094** (CMC GalvaBar, Catoosa OK) is a stocked mill
+   product that "ships in days" and **bends and fabricates after galvanizing without
+   repair**; ACI 318-19 §20.2.1.7.2 lists A767 and A1094 alike and ψ_e = 1.0 either way.
+   The A767 route has two Minnesota plants — **AZZ Galvanizing, Winsted (800 6th St S) and
+   NE Minneapolis**. So the fabricator picks the route and **names it on the order**. The
+   spec now states the **goal** (long-term durability of exposed concrete in F3 + C2, which
+   the mix alone meets: w/cm ≤ 0.40, f'c ≥ 5,000, 6% ± 1.5 air, 2" cover) with the accepted
+   ladder under it — **owner, 2026-09-12: galvanized either standard preferred → black bar
+   at the stated cover and mix accepted as a documented written exception → epoxy and
+   stainless stay refused.** Galvanizing is the owner's margin, not a code requirement, so
+   the spec can now flex on schedule without losing what it was for.
+
+**Not resolved, and cited rather than folded in: BLD-12.** The belling precondition below
+still has no soils report behind it, and it gates the two augered piers.
+
+The original finding, for the record:
 
 **Four findings from outside the model, each of which a sub will raise and the
 design currently does not answer.**
@@ -1114,8 +1180,14 @@ download, not more searching.
 5. **Whether one Twin Cities crew installs all the metal systems**, and any Twin
    Cities price for *exterior-side* spray foam. Neither is published. Bid it and
    see. (BLD-01b, BLD-10)
-6. **Hot-dip galvanized rebar minimum order, lot charge and lead time** — not
-   published by any Midwest supplier. Must be quoted.
+6. ~~**Hot-dip galvanized rebar minimum order, lot charge and lead time** — not
+   published by any Midwest supplier.~~ **CLOSED 2026-09-12 — the premise was wrong: there
+   are two routes and one of them is stocked.** **ASTM A1094** (CMC GalvaBar, Catoosa OK)
+   is a stocked mill product that ships in days and bends after coating without repair, and
+   the **A767** after-fabrication route has two Minnesota plants (**AZZ Winsted** and **AZZ
+   NE Minneapolis**). The fabricator picks and names the route on the order. What remains is
+   an ordinary quote for a fabricated part, not a search for whether the product exists.
+   (BLD-02 finding 4)
 7. **Whether the local jurisdiction's ordinance permits owner-performed
    plumbing.** The state exemption can be switched off locally. (BLD-15)
 8. **Whether ch. 327A reaches an owner-builder who sells without occupying.** No
