@@ -21,12 +21,12 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Remaining Work
 
-- **`PEDESTAL_CONCRETE` is dead.** `plan/assemblies.py`, referenced by zero elements, its
-  comment naming `PT-BW-WP` — a tag that no longer exists. Retiring an assembly is a library
-  change with a price-row and takeoff tail, not a comment edit.
 - **`PT-BW-W`/`-GW` carry a beam end and a 6x6's `ABU66SS` base on the same 12" circle.** A
   real volumetric overlap, ungraded at 0 FAIL. Same x=6'-0" congestion as the open
   `W-BW-SCREEN` plate item below, and exactly the condition the dead pedestal existed for.
+  That pedestal is gone (retired 2026-09-13, unreferenced), so a fix now has to author its
+  own — which is the honest cost, since the dead one was a bare 12" concrete layer with no
+  post or bearing geometry and would not have solved the overlap on its own.
 - **`HGAM10` prints as two BOM rows, 2 + 10.** The garden's two porch ties are filed
   `HURRICANE_TIE` while the other ten are `POST_CAP`. The total of 12 is right; the kind split
   is the inconsistency, and it is a model edit.

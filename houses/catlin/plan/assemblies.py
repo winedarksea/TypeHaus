@@ -1554,21 +1554,6 @@ PIER_CONCRETE_12 = Assembly(
     source="catlin-house 12\" round north-entry piers and columns — cast in a fibre form on a spread pad, stripped to the form line; EXPOSED_MIX, 5,000 psi at w/cm 0.40 with 6% +/-1.5 air and galvanized bar (A767 after fabrication or A1094 stock, named on the order); the cage is a fabricated 8-inch unit, one of twelve identical cross-sections house-wide (ACI 318-19 class F3 + C2; the 4,000 psi F2 this once specified did not meet Table 19.3.2.1's 4,500 psi for its own class); PT-BW-RE and PT-BW-RNE run unbroken to BM-BW-RE's soffit and are FIXED at the base, same section and cage; at every joint where wood bears (PT-BW-W/-E/-GW/-GE under the seat beams, PT-BW-RE/-RNE under the header): >=15 degree top wash with a >=1\" drip lip screeded around it, top CAST TO LINE under the beam footprint and NO grout island — tolerance taken in the SS316-SHIM-35 stainless standoff shim pack that holds the KDAT soffit 1/2\"-1\" clear (modeled at CN-BW-STDF-*, and its catalog record carries the detailing), or, if a bed is unavoidable, epoxy grout confined under the standoff plate; beam held down by an HGAM10 gusset angle isolated from the standoff with EPDM or HDPE, #14 screws to the wood and Titen Turbo to the concrete at >=3\" edge distance on the 12\" round",
 )
 
-# Cast pedestals: the top of a shared pier where a beam end and a post base cannot both sit
-# on a 12" circle (PT-BW-WP), and the two garage-side pedestals that replace a treated plate
-# lying on the ICF stem top. Same EXPOSED_MIX as the piers -- these stand up to 25 3/4" out
-# of the ground at a salted entry, which is an F3/C2 exposure, not an interior pour. The
-# layer thickness here is nominal; each Post's own `size` carries its real section.
-PEDESTAL_CONCRETE = Assembly(
-    tag="PEDESTAL_CONCRETE",
-    layers=(
-        Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
-              function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
-    ),
-    interfaces=(_CONCRETE_BEARING,),
-    source="catlin-house cast pedestals at the north entry — formed square, cast with the pier or the stem below, stripped to the form line; EXPOSED_MIX (ACI 318-19 class F3 + C2) with A767 galvanized bar",
-)
-
 RAILING_DARK_METAL = Assembly(
     tag="RAILING_DARK_METAL",
     layers=(
@@ -4364,7 +4349,6 @@ ASSEMBLIES = [
     BEAM_GLULAM_TREATED,
     POST_KDAT,
     PIER_CONCRETE_12,
-    PEDESTAL_CONCRETE,
     RAILING_DARK_METAL,
     GARAGE_ICF_6,
     GARAGE_WALL_2X6,
