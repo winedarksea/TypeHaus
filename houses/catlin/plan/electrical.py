@@ -1170,12 +1170,11 @@ MAIN_EQUIPMENT = [
     # finished floor is +15/16", so an authored 24" resolves to 24 15/16" absolute — which is
     # exactly W-M-FIRE-PLINTH's top, the brick sill, to the thousandth. That agreement is the
     # check on the claim, and the resolved model confirms it: `canvas_objects` carries this
-    # unit at z=0.8366125 m = 32 15/16" absolute at the old authored 32". ** THE COMMENT ON
-    # FURN-M-FIRE-MANTEL IN plan/placeables.py STILL SAYS THE DATUM IS THE FRAMING FLOOR AND
-    # IT IS NOW WRONG ** — that was true when it was written and stopped being true when the
-    # finished-floor plane landed; the mantel, authored 64 15/16" against that reading, now
-    # resolves to 65 7/8" absolute and floats 15/16" OFF the top of W-M-FIRE-HEAD. Reported,
-    # not fixed here: that file is not this change's to edit.
+    # unit at z=0.8366125 m = 32 15/16" absolute at the old authored 32". ** THE MANTEL WAS
+    # FIXED THE SAME DAY ON THIS READING. ** FURN-M-FIRE-MANTEL had been authored 64 15/16"
+    # against the old framing-floor reading, which applied the 15/16" twice and floated the
+    # shelf off the brick; plan/placeables.py now authors `inch(64)`, resolving to 64 15/16"
+    # absolute — the top of W-M-FIRE-HEAD — and its comment block states this datum.
     #
     # ** THE SILL IS BACK AT 24" AFF, AND THIS PARAGRAPH USED TO ARGUE THE OPPOSITE. ** It read:
     # "`elevation` is the BASE of the opening at 32" — the east row's own sill line, so one

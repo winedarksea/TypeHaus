@@ -364,14 +364,13 @@ MAIN_SHELVES = [
     # risk. It is still on the list of things to get from Amantii in writing; see
     # EQ-T-FIREPLACE-EL.
     #
-    # ** CAVEAT ON "64 AFF", AND IT IS NOT THIS FILE'S TO FIX. ** 19 5/8" is measured to a
-    # mantel underside at 64" AFF, which is the design intent and what every other comment in
-    # the house states. The host placeable is authored `elevation=inch(64.9375)` on the
-    # reading that `Mount.elevation` is measured off the SUBFLOOR; `resolve/placeables.py`
-    # now measures it off the room's FINISHED floor, so FURN-M-FIRE-MANTEL actually resolves
-    # to 65 7/8" absolute — 15/16" high, floating off the brick. Reported against
-    # plan/placeables.py; if that is fixed to `inch(64)` this number stays right, and if it is
-    # not, the built clearance is 20 9/16" rather than 19 5/8" and still far past the 4".
+    # ** "64 AFF" IS EXACT, SETTLED 2026-09-11. ** 19 5/8" is measured to a mantel underside
+    # at 64" AFF. `Mount.elevation` is measured off the room's FINISHED floor
+    # (`resolve/placeables.py::_floor_elevation`), and RM-M-LIVING's is +15/16", so the host
+    # `elevation=inch(64)` resolves to 64 15/16" absolute — exactly W-M-FIRE-HEAD's top, the
+    # shelf sitting ON the brick. It was authored `inch(64.9375)` against the old subfloor
+    # reading, which applied that 15/16" twice and floated the shelf off the brick at 0 FAIL;
+    # plan/placeables.py carries the correction and why.
     #
     # ** 12/4 STOCK, NOT THE STUDY'S 8/4, AND `haus millwork` IS WHAT SAID SO. ** Authored on
     # `walnut-shelf-8q` first, the schedule printed that 2 1/4" finished cannot come out of
