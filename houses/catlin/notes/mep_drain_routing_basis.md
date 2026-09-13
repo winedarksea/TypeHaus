@@ -133,16 +133,30 @@ this truss is 8 7/8", which places the open web between
 
     108.125 + 1.5 = 109.625   and   120 − 1.5 = 118.5      (118.5 − 109.625 = 8.875 ✓)
 
-So a **crossing** leg's outside must lie inside 109.625..118.5 — for a 3" pipe, a centreline
-in [111.125, 117.0]. A leg **riding a bay** may use the full 108.125..120, because nothing is
-in the way along it. Two different admissibility rules for the same pipe, decided by its
-direction relative to `JoistSpec.direction`, and the reason a router that only knows "is it
-in a bay" produces routes that cannot be built.
+So a **crossing** leg's outside must lie inside 109.625..118.5.
 
-**Worked once for the collector.** Its south leg runs in y from 116.5 to 113.375: crown
-118.0 ≤ 118.5 ✓, invert 111.875 ≥ 109.625 ✓. Its east leg runs in x at y=202.8, in the bay
-between the y=192 and y=208 lines (clear 193.75..206.25): a 3" pipe spans 201.3..204.3, with
-7.55" and 1.95" of clearance. Both admissible, by different rules.
+** AND "A 3 INCH PIPE" IS 3.500" ACROSS, NOT 3.000". ** The authored `diameter` is the
+nominal the code tables are keyed on; 3" PVC DWV measures **3.500"** OD (ASTM D2665), and
+`resolve/pipe_sections.py` is where the engine now converts one to the other. Worked at the
+real size the admissible centreline band is **[111.375, 116.75]**, a quarter inch tighter at
+each end than the [111.125, 117.0] this section used to state.
+
+A leg **riding a bay** may use the full 108.125..120, because nothing is in the way along
+it. Two different admissibility rules for the same pipe, decided by its direction relative
+to `JoistSpec.direction`, and the reason a router that only knows "is it in a bay" produces
+routes that cannot be built.
+
+**Worked once for the collector, at 3.500".** Its south leg runs in y from 116.5 to 113.375:
+crown 118.25 ≤ 118.5 ✓, invert 111.625 ≥ 109.625 ✓. Its east leg runs in x at y=202.8, in
+the bay between the y=192 and y=208 lines (clear 193.75..206.25): the pipe spans
+201.05..204.55, with 7.30" and 1.70" of clearance. Both admissible, by different rules.
+
+Those are **whole-leg envelope** numbers — the crown taken at the leg's high end against the
+chord ceiling — and the envelope is the conservative read, not the build margin. The high
+end (y=250.625) sits in the 241.75..254.25 clear bay, where there is no truss at all.
+`mep.run_member_crossing` grades the three truss lines the leg **actually crosses** and
+reports **+0.944"** of crown at the tightest, `joist-0-015-0`. BLD-05's "half an inch of
+clearance" was this envelope at the nominal size; both halves of that number have moved.
 
 ---
 

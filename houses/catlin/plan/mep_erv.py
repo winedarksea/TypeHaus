@@ -637,9 +637,23 @@ DUCTS_ERV_BASEMENT = [
 # the duct's own storey*, so a run filed on `main` with `floor_ref="FS-S-WEST"` gets graded
 # against FS-M-WEST's joist lines instead — which sit on a different 16" phase, so every
 # radial reported a straddle it did not have. Elevations are therefore second-relative:
-# -20" is the manifold port at 8'-4" above the main floor, -10 3/8" is the centreline of a
-# 4" duct sitting on FS-S-WEST's bottom chord at 108 1/8" (it was -10 3/8" for a 3" duct
-# until 2026-09-12; the duct grew an inch and its centreline rose half of one).
+# -20" is the manifold port at 8'-4" above the main floor, and -8 3/8" is the centreline of
+# a 4" duct sitting on FS-S-WEST's bottom chord.
+#
+# ** THAT SECOND NUMBER WAS 1 1/2" LOW AND NOTHING GRADED IT UNTIL 2026-09-12. ** It read
+# -9 7/8", derived against the truss's 108 1/8" bottom — which is the bottom of the bottom
+# CHORD, not its top. The chord is 1 1/2" thick, so "sitting on the bottom chord" is an
+# invert at **109 5/8"**, the floor of the 8 7/8" web window (the drain note's §3), and a
+# centreline at 111 5/8" = -8 3/8" second-relative.
+#
+# For the twelve legs that ride a bay the old number was harmless: a run travelling ALONG
+# the members may use the full 108 1/8"..120" depth, because nothing is in the way along it.
+# For the legs that run SOUTH ACROSS the trusses — which is every radial's first leg, and
+# which the note below already says out loud — it put 1 1/2" of a 4" duct inside the bottom
+# chord at every line it crossed. `mep.duct_joist_bay_occupancy` never saw it: that check
+# asks whether the duct is DEEP enough to be a problem (4" <= 8 7/8", so no) and never
+# where it sits. `mep.run_member_crossing` is the check that asks the second question, and
+# it reported all thirteen.
 #
 # Bay centres are 8" + n*16". **Two of them are unusable and the check is what said so:**
 # FO-S-STAIR's trimmers land at y=26'-0 3/8" and y=35'-5 3/8", so a duct centred on the
@@ -677,7 +691,9 @@ DUCTS_ERV_BASEMENT = [
 #     drawn on top of each other. UNKNOWN is the honest verdict; the prose is not the record
 #     of this any more.
 _PORT_Z = inch(-20)
-_BAY_Z = inch(-9.875)
+#: A 4" duct's centreline resting on FS-S-WEST's bottom chord: invert 109 5/8" (the web
+#: window's floor), centreline 111 5/8", second-relative -8 3/8". See the derivation above.
+_BAY_Z = inch(-8.375)
 
 DUCTS_ERV_LEVEL2 = [
     DuctRun(uid="MRH0QZT6NN", tag="DU-M-ERV-R-LIVING", system=DuctSystem.SUPPLY,

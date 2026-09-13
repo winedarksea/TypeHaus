@@ -141,17 +141,26 @@ def test_the_bay_and_its_crossing_window_are_hand_derivable(catlin_model_ro) -> 
 
 def test_a_three_inch_pipe_fits_the_crossing_window_only_in_a_band(
         catlin_model_ro) -> None:
-    """The number the collector's drop bottom is set by. A 3" pipe crossing the trusses
-    has a centreline range of [111.125, 117.0]; 116.5 leaves 1/2" of crown margin and
-    117.0 puts the crown exactly on the chord, which the router must treat as infeasible
-    rather than tight."""
+    """The number the collector's drop bottom is set by, **at 3" DWV's real 3.500" OD**.
+
+    A 3" pipe crossing the trusses has a centreline range of [111.375, 116.75]: 116.5 leaves
+    0.25" of crown margin and 116.75 puts the crown exactly on the chord, which the router
+    must treat as infeasible rather than tight.
+
+    The band used to be written [111.125, 117.0] against the authored *nominal* 3", which is
+    a quarter inch wider at each end than the pipe that gets installed —
+    ``resolve/pipe_sections.py`` is the correction and this is the oracle moving with it.
+    The note's §3 works the same two numbers by hand.
+    """
+    from typehaus.resolve.pipe_sections import pipe_outside_diameter_m
     from typehaus.routing.corridors import crossing_window
 
     floor = next(f for f in catlin_model_ro.floors if f.tag == "FS-S-WEST")
     low, high = crossing_window(catlin_model_ro, floor)
-    radius = 1.5 * M_PER_IN
-    assert _in(low + radius) == pytest.approx(111.125, abs=0.001)
-    assert _in(high - radius) == pytest.approx(117.0, abs=0.001)
+    radius = pipe_outside_diameter_m(3 * M_PER_IN, "pvc") / 2.0
+    assert _in(2 * radius) == pytest.approx(3.500, abs=1e-9)
+    assert _in(low + radius) == pytest.approx(111.375, abs=0.001)
+    assert _in(high - radius) == pytest.approx(116.75, abs=0.001)
 
 
 # --- §4 the escape graph ---------------------------------------------------------------

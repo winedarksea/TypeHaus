@@ -25,6 +25,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     room_heat,
     routing,
     routing_ceiling,
+    routing_members,
     routing_openings,
     supply_protection,
     water_heater,

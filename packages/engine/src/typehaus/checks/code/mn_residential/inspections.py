@@ -129,7 +129,12 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
         check_ids=("mep.drain_slope", "mep.drain_offset_geometry", "mep.trap_arm_length",
                    "mep.vent_reachability", "mep.vent_termination_height",
                    "mep.wet_wall_occupancy", "structural.wet_wall_bearing",
-                   "mep.pipe_sizing", "mep.fixture_drain_reach"),
+                   "mep.pipe_sizing", "mep.fixture_drain_reach",
+                   # Not a plumbing rule as such — it grades pipe, duct and raceway alike
+                   # — but the plumbing rough is when a person is standing under that floor
+                   # with the holes already cut, and it is the last moment the answer is
+                   # cheap.
+                   "mep.run_member_crossing"),
         on_site=("DWV under test", "water piping under test", "no insulation in the walls"),
         milestone="rough_ins",
         code_refs=("IRC P2503", "MN Rules 4714"),

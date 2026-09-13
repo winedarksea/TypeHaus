@@ -1583,7 +1583,7 @@ MAIN_DATA_TRUNKS = [
                service=Service.DATA,
                path=(pt(ft(2), ft(34, 6)), pt(ft(2), ft(35, 6)), pt(ft(19), ft(35, 6)),
                      pt(ft(19), ft(29))),
-               start_elevation=ft(9, 2), end_elevation=ft(9, 2),
+               start_elevation=ft(9, 2.25), end_elevation=ft(9, 2.25),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-KITCH-AP"),
     # PORCH goes SOUTH first and turns east at y=1'-0", well below the void, then out under
     # the balcony deck to the porch soffit — still sharing SP-SG-PORCH-ELEC with the ceiling
@@ -1592,13 +1592,27 @@ MAIN_DATA_TRUNKS = [
     # 54'-10" of plan run as the void-crossing alternative's 15'-6" + 39'-4", so 55.33 LF
     # developed either way, at identical cost. The long x=2'-0" leg rides FS-S-WEST, which
     # is open-web:
-    # 3/4" EMT passes between the 8 7/8" chords without a hole in anything
-    # (resolve/framing/profiles.py).
+    #
+    # ** THE +9'-2" CLAIM WAS MEASURED AT THE NOMINAL SIZE AND IT WAS 0.086" WRONG. ** The
+    # comment here used to read "3/4" EMT passes between the 8 7/8" chords without a hole in
+    # anything". 3/4" EMT is a nominal BORE: the real outside is **0.922"**
+    # (NEC ch. 9 Table 4, `resolve/pipe_sections.py`), so at +9'-2" = 110.000" the invert sat
+    # at 109.539 against the web's 109.625 floor — 0.086" INTO the bottom chord, on every
+    # truss line it crossed. +9'-2 1/4" clears by 0.164" and leaves 7.79" under the top
+    # chord. It is the cheapest edit in the house, and nothing graded it until
+    # `mep.run_member_crossing`.
+    #
+    # ** AND THE DROP HAD TO WAIT FOR THE RIM. ** A ConduitRun rises at its LAST vertex only
+    # (`takeoff/runs.conduit_vertex_z`), so the old three-point path started falling to
+    # +8'-8" at y=1'-0" and was 1.115" into the rim by the time it reached y=0 — six times
+    # the trunk's own error, and invisible for the same reason. The fourth point at y=-2"
+    # holds the elevation through the rim and turns down OUTSIDE the deck, which is also how
+    # it gets built.
     ConduitRun(uid="CDT011AAAA", tag="CD-M-DATA-PORCH", trade_size=inch(0.75),
                service=Service.DATA,
                path=(pt(ft(2), ft(34, 6)), pt(ft(2), ft(1)), pt(ft(17, 6), ft(1)),
-                     pt(ft(17, 6), ft(-4.833))),
-               start_elevation=ft(9, 2), end_elevation=ft(8, 8),
+                     pt(ft(17, 6), inch(-2)), pt(ft(17, 6), ft(-4.833))),
+               start_elevation=ft(9, 2.25), end_elevation=ft(8, 8),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-PORCH-AP"),
 ]
 
