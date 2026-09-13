@@ -12,8 +12,14 @@ out/handoff/
   calcs/                    the calculation package, verbatim from `haus calcs`
   calcs.pdf                 the same, flattened and page-anchored — what a seal binds to
   notes/                    ONLY the hand-worked notes these records are checked against
-  model.ifc                 IFC4, framed LOD, with sections, records and a bar schedule
+  model.ifc                 IFC4, framed LOD, with sections, records, a bar schedule AND the
+                            structural analysis view (see below)
   model.glb                 the same building, for a viewer that does not read IFC
+  analysis/
+    model.pynite.py         the analytical model as a self-contained PyNite script: run it
+    members.csv             one row per analytical member, loads by case, for ForteWEB/Sizer
+    centreline.dxf          3-D centrelines, layer = section, for RISA-3D
+    README.md               which file opens in which tool, and the claims every file makes
 out/handoff.zip             --zip: the file you actually send
 ```
 
@@ -63,6 +69,30 @@ and carries three things more:
   them back up against the bill of materials. **No Body representation**: drawing a cage
   would invent hook geometry, laps and cover the model does not carry, and a drawn cage read
   as a placement drawing is worse than none because it looks like one.
+
+## The analytical model — one graph, four files
+
+`typehaus/analytical/` builds the **engineered items and their load path** — every member a
+record names, what it bears on down to the footing, what bears on it — as nodes, members,
+supports and load cases (decision #73, `plans/31-ifc-analytical.md`). Four files are written
+from that one graph, so they cannot disagree with each other:
+
+| File | Opens in | What it carries |
+|---|---|---|
+| `model.ifc` (structural analysis view) | SAP2000, ETABS (*File > Import > IFC*, choose the structural view), Bonsai | `IfcStructuralAnalysisModel`; one `IfcStructuralCurveMember` per member sharing the physical member's `IfcMaterialProfileSet`; `IfcStructuralPointConnection` per node with an `IfcBoundaryNodeCondition` where a support exists; load cases and actions; `IfcRelAssignsToProduct` back to the physical element |
+| `analysis/centreline.dxf` | RISA-3D (*File > Import > DXF*, inches, layer = section set, rotate to Y-up) | `LINE` per member, `POINT` per node, layer named for the section, labels with member id, section and item ids, supports and the assumption lines as text |
+| `analysis/members.csv` | a spreadsheet; ForteWEB / WoodWorks Sizer / Enercalc by hand | one row per member: section, material, E and where it came from, length, ends, releases, supports, item ids, line and point loads per case |
+| `analysis/model.pynite.py` | `python model.pynite.py` with PyNite installed (`pip install PyNiteFEA`) | rebuilds and solves the model, prints reactions per case and member extremes |
+
+**Every fixity, release and load is a claim this engine makes and states.** A support's
+`basis` says why it is fixed or pinned (the balcony's cast columns are the deck's lateral
+system — no brace, no wall — so they are fixed; a post on a base connector is pinned). A
+load's `source` names the engineering item and the quantity it came from. What could not
+be derived is in `gaps`, printed in every file, never defaulted. Retaining walls and slabs
+are not surface members in this version and the gaps say so by item id.
+
+The model is verified the way every calculation here is: `tests/test_analytical_oracle.py`
+solves the exported graph in PyNite and reproduces `notes/analytical_model_basis.md`.
 
 ## Pruning
 

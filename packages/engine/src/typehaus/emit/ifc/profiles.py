@@ -66,6 +66,27 @@ class ProfileCollector:
 
     def __init__(self) -> None:
         self._by_section: dict[tuple[str, str, float | None], list] = {}
+        self._companions: dict[int, list] = {}
+
+    def add_companion(self, host: Any, companion: Any) -> None:
+        """``companion`` takes whatever profile set ``host`` ends up with.
+
+        The analytical member and the physical element it stands for must share ONE
+        ``IfcMaterialProfileSet`` — two definitions of one section is how the analytical
+        and physical models drift apart. Registered against the host entity rather than
+        against a section key because the key is derived here, from the host's own
+        property set, and re-deriving it in the analytical emitter is exactly the second
+        derivation this avoids. A companion whose host never gets a section (it carries a
+        layer set, or its size is unparseable) gets nothing here, and its caller gives it
+        one of its own (``analytical.attach_orphan_sections``).
+
+        Keyed on the STEP instance id, not ``id()``: ifcopenshell hands back a fresh Python
+        wrapper for the same entity on every ``by_type``, so the host registered by the
+        analytical emitter and the host walked by ``attach_profiles`` are two objects.
+        """
+        if host is None or companion is None:
+            return
+        self._companions.setdefault(host.id(), []).append(companion)
 
     def add(self, element: Any, profile: str, *, concrete_fc_psi: float | None = None,
             youngs_modulus_psi: float | None = None) -> None:
@@ -91,8 +112,11 @@ class ProfileCollector:
                 "IfcMaterialProfile", Name=profile, Material=material, Profile=shape)
             profile_set = f.create_entity(
                 "IfcMaterialProfileSet", Name=profile, MaterialProfiles=[material_profile])
+            related = list(elements)
+            for element in elements:
+                related.extend(self._companions.get(element.id(), ()))
             f.create_entity("IfcRelAssociatesMaterial", GlobalId=new_guid(),
-                            RelatedObjects=list(elements), RelatingMaterial=profile_set)
+                            RelatedObjects=related, RelatingMaterial=profile_set)
             written += 1
         self._by_section.clear()
         return written
@@ -143,7 +167,8 @@ def _mechanical(f: Any, material: Any, youngs_modulus_psi: float) -> None:
 _PROFILED = ("IfcBeam", "IfcColumn", "IfcMember")
 
 
-def attach_profiles(f: Any, model: Any, engineering: Any = None) -> int:
+def attach_profiles(f: Any, model: Any, engineering: Any = None,
+                    collector: ProfileCollector | None = None) -> int:
     """Give every emitted structural member its section, as a POST-PASS over the file.
 
     A post-pass rather than a parameter threaded through five emitters, and that is a
@@ -153,11 +178,15 @@ def attach_profiles(f: Any, model: Any, engineering: Any = None) -> int:
     beam or column solid carries no profile there (its geometry is an outline prism), so its
     section is read off the AUTHORED element's ``size``, which is where a person typed it.
 
+    ``collector`` lets a caller pre-register companions (``emit/ifc/analytical.py``'s curve
+    members) so they land on the same profile sets as their physical elements. Omitted, a
+    fresh collector is used and the behaviour is exactly as before.
+
     Returns the number of distinct sections written.
     """
     import ifcopenshell.util.element as ue
 
-    collector = ProfileCollector()
+    collector = collector if collector is not None else ProfileCollector()
     moduli = _adjusted_moduli(engineering)
     for kind in _PROFILED:
         try:

@@ -80,6 +80,8 @@ an item id `<kind>/<element-tag>` that a professional seal can cover (decision #
 .venv/bin/haus calcs houses/catlin                        # the calc package a PE marks up
 .venv/bin/haus handoff houses/catlin --zip                # the whole bundle a PE gets
 .venv/bin/haus print houses/catlin --sealed               # the submittal gate
+.venv/bin/haus analysis houses/catlin                     # the engineered frame: IFC SAM, RISA DXF, CSV, PyNite script
+.venv/bin/haus analysis houses/catlin --solve             # solve it in PyNite; reactions beside the records' demands
 ```
 
 - `typehaus/engineering/` is a **leaf package**: it imports `model`/`resolve`/`quantities`/
@@ -97,6 +99,13 @@ an item id `<kind>/<element-tag>` that a professional seal can cover (decision #
 - **Every calculation is oracled against an independently hand-worked note** in
   `houses/<name>/notes/`, the way `typehaus/wind.py` is oracled against
   `catlin_truss_engineering.md`. A calc that only agrees with itself is not verified.
+- **The analytical model is one graph, four readers** (decision #73). `typehaus/analytical/` is a leaf
+  like `engineering/`; it builds the engineered items *and their load path* as nodes, members,
+  supports and load cases, and the IFC4 structural analysis view (SAP2000/ETABS/Bonsai), the
+  centreline DXF (RISA), `members.csv` and the PyNite script all read it. Fixity and releases are
+  **derived and claimed**, each with a `basis`; the underivable goes in `gaps`. Loads are the ones
+  the records consumed. PyNite (`dev`/`fea` extra) is the oracle: `tests/test_analytical_oracle.py`
+  solves the exported graph against `notes/analytical_model_basis.md`.
 - **draft** = this engine computed it and it checks out; `haus print` gates here, because
   draft approval is exactly what a permit-ready printoff is for. **sealed** = a licensed PE
   stamped it *and* the pinned fingerprint still matches the model. `haus print --sealed` is

@@ -1,75 +1,97 @@
-# The analytical IFC, and a centreline DXF — designed, not built
+# The analytical model — one graph, four readers
 
-**Status: DESIGNED, NOT IMPLEMENTED (2026-09-11).** The physical enrichment shipped —
-`haus handoff`'s IFC carries section profiles, engineering records and a bar schedule
-(`docs/handoff-bundle-format.md`). This is the next step and it is written down rather than
-written, deliberately: an IFC4 structural analysis view has no oracle in this repo and no
-consumer any test here can open, so building it untested would produce a file that looks
-authoritative and has been checked by nobody. That is the failure mode the whole engineering
-lane exists to avoid.
+**Status: IN PROGRESS (2026-09-12).** The physical enrichment shipped first — `haus handoff`'s
+IFC carries section profiles, engineering records and a bar schedule
+(`docs/handoff-bundle-format.md`). This plan is the next step: what an engineer needs to
+**load the engineered work into their own software in one click** and re-run it, instead
+of re-modelling the building from the drawings.
 
-What follows is the design, in enough detail to implement against.
+The 2026-09-11 version of this document was a design and said so, gated on two things: an
+oracle, and a consumer somebody had actually opened. Both gates are now in the plan itself
+(§5), and the owner made the three decisions the design was waiting on (§1).
 
-## Why an analytical model at all
+## 1. Owner decisions, 2026-09-12
 
-The physical IFC says *this beam is a 3-1/2" x 11-7/8" glulam here*. It does not say *this
-member spans between these two nodes, pinned at one end and fixed at the other, under these
-load cases*. An engineer wanting to re-run the calculation in their own software currently
-re-models the building by hand from the drawings — which is most of the cost of a review,
-and every hand re-model is a chance to re-model it differently from what was built.
+1. **Scope is the engineered items plus their load path.** Every member a record names,
+   everything it bears on down to the footing, and everything that bears on it. A few
+   hundred elements a PE can read, and the same things the calc sheets cover. Not the
+   whole 15,000-member frame: a review scope buried in studs and blocking is not a review.
+2. **Fixity and releases are derived and claimed.** The earlier draft said "authored, never
+   inferred". The owner's goal is a *full PE output, just without the stamp* — every
+   structural claim the review needs is modelled and stated — so the engine derives a
+   column's base fixity from the same fact `deck_post` already grades on (`_Pier.lateral_
+   system`: no brace, no wall, therefore the columns are the lateral system and are fixed)
+   and says so in a `basis` string beside the claim. What cannot be derived is listed in
+   `gaps`, in words. Nothing is silently defaulted.
+3. **An open FE solver is the oracle, and later a calculation engine.** PyNite (3-D frame
+   FE, textbook-tested CI) is a `dev` and `fea` extra. A test reads the exported model
+   back, solves it, and checks reactions against the hand-worked notes. The owner wants a
+   Python FEA in the main calculations as a follow-on; the graph below is the input it
+   will consume, which is why it is format-neutral.
 
-Consumers, checked before designing anything against them: **Bonsai** reads
-`IfcStructuralAnalysisModel` (this is the gate — decision #48 makes Bonsai the reference
-viewer). **ETABS** and **SAP2000** import the IFC4 structural analysis view. **RISA reads
-no IFC at all**, which is why the DXF in §3 is part of the same design rather than an
-afterthought.
+## 2. Consumers, verified before designing against them
 
-## 1. `emit/ifc/analytical.py` (~320 lines)
+| Tool | Reads | Verified how |
+|---|---|---|
+| SAP2000 / ETABS | IFC4 structural analysis view: `IfcStructuralAnalysisModel`, curve/surface members, point connections with `IfcBoundaryNodeCondition`, load cases/groups, linear/point/planar actions **when connected to a structural item**, `IfcMaterialProfileSet`, parametric rectangle/circle profiles. Not `IfcRelAssignsToProduct`, not `IfcTopologyRepresentation`. | CSI Technical Note *IFC4 Import and Export* (S-TN-IFC-001), entity tables pp. 2–12 |
+| Bonsai 0.8.3 (Blender 4.2, installed on this machine) | `bim/module/structural`: analysis models, curve/surface members, point connections, boundary conditions, load cases, linear/point actions | module source, `tool/structural.py` |
+| RISA-3D | **No IFC.** DXF: `LINE` → member, `POINT` → node, layer name → section set (import option), units chosen on import, rotate-to-Y-up option | RISA help, *DXF Files* |
+| ForteWEB / WoodWorks Sizer / Enercalc | Nothing. Single-member tools a PE types into | vendor pages |
+| PyNite | Its own Python API | installed, 3.1.0 |
 
-- One `IfcStructuralAnalysisModel` with `PredefinedType = LOADING_3D`, aggregated to the
-  project.
-- One `IfcStructuralCurveMember` per beam, column, post, joist and rafter, with an `IfcEdge`
-  centreline and **the same `IfcMaterialProfileSet` the physical member carries**. Sharing
-  the profile set is the point: two section definitions for one member is how the analytical
-  and physical models drift apart.
-- `IfcRelAssignsToProduct` back to the physical element, so a reviewer can select a member in
-  either model and find it in the other.
-- `IfcStructuralSurfaceMember(SHELL)` for foundation walls, retaining walls and slabs.
-- `IfcStructuralPointConnection` per bearing, with an `IfcBoundaryNodeCondition` that is
-  **fixed or pinned from `pier.lateral_system`** — authored, never inferred. A base fixity
-  this engine guessed would be a structural claim, and the balcony's four fixed-base cast
-  columns are the whole lateral system: getting that wrong reverses the answer.
-- Units: FORCE, PRESSURE and MASS plus the derived linear- and planar-force units, in a new
-  `emit/ifc/lowlevel_units.py`. `lowlevel.py` is 562 lines and is not grown.
+## 3. The design
 
-## 2. `emit/ifc/analytical_loads.py` (~220 lines)
+```
+typehaus/analytical/            LEAF — imports model/resolve/quantities/engineering/wind,
+  graph.py                      never checks/takeoff/emit (tests/test_routing_leaf.py)
+  build.py  scope.py  members.py  supports.py  loads.py  materials.py
+  pynite_map.py  solve.py       SI graph -> lb/in PyNite inputs; in-process solve
+emit/ifc/analytical.py          IfcStructuralAnalysisModel + members + connections
+emit/ifc/analytical_loads.py    load cases, actions, combinations
+emit/ifc/lowlevel_units.py      FORCE / PRESSURE / MASS + linear/planar force units
+emit/draw/dxf_structure.py      3-D centreline DXF for RISA
+emit/analytical/pynite_script.py  self-contained .py that rebuilds and solves the model
+emit/analytical/members_csv.py    one row per member, loads by case, for single-member tools
+cli/cmd_analysis.py             `haus analysis` — the four files, and --solve
+```
 
-- One `IfcStructuralLoadCase` per source: dead, snow, wind, earth, live.
-- The actions come off `EngineeringRecord.inputs` — `uniform_load`, `suction_asd`,
-  `active_efp`, `retained_height` — plus `typehaus/wind.py` and `engineering/soil.py`. **The
-  loads a calculation actually consumed**, not a second derivation of them; a load case that
-  disagreed with the sheet beside it would be worse than none.
-- The import direction is settled and must stay so: `emit/ifc` **may** import `engineering`;
-  `engineering` **never** imports `checks`. `tests/test_routing_leaf.py`'s AST walk is the
-  pattern for a lint if one is wanted.
-- Each action's property set names the item id and the load combination, so an action traces
-  back to the sheet that produced it.
+- **One graph, four readers.** `graph.py` is a format-neutral `AnalyticalModel` — nodes,
+  members (with the same `CrossSection` the geometry was built from), supports, load cases,
+  member/node loads, combinations, `assumptions`, `gaps`. The IFC, the DXF, the CSV and the
+  PyNite script all read it and nothing else, so they cannot disagree about which node a
+  beam lands on. Same reason the physical IFC shares one `IfcMaterialProfileSet` between the
+  geometry and the analytical member.
+- **Loads are what the records consumed**, never a second derivation where a record has the
+  number: `roof_beam`'s `uniform_load`, `deck_post`'s dead/live and wind base moment (applied
+  as the storey shear at the column top so the solve reproduces the moment), the guard's
+  200 lb as its own case. Each load's `source` names the item and the quantity.
+- **Every analytical entity is machine-minted and pinned** through
+  `emit/ifc/lowlevel_guids.py`, or `haus handoff`'s manifest stops meaning anything.
+- **Rigid-link convention.** A post's top node sits on the beam centreline it bears on; the
+  beam end there is moment-released. Stated in `assumptions`, printed in every export.
+- **Not in v1:** retaining walls and slabs as `IfcStructuralSurfaceMember`. They are listed
+  in `gaps` by item id. The retaining items' oracle is a free-body note, which a surface
+  model would not check better than the hand pass does.
 
-## 3. `emit/draw/dxf_structure.py` — the centreline DXF
+## 4. Where it lands
 
-RISA reads no IFC. A 3-D centreline DXF is what it and most older analysis packages do read:
-one `LINE` per member, a layer per kind, and a text entity carrying the profile and the item
-id. `ezdxf` is already a dependency and `emit/draw` already writes plan DXFs, so this is the
-smallest of the three pieces and probably the first one worth doing.
+`haus handoff` adds `analysis/` — `model.pynite.py`, `members.csv`, `centreline.dxf` —
+and the structural analysis view rides inside `model.ifc` (SAP2000's import form picks the
+view; Bonsai shows both; the `IfcRelAssignsToProduct` links need one file). The README
+gains "Open it in your software", one paragraph per tool. `haus analysis houses/<name>`
+writes the same four files standalone and `--solve` prints reactions beside the records'
+demands.
 
-## What has to be true before any of this is built
+## 5. The two gates, now inside the work
 
-1. **An oracle.** Every calculation in this engine is checked against an independent hand
-   pass; an analytical model is not a calculation, but the boundary conditions and the load
-   cases it publishes *are* claims, and a note has to state them.
-2. **A consumer that was actually opened.** "Bonsai reads the SAM" is a statement about
-   Bonsai that somebody has to verify by opening the file, the way
-   `scripts/verify_bonsai_import.py` already verifies the physical one.
-3. **Byte-determinism preserved.** Every entity added here is machine-minted and must be
-   pinned by `emit/ifc/lowlevel_guids.py`, or `haus handoff`'s manifest stops meaning
-   anything. Add the new relationship types to `_MACHINE_MINTED` in the same commit.
+1. **Oracle.** `houses/catlin/notes/analytical_model_basis.md` states the boundary
+   conditions and load cases as claims and hand-solves the balcony bent: 614 lb E-W storey
+   shear over four fixed columns, 153.4 lb each at the deck plane, 9.03' lever, **1,385
+   lb-ft** per base — the number `balcony_moment_columns.md` §2b already carries.
+   `tests/test_analytical_oracle.py` solves the exported graph in PyNite and reproduces it,
+   plus each pier's gravity reaction against its record's `dead_load + live_load`.
+2. **A consumer that was opened.** `scripts/verify_bonsai_import.py` now counts the
+   analysis model's members and connections, and is run headless against
+   `out/handoff/model.ifc` with the Blender 4.2 + Bonsai 0.8.3 on this machine.
+3. **Byte-determinism** for the IFC, the DXF, the CSV and the script: two-run equality
+   tests on each.

@@ -103,12 +103,34 @@ def handoff(
         copied.append(name)
 
     # --- the models ----------------------------------------------------------------------
+    # --- the analytical model: one graph, four files (decision #73) ----------------------
+    # Built before the IFC so the structural analysis view rides INSIDE model.ifc, where its
+    # IfcRelAssignsToProduct links can reach the physical members.
+    from typehaus.analytical.build import build_analytical_model
+    from typehaus.emit.analytical import (
+        write_analysis_readme,
+        write_members_csv,
+        write_pynite_script,
+    )
+    from typehaus.emit.draw.dxf_structure import write_structure_dxf
+
+    analytical = build_analytical_model(load.ctx)
+    house_name = load.ctx.model.plan.project.name or directory.name
+    for relative, writer in (("analysis/model.pynite.py", write_pynite_script),
+                             ("analysis/members.csv", write_members_csv),
+                             ("analysis/centreline.dxf", write_structure_dxf)):
+        writer(analytical, root / relative)
+        written.append(relative)
+    write_analysis_readme(analytical, root / "analysis" / "README.md", house=house_name,
+                          has_ifc=models)
+    written.append("analysis/README.md")
+
     if models:
         from typehaus.emit.gltf.emitter import emit_glb
         from typehaus.emit.ifc.emitter import emit_ifc
 
         emit_ifc(load.ctx.model, root / "model.ifc", lod="framed", house_dir=directory,
-                 engineering=load.results, register=load.register)
+                 engineering=load.results, register=load.register, analytical=analytical)
         written.append("model.ifc")
         emit_glb(load.ctx.model, root / "model.glb")
         written.append("model.glb")

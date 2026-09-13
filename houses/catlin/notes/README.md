@@ -32,6 +32,7 @@ each is kept because the *rule* it established usually outlives the design that 
 | Note | Oracles | Status |
 |---|---|---|
 | `board_batten_girt_span.md` | `engineering/wall_panel.py` + `engineering/wall_panel_withdrawal.py` (`tests/test_wall_panel_calcs.py`) | live |
+| `analytical_model_basis.md` | `analytical/supports.py` + `loads.py` + `solve.py` — the fixity and load-case CLAIMS of the exported analytical model, hand-solved for the balcony bent (`tests/test_analytical_oracle.py`) | live |
 | `balcony_moment_columns.md` | `engineering/deck_post.py`; §5 is now the NDS cross-check beside a published-table read, not an oracle (`tests/test_pier_calcs.py`) | live |
 | `breezeway_piers.md` | superseded by foundation bridge | retired 2026-09-10 |
 | `north_entry_structure.md` | the north entry bearing map and what carries what | live |

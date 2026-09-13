@@ -32,6 +32,11 @@ _SRC = pathlib.Path(__file__).resolve().parents[1] / "src" / "typehaus"
 #: What each leaf may reach. Everything under ``typehaus`` outside this set is forbidden;
 #: third-party and stdlib imports are not this test's business.
 _ALLOWED = {
+    # The analytical graph is a leaf for the same reason ``engineering`` is: it is what the
+    # emitters read, so an import back into ``emit`` — or into ``checks``, whose Findings it
+    # is deliberately not made of — would be a cycle through the one file four readers share.
+    "analytical": {"model", "resolve", "quantities", "engineering", "wind", "wind_tables",
+                   "findings", "analytical"},
     "routing": {"model", "resolve", "quantities", "routing"},
     "engineering": {"model", "resolve", "quantities", "wind", "wind_tables",
                     "engineering", "findings"},

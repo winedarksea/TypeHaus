@@ -35,8 +35,11 @@ _MACHINE_MINTED = (
     "IfcRelAssignsToGroup",
     "IfcRelAssignsToProduct",
     "IfcRelAssociatesMaterial",
+    "IfcRelAssignsToGroupByFactor",
+    "IfcRelConnectsStructuralActivity",
     "IfcRelConnectsStructuralMember",
     "IfcRelContainedInSpatialStructure",
+    "IfcRelDeclares",
     "IfcRelDefinesByProperties",
     "IfcRelDefinesByType",
     "IfcRelFillsElement",
@@ -58,10 +61,11 @@ _MACHINE_MINTED_DEFINITIONS = (
 _RELATING = ("RelatingObject", "RelatingStructure", "RelatingMaterial", "RelatingSystem",
              "RelatingPropertyDefinition", "RelatingType", "RelatingOpeningElement",
              "RelatingBuildingElement", "RelatingGroup", "RelatingProduct",
-             "RelatingElement")
+             "RelatingElement", "RelatingStructuralMember", "RelatingContext")
 _RELATED = ("RelatedObjects", "RelatedElements", "RelatedFeatureElement",
             "RelatedBuildingElement", "RelatedOpeningElement", "RelatedStructuralMember",
-            "RelatedBuildings", "RelatedObject")
+            "RelatedBuildings", "RelatedObject", "RelatedStructuralConnection",
+            "RelatedStructuralActivity", "RelatedDefinitions")
 
 
 def pin_relationship_guids(f: Any, project_uuid: uuid.UUID) -> int:
@@ -171,6 +175,11 @@ _SINGLETON_SPATIAL = (
     "IfcDistributionSystem", "IfcSystem", "IfcZone", "IfcGroup",
 )
 
+#: ``by_type`` is inclusive of subtypes, so ``IfcGroup`` above also catches the analysis
+#: model and every load case — whose GUIDs ``emit/ifc/analytical.py`` already derives from
+#: the model's own ids. Re-pinning them on file order would throw that away.
+_SELF_IDENTIFIED_GROUPS = ("IfcStructuralAnalysisModel", "IfcStructuralLoadGroup")
+
 
 def pin_spatial_guids(f: Any, project_uuid: uuid.UUID) -> None:
     """Pin the site and building GUIDs, which no model uid backs.
@@ -187,6 +196,8 @@ def pin_spatial_guids(f: Any, project_uuid: uuid.UUID) -> None:
             entities = f.by_type(kind)
         except RuntimeError:
             continue
+        entities = [e for e in entities
+                    if not any(e.is_a(group) for group in _SELF_IDENTIFIED_GROUPS)]
         # Sorted by name so the key is a property of the building and not of emit order.
         for ordinal, entity in enumerate(sorted(entities, key=lambda e: (
                 str(getattr(e, "Name", None) or ""),
@@ -202,6 +213,7 @@ def pin_spatial_guids(f: Any, project_uuid: uuid.UUID) -> None:
 _UNORDERED_MEMBERS = {
     "IfcRelAggregates": ("RelatedObjects",),
     "IfcRelAssignsToGroup": ("RelatedObjects",),
+    "IfcRelDeclares": ("RelatedDefinitions",),
     "IfcRelAssignsToProduct": ("RelatedObjects",),
     "IfcRelAssociatesMaterial": ("RelatedObjects",),
     "IfcRelContainedInSpatialStructure": ("RelatedElements",),

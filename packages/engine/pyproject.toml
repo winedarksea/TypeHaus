@@ -50,7 +50,11 @@ dev = [
     "pytest>=8.0", "pytest-xdist>=3.0", "hypothesis>=6.90", "mypy>=1.9", "ruff>=0.4",
     "ifctester>=0.8",
     "fastapi>=0.110", "uvicorn>=0.29", "websockets>=12", "watchfiles>=0.21", "httpx>=0.27",
+    "PyNiteFEA>=1.0",  # the analytical oracle solver (tests/test_analytical_solve.py)
 ]
+# The analytical solve on its own, for an install that wants `haus analysis --solve`
+# without the whole dev toolchain.
+fea = ["PyNiteFEA>=1.0"]
 
 [project.urls]
 Homepage = "https://type-haus.com"

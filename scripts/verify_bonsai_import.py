@@ -2,7 +2,8 @@
 
 Run with Blender so the milestone handoff test exercises the actual target importer:
 
-  Blender --background --python scripts/verify_bonsai_import.py -- out/handoff-architect/model_core.ifc
+  Blender --background --python scripts/verify_bonsai_import.py \
+      -- out/handoff-architect/model_core.ifc
 """
 
 from __future__ import annotations
@@ -19,7 +20,8 @@ def main() -> None:
     import bpy
 
     if "--" not in sys.argv:
-        raise SystemExit("usage: Blender --background --python verify_bonsai_import.py -- model.ifc")
+        raise SystemExit(
+            "usage: Blender --background --python verify_bonsai_import.py -- model.ifc")
     path = Path(sys.argv[sys.argv.index("--") + 1]).resolve()
     if not path.is_file():
         raise SystemExit(f"IFC not found: {path}")
@@ -43,6 +45,18 @@ def main() -> None:
     )}
     if not all(counts.values()):
         raise RuntimeError(f"Bonsai import lost required core entities: {counts}")
+    # The structural analysis view, where the file carries one. Not every file does — the
+    # permit IFC is geometry only — so its absence is not a failure; a model with an
+    # analysis model but no members or connections is, because that is a view Bonsai
+    # loaded as empty and a reviewer would open expecting the frame.
+    analytical = len(ifc_file.by_type("IfcStructuralAnalysisModel"))
+    if analytical:
+        structural = {kind: len(ifc_file.by_type(kind)) for kind in (
+            "IfcStructuralCurveMember", "IfcStructuralPointConnection",
+        )}
+        if not all(structural.values()):
+            raise RuntimeError(f"analysis model imported without its items: {structural}")
+        print(f"Structural analysis view OK: models={analytical}; {structural}")
     if not bpy.data.objects:
         raise RuntimeError("Bonsai import produced no Blender geometry")
     print(f"Bonsai import OK: {counts}; objects={len(bpy.data.objects)}")

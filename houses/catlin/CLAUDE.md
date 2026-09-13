@@ -1703,6 +1703,7 @@ haus engineering . --fingerprint retaining_wall/W-SG-E2  # paste into engineerin
 haus calcs .                                # -> out/calcs/, the package a PE marks up
 haus handoff . --zip                        # -> out/handoff/ + .zip, the whole PE bundle
 haus print . --sealed                       # the submittal gate — exits 1 today, correctly
+haus analysis . --solve                     # the engineered frame, solved in PyNite beside the records
 ```
 
 - **`notes/` is the oracle set** and `notes/README.md` is its index: which note checks which
@@ -1721,6 +1722,16 @@ haus print . --sealed                       # the submittal gate — exits 1 tod
   The bundle is **byte-deterministic**; regenerate it and diff the manifest to prove it.
   `out/handoff-architect/` is the OTHER bundle (`haus print --handoff`, drawings for an
   architect) and was renamed out of the way on 2026-09-11.
+- **The bundle carries the analytical model four ways** (2026-09-12, decision #73): the IFC4
+  structural analysis view inside `model.ifc` (SAP2000/ETABS/Bonsai), `analysis/centreline.dxf`
+  (RISA), `analysis/members.csv` (ForteWEB/Sizer/Enercalc by hand) and `analysis/model.pynite.py`.
+  Scope is the 36 items and their load path: 54 members, 56 nodes, 22 supports. **The ten
+  lateral-system columns are FIXED and every other base is PINNED, a claim the engine makes
+  and states** (`notes/analytical_model_basis.md`); the retaining set, the wall panel, the
+  trussed roofs and the uplift path are named GAPS, not members. `tests/test_analytical_oracle.py`
+  solves it in PyNite: the balcony pair carries what the records say to 0.03 %, but the frame
+  hands the REAR column ~10 % more than the sheet's equal split, and the record's wind lever is
+  the authored post height, 1 % longer than the built column. Both are findings, not errors.
 - **The IFC in that bundle is enriched** and the one from `haus build` is not: section
   profiles on every member, `Pset_TH_Engineering_<kind>` carrying each record and its
   fingerprint, and a 55-row bar schedule under the pours, summing to the same 3,650 LF the

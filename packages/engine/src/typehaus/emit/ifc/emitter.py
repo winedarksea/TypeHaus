@@ -20,6 +20,8 @@ from typing import Any
 
 from typehaus._meta import IFC_APP_NAME, PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
+from typehaus.emit.ifc.analytical import attach_orphan_sections, emit_analytical
+from typehaus.emit.ifc.analytical_loads import emit_analytical_loads
 from typehaus.emit.ifc.architectural import (
     _emit_furniture,
     _emit_opening,
@@ -39,6 +41,7 @@ from typehaus.emit.ifc.lowlevel_guids import (
     pin_spatial_guids,
     pin_unit_order,
 )
+from typehaus.emit.ifc.lowlevel_units import assign_structural_units
 from typehaus.emit.ifc.mep import (
     _ACCESSORY_IFC_CLASS,
     _PIPE_SYSTEM_OBJECT_TYPES,
@@ -53,7 +56,7 @@ from typehaus.emit.ifc.mep import (
     _emit_stormwater_system,
     _emit_sump_pumps,
 )
-from typehaus.emit.ifc.profiles import attach_profiles
+from typehaus.emit.ifc.profiles import ProfileCollector, attach_profiles
 from typehaus.emit.ifc.reinforcement import emit_reinforcement
 from typehaus.emit.ifc.roof import emit_roof
 from typehaus.emit.ifc.site import (
@@ -85,7 +88,8 @@ __all__ = ["emit_ifc", "_ACCESSORY_IFC_CLASS", "_PIPE_SYSTEM_OBJECT_TYPES",
 
 def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
              sequence: bool = False, house_dir: Path | None = None,
-             engineering: Any = None, register: Any = None) -> Path:
+             engineering: Any = None, register: Any = None,
+             analytical: Any = None) -> Path:
     """Emit the resolved model to an IFC4 file at ``out_path``. Returns the path.
 
     ``engineering`` and ``register`` are the engineering results and the seal register.
@@ -95,6 +99,14 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
     the IFC something a reviewing engineer can check against rather than only look at, and
     it is why ``haus handoff`` ships one. Omitted (the ordinary ``haus build``), nothing
     changes: the permit IFC goes to a plan reviewer who wants geometry.
+
+    ``analytical`` is an ``analytical.graph.AnalyticalModel``. Passed, the file additionally
+    carries the IFC4 structural analysis view — the analysis model, its curve members and
+    point connections, the boundary conditions and the load cases (``emit/ifc/analytical.py``
+    and ``analytical_loads.py``) — so an engineer loads the frame into SAP2000/ETABS/Bonsai
+    instead of re-modelling it from the drawings. Each curve member shares its physical
+    element's ``IfcMaterialProfileSet``: two section definitions for one member is how the
+    two views drift apart. Omitted, not one entity of it is written.
 
     ``sequence=True`` additionally writes the derived work packages as
     ``IfcWorkPlan``/``IfcWorkSchedule``/``IfcTask`` plus ``IfcCostSchedule``/``IfcCostItem``
@@ -110,6 +122,10 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
     # left unset, Revit/SketchUp import against the IFC4 Reference View MVD's assumed default
     # rather than this file's actual (metre) coordinates.
     ll.assign_project_units(f)
+    if analytical is not None:
+        # Force, pressure and the derived line-load units: an IfcLinearForceMeasure against
+        # a project that declares no linear-force unit is a number the importer guesses.
+        assign_structural_units(f)
     # IfcOpenShell attaches representation contexts to IfcProject; creating this first is
     # required by current 0.8.x APIs and keeps the output portable to Blender/Bonsai.
     body = ll.add_context(f)
@@ -247,14 +263,33 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
     if engineering is not None:
         emit_reinforcement(f, model, element_entities)
 
+    # The analytical view, BEFORE the profile pass: each curve member registers as a
+    # companion of its physical element on the collector below, so the two share one
+    # IfcMaterialProfileSet rather than defining the same section twice.
+    collector = ProfileCollector() if analytical is not None else None
+    analytical_entities = None
+    if analytical is not None:
+        analytical_entities = emit_analytical(f, ifc_project, building, analytical,
+                                              project_uuid, element_entities,
+                                              profiles=collector, body_context=body)
+
     # Section profiles and material grades on every structural member — the thing that
     # makes this file checkable against the calculation package rather than only viewable.
-    attach_profiles(f, model, engineering)
+    attach_profiles(f, model, engineering, collector=collector)
+    if analytical_entities is not None:
+        # Whatever the shared pass could not reach — a physical element carrying a layer
+        # set, or none at all — falls back to the graph's own section.
+        attach_orphan_sections(f, analytical, analytical_entities)
 
     if engineering is not None:
         # After every element exists and before the GUIDs are pinned: the property sets
         # this writes are themselves machine-minted and must be pinned with the rest.
         attach_engineering_psets(f, model, element_entities, engineering, register)
+
+    if analytical_entities is not None:
+        # After the members exist: every action reaches its member or node through an
+        # IfcRelConnectsStructuralActivity, which is the only way SAP2000 imports a load.
+        emit_analytical_loads(f, analytical, analytical_entities, project_uuid)
 
     ll.flush_containers(f)
 
