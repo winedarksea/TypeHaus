@@ -110,11 +110,46 @@ assert abs(_site.grade.meters - sunken_garden.SPEC.site_grade_in * 0.0254) < 1e-
     f"plan/site.py grade {_site.grade.meters}m disagrees with "
     f"params/sunken_garden.py SPEC.site_grade_in {sunken_garden.SPEC.site_grade_in}in")
 
+# --- The structures on this site ---------------------------------------------------------
+#
+# A STOREY IS A DATUM PLANE; THE CONTAINER IS THE BUILDING. Revit's Level, IFC's
+# ``IfcBuildingStorey`` and SketchUp's absence of levels all agree on this, and this file spent
+# its life disagreeing: ``garage`` was a storey, which made one key carry both "which level"
+# and "which of the four structures". Nothing downstream could ask "how big is this building"
+# without re-deriving the answer — ``resolve/orientation.py``, ``server/space_summary.py`` and
+# ``checks/code/mn_energy.py`` each derived it their own way, three times.
+#
+# Order is SHEET order: the A-1xx block, the storey tabs and the ``(building_order, elevation)``
+# sort all read it, so the dwelling comes first and the sitework last.
+#
+# NOT ``Project.building``, which stays exactly what it was — the title-block name. Conflating
+# the two would re-create the overload this pair exists to undo.
+_buildings = (
+    Building(uid="ABN42C8JSD", tag="house", name="House", kind="dwelling"),
+    # Its own structure, four feet of outdoor air from the dwelling, on its own frost-depth
+    # ICF: no common wall, no common roof plane, no opening between the two. MN classifies a
+    # garage as IRC-4 accessory occupancy rather than part of the IRC-1 dwelling.
+    Building(uid="8JB41G4FNP", tag="garage", name="Garage", kind="accessory"),
+    Building(uid="4RASW24NKX", tag="court", name="Sunken garden, porch and balcony",
+             kind="accessory"),
+    # The north bridge landing and its screen. Strapped to the GARAGE (seven LSTA24s) and
+    # bearing nothing at the house end, which is a movement joint. Its own building precisely
+    # because it is physically continuous with both and belongs to neither — which is also why
+    # membership here is AUTHORED and then verified, never derived from the wall graph.
+    Building(uid="EX66NZS4P1", tag="entry", name="North entry", kind="accessory"),
+    # Heat-pump pads and the raised garden bed. ``sitework`` is not an occupancy: it is how a
+    # check that only reaches dwellings knows to stop here.
+    Building(uid="BXG6W3G5W8", tag="yard", name="Yard structures", kind="sitework"),
+)
+
 _project = Project(
     name="Catlin House",
     project_uuid=PROJECT_UUID,
     site=_site,
     building=Building(name="Catlin House"),
+    # The structure axis (above). ``building`` on the line before is the title block; these
+    # are the buildings storeys belong to. Two different facts, deliberately two fields.
+    buildings=_buildings,
     format_version=format_version,
     requires_engine=requires_engine,
     # Title-block identity, printed on every sheet. No firm or architect row: Minn. Stat.
@@ -134,11 +169,23 @@ _project = Project(
     active_code_profile="MN/IRC",
 )
 
+# --- The levels, per building -------------------------------------------------------------
+#
+# ** EVERY NEW STOREY TAKES ITS ELEVATION FROM THE SAME CONSTANT OBJECT THE OLD ONE READ. **
+# That rule is what makes the re-filing below a pure re-grouping: ``g-deck`` reads
+# ``main_deck.MAIN_DATUM``, never a re-derived ``ft(0)``; ``court-low`` reads
+# ``main_deck.BASEMENT_DATUM``. Delta zero — and ``tests/test_elevation_goldens.py`` proves it
+# over every resolved z in the house rather than by a per-element audit.
+#
+# Two buildings holding a level at one elevation is the whole point, and is exactly what a flat
+# storey list could not say: ``main``, ``g-deck``, ``court-main``, ``entry`` and ``yard-grade``
+# are all at 0'-0". Any rationalization of the datums themselves — collapsing the garage's
+# three planes, re-basing the entry — is a separate commit with its own delta analysis.
 _storeys = (
     # -9'-1 7/16": the bearing seat less an exactly 8'-0" pour. Reads from
     # ``params/main_deck.py``, the way ``main`` already reads MAIN_DATUM from the same
     # module — a literal here would let the basement floor and its walls drift apart.
-    Storey(uid="STBASEAAAA", tag="basement", elevation=main_deck.BASEMENT_DATUM,
+    Storey(uid="STBASEAAAA", tag="basement", building="house", elevation=main_deck.BASEMENT_DATUM,
            # 8'-0 15/16", derived — NOT the 9'-0" nominal the other storeys carry. This
            # basement's ceiling is the deck's soffit, and it is 11" under a nominal 9'-0".
            default_ceiling_height=main_deck.BASEMENT_CEILING_HEIGHT),
@@ -146,7 +193,7 @@ _storeys = (
     # SL-M-DECK pins its cap to — so it lives beside that arithmetic in params/main_deck.py
     # rather than as a second literal here. Note it is the TOP OF JOISTS, not the walking
     # surface: the subfloor rides 3/4" above it.
-    Storey(uid="STMAINAAAA", tag="main", elevation=main_deck.MAIN_DATUM,
+    Storey(uid="STMAINAAAA", tag="main", building="house", elevation=main_deck.MAIN_DATUM,
            default_ceiling_height=ft(9)),
     # The garage storey *is* the stem top: its wood walls bear there. The stem tops out
     # GARAGE_STEM_REVEAL above *grade*, not above the house datum, because the garage is
@@ -155,23 +202,81 @@ _storeys = (
     # the overhead door carries a negative sill (plan/storeys/garage.py). Plates are 8'-4"
     # so the garage roof stays put as grade takes the storey down; see the note on WALLS
     # there.
-    Storey(uid="STGARAAAAA", tag="garage",
+    Storey(uid="STGARAAAAA", tag="garage", building="garage",
            elevation=ft(foundations.SITE_GRADE.feet + garage.GARAGE_STEM_REVEAL.feet),
            default_ceiling_height=ft(8, 4)),
     # Platform framing: 9' stud wall plus the nominal 12" floor system above it.
-    Storey(uid="STSECDAAAA", tag="second", elevation=ft(10),
+    Storey(uid="STSECDAAAA", tag="second", building="house", elevation=ft(10),
            default_ceiling_height=ft(9)),
-    Storey(uid="STATTCAAAA", tag="attic", elevation=ft(20),
+    Storey(uid="STATTCAAAA", tag="attic", building="house", elevation=ft(20),
            default_ceiling_height=ft(11)),
+    # --- garage ---------------------------------------------------------------------------
+    # The frost-depth ICF stems, their footings and the hydrant drywell. These rode `basement`
+    # because that is the level they are poured at; they are the GARAGE's foundation and never
+    # the house's, and `foundations.BASEMENT_ELEMENTS` bundled them with the house footings.
+    Storey(uid="9Q2NHMYFBC", tag="g-foundation", building="garage",
+           elevation=main_deck.BASEMENT_DATUM,
+           default_ceiling_height=main_deck.BASEMENT_CEILING_HEIGHT),
+    # The garage's level AT THE MAIN DATUM — the plane the service-door threshold and the entry
+    # landing share, and where the garage's own sleeves and supply devices sit. It is not
+    # `garage` (-1'-0", the stem top where the wood walls bear) and not the slab (-2'-10", the
+    # surface you park on): three distinct planes the one `garage` key stood in for. See
+    # plan/mep.py's GARAGE_DECK_ELEMENTS for what a naive re-file onto `garage` would cost.
+    Storey(uid="32KZP05FCA", tag="g-deck", building="garage",
+           elevation=main_deck.MAIN_DATUM, default_ceiling_height=ft(9)),
+    # --- court (sunken garden / porch / balcony) ------------------------------------------
+    # The freestanding arched concrete structure south of the house: one building, three
+    # levels, and the `sunken_garden.BASEMENT_/MAIN_/SECOND_ELEMENTS` split already named them.
+    Storey(uid="PVEZTJYS9Z", tag="court-low", building="court",
+           elevation=main_deck.BASEMENT_DATUM,
+           default_ceiling_height=main_deck.BASEMENT_CEILING_HEIGHT),
+    Storey(uid="NNYT3PHSZM", tag="court-main", building="court",
+           elevation=main_deck.MAIN_DATUM, default_ceiling_height=ft(9)),
+    Storey(uid="XX5J0ZSNDQ", tag="court-upper", building="court",
+           elevation=ft(10), default_ceiling_height=ft(9)),
+    # --- entry (north bridge) --------------------------------------------------------------
+    # TWO levels, because the entry really does have two. `entry-low` is the shear panel's
+    # own level: `W-BW-SCREEN` and `W-BW-SCREEN-SKIRT` were filed on the `garage` STOREY
+    # (params/breezeway.py:279 explains why — on `main` the panel joined the HOUSE's braced
+    # wall lines and stretched its dimension chain to 43'-2 5/8"). That workaround is exactly
+    # what the building axis replaces: the panel is the ENTRY's west lateral system, so it
+    # says so, and nothing about the house's braced-wall derivation can reach it either way.
+    #
+    # ** THE ELEVATION IS THE GARAGE STOREY'S OWN EXPRESSION, CHARACTER FOR CHARACTER. ** Not
+    # a literal -1'-0": the stem tops out GARAGE_STEM_REVEAL above GRADE, and a literal here
+    # would drift the panel off the stem the first time grade moved. Delta zero.
+    Storey(uid="E1V1RZ6S8B", tag="entry-low", building="entry",
+           elevation=ft(foundations.SITE_GRADE.feet + garage.GARAGE_STEM_REVEAL.feet),
+           default_ceiling_height=ft(8, 4)),
+    # The landing level: the bridge deck, its beams, piers, tiers and guards, at the main
+    # datum the service-door threshold shares.
+    Storey(uid="3FYD4882GK", tag="entry", building="entry",
+           elevation=main_deck.MAIN_DATUM, default_ceiling_height=ft(9)),
+    # --- yard -----------------------------------------------------------------------------
+    Storey(uid="XRMKTA1PNF", tag="yard-grade", building="yard",
+           elevation=main_deck.MAIN_DATUM, default_ceiling_height=ft(9)),
+    Storey(uid="4C808V8ER0", tag="yard-low", building="yard",
+           elevation=main_deck.BASEMENT_DATUM,
+           default_ceiling_height=main_deck.BASEMENT_CEILING_HEIGHT),
 )
 
 PLAN = (
     PlanModel(project=_project, library=_library, storeys=_storeys)
+    # --- house -----------------------------------------------------------------------------
+    #
+    # The bulk of the model, and NONE of it moves: the four house storeys keep their tags,
+    # their elevations and their element lists. What left each list below is named, so the
+    # diff is readable as "these four groups became their own buildings" rather than as a
+    # whole-house re-file.
     .with_elements(
         "basement",
+        # `foundations.BASEMENT_ELEMENTS` was the house footings AND the garage's stems,
+        # footings and hydrant drywell in one list; the four garage names are spread onto
+        # `g-foundation` below instead. Spread by name rather than by editing params/, which
+        # already named all four at module level.
         [*basement.ELEMENTS, *fixtures.BASEMENT_FIXTURES,
-         *sunken_garden.BASEMENT_ELEMENTS,
-         *raised_garden.BASEMENT_ELEMENTS, *foundations.BASEMENT_ELEMENTS,
+         *foundations.HOUSE_FOOTINGS, *foundations.HOUSE_FOOTING_BEDDING,
+         *foundations.VENEER_PLINTH, *foundations.VENEER_PLINTH_BEDDING,
          *mep.BASEMENT_ELEMENTS, *electrical.BASEMENT_ELEMENTS,
          *lighting.BASEMENT_LIGHTING,
          *placeables.BASEMENT_PLACEABLES, *millwork.BASEMENT_SHELVES,
@@ -179,14 +284,12 @@ PLAN = (
     )
     .with_elements(
         "main",
+        # `fixtures.PORCH_HYDRANT` stays HOUSE, and the tag is the trap: it is bolted
+        # through `W-M-S1`, the house's own south wall, and names `RM-M-BED` behind it. A
+        # hydrant you reach from the porch still belongs to the wall it penetrates. Same for
+        # `BALCONY_HYDRANT` on `second` (`W-S-S1`, `RM-S-PLANT`).
         [*main.ELEMENTS, *fixtures.MAIN_FIXTURES, *fixtures.PORCH_HYDRANT,
-         *sunken_garden.MAIN_ELEMENTS,
-         *breezeway.MAIN_ELEMENTS, *main_deck.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS,
-         # EQ-M-HP3-OD's pad and stand, in the slot north of the house (params/hp3_pad.py).
-         *hp3_pad.MAIN_ELEMENTS,
-         # EQ-M-HP1-OD's pad and stand, north face east of the garage
-         # (params/hp1_north_pad.py) — it crossed from the south pocket on 2026-09-04.
-         *hp1_north_pad.MAIN_ELEMENTS,
+         *main_deck.MAIN_ELEMENTS, *mep.MAIN_ELEMENTS,
          # The four wall corners where the north/south board & batten meets the east/west
          # PBR. Filed on `main` (the run starts below the main datum) though the module
          # that derives them is the roof eave's — it owns the cladding-face constant.
@@ -197,19 +300,10 @@ PLAN = (
          *countertops.MAIN_COUNTERTOPS,
          *backing.MAIN_BACKING, *backing_wet.MAIN_WET_BACKING],
     )
-    .with_elements("garage", [*garage.ELEMENTS, *foundations.GARAGE_ELEMENTS,
-                              *breezeway.GARAGE_STOREY_ELEMENTS,
-                              *backing.GARAGE_BACKING,
-                              *electrical.GARAGE_ELEMENTS,
-                              *fixtures.GARAGE_FIXTURES,
-                              *lighting.GARAGE_LIGHTING,
-                              *placeables.GARAGE_PLACEABLES,
-                              *wind_clamps.GARAGE_WALL_WIND_CLAMPS,
-                              *wind_clamps.GARAGE_ROOF_WIND_CLAMPS])
     .with_elements("second", [*second.ELEMENTS, *attic_studio.SECOND_ELEMENTS,
                                 *fixtures.SECOND_FIXTURES,
                                 *fixtures.BALCONY_HYDRANT,
-                                *sunken_garden.SECOND_ELEMENTS, *mep.SECOND_ELEMENTS,
+                                *mep.SECOND_ELEMENTS,
                                 *electrical.SECOND_ELEMENTS, *lighting.SECOND_LIGHTING,
                                 *placeables.SECOND_PLACEABLES,
                                 *second_deck.SECOND_ELEMENTS,
@@ -227,4 +321,37 @@ PLAN = (
                              *millwork.ATTIC_SHELVES,
                              *backing.ATTIC_BACKING,
                              *backing_wet.ATTIC_WET_BACKING])
+    # --- garage ----------------------------------------------------------------------------
+    .with_elements("g-foundation", [*foundations.GARAGE_STEM_NODES,
+                                    *foundations.GARAGE_STEM_WALLS,
+                                    *foundations.GARAGE_FOOTINGS,
+                                    foundations.GARAGE_HYDRANT_DRYWELL])
+    .with_elements("garage", [*garage.ELEMENTS, *foundations.GARAGE_ELEMENTS,
+                              *backing.GARAGE_BACKING,
+                              *electrical.GARAGE_ELEMENTS,
+                              *fixtures.GARAGE_FIXTURES,
+                              *lighting.GARAGE_LIGHTING,
+                              *placeables.GARAGE_PLACEABLES,
+                              *wind_clamps.GARAGE_WALL_WIND_CLAMPS,
+                              *wind_clamps.GARAGE_ROOF_WIND_CLAMPS])
+    .with_elements("g-deck", [*mep.GARAGE_DECK_ELEMENTS])
+    # --- court (sunken garden / porch / balcony) --------------------------------------------
+    .with_elements("court-low", [*sunken_garden.BASEMENT_ELEMENTS])
+    .with_elements("court-main", [*sunken_garden.MAIN_ELEMENTS])
+    .with_elements("court-upper", [*sunken_garden.SECOND_ELEMENTS])
+    # --- entry (north bridge) --------------------------------------------------------------
+    #
+    # What this buys at the seam, for free: `W-BW-SCREEN`/`-SKIRT`, `FS-BW-GARAGE`,
+    # `RL-BW-GARAGE-E` and `SC-BW-WEST` now sit in one cell with the screen that supports
+    # them, so a sheet can draw the entry whole. And the `params/breezeway.py:279` workaround —
+    # keep the screen off the house's braced-wall lines by the storey it is filed on — is
+    # satisfied BY THE MODEL rather than by the filing.
+    # `GARAGE_STOREY_ELEMENTS` is the screen panel, its skirt and their four nodes — the list
+    # is `[]` at line 288 and `.extend()`ed twice further down the module, so read it at
+    # import time, not at its assignment.
+    .with_elements("entry-low", [*breezeway.GARAGE_STOREY_ELEMENTS])
+    .with_elements("entry", [*breezeway.MAIN_ELEMENTS])
+    # --- yard (sitework) -------------------------------------------------------------------
+    .with_elements("yard-grade", [*hp3_pad.MAIN_ELEMENTS, *hp1_north_pad.MAIN_ELEMENTS])
+    .with_elements("yard-low", [*raised_garden.BASEMENT_ELEMENTS])
 )

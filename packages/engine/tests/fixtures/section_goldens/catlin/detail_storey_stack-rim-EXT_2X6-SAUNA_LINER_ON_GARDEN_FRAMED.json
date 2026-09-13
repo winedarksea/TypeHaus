@@ -1387,62 +1387,6 @@
       "node": "polyline",
       "points": [
         [
-          -10.625,
-          -7.249999999999999
-        ],
-        [
-          -9.375,
-          -7.249999999999999
-        ],
-        [
-          -9.375,
-          0.0
-        ],
-        [
-          -10.625,
-          0.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "SGFS01AAAA",
-      "tag": "rim-1"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -10.625,
-          -7.249999999999999
-        ],
-        [
-          -9.375,
-          -7.249999999999999
-        ],
-        [
-          -9.375,
-          0.0
-        ],
-        [
-          -10.625,
-          0.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "post-paint-white"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           -1.25,
           -11.875
         ],
@@ -1635,20 +1579,20 @@
       "node": "polyline",
       "points": [
         [
-          -15.90251968503937,
+          -10.625,
+          -7.249999999999999
+        ],
+        [
+          -9.375,
+          -7.249999999999999
+        ],
+        [
+          -9.375,
           0.0
         ],
         [
-          -10.0,
+          -10.625,
           0.0
-        ],
-        [
-          -10.0,
-          1.0
-        ],
-        [
-          -15.90251968503937,
-          1.0
         ]
       ],
       "layer": "S-FRAM",
@@ -1656,27 +1600,27 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "SGFS01AAAA",
-      "tag": "deck"
+      "tag": "rim-1"
     },
     {
       "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          -15.90251968503937,
+          -10.625,
+          -7.249999999999999
+        ],
+        [
+          -9.375,
+          -7.249999999999999
+        ],
+        [
+          -9.375,
           0.0
         ],
         [
-          -10.0,
+          -10.625,
           0.0
-        ],
-        [
-          -10.0,
-          1.0
-        ],
-        [
-          -15.90251968503937,
-          1.0
         ]
       ],
       "pattern": "lumber",
@@ -1684,7 +1628,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "composite-deck"
+      "material": "post-paint-white"
     },
     {
       "space": "model",
@@ -1741,6 +1685,62 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "plywood-subfloor"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -15.90251968503937,
+          0.0
+        ],
+        [
+          -10.0,
+          0.0
+        ],
+        [
+          -10.0,
+          1.0
+        ],
+        [
+          -15.90251968503937,
+          1.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "SGFS01AAAA",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -15.90251968503937,
+          0.0
+        ],
+        [
+          -10.0,
+          0.0
+        ],
+        [
+          -10.0,
+          1.0
+        ],
+        [
+          -15.90251968503937,
+          1.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "composite-deck"
     },
     {
       "space": "model",

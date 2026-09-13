@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 export type ThemePreference = "system" | "light" | "dark";
 export type ResolvedTheme = Exclude<ThemePreference, "system">;
@@ -97,21 +97,73 @@ export function initializeTheme(): ThemePreference {
   return preference;
 }
 
+/**
+ * The theme is ONE piece of state with several readers, so it lives in a module store rather
+ * than in each hook call's useState.
+ *
+ * It was per-instance useState, and that made every caller its own island: the overflow menu
+ * flipped the preference and re-rendered itself, `applyTheme` wrote data-theme on <html> so the
+ * whole stylesheet followed — and Panel3D, whose useTheme() is a separate useState, was never
+ * told. Its three.js scene kept the palette it had mounted with, so a runtime toggle left the
+ * 3D backdrop, the schematic material tints and the selection highlight on the old theme while
+ * every CSS surface around them changed. Reloading the page "fixed" it because the fresh mount
+ * read the stored preference.
+ *
+ * useSyncExternalStore is the primitive for exactly this: one value, every reader re-rendered
+ * on a write. Any future useTheme() caller is correct by construction.
+ */
+interface ThemeState {
+  readonly preference: ThemePreference;
+  readonly theme: ResolvedTheme;
+}
+
+// Cached, and replaced wholesale on a change: getSnapshot must return a referentially stable
+// value between writes or useSyncExternalStore re-renders forever.
+let themeState: ThemeState | null = null;
+const themeListeners = new Set<() => void>();
+
+function themeSnapshot(): ThemeState {
+  if (!themeState) {
+    const preference = savedThemePreference();
+    themeState = { preference, theme: resolveTheme(preference, systemPrefersDark()) };
+  }
+  return themeState;
+}
+
+function publishThemeState(next: ThemeState): void {
+  themeState = next;
+  for (const listener of themeListeners) listener();
+}
+
+// The OS preference moving only matters while the preference is "system"; resolveTheme already
+// encodes that, so this is a no-op write for an explicit light/dark and publishes nothing.
+function refreshResolvedTheme(): void {
+  const { preference, theme } = themeSnapshot();
+  const resolved = applyTheme(preference);
+  if (resolved !== theme) publishThemeState({ preference, theme: resolved });
+}
+
+function subscribeTheme(listener: () => void): () => void {
+  themeListeners.add(listener);
+  // One media listener for the whole app, attached with the first subscriber rather than per
+  // hook instance — the old code added one per caller.
+  if (themeListeners.size === 1) {
+    window.matchMedia(DARK_MEDIA_QUERY).addEventListener("change", refreshResolvedTheme);
+  }
+  return () => {
+    themeListeners.delete(listener);
+    if (themeListeners.size === 0) {
+      window.matchMedia(DARK_MEDIA_QUERY).removeEventListener("change", refreshResolvedTheme);
+    }
+  };
+}
+
 export function useTheme(): {
   preference: ThemePreference;
   theme: ResolvedTheme;
   setPreference: (preference: ThemePreference) => void;
 } {
-  const [preference, setPreferenceState] = useState<ThemePreference>(savedThemePreference);
-  const [theme, setTheme] = useState<ResolvedTheme>(() => applyTheme(savedThemePreference()));
-
-  useEffect(() => {
-    const media = window.matchMedia(DARK_MEDIA_QUERY);
-    const refresh = () => setTheme(applyTheme(preference));
-    refresh();
-    media.addEventListener("change", refresh);
-    return () => media.removeEventListener("change", refresh);
-  }, [preference]);
+  const { preference, theme } = useSyncExternalStore(subscribeTheme, themeSnapshot);
 
   const setPreference = (next: ThemePreference) => {
     try {
@@ -119,7 +171,8 @@ export function useTheme(): {
     } catch {
       // Private browsing may reject storage; the in-memory choice still applies.
     }
-    setPreferenceState(next);
+    // applyTheme does the DOM side of the switch and hands back what "system" resolved to.
+    publishThemeState({ preference: next, theme: applyTheme(next) });
   };
 
   return { preference, theme, setPreference };

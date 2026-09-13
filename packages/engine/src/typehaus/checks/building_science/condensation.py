@@ -213,13 +213,23 @@ def conditioned_envelope_surfaces(ctx: CheckContext) -> list[EnvelopeSurface]:
     the first under a longer name — and an accent-wall lining swap (same film, same class)
     is not a different building-science question.
     """
-    conditioned: set[str] = set()
-    for storey in ctx.plan.storeys:
-        for element in ctx.plan.storey_elements(storey.tag):
-            occ = getattr(element, "occupancy", None)
-            if element.element_kind == "Room" and occ not in _UNCONDITIONED:
-                conditioned.add(storey.tag)
-                break
+    # ** ONE DERIVATION OF "IS THIS STOREY CONDITIONED", NOT TWO. ** This was an inline set
+    # that only ever ADDED a storey holding a conditioned room, so a storey holding no rooms
+    # at all fell out of scope silently. ``energy_scope._storey_is_conditioned`` is the same
+    # question asked by the block load and the prescriptive table, and it already answers the
+    # empty case the way this module needs: *an empty storey stays in scope, because it is a
+    # modelling gap and not a declared unconditioned space.*
+    #
+    # The difference is not academic. The garage's ICF stem holds no room of its own, and the
+    # inline set dropped ``GARAGE_ICF_6`` off the screened envelope the moment the stem was
+    # filed on the garage's own foundation level rather than the house's basement — taking
+    # with it the FAIL that is the *stated reason* the coil band stands on a 1/4" vented
+    # standoff (houses/catlin/CLAUDE.md: "delete it and the FAIL returns"). A guard the house
+    # documents as load-bearing must not evaporate because an element was re-filed.
+    from typehaus.checks.building_science.energy_scope import _storey_is_conditioned
+
+    conditioned = {storey.tag for storey in ctx.plan.storeys
+                   if _storey_is_conditioned(ctx.plan, storey.tag)}
 
     humid_by_wall = humid_rooms_by_wall(ctx)
     surfaces: list[EnvelopeSurface] = []

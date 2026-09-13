@@ -11,7 +11,7 @@ from typehaus.model.base import Element, HausModel
 from typehaus.model.electrical import Circuit, LoadManagement
 from typehaus.model.materials import Material
 from typehaus.model.product import Product
-from typehaus.model.project import Project, Storey
+from typehaus.model.project import Building, Project, Storey
 from typehaus.model.types import (
     ApplianceType,
     DoorType,
@@ -116,6 +116,11 @@ def _apply_substitution(layers: list, sub: object) -> list:
     return layers[:lo] + list(sub.replacement) + layers[hi + 1 :]
 
 
+# The building every storey belongs to when a house authors no ``Project.buildings``. Not a
+# real structure — the name a one-structure model reads so ``building_of`` is total.
+IMPLICIT_BUILDING = "building"
+
+
 class PlanModel(HausModel):
     """The validated authored model, before resolve. Whole-building (→ 02 §Pipeline)."""
 
@@ -130,6 +135,55 @@ class PlanModel(HausModel):
 
     def storey(self, tag: str) -> Storey | None:
         return next((s for s in self.storeys if s.tag == tag), None)
+
+    # --- the building axis (a storey is a datum; the container is the building) ----------
+    #
+    # ``building`` is a pure function of storey, so none of this needs a new field on a
+    # ``Resolved*`` class, a re-keying of ``elements``, or a per-element override. Everything
+    # downstream asks the plan.
+
+    def buildings(self) -> tuple[Building, ...]:
+        """The authored structures, or the one implicit building every storey belongs to.
+
+        The fallback is what keeps the axis inert for a house that authors nothing: one
+        building, every storey in it, so ``building_of`` is total and every building-scoped
+        consumer reduces to the whole-model behaviour it had before.
+        """
+        if self.project.buildings:
+            return self.project.buildings
+        return (Building(tag=IMPLICIT_BUILDING, name=self.project.building.name),)
+
+    def building_of(self, storey_tag: str) -> str:
+        """The building tag owning ``storey_tag``. Total: unknown or unclaimed reads first."""
+        storey = self.storey(storey_tag)
+        if storey is not None and storey.building:
+            return storey.building
+        return self.buildings()[0].tag
+
+    def building(self, tag: str) -> Building | None:
+        return next((b for b in self.buildings() if b.tag == tag), None)
+
+    def storeys_of(self, building: str) -> tuple[Storey, ...]:
+        """Every storey of one building, in authored order."""
+        return tuple(s for s in self.storeys if self.building_of(s.tag) == building)
+
+    def building_order(self, building: str) -> int:
+        """Index of a building in sheet order; unknown sorts last, never first."""
+        tags = [b.tag for b in self.buildings()]
+        return tags.index(building) if building in tags else len(tags)
+
+    def cells(self) -> tuple[tuple[Building, Storey], ...]:
+        """Every (building, storey) pair, buildings in sheet order then authored storey order.
+
+        The "cell" is the unit that a sheet, an ``IfcBuildingStorey`` and a space summary are
+        really about — never the storey alone, which two buildings may share an elevation on.
+        """
+        by_building = {b.tag: b for b in self.buildings()}
+        return tuple(
+            (by_building[tag], storey)
+            for tag in by_building
+            for storey in self.storeys_of(tag)
+        )
 
     def storey_elements(self, storey_tag: str) -> tuple[Element, ...]:
         return self.elements.get(storey_tag, ())

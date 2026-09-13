@@ -2787,62 +2787,6 @@
       "node": "polyline",
       "points": [
         [
-          514.2875,
-          -84.00000000000001
-        ],
-        [
-          534.2875,
-          -84.00000000000001
-        ],
-        [
-          534.2875,
-          -76.00000000000001
-        ],
-        [
-          514.2875,
-          -76.00000000000001
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CGF201AAAA",
-      "tag": "FT-GF-S1"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          514.2875,
-          -84.00000000000001
-        ],
-        [
-          534.2875,
-          -84.00000000000001
-        ],
-        [
-          534.2875,
-          -76.00000000000001
-        ],
-        [
-          514.2875,
-          -76.00000000000001
-        ]
-      ],
-      "pattern": "concrete",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "concrete"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           530.125,
           -37.5
         ],
@@ -2885,6 +2829,62 @@
         [
           530.125,
           -34.0
+        ]
+      ],
+      "pattern": "concrete",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "concrete"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          514.2875,
+          -84.00000000000001
+        ],
+        [
+          534.2875,
+          -84.00000000000001
+        ],
+        [
+          534.2875,
+          -76.00000000000001
+        ],
+        [
+          514.2875,
+          -76.00000000000001
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CGF201AAAA",
+      "tag": "FT-GF-S1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          514.2875,
+          -84.00000000000001
+        ],
+        [
+          534.2875,
+          -84.00000000000001
+        ],
+        [
+          534.2875,
+          -76.00000000000001
+        ],
+        [
+          514.2875,
+          -76.00000000000001
         ]
       ],
       "pattern": "concrete",
@@ -4591,6 +4591,390 @@
       "node": "polyline",
       "points": [
         [
+          420.125,
+          -11.875
+        ],
+        [
+          422.625,
+          -11.875
+        ],
+        [
+          422.625,
+          0.0
+        ],
+        [
+          420.125,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMFS03AAAA",
+      "tag": "joist-0-010-0"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          420.125,
+          -11.875
+        ],
+        [
+          422.625,
+          -11.875
+        ],
+        [
+          422.625,
+          0.0
+        ],
+        [
+          420.125,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          420.125,
+          -10.5
+        ],
+        [
+          422.625,
+          -10.5
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMFS03AAAA",
+      "tag": "joist-0-010-0/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          420.125,
+          -1.375
+        ],
+        [
+          422.625,
+          -1.375
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMFS03AAAA",
+      "tag": "joist-0-010-0/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          430.75000000000006,
+          -11.875
+        ],
+        [
+          433.25,
+          -11.875
+        ],
+        [
+          433.25,
+          0.0
+        ],
+        [
+          430.75000000000006,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMFS03AAAA",
+      "tag": "joist-0-011-0"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          430.75000000000006,
+          -11.875
+        ],
+        [
+          433.25,
+          -11.875
+        ],
+        [
+          433.25,
+          0.0
+        ],
+        [
+          430.75000000000006,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          430.75000000000006,
+          -10.5
+        ],
+        [
+          433.25,
+          -10.5
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMFS03AAAA",
+      "tag": "joist-0-011-0/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          430.75000000000006,
+          -1.375
+        ],
+        [
+          433.25,
+          -1.375
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CMFS03AAAA",
+      "tag": "joist-0-011-0/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          414.25000000000006,
+          108.125
+        ],
+        [
+          417.75,
+          108.125
+        ],
+        [
+          417.75,
+          120.0
+        ],
+        [
+          414.25000000000006,
+          120.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "1JXQ975X9E",
+      "tag": "joist-0-026-0"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          414.25000000000006,
+          108.125
+        ],
+        [
+          417.75,
+          108.125
+        ],
+        [
+          417.75,
+          120.0
+        ],
+        [
+          414.25000000000006,
+          120.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          414.25000000000006,
+          109.625
+        ],
+        [
+          417.75,
+          109.625
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "1JXQ975X9E",
+      "tag": "joist-0-026-0/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          414.25000000000006,
+          118.5
+        ],
+        [
+          417.75,
+          118.5
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "1JXQ975X9E",
+      "tag": "joist-0-026-0/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          430.25,
+          108.125
+        ],
+        [
+          433.75000000000006,
+          108.125
+        ],
+        [
+          433.75000000000006,
+          120.0
+        ],
+        [
+          430.25,
+          120.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "1JXQ975X9E",
+      "tag": "joist-0-027-0"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          430.25,
+          108.125
+        ],
+        [
+          433.75000000000006,
+          108.125
+        ],
+        [
+          433.75000000000006,
+          120.0
+        ],
+        [
+          430.25,
+          120.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          430.25,
+          109.625
+        ],
+        [
+          433.75000000000006,
+          109.625
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "1JXQ975X9E",
+      "tag": "joist-0-027-0/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          430.25,
+          118.5
+        ],
+        [
+          433.75000000000006,
+          118.5
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "1JXQ975X9E",
+      "tag": "joist-0-027-0/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           439.875,
           -8.25
         ],
@@ -4983,390 +5367,6 @@
       "node": "polyline",
       "points": [
         [
-          420.125,
-          -11.875
-        ],
-        [
-          422.625,
-          -11.875
-        ],
-        [
-          422.625,
-          0.0
-        ],
-        [
-          420.125,
-          0.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMFS03AAAA",
-      "tag": "joist-0-010-0"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          420.125,
-          -11.875
-        ],
-        [
-          422.625,
-          -11.875
-        ],
-        [
-          422.625,
-          0.0
-        ],
-        [
-          420.125,
-          0.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          420.125,
-          -10.5
-        ],
-        [
-          422.625,
-          -10.5
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMFS03AAAA",
-      "tag": "joist-0-010-0/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          420.125,
-          -1.375
-        ],
-        [
-          422.625,
-          -1.375
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMFS03AAAA",
-      "tag": "joist-0-010-0/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          430.75000000000006,
-          -11.875
-        ],
-        [
-          433.25,
-          -11.875
-        ],
-        [
-          433.25,
-          0.0
-        ],
-        [
-          430.75000000000006,
-          0.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMFS03AAAA",
-      "tag": "joist-0-011-0"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          430.75000000000006,
-          -11.875
-        ],
-        [
-          433.25,
-          -11.875
-        ],
-        [
-          433.25,
-          0.0
-        ],
-        [
-          430.75000000000006,
-          0.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          430.75000000000006,
-          -10.5
-        ],
-        [
-          433.25,
-          -10.5
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMFS03AAAA",
-      "tag": "joist-0-011-0/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          430.75000000000006,
-          -1.375
-        ],
-        [
-          433.25,
-          -1.375
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMFS03AAAA",
-      "tag": "joist-0-011-0/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          414.25000000000006,
-          108.125
-        ],
-        [
-          417.75,
-          108.125
-        ],
-        [
-          417.75,
-          120.0
-        ],
-        [
-          414.25000000000006,
-          120.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "1JXQ975X9E",
-      "tag": "joist-0-026-0"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          414.25000000000006,
-          108.125
-        ],
-        [
-          417.75,
-          108.125
-        ],
-        [
-          417.75,
-          120.0
-        ],
-        [
-          414.25000000000006,
-          120.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          414.25000000000006,
-          109.625
-        ],
-        [
-          417.75,
-          109.625
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "1JXQ975X9E",
-      "tag": "joist-0-026-0/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          414.25000000000006,
-          118.5
-        ],
-        [
-          417.75,
-          118.5
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "1JXQ975X9E",
-      "tag": "joist-0-026-0/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          430.25,
-          108.125
-        ],
-        [
-          433.75000000000006,
-          108.125
-        ],
-        [
-          433.75000000000006,
-          120.0
-        ],
-        [
-          430.25,
-          120.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "1JXQ975X9E",
-      "tag": "joist-0-027-0"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          430.25,
-          108.125
-        ],
-        [
-          433.75000000000006,
-          108.125
-        ],
-        [
-          433.75000000000006,
-          120.0
-        ],
-        [
-          430.25,
-          120.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          430.25,
-          109.625
-        ],
-        [
-          433.75000000000006,
-          109.625
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "1JXQ975X9E",
-      "tag": "joist-0-027-0/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          430.25,
-          118.5
-        ],
-        [
-          433.75000000000006,
-          118.5
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.13,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "1JXQ975X9E",
-      "tag": "joist-0-027-0/flange"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           598.625,
           -28.700000000000003
         ],
@@ -5591,118 +5591,6 @@
       "node": "polyline",
       "points": [
         [
-          439.75000000000006,
-          -1.0
-        ],
-        [
-          518.625,
-          -1.0
-        ],
-        [
-          518.625,
-          0.0
-        ],
-        [
-          439.75000000000006,
-          0.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "BWFS01AAAA",
-      "tag": "deck"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          439.75000000000006,
-          -1.0
-        ],
-        [
-          518.625,
-          -1.0
-        ],
-        [
-          518.625,
-          0.0
-        ],
-        [
-          439.75000000000006,
-          0.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "composite-deck"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          518.875,
-          -1.0
-        ],
-        [
-          565.625,
-          -1.0
-        ],
-        [
-          565.625,
-          0.0
-        ],
-        [
-          518.875,
-          0.0
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "BWFS02AAAA",
-      "tag": "deck"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          518.875,
-          -1.0
-        ],
-        [
-          565.625,
-          -1.0
-        ],
-        [
-          565.625,
-          0.0
-        ],
-        [
-          518.875,
-          0.0
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "composite-deck"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           408.00000000000006,
           0.0
         ],
@@ -5809,6 +5697,118 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "plywood-subfloor"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          439.75000000000006,
+          -1.0
+        ],
+        [
+          518.625,
+          -1.0
+        ],
+        [
+          518.625,
+          0.0
+        ],
+        [
+          439.75000000000006,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "BWFS01AAAA",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          439.75000000000006,
+          -1.0
+        ],
+        [
+          518.625,
+          -1.0
+        ],
+        [
+          518.625,
+          0.0
+        ],
+        [
+          439.75000000000006,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "composite-deck"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          518.875,
+          -1.0
+        ],
+        [
+          565.625,
+          -1.0
+        ],
+        [
+          565.625,
+          0.0
+        ],
+        [
+          518.875,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "BWFS02AAAA",
+      "tag": "deck"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          518.875,
+          -1.0
+        ],
+        [
+          565.625,
+          -1.0
+        ],
+        [
+          565.625,
+          0.0
+        ],
+        [
+          518.875,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "composite-deck"
     },
     {
       "space": "model",

@@ -136,8 +136,24 @@ def build_center_section(model: ResolvedModel) -> Scene:
     :func:`build_section` is not — an authored detail is a fragment of a building with no
     storey ladder to hang off and no ground within a hundred feet of its crop.
     """
+    # ** WHICH WALLS ARE "THE HOUSE" IS THE BUILDING AXIS, NOT A TAG SET. ** This read
+    # ``wall.storey in {"basement", "main", "second", "attic"}`` — a hard-coded list of
+    # catlin's four house storey tags, one of the three places in this engine that re-derived
+    # "which of the structures" because a storey key could not say it. It was wrong in both
+    # directions: ``startswith("W-")`` also matches ``W-SG-`` (the sunken garden),
+    # ``W-BW-`` (the north entry) and ``W-RG-`` (the raised garden), all of which were filed
+    # on those same four storeys, so their y extents dragged the section's cut station off
+    # the house's actual centre; and it silently excluded any storey not named in the list,
+    # which on the starter house is ``upper``.
+    #
+    # A section through "the building" is a section through the DWELLING. A house that
+    # declares no buildings has one implicit dwelling holding every storey, which is the
+    # whole-model behaviour this had before the list was bolted on.
+    plan = model.plan
+    dwelling = {storey.tag for building in plan.buildings() if building.kind == "dwelling"
+                for storey in plan.storeys_of(building.tag)}
     house_walls = [wall for wall in model.walls if wall.tag.startswith("W-")
-                   and wall.storey in {"basement", "main", "second", "attic"}]
+                   and wall.storey in dwelling]
     stations = [coordinate for wall in house_walls
                 for coordinate in (wall.axis[0][1], wall.axis[1][1])]
     station = (min(stations) + max(stations)) / 2.0 if stations else 0.0

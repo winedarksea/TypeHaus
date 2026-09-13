@@ -188,6 +188,12 @@ def ground_below_ft(plan: PlanModel) -> float:
     return min(candidates) if candidates else 0.0
 
 
+#: Points a candidate's ``path`` needs before :func:`nearest` will consider it, by element
+#: kind. The default of 3 rejects a two-point run as a drip/flashing edge; a ``Railing`` is
+#: exempt because a guard is routinely one straight leg (see :func:`nearest`).
+_MIN_PATH_POINTS = {"Railing": 2}
+
+
 def nearest(plan: PlanModel, anchors: Any, kind: type, storey: str | None = None) -> Any:
     """The element of ``kind`` whose plan path actually belongs to this structure.
 
@@ -210,6 +216,22 @@ def nearest(plan: PlanModel, anchors: Any, kind: type, storey: str | None = None
     The filter is not applied when it would return nothing: a house that files its guards on
     a storey other than its deck's still gets the historical proximity answer rather than a
     silent ``None`` that reads as "no guard here".
+
+    ** A GUARD MAY BE ONE STRAIGHT LEG, AND THE THREE-POINT GATE USED TO DENY IT. ** The
+    ``len(path) < 3`` rule below is written for a ``Fascia`` — a two-point run there really is
+    a drip or a flashing edge rather than the outline of a structure. A ``Railing`` is not
+    that: eleven of catlin's thirteen guards are single straight runs, and only
+    ``RL-SG-PORCH`` and ``RL-SG-BALCONY`` turn a corner.
+    #
+    Applying the gate to a Railing had a consequence that stayed hidden while every structure
+    shared the house's storey keys: the north entry's landing piers took their base moment
+    from ``RL-SG-PORCH``, the sunken-garden porch guard forty feet away, because it was the
+    ONLY railing filed on ``main`` that cleared three points. Its base is +0'-1" where the
+    entry's is -2'-10", so the demand those four piers were graded on described a different
+    structure at a different elevation. Giving the entry its own building made the borrowing
+    visible — the entry's own guards are two-point runs, so the gate left it with no guard at
+    all and the piers silently published axial-only, dropping the state that governed them.
+    Neither answer was right; the gate is what was wrong.
     """
     xs = [a.position.xy_m[0] for a in anchors]
     ys = [a.position.xy_m[1] for a in anchors]
@@ -222,10 +244,11 @@ def nearest(plan: PlanModel, anchors: Any, kind: type, storey: str | None = None
             continue
         if on_storey and id(element) not in on_storey:
             continue
-        # >= 3 points: a two-point run is a drip or a flashing edge, not the plan outline
-        # of a thing this structure is bounded by.
+        # A two-point run is a drip or a flashing edge rather than a plan outline — for a
+        # Fascia. For a Railing it is the ordinary case, and a guard is still a guard when it
+        # does not turn a corner. See the block in the docstring.
         path = getattr(element, "path", ())
-        if len(path) < 3:
+        if len(path) < _MIN_PATH_POINTS.get(kind.__name__, 3):
             continue
         px = sum(p.xy_m[0] for p in path) / len(path)
         py = sum(p.xy_m[1] for p in path) / len(path)

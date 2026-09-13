@@ -121,9 +121,12 @@ an item id `<kind>/<element-tag>` that a professional seal can cover (decision #
   the engine can scaffold without ever writing a seal. The bundle is byte-deterministic, or
   the manifest would prove nothing (`docs/handoff-bundle-format.md`).
 - The seal lives in `houses/<name>/engineering.toml` (`docs/engineering-toml-format.md`),
-  never on the elements: those are `# haus: editable` and undoable, and `_content_hash`
-  hashes every `plan/**/*.py`, so a stamp written into plan source would change the hash it
-  is pinned against. **The engine reads that file and never writes it.**
+  never on the elements: those are `# haus: editable` and undoable, and a stamp in plan
+  source would be read back by the very records it is a statement about. **The engine reads
+  that file and never writes it.** (It is *not* true that `_content_hash` pins a seal — a
+  seal pins `engineering/fingerprint.fingerprint(record)`, which hashes the record's inputs
+  and ratio and never the model's bytes. `_content_hash` reaches printed prose and the UI's
+  concurrency revision only. What stales a seal is moving geometry or elevations.)
 - `Result.NOT_APPLICABLE` is a fourth verdict — "the condition this rule governs does not
   exist in this building" — and must be **earned** from positive evidence of absence. "No
   masonry guard anywhere in the plan" is N/A. "No dryer modeled" in a house with a laundry
@@ -204,10 +207,11 @@ haus route houses/catlin --unconnected                 # one per fixture_drain_r
 haus route houses/catlin --run DU-M-ERV-R-KITCH --explain
 ```
 
-- **There is no `--write`.** `source/loader._content_hash` hashes every `plan/**/*.py`, so
-  a machine edit stales every pinned engineering seal; the prose in a plan file *is* the
-  design record; and accepting a route is a judgement, exactly as
-  `haus engineering --fingerprint` prints a value for a person to paste.
+- **There is no `--write`.** The prose in a plan file *is* the design record; and accepting
+  a route is a judgement, exactly as `haus engineering --fingerprint` prints a value for a
+  person to paste. The reason once given first here — "`_content_hash` stales every pinned
+  engineering seal" — is **false** and is gone; see the seal bullet above for what a seal is
+  actually pinned against.
 - **A search result is not a `Finding`.** What is a fact about the building —
   "this drain hangs 8" into the gym", "this fixture is 48" from every pipe in the house" —
   belongs in `checks/`, and the router is aimed at it. A verdict that moved when a cost

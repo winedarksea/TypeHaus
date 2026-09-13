@@ -111,15 +111,43 @@ class Site(HausModel):
 
 @register_element
 class Storey(Element):
-    """A building level. Resolves in the shared project-north plan frame (→ 02)."""
+    """A level *within one building*. Resolves in the shared project-north plan frame (→ 02).
+
+    ``building`` names the :class:`Building` this level belongs to, and is the axis a storey
+    key was overloaded to carry. A storey is a DATUM PLANE, not a container of structures —
+    Revit's Level, IFC's ``IfcBuildingStorey``; the container is the building. Two buildings
+    may hold a level at the same ``elevation`` (a detached garage's deck is at the house's
+    main datum), which a single flat storey list cannot express.
+
+    Empty means "the one implicit building" — see ``PlanModel.building_of``. A house that
+    knows about only one structure authors nothing and reads exactly as before.
+    """
 
     elevation: Length
     default_ceiling_height: Length
     vertical_datum: FaceRef = face("sheathing-ext")  # #43 default
+    building: str = ""
 
 
-class Building(HausModel):
+@register_element
+class Building(Element):
+    """One structure on the site. ``IfcSite -> IfcBuilding[] -> IfcBuildingStorey[]``.
+
+    Membership is AUTHORED on the storey, not derived: a building is a design claim, not a
+    geometric fact (a canopy may be strapped to a garage and still be its own structure).
+    ``integrity.building_partition`` verifies the claim against the wall graph.
+
+    ``tag`` defaults to empty so ``Project.building`` — the unrelated title-block name —
+    still constructs as ``Building(name=...)``; an entry in ``Project.buildings`` must name
+    one, which the loader enforces.
+    """
+
+    tag: str = ""
     name: str = "Building"
+    # Not an occupancy and not a structural fact: which kind of thing this is for the
+    # purpose of the checks that only reach dwellings. ``sitework`` covers pads, raised
+    # garden beds and the like — structures nothing is occupied in.
+    kind: Literal["dwelling", "accessory", "sitework"] = "dwelling"
 
 
 class Project(HausModel):
@@ -128,7 +156,14 @@ class Project(HausModel):
     name: str
     project_uuid: uuid.UUID
     site: Site
+    # The TITLE-BLOCK name, printed on every sheet. Deliberately NOT re-overloaded into the
+    # structure axis: ``buildings`` below is that, and conflating them would re-create the
+    # exact overload this field pair exists to undo.
     building: Building = Building()
+    # The structures on the site, in sheet order — the order ``(building_order, elevation)``
+    # sorts by, so a sheet index cannot interleave two buildings. Empty means one implicit
+    # building holding every storey.
+    buildings: tuple[Building, ...] = ()
     format_version: int = 1
     requires_engine: str = ">=0.1,<0.2"
     active_code_profile: str | None = None

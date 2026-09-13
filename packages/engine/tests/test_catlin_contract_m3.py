@@ -2169,21 +2169,35 @@ def test_wall_and_room_counts_by_storey(catlin_model):
     by_storey: dict[str, int] = {}
     for wall in catlin_model.walls:
         by_storey[wall.storey] = by_storey.get(wall.storey, 0) + 1
-    assert by_storey["basement"] >= 25  # house concrete + garden + garage stem
+    # ** RE-KEYED ONTO THE BUILDING AXIS, 2026-09-13. ** The house's four storeys keep their
+    # tags and their walls; what left them is each other structure's, which used to share
+    # these keys because a storey could not say which building it belonged to. `basement` gave
+    # up the garden court's seven walls (`court-low`) and the garage's nine stem segments
+    # (`g-foundation`); `garage` gave up the north entry's shear panel (`entry-low`).
+    #
+    # The numbers are floors, not equalities, precisely so this census survives that kind of
+    # move — except the garage's, which is an equality on purpose (see below).
+    assert by_storey["basement"] >= 25  # the house's own concrete
     assert by_storey["main"] >= 25
     assert by_storey["second"] >= 30
     assert by_storey["attic"] >= 12
-    # SIX, and only one of them is the garage. Four are its wood-framed walls — it was 8
-    # until 2026-09-03, when the east wainscot's own veneer walls (2 piers + 2 SE/NE corner
-    # returns) went with it, and the garage's base skin became a banded LAYER on the stem
-    # rather than a wall. The fifth, since 2026-09-10, is `W-BW-SCREEN`: the north entry
-    # canopy's west shear panel, filed on this storey with the canopy roof it braces, because
-    # every "how big is this building" and "where are its braced wall lines" derivation is
-    # scoped by storey and on `main` it joined the HOUSE's. The sixth, since 2026-09-11, is
-    # `W-BW-SCREEN-SKIRT`, that panel's own corrugated skirt over the deck framing: a second
-    # model element for one physical sheet, because a wall's layers cannot run below its base
-    # and a lower base would drop the panel's sole plate into the two seat beams.
-    assert by_storey["garage"] == 6
+    assert by_storey["court-low"] >= 5       # the freestanding garden/porch structure
+    assert by_storey["g-foundation"] >= 5    # the garage's frost-depth ICF stems
+    # FOUR, and all four are the garage's own wood-framed walls. It was 8 until 2026-09-03,
+    # when the east wainscot's veneer walls (2 piers + 2 SE/NE corner returns) went with it
+    # and the base skin became a banded LAYER on the stem rather than a wall. It then read 6
+    # from 2026-09-10, because `W-BW-SCREEN` and its `-SKIRT` were filed on this STOREY — the
+    # north entry canopy's west shear panel, put here so it would not join the HOUSE's braced
+    # wall lines on `main` (params/breezeway.py:279). That was a filing standing in for a
+    # missing axis, and it cost the garage a false bracing census: `structural.
+    # braced_wall_panels` reported "garage: 5 braced wall line(s)", one of which belonged to
+    # another building four feet away.
+    #
+    # Both now sit on `entry-low`, the entry building's own level at the same elevation — the
+    # garage storey's expression character for character, so nothing moved. The panel is still
+    # kept off the house's braced wall lines, now BY THE MODEL rather than by the filing.
+    assert by_storey["garage"] == 4
+    assert by_storey["entry-low"] == 2       # W-BW-SCREEN + W-BW-SCREEN-SKIRT
     rooms = {r.tag for r in catlin_model.rooms}
     # RM-A-WEST-UNFIN was retyped and renamed RM-A-STUDIO in place (same uid, CAR401AAAA),
     # and split off RM-A-STUBATH and RM-A-POCKET as new rooms.

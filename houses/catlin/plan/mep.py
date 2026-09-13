@@ -49,11 +49,9 @@ MAIN_ELEMENTS = [*mep_sleeves.SLEEVES,
                  *mep_venting.VENT_BRANCHES_MAIN,
                  *mep_electrical.MAIN_DEVICES,
                  *mep_supply.WATER_SUPPLY,
-                 *mep_sleeves.GARAGE_SLEEVES,
                  *mep_supply.HYDRANT_BRANCH_MAIN,
                  *mep_supply.KITCHEN_STUB_MAIN,
                  *mep_supply_devices.SUPPLY_DEVICES_MAIN,
-                 *mep_supply_devices.SUPPLY_DEVICES_GARAGE,
                  *mep_hvac.DUCTS_MAIN,
                  *mep_erv.EQUIPMENT_ERV_MAIN,
                  # The outdoor-air INTAKE hood, on the west face of RM-M-MECH. Filed on a
@@ -66,6 +64,19 @@ MAIN_ELEMENTS = [*mep_sleeves.SLEEVES,
                  *mep_erv.PENETRATIONS_ERV_MAIN,
                  *mep_erv.DUCTS_ERV_RISERS,
                  *mep_registers.REGISTERS_MAIN]
+
+# ** THE GARAGE'S MEP AT THE MAIN DATUM, NOT THE HOUSE'S (2026-09-13). ** These two rode in
+# ``MAIN_ELEMENTS`` because that was the only storey at 0'-0" and a storey key was carrying
+# both "which level" and "which structure". They belong to the GARAGE, and now say so: the
+# manifest files them on ``g-deck``, the garage's own level at the main datum.
+#
+# The datum is the point. ``g-deck.elevation`` is ``main_deck.MAIN_DATUM`` — the same constant
+# object ``main`` reads — so nothing moves. Filing them on the ``garage`` storey instead would
+# have been the obvious move and a silent 1'-0" error: a ``PipeRun``'s inverts are
+# storey-relative while a ``ConduitRun``'s are absolute, the garage storey sits at -1'-0", and
+# no check in the repo grades a sleeve's absolute invert against anything.
+GARAGE_DECK_ELEMENTS = [*mep_sleeves.GARAGE_SLEEVES,
+                        *mep_supply_devices.SUPPLY_DEVICES_GARAGE]
 
 BASEMENT_ELEMENTS = [*mep_drainage.DRAINS,
                      *mep_drainage.CONDENSATE,

@@ -1,14 +1,20 @@
 """A proposal is text a person pastes. **There is no ``--write``, and there never will be.**
 
-Three reasons, and the third is fatal on its own:
+Two reasons, and the second is fatal on its own. **There used to be a third and it was
+false:** "``_content_hash`` hashes every ``plan/**/*.py``, so a machine edit stales every
+pinned engineering seal." It does not. A seal is pinned against
+``engineering/fingerprint.fingerprint(record)`` — scheme, kind, key, ``basis_version``, the
+record's rounded inputs and its ratio — and ``content_hash`` is not one of them;
+``fingerprint``'s own docstring says hashing the model was rejected for exactly this reason.
+``_content_hash`` reaches printed prose (``takeoff/handoff.py``, ``calc_package.py``,
+``calc_pdf.py``) and the UI's optimistic-concurrency revision (``source/coordinator.py``),
+and nothing else. What actually stales a seal is **moving geometry or elevations** — which a
+route proposal would do, so the concern was real and only the mechanism was wrong.
 
-1. ``source/loader._content_hash`` hashes every ``plan/**/*.py``, so a machine edit stales
-   every pinned engineering seal in the house. A router that silently invalidates a PE's
-   stamp is not a convenience.
-2. The prose in a plan file **is the design record.** ``houses/catlin/plan/mep_drainage.py``
+1. The prose in a plan file **is the design record.** ``houses/catlin/plan/mep_drainage.py``
    opens with thirty lines saying why the kitchen drain goes where it does; a write-back
    would preserve those lines while making them false, which is worse than deleting them.
-3. **Accepting a route is a judgement.** ``haus engineering --fingerprint`` already prints
+2. **Accepting a route is a judgement.** ``haus engineering --fingerprint`` already prints
    a value for a person to paste for exactly this reason, and this is the same shape of
    act: the engine computes, the person commits.
 

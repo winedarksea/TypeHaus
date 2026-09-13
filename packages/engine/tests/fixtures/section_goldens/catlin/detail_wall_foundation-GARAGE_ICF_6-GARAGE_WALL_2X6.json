@@ -967,62 +967,6 @@
       "node": "polyline",
       "points": [
         [
-          563.125,
-          -37.0
-        ],
-        [
-          565.6830708661419,
-          -37.0
-        ],
-        [
-          565.6830708661419,
-          -31.000000000000004
-        ],
-        [
-          563.125,
-          -31.000000000000004
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "BWIB0AAAAA",
-      "tag": "CN-BW-IBASE-C"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          563.125,
-          -37.0
-        ],
-        [
-          565.6830708661419,
-          -37.0
-        ],
-        [
-          565.6830708661419,
-          -31.000000000000004
-        ],
-        [
-          563.125,
-          -31.000000000000004
-        ]
-      ],
-      "pattern": "concrete",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "concrete"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           517.825,
           -12.266666666666666
         ],
@@ -1129,6 +1073,62 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "aluminum-flat-pvdf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          563.125,
+          -37.0
+        ],
+        [
+          565.6830708661419,
+          -37.0
+        ],
+        [
+          565.6830708661419,
+          -31.000000000000004
+        ],
+        [
+          563.125,
+          -31.000000000000004
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "BWIB0AAAAA",
+      "tag": "CN-BW-IBASE-C"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          563.125,
+          -37.0
+        ],
+        [
+          565.6830708661419,
+          -37.0
+        ],
+        [
+          565.6830708661419,
+          -31.000000000000004
+        ],
+        [
+          563.125,
+          -31.000000000000004
+        ]
+      ],
+      "pattern": "concrete",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "concrete"
     },
     {
       "space": "model",

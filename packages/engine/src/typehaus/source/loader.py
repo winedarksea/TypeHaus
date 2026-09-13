@@ -598,12 +598,63 @@ def _identity_check(authored: list, findings: list[Finding]) -> None:
             ))
 
 
+def _building_check(plan: PlanModel, findings: list[Finding]) -> None:
+    """Every authored building has a tag, and every storey names one that exists.
+
+    A house that authors no ``Project.buildings`` is the implicit-single-building case and
+    says nothing here: ``PlanModel.building_of`` synthesizes one and every storey is in it.
+    Once a house DOES author buildings, a storey left unclaimed would silently join the
+    first one — so the moment the axis is used at all, it is used completely.
+    """
+    buildings = plan.project.buildings
+    if not buildings:
+        return
+    blank = [b.name for b in buildings if not b.tag]
+    if blank:
+        findings.append(Finding(
+            severity=Severity.ERROR,
+            check_id="loader.building_tag_present",
+            message=f"{len(blank)} Building(s) in Project.buildings carry no tag "
+                    f"({', '.join(sorted(blank))})",
+            fix_hint="a Building in Project.buildings is addressed by tag — give it one",
+        ))
+    known = {b.tag for b in buildings if b.tag}
+    unclaimed = [s.tag for s in plan.storeys if not s.building]
+    if unclaimed:
+        findings.append(Finding(
+            severity=Severity.ERROR,
+            check_id="loader.storey_building_present",
+            message=(f"this plan authors buildings, so every storey must name one; "
+                     f"{len(unclaimed)} do(es) not ({', '.join(sorted(unclaimed))})"),
+            element_tags=tuple(sorted(unclaimed)),
+            fix_hint=f"add building=\"<tag>\" — one of {', '.join(sorted(known))}",
+        ))
+    for storey in plan.storeys:
+        if storey.building and storey.building not in known:
+            findings.append(Finding(
+                severity=Severity.ERROR,
+                check_id="loader.storey_building_unknown",
+                message=(f"storey {storey.tag!r} names building {storey.building!r}, which is "
+                         f"not in Project.buildings"),
+                element_tags=(storey.tag,),
+                fix_hint=f"one of {', '.join(sorted(known))}",
+            ))
+    for building in buildings:
+        if building.tag and not plan.storeys_of(building.tag):
+            findings.append(Finding(
+                severity=Severity.WARN,
+                check_id="loader.building_has_no_storey",
+                message=f"building {building.tag!r} holds no storey",
+            ))
+
+
 def _consistency_check(
     plan: PlanModel, prov: Provenance, findings: list[Finding], house_dir: Path
 ) -> None:
     """Assert the import view and the libcst view agree on the authored tag set."""
     authored = list(plan.all_elements())
     _identity_check(authored, findings)
+    _building_check(plan, findings)
     elements = {el.tag: el for el in authored}
     # Provenance may legitimately hold library/storey tags too; only flag plan
     # elements the libcst path never saw. Runtime capture (add_generated) supplies a

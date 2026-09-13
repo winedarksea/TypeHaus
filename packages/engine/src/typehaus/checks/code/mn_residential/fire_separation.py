@@ -277,10 +277,25 @@ def floor_assembly_protection(ctx: CheckContext) -> list[Finding]:
     # The floor *over* a basement is the floor system of the storey above it — a
     # FloorSystem belongs to the storey it decks, and carries no storey field of its own, so
     # the storey comes from the resolved floor.
-    ordered = sorted(ctx.plan.storeys, key=lambda s: s.elevation.meters)
+    # ** THE STOREY ABOVE IS WITHIN THE SAME BUILDING. ** A flat sort over every storey on
+    # the site answers "what is the next plane up", which is not the question: the floor over
+    # the house's basement is the house's main deck, and a garage level one foot under it is
+    # not a floor over anything of the house's. On catlin the flat sort really did pick
+    # `garage` over `basement` and report `SL-G-FLOOR` — the detached garage's slab, four feet
+    # of outdoor air away — as "the floor over the basement", which this function's own
+    # comment below says should be `SL-M-DECK`. It passed, for the wrong subject.
+    #
+    # Scoping to the building is also what keeps the verdict stable as storeys are minted: the
+    # court, the garage foundation and the yard all have a level at the basement datum, and in
+    # a flat sort each of them would nominate a "storey above" from whichever building
+    # happened to sort next.
     above_tags = set()
     for storey in below:
-        higher = [s for s in ordered if s.elevation.meters > storey.elevation.meters]
+        building = ctx.plan.building_of(storey.tag)
+        higher = sorted(
+            (s for s in ctx.plan.storeys_of(building)
+             if s.elevation.meters > storey.elevation.meters),
+            key=lambda s: s.elevation.meters)
         if higher:
             above_tags.add(higher[0].tag)
     floor_storeys = {floor.tag: floor.storey for floor in ctx.model.floors}

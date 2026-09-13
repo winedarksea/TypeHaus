@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** fde3c8c96f42f522  
+**Model hash:** 22aaa96b41e054b8  
 **Lines:** 113
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -113,27 +113,27 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | Beam (beam) | 3.6 | bf | 1 placed, 1.1 SF plan; 0.01 cy in the takeoff | main |
-| Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | 122.4 | bf | 3 placed, 8.5 SF plan; 0.38 cy in the takeoff | second |
-| Beam — BEAM_KDAT (beam:BEAM_KDAT) | 188.4 | bf | 9 placed, 19.4 SF plan; 0.58 cy in the takeoff | main |
+| Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | 122.4 | bf | 3 placed, 8.5 SF plan; 0.38 cy in the takeoff | court-upper |
+| Beam — BEAM_KDAT (beam:BEAM_KDAT) | 188.4 | bf | 9 placed, 19.4 SF plan; 0.58 cy in the takeoff | court-main, entry |
 | Beam — BEAM_LVL (beam:BEAM_LVL) | 84 | bf | 3 placed, 7.1 SF plan; 0.26 cy in the takeoff | main, second |
-| Beam — BEAM_WHITE_PAINT (beam:BEAM_WHITE_PAINT) | 84 | bf | 2 placed, 7.5 SF plan; 0.26 cy in the takeoff | main |
+| Beam — BEAM_WHITE_PAINT (beam:BEAM_WHITE_PAINT) | 84 | bf | 2 placed, 7.5 SF plan; 0.26 cy in the takeoff | court-main |
 | Column — ELM_TIMBER (column:ELM_TIMBER) | 111.6 | bf | 4 placed, 1.0 SF plan; 0.34 cy in the takeoff | second |
-| Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | 12 | ea | 12 placed, 0.3 SF plan; 0.02 cy in the takeoff | main |
-| Column — POST_KDAT (column:POST_KDAT) | 43.2 | bf | 4 placed, 0.6 SF plan; 0.13 cy in the takeoff | main |
+| Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | 12 | ea | 12 placed, 0.3 SF plan; 0.02 cy in the takeoff | court-main, yard-grade |
+| Column — POST_KDAT (column:POST_KDAT) | 43.2 | bf | 4 placed, 0.6 SF plan; 0.13 cy in the takeoff | entry |
 | Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | 19.2 | bf | 3 placed, 0.3 SF plan; 0.06 cy in the takeoff | main |
-| Column — POST_WHITE_PAINT_DF (column:POST_WHITE_PAINT_DF) | 42 | bf | 2 placed, 0.4 SF plan; 0.13 cy in the takeoff | second |
+| Column — POST_WHITE_PAINT_DF (column:POST_WHITE_PAINT_DF) | 42 | bf | 2 placed, 0.4 SF plan; 0.13 cy in the takeoff | court-upper |
 | Slab — TUBDECK_INT_PLY_CAP (slab:TUBDECK_INT_PLY_CAP) | 7.3 | SF | 1 placed, 7.3 SF plan; 0.05 cy in the takeoff | main |
 
 ## Member protection tape
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| butyl-tape, 1 1/4" on deck (butyl-tape) | 71 | LF |  | main, second |
-| butyl-tape, 1 1/2" on deck (butyl-tape) | 404.3 | LF |  | main, second |
-| butyl-tape-beam, 1 1/2" on beam (butyl-tape-beam) | 5 | LF |  | main |
-| butyl-tape-beam, 3" on beam (butyl-tape-beam) | 28 | LF |  | main |
-| butyl-tape-beam, 3 1/2" on beam (butyl-tape-beam) | 29 | LF |  | second |
-| butyl-tape-beam, 4 1/2" on beam (butyl-tape-beam) | 51.4 | LF |  | main |
+| butyl-tape, 1 1/4" on deck (butyl-tape) | 71 | LF |  | court-main, court-upper, entry |
+| butyl-tape, 1 1/2" on deck (butyl-tape) | 404.3 | LF |  | court-main, court-upper, entry |
+| butyl-tape-beam, 1 1/2" on beam (butyl-tape-beam) | 5 | LF |  | entry |
+| butyl-tape-beam, 3" on beam (butyl-tape-beam) | 28 | LF |  | entry |
+| butyl-tape-beam, 3 1/2" on beam (butyl-tape-beam) | 29 | LF |  | court-upper |
+| butyl-tape-beam, 4 1/2" on beam (butyl-tape-beam) | 51.4 | LF |  | court-main, entry |
 
 ## Construction returns
 

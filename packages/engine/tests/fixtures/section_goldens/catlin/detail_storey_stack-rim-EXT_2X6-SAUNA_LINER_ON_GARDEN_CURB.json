@@ -1267,62 +1267,6 @@
       "node": "polyline",
       "points": [
         [
-          -15.90251968503937,
-          -114.9375
-        ],
-        [
-          -10.0,
-          -114.9375
-        ],
-        [
-          -10.0,
-          -112.9375
-        ],
-        [
-          -15.90251968503937,
-          -112.9375
-        ]
-      ],
-      "layer": "A-SLAB",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "SGFW01AAAA",
-      "tag": "SL-SG-FROST-W"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          -15.90251968503937,
-          -114.9375
-        ],
-        [
-          -10.0,
-          -114.9375
-        ],
-        [
-          -10.0,
-          -112.9375
-        ],
-        [
-          -15.90251968503937,
-          -112.9375
-        ]
-      ],
-      "pattern": "xps",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "xps"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           -4.0,
           -117.4375
         ],
@@ -1373,6 +1317,62 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "concrete"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -15.90251968503937,
+          -114.9375
+        ],
+        [
+          -10.0,
+          -114.9375
+        ],
+        [
+          -10.0,
+          -112.9375
+        ],
+        [
+          -15.90251968503937,
+          -112.9375
+        ]
+      ],
+      "layer": "A-SLAB",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "SGFW01AAAA",
+      "tag": "SL-SG-FROST-W"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -15.90251968503937,
+          -114.9375
+        ],
+        [
+          -10.0,
+          -114.9375
+        ],
+        [
+          -10.0,
+          -112.9375
+        ],
+        [
+          -15.90251968503937,
+          -112.9375
+        ]
+      ],
+      "pattern": "xps",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "xps"
     },
     {
       "space": "model",

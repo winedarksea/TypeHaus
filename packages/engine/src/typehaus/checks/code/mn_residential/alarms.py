@@ -80,6 +80,22 @@ def alarm_on_every_storey(ctx: CheckContext) -> list[Finding]:
     for storey in ctx.plan.storeys:
         elements = ctx.plan.storey_elements(storey.tag)
         rooms = [e for e in elements if e.element_kind == "Room"]
+        # R314.3's subject is "each storey of the DWELLING UNIT". Which building a storey
+        # belongs to answers that directly, and it is authored — so a level of the detached
+        # garage, the sunken-garden court or the heat-pump pads is positive evidence of
+        # absence, not a gap. Before the building axis existed this could only be guessed
+        # from the rooms on the storey, and a storey with no rooms had to report UNKNOWN:
+        # eight of catlin's thirteen levels hold no room at all, and not one of them is a
+        # storey of the dwelling.
+        #
+        # Ordered before the room test on purpose. It is the stronger statement of the two —
+        # a declared non-dwelling building outranks whatever rooms happen to be filed on it.
+        building = ctx.plan.building(ctx.plan.building_of(storey.tag))
+        if building is not None and building.kind != "dwelling":
+            out.append(_pass(cid, f"storey {storey.tag} belongs to {building.tag} "
+                             f"({building.kind}), not the dwelling unit — R314.3 does not "
+                             "reach it", code))
+            continue
         if not rooms:
             out.append(_unknown(cid, f"storey {storey.tag} resolves no rooms, so whether it "
                                 "is a storey of the dwelling cannot be decided",

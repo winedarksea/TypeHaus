@@ -9,8 +9,13 @@ Why a file rather than fields on the elements. Four reasons, and the last one is
    a work package is not a plan edit") and for dollars (#28).
 3. Element files carry ``# haus: editable`` — they are UI-writable and sit in the undo
    journal. Un-stamping a sealed design with Ctrl-Z is that same lie about a legal document.
-4. **Fatal.** ``source/loader.py::_content_hash`` hashes every ``plan/**/*.py``. Writing a
-   stamp into plan source would change the very hash the stamp is pinned against.
+4. **Fatal.** A stamp in plan source would be *read back by the thing it is a statement
+   about*. The seal names item ids and pins ``fingerprint(record)`` for each; those records
+   are computed from the plan, so a plan that also contained the seal would be an input to
+   its own pin. (This reason used to be stated as "``_content_hash`` hashes every
+   ``plan/**/*.py``, so the stamp would change the hash it is pinned against" — **that
+   mechanism is false.** Nothing pins a seal against ``content_hash``; see
+   ``fingerprint.py``, which rejected hashing the model on purpose.)
 
 Conventions follow ``cli/price_file.py``: an absent file is ``None``, not an error, so a
 house that has not been to an engineer behaves exactly as it did before this existed; a
