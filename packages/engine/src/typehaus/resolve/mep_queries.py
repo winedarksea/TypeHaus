@@ -481,15 +481,22 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
     joist_lines = joist_line_stations(floor)
     member_depth = max((m.z1_m - m.z0_m for m in floor.members), default=depth_m)
     depth_ok = depth_m <= member_depth + 1e-9
-    # ``mep_crossings.member_window`` owns every reading of "the window a service gets" — an
-    # open web, an I-joist's flanges, R502.8.1's 2" on solid-sawn. This used to ask
-    # ``open_web_opening_m`` itself and treat "no answer" as a conflict, which is right for a
-    # truss and wrong for the two sections that publish a window by a different rule. The
-    # member is passed explicitly because a bay EDGE is the section a crossing meets, and
-    # ``members[0]`` is whichever the resolver emitted first — a rim board on most floors,
-    # and a rim board is never an open web.
+    # ``mep_crossings.member_window`` owns every reading of "the window a service gets", so
+    # this no longer asks ``open_web_opening_m`` itself. The member is passed explicitly
+    # because a bay EDGE is the section a crossing meets, and ``members[0]`` is whichever the
+    # resolver emitted first — a rim board on most floors, and a rim board is never an open
+    # web.
+    #
+    # ** ONLY AN OPEN WEB LETS A DUCT THROUGH, AND THE OTHER TWO WINDOWS ARE NOT THE SAME
+    # PERMISSION. ** A truss's web is a hole that is already there; an I-joist's
+    # flange-to-flange space and R502.8.1's 2"-from-each-edge are the zones a *bored* hole
+    # may sit in, and the diameter a duct needs is a fabricator's-chart question this engine
+    # does not hold. Reading all three as "a duct may cross here" would silently permit an 8"
+    # round hole through an 11 7/8" I-joist web, which no chart allows — so a crossing on
+    # anything but an open web still wants a soffit or a chase.
     window = member_window(floor, edges[0]) if edges else None
-    opening_m = window.height_m if window is not None else None
+    opening_m = (window.height_m
+                 if window is not None and window.kind == "open_web" else None)
 
     conflicts: list[str] = []
     crossings: list[tuple[float, float]] = []
@@ -533,7 +540,7 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
                         f"segment {i} runs perpendicular/oblique across joist line(s) "
                         f"{[round(v, 3) for v in crossed]} — depth "
                         f"{depth_m / M_PER_IN:.1f}\" exceeds the "
-                        f"{opening_m / M_PER_IN:.1f}\" it gets "
+                        f"{opening_m / M_PER_IN:.1f}\" opening it gets — "
                         f"{window.basis if window is not None else ''}"
                     )
                 else:
