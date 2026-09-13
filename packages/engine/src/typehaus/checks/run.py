@@ -93,6 +93,8 @@ def load_preferences(house_dir: Path) -> Preferences:
             ceiling_intrusion_in=mep.get("ceiling_intrusion_in", 3.0),
             min_ceiling_exposure_ft=mep.get("min_ceiling_exposure_ft", 0.5),
             terminal_grace_in=mep.get("terminal_grace_in", 24.0),
+            exposed_service_headroom_ft=mep.get(
+                "exposed_service_headroom_ft", 80.0 / 12.0),
             fixture_drain_reach_in=mep.get("fixture_drain_reach_in", 12.0),
             max_drain_offset_slope_in_per_ft=mep.get(
                 "max_drain_offset_slope_in_per_ft", 12.0),

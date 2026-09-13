@@ -997,8 +997,11 @@ ROOMS = [
     # carries the mobilisation arithmetic. The walk-in follows the suite for the same reason
     # it followed the walnut: a species change in a 27 SF doorway buys a reducer strip and a
     # second set-up for nothing.
+    # Exposed duct in the suite is the owner's own call — see RM-B-GYM's note for what the
+    # declaration does and does not buy. SF-S-SUITE is untouched here.
     Room(uid="CSR406AAAA", tag="RM-S-SUITE", seed=pt(ft(5), ft(16)),
-         occupancy=Occupancy.BEDROOM, floor_finish="oak"),
+         occupancy=Occupancy.BEDROOM, floor_finish="oak",
+         exposed_services="owner accepts exposed duct in the primary suite: the supply branch runs on the face of the ceiling rather than inside it"),
     Room(uid="CSR407AAAA", tag="RM-S-CLOSET", seed=pt(ft(14), ft(10, 8)),
          occupancy=Occupancy.STORAGE, floor_finish="oak"),
     # LVP through the unheated wet rooms and the circulation: one continuous plank floor

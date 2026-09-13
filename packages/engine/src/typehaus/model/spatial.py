@@ -3,6 +3,8 @@ Furniture (→ 10, → 11)."""
 
 from __future__ import annotations
 
+from pydantic import field_validator
+
 from typehaus.model.assembly import Layer
 from typehaus.model.base import Element
 from typehaus.model.enums import (
@@ -45,6 +47,24 @@ class Room(Element):
     # Room side first, same convention as ``wall_lining``. Empty = no override, fall
     # through to the derived default.
     ceiling_lining: tuple[Layer, ...] = ()
+    # ** THE CEILING OF THIS ROOM IS DELIBERATELY OPEN, AND THIS IS THE SENTENCE THAT SAYS
+    # SO. ** The owner's decision to live with exposed pipe and duct is a decision about a
+    # ROOM, not about a run: it is taken once for the basement gym and it then covers every
+    # service that crosses it, including the ones drawn after the decision. A per-run field
+    # would have to be re-authored on each of them, and a run crossing three rooms would
+    # have to state an answer for rooms whose owner never had an opinion about it.
+    #
+    # ** IT IS A REASON, NOT A FLAG. ** ``mep.run_in_finished_volume`` quotes it back in its
+    # PASS message, so a reviewer reads the decision instead of a silence. A boolean here
+    # would be a suppression wearing a schema, which is why the validator below refuses a
+    # word, a "true", or a shrug: the only way to declare it is to say why.
+    #
+    # ** EXPOSED IS NOT UNGRADED. ** The check stops measuring the run against the room's
+    # finished ceiling and starts measuring it against the headroom line
+    # (``MepPreferences.exposed_service_headroom_ft``). Nothing about this field excuses a
+    # pipe somebody walks into — ``code.R305_ceiling_height`` measures the STRUCTURE
+    # overhead and has never seen a pipe at all.
+    exposed_services: str | None = None
     # How wet this room is run — a separate axis from `occupancy` (see HumidityClass).
     # It is what scopes the condensation walk and the humid-room checks to the RH a
     # bounding assembly actually faces, instead of the whole-house design figure.
@@ -57,6 +77,25 @@ class Room(Element):
     # tropical case — cannot state only one of them and be analysed honestly. None means
     # the house's ``Preferences.interior_setpoint_f``.
     design_temperature_f: float | None = None
+
+    @field_validator("exposed_services")
+    @classmethod
+    def _reason_is_a_sentence(cls, value: str | None) -> str | None:
+        """A declaration nobody explained is a suppression, so refuse one at load time.
+
+        The bar is deliberately low and deliberately not zero: a few words in a row. What
+        it catches is the spellings a boolean would take — ``"true"``, ``"yes"``, ``"x"``,
+        ``""`` — and the empty gesture of authoring the field and leaving it blank.
+        """
+        if value is None:
+            return None
+        reason = value.strip()
+        if len(reason) < 12 or " " not in reason:
+            raise ValueError(
+                "Room.exposed_services is the REASON the ceiling is left open, not a flag: "
+                "write the sentence a reviewer should read "
+                f"(e.g. 'owner accepts exposed service runs in the gym'), not {value!r}")
+        return reason
 
     @property
     def interior_design_relative_humidity(self) -> float | None:

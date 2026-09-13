@@ -1356,8 +1356,14 @@ ROOMS = [
          )),
     Room(uid="CBR404AAAA", tag="RM-B-PLAY-N", seed=pt(ft(27), ft(27)),
          occupancy=Occupancy.MEDIA, floor_finish="carpet"),
+    # ** THE GYM CEILING IS OPEN ON PURPOSE (2026-09-13). ** The owner is comfortable with
+    # exposed pipe and duct down here, and saying so is a design statement, not a waiver:
+    # mep.run_in_finished_volume reads the sentence and PASSES with it quoted, and every run
+    # crossing this room is still measured against the 6'-8" headroom line. SF-B-GYM is
+    # untouched by this and stays until its retirement is decided on its own merits.
     Room(uid="CBR405AAAA", tag="RM-B-GYM", seed=pt(ft(27), ft(9)),
-         occupancy=Occupancy.LIVING, floor_finish="rubber"),
+         occupancy=Occupancy.LIVING, floor_finish="rubber",
+         exposed_services="owner accepts exposed services in the basement: the gym ceiling is left open to the deck above, painted out, and the pipe and duct crossing it are part of how the room looks"),
     # ESS closet: MECHANICAL like the room it's carved from — STORAGE would
     # trigger habitability rules a battery cabinet has no use for. R327.4 permits an ESS in
     # a utility closet, which is exactly what this is.

@@ -39,6 +39,17 @@ whole length.
 explicit UNKNOWN rather than passing quietly. A clean report that claimed to cover them
 would be claiming coverage it does not have.
 
+**A room may answer this in words.** Boxing a run out with a ``Soffit`` was the only
+authored answer until 2026-09-13, which made a soffit the engine's idea of a ceiling
+rather than the owner's: three of catlin's exist for no other reason. ``Room.exposed_services``
+is the other answer — a sentence saying the room's ceiling is deliberately open — and it is
+positive evidence, not a suppression: the PASS quotes it back, so the report carries the
+decision instead of a silence. It retires the ceiling comparison for that room and **only**
+that comparison; every run crossing it is measured again against
+``MepPreferences.exposed_service_headroom_ft``, because nothing else in the engine asks
+whether somebody walks into the pipe (``code.R305_ceiling_height`` measures the structure
+overhead and has never seen a run).
+
 **Known soft spot.** The wall exemption asks only whether the run is inside a wall's plan
 footprint and z band — see
 :func:`~typehaus.checks.mep.routing_geometry.wall_cover`. A 12" cast foundation wall
@@ -173,6 +184,60 @@ def _air_interval(za: float, zb: float, radius: float, floor: float, ceiling: fl
     return (lo, hi) if hi - lo > 1e-9 else None
 
 
+def _segment_rows(a: tuple[float, float], za: float, zb: float, radius: float,
+                  segment: LineString, riser: bool, outline: Any, cover: Any,
+                  soffits: Any, floor: float, plane: float,
+                  tol: float) -> list[tuple[float, float]]:
+    """``(exposure_ft, intrusion_in)`` for one segment against one horizontal ``plane``.
+
+    Lifted out of the grading loop so the plane is an ARGUMENT: a room whose ceiling is
+    closed is graded against the ceiling, and a room whose ``exposed_services`` says it is
+    open is graded against its headroom line by the same arithmetic. Two planes, one
+    measurement — a second copy of this would be two things to keep agreeing.
+    """
+    if riser:
+        if not outline.covers(Point(a)):
+            return []
+        if cover is not None and cover.covers(Point(a)):
+            return []
+        if soffits is not None and soffits.covers(Point(a)):
+            return []
+        low = max(min(za, zb) - radius, floor)
+        high = min(max(za, zb) + radius, plane)
+        if high - low <= tol:
+            return []
+        return [((high - low) * M_TO_FT, (plane - low) / M_PER_IN)]
+
+    piece = outline.intersection(segment)
+    if piece.is_empty or piece.length <= 0:
+        return []
+    if cover is not None:
+        piece = piece.difference(cover)
+    if soffits is not None:
+        piece = piece.difference(soffits)
+    if piece.is_empty or piece.length <= 0:
+        return []
+    span = segment.length
+    rows: list[tuple[float, float]] = []
+    for part in (piece.geoms if isinstance(piece, MultiLineString) else [piece]):
+        if part.length <= 0:
+            continue
+        ts = sorted(segment.project(Point(xy)) / span for xy in part.coords)
+        air = _air_interval(za, zb, radius, floor, plane, tol)
+        if air is None:
+            continue
+        lo, hi = max(ts[0], air[0]), min(ts[-1], air[1])
+        if hi <= lo:
+            continue
+        # Clamped to the band: the pipe's bottom can be below the storey datum (a drop on
+        # its way through the floor), and "116 inches below the ceiling" of a 107-inch room
+        # is not a number anybody can use. What is true is that it occupies the whole height.
+        deepest = plane - max(min(za + (zb - za) * lo,
+                                  za + (zb - za) * hi) - radius, floor)
+        rows.append(((hi - lo) * span * M_TO_FT, deepest / M_PER_IN))
+    return rows
+
+
 @check(Tier.ADVISORY, "mep.run_in_finished_volume")
 def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
     """A pipe, duct or raceway may not hang in the open air of a finished room.
@@ -181,6 +246,10 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
     citation to hang a ``PermitItemSpec`` on. It is the buildability twin of
     ``mep.run_over_void``, and ``CheckReport.counts()`` counts a FAIL regardless of
     severity, so it holds a clean house to the same standard a code check would.
+
+    A room whose ``Room.exposed_services`` states a reason is not graded against its
+    ceiling plane at all — its ceiling is authored as deliberately open — but every run
+    crossing it is still held to the headroom line. See the module note.
 
     A room is finished unless its occupancy is in
     :data:`~typehaus.model.enums.EXPOSED_SERVICE_OCCUPANCIES` — a mechanical room's ceiling
@@ -198,13 +267,16 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
                              "there is nothing to say a room's air ends at", ())]
 
     occupancies = {room.tag: room.occupancy for room in ctx.model.rooms}
+    declared = {room.tag: room.exposed_services for room in ctx.model.rooms
+                if room.exposed_services}
     storey_z = {storey.tag: storey.elevation.meters for storey in ctx.plan.storeys}
     radii = run_radii(ctx)
     soffit_covers: dict[str, Any] = {}
     tol = rules.ceiling_intrusion_in * M_PER_IN
     grace_m = rules.terminal_grace_in * M_PER_IN
+    headroom_m = rules.exposed_service_headroom_ft / M_TO_FT
 
-    graded: list[tuple[Any, float, float, list, Any]] = []
+    graded: list[tuple[Any, float, float, list, Any, str | None]] = []
     follow_roof: set[str] = set()
     for ceiling in ctx.model.ceilings:
         if ceiling.z0_m is None:
@@ -220,12 +292,17 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
             continue
         floor = storey_z.get(ceiling.storey, 0.0)
         graded.append((ceiling, floor, ceiling.z0_m,
-                       _terminals_in(ctx, ceiling.storey, outline), outline))
+                       _terminals_in(ctx, ceiling.storey, outline), outline,
+                       declared.get(ceiling.room_ref)))
 
     out: list[Finding] = []
     covers: dict[str, Any] = {}
     ungraded: list[str] = []
     worst: dict[tuple[str, str], tuple[float, float]] = {}
+    #: (run, room) rows for a DECLARED room, measured against its headroom line instead.
+    low: dict[tuple[str, str], tuple[float, float]] = {}
+    #: What each declared room's PASS gets to say it actually saw.
+    crossings: dict[str, set[str]] = {room: set() for room in declared}
 
     for kind, tag, path, z in runs:
         if len(path) < 2:
@@ -239,58 +316,28 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
             za, zb = z[index], z[index + 1]
             segment = LineString([a, b])
             riser = segment.length <= VOID_BUFFER_M
-            for ceiling, floor, plane, terminals, outline in graded:
+            for ceiling, floor, plane, terminals, outline, reason in graded:
                 if _terminates_in_room(path, index, terminals.get(kind, ()), grace_m):
                     continue
                 if ceiling.storey not in covers:
                     covers[ceiling.storey] = wall_cover(ctx, {ceiling.storey})
                     soffit_covers[ceiling.storey] = _soffit_union(ctx, ceiling.storey)
-                soffits = soffit_covers[ceiling.storey]
-                if riser:
-                    if not outline.covers(Point(a)):
-                        continue
-                    cover = covers[ceiling.storey]
-                    if cover is not None and cover.covers(Point(a)):
-                        continue
-                    if soffits is not None and soffits.covers(Point(a)):
-                        continue
-                    low = max(min(za, zb) - radius, floor)
-                    high = min(max(za, zb) + radius, plane)
-                    if high - low <= tol:
-                        continue
-                    _record(worst, tag, ceiling.room_ref,
-                            (high - low) * M_TO_FT, (plane - low) / M_PER_IN)
+                args = (a, za, zb, radius, segment, riser, outline,
+                        covers[ceiling.storey], soffit_covers[ceiling.storey], floor)
+                rows = _segment_rows(*args, plane, tol)
+                if reason is None:
+                    for exposure_ft, intrusion_in in rows:
+                        _record(worst, tag, ceiling.room_ref, exposure_ft, intrusion_in)
                     continue
-                piece = outline.intersection(segment)
-                if piece.is_empty or piece.length <= 0:
-                    continue
-                cover = covers[ceiling.storey]
-                if cover is not None:
-                    piece = piece.difference(cover)
-                if soffits is not None:
-                    piece = piece.difference(soffits)
-                if piece.is_empty or piece.length <= 0:
-                    continue
-                span = segment.length
-                parts = (piece.geoms if isinstance(piece, MultiLineString) else [piece])
-                for part in parts:
-                    if part.length <= 0:
-                        continue
-                    ts = sorted(segment.project(Point(xy)) / span for xy in part.coords)
-                    air = _air_interval(za, zb, radius, floor, plane, tol)
-                    if air is None:
-                        continue
-                    lo, hi = max(ts[0], air[0]), min(ts[-1], air[1])
-                    if hi <= lo:
-                        continue
-                    exposure_ft = (hi - lo) * span * M_TO_FT
-                    # Clamped to the band: the pipe's bottom can be below the storey
-                    # datum (a drop on its way through the floor), and "116 inches below
-                    # the ceiling" of a 107-inch room is not a number anybody can use.
-                    # What is true is that it occupies the room's whole height.
-                    deepest = plane - max(min(za + (zb - za) * lo,
-                                              za + (zb - za) * hi) - radius, floor)
-                    _record(worst, tag, ceiling.room_ref, exposure_ft, deepest / M_PER_IN)
+                # Declared open. The crossing is the DESIGN, so it is evidence for the pass
+                # rather than a finding — and the run is then measured again against the
+                # headroom line, with no intrusion allowance, because a pipe somebody walks
+                # into is a different defect and this is the only check that can see it.
+                if rows:
+                    crossings[ceiling.room_ref].add(tag)
+                head = min(plane, floor + headroom_m)
+                for exposure_ft, intrusion_in in _segment_rows(*args, head, 0.0):
+                    _record(low, tag, ceiling.room_ref, exposure_ft, intrusion_in)
 
     for (tag, room), (exposure_ft, intrusion_in) in sorted(worst.items()):
         if exposure_ft < rules.min_ceiling_exposure_ft:
@@ -302,10 +349,55 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
             f"run {tag} hangs {intrusion_in:.1f}\" below {room}'s finished ceiling for "
             f"{exposure_ft:.2f} ft — that is inside the room, not above it",
             (tag, room), Result.FAIL,
-            fix="reroute it out of the room, take it into a wall, or author a Soffit that "
+            fix="reroute it out of the room, take it into a wall, author a Soffit that "
                 "boxes it out. Dropping the room's whole ceiling to hide one corridor is "
                 "not the same fix: clear height is read by lighting, code.R305 and the "
-                "takeoff"))
+                "takeoff. If the ceiling is meant to be open, say so on the Room: "
+                "`exposed_services=\"<why>\"` is an answer this check reads and quotes"))
+
+    head_label = _feet_inches(rules.exposed_service_headroom_ft)
+    for (tag, room), (exposure_ft, intrusion_in) in sorted(low.items()):
+        if exposure_ft < rules.min_ceiling_exposure_ft:
+            continue
+        out.append(advisory(
+            cid,
+            f"run {tag} hangs {intrusion_in:.1f}\" below the {head_label} headroom line "
+            f"in {room} for {exposure_ft:.2f} ft — {room}'s services are deliberately "
+            "exposed, but this one is in the way of somebody's head, which is a different "
+            "question",
+            (tag, room), Result.FAIL,
+            fix="lift it, reroute it, or box THIS run out. Declaring the ceiling open is "
+                "not an answer to head height: code.R305_ceiling_height measures the "
+                "structure overhead and never sees a run"))
+
+    for room in sorted(declared):
+        if room in follow_roof:
+            continue
+        if not any(ceiling.room_ref == room for ceiling, *_ in graded):
+            out.append(unknown(
+                cid,
+                f"{room} declares its services deliberately exposed (\"{declared[room]}\") "
+                "but resolves no finished ceiling plane here, so the declaration grades "
+                "nothing and no run was measured against it",
+                (room,)))
+            continue
+        if any(key[1] == room for key in low):
+            continue
+        seen = crossings[room]
+        # An empty set is not a quiet pass: it says the declaration is not what is carrying
+        # this room today — a Soffit or a wall still covers everything crossing it — and a
+        # reader deciding whether that box can go needs to be told which of the two answered.
+        evidence = (f"so the {len(seen)} run(s) under its ceiling are the design, not a "
+                    "defect "
+                    f"({', '.join(sorted(seen))}), and each still clears the {head_label} "
+                    "headroom line"
+                    if seen else
+                    "though nothing currently hangs in its open air: a Soffit or a wall "
+                    "still covers every run that crosses it")
+        out.append(passed(
+            cid, f"{room}: services are deliberately exposed — \"{declared[room]}\" — "
+                 + evidence,
+            (room,) + tuple(sorted(seen))))
 
     if not any(finding.result is Result.FAIL for finding in out):
         out.append(passed(cid, f"{len(runs)} runs against {len(graded)} finished ceiling "
@@ -322,6 +414,12 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
                                 f"are not graded: {', '.join(sorted(ungraded)[:6])}",
                            tuple(sorted(ungraded))))
     return out
+
+
+def _feet_inches(feet: float) -> str:
+    """``6.667`` -> ``6'-8"``. The headroom line is a dimension and reads as one."""
+    total = round(feet * 12)
+    return f"{total // 12}'-{total % 12}\""
 
 
 def _record(worst: dict, tag: str, room: str, exposure_ft: float,

@@ -97,6 +97,18 @@ class MepPreferences:
     #: reads as the connection to that thing rather than transit through the room. See
     #: ``routing_ceiling._terminates_in_room``.
     terminal_grace_in: float = 24.0
+    #: The head a run must keep in a room whose ``Room.exposed_services`` declares its
+    #: ceiling deliberately open. Declaring a room exposed retires the ceiling-plane
+    #: comparison for it; it does NOT retire the question of whether somebody walks into the
+    #: pipe, and nothing else in the engine asks that one — ``code.R305_ceiling_height``
+    #: measures the STRUCTURE overhead and has never looked at a service run.
+    #:
+    #: 6'-8" is Minn. R. 1309.0305 R305.1.1's floor for the non-habitable parts of a
+    #: basement, which is where exposed service ceilings actually live, and it is used here
+    #: as a buildability line rather than as a code verdict: this check is ADVISORY and
+    #: cites nothing. Measured off the storey datum, which is top-of-joists — a finished
+    #: floor sits above it, so the number is read slightly conservatively on purpose.
+    exposed_service_headroom_ft: float = 80.0 / 12.0
 
     # --- checks/mep/drain_geometry.py ---
     #: How far a drained fixture's derived drain point may sit from the nearest polyline of a

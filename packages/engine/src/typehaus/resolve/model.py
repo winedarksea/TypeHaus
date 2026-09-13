@@ -834,6 +834,11 @@ class ResolvedRoom:
     head_limited_area_m2: float | None = None
     glazed_area_m2: float | None = None
     operable_glazed_area_m2: float | None = None
+    # The authored sentence from ``Room.exposed_services`` — this room's ceiling is
+    # deliberately left open and its services are meant to be seen. Carried through
+    # verbatim because ``mep.run_in_finished_volume`` quotes it in its PASS: a reviewer
+    # reads the decision, not a silence. ``None`` is the ordinary finished ceiling.
+    exposed_services: str | None = None
 
 
 @dataclass(frozen=True)

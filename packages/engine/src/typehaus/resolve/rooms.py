@@ -170,6 +170,7 @@ def resolve_rooms(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 finish_zones=_finish_zones(plan, storey.tag, room, clear),
                 head_limited_area_m2=room_head_limited_area_m2(
                     model, ring, storey.elevation.meters),
+                exposed_services=room.exposed_services,
             )
             glazing = room_glazing_areas(plan, model, resolved)
             if glazing is not None:
