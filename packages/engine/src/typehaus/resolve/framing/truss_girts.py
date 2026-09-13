@@ -36,13 +36,22 @@ rough opening, and the buck.
 
 Three rules run through everything here and are worth stating once rather than at each use.
 
-**One fastener, and it is the whole load path.** One 8" SDWS22800DB per crossing, driven
-through girt + block (6") and the sheathing, 1-1/2" into the stud. There is no second pass
-and no nail: the block bears the cladding's gravity in direct compression on the sheathing,
-so the screw is a pure withdrawal element at about 38% of its ASD allowable. Nothing else
-holds the cladding on, which is why ``takeoff/fasteners.py`` bills it off the resolved
-blocks rather than off a grid, and why the note names the screw pattern as the one thing
-this wall cannot miss.
+**One fastener, and it is the whole load path.** One 8" FastenMaster TimberLOK (TLOK08)
+per crossing, driven through girt + block (6") and the sheathing, 1-1/2" into the stud.
+There is no second pass and no nail: the block bears the cladding's gravity in direct
+compression on the sheathing, so the screw is a pure withdrawal element at about 38% of its
+ASD allowable. Nothing else holds the cladding on, which is why ``takeoff/fasteners.py``
+bills it off the resolved blocks rather than off a grid, and why the note names the screw
+pattern as the one thing this wall cannot miss.
+
+The screw is chosen on THREAD, not length. The clamped stack is the girt and the block —
+6.0"; the sheathing is nailed to the stud and is not a member being drawn together — and
+plain shank has to span it. TimberLOK threads 2" at every length (ICC-ES ESR-1078
+Table 1A) and clears it exactly. The SDWS22800DB this wall carried until 2026-09-12 does
+not: every SDWS22 threads 3" whatever its length (IAPMO UES ER-192 Table 7), so 1" of that
+thread stood inside the stack and jacked the girt off the block. Graded as
+``engineering/girt_screw.py``; the house authors the part on the girt band's
+``FramingSpec``.
 
 **Materials are by exposure.** On the one-tier wall everything outboard of the sheathing is
 KDAT — the girt is a 3-1/2"-deep horizontal ledge behind the cladding that will wet-cycle

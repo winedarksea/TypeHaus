@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Literal
 
+from pydantic import model_validator
+
 from typehaus.model.base import HausModel
 from typehaus.model.enums import (
     ControlLayer,
@@ -122,6 +124,30 @@ class FramingSpec(HausModel):
     # Swinburne outrigger, which frames on a tab, not on blocks — and
     # ``integrity.assembly_layers`` refuses the pair.
     standoff: Literal["none", "block"] = "none"
+    # ``standoff="block"`` only: the ONE screw per crossing that is the whole load path of a
+    # girt wall, in the same "prose is bought, numbers are graded" shape as
+    # ``Material.panel_fastener*``. The prose is what an order spells; the numbers are what
+    # ``engineering/girt_screw.py`` grades, and a diameter parsed out of a description would
+    # silently read "#10-12" as ten inches.
+    #
+    # There is no capacity default anywhere below. Withdrawal per inch and head pull-through
+    # are read off the screw's own evaluation report — they are published test values, not
+    # something the code's equation produces — and a kind that guessed one would be inventing
+    # the number a seal is meant to rest on.
+    standoff_fastener: str | None = None
+    #: The orderable part number, so the takeoff bills the screw the calc graded.
+    standoff_fastener_part: str | None = None
+    standoff_fastener_diameter_in: float | None = None
+    standoff_fastener_length_in: float | None = None
+    #: THREAD length, which is a different number from the length and the one that decides
+    #: whether the stack can be drawn tight: thread standing in the clamped members jacks
+    #: them apart instead of pulling them together. Every SDWS22 threads 3" regardless of
+    #: length (IAPMO UES ER-192 Table 7), which is exactly why this is authored per screw.
+    standoff_fastener_thread_in: float | None = None
+    standoff_fastener_withdrawal_lb_per_in: float | None = None
+    standoff_fastener_pull_through_lb: float | None = None
+    #: The report, table and revision the numbers were read from. Required with them.
+    standoff_fastener_source: str | None = None
     # "california" is the drywall-backer corner: the same stick count as "3-stud", but the
     # supplemental stud is laid FLAT, leaving the corner cavity open to insulation.
     corner_style: Literal["3-stud", "4-stud", "california"] = "3-stud"
@@ -148,6 +174,27 @@ class FramingSpec(HausModel):
     # layer is an air-barrier crossing and gets the peel-and-stick form, an interior wall
     # gets plain closed-cell foam. State it only to override that.
     sill_gasket_product: str | None = None
+
+    @model_validator(mode="after")
+    def _standoff_fastener_numbers_are_all_or_none(self) -> FramingSpec:
+        """A half-authored screw is worse than no screw: it grades against a phantom.
+
+        The five numbers and their source are one statement. With three of them present the
+        engineering record would report INCOMPLETE naming the other two, which reads as
+        "nobody has got to it yet" rather than "somebody transcribed half a table row".
+        """
+        numbers = (self.standoff_fastener_diameter_in, self.standoff_fastener_length_in,
+                   self.standoff_fastener_thread_in,
+                   self.standoff_fastener_withdrawal_lb_per_in,
+                   self.standoff_fastener_pull_through_lb, self.standoff_fastener_source)
+        present = [value is not None for value in numbers]
+        if any(present) and not all(present):
+            raise ValueError(
+                "FramingSpec standoff fastener numbers are all-or-none: "
+                "standoff_fastener_diameter_in, _length_in, _thread_in, "
+                "_withdrawal_lb_per_in, _pull_through_lb and _source must be authored "
+                "together or left unset")
+        return self
 
 
 class MasonrySpec(HausModel):

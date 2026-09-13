@@ -60,6 +60,7 @@ LOAD_COMBINATIONS: dict[str, tuple[str, str]] = {
                        "ASCE 7-16 §2.3.1(6) / IBC 2018 §1605.2; IBC §1807.2.3"),
     "retaining_system": ("service loads, FS >= 1.5", "IBC 2018 §1807.2.3"),
     "wall_panel": ("0.6W", "ASCE 7-16 §2.4.1(7), C&C pressures per §30.3"),
+    "girt_screw": ("0.6W", "ASCE 7-16 §2.4.1(7), C&C pressures per §30.3"),
     "post_bearing": ("D + L, allowable stress design",
                      "AWC NDS 2018 §3.10; IRC R507.1 loads"),
     "spread_footing": ("D + L, allowable stress design against presumptive bearing",

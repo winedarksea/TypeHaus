@@ -20,7 +20,8 @@ from dataclasses import dataclass, field
 from typing import Any
 
 #: Items whose element is a surface, not a curve member. Every one of these is a gap in v1.
-SURFACE_KINDS = frozenset({"retaining_wall", "retaining_system", "wall_panel"})
+SURFACE_KINDS = frozenset({"girt_screw", "retaining_wall", "retaining_system",
+                           "wall_panel"})
 
 #: How deep a bearing_refs chain may be walked. Four levels is past any real framing chain
 #: and is the same guard ``engineering/pier_basis._delivered_to_posts`` uses.

@@ -22,6 +22,10 @@ _APA = "APA/Performance Panels published ASTM E96 dry-cup panel permeance data"
 STARTER_MATERIALS: tuple[Material, ...] = (
     Material(tag="spf", name="SPF framing lumber", r_per_inch=1.25, density=460.0,
              perm_rating=2.9, hatch="lumber", color="#d8c9a6",
+             # NDS 2018 Table 12.3.3A, "Spruce-Pine-Fir". The stud is the MAIN member every
+             # long standoff screw lands in, and withdrawal goes as G squared, so this is a
+             # structural input and not a description.
+             specific_gravity=0.42,
              source=f"{_UAF}: 'Wood, sugar pine' permeability 0.4-5.4 perm-in "
                     "(the table's softwood entry); midpoint of the published range"),
     # No published permeance/permeability located for laminated strand lumber; the field is

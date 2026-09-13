@@ -1107,10 +1107,15 @@
 # "SDWS22500DB" = { low = 0.7, high = 1.1 }  # was 4154 ea — girt-wall block screws (block-1 + block-2)
 # "SDWS22400DB" = { low = 0.6, high = 0.95 }  # was 2570 ea — Swinburne truss-wall block screws
 #
-# ** THE CATLIN TRUSS'S ONE FASTENER (2026-09-01). ** 1,128 ea, one per crossing, and there
-# is no second screw and no nail anywhere outboard of the sheathing. Derived from the
-# resolved blocks rather than from a grid (takeoff/fasteners.truss_wall_block_screw_rows):
+# ** THE CATLIN TRUSS'S ONE FASTENER (2026-09-01; re-counted 1,131 on 2026-09-12). ** One
+# per crossing, and there is no second screw and no nail anywhere outboard of the sheathing.
+# Derived from the resolved blocks rather than from a grid
+# (takeoff/fasteners.truss_wall_block_screw_rows):
 #   1-1/2" girt + 4-1/2" block (3 plies) + 1/2" sheathing + 1-1/2" into the stud     = 8.00"
+# Of that 8.00", the CLAMPED STACK is the first 6.00" — girt + block. The sheathing is
+# nailed to the stud, so it sits on the stud's side of the joint and is not being drawn
+# together. That 6.00" is what the screw's plain shank has to span, and it is the number the
+# screw is now chosen on.
 #
 # The count FELL from 4,154 to 1,128 and both halves of that are the design. Deleting the
 # inner tier deletes one of the two screws at every station; putting the block on every
@@ -1151,7 +1156,26 @@
 # coating is already rated "equivalent to hot-dip galvanization... suitable for certain
 # exterior and preservative-treated wood applications." Stainless stays where it is cheap
 # and exposed: the 1-1/2" cladding fasteners below.
-"SDWS22800DB" = { low = 1.15, high = 1.75 }  # 1128 ea — the catlin truss's one girt screw
+# ** THE SDWS LEFT ON 2026-09-12, AND IT IS NOT A PRICE DECISION. ** IAPMO UES ER-192
+# Table 7 gives every SDWS22 a 3" THREAD whatever its overall length. The clamped stack here
+# is 6.0" — girt 1-1/2" + block 4-1/2"; the 1/2" sheathing is nailed to the stud and is not
+# a member being drawn together — so an 8" SDWS leaves only 5" of plain shank and stands 1"
+# of thread inside the members it is supposed to be pulling down. It jacks the girt off the
+# block. Nothing in the house had ever stated the thread length, which is why this stood for
+# eleven days; see notes/catlin_truss_engineering.md §3 and the `girt_screw/W-A-N1`
+# engineering item. SDWS221000DB would fix the engagement at 10"; the owner wants an 8" screw.
+# "SDWS22800DB" = { low = 1.15, high = 1.75 }  # was 1128 ea — superseded by TLOK08
+#
+# FastenMaster TimberLOK, ICC-ES ESR-1078 (reissued 2026-01): 2" thread at every length
+# (Table 1A), so 6" of plain shank spans the 6.0" stack exactly and 1-1/2" of thread lands
+# in the stud, past the report's 1.25" minimum embedded thread. $203 per 250 list = $0.81
+# ea; the high is the small-box rate. It is also the CHEAPER screw, which is a coincidence
+# and not the reason. HeadLOK 8" (HLGM8) is the recorded alternate — same 2" thread, flat
+# head, 600 lb head pull-through against TimberLOK's 200 at SG 0.55 — but ESR-1078 Table 2
+# wants 2.0" of embedded thread for it and that needs the 1/2" ply counted, which the report
+# is silent on. Also rejected: Rothoblaas HBS/TBS 8 mm (3-1/8" thread at every length;
+# ESR-4645 is dry service only) and HECO TOPIX-plus (no US evaluation report).
+"TLOK08" = { low = 0.81, high = 1.10 }  # 1131 ea — the catlin truss's one girt screw
 # The garage ICF stem's exterior protection band, 224 ea at 5". DERIVED, and the part is a
 # PROXY rather than a purchase instruction: `exterior_insulation_fastening` reads the band's
 # 1/4" vented standoff over 2.5" of `eps-ext` as screwed-furring-through-foam, which is the
@@ -3116,6 +3140,21 @@
 # "closed-cell-spray-foam:1.0" = { material = { low = 0.4, high = 0.6 }, labour = { low = 0.6, high = 0.9 } }  # was 3092.6 SF — the rest of pass 2 (band C)
 # Sources: 2026 published ccSPF $/board-foot surveys (homeguide.com, retrofoamofmichigan) —
 # the same two the rim row cites; the board-feet are this assembly's own geometry.
+#
+# ** THE PRODUCT, AND WHY 4" IS ONE PASS (2026-09-12). ** Huntsman Heatlok HFO High Lift,
+# ICC-ES ESR-4073. §4.2 permits 6-1/2" PER PASS; the TDS ladder is 6.5" at or below 70 F,
+# 4" at 70-80 F, 3.25" above 80 F. So "one 4" application" holds below 80 F and is a
+# SUBSTRATE-TEMPERATURE condition on the spray day, not a wish — the earlier 1-1/2"/pass
+# figure that would have made this two lifts is legacy SPFA guidance and does not apply to
+# this product. Heatlok HFO **Pro** is a different product (ESL-1372, 2"/pass); do not let a
+# supplier substitute it without re-pricing the second mobilisation.
+#
+# ** WRB IS NOT IN ESR-4073'S SCOPE, and this is an open alternate-approval item. ** The
+# report does not evaluate water-resistive barrier. The only report found granting ccSPF a
+# WRB listing is Icynene ProSeal Eco (ESR-3493 §4.6, 1-1/2" minimum) and it expired in 2021.
+# Approval here runs through Minn. R. 1300.0110, on Huntsman's own ASTM E331 / E2178 data
+# for the product actually bought. Nothing is priced against it — it is a submittal, not a
+# line — but the wall has no other water plane, so it has to be asked before the order.
 "closed-cell-spray-foam:4.0" = { material = { low = 1.6, high = 2.4 }, labour = { low = 2.4, high = 3.6 } }  # 3092.6 SF — the one 4" application, filleted at the blocks and shaved to a gauge
 # 2026-08-31 — GARAGE_WALL_2X6's stud-bay fill, 631.3 SF at 2". A DIFFERENT BUILDING and a
 # different visit from the three rows above: the garage is detached, and its bays are
@@ -3599,6 +3638,16 @@
 # CLOSURES RUN THE OTHER WAY: PBR is ribbed, so every horizontal termination needs a die-cut
 # foam closure matched to the rib ($0.45-0.72/LF published, plus butyl bedding); board &
 # batten's guide calls for zero closures.
+#
+# ** THE PUBLISHED ALTERNATIVE NOT TAKEN (2026-09-12), recorded so the choice stays visible. **
+# AEP Span Flush Panel, IAPMO UES ER-309 Tables 6.6/6.7: 24 ga, 12" coverage, 66 psf ASD
+# negative at 24" over "Lumber (DFL) 1" min" OPEN framing. That last phrase is the whole
+# point — it is a published span table for this exact condition, so a Flush Panel would come
+# out of the engineering register as a `PublishedSpan` (the PBR precedent) and stop being a
+# sealed item. BB75-1111 stays: the owner wants the batten line, its own item computes at
+# bending d/c 0.31 and withdrawal d/c 0.12, and this is priced as the cost of the
+# appearance, not as a problem. No rate change either way — both are 24 ga PVDF on the same
+# girts with the same brake-formed trim inside the $/SF.
 #
 # Sources: Metal Sales BB75-1111 install guide, 2025-10 (coverage, substrate, allowable load
 # table and its note 2, fastener row, the 1/2"-past rule); Western States Metal Roofing doc

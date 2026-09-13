@@ -302,6 +302,18 @@ EXT_2X6 = Assembly(
         # foam does not need backing (ESR-4073 §4.4.2 permits 7-1/4" on a vertical surface)
         # and its racking contribution is its bond to the sheathing face, unchanged.
         #
+        # THE PRODUCT IS HUNTSMAN HEATLOK HFO HIGH LIFT, ICC-ES ESR-4073. §4.2 permits
+        # 6-1/2" PER PASS and the TDS ladder is 6.5" at or below 70 F, 4" at 70-80 F, 3.25"
+        # above 80 F — so ONE 4" application holds below 80 F, and substrate temperature on
+        # the spray day is the condition, not the 1-1/2"/pass legacy SPFA figure. Heatlok HFO
+        # *Pro* is a different product (ESL-1372, 2"/pass) and would make this two lifts.
+        #
+        # WRB IS NOT IN ESR-4073'S SCOPE. The report does not evaluate water-resistive
+        # barrier, and the only ccSPF report found granting one (Icynene ProSeal Eco
+        # ESR-3493 §4.6) expired in 2021. This wall has no other water plane, so it is an
+        # OPEN alternate-approval item under Minn. R. 1300.0110 on Huntsman's own ASTM E331 /
+        # E2178 data for the product bought. See notes/catlin_truss_engineering.md §9.
+        #
         # No framing factor is authored here, deliberately, and it is why the card reads
         # high. The blocks are 1.6% of this band's area and they are modelled by
         # `resolve/framing/truss_girts.py`, not by the assembly: a plain INSULATION layer
@@ -333,11 +345,23 @@ EXT_2X6 = Assembly(
         # facade's studs and windows already sit on. 24" courses against the 16" stud module
         # make the crossing tributary 32" x 24" = 5.33 ft2.
         #
-        # ONE 8" SDWS22800DB PER CROSSING, through girt (1-1/2") + block (4-1/2") +
-        # sheathing (1/2"), 1-1/2" into the stud. One fastener pass, no nails, and it is the
-        # entire load path: the block bears the cladding's gravity in direct compression on
-        # the sheathing, so the screw is a pure withdrawal element at ~38% of allowable.
+        # ONE 8" FASTENMASTER TIMBERLOK (TLOK08) PER CROSSING, through girt (1-1/2") +
+        # block (4-1/2") + sheathing (1/2"), 1-1/2" into the stud. One fastener pass, no
+        # nails, and it is the entire load path: the block bears the cladding's gravity in
+        # direct compression on the sheathing, so the screw is a pure withdrawal element.
         # Mark the stud line across the girt face as it is laid so the screw is not blind.
+        #
+        # THE CLAMPED STACK IS 6.0", not 6.5": girt 1-1/2" + block 4-1/2". The sheathing is
+        # nailed to the stud, so it sits on the stud's side of the joint and is not one of
+        # the members being drawn together. TimberLOK threads 2" (ESR-1078 Table 1A), so 6"
+        # of plain shank spans that 6.0" exactly and the thread starts where the stud does;
+        # 1-1/2" of it lands in the stud, past ESR-1078's 1.25" minimum embedded thread.
+        #
+        # THE SDWS22800DB THIS WALL CARRIED UNTIL 2026-09-12 CANNOT DO THAT. Every SDWS22
+        # threads 3" whatever its length (IAPMO UES ER-192 Table 7), so at 8" it stands 1"
+        # of thread inside the 6.0" stack and jacks the girt off the block instead of
+        # pulling it down. Graded as `girt_screw/W-A-N1`; see
+        # notes/catlin_truss_engineering.md §3.
         #
         # `course_offset=inch(0)` is the swept phase for the 24" module, not a default left
         # in place: the whole 1/8" sweep from -16" to +8" was run against the openings, and
@@ -353,7 +377,15 @@ EXT_2X6 = Assembly(
               framing=FramingSpec(member="2x4", direction="horizontal", laid="flat",
                                   spacing=inch(24), layout_origin="line",
                                   course_datum="framing-base", course_offset=inch(0),
-                                  standoff="block")),
+                                  standoff="block",
+                                  standoff_fastener="FastenMaster TimberLOK 8\" TLOK08, ESR-1078",
+                                  standoff_fastener_part="TLOK08",
+                                  standoff_fastener_diameter_in=0.189,
+                                  standoff_fastener_length_in=8.0,
+                                  standoff_fastener_thread_in=2.0,
+                                  standoff_fastener_withdrawal_lb_per_in=170.0,
+                                  standoff_fastener_pull_through_lb=200.0,
+                                  standoff_fastener_source="ICC-ES ESR-1078 (reissued 2026-01), Tables 1A (2 in thread), 2 (withdrawal, SPF G 0.42) and 3 (head pull-through, 1-1/2 in side member at SG 0.55); coating for ACQ-D <= 0.40 pcf per 4.1.7 / Table 6")),
         Layer(name="cladding", material_ref="pbr-panel-26", thickness=inch(1.25),
               function=LayerFunction.CLADDING),
     ),
@@ -3973,6 +4005,18 @@ PLANT_EXT_2X6_HUMID = Assembly(
         # foam does not need backing (ESR-4073 §4.4.2 permits 7-1/4" on a vertical surface)
         # and its racking contribution is its bond to the sheathing face, unchanged.
         #
+        # THE PRODUCT IS HUNTSMAN HEATLOK HFO HIGH LIFT, ICC-ES ESR-4073. §4.2 permits
+        # 6-1/2" PER PASS and the TDS ladder is 6.5" at or below 70 F, 4" at 70-80 F, 3.25"
+        # above 80 F — so ONE 4" application holds below 80 F, and substrate temperature on
+        # the spray day is the condition, not the 1-1/2"/pass legacy SPFA figure. Heatlok HFO
+        # *Pro* is a different product (ESL-1372, 2"/pass) and would make this two lifts.
+        #
+        # WRB IS NOT IN ESR-4073'S SCOPE. The report does not evaluate water-resistive
+        # barrier, and the only ccSPF report found granting one (Icynene ProSeal Eco
+        # ESR-3493 §4.6) expired in 2021. This wall has no other water plane, so it is an
+        # OPEN alternate-approval item under Minn. R. 1300.0110 on Huntsman's own ASTM E331 /
+        # E2178 data for the product bought. See notes/catlin_truss_engineering.md §9.
+        #
         # No framing factor is authored here, deliberately, and it is why the card reads
         # high. The blocks are 1.6% of this band's area and they are modelled by
         # `resolve/framing/truss_girts.py`, not by the assembly: a plain INSULATION layer
@@ -4004,11 +4048,23 @@ PLANT_EXT_2X6_HUMID = Assembly(
         # facade's studs and windows already sit on. 24" courses against the 16" stud module
         # make the crossing tributary 32" x 24" = 5.33 ft2.
         #
-        # ONE 8" SDWS22800DB PER CROSSING, through girt (1-1/2") + block (4-1/2") +
-        # sheathing (1/2"), 1-1/2" into the stud. One fastener pass, no nails, and it is the
-        # entire load path: the block bears the cladding's gravity in direct compression on
-        # the sheathing, so the screw is a pure withdrawal element at ~38% of allowable.
+        # ONE 8" FASTENMASTER TIMBERLOK (TLOK08) PER CROSSING, through girt (1-1/2") +
+        # block (4-1/2") + sheathing (1/2"), 1-1/2" into the stud. One fastener pass, no
+        # nails, and it is the entire load path: the block bears the cladding's gravity in
+        # direct compression on the sheathing, so the screw is a pure withdrawal element.
         # Mark the stud line across the girt face as it is laid so the screw is not blind.
+        #
+        # THE CLAMPED STACK IS 6.0", not 6.5": girt 1-1/2" + block 4-1/2". The sheathing is
+        # nailed to the stud, so it sits on the stud's side of the joint and is not one of
+        # the members being drawn together. TimberLOK threads 2" (ESR-1078 Table 1A), so 6"
+        # of plain shank spans that 6.0" exactly and the thread starts where the stud does;
+        # 1-1/2" of it lands in the stud, past ESR-1078's 1.25" minimum embedded thread.
+        #
+        # THE SDWS22800DB THIS WALL CARRIED UNTIL 2026-09-12 CANNOT DO THAT. Every SDWS22
+        # threads 3" whatever its length (IAPMO UES ER-192 Table 7), so at 8" it stands 1"
+        # of thread inside the 6.0" stack and jacks the girt off the block instead of
+        # pulling it down. Graded as `girt_screw/W-A-N1`; see
+        # notes/catlin_truss_engineering.md §3.
         #
         # `course_offset=inch(0)` is the swept phase for the 24" module, not a default left
         # in place: the whole 1/8" sweep from -16" to +8" was run against the openings, and
@@ -4024,7 +4080,15 @@ PLANT_EXT_2X6_HUMID = Assembly(
               framing=FramingSpec(member="2x4", direction="horizontal", laid="flat",
                                   spacing=inch(24), layout_origin="line",
                                   course_datum="framing-base", course_offset=inch(0),
-                                  standoff="block")),
+                                  standoff="block",
+                                  standoff_fastener="FastenMaster TimberLOK 8\" TLOK08, ESR-1078",
+                                  standoff_fastener_part="TLOK08",
+                                  standoff_fastener_diameter_in=0.189,
+                                  standoff_fastener_length_in=8.0,
+                                  standoff_fastener_thread_in=2.0,
+                                  standoff_fastener_withdrawal_lb_per_in=170.0,
+                                  standoff_fastener_pull_through_lb=200.0,
+                                  standoff_fastener_source="ICC-ES ESR-1078 (reissued 2026-01), Tables 1A (2 in thread), 2 (withdrawal, SPF G 0.42) and 3 (head pull-through, 1-1/2 in side member at SG 0.55); coating for ACQ-D <= 0.40 pcf per 4.1.7 / Table 6")),
         Layer(name="cladding", material_ref="pbr-panel-26", thickness=inch(1.25),
               function=LayerFunction.CLADDING),
     ),

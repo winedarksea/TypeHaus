@@ -141,7 +141,7 @@ class _Panel:
     support_specific_gravity: float | None
 
 
-def _mean_roof_height_ft(ctx: EngineeringContext) -> float | None:
+def mean_roof_height_ft(ctx: EngineeringContext) -> float | None:
     """h for q_h — the mean of eave and ridge over the tallest roof in the model.
 
     Per-building would be better and this model has no building grouping to ask; the tallest
@@ -166,7 +166,7 @@ def _panels(ctx: EngineeringContext) -> list[_Panel]:
     continuous deck).
     """
     catalog = {material.tag: material for material in ctx.plan.library.materials}
-    height = _mean_roof_height_ft(ctx)
+    height = mean_roof_height_ft(ctx)
     out: list[_Panel] = []
     for wall in ctx.model.walls:
         body = wall.body_layers()

@@ -46,6 +46,7 @@ from typehaus.takeoff.hardware_catalog import (
     ROLE_EXPOSED_FASTENER_PANEL_SCREW,
     ROLE_EXTERIOR_INSULATION_SCREW,
     ROLE_FACE_MOUNT_JOIST_HANGER,
+    ROLE_GIRT_STANDOFF_SCREW,
     ROLE_GLAZING_PANEL_FASTENER,
     ROLE_HURRICANE_TIE,
     ROLE_KNEE_BRACE,
@@ -89,8 +90,32 @@ SDWS_TIMBER_SCREW = StructuralHardware(
         3.0: "SDWS22300DB", 4.0: "SDWS22400DB", 5.0: "SDWS22500DB",
         6.0: "SDWS22600DB", 8.0: "SDWS22800DB",
     },
+    # IAPMO UES ER-192 Table 7: every SDWS22 threads 3 in, whatever its overall length. That
+    # is why this family cannot serve a girt crossing — at 8 in over a 6 in clamped stack,
+    # 1 in of that thread stands inside the members it is supposed to be pulling together.
+    thread_length_in_by_length_in={
+        3.0: 3.0, 4.0: 3.0, 5.0: 3.0, 6.0: 3.0, 8.0: 3.0,
+    },
     source="Simpson Strong-Tie SDWS Timber Screw product family (strongtie.com/sdws) — "
-           "0.220 in shank structural wood screw, Double-Barrier coated (DB)",
+           "0.220 in shank structural wood screw, Double-Barrier coated (DB); thread "
+           "lengths per IAPMO UES ER-192 Table 7",
+)
+
+# The girt crossing screw, and the only member of its role. Chosen on THREAD, not length:
+# 2 in of thread on an 8 in screw leaves 6 in of plain shank to span the 6 in clamped stack
+# (girt 1-1/2 in + three-ply block 4-1/2 in), so every turn of the thread is pulling the
+# stack together rather than standing in it. See ``engineering/girt_screw.py``.
+FASTENMASTER_TIMBERLOK = StructuralHardware(
+    tag="fastenmaster-timberlok",
+    name="TimberLOK heavy-duty wood screw (0.189 in shank)",
+    role=ROLE_GIRT_STANDOFF_SCREW,
+    manufacturer="FastenMaster",
+    model="TLOK",
+    part_number_by_length_in={6.0: "TLOK06", 8.0: "TLOK08", 10.0: "TLOK10"},
+    thread_length_in_by_length_in={6.0: 2.0, 8.0: 2.0, 10.0: 2.0},
+    source="FastenMaster TimberLOK, ICC-ES ESR-1078 (reissued 2026-01) Table 1A — 2 in "
+           "thread at every length; coating rated for ACQ-D <= 0.40 pcf per §4.1.7 / "
+           "Table 6",
 )
 
 SDWH_TIMBER_HEX_SCREW = StructuralHardware(
@@ -1467,6 +1492,7 @@ POCKET_FRAME_KIT_HEAVY = StructuralHardware(
 STRUCTURAL_HARDWARE: tuple = (
     SDWS_TIMBER_SCREW,
     SDWH_TIMBER_HEX_SCREW,
+    FASTENMASTER_TIMBERLOK,
     LSSR_SLOPED_HANGER,
     LSTA24_RIDGE_STRAP,
     LUS_FACE_MOUNT_HANGER,

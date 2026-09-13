@@ -402,6 +402,28 @@ findings.** Stated so nobody reads them as verified absences:
 **Nothing in the model changed on the strength of this survey**, and that is the point: an
 absence of published data is a finding, not a licence to interpolate one.
 
+### 7.9 The published alternative not taken (2026-09-12)
+
+**AEP Span Flush Panel**, IAPMO UES **ER-309** Tables 6.6/6.7: 24 ga, **12" coverage**,
+**66 psf ASD negative at 24"** over **"Lumber (DFL) 1" min"** open framing.
+
+That last phrase is the whole of why it is recorded here. It is a published span table for
+*this exact condition* — a concealed-fastener panel on open wood girts at this house's own
+spacing — which is what the twenty-paragraph search of §7 set out to find and did not find
+for BB75-1111. A Flush Panel would therefore be graded as a `PublishedSpan`
+(`checks/structural/published.py`) and would come **out of the engineering register**
+entirely, exactly as PBR does on the strength of its three wall span tables. No seal, no
+`wall_panel` item, no calculation.
+
+**It is not taken.** The owner wants the batten line, and BB75-1111's own item computes at
+bending d/c 0.31 and withdrawal d/c 0.12 — a long way from the margin being the reason. What
+the Flush Panel buys is a *review* cost, not a structural one, and the batten is what the
+house is for. `prices.toml` carries the dollar half: both are 24 ga PVDF on the same girts
+with the same brake-formed trim inside the $/SF, so there is no rate difference either way.
+
+It is written down so that the next person to ask "why is this panel an engineered item when
+the one next to it is not?" gets the answer in one place rather than re-running §7.
+
 ## 8. What a seal has to cover
 
 **One item, twenty walls: `wall_panel/W-A-N1`.** Until 2026-09-11 the register carried

@@ -3,13 +3,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Needs your decision
 
-- **The garage service-door landing wants a guard, and nothing was asking (2026-09-07).**
-  `code.R312_1_guard_height` now walks slab edges, so `SL-G-STEP-0` — the 3'-0" landing at
-  D-G-SERVICE, 34" above the garage slab — reports 2.4' of open east side and 1.5' of open
-  north side over R312.1.1's 30" threshold. `plan/storeys/garage.py` flagged exactly this
-  and called it the owner's. **DEFERRED 2026-09-07**: reworking the landing is the preferred
-  answer and it is a known item; the FAIL stays visible rather than being allow-listed.
-
 - **RM-B-BATH is BOXED OUT and the soffit datum was wrong under it (2026-09-07).**
   `SF-B-BATH` takes all three of that room's runs — `PR-B-LSINK-DRAIN`, `PR-B-BATH-VENT`,
   `PR-B-HW-BATH` — in one bulkhead over the north wall, face at 7'-4 7/16" clear. Authoring
@@ -34,48 +27,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   279 references across 51 engine modules + tests + houses + ui. Details:
   `clear-face-is-not-the-finish-face.md`.
 
-- **Zoning height is now 2'-10" above average grade.** No `height_limit` exists on a jurisdiction profile, so this is a note, not a check.
-
-- **Porch beam span is a 9" knife-edge.** `FS-SG-PORCH`'s 7.25' joist span reads IRC Table
-  R507.5(1)'s 8' row (10.25' beam limit) against a 10.00' actual beam span. At 8.01' the
-  lookup drops to the 10' row and **all four porch beams FAIL by 10"**. **DECIDED 2026-09-06:
-  the four beams stay 3-ply KDAT 2x12** (not glulam) — the ply seams are covered by butyl tape
-  + aluminum cap and never see rain. The span knife-edge itself is still live: re-check any
-  PORCH beam-section change against it. (`notes/beam_water_protection.md`)
-
-### `mep.run_in_finished_volume`: CLOSED, and the three engine bugs are the part worth keeping
-
-**The check PASSes as of 2026-09-11** — 122 runs against 33 finished ceiling planes, none
-hanging in a room's air. It was 20 FAIL the day it landed (2026-09-07) and 13 after the
-sauna pass; the last of it went with the three supply risers on 2026-09-09, which jogged at
-ceiling level and dropped inside their wet walls. The per-run lists that used to live here
-are deleted rather than archived: they described a house that no longer exists, and a stale
-list of tags is worse than no list because it reads as work.
-
-It still reports one honest UNKNOWN: five attic rooms resolve no flat ceiling plane at all
-(`Room.ceiling` is `FollowRoof`, so there is no single elevation to compare a run against)
-and are NOT graded — `RM-A-EAST-UNFIN`, `-POCKET`, `-STUBATH`, `-STUDIO`, `-STUDY`. That is
-the check declining to invent a datum, not a gap in the house.
-
-**What survives is the three engine bugs the check itself carried**, because each made the
-report LOOK better than the house was — the failure mode to watch for in any new check:
-
-- `_soffit_union` unioned every soffit in the house with no storey filter, so a basement
-  bulkhead read as covering the rooms two floors above it. `SF-B-BATH` took 6.8 SF out of
-  RM-S-SUITEBATH's ceiling the day it was authored. Keyed by storey now, like the
-  `wall_cover` beside it — and fixing it ADDED two honest FAILs and lengthened four more.
-- `resolve/envelope.py` hung every soffit from `storey.default_ceiling_height` rather than
-  the deck actually overhead.
-- `emit/draw/plumbingplan.storey_above` picked the garage as the storey over the basement
-  the moment the basement declared its true ceiling height, dropping eleven of the twelve
-  deck sleeves off sheet P-101. It asks `ceiling_decks_over` now instead of comparing
-  elevations.
-
-The measured fact the sauna pass turned up is also worth keeping: **the basement has no
-plenum anywhere.** Every ceiling on that storey is 5/8" of gypsum straight onto the joist
-soffit, the workshop included — so "reroute it through the workshop" had nowhere to route
-to, and any future basement MEP proposal that assumes a plenum is wrong before it starts.
-
 - ~~Add soffit lighting to the garage overhead-door side and both side walls~~ — **DONE
   2026-09-11.** Mark W (`ED-T-LT-LINEAR-EXT`), a damp/wet-rated 120V linear in a 2 1/2"
   aluminium channel, on three `LightRun`s: both eave soffits (24'-0" each) and a surface run
@@ -86,9 +37,6 @@ to, and any future basement MEP proposal that assumes a plenum is wrong before i
   panel stays open to the attic vent channel. Own timer control (`ED-G-SOFFIT-SW`), not the
   door sconces' switch — different duty cycle. Priced as a driven allowance, not a
   `[placeables]` row; see the gap below.
-- Add trim/baseboard — we're generally trimless (clean lines, drywall), but maybe a flush-with-drywall baseboard.
-- Orientation-tuned glass, particularly second-story south-facing windows.
-- Make it easier to "hop" into a given room for 3d viewing and rotate in spot, perhaps with a "fish eye" lens view rendering
 
 
 - **2D-edit sync** — a PatchOp rewrites one constructor; derived data recomputes but authored
@@ -98,88 +46,6 @@ to, and any future basement MEP proposal that assumes a plenum is wrong before i
   retypes through a centre-holding macro. Re-affirmed deferred 2026-08-07.
 
 ## Remaining Work
-
-### Asked and DECIDED on 2026-09-11 — stop re-asking
-
-Three changes were priced against the real model that day and refused, each with a
-load-bearing argument written into the source beside the thing it defends. They are recorded
-here as CLOSED so the list stops re-proposing them; re-opening one means overwriting a dated
-argument that is still correct, which is a design pass and not a cleanup.
-
-- **Close the raised garden's return-wall gap — NO, and the leader is why.**
-  `params/raised_garden.py:218`. The returns' inboard ends are derived rather than typed, and
-  the gap they leave is the downspout's. Closing it puts masonry where the water goes.
-- **A pocket door at the basement bath — NO, the wall cannot take one.**
-  `plan/storeys/basement.py:1076`. There is 33 15/16" of wall north of the mouth and 24 1/16"
-  south of it against the 38" a 32" leaf needs either way; `integrity.opening_fits` calls it
-  at **4 1/16" short**. The wall is the constraint, not the hardware.
-- **Replace the nine garage footings with an aggregate footing — NO.**
-  `params/foundations.py:445`. Five reasons are written out there; the one to remember is
-  that **frost is not the obstacle and must not be offered as one** — these bases sit 50"
-  down against a 42" frost depth and pass on depth alone. The cited precedent does not
-  transfer either: `raised_garden.py` hosts a bedding on a FoundationWall because that wall
-  is a dry-stacked SRW with no concrete under it by design, which is the other case the
-  element's own docstring separates from an ICF stem.
-
-**What that last one WAS pointing at is real and stays open.** Those nine are the only
-footings in the house with **no `FootingBedding` under them** — `HOUSE_FOOTING_BEDDING` beds
-every `FT-B-*` on 7" of stone, `sunken_garden.py` beds every `FT-SG-*`, `raised_garden.py`
-beds all five `W-RG-*`, and `FOOTING_20`'s own `source` string says the strip is "poured
-against the bedding prep". For these nine there is none. It is not authored for one honest
-reason: **a bed's drain tile needs a collector below it and the garage has none** — the
-house's falls to `SM-B-RADON` and the court's to `DRW-SG-MAIN`, and there is no sump in the
-garage and no gravity outlet below -7'-0" on this lot. An undrained bed is defensible (the
-raised garden's are `drain_tile=False`) but it is an excavation and a stone order nobody has
-costed. **It is a decision, not a correction** — which is why it is here and not in a batch.
-
-
-### Asked and DECIDED on 2026-09-12 — stop re-asking
-
-Two owner questions about the north entry canopy headers, both answered NO CHANGE. The
-argument for each lives beside the thing it defends, per the same convention as the block
-above; re-opening one means overwriting a dated argument that is still correct.
-
-- **Exterior-rated glulam for `BM-BW-RW`/`-RE` — NO, and the ENGINE is the reason.**
-  `params/north_entry_frame.py` carries it. Capacity never was the question: bending 0.707,
-  shear 0.508, deflection 0.129. But `engineering/roof_beam.py`'s `_SECTION` matches a sawn
-  `N-2xM` and nothing else, so a `"3.5x11.875"` makes both records INCOMPLETE — and these two
-  are the whole `roof_beam` kind. Nothing picks them up: `engineering/glulam_beam.py` left the
-  registered-kind tuple on 2026-09-11 and is deck-only besides, 40 psf live at `C_D` 1.0,
-  which cannot carry this 73.7 psf drift case. **The ply seam, the one argument that would
-  have overridden that, does not reach these two beams**: both headers ARE the canopy's eave
-  bearing lines, the trusses land on their tops, so each seam sits inside the roof assembly
-  under the deck, 1'-4" inboard of the drip line — the FPInnovations carve-out for appressed
-  PRESERVATIVE-TREATED plies. **Not the porch's 2026-09-06 refusal repeated**: that one rested
-  on tape plus a formed cap, this one on being under the roof, and neither argument transfers.
-  Cost confirms rather than drives, ~$325-450 over 11.4 LF. (→ `houses/catlin/DESIGN-LOG.md`,
-  "Site and the four structures"; `notes/north_entry_piers.md` §5)
-- **A sill gasket at the wood-on-concrete beam seats — NO, the standoff is already there and a
-  gasket would be the wrong part.** Twelve seats, all on an `SS316-SHIM-35` pack holding a
-  1/2"-1" drained gap: six at the north entry, six in the garden. `BM-BW-RW` never touches
-  concrete at all. The `HGAM10` is the TIE, never the bearing. A closed-cell gasket is a
-  capillary break for a plate bolted tight to a slab; at an exposed joint it becomes the
-  water-holding layer. **And the wicking intuition is right about the mechanism it names and
-  beside the point for the one that governs** — capillary rise is bounded by evaporation, not
-  suction, at 100-480 mm, and nothing here is within reach of it: pier tops 18 1/2" above
-  grade, canopy columns 9'-2 3/4", the garden's porch columns 10'-0 15/16" out of the court
-  floor. What wets a
-  seat is rain standing on the pour plus end-grain uptake where a beam END lands there, and
-  the wash, drip lip and gap are aimed at that. **No IRC provision requires a barrier or a
-  standoff here**, which `library/hardware.py` claimed until 2026-09-12: R317.1.4 governs wood
-  COLUMNS and its projections RELIEVE the treatment requirement rather than impose a
-  clearance. (→ `houses/catlin/CLAUDE.md` and `DESIGN-LOG.md`, "Site and the four structures";
-  `library/hardware.py` `BEARING_STANDOFF_SHIM`)
-
-**What the question turned up, and it was the real find.** `PIER_CONCRETE_12` still specified
-a grout island — at `PT-BW-RE`/`-RNE`, the exact joint the question asks about. Retyping
-`PT-SG-COL` on 2026-09-10 was recorded as closing that follow-up and did not: the island rode
-the assembly to the north entry. Struck at the source, along with the assembly's `>=1-1/2"`
-Titen Turbo edge distance, which was Simpson's bare floor where the identical 12" round
-elsewhere in this house specifies `>=3"`.
-
-### Found on 2026-09-12, to fix later
-
-Three things the pass above turned up that are NOT prose and do not belong in a prose commit:
 
 - **`PEDESTAL_CONCRETE` is dead.** `plan/assemblies.py`, referenced by zero elements, its
   comment naming `PT-BW-WP` — a tag that no longer exists. Retiring an assembly is a library
@@ -199,23 +65,6 @@ Three things the pass above turned up that are NOT prose and do not belong in a 
   polygon, so the lapping wall's extra 1/2"/corner is unbilled too (a second, independent
   gap). No sheet-layout engine exists to check a break landing on a stud at all.
 
-- ~~**Plywood-by-the-sheet takeoff doesn't carry per-piece install labour.**~~ — **DONE**,
-  in two halves. The `scope` qualifier on `[sheet_goods]` landed in `5ad882a1`, the
-  `"struct-1-plywood:buck rip"` row with it, and `"struct-1-plywood:bearing stiffener rip"`
-  on 2026-09-11. Both rows now carry the piecework the flat $16-34/sheet rate never reached:
-  156 buck frames set square in their ROs, and 152 bevelled stiffener plies nailed at 76
-  rafter ends ($280-600 of framer time over the 2 sheets the saw actually consumes, which is
-  why that row's per-sheet labour is deliberately an order above every other row in the
-  table and is not a typo).
-  **The other two rip scopes are left on the flat rate on purpose** and should stay there:
-  `sheathing rip` bills 1 sheet of 0.625" cdx-plywood and 1 of 0.5" struct-1-plywood, which
-  are offcuts hung as sheathing — exactly what both base rows are basised on, so a scope row
-  would restate the fallback and add a second place to keep in step.
-  **Still open, and it is a cost-code note rather than a price one:** the buck move
-  (2400/openings -> framing) shifts money between two `haus tasks` work packages.
-
-**Deliberately not done, and why:**
-
 - **Deck post/footing and concrete-spec follow-ups**, each blocked on something specific:
   - `SUNKEN_GARDEN_COLUMN_12` still reads the presumptive f'c (3,000 psi) vs
     `PIER_CONCRETE_12`'s migrated 5,000 — blocked on re-oracling `notes/balcony_moment_columns.md`.
@@ -228,12 +77,6 @@ Three things the pass above turned up that are NOT prose and do not belong in a 
     staying at 2.5" — ACI's 3" earth-cast rule doesn't apply to Sonotube-formed columns.
   - Galvashield XPX anodes for the salt-splash sunken-garden walls: undecided (columns already
     declined them in favor of galvanized bar at 3" cover).
-  - ~~Beam-bearing audit: is every wood member bearing on concrete covered by a standoff?
-    `PT-SG-COL`'s grout island is a known outstanding case.~~ — **DONE 2026-09-12.** Twelve
-    seats house-wide, all on an `SS316-SHIM-35` pack: six in the garden (`CN-SG-STDF-*`), six
-    at the north entry (`CN-BW-STDF-*`). The island was not at `PT-SG-COL` any more — the
-    2026-09-10 retype moved it to `PT-BW-RE`/`-RNE` rather than closing it, and it is struck
-    from `PIER_CONCRETE_12` at the source now.
 
 - **Breezeway piers' axial state is INCOMPLETE, demand not faked.** `BM-BW-RW/RE` bear on
   piers with no plan area behind them (the breezeway roof is neither a `Roof` nor a
@@ -327,16 +170,6 @@ Three things the pass above turned up that are NOT prose and do not belong in a 
   what keeps them out of `estimate["unpriced"]`, where the total silently falls. All three
   placements now PASS. The UNKNOWN arm is still covered, on a synthetic fixture rather than
   on the house.
-- **mypy is no longer a gate anywhere (2026-09-09).** `mypy --strict packages/engine/src`
-  reports 2781 errors in 333 files; relaxing implicit-optional, missing imports and
-  `no-untyped-def`/`type-arg`/`misc` still leaves 1119 in 158. It was removed from
-  `ci.yml` and `scripts/verify.sh` for 0.1.0, because a `set -e` script stopping at stage 4
-  meant the builds, `haus check houses/catlin`, the full IFC build and the UI stages were
-  never running. Roughly 2000 of the strict errors are mechanical (missing annotations, bare
-  generics, `no_implicit_reexport` wanting `__all__` on hub modules, absent third-party
-  stubs); about 450 — `arg-type`, `call-overload`, `union-attr`, `index` — want individual
-  review and may be latent bugs. Work it module by module and restore both steps at zero.
-
 
 ### Structural/framing residuals
 
@@ -488,36 +321,27 @@ the future.
 - looks like the garage got switched back to concrete footings. The plan was for compacted aggregate footings (which last I checked are allowed per code as footings)
 - **`TR-SG-LEADER-SE`'s outlet needs a shoe.** Closing the apron's north notches on 2026-09-12 put `W-RG-EAST-BALCONY` under the leader, crest 6" below the outlet, so 200 sf of balcony discharge lands on the cap of a dry-stacked segmental wall unless the outlet turns south. A cast elbow and a 1'-0" shoe to y -11'-3" is the detail; `Downspout` is a vertical run with one outlet elevation, so the model cannot hold it and nothing in `haus check` grades a downspout against a landscape wall. It has to reach the drawings from `params/raised_garden.py`.
 - Make sure the plant room can be hooked up to an automatic watering system in the future. No, the hydrant doesn't count as it is on the exterior side.
-- Pocket door possibly for basement bathroom
 - Double check the electric fireplace will mount into the brick. Brick likely needs a metal lintel to hold the brick part above the fireplace. Oksana also wants the fireplace lower (not eye level, but just a bit above floor level, like a traditional fireplace)
 - Kitchen has lights stuck above cabinets. Might want to swap some cans for under counter lighting. **Still open, and the geometry under it moved 2026-09-11:** the uppers are 15" deep hung at 53", not 13" at 54", so their fronts are 2" further into the room and 1" lower than whatever this item was last looked at against. The five under-cabinet tape runs moved with them.
- - ~~Review the basement concrete dampproofing~~ / ~~Review the basement's protection board~~ — **BOTH CLOSED 2026-09-12.** Researching them found the second already answered and stale, and the first governed by a rule nobody here knew about.
-   - **Minnesota does not permit dampproofing at all.** Minn. R. 1309.0406 subp. 1: "Section R406.1 is deleted in its entirety." Subp. 2 replaces it — every exterior foundation wall that retains earth and encloses below-grade space "shall be waterproofed", with no high-water-table precondition and crawl spaces named — and lists eight acceptable materials. So "a good-value dampproofing product" has no legal answer here. `code.R406_1_dampproofing` was grading a section this state struck; it is `code.MN_1309_0406_waterproofing` now and grades the layer's MATERIAL against subp. 2's list, not merely the presence of a water-control layer.
-   - **The selection is a 60-mil self-adhered rubberised-asphalt sheet** (Bituthene 3000, or Polyguard 650 / MiraDRI 860 as equals) — subp. 2's item 5 and the strongest published numbers of the eight: 0.05 perm, 300% elongation, 200 ft head, crack-cycled 100x at -25 F. **Spec `Bituthene Low Temperature` + `Primer B2 LVC` if the pour lands below 40 F** — the standard grade needs 40 F and would otherwise gate the whole foundation on a warm week.
-   - **The layer was modelled as housewrap.** `damp-proof` pointed at `air-barrier` — Tyvek HomeWrap, 54 perm, 400x off what every other document in the repo assumed — under one price key shared with the roof underlayment and the framed-wall WRB. It is its own `waterproofing` material now, at 0.05 perm, with its own price, its own trade and its own quantity.
-   - **No dimple mat, and free-draining stone instead.** Delta-MS wants its head mechanically fastened to the wall and outboard of 4" of XPS there is nothing to fasten into. 12" of #57 washed stone up 4'-0", geotextile-lined — `[allowances] foundation-free-draining-backfill`.
-   - **No membrane at the sunken garden**, and for a better reason than cost: subp. 2 scopes to walls that enclose below-grade interior space and no W-SG-* wall has a room behind it. What those walls get is the drained backfill the free-body note says nothing in the model provides. It relieves the hydrostatic case; it does **not** fix the R404.4 sliding failure (FS ~0.57 vs 1.50), which still needs a consultant.
-   - **The protection board item was stale.** The 1/2" aluminium-faced board became a 1/8" trowel-applied acrylic coating on 2026-09-04 (houses/catlin/CLAUDE.md; notes/basement_to_framed_wall_detail.md) and anchoring was answered there too. That coating is the **above-grade exposed-XPS band only**, 278 SF of ~1,016 SF — a UV/impact skin, not a below-grade protection course. Below grade there is none, by decision.
-   - Two things that were only schedule bugs and are fixed: the membrane filed on the **siding** trade, so it landed in `task/walls/building` after the roof was on, and the `$0-12.50/SF` allowance sat in the flatwork visit, which `depends_on insp/foundation_backfill`. Both now stand before backfill.
-   - **Still to confirm outside the model:** three metro quotes for installed peel-and-stick on NEW construction (published installed figures are retrofit-weighted), and the pour season.
-   - **Two scope gaps it surfaced, both at 0 FAIL and neither caused by this work.** `W-B-S2-FR` / `W-B-S3-FR` are plain `Wall`s and not `FoundationWall`s, so every foundation check skips them although they carry a real membrane layer (recorded at `plan/storeys/basement.py`); and `W-B-S2` / `W-B-S3` carry `unbalanced_fill=ft(0)`, below `_MIN_RETAINED_FILL = ft(2)`, so they drop out of `_retaining_walls()` entirely. Both are curbs under framed walkout walls, so neither is wrong on the ground — but neither is *graded*, and a future edit that buried one of them would not be caught.
-   - **`Material.product_ref` was NOT set, and it is not an oversight.** The plan called for a `Product` record naming the GCP datasheet so the BOM row reads "GCP Bituthene 3000". `Material.product_ref` can only be set where the material is authored; the material has to live in `library/materials.py` because a LIBRARY assembly (`FOUNDATION_WALL_XPS4_OUTBOARD`) references it; and a library material may not name a house-owned `Product` tag — `Library.products` is populated from `plan/products.py` and every other house would resolve it to `None`. There is no override path: `PlanModel.material()` returns the FIRST match, so a house appending a duplicate tag is shadowed for geometry while WINNING in `product_labels`, which is worse than not doing it. The identity lives in the material's `source` and in the `prices.toml` selection note instead. Closing it properly means either a house-level material-override mechanism or moving the foundation tail out of the library.
+ - **The selection is a 60-mil self-adhered rubberised-asphalt sheet** (Bituthene 3000, or Polyguard 650 / MiraDRI 860 as equals) — subp. 2's item 5 and the strongest published numbers of the eight: 0.05 perm, 300% elongation, 200 ft head, crack-cycled 100x at -25 F. **Spec `Bituthene Low Temperature` + `Primer B2 LVC` if the pour lands below 40 F** — the standard grade needs 40 F and would otherwise gate the whole foundation on a warm week.
+ - **`Material.product_ref` was NOT set, and it is not an oversight.** The plan called for a `Product` record naming the GCP datasheet so the BOM row reads "GCP Bituthene 3000". `Material.product_ref` can only be set where the material is authored; the material has to live in `library/materials.py` because a LIBRARY assembly (`FOUNDATION_WALL_XPS4_OUTBOARD`) references it; and a library material may not name a house-owned `Product` tag — `Library.products` is populated from `plan/products.py` and every other house would resolve it to `None`. There is no override path: `PlanModel.material()` returns the FIRST match, so a house appending a duplicate tag is shadowed for geometry while WINNING in `product_labels`, which is worse than not doing it. The identity lives in the material's `source` and in the `prices.toml` selection note instead. Closing it properly means either a house-level material-override mechanism or moving the foundation tail out of the library.
  - **Still open, small:** `FS-SG-DECK`'s joists are one flat plane on the now-tilted beams, so the model's deck is the deck's SOUTH (low) edge and the real north edge stands up to 2.45" higher. Closing it means teaching `resolve/floors.py` to take each joist's z from its tilted bearings, which reaches `ResolvedFloor.deck_z0_m`/`deck_z1_m` and every room, energy, section and guard consumer that reads them. (make sure the D-S-DECK-E door is aligned with the real height closely enough for easy entrance)
- - The wall that is W-BW-SCREEN has its top and bottom plates going straight through the middle of columns PT-BW-CW and PT-BWCNW. We also find the 3d rendering of the SKIRT, the SCREEN, and the garage wall inelegant in 3d, failing to show how the corrugated siding would be seamless across all three (although this is a nitpick that may not be worth the engine change complexity to render cleanly)
  - frost free wall hydrants fail to full render as penetrations through the exterior cladding, and may also be rendering slightly too low
  - The Disciplines toggles for view options don't always toggle the right things. Footing beddings should probably be "drainage". The 6 concrete columns should be concrete, not framing. Corner flashing shouldn't be roof but wall cladding (such as TR-H-CORNER-SW-1). The concrete walls should be concrete, not walls (although perhaps we should redesign this so some items can be two or more disciplines?).
  - Model a rain garden to the west of the garage gathering water with drain tile from TR-G-LEADER-W and TR-RF-LEADER-W
- - Let's see if we can simplify the number of door types used in the house down at all, with small swaps.
- - ~~Simplifying wall assemblies (the stair-wall family, the three sauna liners, and how to keep the count down).~~ **DONE 2026-09-12** — decision #72 ("a wall tag is one geometry stack"), `advisory.assembly_variety` grading it, eight assemblies converted to `variant_of` + `substitute`, the mudroom/stair twin merged as `INT_2X6_BRG_EXPOSED_PLY`, two dead tags deleted and the glazed wall promoted to the library. Stars turned out to be the wrong lever — they curate the permit set only. `PLANT_EXT_2X6_HUMID` is the one conversion deliberately not made; see its note in `houses/catlin/plan/assemblies.py`.
+ - Double check where soffits have been added and see if they can be removed. Only one is for sure needed, over the second story hallway.
+ - **Rebar (~5 tons, $10,000-18,000) is deliberately inside the `[concrete]` $/cy rates.** If
+  it's ever authored as real elements, cut the concrete rates the same day. We may want to model rebar so it is clearly shown as a model element (selectable separately from concrete in the 3d view)
+ - See if the sunken garden still has a R404.4 sliding failure
+ - Add trim/baseboard — we're generally trimless (clean lines, drywall), but maybe a flush-with-drywall baseboard.
+- Orientation-tuned glass, particularly second-story south-facing windows.
+- Make it easier to "hop" into a given room for 3d viewing and rotate in spot, perhaps with a "fish eye" lens view rendering
 
-`emit/draw/schedules/openings.py` prints only the U-factor column for a door
+ - `emit/draw/schedules/openings.py` prints only the U-factor column for a door
 (`_energy_columns(spec, is_door=True)` returns a 1-tuple and the door header set stops at
 "U-factor"), so A-601 still does not show the new SHGC/VT. Lighting it up means widening the
 door table and re-blessing `test_energy_sheet.py`'s column-count assertion — a schedule-sheet
-change, not an energy one, and deliberately left out of the 2026-09-11 batch.
-
-## Found while doing the 2026-08-23 batch
-
+change
 - **The published web app runs a GEOS version behind the dev venv, and a geometry bug can ship
   green.** `.venv` is GEOS 3.13.1; the Pyodide-based web app is GEOS 3.12.1, which previously
   raised a fatal `TopologyException` unioning basement wall bodies (fixed by routing through
@@ -554,30 +378,3 @@ Still deferred, and each for its own reason:
 Firstly design a house (with permit checks, building science review, floorplan editing in the 2d UI, 3d review, cost reduction and BOM review).
 Secondly gather bids, organize the timeline (inspection gates, etc), then track completed progress.
 Thirdly use the house design as a reference (ie for agents understanding live data on home assistant in context), potentially with feedback loop of updating the design or later running a remodel
-
-### Other visual ideas (just ideas, not a TODO)
-Dark base to the house
-Dark panel along the panel of the corner most panels
-Standing seam clamps to anchor decorative elements, possibly at gable peak, or lightning rod
-Architectural lighting on facade (try to aim to be dark sky friendly)
-
-**From the pattern-language review, 2026-08-29** (`plans/pattern_language_review.md` has the
-number, the pattern and the reasoning against every one of these; rows with a MEASURED number
-are ready to move to `plans/cost-options.md` whenever the owner wants them):
-
-## Takeoff and price-model gaps found by the 2026-08-30 allowance audit
-
-All five were handled **price-side** in `houses/catlin/prices.toml` (rate corrected for the
-true quantity, comment says so). Each is really a takeoff-code fix and a takeoff change alters
-quantities for every house, so each deserves its own commit/test rather than riding in with
-documentation.
-
-Two pricing decisions correct today that become double bills the moment anything moves:
-
-- **Rebar (~5 tons, $10,000-18,000) is deliberately inside the `[concrete]` $/cy rates.** If
-  it's ever authored as real elements, cut the concrete rates the same day — nothing enforces
-  that.
-- ~~**`BASEMENT_12`'s all-in rate absorbs damp-proofing**~~ — CLOSED 2026-09-12. The rates
-  came down: `BASEMENT_12` and `BASEMENT_8` are struck by $7-18/LF at their own yields, and
-  the layer is now `[envelope_layers]."waterproofing"`, a specified 60-mil self-adhered sheet
-  rather than the 54-perm housewrap it had been modelled as.

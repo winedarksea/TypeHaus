@@ -204,15 +204,31 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   by the blocks, then the block's proud 1/2" as a continuous vent gap, then one tier of flat
   horizontal KDAT 2x4 girts at 24" o.c. in free air, then the panel. Each crossing: three
   loose 3-1/2"x3-1/2"x1-1/2" KDAT offcuts stacked to 4-1/2" over every OTHER stud, clamped
-  by one 8" SDWS22800DB through girt + block + sheathing, 1-1/2" into the stud. There is
-  only ONE tier — do not add a second inner one; the foam needs no backing (ESR-4073
-  §4.4.2, ESL-1372) (→ DESIGN-LOG.md, "Shell: framing module and envelope").
-- THE SCREW IS THE ONLY LOAD PATH per crossing, no second tier, no nail — 54% utilised at
-  Exposure C, 38% at Exposure B. Mark the stud line across the girt face as it's laid: the
-  screw is blind through 6" of wood into a 1-1/2" target, invisible once the foam is on —
-  inspect the pattern before the sprayer arrives.
+  by one 8" FASTENMASTER TIMBERLOK (TLOK08) through girt + block + sheathing, 1-1/2" into
+  the stud. There is only ONE tier — do not add a second inner one; the foam needs no
+  backing (ESR-4073 §4.4.2) (→ DESIGN-LOG.md, "Shell: framing module and envelope").
+- THE SCREW IS CHOSEN ON THREAD, NOT LENGTH (2026-09-12). The CLAMPED STACK is 6.0" — girt
+  1-1/2" + block 4-1/2"; the 1/2" ply is nailed to the stud and is NOT a member being drawn
+  together — and plain shank has to span it. TimberLOK threads 2" (ESR-1078 Table 1A) and
+  clears it exactly. The SDWS22800DB this wall carried until 2026-09-12 does NOT: every
+  SDWS22 threads 3" whatever its length (IAPMO UES ER-192 Table 7), so 1" of thread stood
+  inside the stack and jacked the girt off its blocks. **Never substitute a screw here
+  without reading its thread length.** The part is authored on the girt band's `FramingSpec`
+  (`standoff_fastener_*`), and the takeoff bills exactly it.
+- THE SCREW IS THE ONLY LOAD PATH per crossing, no second tier, no nail. Graded as
+  `girt_screw/W-A-N1` beside `wall_panel/W-A-N1` — three states, head pull-through governing
+  at d/c 0.487 (Exposure B, the site's basis; 0.712 at Exposure C). Mark the stud line across
+  the girt face as it's laid: the screw is blind through 6" of wood into a 1-1/2" target,
+  invisible once the foam is on — inspect the pattern before the sprayer arrives. Head seats
+  FLUSH; a head that will not pull down means the wrong screw.
 - There is no WRB — the foam is air/water/vapour/thermal; `plan/transitions.py` names
-  `spray-foam-ext` as the water/thermal plane. Wood and the screw pass happen on the FLAT
+  `spray-foam-ext` as the water/thermal plane. THE FOAM IS **HUNTSMAN HEATLOK HFO HIGH
+  LIFT** (ICC-ES ESR-4073): §4.2 permits 6-1/2" per pass, so 4" is ONE application below
+  80 F (the TDS ladder is 6.5"/4"/3.25" by substrate temperature). Heatlok HFO *Pro*
+  (ESL-1372) is 2"/pass and would force a second mobilisation — do not let it be
+  substituted. **ESR-4073 does NOT evaluate WRB**, so the water plane is an open
+  alternate-approval item under Minn. R. 1300.0110 on Huntsman's own E331/E2178 data
+  (notes/catlin_truss_engineering.md §9). Wood and the screw pass happen on the FLAT
   wall before tilt; fillet the foam against the block sides (BSI-048), never butt square.
 - Everything outboard of sheathing is KDAT — one BOM row, plus `3-2x4:kdat` for the block.
   Blocks are on the STUD module, every OTHER stud, at 32" from the wall's LAYOUT LINE (girts

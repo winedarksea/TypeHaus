@@ -298,8 +298,11 @@ def truss_wall_block_screw_rows(model: ResolvedModel,
                 through_in = (block_m + sheathing_m) / M_PER_IN
                 scope, screws = "truss wall blocks", TRUSS_BLOCK_SCREWS
             required_in = through_in + rules.minimum_structural_embedment_in
-            item, length_in, part_number = screw_for_required_length(
-                ROLE_EXTERIOR_INSULATION_SCREW, required_in)
+            authored = (bands[1].framing if kind == "girt" and bands is not None
+                        else None)
+            clamped_in = (GIRT_STOCK_M + block_m) / M_PER_IN
+            item, length_in, part_number, thread_in = _block_screw_choice(
+                authored, required_in, clamped_in)
             group = groups.setdefault((scope, part_number, round(required_in, 3)), {
                 "item": item, "length_in": length_in, "part_number": part_number,
                 "count": 0, "by_storey": Counter(), "required_in": required_in,
@@ -307,6 +310,7 @@ def truss_wall_block_screw_rows(model: ResolvedModel,
                 "tier": tier if kind == "girt" else None,
                 "one_tier": kind == "girt" and one_tier,
                 "block_in": block_m / M_PER_IN,
+                "thread_in": thread_in, "clamped_in": clamped_in,
                 "spacing_in": (2.0 if one_tier else 1.0) * rules.strip_spacing_in,
             })
             group["count"] += screws
@@ -318,6 +322,45 @@ def truss_wall_block_screw_rows(model: ResolvedModel,
         by_storey=dict(sorted(group["by_storey"].items())),
         basis=_block_screw_basis(group, rules),
     ) for _key, group in sorted(groups.items())]
+
+
+def _block_screw_choice(framing, required_in: float, clamped_in: float) -> tuple:
+    """The screw this row bills: the one the house AUTHORED, else the derived ladder.
+
+    Returns ``(item, length_in, part_number, thread_in)``.
+
+    An authored ``standoff_fastener_part`` is the screw ``engineering/girt_screw.py``
+    graded, so the takeoff bills exactly it — a BOM that ordered a different screw from the
+    one the record stamped would put the two in silent disagreement, which is the failure
+    this branch exists to prevent. The derived ladder stays for every wall that authors
+    nothing, and is unchanged.
+
+    Both paths are held to the THREAD ENGAGEMENT rule: plain shank must span the clamped
+    stack (girt + block). The sheathing is nailed to the stud and is not being drawn
+    together, so it is not in ``clamped_in``. A screw that fails it is refused outright,
+    the same way an under-length one is: thread standing in the clamped members jacks them
+    apart, and a row billing such a screw is worse than no row.
+    """
+    from typehaus.takeoff.hardware_catalog import screw_by_part_number
+
+    part = getattr(framing, "standoff_fastener_part", None) if framing is not None else None
+    if part is None:
+        item, length_in, part_number = screw_for_required_length(
+            ROLE_EXTERIOR_INSULATION_SCREW, required_in)
+        thread_in = item.thread_length_in_by_length_in.get(length_in)
+    else:
+        item, length_in, thread_in = screw_by_part_number(part)
+        part_number = part
+        if length_in + 1e-9 < required_in:
+            raise LookupError(
+                f"authored girt screw {part} is {length_in:g} in and the crossing needs "
+                f"{required_in:.2f} in")
+    if thread_in is not None and length_in - thread_in + 1e-9 < clamped_in:
+        raise LookupError(
+            f"girt screw {part_number} threads {thread_in:g} in of its {length_in:g} in, "
+            f"leaving {length_in - thread_in:g} in of plain shank for a {clamped_in:.2f} in "
+            f"clamped stack — the thread would stand in the members it has to clamp")
+    return item, length_in, part_number, thread_in
 
 
 def _block_screw_basis(group: dict, rules: ExteriorInsulationFastenerRules) -> str:
@@ -339,9 +382,16 @@ def _block_screw_basis(group: dict, rules: ExteriorInsulationFastenerRules) -> s
         # The single load path, and the sentence an estimator has to be able to re-derive:
         # count the blocks, buy that many 8" screws, and there is no second fastener anywhere
         # in this wall.
+        thread = ""
+        if group.get("thread_in") is not None:
+            # The number that decides whether this screw works at all, and the one the old
+            # SDWS row never said: plain shank has to span the clamped stack.
+            thread = (f", {group['thread_in']:g} in thread, all of it past the block "
+                      f"({group['clamped_in']:.2f} in clamped stack spanned by "
+                      f"{group['length_in'] - group['thread_in']:g} in of plain shank)")
         return (f"{GIRT_BLOCK_SCREWS} per block into the stud, through girt "
-                f"(1.5 in) + block ({group['block_in']:.2f} in, 3 plies) + sheathing; one "
-                f"block under every girt course on every other stud "
+                f"(1.5 in) + block ({group['block_in']:.2f} in, 3 plies) + sheathing{thread}; "
+                f"one block under every girt course on every other stud "
                 f"({group['spacing_in']:g} in o.c.) plus one at each free course end, and "
                 f"one under every jamb post and head/sill course {penetration}")
     lands = ("the stud, through girt + block + sheathing" if group["tier"] == INNER

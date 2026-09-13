@@ -25,6 +25,62 @@ bottom has no constraint-index section of its own — the constraints live in
 
 ## Shell: framing module and envelope
 
+### The girt screw went engineered, and the screw itself was replaced (2026-09-12)
+
+`plans/buildability.md` BLD-01b's first finding was that the crossing screw has thread
+engaged in both members with no clamp-up, and that nothing in the house answered it. That
+finding was right, and it had been right for eleven days.
+
+**What nobody had written down is the thread length.** `notes/catlin_truss_engineering.md`
+§3 hand-worked the withdrawal from NDS §12.2 and stopped there. It never stated how much of
+the screw is threaded, never checked whether that thread could clamp anything, never checked
+the head, and cited ESR-2236 — which is the report for the SDS, not the SDWS. The real
+report is **IAPMO UES ER-192, and its Table 7 gives every SDWS22 a 3" thread whatever the
+overall length.**
+
+**The audit's 6-1/2" was wrong, and the right number is 6.0".** The clamped stack is the
+girt (1-1/2") and the block (4-1/2") — the members being drawn together. The 1/2" plywood is
+nailed to the stud, so it is on the stud's side of the joint; counting it as something the
+screw has to clamp is counting the anchor as part of the load. At 6.0" the arithmetic is
+unambiguous: an 8" SDWS leaves 5" of plain shank and stands **1" of thread inside the
+stack**, which jacks the girt off its blocks instead of pulling it down. No amount of driver
+fixes that, and it would have been discovered in the field as "the heads will not pull
+down".
+
+**So the screw left.** FastenMaster **TimberLOK 8" (TLOK08), ICC-ES ESR-1078** (reissued
+2026-01): 2" thread at every length (Table 1A), so 6" of plain shank spans the 6.0" stack
+exactly and the thread starts where the stud does — 1-1/2" of it embedded, above the
+report's 1.25" minimum. Its coating is rated for ACQ-D at or below 0.40 pcf (§4.1.7 /
+Table 6), which the KDAT girt needs. It is also cheaper, which is a coincidence and not the
+reason. Rejected: SDWS221000DB (10" restores the engagement; the owner wants an 8" screw),
+Rothoblaas HBS/TBS 8 mm (3-1/8" thread at every length, and ESR-4645 is dry service only),
+HECO TOPIX-plus (no US report). **HeadLOK 8" (HLGM8) is the recorded alternate** — same 2"
+thread, flat head, 600 lb head pull-through against TimberLOK's 200 — and it is not
+specified only because ESR-1078 Table 2 wants 2.0" of embedded thread for it, which needs
+the 1/2" ply counted and the report is silent on sheathing. A reviewer willing to count it
+should take HeadLOK.
+
+**And the calculation became an item.** `girt_screw/W-A-N1` grades three states — thread
+engagement, withdrawal from the stud, head pull-through of the girt — plus NDS §12.1.4.6's
+6D penetration as an input check, over all 36 `standoff="block"` walls as one design. Head
+pull-through governs at d/c 0.487. It is **register-only**, the `wall_panel` precedent: no
+`engineered()` bridge, no `PermitItemSpec`, no permit ratchet, because the screw is a
+component of an assembly no prescriptive table reaches and there is no prescriptive check
+for an engineered record to answer.
+
+Two choices inside it are worth knowing. **Capacities are read, not derived**: ESR-1078's
+tested 170 lb/in and 200 lb come off the girt band's own `FramingSpec`
+(`standoff_fastener_*`), because `engineering/` may not import the hardware catalog, and
+NDS's `W = 2850 G² D` (95.0 lb/in at G 0.42) is printed only as a cross-check. **C_D is
+1.0**, not NDS Table 2.3.2's 1.6 for wind: that factor belongs to the code equation, and
+applying it to a tested allowable whose report nobody has read would inflate the capacity by
+60% on an assumption. The reviewer is asked to restore it if ESR-1078 §4 permits.
+
+**BLD-01a is not a change.** The panel was already Metal Sales BB75-1111 with a named
+`open_framing_source`, the twenty INCOMPLETE items were already one draft group item at
+bending d/c 0.31, and the cladding screw was already 2", which closes the Metal Sales
+"1/2" past the support" variance. The audit was reading a house that had moved.
+
 ### Three requirements left the engineering register without anybody stamping them (2026-09-11)
 
 `haus engineering` listed a garage-door header, the house roof's I-joist rafters and the

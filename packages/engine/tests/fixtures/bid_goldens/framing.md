@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** bc1e29f205ca2d4e  
-**Lines:** 115
+**Model hash:** 93e7451cffb36a37  
+**Lines:** 116
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -109,6 +109,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | SP4 stud plate tie (2x4) | 6 | ea |  | building |
 | SP6 stud plate tie (2x6) | 319 | ea |  | building |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | 12 | ea |  | building |
+| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 1,131 | ea |  | building |
 
 ## Pours and structural solids
 
@@ -264,6 +265,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | SP4 stud plate tie (2x4) | — |
 | SP6 stud plate tie (2x6) | — |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | — |
+| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | — |
 | Beam (beam) | BM-M-FIRE-LINTEL |
 | Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | BM-SG-BLC, BM-SG-BLE, BM-SG-BLW |
 | Beam — BEAM_KDAT (beam:BEAM_KDAT) | BM-BW-FC, BM-BW-FE, BM-BW-GARAGE-SEAT, BM-BW-HOUSE-SEAT, BM-BW-RE, BM-BW-RW, BM-BW-SCSILL, BM-SG-BKE, BM-SG-BKW |

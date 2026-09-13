@@ -13,6 +13,12 @@ from dataclasses import dataclass, field
 # Stable role keys the take-off selects hardware by. A role is a *condition* in the resolved
 # model, never a product: several products may serve one role, and the catalog decides.
 ROLE_EXTERIOR_INSULATION_SCREW = "exterior_insulation_screw"
+# The ONE screw per crossing of a block-standoff girt wall. Its own role, deliberately kept
+# off the SDWS/SDWH ladder above: that ladder is length-selected and a girt screw is chosen
+# on THREAD length, which the ladder cannot see. A shared role would let
+# ``screw_for_required_length`` hand back an 8" SDWS whose 3" thread stands in the clamped
+# stack and jacks it apart — the exact failure ``engineering/girt_screw.py`` grades.
+ROLE_GIRT_STANDOFF_SCREW = "girt_standoff_screw"
 ROLE_SLOPED_JOIST_HANGER = "sloped_joist_hanger"
 # The strap that carries a rafter's tension THROUGH the ridge to its opposite number.
 # Its own role, not a variant of the sloped hanger: the hanger holds one rafter up in
@@ -210,6 +216,12 @@ class StructuralHardware:
     unit: str = "each"            # purchase unit ("each" | "coil")
     # Length-selected fasteners: available lengths mapped to their published part numbers.
     part_number_by_length_in: dict = field(default_factory=dict)
+    #: Published THREAD length per overall length, where the report states one. Empty means
+    #: nobody has read it, never "fully threaded". It is a different number from the length
+    #: and the one the clamped-stack rule turns on: thread standing inside the members being
+    #: clamped jacks them apart instead of drawing them together, so a screw is chosen on
+    #: ``length - thread >= the stack`` and not on length alone.
+    thread_length_in_by_length_in: dict = field(default_factory=dict)
     # Nominal member sizes this part is published for (empty = size-independent).
     fits_nominal: tuple = ()
     #: Which wood-contact condition this coating is for — :data:`EXPOSURE_DRY` or
@@ -401,3 +413,22 @@ def screw_for_required_length(role: str, required_length_in: float) -> tuple:
         raise LookupError(f"no catalogued {role} reaches {required_length_in:.2f} in")
     length_in, item = min(candidates, key=lambda pair: pair[0])
     return item, length_in, item.part_number_by_length_in[length_in]
+
+
+def screw_by_part_number(part_number: str) -> tuple:
+    """The catalogued screw a house AUTHORED, by part number.
+
+    Returns ``(item, length_in, thread_in)``; ``thread_in`` is ``None`` where the record's
+    report was not read for one. Raises when the part is not catalogued — a BOM line naming
+    a screw nobody has a source for is the failure this refuses, not a row to guess at.
+
+    Its own function rather than a branch of :func:`screw_for_required_length`: that one
+    *derives* a length from a stack and is the right answer when nothing is authored. This
+    one is the case where an engineering record already picked the screw, and the takeoff's
+    job is to bill exactly that and not re-derive a different one.
+    """
+    for item in structural_hardware_catalog():
+        for length_in, catalogued in item.part_number_by_length_in.items():
+            if catalogued == part_number:
+                return item, length_in, item.thread_length_in_by_length_in.get(length_in)
+    raise LookupError(f"no catalogued structural screw has part number {part_number!r}")

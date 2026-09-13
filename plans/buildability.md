@@ -173,10 +173,10 @@ is still the first thing to remove.
 
 | id | Finding | Risk | Verdict | Delta |
 |---|---|---|---|---|
-| BLD-01a | Drop board-and-batten; one wall panel product | HIGH | **SIMPLIFY** | **−$1,704 to −$4,635** |
+| BLD-01a | Drop board-and-batten; one wall panel product | ~~HIGH~~ LOW | **KEEP — resolved 2026-09-11** | re-strike |
 | BLD-12 | No soils report, and the piers make one mandatory | HIGH | **SIMPLIFY** | +$2,500 to $5,000 |
 | BLD-06 | Service load calc rests on unlisted devices | HIGH | **SIMPLIFY** | +$0 or +$10k–15k |
-| BLD-01b | The girt-and-block exterior wall | HIGH | OWNER CALL | unpriced |
+| BLD-01b | The girt-and-block exterior wall | HIGH | **KEEP + ENGINEERED (2026-09-12)** | screw −$0.34/ea |
 | BLD-03 | Two floor systems on the main storey | HIGH | **SIMPLIFY** | **−$7,536 to −$13,486** |
 | BLD-02 | The freestanding concrete structure | HIGH | OWNER CALL | unpriced |
 | BLD-05 | Suite bathroom drain, 0.062" of slack | HIGH | **SIMPLIFY** | ~free if timed right |
@@ -192,6 +192,13 @@ is still the first thing to remove.
 **The two measured simplifications together are −$9,240 to −$18,121** (as of
 `286ef997`; see BLD-01a on why its engineering-register figure needs re-striking).
 
+**METHOD NOTE — the baseline was re-read on 2026-09-12 and this file's is stale.**
+`haus check houses/catlin` reads **1245 pass / 0 fail / 45 unknown / 30 N/A**, and the
+register holds **no INCOMPLETE item at all**. Every `1085 / 3 / 46 / 21` in the tables
+below, and every register count derived from it, is from `286ef997` and is quoted as
+history. Re-strike in a detached worktree at HEAD, per §2's own method, before quoting a
+dollar figure from here.
+
 **What the 2026-09-10 bug-fix pass closed**, leaving every simplification decision
 open: BLD-16 (the profile name, and an `nec_base` field so the 2026 NEC adoption is on
 record), BLD-14 (eight stale cross-references, three comments naming deleted constants,
@@ -202,20 +209,55 @@ Three claims in this file did not survive verification and are corrected in plac
 baseline, the spa GFCI, and the trade-visit count.
 
 **If you do only three things:** authorise the soils report (BLD-12, it gates
-BLD-02 and is code-mandatory for the piers), drop board-and-batten (BLD-01a), and
+BLD-02 and is code-mandatory for the piers), get the foam's own E331/E2178 data for the
+WRB approval (BLD-01b finding 3), and
 put a listed Power Control System behind the service calculation or upsize the
 service (BLD-06).
 
 ## 5. The findings in full
 
-### BLD-01a — Drop board-and-batten. One wall panel product. **HIGH · SIMPLIFY**
+### BLD-01a — Drop board-and-batten. ~~One wall panel product.~~ **KEEP — RESOLVED 2026-09-11**
+
+> **VERDICT REVERSED, 2026-09-12 (owner). The panel stays.** This finding was written
+> against a house that had already moved: commits `0925db4f` and `b4b8afb3` on 2026-09-11
+> named the product, closed the screw, and collapsed the register entry. Specifically —
+>
+> * **The panel is a named product**: **Metal Sales BB75-1111, 11" coverage, 24 ga PVDF**,
+>   on-label over "Lumber – 1x or thicker" OPEN framing in the manufacturer's own words,
+>   which `Material.open_framing_source` now carries verbatim.
+> * **The twenty INCOMPLETE items are gone.** They are **one draft group item,
+>   `wall_panel/W-A-N1`**, computing bending d/c **0.31** against the manufacturer's
+>   published 58 psf at 24" and withdrawal d/c **0.12** from NDS 2018 §12.2. The register
+>   holds no INCOMPLETE item anywhere. **The stated failure mode — "twenty engineered items
+>   no engineer can close" — no longer exists.**
+> * **The cladding screw is 2", Type 17 wood point**, which closes the Metal Sales
+>   "1/2" past the inside face of the support" variance outright. It is no longer open.
+>
+> **Three paragraphs below are SUPERSEDED and are kept only as the record of what was
+> searched.** The 20"-coverage claim, the ESR-4730 reading and the "Metal Sales publishes 10
+> and 12 only" finding were all against a product this house does not specify: BB75-1111 is
+> **11"**, and ESR-4730 is Western States' report for a different panel. What survives of
+> that research is its conclusion — that no report covers a concealed panel on open wood
+> girts — and that is exactly why `wall_panel` is an engineered item rather than an UNKNOWN.
+>
+> **The published alternative, recorded and not taken.** **AEP Span Flush Panel**, IAPMO UES
+> **ER-309** Tables 6.6/6.7: 24 ga, 12" coverage, **66 psf ASD negative at 24" over "Lumber
+> (DFL) 1" min" open framing**. That is a published span table for this exact condition, so a
+> Flush Panel would leave the register entirely as a `PublishedSpan` — the PBR precedent. It
+> is not taken because the owner wants the batten line and the item computes at 0.31. See
+> `notes/board_batten_girt_span.md` §7.9.
+>
+> **The dollar delta is kept, re-labelled.** −$1,704 to −$4,635 at `286ef997` is now the
+> **cost of the appearance**, not a saving on the table, and it needs re-striking at HEAD
+> before it is quoted.
+
 
 | | |
 |---|---|
 | element | twenty `layer_materials=` overrides in `plan/storeys/{main,second,attic}.py`, plus the corner-trim material in `params/roof_trim.py` |
 | what a sub sees | Two different concealed- and exposed-fastener metal wall panels on one house, on different elevations |
-| failure mode | Not a site failure. A permit failure: twenty engineered items that no engineer can close, because the governing limit state is unpublished |
-| risk | **HIGH** — it is twenty of the twenty-five open items on the calculation package |
+| failure mode | ~~A permit failure: twenty engineered items that no engineer can close~~ **SUPERSEDED** — withdrawal is now computed per NDS §12.2 and the item is draft |
+| risk | ~~**HIGH** — it is twenty of the twenty-five open items on the calculation package~~ **LOW as of 2026-09-11** — one draft group item, d/c 0.31 |
 | trade | Siding. Does not change the visit count |
 | simplification | Clad the twenty north and south walls in `pbr-panel-26`, the exposed-fastener panel already used on every other elevation. PBR is prescriptive here: ASC, Metal Panels Inc. and Homewood publish span tables giving 144 to 168 psf at 3'-0" |
 | cost of the cut | Appearance only. The north and south facades lose the 20-inch batten rhythm and read as PBR like the rest of the house. Exposed fasteners become visible on those elevations |
@@ -251,7 +293,9 @@ dollar delta is as of `286ef997` and should be re-struck the same way.
 note records that no manufacturer publishes the withdrawal allowable. Three
 further facts came back:
 
-- **The one evaluation report that covers a board-and-batten panel forbids this
+- **SUPERSEDED — this is the wrong panel's report.** ESR-4730 is Western States'; the
+  house specifies Metal Sales BB75-1111. Kept as the record of what was searched.
+  **The one evaluation report that covers a board-and-batten panel forbids this
   application outright.** Western States' ESR-4730 §5.2 and §4.2 both state the
   panels "must be backed by a solid substrate." Its Table 2 evaluates their
   board-and-batten at **8-inch width with support fasteners at 12 inches maximum**,
@@ -261,7 +305,8 @@ further facts came back:
   The guide says the panel is used over open purlins and that "most details in this
   guide are shown with panels attached to open framing." The guide sells you open
   framing; the report the official reads forbids it.
-- **The specified panel may not exist at the second source.** Metal Sales'
+- **SUPERSEDED — BB75-1111 is 11" coverage and it is the specified product.**
+  **The specified panel may not exist at the second source.** Metal Sales'
   board-and-batten is published at **10-inch and 12-inch coverage only**, over steel
   framing 18 ga or thicker, plywood, oriented strand board or 1x lumber. There is no
   20-inch product and no girt spacing given. McElroy's is 12-inch over solid deck;
@@ -277,46 +322,74 @@ screw's grip in a 1 1/2-inch flat treated girt is, and nobody publishes that
 either.** BLD-01a removes twenty items from the register and does not remove the
 underlying physical question, which belongs to BLD-01b.
 
-### BLD-01b — The girt-and-block exterior wall. **HIGH · OWNER CALL**
+**And that caveat is the one thing in this finding that aged perfectly.** "The screw's grip
+in a 1 1/2-inch flat treated girt is the limit, and nobody publishes that either" was
+right — and as of 2026-09-12 it is a named item, `girt_screw/W-A-N1`, with the head
+pull-through of that very girt governing at d/c 0.487. See BLD-01b finding 1.
+
+### BLD-01b — The girt-and-block exterior wall. **HIGH · KEEP + ENGINEERED (2026-09-12)**
+
+> **OWNER DECISION: the wall stays, and the screw goes engineered — with the screw
+> replaced.** Finding 1 below is REAL and it was unanswered, which is why this is not a
+> "keep as is". Finding 4 is WRONG and is corrected. Findings 2 and 3 stand, and 3 is now
+> stated as an open approval item rather than a generic argument.
+>
+> **What changed in the house.** The crossing screw is **FastenMaster TimberLOK 8"
+> (TLOK08), ICC-ES ESR-1078**, replacing the SDWS22800DB, and it is graded as
+> `girt_screw/W-A-N1` — three limit states over all 36 `standoff="block"` walls as one
+> design, head pull-through governing at **d/c 0.487**. The screw's numbers are authored on
+> the girt band's `FramingSpec` and the takeoff bills exactly the part the record stamped.
+> `notes/catlin_truss_engineering.md` §3 is the oracle and was rewritten with it.
+
 
 | | |
 |---|---|
-| element | `EXT_2X6` in `houses/catlin/plan/assemblies.py`, on 34 walls |
+| element | `EXT_2X6` (34 walls) and `PLANT_EXT_2X6_HUMID` (2) in `houses/catlin/plan/assemblies.py` — **36 walls**, one design |
 | what a sub sees | Four inches of spray foam on the *outside* of the sheathing with no housewrap, horizontal treated 2x4s floating in mid-air on stacks of loose offcuts, and one long screw holding each stack |
-| risk | **HIGH** — buried, structural, and it is the cladding attachment for the whole house |
+| risk | **HIGH** — buried, structural, and it is the cladding attachment for the whole house. Now GRADED, which is not the same as reduced |
 | trade | Framer, foam sub, siding crew, window sub. Four visits and an inspection hold |
 
 **Scale of the operation, from the takeoff:**
 
 | Item | Quantity | Priced |
 |---|---|---|
-| SDWS22800DB 8" timber screws | **1,118**, one per crossing | $1,286 – $1,957 |
+| ~~SDWS22800DB~~ **TLOK08** 8" timber screws | ~~1,118~~ **1,131**, one per crossing | ~~$1,286 – $1,957~~ **$916 – $1,244** |
 | `3-2x4:kdat` block stock (3,354 offcuts, stacked in threes) | 344 LF | $1,514 – $2,305 |
 | `2x4:kdat` flat girts | 2,790 LF | $5,580 – $8,928 |
 | 4" exterior closed-cell spray foam | — | $22,003 – $34,093 |
 | **Standoff system subtotal** | | **$8,379 – $13,190** |
 
 The material price is not the risk. Cutting and stacking 3,354 offcuts, marking the
-stud line across each girt face as it is laid, and driving 1,118 blind eight-inch
+stud line across each girt face as it is laid, and driving 1,131 blind eight-inch
 screws is per-piece work, and `plans/TODO.md` already records this exact class of
 under-billing for the window bucks.
 
 **Four findings from outside the model. The first is a specific, checkable defect.**
 
-1. **The screw may not be able to clamp the joint, and that is a different failure
-   mode from the one the engineering note grades.** Simpson publishes the
-   SDWS22800DB with a **2 3/4-inch thread length**. The side member here is girt
-   1.5 inches plus block 4.5 inches plus sheathing 0.5 inches, **6.5 inches total**,
-   so the threaded portion runs from 5.25 to 8.0 inches under the head. That puts
-   roughly **1 1/4 inches of thread in the block and sheathing** rather than all of
-   it in the stud. Threads engaged in *both* members prevent clamp-up: the screw
-   jacks the girt off the block instead of drawing it tight. Simpson's own table
-   note adds that published values assume pull-through of a **1 1/2-inch** side
-   member; nobody has tested a 6.5-inch one. Withdrawal from the stud computes to
-   about 280 lb at a load duration factor of 1.0 and 449 lb at 1.6, which is in the
-   range the house's note works with — but **withdrawal is not the question raised
-   here**. This wants checking against `notes/catlin_truss_engineering.md` before
-   anything else in this file.
+1. **ANSWERED, AND THE FINDING WAS RIGHT. The screw could not clamp the joint, and the
+   screw has been replaced.** The mechanism is exactly as stated — thread engaged in both
+   members prevents clamp-up and jacks the girt off the block — and nothing in the house
+   answered it, because nothing in the house had ever written down the thread length.
+   Three corrections to the arithmetic, none of which changes the verdict:
+   * **The thread is 3", not 2 3/4".** The right report is **IAPMO UES ER-192 Table 7**
+     (the SDWS), not ESR-2236 (the SDS, which the house's own note cited). Every SDWS22
+     threads 3" whatever its overall length.
+   * **The clamped stack is 6.0", not 6.5".** Girt 1-1/2" + block 4-1/2". The 1/2" plywood
+     is **nailed to the stud**, so it is on the stud's side of the joint and is not a member
+     being drawn together; counting it is counting the anchor as part of the load. At 6.0"
+     the 8" SDWS leaves 5" of plain shank and stands **1" of thread inside the stack**.
+   * **The pull-through observation was the sharpest part of the finding.** The 1-1/2" side
+     member the table assumes IS the girt — a single flat 2x4 — not the 6.5" through-count.
+     That is now a graded state, and at **200 lb** against a 97.4 lb demand it is the
+     **governing** one of the three.
+   **The fix: TimberLOK 8" (TLOK08), ESR-1078 Table 1A — 2" thread**, so 6" of plain shank
+   spans the 6.0" stack exactly and 1-1/2" of thread lands in the stud, above the report's
+   1.25" minimum. Coating rated for ACQ-D ≤ 0.40 pcf (§4.1.7 / Table 6). It is also $0.34
+   cheaper per screw. Rejected: SDWS221000DB (10" restores engagement; the owner wants 8"),
+   Rothoblaas HBS/TBS 8 mm (3-1/8" thread at every length, ESR-4645 dry service only), HECO
+   TOPIX-plus (no US report). **HeadLOK 8" (HLGM8) is the recorded alternate** — same 2"
+   thread, 600 lb pull-through — held back only because ESR-1078 Table 2 wants 2.0" embedded
+   thread for it, which needs the 1/2" ply counted and the report is silent on sheathing.
 2. **The prescriptive attachment table does not reach this wall, on three counts.**
    IRC Table R703.15.2 requires foam with a minimum compressive strength of 15 psi
    per ASTM C578 or C1289; closed-cell spray foam is neither, it is C1029, so the
@@ -328,7 +401,23 @@ under-billing for the window bucks.
    count. The blocks bearing directly on sheathing rather than on foam is
    structurally better than the tabulated case, but it means no table and no
    evaluation report applies and the connection is engineered by default.
-3. **Foam as the water barrier is achievable, but only product by product.** BASF's
+   **STANDS, and it is now acted on rather than noted.** "Engineered by default" is exactly
+   decision #65's condition, and as of 2026-09-12 the connection has a name
+   (`girt_screw/W-A-N1`), a computed demand, three read capacities and a fingerprint a seal
+   pins to. The same reasoning the DESIGN-LOG records at "Three requirements left the
+   engineering register" (L178-181) applies in reverse here: no published table reaches it,
+   so it stays in the register.
+3. **STANDS, AND IT IS AN OPEN APPROVAL ITEM — stated as one rather than argued.** The
+   product is now named: **Huntsman Heatlok HFO High Lift, ICC-ES ESR-4073**. But **ESR-4073
+   does not evaluate WRB at all**, so naming the product does not close this. The only report
+   found granting ccSPF a WRB listing is **Icynene ProSeal Eco (ESR-3493 §4.6, 1-1/2"
+   minimum), and it expired in 2021**. Approval therefore runs through **Minn. R. 1300.0110**
+   on **Huntsman's own ASTM E331 and E2178 data for the product actually bought** — which is
+   this finding's own instruction, and it is not yet done. It is recorded in
+   `notes/catlin_truss_engineering.md` §9, in the assembly comment and in `prices.toml`, so
+   the next reader cannot take §1's "the foam is the water plane" as a closed question.
+   The BASF paragraph below is kept as the shape of what an acceptable report looks like.
+   **Foam as the water barrier is achievable, but only product by product.** BASF's
    ESR-2642 §4.5 permits WALLTITE LWP as an alternative to the prescribed
    water-resistive barrier at one inch minimum, **provided all construction joints
    and penetrations are sealed with the same foam**. Two conditions bite: §3.2
@@ -341,9 +430,17 @@ under-billing for the window bucks.
    official approves an alternate only on finding it at least equivalent. **Hand
    the reviewer the evaluation report for the specific foam the sprayer actually
    buys, not a generic argument.** No Minnesota precedent was found.
-4. **Four inches is three or four passes, not two, and it is weather-dependent
-   work on a critical-path day.** Industry guidance caps a lift at about 1 1/2
-   inches with a cool-down between, so 4 inches is three passes minimum. Exterior
+4. **CORRECTED — the 1 1/2-inch lift figure does not apply to this foam.** It is legacy
+   SPFA guidance. **ESR-4073 §4.2 permits 6-1/2" per pass**, and the product's TDS gives the
+   ladder by substrate temperature: **6.5" at or below 70 °F, 4" at 70–80 °F, 3.25" above
+   80 °F**. So **"one 4-inch application" holds below 80 °F** — which is the design, and the
+   labour case the whole one-tier wall was built on. What is real is the temperature condition:
+   spray above 80 °F and it becomes two lifts and a second mobilisation. (Heatlok HFO **Pro**
+   is a different product, ESL-1372, at 2"/pass; do not let a supplier substitute it.) The
+   rest of this finding stands and is worth keeping — the substrate minimum, the wind
+   shutdown, and **specify a minimum thickness, never an average**.
+   ~~Industry guidance caps a lift at about 1 1/2
+   inches with a cool-down between, so 4 inches is three passes minimum.~~ Exterior
    application adds a 50°F substrate minimum on most formulations and a shutdown
    above roughly 10 to 15 mph of wind. Thickness shortfall is the single
    most-reported dispute in this trade and it is verified by the owner with a stiff
@@ -813,8 +910,9 @@ one contract.
 ### BLD-10 — Seven cladding materials, three scopes, and a rule with no enforcement. **MED · SIMPLIFY**
 
 Three standing-seam profiles, board-and-batten, PBR panel, corrugated, and a flat
-PVDF aluminium band. BLD-01a removes one. The remaining question is whether three
-standing-seam profiles are three products or one.
+PVDF aluminium band. ~~BLD-01a removes one.~~ **BLD-01a was reversed on 2026-09-12 and the
+board-and-batten stays, so the count is unchanged at seven.** The remaining question is
+whether three standing-seam profiles are three products or one.
 
 **This is probably three separate scopes, not one crew.** These are different skill
 classes rather than different products. Exposed-fastener PBR and corrugated screw
@@ -996,11 +1094,13 @@ owner-GC owns personally.
 These were researched and came back empty. Each is a phone call or a spreadsheet
 download, not more searching.
 
-1. **Does the SDWS22800DB clamp up through a 6.5-inch side member?** Simpson's
-   published values assume a 1.5-inch side member and a 2 3/4-inch thread. This is
-   the one item in the file that could invalidate a structural note, and it should
-   go to Simpson's engineering line and to `notes/catlin_truss_engineering.md`
-   before anything else here is acted on. (BLD-01b)
+1. ~~**Does the SDWS22800DB clamp up through a 6.5-inch side member?**~~ **CLOSED
+   2026-09-12 — no, and the screw was replaced.** It did not need a phone call: IAPMO UES
+   ER-192 Table 7 publishes the thread length (3" at every length), the clamped stack is
+   6.0" once the stud-nailed sheathing is taken off the girt's side of the joint, and the
+   arithmetic closes itself. The screw is now TimberLOK TLOK08 (ESR-1078, 2" thread) and the
+   joint is graded as `girt_screw/W-A-N1`. `notes/catlin_truss_engineering.md` §3 was
+   rewritten. (BLD-01b finding 1)
 2. **Will a Minnesota electrical inspector accept an energy-management credit in
    the service calculation, and under what listing?** No Minnesota bulletin,
    amendment list or guidance was published for the 2026 code. Call the Department

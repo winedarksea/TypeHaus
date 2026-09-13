@@ -29,6 +29,7 @@ from typehaus.takeoff.hangers import hung_connections
 from typehaus.takeoff.hardware_catalog import (
     ROLE_EXPOSED_FASTENER_PANEL_SCREW,
     ROLE_EXTERIOR_INSULATION_SCREW,
+    ROLE_GIRT_STANDOFF_SCREW,
     ROLE_KNEE_BRACE,
     ROLE_MUDSILL_ANCHOR,
     ROLE_PIPE_CLAMP,
@@ -171,8 +172,11 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     """
     from typehaus.resolve.framing.truss_wall import girt_block_tier
 
-    rows = [row for row in hardware_takeoff(catlin_model)
-            if row["role"] == ROLE_EXTERIOR_INSULATION_SCREW]
+    all_rows = hardware_takeoff(catlin_model)
+    rows = [row for row in all_rows if row["role"] == ROLE_EXTERIOR_INSULATION_SCREW]
+    # The girt crossing screw has its OWN role since 2026-09-12: it is selected on thread
+    # length, which the length-ordered exterior-insulation ladder cannot see.
+    girt_rows = [row for row in all_rows if row["role"] == ROLE_GIRT_STANDOFF_SCREW]
     # ONE "exterior wall furring" row, and it is the garage ICF stem's protection band.
     # `GARAGE_ICF_6`'s stem walls are filed on the `basement` storey
     # (params/foundations.py), which is what separates them from the house's truss-wall
@@ -194,9 +198,17 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # ONE row: the screw goes through everything in one pass and lands in the stud:
     #   1.5 girt + 4.5 block (3 plies) + 0.5 sheathing + 1.5 into the stud       = 8.00 in
     # Wood-to-wood the whole way with continuous lateral support.
-    row = next(r for r in rows if r["scope"] == "girt wall blocks")
-    assert row["size"] == "8 in" and row["part_number"] == "SDWS22800DB"
-    assert not [r for r in rows if r["scope"].startswith("girt wall block-")], \
+    #
+    # ** THE PART IS AUTHORED, NOT DERIVED (2026-09-12). ** The girt band's FramingSpec names
+    # TLOK08, so the takeoff bills the screw `engineering/girt_screw.py` graded rather than
+    # re-deriving one from the stack — a BOM ordering a different screw from the one the
+    # record stamped would put the two in silent disagreement. The SDWS22800DB the ladder
+    # used to pick threads 3 in at every length (ER-192 Table 7) and stands 1 in of that
+    # inside the 6.0 in clamped stack, which is why it left.
+    row = next(r for r in girt_rows if r["scope"] == "girt wall blocks")
+    assert row["size"] == "8 in" and row["part_number"] == "TLOK08"
+    assert "2 in thread, all of it past the block" in row["basis"], row["basis"]
+    assert not [r for r in girt_rows if r["scope"].startswith("girt wall block-")], \
         "the two-tier scopes are gone with the inner girt"
     # ONE screw per block, not two: the girt lying across the block is continuous and screwed
     # at every block along its run, so there is no rotation for a second to resist. And there
@@ -214,10 +226,12 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     blocks = sum(1 for w in catlin_model.walls for m in w.members
                  if m.category == "truss_block" and girt_block_tier(m.child_key) is not None)
     assert row["count"] == blocks > 0
-    # It is the only structural screw this role bills ON THE HOUSE — the roof's 581 came out
-    # with the nailbase, and the inner tier's took the second wall row with it. The other 221
-    # are the garage ICF stem's protection band (see above), which is a different building.
-    assert row["count"] + furring[0]["count"] == sum(r["count"] for r in rows) > 0
+    # The two roles between them bill every structural screw through anything on this house
+    # — the roof's 581 came out with the nailbase, and the inner tier's took the second wall
+    # row with it. The 224 on the insulation role are the garage ICF stem's protection band
+    # (see above), which is a different building.
+    assert girt_rows == [row], "the girt crossing screw is one row and one part"
+    assert furring[0]["count"] == sum(r["count"] for r in rows) > 0
     # 1114 since 2026-09-03: the garden/garage window work moved the openings the girt
     # courses pack around, and the block count follows the blocks, not a literal here — the
     # assertion above already ties it to the resolved model, and this one is the tripwire

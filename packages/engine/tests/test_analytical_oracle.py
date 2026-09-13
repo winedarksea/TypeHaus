@@ -136,5 +136,6 @@ def test_roof_beam_line_loads_sum_to_the_records_uniform_load(solved):
 def test_the_gaps_name_what_the_note_says_is_not_modelled(solved):
     _, model, _, _ = solved
     joined = "\n".join(model.gaps)
-    for item in ("retaining_system/W-SG-ARCH", "wall_panel/W-A-N1", "lateral_uplift/RF-HOUSE"):
+    for item in ("retaining_system/W-SG-ARCH", "wall_panel/W-A-N1", "girt_screw/W-A-N1",
+                 "lateral_uplift/RF-HOUSE"):
         assert item in joined

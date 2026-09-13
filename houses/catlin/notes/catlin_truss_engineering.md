@@ -5,8 +5,9 @@
 carried on 4-1/2" blocks, standing in free air outboard of 4" of closed-cell spray foam.
 Every number below is recomputed here from first principles, with the arithmetic shown, so a
 reviewer can check the whole chain without opening the model.
-**Oracle for:** `typehaus/wind.py`, reproduced by `tests/test_wind_loads.py`; and the
-`rafter/RF-*` deferral in `engineering/deferred.py`.
+**Oracle for:** `typehaus/wind.py`, reproduced by `tests/test_wind_loads.py`; the
+`rafter/RF-*` deferral in `engineering/deferred.py`; and **§3 for
+`typehaus/engineering/girt_screw.py`**, reproduced by `tests/test_girt_screw_calcs.py`.
 **What is asked of the reviewer:** this is a plain NDS connection design under IRC R301.1.3
 engineered design. It is not a prescriptive furring schedule and does not claim to be one.
 See §6 (Code path) for why IRC Table R703.15.1 is not the applicable provision.
@@ -170,78 +171,171 @@ well under one.
 
 ---
 
-## 3. Screw withdrawal — the governing check, and the ONLY load path
+## 3. The girt crossing screw — the ONLY load path, and three limit states
 
-Simpson **SDWS22800DB**, 0.220" shank x 8" long, DB (double-barrier) coating rated for
-treated lumber.
+**FastenMaster TimberLOK, 8", part TLOK08** — 0.189" shank, **2" thread** (ICC-ES ESR-1078,
+reissued 2026-01, Table 1A). Coating rated for ACQ-D at or below 0.40 pcf (§4.1.7 / Table 6),
+which is what the KDAT girt it passes through requires.
 
-NDS 2018 §12.2.3, wood screw withdrawal, W = 2,850 · G² · D lb per inch of thread
-penetration; SPF G = 0.42, D = 0.220":
+**Superseded 2026-09-12:** this was the Simpson SDWS22800DB. It is not a preference change —
+see "the engagement check" below; the SDWS cannot clamp this stack, and nothing in the house
+had ever written down the thread length that decides it.
 
-```
-W = 2,850 · 0.42² · 0.220 = 2,850 · 0.1764 · 0.220 = 110.6 lb/in
-```
-
-**The screw's length, term by term** — and the term that matters is the last one:
+### 3.1 The screw's length, term by term — and there are TWO stacks, not one
 
 ```
-girt                  1-1/2"
-block, three plies    4-1/2"
-sheathing               1/2"
+girt                  1-1/2"  \
+block, three plies    4-1/2"  /  the CLAMPED STACK       6"
+sheathing               1/2"     nailed to the stud
                       ------
 through                 6-1/2"
 screw                   8"
                       ------
-into the stud           1-1/2"     <- the thread penetration the design is worked at
+into the stud           1-1/2"     <- the embedded thread the design is worked at
 ```
 
-The stud is 5-1/2" deep, so 3" more is available and the screw is nowhere near bottoming.
-1-1/2" is 6.8 D against NDS §12.1.4.6's 6 D minimum for a wood screw's penetration.
+The distinction is the correction. **The sheathing is nailed to the stud**, so it is on the
+stud's side of the joint and is not one of the members being drawn together. The clamped
+stack is therefore **6.0"**, not the 6-1/2" a through-count gives. Everything below turns on
+that number.
+
+The stud is 5-1/2" deep, so 3" of penetration is available and the screw is nowhere near
+bottoming out.
+
+### 3.2 The engagement check — the one this note did not previously make
+
+A lag-type screw draws two members together only if the members being clamped are spanned by
+**plain shank**. Thread biting in the near member jacks it away from the far one and the
+joint stands open, whatever the withdrawal number says.
 
 ```
-W_ref = 110.6 x 1.5              = 166 lb
-W_ASD = 166 x C_D(1.6, wind)     = 265 lb
+required:  plain shank  >=  clamped stack
 
-utilisation = 142 / 265 = 54 %   (Exposure C, the design basis)
-            = 102 / 265 = 38 %   (Exposure B, the site's actual exposure)
+TimberLOK 8":   8" - 2" thread = 6.0" shank   vs  6.0" stack   ->  OK, exactly
+SDWS22800DB:    8" - 3" thread = 5.0" shank   vs  6.0" stack   ->  1.0" of thread
+                                                                   INSIDE the stack
 ```
 
-**54 % is the honest headline and it is a real change** — the two-tier wall's screws were at
-36 %, each carrying half of a smaller tributary. Three conservatisms are stacked on top of
-that 54 %, and a reviewer should know which:
+**Every SDWS22 has a 3" thread whatever its overall length** — IAPMO UES ER-192 Table 7.
+That is the fact this note was missing. An earlier draft cited ESR-2236, which is the
+report for the SDS, not the SDWS. At 8" long the SDWS stands an inch of thread in the girt
+and block and jacks the girt off its blocks; the fix at 10" (SDWS221000DB) restores the
+engagement and the owner wants an 8" screw. TimberLOK's 2" thread clears the stack exactly
+and starts where the stud does.
 
-- **Exposure C on a site that is Exposure B by surroundings.** At B it is 38 %.
-- **The zone 5 CORNER suction applied over the whole house.** The field (zone 4) is 19 %
-  lower; at Exposure B in the field it is 31 %.
-- **1-1/2" of thread**, where 3" is physically available. Driving to 2" — which the screw
-  reaches without help — takes it to 40 % at Exposure C. The design is worked at 1-1/2"
-  because 1-1/2" is what a field crew can be held to.
+Rothoblaas HBS/TBS 8 mm was checked and rejected — 3-1/8" thread at every length, and
+ESR-4645 is dry-service only. HECO TOPIX-plus has no US evaluation report.
 
-**There is no redundancy behind it, and that is the trade the one-tier wall made.** The
-two-tier wall put two independent screws at every station on two different modules. This one
-puts one, and it is the only thing tying the cladding assembly to the structure. What buys
-it back: the screw carries **no gravity at all** (§4), the pattern is simple enough to
-inspect from the ground before the foam goes on, and the girt lying across the blocks is
-continuous and screwed at every block along its run, so no single screw is resisting a
-rotation on its own.
+### 3.3 Withdrawal from the stud
 
-> **For the reviewer.** Substitute the ESR-2236 tabulated withdrawal value for the SDWS in
-> place of the NDS general equation if you prefer; it is the same order of magnitude. The
-> point of the general equation here is that it is checkable without a proprietary report.
+ESR-1078 **Table 2**, withdrawal per inch of embedded thread, SPF G = 0.42:
+
+```
+W      = 170 lb/in                          (ESR-1078 Table 2, published test value)
+p      = 1-1/2" of embedded thread          (§3.1)
+Z      = 170 x 1.5 x C_D(1.0)  =  255 lb
+```
+
+**C_D is 1.0 and that is deliberate.** NDS Table 2.3.2 would give 1.6 for wind, but that
+factor belongs to the NDS equation; applying it to a *tested* allowable whose report does
+not authorise it would inflate this capacity by 60 % on a clause nobody has read. **The
+reviewer is asked to check ESR-1078 §4 and restore 1.6 if the report permits it** — the
+design passes either way and this note states the conservative reading.
+
+**C_M is 1.0, dry service.** The embedded thread lands in a stud inside a continuous
+closed-cell foam air and water barrier. 0.7 (wet service) is the alternate if a reviewer
+disagrees, and would put the capacity at 179 lb — still passing.
+
+**Cross-check against the code's own equation**, printed the way
+`notes/board_batten_girt_span.md` prints ER-309's DFL row:
+
+```
+NDS 2018 §12.2.1   W = 2,850 G² D = 2,850 x 0.42² x 0.189 = 95.0 lb/in   (unadjusted)
+```
+
+The tested 170 lb/in governs; the general equation is here so a reviewer can see the two are
+the same order and the report is not an outlier.
+
+**NDS §12.1.4.6 minimum penetration:** 6 D = 6 x 0.189" = **1.134"**, against 1.5" embedded.
+Satisfied with margin.
+
+### 3.4 Head pull-through of the girt
+
+ESR-1078 **Table 3**, 1-1/2" side member. The girt IS that side member — a single flat 2x4
+of KDAT at SG 0.55 — so the table's assumption is the built condition and not an analogy:
+
+```
+head pull-through = 200 lb
+```
+
+This is the *lowest* of the three capacities and it is what governs. HeadLOK 8" (HLGM8) is
+the recorded alternate: same 2" thread, flat head, 600 lb pull-through at SG 0.55 — three
+times the margin. It is not specified because ESR-1078 Table 2 wants **2.0"** of embedded
+thread for it, which needs the 1/2" ply counted on the stud side, and the report is silent
+on sheathing. If the reviewer is willing to count it, HeadLOK is the better screw.
+
+### 3.5 The demand, and the three ratios
+
+The site's own basis — **115 mph V_ult, Exposure B, Risk Category II** — at the building's
+mean roof height of 25.60 ft, worked in full in `notes/board_batten_girt_span.md` §2-§4 and
+recomputed identically here because the panel and the screw carry **one** suction:
+
+```
+q_h      = 19.27 psf
+GC_p     = -1.4   (ASCE 7-16 Fig. 30.3-1, Zone 5 corner, at 1.33 ft² effective area)
+GC_pi    =  0.18  (Table 26.13-1, enclosed)
+strength = 19.27 x (1.4 + 0.18)         = 30.44 psf
+ASD      = 0.6 x 30.44                  = 18.27 psf      (ASCE 7-16 §2.4.1)
+
+tributary = 32" x 24"                   = 5.33 ft²
+demand    = 18.27 x 5.33                = 97.4 lb per crossing
+```
+
+| limit state | demand | capacity | d/c |
+|---|---|---|---|
+| thread engagement (shank across the clamped stack) | 6.0 in | 6.0 in | **1.000** |
+| withdrawal from the stud | 97.4 lb | 255 lb | 0.382 |
+| **head pull-through of the girt** | 97.4 lb | **200 lb** | **0.487** |
+| minimum penetration, 6 D | 1.134 in | 1.500 in | 0.756 |
+
+Engagement is a *detailing* row: it reads 1.000 because the screw fits exactly, which is the
+right answer and not a margin to be spent. The governing strength state is head pull-through
+at **d/c 0.487**.
+
+**Exposure C, printed as the alternate.** §2 works the same wall at Exposure C (26.7 psf
+suction, 142 lb per crossing) as a conservatism on a site that is Exposure B by its
+surroundings. At C the ratios are 0.558 withdrawal and **0.712 pull-through** — still
+passing, on a basis the site does not need.
+
+### 3.6 What a reviewer should know about the wood
+
+**The main-storey studs are LSL, which is outside ESR-1078 §3.2's scope.** They are graded
+here at SPF, **G 0.42** — conservative against LP's ~0.50 equivalent — and a reviewer is
+asked to confirm or replace that reading. The second-storey and attic studs are ordinary
+dimensional SPF and the value is exact for them.
 
 **Lateral support.** The screw is wood-to-wood over its whole through-length with no gap, no
-foam and no standoff in the path. This is an ordinary NDS connection, not a cantilevered
+foam and no standoff in the path. This is an ordinary connection, not a cantilevered
 fastener through insulation.
 
-**Stainless was considered and rejected.** SDWS27800SS, Type 316, 8", IAPMO UES
-ER-192 — withdrawal is a wash (385 lb allowable against this screw's 374 on the same basis)
-and shear is slightly worse, which is irrelevant because the screw carries no gravity. It
-was rejected on driving torque, on cost, and because its thermal advantage is roughly half
-what the alloy suggests: 316 cannot be heat-treated, so Simpson buys back torsional strength
-with section — **0.276" against 0.220"** — and bridging goes as k·D², so 57 % more section
-eats most of a 3x conductivity gain. The full argument, including a brand sweep showing that
-every 8"-capable stainless screw on the market is fatter than 0.220", is recorded against the
-`SDWS22800DB` row in `prices.toml`.
+### 3.7 There is no redundancy behind it
+
+The two-tier wall put two independent screws at every station on two different modules. This
+one puts one, and it is the only thing tying the cladding assembly to the structure. What
+buys it back: the screw carries **no gravity at all** (§4), the pattern is simple enough to
+inspect from the ground before the foam goes on, and the girt lying across the blocks is
+continuous and screwed at every block along its run, so no single screw resists a rotation on
+its own.
+
+**Stainless was considered and rejected** (SDWS27800SS, Type 316, IAPMO UES ER-192). It
+carries the SDWS's 3" thread and therefore fails §3.2 for the same reason, before cost,
+driving torque or thermal bridging is reached. The full cost and thermal argument is recorded
+against the screw row in `prices.toml`.
+
+**This section is oracled by `typehaus/engineering/girt_screw.py`**, item
+`girt_screw/W-A-N1`, and reproduced by `tests/test_girt_screw_calcs.py`. Run
+`haus engineering houses/catlin --item girt_screw/W-A-N1` to see every term above printed
+from the model.
 
 ---
 
@@ -317,17 +411,22 @@ demand = 26.7 psf x (12" x 24" = 2.00 ft²) = 53 lb          ->  25 % utilised
 Closing the courses from 32" to 24" took this from 33 % to 25 %, and it took the panel's own
 span question with it (below).
 
-**THE CLADDING SCREW IS 1-1/2", STAINLESS OR ASTM A153 CLASS D HDG.** Not the 1" "plated"
-stock pancake screw a panel order ships with, and this is a specification line, not a note:
+**THE CLADDING SCREW IS 2", TYPE 17 WOOD POINT, STAINLESS OR ASTM A153 CLASS D HDG**
+(2026-09-11). Not the 1" "plated" stock pancake screw a panel order ships with, and not the
+1-1/2" this note specified before, and this is a specification line:
 
 - it has to take the **full 1-1/2" thickness** of the KDAT girt, because there is no
   sheathing behind the nailer to catch a short screw — the girt stands in free air;
 - it lands in treated stock, in weather, galvanically coupled to a coated steel panel. That
   is the one genuine corrosion exposure in this assembly, and it is the opposite case from
   the girt screw of §3, which lives encapsulated in closed-cell foam in dry service;
-- Metal Sales' published detail asks for **1/2" past the inside face of the support**, which
-  no 1-1/2" screw in a 1-1/2" girt can give. **That needs a written variance from the
-  supplier** and is an open item.
+- Metal Sales' published detail asks for **1/2" past the inside face of the support**.
+  **THIS IS NOW CLOSED, not an open variance.** A 1-1/2" screw in a 1-1/2" girt could never
+  give it; the 2" does, with the tip standing outside the girt's inboard face, and no
+  supplier variance is needed. See `notes/board_batten_girt_span.md` §6, which works the
+  withdrawal at the 2" length and prints the 1" and 1-1/2" alternates in d/c;
+- **a wood point, not a drill point.** It is graded as an NDS wood screw, and a self-drilling
+  point in a 1-1/2" girt reams its own thread away.
 
 > **For the reviewer — the panel's own span.**
 > The arithmetic above is the fastener into the girt. The **panel spanning between courses**
@@ -340,8 +439,8 @@ stock pancake screw a panel order ships with, and this is a specification line, 
 > against the 18.3 psf ASD zone-5 suction that `notes/board_batten_girt_span.md` works from
 > the house's actual mean roof height.
 
-**Coating.** The girt screw of §3 passes through KDAT into SPF, so the SDWS's DB coating
-(rated for treated lumber) is the specification. See §9 for the one open question behind
+**Coating.** The girt screw of §3 passes through KDAT into SPF, so TimberLOK's coating
+rated for ACQ-D at or below 0.40 pcf (ESR-1078 §4.1.7 / Table 6) is the specification. See §9 for the one open question behind
 that: which preservative the KDAT actually carries.
 
 ---
@@ -534,17 +633,25 @@ lifts any more, which is what used to force a second mobilisation.
 3. **Bucks.** 6" deep, all four sides of every rough opening — unchanged.
 4. **Drop three offcuts at each crossing** on every other stud line. Loose, no tack: the
    girt screw clamps them.
-5. **Lay the girt over them, mark the stud line across its face, drive the 8" screw.** The
-   mark is not optional — the screw is otherwise blind through 6" of wood into a 1-1/2"
-   target. Head recessed flush; the panel bears on this face.
+5. **Lay the girt over them, mark the stud line across its face, drive the 8" TimberLOK
+   (TLOK08).** The mark is not optional — the screw is otherwise blind through 6" of wood
+   into a 1-1/2" target. **Head seated FLUSH** — not recessed, not proud; the panel bears on
+   this face, and the screw's 6" of plain shank is what draws girt and block down onto the
+   sheathing. **If the head will not pull down, the screw is wrong.** That is the field
+   symptom of §3.2: a thread standing in the clamped stack jacks the girt off its blocks, and
+   no amount of driver is the answer.
 6. **Jamb posts and head/sill courses at each RO**, on their own blocks, screwed at ≤ 24".
 7. **Tilt.**
-8. **Foam: one 4" application**, sprayed through the 20-1/2" clear between courses and behind
-   them — the girt stands 1/2" off the foam face, so the whole plane is reachable from
-   outside. **Fillet against the block sides** (BSI-048), do not butt square. **Shave to a
+8. **Foam: one 4" application** of **Huntsman Heatlok HFO High Lift (ICC-ES ESR-4073)**,
+   sprayed through the 20-1/2" clear between courses and behind them — the girt stands 1/2"
+   off the foam face, so the whole plane is reachable from outside. **§4.2 permits 6-1/2" per
+   pass**, and the TDS ladder is 6.5" at or below 70 F, 4" at 70-80 F, 3.25" above 80 F, so
+   4" in one application holds **below 80 F** and substrate temperature on the day is the
+   condition. Heatlok HFO *Pro* is a different product (ESL-1372, 2" per pass) and would force
+   a second lift and a second mobilisation; do not let a supplier substitute it silently. **Fillet against the block sides** (BSI-048), do not butt square. **Shave to a
    gauge 1/2" behind the block's outer face**; the blocks stand proud at every crossing and
    are the gauge.
-9. **Sill pans, windows, cladding.**
+9. **Sill pans, jamb trim, windows, head flashing, head trim, cladding.**
 
 **What is given up, and it is a real cost.** With every wall section framed on its own deck
 off its own sole plate, a **±1" course step between wall sections is tolerated**. The
@@ -555,8 +662,20 @@ the cladding installer rather than letting them discover it.
 
 ## 9. Risks, stated plainly
 
+**THE FOAM IS THE ONLY WATER PLANE, AND ITS WRB LISTING IS AN OPEN ALTERNATE-APPROVAL ITEM.**
+This wall has no housewrap, no building paper and no membrane: the ccSPF is air, water,
+vapour and thermal in one application, and §1 says so. **ICC-ES ESR-4073 does not evaluate
+water-resistive barrier.** The only ccSPF report found granting a WRB listing is Icynene
+ProSeal Eco (ESR-3493 §4.6, 1-1/2" minimum) and it **expired in 2021**, so it cannot be
+leaned on. Approval here runs through **Minn. R. 1300.0110** (alternate materials and
+methods) on **Huntsman's own ASTM E331 and ASTM E2178 data for the product actually bought**.
+That data has to be in hand before the order, not at inspection. It is stated here as an open
+item rather than buried, because a reviewer reading §1 would otherwise reasonably assume the
+WRB question was closed by the ESR, and it is not.
+
+
 **Foam shrinkage at the block, and the fillet.** Planed lumber shrinks; a square cold joint
-where the foam meets a block side is exactly where a crack goes, and this wall has 1,128
+where the foam meets a block side is exactly where a crack goes, and this wall has 1,131
 blocks with four sides each. The specification is **a fillet against every block side**
 (BSI-048's rule for foam against a projecting member), not a butt. It is a spray technique,
 it costs nothing in material, and it is inside the labour half of the ccSPF rate in
@@ -633,16 +752,28 @@ for the sweep and `notes/outie_window_truss_detail.md` for the per-opening table
 ## 10. What the reviewer is being asked to confirm
 
 1. The ASCE 7-16 C&C pressures in §2, and whether Exposure C is the right conservatism.
-2. **The single load path.** §3 at 54 % (Exposure C) / 38 % (Exposure B) on one 8" screw per
-   5.33 ft², with the block carrying gravity in bearing so the screw is pure withdrawal. Is
-   one fastener per crossing acceptable without redundancy, and is 1-1/2" of thread into the
-   stud the right design penetration when 3" is available?
-3. The NDS withdrawal value in §3, or its ESR-2236 substitute.
+2. **The single load path.** §3 at 0.487 governing (Exposure B, the site's own basis) /
+   0.712 (Exposure C) on one 8" screw per 5.33 ft², with the block carrying gravity in
+   bearing so the screw is pure withdrawal. Is one fastener per crossing acceptable without
+   redundancy, and is 1-1/2" of thread into the stud the right design penetration when 3" is
+   available?
+3. The ESR-1078 Table 2 withdrawal value in §3.3, and its NDS §12.2 cross-check.
 4. That §6's reading is right: that a wood-to-wood screw with continuous lateral support
    between framing members, driven before any foam exists, is an R301.1.3 engineered
    connection and not an R703.15 through-foam furring attachment.
 5. Whether anything in §9 needs to become a specification line rather than a note — the
    fillet at the blocks and the marked stud line are the two candidates.
+6. **§3.2, the thread engagement check**, and whether the clamped stack is rightly read as
+   6.0" (girt + block) rather than 6-1/2". The sheathing is nailed to the stud; the note's
+   position is that it is therefore on the stud's side of the joint and is not a member being
+   drawn together. If a reviewer reads it the other way, the TimberLOK no longer clears and
+   the screw goes to 10".
+7. **§3.4, head pull-through**, which is the governing state and the lowest of the three
+   capacities. Specifically: is ESR-1078 Table 3's 1-1/2" side member at SG 0.55 the right
+   row for a single flat KDAT 2x4 standing in free air, and is HeadLOK worth the 2.0"
+   embedded-thread reading it would require?
+8. **§3.3's C_D of 1.0.** ESR-1078 §4 should be checked; if the report authorises a
+   load-duration adjustment, withdrawal capacity rises to 408 lb and d/c falls to 0.239.
 
 ---
 
@@ -655,5 +786,10 @@ out of it.
 
 - **ASCE 7-16**
 - ASTM A153, ASTM D1623
-- **IAPMO UES ER-192**
+- **IAPMO UES ER-192** (SDWS thread lengths, Table 7 — the superseded screw)
+- **ICC-ES ESR-1078** (FastenMaster TimberLOK, reissued 2026-01; Tables 1A, 2, 3, §4.1.7)
+- **ICC-ES ESR-4073** (Huntsman Heatlok HFO High Lift; §4.2, §4.4.2)
+- ICC-ES ESR-3493 (Icynene ProSeal Eco §4.6 — expired 2021, cited only as not usable)
+- IAPMO UES ER-309 (AEP Span; the published open-framing alternative, §5)
+- Minn. R. 1300.0110
 - IRC R301.1.3, IRC R702.7.1, IRC R703.15, IRC R703.3, IRC R703.3.2, IRC Table R703.15.1

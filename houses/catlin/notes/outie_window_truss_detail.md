@@ -29,7 +29,7 @@ source:
 - Wall: 2x6 studs, 1/2" plywood, 4" of 2 lb closed-cell foam in one pass.
 - Girts: KDAT 2x4 laid flat, horizontal, 24" o.c., on three-ply 4-1/2" KDAT blocks.
 - Blocks land on every other stud, 32" o.c. from the layout line.
-- One 8" SDWS22800DB per crossing, 1-1/2" into the stud. 1,128 total.
+- One 8" TimberLOK TLOK08 per crossing, 1-1/2" into the stud. 1,131 total.
 - Cladding: PBR board-and-batten on the girts, face 7-1/4" off the sheathing.
 - Block stands 1/2" proud of the foam. That gap is the drainage plane.
 - Window mount plane is the girt face, 6" outboard of the sheathing.
@@ -93,7 +93,7 @@ at whole multiples of **32"** from the wall's LAYOUT LINE, on the same phase the
 > puts half of a facade's wall segments on the opposite 32" parity from the rest — every block
 > faithfully on a stud, and the facade's grid different storey to storey.
 
-**One 8" SDWS22800DB per crossing**, through the girt (1-1/2"), the three plies (4-1/2") and
+**One 8" FastenMaster TimberLOK (TLOK08) per crossing**, through the girt (1-1/2"), the three plies (4-1/2") and
 the sheathing (1/2"), 1-1/2" into the stud. One fastener pass, no nails, and it is the entire
 load path: the block bears the cladding's gravity in direct compression on the sheathing, so
 the screw is a pure withdrawal element. It is wood-to-wood with continuous lateral support
@@ -138,8 +138,11 @@ applicator reaches the whole plane from outside through the 20-1/2" between cour
 3. **Mark the 24" course lines off the sole plate** and snap the stud lines across them.
 4. **Drop three offcuts at each crossing**, on every other stud line. Loose — no tack. The
    girt screw clamps them; the block is the screw's spacer, not its anchor.
-5. **Lay the girt over them, mark the stud line across its face, and drive the 8" SDWS.**
-   Head recessed flush: the panel bears on this face.
+5. **Lay the girt over them, mark the stud line across its face, and drive the 8"
+   TimberLOK (TLOK08).** Head seated FLUSH, not recessed and not proud: the panel bears on
+   this face, and the screw's 6" of plain shank is what draws girt and block down onto the
+   sheathing. If the head will not pull down, the screw is wrong — check the thread length
+   before reaching for the impact driver.
 6. **Jamb posts and head/sill courses at each RO**, on their own blocks, screwed at ≤ 24".
 7. **Tilt.**
 8. **Foam: one 4" application**, sprayed through the clear between courses and behind them.
@@ -147,7 +150,7 @@ applicator reaches the whole plane from outside through the 20-1/2" between cour
    shrinks, and a square cold joint at a block is where the crack goes. **Shave to a gauge
    1/2" behind the block's outer face**; the blocks stand proud at every crossing and are the
    gauge.
-9. Sill pan, window, head flashing, cladding.
+9. Sill pan, jamb trim, window, head flashing, head trim, cladding.
 
 **Inspect the screw pattern from the ground before the sprayer arrives.** It is a single load
 path and this is the last moment it can be seen.
@@ -280,6 +283,20 @@ One number told the recipe which wall it is on: the head course is **3-1/2"** ta
 laid flat) against the Swinburne wall's **1-1/2"** (the same board on edge), so the flashing's
 upstand starts two inches higher. Everything else — the mount plane, the foam face, the vent
 depth — the recipe already read off the resolved stack and needed no telling.
+
+- **Jamb and head trim (2026-09-12).** The Metal Sales BB75-1111 kit's **Sill/Jamb Trim** is
+  a J-shaped receiver: it runs up each jamb to the head and takes the panel's cut end at the
+  reveal. Without it, the cut edge IS the finish. **Head Trim** goes over it, under the head
+  flashing's drip. Both are brake-formed flat stock from the same kit as the corners and the
+  starter, which is why nothing new bills for them — `prices.toml` puts the whole trim kit
+  inside the panel's $/SF rate (TRIM IS PARITY), and `[basis_notes] envelope_layers` forbids
+  counting a piece against a concealed row. The build order is in "Sequence" step 9: sill
+  pan, jamb trim, window, head flashing, head trim, cladding.
+
+  **Not yet a keyed callout.** A `[K8]` row would put the detail's notes onto a second sheet
+  (`integrity.sheet_note_legibility`, 36 rows to a page, and this sheet sits on 36). Drawing
+  it means retiring a note that is already there, which is a sheet decision and not a
+  fastener one.
 
 The buck, the head/sill courses and the girts themselves are **not** drawn as convention
 linework. They are resolved members, so the cut carries them as the solids they are; drawing
