@@ -628,7 +628,7 @@ DUCTS_ERV_BASEMENT = [
 #      bay field overhead;
 #   2. run SOUTH down its own lane — one lane per radial, at the port's own x, so no two
 #      share a line — crossing the open truss webs, which is legal because the chord-to-chord
-#      opening is 8 7/8" and these are 3";
+#      opening is 8 7/8" and these are 4";
 #   3. turn east or west along ONE bay centre to its terminal.
 #
 # **FILED ON THE SECOND STOREY, NOT THE MAIN ONE, AND THAT IS NOT COSMETIC.** These ducts run
@@ -646,7 +646,8 @@ DUCTS_ERV_BASEMENT = [
 # invert at **109 5/8"**, the floor of the 8 7/8" web window (the drain note's §3), and a
 # centreline at 111 5/8" = -8 3/8" second-relative.
 #
-# For the twelve legs that ride a bay the old number was harmless: a run travelling ALONG
+# For the twelve legs that ride a bay (every radial but BATH2, which has no east-west
+# leg) the old number was harmless: a run travelling ALONG
 # the members may use the full 108 1/8"..120" depth, because nothing is in the way along it.
 # For the legs that run SOUTH ACROSS the trusses — which is every radial's first leg, and
 # which the note below already says out loud — it put 1 1/2" of a 4" duct inside the bottom
@@ -661,19 +662,20 @@ DUCTS_ERV_BASEMENT = [
 # than 35'-4", and everything that would naturally have used the 26'-0" bay uses 24'-8".
 #
 # HONEST LIMITS, both real and neither graded by anything:
-#   * The twelve lanes leave the closet as TWO INTERLEAVED FAMILIES, NOT ONE 4" MODULE, AND
-#     SIX PAIRS OVERLAP. The nine extract lanes are on a 4" module — x=36", 40", 44", 52",
-#     56", 60", 64", 68" (48" is vacant), plus PLANT out on its own at 34" — so within that
-#     family 4" ducts do sit two inches apart, which is what the neck of a home-run bundle looks
-#     like off a pair of manifolds in a 6'-0" closet. The three SUPPLY lanes are not on it:
-#     LIVING/BED/STUDY are at x=38", 46", 54", the extract module's half-step, an 8" module
-#     interleaved between its lanes. That puts six pairs on 2" centres — PLANT/BATH1 (34/36),
-#     BATH1/LIVING (36/38), LIVING/VANITY (38/40), KITCH/BED (44/46), SUITEBATH/STUDY
-#     (52/54) and STUDY/LAUNDRY (54/56) — and a 4" duct on 2" centres OVERLAPS ITS NEIGHBOUR
-#     BY 2" (it was 1" at 3"). They are drawn as straight lines because a lane is a straight line in this model
-#     and a bundle is not; in the field the neck is dressed — a short 4" semi-rigid leg off
-#     each start collar (DUCT-T-SEMIRIGID-4 is in the catalog for exactly this) lets the
-#     runs pass each other before they go rigid, which is the whole reason the drawing is
+#   * The thirteen lanes leave the closet as TWO INTERLEAVED FAMILIES, NOT ONE 4" MODULE,
+#     AND SEVEN PAIRS OVERLAP. Ten extract lanes: nine on a 4" module — x=36", 40", 44",
+#     48", 52", 56", 60", 64", 68" — plus PLANT on its own at 34". On a 4" module 4" ducts
+#     are TANGENT, zero clear, which is what the neck of a home-run bundle looks like off a
+#     pair of manifolds in a 6'-0" closet. The three SUPPLY lanes are not on it:
+#     LIVING/BED/STUDY at x=38", 46", 54" — the extract module's half-step, an 8" module
+#     interleaved between its lanes. That puts seven pairs on 2" centres — PLANT/BATH1
+#     (34/36), BATH1/LIVING (36/38), LIVING/VANITY (38/40), KITCH/BED (44/46), BED/BATH2
+#     (46/48), SUITEBATH/STUDY (52/54) and STUDY/LAUNDRY (54/56) — and two 4" ducts on 2"
+#     centres OVERLAP BY 2" (4" of radii less the 2" centre distance; it was 1" at 3").
+#     They are drawn as straight lines because a lane is a straight line in this model and a
+#     bundle is not; in the field the neck is dressed — a short 4" semi-rigid leg off each
+#     start collar (DUCT-T-SEMIRIGID-4 is in the catalog for exactly this) lets the runs
+#     pass each other before they go rigid, which is the whole reason the drawing is
 #     tolerable rather than wrong.
 #     **Nothing grades it.** `mep.duct_joist_bay_occupancy` pairs runs that share a bay
 #     CENTRELINE, and these lanes run south ACROSS the bays; crossing runs are deliberately
@@ -681,15 +683,15 @@ DUCTS_ERV_BASEMENT = [
 #     the along-bay case below that the check sees, and it reports that one UNKNOWN. If the
 #     neck is ever to be modelled honestly rather than noted, the lever is a real Soffit or a
 #     per-lane offset in the first 3'-0" — not a wider spacing all the way south, which would
-#     move nine terminals to buy clearance in one closet.
+#     move twelve terminals to buy clearance in one closet.
 #   * Two pairs share part of one bay: STUDY and LAUNDRY both ride the 20'-8" bay from
-#     x=4'-8" to x=15'-0", and BATH1/VANITY/KITCH all turn on 24'-8". A 14 1/2" clear bay
-#     holds two 4" ducts side by side without argument (12 1/2" clear less 8" is 4 1/2"). This is the one duct-against-duct
-#     case the engine does grade outside a modeled Soffit: `mep.duct_joist_bay_occupancy`
-#     names STUDY and LAUNDRY on FS-S-WEST and reports UNKNOWN — the bay is wide enough, but
-#     the model gives a run one centreline per bay, so two lanes in one bay are necessarily
-#     drawn on top of each other. UNKNOWN is the honest verdict; the prose is not the record
-#     of this any more.
+#     x=4'-8" to x=14'-6", and BATH1/VANITY/KITCH all turn on 24'-8". The bay is 12 1/2"
+#     clear (16" o.c. less a 3 1/2" chord), so two 4" ducts side by side leave 4 1/2" and
+#     fit without argument. This is the one duct-against-duct case the engine does grade
+#     outside a modeled Soffit: `mep.duct_joist_bay_occupancy` names STUDY and LAUNDRY on
+#     FS-S-WEST and reports UNKNOWN — the bay is wide enough, but the model gives a run one
+#     centreline per bay, so two lanes in one bay are necessarily drawn on top of each
+#     other. UNKNOWN is the honest verdict; the prose is not the record of this any more.
 _PORT_Z = inch(-20)
 #: A 4" duct's centreline resting on FS-S-WEST's bottom chord: invert 109 5/8" (the web
 #: window's floor), centreline 111 5/8", second-relative -8 3/8". See the derivation above.
@@ -882,7 +884,7 @@ DUCTS_ERV_LEVEL2 = [
     # w.g." this file quotes elsewhere is the model-name point off the fan curve, not the rating
     # point, and the real static budget is about double what those comments assume. This is
     # still the radial whose drop the installer must check — 25 cfm, and longest again now.
-    # -20" is the manifold port, -9 7/8" a 4" duct on the truss bottom chord.
+    # -20" is the manifold port, -8 3/8" a 4" duct on the truss bottom chord.
     # ** THE RISER MUST NOT STAND IN D-S-PLANT'S CLEAR OPENING, AND `mep.duct_joist_bay`
     # DOES NOT CATCH IT. ** That door is centred on y=4'-0" in W-S-C1 with its jacks at
     # y=2'-8 1/4" and y=5'-3 3/4", so a riser at y=4'-8" would stand 7" inside the north
