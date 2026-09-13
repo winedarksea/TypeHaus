@@ -181,7 +181,7 @@ is still the first thing to remove.
 | BLD-02 | The freestanding concrete structure | HIGH | **RESOLVED 2026-09-12 (BLD-12 still gates the piers)** | unpriced |
 | BLD-05 | Suite bathroom drain, 0.062" of slack | HIGH | **SIMPLIFY** | ~free if timed right |
 | BLD-13 | Conditions the engine does not grade | HIGH | KEEP as checklist | — |
-| BLD-08 | ERV radial scheme off-catalog; heat pumps fine | MED | **RESOLVED 2026-09-12 — standard parts, provenance closed** | ~neutral; cost + warranty stay owner calls |
+| BLD-08 | ERV radial scheme off-catalog; heat pumps fine | MED | **RESOLVED 2026-09-12 — standard parts, provenance closed** | **+$766 to +$1,520** measured; the conventional-ERV comparison + warranty stay owner calls |
 | BLD-07 | Unvented roof: painter, insulator, undrawn eave | MED | KEEP + 2 instructions | — |
 | BLD-04 | 13 one-off assemblies, 10 one-off door types | MED | **SIMPLIFY** | unpriced |
 | BLD-10 | Seven cladding materials, three scopes | MED | **SIMPLIFY** | unpriced |
@@ -1123,11 +1123,17 @@ R202 excludes bathrooms from habitable space by name — so no inspector will as
 precisely why it had to be asked here. The decision left open is one hour of Manual J, a
 second heat source in `RM-M-BATH2`, or accepting it.
 
-**What is NOT closed, deliberately.** **Cost** — the finding's "$9,200–9,500 radial vs
-$2,600 conventional" comparison is against the proprietary system that is no longer being
-bought, and re-costing the standard-parts build against a conventional single-trunk ERV is a
-real question nobody has answered. `prices.toml` is re-banded for what is now specified and
-that is all. **Warranty tier** — 5 parts / 7 compressor standard; 10/10 only through a Gree
+**What is NOT closed, deliberately.** **Cost** — but the *retype's own* delta is measured, so
+say that first. `prices.toml` is re-banded for what is now specified, and against the
+proprietary build it replaces the whole house moves **+$766 to +$1,520** on a $821k–$1.68M
+construction total, about **0.1 %**: `ducts` +$720/+$1,439 (rigid pipe is dearer per foot
+than semi-rigid in both material and labour — it is cut, crimped and screwed rather than
+pushed through a bay), `duct_fittings` +$52/+$104 (41 elbows at 4" instead of 42 at 3"), and
+`placeables` −$5/−$20 (a fabricated plenum's material falls and its labour rises).
+**Going to commodity parts costs about a thousand dollars and buys a Twin Cities supply
+chain.** What is NOT answered is the finding's own comparison — "$9,200–9,500 radial vs
+$2,600 conventional" was against the proprietary system nobody is buying now, and re-costing
+this build against a conventional single-trunk ERV is a real question nobody has done. **Warranty tier** — 5 parts / 7 compressor standard; 10/10 only through a Gree
 Select Dealer with 60-day registration. **Owner-supplied is NOT void**, it simply cannot
 reach Select, and both tiers require a licensed installing contractor and exclude labour.
 Recorded on the type; still an owner call.

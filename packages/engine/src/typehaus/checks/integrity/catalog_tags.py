@@ -20,7 +20,8 @@ from typehaus.findings import Finding, Result, Severity
 CATALOGS = (
     "materials", "assemblies", "products", "door_types", "window_types", "furniture_types",
     "railing_types", "fixture_types", "appliance_types", "equipment_types",
-    "register_types", "electrical_device_types", "circuits", "load_managements",
+    "register_types", "duct_product_types", "electrical_device_types", "circuits",
+    "load_managements",
     "transitions", "construction_rules",
 )
 

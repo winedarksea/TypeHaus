@@ -155,14 +155,19 @@ def test_the_reroute_is_visible_in_the_schedule(by_tag):
 def test_duct_rows_price_through_the_material_qualified_key(catlin_model, catlin_prices):
     """``[ducts]`` keys on ``system`` and is qualified by ``material``
     (``prices.QUALIFIED_KEY_FIELD``). A second, hand-rolled ``table.get(system)`` would
-    price every 3" semi-rigid radial at the sheet-metal rate — which is the drift
-    :func:`rate_for` exists to prevent, so the schedule must resolve the qualified key."""
+    price every ERV radial at the fabricated sheet-metal trunk rate — which is the drift
+    :func:`rate_for` exists to prevent, so the schedule must resolve the qualified key.
+
+    The qualifier was ``semi_rigid`` until 2026-09-12; every ERV run is ``galvanized`` now
+    (plans/buildability.md BLD-08), and the point of the test is unchanged — a *qualified*
+    key must resolve, and the bare ``supply``/``return``/``exhaust`` rows are the fabricated
+    rectangular trunks, which cost two to three times as much per foot."""
     priced = run_schedule(catlin_model, catlin_prices)
-    semi_rigid = [row for row in priced
-                  if row["kind"] == "duct" and ":semi_rigid" in str(row.get("price_key"))]
-    assert semi_rigid, "catlin's radials are semi_rigid; the qualifier did not resolve"
-    for row in semi_rigid:
-        key, rate = rate_for(catlin_prices, "ducts", row["system"], "semi_rigid")
+    qualified = [row for row in priced
+                 if row["kind"] == "duct" and ":galvanized" in str(row.get("price_key"))]
+    assert qualified, "catlin's ERV runs are galvanized; the qualifier did not resolve"
+    for row in qualified:
+        key, rate = rate_for(catlin_prices, "ducts", row["system"], "galvanized")
         assert key == row["price_key"]
         assert row["cost_low"] == pytest.approx(
             rate.times(row["developed_ft"]).low, abs=0.02)

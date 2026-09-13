@@ -4829,25 +4829,26 @@
 #
 # $/LF, by system, optionally qualified by material and then by diameter
 "exhaust" = { material = { low = 3, high = 8 }, labour = { low = 5, high = 12 } }  # sheet-metal fallback, 0 LF today
-"exhaust:semi_rigid:3.0" = { material = { low = 2.25, high = 4.5 }, labour = { low = 2.75, high = 6.5 } }  # 217.5 LF of 75 mm ERV branch
-"exhaust:semi_rigid:6.0" = { material = { low = 4, high = 8 }, labour = { low = 3.5, high = 8 } }  # 43.0 LF of 6" ERV trunk
-"exhaust:galvanized:4.0" = { material = { low = 2.75, high = 5.5 }, labour = { low = 3.25, high = 7.5 } }  # 4" galvanized snap-lock radial, extract side
-"exhaust:galvanized:6.0" = { material = { low = 4.5, high = 9 }, labour = { low = 4, high = 9 } }  # 6" galvanized trunk/riser, extract side
+"exhaust:semi_rigid:3.0" = { material = { low = 2.25, high = 4.5 }, labour = { low = 2.75, high = 6.5 } }  # 0 LF since 2026-09-12 — was 217.5 LF of 75 mm ERV branch
+"exhaust:semi_rigid:6.0" = { material = { low = 4, high = 8 }, labour = { low = 3.5, high = 8 } }  # 0 LF since 2026-09-12 — was 43.0 LF of 6" ERV trunk
+"exhaust:galvanized:4.0" = { material = { low = 2.75, high = 5.5 }, labour = { low = 3.25, high = 7.5 } }  # 211.7 LF of 4" snap-lock radial, extract side
+"exhaust:galvanized:6.0" = { material = { low = 4.5, high = 9 }, labour = { low = 4, high = 9 } }  # 61.6 LF — DU-ERV-RISER-EXH + DU-ERV-EA
 "exhaust:galvanized" = { material = { low = 3.5, high = 7 }, labour = { low = 3.5, high = 8 } }  # fallback for a diameter not priced above
 "exhaust:semi_rigid" = { material = { low = 2.5, high = 5 }, labour = { low = 3, high = 7 } }  # fallback for a diameter not priced above
 "outdoor_air" = { material = { low = 6, high = 13 }, labour = { low = 8.5, high = 19 } }  # sheet-metal fallback, 0 LF today
-"outdoor_air:galvanized" = { material = { low = 5, high = 10 }, labour = { low = 4.5, high = 10 } }  # 6" galvanized inside an R-8 vapour-sealed wrap — dearer than a bare trunk, it is the run that sweats
-"outdoor_air:semi_rigid" = { material = { low = 3.5, high = 7 }, labour = { low = 3.5, high = 8 } }  # 37.6 LF of 6" insulated — dearer than a bare radial, it is the run that sweats
+"outdoor_air:galvanized" = { material = { low = 5, high = 10 }, labour = { low = 4.5, high = 10 } }  # 14.0 LF of 6" galvanized inside an R-8 vapour-sealed wrap — dearer than a bare trunk, it is the run that sweats
+"outdoor_air:semi_rigid" = { material = { low = 3.5, high = 7 }, labour = { low = 3.5, high = 8 } }  # 0 LF since 2026-09-12 — was 37.6 LF of 6" insulated
 "return" = { material = { low = 7, high = 13 }, labour = { low = 12, high = 28 } }  # 0.5 LF of galvanized stub
-"return:galvanized:4.0" = { material = { low = 2.75, high = 5.5 }, labour = { low = 3.25, high = 7.5 } }  # 4" galvanized snap-lock radial, return side
+"return:galvanized:4.0" = { material = { low = 2.75, high = 5.5 }, labour = { low = 3.25, high = 7.5 } }  # 251.4 LF of 4" snap-lock radial, return side
+"return:galvanized:6.0" = { material = { low = 4.5, high = 9 }, labour = { low = 4, high = 9 } }  # 5.6 LF — DU-B-ERV-RET-TRUNK
 "return:galvanized" = { material = { low = 3.5, high = 7 }, labour = { low = 3.5, high = 8 } }  # fallback for a diameter not priced above
-"return:semi_rigid" = { material = { low = 2.5, high = 5 }, labour = { low = 3, high = 7 } }  # 198.1 LF of 3" radial
+"return:semi_rigid" = { material = { low = 2.5, high = 5 }, labour = { low = 3, high = 7 } }  # 0 LF since 2026-09-12 — was 198.1 LF of 3" radial
 "supply" = { material = { low = 7, high = 13 }, labour = { low = 12, high = 28 } }  # 53.9 LF of galvanized trunk
-"supply:semi_rigid:3.0" = { material = { low = 2.25, high = 4.5 }, labour = { low = 2.75, high = 6.5 } }  # 181.6 LF of 75 mm radial
-"supply:semi_rigid:6.0" = { material = { low = 4, high = 8 }, labour = { low = 3.5, high = 8 } }  # 68.8 LF of 6" radial riser
+"supply:semi_rigid:3.0" = { material = { low = 2.25, high = 4.5 }, labour = { low = 2.75, high = 6.5 } }  # 0 LF since 2026-09-12 — was 181.6 LF of 75 mm radial
+"supply:semi_rigid:6.0" = { material = { low = 4, high = 8 }, labour = { low = 3.5, high = 8 } }  # 0 LF since 2026-09-12 — was 68.8 LF of 6" radial riser
 "supply:semi_rigid" = { material = { low = 2.75, high = 5.5 }, labour = { low = 3, high = 7 } }  # fallback for a diameter not priced above
-"supply:galvanized:4.0" = { material = { low = 2.75, high = 5.5 }, labour = { low = 3.25, high = 7.5 } }  # 4" galvanized snap-lock radial, supply side
-"supply:galvanized:6.0" = { material = { low = 4.5, high = 9 }, labour = { low = 4, high = 9 } }  # 6" galvanized trunk/riser/mixing-box feed
+"supply:galvanized:4.0" = { material = { low = 2.75, high = 5.5 }, labour = { low = 3.25, high = 7.5 } }  # 198.2 LF of 4" snap-lock radial, supply side
+"supply:galvanized:6.0" = { material = { low = 4.5, high = 9 }, labour = { low = 4, high = 9 } }  # 76.9 LF — DU-ERV-RISER-SUP + DU-B-ERV-SUP-TRUNK + DU-S-ERV-HP-FEED
 "supply:galvanized" = { material = { low = 3.5, high = 7 }, labour = { low = 3.5, high = 8 } }  # fallback for a diameter not priced above
 
 [duct_fittings]
@@ -4860,7 +4861,7 @@
 # elbow-90-3in is the retired 75 mm semi-rigid bend (was 42 ea at 3/8). Kept unreferenced
 # with the [ducts] :semi_rigid rows, for the same reason.
 "elbow-90-3in" = { low = 3, high = 8 }             # 0 ea — retired 2026-09-12 with the 3" radial
-"elbow-90-4in" = { low = 4, high = 10 }            # 4" stamped adjustable galvanized elbow — the radials' bend, 2026-09-12
+"elbow-90-4in" = { low = 4, high = 10 }            # 41 ea — 4" stamped adjustable galvanized elbow, the radials' bend (2026-09-12)
 "elbow-90-6in" = { low = 9, high = 22 }            # 9 ea — 6" insulated riser elbow
 # elbow-90-8in retired 2026-08-30 with DU-A-HP-STUDY, the run whose rise it turned. The one
 # vertical System 1 has now is DU-S-HP-SOUTH-RISE's, and that branch is 10x6.

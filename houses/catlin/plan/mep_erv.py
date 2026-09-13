@@ -811,9 +811,21 @@ DUCTS_ERV_LEVEL2 = [
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=5),
+    # ** ITS EAST LEG MOVED ONE BAY NORTH ON 2026-09-12, 22'-0" -> 23'-4", AND THE 4" RETYPE
+    # IS WHY. ** A 3" duct on this lane spanned y 21'-10 1/2"..22'-1 1/2"; at 4" it spans
+    # 21'-10"..22'-2", half an inch further south — and that half inch closed the only lane
+    # `haus route` could find for PR-M-S-SUITE-TUB-DRAIN, whose terminal sits at
+    # y=21'-9 1/8". Nothing FAILED: the authored drain is unchanged and `haus check` never
+    # moved. What broke was the ROUTER's ability to re-derive that run, which is the honest
+    # early warning that the corridor had no slack left in it.
+    # 23'-4" (280" = 8 + 17 x 16) is a bay centre, it is free — LIVING/BED/STUDY/BATH1/
+    # VANITY/KITCH/SUITEBATH/LAUNDRY/MUD/BED1/PLANT take 12'-8"/6'-0"/20'-8"/24'-8"/19'-4"/
+    # 18'-0"/31'-4"/14'-0"/7'-4" and none of them is on it — and it is still well inside
+    # RM-S-BED2 (y 18'-27'). REG-S-RET-BED2 moved with it; a floor boot against the east
+    # wall is as good at 23'-4" as at 22'-0".
     DuctRun(uid="2QHYF71DBS", tag="DU-M-ERV-R-BED2", system=DuctSystem.RETURN,
-            path=(pt(ft(5, 8), ft(35)), pt(ft(5, 8), ft(35)), pt(ft(5, 8), ft(22)),
-                  pt(ft(29), ft(22))),
+            path=(pt(ft(5, 8), ft(35)), pt(ft(5, 8), ft(35)), pt(ft(5, 8), ft(23, 4)),
+                  pt(ft(29), ft(23, 4))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=5),

@@ -322,8 +322,13 @@ REGISTERS = [
             position=pt(ft(29), ft(14)), duct_ref="DU-M-ERV-R-BED1",
             type_ref="REG-T-ERV-EXH", design_cfm=2,
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
+    # y=23'-4" since 2026-09-12, not 22'-0": DU-M-ERV-R-BED2's east leg moved one bay north
+    # when the radials went to 4", because at 22'-0" the duct's south face closed the last
+    # lane `haus route` had for PR-M-S-SUITE-TUB-DRAIN. The boot follows its run. Still x=29'
+    # against the east wall, still diagonally opposite the hall-side supply, still inside
+    # RM-S-BED2's y 18'-27'.
     Register(uid="CMR907AAAA", tag="REG-S-RET-BED2", kind=DuctSystem.RETURN, room="RM-S-BED2",
-            position=pt(ft(29), ft(22)), duct_ref="DU-M-ERV-R-BED2",
+            position=pt(ft(29), ft(23, 4)), duct_ref="DU-M-ERV-R-BED2",
             type_ref="REG-T-ERV-EXH", design_cfm=2,
             mount=Mount(kind=MountKind.FLOOR, recessed_into_host_surface=True)),
     # BED3 IS A CEILING GRILLE, AND ITS TWO NEIGHBOURS ARE NOT: FO-S-STAIR blocks every

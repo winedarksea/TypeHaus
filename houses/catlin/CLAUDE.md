@@ -858,9 +858,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     R403.5's **205**.
   - **Three new checks.** `mep.erv_static_budget` (ADVISORY) computes Darcy-Weisbach/Colebrook
     over the whole system and reads the curve at it: **0.459" w.g. worst path, 203 cfm
-    delivered** — clears 205's... no: it reads 203 against a 210 design rate and reports the
-    7 cfm as UNKNOWN, because whether it is enough is `code.N1103_6_whole_house_ventilation`'s
-    question. `mep.erv_manifold_ports` (INTEGRITY, **blocks**) grades the "10 of 10" prose.
+    delivered**. It reports the 7 cfm against the 210 design rate as UNKNOWN, never a FAIL —
+    whether 203 is ENOUGH is `code.N1103_6_whole_house_ventilation`'s question, asked against
+    MN's 205 and not against a designer's hope. `mep.erv_manifold_ports` (INTEGRITY, **blocks**) grades the "10 of 10" prose.
     `mep.room_heat_source` (ADVISORY) is the radiant arithmetic. Oracles:
     `notes/erv_static_budget.md`, `notes/room_heat_loss_baths.md`.
   - **`DuctProductType` is keyed exactly like `prices.toml`'s `[ducts]`** — the
