@@ -4,6 +4,7 @@ import { locateUid } from "../state/locate";
 import type { PreviewGeometry } from "../engine/EngineClient";
 import type { Opening, Room, Vec2, Wall } from "../model/types";
 import { anyTradeVisible, canvasObjectTrades } from "../model/visibility";
+import { storeysAtDatum } from "../model/levels";
 import { wallTrades } from "../model/tradeVisibility";
 import type { PlanWarningMarker } from "../model/planWarnings";
 import {
@@ -120,11 +121,18 @@ export function Canvas2D() {
     defaultAssembly, serviceOptions, canvasTypes, warningMarkers, nearestNodeTag, storeyHintFile,
   } = useStoreySlice(model, activeStorey, tolM);
   const wallAssembly = drawAssembly || defaultAssembly;
+  // The whole datum, not the one storey — see useStoreySlice's note and model/levels.ts.
+  const levelStoreys = useMemo(() => storeysAtDatum(model, activeStorey), [model, activeStorey]);
+  const onLevel = useCallback(
+    (storey: string | null | undefined) =>
+      !levelStoreys || (storey != null && levelStoreys.has(storey)),
+    [levelStoreys],
+  );
 
   const visibleServiceObjects = useMemo(() => (model.canvas_objects ?? []).filter((item) =>
-    item.position_m && (!activeStorey || item.storey === activeStorey) &&
+    item.position_m && onLevel(item.storey) &&
     (!activeService || (item.type ? canvasTypes.get(item.type)?.ports.some((port) => port.service === activeService) : false))),
-  [model.canvas_objects, activeStorey, activeService, canvasTypes]);
+  [model.canvas_objects, onLevel, activeService, canvasTypes]);
 
   // Openings indexed by host wall tag. Two reasons, both about the wall pass below. The scan it
   // replaces was O(walls x openings) per render, and — the one that actually cost frames — it
@@ -150,16 +158,16 @@ export function Canvas2D() {
   }, [model.openings, openingDragPreview]);
 
   const roomsOnStorey = useMemo(
-    () => model.rooms.filter((r) => !activeStorey || r.storey === activeStorey),
-    [model.rooms, activeStorey],
+    () => model.rooms.filter((r) => onLevel(r.storey)),
+    [model.rooms, onLevel],
   );
   const footprintObjects = useMemo(() => (model.canvas_objects ?? [])
     // Doors/windows remain topology-aware SVG shapes below; their normalized records
     // serve inspection/interchange consumers and must not render a second footprint.
     .filter((item) => item.domain !== "opening" && item.position_m &&
       anyTradeVisible(canvasObjectTrades(item), visibleTrades) &&
-      (!activeStorey || item.storey === activeStorey)),
-  [model.canvas_objects, visibleTrades, activeStorey]);
+      onLevel(item.storey)),
+  [model.canvas_objects, visibleTrades, onLevel]);
   const popupWall = useMemo(
     () => wallAssemblyPopup ? model.walls.find((wall) => wall.uid === wallAssemblyPopup.wallUid) ?? null : null,
     [model.walls, wallAssemblyPopup],
@@ -460,7 +468,7 @@ export function Canvas2D() {
           {/* openings */}
           {visibleTrades.openings && model.openings.map((o) => {
             const host = openingHostWall(model.walls, o);
-            if (!host || (activeStorey && host.storey !== activeStorey)) return null;
+            if (!host || !onLevel(host.storey)) return null;
             // Both kinds carry an operation now: it picks the door's swing/track glyph and,
             // for a window, the sash tick that separates an operable unit from a picture one.
             const operation = o.is_door

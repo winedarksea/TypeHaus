@@ -95,10 +95,27 @@ def _document_header(
              "url": "/underlay/" + quote(item.path, safe="")}
             for item in (preferences.underlays if preferences is not None else ())
         ],
+        # Ordered by (building, elevation) rather than elevation alone: five structures now
+        # hold a level at 0'-0", and a flat elevation sort interleaves them arbitrarily.
+        "buildings": [
+            {"tag": b.tag, "name": b.name, "kind": b.kind}
+            for b in model.plan.buildings()
+        ],
+        # The LEVELS are what a reader picks between: one datum, every storey standing on it.
+        # Derived here rather than in the UI because choosing a level's primary tag has a rule
+        # (the dwelling's storey wins) that would drift the moment it were written twice.
+        "levels": [
+            {"key": primary.tag, "elevation_m": primary.elevation.meters,
+             "storeys": [s.tag for s in here]}
+            for primary, here in model.plan.levels()
+        ],
         "storeys": [
             {"tag": s.tag, "elevation_m": s.elevation.meters,
-             "ceiling_m": s.default_ceiling_height.meters}
-            for s in sorted(model.plan.storeys, key=lambda x: x.elevation.meters)
+             "ceiling_m": s.default_ceiling_height.meters,
+             "building": model.plan.building_of(s.tag)}
+            for s in sorted(model.plan.storeys,
+                            key=lambda x: (model.plan.building_order(
+                                model.plan.building_of(x.tag)), x.elevation.meters))
         ],
     }
 

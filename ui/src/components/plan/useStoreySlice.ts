@@ -11,6 +11,7 @@ import {
 } from "../../model/planWarnings";
 import { deriveNodes, type Node as GeoNode } from "../../model/geometry";
 import { openEndKeys } from "./PlanChrome";
+import { storeysAtDatum } from "../../model/levels";
 
 export interface StoreySlice {
   wallsOnStorey: Wall[];
@@ -31,9 +32,18 @@ export interface StoreySlice {
 }
 
 export function useStoreySlice(model: Model, activeStorey: string | null, tolM: number): StoreySlice {
+  // The LEVEL, not the storey: a plan is a horizontal cut, and the cut at 0'-0" crosses the
+  // house's main floor, the garage deck, the porch and the north entry. Filtering on the one
+  // tag drew a main floor with no porch on it (→ model/levels.ts). `activeStorey` stays a
+  // single tag because it is also the authoring target — where a drawn wall is filed.
+  const here = useMemo(() => storeysAtDatum(model, activeStorey), [model, activeStorey]);
+  const onLevel = useMemo(
+    () => (storey: string | null | undefined) => !here || (storey != null && here.has(storey)),
+    [here],
+  );
   const wallsOnStorey = useMemo(
-    () => model.walls.filter((w) => !activeStorey || w.storey === activeStorey),
-    [model.walls, activeStorey],
+    () => model.walls.filter((w) => onLevel(w.storey)),
+    [model.walls, onLevel],
   );
   // Node markers are view-local: deriving them from every storey makes unrelated
   // endpoints appear on the active floorplan when storeys share coordinates.
@@ -41,13 +51,13 @@ export function useStoreySlice(model: Model, activeStorey: string | null, tolM: 
   const openEnds = useMemo(() => openEndKeys(wallsOnStorey), [wallsOnStorey]);
   // Authored nodes on the active storey → the snap/heal/stretch vocabulary (addressed by tag).
   const storeyNodes = useMemo(
-    () => (model.nodes ?? []).filter((n) => !activeStorey || n.storey === activeStorey),
-    [model.nodes, activeStorey],
+    () => (model.nodes ?? []).filter((n) => onLevel(n.storey)),
+    [model.nodes, onLevel],
   );
   const stairsOnStorey = useMemo(() => {
     const candidates = (model.stairs ?? [])
-      .filter((stair) => !activeStorey || stair.storey === activeStorey || stair.to_storey === activeStorey)
-      .sort((a, b) => Number(a.storey !== activeStorey) - Number(b.storey !== activeStorey) || a.uid.localeCompare(b.uid));
+      .filter((stair) => onLevel(stair.storey) || onLevel(stair.to_storey))
+      .sort((a, b) => Number(!onLevel(a.storey)) - Number(!onLevel(b.storey)) || a.uid.localeCompare(b.uid));
     const seenOutlines = new Set<string>();
     return candidates.filter((stair) => {
       const outlineKey = stair.outline.map(([x, y]) => `${x.toFixed(6)},${y.toFixed(6)}`).sort().join(";");
@@ -55,13 +65,13 @@ export function useStoreySlice(model: Model, activeStorey: string | null, tolM: 
       seenOutlines.add(outlineKey);
       return true;
     });
-  }, [model.stairs, activeStorey]);
+  }, [model.stairs, onLevel]);
   // Resolved slabs on the active storey, drawn as concrete outlines under the walls — the
   // plan's mirror of the sheet emitters' slab pass (emit/draw/foundationplan.py::_emit_slabs).
   const slabsOnStorey = useMemo(
     () => (model.solids ?? []).filter((solid) => solid.category === "slab" &&
-      (!activeStorey || solid.storey === activeStorey) && solid.outline.length >= 3),
-    [model.solids, activeStorey],
+      onLevel(solid.storey) && solid.outline.length >= 3),
+    [model.solids, onLevel],
   );
   // Guards and handrails, drawn the way the sheet emitter draws them
   // (emit/draw/floorplan.py::_emit_railings): every post and rail as its own plan outline, so
@@ -76,8 +86,8 @@ export function useStoreySlice(model: Model, activeStorey: string | null, tolM: 
   // set at ~2 entries per railing instead of ~145.
   const railingsOnStorey = useMemo(
     () => (model.solids ?? []).filter((solid) => solid.category === "railing" &&
-      (!activeStorey || solid.storey === activeStorey) && solid.outline.length >= 3),
-    [model.solids, activeStorey],
+      onLevel(solid.storey) && solid.outline.length >= 3),
+    [model.solids, onLevel],
   );
   // Sump pits, drawn on the same slab pass they sit in: a sump is a basin cast at the
   // storey's own elevation (resolve/accessories.py::_resolve_sump), not a buried run like
@@ -85,8 +95,8 @@ export function useStoreySlice(model: Model, activeStorey: string | null, tolM: 
   // the storey never crosses — so unlike those, it belongs in plan.
   const sumpsOnStorey = useMemo(
     () => (model.solids ?? []).filter((solid) => solid.category === "sump" &&
-      (!activeStorey || solid.storey === activeStorey) && solid.outline.length >= 3),
-    [model.solids, activeStorey],
+      onLevel(solid.storey) && solid.outline.length >= 3),
+    [model.solids, onLevel],
   );
   const snapNodes = useMemo(() => {
     const m = new Map<string, GeoNode>();
@@ -135,9 +145,18 @@ export function useStoreySlice(model: Model, activeStorey: string | null, tolM: 
   const storeyHintFile = useCallback(
     // Only *editable* provenance may route adds — a params-generated node's file would
     // send the coordinator to a file writeback can't touch.
-    () => storeyNodes.find((n) => n.provenance?.editable)?.provenance?.file
+    //
+    // Scoped to `activeStorey`, NOT to the level. The level is what gets *drawn*; this picks
+    // the file a new element is *written* to, and the porch and the main floor are drawn
+    // together but authored apart. Taking the level's first editable file would file a wall
+    // drawn on the main floor into the court's source.
+    () => storeyNodes.find((n) => n.storey === activeStorey && n.provenance?.editable)
+      ?.provenance?.file
+      ?? wallsOnStorey.find((w) => w.storey === activeStorey && w.provenance?.editable)
+        ?.provenance?.file
+      ?? storeyNodes.find((n) => n.provenance?.editable)?.provenance?.file
       ?? wallsOnStorey.find((w) => w.provenance?.editable)?.provenance?.file,
-    [storeyNodes, wallsOnStorey],
+    [storeyNodes, wallsOnStorey, activeStorey],
   );
 
   return {

@@ -36,6 +36,7 @@ from typehaus.emit.draw.pdf_writer import _close
 from typehaus.emit.draw.plumbingplan import build_plumbing_plan, has_plumbing_content
 from typehaus.emit.draw.roofframingplan import build_roof_framing_plan
 from typehaus.emit.draw.roofplan import build_roof_plan
+from typehaus.emit.draw.datum import at_level, model_at_level
 from typehaus.emit.draw.scene import Scene
 from typehaus.emit.draw.schedules import (
     _has_data_content,
@@ -222,6 +223,16 @@ def build_sheet_index(model: ResolvedModel,
                             page=partial(_write_structural_notes, profile=profile,
                                          preferences=preferences, house_dir=house_dir)))
 
+    # ONE SHEET PER LEVEL, NOT PER STOREY. A storey is a datum within one building, so
+    # catlin has five at 0'-0" (the house's main floor, the garage deck, the porch, the north
+    # entry, the yard pads) and iterating storeys gave nine plumbing plans and a main floor
+    # plan with no porch drawn on it. A plan is a horizontal cut, and a cut crosses every
+    # structure standing on the plane — so each level is drawn once, from a model whose
+    # elements on that datum all wear the level's own tag (→ ``emit/draw/datum``).
+    levels = model.plan.levels()
+    level_tags = [primary.tag for primary, _ in levels]
+    at = {tag: model_at_level(model, tag) for tag in level_tags}
+
     if has_foundation_content(model):
         sheets.append(SheetSpec("S-100", "Foundation plan",
                                 scene=partial(build_foundation_plan, profile=profile),
@@ -232,13 +243,12 @@ def build_sheet_index(model: ResolvedModel,
     # sheets of one floor cannot see the floor, and no sheet in that pile could show a beam
     # two bays share. ``framed_levels`` assigns the marks storey-wide, which is what makes
     # the merge honest rather than a collage.
-    framed_storeys = [storey.tag for storey in sorted(model.plan.storeys,
-                                                      key=lambda s: s.elevation.meters)
-                      if any(floor.storey == storey.tag for floor in model.floors)]
+    framed_storeys = [tag for tag in level_tags
+                      if any(floor.storey == tag for floor in at[tag].floors)]
     for index, storey_tag in enumerate(framed_storeys, start=1):
         number = "S-101" if len(framed_storeys) == 1 else f"S-101.{index}"
         sheets.append(SheetSpec(number, f"Framing plan — {storey_tag}",
-                                scene=partial(build_framing_plan, storey=storey_tag),
+                                scene=at_level(build_framing_plan, storey_tag),
                                 north_arrow=True, keywords={"storey": storey_tag}))
 
     # Roof framing keeps its own S-102 series: a roof is a framed level too, but numbering
@@ -258,13 +268,12 @@ def build_sheet_index(model: ResolvedModel,
     # its own sheet rather than folding into S-101: braced-wall content exists on the
     # basement and the garage where no framed deck does, and S-101 is now the densest sheet
     # in the set.
-    braced_storeys = [s.tag for s in sorted(model.plan.storeys,
-                                            key=lambda s: s.elevation.meters)
-                      if has_braced_wall_content(model, s.tag)]
+    braced_storeys = [tag for tag in level_tags
+                      if has_braced_wall_content(at[tag], tag)]
     for index, storey_tag in enumerate(braced_storeys, start=1):
         number = "S-103" if len(braced_storeys) == 1 else f"S-103.{index}"
         sheets.append(SheetSpec(number, f"Braced wall plan — {storey_tag}",
-                                scene=partial(build_braced_wall_plan, storey=storey_tag),
+                                scene=at_level(build_braced_wall_plan, storey_tag),
                                 north_arrow=True, keywords={"storey": storey_tag}))
 
     if model.all_members():
@@ -293,12 +302,11 @@ def build_sheet_index(model: ResolvedModel,
         sheets.append(SheetSpec("A-002", "Architectural specifications",
                                 page=_write_specifications))
 
-    storeys = sorted(model.plan.storeys, key=lambda s: s.elevation.meters)
-    floor_pages = [(f"A-{101 + i:03d}", storey.tag) for i, storey in enumerate(storeys)
-                   if any(wall.storey == storey.tag for wall in model.walls)]
+    floor_pages = [(f"A-{101 + i:03d}", tag) for i, tag in enumerate(level_tags)
+                   if any(wall.storey == tag for wall in at[tag].walls)]
     for number, storey in floor_pages:
         sheets.append(SheetSpec(number, f"{storey.title()} floor plan",
-                                scene=partial(build_floorplan, storey=storey),
+                                scene=at_level(build_floorplan, storey),
                                 north_arrow=True))
 
     sheets.append(SheetSpec(f"A-{101 + len(floor_pages):03d}", "Roof plan",
@@ -355,47 +363,47 @@ def build_sheet_index(model: ResolvedModel,
     sheets.append(SheetSpec("A-603", "Room finish schedule",
                             page=_write_room_finish_schedule, sets=FULL_ONLY))
 
-    plumbing_storeys = [s.tag for s in storeys if has_plumbing_content(model, s.tag)]
+    plumbing_storeys = [tag for tag in level_tags if has_plumbing_content(at[tag], tag)]
     for index, storey_tag in enumerate(plumbing_storeys, start=1):
         # Full only. The Saint Paul DSI new-construction checklist asks for fixtures on
         # the floor plans and lists no separate P drawings; 1-2 family plumbing is exempt
         # from MN 4714 plan review. `[print] permit_add = ["P-1"]` restores them.
         sheets.append(SheetSpec(f"P-{100 + index}", f"Plumbing plan — {storey_tag}",
-                                scene=partial(build_plumbing_plan, storey=storey_tag),
+                                scene=at_level(build_plumbing_plan, storey_tag),
                                 sets=FULL_ONLY))
 
     # P-2xx: the drainage plans, one per storey with stormwater content — the same
     # second-series-per-trade convention the lighting sheets use against E-10x. Gutters,
     # leaders, tile, trenches and pits are a different installer (and inspection) from the
     # sanitary/domestic rough-in on P-10x, and merging them buries the buried work.
-    drainage_storeys = [s.tag for s in storeys if has_drainage_content(model, s.tag)]
+    drainage_storeys = [tag for tag in level_tags if has_drainage_content(at[tag], tag)]
     for index, storey_tag in enumerate(drainage_storeys, start=1):
         # Full only: the grading and discharge story a reviewer wants belongs on C-101.
         sheets.append(SheetSpec(f"P-{200 + index}", f"Drainage plan — {storey_tag}",
-                                scene=partial(build_drainage_plan, storey=storey_tag),
+                                scene=at_level(build_drainage_plan, storey_tag),
                                 north_arrow=True, sets=FULL_ONLY))
 
-    hvac_storeys = [s.tag for s in storeys if has_hvac_content(model, s.tag)]
+    hvac_storeys = [tag for tag in level_tags if has_hvac_content(at[tag], tag)]
     for index, storey_tag in enumerate(hvac_storeys, start=1):
         sheets.append(SheetSpec(f"M-{100 + index}", f"HVAC plan — {storey_tag}",
-                                scene=partial(build_hvac_plan, storey=storey_tag)))
+                                scene=at_level(build_hvac_plan, storey_tag)))
 
-    electrical_storeys = [s.tag for s in storeys if has_electrical_content(model, s.tag)]
+    electrical_storeys = [tag for tag in level_tags if has_electrical_content(at[tag], tag)]
     for index, storey_tag in enumerate(electrical_storeys, start=1):
         # Full only, same reason as P-1xx: electrical is permitted by the State Board of
         # Electricity, not by DSI, and the checklist names no E drawings.
         sheets.append(SheetSpec(f"E-{100 + index}", f"Electrical plan — {storey_tag}",
-                                scene=partial(build_electrical_plan, storey=storey_tag),
+                                scene=at_level(build_electrical_plan, storey_tag),
                                 sets=FULL_ONLY))
 
     # E-2xx: the lighting plans, one per storey that has luminaires. A separate series
     # from the E-10x power sheets on purpose — an electrician wiring devices and a reader
     # checking what hangs over the dining table want two different drawings, and merging
     # them produces a sheet too dense to be either.
-    lighting_storeys = [s.tag for s in storeys if has_lighting_content(model, s.tag)]
+    lighting_storeys = [tag for tag in level_tags if has_lighting_content(at[tag], tag)]
     for index, storey_tag in enumerate(lighting_storeys, start=1):
         sheets.append(SheetSpec(f"E-{200 + index}", f"Lighting plan — {storey_tag}",
-                                scene=partial(build_lighting_plan, storey=storey_tag),
+                                scene=at_level(build_lighting_plan, storey_tag),
                                 sets=FULL_ONLY))
 
     if model.plan.library.circuits:
@@ -474,10 +482,11 @@ def write_plan_dxfs(model: ResolvedModel, output_dir: Path) -> list[Path]:
 
     output_dir.mkdir(parents=True, exist_ok=True)
     paths: list[Path] = []
-    for storey in sorted(model.plan.storeys, key=lambda item: item.elevation.meters):
-        if any(wall.storey == storey.tag for wall in model.walls):
-            paths.append(write_dxf(build_floorplan(model, storey.tag),
-                                   output_dir / f"plan_{storey.tag}.dxf"))
+    for primary, _here in model.plan.levels():
+        scoped = model_at_level(model, primary.tag)
+        if any(wall.storey == primary.tag for wall in scoped.walls):
+            paths.append(write_dxf(build_floorplan(scoped, primary.tag),
+                                   output_dir / f"plan_{primary.tag}.dxf"))
     return paths
 
 

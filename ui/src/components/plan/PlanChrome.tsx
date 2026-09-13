@@ -3,9 +3,11 @@
 // asks about the wall network it just drew.
 //
 // Split out of components/Canvas2D.tsx with the rest of the presentational layer.
+import { useMemo } from "react";
 import { useStore } from "../../state/store";
 import type { Model, PlanNode, Vec2, Wall } from "../../model/types";
 import { deriveNodes, type Node as GeoNode } from "../../model/geometry";
+import { activeLevelKey, levelsOf } from "../../model/levels";
 
 export function ToolHint({ tool, draft, assembly, assemblies, onAssembly, onSplit }: {
   tool: string;
@@ -64,16 +66,23 @@ export function BackgroundGrid({ view }: { view: { scale: number; tx: number; ty
   );
 }
 
+// One tab per LEVEL, never per storey: catlin has fourteen storeys on five datums, and the
+// four extra tags at 0'-0" are the same floor of four other structures (→ model/levels.ts).
 export function StoreyTabs({ model }: { model: Model }) {
   const activeStorey = useStore((s) => s.activeStorey);
   const setActiveStorey = useStore((s) => s.setActiveStorey);
-  if (model.storeys.length <= 1) return null;
+  const levels = useMemo(() => levelsOf(model), [model]);
+  const active = activeLevelKey(model, activeStorey);
+  if (levels.length <= 1) return null;
   return (
     <div className="hud" style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-      {model.storeys.map((s) => (
-        <button key={s.tag} className={`seg-btn${activeStorey === s.tag ? " active" : ""}`}
-          onClick={() => setActiveStorey(s.tag)}>
-          {s.tag}
+      {levels.map((l) => (
+        <button key={l.key} className={`seg-btn${active === l.key ? " active" : ""}`}
+          onClick={() => setActiveStorey(l.key)}
+          title={l.storeys.length > 1
+            ? `also drawn here: ${l.storeys.filter((t) => t !== l.key).join(", ")}`
+            : undefined}>
+          {l.key}
         </button>
       ))}
     </div>

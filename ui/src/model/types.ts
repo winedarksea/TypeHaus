@@ -1064,6 +1064,27 @@ export interface Storey {
   tag: string;
   elevation_m: number;
   ceiling_m: number;
+  // Which structure this level belongs to (→ Building.tag). A storey is a DATUM; the
+  // container is the building. Absent on older model.json, where there was one structure.
+  building?: string;
+}
+
+// One datum and every storey standing on it (→ PlanModel.levels). What the level picker
+// offers and what one floor plan draws: a cut at 0'-0" crosses the house's main floor, the
+// garage deck, the porch and the north entry, and a reader asking for the main floor wants
+// all of them. Absent on older model.json — see model/levels.ts for the fallback.
+export interface Level {
+  key: string;
+  elevation_m: number;
+  storeys: string[];
+}
+
+// One structure on the site (→ IfcBuilding). Several may hold a level at the same
+// elevation — the garage deck and the house's main floor both sit at 0'-0".
+export interface Building {
+  tag: string;
+  name: string;
+  kind: "dwelling" | "accessory" | "sitework";
 }
 
 // --- Authoring catalog (→ server model_json._catalog). The palette the placement and
@@ -1467,6 +1488,8 @@ export interface Model {
     spot_elevations?: { position: Vec2; elevation_m: number; kind?: "grade" | "structure" }[];
   };
   underlays?: Underlay[];
+  buildings?: Building[];
+  levels?: Level[];
   storeys: Storey[];
   walls: Wall[];
   junctions?: Junction[];

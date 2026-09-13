@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState, type CSSProperties } from "react";
 import { useStore } from "../state/store";
+import { activeLevelKey, levelsOf } from "../model/levels";
 import { DEFAULT_EARTH_OPACITY, type LabelMode, type Representation, type ViewMode, type ThreeMode, type ViewTransform, type Workspace } from "../state/vocabulary";
 import { migrateSavedVisibility, type VisibleTrades } from "../model/tradeVisibility";
 import { DisciplinesGrid } from "./views/DisciplinesGrid";
@@ -151,9 +152,11 @@ export function ViewsPanel() {
       <DisciplinesGrid viewMode={viewMode} />
 
       <h3>Level</h3>
-      <select value={activeStorey ?? ""} onChange={(e) => setActiveStorey(e.target.value || null)} style={{ width: "100%" }}>
-        {model.storeys.map((s) => (
-          <option key={s.tag} value={s.tag}>{s.tag}</option>
+      {/* Levels, not storeys: fourteen storeys stand on five datums here (→ model/levels.ts). */}
+      <select value={activeLevelKey(model, activeStorey) ?? ""}
+        onChange={(e) => setActiveStorey(e.target.value || null)} style={{ width: "100%" }}>
+        {levelsOf(model).map((l) => (
+          <option key={l.key} value={l.key}>{l.key}</option>
         ))}
       </select>
 

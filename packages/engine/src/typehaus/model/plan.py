@@ -185,6 +185,51 @@ class PlanModel(HausModel):
             for storey in self.storeys_of(tag)
         )
 
+    # --- the datum axis (a LEVEL is one cut plane through every structure on it) ---------
+    def levels(self) -> tuple[tuple[Storey, tuple[Storey, ...]], ...]:
+        """Storeys grouped by shared elevation, bottom-up: ``(primary, every storey there)``.
+
+        A **cell** is what one structure occupies; a **level** is what one horizontal cut
+        crosses, and a drawing is the second. Five of catlin's structures hold a storey at
+        ``0'-0"`` — the house's main floor, the garage deck, the porch, the north entry and
+        the yard pads — and a reader asking for the main floor plan wants all five, because
+        the porch is a thing you step onto from the main floor. Iterating storeys instead
+        gave nine plumbing plans and a main floor plan with no porch on it.
+
+        ``primary`` is the tag the level is NAMED and addressed by, and it is the dwelling's
+        storey wherever one stands on the datum, so the level list reads ``basement, garage,
+        main, second, attic`` rather than fourteen entries. Grouping is by rounded elevation:
+        two storeys reading one constant are bit-equal, but a datum should not split on the
+        last ulp of a float that has been through JSON.
+        """
+        groups: dict[int, list[Storey]] = {}
+        for storey in self.storeys:
+            groups.setdefault(round(storey.elevation.meters * 1e4), []).append(storey)
+        levels = []
+        for key in sorted(groups):
+            here = sorted(groups[key], key=lambda s: (
+                self.building_of(s.tag) not in self._dwelling_tags(),
+                self.building_order(self.building_of(s.tag)), s.tag))
+            levels.append((here[0], tuple(groups[key])))
+        return tuple(levels)
+
+    def _dwelling_tags(self) -> frozenset[str]:
+        return frozenset(b.tag for b in self.buildings() if b.kind == "dwelling")
+
+    def level_of(self, storey_tag: str) -> tuple[str, ...]:
+        """Every storey sharing ``storey_tag``'s datum, itself included.
+
+        The display filter: what a plan drawn at this level shows. A tag naming no storey
+        answers with itself, so a caller holding a stale tag draws one storey rather than
+        silently drawing the whole house.
+        """
+        storey = self.storey(storey_tag)
+        if storey is None:
+            return (storey_tag,)
+        key = round(storey.elevation.meters * 1e4)
+        return tuple(s.tag for s in self.storeys
+                     if round(s.elevation.meters * 1e4) == key)
+
     def storey_elements(self, storey_tag: str) -> tuple[Element, ...]:
         return self.elements.get(storey_tag, ())
 

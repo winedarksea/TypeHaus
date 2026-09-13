@@ -144,7 +144,16 @@
   font-size: 12px;
 }
 
-/* Project drawer hierarchy (Phase 6). */
+/* Project drawer hierarchy (Phase 6). Storeys sit under the building that holds them, so a
+   reader can tell the garage's deck from the house's main floor — they share an elevation. */
+.hierarchy-building + .hierarchy-building {
+  margin-top: 8px;
+}
+.hierarchy-building-name {
+  font-size: var(--text-xs);
+  color: var(--muted);
+  margin-bottom: 3px;
+}
 .hierarchy-levels {
   display: flex;
   flex-wrap: wrap;

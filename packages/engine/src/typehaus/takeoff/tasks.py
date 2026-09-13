@@ -98,11 +98,25 @@ class _Bucket:
 
 
 def _storey_of_tag(model: Any) -> dict[str, str]:
-    """tag -> storey, for every authored element. Built once per export."""
+    """tag -> **level**, for every authored element. Built once per export.
+
+    The level, not the storey: a storey is a datum within one building, so the sunken
+    garden's concrete sits on ``court-low`` and the basement's on ``basement`` though both are
+    the same pour at the same elevation. Keying on the storey handed a concrete sub four
+    packages for one day's work and produced a ``task/siding/entry-low`` worth $41 — and it
+    split ids that ``tasks.toml`` already names (``task/concrete/basement``), which is the
+    more concrete harm. One package per (trade x datum) is what a visit actually is.
+
+    A row spanning two structures on one datum now lands on that level rather than falling
+    building-wide, which moves money *out* of the un-split ``BUILDING`` bucket, never into it.
+    """
+    primary_of = {storey: primary.tag
+                  for primary, here in model.plan.levels() for storey in
+                  (s.tag for s in here)}
     index: dict[str, str] = {}
     for storey in model.plan.storeys:
         for element in model.plan.storey_elements(storey.tag):
-            index[element.tag] = storey.tag
+            index[element.tag] = primary_of.get(storey.tag, storey.tag)
     return index
 
 

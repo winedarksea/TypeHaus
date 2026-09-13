@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useRef, useState } from "react";
+import { Fragment, useCallback, useMemo, useRef, useState } from "react";
 import { useStore } from "../state/store";
 import type { Model, Wall } from "../model/types";
 import { BuildingScienceDashboard } from "./BuildingScienceDashboard";
@@ -96,6 +96,22 @@ function DrawerSection({ title, defaultOpen = false, right, children }: {
 function Hierarchy({ model }: { model: Model }) {
   const activeStorey = useStore((s) => s.activeStorey);
   const setActiveStorey = useStore((s) => s.setActiveStorey);
+  // Storeys under the building that holds them, buildings in the order the project declares
+  // them. An older model.json names no building, and then there is one implicit group.
+  const buildingGroups = useMemo(() => {
+    const order = (model.buildings ?? []).map((b) => b.tag);
+    const names = new Map((model.buildings ?? []).map((b) => [b.tag, b.name]));
+    const groups = new Map<string, typeof model.storeys>();
+    for (const s of model.storeys) {
+      const tag = s.building ?? "";
+      const at = groups.get(tag);
+      if (at) at.push(s);
+      else groups.set(tag, [s]);
+    }
+    return [...groups.entries()]
+      .sort((a, b) => (order.indexOf(a[0]) + 1 || 99) - (order.indexOf(b[0]) + 1 || 99))
+      .map(([tag, storeys]) => [names.get(tag) ?? tag, storeys] as const);
+  }, [model.buildings, model.storeys]);
   const counts: [string, number][] = [
     ["Walls", model.walls.length],
     ["Openings", model.openings.length],
@@ -106,17 +122,26 @@ function Hierarchy({ model }: { model: Model }) {
   ];
   return (
     <div>
-      <div className="hierarchy-levels">
-        {model.storeys.map((s) => (
-          <button
-            key={s.tag}
-            className={`hierarchy-level${activeStorey === s.tag ? " active" : ""}`}
-            onClick={() => setActiveStorey(s.tag)}
-          >
-            {s.tag}
-          </button>
-        ))}
-      </div>
+      {/* The one place the FULL building -> storey tree belongs. The level tabs over the
+          canvas offer datums (five here, not fourteen — see model/levels.ts); an object
+          hierarchy is an index of the graph, so it shows every structure and every level in
+          it. Picking a sub-storey focuses the datum it stands on and files new work there. */}
+      {buildingGroups.map(([building, storeys]) => (
+        <div key={building} className="hierarchy-building">
+          {buildingGroups.length > 1 && <div className="hierarchy-building-name">{building}</div>}
+          <div className="hierarchy-levels">
+            {storeys.map((s) => (
+              <button
+                key={s.tag}
+                className={`hierarchy-level${activeStorey === s.tag ? " active" : ""}`}
+                onClick={() => setActiveStorey(s.tag)}
+              >
+                {s.tag}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
       <div className="kv" style={{ marginTop: 8 }}>
         {counts.map(([label, n]) => (
           <Fragment key={label}>

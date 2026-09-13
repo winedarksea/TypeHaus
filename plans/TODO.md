@@ -343,6 +343,7 @@ the future.
 - Remove the fiber optic lighting from the sauna, too expensive. We are thinking of using ceiling mounted LED stars (20mm luxeon style, ledsupply, etc) using modular cobs (we like the idea of modular, open standard) or else LED strips such as https://www.ledsupply.com/sauna-led-strip-lights under the benches. Either way the driver would be located in the wall behind the insulation, possibly accessible from the workshop.
 - Possibly in second floor study, a bookshelf continuing hallways to make an alcove under the stairs
 - Consider making the dining room "candelier" a TV screen (direct-lit/FALD Mini-LED LCD, 65") screen, perhaps connected to an exterior webcam, set recessed in the ceiling a bit (still replaceable, likely with the joist space above open for more room for airflow).
+- Can we remove W-SG-ARCH and make make SL-SG-FLOOR built with rebar into the footings to serve as the cross-brace? W-SG-BRKBM should also be serving as part of the cross brace. There may be some confusion in how W-SG-W1 and W-SG-W2 are really one continuous pour.
 
  - **The published web app runs a GEOS version behind the dev venv, and a geometry bug can ship
   green.** `.venv` is GEOS 3.13.1; the Pyodide-based web app is GEOS 3.12.1, which previously
