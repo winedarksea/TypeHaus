@@ -2363,14 +2363,30 @@
 # balancing pass — but the case now HANGS (see plan/electrical.py), which is the cheaper end
 # of that range rather than the dearer.
 "EQ-T-BROAN-B210E75RT" = { material = { low = 1400, high = 2400 }, labour = { low = 950, high = 2100 } }  # 1 ea
-# The radial sub-manifolds: four rows, five manifolds. A 160 mm-collared plenum with six or
-# ten 75 mm outlets and
-# a balancing damper at each, plus the ONE 6" -> 160 mm adapter every manifold needs because
-# the Broan's ports are 6" and the manifold stock is metric. The adapter is a real part and a
-# real fitting-up, so it rides in these rows rather than being shrugged into the duct $/LF.
-"EQ-T-ERV-MANIFOLD-6" = { material = { low = 180, high = 420 }, labour = { low = 120, high = 300 } }  # 2 ea — the supply side
-"EQ-T-ERV-MANIFOLD-6-EXH" = { material = { low = 180, high = 420 }, labour = { low = 120, high = 300 } }  # 2 ea — the same part on the extract side; separate row only because its trunk declares RETURN_AIR
-"EQ-T-ERV-MANIFOLD-10" = { material = { low = 260, high = 600 }, labour = { low = 150, high = 380 } }  # 1 ea
+# ** RE-BANDED 2026-09-12 FOR A FABRICATED PLENUM (plans/buildability.md BLD-08). ** Three
+# rows, five plenums. These were priced as a proprietary 160 mm-collared radial manifold with
+# six or ten 75 mm outlets, plus the ONE 6" -> 160 mm metric adapter each one needed because
+# the Broan's ports are 6" and the manifold stock is metric. That part has three US sellers,
+# no Minnesota dealer, and the owner's decision is no proprietary tube.
+#
+# What is bought now is sheet-metal shop work, exactly like EQ-T-ERV-MIXING-BOX two rows
+# below: a galvanized box with one 8" inlet collar, N x 4" start collars each with an
+# integral butterfly damper, seams mastic-sealed. Material is metal and N dampers; labour is
+# shop fabrication plus hanging it in a 6'-0" closet or an attic pocket. THE METRIC ADAPTER
+# IS GONE from all five — an 8" collar takes a 6" trunk with a commodity reducer, and the
+# reducer is inside the duct $/LF.
+#
+# ** THE START COLLARS AND THEIR DAMPERS ARE IN THESE ROWS, NOT A ROW OF THEIR OWN. ** 28
+# ports across the five boxes, 23 of them live; a start collar with a damper is $8-18 and
+# fitting it is part of making the box. Billing them separately would double-count against
+# the fabrication labour, which is priced per box and not per port.
+#
+# ** SUPERSEDED BANDS, QUOTED: ** MANIFOLD-6 and -6-EXH were 180/420 material + 120/300
+# labour; MANIFOLD-10 was 260/600 + 150/380. Material falls (commodity steel and butterfly
+# dampers against an imported plenum plus its adapter); labour rises (a shop builds it).
+"EQ-T-ERV-MANIFOLD-6" = { material = { low = 120, high = 300 }, labour = { low = 180, high = 420 } }  # 2 ea — the supply side
+"EQ-T-ERV-MANIFOLD-6-EXH" = { material = { low = 120, high = 300 }, labour = { low = 180, high = 420 } }  # 2 ea — the same part on the extract side; separate row only because its trunk declares RETURN_AIR
+"EQ-T-ERV-MANIFOLD-10" = { material = { low = 175, high = 430 }, labour = { low = 230, high = 530 } }  # 1 ea — ten ports in a longer box
 # Fabricated plenum box with a 6" collar and a gravity backdraft damper. Sheet-metal shop
 # work, not a catalogue item: the material range is the metal and the damper, the labour is
 # the fabrication plus fitting it into a 30 3/4" soffit with an air handler already in it.
@@ -4795,19 +4811,44 @@
 # falls back to the blend with no error and no warning. `test_duct_prices_qualify_on_diameter`
 # is what pins the spelling.
 #
+# ** GALVANIZED REPLACED SEMI-RIGID ON 2026-09-12 (plans/buildability.md BLD-08), AND THE
+# MATERIAL KEY IS THE WHOLE REASON THE OLD ROWS COULD NOT SIMPLY BE REPRICED. ** Every radial
+# went 3" semi-rigid -> 4" galvanized snap-lock and every trunk 6" semi-rigid -> 6" galvanized,
+# because the proprietary 75 mm tube has no Minnesota dealer and the topology never needed it.
+# `material` is half the lookup key, so the `:semi_rigid` rows below now price NOTHING. They
+# are kept, not deleted: the semi-rigid rows are what notes/erv_static_budget.md §6's
+# rigid-versus-flexible comparison is costed against, and DUCT-T-SEMIRIGID-4 is still in the
+# catalog for the first run that needs a flexible leg.
+#
+# ** THE SUPERSEDED BANDS, QUOTED SO THE DELTA IS READABLE: ** 3" semi-rigid radial was
+# 2.25/4.50 material + 2.75/6.50 labour; 6" semi-rigid was 4.00/8.00 + 3.50/8.00. Rigid pipe
+# is dearer in both halves — more steel per foot, and it is cut, crimped and screwed rather
+# than pushed through a bay — and that is the price of a commodity catalogue. It is NOT the
+# sheet-metal rate either: a 4" snap-lock branch is one person with snips, not a fabricated
+# rectangular trunk, so these rows sit a long way under the bare `supply`/`return` rows.
+#
 # $/LF, by system, optionally qualified by material and then by diameter
 "exhaust" = { material = { low = 3, high = 8 }, labour = { low = 5, high = 12 } }  # sheet-metal fallback, 0 LF today
 "exhaust:semi_rigid:3.0" = { material = { low = 2.25, high = 4.5 }, labour = { low = 2.75, high = 6.5 } }  # 217.5 LF of 75 mm ERV branch
 "exhaust:semi_rigid:6.0" = { material = { low = 4, high = 8 }, labour = { low = 3.5, high = 8 } }  # 43.0 LF of 6" ERV trunk
+"exhaust:galvanized:4.0" = { material = { low = 2.75, high = 5.5 }, labour = { low = 3.25, high = 7.5 } }  # 4" galvanized snap-lock radial, extract side
+"exhaust:galvanized:6.0" = { material = { low = 4.5, high = 9 }, labour = { low = 4, high = 9 } }  # 6" galvanized trunk/riser, extract side
+"exhaust:galvanized" = { material = { low = 3.5, high = 7 }, labour = { low = 3.5, high = 8 } }  # fallback for a diameter not priced above
 "exhaust:semi_rigid" = { material = { low = 2.5, high = 5 }, labour = { low = 3, high = 7 } }  # fallback for a diameter not priced above
 "outdoor_air" = { material = { low = 6, high = 13 }, labour = { low = 8.5, high = 19 } }  # sheet-metal fallback, 0 LF today
+"outdoor_air:galvanized" = { material = { low = 5, high = 10 }, labour = { low = 4.5, high = 10 } }  # 6" galvanized inside an R-8 vapour-sealed wrap — dearer than a bare trunk, it is the run that sweats
 "outdoor_air:semi_rigid" = { material = { low = 3.5, high = 7 }, labour = { low = 3.5, high = 8 } }  # 37.6 LF of 6" insulated — dearer than a bare radial, it is the run that sweats
 "return" = { material = { low = 7, high = 13 }, labour = { low = 12, high = 28 } }  # 0.5 LF of galvanized stub
+"return:galvanized:4.0" = { material = { low = 2.75, high = 5.5 }, labour = { low = 3.25, high = 7.5 } }  # 4" galvanized snap-lock radial, return side
+"return:galvanized" = { material = { low = 3.5, high = 7 }, labour = { low = 3.5, high = 8 } }  # fallback for a diameter not priced above
 "return:semi_rigid" = { material = { low = 2.5, high = 5 }, labour = { low = 3, high = 7 } }  # 198.1 LF of 3" radial
 "supply" = { material = { low = 7, high = 13 }, labour = { low = 12, high = 28 } }  # 53.9 LF of galvanized trunk
 "supply:semi_rigid:3.0" = { material = { low = 2.25, high = 4.5 }, labour = { low = 2.75, high = 6.5 } }  # 181.6 LF of 75 mm radial
 "supply:semi_rigid:6.0" = { material = { low = 4, high = 8 }, labour = { low = 3.5, high = 8 } }  # 68.8 LF of 6" radial riser
 "supply:semi_rigid" = { material = { low = 2.75, high = 5.5 }, labour = { low = 3, high = 7 } }  # fallback for a diameter not priced above
+"supply:galvanized:4.0" = { material = { low = 2.75, high = 5.5 }, labour = { low = 3.25, high = 7.5 } }  # 4" galvanized snap-lock radial, supply side
+"supply:galvanized:6.0" = { material = { low = 4.5, high = 9 }, labour = { low = 4, high = 9 } }  # 6" galvanized trunk/riser/mixing-box feed
+"supply:galvanized" = { material = { low = 3.5, high = 7 }, labour = { low = 3.5, high = 8 } }  # fallback for a diameter not priced above
 
 [duct_fittings]
 # NEW 2026-08-25, and it could not have existed a day earlier: a duct elbow is counted off
@@ -4816,7 +4857,10 @@
 # Material only, exactly as [pipe_fittings] is and for the same reason — the labour of making
 # a bend up is inside the run's installed $/LF above.
 # $ each, keyed as ordered
-"elbow-90-3in" = { low = 3, high = 8 }             # 42 ea — 75 mm semi-rigid bend
+# elbow-90-3in is the retired 75 mm semi-rigid bend (was 42 ea at 3/8). Kept unreferenced
+# with the [ducts] :semi_rigid rows, for the same reason.
+"elbow-90-3in" = { low = 3, high = 8 }             # 0 ea — retired 2026-09-12 with the 3" radial
+"elbow-90-4in" = { low = 4, high = 10 }            # 4" stamped adjustable galvanized elbow — the radials' bend, 2026-09-12
 "elbow-90-6in" = { low = 9, high = 22 }            # 9 ea — 6" insulated riser elbow
 # elbow-90-8in retired 2026-08-30 with DU-A-HP-STUDY, the run whose rise it turned. The one
 # vertical System 1 has now is DU-S-HP-SOUTH-RISE's, and that branch is 10x6.

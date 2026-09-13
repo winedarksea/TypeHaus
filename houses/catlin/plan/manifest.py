@@ -75,6 +75,7 @@ _library = Library(
     # vs APPL-*), which `integrity.duplicate_catalog_tag` proves rather than assumes.
     appliance_types=(*STARTER_APPLIANCE_TYPES, *appliance_types.APPLIANCE_TYPES),
     register_types=mep.REGISTER_TYPES,
+    duct_product_types=mep.DUCT_PRODUCT_TYPES,
     equipment_types=(*mep.EQUIPMENT_TYPES, *electrical.EQUIPMENT_TYPES),
     electrical_device_types=(*mep.ELECTRICAL_DEVICE_TYPES, *electrical.DEVICE_TYPES,
                              *lighting_types.LIGHTING_TYPES),

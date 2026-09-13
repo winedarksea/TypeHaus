@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Literal
 
+from pydantic import model_validator
+
 from typehaus.model.base import HausModel
 from typehaus.model.enums import DoorOperation, LuminaireForm, Service, WindowOperation
 from typehaus.model.placeables import (
@@ -265,6 +267,14 @@ class AirHandlingProductFacts(HausModel):
     #: same frame ``ServicePort.position`` and the plan symbols use, ``+y`` toward the back.
     #: A ceiling grille's hinged face is ``"bottom"``; a cabinet's door is ``"front"``.
     service_face: Literal["front", "back", "left", "right", "top", "bottom"] | None = None
+    #: Measured static loss across this part, as ``((cfm, Pa), ...)`` ascending in cfm —
+    #: a plenum, a balancing damper, a diffuser, a transition. Pascals and not inches w.g.
+    #: because that is the unit every European and most North American component sheets
+    #: publish a component loss in; the fan curve is in inches w.g. because that is the
+    #: unit ITS sheet publishes. Two units, each the one its source states, converted once
+    #: where they meet. Empty means the sheet does not state one, and the static budget
+    #: reports the gap rather than inventing a K-factor.
+    static_loss_pa_at_cfm: tuple[tuple[float, float], ...] = ()
 
 
 class EquipmentType(FurnitureType, AirHandlingProductFacts):
@@ -283,6 +293,24 @@ class EquipmentType(FurnitureType, AirHandlingProductFacts):
     # the load by thousands of Btu/h.
     ventilation_cfm: float | None = None
     sensible_recovery_effectiveness: float | None = None
+    #: The published fan curve, as ``((static in. w.g., net cfm), ...)`` — the whole table a
+    #: ventilator's spec sheet prints, not the one point its model number is named for.
+    #: ``ventilation_cfm`` is the DESIGN intent; this is what the machine can actually do
+    #: against the duct system it was given, and ``mep.erv_static_budget`` interpolates it.
+    #: Strictly increasing in static and non-increasing in cfm — a curve that rises with
+    #: static is a transcription error, and the validator below refuses it at load time.
+    fan_curve: tuple[tuple[float, float], ...] = ()
+    #: The static past which the manufacturer will not operate the machine at all — a hard
+    #: ceiling, distinct from the last point on the curve. The Broan B210E75RT's core
+    #: deforms above 1.3 in. w.g., which is a different kind of statement from "the curve
+    #: stops here", and a budget that merely ran off the end of the table would understate it.
+    fan_curve_max_static_in_wg: float | None = None
+    #: Distribution plenums (``EquipmentKind.DUCT_MANIFOLD``): how many branch ports the
+    #: part is fabricated with, and their diameter. ``mep.erv_manifold_ports`` counts the
+    #: runs landing in the part against this, which is what turns "10 of 10" from a comment
+    #: into a verdict. Never inferred from the type name.
+    duct_ports: int | None = None
+    port_diameter: Length | None = None
     # Lowest outdoor temperature the unit is rated to operate at (cold-climate heat pumps).
     # Compared against the site heating design temperature by the HVAC schedule.
     min_operating_temp_f: float | None = None
@@ -318,6 +346,72 @@ class EquipmentType(FurnitureType, AirHandlingProductFacts):
     inverter_kw_surge: float | None = None
     # Maximum PV array the inverter accepts, kW DC.
     pv_input_kw: float | None = None
+
+    @model_validator(mode="after")
+    def _check_fan_curve(self) -> EquipmentType:
+        """A fan curve is refused at load time rather than graded, and the reason is scope.
+
+        Every other datasheet field here is a single number nobody can mistranscribe into
+        something self-contradictory. A curve is a table, and the two ways it goes wrong —
+        points out of order, cfm RISING with static — are not facts about the building that
+        a ``Finding`` could report. They are facts about the typing, and a static budget
+        interpolated through them would return a plausible number that means nothing.
+        """
+        curve = self.fan_curve
+        if not curve:
+            return self
+        if len(curve) < 2:
+            raise ValueError(f"{self.tag}: fan_curve needs at least two points to "
+                             "interpolate between; one point is a rating, not a curve")
+        for (s0, c0), (s1, c1) in zip(curve, curve[1:], strict=False):
+            if s1 <= s0:
+                raise ValueError(f"{self.tag}: fan_curve static must strictly increase; "
+                                 f"{s1} follows {s0}")
+            if c1 > c0:
+                raise ValueError(f"{self.tag}: fan_curve cfm must not rise with static; "
+                                 f"{c1} cfm at {s1} in. w.g. follows {c0} at {s0}")
+        return self
+
+
+class DuctProductType(HausModel):
+    """The duct itself as a purchased product: what a run is made of, and how it resists.
+
+    A ``DuctRun`` states a *material* and a *nominal diameter* and nothing else about the
+    pipe — which is right, because those two are what an estimator orders on and are exactly
+    the pair ``prices.toml``'s ``[ducts]`` qualifies its rows by. What they cannot tell a
+    pressure calculation is the **bore** (4" snap-lock is 4.0" inside; 4" semi-rigid
+    aluminium is not) or the **roughness**, and both move friction by more than the tolerance
+    of the answer. So the pair is the key and this row is the value, matched by
+    ``(material, nominal_diameter)`` — one join, the same join the price uses, and a run
+    whose pair names no row is reported UNKNOWN rather than given a default ε.
+
+    **The physics is the engine's; the coefficients are the house's.** Darcy-Weisbach with
+    the Colebrook friction factor is public and lives in ``checks/mep/erv_static.py``. The
+    absolute roughness of galvanized steel and of semi-rigid aluminium, and the equivalent
+    length of a bend, are readings off ASHRAE tables that belong to whoever authored the
+    row — the same division ``PublishedSpan`` makes between a table read and a calculation.
+    """
+
+    tag: str
+    name: str
+    #: Matches ``DuctRun.material`` exactly (``"galvanized"``, ``"semi_rigid"``, ``"flex"``).
+    material: str
+    #: Matches ``DuctRun.diameter`` — the size the run is drawn and ordered at.
+    nominal_diameter: Length
+    #: The actual inside diameter. Friction goes as roughly the fifth power of it, so the
+    #: nominal size is not close enough to stand in.
+    bore_diameter: Length
+    #: Absolute roughness ε, in metres, as the authoring note reads it off ASHRAE.
+    roughness_m: float
+    #: The most air the product is used for at the velocity the house designs to. Advisory:
+    #: ``mep.erv_static_budget`` grades each radial's ``design_cfm`` against it.
+    max_cfm: float | None = None
+    #: Equivalent length of one 90-degree bend in this product — authored, not derived. A
+    #: fitting loss is a measured coefficient, and deriving one from geometry would be the
+    #: engine inventing a number its sources publish.
+    bend_equivalent_length: Length | None = None
+    product_ref: str | None = None
+    source: str | None = None
 
 
 class RegisterType(FurnitureType, AirHandlingProductFacts):
@@ -419,6 +513,7 @@ for _name, _obj in (
     ("FixtureType", FixtureType),
     ("ApplianceType", ApplianceType),
     ("EquipmentType", EquipmentType),
+    ("DuctProductType", DuctProductType),
     ("RegisterType", RegisterType),
     ("ElectricalDeviceType", ElectricalDeviceType),
     ("LuminaireType", LuminaireType),

@@ -79,7 +79,7 @@ def _case_box(footprint: Sequence[tuple[float, float]]
 def _reaches_vertically(z: float | None, base_m: float, height_m: float | None) -> bool:
     """Whether an elevation is inside the case. Unknown height falls back to the plan test.
 
-    Same band as ``mep.duct_connectivity._meets_equipment``: ``z_m`` is the object's *base*
+    Same band as ``mep.duct_connectivity.equipment_at_end``: ``z_m`` is the object's *base*
     — a ceiling-hung ERV at a 6'-0" mount resolves to the bottom of its case — so the band
     runs upward from it.
     """

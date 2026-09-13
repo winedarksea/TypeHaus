@@ -1,0 +1,284 @@
+# ERV static budget — hand-worked basis
+
+**House:** catlin
+**Structure:** `EQ-B-ERV` (Broan B210E75RT) and the whole balanced distribution system it
+drives — 5 fabricated plenums, 23 radials, 4 trunks/risers, 2 outdoor legs, 26 terminals.
+**Written:** 2026-09-12, by hand, before the calculation it oracles was encoded.
+**Oracle for:** `checks/mep/erv_static.py`, reported by `mep.erv_static_budget`; reproduced
+by `tests/test_erv_static_oracle.py`.
+**Companions:** `notes/room_heat_loss_baths.md` — the radiant arithmetic from the same
+BLD-08 pass; `notes/system1_return_path.md` — the *other* air system's return path, which
+shares none of this machine's duct.
+**What is asked of the reviewer:** redo §6's two column sums and say whether 6" trunks are
+accepted or the 8" upsize in §7 should be bought. The friction arithmetic in §2–§5 is
+ordinary Darcy–Weisbach and is offered for checking, not for deciding.
+
+> ⚠ **`ventilation_cfm = 210` IS A DESIGN INTENT, NOT A PROMISE THE CURVE CAN KEEP.** 210 is
+> the model-name number and it is the curve's value at 0.2 in. w.g. No duct system this size
+> lands under 0.2 in. w.g., so the delivered figure will always read short of 210. What
+> governs is MN 1322 R403.5's **205 cfm**, which `code.N1103_6_whole_house_ventilation`
+> grades. `mep.erv_static_budget` reports the shortfall against 210 as UNKNOWN and never as
+> a FAIL, for exactly that reason — see §8.
+
+> ⚠ **THE GRADED NUMBER IS DELIBERATELY CONSERVATIVE IN TWO PLACES**, both named in §9: the
+> risers are worked at their authored 210 cfm over their whole length though the real flow
+> below the level-2 tap is 200 and above it 54, and the trunk chain is summed whole though
+> `DU-S-ERV-HP-FEED` parallels the path rather than lying on it. Worked without either
+> simplification the system reads **0.380 in. w.g. and 206.4 cfm**, against the graded
+> 0.457 and 203.2. Both readings clear 205; neither reaches 210.
+
+---
+
+## 1. The system as built
+
+After the 2026-09-12 redesign (`plans/buildability.md` BLD-08) there is no proprietary part
+anywhere in the distribution. The topology — one home run per terminal off a dampered
+plenum — did not change; what it is built from did.
+
+| piece | what it is | count |
+|---|---|---|
+| the machine | Broan B210E75RT, 6" top ports, `fan_curve` authored | 1 |
+| plenums | fabricated galvanized box, 8" inlet collar, N x 4" dampered start collars | 5 (28 ports, 23 live) |
+| radials | 4" galvanized snap-lock, one per terminal | 23 |
+| trunks and risers | 6" galvanized | 4 |
+| outdoor legs | 6" galvanized inside an R-8 vapour-sealed wrap | 2 |
+| terminals | 4"-collar commodity diffusers and grilles | 26 |
+
+Developed lengths and elbow counts below are read off the resolved model
+(`takeoff/runs.py::run_schedule`), not scaled off a drawing.
+
+## 2. The friction model
+
+Darcy–Weisbach with a Colebrook friction factor, in the units the sources publish in.
+
+| term | working | value |
+|---|---|---|
+| standard air, 70 °F | ρ = 0.075 lb/ft³ | — |
+| kinematic viscosity | ν, 70 °F dry air | 1.63 x 10⁻⁴ ft²/s |
+| area | A = πD²/4 | ft² |
+| velocity | V = Q / A | fpm |
+| velocity pressure | P_v = (V / 4005)² | in. w.g. |
+| Reynolds number | Re = (V/60) · D / ν | — |
+| friction factor | 1/√f = −2 log₁₀( ε/3.7D + 2.51/(Re√f) ) | — |
+| pressure drop | Δp = f · (L_eff / D) · P_v | in. w.g. |
+| effective length | L_eff = developed + (elbows x bend equivalent length) | ft |
+| unit bridge | 1 in. w.g. = 249.089 Pa | — |
+
+The physics is the engine's. The two coefficients it needs are readings off **ASHRAE
+Fundamentals Ch. 21** and belong to the house, authored on `DuctProductType`:
+
+| product | ε (ASHRAE Table 1) | bend equivalent length | working |
+|---|---|---|---|
+| 4" galvanized snap-lock | 0.0003 ft (galvanized, longitudinal seam — "medium smooth") | 2'-6" | C = 0.22 (smooth r/D = 1.5), L_e = C·D/f = 0.22 x 0.3333 / 0.0324 = 2.26 ft, rounded up for a stamped adjustable elbow |
+| 6" galvanized | 0.0003 ft | 4'-6" | 0.22 x 0.5 / 0.0225 = 4.89 ft, rounded down to the nearest half foot |
+| 4" semi-rigid aluminium | 0.0009144 m = 0.003 ft (flexible metallic, fully extended) | 3'-6" | bore 3.8", not 4.0" |
+| 6" insulated flex | 0.003 ft | 7'-0" | the rejected alternative — §6 |
+
+**Roughness is read fully extended, and that is the honest reading only if the duct is
+installed fully extended.** A compressed flex run is several times worse and is a defect,
+not a product; nothing in this note or the check models one.
+
+## 3. The radials, term by term
+
+Every radial is 4" galvanized. `Δp_duct` is §2's formula; `Δp_terminal` is §5's.
+
+| run | Q (cfm) | developed (ft) | elbows | L_eff (ft) | V (fpm) | P_v (in.) | Re | f | Δp_duct (in.) |
+|---|---|---|---|---|---|---|---|---|---|
+| `DU-M-ERV-R-PLANT` | 25 | 53.00 | 3 | 60.50 | 286 | 0.00512 | 9,764 | 0.0324 | **0.0301** |
+| `DU-B-ERV-R-PLAY` | 30 | 17.00 | 1 | 19.50 | 344 | 0.00737 | 11,717 | 0.0311 | **0.0134** |
+| `DU-M-ERV-R-LIVING` | 20 | 46.01 | 2 | 51.01 | 229 | 0.00327 | 7,811 | 0.0342 | 0.0171 |
+| `DU-A-ERV-R-BED3` | 5 | 56.15 | 5 | 68.65 | 57 | 0.00020 | 1,953 | — | ~0.001 |
+
+The last row is the point worth writing down: **`DU-A-ERV-R-BED3` is the LONGEST radial in
+the house at 56'-2", and it is not remotely the worst.** Static goes as Q², and at 5 cfm it
+costs about a thousandth of an inch. Length was never the criterion. The two runs that
+matter are `DU-M-ERV-R-PLANT` (25 cfm and long) and `DU-B-ERV-R-PLAY` (30 cfm, the highest
+flow on any radial). The prose in `plan/mep_erv.py` has said for months that PLANT is "the
+radial whose drop the installer must check"; this note is where that stops being an
+assertion.
+
+**`DU-A-ERV-R-BED3` at 5 cfm is below the transition band (Re ≈ 1,950).** Colebrook is not
+valid there and the check refuses to publish a friction factor for it; the drop is bounded
+above by the laminar value and is negligible either way. It cannot govern, so nothing turns
+on the refusal.
+
+## 4. The plenum, derived
+
+There is no manufacturer, so there is no published curve. What is authored is worked here
+from ASHRAE fitting coefficients, at the house's **largest** port flow (25 cfm), which makes
+it conservative at every other port.
+
+| term | working | value |
+|---|---|---|
+| inlet velocity, 8" collar at 210 cfm | A = 0.3491 ft²; V = 210/0.3491 | 602 fpm |
+| inlet velocity pressure | (602/4005)² | 0.02256 in. = 5.62 Pa |
+| abrupt expansion into the box | C = 0.80 (area ratio > 4) x 5.62 | 4.50 Pa |
+| port velocity, 4" collar at 25 cfm | A = 0.08727 ft²; V = 25/0.08727 | 286 fpm |
+| port velocity pressure | (286/4005)² | 0.00512 in. = 1.27 Pa |
+| contraction into the collar + butterfly damper, full open | C = 0.50 + 0.30 = 0.80 x 1.27 | 1.02 Pa |
+| **inlet-to-port total at 210 cfm** | 4.50 + 1.02 | **5.5 Pa** |
+
+The authored curve is that figure scaled as Q² on the **trunk** flow, because the expansion
+term is the larger and the only one the trunk flow moves:
+
+`((60, 0.5), (120, 1.8), (210, 5.5))` Pa — 5.5 x (120/210)² = 1.80 ✓, 5.5 x (60/210)² = 0.45 ✓.
+
+`EQ-T-ERV-MANIFOLD-10` carries the same curve: the ten-port box is **longer, not fatter**,
+and neither the 8" inlet nor one 4" collar changes with its length.
+
+## 5. The terminals, derived
+
+Same situation and same treatment: commodity bath-fan grilles, no published drop at 20 cfm.
+K on the **collar** velocity pressure (0.81 Pa at 20 cfm through 4"):
+
+| type | K | basis | at 20 cfm |
+|---|---|---|---|
+| `REG-T-ERV-SUP` / `-EXH` / `-EXH-WALL` | 5 | plain dampered round diffuser | 4.0 Pa |
+| `REG-T-ERV-SAUNA-SUP` / `-SAUNA-EXH` / `-PLANT-EXH` | 8 | face carries a closable or motorised damper of its own | 6.5 Pa |
+| `REG-T-ERV-BENCH-HOOD` | 6 | fabricated hood — a plenum with a collar | 7.6 Pa at its own 25 cfm |
+
+Each row is authored as three points scaling Q², so the check interpolates rather than
+re-derives. **A submitted product with a real test curve replaces the three points and
+nothing else in this note.**
+
+## 6. The two air paths, and which governs
+
+The machine's curve is an **external static per side**, so the governing figure is the worse
+of the two paths and never their sum. Each path is: worst radial + its terminal + the plenum
+that radial lands in (at the sum of that plenum's radial flows) + every trunk on that side.
+
+**EXTRACT — `DU-M-ERV-R-PLANT` → `EQ-M-ERV-MAN-EXH` → riser → basement trunk → machine → `DU-ERV-EA`**
+
+| term | working | Δp (in. w.g.) |
+|---|---|---|
+| `DU-M-ERV-R-PLANT` | §3 | 0.0301 |
+| terminal `REG-T-ERV-PLANT-EXH` | 6.5 x (25/20)² = 10.16 Pa / 249.089 | 0.0408 |
+| plenum `EQ-M-ERV-MAN-EXH` at 146 cfm | 5.5 x (146/210)² = 2.66 Pa / 249.089 | 0.0107 |
+| `DU-ERV-RISER-EXH` | 210 cfm, 32.26 ft + 3 x 4.5, f 0.0225, P_v 0.07131 | 0.1472 |
+| `DU-B-ERV-RET-TRUNK` | 210 cfm, 5.62 ft + 3 x 4.5 | 0.0615 |
+| `DU-ERV-EA` | 210 cfm, 29.32 ft + 5 x 4.5 | 0.1666 |
+| | | **0.4568** |
+
+**SUPPLY — `DU-ERV-OA` → machine → basement trunk → `EQ-B-ERV-MAN-SUP` → `DU-B-ERV-R-PLAY`**
+
+| term | working | Δp (in. w.g.) |
+|---|---|---|
+| `DU-B-ERV-R-PLAY` | §3 | 0.0134 |
+| terminal `REG-T-ERV-SUP` | 4.0 x (30/20)² = 9.00 Pa / 249.089 | 0.0361 |
+| plenum `EQ-B-ERV-MAN-SUP` at 60 cfm | 0.45 Pa / 249.089 | 0.0018 |
+| `DU-ERV-OA` | 210 cfm, 13.99 ft + 6 x 4.5 | 0.1318 |
+| `DU-B-ERV-SUP-TRUNK` | 210 cfm, 2.78 ft + 1 x 4.5 | 0.0234 |
+| `DU-ERV-RISER-SUP` | 210 cfm, 29.48 ft + 3 x 4.5 | 0.1382 |
+| `DU-S-ERV-HP-FEED` | 100 cfm, 44.58 ft + 7 x 4.5 | 0.0633 |
+| | | **0.4081** |
+
+**The extract side governs at 0.4568 in. w.g.** Off the authored fan curve, between
+(0.4, 206) and (0.5, 201):
+
+> 206 − (0.0568 / 0.1) x 5 = **203.2 cfm delivered**
+
+against 205 cfm required by MN 1322 R403.5 and 210 cfm of design intent. **The system clears
+the code rate by 1.9 % and falls 3.2 % short of the intent.**
+
+**The rejected build, for the record.** Insulated flex is what a Twin Cities contractor
+reaches for on a 6" ERV leg. The same two outdoor runs, worked at flex's roughness and bend
+length:
+
+| | `DU-ERV-OA` | `DU-ERV-EA` | pair |
+|---|---|---|---|
+| 6" galvanized in an R-8 wrap | 0.1318 | 0.1666 | **0.2985** |
+| 6" insulated flex | 0.2683 | 0.3082 | **0.5766** |
+
+Flex costs **0.28 in. w.g. more on two runs** — more than half the machine's whole budget,
+and it would take delivered flow to about 195 cfm, under MN's 205. **Rigid pipe here is not
+a refinement, it is what makes the system legal.** `DUCT-T-FLEX-6` stays in the catalog,
+named by no run, so this comparison reads off typed data.
+
+## 7. Broan's own instruction, and what obeying it would cost
+
+The B210E75RT installation manual carries one distribution instruction: **above 200 cfm with
+long runs or many elbows, take the trunk up to 8 in.** This system is 210 cfm with 30 ft of
+outdoor leg and eleven elbows on it, so the instruction is squarely aimed at it.
+
+Worked at 8" galvanized (ε unchanged, bend equivalent 6'-6" = 0.22 x 0.6667 / 0.0232):
+
+| run | at 6" | at 8" | saved |
+|---|---|---|---|
+| `DU-ERV-EA` | 0.1666 | 0.0486 | 0.1180 |
+| `DU-ERV-OA` | 0.1318 | 0.0416 | 0.0902 |
+
+Upsizing the two outdoor legs alone takes the extract path to about **0.339 in. w.g.** and
+delivered flow to about **207 cfm**, plus roughly 0.02 in. for a 6→8 transition at each ERV
+collar and each hood — call it **0.36 in. and 206.5 cfm**. It buys about 3 cfm.
+
+**It is priced here and not built.** What it costs: ~43 LF of 8" pipe in place of 6" (about
+$60–130 of material), two 8" wall hoods and two enlarged flashed penetrations in place of
+the 6" pair already modelled (`AO-M-ERV-OA`, `AO-S-ERV-EA` are 7" rough openings; a 9"
+opening still lands inside a stud bay and still takes no header, but it cuts a second girt
+course), and four 6→8 transitions. Roughly **$400–900 all in**, for 3 cfm the house does not
+need. The NW chase has the room — four 6" insulated risers at about 25 % fill — so if the
+commissioning measurement in §8 comes in under 205, this is the lever, and it is the first
+one to pull.
+
+## 8. Commissioning — and the real risk is the measurement
+
+23 radials averaging 9 cfm each is not hard to balance; it is hard to **measure**. Every
+term in §3–§5 is a design figure, and the only thing that closes this system out is a
+measured one.
+
+- **A capture hood is the wrong instrument below about 150 cfm.** Ordinary flow hoods read
+  25–30 % low in that band, and a 9 cfm terminal is a quarter of the way down their scale.
+  A **TSI Alnor LoFlo-class** balometer (or equivalent low-flow hood) is required equipment
+  here, not a preference. A reading taken with a standard hood is not evidence.
+- **Measure the total across the core, not by summing terminals.** Sum 23 low-flow readings
+  and the instrument error compounds; one measurement at the machine's supply and extract
+  collars is one error.
+- **Then balance at the plenum, never at the grille.** Every port has a butterfly damper at
+  the start collar; that is the adjustment. Closing a grille face throttles the branch and
+  makes it whistle.
+- **Report per terminal**: tag, design cfm, measured cfm, damper position. 23 rows, one
+  page, filed with the O&M.
+- **The number to hit is 205 cfm net supply**, MN 1322 R403.5, not 210.
+
+## 9. What is NOT graded here
+
+- **The risers are worked at 210 cfm over their whole length.** `DU-ERV-RISER-EXH` really
+  carries 200 cfm below the level-2 tap and 54 above it; `DU-ERV-RISER-SUP` likewise. The
+  authored `design_cfm` is what is graded, because the tap elevation is not a typed fact and
+  inferring one would be the check inventing a number. Worked segmented, the extract riser
+  costs 0.0700 in. instead of 0.1472 and the path total falls to **0.3796 in. / 206.4 cfm**.
+- **The trunk chain is summed whole.** `DU-S-ERV-HP-FEED` is a parallel branch off the
+  supply riser, not a segment of the path to `DU-B-ERV-R-PLAY`; summing it over-counts the
+  supply path by 0.0633 in. The supply path does not govern either way.
+- **Leakage.** Sealed rigid pipe leaks; nothing here models it. A duct-leakage test is the
+  only answer and it is a commissioning item, not a calculation.
+- **Filter loading.** The curve is a clean-filter curve. MERV 8 at end of life adds
+  meaningfully to the extract-side static; MERV 13, which this machine offers, adds more.
+  The filter is inside the machine, so it is inside the curve's own zero — which means a
+  loaded filter eats the margin this note reports and nothing warns of it but the schedule.
+- **Frost on the intake hood screen.** `EQ-M-ERV-HOOD-OA` carries a deliberately coarse 1/4"
+  bird screen for this reason, and a screen partly blocked at −15 °F is a real static the
+  design cannot bound.
+- **The machine's own internal resistance**, its recirculation defrost cycle, and anything
+  about heat recovery. This note is pressure only.
+- **The 6" ERV collars themselves.** Four collar transitions at the machine are inside its
+  certified rating and are not double-counted here.
+
+## Sources
+
+- ASHRAE *Handbook — Fundamentals*, Ch. 21 (Duct Design): Table 1 absolute roughness for
+  galvanized steel and flexible metallic duct; fitting loss coefficients for abrupt
+  expansion, sudden contraction, butterfly damper and round elbow.
+- Colebrook, C. F. (1939), *Turbulent flow in pipes* — the implicit friction-factor
+  relation; Darcy–Weisbach for the pressure drop itself.
+- Broan **B210E75RT** specification sheet — the fan curve authored on
+  `EQ-T-BROAN-B210E75RT`: 214 cfm @ 0.1, 210 @ 0.2, 208 @ 0.3, 206 @ 0.4, 201 @ 0.5,
+  199 @ 0.6, 195 @ 0.7, 191 @ 0.8, 184 @ 1.0, 176 @ 1.2 in. w.g.; 1.3 in. w.g. is the
+  ceiling above which the core deforms. Recirculation defrost, HVI-tested at −13 °F,
+  SRE 65 % there.
+- Broan **B210E75RT installation manual** — the 8"-trunk-above-200-cfm instruction (§7).
+- HVI **Certified Products Directory**, HVI ID 2004940 — 206 cfm net supply at 0.4 in. w.g.
+- Minnesota Rules **1322** (MN amendments to IRC Ch. 11), R403.5 — the 205 cfm whole-house
+  rate this building requires, graded by `code.N1103_6_whole_house_ventilation`.
+- TSI **Alnor LoFlo** balometer product literature — the low-flow instrument class §8 calls
+  for, and the documented −25 to −30 % bias of ordinary capture hoods below 150 cfm.

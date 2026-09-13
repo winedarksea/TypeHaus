@@ -315,6 +315,17 @@ class FloorHeat(Element):
     # mat contributes nothing to its zone's heating capacity — never inferred from area, since
     # a guessed W/ft2 would move a sizing verdict on an assumption the author never made.
     watts: float | None = None
+    # What the finished floor DELIVERS to the room, Btu/h per square foot of heated zone —
+    # a different quantity from ``watts``, which is what the cable DRAWS. The two are not
+    # convertible: a mat draws its nameplate whatever it is under, while what reaches the
+    # room is set by the covering, the floor surface temperature the covering tolerates and
+    # the operative temperature of the room. Schluter publishes the relation as a curve of
+    # ΔT between those two, and a reading off it is the authored number here. Never
+    # defaulted and never derived from ``watts``: the derivation would silently assume the
+    # cable's whole draw arrives in the room, which is the optimistic error in exactly the
+    # calculation (``mep.room_heat_source``) that decides whether a radiant floor can be a
+    # room's only heat.
+    delivered_btuh_per_ft2: float | None = None
 
 
 class FinishZone(HausModel):

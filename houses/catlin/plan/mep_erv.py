@@ -445,7 +445,7 @@ DUCTS_ERV_RISERS = [
                   pt(ft(0, 5), ft(33, 7.5))),
             elevations=(inch(-19.4375), inch(-19.4375), inch(-19.4375),
                         inch(-19.4375), inch(231.875)),
-            diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
+            diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             insulation="R-8 wrap", design_cfm=210),
     DuctRun(uid="GFTW5CBARX", tag="DU-ERV-RISER-EXH", system=DuctSystem.EXHAUST,
             path=(pt(ft(1, 2), ft(33, 7.5)), pt(ft(1, 2), ft(33, 7.5)),
@@ -453,7 +453,7 @@ DUCTS_ERV_RISERS = [
                   pt(ft(5, 10), ft(29, 3)), pt(ft(5, 10), ft(28, 8))),
             elevations=(inch(244), inch(-27), inch(-27), inch(-19.4375),
                         inch(-19.4375), inch(-19.4375)),
-            diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
+            diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             insulation="R-8 wrap", design_cfm=210),
     # The outdoor side, which did not exist at all before this pass. Both legs carry
     # outdoor-temperature air through conditioned space, so both are insulated AND vapour
@@ -494,7 +494,7 @@ DUCTS_ERV_RISERS = [
                   pt(ft(3, 8), ft(31, 1))),
             elevations=(inch(48), inch(48), inch(48), inch(48), inch(-27),
                         inch(-27), inch(-27), inch(-27), inch(-33.8375)),
-            diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
+            diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             insulation="R-8 wrap, vapour-sealed", design_cfm=210),
     DuctRun(uid="BYAVBJKRS6", tag="DU-ERV-EA", system=DuctSystem.EXHAUST,
             # Manifold first, hood last — the direction the air goes, and the direction
@@ -518,7 +518,7 @@ DUCTS_ERV_RISERS = [
                   pt(inch(-8), ft(34, 0))),
             elevations=(inch(-33.8375), inch(-27), inch(-27), inch(-27),
                         inch(204), inch(204), inch(204)),
-            diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
+            diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             insulation="R-8 wrap, vapour-sealed", design_cfm=210),
 ]
 
@@ -552,7 +552,7 @@ DUCTS_ERV_BASEMENT = [
             path=(pt(ft(4, 9), ft(30, 4)), pt(ft(4, 9), ft(30, 4)),
                   pt(ft(6, 4), ft(30, 4))),
             elevations=(inch(75.6), inch(90), inch(90)),
-            diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
+            diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=210),
     DuctRun(uid="6BTCWW2S1V", tag="DU-B-ERV-RET-TRUNK", system=DuctSystem.RETURN,
             path=(pt(ft(7), ft(28, 8)), pt(ft(7), ft(28, 8)),
@@ -560,34 +560,34 @@ DUCTS_ERV_BASEMENT = [
                   pt(ft(3, 8), ft(29, 9))),
             elevations=(inch(90), inch(82.4375), inch(82.4375), inch(82.4375),
                         inch(75.6)),
-            diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
+            diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=210),
     DuctRun(uid="CND5TE40W0", tag="DU-B-ERV-R-GYM", system=DuctSystem.SUPPLY,
             path=(pt(ft(6, 6), ft(30, 6)), pt(ft(6, 6), ft(10, 6.6)), pt(ft(19), ft(10, 6.6)),
                   pt(ft(19), ft(13))),
             start_elevation=ft(7, 6), end_elevation=ft(7, 6),
-            diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=18),
+            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=18),
     DuctRun(uid="DMEQ946YAX", tag="DU-B-ERV-R-PLAY", system=DuctSystem.SUPPLY,
             path=(pt(ft(6, 6), ft(30, 6)), pt(ft(19), ft(30, 6)), pt(ft(19), ft(26))),
             start_elevation=ft(7, 6), end_elevation=ft(7, 6),
-            diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=30),
+            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=30),
     DuctRun(uid="VXGA0P0V72", tag="DU-B-ERV-R-SAUNA-SUP", system=DuctSystem.SUPPLY,
             path=(pt(ft(6, 6), ft(30, 6)), pt(ft(6, 6), inch(20.5)),
                   pt(inch(199.75), inch(20.5)), pt(inch(199.75), inch(20.5))),
             elevations=(ft(7, 6), ft(7, 6), ft(7, 6), ft(7)),
-            diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=12),
+            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=12),
     # The bench hood's pull. It drops out of the ceiling chase to the hood face at 5'-6",
     # which is the vertical leg that makes it a capture hood rather than a ceiling diffuser.
     DuctRun(uid="MTVYDDP43W", tag="DU-B-ERV-R-BENCH", system=DuctSystem.RETURN,
             path=(pt(ft(6, 6), ft(28, 6)), pt(ft(2), ft(28, 6)), pt(ft(2), ft(8, 6)),
                   pt(ft(2), ft(8, 6))),
             elevations=(ft(7, 6), ft(7, 6), ft(7, 6), ft(6, 2)),
-            diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=25),
+            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=25),
     DuctRun(uid="03883CKF0H", tag="DU-B-ERV-R-BATH", system=DuctSystem.EXHAUST,
             path=(pt(ft(6, 6), ft(28, 6)), pt(ft(12), ft(28, 6)),
                   pt(ft(12), inch(289.625))),
             start_elevation=ft(7, 6), end_elevation=ft(7, 6),
-            diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=20),
+            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=20),
     # The sauna's low pickup is 4" off the floor on the WEST liner (the south face went to
     # EQ-B-SAUNA-HTR when the room rotated), so this radial runs the length of the house in
     # the ceiling chase and then drops seven feet down the wall. The
@@ -598,7 +598,7 @@ DUCTS_ERV_BASEMENT = [
             path=(pt(ft(6, 6), ft(28, 6)), pt(inch(110), ft(28, 6)), pt(inch(110), ft(3, 2)),
                   pt(inch(110), ft(3, 2))),
             elevations=(ft(7, 6), ft(7, 6), ft(7, 6), inch(4)),
-            diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=20),
+            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=20),
 ]
 
 # ================= LEVEL 2 — RM-M-MECH RADIALS (FS-S-WEST JOIST BAY) =================
@@ -656,21 +656,21 @@ DUCTS_ERV_BASEMENT = [
 #     drawn on top of each other. UNKNOWN is the honest verdict; the prose is not the record
 #     of this any more.
 _PORT_Z = inch(-20)
-_BAY_Z = inch(-10.375)
+_BAY_Z = inch(-9.875)
 
 DUCTS_ERV_LEVEL2 = [
     DuctRun(uid="MRH0QZT6NN", tag="DU-M-ERV-R-LIVING", system=DuctSystem.SUPPLY,
             path=(pt(ft(3, 2), ft(34)), pt(ft(3, 2), ft(34)), pt(ft(3, 2), ft(12, 8)),
                   pt(ft(27), ft(12, 8))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
-            diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
-            material="semi_rigid", design_cfm=20),
+            diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
+            material="galvanized", design_cfm=20),
     DuctRun(uid="83MA15Q308", tag="DU-M-ERV-R-BED", system=DuctSystem.SUPPLY,
             path=(pt(ft(3, 10), ft(34)), pt(ft(3, 10), ft(34)), pt(ft(3, 10), ft(6)),
                   pt(ft(9), ft(6))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
-            diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
-            material="semi_rigid", design_cfm=15),
+            diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
+            material="galvanized", design_cfm=15),
     # ** A CEILING RUN, FOUR POINTS, THE SHAPE EVERY OTHER LEVEL-2 CEILING RADIAL HAS. **
     # RM-M-STUDY is paired with a LOW extract instead (DU-M-ERV-R-LAUNDRY below), which is
     # what makes a ceiling supply work in a 148 cf box, feeding overhead by ED-M-STUDY-SPOT.
@@ -685,26 +685,26 @@ DUCTS_ERV_LEVEL2 = [
             path=(pt(ft(4, 6), ft(34)), pt(ft(4, 6), ft(34)), pt(ft(4, 6), ft(20, 8)),
                   pt(ft(17, 2), ft(20, 8))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
-            diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
-            material="semi_rigid", design_cfm=15),
+            diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
+            material="galvanized", design_cfm=15),
     DuctRun(uid="K04AT15S97", tag="DU-M-ERV-R-BATH1", system=DuctSystem.EXHAUST,
             path=(pt(ft(3), ft(35)), pt(ft(3), ft(35)), pt(ft(3), ft(24, 8)),
                   pt(ft(1, 2), ft(24, 8))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
-            diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
-            material="semi_rigid", design_cfm=20),
+            diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
+            material="galvanized", design_cfm=20),
     DuctRun(uid="B13Y04D9BP", tag="DU-M-ERV-R-VANITY", system=DuctSystem.EXHAUST,
             path=(pt(ft(3, 4), ft(35)), pt(ft(3, 4), ft(35)), pt(ft(3, 4), ft(24, 8)),
                   pt(ft(3), ft(24, 8))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
-            diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
-            material="semi_rigid", design_cfm=20),
+            diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
+            material="galvanized", design_cfm=20),
     DuctRun(uid="YEXGZK2KW2", tag="DU-M-ERV-R-KITCH", system=DuctSystem.RETURN,
             path=(pt(ft(3, 8), ft(35)), pt(ft(3, 8), ft(35)), pt(ft(3, 8), ft(24, 8)),
                   pt(ft(20, 10.7), ft(24, 8))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
-            diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
-            material="semi_rigid", design_cfm=8),
+            diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
+            material="galvanized", design_cfm=8),
     DuctRun(uid="DPAS57TPCG", tag="DU-M-ERV-R-BATH2", system=DuctSystem.EXHAUST,
             # Three points, not four: this lane's x IS the terminal's, so the run rises and
             # goes straight south with no turn at the end. A fourth vertex repeating the
@@ -713,14 +713,14 @@ DUCTS_ERV_LEVEL2 = [
             # path and the exported geometry, so it is not authored.
             path=(pt(ft(4), ft(35)), pt(ft(4), ft(35)), pt(ft(4), ft(18))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z),
-            diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
-            material="semi_rigid", design_cfm=20),
+            diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
+            material="galvanized", design_cfm=20),
     DuctRun(uid="63W84CCNE4", tag="DU-M-ERV-R-SUITEBATH", system=DuctSystem.EXHAUST,
             path=(pt(ft(4, 4), ft(35)), pt(ft(4, 4), ft(35)), pt(ft(4, 4), ft(19, 4)),
                   pt(ft(14), ft(19, 4))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
-            diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
-            material="semi_rigid", design_cfm=20),
+            diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
+            material="galvanized", design_cfm=20),
     # ** THE ONE TWO-HEADED RADIAL IN THE HOUSE, AND THE PORT BUDGET IS WHY.
     # ** RM-M-STUDY needs a stale-air pickup. It cannot have its own lane:
     # EQ-M-ERV-MAN-EXH is an EQ-T-ERV-MANIFOLD-10 and all TEN of its ports are spoken for —
@@ -775,26 +775,26 @@ DUCTS_ERV_LEVEL2 = [
                   pt(ft(14, 6), ft(18))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z, _BAY_Z, _BAY_Z,
                         inch(-108)),
-            diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
-            material="semi_rigid", design_cfm=15),
+            diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
+            material="galvanized", design_cfm=15),
     DuctRun(uid="YFDV1TGN1W", tag="DU-M-ERV-R-MUD", system=DuctSystem.RETURN,
             path=(pt(ft(5), ft(35)), pt(ft(5), ft(35)), pt(ft(5), ft(31, 4)),
                   pt(ft(4, 0.4), ft(31, 4))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
-            diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
-            material="semi_rigid", design_cfm=8),
+            diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
+            material="galvanized", design_cfm=8),
     DuctRun(uid="164777V9JK", tag="DU-M-ERV-R-BED1", system=DuctSystem.RETURN,
             path=(pt(ft(5, 4), ft(35)), pt(ft(5, 4), ft(35)), pt(ft(5, 4), ft(14)),
                   pt(ft(29), ft(14))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
-            diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
-            material="semi_rigid", design_cfm=5),
+            diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
+            material="galvanized", design_cfm=5),
     DuctRun(uid="2QHYF71DBS", tag="DU-M-ERV-R-BED2", system=DuctSystem.RETURN,
             path=(pt(ft(5, 8), ft(35)), pt(ft(5, 8), ft(35)), pt(ft(5, 8), ft(22)),
                   pt(ft(29), ft(22))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
-            diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
-            material="semi_rigid", design_cfm=5),
+            diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
+            material="galvanized", design_cfm=5),
     # THE PLANT ROOM'S EXTRACT. It keeps the DU-S-PLANT-EXH/DU-A-ERV-R-PLANT uid.
     #
     # ** IT IS DOWN HERE BECAUSE THE ATTIC'S DECK CHASE IS A FINISHED BEDROOM. ** Off
@@ -862,8 +862,8 @@ DUCTS_ERV_LEVEL2 = [
                   pt(ft(2, 10), ft(7, 4)), pt(ft(18), ft(7, 4)),
                   pt(ft(18), ft(7, 4))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z, inch(102)),
-            diameter=inch(3), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
-            material="semi_rigid", design_cfm=25),
+            diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
+            material="galvanized", design_cfm=25),
 ]
 
 # ============================== LEVEL 3 — ATTIC RADIALS ==============================
@@ -894,7 +894,7 @@ DUCTS_ERV_LEVEL2 = [
 # FS-ATTIC's bottom chord at 228 1/8". Both are attic-relative, and negative because the
 # attic datum is the deck top.
 _ATTIC_DECK_Z = inch(4)
-_ATTIC_BAY_Z = inch(-10.375)
+_ATTIC_BAY_Z = inch(-9.875)
 
 DUCTS_ERV_ATTIC = [
     DuctRun(uid="4YT114ADP3", tag="DU-A-ERV-R-BATH1", system=DuctSystem.EXHAUST,
@@ -902,7 +902,7 @@ DUCTS_ERV_ATTIC = [
                   pt(ft(1), ft(32, 8)), pt(ft(5), ft(32, 8))),
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
                         _ATTIC_BAY_Z, _ATTIC_BAY_Z),
-            diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=20),
+            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=20),
     # THE ATTIC'S OWN PICKUP, at the studio's NW corner, not the walled storage pocket —
     # REG-A-RET1 must not extract a guest bedroom's air through a closed door.
     #
@@ -915,7 +915,7 @@ DUCTS_ERV_ATTIC = [
             path=(pt(ft(5), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(20, 8)),
                   pt(ft(1), ft(20, 8))),
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z, inch(-2)),
-            diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=9),
+            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=9),
     # THE GUEST BATH'S EXTRACT. Same chase south to y=19'-0",
     # then east on the deck to the W-A-STU-W axis at x=9'-7 1/2" and UP inside that wall's
     # 5 1/2" staggered cavity to REG-A-STUBATH-EXH at 7'-0". The rise is the whole reason the
@@ -946,7 +946,7 @@ DUCTS_ERV_ATTIC = [
             # agree regardless of elevation.
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
                         _ATTIC_BAY_Z, _ATTIC_BAY_Z, inch(52)),
-            diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid",
+            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=20),
     # RM-S-BED3's extract, forced up here by FO-S-STAIR — see the header. It becomes a ceiling
     # grille rather than a floor boot, which for stale air is the better end of the room anyway.
@@ -972,7 +972,7 @@ DUCTS_ERV_ATTIC = [
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z,
                         _ATTIC_BAY_Z, _ATTIC_BAY_Z,
                         _ATTIC_DECK_Z, _ATTIC_DECK_Z),
-            diameter=inch(3), routing=DuctRouting.CHASE, material="semi_rigid", design_cfm=5),
+            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=5),
 ]
 
 # THE MIXING-BOX FEED — the one place fresh air enters the heat-pump loop.
@@ -1043,6 +1043,6 @@ DUCTS_ERV_MIX_FEED = [
             # the drop lands inside EQ-S-ERV-MIX's own 10 x 12 footprint, which IS a graded
             # occupant of the box, in the east lane with 1" to the cavity face. Nothing else
             # of this run is in the box at all — the 12'-2" tail that used to be is gone.
-            diameter=inch(6), routing=DuctRouting.CHASE, material="semi_rigid",
+            diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=100),
 ]

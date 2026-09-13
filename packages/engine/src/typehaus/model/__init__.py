@@ -190,6 +190,7 @@ from typehaus.model.trim import (
 from typehaus.model.types import (
     ApplianceType,
     DoorType,
+    DuctProductType,
     ElectricalDeviceType,
     EquipmentType,
     FixtureType,
@@ -271,7 +272,7 @@ __all__ = [
     "MasonrySpec", "AssemblyInterface",
     "ConstructionRule", "Substitution", "Material", "Product",
     "DoorType", "WindowType", "FurnitureType", "FixtureType", "ApplianceType", "EquipmentType",
-    "RegisterType", "RailingType", "ElectricalDeviceType", "LuminaireType", "MeshRef",
+    "RegisterType", "RailingType", "DuctProductType", "ElectricalDeviceType", "LuminaireType", "MeshRef",
     "JoistSpec", "JoistReinforcement", "DeckLayer", "FloorSystem", "FloorOpening",
     "Slab", "SlabThermalBreak",
     "Soffit", "SoffitOpening",

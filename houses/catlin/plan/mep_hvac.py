@@ -37,19 +37,33 @@ from typehaus.model import m
 # flow, ~197 cfm whole-house rate) replacing the old furnace-styled REG-T-SUPPLY/RETURN
 # (plans/TODO.md §HVAC) — old tags dropped, not aliased, so a schedule can't print both.
 # REG-T-HP-SUP/RET are the bigger conditioned-air terminals on System 1's ducted chase.
+# ** EVERY ERV TERMINAL TOOK A 4" COLLAR ON 2026-09-12 (BLD-08). ** The radials below them
+# went from 3" semi-rigid to 4" galvanized snap-lock, and a terminal is bought by its collar.
+# The 7" x 7" FACE does not move — it is the hole in the ceiling and the thing a clearance
+# check measures — and neither does any elevation; only the spigot the boot lands on.
+#
+# ** `static_loss_pa_at_cfm` IS DERIVED, NOT PUBLISHED. ** These are commodity bath-fan
+# grilles and diffusers; none of their makers publishes a pressure-drop curve at 20 cfm. The
+# three points on each row are K x (collar velocity pressure) at three flows, worked in
+# notes/erv_static_budget.md §5 from ASHRAE Fundamentals Ch. 21 terminal coefficients — K = 5
+# for a plain dampered diffuser, K = 8 where the face carries a closable or motorised damper
+# of its own. A submitted product with a real curve replaces the three points and nothing
+# else. They feed `mep.erv_static_budget` and are read by nothing else.
 REGISTER_TYPES = (
-    RegisterType(tag="REG-T-ERV-SUP", name="ERV fresh-air supply diffuser, 6\" round",
+    RegisterType(tag="REG-T-ERV-SUP", name="ERV fresh-air supply diffuser, 4\" round collar",
                  footprint=(inch(7), inch(7)), height=inch(1),
                  plan_symbol="register", ventilation_terminal=True,
+                 static_loss_pa_at_cfm=((10.0, 1.0), (20.0, 4.0), (30.0, 9.0)),
                  ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
     # REG-T-ERV-EXH-WALL below is the house's only wall-oriented ERV terminal type:
     # `footprint` is a PLAN rectangle, so a ceiling grille authors (face, face) with
     # `height` as its 1" thickness and a wall grille authors (face, DEPTH) with `height` as
     # the face. Mount a ceiling type on a wall and 3" of it draws inside the studs.
-    RegisterType(tag="REG-T-ERV-EXH", name="ERV stale-air extract diffuser, 6\" round",
+    RegisterType(tag="REG-T-ERV-EXH", name="ERV stale-air extract diffuser, 4\" round collar",
                  footprint=(inch(7), inch(7)), height=inch(1),
                  plan_symbol="register", ventilation_terminal=True,
+                 static_loss_pa_at_cfm=((10.0, 1.0), (20.0, 4.0), (30.0, 9.0)),
                  ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
     # A CEILING diffuser lies in the plane it is cut into (7x7 face, 1" deep); mounting that
@@ -59,9 +73,10 @@ REGISTER_TYPES = (
     # protrusion, past A117.1 §307.2's 4", obstructing FX-A-STUBATH-WC's required clear
     # space. A sidewall grille is a 7" face 1" deep, which is what this type says.
     RegisterType(tag="REG-T-ERV-EXH-WALL",
-                 name="ERV stale-air extract diffuser, 6\" round, sidewall",
+                 name="ERV stale-air extract diffuser, 4\" round collar, sidewall",
                  footprint=(inch(7), inch(1)), height=inch(7),
                  plan_symbol="register", ventilation_terminal=True,
+                 static_loss_pa_at_cfm=((10.0, 1.0), (20.0, 4.0), (30.0, 9.0)),
                  ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
     # The sauna's own pair, small and dampered. A sauna is run in sessions, not
@@ -73,6 +88,7 @@ REGISTER_TYPES = (
                  name="Sauna fresh-air supply, 4x4, small adjustable/closable damper",
                  footprint=(inch(4), inch(4)), height=inch(1),
                  plan_symbol="register", ventilation_terminal=True,
+                 static_loss_pa_at_cfm=((10.0, 1.6), (20.0, 6.5), (30.0, 14.6)),
                  source="plans/TODO.md §HVAC: sauna terminals small, adjustable/closable damper",
                  ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
@@ -80,6 +96,7 @@ REGISTER_TYPES = (
                  name="Sauna stale-air extract, 4x4, small adjustable/closable damper",
                  footprint=(inch(4), inch(4)), height=inch(1),
                  plan_symbol="register", ventilation_terminal=True,
+                 static_loss_pa_at_cfm=((10.0, 1.6), (20.0, 6.5), (30.0, 14.6)),
                  source="plans/TODO.md §HVAC: sauna terminals small, adjustable/closable damper",
                  ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
@@ -100,6 +117,7 @@ REGISTER_TYPES = (
                  name="Plant-room stale-air extract, 6x4, motorised RH-controlled damper",
                  footprint=(inch(6), inch(4)), height=inch(1),
                  plan_symbol="register", ventilation_terminal=True,
+                 static_loss_pa_at_cfm=((10.0, 1.6), (20.0, 6.5), (30.0, 14.6)),
                  source="notes/plant_room.md — dedicated dampered extract off EQ-B-ERV; holds RM-S-PLANT neutral-to-slightly-negative and is the room's only moisture removal path",
                  ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),

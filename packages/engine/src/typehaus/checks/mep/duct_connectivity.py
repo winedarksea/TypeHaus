@@ -130,7 +130,7 @@ def case_height(ctx: CheckContext, type_ref: str | None) -> float | None:
     return None
 
 
-def _meets_equipment(ctx: CheckContext, z: float | None,
+def equipment_at_end(ctx: CheckContext, z: float | None,
                      point: tuple[float, float]) -> str | None:
     """Whether the end lands in a machine's footprint, at the height of its case.
 
@@ -139,6 +139,11 @@ def _meets_equipment(ctx: CheckContext, z: float | None,
     asked with the identical arithmetic that decides a duct is plumbed into a machine. The
     elevation band is this check's own: a soffit clash is already confined to one box, and a
     duct end is not.
+
+    Public — and named for what it *returns*, the machine's tag, rather than for the boolean
+    the connectivity walk uses it as — because ``mep.erv_static_budget`` and
+    ``mep.erv_manifold_ports`` both need to know which plenum a run lands in, and a second
+    implementation of "lands in" would be a second answer to a question this module settles.
     """
     from shapely.geometry import Polygon
 
@@ -224,7 +229,7 @@ def duct_connectivity(ctx: CheckContext) -> list[Finding]:
         for point, label in ((duct.path[0], "start"), (duct.path[-1], "end")):
             z = z_by_end[label]
             landed = (_meets_another_duct(ctx, duct, z, point)
-                      or _meets_equipment(ctx, z, point)
+                      or equipment_at_end(ctx, z, point)
                       or _boot(ctx, duct, point))
             if landed is not None:
                 out.append(passed(

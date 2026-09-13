@@ -9,7 +9,7 @@ The 2,515-line original was split by system (AGENTS.md §1.1 keeps files under 5
 - ``plan/mep_supply_devices.py`` — in-line valves, stops and arrestors
 - ``plan/mep_hvac.py``           — System 1's conditioned-air chase, equipment, terminal types
 - ``plan/mep_erv.py``            — the ERV as placed: manifolds, mixing box, hoods, the four
-  chase risers and the twenty-two semi-rigid radials
+  chase risers and the twenty-three 4" galvanized radials
 - ``plan/mep_erv_types.py``      — the ERV catalog: the Broan, the two manifold sizes, the
   mixing box, the exterior hood, the over-bench capture hood
 - ``plan/mep_registers.py``      — the air terminals themselves, storey by storey
@@ -33,6 +33,9 @@ from plan import (mep_drainage, mep_electrical, mep_erv, mep_erv_types, mep_hvac
 REGISTER_TYPES = (*mep_hvac.REGISTER_TYPES, *mep_erv_types.REGISTER_TYPES_ERV)
 EQUIPMENT_TYPES = (*mep_hvac.EQUIPMENT_TYPES, *mep_erv_types.EQUIPMENT_TYPES_ERV)
 ELECTRICAL_DEVICE_TYPES = mep_electrical.ELECTRICAL_DEVICE_TYPES
+# The duct as a PRODUCT, keyed by the (material, nominal diameter) pair a run states
+# and `prices.toml` already qualifies on. Read only by `mep.erv_static_budget`.
+DUCT_PRODUCT_TYPES = mep_erv_types.DUCT_PRODUCT_TYPES_ERV
 
 MAIN_ELEMENTS = [*mep_sleeves.SLEEVES,
                  *mep_sleeves.SUPPLY_SLEEVES,
