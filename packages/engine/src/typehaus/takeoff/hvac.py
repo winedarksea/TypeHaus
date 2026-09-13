@@ -23,6 +23,8 @@ from typehaus.resolve.model import ResolvedModel
 _M_TO_FT = 3.280839895
 # Electric resistance heat converts at the physical constant — no efficiency term to apply.
 _W_TO_BTUH = 3.412141633
+#: Square feet per square metre. Room heat is reported to people who think in feet.
+_M2_TO_FT2 = 10.76391041671
 
 # The indoor halves of a split system: both pair back to a condenser and neither carries a
 # rating of its own that a zone should be sized against.
@@ -226,6 +228,143 @@ def supplemental_heat_by_room(model: ResolvedModel) -> dict[str, list[tuple[str,
                          if Polygon(room.clear_face).contains(Point(centre))), None)
             if host is not None:
                 add(host.tag, element.tag, btuh)
+    return out
+
+
+@dataclass(frozen=True)
+class RoomHeat:
+    """What actually heats one conditioned room, gathered from every authoring shape.
+
+    One row per conditioned room, and the point of it is that the *question* differs by
+    room. A room with a supply register belongs to a ducted zone and its heat is that zone's
+    margin — an arithmetic already done by :func:`heating_zones`. A room with no supply
+    register is heated by whatever is physically in it, and nothing was gathering that.
+
+    It lives here rather than in the check because :func:`supplemental_heat_by_room` already
+    owns room attribution for radiant and resistance heat, and a second walk of
+    ``FloorHeat`` and ``Equipment`` would be a second answer to "which room does this heat".
+    """
+
+    room: str
+    occupancy: str
+    storey: str
+    area_ft2: float
+    #: What physically reaches this room with conditioned air, by tag: a non-ventilation
+    #: SUPPLY register in it, or an indoor head / air handler standing in it. EMPTY is the
+    #: interesting case — the room is heated by whatever is inside it and by transfer through
+    #: its doorways, and transfer is not something this model can see. Deliberately NOT
+    #: ``zone_rooms``: a zone is an authored CLAIM about which rooms a unit serves, and a
+    #: head in the basement gym claims the bathroom upstairs behind two doors.
+    reached_by: tuple[str, ...]
+    #: The rated outdoor unit whose ``zone_rooms`` claim this room, and that zone's margin.
+    zone_tag: str | None
+    zone_margin_btuh: float | None
+    #: ``FloorHeat`` zones attributed to this room, and what they DELIVER at design.
+    radiant_tags: tuple[str, ...]
+    #: ``min(heated area x delivered_btuh_per_ft2, watts x 3.412)`` summed over the zones —
+    #: the floor cannot deliver more than the cable draws, and cannot deliver the cable's
+    #: whole draw over more floor than is heated. ``None`` when no zone in the room states
+    #: ``delivered_btuh_per_ft2``, which is a gap and never a zero.
+    radiant_btuh: float | None
+    #: Zones that state ``watts`` but no ``delivered_btuh_per_ft2``, by tag.
+    radiant_undeclared: tuple[str, ...]
+    #: Resistance heat that is not a floor — a fireplace, a wall unit — from
+    #: :func:`supplemental_heat_by_room`, with the radiant entries taken back out.
+    supplemental_btuh: float
+    supplemental_tags: tuple[str, ...]
+
+    @property
+    def delivered_btuh(self) -> float | None:
+        """Everything in the room that makes heat, or None when the radiant side is a gap."""
+        if self.radiant_btuh is None:
+            return None if self.radiant_undeclared else self.supplemental_btuh
+        return self.radiant_btuh + self.supplemental_btuh
+
+
+def room_heat_sources(model: ResolvedModel,
+                      preferences: Preferences) -> list[RoomHeat]:
+    """One :class:`RoomHeat` per conditioned room, ordered by tag.
+
+    ``preferences`` is taken for symmetry with :func:`heating_zones` and because a caller
+    holding one should not have to find another; nothing here reads it today.
+    """
+    from shapely.geometry import Point, Polygon
+
+    from typehaus.model.floors import FloorHeat
+
+    zones, _unclaimed = heating_zones(model, preferences)
+    zone_of: dict[str, HvacZone] = {}
+    for zone in zones:
+        for room in zone.rooms:
+            zone_of[room] = zone
+
+    reach: dict[str, list[str]] = {}
+    for row in register_schedule(model):
+        if row["kind"] == "supply" and not row["ventilation_terminal"] and row["room"]:
+            reach.setdefault(str(row["room"]), []).append(str(row["tag"]))
+    for unit in hvac_units(model):
+        if unit.kind in _INDOOR_KINDS and unit.room:
+            reach.setdefault(unit.room, []).append(unit.tag)
+
+    # Radiant, attributed the same way ``supplemental_heat_by_room`` attributes it: by
+    # ``room_ref`` when the zone names one, else by the room whose clear face contains it.
+    # One walk, so the two can never disagree about which room a mat heats.
+    resolved = {item.tag: item for item in model.floor_heat}
+    rooms_by_storey: dict[str, list[object]] = {}
+    for room in model.rooms:
+        rooms_by_storey.setdefault(room.storey, []).append(room)
+    radiant_output: dict[str, list[tuple[str, float | None]]] = {}
+    for storey in model.plan.storeys:
+        for element in model.plan.storey_elements(storey.tag):
+            if not isinstance(element, FloorHeat):
+                continue
+            zone_geom = resolved.get(element.tag)
+            if zone_geom is None or not zone_geom.zone:
+                continue
+            polygon = Polygon(zone_geom.zone)
+            host = element.room_ref
+            if host is None:
+                centre = polygon.representative_point()
+                found = next((room for room in rooms_by_storey.get(storey.tag, [])
+                              if Polygon(room.clear_face).contains(Point(centre))), None)
+                host = found.tag if found is not None else None
+            if host is None:
+                continue
+            if element.delivered_btuh_per_ft2 is None:
+                # A gap, never a zero: a mat whose delivered output nobody stated is not a
+                # mat that delivers nothing, and the check must say so rather than sum it.
+                radiant_output.setdefault(host, []).append((element.tag, None))
+                continue
+            # The floor cannot deliver more than the cable draws, and cannot deliver the
+            # cable's whole draw over more floor than is actually heated. Both bounds bind.
+            delivered = polygon.area * _M2_TO_FT2 * element.delivered_btuh_per_ft2
+            if element.watts is not None:
+                delivered = min(delivered, element.watts * _W_TO_BTUH)
+            radiant_output.setdefault(host, []).append((element.tag, delivered))
+
+    supplemental = supplemental_heat_by_room(model)
+    radiant_tags = {tag for entries in radiant_output.values() for tag, _ in entries}
+
+    out: list[RoomHeat] = []
+    for room in sorted(model.rooms, key=lambda item: item.tag):
+        if not room.conditioned:
+            continue
+        entries = radiant_output.get(room.tag, [])
+        stated = [value for _tag, value in entries if value is not None]
+        zone = zone_of.get(room.tag)
+        others = [(tag, btuh) for tag, btuh in supplemental.get(room.tag, ())
+                  if tag not in radiant_tags]
+        out.append(RoomHeat(
+            room=room.tag, occupancy=room.occupancy, storey=room.storey,
+            area_ft2=room.area_m2 * _M2_TO_FT2,
+            reached_by=tuple(sorted(reach.get(room.tag, ()))),
+            zone_tag=zone.equipment_tag if zone is not None else None,
+            zone_margin_btuh=zone.heating_margin_btuh if zone is not None else None,
+            radiant_tags=tuple(tag for tag, _ in entries),
+            radiant_btuh=sum(stated) if stated else None,
+            radiant_undeclared=tuple(tag for tag, value in entries if value is None),
+            supplemental_btuh=sum(btuh for _tag, btuh in others),
+            supplemental_tags=tuple(tag for tag, _btuh in others)))
     return out
 
 

@@ -3,8 +3,8 @@
 #
 # Split out of plan/mep_hvac.py (which keeps System 1's conditioned-air chase) because the
 # ERV stopped being four rectangular trunks and became a system: a real machine with four
-# ports, an outdoor side that did not exist before, four risers up one shaft, three
-# sub-manifolds and twenty-one semi-rigid radials. mep_hvac.py was at its page budget with
+# ports, an outdoor side that did not exist before, four risers up one shaft, five
+# distribution plenums and twenty-three radials. mep_hvac.py was at its page budget with
 # the trunks alone.
 #
 # =============================== THE SYSTEM, IN BRIEF ==================================
@@ -13,25 +13,43 @@
 # MERV 8 filter, 81% SRE at 32 F and **65% SRE at -13 F**. EQ-B-ERV keeps its uid (IFC
 # GlobalId stability) and its position.
 #
-# ** THE RATING POINT IS 206 CFM AT 0.4" W.G., NOT 210 AT 0.2". ** HVI certifies this
-# machine at 206 cfm net supply at 0.4" w.g. (B210E75RT, HVI ID 2004940) — see the note at
-# DU-S-ERV-R-PLANT below. "210 CFM at 0.2 in. w.g." is the model-name point off the fan
-# curve, not the rating point; reading it as the rating point understates the real static
-# budget by half.
+# ** THE WHOLE FAN CURVE IS TYPED DATA NOW (2026-09-12, BLD-08), AND THE ARGUMENT IS OVER. **
+# "210 at 0.2"" and "206 at 0.4"" were never two claims; they are two stations on one curve,
+# and `EQ-T-BROAN-B210E75RT.fan_curve` carries all ten published points (214 @ 0.1" down to
+# 176 @ 1.2", ceiling 1.3" where the core deforms). `mep.erv_static_budget` computes what
+# THIS duct system costs and reads the curve at it: **0.459" w.g. worst path, 203 cfm
+# delivered**, the worst path being DU-M-ERV-R-PLANT on the extract side. The oracle is
+# notes/erv_static_budget.md, which also prices the 8" trunk upsize Broan's manual asks for
+# above 200 cfm and says why this house does not buy it.
 # `ventilation_cfm=210` stays authored — see plan/mep_erv_types.py for why moving it is a
-# separate decision with a live verdict behind it.
+# separate decision with a live verdict behind it. It is a design INTENT: 210 is the curve's
+# value at 0.2" w.g. and no real duct system lands there. **205 (MN 1322 R403.5) is the
+# number that governs**, and `code.N1103_6_whole_house_ventilation` is what grades it.
 #
 # The SRE goes 0.75 -> 0.65 and that is a *worse* number on purpose: -15 F is this site's
 # heating design temperature (plan/site.py), so the -13 F certified figure is the honest one
 # for the block load. It raises the ventilation term; `mep.heating_capacity` moves with it,
 # and that movement is a fact about a real machine rather than a regression.
 #
-# **It is a radial install, not trunk-and-branch.** Every rectangular ERV trunk is deleted.
-# What replaces them is one 75 mm (~3") semi-rigid radial per terminal off a sub-manifold,
-# which is the whole labour argument: no tees to cut in, no branch takeoffs to seal, no
-# sheet metal to fabricate, and every terminal balanceable at the manifold rather than at
-# the grille. 6 radial supplies at ~18 cfm and 15 radial extracts at 8-25 cfm each all fit
-# one 75 mm run per terminal, so nothing is doubled.
+# **It is a home-run install, not trunk-and-branch, and since 2026-09-12 every part of it
+# is a commodity.** Every rectangular ERV trunk is deleted. What replaces them is one **4"
+# galvanized snap-lock** radial per terminal off a **fabricated galvanized plenum**, which is
+# the whole labour argument: no tees to cut in, no branch takeoffs to seal, and every
+# terminal balanceable at a butterfly damper on its own start collar rather than at the
+# grille. Twenty-three radials at 5-30 cfm each, one run per terminal, nothing doubled.
+#
+# ** THE 75 mm SEMI-RIGID TUBE IS GONE AND IT WAS A SOURCING DECISION, NOT A PRESSURE ONE. **
+# (plans/buildability.md BLD-08.) Radial semi-rigid at 75 mm has three US sellers — Zehnder,
+# and Brink through 475 — and no Minnesota dealer for either; the owner's decision is no
+# proprietary tube. The TOPOLOGY survives intact, because a home run off a dampered plenum is
+# documented standard practice and needs no special part: an 8" plenum with 4" takeoffs,
+# start collars with dampers, 4" bath-fan grilles, all off a shelf in Bloomington.
+# ** 4" AND NOT 3" IS A CATALOGUE DECISION. ** A 3" branch carries these flows easily and 3"
+# pipe, elbows and start collars are stocked — it is 3" DAMPERS and GRILLES that are a thin,
+# Amazon-grade catalogue. At 4" every part is a bath-fan commodity. The lane spacing below
+# did not have to change for it: `mep.duct_joist_bay_occupancy` reads the same UNKNOWN at 4"
+# that it read at 3" (12 1/2" clear bay, two 4" runs leave 4 1/2"), and the check tally did
+# not move by a single finding.
 #
 # **The manifolds map to CAVITIES, not storeys.** This is the finding that makes the layout
 # cheap. A terminal is fed from whichever floor cavity it sits in, and there are three:
@@ -44,7 +62,7 @@
 #
 # **Routing rule, forced by the deck construction.** Every floor system in this house runs
 # its bays east-west (`direction="x"`). FS-S-WEST (x 0'-18') is open-web floor truss with an
-# 8 7/8" chord-to-chord opening, so a 3" radial crosses joists there freely; FS-S-EAST and
+# 8 7/8" chord-to-chord opening, so a 4" radial crosses joists there freely; FS-S-EAST and
 # every I-joist field cannot be crossed. So each level-2 radial goes **north-south through
 # the truss webs on the west half first, then turns east along a bay** — which is exactly
 # why the level-2 manifolds belong in RM-M-MECH (x 0'-6') and not somewhere central. Bays
@@ -72,7 +90,7 @@
 #     rectangular trunks these replace;
 #   * attic: a boxed floor chase along the west wall at x=1'-0" carries the north-south leg
 #     on the FS-ATTIC deck, and the east-west leg rides an FS-ATTIC bay. One run cannot
-#     declare two cavities, and splitting a single length of semi-rigid into two elements to
+#     declare two cavities, and splitting a single length of pipe into two elements to
 #     satisfy an enum would be modelling the checker rather than the house.
 # The level-2 radials are `JOIST_BAY` with `floor_ref="FS-S-WEST"` and ARE graded.
 
@@ -524,7 +542,7 @@ DUCTS_ERV_RISERS = [
 
 # ============================== LEVEL 1 — BASEMENT RADIALS ============================
 #
-# Six 75 mm radials off the two manifolds beside the machine, boxed under the basement
+# Six 4" radials off the two plenums beside the machine, boxed under the basement
 # ceiling. Centreline at 7'-6" above the basement floor, inside the manifolds' own 7'-2"
 # to 7'-10" band and clear of the 8'-0 15/16" underside.
 #
@@ -603,7 +621,7 @@ DUCTS_ERV_BASEMENT = [
 
 # ================= LEVEL 2 — RM-M-MECH RADIALS (FS-S-WEST JOIST BAY) =================
 #
-# Twelve 75 mm radials, all `JOIST_BAY` against FS-S-WEST and all graded by
+# Thirteen 4" radials, all `JOIST_BAY` against FS-S-WEST and all graded by
 # `mep.duct_joist_bay`. Each has the same three moves and no others:
 #
 #   1. rise out of its own manifold port at 8'-4" above the main floor, straight up into the
@@ -620,10 +638,11 @@ DUCTS_ERV_BASEMENT = [
 # against FS-M-WEST's joist lines instead — which sit on a different 16" phase, so every
 # radial reported a straddle it did not have. Elevations are therefore second-relative:
 # -20" is the manifold port at 8'-4" above the main floor, -10 3/8" is the centreline of a
-# 3" duct sitting on FS-S-WEST's bottom chord at 108 1/8".
+# 4" duct sitting on FS-S-WEST's bottom chord at 108 1/8" (it was -10 3/8" for a 3" duct
+# until 2026-09-12; the duct grew an inch and its centreline rose half of one).
 #
 # Bay centres are 8" + n*16". **Two of them are unusable and the check is what said so:**
-# FO-S-STAIR's trimmers land at y=26'-0 3/8" and y=35'-5 3/8", so a 3" duct centred on the
+# FO-S-STAIR's trimmers land at y=26'-0 3/8" and y=35'-5 3/8", so a duct centred on the
 # 26'-0" or 35'-4" bay straddles one. The extract manifold therefore sits at y=35'-0" rather
 # than 35'-4", and everything that would naturally have used the 26'-0" bay uses 24'-8".
 #
@@ -631,15 +650,17 @@ DUCTS_ERV_BASEMENT = [
 #   * The twelve lanes leave the closet as TWO INTERLEAVED FAMILIES, NOT ONE 4" MODULE, AND
 #     SIX PAIRS OVERLAP. The nine extract lanes are on a 4" module — x=36", 40", 44", 52",
 #     56", 60", 64", 68" (48" is vacant), plus PLANT out on its own at 34" — so within that
-#     family 3" ducts do sit an inch apart, which is what the neck of a radial bundle looks
+#     family 4" ducts do sit two inches apart, which is what the neck of a home-run bundle looks
 #     like off a pair of manifolds in a 6'-0" closet. The three SUPPLY lanes are not on it:
 #     LIVING/BED/STUDY are at x=38", 46", 54", the extract module's half-step, an 8" module
 #     interleaved between its lanes. That puts six pairs on 2" centres — PLANT/BATH1 (34/36),
 #     BATH1/LIVING (36/38), LIVING/VANITY (38/40), KITCH/BED (44/46), SUITEBATH/STUDY
-#     (52/54) and STUDY/LAUNDRY (54/56) — and a 3" duct on 2" centres OVERLAPS ITS NEIGHBOUR
-#     BY 1". They are drawn as straight lines because a lane is a straight line in this model
-#     and a bundle is not; in the field the neck is dressed and the flexible 75 mm runs pass
-#     each other, which is the whole reason the drawing is tolerable rather than wrong.
+#     (52/54) and STUDY/LAUNDRY (54/56) — and a 4" duct on 2" centres OVERLAPS ITS NEIGHBOUR
+#     BY 2" (it was 1" at 3"). They are drawn as straight lines because a lane is a straight line in this model
+#     and a bundle is not; in the field the neck is dressed — a short 4" semi-rigid leg off
+#     each start collar (DUCT-T-SEMIRIGID-4 is in the catalog for exactly this) lets the
+#     runs pass each other before they go rigid, which is the whole reason the drawing is
+#     tolerable rather than wrong.
 #     **Nothing grades it.** `mep.duct_joist_bay_occupancy` pairs runs that share a bay
 #     CENTRELINE, and these lanes run south ACROSS the bays; crossing runs are deliberately
 #     not paired (a hanger-gap subtraction between them returns a meaningless number). It is
@@ -649,7 +670,7 @@ DUCTS_ERV_BASEMENT = [
 #     move nine terminals to buy clearance in one closet.
 #   * Two pairs share part of one bay: STUDY and LAUNDRY both ride the 20'-8" bay from
 #     x=4'-8" to x=15'-0", and BATH1/VANITY/KITCH all turn on 24'-8". A 14 1/2" clear bay
-#     holds two 3" ducts side by side without argument. This is the one duct-against-duct
+#     holds two 4" ducts side by side without argument (12 1/2" clear less 8" is 4 1/2"). This is the one duct-against-duct
 #     case the engine does grade outside a modeled Soffit: `mep.duct_joist_bay_occupancy`
 #     names STUDY and LAUNDRY on FS-S-WEST and reports UNKNOWN — the bay is wide enough, but
 #     the model gives a run one centreline per bay, so two lanes in one bay are necessarily
@@ -678,7 +699,7 @@ DUCTS_ERV_LEVEL2 = [
     # ** IT RIDES THE 20'-8" BAY, AND THAT COSTS NOTHING BECAUSE IT IS ONE BAY. **
     # FS-S-WEST's joist lines are at 8" + n*16", so the terminal's 20'-8" sits between the
     # joists at 20'-0" and 21'-4" for the whole ride
-    # from x=4'-6" to x=17'-2" — no jog, no crossing, one straight length of semi-rigid.
+    # from x=4'-6" to x=17'-2" — no jog, no crossing, one straight length of snap-lock pipe.
     # Stopping short of the joist at 21'-4" is also why the grille cannot sit on the
     # sconce's own 21'-5" line; the argument is on REG-M-SUP4 in plan/mep_registers.py.
     DuctRun(uid="2ZZ3MF5VAF", tag="DU-M-ERV-R-STUDY", system=DuctSystem.SUPPLY,
@@ -740,19 +761,20 @@ DUCTS_ERV_LEVEL2 = [
     # simpler route. It is the wrong one: a shared duct is a crosstalk path in both
     # directions, and the room at this end of it is a CALL BOOTH. RM-M-BATH2 is occupied and
     # wants privacy of its own; RM-M-LAUNDRY is a 4'-3" closet behind a door, unoccupied,
-    # and taking a 5 cfm trickle. Fifteen feet of 3" semi-rigid and four bends to a laundry
+    # and taking a 5 cfm trickle. Fifteen feet of 4" snap-lock and four bends to a laundry
     # closet is the cheapest neighbour this booth could have been given.
     #
     # ** THE FLOW IS WHAT CAPS THE STUDY AT 10 cfm. ** 5 + 10 = 15 cfm on the shared length,
-    # ~25 m3/h, comfortably inside a 75 mm tube's ~30 m3/h. The room is 15 cfm supply / 10
+    # ~25 m3/h, and a 4" run is used to 50 cfm here (DUCT-T-GALV-4.max_cfm, a 600 fpm quiet
+    # limit rather than a pressure one). The room is 15 cfm supply / 10
     # extract on purpose (booth stays positive — see REG-M-RET-STUDY), but the headroom to
     # take it to a balanced 15/15 later is only about 2 cfm, not 5. Anything past that is a
     # second lane, and there is no port for one.
     #
     # ** AND IT IS ALREADY AT THE SMALLEST SIZE THERE IS HERE. ** The owner asked whether a
-    # small room could take a smaller duct: every radial in this house is one 75 mm SKU
+    # small room could take a smaller duct: every radial in this house is one 4" SKU
     # already. The step below it (51 mm) would put 10 cfm at ~450 fpm in a tube ten inches
-    # from a seated occupant's feet, against ~200 fpm at 75 mm — in the one room built to be
+    # from a seated occupant's feet, against ~115 fpm at 4" — in the one room built to be
     # quiet, downsizing is the expensive direction.
     #
     # Route: east along the 20'-8" bay to the laundry head, on east to x=15'-0", SOUTH
@@ -822,7 +844,7 @@ DUCTS_ERV_LEVEL2 = [
     # stratifies, so the wettest air in RM-S-PLANT is the air overhead. The grille is not in
     # the ceiling — this duct is below the room, not above it — so it rises inside
     # W-S-C1 and discharges at 8'-6", six inches under the 9'-0" ceiling. W-S-C1 is
-    # PLANT_INT_2X6_BRG_HUMID at 7.43": a 5 1/2" cavity, room for a 75 mm riser AND a
+    # PLANT_INT_2X6_BRG_HUMID at 7.43": a 5 1/2" cavity, room for a 4" riser AND a
     # vapour-tight boot through the liner. W-S-PS1, the room's north wall, is 2x4 and is not.
     #
     # ** IT IS LONGER, NOT SHORTER: 55'-8" against the attic route's 47'-5". ** 45'-6" of plan
@@ -832,11 +854,11 @@ DUCTS_ERV_LEVEL2 = [
     # w.g." this file quotes elsewhere is the model-name point off the fan curve, not the rating
     # point, and the real static budget is about double what those comments assume. This is
     # still the radial whose drop the installer must check — 25 cfm, and longest again now.
-    # -20" is the manifold port, -10 3/8" a 3" duct on the truss bottom chord.
+    # -20" is the manifold port, -9 7/8" a 4" duct on the truss bottom chord.
     # ** THE RISER MUST NOT STAND IN D-S-PLANT'S CLEAR OPENING, AND `mep.duct_joist_bay`
     # DOES NOT CATCH IT. ** That door is centred on y=4'-0" in W-S-C1 with its jacks at
     # y=2'-8 1/4" and y=5'-3 3/4", so a riser at y=4'-8" would stand 7" inside the north
-    # jamb: through the bearing wall's sole plate, 78 1/2" of bare 3" duct standing free in
+    # jamb: through the bearing wall's sole plate, 78 1/2" of bare 4" duct standing free in
     # the rough opening with nothing to strap it to and the leaf swinging through it, then a
     # 3" bore through a solid 2-ply 2x8 header. `mep.duct_joist_bay` grades the bay and never
     # asks what the riser stands in, so it would PASS.
@@ -851,8 +873,8 @@ DUCTS_ERV_LEVEL2 = [
     # throw across the room is 11'-7 1/2".
     #
     # The alternative bay, y=2'-0" south of the door, is 2'-8" LONGER and lands the riser in
-    # the same stud bay as ED-S-PLANT-SW-TIMER's gasketed box — a 3" duct and a 2 1/2" box in
-    # a 5 1/2" cavity is zero clearance, and no check in the engine grades duct against device.
+    # the same stud bay as ED-S-PLANT-SW-TIMER's gasketed box — a 4" duct and a 2 1/2" box in
+    # a 5 1/2" cavity is worse than zero clearance, and no check in the engine grades duct against device.
     #
     # There is no legal riser at y=4'-8" at all: the jacks, the full-width header and the one
     # cripple at y=49" between them leave no station in the opening, so jogging inside the
@@ -890,7 +912,7 @@ DUCTS_ERV_LEVEL2 = [
 # within a foot of the joists' west bearing, which is the one place the chart does not — and
 # that is before ~16 bored webs and a manufacturer sign-off.
 #
-# +4" is a 3" duct lying on the attic deck at 240"; -10 3/8" is its centreline sitting on
+# +4" is a 4" duct lying on the attic deck at 240"; -9 7/8" is its centreline sitting on
 # FS-ATTIC's bottom chord at 228 1/8". Both are attic-relative, and negative because the
 # attic datum is the deck top.
 _ATTIC_DECK_Z = inch(4)
@@ -961,7 +983,7 @@ DUCTS_ERV_ATTIC = [
     # x=29', then north on the east loft's deck to the existing grille. **~53'-6", not the
     # longest radial in the house** — DU-M-ERV-R-PLANT is 55'-8" on the FS-S-WEST trusses.
     # Length was never the criterion anyway — BED3 carries 5 cfm (~102 fpm in
-    # 75 mm, where 21 extra feet costs hundredths of an inch w.g.), while PLANT carries 25 cfm and
+    # 4", where 21 extra feet costs thousandths of an inch w.g.), while PLANT carries 25 cfm and
     # is the run whose drop the installer must check. The two are on different machine ports:
     # BED3 on EQ-A-ERV-MAN-EXH, PLANT on EQ-M-ERV-MAN-EXH. Re-filing BED3 onto the main-storey
     # manifold is blocked by FO-S-STAIR, and that manifold is full at 10 of 10.
@@ -988,13 +1010,13 @@ DUCTS_ERV_ATTIC = [
 # back south. Nine vertices now instead of twelve; the tail, both of its turns and the pinch
 # are all gone. Developed ~43'-7" against ~61'-2".
 #
-# 6" and not a 75 mm radial: ~100 of the machine's 210 authored cfm goes through here (206
+# 6" and not a 4" radial: ~100 of the machine's 210 authored cfm goes through here (206
 # certified — see the header), which is half the house's fresh air arriving in one place, and
 # a radial would run it at ~5,000 fpm.
 #
 # ** IT NEVER ENTERS THE GUEST STUDIO. ** Running the x=1'-0" deck chase south all the way
 # would put 10'-11" of 6" duct along the base of a finished bedroom's knee wall — the single
-# item that would set that chase's SECTION, where everything else on that wall is 75 mm.
+# item that would set that chase's SECTION, where everything else on that wall is 4".
 # It turns east in **y=22'-0"** — the same bay DU-A-ERV-R-BED3 takes, and for the same
 # reason: 264" = 8 + 16 x 16 is a bay centre, it sits under W-A-STU-N's sole plate so the
 # partition is irrelevant, and it is the last bay south of FO-A-HALL, which severs every

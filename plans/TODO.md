@@ -147,14 +147,21 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 - **Duct-against-duct crossings are ungraded outside a modelled `Soffit`.** Radials cross in
   the `FS-S-WEST` field; fits in an 11 7/8" bay with an 8 7/8" web opening but the model can't
   say so. `mep.duct_soffit_occupancy` is the shape a joist-bay version would take.
-- **`DU-M-ERV-R-PLANT`'s pressure drop wants checking** before 75mm is committed — 55'-8"
-  radial, longest in the house. Check against 0.4" w.g. (HVI-certified rating point for the
-  B210E75RT), not 0.2" (that's the fan-curve model-name point, not the rating).
-- **Level-2 ERV radials are not on the claimed 4" centres.** `DU-M-ERV-R-BED`/`R-KITCH` and
-  `DU-M-ERV-R-LIVING`/`R-BATH1` overlap by 1"; `R-STUDY`/`R-LAUNDRY` share a bay centre
-  outright (3" overlap over 48-70"). `mep.duct_joist_bay_occupancy` reports UNKNOWN (the
-  12.5" clear bay does hold both) rather than FAIL. The drawing's prose claim is wrong; that's
-  the part to fix.
+- ~~**`DU-M-ERV-R-PLANT`'s pressure drop wants checking** before 75mm is committed.~~
+  **DONE 2026-09-12 (BLD-08), and 75 mm was not committed — it is 4" galvanized now.**
+  `mep.erv_static_budget` computes it: the PLANT branch costs **0.030" w.g. of friction plus
+  0.042" at its terminal**, and it IS the worst path in the house — 0.459" w.g. all in,
+  including its plenum and the whole extract trunk chain, for **203 cfm delivered** off the
+  authored fan curve. Note that PLANT is no longer the longest radial (`DU-A-ERV-R-BED3` is,
+  at 56'-2"); length never was the criterion, Q² is. Oracle: `notes/erv_static_budget.md`.
+- **Level-2 ERV radials are not on the claimed 4" centres, and at 4" pipe the overlap
+  doubled.** `DU-M-ERV-R-BED`/`R-KITCH` and `DU-M-ERV-R-LIVING`/`R-BATH1` now overlap by 2"
+  (1" at 3"); `R-STUDY`/`R-LAUNDRY` share a bay centre outright. `mep.duct_joist_bay_occupancy`
+  still reports UNKNOWN — the 12.5" clear bay holds two 4" runs with 4.5" to spare — and the
+  2026-09-12 retype moved the check tally by not one finding. The prose in `plan/mep_erv.py`
+  says 2" now and says a short semi-rigid leg off each start collar is how the neck is
+  dressed. **What is still not modelled is the neck itself**; the lever remains a real
+  `Soffit` or a per-lane offset in the first 3'-0", never wider spacing all the way south.
 - **`DU-ERV-RISER-EXH` passes 2" from `DU-A-ERV-R-BATH1`** at the same elevation but is 46"
   short of the manifold it's described as reaching — an interference, not a tee. Same issue on
   `DU-S-ERV-HP-FEED`.

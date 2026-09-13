@@ -272,3 +272,81 @@ def test_the_fresh_feed_drops_into_the_soffit(catlin_model) -> None:
     # consequence.
     fall_in = (max(feed.z_m) - min(feed.z_m)) / M_PER_IN
     assert fall_in == pytest.approx(28.875, abs=0.01)
+
+
+# --- the 2026-09-12 standard-parts redesign (plans/buildability.md BLD-08) -----------------
+
+def test_every_radial_is_four_inch_galvanized_and_there_are_twenty_three(catlin_model) -> None:
+    """The whole BLD-08 distribution decision, in one assertion.
+
+    The 75 mm semi-rigid tube had three US sellers and no Minnesota dealer, so it is gone;
+    the home-run TOPOLOGY is untouched. 4" and not 3" is a CATALOGUE decision — 3" pipe and
+    collars are stocked, 3" dampers and grilles are not.
+    """
+    radials = [d for d in catlin_model.ducts
+               if d.tag.startswith(("DU-B-ERV-R-", "DU-M-ERV-R-", "DU-A-ERV-R-"))]
+    assert len(radials) == 23, sorted(d.tag for d in radials)
+    for duct in radials:
+        assert duct.diameter_m == pytest.approx(4 * M_PER_IN), duct.tag
+        assert duct.material == "galvanized", duct.tag
+
+
+def test_every_trunk_riser_and_outdoor_leg_is_six_inch_galvanized(catlin_model) -> None:
+    """Six inches and not eight, deliberately. Broan's manual asks for an 8" trunk above
+    200 cfm with long runs; ``notes/erv_static_budget.md`` §7 prices that upsize as the
+    fallback rather than building it, because at 6" the worst path still clears MN's rate."""
+    by_tag = {d.tag: d for d in catlin_model.ducts}
+    for tag in ("DU-ERV-RISER-SUP", "DU-ERV-RISER-EXH", "DU-B-ERV-SUP-TRUNK",
+                "DU-B-ERV-RET-TRUNK", "DU-ERV-OA", "DU-ERV-EA", "DU-S-ERV-HP-FEED"):
+        assert by_tag[tag].diameter_m == pytest.approx(6 * M_PER_IN), tag
+        assert by_tag[tag].material == "galvanized", tag
+
+
+def test_no_run_in_the_house_is_semi_rigid_any_more(catlin_model) -> None:
+    """``DUCT-T-SEMIRIGID-4`` stays in the catalog for the first run that needs a flexible
+    leg through a truss web, and for ``notes/erv_static_budget.md`` §6's comparison — but
+    nothing names it today, and a stray one would price and resist differently."""
+    assert [d.tag for d in catlin_model.ducts if d.material == "semi_rigid"] == []
+
+
+def test_every_plenum_states_its_port_count_and_its_port_size(catlin_plan) -> None:
+    """``duct_ports`` is what turns ``plan/mep_erv.py``'s "full at 10 of 10" from prose into
+    a verdict. ``port_diameter`` is what keeps the 6" trunk collar out of the census."""
+    types = {t.tag: t for t in catlin_plan.library.equipment_types}
+    for tag, ports in (("EQ-T-ERV-MANIFOLD-6", 6), ("EQ-T-ERV-MANIFOLD-6-EXH", 6),
+                       ("EQ-T-ERV-MANIFOLD-10", 10)):
+        assert types[tag].duct_ports == ports, tag
+        assert types[tag].port_diameter.meters == pytest.approx(4 * M_PER_IN), tag
+        assert types[tag].static_loss_pa_at_cfm, tag
+    # A hood is a one-port fitting and says so — it carries DUCT_MANIFOLD only because the
+    # enum has no HOOD kind, and a second duct landing on one would be a real defect.
+    for tag in ("EQ-T-ERV-HOOD-6", "EQ-T-ERV-HOOD-6-EXH"):
+        assert types[tag].duct_ports == 1, tag
+        assert types[tag].port_diameter.meters == pytest.approx(6 * M_PER_IN), tag
+
+
+def test_the_port_census_is_clean_and_the_level_two_extract_is_full(catlin_model) -> None:
+    """``EQ-M-ERV-MAN-EXH`` at 10 of 10 is the claim every "where could a new terminal go"
+    argument in ``plan/mep_erv.py`` leans on. It is graded now, and it BLOCKS."""
+    from typehaus.checks.mep.erv_manifold_ports import erv_manifold_ports
+
+    findings = erv_manifold_ports(check_context(model=catlin_model))
+    assert [f.message for f in findings if f.result is Result.FAIL] == []
+    full = next(f for f in findings if "EQ-M-ERV-MAN-EXH" in f.message)
+    assert "10 of 10 x 4\" ports used, full" in full.message
+
+
+def test_the_duct_product_catalog_is_keyed_like_the_price_rows(catlin_plan) -> None:
+    """``DuctProductType`` joins on (material, nominal diameter) — the same pair
+    ``prices.toml``'s ``[ducts]`` qualifies on — so a run that prices as 4" galvanized cannot
+    resist as something else."""
+    rows = {(r.material, round(r.nominal_diameter.meters / M_PER_IN, 1)): r
+            for r in catlin_plan.library.duct_product_types}
+    assert ("galvanized", 4.0) in rows
+    assert ("galvanized", 6.0) in rows
+    # The physics is the engine's; these coefficients are ASHRAE reads the house owns.
+    assert rows[("galvanized", 4.0)].roughness_m == pytest.approx(0.0000914)
+    assert rows[("galvanized", 4.0)].bend_equivalent_length.meters == pytest.approx(30 * M_PER_IN)
+    # Flex is three times the roughness and is named by no run — kept so the note's
+    # rigid-versus-flex comparison reads off typed data.
+    assert rows[("flex", 6.0)].roughness_m > 10 * rows[("galvanized", 6.0)].roughness_m

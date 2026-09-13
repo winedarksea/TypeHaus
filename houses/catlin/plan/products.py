@@ -106,6 +106,50 @@ BROAN_B210E75RT = Product(
            "for why the -13 F one is the one authored.",
 )
 
+# ============================ THE ERV'S STANDARD PARTS ================================
+#
+# NEW 2026-09-12 (plans/buildability.md BLD-08). The distribution used to be a proprietary
+# 160 mm/75 mm radial system with three US sellers and no Minnesota dealer, and the owner's
+# decision is not to buy one. What replaced it is a class of part rather than a SKU, which is
+# exactly what a `Product` row is for: these name no brand, because the point of the decision
+# is that any supply house has them. ** `brand=""` IS THE POINT, NOT AN OMISSION: ** the
+# field's own comment says an empty `model` is "a real and honest state" where a brand has
+# been chosen and a model has not, and this is the same claim one field further left. A brand
+# here would be a false precision — the opposite of the Broan row above, where the identity
+# moved a number a check reads.
+ERV_PLENUM_FABRICATED = Product(
+    tag="PROD-ERV-PLENUM-FAB", brand="", model="",
+    name="Fabricated galvanized air plenum, 8\" inlet collar, N x 4\" dampered ports",
+    source="Sheet-metal shop fabrication to the spec on EQ-T-ERV-MANIFOLD-6/-6-EXH/-10: "
+           "26 ga galvanized box, one 8 in. inlet collar, N 4 in. start collars each with an "
+           "integral butterfly balancing damper, seams sealed with mastic. The same thing "
+           "this house already buys for EQ-T-ERV-MIXING-BOX. No brand: every shop builds it.",
+)
+ERV_START_COLLAR_DAMPERED = Product(
+    tag="PROD-ERV-COLLAR-4-DAMPER", brand="", model="",
+    name="4\" start collar with integral butterfly damper",
+    source="Commodity bath-fan part, 28 across the five plenums (23 live). It is the ONLY "
+           "balancing adjustment in the system — notes/erv_static_budget.md §8 is explicit "
+           "that a terminal is never balanced at its grille face. Priced inside the plenum "
+           "rows in prices.toml, not separately: fitting a collar is part of making the box.",
+)
+ERV_VOLUME_DAMPER_4 = Product(
+    tag="PROD-ERV-DAMPER-4", brand="", model="",
+    name="4\" in-line volume damper",
+    source="The in-line alternative to a start-collar damper, for a run a plenum cannot be "
+           "reached at. None is authored today; the row exists so the first one is a "
+           "selection rather than an invention.",
+)
+ERV_TERMINAL_4 = Product(
+    tag="PROD-ERV-TERMINAL-4", brand="", model="",
+    name="4\" round-collar ceiling diffuser / bath grille",
+    source="Commodity bath-fan terminal: a 4 in. round collar behind a stamped face. Every "
+           "REG-T-ERV-* row is one of these. 4 in. and not 3 in. is the whole catalogue "
+           "argument in plan/mep_erv.py's header — 3 in. pipe is stocked, 3 in. dampers and "
+           "grilles are not. Loss curves on the types are DERIVED (notes/erv_static_budget.md "
+           "§5), not published; a submitted product with a real curve replaces them.",
+)
+
 # The study's bookcase door (DT-INT-BOOKCASE30, W-A-SN's built-in). A model rather than a
 # bare brand because the flush-mount case DEPTH is the number the assembly was drawn to:
 # INT_2X4_BOOKCASE_12's 6 3/8" case-pocket plus its 3 1/2" stud-case give 9 7/8" of
@@ -173,6 +217,8 @@ PRODUCTS = (
     FRIGIDAIRE_ALL_REFRIGERATOR, FRIGIDAIRE_ALL_FREEZER,
     RHEEM_PROTERRA_80, EG4_12KPV, EG4_POWERPRO_WALLMOUNT,
     BROAN_B210E75RT, MURPHY_BOOKCASE_30,
+    ERV_PLENUM_FABRICATED, ERV_START_COLLAR_DAMPERED, ERV_VOLUME_DAMPER_4,
+    ERV_TERMINAL_4,
     KOHLER_UNDERSCORE_5713_W1, KOHLER_CLEARFLO_7272,
     *INTERIOR_PRODUCTS,
 )

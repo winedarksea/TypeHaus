@@ -1648,11 +1648,23 @@ FLOOR_HEAT = [
     # against a design load it cannot meet, i.e. unheated. The old number was wrong; the
     # answer is a bigger MAT, not a smaller wattage.
     #
-    # The load it has to carry, at the -15 F of plan/site.py: RM-M-BATH2 has one exterior
-    # surface, the west wall, and one window in it. 76.4 ft2 of EXT_2X6 at R-40.7
-    # over an 85 F delta is 160 BTU/h; WIN-M-BATH2 is 6.75 ft2 of U-0.25 glass at 143 BTU/h.
-    # Ceiling and floor are both interior. ** ~303 BTU/h, which is small because the
-    # envelope is very good. **
+    # The load it has to carry, at the -15 F of plan/site.py. The ENVELOPE half of it is
+    # small because the envelope is very good: RM-M-BATH2 has one exterior surface, the west
+    # wall, and one window in it — 76.4 ft2 of EXT_2X6 at R-40.7 over an 85 F delta is
+    # 160 BTU/h, WIN-M-BATH2 is 6.75 ft2 of U-0.25 glass at 143 BTU/h, ceiling and floor are
+    # both interior. ** ~303 BTU/h, and that is the number this file quoted for months. **
+    #
+    # ** THE ENGINE'S ROOM-SCOPED LOAD IS 673 BTU/h, NOT 303, AND THE DIFFERENCE IS AIR
+    # (2026-09-12, BLD-08). ** `estimate_block_load(rooms={"RM-M-BATH2"})` adds the two
+    # air-side terms the hand pass above simply left out — blower-door infiltration and
+    # ventilation air — apportioned by this room's share of conditioned volume. That
+    # apportionment is the part worth arguing with, and the note argues with it: a bathroom
+    # on continuous ERV extract is where ventilation air LEAVES, not where it enters, so a
+    # pro-rata slice of the house's ventilation load is charged to it twice over. The load
+    # is somewhere between the two figures and nothing in this model can say where.
+    # `mep.room_heat_source` reports the comparison as UNKNOWN for exactly that reason, and
+    # notes/room_heat_loss_baths.md carries both passes. ** Do not "fix" this by shrinking
+    # the load; the honest answer is an hour of Manual J. **
     #
     # ** THE ZONE IS 17.85 ft2 AND THE PRODUCT IS A REAL SKU. ** Schluter DITRA-HEAT-E-HK
     # **DHEHK12016**: 52.9 ft of twisted-pair cable, 16.0 ft2 at 3-stud spacing, 120 V,
@@ -1666,15 +1678,26 @@ FLOOR_HEAT = [
     # 21.3 without going up to DHEHK12021 — the wattage is a PURCHASED QUANTITY here, not
     # `area x 12`, and no supplier sells the number that formula produces.
     #
-    # ** THE HONEST NUMBER: 16.0 ft2 x Schluter's 18.6 BTU/h/ft2 of floor surface (82 F
-    # floor against 72 F operative) IS 298 BTU/h AGAINST 303 — 98%, NOT A MARGIN. ** The
-    # room simply has no more legal floor to heat: the vanity, the water closet, the shower
-    # and the tub deck take it, and the keepouts below are manufacturer minimums rather than
-    # choices. That is acceptable and is not a fudge — -15 F is the 99% design temperature
-    # and a bathroom is occupied in bursts, and tile has no surface-temperature cap, so the
-    # floor can run warmer than 82 F on the coldest morning of the year. But there is NO
-    # headroom left here: if the window ever gets bigger, or the envelope worse, this room
-    # needs a second heat source rather than a bigger mat.
+    # ** THE HONEST NUMBER, CORRECTED 2026-09-12: 17.52 ft2 x 22.8 BTU/h/ft2 = 399 BTU/h. **
+    # This block read "16.0 ft2 x Schluter's 18.6 (82 F floor against 72 F operative) is
+    # 298 against 303 — 98%, not a margin". Two things in that were wrong. **18.6 is
+    # Schluter's 82 F EXAMPLE, not the design point**: their own delivered-output relation is
+    # Q = 8.92 x dT^1.1 W/m2, and at the recommended 84 F floor over 72 F operative that is
+    # 22.8 BTU/h/ft2 (see the field on the zone below). And the area is the POLYGON's
+    # 17.52 ft2, not the purchased cable's 16.0 — the buffer zone is heated floor too, it is
+    # simply not cable.
+    #
+    # ** SO IT IS 399 BTU/h AGAINST A 673 BTU/h ENGINE LOAD — 41% SHORT — AND THE
+    # CONSTRAINT IS AREA, NOT WATTAGE. ** The DHEHK12016 draws 203 W = 693 BTU/h, well over
+    # the room's load; it cannot deliver that because 17.52 ft2 of floor at 22.8 will not
+    # carry it. Covering 673 BTU/h needs 29.5 ft2 of heated floor in a room that has 74.4 ft2
+    # total, and the vanity, water closet, shower and tub deck take the rest. **A bigger
+    # cable buys nothing here.** What the room has instead is real and is why this is not an
+    # emergency: -15 F is the 99% design temperature, a bathroom is occupied in bursts, tile
+    # has no surface-temperature cap so the floor can run well over 84 F on the coldest
+    # morning, and the 673 figure itself over-charges the room for ventilation air (above).
+    # ** But there is no headroom: if the window grows or the envelope worsens, this room
+    # needs a SECOND heat source — a small panel or a toe-kick — not a bigger mat. **
     #
     # Keepouts are Schluter's, not invented: 2" off every wall and fixed cabinet, 7" off the
     # water closet's drain centreline (wax-ring heat), and **nothing under the tub deck** —
@@ -1720,6 +1743,18 @@ FLOOR_HEAT = [
               # the density claim (203 W / 16.0 ft2 = 12.7 W/ft2 either way), but it is what
               # `takeoff/placeables.py` divides the zone area by to derive billed cable.
               #
+              # ** 22.8 Btu/h/ft2 IS WHAT THE FLOOR DELIVERS; `watts` IS WHAT THE CABLE
+              # DRAWS. ** The two are not convertible and this field exists because they
+              # are not. Schluter publishes delivered output as Q = 8.92 x dT^1.1 W/m2,
+              # where dT is floor surface minus room operative temperature. At the
+              # recommended 84 F floor over a 72 F room, dT = 12 F = 6.67 C:
+              #     8.92 x 6.67^1.1 = 8.92 x 8.06 = 71.9 W/m2
+              #     71.9 x 3.412 / 10.764 = 22.8 Btu/h/ft2
+              # ** THE 18.6 THIS HOUSE QUOTED WAS THE 82 F EXAMPLE, NOT THE DESIGN POINT **,
+              # and BLD-08's own "25 to 30" was a guess at the other end. Neither is the
+              # number. `mep.room_heat_source` reads it, caps it at `watts` x 3.412, and
+              # grades the result against this room's own design load —
+              # notes/room_heat_loss_baths.md is the hand pass.
               # ** THE BILLED LF IS STILL NOT AN ORDER QUANTITY. ** It is the routing length
               # over the WHOLE 17.85 ft2 polygon; the cable only covers 16.0 of that, and
               # the remaining 1.85 ft2 is the buffer zone Schluter wants the surplus parked
@@ -1729,7 +1764,7 @@ FLOOR_HEAT = [
               # slightly low. Left alone — it is well inside the low/high band.)
               system=RadiantSystem.ELECTRIC, spacing=inch(3.625), embed=in_slab(inch(0.5)),
               # DHEHK12016 as purchased. NOT a computed number — see above.
-              watts=203,
+              watts=203, delivered_btuh_per_ft2=22.8,
               stat=pt(inch(40), inch(175))),
     # Under the dining table. FURN-M-DINING covers x 22'-11"..30'-11", y 15'-7"..19'-1"; the
     # zone takes the table's exact width and runs y 13'-9"..21'-0" so it reaches under both

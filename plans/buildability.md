@@ -181,7 +181,7 @@ is still the first thing to remove.
 | BLD-02 | The freestanding concrete structure | HIGH | **RESOLVED 2026-09-12 (BLD-12 still gates the piers)** | unpriced |
 | BLD-05 | Suite bathroom drain, 0.062" of slack | HIGH | **SIMPLIFY** | ~free if timed right |
 | BLD-13 | Conditions the engine does not grade | HIGH | KEEP as checklist | — |
-| BLD-08 | ERV radial scheme off-catalog; heat pumps fine | MED | split | unpriced |
+| BLD-08 | ERV radial scheme off-catalog; heat pumps fine | MED | **RESOLVED 2026-09-12 — standard parts, provenance closed** | ~neutral; cost + warranty stay owner calls |
 | BLD-07 | Unvented roof: painter, insulator, undrawn eave | MED | KEEP + 2 instructions | — |
 | BLD-04 | 13 one-off assemblies, 10 one-off door types | MED | **SIMPLIFY** | unpriced |
 | BLD-10 | Seven cladding materials, three scopes | MED | **SIMPLIFY** | unpriced |
@@ -1052,7 +1052,98 @@ published row prescriptively (17'-9 3/4" against 18'-4") and carries the hanging
 condition on the finding rather than reporting UNKNOWN; ForteWEB still owns the last
 word. See `houses/catlin/notes/roof_rafter_span_read.md` §3.
 
-### BLD-08 — Split verdict: the heat pumps are right, the ERV scheme is off-catalog. **MED**
+### BLD-08 — Split verdict: the heat pumps are right, the ERV scheme is off-catalog. **MED · RESOLVED 2026-09-12**
+
+**RESOLVED 2026-09-12 — the design was right about the machine and wrong about where to buy
+the pipe.** Three of the four items closed against published documents rather than against
+judgement; the fourth became arithmetic the engine now does. **Cost and the Gree Select
+warranty tier stay open as owner calls** and nothing below decides them.
+
+**1. The rating point was never in dispute — it was one curve read at two stations.**
+Broan's B210E75RT spec sheet publishes the whole thing: 214 cfm @ 0.1", 210 @ 0.2", 208 @
+0.3", **206 @ 0.4"**, 201 @ 0.5, 199 @ 0.6, 195 @ 0.7, 191 @ 0.8, 184 @ 1.0, 176 @ 1.2 in.
+w.g., with **1.3 in. w.g. a hard ceiling** above which the core deforms. The distributor's
+"210 at 0.2"" and the design's "206 at 0.4"" are both correct and neither is the rating of
+the other. **That closes open question 3** — and it closes it as typed data, not as prose:
+`EQ-T-BROAN-B210E75RT.fan_curve` carries all ten points, and `mep.erv_static_budget`
+computes what this duct system costs and reads the curve at it. **0.459 in. w.g. worst path,
+203 cfm delivered**, the worst path being `DU-M-ERV-R-PLANT` on the extract side. Recovery is
+recirculation defrost, HVI-tested at −13 °F with SRE 65 % there, which is already what the
+block load uses.
+
+**2. "Radial semi-rigid is off-catalog" was right, and the answer was not to give up the
+topology.** Only Zehnder (three US sellers) and Brink through 475 sell 75 mm systems, and
+neither has a Minnesota dealer. **Owner decision: no proprietary tube.** But a home run per
+terminal off a dampered plenum is documented standard practice — an 8" plenum with 4"
+takeoffs — and needs no special part. So the topology is untouched and every piece of it is
+now a commodity: **4" galvanized snap-lock radials, 6" galvanized trunks and risers,
+fabricated galvanized plenums** (8" inlet collar, N × 4" start collars with butterfly
+dampers, mastic-sealed — from any sheet-metal shop, exactly as `EQ-T-ERV-MIXING-BOX` already
+is), **4"-collar bath-fan grilles and diffusers**. **4" and not 3" is a CATALOGUE decision,
+not a pressure one**: 3" pipe, elbows and start collars are stocked, but 3" dampers and
+grilles are a thin, Amazon-grade catalogue. The retype moved the check tally by **not one
+finding** — `mep.duct_joist_bay_occupancy` reads the same UNKNOWN at 4" that it read at 3",
+because a 12 1/2" clear bay holds two 4" runs with 4 1/2" to spare.
+
+**3. "21 radials not balanceable" was 23 radials, and the risk is the MEASUREMENT.** Adjustment
+is a butterfly damper at each start collar — one per port, at the plenum, never at the grille
+face. What is genuinely hard is reading 9 cfm: ordinary capture hoods bias **−25 to −30 %
+below 150 cfm**, so a **TSI Alnor LoFlo-class** instrument is required equipment and a reading
+from a standard hood is not evidence. `notes/erv_static_budget.md` §8 is the commissioning
+spec — measure the total across the core rather than by summing 23 low-flow readings, then
+balance at the plenum, then report per terminal.
+
+**4. The Gree data hole is closed, and TWO MISREADS WERE FOUND ON OUR OWN SIDE.** The −15 °F
+figure is **verbatim**, not interpolated: Gree Extended Ratings catalogue
+`GREE_FLEXX_ULTRA_EXTENDED RATINGS_08272024`, model FXU24, 70 °F return, **"MAX OUTPUT"**
+band — −22 °F 18,000 Btu/h @ COP 1.49; −15 °F **21,000 @ 1.57**; a flat 24,000 from −5 to
+47 °F. The unit **is** on the cold-climate list: NEEP ccASHP **id 504980**, ENERGY STAR Cold
+Climate, −22 °F maximum 18,000 Btu/h at **COP 1.36** — same capacity as Gree's own row at a
+lower COP, so quote NEEP's when a figure must be conservative. **AHRI 215213329 certifies
+SEER2/EER2/HSPF2 and the 47 °F and 17 °F points only**, and pointing at it for the −15 °F
+number was always going to fail at a plan review; that scope is now stated in the type's
+`source`. **That closes open question 4.** The two misreads: airflow is **760 cfm at 0.5" ESP
+(speed 3)**, not "760 at 1.0"" — 850 cfm is the only speed that reaches 1.0" — and the heat
+kit is a **field-installed accessory** (5/6/10 kW) the cabinet accepts, not factory-fitted.
+Neither changes the decision, and **the interlock argument is untouched**: what the DUC24
+lacked was the aux-heat *terminal*, and this cabinet has it.
+
+**5. The radiant zones got their arithmetic, and one of them is short.** Schluter's own
+relation is Q = 8.92·ΔT^1.1 W/m²; at the recommended **84 °F floor over a 72 °F room** that
+is **22.8 Btu/h/ft²** — not the **18.6** this house quoted in two files (Schluter's *82 °F
+example*) and not the **25–30** the finding below assumes. MN 1322's **−15 °F** is confirmed
+as the governing design temperature. Against the engine's room-scoped load:
+**`RM-S-BATH1` delivers 623 Btu/h against 591 and is covered; `RM-M-BATH2` delivers 399
+against 673 and is 41 % short.** **And a bigger cable cannot fix it** — the DHEHK12016
+already *draws* 693 Btu/h; what the room lacks is heated FLOOR AREA (29.5 ft² needed, 17.52
+available after the manufacturer's own keepouts). The verdict is UNKNOWN rather than a
+failure because a room-scoped block load over-states a small interior bathroom on continuous
+extract in three named ways. **Also worth knowing: R303.10 does not reach either room** —
+R202 excludes bathrooms from habitable space by name — so no inspector will ask, which is
+precisely why it had to be asked here. The decision left open is one hour of Manual J, a
+second heat source in `RM-M-BATH2`, or accepting it.
+
+**What is NOT closed, deliberately.** **Cost** — the finding's "$9,200–9,500 radial vs
+$2,600 conventional" comparison is against the proprietary system that is no longer being
+bought, and re-costing the standard-parts build against a conventional single-trunk ERV is a
+real question nobody has answered. `prices.toml` is re-banded for what is now specified and
+that is all. **Warranty tier** — 5 parts / 7 compressor standard; 10/10 only through a Gree
+Select Dealer with 60-day registration. **Owner-supplied is NOT void**, it simply cannot
+reach Select, and both tiers require a licensed installing contractor and exclude labour.
+Recorded on the type; still an owner call.
+
+**Three checks came out of this**, all registered in `checks/mep/`:
+`mep.erv_static_budget` (ADVISORY — the whole system's Darcy–Weisbach/Colebrook budget
+against the published curve), `mep.erv_manifold_ports` (INTEGRITY, **blocks** — it grades
+`plan/mep_erv.py`'s "full at 10 of 10" prose), and `mep.room_heat_source` (ADVISORY — item 5).
+New schema: `EquipmentType.fan_curve` / `fan_curve_max_static_in_wg` / `duct_ports` /
+`port_diameter` (with a load-time validator that refuses a mistranscribed curve),
+`AirHandlingProductFacts.static_loss_pa_at_cfm`, `FloorHeat.delivered_btuh_per_ft2`, and a new
+`DuctProductType` keyed on the **(material, nominal diameter)** pair `prices.toml`'s `[ducts]`
+already qualifies on — one join, so a run cannot price as one product and resist as another.
+Oracles: `notes/erv_static_budget.md`, `notes/room_heat_loss_baths.md`.
+
+The original finding, for the record:
 
 **Three separate outdoor units is good practice, not a red flag — KEEP.** The
 building-science literature actively prefers it in a cold climate. A multi-zone
@@ -1339,12 +1430,20 @@ download, not more searching.
    fits 267.4 A unmanaged, so nothing in the calculation depends on an inspector's reading.
    The question still stands for anyone who wants the credit, and the answer the engine now
    requires is a UL 3141 listing (2026 NEC 130.2). (BLD-06)
-3. **The Broan B210E75RT's certified net supply at 0.4 inches water gauge.** The
-   directory publishes that column but renders it in JavaScript; the spreadsheet is
-   downloadable. One distributor contradicts the design's figure. (BLD-08)
-4. **The Gree FLEXX Ultra's capacity at 5°F and −13°F, and its cold-climate
-   listing status.** Manufacturer submittals blocked automated access. Look it up
-   manually before closing the heat-loss calculation. (BLD-08)
+3. ~~**The Broan B210E75RT's certified net supply at 0.4 inches water gauge.**~~
+   **ANSWERED 2026-09-12 — 206 cfm, and the premise of the contradiction was wrong.** The
+   distributor's "210 at 0.2"" and the design's "206 at 0.4"" are the same fan curve read at
+   two stations; the spec sheet publishes all ten points and they are now authored as
+   `EQ-T-BROAN-B210E75RT.fan_curve`, so nobody re-derives either figure from prose again.
+   `mep.erv_static_budget` reads the curve at the static this duct system actually makes:
+   0.459 in. w.g., 203 cfm delivered. (BLD-08)
+4. ~~**The Gree FLEXX Ultra's capacity at 5°F and −13°F, and its cold-climate
+   listing status.**~~ **ANSWERED 2026-09-12 — verbatim, and it IS listed.** Gree Extended
+   Ratings `GREE_FLEXX_ULTRA_EXTENDED RATINGS_08272024`, FXU24, 70 °F return, "MAX OUTPUT":
+   −22 °F 18,000 Btu/h @ COP 1.49, −15 °F **21,000 @ 1.57**, flat 24,000 from −5 to 47 °F.
+   NEEP ccASHP **id 504980**, ENERGY STAR Cold Climate, −22 °F 18,000 @ COP 1.36. **AHRI
+   215213329's scope is SEER2/EER2/HSPF2 and the 47/17 °F points only** — say so at plan
+   review rather than pointing at the certificate for a −15 °F number. (BLD-08)
 5. **Whether one Twin Cities crew installs all the metal systems**, and any Twin
    Cities price for *exterior-side* spray foam. Neither is published. Bid it and
    see. (BLD-01b, BLD-10)

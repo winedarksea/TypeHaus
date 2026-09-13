@@ -45,6 +45,8 @@ each is kept because the *rule* it established usually outlives the design that 
 | `sunken_garden_retaining_screening.md` | `engineering/retaining_wall.py` §4 (`tests/test_retaining_wall_calc.py`) | live |
 | `uplift_load_path.md` | `lateral_uplift/RF-*` deferral (`tests/test_uplift_load_path.py`) | live |
 | `soffit_rung_deflection.md` | `checks/structural/soffit.py` | live |
+| `erv_static_budget.md` | `checks/mep/erv_static.py` — the whole ERV distribution's pressure budget against the Broan's published fan curve (`tests/test_erv_static_oracle.py`) | live |
+| `room_heat_loss_baths.md` | `checks/mep/room_heat.py` — the two radiant floors that are the sole heat in their room (`tests/test_room_heat_source.py`) | live |
 
 ### Published-table reads
 

@@ -836,7 +836,43 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
 ### Ventilation, ducts and soffits
 
-- **ERV: Broan B210E75RT, semi-rigid radial** (`plan/mep_erv.py`).
+- **ERV: Broan B210E75RT, home-run distribution in STANDARD PARTS** (`plan/mep_erv.py`).
+  Redesigned 2026-09-12 (BLD-08): the topology did not change, what it is built from did.
+  - **No proprietary tube anywhere.** The 160 mm/75 mm radial manifold and its semi-rigid
+    tube had three US sellers and no Minnesota dealer, and the owner's decision is not to
+    buy one. Every radial is **4" galvanized snap-lock** (`material="galvanized"`), every
+    trunk, riser and outdoor leg **6" galvanized**, every terminal a **4"-collar** commodity
+    diffuser or bath grille, and every manifold a **fabricated galvanized plenum** — 8" inlet
+    collar, N x 4" start collars each with a butterfly damper, mastic-sealed — from any
+    sheet-metal shop, exactly as `EQ-T-ERV-MIXING-BOX` already is. Tags did not change
+    (`EQ-T-ERV-MANIFOLD-6/-6-EXH/-10`); five `type_ref`s, the price rows and the goldens key
+    on them. **4" and not 3" is a CATALOGUE decision, not a pressure one**: 3" pipe and
+    collars are stocked but 3" dampers and grilles are a thin Amazon-grade catalogue.
+  - **The fan curve is typed data now, and it closes `plans/buildability.md` open question
+    3.** `EQ-T-BROAN-B210E75RT.fan_curve` carries all ten published points (214 cfm @ 0.1"
+    w.g. down to 176 @ 1.2") plus `fan_curve_max_static_in_wg=1.3` — a HARD CEILING above
+    which the core deforms, a different statement from the curve's last point. The old
+    "0.2" vs 0.4"" argument was never a disagreement: they are two stations on one curve.
+    **`ventilation_cfm` stays 210** and it is a design INTENT, not a promise the curve can
+    keep — no real duct system lands under 0.2" w.g. The number that governs is MN 1322
+    R403.5's **205**.
+  - **Three new checks.** `mep.erv_static_budget` (ADVISORY) computes Darcy-Weisbach/Colebrook
+    over the whole system and reads the curve at it: **0.459" w.g. worst path, 203 cfm
+    delivered** — clears 205's... no: it reads 203 against a 210 design rate and reports the
+    7 cfm as UNKNOWN, because whether it is enough is `code.N1103_6_whole_house_ventilation`'s
+    question. `mep.erv_manifold_ports` (INTEGRITY, **blocks**) grades the "10 of 10" prose.
+    `mep.room_heat_source` (ADVISORY) is the radiant arithmetic. Oracles:
+    `notes/erv_static_budget.md`, `notes/room_heat_loss_baths.md`.
+  - **`DuctProductType` is keyed exactly like `prices.toml`'s `[ducts]`** — the
+    (material, nominal diameter) pair — so a run that prices as 4" galvanized cannot resist
+    as something else. The engine owns the physics; the house owns the ASHRAE roughness and
+    bend coefficients, on the row. A run whose pair names no row is UNKNOWN by that pair,
+    never given a default epsilon.
+  - **Broan's manual asks for an 8" trunk above 200 cfm with long runs, and this house does
+    not obey it — deliberately.** `notes/erv_static_budget.md` §7 prices the upsize
+    (~$400-900, buys ~3 cfm) as the FIRST lever if commissioning comes in under 205 cfm.
+    §8 is the commissioning spec, and its real point is that an ordinary flow hood reads
+    25-30% low below 150 cfm: a **TSI Alnor LoFlo-class** instrument is required equipment.
   - **Three manifolds map to CAVITIES, not storeys.** Level 1 = basement ceiling, machine in
     RM-B-FURNACE. Level 2 = RM-M-MECH, feeding both main-storey CEILING grilles and
     second-storey FLOOR boots because both open into the one FS-S-WEST/EAST cavity. Level 3 =
@@ -903,13 +939,27 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - **`CHASE` routing (a framed shaft not modeled as a `Soffit`) is a declared unchecked
     case** — do not rely on it for clearance.
   - **`EQ-T-GREE-FLEXX-ULTRA-24-AH`/`-OD` is the live heat-pump type for
-    `EQ-S-HP1-AH`/`EQ-M-HP1-OD`.** 760 cfm at 1.0" w.c., 21,000 Btu/h read at -15 F (**# TODO verify datasheet** — the
-    figure carries an AHRI certificate number but no table or column reference, and the two
-    types this replaced were both retyped over numbers read from the wrong column; see
-    DESIGN-LOG.md and `plans/buildability.md` BLD-08) (137% of
-    the zone's 15,164 Btu/h block load, unaided), 24 VAC control with a factory heat kit,
-    HSPF2 10.0, ENERGY STAR Cold Climate (AHRI 215213329). Depth is 18 1/8" (→ DESIGN-LOG.md,
-    "Ventilation, ducts and soffits" for the two retypes this replaced).
+    `EQ-S-HP1-AH`/`EQ-M-HP1-OD`, and its provenance is CLOSED (2026-09-12, BLD-08).** The
+    `# TODO verify datasheet` that stood here is gone because the figure was verified, not
+    because it was waived: **21,000 Btu/h at -15 F, COP 1.57**, read verbatim from Gree's
+    `GREE_FLEXX_ULTRA_EXTENDED RATINGS_08272024`, model FXU24, 70 F return, **"MAX OUTPUT"
+    band** (137% of the zone's 15,164 Btu/h block load, unaided). NEEP ccASHP **id 504980**
+    lists the unit as ENERGY STAR Cold Climate with a -22 F maximum of 18,000 Btu/h at
+    **COP 1.36** — same capacity as Gree's own -22 F row, lower COP; quote NEEP's when a
+    figure must be conservative.
+    **AHRI 215213329 certifies SEER2/EER2/HSPF2 and the 47 F and 17 F points ONLY**, so the
+    -15 F number is a manufacturer rating with no certificate behind it. Say so at plan
+    review rather than pointing at the AHRI number.
+    **Two misreads corrected in the same pass, neither changing the decision:** airflow is
+    **760 cfm at 0.5" ESP (speed 3)** — 850 cfm is the only speed that reaches 1.0", and the
+    "760 at 1.0"" this file carried was the wrong column; and the heat kit is a
+    **field-installed accessory** (5/6/10 kW) the cabinet accepts, not factory-fitted — the
+    interlock argument that drove the retype is untouched, because what the DUC24 lacked was
+    the aux-heat TERMINAL and this cabinet has it.
+    HSPF2 10.0. Depth is 18 1/8" (→ DESIGN-LOG.md, "Ventilation, ducts and soffits" for the
+    two retypes this replaced).
+    **Warranty stays an owner call**: 5 parts / 7 compressor standard, 10/10 only through a
+    Gree Select Dealer with 60-day registration. Owner-supplied is NOT void, just not Select.
   - **A `# TODO verify datasheet` marker on any equipment type is not documentation debt —
     every clearance, lane, and velocity downstream of it is provisional** until the type is
     replaced with a verified one; re-check all of them when it is.

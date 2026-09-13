@@ -177,6 +177,12 @@ EQUIPMENT_TYPES_ERV = (
                   name="Exterior ventilation hood, 6\" round, bird screen + backdraft damper",
                   footprint=(inch(12), inch(12)), height=inch(12),
                   plan_symbol="erv",
+                  # A hood IS a one-port fitting, and saying so is what keeps it out of
+                  # `mep.erv_manifold_ports`'s UNKNOWN column. It carries EquipmentKind.
+                  # DUCT_MANIFOLD because there is no HOOD kind in the enum, so the port
+                  # census walks it; one 6" duct is exactly what may land on it, and a
+                  # second would be a real defect this now reports.
+                  duct_ports=1, port_diameter=inch(6),
                   source="Generic 6\" wall/gable hood with 1/4\" bird screen and a gravity backdraft damper. Screen mesh is deliberately coarse: a fine mesh frosts shut on an intake at -15 F.",
                   ports=(ServicePort(tag="duct", service=Service.OUTDOOR_AIR,
                                      position=(ft(0), ft(0), inch(6))),)),
@@ -184,6 +190,7 @@ EQUIPMENT_TYPES_ERV = (
                   name="Exterior ventilation hood, 6\" round, discharge, bird screen + backdraft damper",
                   footprint=(inch(12), inch(12)), height=inch(12),
                   plan_symbol="erv",
+                  duct_ports=1, port_diameter=inch(6),
                   source="EQ-T-ERV-HOOD-6 with the damper reversed — the same casting, the same screen, the same price, on the discharge side. The screen stays the coarse 1/4\" mesh: a discharge hood carries humid room air and a fine mesh frosts shut on it as readily as on an intake.",
                   ports=(ServicePort(tag="duct", service=Service.EXHAUST_AIR,
                                      position=(ft(0), ft(0), inch(6))),)),

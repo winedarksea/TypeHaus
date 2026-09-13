@@ -315,9 +315,26 @@ EQUIPMENT_TYPES = (
     #    covered with could not be interlocked with the heat pump at all, so the credit the
     #    check was granting described a machine that cannot be built.
     #
-    # The FLEXX Ultra answers all three — 760 cfm at 1.0 in. w.c., 21,000 Btu/h read at
-    # -15 F (138% of the load, unaided), 24 VAC control with a factory heat kit — and is
-    # ENERGY STAR Cold Climate certified where the Vireo is not. HSPF2 goes 9.0 -> 10.0.
+    # The FLEXX Ultra answers all three — 760 cfm, 21,000 Btu/h read at -15 F (138% of the
+    # load, unaided), 24 VAC control with an aux-heat terminal — and is ENERGY STAR Cold
+    # Climate certified where the Vireo is not. HSPF2 goes 9.0 -> 10.0.
+    #
+    # ** TWO MISREADS IN THAT SENTENCE, BOTH CORRECTED 2026-09-12 (BLD-08). ** Neither
+    # changes the decision; both were the same kind of error as the DUC24 record above, which
+    # is why they are written down rather than quietly fixed.
+    #
+    #  * "760 cfm AT 1.0 in. w.c." WAS THE WRONG COLUMN. The fan table gives 760 cfm at
+    #    **speed 3, 0.5 in. ESP**. At 1.0 in. the only speed that reaches the duct system at
+    #    all is speed 5, at 850 cfm. The 750 cfm this duct system is sized to is comfortably
+    #    inside either reading, so the machine is still right; what was wrong was the claim
+    #    about WHERE on the curve it sits, and a static budget built on 1.0 in. would have
+    #    been built on nothing.
+    #  * "A FACTORY HEAT KIT" IS A FIELD ACCESSORY. The cabinet ACCEPTS an electric heat kit
+    #    (5 / 6 / 10 kW) and it is ordered and installed separately, not fitted at the works.
+    #    ** The interlock argument is untouched by this ** and it is the argument that
+    #    mattered: the cabinet has the aux-heat terminal the DUC24 lacked, so a strip heater
+    #    here CAN be interlocked with the compressor, which is the whole reason the pairing
+    #    changed. A field kit on a listed terminal interlocks exactly as a factory one would.
     #
     # WHY THIS UNIT AND NOT A SHALLOWER ONE. Connection geometry decides where a machine can
     # live: every concealed slim duct — Gree, LG, Samsung — puts supply on one long face and
@@ -373,7 +390,7 @@ EQUIPMENT_TYPES = (
                   min_operating_temp_f=-22.0,
                   hspf2=10.0,
                   seer2=18.0,
-                  source="Gree FXU24HP230V1R32AO (FLEXX Ultra, R32). 39 x 37 13/16 x 14 9/16 in overall (W x H x D), foot pattern 29 3/4 in across the width by 15 9/16 in across the depth, net weight 187.4 lb. Electrical MCA 21 A / MOCP 25 A at 208-230 V, single phase. LOW-TEMPERATURE HEATING, read from Gree's FLEXX Ultra Extended Ratings at 70 F return — not interpolated, unlike the VIR24 record this replaced: -22 F 18,000 Btu/h at COP 1.49; -20 F 19,500 at 1.53; -15 F 21,000 at 1.57; and a flat 24,000 Btu/h from -5 F all the way to 47 F. NOTE that this document's COP column is TRUE COP (W/W), unlike the All-Match Extended Ratings whose column is Btu/h per watt. HSPF2 10.0 / SEER2 18.0, ENERGY STAR Cold Climate certified (AHRI 215213329). min_operating_temp_f -22 F per the operating envelope. heating_capacity_at_design_btuh is the -15 F read value, so the unit covers its whole operating range unaided: at -22 F it still makes 18,000 Btu/h against a ~16,400 Btu/h load, which is what demotes EQ-S-HP1-STRIP from a design-condition necessity to true sub-lockout backup.",
+                  source="Gree FXU24HP230V1R32AO (FLEXX Ultra, R32). 39 x 37 13/16 x 14 9/16 in overall (W x H x D), foot pattern 29 3/4 in across the width by 15 9/16 in across the depth, net weight 187.4 lb. Electrical MCA 21 A / MOCP 25 A at 208-230 V, single phase. LOW-TEMPERATURE HEATING, read VERBATIM from Gree's Extended Ratings catalogue GREE_FLEXX_ULTRA_EXTENDED RATINGS_08272024, model FXU24, 70 F return, the 'MAX OUTPUT' band — not interpolated, unlike the VIR24 record this replaced: -22 F 18,000 Btu/h at COP 1.49; -20 F 19,500 at 1.53; -15 F 21,000 at 1.57; and a flat 24,000 Btu/h from -5 F all the way to 47 F. THAT BAND IS 'MAX OUTPUT', NOT AN AHRI TEST CONDITION, and the difference is worth knowing at a plan review: AHRI 215213329 certifies SEER2/EER2/HSPF2 and the 47 F and 17 F points ONLY, so the -15 F figure is a manufacturer rating and no certificate stands behind it. NEEP's ccASHP database lists this unit (id 504980) as ENERGY STAR Cold Climate and publishes a -22 F maximum of 18,000 Btu/h at COP 1.36 — the same capacity as Gree's own -22 F row, at a LOWER COP (1.36 against 1.49). Where the two disagree the NEEP figure is the conservative one; the capacity this house sizes against is identical either way. NOTE that this document's COP column is TRUE COP (W/W), unlike the All-Match Extended Ratings whose column is Btu/h per watt. HSPF2 10.0 / SEER2 18.0, ENERGY STAR Cold Climate certified; AHRI 215213329 is the certificate for those three seasonal ratings and the two AHRI points, and its scope stops there. min_operating_temp_f -22 F per the operating envelope. heating_capacity_at_design_btuh is the -15 F read value, so the unit covers its whole operating range unaided: at -22 F it still makes 18,000 Btu/h against a ~16,400 Btu/h load, which is what demotes EQ-S-HP1-STRIP from a design-condition necessity to true sub-lockout backup. WARRANTY IS AN OWNER CALL AND IS NOT SETTLED HERE: Gree's standard terms are 5 years parts / 7 years compressor; the 10/10 tier requires purchase AND installation by a Gree Select Dealer with registration inside 60 days. An owner-supplied unit is NOT void — it carries the standard tier — it simply cannot reach Select. Both tiers require a licensed installing contractor and both exclude labour and faulty installation.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
     # System 2 — Gree Multi Ultra, one 3-port outdoor unit driving three wall-mount heads

@@ -25,7 +25,7 @@ ordinary Darcy–Weisbach and is offered for checking, not for deciding.
 > below the level-2 tap is 200 and above it 54, and the trunk chain is summed whole though
 > `DU-S-ERV-HP-FEED` parallels the path rather than lying on it. Worked without either
 > simplification the system reads **0.380 in. w.g. and 206.4 cfm**, against the graded
-> 0.457 and 203.2. Both readings clear 205; neither reaches 210.
+> 0.459 and 203.0. Both readings clear 205; neither reaches 210.
 
 ---
 
@@ -97,10 +97,14 @@ flow on any radial). The prose in `plan/mep_erv.py` has said for months that PLA
 radial whose drop the installer must check"; this note is where that stops being an
 assertion.
 
-**`DU-A-ERV-R-BED3` at 5 cfm is below the transition band (Re ≈ 1,950).** Colebrook is not
-valid there and the check refuses to publish a friction factor for it; the drop is bounded
-above by the laminar value and is negligible either way. It cannot govern, so nothing turns
-on the refusal.
+**`DU-A-ERV-R-BED3` at 5 cfm is LAMINAR (Re ≈ 1,950), and Colebrook is a turbulent
+correlation.** Six of the 23 radials run below Re 4,000. Where Re < 2,300 the flow is laminar
+and Hagen–Poiseuille is exact, so f = 64/Re = 64/1,953 = 0.0328 and the drop is
+0.0328 × (68.65/0.3333) × 0.00020 = **0.0014 in.** Between 2,300 and 4,000 there is no
+correlation at all and the conservative read is the turbulent value at the top of the band,
+which is what the check uses. Nothing in this band can govern — a 5 cfm branch's velocity
+pressure is two orders below a 210 cfm trunk's — but the regime has to be named rather than
+reported as a gap in the model.
 
 ## 4. The plenum, derived
 
@@ -141,6 +145,15 @@ Each row is authored as three points scaling Q², so the check interpolates rath
 re-derives. **A submitted product with a real test curve replaces the three points and
 nothing else in this note.**
 
+**The check interpolates LINEARLY between the authored points, and a chord across a Q² curve
+sits above it.** That is deliberate and it is why §6's terminal reads 10.6 Pa where the Q²
+value at 25 cfm is 10.16, and the plenum 2.9 Pa where Q² gives 2.66: linear between (20, 6.5)
+and (30, 14.6) is (6.5 + 14.6)/2 = 10.55, and between (120, 1.8) and (210, 5.5) at 146 cfm is
+1.8 + 3.7 × 26/90 = 2.87. Three points is what a component sheet publishes, three points is
+what is authored, and reading a chord between them is the conservative direction. It costs
+this system 0.002 in. w.g. in total. **Adding points to a curve tightens the graded figure;
+it never loosens it.**
+
 ## 6. The two air paths, and which governs
 
 The machine's curve is an **external static per side**, so the governing figure is the worse
@@ -152,30 +165,30 @@ that radial lands in (at the sum of that plenum's radial flows) + every trunk on
 | term | working | Δp (in. w.g.) |
 |---|---|---|
 | `DU-M-ERV-R-PLANT` | §3 | 0.0301 |
-| terminal `REG-T-ERV-PLANT-EXH` | 6.5 x (25/20)² = 10.16 Pa / 249.089 | 0.0408 |
-| plenum `EQ-M-ERV-MAN-EXH` at 146 cfm | 5.5 x (146/210)² = 2.66 Pa / 249.089 | 0.0107 |
+| terminal `REG-T-ERV-PLANT-EXH` | linear at 25 cfm = 10.55 Pa / 249.089 (Q² would give 10.16) | 0.0424 |
+| plenum `EQ-M-ERV-MAN-EXH` at 146 cfm | linear = 2.87 Pa / 249.089 (Q² would give 2.66) | 0.0115 |
 | `DU-ERV-RISER-EXH` | 210 cfm, 32.26 ft + 3 x 4.5, f 0.0225, P_v 0.07131 | 0.1472 |
 | `DU-B-ERV-RET-TRUNK` | 210 cfm, 5.62 ft + 3 x 4.5 | 0.0615 |
 | `DU-ERV-EA` | 210 cfm, 29.32 ft + 5 x 4.5 | 0.1666 |
-| | | **0.4568** |
+| | | **0.4593** |
 
 **SUPPLY — `DU-ERV-OA` → machine → basement trunk → `EQ-B-ERV-MAN-SUP` → `DU-B-ERV-R-PLAY`**
 
 | term | working | Δp (in. w.g.) |
 |---|---|---|
 | `DU-B-ERV-R-PLAY` | §3 | 0.0134 |
-| terminal `REG-T-ERV-SUP` | 4.0 x (30/20)² = 9.00 Pa / 249.089 | 0.0361 |
-| plenum `EQ-B-ERV-MAN-SUP` at 60 cfm | 0.45 Pa / 249.089 | 0.0018 |
+| terminal `REG-T-ERV-SUP` | linear at 30 cfm = the curve's own point, 9.00 Pa / 249.089 | 0.0361 |
+| plenum `EQ-B-ERV-MAN-SUP` at 60 cfm | the curve's own point, 0.50 Pa / 249.089 | 0.0020 |
 | `DU-ERV-OA` | 210 cfm, 13.99 ft + 6 x 4.5 | 0.1318 |
 | `DU-B-ERV-SUP-TRUNK` | 210 cfm, 2.78 ft + 1 x 4.5 | 0.0234 |
 | `DU-ERV-RISER-SUP` | 210 cfm, 29.48 ft + 3 x 4.5 | 0.1382 |
 | `DU-S-ERV-HP-FEED` | 100 cfm, 44.58 ft + 7 x 4.5 | 0.0633 |
-| | | **0.4081** |
+| | | **0.4083** |
 
-**The extract side governs at 0.4568 in. w.g.** Off the authored fan curve, between
+**The extract side governs at 0.4593 in. w.g.** Off the authored fan curve, between
 (0.4, 206) and (0.5, 201):
 
-> 206 − (0.0568 / 0.1) x 5 = **203.2 cfm delivered**
+> 206 − (0.0593 / 0.1) x 5 = **203.0 cfm delivered**
 
 against 205 cfm required by MN 1322 R403.5 and 210 cfm of design intent. **The system clears
 the code rate by 1.9 % and falls 3.2 % short of the intent.**
@@ -246,7 +259,7 @@ measured one.
   carries 200 cfm below the level-2 tap and 54 above it; `DU-ERV-RISER-SUP` likewise. The
   authored `design_cfm` is what is graded, because the tap elevation is not a typed fact and
   inferring one would be the check inventing a number. Worked segmented, the extract riser
-  costs 0.0700 in. instead of 0.1472 and the path total falls to **0.3796 in. / 206.4 cfm**.
+  costs 0.0700 in. instead of 0.1472 and the path total falls to **0.382 in. / 206.4 cfm**.
 - **The trunk chain is summed whole.** `DU-S-ERV-HP-FEED` is a parallel branch off the
   supply riser, not a segment of the path to `DU-B-ERV-R-PLAY`; summing it over-counts the
   supply path by 0.0633 in. The supply path does not govern either way.

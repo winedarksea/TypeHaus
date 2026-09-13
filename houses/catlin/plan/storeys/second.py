@@ -1108,11 +1108,20 @@ FLOOR_HEAT = [
               #
               # ** RM-S-BATH1 HAS NO SUPPLY REGISTER EITHER. ** REG-S-EXH1 is ERV *exhaust*;
               # there is no REG-S-HP-BATH1. So this mat, like RM-M-BATH2's, is the room's ONLY
-              # heat source. At Schluter's 18.6 BTU/h/ft2 delivered it puts out ~497 BTU/h.
-              # The room's design loss has NOT been computed here (RM-M-BATH2's was, and came
-              # to ~303 BTU/h over a room 15% smaller) -- so this one looks comfortable rather
-              # than proven, and it is worth an hour with the block load before the permit set.
-              watts=338,
+              # heat source — which `mep.room_heat_source` now grades rather than this comment
+              # wondering about.
+              #
+              # ** AND IT IS COMPUTED NOW (2026-09-12, BLD-08). ** This block used to say the
+              # room's design loss "has NOT been computed here" and quoted ~497 Btu/h off an
+              # 18.6 figure. Both halves are replaced: 18.6 was Schluter's 82 F EXAMPLE, and
+              # the design point is 84 F floor over 72 F operative, which their own
+              # Q = 8.92 x dT^1.1 W/m2 puts at 22.8 Btu/h/ft2. The load is worked in
+              # notes/room_heat_loss_baths.md and by `estimate_block_load(rooms=...)`:
+              #     delivered = min(27.31 ft2 x 22.8, 338 W x 3.412) = min(623, 1,153) = 623
+              #     load      = 591 Btu/h at -15 F
+              # so this room is covered with about 5% to spare. RM-M-BATH2 is NOT, and the
+              # reason is heated AREA, not wattage — see the note.
+              watts=338, delivered_btuh_per_ft2=22.8,
               stat=pt(ft(1, 6), ft(32))),
 ]
 
