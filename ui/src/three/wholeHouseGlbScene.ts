@@ -69,6 +69,10 @@ export function applyWholeHouseGlb(
     world.decompose(mesh.position, mesh.quaternion, mesh.scale);
     mesh.castShadow = true;
     mesh.receiveShadow = true;
+    // The engine's sets, unrefined: the glTF extras stamp `framing`, and the Views panel's
+    // framing FACETS (model/tradeVisibility.ts) are derived from a layer function this path
+    // never sees. Whoever promotes the GLB has to carry the function into the extras first,
+    // or "just the wooden sticks" comes back as a plywood box.
     mesh.userData.trades = [...assignment.trades];
     if (assignment.uid) {
       const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];

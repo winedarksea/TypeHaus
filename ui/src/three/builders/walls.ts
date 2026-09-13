@@ -6,7 +6,7 @@
 // raked top of a gable or ToRoof wall) rather than a straight extrusion of a resolved polygon.
 import * as THREE from "three";
 import { layerTrades, primaryTrade, wallTrades } from "../../model/tradeVisibility";
-import type { DoorOperation, MaterialSpec, Opening, Wall } from "../../model/types";
+import type { DoorOperation, Layer, MaterialSpec, Opening, Wall } from "../../model/types";
 import {
   authoredAppearance, finishBaseColor, materialColor, type ResolvedNordicPalette,
 } from "../../nordic/palette";
@@ -60,6 +60,30 @@ export function rakedTopAt(w: Wall, x: number, y: number): number {
   return start + (end - start) * t;
 }
 
+/** Whether a resolved layer gets an extruded prism of its own in the 3-D viewer.
+ *
+ * Cavity fill shares its host structure layer's polygon — a solid there would only z-fight
+ * with the studs it lives between.
+ *
+ * A FRAMED FURRING band is not a plane. Furring is sticks at a spacing — catlin's girts, a
+ * sauna's 1x4 strapping, a resilient channel — and the solver has already emitted every one of
+ * them into the wall's own `members`, which this builder draws beside the bands. Extruding the
+ * band as well drew a solid prism over the sticks it stands for AND, on EXT_2X6, closed the
+ * 1/2" vent gap the girts stand off the foam on, so a vented rainscreen read as sheet furring.
+ * Only the FRAMED ones: a furring layer with no FramingSpec is a genuine continuous sheet and
+ * still has a solid to draw.
+ *
+ * Structure and sheathing bands deliberately stay. A wall body has to be opaque from outside,
+ * and their double-draw is answered by the `framing:*` facets (model/tradeVisibility.ts) —
+ * which a furring band on a wall no longer reaches.
+ *
+ * Depth accounting must NOT use this: the girts are 1 1/2" of real wall (→ `exteriorFace`).
+ */
+export function layerDrawsBandSolid(layer: Pick<Layer, "function" | "is_cavity" | "framed">) {
+  if (layer.is_cavity) return false;
+  return !(layer.framed && layer.function.trim().toLowerCase() === "furring");
+}
+
 // Extrude a layer polygon between z0 and a per-vertex raked top (rather than a flat height) —
 // a wall under a sloped roof (gable end, ToRoof) must stop at its actual rake, or its full
 // bounding-height rectangle engulfs the roof geometry and hides it from outside (#WP-roof-hide).
@@ -87,9 +111,7 @@ export function buildWall(
     const bandTrades = layerTrades(ly);
     const layerFirstChildIndex = body.children.length;
     if (ly.polygon.length < 3) continue;
-    // Cavity fill shares its host structure layer's polygon — extruding it would only
-    // z-fight with the studs it lives between.
-    if (ly.is_cavity) continue;
+    if (!layerDrawsBandSolid(ly)) continue;
     const appearance = authoredAppearance(ly.material, materials);
     // A metal panel finish is DECLARED first and guessed second. `metalPanelProfileForFinish`
     // reads the material's authored `finish` — "ribbed-panel" for the house's exposed-fastener

@@ -5,7 +5,7 @@
 import type { Trade } from "../state/vocabulary";
 import type { CanvasObject, Layer } from "./types";
 import {
-  anyTradeVisible, canvasObjectTrades, layerTrades, type VisibleTrades,
+  anyTradeVisible, baseTrade, canvasObjectTrades, layerTrades, type VisibleTrades,
 } from "./tradeVisibility";
 
 export {
@@ -14,15 +14,22 @@ export {
 } from "./tradeVisibility";
 
 /**
- * Whether a resolved wall/roof layer should draw. Cavity fill is judged by its *own* trade
- * (insulation), not its structure host: hiding Framing to look at the sheathing must not take
- * the batts with it, and hiding Insulation is exactly how the garage gable-end question — is
- * that outermost band the weather skin or cavity fill? — gets settled.
+ * Whether a resolved wall/roof layer should draw **in the plan**. Cavity fill is judged by its
+ * *own* trade (insulation), not its structure host: hiding Framing to look at the sheathing
+ * must not take the batts with it, and hiding Insulation is exactly how the garage gable-end
+ * question — is that outermost band the weather skin or cavity fill? — gets settled.
+ *
+ * The framing FACETS are collapsed to their trade here, and only here. They exist because the
+ * 3D viewer draws a wall's structure/furring/sheathing bands as solid prisms *over* the very
+ * sticks a framing view wants to see, and they default off for that reason. The plan has no
+ * such problem — it is a horizontal cut, every band is a stripe beside its neighbours — and
+ * honouring the default there would open a hole through the middle of every wall at the
+ * representations that draw no members.
  */
 export function isLayerVisible(
   layer: Pick<Layer, "function" | "trades">, visibleTrades: VisibleTrades,
 ): boolean {
-  return anyTradeVisible(layerTrades(layer), visibleTrades);
+  return anyTradeVisible(layerTrades(layer).map(baseTrade), visibleTrades);
 }
 
 /** The primary trade of a placeable, for consumers that file under one. */

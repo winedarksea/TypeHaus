@@ -8,11 +8,11 @@
 // replaces was a second axis over the same bands — a layer's function IS a trade now.
 import { useState } from "react";
 import { useStore } from "../../state/store";
-import { ALL_TRADES, type Trade } from "../../state/vocabulary";
+import type { Trade } from "../../state/vocabulary";
 import { TRADE_SURFACES } from "../../model/visibility";
 import {
-  expandRolePreset, groupState, TRADE_GROUPS, TRADE_LABEL, type RolePreset,
-  type VisibleTrades,
+  ALL_VISIBILITY_KEYS, baseTrade, expandRolePreset, groupState, TRADE_GROUPS, type RolePreset,
+  type VisibilityKey, visibilityKeyLabel, visibilityKeysOf, type VisibleTrades,
 } from "../../model/tradeVisibility";
 import { TriStateCheckbox } from "../ui/TriStateCheckbox";
 import { Icon } from "../../icons/Icon";
@@ -30,13 +30,17 @@ export const ROLE_PRESETS: Record<string, RolePreset> = {
 };
 
 export function roleMatches(role: string, visible: VisibleTrades): boolean {
-  const wanted = new Set(expandRolePreset(ROLE_PRESETS[role]));
-  return ALL_TRADES.every((trade) => visible[trade] === wanted.has(trade));
+  const wanted = new Set<VisibilityKey>(expandRolePreset(ROLE_PRESETS[role]));
+  return ALL_VISIBILITY_KEYS.every((key) => visible[key] === wanted.has(key));
 }
 
-/** The chips a group shows: every trade that draws somewhere. `general` draws nowhere. */
-function chipTrades(trades: readonly Trade[]): Trade[] {
-  return trades.filter((trade) => TRADE_SURFACES[trade].model || TRADE_SURFACES[trade].plan);
+/** The chips a group shows: every visibility key that draws somewhere. `general` draws
+ *  nowhere, and `framing` shows as its facets — the sticks and the sheathing separately,
+ *  which is the only way to look at a stud wall without a plywood skin over it. */
+function chipKeys(trades: readonly Trade[]): VisibilityKey[] {
+  return trades
+    .filter((trade) => TRADE_SURFACES[trade].model || TRADE_SURFACES[trade].plan)
+    .flatMap(visibilityKeysOf);
 }
 
 export function DisciplinesGrid({ viewMode }: { viewMode: "2d" | "split" | "3d" }) {
@@ -61,12 +65,12 @@ export function DisciplinesGrid({ viewMode }: { viewMode: "2d" | "split" | "3d" 
           when its checkbox does nothing on the plan side. */}
       <div className="trade-groups">
         {TRADE_GROUPS.map((group) => {
-          const chips = chipTrades(group.trades);
+          const chips = chipKeys(group.trades);
           if (chips.length === 0) return null;
           const state = groupState(group.id, visibleTrades);
-          const on = chips.filter((trade) => visibleTrades[trade]).length;
+          const on = chips.filter((key) => visibleTrades[key]).length;
           const open = expanded.has(group.id);
-          const planOnly3D = chips.every((trade) => !TRADE_SURFACES[trade].plan);
+          const planOnly3D = chips.every((key) => !TRADE_SURFACES[baseTrade(key)].plan);
           return (
             <div key={group.id} className={`trade-group${state === "off" ? "" : " on"}`}>
               <div className="trade-chip trade-group-header"
@@ -90,14 +94,15 @@ export function DisciplinesGrid({ viewMode }: { viewMode: "2d" | "split" | "3d" 
               </div>
               {open && chips.length > 1 && (
                 <div className="trade-grid trade-group-chips">
-                  {chips.map((trade) => {
-                    const chipPlanOnly3D = !TRADE_SURFACES[trade].plan;
+                  {chips.map((key) => {
+                    const chipPlanOnly3D = !TRADE_SURFACES[baseTrade(key)].plan;
+                    const label = visibilityKeyLabel(key);
                     return (
-                      <label key={trade} className={`trade-chip${visibleTrades[trade] ? " on" : ""}`}
-                        title={chipPlanOnly3D ? `${TRADE_LABEL[trade]} — drawn in 3D only` : TRADE_LABEL[trade]}>
-                        <input type="checkbox" checked={visibleTrades[trade]}
-                          onChange={(e) => setTradeVisible(trade, e.target.checked)} />
-                        {TRADE_LABEL[trade]}
+                      <label key={key} className={`trade-chip${visibleTrades[key] ? " on" : ""}`}
+                        title={chipPlanOnly3D ? `${label} — drawn in 3D only` : label}>
+                        <input type="checkbox" checked={visibleTrades[key]}
+                          onChange={(e) => setTradeVisible(key, e.target.checked)} />
+                        {label}
                         {chipPlanOnly3D && <span className="trade-surface" aria-label="3D only">3D</span>}
                       </label>
                     );

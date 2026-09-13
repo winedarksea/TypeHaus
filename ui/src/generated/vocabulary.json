@@ -20,6 +20,25 @@
     "sheathing": "framing",
     "structure": "framing"
   },
+  "memberCategoryTrades": {
+    "air_gap": "siding",
+    "airgap": "siding",
+    "cladding": "siding",
+    "corner_trim": "siding",
+    "fascia": "siding",
+    "furring": "siding",
+    "gutter": "drainage",
+    "insulation": "insulation",
+    "landing": "stairs",
+    "landing_framing": "stairs",
+    "newel": "stairs",
+    "ridge_cap": "roofing",
+    "riser": "stairs",
+    "soffit": "siding",
+    "stringer": "stairs",
+    "tread": "stairs",
+    "winder": "stairs"
+  },
   "memberColors": {
     "air_gap": 13425126,
     "airgap": 13425126,

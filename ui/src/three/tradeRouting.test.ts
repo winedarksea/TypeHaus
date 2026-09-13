@@ -3,7 +3,7 @@
 // tagged fails here rather than in the browser.
 import * as THREE from "three";
 import type { Wall } from "../model/types";
-import { allVisibleTrades, onlyTrades } from "../model/tradeVisibility";
+import { allVisibleTrades, defaultVisibleTrades, onlyTrades } from "../model/tradeVisibility";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 import { ALL_TRADES, type Trade } from "../state/vocabulary";
 import { applyTradeVisibility, tagTrades } from "./builders/registry";
@@ -31,6 +31,7 @@ function wall(): Wall {
     layers: [
       band("cladding", "cladding", "board-batten-24", ["siding"]),
       band("foam", "insulation", "xps", ["insulation"]),
+      band("ply", "sheathing", "struct-1-plywood", ["framing"]),
       band("studs", "structure", "spf", ["framing"]),
       band("board", "finish", "gwb", ["drywall"]),
     ],
@@ -45,8 +46,9 @@ export function runTradeRoutingTests() {
   buildWall(tradeGroups, wall(), [], [0, 0], "schematic", RESOLVED_NORDIC_PALETTE.light,
     [], new Map());
   const meshes = (trade: Trade) => tradeGroups[trade].children.filter((c) => c instanceof THREE.Mesh);
-  // The body files under the wall's primary trade; every band carries its own set.
-  assert(meshes("siding").length === 4, "Four bands build into the siding container");
+  // The body files under the wall's primary trade; every band carries its own set. A wall
+  // with no lumber of its own keeps its structure band — nothing else would stand there.
+  assert(meshes("siding").length === 5, "Five bands build into the siding container");
   const byTrade = (trade: string) => meshes("siding").filter((m) => (m.userData.trades as string[]).includes(trade));
   assert(byTrade("insulation").length === 1 && byTrade("drywall").length === 1,
     "Each band is tagged with its own trade");
@@ -66,6 +68,22 @@ export function runTradeRoutingTests() {
   tagTrades(tradeGroups.siding, 0, ["concrete"]);
   assert((extra.userData.trades as string[]).join() === "concrete", "Untagged children take the outer set");
   assert(byTrade("insulation").length === 1, "Tagged children keep theirs");
+
+  // --- the framing view --------------------------------------------------------------
+  // The two solid bands a framing view has to be able to drop — the structure prism standing
+  // for the studs and the sheathing nailed over them — ride facets of their own, not the bare
+  // `framing` token the sticks do. Before that, "just the wooden sticks" drew a solid box.
+  assert(!meshes("siding").some((m) => (m.userData.trades as string[]).join() === "framing"),
+    "No wall band is left on the bare framing token");
+  assert(byTrade("framing:structure").length === 1 && byTrade("framing:sheathing").length === 1,
+    "The structure and sheathing bands each take their own facet");
+
+  // Just the wooden sticks: framing on, both of its facets off — which is the default.
+  const sticksOnly = defaultVisibleTrades();
+  for (const trade of ALL_TRADES) if (trade !== "framing") sticksOnly[trade] = false;
+  applyTradeVisibility(root, sticksOnly);
+  assert(meshes("siding").every((m) => !m.visible), "Not one wall band draws");
+  applyTradeVisibility(root, allVisibleTrades());
 
   // Multi-trade sets draw while any member is on.
   const shared = new THREE.Mesh();

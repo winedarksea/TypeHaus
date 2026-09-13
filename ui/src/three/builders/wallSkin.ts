@@ -10,7 +10,7 @@
 // view in 3D. Split out of builders/walls.ts, which is about the layer stack.
 import type * as THREE from "three";
 import type { MaterialSpec, Member } from "../../model/types";
-import { memberTrades } from "../../model/tradeVisibility";
+import { memberTrades, type VisibilityKey } from "../../model/tradeVisibility";
 import type { ResolvedNordicPalette } from "../../nordic/palette";
 import { buildMembers, isSkinMember, type SkinLine } from "../members";
 import type { PlanCenter } from "../planGeometry";
@@ -18,8 +18,9 @@ import type { Trade } from "../../state/vocabulary";
 import { tagTrades } from "./registry";
 
 /** The trade set a wall member rides: lumber and furring closures are framing; a skin band
- *  continues its layer's trade. */
-export function memberTradeSet(member: Member): Trade[] {
+ *  continues its layer's trade (a sheathing closure takes the `framing:sheathing` facet with
+ *  it, so dropping the sheathing drops the band that continues it past the top plate). */
+export function memberTradeSet(member: Member): VisibilityKey[] {
   if (!isSkinMember(member)) return ["framing"];
   const trades = memberTrades(member);
   return trades.length === 1 && trades[0] === "siding" && member.category === "furring"
@@ -37,7 +38,8 @@ export function buildWallSkinMembers(
   tagTrades(tradeGroups.framing, lumberFirst, ["framing"]);
   // Bucketed by trade set: a truss block and a corner-trim run both name a material and
   // answer to different trades, and a merged mesh has one visibility flag.
-  const skinByBucket = new Map<string, { parent: THREE.Group; trades: Trade[]; members: Member[] }>();
+  const skinByBucket = new Map<string,
+    { parent: THREE.Group; trades: VisibilityKey[]; members: Member[] }>();
   for (const member of members) {
     if (!member.material) continue;
     const trades = memberTradeSet(member);

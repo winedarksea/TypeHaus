@@ -173,10 +173,13 @@ def test_a_laid_deck_in_a_slab_row_needs_its_material_to_say_so() -> None:
     composite plank on 2x8 joists alike, so this is the only case the trade table cannot
     settle on its own — and silence is not evidence, so a row with no assembly stays a
     pour."""
+    # A deck plank is the finished walking surface (flooring, 2026-09-13): laid last, over a
+    # frame the carpenter already signed off, and priced against LVP and oak. The joists and
+    # the rim under it are still the framer's.
     assert cost_code("concrete", "slab:PORCH_DECK_COMPOSITE",
-                     material="composite-deck").trade == "framing"
+                     material="composite-deck").trade == "flooring"
     assert cost_code("concrete", "slab:BALCONY_DECK_ALUMINUM",
-                     material="aluminum-deck").trade == "framing"
+                     material="aluminum-deck").trade == "flooring"
     # And a slab that is neither a pour nor a deck files where its material says.
     # FPSF wing foam is the foundation contractor's (adjudicated 2026-09-12).
     assert cost_code("concrete", "slab:SG_FROST_WING_XPS1", material="xps").trade == "concrete"

@@ -59,6 +59,7 @@ from typehaus.emit.gltf.palette import _PALETTE
 from typehaus.emit.trade_rules import (
     CANVAS_DOMAIN_TRADE,
     LAYER_FUNCTION_TRADE,
+    MEMBER_CATEGORY_TRADE,
     RECORD_FAMILY_TRADES,
     solid_trades,
 )
@@ -105,6 +106,11 @@ def build_vocabulary_manifest() -> dict[str, object]:
         "tradeGroups": [{"id": gid, "label": label, "trades": list(trades)}
                         for gid, label, trades in TRADE_GROUPS],
         "layerFunctionTrades": dict(LAYER_FUNCTION_TRADE),
+        # Member categories that are NOT layer functions — the derived eave trim (fascia,
+        # soffit, corner trim), the gutter, the ridge cap, the stair builder's pieces. The
+        # viewer graded a member by the layer-function map alone, so a garage eave soffit
+        # panel fell through to "framing" and hid with the sticks instead of the siding.
+        "memberCategoryTrades": dict(MEMBER_CATEGORY_TRADE),
         "canvasDomainTrades": dict(CANVAS_DOMAIN_TRADE),
         "solidTradeSets": {category: list(solid_trades(category))
                            for category in SOLID_CATEGORY_TRADE},

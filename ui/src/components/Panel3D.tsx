@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { useStore } from "../state/store";
 import { ALL_TRADES, DEFAULT_EARTH_OPACITY, type SelectionKind, type Trade } from "../state/vocabulary";
-import { allVisibleTrades, anyTradeVisible, type VisibleTrades } from "../model/tradeVisibility";
+import { anyTradeVisible, defaultVisibleTrades, type VisibleTrades } from "../model/tradeVisibility";
 import type { Model } from "../model/types";
 import type { EngineClient } from "../engine/EngineClient";
 import { RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
@@ -268,7 +268,7 @@ function createScene(
   // Trade visibility lives on the meshes, which setModel rebuilds — unlike the trade groups,
   // which persist. Remembering the filter here is what lets a rebuild land with the user's
   // filter still applied.
-  let visibleTrades: VisibleTrades = allVisibleTrades();
+  let visibleTrades: VisibleTrades = defaultVisibleTrades();
   // Ground opacity is remembered here for the same reason: the sheet is one of the meshes a
   // rebuild throws away, so populateScene reads this rather than the default.
   let earthOpacity = DEFAULT_EARTH_OPACITY;

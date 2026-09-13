@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "../state/store";
-import { ALL_TRADES } from "../state/vocabulary";
-import { groupState, TRADE_GROUPS, TRADE_LABEL } from "../model/tradeVisibility";
+import {
+  ALL_VISIBILITY_KEYS, groupState, TRADE_GROUPS, visibilityKeyLabel, visibilityKeysOf,
+} from "../model/tradeVisibility";
 import { HIDDEN_REPORTS } from "../state/public";
 
 // Command palette (Phase 4): fuzzy-searchable actions + recent commands. The registry is
@@ -123,15 +124,18 @@ export function CommandPalette() {
         id: `group-${group.id}`,
         title: `Toggle ${group.label} visibility`,
         group: "Isolate",
-        run: () => setTradesVisible(group.trades, groupState(group.id, visibleTrades) !== "on"),
+        run: () => setTradesVisible(group.trades.flatMap(visibilityKeysOf),
+          groupState(group.id, visibleTrades) !== "on"),
       });
     }
-    for (const trade of ALL_TRADES) {
+    // Keys, not trades: `framing` splits into the sticks and the sheathing, and the palette
+    // is where a reader who knows what they want types "sheathing" and gets it.
+    for (const key of ALL_VISIBILITY_KEYS) {
       list.push({
-        id: `trade-${trade}`,
-        title: `Toggle ${TRADE_LABEL[trade].toLowerCase()} visibility`,
+        id: `trade-${key}`,
+        title: `Toggle ${visibilityKeyLabel(key).toLowerCase()} visibility`,
         group: "Isolate",
-        run: () => setTradeVisible(trade, !visibleTrades[trade]),
+        run: () => setTradeVisible(key, !visibleTrades[key]),
       });
     }
     // Keep an unused reference so a shading toggle reads intent; threeMode drives the label.

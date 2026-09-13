@@ -11,13 +11,23 @@ from __future__ import annotations
 
 from typing import Any
 
-from typehaus.emit.trade_rules import RECORD_FAMILY_TRADES, assembly_trades, solid_trades
+from typehaus.emit.trade_rules import (
+    RECORD_FAMILY_TRADES,
+    assembly_trades,
+    layer_trade,
+    solid_trades,
+)
 from typehaus.model.floors import FloorOpening, FloorSystem
 from typehaus.model.spatial import Stair
 from typehaus.resolve.assembly_material import solid_material_ref
 from typehaus.resolve.geometry_build import wall_trades
 from typehaus.resolve.model import ResolvedModel
-from typehaus.server.model_json_shared import _layer_json, _member_json, _provenance
+from typehaus.server.model_json_shared import (
+    _enum_value,
+    _layer_json,
+    _member_json,
+    _provenance,
+)
 from typehaus.source.provenance import Provenance
 
 
@@ -214,12 +224,25 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
              "layer_edge_setbacks": [dict(entry) for entry in roof.layer_edge_setbacks],
              "ridge_direction": roof.ridge_direction, "assembly": roof.assembly,
              "trades": list(assembly_trades(model.plan, roof.assembly, "roof")),
+             # Per-layer trades, in the assembly's own layer order and graded at ROOF scope.
+             # The viewer draws the roof's stack from the CATALOG assembly, whose layers carry
+             # no scope and no trade of their own, so it was grading the standing seam by
+             # function alone -- and `cladding` with nobody to say "roof" is siding. The whole
+             # metal roof answered to the wall's siding chip.
+             "layer_trades": _roof_layer_trades(model.plan, roof.assembly),
              "surface_area_m2": roof.surface_area_m2,
              "members": [_member_json(member) for member in roof.members],
              "provenance": _provenance(provenance, roof.tag)}
             for roof in sorted(model.roofs, key=lambda item: item.uid)
         ],
     }
+
+
+def _roof_layer_trades(plan, assembly_tag: str | None) -> list[str]:
+    """One trade per catalog layer of a roof assembly, at roof scope."""
+    assembly = plan.library.resolve_assembly(assembly_tag) if assembly_tag else None
+    return [layer_trade(_enum_value(layer.function), "roof", layer.material_ref)
+            for layer in (getattr(assembly, "layers", ()) or ())]
 
 
 def framing_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str, Any]:
@@ -256,7 +279,12 @@ def framing_json(model: ResolvedModel, provenance: Provenance | None) -> dict[st
         "floors": [
             {"uid": floor.uid, "tag": floor.tag, "storey": floor.storey,
              "direction": floor.direction,
+             # `trades` so the viewer can tell a plywood deck (sheathing, hidden with the
+             # rest of the framing skin) from the porch's composite plank and the balcony's
+             # aluminium one, which are the finished walking surface and always draw.
              "subfloor": ({"material": authored.subfloor.material_ref,
+                           "trades": [layer_trade("sheathing", "floor",
+                                                  authored.subfloor.material_ref)],
                             "thickness_m": authored.subfloor.thickness.meters}
                            if isinstance((authored := model.plan.by_tag(floor.tag)), FloorSystem)
                            and authored.subfloor is not None else None),

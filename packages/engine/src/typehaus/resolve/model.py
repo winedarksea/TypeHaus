@@ -77,6 +77,12 @@ class ResolvedLayer:
     # the resolved layer because ``FramingSpec`` itself does not survive into ``model.json``,
     # and the viewer is where a board direction is finally visible.
     board_run: str | None = None
+    # Whether the assembly gives this layer a ``FramingSpec`` — i.e. the band is really
+    # sticks at a spacing, and the solver has emitted the members to prove it. ``FramingSpec``
+    # itself does not survive into ``model.json``, and the 3-D viewer is the one consumer that
+    # draws the band AND the members at the same time: an extruded prism over girts it stands
+    # for both hides them and seals the vent gap behind them (→ ui builders/walls.ts).
+    framed: bool = False
 
     def band(self, wall: ResolvedWall) -> tuple[float, float]:
         """This layer's absolute (z0, z1), falling back to the wall's where unbanded."""

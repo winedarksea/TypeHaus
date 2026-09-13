@@ -298,6 +298,7 @@ def resolve_wall_geometry(plan: PlanModel, wall, storey_tag: str, z0: float,
                 slot=getattr(layer, "slot", None),
                 band_spec=spec,
                 board_run=_board_run(stack, index),
+                framed=layer.framing is not None,
             )
         )
         # One resolved layer per fill. A bay may hold several in series (flash-and-batt),

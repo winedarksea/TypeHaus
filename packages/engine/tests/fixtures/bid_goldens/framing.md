@@ -4,7 +4,7 @@
 **Trade:** Framing  
 **Engine:** 0.1.1  
 **Model hash:** fde3c8c96f42f522  
-**Lines:** 115
+**Lines:** 113
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -53,10 +53,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Aluminum deck board (Wahoo AridDeck-style), 1 1/2" subfloor (aluminum-deck:subfloor) | 207.8 | SF | 7 sheets 4x8 over 207.8 SF net; 7.0 sheets in the takeoff | building |
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 22 | sheets 4x8 | 22 sheets 4x8 over 690.2 SF net | building |
 | 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 5.0 SF net | building |
-| Composite decking (capped PVC/wood), 1" subfloor (composite-deck:subfloor) | 205.8 | SF | 7 sheets 4x8 over 205.8 SF net; 7.0 sheets in the takeoff | building |
 | 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 100 | sheets 4x8 | 100 sheets 4x8 over 3186.1 SF net | building |
 | SPF framing lumber, 3/4" ceiling (spf:ceiling) | 5 | sheets 4x8 | 5 sheets 4x8 over 159.2 SF net | building |
 | SPF framing lumber, 11 1/4" ceiling (spf:ceiling) | 3 | sheets 4x8 | 3 sheets 4x8 over 91.7 SF net | building |
@@ -213,10 +211,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | — |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | — |
 | hanger — hanger board (hanger) | — |
-| Aluminum deck board (Wahoo AridDeck-style), 1 1/2" subfloor (aluminum-deck:subfloor) | — |
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | — |
 | 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | — |
-| Composite decking (capped PVC/wood), 1" subfloor (composite-deck:subfloor) | — |
 | 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | — |
 | SPF framing lumber, 3/4" ceiling (spf:ceiling) | — |
 | SPF framing lumber, 11 1/4" ceiling (spf:ceiling) | — |

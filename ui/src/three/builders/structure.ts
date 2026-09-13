@@ -9,7 +9,7 @@ import type {
   Brace, Catalog, FootingBedding, Floor, LightRun, Member, Paneling, Roof, Room, Solid,
   SoffitFraming, SolarPanel, Stair, Vec2,
 } from "../../model/types";
-import { layerTrades, memberTrades, primaryTrade } from "../../model/tradeVisibility";
+import { layerTrades, memberTrades, primaryTrade, type VisibilityKey } from "../../model/tradeVisibility";
 import type { Trade } from "../../state/vocabulary";
 import {
   authoredAppearance, finishBaseColor, floorSurface, materialColor, type MaterialAppearance,
@@ -219,8 +219,17 @@ export function buildFloor(parent: THREE.Group, floor: Floor, center: PlanCenter
       center,
     );
     if (!geometry) return;
-    parent.add(new THREE.Mesh(geometry,
-      standardMaterial(new THREE.Color(materialColor(floor.subfloor.material, palette)), mode)));
+    // A plywood subfloor is sheathing laid flat and takes the sheathing facet, so dropping it
+    // shows the joist field under it — the same gesture that peels a wall down to its studs.
+    // A deck board is NOT: the porch's composite plank and the balcony's aluminium plank are
+    // the finished walking surface, and filing them as sheathing hid both of them the moment
+    // that facet started off. The material decides; only one that says nothing falls through.
+    const deck = new THREE.Mesh(geometry,
+      standardMaterial(new THREE.Color(materialColor(floor.subfloor.material, palette)), mode));
+    deck.userData.trades = layerTrades({
+      function: "sheathing", trades: floor.subfloor.trades,
+    } as Parameters<typeof layerTrades>[0]);
+    parent.add(deck);
   }
   registerSelectable(parent, firstChildIndex, floor.uid, "floor", picks, byUid);
   // Joists are framing, and belong under the framing toggle with every other stick in the
@@ -396,7 +405,7 @@ function bandAxis(outline: readonly Vec2[]): [Vec2, Vec2] {
 function buildSkinByTrade(group: THREE.Group, members: Member[], ownerUid: string,
   center: PlanCenter, mode: "nordic" | "schematic", palette: ResolvedNordicPalette,
   catalog: Catalog | undefined, skinLines?: readonly SkinLine[]) {
-  const byTrades = new Map<string, { trades: Trade[]; members: Member[] }>();
+  const byTrades = new Map<string, { trades: VisibilityKey[]; members: Member[] }>();
   for (const member of members) {
     const trades = memberTrades(member);
     const key = trades.join("+");
@@ -430,6 +439,12 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
   const setbacks = new Map((roof.layer_edge_setbacks ?? []).map((e) => [e.layer, e]));
   const stack = layers.length ? layers
     : [{ name: "roofing", function: "cladding", material: "standing-seam", thickness_m: 0.05 }];
+  // The engine's verdict per catalog layer, by identity into the assembly's own list — the
+  // stack above is `aboveStructureLayers`, a FILTERED view of it, so the indices differ.
+  // Without this the standing seam graded on its function alone and landed on the wall's
+  // siding chip; a roof's cladding is the roofer's.
+  const roofLayerTrade = new Map<unknown, string>(
+    (assembly?.layers ?? []).map((layer, index) => [layer, roof.layer_trades?.[index] ?? ""]));
 
   let base = 0;
   for (const layer of stack) {
@@ -475,7 +490,13 @@ export function buildRoof(parent: THREE.Group, roof: Roof, center: PlanCenter,
       });
     if (seam) applyStandingSeamRoofUv(geo, roof, center, seamProfile);
     const mesh = makeSurfaceMesh(geo, mat);
-    mesh.userData.trades = layerTrades({ function: layer.function, trades: undefined });
+    // Through `layerTrades` rather than used raw, so the roof's own sheathing deck takes the
+    // framing FACET the wall's does. Without that the deck and the rafter band sat on the
+    // bare `framing` token, and turning Roof off left the whole shell standing.
+    const stamped = roofLayerTrade.get(layer);
+    mesh.userData.trades = layerTrades({
+      function: layer.function, trades: stamped ? [stamped] : undefined,
+    } as Parameters<typeof layerTrades>[0]);
     parent.add(mesh);
     base = top;
   }

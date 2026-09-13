@@ -20,7 +20,9 @@ import { loadBundledHouse, pickHouseDirectory } from "../engine/openHouse";
 // and keep the HttpEngineClient default.
 const PWA_STANDALONE = import.meta.env.VITE_PWA_STANDALONE === "1";
 import type { Model, Severity } from "../model/types";
-import { allVisibleTrades, onlyTrades, type VisibleTrades } from "../model/tradeVisibility";
+import {
+  allVisibleTrades, defaultVisibleTrades, onlyTrades, type VisibilityKey, type VisibleTrades,
+} from "../model/tradeVisibility";
 import { locateUid } from "./locate";
 import type { PanelId } from "./panels";
 import { createMutationActions, type MutationActions } from "./mutations";
@@ -28,7 +30,7 @@ import { createSiteSlice, type SiteSlice } from "./site";
 import {
   DEFAULT_EARTH_OPACITY,
   type Conflict, type DetailView, type DocumentsTab, type LabelMode, type Lens, type Representation, type Selection,
-  type ThreeMode, type Toast, type Tool, type Trade,
+  type ThreeMode, type Toast, type Tool,
   type ViewMode, type ViewTransform, type Workspace,
 } from "./vocabulary";
 
@@ -114,10 +116,10 @@ export interface StoreState extends MutationActions, SiteSlice {
   setViewMode: (v: ViewMode) => void;
   setThreeMode: (m: ThreeMode) => void;
   setLabelMode: (v: LabelMode) => void;
-  setTradeVisible: (trade: Trade, visible: boolean) => void;
+  setTradeVisible: (key: VisibilityKey, visible: boolean) => void;
   // Several at once (a group header), and the isolation gesture: exactly these, nothing else.
-  setTradesVisible: (trades: readonly Trade[], visible: boolean) => void;
-  showOnlyTrades: (trades: readonly Trade[]) => void;
+  setTradesVisible: (keys: readonly VisibilityKey[], visible: boolean) => void;
+  showOnlyTrades: (keys: readonly VisibilityKey[]) => void;
   setEarthOpacity: (opacity: number) => void;
   showEverything: () => void; // one-tap escape from an over-filtered view
   setDetailView: (v: DetailView) => void;
@@ -190,7 +192,7 @@ export const useStore = create<StoreState>((set, get, store) => ({
   view: { scale: 120, tx: 80, ty: 80 },
   showFraming: true,
   labelMode: "hover",
-  visibleTrades: allVisibleTrades(),
+  visibleTrades: defaultVisibleTrades(),
   earthOpacity: DEFAULT_EARTH_OPACITY,
   detailView: "none",
   documentsTab: "drawings",
@@ -316,13 +318,13 @@ export const useStore = create<StoreState>((set, get, store) => ({
   setViewMode: (viewMode) => set({ viewMode }),
   setThreeMode: (threeMode) => set({ threeMode }),
   setLabelMode: (labelMode) => set({ labelMode }),
-  setTradeVisible: (trade, visible) =>
-    set((s) => ({ visibleTrades: { ...s.visibleTrades, [trade]: visible } })),
-  setTradesVisible: (trades, visible) =>
+  setTradeVisible: (key, visible) =>
+    set((s) => ({ visibleTrades: { ...s.visibleTrades, [key]: visible } })),
+  setTradesVisible: (keys, visible) =>
     set((s) => ({ visibleTrades: {
-      ...s.visibleTrades, ...Object.fromEntries(trades.map((trade) => [trade, visible])),
+      ...s.visibleTrades, ...Object.fromEntries(keys.map((key) => [key, visible])),
     } })),
-  showOnlyTrades: (trades) => set({ visibleTrades: onlyTrades(trades) }),
+  showOnlyTrades: (keys) => set({ visibleTrades: onlyTrades(keys) }),
   setEarthOpacity: (opacity) => set({ earthOpacity: Math.min(1, Math.max(0, opacity)) }),
   showEverything: () => set({ visibleTrades: allVisibleTrades() }),
   // Leaving for the canvas always clears the origin: whatever opened the reader, the user

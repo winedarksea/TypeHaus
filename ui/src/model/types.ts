@@ -61,6 +61,11 @@ export interface Layer {
   // fastened to. Null/absent on every layer that is not a board finish, and on one with no
   // furring behind it to derive from.
   board_run?: "horizontal" | "vertical" | null;
+  // True when the layer carries a FramingSpec — the band is really sticks at a spacing, and
+  // the members that prove it are in the wall's own `members`. The 3D viewer is the one place
+  // a band and its members draw together, so a framed FURRING band is not extruded there
+  // (three/builders/walls.ts): a solid plane over the girts hides them and seals the vent gap.
+  framed?: boolean;
 }
 
 // Orientation convention (defined once, engine side: resolve/framing/profiles.py):
@@ -1193,6 +1198,10 @@ export interface Roof {
   provenance: Provenance | null;
   // The roof shell's trade set — its assembly layers' (roofing first).
   trades?: string[];
+  // One trade per CATALOG assembly layer, in that order, graded at roof scope. The viewer
+  // draws the stack from the catalog record, whose layers carry neither scope nor material
+  // verdict, and `cladding` with nobody to say "roof" grades as siding.
+  layer_trades?: string[];
   bearing_z_m?: number | null;
   layer_edge_setbacks?: RoofLayerSetback[];
 }
@@ -1334,7 +1343,9 @@ export interface Floor {
   tag: string;
   storey: string;
   direction: "x" | "y";
-  subfloor: { material: string; thickness_m: number } | null;
+  // `trades` tells a plywood deck (sheathing) from the porch's composite plank and the
+  // balcony's aluminium one (flooring — the finished walking surface).
+  subfloor: { material: string; thickness_m: number; trades?: string[] } | null;
   openings: Vec2[][];
   provenance: Provenance | null;
   members: Member[];

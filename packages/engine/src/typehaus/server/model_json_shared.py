@@ -99,6 +99,10 @@ def _layer_json(layer, scope: str = "wall") -> dict[str, Any]:
             "is_cavity": layer.is_cavity, "cavity_host": layer.cavity_host,
             "z0_m": layer.z0_m, "z1_m": layer.z1_m,
             "board_run": layer.board_run,
+            # True when the band is really sticks at a spacing (the layer carries a
+            # ``FramingSpec`` and the members are in this wall's `members`). The 3-D viewer
+            # uses it to stop drawing a solid prism over the very members it stands for.
+            "framed": layer.framed,
             # The trade this band belongs to; the viewer derives visibility from it.
             "trades": [layer_trade(layer.function, scope, layer.material_ref)]}
 
