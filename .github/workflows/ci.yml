@@ -31,10 +31,13 @@ jobs:
       # module at a time, and restore this step when the count reaches zero.
       - name: pytest
         run: uv run pytest packages/engine/tests -q
+      # -p no:typehaus_checks: the file is ALSO the `typehaus_checks` pytest11 entry point,
+      # so naming it as an argument double-loads it and pytest 9.x rejects the second
+      # parametrize. Same flag as scripts/verify.sh and scripts/ci_local.sh.
       - name: Checks-as-tests on the starter house
         env:
           TYPEHAUS_HOUSE: houses/starter
-        run: uv run pytest packages/engine/src/typehaus/checks/pytest_plugin.py -q
+        run: uv run pytest -p no:typehaus_checks packages/engine/src/typehaus/checks/pytest_plugin.py -q
       - name: Starter-house build smoke test
         run: uv run haus build houses/starter
       # The reference house was never built in CI, so a break in it was only ever found by
