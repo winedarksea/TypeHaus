@@ -97,7 +97,7 @@ def test_the_deck_and_the_shower_share_one_knee_wall():
 
 
 def test_the_water_closet_backs_a_wall_with_its_code_clearance_clear():
-    """Its 15"-a-side envelope (P2705.1) is bounded by W-M-W3 on one hand and the tub deck
+    """Its 15"-a-side envelope (UPC 402.5, the section MN enforces) is bounded by W-M-W3 on one hand and the tub deck
     on the other, with about 7" to spare — so this is the assertion that catches the deck
     growing westward."""
     model, _ = resolve(_plan())

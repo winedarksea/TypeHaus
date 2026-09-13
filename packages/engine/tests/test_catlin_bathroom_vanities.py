@@ -258,7 +258,8 @@ def test_the_basement_vanity_is_shallow_and_the_reason_changed_with_the_room():
 def test_the_alcove_is_two_bowls_at_exactly_the_code_minimum_spacing():
     """60" is the smallest legal true double, and this alcove is 61.49" wide.
 
-    IRC P2705.1 / IPC 405.3.1 want 30" between adjacent fixtures and 15" from a lavatory
+    UPC 402.5 -- the section MN enforces, not IRC P2705.1, which Minn. R. 1309.0010
+    subp. 3.D deletes -- wants 30" between adjacent fixtures and 15" from a lavatory
     centreline to a side wall. 15 + 30 + 15 = 60, so there is no slack at all: if either
     cabinet ever moves, one of the two numbers below breaks.
     """

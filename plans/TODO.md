@@ -3,20 +3,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Needs your decision
 
-- **RM-B-BATH is BOXED OUT and the soffit datum was wrong under it (2026-09-07).**
-  `SF-B-BATH` takes all three of that room's runs — `PR-B-LSINK-DRAIN`, `PR-B-BATH-VENT`,
-  `PR-B-HW-BATH` — in one bulkhead over the north wall, face at 7'-4 7/16" clear. Authoring
-  it exposed a real engine gap: `resolve/envelope.py` hung every soffit from
-  `storey.default_ceiling_height`, and the basement declared a nominal 9'-0" against a real
-  8'-0 15/16", so the box ran 11" up inside FS-M-WEST's joists (22 interference FAILs). A
-  soffit now hangs from the DECK UNDERSIDE over its own outline, with the nominal kept only
-  as the fallback where no deck is overhead, and `params/main_deck.BASEMENT_CEILING_HEIGHT`
-  is what `plan/manifest.py` states — that field also places every ceiling-mounted placeable
-  and light in the basement, so it was never cosmetic. One knock-on: SF-S-DUCT's face moved
-  1/8" with the plane it dropped from and its duct read 0.1" proud, so its 7'-10" face is
-  now PINNED with `underside_elevation` rather than derived with `drop`. Any soffit whose
-  face is a stated design elevation should be authored the same way.
-
 - **NEC 210.52 receptacle checks measure to the vanity carcass, not the basin** (no `FixtureType.basin` field exists). Permissive rather than wrong. The (D)(2) cabinet-face branch reports UNKNOWN for the same reason.
 
 - **`Room.clear_face` is not the wall's finish face** — it's inset from the wall AXIS by the
@@ -26,18 +12,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   real fix is a second `ResolvedRoom` polygon that IS the finish face, but the blast radius is
   279 references across 51 engine modules + tests + houses + ui. Details:
   `clear-face-is-not-the-finish-face.md`.
-
-- ~~Add soffit lighting to the garage overhead-door side and both side walls~~ — **DONE
-  2026-09-11.** Mark W (`ED-T-LT-LINEAR-EXT`), a damp/wet-rated 120V linear in a 2 1/2"
-  aluminium channel, on three `LightRun`s: both eave soffits (24'-0" each) and a surface run
-  on the north gable face over `D-G-OVERHEAD` (16'-0"). **The overhead-door side has no
-  soffit to integrate with** — `RF-GARAGE` is a gable with `ridge_direction="y"`, so the
-  eaves are EAST and WEST and the door wall is a rake; that run is surface-mounted instead.
-  In the eaves the channel is held to the inboard solid strip so all ~10 1/8" of perforated
-  panel stays open to the attic vent channel. Own timer control (`ED-G-SOFFIT-SW`), not the
-  door sconces' switch — different duty cycle. Priced as a driven allowance, not a
-  `[placeables]` row; see the gap below.
-
 
 - **2D-edit sync** — a PatchOp rewrites one constructor; derived data recomputes but authored
   cross-references don't. `retype_placeable` already re-anchors wall-fitted placeables and
@@ -168,16 +142,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 - **`REG-S-HP-PLANT` throw is 11'-7" across an 18'x9' room** (deliberate — see
   `plan/mep_registers.py`), leaving the west 14' unswept by the room's only moisture-removal
   extract. A middle station (~x 12'-6") would halve the duct run if the saving is wanted.
-- **Three ERV manifold/hood types are cast to the wrong service** (`EQ-T-ERV-MANIFOLD-6` on
-  two extract manifolds, `EQ-T-ERV-HOOD-6` on an exhaust-fed hood) — `mep.equipment_port_service`
-  reported 3 UNKNOWN rather than FAIL, since a FAIL would report the catalog's shape, not the
-  building. **DONE 2026-09-11:** `EQ-T-ERV-MANIFOLD-6-EXH` (trunk `RETURN_AIR`) and
-  `EQ-T-ERV-HOOD-6-EXH` (duct `EXHAUST_AIR`) are minted, three `type_ref`s swapped, and both
-  carry their own `prices.toml` rows at the same rate as their supply twins — the split is
-  what keeps them out of `estimate["unpriced"]`, where the total silently falls. All three
-  placements now PASS. The UNKNOWN arm is still covered, on a synthetic fixture rather than
-  on the house.
-
 ### Structural/framing residuals
 
 - **`FT-SG-*` frost cover (12"-21" vs 42" required) routes to UNKNOWN**, not FAIL —
@@ -219,7 +183,8 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   of bearing each end, so no node had to be invented. The two costs:
   1. **`cross_section` parses `"WxD"` and only that.** `"3.5x3.5"` resolves; `"L3-1/2x3-1/2x1/4"`
      and `"3.5x3.5 STEEL"` both fall **silently** to the 1.5x5.5 fallback. So the size field
-     holds the angle's BOUNDING BOX and the drawn solid is ~2.7x the steel. The real piece is
+     holds the angle's BOUNDING BOX and the drawn solid is **7.3x** the steel (12.25 in²
+  against the real section's 1.69 in²). The real piece is
      in `engineering_note` (a `Beam` has no `source` field) — where nothing reads it.
   2. **It bills $0.** A `Beam` reaches the estimate only through its `assembly`, as a
      `beam · <assembly>` **cubic-yard** row. Leaving `assembly` unset is deliberate — a $/cy
@@ -236,8 +201,10 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   floated 15/16" clear of the brick it caps — **at 0 FAIL**. Fixed 2026-09-11. A placeable is
   graded against clearance zones, doors and protruding-object rules, never against its host
   surface, so the stale comment was the only thing that was ever wrong and the only thing
-  that could have caught it. Worth a sweep: anything authored with a hand-added floor-finish
-  offset is now that offset too high, silently.
+  that could have caught it. **The sweep is done and came back clean** — no remaining
+  hand-added floor-finish offset anywhere in `houses/catlin/plan`. What survives is prose:
+  the comments at `plan/millwork.py` and `plan/electrical.py` still describe the pre-fix
+  mantel.
 - **`light_run_materials` is an unread price table, and a `[placeables]` row for a
   `LuminaireType` on a `LightRun` matches nothing.** The table is keyed on `item`
   ("channel", "tape"), not on a type, so a per-each row bills $0 with no warning — found
@@ -265,9 +232,10 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 - **Nothing re-checks a fixture against a code clearance once the fixture's size changes.**
   `RM-M-BATH2`'s 54" vanity was sized to IRC P2705.1's 21" (which MN deletes) instead of the
   enforced UPC 402.5's 24", clearing it by only 0.24" — then a real TOTO bowl (28.5-30" deep)
-  put the cabinet inside the code envelope. Vanity is 51" now, but
-  `test_catlin_bath2_vanity_heat_and_joists.py` still asserts against 21" — worth a sweep for
-  other dimensions justified against IRC's plumbing chapters instead of MN's amendments.
+  put the cabinet inside the code envelope. That one is closed: the vanity is
+  `FX-VANITY-48-SHALLOW` (48") and `test_catlin_bath2_vanity_heat_and_joists.py` measures
+  against the 24" and says why. The general gap stays — worth a sweep for other dimensions
+  justified against IRC's plumbing chapters instead of MN's amendments.
 - **R502.10.1's single-member header allowance is sawn-lumber only, deliberately** — an
   I-joist/floor-truss deck would need a manufacturer's hung-header table this engine doesn't
   have, so catlin (all I-joist/floor-truss decks) sees no saving from it. **Still open:**
@@ -278,16 +246,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   continuity check across the five hand-worked elevation pairs — get one `top` wrong and the
   panel gets a horizontal slot in it at 0 FAIL. A `Wall.voids` field (or a `RoughOpening` host
   with no door/window) would say it in one element.
-- **Two consumers still read the STRUCTURAL floor where they mean the finished one.**
-  `Material.finish_thickness_in` and `resolve/room_floor.py::room_finished_floor_elevation`
-  (2026-09-11) fixed `Mount.elevation` and the stair-arrival rule, and every catlin covering
-  states a depth (`advisory.floor_finish_depth` is what reports one that does not). Not yet
-  moved over: the glTF/IFC floor mesh and room label z, which draw the structural plane and
-  so sit up to 1 1/2" under the floor they represent; and R305.1's clear height
-  (`checks/code/mn_residential/rules.py::_derived_clear_height`), which measures from the
-  storey datum and therefore reads GENEROUS by the whole build-up. Both want the same
-  helper. The clear-height one is the one that can change a verdict.
-
 ## Phase 2 — Complete Catlin junctions (deferred by decision 2026-08-02)
 
 - Resolve mixed-assembly L corners and collinear assembly changes through named
@@ -336,7 +294,16 @@ the future.
  - **Still open, small:** `FS-SG-DECK`'s joists are one flat plane on the now-tilted beams, so the model's deck is the deck's SOUTH (low) edge and the real north edge stands up to 2.45" higher. Closing it means teaching `resolve/floors.py` to take each joist's z from its tilted bearings, which reaches `ResolvedFloor.deck_z0_m`/`deck_z1_m` and every room, energy, section and guard consumer that reads them. (make sure the D-S-DECK-E door is aligned with the real height closely enough for easy entrance)
  - The Disciplines toggles for view options don't always toggle the right things. Footing beddings should probably be "drainage". The 6 concrete columns should be concrete, not framing. Corner flashing shouldn't be roof but wall cladding (such as TR-H-CORNER-SW-1). The concrete walls should be concrete, not walls (although perhaps we should redesign this so some items can be two or more disciplines?).
  - Model a rain garden to the west of the garage gathering water with drain tile from TR-G-LEADER-W and TR-RF-LEADER-W
- - Double check where soffits have been added and see if they can be removed. Only one is for sure needed, over the second story hallway.
+ - **Six soffit boxes; three are candidates to retire.** `SF-S-DUCT` (second-storey hallway,
+   hosts `REG-S-HP-STAIR`, three cans and an LED driver), `SF-S-HP1` (it IS the air-handler
+   enclosure, with a framed `SoffitOpening` lidded by `FURN-S-NCLOSET-AP`) and `SF-B-BATH`
+   stay. **Answer: exposed pipe and duct are acceptable** — in the basement especially, and
+   exposed duct in the suite is fine — so `SF-B-HALL`, `SF-B-GYM` and `SF-S-SUITE` should go.
+   It is not a deletion, though: all three were authored to answer
+   `mep.run_in_finished_volume`, and catlin is held to a clean report, so deleting a box
+   just converts it into a finding. A run (or a room's ceiling) needs a way to be declared
+   deliberately exposed — positive authored evidence, not a suppression, since a suppressed
+   check folds to UNKNOWN and does not open the permit gate.
  - **Rebar (~5 tons, $10,000-18,000) is deliberately inside the `[concrete]` $/cy rates.** If
   it's ever authored as real elements, cut the concrete rates the same day. We may want to model rebar so it is clearly shown as a model element (selectable separately from concrete in the 3d view)
  - See if the sunken garden still has a R404.4 sliding failure
@@ -347,12 +314,7 @@ the future.
 - Possibly in second floor study, a bookshelf continuing hallways to make an alcove under the stairs
 - Consider making the dining room "candelier" a TV screen (direct-lit/FALD Mini-LED LCD, 65") screen, perhaps connected to an exterior webcam, set recessed in the ceiling a bit (still replaceable, likely with the joist space above open for more room for airflow).
 
- - `emit/draw/schedules/openings.py` prints only the U-factor column for a door
-(`_energy_columns(spec, is_door=True)` returns a 1-tuple and the door header set stops at
-"U-factor"), so A-601 still does not show the new SHGC/VT. Lighting it up means widening the
-door table and re-blessing `test_energy_sheet.py`'s column-count assertion — a schedule-sheet
-change
-- **The published web app runs a GEOS version behind the dev venv, and a geometry bug can ship
+ - **The published web app runs a GEOS version behind the dev venv, and a geometry bug can ship
   green.** `.venv` is GEOS 3.13.1; the Pyodide-based web app is GEOS 3.12.1, which previously
   raised a fatal `TopologyException` unioning basement wall bodies (fixed by routing through
   `resolve/overlay.py`'s fixed-precision helper). **The class of bug is still the open item**:
