@@ -78,21 +78,35 @@ def run_polylines(ctx: CheckContext) -> list[tuple[str, str, tuple[tuple[float, 
 
 
 def run_radii(ctx: CheckContext) -> dict[str, float]:
-    """Half the outside dimension of each run, keyed by tag.
+    """Half the **real** outside dimension of each run, keyed by tag.
 
     A run is a centreline and an opening is a hole; whether the two meet is a question about
     the run's SURFACE. Six inches of duct with an inch of wrap either side is eight inches of
-    obstruction, and grading its centreline alone under-reports by four. A raceway's trade
-    size is a nominal bore rather than an outside diameter, but the error is under an eighth
-    of an inch on 3/4" EMT and in the conservative direction.
+    obstruction, and grading its centreline alone under-reports by four.
+
+    The nominal→outside conversion is :mod:`typehaus.resolve.pipe_sections`, which this
+    function's previous docstring confessed the need for: "a raceway's trade size is a
+    nominal bore rather than an outside diameter, but the error is under an eighth of an inch
+    on 3/4" EMT and in the conservative direction". The error is 0.172" on 3/4" EMT, it is
+    half an inch on 3" DWV, and on catlin it was hiding two raceways bored into a chord. Five
+    consumers read this one function, so they get one notion of a run's surface and cannot
+    drift into three.
+
+    A duct's authored diameter **is** its outside dimension — sheet metal is specified by the
+    size it measures, not by a nominal — so ducts pass through unconverted.
     """
+    from typehaus.resolve.pipe_sections import (
+        pipe_outside_diameter_m,
+        raceway_outside_diameter_m,
+    )
+
     radii: dict[str, float] = {}
     for run in ctx.model.pipe_runs:
-        radii[run.tag] = (run.diameter_m or 0.0) / 2.0
+        radii[run.tag] = pipe_outside_diameter_m(run.diameter_m or 0.0, run.material) / 2.0
     for duct in ctx.model.ducts:
         radii[duct.tag] = (duct.diameter_m or 0.0) / 2.0
     for raceway in ctx.model.conduits:
-        radii[raceway.tag] = (raceway.trade_size_m or 0.0) / 2.0
+        radii[raceway.tag] = raceway_outside_diameter_m(raceway.trade_size_m or 0.0) / 2.0
     return radii
 
 
