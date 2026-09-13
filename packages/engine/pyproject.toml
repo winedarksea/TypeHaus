@@ -58,8 +58,8 @@ fea = ["PyNiteFEA>=1.0"]
 
 [project.urls]
 Homepage = "https://type-haus.com"
-Repository = "https://github.com/colincatlin/TypeHaus"
-Issues = "https://github.com/colincatlin/TypeHaus/issues"
+Repository = "https://github.com/winedarksea/TypeHaus"
+Issues = "https://github.com/winedarksea/TypeHaus/issues"
 Documentation = "https://type-haus.com"
 
 [project.scripts]

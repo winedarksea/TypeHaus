@@ -47,6 +47,30 @@ open http://127.0.0.1:8127/
 Note that a plain static server ignores `_headers` and `_redirects`; `/app/` still works because
 the directory has an `index.html`.
 
+### The editor screenshots
+
+`assets/editor-plan-basement.png`, `assets/editor-split.png` and `assets/editor-3d.png` are
+committed, not built by `build-site.mjs` — capturing them needs a running engine and a
+headless browser, which is too much to ask of a deploy. They are the hero and the two feature
+shots, and `editor-split.png` is also the `og:image`, so they are the first thing anyone sees.
+Regenerate them whenever the editor chrome changes:
+
+```bash
+cd ui && npm run build                       # `haus serve` serves ui/dist, so build first
+.venv/bin/haus serve houses/catlin           # in another shell, on 8765
+cd ui && node scripts/shoot-landing.mjs      # -> landing/assets/*.png
+```
+
+`npm run shots:landing` does the build and the capture in one go, but still needs the server
+already up. The shots are dark-theme at 1600x879 — the size `index.html` lays out, captured
+at the viewport rather than cropped, so the app lays itself out for the frame that ships. The
+filenames are the contract and are overwritten in place.
+
+This is **not** `npm run shots`, which photographs 42 states to judge the chrome against
+committed baselines and assertions. `shoot-landing.mjs` shares that harness's `lib/` so the
+posing and settling logic has one implementation, but it captures three chosen frames and
+judges nothing.
+
 ## Host
 
 `_headers` and `_redirects` are the Cloudflare Pages / Netlify convention and work unmodified on

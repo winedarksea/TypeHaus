@@ -2,13 +2,223 @@
 
 All notable changes to `typehaus`. This project follows [semantic versioning](https://semver.org).
 
-## 0.1.1 — 2026-09-09
+## 0.1.1 — 2026-09-13
 
 **The first working publish.** 0.1.0 was tagged but never reached PyPI: its CI could not go
 green, because `mypy --strict` was a gate on the engine job and reports 2781 errors. The tag
 stands as history; 0.1.1 is the version that ships. Everything below under 0.1.0 is part of
 this release.
 
+The four days between the tag and the upload were not spent waiting on CI, so this release
+also carries the work below — a build surface (`haus schedule` / `inspections` / `site`), the
+PE handover (`haus handoff`), the analytical export (`haus analysis`), per-trade bid packages,
+nineteen new checks and one renamed one. **Two changes need action from a 0.1.0 user**: the
+trade vocabulary rename, and the retired `code.R406_1_dampproofing` id.
+
+- **`haus schedule`, `haus inspections` and `haus site` make the build a first-class
+  surface.** The engine already knew what the house was made of and nothing knew what order
+  it gets built in. `typehaus/schedule/` is a leaf like `engineering/` and `routing/`: it
+  derives *readiness* — what is ready to start and exactly what is in the way — while every
+  date comes from an authored input (`[calendar]`, `duration_days`, `cure_days`,
+  `lead_days`) and anything absent reads **"needs confirmation"** rather than taking a
+  default. The schedulable unit is a **visit** (one sub, one arrival), authored in
+  `tasks.toml`; **checkpoints** are ordered pauses inside one arrival, so a footing visit is
+  forms / pour / strip rather than three mobilisations. A booking is never moved — a
+  predecessor that slips past one marks it *threatened* with the slack. The AHJ's own record
+  lives in `houses/<name>/inspections.toml` (`docs/site-state-format.md`), an inspection
+  result is an appended `attempt` rather than an overwritten slot, a `partial` releases only
+  the scope it approved, and a waiver is a table naming who granted it because it outranks
+  the model's own evidence. `haus site validate` exits 1 on any error; `haus schedule
+  --propose` prints a visit split to paste and writes nothing. `schedule/site_ops.py` is the
+  one write path both `PUT`s and the CLI fold through: temp-file plus `os.replace`, and a
+  stale `if_revision` is a 409 carrying the fresh payload, never a merge. In the UI the site
+  pages are a second top-level surface at `#/site/board` — no canvas, no 3D.
+- **One trade vocabulary replaces the 13-name visibility list, and it is a breaking
+  rename.** 21 trades in 11 groups are now shared by the viewer toggles, the BOM and the
+  schedule, so a beam cap cannot be roofing in one place and siding in another. `walls`,
+  `floors` and `roof` are **retired**: `roof` becomes `roofing`, and the old `walls` /
+  `floors` buckets split across `framing`, `siding`, `drywall`, `insulation` and the rest.
+  An element now carries a *set* of trades (`ElementGeometry.trades`, glTF extras,
+  `model.json`) and draws if any of them is visible. A house with authored site files must
+  run **`haus site migrate --write`**, which folds the textual renames in place and lists
+  the one-to-many cases it cannot decide; a saved viewer visibility recipe is migrated in
+  the UI. A visit naming rows outside its own package is now a validation error rather than
+  a silent miss.
+- **`haus bids` writes unpriced per-trade bid packages.** A sub is asked to quote scope, not
+  to read someone's cost model, so the packages carry quantities and no dollars
+  (`docs/bid-package-format.md`). Alongside it `takeoff/labels.py` gives every estimate row
+  a readable label with the id kept beside it — id-shaped descriptions went from 354 to 8,
+  ratcheted by a test — and `takeoff/bom_walk.py` is now the single BOM walk the estimate,
+  the tasks and the bid packages all read.
+- **`haus handoff` assembles the whole engineering handover in one command.** Handing the
+  engineering to a PE meant running `haus calcs`, running `haus build`, working out which
+  notes were cited, pulling forty fingerprints one at a time and writing the covering page
+  by hand, which nobody did twice the same way. `out/handoff/` now carries the calc package
+  and its PDF, only the notes those records are actually checked against, the models, a
+  README that routes a reviewer through it in five minutes, a `MANIFEST.json` of sha256s,
+  and `engineering.toml.draft` — the seal register as a **form**, fingerprints filled in and
+  every human field a visible `<<placeholder>>`. The rule is kept by the loader rather than
+  by restraint: `register.py` now **refuses** a register still holding a placeholder, naming
+  the field, so the engine can scaffold the tedious half without ever writing a seal. A
+  manifest is only worth having if the bundle is byte-deterministic and it was not, so four
+  emitter fixes land with it: the calc PDF's `CreationDate` / `ModDate` and the IFC's STEP
+  timestamp are pinned, every GUID ifcopenshell mints for us is rewritten as a uuid5 of what
+  it identifies, and the member lists it collects through `set()` are sorted. Two runs now
+  produce identical bytes, so a changed hash is a changed model. The IFC inside that bundle
+  is enriched where `haus build`'s deliberately is not — section profiles shared per
+  section, `Pset_TH_Engineering_<kind>` on every element a record names, and a bar schedule
+  under the pours it belongs to — and `docs/handoff-bundle-format.md` describes it.
+- **`haus analysis` exports the analytical model, and `--solve` checks it.** The engineered
+  items and their load path are now one graph of nodes, members, supports and load cases,
+  read by four consumers: the IFC4 structural analysis view for SAP2000/ETABS/Bonsai, a
+  centreline DXF for RISA, `members.csv`, and a runnable PyNite script. Fixity and releases
+  are **derived and claimed**, each with a `basis` string, and what cannot be derived goes
+  in an explicit `gaps` list rather than being guessed; the loads are the ones the
+  engineering records actually consumed. PyNite is the oracle rather than a feature —
+  `tests/test_analytical_oracle.py` solves the exported graph against a hand-worked note —
+  and it ships as a new **`fea` extra** (`pip install 'typehaus[fea]'`) for an install that
+  wants `--solve` without the whole dev toolchain.
+- **A published manufacturer table is now a prescriptive read, not engineering.** Three
+  requirements sat in the engineering register on one shared piece of reasoning — the IRC's
+  table stops, so an engineer owns it — and the hole in that is that the IRC is not the only
+  body that publishes a table. `PublishedSpan` puts the read in the model: source, the row
+  in the table's own words, the member, the span, and the conditions the row assumes that
+  this engine does not check. Four of its fields are drift guards, and
+  `checks/structural/published.py` returns UNKNOWN naming the mismatch — rather than a PASS
+  off a quotation that has stopped describing the building — as soon as the member is
+  retyped, the spacing changes, the carried span grows or the demand passes the row's load
+  basis. **`deck_beam` is deregistered from the engineering register and `glulam_beam` is
+  demoted to a pure `nds_states` module**; the arithmetic stays, printed beside the
+  published row as an advisory, because every deck guide is dry-use and a balcony beam
+  stands in weather. The `header` deferral is gone and `rafter` is narrowed to roofs that
+  resolve no member at all. A house that authors no `PublishedSpan` gets the UNKNOWN with a
+  hint, which is what `engineered()`'s old NO_CALC branch supplied. The register goes from
+  41 items to 36 and unsealed from 9 to 7.
+- **Nineteen new checks, and one renamed.** `code.R406_1_dampproofing` is **gone**, replaced
+  by `code.MN_1309_0406_waterproofing` — a suppression or an allow-list naming the old id no
+  longer matches anything. The additions are `code.R311_7_5_1_stair_end_risers`,
+  `structural.slab_published_span`, `structural.rake_overhang_backspan`,
+  `structural.deck_beam_cantilever`, `structural.column_on_wall_support`,
+  `mep.run_member_crossing`, `mep.drain_tie_in`, `mep.drain_slope_margin`,
+  `mep.room_heat_source`, `mep.erv_static_budget`, `mep.erv_manifold_ports`,
+  `electrical.panel_feeder_load`, `integrity.member_profile_parses`,
+  `integrity.drip_flashing_back_side`, `advisory.assembly_variety`,
+  `advisory.countertop_overhang`, `advisory.floor_finish_depth` and
+  `advisory.wall_backing_bearing`. A house that was clean under 0.1.0 may pick up findings
+  from any of them; several found real defects in the reference house.
+- **Minnesota is not an IRC plumbing state, and the drain-slope rule now says so.** The
+  profile cited IRC P3005.3 for slope while citing ch. 4714 (UPC) for the sizing and
+  trap-arm tables two lines below, and Minn. R. 1309.0010 subp. 3.D deletes IRC chapters
+  25–33. UPC 708.0 is 1/4"/ft at **every** size, so the `>3" -> 1/8"/ft` row that both
+  `mep.drain_slope` and `routing/gravity` carried is gone — it had been reading a 4" line as
+  holding twice its grade when it was 0.017"/ft over the minimum. `resolve/mep_slope.py` is
+  the one owner, returning the grade and the sentence to cite, and the reduced-slope
+  exception is authored per run as `PipeRun.reduced_slope_approval` rather than as a
+  preferences flag, because an approval is of one pipe on one set of drawings. On pipe under
+  4" it is a FAIL. Beside it, `mep.drain_slope_margin` reports how much pitch is in hand **on
+  a PASS as well**, since the field method steps a standoff about an inch every four feet and
+  "at the minimum" and "half an inch over" are not the same building.
+- **A pipe's nominal size and the diameter it measures are now two different numbers.**
+  `resolve/pipe_sections.py` is the sibling of `LUMBER_ACTUAL`: the author writes the
+  nominal the code tables are keyed on, the geometry gets the real OD, and `run_radii` reads
+  it so all five consumers share one notion of a run's surface. Three tables, because the
+  material decides and that is load-bearing — a material-blind IPS table reads 1 1/4" copper
+  at 1.660" instead of 1.375" and invents clearance findings. Authored `diameter` is
+  untouched and `mep.pipe_sizing` still keys its table on the nominal. The emitters and the
+  takeoff still sweep the nominal tube this pass, recorded as debt in the module docstring,
+  because widening the solid re-blesses every IFC golden.
+- **One owner for the window a service may cross a floor's members in.** Three readings of
+  that band existed and no two agreed. `resolve/mep_crossings.py` owns all three now — an
+  open-web truss gives its web, an I-joist its depth less both flanges, solid-sawn IRC
+  R502.8.1's 2" from each edge — and each carries the `basis` sentence a finding quotes,
+  because "1.194" of crown" means nothing without "inside the 8 7/8" web" beside it. Those
+  three are **not** the same permission: a truss's web is a hole that is already there,
+  while the other two are zones a *bored* hole may sit in, and reading them alike had
+  silently permitted an 8" round duct through an 11 7/8" I-joist. `mep.run_member_crossing`
+  then grades pipe, duct and raceway alike per crossing rather than per leg; it found
+  fifteen real defects in the reference house.
+- **Clear height is measured from the finished floor, not the joist tops.** A storey's
+  elevation is the structural datum and the finished floor stands above it by the whole
+  build-up, which on the reference house runs from 0" on a bare slab to a full 1 1/2" over a
+  3/4" wood floor — the code comments' flat 3/4" was wrong in both directions.
+  `resolve/rooms.py::_clear_head` now takes an explicit datum and is handed
+  `room_finished_floor_elevation`. It is the only place the datum could be chosen, so every
+  consumer downstream moves with it, and headroom verdicts near a limit can change.
+- **A room may say its ceiling is open on purpose.** A `Soffit` was the only authored answer
+  to `mep.run_in_finished_volume`, which made a soffit the engine's idea of a ceiling rather
+  than the owner's. `Room.exposed_services` is the other answer: a sentence saying why,
+  refused at load time if it is a flag wearing a string. The check quotes it back in a PASS,
+  so the report carries the decision rather than a silence and the house stays clean rather
+  than suppressed — a suppression folds to UNKNOWN and does not open the permit gate. It
+  retires exactly one question: every run in a declared room is still measured against
+  `MepPreferences.exposed_service_headroom_ft`.
+- **A nominal profile `cross_section` cannot parse is reported instead of swallowed.** An
+  unreadable nominal came back as the 1 1/2" x 5 1/2" fallback and the solid, the plan cut,
+  the interference check and the BOM row all quietly became a 2x6. The silence in `resolve()`
+  stays, because 31 modules call `cross_section` where a raise aborts the build rather than
+  reporting a defect; `parses()` asks the question without raising and
+  `integrity.member_profile_parses` asks it of every authored and resolved nominal —
+  elements, `JoistSpec`, `FramingSpec` and every stick the solver mints. UNKNOWN, not FAIL:
+  the engine cannot say the member is wrong, only that it does not know what the string
+  names.
+- **New authorable elements and fields.** `Countertop` hosts on the placeables it covers and
+  derives its slab polygon, area, run length and cantilever off the run, so a peninsula's
+  knee is a gradeable fact rather than prose — it deliberately draws nothing, because the
+  base-cabinet symbol already draws the slab. `SlatScreen` and `resolve/screens.py` model an
+  open screen as structure. `Roof.bearing_refs` may now name a `Beam` and not only a wall
+  (`resolve/roof_bearing.py`), which is what a canopy on two headers needs. `DoorType`
+  carries `shgc` / `vt` with the same semantics `WindowType` has. `Site.parcel_basis` gains
+  `"plat"` — dimensions stated off a plat, county record or deed, with nobody's seal on them
+  and no corner located — which grades UNKNOWN rather than borrowing either the drawn or the
+  surveyed verdict; `"placeholder"` still FAILs unchanged.
+- **A glazed door is fenestration.** R202 says so and the engine treated one as glazing in
+  some places and not others. `energy_load` now accumulates a door solar term with the
+  orientation lookup hoisted out of the window branch, so a glazed exterior leaf stating no
+  SHGC earns the same UNKNOWN a window does and an opaque leaf earns neither gain nor gap;
+  the cooling sum is taken off the components rather than off `window_solar` by name, which
+  was why the doors' gain sat in the report and outside the load. `mn_energy` grades exterior
+  door types against the same N1102.1.2 fenestration column as `window_u_max` — the
+  2009-era separate door column is gone — and skips interior leaves. A house with glazed
+  exterior doors will see its cooling load move.
+- **The panel schedule sees a line-voltage light run.** `_connected_va` summed
+  `ElectricalDevice`s only and `connected_lighting_va` admitted luminaire types and PSU tags,
+  so a `LightRun` with a circuit and no `psu_ref` was counted nowhere. It has no `load_va` to
+  bill — it is watts per foot over a length, and only the resolved run knows the length — so
+  the VA is indexed by tag off `model.light_runs`. Runs report under their own `runs` key and
+  the fixture count is unchanged. A 24V run stays out: its load belongs to its PSU, which is
+  a device counted already. `electrical.panel_feeder_load` grades the service the same way.
+- **`model.json` tells the UI a wall's true kind, so a `FoundationWall` can be edited.** A
+  writeback op matches the constructor name literally, which is what keeps a source rewrite
+  honest about which constructor it edits, but the UI addressed every wall as `"Wall"` — so
+  an op aimed at a `FoundationWall` routed to no file and came back 422, while the loader's
+  consistency check counted that same element as UI-movable and reported the house clean on
+  a capability it did not have. The disagreement, not the 422, was the bug. The wall payload
+  now carries the authored element's own class name and the UI sends it back for delete and
+  for the assembly picker; `writeback_py._call_kind` is deliberately **not** broadened.
+- **`TrimKind.BEAM_CAP` gets its own solid category and trade.** It collapsed onto
+  `flashing`, and flashing rides roofing, so aluminium beam caps showed under the roof toggle
+  while the BOM had been billing them to siding all along. Minting a category touches five
+  more consumers keyed on the category string — the glTF palette, the IFC kind map (unknown
+  kinds fall back to `IfcFooting`, so seven caps would have exported as footings), the
+  elevation projector, and the rest — which is why the split is eight files rather than
+  three. Separately, the twelve HGAM10 masonry gussets are one BOM row of hurricane ties
+  rather than two rows split ten post caps to two ties: landing on a cast column top is what
+  the part is published for and does not turn it into a post cap.
+- **The dead `PEDESTAL_CONCRETE` assembly is retired.** Zero elements carried it and the tag
+  its comment named no longer exists. The BOM is byte-identical, because a `[concrete]` price
+  key is only emitted for an assembly some element actually carries; the one real consequence
+  is `model.json`'s `building_science.condensation` array, which analyses every library
+  assembly and goes from 75 rows to 74, re-indexed at 28.
+- **The reference house.** `houses/catlin` absorbed several hundred commits' worth of design
+  work this cycle — the north entry engineered as real structure, the sunken garden court
+  simplified to one footing, column and bell, an extruded garage replacing the poly
+  breezeway, the truss girts, the board-and-batten product named and its screw withdrawal
+  computed per NDS 2018 §12.2, the ERV static budget re-struck against the HVI-certified
+  curve, the parcel corrected to its real 50' x 133', the electrical circuits reworked, and
+  three soffits retired in favour of rooms that declare their ceilings open. It is a
+  reference model rather than shipped API surface, so the detail lives in
+  `houses/catlin/DESIGN-LOG.md`; what matters here is that it reports **0 FAIL** against
+  1,450 encoded rules and remains the house the engine is exercised on.
 - **mypy is no longer a gate**, in `ci.yml` or in `scripts/verify.sh`. There was no setting
   under which it passed — a heavily relaxed run still reports 1119 errors in 158 files — so
   it was removed rather than pinned green by a config that hides it. `[tool.mypy]
@@ -38,6 +248,11 @@ this release.
   rather than a defect, already `blocking=False` in the Minnesota profile. The stage now
   gates on `haus check --json --exit-on none` with the identical one-entry allow-list, so a
   real regression still stops the build.
+- **The PyPI project links point at the repository that exists.** `Repository` and `Issues`
+  named `github.com/colincatlin/TypeHaus`; the remote is `github.com/winedarksea/TypeHaus`.
+  Nothing in the build reads those fields, so the only place the mistake could surface was
+  the published project page — as a dead "Source" link, after upload, permanently for that
+  version.
 
 ## 0.1.0 — 2026-09-09 (tagged, never published)
 

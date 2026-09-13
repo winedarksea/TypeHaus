@@ -246,8 +246,9 @@
         <h2>What a permit set looks like</h2>
         <p class="sub">
           <code class="inline-code">haus print</code> builds the model, renders every sheet, and
-          writes one <code class="inline-code">permit_set.pdf</code> plus per-sheet DXF at 11×17 —
-          the size many Minnesota cities accept for a residential review set. The whole set is
+          writes one <code class="inline-code">permit_set.pdf</code> at 11×17 — the size many
+          Minnesota cities accept for a residential review set — plus an editable DXF of each
+          storey's floor plan. The reference house comes to 57 sheets. The whole set is
           composed from the resolved model, so nothing is drawn twice and nothing drifts.
         </p>
         <div class="scroll-x">
@@ -256,17 +257,20 @@
               <tr><th>Sheet</th><th>Content</th></tr>
             </thead>
             <tbody>
-              <tr><td>A-000</td><td>Cover, sheet index, code summary from the checks output</td></tr>
+              <tr><td>G-001…005</td><td>Cover and code summary, general notes, symbols and line weights, energy compliance, ventilation certificate</td></tr>
               <tr><td>C-101</td><td>Site plan — parcel basemap, setbacks, project north</td></tr>
+              <tr><td>S-001</td><td>General structural notes — design criteria, loads, materials</td></tr>
               <tr><td>S-100</td><td>Foundation plan — foundation walls, footings, pads, posts</td></tr>
-              <tr><td>S-101…</td><td>Framing plan per storey, plus a framing schedule and bill of materials</td></tr>
+              <tr><td>S-101…103</td><td>Framing plan per storey, then roof framing and braced wall plans</td></tr>
+              <tr><td>S-602…603</td><td>Connection hardware schedule, and the engineering register — what needs a seal and what governs</td></tr>
+              <tr><td>A-002</td><td>Architectural specifications</td></tr>
               <tr><td>A-101…</td><td>Dimensioned floor plan per storey, then the roof plan</td></tr>
               <tr><td>A-201…204</td><td>North, south, east and west exterior elevations</td></tr>
               <tr><td>A-301</td><td>Building section</td></tr>
-              <tr><td>A-401…</td><td>Wall sections and details — authored slices, then every derived transition</td></tr>
-              <tr><td>A-601</td><td>Door and window schedule</td></tr>
-              <tr><td>P/M/E-1xx</td><td>Plumbing, HVAC and electrical plans, per storey that has content</td></tr>
-              <tr><td>EN-1</td><td>Energy compliance summary — assembly R-values against code and preferences</td></tr>
+              <tr><td>A-501…</td><td>Wall sections and details — authored slices, then every derived transition</td></tr>
+              <tr><td>A-601…602</td><td>Door schedule, window schedule</td></tr>
+              <tr><td>M-101…</td><td>HVAC plan per storey that has content</td></tr>
+              <tr><td>E-601</td><td>Panel schedule and service load calculation</td></tr>
             </tbody>
           </table>
         </div>
@@ -319,7 +323,7 @@ haus new my-house
 haus build my-house              <span class="c"># -&gt; out/model.json (+ IFC)</span>
 haus check my-house              <span class="c"># integrity / code / structural / advisory findings</span>
 haus ls my-house --summary       <span class="c"># compact plan digest</span>
-haus serve my-house              <span class="c"># 2D/3D editor at http://127.0.0.1:8000</span>
+haus serve my-house              <span class="c"># 2D/3D editor at http://127.0.0.1:8765</span>
 
 <span class="c"># analyze</span>
 haus energy my-house             <span class="c"># design-day block heating/cooling load</span>

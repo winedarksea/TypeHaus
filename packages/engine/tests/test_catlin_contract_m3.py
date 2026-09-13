@@ -229,47 +229,24 @@ def test_site_plan_keeps_freestanding_roofs_and_foundation_supports_visible(catl
     assert any(getattr(node, "layer", None) == "A-SITE-FOUND" for node in scene.nodes)
 
 
-def test_catlin_legacy_floorplans_are_dim_view_only_underlays():
-    from typehaus.checks import load_preferences
+def test_catlin_carries_no_reference_underlays():
+    """The legacy floorplan pages are retired (preferences.toml).
 
-    underlays = load_preferences(CATLIN_DIR).underlays
-    assert {item.storey for item in underlays} == {"basement", "main", "second", "attic"}
-    assert all(item.path.startswith("../../catlin_floorplan/") for item in underlays)
-    # Dim enough to stay obviously reference-only, dark enough to read at 110 dpi. 0.16 was
-    # invisible in a `haus render` snapshot, which is the one place the underlay has a job.
-    assert all(0.0 < item.opacity <= 0.35 for item in underlays)
-
-
-def test_catlin_underlays_are_calibrated_to_the_source_svg_grid():
-    """All four pages are 1280x1920 on the vector twins' own 74.7029 px/m grid.
-
-    The extent is therefore identical on every page and only the origin differs; a table
-    that disagrees is a mis-calibration, which makes the underlay useless as a ruler.
+    They were a calibration aid, and a raster behind the linework reads as part of the
+    drawing to anybody who did not author it. Every catlin snapshot is now the model alone,
+    and nothing has to remember `--no-underlay`.
     """
     from typehaus.checks import load_preferences
 
-    px_per_m = 74.7029
-    for item in load_preferences(CATLIN_DIR).underlays:
-        assert item.width_m == pytest.approx(1280 / px_per_m, abs=0.001)
-        assert item.height_m == pytest.approx(1920 / px_per_m, abs=0.001)
-        assert item.rotation_deg == 0.0
-    by_storey = {item.storey: item for item in load_preferences(CATLIN_DIR).underlays}
-    # SW corner of each page's wall-fill polygon, measured off the .svg (see preferences.toml).
-    for storey, origin in (("basement", (-3.1807, -12.3580)), ("main", (-2.9769, -4.7410)),
-                           ("second", (-3.0595, -9.0316)), ("attic", (-3.0382, -8.0507))):
-        assert (by_storey[storey].origin_x_m,
-                by_storey[storey].origin_y_m) == pytest.approx(origin, abs=0.001)
+    assert load_preferences(CATLIN_DIR).underlays == ()
 
 
-def test_configured_reference_underlay_is_served_through_the_sandboxed_route():
+def test_model_json_offers_catlin_no_underlays():
     fastapi_testclient = pytest.importorskip("fastapi.testclient")
     from typehaus.server.app import create_app
 
     with fastapi_testclient.TestClient(create_app(CATLIN_DIR)) as client:
-        url = client.get("/model").json()["underlays"][0]["url"]
-        response = client.get(url)
-    assert response.status_code == 200
-    assert response.headers["content-type"].startswith("image/png")
+        assert client.get("/model").json()["underlays"] == []
 
 
 def test_centerline_bearing_wall_runs_full_length_on_both_framed_storeys(catlin_model):

@@ -109,10 +109,10 @@ if [ "$want_launch" = "y" ]; then
     haus new "$HOUSE_DIR" || err "haus new failed; you can run it yourself later."
   fi
   if [ -d "$HOUSE_DIR" ]; then
-    info "Starting the editor at http://127.0.0.1:8000 ..."
+    info "Starting the editor at http://127.0.0.1:8765 ..."
     ( haus serve "$HOUSE_DIR" & )
     sleep 2
-    URL="http://127.0.0.1:8000"
+    URL="http://127.0.0.1:8765"
     case "$(uname -s 2>/dev/null || echo unknown)" in
       Darwin) open "$URL" >/dev/null 2>&1 || true ;;
       Linux) xdg-open "$URL" >/dev/null 2>&1 || true ;;
@@ -128,7 +128,7 @@ cat <<EOF
 Type:Haus is installed.
 
   New house:  haus new my-house
-  Edit:       haus serve my-house      # 2D/3D editor at http://127.0.0.1:8000
+  Edit:       haus serve my-house      # 2D/3D editor at http://127.0.0.1:8765
   Build:      haus build my-house      # -> out/model.json (+ IFC)
   Check:      haus check my-house
   Browser:    https://type-haus.com/app   (no install — runs the engine in-browser)

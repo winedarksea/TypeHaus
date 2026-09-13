@@ -162,7 +162,9 @@ def test_catlin_round_trip_builds_identically(tmp_path: Path) -> None:
 
     export = export_house(catlin, tmp_path / "catlin.haus.zip")
     assert not export.missing_underlays
-    assert export.relinked_underlays  # catlin references ../../catlin_floorplan/*.png
+    # catlin retired its reference underlays, so there is nothing to relink. The relink
+    # path itself is covered by the synthetic house above.
+    assert not export.relinked_underlays
 
     dest = tmp_path / "catlin-import"
     result = import_house(export.archive, dest)
