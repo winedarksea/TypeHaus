@@ -7,6 +7,7 @@ import { anyTradeVisible, defaultVisibleTrades, type VisibleTrades } from "../mo
 import type { Model } from "../model/types";
 import type { EngineClient } from "../engine/EngineClient";
 import { RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
+import { createViewportBackground, viewportBackgroundCss } from "../three/viewportBackground";
 import { disposeGroup } from "../three/members";
 import { locateMember } from "../model/memberIdentity";
 import { buildMemberHighlight, resolveMemberPickUid } from "../three/memberPicking";
@@ -128,7 +129,15 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
 
   return (
     <div style={{ position: "absolute", inset: 0 }}>
-      <div ref={mountRef} style={{ position: "absolute", inset: 0 }} />
+      <div
+        ref={mountRef}
+        style={{
+          position: "absolute", inset: 0,
+          // Matches the scene backdrop exactly (same two stops), so the moments the canvas does
+          // not cover the pane — a resize, the first paint — show the stage rather than --bg.
+          background: viewportBackgroundCss(RESOLVED_NORDIC_PALETTE[theme]),
+        }}
+      />
       <svg
         ref={compassRef}
         className="hud"
@@ -211,7 +220,16 @@ function createScene(
   onPick: (kind: SelectionKind, uid: string) => void,
 ): SceneApi {
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(RESOLVED_NORDIC_PALETTE.light.bg);
+  // The backdrop is a disposable texture rather than a Color, so it goes through one closure
+  // that owns the old one's lifetime (→ applyBackground). Seeded light; the theme effect in
+  // Panel3D corrects it on mount, exactly as it did when this was a flat colour.
+  let backgroundTexture: THREE.CanvasTexture | null = null;
+  const applyBackground = (palette: ResolvedNordicPalette) => {
+    backgroundTexture?.dispose();
+    backgroundTexture = createViewportBackground(palette);
+    scene.background = backgroundTexture;
+  };
+  applyBackground(RESOLVED_NORDIC_PALETTE.light);
   const camera = new THREE.PerspectiveCamera(50, 1, 0.05, 500);
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
@@ -651,7 +669,7 @@ function createScene(
   const setModel =(m: Model, mode: "nordic" | "schematic", palette: ResolvedNordicPalette, preserveView: boolean) => {
     clear();
     activePalette = palette;
-    scene.background = new THREE.Color(palette.bg);
+    applyBackground(palette);
     trueNorthDegrees = m.site?.true_north_deg ?? 0;
     defaultViewPan = m.project?.default_view_pan ?? [0, 0];
     if (!preserveView) target = new THREE.Vector3(0, 1.2, 0);
@@ -705,7 +723,7 @@ function createScene(
 
   const setPalette = (palette: ResolvedNordicPalette) => {
     activePalette = palette;
-    scene.background = new THREE.Color(palette.bg);
+    applyBackground(palette);
     requestRender();
   };
 
@@ -763,6 +781,7 @@ function createScene(
       stopTween();
       ro.disconnect();
       for (const trade of ALL_TRADES) disposeGroup(tradeGroups[trade]);
+      backgroundTexture?.dispose();
       environment.dispose();
       pmrem.dispose();
       renderer.dispose();

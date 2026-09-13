@@ -69,6 +69,14 @@ const FALLBACK = "var(--material-fallback)";
 
 export interface ResolvedNordicPalette {
   bg: string;
+  /**
+   * The 3D stage backdrop, top -> bottom. Deliberately not `bg`: the viewport is a stage, not
+   * chrome. A flat background the colour of the app frame gave a white-clad envelope (Regal
+   * White #E8E8E2) no silhouette at all in light theme; a two-stop ramp puts a darker tone
+   * behind the roofline and a lighter one behind the base, so separation no longer depends on
+   * which colour the house happens to be.
+   */
+  viewport: readonly [top: string, bottom: string];
   edge: string;
   highlight: string;
   material: Record<string, string>;
@@ -77,12 +85,12 @@ export interface ResolvedNordicPalette {
 
 export const RESOLVED_NORDIC_PALETTE: Record<"light" | "dark", ResolvedNordicPalette> = {
   light: {
-    bg: "#f4f2ed", edge: "#4a463d", highlight: "#2a3d45",
+    bg: "#f4f2ed", viewport: ["#cfcabf", "#ebe7dd"], edge: "#4a463d", highlight: "#2a3d45",
     material: { lumber: "#d8c9a6", osb: "#c9a86a", rigid: "#e8d64f", batt: "#f3c6d0", gypsum: "#efeae2", membrane: "#4a4a4a", siding: "#b8bcc0", metal: "#6b7076", concrete: "#a9a9a9", masonry: "#9c5a45", fallback: "#cfc9bd" },
     member: { wood: 0xb3854f, concrete: 0xb0b0b0 },
   },
   dark: {
-    bg: "#2E3440", edge: "#D8DEE9", highlight: "#88C0D0",
+    bg: "#2E3440", viewport: ["#262b35", "#3B4252"], edge: "#D8DEE9", highlight: "#88C0D0",
     material: { lumber: "#D6B06F", osb: "#D09A57", rigid: "#EBCB8B", batt: "#D9A4B2", gypsum: "#D8DEE9", membrane: "#BFC8D5", siding: "#AEB8C6", metal: "#9AA8BA", concrete: "#B0B8C4", masonry: "#A86550", fallback: "#C4BDAE" },
     member: { wood: 0xd6b06f, concrete: 0xb0b8c4 },
   },
