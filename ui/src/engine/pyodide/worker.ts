@@ -69,7 +69,10 @@ async function init(msg: InitMsg): Promise<void> {
   const res = await fetch(msg.engineTarUrl);
   if (!res.ok) throw new Error(`engine tarball ${res.status} @ ${msg.engineTarUrl}`);
   const buf = await res.arrayBuffer();
-  pyodide.unpackArchive(buf, "tar", { extractDir: "/engine" });
+  // "gztar", not "tar": the bundle ships gzipped because Cloudflare will not compress
+  // application/x-tar, so the plain tar crossed the wire at 8 MB. unpackArchive takes any
+  // shutil.unpack_archive format and zlib is in the pyodide stdlib, so this costs nothing.
+  pyodide.unpackArchive(buf, "gztar", { extractDir: "/engine" });
   pyodide.runPython("import sys; sys.path.insert(0, '/engine')");
 
   // Run the bootstrap; ENGINE lives in the pyodide global namespace.

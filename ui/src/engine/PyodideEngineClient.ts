@@ -100,7 +100,7 @@ export class PyodideEngineClient implements EngineClient {
   private async boot(): Promise<void> {
     await this.call("init", {
       pyodideIndexUrl: PYODIDE_INDEX_URL,
-      engineTarUrl: new URL("typehaus-engine.tar", document.baseURI).href,
+      engineTarUrl: new URL("typehaus-engine.tar.gz", document.baseURI).href,
       ifcExtTarUrl: new URL(IFC_EXT_TAR, document.baseURI).href,
       ifcWasmUrl: IFC_WASM_URL,
     });

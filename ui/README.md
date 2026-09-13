@@ -13,7 +13,7 @@ emitter (→ 20).
   the offline PWA (→ 40, M4) without touching editor code.
 - **`src/engine/pyodide/`** — the offline engine host (M4 WP4.2, gate outcome b). `worker.ts`
   loads pyodide + pydantic + shapely, unpacks the bundled engine tarball
-  (`public/typehaus-engine.tar`, built by `scripts/build-pwa-assets.mjs`), and runs
+  (`public/typehaus-engine.tar.gz`, built by `scripts/build-pwa-assets.mjs`), and runs
   `bootstrap.py`, which stubs the three wasm-hostile deps (libcst/ifcopenshell/pyproj) and
   serves resolve → checks → model.json → `.glb`. Editing (libcst writeback) and IFC export are
   refused offline with a clear "requires local install" — the local `haus serve` stays the
@@ -52,7 +52,7 @@ The built app is an installable PWA. When the engine is unreachable, on a File S
 Access-capable browser the engine-error screen offers **Open house folder (offline)**: pick any
 Type:Haus house directory and the pyodide worker resolves it in-browser — view, checks, and 3D,
 no server. Editing routes back to `haus serve`. `scripts/build-pwa-assets.mjs` (run by
-`prebuild`) bundles the `typehaus` + `library` sources into `public/typehaus-engine.tar`.
+`prebuild`) bundles the `typehaus` + `library` sources into `public/typehaus-engine.tar.gz`.
 
 The degraded-mode path is verified end-to-end against real pyodide in
 `../plans/40-m4-gate.md` (load `houses/starter` → model.json + checks + valid `.glb`).

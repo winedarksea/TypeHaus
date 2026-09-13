@@ -123,11 +123,20 @@ directory `site`. `_headers` and `_redirects` are read from the publish director
 Worth knowing before you debug a "why am I still seeing the old build" report:
 
 - `/app/assets/*` is content-hashed by Vite and served `immutable` for a year.
-- `/app/typehaus-engine.tar` and `/app/catlin-house.json` are **not** hashed — the same URL gets
-  new bytes on every deploy. They are served `max-age=0, must-revalidate`, and the service worker
-  treats them stale-while-revalidate: an installed PWA shows the cached copy instantly and picks
-  the new one up on the following boot. Deploys therefore take effect one reload late for
-  returning visitors, by design.
+- `/app/typehaus-engine.tar.gz` and `/app/catlin-house.json` are **not** hashed — the same URL
+  gets new bytes on every deploy. They are served `max-age=0, must-revalidate`, and the service
+  worker fetches them **network-first**, falling back to the cache only when the network is
+  unreachable. They used to be stale-while-revalidate, which meant a returning visitor ran the
+  new app JS (content-hashed, therefore always current) against the engine and house cached on
+  their last visit. Any skew between the two boots to "Cannot reach engine" for exactly the
+  people who have been here before, and works in a browser that has never visited — which is how
+  it presented in 2026-09. The steady-state cost of going to the network first is a 304, because
+  both files are byte-deterministic.
+- The engine tarball ships **gzipped**. Cloudflare does not compress `application/x-tar`, so the
+  plain tar crossed the wire at its full ~8 MB on every cold boot against ~2.3 MB now. Its
+  `Content-Type` is pinned to `application/octet-stream` in `_headers` so no host adds a
+  `Content-Encoding: gzip` the browser would silently undo — the worker inflates it itself,
+  via `unpackArchive(…, "gztar")`.
 - `/app/index.html` and `/app/sw.js` are `no-cache`; navigations are network-first.
 
 ## First-load dependency

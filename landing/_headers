@@ -30,8 +30,12 @@
 # the same URLs. `immutable` here would pin returning visitors to a stale engine for a year, so
 # revalidate instead — the ETag makes the steady-state cost a 304, and the service worker serves
 # the cached copy immediately while the revalidation runs (stale-while-revalidate in sw.js).
-/app/typehaus-engine.tar
+# Content-Type is pinned so no host decides a `.gz` warrants `Content-Encoding: gzip`: the
+# browser would then transparently inflate it and the worker's unpackArchive(…, "gztar") would
+# be handed a plain tar.
+/app/typehaus-engine.tar.gz
   Cache-Control: public, max-age=0, must-revalidate
+  Content-Type: application/octet-stream
 /app/typehaus-ifc-ext.tar
   Cache-Control: public, max-age=0, must-revalidate
 /app/catlin-house.json
