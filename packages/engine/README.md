@@ -72,7 +72,7 @@ licensed professional, which the engine gates on and never fakes.
 ## Links
 
 - Homepage: <https://type-haus.com>
-- Source and issues: <https://github.com/colincatlin/TypeHaus>
+- Source and issues: <https://github.com/winedarksea/TypeHaus>
 
 ## License
 
