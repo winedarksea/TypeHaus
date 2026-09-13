@@ -265,7 +265,8 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
     InspectionSpec(
         id="final_electrical", label="Final electrical",
         authority="electrical", after=("drywall",),
-        check_ids=("electrical.service_load", "electrical.lighting_controls",
+        check_ids=("electrical.service_load", "electrical.panel_feeder_load",
+                   "electrical.lighting_controls",
                    "code.R327_ess_listing", "code.R327_ess_capacity",
                    "code.R327_ess_detection", "code.NEC_705_12_interconnection",
                    "code.NEC_690_12_rapid_shutdown"),

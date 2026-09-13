@@ -175,7 +175,7 @@ is still the first thing to remove.
 |---|---|---|---|---|
 | BLD-01a | Drop board-and-batten; one wall panel product | ~~HIGH~~ LOW | **KEEP — resolved 2026-09-11** | re-strike |
 | BLD-12 | No soils report, and the piers make one mandatory | HIGH | **SIMPLIFY** | +$2,500 to $5,000 |
-| BLD-06 | Service load calc rests on unlisted devices | HIGH | **SIMPLIFY** | +$0 or +$10k–15k |
+| BLD-06 | Service load calc rests on unlisted devices | HIGH | **RESOLVED 2026-09-12 — Class 320 service** | +$2.5k–5k, 320 A service |
 | BLD-01b | The girt-and-block exterior wall | HIGH | **KEEP + ENGINEERED (2026-09-12)** | screw −$0.34/ea |
 | BLD-03 | Two floor systems on the main storey | HIGH | **KEEP — resolved 2026-09-12** (product decision + finish change) | cut declined; the −$7,536 to −$13,486 stands as the measured price of the feature |
 | BLD-02 | The freestanding concrete structure | HIGH | **RESOLVED 2026-09-12 (BLD-12 still gates the piers)** | unpriced |
@@ -224,8 +224,8 @@ either, and are corrected in place: **six** cast columns not four, **10'-4"** re
 thing gating BLD-02, whose other four findings are closed, and it is code-mandatory for the
 piers), get the foam's own E331/E2178 data for the
 WRB approval (BLD-01b finding 3), and
-put a listed Power Control System behind the service calculation or upsize the
-service (BLD-06).
+and upsize the service (BLD-06 — **done 2026-09-12**: a Class 320 meter-main, not a
+listed Power Control System).
 
 ## 5. The findings in full
 
@@ -876,7 +876,50 @@ placed**, and get the chase designed into the webs. The second costs nothing but
 meeting held at the right time, and the truss order is already on the critical
 path for three trades (see the trade-visit map).
 
-### BLD-06 — The service load calculation rests on devices that are not listed for it. **HIGH · SIMPLIFY**
+### BLD-06 — The service load calculation rests on devices that are not listed for it. **HIGH · RESOLVED 2026-09-12**
+
+**RESOLVED 2026-09-12 — CLASS 320 SERVICE, and load management retired from the house
+entirely.** The premise held: three of the four credits rested on Emporia/software with no
+UL 3141 behind them and would not have survived plan review. The exit was not a $2-3k listed
+power control system but the service itself — one Class 320 HDLB meter-main with **two 200 A
+mains outdoors** (which also answers 2026 NEC 230.70(A)), at ~$2.5k-5k of increment on a
+house not yet built. **267.4 A of unmanaged 220.82 demand against 320 A**, no software
+anywhere in the calculation. `houses/catlin/DESIGN-LOG.md` §"Electrical service" carries the
+derivation; `houses/catlin/CLAUDE.md` §"Electrical service" carries what must stay true.
+
+**Two corrections to the finding below, in opposite directions.**
+
+- **Too optimistic on the EV group.** The finding says "the EV group has a defensible path,
+  because NEC 625.42(A) recognises an EVSE-side energy management system". Under the **2026**
+  625.42(A) that EVSE-side system must itself be a PCS under Article 130 Part II, and
+  Emporia's charger carries UL 2594 / 2231 / 991 and no UL 3141. So **all three** software
+  credits were exposed, not two.
+- **Too pessimistic on the strip-heat lockout.** 220.82(C)(2)/(4) credits a controller that
+  prevents a compressor and its supplemental heat from operating at the same time **in the
+  article itself** — no Article 130 device, no listing. `LM-HP1-AUX` was the FLEXX Ultra's
+  own outdoor-thermostat lockout and was earnable all along. It is retired anyway, because
+  with a 320 A service it buys nothing; the lockout is still SET, as an HVAC control setting
+  recorded on `CKT-HP1-AH`.
+
+**And "$10,000 to $15,000" is retrofit pricing.** On a new build the delta is the meter-main
+over a plain 200 A socket, a second 200 A load centre, and two short 4/0 Al SER feeders —
+all three now priced in `houses/catlin/prices.toml`. Note also that **there is no 225 A and
+no 400 A service class**: Xcel MN residential sockets are 200 A or 320 A continuous, both
+heavy-duty lever bypass, and "400 A" is trade shorthand for 320 / 0.8.
+
+**What changed in the engine.** `LoadManagement.strategy` is now a constrained literal
+(`hvac_interlock` | `noncoincident` | `pcs`) with a `listing` field, and
+`takeoff/electrical.py` **refuses** a credit whose basis does not hold — that closes the
+"no field for the listing" gap recorded at the foot of this file.
+`code.NEC_705_12_interconnection` now reads a panel's own main rather than borrowing the
+meter's `service_amps` (at 320 A it would have graded the wrong number), and a new ADVISORY
+`electrical.panel_feeder_load` grades each panel's 220.82 demand against its own main, which
+is the binding constraint once load is split across two feeders.
+
+**The Article 680 items and the 230.70(A) service-disconnect-location check are NOT closed
+here** — they are checking gaps and stay with BLD-13.
+
+The original finding, for the record:
 
 This was the finding that moved most on research, and it moved against the design.
 
@@ -918,7 +961,8 @@ review.
   service is a 320 amp continuous meter socket with an approved lever bypass;
   above that means a current-transformer cabinet. Metro pricing for 100 to 200
   amps runs $7,700 to $9,500 installed, and $10,000 to $15,000 is a defensible
-  budget for 200 to 400 on a house not yet built.
+  budget for 200 to 400 on a house not yet built. *(Corrected above: that is retrofit
+  pricing; on a new build the increment is ~$2,500 to $5,000.)*
 
 Two smaller items found alongside, and **the first draft of this file got the spa
 wrong.** The sauna's omitted GFCI is correct — 210.8(F) reaches only outdoor dwelling
@@ -1289,10 +1333,12 @@ download, not more searching.
    arithmetic closes itself. The screw is now TimberLOK TLOK08 (ESR-1078, 2" thread) and the
    joint is graded as `girt_screw/W-A-N1`. `notes/catlin_truss_engineering.md` §3 was
    rewritten. (BLD-01b finding 1)
-2. **Will a Minnesota electrical inspector accept an energy-management credit in
-   the service calculation, and under what listing?** No Minnesota bulletin,
-   amendment list or guidance was published for the 2026 code. Call the Department
-   of Labor and Industry electrical unit. (BLD-06)
+2. ~~**Will a Minnesota electrical inspector accept an energy-management credit in
+   the service calculation, and under what listing?**~~ **MOOT for this house
+   (2026-09-12)**: catlin takes no energy-management credit at all. The Class 320 service
+   fits 267.4 A unmanaged, so nothing in the calculation depends on an inspector's reading.
+   The question still stands for anyone who wants the credit, and the answer the engine now
+   requires is a UL 3141 listing (2026 NEC 130.2). (BLD-06)
 3. **The Broan B210E75RT's certified net supply at 0.4 inches water gauge.** The
    directory publishes that column but renders it in JavaScript; the spreadsheet is
    downloadable. One distributor contradicts the design's figure. (BLD-08)
@@ -1338,9 +1384,11 @@ download, not more searching.
   GlobalIds — the fix is a project, not a patch. It feeds the project management work
   deferred at the foot of `plans/TODO.md`.
 
-- **Article 680, and the checks BLD-06 would need.** Nothing in the engine cites
-  Article 680, so the spa's GFCI, its within-sight disconnect and its 680.42 bonding are
-  authored and ungraded, and `code.E3902_gfci_locations` cannot reach a 240 V outlet by
-  construction. Likewise `LoadManagement` has no field for the *listing* of the device
-  doing the controlling, which is the whole of BLD-06: the credit is applied to the
-  service calculation with nothing recording what enforces it.
+- **Article 680, and a 230.70(A) service-disconnect-location check.** Nothing in the engine
+  cites Article 680, so the spa's GFCI, its within-sight disconnect and its 680.42 bonding
+  are authored and ungraded, and `code.E3902_gfci_locations` cannot reach a 240 V outlet by
+  construction. Nothing grades where the service disconnect is, either. **Both move wholly
+  under BLD-13.** The other half of this item — `LoadManagement` having no field for the
+  *listing* of the device doing the controlling — is **CLOSED** by BLD-06's 2026-09-12
+  resolution: `strategy` is a constrained literal, `listing` exists, and an unearned credit
+  is refused rather than applied.

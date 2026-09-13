@@ -199,16 +199,17 @@ EQUIPMENT_TYPES = (
     # ONE 80-gal hybrid HPWH. Rheem ProTerra PROPH80, EcoNet-enabled: 4.5 kW resistance
     # element, 30A/240V dedicated circuit, single power whip.
     #
-    # Compressor-only draw ("Heat Pump"/"Energy Saver" mode) is ~360-500W per the datasheet;
-    # `LM-WH` (plan/circuits.py) carries 500 VA as its `max_simultaneous_va` ceiling.
-    # ESPHome's esphome-econet component forces Heat-Pump-Only mode on battery/near-peak,
-    # Hybrid otherwise — a demand-response behavior on the normal circuit (lives on
-    # `LoadManagement`, not a second `Equipment`); the breaker/panel/NEC 220.82 sizing still
-    # goes against the nameplate 4.5 kW. See `code.P2804_water_heater_relief` for the TPR.
+    # Compressor-only draw ("Heat Pump"/"Energy Saver" mode) is ~360-500W per the datasheet.
+    # ESPHome's esphome-econet component forces Heat-Pump-Only mode ON BATTERY, Hybrid
+    # otherwise — a ** BACKUP RESERVE ** behaviour that belongs with CKT-WH-240's
+    # `backup_tier=SHED`, not a load-management credit: an unlisted software governor is not
+    # a PCS (2026 NEC 130.2) and nothing in the 220.82 calculation reads it. The
+    # breaker/panel/NEC 220.82 sizing goes against the nameplate 4.5 kW. See
+    # `code.P2804_water_heater_relief` for the TPR.
     #
     # Fallback if reverted to a 120V-only plug-in HPWH (~450W, no 240V circuit): swap
     # `type_ref` on EQ-B-WH to a 120V-only EquipmentType, retag `circuit` to a 1-pole 120V
-    # circuit at ~450 VA, and delete `LM-WH`. Nothing else needs to move.
+    # circuit at ~450 VA. Nothing else needs to move.
     EquipmentType(tag="EQ-T-WATER-HEATER", name="Water heater, Rheem ProTerra 80gal hybrid heat pump (EcoNet)",
                   product_ref="PROD-RHEEM-PROPH80",
                   footprint=(inch(24), inch(24)), height=ft(5, 8),

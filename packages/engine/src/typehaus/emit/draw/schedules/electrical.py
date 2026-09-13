@@ -29,7 +29,7 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
     )
     with schedule_sheet(pdf, model, number, name) as fig:
         schedule = panel_schedule(model)
-        section(fig, 0.04, 0.90, "PANEL SCHEDULE — ED-B-PANEL (225A, 200A SERVICE)")
+        section(fig, 0.04, 0.90, "PANEL SCHEDULE")
         # The backup column names the tier, not just the fact: a reader has to be able to tell
         # the circuits that ride through an outage from the ones a relay drops.
         _TIER_LABEL = {"always_on": "BKUP-ON", "shed": "BKUP-SHED"}
@@ -61,6 +61,12 @@ def _write_panel_schedule(pdf, model: ResolvedModel, number: str, name: str) -> 
                                        f"{load['panel_rating_amps']}A panel — "
                                        + ("OK" if load["within_service"] else "OVER")),
         ]
+        # One row per panel stating a main: with the load split across two mains the
+        # service total no longer says whether either feeder fits.
+        load_rows.extend(
+            (f"{row['panel']} feeder (estimate)",
+             f"{row['demand_amps']:.1f} A of {row['main_amps']:.0f} A main")
+            for row in _panel_feeder_rows(model))
         _add_table(fig, load_rows, ("Line", "Value"), bbox=(0.04, 0.18, 0.6, 0.18))
 
         backup = backup_component_rows(model)
@@ -249,3 +255,26 @@ def _write_data_schedule(pdf, model: ResolvedModel, number: str, name: str) -> N
                  "panel schedule.\nComms conductors share no raceway with power (NEC 800.133, "
                  "725); shared penetrations are permitted.",
                  fontsize=7, family="sans-serif")
+
+
+def _panel_feeder_rows(model) -> list[dict[str, object]]:
+    """Per-panel 220.82 feeder demand — the same estimate `electrical.panel_feeder_load`
+    grades, so the sheet and the finding cannot disagree."""
+    from typehaus.takeoff import service_load_summary
+
+    types = {t.tag: t for t in model.plan.library.electrical_device_types}
+    panels = {e.tag: e for e in model.plan.all_elements()
+              if e.element_kind == "ElectricalDevice" and e.kind.value == "panel"}
+    by_panel: dict[str, set[str]] = {}
+    for circuit in model.plan.library.circuits:
+        by_panel.setdefault(circuit.panel_ref, set()).add(circuit.tag)
+    rows = []
+    for panel_ref in sorted(by_panel):
+        product = types.get(getattr(panels.get(panel_ref), "type_ref", "") or "")
+        main = getattr(product, "service_amps", None)
+        if main is None:
+            continue
+        summary = service_load_summary(model, circuit_tags=frozenset(by_panel[panel_ref]))
+        rows.append({"panel": panel_ref, "main_amps": float(main),
+                     "demand_amps": float(summary["demand_va"]) / 240.0})
+    return rows

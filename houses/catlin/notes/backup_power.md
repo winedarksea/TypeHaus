@@ -60,9 +60,14 @@ of its channels directly.
 
 **The water heater.** This house has one water heater — an 80-gal Rheem ProTerra hybrid
 HPWH on one 240V/4,500 VA circuit. `CKT-WH-240` carries the whole unit on the SHED tier,
-and its 500 VA backup contribution is enforced by `LM-WH` (`plan/circuits.py`): a Home
-Assistant automation (ESPHome's `esphome-econet`, bridging the unit's EcoNet API) forces
-Heat-Pump-Only mode whenever the house is on battery.
+and its 500 VA backup contribution comes from a Home Assistant automation (ESPHome's
+`esphome-econet`, bridging the unit's EcoNet API) that forces Heat-Pump-Only mode whenever
+the house is on battery. It is a **backup reserve measure only** — it used to be authored as
+a `LoadManagement` (`LM-WH`) and credited against the service calculation, which it never
+earned: an unlisted software governor is not a power control system (2026 NEC 130.2). It
+lives on the circuit now, as `CKT-WH-240.backup_va = 500` beside `backup_tier=SHED`, and
+nothing in the 220.82 calculation reads it. **The 500 VA is load-bearing here**: at the
+tank's 4,500 VA nameplate the SHED tier's peak does not fit the 12kPV's 8 kW continuous.
 
 ## Does the 12kPV carry it?
 
@@ -150,8 +155,9 @@ voltage the rule may read.
   clean landing is another `source=True` circuit — but `code.NEC_705_12_interconnection`
   currently applies the *service* main to any panel carrying a source, because the model has
   no feeder element. A source on `ED-B-BACKUP-PANEL` needs that feeder first. The 705.12
-  headroom is there: 225 × 1.2 − 200 = 70A allowed, 50A used, 20A spare on the main bus.
-  `LM-EV` stays the load-management hook on the charging side.
+  headroom is there: 225 × 1.2 − 200 = 70A allowed, 50A used, 20A spare on the main bus —
+  still 200 here, because `ED-T-PANEL` states its own 200 A main and the check now prefers it
+  over the Class 320 service size.
 - **Moving the ESS to the garage.** Still open, and now a bigger change than it was: the
   closet is two partitions and two wall splits, not a `room=` string.
   `code.R327_ess_capacity` already exempts garage rooms

@@ -27,12 +27,27 @@ from typehaus.model import m
 
 ELECTRICAL_DEVICE_TYPES = (
     # ``bus_amps=225`` is what `code.NEC_705_12_interconnection` computes the 120% rule
-    # against. It is the busbar rating, deliberately not the 200A service:
+    # against. It is the busbar rating, deliberately not the main:
     # NEC 705.12(B)(3)(2) sizes the allowable backfeed on the bus, and this panel is a 225A
-    # bus on a 200A main precisely so there is 70A of source headroom.
-    ElectricalDeviceType(tag="ED-T-PANEL", name="225A electrical panel (200A service)", footprint=(inch(20), inch(4)), height=ft(3),
-                          plan_symbol="panel", spaces=54, bus_amps=225,
+    # bus behind a 200A main precisely so there is 70A of source headroom.
+    #
+    # ``service_amps=200`` is THIS PANEL'S MAIN, and it has to be stated now that the
+    # service is a Class 320 meter-main (plan/electrical.py, ED-T-METER): without it the
+    # 705.12 check borrows the service size and would grade a 320A main against a 225A
+    # bus, silently loosening the backfeed allowance on a panel that never sees 320A.
+    ElectricalDeviceType(tag="ED-T-PANEL", name="225A bus, 200A main (feeder 1 of the 320A service)",
+                          footprint=(inch(20), inch(4)), height=ft(3),
+                          plan_symbol="panel", spaces=54, bus_amps=225, service_amps=200,
                           ports=(ServicePort(tag="service", service=Service.POWER_240,
+                                             position=(ft(0), ft(0), ft(0))),)),
+    # Feeder 2 of the Class 320 service: the wellness and EV loads, which are what made the
+    # 220.82 total need a service upgrade in the first place. 20 spaces for the 4 two-pole
+    # circuits in use — room to add, not room to fill. ``bus_amps=200`` equals the main:
+    # nothing backfeeds this bus, and a 225A bus here would buy headroom nobody needs.
+    ElectricalDeviceType(tag="ED-T-PANEL-2", name="200A main (feeder 2 of the 320A service)",
+                          footprint=(inch(16), inch(4)), height=ft(2, 6),
+                          plan_symbol="panel", spaces=20, bus_amps=200, service_amps=200,
+                          ports=(ServicePort(tag="feed", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
     # Backup subpanel on the EG4's dedicated load output. 12 spaces for the 7
     # in use — the spare six are room for a second always-on circuit. No ``bus_amps``:
@@ -106,6 +121,18 @@ PANEL = [
     ElectricalDevice(uid="CEP901AAAA", tag="ED-B-PANEL", kind=DeviceKind.PANEL,
                      # x=0'-10": face-mounted on W-B-W1/W2, whose inside face is x=0'-8".
                      position=pt(inch(10), ft(29)), type_ref="ED-T-PANEL",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5)), rotation=deg(90)),
+    # Feeder 2's panel, on the same W-B-W1/W2 face, SOUTH of ED-B-BACKUP-PANEL. The bays
+    # north of ED-B-PANEL are full and nothing grades a device-on-device overlap: the wall
+    # runs ED-B-BACKUP-PANEL 26'-5"..27'-7", ED-B-UTIL-RC1 27'-10"..28'-2", ED-B-PANEL
+    # 28'-2"..29'-10", ED-B-NET-PATCH 30'-4 1/2"..31'-7 1/2", the ERV duct crossing at
+    # 31'-4" and ED-B-BACKUP-ENCL 31'-10"..33'-2" — the one gap between them is 6 1/2" wide.
+    # 25'-0" centres this 16" enclosure at 24'-4"..25'-8", 9" clear of the backup panel,
+    # with the whole 23'..26' band empty. NEC 110.26 working space (36" deep, 30" wide) runs
+    # east into open basement floor. Nothing in checks/ grades working space or device
+    # overlap, so both are held by the measurements above and by eye in the viewer.
+    ElectricalDevice(uid="F7T26XHBCR", tag="ED-B-PANEL-2", kind=DeviceKind.PANEL,
+                     position=pt(inch(10), ft(25)), type_ref="ED-T-PANEL-2",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5)), rotation=deg(90)),
 ]
 

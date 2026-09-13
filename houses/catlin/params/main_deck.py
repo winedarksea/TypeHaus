@@ -514,16 +514,13 @@ DECK = Slab(
     # bays and the band bills as coated concrete. Move _BAND_Y and the finish moves too —
     # the boundary is stated once, here. Spec in notes/mixed_deck_movement_joint.md.
     #
-    # ** 2026-09-12: A COATING, NOT A CREAM POLISH. ** A polish and a coating want opposite
-    # surfaces — every coating TDS found asks for ICRI CSP 2-4, a hard-troweled cream reads
-    # below CSP 2, and a hone toward 200 grit moves further from profile rather than toward
-    # it. So the route is a LIGHT steel trowel (ACI 302.1R's maximum density for a slab
-    # receiving an adhered covering), a diamond grind to CSP 2-3, and a coating over a
-    # moisture-mitigating primer. The cream polish stays in the note as a named, costed
-    # fallback the owner may revert to at pour time. The risk the coating adds is moisture,
-    # not silica: this cap dries UPWARD ONLY (EPS below), so ASTM F2170 in-situ RH at 40% of
-    # depth is a gate and not a formality. Nothing in the engine grades it — a floor_finish
-    # is not a Layer, so no vapour check sees the film. notes/mixed_deck_movement_joint.md.
+    # ** 2026-09-12: A COATING, NOT A CREAM POLISH. ** The two want opposite surfaces —
+    # coating TDSs ask for ICRI CSP 2-4 and a hard-troweled cream reads below CSP 2 — so the
+    # route is a LIGHT steel trowel, a grind to CSP 2-3 and a coating over a
+    # moisture-mitigating primer. The cream polish stays a named, costed fallback. The risk
+    # is moisture, not silica: this cap dries UPWARD ONLY (EPS below), so ASTM F2170 in-situ
+    # RH is a real gate, and nothing in the engine grades it — a floor_finish is not a
+    # Layer, so no vapour check sees the film. notes/mixed_deck_movement_joint.md.
     floor_finish="coated-concrete",
     # Ceiling is 5/8" gypsum end to end (CLAUDE.md) — the media room below sees the same
     # board as the wood bays either side of it, no EPS layer (per the owner: EPS is always
@@ -540,18 +537,12 @@ DECK = Slab(
     # ``structural.mixed_deck_bearing_seat`` FAILs on either if it stops meeting the wood.
     # SL-G-FLOOR pins itself the same way.
     top_elevation=DECK_TOP,
-    # ** THE DECK'S STRUCTURE IS A PRESCRIPTIVE READ, NOT A SEAL. ** Until 2026-09-12 the
-    # span of this deck was graded by nothing at all: there is no engineering/ kind for a
-    # suspended slab and no check read a slab's span, so it sat outside both gates. It does
-    # not need a seal — BuildDeck publishes an allowable-live-load table for exactly this
-    # section, and reading the row is the same act as reading an IRC table.
-    # ``structural.slab_published_span`` grades it, and the four drift guards on
-    # PublishedSpan are what stop the quotation outliving the model: retype the form,
-    # deepen the cap, rename the product or raise the occupancy demand past 62 psf and the
-    # finding goes UNKNOWN naming the mismatch instead of printing a PASS off a stale row.
-    #
-    # ``member`` is spelled the way ``checks/structural/slab_span.py`` derives it from
-    # DECK_EPS_INT — form thickness, form material name, cap thickness. Do not "tidy" it.
+    # ** THE DECK'S STRUCTURE IS A PRESCRIPTIVE READ, NOT A SEAL (2026-09-12). ** Nothing
+    # graded this span before: no engineering/ kind for a suspended slab, no check reading
+    # one. It needs no seal — BuildDeck publishes the row (docstring above), and
+    # ``structural.slab_published_span`` grades it. ``member`` is spelled the way that check
+    # derives it from DECK_EPS_INT — form thickness, form material name, cap thickness — so
+    # retyping any of the three takes the finding to UNKNOWN. Do not "tidy" it.
     published_span=PublishedSpan(
         source="BuildDeck Design, Engineering and Installation Manual (BuildBlock, 2022), allowable live load table, 10\" deck / 4\" cap",
         table="10\" deck, 4\" cap, 2-#5 beam bars, 20'-0\" span, 62 psf live load",

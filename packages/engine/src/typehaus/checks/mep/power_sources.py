@@ -48,10 +48,12 @@ def _finding(cid: str, result: Result, message: str, tags: tuple[str, ...],
 def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
     """NEC 705.12(B)(3)(2) — the 120% busbar allowance, per panel that carries a source.
 
-    The main breaker term is the service size the load summary reports — the same 200A the
-    E-601 sheet prints, so the sheet and the finding cannot disagree; source breakers are
-    the circuits flagged ``source=True`` on that panel — typed, so a renamed PV circuit
-    cannot silently stop counting.
+    The main breaker term is the panel's OWN ``service_amps`` where its type states one —
+    705.12 measures a backfeed against the main ahead of the bus, and on a Class 320
+    service the meter-main's 320 A is not any one panel's main. The service size the load
+    summary reports is the fallback for a panel that states none. Source breakers are the
+    circuits flagged ``source=True`` on that panel — typed, so a renamed PV circuit cannot
+    silently stop counting.
 
     One documented limit: the model carries no feeder element, so a source landing on a
     *subpanel* has no modeled main OCPD of its own. This check applies the service main to
@@ -92,6 +94,8 @@ def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
     for panel_ref, group in sorted(by_panel.items()):
         product = types.get(getattr(panels.get(panel_ref), "type_ref", None) or "")
         bus_amps = getattr(product, "bus_amps", None)
+        # The panel's own main outranks the service size: see the docstring.
+        main_amps = float(getattr(product, "service_amps", None) or service_amps or 0.0) or None
         source_amps = sum(c.breaker_amps for c in group)
         tags = tuple([panel_ref] + sorted(c.tag for c in group))
         if bus_amps is None:
@@ -102,19 +106,20 @@ def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
                 "``bus_amps``, so the 120% allowance cannot be computed", tags, code,
                 "declare bus_amps on the panel's ElectricalDeviceType"))
             continue
-        if service_amps is None:
+        if main_amps is None:
             out.append(_finding(
                 cid, Result.UNKNOWN,
-                f"panel {panel_ref} has a {bus_amps}A bus but no service size is "
-                "computable, so the main breaker term of 705.12 is unknown", tags, code))
+                f"panel {panel_ref} has a {bus_amps}A bus but neither its type nor the "
+                "service states a main breaker, so the main term of 705.12 is unknown",
+                tags, code))
             continue
         allowance = bus_amps * _BUS_ALLOWANCE
-        total = float(service_amps) + source_amps
+        total = float(main_amps) + source_amps
         headroom = allowance - total
         if total > allowance + 1e-9:
             out.append(_finding(
                 cid, Result.FAIL,
-                f"panel {panel_ref}: {service_amps}A main + {source_amps}A of source "
+                f"panel {panel_ref}: {main_amps:g}A main + {source_amps}A of source "
                 f"breakers = {total:g}A exceeds {_BUS_ALLOWANCE:g} x {bus_amps}A bus = "
                 f"{allowance:g}A", tags, code,
                 f"reduce the source breaker(s) by {total - allowance:g}A, or use a "
@@ -122,7 +127,7 @@ def interconnection_busbar(ctx: CheckContext) -> list[Finding]:
         else:
             out.append(_finding(
                 cid, Result.PASS,
-                f"panel {panel_ref}: {service_amps}A main + {source_amps}A source "
+                f"panel {panel_ref}: {main_amps:g}A main + {source_amps}A source "
                 f"({', '.join(sorted(c.tag for c in group))}) = {total:g}A of the "
                 f"{allowance:g}A allowed on a {bus_amps}A bus — {headroom:g}A spare",
                 tags, code))

@@ -79,7 +79,8 @@ _library = Library(
     electrical_device_types=(*mep.ELECTRICAL_DEVICE_TYPES, *electrical.DEVICE_TYPES,
                              *lighting_types.LIGHTING_TYPES),
     circuits=circuits.CIRCUITS,
-    load_managements=circuits.LOAD_MANAGEMENTS,
+    # No ``load_managements``: retired 2026-09-12 with the Class 320 service. See the
+    # block at the foot of plan/circuits.py.
     transitions=transitions.TRANSITIONS,
     construction_rules=tuple(assemblies.CONSTRUCTION_RULES),
 )

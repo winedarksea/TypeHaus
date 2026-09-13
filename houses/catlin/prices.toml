@@ -2179,7 +2179,9 @@
 "ED-T-BACKUP-PANEL" = { material = { low = 90, high = 260 }, labour = { low = 250, high = 600 } }  # 1 ea
 "ED-T-DISCONNECT-3R" = { material = { low = 30, high = 90 }, labour = { low = 90, high = 220 } }  # 4 ea
 # Both EV rows are the RECEPTACLE, per the catalog name — not the EVSE that plugs into it.
-# If the Emporia unit is meant to be in the estimate it is a separate ~$400-600 line.
+# If the Emporia unit is meant to be in the estimate it is a separate ~$400-600 line. It stays
+# the charger either way: it is a listed EVSE (UL 2594 3rd ed.), and what the 2026-09-12
+# service decision retired is only the CREDIT its PowerSmart throttling used to take.
 "ED-T-EV-1450" = { material = { low = 25, high = 80 }, labour = { low = 160, high = 380 } }  # 1 ea
 "ED-T-EV-620" = { material = { low = 15, high = 45 }, labour = { low = 160, high = 380 } }  # 1 ea
 "ED-T-FLOOR-STAT" = { material = { low = 130, high = 300 }, labour = { low = 150, high = 300 } }  # 3 ea
@@ -2300,7 +2302,12 @@
 # ED-T-LT-STRIP24 and its new task sibling ED-T-LT-STRIP24-TASK bill per lineal foot through
 # `light_run_materials`, which is a declared-unpriced view, and this is a point fixture.
 "ED-T-LT-SLOT72" = { material = { low = 140, high = 420 }, labour = { low = 45, high = 100 } }  # 1 ea
-"ED-T-METER" = { material = { low = 70, high = 200 }, labour = { low = 150, high = 400 } }  # 1 ea
+# ** REPRICED 2026-09-12 WITH THE CLASS 320 RETYPE. ** This is no longer a plain $70-200
+# meter socket: it is a Class 320 heavy-duty lever-bypass COMBINATION meter-main carrying the
+# two 200 A mains outdoors (Milbank/Eaton HD class, the Xcel MN residential standard above
+# 200 A). Material is the enclosure with both mains fitted; labour is setting a 36" enclosure,
+# terminating 4/0 service conductors and the utility co-ordination the old socket also needed.
+"ED-T-METER" = { material = { low = 900, high = 1600 }, labour = { low = 600, high = 1200 } }  # 1 ea
 # The enclosure AND its contents (router, PoE switch, patch panel), per the catalog name.
 # ADDED 2026-08-22 with the three hardwired drops. A single-gang Cat 6A keystone plate is
 # a few dollars of parts; the money is the pull — a home run from ED-B-NET-PATCH, terminated
@@ -2309,6 +2316,10 @@
 "ED-T-DATA-JACK" = { material = { low = 12, high = 45 }, labour = { low = 90, high = 260 } }  # 3 ea
 "ED-T-NET-ENCLOSURE" = { material = { low = 300, high = 900 }, labour = { low = 150, high = 400 } }  # 1 ea
 "ED-T-PANEL" = { material = { low = 250, high = 700 }, labour = { low = 1700, high = 3600 } }  # 1 ea
+# Feeder 2's panel (2026-09-12). Material is a 20-space 200 A main-lug load centre; labour is
+# a fraction of ED-T-PANEL's because it carries four 2-pole circuits that were already being
+# run — the home runs land here instead of there.
+"ED-T-PANEL-2" = { material = { low = 150, high = 350 }, labour = { low = 500, high = 1000 } }  # 1 ea
 "ED-T-PV-JB" = { material = { low = 25, high = 80 }, labour = { low = 45, high = 95 } }  # 1 ea
 "ED-T-RECEPTACLE" = { material = { low = 2.5, high = 9 }, labour = { low = 38, high = 78 } }  # 68 ea
 "ED-T-RECEPTACLE-1430" = { material = { low = 12, high = 35 }, labour = { low = 45, high = 95 } }  # 1 ea
@@ -2342,7 +2353,7 @@
 # needs NO sheet metal at all — no plenum cut, no fabricated frame, no separate pressure
 # switch or limit to commission. Material is the OEM kit at list; labour is the electrical end
 # only (0.5-1 hr to set the kit and land the elements) plus commissioning the outdoor-thermostat
-# lockout LM-HP1-AUX depends on. The BRANCH CIRCUIT is NOT in this line and there no longer is
+# lockout (see CKT-HP1-AH, plan/circuits.py) depends on. The BRANCH CIRCUIT is NOT in this line and there no longer is
 # one: CKT-HP1-STRIP is deleted and the kit rides CKT-HP1-AH, whose breaker goes 15A -> 35A —
 # a breaker swap and a conductor upsize on an existing home run, not a new circuit.
 "EQ-T-GREE-FLEXX-HEATKIT-46KW" = { material = { low = 260, high = 520 }, labour = { low = 120, high = 300 } }  # 1 ea — FLEXA2LHTR05KWD, 4.6 kW at 230V, MCA 29.9 A
@@ -6015,6 +6026,11 @@ envelope-garage-corrugated-closure-strips = { low = 384, high = 864 }
 plumbing-municipal-water-sewer-and-sac = { low = 6000, high = 18000 }
 # Includes temporary construction power.
 electrical-service-entrance-and-utility = { low = 3500, high = 9000 }
+# The two feeders the Class 320 meter-main needs and no element models: 4/0 Al SER from the
+# outdoor enclosure's two 200 A mains to ED-B-PANEL and ED-B-PANEL-2 in the basement, both
+# short runs on the same west wall. No `Feeder` element exists in the engine, so this is the
+# only place they are priced (2026-09-12).
+electrical-service-feeders-4-0-al-ser = { low = 400, high = 900 }
 # 5 pairings, ~198 LF. Entirely absent today. GREW ~50 LF on 2026-09-02, when both balcony
 # condensers moved to a ground pad east of the porch: HP1 ran ~40 ft up the W-M-S2 /
 # W-S-S2 stud bay into FS-ATTIC, and HP2's three ports ~25-30 ft each through the main-floor

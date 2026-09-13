@@ -431,7 +431,7 @@ class DeviceKind(Enum):
     LIGHT = "light"
     PANEL = "panel"
     JUNCTION_BOX = "junction_box"  # NEMA 3R weatherproof exterior box (blank/gasketed)
-    METER = "meter"  # utility meter, separate from the panel (200A service)
+    METER = "meter"  # utility meter or combination meter-main, distinct from a load centre
     DISCONNECT = "disconnect"  # equipment disconnect (heat pump, hot tub, WH)
     # Any low-voltage structured-cabling endpoint: patch enclosure, wireless access point,
     # data jack, PoE camera. One kind, because they share a plan glyph and the E-COMM layer;

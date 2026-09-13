@@ -1,6 +1,7 @@
 # haus: editable
-# Catlin electrical service upgrade (plans/electrical_notes.md): 200A service, separate
-# meter, 225A panel (plan/mep.py), 240V appliance circuits, two garage EV receptacles, the
+# Catlin electrical service (plans/electrical_notes.md): a Class 320 HDLB meter-main with
+# two 200A mains, two basement panels (plan/mep_electrical.py), 240V appliance circuits,
+# two garage EV receptacles, the
 # backup subsystem's DIN enclosure, hot tub + heat-pump disconnects, PV junction box.
 #
 # All-electric: no gas, no furnace. Three Gree heat-pump systems plus electric radiant
@@ -92,11 +93,22 @@ from typehaus.model import m
 
 DEVICE_TYPES = (
     # `service_amps` is the service size as data: it's what 220.82 demand is compared
-    # against. Distinct from the panel's `bus_amps` — the 225A bus behind this 200A meter is
-    # what NEC 705.12 measures a backfeed against.
-    ElectricalDeviceType(tag="ED-T-METER", name="200A meter socket (meter separate from panel)",
-                          service_amps=200,
-                          footprint=(inch(12), inch(6)), height=inch(16),
+    # against. Distinct from a panel's `bus_amps` (what NEC 705.12 measures a backfeed
+    # against) and from a panel's own `service_amps` (that panel's main breaker).
+    #
+    # ** CLASS 320, decided 2026-09-12 (DESIGN-LOG.md "Electrical service"). ** The 220.82
+    # demand is 267 A with no load management at all, and every software credit that used
+    # to fit it inside 200 A needed a listing the hardware does not carry (2026 NEC 130.2 /
+    # 625.42(A): a PCS listed to UL 3141). A Class 320 heavy-duty lever-bypass meter-main
+    # is the Xcel MN residential socket above 200 A — there is no 225 A or 400 A service
+    # class; the trade says "400 A" because 320 / 0.8 = 400. Two 200 A mains live in this
+    # enclosure outdoors, which is also how the house meets 2026 NEC 230.70(A).
+    ElectricalDeviceType(tag="ED-T-METER",
+                          name="Class 320 HDLB meter-main, 320A continuous, two 200A mains outdoors (2026 NEC 230.70(A))",
+                          service_amps=320,
+                          # A meter-main is a tall combination enclosure, not a plain
+                          # socket: ~20" wide x 8" deep x 36" tall (Milbank/Eaton HD class).
+                          footprint=(inch(20), inch(8)), height=inch(36),
                           # A meter socket is a plain galvanised can with a glass register,
                           # not the yellow slab the electrical-domain fallback colour draws
                           # (same reason ED-T-DISCONNECT-3R names a symbol) — `plan_symbol`
@@ -120,12 +132,13 @@ DEVICE_TYPES = (
                           footprint=(inch(4), inch(4)), height=inch(4),
                           ports=(ServicePort(tag="power", service=Service.POWER_240,
                                              position=(ft(0), ft(0), ft(0))),)),
-    # The managed EVSE outlet: an Emporia Vue (whole-panel CT sensing, NEC 625.42) throttles
-    # it so the EV group never pushes the service over its ceiling — that EMS is LM-EV in
-    # plan/circuits.py. load_va stays the unmanaged continuous rating so the schedule shows
-    # what the conductors are sized for.
+    # The 14-50 EVSE outlet. The Emporia charger stays and is a listed EVSE (UL 2594 3rd
+    # ed.); what it is NOT is a power control system, so its PowerSmart throttling earns no
+    # credit in the 220.82 calculation (2026 NEC 625.42(A) -> Article 130 Part II, which
+    # wants a UL 3141 listing). load_va is the unmanaged continuous rating, which is now
+    # simply what the circuit draws.
     ElectricalDeviceType(tag="ED-T-EV-1450",
-                          name="EV receptacle, NEMA 14-50R (Emporia Vue managed EVSE)",
+                          name="EV receptacle, NEMA 14-50R",
                           nema="14-50R", load_va=9600,
                           footprint=(inch(4), inch(4)), height=inch(4),
                           ports=(ServicePort(tag="power", service=Service.POWER_240,
@@ -510,10 +523,11 @@ EQUIPMENT_TYPES = (
                   footprint=(inch(16), inch(10)), height=inch(10),
                   # ** AT-DESIGN IS ZERO, AND THAT IS THE POINT OF THE LOCKOUT. ** 15,695
                   # Btu/h is the nameplate. At this site's -15 F design temperature the kit
-                  # delivers NONE of it: LM-HP1-AUX (plan/circuits.py) is an outdoor
-                  # thermostat that enables the elements only below the compressor's -22 F
-                  # cut-out, which is what makes the elements and the compressor
-                  # non-coincident loads and keeps the house inside its 200 A service. So
+                  # delivers NONE of it: an outdoor thermostat (see CKT-HP1-AH in
+                  # plan/circuits.py) enables the elements only below the compressor's
+                  # -22 F cut-out, so the elements and the compressor are non-coincident
+                  # loads. That used to be a 220.60 credit against a 200 A service; with
+                  # the Class 320 service it is just how the unit is set up. So
                   # `mep.heating_capacity` must NOT credit it against the design-day block
                   # load — the margin it reports for System 1 is the machine's own, unaided,
                   # which is the honest reading and the whole case for the retype.
@@ -533,16 +547,18 @@ EQUIPMENT_TYPES = (
 
 # --- Service entrance + backup enclosure ---------------------------------------------
 SERVICE_DEVICES = [
-    # Exterior west wall at y=29', 7" outside the sheathing plane — the meter's back is
-    # left inside the cladding it is surface-mounted on.
+    # Exterior west wall at y=29'. x moved 1" further out with the Class 320 retype: the
+    # enclosure is 8" deep where the old socket was 6", and it is the BACK that stays put
+    # against the cladding it is surface-mounted on.
     #
-    # Height: the elevation is the *base* of the 16" socket and the project
-    # datum is the main floor, so the authored 5'-0" put the glass 8'-6" above SITE_GRADE
-    # (-2'-10") — a ladder job, not a meter. 1'-6" here is grade + 4'-4" to the base and so
-    # grade + 5'-0" to the register centre, mid-band of the utility's 4'-0"..6'-0" window.
+    # Height: the elevation is the *base* of the enclosure and the project datum is the
+    # main floor, so a 36" meter-main based at the datum runs grade + 2'-10" to grade +
+    # 5'-10" (SITE_GRADE is -2'-10"). The register sits about 8" below the top of an HDLB
+    # combination enclosure, so the glass lands at roughly grade + 5'-2" — inside the
+    # utility's 4'-0"..6'-0" window, which the old 16" socket met from a 1'-6" base.
     ElectricalDevice(uid="CEE001AAAA", tag="ED-M-METER", kind=DeviceKind.METER,
-                     position=pt(ft(0, -10.25), ft(29, 9.125)), type_ref="ED-T-METER",
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(1, 6)), room=None, rotation=deg(270)),
+                     position=pt(ft(0, -11.25), ft(29, 9.125)), type_ref="ED-T-METER",
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(0)), room=None, rotation=deg(270)),
 ]
 
 # --- the backup microgrid (notes/backup_power.md) -------------------------------------

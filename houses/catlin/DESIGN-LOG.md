@@ -2256,6 +2256,91 @@ one of them was about length.
   stem 9.2865' → 9.1198', which took sliding 1.77 → 1.80 for free.
 
 
+## Electrical service
+
+### BLD-06 answered: the service went Class 320 and load management left the house (2026-09-12)
+
+**The reviewer's premise held, and their arithmetic did not.** BLD-06 said the 191.4 A
+220.82 demand only fit the 200 A service because four `LoadManagement` groups credited
+18,240 VA, and that the devices behind three of them were not listed for it. Checked against
+the 2026 NEC — which Minnesota adopted for electrical permits filed on or after 2026-08-17,
+and which `inspections.toml [permit]` already declares as `nec_edition = "2026"` — the
+premise is right:
+
+- Article 750 became **Article 130**; 220.70 became **120.7** (a PCS setpoint must be <= 80%
+  of the monitored OCPD and set by a qualified person); **130.2** requires an energy
+  management system to be listed, and one providing overload control to be listed as a
+  **power control system (UL 3141)**. **625.42(A)** now points EV supply equipment at a PCS
+  under Article 130 Part II.
+- Emporia's certification page lists UL 61010-2-030 and UL 2808 for the Vue; the charger's
+  spec sheet lists UL 2594 / 2231 / 991. **No UL 3141, no EVEMS listing.** So `LM-EV`,
+  `LM-WELLNESS` and `LM-WH` — Emporia throttling, an Emporia contactor shed and an ESPHome /
+  EcoNet automation — were crediting amps none of them could earn.
+
+**Where the reviewer erred, in both directions.** Too optimistic on the EV group: under 2026
+625.42(A) the EV controller must itself be a PCS, so all three software credits were exposed,
+not two. Too pessimistic on the strip-heat lockout: **220.82(C)(2)/(4) credits a controller
+that prevents a compressor and its supplemental heat from operating at the same time**
+directly, and that is the FLEXX Ultra's own outdoor-thermostat lockout — no Article 130
+device, no listing, nothing to buy. `LM-HP1-AUX` was earnable all along.
+
+**The four options, measured on this model rather than estimated.**
+
+| | demand | what it needs |
+|---|---|---|
+| unmanaged | **267.4 A** | nothing |
+| keep only the code-native HVAC interlock | 248 A | an outdoor thermostat (already specified) |
+| + a listed EV PCS | 216 A | SPAN / Lumin / Eaton / Schneider hardware, ~$2.1-3.5k + install |
+| + a hardwired spa/sauna interlock under 220.60 | 198 A | contactors, and an AHJ judgement, for **1.9 A** of margin |
+
+The standard method (Part III) is worse still at 344 A. So the choice was a whole-house PCS
+or a bigger service.
+
+**Class 320 won, and the cost gap is not what the review said.** Xcel's MN residential
+standards carry two socket sizes — 200 A and 320 A continuous — both heavy-duty lever bypass
+(Landis+Gyr HQ, Square D, Milbank HD, Eaton MSL), with no CT cabinet required below 320 A
+continuous. **There is no 225 A service class and no 400 A one**: the trade says "400 A"
+because 320 / 0.8 = 400, and this house's 225 A is `ED-T-PANEL`'s busbar. On a NEW BUILD the
+increment is the meter-main delta over a plain 200 A socket, a second 200 A load centre, and
+two short 4/0 Al SER feeders on the same wall — **~$2.5-5k**, priced in `prices.toml` as
+`ED-T-METER`, `ED-T-PANEL-2` and the `electrical-service-feeders-4-0-al-ser` allowance. The
+review's $10-15k is retrofit pricing: a service change on a finished house pays for a mast,
+a re-pull and a utility disconnect this project pays for once anyway. Against that, a listed
+PCS is $2-3k of hardware plus install **and** a permanent software dependency inside the load
+calculation, on a house that already declines that dependency everywhere else.
+
+**So load management left entirely.** `load_managements=()`. None of the four groups was a
+backup item — backup shedding lives on `Circuit.backup_tier` plus the Shelly relay and its
+contactors — so nothing about the microgrid moved. What survives, demoted to what it always
+was: the aux-heat lockout is an HVAC control setting on `CKT-HP1-AH`, and the water heater's
+Heat-Pump-Only automation is a **backup reserve** measure beside `backup_tier=SHED`.
+
+**The Emporia charger stays.** It is a listed EVSE (UL 2594 3rd ed., Energy Star). What it
+lacks is a PCS listing for PowerSmart throttling, which a 320 A service does not need.
+Contingency only: if dynamic EV charging is ever to be credited again, the path is a UL 3141
+PCS, not a different charger.
+
+**Two engine consequences, both real bugs the decision exposed.**
+
+1. `code.NEC_705_12_interconnection` borrowed the METER's `service_amps` as its main-breaker
+   term. At 320 A that would have graded 320 + 50 = 370 A against a 225 A bus's 270 A
+   allowance — a FAIL on a panel whose main is 200 A, or, had the bus been larger, a silently
+   **loosened** allowance. The check now reads the panel type's own `service_amps` first and
+   falls back to the service size only where a panel states none, so both panels declare
+   `service_amps=200` and the finding still reads "200A main + 50A source ... 20A spare".
+2. With the load split across two mains the service total proves nothing about either half.
+   `electrical.panel_feeder_load` (ADVISORY, on the final-electrical inspection) runs the
+   220.82 term structure over one panel's circuits against that panel's main. It is labelled
+   an **estimate**: a subpanel feeder is properly NEC 220 Part III, and applying the
+   first-10-kVA-at-100% step per panel over-counts. ED-B-PANEL 157.5 A, ED-B-PANEL-2 117.7 A.
+
+**And the engine stopped accepting a credit on trust.** `LoadManagement.strategy` was free
+text; it is now `"hvac_interlock" | "noncoincident" | "pcs"` with a `listing` field, and
+`takeoff/electrical.py::_credit_refusal` refuses a `pcs` with no listing, a `noncoincident`
+with no source, and an `hvac_interlock` reaching anything but heat-pump circuits. A refused
+group FAILs `electrical.service_load` and its excess stays in the demand. The old spelling
+would have let exactly this house's four groups through again.
+
 ## Kitchen: the IKEA SEKTION ladder
 
 **The decision was already made; the model had not heard.** `PROD-IKEA-SEKTION` and

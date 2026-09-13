@@ -337,6 +337,8 @@ the future.
 - Orientation-tuned glass, particularly second-story south-facing windows.
 - Make it easier to "hop" into a given room for 3d viewing and rotate in spot, perhaps with a "fish eye" lens view rendering
 - Remove the fiber optic lighting from the sauna, too expensive. We are thinking of using ceiling mounted LED stars (20mm luxeon style, ledsupply, etc) using modular cobs (we like the idea of modular, open standard) or else LED strips such as https://www.ledsupply.com/sauna-led-strip-lights under the benches. Either way the driver would be located in the wall behind the insulation, possibly accessible from the workshop.
+- Possibly in second floor study, a bookshelf continuing hallways to make an alcove under the stairs
+- Consider making the dining room "candelier" a TV screen (direct-lit/FALD Mini-LED LCD, 65") screen, perhaps connected to an exterior webcam, set recessed in the ceiling a bit (still replaceable, likely with the joist space above open for more room for airflow).
 
  - `emit/draw/schedules/openings.py` prints only the U-factor column for a door
 (`_energy_columns(spec, is_door=True)` returns a 1-tuple and the door header set stops at

@@ -55,20 +55,17 @@ _HOURS_PER_DAY = 24.0
 
 
 def _governed_va(model: ResolvedModel, circuit, va: float) -> float:
-    """The most this circuit can draw once its own load management engages.
+    """The most this circuit can draw during a backup event.
 
-    Only the single-circuit case is handled: a controller managing exactly one circuit
-    (a smart appliance mode-shed, e.g. a water heater forced to Heat-Pump-Only on
-    battery) has an unambiguous per-circuit ceiling — the group's cap *is* that circuit's
-    cap. A multi-circuit group (LM-EV, LM-WELLNESS) does not currently reach the backup
-    panel and is deliberately left ungoverned here: splitting one shared cap across
-    members that might draw simultaneously needs a priority rule this model does not
-    carry, and guessing one would understate the peak rather than overstate it — the
-    wrong direction to be wrong in for a sizing check.
+    ``Circuit.backup_va`` where authored — a smart appliance held in a low-power mode while
+    the house is on battery (the water heater forced to Heat-Pump-Only), which is a BACKUP
+    fact and lives on the circuit beside ``backup_tier``. This used to read a
+    single-circuit ``LoadManagement`` instead, which conflated a backup reserve with a
+    service-calculation credit; those are different claims needing different evidence (2026
+    NEC 130.2 wants a listing for the second and nothing for the first).
     """
-    for management in model.plan.library.load_managements:
-        if management.managed_circuits == (circuit.tag,):
-            return min(va, management.max_simultaneous_va)
+    if circuit.backup_va is not None:
+        return min(va, float(circuit.backup_va))
     return va
 
 

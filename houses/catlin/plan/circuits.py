@@ -25,8 +25,11 @@ Conventions:
   down the right, and a 2-pole breaker takes ``slot`` and ``slot + 2`` (same column).
   The ESS grid port backfeeds at the bottom of the bus (40/42), opposite the main (120%
   rule); ``code.NEC_705_12_interconnection`` grades that arithmetic.
-  ED-B-PANEL carries 13 two-pole + 21 one-pole = 47 of ED-T-PANEL's 54 spaces (seven
-  spare); ED-B-BACKUP-PANEL carries 2 two-pole + 4 one-pole = 8 of its 12.
+  ED-B-PANEL is feeder 1 of the Class 320 service and ED-B-PANEL-2 is feeder 2
+  (plan/mep_electrical.py). Slots 1/5/9/13 of ED-B-PANEL-2 carry CKT-SPA, CKT-SAUNA,
+  CKT-EV-1450 and CKT-EV-620, which moved off ED-B-PANEL on 2026-09-12 — their old slots
+  9, 13, 17 and 21 there are spares now. ED-B-BACKUP-PANEL carries 2 two-pole + 4 one-pole
+  = 8 of its 12. Counts per panel come from `electrical.panel_spaces`, not from here.
   ``electrical.panel_spaces`` reconciles both against
   ``test_catlin_panel_spaces_fits_the_54_space_enclosure``. Count from the loaded plan,
   not by hand — a hand count has been wrong here before.
@@ -34,13 +37,16 @@ Conventions:
 
 from __future__ import annotations
 
-from typehaus import BackupTier, Circuit, LoadManagement
+from typehaus import BackupTier, Circuit
 
 _PANEL = "ED-B-PANEL"
 # The backup subpanel on the EG4 12kPV's dedicated load output (plan/electrical.py) — a
 # separate bus that stays energized when the grid does not, which is why tiered circuits
 # live here rather than in ED-B-PANEL. Slot numbering: same convention, odd left/even right.
 _BACKUP_PANEL = "ED-B-BACKUP-PANEL"
+# Feeder 2 of the Class 320 service (plan/mep_electrical.py, ED-T-PANEL-2): a second 200 A
+# main out of the meter-main, carrying the wellness and EV loads. Same slot convention.
+_PANEL_2 = "ED-B-PANEL-2"
 
 CIRCUITS = (
     # --- 240V dedicated loads (electrical_notes.md line 4) ---------------------------
@@ -54,15 +60,15 @@ CIRCUITS = (
     Circuit(uid="CKT002AAAA", tag="CKT-DRYER", slot=5, panel_ref=_PANEL, breaker_amps=30, poles=2,
             nema="14-30R", load_va=830, description="Dryer"),
     # The two EV circuits author load_va explicitly (same figures as their receptacle
-    # types) because LOAD_MANAGEMENTS below reads the managed group's load off the
-    # *circuits*, not the devices.
-    Circuit(uid="CKT003AAAA", tag="CKT-EV-1450", slot=9, panel_ref=_PANEL, breaker_amps=50, poles=2,
+    # types), so the schedule reads the same number the conductors are sized for whether or
+    # not a device happens to be placed on the circuit.
+    Circuit(uid="CKT003AAAA", tag="CKT-EV-1450", slot=9, panel_ref=_PANEL_2, breaker_amps=50, poles=2,
             nema="14-50R", load_va=9600,
-            description="EV charging, NEMA 14-50 (garage) — Emporia Vue managed"),
-    Circuit(uid="CKT004AAAA", tag="CKT-EV-620", slot=13, panel_ref=_PANEL, breaker_amps=20, poles=2,
+            description="EV charging, NEMA 14-50 (garage)"),
+    Circuit(uid="CKT004AAAA", tag="CKT-EV-620", slot=13, panel_ref=_PANEL_2, breaker_amps=20, poles=2,
             nema="6-20R", load_va=3840,
-            description="EV charging, NEMA 6-20 (garage) — Emporia Vue managed"),
-    Circuit(uid="CKT005AAAA", tag="CKT-SPA", slot=17, panel_ref=_PANEL, breaker_amps=50, poles=2,
+            description="EV charging, NEMA 6-20 (garage)"),
+    Circuit(uid="CKT005AAAA", tag="CKT-SPA", slot=1, panel_ref=_PANEL_2, breaker_amps=50, poles=2,
             gfci=True, load_va=11500, description="Hot tub (sunken garden)"),
     # 50A/2p GFCI per notes/sauna_shower_basement_detail.md (max 10.5 kW). EQ-B-SAUNA-HTR
     # is 9 kW = 37.5A, 46.9A at the 125% continuous factor, so 50A is the breaker.
@@ -88,7 +94,7 @@ CIRCUITS = (
     # 30 mA GFPE, which catches a real fault without the nuisance trips. ** The sauna LIGHTS
     # are a different question and DO need GFCI ** under 210.8(A)(5), which is why lights and
     # heater are on separate circuits.
-    Circuit(uid="CKT006AAAA", tag="CKT-SAUNA", slot=21, panel_ref=_PANEL, breaker_amps=60, poles=2,
+    Circuit(uid="CKT006AAAA", tag="CKT-SAUNA", slot=5, panel_ref=_PANEL_2, breaker_amps=60, poles=2,
             gfci=False, load_va=10500, description="Sauna heater (EQ-B-SAUNA-HTR), 10.5 kW"),
     # CKT-WH-240 moved to the backup subpanel — see the SHED tier below. Slot 25 is a
     # spare on the main panel now.
@@ -114,6 +120,15 @@ CIRCUITS = (
     # from a circuit of its own. 4,600 W / 240 V = 19.2 A for the elements plus ~3 A of blower
     # = 22.2 A, x125% continuous = 27.7 A; the kit's published MCA is 29.9 A and its maximum
     # overcurrent device 35 A, which is the breaker. load_va 5,300 = 4,600 + ~700 of blower.
+    #
+    # ** THE OUTDOOR-THERMOSTAT AUX-HEAT LOCKOUT IS A CONTROL SETTING, NOT A CREDIT. ** The
+    # FLEXX Ultra's 24 VAC aux output is set to enable the elements only BELOW the -22 F
+    # compressor lockout (the outdoor unit makes 21,000 Btu/h at -15 F against a 15,164
+    # Btu/h block load, so the kit is backup for the hours the compressor is off), and
+    # defrost therefore runs unheated — two to four minutes of cool discharge, the standard
+    # cold-climate arrangement. It used to be authored as LM-HP1-AUX and credited 4,600 VA
+    # under 220.82(C)/220.60, which is what kept the house inside a 200 A service. With the
+    # Class 320 service (2026-09-12) it buys nothing and is just how the unit is set up.
     Circuit(uid="CKT036AAAA", tag="CKT-HP1-AH", slot=50, panel_ref=_PANEL, breaker_amps=35, poles=2,
             load_va=5300,
             description="Heat pump 1 indoor, ducted air handler + 4.6 kW heat kit (EQ-S-HP1-AH, EQ-S-HP1-STRIP)"),
@@ -130,7 +145,7 @@ CIRCUITS = (
             nema="6-20R", gfci=True, load_va=3840,
             description="Kitchen kettle outlet (6-20R half)"),
     # The EG4 12kPV's grid port, at the opposite end of the bus from the main (120% rule
-    # headroom is why the panel is 225A on a 200A service). Both PV and battery reach the
+    # headroom is why the panel is a 225A bus on a 200A main). Both PV and battery reach the
     # service through this one breaker — the array lands on the inverter's MPPTs
     # (EQ-B-ESS-INV) rather than backfeeding on its own.
     #
@@ -303,15 +318,23 @@ CIRCUITS = (
     # 2026-08-15 — replacing the old two-tank split, which modelled one product's single
     # power whip as two appliances on two panels. `load_va=4500` is the nameplate (what
     # the breaker/schedule/220.82 estimate size against, since a resistance-element call
-    # can happen whenever `LM-WH` below hasn't forced Heat-Pump-Only mode, which is what
-    # actually governs the ~500W backup-event draw — see EQ-T-WATER-HEATER's note in
-    # plan/mep.py). `duty_cycle=0.15`: a HPWH makes a household day of hot water in 3-4
-    # hours of compressor run.
+    # can happen at any time). ** THE ESPHome/EcoNet Heat-Pump-Only AUTOMATION IS A BACKUP
+    # RESERVE MEASURE, NOT A LOAD-MANAGEMENT CREDIT. ** It belongs with `backup_tier=SHED`:
+    # on battery it holds the tank at the compressor's ~500 W instead of 4,500 W, which is
+    # what governs the backup-event draw (see EQ-T-WATER-HEATER's note in plan/mep_hvac.py).
+    # It buys nothing in the 220.82 calculation and never did — an unlisted software
+    # governor is not a PCS (2026 NEC 130.2). `duty_cycle=0.15`: a HPWH makes a household
+    # day of hot water in 3-4 hours of compressor run.
     # Slot 9 (not 5): a 2-pole breaker occupies slot and slot+2 in the same column
     # (electrical.panel_spaces); 5+7 collides with CKT-SUMP at slot 7, 9+11 is clear.
+    # `backup_va=500`: the compressor's steady-state ceiling in Heat-Pump-Only mode
+    # (datasheet figure). It is what the ESPHome/EcoNet automation holds the tank to while
+    # the house is on battery, and the number the inverter is sized against — the SHED
+    # tier's peak is over 8 kW without it. Authored on the circuit, not as a
+    # `LoadManagement`: it is a backup reserve, not a 220.82 credit.
     Circuit(uid="CKT007AAAA", tag="CKT-WH-240", slot=9, panel_ref=_BACKUP_PANEL,
             breaker_amps=30, poles=2, backup_tier=BackupTier.SHED, load_va=4500,
-            duty_cycle=0.15,
+            backup_va=500, duty_cycle=0.15,
             description="Water heater, Rheem ProTerra 80gal hybrid HPWH (EQ-B-WH; "
                         "EcoNet-automated to Heat-Pump-Only on backup)"),
     # GFCI at the breaker (2026-08-01): RM-B-FURNACE is unfinished below-grade space under
@@ -397,7 +420,8 @@ CIRCUITS = (
     # the two currencies that are scarce here. It costs one of nine spare 1-pole spaces (let
     # `electrical.panel_spaces` reconcile the count; do not hand-count), and it adds 0 VA to the
     # 220.82 summary because bathroom branch circuits are not in 220.82(B)(1)'s list — which
-    # matters when `electrical.service_load` has 7.9A of margin against the 200A service.
+    # mattered when the margin was 7.9 A against a 200 A service, and is simply free now
+    # that the Class 320 service leaves 52.6 A (267.4 A of 320 A).
     Circuit(tag="CKT-BATH-ATTIC", slot=41, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, afci=True, load_va=0,
             description="Attic guest bath receptacle"),
@@ -410,8 +434,8 @@ CIRCUITS = (
     # ** 15 A IS THE MANUFACTURER'S NUMBER, NOT THE LOAD. ** The heater draws 1.1 A / 65 W —
     # less than a light bulb. `load_va` is that 65, because the 220.82 summary has to see
     # what the house actually draws, and sizing it at the breaker would invent 1,735 VA of
-    # demand out of a required circuit rating. `electrical.service_load` has 7.9 A of margin
-    # against the 200 A service and 65 VA is 0.3 A of it.
+    # demand out of a required circuit rating. `electrical.service_load` has 52.6 A of margin
+    # against the 320 A service and 65 VA is 0.3 A of it.
     #
     # GFCI AT THE BREAKER, not a GFCI device, and here that is not just the house convention
     # (plans/TODO.md): the outlet this circuit feeds is sealed inside SL-M-TUBDK's deck box
@@ -463,8 +487,8 @@ CIRCUITS = (
     # that one is a fixed appliance rather than something plugged into a bathroom outlet.
     #
     # ** WHAT THE OTHER READING COSTS, MEASURED RATHER THAN ESTIMATED: ** at load_va=1400 on
-    # both, `electrical.service_load` goes 191.4 A -> 196.1 A against the 200 A service —
-    # 2 x 1,400 VA through 220.82(B)'s 40% remainder factor, more than half the margin left.
+    # both, `electrical.service_load` goes 267.4 A -> 272.1 A against the 320 A service —
+    # 2 x 1,400 VA through 220.82(B)'s 40% remainder factor, 4.7 A of a 52.6 A margin.
     # It still PASSES. So this zero is not load-hiding to make a check go green; it is a
     # coincidence judgement, and the revert is two numbers. ** Revisit it if anything with a
     # real duty cycle ever joins these circuits ** — they are 20 A and they feed one outlet
@@ -477,83 +501,26 @@ CIRCUITS = (
             description="Bidet seat — RM-M-BATH2 water closet (FX-M-BATH2-WC, WASHLET S5)"),
 )
 
-# --- Load management (NEC 625.42 / 220.82) ---------------------------------------------
-# Settles plans/TODO.md's "service load exceeds the service" with management rather than
-# a service upgrade (re-affirmed 2026-08-15). Three groups; LM-WH joined 2026-08-15 when
-# the two-tank water-heater model (plan/mep.py's note) was corrected to the single
-# ProTerra it should always have been.
+# --- Load management: NONE, and deliberately (2026-09-12) ------------------------------
+# This house authors no ``LoadManagement`` at all, and ``plan/manifest.py`` passes none.
 #
-# What each lever is worth (from `haus schedule` / takeoff/electrical.py::
-# service_load_summary, not authored here):
+# Until 2026-09-12 four groups (LM-EV, LM-WELLNESS, LM-WH, LM-HP1-AUX) credited 18,240 VA
+# and were the only reason the 220.82 demand fit a 200 A service. Three of them rested on
+# software — Emporia PowerSmart throttling, an ESPHome/EcoNet automation, an Emporia
+# contactor shed — and under the 2026 NEC (MN adopted it for permits filed on or after
+# 2026-08-17) a controller that limits load in a service calculation has to be a POWER
+# CONTROL SYSTEM: 130.2 requires the listing, 120.7 sets the setpoint at <= 80% of the
+# monitored OCPD, and 625.42(A) points EV supply equipment at the same Part II. Emporia's
+# gear carries UL 61010-2-030 / 2808 / 2594 / 2231 / 991 and no UL 3141, so none of those
+# three credits was ever earnable. (The fourth, LM-HP1-AUX, was earnable — 220.82(C)(2)/(4)
+# credits an interlock between a compressor and its supplemental heat directly — but with
+# no service constraint left to satisfy it buys nothing.)
 #
-#   unmanaged                                                     246.4A
-#   LM-EV: EV pair capped 5,760 -> 5,600 VA, credited at 100%     -32.7A  ->  213.7A
-#   LM-WELLNESS: spa + sauna one at a time, 9,000 VA excess *40%  -15.0A  ->  198.7A
-#   LM-WH: ProTerra forced Heat-Pump-Only near peak, 4,000 VA *40% -6.7A  ->  192.1A
+# The answer was the service, not a $2-3k listed PCS: a Class 320 HDLB meter-main with two
+# 200 A mains. ** 267.4 A of unmanaged 220.82 demand against 320 A **, no software in the
+# calculation at all. See DESIGN-LOG.md "Electrical service" for the derivation, the three
+# options priced, and why there is no such thing as a 225 A service.
 #
-# 7.9A of margin against the 200A service — still not slack; the answer past that is the
-# 400A service this pass deliberately did not buy.
-#
-# Credit sizing: a managed group's connected excess is removed from the 220.82 term it was
-# counted in. The EV pair (continuous) is credited at 100%; spa/sauna and the water heater
-# are fixed appliances under (B)(3), reached through the 40% remainder factor, so their
-# excess is worth 40 cents on the dollar. Crediting any at 100% would overstate the saving.
-LOAD_MANAGEMENTS = (
-    # Emporia Vue watches the whole-panel CTs and throttles the 14-50 EVSE. 5,600 VA =
-    # 23.3A at 240V across both EV circuits — above the 6A/1.4kW floor an EVSE must never
-    # be throttled below, so this is the guaranteed floor, not the rate it charges at.
-    LoadManagement(uid="EMSEV0AAAA", tag="LM-EV",
-                   managed_circuits=("CKT-EV-1450", "CKT-EV-620"),
-                   max_simultaneous_va=5600, strategy="ems",
-                   source="Emporia Vue dynamic load management (NEC 625.42 EMS)"),
-    # Spa + sauna, interlocked so only one heats at a time: 11,500 VA is the spa (the
-    # larger), so the group never draws more than the tub alone does. The two largest
-    # fixed appliances in the house (11.5kVA + 9kVA vs a 12kVA range), 40' apart, so this
-    # is contactor-based priority shedding on the Emporia controller, not a mechanical
-    # interlock.
-    LoadManagement(uid="EMSWL0AAAA", tag="LM-WELLNESS",
-                   managed_circuits=("CKT-SPA", "CKT-SAUNA"),
-                   max_simultaneous_va=11500, strategy="ems",
-                   source="Emporia contactor-based priority shed, spa vs sauna (NEC 220.82 "
-                          "connected-load management)"),
-    # CKT-WH-240's own governor, not a panel-level EMS: ESPHome's `esphome-econet`
-    # bridges the Rheem ProTerra's EcoNet API to Home Assistant, forcing Heat-Pump-Only
-    # mode (compressor only) whenever the house is on battery or near the 200A peak. 500VA
-    # is the compressor's steady-state ceiling in that mode (datasheet figure, see
-    # EQ-T-WATER-HEATER's note in plan/mep.py); 4,500VA nameplate is what the breaker and
-    # 220.82 base case assume otherwise. A single-circuit "group" is correct here — one
-    # appliance governing its own two internal loads, not a simplification of two tanks.
-    # System 1's aux heat against System 1's compressor — an OUTDOOR THERMOSTAT LOCKOUT, and
-    # the reason the 4.6 kW kit does not need a service upgrade to sit in this panel.
-    #
-    # ** THE 220.82(C) ARITHMETIC IS WHY THIS EXISTS. ** The kit is 4,600 W. Dropped into the
-    # heat-pump term at 100% alongside the outdoor unit it lands the house at 210.6 A against
-    # a 200 A service — `electrical.service_load` says so, and it is right to. But the two are
-    # NON-COINCIDENT loads (NEC 220.60): the FLEXX Ultra covers its zone unaided to its -22 F
-    # lockout (EQ-T-GREE-FLEXX-ULTRA-24-OD makes 21,000 Btu/h at -15 F against a 15,164 Btu/h
-    # block load), so the kit is backup for the hours BELOW that lockout — the hours the
-    # compressor is off. An outdoor thermostat enabling the elements only under the
-    # compressor's own cut-out is the control that makes that a fact rather than an intention.
-    #
-    # 5,740 VA is the larger of the two states, not the larger of the two circuits: the blower
-    # runs in both. Compressor 5,040 + blower ~700 = 5,740; elements 4,600 + blower ~700 =
-    # 5,300. So the group's connected 10,340 VA never all arrives, and 4,600 of it — exactly
-    # the elements — is what the credit removes.
-    #
-    # WHAT IT COSTS, said plainly: the kit is locked out during defrost too, so the discharge
-    # runs cool for the two to four minutes of a defrost cycle rather than being tempered by
-    # resistance heat. That is the trade for not upsizing the service, and it is the standard
-    # cold-climate arrangement, not a compromise invented here.
-    LoadManagement(uid="EMSHP0AAAA", tag="LM-HP1-AUX",
-                   managed_circuits=("CKT-HP1", "CKT-HP1-AH"),
-                   max_simultaneous_va=5740, strategy="interlock",
-                   source="Outdoor-thermostat lockout on the FLEXX Ultra's 24 VAC aux-heat "
-                          "output: the 4.6 kW heat kit is enabled only below the -22 F "
-                          "compressor lockout, so elements and compressor are non-coincident "
-                          "loads (NEC 220.60)"),
-    LoadManagement(uid="EMSWH0AAAA", tag="LM-WH",
-                   managed_circuits=("CKT-WH-240",),
-                   max_simultaneous_va=500, strategy="ems",
-                   source="ESPHome esphome-econet -> Home Assistant automation, forcing "
-                          "Rheem EcoNet Heat-Pump-Only mode on battery or near peak demand"),
-)
+# Re-adding a group is a real decision, not a tidy-up: the engine now refuses a credit
+# whose basis does not hold (takeoff/electrical.py::_credit_refusal), so a ``pcs`` without
+# a ``listing`` FAILs `electrical.service_load` rather than quietly saving amps.

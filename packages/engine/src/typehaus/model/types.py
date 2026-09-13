@@ -345,10 +345,14 @@ class ElectricalDeviceType(FurnitureType):
     bus_amps: int | None = None
     # Service ampacity (meter sockets and main-disconnect panels). Distinct from
     # ``bus_amps``: the bus is what a backfeed is measured against, this is the main
-    # breaker the 220.82 demand is compared to, and a 225A-bus panel behind a 200A meter is
-    # the ordinary case where they differ. Before this field the service size was a literal
-    # 200 inside ``takeoff/electrical.py``, so a house could not state a 400A service and
-    # every plan was graded against 200A no matter what it drew.
+    # breaker — on a METER type the service size, on a PANEL type that panel's own main,
+    # which is the term ``code.NEC_705_12_interconnection`` uses and what
+    # ``electrical.panel_feeder_load`` grades the feeder demand against. A 225A-bus panel
+    # behind a 200A meter is the ordinary case where bus and main differ; a Class 320
+    # meter-main feeding two 200A panels is the case where meter and panel do. Before this
+    # field the service size was a literal 200 inside ``takeoff/electrical.py``, so a house
+    # could not state a 400A service and every plan was graded against 200A no matter what
+    # it drew.
     service_amps: int | None = None
     # How a SWITCH device controls what it feeds: "dimmer" | "timer" | "smart" | None
     # (a plain toggle). Read by the lighting-controls check and printed in the E-602

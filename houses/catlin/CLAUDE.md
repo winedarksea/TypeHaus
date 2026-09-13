@@ -82,8 +82,8 @@ not instruction: when it disagrees with this file or the model, it is the one th
     reaches for a spare bay.
   - **`load_va=0` IS A COINCIDENCE JUDGEMENT, NOT AN OMISSION** (owner's call). Each seat is
     ~1,400 VA and only while its instantaneous heater runs — seconds per use. At the other
-    reading of 220.82 (nameplate under (B)(3)) `electrical.service_load` goes 191.4 A ->
-    196.1 A against the 200 A service and still passes, so this is not load-hiding to make a
+    reading of 220.82 (nameplate under (B)(3)) `electrical.service_load` goes 267.4 A ->
+    272.1 A against the 320 A service and still passes, so this is not load-hiding to make a
     check green. **Revisit it if anything with a real duty cycle joins these circuits.**
   - **THE WARM WATER IS THE ELECTRICITY.** An S5 heats from the COLD supply instantaneously.
     No WC in this house takes a hot run and none should — `needs` is `WATER_COLD` on all six
@@ -1701,6 +1701,49 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     deep (3 5/8"), 3/16" proud each face. Door extrados crowns at 81 5/8", window's at
     52 5/8". **Viewer-only** — an exported `.glb` still shows a plain spandrel.
 
+
+### Electrical service
+
+- **Class 320 service, decided 2026-09-12.** One Class 320 HDLB (heavy-duty lever-bypass)
+  combination meter-main at `ED-M-METER` on the west wall, 320 A continuous, carrying **two
+  200 A mains outdoors** — which is also how the house meets 2026 NEC 230.70(A). The trade
+  calls the same enclosure "400 A" because 320 / 0.8 = 400; there is no separate 400 A
+  service class, and **there is no 225 A service class either** — 225 A is `ED-T-PANEL`'s
+  BUS. (→ DESIGN-LOG.md, "Electrical service")
+- **Two feeder panels.** `ED-B-PANEL` (225 A bus, 200 A main, 54 spaces) is feeder 1;
+  `ED-B-PANEL-2` (200 A bus, 200 A main, 20 spaces) is feeder 2, on the same W-B-W1/W2 face
+  at y=25'-0" — **south** of `ED-B-BACKUP-PANEL`, because the bays north of `ED-B-PANEL` are
+  full (`ED-B-NET-PATCH`, the ERV duct crossing at 31'-4", `ED-B-BACKUP-ENCL`) and the one
+  gap between them is 6 1/2" wide. **Nothing grades a device-on-device overlap or NEC 110.26
+  working space**; both are held by the measurements in `plan/mep_electrical.py`. Feeder 2 carries `CKT-SPA`, `CKT-SAUNA`, `CKT-EV-1450`, `CKT-EV-620` and nothing
+  else. `electrical.panel_feeder_load` grades each panel's own 220.82 demand against its own
+  main (157.5 A and 117.7 A of 200 A); `electrical.service_load` grades the house against the
+  meter (267.4 A of 320 A, **52.6 A of margin**).
+- **Both panels state `service_amps=200` on their types, and must keep doing so.**
+  `code.NEC_705_12_interconnection` reads the panel's own main first and falls back to the
+  service size — drop the field and the ESS backfeed gets graded against 320 A on a 225 A
+  bus, which silently loosens the 120% allowance at 0 FAIL.
+- **No `LoadManagement` anywhere in this house, and none may be re-added without a
+  listing.** The four retired groups (`LM-EV`, `LM-WELLNESS`, `LM-WH`, `LM-HP1-AUX`) were
+  the only reason the demand ever fit 200 A. Under the 2026 NEC a controller that limits
+  load in a service calculation must be a **power control system** — 130.2 requires the
+  listing (UL 3141), 120.7 sets the setpoint at <= 80% of the monitored OCPD, 625.42(A)
+  points EV supply equipment at the same Part II — and the engine now refuses a credit whose
+  basis does not hold. The one basis that needs no listed device is `hvac_interlock`
+  (220.82(C)(2)/(4), a compressor against its own supplemental heat).
+- **Backup shedding is NOT load management** and was never touched: it lives on
+  `Circuit.backup_tier` plus the Shelly Pro 4PM relay and its contactors
+  (`backup_component_rows`). So does the water heater's ESPHome/EcoNet Heat-Pump-Only
+  automation, now authored as **`CKT-WH-240.backup_va = 500`** — a backup reserve worth
+  nothing in 220.82, and **load-bearing**: at the 4,500 VA nameplate the SHED tier's peak
+  does not fit the 12kPV's 8 kW continuous.
+- **The Emporia charger stays.** It is a listed EVSE (UL 2594 3rd ed.); what it lacks is a
+  PCS listing for PowerSmart throttling, which a 320 A service no longer needs. If dynamic
+  EV charging is ever to be credited again the path is a UL 3141 PCS, not a different
+  charger.
+- The aux-heat **outdoor-thermostat lockout is still set** (elements enabled only below the
+  -22 F compressor cut-out, so defrost runs unheated) — it is an HVAC control setting
+  recorded on `CKT-HP1-AH`, no longer a credit.
 
 ### Kitchen: the IKEA SEKTION ladder
 

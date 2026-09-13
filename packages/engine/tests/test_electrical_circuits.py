@@ -259,7 +259,10 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     load = service_load_summary(catlin_model)
     assert load["floor_area_ft2"] > 4000
     assert load["demand_amps"] > 100  # a real number, not a stub
-    assert load["panel_rating_amps"] == 225 and load["service_amps"] == 200
+    # The Class 320 meter-main (2026-09-12): 320 A of service behind a 225 A largest bus.
+    assert load["panel_rating_amps"] == 225 and load["service_amps"] == 320
+    # And it fits UNMANAGED — no software anywhere in the calculation.
+    assert load["unmanaged_demand_va"] / 240 <= 320
     # 220.82(C) selects, it does not sum: five separately controlled resistance heaters
     # (three mats, the fireplace and the garage heater) are taken at 40% and lose to the three
     # heat-pump systems at 100%, so the heating term is the heat pumps' and the resistance
@@ -274,13 +277,11 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
     # the heat-pump term instead of at 40% in the resistance one.
     assert load["resistance_heat_units"] == 5 and load["resistance_heat_factor"] == 0.40
     assert load["hvac_va"] == load["heat_pump_va"] > load["resistance_heat_va"] * 0.40
-    # And the aux-heat lockout is what keeps that 100% inside a 200 A service: LM-HP1-AUX
-    # (plan/circuits.py) is an outdoor thermostat enabling the elements only below the
-    # compressor's -22 F cut-out, so the two are non-coincident (NEC 220.60). Without it the
-    # house estimates 210.6 A.
-    assert any(credit["tag"] == "LM-HP1-AUX" and credit["excess_va"] == 4600
-               for credit in load["load_management"])
-    assert load["demand_amps"] < 200
+    # The kit's 4,600 W is counted at 100% in the heat-pump term and NOTHING credits it
+    # back: catlin retired every LoadManagement on 2026-09-12 with the Class 320 service.
+    assert load["load_management"] == []
+    assert load["hvac_va"] == load["heat_pump_va"]
+    assert load["demand_amps"] < 320
 
 
 #: RM-B-GYM's 210.52(A) gap, accepted by the owner 2026-09-07, is RETIRED 2026-09-09: with
@@ -494,13 +495,15 @@ def test_catlin_slot_map_is_complete_and_unique(catlin_model):
     columns are honest (2-pole pairs share a column because slot and slot+2 have the same
     parity).
 
-    Per panel: the house has two enclosures, and slot 2 of the backup subpanel is a
-    different piece of metal from slot 2 of the service panel. Collapsing them into one
-    map made the second panel's first circuit look like a double-tap.
+    Per panel: the house has THREE enclosures now (the two Class 320 feeder panels and the
+    backup subpanel), and slot 2 of one is a different piece of metal from slot 2 of another.
+    Collapsing them into one map made the second panel's first circuit look like a
+    double-tap.
     """
     circuits = catlin_model.plan.library.circuits
     assert all(circuit.slot is not None for circuit in circuits)
-    assert len({c.panel_ref for c in circuits}) == 2
+    assert {c.panel_ref for c in circuits} == {
+        "ED-B-PANEL", "ED-B-PANEL-2", "ED-B-BACKUP-PANEL"}
     occupied: dict = {}
     for circuit in circuits:
         positions = (circuit.slot,) if circuit.poles == 1 else (circuit.slot,
@@ -536,11 +539,11 @@ def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
     main = spaces("ED-B-PANEL", "ED-T-PANEL")
     backup = spaces("ED-B-BACKUP-PANEL", "ED-T-BACKUP-PANEL")
     assert main[0] <= main[1] and backup[0] <= backup[1]
-    # CKT-DISPOSAL spent one, CKT-WH-240's move to backup freed two, CKT-BATH2-TUB spent
-    # one more for the drop-in bath's heated surface, and CKT-HP1-STRIP's deletion gave a
-    # 2-pole back, and the two washlet circuits spent two more. Then CKT-SPD, the NEC 230.67
-    # service surge device, took a 2-pole. Seven spare.
-    assert main == (47, 54)
+    # 47 -> 39 on 2026-09-12: CKT-SPA, CKT-SAUNA, CKT-EV-1450 and CKT-EV-620 (four 2-pole,
+    # eight spaces) moved to ED-B-PANEL-2, feeder 2 of the Class 320 service. Fifteen spare
+    # here, twelve there.
+    assert main == (39, 54)
+    assert spaces("ED-B-PANEL-2", "ED-T-PANEL-2") == (8, 20)
     assert backup == (8, 12)
     required = sum(circuit.poles for circuit in circuits)
     declared = main[1]
@@ -552,13 +555,12 @@ def test_catlin_panel_spaces_fits_the_54_space_enclosure(catlin_model):
 
 # --- service load + load management ---------------------------------------------------
 
-def test_catlin_service_load_finding_reflects_the_ems_decision(catlin_model):
-    """Catlin settled the open service-load decision with an EMS (LM-EV, plan/circuits.py)
-    rather than a service upgrade, so the raw 220.82 demand is still over the 200A service
-    while the *managed* demand fits. The amps come off the takeoff, never pinned here.
+def test_catlin_service_load_finding_reflects_the_service_decision(catlin_model):
+    """Catlin settled the open service-load question with a Class 320 service (2026-09-12),
+    not with load management: it authors no `LoadManagement` at all, the credit is zero, and
+    the unmanaged 220.82 demand fits the service on its own.
 
-    Both branches are live: if the house ever slims under the service on its own, or if
-    the credit ever stops covering the overage, the check has to agree either way."""
+    Both branches stay live: if the service is ever slimmed back, the check has to fail."""
     from typehaus.takeoff import service_load_summary
 
     report = run_from_model(catlin_model, [], tier=Tier.ADVISORY)
@@ -566,26 +568,22 @@ def test_catlin_service_load_finding_reflects_the_ems_decision(catlin_model):
     summary = service_load_summary(catlin_model)
     assert findings
 
-    managements = catlin_model.plan.library.load_managements
-    circuits = {c.tag: c for c in catlin_model.plan.library.circuits}
-    assert managements, "the EMS decision is authored, not open"
-    credit_va = 0.0
-    for management in managements:
-        group_va = sum(circuits[tag].load_va or 0.0 for tag in management.managed_circuits)
-        credit_va += max(0.0, group_va - management.max_simultaneous_va)
-    assert credit_va > 0, "an EMS that credits nothing is not managing anything"
-    managed_amps = float(summary["demand_va"]) / 240.0 - credit_va / 240.0
+    assert not catlin_model.plan.library.load_managements, (
+        "the Class 320 decision retired load management from this house entirely")
+    assert summary["load_management_credit_va"] == 0
+    assert summary["demand_va"] == summary["unmanaged_demand_va"]
+    amps = float(summary["demand_va"]) / 240.0
 
-    if managed_amps > float(summary["service_amps"]):
+    if amps > float(summary["service_amps"]):
         fails = [f for f in findings if f.result.value == "fail"]
         assert fails, [f.message for f in findings]
-        assert "625.42" in fails[0].message and "interlock" in fails[0].message
+        assert "PCS" in fails[0].message and "interlock" in fails[0].message
         assert "service upgrade" in fails[0].message
         assert f"{summary['service_amps']:.0f}A" in fails[0].message
     else:
         assert all(f.result.value == "pass" for f in findings), [
             f.message for f in findings]
-        assert any("load-management credit" in f.message for f in findings)
+        assert any("no load-management credit" in f.message for f in findings)
 
 
 def test_load_management_credits_the_managed_excess():
@@ -606,18 +604,129 @@ def test_load_management_credits_the_managed_excess():
     assert any(f.result.value == "fail" for f in unmanaged)
 
     ems = LoadManagement(tag="LM-KILN", managed_circuits=("CKT-KILN",),
-                         max_simultaneous_va=10000, strategy="ems",
-                         source="synthetic test EMS")
+                         max_simultaneous_va=10000, strategy="pcs",
+                         listing="UL 3141 (synthetic)",
+                         source="synthetic test PCS")
     managed = _run(Library(circuits=(big,), load_managements=(ems,)))
     assert managed and all(f.result.value == "pass" for f in managed), [
         f.message for f in managed]
+
+
+def _lm_findings(lm, circuit):
+    plan = _plan(circuits=(circuit,), devices=(_PANEL,)).model_copy(
+        update={"library": Library(circuits=(circuit,), load_managements=(lm,))})
+    return _findings(plan, "electrical.service_load")
+
+
+def test_a_pcs_without_a_listing_earns_nothing_and_fails():
+    """2026 NEC 130.2: a power control system in a load calculation has to be listed.
+
+    This is exactly catlin's retired LM-EV — Emporia PowerSmart throttling, no UL 3141 —
+    and the old free-text `strategy` let it take 4,000 VA off the service on its own say-so.
+    """
+    from typehaus.model import LoadManagement
+
+    big = Circuit(tag="CKT-KILN", panel_ref="ED-M-PANEL", breaker_amps=100, poles=2,
+                  load_va=150000, description="Kiln bank")
+    lm = LoadManagement(tag="LM-KILN", managed_circuits=("CKT-KILN",),
+                        max_simultaneous_va=10000, strategy="pcs", source="a vendor claim")
+    findings = _lm_findings(lm, big)
+    refused = [f for f in findings if f.result.value == "fail" and "LM-KILN" in f.message]
+    assert refused and "130.2" in refused[0].message and "UL 3141" in refused[0].message
+    # And the excess stays in the demand: the service line fails too.
+    assert any(f.result.value == "fail" and "exceeds" in f.message for f in findings)
+
+
+def test_a_listed_pcs_earns_its_credit():
+    from typehaus.model import LoadManagement
+
+    big = Circuit(tag="CKT-KILN", panel_ref="ED-M-PANEL", breaker_amps=100, poles=2,
+                  load_va=150000, description="Kiln bank")
+    lm = LoadManagement(tag="LM-KILN", managed_circuits=("CKT-KILN",),
+                        max_simultaneous_va=10000, strategy="pcs",
+                        listing="UL 3141 (synthetic)", source="synthetic test PCS")
+    findings = _lm_findings(lm, big)
+    assert findings and all(f.result.value == "pass" for f in findings), [
+        f.message for f in findings]
+    assert any("PCS, UL 3141 (synthetic)" in f.message for f in findings)
+
+
+def test_an_hvac_interlock_over_an_appliance_is_refused():
+    """220.82(C) reaches a compressor and its supplemental heat. It does not reach a kiln,
+    and the credit catlin's LM-WELLNESS took over a spa and a sauna was the same error."""
+    from typehaus.model import LoadManagement
+
+    big = Circuit(tag="CKT-KILN", panel_ref="ED-M-PANEL", breaker_amps=100, poles=2,
+                  load_va=150000, description="Kiln bank")
+    lm = LoadManagement(tag="LM-KILN", managed_circuits=("CKT-KILN",),
+                        max_simultaneous_va=10000, strategy="hvac_interlock")
+    findings = _lm_findings(lm, big)
+    refused = [f for f in findings if f.result.value == "fail" and "LM-KILN" in f.message]
+    assert refused and "220.82(C)" in refused[0].message
+    assert "appliance" in refused[0].message
+
+
+# --- per-panel feeder load ------------------------------------------------------------
+
+def _feeder_plan(main_amps, circuits):
+    panel_type = ElectricalDeviceType(tag="ED-T-PNL", name="Panel", footprint=(m(.5), m(.1)),
+                                      height=m(1), spaces=42, bus_amps=225,
+                                      service_amps=main_amps, ports=(_PORT_240,))
+    panel = ElectricalDevice(tag="ED-M-PANEL", kind=DeviceKind.PANEL,
+                             position=pt(m(0), m(0)), type_ref="ED-T-PNL")
+    return _plan(circuits=circuits, devices=(panel,), types=(panel_type,))
+
+
+def test_panel_feeder_load_fails_a_panel_over_its_own_main():
+    """The constraint the service total cannot see once load is split across two mains."""
+    circuits = (Circuit(tag="CKT-BIG", panel_ref="ED-M-PANEL", breaker_amps=100, poles=2,
+                        load_va=110000, description="A very large appliance"),)
+    findings = _findings(_feeder_plan(200, circuits), "electrical.panel_feeder_load")
+    assert findings and findings[0].result.value == "fail", [f.message for f in findings]
+    assert "200A main" in findings[0].message and "estimate" in findings[0].message
+
+
+def test_panel_feeder_load_is_not_applicable_without_a_stated_main():
+    """Earned N/A, not silence: the schedule was read and no panel states a main OCPD."""
+    circuit = Circuit(tag="CKT-01", panel_ref="ED-M-PANEL", breaker_amps=20)
+    findings = _findings(_plan(circuits=(circuit,), devices=(_PANEL,)),
+                         "electrical.panel_feeder_load")
+    assert [f.result.value for f in findings] == ["not_applicable"]
+
+
+def test_705_12_reads_the_panels_own_main_not_a_320a_service():
+    """A Class 320 meter-main over a 200 A panel: borrowing the METER's service_amps would
+    grade 320 + 50 against a 225 A bus. The panel's own main is the 705.12 term."""
+    meter_type = ElectricalDeviceType(tag="ED-T-MTR", name="Meter", footprint=(m(.5), m(.2)),
+                                      height=m(1), service_amps=320, ports=(_PORT_240,))
+    meter = ElectricalDevice(tag="ED-M-METER", kind=DeviceKind.METER,
+                             position=pt(m(1), m(0)), type_ref="ED-T-MTR")
+    circuits = (Circuit(tag="CKT-LOAD", panel_ref="ED-M-PANEL", breaker_amps=20, load_va=1000,
+                        description="A load"),
+                Circuit(tag="CKT-PV", panel_ref="ED-M-PANEL", breaker_amps=50, poles=2,
+                        source=True, description="PV/ESS grid port"))
+    panel_type = ElectricalDeviceType(tag="ED-T-PNL", name="Panel", footprint=(m(.5), m(.1)),
+                                      height=m(1), spaces=42, bus_amps=225, service_amps=200,
+                                      ports=(_PORT_240,))
+    panel = ElectricalDevice(tag="ED-M-PANEL", kind=DeviceKind.PANEL,
+                             position=pt(m(0), m(0)), type_ref="ED-T-PNL")
+    plan = _plan(circuits=circuits, devices=(panel, meter),
+                 types=(panel_type, meter_type))
+    model, errors = resolve(plan)
+    assert not [f for f in errors if f.severity.value == "error"]
+    report = run_from_model(model, [], tier=Tier.CODE)
+    findings = [f for f in report.findings
+                if f.check_id == "code.NEC_705_12_interconnection"]
+    assert findings and findings[0].result.value == "pass", [f.message for f in findings]
+    assert "200A main + 50A source" in findings[0].message
 
 
 def test_load_management_flags_unknown_circuits():
     from typehaus.model import LoadManagement
 
     lm = LoadManagement(tag="LM-X", managed_circuits=("CKT-NOPE",),
-                        max_simultaneous_va=1000, strategy="interlock")
+                        max_simultaneous_va=1000, strategy="noncoincident",
+                        source="a synthetic interlock")
     circuit = Circuit(tag="CKT-01", panel_ref="ED-M-PANEL", breaker_amps=20)
     plan = _plan(circuits=(circuit,), devices=(_PANEL,)).model_copy(
         update={"library": Library(circuits=(circuit,), load_managements=(lm,))})

@@ -176,7 +176,36 @@ def _service_amps(model: ResolvedModel) -> tuple[float, str]:
     return DEFAULT_SERVICE_AMPS, "default"
 
 
-def load_management_credits(model: ResolvedModel) -> list[dict[str, object]]:
+def _credit_refusal(model: ResolvedModel, management, members, consumers) -> str:
+    """Why this group earns no credit, or "" when it earns one.
+
+    The rules are the three bases ``LoadManagement`` names, and each is refused on its own
+    terms rather than on a blanket "unlisted" — a reader has to be able to see which
+    requirement was missed.
+    """
+    if management.strategy == "hvac_interlock":
+        off = sorted({_bucket(model, c, consumers.get(c.tag, [])) for c in members} -
+                     {"heat_pump"})
+        if off:
+            return ("220.82(C) reaches a compressor and its supplemental heat, not "
+                    + ", ".join(off))
+        return ""
+    if management.strategy == "noncoincident":
+        if not management.source.strip():
+            return ("NEC 220.60 counts noncoincident loads once only where something makes "
+                    "them exclusive; no source recorded")
+        return ""
+    if management.strategy == "pcs":
+        if not management.listing.strip():
+            return ("2026 NEC 130.2 / 120.7: a PCS in a load calculation must be listed "
+                    "(UL 3141); none recorded")
+        return ""
+    return f"unknown strategy {management.strategy!r}"
+
+
+def load_management_credits(
+        model: ResolvedModel, *, circuit_tags: frozenset[str] | None = None,
+) -> list[dict[str, object]]:
     """Per-``LoadManagement`` connected excess, resolved into the buckets it came from.
 
     A controller guarantees its group never draws more than ``max_simultaneous_va``
@@ -185,17 +214,26 @@ def load_management_credits(model: ResolvedModel) -> list[dict[str, object]]:
     share of the group's connected load — exact for the homogeneous groups anyone actually
     builds (all EV, all resistance, all fixed appliance), and stated rather than hidden for
     the mixed case.
+
+    ``credited`` is the gate: a group whose basis does not hold reports its excess and a
+    ``refusal``, and ``service_load_summary`` leaves that excess in the demand. A credit
+    the code does not name and no listing backs is not a credit.
     """
     consumers = _circuit_consumers(model)
-    circuits = {c.tag: c for c in model.plan.library.circuits}
+    circuits = {c.tag: c for c in model.plan.library.circuits
+                if circuit_tags is None or c.tag in circuit_tags}
     out: list[dict[str, object]] = []
     for management in model.plan.library.load_managements:
-        missing = [tag for tag in management.managed_circuits if tag not in circuits]
+        known = {c.tag for c in model.plan.library.circuits}
+        missing = [tag for tag in management.managed_circuits if tag not in known]
         members = [circuits[tag] for tag in management.managed_circuits if tag in circuits]
+        if circuit_tags is not None and not members:
+            continue  # this group reaches no circuit in the subset
         group_va = sum(_connected_va(model, c, consumers.get(c.tag, [])) for c in members)
         excess = max(0.0, group_va - management.max_simultaneous_va)
+        refusal = _credit_refusal(model, management, members, consumers)
         by_bucket: dict[str, float] = {}
-        if excess > 0 and group_va > 0:
+        if excess > 0 and group_va > 0 and not refusal:
             for circuit in members:
                 va = _connected_va(model, circuit, consumers.get(circuit.tag, []))
                 share = excess * (va / group_va)
@@ -204,15 +242,19 @@ def load_management_credits(model: ResolvedModel) -> list[dict[str, object]]:
                     + share)
         out.append({
             "tag": management.tag, "strategy": management.strategy,
+            "listing": management.listing, "source": management.source,
             "managed_circuits": list(management.managed_circuits),
             "missing_circuits": missing,
             "group_va": group_va, "cap_va": management.max_simultaneous_va,
             "excess_va": excess, "by_bucket": by_bucket,
+            "credited": not refusal, "refusal": refusal,
         })
     return out
 
 
-def service_load_summary(model: ResolvedModel) -> dict[str, object]:
+def service_load_summary(
+        model: ResolvedModel, *, circuit_tags: frozenset[str] | None = None,
+) -> dict[str, object]:
     """NEC 220.82-style optional-method estimate against the authored service and panel bus.
 
     Labeled an estimate on the sheet: general lighting from resolved conditioned floor
@@ -225,18 +267,27 @@ def service_load_summary(model: ResolvedModel) -> dict[str, object]:
     would also mean a 1.5 kW bench heater in an unconditioned garage landing in the
     fixed-appliance bucket (B)(3), which (B) explicitly excludes heating loads from.
 
-    Authored ``LoadManagement`` is applied here rather than by the caller, and in the bucket
-    each managed circuit was counted in: an interlock over two fixed appliances saves 40% of
-    its connected excess, not 100% of it, because that is the only rate at which the excess
-    ever reached the demand.
+    Only a *credited* ``LoadManagement`` is applied, and in the bucket each managed circuit
+    was counted in: an interlock over two fixed appliances saves 40% of its connected
+    excess, not 100% of it, because that is the only rate at which the excess ever reached
+    the demand. A refused group's excess stays in the demand.
+
+    ``circuit_tags`` narrows the whole calculation to a subset — the per-panel feeder
+    estimate. The general-lighting allowance follows the subset's ``general`` circuits, so
+    a panel hosting none of them carries none of it.
     """
     floor_area_ft2 = sum(room.area_m2 for room in model.rooms if room.conditioned) * _M2_TO_FT2
     general_va = GENERAL_LIGHTING_VA_PER_FT2 * floor_area_ft2 + SMALL_APPLIANCE_AND_LAUNDRY_VA
 
     consumers = _circuit_consumers(model)
+    scope = [c for c in model.plan.library.circuits
+             if circuit_tags is None or c.tag in circuit_tags]
+    if circuit_tags is not None and not any(
+            _bucket(model, c, consumers.get(c.tag, [])) == "general" for c in scope):
+        general_va = 0.0
     connected: dict[str, float] = {}
     resistance_heat_units = 0
-    for circuit in model.plan.library.circuits:
+    for circuit in scope:
         bucket = _bucket(model, circuit, consumers.get(circuit.tag, []))
         if bucket in ("source", "general"):
             continue  # a source is not a load; general is the 3 VA/ft2 allowance above
@@ -245,7 +296,7 @@ def service_load_summary(model: ResolvedModel) -> dict[str, object]:
         if bucket == "resistance_heat":
             resistance_heat_units += 1
 
-    credits = load_management_credits(model)
+    credits = load_management_credits(model, circuit_tags=circuit_tags)
     managed: dict[str, float] = {}
     for credit in credits:
         for bucket, va in credit["by_bucket"].items():  # type: ignore[union-attr]
