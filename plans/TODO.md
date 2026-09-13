@@ -27,9 +27,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   That pedestal is gone (retired 2026-09-13, unreferenced), so a fix now has to author its
   own — which is the honest cost, since the dead one was a bare 12" concrete layer with no
   post or bearing geometry and would not have solved the overlap on its own.
-- **`HGAM10` prints as two BOM rows, 2 + 10.** The garden's two porch ties are filed
-  `HURRICANE_TIE` while the other ten are `POST_CAP`. The total of 12 is right; the kind split
-  is the inconsistency, and it is a model edit.
 
 
 - **1/2" sheathing lap is undeclared.** `_clip_l_corner` mitres all layers on the angular

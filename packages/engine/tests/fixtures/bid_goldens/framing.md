@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** 93e7451cffb36a37  
-**Lines:** 116
+**Model hash:** ef763499da18baba  
+**Lines:** 115
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -85,8 +85,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | H2.5A hurricane/seismic tie | 10 | ea |  | building |
 | H2.5ASS stainless hurricane/seismic tie | 6 | ea |  | building |
 | H2.5AZ ZMAX hurricane/seismic tie | 28 | ea |  | building |
-| HGAM10 masonry gusset angle | 2 | ea |  | building |
-| HGAM10 masonry gusset angle | 10 | ea |  | building |
+| HGAM10 masonry gusset angle | 12 | ea |  | building |
 | HUC concealed-flange masonry/concrete hanger | 2 | ea |  | building |
 | HUC212-3 concealed-flange hanger, triple 2x12 | 4 | ea |  | building |
 | KBS1Z knee-brace / beam strap (ZMAX) | 2 | ea |  | building |
@@ -241,7 +240,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | H2.5A hurricane/seismic tie | — |
 | H2.5ASS stainless hurricane/seismic tie | — |
 | H2.5AZ ZMAX hurricane/seismic tie | — |
-| HGAM10 masonry gusset angle | — |
 | HGAM10 masonry gusset angle | — |
 | HUC concealed-flange masonry/concrete hanger | — |
 | HUC212-3 concealed-flange hanger, triple 2x12 | — |

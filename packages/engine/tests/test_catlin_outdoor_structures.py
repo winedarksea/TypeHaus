@@ -393,9 +393,12 @@ def test_the_two_beam_on_column_ties_reach_concrete(catlin_model) -> None:
     Both are HGAM10 masonry gusset angles: #14 screws into the wood leg, Titen Turbo into
     the concrete — an H2.5A's published values are nails into lumber on BOTH legs, which
     would splice the two beam ends across the pour instead of holding either down to it.
-    The ``ConnectorKind`` is unchanged on purpose — ``takeoff/uplift.py`` keys the
-    beam-to-post link on the kind and never on the size, so this moves the BOM and no
-    finding. No authored H2.5A is left in the house.
+    Every HGAM10 in the house is a HURRICANE_TIE as of 2026-09-13: the part is a hurricane
+    tie wherever it lands, and sitting on a cast column top does not make it a post cap.
+    The ten that used to be POST_CAP joined these two, which merged the BOM's split
+    2 + 10 rows into one row of twelve at the same money and left every finding byte
+    identical — ``_POST_TOP_KINDS`` already held both kinds. No authored H2.5A is left in
+    the house.
     """
     for tag, column in (("CN-SG-TIE-COL", "PT-SG-COL"), ("CN-SG-TIE-FCOL", "PT-SG-FCOL")):
         tie = catlin_model.plan.by_tag(tag)

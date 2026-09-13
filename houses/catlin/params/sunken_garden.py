@@ -3561,7 +3561,7 @@ for _row, _y, _rise in _PILLAR_ROWS:
     for _i in _CORNER_PILLAR_INDICES:
         CONNECTORS.append(Connector(
             uid=_CORNER_SEAT_UID[(_row, _i)], tag=f"CN-SG-SEAT-{_row}{_i}",
-            kind=ConnectorKind.POST_CAP,
+            kind=ConnectorKind.HURRICANE_TIE,
             position=pt(ft(_PILLAR_X[_i - 1]), ft(_y)),
             elevation=_balcony_beam_soffit + _rise, size="HGAM10",
             connects=(_CORNER_SEAT_BEAM[(_row, _i)], f"PT-SG-B{_row}{_i}")))

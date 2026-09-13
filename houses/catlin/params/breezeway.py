@@ -392,7 +392,7 @@ for _i, (_t, _x, _y, _beam) in enumerate((
         connects=(_beam, f"PT-BW-{_t}")))
     SEAT_BEARINGS.append(Connector(
         uid=f"BWSG{_i}AAAAAA"[:10], tag=f"CN-BW-TIE-{_t}",
-        kind=ConnectorKind.POST_CAP, position=pt(ft(_x), ft(_y)),
+        kind=ConnectorKind.HURRICANE_TIE, position=pt(ft(_x), ft(_y)),
         elevation=ft(BEARING_TOP_FT), size="HGAM10",
         connects=(_beam, f"PT-BW-{_t}")))
 
@@ -425,7 +425,7 @@ for _i, (_t, _y) in enumerate((("E", PIER_LINE_Y_FT), ("NE", GARAGE_SEAT_Y_FT)))
         connects=("BM-BW-RE", f"PT-BW-R{'E' if _t == 'E' else 'NE'}")))
     EAST_HEADER_BEARINGS.append(Connector(
         uid=f"BWEG{_i}AAAAAA"[:10], tag=f"CN-BW-TIE-R{_t}",
-        kind=ConnectorKind.POST_CAP, position=pt(ft(ROOF_COLUMN_EAST_X_FT), ft(_y)),
+        kind=ConnectorKind.HURRICANE_TIE, position=pt(ft(ROOF_COLUMN_EAST_X_FT), ft(_y)),
         elevation=ft(HEADER_SOFFIT_FT), size="HGAM10",
         connects=("BM-BW-RE", f"PT-BW-R{'E' if _t == 'E' else 'NE'}")))
 

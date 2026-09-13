@@ -202,11 +202,13 @@ def test_an_undeclared_bearing_is_still_reported_as_un_gradeable(ctx) -> None:
     assert "declares no `supported_by`" in finding.message
 
 
-def test_an_authored_hurricane_tie_connects_a_beam_to_its_column(findings) -> None:
+def test_a_gusset_on_a_cast_column_connects_a_beam_to_it(findings) -> None:
     """``CN-SG-TIE-COL`` / ``CN-SG-TIE-FCOL`` are the uplift connection at the two columns.
 
-    They are HURRICANE_TIE, not HOLD_DOWN. A check that only recognised straps and caps
-    reported all four of these beam ends as breaks while the plan had already modelled them.
+    They are HGAM10 masonry gussets, authored HURRICANE_TIE like every other HGAM10 in the
+    house — a beam landing on a pour is held down by a tie, not capped by a post cap. A
+    ``_POST_TOP_KINDS`` that named only the strap and the cap reported all four of these
+    beam ends as breaks while the plan had already modelled them.
     """
     for beam, column in (("BM-SG-BKW", "PT-SG-COL"), ("BM-SG-BKE", "PT-SG-COL"),
                          ("BM-SG-FRW", "PT-SG-FCOL"), ("BM-SG-FRE", "PT-SG-FCOL")):
