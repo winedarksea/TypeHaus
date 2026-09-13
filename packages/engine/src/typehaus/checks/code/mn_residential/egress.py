@@ -113,10 +113,17 @@ def basement_storey_egress(ctx: CheckContext) -> list[Finding]:
         if not below:
             continue
         room_tags = {room.tag for room in rooms}
+        # Openings anywhere on this storey's LEVEL, not just under its own tag. R310.1 asks
+        # for an opening "into a public way, yard or court", and a court is by definition
+        # another structure: the sunken garden's archways are the basement's way out and are
+        # filed on the court's own storey. Requiring the host wall to carry this storey's tag
+        # made the answer depend on which building a wall happened to be filed under, which
+        # is the axis the storey key stopped carrying (→ PlanModel.level_of).
+        here = set(ctx.plan.level_of(storey.tag))
         found = None
         for opening in ctx.model.openings:
             wall = ctx.model.wall(opening.host_wall)
-            if wall is None or wall.storey != storey.tag:
+            if wall is None or wall.storey not in here:
                 continue
             if not _wall_is_exterior(ctx, wall, rooms_by_storey):
                 continue

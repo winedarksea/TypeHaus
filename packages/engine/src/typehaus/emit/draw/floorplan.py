@@ -231,13 +231,15 @@ def _emit_slabs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
                         if s.category == "slab" and s.storey == storey),
                        key=lambda s: s.uid):
         _draw(slab.outline, slab.uid, slab.tag)
-    # Only a deck with no walls around it: an interior floor's subfloor covers the whole
-    # storey and drawing its rectangle would put a box over every room plan.
+    # Only a deck no rooms sit on: an interior floor's subfloor covers the whole storey and
+    # drawing its rectangle would put a box over every room plan.
     walled = {wall.storey for wall in model.walls}
     for floor in sorted((f for f in model.floors
                          if f.storey == storey and len(f.deck_outline) >= 3),
                         key=lambda f: f.uid):
-        if floor.storey in walled and _has_enclosing_walls(model, floor):
+        if _is_interior_floor(model, floor, rooms):
+            continue
+        if not rooms and floor.storey in walled and _has_enclosing_walls(model, floor):
             continue
         _draw(floor.deck_outline, floor.uid, floor.tag)
 
@@ -255,6 +257,30 @@ def _surface_name(tag: str) -> str:
     if len(parts) > 1 and len(parts[0]) <= 2 and parts[0].isalpha():
         parts = parts[1:]
     return " ".join(parts) if parts else tag
+
+
+#: Share of a deck's area that must lie under rooms before it counts as an interior floor.
+#: Catlin separates at 0.0 % against 90.6 %, so the threshold is nowhere near anything.
+_INTERIOR_FLOOR_COVERAGE = 0.5
+
+
+def _is_interior_floor(model: ResolvedModel, floor, rooms) -> bool:
+    """True when rooms sit on this floor, so its outline would box in the room plan.
+
+    Replaces "does a wall stand inside the footprint", which was a proxy for the same
+    question and stopped agreeing with it. The north entry's landing is an open-air deck with
+    a SCREEN WALL standing on it: once the screen and the landing shared a storey the proxy
+    called the landing interior and silently dropped it from A-102 — while the porch and the
+    balcony, which no wall touches, kept drawing. Rooms are what the rule is actually about;
+    the docstring always said so.
+    """
+    if not rooms:
+        return False
+    deck = Polygon(floor.deck_outline)
+    if not deck.is_valid or deck.area <= 1e-9:
+        return False
+    covered = sum(deck.intersection(room).area for room in rooms if room.is_valid)
+    return covered / deck.area >= _INTERIOR_FLOOR_COVERAGE
 
 
 def _has_enclosing_walls(model: ResolvedModel, floor) -> bool:

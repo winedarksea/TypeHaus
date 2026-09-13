@@ -14759,7 +14759,7 @@
         481.58333334645675,
         -109.4375
       ],
-      "text": "BASEMENT FLOOR / G-FOUNDATION FLOOR / COURT-LOW FLOOR / YARD-LOW FLOOR  EL. -9'-1\"",
+      "text": "BASEMENT FLOOR  EL. -9'-1\"",
       "height": 6.222222222222221,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -14792,52 +14792,13 @@
       },
       "at": [
         517.5833333464568,
-        -35.844444444444434
+        -34.0
       ],
       "to": [
         481.58333334645675,
         -34.0
       ],
       "text": "GRADE  EL. -2'-10\"",
-      "height": 6.222222222222221,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "symbol",
-      "name": "level-marker",
-      "insert": [
-        481.58333334645675,
-        -12.000000000000005
-      ],
-      "rotation": 0.0,
-      "scale": 1.0,
-      "layer": "A-ANNO-SYMB",
-      "params": {},
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          481.58333334645675,
-          -12.000000000000005
-        ],
-        "name": "G-FOUNDATION T.O. PLATE"
-      },
-      "at": [
-        517.5833333464568,
-        -17.922222222222217
-      ],
-      "to": [
-        481.58333334645675,
-        -12.000000000000005
-      ],
-      "text": "G-FOUNDATION T.O. PLATE / GARAGE FLOOR / ENTRY-LOW FLOOR  EL. -1'-0\"",
       "height": 6.222222222222221,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -14876,85 +14837,7 @@
         481.58333334645675,
         0.0
       ],
-      "text": "BASEMENT T.O. PLATE / COURT-LOW T.O. PLATE / YARD-LOW T.O. PLATE / MAIN FLOOR / G-DECK FLOOR / COURT-MAIN FLOOR / ENTRY FLOOR / YARD-GRADE FLOOR  EL. 0'-0\"",
-      "height": 6.222222222222221,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "symbol",
-      "name": "level-marker",
-      "insert": [
-        481.58333334645675,
-        47.99999999999999
-      ],
-      "rotation": 0.0,
-      "scale": 1.0,
-      "layer": "A-ANNO-SYMB",
-      "params": {},
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          481.58333334645675,
-          47.99999999999999
-        ],
-        "name": "ENTRY-LOW T.O. PLATE"
-      },
-      "at": [
-        517.5833333464568,
-        47.99999999999999
-      ],
-      "to": [
-        481.58333334645675,
-        47.99999999999999
-      ],
-      "text": "ENTRY-LOW T.O. PLATE  EL. 4'-0\"",
-      "height": 6.222222222222221,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "symbol",
-      "name": "level-marker",
-      "insert": [
-        481.58333334645675,
-        88.0
-      ],
-      "rotation": 0.0,
-      "scale": 1.0,
-      "layer": "A-ANNO-SYMB",
-      "params": {},
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          481.58333334645675,
-          88.0
-        ],
-        "name": "GARAGE T.O. PLATE"
-      },
-      "at": [
-        517.5833333464568,
-        88.0
-      ],
-      "to": [
-        481.58333334645675,
-        88.0
-      ],
-      "text": "GARAGE T.O. PLATE  EL. 7'-4\"",
+      "text": "BASEMENT T.O. PLATE / MAIN FLOOR  EL. 0'-0\"",
       "height": 6.222222222222221,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -14993,7 +14876,7 @@
         481.58333334645675,
         120.0
       ],
-      "text": "MAIN T.O. PLATE / SECOND FLOOR / COURT-UPPER FLOOR  EL. 10'-0\"",
+      "text": "MAIN T.O. PLATE / SECOND FLOOR  EL. 10'-0\"",
       "height": 6.222222222222221,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -15205,78 +15088,6 @@
           "kind": "point",
           "xy": [
             481.58333334645675,
-            47.99999999999999
-          ],
-          "name": "ENTRY-LOW T.O. PLATE"
-        }
-      ],
-      "p0": [
-        481.58333334645675,
-        0.0
-      ],
-      "p1": [
-        481.58333334645675,
-        47.99999999999999
-      ],
-      "offset": 6.0,
-      "height_pt": 6.5,
-      "layer": "A-ANNO-DIMS",
-      "text": null,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            481.58333334645675,
-            47.99999999999999
-          ],
-          "name": "ENTRY-LOW T.O. PLATE"
-        },
-        {
-          "kind": "point",
-          "xy": [
-            481.58333334645675,
-            88.0
-          ],
-          "name": "GARAGE T.O. PLATE"
-        }
-      ],
-      "p0": [
-        481.58333334645675,
-        47.99999999999999
-      ],
-      "p1": [
-        481.58333334645675,
-        88.0
-      ],
-      "offset": 6.0,
-      "height_pt": 6.5,
-      "layer": "A-ANNO-DIMS",
-      "text": null,
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "dimension",
-      "kind": "linear",
-      "ends": [
-        {
-          "kind": "point",
-          "xy": [
-            481.58333334645675,
-            88.0
-          ],
-          "name": "GARAGE T.O. PLATE"
-        },
-        {
-          "kind": "point",
-          "xy": [
-            481.58333334645675,
             120.0
           ],
           "name": "MAIN T.O. PLATE"
@@ -15284,7 +15095,7 @@
       ],
       "p0": [
         481.58333334645675,
-        88.0
+        0.0
       ],
       "p1": [
         481.58333334645675,

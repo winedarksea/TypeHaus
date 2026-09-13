@@ -212,14 +212,17 @@ def test_only_the_porch_sisters_a_deck_joist(catlin_model):
         found = [m for m in floor.members if m.category == "sister_joist"]
         assert floor.tag not in unsistered or found == [], floor.tag
         sisters.extend((floor.tag, m) for m in found)
-    assert [tag for tag, _ in sisters] == [
-        "FS-SG-PORCH", "FS-SG-PORCH", "FS-M-WEST"]
+    # Order follows `model.floors`, which follows storey order — and the porch is the COURT's
+    # floor now (`court-main`), resolved after the house's. The set is what this asserts.
+    assert sorted(tag for tag, _ in sisters) == [
+        "FS-M-WEST", "FS-SG-PORCH", "FS-SG-PORCH"]
     # Full span, tip to tip: a sister that stops short carries nothing where the load is
     # (``resolve/floors.py::_reinforcement_members``). 17.9' and not the 18'-0" bearing grid
     # — the joist it doubles stops 1 1/4" inboard of the foundation's framing face, behind
     # the rim board, and the sister is cut to the joist rather than to the grid line
     # (``resolve/floor_ends.py``).
-    assert round(sisters[-1][1].length_m / 0.3048, 2) == 17.9
+    full_span = next(m for tag, m in sisters if tag == "FS-M-WEST")
+    assert round(full_span.length_m / 0.3048, 2) == 17.9
     rows = {(row["profile"], row["category"]) for row in framing_takeoff(catlin_model)}
     assert sorted(key for key in rows if key[1] == "sister_joist") == [
         ("11.875 I-joist", "sister_joist"), ("2x8", "sister_joist")]

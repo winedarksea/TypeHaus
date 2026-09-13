@@ -363,9 +363,17 @@ def test_a_sleeve_the_run_misses_does_not_protect_it(catlin_model):
     sleeve = catlin_model.plan.by_tag("SP-GF-S-HYD")
     # Slide it 8" off the run's x=5' line, still inside its host footing so it resolves.
     strayed = sleeve.model_copy(update={"position": pt(ft(5, 8), ft(41))})
+    # Patch the storey that actually HOLDS the sleeve, found rather than named: this read
+    # "main" until 2026-09-13, when the garage's MEP moved to its own `g-deck`. A
+    # `with_elements` call naming the wrong storey is a silent no-op — the sleeve never
+    # strayed, the crossing kept its by-name PASS, and the test asserted FAIL against a
+    # model identical to the control.
+    host = next(storey.tag for storey in catlin_model.plan.storeys
+                if any(e.tag == sleeve.tag
+                       for e in catlin_model.plan.storey_elements(storey.tag)))
     patched = catlin_model.plan.with_elements(
-        "main", [strayed if e.tag == sleeve.tag else e
-                 for e in catlin_model.plan.storey_elements("main")])
+        host, [strayed if e.tag == sleeve.tag else e
+               for e in catlin_model.plan.storey_elements(host)])
     model, _ = resolve(patched)
     findings = [f for f in footing_clearance(
         type(ctx)(plan=patched, model=model, preferences=ctx.preferences,

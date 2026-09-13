@@ -287,12 +287,21 @@ def emit_level_markers(b: SceneBuilder, levels: list[Level],
 def merged_levels(model: ResolvedModel) -> list[Level]:
     """Grade, each storey's floor and top-of-plate, and the ridge — coincident lines merged."""
     named: list[tuple[str, float]] = [("GRADE", grade_datum(model))]
-    for storey in sorted(model.plan.storeys, key=lambda item: item.elevation.meters):
-        named.append((f"{storey.tag.upper()} FLOOR", storey.elevation.meters))
-        storey_walls = [wall for wall in model.walls if wall.storey == storey.tag]
-        if storey_walls:
-            named.append((f"{storey.tag.upper()} T.O. PLATE",
-                          max(wall.z1_m for wall in storey_walls)))
+    # One caption per LEVEL, not per storey. A storey is a datum within one building, so four
+    # of catlin's stand on the basement's: naming each produced the caption "BASEMENT FLOOR /
+    # G-FOUNDATION FLOOR / COURT-LOW FLOOR / YARD-LOW FLOOR", which says four times over what
+    # a datum line exists to say once. The level is named for the floor a reader knows.
+    #
+    # The plate is the level's highest, so a level holding two structures reports the taller
+    # one's. An accessory building's own plate is a real datum, but it is one a section CUT
+    # THROUGH THAT BUILDING should caption, and this list is built for the whole set.
+    for primary, here in model.plan.levels():
+        named.append((f"{primary.tag.upper()} FLOOR", primary.elevation.meters))
+        tags = {storey.tag for storey in here}
+        level_walls = [wall for wall in model.walls if wall.storey in tags]
+        if level_walls:
+            named.append((f"{primary.tag.upper()} T.O. PLATE",
+                          max(wall.z1_m for wall in level_walls)))
     if model.roofs:
         named.append(("RIDGE", max(roof.ridge_z_m for roof in model.roofs)))
 

@@ -50,16 +50,20 @@ def test_each_framed_storey_gets_its_four_perimeter_lines(catlin_model_ro):
         assert len(lines) == 4, f"{storey}: {[line.tag for line in lines]}"
         assert {line.direction for line in lines} == {"x", "y"}
         assert all(abs(line.length_ft - 36.0) < 0.5 for line in lines)
-    # The garage storey carries FIVE, and the odd one out is not a garage wall at all:
-    # `W-BW-SCREEN` is the north entry canopy's west shear panel, filed on this storey with
-    # the canopy roof it braces. It is genuinely a braced wall line — sheathed both faces,
-    # standing on the seat beams over two piers — and 6'-6 3/4" long rather than 24'-0",
-    # which is why the length assertion below excludes it by tag instead of by count.
+    # The garage carries its OWN four, and nothing else. This assertion used to read five,
+    # and its comment recorded why: `W-BW-SCREEN` is the north entry canopy's west shear
+    # panel, 6'-6 3/4" long rather than 24'-0", which was filed on the garage's storey
+    # because the entry had no storey of its own to be filed on. It is a genuine braced wall
+    # line — sheathed both faces, standing on the seat beams over two piers — belonging to a
+    # different structure, and a garage's braced-wall count is exactly the thing it should
+    # not appear in. Giving the entry `entry-low` separated them; this is that separation.
     garage = braced_wall_lines(catlin_model_ro, "garage")
-    assert len(garage) == 5, [line.tag for line in garage]
-    perimeter = [line for line in garage if "W-BW-SCREEN" not in line.wall_tags]
-    assert len(perimeter) == 4
-    assert all(abs(line.length_ft - 24.0) < 0.5 for line in perimeter)
+    assert len(garage) == 4, [line.tag for line in garage]
+    assert all(abs(line.length_ft - 24.0) < 0.5 for line in garage)
+    assert not [line for line in garage if "W-BW-SCREEN" in line.wall_tags]
+
+    entry = braced_wall_lines(catlin_model_ro, "entry-low")
+    assert [line.wall_tags for line in entry] == [("W-BW-SCREEN",)]
 
 
 def test_a_poured_wall_is_not_a_braced_wall_line(catlin_model_ro):
@@ -94,12 +98,18 @@ def test_the_sheet_says_on_itself_that_the_panels_are_missing(catlin_model_ro):
     assert [n for n in scene.nodes if isinstance(n, Polyline) and n.layer == BWL_LAYER]
 
 
-def test_a_sheet_exists_for_every_storey_that_has_lines(catlin_model_ro):
-    storeys = [s.tag for s in catlin_model_ro.plan.storeys
-               if has_braced_wall_content(catlin_model_ro, s.tag)]
+def test_a_sheet_exists_for_every_level_that_has_lines(catlin_model_ro):
+    # One sheet per LEVEL. MNSPECT runs a braced-wall inspection per floor, and the garage's
+    # shear panels are on the floor the garage is attached to — not a sheet of their own
+    # (→ emit/draw/datum, PlanModel.levels).
+    from typehaus.emit.draw.datum import model_at_level
+
+    levels = [primary.tag for primary, _here in catlin_model_ro.plan.levels()
+              if has_braced_wall_content(model_at_level(catlin_model_ro, primary.tag),
+                                         primary.tag)]
     numbers = [s.number for s in build_sheet_index(catlin_model_ro)
                if s.number.startswith("S-103")]
-    assert len(numbers) == len(storeys) > 0
+    assert len(numbers) == len(levels) > 0
 
 
 def test_line_spacing_passes_and_names_the_clause(catlin_model_ro):

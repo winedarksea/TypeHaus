@@ -51,7 +51,15 @@ def test_foundation_plan_draws_basement_walls_and_slab(catlin_model):
     # foundation layer. W-B-S2 replaces it: the sunken garden's sauna curb, a real 7 1/4"
     # pour on FT-B-S2.
     assert {"W-B-S1", "W-B-S2", "W-GF-N"} <= wall_tags
-    assert all(catlin_model.wall(tag).storey in ("basement", "garage") for tag in wall_tags)
+    # By LEVEL, not by storey tag. S-100 draws every FoundationWall in the project, and the
+    # sunken garden's curbs, the raised garden's and the garage's frost stems now sit on their
+    # own buildings' storeys — all of them still on the basement or main level.
+    assert all(
+        catlin_model.plan.level_of(catlin_model.wall(tag).storey)
+        and any(primary.tag in ("basement", "main")
+                for primary, here in catlin_model.plan.levels()
+                if catlin_model.wall(tag).storey in {s.tag for s in here})
+        for tag in wall_tags)
 
 
 def test_foundation_plan_has_footing_leaders(catlin_model):

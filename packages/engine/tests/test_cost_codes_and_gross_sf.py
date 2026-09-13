@@ -122,16 +122,22 @@ def test_an_enclosure_with_no_room_in_it_is_not_floor_area(catlin_model) -> None
     onto the basement's gross floor area. `_exterior_shells_by_storey` keeps a hole that
     nothing is built over now as well as one over an excavation.
 
-    What is left over is honest and is pinned rather than smoothed away: the court walls'
-    and the apron's own CONCRETE AND BLOCK are inside the merged shell's outer ring, so the
-    basement carries ~160 sf more than the storeys above it — ~86 sf of court wall and
-    ~74 sf of SRW apron. That is the walls, not the court and not the terrace.
+    ** AND THE BUILDING AXIS CLOSED THE LEFTOVER ON 2026-09-13. ** What used to be pinned
+    here as honest-but-left-over is gone: the court walls' and the apron's own CONCRETE AND
+    BLOCK sat inside the house basement's merged shell, so the basement carried ~160 sf more
+    than the storeys above it (~86 sf of court wall, ~74 sf of SRW apron). Those walls are the
+    COURT's and the YARD's, and now they are filed on those buildings' own storeys — where no
+    Room sits, so they are not floor area at all. Which is this test's title: the rule was
+    always right, and it only ever failed to reach walls that had nowhere else to be filed.
     """
     gross = gross_area_sf(catlin_model)["storeys"]
-    court_walls_sf = gross["basement"] - gross["main"]
-    assert 120 < court_walls_sf < 200, court_walls_sf
-    # And the court itself — 488 sf of open ground — is not in there at any tolerance.
-    assert gross["basement"] < gross["main"] + 400
+    # The basement is the HOUSE's basement: within a few sf of the floor above it, not 160
+    # over. It is slightly *under* main, which is the footprint difference and nothing else.
+    assert abs(gross["basement"] - gross["main"]) < 60, (gross["basement"], gross["main"])
+    # And an enclosure with no room in it is not floor area — the court's retaining walls and
+    # the raised garden's apron enclose open ground, and report exactly zero.
+    for storey in ("court-low", "yard-low"):
+        assert gross[storey] == 0.0, (storey, gross[storey])
 
 
 # --- the section name is not the trade ---------------------------------------------------

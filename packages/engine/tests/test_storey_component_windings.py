@@ -121,12 +121,29 @@ def test_catlin_basement_structures_resolve_independently(catlin_model) -> None:
     # uses) and traces as its own component keyed on N-B-S1F. Like the veneer it winds at
     # +1 rather than the perimeter's -1, which is why both framed walls author
     # `interior_room` explicitly.
-    assert len(windings.sign_by_component_key) == 7
+    # ** AND ON 2026-09-13 THEY STOPPED SHARING THE KEY. ** Those seven were four structures
+    # crowded onto one storey tag, and the building axis gave each its own: the seven
+    # components are now 3 + 2 + 1 + 1 across four storeys at the same datum. Nothing about
+    # the tracing changed — the same components, keyed on the same nodes — but "each must
+    # answer for itself" is now structural rather than something the tracer has to recover
+    # from a graph that mixes four buildings.
+    assert len(windings.sign_by_component_key) == 3
+    per_storey = {tag: len(resolve_storey_windings(catlin_model.plan,
+                                                  tag).sign_by_component_key)
+                  for tag in ("basement", "g-foundation", "court-low", "yard-low")}
+    assert per_storey == {"basement": 3, "g-foundation": 1, "court-low": 2, "yard-low": 1}
+    assert sum(per_storey.values()) == 7
+
     basement_walls = [e for e in catlin_model.plan.storey_elements("basement")
                       if e.element_kind in ("Wall", "FoundationWall")]
-    sunken_garden = next(w for w in basement_walls if w.start_node.startswith("N-SG-"))
+    court = resolve_storey_windings(catlin_model.plan, "court-low")
+    court_walls = [e for e in catlin_model.plan.storey_elements("court-low")
+                   if e.element_kind in ("Wall", "FoundationWall")]
+    sunken_garden = next(w for w in court_walls if w.start_node.startswith("N-SG-"))
     house = next(w for w in basement_walls if w.start_node.startswith("N-B-"))
-    assert (windings.component_key_for_wall(sunken_garden)
+    # Different storeys now, so the components cannot collide even by accident; the house's
+    # own tracing must still not reach into the court's.
+    assert (court.component_key_for_wall(sunken_garden)
             != windings.component_key_for_wall(house))
     # The house is a closed loop, authored clockwise-in-plan, and traces to -1 on its own
     # outer ring rather than borrowing anyone's scalar.
@@ -144,5 +161,5 @@ def test_catlin_basement_structures_resolve_independently(catlin_model) -> None:
     # this sign to decide which side of an off-centre footing is the HEEL, and refuses
     # (INCOMPLETE) rather than guess when the winding is unrecoverable — so the three
     # retaining walls' eccentricity depends on this assertion holding.
-    assert windings.sign_for_wall(sunken_garden) == -1.0
+    assert court.sign_for_wall(sunken_garden) == -1.0
     assert UNRECOVERABLE_WINDING_OUTWARD_SIGN == 1.0  # the fallback taken when unrecoverable

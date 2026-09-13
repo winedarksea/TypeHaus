@@ -122,6 +122,9 @@ def _egress_ctx(*, grade_ft: float | None, opening_w: float, opening_h: float,
         storeys=storeys,
         storey_elements=lambda tag: [room] if tag == "basement" else [],
         project=SimpleNamespace(site=site),
+        # One structure, so every storey is its own level — which is what `level_of` answers
+        # for any house that authors no second building.
+        level_of=lambda tag: (tag,),
     )
     model = SimpleNamespace(rooms=[], openings=[opening], walls=[wall],
                             wall=lambda tag: wall if tag == "W-B-S" else None)
@@ -160,11 +163,16 @@ def test_basement_egress_accepts_an_exterior_door_and_an_untyped_opening():
 
 # --- R314.3 / R315.3 alarms --------------------------------------------------------------
 
-def _alarm_ctx(rooms, alarms):
+def _alarm_ctx(rooms, alarms, *, building_kind="dwelling"):
+    """A one-storey plan stub. ``building_kind`` is the axis R314.3's scope now reads first:
+    a storey of an accessory structure is outside the dwelling unit whatever is filed on it."""
     by_storey = {"main": list(rooms) + list(alarms)}
+    building = SimpleNamespace(tag="b1", name="B1", kind=building_kind)
     return SimpleNamespace(
         plan=SimpleNamespace(storeys=[SimpleNamespace(tag="main", elevation=ft(0))],
-                             storey_elements=lambda tag: by_storey.get(tag, [])),
+                             storey_elements=lambda tag: by_storey.get(tag, []),
+                             building_of=lambda tag: building.tag,
+                             building=lambda tag: building if tag == building.tag else None),
         model=SimpleNamespace(rooms=[]),
     )
 
@@ -212,6 +220,17 @@ def test_every_storey_alarm_scope_passes_a_garage_only_storey():
 def test_every_storey_alarm_is_unknown_on_a_storey_with_no_rooms():
     ctx = _alarm_ctx([], [])
     assert _results(alarm_on_every_storey(ctx)) == [Result.UNKNOWN]
+
+
+def test_every_storey_alarm_scope_passes_an_accessory_buildings_storey():
+    """The building axis, which outranks the rooms. A storey of a detached garage or a porch
+    needs no alarm however it is occupied — and unlike the occupancy test above, this answers
+    for a storey holding NO rooms, which used to be the UNKNOWN directly below. Eight of
+    catlin's storeys are exactly that case."""
+    ctx = _alarm_ctx([], [], building_kind="accessory")
+    findings = alarm_on_every_storey(ctx)
+    assert _results(findings) == [Result.PASS]
+    assert "does not reach it" in findings[0].message
 
 
 def test_co_alarm_passes_outside_the_sleeping_area_and_fails_inside_it():

@@ -1125,16 +1125,23 @@ def test_deck_slabs_render_on_their_storey_plans(catlin_model):
     from typehaus.emit.draw.floorplan import build_floorplan
     from typehaus.emit.draw.scene import Polyline
 
+    # Built per LEVEL, the way the A-1xx sheet is: the balcony deck stands on `court-upper`
+    # and the porch on `court-main`, their own building's storeys at the house's datums, so
+    # the raw model filtered on one storey tag draws neither (→ emit/draw/datum).
+    from typehaus.emit.draw.datum import model_at_level
+
     for storey, tag in (("second", "FS-SG-DECK"), ("main", "FS-SG-PORCH"),
                         ("main", "FS-BW-FLOOR")):
-        outlines = [node for node in build_floorplan(catlin_model, storey).nodes
+        scoped = model_at_level(catlin_model, storey)
+        outlines = [node for node in build_floorplan(scoped, storey).nodes
                     if isinstance(node, Polyline) and getattr(node, "tag", None) == tag]
         assert len(outlines) == 1, (storey, tag)
         assert outlines[0].layer == "A-SLAB" and outlines[0].closed
 
     # And an interior floor still does NOT draw one: its subfloor covers the whole storey,
     # so its rectangle would sit over every room on the plan.
-    interior = [node for node in build_floorplan(catlin_model, "second").nodes
+    interior = [node for node in build_floorplan(model_at_level(catlin_model, "second"),
+                                                 "second").nodes
                 if isinstance(node, Polyline)
                 and str(getattr(node, "tag", "")).startswith("FS-S-")]
     assert not interior, [node.tag for node in interior]
@@ -1832,7 +1839,10 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     assert max(ys) - min(ys) == pytest.approx(ft(26).meters)
 
     # The porch/balcony framing members are authored (their 3D resolution is Phase 2).
-    elements = [el for tag in ("basement", "main", "second")
+    # Every storey of those three LEVELS: the court is its own building now, so its posts and
+    # beams are filed on court-low / court-main / court-upper rather than on the house's.
+    elements = [el for level in ("basement", "main", "second")
+                for tag in catlin_model.plan.level_of(level)
                 for el in catlin_model.plan.storey_elements(tag)]
     posts = {el.tag for el in elements if el.element_kind == "Post" and el.tag.startswith("PT-SG-")}
     beams = {el.tag for el in elements if el.element_kind == "Beam" and el.tag.startswith("BM-SG-")}

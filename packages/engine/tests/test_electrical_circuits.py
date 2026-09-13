@@ -323,7 +323,10 @@ def test_panel_schedule_sheet_is_in_the_permit_set(catlin_model):
 
     numbers = {sheet.number for sheet in build_sheet_index(catlin_model)}
     assert "E-601" in numbers
-    assert {"E-101", "E-102", "E-103", "E-104", "E-105"} <= numbers  # all five storeys
+    # Four levels, not the five storey-keyed sheets this once asserted: the garage is drawn
+    # on the main floor's power plan (→ emit/draw/datum, PlanModel.levels).
+    assert {"E-101", "E-102", "E-103", "E-104"} <= numbers
+    assert "E-105" not in numbers
     # The panel schedule is what a plan checker wants; the power plans are not on the
     # checklist (electrical is permitted by the State Board of Electricity).
     permit = {sheet.number for sheet in build_sheet_index(catlin_model, sets="permit")}

@@ -18,6 +18,7 @@ from typehaus.emit.draw.bracedwallplan import (
     build_braced_wall_plan,
     has_braced_wall_content,
 )
+from typehaus.emit.draw.datum import at_level, model_at_level
 from typehaus.emit.draw.details import (
     DerivedDetail,
     build_authored_detail_scene,
@@ -36,7 +37,6 @@ from typehaus.emit.draw.pdf_writer import _close
 from typehaus.emit.draw.plumbingplan import build_plumbing_plan, has_plumbing_content
 from typehaus.emit.draw.roofframingplan import build_roof_framing_plan
 from typehaus.emit.draw.roofplan import build_roof_plan
-from typehaus.emit.draw.datum import at_level, model_at_level
 from typehaus.emit.draw.scene import Scene
 from typehaus.emit.draw.schedules import (
     _has_data_content,

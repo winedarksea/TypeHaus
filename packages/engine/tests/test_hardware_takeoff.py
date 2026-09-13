@@ -178,15 +178,17 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # length, which the length-ordered exterior-insulation ladder cannot see.
     girt_rows = [row for row in all_rows if row["role"] == ROLE_GIRT_STANDOFF_SCREW]
     # ONE "exterior wall furring" row, and it is the garage ICF stem's protection band.
-    # `GARAGE_ICF_6`'s stem walls are filed on the `basement` storey
-    # (params/foundations.py), which is what separates them from the house's truss-wall
-    # storeys — so a row reaching `main`, `second` or `attic` means the truss wall has grown
-    # a screwed strip through foam that nobody designed, which is the thing this test has
-    # always been for.
+    # `GARAGE_ICF_6`'s stem walls are filed on `g-foundation` — the GARAGE's own frost-depth
+    # storey since 2026-09-13, `basement` before that — which is what separates them from the
+    # house's truss-wall storeys, so a row reaching `main`, `second` or `attic` means the
+    # truss wall has grown a screwed strip through foam that nobody designed. That is the
+    # thing this test has always been for, and the stem having a storey of its own rather
+    # than lodging on the house's basement makes the separation structural instead of
+    # incidental.
     furring = [row for row in rows if row["scope"] == "exterior wall furring"]
     assert len(furring) == 1, \
         "only the garage ICF stem's protection band takes a through-foam screw"
-    assert set(furring[0]["by_storey"]) == {"basement"}, \
+    assert set(furring[0]["by_storey"]) == {"g-foundation"}, \
         "a truss wall has no screwed furring strip — see takeoff/fasteners.py"
     # 5 in, not the girt wall's 8 in: 2.5 in of eps-ext + a 0.25 in vented standoff + 1.5 in
     # of embedment = 4.25 in required. The embedment is the rule's WOOD-STUD figure and the
@@ -810,7 +812,11 @@ def test_catlin_bills_panel_screws_on_the_house_and_garage_walls(catlin_model) -
         # this test's own guard from the other direction: a storey drops off these rows
         # when its last exposed-fastener panel goes, and the attic coming back would mean a
         # concealed panel was being screw-counted.
-        assert set(row["by_storey"]) == {"garage", "main", "second"}, row["by_storey"]
+        # `entry-low` joined on 2026-09-13: W-BW-SCREEN-SKIRT's PBR, which was billed under
+        # `garage` when the north entry had no storey of its own. Same 21 screws, named for
+        # the structure that owns them.
+        assert set(row["by_storey"]) == {"entry-low", "garage", "main", "second"}, \
+            row["by_storey"]
     field = next(r for r in rows if r["scope"].endswith("field"))
     sidelap = next(r for r in rows if r["scope"].endswith("sidelap"))
     assert "12 in o.c." in field["basis"] and "24 in o.c." in field["basis"]
@@ -822,8 +828,13 @@ def test_catlin_bills_panel_screws_on_the_house_and_garage_walls(catlin_model) -
     # The garage count is a known approximation — ``ExposedFastenerCladdingRules``
     # hard-codes PBR's 12" rib pitch and 36" coverage rather than corrugated's 2-2/3"/32"
     # (prices.toml, `S-5-N` row) — recorded there rather than fixed for one building.
-    # The garage storey went 500/140 -> 521/146 on 2026-09-10, and the difference is not the
-    # garage: `W-BW-SCREEN`, the north entry's west screen panel, is filed on this storey and
-    # is corrugated on BOTH faces, so it bills two skins of its own.
-    assert field["count"] == 1451 and field["by_storey"]["garage"] == 521
-    assert sidelap["count"] == 380 and sidelap["by_storey"]["garage"] == 146
+    # The garage storey went 500/140 -> 521/146 on 2026-09-10, and the difference was never
+    # the garage: `W-BW-SCREEN`, the north entry's west screen panel, was filed on this storey
+    # for want of one of its own and is corrugated on BOTH faces, so it bills two skins. On
+    # 2026-09-13 the entry got `entry-low` and the garage went back to 500/140 with the
+    # screen's 21/6 billed against the entry. The TOTALS did not move — the same panels, the
+    # same screws, attributed to the structure that owns them.
+    assert field["count"] == 1451
+    assert field["by_storey"]["garage"] == 500 and field["by_storey"]["entry-low"] == 21
+    assert sidelap["count"] == 380
+    assert sidelap["by_storey"]["garage"] == 140 and sidelap["by_storey"]["entry-low"] == 6

@@ -64,15 +64,18 @@ DROPPED_REFERENCE_STOREYS = ("breezeway-placeholder",)
 # regression: something the old house had and the new one silently lost.
 _GARAGE_MOVED = "the garage moved 7'-5 5/8\" south to close the breezeway gap to 4'-0 1/2\""
 
-# "Basement Shower Recess (placeholder)" was declared here until 2026-09-04, and it is gone
-# because the matcher now PAIRS it — with SL-SG-FROST-W, the R403.3 wing insulation the
-# sunken garden gained, 1.644 m away and reported `divergent` on placement. That is a
-# nearest-slab-on-the-basement-storey pairing rather than a recovery of the recess, so the
-# entry cannot stay: this dict is keyed on *unmatched* names, and a name the report no
-# longer lists as unmatched is a lie whatever the pairing means. The port still has no
-# shower recess; RM-B-SAUNA is a real room instead, which is why nothing was lost.
-
 DECLARED_DIVERGENCES = {
+    # Declared until 2026-09-04, dropped when the matcher started PAIRING it with
+    # SL-SG-FROST-W (the sunken garden's R403.3 wing insulation, 1.644 m away, reported
+    # `divergent` on placement) — a nearest-slab-on-the-basement-storey coincidence rather
+    # than a recovery of the recess. Back on 2026-09-13, and the pairing is what went away:
+    # SL-SG-FROST-W is the COURT's slab and is filed on `court-low` now, so it is no longer
+    # a candidate for a reference element on the house's basement. The spurious match is
+    # gone; the honest unmatched name it was hiding is what remains.
+    "Basement Shower Recess (placeholder)": (
+        "the port has no shower recess: RM-B-SAUNA is a real room with its own plumbing "
+        "instead, and nothing in the new house is a placeholder for it"
+    ),
     # "House Basement Center Wall (N-S)" was declared here until 2026-09-07 — the old
     # one-piece 36' solid against a centerline split at door and stair openings. It PAIRS
     # again now, and the same-day hall changes are what did it: deleting W-B-CW2B and
