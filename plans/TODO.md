@@ -168,6 +168,16 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ### Schema gaps found during selections/fireplace passes
 
+- **A resilient channel is framed as a 2x6, in the shared library.** `INT_2X4_RC` and
+  `INT_2X4_RC_DOUBLE_GWB` (`library/assemblies.py:317,343`) spell their furring
+  `"25 ga. resilient channel"` — a real product no lumber pattern will ever match, so
+  `cross_section` hands back the 1 1/2" x 5 1/2" fallback and **64 resolved strapping
+  members** draw, plan-cut, clash-check and bill as a 2x6 instead of a 1/2" hat channel.
+  `prices.toml` already prices 488 LF of it. Found by `integrity.member_profile_parses`
+  (2026-09-13), which is the only reason it is visible; it reports UNKNOWN because the
+  engine cannot say what section the string names. The fix is a real section for the
+  product, not a parser branch — and it is a LIBRARY change, so it moves every house.
+
 - **The fireplace elevation is checkable by no drawing.** The firebox, its lintel and the
   mantel are on the INTERIOR face of `W-M-E1`; `--view elevation` emits the four exterior
   faces, `--view section` cuts mid-house and misses y=8'-8", and `--view 3d` emits only a

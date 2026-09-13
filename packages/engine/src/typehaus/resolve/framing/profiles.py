@@ -335,6 +335,43 @@ def cross_section(profile: str) -> CrossSection:
     return _rect(*_FALLBACK_ACTUAL_IN)
 
 
+#: Every pattern above whose match IS the answer — matching one means the string was read,
+#: not guessed at. The two nominal patterns are deliberately absent: they match on shape
+#: alone and then look the size up in ``LUMBER_ACTUAL``, which has its own silent fallback,
+#: so :func:`parses` grades them separately. Named explicitly rather than discovered, so a
+#: new pattern is a deliberate decision to cover; ``test_profile_parses.py`` lints that
+#: every ``_RE_*`` in this module is accounted for on one side or the other.
+_PARSED_PATTERNS = (
+    _RE_MULTI_LVL, _RE_SINGLE_LVL, _RE_RIM, _RE_LSL, _RE_DECK, _RE_TJI, _RE_IJOIST,
+    _RE_FLOOR_TRUSS, _RE_ROOF_TRUSS, _RE_ACTUAL, _RE_PANEL, _RE_ROUND,
+)
+#: The profile strings :func:`cross_section` answers by literal comparison rather than by
+#: pattern. Kept beside the branches that spell them so the two cannot drift apart.
+_PARSED_LITERALS = frozenset({"engineered-LVL", "hanger", "tapered tread"})
+
+
+def parses(profile: str) -> bool:
+    """True when :func:`cross_section` really *read* ``profile``, rather than guessing.
+
+    ``cross_section`` never raises: anything it cannot read resolves to the 1 1/2" x 5 1/2"
+    ``_FALLBACK_ACTUAL_IN`` rectangle, and the two nominal branches do the same thing one
+    level down — a well-formed but unpublished nominal (``"16x16"``, ``"3.5x3.5 STEEL"``,
+    ``"L3-1/2x3-1/2x1/4"``) matches the pattern, misses ``LUMBER_ACTUAL``, and comes back
+    looking exactly like a successful parse of a 2x6. That silence is deliberate — 31
+    modules call ``cross_section`` from inside ``resolve()``, where a raise is the wrong
+    instrument — so the question is asked HERE and answered as a check finding instead
+    (``integrity.member_profile_parses``).
+
+    Parse-only and total: never raises, never touches the catalog, never mutates.
+    """
+    text = profile.strip().split(":", 1)[0]
+    if match := _RE_MULTI_NOMINAL.match(text):
+        return match["nominal"] in LUMBER_ACTUAL
+    if _RE_NOMINAL.match(text):
+        return text in LUMBER_ACTUAL
+    return text in _PARSED_LITERALS or any(rx.match(text) for rx in _PARSED_PATTERNS)
+
+
 #: A truss roof with no authored heel gets the standard energy heel.
 DEFAULT_TRUSS_HEEL_M = inch(9.25).meters
 
