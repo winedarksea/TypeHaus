@@ -12,13 +12,14 @@ from __future__ import annotations
 from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from contextvars import ContextVar
+from types import MappingProxyType
 from typing import TypeVar
 
 ParameterValue = bool | int | float | str
 _T = TypeVar("_T", bool, int, float, str)
 
 _ACTIVE: ContextVar[Mapping[str, ParameterValue]] = ContextVar(
-    "typehaus_house_parameter_overrides", default={}
+    "typehaus_house_parameter_overrides", default=MappingProxyType({})
 )
 _CONSUMED: ContextVar[set[str] | None] = ContextVar(
     "typehaus_consumed_house_parameter_overrides", default=None
@@ -67,4 +68,3 @@ def parameter(name: str, default: _T) -> _T:
     if not isinstance(value, str):
         raise ValueError(f"parameter override {name!r} must be a string")
     return value  # type: ignore[return-value]
-

@@ -168,6 +168,42 @@ class NodeLoad:
 
 
 @dataclass(frozen=True)
+class Plate:
+    """Four-node concrete shell. Node order follows PyNite's i-j-m-n convention."""
+
+    id: str
+    tag: str
+    i: str
+    j: str
+    m: str
+    n: str
+    thickness_m: float
+    material: str
+    e_pa: float
+    poisson: float
+    basis: str
+
+
+@dataclass(frozen=True)
+class SupportSpring:
+    """Nodal support spring; direction is the permitted global displacement sign."""
+
+    node: str
+    dof: str
+    stiffness_n_m: float
+    direction: str | None
+    basis: str
+
+
+@dataclass(frozen=True)
+class PlatePressure:
+    case: LoadCaseKind
+    plate: str
+    pressure_pa: float
+    source: str = ""
+
+
+@dataclass(frozen=True)
 class Combination:
     """An ASD combination the records actually graded against (``LimitState.combination``),
     never a full IBC 1605.3.1 set the calculation did not run."""
@@ -186,7 +222,13 @@ class AnalyticalModel:
     member_loads: tuple[MemberLoad, ...] = ()
     member_point_loads: tuple[MemberPointLoad, ...] = ()
     node_loads: tuple[NodeLoad, ...] = ()
+    plates: tuple[Plate, ...] = ()
+    support_springs: tuple[SupportSpring, ...] = ()
+    plate_pressures: tuple[PlatePressure, ...] = ()
     combinations: tuple[Combination, ...] = ()
+    #: Keep the standard one-combination-per-case exports. Coupled nonlinear soil-contact
+    #: models disable these because an earth-only case has no gravity to keep contact active.
+    include_unit_case_combinations: bool = True
     #: The engineering items this model was scoped from, sorted.
     scope: tuple[str, ...] = ()
     #: Claims a reviewer is entitled to reject, one line each — the assumed moduli, the

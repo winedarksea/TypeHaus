@@ -1217,10 +1217,7 @@ BASEMENT_FIBER_CEMENT_SCREEN = Assembly(
         Layer(name="fiber-cement-panel", material_ref="fiber-cement",
               thickness=inch(0.3125), function=LayerFunction.STRUCTURE),
     ),
-    source="sunken-garden walkout alternate: exterior fiber-cement panels on horizontal "
-           "treated girts fastened to verified wall framing, with continuous head/base and "
-           "opening flashing, drained cavity, supported panel edges, corrosion-resistant "
-           "fasteners, and manufacturer-required clearance above the wet court",
+    source="sunken-garden walkout alternate: exterior fiber-cement panels on horizontal treated girts fastened to verified wall framing, with continuous head/base and opening flashing, drained cavity, supported panel edges, corrosion-resistant fasteners, and manufacturer-required clearance above the wet court",
 )
 
 # --- RM-M-LIVING's fireplace surround --------------------------------------------------

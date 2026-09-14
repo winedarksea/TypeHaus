@@ -57,6 +57,7 @@ class SolveResult:
     #: the unit per-case combos ``pynite_map`` always writes.
     reactions: dict[tuple[str, str], Reaction]
     member_extremes: dict[tuple[str, str], MemberExtremes]
+    node_displacements_m: dict[tuple[str, str], tuple[float, float, float]]
     stable: bool
     warnings: tuple[str, ...] = ()
     inputs: PyniteInputs | None = field(default=None, repr=False)
@@ -74,7 +75,7 @@ def solve(model: AnalyticalModel) -> SolveResult:
 
     warnings: list[str] = []
     if not inputs.combos:
-        return SolveResult({}, {}, stable=False,
+        return SolveResult({}, {}, {}, stable=False,
                            warnings=("no load cases: nothing to solve",), inputs=inputs)
     # PyNite reports an unstable degree of freedom by PRINTING it and carrying on, and
     # raises only when the matrix is outright singular. Both are answers about the model,
@@ -84,9 +85,12 @@ def solve(model: AnalyticalModel) -> SolveResult:
     try:
         with contextlib.redirect_stdout(console):
             # check_statics writes a table; the caller wants values, not a report.
-            fe.analyze_linear(log=False, check_stability=True, check_statics=False, sparse=True)
+            if any(direction is not None for *_head, direction in inputs.support_springs):
+                fe.analyze(log=False, check_stability=True, check_statics=False, sparse=True)
+            else:
+                fe.analyze_linear(log=False, check_stability=True, check_statics=False, sparse=True)
     except Exception as exc:  # noqa: BLE001 - a singular matrix is a modelling answer
-        return SolveResult({}, {}, stable=False,
+        return SolveResult({}, {}, {}, stable=False,
                            warnings=(f"solve failed: {type(exc).__name__}: {exc}",
                                      *_console_lines(console)),
                            inputs=inputs)
@@ -95,6 +99,7 @@ def solve(model: AnalyticalModel) -> SolveResult:
     return SolveResult(
         reactions=_reactions(fe, inputs),
         member_extremes=_extremes(fe, inputs),
+        node_displacements_m=_displacements(fe, inputs),
         stable=True,
         warnings=tuple(warnings),
         inputs=inputs,
@@ -117,14 +122,20 @@ def _assemble(fe, inputs: PyniteInputs):
         fe.add_member(name, i_node, j_node, material, section, rotation=rotation)
     for name, flags in inputs.releases:
         fe.def_releases(name, *flags)
+    for name, i_node, j_node, m_node, n_node, thickness, material in inputs.quads:
+        fe.add_quad(name, i_node, j_node, m_node, n_node, thickness, material)
     for node, dx, dy, dz, rx, ry, rz in inputs.supports:
         fe.def_support(node, dx, dy, dz, rx, ry, rz)
+    for node, dof, stiffness, direction in inputs.support_springs:
+        fe.def_support_spring(node, dof, stiffness, direction)
     for member, direction, w1, w2, x1, x2, case in inputs.dist_loads:
         fe.add_member_dist_load(member, direction, w1, w2, x1, x2, case=case)
     for member, direction, p, x, case in inputs.pt_loads:
         fe.add_member_pt_load(member, direction, p, x, case=case)
     for node, direction, p, case in inputs.node_loads:
         fe.add_node_load(node, direction, p, case=case)
+    for quad, pressure, case in inputs.quad_pressures:
+        fe.add_quad_surface_pressure(quad, pressure, case=case)
     for name, factors in inputs.combos:
         fe.add_load_combo(name, dict(factors))
     return fe
@@ -132,7 +143,9 @@ def _assemble(fe, inputs: PyniteInputs):
 
 def _reactions(fe, inputs: PyniteInputs) -> dict[tuple[str, str], Reaction]:
     out: dict[tuple[str, str], Reaction] = {}
-    for node_name, *_ in inputs.supports:
+    reaction_nodes = sorted({row[0] for row in inputs.supports}
+                            | {row[0] for row in inputs.support_springs})
+    for node_name in reaction_nodes:
         node = fe.nodes[node_name]
         for combo in inputs.combo_names:
             out[(node_name, combo)] = Reaction(
@@ -142,6 +155,19 @@ def _reactions(fe, inputs: PyniteInputs) -> dict[tuple[str, str], Reaction]:
                 mx_nm=float(node.RxnMX[combo]) / NM_TO_LB_IN,
                 my_nm=float(node.RxnMY[combo]) / NM_TO_LB_IN,
                 mz_nm=float(node.RxnMZ[combo]) / NM_TO_LB_IN,
+            )
+    return out
+
+
+def _displacements(fe, inputs: PyniteInputs) -> dict[tuple[str, str], tuple[float, float, float]]:
+    out: dict[tuple[str, str], tuple[float, float, float]] = {}
+    for node_name, *_ in inputs.nodes:
+        node = fe.nodes[node_name]
+        for combo in inputs.combo_names:
+            out[(node_name, combo)] = (
+                float(node.DX[combo]) / (1.0 / 0.0254),
+                float(node.DY[combo]) / (1.0 / 0.0254),
+                float(node.DZ[combo]) / (1.0 / 0.0254),
             )
     return out
 

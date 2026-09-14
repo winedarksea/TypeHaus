@@ -1113,6 +1113,7 @@ RETAINING_WALL_THICKNESS_IN = SPEC.wall_thickness_in
 # to be authored at a different elevation makes this a range along the wall. Widen it to a
 # (min, max) pair when that happens rather than picking one end.
 RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN = 40.0
+LOCAL_YARD_GRADE_IN = -RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN
 RETAINING_EXPOSURE_BAND_IN = (36.0, 48.0)
 # The porch's front edge — the plane the two front beams and RL-SG-PORCH's south run sit
 # on. Published because a second module must not re-derive it.

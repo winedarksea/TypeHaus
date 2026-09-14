@@ -117,6 +117,7 @@ from typehaus import FootingBedding, FoundationWall, Node, face, ft, inch, pt
 from params.sunken_garden import (
     BALCONY_FRONT_AXIS_Y_FT,
     RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN,
+    LOCAL_YARD_GRADE_IN,
     RETAINING_WALL_SPAN_X_FT,
     RETAINING_WALL_THICKNESS_IN,
     RETAINING_WALL_TOP_FT,
@@ -348,7 +349,7 @@ elif SUNKEN_GARDEN_OPTION.planting_layout == "setback":
         north_ft=Y_NORTH,
         bed_width_in=SUNKEN_GARDEN_OPTION.planting_width_in,
         setback_in=SUNKEN_GARDEN_OPTION.planter_setback_in,
-        yard_grade_in=-40.0,
+        yard_grade_in=LOCAL_YARD_GRADE_IN,
         soil_height_in=SUNKEN_GARDEN_OPTION.raised_soil_height_in,
     )
 else:

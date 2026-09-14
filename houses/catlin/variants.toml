@@ -16,6 +16,7 @@ description = "Planting at ordinary yard grade; full-depth brick."
 [[variant]]
 name = "yard-grade-fiber-cement"
 description = "Planting at ordinary yard grade; drained fiber-cement panel screen."
+assembly_swaps = { BASEMENT_BRICK_VENEER = "BASEMENT_FIBER_CEMENT_SCREEN" }
 [variant.parameters]
 "sunken_garden.planting_layout" = "yard-grade"
 "sunken_garden.raised_soil_height_in" = 0
@@ -33,6 +34,7 @@ description = "30-inch bed against the court wall, 24 inches clear; brick and me
 [[variant]]
 name = "against-wall-24-fiber-cement"
 description = "30-inch bed against the court wall, 24 inches clear; panel screen and guard."
+assembly_swaps = { BASEMENT_BRICK_VENEER = "BASEMENT_FIBER_CEMENT_SCREEN" }
 [variant.parameters]
 "sunken_garden.planting_layout" = "against-wall"
 "sunken_garden.raised_soil_height_in" = 30
@@ -51,6 +53,7 @@ description = "30-inch bed against the court wall, 36 inches clear; brick and me
 [[variant]]
 name = "against-wall-36-fiber-cement"
 description = "30-inch bed against the court wall, 36 inches clear; panel screen and guard."
+assembly_swaps = { BASEMENT_BRICK_VENEER = "BASEMENT_FIBER_CEMENT_SCREEN" }
 [variant.parameters]
 "sunken_garden.planting_layout" = "against-wall"
 "sunken_garden.raised_soil_height_in" = 30
@@ -70,6 +73,7 @@ description = "Separate 30-inch by 24-inch bed beyond a 36-inch clear strip; bri
 [[variant]]
 name = "setback-24-fiber-cement"
 description = "Separate 30-inch by 24-inch bed beyond a 36-inch clear strip; panel screen."
+assembly_swaps = { BASEMENT_BRICK_VENEER = "BASEMENT_FIBER_CEMENT_SCREEN" }
 [variant.parameters]
 "sunken_garden.planting_layout" = "setback"
 "sunken_garden.raised_soil_height_in" = 30
@@ -90,6 +94,7 @@ description = "Separate 30-inch by 36-inch bed beyond a 36-inch clear strip; bri
 [[variant]]
 name = "setback-36-fiber-cement"
 description = "Separate 30-inch by 36-inch bed beyond a 36-inch clear strip; panel screen."
+assembly_swaps = { BASEMENT_BRICK_VENEER = "BASEMENT_FIBER_CEMENT_SCREEN" }
 [variant.parameters]
 "sunken_garden.planting_layout" = "setback"
 "sunken_garden.raised_soil_height_in" = 30

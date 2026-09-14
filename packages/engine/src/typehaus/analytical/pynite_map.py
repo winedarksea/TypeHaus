@@ -157,7 +157,8 @@ def support_label(support: Support, separator: str = "+") -> str:
 
 def material_names(model: AnalyticalModel) -> dict[tuple[str, float], str]:
     """``(material string, E) → PyNite material name``, disambiguated only where needed."""
-    keys = sorted({(m.material, m.e_pa) for m in model.members})
+    keys = sorted({(m.material, m.e_pa) for m in model.members}
+                  | {(p.material, p.e_pa) for p in model.plates})
     by_base: dict[str, list[tuple[str, float]]] = {}
     for key in keys:
         by_base.setdefault(_sanitise(key[0]), []).append(key)
@@ -193,6 +194,9 @@ class PyniteInputs:
     pt_loads: tuple[tuple[str, str, float, float, str], ...]
     node_loads: tuple[tuple[str, str, float, str], ...]
     combos: tuple[tuple[str, tuple[tuple[str, float], ...]], ...]
+    quads: tuple[tuple[str, str, str, str, str, float, str], ...]
+    support_springs: tuple[tuple[str, str, float, str | None], ...]
+    quad_pressures: tuple[tuple[str, float, str], ...]
 
     @property
     def combo_names(self) -> tuple[str, ...]:
@@ -207,8 +211,12 @@ def build_inputs(model: AnalyticalModel) -> PyniteInputs:
     nodes = tuple(sorted(
         (n.id, n.x_m * M_TO_IN, n.y_m * M_TO_IN, n.z_m * M_TO_IN) for n in model.nodes
     ))
+    plate_poisson = {(plate.material, plate.e_pa): plate.poisson for plate in model.plates}
     materials = tuple(sorted(
-        (name, e_pa * PA_TO_PSI, e_pa * PA_TO_PSI * _g_over_e(mat), _poisson(mat), _RHO_PCI)
+        (name, e_pa * PA_TO_PSI,
+         e_pa * PA_TO_PSI / (2.0 * (1.0 + plate_poisson[(mat, e_pa)]))
+         if (mat, e_pa) in plate_poisson else e_pa * PA_TO_PSI * _g_over_e(mat),
+         plate_poisson.get((mat, e_pa), _poisson(mat)), _RHO_PCI)
         for (mat, e_pa), name in mats.items()
     ))
     sections = tuple(sorted(
@@ -249,10 +257,27 @@ def build_inputs(model: AnalyticalModel) -> PyniteInputs:
         for load in model.member_point_loads
     ))
     node_loads = tuple(sorted(_node_load_calls(model)))
+    quads = tuple(sorted(
+        (plate.id, plate.i, plate.j, plate.m, plate.n, plate.thickness_m * M_TO_IN,
+         mats[(plate.material, plate.e_pa)])
+        for plate in model.plates
+    ))
+    support_springs = tuple(sorted(
+        (spring.node, spring.dof,
+         spring.stiffness_n_m * (NM_TO_LB_IN if spring.dof.startswith("R")
+                                 else N_TO_LB / M_TO_IN),
+         spring.direction)
+        for spring in model.support_springs
+    ))
+    quad_pressures = tuple(sorted(
+        (pressure.plate, pressure.pressure_pa * PA_TO_PSI, pressure.case.value)
+        for pressure in model.plate_pressures
+    ))
     return PyniteInputs(
         nodes=nodes, materials=materials, sections=sections, members=members,
         supports=supports, releases=releases, dist_loads=dist_loads, pt_loads=pt_loads,
-        node_loads=node_loads, combos=_combos(model),
+        node_loads=node_loads, combos=_combos(model), quads=quads,
+        support_springs=support_springs, quad_pressures=quad_pressures,
     )
 
 
@@ -275,7 +300,8 @@ def _combos(model: AnalyticalModel) -> tuple[tuple[str, tuple[tuple[str, float],
     The per-case combos are what makes ``reactions[(node, "wind")]`` mean the wind case
     alone — PyNite reports results per *combination*, never per case.
     """
-    case_names = sorted({c.kind.value for c in model.cases})
+    case_names = (sorted({c.kind.value for c in model.cases})
+                  if model.include_unit_case_combinations else [])
     combos = [(name, ((name, 1.0),)) for name in case_names]
     taken = set(case_names)
     for combination in sorted(model.combinations, key=lambda c: c.name):

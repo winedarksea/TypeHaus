@@ -291,7 +291,9 @@ def _capture_authorship(house_dir: Path) -> Iterator[dict[str, SourceLoc]]:
         set_construction_observer(None)
 
 
-def load_plan(house_dir: Path, *, parameter_overrides: dict[str, object] | None = None) -> LoadResult:
+def load_plan(
+    house_dir: Path, *, parameter_overrides: dict[str, object] | None = None,
+) -> LoadResult:
     """Full load: dialect lint (all editable files) → import manifest → PlanModel.
 
     Import runs the plan package normally (fast path); the libcst path builds the
