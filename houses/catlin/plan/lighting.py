@@ -139,25 +139,73 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-B-STAIR", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(54))),
 
-    # RM-B-SAUNA had NO LIGHT AND NO SWITCH until 2026-09-05 — the room was drawn, rotated
-    # and shrunk without one, and nothing in this engine grades a missing lighting outlet
-    # (there is no NEC 210.70 check), so it stayed invisible. One fixture, in the south-west
-    # corner on the south liner at 5'-0" AFF: the far end of that liner from EQ-B-SAUNA-HTR
-    # (which is on the east one now) and in the
-    # room's coolest corner, west of WIN-B-SAUNA's west jamb (x=12'-1"), and 3'-6" above
-    # FURN-B-SAUNA-BENCH-S's 18" top so nothing shades it.
-    ElectricalDevice(uid="AEYMMW1KDG", tag="ED-B-SAUNA-LT", kind=DeviceKind.LIGHT,
-                     position=pt(inch(120), inch(11.5)), type_ref="ED-T-LT-SAUNA-VT",
-                     circuit="CKT-LT-BACKUP", room="RM-B-SAUNA",
-                     controlled_by=("ED-B-SAUNA-SW",), rotation=deg(0),
-                     mount=Mount(kind=MountKind.WALL, elevation=inch(60))),
-    # The switch is OUTSIDE the hot room — a standard wall switch is rated to 40 C ambient
-    # and a sauna is not, which is why the fixture above needed its own 125 C listing and
-    # why this cannot simply be an integral-switch J1. It sits on W-B-CS's GYM face, 4 3/8"
-    # north of D-B-SAUNA's north jamb (y=5'-1 11/16"), so it is the switch you reach for on
-    # the way in. `room` is RM-B-GYM for the same reason: the device is in the gym.
+    # ** RM-B-SAUNA IS LIT FROM UNDER THE BENCHES SINCE 2026-09-13; NOTHING ELECTRICAL IS
+    # LEFT IN THE HOT ROOM. ** ED-B-SAUNA-LT (mark V, a $1,500-2,250 Cariitti fibre kit) was
+    # cut for cost; mark V stays in the catalog as the named revert and ** uid AEYMMW1KDG IS
+    # RETIRED, never to be reused ** (the SGS503AAAA precedent). Why, in full:
+    # DESIGN-LOG.md, "Basement".
+    #
+    # ** TWO RUNS, BECAUSE THE BENCHES ARE NOT A U. ** The west and south foot benches butt
+    # at x=10'-9 13/16" and make an L; the two-tier bench stands alone across the room
+    # (plan/placeables.py). One run would draw tape over open floor. The L bills 2 end caps
+    # + ** 1 corner connector **, `light_run_materials` deriving that from len(path) - 2.
+    #
+    # ** THE PATHS ARE THE BENCH FRONT FACES, NOT THE LINER ** — the strip is on the fascia,
+    # 20"-42" off the wall. The west leg starts at y=2'-5 1/2" and not at its bench's own
+    # south end: south of that line the south bench covers the west bench's fascia.
+    #
+    # ** 16" IS ONE ELEVATION FOR THE WHOLE PATH AND A LightRun CANNOT RAKE. ** It works only
+    # while all three seat tops are 18" — the foot benches are stated 18", the 2T-60's LOWER
+    # tier derives at half its declared 36" (library/placeables/furniture.py). Clears
+    # REG-B-EXH2's 4" AFF stale pickup behind the west bench.
+    LightRun(uid="0Y2Z97Y7TY", tag="LR-B-SAUNA-BENCH-L", type_ref="ED-T-LT-STRIP24-SAUNA",
+             path=(pt(inch(129.8125), inch(66)), pt(inch(129.8125), inch(29.5)),
+                   pt(inch(177.8125), inch(29.5))),
+             room="RM-B-SAUNA", psu_ref="ED-B-SAUNA-LT-PSU",
+             controlled_by=("ED-B-SAUNA-SW",),
+             mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    LightRun(uid="CH9EBHV9B6", tag="LR-B-SAUNA-BENCH-N", type_ref="ED-T-LT-STRIP24-SAUNA",
+             path=(pt(inch(111.25), inch(74.1875)), pt(inch(171.25), inch(74.1875))),
+             room="RM-B-SAUNA", psu_ref="ED-B-SAUNA-LT-PSU",
+             controlled_by=("ED-B-SAUNA-SW",),
+             mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    # ** NO `circuit=` ON EITHER RUN: ** a 24V run carries none, its PSU does — authoring one
+    # double-bills the tape against CKT-LT-BACKUP.
+    #
+    # ** THE PSU SIZE IS THE BINDING CONSTRAINT. ** 12'-1/2" at 3 W/ft is 36.1 W; x1.25 is
+    # 45.2 W, ** 75% of the PSU-60's nameplate ** and inside the OMNIDRIVE X's own "load to
+    # <=80%". ED-T-LT-PSU-200 is NOT available here: a PSU sums into the backup tier at its
+    # RATING, not the tape's draw (plan/lighting_types.py), so 200 VA on the ALWAYS_ON tier
+    # costs 1.40 kWh over 48 h against a 0.84 kWh surplus and flips
+    # `cycle_48h.sustains_always_on` — the trap that withdrew the basement cove below. The
+    # 60 VA part leaves +0.44 kWh; `test_backup_calc.py` is the assertion.
+    #
+    # ** ON THE WORKSHOP FACE OF W-B-SA-N (y=10'-3 13/16"), NOT IN THE SAUNA. ** x=10'-0"
+    # keeps the 8" box 6 3/16" clear of W-B-SA-W's corner and west of PR-B-ERV-COND's drop
+    # at x=13'. A device footprint is a plan rectangle CENTRED on `position` (the
+    # ED-B-WORKSHOP-SW block above works the same arithmetic), so the centre sits half the
+    # box's plan depth off the face and the back lands flush. 48" AFF is reach height:
+    # the OMNIDRIVE X wants a driver accessible and ventilated, which a ceiling box is not.
+    # ** Its footprint is a CEILING-box rectangle (8x6x3 high), so on a wall the model
+    # projects the 6" and not the part's real 3" ** — the `Register` trap in another family.
+    # Free today (no ElectricalDevice resolves a solid), but do not measure a clearance off it.
+    #
+    # ** IT BREACHES W-B-SA-N'S VAPOUR BARRIER, DELIBERATELY. ** plan/fixtures.py routes the
+    # sauna's plumbing through W-B-CS to keep this foil-faced polyiso unbroken; what crosses
+    # here is one 24V Class 2 pair through a single gasketed grommet, sealed both faces.
+    ElectricalDevice(uid="392P1PBQF7", tag="ED-B-SAUNA-LT-PSU", kind=DeviceKind.JUNCTION_BOX,
+                     position=pt(inch(120), inch(126.8125)), type_ref="ED-T-LT-PSU-60",
+                     circuit="CKT-LT-BACKUP", room="RM-B-WORKSHOP", rotation=deg(0),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+    # The control is OUTSIDE the hot room — a wall switch is rated to 40 C ambient and a
+    # sauna is not, which is why an integral-switch J1 could never stand inside. On W-B-CS's
+    # GYM face, 4 3/8" north of D-B-SAUNA's north jamb, so it is the switch you reach on the
+    # way in; `room` is RM-B-GYM because the device is in the gym.
+    # ** ED-T-SWITCH-DIM SINCE 2026-09-13, TO KEEP THE DIMMING MARK V ALREADY HAD. ** Pair it
+    # with the OMNIDRIVE X as a reverse-phase ELV control (Lutron DVELV-300P), NEVER the
+    # DVCL-153P the cans use — that mis-pairing is the commonest cause of tape flicker.
     ElectricalDevice(uid="MDVC5HGQZ8", tag="ED-B-SAUNA-SW", kind=DeviceKind.SWITCH,
-                     position=pt(inch(220.375), inch(66)), type_ref="ED-T-SWITCH",
+                     position=pt(inch(220.375), inch(66)), type_ref="ED-T-SWITCH-DIM",
                      circuit="CKT-LT-BACKUP", room="RM-B-GYM", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 

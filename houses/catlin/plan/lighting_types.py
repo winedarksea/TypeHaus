@@ -236,10 +236,12 @@ AMBIENT_LUMINAIRE_TYPES = (
     # (G) and ED-T-LT-SLOT72 (T) already are: the long wire stays at 120V and the only thing
     # at the eave is the luminaire.
     #
-    # ** MARK W, BECAUSE W IS THE NEXT FREE LETTER. ** The schedule runs A..V today (I and O
-    # are skipped — both read as digits on a drawing), V being the sauna's fibre-optic projector, so W is
-    # the first unused letter and not a numbered variant of anything: this is a new family,
-    # not a second height of one.
+    # ** MARK W, BECAUSE W WAS THE NEXT FREE LETTER. ** The schedule runs A..W today (I and O
+    # are skipped — both read as digits on a drawing), V being the sauna's fibre-optic
+    # projector, which is retained CATALOG-ONLY as a revert (2026-09-13) and so does NOT free
+    # its letter. W was the first unused letter here and not a numbered variant of anything:
+    # this is a new family, not a second height of one. ** X IS THE NEXT ONE **, and it is
+    # taken — the sauna's under-bench tape, below.
     #
     # ** NO product_ref: the ED-T-LT-CAN3 / ED-T-LT-CAN4-4000 precedent. ** What is specified
     # here is a requirement — an extruded aluminium channel, gasketed lens, IP66, 120V
@@ -271,6 +273,49 @@ AMBIENT_LUMINAIRE_TYPES = (
                          "~210 lm/ft, in 4' sections with wet-location feed-through "
                          "fittings. Aperture mounted facing DOWN (full cutoff). No "
                          "product_ref until a datasheet is read."),
+
+    # --- X: the sauna's under-bench tape (2026-09-13) ---------------------------------
+    # ** THIS REPLACES THE FIBRE-OPTIC KIT, AND THE REASON IS MONEY, NOT PHYSICS. **
+    # Mark V (ED-T-LT-SAUNA-VT, plan/lighting_types_decor.py) was $1,500-2,250 installed —
+    # by a wide margin the most expensive luminaire in the house, for one 92 SF room. It is
+    # kept in the catalog, unreferenced, as a named revert; see that file for why fibre was
+    # the only construction that could sit in the CEILING of a löyly peak.
+    #
+    # ** UNDER THE BENCHES IS NOT A COMPROMISE, IT IS WHAT THE NOTES ALWAYS SAID. **
+    # notes/sauna_basement_wall_detail.md and notes/sauna_shower_basement_detail.md both
+    # specify "light strips under the lower bench lip; keep drivers and transformers out of
+    # the hot zone". The fibre kit was the thing that departed from the notes.
+    #
+    # ** 90 C IS THE PUBLISHED RATING AND UNDER A BENCH IS WHY IT IS ENOUGH. ** A sauna is
+    # a stratified room: the 194 F (90 C) löyly peak is a CEILING number, and the air at the
+    # 18" foot-bench lip runs 40-60 F below it. This tape cannot go where the ferrules went
+    # and does not have to. Nothing electrical is left in the hot room at all — the driver is
+    # a surface box on the workshop face of W-B-SA-N and the dimmer is in the gym.
+    #
+    # ** 2700K, AND THAT ARGUMENT IS CARRIED OVER FROM MARK V, NOT INVENTED HERE: ** the
+    # room is basswood-lined and read by firelight standards, and a bright fixture in a small
+    # hot room is glare rather than light. It is the one deliberate departure from the
+    # house's fixed 3000K standard, and it survived the product change.
+    #
+    # ``wet_rated`` is mandatory, not decorative: RM-B-SAUNA is Occupancy.BATHROOM and
+    # `electrical.wet_location` walks LightRuns as well as point fixtures (the E1 precedent).
+    # No ports, no plan_symbol, no load_va — a run is named by a LightRun and fed by a PSU,
+    # the same convention E / E1 / U follow.
+    LuminaireType(tag="ED-T-LT-STRIP24-SAUNA", type_mark="X",
+                  name="Sauna under-bench LED strip, 24V IP68 silicone",
+                  form=LuminaireForm.STRIP,
+                  footprint=(inch(0.5), inch(0.5)), height=inch(0.5),
+                  lamp="LED tape, 24V DC, silicone-jacketed IP68, -30..90 C",
+                  watts_per_ft=3.0, lumens=320.0, cct_k=2700, cri=90,
+                  voltage=24, dimmable=True, wet_rated=True,
+                  product_ref="PROD-LEDSUPPLY-SAUNA-STRIP",
+                  source="LEDsupply sauna LED strip, fixed white 2700K: 24V DC, 3 W/ft, up "
+                         "to 320 lm/ft, CRI 90, 120 LED/m, IP68, rated -30 C to 90 C. Under "
+                         "the lower bench lip on all three benches, which is the coolest air "
+                         "in a stratified room; driver and dimmer both outside the hot room. "
+                         "2700K stays deliberate: the room is basswood-lined and read by "
+                         "firelight standards, and a bright fixture in a small hot room is "
+                         "glare rather than light."),
 
     # --- F: the plant-room tubes ------------------------------------------------------
     # Growth-spectrum, hung on a cable suspension kit over the plants at the south windows.

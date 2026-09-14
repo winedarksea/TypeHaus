@@ -67,31 +67,38 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   footprint=(inch(5), inch(4)), height=inch(9), plan_symbol="sconce-spot",
                   lamp="LED integrated", watts=8.0, lumens=600.0, cct_k=3000, cri=90,
                   integral_switch=True, load_va=8.0, ports=_POWER_120),
-    # V: the sauna. A hot room needs its own listing — an ordinary damp-rated sconce is
-    # rated to 40 C ambient and the ceiling of a 194 F löyly peak is roughly 90 C.
+    # ** V: THE SAUNA'S FIBRE-OPTIC KIT — CATALOG-ONLY SINCE 2026-09-13. NOT A LIVE
+    # SPECIFICATION. ** Nothing references this type. RM-B-SAUNA is lit by two 24V
+    # under-bench runs of ED-T-LT-STRIP24-SAUNA (mark X, plan/lighting_types.py) instead. It
+    # is kept here, unreferenced and still priced, the way `EXT_2X6_SWINBURNE`,
+    # `glazed-green-brick` and mark N are kept: a deleted row is a revert nobody can cost.
+    # ** ITS LETTER IS NOT FREED EITHER ** — the E-602 schedule is keyed on the mark, so V
+    # stays V and the replacement took X.
     #
-    # ** RE-SPECIFIED 2026-09-06: NOTHING SOLD IN THE US IS BOTH IP65 AND 125 C, WHICH
-    # PICKS THE PRODUCT FOR US. ** The type this replaces asked for a gasketed wood-shaded
-    # sconce at 125 C ambient, and that combination does not exist as a consumer luminaire:
-    # LED sconces top out at 60-93 C, and lamp-and-shade fixtures are limited by their cable,
-    # not their shade. The only construction that clears the temperature is ** fibre optic **,
-    # because there are no electronics in the hot zone at all — glass fibre is rated 180 C
-    # and carries no current, so the ferrules can go in the CEILING and even over the heater
-    # while the dimmable projector lives outside the room.
+    # ** WHY FIBRE WAS CHOSEN (2026-09-06). ** A hot room needs its own listing: an ordinary
+    # damp-rated sconce is rated to 40 C ambient and the ceiling of a 194 F löyly peak is
+    # roughly 90 C. Nothing sold in the US is both IP65 and 125 C — LED sconces top out at
+    # 60-93 C and lamp-and-shade fixtures are limited by their cable, not their shade. The
+    # only construction that clears it is ** fibre optic **, because there are no electronics
+    # in the hot zone at all: glass fibre is rated 180 C and carries no current, so the
+    # ferrules can go in the CEILING and even over the heater while the dimmable projector
+    # lives outside the room. That is also why it is dimmable — the dimming happens at the
+    # projector, in cool air.
     #
-    # That inverts two things the old spec had backwards. It is no longer mounted low in the
-    # corner diagonally opposite the heater — that placement existed to keep a fixture out of
-    # the hottest air, and a fibre ferrule does not care. And it IS dimmable, because the
-    # dimming happens at the projector in cool air; the old "not dimmable" note was a
-    # property of a potted driver in the hot room, which there no longer is.
+    # ** WHY IT WAS DROPPED (2026-09-13): COST, AND ONLY COST. ** $1,500-2,250 installed
+    # (prices.toml) — the most expensive luminaire in the house by a wide margin, for one
+    # 92 SF room. The owner cut it. The star-field effect is deliberately given up; mark X
+    # buys a functional under-bench wash for roughly a tenth of that, and it is what
+    # notes/sauna_basement_wall_detail.md specified all along.
+    #
+    # ** THE ONE LIVE RISK IF IT EVER COMES BACK, AND IT IS A PERMIT RISK: ** Cariitti and
+    # Harvia are CE-marked European products, not NRTL-listed. If the inspector wants an NRTL
+    # listing inside the hot room this is the most likely snag in the house — confirm in
+    # writing before ordering. Mark X has no such exposure: it is 24V Class 2 tape.
     #
     # ** NEVER RECESS A CAN IN A HOT ROOM ** — it penetrates the vapour barrier at the
     # hottest point in the building and puts a driver in the hot cavity. And never cedar for
-    # a shade: it bleeds resin onto basswood.
-    #
-    # ** THE ONE LIVE RISK, AND IT IS A PERMIT RISK: ** Cariitti and Harvia are CE-marked
-    # European products, not NRTL-listed. If the inspector wants an NRTL listing inside the
-    # hot room this is the most likely snag in the house — confirm in writing before ordering.
+    # a shade: it bleeds resin onto basswood. Both still hold, whatever is specified.
     LuminaireType(tag="ED-T-LT-SAUNA-VT",
                   name="Sauna fibre-optic lighting, 8 ferrules on a remote projector",
                   form=LuminaireForm.SCONCE, type_mark="V",
@@ -100,7 +107,9 @@ DECORATIVE_LUMINAIRE_TYPES = (
                   lumens=400.0, cct_k=2700, cri=90, dimmable=True,
                   damp_rated=True, wet_rated=True, load_va=6.0, ports=_POWER_120,
                   product_ref="PROD-CARIITTI-VPL30-G211",
-                  source="Cariitti Premium Glass Fiber 8-spot with a dimmable 2700K "
+                  source="CATALOG-ONLY since 2026-09-13, retained as the named revert for "
+                         "ED-T-LT-STRIP24-SAUNA (mark X); nothing references it. Cariitti "
+                         "Premium Glass Fiber 8-spot with a dimmable 2700K "
                          "projector mounted OUTSIDE the hot room "
                          "(notes/sauna_basement_wall_detail.md). 2700K and 400 lm stay "
                          "deliberate: the room is basswood-lined and read by firelight "

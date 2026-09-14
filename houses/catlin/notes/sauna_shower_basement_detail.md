@@ -40,7 +40,7 @@ source:
 
 - Electrical: supply 240V, **60A** 2-pole breaker and wiring to a 10.5 kW sauna heater (Harvia Cilindro PC110E). NEC 424.3(B) makes this a continuous load at 125%: 43.75 A x 1.25 = 54.7 A, which a 50A breaker will not carry — the "50A / 10.5 kW max" this note used to print was never arithmetic that closed. Pull **#6 THHN in conduit**, not #8 NM-B: NEC 334.80 caps NM-B at the 60 °C column, making #8 a 40 A conductor. **No GFCI on the heater** — 210.8(A) governs receptacles, 210.8(D)'s appliance list excludes sauna heaters, and the manufacturers advise against it in writing because moisture in the elements' magnesium-oxide fill causes nuisance trips; a 2–4 hour dry burn-in before final inspection is the fix, and a 30 mA GFPE is the fallback if the AHJ insists. The sauna **lights** do take GFCI under 210.8(A)(5), which is why they are a separate circuit. For gas/wood appliances, reference MPC Section 615 and the appliance listing.
 
-- Lighting: IP65-rated LED strips concealed under lower bench lips + one waterproof wall sconce; keep drivers/transformers outside hot zone.
+- Lighting: IP65 or better LED strips concealed under the lower bench lips, 24V; no luminaire and no line voltage inside the hot room. Keep drivers/transformers outside it.
 
 - Ventilation: include HRV/ERV connections with adjustable cedar vent registers; intake low and away from heater, exhaust high above/near heater. Keep plastic vent pipe behind insulation.
 

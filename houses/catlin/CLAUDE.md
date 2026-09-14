@@ -1111,8 +1111,21 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `EquipmentType` carries no clearances field and nothing would stop a 30" hot stove at the
     doorway. `FURN-SAUNA-BENCH-48` must stay priced in `prices.toml` — an unpriced type
     silently drops from the takeoff. `REG-B-SUP3`, `DU-B-ERV-R-SAUNA-SUP`'s east leg and
-    `ED-B-SAUNA-JB` all sit with the heater on the east liner. Lighting `ED-T-LT-SAUNA-VT`
-    (125°C sauna-listed) keeps its switch **outside** the hot room.
+    `ED-B-SAUNA-JB` all sit with the heater on the east liner.
+  - **Lighting is two 24V under-bench runs and NOTHING ELECTRICAL IS IN THE HOT ROOM
+    (2026-09-13).** `LR-B-SAUNA-BENCH-L` (an L along the west + south foot benches, 7'-1/2",
+    1 corner connector) and `LR-B-SAUNA-BENCH-N` (5'-0" along the two-tier bench), both
+    `ED-T-LT-STRIP24-SAUNA` mark **X** — 24V IP68 silicone tape rated to 90 C, 2700K, at
+    **16" AFF** under the 18" bench lips, which is the coolest air in a stratified room. One
+    `Mount.elevation` serves a whole `LightRun`, so this works only while all three seat tops
+    stay 18". Driver `ED-B-SAUNA-LT-PSU` (`ED-T-LT-PSU-60`) is a surface box on W-B-SA-N's
+    **workshop** face at (10'-0", 10'-6 13/16"), 48" AFF; `ED-B-SAUNA-SW` is on W-B-CS's
+    **gym** face and retyped `ED-T-SWITCH-DIM`. 36.1 W x1.25 = 45.2 W, **75% of the PSU-60's
+    nameplate** — `ED-T-LT-PSU-200` is not available here, a PSU sums at its RATING and 200 VA
+    on the ALWAYS_ON tier flips `cycle_48h.sustains_always_on` (surplus is +0.44 kWh).
+    The tape bills through `[allowances] electrical-sauna-under-bench-strip`, not
+    `[placeables]`. **`ED-T-LT-SAUNA-VT` (mark V, the fibre-optic kit) is retained
+    CATALOG-ONLY as the named revert and its letter is NOT freed** — the replacement took X.
 
 - **Bathroom.** Rotated north-south along the framed stair wall (`W-B-STR3B`/`W-B-STR2`);
   clear **3'-3 15/16" x 7'-1 1/4"**. Wet wall is `W-B-BA-E`, an `INT_2X6_STAGGERED_PLUMBING`

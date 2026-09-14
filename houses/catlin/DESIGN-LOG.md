@@ -792,6 +792,100 @@ pocket was possible there at all.
 
 ## Basement
 
+- **THE SAUNA'S FIBRE-OPTIC LIGHTING IS CUT; TWO 24V UNDER-BENCH RUNS REPLACE IT
+  (2026-09-13).** The room's only light was `ED-B-SAUNA-LT`, a single point fixture on
+  `ED-T-LT-SAUNA-VT` (mark V) — a Cariitti Premium Glass Fiber 8-spot kit with a remote
+  dimmable projector, billing **$1,500-2,250 installed**. That was, by a wide margin, the
+  most expensive luminaire in the house, for one 92 SF room, and the owner cut it
+  (`plans/TODO.md`).
+  - **The replacement is not a new idea; it is what the notes always said.**
+    `notes/sauna_basement_wall_detail.md` and `notes/sauna_shower_basement_detail.md` both
+    specify "set light strips under the lower bench lip; keep drivers and transformers out
+    of the hot zone". The **fibre kit was the departure**, in a 2026-09-06 re-spec that was
+    answering a real constraint (see below) and answered it expensively.
+  - **The 2026-09-06 reasoning was not wrong, it was aimed at a harder problem.** Nothing
+    sold in the US is both IP65 and 125 C — LED sconces top out at 60-93 C — so a fixture in
+    the CEILING of a 194 F löyly peak really does have only one construction available, and
+    fibre optic is it. Under a bench the problem is different: a sauna is stratified, the
+    peak is a ceiling number, and the air at an 18" foot bench runs 40-60 F below it. The
+    LEDsupply sauna tape publishes **-30 C to +90 C**, which is enough there and would not be
+    enough on a wall. That temperature rating is the whole reason this tape and not the
+    Armacost cove tape (`PROD-ARMACOST-RIBBONFLEX-COB`, an ordinary 60 C part).
+  - **Mark V stays in the catalog at 0 ea, and its LETTER is not freed.** The
+    `glazed-green-brick` / `EXT_2X6_SWINBURNE` / mark N convention: a deleted row is a revert
+    nobody can cost. The E-602 schedule is keyed on the mark, so the new type took **X**
+    (`W` is `ED-T-LT-LINEAR-EXT`). `PROD-CARIITTI-VPL30-G211` stays too. The one live risk if
+    the revert is ever taken is unchanged and is a PERMIT risk: Cariitti and Harvia are
+    CE-marked, not NRTL-listed. Mark X has no such exposure — it is 24V Class 2 tape.
+  - **uid `AEYMMW1KDG` IS RETIRED and must never be reused** (the `SGS503AAAA` precedent).
+  - **TWO runs, because the benches are not a U.** The west foot bench (54") and the south
+    foot bench (48") butt at x=10'-9 13/16" and form an L; the two-tier bench stands alone
+    across the room with a y 66"..74 3/16" gap of open floor. `LR-B-SAUNA-BENCH-L` is a
+    3-point path (west leg → SW corner → south leg, 7'-1/2") and `LR-B-SAUNA-BENCH-N` a
+    2-point path (5'-0"). `light_run_materials` derives connectors from `len(path) - 2`, so
+    the pair bills 4 end caps and **1 corner connector** — which is the physical truth; one
+    run across the floor would have billed none and drawn tape over open floor.
+  - **The paths are the bench FRONT FACES, not the liner** — the strip mounts to the fascia,
+    20"-42" out from the wall. The west leg starts at y=2'-5 1/2" and not at the bench's own
+    south end, because south of that line the west bench's fascia is behind the south bench.
+  - **16" AFF is one elevation for the whole path, and a `LightRun` cannot rake.** It works
+    only because every bench this tape touches is 18": the two foot benches are stated 18"
+    and the 2T-60's LOWER tier derives at half its declared 36" (`library/placeables/
+    furniture.py`). It clears `REG-B-EXH2`'s 4" AFF stale pickup behind the west bench.
+  - **The PSU size was the binding constraint and it landed with room to spare.** 12'-1/2"
+    at 3 W/ft is 36.1 W; x1.25 continuous is 45.2 W, **75.3% of `ED-T-LT-PSU-60`'s
+    nameplate** — inside the OMNIDRIVE X's own "load to <=80%" instruction with no run
+    shortening needed. `ED-T-LT-PSU-200` was never available: a PSU sums into the backup
+    tier at its **RATING**, not the tape's draw, so 200 VA on `CKT-LT-BACKUP` (ALWAYS_ON)
+    costs 1.40 kWh over 48 h against a 0.84 kWh solar surplus and flips
+    `cycle_48h.sustains_always_on` to False — the identical trap that withdrew the basement
+    cove. **Measured before and after**: CKT-LT-BACKUP 791 → 845 VA (−6 for the deleted
+    fixture, +60 for the driver), 48-hour always-on surplus +0.84 → **+0.44 kWh**,
+    battery-only autonomy 41.2 → 40.1 h, `sustains_always_on` still True.
+    `test_backup_calc.py` passes.
+  - **The driver is a SURFACE box on the workshop face of `W-B-SA-N`**, at (10'-0",
+    10'-6 13/16"), 48" AFF — x=10'-0" keeps the 8" box 6 3/16" clear of `W-B-SA-W`'s corner
+    and well west of `PR-B-ERV-COND`'s drop at x=13'; the centre is 3" north of the 10'-3
+    13/16" face because a device footprint is a plan rectangle CENTRED on `position`.
+    Surface and at reach height rather than buried in the cavity, which is what the
+    OMNIDRIVE X's "accessible and ventilated" asks for — a driver is the part that dies and
+    a plastered-in one is a demolition job. **It does breach W-B-SA-N's foil-faced polyiso**,
+    the very barrier `plan/fixtures.py` routes the sauna's plumbing through `W-B-CS` to
+    protect; the trade is taken deliberately, because what crosses is one 24V Class 2 pair
+    through a single gasketed grommet sealed both faces, not a 2" drain.
+  - **`ED-B-SAUNA-SW` retyped `ED-T-SWITCH` → `ED-T-SWITCH-DIM`** and did not move. The
+    fibre kit dimmed at its projector; losing the dimmer in the swap would have been a quiet
+    downgrade in the one room read by firelight standards. Pair it with a Lutron DVELV-300P
+    reverse-phase control, never the DVCL-153P the cans use.
+  - **The tape is priced by an `[allowances]` lump, and that is a DELIBERATE departure from
+    the other three 24V strip types.** E / E1 / U bill per lineal foot through
+    `light_run_materials`, which `prices.toml` declares an **unpriced view** — so a fourth
+    type on that convention would have contributed **$0**, and the takeoff would have
+    reported the whole $1,500-2,250 as saved. That is not true: a sauna-rated silicone IP68
+    tape plus channel is a real purchase. `electrical-sauna-under-bench-strip` is a driven
+    allowance on `light_run_materials.quantity[type=ED-T-LT-STRIP24-SAUNA,item=channel]`,
+    the same vehicle and for the same reason as `electrical-garage-exterior-linear`.
+  - **What was deliberately given up:** the star-field effect. What replaces it is a
+    functional under-bench wash in the coolest part of a stratified room, at roughly a tenth
+    of the cost, with no electronics and no line voltage inside the hot room at all. The
+    ceiling LED-star option the TODO also floated was not taken — it puts emitters back at
+    the hottest point and back through the vapour barrier.
+  - **Mark V does NOT print a 0-count E-602 row, and that is correct.**
+    `takeoff/lighting.py::luminaire_schedule` iterates `set(counts) | set(run_feet)` — types
+    that are *actually installed* — not the whole catalog, so a catalog-only type simply
+    leaves the schedule. That is the right behaviour: an electrician's schedule should not
+    carry a fixture nobody is buying. The revert lives in `prices.toml` (0 ea, rate intact)
+    and in the type catalog, which is where a revert belongs. Mark X shows `count: 0` beside
+    E / E1 / U / W for a different reason — a `LightRun` has no unit to count, so those five
+    report lineal feet instead.
+  - **Verified, not assumed:** `code.R303_1_light_and_ventilation` does not regress, because
+    it never graded this room — its population excludes `Occupancy.BATHROOM`, which
+    `RM-B-SAUNA` is, and `code.R303_3_local_exhaust` is what covers it. The whole check
+    report moved by exactly three lines (`lighting_controls` 140 → 141 luminaires,
+    `wet_location` 29 → 30, `light_run_psu` 14 → 16 runs), 0 FAIL before and after.
+  - The 2026-09-05 entry below (the room getting its first light at all) is history and
+    stays.
+
 - **MINNESOTA DOES NOT PERMIT DAMPPROOFING, AND THE LAYER WAS MODELLED AS
   HOUSEWRAP (2026-09-12).** Two owner questions — "review the basement
   dampproofing, good quality and good value" and "review the protection board"

@@ -2284,24 +2284,26 @@
 # the room's R303.1 compliance depends on rather than against a look.
 "ED-T-LT-PENDANT-BAR" = { material = { low = 180, high = 700 }, labour = { low = 70, high = 200 } }  # 0 ea — CATALOG-ONLY since 2026-09-10, the mark N convention: its one placement retyped to ED-T-LT-MIRROR when the attic rake left no room for a hung fixture. Kept priced so the revert costs nothing
 "ED-T-LT-PSU-200" = { material = { low = 60, high = 160 }, labour = { low = 45, high = 95 } }  # 3 ea
-"ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 3 ea
+"ED-T-LT-PSU-60" = { material = { low = 30, high = 90 }, labour = { low = 45, high = 95 } }  # 4 ea — the fourth is ED-B-SAUNA-LT-PSU (2026-09-13), surface-mounted on the workshop face of W-B-SA-N rather than in a ceiling box
 "ED-T-LT-SCONCE-EXT" = { material = { low = 70, high = 250 }, labour = { low = 48, high = 115 } }  # 3 ea — ED-G-EXT-LT-E and -W, a matching pair flanking D-G-OVERHEAD (one fitting until 2026-09-07), and ED-M-STAIR-LT beside the head of ST-SG-PORCH (2026-09-03; moved off the house onto W-SG-E1's east face 2026-09-04, where it is a step light 2'-2" over the pad rather than a sconce 9'-10" over it — same fitting, but the feed is a drop down the porch framing to a concrete wall rather than a box in a stud bay, so take the labour at the high end). The stair light reuses this type rather than minting a full-cutoff downlight of its own precisely so it lands on a priced row: an unpriced type is silently dropped from the bill
 "ED-T-LT-SCONCE-SPOT" = { material = { low = 70, high = 250 }, labour = { low = 48, high = 115 } }  # 4 ea
 # 2026-08-18: the same down-spot, wet-location listed with a gasketed lens and a
 # corrosion-resistant housing. Same ~30-40% adder as the fan above.
 "ED-T-LT-SCONCE-SPOT-WET" = { material = { low = 95, high = 340 }, labour = { low = 60, high = 140 } }  # 1 ea
-# 2026-09-05: the sauna's own fixture. A 125 C sauna listing is a small, specialised market
-# — the article is a shaded IP65 wall luminaire, not a sconce with a gasket — so the material
-# band sits above the ordinary sconce rows despite the lower output. Labour is a plain
-# sconce's: one box, one gasketed backplate, on a liner the joiner has already blocked.
-# ** NOT A SCONCE ANY MORE, AND THAT IS WHY THE NUMBER MOVES SO FAR. ** Nothing sold in the
-# US is both IP65 and 125 C -- LED sconces top out at 60-93 C -- so the only construction
-# that clears a loyly peak is FIBRE OPTIC, which puts no electronics in the hot zone at all.
-# Cariitti Premium Glass Fiber 8-spot at $1,300 + a Harvia Legend SAS21107 shade at $159.
-# One instance, but it is an eight-ferrule KIT, not one fixture.
+# ** CUT 2026-09-13. THE ROW STAYS, THE COUNT IS ZERO — the mark N / glazed-green-brick
+# convention: a deleted row silently drops the type from any future takeoff, so the revert
+# could not be costed. ** This was the sauna's fibre-optic kit and it was $1,500-2,250
+# installed, the most expensive luminaire in the house for a 92 SF room. RM-B-SAUNA is lit
+# by two 24V under-bench runs now (mark X, ED-T-LT-STRIP24-SAUNA), allowance-priced under
+# `electrical-sauna-under-bench-strip` in [allowances].
+# Why the number was ever this big: nothing sold in the US is both IP65 and 125 C -- LED
+# sconces top out at 60-93 C -- so the only construction that clears a loyly peak at the
+# CEILING is FIBRE OPTIC, which puts no electronics in the hot zone at all. Cariitti Premium
+# Glass Fiber 8-spot at $1,300 + a Harvia Legend SAS21107 shade at $159; one instance, but an
+# eight-ferrule KIT, not one fixture. Labour was a plain sconce's plus the projector.
 # ** CE-MARKED, NOT NRTL-LISTED: ** if the inspector wants an NRTL listing inside the hot
-# room this is the most likely permit snag in the house. Confirm before ordering.
-"ED-T-LT-SAUNA-VT" = { material = { low = 1300, high = 1800 }, labour = { low = 200, high = 450 } }  # 1 ea
+# room this was the most likely permit snag in the house. Confirm before ordering a revert.
+"ED-T-LT-SAUNA-VT" = { material = { low = 1300, high = 1800 }, labour = { low = 200, high = 450 } }  # 0 ea — CATALOG-ONLY since 2026-09-13; kept priced so the revert costs nothing to evaluate
 "ED-T-LT-SCONCE-STAIR" = { material = { low = 60, high = 220 }, labour = { low = 48, high = 115 } }  # 3 ea
 "ED-T-LT-SCONCE-UD" = { material = { low = 70, high = 240 }, labour = { low = 48, high = 115 } }  # 15 ea — was 17 until 2026-09-10, when ED-A-STUDIO-WALL2/WALL4 were deleted: the studio's five-at-30" run went to three at 60" once R303.1 stopped binding it (plan/lighting_attic.py)
 # ** THE COLD RATING IS WHAT COSTS THE MONEY. ** Almost every consumer LED shop light is
@@ -2350,8 +2352,8 @@
 # without the cover would be buying the wrong thing.
 "ED-T-RECEPTACLE-WR-GFCI" = { material = { low = 38, high = 85 }, labour = { low = 65, high = 135 } }  # 5 ea
 "ED-T-SAUNA-JB" = { material = { low = 12, high = 40 }, labour = { low = 45, high = 95 } }  # 1 ea
-"ED-T-SWITCH" = { material = { low = 3, high = 10 }, labour = { low = 32, high = 68 } }  # 36 ea
-"ED-T-SWITCH-DIM" = { material = { low = 20, high = 60 }, labour = { low = 52, high = 110 } }  # 6 ea
+"ED-T-SWITCH" = { material = { low = 3, high = 10 }, labour = { low = 32, high = 68 } }  # 35 ea — was 36 until 2026-09-13, when ED-B-SAUNA-SW retyped to the dimmer row below with the sauna's under-bench tape
+"ED-T-SWITCH-DIM" = { material = { low = 20, high = 60 }, labour = { low = 52, high = 110 } }  # 7 ea — ED-B-SAUNA-SW joined 2026-09-13; take it at the labour high end, it is a Lutron DVELV-300P reverse-phase paired to an ELV tape driver, not an LED+ control
 "ED-T-SWITCH-TIMER" = { material = { low = 30, high = 80 }, labour = { low = 60, high = 130 } }  # 2 ea — the plant room, and the garage soffit run since 2026-09-11
 "EQ-T-EG4-12KPV" = { material = { low = 2600, high = 3500 }, labour = { low = 1400, high = 3000 } }  # 1 ea
 # 2026-08-20 — NEW, and it was unpriced in BOTH [placeables] and [furnishings]. A duct heater
@@ -6154,6 +6156,22 @@ electrical-afci-gfci-breakers = { low = 39, high = 81, unit = "ea", driver = "pa
 # takeoff's `unpriced` list exactly as they do today — including this run's own footage.
 # That is the fallback being honest, not this row failing.
 electrical-garage-exterior-linear = { low = 32, high = 85, unit = "LF", driver = "light_run_materials.quantity[type=ED-T-LT-LINEAR-EXT,item=channel]" }
+# The sauna's two under-bench runs, mark X / `ED-T-LT-STRIP24-SAUNA`, 2026-09-13. Same
+# vehicle and the same reason as the row above: `light_run_materials` is an UNREAD table in
+# `cli/prices.py`, keyed on `item` and not on a luminaire type, so a `[placeables]` row for
+# this type would match nothing and bill $0 with no warning.
+# ** AND BILLING $0 IS EXACTLY THE TRAP THIS ROW EXISTS TO CLOSE. ** Deleting
+# `ED-T-LT-SAUNA-VT`'s 1 ea took $1,500-2,250 out of the estimate. The three other 24V strip
+# types (E / E1 / U) are a declared-unpriced view, so without this row the replacement would
+# have landed at zero and the takeoff would have reported the full fibre kit as saved, which
+# is not true: a sauna-rated silicone tape is a real purchase. This is a DELIBERATE departure
+# from the convention those three follow, and the DESIGN-LOG says so.
+# Rate is the silicone IP68 tape, the aluminium channel and lens it sits in, the end caps and
+# the one corner fitting, plus a joiner routing the bench fascias and an electrician making
+# two Class 2 terminations and one gasketed grommet through W-B-SA-N. 12 LF over two runs.
+# The table stays unpriced house-wide, so `channel` and `tape` keep appearing in the
+# takeoff's `unpriced` list including this run's footage — the fallback being honest.
+electrical-sauna-under-bench-strip = { low = 26, high = 62, unit = "LF", driver = "light_run_materials.quantity[type=ED-T-LT-STRIP24-SAUNA,item=channel]" }
 # CKT-SPD rides this row as one more $39-81 branch breaker. That is LOW for a plug-on
 # Type 2 SPD (roughly $100-250 delivered), but the device is NOT unpriced: the "surge" in
 # `electrical-radon-fan-smoke-co-surge-and-commissioning` below is a $2,450-8,000 lump that

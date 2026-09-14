@@ -171,8 +171,28 @@ DIODE_OMNIDRIVE_X = Product(
            "fixture wants its own DVELV-300P rather than being ganged with the kitchen cans.",
 )
 
+LEDSUPPLY_SAUNA_STRIP = Product(
+    tag="PROD-LEDSUPPLY-SAUNA-STRIP", brand="LEDsupply",
+    model="Sauna LED Strip, fixed white 2700K",
+    name="24V sauna-rated LED tape, silicone-jacketed IP68, 3 W/ft",
+    source="LEDsupply published specifications (ledsupply.com/sauna-led-strip-lights), read "
+           "2026-09-13. ** THE TEMPERATURE RATING IS THE WHOLE REASON THIS AND NOT THE "
+           "ARMACOST TAPE. ** Published -30 C to +90 C; ordinary LED tape is a 60 C part and "
+           "a sauna is not. 24V DC, 3 W/ft, up to 320 lm/ft, CRI 90, 120 LED/m, five fixed "
+           "CCTs 2700-6500K (2700K taken), IP68 silicone jacket, 32.8 ft maximum continuous "
+           "run. ** 90 C IS A CEILING NUMBER AND THIS TAPE GOES UNDER A BENCH LIP: ** a "
+           "sauna is stratified, the 194 F löyly peak is at the ceiling, and the air at an "
+           "18\" foot bench runs 40-60 F below it. Do not carry this rating up a wall. IP68 "
+           "and not merely IP65 because the room is washed down; the silicone jacket is also "
+           "what makes it survivable at humidity that condenses on every cooling surface. "
+           "** CUT ONLY ON THE MARKED PITCH AND RE-SEAL THE CUT END ** -- an unsealed "
+           "silicone jacket is an open conductor in a wet room. Driver is the shared "
+           "OMNIDRIVE X 60 W above, OUTSIDE the hot room.",
+)
+
 LIGHTING_PRODUCTS = (
     LOTUS_LL4SR_CAN, WESTGATE_VAPORTIGHT, KUZCO_SAMAR, ROBERN_VITALITY_ROUND,
     MODERN_FORMS_BANTAM, MODERN_FORMS_MYKONOS, CRAFTMADE_FORCE_XL,
     ARMACOST_RIBBONFLEX_COB, DIODE_VALENT_X, DIODE_OMNIDRIVE_X,
+    LEDSUPPLY_SAUNA_STRIP,
 )
