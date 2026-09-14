@@ -307,6 +307,20 @@ export function disposeStandingSeamTextures(): void {
 //     selectable finish variant; `finish: "white-brick"`, or a ref saying "white"/"limewash").
 //   • everything else (default) → the classic red-brick running bond over tan mortar.
 
+// ** THE DEPTH FIX FOR EVERY MINERAL-WASH SURFACE, DECLARED ONCE. ** The wash is a 1/8" layer
+// standing in front of a 12" pour, and Panel3D runs an ordinary 24-bit depth buffer on
+// `PerspectiveCamera(50, 1, 0.05, 500)`, which resolves only about `z² × 1.19e-6` metres —
+// 0.48 mm at 20 m, 3.2 mm at 52 m. A film thin enough to be honest is thin enough to fight, and
+// chasing the fight by thickening the layer is a losing race: 0.01", 1/16" and 1/8" all shimmered.
+// `polygonOffset` ends it deterministically at ANY camera distance, which is what it is for, and
+// it frees the layer's thickness to be a thickness rather than a depth-buffer workaround.
+//
+// NEGATIVE (toward the camera) and small: the wash must win against the substrate directly behind
+// it and nothing else. Back faces are culled, so the wash box's rear face — which IS coincident
+// with the pour — never draws and never competes. Applied to the flat wash and to
+// `SILICATE_WASH_BLOCK_STYLE`, and to nothing else.
+const WASH_POLYGON_OFFSET = { polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 };
+
 /** Nominal running-bond module including joints: modular brick is 8" × 2⅔" with ⅜" joints. */
 export const BRICK_UNIT_M: readonly [number, number] = [0.2032, 0.0679]; // [length, course]
 /** Nominal CMU face module including joints: a standard block is 16" × 8" with ⅜" joints. */
@@ -614,9 +628,15 @@ export function createMasonryMaterial(
   authoredColor?: string | null,
 ): THREE.Material {
   const unitColor = authoredColor ?? style.base ?? color;
+  // `SILICATE_WASH_BLOCK_STYLE` is a COATING that happens to follow a unit module, not a wythe:
+  // it is a 1/8" film standing in front of a 12" block wall, so it needs the same depth offset
+  // the flat wash gets or it shimmers against the block at distance. Every other style here is a
+  // real wythe with real thickness and must NOT be offset — pushing a brick veneer toward the
+  // camera would let it win against things that legitimately stand in front of it.
+  const offset = style.key === "silicate-wash-block" ? WASH_POLYGON_OFFSET : {};
   if (mode === "schematic") {
     return new THREE.MeshStandardMaterial({
-      color: unitColor, roughness: 1, metalness: 0, flatShading: true,
+      color: unitColor, roughness: 1, metalness: 0, flatShading: true, ...offset,
     });
   }
   const { colorMap, normalMap } = buildMasonryMaps(style, new THREE.Color(unitColor));
@@ -627,6 +647,7 @@ export function createMasonryMaterial(
     normalScale: new THREE.Vector2(0.5, 0.5),
     roughness: 0.94,
     metalness: 0,
+    ...offset,
   });
 }
 
@@ -669,6 +690,152 @@ export function applyMasonryWallUv(
     uv[index * 2 + 1] = (elevation - baseZM) / tileSizeM[1];
   }
   geometry.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
+}
+
+// ── Mineral silicate wash ─────────────────────────────────────────────────────────────
+// The sunken-garden court's white potassium-silicate wash, on as-cast concrete. It gets a
+// procedural texture for the same reason the metal skins and the masonry do: a flat fill is
+// the wrong picture of the surface.
+//
+// ** AND IT SOLVES A DEPTH PROBLEM, NOT ONLY AN APPEARANCE ONE. ** The wash is a 1/8" layer
+// standing in front of a 12" pour, and Panel3D runs an ordinary 24-bit depth buffer on
+// `PerspectiveCamera(50, 1, 0.05, 500)`, which resolves only about `z² × 1.19e-6` metres —
+// 0.48 mm at 20 m, 3.2 mm at 52 m. A film thin enough to be honest is thin enough to fight,
+// and chasing the fight by thickening the layer is a losing race: it was tried at 0.01" and
+// 1/16" and still shimmered at 1/8". `polygonOffset` ends it deterministically at ANY camera
+// distance, which is what it is for. The layer's own thickness is now free to be a thickness
+// rather than a depth-buffer workaround.
+//
+// The offset is NEGATIVE (toward the camera) and small: the wash must win against the
+// substrate directly behind it and nothing else. Back faces are culled, so the wash box's rear
+// face — which IS coincident with the pour — never draws and never competes.
+// One shared 512² tile of low-frequency mottle. What it draws is what the manufacturers
+// themselves warn about and what the owner accepted rather than paid to avoid: a silicate wash
+// is non-film-forming and does not level, so it flash-dries, laps under a roller and pools
+// slightly in bugholes. It reads as cloud, not as grain or as coursing — deliberately no bond
+// pattern here, because this variant goes on CAST CONCRETE and brick, where there is no unit
+// module for it to follow. (The SRW legs take `SILICATE_WASH_BLOCK_STYLE` instead, where the
+// dry-stacked module genuinely does telegraph.)
+const WASH_TILE_M = 1.2192; // 4 ft — the scale of a roller lap, not of a unit
+let washMaps: { colorMap: THREE.Texture; roughnessMap: THREE.Texture } | null = null;
+
+function buildWashMaps(): { colorMap: THREE.Texture; roughnessMap: THREE.Texture } {
+  if (washMaps) return washMaps;
+  const size = 512;
+  const colorCanvas = document.createElement("canvas");
+  colorCanvas.width = colorCanvas.height = size;
+  const roughCanvas = document.createElement("canvas");
+  roughCanvas.width = roughCanvas.height = size;
+  const cx = colorCanvas.getContext("2d");
+  const rx = roughCanvas.getContext("2d");
+  if (!cx || !rx) throw new Error("2d context unavailable for the mineral wash tile");
+  // White base; the material tints it, so the tile carries modulation only.
+  cx.fillStyle = "#ffffff";
+  cx.fillRect(0, 0, size, size);
+  rx.fillStyle = "#f0f0f0"; // dead matte everywhere, mottled a little darker where thicker
+  rx.fillRect(0, 0, size, size);
+  // Deterministic value noise at three octaves — no Math.random, so the tile is reproducible
+  // across reloads exactly as the masonry jitter is.
+  const hash = (x: number, y: number): number => {
+    const h = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
+    return h - Math.floor(h);
+  };
+  const octaves: Array<[number, number]> = [[4, 0.055], [11, 0.03], [29, 0.016]];
+  const image = cx.getImageData(0, 0, size, size);
+  const rough = rx.getImageData(0, 0, size, size);
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      let value = 0;
+      for (const [frequency, amplitude] of octaves) {
+        // Bilinear value noise on a wrapping lattice, so the tile is seamless.
+        const fx = (x / size) * frequency;
+        const fy = (y / size) * frequency;
+        const x0 = Math.floor(fx);
+        const y0 = Math.floor(fy);
+        const tx = fx - x0;
+        const ty = fy - y0;
+        const sx = tx * tx * (3 - 2 * tx);
+        const sy = ty * ty * (3 - 2 * ty);
+        const wrap = (n: number) => ((n % frequency) + frequency) % frequency;
+        const n00 = hash(wrap(x0), wrap(y0));
+        const n10 = hash(wrap(x0 + 1), wrap(y0));
+        const n01 = hash(wrap(x0), wrap(y0 + 1));
+        const n11 = hash(wrap(x0 + 1), wrap(y0 + 1));
+        const top = n00 + (n10 - n00) * sx;
+        const bottom = n01 + (n11 - n01) * sx;
+        value += (top + (bottom - top) * sy - 0.5) * amplitude;
+      }
+      const index = (y * size + x) * 4;
+      // Lighten AND darken around the authored tone: a wash is thin in places and pooled in
+      // others, and only modulating one way reads as dirt rather than as coverage.
+      const level = Math.max(0, Math.min(255, Math.round(255 * (1 + value))));
+      image.data[index] = image.data[index + 1] = image.data[index + 2] = level;
+      // Thicker (darker) patches are very slightly less rough — pooled silicate closes the
+      // surface a little. The swing is tiny on purpose: this finish is dead matte everywhere
+      // (Beeck publish "dull matte" at 85°, Romabio <5 gloss) and a glossy patch would be a lie.
+      const roughLevel = Math.max(0, Math.min(255, Math.round(240 + value * 90)));
+      rough.data[index] = rough.data[index + 1] = rough.data[index + 2] = roughLevel;
+      image.data[index + 3] = rough.data[index + 3] = 255;
+    }
+  }
+  cx.putImageData(image, 0, 0);
+  rx.putImageData(rough, 0, 0);
+  const finish = (canvas: HTMLCanvasElement, srgb: boolean): THREE.Texture => {
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    if (srgb) texture.colorSpace = THREE.SRGBColorSpace;
+    texture.anisotropy = 4;
+    return texture;
+  };
+  washMaps = { colorMap: finish(colorCanvas, true), roughnessMap: finish(roughCanvas, false) };
+  return washMaps;
+}
+
+/**
+ * The mineral silicate wash on cast concrete or brick: the authored near-white, mottled by a
+ * shared procedural tile, dead matte, and depth-offset so it never fights the substrate behind
+ * it. `schematic` mode keeps the flat fill — a schematic is a diagram, not a surface.
+ */
+export function createMineralWashMaterial(
+  mode: "nordic" | "schematic", color: THREE.ColorRepresentation,
+): THREE.Material {
+  if (mode === "schematic") {
+    return new THREE.MeshStandardMaterial({
+      color, roughness: 1, metalness: 0, flatShading: true, ...WASH_POLYGON_OFFSET,
+    });
+  }
+  const { colorMap, roughnessMap } = buildWashMaps();
+  return new THREE.MeshStandardMaterial({
+    color, // the tile is white-centred modulation, so this tints rather than double-tints
+    map: colorMap,
+    roughnessMap,
+    roughness: 1,
+    metalness: 0,
+    ...WASH_POLYGON_OFFSET,
+  });
+}
+
+/** World-scaled UVs for a wash layer — the mottle is a property of the WALL, not of the
+ * triangle, so it must not stretch with a face's size. Same frame as the masonry UV. */
+export function applyMineralWashUv(
+  geometry: THREE.BufferGeometry,
+  wallAxis: readonly [readonly [number, number], readonly [number, number]],
+  center: PlanCenter,
+  baseZM = 0,
+): void {
+  applyMasonryWallUv(geometry, wallAxis, center, [WASH_TILE_M, WASH_TILE_M], baseZM);
+}
+
+/** True when a material's declared finish is the flat (cast concrete / brick) wash. */
+export function isMineralWashFinish(finish: string | null | undefined): boolean {
+  return finish === "silicate-wash";
+}
+
+/** Drop the shared wash tile — only for teardown in tests/hot reload. */
+export function disposeMineralWashTextures(): void {
+  washMaps?.colorMap.dispose();
+  washMaps?.roughnessMap.dispose();
+  washMaps = null;
 }
 
 /** Drop the process-wide masonry maps — only for teardown in tests/hot reload. */

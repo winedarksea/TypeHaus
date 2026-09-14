@@ -11,8 +11,9 @@ import {
   authoredAppearance, finishBaseColor, materialColor, type ResolvedNordicPalette,
 } from "../../nordic/palette";
 import {
-  applyMasonryWallUv, applyStandingSeamWallUv, createMasonryMaterial,
-  createStandingSeamMaterial, isMasonry, isStandingSeam, masonryStyleFor, masonryTileSizeM,
+  applyMasonryWallUv, applyMineralWashUv, applyStandingSeamWallUv, createMasonryMaterial,
+  createMineralWashMaterial, createStandingSeamMaterial, isMasonry, isMineralWashFinish,
+  isStandingSeam, masonryStyleFor, masonryTileSizeM,
   metalPanelProfileForFinish, type MetalPanelProfile, SEAM_PROFILE,
 } from "../materials";
 import { categoryColor } from "../members";
@@ -126,13 +127,21 @@ export function buildWall(
     // jitter) comes from the material's authored `finish`, so CMU reads as 16"×8" grey block
     // and white brick as whitewash over grey mortar; only a material that declares nothing
     // falls back to guessing from its tag.
-    const masonryStyle = !seam && isMasonry(ly.material)
+    // The court's mineral silicate wash on cast concrete or brick. Declared by `Material.finish`
+    // rather than guessed from the ref, for the reason `metalPanelProfileFor` above is: a
+    // substring test cannot tell a coating from what it coats. It is checked BEFORE the masonry
+    // branch because the fireplace surround's wash sits on a wall whose other layer is brick, and
+    // the wash is not masonry — it has no unit module to course. (The SRW legs are the other
+    // case: their wash DOES follow a module, declares `silicate-wash-block`, and so goes down the
+    // masonry path to `SILICATE_WASH_BLOCK_STYLE`.)
+    const wash = !seam && isMineralWashFinish(appearance?.finish);
+    const masonryStyle = !seam && !wash && isMasonry(ly.material)
       ? masonryStyleFor(ly.material, appearance?.finish) : null;
     // Wood boards get the same treatment for the same reason: the sauna's basswood T&G liner
     // and the study's walnut wainscot are boards, and a flat fill made a lined room read as
     // tan drywall. `ly.board_run` is derived by the engine from the furring behind the layer
     // (resolve/topology.py `_board_run`), so the boards land the way they are fastened.
-    const plankStyle = !seam && !masonryStyle && isWoodPlank(ly.material)
+    const plankStyle = !seam && !wash && !masonryStyle && isWoodPlank(ly.material)
       ? plankStyleFor(ly.material, appearance?.finish) : null;
     // The coil white is the DEFAULT, not the only option. A metal panel that
     // declares a finish naming its own paint gets that paint; everything else keeps
@@ -146,7 +155,9 @@ export function buildWall(
         Math.max(0.1, w.z1_m - w.z0_m),
       ], seamPaint ? new THREE.Color(seamPaint).getHex() : 0xE8E8E2, true,
       seamProfile ?? SEAM_PROFILE)
-      : masonryStyle
+      : wash
+        ? createMineralWashMaterial(mode, materialColor(ly.material, palette, materials))
+        : masonryStyle
         ? createMasonryMaterial(mode, masonryStyle,
           materialColor(ly.material, palette, materials), appearance?.color)
         : plankStyle
@@ -175,7 +186,11 @@ export function buildWall(
       // The line, not the wall: the pan module belongs to the facade, and the outriggers it
       // clips to are laid out on that same line (resolve/framing/furring.py).
       if (seam) applyStandingSeamWallUv(geo, w.layout_axis ?? w.axis, center, seamProfile ?? SEAM_PROFILE);
-      else if (masonryStyle) {
+      else if (wash) {
+        // The mottle belongs to the WALL, not to the triangle: without world-scaled UVs a tall
+        // court wall and a 20 SF fireplace panel would show the same cloud at two scales.
+        applyMineralWashUv(geo, w.axis, center, w.z0_m);
+      } else if (masonryStyle) {
         // Course from the wall's own base, not project zero — see applyMasonryWallUv.
         applyMasonryWallUv(geo, w.axis, center, masonryTileSizeM(masonryStyle), w.z0_m);
       } else if (plankStyle) {

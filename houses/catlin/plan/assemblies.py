@@ -906,30 +906,32 @@ DECK_EPS_INT = Assembly(
 # is inside the depth buffer's precision at this scene's scale: the viewer flashes the grey
 # substrate through the white face as the camera moves. That was observed, not predicted.
 #
-# ** THE VALUE IS 1/8" AND IT IS ARITHMETIC, NOT TASTE. ** Panel3D runs
-# `PerspectiveCamera(50, 1, 0.05, 500)` on an ordinary 24-bit depth buffer, so the smallest
-# separation the depth test can resolve at camera distance z is about
+# ** 1/8", AND THE DEPTH-BUFFER ARGUMENT THAT USED TO PICK IT IS GONE. ** For a while this
+# value was a renderer workaround. `Material.coating=True` does NOT stop a wall layer drawing
+# (`_is_coating` is scoped to room FLOOR finishes), so the wash gets a real plane, and at
+# `_PAINT_FINISH`'s honest inch(0.01) it z-fought: Panel3D's ordinary 24-bit depth buffer on
+# `PerspectiveCamera(50, 1, 0.05, 500)` resolves only about z^2 * 1.19e-6 metres (0.48 mm at
+# 20 m, 3.2 mm at 52 m), so the viewer flashed grey through the white. Thickening it was a losing
+# race — 0.01", 1/16" and 1/8" all still shimmered — and the race is over: the viewer now gives
+# every wash surface a `polygonOffset` (`WASH_POLYGON_OFFSET` in ui/src/three/materials.ts),
+# which wins the depth test deterministically at ANY camera distance.
 #
-#     dz ~ z^2 * (1/near - 1/far) / (2^24 - 1) = z^2 * 1.19e-6 metres
+# So the thickness is free to be a thickness, and 1/8" is kept on build grounds rather than
+# render ones: it is two coats plus, on the SRW block, the whole-face Quartz Filler or Bonding
+# Coat the Beeckosil TDS requires as a CMU pretreatment — and it is exactly what this house's
+# other coating, `foundation-coating-acrylic`, has carried since 2026-09-04. It is deliberately
+# NOT `_PAINT_FINISH`'s 0.01": that is a brushed latex film on gypsum, which this is not.
 #
-#   z = 20 m  ->  0.48 mm   z = 36 m  ->  1.55 mm   z = 52 m  ->  3.2 mm
-#
-# At inch(0.01) = 0.25 mm the wash is below that beyond ~14 m — i.e. at essentially every view of
-# this court — which is exactly the flashing that was observed. 1/16" (1.59 mm) only reaches
-# ~36 m. 1/8" (3.18 mm) holds to ~52 m, past any view in which the court is more than a few
-# pixels, and it is the value `foundation-coating-acrylic` has carried since 2026-09-04 without
-# this complaint. Taking the sibling coating's proven number rather than the smallest one that
-# might work is the whole point.
-#
-# `THREE.Material.polygonOffset` is the textbook fix for near-coplanar faces and was rejected:
-# glTF has no equivalent, so the viewer and the exported .glb would disagree about a surface the
-# .glb is the record of (-> glb-emitter-parity).
+# ** ONE PARITY CAVEAT. ** glTF has no `polygonOffset`, so an exported .glb opened in a third-party
+# viewer can still shimmer here where the live viewer does not. That is a limitation of the
+# format, not a reason to re-inflate this number (-> glb-emitter-parity).
 #
 # Nothing numeric rides on the value: a coating bills by COVERAGE AREA (`Material.coating`'s own
 # contract), its R/inch is 0.0, and its vapour rating is authored as a thickness-independent
 # PERMEANCE precisely so this cannot leak into the Glaser walk. What it DOES move is geometry —
-# each washed wall grows 1/8" and a centred panel drifts 1/16" — which is why it is a named
-# constant here rather than a number buried in three layer literals.
+# each washed wall grows 1/8" — which is why it is a named constant rather than a number buried in
+# three layer literals, and why every washed wall carries an `alignment` of HALF this value so the
+# pour itself does not move. **Change this and every one of those offsets changes with it.**
 _WASH_FILM = inch(0.125)
 
 # Freestanding sunken-garden / porch / balcony structure — exposed concrete, WASHED WHITE on
