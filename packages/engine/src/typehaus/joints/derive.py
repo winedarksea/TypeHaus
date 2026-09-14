@@ -35,6 +35,7 @@ from typehaus.hardware.config import (
     HardwareTakeoffConfig,
 )
 from typehaus.joints.bearing import bearing_connections, continuous_bearing_members
+from typehaus.joints.hosts import member_storeys
 from typehaus.joints.hung import hung_connections, point_along, ridge_strap_pairs
 from typehaus.joints.model import Joint, axis_of, joint_key
 from typehaus.joints.posts import (
@@ -85,11 +86,13 @@ def derived_joints(model, config: HardwareTakeoffConfig = DEFAULT_HARDWARE_TAKEO
 
 
 def _joint(role: str, part: str, storey: str, point, z_m: float, axis: str,
-           embedded: bool, members, anchor_tag: str, grid_m: float) -> Joint:
+           embedded: bool, members, anchor_tag: str, grid_m: float,
+           height_m: float | None = None) -> Joint:
     point = (float(point[0]), float(point[1]))
     return Joint(role=role, part=part, storey=storey, point=point, z_m=float(z_m),
                  axis=axis, embedded=embedded, members=tuple(members),
-                 key=joint_key(role, anchor_tag, point, float(z_m), grid_m))
+                 key=joint_key(role, anchor_tag, point, float(z_m), grid_m),
+                 height_m=height_m)
 
 
 def _bearing_tie_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> list[Joint]:
@@ -135,39 +138,42 @@ def _continuous_tie_joints(model, config: HardwareTakeoffConfig,
     return out
 
 
+def _carrier_storeys(model) -> dict:
+    """``carrier tag -> storey`` for every thing a member can hang off."""
+    out = {solid.tag: solid.storey for solid in model.solids}
+    for parent_uid, storey in member_storeys(model).items():
+        out.setdefault(parent_uid, storey)
+    for hosts in (model.walls, model.stairs, model.floors, model.roofs,
+                  model.braces, model.soffits):
+        for host in hosts:
+            for member in host.members:
+                out[f"{member.parent_uid}:{member.child_key}"] = host.storey
+    return out
+
+
 def _hanger_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> list[Joint]:
     """A hanger at every hung end, sloped and level being two different parts."""
+    storeys = _carrier_storeys(model)
     out: list[Joint] = []
     for connection in hung_connections(model, config.hanger_detection):
         role = (ROLE_SLOPED_JOIST_HANGER if connection.sloped
                 else ROLE_FACE_MOUNT_JOIST_HANGER)
         item = hardware_for_role(role)
         out.append(_joint(
-            role, item.model, _carrier_storey(model, connection.carrier_tag),
+            role, item.model, storeys.get(connection.carrier_tag, ""),
             connection.point_m, connection.carrier_soffit_m, connection.axis,
             embedded=False, members=(connection.carrier_tag, connection.member_profile),
-            anchor_tag=connection.carrier_tag, grid_m=grid_m))
+            anchor_tag=connection.carrier_tag, grid_m=grid_m,
+            height_m=connection.member_depth_m))
     return out
-
-
-def _carrier_storey(model, carrier_tag: str) -> str:
-    """The storey a carrier stands in. A member carrier's tag is ``parent_uid:child_key``."""
-    parent = carrier_tag.split(":")[0]
-    for solid in model.solids:
-        if solid.tag == carrier_tag or solid.uid == parent:
-            return solid.storey
-    for hosts in (model.walls, model.floors, model.roofs, model.braces, model.stairs):
-        for host in hosts:
-            if host.uid == parent or host.tag == parent:
-                return host.storey
-    return ""
 
 
 def _ridge_strap_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> list[Joint]:
     item = hardware_for_role(ROLE_RIDGE_TIE_STRAP)
+    storeys = _carrier_storeys(model)
     out: list[Joint] = []
     for straps in ridge_strap_pairs(model, config.hanger_detection):
-        storey = _carrier_storey(model, straps.carrier_tag)
+        storey = storeys.get(straps.carrier_tag, "")
         for station_m in straps.stations_m:
             out.append(_joint(
                 ROLE_RIDGE_TIE_STRAP, item.model, storey,

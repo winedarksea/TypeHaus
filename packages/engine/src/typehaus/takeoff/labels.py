@@ -87,6 +87,11 @@ KEY_GLOSSARY: dict[tuple[str, str], str] = {
     ("concrete", "ceiling"): "Ceiling", ("concrete", "glazing"): "Glazing",
     ("concrete", "bug_screen"): "Rainscreen bug screen", ("concrete", "screen_slat"): "Screen slat",
     ("concrete", "dowel"): "Dowel", ("concrete", "connector"): "Connector",
+    # The two families carved off ``connector``. Derived markers never reach a take-off
+    # (they are ``derived`` and skipped), but an AUTHORED cast-in or hanger connector does,
+    # and a label map with a hole in it prints a raw category key on a bid.
+    ("concrete", "connector_embedded"): "Cast-in connector",
+    ("concrete", "connector_hanger"): "Joist hanger",
     ("concrete", "ro_stub"): "RO stub", ("concrete", "eave_soffit"): "Eave soffit",
     ("concrete", "wall_corner"): "Wall corner closure",
     ("sill_gaskets", "sill-seal-foam"): "Sill seal foam gasket, under the sill plate",

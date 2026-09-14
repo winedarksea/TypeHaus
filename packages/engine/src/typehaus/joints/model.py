@@ -41,6 +41,10 @@ class Joint:
     #: an edit elsewhere in the house must not renumber this one — which is why it is a
     #: hash of *where and what* rather than an ordinal.
     key: str
+    #: The joint's own vertical extent, where it has one: a hanger is as deep as the member
+    #: it carries, and a marker that guessed a height would be drawing a different part.
+    #: ``None`` where the role's own table answers (a tie is a tie, whatever it holds).
+    height_m: float | None = None
 
 
 def joint_key(role: str, anchor_tag: str, point: tuple[float, float], z_m: float,

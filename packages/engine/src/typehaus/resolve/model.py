@@ -463,6 +463,21 @@ class ResolvedSolid:
     # taught about sweeps (the plan sheet's railing polylines, the take-off's centroid)
     # degrades to something honest instead of breaking.
     sweep: SolidSweep | None = None
+    # A MARKER for a part billed elsewhere: never measured, never cut, never bid. The 500-odd
+    # derived connectors are the case — located by ``typehaus.joints``, billed by part number
+    # from ``takeoff/hardware.py``, and drawn here only so a person can see them.
+    #
+    # Deliberately orthogonal to ``category``, not folded into it. ``category`` answers *what
+    # trade, what colour, what label*; this answers *is this a thing to measure*, and the two
+    # are independent — a derived marker and an authored connector are the same family and
+    # the same colour and only one of them has a volume worth billing. Folding them together
+    # would need a second category for every family that can be either, and
+    # ``SOLID_CATEGORY_TRADE`` would grow a four-way explosion to say one bit.
+    #
+    # Consumers that MEASURE must skip it — ``structural_solids_takeoff``, the bid packages,
+    # the section and plan drawings, the IFC emitter. Consumers that DRAW must not: glTF,
+    # model.json and the viewer are the whole point.
+    derived: bool = False
 
 
 @dataclass

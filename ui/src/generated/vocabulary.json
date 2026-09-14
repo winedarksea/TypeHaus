@@ -56,6 +56,8 @@
     "conduit_data": 3057819,
     "conduit_power": 9129395,
     "connector": 5856353,
+    "connector_embedded": 4999751,
+    "connector_hanger": 6382441,
     "corner": 10712394,
     "corner_trim": 14277598,
     "cove_channel": 13421772,
@@ -208,6 +210,8 @@
     "conduit_data": 3057819,
     "conduit_power": 9129395,
     "connector": 5856353,
+    "connector_embedded": 4999751,
+    "connector_hanger": 6382441,
     "corner": 10712394,
     "corner_trim": 14277598,
     "cove_channel": 13421772,
@@ -331,6 +335,12 @@
       "electrical"
     ],
     "connector": [
+      "framing"
+    ],
+    "connector_embedded": [
+      "framing"
+    ],
+    "connector_hanger": [
       "framing"
     ],
     "dowel": [
@@ -482,6 +492,8 @@
     "conduit_data": "electrical",
     "conduit_power": "electrical",
     "connector": "framing",
+    "connector_embedded": "framing",
+    "connector_hanger": "framing",
     "dowel": "concrete",
     "downspout": "drainage",
     "drain_tile": "drainage",

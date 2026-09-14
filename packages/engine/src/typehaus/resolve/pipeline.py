@@ -150,6 +150,16 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_floor_heat(model))
     with _stage("stacking"):
         findings.extend(resolve_stacking(model))
+    with _stage("connector_markers"):
+        # After stacking (the tie-plate rule reads the stack edges) and before geometry
+        # (which consumes the solids). Function-local import, as ``geometry_build`` below
+        # is, because ``typehaus.joints`` reads ``resolve.model``.
+        #
+        # Its own stage rather than a few lines inside another, so its cost is visible in
+        # `haus build --timing` instead of hiding inside resolve's total — see PERF.md.
+        from typehaus.resolve.connector_markers import resolve_connector_markers
+
+        findings.extend(resolve_connector_markers(model))
     with _stage("conditions"):
         _assembly_change_conditions(model)
     with _stage("geometry"):

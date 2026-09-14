@@ -127,6 +127,13 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
     "railing": "stairs", "railing_infill": "stairs", "railing_glass": "stairs",
     # Structural hardware rides with the members it joins.
     "connector": "framing",
+    # Both carved-off connector families stay FRAMING here, deliberately. This table decides
+    # the viewer's CONTAINER and nothing else; who is *quoted* a cast-in anchor is decided by
+    # its cost code (``takeoff/cost_codes.py``), which is where the concrete sub's scope
+    # actually lives. Flipping this to "concrete" would move only the container — and would
+    # BREAK the Connectors toggle, whose facet machinery is keyed to framing.
+    "connector_embedded": "framing",
+    "connector_hanger": "framing",
 }
 
 

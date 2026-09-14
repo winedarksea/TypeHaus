@@ -176,6 +176,13 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
         # and the viewer draw a run; in IFC it would be a duplicate, and an IfcFooting.
         if (solid.category or "").lower() in ROUTED_RUN_CATEGORIES:
             continue
+        # A derived connector marker stands for a part billed by part number elsewhere. It
+        # is deliberately NOT in the IFC: every sha256 in the `haus handoff` manifest is
+        # taken over this file, and 500 markers would be 500 IfcBuildingElementProxies a
+        # structural reviewer has to read past. Emitting them as IfcMechanicalFastener is a
+        # real and useful deliverable — with its own golden and its own manifest cost.
+        if solid.derived:
+            continue
         element = _emit_solid(f, body, solid, storeys, project_uuid, model)
         element_entities.setdefault(solid.tag, element)
         if (solid.category or "").lower() in DRAINAGE_CATEGORIES:

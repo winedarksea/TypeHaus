@@ -38,7 +38,8 @@ MIRRORED_SOLID_CATEGORIES = frozenset(
         "vent", "fascia", "flashing", "wall_corner", "beam_cap", "eave_soffit",
         "bug_screen", "glazing",
         "glazing_trim", "snow_guard", "seam_clamp", "panel_strap", "railing",
-        "railing_infill", "railing_glass", "connector", "ceiling", "soffit", "screen_slat",
+        "railing_infill", "railing_glass", "connector", "connector_embedded",
+        "connector_hanger", "ceiling", "soffit", "screen_slat",
     })
 
 #: Aggregates a sub buys by the yard, even where the takeoff carries them as a layer area.

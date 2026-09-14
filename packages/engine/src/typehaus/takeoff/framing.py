@@ -292,6 +292,12 @@ def structural_solids_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     Row = dict[str, object]
     groups: dict[tuple[str, str], Row] = {}
     for solid in model.solids:
+        # A derived connector marker is a MARKER: the part it stands for is billed by
+        # part number in ``takeoff/hardware.py``, off the joint, never off this box. Without
+        # this skip the 500-odd markers become a phantom "connector" volume row standing
+        # beside the rows that already bought them. This is the critical one.
+        if solid.derived:
+            continue
         net_area_m2 = abs(polygon_area(list(solid.outline))) - sum(
             abs(polygon_area(list(void))) for void in solid.voids)
         volume_m3 = max(0.0, net_area_m2) * max(0.0, solid.z1_m - solid.z0_m)

@@ -93,6 +93,10 @@ def build_section(model: ResolvedModel, view: Slice, joints=None,
                        joints, ladder_labels, scale)
 
     for solid in model.solids:
+        # A marker for a part billed elsewhere is not a thing the section cuts through: a
+        # 1/4" tie in a wall cut is noise, and drawing it would move all 86 section goldens.
+        if solid.derived:
+            continue
         _emit_solid_cut(b, model, solid, plane, crop)
 
     for roof in model.roofs:

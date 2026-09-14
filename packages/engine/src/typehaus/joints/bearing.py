@@ -21,6 +21,7 @@ from dataclasses import dataclass
 from typehaus.hardware.config import FT_TO_M, UpliftTieRules
 from typehaus.hardware.plan_geometry import centerline_endpoints, distance_point_to_segment
 from typehaus.joints.authored import authored_joints, tags_covered_by
+from typehaus.joints.hosts import member_storeys
 from typehaus.joints.model import axis_of
 from typehaus.model.enums import ConnectorKind
 from typehaus.quantities import M_PER_IN
@@ -331,21 +332,6 @@ class ContinuousBearing:
     z_m: float
 
 
-def _members_by_storey(model: ResolvedModel) -> dict:
-    """``parent_uid -> storey`` for every framing host.
-
-    ``ResolvedModel.all_members`` flattens the hosts away and a ``FramedMember`` carries no
-    storey of its own, so the storey a tie is filed under comes from the thing that owns the
-    member. Nothing here needs it to be fast: it is one pass over the hosts.
-    """
-    by_uid: dict = {}
-    for hosts in (model.walls, model.stairs, model.floors, model.roofs,
-                  model.braces, model.soffits):
-        for host in hosts:
-            by_uid[host.uid] = host.storey
-    return by_uid
-
-
 def continuous_bearing_members(model: ResolvedModel, rules: UpliftTieRules) -> list:
     """Every continuously supported member, with its ties' stations.
 
@@ -355,7 +341,7 @@ def continuous_bearing_members(model: ResolvedModel, rules: UpliftTieRules) -> l
     computes a tributary uplift, or compares one against the tie's allowable.
     """
     pitch_m = max(rules.continuous_bearing_pitch_ft, 0.5) * FT_TO_M
-    storeys = _members_by_storey(model)
+    storeys = member_storeys(model)
     found = []
     for member in model.all_members():
         if not member.continuously_supported:

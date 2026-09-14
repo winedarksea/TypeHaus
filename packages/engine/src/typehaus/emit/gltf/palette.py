@@ -143,6 +143,10 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "dowel": (0.20, 0.55, 0.35, 1.0),     # GFRP rebar (green)
     "thermal_break": (0.95, 0.55, 0.15, 1.0),  # XPS foam block (orange)
     "connector": (0.35, 0.36, 0.38, 1.0),  # galvanized structural hardware
+    # Cast-in hardware, a touch warmer and darker than the framer's galvanized grey, so the
+    # two families read apart when both toggles are on rather than making one grey mass.
+    "connector_embedded": (0.30, 0.29, 0.28, 1.0),
+    "connector_hanger": (0.38, 0.39, 0.41, 1.0),
     # The two roof/skin hardware families, split off ``connector`` because they are different
     # products and a category is what the 3D inspector labels a solid with. Both are mill
     # aluminium sitting on the standing-seam skin rather than the hot-dip galvanized steel a
