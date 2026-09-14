@@ -1116,9 +1116,24 @@ HGAM10_MASONRY_GUSSET = StructuralHardware(
     #
     # F2 is directional and the table says so in footnote 5: 795 lbf for force INTO the
     # connector, 460 lbf away from it. **The lower, away-from figure is recorded**, because
-    # nothing in this model orients the two HGAM10s at the cast column tops against a load
-    # direction, and a value that only holds for one sign of the load is not a capacity a
-    # check can use. The 795 is in the citation for a reviewer who can establish the sign.
+    # nothing in this model orients a gusset against a load direction, and a value that only
+    # holds for one sign of the load is not a capacity a check can use. The 795 is in the
+    # citation for a reviewer who can establish the sign.
+    #
+    # **This said "the two HGAM10s at the cast column tops" until 2026-09-14, when there were
+    # already twelve.** There are twenty-four now: every one of the twelve joints carries a
+    # PAIR, one gusset each side of the beam, because a single angle is an eccentric rotation
+    # restraint and NDS 3.3.3 wants beam ends restrained against rotation. Footnote 4 is the
+    # condition that permits it — a minimum 2-1/2" member "where anchors are installed on each
+    # side" — and every beam at these joints is 3" or wider.
+    #
+    # A pair does NOT raise the recorded number, and it is worth being explicit about why the
+    # temptation exists. With gussets on opposing faces, whichever way the load goes one of
+    # them takes it as force INTO the connector, so the 795 is always available to *some*
+    # gusset. That is a real observation and it is still not a capacity to record here: which
+    # gusset, under which load case, is a question this model cannot answer, and the three
+    # `lateral_uplift` items are UNKNOWN pending a PE seal regardless. The recorded value
+    # stays 460.
     #
     # This part is used here as a masonry gusset angle at a beam-on-cast-column joint — its
     # actual published application ("anchor wood trusses, rafters, joists, or beams to

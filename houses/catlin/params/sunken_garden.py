@@ -3634,16 +3634,40 @@ for _row, _y, _rise in _PILLAR_ROWS:
 # band above the joint it makes.
 _CORNER_SEAT_BEAM = {("R", 1): "BM-SG-BLW", ("F", 1): "BM-SG-BLW",
                      ("R", 3): "BM-SG-BLE", ("F", 3): "BM-SG-BLE"}
+#
+# ** TWO GUSSETS PER COLUMN, ONE EACH SIDE OF THE BEAM, SINCE 2026-09-14. ** A single angle
+# restrains the beam end against rotation from one face only, and that is an ECCENTRIC
+# restraint: NDS 3.3.3 requires beam ends to be restrained against rotation, and a one-sided
+# gusset leaves the joint free to roll away from it. FL11473 footnote 4 contemplates the
+# two-sided install directly and states its condition — a minimum 2-1/2" member "where
+# anchors are installed on each side" — and the balcony beams are 3-1/2" glulam.
+#
+# The edge distance still works on both sides, and it is the gate that could have cut this
+# back to the two porch joints. Anchors must sit outside the beam (>=1-3/4" off the axis for
+# a 3-1/2" beam) and keep >=3" to the edge of the 12" round (so <=3" off the axis). Both
+# sides get the same 1-1/4" band, because a circle is symmetric about its own diameter.
+#
+# Authored at the beam FACES rather than both on the centreline: the gusset's wood leg screws
+# to the beam side, so the face is where the part is, and two markers at one point would draw
+# as a single box.
 _CORNER_SEAT_UID = {("R", 1): "SGCG1RAAAA", ("R", 3): "SGCG3RAAAA",
                     ("F", 1): "SGCG1FAAAA", ("F", 3): "SGCG3FAAAA"}
+#: The second of each pair. New uids, minted here as every other uid in this file is — `haus
+#: fmt` does not visit `params/*.py` and an empty uid is skipped, not filled.
+_CORNER_SEAT_UID_B = {("R", 1): "SGCG1RBAAA", ("R", 3): "SGCG3RBAAA",
+                      ("F", 1): "SGCG1FBAAA", ("F", 3): "SGCG3FBAAA"}
 for _row, _y, _rise in _PILLAR_ROWS:
     for _i in _CORNER_PILLAR_INDICES:
-        CONNECTORS.append(Connector(
-            uid=_CORNER_SEAT_UID[(_row, _i)], tag=f"CN-SG-SEAT-{_row}{_i}",
-            kind=ConnectorKind.HURRICANE_TIE,
-            position=pt(ft(_PILLAR_X[_i - 1]), ft(_y)),
-            elevation=_balcony_beam_soffit + _rise, size="HGAM10",
-            connects=(_CORNER_SEAT_BEAM[(_row, _i)], f"PT-SG-B{_row}{_i}")))
+        # The balcony beams run NORTH-SOUTH, so their faces are east and west: the offset is
+        # in x. 1-3/4" is half the 3-1/2" glulam.
+        for _uids, _side, _dx in ((_CORNER_SEAT_UID, "", -1.75),
+                                  (_CORNER_SEAT_UID_B, "B", 1.75)):
+            CONNECTORS.append(Connector(
+                uid=_uids[(_row, _i)], tag=f"CN-SG-SEAT-{_row}{_i}{_side}",
+                kind=ConnectorKind.HURRICANE_TIE,
+                position=pt(ft(_PILLAR_X[_i - 1]) + inch(_dx), ft(_y)),
+                elevation=_balcony_beam_soffit + _rise, size="HGAM10",
+                connects=(_CORNER_SEAT_BEAM[(_row, _i)], f"PT-SG-B{_row}{_i}")))
 
 # THE TWO CENTRE POST CAPS. A 3-1/2" glulam landing on a 6x6 is a CCQ46SDS2.5 (ESR-2604) —
 # the column cap sized for a 4x beam on a 6x post, with SDS screws both ways. The corners
@@ -3739,8 +3763,18 @@ CONNECTORS += [
     # not stocked post sizes, so with no ``_POST_TOP_KINDS`` connector at the joint all four
     # beam-end links go ``hardware=None`` and the check reports four FAILs.
     # Same part at CN-SG-TIE-FCOL below. See notes/uplift_load_path.md.
+    # ** PAIRED SINCE 2026-09-14, one gusset each side of the beam line. ** See the corner
+    # seats above for the reasoning (NDS 3.3.3, FL11473 fn.4) and the edge-distance check.
+    # The back beams run EAST-WEST, so their faces are north and south and the offset is in
+    # y; 2-1/4" is half the 4-1/2" 3-2x12. That is the tight case on a 12" round — anchors
+    # land in the 2-1/4" to 3" band off the axis — and it holds on both sides.
     Connector(uid="SGCT01AAAA", tag="CN-SG-TIE-COL", kind=ConnectorKind.HURRICANE_TIE,
-              position=pt(ft(_cx), ft(_y_col)), elevation=_back_beam_soffit, size="HGAM10",
+              position=pt(ft(_cx), ft(_y_col) - inch(2.25)),
+              elevation=_back_beam_soffit, size="HGAM10",
+              connects=("BM-SG-BKW", "BM-SG-BKE", "PT-SG-COL")),
+    Connector(uid="SGCT01BAAA", tag="CN-SG-TIE-COLB", kind=ConnectorKind.HURRICANE_TIE,
+              position=pt(ft(_cx), ft(_y_col) + inch(2.25)),
+              elevation=_back_beam_soffit, size="HGAM10",
               connects=("BM-SG-BKW", "BM-SG-BKE", "PT-SG-COL")),
     # CN-SG-TIE-BR2 (uid J6XRAXQG5T) is retired, with the joist reinforcement above. It held
     # the *front* bearing of PT-SG-BR2's joist line down against the prying
@@ -3753,9 +3787,14 @@ CONNECTORS += [
     Connector(uid="SGCH04AAAA", tag="CN-SG-HGR-FE", kind=ConnectorKind.JOIST_HANGER,
               position=pt(ft(_x_ax_e), ft(_y_ax_front)), elevation=_back_beam_mid,
               size="HUC212-3", connects=("BM-SG-FRE", "W-SG-E1")),
+    # Paired, exactly as CN-SG-TIE-COL above and for the same reasons.
     Connector(uid="SGCT02AAAA", tag="CN-SG-TIE-FCOL", kind=ConnectorKind.HURRICANE_TIE,
-              position=pt(ft(_cx), ft(_y_ax_front)), elevation=_back_beam_soffit,
-              size="HGAM10",
+              position=pt(ft(_cx), ft(_y_ax_front) - inch(2.25)),
+              elevation=_back_beam_soffit, size="HGAM10",
+              connects=("BM-SG-FRW", "BM-SG-FRE", "PT-SG-FCOL")),
+    Connector(uid="SGCT02BAAA", tag="CN-SG-TIE-FCOLB", kind=ConnectorKind.HURRICANE_TIE,
+              position=pt(ft(_cx), ft(_y_ax_front) + inch(2.25)),
+              elevation=_back_beam_soffit, size="HGAM10",
               connects=("BM-SG-FRW", "BM-SG-FRE", "PT-SG-FCOL")),
 ]
 

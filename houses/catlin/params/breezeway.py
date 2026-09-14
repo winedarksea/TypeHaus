@@ -390,11 +390,23 @@ for _i, (_t, _x, _y, _beam) in enumerate((
         kind=ConnectorKind.BEARING_STANDOFF, position=pt(ft(_x), ft(_y)),
         elevation=ft(BEARING_TOP_FT), size="SS316-SHIM-35",
         connects=(_beam, f"PT-BW-{_t}")))
-    SEAT_BEARINGS.append(Connector(
-        uid=f"BWSG{_i}AAAAAA"[:10], tag=f"CN-BW-TIE-{_t}",
-        kind=ConnectorKind.HURRICANE_TIE, position=pt(ft(_x), ft(_y)),
-        elevation=ft(BEARING_TOP_FT), size="HGAM10",
-        connects=(_beam, f"PT-BW-{_t}")))
+    # ** A PAIR, ONE EACH SIDE OF THE BEAM. ** A single gusset restrains the beam end
+    # against rotation from one face only, which is an ECCENTRIC restraint: NDS 3.3.3
+    # requires beam ends to be restrained against rotation, and a one-sided angle leaves the
+    # joint free to roll away from it. FL11473 footnote 4 contemplates the two-sided install
+    # directly and sets its condition — a minimum 2-1/2" member "where anchors are installed
+    # on each side". A 3" seat beam clears it.
+    #
+    # Authored at the beam FACES rather than both on its centreline: the gusset's wood leg
+    # screws to the beam side, so the face is where the part is, and two markers at one point
+    # would draw as one box. 1-1/2" is half the 3" seat beam.
+    for _side, _dy in (("A", -1.5), ("B", 1.5)):
+        SEAT_BEARINGS.append(Connector(
+            uid=f"BWS{_side}{_i}AAAAAA"[:10], tag=f"CN-BW-TIE-{_t}{_side}",
+            kind=ConnectorKind.HURRICANE_TIE,
+            position=pt(ft(_x), ft(_y) + inch(_dy)),
+            elevation=ft(BEARING_TOP_FT), size="HGAM10",
+            connects=(_beam, f"PT-BW-{_t}")))
 
 # The two header caps. A 3-ply 2x12 is 4 1/2" wide, which is the "4x beam" the CCQ46 is
 # published for, on the 6x6 it names. `structural.uplift_path_coverage` would otherwise take
@@ -423,11 +435,19 @@ for _i, (_t, _y) in enumerate((("E", PIER_LINE_Y_FT), ("NE", GARAGE_SEAT_Y_FT)))
         kind=ConnectorKind.BEARING_STANDOFF, position=pt(ft(ROOF_COLUMN_EAST_X_FT), ft(_y)),
         elevation=ft(HEADER_SOFFIT_FT), size="SS316-SHIM-35",
         connects=("BM-BW-RE", f"PT-BW-R{'E' if _t == 'E' else 'NE'}")))
-    EAST_HEADER_BEARINGS.append(Connector(
-        uid=f"BWEG{_i}AAAAAA"[:10], tag=f"CN-BW-TIE-R{_t}",
-        kind=ConnectorKind.HURRICANE_TIE, position=pt(ft(ROOF_COLUMN_EAST_X_FT), ft(_y)),
-        elevation=ft(HEADER_SOFFIT_FT), size="HGAM10",
-        connects=("BM-BW-RE", f"PT-BW-R{'E' if _t == 'E' else 'NE'}")))
+    # Paired, for the reason at SEAT_BEARINGS above. 2-1/4" is half the 4-1/2" header, and
+    # the header runs NORTH-SOUTH, so its faces are east and west — the offset is in x where
+    # the seat beams' is in y. On a 12" round that puts each anchor group 2-1/4" to 3" off
+    # the axis, which is the band where >=3" edge distance to the circle still holds.
+    # Prefix BWQ, not BWE: "BWEB0AAAAA" is CN-BW-STDF-RE's uid, so the obvious spelling
+    # collided — a hard load-time ERROR, which is how it was caught rather than shipped.
+    for _side, _dx in (("A", -2.25), ("B", 2.25)):
+        EAST_HEADER_BEARINGS.append(Connector(
+            uid=f"BWQ{_side}{_i}AAAAAA"[:10], tag=f"CN-BW-TIE-R{_t}{_side}",
+            kind=ConnectorKind.HURRICANE_TIE,
+            position=pt(ft(ROOF_COLUMN_EAST_X_FT) + inch(_dx), ft(_y)),
+            elevation=ft(HEADER_SOFFIT_FT), size="HGAM10",
+            connects=("BM-BW-RE", f"PT-BW-R{'E' if _t == 'E' else 'NE'}")))
 
 # ** THE FOUR COLUMN BASES, AUTHORED FOR THE SAME REASON THE TRUSS TIES ARE. **
 # `takeoff/uplift_joints.py::post_base_rows` derives a base from the post's SECTION and names
