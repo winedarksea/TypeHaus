@@ -27,6 +27,7 @@ from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.guard_lines import guard_lines
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.checks.structural.deck_tables import (
+    DECK_DEAD_LOAD_PSF,
     DECK_TOTAL_LOAD_PSF,
     GUARD_MIN_HEIGHT_IN,
     GUARD_REQUIRED_ABOVE_IN,
@@ -709,7 +710,26 @@ def _bearing_of(ctx: CheckContext, post: Post) -> tuple[object, tuple[str, ...]]
     return (current if current is not post else None), tuple(seen)
 
 
-def _not_a_pad(ctx: CheckContext, deck, post: Post, bearing: object,
+def _hands_over(ctx: CheckContext, chain: tuple[str, ...]) -> bool:
+    """Does this post stand on ANOTHER POST, and so hand its load over at that joint?
+
+    ** ASKED BEFORE THE PAD TEST, AND THAT ORDER IS THE WHOLE POINT. ** This lived inside
+    ``_not_a_pad``, which is only reached when the chain does NOT end at a ``Pad`` — so the
+    day ``PT-BW-W`` became a Pad, ``PT-BW-CW`` standing on it stopped being N/A and started
+    reporting a PASS on that same pad. The pad was then graded twice: once against the pier's
+    own tributary and once against the wood column's, two answers about one pour, and the
+    second of them silently ignoring everything the first had already put on it.
+
+    The first hop is the tell — what the post is authored to stand on, before the chain is
+    followed any further — and it is a fact about the LOAD PATH, not about what happens to be
+    at the bottom of it.
+    """
+    from typehaus.model.structure import Post as _Post
+
+    return bool(chain) and isinstance(ctx.plan.by_tag(chain[0]), _Post)
+
+
+def _not_a_pad(ctx: CheckContext, carried_tag: str, post: Post, bearing: object,
                chain: tuple[str, ...]) -> Finding:
     """The verdict for a post that does not land on a ``Pad``. Three different verdicts.
 
@@ -735,13 +755,24 @@ def _not_a_pad(ctx: CheckContext, deck, post: Post, bearing: object,
     # what this post is authored to stand on, before the chain is followed any further.
     first = ctx.plan.by_tag(chain[0]) if chain else None
     if isinstance(first, Post):
+        # ** NAME WHAT ACTUALLY CARRIES IT, WHICH IS NOT ALWAYS AN ENGINEERED ITEM. ** This
+        # sentence used to read "spread_footing/<the post below>" unconditionally, which was
+        # true while every pier in this house stood on a belled `Footing`. Since 2026-09-14
+        # some stand on a `Pad` and are graded prescriptively right here, and pointing a
+        # reader at a `spread_footing/` item that does not exist is worse than vague.
+        if isinstance(bearing, Pad):
+            answer = (f"What carries both is {first.tag}'s own bearing on {bearing.tag}, "
+                      f"graded in this same rule — and the share this post hands down is "
+                      f"already in that tributary")
+        else:
+            answer = (f"What carries both is spread_footing/{first.tag}, and that item's "
+                      f"bearing design has to include this post's share")
         return not_applicable(
             "structural.deck_footing_size",
             f"post {post.tag} bears on {first.tag}, another post ({where}) — its load leaves "
             f"through that column, so IRC R507.3.1 has no separate footing to size here. "
-            f"What carries both is spread_footing/{first.tag}, and that item's bearing "
-            f"design has to include this post's share",
-            (deck.tag, post.tag, first.tag), code="IRC R507.3")
+            f"{answer}",
+            (carried_tag, post.tag, first.tag), code="IRC R507.3")
     if isinstance(bearing, FoundationWall):
         return not_applicable(
             "structural.deck_footing_size",
@@ -749,7 +780,7 @@ def _not_a_pad(ctx: CheckContext, deck, post: Post, bearing: object,
             f"footing ({where}) — IRC R507.3.1 sizes a deck post's own spread footing over "
             f"soil, and this load path has none. The wall's footing is graded by "
             f"structural.foundation_unbalanced_fill and structural.frost_depth",
-            (deck.tag, post.tag, bearing.tag), code="IRC R507.3")
+            (carried_tag, post.tag, bearing.tag), code="IRC R507.3")
     if isinstance(bearing, FloorSystem):
         return not_applicable(
             "structural.deck_footing_size",
@@ -758,7 +789,7 @@ def _not_a_pad(ctx: CheckContext, deck, post: Post, bearing: object,
             f"size. What carries it is graded by structural.deck_post_bearing (the "
             f"cross-grain bearing at the joint itself), by structural.cantilever_point_load "
             f"and by the joist span checks",
-            (deck.tag, post.tag, bearing.tag), code="IRC R507.3")
+            (carried_tag, post.tag, bearing.tag), code="IRC R507.3")
     if isinstance(bearing, Footing):
         return _engineered(
             ctx, "structural.deck_footing_size",
@@ -767,7 +798,7 @@ def _not_a_pad(ctx: CheckContext, deck, post: Post, bearing: object,
             f"Footing rather than a Pad ({where}) — a belled pier, which IRC Table R507.3.1's "
             f"flat-pad rows do not publish. Its bearing is a design against the site's own "
             f"allowable pressure, not a lookup",
-            (deck.tag, post.tag, bearing.tag), code="IRC R507.3")
+            (carried_tag, post.tag, bearing.tag), code="IRC R507.3")
     if isinstance(bearing, Slab):
         # ** EARNED, NOT ASSUMED. ** R507.3.1 sizes a deck post's own spread footing over
         # SOIL, and the positive evidence of absence here is that the post lands on a slab on
@@ -783,19 +814,131 @@ def _not_a_pad(ctx: CheckContext, deck, post: Post, bearing: object,
             f"R507.3.1 sizes a spread footing over soil and there is none here. NOT graded "
             f"by this or any other rule: the slab's own bending and punching shear under the "
             f"point load, and the bearing of whatever is under the slab",
-            (deck.tag, post.tag, bearing.tag), code="IRC R507.3")
+            (carried_tag, post.tag, bearing.tag), code="IRC R507.3")
     if bearing is None:
         return _unknown(
             "structural.deck_footing_size",
             f"post {post.tag} declares no supported_by, so nothing says what carries it — "
             f"author it before IRC R507.3.1 can size anything",
-            (deck.tag, post.tag))
+            (carried_tag, post.tag))
     return _engineered(
         ctx, "structural.deck_footing_size",
         item_id("spread_footing", post.tag),
         f"post {post.tag} bears on {getattr(bearing, 'tag', where)}, which is neither a Pad "
         f"nor anything this check knows how to grade ({where})",
-        (deck.tag, post.tag), code="IRC R507.3")
+        (carried_tag, post.tag), code="IRC R507.3")
+
+
+def _roof_borne_posts(ctx: CheckContext) -> tuple[dict[str, float], set[str]]:
+    """``(post tag -> EQUIVALENT deck tributary ft2, every post the roof reaches)``.
+
+    **Two collections and not one, because a post can be worth a VERDICT without being worth
+    an AREA.** The shares are handed down the post chain to whatever stands on the ground, so
+    a wood column standing on a pier keeps none of the roof it carries — but it still has to
+    be reported, as the N/A that says where its load went. Dropping it from the shares dict
+    and stopping there made two posts that used to carry a verdict carry nothing at all,
+    which reads exactly like a check that never looked at them.
+
+    ** A POST CAN BE INVISIBLE TO THIS CHECK RATHER THAN MERELY LIGHT, AND TWO OF CATLIN'S
+    ARE. ** ``_deck_posts`` walks ``deck.authored.joists.bearing_refs``, so a post that
+    carries no deck never enters the loop at all. ``PT-BW-RE`` and ``PT-BW-RNE`` carry
+    ``BM-BW-RE``, a ROOF header and nothing else: they do not read tributary 0, they are not
+    read. Before 2026-09-14 that was hidden by the ``spread_footing/`` item their belled
+    ``Footing`` raised — delete the Footing without this and the item goes and nothing at all
+    stands in its place.
+
+    ** THIS IS A DELIBERATE RESTATEMENT OF ``engineering/pier_basis._roof_fields``, NOT A
+    SHARED FUNCTION. ** ``engineering`` is a leaf package and this one is ``checks``; the
+    layering forbids the import in the direction that would help. **If one moves, move the
+    other** — the same standing instruction ``_delivered_to_posts`` already carries above.
+    ``tests/test_pier_calcs.py::test_the_two_tributary_rules_agree`` is what holds them
+    together.
+
+    ** THE ROOF SHARE IS CONVERTED TO DECK CURRENCY, BECAUSE R507.3.1 HAS ONLY ONE. ** The
+    table sizes a bearing area from ``tributary x 50 psf``. A roof does not carry 50 psf: on
+    this site it carries SNOW, and ``pier_basis`` grades a pier's roof area at
+    ``DECK_DEAD_LOAD_PSF + Site.ground_snow_load_psf``. So the area is scaled by the ratio of
+    those two loads rather than added raw, and one currency reaches the table. At catlin's 50
+    psf ground snow that is ``(10 + 50) / 50 = 1.2``, so 40 ft2 of canopy reads as 48 ft2 of
+    deck — 1.60 ft2 of required bearing on the mn-2020 profile's 1,500 psf.
+
+    ** WHAT THIS DOES NOT RESTATE, AND THE UNDER-COUNT IT LEAVES. ** ``pier_basis`` has a
+    SECOND roof rule, ``_rafter_fields``, for a roof framed as beams-on-beams — neither a
+    ``Roof`` nor a ``FloorSystem``, so there is no footprint polygon and the area has to be
+    built from the rafters' own bearing refs. That is seventy lines of geometry, and a third
+    copy of it is a worse hazard than the gap: catlin's case is the breezeway shelter, which
+    gives all four breezeway piers 7.71 ft2 of roof each that this function does not see.
+    **All four are DECK posts** and are graded here on their deck share — which is exactly
+    what makes the gap tolerable, because the failure this function exists for is a post that
+    is not graded at all. What they lose is 9.3 ft2 of equivalent area, i.e. 0.31 ft2 of
+    required bearing against the 3.75 and 2.25 ft2 they have. **It is an under-count, which
+    is the wrong direction for a demand**, and it is written down rather than discovered — see
+    ``tests/test_pier_calcs.py::test_the_two_ROOF_tributary_rules_agree_too``, which asserts
+    the boundary instead of asserting equality it cannot have.
+    """
+    from typehaus.model.spatial import Roof
+
+    ground_snow = getattr(ctx.plan.project.site, "ground_snow_load_psf", None)
+    if not ground_snow:
+        return {}
+    scale = (DECK_DEAD_LOAD_PSF + float(ground_snow)) / DECK_TOTAL_LOAD_PSF
+    out: dict[str, float] = {}
+    for roof in ctx.model.roofs:
+        element = ctx.plan.by_tag(roof.tag)
+        if not isinstance(element, Roof):
+            continue
+        bearings = [ctx.plan.by_tag(ref) for ref in element.bearing_refs]
+        beams = [b for b in bearings if isinstance(b, Beam)]
+        if not beams or len(bearings) < 2:
+            continue
+        # The overhang-expanded footprint, not the bearing rectangle: an eave past the
+        # bearing line is real load a truss carries back to the same two headers, and the
+        # smaller number would UNDER-count a demand.
+        area_ft2 = abs(_shoelace([tuple(p) for p in roof.footprint])) / (_M_PER_FT ** 2)
+        if area_ft2 <= 0.0:
+            continue
+        share_per_bearing = area_ft2 / len(bearings)
+        for beam in beams:
+            supports = beam.bearing_refs or ()
+            if not supports:
+                continue
+            share = share_per_bearing / len(supports)
+            for support in supports:
+                if isinstance(ctx.plan.by_tag(support), Post):
+                    out[support] = out.get(support, 0.0) + share * scale
+    return _handed_down(ctx, out), set(out)
+
+
+def _handed_down(ctx: CheckContext, shares: dict[str, float]) -> dict[str, float]:
+    """Move each post's share onto the post it stands on, all the way down.
+
+    ** THE N/A ON THE POST ABOVE IS A PROMISE, AND THIS IS WHAT KEEPS IT. ** ``_not_a_pad``
+    tells a reader that a post standing on another post has no footing of its own because
+    "what carries both is the item on the post below". If the share stopped at the upper post
+    the pad under the lower one would be sized without it — the promise broken silently, and
+    in the unconservative direction. ``pier_basis`` collects the same hand-down for the same
+    reason and says so in the same words; **if one moves, move the other.**
+
+    Catlin's case is the canopy: ``BM-BW-RW`` bears on ``PT-BW-CW``/``-CNW``, two 6x6 KDAT
+    columns that themselves stand on ``PT-BW-W``/``-GW``. The roof's west half reaches the
+    ground through those piers and nothing else.
+    """
+    from typehaus.model.structure import Post
+
+    out: dict[str, float] = {}
+    for tag, share in shares.items():
+        seen: set[str] = set()
+        current = ctx.plan.by_tag(tag)
+        while (isinstance(current, Post) and current.tag not in seen
+               and current.supported_by):
+            seen.add(current.tag)
+            below = ctx.plan.by_tag(current.supported_by)
+            if not isinstance(below, Post):
+                break
+            current = below
+        landing = current.tag if isinstance(current, Post) else tag
+        out[landing] = out.get(landing, 0.0) + share
+    return out
 
 
 @check(Tier.STRUCTURAL, "structural.deck_footing_size")
@@ -810,6 +953,8 @@ def deck_footing_size(ctx: CheckContext) -> list[Finding]:
                          f"profile {ctx.profile.name} declares no soil bearing value, so a "
                          "footing cannot be sized")]
     out: list[Finding] = []
+    graded: set[str] = set()
+    roof_borne, roof_subjects = _roof_borne_posts(ctx)
     for deck in decks:
         posts = _deck_posts(ctx, deck)
         tributaries = _tributaries_ft2(ctx, deck)
@@ -824,10 +969,15 @@ def deck_footing_size(ctx: CheckContext) -> list[Finding]:
             # again the share of the corners, and one pad size for all of them would either
             # under-size those two or over-size the other four.
             tributary = tributaries.get(post.tag, 0.0)
+            # A post under a deck may ALSO be under a roof — the north entry's west pair is
+            # both. Its footing answers for the two together, so the roof's equivalent share
+            # is added here rather than reported separately.
+            tributary += roof_borne.get(post.tag, 0.0)
+            graded.add(post.tag)
             required = max(required_footing_area_ft2(tributary, soil_psf), minimum)
             bearing, chain = _bearing_of(ctx, post)
-            if not isinstance(bearing, Pad):
-                out.append(_not_a_pad(ctx, deck, post, bearing, chain))
+            if _hands_over(ctx, chain) or not isinstance(bearing, Pad):
+                out.append(_not_a_pad(ctx, deck.tag, post, bearing, chain))
                 continue
             pad = bearing
             area_ft2 = abs(_shoelace([p.xy_m for p in pad.outline])) / (_M_PER_FT ** 2)
@@ -858,7 +1008,62 @@ def deck_footing_size(ctx: CheckContext) -> list[Finding]:
                     f"needs for {tributary:.1f} ft2 tributary",
                     (deck.tag, pad.tag), Result.PASS,
                 ))
+    # ** AND THE POSTS NO DECK REACHES AT ALL. ** A post carrying only a roof header is not
+    # in any deck's post list, so without this pass it is not graded — not graded lightly,
+    # not graded at zero: absent. See :func:`_roof_borne_posts`.
+    for tag in sorted((set(roof_borne) | roof_subjects) - graded):
+        post = ctx.plan.by_tag(tag)
+        if not isinstance(post, Post):
+            continue
+        roof = _roof_over(ctx, tag)
+        tributary = roof_borne.get(tag, 0.0)
+        required = max(required_footing_area_ft2(tributary, soil_psf), minimum)
+        bearing, chain = _bearing_of(ctx, post)
+        if _hands_over(ctx, chain) or not isinstance(bearing, Pad):
+            out.append(_not_a_pad(ctx, roof, post, bearing, chain))
+            continue
+        pad = bearing
+        area_ft2 = abs(_shoelace([p.xy_m for p in pad.outline])) / (_M_PER_FT ** 2)
+        thickness_in = pad.thickness.inches
+        if area_ft2 + 1e-9 < required:
+            out.append(_advisory(
+                "structural.deck_footing_size",
+                f"roof {roof} pad {pad.tag} bears {area_ft2:.2f} ft2, under the "
+                f"{required:.2f} ft2 IRC R507.3.1 needs for {tributary:.1f} ft2 of "
+                f"deck-equivalent tributary on {soil_psf:.0f} psf soil",
+                (roof, pad.tag), Result.FAIL,
+                fix_hint="widen the pad, or add a column to cut the tributary area"))
+        elif thickness_in + 1e-9 < MIN_DECK_FOOTING_THICKNESS_IN:
+            out.append(_advisory(
+                "structural.deck_footing_size",
+                f"roof {roof} pad {pad.tag} bears enough area but is only "
+                f"{thickness_in:.1f}\" thick, under the "
+                f"{MIN_DECK_FOOTING_THICKNESS_IN:.0f}\" minimum",
+                (roof, pad.tag), Result.FAIL,
+                fix_hint="thicken the pad to at least 6\""))
+        else:
+            out.append(_advisory(
+                "structural.deck_footing_size",
+                f"roof {roof} pad {pad.tag} bears {area_ft2:.2f} ft2 on {soil_psf:.0f} psf "
+                f"soil, over the {required:.2f} ft2 IRC R507.3.1 needs for "
+                f"{tributary:.1f} ft2 of deck-equivalent tributary",
+                (roof, pad.tag), Result.PASS))
     return out
+
+
+def _roof_over(ctx: CheckContext, post_tag: str) -> str:
+    """The tag of the roof whose load reaches ``post_tag``, for the finding to name."""
+    from typehaus.model.spatial import Roof
+
+    for roof in ctx.model.roofs:
+        element = ctx.plan.by_tag(roof.tag)
+        if not isinstance(element, Roof):
+            continue
+        for ref in element.bearing_refs:
+            beam = ctx.plan.by_tag(ref)
+            if isinstance(beam, Beam) and post_tag in (beam.bearing_refs or ()):
+                return roof.tag
+    return post_tag
 
 
 # --- Enclosure ---------------------------------------------------------------------

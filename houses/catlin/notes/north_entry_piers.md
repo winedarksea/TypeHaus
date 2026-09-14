@@ -387,6 +387,46 @@ against a factored 7.8 kip gives δ_ns ≈ 1.01, and e_min stays under §R22.4.2
 
 ### Footing
 
+> ### 2026-09-14 — three of these six left this note's scope, and the other three did not
+>
+> `PD-BW-W`, `PD-BW-E` and `PD-BW-RE` — the HOUSE-side three — are `Pad`s now, graded
+> prescriptively by `structural.deck_footing_size` against IRC Table R507.3.1. Their
+> `spread_footing/` items have left the engineering register, and **§6's bearing arithmetic
+> no longer oracles anything for them**: what governs is a table lookup a reviewer can open.
+> Their axial, slenderness, cage and durability sections above are untouched — `deck_post`
+> still grades all six.
+>
+> What made the conversion possible is that the check learned the ROOF.
+> `checks/structural/deck.py::_roof_borne_posts` converts a post's roof-footprint share into
+> R507.3.1's own deck currency —
+> `(DECK_DEAD_LOAD_PSF + Site.ground_snow_load_psf) / DECK_TOTAL_LOAD_PSF`, 1.2 on this site —
+> so the canopy's snow arrives at the table as 48 ft² of equivalent area per column rather
+> than being dropped. **That had to be built first because of `PT-BW-RE`**, which carries
+> `BM-BW-RE` and no deck at all: it was in no deck's post list, so it was not graded at
+> zero — it was not graded, and its only coverage was the `spread_footing/` item its Footing
+> raised. Deleting that Footing without the roof pass would have removed an item and put
+> nothing in its place.
+>
+> **`PT-BW-GW`, `-GE` and `-RNE` stay `Footing` and stay engineered**, and the reason is the
+> garage strip footing, not the load. They bear at -7'-0", on `FT-GF-S1`/`-S3`'s own plane,
+> and lap about 7 1/2" into it. A `Pad` is an ISOLATED pour by definition —
+> `structural.concrete_interference` scopes every one of them and only a wall-less `Footing` —
+> so calling these Pads asserts a pour that stands clear of something it is cast against.
+> They cannot be pulled clear either: the pier line is 4 1/2" south of that footing's face
+> and the shaft is a 12" round, so the COLUMN overhangs any pad stopping at the face. One
+> pour is the truth, `Footing.under` is how the model says it, and three
+> `spread_footing/` items are the price. **That is an open item, not an oversight.**
+>
+> The pads themselves are 2'-6" x 1'-6" x 1'-0" — a rectangle, not the 2'-0" square below.
+> `FT-B-N1`..`-N4`, the basement's north strip footing, sits on the same -9'-9 7/16" plane
+> and reaches y = 36'-8 1/8"; a 24" square centred on the pier line reached 2 1/8" into it.
+> That lap was there while these were Footings and was invisible, because
+> `concrete_interference` did not scope them. 18" north-south clears it by 1 1/16" and 30"
+> east-west takes the area to **3.75 ft²**, against 2.48 ft² required for `PT-BW-W` on the
+> mn-2020 profile's 1,500 psf. One size for all three: three pad sizes are three rows in
+> S-100's FOUNDATION SCHEDULE, and that sheet is one row from its schedule governing its
+> height again.
+
 | term | working | value |
 |---|---|---|
 | service load | §6 above | 4,404 lb |

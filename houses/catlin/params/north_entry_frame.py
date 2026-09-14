@@ -30,8 +30,8 @@ applied on installation. `AN-BW-KDAT` carries it onto the drawings.
 """
 
 from typehaus import (
-    Annotation, BarSpec, Beam, Connector, ConnectorKind, DeckLayer, Footing, FloorSystem,
-    JoistSpec, Node, Post, Railing, RailingKind, ReinforcementSpec, SlatScreen, Stair,
+    Annotation, BarSpec, Beam, Connector, ConnectorKind, DeckLayer, FloorSystem, Footing,
+    JoistSpec, Node, Pad, Post, Railing, RailingKind, ReinforcementSpec, SlatScreen, Stair,
     ft, inch, pt,
 )
 
@@ -334,12 +334,28 @@ beam(10, "BM-BW-SCSILL", LANDING_WEST_FT, PIER_LINE_Y_FT,
 # 1,240, so on 1,500 psf presumptive soil the required area is 3.1 ft2 and the retired
 # 1.78 ft2 pad no longer covers it. 2'-0" square = 4.0 ft2. See notes/north_entry_piers.md.
 #
-# These are `Footing`, not `Pad`: a Pad is graded prescriptively by
+# ** THESE BECAME `Pad` ON 2026-09-14, AND THE ARGUMENT THEY WERE `Footing` FOR IS ANSWERED
+# RATHER THAN DROPPED. ** It ran: a Pad is graded prescriptively by
 # `structural.deck_footing_size` against an IRC DECK table that knows nothing about roof
-# load, and these carry roof snow. `engineering/spread_footing.py` grades a Footing.
+# load, and these carry roof snow — so `engineering/spread_footing.py` graded a Footing
+# instead, and six `spread_footing/` items went to the seal register for a flat square pad
+# on presumptive soil, which is a lookup and not a design.
+#
+# What changed is that the check learned the roof. `checks/structural/deck.py::_roof_borne_posts`
+# converts a post's roof-footprint share into the DECK currency R507.3.1 is written in —
+# `(DECK_DEAD_LOAD_PSF + Site.ground_snow_load_psf) / DECK_TOTAL_LOAD_PSF`, 1.2 here — so the
+# snow arrives at the table as equivalent area rather than being dropped. **PT-BW-RE and
+# PT-BW-RNE are why that had to be built first**: they carry only `BM-BW-RE`, a roof header,
+# so they were not in any deck's post list at all — not graded at zero, not graded — and
+# deleting their Footing without it would have removed an item and put nothing in its place.
+#
+# **The pour does not change.** `resolve/envelope.py` already drew a post-hosted Footing as a
+# SQUARE of side `width`, so the same concrete is in the same place; see `_pad_outline`.
+# Credited bearing area RISES 3.14 -> 4.00 ft² on a 24", because grading stops reading an
+# inscribed circle that nothing was ever going to form.
 #
 # `bottom_elevation` is what makes these bear at depth rather than pin to the storey datum
-# (-> Footing.bottom_elevation), and the shaft above each grows to suit.
+# (-> Pad.bottom_elevation), and the shaft above each grows to suit.
 # ** THE CAGE MUST BE STRUCTURED, NOT ONLY PROSE, OR ITS STEEL BILLS ZERO. **
 # `vertical_reinforcement` is a free-text string for the drawings; `reinforcement_takeoff`
 # reads `reinforcement` and nothing else. Authoring only the string added 3.18 cy of concrete
@@ -367,7 +383,48 @@ ENTRY_PIER_CAGE = ReinforcementSpec(
 )
 
 PIERS = []
+def _pad_outline(x_ft, y_ft, side_in, along_in=None):
+    """A square (or rectangle) pad footprint centred on the pier, in plan.
+
+    ** THE SHAPE IS THE SAME SHAPE THE FOOTING ALREADY DREW. ** ``resolve/envelope.py``
+    resolves a post-hosted ``Footing`` as a SQUARE of side ``width`` — the round the tag
+    suggests was never what got built or billed — so authoring the square here changes no
+    concrete volume at all. What changes is the credited BEARING AREA: ``deck_footing_size``
+    stops reading the inscribed circle and reads the square, 3.14 -> 4.00 ft² on a 24".
+
+    ``along_in`` (the y dimension) defaults to ``side_in`` and exists for the one thing a
+    ``Pad`` can do that a ``Footing`` cannot: be a rectangle. ``structural.concrete_interference``
+    scopes every Pad but only a wall-less Footing, so a lap that was invisible while these
+    were Footings becomes a FAIL the moment they are Pads — and pulling a pad clear of a
+    strip footing in one direction is what a rectangle is for.
+    """
+    half_x, half_y = inch(side_in) / 2.0, inch(along_in or side_in) / 2.0
+    return (pt(ft(x_ft) - half_x, ft(y_ft) - half_y),
+            pt(ft(x_ft) + half_x, ft(y_ft) - half_y),
+            pt(ft(x_ft) + half_x, ft(y_ft) + half_y),
+            pt(ft(x_ft) - half_x, ft(y_ft) + half_y))
+
+
 FOOTINGS = []
+#: The house-side pads run 18" north-south rather than the 24" their square drew, because
+#: `FT-B-N1`..`-N4` — the basement's own north strip footing, on this same -9'-9 7/16" plane —
+#: reach to y = 36'-8 1/8" and a 24" square centred on the pier line reached 2 1/8" into them.
+#: That lap was there while these were Footings and was invisible: `concrete_interference`
+#: scopes every `Pad` and only a wall-less `Footing`. 18" clears it by 1 1/16".
+#:
+#: The width makes the area back up, which is the whole reason a `Pad` is authored as an
+#: outline instead of a width: 30" x 18" = 3.75 ft² carries PT-BW-W's 2.48 ft² requirement
+#: with room, where a 24" square that cleared in y would have been 24 x 18 = 3.00 ft².
+#:
+#: ** ONE SIZE FOR ALL THREE, AND THE SHEET IS WHY. ** PT-BW-E and PT-BW-RE need 1.00 and
+#: 1.60 ft² and would take a 24" x 18" pad, but three pad sizes are three rows in S-100's
+#: FOUNDATION SCHEDULE and that sheet is fitted to its PLAN — one table row from the schedule
+#: governing the sheet height again, which `test_schedule_columns.py` exists to catch. One
+#: size is also one form, poured three times. The 0.75 ft² of concrete that buys back is
+#: about $12.
+_PAD_WIDE_IN = 30.0
+_PAD_DEPTH_IN = 18.0
+
 for _uid, _tag, _x, _height, _top in (
     ("BWPT01AAAA", "PT-BW-W", LANDING_WEST_FT, BEARING_TOP_FT - FOOTING_TOP_FT,
      BEARING_TOP_FT),
@@ -392,10 +449,11 @@ for _uid, _tag, _x, _height, _top in (
         # moment rule, indifferent to load. Galvanized, house-wide (EXPOSED_MIX, A767).
         vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
         reinforcement=ENTRY_PIER_CAGE,
-        supported_by=f"FT-BW-{_tag.split('-')[-1]}"))
-    FOOTINGS.append(Footing(
-        uid=f"BWF{_uid[4:8]}AA", tag=f"FT-BW-{_tag.split('-')[-1]}", under=_tag,
-        width=ft(2), depth=ft(FOOTING_DEPTH_FT), assembly="PIER_BASE_12",
+        supported_by=f"PD-BW-{_tag.split('-')[-1]}"))
+    FOOTINGS.append(Pad(
+        uid=f"BWF{_uid[4:8]}AA", tag=f"PD-BW-{_tag.split('-')[-1]}",
+        outline=_pad_outline(_x, PIER_LINE_Y_FT, _PAD_WIDE_IN, _PAD_DEPTH_IN),
+        thickness=ft(FOOTING_DEPTH_FT), assembly="PIER_BASE_12",
         bottom_elevation=ft(PIER_BOTTOM_FT)))
 
 # ** THE GARAGE SIDE IS THE MIRROR: TWO PIERS OF ITS OWN, NOT A PLATE ON THE STEM. **
@@ -450,6 +508,23 @@ for _uid, _tag, _x, _pad_in, _top in (
         vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
         reinforcement=ENTRY_PIER_CAGE,
         supported_by=f"FT-BW-{_tag.split('-')[-1]}"))
+    # ** THE GARAGE-SIDE THREE STAY `Footing`, AND IT IS THE STRIP FOOTING THAT DECIDES IT. **
+    # The house-side three became `Pad` on 2026-09-14 and these did not. A `Pad` is an
+    # ISOLATED pour — `structural.concrete_interference` scopes every one of them, and only a
+    # wall-less `Footing` — and these three are not isolated: they are cast on the garage
+    # strip footing's own plane (both -7'-0" to -6'-4") and lap ~7 1/2" into it, which the
+    # comment above has always described as meeting "edge to edge on one plane".
+    #
+    # **And they cannot be pulled clear, which is the part worth writing down.** The pier line
+    # stands 4 1/2" south of `FT-GF-S1`/`-S3`'s south face and the shaft is a 12" round, so
+    # the COLUMN itself overhangs any pad that stops at that face. Clearing the strip in plan
+    # would need a pad about 9" deep — 1 1/2" either side of the shaft — and making the area
+    # back up in width turns it into a 40" grade beam. There is no rectangle here.
+    #
+    # So the honest model is one pour, which is what `Footing.under` says and what
+    # `concrete_interference`'s own fix names: "make the two one pour by hosting it on the
+    # wall/footing it lands in". The cost is that `spread_footing/PT-BW-GW`, `-GE` and `-RNE`
+    # stay in the engineering register. That is a real open item, not an oversight.
     FOOTINGS.append(Footing(
         uid=f"BWFG{_uid[4:6]}AAAA"[:10], tag=f"FT-BW-{_tag.split('-')[-1]}", under=_tag,
         width=inch(_pad_in), depth=ft(GARAGE_FOOTING_THICKNESS_FT),

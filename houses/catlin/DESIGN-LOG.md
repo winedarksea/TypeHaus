@@ -16,6 +16,57 @@ bottom has no constraint-index section of its own — the constraints live in
 
 ## Site and the four structures
 
+### Three of the north entry's six piers became pads, and the check had to learn the roof first (2026-09-14)
+
+Six `spread_footing/` items sat in the register for six flat square bases on presumptive
+soil. That is a table lookup, not a design — but `Pad`, the type that gets the lookup, is
+graded by `structural.deck_footing_size` against an IRC **deck** table that knew nothing
+about roof snow, and these carry a canopy. So they were authored `Footing` and the register
+carried the consequence.
+
+**The fix is in the check, not in the house.** `checks/structural/deck.py::_roof_borne_posts`
+converts a post's roof-footprint share into R507.3.1's own currency —
+`(DECK_DEAD_LOAD_PSF + Site.ground_snow_load_psf) / DECK_TOTAL_LOAD_PSF`, 1.2 on this site —
+and hands it down the post chain, so the canopy's 40 ft² per column arrives at the table as
+48 ft² of equivalent deck. It is a deliberate restatement of
+`engineering/pier_basis._roof_fields`, because `engineering` is a leaf and the import that
+would help runs the wrong way; **if one moves, move the other**, and
+`test_pier_calcs.py` holds them together.
+
+**`PT-BW-RE` and `-RNE` are why that had to come first.** They carry `BM-BW-RE`, a roof
+header, and no deck at all — so they were in no deck's post list and this rule never reached
+them. Not graded at zero: not graded. Their only coverage was the `spread_footing/` item
+their Footing raised, and deleting it without the roof pass would have removed an item and
+left nothing behind. Two further bugs fell out of the same pass, both of them the rule
+answering one question twice:
+
+* **A post standing on another post hands its load over, and that test now runs BEFORE the
+  pad test.** It lived inside `_not_a_pad`, which is only reached when the chain does *not*
+  end at a `Pad` — so the day `PT-BW-W` became a Pad, the wood column on it stopped being
+  N/A and began reporting a PASS on that same pad, graded a second time against its own
+  tributary and ignoring everything the first grading had put there.
+* **A share handed down has to leave the post above.** `_handed_down` moves it, so the pier
+  is sized with the column's load in it — which is what the N/A on the column promises.
+
+**Three piers converted and three did not, and the split is the garage strip footing.**
+`PD-BW-W`/`-E`/`-RE` bear at -9'-9 7/16" and clear everything. `PT-BW-GW`/`-GE`/`-RNE` bear
+at -7'-0", on `FT-GF-S1`/`-S3`'s own plane, lapping about 7 1/2" into it — and a `Pad` is an
+ISOLATED pour by definition, so calling them Pads asserts a pour standing clear of something
+it is cast against. They cannot be pulled clear either: the pier line is 4 1/2" from that
+footing's face and the shaft is a 12" round, so the column overhangs any pad stopping there.
+One pour is the truth and `Footing.under` is how the model says it. **Three
+`spread_footing/` items stay, as an open item rather than an oversight.**
+
+The pads are 2'-6" x 1'-6" x 1'-0" rather than the 2'-0" square their Footings drew, and both
+dimensions are forced. 18" north-south is what clears `FT-B-N1`..`-N4` on the same plane — a
+24" square reached 2 1/8" into them, a lap that had always been there and had always been
+invisible, because `concrete_interference` scopes every `Pad` and only a wall-less `Footing`.
+30" east-west takes the area back to 3.75 ft² against `PT-BW-W`'s 2.48 ft² requirement. One
+size for all three: three sizes are three rows in S-100's FOUNDATION SCHEDULE and that sheet
+is one row from its schedule governing its height again. `prices.toml` gains a qualified
+`pad:PIER_BASE_12` row — 0.35 cy, priced per yard rather than on the generic pad lump,
+because these are sized and their excavation is open for the basement anyway.
+
 - **Breezeway design (retired), in full.** Before the extruded garage gable superseded it, the fourth structure was an enclosed breezeway on freestanding 6x6 posts spanning the 4' gap door-to-door (`params/breezeway.py`), glazed in polycarbonate. The breezeway followed the doors, and nothing enforced that but one line: it was a 4'-6" enclosure centred on the midpoint of `D-M-ENTRY` (x 8'-0") and `D-G-SERVICE` (x 10'-0") — x 9'-0" as of 2026-09-09, once the two stopped being concentric. When either door moved, `_GLAZING_CENTER_X` and `_EW_FT` moved with it (`code.R311_3_exterior_landing` caught a shelter that drifted off its own door). Both doors opened onto the deck at 0'-0" and reached it from opposite directions: `D-M-ENTRY` from the house floor it shares, `D-G-SERVICE` up +1'-0" from a garage storey that sat at -1'-0". The breezeway deck did not move with grade — it was a bridge between two doors, and only its pads and piers followed the soil down. Only 7/8" of the garage's corrugated cladding panel projects past the sheathing plane, so it drips clear; the breezeway's own uncut 4' panel was measured off the cladding rather than the sheathing plane, and its core was 6" thick — a different alignment convention from the garage's. What survives of this design today is the foundation bridge (FS-BW-FLOOR, FS-BW-GARAGE), beams (BM-BW-*), a stair (ST-BW-ENTRY), a railing (RL-BW-ENTRY), and a slat screen (SC-BW-WEST); the posts, roof, and glazing described above are gone. The current design is recorded separately in notes/north_entry_structure.md.
 - **Why grade sits 2'-10" below the main floor.** The basement-ceiling overhaul put a 12 5/8" deck where a 9" slab had been, and the house rose 4" rather than surrender the headroom under it — that 4" rise is folded into the 2'-10" figure.
 - **Why the basement is 8'-0" even, not 9'-0".** The flat bearing seat lands the EPS deck's soffit on the same plane as the wood bays' mudsill: the deck is 14 3/8" deep and the FLOOR meets it there, so the house sits exactly where it was and the basement simply reads shallower as a result. `Storey.default_ceiling_height` still authors a fictional 9'-0" because nothing has gone back to correct it — `code.R305_ceiling_height` was changed instead to derive the real number.

@@ -78,20 +78,33 @@ def test_only_the_belled_piers_remain_engineered(findings) -> None:
     An ENGINEERED finding names an item a professional seal has to cover. Six of the original
     eight named items nobody could ever design, because the footing they named does not exist.
 
-    **Seven since 2026-09-10**, and the five new ones are the same condition, not a
-    regression: the north entry piers each bear on their own ``Footing`` with an authored
+    **Seven since 2026-09-10**, and the five new ones were the same condition, not a
+    regression: the north entry piers each bore on their own ``Footing`` with an authored
     ``bottom_elevation``, which is a belled pier, and IRC Table R507.3.1 publishes flat-pad
-    rows only. Their bearing is a design against the site's own allowable pressure — graded
-    by ``engineering/spread_footing.py`` and oracled by ``notes/north_entry_piers.md`` §6.
+    rows only.
+
+    ** FIVE SINCE 2026-09-14, AND THE TWO THAT LEFT ARE THE POINT OF THE CHANGE. ** The north
+    entry's three HOUSE-side piers became ``Pad``s that day and are graded prescriptively
+    right here. What made that possible was teaching this rule the ROOF: ``_roof_borne_posts``
+    converts a post's roof-footprint share into R507.3.1's own deck currency, so the canopy's
+    snow arrives at the table as equivalent area instead of being dropped — which is what
+    ``Footing`` was chosen over ``Pad`` to avoid in the first place.
+
+    **``PT-BW-RE`` moved the other way and that is not a contradiction.** It was absent from
+    this set because it carries a roof header and NO deck, so a rule that walked only a deck's
+    own posts never reached it — not graded lightly: not graded. It is reached now, and it is
+    a ``Pad``, so it is graded and not engineered.
+
+    The three GARAGE-side piers stay: they are cast on the garage strip footing's own plane
+    and lap ~7 1/2" into it, and the pier line is 4 1/2" from that footing's face, so no
+    rectangle clears it — one pour, which only ``Footing.under`` can say. See
+    ``params/north_entry_frame.py``.
     """
     engineered = {f.element_tags[1] for f in findings
                   if f.authority is Authority.ENGINEERED and len(f.element_tags) > 1
-                  and f.element_tags[1].startswith("PT-")}
-    # PT-BW-RE is deliberately absent: it carries the east roof column and NO deck, so this
-    # rule -- which walks a deck's own posts -- never reaches it. Its footing is graded by
-    # engineering/spread_footing.py all the same.
+                  and str(f.element_tags[1]).startswith("PT-")}
     assert engineered == {"PT-SG-COL", "PT-SG-FCOL",
-                          "PT-BW-W", "PT-BW-E", "PT-BW-GW", "PT-BW-GE"}
+                          "PT-BW-GW", "PT-BW-GE", "PT-BW-RNE"}
     items = {f.engineering_item for f in findings if f.engineering_item}
     assert items == {f"spread_footing/{tag}" for tag in engineered}
 
@@ -107,10 +120,14 @@ def test_no_post_is_reported_as_unsupported_when_the_model_says_otherwise(findin
     graded = {f.element_tags[1] for f in findings
               if len(f.element_tags) > 1 and f.element_tags[1].startswith("PT-SG-")}
     assert graded == set(_EXPECTED)
-    # The untouched branch still runs: every breezeway pad is still graded on its area.
+    # The untouched branch still runs, and since 2026-09-14 it has subjects again: the north
+    # entry's three HOUSE-side piers became ``Pad``s that day (``PD-BW-W`` / ``-E`` / ``-RE``),
+    # so the area branch this rule exists for is exercised by the reference house rather than
+    # only by a unit fixture. It was vacuous in between — the four passage pads it used to
+    # grade went with the foundation bridge.
     pads = {f.element_tags[1] for f in findings
-            if len(f.element_tags) > 1 and f.element_tags[1].startswith("PD-BW-")}
-    assert not pads  # foundation bridge retires every passage pad
+            if len(f.element_tags) > 1 and str(f.element_tags[1]).startswith("PD-BW-")}
+    assert pads == {"PD-BW-W", "PD-BW-E", "PD-BW-RE"}
 
 
 def test_a_post_that_declares_no_bearing_is_unknown_not_na(catlin_plan) -> None:
@@ -124,12 +141,13 @@ def test_a_post_that_declares_no_bearing_is_unknown_not_na(catlin_plan) -> None:
 
     post = next(e for e in catlin_plan.all_elements()
                 if getattr(e, "tag", None) == "PT-SG-COL")
-    deck = next(e for e in catlin_plan.all_elements()
-                if getattr(e, "tag", None) == "FS-SG-PORCH")
 
     class _Ctx:
         plan = catlin_plan
 
-    finding = _not_a_pad(_Ctx(), deck, post, None, ())
+    # A TAG, not the element: ``_not_a_pad`` takes what the finding should NAME as the thing
+    # being carried, and since 2026-09-14 that is a deck tag or a ROOF tag — the check grades
+    # posts that carry only a roof header too, and a roof is not a ``_Deck``.
+    finding = _not_a_pad(_Ctx(), "FS-SG-PORCH", post, None, ())
     assert finding.result is Result.UNKNOWN
     assert "declares no supported_by" in finding.message

@@ -36,10 +36,26 @@ def test_the_breezeway_pads_stand_clear_of_both_buildings():
 
 
 def test_it_reports_the_pours_it_cleared_by_name():
-    """A silent PASS is indistinguishable from a check that never ran."""
+    """A silent PASS is indistinguishable from a check that never ran.
+
+    ** THE HOUSE HAS ISOLATED POURS AGAIN SINCE 2026-09-14. ** This asserted ``not passes``
+    for a while and the assertion was honest: every isolated pour catlin had went with the
+    foundation bridge, so the rule's subject set was empty and the mutation below was the
+    only thing exercising it. The north entry's three HOUSE-side piers became ``Pad``s that
+    day — ``PD-BW-W``/``-E``/``-RE``, a Pad being the one thing this rule scopes
+    unconditionally — and they stand clear of `FT-B-N1`..`-N4`, the basement's north strip
+    footing on their own plane, by 1 1/16". The 18" north-south dimension is what buys that
+    clearance and is the reason those pads are rectangles rather than the 24" squares their
+    Footings drew.
+
+    The three GARAGE-side piers are NOT here, and their absence is the other half of the same
+    fact: they lap the garage strip footing by ~7 1/2" on one plane and cannot be pulled
+    clear, so they stay ``Footing`` with an ``under`` and this rule does not scope them.
+    """
     ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
     passes = [f for f in _findings(ctx) if f.result is Result.PASS]
-    assert not passes  # no isolated connector pours remain; mutation below proves the rule
+    assert len(passes) == 1, [f.message for f in passes]
+    assert set(passes[0].element_tags) == {"PD-BW-W", "PD-BW-E", "PD-BW-RE"}
 
 
 def test_continuous_foundation_work_is_out_of_scope():

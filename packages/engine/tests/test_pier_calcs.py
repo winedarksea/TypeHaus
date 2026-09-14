@@ -612,6 +612,99 @@ def test_the_two_tributary_rules_agree(catlin_plan) -> None:
         assert mine[tag] == pytest.approx(value, rel=1e-9), tag
 
 
+def _deck_posts_everywhere(plan):
+    """Every post any deck delivers load to, across all decks."""
+    from _helpers import check_context
+
+    from typehaus.checks.structural.deck import _deck_posts, _decks
+
+    ctx = check_context(plan=plan)
+    return [post for deck in _decks(ctx) for post in _deck_posts(ctx, deck)]
+
+
+def test_the_two_ROOF_tributary_rules_agree_too(catlin_plan) -> None:
+    """The same duplication, for the rule that was only stated once until 2026-09-14.
+
+    ``checks/structural/deck.py::_roof_borne_posts`` is a restatement of
+    ``engineering/pier_basis._roof_fields``, added so ``structural.deck_footing_size`` could
+    reach a post that carries only a roof — ``PT-BW-RE`` and ``-RNE`` were in no deck's post
+    list at all, so converting their ``Footing`` to a ``Pad`` without it would have retired an
+    item and put nothing in its place. Both modules carry the "if one moves, move the other"
+    instruction; this is the thing that makes it more than an instruction.
+
+    **Two differences are deliberate and are asserted rather than tolerated:**
+
+    * the CHECK converts to R507.3.1's deck currency and the ENGINEERING module does not.
+      ``pier_basis`` keeps ``roof_tributary_ft2`` apart precisely so it can grade it at snow
+      rather than at 40 psf occupancy, while the table has one currency and the conversion is
+      how a roof reaches it honestly. So the two agree up to one scale factor, and the factor
+      is checked here rather than assumed;
+    * the CHECK hands a share down the post chain and ``pier_basis`` does that later, in its
+      own ``handed_*`` pass. So the comparison is made against the piers' FINAL roof
+      tributary, which is where both rules end up.
+
+    ** AND ONE DIFFERENCE THAT IS A GAP, ASSERTED HERE SO IT CANNOT BE FORGOTTEN. **
+    ``pier_basis`` also runs ``_rafter_fields``, for a roof framed as beams-on-beams with no
+    footprint polygon to read — catlin's breezeway shelter, which gives ``PT-BW-E`` and
+    ``PT-BW-GE`` 7.71 ft² of roof apiece. The check does NOT restate that: it is seventy
+    lines of geometry and a third copy would be the worse hazard. Both posts are deck posts
+    and are graded on their deck share, so what they lose is 0.31 ft² of required bearing
+    against the 3.75 and 2.25 they have — but it IS an under-count, and the assertion below
+    pins exactly which two posts carry it so the day a third appears, this fails.
+    """
+    from _helpers import check_context
+
+    from typehaus.checks.structural.deck import _roof_borne_posts
+    from typehaus.checks.structural.deck_tables import (
+        DECK_DEAD_LOAD_PSF,
+        DECK_TOTAL_LOAD_PSF,
+    )
+    from typehaus.engineering.pier_basis import cast_piers
+    from typehaus.engineering.registry import EngineeringContext
+    from typehaus.resolve import resolve
+
+    model, _ = resolve(catlin_plan)
+    ctx = EngineeringContext(plan=catlin_plan, model=model, soil_class="GM")
+    snow = float(getattr(catlin_plan.project.site, "ground_snow_load_psf", 0.0))
+    scale = (DECK_DEAD_LOAD_PSF + snow) / DECK_TOTAL_LOAD_PSF
+    assert scale == pytest.approx(1.2), "catlin is 50 psf ground snow; the factor follows it"
+
+    from typehaus.engineering.pier_basis import _rafter_fields, _roof_fields
+
+    theirs, subjects = _roof_borne_posts(check_context(plan=catlin_plan))
+    # The canopy's four bearing posts are the subjects; the two WOOD ones hand their share
+    # down, so only the piers keep an area. A house with no roof on beams would make this
+    # vacuous, which is why the set is asserted and not merely walked.
+    assert subjects == {"PT-BW-CW", "PT-BW-CNW", "PT-BW-RE", "PT-BW-RNE"}
+
+    mine, _ = _roof_fields(ctx)
+    # Hand it down the same way the check does, so the two are compared where they land.
+    landed: dict[str, float] = {}
+    for tag, share in mine.items():
+        current = catlin_plan.by_tag(tag)
+        while getattr(current, "supported_by", None) is not None:
+            below = catlin_plan.by_tag(current.supported_by)
+            if getattr(below, "element_kind", None) != "Post":
+                break
+            current = below
+        landed[current.tag] = landed.get(current.tag, 0.0) + share
+
+    assert set(theirs) == set(landed), (sorted(theirs), sorted(landed))
+    for tag, value in sorted(theirs.items()):
+        assert value == pytest.approx(landed[tag] * scale, rel=1e-9), tag
+
+    # The gap, named. `_rafter_fields` is the rule the check does not restate.
+    rafter, _ = _rafter_fields(ctx)
+    # All four breezeway piers, 7.71 ft² each. **Every one of them is a DECK post**, which is
+    # the whole of what makes the gap tolerable: the under-count lands on posts this check
+    # already grades on their deck share, never on one that would otherwise be invisible —
+    # which is the failure `_roof_borne_posts` was written for in the first place.
+    assert set(rafter) == {"PT-BW-E", "PT-BW-GE", "PT-BW-W", "PT-BW-GW"}, sorted(rafter)
+    assert all(rafter[tag] == pytest.approx(7.714, abs=0.01) for tag in rafter)
+    deck_posts = {p.tag for p in _deck_posts_everywhere(catlin_plan)}
+    assert set(rafter) <= deck_posts, sorted(set(rafter) - deck_posts)
+
+
 # ---------------------------------------------------------------------------------------
 # The four balcony corner columns, and the three glulam beams over them.
 # Oracle: houses/catlin/notes/balcony_moment_columns.md, hand-worked in a separate pass.

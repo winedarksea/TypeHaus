@@ -1488,7 +1488,26 @@
 # names ($180-200/cy, a YARD'S PRE-TAX SHEET) plus the rebar and form lumber consumed in the
 # pour; labour is the residual. That order matters — see the [basis_notes] on this section.
 "footing" = { material = { low = 195, high = 240 }, labour = { low = 85, high = 210 } }  # 33.25 cy (31.52 strip + 1.73 FOOTING_FPSF_20) — comment was stale at 38.63 until 2026-08-29 — was $190-300, then merged $280-450
-"pad" = { low = 500, high = 1000 }  # 0.59 cy — all setup, no volume; really a $300-600 minimum charge
+# ** THE GENERIC ROW, AND CATLIN NO LONGER USES IT (2026-09-14). ** It is a lump for a pad
+# nobody has sized — all setup and no volume, really a $300-600 minimum charge — and the
+# "0.59 cy" in this comment was stale for as long as the house had no `Pad` at all. Kept
+# priced on the glazed-green-brick convention, so a pad authored somewhere with no qualified
+# row does not silently fall out of the bill.
+"pad" = { low = 500, high = 1000 }  # 0.0 cy — the unqualified fallback; every pad catlin has is PIER_BASE_12 below
+# The north entry's three HOUSE-side piers, which became `Pad` on 2026-09-14 when
+# `deck_footing_size` learned to convert a roof share into its own deck currency and their
+# `spread_footing/` items left the register. 2'-6" x 1'-6" x 1'-0", three of them, 0.35 cy.
+#
+# **A qualified row, and priced per cubic yard rather than as the lump above**, because these
+# are sized: one form built once and struck three times at a known depth, in an excavation
+# that is open anyway for the basement (all three bear at -9'-9 7/16", the house-side plane).
+# The rate is the `footing` band's material — same ready-mix, same truck — over a labour band
+# a third again wider, because a 3-form isolated pour at the bottom of a deep excavation
+# carries setup a continuous strip footing amortises over 96 LF.
+#
+# Rebar: NONE authored, and that is the same open item `notes/rebar_backout.md` §5 records
+# for the belled piers. The rate carries no steel and the note says so.
+"pad:PIER_BASE_12" = { material = { low = 195, high = 240 }, labour = { low = 115, high = 280 } }  # 0.35 cy — PD-BW-W / -E / -RE
 # ** SECOND-LARGEST ERROR. ** $175-280/cy is $2.16-3.46/SF at 4" — bare ready-mix with no
 # labour in it. Minnesota installed slab is $6.60-13.20/SF (CalcShed by-state, Aug 2026);
 # plain slab material+labour $6.50-10.50/SF (Concrete Network, Jul 2026); Midwest $7-11/SF.
