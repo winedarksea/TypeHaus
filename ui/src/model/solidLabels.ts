@@ -16,6 +16,11 @@ import type { Catalog } from "./types";
 // Anything absent falls back to the category with its underscores opened out, so a new
 // category is readable on the day it lands and gets a proper name when someone has one.
 const SOLID_CATEGORY_LABEL: Record<string, string> = {
+  // `connector` had no entry and worked only by the underscore fallback, which reads fine by
+  // luck. Its two carved-off families do not: "connector embedded" says nothing.
+  connector: "Connector",
+  connector_embedded: "Cast-in connector",
+  connector_hanger: "Joist hanger",
   main_shutoff: "Main shutoff valve",
   shutoff: "Isolation valve",
   backflow_preventer: "Backflow preventer",

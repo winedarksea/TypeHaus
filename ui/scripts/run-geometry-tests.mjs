@@ -12,7 +12,7 @@ try {
   const { runModelGeometryTests } = await server.ssrLoadModule("/src/model/geometry.test.ts");
   const { runMemberFootprintTests } = await server.ssrLoadModule("/src/model/memberFootprint.test.ts");
   const { runVisibilityTests } = await server.ssrLoadModule("/src/model/visibility.test.ts");
-  const { runTradeRoutingTests } = await server.ssrLoadModule("/src/three/tradeRouting.test.ts");
+  const { runTradeRoutingTests, runConnectorFacetTests, runTagNewFacetTests } = await server.ssrLoadModule("/src/three/tradeRouting.test.ts");
   const { runEngineBomTests } = await server.ssrLoadModule("/src/model/engineBom.test.ts");
   const { runEngineCostsTests } = await server.ssrLoadModule("/src/model/engineCosts.test.ts");
   const { runEngineEstimateTests } = await server.ssrLoadModule("/src/model/engineEstimate.test.ts");
@@ -62,6 +62,9 @@ try {
   runViewFramingTests();
   runVisibilityTests();
   runTradeRoutingTests();
+  runConnectorFacetTests();
+  runTagNewFacetTests();
+  console.log("Connector facet + tagNew routing tests passed.");
   runEngineBomTests();
   runEngineCostsTests();
   runEngineEstimateTests();

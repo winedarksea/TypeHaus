@@ -5,7 +5,8 @@ import {
   solidTrades, TRADE_SURFACES,
 } from "./visibility";
 import {
-  ALL_VISIBILITY_KEYS, allVisibleTrades, anyTradeVisible, baseTrade, defaultVisibleTrades,
+  ALL_VISIBILITY_KEYS, allVisibleTrades, anyTradeVisible, baseTrade, DEFAULT_OFF_KEYS,
+  defaultVisibleTrades,
   expandRolePreset, FRAMING_FACETS, groupState, migrateSavedVisibility, onlyTrades, primaryTrade,
   TRADE_GROUP_OF, TRADE_GROUPS, TRADE_LABEL, visibilityKeyLabel, visibilityKeysOf, wallTrades,
 } from "./tradeVisibility";
@@ -99,7 +100,8 @@ export function runVisibilityTests() {
   assert(groupState("walls", mixed) === "mixed", "Some chips off → mixed");
 
   assert(expandRolePreset({ groups: ["walls"], trades: ["framing"] }).join() ===
-    "framing,framing:structure,framing:furring,framing:sheathing,siding,insulation,drywall,paint",
+    "framing,framing:structure,framing:furring,framing:sheathing,framing:connector," +
+    "framing:connector-embedded,siding,insulation,drywall,paint",
     "A preset expands its groups and trades, in order, framing to its facets");
 
   // Saved recipes from the 13-name vocabulary still apply.
@@ -147,10 +149,16 @@ export function runVisibilityTests() {
   const restored = onlyTrades(["framing"]);
   assert(restored.framing && !restored["framing:sheathing"],
     "onlyTrades is literal — a facet left out stays out");
-  // Defaults: the two solid bands start off, so the framing view opens on the sticks.
+  // Defaults: the three solid BANDS start off, so the framing view opens on the sticks.
+  // The connector facets do not — a band is an interior sandwich layer buried behind the
+  // cladding, while a connector marker is the thing somebody asked to be able to see.
   const fresh = defaultVisibleTrades();
   assert(fresh.framing && fresh.siding && fresh.concrete, "Every trade starts visible");
-  for (const facet of FRAMING_FACETS) assert(!fresh[facet], `${facet} starts hidden`);
+  for (const key of DEFAULT_OFF_KEYS) assert(!fresh[key], `${key} starts hidden`);
+  for (const facet of FRAMING_FACETS) {
+    if ((DEFAULT_OFF_KEYS as readonly string[]).includes(facet)) continue;
+    assert(fresh[facet], `${facet} starts visible`);
+  }
   assert(groupState("structure", fresh) === "mixed",
     "The Framing group opens mixed: sticks on, the bands off");
   assert(ALL_VISIBILITY_KEYS.every((key) => allVisibleTrades()[key]),

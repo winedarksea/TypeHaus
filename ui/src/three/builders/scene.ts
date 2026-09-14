@@ -14,7 +14,8 @@ import type { Model } from "../../model/types";
 import type { ResolvedNordicPalette } from "../../nordic/palette";
 import { disposeGroup, type SkinLine } from "../members";
 import {
-  canvasObjectTrades, primaryTrade, RECORD_FAMILY_TRADES, roofTrades, solidTrades, wallTrades,
+  canvasObjectTrades, primaryTrade, RECORD_FAMILY_TRADES, roofTrades, solidTrades,
+  solidVisibilityKeys, type VisibilityKey, wallTrades,
 } from "../../model/tradeVisibility";
 import {
   projectPlanRotationToSceneRadians, projectPointToScene, type PlanCenter,
@@ -80,19 +81,26 @@ function placeableElevationM(model: Model, storeyTag: string | null | undefined)
 // PRIMARY trade and the meshes carry the element's whole trade SET (fill-in: a builder that
 // already tagged finer sets — a wall's bands, a roof's skin buckets — keeps them). Snapshot
 // every container before a builder call, tag what appeared afterwards.
-type Snapshot = Record<Trade, number>;
+export type Snapshot = Record<Trade, number>;
 
-function snapshot(tradeGroups: Record<Trade, THREE.Group>): Snapshot {
+export function snapshot(tradeGroups: Record<Trade, THREE.Group>): Snapshot {
   return Object.fromEntries(
     ALL_TRADES.map((trade) => [trade, tradeGroups[trade].children.length]),
   ) as Snapshot;
 }
 
-function tagNew(tradeGroups: Record<Trade, THREE.Group>, before: Snapshot,
-  trades: readonly Trade[]) {
+export function tagNew(tradeGroups: Record<Trade, THREE.Group>, before: Snapshot,
+  trades: readonly VisibilityKey[]) {
+  // A caller that already named a framing FACET meant it, and flattening it here is what
+  // made the Connectors toggle silently do nothing: the marker arrived correctly routed and
+  // was immediately relabelled `framing`. Narrowed to the case the force-tag is actually for
+  // — a wall or a roof whose incidental framing landed in the container without a set of its
+  // own. `wallSkinMembers` self-tags for exactly the same reason.
+  const namedFacets = trades.filter((key) => key.startsWith("framing:"));
   for (const trade of ALL_TRADES) {
-    // Whatever landed in the framing container is the framer's, whichever element built it.
-    const set = trade === "framing" ? ["framing"] : trades;
+    const set = trade === "framing"
+      ? (namedFacets.length ? namedFacets : ["framing"])
+      : trades;
     tagTrades(tradeGroups[trade], before[trade], set);
   }
 }
@@ -147,7 +155,7 @@ export function populateScene(options: PopulateSceneOptions) {
     tradeGroups, model, center, mode, palette, earthOpacity, registry, generation,
     currentGeneration, requestRender, tradeVisible,
   } = options;
-  const build = (trades: readonly Trade[], run: () => void) => {
+  const build = (trades: readonly VisibilityKey[], run: () => void) => {
     const before = snapshot(tradeGroups);
     run();
     tagNew(tradeGroups, before, trades);
@@ -173,9 +181,13 @@ export function populateScene(options: PopulateSceneOptions) {
   // run is plumbing, a cast column is concrete. The set is stamped by the engine
   // (model.json `trades`) and falls back to the generated category map.
   for (const solid of model.solids ?? []) {
+    // Two answers, deliberately. `solidTrades` decides the CONTAINER (a connector's is
+    // framing, and `primaryTrade` maps its facet back to framing anyway); the keys decide
+    // what it is TAGGED with, which is what its own toggle reaches.
     const trades = solidTrades(solid);
-    build(trades, () => buildSolid(container(trades), solid, center, mode, palette,
-      model.catalog, registry.picks, registry.byUid, model.catalog?.materials));
+    build(solidVisibilityKeys(solid), () => buildSolid(container(trades), solid, center,
+      mode, palette, model.catalog, registry.picks, registry.byUid,
+      model.catalog?.materials));
   }
   // A paneling band is the millworker's applied surface on a wall.
   for (const band of model.panelings ?? []) {
