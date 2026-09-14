@@ -136,6 +136,137 @@ def test_basement_veneer_brick_faces_the_garden() -> None:
         assert max(p[1] for p in brick.polygon) <= inch(-4.55).meters + 1e-9
 
 
+
+def test_fireplace_wash_faces_the_room() -> None:
+    """The five W-M-FIRE-* walls carry the wash on RM-M-LIVING's side, not against the studs.
+
+    ``FIREPLACE_BRICK_WYTHE`` is ``layers=(brick, wash)`` and the ORDER is the whole point.
+    ``resolve/topology.py`` places layer 0 on the ``-outward_sign * normal(start->end)`` side —
+    the left normal ``(-dy, dx)``. Each of these walls is its own ``open_end`` node pair, finds
+    no closed walk and so takes ``UNRECOVERABLE_WINDING_OUTWARD_SIGN = +1.0``; they are authored
+    S->N, so ``normal`` points WEST and layer 0 lands EAST, against W-M-E1's studs. The room face
+    is therefore the LAST layer, and the wash has to be it.
+
+    ** THIS TEST IS THE ONLY GUARD. ** ``advisory.cladding_side_mismatch`` inspects CLADDING
+    layers and this assembly deliberately has none (CLADDING would drag a brick panel standing
+    inside a conditioned room into the Glaser scope — see the assembly's own note). So a wash
+    authored at index 0 would silently paint the BACK of the panel, invisible from the room, at
+    0 FAIL. Compare ``test_basement_veneer_brick_faces_the_garden`` above, which pins the same
+    class of bug on the one wall that does have a cladding layer.
+    """
+    model, _ = resolve(load_plan(CATLIN).plan)
+    tags = ["W-M-FIRE-STUB", "W-M-FIRE-PLINTH", "W-M-FIRE-JAMB-S", "W-M-FIRE-JAMB-N",
+            "W-M-FIRE-HEAD"]
+    for tag in tags:
+        wall = model.wall(tag)
+        assert wall is not None, f"{tag} missing from the resolved model"
+        depth = {ly.name: ly for ly in wall.depth_layers()}
+        assert set(depth) == {"brick", "wash"}, f"{tag}: {sorted(depth)}"
+        brick_x = _centroid(depth["brick"].polygon)[0]
+        wash_x = _centroid(depth["wash"].polygon)[0]
+        # West is -x and the living room is west of the panel; W-M-E1's studs are east.
+        assert wash_x < brick_x, (
+            f"{tag}: the wash must sit WEST of the brick (toward RM-M-LIVING), not against "
+            f"W-M-E1's studs — wash x={wash_x:.5f} vs brick x={brick_x:.5f}")
+        # And it is a film, not a wythe. The centroids sit half of each layer's own thickness
+        # either side of the shared face, so the gap is (brick + wash) / 2 — derived from the
+        # resolved layers rather than hardcoded, because `_WASH_FILM` is a render decision that
+        # has already moved once (0.01" -> 1/8") and what this assertion is about is the ORDER,
+        # not the value. What it pins is that the wash is a thin film in front of a 3 5/8" wythe
+        # and not a second wythe of its own.
+        brick_t = depth["brick"].thickness_m
+        wash_t = depth["wash"].thickness_m
+        assert brick_t == pytest.approx(inch(3.625).meters, abs=1e-9)
+        assert wash_t < inch(0.5).meters, "the wash is a coating, not a wythe"
+        assert brick_x - wash_x == pytest.approx((brick_t + wash_t) / 2.0, abs=1e-6)
+
+
+def test_court_wash_faces_the_court() -> None:
+    """All five SUNKEN_GARDEN_WALL walls carry the wash on the COURT face, at layer 0.
+
+    The court is a light well and the wash is what makes it one, so the face is the design.
+    ``params/sunken_garden.py`` used to claim this component had lost its only closed loop and
+    fell back to ``UNRECOVERABLE_WINDING_OUTWARD_SIGN`` (+1); it has not — ``W-SG-ARCH`` supplies
+    the N-SG-MW/N-SG-ME leg, the walk ME->SE->SW->MW->ME closes, and the component resolves to
+    **-1.0**, which is what puts layer 0 on the court side for all five.
+
+    Deleting W-SG-ARCH, or renaming either of those nodes, would drop the sign to +1 and bury the
+    wash on the outboard face of all five walls silently: no check grades a FINISH layer's side.
+    That is what this test is for.
+    """
+    from typehaus.resolve.orientation import resolve_storey_windings
+
+    plan = load_plan(CATLIN).plan
+    windings = resolve_storey_windings(plan, "court-low")
+    model, _ = resolve(plan)
+    # The court walls and the direction the court lies in from each one's own axis.
+    court_side = {
+        "W-SG-W1": ("x", +1),   # NW->MW, court is east
+        "W-SG-E1": ("x", -1),   # ME->NE, court is west
+        "W-SG-W2": ("x", +1),   # MW->SW, court is east
+        "W-SG-E2": ("x", -1),   # SE->ME, court is west
+        "W-SG-S": ("y", +1),    # SW->SE, court is north
+    }
+    for tag, (axis, sign) in court_side.items():
+        wall = model.wall(tag)
+        assert wall is not None, f"{tag} missing from the resolved model"
+        assert windings.sign_for_wall(plan.by_tag(tag)) == -1.0, (
+            f"{tag}: the N-SG-* component must resolve to -1.0; a +1 here means the closed walk "
+            "through W-SG-ARCH was lost and every wash face is now on the wrong side")
+        depth = {ly.name: ly for ly in wall.depth_layers()}
+        assert set(depth) == {"wash", "concrete"}, f"{tag}: {sorted(depth)}"
+        i = 0 if axis == "x" else 1
+        wash = _centroid(depth["wash"].polygon)[i]
+        concrete = _centroid(depth["concrete"].polygon)[i]
+        assert (wash - concrete) * sign > 0, (
+            f"{tag}: the wash must sit on the COURT side of the pour along {axis} "
+            f"(expected sign {sign:+d}), got wash={wash:.5f} concrete={concrete:.5f}")
+
+
+def test_raised_garden_wash_faces_the_yard_on_the_perimeter_legs_only() -> None:
+    """Only the three perimeter legs are washed, and their wash faces the lawn.
+
+    The RG graph is an open chain (``WB-NW-SW-SE-NE-EB``, no north wall), so ``_closed_walks``
+    finds nothing and the sign genuinely IS ``UNRECOVERABLE_WINDING_OUTWARD_SIGN = +1.0``. That
+    is not a bug here: with +1, layer 0 lands on the ``-normal`` side, which for these three legs
+    is exactly the yard. The two balcony returns are excluded because they have no lawn-facing
+    face at all — layer 0 on them would land in the terrace fill.
+    """
+    from typehaus.resolve.orientation import (
+        UNRECOVERABLE_WINDING_OUTWARD_SIGN,
+        resolve_storey_windings,
+    )
+
+    plan = load_plan(CATLIN).plan
+    windings = resolve_storey_windings(plan, "yard-low")
+    model, _ = resolve(plan)
+    yard_side = {
+        "W-RG-BLOCK": ("y", -1),   # SW->SE, yard is south
+        "W-RG-WEST": ("x", -1),    # NW->SW, yard is west
+        "W-RG-EAST": ("x", +1),    # SE->NE, yard is east
+    }
+    for tag, (axis, sign) in yard_side.items():
+        wall = model.wall(tag)
+        assert wall is not None, f"{tag} missing from the resolved model"
+        assert windings.sign_for_wall(plan.by_tag(tag)) == UNRECOVERABLE_WINDING_OUTWARD_SIGN
+        depth = {ly.name: ly for ly in wall.depth_layers()}
+        assert set(depth) == {"wash", "srw-block"}, f"{tag}: {sorted(depth)}"
+        i = 0 if axis == "x" else 1
+        wash = _centroid(depth["wash"].polygon)[i]
+        block = _centroid(depth["srw-block"].polygon)[i]
+        assert (wash - block) * sign > 0, (
+            f"{tag}: the wash must sit on the YARD side of the block along {axis} "
+            f"(expected sign {sign:+d}), got wash={wash:.5f} block={block:.5f}")
+        # Banded to the exposed 3'-4" off WALL_BASE, NOT to the global site grade (-2'-10").
+        assert wall.z0_m == pytest.approx(ft(-4).meters, abs=1e-6)
+        assert depth["wash"].z0_m == pytest.approx(ft(-4).meters + inch(8).meters, abs=1e-6)
+    for tag in ("W-RG-WEST-BALCONY", "W-RG-EAST-BALCONY"):
+        wall = model.wall(tag)
+        assert wall is not None
+        assert {ly.name for ly in wall.depth_layers()} == {"srw-block"}, (
+            f"{tag} returns terrace fill to the south and the balcony underside to the north — "
+            "it has no lawn-facing face and must stay bare")
+
 # --- the guard itself, on a minimal two-wall corner -----------------------------------
 
 _CLAD = Assembly(tag="CLAD", layers=(

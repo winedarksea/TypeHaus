@@ -894,15 +894,115 @@ DECK_EPS_INT = Assembly(
     source="catlin-house main-floor deck — LiteDeck 10\" EPS stay-in-place beam (8\" base panel + 2\" top hat) with a 4 3/8\" cast cover (14 3/8\" total, so the soffit lands on the same flat bearing seat as the wood bays' mudsill), steel furring rib and a 5/8\" gypsum R316.4 thermal barrier under it; replaced CATLIN_DECK_9_INT 2026-08-21, deepened 2026-08-23",
 )
 
-# Freestanding sunken-garden / porch / balcony structure — exposed concrete.
+# ** THE WASH LAYER'S THICKNESS IS A RENDER DECISION, NOT A CLAIM ABOUT FILM BUILD. ** A
+# two-coat mineral silicate wash is a film, not a board; `_PAINT_FINISH` above carries such a
+# film at inch(0.01) and that is the honest number. It cannot be used here, and the reason is
+# the renderer rather than the chemistry.
+#
+# `Material.coating=True` does NOT stop a WALL layer from drawing: `_is_coating`
+# (emit/gltf/emitter.py) is scoped to room FLOOR finishes — a sealer on the deck rather than a
+# covering over it — and wall layers draw by thickness regardless. So the wash gets a real
+# plane, and at 0.01" that plane sits 5 thousandths of an inch off the concrete behind it, which
+# is inside the depth buffer's precision at this scene's scale: the viewer flashes the grey
+# substrate through the white face as the camera moves. That was observed, not predicted.
+#
+# ** THE VALUE IS 1/8" AND IT IS ARITHMETIC, NOT TASTE. ** Panel3D runs
+# `PerspectiveCamera(50, 1, 0.05, 500)` on an ordinary 24-bit depth buffer, so the smallest
+# separation the depth test can resolve at camera distance z is about
+#
+#     dz ~ z^2 * (1/near - 1/far) / (2^24 - 1) = z^2 * 1.19e-6 metres
+#
+#   z = 20 m  ->  0.48 mm   z = 36 m  ->  1.55 mm   z = 52 m  ->  3.2 mm
+#
+# At inch(0.01) = 0.25 mm the wash is below that beyond ~14 m — i.e. at essentially every view of
+# this court — which is exactly the flashing that was observed. 1/16" (1.59 mm) only reaches
+# ~36 m. 1/8" (3.18 mm) holds to ~52 m, past any view in which the court is more than a few
+# pixels, and it is the value `foundation-coating-acrylic` has carried since 2026-09-04 without
+# this complaint. Taking the sibling coating's proven number rather than the smallest one that
+# might work is the whole point.
+#
+# `THREE.Material.polygonOffset` is the textbook fix for near-coplanar faces and was rejected:
+# glTF has no equivalent, so the viewer and the exported .glb would disagree about a surface the
+# .glb is the record of (-> glb-emitter-parity).
+#
+# Nothing numeric rides on the value: a coating bills by COVERAGE AREA (`Material.coating`'s own
+# contract), its R/inch is 0.0, and its vapour rating is authored as a thickness-independent
+# PERMEANCE precisely so this cannot leak into the Glaser walk. What it DOES move is geometry —
+# each washed wall grows 1/8" and a centred panel drifts 1/16" — which is why it is a named
+# constant here rather than a number buried in three layer literals.
+_WASH_FILM = inch(0.125)
+
+# Freestanding sunken-garden / porch / balcony structure — exposed concrete, WASHED WHITE on
+# the court face since 2026-09-13.
+#
+# ** THE WASH IS A DAYLIGHTING DEVICE, NOT A DECORATION, AND NOTHING IN THE ENGINE GRADES IT. **
+# The court is a light well: a U of 12" walls enclosing the only thing the basement's south
+# glazing looks at. Bare grey concrete has a diffuse reflectance of roughly 23-35%, so most of
+# the daylight that reaches the court is absorbed there instead of delivered inside. An untinted
+# white mineral silicate wash raises that to ~90% LRV. No check reads reflectance, albedo, LRV
+# or SRI, so a 0-FAIL report says nothing whatever about whether this works — the reasoning is
+# in DESIGN-LOG.md and the intent is here.
+#
+# ** IT IS LAYER 0 AND THAT IS THE COURT FACE, WHICH HAD TO BE VERIFIED RATHER THAN ASSUMED. **
+# `resolve/topology.py` places layer 0 on the `-outward_sign * normal(start->end)` side, and
+# the note in params/sunken_garden.py used to claim this component had lost its only closed
+# loop and so took `UNRECOVERABLE_WINDING_OUTWARD_SIGN = +1`. That claim is STALE: `W-SG-ARCH`
+# is a live FoundationWall on the N-SG-MW -> N-SG-ME pair, which closes the walk
+# ME->SE->SW->MW->ME, and `resolve_storey_windings(plan, "court-low")` resolves the `N-SG-ME`
+# component to **-1.0**. With sign -1 layer 0 lands on the +normal side, which is the court
+# side for all five walls (W1, E1, W2, E2 and S) — the consistency the params note means by
+# "both side walls wind the same way around the garden". Re-run that diagnostic before moving
+# any of these walls' nodes; it is the only thing holding the face down.
+#
+# ** THE WALL TOPS STAY BARE ON PURPOSE. ** A layer sits on a FACE. W-SG-E1's top is a walked
+# threshold, and a mineral coating on a walked surface wears and is a slip question — the same
+# reason SL-SG-FLOOR and the porch treads are out of scope.
+#
+# ** THE SILANE IS GONE WHERE THIS WASH GOES ** (see SUNKEN_GARDEN_COLUMN_12 below). A
+# silane/siloxane repellent makes concrete hydrophobic and non-absorbent, which is the one
+# condition a potassium silicate cannot bond to. They are alternatives, never a stack.
 SUNKEN_GARDEN_WALL = Assembly(
     tag="SUNKEN_GARDEN_WALL",
+    layers=(
+        Layer(name="wash", material_ref="silicate-wash-white", thickness=_WASH_FILM,
+              function=LayerFunction.FINISH),
+        Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
+              function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
+    ),
+    interfaces=(_CONCRETE_BEARING,),
+    source="catlin-house sunken_garden_retaining_wall_detail.py; court face washed with an untinted white mineral silicate (2 coats) 2026-09-13 — see the note above and DESIGN-LOG.md",
+)
+
+# W-SG-ARCH, the BURIED grade beam / strut on the MW-ME line: the identical 12" court pour off
+# the identical ticket, and the ONLY difference is that it carries no wash.
+#
+# ** IT SHARED SUNKEN_GARDEN_WALL UNTIL 2026-09-13 AND THE WASH IS WHAT SPLIT THEM. ** Sharing
+# was right while the assembly was one bare concrete layer: same thickness, same EXPOSED_MIX, same
+# $/cy. It stopped being right the moment layer 0 became a white mineral silicate wash, because
+# this beam's own note says what it is — "its TOP is the rim slab's underside, so the court floor
+# bears on it and NOTHING OF IT SHOWS". A wash on it is 3.6 SF of paint billed on a face that is
+# under the court slab, cannot be reached, cannot be seen and cannot reflect anything. It went in
+# silently: no check grades whether a FINISH layer is reachable, and `test_elevation_goldens.py`
+# caught it only because the wash added a sixth `layer:wash` key where the court has five walls.
+#
+# ** THE BEAM MOVED AND THE COURT WALLS DID NOT, WHICH IS THE CHEAP DIRECTION. ** Five walls keep
+# `SUNKEN_GARDEN_WALL`, so every test, condition gate and price key already written against that
+# tag still names the same five subjects; one buried beam takes a new tag. The reverse split would
+# have retagged five.
+#
+# Everything else is deliberately IDENTICAL — 12", EXPOSED_MIX, _CONCRETE_BEARING — because it is
+# literally the same pour off the same ticket (prices.toml: "one ticket for the whole court and
+# entry"). Its `prices.toml` [wall_structure] row is split off at the SAME rate for that reason.
+# This assembly is NOT the place to reconsider the mix; `unbalanced_fill=inch(0)` on the wall is
+# where the fact that it retains nothing is already recorded.
+SUNKEN_GARDEN_GRADE_BEAM_12 = Assembly(
+    tag="SUNKEN_GARDEN_GRADE_BEAM_12",
     layers=(
         Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
               function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
     interfaces=(_CONCRETE_BEARING,),
-    source="catlin-house sunken_garden_retaining_wall_detail.py",
+    source="catlin-house W-SG-ARCH — the buried grade beam / strut on the N-SG-MW/N-SG-ME line, the same 12\" EXPOSED_MIX court pour off the same ticket as SUNKEN_GARDEN_WALL and split off it 2026-09-13 for one reason only: it carries NO mineral silicate wash, because its top is the rim slab's underside and nothing of it shows",
 )
 
 # The veneer grade beam W-SG-BRKBM: the same 12" court pour, plus the 2" isolation board
@@ -1028,7 +1128,7 @@ SUNKEN_GARDEN_COLUMN_12 = Assembly(
     # beams are treated glulam and will corrode plain steel. The standoff is at the beam
     # SOFFIT, so it does not touch the cap-and-butyl-tape order at the beam TOP
     # (TR-SG-CAP-*); those are two different joints on the same member.
-    source="catlin-house garden columns (PT-SG-FCOL + the four balcony corners PT-SG-BR1/BR3/BF1/BF3) — 12\" round cast concrete, FIXED at the base: the cage is a FABRICATED 8-INCH UNIT, not a field-bent detail — (4) #5 verticals with #3 rings @ 10\" o.c. at 2\" cover, 8\" out-to-out of rings, one of twelve identical cross-sections house-wide (six court columns, six north-entry pours), lengths per pour, tied not welded; galvanized (ASTM A767 after fabrication, or A1094 coated stock bent after coating) — the fabricator's choice, NAMED ON THE ORDER; lapped class B ~30\" onto (4) #5 galvanized dowels cast with the wall pour below; wall-top cold joint roughened to 1/4\" amplitude with laitance removed and a bentonite or crystalline waterstop strip set inside the dowel circle (it is the wettest, saltiest elevation on the column and a documented chloride path); Sonotube Finish Free form seated in a plywood saddle collar screwed to the wall FACES (a flush tube leaves no wall top to anchor a collar to) and kicked to the porch framing, stripped to the form line; 5,000 psi, w/cm <= 0.40, 6% +/-1.5 air at 3/4\" or 3/8\" aggregate with SCM caps per ACI 318-19 §19.3.3.4 (class F3 + C2 — chloride tracked into a court that drains only to DRW-SG-MAIN and cannot shed it, plus planter runoff above; NOT washoff from the drive, which is 96 ft away north of the garage; IRC R402.2), air verified at the point of placement, 12-18\" lifts vibrated in the core and never on the cage; top CAST TO LINE under the beam footprint with a >=15 degree wash and >=1\" drip lip screeded around it (BIA Tech Note 36A) and NO grout island — tolerance taken in the SS316-SHIM-35 standoff shim pack (modeled at CN-SG-STDF-*, and its catalog record carries the detailing) or, if a bed is unavoidable, epoxy grout confined under the standoff plate; beam held down by an HGAM10 masonry gusset angle isolated from the standoff with EPDM or HDPE, #14 screws to the wood and Titen Turbo to the concrete at >=3\" edge distance on the 12\" round; broom or float finish on the wash, never steel-trowelled (NRMCA CIP 2); wet-cure 7 days protected from freezing to 3,600 psi (ACI 306); silane/siloxane repellent at 28 days, re-applied ~10-yearly; optional mineral paint to match the white centre posts",
+    source="catlin-house garden columns (PT-SG-FCOL + the four balcony corners PT-SG-BR1/BR3/BF1/BF3) — 12\" round cast concrete, FIXED at the base: the cage is a FABRICATED 8-INCH UNIT, not a field-bent detail — (4) #5 verticals with #3 rings @ 10\" o.c. at 2\" cover, 8\" out-to-out of rings, one of twelve identical cross-sections house-wide (six court columns, six north-entry pours), lengths per pour, tied not welded; galvanized (ASTM A767 after fabrication, or A1094 coated stock bent after coating) — the fabricator's choice, NAMED ON THE ORDER; lapped class B ~30\" onto (4) #5 galvanized dowels cast with the wall pour below; wall-top cold joint roughened to 1/4\" amplitude with laitance removed and a bentonite or crystalline waterstop strip set inside the dowel circle (it is the wettest, saltiest elevation on the column and a documented chloride path); Sonotube Finish Free form seated in a plywood saddle collar screwed to the wall FACES (a flush tube leaves no wall top to anchor a collar to) and kicked to the porch framing, stripped to the form line; 5,000 psi, w/cm <= 0.40, 6% +/-1.5 air at 3/4\" or 3/8\" aggregate with SCM caps per ACI 318-19 §19.3.3.4 (class F3 + C2 — chloride tracked into a court that drains only to DRW-SG-MAIN and cannot shed it, plus planter runoff above; NOT washoff from the drive, which is 96 ft away north of the garage; IRC R402.2), air verified at the point of placement, 12-18\" lifts vibrated in the core and never on the cage; top CAST TO LINE under the beam footprint with a >=15 degree wash and >=1\" drip lip screeded around it (BIA Tech Note 36A) and NO grout island — tolerance taken in the SS316-SHIM-35 standoff shim pack (modeled at CN-SG-STDF-*, and its catalog record carries the detailing) or, if a bed is unavoidable, epoxy grout confined under the standoff plate; beam held down by an HGAM10 masonry gusset angle isolated from the standoff with EPDM or HDPE, #14 screws to the wood and Titen Turbo to the concrete at >=3\" edge distance on the 12\" round; broom or float finish on the wash, never steel-trowelled (NRMCA CIP 2); wet-cure 7 days protected from freezing to 3,600 psi (ACI 306); NO SILANE/SILOXANE REPELLENT — all six columns are WASHED WHITE instead, with an untinted mineral silicate (2 coats) over the full cylindrical face, which is itself vapour-open weather protection and is the conventional alternative to a repellent on exposed concrete; a silane makes the pour hydrophobic and non-absorbent, which is the one condition a potassium silicate cannot bond to, so the two are alternatives and never a stack, and the ~10-YEARLY RECOAT OBLIGATION GOES WITH IT; the wash also matches the white centre posts (POST_WHITE_PAINT_DF / BEAM_WHITE_PAINT) this court already carries, which is what the old \"optional mineral paint\" line was reaching for; applied after the pour has cured and the court is backfilled, by the coating trade on its own arrival, never by the concrete sub",
 )
 
 # Brick veneer over the exposed basement wall (sunken garden excavated against it).
@@ -1104,7 +1204,7 @@ BASEMENT_BRICK_VENEER = Assembly(
 
 # --- RM-M-LIVING's fireplace surround --------------------------------------------------
 #
-# One 3 5/8" wythe of white face brick standing IN FRONT OF W-M-E1, in the pier between
+# One 3 5/8" wythe of face brick standing IN FRONT OF W-M-E1, in the pier between
 # WIN-M-LIV-E1 and WIN-M-LIV-E2. Full brick, not slips (owner's call): it starts on
 # W-B-E1's pour at -1'-1 7/16", rises 13 7/16" through FS-M-EAST's joist zone and stops at
 # 5'-4", where the walnut mantel caps it. notes/east_breast_bearing.md carries the load
@@ -1130,14 +1230,51 @@ BASEMENT_BRICK_VENEER = Assembly(
 # MasonrySpec turns on would replace the $/SF `white-brick` row this house already prices.
 # Modular coursing is 2 2/3" (three courses to 8") and every datum in the elevation lands on
 # a whole course — see the surround's note in plan/storeys/main.py.
+# ** ONE BRICK BLEND HOUSE-WIDE SINCE 2026-09-13: THIS PANEL IS `brown-brick` AND IS WASHED
+# WHITE. ** It ordered `white-brick` until then, and the white was never a designed choice —
+# the Material was sourced to the retired porch parapet and brief.md says only "white metal
+# skin", never white brick. What that second colour cost was real and off-model: a THIRD cube
+# of special-order brick against ~21 SF of need (a cube is 480-534 units, 71-79 SF at 6.75
+# units/SF), ~53 SF of which is never laid, plus the 1.5-2x special-order premium and its lead
+# time, plus a second colour for the mason to lay to a line. Consolidated, the court's 131 SF
+# and this panel's 21 SF come off the same two cubes.
+#
+# ** THE ESTIMATE MOVES $0 ON BRICK AND MUST. ** Both rows price $/SF of FACE LAID, so the cube
+# arithmetic above is not in this model at all. Do NOT re-rate the material half down to book
+# the saving — that would move the total and misdescribe where the money went. See prices.toml.
+#
+# ** THE WASH IS THE LAST LAYER, AND THIS IS THE TRAP. ** `resolve/topology.py` places layer 0
+# on the `-outward_sign * normal(start->end)` side — the LEFT normal `(-dy, dx)`. These five
+# walls sit on their own `open_end` node pairs, find no closed walk, and so take
+# `UNRECOVERABLE_WINDING_OUTWARD_SIGN = +1.0`; they are authored S->N, so `normal` points WEST
+# and layer 0 lands EAST, against W-M-E1's studs. The room face is therefore the LAST layer.
+# Nothing grades this — `advisory.cladding_side_mismatch` inspects CLADDING layers and this
+# assembly deliberately has none — so a wash at index 0 would silently paint the BACK of the
+# panel at 0 FAIL. `test_masonry_finish.py` pins the wash west of the brick for all five walls,
+# and that test is the only guard there is.
+#
+# ** FINISH, NOT CLADDING, AND FOR THIS ASSEMBLY'S OWN REASON. ** `_PROTECTION_PANEL`'s "must
+# stay CLADDING" warning is about the foundation band, where CLADDING is what keeps it in
+# Glaser scope. Here the note above says the opposite: CLADDING would drag the surround INTO
+# that scope, and a brick panel standing inside a conditioned room is not an envelope assembly
+# to grade. Both functions are in `takeoff/envelope.py::_BILLABLE`, so billing is identical.
+#
+# ** NO ControlLayer.VAPOR. ** A silicate wash is ~25 perms — the opposite of a retarder. See
+# `silicate-wash-white` in library/materials.py for the derivation.
+#
+# Geometry: the stack totals 3 3/4" rather than 3 5/8", so the centred panel drifts 1/16" west
+# and the overhang past W-B-E1's pour goes 1/8" -> 3/16". Below every tolerance in
+# notes/east_breast_bearing.md, whose numbers all stand (both bricks are 1,920 kg/m3).
 _FIREPLACE_WYTHE = inch(3.625)
 FIREPLACE_BRICK_WYTHE = Assembly(
     tag="FIREPLACE_BRICK_WYTHE",
     layers=(
-        Layer(name="brick", material_ref="white-brick", thickness=_FIREPLACE_WYTHE,
+        Layer(name="brick", material_ref="brown-brick", thickness=_FIREPLACE_WYTHE,
               function=LayerFunction.STRUCTURE),
+        Layer(name="wash", material_ref="silicate-wash-white", thickness=_WASH_FILM,
+              function=LayerFunction.FINISH),
     ),
-    source="RM-M-LIVING fireplace surround (2026-09-06) — one 3 5/8\" wythe of white face brick with grey mortar, ASTM C216, running modular coursing (2 2/3\" per course) off W-B-E1's pour at -1'-1 7/16\" and stopping at 5'-4\" under the walnut mantel. Full brick, not slips (owner's call). Ties back to W-M-E1's studs through the 1 7/8\" behind the wythe; the load path is brick to concrete and is worked in notes/east_breast_bearing.md",
+    source="RM-M-LIVING fireplace surround (2026-09-06) — one 3 5/8\" wythe of face brick with grey mortar, ASTM C216, running modular coursing (2 2/3\" per course) off W-B-E1's pour at -1'-1 7/16\" and stopping at 5'-4\" under the walnut mantel. Full brick, not slips (owner's call). Ties back to W-M-E1's studs through the 1 7/8\" behind the wythe; the load path is brick to concrete and is worked in notes/east_breast_bearing.md. Laid BARE in the court's own brown blend 2026-09-13 (one blend house-wide) and washed white by the coating trade on a later arrival — the brick is not a white brick and must not be substituted with one",
 )
 
 # Raised-garden outer face: dry-stacked segmental retaining-wall block, one unit deep. No
@@ -1153,6 +1290,61 @@ RETAINING_BLOCK_12 = Assembly(
                                   core_fill=False)),
     ),
     source="raised garden (brief.md follow-up) — outer face, dry-stacked SRW units",
+)
+
+# The SAME wall, washed white on its OUTBOARD (yard) face — the three perimeter legs only.
+#
+# ** WHY A VARIANT AND NOT A LAYER ON THE ASSEMBLY ABOVE. ** `params/raised_garden._APRON`
+# shares one assembly across all five legs, and only three of them HAVE a yard-facing face.
+# The RG graph is `WB-NW-SW-SE-NE-EB`, an open chain with no cycle (the U is open to the north
+# and there is no north wall), so `_closed_walks` returns empty and the sign genuinely is
+# `UNRECOVERABLE_WINDING_OUTWARD_SIGN = +1.0`. With sign +1 layer 0 lands on the -normal side,
+# which for the three perimeter legs is exactly the yard:
+#
+#     W-RG-BLOCK   SW->SE, east   layer 0 south   yard is south of -33'-4"   OK
+#     W-RG-WEST    NW->SW, south  layer 0 west    yard is west of x 4'-0"    OK
+#     W-RG-EAST    SE->NE, north  layer 0 east    yard is east of x 32'-0"   OK
+#
+# The two 3'-6" balcony returns (`W-RG-WEST-BALCONY`, `W-RG-EAST-BALCONY`) are NOT part of that
+# perimeter: they run east-west at y -10'-6" closing the U against the court walls, retaining
+# terrace fill to the south with the court and the balcony underside to the north. They have no
+# lawn-facing face at all, layer 0 on them would land in the FILL, and they sit in deep shade
+# under the balcony. So they stay on plain `RETAINING_BLOCK_12` — a faithful reading of
+# "exterior side, to reflect more light into the lawn", not a narrowing of it.
+#
+# ** THE BAND IS WALL_BASE + 8", AND IT MUST NOT BE "SIMPLIFIED" TO GRADE. ** Only the exposed
+# 3'-4" gets coated; the buried 8" of embedment is backfill, not a reflector.
+# `LayerDatum.GRADE` resolves to `plan.project.site.grade` — the SINGLE GLOBAL site grade,
+# authored at -2'-10" — and the yard this wall actually stands in is -3'-4", so a GRADE band
+# would sit 6" too high. That is the "grade cannot see a terrace" problem. The wall-relative
+# datum is exact here instead: the wall runs 0'-0" to -4'-0", so WALL_BASE + 8" lands precisely
+# on the authored -3'-4" yard.
+#
+# ** THE MATERIAL IS THE `-block` TAG, AND THAT IS A RENDER DECISION. ** Same product, same
+# price, same pail as `silicate-wash-white` on the court's cast concrete; the split tag exists
+# because a thin silicate film over dry-stacked SRW units telegraphs the unit module and the
+# open joints straight through, where over as-cast concrete it reads as one flat plane. See
+# library/materials.py.
+#
+# ** THE SRW UNITS ARE THE WEAKEST SUBSTRATE IN THIS SCOPE AND THE RISK IS REAL. ** Dry-cast,
+# integrally coloured units are far less absorbent than cast-in-place and frequently carry an
+# INTEGRAL WATER REPELLENT — the one condition a potassium silicate cannot bond to. A test panel
+# on a spare block precedes 245 SF, the open dry-stacked joints will take it unevenly,
+# efflorescence driven out of the granular backfill can lift or stain it, and many SRW
+# manufacturers void warranty on coatings. None of that is gradeable; it is in DESIGN-LOG.md.
+RETAINING_BLOCK_12_WASHED = Assembly(
+    tag="RETAINING_BLOCK_12_WASHED",
+    layers=(
+        Layer(name="wash", material_ref="silicate-wash-white-block", thickness=_WASH_FILM,
+              function=LayerFunction.FINISH,
+              extent=LayerExtent(
+                  bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(8)))),
+        Layer(name="srw-block", material_ref="retaining-block", thickness=inch(12.0),
+              function=LayerFunction.STRUCTURE,
+              masonry=MasonrySpec(unit_size="12x6x18 SRW block", coursing=inch(6.0),
+                                  core_fill=False)),
+    ),
+    source="raised garden — the three PERIMETER legs (W-RG-BLOCK/WEST/EAST), dry-stacked SRW units washed white with an untinted mineral silicate (2 coats) over the exposed 3'-4\" only, to bounce light down onto a partially-sunny lawn; the two balcony returns keep plain RETAINING_BLOCK_12 because they face no lawn",
 )
 
 # Deck walking surfaces (single-layer). The joists/beams under them are separate framing
@@ -4331,11 +4523,13 @@ ASSEMBLIES = [
     DECK_EPS_INT,
     FOUNDATION_WALL_12_INT,
     SUNKEN_GARDEN_WALL,
+    SUNKEN_GARDEN_GRADE_BEAM_12,
     SG_VENEER_BEAM_14,
     SUNKEN_GARDEN_COLUMN_12,
     BASEMENT_BRICK_VENEER,
     FIREPLACE_BRICK_WYTHE,
     RETAINING_BLOCK_12,
+    RETAINING_BLOCK_12_WASHED,
     PORCH_DECK_COMPOSITE,
     BREEZEWAY_ROOF_GLAZING,
     BALCONY_DECK_ALUMINUM,

@@ -124,10 +124,20 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # the veneer is one flat `brown-brick` field now. Both Materials are still in the
     # catalog, unreferenced and deliberately so (plan/assemblies.py), so a material dropping
     # out of this set is again not evidence it dropped out of the catalog.
-    # `white-brick` ARRIVED 2026-09-06 with W-M-FIRE-*, and it is the second brick in this set
-    # rather than a replacement for the first: `brown-brick` is still the sunken garden's
-    # veneer. The material had been in the catalog and unreferenced since the porch parapet
-    # was retired.
+    # `white-brick` ARRIVED 2026-09-06 with W-M-FIRE-* AND LEFT AGAIN ON 2026-09-13, and the
+    # narrative that stood here was exactly backwards by the end. It said white-brick was "the
+    # second brick in this set rather than a replacement for the first"; the house has since gone
+    # back to ONE brick blend, so `brown-brick` is now the only brick in the set and carries BOTH
+    # assembly keys — the sunken garden's veneer and the fireplace surround. The firebox reads
+    # white from a mineral silicate WASH, which is a FINISH layer and bills through
+    # `[envelope_layers]`, not here.
+    #
+    # So this is the third time this set has taught the same lesson and it is worth stating
+    # plainly: **a material leaving this set is not evidence it left the catalog.** `white-brick`
+    # is still a live `Material`, still carries `WHITE_BRICK_STYLE` and its `_FINISH_BASE` entry,
+    # and still has a kept `[envelope_layers]` row — referenced by nothing, deliberately, on the
+    # `glazed-green-brick` convention, so that reverting is one `material_ref` edit. Check the
+    # catalog and `[envelope_layers]` before concluding anything from this assertion.
     # `corrugated-panel-26` ARRIVED 2026-09-11 with `W-BW-SCREEN-SKIRT`, and it is METAL back in
     # this table for the first time since `aluminum-flat-pvdf` left it three paragraphs up —
     # for the identical reason that one was here: a free-standing sheet whose panel IS the
@@ -135,7 +145,7 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # The same panel on the wall ABOVE the skirt is a CLADDING layer and still bills there, so
     # one material is legitimately split across the two tables. Do not "tidy" that into one.
     assert {row["material"] for row in rows} == {
-        "concrete", "retaining-block", "brown-brick", "white-brick", "spf",
+        "concrete", "retaining-block", "brown-brick", "spf",
         "corrugated-panel-26"}
     # Bigger than the entire priced concrete order (footings + slab) the estimate used to
     # know about, which is the measure of what was missing. It was >100 cy until 2026-08-23:

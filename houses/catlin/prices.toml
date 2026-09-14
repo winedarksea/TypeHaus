@@ -1306,7 +1306,13 @@
 #     plywood saddle collar screwed to a wall face and kicked to the porch framing, which
 #     is a two-person day of forming for four columns. PT-SG-FCOL and PT-SG-COL are tubes
 #     in a hole and get none of it;
-#   * a waterstop strip at the wall-top cold joint on those same four, and silane at 28 days.
+#   * a waterstop strip at the wall-top cold joint on those same four. ** THE SILANE THAT
+#     USED TO SIT IN THIS BULLET IS GONE (2026-09-13) AND IT IS NOT A SAVING HERE. ** All
+#     six columns are washed white with a mineral silicate instead, which cannot bond to a
+#     hydrophobic substrate, so the repellent and the wash are alternatives. The wash is
+#     priced as its own [allowances] lump — a different trade on a different arrival — so
+#     this $/cy rate loses the silane and gains nothing, and the ~10-yearly recoat
+#     obligation the repellent carried is gone with it.
 # ~$60-110/LF installed against the piers' $31-62 covers all of that. PLACEHOLDER pending a
 # concrete quote — the cage and the forming are the two lines to ask about by name.
 #
@@ -3427,6 +3433,78 @@
 # Sources: superarbor.io Tuff II 5-gal list 2026; homedepot.com SM38 Sticky Mesh HD 38" x
 # 150 ft; Styro Industries "Applying TUFF II Over Rigid Foam & ICF" for coverage and coats.
 "foundation-coating-acrylic" = { material = { low = 1.78, high = 2.65 }, labour = { low = 4.5, high = 9 } }  # 276.3 SF — 2 coats + mesh over XPS; ~75/25 LABOUR to material
+# --- THE MINERAL SILICATE WASH, NEW 2026-09-13 ---------------------------------------------
+# The sunken garden court's daylighting coat: two coats of untinted white potassium-silicate
+# mineral paint. Product of record BEECK Beeckosil Fine, White C-102 (LRV 90). The design
+# argument is in plan/assemblies.py and DESIGN-LOG.md; this is only the money.
+#
+# ** TWO ROWS, NOT ONE, AND THE SPLIT IS A SOURCED 50% RATE DIFFERENCE — NOT A CATEGORY TIDY. **
+# It nearly went in as a single bare-tag rate on the `latex-paint` precedent (one product, one
+# crew, one pail). The substrates do not agree. Beeck publish coverage BY SUBSTRATE TEXTURE and
+# the dry-stacked SRW block needs a third full application that the cast concrete does not:
+#
+#   cast concrete / brick, average texture   200-275 SF/gal/coat   no primer on raw mineral
+#   split-face & heavily textured masonry    150-200 SF/gal/coat   + Quartz Filler or Bonding
+#                                                                   Coat over the WHOLE face
+#
+# That pretreatment is not a spot fill and not optional: the Beeckosil TDS §2.3 says "For CMU
+# apply BEECK Quartz Filler or BEECK Bonding Coat Fine / Coarse over the entire surface as a
+# pretreatment to fill small holes or voids". So the block face buys worse coverage AND an extra
+# brush-applied coat, and lands ~50% above the wall rate. Merging the two would be the same
+# error [ducts] was un-merged for: a blend that makes the mix free to change.
+#
+# MATERIAL, arithmetic shown (coats / coverage x $/gal; low = best coverage at the 3-gal pail
+# price, high = worst coverage at the 1-gal price). BEECK US shop list, read 2026-09-13:
+# Beeckosil Fine White C-102 $129.95/gal, $365.95/3 gal = $121.98/gal.
+#   cast concrete   2/275 x 121.98 = $0.89/SF   ..  2/200 x 129.95 = $1.30/SF
+#   SRW block       2/200 x 121.98 = $1.22/SF   ..  2/150 x 129.95 = $1.73/SF
+#     + Quartz Filler 1 coat at 150-250 SF/gal, $130.98-145.95/gal = $0.52 .. $0.97/SF
+#     = $1.74 .. $2.70/SF
+# These are LIST prices. BEECK's contractor/volume net is quote-only and was not obtainable, so
+# there is real room below the material half — do not read it as a firm number.
+#
+# LABOUR is backed out of Homewyse's May 2026 national "cost to paint brick" ($2.62-4.93/SF
+# all-in, 134 SF basis) less commodity exterior latex at ~$0.50-0.55/SF, giving ~$2.00-4.40/SF
+# for two brush/roll applications on a flat masonry wall including basic prep, supplies and
+# equipment; carried as $2.00-4.50. The block rate scales x~1.35 for the third application
+# ($2.70-6.00). ** MINNEAPOLIS NEEDS NO REGIONAL MULTIPLIER ** — painter wage there is
+# $24.41-25.29/hr against a national contractor band of $25-75/hr, so the national figures apply
+# as published. Then +$0.45-0.56/SF for the mandatory pore-deep pressure wash, which Homewyse
+# prices as its OWN line and does not include in painting labour.
+#
+# ** WHAT IS MANDATORY, UNPRICED, AND MUST BE ASKED FOR BY NAME ON THE QUOTE. ** The Beeckosil
+# TDS requires, on new cast concrete, an ETCHING FLUID to remove sinter skin and BEECK FORMWORK
+# OIL REMOVER with a high-pressure pore-deep clean and clean-water rinse before any coat. Neither
+# product is listed in the US shop and NO painting $/SF found includes etching or degreasing as
+# prep. It is not in these rates and is not invented into them: the only etch figures online are
+# decorative acid-STAINING of floors at $2-6/SF, a different trade, and laundering that in would
+# be a fabricated number. Treat etch + formwork-oil removal as an open line on the bid.
+#
+# ** THE TDS AND THE WEBSITE DISAGREE ABOUT COVERAGE BY ~40% AND THE CONSERVATIVE ONE IS USED. **
+# The TDS quotes a headline 300-350 SF/gal/coat; that is for SMOOTH, normally-absorbent substrate,
+# which as-cast concrete and SRW block are not. The website's by-substrate table above is used. A
+# supplier quoting off the TDS will show material ~40% lower. Both documents say the same thing
+# about resolving it: run the TRIAL APPLICATION the TDS requires anyway.
+#
+# ** NO [waste] ENTRY FOR EITHER TAG, DELIBERATELY. ** `Material.coating`'s own contract is
+# "billed by coverage area, with no waste allowance", and that is NOT automatic in this file — a
+# [waste] row would have to be authored to break it. Do not add one.
+#
+# Romabio Masonry Flat was the cheaper system at $0.69-1.16/SF installed material, and was
+# rejected on chemistry rather than price: its binder is a D-SILICATE modified with an organic
+# dispersion, and its own apply-guide REQUIRES MicroGrip primer on concrete and concrete block —
+# which fails the owner's binding constraint of a raw, untreated, unprimed substrate.
+"silicate-wash-white" = { material = { low = 0.89, high = 1.3 }, labour = { low = 2.45, high = 5.06 } }  # 691.9 SF — 671.5 on the five court walls' court face (full height) + 20.4 on the fireplace surround's room face; 2 coats, NO primer on raw mineral substrate
+# The SRW legs: worse coverage on a split-face-textured unit PLUS the whole-face Quartz Filler or
+# Bonding Coat pretreatment the TDS requires on block. Same pail, same crew, same arrival —
+# a different substrate, and the rate says so.
+#
+# ** IF THE BLOCK TURNS OUT TO CARRY AN INTEGRAL WATER REPELLENT, THIS ROW MOVES AND THE PRODUCT
+# CHANGES. ** A repellent unit cannot be silicified by Beeckosil; the answer is BEECK Beecko-SOL
+# (silica-sol modified, $158.95/gal, $464.95/3 gal), which is $1.55-2.12/SF of material against
+# $1.22-1.73 — about +$0.33-0.39/SF, plus the same filler coat. Whether these units are IWR-dosed
+# is the ONE spec to confirm with the block manufacturer before ordering, and it is unknown today.
+"silicate-wash-white-block" = { material = { low = 1.74, high = 2.7 }, labour = { low = 3.15, high = 6.56 } }  # 232.2 SF — the three raised-garden perimeter legs' yard face, banded to the exposed 3'-4"
 # ** UNREFERENCED SINCE 2026-09-04 — the named alternate to the coating above, kept live on
 # the `glazed-green-brick` convention so the revert is one `material_ref` edit. ** A 1/2"
 # aluminium-faced rigid protection board, sold in 4' x 8' sheets and fastened into the XPS
@@ -3834,12 +3912,18 @@
 # "stucco" = { material = { low = 0.9, high = 2 }, labour = { low = 3.5, high = 7 } }  # was 273.7 SF
 # ** UNREFERENCED FROM THIS SECTION, AND THE 133.8 SF IS STALE. ** It was the porch parapet's
 # outer wythe; that parapet is retired, and no CLADDING or FINISH layer in this house names
-# `white-brick` today. The material IS live again since 2026-09-06 — it is RM-M-LIVING's
-# fireplace surround — but a freestanding wythe's only layer is STRUCTURE, so it bills through
-# [wall_structure] on "FIREPLACE_BRICK_WYTHE:white-brick", not here. This row is kept, not
-# deleted, for the same reason the sofa's is: the day a white-brick cladding layer exists again,
-# an unpriced material drops from the bill silently.
-"white-brick" = { material = { low = 6, high = 12 }, labour = { low = 15, high = 26 } }  # 0 SF live — see [wall_structure] FIREPLACE_BRICK_WYTHE
+# `white-brick` today.
+#
+# ** AND SINCE 2026-09-13 NO LAYER OF ANY FUNCTION NAMES IT EITHER. ** It was live from
+# 2026-09-06 as RM-M-LIVING's fireplace surround, billing through [wall_structure] on
+# "FIREPLACE_BRICK_WYTHE:white-brick"; the blend consolidated to one brown brick house-wide and
+# that surround is washed white instead. So the Material is now referenced by NOTHING, which
+# makes this row MORE load-bearing for the revert rather than less — it is the only place the
+# rate survives, and the day a white-brick layer exists again an unpriced material would drop
+# from the bill silently. Kept for the same reason the sofa's is, and on the same
+# `glazed-green-brick` convention that keeps the Material, its MasonryStyle and its _FINISH_BASE
+# entry alive alongside it.
+"white-brick" = { material = { low = 6, high = 12 }, labour = { low = 15, high = 26 } }  # 0 SF live — referenced by NOTHING since 2026-09-13; kept for the revert
 # ** XPS IS THICKNESS-QUALIFIED SINCE 2026-08-31, AND IT HAD TO BE. ** `envelope_layers`
 # qualifies its price key on `thickness_in` (cli/prices.py QUALIFIED_KEY_FIELD), and this
 # file carried only the bare key — so 1", 2" and 3" boards all priced at ONE $/SF blend.
@@ -3965,14 +4049,25 @@
 # field needs scaffold for its upper 6'. The stated Twin Cities market for standard veneer in
 # this file is $15-35/SF, so the field belongs mid-range, not at the floor: $19-30/SF.
 #
-# The LOW is $19, not the $16 the market alone would say, and that is deliberate. 129.2 SF is
+# The LOW is $19, not the $16 the market alone would say, and that is deliberate. 124.9 SF is
 # a minimum-mobilisation masonry job and this file's own note above says a mason will not set
-# up scaffold for under roughly $2,500-4,000. $16/SF x 129.2 SF = $2,067, which is BELOW that
-# floor — a number this file elsewhere says cannot be bought. $19 x 129.2 = $2,455 lands on
-# it. The range is therefore $2,455-3,876 against the Ishtar wall's $2,573-5,467: a saving of
+# up scaffold for under roughly $2,500-4,000. $16/SF x 124.9 SF = $1,998, which is BELOW that
+# floor — a number this file elsewhere says cannot be bought. $19 x 124.9 = $2,373 lands on
+# it. The range is therefore $2,373-3,747 against the Ishtar wall's $2,573-5,467: a saving of
 # roughly $120-1,590, real but modest. The honest headline is that this is a look change that
 # also happens to be cheaper and better suited to a wet court, not a cost measure.
 #
+# ** THE AREA IN THIS BLOCK WAS 129.2 SF AND IS 124.9 SF; RECONCILED 2026-09-13, AND NO DOLLAR
+# MOVES. ** 124.9 is what the takeoff has been reporting: 18'-8" x 102 7/16" = 159.3 SF gross,
+# less AO-B-BRICK-WIN (1.94) and AO-B-BRICK-DOOR (32.5). The figures above are restated at the
+# true area rather than re-rated, and the consequence has to be said out loud: the LOW rate of
+# $19 was chosen because $19 x 129.2 = $2,455 cleared this file's own "$2,500-4,000 mason
+# mobilisation floor" where the market's $16 did not — and $19 x 124.9 = $2,373 does NOT clear
+# it. ** DO NOT BUMP THE RATE TO RESCUE A DOCUMENTATION ERROR. ** The honest resolution is the
+# 2026-09-13 blend consolidation: the court field and the firebox are now one blend on one
+# call-out, $2,373-3,747 + $469-1,142 = $2,842-4,889, which lands on the floor for real. If they
+# end up as two trips, it is FIREPLACE_BRICK_WYTHE that is light by the mobilisation, and that
+# row already says so.
 # The bare assembly key stays as the fallback for any brick region a future band adds without
 # its own rate, and is re-based to the same field rate — there is no glaze left to price up.
 # Ties, flashing, weeps and the shelf angle are in the rate; the concrete backup is the wall
@@ -3987,7 +4082,7 @@
 # $1,860-3,224 — on this file's own precedent that "a mason will not set up scaffold for
 # under roughly $2,500-4,000" (BASEMENT_BRICK_VENEER above) and that 24.8 SF is far below any
 # masonry minimum. That reasoning is sound for a STANDALONE trip and wrong here: ** the same
-# masons lay BASEMENT_BRICK_VENEER's 129.2 SF in the sunken garden court, and the owner is
+# masons lay BASEMENT_BRICK_VENEER's 124.9 SF in the sunken garden court, and the owner is
 # billing both as one call-out. ** The mobilisation is already bought and paid for on that
 # row; charging it again here bills one setup twice, which is exactly the double-count the
 # rest of this file is careful about. So the labour half is now the MARGINAL cost of 24.8 more
@@ -4002,9 +4097,12 @@
 # row is light by roughly $1,300-2,000 — the mobilisation, straight back. Sequence them
 # together or re-rate this row; it cannot be both.
 #
-# Material $8-16/SF is unchanged and is a small-quantity white face brick (one pallet minimum
-# against ~4 SF of actual need), grey mortar, ties into W-M-E1's studs, and the lintel over the
-# firebox opening — a rowlock course or a steel angle.
+# Material $8-16/SF is unchanged and is ordinary ASTM C216 Grade SW face brick, grey mortar,
+# ties into W-M-E1's studs, and the lintel over the firebox opening — a rowlock course or a
+# steel angle. ** IT IS NO LONGER A SMALL-QUANTITY SPECIAL ORDER. ** Until 2026-09-13 this was a
+# white face brick carrying "one pallet minimum against ~4 SF of actual need"; since the blend
+# consolidated it comes off BASEMENT_BRICK_VENEER's own order and the pallet minimum is gone.
+# The $/SF does not move, because it never priced the pallet.
 #
 # ** THE DEDUCTION IS NOW REAL: 20.4 SF NET, NOT 24.8 SF GROSS (2026-09-06). ** The panel used
 # to be ONE Wall, which the model could not cut a hole in short of authoring a Window or a Door
@@ -4027,9 +4125,28 @@
 # `FT-MANTEL-WALNUT-46` since 2026-09-06, an [allowances] lump before that); and the appliance
 # ([placeables] EQ-T-FIREPLACE-EL).
 "FIREPLACE_BRICK_WYTHE" = { material = { low = 8, high = 16 }, labour = { low = 15, high = 40 }, unit = "SF" }  # fallback; 20.4 SF of face, net of the firebox opening
-"FIREPLACE_BRICK_WYTHE:white-brick" = { material = { low = 8, high = 16 }, labour = { low = 15, high = 40 }, unit = "SF" }  # 20.4 SF, five walls net of the 29 1/2" x 20 5/8" opening
-"BASEMENT_BRICK_VENEER" = { low = 19, high = 30, unit = "SF" }  # fallback; 129.2 SF of face
-"BASEMENT_BRICK_VENEER:brown-brick" = { low = 19, high = 30, unit = "SF" }  # 129.2 SF, the whole field
+# ** THE PANEL MOVED white-brick -> brown-brick ON 2026-09-13 AND EVERY DOLLAR IN THIS ROW IS
+# DELIBERATELY UNCHANGED. ** One brick blend house-wide: this surround now orders the court
+# veneer's brown blend and is WASHED WHITE by the coating trade afterwards (see
+# [envelope_layers] silicate-wash-white), so it still reads white, from the coating rather than
+# from the body. The saving is one cube of special-order white brick against ~21 SF of need,
+# plus its 1.5-2x premium and lead time, plus a second colour for the mason to lay to a line —
+# and NONE of that is in this model, because both rows price $/SF of FACE LAID. Re-rating the
+# material half down to "book the saving" would move the estimate ~$19-29 and misdescribe where
+# the money went.
+#
+# ** THE USUAL UNPRICED-ROW ALARM DOES NOT FIRE HERE, WHICH IS WHY THE KEY AND NOT THE TOTAL IS
+# WHAT TO VERIFY. ** The bare "FIREPLACE_BRICK_WYTHE" fallback above carries these same numbers,
+# so deleting the per-material row entirely would keep the dollars exactly right while nothing
+# was reported. Check that the BOM row reads `FIREPLACE_BRICK_WYTHE:brown-brick` and that
+# `FIREPLACE_BRICK_WYTHE:white-brick` appears nowhere under out/.
+"FIREPLACE_BRICK_WYTHE:brown-brick" = { material = { low = 8, high = 16 }, labour = { low = 15, high = 40 }, unit = "SF" }  # 20.4 SF, five walls net of the 29 1/2" x 20 5/8" opening
+# TOMBSTONE 2026-09-13: was "FIREPLACE_BRICK_WYTHE:white-brick" at these same rates. Kept
+# commented for the revert, on the `glazed-green-brick` convention — going back to a white body
+# is one `material_ref` edit on FIREPLACE_BRICK_WYTHE plus un-commenting this line.
+# "FIREPLACE_BRICK_WYTHE:white-brick" = { material = { low = 8, high = 16 }, labour = { low = 15, high = 40 }, unit = "SF" }
+"BASEMENT_BRICK_VENEER" = { low = 19, high = 30, unit = "SF" }  # fallback; 124.9 SF of face
+"BASEMENT_BRICK_VENEER:brown-brick" = { low = 19, high = 30, unit = "SF" }  # 124.9 SF, the whole field
 # RETIRED 2026-09-04 with the Ishtar scheme. Kept for the revert, NOT dead weight to tidy up:
 #   glazed-lapis  90.1 SF   the field. A GLAZED specialty face brick is a special order at
 #                           1.5-2x the body price, with lead time and no local substitute.
@@ -4166,7 +4283,24 @@
 # SPLIT 2026-08-27, on a delivered-block price rather than a back-out: SRW units run
 # $12-20/SF of face and the geogrid and drainage stone behind them $3-6/SF, both pre-tax
 # yard prices. There is no ready-mix in this row at all — see the [basis_notes] warning.
-"RETAINING_BLOCK_12" = { material = { low = 15, high = 26 }, labour = { low = 15, high = 34 }, unit = "SF" }  # 245.0 SF of face
+# ** SPLIT ACROSS TWO ASSEMBLY TAGS 2026-09-13, AND THE SPLIT IS RATE-NEUTRAL TO THE CENT. **
+# The three PERIMETER legs took a white mineral silicate wash on their yard face and so moved to
+# `RETAINING_BLOCK_12_WASHED`; the two balcony returns, which face no lawn, stayed here. Both
+# tags carry the SAME $/SF, because the block, the geogrid, the drainage stone and the compacted
+# lifts are identical — the wash is a different trade on a different arrival and bills through
+# [envelope_layers], never here. 28.0 + 278.7 = 306.7 SF and $9,201-18,402, which is exactly
+# what the single row billed the day before.
+#
+# ** BOTH ROWS ARE MANDATORY. ** An assembly tag with no row is dropped from the takeoff
+# SILENTLY and the total FALLS — pricing only the washed tag would quietly lose the two returns.
+#
+# ** AND THE "245.0 SF" THIS COMMENT USED TO CLAIM WAS ALREADY STALE. ** The real quantity is
+# 306.7 SF and has been since the 2026-09-10 pass that took the apron to a 28' south leg and a
+# 4'-0" drop; the old figure predates it. The arithmetic in the notes above (9.07 cy = 245 SF at
+# 27 SF/cy) is therefore historical — it is 11.36 cy today — and the $/SF-of-face rate it argues
+# for is unaffected, which is the point of having re-united the unit.
+"RETAINING_BLOCK_12" = { material = { low = 15, high = 26 }, labour = { low = 15, high = 34 }, unit = "SF" }  # 28.0 SF of face — the two balcony returns only
+"RETAINING_BLOCK_12_WASHED" = { material = { low = 15, high = 26 }, labour = { low = 15, high = 34 }, unit = "SF" }  # 278.7 SF of face — the three perimeter legs; the WASH itself is in [envelope_layers], not here
 # THE NORTH ENTRY SCREEN'S SKIRT (2026-09-11), and it is in this table only because its one
 # layer is STRUCTURE — a self-supporting single skin bills through takeoff/wall_structure.py
 # rather than envelope_layers, on the same footing as RETAINING_BLOCK_12 above it. Priced per
@@ -4213,7 +4347,17 @@
 # and not the 42" masonry parapet over it — neither returns, and the $5,395-$11,257 that
 # retiring them saved is not being given back. (That measurement is in git history; the
 # 2026-08-31 rewrite of plans/cost-options.md keeps live options only.)
-"SUNKEN_GARDEN_WALL" = { material = { low = 215, high = 280 }, labour = { low = 285, high = 620 } }  # 30.20 CY — was merged $500-900
+"SUNKEN_GARDEN_WALL" = { material = { low = 215, high = 280 }, labour = { low = 285, high = 620 } }  # 24.87 CY — the five COURT walls only since 2026-09-13; was merged $500-900
+# ** W-SG-ARCH SPLIT OFF 2026-09-13 AT THE IDENTICAL RATE, AND THE SPLIT IS RATE-NEUTRAL. ** The
+# buried grade beam / strut on the MW-ME line is the same 12" pour off the same ready-mix ticket as
+# the five court walls, so material and labour are byte-identical here and 1.08 + 24.87 = 25.95 CY
+# prices exactly as the single 25.95 CY row would. It has its own ASSEMBLY only because the court
+# walls took a white mineral silicate wash and this beam must not: the court floor bears on its top
+# and nothing of it shows, so a wash there would bill 3.6 SF of paint under a slab (see
+# plan/assemblies.py). ** BOTH ROWS ARE MANDATORY ** — an assembly tag with no row drops from the
+# takeoff silently and the total falls. If the court's mix is ever re-rated, re-rate both: they are
+# one pour and there is no argument for them diverging.
+"SUNKEN_GARDEN_GRADE_BEAM_12" = { material = { low = 215, high = 280 }, labour = { low = 285, high = 620 } }  # 1.08 CY — W-SG-ARCH, the buried strut; same pour, no wash
 
 # The veneer grade beam, NEW 2026-09-05. Same ready-mix anchor as SUNKEN_GARDEN_WALL — it is
 # the same pour, the same day, off the same ticket — but the labour half is materially
@@ -6254,6 +6398,37 @@ finish-interior-trim-and-baseboard = { material = { low = 4200, high = 7000 }, l
 # a door-leaf FACE area the openings table does not report (it has count, width and height,
 # but painting a bifold is not painting a slab). See the note on that row.
 paint-trim-and-doors = { material = { low = 1600, high = 3600 }, labour = { low = 6400, high = 14400 } }
+# --- the court columns' mineral silicate wash, NEW 2026-09-13 --------------------------------
+# The six 12" round cast columns (PT-SG-FCOL, PT-SG-COL, PT-SG-BR1/BR3/BF1/BF3), washed white
+# with the same Beeckosil as the court walls. 57.7 LF x pi x 1.0 ft = ~181 SF of cylindrical face.
+#
+# ** IT IS A LUMP BECAUSE `envelope_layers` STRUCTURALLY CANNOT BILL IT, NOT BECAUSE NOBODY
+# MEASURED. ** Two independent reasons, and the second is why "just add a scope" does not work:
+#   1. `takeoff/envelope.py::_LAYERED_SOLID_SCOPES = ("slab", "footing", "pad")` does not include
+#      a column, so a Layer added to SUNKEN_GARDEN_COLUMN_12 bills NOTHING — silently.
+#   2. Even with "column" added, `envelope.py` measures a solid's layer area as its PLAN OUTLINE
+#      area, which for a 12" round is a 0.79 SF footprint — not the 30 SF of cylinder the wash
+#      actually covers. It would under-bill by ~38x and report a number.
+# No [allowances] `driver` can reach a cylinder's surface area either, so this stays a flat lump
+# rather than a driven rate. The 181 SF behind it is hand-computed and is stated here so the
+# arithmetic can be checked without re-deriving it.
+#
+# MATERIAL: 181 SF x $0.89-1.30/SF (the [envelope_layers] silicate-wash-white rate, average-
+# texture cast concrete) = $161-235.
+# LABOUR: the flat-wall $2.00-4.50/SF x 1.5-2.0 = $3.00-9.00/SF x 181 SF = $543-1,629.
+# ** THE 1.5-2.0x IS JUDGEMENT AND IS NOT SOURCED. ** No published round-column painting
+# multiplier was locatable (RSMeans has column line items and is paywalled). The argument for it:
+# at 12" diameter there is 3.14 SF of face per LF and no roller run longer than 12", so it is all
+# cut-in and continuous rotation, with masking at head and base and access set up at SIX separate
+# locations rather than one continuous wall run. The six setups are the real penalty, not the
+# curvature. Rounded to $750-1,900, i.e. $4.15-10.50/SF of cylindrical face.
+#
+# ** DO NOT LET THIS BE BID AS ITS OWN VISIT. ** The binding Twin Cities number is an exterior
+# JOB-SIZE minimum, not an hourly one: a Minneapolis painter states a $2,000 exterior minimum. At
+# 181 SF this lump is below it at any rate in the range, so let separately the columns cost $2,000
+# regardless of the arithmetic above. Folded in with the 953 SF of wall face the combined scope is
+# ~$3,500-6,700 and the minimum is absorbed. `tasks.toml` puts them in one visit for this reason.
+paint-court-mineral-wash-columns = { material = { low = 161, high = 235 }, labour = { low = 589, high = 1665 } }
 # ** LANE PICKED 2026-08-20: WIRE. ** Ventilated wire shelving on standards, set by the trim
 # carpenter. The alternative was a semi-custom laminate system at $12-40k, and dropping it took
 # $35,000 straight off the estimate's high end — the largest single narrowing of the range that
@@ -6540,6 +6715,17 @@ concrete             = 0.05   # short-load and over-order on ready-mix; you cann
 wall_structure       = 0.05   # same, plus block breakage on RETAINING_BLOCK_12
 footing_bedding      = 0.10   # aggregate compacts and is lost into the subgrade
 envelope_layers      = 0.10   # board cuts, membrane laps, and the offcut at every opening
+# ** THE THREE COATINGS IN THAT SECTION TAKE THE 10% TOO, AND THAT IS DELIBERATE (2026-09-13). **
+# `Material.coating`'s docstring says a coating "still bills — by coverage area, with no waste
+# allowance", which reads as an instruction to override these to 0.0. It is not followed, for two
+# reasons. First, consistency: `latex-paint` and `foundation-coating-acrylic` have carried the
+# section rate since they were authored, so zeroing only `silicate-wash-white` would give this
+# house three coatings with two different waste behaviours and no stated reason. Second, and the
+# real one: paint IS over-ordered, by the pail. The wash needs 721.1 SF x 2 coats / 275 SF/gal =
+# 5.2 gal and is bought as two 3-gal pails — a 15% over-order before a drop is spilled, against
+# the 10% charged here. The docstring's point is that a coating has no OFFCUT, which is true; it
+# does not follow that you use every drop you buy. If a future pass wants 0.0 here, it needs to
+# change all three and say what it thinks happens to the bottom of the pail.
 edge_trim            = 0.10   # trim is cut from stock lengths and the drop is not reusable
 member_protection    = 0.10   # tape comes in 50' rolls and the tail of one is not the start of the next; laps eat a little more
 pipe_insulation      = 0.10   # split sleeve cut to fittings
@@ -6737,7 +6923,7 @@ pipe_fittings   = "material only, and derived rather than quoted — see the tab
 reinforcement   = "$/lb of BAR, MATERIAL ONLY — and the labour is deliberately not here. [basis_notes] concrete is explicit that its $/cy is a sourced material price plus a RESIDUAL labour figure; subtracting a rebar placer's wage out of a residual is judgement dressed as arithmetic, where subtracting a sourced rebar material price out of a sourced material price is arithmetic. So the placing labour stays inside the [concrete] and [wall_structure] residuals, on the same doctrine [hardware] already uses — the labour to drive a screw is inside the [framing] labour rate. Lengths are NET: laps and splices ride in [waste], and chairs, bolsters, tie wire and tie hooks ride inside the $/lb rate. THIS TABLE IS DELIBERATELY EMPTY. Every row lands in the estimate's `unpriced` list, the total does not move by one cent, and the tonnage can be read against the register's ~5 tons / $10,000-18,000 BEFORE any rate is touched — the quantity ships before the dollar does. Pricing it while [rebar_inclusive] still says concrete/wall_structure contain their own rebar is a HARD ERROR in cli/price_file.py, which is what makes the standing 'cut the rates the same day' condition enforced rather than merely written down twice"
 concrete        = "$/cy PLACED. Merged everywhere until 2026-08-27, when the three largest rows (footing, slab, drain_tile's siblings aside) gained a REAL split — and the rule that produced them is the one that kept the rest merged: the MATERIAL half is an independently sourced pre-tax number (Twin Cities ready-mix $180-200/cy, wire mesh $0.20-0.50/SF, rebar) and the labour half is the residual. That is a back-out, and it is honest only in that direction. A percentage guess at the split would read exactly like a real one, which is why the smaller rows still carry none. Raised across the board 2026-08-20; slab-on-grade was ~2.5x low and drain_tile ~5x"
 timber          = "$/cy, but built from $/LF and shown divided in every row's comment — the join measures volume and lumber is bought by the foot. Material and labour are split because a stick of LVL is a purchase and hanging it is a wage, unlike the merged pours in [concrete]"
-wall_structure  = "$/cy PLACED. The five largest rows are SPLIT since 2026-08-27 on the same rule as [concrete] — material sourced pre-tax (ready-mix, rebar, and for GARAGE_ICF_6 the ICF blocks at $5-7/SF of face, which is why that row is over half material where a site-formed wall is under a third), labour the residual. RETAINING_BLOCK_12 is split off a delivered block-and-geogrid price and contains no ready-mix at all. The remaining rows stay merged. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12, ENTRY_SCREEN_SKIRT (a 26ga steel skirt over the north entry deck framing, priced $/SF of face off the [envelope_layers] corrugated-panel-26 rate) and BASEMENT_BRICK_VENEER (with its one live per-material row BASEMENT_BRICK_VENEER:brown-brick — the :glazed-lapis-brick and :glazed-gold-brick rows were commented out 2026-09-04 when the Ishtar scheme was retired, and are kept there for the revert) contain no ready-mix at all and must not be escalated with a concrete index. GARAGE_BRICK_WAINSCOT and GARAGE_ICF_6_BRICKLEDGE were the garage's brick-wainscot pair and were deleted 2026-09-03 with the wainscot itself; the brick row carried the same zero-ready-mix warning, the ledged-stem row did not (it was mostly ICF wall)"
+wall_structure  = "$/cy PLACED. The five largest rows are SPLIT since 2026-08-27 on the same rule as [concrete] — material sourced pre-tax (ready-mix, rebar, and for GARAGE_ICF_6 the ICF blocks at $5-7/SF of face, which is why that row is over half material where a site-formed wall is under a third), labour the residual. RETAINING_BLOCK_12 is split off a delivered block-and-geogrid price and contains no ready-mix at all. The remaining rows stay merged. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12 and RETAINING_BLOCK_12_WASHED (one wall split across two tags 2026-09-13 when the three perimeter legs took a mineral silicate wash on their yard face and the two balcony returns did not; identical rates, and the wash itself bills in [envelope_layers], never here), ENTRY_SCREEN_SKIRT (a 26ga steel skirt over the north entry deck framing, priced $/SF of face off the [envelope_layers] corrugated-panel-26 rate), BASEMENT_BRICK_VENEER and FIREPLACE_BRICK_WYTHE contain no ready-mix at all and must not be escalated with a concrete index. FIREPLACE_BRICK_WYTHE was missing from this list until 2026-09-13 even though its own row comment said \"SAME CATEGORY ERROR AS BASEMENT_BRICK_VENEER\" — a brick panel priced $/SF of face laid has no ready-mix in it either. `brown-brick` now carries a live per-material row under BOTH assembly keys (BASEMENT_BRICK_VENEER:brown-brick and FIREPLACE_BRICK_WYTHE:brown-brick) since the house went back to one brick blend, so the old \"one live per-material row\" phrasing no longer holds; the :glazed-lapis-brick and :glazed-gold-brick rows were commented out 2026-09-04 when the Ishtar scheme was retired, and :white-brick 2026-09-13, all kept there for the revert. GARAGE_BRICK_WAINSCOT and GARAGE_ICF_6_BRICKLEDGE were the garage's brick-wainscot pair and were deleted 2026-09-03 with the wainscot itself; the brick row carried the same zero-ready-mix warning, the ledged-stem row did not (it was mostly ICF wall)"
 footing_bedding = "$/cy delivered — material only. Spreading and compacting is in the excavator's number, which is not in this file. Confirmed 2026-08-20 against MnDOT 2025 average bid prices"
 openings        = "material and labour are now SEPARATE quantities. The old single 55-65% back-out factor is gone: the real material share runs 70-85% for windows, 60-70% for exterior doors, 40-55% for interior doors and 10-25% for a cased opening"
 hardware        = "material only, and deliberately so — the labour to drive a screw or set a hanger is inside the [framing] labour rate. HUC212-3 is the exception and says why"

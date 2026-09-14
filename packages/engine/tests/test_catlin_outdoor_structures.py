@@ -221,6 +221,27 @@ def test_the_corner_columns_are_cast_concrete_with_a_cage(catlin_model) -> None:
         assert max(xs) - min(xs) == pytest.approx(2 * COLUMN_RADIUS_IN * INCH, abs=1e-3), tag
 
 
+
+def _pour_faces(wall, index: int = 0) -> tuple[float, float]:
+    """The two faces of a wall's STRUCTURE layer along axis ``index`` (0 = x, 1 = y).
+
+    ** NOT ``axis +/- thickness_m / 2``, AND THAT IS THE POINT. ** That shorthand is only
+    correct while every layer of the assembly bears and the stack straddles the node line.
+    Since 2026-09-13 the court walls carry a 1/8" mineral silicate wash and the raised garden's
+    perimeter legs carry it too, with a ``face("center", offset=...)`` alignment that holds the
+    POUR on the grid and lets the film oversail outward. So ``thickness_m`` is 12 1/8" while the
+    concrete is still exactly 12" in exactly the place it always was, and the shorthand reports
+    faces 1/16" outboard of the real ones on both sides.
+
+    A column flush with "the wall" is flush with the concrete, and a return closing on "the outer
+    face" closes on the concrete — neither is a statement about paint. Reading the structure
+    layer's own polygon says that directly and cannot drift again.
+    """
+    structure = next(ly for ly in wall.layers if ly.function == "structure")
+    values = [point[index] for point in structure.polygon]
+    return min(values), max(values)
+
+
 def test_the_corner_columns_are_flush_with_both_faces_of_the_wall_they_stand_on(
         catlin_model) -> None:
     """12" round on a 12" wall, centred on its axis: no ledge on either side to pond on.
@@ -231,14 +252,12 @@ def test_the_corner_columns_are_flush_with_both_faces_of_the_wall_they_stand_on(
     the column, which a 20" round would have eaten.
     """
     for tag, wall_tag in PILLAR_BEARING_WALL.items():
-        # A ResolvedWall carries an axis and a thickness, not a plan outline, so the two
-        # faces are the axis +/- half the wall.
-        wall = _wall(catlin_model, wall_tag)
-        axis_x = wall.axis[0][0]
-        half = wall.thickness_m / 2.0
+        # The faces of the POUR, read off its own polygon — see `_pour_faces`. A cast column
+        # bears on cast concrete, and what "flush" means here is flush with that.
+        west_face, east_face = _pour_faces(_wall(catlin_model, wall_tag), 0)
         column_xs = [p[0] for p in _solid(catlin_model, tag).outline]
-        assert min(column_xs) == pytest.approx(axis_x - half, abs=1e-3), tag
-        assert max(column_xs) == pytest.approx(axis_x + half, abs=1e-3), tag
+        assert min(column_xs) == pytest.approx(west_face, abs=1e-3), tag
+        assert max(column_xs) == pytest.approx(east_face, abs=1e-3), tag
 
 
 def test_the_deck_borne_pillars_stand_over_a_bearing_not_a_joist_tip(catlin_model) -> None:
@@ -460,7 +479,17 @@ def test_the_raised_garden_wraps_the_sunken_garden_as_a_u(catlin_model) -> None:
     assert not [w for w in catlin_model.walls if w.tag == "W-RG-INNER"], (
         "W-RG-INNER's job was to be the bed's inner cheek; the SG walls are that face now")
     walls = {tag: _wall(catlin_model, tag) for tag in _APRON_TAGS}
-    assert {w.assembly for w in walls.values()} == {"RETAINING_BLOCK_12"}
+    # ** TWO ASSEMBLY TAGS SINCE 2026-09-13, AND WHICH WALL GETS WHICH IS THE ASSERTION. ** The
+    # three PERIMETER legs took a white mineral silicate wash on their yard face and moved to
+    # `RETAINING_BLOCK_12_WASHED`; the two balcony returns kept the plain tag because they face no
+    # lawn — they run east-west at y -10'-6" retaining terrace fill to the south with the balcony
+    # underside to the north, so layer 0 on them would land in the FILL. Same block, same bed,
+    # same rate; the wash bills through [envelope_layers]. If a future pass "tidies" these back to
+    # one tag it will silently paint two buried faces.
+    assert {w.assembly for w in walls.values()} == {
+        "RETAINING_BLOCK_12", "RETAINING_BLOCK_12_WASHED"}
+    assert {tag for tag, w in walls.items() if w.assembly == "RETAINING_BLOCK_12_WASHED"} == {
+        "W-RG-BLOCK", "W-RG-WEST", "W-RG-EAST"}
 
     south, west, east = (walls[t] for t in _APRON_TAGS[:3])
     # The south leg runs corner to corner, 28'.
@@ -499,10 +528,11 @@ def test_the_raised_garden_returns_close_on_the_court_walls(catlin_model) -> Non
     east = returns["W-RG-EAST-BALCONY"]
     assert {round(x / FT, 4) for x, _ in west.axis} == {4.0, 7.5}
     assert {round(x / FT, 4) for x, _ in east.axis} == {28.5, 32.0}
-    # Read off the court walls rather than typed: their outer faces ARE the return ends.
-    for return_wall, court_tag, sign in ((west, "W-SG-W1", -1), (east, "W-SG-E1", 1)):
-        court = _wall(catlin_model, court_tag)
-        face = court.axis[0][0] + sign * court.thickness_m / 2.0
+    # Read off the court walls rather than typed: their outer faces ARE the return ends. The
+    # face is the POUR's (see `_pour_faces`) — the court walls' 1/8" wash stands on the INBOARD
+    # side and is no part of the joint these returns close.
+    for return_wall, court_tag, outer in ((west, "W-SG-W1", 0), (east, "W-SG-E1", 1)):
+        face = _pour_faces(_wall(catlin_model, court_tag), 0)[outer]
         ends = [x for x, _ in return_wall.axis]
         assert min(abs(x - face) for x in ends) == pytest.approx(0.0, abs=1e-9), court_tag
 

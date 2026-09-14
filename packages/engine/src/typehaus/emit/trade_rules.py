@@ -23,6 +23,11 @@ MATERIAL_TRADE_PATTERNS: tuple[tuple[str, str], ...] = (
     ("resilient-channel*", "drywall"),
     ("*paint*", "paint"),
     ("foundation-coating*", "paint"),
+    # The court's mineral silicate wash, both substrate variants. A coating is the painter's
+    # arrival, not the mason's and not the millworker's — without this it fell through every
+    # pattern below to the section fallback. Mirrors `foundation-coating*` above; note the
+    # glob has to precede `*brick*` and `retaining-block*`, since the wash goes on both.
+    ("silicate-wash*", "paint"),
     ("*spray-foam*", "insulation"),
     ("*fiberglass*", "insulation"),
     ("blown-*", "insulation"),

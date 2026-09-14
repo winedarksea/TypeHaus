@@ -311,6 +311,9 @@ export function disposeStandingSeamTextures(): void {
 export const BRICK_UNIT_M: readonly [number, number] = [0.2032, 0.0679]; // [length, course]
 /** Nominal CMU face module including joints: a standard block is 16" × 8" with ⅜" joints. */
 export const CMU_UNIT_M: readonly [number, number] = [0.4064, 0.2032]; // [length, course]
+/** Segmental retaining-wall unit face module: the raised garden's 12×6×18 SRW block, DRY
+ * STACKED — 18" long × 6" high with no mortar joint, so the module is the unit itself. */
+export const SRW_UNIT_M: readonly [number, number] = [0.4572, 0.1524]; // [length, course]
 /** Glen-Gery Roman Maximus laid flat, including joints: 23⅝" × 1⅝" unit + ⅜" joints both
  * ways — a 24" × 2" module, long and low next to modular's 8" × 2⅔". */
 export const ROMAN_MAXIMUS_UNIT_M: readonly [number, number] = [0.6096, 0.0508]; // [length, course]
@@ -440,6 +443,29 @@ const CMU_STYLE: MasonryStyle = {
   jointFraction: 0.028, halfLap: 0.5, mortar: "#b6b3ac", base: "#9c988f",
   jitterHSL: [0.004, 0.015, 0.05],
 };
+// The raised garden's SRW block WASHED WHITE with an untinted mineral silicate — a clone of
+// CMU_STYLE above on the SRW unit module, and the reason it is a separate recipe rather than a
+// recolour is that a silicate wash is a thin, non-film-forming coating: it hides the grey but
+// does not level anything, so the unit module and the open dry-stacked joints telegraph
+// straight through it. A flat white plane here would be a less accurate render, not a simpler
+// one.
+//
+// `unitM` is SRW_UNIT_M and not CMU_UNIT_M: the block is 18" × 6", not 16" × 8". `jointFraction`
+// is tighter than CMU's because the stack is DRY — there is no mortar joint, only the shadow
+// line between two units — and `mortar` is accordingly not a mortar colour but that shadow,
+// which reads as a grey the wash thins into rather than as a joint.
+//
+// ** JITTER IS MUTED BUT NOT AS MUTED AS WHITE_BRICK_STYLE'S, AND THAT IS DELIBERATE. ** The
+// white-brick comment says "jitter is muted because painted/whitewashed brick reads uniform",
+// which is true of a brushed-out paint film on brick. It is NOT true here: both Beeck and
+// Romabio warn in their own instructions that a silicate wash flash-dries and laps, and mottle
+// over a dry-cast unit is characteristic rather than a defect. So the LIGHTNESS term is raised
+// against white brick's while hue and saturation stay pinned — patchy, never tinted.
+const SILICATE_WASH_BLOCK_STYLE: MasonryStyle = {
+  key: "silicate-wash-block", unitM: SRW_UNIT_M, unitsPerTile: 2, coursesPerTile: 4,
+  jointFraction: 0.018, halfLap: 0.5, mortar: "#c9c5bc", base: "#e9e6df",
+  jitterHSL: [0.006, 0.02, 0.075],
+};
 
 /** True when a wall layer's cladding should be finished as brick/block/stone masonry. */
 export function isMasonry(materialRef: string | null | undefined): boolean {
@@ -473,6 +499,7 @@ export const MASONRY_STYLES: Readonly<Record<string, MasonryStyle>> = {
   "roman-maximus-brick": ROMAN_MAXIMUS_BRICK_STYLE,
   "roman-maximus-soldier": ROMAN_MAXIMUS_SOLDIER_STYLE,
   cmu: CMU_STYLE,
+  "silicate-wash-block": SILICATE_WASH_BLOCK_STYLE,
 };
 
 /**

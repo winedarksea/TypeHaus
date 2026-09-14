@@ -56,9 +56,10 @@ from typehaus import (
     ConnectorKind,
     DeckLayer,
     Dowel,
-    DrainTile,
     Downspout,
+    DrainTile,
     Drywell,
+    face,
     Fascia,
     Flashing,
     FloorOpening,
@@ -68,11 +69,15 @@ from typehaus import (
     FootingBedding,
     FoundationWall,
     FrenchDrain,
+    from_node,
+    ft,
     Gutter,
+    inch,
     JoistReinforcement,
     JoistSpec,
     Node,
     Post,
+    pt,
     PublishedSpan,
     Railing,
     RailingKind,
@@ -80,13 +85,33 @@ from typehaus import (
     Slab,
     Stair,
     TrimKind,
-    from_node,
-    ft,
-    inch,
-    pt,
 )
 
 from typehaus.resolve.framing.profiles import cross_section
+
+# ** THE POUR DOES NOT MOVE WHEN THE WASH IS ADDED, AND THIS IS WHAT HOLDS THAT. **
+# `SUNKEN_GARDEN_WALL` carries a 1/8" white mineral silicate wash at layer 0 (the court face).
+# Without an alignment the resolver centres the WHOLE stack on the node line, so a 12" pour
+# becomes 12 1/8" of stack and the concrete slides 1/16" away from the court — which is not what
+# gets built. What gets built is a 12" pour on the grid with a film painted onto its court face.
+#
+# That 1/16" is not cosmetic. It broke three things at once and only one of them was caught by a
+# check: `SP-SG-W1-CD-SPA` fell out of its own host (`integrity.sleeve_in_opening`, a FAIL), and
+# the corner columns stopped being flush with the wall faces they stand on while the raised
+# garden stopped closing on the court walls — both of those only by test, at 0 FAIL.
+#
+# `_axis_offset_from_interior` measures the axis from the INTERIOR face outward, and its own
+# docstring names this exact case: the offset "is what lets a layer be added to one side of an
+# existing wall without moving the layer that actually holds the datum". Interior here is the
+# wash's outer face, so the stack reads wash 0..1/8", concrete 1/8"..12 1/8"; the concrete's
+# centre is 6 1/8" from the interior face where the default axis is 6 1/16". Hence +1/16" —
+# HALF THE WASH — and the pour lands back on 90"..102" exactly as before.
+#
+# ** IF `_WASH_FILM` EVER CHANGES, THIS CHANGES WITH IT. ** It is half of that value, and nothing
+# derives one from the other across the params/plan boundary. The sign is positive because the
+# wash is layer 0 (inboard); the fireplace surround carries its wash LAST and so takes the
+# negative of the same rule.
+_WASH_AXIS_SHIFT = face("center", offset=inch(0.0625))
 
 
 @dataclass(frozen=True)
@@ -828,22 +853,39 @@ WALLS = [
     # spacing changes mid-pour at y = -11'-0" (`_y_ax_mid`) — #6 @ 38" north of it,
     # #6 @ 10" on the retained face south of it, in one form.**
     FoundationWall(uid="SGW103AAAA", tag="W-SG-W1", start_node="N-SG-NW",
-                   end_node="N-SG-MW", assembly="SUNKEN_GARDEN_WALL",
+                   end_node="N-SG-MW", assembly="SUNKEN_GARDEN_WALL", alignment=_WASH_AXIS_SHIFT,
                    top_elevation=_porch_top, bottom_elevation=_wall_bottom,
                    lateral_support="top_and_bottom",
                    vertical_reinforcement='#6 @ 38" o.c.',
                    reinforcement=_BRACED_STEM_STEEL),
     # East wall runs ME→NE (south→north), opposite the west wall, so both side walls wind
-    # the same way around the garden. Retiring the arched cross-wall broke this component's
-    # only closed loop — the five survivors are now one open chain NW→MW→SW→SE→ME→NE, whose
-    # signed area is zero — so ``resolve_storey_windings`` can no longer recover a winding
-    # and returns ``UNRECOVERABLE_WINDING_OUTWARD_SIGN`` (+1) instead of the -1 it used to.
-    # That is latent and was measured: every SUNKEN_GARDEN_WALL is one centred concrete
-    # layer, so the flip only reverses the vertex order of two layer polygons (W1/E1) and
-    # moves no face. It would stop being latent the moment one of these walls took a second
-    # layer — which is exactly what the retired masonry railing above them was.
+    # the same way around the garden.
+    #
+    # ** THAT CONSISTENCY IS NOW LOAD-BEARING, BECAUSE THESE WALLS TOOK A SECOND LAYER
+    # (2026-09-13). ** SUNKEN_GARDEN_WALL carries a white mineral silicate wash at layer 0 and
+    # layer 0 must land on the COURT face, so the component's winding is no longer latent.
+    #
+    # ** AND THE CLAIM THAT USED TO STAND HERE WAS STALE. ** It said retiring the arched
+    # cross-wall broke this component's only closed loop, leaving one open chain
+    # NW→MW→SW→SE→ME→NE whose signed area is zero, so ``resolve_storey_windings`` returned
+    # ``UNRECOVERABLE_WINDING_OUTWARD_SIGN`` (+1) instead of the -1 it used to. It does not:
+    # ``W-SG-ARCH`` below is a LIVE FoundationWall on the N-SG-MW → N-SG-ME pair, so the graph
+    # still contains the closed walk ME→SE→SW→MW→ME, ``_closed_walks`` finds it, and
+    # ``resolve_storey_windings(plan, "court-low")`` resolves the ``N-SG-ME`` component to
+    # **-1.0**. (Walks from the other nodes escape up the dangling W1/E1 legs and never close,
+    # which is presumably how the stale reading arose. Note the storey is ``court-low``, not
+    # ``basement``.) With sign -1, layer 0 lands on the +normal side, and that is the court face
+    # for all five walls — W1, E1, W2, E2 and S — which is what "both side walls wind the same
+    # way" buys.
+    #
+    # ** RE-RUN THAT DIAGNOSTIC BEFORE MOVING ANY NODE IN THIS COMPONENT, AND DO NOT DELETE
+    # W-SG-ARCH WITHOUT IT. ** Losing the MW–ME leg really would drop the sign to +1 and put
+    # the wash on the outboard, buried face of all five walls — silently, at 0 FAIL, because no
+    # check grades a FINISH layer's side. See RETAINING_BLOCK_12_WASHED in plan/assemblies.py
+    # for the sibling case where the sign genuinely is unrecoverable and the geometry happens
+    # to work out anyway.
     FoundationWall(uid="SGW104AAAA", tag="W-SG-E1", start_node="N-SG-ME",
-                   end_node="N-SG-NE", assembly="SUNKEN_GARDEN_WALL",
+                   end_node="N-SG-NE", assembly="SUNKEN_GARDEN_WALL", alignment=_WASH_AXIS_SHIFT,
                    top_elevation=_porch_top, bottom_elevation=_wall_bottom,
                    lateral_support="top_and_bottom",
                    vertical_reinforcement='#6 @ 38" o.c.',
@@ -883,8 +925,13 @@ WALLS = [
     # `_unbalanced_fill_ft`'s grade-plane proxy invents a retained height for a wall buried
     # inside the excavation, and this beam retains nothing — the court is on one side of it
     # and the porch box on the other, both at the same level.
+    # ** ASSEMBLY IS SUNKEN_GARDEN_GRADE_BEAM_12, NOT SUNKEN_GARDEN_WALL, SINCE 2026-09-13. **
+    # Same 12" pour, same EXPOSED_MIX, same ticket, same $/cy — and no white mineral silicate
+    # wash, because of what the paragraph above says: the court floor bears on this beam's top and
+    # nothing of it shows. Sharing the court walls' assembly would bill 3.6 SF of paint on a face
+    # under the slab. See plan/assemblies.py.
     FoundationWall(uid="SGW102AAAA", tag="W-SG-ARCH", start_node="N-SG-MW",
-                   end_node="N-SG-ME", assembly="SUNKEN_GARDEN_WALL",
+                   end_node="N-SG-ME", assembly="SUNKEN_GARDEN_GRADE_BEAM_12",
                    top_elevation=_grade_beam_top, bottom_elevation=_grade_beam_bottom,
                    unbalanced_fill=inch(0),
                    lateral_support="top_and_bottom"),
@@ -1011,21 +1058,21 @@ WALLS = [
     # this wall", and none has. The engine computes a court that checks out — a draft
     # verdict, not a stamp.
     FoundationWall(uid="SGW105AAAA", tag="W-SG-W2", start_node="N-SG-MW",
-                   end_node="N-SG-SW", assembly="SUNKEN_GARDEN_WALL",
+                   end_node="N-SG-SW", assembly="SUNKEN_GARDEN_WALL", alignment=_WASH_AXIS_SHIFT,
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom,
                    unbalanced_fill=_ret_unbalanced_fill,
                    vertical_reinforcement=_RET_REBAR,
                    reinforcement=_RET_STEM_STEEL,
                    lateral_support="base", base_restraint_ref="W-SG-ARCH"),
     FoundationWall(uid="SGW106AAAA", tag="W-SG-E2", start_node="N-SG-SE",
-                   end_node="N-SG-ME", assembly="SUNKEN_GARDEN_WALL",
+                   end_node="N-SG-ME", assembly="SUNKEN_GARDEN_WALL", alignment=_WASH_AXIS_SHIFT,
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom,
                    unbalanced_fill=_ret_unbalanced_fill,
                    vertical_reinforcement=_RET_REBAR,
                    reinforcement=_RET_STEM_STEEL,
                    lateral_support="base", base_restraint_ref="W-SG-ARCH"),
     FoundationWall(uid="SGW107AAAA", tag="W-SG-S", start_node="N-SG-SW",
-                   end_node="N-SG-SE", assembly="SUNKEN_GARDEN_WALL",
+                   end_node="N-SG-SE", assembly="SUNKEN_GARDEN_WALL", alignment=_WASH_AXIS_SHIFT,
                    unbalanced_fill=_ret_unbalanced_fill,
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom,
                    vertical_reinforcement=_RET_REBAR,

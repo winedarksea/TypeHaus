@@ -2134,6 +2134,12 @@
 2,
 "156bac9d6aaf"
 ],
+"geometry/4MHYR1HBC8/layer:wash": [
+0.0238125,
+0.6334125,
+2,
+"156bac9d6aaf"
+],
 "geometry/4YB7X5WM5X/body": [
 2.419096,
 2.429256,
@@ -2915,6 +2921,12 @@
 "83408aebaec2"
 ],
 "geometry/BVEVY6KVW8/layer:brick": [
+0.6334125,
+1.1572875,
+2,
+"bf95d5df5a46"
+],
+"geometry/BVEVY6KVW8/layer:wash": [
 0.6334125,
 1.1572875,
 2,
@@ -37708,6 +37720,12 @@
 2,
 "bf95d5df5a46"
 ],
+"geometry/R8VJRRE4M6/layer:wash": [
+0.6334125,
+1.1572875,
+2,
+"bf95d5df5a46"
+],
 "geometry/R9TC5VZ1WQ-run/body": [
 2.809875,
 2.828925,
@@ -37864,17 +37882,35 @@
 2,
 "9d590c7e3bd6"
 ],
+"geometry/RGW102AAAA/layer:wash": [
+-1.016,
+0.0,
+2,
+"0494881c0fba"
+],
 "geometry/RGW103AAAA/layer:srw-block": [
 -1.2192,
 0.0,
 2,
 "9d590c7e3bd6"
 ],
+"geometry/RGW103AAAA/layer:wash": [
+-1.016,
+0.0,
+2,
+"0494881c0fba"
+],
 "geometry/RGW104AAAA/layer:srw-block": [
 -1.2192,
 0.0,
 2,
 "9d590c7e3bd6"
+],
+"geometry/RGW104AAAA/layer:wash": [
+-1.016,
+0.0,
+2,
+"0494881c0fba"
 ],
 "geometry/RGW105AAAA/layer:srw-block": [
 -1.2192,
@@ -41098,7 +41134,19 @@
 2,
 "267caf0e8cc8"
 ],
+"geometry/SGW103AAAA/layer:wash": [
+-2.7797125,
+0.0,
+2,
+"267caf0e8cc8"
+],
 "geometry/SGW104AAAA/layer:concrete": [
+-2.7797125,
+0.0,
+2,
+"267caf0e8cc8"
+],
+"geometry/SGW104AAAA/layer:wash": [
 -2.7797125,
 0.0,
 2,
@@ -41110,13 +41158,31 @@
 2,
 "267caf0e8cc8"
 ],
+"geometry/SGW105AAAA/layer:wash": [
+-2.7797125,
+0.0,
+2,
+"267caf0e8cc8"
+],
 "geometry/SGW106AAAA/layer:concrete": [
 -2.7797125,
 0.0,
 2,
 "267caf0e8cc8"
 ],
+"geometry/SGW106AAAA/layer:wash": [
+-2.7797125,
+0.0,
+2,
+"267caf0e8cc8"
+],
 "geometry/SGW107AAAA/layer:concrete": [
+-2.7797125,
+0.0,
+2,
+"267caf0e8cc8"
+],
+"geometry/SGW107AAAA/layer:wash": [
 -2.7797125,
 0.0,
 2,
@@ -42376,6 +42442,12 @@
 2,
 "735dcc88f496"
 ],
+"geometry/Z5314GVSNX/layer:wash": [
+1.1572875,
+1.6494125,
+2,
+"735dcc88f496"
+],
 "geometry/Z5NB8QMK2H-run/body": [
 -0.37592,
 2.8194,
@@ -42503,6 +42575,12 @@
 "d358f70a0aac"
 ],
 "geometry/ZG0Q6KGNXB/layer:brick": [
+-0.3413125,
+0.0238125,
+2,
+"83408aebaec2"
+],
+"geometry/ZG0Q6KGNXB/layer:wash": [
 -0.3413125,
 0.0238125,
 2,

@@ -478,7 +478,7 @@ def test_a_ref_that_names_a_wall_off_the_loop_is_incomplete(tmp_path) -> None:
 def test_a_cross_member_with_no_concrete_is_incomplete(tmp_path) -> None:
     """The loop has to be CAST. A framed cross-member cannot deliver the strut force."""
     plan = _mutated(tmp_path, [(
-        '''                   end_node="N-SG-ME", assembly="SUNKEN_GARDEN_WALL",
+        '''                   end_node="N-SG-ME", assembly="SUNKEN_GARDEN_GRADE_BEAM_12",
                    top_elevation=_grade_beam_top, bottom_elevation=_grade_beam_bottom,''',
         '''                   end_node="N-SG-ME", assembly="EXT_2X6",
                    top_elevation=_grade_beam_top, bottom_elevation=_grade_beam_bottom,''')])

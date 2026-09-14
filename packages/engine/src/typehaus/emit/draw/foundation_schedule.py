@@ -255,6 +255,24 @@ def _bearing_schedule(model: ResolvedModel, marks: FoundationMarks) -> ScheduleT
     )
 
 
+def _structural_thickness_m(wall: ResolvedWall) -> float:
+    """The THK an S-100 wall schedule owes the reader: the POUR, not the finished stack.
+
+    ``ResolvedWall.thickness_m`` is every layer, which is the right number for a clash or a
+    room's clear face and the wrong one on a structural sheet. catlin's sunken-garden court put a
+    1/8" mineral silicate wash on the court face of its 12" retaining walls, and this column
+    duly printed **12 1/8"** — a permit drawing telling a contractor to form a wall an eighth of
+    an inch thicker than the one that is designed, reinforced and priced. Nothing would have
+    caught it but a test that happened to pin the string.
+
+    Summing the STRUCTURE layers says what a foundation wall schedule means. Falls back to the
+    full thickness when an assembly declares no structure layer, so a wall shaped unlike this one
+    reads exactly as it did before (``integrity.assembly_layers`` owns that case separately).
+    """
+    structural = [ly.thickness_m for ly in wall.layers if ly.function == "structure"]
+    return sum(structural) if structural else wall.thickness_m
+
+
 def _wall_schedule(model: ResolvedModel, marks: FoundationMarks) -> ScheduleTable:
     grouped: dict[str, list[ResolvedWall]] = {}
     for wall in foundation_walls(model):
@@ -263,7 +281,8 @@ def _wall_schedule(model: ResolvedModel, marks: FoundationMarks) -> ScheduleTabl
     for mark, walls in sorted(grouped.items(), key=lambda item: _mark_order(item[0])):
         sample = walls[0]
         run_ft = sum(wall_length_m(wall) for wall in walls) * M_TO_FT
-        rows.append((mark, sample.assembly, inches(sample.thickness_m), f"{run_ft:,.0f} LF",
+        rows.append((mark, sample.assembly, inches(_structural_thickness_m(sample)),
+                     f"{run_ft:,.0f} LF",
                      elevation_feet(sample.z1_m), elevation_feet(sample.z0_m), str(len(walls))))
     return ScheduleTable(
         title="FOUNDATION WALL SCHEDULE",

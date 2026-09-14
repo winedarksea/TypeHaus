@@ -1786,9 +1786,20 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     # retired FT-B-BRICK/FB-B-BRICK pair ordered 16 SF of foam through one annotation and
     # 0.1 cy of washed stone through another, for the same 2" of space, and placed neither.
     # A Layer has a polygon, a face and an order, so it can be pinned — see below.
+    #
+    # ** AND W-SG-ARCH IS ITS OWN ASSEMBLY TOO SINCE 2026-09-13, FOR THE SAME KIND OF REASON. **
+    # The five COURT walls carry a white mineral silicate wash at layer 0 — the court is a light
+    # well and the wash is what makes it one. W-SG-ARCH is the BURIED strut: its top is the rim
+    # slab's underside, the court floor bears on it and nothing of it shows, so a wash there would
+    # bill paint on a face under a slab. Identical 12" pour, identical EXPOSED_MIX, identical
+    # ticket and an identical $/cy row — split on appearance alone, which is exactly what an
+    # assembly is for. Nothing grades whether a FINISH layer is reachable, so this assertion and
+    # the wash-face tests in test_masonry_finish.py are the whole guard.
     assert all(w.assembly == "SUNKEN_GARDEN_WALL"
-               for w in walls if w.tag != "W-SG-BRKBM")
+               for w in walls if w.tag not in ("W-SG-BRKBM", "W-SG-ARCH"))
     assert next(w for w in walls if w.tag == "W-SG-BRKBM").assembly == "SG_VENEER_BEAM_14"
+    assert (next(w for w in walls if w.tag == "W-SG-ARCH").assembly
+            == "SUNKEN_GARDEN_GRADE_BEAM_12")
     assert not any(w.tag.startswith("W-SG-RAIL-") for w in walls)
 
     # Both open porch edges are a column at midspan carrying two beams into the side walls.

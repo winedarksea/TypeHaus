@@ -106,18 +106,97 @@ constraints = [
 
 # The mason is a different sub on a different trip, and both wythes are built against
 # cured concrete: the veneer stands on W-SG-BRKBM and the firebox on the main deck.
+#
+# ** ONE BLEND HOUSE-WIDE SINCE 2026-09-13, AND THAT CHANGED WHAT THIS VISIT'S FIRST CONSTRAINT
+# MEANS. ** It used to read "one blend, enough for the whole 129 SF field" — a constraint written
+# for the court alone, which never ordered the second (white) pallet the firebox needed, so the
+# two halves of this visit disagreed about how many colours were arriving. The firebox is now the
+# court's own brown brick and is WASHED WHITE afterwards by the painter, so "one blend" is no
+# longer a preference about the field: it is the only blend on the job, and this visit orders all
+# of it — 124.9 SF of court field plus 20.4 SF of firebox, 145.3 SF off two cubes.
+#
+# ** THE FIREBOX IS LAID BARE. ** The wash is a separate trade on a separate arrival
+# (task/paint/building/mineral-wash), so the mason must not substitute a white brick to "get the
+# look" — the panel will read white from the coating. That is a constraint below, not a note.
+#
+# The row key moved with the blend: `wall_structure:FIREPLACE_BRICK_WYTHE:white-brick` ->
+# `:brown-brick`. `schedule/rules.py::orphan_rows` is an ERROR, so `haus site validate` exits 1
+# until it is renamed — which is the one machine-caught consequence of this whole change.
+#
+# The wash's own BOM row is deliberately NOT listed here: `schedule/rules.py::shared_rows` errors
+# when two visits claim one row, and the coating visit owns it and `depends_on` this one.
 [visits."task/masonry/building/masonry"]
 label = "Brick — the court veneer and the living-room firebox"
 rows = ["wall_structure:BASEMENT_BRICK_VENEER:brown-brick",
-        "wall_structure:FIREPLACE_BRICK_WYTHE:white-brick"]
+        "wall_structure:FIREPLACE_BRICK_WYTHE:brown-brick"]
 element_tags = ["W-B-BRICK", "W-M-FIRE-*"]
 depends_on = ["task/concrete/basement/walls", "task/concrete/building/slabs"]
 blocks_successors = false
 constraints = [
-  { label = "brick and mortar delivered, one blend, enough for the whole 129 SF field", owner = "owner" },
+  { label = "brick and mortar delivered — ONE blend for the whole job, 145.3 SF (124.9 court + 20.4 firebox), no second colour on the order", owner = "owner" },
+  { label = "the firebox panel is laid BARE in the court blend and washed white later — do NOT substitute a white brick", owner = "owner", next_action = "the white reads from the mineral silicate wash, applied by the painter on a later arrival; a white body would order a third cube against ~21 SF of need" },
   { label = "weeps, soft joints at both ends and the anchor schedule agreed", owner = "owner", next_action = "unreinforced brick cannot span 18'-8\" horizontally — do not anchor the wythe to W-SG-W1/E1" },
   { label = "scaffold access for the full 8'-5\" field priced in", severity = "attention" },
   { label = "firebox head is a CUT COURSE on a steel angle lintel, not a rowlock", owner = "owner" },
+]
+
+# --- PAINT: three arrivals, and they are genuinely three ------------------------------------
+# This package was one implicit visit until 2026-09-13, when the court's mineral silicate wash
+# arrived and made the fiction visible: an interior painter after drywall, an exterior coating
+# crew on backfilled foundation walls, and the court wash are not one arrival by any reading.
+# Authored as a full split so no BOM row falls to no visit (`schedule/rules.py::unassigned_scope`
+# is a warning, and a warning nobody reads is how scope goes missing).
+[visits."task/paint/building/interior"]
+label = "Interior paint — walls, ceilings, trim and doors"
+rows = ["envelope_layers:latex-paint", "envelope_layers:latex-paint-accent",
+        "allowances:paint-trim-and-doors"]
+depends_on = ["task/drywall/building"]
+constraints = [
+  { label = "drywall finished to the agreed level" },
+  { label = "colours confirmed per room", owner = "owner" },
+]
+
+[visits."task/paint/building/foundation-coating"]
+label = "Foundation coating — the above-grade XPS band, all four sides"
+rows = ["envelope_layers:foundation-coating-acrylic"]
+element_tags = ["W-B-N*", "W-B-E*", "W-B-W*", "W-B-S*"]
+depends_on = ["task/insulation/building/foam-and-girts", "insp/foundation_backfill"]
+constraints = [
+  { label = "the band runs from 6\" BELOW grade to the wall top — no foam edge left at the soil line" },
+  { label = "mesh over the WHOLE face, then skim, wait two hours, texture — it is not a one-pass parge" },
+]
+
+# ** THE COURT WASH. A SEPARATE TRADE AND A SEPARATE ARRIVAL FROM THE MASON, AND IT IS BOOKED
+# LATE ON PURPOSE. ** The exterior work wants the court backfilled and the forms long gone;
+# the fireplace wants the room framed and the heat on. Beeck ask for >=12 h between coats, forbid
+# application in blazing sun or below 40 F, and want an absorbent substrate left DAMP — none of
+# which composes with a cold, wet, still-being-poured court.
+#
+# ** ALL FOUR SURFACES ARE IN ONE VISIT BECAUSE OF A JOB-SIZE MINIMUM, NOT FOR TIDINESS. ** The
+# binding Twin Cities number is a $2,000 EXTERIOR JOB-SIZE minimum. The six columns alone are
+# ~181 SF and price at $750-1,900, which is under it at any rate in the range — let separately
+# they would cost $2,000 regardless. Combined with 953 SF of wall face the scope is ~$3,500-6,700
+# and the minimum is absorbed. Do not split this visit to "sequence the columns".
+#
+# `depends_on` the masonry visit: the fireplace panel is laid BARE in the court blend and reads
+# white from this coat. The wash's BOM rows are owned HERE and are deliberately not also listed on
+# the masonry visit — `schedule/rules.py::shared_rows` errors when two visits claim one row.
+[visits."task/paint/building/mineral-wash"]
+label = "Mineral silicate wash — the court, the columns, the garden blocks and the firebox"
+rows = ["envelope_layers:silicate-wash-white", "envelope_layers:silicate-wash-white-block",
+        "allowances:paint-court-mineral-wash-columns"]
+element_tags = ["W-SG-*", "PT-SG-*", "W-RG-BLOCK", "W-RG-WEST", "W-RG-EAST", "W-M-FIRE-*"]
+depends_on = ["task/masonry/building/masonry", "insp/foundation_backfill"]
+blocks_successors = false
+constraints = [
+  { label = "TEST PANEL on a spare SRW block accepted before the 232 SF of garden legs is started", owner = "owner", next_action = "dry-cast block is frequently dosed with an integral water repellent, which a potassium silicate cannot bond to — confirm with the block manufacturer in writing and switch to Beecko-SOL if so; this is the manufacturers' own instruction, not a precaution added here" },
+  { label = "substrate UNTREATED — no silane, siloxane or sealer on anything to be washed, ever", owner = "owner", next_action = "the repellent and the wash are alternatives; SUNKEN_GARDEN_COLUMN_12 no longer specifies one and no recoat obligation survives" },
+  { label = "etch + formwork-oil removal + pore-deep pressure rinse priced as its own line", severity = "attention", next_action = "mandatory per the Beeckosil TDS on new cast concrete and inside NO painting $/SF that could be sourced — it is not in the [envelope_layers] rates" },
+  { label = "court backfilled, forms gone, and >=40 F with no blazing sun for the run of the work" },
+  { label = "firebox: the Amantii BI-30-XTRASLIM is TRIMLESS, so wash before the appliance is set or mask it, and stop at the reveal returns", owner = "owner" },
+  { label = "walnut mantel goes on AFTER the wash cures — its hold-down blocking is still pre-brick" },
+  { label = "W-B-BRICK stays BARE brown — it is the deliberate accent wall and is NOT in this scope", owner = "owner" },
+  { label = "wall TOPS and SL-SG-FLOOR stay uncoated — a walked mineral coating wears and is a slip question" },
 ]
 
 # The insulation trade's first arrival, and the one with the hold that cannot be checked

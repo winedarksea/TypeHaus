@@ -1,7 +1,7 @@
 # RM-M-LIVING fireplace surround — bearing, and the floor it passes through
 
 **House:** catlin
-**Structure:** `W-M-FIRE-STUB/-PLINTH/-JAMB-S/-JAMB-N/-HEAD` (the 3 5/8" white-brick wythe, five walls on one axis since 2026-09-06 so the firebox opening is a real void), `FIREPLACE_BRICK_WYTHE` (its
+**Structure:** `W-M-FIRE-STUB/-PLINTH/-JAMB-S/-JAMB-N/-HEAD` (the 3 5/8" brick wythe — `brown-brick` since 2026-09-13, washed white, `white-brick` before that; five walls on one axis since 2026-09-06 so the firebox opening is a real void), `FIREPLACE_BRICK_WYTHE` (its
 assembly), `W-B-E1` (the 12" pour it stands on), `FS-M-EAST` (the floor it passes through),
 `FO-M-FIRE` (the opening in that floor), `EQ-M-FIREPLACE` (the appliance in it),
 `SB-M-FIRE-MANTEL` (the shelf that caps it).
@@ -62,9 +62,17 @@ an aesthetic, it is what puts the brick on the foundation.**
 | term | working | value |
 |---|---|---|
 | panel volume | 45.5 × 78.375 × 3.625 in³ = 12,927 in³ | **7.48 ft³** |
-| masonry density | `white-brick`, 1,920 kg/m³ | **119.9 pcf** |
+| masonry density | `brown-brick`, 1,920 kg/m³ | **119.9 pcf** |
 | panel weight | 7.48 × 119.9 | **≈ 897 lb** |
 | as a line load | 897 lb ÷ 3.79 ft of panel | **≈ 236 plf** |
+
+**The mineral silicate wash adds nothing to this, and that is a modelled fact rather than a
+rounding.** The surround gained a 1/8" white wash on its room face 2026-09-13. Its `Material`
+authors no `density` and no `areal_density_kg_m2` — correct for a `coating=True` film, which has
+no plane of its own — so it contributes **0 plf** to the line load above and this note's numbers
+stand unchanged. By hand it would be on the order of 10-15 lb over 20.4 SF, or ~4 plf, against
+236. The panel volume row is still the brick's 3 5/8" and not the stack's 3 3/4", deliberately:
+the wash is not masonry and must not be weighed as if it were.
 
 That 236 plf goes **brick → mortar bed → `W-B-E1`'s 12" pour → `FT-B-*` → soil.** There is
 no wood in the path. `W-B-E1` is a 12" wall carrying `SL-M-DECK`'s 414 SF cast edge; 236 plf

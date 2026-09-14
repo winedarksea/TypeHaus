@@ -274,7 +274,18 @@ def _bedding_host_footprint(
             f"{bedding.host_ref!r}", bedding.tag)]
     # The band the layers actually occupy — a ``face(...)``-aligned wall does not straddle
     # its node line, and a bed centred on that line would be off by half the wall.
-    axis = band_axis(wall.axis, [point for layer in wall.layers for point in layer.polygon])
+    #
+    # ** STRUCTURE LAYERS ONLY, AND A COATING IS WHY. ** This used to read every layer's polygon,
+    # which is right while every layer bears and wrong the moment one does not. catlin's raised
+    # garden put a 1/8" mineral silicate wash on the yard face of its SRW legs; the wash is a
+    # FINISH layer with `Material.coating=True`, it carries no load and nothing is excavated for
+    # it, yet it dragged the bed's centreline 1/16" off the block it is supposed to sit under —
+    # silently, since nothing grades a levelling pad's position. A bed is placed by what BEARS on
+    # it. Falls back to every layer when an assembly declares no structure layer, so a wall shaped
+    # unlike this one behaves exactly as before (`integrity.assembly_layers` catches that case on
+    # its own account anyway).
+    bearing = [ly for ly in wall.layers if ly.function == "structure"] or list(wall.layers)
+    axis = band_axis(wall.axis, [point for layer in bearing for point in layer.polygon])
     half = (bedding.width.meters if bedding.width is not None else wall.thickness_m) / 2.0
     return rect_between(axis[0], axis[1], -half, half), wall.z0_m, []
 

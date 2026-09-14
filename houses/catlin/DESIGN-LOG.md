@@ -2202,6 +2202,216 @@ read as a designed detail at 0 FAIL.
   149.31 cy either way, with the thermal break the only quantity that changed, 3.43 → 4.60 cf.
   Any concrete delta seen across this date belongs to another change, not this one.
 
+**The court, the columns and the garden blocks are washed white (2026-09-13).** The sunken
+garden is a light well: a U of 12" as-cast concrete walls enclosing the only thing the basement's
+south glazing looks at. Bare grey concrete has a diffuse reflectance of roughly 23-35%, so most of
+the daylight that reached the court was absorbed there rather than delivered inside. Every
+interior face of the court now carries two coats of an untinted white mineral silicate wash, for
+three purposes: **daylight into the basement** (a 3-4x increase in the bounced component reaching
+the south glazing, and a softer bounce when the sun is high and off-axis); **light into the south
+yard**, where the raised-garden terrace's SRW blocks get the wash on their outboard face to bounce
+light down onto a lawn that is only partially sunny; and **appearance** — the court already carries
+white-painted wood (`POST_WHITE_PAINT_DF`, `BEAM_WHITE_PAINT`) and the house a white metal skin, so
+the wash unifies the concrete with them. `SUNKEN_GARDEN_COLUMN_12.source` had already contemplated
+exactly this: "optional mineral paint to match the white centre posts".
+
+- **The brief said "high SRI" and SRI is the wrong metric.** SRI (ASTM E1980) blends solar
+  reflectance with thermal emittance to predict how hot a *roof* gets — a heat-island number, not
+  this. The two that govern here are **LRV / diffuse visible reflectance** for daylighting and
+  **broadband solar/PAR reflectance** for the planting. They track together for an untinted white,
+  so the product choice is unaffected; what matters is that the finish stays **matte**, so the
+  reflection is diffuse rather than a specular hot spot. Both Beeck products publish "dull matte"
+  at 85° (EN ISO 2813) and Romabio publishes <5 gloss, so all three candidates clear that. High
+  albedo also keeps the wall itself cooler, which is the right outcome for anything planted
+  against it.
+- **Product comparison, and why the substrate decided it.**
+
+  | | Beeckosil C-102 White | Romabio Masonry Flat | Beecko-SOL |
+  |---|---|---|---|
+  | binder | unmodified potassium silicate, VOB/C DIN 18363 2.4.1, pure potassium water glass | D-SILICATE **modified with an organic dispersion** — not 2.4.1 | silica-sol modified silicate emulsion, still 2.4.1, <5% organic |
+  | substrate | raw, absorbent, mineral; **no primer** if so | **MicroGrip primer REQUIRED on concrete and concrete block** | tolerates "critical, semi-water repellent and synthetic-resin coated" facades |
+  | coverage | 200-275 sf/gal/coat on cast concrete of average texture, 150-200 on split-face/heavy texture | 200-260 | 300-350 |
+  | LRV | **90** (C-101 Off-White is 60) | not published | not published |
+  | permeance | 75-85 perms ASTM E96; s_d 0.01-0.02 m | — | 75-85 perms; s_d 0.01 m, class V1 |
+
+  The owner's own constraint — an **untreated** substrate — is what chose Beeckosil for the cast
+  concrete: Romabio requires MicroGrip on poured concrete and block, which fails that constraint
+  outright. Note Beeckosil's TDS publishes a *different* headline coverage (300-350) for smooth,
+  normally-absorbent substrate; the 200-275 figure is the substrate-specific one and is what
+  as-cast and SRW actually are.
+- **The permeance derivation, and the number that was nearly authored instead.** The first pass was
+  going to convert EN 1062-1's class threshold: class **V1** ("high") is s_d < 0.14 m, and with
+  s_d = δ_air/W, δ_air ≈ 2e-10 kg/(m·s·Pa) and 1 US perm = 5.72e-11 kg/(m²·s·Pa), that threshold is
+  W ≈ **25 perms**. That is the class FLOOR, not this product, and it would have understated the
+  film by more than 3x. Both TDS in fact publish **75-85 perms by ASTM E96**, and s_d 0.01-0.02 m —
+  an order below the class limit. `library/materials.py` authors **80.0**, the published range's
+  midpoint, per the file's own stated convention. The two published figures do not reconcile with
+  each other (s_d 0.01-0.02 m computes to ~175-350 perms); that is different methods and cup
+  conditions, it is recorded in `source` rather than averaged away, and the ASTM number wins
+  because it is the test this field's unit is defined by. At 80 perms this becomes the most
+  vapour-open material in the library (`air-barrier` is 54, `latex-paint` 5.0), which is the right
+  ordering for a non-film-forming mineral coating — and it must never carry `ControlLayer.VAPOR`.
+- **Reflector ranking, for the record.** A wall bounces light onto the ground in front of it, so of
+  the three raised-garden perimeter legs the south leg `W-RG-BLOCK` (28', facing south over the
+  yard) does most of the work; the east and west legs each catch half a day. All three are in
+  scope, but that is the order if the scope is ever cut.
+- **The winding diagnosis, which was the real risk in the whole change.** A layer's side is
+  derived, not authored: `resolve/topology.py` places layer 0 on the `-outward_sign * normal(start
+  →end)` side. `params/sunken_garden.py` claimed the court component had lost its only closed loop
+  when the arched cross-wall was retired and so took `UNRECOVERABLE_WINDING_OUTWARD_SIGN` (+1),
+  latent "ONLY because every `SUNKEN_GARDEN_WALL` is one centred concrete layer" — and a wash layer
+  is exactly the second layer that would end that. **The claim was stale.** `W-SG-ARCH` is a live
+  `FoundationWall` on the N-SG-MW/N-SG-ME pair, so the walk ME→SE→SW→MW→ME closes and
+  `resolve_storey_windings(plan, "court-low")` resolves the component to **-1.0** — the value the
+  comment said it wanted. (Walks from the other nodes escape up the dangling W1/E1 legs and never
+  close, which is presumably how the stale reading arose; and the storey is `court-low`, not
+  `basement`, which is the other thing the old note got wrong.) With -1, layer 0 lands on the
+  +normal side, and that is the court face for **all five** walls — the consistency
+  `params/sunken_garden.py` means by "both side walls wind the same way around the garden". No
+  engine change was needed and `resolve/orientation.py` was not touched.
+  - The raised garden is the genuine unrecoverable case and it is **not** a bug. Its graph is
+    `WB–NW–SW–SE–NE–EB`, an open chain with no cycle (the U is open to the north and there is no
+    north wall), so `_closed_walks` returns empty and the sign really is +1. With +1, layer 0 lands
+    on the -normal side, which for the three perimeter legs is exactly the yard. The two 3'-6"
+    balcony returns are not on that perimeter — they run east-west at y -10'-6" closing the U
+    against the court walls, retaining terrace fill to the south with the balcony underside to the
+    north — so they have no lawn-facing face at all and layer 0 on them would land in the fill.
+    Hence `RETAINING_BLOCK_12_WASHED` as a variant, and hence only three of the five legs. That is
+    a faithful reading of "exterior side, to reflect more light into the lawn", not a narrowing,
+    and it avoided all model surgery because those three are exactly the walls where layer 0
+    already lands right.
+- **The wash re-centred the pour, and that was the largest single consequence of the change.**
+  A layer stack is centred on the node line, so adding 1/8" of film to a 12" wall slid the
+  concrete 1/16" off the structural grid. Three things broke on that 1/16" and **only one was
+  caught by a check**: `SP-SG-W1-CD-SPA` fell out of its own host (`integrity.sleeve_in_opening`,
+  a FAIL), while the corner columns stopped being flush with the walls they stand on and the
+  raised garden stopped closing on the court walls — both at 0 FAIL, found only by test. The fix
+  is `Wall.alignment`, whose own docstring names this exact case: `FaceRef.offset` "is what lets a
+  layer be added to one side of an existing wall without moving the layer that actually holds the
+  datum". `face("center", offset=±_WASH_FILM/2)`, positive where the wash is layer 0 and negative
+  where it is last, puts the pour back on 90"–102" and lets the film oversail outward — which is
+  what actually gets built: a 12" pour on the grid, painted.
+  - The same class of drift reached the levelling pads. `resolve/envelope.py` centred a
+    `FootingBedding`'s band on **every** layer's polygon, so the wash pulled the stone 1/16" off
+    the block it sits under. It now reads STRUCTURE layers only: a bed is placed by what bears on
+    it. That is an engine change, small and general, and it falls back to every layer where an
+    assembly declares no structure layer.
+  - And the corollary for anyone reading geometry out of this model: **a wall's faces are no
+    longer `axis ± thickness_m/2`.** On a washed wall `thickness_m` is 12 1/8" while the pour is
+    12". Read the structure layer's polygon.
+- **`W-SG-ARCH` was silently washed, and the goldens are what caught it.** It shared
+  `SUNKEN_GARDEN_WALL` with the five court walls — right while that assembly was one bare concrete
+  layer, wrong the moment layer 0 became paint, because the arch is the BURIED strut: its top is
+  the rim slab's underside, the court floor bears on it, and its own note already said "nothing of
+  it shows". Painting it billed 3.6 SF on a face under a slab, and no check grades whether a
+  FINISH layer is reachable. `test_elevation_goldens.py` reported six `layer:wash` keys where the
+  court has five walls, which is the only reason it was found at all. It now carries
+  `SUNKEN_GARDEN_GRADE_BEAM_12` — identical pour, identical mix, identical ticket, identical
+  `$/cy` row, split on appearance alone. The beam moved rather than the five walls because that is
+  the cheap direction: every test, gate and price key already written against `SUNKEN_GARDEN_WALL`
+  still names the same five subjects.
+- **A conduit was found running tangent to a wall face with zero cover.** `CD-B-SPA`'s southward
+  leg was authored at x 8'-6", which is exactly where `W-SG-W1`'s pour used to face, so the leg and
+  both its sleeves grazed a polygon boundary and "crossed" two walls by touching them — passing
+  only because `integrity.sleeve_in_opening` buffers by 1e-6. The wash's 1/16" is what exposed it.
+  The leg moved 1/8" west into the pour; the tangency, not the wash, was the defect.
+- **Decided: accept the telegraphing.** As-cast concrete under a thin translucent wash shows form
+  seams, tie holes and bugholes rather than hiding them — bugholes read slightly darker because the
+  coating thins over the lip and pools in the void, and KEIM describe their own concrete coating as
+  one that "retains original concrete appearance". `SUNKEN_GARDEN_WALL` specifies no form finish and
+  none is being added. A chalky white wash over visible form texture reads as deliberate rather than
+  as a defect and costs nothing extra. **This is a choice, recorded so a later pass does not read
+  the telegraphing as a defect and "fix" it** by adding a concrete-finisher or sack-rub line that
+  was deliberately not bought. Expect first-coat patchiness generally: both manufacturers warn in
+  their own instructions about flash-drying, roller ridges and lapping being visible in glancing
+  light. Mottle is characteristic, not a defect, and the SRW style's `jitterHSL` lightness term is
+  raised above `WHITE_BRICK_STYLE`'s for exactly that reason.
+- **Risks the model cannot express**, all of them on the SRW blocks, which are the weakest
+  substrate in the scope:
+  1. Dry-cast, integrally coloured units are far less absorbent than cast-in-place and frequently
+     carry an **integral water repellent** — the one condition a potassium silicate cannot bond to.
+     NCMA/CMHA TEK 19-7 says of such units that "the most important characteristic of the unit may
+     be its compatibility with the type of coating used… some coatings may not be able to bridge
+     open pores or fill all surface irregularities". Beecko-SOL is the answer, and Beeckosil's own
+     TDS additionally asks for Quartz Filler or a Bonding Coat over the whole face as a CMU
+     pretreatment. **A test panel on a spare block precedes 245 SF** — that is the manufacturers'
+     own instruction ("the only way to precisely predict application rates is with a trial
+     application"), not a precaution added here.
+  2. Open dry-stacked SRW joints will take the wash unevenly.
+  3. Efflorescence driven out of granular backfill through a retaining wall's face can lift or
+     stain a mineral coating. Keystone's own manual calls efflorescence on an SRW face expected and
+     aesthetic-only; Romabio warns that masonry in constant contact with damp "may absorb excessive
+     moisture or salt nitrates which can cause rapid deterioration of masonry substrates and its
+     coatings", and that Masonry Flat is not a stain-blocking paint. Drainage and capping behind
+     the wall is the real control.
+  4. **"SRW manufacturers void warranty on coatings" could NOT be sourced** and is recorded here as
+     unverified rather than as a finding: Keystone's maintenance chapter and Versa-Lok's FAQ never
+     mention paint or coatings, and the only warranty language found is generic. Ask the specific
+     block manufacturer in writing before committing.
+  5. Horticultural: a white wall raises leaf temperature, water demand and reflected UV for
+     anything planted tight against it. Good for compactness, a scorch risk for tender transplants.
+- **The colour is derived, not published, and it is authored under its target.** No measured sRGB
+  or spectral value exists for any of these whites; the only anchored number is LRV 90. That is
+  Y = 0.90 → **#f3f3f3** as an ideal full-hiding chip, which is too bright for a render: a
+  photographed two-coat white silicate over as-cast grey loses 5-15% to mottle, thin-spot substrate
+  bleed and matte micro-shadowing, landing near **#ebe8e1** and reading very slightly warm.
+  `#e9e6df` is authored under that, per the albedo rule this file already applies to
+  `brown-brick` — and it is deliberately the same hex as `WHITE_BRICK_STYLE.base`, because this
+  house already tuned that value for a whitewashed masonry face in this renderer. Note the wash is
+  a **new visible surface, not a recolour**: the substrate materials cannot be retinted, because
+  `material_ref="concrete"` on the STRUCTURE layer is what the `[concrete]` price table's material
+  guard admits, so the white has to come from the wash layer's own `Material.color` drawn in front
+  of the substrate.
+- **Two materials for one product, and the reason is the renderer.** `silicate-wash-white` renders
+  as one flat chalky plane, which is right over as-cast concrete. `silicate-wash-white-block` is the
+  same pail at the same price on the SRW legs, and exists because a thin non-film-forming silicate
+  hides the grey without levelling anything: the 18" x 6" unit module and the open dry-stacked
+  joints telegraph straight through. `Material.finish` is the field that declares appearance, so it
+  takes two tags; `SILICATE_WASH_BLOCK_STYLE` in `ui/src/three/materials.ts` clones `CMU_STYLE` onto
+  the SRW module with the near-white base. The tag carries "block" deliberately, so `family_of`
+  reads it as masonry, which is the gate `builders/walls.ts` gives the coursing path. The fireplace
+  takes the flat variant and **accepts** losing brick coursing on the washed face; coursing still
+  shows on the 3 5/8" reveal returns.
+- **The tag avoids three substring matchers.** `mineral` maps to the **batt** family in both
+  `emit/draw/palette.py` and `ui/src/nordic/palette.ts`, so "mineral-silicate-wash" would render and
+  hatch as mineral wool. `limewash`/`whitewash` are matched by `_is_white_brick` and
+  `isWhiteBrickRef` and would hand the material brick **coursing** — wrong on concrete and on SRW
+  block. `silicate-wash-white` does contain "white", which those same matchers also catch, but it
+  never reaches them: the authored catalog colour is consulted first in both surfaces, and
+  `family_of` returns None for this tag. The `_FINISH_BASE` tables were deliberately NOT given
+  rows, because they are keyed on the material **ref** rather than the finish, so a row named
+  "silicate-wash" would be dead weight that no lookup could ever hit.
+- **One brick blend house-wide, washed at the fireplace only.** The court ordered `brown-brick`
+  (124.9 SF) and the fireplace `white-brick` (20.4 SF). The fireplace moved to the court's blend and
+  takes the wash, so it still reads white — from the coating, not the body. What that removes is a
+  **third cube** of special-order brick: modular face brick is 6.75 units/SF and a cube is 480-534
+  units ≈ 71-79 SF, so 21.42 SF ordered a cube of which ~53 SF is never laid ≈ **$420-850** at this
+  row's own $8-16/SF, plus the 1.5-2x special-order premium and lead time, plus a second colour for
+  the mason to lay to a line. Consolidated, 152.57 SF is still two cubes plus a strap. **The
+  estimate moves $0 on brick and must** — both rows price $/SF of face laid, so none of that cube
+  arithmetic is in this model; re-rating the material half down to book the saving would move the
+  total ~$19-29 and misdescribe where the money went. The white was never a designed choice:
+  `assemblies.py` sourced it to the retired porch parapet and `brief.md` says only "white metal
+  skin", never brick. The whole `white-brick` chain stays live-and-unreferenced on the
+  `glazed-green-brick` convention.
+- **The 129.2 → 124.9 SF reconciliation, and what it costs.** 124.9 is what the takeoff has always
+  reported (18'-8" x 102 7/16" = 159.3 SF gross, less 1.94 and 32.5 for the two reveals). No dollar
+  moves — but the LOW rate of $19/SF was chosen *because* $19 x 129.2 = $2,455 cleared this file's
+  own "$2,500-4,000 mason mobilisation floor" where the market's $16 did not, and $19 x 124.9 =
+  $2,373 does **not** clear it. The honest resolution is the consolidation itself: court + firebox
+  on one call-out is $2,842-4,889, which lands on the floor for real. Bumping the rate to rescue a
+  documentation error was rejected.
+- **Sequencing is a real constraint, not a note.** The wash is a **separate trade and a separate
+  arrival** from the mason. On the exterior it wants the court backfilled and the forms long gone;
+  on the fireplace it wants the room framed and the heat on. Romabio's own guidance is to leave the
+  absorbent substrate **damp**, and Masonry Flat needs 14 days before cleaning — neither of which
+  composes with a cold, wet, still-being-poured court. Book it late.
+- **No `notes/` entry, deliberately.** `notes/` holds hand-worked **oracles** for calculations. There
+  is no calculation here — no check reads reflectance, albedo, LRV or SRI, confirmed by grep over
+  `checks/` — so a note would name no oracle and `routing/oracle.py`-style lints would have nothing
+  to bind. The wash is a `Material.color` decision with a rendering convention and a BOM row behind
+  it; the intent lives in `plan/assemblies.py` and the derivation here.
+
 **The veneer's material history (2026-09-04).** `W-B-BRICK` has worn three faces: first a
 flat field of `glazed-green-brick` (`#1b4332`); then the Ishtar Gate — a lapis field with
 golden-yellow register bands over an unglazed brown plinth; then, since 2026-09-04, the

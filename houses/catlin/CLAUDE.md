@@ -693,7 +693,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   the row's north end as a service window (can never column with the 27"/30" family beside
   it — the 8" rule). `WIN-S-STUDY3` at 4'-0" columns with `WIN-M-LIV-E1`. **Check
   `out/render/elev_east.png` before touching this row.**
-  The fireplace pier sits between `WIN-M-LIV-E1`/`E2`: a 45 1/2" white-facebrick surround
+  The fireplace pier sits between `WIN-M-LIV-E1`/`E2`: a 45 1/2" facebrick surround
   centred y=8'-8", walnut mantel at 5'-4". No window moved for it — the pier centre is a bay
   centre on `W-M-E1`'s grid. **The firebox sill NO LONGER shares the east row's 2'-8" line**
   (2026-09-11): the owner reversed that morning's decision to raise it and it is back at
@@ -716,6 +716,33 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     deliberate CUT COURSE at 16.7 courses (a course line gives 18 2/3", ~1" of daylight) —
     steel angle lintel, not a rowlock. The $/SF rate deliberately does not drop — a mason
     bills the panel on a job this small; re-rating down would deduct twice.
+  - **The surround is laid in the court's BROWN blend and WASHED WHITE, since 2026-09-13.** It
+    ordered `white-brick` until then, which was never a designed choice — the Material was
+    sourced to the retired porch parapet and `brief.md` says only "white metal skin". One blend
+    house-wide removes a third cube of special-order brick against ~21 SF of need (~53 SF never
+    laid), its 1.5-2x premium and lead time, and a second colour for the mason to lay to a line.
+    **The estimate moves $0 on brick** — both rows price $/SF of face laid, so the cube arithmetic
+    is off-model; do NOT re-rate the material half down to "book the saving".
+    - **The wash is the LAST layer, and this is the trap.** These five walls are their own
+      `open_end` node pairs, find no closed walk, take outward sign +1, and are authored S->N — so
+      layer 0 lands EAST, against `W-M-E1`'s studs. `layers=(brick, wash)`. Nothing grades it:
+      `advisory.cladding_side_mismatch` inspects CLADDING layers and this assembly deliberately
+      has none. `test_masonry_finish.py::test_fireplace_wash_faces_the_room` is the only guard.
+    - `LayerFunction.FINISH`, **not** CLADDING — CLADDING would drag a brick panel standing inside
+      a conditioned room into the Glaser scope. Both are in `_BILLABLE`, so billing is identical.
+      **No `ControlLayer.VAPOR`**: a silicate wash is ~80 perms, the opposite of a retarder.
+    - Accepted render loss: the washed face reads as a flat near-white plane, not coursed brick
+      (the wash is not in the masonry family). Coursing still shows on the 3 5/8" reveal returns.
+      Do **not** reach for `Wall.layer_materials` to fix it — `resolve/topology.py` substitutes on
+      the *resolved* layer, so the BOM row would follow it back to `white-brick`.
+    - Sequencing, and it is real: the Amantii BI-30-XTRASLIM is **trimless** (the brick runs to
+      the glass edge), so the wash stops at the reveal returns and goes on **before the appliance
+      is set**, or is masked. The walnut mantel goes on **after the wash cures**; its hold-down
+      blocking is still pre-brick. Mineral silicate on brick is non-combustible, so no clearance
+      number moves.
+    - Geometry: the stack totals 3 3/4" rather than 3 5/8", so the centred panel drifts 1/16"
+      west and the overhang past `W-B-E1`'s pour goes 1/8" -> 3/16". Below every tolerance in
+      `notes/east_breast_bearing.md`, whose numbers all stand (both bricks are 1,920 kg/m3).
   - **The lintel is `BM-M-FIRE-LINTEL`, a `Beam`, since 2026-09-11** — it was prose in three
     files and an element in none. There is no lintel type in the engine and
     `FIREPLACE_BRICK_WYTHE` carries no `MasonrySpec`, so a `Beam` (free-string `size`, two
@@ -1551,6 +1578,75 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
 ### Sunken garden court
 
+- **Every interior face of the court is washed white, and that is a daylighting device.** An
+  untinted white mineral silicate wash (`silicate-wash-white` in `library/materials.py`, LRV 90)
+  on: the five court walls' **court face**, full height (`SUNKEN_GARDEN_WALL` layer 0); all six
+  12" cast columns, full round; and — as `silicate-wash-white-block` — the **outboard (yard)
+  face** of the three raised-garden perimeter legs, banded to the exposed 3'-4". Bare grey
+  concrete reflects ~23-35%, so the court absorbed most of the daylight it was supposed to
+  deliver to the basement's south glazing. **Nothing in the engine grades any of this** — no check
+  reads reflectance, albedo, LRV or SRI — so a 0-FAIL report says nothing about whether it works
+  (→ DESIGN-LOG.md, "Sunken garden court").
+- **Deliberately NOT washed**, and each for a reason: `W-B-BRICK` (a colour accent wall, see
+  below), `SL-SG-FLOOR` and the porch stair treads (a mineral coating on a walked surface wears,
+  and it is a slip question), the court wall **tops** (`W-SG-E1`'s is a walked threshold, same
+  reason), and the two raised-garden **balcony returns** (they face no lawn — layer 0 on them
+  lands in the terrace fill).
+- **The silane is GONE on every washed surface and must not come back.** `SUNKEN_GARDEN_COLUMN_12`
+  used to specify "silane/siloxane repellent at 28 days, re-applied ~10-yearly". A silane makes
+  concrete hydrophobic and non-absorbent — the one condition a potassium silicate cannot bond to.
+  They are alternatives, never a stack; the wash is itself vapour-open weather protection, and the
+  10-year recoat obligation went with the silane.
+- **The wash layer's side is held by ONE thing: the closed walk through `W-SG-ARCH`.** The
+  `N-SG-*` component resolves to outward sign **-1.0** only because `W-SG-ARCH` supplies the
+  N-SG-MW/N-SG-ME leg. Delete it, or rename either node, and the sign falls to +1 and the wash
+  moves to the outboard, buried face of all five walls — **silently, at 0 FAIL**, because no check
+  grades a FINISH layer's side. `test_masonry_finish.py::test_court_wash_faces_the_court` is the
+  guard. The stale comment claiming this component had already lost its loop is corrected in
+  `params/sunken_garden.py`.
+- **The POUR DOES NOT MOVE, and `alignment` is what holds it.** Every washed wall carries
+  `alignment=face("center", offset=±_WASH_FILM/2)` — `+` where the wash is layer 0 (the court
+  walls, the RG legs), `−` where it is last (the fireplace). Without it the resolver centres the
+  whole 12 1/8" stack on the node line and the concrete slides 1/16" off the grid, which is not
+  what gets built. That 1/16" broke three things and only one was caught by a check:
+  `SP-SG-W1-CD-SPA` fell out of its own host (a FAIL), while the corner columns stopped being
+  flush with the walls they stand on and the raised garden stopped closing on the court walls —
+  both at 0 FAIL, by test only. **If `_WASH_FILM` changes, every alignment offset changes with
+  it**; nothing derives one from the other across the params/plan boundary.
+- **`W-SG-ARCH` is `SUNKEN_GARDEN_GRADE_BEAM_12`, not `SUNKEN_GARDEN_WALL`, and must stay so.**
+  Identical 12" pour, identical `EXPOSED_MIX`, identical ticket, identical `$/cy` row — split on
+  2026-09-13 for one reason: it is the BURIED strut, the court floor bears on its top and nothing
+  of it shows, so sharing the court walls' assembly billed 3.6 SF of paint under a slab. Nothing
+  grades whether a FINISH layer is reachable; `test_catlin_contract_m3` is the guard. Both price
+  rows are mandatory — an assembly tag with no row drops from the takeoff silently.
+- **A wall's faces are NOT `axis ± thickness_m/2` any more.** That shorthand is only right while
+  every layer bears and the stack straddles the node line. On a washed wall `thickness_m` is
+  12 1/8" while the pour is 12" exactly where it always was. Read the STRUCTURE layer's polygon
+  (`_pour_faces` in `test_catlin_outdoor_structures.py`). For the same reason a `FootingBedding`'s
+  band is now centred on STRUCTURE layers only (`resolve/envelope.py`): a levelling pad is placed
+  by what bears on it, and the wash had been dragging it 1/16" off the block.
+- **Band the raised-garden wash off `LayerDatum.WALL_BASE`, NEVER `GRADE`.** `GRADE` resolves to
+  `plan.project.site.grade` — the single global site grade at **-2'-10"** — and the yard this wall
+  actually stands in is **-3'-4"**, so a GRADE band sits 6" too high. `WALL_BASE + 8"` is exact.
+  This is the "grade cannot see a terrace" problem; a later reader will want to "simplify" it.
+- **The SRW block is the weakest substrate in the scope and wants a test panel before 245 SF.**
+  Dry-cast integrally-coloured units are far less absorbent than cast-in-place and frequently
+  carry an **integral water repellent**. Beecko-SOL (silica-sol modified) is the answer, the open
+  dry-stacked joints will take it unevenly, and efflorescence out of the backfill can lift or
+  stain it. The manufacturers' own instructions require the trial.
+- **The wash layer is 1/8" and that is arithmetic, not taste.** `Material.coating=True` does NOT
+  stop a wall layer drawing (`_is_coating` is scoped to room floor finishes), so the wash gets a
+  real plane and at `_PAINT_FINISH`'s honest `inch(0.01)` it z-fought — the viewer flashed grey
+  through the white, observed. Panel3D's `PerspectiveCamera(50, 1, 0.05, 500)` on a 24-bit depth
+  buffer resolves only `z² × 1.19e-6` m, which is 0.48 mm at 20 m and 3.2 mm at 52 m: 0.01" fails
+  beyond ~14 m, 1/16" beyond ~36 m, 1/8" holds past any view that matters. It is also exactly what
+  `foundation-coating-acrylic` has carried since 2026-09-04. `_WASH_FILM` in `plan/assemblies.py`
+  carries the arithmetic; `polygonOffset` was rejected because glTF has no equivalent and the .glb
+  would disagree with the viewer. It grows each washed wall 1/8"; that is what moved `CD-B-SPA`'s
+  chase off W-SG-W1's face (see `plan/electrical.py`).
+- **No new `notes/` entry, deliberately.** `notes/` holds hand-worked **oracles** for
+  calculations, and there is no calculation here — no check reads reflectance — so a note would
+  name no oracle and the lint would have nothing to bind. Do not add one.
 - **The court is one surface, one riser.** `SPEC.court_step_down_in = 0`; `SL-SG-FLOOR` is
   flush with the basement floor plane and the 494 sf court reads as one floor. The only step
   is the 7 1/4" riser at `D-B-PATIO`. `SL-SG-STOOP` is retired — never reuse uid `SGS503AAAA`.
@@ -1753,7 +1849,18 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     §5 — at μ = 0.25 the court is at FS 1.16 against 1.50). Do not take it on a takeoff
     reading.
 - **`W-B-BRICK` is one flat field of unglazed `brown-brick` (`#a07c5c`)**, ASTM C216 Grade SW,
-  full height (plinth to top), 129.2 SF, one BOM row `BASEMENT_BRICK_VENEER:brown-brick`.
+  full height (plinth to top), **124.9 SF** (18'-8" x 102 7/16" = 159.3 SF gross, less
+  `AO-B-BRICK-WIN` 1.94 and `AO-B-BRICK-DOOR` 32.5), one BOM row
+  `BASEMENT_BRICK_VENEER:brown-brick`. The 129.2 SF this line and `prices.toml` used to claim was
+  stale and is reconciled (2026-09-13); no dollar moved.
+  - **It stays BARE brown ON PURPOSE, and it is the one court surface that does.** Every other
+    interior face of this court is washed white; this wall is the deliberate colour accent
+    against them. Do not "finish the job" by washing it.
+  - **`brown-brick` is the only brick blend in the house since 2026-09-13** and carries a live
+    per-material row under **two** assembly keys — this one and
+    `FIREPLACE_BRICK_WYTHE:brown-brick`. The fireplace surround was `white-brick` and is now this
+    blend, washed white. `[basis_notes] wall_structure`'s old "one live per-material row"
+    phrasing is amended accordingly.
   Glazed brick is unsuitable here: [BIA Tech Note 13](https://www.gobrick.com/media/file/13-ceramic-glazed-brick-exterior-walls.pdf)
   says not to use it where it can saturate, and this court is a rain sump with walls.
   - **Do not delete** `glazed-green-brick`, `glazed-lapis-brick`, `glazed-gold-brick` from the

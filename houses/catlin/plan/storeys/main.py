@@ -490,7 +490,7 @@ NODES = [
          open_end=True),
     # --- RM-M-LIVING's fireplace surround, W-M-FIRE-* -------------------------------------
     #
-    # Two nodes, one wall, no loop: a 45 1/2" panel of white face brick standing IN FRONT OF
+    # Two nodes, one wall, no loop: a 45 1/2" panel of face brick standing IN FRONT OF
     # W-M-E1 in the pier between WIN-M-LIV-E1 and WIN-M-LIV-E2. Both ends are `open_end=True`
     # for N-M-TUBDK-N/-E's reason — `integrity.wall_loop_open` is an ERROR on a node with one
     # wall edge, and these two genuinely stop in mid-room with the flanking BESTA banks hard
@@ -523,7 +523,8 @@ NODES = [
     # vapour retarder and no insulation. See the assembly's note in plan/assemblies.py.
     # The face lands at x=34'-11 7/8" and the back at x=35'-3 1/2", 1 7/8" shy of the gwb:
     # that gap is the tie space and the firebox's own framing, and it is why the whole
-    # footprint stands over W-B-E1's 12" pour (x 420"..432") bar 1/8".
+    # footprint stands over W-B-E1's 12" pour (x 420"..432") bar 1/8" (3/16" since 2026-09-13:
+    # the 1/8" mineral silicate wash on the room face drifts the centred panel 1/16" west).
     #
     # ** FIVE WALLS ON ONE AXIS, TEN NODES (2026-09-06). ** The panel was one Wall and so it
     # resolved to a plain 4-point rectangle: a solid brick slab with the appliance box stuck
@@ -1113,24 +1114,33 @@ WALLS = [
     # ** THE STUB IS 1 1/4" NARROWER THAN THE PANEL. ** 44 1/4" against 45 1/2", so the plinth
     # corbels 5/8" over it at each end AT THE FLOOR LINE, buried under the lvp and invisible.
     # That 1 1/4" is what lets FO-M-FIRE come in at 47 3/4" instead of 49" — see the opening.
+    # ** THE BRICK DOES NOT MOVE WHEN THE WASH IS ADDED. ** Same rule as
+    # `params/sunken_garden._WASH_AXIS_SHIFT`, opposite sign. FIREPLACE_BRICK_WYTHE is
+    # `layers=(brick, wash)` — the wash is LAST because these walls are authored S->N on their own
+    # open_end pairs and so take outward sign +1, which lands layer 0 EAST against W-M-E1's studs.
+    # Measuring from the interior face the stack is brick 0..3 5/8", wash 3 5/8"..3 3/4", so the
+    # brick's centre is 1 13/16" where the default axis is 1 7/8": -1/16", half of `_WASH_FILM`.
+    # Without it the wythe slides 1/16" west into the room and its overhang past W-B-E1's pour
+    # grows; with it the brick holds exactly where notes/east_breast_bearing.md worked it and the
+    # film oversails into the room, which is what actually gets built.
     Wall(uid="ZG0Q6KGNXB", tag="W-M-FIRE-STUB", start_node="N-M-FIRE-STUB-S",
-         end_node="N-M-FIRE-STUB-N", assembly="FIREPLACE_BRICK_WYTHE",
+         end_node="N-M-FIRE-STUB-N", assembly="FIREPLACE_BRICK_WYTHE", alignment=face("center", offset=inch(-0.0625)),
          base_elevation=inch(-13.4375), top=inch(14.375),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="4MHYR1HBC8", tag="W-M-FIRE-PLINTH", start_node="N-M-FIRE-S", end_node="N-M-FIRE-N",
-         assembly="FIREPLACE_BRICK_WYTHE", base_elevation=inch(0.9375), top=inch(24),
+         assembly="FIREPLACE_BRICK_WYTHE", alignment=face("center", offset=inch(-0.0625)), base_elevation=inch(0.9375), top=inch(24),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="BVEVY6KVW8", tag="W-M-FIRE-JAMB-S", start_node="N-M-FIRE-JS-S",
          end_node="N-M-FIRE-JS-N",
-         assembly="FIREPLACE_BRICK_WYTHE", base_elevation=inch(24.9375), top=inch(20.625),
+         assembly="FIREPLACE_BRICK_WYTHE", alignment=face("center", offset=inch(-0.0625)), base_elevation=inch(24.9375), top=inch(20.625),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="R8VJRRE4M6", tag="W-M-FIRE-JAMB-N", start_node="N-M-FIRE-JN-S",
          end_node="N-M-FIRE-JN-N",
-         assembly="FIREPLACE_BRICK_WYTHE", base_elevation=inch(24.9375), top=inch(20.625),
+         assembly="FIREPLACE_BRICK_WYTHE", alignment=face("center", offset=inch(-0.0625)), base_elevation=inch(24.9375), top=inch(20.625),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="Z5314GVSNX", tag="W-M-FIRE-HEAD", start_node="N-M-FIRE-HD-S",
          end_node="N-M-FIRE-HD-N",
-         assembly="FIREPLACE_BRICK_WYTHE", base_elevation=inch(45.5625), top=inch(19.375),
+         assembly="FIREPLACE_BRICK_WYTHE", alignment=face("center", offset=inch(-0.0625)), base_elevation=inch(45.5625), top=inch(19.375),
          structural_role=StructuralRole.NONBEARING),
 ]
 

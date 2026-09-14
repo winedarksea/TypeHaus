@@ -112,7 +112,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from typehaus import FootingBedding, FoundationWall, Node, ft, inch, pt
+from typehaus import FootingBedding, FoundationWall, Node, face, ft, inch, pt
 
 from params.sunken_garden import (
     BALCONY_FRONT_AXIS_Y_FT,
@@ -260,17 +260,40 @@ NODES = [
 _APRON = dict(assembly="RETAINING_BLOCK_12", top_elevation=TOP, bottom_elevation=BASE,
               unbalanced_fill=inch(RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN))
 
+# ** THE THREE PERIMETER LEGS ARE WASHED WHITE ON THEIR YARD FACE AND THE TWO BALCONY RETURNS
+# ARE NOT (2026-09-13). ** Same wall, same block, same bed — one extra 2-coat mineral silicate
+# wash over the exposed 3'-4", to bounce light down onto a lawn that is only partially sunny.
+# The returns are excluded because they have no lawn-facing face at all: they run east-west at
+# y -10'-6" closing the U against the court walls, retaining terrace fill to the south with the
+# balcony underside to the north, so layer 0 on them would land in the FILL. The reasoning, the
+# layer-0 face table and the substrate risk are all on `RETAINING_BLOCK_12_WASHED` in
+# plan/assemblies.py — read it before moving any of these five nodes.
+#
+# Of the three, the SOUTH leg does most of the work: 28' of face pointing south over the yard,
+# where the east and west legs each catch half a day. All three are in scope; that is the order
+# if the scope is ever cut.
+# ** THE BLOCK DOES NOT MOVE WHEN THE WASH IS ADDED. ** Same rule and same reason as
+# `params/sunken_garden._WASH_AXIS_SHIFT` — read that comment, it carries the derivation. Without
+# an alignment the resolver centres the whole 12 1/8" stack on the node line and the SRW units
+# slide 1/16" toward the court, which is not what gets built (a 12" block wall on its levelling
+# pad, painted on its yard face) and which stopped the apron closing on the sunken-garden walls.
+# Positive because the wash is layer 0. It is HALF of `_WASH_FILM` in plan/assemblies.py and must
+# move with it.
+_WASH_AXIS_SHIFT = face("center", offset=inch(0.0625))
+_APRON_WASHED = dict(_APRON, assembly="RETAINING_BLOCK_12_WASHED",
+                     alignment=_WASH_AXIS_SHIFT)
+
 WALLS = [
     # The south leg keeps W-RG-BLOCK's tag *and* its uid: the tag is what the energy and
     # grading exemptions match on by "W-RG-" prefix, and the uid is what its IFC GlobalId is
     # derived from. It is 28' now rather than 20' — it runs corner to corner of the U.
     FoundationWall(uid="RGW102AAAA", tag="W-RG-BLOCK",
-                   start_node="N-RG-SW", end_node="N-RG-SE", **_APRON),
+                   start_node="N-RG-SW", end_node="N-RG-SE", **_APRON_WASHED),
     # The two legs north to the arch wall's plane. New walls, new uids.
     FoundationWall(uid="RGW103AAAA", tag="W-RG-WEST",
-                   start_node="N-RG-NW", end_node="N-RG-SW", **_APRON),
+                   start_node="N-RG-NW", end_node="N-RG-SW", **_APRON_WASHED),
     FoundationWall(uid="RGW104AAAA", tag="W-RG-EAST",
-                   start_node="N-RG-SE", end_node="N-RG-NE", **_APRON),
+                   start_node="N-RG-SE", end_node="N-RG-NE", **_APRON_WASHED),
     FoundationWall(uid="RGW105AAAA", tag="W-RG-WEST-BALCONY",
                    start_node="N-RG-NW", end_node="N-RG-WEST-BALCONY", **_APRON),
     FoundationWall(uid="RGW106AAAA", tag="W-RG-EAST-BALCONY",

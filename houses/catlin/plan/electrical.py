@@ -1130,7 +1130,8 @@ MAIN_EQUIPMENT = [
     # eye level, reading as fire at 11 feet, with a dark surround and the seats turned onto it.
     #
     # It now sits in the pier between WIN-M-LIV-E1 and WIN-M-LIV-E2, centred on y=8'-8", in a
-    # 45 1/2" white-facebrick surround stopping at a walnut mantel — W-M-FIRE-* in
+    # 45 1/2" facebrick surround, laid in the court's brown blend and WASHED WHITE since
+    # 2026-09-13 (it was a white face brick until then) — W-M-FIRE-* in
     # plan/storeys/main.py carries the pier arithmetic and the whole elevation ladder, and
     # SB-M-FIRE-MANTEL in plan/millwork.py is the shelf. The BESTA run was re-laid about it
     # (all eight kept) and the seating turned onto it (plan/placeables.py).
@@ -1412,6 +1413,10 @@ PV_JBOX_CLAMP = []
 # Four EMT trunks from ED-B-PANEL, elevations project-frame absolute (they cross
 # storeys). Each run travels its plan polyline flat at start_elevation and rises
 # vertically at its last point to end_elevation; the takeoff bills the developed length.
+# The spa feed's southward leg station, shared by the run and BOTH of its sleeves — see the
+# comment on CD-B-SPA below for why it is 8'-5 7/8" and not the 8'-6" it was authored at.
+_SPA_CHASE_X = ft(8, 5.875)
+
 CONDUIT_TRUNKS = [
     # Up the mechanical chase beside the radon vent to the PV junction box, at
     # (1'-6", 34'-6") — inside the enclosure, not out on the open mudroom floor.
@@ -1515,9 +1520,30 @@ CONDUIT_TRUNKS = [
     # South out of the basement to the hot tub disconnect under the porch. The east leg runs
     # 1' north of the y=0 sheathing line, so it crosses W-B-S1 once rather than running
     # 6'-6" inside it.
+    #
+    # ** THE SOUTHWARD LEG IS 8'-5 7/8", NOT 8'-6", AND IT HAD NO CONCRETE COVER BEFORE
+    # 2026-09-13. ** 8'-6" is exactly where W-SG-W1's 12" pour used to FACE — x 90"..102" about
+    # a centreline at 96" — so this leg and both of its sleeves ran tangent to the court face
+    # with zero cover on that side, and the two wall crossings were found by touching a polygon
+    # boundary rather than by passing through anything. `integrity.sleeve_in_opening` tests a
+    # sleeve centre against its host's STRUCTURE polygon buffered by 1e-6, so the tangency
+    # passed only because the buffer includes the boundary.
+    #
+    # It was FOUND because SUNKEN_GARDEN_WALL took a 1/8" mineral silicate wash at layer 0
+    # (2026-09-13): before `_WASH_AXIS_SHIFT` was authored on those walls the stack re-centred and
+    # the pour's court face slid 1/16" west, and this sleeve dropped out of its own host with a
+    # FAIL. The pour does NOT move any more — the alignment holds it on 90"..102" and the wash
+    # oversails into the court — so the tangency would work again. ** THE LEG STAYS AT 8'-5 7/8"
+    # ANYWAY, BECAUSE THE TANGENCY WAS THE DEFECT. ** A cast-in conduit needs concrete cover and
+    # this one had exactly none on its court side; 1/8" west puts it 1/8" inside the pour, which
+    # is a real crossing of a real wall rather than a polygon-boundary graze that only passed
+    # through a 1e-6 buffer. 1/8" is below every tolerance in this house, and the run's function,
+    # elevation and endpoints are unchanged.
+    #
+    # Both sleeves reference _SPA_CHASE_X so they can never drift apart from the run again.
     ConduitRun(uid="CDT004AAAA", tag="CD-B-SPA", trade_size=inch(1),
-               path=(pt(ft(2), ft(29)), pt(ft(2), ft(1)), pt(ft(8, 6), ft(1)),
-                     pt(ft(8, 6), ft(-7.833))),
+               path=(pt(ft(2), ft(29)), pt(ft(2), ft(1)), pt(_SPA_CHASE_X, ft(1)),
+                     pt(_SPA_CHASE_X, ft(-7.833))),
                start_elevation=ft(-4), end_elevation=ft(-4),
                from_ref="ED-B-PANEL", to_ref="ED-B-SPA-DISC"),
 ]
@@ -1835,11 +1861,11 @@ CONDUIT_SLEEVES = [
     # Host is W-B-S1 again since the sauna shrink undid the 2026-09-05 pour split: x=8'-6"
     # is back in the one south segment. Same hole, same station.
     SleevePenetration(uid="CNS015AAAA", tag="SP-B-S1-CD-SPA", host_ref="W-B-S1",
-                      position=pt(ft(8, 6), ft(0, 6)), pipe_diameter=inch(1),
+                      position=pt(_SPA_CHASE_X, ft(0, 6)), pipe_diameter=inch(1),
                       sleeve_diameter=inch(1.75), purpose=Service.POWER_240,
                       axis="horizontal", center_elevation=ft(-4)),
     SleevePenetration(uid="CNS016AAAA", tag="SP-SG-W1-CD-SPA", host_ref="W-SG-W1",
-                      position=pt(ft(8, 6), ft(-4.3332)), pipe_diameter=inch(1),
+                      position=pt(_SPA_CHASE_X, ft(-4.3332)), pipe_diameter=inch(1),
                       sleeve_diameter=inch(1.75), purpose=Service.POWER_240,
                       axis="horizontal", center_elevation=ft(-4)),
 ]

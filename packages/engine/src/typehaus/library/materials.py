@@ -411,6 +411,76 @@ STARTER_MATERIALS: tuple[Material, ...] = (
                     "is a mid-band value biased to the tight end of that spread, quoted as a "
                     "band midpoint rather than as a single published test result"),
 
+    # --- mineral silicate coatings -----------------------------------------------------------
+    #
+    # An untinted white potassium-silicate ("mineral") wash, for bare mineral substrates that
+    # want a high diffuse reflectance: a light well whose job is to bounce daylight into the
+    # rooms that look at it, and a retaining wall meant to throw light back onto a lawn.
+    #
+    # ** IT IS A COATING, NOT A COVERING, AND ALSO NOT A SEALER. ** ``coating=True`` says the
+    # first half — no measurable thickness, billed by coverage area with no waste allowance.
+    # The second half is what separates it from the silane/siloxane repellent it REPLACES on
+    # this house's exposed pours: a silane makes concrete hydrophobic and non-absorbent, which
+    # is precisely the one condition a potassium silicate cannot bond to. The two are
+    # alternatives, never a stack, and a wash is itself vapour-open weather protection.
+    #
+    # ** THE PERMEANCE IS A PUBLISHED ASTM E96 FIGURE, AND IT IS AUTHORED AS A PERMEANCE. **
+    # ``vapor_permeance_perms`` for `latex-paint`'s reason: what is rated here is a finished
+    # two-coat film, and dividing a film rating by the 1/16" a layer carries would invent a
+    # number no test measured. The value is 80.0 — the midpoint of the **75-85 perms** the
+    # Beeckosil and Beecko-SOL technical data sheets publish by ASTM E96 — which is this file's
+    # own convention (see the module docstring): the published test, at its range midpoint.
+    #
+    # ** IT WAS NEARLY AUTHORED AS A CONVERTED CLASS THRESHOLD, AND THE CROSS-CHECK IS WHY THAT
+    # WOULD HAVE BEEN WRONG BY 3x. ** EN 1062-1 class **V1** ("high") is s_d < 0.14 m, and that
+    # threshold converts to only ~25 perms:
+    #
+    #     W = delta_air / s_d = 2e-10 kg/(m.s.Pa) / 0.14 m = 1.43e-9 kg/(m^2.s.Pa),
+    #     and at 1 US perm = 5.72e-11 kg/(m^2.s.Pa) that is  W ~ 25 perms.
+    #
+    # 25 is the FLOOR of the class, not this product. Both TDS in fact give s_d 0.01-0.02 m
+    # (ISO 7783-2) — an order below the class limit — so the real film sits far inside V1 rather
+    # than at its edge. Those two published numbers do NOT reconcile with each other (s_d
+    # 0.01-0.02 m would compute to ~175-350 perms against an ASTM E96 75-85), because they are
+    # different methods and cup conditions; that discrepancy is recorded in ``source`` rather
+    # than averaged away, and the ASTM figure is the one authored because it is the test this
+    # field's unit is defined by. For scale: this now becomes the most vapour-open entry in the
+    # library — `air-barrier` is 54 perms and `latex-paint` is 5.0 — which is the correct
+    # ordering for a non-film-forming mineral coating.
+    #
+    # ** NO ControlLayer.VAPOR ON ANY LAYER THAT USES THIS. ** It is the opposite of a
+    # retarder, and `_PAINT_FINISH`'s Class III film is the reason that needs saying out loud.
+    #
+    # ** THE TAG AVOIDS THREE SUBSTRING MATCHERS ON PURPOSE. ** `mineral` maps to the BATT
+    # family in `emit/draw/palette.py::_FAMILY_NEEDLES` and `ui/src/nordic/palette.ts`, so
+    # "mineral-silicate-wash" would hatch and colour as mineral wool; `limewash`/`whitewash`
+    # are matched by `_is_white_brick` / `isWhiteBrickRef` and would hand it brick COURSING.
+    # The declared `finish` is what carries appearance here, which is why the tag does not
+    # have to.
+    Material(tag="silicate-wash-white",
+             name="Mineral silicate wash, untinted white (2 coats)",
+             r_per_inch=0.0, vapor_permeance_perms=80.0,
+             color="#e9e6df", finish="silicate-wash",
+             hatch="concrete", coating=True,
+             source="untinted white mineral silicate (potassium-silicate) wash, 2 coats, on raw absorbent mineral substrate. Product of record BEECK Beeckosil C-102 White: LRV 90 (Beeck colour page, 'Bright White'; C-101 Off-White is LRV 60 for comparison), single-component silicate paint manufactured to VOB/C DIN 18363 group 2.4.1 on pure potassium water glass, non-film-forming, bonds by silicification with free lime in the substrate, inorganic pigments only (colourfastness A1, BFS 26), 'extreme flat mineral matte finish' and dull matte at 85 deg per EN ISO 2813. Coverage 200-275 sf/gal/coat on CMU, poured and cast concrete of average texture, 150-200 on split-face or heavily textured masonry (Beeck product page; the TDS's own headline 300-350 is for SMOOTH normally-absorbent substrate and does not describe as-cast or SRW). NO PRIMER on a raw mineral substrate, which is the binding constraint on this material and the reason the silane/siloxane repellent it replaces cannot coexist with it; previously painted or non-absorbent surfaces need a BEECK Bonding Coat, highly absorbent ones a Fixative thin. VAPOUR: authored as the PUBLISHED ASTM E96 permeance, 75-85 perms, midpoint 80.0, per the Beeckosil and Beecko-SOL TDS - the library convention (see this file's header) is the published test at its range midpoint, so this supersedes a conversion. Cross-check, and the reason the number is credible rather than merely quoted: both TDS give s_d 0.01-0.02 m (ISO 7783-2) and EN 1062-1 class V1 'high' is s_d < 0.14 m, whose threshold converts to only ~25 perms (W = delta_air/s_d = 2e-10/0.14 = 1.43e-9 kg/(m2.s.Pa), at 1 US perm = 5.72e-11) - so 80 perms sits far INSIDE the class this product family markets into rather than at its floor. The two figures do not reconcile exactly (s_d 0.01-0.02 m would compute to ~175-350 perms) because they are different methods and cup conditions; the ASTM number is the one authored because it is the test this field's unit is defined by. Either way the material is vapour-OPEN and must never carry ControlLayer.VAPOR. Alternates considered: Romabio Masonry Flat (D-SILICATE modified with an organic dispersion, NOT unmodified 2.4.1, and MicroGrip primer is REQUIRED on concrete and concrete block, so it does not clear the no-primer constraint; no LRV published). COLOUR IS DERIVED, NOT PUBLISHED: no measured sRGB or spectral value exists for any of these whites. LRV 90 is Y=0.90 = #f3f3f3 as an ideal full-hiding chip; a photographed two-coat white silicate over as-cast grey loses 5-15% to mottle, thin-spot substrate bleed and matte micro-shadowing, landing near #ebe8e1 and reading very slightly warm. #e9e6df is authored UNDER that, per houses/catlin/CLAUDE.md's rule that the viewer's ambient lifts an albedo, and is deliberately the same hex as WHITE_BRICK_STYLE's base - this house already tuned that value for a whitewashed masonry face in this renderer"),
+    # The SAME PRODUCT on dry-stacked segmental retaining block, split off solely so the
+    # renderers can tell the two apart. A silicate wash is a thin, slightly translucent film:
+    # over as-cast concrete it reads as one flat chalky plane, and over SRW units it does NOT
+    # — the open dry-stacked joints and the unit module telegraph straight through it. That is
+    # an appearance difference between two faces of one order, and `Material.finish` is the
+    # field that declares appearance, so it takes two tags rather than one.
+    #
+    # The tag carries "block" deliberately: `family_of` reads it as MASONRY, which is the gate
+    # `ui/src/three/builders/walls.ts` gives the coursing path (`isMasonry`). Everything else
+    # is identical to `silicate-wash-white` above, INCLUDING the price — one pail, one crew,
+    # one rate over both substrates; see prices.toml [envelope_layers].
+    Material(tag="silicate-wash-white-block",
+             name="Mineral silicate wash, untinted white (2 coats) on SRW block",
+             r_per_inch=0.0, vapor_permeance_perms=80.0,
+             color="#e9e6df", finish="silicate-wash-block",
+             hatch="concrete", coating=True,
+             source="untinted white mineral silicate (potassium-silicate) wash, 2 coats, on raw absorbent mineral substrate. Product of record BEECK Beeckosil C-102 White: LRV 90 (Beeck colour page, 'Bright White'; C-101 Off-White is LRV 60 for comparison), single-component silicate paint manufactured to VOB/C DIN 18363 group 2.4.1 on pure potassium water glass, non-film-forming, bonds by silicification with free lime in the substrate, inorganic pigments only (colourfastness A1, BFS 26), 'extreme flat mineral matte finish' and dull matte at 85 deg per EN ISO 2813. Coverage 200-275 sf/gal/coat on CMU, poured and cast concrete of average texture, 150-200 on split-face or heavily textured masonry (Beeck product page; the TDS's own headline 300-350 is for SMOOTH normally-absorbent substrate and does not describe as-cast or SRW). NO PRIMER on a raw mineral substrate, which is the binding constraint on this material and the reason the silane/siloxane repellent it replaces cannot coexist with it; previously painted or non-absorbent surfaces need a BEECK Bonding Coat, highly absorbent ones a Fixative thin. VAPOUR: authored as the PUBLISHED ASTM E96 permeance, 75-85 perms, midpoint 80.0, per the Beeckosil and Beecko-SOL TDS - the library convention (see this file's header) is the published test at its range midpoint, so this supersedes a conversion. Cross-check, and the reason the number is credible rather than merely quoted: both TDS give s_d 0.01-0.02 m (ISO 7783-2) and EN 1062-1 class V1 'high' is s_d < 0.14 m, whose threshold converts to only ~25 perms (W = delta_air/s_d = 2e-10/0.14 = 1.43e-9 kg/(m2.s.Pa), at 1 US perm = 5.72e-11) - so 80 perms sits far INSIDE the class this product family markets into rather than at its floor. The two figures do not reconcile exactly (s_d 0.01-0.02 m would compute to ~175-350 perms) because they are different methods and cup conditions; the ASTM number is the one authored because it is the test this field's unit is defined by. Either way the material is vapour-OPEN and must never carry ControlLayer.VAPOR. Alternates considered: Romabio Masonry Flat (D-SILICATE modified with an organic dispersion, NOT unmodified 2.4.1, and MicroGrip primer is REQUIRED on concrete and concrete block, so it does not clear the no-primer constraint; no LRV published). COLOUR IS DERIVED, NOT PUBLISHED: no measured sRGB or spectral value exists for any of these whites. LRV 90 is Y=0.90 = #f3f3f3 as an ideal full-hiding chip; a photographed two-coat white silicate over as-cast grey loses 5-15% to mottle, thin-spot substrate bleed and matte micro-shadowing, landing near #ebe8e1 and reading very slightly warm. #e9e6df is authored UNDER that, per houses/catlin/CLAUDE.md's rule that the viewer's ambient lifts an albedo, and is deliberately the same hex as WHITE_BRICK_STYLE's base - this house already tuned that value for a whitewashed masonry face in this renderer. THIS TAG IS THE SRW-BLOCK VARIANT and differs from `silicate-wash-white` in appearance only - same product, same pail, same crew, same price. It also carries the SUBSTRATE WARNING that made a separate record worth having: dry-cast integrally-coloured SRW units are far less absorbent than cast-in-place and frequently carry an INTEGRAL WATER REPELLENT, and NCMA/CMHA TEK 19-7 says of such units that 'the most important characteristic of the unit may be its compatibility with the type of coating used [...] some coatings may not be able to bridge open pores or fill all surface irregularities'. Beeckosil additionally asks for Quartz Filler or a Bonding Coat over the WHOLE face as a CMU pretreatment. The answer on this substrate is BEECK Beecko-SOL, a silica-sol modified silicate emulsion (still VOB/C DIN 18363 2.4.1, <5% organic) whose TDS claims 'perfect adhesion and silicification, even on critical, semi-water repellent and synthetic-resin coated facades' and lists partially water-repellent substrates as suitable - noting the manufacturer goes no further than SEMI-repellent, so a fully IWR-dosed unit is outside what anyone publishes. A TEST PANEL ON A SPARE BLOCK IS MANDATORY AND IS THE MANUFACTURER'S OWN INSTRUCTION ('the only way to precisely predict application rates is with a trial application'), not a precaution added here"),
+
     # --- floor finishes -------------------------------------------------------------------
     #
     # `Room.floor_finish` was a free-form string with nothing behind it: the viewer could not
