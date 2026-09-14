@@ -52,6 +52,7 @@ from typehaus.joints.authored import (
     unanchored_post_tags,
 )
 from typehaus.joints.bearing import bearing_connections, bearing_line_tags
+from typehaus.joints.gable import gable_end_ties
 from typehaus.joints.hung import hung_connections
 from typehaus.joints.posts import catalogued_post_sizes, is_squash_block
 from typehaus.model.enums import ConnectorKind
@@ -382,6 +383,49 @@ def _post_links(ctx: CheckContext) -> list:
     return links
 
 
+# --- link 5: the gable end -----------------------------------------------------------
+
+
+def _gable_links(ctx: CheckContext) -> list:
+    """One link per gable-end wall, and the reason this leg was missing for so long.
+
+    Every other link in this chain hangs off a member that BEARS on something. A gable end
+    bears nothing — no rafter, no truss, no joist lands on it — so it was invisible to a rule
+    built out of bearings, while being the wall that takes the largest out-of-plane wind
+    pressure in the house. A chain with five sound legs and this one absent is not five-sixths
+    connected; it is a chain with a gap at the end everybody photographs after a storm.
+
+    Earned N/A when a house has no gable roof at all: the condition this leg grades does not
+    exist, which is a verdict about the building rather than a silent absence.
+    """
+    ends = gable_end_ties(ctx.model, _CONFIG.gable_end_ties)
+    if not ends:
+        if not any(roof.form == "gable" for roof in ctx.model.roofs):
+            return [Link("the gable-end wall ties", (), None,
+                         not_governed="no roof in this model is a gable, so there is no "
+                                      "gable end to tie")]
+        # Gable roofs but no gable-end wall found under any of them — catlin's breezeway
+        # canopy is the case, a gable bearing on two beams with no wall across its span.
+        # That is a real answer and not a failure to look.
+        return [Link("the gable-end wall ties", (), None,
+                     not_governed="every gable roof here bears on beams, with no wall "
+                                  "across the end of its span to tie")]
+    authored = tags_covered_by(ctx.model, _SEATED_UPLIFT_KINDS)
+    links: list = []
+    for end in sorted(ends, key=lambda e: e.wall_tag):
+        tags = (end.wall_tag, end.roof_tag)
+        if end.wall_tag in authored:
+            links.append(Link(f"gable-end wall {end.wall_tag} to {end.roof_tag}", tags,
+                              "an authored Connector naming it"))
+            continue
+        ties = len(end.stations_m)
+        links.append(Link(
+            f"gable-end wall {end.wall_tag} to {end.roof_tag} over "
+            f"{end.length_m * 3.28084:.1f} ft of top plate",
+            tags, f"{ties} derived gable-end ties" if ties else None))
+    return links
+
+
 @check(Tier.STRUCTURAL, _CHECK_ID)
 def uplift_path_coverage(ctx: CheckContext) -> list[Finding]:
     """Every joint in the roof-to-footing chain, covered or broken."""
@@ -390,6 +434,7 @@ def uplift_path_coverage(ctx: CheckContext) -> list[Finding]:
         *_seated_links(ctx),
         *_stack_and_sill_links(ctx),
         *_post_links(ctx),
+        *_gable_links(ctx),
     )]
 
 

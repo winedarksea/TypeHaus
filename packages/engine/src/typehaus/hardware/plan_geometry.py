@@ -55,3 +55,26 @@ def merge_coincident_points(points: list, tolerance_m: float) -> list:
         if not any(math.dist(point, kept) <= tolerance_m for kept in merged):
             merged.append(point)
     return merged
+
+
+def point_in_ring(point: tuple, ring) -> bool:
+    """Is ``point`` inside the closed plan ``ring``? Even-odd ray cast, boundary unspecified.
+
+    A point exactly on an edge may answer either way, and every caller here is asking about a
+    wall's MIDPOINT against a roof footprint — metres clear of the boundary either way — so
+    the ambiguity is not reachable rather than merely tolerated.
+    """
+    points = list(ring)
+    if len(points) < 3:
+        return False
+    x, y = point[0], point[1]
+    inside = False
+    previous = points[-1]
+    for current in points:
+        (x0, y0), (x1, y1) = previous, current
+        if (y0 > y) != (y1 > y):
+            t = (y - y0) / (y1 - y0)
+            if x < x0 + t * (x1 - x0):
+                inside = not inside
+        previous = current
+    return inside

@@ -20,6 +20,7 @@ from typehaus.hardware.catalog import (
     ROLE_BEAM_HOLD_DOWN,
     ROLE_EMBEDDED_STRAP_HOLDOWN,
     ROLE_FACE_MOUNT_JOIST_HANGER,
+    ROLE_GABLE_END_TIE,
     ROLE_HURRICANE_TIE,
     ROLE_LATERAL_TIE_PLATE,
     ROLE_MUDSILL_ANCHOR,
@@ -76,6 +77,9 @@ MARKER_RULES: dict[str, MarkerRule] = {
     ROLE_EMBEDDED_STRAP_HOLDOWN: MarkerRule(draw=True, along_in=0.75, across_in=0.25,
                                             half_h_in=10.00,
                                             category=CATEGORY_CONNECTOR_EMBEDDED),
+    # Drawn: it is roof-level, visible, and the whole point of adding the leg was that
+    # nobody could see it was missing. An H10A is a bigger tie than an H2.5A and reads as one.
+    ROLE_GABLE_END_TIE: MarkerRule(draw=True, along_in=1.50, across_in=0.31, half_h_in=3.00),
     ROLE_FACE_MOUNT_JOIST_HANGER: MarkerRule(draw=False, along_in=1.50, across_in=0.75,
                                              half_h_in=None,
                                              category=CATEGORY_CONNECTOR_HANGER),

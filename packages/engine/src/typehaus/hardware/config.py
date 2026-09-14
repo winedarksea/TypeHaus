@@ -228,6 +228,35 @@ class UpliftTieRules:
 
 
 @dataclass(frozen=True)
+class GableEndTieRules:
+    """Ties from a gable-end wall's top plate into the roof framing above it.
+
+    **The gap this closes.** Every other leg of the uplift chain was derived and billed —
+    rafter to plate, plate to stud, stud to sill, sill to pour — and the gable end had
+    nothing at all. It is the classic out-of-plane wind failure in a house that has
+    everything else tied, precisely because no rafter bears on it and so no bearing rule
+    ever looks at it.
+
+    A *schedule*, not a design: this says how many ties and where, at a spacing this house
+    chose. It reads no wind field and compares nothing against the part's allowable — that
+    is ``checks/structural`` work, and the H10A's governing number for this joint is its
+    285 lbf F2, not its 1,040 lbf uplift (see ``library/hardware.H10A_GABLE_END_TIE``).
+    """
+
+    #: Along the gable wall's top plate. 48 in is the house's own module and matches the
+    #: pitch ``UpliftTieRules.continuous_bearing_pitch_ft`` already uses along the ridge.
+    tie_pitch_ft: float = 4.0
+    #: Never fewer than this per gable wall, however short. A gable end with one tie in the
+    #: middle is a hinge; both ends have to be caught.
+    minimum_ties_per_wall: int = 2
+    #: How far above its own top plate a wall must rise before it is a GABLE end rather than
+    #: an eave wall. A wall carrying a rafter or truss bears at its plate and rises only the
+    #: plate's own thickness; a gable end climbs toward the ridge. 12 in clears a double top
+    #: plate plus a rim without catching one.
+    minimum_rise_above_plate_in: float = 12.0
+
+
+@dataclass(frozen=True)
 class HardwareTakeoffConfig:
     """The complete rule set behind :func:`typehaus.takeoff.hardware_takeoff`."""
 
@@ -240,6 +269,7 @@ class HardwareTakeoffConfig:
     hanger_detection: HangerDetectionRules = field(default_factory=HangerDetectionRules)
     knee_braces: KneeBraceRules = field(default_factory=KneeBraceRules)
     uplift: UpliftTieRules = field(default_factory=UpliftTieRules)
+    gable_end_ties: GableEndTieRules = field(default_factory=GableEndTieRules)
     # The construction-return take-off category that marks a wood sill plate on concrete.
     sill_plate_takeoff_category: str = "pt-sill-plate"
 

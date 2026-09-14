@@ -46,6 +46,7 @@ from typehaus.hardware.catalog import (
     ROLE_EXPOSED_FASTENER_PANEL_SCREW,
     ROLE_EXTERIOR_INSULATION_SCREW,
     ROLE_FACE_MOUNT_JOIST_HANGER,
+    ROLE_GABLE_END_TIE,
     ROLE_GIRT_STANDOFF_SCREW,
     ROLE_GLAZING_PANEL_FASTENER,
     ROLE_HURRICANE_TIE,
@@ -994,6 +995,61 @@ H25AZ_HURRICANE_TIE = StructuralHardware(
                   "footnote 5 states the uplift already carries the wind increase"),
     ),
 )
+H10A_GABLE_END_TIE = StructuralHardware(
+    tag="simpson-h10a-gable-end-tie",
+    name="H10A gable-end wall tie",
+    role=ROLE_GABLE_END_TIE,
+    manufacturer=_SIMPSON,
+    model="H10A",
+    exposure=EXPOSURE_DRY,
+    source="Simpson Strong-Tie H10A tie, ICC-ES ESR-2613 Table 1 (Hurricane Ties), H10A "
+           "row, reissued June 2026, read 2026-09-14. **A prescriptive read, not a design:** "
+           "the reviewer opens the report, finds the row, and the part\'s capacity is "
+           "closed. What the row does NOT decide is how many, which is this house\'s own "
+           "spacing rule (``GableEndTieRules``) and is recorded as such rather than dressed "
+           "up as engineering.\n\n"
+           "**Why this part and not an LGT or an HGT.** ESR-2613 carries no LGT at all, and "
+           "its HGT is a *girder tiedown bracket* (§3.1.8, Table 8) — a U-shaped bracket "
+           "carrying a girder truss down to a threaded rod, not a gable-wall tie. A part "
+           "picked for its name would have been the wrong part with a real report number "
+           "stapled to it. The H10A is in the same table as the H2.5A this house already "
+           "buys, at roughly twice its numbers in every direction, and the 9-nail pattern "
+           "each side is what carries the gable wall\'s out-of-plane reaction into the roof.",
+    # ESR-2613 Table 1, H10A row: 9-0.148" x 1-1/2" to the rafter and 9 more to the plates.
+    #
+    # **F2 is the column that matters here and it is the small one.** A gable-end tie is not
+    # resisting uplift on a rafter that bears on the plate — no rafter bears on a gable end.
+    # It is resisting the wall\'s OUT-OF-PLANE reaction, which is lateral, and 285 lbf is
+    # what the report publishes for it against 1,040 lbf of uplift. A check that compared a
+    # gable-wall reaction against "the H10A\'s 1,040 lb capacity" would pass a joint nearly
+    # four times overloaded. Footnote 2 goes further and requires a unity equation across
+    # all three directions when a joint sees more than one at once.
+    #
+    # **Published for SG 0.50 lumber and this house frames SPF at SG 0.42** — §3.2.2 requires
+    # an assigned minimum specific gravity of 0.50 for every connector in the report except
+    # the SPH (Table 5) and the SSP/DSP (Table 7, which does publish an 0.43 column). There
+    # is no SPF column for the hurricane ties, so there is no honest SPF number to record and
+    # the species field says which lumber the numbers belong to instead. Using 1,040 lbf
+    # against an SPF plate is unconservative and nothing downstream can detect it. Same
+    # caveat, same reason, as H25A_HURRICANE_TIE above.
+    allowable=AllowableLoads(
+        uplift_lb=1040.0,
+        lateral_f1_lb=565.0,
+        lateral_f2_lb=285.0,
+        load_duration_factor=1.6,
+        species="DF-L (assigned SG 0.50) — **NOT SPF**; catlin frames SPF at SG 0.42 and "
+                "ESR-2613 §3.2.2 requires SG 0.50 for every tie in Table 1",
+        fasteners="9 - 0.148 in x 1-1/2 in to the rafter and 9 - 0.148 in x 1-1/2 in to the "
+                  "plates; footnote 4 requires both connectors in one area on the SAME side "
+                  "of the wall for the tabulated uplift and a continuous load path",
+        citation=("ICC-ES ESR-2613 (Simpson hurricane ties) Table 1, H10A row, reissued "
+                  "June 2026, read 2026-09-14; footnote 2 requires a unity check across "
+                  "uplift + both lateral directions for simultaneous loading, footnote 5 "
+                  "states the uplift is already increased for wind with no further increase "
+                  "allowed, and footnote 6 forbids using the F1 value to replace diaphragm "
+                  "boundary nailing or the solid blocking code requires at a rafter end"),
+    ),
+)
 
 H25ASS_HURRICANE_TIE = StructuralHardware(
     tag="simpson-h2-5ass-hurricane-tie",
@@ -1514,6 +1570,7 @@ STRUCTURAL_HARDWARE: tuple = (
     SILL_ANCHOR_BOLT,
     H25A_HURRICANE_TIE,
     H25AZ_HURRICANE_TIE,
+    H10A_GABLE_END_TIE,
     HGAM10_MASONRY_GUSSET,
     S5_SEAM_CLAMP,
     S5_S_SNAP_LOCK_CLAMP,

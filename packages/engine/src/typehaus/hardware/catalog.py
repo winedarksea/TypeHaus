@@ -19,6 +19,15 @@ ROLE_EXTERIOR_INSULATION_SCREW = "exterior_insulation_screw"
 # ``screw_for_required_length`` hand back an 8" SDWS whose 3" thread stands in the clamped
 # stack and jacks it apart — the exact failure ``engineering/girt_screw.py`` grades.
 ROLE_GIRT_STANDOFF_SCREW = "girt_standoff_screw"
+# The tie from a GABLE-END wall's top plate to the roof framing above it. Its own role, not
+# a variant of ROLE_HURRICANE_TIE, for one reason that decides the part: an eave tie resists
+# UPLIFT on a rafter that bears on the plate, while a gable-end tie resists the wall's
+# OUT-OF-PLANE reaction — a lateral force, in the direction Table 1 calls F2 — at a plate no
+# rafter bears on at all. The two are graded against different columns of the same table, and
+# a shared role would let ``hardware_for_role`` hand back a tie chosen on its uplift number
+# for a joint whose governing load is lateral. The gable end is the classic wind failure in
+# a house that has everything else tied, which is exactly why it gets its own leg.
+ROLE_GABLE_END_TIE = "gable_end_tie"
 ROLE_SLOPED_JOIST_HANGER = "sloped_joist_hanger"
 # The strap that carries a rafter's tension THROUGH the ridge to its opposite number.
 # Its own role, not a variant of the sloped hanger: the hanger holds one rafter up in

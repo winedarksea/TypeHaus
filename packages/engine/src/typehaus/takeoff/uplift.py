@@ -44,12 +44,14 @@ from collections import Counter
 from typehaus.hardware.catalog import (
     EXPOSURE_DRY,
     EXPOSURE_TREATED,
+    ROLE_GABLE_END_TIE,
     ROLE_HURRICANE_TIE,
     ROLE_LATERAL_TIE_PLATE,
     hardware_for_role,
 )
-from typehaus.hardware.config import FT_TO_M, UpliftTieRules
+from typehaus.hardware.config import FT_TO_M, GableEndTieRules, UpliftTieRules
 from typehaus.joints.bearing import bearing_connections, continuous_bearing_members
+from typehaus.joints.gable import gable_end_ties
 from typehaus.joints.sills import tie_plate_walls
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.hardware_row import hardware_row
@@ -188,11 +190,45 @@ def lateral_tie_plate_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
                f"{total_length_m * _M_TO_FT:.1f} LF"))]
 
 
-def uplift_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
+# --- rule 5: the gable end -----------------------------------------------------------
+
+
+def gable_end_tie_rows(model: ResolvedModel, rules: GableEndTieRules) -> list:
+    """H10As along every gable-end wall's top plate.
+
+    The leg that had nothing. ``bearing_connections`` cannot see a gable end because no
+    rafter bears on one, so the wall that takes the largest out-of-plane wind pressure in the
+    house was the only link in the chain with no hardware against it.
+
+    Grouped into ONE row rather than per wall: a framer buys a box of H10A, and the walls
+    belong in the basis where they can be audited. See ``joints/gable.py`` for how a gable end
+    is told from an eave wall and from an interior partition that happens to run the same way.
+    """
+    ends = gable_end_ties(model, rules)
+    if not ends:
+        return []
+    by_storey: Counter = Counter()
+    for end in ends:
+        by_storey[end.storey] += len(end.stations_m)
+    item = hardware_for_role(ROLE_GABLE_END_TIE)
+    walls = ", ".join(f"{end.wall_tag} x{len(end.stations_m)}"
+                      for end in sorted(ends, key=lambda e: e.wall_tag))
+    return [hardware_row(
+        item, scope="gable end wall", count=int(sum(by_storey.values())),
+        by_storey=dict(sorted(by_storey.items())),
+        basis=(f"{rules.tie_pitch_ft:g} ft o.c. plus both ends (min "
+               f"{rules.minimum_ties_per_wall} per wall) along the top plate of "
+               f"{len(ends)} gable-end walls: {walls}"))]
+
+
+def uplift_rows(model: ResolvedModel, rules: UpliftTieRules,
+                gable_rules: GableEndTieRules | None = None) -> list:
     """Every uplift line, in the order the load path runs: roof down to the band."""
+    gable_rules = GableEndTieRules() if gable_rules is None else gable_rules
     return [
         *bearing_uplift_tie_rows(model, rules),
         *continuous_bearing_tie_rows(model, rules),
+        *gable_end_tie_rows(model, gable_rules),
         *post_base_rows(model, rules),
         *post_base_anchor_rows(model, rules),
         *post_beam_strap_rows(model, rules),

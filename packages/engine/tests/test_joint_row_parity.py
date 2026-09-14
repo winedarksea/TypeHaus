@@ -82,3 +82,8 @@ def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_r
     assert joints["sloped_joist_hanger"] == 39
     assert joints["ridge_tie_strap"] == 19
     assert joints["embedded_strap_holdown"] == 40
+    # The leg that had nothing until 2026-09-14: eight gable-end walls, 36 ties. Worth
+    # pinning hard, because the rule that finds them is four predicates and dropping any one
+    # of them silently changes the set (the interior partitions run the same way and rise to
+    # the same height; the breezeway canopy shares the garage's storey).
+    assert joints["gable_end_tie"] == 36
