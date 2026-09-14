@@ -76,7 +76,14 @@ BENCH = REPO_ROOT / "packages" / "engine" / "scripts" / "bench_rebuild.py"
 # junctions 355 ms, draw.details ~2500 ms. Each budget is ~2.2-2.5x that. Re-measure with
 # `scripts/verify.sh` — not a bare `bench_rebuild.py` — whenever these move.
 REBUILD_BUDGET_MS = 5000
-STAGE_BUDGETS_MS = {"resolve": 4000, "resolve.junctions": 900, "draw.details": 6000}
+STAGE_BUDGETS_MS = {"resolve": 4000, "resolve.junctions": 900, "draw.details": 6000,
+                    # The derived connector markers get a tripwire of their own rather than
+                    # hiding inside resolve's total: the stage's cost is a function of how
+                    # many roles ``joints/markers.py`` sets ``draw=True`` on, and widening
+                    # that table is a one-character edit. ~530 markers measured at a 20 ms
+                    # minimum under two-way contention; budgeted well above a six-way one,
+                    # because what this has to catch is somebody drawing five thousand.
+                    "resolve.connector_markers": 300}
 
 
 #: A GitHub runner's wall clock is not a measurement of this engine (→ module docstring),

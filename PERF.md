@@ -31,6 +31,7 @@ in one process so drift hits both arms — not as two separate runs.
 | &nbsp;&nbsp;↳ `resolve.mep` | 14 |
 | &nbsp;&nbsp;↳ `resolve.framing` | 12 |
 | &nbsp;&nbsp;↳ `resolve.construction` | 10 |
+| &nbsp;&nbsp;↳ `resolve.connector_markers` | ~6 |
 | ↳ `load_plan` | 71 |
 | &nbsp;&nbsp;↳ `load_plan.import` | 64 |
 | &nbsp;&nbsp;↳ `load_plan.lint_provenance` | 4.8 |
@@ -38,6 +39,15 @@ in one process so drift hits both arms — not as two separate runs.
 
 `resolve` is now ~79% of a rebuild and `resolve.junctions` is ~41% of resolve. That is where
 the next win is, and it is the polygon clipping in `topology.py`, not the stage around it.
+
+`resolve.connector_markers` draws the ~530 derived connectors and measured at **3.0% of
+resolve** — the row above is that share, not a direct reading: the machine was under
+contention when it was taken and every absolute number on it was ~4x the quiet one. It is
+cheap because a marker is the cheapest solid the geometry builder can make: a 4-point prism,
+no voids, no sweep, no assembly. The cost scales with how many roles `joints/markers.py` sets
+`draw=True` on, which is why the stage carries its own budget in
+`test_resolve_perf_guard.py` instead of hiding inside resolve's total. Re-measure this row
+with `scripts/verify.sh` on a quiet machine.
 
 ### The two `move_nodes` commit paths
 
