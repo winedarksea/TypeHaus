@@ -22,7 +22,12 @@ _SRC = pathlib.Path(__file__).resolve().parents[1] / "src" / "typehaus"
 #: absent: the package reads ``checks.jurisdiction`` (an inspection is *data* on a profile)
 #: and is excused for exactly that below, module by module, so nobody can reach the check
 #: registry by widening one line.
-_ALLOWED = {"model", "resolve", "quantities", "findings", "takeoff", "emit", "schedule"}
+# ``hardware`` joined the set when the hardware tables were promoted out of ``takeoff``:
+# ``handoff.py`` was already reading them, as ``takeoff.hardware_config``, so this is the
+# same dependency spelled honestly — and a strictly weaker one, since ``hardware`` is a
+# leaf under ``takeoff`` rather than the take-off itself.
+_ALLOWED = {"model", "resolve", "quantities", "findings", "takeoff", "emit", "schedule",
+            "hardware"}
 
 _EXCUSED: dict[str, set[str]] = {
     # ``InspectionSpec`` lives beside ``PermitItemSpec`` because the two are the same kind

@@ -3016,18 +3016,6 @@
 2,
 "55ae7f2f6d2a"
 ],
-"geometry/BWEG0AAAAA/body": [
-1.87325,
-2.02565,
-2,
-"a87734b7255d"
-],
-"geometry/BWEG1AAAAA/body": [
-1.87325,
-2.02565,
-2,
-"a87734b7255d"
-],
 "geometry/BWF01AAAA/body": [
 -2.9829125,
 -2.7289125,
@@ -3292,6 +3280,30 @@
 2,
 "4ca62915b364"
 ],
+"geometry/BWQA0AAAAA/body": [
+1.87325,
+2.02565,
+2,
+"a87734b7255d"
+],
+"geometry/BWQA1AAAAA/body": [
+1.87325,
+2.02565,
+2,
+"a87734b7255d"
+],
+"geometry/BWQB0AAAAA/body": [
+1.87325,
+2.02565,
+2,
+"a87734b7255d"
+],
+"geometry/BWQB1AAAAA/body": [
+1.87325,
+2.02565,
+2,
+"a87734b7255d"
+],
 "geometry/BWRGGEAAAA-i000/body": [
 0.01905,
 0.89535,
@@ -3484,6 +3496,54 @@
 16,
 "cfca3a7b87b0"
 ],
+"geometry/BWSA0AAAAA/body": [
+-0.4699,
+-0.3175,
+2,
+"0544e819afdc"
+],
+"geometry/BWSA1AAAAA/body": [
+-0.4699,
+-0.3175,
+2,
+"0544e819afdc"
+],
+"geometry/BWSA2AAAAA/body": [
+-0.4699,
+-0.3175,
+2,
+"0544e819afdc"
+],
+"geometry/BWSA3AAAAA/body": [
+-0.4699,
+-0.3175,
+2,
+"0544e819afdc"
+],
+"geometry/BWSB0AAAAA/body": [
+-0.4699,
+-0.3175,
+2,
+"0544e819afdc"
+],
+"geometry/BWSB1AAAAA/body": [
+-0.4699,
+-0.3175,
+2,
+"0544e819afdc"
+],
+"geometry/BWSB2AAAAA/body": [
+-0.4699,
+-0.3175,
+2,
+"0544e819afdc"
+],
+"geometry/BWSB3AAAAA/body": [
+-0.4699,
+-0.3175,
+2,
+"0544e819afdc"
+],
 "geometry/BWSC001AAA-s000/body": [
 1.2192,
 1.94945,
@@ -3663,30 +3723,6 @@
 -0.381,
 2,
 "295b5d036c97"
-],
-"geometry/BWSG0AAAAA/body": [
--0.4699,
--0.3175,
-2,
-"0544e819afdc"
-],
-"geometry/BWSG1AAAAA/body": [
--0.4699,
--0.3175,
-2,
-"0544e819afdc"
-],
-"geometry/BWSG2AAAAA/body": [
--0.4699,
--0.3175,
-2,
-"0544e819afdc"
-],
-"geometry/BWSG3AAAAA/body": [
--0.4699,
--0.3175,
-2,
-"0544e819afdc"
 ],
 "geometry/BWST01AAAA::framing/member:tread-000": [
 -0.72898,
@@ -13317,6 +13353,3342 @@
 1.2966,
 2,
 "d2b514d070b7"
+],
+"geometry/CM-00567be1c9ef/body": [
+-3.0337125,
+-2.5257125,
+2,
+"469ed6b89083"
+],
+"geometry/CM-007e4cd71826/body": [
+-2.6717625,
+-2.5193625,
+2,
+"72ccc722b643"
+],
+"geometry/CM-0084fc25dca1/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-00bfe51073ee/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-00dc4c03d65e/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-00fc935b5941/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-01a85bbef0b0/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-021e617a7824/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-04acacedd2c0/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-04f7945c83a1/body": [
+9.21385,
+9.22655,
+2,
+"2f7cafc6a437"
+],
+"geometry/CM-055340dee35e/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-0570eb164efb/body": [
+-0.2413,
+-0.127,
+2,
+"d95f2410e6e1"
+],
+"geometry/CM-06c46c8b97b2/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-070d03c42b9d/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-0717be90418f/body": [
+8.8138,
+9.115425,
+2,
+"11e612643aa8"
+],
+"geometry/CM-076c2045b0d4/body": [
+7.9248,
+8.0772,
+2,
+"6d0948a2eb2f"
+],
+"geometry/CM-07d330b99fea/body": [
+-0.0762,
+0.0762,
+2,
+"9cda49579abe"
+],
+"geometry/CM-08afe43e0293/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-0958d0952d96/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-0c0bf32053e7/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-0d095c19010d/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-0e31101ed391/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-0e4c65dba026/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-0ea7d8b8eb92/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-0ebe90af4302/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-0f2ca5906163/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-0f3f0dcac44c/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-0f88dd23c137/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-106ef5c1baae/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-10a1b6c3f5f0/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-10aa4b852d65/body": [
+-2.6781125,
+-2.5257125,
+2,
+"fadc98f9d6c9"
+],
+"geometry/CM-10ea7c9bb4e9/body": [
+8.8138,
+9.115425,
+2,
+"11e612643aa8"
+],
+"geometry/CM-117c3df721e4/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-11a32d87c7d5/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-11ca6c983fbc/body": [
+-0.0762,
+0.0762,
+2,
+"9cda49579abe"
+],
+"geometry/CM-11df580dddf4/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-12bbcb2fb88c/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-1415822aee76/body": [
+-3.0337125,
+-2.5257125,
+2,
+"469ed6b89083"
+],
+"geometry/CM-148dd0859291/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-16061488ead2/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-176c52583b1f/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-185a84da597a/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-18a23ea64f3e/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-199d37b69c32/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-19ed3d0ac347/body": [
+9.144,
+9.2964,
+2,
+"bc4f6d1fa76a"
+],
+"geometry/CM-1a629b155acc/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-1aa187b4decf/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-1aa49cc4b8f6/body": [
+-0.5953125,
+-0.0873125,
+2,
+"c4fbde770ecc"
+],
+"geometry/CM-1baf1607d8cb/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-1c89e8799b26/body": [
+8.8138,
+9.115425,
+2,
+"11e612643aa8"
+],
+"geometry/CM-1ce48d6aa3dc/body": [
+8.8138,
+9.115425,
+2,
+"11e612643aa8"
+],
+"geometry/CM-1d60972441d7/body": [
+-0.2413,
+-0.127,
+2,
+"d95f2410e6e1"
+],
+"geometry/CM-1df6252f226d/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-1e349f4524a7/body": [
+8.8138,
+9.115425,
+2,
+"11e612643aa8"
+],
+"geometry/CM-1e937ae67392/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-2132663d23a9/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-213e89c079b4/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-21d696559fcf/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-21fc7bef0fee/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-220f78e9583b/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-221cfb5c296d/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-22e53b50d851/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-23978f032666/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-239798b21394/body": [
+-0.2667,
+-0.1524,
+2,
+"1502bc750b64"
+],
+"geometry/CM-24834d494b05/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-25144f7e52cc/body": [
+-0.5953125,
+-0.0873125,
+2,
+"c4fbde770ecc"
+],
+"geometry/CM-251d90ff8810/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-254085d53b07/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-25983b494767/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-26318493129f/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-263ef2e49075/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-26c89ac3e6e2/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-274d996bc390/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-2782911c1cfc/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-27bad98f8db4/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-27fa3cd56e17/body": [
+9.21385,
+9.22655,
+2,
+"2f7cafc6a437"
+],
+"geometry/CM-29cd9e53de54/body": [
+-0.9398,
+-0.7874,
+2,
+"950b451b234e"
+],
+"geometry/CM-29e854cf3112/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-2a200a583bf5/body": [
+-3.0337125,
+-2.5257125,
+2,
+"469ed6b89083"
+],
+"geometry/CM-2a5ce11ee9bd/body": [
+2.8344091,
+2.9487091,
+2,
+"8f16e5ef9cf4"
+],
+"geometry/CM-2a8ff193026d/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-2a939991a8c5/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-2a9904e68346/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-2b0f1cda29da/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-2b1aa4b87083/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-2bea5f7e25db/body": [
+2.8436455,
+2.9579455,
+2,
+"65b78d9ed63c"
+],
+"geometry/CM-2cac020018ab/body": [
+9.144,
+9.2964,
+2,
+"bc4f6d1fa76a"
+],
+"geometry/CM-2cd570640379/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-2cf53e8c7cca/body": [
+7.9248,
+8.0772,
+2,
+"6d0948a2eb2f"
+],
+"geometry/CM-2d755aadbff3/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-2d75de6ee74e/body": [
+2.159,
+2.3114,
+2,
+"94beeadf9ce5"
+],
+"geometry/CM-2d9d79dc2812/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-2e611e9bb19e/body": [
+2.8736636,
+2.9879636,
+2,
+"d42d2f2ba4f3"
+],
+"geometry/CM-2eaa8ba63fea/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-2ed22ccc0a71/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-2fb7d82e6655/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-305cb725a8d9/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-307f465165a8/body": [
+-0.5953125,
+-0.0873125,
+2,
+"c4fbde770ecc"
+],
+"geometry/CM-3097b7c7f161/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-30caff0b032c/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-3112859e5a59/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-313ad11211d9/body": [
+9.21385,
+9.22655,
+2,
+"2f7cafc6a437"
+],
+"geometry/CM-32bebe108377/body": [
+-3.0337125,
+-2.5257125,
+2,
+"469ed6b89083"
+],
+"geometry/CM-343afae53aa4/body": [
+-0.5953125,
+-0.0873125,
+2,
+"c4fbde770ecc"
+],
+"geometry/CM-3473a9ce8e1e/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-34f3a43d6365/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-34fdafa4c6bc/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-35287430cb97/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-352e5a43d65b/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-35620f617f16/body": [
+-0.9398,
+-0.7874,
+2,
+"950b451b234e"
+],
+"geometry/CM-357e9fc6ee9b/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-35c97bab71fe/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-35e7811abfee/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-3682ec2d8e02/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-368d76470021/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-37765e80aeca/body": [
+-3.0337125,
+-2.5257125,
+2,
+"469ed6b89083"
+],
+"geometry/CM-378a0037d606/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-37d25e5cbbdf/body": [
+9.144,
+9.2964,
+2,
+"bc4f6d1fa76a"
+],
+"geometry/CM-38a00c8ed09f/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-3940190e4cb5/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-39c6d4cfa69a/body": [
+9.21385,
+9.22655,
+2,
+"2f7cafc6a437"
+],
+"geometry/CM-39d70b17902a/body": [
+8.75665,
+8.87095,
+2,
+"8e3467ea0a69"
+],
+"geometry/CM-3aad7097fb74/body": [
+2.8251727,
+2.9394727,
+2,
+"66554840c56d"
+],
+"geometry/CM-3ac24b0c140c/body": [
+-0.0762,
+0.0762,
+2,
+"9cda49579abe"
+],
+"geometry/CM-3b01583619de/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-3b1928a05221/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-3b78b91178ae/body": [
+9.144,
+9.2964,
+2,
+"bc4f6d1fa76a"
+],
+"geometry/CM-3bd0c8ff59c2/body": [
+9.21385,
+9.22655,
+2,
+"2f7cafc6a437"
+],
+"geometry/CM-3bde718435c5/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-3cd21efa9154/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-3ebbcfb47827/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-3f3a67af3af7/body": [
+8.8138,
+9.115425,
+2,
+"11e612643aa8"
+],
+"geometry/CM-3f90dd447011/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-401dbddc562e/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-40905455a5bf/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-40b414a87b48/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-4100e2ebd5c9/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-413f289ad4fe/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-4148836b02a8/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-41b6a8e95584/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-41ddb0a12184/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-439fb2c0e266/body": [
+-2.6781125,
+-2.5257125,
+2,
+"fadc98f9d6c9"
+],
+"geometry/CM-445fe74f9c1e/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-4498b8fd5c2f/body": [
+-2.6717625,
+-2.5193625,
+2,
+"72ccc722b643"
+],
+"geometry/CM-4655c76f0118/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-46d7a87b1764/body": [
+9.144,
+9.2964,
+2,
+"bc4f6d1fa76a"
+],
+"geometry/CM-48ef0c6387ae/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-492cebb9c303/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-49a36e50a7ee/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-49c17606b4e2/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-4a14a7a8539b/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-4a772bb8b356/body": [
+-2.8559125,
+-2.3479125,
+2,
+"525777202e84"
+],
+"geometry/CM-4b651f25fc46/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-4bb40faf9de9/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-4c51d2b937c8/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-4c821b3ab9c5/body": [
+9.21385,
+9.22655,
+2,
+"2f7cafc6a437"
+],
+"geometry/CM-4c8d7e95b3df/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-4c96fd4e8395/body": [
+2.159,
+2.3114,
+2,
+"94beeadf9ce5"
+],
+"geometry/CM-4ca29b02f64e/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-4d1316021538/body": [
+-0.2413,
+-0.127,
+2,
+"d95f2410e6e1"
+],
+"geometry/CM-4d14870a805d/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-4deefe80117e/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-4f357835a712/body": [
+-3.0337125,
+-2.5257125,
+2,
+"469ed6b89083"
+],
+"geometry/CM-4fb0efde088b/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-4fb7622e8371/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-4fee5d359b30/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-5022d4d5b072/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-506bcd778445/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-510a37cba045/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-5128bd3589df/body": [
+8.8138,
+9.115425,
+2,
+"11e612643aa8"
+],
+"geometry/CM-51377db7a271/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-51c87df649aa/body": [
+7.9248,
+8.0772,
+2,
+"6d0948a2eb2f"
+],
+"geometry/CM-52d781d66afa/body": [
+-0.5588,
+-0.0508,
+2,
+"3168e778a9be"
+],
+"geometry/CM-52d97885f229/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-5300ada26cd6/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-53b6c064ef4b/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-53f4f6f0e10f/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-544e6b45fbb3/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-5455374afa1d/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-546ca364e37d/body": [
+-0.5588,
+-0.0508,
+2,
+"3168e778a9be"
+],
+"geometry/CM-54baf4d080b9/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-5505f82406b0/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-5527d99e4e85/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-55cf248ad506/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-5631ac932a43/body": [
+-0.2413,
+-0.127,
+2,
+"d95f2410e6e1"
+],
+"geometry/CM-5675d76d2ed5/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-5683b281c82b/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-57660f7dc1ce/body": [
+2.159,
+2.3114,
+2,
+"94beeadf9ce5"
+],
+"geometry/CM-5784d73cd2ca/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-57e02d3e4dd4/body": [
+9.21385,
+9.22655,
+2,
+"2f7cafc6a437"
+],
+"geometry/CM-594c5597a809/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-596465723406/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-59b37a53f046/body": [
+-0.5953125,
+-0.0873125,
+2,
+"c4fbde770ecc"
+],
+"geometry/CM-5a4d2031828b/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-5a546beb5483/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-5ae823df4084/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-5bbef9c4cbe5/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-5c264d0f72f7/body": [
+9.21385,
+9.22655,
+2,
+"2f7cafc6a437"
+],
+"geometry/CM-5ca91d14e189/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-5ccfb67af4e1/body": [
+-0.5588,
+-0.0508,
+2,
+"3168e778a9be"
+],
+"geometry/CM-5dae1fa8e54b/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-5e34dc4be888/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-5ed0ecfa0f1b/body": [
+-2.6781125,
+-2.5257125,
+2,
+"fadc98f9d6c9"
+],
+"geometry/CM-5f072a59f104/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-603a3c51f686/body": [
+9.144,
+9.2964,
+2,
+"bc4f6d1fa76a"
+],
+"geometry/CM-604252d8b195/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-6063728600e9/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-6123af65cee3/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-6145ad302d20/body": [
+-0.2667,
+-0.1524,
+2,
+"1502bc750b64"
+],
+"geometry/CM-623813ac0a1c/body": [
+8.8138,
+9.115425,
+2,
+"11e612643aa8"
+],
+"geometry/CM-624598fd0c8e/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-62ce1f28f8ce/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-62e9c29b4b3e/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-6347098fc6c3/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-635ef6981ca4/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-63a327f9c9f8/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-64af8090688d/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-64e5784dbd1e/body": [
+9.144,
+9.2964,
+2,
+"bc4f6d1fa76a"
+],
+"geometry/CM-64f7ce3e35d2/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-658cd919c8f6/body": [
+-0.254,
+0.254,
+2,
+"9cbb1e0ab81d"
+],
+"geometry/CM-65f908b1f2df/body": [
+9.144,
+9.2964,
+2,
+"bc4f6d1fa76a"
+],
+"geometry/CM-6688084d63cd/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-66dbeec2f9e8/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-67708c19de2e/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-67a0fd6b7621/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-67e7f589b118/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-693145dbe5f2/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-698a2ec1b749/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-69903ed7c723/body": [
+2.159,
+2.3114,
+2,
+"94beeadf9ce5"
+],
+"geometry/CM-6993299f0e1a/body": [
+8.8138,
+9.115425,
+2,
+"11e612643aa8"
+],
+"geometry/CM-699bd4f15d28/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-6a1d9e4ffec8/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-6a23adcf80b9/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-6aac1a0ef0ae/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-6ac4a26c74b4/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-6ac4aaa7be09/body": [
+-0.9398,
+-0.7874,
+2,
+"950b451b234e"
+],
+"geometry/CM-6b00e9498fa1/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-6b43747a827b/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-6b5514f0938c/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-6bb10eb0f2f9/body": [
+2.159,
+2.3114,
+2,
+"94beeadf9ce5"
+],
+"geometry/CM-6c5397cb7b38/body": [
+9.21385,
+9.22655,
+2,
+"2f7cafc6a437"
+],
+"geometry/CM-6d3a3de9b751/body": [
+8.8138,
+9.115425,
+2,
+"11e612643aa8"
+],
+"geometry/CM-6eae8d68b454/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-6f3e661b958b/body": [
+9.21385,
+9.22655,
+2,
+"2f7cafc6a437"
+],
+"geometry/CM-6f42f56052af/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-6faad20360d1/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-7016107ca100/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-71ee0123fa64/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-72151dc5bffb/body": [
+-3.0337125,
+-2.5257125,
+2,
+"469ed6b89083"
+],
+"geometry/CM-731a7df363ca/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-738a8664eeb0/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-73a47943a9c7/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-73cea4e85f95/body": [
+8.75665,
+8.87095,
+2,
+"8e3467ea0a69"
+],
+"geometry/CM-73d441892d32/body": [
+9.21385,
+9.22655,
+2,
+"2f7cafc6a437"
+],
+"geometry/CM-7496508a97d5/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-74e85dc019f6/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-75eaecee634d/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-763764d1bae5/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-766f1c8c0adc/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-768e1d66e949/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-7831ff50fe32/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-79993fb0abfb/body": [
+9.21385,
+9.22655,
+2,
+"2f7cafc6a437"
+],
+"geometry/CM-79c314be68af/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-7a3453142170/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-7a407d1d2735/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-7bb1af3e06b6/body": [
+8.8138,
+9.115425,
+2,
+"11e612643aa8"
+],
+"geometry/CM-7c1317d39dbd/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-7c45536ce07d/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-7ccf196719ee/body": [
+9.21385,
+9.22655,
+2,
+"2f7cafc6a437"
+],
+"geometry/CM-7cf4042412de/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-7d1317705788/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-7dbcb5a481e4/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-7eafede10765/body": [
+2.159,
+2.3114,
+2,
+"94beeadf9ce5"
+],
+"geometry/CM-7ebfbfe1fb21/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-7efb4b3cc800/body": [
+-2.8559125,
+-2.3479125,
+2,
+"525777202e84"
+],
+"geometry/CM-7f5da6017391/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-7f8f0ea5c8d2/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-7f9196c7b389/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-803cfeacc391/body": [
+9.21385,
+9.22655,
+2,
+"2f7cafc6a437"
+],
+"geometry/CM-81483362695d/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-81e42255b14f/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-82b6d70c7c33/body": [
+8.8138,
+9.115425,
+2,
+"11e612643aa8"
+],
+"geometry/CM-82e9ef60baec/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-8396aa939318/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-85b2c6ac201d/body": [
+-3.0337125,
+-2.5257125,
+2,
+"469ed6b89083"
+],
+"geometry/CM-866f00e64d4e/body": [
+-0.2413,
+-0.127,
+2,
+"d95f2410e6e1"
+],
+"geometry/CM-86d3528cbcf3/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-8731328f6384/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-88b499bec417/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-89fde14ae237/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-8a44bfd4a7f7/body": [
+-3.0337125,
+-2.5257125,
+2,
+"469ed6b89083"
+],
+"geometry/CM-8aacd8645a42/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-8b0e4e7d816f/body": [
+8.8138,
+9.115425,
+2,
+"11e612643aa8"
+],
+"geometry/CM-8c83243c9152/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-8d1d0536f9f4/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-8d366f573bf7/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-8d47d2d529ed/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-8da5bda58a8e/body": [
+9.144,
+9.2964,
+2,
+"bc4f6d1fa76a"
+],
+"geometry/CM-8e7106e43e9e/body": [
+9.144,
+9.2964,
+2,
+"bc4f6d1fa76a"
+],
+"geometry/CM-8ee6f7ada7c9/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-8fbf5d199fa4/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-8fc1d9d7d2e9/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-900ffe4e6f36/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-903189cc0101/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-907357fb6b9e/body": [
+8.75665,
+8.87095,
+2,
+"8e3467ea0a69"
+],
+"geometry/CM-91e5c91d3a01/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-937025436e0a/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-938c478a383c/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-939c24c7a632/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-9484716624e2/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-95557a50336a/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-95aa337fdf18/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-97393c2dc98e/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-97552bd1413f/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-978afce6964a/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-97b8e52272c3/body": [
+8.8138,
+9.115425,
+2,
+"11e612643aa8"
+],
+"geometry/CM-989002da6d36/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-98a7a6b4f175/body": [
+8.8138,
+9.115425,
+2,
+"11e612643aa8"
+],
+"geometry/CM-98d221412c72/body": [
+-0.9398,
+-0.7874,
+2,
+"950b451b234e"
+],
+"geometry/CM-9a66b4001b35/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-9a6a19950493/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-9a72752864dd/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-9abb81cb5f81/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-9ae9de64c532/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-9afb69de4a9d/body": [
+9.144,
+9.2964,
+2,
+"bc4f6d1fa76a"
+],
+"geometry/CM-9b0201d59d13/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-9b1338ab24ca/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-9d6cbcd8ce9c/body": [
+-0.2667,
+-0.1524,
+2,
+"1502bc750b64"
+],
+"geometry/CM-9e71136cdaca/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-9f16ddafa562/body": [
+-0.2413,
+-0.127,
+2,
+"d95f2410e6e1"
+],
+"geometry/CM-a03d78fbd3c3/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-a067c6e7e08d/body": [
+-2.6717625,
+-2.5193625,
+2,
+"72ccc722b643"
+],
+"geometry/CM-a0b570346040/body": [
+-0.2413,
+-0.127,
+2,
+"d95f2410e6e1"
+],
+"geometry/CM-a0c2152a7945/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-a0c7f49e6859/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-a189d51edbde/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-a22b2f567907/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-a28390db52c7/body": [
+-2.6781125,
+-2.5257125,
+2,
+"fadc98f9d6c9"
+],
+"geometry/CM-a2bfc9fb8061/body": [
+2.159,
+2.3114,
+2,
+"94beeadf9ce5"
+],
+"geometry/CM-a3c7a41dee1a/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-a3e88c83f7bb/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-a3e9d88a25cc/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-a4adcdd90678/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-a4c943edc825/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-a60bee0ddfbb/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-a643874e51eb/body": [
+-2.6781125,
+-2.5257125,
+2,
+"fadc98f9d6c9"
+],
+"geometry/CM-a699d6540bb4/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-a71b03d473d9/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-a77d588c2208/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-a7ad17b0882b/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-a8bfa7ee03c3/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-a922480b2896/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-a959feb7792d/body": [
+-3.0337125,
+-2.5257125,
+2,
+"469ed6b89083"
+],
+"geometry/CM-a9ff453bbd68/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-aa125cbd0edf/body": [
+9.144,
+9.2964,
+2,
+"bc4f6d1fa76a"
+],
+"geometry/CM-aa59531d38db/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-aa6f0043a971/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-aa85a35b9120/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-aaa50e1782c7/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-aad0fc51bd85/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-aaeebf9f5a8f/body": [
+9.144,
+9.2964,
+2,
+"bc4f6d1fa76a"
+],
+"geometry/CM-aafb6673d32e/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-ab2ea44ba8d5/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-abca5e5afd68/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-abfe0c191d85/body": [
+8.75665,
+8.87095,
+2,
+"8e3467ea0a69"
+],
+"geometry/CM-ad1b45840ce0/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-adc9da0fcb2b/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-ae97347d2b4e/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-aeed52ddbac4/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-af0fb8909a54/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-af344359c486/body": [
+-0.2413,
+-0.127,
+2,
+"d95f2410e6e1"
+],
+"geometry/CM-afcacb86d62e/body": [
+2.8159364,
+2.9302364,
+2,
+"ba19a03ad4fc"
+],
+"geometry/CM-b011edbd3768/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-b0172d1a0015/body": [
+9.144,
+9.2964,
+2,
+"bc4f6d1fa76a"
+],
+"geometry/CM-b0d99928de38/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-b12373c5cf2c/body": [
+2.159,
+2.3114,
+2,
+"94beeadf9ce5"
+],
+"geometry/CM-b1b38fe35ff2/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-b1fb47baf148/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-b283db22309b/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-b301dc8f05f8/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-b3352b853677/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-b3485a6c23ab/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-b3cc921b5aeb/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-b3da950fc3b7/body": [
+8.75665,
+8.87095,
+2,
+"8e3467ea0a69"
+],
+"geometry/CM-b484f5dedb8c/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-b4b5dcf2aaba/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-b4c6d9d6e531/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-b4defadf757b/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-b549b46034b8/body": [
+-0.2413,
+-0.127,
+2,
+"d95f2410e6e1"
+],
+"geometry/CM-b5e025cc0495/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-b6edc96487cc/body": [
+-1.1176,
+-0.6096,
+2,
+"615c766bf65e"
+],
+"geometry/CM-b706ee54bf8d/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-b734dbb11bbb/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-b7498c97c660/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-b7de4ad56540/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-b7f09bce0d0e/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-b886ce6cdcc7/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-b8a91d04c16c/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-b8efb790df9e/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-b8ff52b90fcc/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-b90323eed8a1/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-b91df98751b4/body": [
+9.21385,
+9.22655,
+2,
+"2f7cafc6a437"
+],
+"geometry/CM-b9590fec46e9/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-b9a845bf90ca/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-ba9dc8f8d4d6/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-baf21adac128/body": [
+2.159,
+2.3114,
+2,
+"94beeadf9ce5"
+],
+"geometry/CM-bb1f5188f75b/body": [
+7.7216,
+7.874,
+2,
+"c2f5e1c1bd88"
+],
+"geometry/CM-bb6aae2623eb/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-bb878a0b04be/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-bb9f29d7fd16/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-bc44cac652e9/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-bdfa54fc1435/body": [
+2.159,
+2.3114,
+2,
+"94beeadf9ce5"
+],
+"geometry/CM-bf0ff4f2ab9a/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-bf8038c7bcd5/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-bf964f4b0dda/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-bfaac84b22a7/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-bfdc74f355fa/body": [
+8.75665,
+8.87095,
+2,
+"8e3467ea0a69"
+],
+"geometry/CM-c023410a6416/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-c086291782c9/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-c13c9372bcfd/body": [
+-3.0337125,
+-2.5257125,
+2,
+"469ed6b89083"
+],
+"geometry/CM-c2a02d20dd2e/body": [
+-0.5588,
+-0.0508,
+2,
+"3168e778a9be"
+],
+"geometry/CM-c2ddb11519ac/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-c321e7f667a9/body": [
+-3.0337125,
+-2.5257125,
+2,
+"469ed6b89083"
+],
+"geometry/CM-c3b58cf5990e/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-c3b6d4ebb57a/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-c3fa5c751017/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-c493bcef2858/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-c5f2844c81ac/body": [
+8.8138,
+9.115425,
+2,
+"11e612643aa8"
+],
+"geometry/CM-c64b9fa958c3/body": [
+-3.0337125,
+-2.5257125,
+2,
+"469ed6b89083"
+],
+"geometry/CM-c6654c91e00d/body": [
+-0.2413,
+-0.127,
+2,
+"d95f2410e6e1"
+],
+"geometry/CM-c6e74b78166a/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-c76393d769d6/body": [
+9.21385,
+9.22655,
+2,
+"2f7cafc6a437"
+],
+"geometry/CM-c7c37c2213ea/body": [
+-0.2413,
+-0.127,
+2,
+"d95f2410e6e1"
+],
+"geometry/CM-c87a322597bc/body": [
+8.75665,
+8.87095,
+2,
+"8e3467ea0a69"
+],
+"geometry/CM-c8e0683770d2/body": [
+7.7216,
+7.874,
+2,
+"c2f5e1c1bd88"
+],
+"geometry/CM-c91d4b46ced0/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-ca178a7600c6/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-caa5097ae8b1/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-cab695ccfaee/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-cae14b3f2c0e/body": [
+-0.5588,
+-0.0508,
+2,
+"3168e778a9be"
+],
+"geometry/CM-cb4718defdb4/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-cb47ff02bd81/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-cb5b0fa555c3/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-cb5d0ee3b238/body": [
+8.75665,
+8.87095,
+2,
+"8e3467ea0a69"
+],
+"geometry/CM-cbf73b4e18a2/body": [
+2.8528818,
+2.9671818,
+2,
+"f6fb4ce574aa"
+],
+"geometry/CM-cc6cff8b7ec9/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-cd0b491f7224/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-cdd66a1ed5d3/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-cea10e5cac51/body": [
+-0.9398,
+-0.7874,
+2,
+"950b451b234e"
+],
+"geometry/CM-ced867bbe924/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-cf0d2eb78874/body": [
+-0.2413,
+-0.127,
+2,
+"d95f2410e6e1"
+],
+"geometry/CM-cfd67ff3ed09/body": [
+2.159,
+2.3114,
+2,
+"94beeadf9ce5"
+],
+"geometry/CM-cfdc2f81ce35/body": [
+8.75665,
+8.87095,
+2,
+"8e3467ea0a69"
+],
+"geometry/CM-cfeda230ea2d/body": [
+-3.0337125,
+-2.5257125,
+2,
+"469ed6b89083"
+],
+"geometry/CM-d0379156cdf3/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-d1234252320b/body": [
+-0.2413,
+-0.127,
+2,
+"d95f2410e6e1"
+],
+"geometry/CM-d173463ffbd6/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-d17c38a4d4e2/body": [
+8.8138,
+9.115425,
+2,
+"11e612643aa8"
+],
+"geometry/CM-d25cadfcf6b2/body": [
+2.8067,
+2.921,
+2,
+"e243320eaff0"
+],
+"geometry/CM-d26624a3b02a/body": [
+-0.2413,
+-0.127,
+2,
+"d95f2410e6e1"
+],
+"geometry/CM-d2866ad370e9/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-d2a1c59d9ba5/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-d2f3b7685b06/body": [
+2.159,
+2.3114,
+2,
+"94beeadf9ce5"
+],
+"geometry/CM-d37fd654beef/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-d41f74caec76/body": [
+-0.20955,
+0.0762,
+2,
+"78f2a81912ce"
+],
+"geometry/CM-d4b6737861d5/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-d4c326b727ad/body": [
+8.8138,
+9.115425,
+2,
+"11e612643aa8"
+],
+"geometry/CM-d56a030731cf/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-d57928e3882b/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-d58906b1d303/body": [
+2.159,
+2.3114,
+2,
+"94beeadf9ce5"
+],
+"geometry/CM-d5df477c14e3/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-d74a594f88b0/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-d77ad6681c68/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-d78f47d9de65/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-d7c85b63b991/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-d854ec043c93/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-d96997787aaa/body": [
+-0.5588,
+-0.0508,
+2,
+"3168e778a9be"
+],
+"geometry/CM-da2bcb04dcd2/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-da3ef95a3150/body": [
+-0.5588,
+-0.0508,
+2,
+"3168e778a9be"
+],
+"geometry/CM-db28295c2986/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-db5fcb9bd52d/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-dc06b103c22b/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-dc146950c005/body": [
+9.21385,
+9.22655,
+2,
+"2f7cafc6a437"
+],
+"geometry/CM-dc1afe5c07ca/body": [
+7.7216,
+7.874,
+2,
+"c2f5e1c1bd88"
+],
+"geometry/CM-dc7b2a58b1fe/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-dcd128dc8436/body": [
+-2.6717625,
+-2.5193625,
+2,
+"72ccc722b643"
+],
+"geometry/CM-e01e8f28155a/body": [
+-2.6781125,
+-2.5257125,
+2,
+"fadc98f9d6c9"
+],
+"geometry/CM-e03335304b75/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-e044788e90da/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-e14e3db3cecf/body": [
+9.21385,
+9.22655,
+2,
+"2f7cafc6a437"
+],
+"geometry/CM-e19480844a45/body": [
+-0.254,
+0.254,
+2,
+"9cbb1e0ab81d"
+],
+"geometry/CM-e24fbf7b878f/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-e31adc9c3201/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-e3c30269e411/body": [
+-0.254,
+0.254,
+2,
+"9cbb1e0ab81d"
+],
+"geometry/CM-e3d3df9836b6/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-e490b6124ee6/body": [
+-0.2667,
+-0.1524,
+2,
+"1502bc750b64"
+],
+"geometry/CM-e514d9b74ae1/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-e560838d398c/body": [
+-3.0337125,
+-2.5257125,
+2,
+"469ed6b89083"
+],
+"geometry/CM-e58408ce5167/body": [
+9.144,
+9.2964,
+2,
+"bc4f6d1fa76a"
+],
+"geometry/CM-e5e149f66452/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-e60e4aff9859/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-e69ec3b3cc99/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-e769e0bc529a/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-e7b93631dc0b/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-e7ec493ebeed/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-e7f095db223b/body": [
+-0.5588,
+-0.0508,
+2,
+"3168e778a9be"
+],
+"geometry/CM-e82e3f9df3f3/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-e84237c65445/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-eaf33fa00bd1/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-eb3b1aad012c/body": [
+-0.2413,
+-0.127,
+2,
+"d95f2410e6e1"
+],
+"geometry/CM-eb62ee873af5/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-eb9a0afaf091/body": [
+-3.0337125,
+-2.5257125,
+2,
+"469ed6b89083"
+],
+"geometry/CM-ec99bcf997a0/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-eca06a51f2f7/body": [
+-3.0337125,
+-2.5257125,
+2,
+"469ed6b89083"
+],
+"geometry/CM-ecd87b75b9bd/body": [
+-0.5953125,
+-0.0873125,
+2,
+"c4fbde770ecc"
+],
+"geometry/CM-ed33de989884/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-ee264df0189f/body": [
+9.144,
+9.2964,
+2,
+"bc4f6d1fa76a"
+],
+"geometry/CM-eea9a6ca74b8/body": [
+8.75665,
+8.87095,
+2,
+"8e3467ea0a69"
+],
+"geometry/CM-eeb61e36e6ec/body": [
+-3.0337125,
+-2.5257125,
+2,
+"469ed6b89083"
+],
+"geometry/CM-f102710735e8/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-f128540003a8/body": [
+-0.381,
+-0.2286,
+2,
+"bcc30a4b5785"
+],
+"geometry/CM-f2314c14bb54/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-f2499eaf37a5/body": [
+9.21385,
+9.22655,
+2,
+"2f7cafc6a437"
+],
+"geometry/CM-f25887f743c7/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-f26903eae502/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-f290bd1ad4e3/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-f2b17b46aa1a/body": [
+2.8621182,
+2.9764182,
+2,
+"71696d131ac3"
+],
+"geometry/CM-f2e24b91e551/body": [
+-0.5953125,
+-0.0873125,
+2,
+"c4fbde770ecc"
+],
+"geometry/CM-f34e43c558e0/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-f358d5ca5fc2/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-f3cfbe957f08/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-f55fbbb7747b/body": [
+8.8138,
+9.115425,
+2,
+"11e612643aa8"
+],
+"geometry/CM-f638c90a3af2/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-f68b8372dd53/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-f69ac336d44f/body": [
+2.17805,
+2.29235,
+2,
+"384b3b284c4b"
+],
+"geometry/CM-f795fff1648d/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-f801b2d38875/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-f8c538b885be/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-f8e6ddaaa946/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-f9383c4a93da/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-f9af6c56a858/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-f9e8f4c9e93b/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-f9fd343ec19b/body": [
+2.159,
+2.3114,
+2,
+"94beeadf9ce5"
+],
+"geometry/CM-fa02d3c3a5bd/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-fabbf2381e58/body": [
+6.096,
+6.2103,
+2,
+"b2ed8bfb92ea"
+],
+"geometry/CM-faf6fc7eb5e3/body": [
+2.68605,
+2.80035,
+2,
+"5a82f5e8e3ed"
+],
+"geometry/CM-fbaf264d5180/body": [
+-0.2413,
+-0.127,
+2,
+"d95f2410e6e1"
+],
+"geometry/CM-fc1b81fae159/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-fc4418f5a7e0/body": [
+-2.6717625,
+-2.5193625,
+2,
+"72ccc722b643"
+],
+"geometry/CM-fc6729fd46e4/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
+],
+"geometry/CM-fca4adc1ae8d/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-fcf0b4c95c80/body": [
+-0.4175125,
+-0.2651125,
+2,
+"6eaf648a4efb"
+],
+"geometry/CM-fd131aedbd13/body": [
+-3.0337125,
+-2.5257125,
+2,
+"469ed6b89083"
+],
+"geometry/CM-fe3007fe827e/body": [
+-0.3984625,
+-0.2841625,
+2,
+"1dea285841ec"
+],
+"geometry/CM-ff05125c1109/body": [
+-2.8559125,
+-2.7035125,
+2,
+"791a7d356cb0"
+],
+"geometry/CM-ff209c3c17fd/body": [
+5.73405,
+5.84835,
+2,
+"e3861c159b08"
 ],
 "geometry/CM3FCDT2ST/layer:foil-polyiso": [
 -2.7797125,
@@ -38626,7 +41998,19 @@
 2,
 "2a89d8d793fa"
 ],
+"geometry/SGCG1FBAAA/body": [
+2.486025,
+2.638425,
+2,
+"2a89d8d793fa"
+],
 "geometry/SGCG1RAAAA/body": [
+2.536825,
+2.689225,
+2,
+"0c51fc10b12e"
+],
+"geometry/SGCG1RBAAA/body": [
 2.536825,
 2.689225,
 2,
@@ -38638,7 +42022,19 @@
 2,
 "2a89d8d793fa"
 ],
+"geometry/SGCG3FBAAA/body": [
+2.486025,
+2.638425,
+2,
+"2a89d8d793fa"
+],
 "geometry/SGCG3RAAAA/body": [
+2.536825,
+2.689225,
+2,
+"0c51fc10b12e"
+],
+"geometry/SGCG3RBAAA/body": [
 2.536825,
 2.689225,
 2,
@@ -38716,7 +42112,19 @@
 2,
 "864abf1c1f5e"
 ],
+"geometry/SGCT01BAAA/body": [
+-0.5461,
+-0.3937,
+2,
+"864abf1c1f5e"
+],
 "geometry/SGCT02AAAA/body": [
+-0.5461,
+-0.3937,
+2,
+"864abf1c1f5e"
+],
+"geometry/SGCT02BAAA/body": [
 -0.5461,
 -0.3937,
 2,
@@ -72402,18 +75810,30 @@
 "solids/CN-BW-STDF-RNE/z1_m": 1.96215,
 "solids/CN-BW-STDF-W/z0_m": -0.4064,
 "solids/CN-BW-STDF-W/z1_m": -0.381,
-"solids/CN-BW-TIE-E/z0_m": -0.4699,
-"solids/CN-BW-TIE-E/z1_m": -0.3175,
-"solids/CN-BW-TIE-GE/z0_m": -0.4699,
-"solids/CN-BW-TIE-GE/z1_m": -0.3175,
-"solids/CN-BW-TIE-GW/z0_m": -0.4699,
-"solids/CN-BW-TIE-GW/z1_m": -0.3175,
-"solids/CN-BW-TIE-RE/z0_m": 1.87325,
-"solids/CN-BW-TIE-RE/z1_m": 2.02565,
-"solids/CN-BW-TIE-RNE/z0_m": 1.87325,
-"solids/CN-BW-TIE-RNE/z1_m": 2.02565,
-"solids/CN-BW-TIE-W/z0_m": -0.4699,
-"solids/CN-BW-TIE-W/z1_m": -0.3175,
+"solids/CN-BW-TIE-EA/z0_m": -0.4699,
+"solids/CN-BW-TIE-EA/z1_m": -0.3175,
+"solids/CN-BW-TIE-EB/z0_m": -0.4699,
+"solids/CN-BW-TIE-EB/z1_m": -0.3175,
+"solids/CN-BW-TIE-GEA/z0_m": -0.4699,
+"solids/CN-BW-TIE-GEA/z1_m": -0.3175,
+"solids/CN-BW-TIE-GEB/z0_m": -0.4699,
+"solids/CN-BW-TIE-GEB/z1_m": -0.3175,
+"solids/CN-BW-TIE-GWA/z0_m": -0.4699,
+"solids/CN-BW-TIE-GWA/z1_m": -0.3175,
+"solids/CN-BW-TIE-GWB/z0_m": -0.4699,
+"solids/CN-BW-TIE-GWB/z1_m": -0.3175,
+"solids/CN-BW-TIE-REA/z0_m": 1.87325,
+"solids/CN-BW-TIE-REA/z1_m": 2.02565,
+"solids/CN-BW-TIE-REB/z0_m": 1.87325,
+"solids/CN-BW-TIE-REB/z1_m": 2.02565,
+"solids/CN-BW-TIE-RNEA/z0_m": 1.87325,
+"solids/CN-BW-TIE-RNEA/z1_m": 2.02565,
+"solids/CN-BW-TIE-RNEB/z0_m": 1.87325,
+"solids/CN-BW-TIE-RNEB/z1_m": 2.02565,
+"solids/CN-BW-TIE-WA/z0_m": -0.4699,
+"solids/CN-BW-TIE-WA/z1_m": -0.3175,
+"solids/CN-BW-TIE-WB/z0_m": -0.4699,
+"solids/CN-BW-TIE-WB/z1_m": -0.3175,
 "solids/CN-BW-TRTIE-E1/z0_m": 2.159,
 "solids/CN-BW-TRTIE-E1/z1_m": 2.3114,
 "solids/CN-BW-TRTIE-E2/z0_m": 2.159,
@@ -72512,12 +75932,20 @@
 "solids/CN-SG-HPB4/z1_m": -0.762,
 "solids/CN-SG-SEAT-F1/z0_m": 2.486025,
 "solids/CN-SG-SEAT-F1/z1_m": 2.638425,
+"solids/CN-SG-SEAT-F1B/z0_m": 2.486025,
+"solids/CN-SG-SEAT-F1B/z1_m": 2.638425,
 "solids/CN-SG-SEAT-F3/z0_m": 2.486025,
 "solids/CN-SG-SEAT-F3/z1_m": 2.638425,
+"solids/CN-SG-SEAT-F3B/z0_m": 2.486025,
+"solids/CN-SG-SEAT-F3B/z1_m": 2.638425,
 "solids/CN-SG-SEAT-R1/z0_m": 2.536825,
 "solids/CN-SG-SEAT-R1/z1_m": 2.689225,
+"solids/CN-SG-SEAT-R1B/z0_m": 2.536825,
+"solids/CN-SG-SEAT-R1B/z1_m": 2.689225,
 "solids/CN-SG-SEAT-R3/z0_m": 2.536825,
 "solids/CN-SG-SEAT-R3/z1_m": 2.689225,
+"solids/CN-SG-SEAT-R3B/z0_m": 2.536825,
+"solids/CN-SG-SEAT-R3B/z1_m": 2.689225,
 "solids/CN-SG-STDF-COL/z0_m": -0.4953,
 "solids/CN-SG-STDF-COL/z1_m": -0.4699,
 "solids/CN-SG-STDF-F1/z0_m": 2.536825,
@@ -72532,8 +75960,1124 @@
 "solids/CN-SG-STDF-R3/z1_m": 2.613025,
 "solids/CN-SG-TIE-COL/z0_m": -0.5461,
 "solids/CN-SG-TIE-COL/z1_m": -0.3937,
+"solids/CN-SG-TIE-COLB/z0_m": -0.5461,
+"solids/CN-SG-TIE-COLB/z1_m": -0.3937,
 "solids/CN-SG-TIE-FCOL/z0_m": -0.5461,
 "solids/CN-SG-TIE-FCOL/z1_m": -0.3937,
+"solids/CN-SG-TIE-FCOLB/z0_m": -0.5461,
+"solids/CN-SG-TIE-FCOLB/z1_m": -0.3937,
+"solids/CN~H10A~W-A-N1~01/z0_m": 9.144,
+"solids/CN~H10A~W-A-N1~01/z1_m": 9.2964,
+"solids/CN~H10A~W-A-N1~02/z0_m": 9.144,
+"solids/CN~H10A~W-A-N1~02/z1_m": 9.2964,
+"solids/CN~H10A~W-A-N1~03/z0_m": 9.144,
+"solids/CN~H10A~W-A-N1~03/z1_m": 9.2964,
+"solids/CN~H10A~W-A-N1~04/z0_m": 9.144,
+"solids/CN~H10A~W-A-N1~04/z1_m": 9.2964,
+"solids/CN~H10A~W-A-N1~05/z0_m": 9.144,
+"solids/CN~H10A~W-A-N1~05/z1_m": 9.2964,
+"solids/CN~H10A~W-A-N2B~06/z0_m": 9.144,
+"solids/CN~H10A~W-A-N2B~06/z1_m": 9.2964,
+"solids/CN~H10A~W-A-N2B~07/z0_m": 9.144,
+"solids/CN~H10A~W-A-N2B~07/z1_m": 9.2964,
+"solids/CN~H10A~W-A-N2B~08/z0_m": 9.144,
+"solids/CN~H10A~W-A-N2B~08/z1_m": 9.2964,
+"solids/CN~H10A~W-A-N2~09/z0_m": 7.9248,
+"solids/CN~H10A~W-A-N2~09/z1_m": 8.0772,
+"solids/CN~H10A~W-A-N2~10/z0_m": 7.9248,
+"solids/CN~H10A~W-A-N2~10/z1_m": 8.0772,
+"solids/CN~H10A~W-A-N2~11/z0_m": 7.9248,
+"solids/CN~H10A~W-A-N2~11/z1_m": 8.0772,
+"solids/CN~H10A~W-A-S1~12/z0_m": 7.7216,
+"solids/CN~H10A~W-A-S1~12/z1_m": 7.874,
+"solids/CN~H10A~W-A-S1~13/z0_m": 7.7216,
+"solids/CN~H10A~W-A-S1~13/z1_m": 7.874,
+"solids/CN~H10A~W-A-S1~14/z0_m": 7.7216,
+"solids/CN~H10A~W-A-S1~14/z1_m": 7.874,
+"solids/CN~H10A~W-A-S2~15/z0_m": 9.144,
+"solids/CN~H10A~W-A-S2~15/z1_m": 9.2964,
+"solids/CN~H10A~W-A-S2~16/z0_m": 9.144,
+"solids/CN~H10A~W-A-S2~16/z1_m": 9.2964,
+"solids/CN~H10A~W-A-S2~17/z0_m": 9.144,
+"solids/CN~H10A~W-A-S2~17/z1_m": 9.2964,
+"solids/CN~H10A~W-A-S3~18/z0_m": 9.144,
+"solids/CN~H10A~W-A-S3~18/z1_m": 9.2964,
+"solids/CN~H10A~W-A-S3~19/z0_m": 9.144,
+"solids/CN~H10A~W-A-S3~19/z1_m": 9.2964,
+"solids/CN~H10A~W-A-S3~20/z0_m": 9.144,
+"solids/CN~H10A~W-A-S3~20/z1_m": 9.2964,
+"solids/CN~H10A~W-A-S3~21/z0_m": 9.144,
+"solids/CN~H10A~W-A-S3~21/z1_m": 9.2964,
+"solids/CN~H10A~W-A-S3~22/z0_m": 9.144,
+"solids/CN~H10A~W-A-S3~22/z1_m": 9.2964,
+"solids/CN~H10A~W-G-N~23/z0_m": 2.159,
+"solids/CN~H10A~W-G-N~23/z1_m": 2.3114,
+"solids/CN~H10A~W-G-N~24/z0_m": 2.159,
+"solids/CN~H10A~W-G-N~24/z1_m": 2.3114,
+"solids/CN~H10A~W-G-N~25/z0_m": 2.159,
+"solids/CN~H10A~W-G-N~25/z1_m": 2.3114,
+"solids/CN~H10A~W-G-N~26/z0_m": 2.159,
+"solids/CN~H10A~W-G-N~26/z1_m": 2.3114,
+"solids/CN~H10A~W-G-N~27/z0_m": 2.159,
+"solids/CN~H10A~W-G-N~27/z1_m": 2.3114,
+"solids/CN~H10A~W-G-N~28/z0_m": 2.159,
+"solids/CN~H10A~W-G-N~28/z1_m": 2.3114,
+"solids/CN~H10A~W-G-N~29/z0_m": 2.159,
+"solids/CN~H10A~W-G-N~29/z1_m": 2.3114,
+"solids/CN~H10A~W-G-S~30/z0_m": 2.159,
+"solids/CN~H10A~W-G-S~30/z1_m": 2.3114,
+"solids/CN~H10A~W-G-S~31/z0_m": 2.159,
+"solids/CN~H10A~W-G-S~31/z1_m": 2.3114,
+"solids/CN~H10A~W-G-S~32/z0_m": 2.159,
+"solids/CN~H10A~W-G-S~32/z1_m": 2.3114,
+"solids/CN~H10A~W-G-S~33/z0_m": 2.159,
+"solids/CN~H10A~W-G-S~33/z1_m": 2.3114,
+"solids/CN~H10A~W-G-S~34/z0_m": 2.159,
+"solids/CN~H10A~W-G-S~34/z1_m": 2.3114,
+"solids/CN~H10A~W-G-S~35/z0_m": 2.159,
+"solids/CN~H10A~W-G-S~35/z1_m": 2.3114,
+"solids/CN~H10A~W-G-S~36/z0_m": 2.159,
+"solids/CN~H10A~W-G-S~36/z1_m": 2.3114,
+"solids/CN~H2.5AZ~BM-BW-GARAGE-SEAT~01/z0_m": -0.2667,
+"solids/CN~H2.5AZ~BM-BW-GARAGE-SEAT~01/z1_m": -0.1524,
+"solids/CN~H2.5AZ~BM-BW-GARAGE-SEAT~02/z0_m": -0.2667,
+"solids/CN~H2.5AZ~BM-BW-GARAGE-SEAT~02/z1_m": -0.1524,
+"solids/CN~H2.5AZ~BM-BW-GARAGE-SEAT~03/z0_m": -0.2667,
+"solids/CN~H2.5AZ~BM-BW-GARAGE-SEAT~03/z1_m": -0.1524,
+"solids/CN~H2.5AZ~BM-BW-GARAGE-SEAT~04/z0_m": -0.2667,
+"solids/CN~H2.5AZ~BM-BW-GARAGE-SEAT~04/z1_m": -0.1524,
+"solids/CN~H2.5AZ~BM-SG-BLC~05/z0_m": 2.8436455,
+"solids/CN~H2.5AZ~BM-SG-BLC~05/z1_m": 2.9579455,
+"solids/CN~H2.5AZ~BM-SG-BLC~06/z0_m": 2.8344091,
+"solids/CN~H2.5AZ~BM-SG-BLC~06/z1_m": 2.9487091,
+"solids/CN~H2.5AZ~BM-SG-BLC~07/z0_m": 2.8251727,
+"solids/CN~H2.5AZ~BM-SG-BLC~07/z1_m": 2.9394727,
+"solids/CN~H2.5AZ~BM-SG-BLC~08/z0_m": 2.8159364,
+"solids/CN~H2.5AZ~BM-SG-BLC~08/z1_m": 2.9302364,
+"solids/CN~H2.5AZ~BM-SG-BLC~09/z0_m": 2.8067,
+"solids/CN~H2.5AZ~BM-SG-BLC~09/z1_m": 2.921,
+"solids/CN~H2.5AZ~BM-SG-BLC~10/z0_m": 2.8736636,
+"solids/CN~H2.5AZ~BM-SG-BLC~10/z1_m": 2.9879636,
+"solids/CN~H2.5AZ~BM-SG-BLC~11/z0_m": 2.8621182,
+"solids/CN~H2.5AZ~BM-SG-BLC~11/z1_m": 2.9764182,
+"solids/CN~H2.5AZ~BM-SG-BLC~12/z0_m": 2.8528818,
+"solids/CN~H2.5AZ~BM-SG-BLC~12/z1_m": 2.9671818,
+"solids/CN~H2.5AZ~BM-SG-FRE~13/z0_m": -0.2413,
+"solids/CN~H2.5AZ~BM-SG-FRE~13/z1_m": -0.127,
+"solids/CN~H2.5AZ~BM-SG-FRE~14/z0_m": -0.2413,
+"solids/CN~H2.5AZ~BM-SG-FRE~14/z1_m": -0.127,
+"solids/CN~H2.5AZ~BM-SG-FRE~15/z0_m": -0.2413,
+"solids/CN~H2.5AZ~BM-SG-FRE~15/z1_m": -0.127,
+"solids/CN~H2.5AZ~BM-SG-FRE~16/z0_m": -0.2413,
+"solids/CN~H2.5AZ~BM-SG-FRE~16/z1_m": -0.127,
+"solids/CN~H2.5AZ~BM-SG-FRE~17/z0_m": -0.2413,
+"solids/CN~H2.5AZ~BM-SG-FRE~17/z1_m": -0.127,
+"solids/CN~H2.5AZ~BM-SG-FRE~18/z0_m": -0.2413,
+"solids/CN~H2.5AZ~BM-SG-FRE~18/z1_m": -0.127,
+"solids/CN~H2.5AZ~BM-SG-FRE~19/z0_m": -0.2413,
+"solids/CN~H2.5AZ~BM-SG-FRE~19/z1_m": -0.127,
+"solids/CN~H2.5AZ~BM-SG-FRE~20/z0_m": -0.2413,
+"solids/CN~H2.5AZ~BM-SG-FRE~20/z1_m": -0.127,
+"solids/CN~H2.5AZ~BM-SG-FRW~21/z0_m": -0.2413,
+"solids/CN~H2.5AZ~BM-SG-FRW~21/z1_m": -0.127,
+"solids/CN~H2.5AZ~BM-SG-FRW~22/z0_m": -0.2413,
+"solids/CN~H2.5AZ~BM-SG-FRW~22/z1_m": -0.127,
+"solids/CN~H2.5AZ~BM-SG-FRW~23/z0_m": -0.2413,
+"solids/CN~H2.5AZ~BM-SG-FRW~23/z1_m": -0.127,
+"solids/CN~H2.5AZ~BM-SG-FRW~24/z0_m": -0.2413,
+"solids/CN~H2.5AZ~BM-SG-FRW~24/z1_m": -0.127,
+"solids/CN~H2.5AZ~BM-SG-FRW~25/z0_m": -0.2413,
+"solids/CN~H2.5AZ~BM-SG-FRW~25/z1_m": -0.127,
+"solids/CN~H2.5AZ~BM-SG-FRW~26/z0_m": -0.2413,
+"solids/CN~H2.5AZ~BM-SG-FRW~26/z1_m": -0.127,
+"solids/CN~H2.5AZ~BM-SG-FRW~27/z0_m": -0.2413,
+"solids/CN~H2.5AZ~BM-SG-FRW~27/z1_m": -0.127,
+"solids/CN~H2.5AZ~BM-SG-FRW~28/z0_m": -0.2413,
+"solids/CN~H2.5AZ~BM-SG-FRW~28/z1_m": -0.127,
+"solids/CN~H2.5A~2-1.75x16 LVL~295/z0_m": 8.75665,
+"solids/CN~H2.5A~2-1.75x16 LVL~295/z1_m": 8.87095,
+"solids/CN~H2.5A~2-1.75x16 LVL~296/z0_m": 8.75665,
+"solids/CN~H2.5A~2-1.75x16 LVL~296/z1_m": 8.87095,
+"solids/CN~H2.5A~2-1.75x16 LVL~297/z0_m": 8.75665,
+"solids/CN~H2.5A~2-1.75x16 LVL~297/z1_m": 8.87095,
+"solids/CN~H2.5A~2-1.75x16 LVL~298/z0_m": 8.75665,
+"solids/CN~H2.5A~2-1.75x16 LVL~298/z1_m": 8.87095,
+"solids/CN~H2.5A~2-1.75x16 LVL~299/z0_m": 8.75665,
+"solids/CN~H2.5A~2-1.75x16 LVL~299/z1_m": 8.87095,
+"solids/CN~H2.5A~2-1.75x16 LVL~300/z0_m": 8.75665,
+"solids/CN~H2.5A~2-1.75x16 LVL~300/z1_m": 8.87095,
+"solids/CN~H2.5A~2-1.75x16 LVL~301/z0_m": 8.75665,
+"solids/CN~H2.5A~2-1.75x16 LVL~301/z1_m": 8.87095,
+"solids/CN~H2.5A~2-1.75x16 LVL~302/z0_m": 8.75665,
+"solids/CN~H2.5A~2-1.75x16 LVL~302/z1_m": 8.87095,
+"solids/CN~H2.5A~2-1.75x16 LVL~303/z0_m": 8.75665,
+"solids/CN~H2.5A~2-1.75x16 LVL~303/z1_m": 8.87095,
+"solids/CN~H2.5A~2-1.75x16 LVL~304/z0_m": 8.75665,
+"solids/CN~H2.5A~2-1.75x16 LVL~304/z1_m": 8.87095,
+"solids/CN~H2.5A~W-A-E1~01/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-E1~01/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-E1~02/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-E1~02/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-E1~03/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-E1~03/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-E1~04/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-E1~04/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-E1~05/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-E1~05/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-E2~06/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-E2~06/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-E2~07/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-E2~07/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-E2~08/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-E2~08/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-E2~09/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-E2~09/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-E2~10/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-E2~10/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-E2~11/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-E2~11/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-E2~12/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-E2~12/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-E2~13/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-E2~13/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-E2~14/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-E2~14/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-E2~15/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-E2~15/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-E2~16/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-E2~16/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-E2~17/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-E2~17/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-E2~18/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-E2~18/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-E2~19/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-E2~19/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-W1B~20/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-W1B~20/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-W1B~21/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-W1B~21/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-W1B~22/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-W1B~22/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-W1B~23/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-W1B~23/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-W1B~24/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-W1B~24/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-W1B~25/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-W1B~25/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-W1B~26/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-W1B~26/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-W1B~27/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-W1B~27/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-W1B~28/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-W1B~28/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-W1B~29/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-W1B~29/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-W1B~30/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-W1B~30/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-W1~31/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-W1~31/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-W1~32/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-W1~32/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-W1~33/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-W1~33/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-W1~34/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-W1~34/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-W1~35/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-W1~35/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-W1~36/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-W1~36/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-W1~37/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-W1~37/z1_m": 6.2103,
+"solids/CN~H2.5A~W-A-W1~38/z0_m": 6.096,
+"solids/CN~H2.5A~W-A-W1~38/z1_m": 6.2103,
+"solids/CN~H2.5A~W-B-CN2~39/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CN2~39/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-CN~40/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CN~40/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-CN~41/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CN~41/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-CN~42/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CN~42/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-CN~43/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CN~43/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-CN~44/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CN~44/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-CS2~45/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CS2~45/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-CS2~46/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CS2~46/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-CS2~47/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CS2~47/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-CS2~48/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CS2~48/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-CS3~49/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CS3~49/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-CS3~50/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CS3~50/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-CS3~51/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CS3~51/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-CS3~52/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CS3~52/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-CS~53/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CS~53/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-CS~54/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CS~54/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-CS~55/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CS~55/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-CS~56/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CS~56/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-CS~57/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CS~57/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-CS~58/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CS~58/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-CS~59/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CS~59/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-CS~60/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-CS~60/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-E1~61/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-E1~61/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-E1~62/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-E1~62/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-E1~63/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-E1~63/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-E1~64/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-E1~64/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-E1~65/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-E1~65/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-E1~66/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-E1~66/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-E1~67/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-E1~67/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-STR3B~68/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-STR3B~68/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-STR3B~69/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-STR3B~69/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-STR3B~70/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-STR3B~70/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-STR3B~71/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-STR3B~71/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-STR3~72/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-STR3~72/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-STR3~73/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-STR3~73/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-STR3~74/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-STR3~74/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-STR~75/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-STR~75/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-STR~76/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-STR~76/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-STR~77/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-STR~77/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-STR~78/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-STR~78/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-STR~79/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-STR~79/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W1~80/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W1~80/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W1~81/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W1~81/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W1~82/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W1~82/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W1~83/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W1~83/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W1~84/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W1~84/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W1~85/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W1~85/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W1~86/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W1~86/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W1~87/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W1~87/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W1~88/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W1~88/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W1~89/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W1~89/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W1~90/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W1~90/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W1~91/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W1~91/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W1~92/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W1~92/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W1~93/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W1~93/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W1~94/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W1~94/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W2~100/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W2~100/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W2~101/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W2~101/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W2~102/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W2~102/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W2~103/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W2~103/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W2~104/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W2~104/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W2~105/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W2~105/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W2~106/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W2~106/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W2~107/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W2~107/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W2~108/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W2~108/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W2~95/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W2~95/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W2~96/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W2~96/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W2~97/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W2~97/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W2~98/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W2~98/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-B-W2~99/z0_m": -0.3984625,
+"solids/CN~H2.5A~W-B-W2~99/z1_m": -0.2841625,
+"solids/CN~H2.5A~W-G-E~109/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~109/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~110/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~110/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~111/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~111/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~112/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~112/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~113/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~113/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~114/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~114/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~115/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~115/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~116/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~116/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~117/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~117/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~118/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~118/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~119/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~119/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~120/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~120/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~121/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~121/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~122/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~122/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~123/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~123/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~124/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~124/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~125/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~125/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~126/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~126/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~127/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~127/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~128/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~128/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~129/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~129/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~130/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~130/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~131/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~131/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~132/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~132/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~133/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~133/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~134/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~134/z1_m": 2.29235,
+"solids/CN~H2.5A~W-M-C1~135/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C1~135/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C1~136/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C1~136/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C1~137/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C1~137/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C1~138/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C1~138/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C1~139/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C1~139/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C1~140/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C1~140/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C1~141/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C1~141/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C1~142/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C1~142/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C1~143/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C1~143/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C1~144/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C1~144/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C2~145/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C2~145/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C2~146/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C2~146/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C2~147/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C2~147/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C2~148/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C2~148/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C3~149/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C3~149/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C3~150/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C3~150/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C3~151/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C3~151/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C3~152/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C3~152/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C5B~153/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C5B~153/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C5B~154/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C5B~154/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C5~155/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C5~155/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C5~156/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C5~156/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C5~157/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C5~157/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C5~158/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C5~158/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C5~159/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C5~159/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C5~160/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C5~160/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-C5~161/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-C5~161/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~162/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~162/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~163/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~163/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~164/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~164/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~165/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~165/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~166/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~166/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~167/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~167/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~168/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~168/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~169/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~169/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~170/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~170/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~171/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~171/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~172/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~172/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~173/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~173/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~174/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~174/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~175/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~175/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~176/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~176/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~177/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~177/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~178/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~178/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~179/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~179/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~180/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~180/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~181/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~181/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~182/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~182/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~183/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~183/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~184/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~184/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~185/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~185/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~186/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~186/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~187/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~187/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~188/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~188/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-E1~189/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-E1~189/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W1B~190/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W1B~190/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W1B~191/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W1B~191/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W1B~192/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W1B~192/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W1C~193/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W1C~193/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W1~194/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W1~194/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W1~195/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W1~195/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W1~196/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W1~196/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W2~197/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W2~197/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W2~198/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W2~198/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W2~199/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W2~199/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W2~200/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W2~200/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W3~201/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W3~201/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W3~202/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W3~202/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W3~203/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W3~203/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W3~204/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W3~204/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W3~205/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W3~205/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W3~206/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W3~206/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W3~207/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W3~207/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W4~208/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W4~208/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W4~209/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W4~209/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W4~210/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W4~210/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W4~211/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W4~211/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W4~212/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W4~212/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W4~213/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W4~213/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W4~214/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W4~214/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W4~215/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W4~215/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W4~216/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W4~216/z1_m": 2.80035,
+"solids/CN~H2.5A~W-M-W4~217/z0_m": 2.68605,
+"solids/CN~H2.5A~W-M-W4~217/z1_m": 2.80035,
+"solids/CN~H2.5A~W-S-C1~218/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C1~218/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C1~219/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C1~219/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C1~220/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C1~220/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C1~221/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C1~221/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C1~222/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C1~222/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C1~223/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C1~223/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C1~224/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C1~224/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C1~225/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C1~225/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C2B~226/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C2B~226/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C2B~227/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C2B~227/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C2B~228/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C2B~228/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C2C~229/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C2C~229/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C2C~230/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C2C~230/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C2C~231/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C2C~231/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C2C~232/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C2C~232/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C2C~233/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C2C~233/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C2~234/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C2~234/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C2~235/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C2~235/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C4B~236/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C4B~236/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C4B~237/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C4B~237/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C4B~238/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C4B~238/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C4B~239/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C4B~239/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-C4B~240/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-C4B~240/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E1~241/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E1~241/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E1~242/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E1~242/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E1~243/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E1~243/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E1~244/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E1~244/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E1~245/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E1~245/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E2~246/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E2~246/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E2~247/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E2~247/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E2~248/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E2~248/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E2~249/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E2~249/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E2~250/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E2~250/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E2~251/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E2~251/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E2~252/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E2~252/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E3~253/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E3~253/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E3~254/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E3~254/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E3~255/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E3~255/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E3~256/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E3~256/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E3~257/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E3~257/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E3~258/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E3~258/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E3~259/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E3~259/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E4~260/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E4~260/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E4~261/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E4~261/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E4~262/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E4~262/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E4~263/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E4~263/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E4~264/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E4~264/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E4~265/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E4~265/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-E4~266/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-E4~266/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W1B~267/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W1B~267/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W1B~268/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W1B~268/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W1B~269/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W1B~269/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W1~270/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W1~270/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W1~271/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W1~271/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W1~272/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W1~272/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W1~273/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W1~273/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W1~274/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W1~274/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W2~275/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W2~275/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W2~276/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W2~276/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W3~277/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W3~277/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W3~278/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W3~278/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W3~279/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W3~279/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W3~280/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W3~280/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W3~281/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W3~281/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W3~282/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W3~282/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W3~283/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W3~283/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W3~284/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W3~284/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W3~285/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W3~285/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W3~286/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W3~286/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W3~287/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W3~287/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W4~288/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W4~288/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W4~289/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W4~289/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W4~290/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W4~290/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W4~291/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W4~291/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W4~292/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W4~292/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W4~293/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W4~293/z1_m": 5.84835,
+"solids/CN~H2.5A~W-S-W4~294/z0_m": 5.73405,
+"solids/CN~H2.5A~W-S-W4~294/z1_m": 5.84835,
+"solids/CN~LSSR~BM-BW-FC~01/z0_m": -0.20955,
+"solids/CN~LSSR~BM-BW-FC~01/z1_m": 0.0762,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~02/z0_m": 8.8138,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~02/z1_m": 9.115425,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~03/z0_m": 8.8138,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~03/z1_m": 9.115425,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~04/z0_m": 8.8138,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~04/z1_m": 9.115425,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~05/z0_m": 8.8138,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~05/z1_m": 9.115425,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~06/z0_m": 8.8138,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~06/z1_m": 9.115425,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~07/z0_m": 8.8138,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~07/z1_m": 9.115425,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~08/z0_m": 8.8138,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~08/z1_m": 9.115425,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~09/z0_m": 8.8138,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~09/z1_m": 9.115425,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~10/z0_m": 8.8138,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~10/z1_m": 9.115425,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~11/z0_m": 8.8138,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~11/z1_m": 9.115425,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~12/z0_m": 8.8138,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~12/z1_m": 9.115425,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~13/z0_m": 8.8138,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~13/z1_m": 9.115425,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~14/z0_m": 8.8138,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~14/z1_m": 9.115425,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~15/z0_m": 8.8138,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~15/z1_m": 9.115425,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~16/z0_m": 8.8138,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~16/z1_m": 9.115425,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~17/z0_m": 8.8138,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~17/z1_m": 9.115425,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~18/z0_m": 8.8138,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~18/z1_m": 9.115425,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~19/z0_m": 8.8138,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~19/z1_m": 9.115425,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~20/z0_m": 8.8138,
+"solids/CN~LSSR~CABM01AAAA:ridge-beam~20/z1_m": 9.115425,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~01/z0_m": 9.21385,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~01/z1_m": 9.22655,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~02/z0_m": 9.21385,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~02/z1_m": 9.22655,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~03/z0_m": 9.21385,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~03/z1_m": 9.22655,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~04/z0_m": 9.21385,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~04/z1_m": 9.22655,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~05/z0_m": 9.21385,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~05/z1_m": 9.22655,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~06/z0_m": 9.21385,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~06/z1_m": 9.22655,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~07/z0_m": 9.21385,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~07/z1_m": 9.22655,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~08/z0_m": 9.21385,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~08/z1_m": 9.22655,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~09/z0_m": 9.21385,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~09/z1_m": 9.22655,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~10/z0_m": 9.21385,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~10/z1_m": 9.22655,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~11/z0_m": 9.21385,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~11/z1_m": 9.22655,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~12/z0_m": 9.21385,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~12/z1_m": 9.22655,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~13/z0_m": 9.21385,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~13/z1_m": 9.22655,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~14/z0_m": 9.21385,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~14/z1_m": 9.22655,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~15/z0_m": 9.21385,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~15/z1_m": 9.22655,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~16/z0_m": 9.21385,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~16/z1_m": 9.22655,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~17/z0_m": 9.21385,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~17/z1_m": 9.22655,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~18/z0_m": 9.21385,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~18/z1_m": 9.22655,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~19/z0_m": 9.21385,
+"solids/CN~LSTA24~CABM01AAAA:ridge-beam~19/z1_m": 9.22655,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~01/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~01/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~02/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~02/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~03/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~03/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~04/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~04/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~05/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~05/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~06/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~06/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~07/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~07/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~08/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~08/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~09/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~09/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~10/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~10/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~100/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~100/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~101/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~101/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~102/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~102/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~103/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~103/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~104/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~104/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~105/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~105/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~106/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~106/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~107/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~107/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~108/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~108/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~109/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~109/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~11/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~11/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~12/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~12/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~13/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~13/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~14/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~14/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~15/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~15/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~16/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~16/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~17/z0_m": -2.6781125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~17/z1_m": -2.5257125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~18/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~18/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~19/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~19/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~20/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~20/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~21/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~21/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~22/z0_m": -2.6717625,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~22/z1_m": -2.5193625,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~23/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~23/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~24/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~24/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~25/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~25/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~26/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~26/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~27/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~27/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~28/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~28/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~29/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~29/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~30/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~30/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~31/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~31/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~32/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~32/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~33/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~33/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~34/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~34/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~35/z0_m": -0.9398,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~35/z1_m": -0.7874,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~36/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~36/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~37/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~37/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~38/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~38/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~39/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~39/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~40/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~40/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~41/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~41/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~42/z0_m": -2.6781125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~42/z1_m": -2.5257125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~43/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~43/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~44/z0_m": -2.6717625,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~44/z1_m": -2.5193625,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~45/z0_m": -0.9398,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~45/z1_m": -0.7874,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~46/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~46/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~47/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~47/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~48/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~48/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~49/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~49/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~50/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~50/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~51/z0_m": -2.6781125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~51/z1_m": -2.5257125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~52/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~52/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~53/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~53/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~54/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~54/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~55/z0_m": -0.9398,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~55/z1_m": -0.7874,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~56/z0_m": -2.6717625,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~56/z1_m": -2.5193625,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~57/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~57/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~58/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~58/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~59/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~59/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~60/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~60/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~61/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~61/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~62/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~62/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~63/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~63/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~64/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~64/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~65/z0_m": -0.0762,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~65/z1_m": 0.0762,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~66/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~66/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~67/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~67/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~68/z0_m": -2.6781125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~68/z1_m": -2.5257125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~69/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~69/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~70/z0_m": -0.9398,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~70/z1_m": -0.7874,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~71/z0_m": -2.6717625,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~71/z1_m": -2.5193625,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~72/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~72/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~73/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~73/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~74/z0_m": -2.6781125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~74/z1_m": -2.5257125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~75/z0_m": -0.0762,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~75/z1_m": 0.0762,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~76/z0_m": -0.0762,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~76/z1_m": 0.0762,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~77/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~77/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~78/z0_m": -0.9398,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~78/z1_m": -0.7874,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~79/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~79/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~80/z0_m": -2.6717625,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~80/z1_m": -2.5193625,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~81/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~81/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~82/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~82/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~83/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~83/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~84/z0_m": -2.6781125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~84/z1_m": -2.5257125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~85/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~85/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~86/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~86/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~87/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~87/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~88/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~88/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~89/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~89/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~90/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~90/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~91/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~91/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~92/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~92/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~93/z0_m": -0.381,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~93/z1_m": -0.2286,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~94/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~94/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~95/z0_m": -2.8559125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~95/z1_m": -2.7035125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~96/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~96/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~97/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~97/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~98/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~98/z1_m": -0.2651125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~99/z0_m": -0.4175125,
+"solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~99/z1_m": -0.2651125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~01/z0_m": -0.5953125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~01/z1_m": -0.0873125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~02/z0_m": -0.5953125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~02/z1_m": -0.0873125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~03/z0_m": -0.5588,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~03/z1_m": -0.0508,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~04/z0_m": -3.0337125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~04/z1_m": -2.5257125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~05/z0_m": -3.0337125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~05/z1_m": -2.5257125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~06/z0_m": -0.5588,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~06/z1_m": -0.0508,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~07/z0_m": -3.0337125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~07/z1_m": -2.5257125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~08/z0_m": -2.8559125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~08/z1_m": -2.3479125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~09/z0_m": -3.0337125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~09/z1_m": -2.5257125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~10/z0_m": -0.5588,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~10/z1_m": -0.0508,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~11/z0_m": -3.0337125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~11/z1_m": -2.5257125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~12/z0_m": -3.0337125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~12/z1_m": -2.5257125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~13/z0_m": -0.5588,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~13/z1_m": -0.0508,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~14/z0_m": -3.0337125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~14/z1_m": -2.5257125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~15/z0_m": -3.0337125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~15/z1_m": -2.5257125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~16/z0_m": -3.0337125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~16/z1_m": -2.5257125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~17/z0_m": -3.0337125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~17/z1_m": -2.5257125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~18/z0_m": -3.0337125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~18/z1_m": -2.5257125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~19/z0_m": -0.5588,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~19/z1_m": -0.0508,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~20/z0_m": -3.0337125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~20/z1_m": -2.5257125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~21/z0_m": -3.0337125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~21/z1_m": -2.5257125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~22/z0_m": -3.0337125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~22/z1_m": -2.5257125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~23/z0_m": -3.0337125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~23/z1_m": -2.5257125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~24/z0_m": -3.0337125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~24/z1_m": -2.5257125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~25/z0_m": -3.0337125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~25/z1_m": -2.5257125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~26/z0_m": -3.0337125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~26/z1_m": -2.5257125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~27/z0_m": -0.5953125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~27/z1_m": -0.0873125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~28/z0_m": -0.254,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~28/z1_m": 0.254,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~29/z0_m": -0.5953125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~29/z1_m": -0.0873125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~30/z0_m": -0.254,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~30/z1_m": 0.254,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~31/z0_m": -0.254,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~31/z1_m": 0.254,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~32/z0_m": -1.1176,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~32/z1_m": -0.6096,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~33/z0_m": -0.5588,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~33/z1_m": -0.0508,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~34/z0_m": -0.5953125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~34/z1_m": -0.0873125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~35/z0_m": -2.8559125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~35/z1_m": -2.3479125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~36/z0_m": -0.5588,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~36/z1_m": -0.0508,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~37/z0_m": -0.5588,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~37/z1_m": -0.0508,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~38/z0_m": -3.0337125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~38/z1_m": -2.5257125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~39/z0_m": -0.5953125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~39/z1_m": -0.0873125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~40/z0_m": -0.5953125,
+"solids/CN~STHD~CR-CONC-TO-FRAMED-SILL~40/z1_m": -0.0873125,
 "solids/DRW-G-HYDRANT/z0_m": -2.9972,
 "solids/DRW-G-HYDRANT/z1_m": -2.54,
 "solids/DRW-SG-MAIN/z0_m": -5.9801125,

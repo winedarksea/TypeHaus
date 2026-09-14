@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** 0bd130c71d7bac2a  
-**Lines:** 113
+**Model hash:** 1d01d8c243f7534b  
+**Lines:** 114
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -75,6 +75,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | ABU66SS standoff post base (6x6), 316L stainless | 2 | ea |  | building |
 | CCQ46SDS2.5 column cap (4x beam on 6x6 post) | 4 | ea |  | building |
 | CS16 coiled strap, 16 ga | 2 | ea |  | building |
+| H10A gable-end wall tie | 36 | ea |  | building |
 | H2.5A hurricane/seismic tie | 202 | ea |  | building |
 | H2.5A hurricane/seismic tie | 28 | ea |  | building |
 | H2.5A hurricane/seismic tie | 38 | ea |  | building |
@@ -83,7 +84,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | H2.5A hurricane/seismic tie | 10 | ea |  | building |
 | H2.5ASS stainless hurricane/seismic tie | 6 | ea |  | building |
 | H2.5AZ ZMAX hurricane/seismic tie | 28 | ea |  | building |
-| HGAM10 masonry gusset angle | 12 | ea |  | building |
+| HGAM10 masonry gusset angle | 24 | ea |  | building |
 | HUC concealed-flange masonry/concrete hanger | 2 | ea |  | building |
 | HUC212-3 concealed-flange hanger, triple 2x12 | 4 | ea |  | building |
 | KBS1Z knee-brace / beam strap (ZMAX) | 2 | ea |  | building |
@@ -228,6 +229,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | ABU66SS standoff post base (6x6), 316L stainless | — |
 | CCQ46SDS2.5 column cap (4x beam on 6x6 post) | — |
 | CS16 coiled strap, 16 ga | — |
+| H10A gable-end wall tie | — |
 | H2.5A hurricane/seismic tie | — |
 | H2.5A hurricane/seismic tie | — |
 | H2.5A hurricane/seismic tie | — |

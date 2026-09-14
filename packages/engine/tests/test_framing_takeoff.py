@@ -143,11 +143,21 @@ def test_framing_by_size_rolls_up_types(catlin_model) -> None:
 
 
 def test_structural_solids_account_for_every_resolved_solid(catlin_model) -> None:
-    """The member cut list cannot see concrete or standalone structure; this row set can."""
+    """The member cut list cannot see concrete or standalone structure; this row set can.
+
+    The reconciliation is against every solid that is a THING TO MEASURE, which since the
+    derived connector markers landed is no longer every solid. A marker stands for a part
+    billed by part number in the hardware section, off the joint that located it, never off
+    its box — so counting it here would bill five hundred connectors twice, once as a part
+    and once as a phantom volume. ``ResolvedSolid.derived`` is that distinction and this is
+    the invariant that would otherwise quietly absorb it.
+    """
     rows = structural_solids_takeoff(catlin_model)
-    assert sum(int(row["count"]) for row in rows) == len(catlin_model.solids)
+    measured = [solid for solid in catlin_model.solids if not solid.derived]
+    assert measured, "every solid is derived — the fixture is wrong, not the rule"
+    assert sum(int(row["count"]) for row in rows) == len(measured)
     assert {tag for row in rows for tag in row["tags"]} == {
-        solid.tag for solid in catlin_model.solids}
+        solid.tag for solid in measured}
     # Concrete is ordered by the yard, so the volume rollup has to be real.
     footings = next(row for row in rows if row["category"] == "footing")
     assert footings["volume_cubic_yards"] > 0
