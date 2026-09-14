@@ -168,3 +168,61 @@ class PublishedSpan(HausModel):
     #: The carried span the row is indexed by, where it has one (a deck beam is tabulated
     #: against the joist span it picks up).
     carried_span: Length | None = None
+
+
+class PublishedCapacity(HausModel):
+    """One published FORCE — a connector's allowable, a code table's required resistance —
+    quoted onto the element it governs.
+
+    ** A SIBLING OF ``PublishedSpan``, NOT A FIELD ON IT, AND THE REASON IS THAT A FORCE IS
+    NOT A SPAN. ** The two share a purpose: a published table is a prescriptive read, a
+    reviewer opens the document and the question is closed, and putting the read IN THE MODEL
+    is what lets a check grade against it instead of reporting UNKNOWN and waiting for a seal
+    nobody owes. They share nothing else. A span is a length compared against a length; an
+    uplift capacity is a force compared against a DEMAND this engine computes, and the guards
+    that keep a quotation honest are therefore different guards — the wind basis it was read
+    at, not the spacing and carried span a span row is indexed by.
+
+    ``Roof.published_uplift`` is a TUPLE of these where ``Roof.published_span`` is one: a
+    roof has one rafter span and as many uplift joints as it has bearing lines, and catlin's
+    RF-HOUSE has two — the eave tie and the ridge hanger — which are different parts read
+    from different documents.
+
+    **Four fields are drift guards and they are the point**, the same discipline
+    ``PublishedSpan`` carries. A quoted allowable is true for the row it was read at:
+
+    * ``member`` — the retype guard. A row for an LSSR2.37Z says nothing about the part
+      somebody swapped in.
+    * ``spacing`` — where the row is indexed by one.
+    * ``wind_speed_mph`` and ``exposure`` — the basis the REQUIRED force was looked up at. An
+      increase in either invalidates the quotation; a decrease does not, because a row read
+      at a harsher basis still covers a milder one.
+    * ``demand_lb`` — the demand the reader had in hand when they judged the row adequate.
+      The check refuses the row when its own computed demand climbs past it.
+
+    Nothing here is an ``engineering_item``, and that is the entire mechanism: a check that
+    grades against one of these produces a PASS a reviewer can confirm, and mints nothing for
+    the seal register.
+    """
+
+    #: The document, edition, page and table title — enough for a reviewer to open it.
+    source: str
+    #: The row and column actually read, in the table's own words.
+    table: str
+    #: The part or member the row is for, spelled as the model spells it.
+    member: str
+    #: The allowable force that row publishes, pounds.
+    capacity_lb: float
+    #: What the row assumes that this engine does not check — fastener schedule, species,
+    #: installation, load duration. Printed on the finding, because a prescriptive PASS whose
+    #: conditions nobody stated is not a read, it is a claim.
+    condition: str
+    #: The demand the reader judged this row against, pounds. The check refuses the row when
+    #: it computes more.
+    demand_lb: float | None = None
+    #: The o.c. spacing the row is indexed by, where it has one.
+    spacing: Length | None = None
+    #: The ultimate design wind speed the required force was read at, mph.
+    wind_speed_mph: float | None = None
+    #: The ASCE 7 exposure category the required force was read at.
+    exposure: str | None = None

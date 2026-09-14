@@ -492,6 +492,16 @@ for _uid, _tag, _x, _height, _top in (
 # ** AND THE HYDRANT PASSES UNDER, NOT THROUGH. ** `PR-G-HYDRANT-CW` runs north at x=11'-0"
 # with its invert at -8'-10", so at this depth it clears the underside of FT-BW-GE by 1'-10"
 # rather than threading between a shaft and a pad. `mep.footing_clearance` grades it.
+#: What each garage-side pier base is cast monolithically with — the strip footings it laps
+#: on its own -7'-0" plane. Read off the model rather than guessed: `FT-GF-S1`/`-S-DR`/`-S3`
+#: are the garage's south strip run, and `FT-GF-W`/`-E` its returns, and each pier sits where
+#: a return meets the south run. **A pad that laps something it does NOT name here is still a
+#: FAIL**, which is what keeps the declaration from being a blanket exemption.
+_GARAGE_PIER_CAST_WITH = {
+    "PT-BW-GW": ("FT-GF-S1", "FT-GF-W"),
+    "PT-BW-GE": ("FT-GF-S-DR",),
+    "PT-BW-RNE": ("FT-GF-S3", "FT-GF-E"),
+}
 GARAGE_FOOTING_THICKNESS_FT = 8 / 12   # the garage strip's own 8", so the two tops align
 GARAGE_PIER_BOTTOM_FT = -7.0
 GARAGE_FOOTING_TOP_FT = GARAGE_PIER_BOTTOM_FT + GARAGE_FOOTING_THICKNESS_FT
@@ -507,28 +517,34 @@ for _uid, _tag, _x, _pad_in, _top in (
         height=ft(_top - GARAGE_FOOTING_TOP_FT), assembly="PIER_CONCRETE_12",
         vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
         reinforcement=ENTRY_PIER_CAGE,
-        supported_by=f"FT-BW-{_tag.split('-')[-1]}"))
-    # ** THE GARAGE-SIDE THREE STAY `Footing`, AND IT IS THE STRIP FOOTING THAT DECIDES IT. **
-    # The house-side three became `Pad` on 2026-09-14 and these did not. A `Pad` is an
-    # ISOLATED pour — `structural.concrete_interference` scopes every one of them, and only a
-    # wall-less `Footing` — and these three are not isolated: they are cast on the garage
-    # strip footing's own plane (both -7'-0" to -6'-4") and lap ~7 1/2" into it, which the
-    # comment above has always described as meeting "edge to edge on one plane".
+        supported_by=f"PD-BW-{_tag.split('-')[-1]}"))
+    # ** THESE THREE LAP THE GARAGE STRIP FOOTING, AND THE LAP IS THE JOINT. ** They are cast
+    # at -7'-0" on `FT-GF-S1`/`-S3`'s own plane, in the same excavation and at the same time,
+    # and reach about 7 1/2" into it — which the comment above has always described as
+    # meeting "edge to edge on one plane". **They cannot be pulled clear**: the pier line
+    # stands 4 1/2" south of that footing's south face and the shaft is a 12" round, so the
+    # COLUMN itself overhangs any pad stopping at the face. Clearing it in plan would need a
+    # pad about 9" deep — 1 1/2" either side of the shaft — and making the area back up in
+    # width turns it into a 40" grade beam. There is no rectangle here, and there does not
+    # need to be one: monolithic is how it is built.
     #
-    # **And they cannot be pulled clear, which is the part worth writing down.** The pier line
-    # stands 4 1/2" south of `FT-GF-S1`/`-S3`'s south face and the shaft is a 12" round, so
-    # the COLUMN itself overhangs any pad that stops at that face. Clearing the strip in plan
-    # would need a pad about 9" deep — 1 1/2" either side of the shaft — and making the area
-    # back up in width turns it into a 40" grade beam. There is no rectangle here.
+    # `Pad.cast_with` is what says so. Until it existed the only way to model this was a
+    # `Footing` with an `under`, which took the base out of
+    # `structural.concrete_interference`'s scope by pretending it carried a wall — and out of
+    # `structural.deck_footing_size`'s prescriptive reach with it, which is what put three
+    # `spread_footing/` items in the seal register for three flat square bases on presumptive
+    # soil. Declared, the lap is reported as the joint it is, with the detailing obligation
+    # named: continuous bottom steel or dowels through the interface, no unkeyed cold joint.
     #
-    # So the honest model is one pour, which is what `Footing.under` says and what
-    # `concrete_interference`'s own fix names: "make the two one pour by hosting it on the
-    # wall/footing it lands in". The cost is that `spread_footing/PT-BW-GW`, `-GE` and `-RNE`
-    # stay in the engineering register. That is a real open item, not an oversight.
-    FOOTINGS.append(Footing(
-        uid=f"BWFG{_uid[4:6]}AAAA"[:10], tag=f"FT-BW-{_tag.split('-')[-1]}", under=_tag,
-        width=inch(_pad_in), depth=ft(GARAGE_FOOTING_THICKNESS_FT),
-        assembly="PIER_BASE_12", bottom_elevation=ft(GARAGE_PIER_BOTTOM_FT)))
+    # **No widening was needed.** The areas were already there — 4.00 ft² under GW and RNE
+    # and 2.25 under GE, against 2.48 / 1.60 / 1.00 required on the mn-2020 profile's
+    # 1,500 psf — so the sizes are the sizes the Footings drew and the pour is unchanged.
+    FOOTINGS.append(Pad(
+        uid=f"BWFG{_uid[4:6]}AAAA"[:10], tag=f"PD-BW-{_tag.split('-')[-1]}",
+        outline=_pad_outline(_x, GARAGE_SEAT_Y_FT, _pad_in),
+        thickness=ft(GARAGE_FOOTING_THICKNESS_FT),
+        assembly="PIER_BASE_12", bottom_elevation=ft(GARAGE_PIER_BOTTOM_FT),
+        cast_with=_GARAGE_PIER_CAST_WITH[_tag]))
 
 # The two roof columns. Pier/pedestal top -0'-8 1/4" to header soffit +6'-4 3/4" = 7'-1".
 # k*lu/d = 15.5, nowhere near NDS Sec 3.7.1.4's limit of 50. Standoff base ABU66SS on a

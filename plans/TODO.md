@@ -318,26 +318,8 @@ the future.
  - Add trim/baseboard — we're generally trimless (clean lines, drywall), but maybe a flush-with-drywall baseboard.
 - Orientation-tuned glass, particularly second-story south-facing windows.
 - Make it easier to "hop" into a given room for 3d viewing and rotate in spot, perhaps with a "fish eye" lens view rendering
-- ~~Remove the fiber optic lighting from the sauna, too expensive; LED strips under the benches, driver accessible from the workshop.~~ **DONE 2026-09-13.** Two `LightRun`s of `ED-T-LT-STRIP24-SAUNA` (mark X, LEDsupply 24V IP68 sauna tape, 90 C, 2700K) at 16" AFF under the bench lips; `ED-B-SAUNA-LT-PSU` is a surface `ED-T-LT-PSU-60` on W-B-SA-N's workshop face at 48" AFF (surface, not buried in the cavity — a driver is the part that dies and a plastered-in one is a demolition job), and `ED-B-SAUNA-SW` retyped to `ED-T-SWITCH-DIM`. The ceiling star-field option was not taken. `ED-T-LT-SAUNA-VT` stays in the catalog at 0 ea as the named revert. See houses/catlin/DESIGN-LOG.md, "Basement".
 - Possibly in second floor study, a bookshelf continuing hallways to make an alcove under the stairs
 - Consider making the dining room "candelier" a TV screen (direct-lit/FALD Mini-LED LCD, 65") screen, perhaps connected to an exterior webcam, set recessed in the ceiling a bit (still replaceable, likely with the joist space above open for more room for airflow).
-- **Sunken garden, R404.4 and the arch — answered 2026-09-13, no action.** *(1)* There is no
-  sliding failure: it is graded on the closed court loop, `retaining_system/W-SG-ARCH`, at
-  **FS 1.63** against the 1.50 R404.4 requires (d/c 0.92, strut compression 0.47), and
-  `structural.foundation_unbalanced_fill` PASSes W-SG-W2/E2/S as engineered. The ~0.57 in
-  DESIGN-LOG.md is the superseded isolated-cantilever figure. Two caveats stand
-  (`notes/sunken_garden_court_free_body.md` §5, §10): the whole margin rides on the washed-
-  stone bed's μ 0.35 — at μ 0.25 the court is at 1.16 and does NOT meet R404.4 — and 1.63 is
-  a screening on presumptive values with no geotechnical report, unsealed. *(2)* The arch
-  cannot be replaced. `SL-SG-FLOOR` is a 3 1/2" rim carrying seven voids with an 18" sand
-  putting-green profile between the walls — no continuous concrete for a strut, and a `Slab`
-  is not an edge in the bridge test that finds the loop. `W-SG-BRKBM` is explicitly not a
-  strut: wrong end (16' north) and wrong elevation. Deleting the arch is tested
-  (`test_retaining_court.py:431`) and takes the arch plus W2/E2/S to INCOMPLETE, not a
-  quieter PASS. See `notes/sunken_garden_court_free_body.md` §8. *(3)* W1/W2 (and E1/E2) are
-  indeed one pour — now said so in `params/sunken_garden.py` and the house guide, along with
-  the buildability fact: the bar spacing changes mid-pour at y = -11'-0", #6 @ 38" to #6 @ 10".
-
  - **The published web app runs a GEOS version behind the dev venv, and a geometry bug can ship
   green.** `.venv` is GEOS 3.13.1; the Pyodide-based web app is GEOS 3.12.1, which previously
   raised a fatal `TopologyException` unioning basement wall bodies (fixed by routing through
@@ -353,6 +335,7 @@ the future.
 - **`W-B-CW3`/`W-B-STR2` are over-specified** (steel-stud ESS-closet assembly, closet is gone)
   — deliberately not re-specified; would widen each 2" and re-open condition coverage on a
   line nothing else asked about. Revisit only if that wall line opens for another reason.
+- Make sure the EV charger is a Leviton 1450r 50A EV Charging Receptacle
 
 # Project Management
 

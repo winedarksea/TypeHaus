@@ -2168,7 +2168,7 @@ FOOTING_20 = Assembly(
 )
 
 # The 12" cast bases under this house's round piers: the sunken garden's two belled footings
-# (FT-SG-COL, FT-SG-FCOL) and the four breezeway pads (PD-BW-1..4). One assembly for both
+# (PD-SG-COL, PD-SG-FCOL) and the four breezeway pads (PD-BW-1..4). One assembly for both
 # because they are one detail at two plan shapes — a plain, unreinforced 12" pour bearing at
 # frost depth, which is what puts them on the BURIED mix's F0 rather than the court's F3. The
 # bells carry 42" of true cover and the pads bottom at -6'-0"; neither ever freezes, and F0 is

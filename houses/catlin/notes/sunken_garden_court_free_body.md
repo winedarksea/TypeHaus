@@ -953,12 +953,12 @@ braced far better than that. It clears anyway, so the conservative reading is fr
 
 ### On the front column's bell — checked, and it does NOT merge
 
-An earlier scheme proposed merging `FT-SG-FCOL`'s 36" bell into the beam at midspan, on the
+An earlier scheme proposed merging `PD-SG-FCOL`'s 36" bell into the beam at midspan, on the
 grounds that its south edge lands on the beam line. **In plan that is true and in section it
 is not:**
 
 ```
-FT-SG-FCOL   bell     z  -151.44"  to  -139.44"
+PD-SG-FCOL   bell     z  -151.44"  to  -139.44"
 W-SG-ARCH    beam     z  -130.44"  to  -112.94"
                               -------------------
                               9" of clear ground between them

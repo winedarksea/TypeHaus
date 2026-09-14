@@ -319,7 +319,7 @@ the model has nowhere to state it, or states it in a form nothing can read.
    every `$/cy` rate absorbs its own steel. Pricing that table while the flag stands is a
    hard error in `cli/price_file.py`, by design. The two column rows in `prices.toml`
    point back here.
-5. **`FT-SG-COL`/`FCOL` bells and the four breezeway pads** state no reinforcement. All six
+5. **`PD-SG-COL`/`FCOL` bells and the four breezeway pads** state no reinforcement. All six
    now name `PIER_BASE_12` and so have a mix, but no steel: the bells are graded as
    PLAIN concrete and pass (`notes/sunken_garden_piers.md` §5), which ACI 318-19 §14.1.4
    expressly permits in a footing. Correct rather than missing.
@@ -405,7 +405,7 @@ gap and authors steel to close it.
 - **The 26 house and garage strip footings** and `FT-SG-W1`/`E1`. IRC Table R403.1 sizes a
   plain-concrete wall footing for a one- or two-family dwelling from wall load and soil
   bearing alone; no bar is prescribed and none is required. These are §4 item 6.
-- **`FT-SG-COL`/`FCOL`, the two belled piers, and the four breezeway pads.** Graded as
+- **`PD-SG-COL`/`FCOL`, the two belled piers, and the four breezeway pads.** Graded as
   plain concrete and passing — **ACI 318-19 §14.1.4** expressly permits plain concrete in a
   footing — with the working shown in `notes/sunken_garden_piers.md` §5. These are §4 item 5.
 - **`SL-B-FLOOR` and the other slabs on grade.** No mesh and no bar: macro-synthetic fibre

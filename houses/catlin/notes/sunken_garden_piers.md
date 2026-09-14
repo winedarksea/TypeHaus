@@ -499,6 +499,40 @@ the concrete is. `sqrt(5000) = 70.711`. `phi = 0.60` throughout, ACI Table 21.2.
 F0 rather than the court's F3 is earned, not inherited: these two bells carry 42" of true
 cover and do not freeze (§5a's levelling-course diagram, and `BURIED_MIX`'s own note).
 
+### 2026-09-14 — the bells became formed 30" square pads, and §5 lost three limit states
+
+Owner's call. Both bases are `Pad`s now — 30" square, 12" thick, bearing at the same
+`_pier_bell_bottom_ft` — and `spread_footing/PT-SG-COL` and `-FCOL` have left the
+engineering register with them. The reason is grading, not capacity: IRC Table R507.3.1
+publishes FLAT-PAD rows, a 36" bell has no row, and so its bearing was a design against the
+site's own allowable pressure rather than a lookup. A 30" square has a row.
+
+**What is kept.** The depth, exactly — 42" below the court on undisturbed soil, the
+`bottom_elevation` still the derived expression and never a pinned number. So §5a's frost
+argument, the 7" levelling bed rather than a 42" replacement section, and the "dig with the
+open basement excavation" rule all stand unchanged. Bearing: **6.25 ft² provided against
+3.97 ft² required** on the mn-2020 profile's 1,500 psf, d/c **0.64**.
+
+**What is lost, and this is the price of the retirement.** A `Footing` carried
+`spread_footing`'s three SECTION states — flexure at the column face, one-way shear and
+two-way punching shear — and **nothing grades a `Pad`'s own section.** §5c, §5d and §5e below
+therefore describe a calculation the engine no longer performs. They are kept because the
+arithmetic is still the arithmetic and the pad is a squatter version of the same problem: a
+12" round on a 30" square is a 9" cantilever against a 12" thickness, where the 36" bell was
+a 12" cantilever against the same 12", so every one of the three states moves the safe way.
+The largest was flexure at d/c 0.145. **But the engine no longer says so**, and a reader who
+wants it said has to work §5c–§5e by hand on a 30" square, or author the bases back as
+`Footing`s and read the record.
+
+**And the method changed with the shape.** There is no auger and no under-reamer on this job
+now: the pit is dug and the pad is formed in the bottom of it. `AN-SG-PLACEMENTS` and the
+`params/sunken_garden.py` block above carry that; the under-reamer sentences that survive in
+§1 are the record of what this was, not instructions.
+
+Volume falls 0.10 cy each. The 36" `Footing` DREW as a 36" square (9.00 ft²) — that is what
+`resolve/envelope.py` does with a post-hosted footing — so the pour was always square and
+this takes 3" off each side of it rather than changing its shape.
+
 ### 5b. Net pressure
 
 > **REVISED 2026-09-14.** `P_u` fell 1.04% with the tributary (§2 — the porch beams stopping

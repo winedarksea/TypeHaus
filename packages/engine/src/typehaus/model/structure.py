@@ -154,6 +154,40 @@ class Pad(Element):
     # ``structural.concrete_mix_matches_exposure`` no matter what the house authored. A pour
     # this model cannot describe is a pour it cannot grade.
     assembly: str | None = None
+    #: The pours this one is cast MONOLITHICALLY with — footing, slab or foundation-wall
+    #: tags, placed in the same excavation on the same plane at the same time.
+    #:
+    #: ** THIS IS THE ONE THING A `Pad` COULD NOT SAY, AND IT IS WHY SOME BASES HAD TO STAY
+    #: `Footing`. ** A Pad's whole premise is that it stands alone in the soil with its own
+    #: bearing area under its own column, which is what `structural.concrete_interference`
+    #: grades it as: anything an isolated pour shares volume with is a collision, because
+    #: nothing was ever going to be poured with it. A pier base cast against the building's
+    #: strip footing breaks that premise without being a defect — it is ordinary
+    #: construction, and the lap is the joint rather than a clash.
+    #:
+    #: **Empty is not "no lap allowed", it is "nobody has declared one"**, and that is the
+    #: conservative default on purpose: a pad that laps something it has not named is still a
+    #: FAIL, so this field cannot be used by accident and cannot silence a real collision. It
+    #: is a CLAIM about how the concrete is placed, and it carries obligations the check
+    #: prints rather than grades: that the pour really is monolithic (ACI 318-19 Table
+    #: 22.9.4.2 credits shear friction at 1.4λ for concrete placed monolithically against
+    #: 0.6λ for an unroughened cold joint), and that reinforcement runs continuous through
+    #: the intersection where there is any (§14.1.4(a)).
+    #:
+    #: ** IT BUYS NO BEARING AREA, AND THAT IS THE LINE BETWEEN A LOOKUP AND A DESIGN. **
+    #: ``structural.deck_footing_size`` reads this pad's OWN outline and nothing else. IRC
+    #: R403.1.1 sizes a pier footing on "the tributary load and allowable soil pressure" — an
+    #: independent area calculation granting no credit from a neighbour, and the IRC is silent
+    #: on overlapping footings entirely. A pour that needed the union to pass would be a
+    #: footing carrying a wall load AND a column load, which is a COMBINED footing (ACI
+    #: 336.2R's own definition) under ACI 318-19 §13.3.4 — and §13.3.4.3 forbids assuming a
+    #: uniform pressure under one. That is a seal's work. A pad that passes on its own
+    #: footprint is merely poured conveniently, and needs no seal at all.
+    #:
+    #: It is deliberately not on `Footing`: a Footing that carries a wall is already out of
+    #: this check's scope through `under`, and a wall-less one that is cast with something
+    #: else is a Pad by any other name.
+    cast_with: tuple[str, ...] = ()
 
 
 

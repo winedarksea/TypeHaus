@@ -16,7 +16,7 @@ from typehaus.model.enums import (
 )
 from typehaus.model.floors import FinishZone
 from typehaus.model.placeables import Location, Mount
-from typehaus.model.refs import FollowRoof, PublishedSpan
+from typehaus.model.refs import FollowRoof, PublishedCapacity, PublishedSpan
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.model.trim import EaveTrim
 from typehaus.quantities import Length, Pitch, Point2D
@@ -238,6 +238,14 @@ class Roof(Element):
     # engineering register rather than into it. See ``model/refs.PublishedSpan``, which
     # carries the drift guards that stop a quotation outliving the model it was read for.
     published_span: PublishedSpan | None = None
+    # The published rows that answer this roof's UPLIFT connections, where they exist. A
+    # TUPLE and not one row: a roof has a single rafter span and as many uplift joints as it
+    # has bearing lines, read from different documents and answered by different parts —
+    # catlin's RF-HOUSE has an eave tie against a code table and a ridge hanger against a
+    # manufacturer's. See ``model/refs.PublishedCapacity`` for the drift guards, and
+    # ``checks/structural/published.graded_against_published_capacity`` for the grading. A
+    # roof that authors these takes its uplift capacity OUT of the engineering register.
+    published_uplift: tuple[PublishedCapacity, ...] = ()
     # Which of the two ridge-axis ends may be a GABLE END, by compass name. A gable end
     # takes a drop/gable-end frame instead of a field truss, and SBCA's own definition is
     # that such a frame has continuous vertical support from the end wall or beam under its

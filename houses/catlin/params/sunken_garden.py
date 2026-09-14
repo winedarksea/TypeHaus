@@ -76,6 +76,7 @@ from typehaus import (
     JoistReinforcement,
     JoistSpec,
     Node,
+    Pad,
     Post,
     pt,
     PublishedSpan,
@@ -549,7 +550,7 @@ _court_top = inch(_court_top_in)
 # by `test_retaining_court.py::test_the_net_rim_laps_no_footing`**, where it was a hand
 # measurement before. It matters because ``structural.concrete_interference`` grades only
 # ISOLATED pours and every FT-SG-* carries ``under=``: a lap reads as 0 FAIL and bills
-# twice. (FT-SG-COL / FT-SG-FCOL are excluded and always were: those two belled bases top
+# twice. (PD-SG-COL / PD-SG-FCOL are excluded and always were: those two belled bases top
 # out 2'-6" under this slab and their shafts pass through it, so a plan lap is not a lap.)
 _rim_underside_in = _court_top_in - SPEC.rim_thickness_in  # -112.9375
 
@@ -1157,11 +1158,11 @@ _back_beam_mid = _porch_top - ft(_porch_joist_depth_ft + _back_beam_depth_ft / 2
 #
 # What one diameter buys: one under-reamer setting instead of two on a two-pier job, one
 # schedule row, and one number for the driller to hit. What it costs is about 0.09 cy of
-# concrete, ~$27-43. And it lifts the tightest pier in the house: FT-SG-COL's bearing falls
+# concrete, ~$27-43. And it lifts the tightest pier in the house: PD-SG-COL's bearing falls
 # as the square of the diameter, (30/36)^2 = 0.694, taking its d/c from 0.83 to 0.60.
 #
 # ** THE BELL GROWS 3" PER SIDE AND THAT REACHES TOWARD THE HOUSE FOOTING — CHECKED. **
-# FT-SG-COL is centred at y = -2'-3", so its north face goes from -12" to -9". FT-B-S2/S3's
+# PD-SG-COL is centred at y = -2'-3", so its north face goes from -12" to -9". FT-B-S2/S3's
 # south face is at -4". The plan gap closes 8" -> 5", and the two do not touch. They also
 # do not overlap vertically: the bell's TOP is at -139 7/16" and the house strip bottoms at
 # -117 7/16", 22" above it (the bell bears another 12" down, at -151 7/16").
@@ -1176,7 +1177,26 @@ _back_beam_mid = _porch_top - ft(_porch_joist_depth_ft + _back_beam_depth_ft / 2
 _col_footing_width_in = 36.0
 _front_footing_width_in = 36.0
 
-# --- the two porch piers are BELL-BOTTOM PIERS, augered to frost depth -------------------
+# --- the two porch piers reach frost depth by EXCAVATION, on formed square pads ----------
+#
+# ** 2026-09-14: THE BELLS BECAME FORMED 30" SQUARE PADS, AND ONLY THE SHAPE CHANGED. **
+# Owner's call, and the whole of the reason is grading: IRC Table R507.3.1 publishes
+# FLAT-PAD rows, a bell has no row, and `engineering/spread_footing.py` therefore carried
+# `spread_footing/PT-SG-COL` and `-FCOL` to the seal register for a bearing question that a
+# 30" square closes by lookup. **The DEPTH is untouched** — `bottom_elevation` is still the
+# derived `_pier_bell_bottom_ft`, still 42" below the court, still bearing on undisturbed
+# soil — so everything the paragraphs below say about frost cover, about the levelling bed
+# rather than a replacement section, and about digging with the open basement excavation is
+# as true of a formed pad as it was of a bell. What is no longer true is the METHOD: there is
+# no auger and no under-reamer on this job now, the pit is dug and the pad is formed in the
+# bottom of it, and `_col_footing_width_in` / `_front_footing_width_in` above are the
+# retired bell diameters, kept for the revert. See `_PIER_PAD_SIDE_IN` below for what it
+# costs (the three section limit states `spread_footing` graded on the bell go with the
+# record, because nothing grades a `Pad`'s own section).
+#
+# The paragraphs below are the 2026-09-10 pass, kept because the frost argument is the live
+# one and is what a reader has to follow to see why these two are different from the five
+# wall footings beside them.
 #
 # The owner's call, verbatim: "We can perhaps do 'bell bottom' piers as part of the
 # sonotube installation, so going to 42" here (with an auger) is likely easier and less of
@@ -1189,11 +1209,13 @@ _front_footing_width_in = 36.0
 # on undisturbed soil 42" down needs neither claim: ``structural.frost_depth`` grades it on
 # cover, the way it grades a footing in an ordinary trench.
 #
-# What a belled augered pier is, since the model has no single element for one: a 12"
-# (20" at the front) hole augered to 42" below the garden floor, its base under-reamed out
-# to the bell diameter, a fibre tube dropped in the shaft and the whole thing poured
-# monolithically. So it is TWO elements here — the ``Footing`` is the bell (the bearing
-# element, 12" thick at the bottom of the hole) and the ``Post`` is the shaft above it.
+# What it WAS, and what a reader restoring it needs: a belled augered pier is a 12" (20" at
+# the front) hole augered to 42" below the garden floor, its base under-reamed out to the
+# bell diameter, a fibre tube dropped in the shaft and the whole thing poured monolithically.
+# It was TWO elements here — the ``Footing`` was the bell (the bearing element, 12" thick at
+# the bottom of the hole) and the ``Post`` the shaft above it. It is a ``Pad`` and a ``Post``
+# now, and the pair still pours as one placement; what changed is that the bottom is formed
+# square rather than reamed round.
 #
 # **The bell MOVED DOWN; the bell did not GROW.** Deepening the ``Footing`` instead — the
 # only lever this file had before ``Footing.bottom_elevation`` landed — would have drawn a
@@ -1203,9 +1225,9 @@ _front_footing_width_in = 36.0
 # the wrong place is a wrong quantity, not a drafting nicety.
 # 42" below the COURT surface, not below the basement floor plane. Pinned to
 # `basement_depth_ft` this would have lost the whole flood step: cover drops 42.0" -> 34.75",
-# the 7" levelling bed leaves a 41.75" ASCE section, and FT-SG-FCOL FAILs outright — its
+# the 7" levelling bed leaves a 41.75" ASCE section, and PD-SG-FCOL FAILs outright — its
 # ``under`` is a Post, so it misses the R404.4 branch and the nearest frost wing is 62" away.
-# FT-SG-COL would have passed for the wrong reason, shielded at distance 0 by a foam board it
+# PD-SG-COL would have passed for the wrong reason, shielded at distance 0 by a foam board it
 # happens to sit under. Re-derived, cover is exactly 42.0" again.
 # ** DERIVED AGAIN, AND BACK ON 42" EXACTLY (2026-09-05, second pass). **
 # It was pinned at -13'-2 11/16" for one day, on the argument that 49 1/4" of cover is more
@@ -1263,7 +1285,7 @@ COLUMN = Post(uid="SGP001AAAA", tag="PT-SG-COL",
               # spell ONE string and the drawing names ONE part to order.
               vertical_reinforcement=SPEC.corner_column_cage,
               reinforcement=_CAST_COLUMN_CAGE,
-              supported_by="FT-SG-COL")
+              supported_by="PD-SG-COL")
 
 # The front column: a 12" round cast-concrete column on its own belled footing. Its top is
 # the *soffit* of the two front beams, exactly as PT-SG-COL's is the soffit of the back
@@ -1321,7 +1343,7 @@ FRONT_COLUMN = Post(uid="SGP002AAAA", tag="PT-SG-FCOL",
                     size=SPEC.corner_column_size,
                     height=ft(SPEC.basement_depth_ft - _front_beam_depth_ft
                               + _pier_shaft_extension_ft),
-                    supported_by="FT-SG-FCOL",
+                    supported_by="PD-SG-FCOL",
                     # A_g = 113.10 in2, so the 1% floor is 1.131 in2; (4) #5 = 1.24 in2
                     # (rho 1.097%). Ties #3 at 10", inside §25.7.2.2's least of 16db =
                     # 10.0", 48dt = 18.0", h = 12.0". This is the MINIMUM legal cage on a
@@ -1462,7 +1484,7 @@ FOOTINGS = [
     # 12" of bearing and bears straight on FB-SG-ARCH. See its own block in WALLS.
     for w in WALLS if w.tag in _WALL_FOOTING_UID
 ]
-# The two porch piers' BELLS. FT-SG-COL keeps SGF199AAAA; the front column's is appended
+# The two porch piers' BELLS. PD-SG-COL keeps SGF199AAAA; the front column's is appended
 # after it, so nothing already in the IFC moves.
 #
 # ``bottom_elevation`` is what makes these bells rather than plinths: a post-hosted footing
@@ -1470,19 +1492,55 @@ FOOTINGS = [
 # the garden floor on 12" of cover. Authored, the UNDERSIDE is the fixed end — the bell
 # bears at ``_pier_bell_bottom_ft`` and is ``depth`` thick above it — which is exactly how
 # a hole is dug. Width and thickness are untouched: only the elevation changed.
+# ** 2026-09-14: THE BELLS BECAME FORMED SQUARE PADS, AND THE FROST COVER IS KEPT BY DEPTH. **
+# Owner's call. These two were 36" belled bottoms on a 12" augered shaft, and the bell was
+# what put `spread_footing/PT-SG-COL` and `-FCOL` in the seal register: IRC Table R507.3.1
+# publishes FLAT-PAD rows, so a bell has no row and its bearing is a design against the
+# site's own allowable pressure. A 30" square pad has a row, and the question closes.
+#
+# **What does NOT change is the depth.** `bottom_elevation` stays `_pier_bell_bottom_ft` —
+# the DERIVED expression and never a pinned number, which is the trap `houses/catlin/CLAUDE.md`
+# warns about and which this house has already sprung once. These pads still bear at 42"
+# below the court on undisturbed soil, and their frost protection is still excavation rather
+# than the aggregate section the five WALL footings rely on. The levelling bed under each
+# (`FB-SG-COL` / `-FCOL`, `_PIER_BELL` below) is unchanged for the same reason.
+#
+# **What IS lost, and it belongs in the open-items list rather than in silence:** a `Footing`
+# carried `spread_footing`'s flexure, one-way shear and punching-shear states on the bell
+# section, and **nothing grades a `Pad`'s own section**. Those three states go with the
+# record. They were at d/c 0.15, 0.03 and 0.07 on a 36" bell — the section was never close —
+# and a 30" x 12" pad under a 12" round is squatter still, with a shorter cantilever and the
+# same thickness. But the engine no longer says so, and `notes/sunken_garden_piers.md` §5
+# carries that as the price of the retirement.
+#
+# 30" square = 6.25 ft² against 3.97 ft² required at the mn-2020 profile's 1,500 psf, d/c
+# 0.64. Volume falls 0.10 cy each: the 36" Footing DREW as a 36" square (9.00 ft²), which is
+# what `resolve/envelope.py` does with a post-hosted footing, so the pour was always square
+# and this is 6" off each side of it rather than a shape change.
+_PIER_PAD_SIDE_IN = 30.0
+
+
+def _pier_pad_outline(post_tag):
+    """A square pad centred on the column it carries, read off the column's own position."""
+    half = inch(_PIER_PAD_SIDE_IN) / 2.0
+    x, y = (_cx, _y_col) if post_tag == "PT-SG-COL" else (_cx, _y_front_col)
+    return (pt(ft(x) - half, ft(y) - half), pt(ft(x) + half, ft(y) - half),
+            pt(ft(x) + half, ft(y) + half), pt(ft(x) - half, ft(y) + half))
+
+
 FOOTINGS.append(
-    Footing(uid="SGF199AAAA", tag="FT-SG-COL", under="PT-SG-COL",
-            width=inch(_col_footing_width_in),
-            depth=inch(SPEC.footing_thickness_in),
-            assembly="PIER_BASE_12",
-            bottom_elevation=ft(_pier_bell_bottom_ft))
+    Pad(uid="SGF199AAAA", tag="PD-SG-COL",
+        outline=_pier_pad_outline("PT-SG-COL"),
+        thickness=inch(SPEC.footing_thickness_in),
+        assembly="PIER_BASE_12",
+        bottom_elevation=ft(_pier_bell_bottom_ft))
 )
 FOOTINGS.append(
-    Footing(uid="SGF198AAAA", tag="FT-SG-FCOL", under="PT-SG-FCOL",
-            width=inch(_front_footing_width_in),
-            depth=inch(SPEC.footing_thickness_in),
-            assembly="PIER_BASE_12",
-            bottom_elevation=ft(_pier_bell_bottom_ft))
+    Pad(uid="SGF198AAAA", tag="PD-SG-FCOL",
+        outline=_pier_pad_outline("PT-SG-FCOL"),
+        thickness=inch(SPEC.footing_thickness_in),
+        assembly="PIER_BASE_12",
+        bottom_elevation=ft(_pier_bell_bottom_ft))
 )
 
 # The five WALL footings bear on a shared 42" compacted-aggregate section, and that section
@@ -1496,7 +1554,7 @@ FOOTINGS.append(
 # block that breaks the thermal bridge; ``cast_foam_in_aggregate`` records that foam in the
 # resolved geometry / IFC (the dowels themselves are annotation-only — see plans/TODO.md).
 #
-# **FT-SG-COL IS NOT IN THIS SET, and there is nothing to replace it with.** A dowel-and-
+# **PD-SG-COL IS NOT IN THIS SET, and there is nothing to replace it with.** A dowel-and-
 # foam joint needs two concretes meeting at one plane, and the garden bell bears 2'-10"
 # lower than FT-B-S2's underside — its top is 1'-10" below it — so the two pours do not
 # face each other:
@@ -1516,11 +1574,11 @@ _HOUSE_ADJACENT = {"FT-SG-W1", "FT-SG-E1"}
 # at -13'-2 7/16" and clears the well's top of stone by 5" — the two do not overlap in plan
 # at all, so the clearance is belt and braces rather than the thing holding them apart, but
 # it is asserted because it is the number that would close first.
-_PIER_BELL = {"FT-SG-COL", "FT-SG-FCOL"}
+_PIER_BELL = {"PD-SG-COL", "PD-SG-FCOL"}
 _BEDDING_UID = {"FT-SG-W1": "SGB002AAAA", "FT-SG-E1": "SGB003AAAA",
                 "FT-SG-W2": "SGB004AAAA", "FT-SG-E2": "SGB005AAAA",
-                "FT-SG-S": "SGB006AAAA", "FT-SG-COL": "SGB007AAAA",
-                "FT-SG-FCOL": "SGB008AAAA"}
+                "FT-SG-S": "SGB006AAAA", "PD-SG-COL": "SGB007AAAA",
+                "PD-SG-FCOL": "SGB008AAAA"}
 FOOTING_BEDDING = [
     FootingBedding(
         uid=_BEDDING_UID[f.tag],
@@ -3224,7 +3282,7 @@ PORCH_JOISTS = FloorSystem(
     #
     # **The guard post needs no blocking here either, and that is not an oversight.** The
     # RL-SG-PORCH south-leg station at x = 18'-0" is PT-SG-BF2 itself, and the R301.5 200 lb
-    # couple at the top of that guard now runs 6x6 -> ABU66SS -> PT-SG-FCOL -> FT-SG-FCOL,
+    # couple at the top of that guard now runs 6x6 -> ABU66SS -> PT-SG-FCOL -> PD-SG-FCOL,
     # entirely in members that bear on concrete. It never reaches a joist, so there is
     # nothing for a block to take it into. The nine other south-leg stations keep theirs
     # below — their posts really do stand on the plank.
@@ -3424,7 +3482,7 @@ BALCONY_JOISTS = FloorSystem(
 # without a thermal bridge. Bars at mid-JOINT (-9'-5 7/16"), on the north-edge line.
 #
 # **DW-SG-COL, the third, is retired, with its bell.** It would have crossed the joint
-# between FT-SG-COL and FT-B-S2 if the two sat at the same elevation 2" apart, but the bell
+# between PD-SG-COL and FT-B-S2 if the two sat at the same elevation 2" apart, but the bell
 # bears 2'-6" lower — its top is 1'-10" under FT-B-S2's underside — so the bars would span
 # open ground at -9'-4 7/16" with no garden concrete at that height to develop into, and the
 # foam block would have one face and no joint. A separated pier does not need a thermal
@@ -4180,7 +4238,7 @@ BALCONY_BEAM_CAPS = [c for c in BEAM_CAPS if c not in PORCH_BEAM_CAPS]
 SEQUENCE_NOTES = [
     Annotation(
         uid="SGAN01AAAA", tag="AN-SG-PLACEMENTS", position=pt(ft(_cx), ft(-20)),
-        text="THREE PLACEMENTS, NOT FOUR — AND THE ORDER IS THE DESIGN. (1) FOOTINGS AND PIERS: the five strip footings FT-SG-W1/E1/W2/E2/S and BOTH belled piers in one placement. The bells are augered and under-reamed to 36in at -12ft 7-7/16in and poured MONOLITHICALLY with the shaft above them, which is what a belled pier IS — the Footing and the Post are two elements here only because this model has no single one. Auger both shafts WITH THE OPEN BASEMENT EXCAVATION: FT-SG-COL's bell reaches to within 5in of FT-B-S2/S3 in plan and bears 34in below them, inside their 1:1 influence line, so augering after backfill undermines the house footing. (2) WALLS AND GRADE BEAM: all five court walls and W-SG-ARCH, one form height (every top is the porch datum 0ft 0in), one strip-and-set. THE HOUSE BASEMENT WALL MUST BE POURED, CURED AND SURVEYED FIRST — the upper thermal-break dowels are epoxied into it with about 1in of drill tolerance. (3) RIM SLAB AND COLUMNS: SL-SG-FLOOR with all six 12in cast rounds in the same placement, the four balcony corners braced off the court floor and the wall tops rather than off porch framing that does not exist yet. EVERY COURT PLACEMENT NEEDS THE BOOM PUMP and the pumping allowance is already recorded as probably short. This saves one mobilisation and one below-minimum load against the four-pour sequence it replaces"),
+        text="THREE PLACEMENTS, NOT FOUR — AND THE ORDER IS THE DESIGN. (1) FOOTINGS AND PIERS: the five strip footings FT-SG-W1/E1/W2/E2/S and BOTH column pads in one placement. THE PADS ARE FORMED, NOT UNDER-REAMED, SINCE 2026-09-14: 30in square by 12in thick, bearing at -12ft 7-7/16in, with the 12in round cast on top of each. There is no auger and no under-reamer on this job any more — the excavation is dug and the pad is formed in the bottom of it, which is why the levelling bed under each (FB-SG-COL/-FCOL) is still 7in of washed stone and not a 42in replacement section. Dig both pits WITH THE OPEN BASEMENT EXCAVATION: PD-SG-COL reaches to within 8in of FT-B-S2/S3 in plan and bears 34in below them, inside their 1:1 influence line, so excavating after backfill undermines the house footing. (2) WALLS AND GRADE BEAM: all five court walls and W-SG-ARCH, one form height (every top is the porch datum 0ft 0in), one strip-and-set. THE HOUSE BASEMENT WALL MUST BE POURED, CURED AND SURVEYED FIRST — the upper thermal-break dowels are epoxied into it with about 1in of drill tolerance. (3) RIM SLAB AND COLUMNS: SL-SG-FLOOR with all six 12in cast rounds in the same placement, the four balcony corners braced off the court floor and the wall tops rather than off porch framing that does not exist yet. EVERY COURT PLACEMENT NEEDS THE BOOM PUMP and the pumping allowance is already recorded as probably short. This saves one mobilisation and one below-minimum load against the four-pour sequence it replaces"),
     Annotation(
         uid="SGAN02AAAA", tag="AN-SG-MIX", position=pt(ft(_cx), ft(-23)),
         text="MIX SUBSTITUTION, PERMITTED: the court comes off ONE ticket. PIER_BASE_12 (the two belled pier bases) specifies BURIED_MIX and everything else here specifies EXPOSED_MIX. Both are 5,000 psi at w/cm <= 0.40; EXPOSED_MIX adds class F3+C2 air entrainment and SCM caps, so it satisfies every requirement BURIED_MIX states and is the richer of the two. SUPPLY THE WHOLE COURT WITH EXPOSED_MIX. Do not read this as an assembly change — PIER_BASE_12 is shared with the north entry's pads, where the buried mix is correct and cheaper, and retyping it would move concrete that is not in this court. This note is the substitution; the schedule is not wrong"),

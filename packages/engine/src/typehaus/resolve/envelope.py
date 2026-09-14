@@ -262,9 +262,17 @@ def _bedding_host_footprint(
     own thickness. Like ``_resolve_footing``, the band is not extended past the axis ends:
     two legs of an L therefore butt at the shared node rather than overlapping, which is
     what keeps the corner out of the stone order twice.
+
+    ** A `Pad` IS A HOST TOO, SINCE 2026-09-14. ** The rule here is "bed the host's own
+    footprint", and a Pad has one — the category test was never the point, it was just the
+    only pour a host could be when this was written. It matters because the type a base is
+    authored as decides how it is GRADED (a Pad is read against the IRC's flat-pad table, a
+    Footing is delegated to an engineered bearing design), and a levelling course under it is
+    the same few inches of clean stone either way. Silently losing the bed on a retype would
+    take the stone out of the order and the drain tile's host with it.
     """
     host = next((s for s in model.solids
-                 if s.tag == bedding.host_ref and s.category == "footing"), None)
+                 if s.tag == bedding.host_ref and s.category in ("footing", "pad")), None)
     if host is not None:
         return host.outline, host.z0_m, []
     wall = model.wall(bedding.host_ref)
