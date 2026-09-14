@@ -501,7 +501,7 @@ class KneeBrace(Element):
     #: brace — every N-S one here — actually does.
     #:
     #: It moves geometry only. The bolt schedule the lap implies is
-    #: ``takeoff/hardware_config.KneeBraceRules``' business and the capacity is NDS Ch. 12's,
+    #: ``hardware/config.KneeBraceRules``' business and the capacity is NDS Ch. 12's,
     #: neither of which this field decides.
     foot_lap: Length | None = None
     #: A licensed engineer's lateral design for this brace, cited. Verbatim the contract

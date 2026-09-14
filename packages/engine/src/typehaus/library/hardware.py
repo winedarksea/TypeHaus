@@ -32,7 +32,7 @@ strength of having read the code report and stopped there.
 
 from __future__ import annotations
 
-from typehaus.takeoff.hardware_catalog import (
+from typehaus.hardware.catalog import (
     EXPOSURE_DRY,
     EXPOSURE_TREATED,
     ROLE_BEAM_HOLD_DOWN,

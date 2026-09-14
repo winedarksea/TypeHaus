@@ -10,7 +10,7 @@ somebody's memory gets rediscovered, or worse, quietly filled in.
 
 import pytest
 
-from typehaus.takeoff.hardware_catalog import (
+from typehaus.hardware.catalog import (
     AllowableLoads,
     allowable_for_model,
     hardware_by_model,
@@ -173,7 +173,7 @@ def test_the_knee_brace_capacity_this_house_can_actually_use():
     condition type 1 tabulates, and type 1's 1,010 would overstate this joint's capacity by
     87 %. The role argument is what selects it: the same part number is catalogued twice.
     """
-    from typehaus.takeoff.hardware_catalog import ROLE_KNEE_BRACE
+    from typehaus.hardware.catalog import ROLE_KNEE_BRACE
 
     kbs = allowable_for_model("KBS1Z", role=ROLE_KNEE_BRACE)
     assert kbs.lateral_f1_lb == 540.0
@@ -184,7 +184,7 @@ def test_the_knee_brace_capacity_this_house_can_actually_use():
 def test_one_part_number_two_joints_two_rows():
     """The KBS1Z is a beam-to-post cap AND a knee brace, and the table gives them different
     numbers. A lookup by model alone must not decide which one a caller meant."""
-    from typehaus.takeoff.hardware_catalog import ROLE_BEAM_HOLD_DOWN, ROLE_KNEE_BRACE
+    from typehaus.hardware.catalog import ROLE_BEAM_HOLD_DOWN, ROLE_KNEE_BRACE
 
     cap = allowable_for_model("KBS1Z", role=ROLE_BEAM_HOLD_DOWN)
     brace = allowable_for_model("KBS1Z", role=ROLE_KNEE_BRACE)
@@ -200,7 +200,7 @@ def test_the_knee_brace_role_serves_a_part_with_a_published_capacity():
     unrated part back on this role would silently un-brace every deck in the world that
     uses it.
     """
-    from typehaus.takeoff.hardware_catalog import ROLE_KNEE_BRACE, hardware_for_role
+    from typehaus.hardware.catalog import ROLE_KNEE_BRACE, hardware_for_role
 
     item = hardware_for_role(ROLE_KNEE_BRACE)
     assert item.allowable is not None and not item.allowable.is_empty
@@ -249,7 +249,7 @@ def test_allowables_do_not_reach_the_bill_of_materials():
     ``hardware_row`` is the one function every take-off builds rows through, so checking its
     output keys is checking every row in every bill.
     """
-    from typehaus.takeoff.hardware_catalog import hardware_row
+    from typehaus.takeoff.hardware_row import hardware_row
 
     item = hardware_by_model("KBS1Z")
     row = hardware_row(item, scope="test", count=1, basis="test")

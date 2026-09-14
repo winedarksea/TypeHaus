@@ -293,7 +293,7 @@ def _has_uplift_connector(model: ResolvedModel, roof: ResolvedRoof) -> bool:
             continue
         if set(element.connects) & member_keys:
             return True
-    from typehaus.takeoff.hardware_config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
+    from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
     from typehaus.takeoff.uplift import bearing_connections
 
     rules = DEFAULT_HARDWARE_TAKEOFF_CONFIG.uplift

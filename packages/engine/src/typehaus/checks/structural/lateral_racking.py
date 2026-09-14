@@ -21,7 +21,7 @@ members from rotating about the base."
 3. ``F = q_h · G · C_f · A_s`` (§29.3, eq. 29.3-1), then ``0.6 F`` for ASD (§2.4.1), split
    to the braced bays.
 4. The brace's axial force from the post free body, and the connector's allowable from
-   ``takeoff/hardware_catalog``'s transcribed reports.
+   ``hardware/catalog``'s transcribed reports.
 
 **Why it never returns a bare PASS.** Two independent reasons, and either alone is enough.
 
@@ -61,9 +61,9 @@ from typehaus.engineering.balcony_wind import (
 )
 from typehaus.engineering.item import item_id
 from typehaus.findings import Finding, Result
+from typehaus.hardware.catalog import ROLE_KNEE_BRACE, allowable_for_model
 from typehaus.model.structure import KneeBrace, Post, Railing
 from typehaus.model.trim import Fascia
-from typehaus.takeoff.hardware_catalog import ROLE_KNEE_BRACE, allowable_for_model
 from typehaus.wind import ASD_WIND_FACTOR, velocity_pressure_psf, wind_basis
 from typehaus.wind_tables import (
     GUST_EFFECT_RIGID,

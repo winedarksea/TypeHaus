@@ -4,11 +4,15 @@ One entry point that runs every hardware derivation against the resolved model a
 BOM rows in a single shape. Nothing here knows a house: the counts come from the resolved
 framing, assemblies, construction returns, junctions, and modeled connectors, and the rules
 that turn geometry into quantities live in
-:class:`~typehaus.takeoff.hardware_config.HardwareTakeoffConfig`.
+:class:`~typehaus.hardware.config.HardwareTakeoffConfig`.
 """
 
 from __future__ import annotations
 
+from typehaus.hardware.config import (
+    DEFAULT_HARDWARE_TAKEOFF_CONFIG,
+    HardwareTakeoffConfig,
+)
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.anchors import anchorage_rows
 from typehaus.takeoff.doors import door_hardware_rows
@@ -18,10 +22,6 @@ from typehaus.takeoff.fasteners import (
 )
 from typehaus.takeoff.glazing import glazing_fastener_rows
 from typehaus.takeoff.hangers import joist_hanger_rows, ridge_tie_strap_rows
-from typehaus.takeoff.hardware_config import (
-    DEFAULT_HARDWARE_TAKEOFF_CONFIG,
-    HardwareTakeoffConfig,
-)
 from typehaus.takeoff.uplift import uplift_rows
 
 
@@ -30,7 +30,7 @@ def hardware_takeoff(model: ResolvedModel,
     """Every critical hardware line item, derived from the resolved model.
 
     Rows share one schema (see
-    :func:`~typehaus.takeoff.hardware_catalog.hardware_row`): what the part is, how many,
+    :func:`~typehaus.hardware.catalog.hardware_row`): what the part is, how many,
     the purchase unit, and the ``basis`` rule that produced the count.
     """
     return [

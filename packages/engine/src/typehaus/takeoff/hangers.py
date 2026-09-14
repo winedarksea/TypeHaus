@@ -13,19 +13,19 @@ import math
 from collections import Counter
 from dataclasses import dataclass
 
-from typehaus.quantities import M_PER_IN
-from typehaus.resolve.model import ResolvedModel
-from typehaus.resolve.sweep import interpolate_along, straight_sweep_band
-from typehaus.takeoff.hardware_catalog import (
+from typehaus.hardware.catalog import (
     ROLE_CONCRETE_FACE_MOUNT_HANGER,
     ROLE_FACE_MOUNT_JOIST_HANGER,
     ROLE_RIDGE_TIE_STRAP,
     ROLE_SLOPED_JOIST_HANGER,
     hardware_for_role,
-    hardware_row,
 )
-from typehaus.takeoff.hardware_config import HangerDetectionRules
-from typehaus.takeoff.plan_geometry import centerline_endpoints, distance_point_to_segment
+from typehaus.hardware.config import HangerDetectionRules
+from typehaus.hardware.plan_geometry import centerline_endpoints, distance_point_to_segment
+from typehaus.quantities import M_PER_IN
+from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.sweep import interpolate_along, straight_sweep_band
+from typehaus.takeoff.hardware_row import hardware_row
 
 
 @dataclass(frozen=True)

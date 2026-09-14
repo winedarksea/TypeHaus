@@ -45,12 +45,12 @@ from typehaus.checks._authoring import engineered as _engineered
 from typehaus.checks._authoring import not_applicable
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
+from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
 from typehaus.model.enums import ConnectorKind
 from typehaus.model.structure import Beam, Post
 from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.takeoff.anchors import coil_strap_rows, mudsill_anchor_rows
 from typehaus.takeoff.hangers import hung_connections
-from typehaus.takeoff.hardware_config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
 from typehaus.takeoff.uplift import bearing_connections, bearing_line_tags
 from typehaus.takeoff.uplift_joints import (
     authored_joints,

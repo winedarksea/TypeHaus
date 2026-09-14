@@ -12,12 +12,12 @@ pocket doors, and ``width_m`` is what selects the kit.
 
 from __future__ import annotations
 
-from typehaus.resolve.model import ResolvedModel
-from typehaus.takeoff.hardware_catalog import (
+from typehaus.hardware.catalog import (
     ROLE_POCKET_DOOR_FRAME_KIT,
     hardware_for_role_and_nominal,
-    hardware_row,
 )
+from typehaus.resolve.model import ResolvedModel
+from typehaus.takeoff.hardware_row import hardware_row
 
 _M_TO_IN = 39.3700787401575
 

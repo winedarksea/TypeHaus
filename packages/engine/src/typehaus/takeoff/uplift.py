@@ -38,21 +38,21 @@ import math
 from collections import Counter
 from dataclasses import dataclass
 
-from typehaus.model.enums import ConnectorKind
-from typehaus.quantities import M_PER_IN
-from typehaus.resolve.assembly_material import assembly_structure_material
-from typehaus.resolve.model import ResolvedModel
-from typehaus.resolve.sweep import interpolate_along, straight_sweep_band
-from typehaus.takeoff.hardware_catalog import (
+from typehaus.hardware.catalog import (
     EXPOSURE_DRY,
     EXPOSURE_TREATED,
     ROLE_HURRICANE_TIE,
     ROLE_LATERAL_TIE_PLATE,
     hardware_for_role,
-    hardware_row,
 )
-from typehaus.takeoff.hardware_config import FT_TO_M, UpliftTieRules
-from typehaus.takeoff.plan_geometry import centerline_endpoints, distance_point_to_segment
+from typehaus.hardware.config import FT_TO_M, UpliftTieRules
+from typehaus.hardware.plan_geometry import centerline_endpoints, distance_point_to_segment
+from typehaus.model.enums import ConnectorKind
+from typehaus.quantities import M_PER_IN
+from typehaus.resolve.assembly_material import assembly_structure_material
+from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.sweep import interpolate_along, straight_sweep_band
+from typehaus.takeoff.hardware_row import hardware_row
 from typehaus.takeoff.uplift_joints import (
     authored_joints,
     post_base_anchor_rows,

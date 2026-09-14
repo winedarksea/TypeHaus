@@ -15,8 +15,8 @@ from __future__ import annotations
 
 import pytest
 
-from typehaus.takeoff.hardware_config import DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG
-from typehaus.takeoff.hardware_config import UpliftTieRules
+from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG
+from typehaus.hardware.config import UpliftTieRules
 from typehaus.takeoff.uplift import (
     bearing_connections,
     lateral_tie_plate_rows,

@@ -42,7 +42,7 @@ def test_the_mudsill_item_says_it_has_no_positions(catlin_model_ro) -> None:
 
 def test_the_holdown_count_matches_the_takeoff_row(catlin_model_ro) -> None:
     from typehaus.takeoff.anchors import strap_holdown_rows
-    from typehaus.takeoff.hardware_config import DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG
+    from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG
 
     rows = strap_holdown_rows(catlin_model_ro, CONFIG.sill_plate_anchors,
                               CONFIG.sill_plate_takeoff_category)

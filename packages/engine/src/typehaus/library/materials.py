@@ -286,7 +286,7 @@ STARTER_MATERIALS: tuple[Material, ...] = (
                     "corrugation of side lap; this row read 32\" until 2026-09-14), "
                     "face-fastened with gasketed screws through the "
                     "crowns. TWO KNOWN APPROXIMATIONS, recorded here rather than fixed: "
-                    "takeoff/hardware_config.py::ExposedFastenerCladdingRules is one frozen "
+                    "hardware/config.py::ExposedFastenerCladdingRules is one frozen "
                     "dataclass with PBR geometry hard-coded (12\" rib pitch, 36\" coverage), so "
                     "the field screw count is a fair proxy but the sidelap count runs slightly "
                     "low on 36\" vs this panel's 34-2/3\"; and its support_embedment_in=1.4\" is "

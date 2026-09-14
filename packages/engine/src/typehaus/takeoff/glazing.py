@@ -14,13 +14,13 @@ from __future__ import annotations
 
 import math
 
-from typehaus.resolve.geometry import polygon_area
-from typehaus.resolve.model import ResolvedModel
-from typehaus.takeoff.hardware_catalog import (
+from typehaus.hardware.catalog import (
     ROLE_GLAZING_PANEL_FASTENER,
     hardware_for_role,
-    hardware_row,
 )
+from typehaus.resolve.geometry import polygon_area
+from typehaus.resolve.model import ResolvedModel
+from typehaus.takeoff.hardware_row import hardware_row
 
 _M2_TO_FT2 = 10.7639104167
 _M_TO_FT = 3.280839895013123

@@ -203,7 +203,7 @@ def test_s100_names_its_missing_inputs_instead_of_inventing_them(catlin_model):
 
 def test_s100_schedules_the_sill_anchorage_it_already_derived(catlin_model):
     from typehaus.takeoff.anchors import mudsill_anchor_rows
-    from typehaus.takeoff.hardware_config import DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG
+    from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG
 
     table = anchorage_schedule(catlin_model)
     assert table.columns == ("MARK", "TYPE", "PART", "SPACING", "QTY", "WALLS")

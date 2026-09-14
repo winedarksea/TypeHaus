@@ -362,9 +362,9 @@ def _sill_anchorage_findings(model: ResolvedModel) -> list[Finding]:
     was already holding. The finding survives for the house that models neither.
     """
     from typehaus.emit.draw.foundation_schedule import foundation_walls
+    from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
     from typehaus.model.enums import ConnectorKind
     from typehaus.takeoff.anchors import mudsill_anchor_rows
-    from typehaus.takeoff.hardware_config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
 
     walls = tuple(wall.tag for wall in foundation_walls(model))[:1]
     if [e for e in model.plan.all_elements()

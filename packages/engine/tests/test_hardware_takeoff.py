@@ -26,7 +26,7 @@ from typehaus.takeoff.fasteners import (
     fastener_grid_count,
 )
 from typehaus.takeoff.hangers import hung_connections
-from typehaus.takeoff.hardware_catalog import (
+from typehaus.hardware.catalog import (
     ROLE_EXPOSED_FASTENER_PANEL_SCREW,
     ROLE_EXTERIOR_INSULATION_SCREW,
     ROLE_GIRT_STANDOFF_SCREW,
@@ -39,10 +39,10 @@ from typehaus.takeoff.hardware_catalog import (
     screw_for_required_length,
     structural_hardware_catalog,
 )
-from typehaus.takeoff.hardware_config import (
+from typehaus.hardware.config import (
     DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG,
 )
-from typehaus.takeoff.hardware_config import FT_TO_M
+from typehaus.hardware.config import FT_TO_M
 
 FASTENERS = CONFIG.exterior_insulation_fasteners
 STRIP_SPACING_M = FASTENERS.strip_spacing_in * M_PER_IN
@@ -138,7 +138,7 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     """NEITHER the wall nor the roof takes a through-foam screw any more.
 
     The roof has no outsulation or nailbase to screw through. That matters beyond the
-    money: ``takeoff/hardware_config.py``'s ``strip_spacing_in = 16.0`` is a HARD-CODED
+    money: ``hardware/config.py``'s ``strip_spacing_in = 16.0`` is a HARD-CODED
     constant, not read from the roof's ``FramingSpec``, so a roof at 24" o.c. would keep
     ordering its screws on a 16 x 24 grid and nothing would say so. Deleting the nailbase
     removes that landmine rather than stepping on it, and this assertion is what confirms
@@ -490,7 +490,7 @@ def test_each_modeled_knee_brace_takes_two_connectors_one_per_end() -> None:
     exercise it. ``knee_brace_rows`` returning nothing on a plan with no brace is the other
     half of the same contract and is asserted below.
     """
-    from typehaus.takeoff.hardware_catalog import hardware_for_role
+    from typehaus.hardware.catalog import hardware_for_role
 
     assert CONFIG.knee_braces.braces_per_location == 2
     # And the role still resolves to the rated part, so the two-per-brace rule is buying
@@ -515,7 +515,7 @@ def test_the_knee_brace_role_serves_a_part_with_a_published_capacity() -> None:
 
     Any house authoring a knee brace gets whatever this role resolves to. Putting an unrated
     part back on it would silently un-brace every deck in the world that uses it."""
-    from typehaus.takeoff.hardware_catalog import hardware_for_role
+    from typehaus.hardware.catalog import hardware_for_role
 
     item = hardware_for_role(ROLE_KNEE_BRACE)
     assert item.allowable is not None

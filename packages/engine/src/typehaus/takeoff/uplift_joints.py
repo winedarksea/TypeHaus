@@ -16,6 +16,15 @@ from __future__ import annotations
 
 from collections import Counter
 
+from typehaus.hardware.catalog import (
+    ROLE_BEAM_HOLD_DOWN,
+    ROLE_POST_BASE,
+    ROLE_POST_BASE_ANCHOR,
+    hardware_for_role,
+    hardware_for_role_and_nominal,
+    structural_hardware_catalog,
+)
+from typehaus.hardware.config import UpliftTieRules
 from typehaus.model.enums import ConnectorKind
 from typehaus.model.structure import Beam, Connector, Post
 from typehaus.resolve.assembly_material import (
@@ -23,16 +32,7 @@ from typehaus.resolve.assembly_material import (
     solid_material_ref,
 )
 from typehaus.resolve.model import ResolvedModel
-from typehaus.takeoff.hardware_catalog import (
-    ROLE_BEAM_HOLD_DOWN,
-    ROLE_POST_BASE,
-    ROLE_POST_BASE_ANCHOR,
-    hardware_for_role,
-    hardware_for_role_and_nominal,
-    hardware_row,
-    structural_hardware_catalog,
-)
-from typehaus.takeoff.hardware_config import UpliftTieRules
+from typehaus.takeoff.hardware_row import hardware_row
 
 # --- the authored-connector guard ----------------------------------------------------
 

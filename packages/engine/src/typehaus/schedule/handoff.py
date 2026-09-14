@@ -95,8 +95,8 @@ def dowels(model: Any) -> list[HandoffItem]:
 
 def mudsill_anchors(model: Any) -> list[HandoffItem]:
     """Anchor count per sill run — **a count, with no positions behind it.**"""
+    from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG
     from typehaus.takeoff.anchors import mudsill_anchor_rows
-    from typehaus.takeoff.hardware_config import DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG
 
     try:
         rows = mudsill_anchor_rows(model, CONFIG.sill_plate_anchors,
@@ -117,8 +117,8 @@ def mudsill_anchors(model: Any) -> list[HandoffItem]:
 
 def holdowns(model: Any) -> list[HandoffItem]:
     """Embedded strap holdowns — merged run-end locations, which the model does know."""
+    from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG
     from typehaus.takeoff.anchors import strap_holdown_locations
-    from typehaus.takeoff.hardware_config import DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG
 
     try:
         runs, locations = strap_holdown_locations(
@@ -139,7 +139,7 @@ def holdowns(model: Any) -> list[HandoffItem]:
 
 def post_bases(model: Any) -> list[HandoffItem]:
     """Post base anchors — the bolts that have to be in the wet concrete."""
-    from typehaus.takeoff.hardware_config import DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG
+    from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG as CONFIG
     from typehaus.takeoff.uplift_joints import post_base_anchor_rows
 
     try:

@@ -33,8 +33,8 @@ from typehaus.emit.draw.structural_common import (
     point_in_bbox,
     wall_length_m,
 )
+from typehaus.hardware.config import FT_TO_M
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid, ResolvedWall
-from typehaus.takeoff.hardware_config import FT_TO_M
 
 if TYPE_CHECKING:
     from typehaus.model.assembly import ConcreteSpec
@@ -413,8 +413,8 @@ def _mudsill_anchor_schedule_rows(model: ResolvedModel) -> list[tuple[str, ...]]
     ``takeoff`` is the authority and the two must agree — asserted in
     ``test_structural_sheets``.
     """
+    from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
     from typehaus.takeoff.anchors import mudsill_anchor_rows
-    from typehaus.takeoff.hardware_config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
 
     config = DEFAULT_HARDWARE_TAKEOFF_CONFIG
     rules = config.sill_plate_anchors

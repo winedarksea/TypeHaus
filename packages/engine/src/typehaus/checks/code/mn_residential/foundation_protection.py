@@ -141,7 +141,7 @@ def foundation_anchorage(ctx: CheckContext) -> list[Finding]:
     has nothing to grade — UNKNOWN, not a pass, because "no anchors were derived" is not
     "no anchors are needed".
     """
-    from typehaus.takeoff.hardware_config import HardwareTakeoffConfig
+    from typehaus.hardware.config import HardwareTakeoffConfig
 
     cid, code = "code.R403_1_6_foundation_anchorage", "R403.1.6"
     rules = HardwareTakeoffConfig().sill_plate_anchors

@@ -26,8 +26,8 @@ from __future__ import annotations
 
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity, not_applicable
+from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
 from typehaus.quantities import M_PER_IN
-from typehaus.takeoff.hardware_config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
 
 _CHECK_ID = "structural.subfloor_oversail"
 _LIMIT_IN = DEFAULT_HARDWARE_TAKEOFF_CONFIG.uplift.bearing_plan_tolerance_in

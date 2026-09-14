@@ -12,6 +12,15 @@ import math
 from collections import Counter
 from dataclasses import dataclass
 
+from typehaus.hardware.catalog import (
+    ROLE_EXPOSED_FASTENER_PANEL_SCREW,
+    ROLE_EXTERIOR_INSULATION_SCREW,
+    screw_for_required_length,
+)
+from typehaus.hardware.config import (
+    ExposedFastenerCladdingRules,
+    ExteriorInsulationFastenerRules,
+)
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.framing.truss_girts import INNER
@@ -23,16 +32,7 @@ from typehaus.resolve.framing.truss_wall import (
 )
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.model import ResolvedModel
-from typehaus.takeoff.hardware_catalog import (
-    ROLE_EXPOSED_FASTENER_PANEL_SCREW,
-    ROLE_EXTERIOR_INSULATION_SCREW,
-    hardware_row,
-    screw_for_required_length,
-)
-from typehaus.takeoff.hardware_config import (
-    ExposedFastenerCladdingRules,
-    ExteriorInsulationFastenerRules,
-)
+from typehaus.takeoff.hardware_row import hardware_row
 
 # Float slack when a run divides evenly into its spacing (an 18 ft wall at 16 in o.c.).
 _GRID_EPSILON = 1e-9
@@ -341,7 +341,7 @@ def _block_screw_choice(framing, required_in: float, clamped_in: float) -> tuple
     the same way an under-length one is: thread standing in the clamped members jacks them
     apart, and a row billing such a screw is worse than no row.
     """
-    from typehaus.takeoff.hardware_catalog import screw_by_part_number
+    from typehaus.hardware.catalog import screw_by_part_number
 
     part = getattr(framing, "standoff_fastener_part", None) if framing is not None else None
     if part is None:

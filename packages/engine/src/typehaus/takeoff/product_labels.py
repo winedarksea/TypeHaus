@@ -79,7 +79,7 @@ def hardware_product(row: Mapping[str, Any]) -> str | None:
     """The specified product for a ``hardware`` row, read off the row rather than a catalog.
 
     ``StructuralHardware`` is where product identity in this engine started, and a hardware
-    BOM line already carries ``manufacturer`` + ``part_number`` (takeoff/hardware_catalog.py
+    BOM line already carries ``manufacturer`` + ``part_number`` (hardware/catalog.py
     ``hardware_row``). So the join is already done — there is nothing to look up, and a
     ``Product`` record for the connector catalog would only be a second copy of it. Folding
     hardware into ``Product`` is a later move; its length-keyed ``part_number_by_length_in``

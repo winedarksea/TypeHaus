@@ -10,11 +10,7 @@ from __future__ import annotations
 import math
 from collections import Counter
 
-from typehaus.model.enums import ConnectorKind
-from typehaus.model.structure import Connector, KneeBrace
-from typehaus.quantities import M_PER_IN
-from typehaus.resolve.model import ResolvedModel
-from typehaus.takeoff.hardware_catalog import (
+from typehaus.hardware.catalog import (
     ROLE_BRACE_THROUGH_BOLT,
     ROLE_COIL_STRAP,
     ROLE_EMBEDDED_STRAP_HOLDOWN,
@@ -25,16 +21,20 @@ from typehaus.takeoff.hardware_catalog import (
     hardware_by_model,
     hardware_for_role,
     hardware_for_role_and_nominal,
-    hardware_row,
 )
-from typehaus.takeoff.hardware_config import (
+from typehaus.hardware.config import (
     FT_TO_M,
     HardwareTakeoffConfig,
     KneeBraceRules,
     SillPlateAnchorRules,
     WallTieRules,
 )
-from typehaus.takeoff.plan_geometry import centerline_endpoints, merge_coincident_points
+from typehaus.hardware.plan_geometry import centerline_endpoints, merge_coincident_points
+from typehaus.model.enums import ConnectorKind
+from typehaus.model.structure import Connector, KneeBrace
+from typehaus.quantities import M_PER_IN
+from typehaus.resolve.model import ResolvedModel
+from typehaus.takeoff.hardware_row import hardware_row
 
 _M_TO_FT = 3.280839895013123
 
