@@ -15,7 +15,9 @@ Two deductions the equation does not spell and a spreadsheet forgets. The panel'
 flange is not the support, so its thickness comes off the length; and the tapered tip
 carries no thread, which NDS App. L puts at ``2D`` for a wood screw. What is left is capped
 at the support's own thickness — a screw that runs out the back of a 1-1/2" girt is not
-holding 2" of wood, whatever its length says on the box.
+holding 2" of wood, whatever its length says on the box. (This house's own screw is the
+stocked 1", which takes 0.596" and is nowhere near the cap; the cap describes the 2" the
+note records as REJECTED.)
 """
 
 from __future__ import annotations
@@ -91,7 +93,7 @@ def fastener_demand_lb(pressure_psf: float, spacing_in: float, coverage_in: floa
     One screw per panel per girt is the concealed-leg pattern — the batten hides a single
     line of fasteners at each support — so the tributary area is the girt spacing by the
     panel's net coverage. Coverage is a product fact and the answer moves with it directly:
-    an 11" panel is 45% of the demand a 24" one would put on the same screw.
+    a 12" panel is 50% of the demand a 24" one would put on the same screw.
     """
     return pressure_psf * (spacing_in / 12.0) * (coverage_in / 12.0)
 

@@ -29,9 +29,9 @@ def test_the_garage_is_one_assembly_in_one_colour(catlin_model) -> None:
     for tag in ("W-G-S", "W-G-E", "W-G-N", "W-G-W"):
         assert walls[tag].assembly == "GARAGE_WALL_2X6", (
             f"{tag} must not need its own assembly to carry a colour")
-        # `corrugated-panel-26` since 2026-08-31 (the rebuild off Zip-R/nail-strip); still
+        # `corrugated-panel-24` since 2026-08-31 (26 ga until 2026-09-14) (the rebuild off Zip-R/nail-strip); still
         # the house white, still one tag for all four walls.
-        assert _cladding(catlin_model, tag).material_ref == "corrugated-panel-26", (
+        assert _cladding(catlin_model, tag).material_ref == "corrugated-panel-24", (
             f"{tag} is white; the garage green was reverted on 2026-08-26")
 
 
@@ -99,7 +99,7 @@ def test_an_override_substitutes_the_material_and_nothing_else(tmp_path) -> None
     overridden = _cladding(model, "W-G-E")
     plain = _cladding(model, "W-G-N")
     assert overridden.material_ref == "standing-seam-nailstrip-26-green"
-    assert plain.material_ref == "corrugated-panel-26", (
+    assert plain.material_ref == "corrugated-panel-24", (
         "the override must touch only the wall that authored it")
     assert overridden.thickness_m == pytest.approx(plain.thickness_m)
     assert overridden.function == plain.function == "cladding"
@@ -168,8 +168,8 @@ def test_a_declared_metal_skin_is_coil_white_on_a_structure_layer(catlin_model) 
     authored = authored_colors(catlin_model)
     coil_white = _hex_rgba("#e8e8e2")
     for function in ("structure", "cladding"):
-        assert _material_finish_color("corrugated-panel-26", function, authored) == coil_white
-        assert _material_finish_color("pbr-panel-26", function, authored) == coil_white
+        assert _material_finish_color("corrugated-panel-24", function, authored) == coil_white
+        assert _material_finish_color("pbr-panel-24", function, authored) == coil_white
 
     # The guess is not ungated: a ref that merely contains "seam" and declares no finish
     # still only reads as a skin on a cladding layer.

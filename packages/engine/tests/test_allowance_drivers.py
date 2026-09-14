@@ -36,7 +36,7 @@ _BOM = {
          "net_area_sqft": 1_000.0},
         {"scope": "roof", "function": "sheathing", "material": "osb",
          "net_area_sqft": 1_000.0},
-        {"scope": "wall", "function": "cladding", "material": "pbr-panel-26",
+        {"scope": "wall", "function": "cladding", "material": "pbr-panel-24",
          "net_area_sqft": 400.0},
     ],
     # One row per circuit and no count column — what the `rows` pseudo-field exists for.

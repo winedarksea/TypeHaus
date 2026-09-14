@@ -18,8 +18,8 @@ export const SEAM_PAN_WIDTH_M = 0.4064; // 16"
 export const RIBBED_PANEL_PITCH_M = 0.3048; // 12"
 /** Corrugation pitch of a 7/8" corrugated exposed-fastener panel. */
 export const CORRUGATED_PITCH_M = 0.0677; // 2-2/3"
-/** Batten pitch of a concealed-fastener board & batten panel: its 20" net coverage. */
-export const BATTEN_PITCH_M = 0.508; // 20"
+/** Batten pitch of a concealed-fastener board & batten panel: BBD75-1212's 12" coverage. */
+export const BATTEN_PITCH_M = 0.3048; // 12"
 
 // 128 px per pan. At 256 (64 px/pan) the seam ridge was only ~4 px wide and mip generation
 // ate it unevenly, so the module survived at some distances and not others.
@@ -111,10 +111,10 @@ export const CORRUGATED_PROFILE: MetalPanelProfile = {
  *  - `oilCanning: 0.028` — ABOVE PBR's 0.018 and near the seam profile's 0.03, and this is
  *    the term that makes it read as board & batten rather than as wide PBR. A concealed
  *    panel floats between its legs instead of being pulled tight to a girt every 24", and
- *    a wider pan wanders more over the same span.
+ *    the pan is unstiffened across its whole 12" width.
  */
 export const BOARD_BATTEN_PROFILE: MetalPanelProfile = {
-  key: "board-and-batten", moduleM: BATTEN_PITCH_M, ribHalfWidth: 0.05, squareness: 0.9,
+  key: "board-and-batten", moduleM: BATTEN_PITCH_M, ribHalfWidth: 0.0833, squareness: 0.9,
   striations: 0, oilCanning: 0.028,
 };
 

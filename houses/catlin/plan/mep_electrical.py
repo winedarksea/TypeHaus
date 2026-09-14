@@ -464,7 +464,7 @@ NEMA_BOX = [
 # It was a plain S-5! seam clamp: the box's own fastener, sharing ED-A-NEMA-JB's point
 # exactly.
 #
-# The gable wall it sits on is `pbr-panel-26`. **This is WALL and not roof**, which is
+# The gable wall it sits on is `pbr-panel-24`. **This is WALL and not roof**, which is
 # the fact that decides it: at x=4' the rake stands near 26'-6" and the box hangs at 25'-6",
 # so it is a foot below the roof line on an exposed-fastener panel with no seam anywhere in
 # it. An S-5! clamp has nothing to close on.
@@ -489,7 +489,7 @@ NEMA_CLAMP = []
 # ** This is not a downgrade from an S-5! CanDuit #13 ring on a seam clamp — it is the only
 # thing that can work. ** The CanDuit's entire value is
 # non-penetration, and S5_CANDUIT_PIPE_CLAMP declares `requires_role=ROLE_STANDING_SEAM_CLAMP`,
-# so every ring ordered brings a seam clamp with it. `pbr-panel-26` has no seam to clamp:
+# so every ring ordered brings a seam clamp with it. `pbr-panel-24` has no seam to clamp:
 # the ring would arrive with a bracket that has nothing to grip. On a wall already screwed
 # through 3,098 times, a non-penetrating fixing also buys nothing it did not already spend.
 # It is cheaper by roughly $15-22/point against ~$3, but that is the consequence, not the

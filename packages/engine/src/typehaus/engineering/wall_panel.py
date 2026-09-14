@@ -22,6 +22,11 @@ What is read and what is computed
   ``wall_panel_withdrawal.py``. It is a rational design from the code's own equation, which
   is what IAPMO UES ER-309 expressly authorises, and it is done here because waiting for a
   published row means waiting for a document nobody is writing.
+* **Head pull-through is COMPUTED too, per AISI S100** — ``Pnov = 1.5 t d'w Fu`` through the
+  panel's own flange. It is here because IRC R703.1.2 names the modes a design analysis
+  must reach by name: *"All applicable failure modes including bending rupture of siding,
+  fastener withdrawal and fastener head pull-through shall be considered"*. Three named
+  modes, three limit states.
 
 **One item per (panel, spacing), not per wall.** Twenty walls clad in one product over one
 girt course are one design and one seal; twenty identical sheets are twenty chances for a
@@ -63,9 +68,10 @@ from typehaus.engineering.wall_panel_withdrawal import (
 KIND = "wall_panel"
 
 #: Bumped whenever the arithmetic below changes — it rides in the fingerprint.
-BASIS_VERSION = "2"
+BASIS_VERSION = "3"
 BASIS = ("ASCE 7-16 §30.3 (C&C, walls) with §2.4.1 0.6W; manufacturer span table; "
-         "AWC NDS 2018 §12.2 (wood screw withdrawal)")
+         "AWC NDS 2018 §12.2 (wood screw withdrawal); AISI S100 fastener head "
+         "pull-through — the three failure modes IRC R703.1.2 names")
 
 #: ASCE 7-16 Table 26.13-1, enclosed building. Applied with the sign that makes suction
 #: worse, which is the case a cladding panel is ordered against.
@@ -86,6 +92,17 @@ _GCP_NEGATIVE = {
 #: rather than a Material field because no authored number would be read more carefully
 #: than this comment, and none would change an answer.
 SHEET_FLANGE_IN = 0.0239
+
+#: AISI S100 §J4.4.2, head pull-over (pull-through) of a screw through sheet steel:
+#: ``Pnov = 1.5 t d'w Fu``. The safety factor is the standard's own ASD Omega for the
+#: connection.
+PULL_THROUGH_OMEGA = 3.0
+
+#: ASTM A792 Grade 50 (the Galvalume substrate every painted panel on this house is rolled
+#: from), minimum tensile strength. A structural-quality sheet is 65 ksi; the equation is
+#: linear in it, so reading a commercial-quality 52 ksi as this would be unconservative by
+#: 25% — it is a constant with a standard behind it, not a guess.
+SHEET_FU_PSI = 65_000.0
 
 
 def external_pressure_coefficient(area_ft2: float, zone: str = "5") -> float:
@@ -133,6 +150,7 @@ class _Panel:
     fastener: str | None
     fastener_diameter_in: float | None
     fastener_length_in: float | None
+    fastener_head_dia_in: float | None
     coverage_in: float | None
     flange_in: float
     # The SUPPORT, read off the girt layer the panel is screwed into.
@@ -192,6 +210,7 @@ def _panels(ctx: EngineeringContext) -> list[_Panel]:
             fastener=getattr(material, "panel_fastener", None),
             fastener_diameter_in=getattr(material, "panel_fastener_diameter_in", None),
             fastener_length_in=getattr(material, "panel_fastener_length_in", None),
+            fastener_head_dia_in=getattr(material, "panel_fastener_head_dia_in", None),
             coverage_in=getattr(material, "fastener_coverage_in", None),
             flange_in=SHEET_FLANGE_IN,
             support_material=backing.material_ref or "",
@@ -281,6 +300,7 @@ def _one(ctx: EngineeringContext, key: str, members: list[_Panel]) -> Engineerin
     states: list[LimitState] = []
     _bending(panel, demand_psf, area, states, missing)
     withdrawal, trib, load = _withdrawal(panel, demand_psf, states, missing)
+    _pull_through(panel, load, states, missing)
 
     inputs = [
         Quantity("design_wind_speed", basis.speed_mph, "mph", 1.0),
@@ -390,6 +410,37 @@ def _withdrawal(panel: _Panel, demand_psf: float, states: list[LimitState],
     return withdrawal, trib, load
 
 
+def _pull_through(panel: _Panel, load_lb: float, states: list[LimitState],
+                  missing: list[str]) -> None:
+    """Fastener head pull-through — the third mode IRC R703.1.2 names, AISI S100.
+
+    ``Pnov = 1.5 t d'w Fu``: the head pulls a slug of sheet through the panel, so the terms
+    are the PANEL's thickness and the HEAD's bearing diameter, not the shank and the wood.
+    It is the mode a concealed-leg panel is most exposed to on paper — a pancake head is
+    the smallest head sold — and on this wall it is still the least of the three, because a
+    single screw carries only one panel width of suction.
+
+    ``load_lb`` is the same per-fastener demand withdrawal is graded against; a zero means
+    withdrawal could not be computed and already named what is missing.
+    """
+    if load_lb <= 0.0:
+        return
+    if panel.fastener_head_dia_in is None:
+        missing.append(
+            f"Material.panel_fastener_head_dia_in on {panel.material_ref} — the head's "
+            f"bearing diameter d'w in AISI S100's Pnov = 1.5 t d'w Fu. IRC R703.1.2 names "
+            f"head pull-through beside bending and withdrawal, and a pancake head is the "
+            f"smallest in the catalogue, so it is not a mode to assume away")
+        return
+    nominal = 1.5 * panel.flange_in * panel.fastener_head_dia_in * SHEET_FU_PSI
+    allowable = nominal / PULL_THROUGH_OMEGA
+    states.append(LimitState(
+        "fastener head pull-through", load_lb, allowable, "lb",
+        f"AISI S100 Pnov = 1.5 t d'w Fu at t {panel.flange_in:g}\" (24 ga), d'w "
+        f"{panel.fastener_head_dia_in:g}\", Fu {SHEET_FU_PSI / 1000.0:g} ksi (ASTM A792 "
+        f"Grade 50), Omega {PULL_THROUGH_OMEGA:g}"))
+
+
 def _notes(panel: _Panel, demand_psf: float, field_psf: float, strength_psf: float,
            basis, withdrawal, count: int) -> list[str]:
     notes = [
@@ -428,19 +479,30 @@ def _notes(panel: _Panel, demand_psf: float, field_psf: float, strength_psf: flo
 
 
 def _alternates(panel: _Panel, withdrawal) -> str:
-    """The shorter screws the same panel ships with, priced in d/c — why 2" is specified."""
+    """The whole screw-length ladder, priced in d/c — why the stocked 1" is specified.
+
+    The set is the stock lengths plus whatever the house actually authored, de-duplicated
+    in order: the specified length is usually one of the stock ones, and printing it twice
+    would read as two different screws.
+    """
     assert panel.fastener_diameter_in is not None and panel.coverage_in is not None
     assert panel.support_specific_gravity is not None
+    lengths: list[float] = []
+    for length in (1.0, 1.5, 2.0, panel.fastener_length_in or 0.0):
+        if length > 0.0 and not any(abs(length - seen) < 1e-6 for seen in lengths):
+            lengths.append(length)
     parts = []
-    for length in (1.0, 1.5, panel.fastener_length_in or 0.0):
-        if length <= 0.0:
-            continue
+    for length in lengths:
         alt = withdrawal_allowable_lb(
             panel.support_specific_gravity, panel.fastener_diameter_in, length,
             panel.support_thickness_in, panel.flange_in)
         parts.append(f"{length:g}\" -> {alt.thread_penetration_in:.3f}\" pen, "
                      f"{alt.capacity_lb:.0f} lb")
-    return ("Screw length is the whole capacity here, so the alternates are printed: "
-            + "; ".join(parts) + ". The guide's own 1\" pancake screw is what a panel order "
-            "ships with and it does not meet the manufacturer's \"1/2\" or more past the "
-            "inside face of the support\" rule; the 2\" does, with the tip outside the girt.")
+    return ("Screw length is the whole capacity here, so the ladder is printed: "
+            + "; ".join(parts) + ". Every length on it passes, so the length is chosen on "
+            "thread engagement INSIDE the girt and not on protruding past it: the girt is "
+            "the support, and behind it is a vented cavity and then closed-cell foam, "
+            "where a tip adds no withdrawal and no bearing. The guide's own stocked 1\" "
+            "pancake screw is specified; 1-1/2\" is the available margin at no cost; "
+            "nothing longer, because a 2\" tip stands 0.476\" into a 0.500\" vent gap and "
+            "is 0.024\" off the foam.")

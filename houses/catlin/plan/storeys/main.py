@@ -564,9 +564,9 @@ NODES = [
 # --- board & batten on the north and south elevations -----------------------
 #
 # Every wall below whose face runs EAST-WEST — the north and south elevations — carries a
-# `layer_materials=` override swapping its cladding layer from `pbr-panel-26` to
-# `board-batten-24` (24 ga concealed-fastener, 20" net coverage, same white PVDF). The east
-# and west walls keep PBR. Twenty walls across main/second/attic; the full list and the
+# `layer_materials=` override swapping its cladding layer from `pbr-panel-24` to
+# `board-batten-24` (Metal Sales BBD75-1212, 24 ga concealed direct-fastened, 12" net
+# coverage, the same PVDF Linen White). The east and west walls keep PBR. Twenty walls across main/second/attic; the full list and the
 # supplier/gauge/thickness reasoning live on the Material in plan/assemblies.py.
 #
 # ** NO SIBLING ASSEMBLY, and that is the point. ** A second Assembly tag would silently
@@ -581,7 +581,7 @@ NODES = [
 # Note W-S-S1 is PLANT_EXT_2X6_HUMID and so is W-S-W4 on the east/west side: the plant room
 # straddles the split, and this override handles it without forking either assembly.
 #
-# ** The revert is deleting the `layer_materials=` lines. ** `pbr-panel-26` and its
+# ** The revert is deleting the `layer_materials=` lines. ** `pbr-panel-24` and its
 # prices.toml row are still live on the east/west walls, so going back to one skin is a
 # twenty-line deletion with no price archaeology.
 WALLS = [

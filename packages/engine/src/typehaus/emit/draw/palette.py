@@ -132,8 +132,10 @@ DETAIL_FILL: dict[str, str] = {
     # in thickness (which the layer carries) and in nothing this table decides. It is listed
     # explicitly because these tables match by TAG and never guess — `pbr-panel-26` hits no
     # needle in `_FAMILY_NEEDLES` ("clad"/"metal"/"seam" are all absent from it), so without
-    # this row it would draw as the near-white fallback with no hatch.
+    # this row it would draw as the near-white fallback with no hatch. Which is also why the
+    # 24 ga row below is not optional: a NEW tag matched by TAG inherits nothing.
     "pbr-panel-26": "#2f2f2f",
+    "pbr-panel-24": "#2f2f2f",
     # Same reason as pbr-panel-26 above: matched by TAG, hits no `_FAMILY_NEEDLES` needle.
     "board-batten-24": "#2f2f2f",
     "fiber-cement": "#e6e6e6",
@@ -238,6 +240,7 @@ DETAIL_HATCH: dict[str, str] = {
     "standing-seam-nailstrip": "metal",
     "standing-seam-nailstrip-26": "metal",
     "pbr-panel-26": "metal",
+    "pbr-panel-24": "metal",
     "board-batten-24": "metal",
     "metal-dark-exterior": "metal",
     "metal-dark-kstyle": "metal",

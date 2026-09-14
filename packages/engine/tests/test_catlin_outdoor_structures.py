@@ -449,7 +449,7 @@ def test_the_gable_enclosures_carry_no_seam_clamp_on_an_exposed_fastener_wall(
 ) -> None:
     """The NEMA box and the PV junction box keep their gable perch; their clamps do not.
 
-    An S-5! seam clamp closes on a standing-seam leg, and `pbr-panel-26` has no leg — the
+    An S-5! seam clamp closes on a standing-seam leg, and `pbr-panel-24` has no leg — the
     fixing is uninstallable on this wall, so neither clamp exists. Neither box sits on the
     roof: the 4:12 rake at x=4' and x=9' is well above their ~25'-6" elevation, so what has
     to hold is that the boxes ride W-A-N2's gable, below its rake.

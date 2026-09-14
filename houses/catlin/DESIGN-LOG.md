@@ -76,10 +76,12 @@ NDS's `W = 2850 G² D` (95.0 lb/in at G 0.42) is printed only as a cross-check. 
 applying it to a tested allowable whose report nobody has read would inflate the capacity by
 60% on an assumption. The reviewer is asked to restore it if ESR-1078 §4 permits.
 
-**BLD-01a is not a change.** The panel was already Metal Sales BB75-1111 with a named
+**BLD-01a is not a change.** The panel was already a named Metal Sales product with a named
 `open_framing_source`, the twenty INCOMPLETE items were already one draft group item at
-bending d/c 0.31, and the cladding screw was already 2", which closes the Metal Sales
-"1/2" past the support" variance. The audit was reading a house that had moved.
+bending d/c 0.31, and the cladding screw was already 2". The audit was reading a house that
+had moved. (Two of those three have since moved again — see "The metal skin went one gauge,
+one colour and one product number", 2026-09-14: the panel is BBD75-1212, the screw is back
+to 1", and withdrawal governs.)
 
 ### Three requirements left the engineering register without anybody stamping them (2026-09-11)
 
@@ -145,15 +147,142 @@ applied correctly to the row that is not published.
 
 Three things followed. The screw went **1-1/2" → 2"**: not for capacity, which all three
 lengths have, but because Metal Sales asks for 1/2" past the inside face of the support and
-in a 1-1/2" girt nothing shorter can give it. That was a written-variance item and it is now
-closed. The twenty items became **one group item**, `wall_panel/W-A-N1` — one panel, one
-girt spacing, one demand is one design, and twenty identical sheets were twenty chances for
-a reviewer to stamp nineteen. And the panel count roughly doubled, because 11" is real
-coverage where 20" was not, so the labour rate moved to the top of its researched band.
+in a 1-1/2" girt nothing shorter can give it. **That reasoning was withdrawn on 2026-09-14
+and the screw is back to the guide's stocked 1"** — see the entry below; leaving this
+paragraph standing so the history reads as a correction rather than a silent revert. The
+twenty items became **one group item**, `wall_panel/W-A-N1` — one panel, one girt spacing,
+one demand is one design, and twenty identical sheets were twenty chances for a reviewer to
+stamp nineteen. And the panel count roughly doubled, because 11" is real coverage where 20"
+was not, so the labour rate moved to the top of its researched band.
 
 The register went from 60 items with 29 unfinished to 41 with 9. Nothing about the wall
 moved; what moved is that a reviewer now has two graded limit states to confirm instead of
 an absence to be told about.
+
+### The metal skin went one gauge, one colour and one product number (2026-09-14)
+
+Four owner rules drove this and they are worth stating because they settle every trade-off
+below: **~100-year service life; cheapest installed that credibly reaches it; a
+high-reflectance white, to bounce daylight into the tree-shaded rear gardens; and the "best
+look" — concealed fasteners — on the north and south faces only.**
+
+**The house was specifying a panel it could not buy.** The E/W walls and the garage were
+authored as "26 ga PVDF". At Metal Sales, PVDF *is* a 24 ga product — the 24 ga colour guide
+is the PVDF palette and the 26 ga guides are MS Colorfast45, which is SMP. So both are now
+24 ga, under two new house-local tags, `pbr-panel-24` and `corrugated-panel-24`; the 26 ga
+rows stay at 0 SF as the documented revert. A tag reads the gauge, which is why those two had
+to move and `board-batten-24` did not. Hail is the secondary argument (Twin Cities corridor,
+insurers exclude cosmetic denting, 24 ga dents and oil-cans less) and it should be read as
+an appearance-and-claims argument: **gauge has zero effect on corrosion.**
+
+**The colour is PVDF Linen White (81), SRI 89** — SR 0.73 / TE 0.86, the highest in the whole
+Metal Sales line, ahead of Snowdrift White's 78 and the 26 ga SMP white's 79. One colour on
+every face also neutralises St Paul §63.110's advisory that street-facing sides use materials
+similar to the principal facades. Two honest caveats: SRI is NIR-weighted and the garden fill
+light wants visible LRV, which Metal Sales does not publish (peer whites run ~74-75); and it
+is not marked Low Gloss, and there is no matte white in the palette. The "reflected light
+scorches plants" cases are all concave low-e glass — a flat wall cannot focus — so that is a
+non-issue.
+
+**The batten panel was the wrong member of its own family.** BB75-1111, named on 2026-09-11,
+is the CLIP-fastened panel; BBD75-1212 is the direct-fastened one. The two guides' cover
+pages say so, and the wall-base details prove it: BB75's asks for a panel clip and two
+fasteners per clip, BBD75's for one panel fastener at the nail strip. **The house's own
+withdrawal model has always been one screw per panel per girt — BBD75's detail.** So the
+correction makes the existing engineering item true rather than adding to it, and it is
+cheaper besides: 12" coverage instead of 11" (~9% fewer panels, laps and screw lines) and
+~840 screws with no clips against ~2,000 screws and ~1,000 clips. What it gives up is the
+Florida approval (scoped over sheathing, so it never reached this wall) and the clip's
+thermal-movement slip, immaterial at an 11.1 ft storey band.
+
+**The 2" screw comes out, and this is the reversal of 2026-09-11 above.** That entry gave
+the 2" one leg to stand on — Metal Sales asks that fasteners "extend 1/2" or more past the
+inside face of the support" — and the leg does not hold. The girt *is* the support, and
+behind it is a vent gap and then ccSPF, so a protruding tip buys no withdrawal, no bearing
+and no redundancy. The rule cannot be a wood-engagement criterion either: the same stocked 1"
+screw yields **0.034"** of thread on the guide's own 7/16" OSB row against **0.596"** in this
+girt, ~18x. And the load table footnotes fasteners and support material out by name — which
+is exactly why this is an ENGINEERED record — so IRC R703.1.2's design-analysis path governs
+the fastener, and on NDS §12.2 every candidate length passes. The spec is the guide's own
+stocked **1"**: d/c 0.334 on an allowable that already carries NDS's 5:1, and one fewer
+special length on a PO already custom for the 316 SS / A153-D coating. 1-1/2" is recorded as
+the no-cost margin. **2" is affirmatively rejected**: its tip stands 0.476" into a 0.500"
+vent gap, 0.024" off the ccSPF, so ~840 tips are one thin girt or one overdrive from the
+foam.
+
+**Two consequences that had to be handled rather than discovered.** The governing limit
+state **flips to withdrawal** — 0.334 against bending's 0.315, where at 11"/2" it was 0.12
+against 0.315 — so `test_bending_governs_and_the_item_is_finished` was false by its own
+title and is renamed and inverted rather than loosened. The two states are 6% apart, so a
+later coverage or wind change can flip them back with no physical meaning; the note says so.
+And the seal fingerprint moves, on the ratio as well as the inputs.
+
+**The one real gap the exercise found is a code-coverage gap, not a capacity one.** IRC
+R703.1.2 names three failure modes — "bending rupture of siding, fastener withdrawal and
+fastener head pull-through" — and this house graded two. **A third limit state,
+`pull_through`, is added**, AISI S100's `Pnov = 1.5 t d'w Fu` on the 24 ga flange with a
+0.40" pancake head at A792 Grade 50's 65 ksi: 310.7 lb allowable against 36.5 lb, d/c 0.118.
+It passes at 8.5x and it is in the record because the code names it. `BASIS_VERSION` went
+2 → 3.
+
+**And the substrate question, which prompted the whole sweep, is CLOSED — by the code, not
+by a letter.** An earlier draft treated a CTR summary badge as a blocker. That was wrong.
+R703.1.2 asks for a wind-load path by ASTM E330 test or by design analysis and says nothing
+about a solid substrate; BBD75-1212 lists an ASTM E 330 Load Test on its own design page; and
+the allowable table is indexed on FASTENER SPACING from 2'-0" (the narrowest column) out to
+6'-0", so a table built that way is a spanning-between-supports table by construction and a
+24" girt sits at its strong end. The badge is a copy artifact: the same icon row reads
+`10" & 12" COVERAGE` on a sheet showing one panel at 11", because a single 12/2024 sheet was
+split in two and the row copied onto both. No Tech Services letter was needed.
+
+**Two drawing bugs fell out of the scoping, both the same class.** `_BATTEN_PITCH_M` was
+0.508 m — **20"**, authored against no named panel and never re-struck when one was named —
+so every elevation drew battens at nearly twice their pitch; it is 0.3048 m. And
+`_CORRUGATED_LAP_M` was 0.8128 m, **32"**, which is the 7/8" corrugated ROOF coverage where
+the WALL is 34-2/3"; it is 0.8805 m. Both drew a line where no joint is. The ui's
+`ribHalfWidth` is a fraction of the module, so it was re-struck with the pitch to keep the
+drawn cap at 2".
+
+**Recorded and not taken: AEP Span Flex Series 1.2FX20-12d**, which supersedes the Flush
+Panel entry in the note's §7.9 and is better than it — a genuine batten profile covered by
+IAPMO UES ER-309 Table 7.2 "Over solid substrate or over open framing" at **89 psf ASD** over
+"Lumber (DFL) 1" min", which would take `wall_panel/W-A-N1` out of the register as a
+`PublishedSpan` at no cost to the appearance. Not taken for three reasons that have nothing
+to do with load: no Midwest plant against Metal Sales' Rogers MN, the report **expires
+2026-09-30**, and AEP's own guide spec says to avoid contact with treated lumber — every girt
+here is KDAT.
+
+**Which is the other thing researched and settled: keep the KDAT girts.** The measured
+dataset (USDA FPL GTR-227) is unambiguous that moisture content is the whole mechanism —
+"when the wood is dry, embedded metals do not corrode" — and the frightening study (U.S.
+Steel TBP 2005.19) ran ACQ-D in a continuously damp test simulating near-contact with
+standing water, which is not this vented cavity. MCA's 09/2025 bulletin adds that "if panels
+are coated on both sides, a moisture barrier may not be needed"; this panel is coated both
+sides. The actions are cheap and none is a girt swap: **read the end tag before ordering**
+(micronized → change nothing; soluble CA-C or ACQ → change the order, while it is a phone
+call), **upgrade the coil's BACKER coat** — the ~0.5 mil unspecified polyester facing the
+treated wood is the highest-leverage 100-year item in the assembly — specify painted-head 316
+screws, and do NOT cap the girts with a self-adhered strip, which converts a two-sided drying
+ledge into a one-sided one punctured at every screw. Honest against it: nobody publishes a
+detail showing treated girts in a vented rainscreen, and no study tests a vented cavity
+either way. That is a hole in the literature, not evidence of safety.
+
+**The ranked 100-year limiter list, since that was the owner rule.** (1) the exposed
+fasteners' EPDM washers, 15-40 yr — annual look, washer campaign ~yr 30-40, painted heads on
+the order; (2) the base-of-wall salt and snow zone, where 18-24" grade clearance and a
+separately replaceable bottom band are the answer and `haus check` grades neither;
+(3) copper-treated wood contact, above; (4) sealants; (5) paint appearance, recoverable by a
+~$1-3/SF Kynar Aquatec field recoat at year 40-50. **Painted Galvalume itself is last** — USS
+warrants AZ50 painted at 50 yr and the MCA/ZAC field study projects 60-375. The 316 screw
+shank is not on the list at all.
+
+Open, and nothing waits on it: a real Rogers MN quote for BBD75-1212 24 ga PVDF Linen White
+(lead time, stocked or coil run, $/SF) — Linen White is a standard no-upcharge colour but the
+Rogers stock charts are 29/26 ga SMP, so treat it as a made-to-order coil run. Two questions
+to ask while quoting: which BBD75 load table is current, the install guide's 58 psf outward
+at 2'-0" or the 07/2026 CTR's 75 (the model uses 58 either way, the conservative half of an
+irreconcilable pair), and the CRRC 3-year aged SRI for Linen White, which Metal Sales does
+not publish.
 
 
 - The current CATLIN TRUSS WALL is the third wall stack. It replaced the Swinburne
@@ -1562,7 +1691,7 @@ pocket was possible there at all.
     (36") of where the label is expected to land. Generous on purpose: the authored piece and
     the schematic fallback genuinely sit at different elevations, and the window rejects
     another STOREY's flashing, not a few inches of lap order.
-  - **Aluminium over aluminium, and no check grades it.** `corrugated-panel-26` above the band
+  - **Aluminium over aluminium, and no check grades it.** `corrugated-panel-24` above the band
     is 26 ga PVDF-coated steel; the band and the Z are aluminium. They must never lap
     metal-to-metal — sealant or EPDM between, the Z's upper leg behind the corrugated — and
     aluminium must never touch concrete or fresh mortar (alkali strips the oxide film). In a
@@ -1586,9 +1715,9 @@ pocket was possible there at all.
 - **The garage colour history, and the green machinery kept alive.** `W-G-E` briefly carried
   Western States Metal Roofing "Classic Green"
   (westernstatesmetalroofing.com/classic-green) nail-strip and was reverted; all four garage
-  walls are `GARAGE_WALL_2X6` in white today — and that white is `corrugated-panel-26`, not
+  walls are `GARAGE_WALL_2X6` in white today — and that white is `corrugated-panel-24`, not
   the nail strip this paragraph's machinery was built for. The machinery is unchanged and
-  still works; the green revert would now be a `corrugated-panel-26`-based colourway, or a
+  still works; the green revert would now be a `corrugated-panel-24`-based colourway, or a
   return to nail strip first. `standing-seam-nailstrip-26-green` is still in the catalog,
   referenced by nothing — the same convention `glazed-green-brick` is kept under, so going
   green again is a one-line `layer_materials=` change rather than a re-derivation. Two things

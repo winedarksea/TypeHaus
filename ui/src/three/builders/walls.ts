@@ -118,7 +118,7 @@ export function buildWall(
     // reads the material's authored `finish` — "ribbed-panel" for the house's exposed-fastener
     // PBR, "standing-seam" for anything that says so — and only a material that declares
     // nothing falls back to `isStandingSeam`, which is a substring test on the ref and cannot
-    // tell a rib from a fold. `pbr-panel-26` has no "seam" in its tag on purpose, so without
+    // tell a rib from a fold. `pbr-panel-24` has no "seam" in its tag on purpose, so without
     // this branch it would render as flat grey.
     const seamProfile = metalPanelProfileFor(ly.function, ly.material, appearance?.finish);
     const seam = seamProfile !== null;

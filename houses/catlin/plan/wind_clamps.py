@@ -13,7 +13,7 @@
 # clip positions above 90 psf and only reaches the perimeter above 135 psf. So: corners.
 #
 # ** THE 48 HOUSE-WALL CLAMPS ARE GONE, AND NOT AS AN ECONOMY. ** They were `S-5-S`, and an
-# S clamp closes on a snap-lock leg. The house walls are now `pbr-panel-26` — an
+# S clamp closes on a snap-lock leg. The house walls are now `pbr-panel-24` — an
 # exposed-fastener PBR panel with no seam of any kind — so there is nothing left for the
 # clamp to grip and the part is not merely unnecessary but uninstallable. What resisted
 # corner uplift through those clamps is now resisted by the panel's own face-fastened
@@ -61,7 +61,7 @@ from typehaus import Connector, ConnectorKind, ft, pt
 
 # ** THE 16 GARAGE-WALL CLAMPS ARE GONE TOO, for the same reason and by the same argument.
 # ** They were `S-5-N`, and an N clamp closes on a nail strip's bulb-and-lip seam.
-# GARAGE_WALL_2X6 is `corrugated-panel-26` now — a 7/8" corrugated exposed-fastener panel
+# GARAGE_WALL_2X6 is `corrugated-panel-24` now — a 7/8" corrugated exposed-fastener panel
 # with no seam of any kind — so the part is uninstallable there, not merely unneeded. What
 # resisted corner uplift through them is resisted by the panel's own face screws:
 # `exposed_fastener_cladding_screw_rows` bills 640 over the four garage walls (500 field +

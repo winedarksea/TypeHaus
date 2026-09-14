@@ -141,7 +141,7 @@ WALLS = [
 # kick-out leg that runs up behind the corrugated panel cannot be a second bend on the same
 # run. Do not invent a TrimKind for it.
 #
-# ALUMINIUM, AND THAT IS THE CORROSION RULE WRITTEN INTO THE MODEL. `corrugated-panel-26`
+# ALUMINIUM, AND THAT IS THE CORROSION RULE WRITTEN INTO THE MODEL. `corrugated-panel-24`
 # above this line is 26 ga PVDF-coated STEEL and the band below it is aluminium, so the Z
 # between them must be aluminium and must never lap the panel metal-to-metal — sealant or
 # EPDM between, the Z's upper leg behind the corrugated. In a plowed, salted splash zone

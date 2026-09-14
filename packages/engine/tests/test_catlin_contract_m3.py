@@ -2243,7 +2243,7 @@ def test_the_screen_skirt_is_one_sheet_with_the_panel_above_it(catlin_model):
     panel, skirt = walls["W-BW-SCREEN"], walls["W-BW-SCREEN-SKIRT"]
     face = next(ly for ly in panel.layers if ly.name == "cladding-out")
     sheet = next(ly for ly in skirt.layers if ly.name == "skirt-panel")
-    assert face.material_ref == sheet.material_ref == "corrugated-panel-26"
+    assert face.material_ref == sheet.material_ref == "corrugated-panel-24"
 
     def band(layer, axis):
         return (min(p[axis] for p in layer.polygon), max(p[axis] for p in layer.polygon))

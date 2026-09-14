@@ -231,6 +231,18 @@ listed Power Control System).
 
 ### BLD-01a — Drop board-and-batten. ~~One wall panel product.~~ **KEEP — RESOLVED 2026-09-11**
 
+> **SUPERSEDED IN ITS PARTICULARS, 2026-09-14 — the verdict below stands, three of its
+> facts do not.** The panel is **Metal Sales BBD75-1212 at 12" coverage**, not BB75-1111 at
+> 11": BB75 is the CLIP-fastened sibling, and this house's one-screw-per-panel-per-girt
+> model has always been BBD75's detail. The cladding screw is back to the guide's stocked
+> **1"** — the "1/2" past the inside face" argument for the 2" was withdrawn (the girt IS
+> the support, and that rule yields 0.034" of thread on the guide's own 7/16" OSB row).
+> And the item now grades **three** limit states, not two, because IRC R703.1.2 names three;
+> **withdrawal governs at 0.334**, ahead of bending's 0.315. The "published alternative not
+> taken" below is also the wrong AEP panel — Flex Series 1.2FX20-12d is a genuine batten at
+> 89 psf and does NOT cost the batten line. See `houses/catlin/DESIGN-LOG.md`, "The metal
+> skin went one gauge, one colour and one product number", and `notes/board_batten_girt_span.md`.
+>
 > **VERDICT REVERSED, 2026-09-12 (owner). The panel stays.** This finding was written
 > against a house that had already moved: commits `0925db4f` and `b4b8afb3` on 2026-09-11
 > named the product, closed the screw, and collapsed the register entry. Specifically —

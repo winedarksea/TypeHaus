@@ -963,7 +963,7 @@
 # The row stays for the ColorGard's carriers and for the revert.
 "S-5!" = { low = 9, high = 15 }  # 6 ea
 # The two CanDuit rings are NOT TAKEN as of 2026-08-26 — 0 ea each. The house walls went to
-# `pbr-panel-26`, an exposed-fastener panel with no seam, and the ring mounts on a seam
+# `pbr-panel-24`, an exposed-fastener panel with no seam, and the ring mounts on a seam
 # clamp by its M8 shaft (`requires_role`): it would arrive with a bracket that has nothing
 # to grip. The 11 leader/riser fixings moved to "SS316-STANDOFF-STRAP" below, and the 11
 # carried-mount "S-5!" clamps they dragged with them went with them.
@@ -998,7 +998,7 @@
 #   S-5-N  MSRP $7.11; street $7.62 to $9.50
 #
 # ** The S-5-S row is GONE (2026-08-26), and with it the 48 house-wall corner clamps. **
-# Those walls are `pbr-panel-26` now, an exposed-fastener panel with no seam of any kind, so
+# Those walls are `pbr-panel-24` now, an exposed-fastener panel with no seam of any kind, so
 # the S clamp is not merely unneeded but uninstallable. What it resisted is resisted by the
 # panel's own face screws, billed as "T09150HWAM" below. The row is deleted rather than
 # zeroed because a rate for a part the model cannot contain reads as coverage — and unlike
@@ -1063,9 +1063,24 @@
 # ** This is the one cladding fixing in this file billed as a counted part rather than
 # inside a $/SF rate, and that is the whole reason `Material.exposed_fastener` exists. **
 # The four seam profiles' clips and fixings are inside their [envelope_layers] rows. See
-# [basis_notes]. Labour is NOT here: driving them is inside the "pbr-panel-26" labour rate,
+# [basis_notes]. Labour is NOT here: driving them is inside the "pbr-panel-24" labour rate,
 # which is where the care they need (land in the flat, drive to gasket compression and no
 # further) is actually priced.
+#
+# ** THE EPDM WASHER, NOT THE SCREW, IS THE 100-YEAR LIMITER ON THIS HOUSE — and it is the
+# top of the ranked list, ahead of the base-of-wall salt zone, the treated-wood contact and
+# the paint. ** The 316 shank is not the exposure: MCA's fastener-compatibility bulletin
+# (v3, 09/2025) rates 300-series stainless in painted Galvalume as "matching the expected
+# life" of the cladding, and painted Galvalume is itself last on the list of life limiters
+# (USS warrants AZ50 painted at 50 yr; the MCA/ZAC field study projects 60-375). The bonded
+# EPDM washer runs 15-40 years. So the maintenance line this row implies is: an ANNUAL LOOK
+# at the south and west elevations for a chalked, cracked or backed-out washer, and a
+# planned WASHER CAMPAIGN at roughly year 30-40 — pull and replace with the panel left in
+# place. No dollars are carried for it; it is not a construction cost, and dollars here are
+# opt-in. Specify PAINTED heads while ordering: MCA's table rates 300-series stainless on
+# painted Galvalume "Yes" with fine print assuming "the fastener will also be painted", it
+# costs nothing, and it looks better. Recorded with the same standing as the paint's own
+# recoverable end-of-life (a ~$1-3/SF Kynar Aquatec field recoat at year 40-50).
 "T09150HWAM" = { low = 0.579, high = 0.725 }  # 1,804 ea — 1,430 field + 374 sidelap
 # The through-panel pipe straps that replaced the CanDuit rings on the two roof leaders (#13,
 # 4.0" OD) and the north-gable vent riser (#11, 3.5" OD). A commodity 316 stainless two-hole
@@ -3530,7 +3545,7 @@
 # in `[edge_trim] drip_flashing`.
 #
 # ALUMINIUM: do not read this off any of the painted-STEEL panel rows in this file
-# (`board-batten-24`, `corrugated-panel-26`, `pbr-panel-26`, the standing-seam family).
+# (`board-batten-24`, `corrugated-panel-24`, `pbr-panel-24`, the standing-seam family).
 # Painted aluminium runs well above painted steel per SF, and reading one off the other is
 # the class of error the `[envelope_layers]` note at the foot of this file warns about, one
 # key deeper: fixing method + profile + gauge + METAL.
@@ -3671,11 +3686,18 @@
 # cheaper profile, and that is the wall trim load: 20-35% on top of field panel is normal on
 # a concealed-fastener wall, and this wall has 45 openings.
 "standing-seam-snaplock" = { material = { low = 3.75, high = 7 }, labour = { low = 5, high = 9 } }
+# ** NOT TAKEN as of 2026-09-14 — 0 SF, kept as the revert rate ** exactly as the snap-lock
+# row above is. The house's east and west walls went to `pbr-panel-24` below on that date:
+# same profile, same 36" coverage, one gauge heavier and a named colour. The reason is that
+# "26 ga PVDF" is probably not a purchasable combination at Metal Sales at all — the 24 ga
+# colour guide IS the PVDF palette and the 26 ga guides are MS Colorfast45, which is SMP —
+# so this row was pricing a product that may not exist. Going back is a `material_ref`
+# change with no price archaeology. Everything below is its researched basis, kept whole.
+#
 # 1,416.6 SF — the house's EAST AND WEST walls only since 2026-08-31 (it was 3,670.7 SF, the
 # whole of EXT_2X6 + PLANT_EXT_2X6_HUMID, from 2026-08-26 until then). The north and
 # south elevations' 1,678.3 SF went to `board-batten-24` below via a per-wall
-# `layer_materials=` override; this row is 45.8% of the wall area, still live, and IS THE
-# REVERT — delete those twenty overrides and it takes the whole envelope back.
+# `layer_materials=` override; this row was 45.8% of the wall area.
 # Installed $4.50-7.25/SF, and BOTH halves are below the snap-lock row above for reasons
 # that are separate and should not be collapsed into one "it's cheaper" line.
 #
@@ -3701,52 +3723,107 @@
 # applies, and folding the screws back into $/SF here would double-bill them. The board &
 # batten row below is the other way round: concealed fixings, inside its $/SF.
 "pbr-panel-26" = { material = { low = 1.75, high = 2.75 }, labour = { low = 2.75, high = 4.5 } }
+# 1,416.6 SF — the house's EAST AND WEST walls (EXT_2X6 and PLANT_EXT_2X6_HUMID), from
+# 2026-09-14. The same Metal Sales PBR profile as the 26 ga row above, in 24 ga PVDF Linen
+# White (81). This row is 45.8% of the wall area and IS THE REVERT for the board & batten
+# override — delete those twenty `layer_materials=` lines and it takes the whole envelope
+# back. Installed $4.90-8.05/SF against the 26 ga row's $4.50-7.25.
+#
+# ** MATERIAL $2.15-3.30/SF — a lift of $0.40-0.55, and DELIBERATELY LESS than the published
+# 26 -> 24 ga delta of $0.80-1.10/SF (20-35%). ** The published delta is a like-for-like
+# coating comparison and this is not one: the 26 ga row above was already lifted for "the
+# PVDF coil, not the cheaper SMP the profile is usually stocked in", and that uplift was
+# FICTIONAL at 26 ga, where Metal Sales sells SMP. Half the gauge delta is therefore already
+# inside the row being replaced, and applying the full published figure would double-count
+# it. What is genuinely bought here is ~25% more base metal (0.0239" against 0.0179") in a
+# coating system that is actually orderable.
+#
+# ** LABOUR $2.75-4.50/SF, UNCHANGED, and that is a considered call rather than laziness. **
+# Every cost guide tabulates metal labour by profile and never by gauge — the same reasoning
+# the `standing-seam-nailstrip-26` row above writes out. The one claim found for a gauge
+# labour effect is ~10% on handling weight and it runs the WRONG way here (24 ga is heavier),
+# offset by a thicker pan being easier to lay flat. Treat +/-5-10% as a sensitivity.
+#
+# ** The fixings are NOT in this rate ** — same as the 26 ga row: the counted `[hardware]`
+# "T09150HWAM" part, which is what `Material.exposed_fastener` exists to enable. Gauge does
+# not change the count; `takeoff/hardware_config.py` reads a global rule, not the Material.
+#
+# WHY 24 GA, in order of weight: PVDF orderability (above); HAIL, because the Twin Cities are
+# a hail corridor, insurers exclude cosmetic denting and 24 ga dents and oil-cans visibly
+# less — gauge has ZERO effect on corrosion, so this is an appearance-and-claims argument and
+# should be read as one; and COLOUR MATCH, Linen White on every face, which also neutralises
+# St Paul §63.110's advisory that street-facing sides use materials "similar to those used on
+# principal facades". Load was never the reason: 318 psf outward at 2'-0" in 24 ga and 236 in
+# 26 (Metal Sales PBR Condensed Technical Reference 1/2026), both an order of magnitude over
+# the -18.3 psf ASD corner-zone demand, and this wall stays PRESCRIPTIVE either way.
+"pbr-panel-24" = { material = { low = 2.15, high = 3.3 }, labour = { low = 2.75, high = 4.5 } }
 # 1,678.3 SF — the NORTH AND SOUTH elevations of the house walls (EXT_2X6 and
 # PLANT_EXT_2X6_HUMID), from 2026-08-31, via a per-wall `layer_materials=` override on twenty
 # walls. The east and west walls' 1,416.6 SF stay on the PBR row above; the split is 54.2% /
 # 45.8%. Installed $6.45-10.80/SF against PBR's $4.50-7.25.
 #
-# ** THE PRODUCT IS NAMED, from 2026-09-11: METAL SALES BB75-1111. ** 24 ga concealed-fastener
-# board & batten, standard white PVDF, **11" net coverage**, 3/4" rib. It was an unnamed
-# "24 ga board & batten at 20" coverage" until then, with an allowable borrowed from a Metal
-# Sales table for a panel nobody had picked. Naming it bought two things and cost one. It
-# bought the substrate permission in the maker's own words — p.6, "designed to be installed
-# over open framing and/or directly over a wood substrate", support materials including
-# "Lumber - 1x or thicker", which is exactly this wall's 1-1/2" KDAT girt — and it bought a
-# published 58 psf outward at 2'-0" that is now THIS panel's number rather than a nearest
-# match. It cost the panel count: 11" is real and 20" was not.
+# ** THE PRODUCT IS NAMED, and it was RE-NAMED on 2026-09-14: METAL SALES BBD75-1212. **
+# 24 ga concealed DIRECT-fastened board & batten, PVDF Linen White (81), **12" net
+# coverage**, 3/4" rib. From 2026-09-11 to 2026-09-14 this row named BB75-1111, which is the
+# CLIP-fastened panel of the same family — its wall-base detail reads "PANEL CLIP, CLIP
+# FASTENERS (B), 2 PER CLIP" where BBD75's reads "PANEL FASTENER (B), AT NAIL STRIP". The
+# one-screw-per-panel-per-girt model this row and the engineering item have always used is
+# BBD75's detail, so the correction makes the existing arithmetic true rather than replacing
+# it. Before 2026-09-11 it was an unnamed "24 ga board & batten at 20" coverage" with an
+# allowable borrowed from a table for a panel nobody had picked.
 #
-# MATERIAL $2.30-4.05/SF, unchanged. It is a $/SF rate for sheet and trim, and coverage does
-# not move it. Most of the rise over PBR is the MANDATORY 26 ga -> 24 ga step: PVDF is
-# generally only offered on 24 ga board & batten, so 26 ga in this coating system may not be
-# a purchasable combination at all. This row carries the same trim uplift the PBR row carries
-# (46-72% over bare panel; 45 openings), for the same reason.
+# Structurally the two are the same panel (both guides 10/2025: 43 psf inward / 58 outward at
+# 2'-0", same note 2, same support list, 24 ga only, 5'-20'). BBD75-1212 is CHEAPER TO
+# INSTALL on two counts: 12" coverage against 11" is ~9% fewer panels, laps and screw lines,
+# and one nail-strip screw per girt replaces a clip plus two screws — ~840 screws and no
+# clips where BB75 wanted ~2,000 screws and ~1,000 clips. Same 24 ga PVDF coil price band
+# ($2.50-3.00/SF published, which this row's material band straddles), same brake-formed trim
+# kit (C-closure, sill/jamb, head and transition trim, all 24 ga 10'-2" stock). What it gives
+# up: the FBC approval (FL47647.1 is scoped over sheathing and reaches this wall for neither
+# width anyway) and the clip's thermal-movement slip, immaterial at an 11.1 ft storey band.
 #
-# ** LABOUR RE-STRUCK to $4.15-6.75/SF (was $3.70-6.55). ** The researched band is +35-50% on
-# PBR's $2.75-4.50, and the old row sat at the LOW end of it because 20" coverage was 1.8x
-# PBR's panel count. At the product's real 11" against PBR's 36" net coverage that is **3.3x**
-# the panels, so the low end is no longer defensible and the row moves to the TOP of the same
-# band (+50% both ends). The band itself did not move — only where in it this panel sits.
+# MATERIAL $2.30-4.05/SF, unchanged, and the band is CONFIRMED rather than re-derived: the
+# published 24 ga PVDF coil parity for these profiles is $2.50-3.00/SF, which this row
+# contains. It is a $/SF rate for sheet and trim, so coverage does not move it. Most of the
+# rise over PBR WAS the 26 -> 24 ga step; now that the E/W walls are 24 ga too
+# (`pbr-panel-24`), what is left is the trim uplift both rows carry (46-72% over bare panel;
+# 45 openings) plus the concealed-panel trim rate itself, which runs $3-5/LF against $1-3/LF
+# for the exposed-fastener rows.
 #
-# ** ~915 CONCEALED SCREWS, at ~$0.04/SF, and they are inside the labour rate. ** One screw
-# per panel per girt is the concealed-leg pattern, so each screw is responsible for
-# 24" x 11" = 1.83 SF: 1,678.3 / 1.833 = ~915. That is the same tributary the withdrawal
-# calculation grades against (see below), so the count and the structural demand cannot drift
-# apart. If the installer puts a screw at each of the two concealed legs the count roughly
-# doubles to ~1,830 and every screw's demand halves — cheaper structurally, dearer in labour,
-# and neither the model nor this rate assumes it.
+# ** LABOUR $4.15-6.75/SF. ** The researched band is +35-50% on PBR's $2.75-4.50 and this row
+# sits at its TOP (+50% both ends) — struck there on 2026-09-11 when 11" coverage made the
+# panel count 3.3x PBR's. At the real 12" it is **3.0x**, so the row may now sit slightly
+# BELOW the top of the band rather than on it; it is left where it is pending a real quote,
+# which is the conservative direction. The band itself has never moved — only where in it
+# this panel sits.
 #
-# ** THE CLADDING SCREW IS NOW 2", STAINLESS OR ASTM A153 CLASS D HDG ** on this row (the PBR
-# row above keeps 1-1/2", face-fastened into the same girt with no 1/2"-past rule on it), and
-# it is NOT the 1" plated pancake screw a panel order ships with. The length is a calculation,
-# not a preference: Metal Sales' own detail asks that fasteners "extend 1/2" or more past the
-# inside face of the support", and in a 1-1/2" girt no screw shorter than 2" can do it. The 2"
-# passes the girt fully with its tip outside. ** That closes the written-variance item this
-# row used to carry. ** It must be a wood-point (Type 17) screw: a self-drilling point reams
-# its own thread out of a 1-1/2" nailer. This wall has no sheathing behind the nailer to catch
-# a short screw, and a fastener stopping part-way through a treated ledge in a vented cavity
-# is the one corrosion exposure in the assembly — see the SDWS22800DB note in [hardware] for
-# why the GIRT screw, encapsulated and dry, is the opposite case and stays carbon steel.
+# ** ~840 CONCEALED SCREWS, at ~$0.04/SF, and they are inside the labour rate. ** One screw
+# per panel per girt at the nail strip is BBD75's own detail, so each screw is responsible for
+# 24" x 12" = 2.00 SF: 1,678.3 / 2.0 = ~840 (it was ~915 at 11"). That is the same tributary
+# the withdrawal calculation grades against (see below), so the count and the structural
+# demand cannot drift apart. There is NO CLIP LINE on this panel — that is the BB75 product —
+# so nothing else is hidden in this rate. If the installer puts a screw at each of the two
+# concealed legs the count roughly doubles and every screw's demand halves: cheaper
+# structurally, dearer in labour, and neither the model nor this rate assumes it.
+#
+# ** THE CLADDING SCREW IS THE GUIDE'S OWN STOCKED 1", 316 SS OR ASTM A153 CLASS D HDG —
+# REVERSED from the 2" this row carried 2026-09-11 to 2026-09-14. ** The 2" had exactly one
+# argument behind it: Metal Sales' detail asks that fasteners "extend 1/2" or more past the
+# inside face of the support", and in a 1-1/2" girt nothing shorter can. That argument does
+# not survive. The GIRT is the support and the protrusion buys nothing — behind it is the
+# 1/2" vent gap and then ccSPF, where a tip adds no withdrawal and no bearing. The rule
+# cannot be a wood-engagement criterion either: the same 1" screw yields 0.034" of thread in
+# the guide's own 7/16" OSB row against 0.596" in this girt, ~18x. And the load table
+# footnotes fasteners and support material out BY NAME, which is why this is an ENGINEERED
+# item at all — IRC R703.1.2's design-analysis path governs the fastener, and on NDS 2018
+# §12.2 every candidate length passes. 1" gives d/c 0.334, 1-1/2" 0.182 (the available
+# no-cost margin, recorded and not taken), 2" 0.133 and is **REJECTED**: its tip stands
+# 0.476" into a 0.500" vent gap, 0.024" off the ccSPF, so a thin girt or one overdriven screw
+# puts ~840 tips in the foam. Dropping it also takes a special length off a PO that is
+# already custom for the 316 SS / A153-D coating. It must still be a wood-point (Type 17)
+# screw: a self-drilling point reams its own thread out of a 1-1/2" nailer. The coating call
+# is the KDAT contact — see the SDWS22800DB note in [hardware] for why the GIRT screw,
+# encapsulated and dry, is the opposite case and stays carbon steel.
 #
 # ** THE FIXINGS ARE INSIDE THIS RATE, unlike the PBR row. ** `board-batten-24` deliberately
 # does NOT set `Material.exposed_fastener`, so `takeoff.fasteners` bills no counted screw for
@@ -3754,16 +3831,24 @@
 # corrugated + 1,164 on the E/W PBR). Setting that flag AND leaving the screws in this $/SF
 # would double-bill them.
 #
-# ** THE ENGINEERING ITEM IS NOW ONE ITEM AND IT IS FINISHED. ** Twenty `wall_panel/*` records,
-# all INCOMPLETE, became one grouped `wall_panel/W-A-N1` covering all twenty walls: same panel,
-# same girt spacing, same corner-zone demand, one design and one seal. Bending is d/c 0.31
-# against the maker's published 58 psf; withdrawal — which that table excludes by name, "does
-# not address web crippling, fasteners, support material" — is COMPUTED at d/c 0.12 per NDS
-# 2018 section 12.2 from the girt's own specific gravity and the 2" screw's 1.50" penetration.
+# ** THE ENGINEERING ITEM IS ONE ITEM, IT IS FINISHED, AND IT NOW GRADES THREE MODES. **
+# Twenty `wall_panel/*` records, all INCOMPLETE, became one grouped `wall_panel/W-A-N1`
+# covering all twenty walls: same panel, same girt spacing, same corner-zone demand, one
+# design and one seal. IRC R703.1.2 names the modes a design analysis must reach — "bending
+# rupture of siding, fastener withdrawal and fastener head pull-through" — and as of
+# 2026-09-14 all three are graded. Bending d/c 0.315 against the maker's published 58 psf;
+# withdrawal — which that table excludes by name, "does not address web crippling, fasteners,
+# support material" — COMPUTED at d/c **0.334** per NDS 2018 §12.2 from the girt's own
+# specific gravity and the 1" screw's 0.596" penetration; head pull-through COMPUTED at 0.118
+# per AISI S100. ** WITHDRAWAL NOW GOVERNS ** (it was 0.12 at 11" coverage with the 2" screw),
+# which is a real record change and not a capacity concern — the two states are 6% apart, so
+# a later coverage or wind change can flip them back with no physical meaning.
 # ** ESR-4729 DOES NOT COVER THIS WALL ** and an earlier note here was wrong to lean on it: it
 # is Western States' report, for ROOF panels only, on 24 ga minimum over 16 ga steel supports.
-# PBR's wall capacity is cited to a manufacturer wall table (ASC PS230 / Metal Panels Inc. /
-# Homewood publish 144-168 psf at 3'-0" spans, so 6x or better at 24"), not to that report.
+# PBR's wall capacity is now cited to Metal Sales' OWN PBR Condensed Technical Reference
+# (1/2026) wall table — 318 psf outward at 2'-0" in 24 ga, 236 in 26 — which supersedes the
+# ASC PS230 / Metal Panels Inc. / Homewood citations this row used to carry, since the
+# product is Metal Sales on every face now.
 #
 # ** A PURCHASING SUBSTITUTION MUST NOT HAPPEN QUIETLY, and this is now sharper, not softer. **
 # Board & batten is not a purlin-bearing profile. The whole open-girt permission rests on the
@@ -3783,7 +3868,7 @@
 # the PVDF on the rest of the envelope, about as much again as the switch itself, and not
 # quoted below a $3,000 job minimum.
 #
-# ** THE REVERT IS THE `pbr-panel-26` ROW ABOVE, which is why it is still here with its count
+# ** THE REVERT IS THE `pbr-panel-24` ROW ABOVE, which is why it is still here with its count
 # updated rather than deleted. ** Reverting is deleting twenty `layer_materials=` lines; it
 # restores the larger uplift margin, because the girts were sized for PBR.
 #
@@ -3803,23 +3888,44 @@
 # foam closure matched to the rib ($0.45-0.72/LF published, plus butyl bedding); board &
 # batten's guide calls for zero closures.
 #
-# ** THE PUBLISHED ALTERNATIVE NOT TAKEN (2026-09-12), recorded so the choice stays visible. **
-# AEP Span Flush Panel, IAPMO UES ER-309 Tables 6.6/6.7: 24 ga, 12" coverage, 66 psf ASD
-# negative at 24" over "Lumber (DFL) 1" min" OPEN framing. That last phrase is the whole
-# point — it is a published span table for this exact condition, so a Flush Panel would come
-# out of the engineering register as a `PublishedSpan` (the PBR precedent) and stop being a
-# sealed item. BB75-1111 stays: the owner wants the batten line, its own item computes at
-# bending d/c 0.31 and withdrawal d/c 0.12, and this is priced as the cost of the
-# appearance, not as a problem. No rate change either way — both are 24 ga PVDF on the same
-# girts with the same brake-formed trim inside the $/SF.
+# ** THE PUBLISHED ALTERNATIVE NOT TAKEN, CORRECTED 2026-09-14. ** The entry here used to name
+# the AEP Span FLUSH Panel and say the batten line was the cost. It is superseded by AEP Span
+# **Flex Series 1.2FX20-12d** — a GENUINE batten profile (10" field plus one 2" x 1-1/4"
+# batten per 12", direct fastened through a nailing flange), covered by IAPMO UES ER-309
+# Table 7.2 "Over solid substrate or over open framing" with a substrate row that reads
+# literally "Lumber (DFL) 1" min" at 2'-0" spacing: **89 psf ASD**. ER-309 p.9 publishes the
+# wood pull-out values behind it (DFL, 1" min thread, #10 -> 208 lb), which is the very row
+# the note's §6 already reproduces as its cross-check. So it is a published span table for
+# this exact condition on a batten profile, and it would come out of the engineering register
+# as a `PublishedSpan` at NO cost to the appearance. It is still not taken, for reasons that
+# have nothing to do with load: no Midwest plant against Metal Sales' Rogers MN, the report
+# **expires 2026-09-30**, and AEP's own guide spec says "Direct contact or run-off from CCA,
+# ACQ, AC, or other treated lumber... can cause panels and trim to fail prematurely. Avoid
+# contact with these materials" — every girt here is KDAT. Also recorded: Metal Sales
+# TLC-13/TLC-15, direct-fastened in 40' lengths that would run the 31.4' gable unjointed, but
+# a recessed reveal rather than a batten. No rate change for any of them.
 #
-# Sources: Metal Sales BB75-1111 install guide, 2025-10 (coverage, substrate, allowable load
-# table and its note 2, fastener row, the 1/2"-past rule); Western States Metal Roofing doc
-# 4209-22 (open purlins, board & batten 10"-25" custom width, and no load data); Steeldash
-# published trim list. CONFIDENCE: MEDIUM on material, MEDIUM on the labour uplift (it was
-# MEDIUM-LOW while the panel count was a guess). The old OPEN item — "Western States' own
-# board & batten install guide could not be fetched" — is CLOSED: it was fetched and read on
-# 2026-09-11, and what it says is that it publishes nothing.
+# ** PANEL LENGTH IS A REAL CONSTRAINT ON THIS PROFILE. ** B&B maxes at 20', and the N/S
+# gables run 31.4' base-to-peak, so they joint at the storey lines with Transition Trim
+# 55536XX — inside this rate, and the 11.1 ft max band is two panels out of one 20'-2" stock
+# length with no drop. PBR and 7/8" corrugated run to 45', which is why the E/W walls are
+# one-piece over 21'.
+#
+# Sources: Metal Sales BBD75 install guide, 2025-10-16 (coverage, substrate, the ASTM E 330
+# Load Test line, allowable load table and its note 2, fastener row, the 1/2"-past rule and
+# the Support Materials list); the Concealed Direct-Fastened CTR 07/2026 (a NEWER table at
+# 42/75 psf off a LOWER section — irreconcilable with the guide's 58, so 58 is kept as the
+# conservative half and the discrepancy is a question for the Rogers branch, not a gate; the
+# same sheet's "BBD75-1010 only" FBC scoping is why the 1212 carries no product approval at
+# all); the 24 ga PVDF colour guide 9/2026 (Linen White 81: SR 0.73 / TE 0.86 / SRI 89, the
+# highest in the line); Western States Metal Roofing doc 4209-22 (open purlins, board & batten
+# 10"-25" custom width, and no load data); Steeldash published trim list.
+# CONFIDENCE: MEDIUM on material, MEDIUM on the labour uplift.
+# ** THE ONE OPEN ITEM IS A REAL QUOTE ** from Metal Sales Rogers MN (800.328.9316) for
+# BBD75-1212 24 ga PVDF Linen White: lead time, stocked-or-coil-run, and $/SF. Linen White is
+# a standard no-upcharge colour but the Rogers stock charts are 29/26 ga SMP only, so treat it
+# as a made-to-order coil run until told otherwise. That number is what decides whether this
+# material band moves.
 "board-batten-24" = { material = { low = 2.3, high = 4.05 }, labour = { low = 4.15, high = 6.75 } }
 # 749.6 SF — RF-GARAGE. Installed $7.00-13.00/SF against Sheffield's $5-11 for nail strip,
 # lifted for the Twin Cities and for a 749 SF roof being a minimum-mobilisation job for any
@@ -3839,6 +3945,11 @@
 # tag now but `standing-seam-nailstrip-26-green`, which is itself kept for the revert. The
 # rate was researched and the wall could take nail strip again with a one-word change.
 #
+# ** AND THE CORRUGATED ROW BELOW IS ITSELF NOT TAKEN as of 2026-09-14 — 0 SF ** for the same
+# reason `pbr-panel-26` is: "26 ga PVDF" is probably not orderable from Metal Sales. The
+# garage and both entry-screen faces are `corrugated-panel-24` below. Everything in this
+# row's comment is its researched basis and is kept whole; only the gauge moved.
+#
 # 631.3 SF — GARAGE_WALL_2X6, the four garage walls, from 2026-08-31. Installed
 # $4.20-7.35/SF against the $6.00-11.00 of the 26 ga NAIL STRIP it replaces, and both
 # halves are below that row for reasons that are separate:
@@ -3848,8 +3959,12 @@
 # flange. Against a bare panel nearer $1.10-1.60/SF this is lifted for the PVDF coil (not
 # the cheaper SMP the profile is usually stocked in) and for a trim load, but a much
 # smaller one than the house's: three openings on this building against 45 on that one.
-# It is lifted a little where PBR is not, for one reason worth naming — 32" net coverage
-# against PBR's 36" is ~12% more panel, more sidelap and more stitch line per square foot.
+# It is lifted a little where PBR is not, for one reason worth naming — this panel's wall
+# coverage is under PBR's 36", so there is more panel, more sidelap and more stitch line per
+# square foot. (The figure here read "32 inch" until 2026-09-14. That is the ROOF coverage;
+# the WALL coverage is 34-2/3" per the Metal Sales 7/8" Corrugated Wall CTR 1/2024, so the
+# effect is ~4% and not ~12%. The band is not re-struck on a 4% input inside a 60%-wide
+# material range, but the arithmetic should not stay wrong in the file.)
 #
 # LABOUR $2.60-4.75/SF. Set on the studs and screwed off: no clips to lay out, no seaming
 # pass, no seamer rental, and no hidden flange to nail the way the nail strip had. It is
@@ -3864,6 +3979,27 @@
 # 640 screws. The inside/outside CLOSURE STRIPS are not in it either: see
 # `[allowances] envelope-garage-corrugated-closure-strips`.
 "corrugated-panel-26" = { material = { low = 1.6, high = 2.6 }, labour = { low = 2.6, high = 4.75 } }
+# 690.2 SF — GARAGE_WALL_2X6 plus the two ENTRY_SCREEN faces, from 2026-09-14. The library's
+# `corrugated-panel-26` one gauge heavier, in the same PVDF Linen White (81) as the house's
+# board & batten and PBR. Installed $4.60-7.90/SF against the 26 ga row's $4.20-7.35.
+#
+# MATERIAL $2.00-3.15/SF, a lift of $0.40-0.55 — the identical call the `pbr-panel-24` row
+# above writes out at length, for the identical reason: the 26 ga row was already lifted for
+# "the PVDF coil (not the cheaper SMP the profile is usually stocked in)", an uplift that was
+# fictional at 26 ga, so half the published $0.80-1.10 gauge delta is already inside the row
+# being replaced. LABOUR $2.60-4.75/SF unchanged and gauge-neutral, same reasoning.
+#
+# ** The fixings are NOT in this rate ** — the counted `[hardware]` "T09150HWAM", the same
+# 316 stainless gasketed screw the house's PBR takes, and the count does not move with gauge.
+# The Metal Sales Corrugated CTR's own recommendation of stainless- or aluminium-head
+# fasteners over Galvalume is satisfied by that screw. The inside/outside CLOSURE STRIPS are
+# not in it either (`[allowances] envelope-garage-corrugated-closure-strips`), and that
+# allowance is gauge-independent — unchanged.
+#
+# The ENTRY SCREEN moves with the garage because CLAUDE.md records that its west face must
+# stay in the same plane and the same reading as the garage panel; `ENTRY_SCREEN_SKIRT`'s own
+# $/SF row in [wall_structure] is derived from THIS rate by name and moves with it.
+"corrugated-panel-24" = { material = { low = 2.0, high = 3.15 }, labour = { low = 2.6, high = 4.75 } }
 # The roof's two membranes, and they were NOT interchangeable — the deck barrier was the
 # vapour control (0.04 perm, self-adhered to the ZIP under the foam) and the field
 # underlayment above the top deck had to stay vapour-OPEN (20 perm) or the foam was sealed
@@ -4305,15 +4441,18 @@
 # layer is STRUCTURE — a self-supporting single skin bills through takeoff/wall_structure.py
 # rather than envelope_layers, on the same footing as RETAINING_BLOCK_12 above it. Priced per
 # SF of face, not per cubic yard. Keyed on the bare assembly tag like the row above: the
-# stack is one layer of one material, so a `:corrugated-panel-26` qualifier would name the
+# stack is one layer of one material, so a `:corrugated-panel-24` qualifier would name the
 # only thing it could ever name.
-# Material is the [envelope_layers] `corrugated-panel-26` rate UNCHANGED, because it is
+# Material is the [envelope_layers] `corrugated-panel-24` rate UNCHANGED, because it is
 # literally the same panel off the same order as the wall above it and the garage beside it.
+# ** IT IS DERIVED BY NAME AND MUST BE MOVED BY HAND. ** Nothing joins these two rows, so
+# when the panel went 26 ga -> 24 ga PVDF Linen White on 2026-09-14 this material band had
+# to be re-struck with it: $1.60-2.60 -> $2.00-3.15. Labour is untouched.
 # Labour is roughly half again the wall rate: this is a 13 1/2" strip, so it is all cut edge,
 # layout and end lap per square foot and none of the run that makes a wall panel cheap.
 # THERE IS NO READY-MIX IN THIS ROW AT ALL — see the [basis_notes] warning. It must not be
 # escalated with a concrete index.
-"ENTRY_SCREEN_SKIRT" = { material = { low = 1.6, high = 2.6 }, labour = { low = 4.0, high = 7.0 }, unit = "SF" }
+"ENTRY_SCREEN_SKIRT" = { material = { low = 2.0, high = 3.15 }, labour = { low = 4.0, high = 7.0 }, unit = "SF" }
 # THE TWO SUNKEN-GARDEN CURBS (2026-08-28), and they are the most expensive concrete in
 # the house per cubic yard by a wide margin — correctly, because there is almost no
 # concrete in them. W-B-S2 and W-B-S3 are 7 1/4" x 6" curbs under the framed walkout, about
@@ -6923,7 +7062,7 @@ pipe_fittings   = "material only, and derived rather than quoted — see the tab
 reinforcement   = "$/lb of BAR, MATERIAL ONLY — and the labour is deliberately not here. [basis_notes] concrete is explicit that its $/cy is a sourced material price plus a RESIDUAL labour figure; subtracting a rebar placer's wage out of a residual is judgement dressed as arithmetic, where subtracting a sourced rebar material price out of a sourced material price is arithmetic. So the placing labour stays inside the [concrete] and [wall_structure] residuals, on the same doctrine [hardware] already uses — the labour to drive a screw is inside the [framing] labour rate. Lengths are NET: laps and splices ride in [waste], and chairs, bolsters, tie wire and tie hooks ride inside the $/lb rate. THIS TABLE IS DELIBERATELY EMPTY. Every row lands in the estimate's `unpriced` list, the total does not move by one cent, and the tonnage can be read against the register's ~5 tons / $10,000-18,000 BEFORE any rate is touched — the quantity ships before the dollar does. Pricing it while [rebar_inclusive] still says concrete/wall_structure contain their own rebar is a HARD ERROR in cli/price_file.py, which is what makes the standing 'cut the rates the same day' condition enforced rather than merely written down twice"
 concrete        = "$/cy PLACED. Merged everywhere until 2026-08-27, when the three largest rows (footing, slab, drain_tile's siblings aside) gained a REAL split — and the rule that produced them is the one that kept the rest merged: the MATERIAL half is an independently sourced pre-tax number (Twin Cities ready-mix $180-200/cy, wire mesh $0.20-0.50/SF, rebar) and the labour half is the residual. That is a back-out, and it is honest only in that direction. A percentage guess at the split would read exactly like a real one, which is why the smaller rows still carry none. Raised across the board 2026-08-20; slab-on-grade was ~2.5x low and drain_tile ~5x"
 timber          = "$/cy, but built from $/LF and shown divided in every row's comment — the join measures volume and lumber is bought by the foot. Material and labour are split because a stick of LVL is a purchase and hanging it is a wage, unlike the merged pours in [concrete]"
-wall_structure  = "$/cy PLACED. The five largest rows are SPLIT since 2026-08-27 on the same rule as [concrete] — material sourced pre-tax (ready-mix, rebar, and for GARAGE_ICF_6 the ICF blocks at $5-7/SF of face, which is why that row is over half material where a site-formed wall is under a third), labour the residual. RETAINING_BLOCK_12 is split off a delivered block-and-geogrid price and contains no ready-mix at all. The remaining rows stay merged. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12 and RETAINING_BLOCK_12_WASHED (one wall split across two tags 2026-09-13 when the three perimeter legs took a mineral silicate wash on their yard face and the two balcony returns did not; identical rates, and the wash itself bills in [envelope_layers], never here), ENTRY_SCREEN_SKIRT (a 26ga steel skirt over the north entry deck framing, priced $/SF of face off the [envelope_layers] corrugated-panel-26 rate), BASEMENT_BRICK_VENEER and FIREPLACE_BRICK_WYTHE contain no ready-mix at all and must not be escalated with a concrete index. FIREPLACE_BRICK_WYTHE was missing from this list until 2026-09-13 even though its own row comment said \"SAME CATEGORY ERROR AS BASEMENT_BRICK_VENEER\" — a brick panel priced $/SF of face laid has no ready-mix in it either. `brown-brick` now carries a live per-material row under BOTH assembly keys (BASEMENT_BRICK_VENEER:brown-brick and FIREPLACE_BRICK_WYTHE:brown-brick) since the house went back to one brick blend, so the old \"one live per-material row\" phrasing no longer holds; the :glazed-lapis-brick and :glazed-gold-brick rows were commented out 2026-09-04 when the Ishtar scheme was retired, and :white-brick 2026-09-13, all kept there for the revert. GARAGE_BRICK_WAINSCOT and GARAGE_ICF_6_BRICKLEDGE were the garage's brick-wainscot pair and were deleted 2026-09-03 with the wainscot itself; the brick row carried the same zero-ready-mix warning, the ledged-stem row did not (it was mostly ICF wall)"
+wall_structure  = "$/cy PLACED. The five largest rows are SPLIT since 2026-08-27 on the same rule as [concrete] — material sourced pre-tax (ready-mix, rebar, and for GARAGE_ICF_6 the ICF blocks at $5-7/SF of face, which is why that row is over half material where a site-formed wall is under a third), labour the residual. RETAINING_BLOCK_12 is split off a delivered block-and-geogrid price and contains no ready-mix at all. The remaining rows stay merged. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12 and RETAINING_BLOCK_12_WASHED (one wall split across two tags 2026-09-13 when the three perimeter legs took a mineral silicate wash on their yard face and the two balcony returns did not; identical rates, and the wash itself bills in [envelope_layers], never here), ENTRY_SCREEN_SKIRT (a 24ga steel skirt over the north entry deck framing, priced $/SF of face off the [envelope_layers] corrugated-panel-24 rate by name, so the two must be moved together by hand), BASEMENT_BRICK_VENEER and FIREPLACE_BRICK_WYTHE contain no ready-mix at all and must not be escalated with a concrete index. FIREPLACE_BRICK_WYTHE was missing from this list until 2026-09-13 even though its own row comment said \"SAME CATEGORY ERROR AS BASEMENT_BRICK_VENEER\" — a brick panel priced $/SF of face laid has no ready-mix in it either. `brown-brick` now carries a live per-material row under BOTH assembly keys (BASEMENT_BRICK_VENEER:brown-brick and FIREPLACE_BRICK_WYTHE:brown-brick) since the house went back to one brick blend, so the old \"one live per-material row\" phrasing no longer holds; the :glazed-lapis-brick and :glazed-gold-brick rows were commented out 2026-09-04 when the Ishtar scheme was retired, and :white-brick 2026-09-13, all kept there for the revert. GARAGE_BRICK_WAINSCOT and GARAGE_ICF_6_BRICKLEDGE were the garage's brick-wainscot pair and were deleted 2026-09-03 with the wainscot itself; the brick row carried the same zero-ready-mix warning, the ledged-stem row did not (it was mostly ICF wall)"
 footing_bedding = "$/cy delivered — material only. Spreading and compacting is in the excavator's number, which is not in this file. Confirmed 2026-08-20 against MnDOT 2025 average bid prices"
 openings        = "material and labour are now SEPARATE quantities. The old single 55-65% back-out factor is gone: the real material share runs 70-85% for windows, 60-70% for exterior doors, 40-55% for interior doors and 10-25% for a cased opening"
 hardware        = "material only, and deliberately so — the labour to drive a screw or set a hanger is inside the [framing] labour rate. HUC212-3 is the exception and says why"
@@ -6938,5 +7077,5 @@ drainage        = "material plus installed labour, BLENDED over two products tha
 floor_heat      = "material plus installed labour, backed out of published $/SF-of-floor prices. The 3 floor sensors are not in it"
 floor_finishes  = "material plus installed labour on the ORDER quantity. carpet-pad carries labour = 0 on purpose: laying the pad is inside the carpet rate"
 placeables      = "unit price plus INSTALL labour. Rough-in is billed by the foot in [pipe_runs], [ducts] and [conduit]; branch-circuit conductors are in neither and are the largest single omission in the file"
-envelope_layers = "material plus installed labour, $/SF net. Labour is ~60% of this section — standing-seam roofing, drywall finishing and painting are all labour-dominated trades. The metal skin is SEVEN rows keyed on fixing method, seam profile and gauge, not one: mechanical seam, snap lock, nail strip, 26 ga nail strip, 26 ga exposed-fastener PBR, 7/8 in corrugated and 24 ga concealed-fastener board & batten differ by up to $4.50/SF of LABOUR and must never be re-merged. The two EXPOSED-fastener rows are the odd ones out and the split matters beyond labour: PBR and corrugated are the wall panels whose FIXINGS are billed as a separate counted part ([hardware] T09150HWAM, 1,804 screws), because a face-fastened panel opts in via Material.exposed_fastener. Every other row, board & batten included, has its clips and fixings inside its $/SF rate. Folding those screws back into this section, or adding a screw count against any of the concealed rows, double-bills them"
+envelope_layers = "material plus installed labour, $/SF net. Labour is ~60% of this section — standing-seam roofing, drywall finishing and painting are all labour-dominated trades. The metal skin is NINE rows keyed on fixing method, seam profile and gauge, not one: mechanical seam, snap lock, nail strip, 26 ga nail strip, exposed-fastener PBR in BOTH gauges, 7/8 in corrugated in BOTH gauges, and 24 ga concealed-fastener board & batten differ by up to $4.50/SF of LABOUR and must never be re-merged. Since 2026-09-14 the live wall rows are all 24 ga (PVDF is a 24 ga product at Metal Sales) and the two 26 ga rows sit at 0 SF as the documented reverts, alongside snap-lock and 26 ga nail strip. The two EXPOSED-fastener rows are the odd ones out and the split matters beyond labour: PBR and corrugated are the wall panels whose FIXINGS are billed as a separate counted part ([hardware] T09150HWAM, 1,804 screws), because a face-fastened panel opts in via Material.exposed_fastener. Every other row, board & batten included, has its clips and fixings inside its $/SF rate. Folding those screws back into this section, or adding a screw count against any of the concealed rows, double-bills them"
 framing         = "material plus installed labour, $/LF of ordered stock. Add 10-15% for framing general conditions (mobilisation, bracing, layout, hardware, punch-out), which no per-unit rate captures"

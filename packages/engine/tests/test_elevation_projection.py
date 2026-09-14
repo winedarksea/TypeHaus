@@ -232,7 +232,7 @@ def _south_facade_tags(model) -> set[str]:
 
 
 def test_the_cladding_texture_reaches_the_face_fastened_panel(catlin_model):
-    """``pbr-panel-26`` matches none of ``palette.family_of``'s needles, so the catalog's
+    """``pbr-panel-24`` matches none of ``palette.family_of``'s needles, so the catalog's
     own ``exposed_fastener`` flag is what says which module to draw."""
     scene = build_elevation(catlin_model, "south")
     south = _south_facade_tags(catlin_model)
@@ -249,7 +249,7 @@ def test_the_cladding_texture_reaches_the_face_fastened_panel(catlin_model):
 def test_the_board_and_batten_wall_draws_battens_and_not_seam_pitch(catlin_model):
     """The north/south panel is CONCEALED-fastened and declares ``skin_family``, so on the
     two flags alone ``_recipe_for`` would fall through to ``_SEAM_PITCH_M`` and draw a 16"
-    seam rhythm on a wall whose battens stand at 20". The finish is asked FIRST, ahead of
+    seam rhythm on a wall whose battens stand at 12". The finish is asked FIRST, ahead of
     the ``exposed_fastener`` gate, which is what this pins.
 
     Measured as the modal gap between adjacent module lines rather than as any one pair: the

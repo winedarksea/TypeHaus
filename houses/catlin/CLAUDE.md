@@ -178,7 +178,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 ### Site and the four structures
 
 - Four structures: house, garage (4' north gap), sunken-garden/porch/balcony concrete structure (5" south gap), and the north-entry bridge (4' gap).
-- **The north entry is engineered, not schematic** (2026-09-10). `RF-BW-CANOPY` spans 24' between `BM-BW-RW`/`-RE`, which top out at +7'-4" — the garage plate — so the two roof planes are ONE plane; change either and they step apart. **The canopy is freestanding and braces itself.** The WEST header lands on two 6x6 KDAT columns (`PT-BW-CW`/`-CNW`) on `ABU66SS` stainless bases; the EAST header lands on `PT-BW-RE`/`-RNE`, which are **12" cast concrete columns running unbroken from footing to header soffit, fixed at the base** — the east lateral system, and the reason that joint is a shim pack plus an `HGAM10` gusset and never a post cap. The west side is braced by `W-BW-SCREEN`, a sheathed KDAT 2x4 panel deck-to-+4'-0" that is ALSO the guard and the closure over the deck framing. **Its two faces are not the same** (2026-09-11): WEST is 5/8" CDX under 7/8" `corrugated-panel-26` and carries the shear ALONE; EAST is one 5/8" APA Rated Siding 303 MDO panel doing shear and finish together, uncounted, because that face stands under the canopy roof and is a finish problem rather than a weather one. It carries `alignment=face("stud-ext", offset=inch(-1.75))` so the 2x4s stay centred on the `PT-BW-CW`/`-CNW` line at x=6'-0" — without it the stack re-centres and the west corrugated face leaves the plane it shares with the garage panel, **which since 2026-09-12 is the whole of the reason**. The six `structural.member_interference` FAILs recorded here were the offset's stated purpose and were a misreading: 7/16" was just the first value clearing `interference_tolerance_in`, and the real clash was all three plate courses running THROUGH both 6x6s, hidden by `_butt_joint`'s centroid-point reading of a column. Both columns now carry `within_wall="W-BW-SCREEN"` and the solver cuts the plates flush at their faces (3 plates become 9; 7 1/2" / 54 1/4" / 6 1/8"), so no plate/column pair is left to report. **`W-BW-SCREEN-SKIRT`** carries that west sheet 13 1/2" further down over the sill, the seat beams and the two `ABU66SS` bases, stopping 1" ABOVE the pier tops — the bottom edge is OPEN and must stay open, it is how the flutes drain and the column bases dry. It is a second element with its own node pair, not a lower base on the panel, because a wall's layers cannot run below its base and its sole plate would land on the piers in the seat beams. `SC-BW-WEST` is a 2'-4 3/4" slat clerestory above it and `RL-BW-SCREEN` is retired. **The garage joint is a TIE, not the lateral system** — seven `LSTA24` straps at 4'-0" o.c. (`CN-BW-JOINT-*`) make the shared sheathing a drawn connection, and the two roofs move together; the only movement joint is at the HOUSE end. The record said the opposite until this revision, in the same file that required that plane to move. Every truss ties to its header with a stainless `H2.5ASS` at both ends (`CN-BW-TRTIE-*`), authored rather than derived. Both canopy eaves carry the garage's fascia and a CONTINUOUS trough falling north to `TR-G-LEADER-E`/`-W` — no leader at the south end (it would discharge onto the tiers) and no soffit (no wall to die into, and no vented attic to feed). **SIX cast piers on TWO bearing planes and the split matters**: `PT-BW-W`/`-E`/`-RE` bottom at −9'-9 7/16" with the house footing ten inches away, so **cast them in the open basement excavation or they undermine it**; `PT-BW-GW`/`-GE`/`-RNE` bottom at −7'-0", coplanar with the garage strip footings, and are cast with the garage foundation. Nothing here names a `W-B-*` or a `W-G-*` tag. **The landing has ONE tier of beams**: two east-west seat beams on the piers with 2x8 joists running north-south straight on them; `BM-BW-FW` is deleted and `BM-BW-FC`/`-FE` sit in the joist plane, reaching the interior landing under `D-G-SERVICE`'s sill, 3 3/4" over the continuous ICF stem (the west one sistered to the deck's second joist, the east one's face on the RO jamb). `W-BW-SCREEN` is filed on the **garage** storey, with the canopy roof it braces — on `main` it joined the house's braced wall lines and its dimension chain. See notes/north_entry_structure.md and notes/north_entry_piers.md. (→ DESIGN-LOG.md, "Site and the four structures")
+- **The north entry is engineered, not schematic** (2026-09-10). `RF-BW-CANOPY` spans 24' between `BM-BW-RW`/`-RE`, which top out at +7'-4" — the garage plate — so the two roof planes are ONE plane; change either and they step apart. **The canopy is freestanding and braces itself.** The WEST header lands on two 6x6 KDAT columns (`PT-BW-CW`/`-CNW`) on `ABU66SS` stainless bases; the EAST header lands on `PT-BW-RE`/`-RNE`, which are **12" cast concrete columns running unbroken from footing to header soffit, fixed at the base** — the east lateral system, and the reason that joint is a shim pack plus an `HGAM10` gusset and never a post cap. The west side is braced by `W-BW-SCREEN`, a sheathed KDAT 2x4 panel deck-to-+4'-0" that is ALSO the guard and the closure over the deck framing. **Its two faces are not the same** (2026-09-11): WEST is 5/8" CDX under 7/8" `corrugated-panel-24` and carries the shear ALONE; EAST is one 5/8" APA Rated Siding 303 MDO panel doing shear and finish together, uncounted, because that face stands under the canopy roof and is a finish problem rather than a weather one. It carries `alignment=face("stud-ext", offset=inch(-1.75))` so the 2x4s stay centred on the `PT-BW-CW`/`-CNW` line at x=6'-0" — without it the stack re-centres and the west corrugated face leaves the plane it shares with the garage panel, **which since 2026-09-12 is the whole of the reason**. The six `structural.member_interference` FAILs recorded here were the offset's stated purpose and were a misreading: 7/16" was just the first value clearing `interference_tolerance_in`, and the real clash was all three plate courses running THROUGH both 6x6s, hidden by `_butt_joint`'s centroid-point reading of a column. Both columns now carry `within_wall="W-BW-SCREEN"` and the solver cuts the plates flush at their faces (3 plates become 9; 7 1/2" / 54 1/4" / 6 1/8"), so no plate/column pair is left to report. **`W-BW-SCREEN-SKIRT`** carries that west sheet 13 1/2" further down over the sill, the seat beams and the two `ABU66SS` bases, stopping 1" ABOVE the pier tops — the bottom edge is OPEN and must stay open, it is how the flutes drain and the column bases dry. It is a second element with its own node pair, not a lower base on the panel, because a wall's layers cannot run below its base and its sole plate would land on the piers in the seat beams. `SC-BW-WEST` is a 2'-4 3/4" slat clerestory above it and `RL-BW-SCREEN` is retired. **The garage joint is a TIE, not the lateral system** — seven `LSTA24` straps at 4'-0" o.c. (`CN-BW-JOINT-*`) make the shared sheathing a drawn connection, and the two roofs move together; the only movement joint is at the HOUSE end. The record said the opposite until this revision, in the same file that required that plane to move. Every truss ties to its header with a stainless `H2.5ASS` at both ends (`CN-BW-TRTIE-*`), authored rather than derived. Both canopy eaves carry the garage's fascia and a CONTINUOUS trough falling north to `TR-G-LEADER-E`/`-W` — no leader at the south end (it would discharge onto the tiers) and no soffit (no wall to die into, and no vented attic to feed). **SIX cast piers on TWO bearing planes and the split matters**: `PT-BW-W`/`-E`/`-RE` bottom at −9'-9 7/16" with the house footing ten inches away, so **cast them in the open basement excavation or they undermine it**; `PT-BW-GW`/`-GE`/`-RNE` bottom at −7'-0", coplanar with the garage strip footings, and are cast with the garage foundation. Nothing here names a `W-B-*` or a `W-G-*` tag. **The landing has ONE tier of beams**: two east-west seat beams on the piers with 2x8 joists running north-south straight on them; `BM-BW-FW` is deleted and `BM-BW-FC`/`-FE` sit in the joist plane, reaching the interior landing under `D-G-SERVICE`'s sill, 3 3/4" over the continuous ICF stem (the west one sistered to the deck's second joist, the east one's face on the RO jamb). `W-BW-SCREEN` is filed on the **garage** storey, with the canopy roof it braces — on `main` it joined the house's braced wall lines and its dimension chain. See notes/north_entry_structure.md and notes/north_entry_piers.md. (→ DESIGN-LOG.md, "Site and the four structures")
 - **`BM-BW-RW`/`-RE` stay 3-ply 2x12 KDAT; the exterior glulam is REFUSED** (owner, 2026-09-12), and the engine is the reason rather than capacity. These are the only two `roof_beam` items in the house, and `engineering/roof_beam.py`'s `_SECTION` matches a sawn `N-2xM` and nothing else — a `"3.5x11.875"` makes both records INCOMPLETE, and nothing picks them up (`engineering/glulam_beam.py` left the registered-kind tuple on 2026-09-11 and is deck-only besides, 40 psf live at `C_D` 1.0, which cannot carry this 73.7 psf drift case). Retyping trades a d/c of **0.71** for a gap in the register. **The ply seam does not reach these two**: both headers ARE the eave bearing lines, the trusses land on their TOPS, so both seams sit inside the roof assembly under the deck, 1'-4" inboard of the drip line — which is the FPInnovations carve-out for appressed treated plies, and **not** the porch's 2026-09-06 refusal, which rested on tape plus a formed cap. No cap here, and its absence is not a gap. Cost confirms rather than drives: ~$325-450 over 11.4 LF. (→ DESIGN-LOG.md, "Site and the four structures")
 - **Every wood-on-concrete beam seat is a drained STANDOFF, never a sill gasket** (owner, 2026-09-12) — twelve of them, six at the north entry (`CN-BW-STDF-*`) and six in the garden (`CN-SG-STDF-*`), all `SS316-SHIM-35` packs holding a 1/2"-1" gap, and **not one grout island** (`PIER_CONCRETE_12` carried one until 2026-09-12; retyping `PT-SG-COL` on 2026-09-10 rode it over to `PT-BW-RE`/`-RNE` rather than closing it). The `HGAM10` beside the pack is the **TIE**, never the bearing — two parts, two jobs. `BM-BW-RW` never touches concrete at all: 6x6 KDAT posts through `CCQ46SDS2.5` caps on `ABU66SS` bases. **No IRC provision requires a barrier or a standoff at this joint** — R317.1 item (2) needs a foundation wall AND under 8" to grade, R317.1.2 is embedment, and R317.1.4 governs wood COLUMNS with 1"/6"/8" projections that *relieve* the treatment requirement rather than impose a clearance; a treated beam on a concrete column top satisfies R317 with nothing added. A closed-cell gasket would be the wrong part: it is a capillary break for a plate bolted tight to a slab, and at an exposed joint it becomes the water-holding layer. Wicking is not the mechanism that governs either — capillary rise is bounded by evaporation at 100-480 mm, and nothing here is within reach of it: the north entry's pier tops stand 18 1/2" above grade, its canopy columns 9'-2 3/4", and the garden's porch columns rise 10'-0 15/16" out of the court floor. What wets a seat is rain standing on the pour and end-grain uptake where a beam END lands there, which is `BM-BW-RE`'s south end; the wash, the drip lip and the gap are aimed at that. (→ DESIGN-LOG.md, "Site and the four structures")
 - **Grade is 2'-10" below the main floor.** **Datum is the TOP OF JOISTS, not the finished floor** — main-floor FFE is +3/4", so a slab landing there needs an explicit `top_elevation` (`params/main_deck.py`).
@@ -275,10 +275,23 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - On `W-S-SS2` the channel must stay on the NORTH face: the south face carries ST-S2A's
     stringer ledger/handrail and a void boundary `attic.py` defines off it; moving it south
     leaves 35-1/2" against R311.7.1's 36".
-- Cladding split by orientation: `board-batten-24` (1,678.3 SF, Metal Sales BB75-1111,
-  24 ga concealed-fastener PVDF, 11" net coverage) on the 20 east-west-facing walls; `pbr-panel-26` (1,416.6 SF) on
-  the rest — a per-wall `Wall.layer_materials` override, not a sibling assembly (→
-  DESIGN-LOG.md, "Shell: framing module and envelope").
+- Cladding split by orientation: `board-batten-24` (1,678.3 SF, Metal Sales **BBD75-1212**,
+  24 ga concealed DIRECT-fastened PVDF, **12" net coverage**) on the 20 east-west-facing
+  walls; **`pbr-panel-24`** (1,416.6 SF) on the rest — a per-wall `Wall.layer_materials`
+  override, not a sibling assembly (→ DESIGN-LOG.md, "Shell: framing module and envelope").
+  - **Every metal face on the property is 24 ga PVDF Linen White (81) since 2026-09-14**, and
+    the gauge is not a preference: at Metal Sales PVDF *is* a 24 ga product (the 24 ga colour
+    guide is the PVDF palette; the 26 ga guides are MS Colorfast45, which is SMP), so the
+    authored "26 ga PVDF" on the E/W walls and the garage was probably not a purchasable
+    combination. Secondary reasons: hail (Twin Cities corridor, insurers exclude cosmetic
+    denting, 24 ga dents and oil-cans less — gauge has ZERO corrosion effect) and one colour
+    on every face, which also neutralises St Paul §63.110's advisory on street-facing
+    materials. Linen White is the highest SRI in the Metal Sales line — SR 0.73 / TE 0.86 /
+    **SRI 89** — which is the point: bounce daylight into the tree-shaded rear gardens.
+    Caveat: SRI is NIR-weighted, no visible LRV is published, and it is NOT a low-gloss
+    colour. **Two new house-local tags, `pbr-panel-24` and `corrugated-panel-24`**; the 26 ga
+    rows stay at 0 SF as documented reverts. Tags read the GAUGE, which is why they had to
+    move and `board-batten-24` did not.
   - Thickness stays 1-1/4" — LOAD BEARING for the same four consumers listed above
     (`_WALL_OUTBOARD_IN`, `HOUSE_CLADDING_Y_FT`, `gap_to_house_in`, `plan/electrical.py`).
     `skin_family="standing-seam"` must stay on BOTH panels or the flush zero-overhang edge
@@ -289,30 +302,73 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `ui/src/components/DetailCanvas.tsx`, and `emit/draw/elevation_finish.py`'s
     `_BATTEN_PITCH_M` — each silent if missed; full list (→ DESIGN-LOG.md, "Shell: framing
     module and envelope"). The `elevation_finish.py` one is the trap: without its
-    finish-first branch it draws 16" seam pitch, not 20" battens.
+    finish-first branch it draws 16" seam pitch, not 12" battens. Both `_BATTEN_PITCH_M`
+    and `ui`'s `BATTEN_PITCH_M` carried **20"** until 2026-09-14 — authored against no named
+    panel and never re-struck when one was named — and `_CORRUGATED_LAP_M` carried 32", which
+    is the ROOF coverage where the wall is 34-2/3". Both drew a line where no joint is. The
+    ui's `ribHalfWidth` is a FRACTION of the module, so it had to be re-struck with the pitch
+    (0.05 -> 0.0833) to keep the drawn cap at 2".
   - Four wall corners now bill: `TrimKind.WALL_CORNER` + `Flashing.vertical`, 89.5 LF,
     derived off `_WALL_OUTBOARD_IN`. Without `vertical`, a 22'-4" corner bills as 1-1/4" of
     metal (`_EdgeRun.path` is a plan polyline).
-  - The panel is **Metal Sales BB75-1111**, 11" coverage, 24 ga (named 2026-09-11; the tag
-    `board-batten-24` reads as the GAUGE and does not change). 11" is the real coverage —
-    3.3x PBR's panel count, which is why `prices.toml` labour sits at the top of its band.
+  - The panel is **Metal Sales BBD75-1212**, 12" coverage, 24 ga (re-named 2026-09-14; the
+    tag `board-batten-24` reads as the GAUGE and does not change). **BB75-1111, named
+    2026-09-11, is the CLIP-fastened sibling** — its wall-base detail wants a clip and two
+    screws where BBD75's wants one screw at the nail strip, which is the model §6 of the note
+    has always used. Structurally identical (both guides publish 43/58 psf at 2'-0"); BBD75
+    is cheaper to install (~9% fewer panels, ~840 screws and no clips against ~2,000 and
+    ~1,000). 12" is 3.0x PBR's panel count, which is why `prices.toml` labour sits near the
+    top of its band. **Panel length maxes at 20'**, so the 31.4' gables joint at the storey
+    lines with Transition Trim 55536XX; PBR and corrugated run to 45'.
   - ENGINEERED, not prescriptive (decision #65), and **one group item covering all twenty
-    walls**: `wall_panel/W-A-N1`, keyed by the lowest member tag. Bending d/c **0.31**
-    (58 psf published at 24" girts) governs; screw withdrawal d/c **0.12** is COMPUTED per
-    NDS 2018 §12.2, because the maker's table excludes fasteners by name. Status OK.
-    Oracled by `notes/board_batten_girt_span.md`. `--item wall_panel/W-M-S1` resolves to the
-    group. PBR stays prescriptive (ASC PS230/Metal Panels Inc./Homewood span tables,
-    144-168 psf at 3'-0").
+    walls**: `wall_panel/W-A-N1`, keyed by the lowest member tag. **Three limit states since
+    2026-09-14, because IRC R703.1.2 names three** ("bending rupture of siding, fastener
+    withdrawal and fastener head pull-through"): bending d/c **0.315** (58 psf published at
+    24" girts); screw withdrawal d/c **0.334**, COMPUTED per NDS 2018 §12.2 because the
+    maker's table excludes fasteners by name; head pull-through d/c **0.118**, COMPUTED per
+    AISI S100. **WITHDRAWAL GOVERNS** — it was bending until 2026-09-14, flipped by the
+    coverage going 11" -> 12" and the screw 2" -> 1". Both pass wide, the two are 6% apart,
+    and a later coverage or wind change can flip them back with no physical meaning: read the
+    governing state as a label. Status OK. Oracled by `notes/board_batten_girt_span.md`.
+    `--item wall_panel/W-M-S1` resolves to the group. PBR stays prescriptive, now on Metal
+    Sales' own PBR CTR (1/2026): **318 psf** at 2'-0" in 24 ga, 236 in 26, superseding the
+    ASC PS230 / Metal Panels Inc. / Homewood citations.
+  - **The substrate question is closed by the CODE, not by a letter.** IRC R703.1.2 asks for
+    a wind-load path by ASTM E330 test or by design analysis and says nothing about a solid
+    substrate; BBD75-1212 lists an ASTM E 330 Load Test; and the allowable table is indexed
+    on FASTENER SPACING from 2'-0" (narrowest) to 6'-0", so a 24" girt is at its strong end.
+    The 07/2026 CTR's sheathing-only summary badge is a copy artifact — the same row says
+    `10" & 12" COVERAGE` on a sheet showing ONE panel at 11". No Tech Services letter needed.
+  - **58 psf is kept although a newer sheet publishes 75.** The 07/2026 CTR re-publishes this
+    panel at 42/75 off a LOWER section, which is not reconcilable in either limit state
+    (scaling 58 by the section ratio gives ~25-29, not 75). Recorded, not adopted; a question
+    for the Rogers branch when quoting, not a gate. **BBD75-1212 also carries no product
+    approval at all** — the CTR scopes FL47647.1 to "BBD75-1010 only", and BB75's is "over
+    Sheathing". Florida approval is not a Minnesota requirement.
   - ESR-4729 DOES NOT COVER THIS WALL — Western States' ROOF-panel report, 24 ga min over
     16 ga steel. Do not reintroduce it. Of eight surveyed, only Western States and Metal
     Sales permit open girts, and Western States publishes no load data at all (doc 4209-22,
     read in full) — substituting another forces a second girt course or a continuous deck.
-  - Cladding screw is **2"**, wood-point (Type 17), stainless or ASTM A153 Class D HDG. The
-    length is the calculation: Metal Sales' "1/2" past the inside face" clause cannot be met
-    by anything shorter in a 1-1/2" girt, so **that variance item is closed**. A drill point
-    would ream its own thread out of the nailer. PBR's face screw stays 1-1/2".
-  - Revert = delete the twenty `layer_materials=` overrides; `pbr-panel-26` and its
-    `prices.toml` row stay live on the other elevations.
+  - Cladding screw is the guide's own stocked **1"**, wood-point (Type 17), 316 stainless or
+    ASTM A153 Class D HDG — **REVERSED from the 2" specified 2026-09-11 to 2026-09-14.** That
+    2" rested on one clause, "fasteners should extend 1/2" or more past the inside face of
+    the support", and the clause does not carry it: the GIRT is the support and the tip
+    emerges into a vent gap and then ccSPF, buying nothing; the same rule yields 0.034" of
+    thread on the guide's own 7/16" OSB row against 0.596" here; and the load table footnotes
+    fasteners out by name, so NDS §12.2 governs the fastener and every length passes it.
+    **2" is affirmatively rejected** — its tip stands 0.476" into a 0.500" vent gap, 0.024"
+    off the ccSPF, so ~840 tips are one thin girt or one overdrive from the foam. 1-1/2" is
+    the recorded no-cost margin; nothing longer than that, ever. A drill point would ream its
+    own thread out of the nailer. PBR's face screw stays 1-1/2".
+  - **The EPDM washer is the 100-year limiter, not the screw** — 15-40 yr against 300-series
+    stainless in painted Galvalume "matching the expected life" of the cladding (MCA 09/2025)
+    and painted AZ50 at 50-375 yr. Annual look, washer campaign ~yr 30-40, painted heads on
+    the order. Ranked after it: base-of-wall salt zone (ungraded here), treated-wood contact
+    (KEEP THE GIRTS — `notes/board_batten_girt_span.md` §7.10; read the end tag before
+    ordering and upgrade the BACKER coat), sealants, then paint.
+  - Revert = delete the twenty `layer_materials=` overrides; `pbr-panel-24` and its
+    `prices.toml` row stay live on the other elevations. The `pbr-panel-26` /
+    `corrugated-panel-26` rows sit at 0 SF as the gauge revert.
 - Every exterior corner is construction-correct, 4-stud. Layout grid is struck from the
   building's outside sheathing corner: all four facade lines origin `+0.0000"`; 217 of 241
   exterior module studs land on exact 16" multiples (24 exceptions are the corner posts);
@@ -1379,7 +1435,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `back_side`** — get one wall wrong and the drip points at the wall at 0 FAIL.
     `test_garage_base_skin_is_the_stem_band_alone_and_its_top_is_flashed` pins it; confirm in
     the viewer too.
-  - **Aluminium over aluminium; no check grades it.** `corrugated-panel-26` above the band is
+  - **Aluminium over aluminium; no check grades it.** `corrugated-panel-24` above the band is
     26 ga PVDF-coated steel; the band and the Z are aluminium — never lap metal-to-metal
     (sealant/EPDM between) or let aluminium touch concrete/mortar. `aluminum-flat-pvdf` on
     the Z, not `metal-dark-exterior`, is the whole enforcement.
@@ -1392,7 +1448,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `W-GF-S-DR` joined them on 2026-09-11: the service door's grade beam is full stem now, its
     two nodes PINNED at x 8'-3"/11'-9" (`_FOSSIL_SERVICE_OFFSET`) so `FT-GF-S-DR` stays over
     the hydrant crossing `SP-GF-S-HYD` names. Nine stem segments, one grade beam.
-- **The garage is white again** (all four walls `GARAGE_WALL_2X6`, `corrugated-panel-26`).
+- **The garage is white again** (all four walls `GARAGE_WALL_2X6`, `corrugated-panel-24` —
+  24 ga PVDF Linen White since 2026-09-14, the same colour and gauge as the house; 412 psf at
+  2'-0", and the wall coverage is **34-2/3"**, not the 32" roof figure the drawings used).
   `standing-seam-nailstrip-26-green` stays in the catalog, referenced by nothing — going
   green again is a one-line `layer_materials=` change. (→ DESIGN-LOG.md, "Decks and the
   garage")

@@ -115,6 +115,15 @@ class Material(HausModel):
     panel_fastener: str | None = None
     panel_fastener_diameter_in: float | None = None
     panel_fastener_length_in: float | None = None
+    # The fastener HEAD's bearing diameter, d'w — the third dimension, and it grades a
+    # different failure mode from the other two. IRC R703.1.2 names head pull-through
+    # alongside bending and withdrawal, and pull-through is the head pulling through the
+    # PANEL, so it reads the head and the sheet, not the shank and the wood. A pancake
+    # head is the whole point of a concealed-leg screw (it has to sit under the batten),
+    # and it is also the smallest head in the catalogue — which is exactly why the mode is
+    # graded rather than assumed. Absent, `engineering/wall_panel.py` omits the state
+    # rather than guessing a head size.
+    panel_fastener_head_dia_in: float | None = None
     # Net coverage of one panel, in inches — the width one run of fasteners is responsible
     # for. It is the tributary width in the withdrawal demand, so it moves the answer
     # directly, and it is a product fact (11", 12", 16") that no dimension in the assembly

@@ -62,14 +62,17 @@ from typehaus.resolve.model import ResolvedModel
 #: Side-lap spacing of a face-fastened profiled panel — PBR/R-panel covers 36" net.
 _PANEL_LAP_M = 0.9144  # 36"
 
-#: Side-lap spacing of a 7/8" corrugated panel, which covers 32" net and not PBR's 36".
-#: A side lap drawn every 36" on a 32" sheet is not a rounding — it is a line where no
-#: joint is, on every elevation the garage appears in.
-_CORRUGATED_LAP_M = 0.8128  # 32"
+#: Side-lap spacing of a 7/8" corrugated panel, which covers 34-2/3" net on a WALL and not
+#: PBR's 36". (32" is the ROOF figure — one more corrugation of side lap — and it was drawn
+#: here until 2026-09-14.) A side lap drawn at the wrong pitch is not a rounding: it is a
+#: line where no joint is, on every elevation the garage appears in.
+_CORRUGATED_LAP_M = 0.8805  # 34-2/3"
 
-#: Batten spacing of a concealed-fastener board & batten panel, which covers 20" net. Not a
-#: side lap: on this panel the line you read from the street is the batten itself.
-_BATTEN_PITCH_M = 0.508  # 20"
+#: Batten spacing of a concealed-fastener board & batten panel: Metal Sales BBD75-1212
+#: covers 12" net. (20" was authored against no named panel and survived the naming; no
+#: batten panel on the market covers 20".) Not a side lap: on this panel the line you read
+#: from the street is the batten itself.
+_BATTEN_PITCH_M = 0.3048  # 12"
 
 #: Seam spacing of a clipped or mechanically-seamed panel. 16" is the common architectural
 #: pan width and the one the viewer's seam recipe draws.
@@ -159,7 +162,7 @@ def _recipe_for(material: Material | None, material_ref: str | None,
     profiled panel from a clipped or folded one — it is the flag ``takeoff.fasteners`` bills
     from — and ``skin_family`` is a declaration that this material is one of the ribbed metal
     skins a building wears from grade to ridge. ``family_of`` misses both here: this house's
-    cladding is tagged ``pbr-panel-26``, which contains none of the needles, so the whole
+    cladding is tagged ``pbr-panel-24``, which contains none of the needles, so the whole
     facade came out blank while the garage's ``standing-seam-nailstrip-26`` was textured.
     """
     if material is not None:

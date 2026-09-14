@@ -123,7 +123,7 @@ const SEAM_TRIM_CATEGORIES = new Set(["cladding", "ridge_cap", "corner_trim", "g
 // seam nor a declared ribbed panel. A member carries the SAME material ref its host layer
 // does (roof_edge.py/roof_trim.py thread it straight off the wall's own layer), so it takes
 // the identical declared-finish-first dispatch `builders/walls.ts` uses for that layer:
-// `pbr-panel-26` has no "seam" in its tag on purpose, and without reading its authored
+// `pbr-panel-24` has no "seam" in its tag on purpose, and without reading its authored
 // `finish: "ribbed-panel"` here a gable closure in that panel rendered flat grey next to the
 // wall cladding it continues.
 export function metalPanelProfileFor(m: Member,

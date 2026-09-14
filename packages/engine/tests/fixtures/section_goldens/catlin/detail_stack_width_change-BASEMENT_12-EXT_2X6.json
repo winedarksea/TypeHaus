@@ -672,7 +672,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "pbr-panel-26"
+      "material": "pbr-panel-24"
     },
     {
       "space": "model",
@@ -2928,7 +2928,7 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "pbr-panel-26"
+      "material": "pbr-panel-24"
     },
     {
       "space": "paper",
@@ -2965,7 +2965,7 @@
         4.999999999999999,
         1.3980000000000001
       ],
-      "content": "pbr-panel-26  1.25\"",
+      "content": "pbr-panel-24  1.25\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,

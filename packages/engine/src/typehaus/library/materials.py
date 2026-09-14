@@ -282,12 +282,14 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              skin_family="standing-seam", exposed_fastener=True,
              source=f"{_UAF}: continuous sheet steel is vapour-impermeable, as `standing-seam` "
                     "above. 26 ga. PVDF-coated steel, 7/8\" corrugation depth on a 2-2/3\" "
-                    "pitch, 32\" net coverage, face-fastened with gasketed screws through the "
+                    "pitch, 34-2/3\" net WALL coverage (32\" is the ROOF figure, one more "
+                    "corrugation of side lap; this row read 32\" until 2026-09-14), "
+                    "face-fastened with gasketed screws through the "
                     "crowns. TWO KNOWN APPROXIMATIONS, recorded here rather than fixed: "
                     "takeoff/hardware_config.py::ExposedFastenerCladdingRules is one frozen "
                     "dataclass with PBR geometry hard-coded (12\" rib pitch, 36\" coverage), so "
                     "the field screw count is a fair proxy but the sidelap count runs slightly "
-                    "low on 36\" vs this panel's 32\"; and its support_embedment_in=1.4\" is "
+                    "low on 36\" vs this panel's 34-2/3\"; and its support_embedment_in=1.4\" is "
                     "satisfied by no sheathing thickness at all — the rule presumes penetration "
                     "into framing, which is what these screws do"),
     # The vent strip that closes a rainscreen cavity's base: a corrugated polypropylene

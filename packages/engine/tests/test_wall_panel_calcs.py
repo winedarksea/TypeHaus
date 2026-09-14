@@ -13,6 +13,10 @@ Four of these assertions are doing unusual work and are worth reading before cha
   stampable. Nobody publishes a pull-out value for a concealed leg into wood; NDS §12.2 is
   the rational design IAPMO UES ER-309 expressly authorises, and the arithmetic is checked
   term by term against the note rather than against itself.
+* :func:`test_withdrawal_governs_and_the_item_is_finished` pins the limit-state COUNT, which
+  is a code-coverage assertion and not an arithmetic one: IRC R703.1.2 names three failure
+  modes a design analysis must reach, and grading two of them is a hole a passing record
+  would hide.
 * :func:`test_the_east_and_west_pbr_walls_are_not_items` pins the *scope*. PBR's wall
   capacity is published in the manufacturers' own wall span tables (144-168 psf at 3'-0"),
   so it stays prescriptive; an item enumerated for it would be this engine claiming an
@@ -45,17 +49,22 @@ _ORACLE = {
     "allowable_psf": 58.0,
     "bending_ratio": 0.3149,
     # NDS 2018 §12.2, note §6: G 0.55 (Table 12.3.3A southern pine), D 0.190", C_D 1.6,
-    # C_M 0.7, a 2" screw through a 24 ga flange taking the full 1-1/2" girt.
+    # C_M 0.7, and the guide's own stocked 1" screw through a 24 ga flange — 0.5961" of
+    # thread in the 1-1/2" girt once the flange and the 2D tip come off, nowhere near the
+    # support-thickness cap. Re-worked 2026-09-14 from two independent moves at once (11" ->
+    # 12" coverage with BBD75-1212, and the 2" -> 1" screw), so these are recomputed rather
+    # than patched.
     "w": 163.80,
     "w_adjusted": 183.46,
-    "thread_penetration_in": 1.50,
-    "capacity_lb": 275.19,
-    "tributary_ft2": 1.8333,
-    "demand_lb": 33.49,
-    "withdrawal_ratio": 0.1217,
-    # The 1" screw the panel order ships with, printed as an alternate — and the reason the
-    # house specifies 2".
-    "one_inch_ratio": 0.306,
+    "thread_penetration_in": 0.5961,
+    "capacity_lb": 109.36,
+    "tributary_ft2": 2.0,
+    "demand_lb": 36.5318,
+    "withdrawal_ratio": 0.3341,
+    # AISI S100 Pnov = 1.5 t d'w Fu, note §6.2: the 24 ga flange, a 0.40" pancake head and
+    # A792 Grade 50's 65 ksi, at Omega 3.0. The third mode IRC R703.1.2 names.
+    "pull_through_capacity_lb": 310.7,
+    "pull_through_ratio": 0.1176,
 }
 
 #: The twenty north/south walls the board & batten override lands on (§1 of the note).
@@ -185,7 +194,7 @@ def test_withdrawal_is_computed_from_the_standard(record):
     """NDS 2018 §12.2, term by term against §6 of the note."""
     from typehaus.engineering.wall_panel_withdrawal import withdrawal_allowable_lb
 
-    hand = withdrawal_allowable_lb(0.55, 0.190, 2.0, 1.5, 0.0239)
+    hand = withdrawal_allowable_lb(0.55, 0.190, 1.0, 1.5, 0.0239)
     assert hand.w_per_in == pytest.approx(_ORACLE["w"], abs=0.01)
     assert hand.w_adjusted_per_in == pytest.approx(_ORACLE["w_adjusted"], abs=0.01)
     assert hand.thread_penetration_in == pytest.approx(_ORACLE["thread_penetration_in"], abs=1e-3)
@@ -199,33 +208,92 @@ def test_withdrawal_is_computed_from_the_standard(record):
     inputs = {q.name: q.value for q in record.inputs}
     assert inputs["tributary_area"] == pytest.approx(_ORACLE["tributary_ft2"], abs=1e-3)
     assert inputs["fastener_demand"] == pytest.approx(_ORACLE["demand_lb"], abs=0.01)
-    assert inputs["thread_penetration"] == pytest.approx(1.50, abs=1e-3)
+    assert inputs["thread_penetration"] == pytest.approx(
+        _ORACLE["thread_penetration_in"], abs=1e-3)
 
 
-def test_the_shorter_screws_are_printed_as_alternates(record):
-    """The 1" screw a panel order ships with is 0.31 — passing, and not what is specified."""
+def test_the_whole_screw_ladder_is_printed_including_the_rejected_length(record):
+    """The 1" IS the spec since 2026-09-14, so the ladder prints the ones NOT taken.
+
+    The oracle deliberately holds no separate ``one_inch_ratio``. It used to, as an
+    independent check on the alternate that was not specified; now that the 1" is the
+    specified screw that field would be a second literal for the same number, reading like
+    a coincidence. The identity is asserted here instead: the printed 1" row is the
+    withdrawal state.
+    """
     from typehaus.engineering.wall_panel_withdrawal import (
         fastener_demand_lb, withdrawal_allowable_lb)
 
-    short = withdrawal_allowable_lb(0.55, 0.190, 1.0, 1.5, 0.0239)
-    demand = fastener_demand_lb(_ORACLE["asd_zone5_psf"], 24.0, 11.0)
-    assert demand / short.capacity_lb == pytest.approx(_ORACLE["one_inch_ratio"], abs=1e-3)
-    assert any('1" -> 0.596" pen' in note for note in record.notes)
+    spec = withdrawal_allowable_lb(0.55, 0.190, 1.0, 1.5, 0.0239)
+    demand = fastener_demand_lb(_ORACLE["asd_zone5_psf"], 24.0, 12.0)
+    assert demand / spec.capacity_lb == pytest.approx(_ORACLE["withdrawal_ratio"], abs=1e-3)
+    assert _state(record, "withdrawal").ratio == pytest.approx(
+        demand / spec.capacity_lb, abs=1e-6)
+
+    # All three rungs, each exactly once. 2.0 is on the ladder although the house authored
+    # 1.0, because the calc sheet has to show the length that was REJECTED and why; and
+    # 1.0 must not print twice now that the stock set and the authored length coincide.
+    for rung in ('1" -> 0.596" pen', '1.5" -> 1.096" pen', '2" -> 1.500" pen'):
+        printed = [note for note in record.notes if rung in note]
+        assert len(printed) == 1, rung
+        assert printed[0].count(rung) == 1, rung
 
 
-def test_bending_governs_and_the_item_is_finished(record):
-    """Both states graded, both under 1, nothing missing — the item is stampable.
+def test_withdrawal_governs_and_the_item_is_finished(record):
+    """Three states graded, all under 1, nothing missing — the item is stampable.
 
     Until 2026-09-11 this record was hard-wired INCOMPLETE because withdrawal was
-    unpublished. Computing it from NDS is what closed it; the status is now earned by
+    unpublished. Computing it from NDS is what closed it; the status is earned by
     every state being graded, not asserted by the module.
+
+    **Bending governed until 2026-09-14 and this test was named for it.** Two changes
+    flipped it — 11" -> 12" coverage raised the per-fastener demand 9%, and the 2" screw
+    came out for the guide's stocked 1" — putting withdrawal at 0.334 against bending's
+    0.315. Renamed and inverted rather than loosened: the flip is a real record change and
+    the fingerprint moved with it. The two are only 6% apart, so a later coverage or wind
+    change can flip them back with no physical meaning; if that happens, rename again
+    rather than dropping the assertion.
+
+    The count is the other half of this test. IRC R703.1.2 names three failure modes —
+    "bending rupture of siding, fastener withdrawal and fastener head pull-through" — and
+    it went 2 -> 3 on 2026-09-14 when the third was added.
     """
     assert record.status is Status.OK
     assert record.missing == ()
-    assert len(record.limit_states) == 2
+    assert len(record.limit_states) == 3
     assert record.governing is not None
-    assert "bending" in record.governing.name
-    assert record.governing.ratio == pytest.approx(_ORACLE["bending_ratio"], abs=1e-3)
+    assert "withdrawal" in record.governing.name
+    assert record.governing.ratio == pytest.approx(_ORACLE["withdrawal_ratio"], abs=1e-3)
+    assert record.governing.ratio > _state(record, "bending").ratio
+
+
+def test_head_pull_through_is_graded_the_third_mode_the_code_names(record):
+    """AISI S100 ``Pnov = 1.5 t d'w Fu``, term by term against §6.2 of the note.
+
+    Not a capacity concern — it passes at 8.5x — but R703.1.2 names it, and an analysis
+    that answers two of three named modes is an analysis with a hole in it. A pancake head
+    is the smallest head sold, which is why it is graded rather than assumed away.
+    """
+    from typehaus.engineering.wall_panel import (
+        PULL_THROUGH_OMEGA, SHEET_FLANGE_IN, SHEET_FU_PSI)
+
+    hand = 1.5 * SHEET_FLANGE_IN * 0.40 * SHEET_FU_PSI / PULL_THROUGH_OMEGA
+    assert hand == pytest.approx(_ORACLE["pull_through_capacity_lb"], abs=0.1)
+
+    state = _state(record, "pull-through")
+    assert state.capacity == pytest.approx(_ORACLE["pull_through_capacity_lb"], abs=0.1)
+    assert state.demand == pytest.approx(_ORACLE["demand_lb"], abs=0.01)
+    assert state.ratio == pytest.approx(_ORACLE["pull_through_ratio"], abs=1e-3)
+    assert state.ok
+
+
+def test_an_absent_head_diameter_is_incomplete_and_names_itself(tmp_path):
+    """No guessed head size: a smaller head is exactly what would move this state."""
+    results = _variant(tmp_path, _replace("panel_fastener_head_dia_in=0.40,", ""))
+    record = results[_ITEM]
+    assert record.status is Status.INCOMPLETE
+    assert any("panel_fastener_head_dia_in" in name for name in record.missing)
+    assert not any("pull-through" in s.name for s in record.limit_states)
 
 
 def test_the_open_framing_permission_is_quoted_not_summarised(record):
@@ -245,12 +313,21 @@ def test_a_span_the_allowable_was_not_read_at_is_not_interpolated(tmp_path):
                for name in record.missing)
 
 
-def test_a_shorter_screw_moves_the_ratio_and_nothing_else(tmp_path):
+def test_a_longer_screw_moves_the_ratio_and_nothing_else(tmp_path):
+    """The 1-1/2" the note records as available margin, priced as an ablation.
+
+    It ran the other way (2" -> 1") until 2026-09-14, when the 1" became the spec. Same
+    point either way: length moves withdrawal and moves nothing else.
+    """
     results = _variant(tmp_path, _replace(
-        "panel_fastener_length_in=2.0,", "panel_fastener_length_in=1.0,"))
+        "panel_fastener_length_in=1.0,", "panel_fastener_length_in=1.5,"))
     state = _state(results[_ITEM], "withdrawal")
-    assert state.ratio == pytest.approx(_ORACLE["one_inch_ratio"], abs=1e-3)
+    assert state.ratio == pytest.approx(0.1817, abs=1e-3)
     assert results[_ITEM].status is Status.OK
+    assert _state(results[_ITEM], "bending").ratio == pytest.approx(
+        _ORACLE["bending_ratio"], abs=1e-3)
+    assert _state(results[_ITEM], "pull-through").ratio == pytest.approx(
+        _ORACLE["pull_through_ratio"], abs=1e-3)
 
 
 def test_an_absent_diameter_is_incomplete_and_names_itself(tmp_path):

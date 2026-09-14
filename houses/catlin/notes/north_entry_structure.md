@@ -271,7 +271,7 @@ beams between the two columns. It does three jobs: the canopy's north-south shea
 (§1a), the guard, and the closure over the deck framing.
 
 **The two faces are not the same, and that is the 2026-09-11 decision.** WEST takes 5/8" CDX
-under 7/8" `corrugated-panel-26` — the garage's own panel, because the two structures already
+under 7/8" `corrugated-panel-24` — the garage's own panel, because the two structures already
 share a roof plane and a different profile on the one wall standing under that joint would
 read as a mistake. EAST takes one 5/8" APA Rated Siding 303 panel with an MDO face, doing
 shear and finish together. That face stands **under the canopy roof**: it is a finish problem,

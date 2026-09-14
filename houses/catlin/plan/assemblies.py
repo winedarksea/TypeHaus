@@ -400,7 +400,7 @@ EXT_2X6 = Assembly(
                                   standoff_fastener_withdrawal_lb_per_in=170.0,
                                   standoff_fastener_pull_through_lb=200.0,
                                   standoff_fastener_source="ICC-ES ESR-1078 (reissued 2026-01), Tables 1A (2 in thread), 2 (withdrawal, SPF G 0.42) and 3 (head pull-through, 1-1/2 in side member at SG 0.55); coating for ACQ-D <= 0.40 pcf per 4.1.7 / Table 6")),
-        Layer(name="cladding", material_ref="pbr-panel-26", thickness=inch(1.25),
+        Layer(name="cladding", material_ref="pbr-panel-24", thickness=inch(1.25),
               function=LayerFunction.CLADDING),
     ),
     interfaces=(_STUD_BEARING,),
@@ -1608,7 +1608,7 @@ BEAM_GLULAM_TREATED = Assembly(
 # here. It carries NO `control` set for the same reason -- there is no assembly behind it to
 # keep water off, so nothing here is a WRB and nothing should claim to be.
 #
-# Corrugated on the WEST FACE ONLY, `corrugated-panel-26`, which is the garage's own panel:
+# Corrugated on the WEST FACE ONLY, `corrugated-panel-24`, which is the garage's own panel:
 # the two structures already share a roof plane and a sheathing plane, and a different profile
 # on the one wall standing under that joint would read as a mistake. The 7/8" flute is the
 # drainage and vent cavity exactly as it is on the garage (no furring), open at the bottom.
@@ -1629,7 +1629,7 @@ ENTRY_SCREEN_WALL = Assembly(
               framing=FramingSpec(member="2x4", spacing=inch(16))),
         Layer(name="cdx-out", material_ref="cdx-plywood", thickness=inch(0.625),
               function=LayerFunction.SHEATHING),
-        Layer(name="cladding-out", material_ref="corrugated-panel-26", thickness=inch(0.875),
+        Layer(name="cladding-out", material_ref="corrugated-panel-24", thickness=inch(0.875),
               function=LayerFunction.CLADDING),
     ),
     source="north entry west screen, lower panel — KDAT 2x4 at 16in o.c.; WEST face 5/8in CDX under 7/8in corrugated, EAST face one 5/8in APA Rated Siding 303 panel doing shear and finish together. The shear rests on the west face alone; the east ply is not counted. Guard per IRC R312.1, and the closure over the deck framing. No cavity fill and no control layers: an outdoor screen wall, sheltered on the east by the canopy",
@@ -1639,7 +1639,7 @@ ENTRY_SCREEN_WALL = Assembly(
 # `W-BW-SCREEN` bottoms at -0'-1" on BM-BW-SCSILL, and below it sit that 2x8 KDAT sill/rim,
 # the two seat beams, and the ABU66SS standoff bases under PT-BW-CW/-CNW, all the way to the
 # pier tops at -1'-3 1/2". An earlier pass left that band deliberately bare. This closes it:
-# the same `corrugated-panel-26` run down 13 1/2" more, stopping 1" above the cast tops so the
+# the same `corrugated-panel-24` run down 13 1/2" more, stopping 1" above the cast tops so the
 # flutes stay open at the bottom, water leaves, and the column bases dry. A 13 1/2" drop off a
 # continuous sheet is a cantilever, not a span, so there is no bottom girt and nothing to rot.
 #
@@ -1649,7 +1649,7 @@ ENTRY_SCREEN_WALL = Assembly(
 # RETAINING_BLOCK_12 already set. Two consequences, written here rather than discovered:
 #
 #   * It bills through `takeoff/wall_structure.py`, not `envelope_layers` -- its own row of
-#     about 7.4 SF, keyed `ENTRY_SCREEN_SKIRT:corrugated-panel-26` in prices.toml.
+#     about 7.4 SF, keyed `ENTRY_SCREEN_SKIRT:corrugated-panel-24` in prices.toml.
 #   * `takeoff/fasteners.py::_exposed_fastener_cladding_layer` reads only the outermost
 #     CLADDING layer, so the skirt's own field screws are NOT counted. Small and knowable.
 #     (That same function is why dropping ENTRY_SCREEN_WALL's inner panel changed no screw
@@ -1665,7 +1665,7 @@ ENTRY_SCREEN_WALL = Assembly(
 ENTRY_SCREEN_SKIRT = Assembly(
     tag="ENTRY_SCREEN_SKIRT",
     layers=(
-        Layer(name="skirt-panel", material_ref="corrugated-panel-26", thickness=inch(0.875),
+        Layer(name="skirt-panel", material_ref="corrugated-panel-24", thickness=inch(0.875),
               function=LayerFunction.STRUCTURE),
     ),
     source="north entry west screen, SKIRT — one 7/8\" 26ga corrugated sheet, the same panel and the same plane as ENTRY_SCREEN_WALL's west face, carried from the deck joist plane at -0'-1\" down to 1\" above the pier tops. Closes the sill/rim, the two seat beams and the column standoff bases. Self-supporting single skin: the one layer IS the element, per BASEMENT_BRICK_VENEER and RETAINING_BLOCK_12. Open at the bottom edge so the flutes drain",
@@ -2250,7 +2250,7 @@ GARAGE_WALL_2X6 = Assembly(
         # saving. Removing the Zip-R removed that objection. It is corrugated rather than
         # the house's PBR because this is a secondary building and the profile is allowed
         # to differ; the white does not.
-        Layer(name="cladding", material_ref="corrugated-panel-26", thickness=inch(0.875),
+        Layer(name="cladding", material_ref="corrugated-panel-24", thickness=inch(0.875),
               function=LayerFunction.CLADDING),
     ),
     default_lining=_GWB_LINING,
@@ -3578,8 +3578,8 @@ MATERIALS = [
     # The FIRST FOUR tags keep the substring "seam" ON PURPOSE:
     # `ui/src/three/materials.isStandingSeam` and `nordic/palette.familyOf` both key the
     # ribbed metal finish off it, and a tag like "nail-strip-steel" would render this
-    # house's walls as flat grey. `pbr-panel-26` deliberately does NOT play that game — it
-    # declares `finish="ribbed-panel"` and the renderers dispatch on the declaration, which
+    # house's walls as flat grey. The two PBR rows deliberately do NOT play that game — they
+    # declare `finish="ribbed-panel"` and the renderers dispatch on the declaration, which
     # is what the substring fallback was always standing in for.
     Material(tag="standing-seam-snaplock", name="Snap-lock standing-seam steel, 24 ga.",
              r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
@@ -3610,8 +3610,11 @@ MATERIALS = [
              color="#2f5233", finish="classic-green-seam",
              skin_family="standing-seam",
              source="26 ga. PVDF-coated steel, nail-strip seam profile, Western States Metal Roofing \"Classic Green\" (westernstatesmetalroofing.com/classic-green) — an accent colourway for the garage's overhead-door (east) wall only; every other garage wall stays standing-seam-nailstrip-26 white"),
-    # `pbr-panel-26` — 26 ga, EXPOSED-FASTENER PBR. The house walls, EXT_2X6 and
-    # PLANT_EXT_2X6_HUMID, taking over from `standing-seam-snaplock`. The fifth metal skin
+    # `pbr-panel-26` — 26 ga, EXPOSED-FASTENER PBR. ** RETIRED 2026-09-14 and kept at 0 SF
+    # as the documented revert ** — the house's east and west walls are `pbr-panel-24`
+    # below, the same profile a gauge heavier in a named colour, because "26 ga PVDF" is
+    # probably not a purchasable combination at Metal Sales (26 ga there is SMP). It took
+    # EXT_2X6 and PLANT_EXT_2X6_HUMID over from `standing-seam-snaplock`. The fifth metal skin
     # and the only one that is not a concealed-fixing product: 36" net coverage with
     # 1-1/4" major ribs at 12" o.c., screwed through its face into the girts.
     #
@@ -3636,60 +3639,201 @@ MATERIALS = [
              color="#6b7076", finish="ribbed-panel",
              skin_family="standing-seam", exposed_fastener=True,
              source="26 ga. PVDF-coated steel PBR (purlin-bearing rib) wall panel, 36\" net coverage, 1-1/4\" major ribs at 12\" o.c., face-fastened with gasketed screws; same white paint and the same vapour-impermeable sheet steel as the four skins above"),
-    # `board-batten-24` — Metal Sales BB75-1111, 24 ga CONCEALED-FASTENER board & batten
-    # at 11" net coverage, on the NORTH AND SOUTH elevations only. The sixth metal skin. The east and
-    # west walls stay on `pbr-panel-26` above, which is why that row is still here: this is
-    # a per-wall `layer_materials=` swap on twenty walls, not an assembly change.
+    # `pbr-panel-24` — the SAME PBR profile as `pbr-panel-26` above, one gauge heavier and
+    # a named colour, on the house's EAST AND WEST walls (EXT_2X6 and PLANT_EXT_2X6_HUMID).
+    # A new tag rather than an edit to the 26 ga row, because the tag reads the GAUGE: a row
+    # spelled `pbr-panel-26` carrying 24 ga steel would lie to `prices.toml`, to
+    # `emit/draw/palette.py` and to every reader. The 26 ga row stays above at 0 SF as the
+    # documented revert, the way the nail-strip rows are kept.
     #
-    # 24 ga, not 26: PVDF is generally only offered on 24 ga board & batten, so 26 ga in
-    # this coating system may not be a purchasable combination at all. The gauge step is not
-    # optional and it is most of the material premium.
+    # Three reasons for the gauge step, in order of weight:
+    #   - At Metal Sales, PVDF IS a 24 ga product. The 24 ga colour guide is the PVDF
+    #     palette; the 26 ga guides are MS Colorfast45, which is SMP (45-yr film / 30-yr
+    #     chalk-fade, ~10-15 years of field data). The authored "26 ga PVDF" was probably
+    #     not a purchasable combination from this supplier at all.
+    #   - Hail. The Twin Cities are a hail corridor and insurers exclude cosmetic denting;
+    #     24 ga dents and oil-cans visibly less. Gauge has ZERO effect on corrosion — that
+    #     is the paint and the Galvalume — so this is an appearance-and-claims argument,
+    #     not a durability one, and it is worth saying so.
+    #   - Colour match. Linen White (81) on every face of the property, which also
+    #     neutralises St Paul §63.110's advisory that street-facing sides use materials
+    #     "similar to those used on principal facades".
+    # Load is not the reason and never was: PBR at 24 ga is 318 psf outward at 2'-0" (PBR
+    # CTR 1/2026) and at 26 ga 236 psf, both an order of magnitude over the -18.3 psf ASD
+    # corner-zone demand. This wall stays PRESCRIPTIVE — `exposed_fastener=True` keeps it
+    # out of `engineering/wall_panel.py`'s enumeration, which is the correct scope: a
+    # face-fastened panel's wall capacity is published.
+    Material(tag="pbr-panel-24", name="Metal Sales PBR exposed-fastener steel panel, 24 ga., PVDF Linen White (81)",
+             r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
+             color="#6b7076", finish="ribbed-panel",
+             skin_family="standing-seam", exposed_fastener=True,
+             source="Metal Sales PBR-Panel: 24 ga. PVDF-coated steel purlin-bearing-rib wall panel, 36\" net coverage, 1-1/4\" major ribs at 12\" o.c., face-fastened with gasketed screws; 318 psf outward at 2'-0\" (PBR Condensed Technical Reference 1/2026 wall table; the 26 ga row of the same table is 236 psf). PVDF Linen White (81), SR 0.73 / TE 0.86 / SRI 89; same vapour-impermeable sheet steel as the skins above, and the same colour as the board & batten and the garage corrugated"),
+    # `corrugated-panel-24` — the library's `corrugated-panel-26` one gauge heavier, in the
+    # same Linen White, on GARAGE_WALL_2X6 and both ENTRY_SCREEN faces. HOUSE-LOCAL and NOT
+    # an edit to `library/materials.py`: the library row is the shared, reviewed catalog
+    # entry and a second house may still want 26 ga (CONTRIBUTING §Promotion flow). Same
+    # gauge reasoning as `pbr-panel-24` above, and the entry screen moves WITH the garage
+    # because CLAUDE.md records that its west face must stay in the same plane and the same
+    # reading as the garage panel.
     #
-    # 11" net coverage is the PRODUCT'S, not a choice. The row was authored at 20" against
+    # ** 34-2/3" wall coverage, not the library row's 32". ** The Metal Sales 7/8"
+    # Corrugated WALL CTR (1/2024) reads "34 2/3\" panel coverage"; 32" is the ROOF figure,
+    # one more corrugation of side lap. The library's prose and
+    # `emit/draw/elevation_finish.py::_CORRUGATED_LAP_M` both carried 32", which drew a side
+    # lap where no joint is on every garage elevation; the constant is fixed and the library
+    # row's prose is a separate correction. The TAKEOFF still counts screws off
+    # `takeoff/hardware_config.py`'s global PBR 12"/36" proxy — a known approximation,
+    # unchanged by this work and unaffected by gauge.
+    #
+    # `areal_density_kg_m2` is the one number that actually moves with the gauge: 24 ga is
+    # 0.0239" of steel = 4.7 kg/m2 flat, and the corrugation's developed length runs about
+    # 10% over its coverage, so 5.2. The 7/8" layer `thickness` is the PROFILE DEPTH, not
+    # the steel, which is why a dead load taken off it would read a sheet of solid steel.
+    Material(tag="corrugated-panel-24",
+             name="7/8\" corrugated exposed-fastener steel panel, 24 ga., PVDF Linen White (81)",
+             r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
+             areal_density_kg_m2=5.2,
+             color="#6b7076", finish="corrugated",
+             skin_family="standing-seam", exposed_fastener=True,
+             source="Metal Sales 7/8\" Corrugated: 24 ga. PVDF-coated steel, 7/8\" corrugation depth on a 2-2/3\" pitch, 34-2/3\" net WALL coverage (Corrugated Wall CTR 1/2024; 32\" is the roof figure), 3'-45' lengths, \"applies over open framing or solid substrate\", 412 psf outward at 2'-0\"; face-fastened with gasketed screws through the crowns, and the CTR's own recommendation of stainless- or aluminium-head fasteners over Galvalume is met by the specified 316 T09150HWAM. PVDF Linen White (81), SR 0.73 / TE 0.86 / SRI 89 — the same colour as the house's board & batten and PBR. Continuous sheet steel is vapour-impermeable, as `standing-seam`. The takeoff's screw count still runs off takeoff/hardware_config.py's global PBR 12\"/36\" proxy, a known approximation that gauge does not touch"),
+    # `board-batten-24` — Metal Sales BBD75-1212, 24 ga CONCEALED-FASTENER board & batten
+    # at 12" net coverage, on the NORTH AND SOUTH elevations only. The sixth metal skin. The
+    # east and west walls are `pbr-panel-24` above, a different profile in the same colour
+    # and gauge: this is a per-wall `layer_materials=` swap on twenty walls, not an
+    # assembly change.
+    #
+    # ** BB75-1111 is the CLIP-fastened panel; BBD75-1212 is the DIRECT-fastened one, and
+    # this row named the wrong one until 2026-09-14. ** The two guides' cover pages say so
+    # outright — "Concealed Clip-Fastened BB75-1111" against "Concealed Direct-Fastened
+    # BBD75-1010 / BBD75-1212" — and the difference is visible in the wall-base details:
+    # BB75's (guide p.20) reads "PANEL CLIP (SEE PAGE 17), CLIP FASTENERS (B), 2 PER CLIP"
+    # (clip P/N 4934600 G90 / 49346F01 stainless), BBD75's (p.22) reads "PANEL FASTENER (B),
+    # AT NAIL STRIP". The engineering item's withdrawal model — ONE screw per panel per
+    # girt — has always described the direct-fastened panel, so naming BBD75 makes the
+    # existing calculation true rather than adding a new one to it.
+    #
+    # Structurally the two are the same product: both guides (10/2025) publish 43 psf
+    # inward / 58 psf outward at 2'-0" fastener spacing, the same note 2, the same "Lumber
+    # - 1x or thicker" support list, 24 ga only, 5'-20' lengths. What BBD75-1212 buys is
+    # cheaper INSTALLATION — 12" coverage instead of 11" (~9% fewer panels, laps and screw
+    # lines) and one nail-strip screw per girt instead of a clip plus two screws (~840
+    # screws and no clips on the N+S faces, against ~2,000 screws and ~1,000 clips). What
+    # it gives up is the Florida approval (FL47647.1, which is scoped "over Sheathing" and
+    # reaches this wall for neither panel) and the clip's thermal-movement slip, which at
+    # an 11.1 ft storey band is immaterial.
+    #
+    # 24 ga, not 26: at Metal Sales PVDF *is* a 24 ga product. The 24 ga colour guide is the
+    # PVDF palette; the 26 ga guides are MS Colorfast45, which is SMP. "26 ga PVDF" is
+    # probably not a purchasable combination from this supplier at all, which is why every
+    # metal face on this house is now 24 ga (see `pbr-panel-24` above and
+    # `corrugated-panel-24` below).
+    #
+    # ** PVDF Linen White (81), and the colour is a decision. ** 24 ga colour guide 9/2026:
+    # SR 0.73 / TE 0.86 / SRI 89 — the highest SRI in the whole Metal Sales line (Snowdrift
+    # White W81 is 78, the 26 ga SMP "White (30)" is 79). The point is bouncing daylight
+    # into tree-shaded rear gardens. Two caveats worth keeping: SRI is NIR-weighted and
+    # Metal Sales publishes no visible LRV (peer whites run ~74-75), and Linen White is a
+    # standard no-upcharge colour but is NOT marked Low Gloss and "not all colours stocked
+    # at all branches" — treat it as a made-to-order coil run and ask Rogers MN for lead
+    # time. There is no matte white in this palette.
+    #
+    # 12" net coverage is the PRODUCT'S, not a choice. The row was authored at 20" against
     # no named panel; the survey in notes/board_batten_girt_span.md §7 found no
     # 24"-coverage batten panel on the market at all, and published coverages run 10", 11",
-    # 12" and 16". At 11" against PBR's 36" this is 3.3x the panel count, which is why the
-    # prices.toml labour band moved to its top.
+    # 12" and 16". At 12" against PBR's 36" this is 3.0x the panel count, which is why the
+    # prices.toml labour band sits near the top of its researched range.
     #
     # ** The girts constrain the SUPPLIER, and that had to survive a substitution. **
     # Board & batten is not a purlin-bearing profile, and it appears in no evaluation
-    # report. That is why the product is now NAMED rather than assumed: Metal Sales
-    # BB75-1111, whose own install guide (2025-10, p.6) says the panel is "designed to be
-    # installed over open framing and/or directly over a wood substrate" and lists
-    # "Lumber - 1x or thicker" among its supports. This wall's 1-1/2" KDAT girts at 24"
-    # o.c. are on-label under that sentence, which is the whole reason the switch was made
-    # away from an unnamed Western States panel that publishes no load data at all.
+    # report. That is why the product is NAMED rather than assumed: Metal Sales BBD75-1212,
+    # whose own install guide (2025-10-16, p.7) says the panel is "designed to be installed
+    # over open framing and/or directly over a wood substrate" and whose p.12 Support
+    # Materials list reads "Lumber - 1x or thicker" and "Steel Framing - 18 gauge or
+    # thicker" — neither of which is a solid substrate. This wall's 1-1/2" KDAT girts at
+    # 24" o.c. are on-label under that sentence, which is the whole reason the switch was
+    # made away from an unnamed Western States panel that publishes no load data at all.
+    #
+    # ** And the question is closed by the CODE, not by a letter. ** IRC R703.1.2 asks for
+    # a wind-load path by test or by analysis and says nothing about a solid substrate;
+    # BBD75-1212 lists an ASTM E 330 Load Test on its own design page, which is R703.1.2's
+    # first path named on the product; and the allowable table is indexed on FASTENER
+    # SPACING from 2'-0" (the NARROWEST column, 43/58 psf) out to 6'-0" (22/13), so a table
+    # built on fastener spacing across five spans is a spanning-between-supports table by
+    # construction and this 24" girt sits at its strong end. The 07/2026 CTR carries a
+    # summary badge that reads as sheathing-only; it is a copy artifact — the same sheet's
+    # own icon row says `10" & 12" COVERAGE` while showing ONE panel at 11", because the
+    # 12/2024 single-sheet CTR was split in two and the row copied verbatim onto both. No
+    # Tech Services letter is needed.
     #
     # Against the -18.3 psf ASD corner-zone demand the guide's own 58 psf outward at 2'-0"
-    # is d/c 0.31 in bending. The limit state that actually governs a concealed panel is
-    # withdrawal of the hidden leg's screws, which the same table excludes by name ("does
-    # not address web crippling, fasteners, support material"), so it is COMPUTED per NDS
-    # 2018 section 12.2 from the girt's own G and the screw's penetration — d/c 0.12. See
+    # is d/c 0.315 in bending. The limit state that actually GOVERNS is withdrawal of the
+    # concealed leg's screws — d/c 0.334 — which the same table excludes by name ("does not
+    # address web crippling, fasteners, support material"), so it is COMPUTED per NDS 2018
+    # section 12.2 from the girt's own G and the screw's penetration. Head pull-through,
+    # the third mode R703.1.2 names, is computed per AISI S100 and is 0.12. See
     # houses/catlin/notes/board_batten_girt_span.md and the single grouped
     # `wall_panel/W-A-N1` engineering item covering all twenty walls: this panel is
-    # ENGINEERED where PBR was PRESCRIPTIVE, and it is now stampable rather than open.
+    # ENGINEERED where PBR is PRESCRIPTIVE, and it is stampable rather than open.
     #
-    # ** The screw is 2", and the length is the calculation. ** The guide's own 1" pancake
-    # screw leaves 0.596" of thread in the girt once the flange and the tapered tip are
-    # deducted, and it cannot meet Metal Sales' "fasteners should extend 1/2" or more past
-    # the inside face of the support" rule in a 1-1/2" girt. The 2" passes the girt fully,
-    # tip outside, and takes the full 1.50". It must be a wood-point (Type 17) screw: a
-    # self-drilling point reams its own thread out of a 1-1/2" nailer.
+    # ** `panel_allowable_psf` stays 58 even though a newer sheet publishes 75. ** The
+    # Condensed Technical Reference 07/2026 re-publishes this panel at 42 psf inward /
+    # 75 outward at 2'-0", off a LOWER section (Ixx 0.0156-0.0181 against the guide's
+    # 0.0442). A lower section modulus with a higher allowable is not reconcilable in
+    # either limit state — scaling 58 by the section ratio gives ~25-29 psf, not 75 — so
+    # one of the two tables is wrong and 58 is the conservative half. Recorded, not
+    # adopted; it is a question for the Rogers branch when quoting, not a gate.
     #
-    # ** 11" coverage, not 20". ** That is the product's real net coverage, and it is not
-    # cosmetic — panel count and the labour band both move with it (see the
+    # ** The screw is the guide's own stocked 1", and that is a REVERSAL of 2026-09-11. **
+    # This row carried a #10-12 x 2" for three days, on one argument: Metal Sales' detail
+    # asks that "fasteners should extend 1/2" or more past the inside face of the support",
+    # and in a 1-1/2" girt nothing shorter than 2" can. That argument does not hold, for
+    # three reasons, and the note's §6 now works all three:
+    #   - The GIRT is the support, and the protrusion buys nothing. Behind it is the 1/2"
+    #     vent gap and then the ccSPF. A tip emerging into that plane adds no withdrawal,
+    #     no bearing and no redundancy.
+    #   - The rule cannot be a wood-engagement criterion, because on the guide's OWN
+    #     thinnest listed supports it yields almost none: the same 1" screw gives 0.034" of
+    #     thread in 7/16" OSB and 0.096" in 1/2" plywood, against 0.596" in this 1-1/2"
+    #     girt — ~18x the manufacturer's thinnest listed case. It is a sheathing-era "make
+    #     sure you went all the way through" proxy, not a design criterion.
+    #   - And it is not the governing document. The load table footnotes fasteners and
+    #     support material out BY NAME, which is exactly why `wall_panel` is an ENGINEERED
+    #     record; IRC R703.1.2's design-analysis path is the one this wall is on, and NDS
+    #     2018 §12.2 is the analysis. Every candidate length passes it, the 1" included.
+    # At 1" the thread engagement is 0.596" and d/c is 0.334 on an allowable that already
+    # carries NDS's own 5:1. 1-1/2" is recorded as the available no-cost margin upgrade.
+    # ** 2" is affirmatively REJECTED: ** its tip stands 0.476" into a 0.500" vent gap,
+    # 0.024" off the ccSPF face, so a thin girt or one overdriven screw puts ~840 tips in
+    # the foam. Nothing longer than 1-1/2" should ever be specified here.
+    # It must still be a wood-point (Type 17) screw — a self-drilling point reams its own
+    # thread out of a 1-1/2" nailer — and the 316 SS / A153-D coating call is unchanged
+    # (KDAT contact; see prices.toml).
+    #
+    # ** `panel_fastener_head_dia_in=0.40` is not decoration either. ** IRC R703.1.2 names
+    # three failure modes a design analysis must reach — "bending rupture of siding,
+    # fastener withdrawal and fastener head pull-through" — and this field is the third
+    # one's only input the model does not already hold. A pancake head is the smallest head
+    # sold, which is why the mode is graded rather than assumed away; it passes at ~0.12.
+    #
+    # ** 12" coverage, not 20" and not 11". ** That is the product's real net coverage, and
+    # it is not cosmetic — panel count and the labour band both move with it (see the
     # `board-batten-24` row in prices.toml), and fastener tributary area moves with it in
-    # the withdrawal calculation above. No 24"-coverage batten panel exists on the market;
-    # the survey in the note found published coverages of 10", 11", 12" and 16".
+    # the withdrawal calculation above, which is how the governing limit state came to
+    # FLIP: at 11" coverage with the rejected 2" screw withdrawal was 0.12 against
+    # bending's 0.315, and at 12" with the 1" screw it is 0.334 and governs. Both pass
+    # wide, and the two are only 6% apart, so a later coverage or wind change can flip them
+    # back with no physical meaning whatever.
     #
-    # ** Standard white PVDF and not the wood-grain print: ** "white wood" is CERAM-A-STAR
+    # ** PVDF Linen White and not the wood-grain print: ** "white wood" is CERAM-A-STAR
     # SMP, a different coating system and warranty from the PVDF on the rest of the
     # envelope, costs about as much again as the switch itself, and is not quoted below a
     # $3,000 job minimum.
     #
     # ** The tag stays `board-batten-24`. ** It reads as the GAUGE, which is unchanged at
     # 24 ga; renaming it would touch twenty layer_materials overrides, the prices.toml key
-    # and three unrelated tests for nothing.
+    # and three unrelated tests for nothing. (The E/W and garage tags DID have to move —
+    # `pbr-panel-26` -> `pbr-panel-24`, `corrugated-panel-26` -> `corrugated-panel-24` —
+    # because those read the gauge that changed, and a tag that reads 26 ga would lie.)
     #
     # ** `exposed_fastener` is deliberately ABSENT (defaults False). ** A concealed-leg
     # panel's pancake screws are inside the $/SF rate, and leaving the flag on would bill
@@ -3710,18 +3854,19 @@ MATERIALS = [
     # devices in `plan/electrical.py`. The roof footprint re-derives from the bearing walls'
     # outermost layer polygons and those constants do not, so any thickness change makes
     # derived geometry and authored constants silently disagree at the rake ends. The
-    # BB75-1111 rib is 3/4" and the panel plus batten sits inside 1-1/4".
-    Material(tag="board-batten-24", name="Metal Sales BB75-1111 board & batten panel, 11\" coverage, 24 ga.",
+    # BBD75-1212 rib is 3/4" and the panel plus batten sits inside 1-1/4".
+    Material(tag="board-batten-24", name="Metal Sales BBD75-1212 board & batten panel, 12\" coverage, 24 ga., PVDF Linen White (81)",
              r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
              color="#6b7076", finish="board-and-batten",
              skin_family="standing-seam",
              panel_allowable_psf=58.0, panel_allowable_span_in=24.0,
-             open_framing_source="Metal Sales BB75-1111 Board & Batten install guide, 2025-10, p.6: the panel is \"designed to be installed over open framing and/or directly over a wood substrate\", and the support materials listed include \"Lumber - 1x or thicker\"",
-             panel_fastener="#10-12 x 2\" pancake head wood screw, Type 17 point, 316 stainless or ASTM A153 Class D HDG",
+             open_framing_source="Metal Sales BBD75 Board & Batten (Concealed Direct-Fastened) install guide, 2025-10-16, p.7: the panel is \"designed to be installed over open framing and/or directly over a wood substrate\", and p.12's Support Materials list reads \"Lumber - 1x or thicker\" and \"Steel Framing - 18 gauge or thicker\" (neither is a solid substrate). The Spec Data Sheet says the same in its own words: \"Designed for application over solid sheathing or open framing\", typical assembly \"Wood framing with moisture barrier\"",
+             panel_fastener="#10-12 x 1\" pancake head wood screw, Type 17 point, 316 stainless or ASTM A153 Class D HDG",
              panel_fastener_diameter_in=0.190,
-             panel_fastener_length_in=2.0,
-             fastener_coverage_in=11.0,
-             source="Metal Sales BB75-1111: 24 ga. PVDF-coated steel board & batten wall panel, 11\" net coverage, 3/4\" rib, concealed-leg pancake screws over open framing; allowable 58 psf outward / 43 psf inward at 2'-0\" fastener spacing (AISI 2016, 3+ equal spans, L/180, no 1/3 stress increase, and by its own note 2 not covering fasteners or support material); same white paint and the same vapour-impermeable sheet steel as the five skins above"),
+             panel_fastener_length_in=1.0,
+             panel_fastener_head_dia_in=0.40,
+             fastener_coverage_in=12.0,
+             source="Metal Sales BBD75-1212 (product nos. 2520741 ACG / 25207XX PVDF): 24 ga. PVDF-coated steel board & batten wall panel, 12\" net coverage, 3/4\" rib, concealed DIRECT-fastened at the nail strip over open framing; allowable 58 psf outward / 43 psf inward at 2'-0\" fastener spacing (AISI 2016, 3+ equal spans, L/180, no 1/3 stress increase, and by its own note 2 it does not address web crippling, fasteners, support material); PVDF Linen White (81), SR 0.73 / TE 0.86 / SRI 89 per ASTM C1549 / C1371 / E1980, CRRC-listed steep and low slope, 45-yr film / 35-yr chalk-fade warranty; same vapour-impermeable sheet steel as the five skins above"),
     Material(tag="polyiso-foil", name="Foil-faced polyisocyanurate", r_per_inch=6.0,
              perm_rating=0.03, hatch="rigid", color="#d9d2a8", foam_plastic=True,
              source="foil facer is the sauna's vapour retarder as well as its CI"),
@@ -3907,7 +4052,7 @@ MATERIALS = [
     # 0.019" standard trim coil is NOT the fallback — it is the thing this note rejects.
     #
     # ALUMINIUM, WHERE EVERY OTHER PANEL ON THIS BUILDING IS STEEL, AND THAT IS THE POINT.
-    # `corrugated-panel-26` above it is 26 ga PVDF-coated STEEL. The driveway apron is
+    # `corrugated-panel-24` above it is 24 ga PVDF-coated STEEL. The driveway apron is
     # plowed and salted, and chloride is what separates the two metals: aluminium's oxide
     # film re-forms in it and steel's does not. Two consequences that no check can see —
     # the Z-flash at the transition must be ALUMINIUM, not steel, and the two panels must
@@ -4291,7 +4436,7 @@ PLANT_EXT_2X6_HUMID = Assembly(
                                   standoff_fastener_withdrawal_lb_per_in=170.0,
                                   standoff_fastener_pull_through_lb=200.0,
                                   standoff_fastener_source="ICC-ES ESR-1078 (reissued 2026-01), Tables 1A (2 in thread), 2 (withdrawal, SPF G 0.42) and 3 (head pull-through, 1-1/2 in side member at SG 0.55); coating for ACQ-D <= 0.40 pcf per 4.1.7 / Table 6")),
-        Layer(name="cladding", material_ref="pbr-panel-26", thickness=inch(1.25),
+        Layer(name="cladding", material_ref="pbr-panel-24", thickness=inch(1.25),
               function=LayerFunction.CLADDING),
     ),
     interfaces=(_STUD_BEARING,),

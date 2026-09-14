@@ -271,7 +271,7 @@ VENT_RISERS = [
 # decides the part, and it was checked: a fixing that had landed above the rake would be on
 # `standing-seam` roofing and would have stayed on the CanDuit ring.
 #
-# These hold a *pipe*, not a seam: the gable wall is `pbr-panel-26`, an exposed-fastener
+# These hold a *pipe*, not a seam: the gable wall is `pbr-panel-24`, an exposed-fastener
 # panel with no seam, so an S-5! CanDuit ring's `requires_role=ROLE_STANDING_SEAM_CLAMP`
 # would order a bracket with nothing to grip. This follows the roof leaders
 # (plan/mep_electrical.py LEADER_CLAMPS) onto the 316 stainless standoff strap, screwed

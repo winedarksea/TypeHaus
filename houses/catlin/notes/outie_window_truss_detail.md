@@ -284,7 +284,8 @@ laid flat) against the Swinburne wall's **1-1/2"** (the same board on edge), so 
 upstand starts two inches higher. Everything else — the mount plane, the foam face, the vent
 depth — the recipe already read off the resolved stack and needed no telling.
 
-- **Jamb and head trim (2026-09-12).** The Metal Sales BB75-1111 kit's **Sill/Jamb Trim** is
+- **Jamb and head trim (2026-09-12; the panel is BBD75-1212 from 2026-09-14, and the trim
+  kit is the same brake-formed set).** The Metal Sales kit's **Sill/Jamb Trim** is
   a J-shaped receiver: it runs up each jamb to the head and takes the panel's cut end at the
   reveal. Without it, the cut edge IS the finish. **Head Trim** goes over it, under the head
   flashing's drip. Both are brake-formed flat stock from the same kit as the corners and the

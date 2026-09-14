@@ -132,7 +132,7 @@ def test_material_callouts_name_finishes_not_substrates(catlin_model):
     """
     scene = build_elevation(catlin_model, "west")
     materials = {text for text in _leader_texts(scene) if " EL. " not in text}
-    assert "PBR-PANEL-26" in materials
+    assert "PBR-PANEL-24" in materials
     assert not {"STRUCT-1-PLYWOOD", "SPF", "OSB"} & materials
 
 

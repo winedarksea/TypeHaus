@@ -184,8 +184,9 @@ export function runMaterialGeometryTests() {
     "Continuous corrugation stiffens the sheet, so it wanders less than a wide flat pan");
 
   // ── The board & batten profile ──────────────────────────────────────────────────────
-  // The house's north and south walls are 24 ga concealed-fastener board & batten at 20" net
-  // coverage; east and west stay on PBR. `board-batten-24` contains neither "seam" nor
+  // The house's north and south walls are 24 ga concealed-fastener board & batten at 12" net
+  // coverage (Metal Sales BBD75-1212; it read 20" until 2026-09-14, authored against no
+  // named panel); east and west stay on PBR. `board-batten-24` contains neither "seam" nor
   // "standing" either, so it too reaches the metal treatment only through its finish — and
   // unlike the other two it DOES declare `skin_family="standing-seam"`, for the roof edge's
   // sake, which is a field the viewer never consults.
@@ -194,22 +195,31 @@ export function runMaterialGeometryTests() {
   assert(metalPanelProfileForFinish("board-and-batten") === BOARD_BATTEN_PROFILE,
     "An authored finish of 'board-and-batten' selects the board & batten profile");
   assert(Math.abs(BOARD_BATTEN_PROFILE.moduleM - BATTEN_PITCH_M) < 1e-9,
-    "The batten pitch is the panel's 20in net coverage, the widest module of the four");
-  assert(BOARD_BATTEN_PROFILE.moduleM > SEAM_PROFILE.moduleM
-    && BOARD_BATTEN_PROFILE.moduleM > RIBBED_PANEL_PROFILE.moduleM,
-    "20in is wider than a 16in seam pan and far wider than a 12in PBR rib pitch");
+    "The batten pitch is the panel's 12in net coverage, read off the named product");
+  // ** PITCH NO LONGER DISTINGUISHES THIS PROFILE, and that is the point of this pair. **
+  // At the old (wrong) 20" the module was the widest of the four and two assertions here
+  // leaned on that. BBD75-1212 covers 12", which is exactly PBR's rib pitch and NARROWER
+  // than a 16" seam pan — so what separates board & batten from PBR at the same module is
+  // the applied cap and the oil-canning below, not the rhythm.
+  assert(Math.abs(BOARD_BATTEN_PROFILE.moduleM - RIBBED_PANEL_PROFILE.moduleM) < 1e-9,
+    "A 12in batten pitch coincides with PBR's 12in rib pitch");
+  assert(BOARD_BATTEN_PROFILE.moduleM < SEAM_PROFILE.moduleM,
+    "and is narrower than a 16in seam pan");
   // These three are what stop board & batten rendering as PBR with a wider pitch.
   assert(BOARD_BATTEN_PROFILE.ribHalfWidth < RIBBED_PANEL_PROFILE.ribHalfWidth,
     "A batten is NARROW relative to its module where a PBR rib is not");
   assert(BOARD_BATTEN_PROFILE.squareness > RIBBED_PANEL_PROFILE.squareness,
     "A batten is a square applied cap; a PBR crown is roll-formed and a seam is folded");
   assert(BOARD_BATTEN_PROFILE.striations === 0,
-    "A 20in pan is smooth — striations are rolled into narrow flats");
+    "A 12in pan is smooth — striations are rolled into narrow flats");
   assert(BOARD_BATTEN_PROFILE.oilCanning > RIBBED_PANEL_PROFILE.oilCanning,
     "A concealed panel floats between its legs instead of being screwed tight every 24in, "
-    + "and a wider pan wanders more — this is the term that says board & batten");
-  // A ~2in cap on a 20in module: `ribHalfWidth` is the HALF width, so the drawn batten is
-  // 2 x 0.05 x 20in. Pinned because copying PBR's fraction would draw a 5-1/2in one.
+    + "and a 3/4in batten stiffens its pan far less than PBR's 1-1/4in rib does at the "
+    + "same 12in pitch — this is the term that says board & batten");
+  // A ~2in cap on a 12in module: `ribHalfWidth` is the HALF width, so the drawn batten is
+  // 2 x 0.0833 x 12in. Pinned because it is a FRACTION of the module: when the pitch went
+  // 20in -> 12in (BBD75-1212) the fraction had to be re-struck or the cap would have
+  // narrowed to 1-1/4in with it.
   assert(Math.abs(2 * BOARD_BATTEN_PROFILE.ribHalfWidth * BATTEN_PITCH_M - 0.0508) < 1e-4,
     "The batten draws about 2in wide, the wide end of the profile's real range");
 

@@ -146,7 +146,7 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # one material is legitimately split across the two tables. Do not "tidy" that into one.
     assert {row["material"] for row in rows} == {
         "concrete", "retaining-block", "brown-brick", "spf",
-        "corrugated-panel-26"}
+        "corrugated-panel-24"}
     # Bigger than the entire priced concrete order (footings + slab) the estimate used to
     # know about, which is the measure of what was missing. It was >100 cy until 2026-08-23:
     # the flat bearing seat took every basement wall from 9'-4" to exactly 8'-0", which is

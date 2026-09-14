@@ -633,16 +633,16 @@ def test_a_metal_wall_skin_exports_the_coil_white_not_its_hatch_tone():
         # declare skin_family="standing-seam" for the roof edge's sake, and this path never
         # reads that field, so its own `_FINISH_BASE` row is the only thing between it and
         # the "metal" family's blue-grey.
-        "pbr-panel-26": _Authored("metal", hatch_tone, "ribbed-panel"),
-        "corrugated-panel-26": _Authored("metal", hatch_tone, "corrugated"),
+        "pbr-panel-24": _Authored("metal", hatch_tone, "ribbed-panel"),
+        "corrugated-panel-24": _Authored("metal", hatch_tone, "corrugated"),
         "board-batten-24": _Authored("metal", hatch_tone, "board-and-batten"),
         # Two CMU specs that author DIFFERENT greys on purpose. A finish-wins rule would
         # collapse both onto _CMU_BASE; the authored colour has to keep winning for them.
         "cmu-8": _Authored("concrete", "#b8b3ab", "cmu"),
         "cmu-12": _Authored("concrete", "#a8a49c", "cmu"),
     }
-    for skin in ("standing-seam-snaplock", "standing-seam-nailstrip-26", "pbr-panel-26",
-                 "corrugated-panel-26", "board-batten-24"):
+    for skin in ("standing-seam-snaplock", "standing-seam-nailstrip-26", "pbr-panel-24",
+                 "corrugated-panel-24", "board-batten-24"):
         assert _material_finish_color(skin, "cladding", authored) == _hex_rgba(_SEAM_BASE), skin
 
     # **A DECLARED metal skin is the coil white on ANY layer function (2026-09-11).** These two
@@ -653,7 +653,7 @@ def test_a_metal_wall_skin_exports_the_coil_white_not_its_hatch_tone():
     # scoping it exported slate grey beside the corrugated wall it continues, which is this
     # test's own docstring describing the defect `glb-emitter-parity` exists to catch, one
     # layer function over.
-    assert _material_finish_color("pbr-panel-26", "structure", authored) == _hex_rgba(_SEAM_BASE)
+    assert _material_finish_color("pbr-panel-24", "structure", authored) == _hex_rgba(_SEAM_BASE)
     assert (_material_finish_color("board-batten-24", "structure", authored)
             == _hex_rgba(_SEAM_BASE))
     # The SCOPING that mattered is untouched, and it was never about the layer function: a

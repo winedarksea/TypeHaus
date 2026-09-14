@@ -1960,7 +1960,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "pbr-panel-26"
+      "material": "pbr-panel-24"
     },
     {
       "space": "model",
@@ -2016,7 +2016,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "pbr-panel-26"
+      "material": "pbr-panel-24"
     },
     {
       "space": "model",
@@ -2652,7 +2652,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "pbr-panel-26"
+      "material": "pbr-panel-24"
     },
     {
       "space": "model",
@@ -3884,7 +3884,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "pbr-panel-26"
+      "material": "pbr-panel-24"
     },
     {
       "space": "model",
@@ -4332,7 +4332,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "pbr-panel-26"
+      "material": "pbr-panel-24"
     },
     {
       "space": "model",
@@ -13684,7 +13684,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "pbr-panel-26"
+      "material": "pbr-panel-24"
     },
     {
       "space": "model",
@@ -13964,7 +13964,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "pbr-panel-26"
+      "material": "pbr-panel-24"
     },
     {
       "space": "model",

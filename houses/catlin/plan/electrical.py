@@ -1399,7 +1399,7 @@ PV_JBOX = [
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
 ]
 # ** THERE IS NO CN-A-PV-CLAMP, for the same reason as CN-A-NEMA-CLAMP **
-# (plan/mep_electrical.py, which carries the full note): W-A-N2 wears `pbr-panel-26`, an
+# (plan/mep_electrical.py, which carries the full note): W-A-N2 wears `pbr-panel-24`, an
 # exposed-fastener panel with no seam, so a seam clamp there is uninstallable. The box is
 # screwed through the
 # panel into the girt with the same gasketed T09150HWAM the panel is hung on, and those are

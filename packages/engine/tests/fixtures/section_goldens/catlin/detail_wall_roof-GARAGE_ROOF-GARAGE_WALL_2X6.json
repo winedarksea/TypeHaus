@@ -880,7 +880,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": null,
-      "material": "corrugated-panel-26"
+      "material": "corrugated-panel-24"
     },
     {
       "space": "model",
@@ -2070,7 +2070,7 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "corrugated-panel-26"
+      "material": "corrugated-panel-24"
     },
     {
       "space": "paper",
@@ -2107,7 +2107,7 @@
         0.7,
         0.7180000000000002
       ],
-      "content": "corrugated-panel-26  0.875\"",
+      "content": "corrugated-panel-24  0.875\"",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
