@@ -42,13 +42,24 @@ const FRAMING_FACET_OF: Record<string, FramingFacet> = {
   sheathing: "framing:sheathing",
 };
 
+// The connector facets are a different kind of split from the three bands above, and worth
+// saying why they are facets rather than trades. A trade is a BID (emit/trades.py), and
+// nobody bids connectors separately from framing — the framer buys the studs and the ties
+// together. But "show me the hardware" and "show me the concrete sub's cast-in hardware" are
+// two things a person wants to look at, and looking is exactly what a facet is for.
+//
+// Both default ON, unlike the three bands: a band is an interior sandwich layer buried behind
+// the cladding, while a connector marker is the thing somebody asked to be able to see.
 export const FRAMING_FACETS =
-  ["framing:structure", "framing:furring", "framing:sheathing"] as const;
+  ["framing:structure", "framing:furring", "framing:sheathing",
+   "framing:connector", "framing:connector-embedded"] as const;
 export type FramingFacet = (typeof FRAMING_FACETS)[number];
 
-/** Keys a fresh session starts with OFF. Kept to the framing facets: every trade is a scope
- *  somebody bids and starts visible, and these are bands inside one of them. */
-export const DEFAULT_OFF_KEYS: readonly FramingFacet[] = FRAMING_FACETS;
+/** Keys a fresh session starts with OFF. Kept to the three framing BANDS: every trade is a
+ *  scope somebody bids and starts visible, and these are interior sandwich layers inside one
+ *  of them. The connector facets are not here — they are what was asked for. */
+export const DEFAULT_OFF_KEYS: readonly FramingFacet[] =
+  ["framing:structure", "framing:furring", "framing:sheathing"];
 
 /** What the Views panel can switch on and off: every trade, plus the framing facets. */
 export type VisibilityKey = Trade | FramingFacet;
@@ -96,6 +107,8 @@ const VISIBILITY_KEY_LABEL: Partial<Record<VisibilityKey, string>> = {
   "framing:structure": "Structure band",
   "framing:furring": "Furring band",
   "framing:sheathing": "Sheathing",
+  "framing:connector": "Connectors",
+  "framing:connector-embedded": "Cast-in connectors",
 };
 
 /** What a Views-panel chip prints for one visibility key. */
@@ -221,6 +234,30 @@ export function solidTrades(solid: Pick<Solid, "category" | "trades">): Trade[] 
   if (solid.trades?.length) return solid.trades as Trade[];
   const category = solid.category?.toLowerCase() ?? "";
   return (SOLID_TRADE_SETS[category] ?? [SOLID_FALLBACK]) as Trade[];
+}
+
+/** Solid category -> the framing facet it takes. Cast-in hardware separates from the rest
+ *  because it is the concrete sub's scope on site, not the framer's. */
+const FRAMING_FACET_OF_CATEGORY: Record<string, FramingFacet> = {
+  connector: "framing:connector",
+  connector_hanger: "framing:connector",
+  connector_embedded: "framing:connector-embedded",
+};
+
+/** The visibility keys a solid answers to — `solidTrades` with the framing token swapped for
+ *  the facet its category names.
+ *
+ *  Deliberately a second function rather than a wider return type on `solidTrades`: that one
+ *  is what `primaryTrade` and every non-viewer caller reads, and a facet leaking into those
+ *  would put a connector in a container of its own. Mirrors `layerTrades`, which does the same
+ *  thing for a layer band. */
+export function solidVisibilityKeys(
+  solid: Pick<Solid, "category" | "trades">,
+): VisibilityKey[] {
+  const facet = FRAMING_FACET_OF_CATEGORY[solid.category?.toLowerCase() ?? ""];
+  const trades = solidTrades(solid);
+  if (!facet) return trades as VisibilityKey[];
+  return trades.map((trade) => (trade === "framing" ? facet : trade)) as VisibilityKey[];
 }
 
 export function layerTrades(layer: Pick<Layer, "function" | "trades">): VisibilityKey[] {
