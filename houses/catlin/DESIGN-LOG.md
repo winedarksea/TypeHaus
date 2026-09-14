@@ -2362,6 +2362,28 @@ exactly this: "optional mineral paint to match the white centre posts".
   `material_ref="concrete"` on the STRUCTURE layer is what the `[concrete]` price table's material
   guard admits, so the white has to come from the wash layer's own `Material.color` drawn in front
   of the substrate.
+- **The render took three tries, and the first two were the wrong kind of fix.** The wash draws a
+  real plane — `Material.coating=True` only stops a room FLOOR finish from drawing — and a plane
+  that thin z-fights: Panel3D's 24-bit depth buffer on `PerspectiveCamera(50, 1, 0.05, 500)`
+  resolves about `z² × 1.19e-6` m, which is 0.48 mm at 20 m and 3.2 mm at 52 m, so the viewer
+  flashed grey concrete through the white. The first response was to thicken the layer: 0.01" →
+  1/16" → 1/8", each time computing the distance at which it would clear and each time still
+  shimmering in practice. **That was a losing race and the wrong mechanism** — it traded an honest
+  number for a renderer's convenience, and the renderer kept winning. `polygonOffset` is what the
+  problem actually calls for: it wins the depth test deterministically at any camera distance,
+  costs nothing, and hands the thickness back to the builder. 1/8" is kept now on build grounds
+  (two coats, plus the whole-face filler coat the TDS requires on block) and because it is what
+  `foundation-coating-acrylic` has carried since 2026-09-04 — not because of the depth buffer.
+  The one cost: glTF has no `polygonOffset`, so an exported `.glb` in a third-party viewer can
+  still shimmer where the live viewer does not.
+- **And a flat fill was the wrong picture anyway.** The wash now gets a procedural texture, on the
+  same argument the metal skins and the masonry already make in this codebase: one shared 4-ft
+  tile of low-frequency mottle plus a matching roughness map, world-scaled so a 10' court wall and
+  a 20 SF fireplace panel show the same cloud at the same size. What it draws is exactly what the
+  manufacturers warn about and what was accepted rather than paid to avoid — flash-drying, roller
+  laps, slight pooling in bugholes. The roughness swing is deliberately tiny: this finish is dead
+  matte everywhere (Beeck publish "dull matte" at 85°, Romabio <5 gloss) and a glossy patch would
+  be a lie about a non-film-forming coating.
 - **Two materials for one product, and the reason is the renderer.** `silicate-wash-white` renders
   as one flat chalky plane, which is right over as-cast concrete. `silicate-wash-white-block` is the
   same pail at the same price on the SRW legs, and exists because a thin non-film-forming silicate

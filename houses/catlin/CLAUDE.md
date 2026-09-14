@@ -1634,16 +1634,26 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   carry an **integral water repellent**. Beecko-SOL (silica-sol modified) is the answer, the open
   dry-stacked joints will take it unevenly, and efflorescence out of the backfill can lift or
   stain it. The manufacturers' own instructions require the trial.
-- **The wash layer is 1/8" and that is arithmetic, not taste.** `Material.coating=True` does NOT
-  stop a wall layer drawing (`_is_coating` is scoped to room floor finishes), so the wash gets a
-  real plane and at `_PAINT_FINISH`'s honest `inch(0.01)` it z-fought — the viewer flashed grey
-  through the white, observed. Panel3D's `PerspectiveCamera(50, 1, 0.05, 500)` on a 24-bit depth
-  buffer resolves only `z² × 1.19e-6` m, which is 0.48 mm at 20 m and 3.2 mm at 52 m: 0.01" fails
-  beyond ~14 m, 1/16" beyond ~36 m, 1/8" holds past any view that matters. It is also exactly what
-  `foundation-coating-acrylic` has carried since 2026-09-04. `_WASH_FILM` in `plan/assemblies.py`
-  carries the arithmetic; `polygonOffset` was rejected because glTF has no equivalent and the .glb
-  would disagree with the viewer. It grows each washed wall 1/8"; that is what moved `CD-B-SPA`'s
-  chase off W-SG-W1's face (see `plan/electrical.py`).
+- **The wash is 1/8" thick and `polygonOffset` is what stops it z-fighting — not the thickness.**
+  `Material.coating=True` does NOT stop a wall layer drawing (`_is_coating` is scoped to room
+  floor finishes), so the wash gets a real plane, and Panel3D's 24-bit depth buffer on
+  `PerspectiveCamera(50, 1, 0.05, 500)` resolves only `z² × 1.19e-6` m — 0.48 mm at 20 m, 3.2 mm
+  at 52 m. Thickening the layer was a losing race (0.01", 1/16" and 1/8" all shimmered);
+  `WASH_POLYGON_OFFSET` in `ui/src/three/materials.ts` wins the depth test deterministically at
+  any distance. **Do not "fix" a future shimmer by inflating `_WASH_FILM`** — the offset is the
+  mechanism, and every washed wall's `alignment` is half of `_WASH_FILM`, so inflating it moves
+  three files. glTF has no `polygonOffset`, so an exported `.glb` in a third-party viewer can
+  still shimmer; that is a format limitation, not a reason to re-inflate.
+- **The wash has a procedural texture, like the metal skins and the masonry do.**
+  `createMineralWashMaterial` builds one shared 4-ft-module tile of low-frequency mottle with a
+  matching roughness map, world-scaled by `applyMineralWashUv` so a 10' court wall and a 20 SF
+  fireplace panel show the same cloud at the same size. It is declared by `Material.finish ==
+  "silicate-wash"`, checked BEFORE the masonry branch (the fireplace's wash sits on a brick wall
+  and is not masonry). The SRW legs take the other path: `silicate-wash-block` →
+  `SILICATE_WASH_BLOCK_STYLE`, a `CMU_STYLE` clone on the 18"×6" SRW module, because there the
+  dry-stacked unit really does telegraph. Both carry the depth offset; no other masonry style
+  does, and none should — pushing a real wythe toward the camera would let it win against things
+  legitimately in front of it.
 - **No new `notes/` entry, deliberately.** `notes/` holds hand-worked **oracles** for
   calculations, and there is no calculation here — no check reads reflectance — so a note would
   name no oracle and the lint would have nothing to bind. Do not add one.
