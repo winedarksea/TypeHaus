@@ -249,7 +249,7 @@ def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> N
     """
     from typehaus.model.enums import ConnectorKind
     from typehaus.model.structure import Post
-    from typehaus.takeoff.uplift_joints import tags_covered_by
+    from typehaus.joints.authored import tags_covered_by
 
     authored = tags_covered_by(catlin_model_ro, frozenset({ConnectorKind.POST_BASE}))
     assert authored >= AUTHORED_POST_BASES, "the fixture's authored bases moved"
@@ -302,7 +302,7 @@ def test_a_squash_block_is_not_bought_a_post_base(catlin_model_ro) -> None:
     block is hardware at a joint whose connection is the bearing itself.
     """
     from typehaus.model.structure import Post
-    from typehaus.takeoff.uplift_joints import is_squash_block
+    from typehaus.joints.posts import is_squash_block
 
     posts = {e.tag: e for e in catlin_model_ro.plan.all_elements() if isinstance(e, Post)}
     assert is_squash_block(posts["P-M-STRLAND-SE"], RULES)

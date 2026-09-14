@@ -46,19 +46,18 @@ from typehaus.checks._authoring import not_applicable
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, Severity
 from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
+from typehaus.joints.authored import (
+    authored_joints,
+    tags_covered_by,
+    unanchored_post_tags,
+)
+from typehaus.joints.bearing import bearing_connections, bearing_line_tags
+from typehaus.joints.hung import hung_connections
+from typehaus.joints.posts import catalogued_post_sizes, is_squash_block
 from typehaus.model.enums import ConnectorKind
 from typehaus.model.structure import Beam, Post
 from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.takeoff.anchors import coil_strap_rows, mudsill_anchor_rows
-from typehaus.takeoff.hangers import hung_connections
-from typehaus.takeoff.uplift import bearing_connections, bearing_line_tags
-from typehaus.takeoff.uplift_joints import (
-    authored_joints,
-    catalogued_post_sizes,
-    is_squash_block,
-    tags_covered_by,
-    unanchored_post_tags,
-)
 from typehaus.wind import capacity_caveat
 
 #: The id names what the rule grades: whether every joint in the chain is *covered*, a

@@ -268,7 +268,7 @@ def roof_framing_findings(model: ResolvedModel, roof: ResolvedRoof) -> list[Find
                     "Connector hurricane tie references its members and no tie is derived "
                     "at its bearings, so no tie schedule is shown",
             element_tags=(roof.tag,), result=Result.UNKNOWN,
-            fix_hint=("declare the roof's bearing_refs so takeoff/uplift.py can derive a "
+            fix_hint=("declare the roof's bearing_refs so typehaus/joints can locate a "
                       "tie at every seated rafter or truss heel, or author Connector "
                       "elements (HURRICANE_TIE) naming the rafters and plates")))
     if roof_framing_spec(model, roof) is None:
@@ -282,10 +282,9 @@ def roof_framing_findings(model: ResolvedModel, roof: ResolvedRoof) -> list[Find
 def _has_uplift_connector(model: ResolvedModel, roof: ResolvedRoof) -> bool:
     """Is this roof's uplift restraint modelled — authored by hand OR derived?
 
-    Derived ties count here, not only authored connectors, so the BOM
-    (``takeoff/uplift.py``) and this sheet describe the same roof — for the same reason
-    ``checks/structural/uplift_path.py`` reads the take-off rather than re-deriving: one
-    answer, two readers.
+    Derived ties count here, not only authored connectors, so the BOM, this sheet, the
+    load-path check and the 3D markers describe the same roof. All four read
+    ``typehaus.joints`` rather than re-deriving: one answer, four readers.
     """
     member_keys = {member.child_key for member in roof.members} | {roof.tag}
     for element in model.plan.all_elements():
@@ -294,7 +293,7 @@ def _has_uplift_connector(model: ResolvedModel, roof: ResolvedRoof) -> bool:
         if set(element.connects) & member_keys:
             return True
     from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
-    from typehaus.takeoff.uplift import bearing_connections
+    from typehaus.joints.bearing import bearing_connections
 
     rules = DEFAULT_HARDWARE_TAKEOFF_CONFIG.uplift
     return any(connection.assembly_tag == roof.tag

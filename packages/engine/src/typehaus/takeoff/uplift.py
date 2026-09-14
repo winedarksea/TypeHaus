@@ -1,4 +1,9 @@
-"""Uplift hardware along the continuous load path, derived from the resolved framing.
+"""Uplift hardware along the continuous load path — the ROWS, grouped from the joints.
+
+Where the joints *are* is :mod:`typehaus.joints`' business; this module is what a framer
+buys. The split is not tidiness: a derived tie used to be locatable only from inside a bill
+of materials, which is upstream of nothing, so three hundred ties could be specified, billed
+and graded and never drawn. The locator moved out; the grouping stayed here.
 
 The rest of the load path was already derived — MASA anchors and STHD holdowns off the sill
 runs, SP ties off the studs, CS16 coil strap across the stacked wall lines (all
@@ -34,9 +39,7 @@ post with no declared bearing, or an unstocked section shows up.
 
 from __future__ import annotations
 
-import math
 from collections import Counter
-from dataclasses import dataclass
 
 from typehaus.hardware.catalog import (
     EXPOSURE_DRY,
@@ -46,113 +49,17 @@ from typehaus.hardware.catalog import (
     hardware_for_role,
 )
 from typehaus.hardware.config import FT_TO_M, UpliftTieRules
-from typehaus.hardware.plan_geometry import centerline_endpoints, distance_point_to_segment
-from typehaus.model.enums import ConnectorKind
-from typehaus.quantities import M_PER_IN
-from typehaus.resolve.assembly_material import assembly_structure_material
+from typehaus.joints.bearing import bearing_connections, continuous_bearing_members
+from typehaus.joints.sills import tie_plate_walls
 from typehaus.resolve.model import ResolvedModel
-from typehaus.resolve.sweep import interpolate_along, straight_sweep_band
 from typehaus.takeoff.hardware_row import hardware_row
 from typehaus.takeoff.uplift_joints import (
-    authored_joints,
     post_base_anchor_rows,
     post_base_rows,
     post_beam_strap_rows,
-    tags_covered_by,
 )
 
 _M_TO_FT = 3.280839895013123
-
-
-@dataclass(frozen=True)
-class BearingSupport:
-    """A declared bearing line and the elevation a member seats on it at."""
-
-    tag: str
-    p0: tuple
-    p1: tuple
-    top_z_m: float
-    #: Half the support's own width. A member end lands *on* a plate, not on its centreline,
-    #: so the plan test has to admit half a wall — and a 15 1/2" foundation wall and a 6 3/4"
-    #: partition do not get the same allowance.
-    half_width_m: float
-    #: The seat elevation at the FAR end (``p1``), for a support that is not level — a
-    #: TILTED beam (``Beam.top_rise_end``). ``None`` is level and ``top_z_m`` answers for
-    #: the whole run. The bounding box cannot: it reports the run's HIGH end, and a member
-    #: seated at the low end then measures ~2" BELOW its own bearing and is dropped.
-    top_z_end_m: float | None = None
-    #: Is the wood this support presents to a tie preservative-treated? Decides the tie's
-    #: COATING (see :func:`_exposure`), never its capacity. The support and not the member,
-    #: because the support is the leg the model can answer for: a joist carries no material
-    #: ref of its own, while a beam has an assembly and a wall has a layer stack.
-    treated: bool = False
-
-
-@dataclass(frozen=True)
-class BearingConnection:
-    """One detected bearing: which member profile, on which support, in which storey."""
-
-    support_tag: str
-    storey: str
-    #: The roof or floor whose member this is. Carried so a consumer can ask about ONE
-    #: assembly: ``emit/draw/roofframingplan.py`` needs "is THIS roof restrained", and the
-    #: load-path check needs each floor's own tie count rather than the total on a bearing
-    #: wall it shares with the floor next door.
-    assembly_tag: str
-    member_profile: str
-    member_category: str
-    #: Plan location, snapped to ``coincident_bearing_tolerance_in``. Two joist segments that
-    #: meet over an interior bearing wall are one joint and take one tie, not two.
-    key_point: tuple
-    #: Whether the support is preservative-treated wood — see :func:`_exposure`. Part of the
-    #: connection and not of the row, because two joists of one profile can land on a dry
-    #: plate and a treated beam and must then be two orders.
-    support_treated: bool = False
-
-
-def _support(model: ResolvedModel, tag: str, fallback_half_width_m: float):
-    """Resolve a ``bearing_ref`` tag to the line and the top face a member seats on.
-
-    A wall bears at its ``plate_top_z_m`` when it has one and at ``z1_m`` when it does not
-    (a foundation wall's sill plate is a construction return, not part of the wall solid).
-    Either way ``_bears_on`` measures upward from this, so the plate's own thickness lands
-    inside the seat tolerance rather than needing to be modelled here.
-    """
-    wall = model.wall(tag)
-    if wall is not None:
-        top = wall.plate_top_z_m if wall.plate_top_z_m is not None else wall.z1_m
-        return BearingSupport(tag=tag, p0=wall.axis[0], p1=wall.axis[1], top_z_m=top,
-                              half_width_m=wall.thickness_m / 2.0,
-                              treated=_is_treated(model, wall.assembly))
-    for solid in model.solids:
-        if solid.tag != tag or solid.category != "beam":
-            continue
-        treated = _is_treated(model, solid.assembly, material_ref=solid.material)
-        band = straight_sweep_band(solid)
-        if band is not None:
-            (start, end), depth, soffit0, soffit1 = band
-            return BearingSupport(tag=tag, p0=start, p1=end, top_z_m=soffit0 + depth,
-                                  half_width_m=fallback_half_width_m, treated=treated,
-                                  top_z_end_m=soffit1 + depth)
-        start, end = centerline_endpoints(list(solid.outline))
-        return BearingSupport(tag=tag, p0=start, p1=end, top_z_m=solid.z1_m,
-                              half_width_m=fallback_half_width_m, treated=treated)
-    return None
-
-
-def _is_treated(model: ResolvedModel, assembly_tag: str | None,
-                material_ref: str | None = None) -> bool:
-    """Does this support present preservative-treated wood to a connector landing on it?
-
-    Read off the catalog ``Material``, never off a tag spelling: ``BEAM_GLULAM_TREATED``
-    happens to say so in its name and ``POST_KDAT`` does not, and a rule that grepped for
-    "treated" would get one right by luck and the other wrong.
-    """
-    ref = material_ref or assembly_structure_material(model.plan, assembly_tag)
-    if not ref:
-        return False
-    material = model.plan.library.material(ref)
-    return bool(material is not None and material.preservative_treated)
 
 
 def _exposure(connection) -> str:
@@ -165,170 +72,6 @@ def _exposure(connection) -> str:
     price rise bought with no code requirement behind it.
     """
     return EXPOSURE_TREATED if connection.support_treated else EXPOSURE_DRY
-
-
-def _bearing_line(model: ResolvedModel, declared: BearingSupport,
-                  rules: UpliftTieRules) -> list:
-    """``declared`` plus every wall collinear with it at the same bearing elevation.
-
-    A house names a *wall* in ``bearing_refs``; what actually carries the floor is a bearing
-    LINE, and the resolver splits that line into as many walls as the plan has nodes on it
-    (catlin's west line is three segments, of which ``FS-S-WEST`` names one). Billing only
-    the named segment would tie four of that floor's twenty-eight trusses and call the order
-    complete.
-
-    Two guards keep this from wandering: the candidate must be collinear with the declared
-    wall *within half its thickness* — the same allowance the seat test uses — and its
-    bearing top must match, which is what stops the foundation wall directly below a framed
-    one from joining its own successor's line.
-    """
-    seat_m = rules.bearing_seat_tolerance_in * M_PER_IN
-    (ax, ay), (bx, by) = declared.p0, declared.p1
-    dx, dy = bx - ax, by - ay
-    span = (dx * dx + dy * dy) ** 0.5
-    if span < 1e-9:
-        return [declared]
-    line = [declared]
-    for wall in model.walls:
-        if wall.tag == declared.tag:
-            continue
-        top = wall.plate_top_z_m if wall.plate_top_z_m is not None else wall.z1_m
-        if abs(top - declared.top_z_m) > seat_m:
-            continue
-        offsets = [abs((px - ax) * dy - (py - ay) * dx) / span for px, py in wall.axis]
-        if max(offsets) > max(declared.half_width_m, wall.thickness_m / 2.0):
-            continue
-        line.append(BearingSupport(tag=wall.tag, p0=wall.axis[0], p1=wall.axis[1],
-                                   top_z_m=top, half_width_m=wall.thickness_m / 2.0))
-    return line
-
-
-def _bears_on(point: tuple, bottom_z_m: float, support: BearingSupport,
-              rules: UpliftTieRules) -> bool:
-    """Does a member end sit on this support's top face?
-
-    Deliberately **one-sided** in elevation: a bearing member's underside is at the support
-    top or a plate's thickness above it, never below. That single sign is what keeps this
-    rule off the ends ``hangers.py`` already bills — a joist hung in an 11 7/8" beam has its
-    underside ~11 7/8" *below* the beam top, so it fails here no matter how loose the
-    tolerance gets.
-    """
-    plan_tolerance_m = max(support.half_width_m,
-                           rules.bearing_plan_tolerance_in * M_PER_IN)
-    if distance_point_to_segment(point, support.p0, support.p1) > plan_tolerance_m:
-        return False
-    # A TILTED support's seat is at a different elevation at every station, so the member
-    # end is measured against the seat directly under it rather than against the run's box.
-    top_z_m = support.top_z_m
-    if support.top_z_end_m is not None:
-        top_z_m = interpolate_along((support.p0, support.p1), point,
-                                    support.top_z_m, support.top_z_end_m)
-    rise_m = bottom_z_m - top_z_m
-    return -1e-9 <= rise_m <= rules.bearing_seat_tolerance_in * M_PER_IN
-
-
-def _member_ends(member) -> list:
-    """Both ends as ``(point, underside_z)``. A raked member carries its own end elevations,
-    which is what tells a rafter's eave seat from its ridge end."""
-    return [
-        (member.p0, member.z0_m),
-        (member.p1, member.z0_m if member.z0_end_m is None else member.z0_end_m),
-    ]
-
-
-
-
-def _tied_assemblies(model: ResolvedModel, elements_by_tag: dict, rules: UpliftTieRules):
-    """``(resolved assembly, declared bearing tags, member categories to tie)`` triples.
-
-    Roofs and floors are walked separately because each names its bearings on a different
-    field — a ``Roof`` on ``bearing_refs``, a ``FloorSystem`` on ``joists.bearing_refs`` —
-    and they tie different member categories. A rafter roof seats on its rafters; a truss
-    roof seats on its heels, and its top chords pass a foot and a half over the plate on
-    their way to the overhang, so tying those would be tying the wrong member.
-    """
-    for roof in model.roofs:
-        element = elements_by_tag.get(roof.tag)
-        refs = tuple(getattr(element, "bearing_refs", ()) or ())
-        if refs:
-            yield roof, refs, rules.tied_roof_categories
-    for floor in model.floors:
-        element = elements_by_tag.get(floor.tag)
-        joists = getattr(element, "joists", None)
-        refs = tuple(getattr(joists, "bearing_refs", ()) or ())
-        if refs:
-            yield floor, refs, rules.tied_floor_categories
-
-
-def bearing_line_tags(model: ResolvedModel, refs: tuple, rules: UpliftTieRules) -> set:
-    """Every wall tag on the bearing lines ``refs`` names.
-
-    Public because ``checks/structural/uplift_path.py`` has to count ties along the same
-    lines this module ties along. A check that re-derived which walls carry a floor would
-    drift from the take-off, and then the report and the order would disagree about the same
-    house — so there is one answer and both callers read it.
-    """
-    fallback_m = rules.bearing_plan_tolerance_in * M_PER_IN
-    tags: set = set()
-    for ref in refs:
-        declared = _support(model, ref, fallback_m)
-        if declared is not None:
-            tags.update(support.tag for support in _bearing_line(model, declared, rules))
-    return tags
-
-
-def bearing_connections(model: ResolvedModel, rules: UpliftTieRules) -> list:
-    """Every rafter/truss-heel/joist end that bears on a declared support."""
-    fallback_m = rules.bearing_plan_tolerance_in * M_PER_IN
-    grid_m = max(rules.coincident_bearing_tolerance_in, 1e-6) * M_PER_IN
-    kinds = frozenset({ConnectorKind.HURRICANE_TIE, ConnectorKind.HOLD_DOWN})
-    # The ASSEMBLY hand-off is coarse and should be: a tie naming a roof or a floor is the
-    # plan saying "I own this deck's uplift", and there is nothing to disambiguate.
-    covered = tags_covered_by(model, kinds)
-    # The SUPPORT hand-off must not be this coarse: a connector naming a support stands the
-    # rule down only for the specific member bearing on it, never for every member that
-    # support carries. ``authored_joints`` is the pairwise answer — a support stands the rule
-    # down only when one connector names the support and the thing bearing on it TOGETHER.
-    joints = authored_joints(model, kinds)
-    elements_by_tag = {element.tag: element
-                       for storey in model.plan.storeys
-                       for element in model.plan.storey_elements(storey.tag)}
-
-    found: dict = {}
-    for resolved, refs, categories in _tied_assemblies(model, elements_by_tag, rules):
-        if resolved.tag in covered:
-            continue
-        supports: list = []
-        seen: set = set()
-        for tag in refs:
-            if frozenset({tag, resolved.tag}) in joints:
-                continue
-            declared = _support(model, tag, fallback_m)
-            if declared is None:
-                continue
-            for support in _bearing_line(model, declared, rules):
-                if (support.tag in seen
-                        or frozenset({support.tag, resolved.tag}) in joints):
-                    continue
-                seen.add(support.tag)
-                supports.append(support)
-        if not supports:
-            continue
-        for member in resolved.members:
-            if member.category not in categories:
-                continue
-            for point, bottom_z in _member_ends(member):
-                for support in supports:
-                    if not _bears_on(point, bottom_z, support, rules):
-                        continue
-                    key_point = (round(point[0] / grid_m), round(point[1] / grid_m))
-                    found[(support.tag, key_point)] = BearingConnection(
-                        support_tag=support.tag, storey=resolved.storey,
-                        assembly_tag=resolved.tag, member_profile=member.profile,
-                        member_category=member.category, key_point=key_point,
-                        support_treated=support.treated)
-                    break  # one tie per end, even where two declared bearings overlap
-    return sorted(found.values(), key=lambda c: (c.support_tag, c.key_point))
 
 
 def bearing_uplift_tie_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
@@ -383,17 +126,12 @@ def continuous_bearing_tie_rows(model: ResolvedModel, rules: UpliftTieRules) -> 
     Turning ``Site.design_wind_speed_mph`` into a per-tie demand is ``checks/structural/``
     work (``lateral_racking.py`` today, for the balcony's braced bays only).
     """
-    pitch_m = max(rules.continuous_bearing_pitch_ft, 0.5) * FT_TO_M
     groups: dict = {}
-    for member in model.all_members():
-        if not member.continuously_supported:
-            continue
-        # Ends included: a run is a fencepost count, not a division.
-        count = int(math.floor(member.length_m / pitch_m + 1e-9)) + 1
-        entry = groups.setdefault((member.category, member.profile),
+    for run in continuous_bearing_members(model, rules):
+        entry = groups.setdefault((run.category, run.profile),
                                   {"count": 0, "runs": Counter()})
-        entry["count"] += count
-        entry["runs"][f"{member.length_m * _M_TO_FT:.4g}'"] += 1
+        entry["count"] += len(run.stations_m)
+        entry["runs"][f"{run.length_m * _M_TO_FT:.4g}'"] += 1
     if not groups:
         return []
 
@@ -427,21 +165,10 @@ def lateral_tie_plate_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
     walls are exactly the upper halves of the resolved stack edges, so the rule follows the
     model's own account of what stands on what.
     """
-    foundations = {wall.tag for wall in model.walls if wall.is_foundation}
-    # Only the framed-on-framed stack edges. A wall standing on concrete is a sill, and its
-    # plate is already anchored through to the pour by ``anchors.mudsill_anchor_rows`` — a
-    # tie plate there would be a second connection at a joint that has one, which is exactly
-    # the double-billing ``Material.exposed_fastener`` exists to prevent elsewhere.
-    stacked_above = {edge.upper_wall for edge in model.stack_edges
-                     if edge.lower_wall not in foundations}
     pitch_m = rules.tie_plate_pitch_ft * FT_TO_M
     by_storey: Counter = Counter()
     total_length_m, walls = 0.0, 0
-    for wall in model.walls:
-        if wall.tag not in stacked_above or wall.is_foundation:
-            continue
-        if not any(member.category == "stud" for member in wall.members):
-            continue
+    for wall in tie_plate_walls(model):
         (x0, y0), (x1, y1) = wall.axis
         length_m = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
         by_storey[wall.storey] += max(rules.minimum_tie_plates_per_wall,

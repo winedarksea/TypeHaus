@@ -29,7 +29,11 @@ from typehaus.hardware.config import (
     SillPlateAnchorRules,
     WallTieRules,
 )
-from typehaus.hardware.plan_geometry import centerline_endpoints, merge_coincident_points
+from typehaus.joints.sills import (
+    mudsill_anchor_stations,
+    sill_plate_returns,
+    strap_holdown_locations,
+)
 from typehaus.model.enums import ConnectorKind
 from typehaus.model.structure import Connector, KneeBrace
 from typehaus.quantities import M_PER_IN
@@ -37,10 +41,6 @@ from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.hardware_row import hardware_row
 
 _M_TO_FT = 3.280839895013123
-
-
-def _sill_plate_returns(model: ResolvedModel, category: str) -> list:
-    return [ret for ret in model.construction_returns if ret.takeoff_category == category]
 
 
 def mudsill_anchor_rows(model: ResolvedModel, rules: SillPlateAnchorRules,
@@ -51,17 +51,16 @@ def mudsill_anchor_rows(model: ResolvedModel, rules: SillPlateAnchorRules,
     framed wall stacked on a concrete wall produces a return, and the return produces its
     anchors at the configured pitch (never fewer than the code minimum per plate piece).
     """
-    returns = _sill_plate_returns(model, sill_category)
+    returns = sill_plate_returns(model, sill_category)
     if not returns:
         return []
-    pitch_m = rules.mudsill_anchor_pitch_ft * FT_TO_M
+    # Counted off the LOCATED anchors rather than re-applying the pitch rule here. The two
+    # answers agree by construction only if there is one rule, and a station list one part
+    # longer than the order is a drawing that shows hardware nobody bought.
     by_storey: Counter = Counter()
-    total_length_m = 0.0
-    for ret in returns:
-        count = max(rules.minimum_anchors_per_run,
-                    int(math.floor(ret.length_m / pitch_m + 1e-9)) + 1)
-        by_storey[ret.storey] += count
-        total_length_m += ret.length_m
+    for station in mudsill_anchor_stations(model, rules, sill_category):
+        by_storey[station.storey] += 1
+    total_length_m = sum(ret.length_m for ret in returns)
     item = hardware_for_role(ROLE_MUDSILL_ANCHOR)
     return [hardware_row(
         item, scope="sill plate on concrete", count=int(sum(by_storey.values())),
@@ -96,25 +95,6 @@ def sill_gasket_rows(model: ResolvedModel) -> list[dict[str, object]]:
          "length_ft": round(sum(lengths) * _M_TO_FT, 1)}
         for (product, thickness_in), lengths in sorted(runs.items())
     ]
-
-
-def strap_holdown_locations(model: ResolvedModel, rules: SillPlateAnchorRules,
-                            sill_category: str) -> tuple[list, list]:
-    """``(sill runs, merged end locations)`` — the geometry behind the holdown count.
-
-    Extracted from :func:`strap_holdown_rows` so the pour-day handoff list can hand a
-    crew the *places*, not just the number. Run ends that meet at a corner or a plate butt
-    joint are one location, not two, so the endpoints are merged before anything is
-    counted.
-    """
-    returns = _sill_plate_returns(model, sill_category)
-    if not returns:
-        return [], []
-    endpoints: list = []
-    for ret in returns:
-        endpoints.extend(centerline_endpoints(list(ret.outline)))
-    return returns, merge_coincident_points(
-        endpoints, rules.coincident_end_tolerance_in * M_PER_IN)
 
 
 def strap_holdown_rows(model: ResolvedModel, rules: SillPlateAnchorRules,

@@ -1,15 +1,13 @@
-"""The authored-connector guard, and every uplift rule that grades a **joint**.
+"""The BOM rows for post bases, their cast-in anchors, and beam-on-post straps.
 
-The seam from ``takeoff/uplift.py`` is not arbitrary: what is left there derives hardware
-along a *run* — a tie at every member that seats on a bearing line, a plate every four feet
-along a bottom plate — while everything here answers a question about one point where two
-named members meet. A
-post and what it stands on; a beam end and the post under it; and, first, whether the plan
-already authored a ``Connector`` at that point, which is the guard every rule in both files
-asks before it bills anything.
+The seam from ``takeoff/uplift.py`` is not arbitrary: that module groups hardware derived
+along a *run* — a tie at every member seating on a bearing line, a plate every four feet
+along a bottom plate — while these three group a part per point where two named members
+meet.
 
-The guard is here rather than in ``uplift.py`` so the import runs one way: this module knows
-nothing about the run rules, and ``uplift.py`` imports what it needs from here.
+**Every predicate behind them lives in ``typehaus.joints.posts``**, with the reason each
+guard exists and the order they must stay in. What is here is only the grouping: which rows,
+what basis, and how the count is worded for a framer who has to audit it.
 """
 
 from __future__ import annotations
@@ -22,101 +20,15 @@ from typehaus.hardware.catalog import (
     ROLE_POST_BASE_ANCHOR,
     hardware_for_role,
     hardware_for_role_and_nominal,
-    structural_hardware_catalog,
 )
 from typehaus.hardware.config import UpliftTieRules
-from typehaus.model.enums import ConnectorKind
-from typehaus.model.structure import Beam, Connector, Post
-from typehaus.resolve.assembly_material import (
-    assembly_structure_material,
-    solid_material_ref,
+from typehaus.joints.posts import (
+    post_base_anchor_joints,
+    post_base_joints,
+    post_beam_strap_joints,
 )
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.hardware_row import hardware_row
-
-# --- the authored-connector guard ----------------------------------------------------
-
-
-
-def _authored_connectors(model: ResolvedModel) -> list:
-    return [element for storey in model.plan.storeys
-            for element in model.plan.storey_elements(storey.tag)
-            if isinstance(element, Connector)]
-
-
-def tags_covered_by(model: ResolvedModel, kinds: frozenset) -> set:
-    """Every element tag an authored connector of one of ``kinds`` already names.
-
-    Tag-based rather than geometric on purpose: ``Connector.connects`` is the plan's own
-    statement of which members the hardware joins, it is what
-    ``emit/draw/roofframingplan.py`` reads for the tie schedule, and it survives a member
-    being re-resolved at a slightly different coordinate.
-    """
-    covered: set = set()
-    for element in _authored_connectors(model):
-        if element.kind in kinds:
-            covered.update(element.connects)
-    return covered
-
-
-
-def unanchored_post_tags(model: ResolvedModel) -> set:
-    """Tags named by an authored POST_BASE that declares ``anchored=False``.
-
-    A bearing-only base takes no cast-in bolt, so :func:`post_base_anchor_rows` must not
-    bill one. See ``Connector.anchored`` for what the plan is claiming when it sets this.
-    """
-    unanchored: set = set()
-    for element in _authored_connectors(model):
-        if element.kind is ConnectorKind.POST_BASE and not getattr(element, "anchored", True):
-            unanchored.update(element.connects)
-    return unanchored
-
-
-def authored_joints(model: ResolvedModel, kinds: frozenset) -> set:
-    """Every PAIR of tags one authored connector of ``kinds`` names together.
-
-    The coarser :func:`tags_covered_by` answers "is this element mentioned at all", which is
-    the right question for a post base (a post has exactly one) and the wrong one for a
-    beam/post joint (a post carries several beams, and they are not all strapped).
-    """
-    joints: set = set()
-    for element in _authored_connectors(model):
-        if element.kind not in kinds:
-            continue
-        tags = list(element.connects)
-        for index, left in enumerate(tags):
-            for right in tags[index + 1:]:
-                joints.add(frozenset({left, right}))
-    return joints
-
-
-
-
-# --- rules 2 and 3: post bases, their anchors, and beams landing on posts ---------
-
-
-
-def catalogued_post_sizes() -> set:
-    return {nominal for item in structural_hardware_catalog()
-            if item.role == ROLE_POST_BASE for nominal in item.fits_nominal}
-
-
-def _posts(model: ResolvedModel) -> list:
-    return [(storey.tag, element) for storey in model.plan.storeys
-            for element in model.plan.storey_elements(storey.tag)
-            if isinstance(element, Post)]
-
-
-def is_squash_block(post: Post, rules: UpliftTieRules) -> bool:
-    """Is this ``Post`` a short block filling a bay, rather than a column?
-
-    Asked of the height, because that is the only thing that separates them: both are a 4x4
-    on concrete with the same section and the same bearing. A post with no authored height
-    stands its storey and is a column.
-    """
-    return (post.height is not None
-            and post.height.feet <= rules.blocking_max_height_ft)
 
 
 def post_base_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
@@ -139,19 +51,8 @@ def post_base_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
     All four are reported by ``structural.uplift_path_coverage`` rather than being quietly
     absent from the order.
     """
-    stocked = catalogued_post_sizes()
-    # A TENSION_TIE covers the joint too. A post bearing wood-on-wood does not take a
-    # stirrup — it is held DOWN to the framing instead — so a set that only knew POST_BASE
-    # would see no connector at PT-SG-BR2/BF2 and derive two ABU66 for joints that already
-    # have their part. Same set as ``checks/structural/uplift_path.py``'s; they must agree.
-    covered = tags_covered_by(
-        model, frozenset({ConnectorKind.POST_BASE, ConnectorKind.TENSION_TIE}))
     by_size: dict = {}
-    for storey, post in _posts(model):
-        if post.tag in covered or post.within_wall or not post.supported_by:
-            continue
-        if post.size not in stocked or is_squash_block(post, rules):
-            continue
+    for storey, post in post_base_joints(model, rules):
         entry = by_size.setdefault(post.size, {"by_storey": Counter(), "tags": []})
         entry["by_storey"][storey] += 1
         entry["tags"].append(post.tag)
@@ -167,28 +68,6 @@ def post_base_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
             basis=(f"one per {size} post that declares what it bears on: "
                    + ", ".join(sorted(entry["tags"])))))
     return rows
-
-
-def bears_on_concrete(model: ResolvedModel, post: Post) -> bool:
-    """Is the thing this post declares it stands on a concrete pour?
-
-    Asked of the *support*, through the same ``solid_material_ref`` /
-    ``assembly_structure_material`` pair the section hatch and the glTF palette use, so a
-    footing filed as concrete on the drawing is concrete here. A support with neither a
-    solid nor a wall — catlin's case is ``FS-SG-PORCH``, the porch deck two balcony pillars
-    stand on — is framing, and the answer is no.
-    """
-    support = post.supported_by
-    if not support:
-        return False
-    for solid in model.solids:
-        if solid.tag == support:
-            return solid_material_ref(model.plan, solid) == "concrete"
-    for wall in model.walls:
-        if wall.tag == support:
-            return assembly_structure_material(
-                model.plan, getattr(wall, "assembly", None)) == "concrete"
-    return False
 
 
 def post_base_anchor_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
@@ -210,37 +89,9 @@ def post_base_anchor_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
     Both halves of the population are counted here: the ten bases catlin authors as
     ``Connector`` elements *and* the ones ``post_base_rows`` derives. They are one order.
     """
-    covered = tags_covered_by(model, frozenset({ConnectorKind.POST_BASE}))
-    unanchored = unanchored_post_tags(model)
-    stocked = catalogued_post_sizes()
     by_storey: Counter = Counter()
     tags: list = []
-    for storey, post in _posts(model):
-        # ``within_wall`` is geometric: it says the framer cuts the plates around this post.
-        # It does NOT say the base joint is developed by the wall — the breezeway's canopy
-        # columns stand in the screen panel's stud line *and* on authored ABU66SS bases over
-        # cast piers. Key the exemption on the joint instead, or authoring the geometric
-        # field deletes those bolts from the order.
-        if (post.within_wall and post.tag not in covered) or is_squash_block(post, rules):
-            continue
-        # The size gate comes FIRST, and it applies to the authored half too. The
-        # breezeway's four ABU66SS ``Connector`` elements name both members of the joint —
-        # ``connects=("PT-BW-1", "PR-BW-1")`` — so ``tags_covered_by`` returns the concrete
-        # PIER as well as the wood post on it, and a rule that trusted that set billed four
-        # anchor bolts for four sonotubes that have no base and want none.
-        if post.size not in stocked:
-            continue
-        # A base is present if the plan authored one or ``post_base_rows`` can derive one;
-        # the anchor follows the base, so the two populations are unioned rather than
-        # chosen between.
-        if not (post.tag in covered or post.supported_by):
-            continue
-        if not bears_on_concrete(model, post):
-            continue
-        # A base the plan declares bearing-only has no bolt to buy: download crosses the
-        # plate into the pour, and the joint gives up the uplift and lateral the bolt buys.
-        if post.tag in unanchored:
-            continue
+    for storey, post in post_base_anchor_joints(model, rules):
         by_storey[storey] += 1
         tags.append(post.tag)
     if not tags:
@@ -264,29 +115,11 @@ def post_beam_strap_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
     post has one reachable face — the same lesson ``KneeBraceRules`` learned when a pair rule
     billed twelve unbuildable braces. A joint that wants two authors the second by hand.
     """
-    stocked = catalogued_post_sizes()
-    posts = {post.tag: post for _storey, post in _posts(model)}
-    # A joint is covered only when one authored connector names BOTH its members. Matching
-    # on either alone credits the wrong joint: the breezeway straps its two ROOF beams to
-    # PT-BW-1..4, and a post-only test would hand those straps to the two FLOOR beams landing
-    # on the same four posts, which carry nothing at all.
-    covered = authored_joints(model, frozenset({ConnectorKind.HOLD_DOWN,
-                                                ConnectorKind.POST_CAP,
-                                                ConnectorKind.HURRICANE_TIE}))
     by_storey: Counter = Counter()
     joints: list = []
-    for storey in model.plan.storeys:
-        for element in model.plan.storey_elements(storey.tag):
-            if not isinstance(element, Beam):
-                continue
-            for ref in element.bearing_refs:
-                post = posts.get(ref)
-                if post is None or post.size not in stocked:
-                    continue
-                if frozenset({element.tag, post.tag}) in covered:
-                    continue
-                by_storey[storey.tag] += rules.straps_per_post_beam_joint
-                joints.append(f"{element.tag}->{post.tag}")
+    for storey, beam, post in post_beam_strap_joints(model, rules):
+        by_storey[storey] += rules.straps_per_post_beam_joint
+        joints.append(f"{beam.tag}->{post.tag}")
     if not joints:
         return []
     item = hardware_for_role(ROLE_BEAM_HOLD_DOWN)
