@@ -88,6 +88,7 @@ from typehaus import (
 )
 
 from typehaus.resolve.framing.profiles import cross_section
+from params.sunken_garden_options import OPTION
 
 # ** THE POUR DOES NOT MOVE WHEN THE WASH IS ADDED, AND THIS IS WHAT HOLDS THAT. **
 # `SUNKEN_GARDEN_WALL` carries a 1/8" white mineral silicate wash at layer 0 (the court face).
@@ -139,7 +140,7 @@ class SunkenGardenSpec:
     # published constant — a comment is what let the retaining top's spot elevations rot
     # for two revisions.
     closure_break_in: float = 2.0
-    wall_thickness_in: float = 12.0  # side + retaining walls
+    wall_thickness_in: float = OPTION.stem_thickness_in  # side + retaining walls
     # The cast column near the porch's front edge: a SHARED bearing, seating both front
     # beams (on `_y_ax_front`) and PT-SG-BF2 (12" further south, on `_y_balcony_front`) on
     # one pour. See FRONT_COLUMN for the sizing table — 16" and 18" have no solution at a
@@ -166,7 +167,7 @@ class SunkenGardenSpec:
     # strip at 96" — which is exactly the shape a stale number takes. All five court strips
     # are this, centred on the wall axis with a zero offset. See the banner above
     # `_RETAINING` for why the 96" was a fossil of a taller wall.
-    footing_width_in: float = 84.0  # 36" toe + 12" wall + 36" heel
+    footing_width_in: float = OPTION.footing_width_in
     footing_thickness_in: float = 12.0
     # The MN profile's design frost depth (``checks/code/mn_residential/profile.py``:
     # ``frost_depth_in=42.0``), transcribed here because this module has to derive two
@@ -1396,7 +1397,10 @@ _RETAINING_FOOTING_WIDTH_IN = SPEC.footing_width_in  # 84.0
 # the same way around the court (W2 runs MW->SW, E2 runs SE->ME, S runs SW->SE), so a
 # positive offset would be "into the court" for every one of them. Checked, not assumed:
 # see the footing-edge assertions in `test_retaining_court.py`.
-_RETAINING_FOOTING_OFFSET_IN = 0.0
+_RETAINING_FOOTING_OFFSET_IN = (
+    OPTION.footing_toe_in
+    - (_RETAINING_FOOTING_WIDTH_IN - SPEC.wall_thickness_in) / 2.0
+)
 
 # ** THE 3'-0" TOE IS A CANTILEVER, AND IT WAS UNREINFORCED UNTIL 2026-09-03. **
 #
@@ -2403,6 +2407,23 @@ PORCH_GUARD_NE = Railing(
     post_spacing=inch(60), post_size="2x2", rail_count=2, mount="surface",
     assembly="RAILING_DARK_METAL",
     infill="balusters", baluster_spacing=inch(4))
+
+# A planter placed directly against the retaining wall leaves only 10 inches of concrete
+# above its 30-inch soil surface.  The existing 42-inch surface-mounted metal system is
+# therefore continued around the court edge for that variant.  Keeping this as authored
+# geometry makes the extra guard visible in drawings and measurable by the takeoff engine.
+RAISED_BED_GUARDS = []
+if OPTION.needs_court_guard:
+    RAISED_BED_GUARDS.append(Railing(
+        uid="SGRA08AAAA", tag="RL-SG-COURT", type_ref="RAILING-EXT-ALUMINUM-SURFACE",
+        path=(pt(ft(_x_in_w), ft(_y_ax_mid)),
+              pt(ft(_x_in_w), ft(_y_in_s)),
+              pt(ft(_x_in_e), ft(_y_in_s)),
+              pt(ft(_x_in_e), ft(_y_ax_mid))),
+        kind=RailingKind.METAL_SURFACE_MOUNT,
+        height=inch(42), base_elevation=_ret_top,
+        post_spacing=inch(60), post_size="2x2", rail_count=2, mount="surface",
+        assembly="RAILING_DARK_METAL", infill="balusters", baluster_spacing=inch(4)))
 
 # The south leg's post stations, in feet — the run over BM-SG-FRW/FRE that has no wall top
 # under it and therefore needs blocking. Taken as the middle segment of the guard path so
@@ -4054,7 +4075,7 @@ PORCH_SLOT_CLOSURE = Flashing(
 # braces retired there is no second-storey hardware at all.
 MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, *FRONT_BEAMS, PORCH_JOISTS,
                  PORCH_SLOT_CLOSURE,
-                 PORCH_GUARD, PORCH_GUARD_NE,
+                 PORCH_GUARD, PORCH_GUARD_NE, *RAISED_BED_GUARDS,
                  *CONNECTORS, *PORCH_BEAM_CAPS,
                  HP_PAD, *HP_STAND_LEGS, *HP_STAND_ANCHORS,
                  STAIR_PAD, PORCH_STAIR, *PORCH_STAIR_RAILS,

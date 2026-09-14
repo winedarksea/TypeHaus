@@ -66,12 +66,15 @@ class VariantSpec:
     description: str = ""
     assembly_swaps: dict[str, str] = field(default_factory=dict)
     layer_thickness: tuple[LayerThicknessOverride, ...] = ()
+    parameter_overrides: dict[str, bool | int | float | str] = field(default_factory=dict)
 
     def selection(self, house: Path) -> VariantSelection:
         from typehaus.diff.compare import VariantSelection
 
         return VariantSelection(house=Path(house), swaps=dict(self.assembly_swaps),
-                                layer_thickness=self.layer_thickness, label=self.name)
+                                layer_thickness=self.layer_thickness,
+                                parameter_overrides=dict(self.parameter_overrides),
+                                label=self.name)
 
     def as_dict(self) -> dict:
         return {
@@ -83,11 +86,13 @@ class VariantSpec:
                  "thickness_in": item.thickness_in}
                 for item in self.layer_thickness
             ],
+            "parameter_overrides": dict(self.parameter_overrides),
         }
 
     @property
     def override_count(self) -> int:
-        return len(self.assembly_swaps) + len(self.layer_thickness)
+        return (len(self.assembly_swaps) + len(self.layer_thickness)
+                + len(self.parameter_overrides))
 
 
 def load_variants(house_dir: Path) -> tuple[VariantSpec, ...]:
@@ -112,12 +117,20 @@ def load_variants(house_dir: Path) -> tuple[VariantSpec, ...]:
                                        thickness_in=float(item["thickness_in"]))
                 for item in entry.get("layer_thickness", ())
             ),
+            parameter_overrides={str(k): _parameter_value(v, path, str(k))
+                                 for k, v in (entry.get("parameters") or {}).items()},
         ))
     names = [spec.name for spec in specs]
     duplicates = {name for name in names if names.count(name) > 1}
     if duplicates:
         raise ValueError(f"{path}: duplicate variant name(s) {sorted(duplicates)}")
     return tuple(specs)
+
+
+def _parameter_value(value: object, path: Path, name: str) -> bool | int | float | str:
+    if isinstance(value, (bool, int, float, str)):
+        return value
+    raise ValueError(f"{path}: parameter {name!r} must be a scalar boolean, number, or string")
 
 
 def find_variant(specs: tuple[VariantSpec, ...], name: str) -> VariantSpec:

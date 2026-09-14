@@ -1204,6 +1204,25 @@ BASEMENT_BRICK_VENEER = Assembly(
     source="basement south veneer over the sunken garden (2026-09-04) — one flat field of ordinary unglazed buff/brown face brick, ASTM C216 Grade SW, running modular coursing full height; one 3 5/8\" wythe, 6\" ventilated airgap on the grade beam W-SG-BRKBM (not the house footing toe), TMS 402 engineered ties back to the existing south basement wall (no CMU backer: the basement concrete is the backer). Was the Ishtar scheme (2026-08-20 to 2026-09-04): a glazed-lapis field with glazed-gold register bands over this same brown plinth, banded by Layer.slot; and before that one flat field of glazed-green-brick. All three glazed materials stay in the catalog, so any of the schemes is a material_ref away",
 )
 
+# Cost/design alternate for the same walkout face. The panel is represented as the skin's
+# structural layer because this is a freestanding cladding element whose backup is a separate
+# wall; the installed price row includes horizontal treated girts, panel-edge support,
+# corrosion-resistant fasteners, flashings and the drained cavity. Unlike the masonry wythe,
+# this light screen needs no gravity grade beam.
+BASEMENT_FIBER_CEMENT_SCREEN = Assembly(
+    tag="BASEMENT_FIBER_CEMENT_SCREEN",
+    layers=(
+        Layer(name="air-gap", material_ref="air-barrier", thickness=inch(4.0),
+              function=LayerFunction.AIRGAP),
+        Layer(name="fiber-cement-panel", material_ref="fiber-cement",
+              thickness=inch(0.3125), function=LayerFunction.STRUCTURE),
+    ),
+    source="sunken-garden walkout alternate: exterior fiber-cement panels on horizontal "
+           "treated girts fastened to verified wall framing, with continuous head/base and "
+           "opening flashing, drained cavity, supported panel edges, corrosion-resistant "
+           "fasteners, and manufacturer-required clearance above the wet court",
+)
+
 # --- RM-M-LIVING's fireplace surround --------------------------------------------------
 #
 # One 3 5/8" wythe of face brick standing IN FRONT OF W-M-E1, in the pier between
@@ -4674,6 +4693,7 @@ ASSEMBLIES = [
     SG_VENEER_BEAM_14,
     SUNKEN_GARDEN_COLUMN_12,
     BASEMENT_BRICK_VENEER,
+    BASEMENT_FIBER_CEMENT_SCREEN,
     FIREPLACE_BRICK_WYTHE,
     RETAINING_BLOCK_12,
     RETAINING_BLOCK_12_WASHED,

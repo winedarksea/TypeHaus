@@ -122,6 +122,8 @@ from params.sunken_garden import (
     RETAINING_WALL_TOP_FT,
     SOUTH_RETAINING_WALL_AXIS_Y_FT,
 )
+from params.raised_garden_variants import setback_planter_elements
+from params.sunken_garden_options import OPTION as SUNKEN_GARDEN_OPTION
 
 
 @dataclass(frozen=True)
@@ -157,7 +159,11 @@ class RaisedGardenSpec:
     base_pad_overhang_in: float = 6.0
 
 
-SPEC = RaisedGardenSpec()
+SPEC = RaisedGardenSpec(
+    clear_offset_ft=(SUNKEN_GARDEN_OPTION.planting_width_in / 12.0
+                     if SUNKEN_GARDEN_OPTION.planting_layout == "against-wall" else 3.0),
+    drop_ft=(3.0 if SUNKEN_GARDEN_OPTION.planting_layout == "against-wall" else 4.0),
+)
 
 _block_thickness_ft = SPEC.block_thickness_in / 12.0
 _sg_half_thickness_ft = RETAINING_WALL_THICKNESS_IN / 24.0
@@ -187,7 +193,9 @@ X_EAST_BALCONY = _sg_x_east + _sg_half_thickness_ft      # 28.5
 
 # Level with the sunken-garden wall top, 3' down. The drop is a whole number of 6" courses
 # by construction, which is what lets the run be dry-stacked without a cut course.
-TOP = ft(RETAINING_WALL_TOP_FT)
+TOP = (inch(SUNKEN_GARDEN_OPTION.raised_soil_height_in - 40.0)
+       if SUNKEN_GARDEN_OPTION.planting_layout == "against-wall"
+       else ft(RETAINING_WALL_TOP_FT))
 BASE = TOP - inch(SPEC.drop_ft * 12.0)
 
 NODES = [
@@ -257,8 +265,12 @@ NODES = [
 # buys EMBEDMENT. It does not retain anything.
 #
 # So it tracks the exposure, which is where that 3'-4" is computed and pinned.
-_APRON = dict(assembly="RETAINING_BLOCK_12", top_elevation=TOP, bottom_elevation=BASE,
-              unbalanced_fill=inch(RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN))
+_APRON = dict(
+    assembly="RETAINING_BLOCK_12", top_elevation=TOP, bottom_elevation=BASE,
+    unbalanced_fill=inch(SUNKEN_GARDEN_OPTION.raised_soil_height_in
+                         if SUNKEN_GARDEN_OPTION.planting_layout == "against-wall"
+                         else RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN),
+)
 
 # ** THE THREE PERIMETER LEGS ARE WASHED WHITE ON THEIR YARD FACE AND THE TWO BALCONY RETURNS
 # ARE NOT (2026-09-13). ** Same wall, same block, same bed — one extra 2-coat mineral silicate
@@ -325,4 +337,19 @@ BEDDINGS = [
     for i, w in enumerate(WALLS, start=1)
 ]
 
-BASEMENT_ELEMENTS = [*NODES, *WALLS, *BEDDINGS]
+if SUNKEN_GARDEN_OPTION.planting_layout == "yard-grade":
+    BASEMENT_ELEMENTS = []
+elif SUNKEN_GARDEN_OPTION.planting_layout == "setback":
+    BASEMENT_ELEMENTS = setback_planter_elements(
+        court_west_axis_ft=_sg_x_west,
+        court_east_axis_ft=_sg_x_east,
+        court_south_axis_ft=SOUTH_RETAINING_WALL_AXIS_Y_FT,
+        court_wall_thickness_in=RETAINING_WALL_THICKNESS_IN,
+        north_ft=Y_NORTH,
+        bed_width_in=SUNKEN_GARDEN_OPTION.planting_width_in,
+        setback_in=SUNKEN_GARDEN_OPTION.planter_setback_in,
+        yard_grade_in=-40.0,
+        soil_height_in=SUNKEN_GARDEN_OPTION.raised_soil_height_in,
+    )
+else:
+    BASEMENT_ELEMENTS = [*NODES, *WALLS, *BEDDINGS]

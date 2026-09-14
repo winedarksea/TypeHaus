@@ -42,6 +42,7 @@ class VariantSelection:
     swaps: dict[str, str] = field(default_factory=dict)
     label: str | None = None
     layer_thickness: tuple[LayerThicknessOverride, ...] = ()
+    parameter_overrides: dict[str, bool | int | float | str] = field(default_factory=dict)
 
     def resolved_label(self) -> str:
         if self.label:
@@ -49,6 +50,7 @@ class VariantSelection:
         base = Path(self.house).name or str(self.house)
         notes = [f"{old}->{new}" for old, new in sorted(self.swaps.items())]
         notes += [item.label() for item in self.layer_thickness]
+        notes += [f"{key}={value}" for key, value in sorted(self.parameter_overrides.items())]
         return f"{base} [{','.join(notes)}]" if notes else base
 
 
@@ -167,7 +169,7 @@ def variant_plan(selection: VariantSelection) -> PlanModel:
     """Load the base plan and apply this variant's overrides — the one build entry point."""
     from typehaus.source import load_plan
 
-    loaded = load_plan(Path(selection.house))
+    loaded = load_plan(Path(selection.house), parameter_overrides=selection.parameter_overrides)
     if loaded.plan is None:
         raise ValueError(
             f"cannot load plan for {selection.resolved_label()}: "

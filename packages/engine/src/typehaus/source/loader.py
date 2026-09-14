@@ -291,7 +291,7 @@ def _capture_authorship(house_dir: Path) -> Iterator[dict[str, SourceLoc]]:
         set_construction_observer(None)
 
 
-def load_plan(house_dir: Path) -> LoadResult:
+def load_plan(house_dir: Path, *, parameter_overrides: dict[str, object] | None = None) -> LoadResult:
     """Full load: dialect lint (all editable files) → import manifest → PlanModel.
 
     Import runs the plan package normally (fast path); the libcst path builds the
@@ -348,8 +348,19 @@ def load_plan(house_dir: Path) -> LoadResult:
     t0 = time.perf_counter()
     # Capture covers only the manifest import — furniture/placeable loaders below build
     # engine-side wrappers whose authorship is the JSON/GLB asset, not a stack frame.
-    with _capture_authorship(house_dir) as captured:
+    from typehaus.source.parameter_overrides import activated
+
+    with activated(parameter_overrides) as consumed, _capture_authorship(house_dir) as captured:
         plan = _import_manifest(house_dir, findings)
+        unused = sorted(set(parameter_overrides or {}) - consumed)
+        if unused:
+            findings.append(Finding(
+                severity=Severity.ERROR,
+                check_id="loader.unknown_parameter_override",
+                message=f"unknown house parameter override(s): {', '.join(unused)}",
+                source_loc=SourceLoc(file="variants.toml", line=1),
+            ))
+            plan = None
     for tag, loc in captured.items():
         prov.add_generated(tag, loc)
     if plan is not None:

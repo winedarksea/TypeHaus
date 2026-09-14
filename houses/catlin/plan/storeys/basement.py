@@ -38,6 +38,7 @@ from typehaus import (
     inch,
     pt,
 )
+from params.sunken_garden_options import OPTION as SUNKEN_GARDEN_OPTION
 
 # Plan datums (catlin_floorplan/"Colin House_Basement_Level 1.png") are *clear* face
 # dimensions, so node lines are back-calculated from them: furnace room 8'-6" | stair
@@ -983,7 +984,9 @@ WALLS = [
     # The reveals below still measure from N-B-BRICK-W: ``from_node`` counts back from the
     # far end, so naming the west node still works when it's where the run finishes.
     FoundationWall(uid="CBW126AAAA", tag="W-B-BRICK", start_node="N-B-BRICK-E",
-                   end_node="N-B-BRICK-W", assembly="BASEMENT_BRICK_VENEER",
+                   end_node="N-B-BRICK-W",
+                   assembly=("BASEMENT_BRICK_VENEER" if SUNKEN_GARDEN_OPTION.cladding == "brick"
+                             else "BASEMENT_FIBER_CEMENT_SCREEN"),
                    alignment=face("air-gap-int"),
                    unbalanced_fill=ft(0),
                    top_elevation=ft(0), bottom_elevation=inch(-102.4375)),

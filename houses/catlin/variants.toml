@@ -1,0 +1,98 @@
+# The existing geometry remains the base plan. These variants are isolated imports of that
+# plan with parameter values applied before geometry is generated.
+
+[[variant]]
+name = "reference"
+description = "Existing 40-inch raised garden, brick, 12-inch stems and 7-foot footings."
+
+[[variant]]
+name = "yard-grade-brick"
+description = "Planting at ordinary yard grade; full-depth brick."
+[variant.parameters]
+"sunken_garden.planting_layout" = "yard-grade"
+"sunken_garden.raised_soil_height_in" = 0
+"sunken_garden.cladding" = "brick"
+
+[[variant]]
+name = "yard-grade-fiber-cement"
+description = "Planting at ordinary yard grade; drained fiber-cement panel screen."
+[variant.parameters]
+"sunken_garden.planting_layout" = "yard-grade"
+"sunken_garden.raised_soil_height_in" = 0
+"sunken_garden.cladding" = "fiber-cement"
+
+[[variant]]
+name = "against-wall-24-brick"
+description = "30-inch bed against the court wall, 24 inches clear; brick and metal guard."
+[variant.parameters]
+"sunken_garden.planting_layout" = "against-wall"
+"sunken_garden.raised_soil_height_in" = 30
+"sunken_garden.planting_width_in" = 24
+"sunken_garden.cladding" = "brick"
+
+[[variant]]
+name = "against-wall-24-fiber-cement"
+description = "30-inch bed against the court wall, 24 inches clear; panel screen and guard."
+[variant.parameters]
+"sunken_garden.planting_layout" = "against-wall"
+"sunken_garden.raised_soil_height_in" = 30
+"sunken_garden.planting_width_in" = 24
+"sunken_garden.cladding" = "fiber-cement"
+
+[[variant]]
+name = "against-wall-36-brick"
+description = "30-inch bed against the court wall, 36 inches clear; brick and metal guard."
+[variant.parameters]
+"sunken_garden.planting_layout" = "against-wall"
+"sunken_garden.raised_soil_height_in" = 30
+"sunken_garden.planting_width_in" = 36
+"sunken_garden.cladding" = "brick"
+
+[[variant]]
+name = "against-wall-36-fiber-cement"
+description = "30-inch bed against the court wall, 36 inches clear; panel screen and guard."
+[variant.parameters]
+"sunken_garden.planting_layout" = "against-wall"
+"sunken_garden.raised_soil_height_in" = 30
+"sunken_garden.planting_width_in" = 36
+"sunken_garden.cladding" = "fiber-cement"
+
+[[variant]]
+name = "setback-24-brick"
+description = "Separate 30-inch by 24-inch bed beyond a 36-inch clear strip; brick."
+[variant.parameters]
+"sunken_garden.planting_layout" = "setback"
+"sunken_garden.raised_soil_height_in" = 30
+"sunken_garden.planting_width_in" = 24
+"sunken_garden.planter_setback_in" = 36
+"sunken_garden.cladding" = "brick"
+
+[[variant]]
+name = "setback-24-fiber-cement"
+description = "Separate 30-inch by 24-inch bed beyond a 36-inch clear strip; panel screen."
+[variant.parameters]
+"sunken_garden.planting_layout" = "setback"
+"sunken_garden.raised_soil_height_in" = 30
+"sunken_garden.planting_width_in" = 24
+"sunken_garden.planter_setback_in" = 36
+"sunken_garden.cladding" = "fiber-cement"
+
+[[variant]]
+name = "setback-36-brick"
+description = "Separate 30-inch by 36-inch bed beyond a 36-inch clear strip; brick."
+[variant.parameters]
+"sunken_garden.planting_layout" = "setback"
+"sunken_garden.raised_soil_height_in" = 30
+"sunken_garden.planting_width_in" = 36
+"sunken_garden.planter_setback_in" = 36
+"sunken_garden.cladding" = "brick"
+
+[[variant]]
+name = "setback-36-fiber-cement"
+description = "Separate 30-inch by 36-inch bed beyond a 36-inch clear strip; panel screen."
+[variant.parameters]
+"sunken_garden.planting_layout" = "setback"
+"sunken_garden.raised_soil_height_in" = 30
+"sunken_garden.planting_width_in" = 36
+"sunken_garden.planter_setback_in" = 36
+"sunken_garden.cladding" = "fiber-cement"
