@@ -51,7 +51,8 @@ def test_every_allowable_names_its_fasteners(item):
     """Every one of these values is measured through a specific fastener schedule.
 
     Simpson's own tables make this unavoidable: the CS16 is 1,890 lbf at twenty 10d nails and
-    1,725 at twenty-two 8d, and the H2.5A is 700 lbf with nails and 625 with SD9112 screws.
+    1,725 at twenty-two 8d, and the H2.5A is 615 lbf (SPF) with nails and 625 with SD9112
+    screws — two fastener schedules AND two species columns on one stamping.
     A capacity without its schedule is not a capacity, so an empty ``fasteners`` fails here
     even when every load field is None — a record saying "no number is published" still has
     to say what installation the report was describing when it declined to publish one.
@@ -112,8 +113,18 @@ def test_the_stainless_parts_match_carbon_by_a_letter_not_by_a_prefix_match():
     # Same story at the hurricane tie, where the letter also explains the lower figures that
     # were in circulation: they are the stainless SMOOTH-shank table.
     tie = allowable_for_model("H2.5ASS")
-    assert tie is not None and tie.uplift_lb == allowable_for_model("H2.5A").uplift_lb == 700.0
+    assert tie is not None and tie.uplift_lb == 700.0
     assert "SSA8D" in tie.fasteners, "the nail the 700 lbf is conditional on must be named"
+    # ** THE TWO H2.5A RECORDS STOPPED AGREEING ON 2026-09-14, AND THAT IS THE PARITY WORKING
+    # RATHER THAN BREAKING. ** The letter grants parity in the STEEL and the NAILS; it says
+    # nothing about species, and the two records no longer sit in the same species column.
+    # The stainless is nailed into treated southern pine (SG 0.55) and keeps the DF/SP 700;
+    # the galvanized lands on this house's SPF plates and takes the catalog's SPF/HF 615.
+    # Asserting equality here would quietly require the galvanized record to carry a number
+    # for framing it is never installed in.
+    assert allowable_for_model("H2.5A").uplift_lb == 615.0
+    assert "SPF" in allowable_for_model("H2.5A").species
+    assert "SP" in tie.species and "0.55" in tie.species
     # An SS part nobody has recorded still returns None rather than the carbon numbers —
     # the exact-match rule is what makes the parity above a statement instead of an accident.
     assert allowable_for_model("ABU1212SS") is None
@@ -141,13 +152,23 @@ def test_an_unknown_model_returns_none():
 def test_uplift_and_lateral_are_separate_because_they_have_to_be():
     """The H2.5A is the case that makes a scalar "capacity" indefensible.
 
-    700 lbf uplift against 110 lbf lateral: a check holding one number per connector would
-    pass a lateral demand of 650 lb on this tie, which is nearly six times its rating.
+    615 lbf uplift against 110 lbf lateral: a check holding one number per connector would
+    pass a lateral demand of 600 lb on this tie, which is over five times its rating.
+
+    The uplift moved 700 -> 615 on 2026-09-14 (the SPF/HF column of Simpson's catalog, which
+    ICC-ES ESR-2613 does not publish). **The lateral did not**, and that is worth an assertion
+    of its own: on this page F1 and F2 are the same 110 lbf in both species halves, so a
+    reader who "adjusted the tie for SPF" by scaling every number would have got the lateral
+    wrong in the unconservative direction while fixing the uplift.
     """
     h25a = allowable_for_model("H2.5A")
-    assert h25a.uplift_lb == 700.0
+    assert h25a.uplift_lb == 615.0
     assert h25a.lateral_f1_lb == 110.0
-    assert h25a.uplift_lb > 6 * h25a.lateral_f1_lb
+    assert h25a.uplift_lb > 5 * h25a.lateral_f1_lb
+    # The species halves differ in uplift and agree in lateral — the ZMAX is the same
+    # stamping in the other column, so it is the control.
+    assert allowable_for_model("H2.5AZ").uplift_lb == 700.0
+    assert allowable_for_model("H2.5AZ").lateral_f1_lb == h25a.lateral_f1_lb
 
 
 def test_the_species_the_numbers_belong_to_is_recorded_wherever_it_matters():
@@ -156,8 +177,29 @@ def test_the_species_the_numbers_belong_to_is_recorded_wherever_it_matters():
     Where a report gives both columns the SPF one is recorded; where it gives only DF/SP the
     species field has to say so, because a 0.50 value used against SPF is unconservative and
     nothing downstream can detect it.
+
+    ** THE HURRICANE TIES CHANGED SIDES ON 2026-09-14, AND THE LESSON IS ABOUT DOCUMENTS. **
+    ``H2.5A`` and ``H10A`` sat in the second group — "no SPF column exists, so the field says
+    which lumber the number belongs to" — for weeks. That was true of ICC-ES ESR-2613, which
+    has no species columns at all and governs species globally in §3.2.2. It was not true of
+    Simpson, whose CATALOG splits the same table by species. Both records now carry the SPF/HF
+    value and sit in the first group. **A missing number and an unread document look identical
+    from inside the model**, which is the whole reason this test asserts the species string
+    and not just the load.
+
+    The ZMAX and stainless twins stay in the DF/SP column and that is not an inconsistency:
+    they land on treated southern pine at SG 0.55. Same stamping, different framing, different
+    column — General Note e picks by the LOWEST specific gravity in the connection.
     """
-    assert "NOT SPF" in allowable_for_model("H2.5A").species
+    assert "SPF / HF" in allowable_for_model("H2.5A").species
+    assert allowable_for_model("H2.5A").uplift_lb == 615.0
+    assert "SPF / HF" in allowable_for_model("H10A").species
+    assert allowable_for_model("H10A").uplift_lb == 1015.0
+    # The two that legitimately stay in the DF/SP column, and say why in the same field.
+    for model in ("H2.5AZ", "H2.5ASS"):
+        species = allowable_for_model(model).species
+        assert "0.55" in species, model
+        assert allowable_for_model(model).uplift_lb == 700.0, model
     assert "SPF/HF" in allowable_for_model("HGAM10").species
     assert "SPF/HF" in allowable_for_model("KBS1Z").species
     assert "SG 0.42" in allowable_for_model("MASA").species

@@ -9,8 +9,9 @@ that item was about a garage-door header — and that deferral is now gone: the 
 published-table read (`notes/garage_door_header.md`). No calculation in the engine is pinned
 to the sections below.
 **Superseded in part:** §4's hanger reaction, **600 lb at 4:12**, is re-struck at
-**~980 lb at 6:12** in `notes/roof_rafter_span_read.md` §4, against the LSSR2.37Z's 1,060 lb
-with web stiffeners. Use that number, not this one.
+**~980 lb at 6:12** in `notes/roof_rafter_span_read.md` §4, against the LSSR2.37Z's
+**1,090 lb** with web stiffeners (re-sourced 2026-09-14; the 1,060 this note carried is the
+*skewed* row and this ridge is not skewed). Use that number, not this one.
 
 > **SUPERSEDED IN PART, 2026-08-29 — the pitch and section below are one revision behind.**
 > The roof went from 4:12 to 6:12 and the ridge from `2-1.75x14 LVL` to **`2-1.75x16 LVL`**
@@ -70,9 +71,10 @@ criterion is the same one, and it is the sentence to quote at a plan review.
 Nothing about the width is structural here. The 5 1/4" it replaced came from a "6x12" ask
 recorded in the code, not from a calculation.
 
-**The one real constraint is fastener interference, and it is resolved by a clause, not by
-geometry.** LSSR header fasteners are (14) 10d x 2 1/2" (IAPMO-ES ER-280 Table 11), and 28
-rafter *pairs* land directly opposite one another. Two mirrored nail patterns in a 3 1/2"
+**The one real constraint is fastener interference, and it is resolved by a published row,
+not by a clause.** LSSR header fasteners are (14) 10d x 2 1/2" (IAPMO-ES ER-280 Table 11) —
+and **(14) 10d x 3"** in the TJI-specific schedule, TJ-4000 Jul 2025 p. 15, which is worse
+still. 28 rafter *pairs* land directly opposite one another. Two mirrored nail patterns in a 3 1/2"
 beam overlap through a 1 1/2" band, and the usual escape — clinch the protruding tips on the
 back face — is blocked by the other hanger.
 
@@ -88,11 +90,24 @@ Each rafter delivers roughly **600 lb** to the ridge (12 sf tributary at ~50 psf
 LSSR2.37 rated **1,565 lb**. Shortening the header nails and taking the NDS penetration
 reduction lands nowhere near the limit.
 
+> **RE-SOURCED 2026-09-14 — the answer holds and BOTH halves of that sentence were wrong.**
+> The NDS derivation is not needed: the 1-1/2" header nail is a **published row**. Simpson
+> C-C-2026 p. 178, LSSR2.37Z sloped-only, DF/SP header, roof/snow: (14) 0.148 x 1-1/2 =
+> **1,175 lbf**, (14) 0.148 x 2-1/2 = 1,565, (14) SD#9 x 1-1/2 = 1,870. Read the short-nail
+> row off the page and ER-280 §3.2.2 never has to be invoked.
+> And 1,565 was never this joint's ceiling anyway. TJ-4000 p. 15: "Hanger capacities shown
+> are either **joist bearing capacity** or hanger capacity — whichever is less." On an
+> 11-7/8" TJI 230 the joist's own end bearing governs at **1,090 lbf** sloped-only, and no
+> fastener upgrade climbs past it. The connection is min(1,175 hanger, 1,090 joist) = 1,090
+> against ~980 — d/c 0.90, 0.78 with the snow increase. **Put the 1-1/2" nail on the
+> schedule**, and know that it is the joist and not the nail that is now the near thing.
+
 > **RE-STRUCK 2026-09-11, and this paragraph is stale.** The 12 sf tributary is a 4:12
 > figure. At 6:12 over the roof's real 17'-9 3/4" horizontal run, half-span by 2'-0" o.c. is
 > **17.8 sf**, and the reaction is **~980 lb** once the ridge's share of the unbalanced case
-> is carried. Against the LSSR2.37Z's **1,060 lb** with web stiffeners that is d/c 0.92 —
-> tight, and no longer "nowhere near the limit". The working is in
+> is carried. Against the LSSR2.37Z's **1,090 lb** with web stiffeners (sloped-only,
+> TJ-4000 Jul 2025 p. 15 — the 1,060 written here on 2026-09-11 was the *skewed* row, and
+> this ridge is straight) that is d/c 0.90 — tight, and no longer "nowhere near the limit". The working is in
 > `notes/roof_rafter_span_read.md` §4, which is the number to use. **Web stiffeners are not
 > optional at this reaction.**
 
@@ -182,6 +197,12 @@ any of them is allowed.
 ## Sources
 
 - IAPMO-ES **ER-280** §3.2.2 and Table 11 — LSSR/LSSJ, header thickness and fastener schedule
+- Weyerhaeuser **TJ-4000** Specifier's Guide, Jul 2025, pp. 14-16 — the LSSR-on-TJI table,
+  which is the one that governs a hanger carrying an I-joist, the sloped-only/skewed split,
+  and the beveled-web-stiffener rule above 1/4:12
+- Simpson **C-C-2026** pp. 176-179 — sloped-only (p. 178) and skewed (p. 179) as two tables,
+  the fastener-by-fastener rows, and "web stiffeners are required for all I-joists used with
+  these hangers"
 - ICC-ES **ESR-2552** §3.2.2 — face-mount hangers, substrate and moisture content
 - Simpson / Weyerhaeuser **CSG-TJUS25** (Aug 2025) — connector selection for TJIs, note 5
 - Weyerhaeuser **TJ-4000 / TJ-4500** details **H5 / H5S**, and the slope-factor table

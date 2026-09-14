@@ -641,7 +641,7 @@ ROOFS = [
              span=ft(18, 4),
              spacing=inch(24),
              load_psf=55.0,
-             condition="the row is a HORIZONTAL clear span and this roof's run is 17'-9 3/4\" against a 19.91' sloped length; UNRESOLVED — the guide's high-end support note is transcribed two contradictory ways in this house and these joists HANG off RB-HOUSE on 38 LSSR2.37Z hangers rather than bearing on it, so ForteWEB owns the last word (notes/roof_rafter_span_read.md section 3); the hangers carry 1,060 lb with web stiffeners against a ~980 lb reaction, re-struck from ridge_beam_detail.md's 600 lb at 4:12; deflection L/240; the eave oversail and the birdsmouth are not in the row"),
+             condition="the row is a HORIZONTAL clear span and this roof's run is 17'-9 3/4\" against a 19.91' sloped length; UNRESOLVED — the guide's high-end support note is transcribed two contradictory ways in this house and these joists HANG off RB-HOUSE on 38 LSSR2.37Z hangers rather than bearing on it, so ForteWEB owns the last word (notes/roof_rafter_span_read.md section 3); the hangers carry 1,090 lb with web stiffeners against a ~980 lb reaction (TJ-4000 Jul 2025 p.15, LSSR2.37Z on TJI 230, SLOPED ONLY — the 1,060 read here until 2026-09-14 is the skewed row and this ridge is straight; the number is the joist's end bearing, not the hanger's steel, which is why C-C's 1,565 does not apply), re-struck from ridge_beam_detail.md's 600 lb at 4:12; deflection L/240; the eave oversail and the birdsmouth are not in the row"),
          # The barge-board answer for a roof that cannot have a barge board.
          # With zero overhang the formed corner trim is the only piece standing at the rake,
          # and it was ordered in the panels' own white — so the gable read as a knife edge.
@@ -681,10 +681,12 @@ BEAMS = [
     #  - 3.5" is only defensible because the demand is small. LSSR header fasteners are
     #    (14) 10d x 2.5" and 28 rafter PAIRS land opposite each other, so two mirrored
     #    patterns overlap through a 1.5" band and the usual escape — clinch the tips on the
-    #    back face — is blocked by the other hanger. IAPMO-ES ER-280 sec 3.2.2 allows a
-    #    support thinner than the fastener when the NDS penetration reduction is taken; at
-    #    ~600 lb per rafter against an LSSR2.37's 1,565 lb there is room several times over.
-    #    On a beam that was actually working, this width would not be available.
+    #    back face — is blocked by the other hanger. RE-SOURCED 2026-09-14: the short nail
+    #    needs no ER-280 sec 3.2.2 derivation — C-C-2026 p.178 publishes (14) 0.148 x 1.5
+    #    sloped-only on DF/SP at 1,175 lb outright. And 1,565 is hanger-side-only: on a TJI
+    #    the connection is the joist's end bearing, 1,090 lb (TJ-4000 p.15), against ~980 lb
+    #    per rafter at 6:12 — d/c 0.90, not "room several times over". The width is still
+    #    available; the margin belongs to the joist, not to the nail.
     #  - Beveled web stiffeners both sides at this end (Weyerhaeuser H5, APA D710 10c), and
     #    an LSTA24 over the peak per pair — H5S makes the strap mandatory above 3:12.
     #  - The two plies are stitched with SDW22 3-3/4" (Trus Joist SE-N101 Assembly A, side

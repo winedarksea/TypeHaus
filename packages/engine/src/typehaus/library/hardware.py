@@ -131,6 +131,13 @@ SDWH_TIMBER_HEX_SCREW = StructuralHardware(
            "exterior-insulation assemblies",
 )
 
+# **Sloped-only and skewed are two different rows, and the house reads the sloped-only
+# one.** Every published table splits them (C-C-2026 pp. 178 vs 179; ER-280 Table 11; TJ-4000
+# p. 15), because skewing costs fasteners — the header schedule drops 14 -> 13 and the joist
+# 12 -> 9, and CSG-TJUS25 p. 10 says why: "All holes must be filled except for the LSSR
+# hanger when skewed". catlin's ridge is straight and its rafters land square on it, so the
+# skewed row is not this joint's row. The 1,060 lb that circulated in the notes until
+# 2026-09-14 was the skewed one.
 LSSR_SLOPED_HANGER = StructuralHardware(
     tag="simpson-lssr-adjustable-slope-hanger",
     name="LSSR field-adjustable slope/skew hanger",
@@ -140,6 +147,36 @@ LSSR_SLOPED_HANGER = StructuralHardware(
     source="Simpson Strong-Tie LSSR adjustable slope/skew joist and rafter hanger "
            "(strongtie.com/lssr) — the hanger published for a raked member framing into "
            "the face of a ridge beam",
+    allowable=AllowableLoads(
+        uplift_lb=510.0,
+        download_lb=1090.0,
+        load_duration_factor=1.0,
+        species="The HEADER is a 2-ply 1.75x16 LVL, which ER-280 §3.2.2 puts in the DF/SP "
+                "column (\"minimum equivalent specific gravity of 0.50 for engineered "
+                "lumber\") and TJ-4000 p. 15's Support Requirements assume outright. The "
+                "carried member is an 11-7/8\" TJI 230, not sawn lumber, and that is why "
+                "the download below is TJ-4000's and not the catalog's: on an I-joist the "
+                "governing number is the JOIST BEARING capacity, not the hanger's steel",
+        fasteners="(14) 10d 0.148\" x 3\" into the header and (12) 10d 0.148\" x 1-1/2\" "
+                  "into the joist — TJ-4000 p. 15, the TJI schedule. **The catalog's own "
+                  "sloped-only rows are nailed differently** and are read at 2-1/2\": "
+                  "(14) 0.148 x 1-1/2 = 1,175 lbf, (14) 0.148 x 2-1/2 = 1,565, (14) SD#9 x "
+                  "1-1/2 = 1,870 (C-C-2026 p. 178, DF/SP, roof/snow). Web stiffeners are "
+                  "REQUIRED with this hanger — 4\" wide, (4) 0.148\" nails each side — and "
+                  "beveled rather than square wherever the joist slope exceeds 1/4:12",
+        citation="Weyerhaeuser TJ-4000 Specifier's Guide, Jul 2025, p. 15 \"Variable Slope "
+                 "Seat Joist Hanger\" — TJI 230 / LSSR2.37Z, **Sloped Only 1,090 lbf** "
+                 "(Sloped and Skewed 1,060). Its general note is the reason this record "
+                 "carries that number and not C-C's larger one: \"Hanger capacities shown "
+                 "are either joist bearing capacity or hanger capacity — whichever is "
+                 "less.\" At 100% duration; p. 16 footnote 1 permits +15% for snow roofs "
+                 "(1,254 lbf) and +25% for non-snow. Uplift 510 lbf is C-C-2026 p. 178, "
+                 "identical in the skewed row. ER-280 Table 11 note 4 bounds the whole "
+                 "table at +/-45 degrees of slope AND skew with **no angle multiplier "
+                 "inside that range** — the 0.85 above 45 degrees belongs to the LRUZ, and "
+                 "CSG-TJUS25 p. 3's sloped-joist reductions belong to ITS/IUS/MIT/MIU/BA/"
+                 "HB/WP/HU, hangers with no sloped seat. 6:12 is 26.57 degrees",
+    ),
 )
 
 LSTA24_RIDGE_STRAP = StructuralHardware(
@@ -168,6 +205,32 @@ LUS_FACE_MOUNT_HANGER = StructuralHardware(
 #: The Simpson C-C masonry/concrete hanger table, read once and cited by all three records
 #: below. Page 280 is the only page in the catalog that publishes a hanger load INTO a pour,
 #: and everything about which family may be used there comes from it.
+#: ** THE PAGE THAT CLOSED THE HURRICANE TIES' SPECIES GAP (2026-09-14). ** Two records in
+#: this file said for weeks that "ESR-2613 publishes no SPF column for the hurricane ties,
+#: so there is no honest SPF number to record". The first half is TRUE and still is — the
+#: report reissued June 2026 governs species globally in §3.2.2 ("assigned minimum specific
+#: gravity of 0.50"), with named exceptions only for the SPH (Table 5) and the SSP/DSP
+#: (Table 7), and Table 1 has no species columns at all. The second half was FALSE: Simpson's
+#: own CATALOG goes past the report and splits the H/TSP table by species, and the SPF/HF
+#: column is right there.
+#:
+#: So the gap was never in the data, it was in which document had been read. Both records now
+#: carry the catalog value for the framing they actually land in, and the ESR value stays
+#: named beside it as the DF/SP figure — which is what the parts bedded in southern pine
+#: (H2.5AZ, H2.5ASS) correctly use.
+_C_C_H_TIES = (
+    "Simpson Strong-Tie Wood Construction Connectors catalog C-C-2024, p. 288 "
+    "\"H/TSP Seismic and Hurricane Ties\", read 2026-09-14. The table is split into "
+    "\"DF/SP Allowable Loads\" and \"SPF/HF Allowable Loads\" halves, each with Uplift "
+    "(160) and Lateral F1/F2 (160) columns — the species split ICC-ES ESR-2613 does not "
+    "publish. Its DF/SP uplift column reproduces the ESR values exactly, which is what makes "
+    "the SPF/HF column trustworthy as the same test programme rather than a second opinion. "
+    "General Note e: \"For connections involving members with different specific gravities, "
+    "use the allowable load corresponding to the LOWEST specific gravity in the connection, "
+    "unless noted otherwise\" — and the catalog's species chart assigns DF 0.50, SP 0.55, "
+    "SPF 0.42, HF 0.43, LVL (DF/SP) 0.50"
+)
+
 _C_C_MASONRY_HANGERS = (
     "Simpson Strong-Tie Wood Construction Connectors catalog C-C-2017, p. 280 "
     "\"HU/HUC/HSUR/L Hangers (cont.)\" — the masonry/concrete table, updated 04/17/17, "
@@ -1000,26 +1063,48 @@ H25A_HURRICANE_TIE = StructuralHardware(
     # AllowableLoads is a vector. Footnote 2 goes further and requires a unity equation
     # across all three directions when a joint sees more than one at once.
     #
-    # **These values are published for SG 0.50 lumber (DF-L, and 0.55 for southern pine) —
-    # footnote to Table 1 / §3 of the report — and this house frames in SPF at SG 0.42.**
-    # Simpson do not print an SPF column for the hurricane ties the way they do for the
-    # KBS1Z and the HGAM10, so there is no honest SPF number to record here and the species
-    # field says which lumber the numbers belong to instead. Using 700 lbf against an SPF
-    # plate is unconservative and nothing downstream can detect it, so it is stated here.
+    # ** 700 -> 615 ON 2026-09-14: THE SPF NUMBER EXISTS AND THIS RECORD SAID IT DID NOT. **
+    # It read: "Simpson do not print an SPF column for the hurricane ties the way they do for
+    # the KBS1Z and the HGAM10, so there is no honest SPF number to record here." Half of that
+    # was right. ESR-2613 has no species columns at all and governs species globally in
+    # §3.2.2 at SG 0.50 — true, and true again in the June 2026 reissue. But Simpson's own
+    # CATALOG splits the H/TSP table by species, and the SPF/HF uplift for this tie is **615
+    # lbf at 160%**. The gap was in which document had been read, not in the data.
+    #
+    # **So this record now carries the SPF value**, which is the convention ``species``
+    # already states: where the report gives both, record the column this house is built in.
+    # The DF/SP 700 stays named in the species field, because it is the right number for the
+    # same stamping bedded in southern pine — which is exactly what the H2.5AZ and H2.5ASS
+    # records below are for, and why theirs did NOT move.
+    #
+    # It is 12% down, and the direction matters: every derived tie in this house was being
+    # graded against a capacity 85 lbf higher than the framing can develop.
+    #
+    # **Do not derive this by factoring.** Simpson's General Note e sends a mixed-species
+    # joint to the LOWEST specific gravity in it — here the SPF plate at 0.42, under an I-joist
+    # flange at ~0.50 — and the only published multiplier on this page (0.86) belongs to the
+    # stud-to-bottom-plate detail alone. NDS Table 12.3.3 governs individual fasteners, not a
+    # tested proprietary connector whose capacity is part steel. A species Simpson does not
+    # rate at all goes to their letter L-ALTSPECIES, not to arithmetic of ours.
     allowable=AllowableLoads(
-        uplift_lb=700.0,
+        uplift_lb=615.0,
         lateral_f1_lb=110.0,
         lateral_f2_lb=110.0,
         load_duration_factor=1.6,
-        species="DF-L / SP (assigned SG 0.50 / 0.55) — **NOT SPF**; catlin frames SPF at "
-                "SG 0.42 and ESR-2613 publishes no SPF column for the hurricane ties",
+        species="SPF / HF (assigned SG 0.42 / 0.43) — the column this house is framed in, "
+                "and the reason the value is 615 rather than the 700 lbf the same tie "
+                "carries in DF-L / SP (SG 0.50 / 0.55). ESR-2613 publishes only the DF/SP "
+                "figure; the SPF/HF column is the catalog's",
         fasteners="5 - 0.131 in x 2-1/2 in to the rafter and 5 - 0.131 in x 2-1/2 in to "
                   "the plates (ESR-3096 Table publishes 625/450/110 lbf for the same tie "
                   "with 5-SD9112 screws each side — a different fastener, different values)",
-        citation=("ICC-ES ESR-2613 (Simpson hurricane ties) Table 1, H2.5A row, read "
-                  "2026-08-30; footnote 2 requires a unity check across uplift + both "
-                  "lateral directions for simultaneous loading, footnote 5 states the uplift "
-                  "is already increased for wind with no further increase allowed"),
+        citation=(_C_C_H_TIES + ". The SPF/HF uplift is 615 lbf; the DF/SP half of the same "
+                  "row reads 700 lbf and reproduces ICC-ES ESR-2613 (Simpson hurricane ties) "
+                  "Table 1, H2.5A row, read 2026-08-30 — where footnote 2 requires a unity "
+                  "check across uplift + both lateral directions for simultaneous loading "
+                  "and footnote 5 states the uplift is already increased for wind with no "
+                  "further increase allowed. The lateral F1/F2 do not move with species on "
+                  "this page: 110 lbf in both halves"),
     ),
 )
 
@@ -1046,19 +1131,26 @@ H25AZ_HURRICANE_TIE = StructuralHardware(
     # `_H25AZ_ESR2613` names the table, the row, and the date it was read, and the ZMAX
     # coverage is the catalog's own — Simpson list the H2.5AZ under the same H2.5A entry.
     #
-    # **The species caveat rides across unchanged and is still the live one.** These values
-    # are DF/SP (SG 0.50/0.55); ESR-2613 publishes no SPF column for the hurricane ties. Here
-    # that caveat is, for once, satisfied rather than carried: every joint this part is
-    # selected for lands on KDAT southern pine or treated SYP glulam, both SG 0.55.
+    # **The species caveat rides across unchanged and is, here, satisfied rather than
+    # carried:** every joint this part is selected for lands on KDAT southern pine or treated
+    # SYP glulam, both SG 0.55, which is inside the DF/SP column these values come from.
+    #
+    # ** SO THIS RECORD KEEPS 700 WHERE THE G90 H2.5A WENT TO 615 ON 2026-09-14, AND THAT IS
+    # THE POINT OF THE SPLIT. ** Simpson's catalog publishes an SPF/HF column the ESR does
+    # not (``_C_C_H_TIES``), and the galvanized record took it because it lands on SPF
+    # plates. This one does not, because it does not. Same stamping, same report row, two
+    # species columns, two houses' worth of framing — and General Note e is what decides
+    # which: the LOWEST specific gravity in the connection.
     allowable=AllowableLoads(
         uplift_lb=700.0,
         lateral_f1_lb=110.0,
         lateral_f2_lb=110.0,
         load_duration_factor=1.6,
-        species="DF-L / SP (assigned SG 0.50 / 0.55) — **NOT SPF**, and ESR-2613 publishes "
-                "no SPF column for the hurricane ties. Unlike the galvanized record above, "
-                "this is not a caveat in force: the joints that select this part are all on "
-                "SYP (KDAT and treated glulam, SG 0.55), inside the published column",
+        species="DF-L / SP (assigned SG 0.50 / 0.55) — and unlike the galvanized record "
+                "above, that is not a caveat in force here: the joints that select this "
+                "part are all on SYP (KDAT and treated glulam, SG 0.55), inside the "
+                "published column. The catalog's SPF/HF figure for the same tie is 615 lbf "
+                "and is the galvanized record's, not this one's",
         fasteners="5 - 0.131 in x 2-1/2 in to the rafter/joist and 5 - 0.131 in x 2-1/2 in "
                   "to the plates — the carbon schedule, unchanged. **Drive it with "
                   "hot-dip-galvanized nails, not electrogalvanized**: R317.3.1 governs the "
@@ -1104,23 +1196,37 @@ H10A_GABLE_END_TIE = StructuralHardware(
     #
     # **Published for SG 0.50 lumber and this house frames SPF at SG 0.42** — §3.2.2 requires
     # an assigned minimum specific gravity of 0.50 for every connector in the report except
-    # the SPH (Table 5) and the SSP/DSP (Table 7, which does publish an 0.43 column). There
-    # is no SPF column for the hurricane ties, so there is no honest SPF number to record and
-    # the species field says which lumber the numbers belong to instead. Using 1,040 lbf
-    # against an SPF plate is unconservative and nothing downstream can detect it. Same
-    # caveat, same reason, as H25A_HURRICANE_TIE above.
+    # the SPH (Table 5) and the SSP/DSP (Table 7, which does publish an 0.43 column).
+    #
+    # ** 1,040 -> 1,015 ON 2026-09-14, FOR THE REASON THE H2.5A MOVED. ** The sentence that
+    # stood here — "there is no SPF column for the hurricane ties, so there is no honest SPF
+    # number to record" — was right about the REPORT and wrong about Simpson. The catalog
+    # splits the H/TSP table by species and publishes **1,015 lbf** for this tie in SPF/HF.
+    # A gable end is framed in the same SPF as the rest of this house, so that is the column.
+    #
+    # **It barely moves, and the reason is worth knowing when choosing an upgrade.** The
+    # H2.5A loses 12% going from DF/SP to SPF (700 -> 615); the H10A loses 2% (1,040 ->
+    # 1,015), because its capacity is governed by the steel rather than by nail withdrawal
+    # from the plate. In SPF the H10A is therefore a far better buy per pound of capacity
+    # than its DF/SP ratio suggests — the efficient upgrade from an H2.5A here is one H10A,
+    # not a pair of H2.5As (and a PAIR is not a published row at all: it is licensed by
+    # footnote 1 / catalog note 2 and requires a 2-1/2" minimum rafter thickness, which a
+    # single 2x cannot give).
     allowable=AllowableLoads(
-        uplift_lb=1040.0,
+        uplift_lb=1015.0,
         lateral_f1_lb=565.0,
         lateral_f2_lb=285.0,
         load_duration_factor=1.6,
-        species="DF-L (assigned SG 0.50) — **NOT SPF**; catlin frames SPF at SG 0.42 and "
-                "ESR-2613 §3.2.2 requires SG 0.50 for every tie in Table 1",
+        species="SPF / HF (assigned SG 0.42 / 0.43) — the column this house is framed in. "
+                "The same tie carries 1,040 lbf in DF-L (SG 0.50), which is the only figure "
+                "ESR-2613 §3.2.2 publishes; the SPF/HF column is the catalog's",
         fasteners="9 - 0.148 in x 1-1/2 in to the rafter and 9 - 0.148 in x 1-1/2 in to the "
                   "plates; footnote 4 requires both connectors in one area on the SAME side "
                   "of the wall for the tabulated uplift and a continuous load path",
-        citation=("ICC-ES ESR-2613 (Simpson hurricane ties) Table 1, H10A row, reissued "
-                  "June 2026, read 2026-09-14; footnote 2 requires a unity check across "
+        citation=(_C_C_H_TIES + ". The SPF/HF uplift is 1,015 lbf; the DF/SP half of the "
+                  "same row reads 1,040 and reproduces ICC-ES ESR-2613 (Simpson hurricane "
+                  "ties) Table 1, H10A row, reissued June 2026, read 2026-09-14. There "
+                  "footnote 2 requires a unity check across "
                   "uplift + both lateral directions for simultaneous loading, footnote 5 "
                   "states the uplift is already increased for wind with no further increase "
                   "allowed, and footnote 6 forbids using the F1 value to replace diaphragm "
@@ -1162,10 +1268,12 @@ H25ASS_HURRICANE_TIE = StructuralHardware(
         lateral_f1_lb=110.0,
         lateral_f2_lb=110.0,
         load_duration_factor=1.6,
-        species="DF-L / SP (assigned SG 0.50 / 0.55) — **NOT SPF**; catlin frames SPF at "
-                "SG 0.42 and ESR-2613 publishes no SPF column for the hurricane ties. This "
-                "caveat is the carbon record's and rides across unchanged: stainless parity "
-                "is about the steel and the nails, and repairs nothing about species",
+        species="DF-L / SP (assigned SG 0.50 / 0.55) — in force and satisfied: this tie is "
+                "nailed into treated southern pine headers (SG 0.55), inside the published "
+                "column. The catalog's SPF/HF figure for the same stamping is 615 lbf "
+                "(``_C_C_H_TIES``) and belongs to the G90 record, which lands on SPF "
+                "plates; stainless parity is about the steel and the nails and says nothing "
+                "about species either way",
         fasteners="5 - SSA8D stainless ring-shank to the rafter and 5 - SSA8D to the plates "
                   "— the letter's substitution for the catalog's 5 - 0.131 in x 2-1/2 in "
                   "(8d common) each side. **With stainless SMOOTH-shank nails instead, this "

@@ -550,8 +550,10 @@ not publish.
   the answer at 14" (`2-1.75x14 LVL`); before that the beam reached 11.875"
   (`3-1.75x11.875`), leaving the hanger seat and bottom flange 1.52" past the soffit. A
   ridge sized by bending rather than by the plumb cut would want 5 1/4" wide and the full
-  LSSR header nail, rather than the 3 1/2" that only works via the ER-280 penetration
-  reduction.
+  LSSR header nail, rather than the 3 1/2" that takes the short one. **Re-sourced 2026-09-14:
+  the short nail needs no ER-280 §3.2.2 penetration reduction** — C-C-2026 p. 178 publishes
+  (14) 0.148 x 1-1/2 sloped-only on DF/SP at 1,175 lbf outright, and on a TJI the governing
+  number is the joist's end bearing (1,090 lbf, TJ-4000 p. 15) either way.
 - The beam is ordered as three 12s rather than one 36' stick: same lineal feet, no offcut
   at 36', and a 106 lb ply instead of a 317 lb one (36' at 8.8 lb/ft/ply — this section's
   own weight, not `notes/ridge_beam_detail.md`'s 7.7 lb/ft/ply, which was struck for the

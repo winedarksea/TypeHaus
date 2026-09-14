@@ -308,12 +308,26 @@ def test_the_gate_is_concrete_not_a_round_section(catlin_plan, piers) -> None:
     assert not {"PT-BW-1", "PT-BW-2", "PT-BW-3", "PT-BW-4"} & set(piers)
 
 
-def test_a_pad_borne_pier_gets_no_engineered_bearing_record(results) -> None:
+def test_a_pad_borne_pier_gets_no_engineered_bearing_record(results, piers) -> None:
     """§6 — a ``Pad`` IS an IRC Table R507.3.1 row, graded by
-    ``structural.deck_footing_size``. Two authorities on one number is worse than one."""
+    ``structural.deck_footing_size``. Two authorities on one number is worse than one.
+
+    ** AND AS OF 2026-09-14 THAT IS EVERY PIER IN THE HOUSE. ** This used to close with
+    ``"spread_footing/PT-SG-COL" in results`` as its control — proof that the exclusion was
+    selective rather than a module that had stopped running. The two centre-garden bells came
+    off and onto pads that day, and with them the last ``spread_footing`` item catlin had.
+
+    So the control is inverted rather than dropped: the register must hold **no** such item,
+    and the reason is the one above rather than a calc that silently stopped computing.
+    ``_piers_on_their_own_footing`` is asked directly for the same answer, because an empty
+    ``results`` slice and a calc that never ran look identical from here.
+    """
     for tag in _BREEZEWAY_PIERS:
         assert f"spread_footing/{tag}" not in results
-    assert "spread_footing/PT-SG-COL" in results
+    assert not [item for item in results if item.startswith("spread_footing/")], (
+        "catlin has a belled pier again — restore a positive control here, and check whether "
+        "conftest's `catlin_retired_bells` should now read it off the house")
+    assert piers, "every pier stopped being a pier — the fixture has drifted"
 
 
 @pytest.mark.parametrize("tag", sorted(_ORACLE))
@@ -356,13 +370,20 @@ def test_both_columns_carry_the_centre_pillar_that_lands_beside_them(piers) -> N
         assert pier.carried_dead_lb > 0.0, "the pillar's own 6x6 rides down with its share"
 
 
-def test_the_bell_is_read_as_a_circle_not_the_resolved_square(piers, catlin_model) -> None:
+def test_the_bell_is_read_as_a_circle_not_the_resolved_square(catlin_retired_bells) -> None:
     """§3a — the calculation disagrees with the resolved solid ON PURPOSE.
 
     `resolve/envelope.py` draws a post-hosted footing as a SQUARE of side `width`, and
     `params/sunken_garden.py` calls that same number a bell DIAMETER. Taking the square
     credits 27% more bearing area than exists, in the unconservative direction.
+
+    ** RUNS ON conftest's RECONSTRUCTED BELLS SINCE 2026-09-14 ** — catlin draws no
+    post-hosted footing solid any more, so the "and the resolved solid really is the bigger
+    square" half cannot be re-read off ``catlin_model``; the square is computed from the same
+    ``width`` the resolver would have taken. The disagreement itself is still live code in
+    ``pier_basis``, which is what is asserted.
     """
+    _ctx, piers = catlin_retired_bells
     # One diameter on both since 2026-09-10, so this now reads as two identical rows. Keep
     # both: the point is that the CIRCLE is taken, and a single row could be satisfied by a
     # square of some other bell.
@@ -372,24 +393,31 @@ def test_the_bell_is_read_as_a_circle_not_the_resolved_square(piers, catlin_mode
         square = (dia_in / 12.0) ** 2
         assert pier.bearing_area_ft2 == pytest.approx(circle, rel=1e-6)
         assert pier.bearing_area_ft2 == pytest.approx(_ORACLE[tag]["bell_area_ft2"], abs=0.002)
-        # The resolved solid really is the bigger square — this is not a hypothetical.
-        solid = next(s for s in catlin_model.solids if s.tag == pier.footing_tag)
-        xs = [x for x, _ in solid.outline]
-        ys = [y for _, y in solid.outline]
-        resolved = ((max(xs) - min(xs)) / 0.3048) * ((max(ys) - min(ys)) / 0.3048)
-        assert resolved == pytest.approx(square, rel=1e-6)
-        assert pier.bearing_area_ft2 < resolved * 0.80
+        assert pier.bearing_area_ft2 < square * 0.80
+
+
+@pytest.fixture(scope="module")
+def records(catlin_retired_bells):
+    """``spread_footing`` on the two bells conftest puts back. See ``catlin_retired_bells``."""
+    from typehaus.engineering.spread_footing import _one
+
+    ctx, piers = catlin_retired_bells
+    return {tag: _one(ctx, pier) for tag, pier in piers.items()}
 
 
 @pytest.mark.parametrize("tag", sorted(_ORACLE))
-def test_bearing_checks_out_on_the_sites_own_soil(tag, results) -> None:
+def test_bearing_checks_out_on_the_sites_own_soil(tag, records) -> None:
     """§3c. And the allowable is the SITE's class 4, not the washed stone's class 3.
 
     The retaining footings earn 3,000 psf from a 42" replacement section. These bells were
     augered to frost depth to bear on undisturbed soil and carry a 7" LEVELLING course;
     reading the stone's number off that would be a sixth of a section's worth of credit.
+
+    ** ON conftest's RECONSTRUCTED BELLS SINCE 2026-09-14 ** — both piers stand on pads now
+    and mint no ``spread_footing`` record at all, which is what the test above asserts. The
+    bearing derivation is unchanged and still the only one the engine has for a bell.
     """
-    record = results[f"spread_footing/{tag}"]
+    record = records[tag]
     assert record.status is Status.OK, record.summary
     state = next(s for s in record.limit_states if s.name == "bearing")
     assert state.demand == pytest.approx(_ORACLE[tag]["bearing_psf"], abs=3.0)
@@ -659,7 +687,6 @@ def test_the_two_ROOF_tributary_rules_agree_too(catlin_plan) -> None:
         DECK_DEAD_LOAD_PSF,
         DECK_TOTAL_LOAD_PSF,
     )
-    from typehaus.engineering.pier_basis import cast_piers
     from typehaus.engineering.registry import EngineeringContext
     from typehaus.resolve import resolve
 

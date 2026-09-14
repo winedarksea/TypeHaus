@@ -209,18 +209,34 @@ Recorded plainly because the engine will neither stop you nor help you on any of
   §7.4 **Cs slope factor**, which a 6:12 slippery standing-seam roof earns; and the new stack
   is LIGHTER than the one it replaces (~10 psf against ~12-14 — 6" of polyiso and a 5/8" OSB
   deck leave, foam and batt arrive). The real load case is below the 35 psf read above.
-- **The uplift ties are the constraint, not the joists.** `H2.5A` is published at 700 lbf
-  uplift for **SG 0.50** lumber (`library/hardware.py`, ESR-2613) and catlin frames **SPF at
-  SG 0.42** — the library says in as many words that using 700 against an SPF plate is
-  unconservative and nothing downstream can detect it. At 24" o.c. the tributary rises 1.5x,
-  to roughly 480 lb/tie against a derated allowable nearer 560-600 lbf. Inside, but not
+- **The uplift ties are the constraint, not the joists — and the derated allowable is no
+  longer an estimate.** This bullet used to read "700 lbf for SG 0.50 lumber … against a
+  derated allowable nearer 560-600 lbf", the 560-600 being a guess because ESR-2613 has no
+  SPF column. **Simpson's catalog does** (C-C-2024 p. 288, the H/TSP table, split into DF/SP
+  and SPF/HF halves): the H2.5A is **615 lbf** in SPF/HF at 160%. The guess was close and is
+  now sourced; `library/hardware.py` carries 615 as the record's own value.
+- **Two demands are in play and they are not the same number.** At 24" o.c. this note's
+  component-and-cladding estimate is roughly **480 lb/tie**, against 615 — inside, but not
   comfortably, and roof corner/edge zone coefficients run higher than the wall figure that
-  estimate came from. **Budget for upsizing the eave ties (H10A or equivalent)** rather than
-  booking the 378 -> 360 count reduction as a saving.
-- **The ridge hangers survive the move comfortably.** `notes/ridge_beam_detail.md` works each
-  rafter at 600 lb into the ridge (12 sf tributary at ~50 psf) against an LSSR2.37 rated
-  1,565 lb. At 24" that is ~900 lb — **1.74x cover**, down from 2.6x — and the lighter stack
-  makes the real number better than that.
+  estimate came from. IRC Table R802.11's prescriptive row for this roof (Exposure B,
+  V_ult 115, 24" o.c., 36' span, pitch >= 5:12) is **212 lb per connection** — far lower,
+  because it is ASD and already net of a 15 psf roof-and-ceiling dead-load allowance
+  (footnote b). **This stack is ~10 psf and does not deliver that 15**, so the table's offset
+  is optimistic here by roughly 5 psf of tributary. The two numbers bracket the answer; the
+  480 is the one to design to.
+- **So: still budget for upsizing the eave ties (H10A or equivalent)** rather than booking
+  the 378 -> 360 count reduction as a saving. In SPF the H10A is the efficient upgrade — it
+  loses only 2% moving out of the DF/SP column (1,040 -> **1,015** lbf) where the H2.5A loses
+  12%, because its capacity is governed by the steel rather than by nail withdrawal from the
+  plate. A PAIR of H2.5As is not the cheap alternative it looks: Simpson publish no pair row,
+  and the footnote that licenses doubling requires a 2-1/2" minimum rafter thickness, which a
+  single 2x does not have.
+- **The ridge hangers survive the move, but "comfortably" was an artifact of the wrong
+  allowable.** 1,565 lb is the hanger's own steel on sawn lumber; on an 11-7/8" TJI 230 the
+  connection is the **lesser** of that and the joist's end bearing, which TJ-4000 (Jul 2025,
+  p. 15) puts at **1,090 lb** sloped-only. The demand at 24" o.c. is `roof_rafter_span_read.md`
+  §4's **~980 lb**, not 600 — d/c **0.90**, or 0.78 taking p. 16 footnote 1's +15% snow-roof
+  increase. That is cover, not comfort, and the lighter stack is what keeps it there.
 - **The deck cantilever.** The 5/8" plywood oversails the last joist at each eave and spans
   the wall girts. Nothing in the engine grades that overhang.
 - **Sheathing span and the gypsum ceiling at 24" o.c.** No rule in the engine reads the

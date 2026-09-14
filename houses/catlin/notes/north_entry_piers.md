@@ -176,6 +176,15 @@ pine at an entry salted every winter, and the house buys stainless at every KDAT
 > So the H2.5ASS is a **700 / 110 / 110** part here, and `library/hardware.py` records it,
 > against 256 lb of demand.
 >
+> ⚠ **AND IT KEEPS THE 700 WHERE THE GALVANIZED TIE DROPPED TO 615 ON 2026-09-14.** That is
+> not an inconsistency between two records of one stamping — it is the species column. Simpson's
+> catalog (C-C-2024 p. 288) splits the H/TSP table into DF/SP and SPF/HF halves, which ESR-2613
+> does not, and General Note e picks the column by the **lowest specific gravity in the
+> connection**. These eight land on treated southern pine at SG 0.55 and stay in the DF/SP
+> column; the ~270 galvanized ties elsewhere in the house land on SPF plates at SG 0.42 and
+> take the catalog's 615. **Stainless parity is a claim about steel and nails and says nothing
+> about species**, so it rides across unchanged in both directions.
+>
 > ⚠ **THE NAIL IS NOW A SPECIFICATION ITEM.** That 700 lbf is conditional on **SSA8D**
 > stainless ring-shank nails, five to the rafter and five to the plates, substituting for the
 > catalog's 8d common 0.131 x 2-1/2 in. Drive these eight ties with stainless SMOOTH-shank

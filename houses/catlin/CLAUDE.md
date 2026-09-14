@@ -588,9 +588,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - Section is `2-1.75x16 LVL`; depth is a HANGER dimension, not span-driven — the beam
     must reach 14.15" below the ridge at the rafter's plumb cut (14" misses by 0.15", 16"
     clears). LVL comes in 9.5/11.875/14/16/18", no 14 1/4". Beam hangs 16" into the room.
-    3 1/2" width only works because demand is small: relies on ER-280 §3.2.2's NDS
-    penetration reduction (~600 lb/rafter against 1,565 lb capacity) so mirrored LSSR
-    header nails on 28 opposing rafter pairs don't overlap.
+    3 1/2" width only works because demand is small, and the 1-1/2" LSSR header nail that
+    keeps mirrored patterns on 28 opposing rafter pairs from overlapping is a **published
+    row**, not an ER-280 §3.2.2 derivation (C-C-2026 p. 178 sloped-only, DF/SP: 1,175 lbf).
+    The connection is capped by the TJI's end bearing at **1,090 lbf** (TJ-4000 Jul 2025
+    p. 15, sloped-only — 1,565 is hanger-side-only and 1,060 is the *skewed* row), against
+    ~980 lb/rafter: d/c 0.90.
   - Peak hardware: 38 beveled web stiffeners both sides (23/32" ply ripped 4" wide — NOT a
     2x4, cavity is 15/16" a side), 19 LSTA24 over the top per pair (mandatory above 3:12
     per Weyerhaeuser H5S), 10 H2.5A tying beam to plate at 4' o.c. (`uplift_path.py` skips

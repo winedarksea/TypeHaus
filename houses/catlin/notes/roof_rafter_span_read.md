@@ -81,11 +81,43 @@ settle §3 before this goes out; that is a five-minute job and it has not been d
     reaction   = 17.81 x (35 + 15) psf          = ~890 lb
     with the ridge's share of the unbalanced case, take       **~980 lb**
 
-    LSSR2.37Z, with web stiffeners, allowable   **1,060 lb**    d/c 0.92
+    LSSR2.37Z, with web stiffeners, allowable   **1,090 lb**    d/c 0.90
 
-**That is tight, and it is the number in front of the reviewer.** The 600 lb figure in
+**RE-SOURCED 2026-09-14, and the allowable moved for a reason worth reading.** This line
+said **1,060 lb** until today. That is a real published number and it is the wrong row: it
+is the **sloped AND skewed** case (Weyerhaeuser TJ-4000, Jul 2025, p. 15, TJI 230 /
+LSSR2.37Z; the same 1,060 appears in IAPMO-ES ER-280 Table 11 at C_D = 1.00). Every document
+that publishes this hanger splits the two — C-C-2026 pp. 178 vs 179, ER-280 Table 11,
+TJ-4000 p. 15 — because skewing costs fasteners: CSG-TJUS25 p. 10, "All holes must be filled
+except for the LSSR hanger **when skewed**", which takes the header schedule from 14 nails to
+13 and the joist from 12 to 9. **`RB-HOUSE` is a straight ridge and these rafters land square
+on it.** The joint is sloped only, and its row is **1,090 lb**.
+
+**And 1,090 is the right KIND of number, which 1,565 was not.** TJ-4000 p. 15's general note:
+"Hanger capacities shown are either joist bearing capacity or hanger capacity — **whichever
+is less**." On a TJI the joist's own end bearing governs, not the hanger's steel, so the
+1,565 lb that `ridge_beam_detail.md` §2 argued against is the hanger side alone and is not
+available here at any fastener schedule. 1,090 is the connection.
+
+    demand ~980 lb  /  1,090 lb at 100% duration            d/c 0.90
+    with TJ-4000 p.16 fn.1's +15% snow-roof increase, 1,254 d/c 0.78
+
+**Still tight, and still the number in front of the reviewer.** The 600 lb figure in
 `ridge_beam_detail.md` is superseded by this line. Web stiffeners are not optional at this
-reaction.
+reaction, and above 1/4:12 they are **beveled**, not square (TJ-4000 p. 14).
+
+**No slope reduction applies.** ER-280 Table 11 note 4 bounds the tabulated loads at +45 to
+-45 degrees of slope and skew and publishes no multiplier inside that range; 6:12 is 26.57
+degrees. The 0.85 factor above 45 degrees belongs to the **LRUZ**, and CSG-TJUS25 p. 3's
+sloped-joist reductions belong to hangers with no sloped seat (ITS, IUS, MIT, MIU, BA, HB,
+WP, HU). Neither is this part.
+
+**One open edge, and it is inside the margin.** Nothing published gives a sloped-only TJI
+value by joist depth — TJ-4000's 1,090 is flat across 9-1/2" to 16", while CSG-TJUS25's
+*skewed* numbers do vary with depth (1,080 / 1,105 / 1,105). CSG-TJUS25 p. 5 tabulates only
+the skewed case and disagrees with TJ-4000 on it by ~4% (1,105 vs 1,060), attributable to the
+header nail (2-1/2" 10DN there, 3" 10d in TJ-4000). At d/c 0.90 that spread does not decide
+anything; a design sitting at the cap is a call to Weyerhaeuser, not a table read.
 
 ## 5. What is NOT graded here
 
@@ -107,4 +139,8 @@ reaction.
 - **Weyerhaeuser TJ-4000**, *Trus Joist TJI Joist Specifier's Guide*, Jul 2019 — p.12
   "Maximum Horizontal Clear Spans". Cite the edition actually read.
 - **ASCE 7-16 §7.3** — the flat-roof snow this site's 35 psf comes from.
-- **Simpson Strong-Tie LSSR2.37Z** — the sloped/skewed hanger allowable in §4.
+- **Weyerhaeuser TJ-4000**, Jul 2025, p. 15 (Variable Slope Seat Joist Hanger) and p. 16
+  footnote 1 — the LSSR2.37Z-on-TJI-230 **sloped-only** allowable in §4, and the snow
+  increase on it. **Simpson C-C-2026** pp. 178-179 and **IAPMO-ES ER-280** Table 11 are the
+  two other places the sloped-only/skewed split is published; **CSG-TJUS25** (Aug 2025)
+  pp. 3, 5 and 10 gives the web-stiffener rule and the skewed-hole clause.

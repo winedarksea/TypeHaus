@@ -94,14 +94,11 @@ _ROOT_FC = math.sqrt(5000.0)
 
 
 @pytest.fixture(scope="module")
-def records(catlin_plan):
-    from typehaus.engineering.registry import EngineeringContext
-    from typehaus.engineering.spread_footing import compute
-    from typehaus.resolve import resolve
+def records(catlin_retired_bells):
+    from typehaus.engineering.spread_footing import _one
 
-    model, _ = resolve(catlin_plan)
-    ctx = EngineeringContext(plan=catlin_plan, model=model, soil_class="GM")
-    return {record.key: record for record in compute(ctx)}
+    ctx, piers = catlin_retired_bells
+    return {tag: _one(ctx, pier) for tag, pier in piers.items()}
 
 
 def _state(record, name):
@@ -151,7 +148,8 @@ def test_one_way_shear_reproduces_the_note(records) -> None:
         assert state.ok, tag
 
 
-def test_a_degenerate_one_way_section_is_published_and_not_omitted(catlin_plan) -> None:
+def test_a_degenerate_one_way_section_is_published_and_not_omitted(
+        catlin_retired_bells) -> None:
     """A state that vanishes when its geometry degenerates is indistinguishable from one
     nobody wrote, which is precisely the failure an engineering register exists to prevent.
 
@@ -165,14 +163,11 @@ def test_a_degenerate_one_way_section_is_published_and_not_omitted(catlin_plan) 
     """
     import dataclasses
 
-    from typehaus.engineering.registry import EngineeringContext
-    from typehaus.engineering.spread_footing import _piers_on_their_own_footing, _section_states
-    from typehaus.resolve import resolve
+    from typehaus.engineering.spread_footing import _section_states
 
-    model, _ = resolve(catlin_plan)
-    ctx = EngineeringContext(plan=catlin_plan, model=model, soil_class="GM")
-    pier = next(p for p in _piers_on_their_own_footing(ctx) if p.tag == "PT-SG-COL")
-    assert pier.footing_width_in == 36.0, "the live bell is 36\"; this test narrows a copy"
+    ctx, piers = catlin_retired_bells
+    pier = piers["PT-SG-COL"]
+    assert pier.footing_width_in == 36.0, "the reconstructed bell is 36\"; this narrows a copy"
     narrow = dataclasses.replace(pier, footing_width_in=30.0)
 
     states, _notes = _section_states(ctx, narrow)
