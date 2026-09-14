@@ -817,6 +817,16 @@ WALLS = [
     # the same row, because these two walls also carry the porch's four beam pockets, and
     # because taking steel out of a retaining wall to match a table minimum is the engineer's
     # call, not this file's.
+    # ** ONE POUR, TWO SCHEDULES. ** The four side-wall segments are TWO continuous pours
+    # on two axes, x = 8.0 (W1+W2) and x = 28.0 (E1+E2): same 12" SUNKEN_GARDEN_WALL
+    # section, same top (the porch datum) and same bottom, cast at one form height in
+    # placement 2 (`AN-SG-PLACEMENTS`). Each is split into two elements at `N-SG-MW` /
+    # `N-SG-ME` only because the restraint condition changes there — braced top-and-bottom
+    # north of it, base-restrained and R404.4 engineered south of it.
+    #
+    # The buildability consequence, and the thing a crew gets wrong: **the vertical bar
+    # spacing changes mid-pour at y = -11'-0" (`_y_ax_mid`) — #6 @ 38" north of it,
+    # #6 @ 10" on the retained face south of it, in one form.**
     FoundationWall(uid="SGW103AAAA", tag="W-SG-W1", start_node="N-SG-NW",
                    end_node="N-SG-MW", assembly="SUNKEN_GARDEN_WALL",
                    top_elevation=_porch_top, bottom_elevation=_wall_bottom,

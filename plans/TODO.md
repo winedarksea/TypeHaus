@@ -129,21 +129,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 - **Duct-against-duct crossings are ungraded outside a modelled `Soffit`.** Radials cross in
   the `FS-S-WEST` field; fits in an 11 7/8" bay with an 8 7/8" web opening but the model can't
   say so. `mep.duct_soffit_occupancy` is the shape a joist-bay version would take.
-- ~~**`DU-M-ERV-R-PLANT`'s pressure drop wants checking** before 75mm is committed.~~
-  **DONE 2026-09-12 (BLD-08), and 75 mm was not committed — it is 4" galvanized now.**
-  `mep.erv_static_budget` computes it: the PLANT branch costs **0.030" w.g. of friction plus
-  0.042" at its terminal**, and it IS the worst path in the house — 0.459" w.g. all in,
-  including its plenum and the whole extract trunk chain, for **203 cfm delivered** off the
-  authored fan curve. Note that PLANT is no longer the longest radial (`DU-A-ERV-R-BED3` is,
-  at 56'-2"); length never was the criterion, Q² is. Oracle: `notes/erv_static_budget.md`.
-- **Level-2 ERV radials are not on the claimed 4" centres, and at 4" pipe the overlap
-  doubled.** `DU-M-ERV-R-BED`/`R-KITCH` and `DU-M-ERV-R-LIVING`/`R-BATH1` now overlap by 2"
-  (1" at 3"); `R-STUDY`/`R-LAUNDRY` share a bay centre outright. `mep.duct_joist_bay_occupancy`
-  still reports UNKNOWN — the 12.5" clear bay holds two 4" runs with 4.5" to spare — and the
-  2026-09-12 retype moved the check tally by not one finding. The prose in `plan/mep_erv.py`
-  says 2" now and says a short semi-rigid leg off each start collar is how the neck is
-  dressed. **What is still not modelled is the neck itself**; the lever remains a real
-  `Soffit` or a per-lane offset in the first 3'-0", never wider spacing all the way south.
 - **`DU-ERV-RISER-EXH` passes 2" from `DU-A-ERV-R-BATH1`** at the same elevation but is 46"
   short of the manifold it's described as reaching — an interference, not a tee. Same issue on
   `DU-S-ERV-HP-FEED`.
@@ -235,12 +220,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   is NOT the fix — an authored value preempts the derivation outright and freezes the other
   38 fixtures against a hand-sum. Harmless today (54% of a 1,800 VA breaker, 68% of what an
   NEC 210.19(A)(1) continuous load may occupy) and wrong in principle.
-- **Three house plan files are far past `AGENTS.md`'s 500 lines, and two were already split
-  once for exactly that reason.** `plan/electrical.py` is 2,405 (the guide says it was split
-  at 1,700), `plan/lighting.py` 1,663 (split at 1,158), `plan/mep_erv.py` 1,048. The
-  precedent is clean and cheap — `plan/manifest.py` already composes `lighting_attic` and
-  `electrical_attic` the same way a `lighting_garage.py` would need — so this is a mechanical
-  split by storey, not a design question. It grows every time anything is added to a room.
 
 - **Door hardware has no schema vocabulary** — `DoorType` has no lockset/hinge/lever/function/
   finish field; it's one `[allowances]` lump. Measured cost: the $84-306/ea allowance is right
@@ -336,14 +315,28 @@ the future.
    a bathroom ceiling should be open. That is a design question, not a cleanup.
  - **Rebar (~5 tons, $10,000-18,000) is deliberately inside the `[concrete]` $/cy rates.** If
   it's ever authored as real elements, cut the concrete rates the same day. We may want to model rebar so it is clearly shown as a model element (selectable separately from concrete in the 3d view)
- - See if the sunken garden still has a R404.4 sliding failure
  - Add trim/baseboard — we're generally trimless (clean lines, drywall), but maybe a flush-with-drywall baseboard.
 - Orientation-tuned glass, particularly second-story south-facing windows.
 - Make it easier to "hop" into a given room for 3d viewing and rotate in spot, perhaps with a "fish eye" lens view rendering
 - Remove the fiber optic lighting from the sauna, too expensive. We are thinking of using ceiling mounted LED stars (20mm luxeon style, ledsupply, etc) using modular cobs (we like the idea of modular, open standard) or else LED strips such as https://www.ledsupply.com/sauna-led-strip-lights under the benches. Either way the driver would be located in the wall behind the insulation, possibly accessible from the workshop.
 - Possibly in second floor study, a bookshelf continuing hallways to make an alcove under the stairs
 - Consider making the dining room "candelier" a TV screen (direct-lit/FALD Mini-LED LCD, 65") screen, perhaps connected to an exterior webcam, set recessed in the ceiling a bit (still replaceable, likely with the joist space above open for more room for airflow).
-- Can we remove W-SG-ARCH and make make SL-SG-FLOOR built with rebar into the footings to serve as the cross-brace? W-SG-BRKBM should also be serving as part of the cross brace. There may be some confusion in how W-SG-W1 and W-SG-W2 are really one continuous pour.
+- **Sunken garden, R404.4 and the arch — answered 2026-09-13, no action.** *(1)* There is no
+  sliding failure: it is graded on the closed court loop, `retaining_system/W-SG-ARCH`, at
+  **FS 1.63** against the 1.50 R404.4 requires (d/c 0.92, strut compression 0.47), and
+  `structural.foundation_unbalanced_fill` PASSes W-SG-W2/E2/S as engineered. The ~0.57 in
+  DESIGN-LOG.md is the superseded isolated-cantilever figure. Two caveats stand
+  (`notes/sunken_garden_court_free_body.md` §5, §10): the whole margin rides on the washed-
+  stone bed's μ 0.35 — at μ 0.25 the court is at 1.16 and does NOT meet R404.4 — and 1.63 is
+  a screening on presumptive values with no geotechnical report, unsealed. *(2)* The arch
+  cannot be replaced. `SL-SG-FLOOR` is a 3 1/2" rim carrying seven voids with an 18" sand
+  putting-green profile between the walls — no continuous concrete for a strut, and a `Slab`
+  is not an edge in the bridge test that finds the loop. `W-SG-BRKBM` is explicitly not a
+  strut: wrong end (16' north) and wrong elevation. Deleting the arch is tested
+  (`test_retaining_court.py:431`) and takes the arch plus W2/E2/S to INCOMPLETE, not a
+  quieter PASS. See `notes/sunken_garden_court_free_body.md` §8. *(3)* W1/W2 (and E1/E2) are
+  indeed one pour — now said so in `params/sunken_garden.py` and the house guide, along with
+  the buildability fact: the bar spacing changes mid-pour at y = -11'-0", #6 @ 38" to #6 @ 10".
 
  - **The published web app runs a GEOS version behind the dev venv, and a geometry bug can ship
   green.** `.venv` is GEOS 3.13.1; the Pyodide-based web app is GEOS 3.12.1, which previously

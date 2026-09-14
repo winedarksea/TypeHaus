@@ -1065,7 +1065,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - **No membrane on the sunken-garden court walls (`W-SG-*`), and that is deliberate** —
     subp. 2 reaches only walls that also enclose below-grade interior space, and none of
     them does. They get drained backfill instead, which relieves the thrust that a coat
-    would not. It does **not** fix their R404.4 sliding FS of ~0.57 (→ DESIGN-LOG.md).
+    would not. It does not change their R404.4 case either way — sliding is graded on the
+    closed court loop at FS 1.63 (`retaining_system/W-SG-ARCH`), not on these walls
+    individually (→ "Sunken garden court").
   - Skin: `BASEMENT_12`/`_8` cover the XPS with a 1/8" `foundation-coating-acrylic` (troweled
     over mesh) banded from 6" below grade to the wall top, `Layer.extent` off the `GRADE`
     datum so a grade lift grows it with no edit. Do not revert to the old
@@ -1568,6 +1570,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   They still never meet — the bell's top is 22" below the house strip's bottom — so the
   live constraint is SEQUENCING, not clearance: auger both shafts with the open basement
   excavation or they undermine the house footing. `AN-SG-PLACEMENTS` says so on the drawing.
+- **`W-SG-W1`+`W2` are ONE pour, and so are `E1`+`E2`** — one 12" section, one form height,
+  placement 2. They are two elements because the restraint condition changes at `N-SG-MW` /
+  `N-SG-ME`: braced top-and-bottom north, R404.4 base-restrained south. So does the steel —
+  **#6 @ 38" north of y = -11'-0" and #6 @ 10" (retained face) south of it, in one form.**
 - **One footing type in the court, `COURT_FOOTING_12`** (was `RETAINING_FOOTING_96` +
   `PORCH_FOOTING_84`). Identical stacks — 12" of EXPOSED_MIX — split on a width an Assembly
   does not carry, and the porch card declared **13"** where every strip is built at 12". The
