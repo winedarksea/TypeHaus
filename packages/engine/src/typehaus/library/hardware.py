@@ -232,6 +232,56 @@ HUCQ_CONCRETE_HANGER = StructuralHardware(
 #: exposed face flange has nowhere to go — the same reasoning that rejected LUS210 here.
 #: **-212-3 rather than -410**: the member is a 3-ply 2x12, 4-1/2" x 11-1/4", and the seat
 #: has to be the member's.
+#: **The WOOD twin of the record below, added 2026-09-14.** The two share one row of
+#: C-C-2017 p. 136 — "HU212-3 / HUC212-3" — and the same 14 ga, W 4-11/16", H 10-5/16"
+#: seat for three plies of 2x12. What separates them is the SUBSTRATE, and it is the whole
+#: reason both exist: the HUC is a CONCRETE face-mount part (ROLE_CONCRETE_FACE_MOUNT_HANGER,
+#: Titen screws into a pour, p. 280) and the HU is nailed into wood.
+#:
+#: Catlin needs both because its four porch-beam ends now land two different ways. The two
+#: OUTER ends sit in 6" pockets in the 12" cast side walls and take the HUC (CN-SG-HGR-W/E).
+#: The four INNER ends stop at PT-SG-BF2 / PT-SG-BR2's east and west faces and hang off a
+#: 5 1/2" wood post (CN-SG-HGR-C*2-*), which is this part. **The HUC's one advantage over
+#: the HU is a concealed flange, and a 5 1/2" post cannot host one** — there is nothing for
+#: it to disappear into — so specifying the HUC at the pillar would buy a concrete-only load
+#: table and an uninstallable flange at the same time.
+#:
+#: The plain model string is deliberate: ``hardware_by_model`` is exact-match, and a stray
+#: "Z" would silently yield no allowable at all.
+#:
+#: **The SPF/HF load columns of that row are NOT transcribed here, and that is recorded
+#: rather than guessed.** p. 136 was read for the seat dimensions (2026-09-12); its uplift
+#: and download columns have not been. Nothing in the engine grades a ``Connector.size``
+#: against an allowable, so this omission costs no check — but it is a real gap for anyone
+#: sizing this joint, and the APVKB precedent in this file is that an unread or absent row
+#: says so in the citation instead of carrying a number nobody sourced.
+HU212_3_FACE_MOUNT_HANGER = StructuralHardware(
+    tag="simpson-hu212-3-face-mount-hanger",
+    name="HU212-3 face-mount hanger, triple 2x12",
+    role=ROLE_FACE_MOUNT_JOIST_HANGER,
+    manufacturer=_SIMPSON,
+    model="HU212-3",
+    source="Simpson Strong-Tie HU212-3 — 14 ga, W 4-11/16\", H 10-5/16\", B 2-1/2\" "
+           "(C-C-2017 p. 136, the SPF/HF face-mount table, HU212-3 / HUC212-3 row, read "
+           "2026-09-12 for the dimensions). W 4-11/16\" takes the 4-1/2\" three-ply seat "
+           "with 3/16\" to spare; H 10-5/16\" is the hanger's own height and is not the "
+           "member depth. The WOOD twin of HUC212_3_CONCRETE_HANGER: same seat, nailed into "
+           "a post instead of screwed into a pour",
+    allowable=AllowableLoads(
+        fasteners="NOT TRANSCRIBED. The HU family is nailed — the HUC twin's own concrete "
+                  "schedule still puts (10) 10d common into the carried member, and on the "
+                  "HU the header leg is nailed too rather than screwed into a pour — but "
+                  "p. 136's counts for this model have not been read off the page. The "
+                  "hanger ships with no fasteners, so a schedule has to come off that table "
+                  "before this joint is installed, let alone sized",
+        citation="C-C-2017 p. 136, HU212-3 / HUC212-3 row. **The SPF/HF uplift and download "
+                 "columns of that row have not been read**; only the seat dimensions have. "
+                 "The concrete numbers on the HUC212_3_CONCRETE_HANGER record below are "
+                 "p. 280's and are NOT this part's — they are measured through Titen screws "
+                 "into a pour. A load for this joint has to come off p. 136 itself",
+    ),
+)
+
 HUC212_3_CONCRETE_HANGER = StructuralHardware(
     tag="simpson-huc212-3-concealed-flange-hanger",
     name="HUC212-3 concealed-flange hanger, triple 2x12",
@@ -522,6 +572,11 @@ ABU_POST_BASE = StructuralHardware(
     fits_nominal=("6x6",),
     source="Simpson Strong-Tie ABU adjustable standoff post base (strongtie.com/abu) — "
            "1 in standoff keeps the post end off the wet slab",
+    #: 1 3/16": Simpson's published 1" of clear standoff plus the 7 ga (0.1793") base plate
+    #: it is measured above, which is what actually bears on the pour. See
+    #: ``ABU66SS_POST_BASE`` for the full note — the two records are the same stirrup in two
+    #: steels and the geometry does not change with the coating.
+    bearing_standoff_in=1.0 + 0.1793,
     # ESR-1622 Table 2, ABU66 row, verbatim. Two uplift values are published and footnote 4
     # says they "are not cumulative" — 2,475 lbf through the twelve 16d nails into the post,
     # 2,190 lbf through the two 1/2 in bolts. **The lower one is recorded**: this house bolts
@@ -581,6 +636,18 @@ ABU66SS_POST_BASE = StructuralHardware(
     # 2,475 while installed with bolts is over-rated by 13%. Lateral stays None — ESR-1622
     # publishes no F1/F2 row for the ABU family in either steel, and parity cannot conjure a
     # number that does not exist on the carbon side.
+    #: ** THE STANDOFF IS 1 3/16", NOT 1" (2026-09-14). ** Simpson publish the ABU's
+    #: standoff as 1", and that 1" is the clear air between the base plate and the post —
+    #: it does not include the plate the whole stirrup sits on. The plate is 7 gauge,
+    #: 0.1793", and it bears on the pour, so the wood starts 1.1793" above the concrete.
+    #: Both terms are written out because the published number is the 1" and a reader
+    #: checking this against the catalog has to see where the rest came from.
+    #:
+    #: What it buys: this is the R317.1.4 Exception 1/3 standoff itself — the reason an
+    #: untreated post end may stand on concrete at all — and it is 1 3/16" of post length
+    #: that IRC Table R507.4 does not cap, a mill does not cut and a take-off should not
+    #: bill.
+    bearing_standoff_in=1.0 + 0.1793,
     allowable=AllowableLoads(
         uplift_lb=2190.0,
         download_lb=18205.0,
@@ -759,6 +826,10 @@ ABU44_POST_BASE = StructuralHardware(
     source="Simpson Strong-Tie ABU adjustable standoff post base (strongtie.com/abu) — "
            "the 4x4 size of the same family as ABU66; a post base is size-selected, so "
            "the role carries a ladder rather than one part",
+    #: The family's 1" standoff over its own 7 ga base plate, as on the ABU66 records. The
+    #: standoff is the reason this part is at PT-BW-IC/-IE at all — that corner of the
+    #: garage floor is not dry — so it would be odd to carry the part and not its dimension.
+    bearing_standoff_in=1.0 + 0.1793,
 )
 
 # The bolt every ABU sits on. Simpson publish the ABU's uplift and lateral values against a
@@ -845,6 +916,12 @@ CCQ46SDS_POST_CAP = StructuralHardware(
            "seating a nominal 4x (3-1/2 in) beam on a 6x6 post, factory-supplied with "
            "1/4 in x 2-1/2 in SDS Heavy-Duty Connector screws; selected over the PC6Z "
            "because that cap is published for equal post and beam widths",
+    #: The cap's SEAT is 7 gauge, 0.1793", and it lies between the post top and the beam
+    #: soffit — so the post is that much shorter than the clear distance to the member it
+    #: carries. The same 7 ga as the ABU's base plate at the other end of these posts, and
+    #: for the same reason it matters: together the two take a 6x6 on a base and a cap
+    #: 1 3/8" below the clear height, which is what R507.4 caps and what a mill cuts.
+    seat_thickness_in=0.1793,
     # ICC-ES ESR-2604 Table 2, CCQ46SDS2.5 row, re-read 2026-09-03 against the PDF.
     #
     # ** THE NUMBERS HERE WERE WRONG UNTIL THAT RE-READ. ** This record carried 3,285 lbf
@@ -1625,4 +1702,5 @@ CAPACITY_ONLY_RECORDS: tuple = (
     APVKB_KNEE_BRACE,
     HUCQ_CONCRETE_HANGER,
     HUC212_3_CONCRETE_HANGER,
+    HU212_3_FACE_MOUNT_HANGER,
 )

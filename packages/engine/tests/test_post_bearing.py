@@ -65,15 +65,112 @@ _BLC_LOAD_PLF = 500.0
 _BLC_LENGTH_FT = 9.667
 
 
+def _deck_borne_pillars(plan):
+    """catlin with its two centre pillars put back on the porch framing.
+
+    ** WHY THIS FIXTURE EXISTS (2026-09-14). ** Both pillars came off ``FS-SG-PORCH`` and
+    onto the cast column tops that day, which retired ``post_bearing/PT-SG-BF2`` and
+    ``post_bearing/PT-SG-BR2`` from the engineering register — the whole point of the change,
+    since ``_posts_on_framing`` enumerates on exactly one predicate and neither post satisfies
+    it any more. ``compute(ctx)`` on the real house now returns nothing.
+
+    **The oracle cannot move with it.** ``notes/centre_pillar_bearing.md`` was hand-worked for
+    a specific geometry, and a calc reproduced against SOME OTHER geometry is a calc agreeing
+    with itself — which this package's own rule says is not verification. A synthetic deck
+    would have been exactly that. So the test reconstructs the arrangement the note was
+    written for, the way ``swinburne_model`` reconstructs the retired truss wall: a live test
+    of the documented revert rather than of a copy.
+
+    Every value here is DERIVED from the house rather than restated, so the reconstruction
+    cannot drift into fiction:
+
+    * the pillars go back to ``supported_by="FS-SG-PORCH"``, which is
+      ``_DECK_BORNE_PILLAR_BEARINGS`` in ``params/sunken_garden.py``;
+    * ``PT-SG-BR2`` goes back 3" south of ``PT-SG-COL``'s axis (``_REAR_PILLAR_SOUTH_OF_COL_IN``),
+      read off that column's own position — it moved onto the axis when it came down onto
+      concrete, and the reaction the note works depends on where it stands;
+    * the two 3-ply packs come back at the two beam axes, which are the two cast columns'
+      own positions — ``_DECK_BORNE_PILLAR_REINFORCEMENTS``;
+    * the 9" pillar chases go away and the joists' south oversail goes back to 2-3/4"
+      (it is 4-1/4" now, to clear the front rim band of a pillar that passes through it);
+    * the four porch beams go back to dying on the column axes rather than at the pillar
+      faces they hang off now.
+
+    Post HEIGHT is deliberately not reverted: ``post_bearing`` reads bearing areas and a beam
+    reaction and never a post's length, so restating a height here would be a number the test
+    does not use and could quietly get wrong.
+    """
+    from typehaus.model.floors import FloorSystem, JoistReinforcement
+    from typehaus.model.structure import Beam, Post
+    from typehaus.quantities import inch, pt
+
+    columns = {e.tag: e for storey in plan.elements.values() for e in storey
+               if isinstance(e, Post) and e.tag in ("PT-SG-COL", "PT-SG-FCOL")}
+    assert set(columns) == {"PT-SG-COL", "PT-SG-FCOL"}, sorted(columns)
+    back, front = columns["PT-SG-COL"].position, columns["PT-SG-FCOL"].position
+    # 3" south of the back column's axis — ``_REAR_PILLAR_SOUTH_OF_COL_IN``.
+    br2_at = pt(back.x, back.y - inch(3.0))
+    under = {"PT-SG-BR2": br2_at, "PT-SG-BF2": front}
+    # The packs sit ON the beam centrelines, which are the two columns' own axes.
+    packs = tuple(
+        JoistReinforcement(at=at, plies=3, blocking=True,
+                           source="the retired centre-pillar bearing pack, reconstructed")
+        for at in (back, front))
+    beam_home = {"BM-SG-BKW": "N-SGM-COL", "BM-SG-BKE": "N-SGM-COL",
+                 "BM-SG-FRW": "N-SGM-FCOL", "BM-SG-FRE": "N-SGM-FCOL"}
+
+    def revert(element):
+        if isinstance(element, Post) and element.tag in under:
+            return element.model_copy(update={"supported_by": "FS-SG-PORCH",
+                                              "position": under[element.tag]})
+        if isinstance(element, Beam) and element.tag in beam_home:
+            return element.model_copy(update={"start_node": beam_home[element.tag]})
+        if isinstance(element, FloorSystem) and element.tag == "FS-SG-PORCH":
+            joists = element.joists.model_copy(update={"cantilever_start": inch(2.75)})
+            return element.model_copy(update={
+                "joists": joists, "openings": (),
+                "reinforcements": packs + element.reinforcements})
+        return element
+
+    return plan.model_copy(update={
+        "elements": {storey: tuple(revert(e) for e in elements)
+                     for storey, elements in plan.elements.items()}})
+
+
 @pytest.fixture(scope="module")
 def records(catlin_plan):
     from typehaus.engineering.post_bearing import compute
     from typehaus.engineering.registry import EngineeringContext
     from typehaus.resolve import resolve
 
+    plan = _deck_borne_pillars(catlin_plan)
+    model, _ = resolve(plan)
+    ctx = EngineeringContext(plan=plan, model=model, soil_class="GM")
+    return {record.key: record for record in compute(ctx)}
+
+
+def test_the_house_itself_no_longer_poses_this_question(catlin_plan) -> None:
+    """The retirement, pinned — and pinned HERE rather than only in the register's goldens.
+
+    On 2026-09-14 both centre pillars came off ``FS-SG-PORCH`` and onto ``PT-SG-FCOL`` /
+    ``PT-SG-COL``, on ABU66SS bases, with the four porch beams hung off their faces on
+    HU212-3 hangers rather than seated beside them on the pour. ``_posts_on_framing``
+    enumerates a ``Post`` whose ``supported_by`` names a ``FloorSystem`` and nothing else, so
+    the population is empty and the two records have left the register.
+
+    Everything below this test runs on :func:`_deck_borne_pillars`, which puts the
+    arrangement back so the note can still be reproduced. This test is what says the house
+    does not stand that way any more — without it, a reader could take the whole file for a
+    description of the current building.
+    """
+    from typehaus.engineering.post_bearing import _posts_on_framing, compute
+    from typehaus.engineering.registry import EngineeringContext
+    from typehaus.resolve import resolve
+
     model, _ = resolve(catlin_plan)
     ctx = EngineeringContext(plan=catlin_plan, model=model, soil_class="GM")
-    return {record.key: record for record in compute(ctx)}
+    assert _posts_on_framing(ctx) == []
+    assert compute(ctx) == []
 
 
 def _quantity(record, name):
@@ -264,24 +361,33 @@ def test_a_post_at_the_deck_edge_is_credited_only_with_what_is_under_it() -> Non
     assert all(entry["post_bearing_in"] == 5.50 for entry in _ORACLE.values())
 
 
-@pytest.mark.parametrize("tag", _PILLARS)
-def test_the_check_delegates_and_the_item_reaches_the_permit_set(catlin_plan, tag) -> None:
-    """The record has to arrive somewhere a reader will see it.
+def test_the_check_reports_an_earned_na_and_registers_nothing(catlin_plan) -> None:
+    """What ``structural.deck_post_bearing`` says now, and that it is a verdict not a silence.
 
-    ``structural.deck_post_bearing`` turns it into a Finding, and the mn-2020 profile carries
-    a permit item for it — an engineered result on no checklist is work a plan reviewer cannot
-    see, which is what ``test_permit_coverage.py`` exists to stop.
+    The check used to turn each record into an ENGINEERED PASS naming
+    ``post_bearing/PT-SG-B*2``, and the mn-2020 profile carries a permit item for it — an
+    engineered result on no checklist is work a plan reviewer cannot see, which is what
+    ``test_permit_coverage.py`` exists to stop.
+
+    With no post in the house standing on framing there is no record to delegate, and the
+    honest answer is NOT_APPLICABLE **earned from positive evidence of absence** rather than
+    an empty finding list: "no post in this plan stands on a floor system (37 post(s) resolve,
+    all of them on a pad, a footing, a wall, or inside one)". A rule that returned ``[]``
+    would be indistinguishable from a rule that never ran (→ decision: N/A must be earned).
+
+    The permit item and the registered kind both STAY. A house that stands a post on a deck
+    tomorrow — this one or another — gets the record, the item and the checklist line back
+    with no code change, which is why ``notes/centre_pillar_bearing.md`` is kept un-archived
+    and why the fixture above can still reproduce it.
     """
     from pathlib import Path
 
     from typehaus.checks import run
-    from typehaus.engineering import item_id
-    from typehaus.findings import Authority, Result
+    from typehaus.findings import Result
 
     report = run(catlin_plan, Path(catlin_plan.source_root), profile="mn-2020")
-    found = [f for f in report.findings
-             if f.check_id == "structural.deck_post_bearing" and tag in f.element_tags]
+    found = [f for f in report.findings if f.check_id == "structural.deck_post_bearing"]
     assert len(found) == 1, found
-    assert found[0].authority is Authority.ENGINEERED
-    assert found[0].result is Result.PASS, found[0].message
-    assert item_id("post_bearing", tag) in report.engineering
+    assert found[0].result is Result.NOT_APPLICABLE, found[0].message
+    assert "no post in this plan stands on a floor system" in found[0].message
+    assert not [key for key in report.engineering if key.startswith("post_bearing/")]

@@ -182,40 +182,39 @@ def test_a_deck_with_no_reinforcement_emits_nothing() -> None:
 
 
 # --- the catlin decks, end to end -----------------------------------------------------
-def test_only_the_porch_sisters_a_deck_joist(catlin_model):
-    """Which decks stiffen a joist, and — for the two that do not — that they still don't.
+def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
+    """Which decks stiffen a joist — and, since 2026-09-14, that none of them does.
 
-    ** THE PORCH IS THE EXCEPTION, AND IT WAS EARNED. ** Until 2026-09-03 this test asserted
-    that NO deck in the house sistered anything: every deck reinforcement was ``plies=1``, a
-    fastener host rather than a stiffened joist, and the docstring said so. That stopped
-    being true when ``engineering/post_bearing.py`` was written and computed what the two
-    centre balcony pillars actually do to the joist they stand on: through one 1-1/2" ply,
-    ``BM-SG-BLC``'s real reactions bear at 311 and 380 psi against a WET Fc-perp of 285.
-    Rollover was never the binding limit state there — cross-grain bearing was, and no block
-    fixes bearing. Two sisters do, and they take it to 107 and 131 psi.
+    ** THE PORCH WAS THE ONE EXCEPTION, AND IT HAS GONE BACK. ** Until 2026-09-03 this test
+    asserted that no deck in the house sistered anything: every deck reinforcement was
+    ``plies=1``, a fastener host rather than a stiffened joist. That stopped being true when
+    ``engineering/post_bearing.py`` computed what the two centre balcony pillars did to the
+    joist they stood on — through one 1-1/2" ply, ``BM-SG-BLC``'s reactions bore at 311 and
+    380 psi against a WET Fc-perp of 285, and no block fixes bearing. Two sisters took it to
+    107 and 131 psi, and ``FS-SG-PORCH`` carried a 3-ply pack for eleven days.
 
-    So the assertion inverts for one deck and holds for the other two, which is the shape a
-    fact has: ``FS-SG-DECK`` and ``SL-BW-DECK`` still sister nothing, and a stray ``plies=3``
-    on either would still quietly add sisters and their lumber to the BOM.
+    On 2026-09-14 both pillars came off this deck and onto the cast column tops (PT-SG-BF2 on
+    PT-SG-FCOL, PT-SG-BR2 on PT-SG-COL), with the four porch beams hung off their faces on
+    HU212-3 hangers rather than seated beside them on the pour. **A pillar that does not bear
+    on a deck poses no cross-grain question**, which is exactly why the two ``post_bearing``
+    records left the engineering register — so the packs went with them, kept as
+    ``_DECK_BORNE_PILLAR_REINFORCEMENTS`` in ``params/sunken_garden.py``.
 
-    ** TWO SISTERS ON THE PORCH, NOT FOUR. ** Both centre pillars stand on the SAME joist
-    line and both author ``plies=3``. A sister runs the whole joist, so one pack serves both,
-    and ``_reinforcement_members`` tops the line up to the deepest ``plies`` asked for rather
-    than laying a second coincident pair. Four here means that sharing broke.
+    So the original assertion is restored, for the original reason and with one more deck in
+    it: **no deck in this house sisters a joist**, and a stray ``plies=3`` on any of them
+    would quietly add sisters and their lumber to the BOM.
 
     ** AND ONE MORE, NOT ON A DECK AT ALL. ** ``FS-M-WEST`` carries a single full-span ply
-    under RM-M-BATH2's drop-in bath, the built half of plans/TODO.md's 60 psf item.
+    under RM-M-BATH2's drop-in bath, the built half of plans/TODO.md's 60 psf item. It is the
+    only sister left in the house, which is what the exact list below says.
     """
-    unsistered = {"FS-SG-DECK", "SL-BW-DECK"}
+    unsistered = {"FS-SG-DECK", "FS-SG-PORCH", "SL-BW-DECK"}
     sisters = []
     for floor in catlin_model.floors:
         found = [m for m in floor.members if m.category == "sister_joist"]
         assert floor.tag not in unsistered or found == [], floor.tag
         sisters.extend((floor.tag, m) for m in found)
-    # Order follows `model.floors`, which follows storey order — and the porch is the COURT's
-    # floor now (`court-main`), resolved after the house's. The set is what this asserts.
-    assert sorted(tag for tag, _ in sisters) == [
-        "FS-M-WEST", "FS-SG-PORCH", "FS-SG-PORCH"]
+    assert sorted(tag for tag, _ in sisters) == ["FS-M-WEST"]
     # Full span, tip to tip: a sister that stops short carries nothing where the load is
     # (``resolve/floors.py::_reinforcement_members``). 17.9' and not the 18'-0" bearing grid
     # — the joist it doubles stops 1 1/4" inboard of the foundation's framing face, behind
@@ -223,9 +222,11 @@ def test_only_the_porch_sisters_a_deck_joist(catlin_model):
     # (``resolve/floor_ends.py``).
     full_span = next(m for tag, m in sisters if tag == "FS-M-WEST")
     assert round(full_span.length_m / 0.3048, 2) == 17.9
+    # And the BOM follows: the 2x8 sister rows the porch pack bought are gone with it, and
+    # the I-joist ply under the bath is the only sistered stock this house orders.
     rows = {(row["profile"], row["category"]) for row in framing_takeoff(catlin_model)}
     assert sorted(key for key in rows if key[1] == "sister_joist") == [
-        ("11.875 I-joist", "sister_joist"), ("2x8", "sister_joist")]
+        ("11.875 I-joist", "sister_joist")]
 
 
 def test_both_garden_decks_block_only_where_something_is_bolted_down(catlin_model):
@@ -251,26 +252,38 @@ def test_both_garden_decks_block_only_where_something_is_bolted_down(catlin_mode
     would put two blocks in every bay, which is a real ``structural.member_interference``
     FAIL. The two FRONT track runs need none of this: they lie ALONG a joist line.
 
-    ``FS-SG-PORCH`` carries EIGHT: a pair under each centre balcony pillar (PT-SG-BR2 on the
-    back beam line, PT-SG-BF2 on the front one), and a pair under each of RL-SG-PORCH's
-    south-leg guard posts. It was TEN until 2026-09-03, when BF2 came onto the front beam
-    axis at x = 18'-0" and **became** the guard post at that station: two entries 3" apart on
-    one joist line collapsed into one. A 6x6 is better backing for a guard than a block under
-    a 2x2, and the station is not missing backing — it is carrying a column.
+    ``FS-SG-PORCH`` carries FOUR: a pair under each of RL-SG-PORCH's south-leg guard posts.
+    It was TEN, then EIGHT, and the whole of that history is about the two centre pillars.
+    TEN until 2026-09-03, when PT-SG-BF2 came onto the front beam axis at x = 18'-0" and
+    **became** the guard post at that station, collapsing two entries 3" apart on one joist
+    line into one. EIGHT until **2026-09-14, when both centre pillars came off this deck
+    altogether** and onto the cast column tops (PT-SG-BF2 on PT-SG-FCOL, PT-SG-BR2 on
+    PT-SG-COL, ABU66SS bases, the four porch beams hung off their faces). A pillar that does
+    not bear here needs no bearing pack and no squash blocks, so both ``plies=3`` entries
+    went with it — kept as ``_DECK_BORNE_PILLAR_REINFORCEMENTS`` in
+    ``params/sunken_garden.py``.
 
-    The porch pairs are ``plies=3``, the guard pairs ``plies=1``, and so are all sixteen
-    enclosure entries. Blocks and plies answer different limit states — rollover and
-    cross-grain bearing — and only the pillars have the second one (see
-    ``test_only_the_porch_sisters_a_deck_joist``). A stray ``plies=3`` on an enclosure entry
-    would silently sister a joist and buy its lumber; the assertion below is what catches it.
+    **And x = 18'-0" gets nothing to replace them, which is the part worth stating.** The
+    guard post at that station is still PT-SG-BF2, and R301.5's 200 lb at 42" now runs
+    6x6 -> ABU66SS -> PT-SG-FCOL -> FT-SG-FCOL without touching a joist. There is nothing
+    for a block to take it into. That station is also inside ``FO-SG-BF2``, the 9" chase the
+    pillar passes down through, where the joist has been cut and headed — a reinforcement
+    authored there would be laying plies under a hole.
+
+    Every remaining entry on both decks is ``plies=1``: blocks and plies answer different
+    limit states — rollover and cross-grain bearing — and with the pillars gone **nothing in
+    this house has the second one** (see ``test_only_the_porch_sisters_a_deck_joist``). A
+    stray ``plies=3`` anywhere here would silently sister a joist and buy its lumber; the
+    assertion below is what catches it.
     """
     by_tag = {floor.tag: floor for floor in catlin_model.floors}
     deck_blocks = [m for m in by_tag["FS-SG-DECK"].members if m.category == "blocking"]
     assert len(deck_blocks) == 20, len(deck_blocks)
     porch_blocks = [m for m in by_tag["FS-SG-PORCH"].members if m.category == "blocking"]
-    assert len(porch_blocks) == 8, len(porch_blocks)
-    assert [m for m in by_tag["FS-SG-DECK"].members
-            if m.category == "sister_joist"] == [], "plies=1 must sister nothing"
+    assert len(porch_blocks) == 4, len(porch_blocks)
+    for tag in ("FS-SG-DECK", "FS-SG-PORCH"):
+        assert [m for m in by_tag[tag].members
+                if m.category == "sister_joist"] == [], f"plies=1 must sister nothing ({tag})"
 
 
 def test_a_guard_block_authored_on_the_deck_edge_would_be_dropped(catlin_model):

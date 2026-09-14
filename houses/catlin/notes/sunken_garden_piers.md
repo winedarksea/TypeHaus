@@ -115,15 +115,42 @@ and the number is printed on every record so a reviewer can disagree with it.
 
 | | `PT-SG-COL` | `PT-SG-FCOL` |
 |---|---|---|
-| own deck share: 2 porch beams × 7.25' strip × 10.00' ÷ 2 supports each | 72.50 ft² | 72.50 ft² |
+| own deck share: 2 porch beams × 7.25' strip × 9.77' ÷ 2 supports each | 70.84 ft² | 70.84 ft² |
 | handed down by a centre pillar: `BM-SG-BLC`, 10.00' strip × 9.67' ÷ 2 | 48.33 ft² (BR2) | 48.33 ft² (BF2) |
-| **tributary** | **120.83 ft²** | **120.83 ft²** |
+| **tributary** | **119.17 ft²** | **119.17 ft²** |
 | column self weight | 1,258 lb | 1,258 lb |
-| the pillar's own 6x6, 35 pcf | 67 lb | 66 lb |
-| **D** = trib×10 + self + carried | **2,534 lb** | **2,532 lb** |
-| **L** = trib×40 | **4,833 lb** | **4,833 lb** |
-| **service** D+L | **7,367 lb** | **7,366 lb** |
-| **P_u** = 1.2D + 1.6L (IBC §1605.2) | **10,774 lb** | **10,772 lb** |
+| the pillar's own 6x6, 35 pcf | 79 lb | 78 lb |
+| **D** = trib×10 + self + carried | **2,528 lb** | **2,527 lb** |
+| **L** = trib×40 | **4,767 lb** | **4,767 lb** |
+| **service** D+L | **7,295 lb** | **7,294 lb** |
+| **P_u** = 1.2D + 1.6L (IBC §1605.2) | **10,662 lb** | **10,660 lb** |
+
+### 2026-09-14 — the porch share fell 72.50 → 70.84, and it is an ARTEFACT
+
+The two centre pillars came off the porch framing and back onto these column tops
+(`PT-SG-BF2` on `PT-SG-FCOL`, `PT-SG-BR2` on `PT-SG-COL`, ABU66SS bases). A 12" round cannot
+seat a beam end and a pillar at once, so each porch beam now **stops 2 3/4" short of the
+column axis and hangs off the pillar's face** on an HU212-3. Its node-to-node length goes
+10.00' → 9.77', and `pier_basis._weighted_shares` computes `share = strip_ft × length_ft`, so
+the porch half of the tributary falls 1.66 ft² and every demand below it falls 1.04%.
+
+**The deck did not shrink and the load did not go anywhere.** Each pillar passes down through
+a framed 9" chase in `FS-SG-PORCH` (`FO-SG-BF2` / `-BR2`); the joist at x = 18'-0" is cut and
+headed off the two lines 16" either side, and that header carries the 2 3/4" at the beam end
+into the neighbouring joists and so into the same beams. The real tributary is still 120.83
+ft².
+
+**So this table is a ~1.4% UNDER-count, which is the wrong direction for a demand**, and it
+is recorded rather than corrected: `length_ft` is the proxy the whole module rests on, and a
+special case for "a beam that stops at a post face" would be a second opinion about load
+paths in the one module that must not have one. Nothing turns on it here — bearing is the
+governing state at d/c 0.59 (it was 0.60), and the section states below are all under 0.15.
+A reviewer wanting the conservative number should read 120.83 ft², P_u 10,774 lb, and scale
+every demand in §3 by 1.010.
+
+The pillars' own 6x6 rides down heavier than it did (67 → 79 lb): each is 19 1/2" longer now
+that it starts on the column top rather than on the plank, less the 1 3/16" the ABU66SS's
+standoff and the CCQ46SDS2.5's 7 ga seat take off the wood.
 
 **What the change was worth, per column: 116.97 → 120.83 ft², +3.3%.** It moved in two
 directions at once and they nearly cancelled. The porch share FELL, 82.33 → 72.50, because
@@ -474,12 +501,34 @@ cover and do not freeze (§5a's levelling-course diagram, and `BURIED_MIX`'s own
 
 ### 5b. Net pressure
 
+> **REVISED 2026-09-14.** `P_u` fell 1.04% with the tributary (§2 — the porch beams stopping
+> at the centre pillars' faces), and **every demand in §5c–§5e is a linear function of `q_u`,
+> so all of them fall by the same factor** and no ratio changes by more than 0.002. The table
+> below carries the new values; the worked arithmetic that follows is written at the old
+> `q_u` and is scaled by **0.98957** to reach them, which is stated here rather than
+> re-multiplied through forty lines.
+>
+> | state | was | is |
+> |---|---|---|
+> | `q_u` | 10.585 / 10.583 psi | **10.474 / 10.473 psi** |
+> | punching `V_u` (§5c) | 6,267 / 6,266 lb | **6,202 / 6,201 lb** |
+> | one-way `V_u` (§5d) | 364 lb | **360 lb** |
+> | flexure `M_u` (§5e) | 17,856 / 17,854 lb-in | **17,670 / 17,668 lb-in** |
+>
+> Capacities are untouched — they are section and material, and neither moved. The governing
+> ratio is still flexure at **0.145**.
+>
+> Two things in §5c–§5e below are stale for a reason older than this revision and are left
+> alone deliberately: `PT-SG-COL` is worked at `R = 15"` in places, from the days when its
+> bell was 30". Both bells have been 36" since 2026-09-10 and the table above is computed on
+> that; the 30" lines survive as the record of what the change was worth.
+
 ```
                         PT-SG-COL          PT-SG-FCOL
 bell diameter               36"                36"      (both, since 2026-09-10)
 bell area  pi R^2     1,017.88 in^2       1,017.88 in^2
-P_u (§2)                 10,774 lb           10,772 lb
-q_u = P_u / A            10.585 psi          10.583 psi   (1,524 psf each)
+P_u (§2)                 10,662 lb           10,660 lb
+q_u = P_u / A            10.474 psi          10.473 psi   (1,508 psf each)
 ```
 
 ### 5c. Two-way (punching) shear — ACI §14.5.5.1(b)

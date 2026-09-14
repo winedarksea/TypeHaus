@@ -1562,17 +1562,38 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   Titen Turbo at >=3" edge distance. `PIER_CONCRETE_12` says NO GROUT ISLAND too
   since 2026-09-12; retyping `PT-SG-COL` did not close that follow-up, it rode
   the island over to the north entry's own seats.
-- Two CENTRE pillars stay wood 6x6, bearing on a 3-ply pack (joist + two
-  sisters) with squash blocks, through a cut-out in the composite deck
-  (composite bears nothing). `CCQ46SDS2.5` cap closes uplift at each.
-- Porch joists CROSS both beams (`JoistSpec.cantilever_start = 2-3/4"`) — do
-  not move without re-checking NDS §3.10.4 at `PT-SG-BF2`. The composite sheet
-  ends 2-3/4" outboard of `RL-SG-PORCH`'s guard line by design.
-- No standoff post base at either centre pillar: `MSTA12Z` strap (both west
-  faces, x=213.25") + `L50Z` angles (north at both, south at `PT-SG-BR2`) hold
-  each down — never an ABU-type base, neither bears on concrete. Graded via
-  `haus engineering --item post_bearing/PT-SG-BR2`, oracled in
-  `notes/centre_pillar_bearing.md`.
+- Two CENTRE pillars are wood 6x6 and **bear on the two cast columns** since
+  2026-09-14 — `PT-SG-BF2` on `PT-SG-FCOL`, `PT-SG-BR2` on `PT-SG-COL`, both on
+  `ABU66SS` standoff bases (`anchored=True`, cast-in 5/8"). **All six pillars are
+  on concrete**; the 3-ply pack, its squash blocks and the five-part
+  `MSTA12Z`+`L50Z` tie are retired, kept as `_DECK_BORNE_*` revert records in
+  `params/sunken_garden.py`. `CCQ46SDS2.5` cap still closes uplift at each.
+- **The four porch beams HANG off the centre pillars** — `BM-SG-FRW`/`-FRE` and
+  `BM-SG-BKW`/`-BKE` end at the pillar faces (`N-SGM-FCOLW/E`, `N-SGM-COLW/E`)
+  on `HU212-3` face-mount hangers, not `HUC212-3` (that is the concrete part,
+  and a 5-1/2" post cannot host a concealed flange). That is what lets both
+  columns stay 12" round rather than growing to span beam face to pillar face.
+  `PT-SG-BR2` moved 3" north onto the column axis with it.
+- Each centre pillar passes through a framed 9" chase in `FS-SG-PORCH`
+  (`FO-SG-BF2`/`-BR2`); the joist at x=18'-0" is headed off the two lines 16"
+  either side. **No hanger on the post's N/S faces** — four will not fit on a
+  5-1/2" face.
+- Porch joists CROSS both beams (`JoistSpec.cantilever_start = 4-1/4"`, was
+  2-3/4" — the extra 1-1/2" is what takes the front rim band clear of
+  `PT-SG-BF2`). The composite sheet ends 4-1/4" outboard of `RL-SG-PORCH`'s
+  guard line by design.
+- **A post is the WOOD, not the clear span between its bearings** (2026-09-14).
+  `resolve/envelope.py::_post_connector_insets` takes the `ABU66SS`'s 1-3/16"
+  standoff (Simpson's 1" over the stirrup's own 7 ga plate) off the bottom and
+  the `CCQ46SDS2.5`'s 7 ga seat off the top, from the catalog record. Without it
+  `PT-SG-BR2` reads 121-3/8" against IRC Table R507.4's 120".
+- **`SPEC.balcony_fall_in_per_ft` = 1/4 in/ft, and `PT-SG-BR2` has 5/32" under
+  R507.4.** The fall is authored and the rise derived (was a flat 2"). Raising
+  the fall spends that margin at 1/64" of post per 1/64 in/ft.
+- `structural.deck_post_bearing` is now NOT_APPLICABLE house-wide and
+  `post_bearing/*` has left the engineering register — no post in catlin stands
+  on a floor system. `notes/centre_pillar_bearing.md` is KEPT (registered kinds
+  must name a live note) and carries a dated section saying so.
 - Centre pillars are DF-L, not SPF — connector requirement
   (ESR-2604/2330/2105/3096, all SG >= 0.50 at MC <= 19%); see
   `POST_WHITE_PAINT_DF`. C_M 0.70 wet-service is already in the 658/375 lbf in

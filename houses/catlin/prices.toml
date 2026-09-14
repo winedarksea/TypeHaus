@@ -724,7 +724,7 @@
 # which stands the derived rule down and puts the real part number on both. The ABU66 row
 # stays at the galvanized rate, at 0 ea, as the revert.
 "ABU66" = { low = 40, high = 70 }  # 0 ea — the DERIVED galvanized row, stood down by CN-BW-BASE-*. Kept priced (the glazed-green-brick convention) so deleting an authored base does not silently drop the part
-"ABU66SS" = { low = 150, high = 230 }  # 2 ea authored — CN-BW-BASE-W / -NW, the canopy's two WEST columns. It was 10 until 2026-09-03 (the four balcony corner pillars became cast concrete and a doweled lap replaced their bases), 6 later that day (the two CENTRE pillars went to the MSTA12Z/L50Z base tie below), 0 until 2026-09-10 when these stopped billing on the galvanized ABU66 row above, and 4 -> 2 the same day when PT-BW-RE/-RNE became full-height cast columns and the two EAST wood columns went with them
+"ABU66SS" = { low = 150, high = 230 }  # 4 ea authored — CN-BW-BASE-W / -NW, the canopy's two WEST columns, plus CN-SG-BASE-R2 / -F2 since 2026-09-14, when both centre balcony pillars came off the porch framing onto the cast column tops and the strap-and-angle tie below gave way to the part the joint is published for. It was 10 until 2026-09-03 (the four balcony corner pillars became cast concrete and a doweled lap replaced their bases), 6 later that day (the two CENTRE pillars went to the MSTA12Z/L50Z base tie below), 0 until 2026-09-10 when these stopped billing on the galvanized ABU66 row above, and 4 -> 2 the same day when PT-BW-RE/-RNE became full-height cast columns and the two EAST wood columns went with them
 # What replaced two of those, at PT-SG-BR2 and PT-SG-BF2: a base TIE built from stock
 # sheet-metal parts — one 12" strap on the flush west face of each pillar, plus an L angle
 # on every face that has joist pack beside it (BR2 north and south, BF2 north alone).
@@ -743,8 +743,15 @@
 # So the lesson the earlier version of this comment drew — that a real base is expensive —
 # was drawn from the wrong part. A published number costs about $5. See
 # library/hardware.py for both readings, ESR-2105 Table 3 and ESR-3096 Table 4.
-"MSTA12Z" = { low = 3, high = 7 }  # 2 ea — CN-SG-BASE-R2-W / -F2-W, the west-face straps
-"L50Z" = { low = 3, high = 6 }  # 3 ea — CN-SG-BASE-R2-N/-S and -F2-N, the pack-face angles
+# RETIRED 2026-09-14, kept priced per the glazed-green-brick convention. These two were the
+# five-part base tie under the centre pillars while those pillars bore on the porch FRAMING.
+# Both came back down onto the cast column tops that day and take an ABU66SS each — a
+# stirrup on concrete, which is the joint every ABU number is published for and the joint
+# this strap-and-angle pack existed because they did NOT have. Kept priced rather than
+# deleted so that restoring the deck-borne arrangement (`_DECK_BORNE_BASE_TIE` in
+# params/sunken_garden.py) does not silently bill five parts at zero.
+"MSTA12Z" = { low = 3, high = 7 }  # 0 ea — was 2, CN-SG-BASE-R2-W / -F2-W, the west-face straps
+"L50Z" = { low = 3, high = 6 }  # 0 ea — was 3, CN-SG-BASE-R2-N/-S and -F2-N, the pack-face angles
 # The 4x4 rung of the same ladder, ZMAX rather than stainless: the posts it serves are
 # the interior stairwell ones, which are dry. 2026-08-28: 0 ea -> 2. P-M-STRWELL-S/N
 # gained the `supported_by="SL-B-FLOOR"` their own comment had always described in
@@ -927,6 +934,24 @@
 # Simpson's stainless-parity letter covers connector nails, not concrete screws. See
 # notes/beam_water_protection.md.
 "HUC212-3" = { material = { low = 55, high = 95 }, labour = { low = 60, high = 150 } }  # 4 ea
+# ** THE WOOD TWIN OF THE ROW ABOVE, AND IT IS THE CHEAPER HALF OF THE SAME JOINT. **
+# The same four porch beams have two ends each. The OUTER ends sit in the cast pockets and
+# take the HUC above; the INNER ends stopped dying on the cast columns' axes on 2026-09-14
+# and now hang off PT-SG-BF2 / PT-SG-BR2's east and west faces (CN-SG-HGR-C*2-*), because
+# the two centre pillars came back down onto those column tops and the pour cannot carry a
+# beam end and a pillar at 12" round. HU, not HUC: the concealed flange is the HUC's one
+# advantage and a 5-1/2" post has nowhere to conceal it, and the HUC's published loads are
+# Titen-into-concrete loads that say nothing about a nailed joint.
+#
+# Material is the HUC's single-piece band LESS the concrete side, which is the whole of the
+# difference: no Titen 2 at $11-20 a hanger, because the header leg nails into a 6x6 and the
+# 10d commons are inside the framing rate.
+#
+# **No labour line, and that is this section's rule rather than an omission** — see the
+# [basis] note: hardware is material only because setting a hanger is inside the framing
+# labour rate. The HUC is the exception BECAUSE of its concrete side: rotary-hammering 22
+# holes in a cured pocket is not framing labour. Nailing a face-mount hanger to a post is.
+"HU212-3" = { low = 45, high = 70 }  # 4 ea — CN-SG-HGR-CR2-W/E, CN-SG-HGR-CF2-W/E
 # 22 ea -> 30 on 2026-08-30: the eight balcony knee braces moved off the unrated APVKB45-6
 # onto this part, two per brace (Simpson's own instruction — "install single KBS1Z on each
 # end" — and the F1 the code report publishes is measured through that pair). Net material

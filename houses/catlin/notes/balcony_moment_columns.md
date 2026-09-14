@@ -186,8 +186,15 @@ third. Counting all three is conservative, it is what `checks/structural/lateral
 already did with the rails, and at d/c 0.07 the margin is not worth an argument about
 shielding factors.
 
-(The rear row `PT-SG-BR1/BR3` stands 2" proud for the deck's drainage crown, so its lever is
-9.18' and its wind moment **1,410 lb-ft**. The guard case still governs both rows.)
+(The rear row `PT-SG-BR1/BR3` stands **1 27/32"** proud for the deck's drainage crown, so its
+lever is 9.16' and its wind moment **1,408 lb-ft**. The guard case still governs both rows.
+
+**1 27/32" and not 2", since 2026-09-14.** `SPEC.rear_pillar_rise_in = 2.0` was retired for
+`SPEC.balcony_fall_in_per_ft = 0.25`: the FALL is the authored number now — 1/4" per foot,
+the trade standard for a walking deck and twice AridDek's published minimum — and the rise
+follows the run between the bearing rows, which over 7'-4" is 1.833". The flat 2" worked out
+to 0.27 in/ft over that run. Both base moments here are `shear × height`, so they follow the
+rise exactly and by the same 0.15%.)
 
 ### 2c. Guard — IRC R301.5, and it is what governs
 
@@ -312,8 +319,9 @@ state the same concrete.
 | guard magnified, δ 1.030 | 2,577 lb-ft | 24,700 | **0.10** |
 | axial, §22.4.2.1 | 4,947 lb | 285,900 lb | **0.02** |
 
-(The front row, PT-SG-BF1/BF3. The rear row stands 2" proud for the deck's drainage crown
-and reads 1,410 / 2,535 / 2,614 against 24,709 — the same verdict one decimal along.)
+(The front row, PT-SG-BF1/BF3. The rear row stands 1 27/32" proud for the deck's drainage
+crown — see §2b — and reads 1,408 / 2,533 / 2,611 against 24,709, the same verdict one
+decimal along.)
 
 **Bending governs and the guard governs the bending, at an eighth of capacity.** The column
 is not sized by any of these — it is sized by the 2" of cover the durability case asked for

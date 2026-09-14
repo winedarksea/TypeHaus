@@ -13,6 +13,7 @@ from typehaus.model.floors import FloorOpening, FloorSystem, Slab, Soffit
 from typehaus.model.refs import ToRoof
 from typehaus.model.spatial import Roof, Stair
 from typehaus.model.structure import Beam, Footing, FootingBedding, GlazingPanel, Pad, Post
+from typehaus.quantities.length import M_PER_IN
 from typehaus.resolve.ceiling_over import (
     ceiling_decks_over,
     deck_structure_underside_m,
@@ -579,6 +580,7 @@ def resolve_columns_and_beams(model: ResolvedModel) -> list[Finding]:
     ridge_uids = {m.parent_uid for roof in model.roofs for m in roof.members
                   if m.category == "ridge_beam"}
     joist_drop, post_drop = _bearing_stack_drops(model)
+    post_insets = _post_connector_insets(model)
     for storey in model.plan.storeys:
         elevation = storey.elevation.meters
         nodes = {e.tag: e.position.xy_m for e in model.plan.storey_elements(storey.tag)
@@ -586,7 +588,7 @@ def resolve_columns_and_beams(model: ResolvedModel) -> list[Finding]:
         for element in model.plan.storey_elements(storey.tag):
             if isinstance(element, Post):
                 solid = _resolve_post(element, storey.tag, elevation, solid_top,
-                                      storey, post_drop)
+                                      storey, post_drop, post_insets)
                 model.solids.append(solid)
                 # A post can bear on another post — a 6x6 standing on the concrete pier that
                 # lifts it clear of the ground. Publishing each resolved top as we go is what
@@ -606,9 +608,65 @@ def resolve_columns_and_beams(model: ResolvedModel) -> list[Finding]:
     return findings
 
 
+#: Post tag -> (standoff under the wood, seat steel over it), both in metres, derived from
+#: the POST_BASE / POST_CAP connectors a plan authors on that post.
+#:
+#: **A post is the WOOD, not the clear distance between what it stands on and what stands on
+#: it.** A 6x6 on an ABU66 starts 1 3/16" above the pour — Simpson's 1" of standoff over the
+#: stirrup's own 7 ga base plate — and one under a CCQ column cap stops 7 ga short of the
+#: beam soffit. That is 1 3/8" the mill does not cut, the take-off should not bill, and IRC
+#: Table R507.4 does not cap: the table's post height is the post, and until 2026-09-14 this
+#: resolver ran every post to its bearing surfaces and reported the clear distance as if it
+#: were the member.
+#:
+#: The dimensions live on the catalog record (``StructuralHardware.bearing_standoff_in`` /
+#: ``seat_thickness_in``) rather than on the plan, because they are facts about a purchased
+#: part. A part nobody has measured carries ``None`` and the post runs to its bearing surface
+#: exactly as before — "nobody looked", never "there is no standoff".
+def _post_connector_insets(model: ResolvedModel) -> dict[str, tuple[float, float]]:
+    from typehaus.hardware.catalog import hardware_by_model
+    from typehaus.model.enums import ConnectorKind
+    from typehaus.model.structure import Connector
+
+    insets: dict[str, list[float]] = {}
+    for element in model.plan.all_elements():
+        if not isinstance(element, Connector):
+            continue
+        if element.kind not in (ConnectorKind.POST_BASE, ConnectorKind.POST_CAP):
+            continue
+        item = hardware_by_model(element.size or "")
+        if item is None:
+            continue
+        value = (item.bearing_standoff_in if element.kind is ConnectorKind.POST_BASE
+                 else item.seat_thickness_in)
+        if not value:
+            continue
+        index = 0 if element.kind is ConnectorKind.POST_BASE else 1
+        # ** THE JOINT HAS TWO MEMBERS AND ONLY ONE OF THEM IS HELD UP BY THE PART. **
+        # ``connects`` names both and its order is not a contract, so the carried post is
+        # found rather than indexed — and "whichever of them is a Post" is NOT the rule.
+        # A post standing on a cast column names two Posts (catlin's PT-SG-BF2 on
+        # PT-SG-FCOL), and applying an ABU's standoff to both lifts the COLUMN off its
+        # footing by 1 3/16" as well, which moves a pour and every elevation read off it.
+        # The carried member is the one whose ``supported_by`` names the other.
+        posts = [tag for tag in element.connects if isinstance(model.plan.by_tag(tag), Post)]
+        others = set(element.connects)
+        carried = [tag for tag in posts
+                   if getattr(model.plan.by_tag(tag), "supported_by", None) in others - {tag}]
+        # A cap joins a beam to a post, so the lone post in the joint is the subject and
+        # there is nothing for the ``supported_by`` test to match against.
+        if not carried and len(posts) == 1:
+            carried = posts
+        for tag in carried:
+            pair = insets.setdefault(tag, [0.0, 0.0])
+            pair[index] = max(pair[index], value * M_PER_IN)
+    return {tag: (pair[0], pair[1]) for tag, pair in insets.items()}
+
+
 def _resolve_post(post: Post, storey_tag: str, elevation: float,
                   solid_top: dict[str, float], storey,
-                  post_drop: dict[str, float]) -> ResolvedSolid:
+                  post_drop: dict[str, float],
+                  insets: dict[str, tuple[float, float]]) -> ResolvedSolid:
     """A post supported by a footing/pad stands up from that support; otherwise its top
     sits at its storey's deck elevation (it carries that level) and it hangs down by its
     height.
@@ -616,16 +674,26 @@ def _resolve_post(post: Post, storey_tag: str, elevation: float,
     A post carrying joist-loaded beams shortens by that beam's joist drop so its top
     lands at the (lowered) beam soffit. Shortening the authored height rather than
     overriding the top preserves any intentional base offset (the 2" rear-row drainage
-    rise), and leaves breezeway/other non-carrying posts untouched."""
+    rise), and leaves breezeway/other non-carrying posts untouched.
+
+    An authored post base or column cap then insets the WOOD from those two planes — see
+    :func:`_post_connector_insets`. ``height`` stays the clear distance a plan authors,
+    which is the dimension a plan can actually know; the standoff and the seat are facts
+    about the parts and come off the catalog."""
     cs = cross_section(post.size)
     height = (post.height.meters if post.height is not None
               else storey.default_ceiling_height.meters)
     base = solid_top.get(post.supported_by) if post.supported_by else None
     drop = post_drop.get(post.tag, 0.0)
+    standoff, seat = insets.get(post.tag, (0.0, 0.0))
     if base is not None:
-        z0, z1 = base, base + height - drop
+        z0, z1 = base + standoff, base + height - drop - seat
     else:
-        z0, z1 = elevation - height, elevation - drop
+        z0, z1 = elevation - height + standoff, elevation - drop - seat
+    # A standoff and a seat together cannot be allowed to invert a short post: the member
+    # would render inside out and every consumer downstream would read a negative depth.
+    if z1 <= z0:
+        z0, z1 = (base if base is not None else elevation - height), z1 + seat
     return ResolvedSolid(post.uid, post.tag, storey_tag, "column",
                          tuple(post_outline(post.position.xy_m, cs)), z0, z1,
                          assembly=post.assembly)

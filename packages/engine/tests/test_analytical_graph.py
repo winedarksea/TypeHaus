@@ -46,12 +46,29 @@ def _items_of(model, kind: str) -> set[str]:
 
 
 def test_every_graded_member_item_reaches_a_member(analytical) -> None:
-    """A deck post, a roof beam and a post bearing all have a curve member to their name."""
+    """A deck post and a roof beam both have a curve member to their name.
+
+    ** ``post_bearing`` WAS THE THIRD KIND HERE UNTIL 2026-09-14. ** It left because catlin
+    stopped posing the question: both centre balcony pillars came off ``FS-SG-PORCH`` and
+    onto the cast column tops, and ``engineering/post_bearing.py`` enumerates a post whose
+    ``supported_by`` names a ``FloorSystem`` and nothing else. The register has no
+    ``post_bearing/*`` item, so ``_items_of`` returns an empty set and the "fixture has
+    drifted" guard below would fire on a house that is simply built differently.
+
+    It is not replaced by a fourth kind, and that is deliberate: the two kinds left are the
+    two SHAPES this test is about — a column member and a beam member — and adding a third
+    that happens to exist today would pin the register rather than the graph. What catches
+    a genuinely missing member is the subset assertion, which runs on every kind the scope
+    names via ``test_the_scope_is_covered_or_gapped``.
+    """
     carried = {item for member in analytical.members for item in member.item_ids}
-    for kind in ("deck_post", "roof_beam", "post_bearing"):
+    for kind in ("deck_post", "roof_beam"):
         expected = _items_of(analytical, kind)
         assert expected, f"catlin has no {kind} item — the fixture has drifted"
         assert expected <= carried, f"{kind} items with no member: {sorted(expected - carried)}"
+    assert _items_of(analytical, "post_bearing") == set(), (
+        "catlin has a post_bearing item again — a post stands on a deck, and this test "
+        "should go back to asserting that item reaches a member")
 
 
 def test_lateral_system_columns_are_fixed_and_say_why(analytical, catlin_engineering) -> None:

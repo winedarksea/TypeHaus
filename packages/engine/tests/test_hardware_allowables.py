@@ -224,6 +224,16 @@ _NO_PUBLISHED_LOAD = {
                      "same NDS Ch. 12, 2\" more length (a lapped foot crosses the whole post)",
     "AB-058-10-SS": "ESR-1622 §5.6 puts anchor bolt and footing design outside its scope",
     "CS16": "ESR-2105 publishes a by-nail-count ladder; the model tracks no nail count",
+    # ** THE ONE ENTRY HERE THAT IS A GAP RATHER THAN A RESULT (2026-09-14). ** Every other
+    # model above is empty because a report published nothing: somebody read the page and
+    # the number was not on it. HU212-3 is empty because the page has not been read. It was
+    # catalogued for the four porch-beam ends that came off the cast columns and onto
+    # PT-SG-BF2 / PT-SG-BR2's faces, where the seat dimensions decide the part and the loads
+    # were not needed to choose it — nothing in the engine grades a Connector.size against an
+    # allowable. **It is listed here so the gap is version-controlled rather than invisible**,
+    # and the distinction is stated in the record's own citation.
+    "HU212-3": "C-C-2017 p. 136's SPF/HF load columns have not been read — a GAP, not a "
+               "report declining to publish, and the only one of these that is",
 }
 
 

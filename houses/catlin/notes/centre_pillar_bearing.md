@@ -13,6 +13,45 @@ next), `notes/balcony_differential_movement.md` §6 (**the other half of this jo
 note grades the bearing STRESS at the three-ply pack and says nothing about its cross-grain
 SHRINKAGE, which is 0.1-0.2", permanent, one-way, and at the middle two of six supports).
 
+## 2026-09-14 — the population this note grades is now empty, and the note stays
+
+Both pillars came off the porch deck on 2026-09-14 and back onto the concrete column tops
+(`PT-SG-BF2` on `PT-SG-FCOL`, `PT-SG-BR2` on `PT-SG-COL`), standing on ABU66SS bases. The
+four porch beams no longer bear beside them on the pour; they hang off the pillars' east and
+west faces on HU212-3 face-mount hangers, which is what lets those columns stay 12" round
+instead of growing to take a beam face and a pillar face in one pour. `params/sunken_garden.py`
+carries the reversal and its revert record (`_DECK_BORNE_PILLAR_BEARINGS`,
+`_DECK_BORNE_PILLAR_REINFORCEMENTS`, `_DECK_BORNE_BASE_TIE`).
+
+**So `engineering/post_bearing.py` now enumerates nothing in this house.** Its predicate is
+a `Post` whose `supported_by` names a `FloorSystem`, and no post in catlin does any more:
+`structural.deck_post_bearing` reports NOT_APPLICABLE, earned from positive evidence — "37
+post(s) resolve, all of them on a pad, a footing, a wall, or inside one". The two records
+`post_bearing/PT-SG-BF2` and `post_bearing/PT-SG-BR2` have left the engineering register,
+which is the point of the change: cross-grain crushing was a question only because the
+pillars stood on framing.
+
+What replaced it is a PRESCRIPTIVE read rather than nothing. Both pillars are now graded by
+`structural.deck_post_size` against IRC Table R507.4 — a 6x6 at 48.3 ft² tributary, capped at
+10'-0" — and they pass at 9.99' and 9.83'. Two things had to be true for that:
+
+* **The post is the wood, not the clear distance.** `resolve/envelope.py::_post_connector_insets`
+  takes the ABU66SS's 1 3/16" standoff (Simpson's 1" over the stirrup's own 7 ga base plate)
+  off the bottom and the CCQ46SDS2.5's 7 ga seat off the top. Without it `PT-SG-BR2` read
+  121.375" against a 120" limit.
+* **The drainage fall became the authored number.** `SPEC.balcony_fall_in_per_ft` is 1/4" per
+  foot; it was a flat 2" rise, which over this run was 0.27 in/ft. `PT-SG-BR2` is the tallest
+  of the six and has 5/32" of margin under R507.4, so **raising the fall again spends that
+  margin at 1/64" of post per 1/64 in/ft.**
+
+**This note is NOT superseded and is not archived.** `post_bearing` stays a registered kind
+with a declared oracle, `tests/test_calc_package.py` lints that every registered kind names
+an existing, non-archived note, and the arithmetic below is what the check would use the day
+a post stands on framing again — in this house or another. Everything after this section is
+as it was written on 2026-09-03 and describes the arrangement that stood until 2026-09-14.
+
+---
+
 > ## ⚠ THIS JOINT WAS OVER, AND NOTHING IN THE MODEL SAW IT.
 > Until this note and its calculation existed, catlin reported **0 FAIL** with `PT-SG-BF2`
 > bearing at **d/c 2.36** and `PT-SG-BR2` at **1.24**. Neither was a modelling slip: the

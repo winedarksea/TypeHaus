@@ -251,6 +251,25 @@ class StructuralHardware:
     #: **Deliberately absent from ``hardware_row``**: a BOM line orders a part, and putting a
     #: capacity on it would invite reading the bill as a connection schedule.
     allowable: AllowableLoads | None = None
+    #: How far this part holds the member it carries CLEAR of what it is fastened to, in
+    #: inches — a post base's standoff, measured from the bearing surface (the pour, the
+    #: slab) to the underside of the wood, so it includes the part's own base-plate steel.
+    #:
+    #: **It is a length of the building, not a detail of the part.** A 6x6 on an ABU66 is
+    #: 1 3/16" shorter than the clear distance between the pour and the beam over it, and
+    #: that is the length IRC Table R507.4 caps, the length a mill cuts, and the length the
+    #: take-off bills. ``resolve/envelope.py::_resolve_post`` reads it off the POST_BASE
+    #: connector a plan authors on the post and starts the wood there.
+    #:
+    #: ``None`` means nobody has measured it, and the post then runs to its bearing surface
+    #: exactly as it did before this field existed — the same "nobody looked" the
+    #: ``allowable`` field above means, and for the same reason: a default of 0.0 would be a
+    #: claim that the part has no standoff, which for a standoff post base is false.
+    bearing_standoff_in: float | None = None
+    #: The steel this part puts BETWEEN the member it caps and the member above, in inches —
+    #: a column cap's seat. The post top lands one of these below the beam soffit.
+    #: ``None`` means unmeasured, exactly as ``bearing_standoff_in``.
+    seat_thickness_in: float | None = None
 
     @property
     def available_lengths_in(self) -> tuple:

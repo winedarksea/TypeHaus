@@ -45,13 +45,21 @@ RULES = CONFIG.uplift
 # so the 1" standoff is on the drawings — and so the base can say `anchored=False`, which no
 # derived base can. There is no cast-in bolt under those two; see
 # ``test_every_post_base_on_concrete_is_bought_its_anchor``.
-AUTHORED_POST_BASES = {"PT-BW-CW", "PT-BW-CNW", "PT-BW-IC", "PT-BW-IE"}
+#: The two balcony centre pillars joined this set on 2026-09-14, when they came off the porch
+#: framing and onto the cast column tops (CN-SG-BASE-R2 / -F2, ABU66SS, ``anchored=True``).
+#: They were covered by an authored TENSION_TIE until then, and the kind moved with the joint
+#: rather than with the part: ``model/enums.py`` reads TENSION_TIE as "a post on FRAMING" and
+#: POST_BASE as "a stirrup on CONCRETE", so a pillar that now stands on a pour takes a base.
+AUTHORED_POST_BASES = {"PT-BW-CW", "PT-BW-CNW", "PT-BW-IC", "PT-BW-IE",
+                       "PT-SG-BR2", "PT-SG-BF2"}
 
-#: The joints covered by an authored TENSION_TIE instead. They belong in the same set as far
-#: as ``post_base_rows`` is concerned — a post whose joint is already made must not be bought
-#: a base — and the whole reason that rule reads both kinds is that these two would otherwise
-#: derive two phantom ABU66.
-AUTHORED_TENSION_TIES = {"PT-SG-BR2", "PT-SG-BF2"}
+#: **Empty since 2026-09-14, and kept rather than deleted.** ``post_base_rows`` reads BOTH
+#: kinds — a post whose joint is already made must not be bought a base — and while the two
+#: centre pillars were tied rather than based, this set was the only thing exercising the
+#: TENSION_TIE half of that rule in this house. Nothing exercises it now, so the empty set is
+#: the statement: a tie reappearing here is a house change, and the rule reading two kinds is
+#: still asserted below, where every tag in the union must stay out of the derived basis.
+AUTHORED_TENSION_TIES: set[str] = set()
 
 #: The north entry's two canopy-header-to-column joints, authored as CCQ46SDS2.5 column caps
 #: (``CN-BW-CAP-W`` / ``CN-BW-CAP-E``) with RF-BW-CANOPY on 2026-09-10. The tags are the ones
@@ -349,35 +357,58 @@ def test_every_post_base_on_concrete_is_bought_its_anchor(catlin_model_ro) -> No
     # so the screen panel's plates would be cut around them. That field used to stand this
     # rule down on its own and would have deleted these two bolts; it is now keyed on the
     # JOINT, and a post standing in a stud line on an authored base still buys its part.
-    assert row["count"] == 4
-    assert row["count"] == sum(r["count"] for r in post_base_rows(catlin_model_ro, RULES)) + 2
+    #
+    # ** 4 -> 6 ON 2026-09-14, AND IT IS THIS RULE AGREEING WITH A MOVE RATHER THAN DRIFTING. **
+    # Both balcony centre pillars came off the porch framing onto the cast column tops
+    # (CN-SG-BASE-R2 / -F2, ABU66SS, ``anchored=True``) — see
+    # ``test_a_base_on_a_pour_is_bought_its_cast_in_bolt``, which was the test asserting the
+    # opposite about these same two posts while they stood on a deck. A base that bears on
+    # concrete and says it is anchored buys its bolt; nothing about the rule changed.
+    assert row["count"] == 6
+    # The population is the union of DERIVED and AUTHORED bases, stated as that sum rather
+    # than as one number, because the two halves move independently: the derived rows are the
+    # 2 ABU44 ladder rungs, and the authored-and-anchored-on-concrete half is 4 — the
+    # canopy's CN-BW-BASE-W / -NW plus the garden's CN-SG-BASE-R2 / -F2. (The other two
+    # authored bases, CN-BW-IBASE-C / -E, are on concrete and ``anchored=False``, so they are
+    # in neither half; that is the interesting case above.)
+    derived = sum(r["count"] for r in post_base_rows(catlin_model_ro, RULES))
+    assert derived == 2
+    assert row["count"] == derived + 4
     assert "PT-BW-IC" not in row["basis"] and "PT-BW-IE" not in row["basis"], \
         "a bearing-only base must not be billed a cast-in anchor"
 
 
-def test_a_base_standing_on_framing_is_not_bought_a_cast_in_bolt(catlin_model_ro) -> None:
-    """PT-SG-BR2 stands on FS-SG-PORCH — a deck, not a pour.
+def test_a_base_on_a_pour_is_bought_its_cast_in_bolt_and_a_bare_pier_is_not(
+        catlin_model_ro) -> None:
+    """What decides the bolt is the JOINT, which is why this rule is a derivation.
 
-    This is the reason the rule is a derivation over joints and not a
-    ``StructuralHardware.requires_role`` on the base: that field is a flat property of the
-    PART, so it would bill a cast-in bolt into porch decking. A base on framing is bolted or
-    screwed to it, and those fixings are inside the framing rate.
+    It is not a ``StructuralHardware.requires_role`` on the base, because that field is a
+    flat property of the PART: it would bill a cast-in bolt wherever the part appears,
+    including into porch decking. **PT-SG-BR2 and PT-SG-BF2 are the case that proves it, and
+    they have now been on both sides of it.** Until 2026-09-14 they stood on FS-SG-PORCH — a
+    deck, not a pour — and this test asserted they bought no bolt; a base on framing is
+    bolted or screwed to it and those fixings are inside the framing rate. Since that date
+    they stand on PT-SG-FCOL / PT-SG-COL, on anchored ABU66SS, and they buy one each. Same
+    rule, same posts, opposite answer, because what they stand on changed.
 
     The four sonotube piers are the same trap from the other side. ``CN-BW-BASE-*`` names
     both members of its joint, so ``tags_covered_by`` returns PR-BW-1..4 as well as the
     posts on them, and a rule that trusted that set bought four bolts for four piers that
     have no base at all.
+
+    And PT-BW-IC / PT-BW-IE are the third side: their bases DO bear on concrete (the garage
+    slab) and are authored ``anchored=False``, so the pour is not sufficient either — the
+    joint has to claim the bolt as well.
     """
     from typehaus.takeoff.uplift_joints import post_base_anchor_rows
 
     basis = post_base_anchor_rows(catlin_model_ro, RULES)[0]["basis"]
-    assert "PT-SG-BR2" not in basis, "PT-SG-BR2 stands on the porch deck"
-    # Its opposite number left this test on 2026-08-29 when it stood on PT-SG-FCOL's top,
-    # and came back on 2026-09-03 when it moved north onto the porch deck — 3" inside the
-    # front beam axis, the exact mirror of BR2. Both centre pillars bear on framing now.
-    assert "PT-SG-BF2" not in basis, "PT-SG-BF2 stands on the porch deck too"
+    for tag in ("PT-SG-BR2", "PT-SG-BF2"):
+        assert tag in basis, f"{tag} stands on a cast column and its base is anchored"
     for pier in ("PR-BW-1", "PR-BW-2", "PR-BW-3", "PR-BW-4"):
         assert pier not in basis, f"{pier} is a cast pier, not a based post"
+    for bearing_only in ("PT-BW-IC", "PT-BW-IE"):
+        assert bearing_only not in basis, f"{bearing_only}'s base is anchored=False"
 
 
 def test_an_authored_column_cap_stands_down_the_derived_strap(catlin_model_ro):

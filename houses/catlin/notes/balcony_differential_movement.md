@@ -37,20 +37,29 @@ model's deck plane is the deck's LOW edge, deliberately.
 
 ## 1. The slope, and the two numbers it is between
 
-`SPEC.rear_pillar_rise_in = 2.0` raises the rear (north, house-side) pillar row so the deck
+`SPEC.balcony_fall_in_per_ft` raises the rear (north, house-side) pillar row so the deck
 falls south, away from the house.
+
+**2026-09-14: the FALL is now the authored number and the rise is derived from it.** It was
+the other way round — `SPEC.rear_pillar_rise_in = 2.0`, with whatever slope that worked out
+to over whatever run the bearing rows happened to be at. Owner's call: hold 1/4" per foot,
+which is the trade standard for a walking deck and still twice AridDek's published minimum.
 
 | term | working | value |
 |---|---|---|
 | rear bearing line | `_y_rear_pillar` | −2.500' |
 | front bearing line | `_y_front_pillar` | −9.833' |
 | run between bearings | (−2.500) − (−9.833) = 7.333' | **88.0"** |
-| rise | `SPEC.rear_pillar_rise_in` | **2.00"** |
-| slope | 2.00 / 88.0 | 0.0227 in/in = **0.273 in/ft** |
+| fall | `SPEC.balcony_fall_in_per_ft` | **0.250 in/ft** |
+| rise | 0.250 × 7.333 | **1.833"** (was 2.00") |
 | AridDek recommended minimum | manufacturer | 0.125 in/ft |
-| margin | 0.273 / 0.125 | **2.2×** |
+| margin | 0.250 / 0.125 | **2.0×** |
 
-The slope is correct and generous. Nothing here asks for it to change.
+The slope is correct and generous. **One thing now asks it not to rise again**: `PT-SG-BR2`
+is the tallest of the six pillars, and since it came down onto `PT-SG-COL` it is graded
+against IRC Table R507.4 — a 6x6 at this deck's 48.3 ft² tributary is capped at 10'-0". The
+wood measures 119.85" with the ABU66SS standoff and the CCQ46SDS2.5 seat taken off it, so
+there is **5/32" of room**, and every 1/64 in/ft of extra fall spends 1/64" of it.
 
 Two answers that close the parts of the open item that were about the *mechanism*:
 
@@ -153,7 +162,25 @@ this deck that needs a dimension, and the dimension is Wahoo's: their published 
 requirement is in the AridDek installation guide and was not in the public pages. **Pull it
 before the plank is ordered.** The arithmetic above says what it has to accommodate.
 
-## 6. The movement that does need a detail: cross-grain shrinkage at the two centre pillars
+## 6. ~~The movement that does need a detail: cross-grain shrinkage at the two centre pillars~~ — VOIDED 2026-09-14
+
+> **There is no cross-grain path at these two pillars any more, so this section grades a
+> joint that no longer exists.** On 2026-09-14 `PT-SG-BR2` and `PT-SG-BF2` came off
+> `FS-SG-PORCH` and onto the concrete column tops — `PT-SG-COL` and `PT-SG-FCOL` — on
+> ABU66SS standoff bases. **All six pillars bear on concrete now**, so the dishing this
+> section is about cannot happen: there is no softwood depth across the grain under any of
+> the six, and the three-ply sister pack the argument rests on was retired with the
+> arrangement (`_DECK_BORNE_PILLAR_REINFORCEMENTS` in `params/sunken_garden.py`).
+>
+> Of the three answers below, only **(3)** survives, and it survives for a different reason:
+> the `CCQ46SDS2.5` cap stays shim-adjustable at those two seats because a six-point bearing
+> on two pours and two wall tops still wants a way to take a leaf at the first-season
+> inspection. (1) and (2) are about a pack that is gone.
+>
+> Kept rather than deleted because the reasoning is what a reader restoring the deck-borne
+> arrangement needs — it is the movement half of the joint `notes/centre_pillar_bearing.md`
+> grades the stress half of, and that note is kept for the same reason. See its own
+> 2026-09-14 section.
 
 Four of the six pillars bear on concrete. `PT-SG-BR2` and `PT-SG-BF2` do not: they stand on
 `FS-SG-PORCH`, on the three-ply 2x12 sister pack `notes/centre_pillar_bearing.md` grades.

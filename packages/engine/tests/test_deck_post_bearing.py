@@ -27,14 +27,17 @@ _EXPECTED = {
     "PT-SG-BF1": (Result.NOT_APPLICABLE, "W-SG-W1"),
     "PT-SG-BR3": (Result.NOT_APPLICABLE, "W-SG-E1"),
     "PT-SG-BF3": (Result.NOT_APPLICABLE, "W-SG-E1"),
-    # A post on a deck is not a post on the ground. BOTH centre pillars since 2026-09-03:
-    # PT-SG-BF2 stood on PT-SG-FCOL's TOP until then, and came north onto the porch framing
-    # when that column shrank to 12" — the exact mirror of BR2, 3" inside its beam line.
-    # Either way, minting `spread_footing/PT-SG-BF2` would name a footing that does not
-    # exist; what carries the load is graded on the column under the beam it lands in, and
-    # `engineering/pier_basis._piers_below` is what hands it there.
-    "PT-SG-BR2": (Result.NOT_APPLICABLE, "FS-SG-PORCH"),
-    "PT-SG-BF2": (Result.NOT_APPLICABLE, "FS-SG-PORCH"),
+    # A post on another post is not a post on the ground. **BOTH centre pillars bear on the
+    # cast columns again since 2026-09-14** — PT-SG-BF2 on PT-SG-FCOL, PT-SG-BR2 on
+    # PT-SG-COL — which is where BF2 stood until 2026-09-03 and where neither stood in
+    # between. The verdict did NOT move with them, and that is the interesting part: it was
+    # N/A when they stood on `FS-SG-PORCH` and it is N/A now, because the rule is "this post
+    # has no footing of its own to size" and a deck and a column answer it the same way.
+    # What changed is the EVIDENCE, and the evidence is the whole content of an N/A: minting
+    # `spread_footing/PT-SG-BF2` would name a footing that does not exist either way, and
+    # `engineering/pier_basis._piers_below` is what hands the load to the item that does.
+    "PT-SG-BR2": (Result.NOT_APPLICABLE, "PT-SG-COL"),
+    "PT-SG-BF2": (Result.NOT_APPLICABLE, "PT-SG-FCOL"),
     # These two DO bear on soil through their own belled piers. R507.3 has no row for a
     # 30"/36" bell, so they are real engineered items and must stay so.
     "PT-SG-COL": (Result.UNKNOWN, "FT-SG-COL"),

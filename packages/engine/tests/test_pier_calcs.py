@@ -98,9 +98,23 @@ _BREEZEWAY_PIERS = ("PR-BW-1", "PR-BW-2", "PR-BW-3", "PR-BW-4")
 # §2 and §3c of the note. Both piers are 12" round and carry the same cage since
 # 2026-09-03, so the two rows agree on everything but the bell and a pound of pillar.
 #
-# The tributary is 120.83 ft², and it is BEAM-WEIGHTED as of 2026-09-03: each column takes
-# half of each porch beam that lands on it (72.50 ft², the bearing WALL at the beam's far end
-# taking the other half) plus half of BM-SG-BLC, handed down by its centre pillar (48.33 ft²).
+# ** 120.83 -> 119.17 ft² ON 2026-09-14, AND IT IS AN ARTEFACT RATHER THAN A LOAD CHANGE. **
+# The two centre pillars came down onto these column tops, so each porch beam stops 2 3/4"
+# short of the column axis and hangs off the pillar's face (HU212-3) instead of bearing on
+# the pour. ``_weighted_shares`` reads ``share = strip_ft * length_ft`` off the beam's own
+# node-to-node length, so four beams 2 3/4" shorter is 1.66 ft² less tributary — 10.00' ->
+# 9.77' per beam, 72.50 -> 70.84 ft² of porch share.
+#
+# **The deck did not shrink and the load did not go anywhere.** The 2 3/4" of porch at each
+# beam end is carried by the pillar chase's header into the joist lines either side and
+# reaches the same beams. So the model UNDER-counts this column by 1.4% and the notes say so;
+# it is the direction a demand should not err in, and it is recorded rather than corrected
+# because ``length_ft`` is the proxy the whole module is built on. d/c 0.60 -> 0.59 on the
+# governing bearing state, so nothing turns on it.
+#
+# The tributary is BEAM-WEIGHTED as of 2026-09-03: each column takes half of each porch beam
+# that lands on it (the bearing WALL at the beam's far end taking the other half) plus half of
+# BM-SG-BLC, handed down by its centre pillar (48.33 ft²).
 # It was 116.97 under the old `deck area / post count`, and the two errors that rule made
 # nearly cancelled: the porch share was 10 ft² too high and the balcony share 14 too low.
 # PT-SG-COL's bearing d/c is what feels it — 0.81 -> 0.83 on a 30" bell, the least margin in
@@ -120,12 +134,12 @@ _BREEZEWAY_PIERS = ("PR-BW-1", "PR-BW-2", "PR-BW-3", "PR-BW-4")
 # version will find D and P_u agreeing and the loads above them not. notes §1, §2, §4e.
 _ORACLE = {
     "PT-SG-COL": {
-        "tributary_ft2": 120.83, "dead_lb": 2534.0, "live_lb": 4833.0,
-        "service_lb": 7367.0, "factored_lb": 10_774.0,
+        "tributary_ft2": 119.17, "dead_lb": 2528.0, "live_lb": 4767.0,
+        "service_lb": 7295.0, "factored_lb": 10_662.0,
         # 4.909 / 1651 while this bell was 30". Both bells are 36" since 2026-09-10 — the
         # 36" was a fossil from a 20" column and the 30" was set by nothing — which takes
         # the tightest pier in the house from d/c 0.83 to 0.60 for ~0.09 cy of concrete.
-        "bell_area_ft2": 7.069, "bearing_psf": 1192.0,
+        "bell_area_ft2": 7.069, "bearing_psf": 1182.0,
         "gross_in2": 113.1, "h_over_d": 10.68, "min_steel_in2": 1.131,
         # §4c / §4d / §4e of the note.
         "cage": _FCOL_CAGE, "bars": 4, "steel_in2": 1.24,
@@ -139,9 +153,9 @@ _ORACLE = {
         "slenderness": 42.7, "delta_ns": 1.019, "e_magnified_in": 0.978, "e_capped_in": 1.20,
     },
     "PT-SG-FCOL": {
-        "tributary_ft2": 120.83, "dead_lb": 2532.0, "live_lb": 4833.0,
-        "service_lb": 7366.0, "factored_lb": 10_772.0,
-        "bell_area_ft2": 7.069, "bearing_psf": 1192.0,
+        "tributary_ft2": 119.17, "dead_lb": 2527.0, "live_lb": 4767.0,
+        "service_lb": 7294.0, "factored_lb": 10_660.0,
+        "bell_area_ft2": 7.069, "bearing_psf": 1182.0,
         "gross_in2": 113.1, "h_over_d": 10.68, "min_steel_in2": 1.131,
         "cage": _FCOL_CAGE, "bars": 4, "steel_in2": 1.24,
         # ** 187,011 -> 285,893 ON 2026-09-10, AND THE SPLIT ABOVE IS CLOSED. **
@@ -180,8 +194,13 @@ _CORNER_ORACLE = {
     "PT-SG-BF1": {"height_in": 108.125, "wind_lb_ft": 1384.7, "guard_lb_ft": 2502.1},
     "PT-SG-BF3": {"height_in": 108.125, "wind_lb_ft": 1384.7, "guard_lb_ft": 2502.1},
     # The rear row runs 2" proud for the deck's drainage crown.
-    "PT-SG-BR1": {"height_in": 110.125, "wind_lb_ft": 1410.3, "guard_lb_ft": 2535.4},
-    "PT-SG-BR3": {"height_in": 110.125, "wind_lb_ft": 1410.3, "guard_lb_ft": 2535.4},
+    # ** THE REAR PAIR LOST 1/6" ON 2026-09-14. ** ``SPEC.rear_pillar_rise_in = 2.0`` became
+    # ``SPEC.balcony_fall_in_per_ft = 0.25``: the FALL is the authored number now and the rise
+    # follows the run between the bearing rows, which over 7'-4" is 1.833" rather than 2.000".
+    # Both base moments are ``shear x height``, so they follow it exactly and by the same
+    # 0.15%. Nothing else about the rear row moved.
+    "PT-SG-BR1": {"height_in": 109.958, "wind_lb_ft": 1408.2, "guard_lb_ft": 2532.6},
+    "PT-SG-BR3": {"height_in": 109.958, "wind_lb_ft": 1408.2, "guard_lb_ft": 2532.6},
 }
 #: §4 of the note: phi*Mn at the column's own axial load, hand-worked term by term.
 #:
@@ -324,7 +343,12 @@ def test_both_columns_carry_the_centre_pillar_that_lands_beside_them(piers) -> N
     balcony's full depth onto these two pillars alone while the two edge beams share four
     posts, so a sixth of the deck was never what either pillar carried.
     """
-    own_porch_share = 72.50          # 2 porch beams x 7.25' strip x 10.00' over 2 supports
+    # 70.84, not the 72.50 this read until 2026-09-14: each porch beam is 9.77' rather than
+    # 10.00' now that it stops at the centre pillar's face instead of running to the column
+    # axis. The deck it collects did not change — the 2 3/4" at each end reaches the same beam
+    # through the pillar chase's header — so this is a 1.4% UNDER-count, recorded at the head
+    # of ``_ORACLE`` and in notes/sunken_garden_piers.md §2 rather than silently absorbed.
+    own_porch_share = 70.84          # 2 porch beams x 7.25' strip x 9.77' over 2 supports
     balcony_share = 48.33            # BM-SG-BLC, 10.00' strip x 9.67' over its 2 posts
     for tag in ("PT-SG-COL", "PT-SG-FCOL"):
         pier = piers[tag]
@@ -742,7 +766,17 @@ def test_the_cover_is_read_off_the_authored_cage_not_the_code_minimum(results) -
 # every one of these stands in weather. It runs beside the table read as an advisory, and
 # `engineering/glulam_beam.py` is now a pure module exposing `nds_states`.
 
-_BALCONY_SPANS = {"BM-SG-BLW": 7.333, "BM-SG-BLC": 7.0, "BM-SG-BLE": 7.333}
+#: ** BM-SG-BLC IS 7.25' AND ITS TWO NEIGHBOURS ARE NOT, SINCE 2026-09-14. ** PT-SG-BR2 came
+#: 3" north onto PT-SG-COL's axis when it came down onto that column — its old 3" southward
+#: offset only ever dodged ``cantilever.py::_band``'s epsilon, which cannot reach a post that
+#: does not bear on a deck, while on concrete it would have put two of the post's corners 3/8"
+#: outside a 12" round. The centre beam's back span follows its own rear bearing and grows
+#: with it; BR1/BR3 did not move, so BLW/BLE are unchanged at 7.333'. The three beams are
+#: three separate members with their own pairs of bearings, which is why one can move alone.
+#:
+#: The R507.5.1 cantilever limit moves the right way with it: the north overhang falls
+#: 20" -> 17" against a limit that rises 22" -> 22.75".
+_BALCONY_SPANS = {"BM-SG-BLW": 7.333, "BM-SG-BLC": 7.25, "BM-SG-BLE": 7.333}
 _BALCONY_JOIST_SPAN_FT = 10.0
 
 

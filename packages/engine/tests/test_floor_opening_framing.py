@@ -47,9 +47,20 @@ def test_trimmer_plies_are_not_coincident(catlin_model):
 def test_trimmer_plies_lie_face_to_face_outboard_of_the_opening(catlin_model):
     """Ply 0 keeps the authored opening line (the header ends bear on it); ply 1 steps
     exactly one ply thickness *away* from the hole, which is where the second trimmer of
-    a doubled pair goes."""
+    a doubled pair goes.
+
+    **Only the DOUBLED edges are in scope, and since 2026-09-14 that is a real filter rather
+    than a formality.** ``_trimmer_plies`` lays one ply, not two, on an edge inside
+    R502.10.1's 4' short-opening allowance, and catlin now has two such openings: the 9"
+    pillar chases ``FO-SG-BF2``/``-BR2``, where ``PT-SG-BF2``/``PT-SG-BR2`` pass through
+    ``FS-SG-PORCH`` on their way down to the cast columns. An edge with no ply 1 is that
+    rule working, so this asserts the GEOMETRY of a pair wherever there is a pair, and
+    :func:`test_a_short_opening_is_framed_in_single_plies` asserts that the singles are
+    single.
+    """
     trimmers = {member.child_key: member for member in _members(catlin_model, "trimmer")}
-    pairs = {key[: -len("-0")] for key in trimmers if key.endswith("-0")}
+    pairs = {key[: -len("-0")] for key in trimmers
+             if key.endswith("-0") and f"{key[: -len('-0')]}-1" in trimmers}
     assert pairs
     for prefix in pairs:
         first, second = trimmers[f"{prefix}-0"], trimmers[f"{prefix}-1"]
@@ -63,8 +74,23 @@ def test_trimmer_plies_lie_face_to_face_outboard_of_the_opening(catlin_model):
 
 # ------------------------------------------------------------------ header sizing
 def test_opening_headers_are_multi_ply_and_deck_deep(catlin_model):
+    """Every header is flush in its joist band, and doubled unless R502.10.1 says otherwise.
+
+    The DEPTH half holds for every header without exception: a header hangs *inside* the
+    band so the cut joists land on it at their own depth, and one that is not band-deep is
+    drawn wrong whatever its ply count.
+
+    The PLY half is conditional, and the condition is the code's. ``opening_header_profile``
+    emits a single member the size of the floor joist for an opening inside R502.10.1's 4'
+    allowance on a sawn-lumber deck, and doubles up past it. Until 2026-09-14 catlin had no
+    short opening at all, so "always >= 2" and "doubled unless short" were the same
+    assertion; the 9" pillar chases in ``FS-SG-PORCH`` separated them.
+    """
+    from typehaus.resolve.floors import _prescriptive_short_opening
+
     headers = _members(catlin_model, "header")
     assert headers
+    short = 0
     for floor in catlin_model.floors:
         joist = next((member for member in floor.members if member.category == "joist"), None)
         if joist is None:
@@ -72,9 +98,32 @@ def test_opening_headers_are_multi_ply_and_deck_deep(catlin_model):
         band_depth = cross_section(joist.profile).depth_m
         for header in (m for m in floor.members if m.category == "header"):
             section = cross_section(header.profile)
-            assert section.plies >= 2, header.child_key
+            # **The span is not the whole condition — the DECK MATERIAL is the other
+            # half.** R502.10 is a sawn-lumber table, so ``FO-M-FIRE``'s 3'-9" header is
+            # short and still doubled: ``FS-M-WEST`` is framed in I-joists, where "a single
+            # member the same size as the floor joist" means a hung I-joist with web
+            # stiffeners and backer blocks out of a manufacturer's table this engine cannot
+            # grade. Testing on span alone would have called that header wrong.
+            if _prescriptive_short_opening(header.length_m, joist.profile):
+                # R502.10.1: a single member the same size as the floor joist.
+                assert section.plies == 1, header.child_key
+                assert header.profile == joist.profile, header.child_key
+                short += 1
+            else:
+                assert section.plies >= 2, header.child_key
             # Flush in the joist band, so the cut joists hang off it at their own depth.
             assert section.depth_m == pytest.approx(band_depth), header.child_key
+    # The two pillar chases, both edges of each. Named rather than merely tolerated, so
+    # deleting them would fail here instead of quietly relaxing the rule above back to
+    # "always doubled".
+    #
+    # **Four and not two.** Neither chase has a declared bearing under either edge: the four
+    # porch beams stop at the pillar's east and west faces now, so along the chase's own x
+    # band there is no beam axis for ``_opening_edge_has_declared_bearing`` to find, and both
+    # edges get a member. At ``FO-SG-BF2`` the south one lands in the 1 1/2" between the
+    # front rim band and ``PT-SG-BF2``'s south face, which is exactly the block that closes
+    # that chase at the deck edge — a real member, not a drafting artifact.
+    assert short == 4, "expected both headed edges of each 9\" pillar chase"
 
 
 def test_header_ply_count_tracks_the_span(catlin_model):

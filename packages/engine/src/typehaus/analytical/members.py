@@ -45,6 +45,28 @@ _RIGID_LINK = ("rigid link: a bearing node sits on the centreline of the member 
                "reaches the beam it carries, a beam carrying a beam reaches its seat. The "
                "supported member stays straight; half the two members' depths of bearing "
                "eccentricity is not modelled")
+#: The PLAN half of the same idealization, and the one that decides whether a joint exists
+#: at all. **Members meet at WORK POINTS.** A beam that stops short of the post it bears on —
+#: because another post stands on that one and the beam hangs off its face — has its
+#: analytical axis run out to the post's own axis, which is where the joint is. Two beam ends
+#: arriving at one column from opposite sides then share a node with the column top; left at
+#: their own physical ends they are two nodes 5 1/2" apart, each carrying a single member,
+#: and the solver reports that correctly as a rotational instability.
+#:
+#: **The node is moved by extending the AXIS, not by relocating the node.** A node placed off
+#: the end of the member it belongs to is not found by ``_stations``, so the member is built
+#: between the wrong pair of stations and the instability simply moves to the far end.
+#:
+#: Half the post's width is the whole eccentricity, and it is not modelled. Catlin's case is
+#: 2 3/4" — half a 6x6 — at the two porch beam lines, where PT-SG-BF2 / PT-SG-BR2 stand on
+#: PT-SG-FCOL / PT-SG-COL and the four beams hang off their faces on HU212-3 hangers. The
+#: 0.5-parameter guard keeps this to a joint detail: a post half a span away from the beam it
+#: is named under is a modelling error, not an eccentricity, and stretching the member to it
+#: would hide that.
+_WORK_POINT = ("work point: a beam that stops short of a POST it bears on is run out to that "
+               "post's axis, so both beams at a column share the column's node. The plan "
+               "eccentricity between the beam end and the column under it — half the post's "
+               "width — is not modelled")
 
 #: The two rules a reader of this graph has to know beyond the rigid link.
 _SPLIT_RULE = ("every node on a member's interior splits that member into two continuous "
@@ -137,6 +159,35 @@ class _Axis:
         return math.dist(self.p0, self.p1)
 
 
+def _to_work_points(plan: Any, beam: Any, axis: _Axis,
+                    assumptions: list[str]) -> _Axis:
+    """Run a beam's analytical axis out to the POST axes it bears on — see ``_WORK_POINT``.
+
+    A no-op for every beam whose posts stand under it, which is almost all of them: the
+    projection of the post's centre already falls inside the span and the axis is returned
+    unchanged.
+    """
+    from typehaus.model.structure import Post
+
+    p0, p1 = axis.p0, axis.p1
+    moved = False
+    for ref in sorted(beam.bearing_refs or ()):
+        support = plan.by_tag(ref)
+        if not isinstance(support, Post):
+            continue
+        param = axis.param_of(support.position.xy_m)
+        if -0.5 < param < 0.0:
+            p0 = (support.position.xy_m[0], support.position.xy_m[1], p0[2])
+            moved = True
+        elif 1.0 < param < 1.5:
+            p1 = (support.position.xy_m[0], support.position.xy_m[1], p1[2])
+            moved = True
+    if not moved:
+        return axis
+    _remember(assumptions, _WORK_POINT)
+    return _Axis(p0, p1, axis.section)
+
+
 def solid_axis(solid: Any, section: CrossSection) -> _Axis | None:
     """The centreline of a resolved beam solid: its sweep path, or its outline's midline."""
     sweep = getattr(solid, "sweep", None)
@@ -174,7 +225,7 @@ def build_members(ctx: Any, scope: Any) -> MemberGraph:
             continue  # a ridge Beam is emitted as a roof member and resolves to no solid
         axis = solid_axis(solid, cross_section(beam.size))
         if axis is not None:
-            axes[tag] = axis
+            axes[tag] = _to_work_points(plan, beam, axis, assumptions)
     graph.beam_length_m = {tag: axis.length_m for tag, axis in sorted(axes.items())}
     graph.beam_axis_xy = {tag: _unit_xy(axis) for tag, axis in sorted(axes.items())}
 
@@ -208,7 +259,12 @@ def build_members(ctx: Any, scope: Any) -> MemberGraph:
         carried = sorted(t for t in axes if tag in (plan.by_tag(t).bearing_refs or ()))
         if carried:
             axis = axes[carried[0]]
-            top_point = axis.at(min(max(axis.param_of(centre), 0.0), 1.0))
+            # The post's top reaches the beam it carries — but it reaches it straight UP,
+            # on its own axis. Taking the beam's plan point as well would move the column
+            # sideways to a beam that stops short of it, and put its top somewhere the
+            # column is not (``_POST_AXIS_SNAP``).
+            seat = axis.at(min(max(axis.param_of(centre), 0.0), 1.0))
+            top_point = (centre[0], centre[1], seat[2])
             _remember(assumptions, _RIGID_LINK)
         graph.post_base[tag] = str(nodes.add(base_point, f"{tag}:base"))
         graph.post_top[tag] = str(nodes.add(top_point, f"{tag}:top"))

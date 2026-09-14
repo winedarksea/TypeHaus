@@ -2183,6 +2183,62 @@ which is already two named **deferred** items (`column_support/W-SG-W1`/`E1`).
 
 ## Sunken garden court
 
+### The two centre pillars came back down onto concrete, and a register entry closed (2026-09-14)
+
+`haus engineering houses/catlin` listed `post_bearing/PT-SG-BF2` and `post_bearing/PT-SG-BR2`
+— wood-on-wood Fc-perp crushing under a 6x6 carrying a third of a balcony. The question was
+real, the calculation was right, and **the question only existed because the pillars stood on
+framing**. `engineering/post_bearing.py` enumerates on exactly one predicate — a `Post` whose
+`supported_by` names a `FloorSystem` — so both records leave the moment those two name a post
+instead. Register 37 → 35, and `structural.deck_post_bearing` now reports NOT_APPLICABLE,
+earned: "37 post(s) resolve, all of them on a pad, a footing, a wall, or inside one".
+
+**This reverses the 2026-09-03 decision, and the thing that makes it affordable is the
+hangers.** That entry moved `PT-SG-BF2` off `PT-SG-FCOL`'s top because standing on the column
+made the pillar 19 1/2" longer than its five neighbours and forced that column to a 20" round
+— one pour had to span from the beams' north face to the pillar's south face. It does not have
+to any more: **the four porch beams hang off the pillars' east and west faces** on `HU212-3`
+face-mount hangers instead of being seated beside them, so each column carries a pillar and
+nothing else and both stay 12" round. `HU212-3` rather than `HUC212-3` — the HUC is the
+concrete part, its published loads are Titen-into-a-pour loads, and its one advantage is a
+concealed flange a 5 1/2" post has nowhere to host.
+
+`PT-SG-BR2` moved 3" north onto the column axis with it. Its `_REAR_PILLAR_SOUTH_OF_COL_IN`
+offset bought one thing — keeping a deck-borne pillar out of `cantilever.py::_band`'s epsilon
+— and that pillar is not deck-borne any more. What the offset would have COST on concrete is
+real: a 5 1/2" post centred 3" off a 12" round puts two corners 3/8" outside the pour.
+
+Three things had to be built for it, and each is a fact the model did not hold before:
+
+* **A framed chase at each pillar.** `FO-SG-BF2`/`-BR2`, 9" square, `CHASE`: the joist line at
+  x=18'-0" is cut and headed off the two lines 16" either side, and the post passes up through
+  it. **No hanger on the post's north or south faces** — four connectors will not fit on a
+  5 1/2" face, and the two beams already have the east and west. The porch joists' south
+  oversail went 2 3/4" → 4 1/4" so the front rim band clears the pillar it used to run through.
+* **A post is the WOOD, not the clear distance between its bearings.** `StructuralHardware`
+  gained `bearing_standoff_in` / `seat_thickness_in` and `resolve/envelope.py::_resolve_post`
+  insets the member from the parts a plan authors on it: the `ABU66SS`'s 1 3/16" standoff
+  (Simpson's published 1" over the stirrup's own 7 ga base plate) off the bottom, the
+  `CCQ46SDS2.5`'s 7 ga seat off the top. That is 1 3/8" a mill does not cut, a take-off should
+  not bill and IRC Table R507.4 does not cap. It moves every ABU-based post in the house.
+* **The drainage fall became the authored number.** `SPEC.rear_pillar_rise_in = 2.0` is retired
+  for `SPEC.balcony_fall_in_per_ft = 0.25` — 1/4" per foot, the trade standard for a walking
+  deck and twice AridDek's published minimum, where the flat 2" worked out to 0.27 in/ft over
+  this run. A slope survives a bearing row moving; a rise does not.
+
+**What the change buys is a PRESCRIPTIVE read, not silence.** Both pillars are now graded by
+`structural.deck_post_size` against IRC Table R507.4 — a 6x6 at 48.3 ft² tributary, capped at
+10'-0" — and pass at 9.99' and 9.83'. `PT-SG-BR2` has **5/32"**, so raising the fall again
+spends it at 1/64" of post per 1/64 in/ft. catlin holds 0 FAIL.
+
+The deck-borne arrangement is kept in place and referenced by nothing, the `EXT_2X6_SWINBURNE`
+convention: `_DECK_BORNE_PILLAR_BEARINGS`, `_DECK_BORNE_PILLAR_REINFORCEMENTS` (the two 3-ply
+packs) and `_DECK_BORNE_BASE_TIE` (the five-part `MSTA12Z` + `L50Z` tie). The 2026-09-03 block
+above them is verbatim. `notes/centre_pillar_bearing.md` stays on disk and un-archived — a
+registered kind must name a live note, and the arithmetic is what the check would use the day
+a post stands on framing again; `notes/balcony_differential_movement.md` §6 is voided, because
+its cross-grain shrinkage argument has no cross-grain path left.
+
 **First pass — the court went back to one flush surface (2026-09-05).** It had been dropped
 7 1/4" on 2026-09-03 as a flood step, which put four elevations into a 19' court: the court
 itself, a 23.7 sf stoop a riser above it, `W-SG-ARCH` standing 3 3/4" proud as a mow strip,

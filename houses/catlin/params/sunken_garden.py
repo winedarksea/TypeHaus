@@ -348,7 +348,13 @@ class SunkenGardenSpec:
     porch_joist_cantilever_in: float = 0.0
     # balcony framing
     pillar_size: str = "6x6"
-    rear_pillar_rise_in: float = 2.0  # rear row taller for drainage slope
+    #: The balcony's drainage FALL, in inches per foot of southward run — the rear
+    #: (house-side) pillar row stands this much per foot above the front row. Authored as
+    #: a slope rather than as the rise it used to be (``rear_pillar_rise_in = 2.0``,
+    #: retired 2026-09-14) because a slope is the thing that is actually specified: the
+    #: rise it produces then follows the bearing rows wherever they go, and moving a row
+    #: cannot silently change the fall. See ``_rear_pillar_rise_in``.
+    balcony_fall_in_per_ft: float = 0.25
     # **Treated SYP structural glulam, 3-1/2" x 11-7/8"** (Anthony Power Preserved / Boise
     # 24F-V5M1/SP, ~$35/LF, stocked through Boise Cascade Lakeville). These were three
     # site-built 3-ply KDAT 2x12s until 2026-09-03; a glulam is one manufactured member with
@@ -2200,6 +2206,11 @@ HP_STAND_ANCHORS = [
 # north-edge line: the beams stay collinear through the column and the deck edge
 # cantilevers the offset over them toward the house gap. The front line has no such offset
 # — nothing to clear down there — so it sits on the deck's south edge itself.
+#: Half the dressed 6x6 the two centre pillars are, read off ``SPEC.pillar_size`` rather
+#: than written down, so the beam ends and the hanger stations cannot drift from the member
+#: they land on. Used by MAIN_NODES below and by the base/hanger connectors.
+_half_pillar_in = cross_section(SPEC.pillar_size).width_m / 0.0254 / 2.0  # 2.75
+
 MAIN_NODES = [
     Node(uid="SGNM01AAAA", tag="N-SGM-NW", position=pt(ft(_x_ax_w), ft(_y_col)),
          open_end=True),
@@ -2211,6 +2222,24 @@ MAIN_NODES = [
     Node(uid="SGNM05AAAA", tag="N-SGM-FE", position=pt(ft(_x_ax_e), ft(_y_ax_front)),
          open_end=True),
     Node(uid="SGNM06AAAA", tag="N-SGM-FCOL", position=pt(ft(_cx), ft(_y_ax_front))),
+    # ** THE FOUR BEAM ENDS CAME OFF THE COLUMN AXIS ON 2026-09-14. ** Each porch beam used
+    # to run to N-SGM-COL / N-SGM-FCOL — the column's own axis — because its end BORE on the
+    # 12" pour. The centre pillar now stands on that pour (see ``_WALL_UNDER_PILLAR``), so
+    # the two beams at each line stop at the pillar's east and west FACES instead and hang
+    # from it (CN-SG-HGR-C*, HU212-3). 2 3/4" is half the 5 1/2" post, which is why it is
+    # written as the post's half-width rather than as a number.
+    #
+    # N-SGM-COL and N-SGM-FCOL are KEPT. Nothing frames to them now, but they are the two
+    # column axes and the beam ends are authored as offsets FROM them; deleting them would
+    # leave the offsets measured off nothing. Their uids stay spent either way.
+    Node(uid="SGNM07AAAA", tag="N-SGM-COLW",
+         position=pt(ft(_cx) - inch(_half_pillar_in), ft(_y_col))),
+    Node(uid="SGNM08AAAA", tag="N-SGM-COLE",
+         position=pt(ft(_cx) + inch(_half_pillar_in), ft(_y_col))),
+    Node(uid="SGNM09AAAA", tag="N-SGM-FCOLW",
+         position=pt(ft(_cx) - inch(_half_pillar_in), ft(_y_ax_front))),
+    Node(uid="SGNM10AAAA", tag="N-SGM-FCOLE",
+         position=pt(ft(_cx) + inch(_half_pillar_in), ft(_y_ax_front))),
 ]
 
 # Two 3-ply KDAT 2x12 back beams: cast column -> side-wall pockets (two ~9'6" spans).
@@ -2218,11 +2247,11 @@ MAIN_NODES = [
 # has read "3-2x12" with BEAM_KDAT since 2026-08-23; the HGAM10 comment below already
 # called it "the 3-ply KDAT beam". This header was the last line still saying LVL.
 BACK_BEAMS = [
-    Beam(uid="SGBM01AAAA", tag="BM-SG-BKW", start_node="N-SGM-COL", end_node="N-SGM-NW",
+    Beam(uid="SGBM01AAAA", tag="BM-SG-BKW", start_node="N-SGM-COLW", end_node="N-SGM-NW",
          size=SPEC.back_beam, assembly="BEAM_KDAT",
          top_protection=_BEAM_TAPE_WIDE,
          bearing_refs=("PT-SG-COL", "W-SG-W1")),
-    Beam(uid="SGBM02AAAA", tag="BM-SG-BKE", start_node="N-SGM-COL", end_node="N-SGM-NE",
+    Beam(uid="SGBM02AAAA", tag="BM-SG-BKE", start_node="N-SGM-COLE", end_node="N-SGM-NE",
          size=SPEC.back_beam, assembly="BEAM_KDAT",
          top_protection=_BEAM_TAPE_WIDE,
          bearing_refs=("PT-SG-COL", "W-SG-E1")),
@@ -2256,11 +2285,11 @@ BACK_BEAMS = [
 # plan/assemblies.py::BEAM_WHITE_PAINT. The BACK pair keeps BEAM_KDAT: it is behind the
 # porch deck against the house and nobody sees it.
 FRONT_BEAMS = [
-    Beam(uid="SGBM03AAAA", tag="BM-SG-FRW", start_node="N-SGM-FCOL", end_node="N-SGM-FW",
+    Beam(uid="SGBM03AAAA", tag="BM-SG-FRW", start_node="N-SGM-FCOLW", end_node="N-SGM-FW",
          size=SPEC.back_beam, assembly="BEAM_WHITE_PAINT",
          top_protection=_BEAM_TAPE_WIDE,
          bearing_refs=("PT-SG-FCOL", "W-SG-W1")),
-    Beam(uid="SGBM04AAAA", tag="BM-SG-FRE", start_node="N-SGM-FCOL", end_node="N-SGM-FE",
+    Beam(uid="SGBM04AAAA", tag="BM-SG-FRE", start_node="N-SGM-FCOLE", end_node="N-SGM-FE",
          size=SPEC.back_beam, assembly="BEAM_WHITE_PAINT",
          top_protection=_BEAM_TAPE_WIDE,
          bearing_refs=("PT-SG-FCOL", "W-SG-E1")),
@@ -2602,18 +2631,41 @@ _PILLAR_X = (_x_ax_w, _cx, _x_ax_e)
 # the pillars so the map can say the true thing; the two front pillars are longer for it and
 # their ABU66SS bases came down with them, but the beam soffit they rise to has not moved.
 #
-# ``("F", 2)`` is not a wall at all: PT-SG-BF2 stands on the CONCRETE COLUMN, on the same
-# ``_back_beam_soffit`` the two front beams land on. That one entry drives the
-# pillar's ``supported_by``, its base elevation, its length AND ``CN-SG-BASE-F2``'s
-# ``connects`` and elevation, because the bases are generated from ``PILLAR_BEARINGS``
-# below. **Post-on-post is a supported path** — ``resolve_columns_and_beams`` republishes
-# each post's resolved top as it goes (envelope.py), precisely so a post can stand on a
-# concrete pier; ``breezeway.py``'s Pad -> PR-BW-* -> PT-BW-* is the live precedent.
-# Ordering holds because PT-SG-FCOL is in ``BASEMENT_ELEMENTS`` and PT-SG-BF2 in
-# ``SECOND_ELEMENTS``.
+# ``("F", 2)`` and ``("R", 2)`` are not walls at all: the two CENTRE pillars stand on the
+# CONCRETE COLUMNS, on the same ``_back_beam_soffit`` all four porch beams land on. Those
+# two entries drive each pillar's ``supported_by``, its base elevation, its length AND its
+# base connector's ``connects`` and elevation, because the bases are generated from
+# ``PILLAR_BEARINGS`` below. **Post-on-post is a supported path** — ``resolve_columns_and_beams``
+# republishes each post's resolved top as it goes (envelope.py), precisely so a post can
+# stand on a concrete pier; ``breezeway.py``'s Pad -> PR-BW-* -> PT-BW-* is the live
+# precedent. Ordering holds because PT-SG-FCOL / PT-SG-COL are in ``BASEMENT_ELEMENTS`` and
+# the pillars in ``SECOND_ELEMENTS``.
+#
+# ** 2026-09-14: BOTH CENTRE PILLARS CAME BACK DOWN ONTO CONCRETE. ** See
+# ``_DECK_BORNE_PILLAR_BEARINGS`` below for the arrangement this reverses and why. The whole
+# of the retirement is here: ``engineering/post_bearing.py`` enumerates on exactly one
+# predicate — a ``Post`` whose ``supported_by`` names a ``FloorSystem`` — so wood-on-wood
+# Fc-perp crushing stops being a question the moment these two name a post instead. What
+# makes it buildable rather than a longer column is that the four porch beams now HANG off
+# the pillar's east and west faces (HU212-3) instead of being seated beside it, so the pour
+# never has to span from a beam face to a pillar face and PT-SG-FCOL stays 12" round.
 _WALL_UNDER_PILLAR = {
     ("R", 1): ("W-SG-W1", _porch_top), ("R", 3): ("W-SG-E1", _porch_top),
     ("F", 1): ("W-SG-W1", _porch_top), ("F", 3): ("W-SG-E1", _porch_top),
+    ("R", 2): ("PT-SG-COL", _back_beam_soffit),
+    ("F", 2): ("PT-SG-FCOL", _back_beam_soffit),
+}
+#: REVERT RECORD, 2026-09-14 — the deck-borne arrangement this replaced, kept in place and
+#: referenced by nothing, the ``EXT_2X6_SWINBURNE`` convention. Restoring these two lines
+#: (i.e. dropping the ("R", 2) / ("F", 2) entries above so the ``.get()`` default applies)
+#: puts both centre pillars back on the porch framing and brings
+#: ``post_bearing/PT-SG-BF2`` and ``post_bearing/PT-SG-BR2`` back into the engineering
+#: register. The ``JoistReinforcement`` packs that went with it are
+#: ``_DECK_BORNE_PILLAR_REINFORCEMENTS`` beside FS-SG-PORCH's own; the five-part base tie is
+#: recorded at ``_DECK_BORNE_BASE_TIE``.
+_DECK_BORNE_PILLAR_BEARINGS = {
+    ("R", 2): ("FS-SG-PORCH", _porch_walking_surface),
+    ("F", 2): ("FS-SG-PORCH", _porch_walking_surface),
 }
 # The rear pillar row rides on the *back-beam* line, not on the deck's north edge. At
 # `_y_in_n` PT-SG-BR2 would land on the cantilevered tip of the porch joists — a 6x6
@@ -2728,14 +2780,34 @@ _FRONT_COLUMN_CANTILEVER_IN = 2.0
 # paths, and `BALCONY_FRONT_AXIS_Y_FT` — the published contract raised_garden.py reads.
 _y_front_pillar = _y_balcony_front + (
     _corner_column_radius_in + _FRONT_COLUMN_CANTILEVER_IN) / 12.0  # -9.833333'
-_PILLAR_ROWS = (("R", _y_rear_pillar, inch(SPEC.rear_pillar_rise_in)),
+#: The rear row's rise, DERIVED from the fall and the run between the two bearing rows.
+#:
+#: ** 2026-09-14: 2" BECAME 1 27/32", AND THE SLOPE IS NOW THE AUTHORED THING. ** The rise
+#: was a flat 2" and the fall was whatever that worked out to over whatever run the rows
+#: happened to be at — 0.27 in/ft. Owner's call: the number that should be held is 1/4" per
+#: foot, which is the trade standard for a walking deck and still 2x AridDek's published
+#: 1/8 in/ft minimum. Over the 7'-4" between the rows that is 1.833", 5/32" less post than
+#: the flat 2" was.
+#:
+#: **That 5/32" is load-bearing, and not only for drainage.** PT-SG-BR2 is the tallest of
+#: the six pillars and since it came down onto PT-SG-COL it is graded against IRC Table
+#: R507.4, which caps a 6x6 at 10'-0" for this deck's 48.3 ft2 tributary. At the flat 2"
+#: the wood came out at 120.016" — 1/64" over, with the ABU66SS standoff and the
+#: CCQ46SDS2.5 seat already taken off it (resolve/envelope.py::_post_connector_insets).
+#: At 1/4 in/ft it is 119.85", inside by 5/32". **A reader raising the fall again has to
+#: check that limit**: every 1/64 in/ft of extra fall is another 1/64" of post, and there
+#: is 5/32" of room.
+_rear_pillar_rise_in = SPEC.balcony_fall_in_per_ft * (_y_rear_pillar - _y_front_pillar)
+_PILLAR_ROWS = (("R", _y_rear_pillar, inch(_rear_pillar_rise_in)),
                 ("F", _y_front_pillar, ft(0)))
 
 # ** THE DRAINAGE SLOPE, AND WHERE THE ENGINE USED TO THROW HALF OF IT AWAY. **
 #
-# `SPEC.rear_pillar_rise_in` raises the rear pillar row so the deck falls south, away from
-# the house. Over the 88" between the two bearing rows that is 0.23 in/ft against AridDek's
-# recommended minimum of 1/8 in/ft — correct, and generous by ~1.8x.
+# `_rear_pillar_rise_in` raises the rear pillar row so the deck falls south, away from the
+# house. It is `SPEC.balcony_fall_in_per_ft` — 1/4" per foot since 2026-09-14 — times the
+# run between the two bearing rows, against AridDek's recommended minimum of 1/8 in/ft:
+# twice the minimum, and the trade's own number for a deck that has to shed rather than
+# pond. It was a flat 2" until then, which over this run was 0.27 in/ft.
 #
 # Until 2026-09-12 the rise reached the POSTS and stopped there. ``_resolve_post``'s
 # docstring is explicit that it shortens the authored height rather than overriding the top
@@ -2758,7 +2830,7 @@ _PILLAR_ROWS = (("R", _y_rear_pillar, inch(SPEC.rear_pillar_rise_in)),
 # it is on site. Rise per inch of northward run, measured between the two BEARING rows (not
 # the beam ends — the beam oversails both, 20" north and 8" south, and taking the slope off
 # the ends would mis-state it by a quarter of an inch).
-_BEAM_RISE_PER_IN = SPEC.rear_pillar_rise_in / ((_y_rear_pillar - _y_front_pillar) * 12.0)
+_BEAM_RISE_PER_IN = _rear_pillar_rise_in / ((_y_rear_pillar - _y_front_pillar) * 12.0)
 
 
 def _balcony_rise_at(y_ft):
@@ -2766,7 +2838,7 @@ def _balcony_rise_at(y_ft):
 
     The front row is the datum because it is the low end and the one that did not move:
     ``_balcony_beam_soffit`` is where PT-SG-BF1/2/3 top out, and the rear row is exactly
-    ``SPEC.rear_pillar_rise_in`` above it.
+    ``_rear_pillar_rise_in`` above it.
     """
     return inch((y_ft - _y_front_pillar) * 12.0 * _BEAM_RISE_PER_IN)
 
@@ -2822,6 +2894,25 @@ def _balcony_rise_at(y_ft):
 # reasoning above is what replaced it, and a future reader moving this pillar needs both.
 _BF2_NORTH_OF_FRONT_AXIS_IN = 0.0
 _y_bf2 = _y_ax_front + _BF2_NORTH_OF_FRONT_AXIS_IN / 12.0
+# ** 2026-09-14: PT-SG-BR2 CAME BACK ONTO THE COLUMN AXIS, AND THE 3" IS SPENT. **
+# ``_REAR_PILLAR_SOUTH_OF_COL_IN`` bought one thing: it kept a DECK-BORNE pillar out of
+# ``cantilever.py::_band``'s epsilon, which reports a 0" overhang about a joint that does
+# not exist. That pillar is not deck-borne any more — it stands on PT-SG-COL — so
+# ``structural.cantilever_point_load`` never reaches it and the offset buys nothing.
+#
+# What it COSTS once the pillar is on concrete is real, and is why this is not cosmetic:
+# a 5 1/2" post centred 3" off the axis of a 12" round puts two of its corners at
+# sqrt(2.75^2 + 5.75^2) = 6.37" from the centre, 3/8" OUTSIDE the pour, while its north 2"
+# laps BM-SG-BKW/BKE's south 2". On the axis the post is square on the round with 1/2" of
+# edge all the way about, and the two back beams hang off its east and west faces exactly
+# as the two front beams hang off PT-SG-BF2's.
+#
+# BR1/BR3 do NOT move: they bear on W-SG-W1/E1 and ``_REAR_PILLAR_SOUTH_OF_COL_IN`` is
+# still theirs. The rear row is therefore 3" out of line at its centre, which costs
+# nothing — the three balcony beams are three separate members, each with its own pair of
+# bearings, and BM-SG-BLC simply gains 3" of back span (88" -> 91") and loses 3" of north
+# overhang (20" -> 17") against an R507.5.1 limit that rises with it (22" -> 22.75").
+_y_br2 = _y_col
 # The four CORNER pillars became 12" cast concrete columns on 2026-09-03 and the two CENTRE
 # pillars did not. That split is the whole redesign in one loop: four columns FIXED at the
 # base (doweled into the 12" wall tops of W-SG-W1/E1, whose axis they stand on, so the round
@@ -2842,8 +2933,8 @@ for _i, _x in enumerate(_PILLAR_X, start=1):
             (_row, _i), ("FS-SG-PORCH", _porch_walking_surface))
         _tag = f"PT-SG-B{_row}{_i}"
         _is_corner = _i in _CORNER_PILLAR_INDICES
-        if _row == "F" and _i == 2:
-            _y = _y_bf2
+        if _i == 2:
+            _y = _y_bf2 if _row == "F" else _y_br2
         PILLAR_BEARINGS[_tag] = (_bears_on, _base)
         PILLARS.append(Post(uid=f"SGPB{_i}{_row_index}AAAA", tag=_tag,
                             position=pt(ft(_x), ft(_y)),
@@ -3043,6 +3134,48 @@ _BALCONY_GUARD_STATIONS = [
 # --- joist framing under the two decks (rendered members beneath the surface slabs) ---
 # Porch: PT 2x8 @ 16" o.c. running N-S between the two beam lines — hung flush in the front
 # pair, bearing on the back pair and cantilevering the column's offset past it.
+#: The porch joists' SOUTH oversail past the front beam axis, and the BF2 chase's own south
+#: edge — one number, because the chase has to reach the joist tips exactly. See
+#: ``PORCH_JOISTS`` for what the oversail buys and ``PILLAR_CHASES`` for why the chase ends
+#: on it rather than past it.
+_PORCH_JOIST_START_CANT_IN = 4.25
+
+# ** THE TWO PILLAR CHASES (2026-09-14). ** Both centre pillars now rise from the concrete
+# column tops at -1'-6 1/2", which is BELOW this deck, so each passes THROUGH the joist
+# plane on its way to the balcony. The joist line at x = 18'-0" is the one they pass
+# through, and a post and a joist cannot occupy the same 7 1/4".
+#
+# A 9" square is the framed answer and it is the same 9" the field detail already called
+# for in the composite plank: ``resolve/floors.py`` subtracts the opening's along-span
+# interval from the joist line inside it and heads the cut with a trimmer pair on the two
+# lines 16" either side, so **the joists frame to a header spanning between the two joist
+# lines adjacent to x = 18'-0" and the post passes up through the framed opening**. At 9"
+# the opening is inside R502.10.1's short-opening allowance, so the header and trimmers are
+# single-ply joist stock rather than a designed beam.
+#
+# ** NO HANGER ON THE POST'S NORTH OR SOUTH FACES, AND THAT IS THE REASON FOR THE HEADER. **
+# Four connectors will not fit on a 5 1/2" face: the two beams already take the east and
+# west faces (CN-SG-HGR-C*, HU212-3), and hanging the header off the remaining two would
+# put four hangers on one post at one elevation. The header is carried by the two
+# neighbouring joists instead, and the post carries nothing of this deck at all.
+#
+# ``bearing_refs`` names the beam each opening sits on — the header's own ends land on the
+# trimmers, but the trimmers land on these.
+PILLAR_CHASES = [
+    FloorOpening(uid="SGO009AAAA", tag="FO-SG-BF2", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(ft(_cx) - inch(4.5), ft(_y_bf2) - inch(_PORCH_JOIST_START_CANT_IN)),
+                          pt(ft(_cx) + inch(4.5), ft(_y_bf2) - inch(_PORCH_JOIST_START_CANT_IN)),
+                          pt(ft(_cx) + inch(4.5), ft(_y_bf2) + inch(4.5)),
+                          pt(ft(_cx) - inch(4.5), ft(_y_bf2) + inch(4.5))),
+                 bearing_refs=("BM-SG-FRW", "BM-SG-FRE")),
+    FloorOpening(uid="SGO010AAAA", tag="FO-SG-BR2", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(ft(_cx) - inch(4.5), ft(_y_br2) - inch(4.5)),
+                          pt(ft(_cx) + inch(4.5), ft(_y_br2) - inch(4.5)),
+                          pt(ft(_cx) + inch(4.5), ft(_y_br2) + inch(4.5)),
+                          pt(ft(_cx) - inch(4.5), ft(_y_br2) + inch(4.5))),
+                 bearing_refs=("BM-SG-BKW", "BM-SG-BKE")),
+]
+
 PORCH_JOISTS = FloorSystem(
     uid="SGFS01AAAA", tag="FS-SG-PORCH",
     joists=JoistSpec(member=SPEC.porch_joist, spacing=inch(SPEC.porch_joist_oc_in),
@@ -3060,7 +3193,7 @@ PORCH_JOISTS = FloorSystem(
                      # back-beam line to the deck edge, which is the porch's real overhang.
                      # One symmetric value cannot say both.
                      cantilever=inch(SPEC.porch_joist_cantilever_in),
-                     cantilever_start=inch(2.75),
+                     cantilever_start=inch(_PORCH_JOIST_START_CANT_IN),
                      cantilever_end=inch(SPEC.column_south_offset_in),
                      # The NORTH band (rim-0, y = -9'-8 3/4") is the porch's exposed front
                      # edge: it closes the joist tips over the garden walk, in the same plane
@@ -3081,64 +3214,24 @@ PORCH_JOISTS = FloorSystem(
                      # Member count is unchanged from the single-wall bearing.
                      bearing_refs=("BM-SG-FRW", "BM-SG-FRE",
                                    "BM-SG-BKW", "BM-SG-BKE")),
-    # THE TWO CENTRE PILLARS' BEARING PACKS — 3 plies and blocking, on the beam lines.
+    # ** THE TWO CENTRE PILLARS' BEARING PACKS WERE RETIRED ON 2026-09-14. **
+    # Both pillars bear on the concrete column tops now, not on this deck (see
+    # ``_WALL_UNDER_PILLAR``), so there is no pillar load in these joists to spread and no
+    # cross-grain plane here to grade: ``engineering/post_bearing.py`` enumerates a post
+    # whose ``supported_by`` names a FloorSystem, and neither does. What stands at x = 18'-0"
+    # instead is ``PILLAR_CHASES`` — a framed 9" opening at each pillar, headed off the two
+    # joist lines 16" either side.
     #
-    # The pillar rows sit ON the beam lines, so the CANTILEVER reason for reinforcement is
-    # gone. ``structural.cantilever_point_load`` is not quite silent about it: since the
-    # joists gained their 2 3/4" ``cantilever_start`` the check names PT-SG-BF2 at **0.0"
-    # past the bearing line** — i.e. it reports a post standing on the bearing itself, not
-    # out on the overhang, and it says in the same breath that the load is answered by the
-    # 3-ply pack below. That is an advisory UNKNOWN about a joint that does not exist, and
-    # ``haus print --sealed`` passes over it. Cross-grain bearing under a 6x6 point load is
-    # the DIFFERENT and real reason, and since 2026-09-03 it is computed:
-    # ``engineering/post_bearing.py`` grades both pillars against NDS §3.10, reported by
-    # ``structural.deck_post_bearing`` and oracled in notes/centre_pillar_bearing.md.
+    # **The guard post needs no blocking here either, and that is not an oversight.** The
+    # RL-SG-PORCH south-leg station at x = 18'-0" is PT-SG-BF2 itself, and the R301.5 200 lb
+    # couple at the top of that guard now runs 6x6 -> ABU66SS -> PT-SG-FCOL -> FT-SG-FCOL,
+    # entirely in members that bear on concrete. It never reaches a joist, so there is
+    # nothing for a block to take it into. The nine other south-leg stations keep theirs
+    # below — their posts really do stand on the plank.
     #
-    # ** WHY plies=3 AND NOT 1. ** It was 1, on the reasoning that "what this needs is a
-    # bearing block against rollover, not a stiffened joist". Rollover was never the binding
-    # limit state. Through ONE 1-1/2" ply, BM-SG-BLC's real reactions (2,566 lb at BR2 and
-    # 2,267 lb at BF2, by statics on its 20"/15" overhangs — not a sixth of the deck) work
-    # out at 311 psi under the base and 380 psi where the joist crosses the back beam,
-    # against a **wet** Fc-perp of 285 psi. Not the 425 the old comment here graded against:
-    # this frame stands in weather, NDS Table 4.3.1's C_M of 0.67 applies to it, and the
-    # glulam bearing on the other end of the same post has been graded wet since the day it
-    # was first computed. Two plies of sister take the same load to 104 and 127 psi.
-    #
-    # ** AND THE ``at`` MOVED ONTO THE BEAM CENTRELINES. ** ``_reinforcement_members`` uses
-    # ``at``'s across-span coordinate to pick the joist line and its along-span coordinate
-    # for ``block_axis`` only, so authoring ``at`` on the beam axis lands the blocks directly
-    # over the beam rather than tangent to it. At the pillar stations they ran 2.25"-3.75"
-    # from the axis against a 4-1/2" beam whose face is at 2.25": tangent, never over it, so
-    # they could only shed load into the neighbouring joists through their end nails. That is
-    # rollover restraint, which is what their ``source`` claims, and it is all it was.
-    #
-    # ONE entry at x = 18'-0" on the front line, not two. BF2 and the guard-post block were
-    # 3" apart on the same joist; BF2 is now the guard post (see
-    # ``_PORCH_GUARD_SOUTH_STATIONS``) and they are one pack.
+    # The retired specs are kept, in place and referenced by nothing, as
+    # ``_DECK_BORNE_PILLAR_REINFORCEMENTS`` below.
     reinforcements=(
-        JoistReinforcement(
-            at=pt(ft(_cx), ft(_y_col)), plies=3, blocking=True,
-            source="3-ply bearing pack + squash blocks under PT-SG-BR2 — a 6x6 carrying a "
-                   "third of the balcony lands here; the plies spread 2,566 lb across 4 1/2\" "
-                   "of stock and the blocks take the cross-grain load into the back beams "
-                   "instead of into the joist's web"),
-        # BF2's, at x = 18'-0" on the FRONT beam axis. One entry doing three jobs: the
-        # pillar's bearing pack, the blocks that put its load onto the beam it stands over,
-        # and the backing for the guard whose post that pillar now is.
-        # ``plies=3`` HERE TOO, AND IT BUYS NO SECOND PACK. Both centre pillars stand on
-        # the SAME joist line (x = 18'-0"), and a sister runs the WHOLE joist — bearing line
-        # to bearing line — so the three plies asked for at the back beam already run under
-        # this pillar. ``_reinforcement_members`` tops a line's cluster UP to the deepest
-        # ``plies`` any entry on it asks for, so this states the requirement without laying a
-        # second, coincident pair. What this entry adds on its own is its BLOCKS, at the
-        # front beam, where the joists END.
-        JoistReinforcement(
-            at=pt(ft(_cx), ft(_y_ax_front)), plies=3, blocking=True,
-            source="3-ply bearing pack + squash blocks under PT-SG-BF2, which is also the "
-                   "RL-SG-PORCH south-leg guard post at this station — the joists END on "
-                   "the front beam with 2 1/4\" of bearing, so the plies are what spread "
-                   "2,267 lb over it and the blocks are what the guard's overturning lands "
-                   "in, never TR-SG-CAP-FRW/FRE and its butyl"),
         # The porch guard's south-leg posts. A surface-mounted 42" guard takes the R301.5
         # 200 lb concentrated load at its top, which arrives at the baseplate as a couple
         # the 5x5 plate spreads over two joists — and nothing under it but a 1" composite
@@ -3169,6 +3262,8 @@ PORCH_JOISTS = FloorSystem(
     # construction; 2 3/4" is a small setback, not a landing. TR-SG-DRIP / `_FRONT_PATH`
     # are unaffected — they are the BALCONY's front edge (`_y_balcony_front`), not this one.
     outline=_PORCH_OUTLINE,
+    #: The two pillar chases — see ``PILLAR_CHASES`` above.
+    openings=("FO-SG-BF2", "FO-SG-BR2"),
     # The composite plank *is* this deck's sheet: with SL-SG-PORCH gone the boards are the
     # floor system's own surface layer, which is both what a person stands on (the balcony
     # pillar that misses the masonry railing bears here) and what the sheet-goods take-off
@@ -3183,6 +3278,28 @@ PORCH_JOISTS = FloorSystem(
     # 40-psf floor table — see checks/structural/deck.py.
     service="deck",
     source="porch floor — PT 2x8 joists bearing on the front and back beam lines",
+)
+
+#: REVERT RECORD, 2026-09-14 — the two ``JoistReinforcement`` packs that carried the centre
+#: pillars while they bore on this deck. Kept in place and referenced by nothing, the
+#: ``EXT_2X6_SWINBURNE`` convention: restoring ``_DECK_BORNE_PILLAR_BEARINGS`` without
+#: restoring these would put two 6x6s carrying a third of a balcony each onto a single
+#: 1 1/2" ply, at 311 and 380 psi against a wet Fc-perp of 285. The ``at`` points are the
+#: two beam centrelines; ``plies=3`` is what took those planes to 104 and 127 psi.
+_DECK_BORNE_PILLAR_REINFORCEMENTS = (
+    JoistReinforcement(
+        at=pt(ft(_cx), ft(_y_col)), plies=3, blocking=True,
+        source="3-ply bearing pack + squash blocks under PT-SG-BR2 — a 6x6 carrying a "
+               "third of the balcony lands here; the plies spread 2,566 lb across 4 1/2\" "
+               "of stock and the blocks take the cross-grain load into the back beams "
+               "instead of into the joist's web"),
+    JoistReinforcement(
+        at=pt(ft(_cx), ft(_y_ax_front)), plies=3, blocking=True,
+        source="3-ply bearing pack + squash blocks under PT-SG-BF2, which is also the "
+               "RL-SG-PORCH south-leg guard post at this station — the joists END on "
+               "the front beam with 2 1/4\" of bearing, so the plies are what spread "
+               "2,267 lb over it and the blocks are what the guard's overturning lands "
+               "in, never TR-SG-CAP-FRW/FRE and its butyl"),
 )
 
 # --- the porch enclosure's flank blocking (2026-09-03) --------------------------------
@@ -3537,89 +3654,96 @@ STEM_DOWELS = [
 # standing on 12" cast concrete: the joint is a lapped doweled splice made in the pour, not
 # a connector, and authoring a base there would bill four standoffs that do not exist and
 # claim a pinned joint where the whole redesign turns on a FIXED one.
+#: REVERT RECORD, 2026-09-14 — the five-part base tie the two centre pillars carried while
+#: they bore on the porch framing: an MSTA12Z strap on the one flush vertical pair (the
+#: post's west face and the joist pack's, both at x = 213 1/4") plus L50Z angles wherever
+#: there was pack to screw into (BR2 north and south, BF2 north alone). Totals 1,408 lbf at
+#: BR2 and 1,033 lbf at BF2 against a 300-600 lbf demand. Kept in place and referenced by
+#: nothing, beside ``_DECK_BORNE_PILLAR_BEARINGS`` and
+#: ``_DECK_BORNE_PILLAR_REINFORCEMENTS``, because the reasoning it encodes — why nothing
+#: that WRAPS this joint can be built at a T, and why ABU66SS was the wrong part on a deck —
+#: is the reasoning a reader restoring that arrangement needs. The three ratings and the
+#: species argument are still in ``library/hardware.py``.
+#:
+#: ``TENSION_TIE`` was the kind, and the kind is the whole difference: ``model/enums.py``
+#: reads TENSION_TIE as "a post on FRAMING" and POST_BASE as "a stirrup on CONCRETE". These
+#: two pillars stand on concrete now, so they take a POST_BASE.
+_DECK_BORNE_BASE_TIE = (
+    ("CN-SG-BASE-R2-W", "MSTA12Z"), ("CN-SG-BASE-R2-N", "L50Z"),
+    ("CN-SG-BASE-R2-S", "L50Z"),
+    ("CN-SG-BASE-F2-W", "MSTA12Z"), ("CN-SG-BASE-F2-N", "L50Z"),
+)
+
+# ** THE TWO CENTRE PILLAR BASES — ABU66SS ON THE POUR, SINCE 2026-09-14. **
+#
+# Both centre pillars stand on a 12" cast column top now (``_WALL_UNDER_PILLAR``), so the
+# joint this connector makes is the one every published ABU number is measured at: a wood
+# post standing off CONCRETE through a cast-in 5/8" anchor. That is the reversal of the note
+# kept at ``_DECK_BORNE_BASE_TIE`` above, and it is a kind change rather than a size change
+# — ``ConnectorKind.POST_BASE`` is "a stirrup on concrete" and ``TENSION_TIE`` is "a post on
+# framing" (model/enums.py). Authoring the old kind here would have drawn the right part
+# against the wrong joint.
+#
+# **ABU66SS, not ABU66Z**: these two stirrups stand in the open at the head of a sunken
+# garden, in the same run-off the other ten stainless bases on this house were specified
+# for, and the stainless carries the galvanised part's published numbers (L-F-SSNAILS — see
+# ``library/hardware.py::ABU66SS_POST_BASE``). ``anchored=True`` says the 5/8" bolt is cast
+# into the column rather than drilled after: these two pours are placed with the garden's
+# own excavation and the bolt is set wet.
+#
+# **The 1" standoff is the point of the part, not a detail of it.** IRC R317.1.4 Exception
+# 1/3 lets an untreated post end stand clear of concrete instead of being treated for
+# ground contact, and an ABU is what makes that standoff a countable thing rather than a
+# sentence in an assembly's ``source``. It is also 1" of the two pillars' modelled length —
+# see ``SPEC.pillar_size`` and the post-length note on ``PILLARS``.
+#
+# ``elevation`` is the column top the stirrup is bolted to, which is also the pillar's own
+# base: ``PILLAR_BEARINGS`` carries both, so the two cannot drift apart.
 CONNECTORS = []
 for _row, _y, _rise in _PILLAR_ROWS:
-    # THE BASE TIE IS A STRAP PLUS ANGLES — FIVE PARTS, NOT ONE CAP. Both centre pillars
-    # bear on the porch FRAMING, and the four parts that stood here before all fail at that
-    # joint. The first three failed on their ratings; the fourth failed on geometry:
-    #
-    #   * **ABU66SS — unrated.** Every published value an ABU has is measured with the
-    #     stirrup bearing on CONCRETE through a 5/8" cast-in anchor, and ESR-1622 §5.6 puts
-    #     that anchor and its footing outside its own scope. On a deck there is no pour, no
-    #     cast-in bolt and no basis for the table. (The stainless ABU66SS is still not in
-    #     ESR-1622, but that is no longer why it fails here: L-F-SSNAILS rates it at the
-    #     galvanized ABU66's numbers since 2026-09-11. It fails on the JOINT — those numbers
-    #     are concrete-bearing numbers and this is wood-on-wood.) Its 1" standoff was cited
-    #     to IRC R317.1.4 Exception 1/3, which governs a wood column on CONCRETE.
-    #   * **DTT2Z — right idea, wrong shape.** One-sided: eccentric on a 6x6, needing a 1/2"
-    #     rod driven through the joist pack to a nut in the beam bay, and contributing
-    #     nothing lateral at a base that is pinned by design. Superseded the same day.
-    #   * **CCQ4.62-5.50SDS inverted — IT DOES NOT FIT, AT EITHER PILLAR.** This is the one
-    #     worth remembering, because it read as correct on paper for a whole day. At
-    #     PT-SG-BF2 the rim, the joist tips, the beam axis and the post centre are all one
-    #     line — a T, with no orientation for a channel. At PT-SG-BR2 the squash blocks sit
-    #     in the bays flanking the 3-ply pack, exactly where an inverted channel's side
-    #     plates must hang. It was also ~20x the demand: 6,785 lbf at a joint whose net
-    #     uplift, off this house's own wind basis (V_ult 115, Exp B, q_h ~16.5 psf, free-roof
-    #     C_N ~1.2, 0.6 for ASD: ~11.9 psf over ~48 ft2 = ~575 lb up, less 0.6D ~290 lb), is
-    #     about 285 lb. ``structural.uplift_capacity`` is an honest UNKNOWN here and nothing
-    #     in the engine computes that number, so it is written down where it can be checked.
-    #
-    # ** THE MIX IS DECIDED BY WHAT EACH FACE HAS BESIDE IT. ** Not by symmetry:
-    #
-    #      pillar     | west (flush) | north      | south      | east
-    #      PT-SG-BR2  | 1 x MSTA12Z  | 1 x L50Z   | 1 x L50Z   | —
-    #      PT-SG-BF2  | 1 x MSTA12Z  | 1 x L50Z   | —          | —
-    #
-    # The strap takes the ONE flush vertical pair in the joint: the post's west face and the
-    # pack's west face are both at x = 213.25" at both pillars, so 12" of strap lies flat
-    # with 6" in each member, and its 2-1/2" nails cross the outer joist and land 1" into
-    # the first sister — two of the three plies. The east face has a 1" step and takes
-    # nothing. The angles go only where there is pack to screw into: BR2 north and south,
-    # BF2 north alone. The E/W faces offer 1-1/2" of block, so angles there would be
-    # fiction. Totals against a 300-600 lbf demand: BR2 1,408 lbf, BF2 1,033 lbf.
-    #
-    # ** THE SPECIES IS STILL THE REASON THE PILLARS ARE DF-L. ** ESR-2105 §3.5.2 and
-    # ESR-3096 §3.2.2 carry the same clause as ESR-2604/ESR-2330 §3.2.2 — SG >= 0.50 at
-    # MC <= 19%. At SPF 0.42 nothing at either end of these posts had a published value,
-    # the CCQ46SDS2.5 cap on top included, so POST_WHITE_PAINT_DF keeps its reason and only
-    # its citation widens. The moisture half is not met by an open deck frame and rides on
-    # the seal; the WET SERVICE half is resolvable and is APPLIED — both reports' §4.1 send
-    # it to the NDS wet service factor, so C_M 0.70 is already in the 658/375 lbf above.
-    #
-    # The pillar bears DIRECTLY on the 3-ply pack under it (see FS-SG-PORCH's
-    # reinforcements), wood on wood with no plate between: ``engineering/post_bearing.py``
-    # grades the post's own footprint onto the joists. Both sit at ``_porch_walking_surface``
-    # with a plank cut-out under them, and each connector rides that pillar's own bearing
-    # top so it draws where the post actually starts. The per-face ``position`` offsets are
-    # the real faces of the 5-1/2" post, so the five markers do not co-locate.
     _bearing_tag, _bearing_top = PILLAR_BEARINGS[f"PT-SG-B{_row}2"]
-    _post_y = _y_bf2 if _row == "F" else _y
-    _half_post_ft = 2.75 / 12.0
+    _post_y = _y_bf2 if _row == "F" else _y_br2
     CONNECTORS.append(Connector(
-        uid=f"SGCBW{_row}AAAA", tag=f"CN-SG-BASE-{_row}2-W",
-        kind=ConnectorKind.TENSION_TIE,
-        position=pt(ft(_cx - _half_post_ft), ft(_post_y)),
-        elevation=_bearing_top,
-        size="MSTA12Z", connects=(f"PT-SG-B{_row}2", _bearing_tag)))
-    CONNECTORS.append(Connector(
-        uid=f"SGCBN{_row}AAAA", tag=f"CN-SG-BASE-{_row}2-N",
-        kind=ConnectorKind.TENSION_TIE,
-        position=pt(ft(_cx), ft(_post_y + _half_post_ft)),
-        elevation=_bearing_top,
-        size="L50Z", connects=(f"PT-SG-B{_row}2", _bearing_tag)))
-    if _row == "R":
-        # BR2 only: the pack runs on south of this pillar. At BF2 the joist field ENDS on
-        # the front beam and there is nothing south of the post to land an angle on.
+        uid=f"SGCB2{_row}AAAA", tag=f"CN-SG-BASE-{_row}2",
+        kind=ConnectorKind.POST_BASE,
+        position=pt(ft(_cx), ft(_post_y)),
+        elevation=_bearing_top, anchored=True,
+        size="ABU66SS", connects=(f"PT-SG-B{_row}2", _bearing_tag)))
+    # ** AND THE FOUR PORCH BEAMS HANG OFF THE PILLAR. ** Each beam used to run to the
+    # column's own axis and BEAR on the pour; the pillar stands on that pour now, so the
+    # beam stops at the pillar's face (N-SGM-COLW/COLE, N-SGM-FCOLW/FCOLE) and is carried
+    # by a face-mount hanger instead.
+    #
+    # **HU212-3, not HUC212-3.** The HUC is the CONCRETE-face-mount part the four wall
+    # pockets take (CN-SG-HGR-W/E below), and its one advantage over the HU is a concealed
+    # flange that lets the end sit in a 6" pocket. A 5 1/2" post cannot host a concealed
+    # flange at all — there is nothing for it to disappear into — and the HUC's published
+    # loads are Titen-into-concrete loads, which is not this joint. The HU is the same
+    # 4 11/16" x 10 5/16" seat for the same three plies of 2x12, nailed into wood.
+    # Write the plain model string: ``hardware_by_model`` is exact-match and a stray "Z"
+    # silently yields no allowable.
+    #
+    # ``elevation`` is the beam's mid-depth, as the four pocket hangers are authored: a
+    # Connector draws as a marker box centred on its elevation, and the soffit would hang
+    # the marker below the joint.
+    for _side, _dx, _beam in (("W", -1.0, f"BM-SG-{'BK' if _row == 'R' else 'FR'}W"),
+                              ("E", 1.0, f"BM-SG-{'BK' if _row == 'R' else 'FR'}E")):
         CONNECTORS.append(Connector(
-            uid=f"SGCBS{_row}AAAA", tag=f"CN-SG-BASE-{_row}2-S",
-            kind=ConnectorKind.TENSION_TIE,
-            position=pt(ft(_cx), ft(_post_y - _half_post_ft)),
-            elevation=_bearing_top,
-            size="L50Z", connects=(f"PT-SG-B{_row}2", _bearing_tag)))
+            uid=f"SGCHC{_row}{_side}AAA", tag=f"CN-SG-HGR-C{_row}2-{_side}",
+            kind=ConnectorKind.JOIST_HANGER,
+            position=pt(ft(_cx) + inch(_dx * _half_pillar_in), ft(_post_y)),
+            elevation=_back_beam_mid,
+            size="HU212-3", connects=(_beam, f"PT-SG-B{_row}2")))
 # Spent post-base uids, not reused: SGCB1RAAAA / SGCB3RAAAA / SGCB1FAAAA / SGCB3FAAAA, the
 # four corner ABU66SS bases retired when those pillars became cast columns, and
-# SGCB2RAAAA / SGCB2FAAAA, the two inverted-CCQ bases this five-part tie replaced.
+# SGCBWRAAAA / SGCBNRAAAA / SGCBSRAAAA / SGCBWFAAAA / SGCBNFAAAA, the five parts of the
+# deck-borne base tie retired on 2026-09-14 (see ``_DECK_BORNE_BASE_TIE``).
+#
+# ``SGCB2RAAAA`` / ``SGCB2FAAAA`` are BACK IN USE, and deliberately so: they were the two
+# inverted-CCQ bases at these same two joints, and the part standing there now is a base at
+# the same two pillars. The uid is the element's identity, and the element — "the thing that
+# holds PT-SG-B*2 down at its bottom" — never went away; only the part did. Reusing them
+# keeps both IFC GlobalIds continuous across the whole history of this joint.
 
 # THE FOUR CORNER BEAM SEATS. Each 12" column top carries ONE balcony beam end (the west
 # and east beams' two ends each), held down by an HGAM10 masonry gusset angle — the same
@@ -4022,7 +4146,7 @@ _BEAM_CAP_AT = (
     ("SGCP04AAAA", "TR-SG-CAP-FRE", (_cx, _y_ax_front), (_x_ax_e, _y_ax_front),
      _front_beam_top, _porch_cap_thickness, "BM-SG-FRE"),
     # The balcony's three run N-S on the deck's own 2"-in-8'-8" southward fall (the rear
-    # pillars are ``rear_pillar_rise_in`` taller), so each cap sheds to its south end — which
+    # pillars are ``_rear_pillar_rise_in`` taller), so each cap sheds to its south end — which
     # is the front edge, where TR-SG-GUTTER already hangs. The caps discharge into the
     # trough rather than onto the pillar tops and the front rail below them.
     ("SGCP05AAAA", "TR-SG-CAP-BLW", (_x_ax_w, _y_in_n), (_x_ax_w, _y_balcony_front),
@@ -4113,7 +4237,7 @@ PORCH_SLOT_CLOSURE = Flashing(
 # Every remaining connector is porch hardware at the deck (post bases, hangers, the column
 # ties and the four corner beam-seat gussets), so main takes them whole. With the knee
 # braces retired there is no second-storey hardware at all.
-MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, *FRONT_BEAMS, PORCH_JOISTS,
+MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, *FRONT_BEAMS, PORCH_JOISTS, *PILLAR_CHASES,
                  PORCH_SLOT_CLOSURE,
                  PORCH_GUARD, PORCH_GUARD_NE, *RAISED_BED_GUARDS,
                  *CONNECTORS, *PORCH_BEAM_CAPS,

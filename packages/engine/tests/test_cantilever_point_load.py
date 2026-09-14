@@ -299,39 +299,36 @@ def test_the_check_is_registered_in_the_structural_tier() -> None:
         check_id for check_id, _fn in registered(Tier.STRUCTURAL)}
 
 
-def test_catlin_reports_only_the_zero_inch_artifact_at_the_front_bearing(catlin_findings):
-    """Catlin used to be this check's one real subject; what is left is ``_band``'s epsilon.
+def test_catlin_now_reports_nothing_because_no_post_stands_on_a_deck(catlin_findings):
+    """Catlin used to be this check's one real subject; since 2026-09-14 it has none.
 
-    PT-SG-BR2 stood on FS-SG-PORCH's 17" north overhang — the only post in the house that
-    did — and the finding read UNKNOWN because all three mitigation arms matched: an
-    authored 3-ply JoistReinforcement, 2 sistered plies and 2 blocks off the geometry, and
-    CN-SG-TIE-BR2 at the far bearing. The rear balcony pillar row now sits on the back-beam
-    line, 3" south of the bearing, and that condition is gone.
+    Two conditions have gone, eleven days apart, and the order matters because the second is
+    what emptied the check.
 
-    **The one finding that remains is the artifact this test's earlier revision predicted.**
-    ``_band`` is closed at the bearing line (``post_axis >= axis_hi - end - _EPS``), so a
-    post landed exactly on a bearing line reads as inside the overhang and reports a **0"**
-    one. On 2026-09-03 FS-SG-PORCH's joists gained a 2-3/4" ``cantilever_start`` — they now
-    CROSS the front beam instead of stopping on its centreline, which is the right framing
-    and takes both bearing planes at PT-SG-BF2 out of NDS §3.10.4's END case — and that
-    gives the deck a south overhang for the first time. PT-SG-BF2 has not moved: it stands
-    on the front beam axis, 2-3/4" from the joist tips, i.e. **on the bearing itself**.
+    **The real subject went first.** PT-SG-BR2 stood on FS-SG-PORCH's 17" north overhang —
+    the only post in the house that did — and the finding read UNKNOWN because all three
+    mitigation arms matched: an authored 3-ply JoistReinforcement, 2 sistered plies and 2
+    blocks off the geometry, and CN-SG-TIE-BR2 at the far bearing. Moving the rear balcony
+    pillar row onto the back-beam line ended that.
 
-    So the check names a post 0.0" past its bearing line and says in the same breath that
-    the load is answered by the 3-ply pack under it. It is an honest advisory about a joint
-    that does not exist, it is not gating (``haus print --sealed`` passes over it), and the
-    real question at this pillar — cross-grain bearing — is computed by
-    ``engineering/post_bearing.py`` and oracled in notes/centre_pillar_bearing.md. Pinned
-    here rather than suppressed: the day a post genuinely stands out on that overhang, this
-    assertion is what changes.
+    **The artifact went second.** ``_band`` is closed at the bearing line
+    (``post_axis >= axis_hi - end - _EPS``), so a post landed exactly on a bearing line reads
+    as inside the overhang and reports a **0"** one. When FS-SG-PORCH's joists gained a
+    ``cantilever_start`` on 2026-09-03 the deck got a south overhang for the first time, and
+    PT-SG-BF2 — standing on the front beam axis, on the bearing itself — began reporting 0.0"
+    past it: an honest advisory about a joint that does not exist.
 
-    The synthetic fixtures above are what keep every arm of the contract exercised.
+    On 2026-09-14 both centre pillars came off this deck and onto the cast column tops
+    (PT-SG-BF2 on PT-SG-FCOL, PT-SG-BR2 on PT-SG-COL, ABU66SS bases, the four porch beams
+    hung off their faces on HU212-3 hangers). **This check walks posts that bear on a deck,
+    and there are none left**, so the epsilon has nothing to be closed at. The same fact
+    retired the two ``post_bearing`` records — cross-grain bearing was the real question at
+    those joints — which is the engineering register's view of one change.
+
+    Pinned as an empty list rather than deleted: an empty result nobody asserts is
+    indistinguishable from a check that stopped running, and this is the assertion that
+    changes the day a post genuinely stands out on an overhang again.
+    ``test_the_check_is_registered_in_the_structural_tier`` above is the other half of that
+    pair, and the synthetic fixtures are what keep every arm of the contract exercised.
     """
-    assert [f.message for f in catlin_findings] == [f.message for f in catlin_findings
-                                                    if "PT-SG-BF2" in f.message]
-    assert len(catlin_findings) == 1, [f.message for f in catlin_findings]
-    message = catlin_findings[0].message
-    assert "0.0\" past the bearing line" in message
-    # Every mitigation arm still matches, which is why it is UNKNOWN and not a FAIL.
-    assert "authored 3-ply JoistReinforcement" in message
-    assert "sistered 2x8 plies" in message and "solid blocks" in message
+    assert [f.message for f in catlin_findings] == []

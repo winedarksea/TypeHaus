@@ -73,10 +73,17 @@ def test_beam_length_is_the_axis_length(rows):
     """
     wide = [r for r in rows if r["scope"] == "beam" and r["width_in"] == 4.5]
     assert len(wide) == 1
-    # 2 back beams at 10' + 2 front beams at 10' = 40.0', plus (2026-09-10) the canopy's two
-    # 3-2x12 headers at 5'-8 5/8" each — PIER_LINE_Y_FT 37'-6" to GARAGE_Y_SOUTH 43'-2 5/8" —
-    # for 11.4' more. Same 4 1/2" width, same roll, one row: 51.4' over 6 members.
-    assert wide[0]["length_ft"] == pytest.approx(51.4, abs=0.1)
+    # 2 back beams + 2 front beams, plus (2026-09-10) the canopy's two 3-2x12 headers at
+    # 5'-8 5/8" each — PIER_LINE_Y_FT 37'-6" to GARAGE_Y_SOUTH 43'-2 5/8" — for 11.4'. Same
+    # 4 1/2" width, same roll, one row: 50.5' over 6 members.
+    #
+    # **50.5' and not 51.4' since 2026-09-14.** Each of the four porch beams lost 2 3/4" —
+    # 11" over the four — when its inner end came off the cast column's axis and onto
+    # PT-SG-BF2 / PT-SG-BR2's face, where an HU212-3 carries it. The two centre pillars stand
+    # on those column tops now, and a 12" round cannot seat a beam end and a pillar at once.
+    # A beam's billed length is its AXIS, so the tape follows the node move exactly, which is
+    # the property this test is really about.
+    assert wide[0]["length_ft"] == pytest.approx(50.5, abs=0.1)
     assert wide[0]["count"] == 6
 
     glulam = [r for r in rows if r["scope"] == "beam" and r["width_in"] == 3.5]

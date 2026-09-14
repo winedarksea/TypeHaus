@@ -44,24 +44,38 @@ _ORACLE = {
     # residue is real rather than noise: PT-SG-COL carries 1.2 lb more dead load than
     # PT-SG-FCOL (a beam-weighted tributary share, §2). Keeping both rows rather than
     # collapsing them to one is deliberate — if they ever diverge further, something moved.
+    # ** EVERY DEMAND FELL 1.04% ON 2026-09-14, AND BY THE SAME FACTOR ON BOTH PIERS. **
+    # Same shape as the 2026-09-03 revision below and for the same reason: all three states
+    # are driven by the net soil pressure, which is P_u over the bell, so a change in P_u
+    # scales them together. P_u fell because ``tributary_ft2`` fell 120.83 -> 119.17 when the
+    # two centre pillars came down onto these column tops and the four porch beams stopped
+    # 2 3/4" short of the axis to hang off the pillars' faces. ``_weighted_shares`` reads a
+    # beam's LENGTH, so shorter beams are less tributary.
+    #
+    # **That 1.66 ft² is a modelling artefact, not a load that went away** — the porch deck it
+    # represents still reaches these beams, through the pillar chases' headers. The demands
+    # here are therefore a 1% under-count, which is the wrong direction; it is recorded in
+    # notes/sunken_garden_piers.md §2 and in test_pier_calcs.py's ``_ORACLE`` head rather than
+    # corrected, because ``length_ft`` is the proxy the whole module rests on. Every ratio
+    # stays far inside its capacity — the largest is flexure at 0.15.
     "PT-SG-COL": {
         "bell_in": 36.0,
-        "pressure_psi": 10.585,
-        "punching_demand": 6267.0,
+        "pressure_psi": 10.474,
+        "punching_demand": 6202.0,
         "punching_capacity": 93150.0,
-        "one_way_demand": 364.0,
+        "one_way_demand": 360.0,
         "one_way_capacity": 10696.0,
-        "flexure_demand": 17856.0,
+        "flexure_demand": 17670.0,
         "flexure_capacity": 121599.0,
     },
     "PT-SG-FCOL": {
         "bell_in": 36.0,
-        "pressure_psi": 10.583,
-        "punching_demand": 6266.0,
+        "pressure_psi": 10.473,
+        "punching_demand": 6201.0,
         "punching_capacity": 93150.0,
-        "one_way_demand": 364.0,
+        "one_way_demand": 360.0,
         "one_way_capacity": 10696.0,
-        "flexure_demand": 17854.0,
+        "flexure_demand": 17668.0,
         "flexure_capacity": 121599.0,
     },
 }

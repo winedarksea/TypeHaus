@@ -77,7 +77,19 @@ def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_r
     and a silent move in one of them is what this would catch.
     """
     joints = Counter(joint.role for joint in derived_joints(catlin_model_ro, CONFIG))
-    assert joints["hurricane_tie"] == 332
+    # ** 332 -> 334 ON 2026-09-14, AND IT IS THE CHASES, NOT THE PILLARS. ** The two centre
+    # balcony pillars came down onto the cast column tops that day and pass through
+    # ``FS-SG-PORCH`` on the way, through a framed 9" opening each (FO-SG-BF2 / FO-SG-BR2).
+    # A tie is derived per seated member END, and cutting the joist line at x = 18'-0" makes
+    # more ends: ``FO-SG-BR2`` sits over the back beam and splits that line in two, giving
+    # BM-SG-BKW two ends where it had one (+2), and ``FO-SG-BF2`` moves the same line's south
+    # end from one station to the next on BM-SG-FRW (+1/-1). Net +2, all on one joist line.
+    #
+    # The PILLARS themselves add nothing here, which is worth saying because it looks as
+    # though they should: the four porch beams now stop at the pillar faces and hang there on
+    # authored HU212-3 hangers (CN-SG-HGR-C*), and an authored connector stands the
+    # derivation down rather than adding to it.
+    assert joints["hurricane_tie"] == 334
     assert joints["mudsill_anchor"] == 137
     assert joints["sloped_joist_hanger"] == 39
     assert joints["ridge_tie_strap"] == 19
