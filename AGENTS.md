@@ -38,6 +38,17 @@ This document provides guidelines for agents working on the TypeHaus codebase.
   corrupts whatever module runs next, which is a failure that lands nowhere near its cause —
   if a test edits the model, it takes `catlin_model`. A test that emits a *mutated* model,
   another house, or a non-default LOD calls `emit_ifc` itself.
+- **The composed ones**, for what costs ~20 s rather than ~4: `catlin_ctx` (session, the
+  `build_context`, **read-only**), `catlin_check_report` (session, a `report(tier)` factory),
+  `catlin_model_report` (session, the registry with **no** `house_dir`), `catlin_sheet_index`
+  (session, an `index(sets, details, paper)` factory returning tuples), `catlin_details`
+  (session, all ~76 derived details — genuinely immutable), `catlin_permit_set` (module).
+  **`tests/test_catlin_fixture_discipline.py` enforces this**: a module that loads the real
+  catlin by name needs an entry in its budget table, with the reason on the same line.
+  Three things are NOT these fixtures and must build their own, because they are different
+  answers rather than more expensive ones: a call with an explicit `profile=`, a call with
+  **no** `house_dir` (empty `Preferences`, so a different suppression set), and anything
+  that mutates the context or the model.
 - **The `slow` marker:** one marker, registered in the root `pyproject.toml`, applied at
   module level (`pytestmark = pytest.mark.slow`). `scripts/verify.sh --fast` deselects it;
   the full gate runs everything, so `slow` is a fast-loop convenience and never a
