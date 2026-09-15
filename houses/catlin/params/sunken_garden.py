@@ -83,7 +83,9 @@ from typehaus import (
     Railing,
     RailingKind,
     ReinforcementSpec,
+    Service,
     Slab,
+    SleevePenetration,
     Stair,
     TrimKind,
 )
@@ -1835,8 +1837,8 @@ GARDEN_UNDERDRAIN = FrenchDrain(
 # definition — and that note currently answers it by assuming the well FULLY FAILED. This
 # leg raises that margin instead of restating it.
 #
-# ** Its invert is ABOVE FD-SG-FIELD's tee and BELOW the profile. ** -131 7/16": 4" above
-# the underdrain's trench floor, 4" below the gravel blanket's underside. Storage in a
+# ** Its invert is ABOVE FD-SG-FIELD's tee and AT the profile underside. ** -127 7/16": 8"
+# above the underdrain's trench floor. Storage in a
 # soakaway is only the volume beneath its inlet, so the well must fill and SPILL — never
 # back up into the gravel, which would drown the rootzone from below.
 #
@@ -1844,8 +1846,8 @@ GARDEN_UNDERDRAIN = FrenchDrain(
 # the well north to here is a 4" pipe SLEEVED through W-SG-ARCH at mid-depth, not an
 # excavation: a stone trench crossing the beam at this invert would undermine the strut the
 # free-body note holds the whole court together with. `FrenchDrain` has no way to say
-# "sleeve", so the modelled trench is only the part that really is one, and the sleeve is
-# this comment. North of the court it ties into the house perimeter collector, which as of
+# "sleeve", so the modelled trench is only the part that really is one; the cast opening is
+# `SP-SG-ARCH-OVERFLOW` below. North of the court it ties into the house collector, which as of
 # today falls to the same sump.
 # ** THE TWO LEADS THAT MAKE "discharges to DRW-SG-MAIN" A RUN AND NOT A STRING. **
 # Seven `FootingBedding` tiles in this court name DRW-SG-MAIN, the well names all seven
@@ -1895,10 +1897,20 @@ GARDEN_OVERFLOW = FrenchDrain(
     uid="SGFD02AAAA", tag="FD-SG-OVERFLOW",
     path=(pt(ft(_field_x_mid), ft(_field_y_n + 1.0)),
           pt(ft(_field_x_mid), ft(_y_in_n))),
-    invert=_court_top - inch(SPEC.field_depth_in) - inch(4),
+    invert=_court_top - inch(SPEC.field_depth_in),
     trench_width=inch(6), trench_depth=inch(8),
     tile=DrainTile(diameter=inch(4), sock=False, discharge="SM-B-RADON"),
     discharge_ref="SM-B-RADON",
+)
+
+# The overflow crosses the grade beam as a pipe, not as a stone trench. Authoring its cast
+# sleeve keeps the opening visible to reinforcement coordination and concrete takeoff.
+GARDEN_OVERFLOW_SLEEVE = SleevePenetration(
+    uid="SGSP01AAAA", tag="SP-SG-ARCH-OVERFLOW", host_ref="W-SG-ARCH",
+    position=pt(ft(_field_x_mid), ft(_y_ax_mid)),
+    pipe_diameter=inch(4), sleeve_diameter=inch(6),
+    serves_fixture="FD-SG-OVERFLOW", purpose=Service.DRAIN,
+    axis="horizontal", center_elevation=GARDEN_OVERFLOW.invert,
 )
 
 GARDEN_SLAB = Slab(
@@ -4249,7 +4261,7 @@ SEQUENCE_NOTES = [
 
 BASEMENT_ELEMENTS = [*NODES, *WALLS, COLUMN, FRONT_COLUMN, *FOOTINGS,
                      *FOOTING_BEDDING, GARDEN_DRYWELL, GARDEN_UNDERDRAIN, GARDEN_OVERFLOW,
-                     GARDEN_LEAD_W, GARDEN_LEAD_E, *SEQUENCE_NOTES,
+                     GARDEN_OVERFLOW_SLEEVE, GARDEN_LEAD_W, GARDEN_LEAD_E, *SEQUENCE_NOTES,
                      *GARDEN_FLOOR_OPENINGS, GARDEN_SLAB,
                      GARDEN_FIELD, *FROST_WINGS, *DOWELS, *STEM_DOWELS]
 # --- the porch enclosure's north deck-slot closure (2026-09-03) -----------------------

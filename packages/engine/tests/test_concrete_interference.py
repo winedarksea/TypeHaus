@@ -48,25 +48,75 @@ def test_it_reports_the_pours_it_cleared_by_name():
     clearance and is the reason those pads are rectangles rather than the 24" squares their
     Footings drew.
 
-    The three GARAGE-side piers are NOT here, and their absence is the other half of the same
-    fact: they lap the garage strip footing by ~7 1/2" on one plane and cannot be pulled
-    clear, so they stay ``Footing`` with an ``under`` and this rule does not scope them.
+    ** AND THE GARAGE-SIDE THREE ARE HERE TOO NOW, BY THE OTHER ROUTE. ** The docstring above
+    used to close by saying they were absent: they lap the garage strip footing by ~7 1/2" on
+    one plane, cannot be pulled clear, and so stayed ``Footing`` with an ``under``. They are
+    ``Pad``s as of 2026-09-14, declaring ``cast_with`` — the lap is a real lap and the answer
+    is that it is one POUR, not that it is no overlap. Each such declaration is its own PASS
+    naming both sides, because a reader has to be able to see which footing each pad is
+    monolithic with; the pours that simply stand clear stay aggregated into one line.
+
+    So the count is two shapes of PASS, and the test asserts both rather than a total: a
+    single aggregate for the clear-standing pours, and one per declared pour. ``PD-SG-COL``
+    and ``PD-SG-FCOL`` joined the aggregate the same day, when the two centre-garden bells
+    became pads.
     """
     ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
     passes = [f for f in _findings(ctx) if f.result is Result.PASS]
-    assert len(passes) == 1, [f.message for f in passes]
-    assert set(passes[0].element_tags) == {"PD-BW-W", "PD-BW-E", "PD-BW-RE"}
+    declared = [f for f in passes if "CAST WITH" in f.message]
+    clear = [f for f in passes if f not in declared]
+
+    assert len(clear) == 1, [f.message for f in clear]
+    assert set(clear[0].element_tags) == {
+        "PD-BW-W", "PD-BW-E", "PD-BW-RE", "PD-SG-COL", "PD-SG-FCOL"}
+
+    # One per (pad, footing) lap, not one per pad: PD-BW-GW and PD-BW-RNE each cross two
+    # legs of the garage strip, and a reader owed "which footing" is owed it for each.
+    assert {tuple(sorted(f.element_tags)) for f in declared} == {
+        ("FT-GF-S-DR", "PD-BW-GE"),
+        ("FT-GF-S1", "PD-BW-GW"),
+        ("FT-GF-W", "PD-BW-GW"),
+        ("FT-GF-E", "PD-BW-RNE"),
+        ("FT-GF-S3", "PD-BW-RNE"),
+    }
+    for finding in declared:
+        # The grant is narrow and the message must keep saying so — a declared pour buys a
+        # joint, never bearing area (ACI 318-19 §13.3.4's combined-footing line).
+        assert "takes no credit" in finding.message
 
 
-def test_continuous_foundation_work_is_out_of_scope():
+def test_continuous_foundation_work_is_never_the_SUBJECT_of_a_finding():
     """Strip footings lap at every corner and the basement slab crosses all of them.
 
-    None of that may reach this check — it graded ~80 findings of correct construction
-    before the scope was narrowed to isolated pours, which is worse than grading none.
+    None of that may be GRADED here — the check produced ~80 findings about correct
+    construction before its scope was narrowed to isolated pours, which is worse than
+    producing none.
+
+    ** THE ASSERTION MOVED FROM "never named" TO "never the subject" ON 2026-09-14 ** and the
+    distinction is the whole point of ``cast_with``. A pad that declares it is cast with
+    ``FT-GF-S1`` produces a finding that has to say *which* footing, or the reader cannot
+    check the declaration against the drawing. So continuous work is named — as the
+    counterparty of somebody else's declaration, never as a thing this rule grades. Going
+    back to a blanket "no FT- may appear" would either delete that name from the message or
+    stop the check scoping declared pours at all, and both are worse than the lap.
     """
-    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
-    named = {t for f in _findings(ctx) for t in f.element_tags}
-    assert not {t for t in named if t.startswith(("FT-", "W-", "SL-"))}
+    from typehaus.model.structure import Pad
+
+    plan = load_plan(CATLIN_DIR).plan
+    ctx, _ = build_context(plan, CATLIN_DIR)
+    declared = {pad.tag: set(pad.cast_with or ()) for pad in plan.all_elements()
+                if isinstance(pad, Pad)}
+
+    for finding in _findings(ctx):
+        tags = set(finding.element_tags)
+        pads = {t for t in tags if t in declared}
+        assert pads, f"a finding about no Pad at all: {sorted(tags)}"
+        # Everything else it names must be something one of those pads declared.
+        continuous = {t for t in tags - pads if t.startswith(("FT-", "W-", "SL-"))}
+        allowed = set().union(*(declared[tag] for tag in pads))
+        assert continuous <= allowed, (
+            f"{sorted(continuous)} is graded here without being declared by "
+            f"{sorted(pads)}: {finding.message}")
 
 
 def test_a_pad_moved_back_onto_the_frame_line_is_caught():

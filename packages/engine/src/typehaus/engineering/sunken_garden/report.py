@@ -30,9 +30,11 @@ def _fingerprint(payload: object) -> str:
 
 
 def _layout_table(results: tuple[LayoutResult, ...]) -> list[str]:
+    reference = results[0].installed_cost
     lines = [
-        "| Alternative | Material | Labor | Installed | Governing service check | Status |",
-        "|---|---:|---:|---:|---|---|",
+        "| Alternative | Material | Labor | Installed | Direct savings | "
+        "Governing check | Status |",
+        "|---|---:|---:|---:|---:|---|---|",
     ]
     for result in results:
         material = CostRange(0.0, 0.0)
@@ -49,9 +51,15 @@ def _layout_table(results: tuple[LayoutResult, ...]) -> list[str]:
                     governing.bearing_max_psf / 3000.0)
         status = ("screening pass" if all(case.passes_screening for case in result.cases)
                   else "revise")
+        direct_savings = CostRange(
+            reference.low - result.installed_cost.low,
+            reference.high - result.installed_cost.high,
+        )
         lines.append(
             f"| {result.name} | {_money(material)} | {_money(labor)} | "
-            f"{_money(result.installed_cost)} | {governing.case} ({ratio:.2f}) | {status} |"
+            f"{_money(result.installed_cost)} | "
+            f"{_money(direct_savings)} | "
+            f"{governing.case} ({ratio:.2f}) | {status} |"
         )
     return lines
 
@@ -89,12 +97,52 @@ def _sizing_lines() -> list[str]:
     return lines
 
 
+def _recommendation_lines(results: tuple[LayoutResult, ...]) -> list[str]:
+    by_name = {result.name: result for result in results}
+    reference = by_name["reference-brick"].installed_cost
+
+    def saving(name: str) -> CostRange:
+        cost = by_name[name].installed_cost
+        return CostRange(reference.low - cost.low, reference.high - cost.high)
+
+    return [
+        "## Pragmatic shortlist", "",
+        "1. **Yard-grade planting with fiber-cement is the pragmatic cost and engineering "
+        "choice.** It removes the planter surcharge and saves about "
+        f"{_money(saving('yard-grade-fiber-cement'))} "
+        "in the directly compared scope. It also removes masonry gravity support from the "
+        "veneer beam, subject to a smaller transverse tie being confirmed by the coupled model.",
+        "2. **Yard-grade planting with brick is the pragmatic appearance-first alternate.** "
+        "It retains the full-depth masonry expression and saves about "
+        f"{_money(saving('yard-grade-brick'))}. "
+        "It requires the corrected veneer beam, three-#5 study reinforcement, masonry-anchor "
+        "design and verified pocket development.",
+        "3. **If a raised bed is essential, use the separate 24-inch bed with fiber-cement as "
+        "the engineering-led fallback.** The 36-inch clear strip sharply reduces surcharge at "
+        "the court, but the second planter wall, foundations and drainage make this the most "
+        "expensive family and require a utility/circulation check.",
+        "",
+        "The against-wall variants are not shortlisted. They retain most of the lateral load, "
+        "add a 42-inch metal guard, and save little construction compared with the reference. "
+        "The 36-inch setback bed is also dominated by the 24-inch setback bed unless the extra "
+        "planting width has owner value.", "",
+    ]
+
+
 def _svg(layout: str, raised_in: float, width_in: float, setback_in: float) -> str:
     yard_y = 90
     wall_x = 250
     soil_top = yard_y - raised_in
     bed_x = wall_x + setback_in
     bed_width = max(width_in, 1.0)
+    plan_offset = (width_in + setback_in) * 0.7
+    planter_plan = ""
+    if raised_in:
+        planter_plan = (
+            f'<path d="M{470 - plan_offset:.1f} 65 V{215 + plan_offset:.1f} '
+            f'H{650 + plan_offset:.1f} V65" fill="none" stroke="#9b7653" '
+            'stroke-width="8"/>'
+        )
     return "\n".join((
         '<svg xmlns="http://www.w3.org/2000/svg" width="720" height="260" '
         'viewBox="0 0 720 260">',
@@ -119,6 +167,11 @@ def _svg(layout: str, raised_in: float, width_in: float, setback_in: float) -> s
         '<text x="20" y="115">ordinary yard</text>',
         '<text x="275" y="165">drained stone + filter</text>',
         '<text x="340" y="203">collector to drywell/overflow</text>',
+        '<text x="450" y="35">plan</text>',
+        '<path d="M470 65 V215 H650 V65" fill="none" stroke="#777" stroke-width="10"/>',
+        planter_plan,
+        '<line x1="470" y1="65" x2="650" y2="65" stroke="#168aad" stroke-width="4"/>',
+        '<text x="475" y="240">court wall / planter / north tie</text>',
         "</svg>",
     ))
 
@@ -155,6 +208,25 @@ def write_study(output_dir: Path) -> Path:
         "6-inch steps, and 6-inch toe allocations with at least 12 inches at toe and heel. "
         "A screening pass is not a construction size: development, local balcony zones, soil "
         "stiffness, settlement, frost and global stability remain open.", "",
+        "No structural reduction in the bounded set is currently supported. Conditional "
+        "structural savings are therefore reported as $0; smaller stems or footings remain "
+        "design candidates only and must not be carried into bidding.", "",
+        "## Coupled structural model and member schedule", "",
+        "The PyNite model contains shell elements for W-SG-W1, W-SG-W2, W-SG-S, W-SG-E2 "
+        "and W-SG-E1; footing plates; W-SG-ARCH; the optional W-SG-BRKBM tie; four balcony "
+        "reaction nodes; horizontal soil springs; and one-sided vertical contact springs. "
+        "It runs with and without the veneer tie and with unequal east/west load. The project "
+        "solve is INCOMPLETE until measured soil stiffness and column reactions are supplied; "
+        "the solver does not substitute fixed supports or zero reactions.", "",
+        "| Members | Current study section | Role / required check |", "|---|---|---|",
+        "| W-SG-W1 / E1 | 12-in stem | porch wall, balcony local zones, staged backfill |",
+        "| W-SG-W2 / E2 / S | 12-in stem, #6 at 10 in | retained wall plates and corners |",
+        "| FT-SG-W1/E1/W2/E2/S | 7 ft by 12 in, #5 mat | contact, bearing, toe/heel flexure |",
+        "| W-SG-ARCH | 12 by 17.75 in | calculated transverse force and penetrated section |",
+        "| W-SG-BRKBM | 12 by 17.75 in | brick gravity beam and optional transverse tie |",
+        "| PT-SG-BR/BF corners | local 12-in cast columns | reactions, bearing and anchorage |",
+        "", "Validation examples cover a cantilever wall, beam/frame response, unequal loading, "
+        "removed ties, missing-input refusal, global equilibrium and 4/3/2-foot mesh response.", "",
         "## Corrected veneer beam", "",
         f"Effective span {beam.effective_span_ft:.2f} ft; factored load "
         f"{beam.factored_load_plf:.0f} plf; Mu {beam.factored_moment_ftlb / 1000:.1f} kip-ft; "
@@ -191,6 +263,7 @@ def write_study(output_dir: Path) -> Path:
         "equipment and stockpiles out of the surcharge zone unless included in the case.",
         "4. Coordinate reinforcement, corner bars, beam pockets, balcony-column zones, GFRP "
         "thermal-break dowels, sleeves, waterstops and drains before either wall placement.", "",
+        *_recommendation_lines(results),
         "## Unresolved requirements", "",
     ])
     lines.extend(f"- {item}" for item in design.unresolved_requirements())

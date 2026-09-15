@@ -102,6 +102,7 @@ _UNIT_COST = {
     "brick": UnitCost(CostRange(13.0, 19.0), CostRange(21.0, 33.0)),
     "fiber-cement": UnitCost(CostRange(11.0, 18.0), CostRange(13.0, 22.0)),
     "drainage": UnitCost(CostRange(18.0, 30.0), CostRange(37.0, 65.0)),
+    "waterproofing": UnitCost(CostRange(3.0, 6.0), CostRange(5.0, 9.0)),
 }
 
 
@@ -126,17 +127,27 @@ def _cost_lines(design: SunkenGardenDesignInput, planting: PlantingProfile,
     length = _court_length_ft(design)
     face_sf = length * design.geometry.concrete_stem_height_ft
     planter_length = _planter_length_ft(design, planting)
-    guard_length = length if planting.layout in {"against-wall", "reference"} else 0.0
+    guard_length = length if planting.layout == "against-wall" else 0.0
     cladding_sf = 129.0
+    concrete_cy = _concrete_volume_cy(design)
+    replacement_stone_cy = 89.82  # current resolved Catlin takeoff
+    excavation_cy = replacement_stone_cy + concrete_cy
     # Common structural dimensions are intentionally held fixed here. The sizing study
     # reports structural deltas separately, conditional on the missing site inputs.
     return (
+        CostLine("court excavation", excavation_cy, "cy", _UNIT_COST["excavation"]),
+        CostLine("washed replacement stone", replacement_stone_cy, "cy",
+                 _UNIT_COST["replacement stone"]),
+        CostLine("court reinforced concrete", concrete_cy, "cy", _UNIT_COST["concrete"]),
         CostLine("planter construction", planter_length * 3.0, "face sf",
                  _UNIT_COST["planter block"]),
         CostLine("planter drainage", planter_length, "lf", _UNIT_COST["drainage"]),
         CostLine("court metal guard", guard_length, "lf", _UNIT_COST["metal guard"]),
         CostLine(f"{cladding} walkout finish", cladding_sf, "sf", _UNIT_COST[cladding]),
         CostLine("retained-face drainage", length, "lf", _UNIT_COST["drainage"]),
+        CostLine("retained-face waterproofing",
+                 length * design.soil.ordinary_retained_height_ft.value,
+                 "sf", _UNIT_COST["waterproofing"]),
         CostLine("court wall formwork", face_sf * 2.0, "sf", _UNIT_COST["formwork"]),
     )
 

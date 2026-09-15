@@ -19,6 +19,7 @@ from typehaus import (
     Node,
     Occupancy,
     Pitch,
+    PublishedCapacity,
     PublishedSpan,
     Railing,
     RailingKind,
@@ -642,6 +643,44 @@ ROOFS = [
              spacing=inch(24),
              load_psf=55.0,
              condition="the row is a HORIZONTAL clear span and this roof's run is 17'-9 3/4\" against a 19.91' sloped length; UNRESOLVED — the guide's high-end support note is transcribed two contradictory ways in this house and these joists HANG off RB-HOUSE on 38 LSSR2.37Z hangers rather than bearing on it, so ForteWEB owns the last word (notes/roof_rafter_span_read.md section 3); the hangers carry 1,090 lb with web stiffeners against a ~980 lb reaction (TJ-4000 Jul 2025 p.15, LSSR2.37Z on TJI 230, SLOPED ONLY — the 1,060 read here until 2026-09-14 is the skewed row and this ridge is straight; the number is the joist's end bearing, not the hanger's steel, which is why C-C's 1,565 does not apply), re-struck from ridge_beam_detail.md's 600 lb at 4:12; deflection L/240; the eave oversail and the birdsmouth are not in the row"),
+         # ** THE UPLIFT CAPACITY IS A PRESCRIPTIVE READ TOO, SINCE 2026-09-14, AND THAT
+         # RETIRED `lateral_uplift/RF-HOUSE` FROM THE ENGINEERING REGISTER. ** The item had
+         # been UNKNOWN and seal-blocked on the reasoning that this engine derives no wind
+         # demand for a joint. It does not — but it does not have to. IRC Table R802.11
+         # PUBLISHES the required resistance per connection, indexed by exactly the five
+         # things this roof has, and reading it is the same act as reading the span table
+         # eight lines above. `typehaus/wind_tables.py` holds the grid;
+         # `structural.uplift_capacity` looks up the cell and compares it to these rows.
+         #
+         # The demand both rows are graded against is **212 lb per connection**: exposure B,
+         # 24" o.c., 36' span (the row covering this roof's 35.6'), Vult 115, pitch >= 5:12.
+         # Footnote b's 15 psf dead-load allowance is already netted out of it, and the
+         # value is the full CORNER-ZONE figure — footnote d's 0.75 is not claimed here.
+         #
+         # Both joints clear it about threefold, which is the reason this is a lookup and
+         # not a design: nothing about this roof is near a limit.
+         published_uplift=(
+             PublishedCapacity(
+                 source="Simpson Strong-Tie C-C-2024 p.288, the H/TSP table, SPF/HF half",
+                 table="the eave tie; H2.5A, SPF/HF (SG 0.42), uplift 615 lbf at 160%",
+                 member="H2.5A",
+                 capacity_lb=615.0,
+                 demand_lb=212.0,
+                 spacing=inch(24),
+                 wind_speed_mph=115.0,
+                 exposure="B",
+                 condition="the 615 is the SPF/HF column and this roof's plates are SPF — General Note e picks the column by the LOWEST specific gravity in the connection, so a single southern-pine member in the joint would not move it back to the DF/SP 700; the row assumes the full published nail schedule driven into 1-1/2\" of plate, and neither the nailing nor the tie's own installation is modelled here"),
+             PublishedCapacity(
+                 source="Simpson Strong-Tie C-C-2026 p.178, sloped-only LSSR rows",
+                 table="the ridge hanger; LSSR2.37Z, uplift 510 lbf (identical in the skewed row)",
+                 member="LSSR",
+                 capacity_lb=510.0,
+                 demand_lb=212.0,
+                 spacing=inch(24),
+                 wind_speed_mph=115.0,
+                 exposure="B",
+                 condition="uplift on this hanger does not vary with the header nail length the way its DOWNLOAD does (1,175 / 1,565 / 1,870 lbf across the three schedules) and it is the same in the sloped and skewed rows; web stiffeners are required with this hanger regardless, and above 1/4:12 they are beveled — neither is checked here. The LSTA24 over the peak carries the rafter-pair tension across the ridge and is a separate load path, not part of this number"),
+         ),
          # The barge-board answer for a roof that cannot have a barge board.
          # With zero overhang the formed corner trim is the only piece standing at the rake,
          # and it was ordered in the panels' own white — so the gable read as a knife edge.

@@ -11,12 +11,18 @@ from typehaus.diff.compare import variant_plan
 from typehaus.diff.variants import find_variant, load_variants
 from typehaus.engineering.sunken_garden.comparison import COURTYARD_LAYOUTS, sizing_study
 from typehaus.engineering.sunken_garden.coupled import analyse_coupled
-from typehaus.engineering.sunken_garden.inputs import BasedValue, PlantingProfile, default_design_input
+from typehaus.engineering.sunken_garden.inputs import (
+    BasedValue,
+    PlantingProfile,
+    default_design_input,
+)
 from typehaus.engineering.sunken_garden.loads import (
     finite_strip_lateral_pressure_psf,
     integrate_pressure,
 )
 from typehaus.engineering.sunken_garden.veneer_beam import check_veneer_beam
+from typehaus.source.loader import load_plan
+from typehaus.source.parameter_overrides import activated, parameter
 
 
 def _items(plan):
@@ -76,6 +82,19 @@ def test_catlin_variants_are_isolated_and_keep_wall_identity() -> None:
     against_wall = next(item for item in against_items if item.tag == "W-SG-W2")
     reference_wall = next(item for item in reference_items if item.tag == "W-SG-W2")
     assert against_wall.uid == reference_wall.uid
+    assert any(item.tag == "SP-SG-ARCH-OVERFLOW" for item in reference_items)
+
+
+def test_parameter_context_restores_and_unknown_house_parameter_fails() -> None:
+    assert parameter("example", 12.0) == 12.0
+    with activated({"example": 10.0}) as consumed:
+        assert parameter("example", 12.0) == 10.0
+        assert consumed == {"example"}
+    assert parameter("example", 12.0) == 12.0
+    loaded = load_plan(Path("houses/starter"), parameter_overrides={"typo.parameter": 1})
+    assert loaded.plan is None
+    assert any(item.check_id == "loader.unknown_parameter_override"
+               for item in loaded.findings)
 
 
 def test_setback_variant_builds_separate_closed_planter_and_fiber_screen() -> None:

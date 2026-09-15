@@ -336,6 +336,7 @@ the future.
   — deliberately not re-specified; would widen each 2" and re-open condition coverage on a
   line nothing else asked about. Revisit only if that wall line opens for another reason.
 - Make sure the EV charger is a Leviton 1450r 50A EV Charging Receptacle
+- The ABU66SS on top of PT-SG-COL and PT-SG-FCOL seems to have been lost and accidentally replaced with HGAM10 there, which is incorrect. I'm also not sure the trimmers for JOIST-0-007-0 between there are quite right, and all of the joists there are a bit too long by about 3.5", they extend into the brick veneer wall
 
 # Project Management
 
