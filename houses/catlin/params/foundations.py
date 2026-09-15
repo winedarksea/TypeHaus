@@ -463,9 +463,51 @@ GARAGE_STEM_WALLS = [
 _GARAGE_FOOTING = dict(width=inch(20), depth=inch(8), center_on="wall",
                        assembly="FOOTING_20")
 
-# ** ASKED 2026-09-11: REPLACE THESE NINE WITH AN AGGREGATE FOOTING. THE ANSWER IS NO. **
-# This is a NEW proposal, not a revert — nothing in this repo's history ever put the garage
-# stem on stone. Five reasons, and the first is the one that ends it:
+# ** ASKED 2026-09-11: REPLACE THESE NINE WITH AN AGGREGATE FOOTING. THE ANSWER IS STILL NO,
+# BUT FOUR OF THE FIVE REASONS HAVE GONE (re-examined 2026-09-15). **
+#
+# The proposal came back pointing at 2024 IRC R403.5, on the argument that it permits a
+# crushed-stone footing under a NONRETAINING cast-in-place foundation complying with
+# R404.1.3 — which would be a different section from the one reason 1 answers. Re-examined
+# against that, and the scoreboard is worth writing down because most of it moved:
+#
+#   2. DISSOLVED, and by this file. `unbalanced_fill=ft(0)` is now authored on `_STEM` and
+#      `_GRADE_BEAM` (see `_NO_RETAINED_FILL` above): grade is -2'-10", the stem runs
+#      -6'-4"..-1'-0", and SL-G-FLOOR's top is -2'-10" — exactly grade — so these stems
+#      retain nothing and the 3'-6" this reason rested on was the derived proxy, not the
+#      building. The base-restraint half of the objection goes with it.
+#   3. DISSOLVED by not deleting anything. The proposal is now a RETYPE: keep the nine
+#      elements, their tags, their uids, their `under` and their `bottom_elevation`, and
+#      change what they are made of. SP-GF-S-HYD still names them, the -7'-0" plane still
+#      exists, and every argument in `mep_supply.py`, `electrical.py` and
+#      `north_entry_frame.py` keeps its referent.
+#   4. DISSOLVED. The FootingBedding precedent is not what would be used — the shape is a
+#      `material` discriminator on `Footing` itself, so a stone footing is a Footing and
+#      stays in all six `isinstance(el, Footing)` consumers instead of vanishing from them.
+#   5. DISSOLVED. `_GARAGE_FOOTING` would take a new assembly tag of its own
+#      (FOOTING_STONE_20); FOOTING_20 stays exactly as it is under every FT-B-*.
+#
+# ** REASON 1 STANDS, AND IT IS NOW THE WHOLE ANSWER. ** It could not be confirmed that the
+# section has been renumbered and re-scoped the way the proposal assumes. What is readable
+# says the opposite: the provision is **R403.4.1 Crushed stone footings**, sitting under
+# **R403.4 Footings for precast concrete foundations**, and its requirements are exactly the
+# ones quoted at this proposal — angular stone to ASTM C33, 1/2" max and 1/16" min,
+# consolidated by vibratory plate in 8" lifts, Seismic Design Categories A, B and C only.
+# That is the section reason 1 already described, still scoped to a precast panel set on
+# compacted stone rather than to a wall poured in place with #4s at 16" o.c. running out of
+# its base into dowels that must lap something.
+#
+# ** AND MINNESOTA HAS NOT ADOPTED THE EDITION BEING CITED. ** `MN_2020` is the profile this
+# house is graded against. A 2024 provision expected in MN in 2027 is a thing to design
+# toward, not a thing to encode as a passing check today — and encoding a sizing rule from
+# Table R403.5 without reading Table R403.5 would be inventing the one number that governs.
+#
+# ** WHAT WOULD CLOSE IT. ** The 2024 text of the section, read rather than summarised, and
+# specifically: whether its scope sentence reaches a reinforced cast-in-place wall at all,
+# and what Table R403.5 requires for thickness and width. If it does reach one, four of the
+# five objections are already gone and this becomes a retype plus a new CODE-tier check.
+#
+# The original five, kept verbatim below because they are what the answer is made of:
 #
 # 1. **There is nothing to dowel into.** `GARAGE_ICF_6` states
 #    `MasonrySpec(unit_size="ICF-6", core_fill=True, rebar_spacing=inch(16))`: a cast-in-
