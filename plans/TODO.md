@@ -339,6 +339,9 @@ the future.
 - The ABU66SS on top of PT-SG-COL and PT-SG-FCOL seems to have been lost and accidentally replaced with HGAM10 there, which is incorrect. I'm also not sure the trimmers for JOIST-0-007-0 between there are quite right, and all of the joists there are a bit too long by about 3.5", they extend into the brick veneer wall
 - Almost every flat roof I have seen uses joists on hangers between beams. Yet our balcony here has joists above the beams (presumably held down by hurricane ties). If we put the joists lower onto the beams, we end up with the 6x6 posts being possibly too tall (over 10' it said earlier, but R507.4 says it's good up to 14').
 - Figure out a space for a cat litter box.
+- Have the UI resolve pages and reports under /app, so we can give a URL to them directly, type-haus.com/app/?= (for example)
+- Part of the attic is open to the stairs below. It should say that in the printed plan.
+- The printed plans draw the stair lines wrong (the 3d model seems more accurate)
 
 # Project Management
 
