@@ -30,9 +30,6 @@ from typehaus.model import (
     inch,
     pt,
 )
-from typehaus.resolve import resolve
-from typehaus.source import load_plan
-from _helpers import CATLIN
 
 
 def _centroid(polygon):
@@ -47,17 +44,20 @@ def _centroid(polygon):
 # brick onto the porch, synthetically and in both directions.
 
 
-def test_catlin_has_no_cladding_side_mismatch() -> None:
-    report = run(load_plan(CATLIN).plan)
+def test_catlin_has_no_cladding_side_mismatch(catlin_plan) -> None:
+    # `run(plan)` with NO house_dir, and not `catlin_check_report()`: an absent directory
+    # means an empty `Preferences`, so a different suppression set and a different
+    # jurisdiction. Two different reports, not one cheaper one.
+    report = run(catlin_plan)
     mismatches = [f for f in report.findings
                   if f.check_id == "advisory.cladding_side_mismatch"]
     assert not mismatches, [f.message for f in mismatches]
 
 
-def test_white_brick_material_ships_its_appearance() -> None:
+def test_white_brick_material_ships_its_appearance(catlin_model_ro) -> None:
     from typehaus.server.model_json import model_to_dict
 
-    model, _ = resolve(load_plan(CATLIN).plan)
+    model = catlin_model_ro
     materials = {m["tag"]: m for m in model_to_dict(model)["catalog"]["materials"]}
     assert materials["white-brick"]["finish"] == "white-brick"
     assert materials["white-brick"]["color"] == "#e9e6df"
@@ -76,7 +76,7 @@ def test_gltf_colors_white_brick_whitewashed() -> None:
         material_family_color("brick"))
 
 
-def test_glazed_green_brick_material_ships_its_appearance() -> None:
+def test_glazed_green_brick_material_ships_its_appearance(catlin_model_ro) -> None:
     """The basement's south veneer — same pattern as the white brick above.
 
     A third brick had to be distinguishable from the other two or the sunken garden's most
@@ -85,7 +85,7 @@ def test_glazed_green_brick_material_ships_its_appearance() -> None:
     """
     from typehaus.server.model_json import model_to_dict
 
-    model, _ = resolve(load_plan(CATLIN).plan)
+    model = catlin_model_ro
     materials = {m["tag"]: m for m in model_to_dict(model)["catalog"]["materials"]}
     assert materials["glazed-green-brick"]["finish"] == "glazed-green-brick"
     assert materials["glazed-green-brick"]["color"] == "#1b4332"
@@ -108,7 +108,7 @@ def test_gltf_colors_glazed_green_brick_green() -> None:
     assert green != _material_finish_color("white-brick", "cladding")
 
 
-def test_basement_veneer_brick_faces_the_garden() -> None:
+def test_basement_veneer_brick_faces_the_garden(catlin_model_ro) -> None:
     """W-B-BRICK is authored east->west on purpose — see the note in plan/storeys/basement.py.
 
     It is its own wall-graph component (two open ends, no loop), so it gets the fallback
@@ -116,7 +116,7 @@ def test_basement_veneer_brick_faces_the_garden() -> None:
     built *north*, back through the XPS into the concrete. This pins the direction: the brick
     must end up south of the air gap, in the sunken garden.
     """
-    model, _ = resolve(load_plan(CATLIN).plan)
+    model = catlin_model_ro
     wall = model.wall("W-B-BRICK")
     assert wall is not None, "W-B-BRICK missing from the resolved model"
     # One flat wythe since 2026-09-04. It was five `Layer.slot` regions of the Ishtar scheme,
@@ -137,7 +137,7 @@ def test_basement_veneer_brick_faces_the_garden() -> None:
 
 
 
-def test_fireplace_wash_faces_the_room() -> None:
+def test_fireplace_wash_faces_the_room(catlin_model_ro) -> None:
     """The five W-M-FIRE-* walls carry the wash on RM-M-LIVING's side, not against the studs.
 
     ``FIREPLACE_BRICK_WYTHE`` is ``layers=(brick, wash)`` and the ORDER is the whole point.
@@ -154,7 +154,7 @@ def test_fireplace_wash_faces_the_room() -> None:
     0 FAIL. Compare ``test_basement_veneer_brick_faces_the_garden`` above, which pins the same
     class of bug on the one wall that does have a cladding layer.
     """
-    model, _ = resolve(load_plan(CATLIN).plan)
+    model = catlin_model_ro
     tags = ["W-M-FIRE-STUB", "W-M-FIRE-PLINTH", "W-M-FIRE-JAMB-S", "W-M-FIRE-JAMB-N",
             "W-M-FIRE-HEAD"]
     for tag in tags:
@@ -181,7 +181,7 @@ def test_fireplace_wash_faces_the_room() -> None:
         assert brick_x - wash_x == pytest.approx((brick_t + wash_t) / 2.0, abs=1e-6)
 
 
-def test_court_wash_faces_the_court() -> None:
+def test_court_wash_faces_the_court(catlin_plan, catlin_model_ro) -> None:
     """All five SUNKEN_GARDEN_WALL walls carry the wash on the COURT face, at layer 0.
 
     The court is a light well and the wash is what makes it one, so the face is the design.
@@ -196,9 +196,9 @@ def test_court_wash_faces_the_court() -> None:
     """
     from typehaus.resolve.orientation import resolve_storey_windings
 
-    plan = load_plan(CATLIN).plan
+    plan = catlin_plan
     windings = resolve_storey_windings(plan, "court-low")
-    model, _ = resolve(plan)
+    model = catlin_model_ro
     # The court walls and the direction the court lies in from each one's own axis.
     court_side = {
         "W-SG-W1": ("x", +1),   # NW->MW, court is east
@@ -223,7 +223,7 @@ def test_court_wash_faces_the_court() -> None:
             f"(expected sign {sign:+d}), got wash={wash:.5f} concrete={concrete:.5f}")
 
 
-def test_raised_garden_wash_faces_the_yard_on_the_perimeter_legs_only() -> None:
+def test_raised_garden_wash_faces_the_yard_on_the_perimeter_legs_only(catlin_plan, catlin_model_ro) -> None:
     """Only the three perimeter legs are washed, and their wash faces the lawn.
 
     The RG graph is an open chain (``WB-NW-SW-SE-NE-EB``, no north wall), so ``_closed_walks``
@@ -237,9 +237,9 @@ def test_raised_garden_wash_faces_the_yard_on_the_perimeter_legs_only() -> None:
         resolve_storey_windings,
     )
 
-    plan = load_plan(CATLIN).plan
+    plan = catlin_plan
     windings = resolve_storey_windings(plan, "yard-low")
-    model, _ = resolve(plan)
+    model = catlin_model_ro
     yard_side = {
         "W-RG-BLOCK": ("y", -1),   # SW->SE, yard is south
         "W-RG-WEST": ("x", -1),    # NW->SW, yard is west

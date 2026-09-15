@@ -20,13 +20,6 @@ from _helpers import CATLIN as CATLIN_DIR, copy_house
 
 
 
-@pytest.fixture(scope="module")
-def catlin_plan():
-    result = load_plan(CATLIN_DIR)
-    assert result.plan is not None
-    return result.plan
-
-
 def _fixture(plan, tag):
     return next(e for e in plan.all_elements() if getattr(e, "tag", None) == tag)
 

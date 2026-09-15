@@ -130,7 +130,8 @@ def test_the_scaffold_is_refused_until_a_person_fills_it_in(bundle, tmp_path):
     assert "engineer" in message
 
 
-def test_a_filled_scaffold_seals_every_computed_item(bundle, tmp_path):
+def test_a_filled_scaffold_seals_every_computed_item(bundle, tmp_path, catlin_ctx,
+                                                     catlin_check_report):
     """The other half: filled in, the form works, and its fingerprints are the live ones."""
     from typehaus.engineering import Freshness
     from typehaus.engineering.register import load_register
@@ -146,12 +147,10 @@ def test_a_filled_scaffold_seals_every_computed_item(bundle, tmp_path):
     register = load_register(house)
     assert register.signoffs
 
-    from typehaus.checks import build_context, run_checks
-    from typehaus.source import load_plan
-
-    loaded = load_plan(CATLIN)
-    ctx, _ = build_context(loaded.plan, CATLIN)
-    report = run_checks(ctx)
+    # `catlin_check_report()` is `run_checks(catlin_ctx)`, which is what populates
+    # `ctx.engineering` — the map this test reads.
+    ctx = catlin_ctx
+    report = catlin_check_report()
     named = {f.engineering_item for f in report.findings if f.engineering_item}
     computed = [ctx.engineering[i] for i in sorted(named | set(ctx.engineering))
                 if ctx.engineering[i].inputs]
@@ -162,7 +161,9 @@ def test_a_filled_scaffold_seals_every_computed_item(bundle, tmp_path):
         assert signoff is not None
 
 
-def test_a_deferred_item_stays_unsealed_even_with_the_form_filled(bundle, tmp_path):
+def test_a_deferred_item_stays_unsealed_even_with_the_form_filled(bundle, tmp_path,
+                                                                  catlin_ctx,
+                                                                  catlin_check_report):
     """Its block is commented out, so filling the form cannot accidentally stamp it."""
     from typehaus.engineering import Freshness
     from typehaus.engineering.register import load_register
@@ -178,26 +179,20 @@ def test_a_deferred_item_stays_unsealed_even_with_the_form_filled(bundle, tmp_pa
     (house / "engineering.toml").write_text(filled)
     register = load_register(house)
 
-    from typehaus.checks import build_context, run_checks
-    from typehaus.source import load_plan
-
-    loaded = load_plan(CATLIN)
-    ctx, _ = build_context(loaded.plan, CATLIN)
-    run_checks(ctx)
+    ctx = catlin_ctx
+    catlin_check_report()
     deferred = ctx.engineering["column_support/W-SG-W1"]
     state, _ = register.freshness(deferred)
     assert state is not Freshness.FRESH
 
 
-def test_the_fingerprints_in_the_form_are_the_ones_the_cli_prints(bundle):
-    from typehaus.checks import build_context, run_checks
+def test_the_fingerprints_in_the_form_are_the_ones_the_cli_prints(bundle, catlin_ctx,
+                                                                 catlin_check_report):
     from typehaus.engineering.fingerprint import fingerprint
-    from typehaus.source import load_plan
 
     draft = (bundle / "engineering.toml.draft").read_text()
-    loaded = load_plan(CATLIN)
-    ctx, _ = build_context(loaded.plan, CATLIN)
-    run_checks(ctx)
+    ctx = catlin_ctx
+    catlin_check_report()
     pinned = dict(re.findall(r'^"([^"]+)" = "([0-9a-f]+)"$', draft, re.MULTILINE))
     assert pinned
     for item_id, digest in pinned.items():

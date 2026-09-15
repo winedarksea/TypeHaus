@@ -307,7 +307,7 @@ def test_every_vanity_carries_a_billable_shelf():
             assert shelf.count == 2, "one shelf plus the case top"
 
 
-def test_the_hall_bath_mat_gave_way_to_the_cabinet_and_is_a_real_cable():
+def test_the_hall_bath_mat_gave_way_to_the_cabinet_and_is_a_real_cable(catlin_plan):
     """Heating cable under a closed-toe vanity has nowhere to dump its heat.
 
     Schluter forbids it outright, and `advisory.floor_heat_fixture_keepout` FAILed the moment
@@ -327,7 +327,7 @@ def test_the_hall_bath_mat_gave_way_to_the_cabinet_and_is_a_real_cable():
 
     # `watts` is authored data and does not survive onto the resolved zone (which keeps
     # only geometry, spacing and a derived wire length), so read it off the plan element.
-    plan = load_plan(CATLIN_DIR).plan
+    plan = catlin_plan
     authored = next(e for e in plan.storey_elements("second")
                     if getattr(e, "tag", "") == "FH-S-BATH1")
     area = poly.area / IN / IN / 144

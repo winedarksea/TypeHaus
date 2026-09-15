@@ -19,17 +19,8 @@ from pathlib import Path
 import pytest
 
 from typehaus.quantities import ft
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
 
 TOL_M = 0.0254 / 2.0  # half an inch
-
-
-@pytest.fixture(scope="module")
-def catlin_plan():
-    result = load_plan(CATLIN_DIR)
-    assert result.plan is not None, result.findings
-    return result.plan
 
 
 def _node(plan, tag):
