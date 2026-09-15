@@ -37,8 +37,8 @@ DELIBERATELY_UNPAINTED = {"bug_screen", "glazing", "glazing_trim"}
 
 
 @pytest.fixture(scope="module")
-def catlin_solid_categories(catlin_model) -> set[str]:
-    return {solid.category.lower() for solid in catlin_model.solids}
+def catlin_solid_categories(catlin_model_ro) -> set[str]:
+    return {solid.category.lower() for solid in catlin_model_ro.solids}
 
 
 def _metallic_categories() -> set[str]:

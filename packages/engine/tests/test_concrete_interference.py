@@ -29,13 +29,13 @@ def _findings(ctx):
     return concrete_interference(ctx)
 
 
-def test_the_breezeway_pads_stand_clear_of_both_buildings():
-    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
+def test_the_breezeway_pads_stand_clear_of_both_buildings(catlin_ctx):
+    ctx = catlin_ctx
     fails = [f for f in _findings(ctx) if f.result is Result.FAIL]
     assert not fails, [f.message for f in fails]
 
 
-def test_it_reports_the_pours_it_cleared_by_name():
+def test_it_reports_the_pours_it_cleared_by_name(catlin_ctx):
     """A silent PASS is indistinguishable from a check that never ran.
 
     ** THE HOUSE HAS ISOLATED POURS AGAIN SINCE 2026-09-14. ** This asserted ``not passes``
@@ -61,7 +61,7 @@ def test_it_reports_the_pours_it_cleared_by_name():
     and ``PD-SG-FCOL`` joined the aggregate the same day, when the two centre-garden bells
     became pads.
     """
-    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
+    ctx = catlin_ctx
     passes = [f for f in _findings(ctx) if f.result is Result.PASS]
     declared = [f for f in passes if "CAST WITH" in f.message]
     clear = [f for f in passes if f not in declared]
@@ -85,7 +85,8 @@ def test_it_reports_the_pours_it_cleared_by_name():
         assert "takes no credit" in finding.message
 
 
-def test_continuous_foundation_work_is_never_the_SUBJECT_of_a_finding():
+def test_continuous_foundation_work_is_never_the_SUBJECT_of_a_finding(catlin_plan,
+                                                                        catlin_ctx):
     """Strip footings lap at every corner and the basement slab crosses all of them.
 
     None of that may be GRADED here — the check produced ~80 findings about correct
@@ -102,8 +103,8 @@ def test_continuous_foundation_work_is_never_the_SUBJECT_of_a_finding():
     """
     from typehaus.model.structure import Pad
 
-    plan = load_plan(CATLIN_DIR).plan
-    ctx, _ = build_context(plan, CATLIN_DIR)
+    plan = catlin_plan
+    ctx = catlin_ctx
     declared = {pad.tag: set(pad.cast_with or ()) for pad in plan.all_elements()
                 if isinstance(pad, Pad)}
 

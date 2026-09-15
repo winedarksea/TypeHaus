@@ -19,13 +19,8 @@ M_PER_IN = 0.0254
 
 
 @pytest.fixture(scope="module")
-def catlin():
-    from typehaus.resolve import resolve
-    from typehaus.source import load_plan
-
-    loaded = load_plan(CATLIN)
-    model, _ = resolve(loaded.plan)
-    return model
+def catlin(catlin_model_ro):
+    return catlin_model_ro
 
 
 def _floor(model, tag):

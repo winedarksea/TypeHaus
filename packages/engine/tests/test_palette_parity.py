@@ -24,18 +24,14 @@ import pytest
 
 from typehaus.emit.gltf.emitter import _PALETTE
 from typehaus.emit.vocabulary_manifest import build_vocabulary_manifest
-from typehaus.resolve import resolve
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR, REPO_ROOT
+from _helpers import REPO_ROOT
 
 VOCABULARY_JSON = REPO_ROOT / "ui" / "src" / "generated" / "vocabulary.json"
 
 
 @pytest.fixture(scope="module")
-def catlin_member_categories() -> set[str]:
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    assert not [f for f in findings if f.severity.value == "error"]
+def catlin_member_categories(catlin_model_ro) -> set[str]:
+    model = catlin_model_ro
     categories: set[str] = set()
     for host in (*model.walls, *model.floors, *model.roofs, *model.stairs):
         for member in host.members:

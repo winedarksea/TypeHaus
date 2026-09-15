@@ -373,13 +373,16 @@ def test_the_legend_names_the_flashing_it_drew(catlin_model):
 # different side.
 
 
-def _keyed_details(model):
-    """Every derived detail whose notes file carries keyed notes, with its scene."""
+def _keyed_details(details):
+    """Every derived detail whose notes file carries keyed notes, with its scene.
+
+    Takes ``catlin_details`` rather than a model: this was rebuilding all ~76 details on
+    every call, and five tests in this module call it.
+    """
     from typehaus.emit.draw.keyed_notes import KEY_LAYER
 
     out = []
-    for derived in derive_detail_slices(model):
-        scene, _ = build_detail(model, derived)
+    for derived, scene, _findings in details.values():
         keys = {n.content for n in scene.nodes
                 if isinstance(n, Text) and n.layer == KEY_LAYER}
         if keys:
@@ -387,30 +390,30 @@ def _keyed_details(model):
     return out
 
 
-def test_the_catlin_set_actually_draws_keyed_bubbles(catlin_model_ro):
+def test_the_catlin_set_actually_draws_keyed_bubbles(catlin_details):
     """A guard on the whole feature: an anchor that silently stops resolving reads as
     'no keyed notes anywhere', which is indistinguishable from 'the feature is off'."""
-    assert _keyed_details(catlin_model_ro), "no detail in the house draws a keyed bubble"
+    assert _keyed_details(catlin_details), "no detail in the house draws a keyed bubble"
 
 
-def test_every_bubble_on_a_drawing_has_an_entry_in_its_legend(catlin_model_ro):
-    for derived, scene, keys in _keyed_details(catlin_model_ro):
+def test_every_bubble_on_a_drawing_has_an_entry_in_its_legend(catlin_details):
+    for derived, scene, keys in _keyed_details(catlin_details):
         legend = {line.split("  ")[0] for line in scene.notes if line[:1] == "K"}
         assert keys <= legend, f"{derived.key}: bubbles {keys - legend} are in no legend"
 
 
-def test_a_key_is_bubbled_at_most_once_per_drawing(catlin_model_ro):
+def test_a_key_is_bubbled_at_most_once_per_drawing(catlin_details):
     """Two bubbles carrying one key means a builder cannot tell which place the note is
     about, which is worse than no bubble at all."""
     from typehaus.emit.draw.keyed_notes import KEY_LAYER
 
-    for derived, scene, _ in _keyed_details(catlin_model_ro):
+    for derived, scene, _ in _keyed_details(catlin_details):
         drawn = [n.content for n in scene.nodes
                  if isinstance(n, Text) and n.layer == KEY_LAYER]
         assert len(drawn) == len(set(drawn)), f"{derived.key}: duplicate bubble {drawn}"
 
 
-def test_a_bubble_never_lands_on_a_layer_ladder_leader(catlin_model_ro):
+def test_a_bubble_never_lands_on_a_layer_ladder_leader(catlin_details):
     """The strip outboard of the wall is where the continuity column already lives.
 
     ``_dodge_point`` slides a bubble down until it clears every leader box in the scene;
@@ -419,7 +422,7 @@ def test_a_bubble_never_lands_on_a_layer_ladder_leader(catlin_model_ro):
     from typehaus.emit.draw.annotate import leader_box
     from typehaus.emit.draw.keyed_notes import KEY_LAYER, bubble_extent
 
-    for derived, scene, _ in _keyed_details(catlin_model_ro):
+    for derived, scene, _ in _keyed_details(catlin_details):
         scale = scene.frame.scale if scene.frame is not None else None
         boxes = [leader_box(n, scale) for n in scene.nodes if isinstance(n, Leader)
                  and n.text]
@@ -447,7 +450,7 @@ def test_a_keyed_note_off_this_detail_draws_nothing_and_reports_nothing(catlin_m
     assert not [f for f in findings if "anchor" in f.check_id]
 
 
-def test_a_bubble_never_leaves_the_drawing_to_avoid_a_leader(catlin_model_ro):
+def test_a_bubble_never_leaves_the_drawing_to_avoid_a_leader(catlin_details):
     """The regression the eave detail showed at 300 dpi.
 
     The dodge was unbounded, so K3 and K4 slid clean off the bottom of the drawing into the
@@ -456,7 +459,7 @@ def test_a_bubble_never_leaves_the_drawing_to_avoid_a_leader(catlin_model_ro):
     """
     from typehaus.emit.draw.keyed_notes import KEY_LAYER
 
-    for _derived, scene, _keys in _keyed_details(catlin_model_ro):
+    for _derived, scene, _keys in _keyed_details(catlin_details):
         crop = [n for n in scene.nodes if isinstance(n, Polyline) and n.space == "model"]
         assert crop
         z_low = min(p[1] for n in crop for p in n.points)

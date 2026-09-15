@@ -13,9 +13,6 @@ from __future__ import annotations
 from pathlib import Path
 from types import SimpleNamespace
 
-import pytest
-
-from typehaus.checks import build_context
 from typehaus.checks.code.mn_residential.fall_protection import stairwell_guard
 from typehaus.checks.code.mn_residential.stairs import (
     stair_handrail,
@@ -26,18 +23,10 @@ from typehaus.checks.code.mn_residential.stairs import (
 from typehaus.findings import Result
 from typehaus.quantities import inch
 from typehaus.resolve.model import FramedMember, ResolvedFloor, ResolvedStair
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
 
 
 _RISER = 0.19
 _GOING = 0.254
-
-
-@pytest.fixture(scope="module")
-def catlin_ctx():
-    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
-    return ctx
 
 
 def _tread(index: int, width_m: float = 1.0) -> FramedMember:

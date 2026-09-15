@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from typehaus.checks import build_context, run
+from typehaus.checks import build_context
 from typehaus.checks.integrity.catalog_tags import unknown_product_ref
 from typehaus.model import Product
 from typehaus.source import load_plan
@@ -45,11 +45,9 @@ def test_the_washtower_type_resolves_to_its_brand_and_model(catlin_plan) -> None
     assert "WKHC252HBA" in appliance.name
 
 
-def test_catlin_names_no_product_it_has_not_defined() -> None:
+def test_catlin_names_no_product_it_has_not_defined(catlin_check_report) -> None:
     """The reference house's own dangling-ref gate, run through the real check pipeline."""
-    result = load_plan(CATLIN)
-    assert result.plan is not None
-    report = run(result.plan, CATLIN)
+    report = catlin_check_report()
     assert [f for f in report.findings if f.check_id == "integrity.unknown_product_ref"] == []
 
 

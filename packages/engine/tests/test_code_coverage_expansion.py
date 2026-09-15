@@ -20,7 +20,6 @@ from types import SimpleNamespace
 
 import pytest
 
-from typehaus.checks import build_context
 from typehaus.checks.code.mn_residential.attic import attic_access
 from typehaus.checks.code.mn_residential.attic_ventilation import attic_ventilation
 from typehaus.checks.code.mn_residential.glazing import safety_glazing
@@ -61,15 +60,7 @@ from typehaus.findings import Result
 from typehaus.model.enums import AlarmKind, Occupancy
 from typehaus.model.refs import FollowRoof
 from typehaus.quantities import ft, inch
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
 
-
-
-@pytest.fixture(scope="module")
-def catlin_ctx():
-    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
-    return ctx
 
 
 def _results(findings) -> list[Result]:

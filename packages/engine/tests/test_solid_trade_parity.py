@@ -40,8 +40,8 @@ DELIBERATELY_UNCLASSIFIED: set[str] = set()
 
 
 @pytest.fixture(scope="module")
-def catlin_solid_categories(catlin_model) -> set[str]:
-    return {solid.category.lower() for solid in catlin_model.solids}
+def catlin_solid_categories(catlin_model_ro) -> set[str]:
+    return {solid.category.lower() for solid in catlin_model_ro.solids}
 
 
 def test_every_trade_in_the_table_is_one_the_ui_honours() -> None:

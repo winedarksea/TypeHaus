@@ -110,8 +110,8 @@ def test_outer_joist_spans_cantilever_nine_inches(catlin_model):
 
 
 # --------------------------------------------------------------------- regression
-def test_deck_bearing_stack_has_no_interference():
-    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
+def test_deck_bearing_stack_has_no_interference(catlin_ctx):
+    ctx = catlin_ctx
     deck_findings = [
         f for f in member_interference(ctx)
         if any(t.startswith(_DECK_PREFIXES) for t in f.element_tags)
@@ -119,11 +119,11 @@ def test_deck_bearing_stack_has_no_interference():
     assert not deck_findings, [f.message for f in deck_findings]
 
 
-def test_stair_support_framing_reports_no_interference():
+def test_stair_support_framing_reports_no_interference(catlin_ctx):
     """The landing posts, winder newel/carriages and turn header must be *joints*, not
     clashes. Sharper than the global ceiling below: it cannot be satisfied by the check
     happening to stay under five findings elsewhere."""
-    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
+    ctx = catlin_ctx
     # A member's label is "{parent_uid}:{child_key}", so match the stair's uid.
     stair_uids = {stair.uid for stair in ctx.model.stairs}
     stair_findings = [f for f in member_interference(ctx)
@@ -131,35 +131,35 @@ def test_stair_support_framing_reports_no_interference():
     assert not stair_findings, [f.message for f in stair_findings]
 
 
-def test_balcony_knee_braces_are_not_a_clash():
+def test_balcony_knee_braces_are_not_a_clash(catlin_ctx):
     """The braces leave the post *face* and stop at the soffit, so nothing overlaps.
 
     Both ends are where a clash would come from: an end buried in the 6x6 shares more plan
     area than the tolerance allows (and sits too far inside the column for the butt-joint
     exemption), and a brace run past the soffit would share volume with the member it braces.
     """
-    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
+    ctx = catlin_ctx
     brace_findings = [f for f in member_interference(ctx)
                       if any("KB-SG" in tag or "GIRT" in tag for tag in f.element_tags)]
     assert not brace_findings, [f.message for f in brace_findings]
 
 
-def test_catlin_framing_interference_stays_near_zero():
+def test_catlin_framing_interference_stays_near_zero(catlin_ctx):
     """Guards the ~2662 -> 0 cleanup (correct stud orientation, slope-aware z, intended
     corner/tee/bearing/stair joints), then the centreline exclusion-band fix that took the
     last two same-wall stud/king clashes to zero. A small ceiling keeps it robust to
     model tweaks."""
-    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
+    ctx = catlin_ctx
     findings = member_interference(ctx)
     assert len(findings) <= 2, [f.message for f in findings]
 
 
-def test_tudor_posts_within_their_wall_are_not_a_clash():
+def test_tudor_posts_within_their_wall_are_not_a_clash(catlin_ctx):
     """The suite's four elm timbers stand in W-S-W3's stud line (``Post.within_wall``):
     the framer cuts the plates and studs around them, so their shared volume with that
     one wall's framing is the cut, not an elevation bug. The clearance is authored —
     remove ``within_wall`` and the same posts report against all three plates."""
-    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
+    ctx = catlin_ctx
     tudor = [f for f in member_interference(ctx)
              if any("TUDOR" in tag for tag in f.element_tags)]
     assert not tudor, [f.message for f in tudor]
@@ -185,6 +185,8 @@ def test_catlin_window_member_overlaps_pinned_at_zero():
       change, not aimed at.
 
     The count is the regression guard; the docstring is the map for whoever moves it."""
+    # Its own context, not ``catlin_ctx``: this test empties ``ctx.model.junctions``
+    # and a shared model must never be mutated.
     ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
     ctx.model.junctions = []  # disable the junction-proximity clear
     window_findings = [

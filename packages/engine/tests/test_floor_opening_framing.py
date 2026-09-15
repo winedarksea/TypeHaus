@@ -23,7 +23,6 @@ from typehaus.findings import Result
 from typehaus.quantities import ft, inch
 from typehaus.resolve.floors import opening_header_profile
 from typehaus.resolve.framing.profiles import cross_section
-from typehaus.source import load_plan
 from _helpers import CATLIN as CATLIN_DIR
 
 
@@ -136,7 +135,7 @@ def test_header_ply_count_tracks_the_span(catlin_model):
     assert short.depth_m == pytest.approx(band) and long.depth_m == pytest.approx(band)
 
 
-def _plan_without_stair_bearing_refs():
+def _plan_without_stair_bearing_refs(catlin_plan):
     """Catlin with FO-S-STAIR's ``bearing_refs`` stripped.
 
     Both of that opening's long edges are carried by bearing wall, so the resolver draws
@@ -144,7 +143,7 @@ def _plan_without_stair_bearing_refs():
     declared bearing restores exactly the condition the rule guards: a 10'-3" opening edge
     with nothing under it, closed by a header past the prescriptive table.
     """
-    plan = load_plan(CATLIN_DIR).plan
+    plan = catlin_plan
     elements = {
         storey: [element.model_copy(update={"bearing_refs": ()})
                  if getattr(element, "tag", None) == "FO-S-STAIR" else element
@@ -166,10 +165,10 @@ def test_no_header_is_drawn_where_bearing_wall_carries_the_edge(catlin_model):
     assert headers == []
 
 
-def test_beyond_prescriptive_header_is_reported():
+def test_beyond_prescriptive_header_is_reported(catlin_plan):
     """A 10'-3" floor-opening header is an engineered beam; the drawing set has to say
     so, which ``structural.header_prescriptive`` only ever did for *wall* openings."""
-    plan = _plan_without_stair_bearing_refs()
+    plan = _plan_without_stair_bearing_refs(catlin_plan)
     ctx, _ = build_context(plan, CATLIN_DIR)
     findings = floor_opening_header_within_prescriptive(ctx)
     failures = [finding for finding in findings if finding.result is Result.FAIL]

@@ -18,6 +18,8 @@ here together rather than beside whichever thing they constrain.
 
 from __future__ import annotations
 
+from functools import cache
+
 from pathlib import Path
 
 import pytest
@@ -43,7 +45,14 @@ VANITIES = {
 }
 
 
+@cache
 def _model():
+    """The resolved catlin model — built once for this module.
+
+    Memoised: this was called 11 times and rebuilt the whole house each time. Everything
+    here reads and nothing mutates, which is what makes one shared instance safe (the same
+    rule ``catlin_model_ro`` states in conftest).
+    """
     return resolve(load_plan(CATLIN_DIR).plan)[0]
 
 

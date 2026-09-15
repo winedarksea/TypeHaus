@@ -30,8 +30,6 @@ from typehaus.resolve.framing.solver import _framing_axis, frame_wall
 from typehaus.resolve.framing.stud_module import opening_stud_module
 from typehaus.resolve.geometry import sub, unit
 from typehaus.resolve.model import ResolvedLayer, ResolvedWall
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
 
 
 _STUD_THICKNESS = inch(1.5).meters
@@ -457,8 +455,8 @@ def test_corner_style_on_an_open_end_reports_a_finding_instead_of_a_silent_no_op
 
 # ------------------------------------------------------------------- catlin integration
 @pytest.fixture(scope="module")
-def catlin_resolved():
-    model, findings = resolve(load_plan(CATLIN_DIR).plan)
+def catlin_resolved(catlin_plan):
+    model, findings = resolve(catlin_plan)
     assert not [f for f in findings if f.severity.value == "error"]
     return model
 

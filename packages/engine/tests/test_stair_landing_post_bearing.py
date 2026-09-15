@@ -16,21 +16,18 @@ from __future__ import annotations
 from types import SimpleNamespace
 
 
-from typehaus.checks import build_context
 from typehaus.checks.structural.stairs import landing_post_bearing
 from typehaus.findings import Result
 from typehaus.quantities import inch
 from typehaus.resolve.model import FramedMember, ResolvedStair
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
 
 
 _DECK_Z = 0.0
 _POST_TOP_Z = 1.5
 
 
-def test_catlin_landing_posts_all_land_on_something_bearing(catlin_model):
-    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
+def test_catlin_landing_posts_all_land_on_something_bearing(catlin_model, catlin_ctx):
+    ctx = catlin_ctx
     findings = landing_post_bearing(ctx)
     posts = [member for stair in catlin_model.stairs for member in stair.members
              if member.child_key.startswith("landing-post-")]

@@ -13,6 +13,8 @@ Three changes landed together and each is silently breakable from somewhere else
 
 from __future__ import annotations
 
+from functools import cache
+
 from itertools import pairwise
 from pathlib import Path
 
@@ -25,11 +27,25 @@ CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 M_PER_IN = 0.0254
 
 
+@cache
 def _plan():
+    """The loaded catlin plan — built once for this module.
+
+    Memoised: this was called 12 times and rebuilt the whole house each time. Everything
+    here reads and nothing mutates, which is what makes one shared instance safe (the same
+    rule ``catlin_model_ro`` states in conftest).
+    """
     return load_plan(CATLIN_DIR).plan
 
 
+@cache
 def _model():
+    """The resolved catlin model — built once for this module.
+
+    Memoised: this was called 14 times and rebuilt the whole house each time. Everything
+    here reads and nothing mutates, which is what makes one shared instance safe (the same
+    rule ``catlin_model_ro`` states in conftest).
+    """
     return resolve(_plan())[0]
 
 

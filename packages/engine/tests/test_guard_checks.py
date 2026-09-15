@@ -29,23 +29,10 @@ from typehaus.checks.structural.guards import (
 )
 from typehaus.findings import Result
 from typehaus.quantities import inch
-from _helpers import CATLIN as CATLIN_DIR
 
 #: A 3'-6" guard — the height R312.1.2's 36" minimum is cleared by, and the height the
 #: retired porch parapet was drawn at.
 GUARD_HEIGHT_M = inch(42).meters
-
-
-@pytest.fixture(scope="module")
-def catlin_ctx():
-    """The real house, with its preferences — the allowance this rule grades against is
-    authored in ``houses/catlin/preferences.toml``, so a bare ``Preferences()`` would be
-    checking a different number than the one the house states."""
-    from typehaus.checks import build_context
-    from typehaus.source import load_plan
-
-    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
-    return ctx
 
 
 def test_catlin_grades_one_guard_wall_and_it_is_not_masonry(catlin_ctx):

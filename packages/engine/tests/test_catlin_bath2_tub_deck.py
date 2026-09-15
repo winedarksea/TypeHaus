@@ -15,6 +15,8 @@ which is silently breakable by an edit somewhere else:
 
 from __future__ import annotations
 
+from functools import cache
+
 from pathlib import Path
 
 from shapely.geometry import Polygon
@@ -27,7 +29,14 @@ CATLIN_DIR = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 M_PER_IN = 0.0254
 
 
+@cache
 def _plan():
+    """The loaded catlin plan — built once for this module.
+
+    Memoised: this was called 12 times and rebuilt the whole house each time. Everything
+    here reads and nothing mutates, which is what makes one shared instance safe (the same
+    rule ``catlin_model_ro`` states in conftest).
+    """
     return load_plan(CATLIN_DIR).plan
 
 

@@ -113,8 +113,9 @@ def test_floor_joist_counts_match_old_model(catlin_model):
               if s == 10.135) == 8
 
 
-def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables():
-    report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
+def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables(
+        catlin_check_report):
+    report = catlin_check_report()
     findings = [finding for finding in report.findings
                 if finding.check_id in {"structural.ijoist_span", "structural.frost_depth"}]
     assert findings
@@ -143,7 +144,8 @@ def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables(
         assert "ASCE 32" not in by_tag[tag].message, tag
 
 
-def test_catlin_sunken_garden_decks_are_graded_and_the_guard_rule_resolves():
+def test_catlin_sunken_garden_decks_are_graded_and_the_guard_rule_resolves(
+        catlin_plan, catlin_check_report):
     """Both freestanding sunken-garden walking surfaces carry ``service="deck"`` (IRC R507 /
     AWC DCA6 scope, like the breezeway's FS-BW-FLOOR) and ``structural.deck_guard`` reaches a
     real verdict for each: the balcony is guarded by RL-SG-BALCONY at 42" over its 120" drop,
@@ -152,11 +154,10 @@ def test_catlin_sunken_garden_decks_are_graded_and_the_guard_rule_resolves():
     condition it deliberately does not model.)"""
     from typehaus.model.floors import FloorSystem
 
-    plan = load_plan(CATLIN_DIR).plan
-    decks = {e.tag: e for e in plan.all_elements()
+    decks = {e.tag: e for e in catlin_plan.all_elements()
              if isinstance(e, FloorSystem) and e.service == "deck"}
     assert {"FS-SG-PORCH", "FS-SG-DECK"} <= set(decks)
-    report = run(plan, CATLIN_DIR, tier=None)
+    report = catlin_check_report()
     guard = {tag: [f for f in report.findings if f.check_id == "structural.deck_guard"
                    and tag in f.element_tags]
              for tag in ("FS-SG-PORCH", "FS-SG-DECK")}
@@ -168,18 +169,18 @@ def test_catlin_sunken_garden_decks_are_graded_and_the_guard_rule_resolves():
     assert "RL-SG-BALCONY" in balcony.element_tags
 
 
-def test_catlin_fixtures_do_not_overlap_and_required_clearances_hold():
+def test_catlin_fixtures_do_not_overlap_and_required_clearances_hold(catlin_check_report):
     """The ensuite de-overlap pass and the BATH2 wet-wall move leave every room's fixture
     footprints pairwise disjoint with each WC's REQUIRED clearance zone empty."""
-    report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
+    report = catlin_check_report()
     findings = [f for f in report.findings if f.check_id == "advisory.fixture_overlap"]
     assert not findings, [f.message for f in findings]
 
 
-def test_catlin_permit_checklist_passes_declared_minnesota_subset():
+def test_catlin_permit_checklist_passes_declared_minnesota_subset(catlin_check_report):
     from typehaus.checks import evaluate_permit_checklist
 
-    report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
+    report = catlin_check_report()
     checklist = evaluate_permit_checklist(report, "mn-2020")
     # Every slab either carries an authored assembly or is scoped out of the prescriptive
     # table for a stated reason (the main-floor deck has conditioned space on both faces;
@@ -449,7 +450,8 @@ def test_house_roof_bearing_datum_seat_cuts_and_layer_setbacks(catlin_model):
     assert garage.layer_edge_setbacks == ()
 
 
-def test_catlin_roof_answers_its_condensation_criterion_and_carries_the_r():
+def test_catlin_roof_answers_its_condensation_criterion_and_carries_the_r(
+        catlin_plan, catlin_check_report):
     """The hot roof must have an ANSWER on condensation — a code criterion, not a Glaser
     walk — and carry a whole-assembly R >= 50, both read off the resolved model rather than
     pinned to authored numbers.
@@ -470,8 +472,7 @@ def test_catlin_roof_answers_its_condensation_criterion_and_carries_the_r():
     from typehaus.checks.building_science.condensation import CHECK_ID
     from typehaus.checks.code.unvented_roof import CHECK_ID as R806_5_CHECK_ID
 
-    plan = load_plan(CATLIN_DIR).plan
-    report = run(plan, CATLIN_DIR, tier=None)
+    report = catlin_check_report()
     gate = [f for f in report.findings
             if f.check_id == CHECK_ID and "ROOF" in f.element_tags]
     assert gate, "the condensation gate never evaluated ROOF"
@@ -483,12 +484,12 @@ def test_catlin_roof_answers_its_condensation_criterion_and_carries_the_r():
     assert coded, "nothing graded R806.5 on the assembly the gate handed to it"
     assert all(f.result is Result.PASS for f in coded), [f.message for f in coded]
 
-    r = assembly_r_value(plan.library.resolve_assembly("ROOF"), plan.library)
+    r = assembly_r_value(catlin_plan.library.resolve_assembly("ROOF"), catlin_plan.library)
     assert r.value is not None and not r.unknown_materials
     assert r.value.r_us >= 50.0
 
 
-def test_garage_gable_roof_frames_raised_heel_trusses(catlin_model):
+def test_garage_gable_roof_frames_raised_heel_trusses(catlin_model, catlin_plan):
     """The garage roof is framed as raised-heel trusses: ONE member per truss, spanning its
     two bearings and standing from the plate top to the ridge. A truss carries its own ridge,
     so it needs no authored ridge Beam and must not raise the ridge_support advisory."""
@@ -508,7 +509,7 @@ def test_garage_gable_roof_frames_raised_heel_trusses(catlin_model):
         assert truss.z0_m == pytest.approx(garage_roof.bearing_z_m)
         # Plate top to ridge: the raised heel is inside that height, not a member of its own.
         assert truss.z1_m - truss.z0_m > 1.0
-    _, resolve_findings = resolve(load_plan(CATLIN_DIR).plan)
+    _, resolve_findings = resolve(catlin_plan)
     ridge = [f for f in resolve_findings if f.check_id == "structural.ridge_support"]
     assert not [f for f in ridge if f.element_tags == ("RF-GARAGE",)]
     assert not [f for f in ridge if f.severity.value == "error"]
@@ -712,8 +713,8 @@ def test_exterior_corners_include_strength_first_third_stud(catlin_model):
         assert any(member.category == "corner" for member in wall.members), tag
 
 
-def test_bedroom_egress_is_associated_with_its_own_bounding_wall():
-    report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
+def test_bedroom_egress_is_associated_with_its_own_bounding_wall(catlin_check_report):
+    report = catlin_check_report()
     findings = [finding for finding in report.findings if finding.check_id == "code.R310_egress"]
     # Six sleeping rooms: RM-A-STUDIO, the west attic loft retyped to Occupancy.BEDROOM as a
     # guest studio. It is the reason R310 reaches the attic at all —
@@ -725,7 +726,8 @@ def test_bedroom_egress_is_associated_with_its_own_bounding_wall():
     assert all("WIN-B-SAUNA" not in finding.message for finding in findings)
 
 
-def test_every_credited_egress_window_is_in_an_exterior_wall():
+def test_every_credited_egress_window_is_in_an_exterior_wall(catlin_ctx,
+                                                            catlin_check_report):
     """R310.1's opening must reach "a public way, yard or court" — never the next room.
 
     The house-side half of the ``exterior_only`` fix; the two-sided synthetic pair lives in
@@ -735,11 +737,10 @@ def test_every_credited_egress_window_is_in_an_exterior_wall():
     Author a borrowed-light sash into a bedroom partition and the *other* file's test proves
     the rule rejects it; this one proves nobody quietly re-pointed a real bedroom at one.
     """
-    from typehaus.checks import build_context
     from typehaus.checks.code.mn_residential._common import _rooms_by_storey, _wall_is_exterior
 
-    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
-    findings = [f for f in run(ctx.plan, CATLIN_DIR, tier=None).findings
+    ctx = catlin_ctx
+    findings = [f for f in catlin_check_report().findings
                 if f.check_id == "code.R310_egress"]
     credited = {word for finding in findings for word in finding.message.split()
                 if word.startswith("WIN-")}
@@ -753,8 +754,8 @@ def test_every_credited_egress_window_is_in_an_exterior_wall():
             "space on both sides")
 
 
-def test_catlin_window_openings_follow_their_walls_framing_module():
-    report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
+def test_catlin_window_openings_follow_their_walls_framing_module(catlin_check_report):
+    report = catlin_check_report()
     findings = [finding for finding in report.findings
                 if finding.check_id == "structural.window_framing_module"]
     # No exceptions, and that is the point of the assertion: the exterior assembly takes its
@@ -773,7 +774,8 @@ def test_catlin_window_openings_follow_their_walls_framing_module():
     assert not findings, [finding.message for finding in findings]
 
 
-def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_height(catlin_model):
+def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_height(
+        catlin_model, catlin_check_report):
     """The gable peak's composition: two 27x64 casements symmetric about the x=18' ridge.
 
     Every number here is load-bearing on the design. The rake is what makes this worth
@@ -844,7 +846,7 @@ def test_the_attic_south_juliet_pair_straddles_the_ridge_at_full_unclipped_heigh
     assert pier == pytest.approx(inch(21).meters, abs=1e-6)
     assert pier >= inch(14).meters
 
-    report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
+    report = catlin_check_report()
     # `integrity.opening_fits` is a hard gate and stays clean. `window_framing_module` is an
     # ADVISORY: on a grid shared by the whole south line, 16'-0"/20'-0" ARE stud lines, so
     # both checks are clean. The advisory is asserted clean so a future re-phase cannot
@@ -875,9 +877,12 @@ def _opening_plan_y(model, tag):
     return y0 + (y1 - y0) * (opening.center_along_m / length), opening
 
 
-def _framing_offenders(tags):
-    """Re-run opening/module/safety gates and keep only failures naming one of ``tags``."""
-    report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
+def _framing_offenders(report, tags):
+    """Opening/module/safety gate failures naming one of ``tags``.
+
+    Takes the report rather than running the registry: three tests called this and each
+    paid a full ~20 s run for the same verdicts (→ ``catlin_check_report``).
+    """
     return [finding.message for finding in report.findings
             if finding.check_id in ("structural.window_framing_module",
                                     "integrity.opening_fits",
@@ -886,7 +891,8 @@ def _framing_offenders(tags):
             and any(tag in finding.message for tag in tags)]
 
 
-def test_the_west_facade_stacks_five_two_storey_window_columns(catlin_model):
+def test_the_west_facade_stacks_five_two_storey_window_columns(catlin_model,
+                                                               catlin_check_report):
     """Five exact lower columns and mirrored attic caps.
 
     The whole face re-hangs on the house grid — same rhythm, same pairs, one datum — so all
@@ -958,10 +964,11 @@ def test_the_west_facade_stacks_five_two_storey_window_columns(catlin_model):
             "tee-N-S-W3-block-02", "tee-N-S-W3-block-03"} <= suite_wall_member_keys
 
     column_tags = [tag for pair in columns.values() for tag in pair]
-    assert not _framing_offenders(column_tags)
+    assert not _framing_offenders(catlin_check_report(), column_tags)
 
 
-def test_the_east_second_storey_window_row_mirrors_about_the_house_centreline(catlin_model):
+def test_the_east_second_storey_window_row_mirrors_about_the_house_centreline(
+        catlin_model, catlin_check_report):
     """13'-4" / 22'-8" — the inner pair, mirrored about the 36'-0" face exactly.
 
     Width and head mirror too, on one 3'-0" sill, so the two halves are the same picture —
@@ -1025,21 +1032,23 @@ def test_the_east_second_storey_window_row_mirrors_about_the_house_centreline(ca
     # 4'-0" sill is set by WIN-M-KIT-E's counter below rather than by this face.
     assert head("WIN-S-BED3") == pytest.approx(ft(6).meters, abs=1e-6)
 
-    assert not _framing_offenders(["WIN-S-STUDY3", "WIN-S-BED1", "WIN-S-BED2", "WIN-S-BED3"])
+    assert not _framing_offenders(catlin_check_report(),
+                                 ["WIN-S-STUDY3", "WIN-S-BED1", "WIN-S-BED2", "WIN-S-BED3"])
 
 
-def test_every_catlin_boundary_condition_has_a_transition_binding():
-    report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
+def test_every_catlin_boundary_condition_has_a_transition_binding(catlin_check_report):
+    report = catlin_check_report()
     findings = [finding for finding in report.findings
                 if finding.check_id == "integrity.condition_coverage"]
     assert not findings, [finding.message for finding in findings]
 
 
-def test_ci_thickness_bump_reflows_resolved_envelope_without_losing_transition_coverage():
+def test_ci_thickness_bump_reflows_resolved_envelope_without_losing_transition_coverage(
+        catlin_plan):
     """M3's details must follow layer geometry rather than preserve a hand-drawn offset."""
     from typehaus.emit.draw import build_center_section
 
-    plan = load_plan(CATLIN_DIR).plan
+    plan = catlin_plan
     baseline, baseline_findings = resolve(plan)
     assert not [finding for finding in baseline_findings if finding.severity.value == "error"]
     base_assembly = next(item for item in plan.library.assemblies if item.tag == "EXT_2X6")
@@ -1066,11 +1075,12 @@ def test_ci_thickness_bump_reflows_resolved_envelope_without_losing_transition_c
                     if finding.check_id == "integrity.condition_coverage"]
 
 
-def test_catlin_has_required_smoke_co_alarm_coverage_and_json_symbols(tmp_path):
+def test_catlin_has_required_smoke_co_alarm_coverage_and_json_symbols(
+        tmp_path, catlin_plan, catlin_check_report):
     from typehaus.server.model_json import model_to_dict
 
-    plan = load_plan(CATLIN_DIR).plan
-    report = run(plan, CATLIN_DIR, tier=None)
+    plan = catlin_plan
+    report = catlin_check_report()
     assert not [finding for finding in report.findings
                 if finding.check_id in ("code.R314_R315_alarms", "code.R315_garage_alarms")
                 and finding.result is Result.FAIL]
@@ -1150,20 +1160,21 @@ def test_deck_slabs_render_on_their_storey_plans(catlin_model):
     assert not interior, [node.tag for node in interior]
 
 
-def test_catlin_drain_fixtures_use_six_inch_wet_walls():
-    report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
+def test_catlin_drain_fixtures_use_six_inch_wet_walls(catlin_check_report):
+    report = catlin_check_report()
     findings = [finding for finding in report.findings if finding.check_id == "advisory.wet_wall_depth"]
     assert not findings, [finding.message for finding in findings]
 
 
-def test_catlin_floor_heat_has_no_fixture_keepout_conflict():
-    report = run(load_plan(CATLIN_DIR).plan, CATLIN_DIR, tier=None)
+def test_catlin_floor_heat_has_no_fixture_keepout_conflict(catlin_check_report):
+    report = catlin_check_report()
     findings = [finding for finding in report.findings
                 if finding.check_id == "advisory.floor_heat_fixture_keepout"]
     assert not findings, [finding.message for finding in findings]
 
 
-def test_house_local_furniture_import_creates_a_type_and_placed_instance(tmp_path, monkeypatch):
+def test_house_local_furniture_import_creates_a_type_and_placed_instance(
+        tmp_path, monkeypatch, catlin_plan):
     """The M3 mesh importer never touches shared library source or a manifest."""
     from typehaus.cli.furniture_import import import_furniture_mesh
     from typehaus.source.imported_furniture import load_imported_furniture
@@ -1186,7 +1197,7 @@ def test_house_local_furniture_import_creates_a_type_and_placed_instance(tmp_pat
                         SimpleNamespace(load=lambda *_args, **_kwargs: FakeScene()))
     import_furniture_mesh(source, tmp_path, tag="reading-chair", room="RM-M-LIVING",
                           position_m=(7.0, 4.0), storage=True)
-    plan = load_plan(CATLIN_DIR).plan
+    plan = catlin_plan
     assert plan is not None
     findings = []
     augmented = load_imported_furniture(tmp_path, plan, findings)
@@ -2523,17 +2534,6 @@ def test_floor_heat_zones_do_not_run_under_the_walls_that_bound_them(catlin_mode
 # test_ifc_validation_gate.py asserts exactly this for [catlin-framed], among three other
 # (house, LOD) combinations. Nothing is lost from the --fast tier by deselecting it here.
 @pytest.mark.slow
-def test_ifc_emission_when_available(catlin_ifc_path):
-    ifcopenshell = pytest.importorskip("ifcopenshell")
-    import ifcopenshell.validate
-
-    path = catlin_ifc_path
-    assert path.exists() and path.stat().st_size > 0
-    logger = ifcopenshell.validate.json_logger()
-    ifcopenshell.validate.validate(str(path), logger, express_rules=True)
-    assert not logger.statements, logger.statements
-
-
 def test_the_main_floor_finish_follows_the_deck_boundary(tmp_path):
     """The contract that makes DERIVING the finish split worth it rather than authoring it.
 

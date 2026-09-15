@@ -22,7 +22,6 @@ from types import SimpleNamespace
 
 import pytest
 
-from typehaus.checks import build_context
 from typehaus.checks.structural.stairs import (
     MIN_WINDER_NARROW_TREAD_IN,
     winder_narrow_tread_depth,
@@ -33,8 +32,6 @@ from typehaus.quantities import inch
 from typehaus.resolve.framing.footprint import member_footprint
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedStair
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
 
 _TREAD_THICKNESS_M = inch(1.5).meters
 # A profile string is a rounded human-readable catalog key ("deck 10.3333x1.5"), so a
@@ -206,8 +203,8 @@ def test_winder_narrow_ends_are_spaced_at_the_code_minimum(catlin_model):
     assert min(gaps) >= inch(6).meters - 1e-9
 
 
-def test_winder_narrow_end_depth_is_measured_and_reported(catlin_model):
-    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
+def test_winder_narrow_end_depth_is_measured_and_reported(catlin_ctx):
+    ctx = catlin_ctx
     findings = winder_narrow_tread_depth(ctx)
     assert len(findings) == 1
     finding = findings[0]
@@ -244,8 +241,8 @@ def test_winder_check_passes_a_turn_that_does_meet_the_six_inch_minimum():
 
 
 # ------------------------------------------------------------------ the walk line
-def test_winder_walk_line_is_measured_a_foot_out_from_the_narrow_end(catlin_model):
-    ctx, _ = build_context(load_plan(CATLIN_DIR).plan, CATLIN_DIR)
+def test_winder_walk_line_is_measured_a_foot_out_from_the_narrow_end(catlin_ctx):
+    ctx = catlin_ctx
     findings = winder_walk_line_depth(ctx)
     assert len(findings) == 1
     finding = findings[0]

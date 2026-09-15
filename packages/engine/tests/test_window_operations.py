@@ -17,18 +17,11 @@ import pytest
 from typehaus.model.enums import WindowOperation
 from typehaus.model.types import WindowType
 from typehaus.quantities import ft
-from typehaus.source import load_plan
-from _helpers import CATLIN as CATLIN_DIR
 
 
 
-@pytest.fixture(scope="module")
-def catlin_plan():
-    result = load_plan(CATLIN_DIR)
-    assert result.plan is not None, [f.message for f in result.findings]
-    return result.plan
-
-
+# ``catlin_plan`` is conftest's session fixture; this module shadowed it with an
+# identical module-scoped load.
 def test_every_catlin_window_type_declares_a_modeled_operation(catlin_plan):
     window_types = catlin_plan.library.window_types
     assert window_types, "the catlin catalog must declare window types"

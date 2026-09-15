@@ -18,12 +18,8 @@ from _helpers import CATLIN as CATLIN_DIR
 
 
 @pytest.fixture(scope="module")
-def catlin_payload():
-    result = load_plan(CATLIN_DIR)
-    model, findings = resolve(result.plan)
-    errors = [f for f in findings if f.severity.value == "error"]
-    assert not errors, errors
-    return model_to_dict(model)
+def catlin_payload(catlin_model_ro):
+    return model_to_dict(catlin_model_ro)
 
 
 @pytest.fixture(scope="module")

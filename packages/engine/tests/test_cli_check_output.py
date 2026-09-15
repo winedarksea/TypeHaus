@@ -24,6 +24,21 @@ from _helpers import CATLIN, STARTER
 runner = CliRunner()
 
 
+# `haus check` on catlin is a full registry run, ~20 s, and these two invocations were each
+# made twice for the same bytes. Module scope, not session: `--dist loadfile` keeps a module
+# on one worker, and nothing outside this file wants a CliRunner result.
+@pytest.fixture(scope="module")
+def catlin_json():
+    """``haus check houses/catlin --json`` — invoked once. Read ``.output``, never mutate."""
+    return runner.invoke(app, ["check", str(CATLIN), "--json"])
+
+
+@pytest.fixture(scope="module")
+def catlin_json_summary():
+    """``haus check houses/catlin --json-summary`` — invoked once."""
+    return runner.invoke(app, ["check", str(CATLIN), "--json-summary"])
+
+
 def _finding(result: Result, severity: Severity = Severity.WARN) -> Finding:
     return Finding(severity=severity, check_id="advisory.demo", message="demo", result=result)
 
@@ -105,7 +120,7 @@ def test_exit_on_error_is_the_looser_gate() -> None:
         app, ["check", str(CATLIN), "--exit-on", ExitOn.error.value]).exit_code == 0
 
 
-def test_catlin_carries_no_failures(catlin_model) -> None:
+def test_catlin_carries_no_failures(catlin_json) -> None:
     """The reference house checks clean — 0 FAIL, not "0 errors", bar one accepted advisory.
 
     Asserted through the JSON surface rather than the exit code so the failure message
@@ -121,8 +136,7 @@ def test_catlin_carries_no_failures(catlin_model) -> None:
     """
     import json
 
-    result = runner.invoke(app, ["check", str(CATLIN), "--json"])
-    payload = json.loads(result.output)
+    payload = json.loads(catlin_json.output)
     failures = [
         (f["check_id"], tuple(sorted(f["element_tags"] or ())))
         for f in payload["findings"] if f["result"] == "fail"
@@ -160,15 +174,15 @@ def test_json_output_is_complete_regardless_of_only() -> None:
     assert payload["engineered"] <= len(payload["findings"])
 
 
-def test_json_summary_agrees_with_json_on_the_counts_but_is_far_smaller() -> None:
+def test_json_summary_agrees_with_json_on_the_counts_but_is_far_smaller(
+        catlin_json, catlin_json_summary) -> None:
     """`--json-summary` is the compact agent surface (#52): same pass/fail/unknown as
     `--json` (other tests, and callers, already assert on those three keys), but without a
     full `model_dump()` per finding — an order of magnitude smaller on catlin's ~700
     findings."""
     import json
 
-    full = runner.invoke(app, ["check", str(CATLIN), "--json"])
-    summary = runner.invoke(app, ["check", str(CATLIN), "--json-summary"])
+    full, summary = catlin_json, catlin_json_summary
     # Compared rather than pinned to 0: what this test is about is that the two machine
     # surfaces AGREE, not what catlin's exit code happens to be — that is
     # `test_catlin_carries_no_failures`'s job.
@@ -184,14 +198,13 @@ def test_json_summary_agrees_with_json_on_the_counts_but_is_far_smaller() -> Non
     assert len(summary.output) < len(full.output) / 10
 
 
-def test_json_summary_categories_sum_to_the_totals() -> None:
+def test_json_summary_categories_sum_to_the_totals(catlin_json_summary) -> None:
     """Each category is a check_id namespace (`structural.foo` -> `structural`); the
     per-category counts must reconcile with the top-level pass/fail/unknown exactly, since
     every finding lands in exactly one category."""
     import json
 
-    result = runner.invoke(app, ["check", str(CATLIN), "--json-summary"])
-    payload = json.loads(result.output)
+    payload = json.loads(catlin_json_summary.output)
     categories = payload["categories"]
     assert categories, payload
     assert sum(c["pass"] for c in categories.values()) == payload["pass"]
