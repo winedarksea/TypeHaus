@@ -184,9 +184,17 @@ def post_beam_strap_joints(model: ResolvedModel, rules: UpliftTieRules) -> list:
     # on either alone credits the wrong joint: the breezeway straps its two ROOF beams to
     # PT-BW-1..4, and a post-only test would hand those straps to the two FLOOR beams landing
     # on the same four posts, which carry nothing at all.
+    # JOIST_HANGER is here for the beam a author HANGS off a post's FACE rather than landing
+    # on its top — catlin's BM-BW-SCSILL on PT-BW-CW/-CNW, where a 6x6 is wider than the seat
+    # beam beside it and there is nowhere to land. A face-mount hanger is nailed into both
+    # members, so it is the tie at that joint; the generic strap this module derives is a
+    # knee brace (ROLE_BEAM_HOLD_DOWN -> KBS1Z) and would not even be buildable in the joist
+    # plane. What the hanger does NOT settle is its uplift RATING: catalog `allowable` is
+    # None for HU28-2Z, which means nobody has looked it up, not that it is zero.
     covered = authored_joints(model, frozenset({ConnectorKind.HOLD_DOWN,
                                                 ConnectorKind.POST_CAP,
-                                                ConnectorKind.HURRICANE_TIE}))
+                                                ConnectorKind.HURRICANE_TIE,
+                                                ConnectorKind.JOIST_HANGER}))
     found = []
     for storey in model.plan.storeys:
         for element in model.plan.storey_elements(storey.tag):

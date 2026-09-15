@@ -722,12 +722,28 @@ def test_the_two_ROOF_tributary_rules_agree_too(catlin_plan) -> None:
 
     # The gap, named. `_rafter_fields` is the rule the check does not restate.
     rafter, _ = _rafter_fields(ctx)
-    # All four breezeway piers, 7.71 ft² each. **Every one of them is a DECK post**, which is
+    # All four breezeway piers, 9.34 ft² each. **Every one of them is a DECK post**, which is
     # the whole of what makes the gap tolerable: the under-count lands on posts this check
     # already grades on their deck share, never on one that would otherwise be invisible —
     # which is the failure `_roof_borne_posts` was written for in the first place.
+    #
+    # ** 7.71 UNTIL 2026-09-15, AND WHAT MOVED IT WAS A MEMBER LEAVING THE FIELD. ** There is
+    # exactly one beams-on-beams field in this house and its parents are the two seat beams.
+    # `BM-BW-SCSILL` used to name both of them and so counted as one of its "rafters" — a
+    # 4'-11 3/4" screen sill averaged in with `BM-BW-FC`/`-FE`, which span the whole landing.
+    # The sill now hangs off the two canopy COLUMNS instead (it never bore on the seat beams
+    # once it was shortened to the column faces), so the average span is the two carriers'
+    # own, and the field grows. Up is the safe direction here — this module's docstring is
+    # explicit that an understated tributary is an understated demand.
+    #
+    # ** AND THE FIELD IS NOT A ROOF, WHICH IS A SEPARATE AND OLDER PROBLEM. ** `_rafter_fields`
+    # keys purely on "a beam naming two beams", with no test that anything roof-like is over
+    # it, and its docstring still describes the RETIRED breezeway shelter and its `GL-BW-ROOF`
+    # glazing. What it actually reaches in catlin today is the garage landing's floor carriers.
+    # Grading an exterior landing at snow is defensible; counting it twice, once here and once
+    # as deck, is not obviously so. Not fixed here — it is recorded so it is not rediscovered.
     assert set(rafter) == {"PT-BW-E", "PT-BW-GE", "PT-BW-W", "PT-BW-GW"}, sorted(rafter)
-    assert all(rafter[tag] == pytest.approx(7.714, abs=0.01) for tag in rafter)
+    assert all(rafter[tag] == pytest.approx(9.341, abs=0.01) for tag in rafter)
     deck_posts = {p.tag for p in _deck_posts_everywhere(catlin_plan)}
     assert set(rafter) <= deck_posts, sorted(set(rafter) - deck_posts)
 

@@ -23,6 +23,7 @@ from params.foundations import SITE_GRADE
 from params.north_entry_frame import (
     BEAM_X_FT,
     BEARING_TOP_FT,
+    COLUMN_HALF_FT,
     DECK_FINISH_FT,
     DECK_JOIST_TOP_FT,
     DECK_SHEET_SOUTH_Y_FT,
@@ -448,7 +449,22 @@ SEAT_BEAM_HANGERS = [
               position=pt(ft(LANDING_WEST_FT), ft(GARAGE_SEAT_Y_FT)),
               elevation=ft(SEAT_TOP_FT), size="HU28-2Z",
               connects=("BM-BW-GARAGE-SEAT", "PT-BW-CNW")),
+    Connector(uid="BWSH03AAAA", tag="CN-BW-HGR-SCS-S", kind=ConnectorKind.JOIST_HANGER,
+              position=pt(ft(LANDING_WEST_FT), ft(PIER_LINE_Y_FT + COLUMN_HALF_FT)),
+              elevation=ft(SEAT_TOP_FT), size="HU28-2Z",
+              connects=("BM-BW-SCSILL", "PT-BW-CW")),
+    Connector(uid="BWSH04AAAA", tag="CN-BW-HGR-SCS-N", kind=ConnectorKind.JOIST_HANGER,
+              position=pt(ft(LANDING_WEST_FT), ft(GARAGE_SEAT_Y_FT - COLUMN_HALF_FT)),
+              elevation=ft(SEAT_TOP_FT), size="HU28-2Z",
+              connects=("BM-BW-SCSILL", "PT-BW-CNW")),
 ]
+
+# ** EACH COLUMN NOW CARRIES TWO HANGERS, ON TWO DIFFERENT FACES (owner, 2026-09-15). ** The
+# seat beam runs east-west and hangs off the column's east face; BM-BW-SCSILL runs north-south
+# and hangs off the face square to it. Both land at SEAT_TOP_FT -- the seat beam's top and the
+# sill's soffit are the same plane, because the sill is a 2x8 topped with the joists and
+# JOIST_DEPTH_IN is 7 1/4". Two HU28-2Z on adjacent faces of one 6x6 do not share fasteners.
+# Why the sill hangs at all is arithmetic, and it lives on the beam in params/north_entry_frame.py.
 
 # ** THE EAST HEADER LANDS ON A CAST TOP, WHICH IS A DIFFERENT JOINT AND A DIFFERENT PART. **
 # A CCQ46SDS2.5 is a post cap: it joins a 4x beam to a 6x6 WOOD post and is fastened into

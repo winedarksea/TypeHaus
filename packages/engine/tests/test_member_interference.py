@@ -317,3 +317,41 @@ def test_a_named_hanger_clears_exactly_the_pair_it_names():
                        kind="column", parent="PT-2")
     assert not _hung_from(beam, other, hung)
     assert not _hung_from(beam, column, set())
+
+
+def test_a_beam_driven_into_a_column_is_not_a_butt_joint():
+    """``_butt_joint``'s ``column`` clause is gone — 2026-09-15.
+
+    A column collapses to a POINT in this test (``_solid_segment`` returns its centroid
+    twice), so "an endpoint lands on the other's axis" was satisfied by any member driven
+    halfway into one. What that cleared was interpenetration, which is the single bug class
+    this module exists to find. A genuine bearing joint never needed the clause: the
+    ``tol_z`` gate upstream clears it on near-zero vertical overlap, before this is reached.
+
+    Worked from catlin's BM-BW-SCSILL, which ran 2 3/4" into each of two 6x6 columns over
+    its full 7 1/4" depth and was invisible for precisely this reason. A rim and a
+    plate/plate lap are still cleared — those are the clauses that remain.
+    """
+    from shapely.geometry import box
+
+    from typehaus.checks.structural.interference import _butt_joint, _Candidate
+
+    tol = inch(0.5).meters
+    # A column centred on the origin; its "segment" is its centroid, twice over.
+    column = _Candidate("PT-BW-CW", box(-0.07, -0.07, 0.07, 0.07), 0.0, 2.0,
+                        seg=((0.0, 0.0), (0.0, 0.0)), kind="column", parent="PT-1")
+    # A beam running away from that centroid — an end landing exactly ON it.
+    beam = _Candidate("BM-BW-SCSILL", box(-0.02, 0.0, 0.02, 1.0), 0.0, 0.184,
+                      seg=((0.0, 0.0), (0.0, 1.0)), kind="beam", parent="BM-1")
+    assert not _butt_joint(beam, column, tol)
+    assert not _butt_joint(column, beam, tol)  # order-independent
+
+    # The surviving clauses still clear what they always did.
+    rim = _Candidate("RIM-1", beam.poly, 0.0, 0.184, seg=beam.seg, kind="rim",
+                     parent="RIM-1")
+    assert _butt_joint(rim, column, tol)
+    plate_a = _Candidate("PL-A", box(0.0, 0.0, 1.0, 0.09), 0.0, 0.038,
+                         seg=((0.0, 0.045), (1.0, 0.045)), kind="plate", parent="W-1")
+    plate_b = _Candidate("PL-B", box(0.455, 0.0, 0.545, 1.0), 0.0, 0.038,
+                         seg=((0.5, 0.045), (0.5, 1.0)), kind="plate", parent="W-2")
+    assert _butt_joint(plate_a, plate_b, tol)

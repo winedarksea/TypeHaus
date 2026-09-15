@@ -451,28 +451,21 @@ def _butt_joint(a: _Candidate, b: _Candidate, tol: float) -> bool:
     a branch wall run to the through wall they tee into — the single most common intended
     framing joint, resolved as a lap in real framing).
 
-    **The column clause is WRONG and is still here, deliberately — 2026-09-15.** A column
-    degenerates to a POINT in this test (``_solid_segment`` returns its centroid twice), so
-    "an endpoint lands on its axis" is satisfied by any member whose end reaches the column's
-    CENTRE — which is to say by a member driven halfway into it. A true bearing joint has
-    near-zero z-overlap and the ``tol_z`` gate above already clears it without help, so what
-    this clause actually clears is interpenetration, the one bug class this module exists
-    for.
+    **The column clause is GONE, and what replaced it is in the model — 2026-09-15.** A
+    column degenerates to a POINT in this test (``_solid_segment`` returns its centroid
+    twice), so "an endpoint lands on its axis" was satisfied by any member whose end reached
+    the column's CENTRE — which is to say by a member driven halfway into it. A true bearing
+    joint has near-zero z-overlap and the ``tol_z`` gate above already clears it without
+    help, so what the clause actually cleared was interpenetration, the one bug class this
+    module exists for.
 
-    Dropping the two ``column`` tests was measured and surfaces exactly four real pairs, all
-    at the north entry: the two seat beams 2 3/4" into their 6x6 columns over 6 1/16" of
-    shared height, and ``BM-BW-SCSILL`` 2 3/4" into each of the same two over its full
-    7 1/4". The seat beams are now answered — their joint is authored (``_hung_pairs``, the
-    HU28-2Z hangers) and would be cleared honestly. **The sill is not**, and it has no clean
-    answer: shortening it to the column faces takes its ends past the 3" seat beams it bears
-    on, and re-bearing it on the columns costs six UNKNOWNs because nothing gives its load a
-    tributary area. See ``params/north_entry_frame.py`` at BM-BW-SCSILL.
-
-    So the clause stays until that is decided, and catlin stays at 0 FAIL honestly rather
-    than by a grader that cannot see the difference. Removing the two ``column`` terms below
-    is the whole change when it is."""
+    It hid exactly four pairs, all at catlin's north entry: the two seat beams 2 3/4" into
+    their 6x6 columns over 6 1/16" of shared height, and ``BM-BW-SCSILL`` 2 3/4" into each
+    of the same two over its full 7 1/4". Each is now answered where the answer belongs —
+    all four joints hang on an authored HU28-2Z that ``_hung_pairs`` clears BY NAME, and the
+    sill was additionally shortened to the column faces, so it no longer overlaps anything.
+    A member left too long against a column it never named is reported again."""
     if not (a.kind == "rim" or b.kind == "rim"
-            or a.kind == "column" or b.kind == "column"
             or (a.kind == "plate" and b.kind == "plate")):
         return False
     return (any(_point_on_segment(pt, b.seg[0], b.seg[1], tol) for pt in a.seg)

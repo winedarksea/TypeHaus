@@ -211,9 +211,22 @@ def test_catlin_has_no_fail_here(catlin_findings):
     ceiling and produces a real d/c — so ``engineered()`` returns the calculation's own
     result. It is still a DRAFT and still unsealed; ``haus print --sealed`` is the gate that
     says so.
+
+    ** AND TWO ARE UNKNOWN AGAIN SINCE 2026-09-15, FOR A REASON THAT IS NOT THIS CHECK'S. **
+    ``BM-BW-SCSILL`` was shortened to the canopy columns' faces and hung there, so it now
+    names PT-BW-CW/-CNW as its bearing and its load reaches the piers under them. Nothing
+    gives that load a plan AREA — no FloorSystem and no Roof stands over a screen sill — so
+    ``deck_post`` cannot finish the axial demand on PT-BW-W and PT-BW-GW, and this check
+    reports what the record could not produce rather than inventing one. That load was never
+    in any tributary; what changed is that the model now says so out loud. Asserted by TAG,
+    so a third one is a failure rather than a tolerance.
     """
     assert all(f.result is not Result.FAIL for f in catlin_findings)
-    assert all(f.result is Result.PASS for f in catlin_findings)
+    unknown = [f for f in catlin_findings if f.result is Result.UNKNOWN]
+    assert {f.engineering_item for f in unknown} == {"deck_post/PT-BW-W",
+                                                     "deck_post/PT-BW-GW"}
+    assert all("no tributary AREA for that load" in f.message for f in unknown)
+    assert all(f.result is Result.PASS for f in catlin_findings if f not in unknown)
 
 
 def test_a_deck_hung_in_a_shear_wall_is_not_reported_as_column_braced(catlin_model):

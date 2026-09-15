@@ -86,6 +86,10 @@ DETAIL_CUT_Y_FT = (HOUSE_CLADDING_Y_FT + GARAGE_CLADDING_Y_FT) / 2
 # the same depth is undermining, and the answer becomes benching the excavation or bearing
 # the pier higher and lengthening the column. It belongs on the drawings.
 PIER_LINE_Y_FT = 37.5
+# Half of the 6x6 canopy columns that stand on this line and on the garage seat line.
+# BM-BW-SCSILL's ends are set off the column CENTRES by this, because a 6x6 is wider
+# than the 3" seat beam it shares a centreline with -- see that beam for the arithmetic.
+COLUMN_HALF_FT = 2.75 / 12
 PIER_BOTTOM_FT = -(9 + 9.4375 / 12)   # the house footing underside, -9'-9 7/16"
 # 10", not 12". The garage hydrant line runs at -8'-10"; a 12" pad tops out at -8'-9 7/16"
 # and swallows it, and a water line cast through a spread footing is a sleeve detail nobody
@@ -328,41 +332,41 @@ beam(7, "BM-BW-RE", ROOF_COLUMN_EAST_X_FT, PIER_LINE_Y_FT,
 # (f_b ~2,200 psi). `structural.masonry_guard_bearing` is what said so, and it was right:
 # a guard over the house's 50 plf allowance has to name its bearing line.
 #
-# A 2x8 between the two columns is the whole fix. Span 4'-11 3/4", w 77 plf, M 239 lb-ft,
-# S 13.14 in3, f_b 218 psi -- d/c ~0.26 wet-service.
+# A 2x8 between the two columns is the whole fix. Span 4'-6 1/4", w 77 plf, M 197 lb-ft,
+# S 13.14 in3, f_b 180 psi -- d/c ~0.21 wet-service.
 #
 # ** IT SITS IN THE JOIST PLANE, NOT IN THE SEAT PLANE, AND THAT IS FORCED. ** At the seat
 # top it would be at the same elevation as BM-BW-HOUSE-SEAT and BM-BW-GARAGE-SEAT, whose
 # west ends are on this same line, and two beams crossing at one elevation is a clash in a
 # model with no hanger (`structural.member_interference` reported it). Topped with the
-# joists instead it lands ON both seats, which is an ordinary bearing, and it doubles as the
-# deck's west rim -- the joist field starts 3 3/4" east of this line to clear the columns,
-# so without it that strip of board had nothing under it either.
-# ** THIS MEMBER BURIES 2 3/4" IN EACH 6x6 AND THERE IS NO CLEAN FIX -- OPEN, 2026-09-15. **
-# Its ends are authored at the column CENTRES, so it runs 2 3/4" into PT-BW-CW and PT-BW-CNW
-# over its full 7 1/4" depth. The clash is real; `structural.member_interference` cannot see
-# it only because `_butt_joint` still clears any pair containing a column (see that function
-# -- the clause is wrong and is what hides this).
+# joists instead it clears both seats and doubles as the deck's west rim -- the joist field
+# starts 3 3/4" east of this line to clear the columns, so without it that strip of board
+# had nothing under it either.
 #
-# ** "SHORTEN TO THE COLUMN FACES" DOES NOT WORK, AND THE ARITHMETIC IS WHY. ** A 6x6 is
-# 5 1/2" wide and the seat beams are 3", both centred on this line: the column faces are at
-# y 37.7292 / 42.2500 and the seat beams' faces at 37.625 / 42.354. Pulling the ends back to
-# the column faces therefore takes them PAST the beams they bear on -- measured, and
-# `test_analytical_graph` catches it as "a run of members hangs on no support".
+# ** IT HANGS OFF BOTH COLUMNS, AND THAT IS THE ONLY BUILDABLE END (owner, 2026-09-15). **
+# The 6x6 fully shadows the seat beam this sill would otherwise land on. Both are centred on
+# this line, the column 5 1/2" wide and the seat beam 3", so the column faces stand at
+# y 37.7292 / 42.2500 and the beam faces 1 1/4" further in at 37.625 / 42.354. No end
+# condition reaches the beam without passing through the column: authored to the column
+# CENTRES the sill buried 2 3/4" in each 6x6 over its full 7 1/4" depth, and shortened to the
+# column FACES it stops 1 1/4" clear of its own bearing -- `test_analytical_graph` catches
+# that second one as "a run of members hangs on no support". Measured both ways.
 #
-# Re-pointing bearing_refs at the columns instead makes the graph whole but costs SIX new
-# UNKNOWNs: no FloorSystem and no Roof names this beam, so the piers under those columns get
-# a load with no tributary AREA and `structural.deck_post_size` cannot finish their axial
-# demand. That is an honest finding rather than noise, and it is the real open question --
-# this sill's load is not in any tributary today.
+# So it stops at the faces and hangs there, on an HU28-2Z apiece (CN-BW-HGR-SCS-* in
+# params/breezeway.py). This revises the owner's earlier "shorten, do not hang" -- that call
+# assumed shortening alone left it bearing, and the arithmetic above is why it does not. It
+# also puts the sill where everything else on this wall already stops: both columns carry
+# `within_wall="W-BW-SCREEN"`, so the panel's three plate courses are cut at these same two
+# faces, and the sill now dies into them on the same plane as the studs above it.
 #
-# So it is left long, and left clashing, deliberately. Closing it is an owner/engineer call
-# between: (a) bear it on the columns and give its load a modelled plan area, (b) hang it
-# with a part, against the owner's 2026-09-15 "shorten, do not hang", or (c) move the screen
-# line off the column centreline.
-beam(10, "BM-BW-SCSILL", LANDING_WEST_FT, PIER_LINE_Y_FT,
-     LANDING_WEST_FT, GARAGE_SEAT_Y_FT,
-     ("BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT"), DECK_JOIST_TOP_FT, "2x8")
+# ** bearing_refs FOLLOWS THE HANGER TO THE COLUMNS, WHICH IS THE OPPOSITE OF THE SEAT BEAMS
+# ABOVE, AND DELIBERATELY. ** A seat beam's refs stay on its PIER because the pier is where
+# its path ends and `pier_basis`'s tributary is built on that naming. This sill is different:
+# its load is taken by the column itself, which stands on its own pier through `supported_by`,
+# and the seat beams it used to name are members it no longer touches at all.
+beam(10, "BM-BW-SCSILL", LANDING_WEST_FT, PIER_LINE_Y_FT + COLUMN_HALF_FT,
+     LANDING_WEST_FT, GARAGE_SEAT_Y_FT - COLUMN_HALF_FT,
+     ("PT-BW-CW", "PT-BW-CNW"), DECK_JOIST_TOP_FT, "2x8")
 
 # --- piers, pedestals and columns -------------------------------------------------------
 #
