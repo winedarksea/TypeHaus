@@ -98,15 +98,25 @@ the rear. Re-measured after:
 | front bearing, y = −9.833' | 100.8750" | 100.8750" | **0** |
 | rear bearing, y = −2.500' | 102.8750" | 102.8750" | **0** |
 
-**The residual, stated rather than hidden.** `FS-SG-DECK`'s joists are still a single flat
-plane at the storey datum, so in the model they now sit 0" proud of the beam top at the
-front bearing and up to 2.45" *inside* it at the north cantilever tip. On site each joist is
-level at its own height — a staircase of ~1/4" steps across the 16" o.c. field, which is how
-a sloped deck is actually framed. The model's flat plane is therefore the deck's SOUTH edge,
-and teaching `resolve/floors.py` to take each joist's z from its tilted bearings is the
-change that would close it. It was not done here: `ResolvedFloor.deck_z0_m`/`deck_z1_m` are
-single values read by the room, energy, section and guard consumers, and tilting that plane
-is a far larger surface than the 2" the columns carried.
+**The residual, stated rather than hidden — and it is now one thing, not two.** The joists
+followed. `FS-SG-DECK` carries `top_rise=_balcony_beam_rise`, the same expression the beams
+use over the same run so the two cannot drift apart, and each joist is level at its own
+height: a staircase of ~1/4" steps across the 16" o.c. field, which is how a sloped deck is
+actually framed. The beam tops no longer come up through the joists they carry, and
+`structural.member_interference` no longer has anything to say about them.
+
+What is still flat is the deck **plane**. `ResolvedFloor.deck_z0_m`/`deck_z1_m` are single
+values read by the room, energy, section and guard consumers, so the model's 10'-0" walking
+surface is this deck's SOUTH (low) edge and the built north edge stands 2 5/8" above it.
+Tilting that plane is a far larger surface than the 2" the columns carried, and it is
+deliberately not attempted here; `params/sunken_garden.py` says the same thing at the
+`top_rise` it sets, so the two records agree.
+
+*(Until 2026-09-15 this paragraph claimed the joists were "still a single flat plane at the
+storey datum" and that closing it "was not done here". That was written before the
+`top_rise` landed and was never revised — it read as though the beams had been tilted and
+the field left behind them, which is the one condition this whole note exists to say was
+fixed.)*
 
 ## 3. A tilted beam needs a tapered bearing, and the part is already at every seat
 
