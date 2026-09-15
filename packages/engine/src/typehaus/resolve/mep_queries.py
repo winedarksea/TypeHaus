@@ -133,7 +133,7 @@ def conduit_vertical_profile(run: ResolvedConduitRun) -> tuple[Ring, list[float]
     express one: the final plan point repeated, carrying the two different elevations.
 
     Public because ``typehaus.routing`` needs the same reconstruction and may not import
-    ``takeoff`` (the leaf rule, ``tests/test_routing_leaf.py``), where the other reading of
+    ``takeoff`` (the leaf rule, ``tests/test_package_leaves.py``), where the other reading of
     "a ConduitRun rises at its last point" lives as ``takeoff.runs.conduit_vertex_z``. One
     fact, and the copy on the ``resolve`` side is the one a leaf can reach."""
     if run.z_start_m is None or run.z_end_m is None or len(run.path) < 2:

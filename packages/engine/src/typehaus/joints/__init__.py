@@ -22,7 +22,7 @@ the order agreed about the count, and now the drawing cannot drift from either.
 and nothing else — never ``checks``, never ``takeoff``, never ``emit``. A joint is a fact
 about the building; a row and a finding are two opinions about that fact, and a locator
 that could see either would be tempted to answer differently for each.
-``tests/test_joints_leaf.py`` walks the imports and fails on a violation.
+``tests/test_package_leaves.py`` walks the imports and fails on a violation.
 """
 
 from typehaus.joints.derive import derived_joints

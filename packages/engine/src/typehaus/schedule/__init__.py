@@ -4,7 +4,7 @@ A **leaf**, exactly as ``routing/`` and ``engineering/`` are. It reads the model
 findings somebody else produced and the owner's authored site state, and it derives what
 is ready. It never grades the building — a readiness state that moved when a check moved
 would still be a statement about site state, and a ``Finding`` is where facts about the
-building live. ``tests/test_schedule_leaf.py`` walks the AST and enforces it.
+building live. ``tests/test_package_leaves.py`` walks the AST and enforces it.
 
 The commitment underneath the whole package: **readiness is derived, dates are authored**.
 Nothing here computes a duration, a lead time or a calendar date, for the same reason

@@ -197,7 +197,7 @@ haus site migrate houses/catlin --write           # fold the old spellings, in p
 paste. It is a leaf like `engineering/`: it imports `model` / `resolve` / `quantities` and
 **never `checks`, `takeoff`, `emit`**, and nothing upstream imports it — `cli/cmd_route.py`
 is the one place it and `checks` meet, and it sits above both
-(`tests/test_routing_leaf.py` walks the AST, function-local imports included).
+(`tests/test_package_leaves.py` walks the AST, function-local imports included).
 
 ```
 haus route houses/catlin --run PR-B-KITCH-DRAIN        # re-route one authored run

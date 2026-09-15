@@ -8,6 +8,6 @@ questions, and none of them wants a bill of materials.
 
 So this package is a **leaf**: it imports the standard library and ``typehaus.library``
 (lazily, for the catalog items) and nothing else in the engine. Nothing here may reach for
-``model``, ``resolve``, ``checks`` or ``takeoff``. ``tests/test_hardware_leaf.py`` walks
+``model``, ``resolve``, ``checks`` or ``takeoff``. ``tests/test_package_leaves.py`` walks
 the imports and fails on a violation.
 """

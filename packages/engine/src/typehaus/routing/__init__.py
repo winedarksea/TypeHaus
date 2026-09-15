@@ -8,7 +8,7 @@ A search result is not a fact about the building. A ``Finding`` whose verdict mo
 cost weight moves is not a finding — it is an opinion with a citation stapled to it. So
 nothing in ``resolve/`` or ``checks/`` may import ``typehaus.routing``, and this package
 imports neither of them back: it reads ``model`` / ``resolve`` / ``quantities`` and stops.
-``tests/test_routing_leaf.py`` walks the imports and fails on a violation.
+``tests/test_package_leaves.py`` walks the imports and fails on a violation.
 
 What *is* a fact — "this drain hangs 8 inches into the gym", "this fixture is 48 inches
 from every pipe in the house" — belongs in ``checks/``, and is what the router is then

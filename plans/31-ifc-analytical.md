@@ -43,7 +43,7 @@ oracle, and a consumer somebody had actually opened. Both gates are now in the p
 
 ```
 typehaus/analytical/            LEAF — imports model/resolve/quantities/engineering/wind,
-  graph.py                      never checks/takeoff/emit (tests/test_routing_leaf.py)
+  graph.py                      never checks/takeoff/emit (tests/test_package_leaves.py)
   build.py  scope.py  members.py  supports.py  loads.py  materials.py
   pynite_map.py  solve.py       SI graph -> lb/in PyNite inputs; in-process solve
 emit/ifc/analytical.py          IfcStructuralAnalysisModel + members + connections

@@ -274,7 +274,7 @@ def build_bid_packages(model: Any, bom: Mapping[str, Any], *,
         for section in sections:
             shape = shape_for(section)
             # By key: the schedule's family order lives in the schedule leaf, which
-            # nothing upstream may import (tests/test_schedule_leaf.py); the recipe's
+            # nothing upstream may import (tests/test_package_leaves.py); the recipe's
             # section order is the ordering a package needs.
             lines = sorted(by_trade[trade][section], key=lambda line: line.key)
             units = {line.unit for line in lines}

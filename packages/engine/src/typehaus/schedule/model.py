@@ -12,7 +12,7 @@ splits (:mod:`typehaus.schedule.propose`) and derives readiness
 
 Nothing in this package grades the building. A readiness state is a statement about
 *authored site state plus findings someone else produced*; the facts about the building
-stay in ``checks/``. ``tests/test_schedule_leaf.py`` is what keeps that true.
+stay in ``checks/``. ``tests/test_package_leaves.py`` is what keeps that true.
 """
 
 from __future__ import annotations

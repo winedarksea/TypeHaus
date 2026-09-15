@@ -122,7 +122,7 @@ expecting a blocker is the mistake this sentence exists to prevent.
 (`schedule/readiness.py`), so a record naming a check id that no module registers sits at
 `not_ready` for ever, `haus schedule` prints only `record.unmet` and never says why, and it
 still cannot stop a recorded pass — a typo becomes a permanent silent block. The guard is a
-test rather than a rule in `schedule/rules.py`, because `test_schedule_leaf.py` forbids that
+test rather than a rule in `schedule/rules.py`, because `test_package_leaves.py` forbids that
 package from importing the check registry.
 
 ### `[calendar]`, `[contractors]` and `milestones`

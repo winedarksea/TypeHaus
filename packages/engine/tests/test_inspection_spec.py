@@ -34,7 +34,7 @@ def test_every_extra_inspection_in_the_reference_house_is_registered() -> None:
     ``not_ready`` for ever, ``cmd_schedule`` prints only ``record.unmet`` and never says
     why, and it still cannot stop a recorded pass. Nothing anywhere reports the typo.
 
-    It cannot live in ``schedule/rules.py``: ``test_schedule_leaf.py`` forbids that package
+    It cannot live in ``schedule/rules.py``: ``test_package_leaves.py`` forbids that package
     from importing the check registry, which is exactly the leaf rule that makes the
     scheduler testable without the checks tree. So the guard is a test, and this is it.
     """
