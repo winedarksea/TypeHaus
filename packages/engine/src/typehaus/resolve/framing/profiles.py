@@ -123,6 +123,15 @@ _RE_ROUND = re.compile(r"^(?P<dia>\d+(?:\.\d+)?)\s+round$")
 _RE_PANEL = re.compile(
     r"^(?P<width>\d+(?:\.\d+)?)x(?P<thickness>\d+(?:\.\d+)?)\s+(?:(?P<label>[a-z]+)\s+)?panel$"
 )
+# A rolled steel angle, AISC spelling with decimal legs: "L3.5x3.5x0.25". The leading L is
+# the whole tell — without it "3.5x3.5" is a well-formed ACTUAL rectangle and parses as a
+# 3 1/2" square timber, which is how catlin's fireplace lintel came to draw and bill at
+# 7.26x the steel it is. The AISC fraction spelling ("L3-1/2x3-1/2x1/4") is deliberately NOT
+# accepted: it would need its own fraction grammar, and a string this module cannot read is
+# reported by ``integrity.member_profile_parses`` rather than guessed at.
+_RE_ANGLE = re.compile(
+    r"^L(?P<leg_a>\d+(?:\.\d+)?)x(?P<leg_b>\d+(?:\.\d+)?)x(?P<thk>\d+(?:\.\d+)?)$"
+)
 
 
 def is_sawn_lumber(profile: str) -> bool:
@@ -172,7 +181,7 @@ class CrossSection:
     every shape, including ``"i_joist"`` (there, ``width_m`` is the flange width).
     """
 
-    shape: str  # "rect" | "i_joist" | "round"
+    shape: str  # "rect" | "i_joist" | "round" | "angle" | "floor_truss" | "roof_truss"
     width_m: float  # for "round": the diameter (width_m == depth_m)
     depth_m: float
     flange_width_m: float | None = None
@@ -317,6 +326,17 @@ def cross_section(profile: str) -> CrossSection:
     if match := _RE_PANEL.match(text):
         return _rect(float(match["width"]), float(match["thickness"]))
 
+    if match := _RE_ANGLE.match(text):
+        # width_m/depth_m are the BOUNDING legs, so every consumer that only knows
+        # rectangles keeps a true container; web_thickness_m carries the leg thickness,
+        # which is what makes the section real for anything that looks.
+        return CrossSection(
+            shape="angle",
+            width_m=inch(float(match["leg_a"])).meters,
+            depth_m=inch(float(match["leg_b"])).meters,
+            web_thickness_m=inch(float(match["thk"])).meters,
+        )
+
     if match := _RE_ROUND.match(text):
         dia_m = inch(float(match["dia"])).meters
         return CrossSection(shape="round", width_m=dia_m, depth_m=dia_m)
@@ -352,7 +372,7 @@ def cross_section(profile: str) -> CrossSection:
 #: every ``_RE_*`` in this module is accounted for on one side or the other.
 _PARSED_PATTERNS = (
     _RE_MULTI_LVL, _RE_SINGLE_LVL, _RE_RIM, _RE_LSL, _RE_DECK, _RE_TJI, _RE_IJOIST,
-    _RE_FLOOR_TRUSS, _RE_ROOF_TRUSS, _RE_ACTUAL, _RE_PANEL, _RE_ROUND,
+    _RE_FLOOR_TRUSS, _RE_ROOF_TRUSS, _RE_ACTUAL, _RE_PANEL, _RE_ROUND, _RE_ANGLE,
 )
 #: The profile strings :func:`cross_section` answers by literal comparison rather than by
 #: pattern. Kept beside the branches that spell them so the two cannot drift apart.

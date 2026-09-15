@@ -742,6 +742,20 @@ def _resolve_beam(beam: Beam, storey_tag: str, elevation: float,
     # extent, per the ``ResolvedSolid.sweep`` contract: a consumer that knows nothing about
     # sweeps then reads a box that CONTAINS the beam — conservative and honest — instead of
     # a flat box the member has half escaped.
+    # ** AN ANGLE IS STILL DRAWN AS ITS BOUNDING BOX, AND THE BLOCKER IS THE SLICER. **
+    # ``sweep.angle_profile`` builds the real six-point L and it is correct — swept, it
+    # measures 1.6875 in2 against AISC's 1.69 for the 3-1/2x3-1/2x1/4. But an L is CONCAVE,
+    # and ``geometry_slice._box_hull_profile`` — the production cut — takes the convex HULL
+    # of the ring it is given, so every section through it comes back as the filled
+    # rectangle: 0.0045 m2 where the mesh walk gives 0.0011.
+    # ``test_sweep_kernel.py::test_the_hull_cut_agrees_with_the_mesh_walk_it_replaced``
+    # catches exactly that disagreement.
+    #
+    # So the section is honest in ``cross_section`` (shape "angle", real leg thickness) and
+    # in ``analytical/pynite_map`` (A 1.69 in2, not 12.25), and the drawn solid is knowingly
+    # a container rather than a lie the model believes. Teaching the slicer concave profiles
+    # is the prerequisite for drawing it, and it is a kernel change every swept run in the
+    # house goes through — not a beam-resolver change.
     rise = 0.0 if beam.top_rise_end is None else beam.top_rise_end.meters
     sweep = None
     if abs(rise) > 1e-9:

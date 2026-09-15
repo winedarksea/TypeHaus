@@ -180,3 +180,43 @@ def test_support_label_names_the_extra_rotations():
     # A FIXED support that releases a rotation is named too, not silently downgraded.
     assert support_label(
         Support("A", Fixity.FIXED, "w", rotations=(True, True, False))) == "fixed+RX+RY"
+
+
+def test_the_angle_section_is_oracled_against_aisc() -> None:
+    """``L3-1/2x3-1/2x1/4`` as two rectangles, against the published AISC values.
+
+    The point of the shape existing at all: catlin's fireplace lintel was authored
+    ``"3.5x3.5"``, which parses as a milled 3 1/2" square, so every consumer believed
+    12.25 in2 of steel where there is 1.69 — a factor of 7.26.
+
+    The two-rectangle decomposition omits the fillet at the heel, which adds a little area
+    at small radius; so it should read slightly LOW on area and slightly HIGH on I, and the
+    assertions are one-sided on purpose to pin that sign. ``J`` is the open thin-walled sum
+    and is approximate by the module's own docstring.
+    """
+    from typehaus.analytical.pynite_map import section_properties
+    from typehaus.resolve.framing.profiles import cross_section
+
+    section = cross_section("L3.5x3.5x0.25")
+    assert section.shape == "angle"
+    area, iy, iz, j = section_properties(section)
+
+    assert area == pytest.approx(1.69, rel=0.01)
+    assert area < 1.69, "omitting the heel fillet must read low on area, not high"
+    assert iy == pytest.approx(1.99, rel=0.02)
+    assert iy > 1.99, "and high on I, for the same reason"
+    assert iz == pytest.approx(iy), "equal legs, equal geometric-axis I"
+    assert j == pytest.approx(0.0332, rel=0.10)
+
+    # The whole reason the shape exists, stated as the comparison it replaces.
+    box = section_properties(cross_section("3.5x3.5"))[0]
+    assert box / area == pytest.approx(7.26, abs=0.05)
+
+
+def test_an_angle_without_a_leg_thickness_raises_rather_than_guessing() -> None:
+    """``section_properties`` must never fall through to a rectangle — the module says so."""
+    from typehaus.analytical.pynite_map import section_properties
+    from typehaus.resolve.framing.profiles import CrossSection
+
+    with pytest.raises(ValueError, match="leg thickness"):
+        section_properties(CrossSection(shape="angle", width_m=0.0889, depth_m=0.0889))

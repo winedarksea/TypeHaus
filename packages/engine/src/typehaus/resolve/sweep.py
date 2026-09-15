@@ -65,6 +65,23 @@ def rect_profile(width: float, depth: float) -> tuple[Vec2, ...]:
     return ((-hw, -hd), (hw, -hd), (hw, hd), (-hw, hd))
 
 
+def angle_profile(leg_u: float, leg_v: float, thickness: float) -> tuple[Vec2, ...]:
+    """An equal- or unequal-leg steel angle, CCW, centred on the same box ``rect_profile`` is.
+
+    Six points, not four: the whole reason this exists is that an angle is ~1/7 of its own
+    bounding box, so drawing it as a rectangle draws seven times the steel. The heel sits at
+    the (-u, -v) corner, one leg running +u and the other +v, which is the orientation an
+    angle lintel is set in — horizontal leg bearing, vertical leg up against the masonry.
+
+    Centred on the bounding box rather than on the centroid so the drawn solid sits exactly
+    where the rectangle used to, and ``ResolvedSolid.outline``/``z0_m``/``z1_m`` stay a true
+    container of it.
+    """
+    hu, hv = leg_u / 2.0, leg_v / 2.0
+    return ((-hu, -hv), (hu, -hv), (hu, -hv + thickness),
+            (-hu + thickness, -hv + thickness), (-hu + thickness, hv), (-hu, hv))
+
+
 def _sub3(a: Vec3, b: Vec3) -> Vec3:
     return (a[0] - b[0], a[1] - b[1], a[2] - b[2])
 

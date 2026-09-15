@@ -85,6 +85,9 @@ def section_properties(section: CrossSection) -> tuple[float, float, float, floa
         h = section.depth_m * M_TO_IN      # wide face
         return (b * h, b * h**3 / 12.0, h * b**3 / 12.0, _rect_torsion_in4(b, h))
 
+    if section.shape == "angle":
+        return _angle_properties(section)
+
     if section.shape == "i_joist":
         return _i_joist_properties(section)
 
@@ -98,6 +101,40 @@ def _rect_torsion_in4(b: float, h: float) -> float:
     """Saint-Venant J for a solid rectangle, long side ``a``, short side ``t``."""
     a, t = (h, b) if h >= b else (b, h)
     return a * t**3 * (1.0 / 3.0 - 0.21 * (t / a) * (1.0 - t**4 / (12.0 * a**4)))
+
+
+def _angle_properties(section: CrossSection) -> tuple[float, float, float, float]:
+    """A rolled angle as two rectangles, about its GEOMETRIC (leg-parallel) axes.
+
+    Computed, not transcribed. Against AISC's L3-1/2x3-1/2x1/4 the two-rectangle model gives
+    A 1.6875 in2 (published 1.69, 0.15% low) and I 2.010 in4 (published 1.99, 1.0% high);
+    the residual is the fillet at the heel, which this decomposition omits — it adds a little
+    area at small radius, so it raises A and lowers I, exactly the pair of signs seen.
+
+    **Geometric axes, not principal ones, and that is the right answer here.** An angle's
+    principal axes are rotated off its legs, and AISC publishes both sets. A lintel bends
+    about a horizontal axis because the masonry it carries holds it there; it is not free to
+    deflect about its weak principal axis. A member that IS free to — an unbraced angle
+    strut — wants the principal values, and this function does not give them.
+
+    ``J`` is the open thin-walled sum and is approximate, as the module docstring says: it
+    reads 0.0352 in4 against AISC's 0.0332.
+    """
+    if not section.web_thickness_m:
+        raise ValueError("angle section is missing its leg thickness (web_thickness_m)")
+    a = section.width_m * M_TO_IN        # leg along u
+    b = section.depth_m * M_TO_IN        # leg along v
+    t = section.web_thickness_m * M_TO_IN
+    area = t * (a + b - t)
+    # Centroid from the heel, each axis: the full leg plus the other leg less the overlap.
+    v_bar = (b * b + (a - t) * t) / (2.0 * (a + b - t))
+    u_bar = (a * a + (b - t) * t) / (2.0 * (a + b - t))
+    iy = (t * b**3 / 12.0 + b * t * (b / 2.0 - v_bar) ** 2
+          + (a - t) * t**3 / 12.0 + (a - t) * t * (v_bar - t / 2.0) ** 2)
+    iz = (t * a**3 / 12.0 + a * t * (a / 2.0 - u_bar) ** 2
+          + (b - t) * t**3 / 12.0 + (b - t) * t * (u_bar - t / 2.0) ** 2)
+    j = t**3 * (a + b - t) / 3.0
+    return (area, iy, iz, j)
 
 
 def _i_joist_properties(section: CrossSection) -> tuple[float, float, float, float]:
@@ -124,6 +161,9 @@ def _sanitise(text: str) -> str:
 def _section_token(section: CrossSection) -> str:
     if section.shape == "round":
         return f"{section.width_m * M_TO_IN:g}_RD"
+    if section.shape == "angle":
+        thk = (section.web_thickness_m or 0.0) * M_TO_IN
+        return (f"L{section.width_m * M_TO_IN:g}X{section.depth_m * M_TO_IN:g}X{thk:g}")
     suffix = "_IJ" if section.shape == "i_joist" else ""
     return f"{section.width_m * M_TO_IN:g}X{section.depth_m * M_TO_IN:g}{suffix}"
 

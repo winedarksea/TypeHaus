@@ -49,7 +49,7 @@ _READABLE = (
     "1.75x11.875 LSL", "1.5x11.875 rim", "deck 42x1.5", "11.875 I-joist", "11.875 TJI 230",
     "11.875 floor truss", "24 roof truss", "24 gable roof truss", "6.125x6.125", "12 round",
     "48x0.75 panel", "48x0.75 corner panel", "engineered-LVL", "hanger", "tapered tread",
-    "25 ga. resilient channel",
+    "25 ga. resilient channel", "L3.5x3.5x0.25",
 )
 #: The trap. Every one of these resolves to the 1 1/2" x 5 1/2" fallback today.
 _UNREADABLE = (
@@ -199,15 +199,25 @@ def test_a_steel_beam_size_is_flagged() -> None:
     assert "3.5x3.5 STEEL" in findings[0].message
 
 
-def test_the_bounding_box_spelling_is_not_flagged() -> None:
-    """``size="3.5x3.5"`` is a stated section and parses; only the unreadable spelling goes.
+def test_a_bounding_box_spelling_still_parses_and_that_is_the_limit_of_this_check() -> None:
+    """``size="3.5x3.5"`` is a well-formed stated section, so this check PASSes it — and
+    that is a real limit of the check rather than a success.
 
-    This is catlin's own ``BM-M-FIRE-LINTEL``, whose ``engineering_note`` says outright that
-    the size is the angle's bounding box. A check that flagged it would be asking the house
-    to stop describing a member it has already described honestly.
+    It was catlin's own ``BM-M-FIRE-LINTEL`` until 2026-09-15, and this test used to argue
+    the house had "described it honestly". It had not: 3 1/2" x 3 1/2" is the angle's
+    BOUNDING BOX, 12.25 in2 against 1.69 of steel, and every consumer believed the box.
+    ``parses()`` cannot tell the difference, because both are legitimate rectangles — what
+    fixed it was giving the angle a spelling of its own (``L3.5x3.5x0.25``) so the section
+    carries its leg thickness.
+
+    Kept as a PASS, with the reason corrected: a check that guessed which rectangles are
+    secretly angles would be guessing.
     """
     findings = _run(elements=[_Element("Beam", "BM-X", size="3.5x3.5")])
     assert [f.result for f in findings] == [Result.PASS]
+    # The spelling that replaced it parses too, and carries the leg the box cannot.
+    assert cross_section("L3.5x3.5x0.25").web_thickness_m == pytest.approx(
+        inch(0.25).meters)
 
 
 def test_a_product_model_in_a_size_field_is_not_swept() -> None:

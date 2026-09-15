@@ -2164,9 +2164,9 @@ BEAMS = [
     # house-wide); this piece is dry and interior, so the galvanising is consistency, not
     # exposure.
     Beam(uid="YCCXRC0ZP3", tag="BM-M-FIRE-LINTEL", start_node="N-M-FIRE-JS-S", end_node="N-M-FIRE-JN-N",
-         size="3.5x3.5", bearing_refs=("W-M-FIRE-JAMB-S", "W-M-FIRE-JAMB-N"),
+         size="L3.5x3.5x0.25", bearing_refs=("W-M-FIRE-JAMB-S", "W-M-FIRE-JAMB-N"),
          top_elevation=inch(49.0625),
-         engineering_note="L3-1/2x3-1/2x1/4 A36 hot-dip galvanised steel angle lintel over the 29 1/2 in firebox opening, 8 in bearing each end on the brick jamb piers. Minimum stock section, not a designed one: the spandrel it carries is ~56 lb. size is the angle's bounding box, so the modelled solid and its BOM row are both larger than the steel."),
+         engineering_note="L3-1/2x3-1/2x1/4 A36 hot-dip galvanised steel angle lintel over the 29 1/2 in firebox opening, 8 in bearing each end on the brick jamb piers. Minimum stock section, not a designed one: the spandrel it carries is ~56 lb. SIZE IS THE REAL SECTION SINCE 2026-09-15: it read 3.5x3.5 until then, which parses as a milled 3 1/2 in square and drew, clashed and billed 7.26x the steel (12.25 in2 of box against 1.69 in2 of angle). The AISC fraction spelling is deliberately not accepted by the parser, so this is the decimal form of the same part."),
 ]
 
 # The first-floor study's walnut wainscot (plans/TODO.md §Hardwood): every bounding wall
