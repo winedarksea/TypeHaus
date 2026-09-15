@@ -288,3 +288,32 @@ def test_a_sistered_ply_hangs_flush_where_its_joist_does():
     # Still authored, never guessed: an unpinned beam (absent from the pair set) reports.
     joist, beam = _flush_candidates("sister_joist")
     assert not _flush_framed_into_beam(joist, beam, set())
+
+
+def test_a_named_hanger_clears_exactly_the_pair_it_names():
+    """``_hung_pairs``/``_hung_from``: the clearance is authored, never guessed.
+
+    A hanger has no geometry — the steel saddle's flange has no representation — so a beam
+    hung off a column still reads as sharing volume with it however correct the connection
+    is, and ``bearing_refs`` does nothing about that (it is a statement about load path, not
+    about where the wood stops). The only thing that clears the pair is an author naming it.
+
+    catlin's two north-entry seat beams are the worked case: each runs 2 3/4" into the 6x6
+    canopy column it lands on, and CN-BW-HGR-CW / -CNW are what say so.
+    """
+    from shapely.geometry import box
+
+    from typehaus.checks.structural.interference import _Candidate, _hung_from
+
+    beam = _Candidate("BM-BW-HOUSE-SEAT", box(0.0, 0.0, 1.0, 0.1), 0.0, 0.2,
+                      seg=((0.0, 0.05), (1.0, 0.05)), kind="beam", parent="BM-1")
+    column = _Candidate("PT-BW-CW", box(-0.07, -0.02, 0.07, 0.12), 0.0, 2.0,
+                        seg=((0.0, 0.05), (0.0, 0.05)), kind="column", parent="PT-1")
+    hung = {frozenset(("BM-BW-HOUSE-SEAT", "PT-BW-CW"))}
+    assert _hung_from(beam, column, hung)
+    assert _hung_from(column, beam, hung)  # order-independent
+    # The same beam against a column nobody connected it to is still reported.
+    other = _Candidate("PT-BW-CNW", column.poly, 0.0, 2.0, seg=column.seg,
+                       kind="column", parent="PT-2")
+    assert not _hung_from(beam, other, hung)
+    assert not _hung_from(beam, column, set())

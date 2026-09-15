@@ -959,6 +959,13 @@
 # labour rate. The HUC is the exception BECAUSE of its concrete side: rotary-hammering 22
 # holes in a cured pocket is not framing labour. Nailing a face-mount hanger to a post is.
 "HU212-3" = { low = 45, high = 70 }  # 4 ea — CN-SG-HGR-CR2-W/E, CN-SG-HGR-CF2-W/E
+# The north entry's two seat-beam hangers (CN-BW-HGR-CW/-CNW, 2026-09-15). A double-2x8
+# face-mount hanger is a fraction of the triple-2x12 above it — one third the seat width and
+# two thirds the height — and ZMAX (G185) carries the usual small premium over plain G90.
+# Material only, per this section's rule: nailing a face-mount hanger to a 6x6 is framing
+# labour. ** THE ROW MUST EXIST EVEN AT A ROUGH BAND **: an unpriced part is silently dropped
+# from the takeoff, so the total FALLS and the omission reads as a saving.
+"HU28-2Z" = { low = 9, high = 16 }  # 2 ea — CN-BW-HGR-CW/-CNW
 # 22 ea -> 30 on 2026-08-30: the eight balcony knee braces moved off the unrated APVKB45-6
 # onto this part, two per brace (Simpson's own instruction — "install single KBS1Z on each
 # end" — and the F1 the code report publishes is measured through that pair). Net material

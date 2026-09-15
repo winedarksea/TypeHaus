@@ -49,6 +49,7 @@ from params.north_entry_frame import (
     ROOF_COLUMN_EAST_X_FT,
     SCREEN_CLADDING_WEST_X_FT,
     SCREEN_PANEL_TOP_FT,
+    SEAT_TOP_FT,
     rectangle,
 )
 from plan.storeys.garage import GARAGE_Y_SOUTH
@@ -420,6 +421,35 @@ COLUMN_CAPS = [
                                        ("NW", LANDING_WEST_FT, GARAGE_SEAT_Y_FT)))
 ]
 
+# ** THE TWO SEAT BEAMS HANG OFF THE CANOPY COLUMNS (owner, 2026-09-15). ** Each seat beam is
+# authored to the column line, so its west end sits inside the 6x6 standing there — 2 3/4" in,
+# over 6 1/16" of shared height. `structural.member_interference` could not see it until the
+# column exclusion came out of `_butt_joint`, because a column degenerates to a point in that
+# test and "an endpoint on its axis" was true of a beam driven halfway into it.
+#
+# ** HU28-2Z, NOT HUC (owner). ** An HUC is the concealed-flange twin, made for screwing into
+# a POUR; the carrying member here is wood. ZMAX (G185) rather than stainless, also the
+# owner's call: the beam is effectively bearing on the column below it already, so a coating
+# failure at this joint is not catastrophic — which is not true of the ABU66SS bases at grade.
+#
+# ** THE HANGER FIXES THE RECORD, NOT THE GEOMETRY, AND THAT IS THE POINT. ** A hanger's
+# flange has no representation in the model, so the beam is carried to its authored joint
+# either way; what an authored Connector buys is that `_hung_pairs` clears exactly this pair
+# and no other. The same beam left too long against a column it never named is still reported.
+#
+# ** THE HANGER BOTTOM RESTS ON THE POUR, AND THE MODEL CANNOT HOLD THAT. ** It is a drawing
+# fact — see AN-BW-STRUCTURE and notes/north_entry_structure.md.
+SEAT_BEAM_HANGERS = [
+    Connector(uid="BWSH01AAAA", tag="CN-BW-HGR-CW", kind=ConnectorKind.JOIST_HANGER,
+              position=pt(ft(LANDING_WEST_FT), ft(HOUSE_SEAT_Y_FT)),
+              elevation=ft(SEAT_TOP_FT), size="HU28-2Z",
+              connects=("BM-BW-HOUSE-SEAT", "PT-BW-CW")),
+    Connector(uid="BWSH02AAAA", tag="CN-BW-HGR-CNW", kind=ConnectorKind.JOIST_HANGER,
+              position=pt(ft(LANDING_WEST_FT), ft(GARAGE_SEAT_Y_FT)),
+              elevation=ft(SEAT_TOP_FT), size="HU28-2Z",
+              connects=("BM-BW-GARAGE-SEAT", "PT-BW-CNW")),
+]
+
 # ** THE EAST HEADER LANDS ON A CAST TOP, WHICH IS A DIFFERENT JOINT AND A DIFFERENT PART. **
 # A CCQ46SDS2.5 is a post cap: it joins a 4x beam to a 6x6 WOOD post and is fastened into
 # wood on both legs. There is no wood under BM-BW-RE any more. The joint here is the one the
@@ -615,5 +645,6 @@ SNOW_RETENTION = [
 
 MAIN_ELEMENTS = [*FRAME_ELEMENTS, FLOOR, GARAGE_FLOOR, TIERS, *TIER_SLABS,
                  SCREEN, *RAILINGS, *SEAT_BEARINGS, *COLUMN_BASES, *INTERIOR_POST_BASES,
-                 *COLUMN_CAPS, *EAST_HEADER_BEARINGS, *TRUSS_TIES, *JOINT_TIES,
+                 *COLUMN_CAPS, *SEAT_BEAM_HANGERS, *EAST_HEADER_BEARINGS,
+                 *TRUSS_TIES, *JOINT_TIES,
                  *SNOW_RETENTION, *NOTES]

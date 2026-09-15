@@ -318,6 +318,41 @@ HUCQ_CONCRETE_HANGER = StructuralHardware(
 #: against an allowable, so this omission costs no check — but it is a real gap for anyone
 #: sizing this joint, and the APVKB precedent in this file is that an unread or absent row
 #: says so in the citation instead of carrying a number nobody sourced.
+#: The north entry's two seat beams hang off the 6x6 KDAT canopy columns on these. Owner's
+#: call 2026-09-15: **HU28-2Z, not HUC** — an HUC is the concealed-flange twin for screwing
+#: into a POUR, and these land on wood. ZMAX (G185) rather than stainless is accepted
+#: because the joint is already effectively bearing on the column below it, so a coating
+#: failure here is not catastrophic; it is the same reasoning the ABU66SS did NOT get.
+#:
+#: ** THE ALLOWABLE IS DELIBERATELY UNREAD, WHICH IS A STATEMENT AND NOT AN OMISSION. **
+#: ``allowable=None`` is this schema's "nobody has looked yet", distinct from an
+#: ``AllowableLoads`` whose values are all ``None`` ("somebody looked, the report published
+#: nothing"). The C-C SPF/HF face-mount row for this model has not been read, and
+#: transcribing a DF/SP figure in its place is the one error this file's own rule 3 calls
+#: out as "an unconservative error that no amount of care downstream can detect" — SPF runs
+#: materially below DF/SP on every hanger row. Read p. 136's HU28 row before this joint is
+#: sized or installed.
+#:
+#: It lives in ``CAPACITY_ONLY_RECORDS``, not ``STRUCTURAL_HARDWARE``: the latter would make
+#: ``hardware_for_role`` ambiguous for ROLE_FACE_MOUNT_JOIST_HANGER and raise a LookupError,
+#: killing every derived hanger row in the house. What it is here FOR is identity — without
+#: a record, ``hardware_by_model``'s prefix matching captions the BOM line with whatever
+#: family sorts first under "HU".
+HU28_2Z_FACE_MOUNT_HANGER = StructuralHardware(
+    tag="simpson-hu28-2z-face-mount-hanger",
+    name="HU28-2Z face-mount hanger, double 2x8 (ZMAX)",
+    role=ROLE_FACE_MOUNT_JOIST_HANGER,
+    manufacturer=_SIMPSON,
+    model="HU28-2Z",
+    fits_nominal=("2-2x8",),
+    source="Simpson Strong-Tie HU28-2 in ZMAX (G185) — the WOOD face-mount hanger, nailed "
+           "into the 6x6 KDAT column rather than screwed into a pour. Chosen over the HUC "
+           "twin by the owner on 2026-09-15 because the carrying member here is wood. "
+           "DIMENSIONS AND ALLOWABLES NOT YET TRANSCRIBED: read the C-C SPF/HF face-mount "
+           "table's HU28 row before sizing or installing this joint",
+)
+
+
 HU212_3_FACE_MOUNT_HANGER = StructuralHardware(
     tag="simpson-hu212-3-face-mount-hanger",
     name="HU212-3 face-mount hanger, triple 2x12",
@@ -1817,4 +1852,5 @@ CAPACITY_ONLY_RECORDS: tuple = (
     HUCQ_CONCRETE_HANGER,
     HUC212_3_CONCRETE_HANGER,
     HU212_3_FACE_MOUNT_HANGER,
+    HU28_2Z_FACE_MOUNT_HANGER,
 )

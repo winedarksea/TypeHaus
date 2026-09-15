@@ -235,6 +235,24 @@ def beam(number, tag, x0, y0, x1, y1, bearings, top=DECK_JOIST_TOP_FT, size="2-2
 # and north of the beam line, which is exactly why six invented stand-off brackets existed.
 # Both now land on two cast piers each, at the same elevation and on the same span, so
 # `structural.deck_beam_span` grades them identically.
+# ** THE WEST END HANGS OFF THE COLUMN, IT DOES NOT RUN INTO IT (2026-09-15). ** Both seat
+# beams are authored to the column LINE, so each ran 2 3/4" into the 6x6 standing there and
+# shared 6 1/16" of height with it. That was invisible until this revision only because
+# `_butt_joint` cleared any pair with a column in it — a column degenerates to a POINT in
+# that test, so "an endpoint lands on its axis" was satisfied by a beam driven halfway in.
+# The geometry is unchanged and cannot be: a hanger's flange has no representation, so the
+# beam is carried to the joint it was authored at either way. What changed is that the joint
+# is now AUTHORED (CN-BW-HGR-* below, HU28-2Z), and only an authored pair is cleared.
+#
+# ** bearing_refs STAYS ON THE PIERS, AND THAT IS A MEASURED DECISION. ** Re-pointing the
+# west end at the column reads well -- it is the immediate support -- but it was tried and
+# reverted: it takes `deck_post/PT-BW-W` and `/PT-BW-GW` from "dowel lap, class B"
+# (d/c 0.30 and 0.46) to "axial, tied column" (0.024, 0.023), which is not a capacity gain,
+# it is the dowel-lap limit state LEAVING the register for both piers. The column still
+# stands on the pier (`supported_by`), so the load still arrives there; naming the pier is
+# naming the end of that path, and it is the naming the pier_basis tributary is built on.
+# The clash is cleared by the authored hanger, not by this field -- bearing_refs is a
+# statement about load path, not about where the wood stops.
 beam(1, "BM-BW-HOUSE-SEAT", LANDING_WEST_FT, HOUSE_SEAT_Y_FT,
      LANDING_EAST_FT, HOUSE_SEAT_Y_FT, ("PT-BW-W", "PT-BW-E"), SEAT_TOP_FT)
 beam(2, "BM-BW-GARAGE-SEAT", LANDING_WEST_FT, GARAGE_SEAT_Y_FT,
@@ -320,6 +338,28 @@ beam(7, "BM-BW-RE", ROOF_COLUMN_EAST_X_FT, PIER_LINE_Y_FT,
 # joists instead it lands ON both seats, which is an ordinary bearing, and it doubles as the
 # deck's west rim -- the joist field starts 3 3/4" east of this line to clear the columns,
 # so without it that strip of board had nothing under it either.
+# ** THIS MEMBER BURIES 2 3/4" IN EACH 6x6 AND THERE IS NO CLEAN FIX -- OPEN, 2026-09-15. **
+# Its ends are authored at the column CENTRES, so it runs 2 3/4" into PT-BW-CW and PT-BW-CNW
+# over its full 7 1/4" depth. The clash is real; `structural.member_interference` cannot see
+# it only because `_butt_joint` still clears any pair containing a column (see that function
+# -- the clause is wrong and is what hides this).
+#
+# ** "SHORTEN TO THE COLUMN FACES" DOES NOT WORK, AND THE ARITHMETIC IS WHY. ** A 6x6 is
+# 5 1/2" wide and the seat beams are 3", both centred on this line: the column faces are at
+# y 37.7292 / 42.2500 and the seat beams' faces at 37.625 / 42.354. Pulling the ends back to
+# the column faces therefore takes them PAST the beams they bear on -- measured, and
+# `test_analytical_graph` catches it as "a run of members hangs on no support".
+#
+# Re-pointing bearing_refs at the columns instead makes the graph whole but costs SIX new
+# UNKNOWNs: no FloorSystem and no Roof names this beam, so the piers under those columns get
+# a load with no tributary AREA and `structural.deck_post_size` cannot finish their axial
+# demand. That is an honest finding rather than noise, and it is the real open question --
+# this sill's load is not in any tributary today.
+#
+# So it is left long, and left clashing, deliberately. Closing it is an owner/engineer call
+# between: (a) bear it on the columns and give its load a modelled plan area, (b) hang it
+# with a part, against the owner's 2026-09-15 "shorten, do not hang", or (c) move the screen
+# line off the column centreline.
 beam(10, "BM-BW-SCSILL", LANDING_WEST_FT, PIER_LINE_Y_FT,
      LANDING_WEST_FT, GARAGE_SEAT_Y_FT,
      ("BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT"), DECK_JOIST_TOP_FT, "2x8")

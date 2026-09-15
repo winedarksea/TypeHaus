@@ -4,7 +4,7 @@
 **Trade:** Framing  
 **Engine:** 0.1.1  
 **Model hash:** cd040e04d512ab7a  
-**Lines:** 113
+**Lines:** 114
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -86,6 +86,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | H2.5AZ ZMAX hurricane/seismic tie | 30 | ea |  | building |
 | HGAM10 masonry gusset angle | 24 | ea |  | building |
 | HU212-3 face-mount hanger, triple 2x12 | 4 | ea |  | building |
+| HU28-2Z face-mount hanger, double 2x8 (ZMAX) | 2 | ea |  | building |
 | HUC concealed-flange masonry/concrete hanger | 2 | ea |  | building |
 | HUC212-3 concealed-flange hanger, triple 2x12 | 4 | ea |  | building |
 | KBS1Z knee-brace / beam strap (ZMAX) | 2 | ea |  | building |
@@ -239,6 +240,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | H2.5AZ ZMAX hurricane/seismic tie | — |
 | HGAM10 masonry gusset angle | — |
 | HU212-3 face-mount hanger, triple 2x12 | — |
+| HU28-2Z face-mount hanger, double 2x8 (ZMAX) | — |
 | HUC concealed-flange masonry/concrete hanger | — |
 | HUC212-3 concealed-flange hanger, triple 2x12 | — |
 | KBS1Z knee-brace / beam strap (ZMAX) | — |

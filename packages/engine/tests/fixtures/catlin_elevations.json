@@ -3724,6 +3724,18 @@
 2,
 "295b5d036c97"
 ],
+"geometry/BWSH01AAAA/body": [
+-0.28575,
+-0.13335,
+2,
+"e24186f2b9da"
+],
+"geometry/BWSH02AAAA/body": [
+-0.28575,
+-0.13335,
+2,
+"e24186f2b9da"
+],
 "geometry/BWST01AAAA::framing/member:tread-000": [
 -0.72898,
 -0.69088,
@@ -75903,6 +75915,10 @@
 "solids/CN-BW-CAP-NW/z1_m": 2.02565,
 "solids/CN-BW-CAP-W/z0_m": 1.87325,
 "solids/CN-BW-CAP-W/z1_m": 2.02565,
+"solids/CN-BW-HGR-CNW/z0_m": -0.28575,
+"solids/CN-BW-HGR-CNW/z1_m": -0.13335,
+"solids/CN-BW-HGR-CW/z0_m": -0.28575,
+"solids/CN-BW-HGR-CW/z1_m": -0.13335,
 "solids/CN-BW-IBASE-C/z0_m": -0.9398,
 "solids/CN-BW-IBASE-C/z1_m": -0.7874,
 "solids/CN-BW-IBASE-E/z0_m": -0.9398,

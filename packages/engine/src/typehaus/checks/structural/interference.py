@@ -326,6 +326,43 @@ def _within_wall_pairs(plan) -> set[tuple[str, str]]:
     }
 
 
+def _hung_pairs(plan) -> set[frozenset[str]]:
+    """Tag pairs an author declared joined by a hanger, from ``Connector.connects``.
+
+    A hanger has no geometry. The part is a steel saddle whose flange stands on the face of
+    the carrying member, so the carried member's END stops at that face — but the model
+    carries the beam to the joint it was authored at, and a hanger cannot push it back. The
+    two therefore read as sharing volume however correct the connection is, and re-pointing
+    ``bearing_refs`` does nothing about it: ``bearing_refs`` is a statement about load path,
+    not about where the wood stops.
+
+    Same shape as :func:`_within_wall_pairs` and :func:`_flush_framed_pairs`, and the
+    module's rule holds — **the clearance is authored, never guessed**. Only the two tags a
+    ``Connector`` actually names are cleared against each other, so the same beam left too
+    long against a column it never named is still reported.
+    """
+    from typehaus.model.enums import ConnectorKind
+    from typehaus.model.structure import Connector
+
+    if plan is None:
+        return set()
+    hung = {ConnectorKind.JOIST_HANGER, ConnectorKind.POST_CAP}
+    out: set[frozenset[str]] = set()
+    for element in plan.all_elements():
+        if not isinstance(element, Connector) or element.kind not in hung:
+            continue
+        tags = [tag for tag in (element.connects or ()) if tag]
+        for index, first in enumerate(tags):
+            for second in tags[index + 1:]:
+                out.add(frozenset((first, second)))
+    return out
+
+
+def _hung_from(a: _Candidate, b: _Candidate, hung: set[frozenset[str]]) -> bool:
+    """True where a Connector names both of these members as the joint it makes."""
+    return frozenset((a.label, b.label)) in hung
+
+
 def _column_within_wall(a: _Candidate, b: _Candidate,
                         within_pairs: set[tuple[str, str]]) -> bool:
     """True for a column standing inside the one wall its author placed it within."""
@@ -410,10 +447,30 @@ def _butt_joint(a: _Candidate, b: _Candidate, tol: float) -> bool:
     bug this check exists for. A joist bearing on a beam is *also* geometrically an
     endpoint-on-axis, but its elevation is what we police — so a beam is never a valid
     partner here. Cleared cases: a joist end butting a rim board (coplanar by design),
-    a post/column seated under a beam (the vertical bearing, incl. the intended 2"
-    rear-row drainage poke), and two wall plates lapping where their walls meet at an
-    L/T (the bottom/top plates of a branch wall run to the through wall they tee into —
-    the single most common intended framing joint, resolved as a lap in real framing)."""
+    and two wall plates lapping where their walls meet at an L/T (the bottom/top plates of
+    a branch wall run to the through wall they tee into — the single most common intended
+    framing joint, resolved as a lap in real framing).
+
+    **The column clause is WRONG and is still here, deliberately — 2026-09-15.** A column
+    degenerates to a POINT in this test (``_solid_segment`` returns its centroid twice), so
+    "an endpoint lands on its axis" is satisfied by any member whose end reaches the column's
+    CENTRE — which is to say by a member driven halfway into it. A true bearing joint has
+    near-zero z-overlap and the ``tol_z`` gate above already clears it without help, so what
+    this clause actually clears is interpenetration, the one bug class this module exists
+    for.
+
+    Dropping the two ``column`` tests was measured and surfaces exactly four real pairs, all
+    at the north entry: the two seat beams 2 3/4" into their 6x6 columns over 6 1/16" of
+    shared height, and ``BM-BW-SCSILL`` 2 3/4" into each of the same two over its full
+    7 1/4". The seat beams are now answered — their joint is authored (``_hung_pairs``, the
+    HU28-2Z hangers) and would be cleared honestly. **The sill is not**, and it has no clean
+    answer: shortening it to the column faces takes its ends past the 3" seat beams it bears
+    on, and re-bearing it on the columns costs six UNKNOWNs because nothing gives its load a
+    tributary area. See ``params/north_entry_frame.py`` at BM-BW-SCSILL.
+
+    So the clause stays until that is decided, and catlin stays at 0 FAIL honestly rather
+    than by a grader that cannot see the difference. Removing the two ``column`` terms below
+    is the whole change when it is."""
     if not (a.kind == "rim" or b.kind == "rim"
             or a.kind == "column" or b.kind == "column"
             or (a.kind == "plate" and b.kind == "plate")):
@@ -437,6 +494,7 @@ def member_interference(ctx: CheckContext) -> list[Finding]:
     junction_tol = inch(10.0).meters
     flush_pairs = _flush_framed_pairs(getattr(ctx, "plan", None))
     within_pairs = _within_wall_pairs(getattr(ctx, "plan", None))
+    hung_pairs = _hung_pairs(getattr(ctx, "plan", None))
 
     candidates: list[_Candidate] = []
     for member in ctx.model.all_members():
@@ -511,6 +569,11 @@ def member_interference(ctx: CheckContext) -> list[Finding]:
             # A joist hung *flush* into a beam it is authored to bear on — the same joint
             # the floor-opening-header clause above clears, just against a beam.
             if _flush_framed_into_beam(a, b, flush_pairs):
+                continue
+            # A member an author hung off another with a real, named Connector. A hanger has
+            # no geometry, so the carried member still reads as sharing volume with what
+            # carries it; only the two tags the Connector names are cleared.
+            if _hung_from(a, b, hung_pairs):
                 continue
             # A column its author stood *inside* a wall's stud line (Post.within_wall):
             # the plates/studs are cut around it, so shared volume with that one wall's
