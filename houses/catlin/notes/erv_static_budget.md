@@ -25,7 +25,7 @@ ordinary Darcy–Weisbach and is offered for checking, not for deciding.
 > below the level-2 tap is 200 and above it 54, and the trunk chain is summed whole though
 > `DU-S-ERV-HP-FEED` parallels the path rather than lying on it. Worked without either
 > simplification the system reads **0.380 in. w.g. and 206.4 cfm**, against the graded
-> 0.417 and 205.2. Both readings clear 205; neither reaches 210.
+> 0.406 and 205.7. Both readings clear 205; neither reaches 210.
 >
 > ⚠ **THE EXTRACT SIDE WAS REBALANCED ON 2026-09-15 AND THE GOVERNING PATH MOVED.** It was
 > authored at 265 cfm against a 210 cfm machine — 65 basement + 146 main + 54 attic, summed
@@ -183,18 +183,37 @@ that radial lands in (at the sum of that plenum's radial flows) + every trunk on
 | `DU-B-ERV-R-SAUNA-EXH` | §3 | 0.0135 |
 | terminal `REG-T-ERV-SAUNA-EXH` | 20 cfm is the curve's own point, 6.50 Pa / 249.089 | 0.0261 |
 | plenum `EQ-B-ERV-MAN-EXH` at 46 cfm | below the curve's first point (60, 0.5), so clamped to it | 0.0020 |
-| `DU-ERV-RISER-EXH` | 210 cfm, 32.26 ft + 3 x 4.5, f 0.0225, P_v 0.07131 | 0.1472 |
-| `DU-B-ERV-RET-TRUNK` | 210 cfm, 5.62 ft + 3 x 4.5 | 0.0615 |
-| `DU-ERV-EA` | 210 cfm, 29.32 ft + 5 x 4.5 | 0.1666 |
-| | | **0.4169** |
+| `DU-ERV-RISER-EXH` | 210 cfm, 36.20 ft + 6 x 4.5, f 0.0225, P_v 0.07131 | 0.2028 |
+| `DU-B-ERV-RET-TRUNK` | 210 cfm, 5.62 ft + 3 x 4.5 | 0.0614 |
+| `DU-ERV-EA` | 210 cfm in **8"**, 29.32 ft + 5 x 4.5, f 0.0232, P_v 0.02256 | 0.0407 |
+| | | **0.3465** |
 
 **The riser is in this column although the sauna's own air never enters it**, and that is
 §6's stated method rather than an oversight: the path is "worst radial + its terminal + its
 plenum + EVERY trunk on that side". `DU-B-ERV-R-SAUNA-EXH` lands in the BASEMENT plenum, so
 its air goes straight out the return trunk; the riser above carries the two upper storeys'
 share into the same box. Summing it is the conservative reading and it is §9's second listed
-conservatism, now worth 0.147 of the 0.417 — 35% of the column, and the largest single term
-in this note.
+conservatism — now worth **0.203 of the 0.347, 59% of the column**, and by a wide margin the
+largest single term in this note.
+
+**Two things moved this column on 2026-09-15 and they moved it in opposite directions.**
+
+*The riser got longer, 0.147 -> 0.203, and that is the cost of telling the truth.*
+`DU-ERV-RISER-EXH` used to stop at (1'-2", 33'-7 1/2") @ +244" — in mid-air, 46" short of
+`EQ-A-ERV-MAN-EXH`. `mep.duct_connectivity` passed it anyway, because its head stood within
+`DUCT_JOINT_TOLERANCE_M` (3") of `DU-A-ERV-R-BATH1`'s north-south leg at (1'-0", 33'-7 1/2"):
+**a 210 cfm riser was reading as teed into a 20 cfm bath radial, and the check passed BECAUSE
+of the interference.** Re-stationing the riser 4 5/8" east dissolved the accident and the
+check said "lands on nothing" the same minute. The feed is now drawn — north to y=34'-6",
+then east along the line the four attic radials already share, into the manifold — and it
+costs 3.94 ft and three elbows. That is the honest number this column never carried.
+
+*The discharge got bigger, 0.167 -> 0.041, and that is the owner's lever.* `DU-ERV-EA` went
+6" -> 8". Area goes as d² and friction as V², so the same 210 cfm through 1.78x the area
+costs (1/1.78)² of the velocity pressure; against a slightly higher f at the lower Reynolds
+number the term falls to a quarter. **It is worth more than everything else in this note put
+together**, and the shaft was sized for it months ago — the riser's own prose argued y=34'-8"
+because "at y=35'-6" an 8" envelope would stand 4 5/8" inside the stud cavity".
 
 **SUPPLY — `DU-ERV-OA` → machine → basement trunk → `EQ-B-ERV-MAN-SUP` → `DU-B-ERV-R-PLAY`**
 
@@ -205,17 +224,40 @@ in this note.
 | plenum `EQ-B-ERV-MAN-SUP` at 60 cfm | the curve's own point, 0.50 Pa / 249.089 | 0.0020 |
 | `DU-ERV-OA` | 210 cfm, 13.99 ft + 6 x 4.5 | 0.1318 |
 | `DU-B-ERV-SUP-TRUNK` | 210 cfm, 2.78 ft + 1 x 4.5 | 0.0234 |
-| `DU-ERV-RISER-SUP` | 210 cfm, 29.48 ft + 3 x 4.5 | 0.1382 |
-| `DU-S-ERV-HP-FEED` | 100 cfm, 44.58 ft + 7 x 4.5 | 0.0633 |
-| | | **0.4083** |
+| `DU-ERV-RISER-SUP` | 210 cfm, 29.10 ft + 3 x 4.5 | 0.1367 |
+| `DU-S-ERV-HP-FEED` | 100 cfm, 44.20 ft + 7 x 4.5 | 0.0630 |
+| | | **0.4064** |
 
-**The extract side governs at 0.4169 in. w.g.** Off the authored fan curve, between
-(0.4, 206) and (0.5, 201):
+**This column barely moved and the chase re-pack is why it barely moved.** All four risers
+were re-stationed onto the shaft's own clear width — `DU-ERV-RISER-SUP` 0'-5" -> 9 5/8",
+`DU-ERV-RISER-EXH` 1'-2" -> 18 5/8", `DU-ERV-OA` 1'-11" -> 27 5/8" — and the two supply legs
+that changed changed by the same 4 5/8" in opposite senses: `DU-ERV-OA`'s hood leg grew by
+it, its basement leg shrank by it, and its developed length is identical to the foot.
+`DU-ERV-RISER-SUP`'s basement leg shrank 4 5/8" (-0.0015) and `DU-S-ERV-HP-FEED`'s attic jog
+shrank from 7" to 2 3/8" (-0.0003) because the riser head came out to meet it.
 
-> 206 − (0.0169 / 0.1) x 5 = **205.2 cfm delivered**
+**THE SUPPLY SIDE GOVERNS NOW, at 0.4064 in. w.g. against extract's 0.3465.** Off the
+authored fan curve, between (0.4, 206) and (0.5, 201):
+
+> 206 − (0.0064 / 0.1) x 5 = **205.7 cfm delivered**
 
 against 205 cfm required by MN 1322 R403.5 and 210 cfm of design intent. **The system clears
-the code rate by 0.1 % and falls 2.3 % short of the intent.**
+the code rate by 0.3 % and falls 2.0 % short of the intent.**
+
+> ⚠ **THE SIDES SWAPPED, AND THE PREVIOUS REVISION OF THIS SECTION PREDICTED IT.** The
+> 2026-09-15 rebalance left extract governing by 0.0086 in. and this note said in as many
+> words that "the next improvement to the extract side buys almost nothing, because the
+> supply side takes over within a hundredth of an inch". `DU-ERV-EA` 6" -> 8" was then bought
+> and extract fell 0.0704 — of which only the first 0.0086 bought anything. **The remaining
+> 0.062 in. of extract margin is not a saving; it is headroom nobody is spending.**
+>
+> So the two extract levers still on the table — the elbow audit (11 six-inch elbows on the
+> extract trunks) and riser segmentation — are now worth **nothing at all** to the delivered
+> figure, and should not be bought for this reason. They may still be worth buying to get the
+> riser's 0.203 down as insurance, since that one term is 59% of its column and is the thing
+> that grew when the feed was drawn honestly. Every lever that moves the DELIVERED number
+> from here is on the SUPPLY side: `DU-ERV-RISER-SUP` (0.1367), `DU-ERV-OA` (0.1318) and
+> `DU-S-ERV-HP-FEED` (0.0630) are 82% of the governing column.
 
 > ⚠ **THE TWO SIDES HAVE ALL BUT CONVERGED, AND THAT CHANGES WHICH LEVER MATTERS.** Extract
 > governed by 0.051 in. before the rebalance and governs by **0.0086** now (0.4169 against

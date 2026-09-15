@@ -162,42 +162,51 @@ def test_the_broan_carries_the_whole_published_curve(catlin_plan) -> None:
     assert broan.fan_curve_max_static_in_wg == pytest.approx(1.3)
 
 
-def test_the_worst_path_is_the_sauna_extract_radial(catlin_model_ro) -> None:
-    """Note §6, and the governing radial MOVED on 2026-09-15.
+def test_the_governing_side_is_now_supply(catlin_model_ro) -> None:
+    """Note §6, and the governing SIDE swapped on 2026-09-15 — twice over, in one day.
 
-    It was ``DU-M-ERV-R-PLANT`` — 25 cfm down 60'-6" of effective length, through an
-    RH-dampered terminal, 0.0301 + 0.0424 between them. The extract side was rebalanced from
-    265 cfm to the machine's 210 and PLANT came down to 5 cfm, where the Q^2 term costs about
-    a thousandth of an inch: **a 5x cut in flow is a 25x cut in friction**. Both of the old
-    terms effectively vanished and the worst path is now the sauna's, where the motorised
-    damper is most of the number and the duct almost none of it.
+    The machine's curve is an external static PER SIDE, so what governs is the worse of two
+    paths and never their sum. Extract had governed since this note was written. Two changes
+    took it below supply:
 
-    Still not the LONGEST radial, which remains the whole point of §3's last rows —
-    ``DU-A-ERV-R-BED3`` is 56'-2" and PLANT 53'-0", and at 5 cfm neither is worth anything.
+    * the extract side was rebalanced 265 -> 210 cfm, which took the worst radial off
+      ``DU-M-ERV-R-PLANT`` (a 5x cut in flow is a 25x cut in friction) and the column from
+      0.459 to 0.417;
+    * ``DU-ERV-EA`` went 6" -> 8", which took the discharge term from 0.1666 to 0.0407 and
+      the column to 0.3465 — against supply's 0.4064.
+
+    The previous revision of §6 PREDICTED this in as many words, having measured the margin
+    at 0.0086 in., and the prediction is the reason the assertion is written this way round:
+    what matters is not that the number moved but that the LEVER moved with it. Every
+    remaining extract lever — the elbow audit, riser segmentation — is now worth nothing to
+    the delivered figure, and §6 says so.
     """
     message = _machine_finding(catlin_model_ro).message
-    assert "extract side via DU-B-ERV-R-SAUNA-EXH" in message
-    assert "DU-A-ERV-R-BED3" not in message
-    assert "DU-M-ERV-R-PLANT" not in message
+    assert "supply side via DU-B-ERV-R-PLAY" in message
+    assert "extract side" not in message
 
 
 def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> None:
-    """Note §6: 0.417 in. w.g. and 205 cfm.
+    """Note §6: 0.406 in. w.g. and 205.7 cfm, on the SUPPLY side.
 
     Hand-worked in the note before this assertion was changed, which is the order that makes
-    it an oracle: L_eff 35.17 + 2 x 2.5 = 40.17 ft, V 229 fpm, P_v 0.00327, f 0.0342 gives
-    the radial 0.0135; + 6.50/249.089 terminal + 0.50/249.089 plenum + 0.1472 riser + 0.0615
-    return trunk + 0.1666 EA = 0.4169. Delivered off the curve between (0.4, 206) and
-    (0.5, 201): 206 - 0.169 x 5 = 205.2.
+    it an oracle. Supply column, term by term: ``DU-B-ERV-R-PLAY`` 0.0134 + terminal
+    9.00/249.089 + plenum 0.50/249.089 + ``DU-ERV-OA`` 0.1318 + ``DU-B-ERV-SUP-TRUNK`` 0.0234
+    + ``DU-ERV-RISER-SUP`` 0.1367 + ``DU-S-ERV-HP-FEED`` 0.0630 = **0.4064**. Delivered off
+    the curve between (0.4, 206) and (0.5, 201): 206 - 0.064 x 5 = 205.7.
 
-    ** THE CODE MARGIN IS NOW 0.2 cfm. ** 205.2 against MN 1322 R403.5's 205. It was 203.0
-    against 205 before — below it — so this is the rebalance moving the delivered figure UP
-    past the code rate rather than a margin being spent. But it is thin enough that §8's
-    "measure it at commissioning with a low-flow hood" is now the operative sentence.
+    The engine reads 0.407 and 206. The eighth-thousandth between the two is the note's own
+    f estimates at the 8" Reynolds number, and it is smaller than the rounding either figure
+    is printed at.
+
+    ** THE CODE MARGIN IS 0.7 cfm. ** 205.7 against MN 1322 R403.5's 205. It was 203.0 —
+    BELOW the rate — before any of this, so the day's work moved the delivered figure up past
+    the line. It is still thin enough that §8's "measure it at commissioning with a low-flow
+    hood" is the operative sentence, and now it is the SUPPLY side to hood.
     """
     message = _machine_finding(catlin_model_ro).message
-    assert "0.417 in. w.g." in message
-    assert "delivering 205 cfm" in message
+    assert "0.407 in. w.g." in message
+    assert "delivering 206 cfm" in message
 
 
 def test_the_shortfall_against_the_design_rate_is_unknown_and_never_a_fail(

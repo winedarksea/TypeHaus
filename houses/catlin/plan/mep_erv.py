@@ -393,7 +393,7 @@ PENETRATIONS_ERV_SECOND = [
     # +17'-0" in the project frame, which is where the duct and the hood are.
     RoughOpening(uid="SMGEY3KGXE", tag="AO-S-ERV-EA", host="W-S-W1B",
                  position=from_node("N-S-NW", inch(20.5)),
-                 width=inch(7), height=inch(7), sill_height=inch(80.5),
+                 width=inch(9), height=inch(9), sill_height=inch(79.5),
                  penetration_for=("DU-ERV-EA",)),
 ]
 
@@ -409,20 +409,40 @@ PENETRATIONS_ERV_SECOND = [
 # stud as shaft on each such face. Against the resolved wall LAYERS the notch is
 # **x 0'-6 5/8"..2'-6 5/8" by y 33'-3 1/4"..35'-5 3/8" — 24" wide by 26 1/8" deep.**
 #
-# That matters, because the three-in-a-row below was arithmetic against the wrong west face.
-# Three 8" OD ducts on 9" centres need 25" and the shaft has 24": **DU-ERV-RISER-SUP at x=0'-5"
-# is 5 5/8" inside W-M-W1B / W-S-W1B's stud cavity for its whole height**, and the row is one
-# inch over. That is a real, live defect and it is NOT fixed here — it belongs to the two
-# risers that still run the full height, and moving either of them is its own pass. It is
-# written down so the next person does not re-derive the 30 1/8" and conclude it fits.
+# ** RE-PACKED 2026-09-15, AND THE ROW IS NOW INSIDE THE SHAFT. ** It was not: the row read
+# x=5"/12"/14"/23" against a west face at 6 5/8", so **DU-ERV-RISER-SUP stood 4 5/8" inside
+# W-M-W1B / W-S-W1B's stud cavity for its whole height**, and DU-S-ERV-HP-FEED at 12" and
+# DU-ERV-RISER-EXH at 14" were two 6" ducts on 2" centres sharing 4" of plan. Both were
+# recorded as live defects here and neither was graded by anything.
+#
+# The measured pack, envelope by envelope against the 6 5/8"..30 5/8" clear:
+#
+#     DU-ERV-RISER-SUP   x  9 5/8"    6 5/8" .. 12 5/8"   flush to the west face
+#     DU-S-ERV-HP-FEED   x 12"        9"     .. 15"       joins SUP's head, see below
+#     DU-ERV-RISER-EXH   x 18 5/8"   15 5/8" .. 21 5/8"   5/8" clear of HP-FEED
+#     DU-ERV-OA          x 27 5/8"   24 5/8" .. 30 5/8"   flush to the east face
+#
+# Three full-height risers on 9" centres fill 24" exactly, which is why the fourth cannot be
+# one: HP-FEED is a 12 7/8" STANDPIPE between FS-ATTIC's bottom chord and the deck, not a
+# riser, so it overlaps SUP in plan only across the 3/4" of z where the two are joined — it
+# comes off SUP's head. That is a joint and not a clash, and it is the whole reason four
+# ducts fit where four risers could not. Its jog also shortened 7" -> 2 3/8", because the
+# riser head moved out to meet it.
+#
+# ** THE ORDER WAS FORCED AND IS WORTH RECORDING. ** DU-ERV-EA went 6" -> 8" for the static
+# budget; AO-S-ERV-EA grew 7" -> 9" to pass it; the bigger hole then caught DU-ERV-RISER-SUP
+# standing in that same wall, which `mep.run_through_opening` reported as a FAIL. The stud
+# cavity defect had been sitting at 0 FAIL for months and it took an unrelated duct upsize to
+# make anything say so.
 #
 # The hoods stacking at the NW chase makes the above tractable rather than urgent: DU-ERV-OA
 # stops at the main storey and DU-ERV-EA at the second, so the four-in-a-shaft problem
 # exists only below main; above the second storey the shaft carries two ducts, not four.
 # DU-ERV-EA's own riser sits at y=34'-8", clear of the NORTH wall's stud cavity.
 #
-# The shaft also carries six plumbing vents and VR-M-RADON-VENT clustered at (1'-0", 34'-6"),
-# and eight conduits between x=1'-6" and x=2'-6" at y=34'-6"..35'-0". It is not roomy, and
+# The shaft also carries VR-M-RADON-VENT at (1'-0", 34'-6") — ONE 3" riser carrying radon and
+# plumbing vent together, which is what the six vent branches land on rather than six risers
+# of their own — and nine conduits at x=1'-6"/2'-0"/2'-6", y=34'-6" (one at y=35'-3"). It is not roomy, and
 # **nothing else should be added to this chase**. The fallback the plan named — a framed shaft
 # in RM-M-MECH's dead corner — is not needed, and the closet's own dead corner is now the
 # manifolds' instead.
@@ -472,17 +492,19 @@ DUCTS_ERV_RISERS = [
     # because the manifold's own west approach along y=28'-6" is DU-B-ERV-R-BENCH's.
     DuctRun(uid="1BMFGSMKJY", tag="DU-ERV-RISER-SUP", system=DuctSystem.SUPPLY,
             path=(pt(ft(5, 10), ft(30, 6)), pt(ft(5, 10), ft(31, 8)),
-                  pt(ft(0, 5), ft(31, 8)), pt(ft(0, 5), ft(33, 7.5)),
-                  pt(ft(0, 5), ft(33, 7.5))),
+                  pt(inch(9.625), ft(31, 8)), pt(inch(9.625), ft(33, 7.5)),
+                  pt(inch(9.625), ft(33, 7.5))),
             elevations=(inch(-19.4375), inch(-19.4375), inch(-19.4375),
                         inch(-19.4375), inch(231.875)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             insulation="R-8 wrap", design_cfm=210),
     DuctRun(uid="GFTW5CBARX", tag="DU-ERV-RISER-EXH", system=DuctSystem.EXHAUST,
-            path=(pt(ft(1, 2), ft(33, 7.5)), pt(ft(1, 2), ft(33, 7.5)),
-                  pt(ft(1, 2), ft(29, 3)), pt(ft(5, 0), ft(29, 3)),
+            path=(pt(ft(5), ft(34, 6)), pt(inch(18.625), ft(34, 6)),
+                  pt(inch(18.625), ft(33, 7.5)), pt(inch(18.625), ft(33, 7.5)),
+                  pt(inch(18.625), ft(29, 3)), pt(ft(5, 0), ft(29, 3)),
                   pt(ft(5, 10), ft(29, 3)), pt(ft(5, 10), ft(28, 8))),
-            elevations=(inch(244), inch(-27), inch(-27), inch(-19.4375),
+            elevations=(inch(244), inch(244), inch(244), inch(-27),
+                        inch(-27), inch(-19.4375),
                         inch(-19.4375), inch(-19.4375)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             insulation="R-8 wrap", design_cfm=210),
@@ -519,8 +541,8 @@ DUCTS_ERV_RISERS = [
             # horizontal leg 5 5/8" north of RM-M-MECH's south face and 8'-0" under the two
             # wall-hung manifolds at +8'-0", so it crosses nothing in a 5'-3" x 1'-11" room.
             path=(pt(inch(-8), ft(33, 11)), pt(inch(6), ft(33, 11)),
-                  pt(ft(1, 11), ft(33, 11)), pt(ft(1, 11), ft(33, 7.5)),
-                  pt(ft(1, 11), ft(33, 7.5)), pt(ft(1, 11), ft(32, 6)),
+                  pt(inch(27.625), ft(33, 11)), pt(inch(27.625), ft(33, 7.5)),
+                  pt(inch(27.625), ft(33, 7.5)), pt(inch(27.625), ft(32, 6)),
                   pt(ft(3, 8), ft(32, 6)), pt(ft(3, 8), ft(31, 1)),
                   pt(ft(3, 8), ft(31, 1))),
             elevations=(inch(48), inch(48), inch(48), inch(48), inch(-27),
@@ -549,7 +571,14 @@ DUCTS_ERV_RISERS = [
                   pt(inch(-8), ft(34, 0))),
             elevations=(inch(-33.8375), inch(-27), inch(-27), inch(-27),
                         inch(204), inch(204), inch(204)),
-            diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
+            # ** 8", NOT 6" (owner, in the measured package). ** This is the single biggest
+            # lever in the static budget and the note prices it: the discharge leg is 29'-4"
+            # of the extract chain's worst path, and area goes as d^2 while friction goes as
+            # V^2, so a 6" -> 8" step takes roughly two-thirds off this term. The prose above
+            # already sized the shaft for it — "at y=35'-6" an 8" envelope would stand 4 5/8"
+            # inside the stud cavity; y=34'-8" is 9" clear" was written against THIS diameter,
+            # months before it was bought. `AO-S-ERV-EA` grows 7" -> 9" to match.
+            diameter=inch(8), routing=DuctRouting.CHASE, material="galvanized",
             insulation="R-8 wrap, vapour-sealed", design_cfm=210),
 ]
 
@@ -1092,7 +1121,7 @@ DUCTS_ERV_MIX_FEED = [
             # -8 7/8" is a 6" duct on FS-ATTIC's bottom chord; +4" is the same duct lying on
             # the attic deck; -24 7/8" is 6" above SF-S-HP1's cavity floor, unchanged by the
             # move because the 21" drop keeps that floor at 209 1/8" absolute.
-            path=(pt(ft(0, 5), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)),
+            path=(pt(inch(9.625), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)), pt(ft(1), ft(33, 7.5)),
                   pt(ft(1), ft(22)),
                   pt(ft(1), ft(22)), pt(ft(21), ft(22)),
                   pt(ft(21), ft(22)), pt(ft(21), ft(28, 9)),

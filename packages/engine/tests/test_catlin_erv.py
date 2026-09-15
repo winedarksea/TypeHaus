@@ -109,22 +109,61 @@ def test_every_ventilation_terminal_states_a_design_cfm(catlin_plan) -> None:
 
 # --- the risers and the outdoor side -------------------------------------------------------
 
-def test_all_four_risers_share_the_one_chase(catlin_model) -> None:
-    """The radon/plumbing chase at (1', 34'-6") is the house's only continuous
-    basement-to-attic shaft, and the four ERV risers are measured into it rather than
-    assumed into it — see the arithmetic in plan/mep_erv.py."""
+#: The shaft's CLEAR extent, measured off the resolved wall layers rather than off a room
+#: polygon — ``resolve/rooms.py`` insets only by the lining and these walls are
+#: ``face("sheathing-ext")``, so a room-polygon reading counts 6" of exterior stud as shaft.
+#: x 0'-6 5/8"..2'-6 5/8" by y 33'-3 1/4"..35'-5 3/8": 24" wide by 26 1/8" deep.
+_SHAFT_X = (6.625, 30.625)
+_SHAFT_Y = (399.25, 425.375)
+
+
+def test_every_riser_stands_INSIDE_the_chase_with_its_whole_envelope(catlin_model) -> None:
+    """Replaced on 2026-09-15, because the test this supersedes never tested the chase.
+
+    It asserted ``min(xs) < 3.0 and max(ys) > 33.0`` — "some vertex of this run is west of
+    3 ft and some vertex is north of 33 ft". That is satisfied by anything that touches the
+    north-west corner of the house, it says nothing about the 24" shaft, and it passed
+    throughout the period when ``DU-ERV-RISER-SUP`` stood **4 5/8" outside the shaft's west
+    face, in an exterior stud cavity**, and when ``DU-S-ERV-HP-FEED`` and
+    ``DU-ERV-RISER-EXH`` shared 4" of plan on 2" centres.
+
+    What is asserted now is the thing that has to be true to build it: every riser's whole
+    ENVELOPE — centreline plus radius, not the centreline — lies inside the measured clear
+    extent, and no two of them overlap in plan unless they are the same air path meeting at
+    a joint.
+    """
     risers = {d.tag: d for d in catlin_model.ducts
               if d.tag in ("DU-ERV-RISER-SUP", "DU-ERV-RISER-EXH", "DU-ERV-OA", "DU-ERV-EA")}
     assert len(risers) == 4
+
+    bands: dict[str, tuple[float, float, float, float]] = {}
     for tag, duct in risers.items():
-        xs = [x / _FT for x, _ in duct.path]
-        ys = [y / _FT for _, y in duct.path]
-        assert min(xs) < 3.0, tag  # every one passes through the chase's west end
-        assert max(ys) > 33.0, tag
-        assert duct.diameter_m / M_PER_IN == pytest.approx(6.0), tag
-        # Both legs of the outdoor pair carry outdoor-temperature air through conditioned
-        # space; an uninsulated one sweats all winter.
-        assert duct.insulation, tag
+        radius = duct.diameter_m / M_PER_IN / 2.0
+        assert duct.insulation, tag  # outdoor-temperature air through conditioned space
+        for index in range(len(duct.path) - 1):
+            a, b = duct.path[index], duct.path[index + 1]
+            if abs(a[0] - b[0]) > 1e-9 or abs(a[1] - b[1]) > 1e-9:
+                continue  # not the vertical segment
+            x, y = a[0] / M_PER_IN, a[1] / M_PER_IN
+            if not (_SHAFT_Y[0] - 8 < y < _SHAFT_Y[1] + 8):
+                continue  # a vertical leg somewhere else in the house
+            lo, hi = x - radius, x + radius
+            assert _SHAFT_X[0] - 1e-6 <= lo and hi <= _SHAFT_X[1] + 1e-6, (
+                f"{tag} spans x {lo:.3f}..{hi:.3f}, outside the shaft's "
+                f"{_SHAFT_X[0]}..{_SHAFT_X[1]}")
+            assert _SHAFT_Y[0] - 1e-6 <= y - radius and y + radius <= _SHAFT_Y[1] + 1e-6, tag
+            bands[tag] = (lo, hi, y - radius, y + radius)
+            break
+    assert set(bands) == set(risers), sorted(set(risers) - set(bands))
+
+    # No two risers share plan, unless they are the same air path meeting at a joint.
+    # DU-S-ERV-HP-FEED comes OFF DU-ERV-RISER-SUP's head and is not in this set.
+    for one_tag, (x0, x1, y0, y1) in bands.items():
+        for other_tag, (u0, u1, v0, v1) in bands.items():
+            if one_tag >= other_tag:
+                continue
+            assert not (x0 < u1 and x1 > u0 and y0 < v1 and y1 > v0), (
+                f"{one_tag} and {other_tag} overlap in plan")
 
 
 def test_the_outdoor_pair_is_vapour_sealed_and_the_distribution_pair_is_not(catlin_model) -> None:
@@ -291,15 +330,29 @@ def test_every_radial_is_four_inch_galvanized_and_there_are_twenty_three(catlin_
         assert duct.material == "galvanized", duct.tag
 
 
-def test_every_trunk_riser_and_outdoor_leg_is_six_inch_galvanized(catlin_model) -> None:
-    """Six inches and not eight, deliberately. Broan's manual asks for an 8" trunk above
-    200 cfm with long runs; ``notes/erv_static_budget.md`` §7 prices that upsize as the
-    fallback rather than building it, because at 6" the worst path still clears MN's rate."""
+def test_every_trunk_riser_and_outdoor_leg_is_galvanized_at_its_stated_size(catlin_model) -> None:
+    """Six inches everywhere except the discharge, which was BOUGHT at eight on 2026-09-15.
+
+    Broan's manual asks for an 8" trunk above 200 cfm with long runs, and
+    ``notes/erv_static_budget.md`` §7 priced that upsize as a fallback for months rather than
+    building it, because at 6" the worst path still cleared MN's rate. Drawing the attic
+    extract feed honestly — the riser had been reading as connected only because its head sat
+    within the 3" joint tolerance of a bath radial — put 0.056 in. w.g. back on the extract
+    column and took the delivered figure to 202 cfm, BELOW MN 1322 R403.5's 205. ``DU-ERV-EA``
+    at 8" is what paid for that and more: the term falls 0.1666 -> 0.0407, because area goes
+    as d² while friction goes as V².
+
+    Only the discharge. The intake ``DU-ERV-OA`` stays 6": it is 0.1318 of the SUPPLY column,
+    which now governs, and upsizing it is the next lever rather than a done one — §6 says
+    which levers are still worth anything and which are not.
+    """
     by_tag = {d.tag: d for d in catlin_model.ducts}
     for tag in ("DU-ERV-RISER-SUP", "DU-ERV-RISER-EXH", "DU-B-ERV-SUP-TRUNK",
-                "DU-B-ERV-RET-TRUNK", "DU-ERV-OA", "DU-ERV-EA", "DU-S-ERV-HP-FEED"):
+                "DU-B-ERV-RET-TRUNK", "DU-ERV-OA", "DU-S-ERV-HP-FEED"):
         assert by_tag[tag].diameter_m == pytest.approx(6 * M_PER_IN), tag
         assert by_tag[tag].material == "galvanized", tag
+    assert by_tag["DU-ERV-EA"].diameter_m == pytest.approx(8 * M_PER_IN)
+    assert by_tag["DU-ERV-EA"].material == "galvanized"
 
 
 def test_no_run_in_the_house_is_semi_rigid_any_more(catlin_model) -> None:

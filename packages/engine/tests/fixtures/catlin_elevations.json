@@ -791,8 +791,8 @@
 "ducts/DU-ERV-RISER-EXH/z_m": [
 -0.6858,
 6.1976,
-6,
-"db884339e65f"
+8,
+"3c6cb6efcdc1"
 ],
 "ducts/DU-ERV-RISER-SUP/z_m": [
 -0.4937125,
@@ -3954,9 +3954,9 @@
 ],
 "geometry/BYAVBJKRS6-run/body": [
 -0.8594725,
-5.2578,
+5.2832,
 144,
-"4175ab2be797"
+"0c8a8616a0dc"
 ],
 "geometry/C75VZB9VX8-i000/body": [
 3.9611178,
@@ -39284,49 +39284,49 @@
 3.048,
 6.11505,
 8,
-"73589529008d"
+"db1d41f5de4c"
 ],
 "geometry/CSW154AAAA/layer:gwb-int": [
 3.048,
 6.11505,
 8,
-"73589529008d"
+"db1d41f5de4c"
 ],
 "geometry/CSW154AAAA/layer:outer-girt": [
 3.048,
 6.11505,
 8,
-"73589529008d"
+"db1d41f5de4c"
 ],
 "geometry/CSW154AAAA/layer:paint": [
 3.048,
 6.11505,
 8,
-"73589529008d"
+"db1d41f5de4c"
 ],
 "geometry/CSW154AAAA/layer:sheathing": [
 3.048,
 6.11505,
 8,
-"73589529008d"
+"db1d41f5de4c"
 ],
 "geometry/CSW154AAAA/layer:spray-foam": [
 3.048,
 6.11505,
 8,
-"73589529008d"
+"db1d41f5de4c"
 ],
 "geometry/CSW154AAAA/layer:stud": [
 3.048,
 6.11505,
 8,
-"73589529008d"
+"db1d41f5de4c"
 ],
 "geometry/CSW154AAAA/layer:vent-gap": [
 3.048,
 6.11505,
 8,
-"73589529008d"
+"db1d41f5de4c"
 ],
 "geometry/CSW154AAAA::framing/member:block-2-000-00": [
 3.048,
@@ -39401,52 +39401,52 @@
 "8669e34b3b2a"
 ],
 "geometry/CSW154AAAA::framing/member:block-2-jamb-000-0-00": [
-5.0038,
-5.0927,
+4.9784,
+5.0673,
 8,
-"a034a97e9123"
+"191355b7261e"
 ],
 "geometry/CSW154AAAA::framing/member:block-2-jamb-000-0-01": [
-5.2705,
-5.3594,
+5.2959,
+5.3848,
 8,
-"642a591a9882"
+"3e8f84baabab"
 ],
 "geometry/CSW154AAAA::framing/member:block-2-jamb-000-1-00": [
-5.0038,
-5.0927,
+4.9784,
+5.0673,
 8,
-"a034a97e9123"
+"191355b7261e"
 ],
 "geometry/CSW154AAAA::framing/member:block-2-jamb-000-1-01": [
-5.2705,
-5.3594,
+5.2959,
+5.3848,
 8,
-"642a591a9882"
+"3e8f84baabab"
 ],
 "geometry/CSW154AAAA::framing/member:buck-head-000": [
-5.260975,
-5.2705,
+5.286375,
+5.2959,
 8,
-"d44deb3ecd93"
+"07b3f12b261f"
 ],
 "geometry/CSW154AAAA::framing/member:buck-jamb-000-0": [
-5.102225,
-5.260975,
+5.076825,
+5.286375,
 8,
-"7672c6941e84"
+"2421750f5348"
 ],
 "geometry/CSW154AAAA::framing/member:buck-jamb-000-1": [
-5.102225,
-5.260975,
+5.076825,
+5.286375,
 8,
-"7672c6941e84"
+"2421750f5348"
 ],
 "geometry/CSW154AAAA::framing/member:buck-sill-000": [
-5.0927,
-5.102225,
+5.0673,
+5.076825,
 8,
-"62f7ac5603c8"
+"db318ad5d34a"
 ],
 "geometry/CSW154AAAA::framing/member:corner-start": [
 3.0861,
@@ -39461,16 +39461,16 @@
 "50ef2552dcd5"
 ],
 "geometry/CSW154AAAA::framing/member:ladder-head-outer-girt-000": [
-5.2705,
-5.3594,
+5.2959,
+5.3848,
 8,
-"642a591a9882"
+"3e8f84baabab"
 ],
 "geometry/CSW154AAAA::framing/member:ladder-sill-outer-girt-000": [
-5.0038,
-5.0927,
+4.9784,
+5.0673,
 8,
-"a034a97e9123"
+"191355b7261e"
 ],
 "geometry/CSW154AAAA::framing/member:plate-bottom": [
 3.048,
@@ -39491,28 +39491,28 @@
 "f6380622d682"
 ],
 "geometry/CSW154AAAA::framing/member:roughhead-0": [
-5.2705,
-5.3086,
+5.2959,
+5.334,
 8,
-"96fe65f053e3"
+"bdbea2531585"
 ],
 "geometry/CSW154AAAA::framing/member:sill-0": [
-5.0546,
-5.0927,
+5.0292,
+5.0673,
 8,
-"2ea9474aa114"
+"a2311b30fa37"
 ],
 "geometry/CSW154AAAA::framing/member:strapping-jamb-outer-girt-000-0": [
-5.0038,
-5.3594,
+4.9784,
+5.3848,
 8,
-"e9ad8e825dd1"
+"9a483f39d703"
 ],
 "geometry/CSW154AAAA::framing/member:strapping-jamb-outer-girt-000-1": [
-5.0038,
-5.3594,
+4.9784,
+5.3848,
 8,
-"e9ad8e825dd1"
+"9a483f39d703"
 ],
 "geometry/CSW154AAAA::framing/member:strapping-outer-girt-000": [
 3.048,
@@ -40008,9 +40008,9 @@
 ],
 "geometry/GFTW5CBARX-run/body": [
 -0.762,
-6.1976,
-120,
-"de659ac931cd"
+6.2738,
+168,
+"fc2be3965b13"
 ],
 "geometry/H2VD7MCX4L/body": [
 -0.45212,
@@ -73325,52 +73325,52 @@
 "1e6871fbce74"
 ],
 "member/CSW154AAAA/block-2-jamb-000-0-00": [
-5.0038,
-5.0927,
+4.9784,
+5.0673,
 2,
-"29f5c7430c21"
+"58e807177894"
 ],
 "member/CSW154AAAA/block-2-jamb-000-0-01": [
-5.2705,
-5.3594,
+5.2959,
+5.3848,
 2,
-"3f4a198b605e"
+"eb1f581d44bc"
 ],
 "member/CSW154AAAA/block-2-jamb-000-1-00": [
-5.0038,
-5.0927,
+4.9784,
+5.0673,
 2,
-"29f5c7430c21"
+"58e807177894"
 ],
 "member/CSW154AAAA/block-2-jamb-000-1-01": [
-5.2705,
-5.3594,
+5.2959,
+5.3848,
 2,
-"3f4a198b605e"
+"eb1f581d44bc"
 ],
 "member/CSW154AAAA/buck-head-000": [
-5.260975,
-5.2705,
+5.286375,
+5.2959,
 2,
-"f258258bf025"
+"0b6a16ca64e4"
 ],
 "member/CSW154AAAA/buck-jamb-000-0": [
-5.102225,
-5.260975,
+5.076825,
+5.286375,
 2,
-"5f8306551a2f"
+"ce37d1b09066"
 ],
 "member/CSW154AAAA/buck-jamb-000-1": [
-5.102225,
-5.260975,
+5.076825,
+5.286375,
 2,
-"5f8306551a2f"
+"ce37d1b09066"
 ],
 "member/CSW154AAAA/buck-sill-000": [
-5.0927,
-5.102225,
+5.0673,
+5.076825,
 2,
-"3263cc59b299"
+"327fd3c9c9ca"
 ],
 "member/CSW154AAAA/corner-start": [
 3.0861,
@@ -73385,16 +73385,16 @@
 "015f08fd3431"
 ],
 "member/CSW154AAAA/ladder-head-outer-girt-000": [
-5.2705,
-5.3594,
+5.2959,
+5.3848,
 2,
-"3f4a198b605e"
+"eb1f581d44bc"
 ],
 "member/CSW154AAAA/ladder-sill-outer-girt-000": [
-5.0038,
-5.0927,
+4.9784,
+5.0673,
 2,
-"29f5c7430c21"
+"58e807177894"
 ],
 "member/CSW154AAAA/plate-bottom": [
 3.048,
@@ -73415,28 +73415,28 @@
 "2608551f5a15"
 ],
 "member/CSW154AAAA/roughhead-0": [
-5.2705,
-5.3086,
+5.2959,
+5.334,
 2,
-"1515598fdfc2"
+"c868594d36b9"
 ],
 "member/CSW154AAAA/sill-0": [
-5.0546,
-5.0927,
+5.0292,
+5.0673,
 2,
-"6666a82b93e9"
+"55adc1aa14d7"
 ],
 "member/CSW154AAAA/strapping-jamb-outer-girt-000-0": [
-5.0038,
-5.3594,
+4.9784,
+5.3848,
 2,
-"49967a88d00d"
+"2ca20a480c65"
 ],
 "member/CSW154AAAA/strapping-jamb-outer-girt-000-1": [
-5.0038,
-5.3594,
+4.9784,
+5.3848,
 2,
-"49967a88d00d"
+"2ca20a480c65"
 ],
 "member/CSW154AAAA/strapping-outer-girt-000": [
 3.048,
@@ -77696,11 +77696,11 @@
 "solids/DU-B-ERV-SUP-TRUNK-RUN/z0_m": -0.8594725,
 "solids/DU-B-ERV-SUP-TRUNK-RUN/z1_m": -0.4175125,
 "solids/DU-ERV-EA-RUN/z0_m": -0.8594725,
-"solids/DU-ERV-EA-RUN/z1_m": 5.2578,
+"solids/DU-ERV-EA-RUN/z1_m": 5.2832,
 "solids/DU-ERV-OA-RUN/z0_m": -0.8594725,
 "solids/DU-ERV-OA-RUN/z1_m": 1.2954,
 "solids/DU-ERV-RISER-EXH-RUN/z0_m": -0.762,
-"solids/DU-ERV-RISER-EXH-RUN/z1_m": 6.1976,
+"solids/DU-ERV-RISER-EXH-RUN/z1_m": 6.2738,
 "solids/DU-ERV-RISER-SUP-RUN/z0_m": -0.5699125,
 "solids/DU-ERV-RISER-SUP-RUN/z1_m": 5.889625,
 "solids/DU-M-ERV-R-BATH1-RUN/z0_m": 2.54,
