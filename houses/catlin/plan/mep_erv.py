@@ -17,8 +17,8 @@
 # "210 at 0.2"" and "206 at 0.4"" were never two claims; they are two stations on one curve,
 # and `EQ-T-BROAN-B210E75RT.fan_curve` carries all ten published points (214 @ 0.1" down to
 # 176 @ 1.2", ceiling 1.3" where the core deforms). `mep.erv_static_budget` computes what
-# THIS duct system costs and reads the curve at it: **0.459" w.g. worst path, 203 cfm
-# delivered**, the worst path being DU-M-ERV-R-PLANT on the extract side. The oracle is
+# THIS duct system costs and reads the curve at it: **0.417" w.g. worst path, 205 cfm
+# delivered**, the worst path being DU-B-ERV-R-SAUNA-EXH on the extract side. The oracle is
 # notes/erv_static_budget.md, which also prices the 8" trunk upsize Broan's manual asks for
 # above 200 cfm and says why this house does not buy it.
 # `ventilation_cfm=210` stays authored — see plan/mep_erv_types.py for why moving it is a
@@ -613,7 +613,7 @@ DUCTS_ERV_BASEMENT = [
             path=(pt(ft(6, 6), ft(28, 6)), pt(ft(2), ft(28, 6)), pt(ft(2), ft(8, 6)),
                   pt(ft(2), ft(8, 6))),
             elevations=(ft(7, 6), ft(7, 6), ft(7, 6), ft(6, 2)),
-            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=25),
+            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=6),
     DuctRun(uid="03883CKF0H", tag="DU-B-ERV-R-BATH", system=DuctSystem.EXHAUST,
             path=(pt(ft(6, 6), ft(28, 6)), pt(ft(12), ft(28, 6)),
                   pt(ft(12), inch(289.625))),
@@ -758,7 +758,7 @@ DUCTS_ERV_LEVEL2 = [
                   pt(ft(20, 10.7), ft(24, 8))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
-            material="galvanized", design_cfm=8),
+            material="galvanized", design_cfm=6),
     DuctRun(uid="DPAS57TPCG", tag="DU-M-ERV-R-BATH2", system=DuctSystem.EXHAUST,
             # Three points, not four: this lane's x IS the terminal's, so the run rises and
             # goes straight south with no turn at the end. A fourth vertex repeating the
@@ -824,13 +824,13 @@ DUCTS_ERV_LEVEL2 = [
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z, _BAY_Z, _BAY_Z,
                         inch(-108)),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
-            material="galvanized", design_cfm=15),
+            material="galvanized", design_cfm=8),
     DuctRun(uid="YFDV1TGN1W", tag="DU-M-ERV-R-MUD", system=DuctSystem.RETURN,
             path=(pt(ft(5), ft(35)), pt(ft(5), ft(35)), pt(ft(5), ft(31, 4)),
                   pt(ft(4, 0.4), ft(31, 4))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
-            material="galvanized", design_cfm=8),
+            material="galvanized", design_cfm=5),
     DuctRun(uid="164777V9JK", tag="DU-M-ERV-R-BED1", system=DuctSystem.RETURN,
             path=(pt(ft(5, 4), ft(35)), pt(ft(5, 4), ft(35)), pt(ft(5, 4), ft(14)),
                   pt(ft(29), ft(14))),
@@ -891,7 +891,13 @@ DUCTS_ERV_LEVEL2 = [
     # this machine at 206 cfm net supply at 0.4" w.g. (B210E75RT, HVI 2004940), so the "0.2"
     # w.g." this file quotes elsewhere is the model-name point off the fan curve, not the rating
     # point, and the real static budget is about double what those comments assume. This is
-    # still the radial whose drop the installer must check — 25 cfm, and longest again now.
+    # ** NO LONGER THE RADIAL WHOSE DROP THE INSTALLER MUST CHECK (2026-09-15). ** It was,
+    # at 25 cfm: 0.0301 in. of duct plus 0.0424 through the RH damper, 16% of the whole
+    # extract path and the governing radial in notes/erv_static_budget.md §6. The extract side
+    # was rebalanced from 265 cfm to the machine's 210 and this room went to 5 cfm — the owner
+    # wants it holding its own atmosphere on a slow turnover, not flushed — and a 5x cut in
+    # flow is a 25x cut in friction, so both terms fell to about a thousandth. It is still the
+    # longest radial on this manifold; that was never what made it matter.
     # -20" is the manifold port, -8 3/8" a 4" duct on the truss bottom chord.
     # ** THE RISER MUST NOT STAND IN D-S-PLANT'S CLEAR OPENING, AND `mep.duct_joist_bay`
     # DOES NOT CATCH IT. ** That door is centred on y=4'-0" in W-S-C1 with its jacks at
@@ -923,7 +929,7 @@ DUCTS_ERV_LEVEL2 = [
                   pt(ft(18), ft(7, 4))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z, inch(102)),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
-            material="galvanized", design_cfm=25),
+            material="galvanized", design_cfm=5),
 ]
 
 # ============================== LEVEL 3 — ATTIC RADIALS ==============================
@@ -975,7 +981,7 @@ DUCTS_ERV_ATTIC = [
             path=(pt(ft(5), ft(34, 6)), pt(ft(1), ft(34, 6)), pt(ft(1), ft(20, 8)),
                   pt(ft(1), ft(20, 8))),
             elevations=(_ATTIC_DECK_Z, _ATTIC_DECK_Z, _ATTIC_DECK_Z, inch(-2)),
-            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=9),
+            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=5),
     # THE GUEST BATH'S EXTRACT. Same chase south to y=19'-0",
     # then east on the deck to the W-A-STU-W axis at x=9'-7 1/2" and UP inside that wall's
     # 5 1/2" staggered cavity to REG-A-STUBATH-EXH at 7'-0". The rise is the whole reason the
@@ -1021,8 +1027,10 @@ DUCTS_ERV_ATTIC = [
     # x=29', then north on the east loft's deck to the existing grille. **~53'-6", not the
     # longest radial in the house** — DU-M-ERV-R-PLANT is 55'-8" on the FS-S-WEST trusses.
     # Length was never the criterion anyway — BED3 carries 5 cfm (~102 fpm in
-    # 4", where 21 extra feet costs thousandths of an inch w.g.), while PLANT carries 25 cfm and
-    # is the run whose drop the installer must check. The two are on different machine ports:
+    # 4", where 21 extra feet costs thousandths of an inch w.g.), and since the 2026-09-15
+    # rebalance PLANT carries 5 cfm too and costs the same nothing. Neither is the run whose
+    # drop the installer must check any more; that is DU-B-ERV-R-SAUNA-EXH, where a motorised
+    # damper and not a duct is the number. The two are on different machine ports:
     # BED3 on EQ-A-ERV-MAN-EXH, PLANT on EQ-M-ERV-MAN-EXH. Re-filing BED3 onto the main-storey
     # manifold is blocked by FO-S-STAIR, and that manifold is full at 10 of 10.
     DuctRun(uid="73FJZH564X", tag="DU-A-ERV-R-BED3", system=DuctSystem.RETURN,

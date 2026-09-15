@@ -25,7 +25,14 @@ ordinary Darcy–Weisbach and is offered for checking, not for deciding.
 > below the level-2 tap is 200 and above it 54, and the trunk chain is summed whole though
 > `DU-S-ERV-HP-FEED` parallels the path rather than lying on it. Worked without either
 > simplification the system reads **0.380 in. w.g. and 206.4 cfm**, against the graded
-> 0.459 and 203.0. Both readings clear 205; neither reaches 210.
+> 0.417 and 205.2. Both readings clear 205; neither reaches 210.
+>
+> ⚠ **THE EXTRACT SIDE WAS REBALANCED ON 2026-09-15 AND THE GOVERNING PATH MOVED.** It was
+> authored at 265 cfm against a 210 cfm machine — 65 basement + 146 main + 54 attic, summed
+> per plenum and never per SIDE, which is why nothing had caught it. Six terminals came down
+> (owner: plant room to a slow turnover, the workshop bench hood is not a fume hood, the
+> attic to 5) and the side now reads 210 exactly: 46 basement + 114 main + 50 attic. The
+> graded figure fell 0.459 -> 0.417 and the worst path stopped being `DU-M-ERV-R-PLANT`.
 
 ---
 
@@ -84,18 +91,27 @@ Every radial is 4" galvanized. `Δp_duct` is §2's formula; `Δp_terminal` is §
 
 | run | Q (cfm) | developed (ft) | elbows | L_eff (ft) | V (fpm) | P_v (in.) | Re | f | Δp_duct (in.) |
 |---|---|---|---|---|---|---|---|---|---|
-| `DU-M-ERV-R-PLANT` | 25 | 53.00 | 3 | 60.50 | 286 | 0.00512 | 9,764 | 0.0324 | **0.0301** |
+| `DU-B-ERV-R-SAUNA-EXH` | 20 | 35.17 | 2 | 40.17 | 229 | 0.00327 | 7,811 | 0.0342 | **0.0135** |
 | `DU-B-ERV-R-PLAY` | 30 | 17.00 | 1 | 19.50 | 344 | 0.00737 | 11,717 | 0.0311 | **0.0134** |
 | `DU-M-ERV-R-LIVING` | 20 | 46.01 | 2 | 51.01 | 229 | 0.00327 | 7,811 | 0.0342 | 0.0171 |
+| `DU-M-ERV-R-PLANT` | 5 | 53.00 | 3 | 60.50 | 57 | 0.00020 | 1,953 | — | ~0.001 |
 | `DU-A-ERV-R-BED3` | 5 | 56.15 | 5 | 68.65 | 57 | 0.00020 | 1,953 | — | ~0.001 |
 
-The last row is the point worth writing down: **`DU-A-ERV-R-BED3` is the LONGEST radial in
-the house at 56'-2", and it is not remotely the worst.** Static goes as Q², and at 5 cfm it
-costs about a thousandth of an inch. Length was never the criterion. The two runs that
-matter are `DU-M-ERV-R-PLANT` (25 cfm and long) and `DU-B-ERV-R-PLAY` (30 cfm, the highest
-flow on any radial). The prose in `plan/mep_erv.py` has said for months that PLANT is "the
-radial whose drop the installer must check"; this note is where that stops being an
-assertion.
+The last two rows are the point worth writing down: **`DU-A-ERV-R-BED3` is the LONGEST
+radial in the house at 56'-2", and `DU-M-ERV-R-PLANT` is the second-longest at 53'-0", and
+neither is remotely the worst.** Static goes as Q², and at 5 cfm each costs about a
+thousandth of an inch. Length was never the criterion.
+
+**PLANT was in the first row of this table until 2026-09-15, and the rebalance is what moved
+it to the last.** At 25 cfm its 60'-6" effective length cost 0.0301 in. and its RH-dampered
+terminal another 0.0424 — together 16% of the whole extract path, and the reason the prose in
+`plan/mep_erv.py` called it "the radial whose drop the installer must check". At 5 cfm the Q²
+term takes both to about a thousandth. **A 5x cut in flow is a 25x cut in friction**, which is
+why re-balancing bought more than any of the three duct changes the owner considered.
+
+The two runs that matter now are `DU-B-ERV-R-SAUNA-EXH` (20 cfm through a motorised damper —
+the damper is most of it, not the duct) and `DU-B-ERV-R-PLAY` (30 cfm, still the highest flow
+on any radial).
 
 **`DU-A-ERV-R-BED3` at 5 cfm is LAMINAR (Re ≈ 1,950), and Colebrook is a turbulent
 correlation.** Six of the 23 radials run below Re 4,000. Where Re < 2,300 the flow is laminar
@@ -160,17 +176,25 @@ The machine's curve is an **external static per side**, so the governing figure 
 of the two paths and never their sum. Each path is: worst radial + its terminal + the plenum
 that radial lands in (at the sum of that plenum's radial flows) + every trunk on that side.
 
-**EXTRACT — `DU-M-ERV-R-PLANT` → `EQ-M-ERV-MAN-EXH` → riser → basement trunk → machine → `DU-ERV-EA`**
+**EXTRACT — `DU-B-ERV-R-SAUNA-EXH` → `EQ-B-ERV-MAN-EXH` → basement trunk → machine → `DU-ERV-EA`**
 
 | term | working | Δp (in. w.g.) |
 |---|---|---|
-| `DU-M-ERV-R-PLANT` | §3 | 0.0301 |
-| terminal `REG-T-ERV-PLANT-EXH` | linear at 25 cfm = 10.55 Pa / 249.089 (Q² would give 10.16) | 0.0424 |
-| plenum `EQ-M-ERV-MAN-EXH` at 146 cfm | linear = 2.87 Pa / 249.089 (Q² would give 2.66) | 0.0115 |
+| `DU-B-ERV-R-SAUNA-EXH` | §3 | 0.0135 |
+| terminal `REG-T-ERV-SAUNA-EXH` | 20 cfm is the curve's own point, 6.50 Pa / 249.089 | 0.0261 |
+| plenum `EQ-B-ERV-MAN-EXH` at 46 cfm | below the curve's first point (60, 0.5), so clamped to it | 0.0020 |
 | `DU-ERV-RISER-EXH` | 210 cfm, 32.26 ft + 3 x 4.5, f 0.0225, P_v 0.07131 | 0.1472 |
 | `DU-B-ERV-RET-TRUNK` | 210 cfm, 5.62 ft + 3 x 4.5 | 0.0615 |
 | `DU-ERV-EA` | 210 cfm, 29.32 ft + 5 x 4.5 | 0.1666 |
-| | | **0.4593** |
+| | | **0.4169** |
+
+**The riser is in this column although the sauna's own air never enters it**, and that is
+§6's stated method rather than an oversight: the path is "worst radial + its terminal + its
+plenum + EVERY trunk on that side". `DU-B-ERV-R-SAUNA-EXH` lands in the BASEMENT plenum, so
+its air goes straight out the return trunk; the riser above carries the two upper storeys'
+share into the same box. Summing it is the conservative reading and it is §9's second listed
+conservatism, now worth 0.147 of the 0.417 — 35% of the column, and the largest single term
+in this note.
 
 **SUPPLY — `DU-ERV-OA` → machine → basement trunk → `EQ-B-ERV-MAN-SUP` → `DU-B-ERV-R-PLAY`**
 
@@ -185,13 +209,27 @@ that radial lands in (at the sum of that plenum's radial flows) + every trunk on
 | `DU-S-ERV-HP-FEED` | 100 cfm, 44.58 ft + 7 x 4.5 | 0.0633 |
 | | | **0.4083** |
 
-**The extract side governs at 0.4593 in. w.g.** Off the authored fan curve, between
+**The extract side governs at 0.4169 in. w.g.** Off the authored fan curve, between
 (0.4, 206) and (0.5, 201):
 
-> 206 − (0.0593 / 0.1) x 5 = **203.0 cfm delivered**
+> 206 − (0.0169 / 0.1) x 5 = **205.2 cfm delivered**
 
 against 205 cfm required by MN 1322 R403.5 and 210 cfm of design intent. **The system clears
-the code rate by 1.9 % and falls 3.2 % short of the intent.**
+the code rate by 0.1 % and falls 2.3 % short of the intent.**
+
+> ⚠ **THE TWO SIDES HAVE ALL BUT CONVERGED, AND THAT CHANGES WHICH LEVER MATTERS.** Extract
+> governed by 0.051 in. before the rebalance and governs by **0.0086** now (0.4169 against
+> supply's 0.4083). The next improvement to the extract side buys almost nothing, because the
+> supply side takes over as the governing path within a hundredth of an inch — and every
+> lever the owner was offered (`DU-ERV-EA` 6" -> 8", the extract elbow audit, riser
+> segmentation) is an EXTRACT lever. Worth 0.0086 between them, and then the arithmetic
+> changes. Re-read this section before buying any of them; the supply column's own big terms
+> are `DU-ERV-OA` (0.1318) and `DU-ERV-RISER-SUP` (0.1382).
+>
+> **And the code margin is now 0.1 %**, which is 0.2 cfm. It was 1.9 %. The rebalance moved
+> the delivered figure UP, so this is not a loss — but a margin that thin is a commissioning
+> measurement, not a calculation, and §8's instruction to measure it with a low-flow hood
+> stops being advice.
 
 **The rejected build, for the record.** Insulated flex is what a Twin Cities contractor
 reaches for on a 6" ERV leg. The same two outdoor runs, worked at flex's roughness and bend

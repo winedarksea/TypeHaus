@@ -954,10 +954,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     keep — no real duct system lands under 0.2" w.g. The number that governs is MN 1322
     R403.5's **205**.
   - **Three new checks.** `mep.erv_static_budget` (ADVISORY) computes Darcy-Weisbach/Colebrook
-    over the whole system and reads the curve at it: **0.459" w.g. worst path, 203 cfm
-    delivered**. It reports the 7 cfm against the 210 design rate as UNKNOWN, never a FAIL —
-    whether 203 is ENOUGH is `code.N1103_6_whole_house_ventilation`'s question, asked against
-    MN's 205 and not against a designer's hope. `mep.erv_manifold_ports` (INTEGRITY, **blocks**) grades the "10 of 10" prose.
+    over the whole system and reads the curve at it: **0.417" w.g. worst path, 205 cfm
+    delivered**. It reports the 5 cfm against the 210 design rate as UNKNOWN, never a FAIL —
+    whether 205 is ENOUGH is `code.N1103_6_whole_house_ventilation`'s question, asked against
+    MN's 205 and not against a designer's hope. **The extract side was authored at 265 cfm
+    against a 210 cfm machine until 2026-09-15** — summed per plenum and never per side, which
+    is why nothing caught it; rebalancing it took the worst path off DU-M-ERV-R-PLANT and the
+    static from 0.459. `mep.erv_manifold_ports` (INTEGRITY, **blocks**) grades the "10 of 10" prose.
     `mep.room_heat_source` (ADVISORY) is the radiant arithmetic. Oracles:
     `notes/erv_static_budget.md`, `notes/room_heat_loss_baths.md`.
   - **`DuctProductType` is keyed exactly like `prices.toml`'s `[ducts]`** — the
