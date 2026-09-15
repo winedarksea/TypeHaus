@@ -25,7 +25,7 @@ from typehaus.model.enums import LayerFunction
 from typehaus.quantities import inch
 from typehaus.resolve import resolve
 from typehaus.resolve.framing.footprint import member_footprint
-from typehaus.resolve.framing.openings import frame_opening
+from typehaus.resolve.framing.openings import WallOpening, frame_opening
 from typehaus.resolve.framing.solver import _framing_axis, frame_wall
 from typehaus.resolve.framing.stud_module import opening_stud_module
 from typehaus.resolve.geometry import sub, unit
@@ -274,6 +274,52 @@ def test_opening_pack_is_framed_from_the_wall_base_not_the_stud_bearing_line():
     cripple = next(m for m in members if m.child_key.startswith("cripple-sill-"))
     assert cripple.z0_m == pytest.approx(rw.base_ref_z_m + plate_h, abs=1e-9)
     assert cripple.z1_m == pytest.approx(sill.z0_m, abs=1e-9), "cripples carry the sill"
+
+
+def test_a_header_free_opening_bears_on_its_neighbours_jamb_pack_not_through_it():
+    """A jamb pack bears, and the module no longer knows where it is.
+
+    ``opening_exclusions`` removes the module studs a pack replaces, and the pack itself
+    stands where its rough opening puts it — off the module. So a narrow opening searching
+    ``stud_stations`` for the framing either side of it looked straight THROUGH its
+    neighbour's pack to the next module line: a 7" hole in the bay beside a 30" window ran
+    its rough sill and head nailer 46 1/2", from the module stud on one side, across both
+    kings, both jacks and the whole window, to the module stud on the far side. Two members
+    floating over a rough opening, and nothing reported it.
+
+    Measured here rather than described: the clear bay is the module stud's inner face to
+    the pack's outer king's inner face, and that is exactly what both members must span.
+    """
+    rw = _mitred_wall(6.0, 0.0, at_start=True)
+    wide = WallOpening(center_m=inch(108).meters, width_m=inch(30).meters,
+                       height_m=inch(48).meters, sill_m=inch(36).meters,
+                       is_door=False, operation=None)
+    # Wholly inside the bay west of that pack, so it takes the header-free path: its RO runs
+    # 81 7/8"..88 7/8", clear of the module stud at 80" and of the pack's outer king.
+    narrow_center = inch(85.375).meters
+    narrow = WallOpening(center_m=narrow_center, width_m=inch(7).meters,
+                         height_m=inch(7).meters, sill_m=inch(24).meters,
+                         is_door=False, operation=None)
+    members = frame_wall(_plan_double(), rw, openings=[wide, narrow])
+
+    half_stud = inch(0.75).meters
+    studs = [m.p0[0] for m in members if m.category == "stud"]
+    kings = [m.p0[0] for m in members if m.category == "king"]
+    assert kings, "the 30\" window must actually produce a pack for this to test anything"
+    left_face = max(s for s in studs if s < narrow_center) + half_stud
+    right_face = min(k for k in kings if k > narrow_center) - half_stud
+
+    sill = next(m for m in members if m.child_key == "sill-1")
+    head = next(m for m in members if m.child_key == "roughhead-1")
+    for member in (sill, head):
+        assert member.p0[0] == pytest.approx(left_face, abs=1e-9)
+        assert member.p1[0] == pytest.approx(right_face, abs=1e-9), (
+            "the run must stop at the neighbour's king, not carry on to the next module "
+            "stud beyond it")
+    # And the whole point: neither member crosses any framing.
+    for station in kings + [m.p0[0] for m in members if m.category == "jack"]:
+        assert not (sill.p0[0] < station < sill.p1[0]), (
+            f"the sill spans a member at {station}")
 
 
 def test_header_free_opening_registers_on_the_same_lines():

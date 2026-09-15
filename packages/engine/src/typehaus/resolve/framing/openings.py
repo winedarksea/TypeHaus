@@ -137,6 +137,42 @@ def in_exclusion(station_m: float, zones: list[tuple[float, float]]) -> bool:
     return any(abs(station_m - center) <= half for center, half in zones)
 
 
+def jamb_pack_stations(openings: list[WallOpening], stud_thickness_m: float,
+                       spacing_m: float, phase_m: float = 0.0) -> list[float]:
+    """Centrelines of every king and jack this wall's jamb packs will stand at.
+
+    These are real members and they bear, but they are not on the module — they sit where
+    their rough openings put them, and ``opening_exclusions`` has just *removed* the module
+    studs they replaced. So a narrow opening looking for the framing either side of it
+    cannot find them by reading the module, and ``_frame_inside_one_bay`` was reading only
+    the module.
+
+    The consequence was a rough sill that spanned its neighbour: a 7" hole in the bay beside
+    a 30" window ran its sill and head nailer 46 1/2" — from the module stud on one side,
+    straight through both of the window's kings, both its jacks and the window itself, to
+    the next module stud on the far side. Both members floated over a rough opening they
+    have no business crossing, and nothing reported it.
+
+    Computed from the same terms ``_append_opening_framing`` lays the pack from, so the two
+    cannot drift: the pack edge, then one member every ``stud_thickness_m`` outward.
+    """
+    out: list[float] = []
+    for opening in openings:
+        if not needs_jamb_pack(opening, spacing_m, stud_thickness_m, phase_m):
+            continue
+        pattern = opening_framing_pattern(opening.operation)
+        kings, jacks = jamb_pack_counts(_m(opening.width_m), pattern)
+        _mouth, closed = pocket_extent(opening)
+        pocket_sign = 0 if not closed else (1 if opening.pocket_sign > 0 else -1)
+        half = opening.width_m / 2
+        for sign in (-1, +1):
+            edge = closed if sign == pocket_sign else opening.center_m + sign * half
+            for index in range(jacks + kings):
+                out.append(edge + sign * (stud_thickness_m / 2
+                                          + index * stud_thickness_m))
+    return out
+
+
 def _sill_datum(rw, z0: float) -> float:
     """The elevation an opening's ``sill_m`` is measured up from.
 

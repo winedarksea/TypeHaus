@@ -39,6 +39,7 @@ from typehaus.resolve.framing.openings import (
     WallOpening,
     frame_opening,
     in_exclusion,
+    jamb_pack_stations,
     merge_spans,
     opening_exclusions,
     sole_plate_breaks,
@@ -318,10 +319,17 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     # Staggered walls frame their openings full plate depth: a king/jack pack split
     # across two faces has no continuous bearing surface for the header.
     opening_framing_members: list[FramedMember] = []
+    # What an opening may BEAR on is not the same list as what the module emits. A jamb pack
+    # stands where its rough opening puts it and the module studs it replaced have just been
+    # excluded, so a narrow opening searching only ``stud_stations`` looks straight through
+    # its neighbour's pack to the next module line. Kept separate from ``stud_stations``,
+    # which is the stud-emission loop's own list and must not grow phantom studs.
+    bearing_stations = tuple(sorted(set(stud_stations) | set(
+        jamb_pack_stations(list(openings), thickness, module_spacing, module_phase))))
     for opening_index, opening in enumerate(openings):
         opening_framing_members.extend(
             frame_opening(rw, d, p0, opening, frame_member, stud_z0, top_at,
-                          opening_index, module_spacing, tuple(stud_stations),
+                          opening_index, module_spacing, bearing_stations,
                           module_phase, cripple_spacing=spacing)
         )
 
