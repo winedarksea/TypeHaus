@@ -166,7 +166,7 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     walls_cy = sum(row["volume_cubic_yards"] for row in wall_structure_takeoff(catlin_model)
                    if row.get("material") == "concrete")
     total_cy = concrete_cy + walls_cy
-    assert total_cy == pytest.approx(147.64, rel=0.02), (
+    assert total_cy == pytest.approx(143.58, rel=0.02), (
         f"the concrete volume moved to {total_cy:.2f} cy; notes/rebar_backout.md §2 and the "
         f"lb/cy figure in §3 both need re-working")
 

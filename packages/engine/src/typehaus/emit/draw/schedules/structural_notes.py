@@ -152,7 +152,13 @@ def design_criteria_block(model: ResolvedModel,
     # Table R301.5 rows this model carries nowhere, and printing the table from memory
     # would be exactly the "per code" note MNSPECT rejects.
     lines.append(_row("OTHER R301.5 LOADS", NOT_STATED + " — not carried by this model"))
-    lines.append("SEISMIC, WEATHERING, TERMITE, ICE BARRIER, FLOOD, AIR-FREEZING INDEX AND")
+    # SEISMIC left this sentence on 2026-09-15. It is a JURISDICTION fact (IRC Table
+    # R301.2.2.1, assigned from the site's mapped spectral response), so it prints from the
+    # profile like the frost depth and the soil bearing above it — and prints NOT STATED,
+    # honestly, on a profile that declares none rather than defaulting to the mildest row.
+    lines.append(_row("SEISMIC DESIGN CATEGORY",
+                      _value(getattr(profile, "seismic_design_category", None))))
+    lines.append("WEATHERING, TERMITE, ICE BARRIER, FLOOD, AIR-FREEZING INDEX AND")
     lines.append("MEAN ANNUAL TEMPERATURE ARE " + NOT_STATED.upper() + " IN THIS MODEL.")
     return lines
 

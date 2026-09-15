@@ -90,6 +90,11 @@ MN_2020 = JurisdictionProfile(
         "subset of the code; results are never 'code compliant'."
     ),
     frost_depth_in=42.0,
+    # Minnesota is Seismic Design Category A statewide: the mapped short-period spectral
+    # response is low enough across the whole state that IRC Table R301.2.2.1's first row
+    # applies, and MN Rules 1309.0301 carries no amendment raising it. Stated here because
+    # it is the jurisdiction's fact, not the house's — see JurisdictionProfile for why.
+    seismic_design_category="A",
     # IRC Table R401.4.1 presumptive value for sandy/silty clay, the conservative default
     # where no soils report exists. A real geotechnical report supersedes it.
     soil_bearing_psf=1500.0,
@@ -462,6 +467,22 @@ MN_2020 = JurisdictionProfile(
                        ("IRC M1401.4", "ASCE 7-16 §29"), blocking=False),
     ),
     permit_exclusions=(
+        # ** AHEAD OF THIS PROFILE'S OWN EDITION, AND THAT IS THE WHOLE REASON. ** R403.5 —
+        # crushed stone footings under a nonretaining cast-in-place foundation — is a 2024
+        # IRC section. This profile's `irc_base` is "2018 IRC + MN amendments", which does
+        # not contain it, so it cannot be a line on THIS checklist without claiming the
+        # reviewer will look it up in a book that does not have it.
+        #
+        # It still runs, and it must. catlin's nine garage footings are authored as crushed
+        # stone against the edition Minnesota adopts in 2027, which is before this house is
+        # built; a retype that no rule anywhere can see is precisely the silent-at-0-FAIL
+        # failure this repo exists to catch. When the 2024 profile is written for real —
+        # `PROFILES["mn-2024"]` is still an alias to MN_2020 — this moves out of here and
+        # onto a PermitItemSpec under the foundation item.
+        ("code.R403_5_crushed_stone_footings",
+         "2024 IRC R403.5, a section this profile's 2018 IRC base does not contain; it runs "
+         "because the footings are authored against the edition MN adopts in 2027 and the "
+         "build starts after it, but it is not a 2020-cycle permit line"),
         ("mep.hydrant_freeze_depth",
          "a fixture-durability rule (a yard hydrant's own freeze protection), not a "
          "permit-plan review item; it stays in the full check report"),

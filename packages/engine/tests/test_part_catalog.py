@@ -71,7 +71,12 @@ def test_a_solid_reports_what_it_is_made_of_not_concrete(catlin_model):
             if part.catalog is not None and part.catalog.material_ref:
                 by_category.setdefault(solid.category, set()).add(part.catalog.material_ref)
     assert by_category, "no solids carried a catalog ref"
-    assert by_category.get("footing") == {"concrete"}   # the blanket rule's one right case
+    # ** THE BLANKET RULE'S ONE RIGHT CASE, UNTIL 2026-09-15. ** A footing used to be
+    # concrete by definition. 2024 IRC R403.5 permits a consolidated crushed-stone
+    # footing under a nonretaining cast-in-place foundation, catlin's garage has nine
+    # of them, and they hatch and bill as stone — which is the point of reading the
+    # material rather than assuming it from the category.
+    assert by_category.get("footing") == {"concrete", "footing-crushed-stone"}
     # A composite/aluminium deck is a "slab" category and is not concrete; a polycarbonate
     # glazing panel is not concrete either.
     assert by_category.get("slab", set()) - {"concrete"}

@@ -13,6 +13,7 @@ from typehaus.checks.code.mn_residential import (  # noqa: F401 - registers chec
     attic,
     attic_ventilation,
     circulation,
+    crushed_stone_footings,
     egress,
     energy_storage,
     fall_protection,

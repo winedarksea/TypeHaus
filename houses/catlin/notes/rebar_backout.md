@@ -134,33 +134,50 @@ footing/slab/pad/column **whose STRUCTURE layer material is `concrete`**, plus e
 `wall_structure` row of material `concrete`. `tests/test_rebar_backout.py` recomputes it.
 
 ```
-column   PIER_CONCRETE_12                       0.82 cy
-column   SUNKEN_GARDEN_COLUMN_12                1.25
-footing  FOOTING_20                     10.30
-footing  PIER_BASE_12                    0.57
-footing  PORCH_FOOTING_84                5.27
-footing  RETAINING_FOOTING_96           16.79
+column   PIER_CONCRETE_12                       1.51 cy
+column   SUNKEN_GARDEN_COLUMN_12                1.53
+footing  COURT_FOOTING_12                      19.09
+footing  FOOTING_20                             6.35
 footing  FOOTING_FPSF_20                        1.48
-pad      PIER_BASE_12                    0.26
-slab     DECK_EPS_INT                   18.37
-slab     GARAGE_STEP_6                   0.17
-slab     GARDEN_COURT_SLAB                     1.31
-slab     SLAB_FLOOR                     14.00
+pad      PIER_BASE_12                           1.06
+slab     DECK_EPS_INT                          18.37
+slab     ENTRY_STEP_TIER                        1.90
 slab     GARAGE_SLAB_ON_GRADE                   5.27
+slab     GARDEN_COURT_SLAB                      1.32
 slab     HP_PAD_ON_GRADE                        0.56
-                                     solids   76.42 cy
+slab     SLAB_FLOOR                            14.00
+                                     solids   72.44 cy
 
-SUNKEN_GARDEN_WALL                            27.44
-BASEMENT_8                             17.55
-BASEMENT_12                            10.67
-GARAGE_ICF_6                                    8.82
+SUNKEN_GARDEN_WALL_DRAINED                    17.79
+BASEMENT_8                                    17.71
+BASEMENT_12                                   10.67
+GARAGE_ICF_6                                   8.94
+SUNKEN_GARDEN_WALL                             7.08
 FOUNDATION_WALL_12_INT                         6.57
 SG_VENEER_BEAM_14                              1.10
-the two garden curbs                           0.21
-                                      walls   72.36 cy
+SUNKEN_GARDEN_GRADE_BEAM_12                    1.08
+GARDEN_CURB_6 + SAUNA_LINER_ON_GARDEN_CURB     0.20
+                                      walls   71.14 cy
 
-                                      TOTAL  148.78 cy
+                                      TOTAL  143.58 cy
 ```
+
+**Re-derived 2026-09-15, and the table above had gone badly stale — most of it was not this
+change.** `PORCH_FOOTING_84`, `RETAINING_FOOTING_96`, `GARAGE_STEP_6` and the footing-hosted
+`PIER_BASE_12` are all gone as assembly names; the court's retaining work split
+`SUNKEN_GARDEN_WALL` into a drained and an undrained assembly and added a grade beam; the
+entry's four cast stair tiers arrived as `ENTRY_STEP_TIER`. Re-read off the machine's own
+filter rather than patched row by row, which is the only way a table like this stays true.
+
+**Of the 5.20 cy that left the total, 3.95 is the garage going to STONE.** 2024 IRC R403.5
+permits a consolidated crushed-stone footing under a nonretaining cast-in-place foundation,
+and catlin's nine garage strips are now built that way (`params/foundations.py`,
+`code.R403_5_crushed_stone_footings`). They leave this denominator **because they are no
+longer concrete**, and they took no steel with them: `_GARAGE_FOOTING` never carried a
+`ReinforcementSpec` and was graded plain under ACI 318-19 §14.1.4. So this is 3.95 cy of
+unreinforced concrete leaving the bottom of the ratio, which moves it UP — the first change
+in this note's history to improve the ratio by removing concrete rather than by finding
+steel, and the one direction that is not a hiding place.
 
 **2.32 cy came out on 2026-09-05's second pass, and every yard of it was concrete poured on
 top of something.** `SUNKEN_GARDEN_WALL` -1.20 (4" off five wall tops at the 36" cap, 8" off
@@ -226,11 +243,18 @@ A specification change should cost nothing, and this one did.)
 ## 3. The test, and it FAILS
 
 ```
-billed          3,515 lb / 147.64 cy   =  23.8 lb/cy   (2026-09-10, second pass)
+billed          3,515 lb / 143.58 cy   =  24.5 lb/cy   (2026-09-15, garage to stone)
+  was           3,515 lb / 147.64 cy   =  23.8 lb/cy   (2026-09-10, second pass)
   was           4,828 lb / 152.69 cy   =  31.6 lb/cy   (2026-09-10, first pass)
   was           3,992 lb / 148.78 cy   =  26.8 lb/cy
-register ~5 t  10,000 lb / 147.64 cy   =  67.7 lb/cy
+register ~5 t  10,000 lb / 143.58 cy   =  69.6 lb/cy
 ```
+
+**+0.7 lb/cy on 2026-09-15, and the numerator did not move at all.** 3.95 cy of the garage's
+unreinforced footings stopped being concrete (§2), so the same steel now sits in less of it.
+Worth saying plainly because every other movement in this note came from finding or losing
+STEEL: this one is the denominator alone, it is arithmetic rather than a discovery, and it
+must not be read as the gap in §4 closing.
 
 **The second pass took the ratio DOWN 7.8 lb/cy, and it is the one sag in this note that is
 not a hiding place.** -1,313 lb against only -5.05 cy, because the larger half of it is a bar
@@ -252,7 +276,7 @@ billing 42% of the steel would make the estimate FALL by the difference — the 
 type drops from the BOM and the saving looks real when it is an artifact" hazard, arriving
 from the other direction and for about $6,000.
 
-23.8 lb/cy is also low on its own terms, and lower than it has been. A lightly reinforced
+24.5 lb/cy is also low on its own terms, and lower than it has been. A lightly reinforced
 residential foundation runs 40-80 lb/cy; the register's ~67 sits inside that and this house
 — with three retaining walls at `#6 @ 10"` vertical and a mat both ways under five strips —
 has no business being below it. The 2026-09-05 footing rise moved the ratio 27.3 -> 26.8 and

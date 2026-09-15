@@ -391,8 +391,18 @@ def _fact_code(section: str, row: Mapping[str, Any]) -> CostCode | None:
 def cost_code(section: str, key: str, overrides: dict[str, str] | None = None,
               material: str | None = None, *, row: Mapping[str, Any] | None = None
               ) -> CostCode:
-    """The code for one BOM row: facts, then key pattern, then solid category, then the
-    section default, then the house's NAHB override.
+    """The code for one BOM row: facts, then a material that positively says what it is,
+    then key pattern, then solid category, then the section default, then the house's NAHB
+    override.
+
+    ** THE MATERIAL MOVED AHEAD OF THE KEY PATTERN ON 2026-09-15. ** ``KEY_PATTERNS``
+    refines a CATEGORY — footing against flatwork against pier, which are separate NAHB
+    accounts and often separate subs — and a category is not a material. While every footing
+    was concrete the distinction never showed; a crushed-stone footing under 2024 IRC R403.5
+    is one, and ``"footing*"`` was classifying it as a pour before anything got to ask what
+    it was made of. ``_solid_code`` returns ``None`` for "it really is concrete", so a
+    concrete footing still falls straight through to the pattern that has always claimed it
+    and no existing row moves.
 
     ``overrides`` is ``prices.toml``'s ``[codes]`` table. It supplies the NAHB code only —
     the CSI code and the trade come from the built-in rules either way, because a builder
@@ -403,13 +413,13 @@ def cost_code(section: str, key: str, overrides: dict[str, str] | None = None,
     key-and-section answer.
     """
     base = _fact_code(section, row) if row is not None else None
+    if base is None and section in SOLID_SECTIONS:
+        base = _solid_code(key, material)
     if base is None:
         for plan_section, pattern, code in KEY_PATTERNS:
             if plan_section == section and fnmatch.fnmatchcase(key.lower(), pattern):
                 base = code
                 break
-    if base is None and section in SOLID_SECTIONS:
-        base = _solid_code(key, material)
     if base is None:
         base = SECTION_CODES.get(section)
     if base is None:

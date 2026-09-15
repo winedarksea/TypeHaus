@@ -2245,6 +2245,32 @@ FOOTING_20 = Assembly(
     source="the ordinary 20\" x 8\" cast strip under the house and garage walls (IRC Table R403.1), poured against the bedding prep",
 )
 
+# ** THE GARAGE'S NINE, ON STONE RATHER THAN CONCRETE (owner, 2026-09-15). ** 2024 IRC
+# R403.5 permits a consolidated crushed-stone footing under a NONRETAINING cast-in-place
+# foundation complying with R404.1.3, and the garage stem is one: `unbalanced_fill=ft(0)` is
+# authored on it (params/foundations.py) because SL-G-FLOOR's top is at grade on the inside
+# and the fill stands level on both faces. MN adopts the 2024 edition in 2027 and this build
+# starts after it.
+#
+# A SEPARATE assembly and not a retype of FOOTING_20, because FOOTING_20 is under every
+# FT-B-* strip in the house and those are staying concrete. Same 20" x 8" section, same
+# bearing plane at -7'-0"; what changes is the material, and with it the price table row
+# (`footing:FOOTING_STONE_20` in [concrete]) and the trade that places it.
+#
+# No `concrete=` spec, and that is not an omission: there is no mix. The durability
+# questions BURIED_MIX answers — f'c, air entrainment, the F-exposure class — are questions
+# about cement paste, and this pour has none. What replaces them is
+# `Footing.stone: CrushedStoneSpec`, which states R403.4.1's five requirements one field
+# each, and `code.R403_5_crushed_stone_footings`, which grades them.
+FOOTING_STONE_20 = Assembly(
+    tag="FOOTING_STONE_20",
+    layers=(
+        Layer(name="stone", material_ref="footing-crushed-stone", thickness=inch(8.0),
+              function=LayerFunction.STRUCTURE),
+    ),
+    source="the 20\" x 8\" consolidated crushed-stone strip under the garage's nine ICF stem runs (2024 IRC R403.5, stone per R403.4.1, sized against Table R403.4); nonretaining cast-in-place per R404.1.3, Seismic Design Category A",
+)
+
 # The 12" cast bases under this house's round piers: the sunken garden's two belled footings
 # (PD-SG-COL, PD-SG-FCOL) and the four breezeway pads (PD-BW-1..4). One assembly for both
 # because they are one detail at two plan shapes — a plain, unreinforced 12" pour bearing at
@@ -4795,6 +4821,7 @@ ASSEMBLIES = [
     SG_FROST_WING_XPS2,
     FOOTING_FPSF_20,
     FOOTING_20,
+    FOOTING_STONE_20,
     COURT_FOOTING_12,
     PIER_BASE_12,
     GARDEN_COURT_SLAB,

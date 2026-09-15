@@ -1501,7 +1501,38 @@
 # SPLIT 2026-08-27. Material is the Twin Cities 2026 ready-mix quote this comment already
 # names ($180-200/cy, a YARD'S PRE-TAX SHEET) plus the rebar and form lumber consumed in the
 # pour; labour is the residual. That order matters — see the [basis_notes] on this section.
-"footing" = { material = { low = 195, high = 240 }, labour = { low = 85, high = 210 } }  # 33.25 cy (31.52 strip + 1.73 FOOTING_FPSF_20) — comment was stale at 38.63 until 2026-08-29 — was $190-300, then merged $280-450
+"footing" = { material = { low = 195, high = 240 }, labour = { low = 85, high = 210 } }  # 26.92 cy MEASURED (19.09 COURT_FOOTING_12 + 6.35 FOOTING_20 + 1.48 FOOTING_FPSF_20) — 30.87 until 2026-09-15, when the garage's nine (3.95 cy) went to stone. The 33.25/31.52/1.73 this comment carried was stale again; re-read off `haus takeoff` rather than re-derived
+# ** THE GARAGE'S NINE, WHICH ARE STONE AND NOT CONCRETE (2026-09-15). ** 2024 IRC R403.5,
+# graded by `code.R403_5_crushed_stone_footings`. They left the row above — that is the
+# 30.87 -> 26.92 cy — and they land here because `structural_solids` keys on solid CATEGORY
+# and a qualified `<category>:<assembly>` key is the escape hatch a non-concrete solid uses
+# (cli/prices.QUALIFIED_KEY_FIELD). Without this row the material guard drops them from the
+# bill entirely and the TOTAL FALLS, which reads as a saving.
+#
+# MATERIAL. Not the [footing_bedding] #57 rate, and the difference is the gradation:
+# R403.4.1 wants 1/2" MAXIMUM and 1/16" minimum, where #57 tops out at 1" and carries
+# nothing under a #4. That is a coarse FILTER aggregate, a more processed and more expensive
+# product than a bedding stone, and MnDOT 2025 Average Bid Prices price the two apart:
+# Coarse Filter Aggregate (CV) $81.24/CY against Coarse Aggregate Bedding (CV) $65.21/CY,
+# both IN PLACE. Delivered-only sits under the in-place figure, which is where $55-85 comes
+# from — the same reasoning, and the same source, as the [footing_bedding] band above.
+#
+# ** THE QUANTITY IS THE REAL COST RISK, AS IT WAS FOR CLASS 5. ** 3.95 cy is 5.5 tons —
+# well under a tandem, and the per-order delivery charge ($150-485 by zone at Plaisted) is
+# larger than the stone. ORDER IT WITH THE 71.2 CY OF #57 the footing beddings already buy:
+# one release, two products, one trip. Priced here as though it does, because the alternative
+# is a $150-485 line this file cannot attribute to a cubic yard. If it ends up a separate
+# call, add that delivery to [allowances] rather than inflating this rate.
+#
+# LABOUR IS A SEPARATE FIELD AND IS NOT THE EXCAVATOR'S SPREAD. R403.5 requires the stone
+# CONSOLIDATED with a vibratory plate in lifts not greater than 8" — at an 8" footing that is
+# one full-depth lift per run, plate-compacted and left flat enough to set an ICF course on.
+# That is not the $8-15/cy "spreading and levelling" the [footing_bedding] comment says sits
+# in the excavator's number; it is a trade operation with its own machine and its own
+# inspection hold. $60-140/cy looks high against the stone until you notice 3.95 cy is half a
+# day for one person with a plate whatever the volume — this band IS mobilisation, spread
+# over the yards, and it is why it is wider than the material above it.
+"footing:FOOTING_STONE_20" = { material = { low = 55, high = 85 }, labour = { low = 60, high = 140 } }  # 3.95 cy = 5.5 tons
 # ** THE GENERIC ROW, AND CATLIN NO LONGER USES IT (2026-09-14). ** It is a lump for a pad
 # nobody has sized — all setup and no volume, really a $300-600 minimum charge — and the
 # "0.59 cy" in this comment was stale for as long as the house had no `Pad` at all. Kept

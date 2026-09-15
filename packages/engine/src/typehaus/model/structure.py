@@ -70,6 +70,37 @@ class FoundationWall(Wall):
     base_restraint_ref: str | None = None
 
 
+class CrushedStoneSpec(HausModel):
+    """The stone a crushed-stone footing is built of — 2024 IRC R403.4.1's requirements.
+
+    **One field per requirement, and that is the point.** R403.4.1 states five separate
+    things about the material and its placement, and a checker has to answer each of them
+    by name. Rolling them into one ``aggregate`` string the way ``FootingBedding`` does
+    would mean reading a gradation out of a substring, which is guessing — the very reason
+    ``FootingBedding.non_frost_susceptible`` exists as its own boolean beside that string.
+
+    The defaults ARE R403.4.1's own numbers, so an author who states nothing states the
+    code minimum and the check grades it as such. An author who states something weaker is
+    then visible, which is the only reason a defaulted field is worth having here.
+    """
+
+    #: "shall meet ASTM C33" — the gradation standard, named rather than described.
+    gradation: str = "ASTM C33"
+    #: "the maximum size stone not to exceed 1/2 inch".
+    max_size: Length = inch(0.5)
+    #: "the minimum stone size not to be smaller than 1/16 inch".
+    min_size: Length = inch(1.0 / 16.0)
+    #: "shall be angular in nature".
+    angular: bool = True
+    #: "shall be free from organic, clayey or silty soils".
+    free_of_fines: bool = True
+    #: "consolidated using a vibratory plate in not greater than 8-inch lifts". Two fields,
+    #: because they are two things that can be wrong: an 8" lift tamped by boot is not this,
+    #: and neither is a vibratory plate run over 18" of stone at once.
+    lift_thickness: Length = inch(8)
+    consolidation: str = "vibratory plate"
+
+
 @register_element
 class Footing(Element):
     """Strip/spread footing auto-following its parent's geometry (→ IfcFooting)."""
@@ -77,6 +108,24 @@ class Footing(Element):
     under: str  # wall or post tag
     width: Length
     depth: Length
+    #: What the footing is MADE OF. "concrete" is every footing that has ever existed in
+    #: this engine and stays the default, so nothing moves.
+    #:
+    #: "crushed_stone" is 2024 IRC R403.5, which permits a consolidated crushed-stone
+    #: footing under a NONRETAINING cast-in-place foundation complying with R404.1.3 — the
+    #: stone itself specified by R403.4.1 and sized by Table R403.4. It is a discriminator
+    #: on ``Footing`` rather than a new element class ON PURPOSE: a stone footing is still
+    #: a footing, it is still under a wall, it still has a width and a depth and a bearing
+    #: plane, and every one of the six ``isinstance(el, Footing)`` consumers must keep
+    #: seeing it. A parallel class would have dropped nine elements out of all of them
+    #: silently. It is not ``FootingBedding`` either: that is a bearing-PREP annotation
+    #: with no width, no reinforcement and no assembly, which never carries a load path.
+    material: Literal["concrete", "crushed_stone"] = "concrete"
+    #: The stone, when ``material`` is "crushed_stone". Unset on a stone footing means the
+    #: author named no stone, which ``code.R403_5_crushed_stone_footings`` reports rather
+    #: than filling in — R403.4.1 is a specification and an unspecified stone meets none of
+    #: it. Ignored on a concrete footing.
+    stone: CrushedStoneSpec | None = None
     #: The steel this pour actually contains. Unset means this model does not say — which
     #: for a footing is the ordinary case and a legal one: ACI 318-19 §14.1.4 permits PLAIN
     #: concrete in a footing (unlike §14.1.5 for a column), so a missing spec grades as plain

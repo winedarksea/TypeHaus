@@ -354,6 +354,21 @@ def _emit_solid_cut(b, model, solid, plane: CutPlane, crop) -> None:
     ``voids`` now *split* the cut span (a section across a stair well stops drawing a slab
     straight through it), and the material is the resolver's ``catalog.material_ref``
     instead of a blanket "concrete".
+
+    ** THE PATTERN HERE IS THE RAW MATERIAL REF, AND MOST REFS ARE NOT PATTERNS — OPEN,
+    2026-09-15. ** Both branches below pass ``material`` straight through as the Hatch
+    pattern. ``ir._hatch_defs`` publishes seven names (batt, lumber, rigid, concrete, osb,
+    metal, airgap), so a cut whose material tag is not one of those asks the renderer for a
+    ``hatch-<tag>`` that does not exist and draws UNHATCHED. It happens to have been
+    invisible because the one solid anybody looks at in section is concrete, and "concrete"
+    is both a tag and a pattern.
+
+    ``palette.detail_hatch`` is the map that answers this and the other two call sites in
+    this module already use it. Folding these two through it as well is a two-line change
+    and it moves **212 golden fields** — spf -> lumber, metal-dark-exterior -> metal and so
+    on, all of them nodes that render unhatched today. Measured, then left: it is a drawing
+    change of its own and does not belong inside a footing retype. The crushed-stone footing
+    that surfaced it has its DETAIL_HATCH entry ready for the day this is done.
     """
     element = model.geometry.by_uid(solid.uid)
     if element is None:

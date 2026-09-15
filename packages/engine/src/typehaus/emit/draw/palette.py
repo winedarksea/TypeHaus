@@ -208,6 +208,13 @@ DETAIL_FILL: dict[str, str] = {
 # what tells a batt from a board *is* the texture.
 DETAIL_HATCH: dict[str, str] = {
     "concrete": "concrete",
+    # A crushed-stone FOOTING (2024 IRC R403.5) draws with the concrete stipple, which is
+    # the conventional aggregate hatch and what `capillary-break-stone` already declares for
+    # the same reason. It is not the same MATERIAL — the cut carries its own ref for colour,
+    # legend and take-off, and the two price and schedule apart — but at 1/4" it is the same
+    # field of dots on the page, and inventing a second stipple nobody can tell from the
+    # first would be noise.
+    "footing-crushed-stone": "concrete",
     "spf": "lumber",
     "lsl": "lumber",
     "cedar-tg": "lumber",

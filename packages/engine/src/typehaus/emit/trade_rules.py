@@ -43,6 +43,12 @@ MATERIAL_TRADE_PATTERNS: tuple[tuple[str, str], ...] = (
     ("geotextile*", "landscaping"),
     ("retaining-block*", "landscaping"),     # segmental retaining wall units
     ("capillary-break-stone", "earth"),
+    # A crushed-stone FOOTING is structure, but it is not a pour and no concrete sub places
+    # it: it is the same crew, the same hole and the same plate compactor as the beddings
+    # above and the capillary break beside it, and it is inspected at the same hold. Sending
+    # it to the concrete trade would schedule a footing into the pour sequence that has
+    # nothing to pour, and put it in a package the excavator has already left.
+    ("footing-crushed-stone", "earth"),
     ("*brick*", "masonry"),
     ("cmu*", "masonry"),
     ("standing-seam*", "roofing"),
@@ -174,7 +180,15 @@ def assembly_trades(plan, assembly_tag: str | None, scope: str) -> tuple[str, ..
 #: mirror of a laid deck in a ``slab`` row.
 _CAST_BY_MATERIAL = frozenset({"column", "post", "beam"})
 #: Categories whose material may say "not a pour": a plank deck, a sod green, an XPS wing.
-_LAID_BY_MATERIAL = frozenset({"slab", "pad"})
+#:
+#: ** "footing" JOINED ON 2026-09-15 AND IT USED TO BE UNCONDITIONAL. ** Every footing
+#: this engine had ever resolved was concrete, so a footing took its category's trade
+#: and its material was never consulted. 2024 IRC R403.5 ends that: a consolidated
+#: crushed-stone footing is a footing in every structural sense — under a wall, with a
+#: width, a depth and a bearing plane, carrying load — and no concrete sub places it.
+#: Without this it billed to the concrete trade, which would schedule it into a pour
+#: sequence with nothing to pour, in a package the excavator has already left.
+_LAID_BY_MATERIAL = frozenset({"slab", "pad", "footing"})
 
 
 def solid_trades(category: str | None, material: str | None = None) -> tuple[str, ...]:

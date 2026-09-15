@@ -105,6 +105,18 @@ class JurisdictionProfile:
     # the unbalanced-fill check reports UNKNOWN: the three columns give wall thicknesses two
     # steps apart, so guessing one is choosing an answer, not defaulting.
     soil_class: str | None = None
+    # IRC Table R301.2.2.1's Seismic Design Category, as the jurisdiction assigns it. It is a
+    # property of the JURISDICTION and not of the house: the IRC assigns it from the mapped
+    # short-period spectral response S_DS for the site, which no element of a plan carries.
+    #
+    # It existed nowhere in this engine until 2026-09-15, which the structural notes sheet
+    # said out loud ("SEISMIC ... NOT STATED IN THIS MODEL"). Several IRC provisions are
+    # scoped by it and could therefore not be graded at all — 2024 R403.5's crushed-stone
+    # footings are limited to A, B and C, and R602.10's bracing tables change above it.
+    #
+    # ``None`` means the profile states none, and a rule scoped on it must report UNKNOWN
+    # rather than assume the friendliest category. Minnesota is A across the state.
+    seismic_design_category: str | None = None
     # The permit checklist this jurisdiction gates on, in print order.
     permit_items: tuple[PermitItemSpec, ...] = ()
     # The inspections this jurisdiction requires, in the order its rule states them.

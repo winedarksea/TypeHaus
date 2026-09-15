@@ -12,6 +12,7 @@ The breezeway's pads/piers/posts belong to the whole structure in ``params/breez
 from __future__ import annotations
 
 from typehaus import (
+    CrushedStoneSpec,
     DrainTile,
     Drywell,
     Footing,
@@ -460,54 +461,97 @@ GARAGE_STEM_WALLS = [
 # `center_on="wall"`: the stem runs 0"..11" inboard of the raw node line, so a 20" strip
 # centred on the node line (the default) would leave 10" of toe under nothing. Centred on
 # the resolved section instead, the toe is a symmetric 4 1/2" each side.
+# ** STONE, NOT CONCRETE, SINCE 2026-09-15 (owner). ** The section is unchanged — 20" x 8",
+# centred on the wall, bearing at -7'-0" — and so are the nine tags, uids and `under` refs.
+# What changed is what it is made of. The scoreboard below is the argument; Table R403.4 is
+# the sizing, and this section clears it with room: a one-storey conventional light-frame
+# load (1,100 plf) wants D = 4" at every soil bearing value in the table and W = 13"/15"/17"
+# for an 8"/10"/12" wall. 8" deep and 20" wide are both above the widest of those, which
+# matters because Table R403.4's wall-width columns START at 8" and this stem is 6" — there
+# is no column to read, so the widest published W is taken rather than an interpolation
+# invented below the table's own range.
 _GARAGE_FOOTING = dict(width=inch(20), depth=inch(8), center_on="wall",
-                       assembly="FOOTING_20")
+                       assembly="FOOTING_STONE_20", material="crushed_stone",
+                       stone=CrushedStoneSpec())
 
-# ** ASKED 2026-09-11: REPLACE THESE NINE WITH AN AGGREGATE FOOTING. THE ANSWER IS STILL NO,
-# BUT FOUR OF THE FIVE REASONS HAVE GONE (re-examined 2026-09-15). **
+# ** ASKED 2026-09-11, REFUSED TWICE, AND DONE ON 2026-09-15. ALL FIVE REASONS ARE GONE. **
 #
-# The proposal came back pointing at 2024 IRC R403.5, on the argument that it permits a
-# crushed-stone footing under a NONRETAINING cast-in-place foundation complying with
-# R404.1.3 — which would be a different section from the one reason 1 answers. Re-examined
-# against that, and the scoreboard is worth writing down because most of it moved:
+# The proposal was to build these nine on consolidated crushed stone instead of concrete,
+# citing 2024 IRC R403.5. It was refused twice, and the second refusal rested on a single
+# claim: that the section was really R403.4.1 under R403.4, *Footings for precast concrete
+# foundations*, and so had nothing to say about a wall poured in place. **That claim was
+# wrong, and both sections exist.** They do different jobs:
 #
-#   2. DISSOLVED, and by this file. `unbalanced_fill=ft(0)` is now authored on `_STEM` and
+#   * **R403.5 "Crushed Stone Footings for Cast-in-Place Concrete Foundations"** is the
+#     SCOPE: stone footings per R403.4.1 are permitted for NONRETAINING cast-in-place
+#     foundations complying with R404.1.3, in Seismic Design Categories A, B and C.
+#   * **R403.4.1** is the specification R403.5 points AT — angular, ASTM C33, 1/2" max and
+#     1/16" min, free of organic/clayey/silty soils, vibratory-plate consolidated in lifts
+#     not greater than 8". It sits under the precast article because that is where it was
+#     first needed, not because that is the only place it is used.
+#
+# And the sizing is **Table R403.4**, not Table R403.5 — an easy and consequential swap,
+# because Table R403.5 is a FOUNDATION WALL table (stem width, height, horizontal bar, braced
+# wall line spacing) and has no footing dimension in it at all.
+#
+# The scoreboard, which is why this took three passes:
+#
+#   1. GONE, and it was the last one standing. "There is nothing to dowel into" rested on the
+#      section being precast-scoped. R403.5 is written for a cast-in-place wall, which is
+#      what GARAGE_ICF_6 is. What the original reason was RIGHT about is that the dowels
+#      need something: under R403.5 they get the ICF's own base and the stone carries
+#      bearing, which is the trade the section makes and the reason it is limited to walls
+#      that retain nothing.
+#   2. GONE, and by this file. `unbalanced_fill=ft(0)` is authored on `_STEM` and
 #      `_GRADE_BEAM` (see `_NO_RETAINED_FILL` above): grade is -2'-10", the stem runs
 #      -6'-4"..-1'-0", and SL-G-FLOOR's top is -2'-10" — exactly grade — so these stems
 #      retain nothing and the 3'-6" this reason rested on was the derived proxy, not the
-#      building. The base-restraint half of the objection goes with it.
-#   3. DISSOLVED by not deleting anything. The proposal is now a RETYPE: keep the nine
-#      elements, their tags, their uids, their `under` and their `bottom_elevation`, and
-#      change what they are made of. SP-GF-S-HYD still names them, the -7'-0" plane still
-#      exists, and every argument in `mep_supply.py`, `electrical.py` and
+#      building. That authored zero is now also what makes the R403.5 claim TESTABLE:
+#      `code.R403_5_crushed_stone_footings` refuses the section on any wall that retains, and
+#      reports UNKNOWN rather than passing on a wall that never states it.
+#   3. GONE by not deleting anything. This is a RETYPE: same nine elements, same tags, same
+#      uids, same `under`, same `bottom_elevation`, same -7'-0" bearing plane. SP-GF-S-HYD
+#      still names them and every argument in `mep_supply.py`, `electrical.py` and
 #      `north_entry_frame.py` keeps its referent.
-#   4. DISSOLVED. The FootingBedding precedent is not what would be used — the shape is a
-#      `material` discriminator on `Footing` itself, so a stone footing is a Footing and
-#      stays in all six `isinstance(el, Footing)` consumers instead of vanishing from them.
-#   5. DISSOLVED. `_GARAGE_FOOTING` would take a new assembly tag of its own
-#      (FOOTING_STONE_20); FOOTING_20 stays exactly as it is under every FT-B-*.
+#   4. GONE. `FootingBedding` is not what was used — `Footing.material` is a discriminator on
+#      the footing itself, so a stone footing is still a Footing and stays in all six
+#      `isinstance(el, Footing)` consumers instead of vanishing from them.
+#   5. GONE. `FOOTING_STONE_20` is its own assembly; `FOOTING_20` is untouched under every
+#      FT-B-* strip in the house.
 #
-# ** REASON 1 STANDS, AND IT IS NOW THE WHOLE ANSWER. ** It could not be confirmed that the
-# section has been renumbered and re-scoped the way the proposal assumes. What is readable
-# says the opposite: the provision is **R403.4.1 Crushed stone footings**, sitting under
-# **R403.4 Footings for precast concrete foundations**, and its requirements are exactly the
-# ones quoted at this proposal — angular stone to ASTM C33, 1/2" max and 1/16" min,
-# consolidated by vibratory plate in 8" lifts, Seismic Design Categories A, B and C only.
-# That is the section reason 1 already described, still scoped to a precast panel set on
-# compacted stone rather than to a wall poured in place with #4s at 16" o.c. running out of
-# its base into dowels that must lap something.
+# ** THE SIZE CLEARS TABLE R403.4 WITH ROOM, AND THE 6" STEM IS THE ONE SUBTLETY. ** The row
+# is conventional light-frame, one storey, 1,100 plf: minimum depth D = 4" at EVERY soil
+# bearing value the table publishes, and minimum width W = 13"/15"/17" for an 8"/10"/12"
+# wall. This section is 20" x 8". But the table's wall-width columns START at 8" and the ICF
+# core is 6", so there is no column to read — footnote a permits interpolating DEPTH between
+# wall widths and says nothing about extrapolating WIDTH below the table. The check therefore
+# holds a sub-8" wall to the WIDEST published W, 17", rather than inventing a narrower one.
+# 20" passes that, so the question never becomes load-bearing here.
 #
-# ** AND MINNESOTA HAS NOT ADOPTED THE EDITION BEING CITED. ** `MN_2020` is the profile this
-# house is graded against. A 2024 provision expected in MN in 2027 is a thing to design
-# toward, not a thing to encode as a passing check today — and encoding a sizing rule from
-# Table R403.5 without reading Table R403.5 would be inventing the one number that governs.
+# ** MINNESOTA IS ON THE 2018 IRC IN THIS ENGINE, AND THAT IS HANDLED RATHER THAN IGNORED. **
+# `MN_2020`'s `irc_base` is "2018 IRC + MN amendments", which contains no R403.5 at all. MN
+# adopts the 2024 edition in 2027 and this house is built after it, so the check RUNS and the
+# profile carries a `permit_exclusions` entry saying in as many words that it is ahead of the
+# edition on the checklist. The alternative — retype nine footings and let no rule anywhere
+# ask whether it was allowed — is the silent-at-0-FAIL failure this repo exists to catch.
 #
-# ** WHAT WOULD CLOSE IT. ** The 2024 text of the section, read rather than summarised, and
-# specifically: whether its scope sentence reaches a reinforced cast-in-place wall at all,
-# and what Table R403.5 requires for thickness and width. If it does reach one, four of the
-# five objections are already gone and this becomes a retype plus a new CODE-tier check.
+# ** WHAT IS STILL TRUE AND IS NOT A CODE QUESTION. ** R403.1.4's 12" minimum depth and
+# R403.1.4.1's frost depth still govern and are unaffected: these bases sit at -7'-0" against
+# a -2'-10" grade, 50" down against `frost_depth_in=42`, and `structural.frost_depth` passes
+# on depth alone. The figures also require the footing top at least 4" below undisturbed
+# ground, which -6'-4" clears by more than three feet.
+#
+# ** THE COST MOVED, AND NOT ONLY DOWN. ** 3.95 cy of concrete left the bill and 3.95 cy of
+# stone arrived: `prices.toml` carries both halves with their MnDOT 2025 sourcing. The stone
+# is cheaper per yard but it is a FILTER aggregate rather than a bedding stone (1/2" top size
+# against #57's 1"), it is under half a tandem and must ride with the beddings' 71.2 cy #57
+# order to avoid a per-order delivery charge larger than the stone, and R403.5's
+# vibratory-plate consolidation is a trade operation with its own machine and its own
+# inspection hold — it is NOT the excavator's spread-and-level, and it carries its own
+# labour line for that reason.
 #
 # The original five, kept verbatim below because they are what the answer is made of:
+
 #
 # 1. **There is nothing to dowel into.** `GARAGE_ICF_6` states
 #    `MasonrySpec(unit_size="ICF-6", core_fill=True, rebar_spacing=inch(16))`: a cast-in-

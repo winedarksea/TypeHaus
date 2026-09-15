@@ -162,6 +162,7 @@ from typehaus.model.spatial import (
 from typehaus.model.structure import (
     Beam,
     Connector,
+    CrushedStoneSpec,
     Dowel,
     DrainTile,
     Drywell,
@@ -263,7 +264,8 @@ __all__ = [
     "PlanModel", "Library", "Project", "Site", "Building", "Storey",
     "Element", "HausModel",
     "Node", "Wall", "Door", "Window", "RoughOpening",
-    "FoundationWall", "Footing", "Pad", "FootingBedding", "DrainTile", "Post", "Beam", "SlatScreen",
+    "FoundationWall", "Footing", "CrushedStoneSpec", "Pad", "FootingBedding", "DrainTile",
+    "Post", "Beam", "SlatScreen",
     "FrenchDrain", "Drywell",
     "Dowel", "Connector", "KneeBrace", "Wedge", "Railing", "Fascia", "Gutter", "Flashing",
     "EaveSoffit", "FasciaBoard", "EaveGutter", "EaveTrim", "GlazingPanel", "GlazingTrim",

@@ -219,6 +219,19 @@ STARTER_MATERIALS: tuple[Material, ...] = (
                     "stone passing a 2\" sieve under a slab-on-ground. #57 is the open-graded "
                     "stone ACI 302.2R names for the capillary break; the point is the absence "
                     "of fines, not the compaction"),
+    # The stone a crushed-stone FOOTING is built of, which is not the stone under a slab
+    # above and not the stone in a footing bedding. 2024 IRC R403.4.1 specifies it directly —
+    # angular, ASTM C33, 1/2" max and 1/16" min, free of organic/clayey/silty soils — and
+    # that gradation is finer at the top end than #57 and coarser at the bottom than a base
+    # course. It is a structural material here: under R403.5 this stone IS the footing, with
+    # a wall bearing on it, rather than a capillary break or a bearing prep under one.
+    Material(tag="footing-crushed-stone",
+             name="Consolidated angular crushed stone footing (IRC R403.4.1)",
+             r_per_inch=0.0, density=1600.0, hatch="concrete", color="#7d7b76",
+             source="2024 IRC R403.4.1: clean crushed stone free from organic, clayey or "
+                    "silty soils, angular in nature and meeting ASTM C33, maximum size not "
+                    "exceeding 1/2 inch and minimum not smaller than 1/16 inch, consolidated "
+                    "using a vibratory plate in lifts not greater than 8 inches"),
     Material(tag="humid-room-membrane",
              name="Self-adhered air/vapour barrier membrane (Class I)",
              r_per_inch=0.0, density=1000.0, vapor_permeance_perms=0.05, hatch="membrane",
