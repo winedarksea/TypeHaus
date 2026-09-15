@@ -17,10 +17,12 @@
 # "210 at 0.2"" and "206 at 0.4"" were never two claims; they are two stations on one curve,
 # and `EQ-T-BROAN-B210E75RT.fan_curve` carries all ten published points (214 @ 0.1" down to
 # 176 @ 1.2", ceiling 1.3" where the core deforms). `mep.erv_static_budget` computes what
-# THIS duct system costs and reads the curve at it: **0.417" w.g. worst path, 205 cfm
-# delivered**, the worst path being DU-B-ERV-R-SAUNA-EXH on the extract side. The oracle is
-# notes/erv_static_budget.md, which also prices the 8" trunk upsize Broan's manual asks for
-# above 200 cfm and says why this house does not buy it.
+# THIS duct system costs and reads the curve at it: **0.407" w.g. worst path, 206 cfm
+# delivered**, the worst path being DU-B-ERV-R-PLAY on the SUPPLY side. The oracle is
+# notes/erv_static_budget.md. The 8" upsize Broan's manual asks for above 200 cfm is no
+# longer refused wholesale: DU-ERV-EA was bought at 8" on 2026-09-15 and it is what moved
+# the governing side from extract to supply. The note's §6 says which levers are left and
+# that all of them are now on the supply side.
 # `ventilation_cfm=210` stays authored — see plan/mep_erv_types.py for why moving it is a
 # separate decision with a live verdict behind it. It is a design INTENT: 210 is the curve's
 # value at 0.2" w.g. and no real duct system lands there. **205 (MN 1322 R403.5) is the
@@ -399,7 +401,8 @@ PENETRATIONS_ERV_SECOND = [
 
 # ====================================== RISERS =======================================
 #
-# Four 6" round risers up the radon/plumbing chase at (1', 34'-6") — the house's one
+# Four round risers — three 6" and DU-ERV-EA at 8" — up the radon/plumbing chase at
+# (1', 34'-6"), the house's one
 # continuous basement-to-attic shaft: RM-M-MECH's floor on main, the 2'-9" x 2'-2 1/8" notch
 # walled by W-S-CH-W/W-S-CH-S in RM-S-BATH1's NW corner on second, out onto the attic deck.
 #
@@ -444,8 +447,55 @@ PENETRATIONS_ERV_SECOND = [
 # plumbing vent together, which is what the six vent branches land on rather than six risers
 # of their own — and nine conduits at x=1'-6"/2'-0"/2'-6", y=34'-6" (one at y=35'-3"). It is not roomy, and
 # **nothing else should be added to this chase**. The fallback the plan named — a framed shaft
-# in RM-M-MECH's dead corner — is not needed, and the closet's own dead corner is now the
-# manifolds' instead.
+# in RM-M-MECH's dead corner — is not needed for the MANIFOLDS, and the closet's own dead
+# corner is now theirs instead. Whether it is needed for a RISER is the open question below.
+#
+# ================== THE SHAFT IS OVER-SUBSCRIBED, MEASURED 2026-09-15 ==================
+#
+# ** FOUR DUCT-ON-DUCT INTERPENETRATIONS ARE LIVE IN THIS CHASE. ** Not near-misses — shared
+# solid, measured off the resolved model as the overlap of the two swept envelopes:
+#
+#     DU-ERV-OA  horizontal entry  @ +4'-0"   x DU-ERV-RISER-SUP   2 3/8 x 2 1/2 x 6"
+#     DU-ERV-OA  horizontal entry  @ +4'-0"   x DU-ERV-RISER-EXH   6     x 2 1/2 x 6"
+#     DU-ERV-EA  horizontal exit   @ +17'-0"  x DU-ERV-RISER-SUP   6     x 2 1/2 x 8"
+#     DU-ERV-EA  horizontal exit   @ +17'-0"  x DU-ERV-RISER-EXH   2 5/8 x 2 1/2 x 8"
+#
+# ** NOTHING GRADES THIS. ** There is no `mep.duct_interference`; the plan named one and it
+# was never built. It cannot simply be added either, because the main-storey radial layer is
+# deliberately schematic — every radial is drawn on one z=+9'-3 5/8" plane and about forty
+# pairs of them cross there. A guard has to be scoped to full-height runs in a chase, or it
+# reports the drawing convention rather than the building.
+#
+# ** AND NO ORDERING OF FOUR RISERS PACKS OUT OF IT. ** Worked exhaustively:
+#
+#   1. OA enters the west wall at y=33'-11" and EA leaves it at y=34'-0", so BOTH sweep the
+#      shaft's full width at that latitude. A riser standing in that sweep is hit — unless it
+#      is absent at that elevation. OA tops out at +4'-0", so OA may stand in EA's sweep;
+#      SUP and EXH are full height and may stand in neither.
+#   2. So EA must be the WESTERNMOST full-height riser, with only OA west of it.
+#   3. EA's jog from any northern row down to y=34'-0" must cross the y=34'-6" utility line.
+#      The free windows there, between VR-M-RADON-VENT (x 10 1/2"..13 1/2") and the conduits
+#      at x=18"/24"/30", are 3 3/8", 3 1/2", 5" and 5". **None takes a 6" duct, let alone an
+#      8" one.** So EA cannot be in a northern row at all: it must sit in OA's row.
+#   4. That row must then carry OA, EA and both trunks: 6 + 8 + 6 + 6 = 26" of metal in a
+#      24" shaft, or 28" if DU-ERV-OA is ever taken to 8". It does not fit.
+#
+# Today's layout evades (3) only by letting EA jog at x=1'-11", where it clips
+# CD-B-DATA-CHASE, and evades (1) by letting the two horizontal legs pass through the two
+# risers — which is the four rows above.
+#
+# ** WHAT THIS BLOCKS. ** notes/erv_static_budget.md §7: DU-ERV-OA at 8" is the one remaining
+# lever on the GOVERNING (supply) column, worth 0.090 in. and about 4.5 cfm against a present
+# code margin of 0.7 cfm. At its station an 8" envelope spans x 23 5/8"..31 5/8" and overruns
+# the shaft's east face by an inch, and the re-stationing that would fix that runs into the
+# four steps above. **The upsize is blocked on this, not on money.**
+#
+# ** THE OPEN DECISION (owner). ** Three ways out, none free: widen the second-storey notch
+# (W-S-CH-W/W-S-CH-S are non-bearing, and RM-S-BATH1's NW corner is where the width comes
+# from); take one riser out of this chase into a second shaft; or accept the four
+# interpenetrations as a coordination item for the sheet-metal sub and say so on the drawing.
+# Until one is chosen, **nothing else should be added to this chase** and DU-ERV-OA stays 6".
+# ======================================================================================
 #
 # The supply and extract risers run the full height, basement manifolds to attic manifold.
 # The outdoor-air and exhaust-air risers run the same way because their hoods are in the

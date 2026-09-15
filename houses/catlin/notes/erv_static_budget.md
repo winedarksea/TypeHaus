@@ -9,9 +9,11 @@ by `tests/test_erv_static_oracle.py`.
 **Companions:** `notes/room_heat_loss_baths.md` — the radiant arithmetic from the same
 BLD-08 pass; `notes/system1_return_path.md` — the *other* air system's return path, which
 shares none of this machine's duct.
-**What is asked of the reviewer:** redo §6's two column sums and say whether 6" trunks are
-accepted or the 8" upsize in §7 should be bought. The friction arithmetic in §2–§5 is
-ordinary Darcy–Weisbach and is offered for checking, not for deciding.
+**What is asked of the reviewer:** redo §6's two column sums, and say whether the 0.7 cfm of
+margin over MN's 205 is enough to build on or whether §7's remaining 8" upsize should be
+bought — knowing that §7 says it cannot be drawn until the chase-packing question is settled.
+The friction arithmetic in §2–§5 is ordinary Darcy–Weisbach and is offered for checking, not
+for deciding.
 
 > ⚠ **`ventilation_cfm = 210` IS A DESIGN INTENT, NOT A PROMISE THE CURVE CAN KEEP.** 210 is
 > the model-name number and it is the curve's value at 0.2 in. w.g. No duct system this size
@@ -48,7 +50,7 @@ plenum — did not change; what it is built from did.
 | plenums | fabricated galvanized box, 8" inlet collar, N x 4" dampered start collars | 5 (28 ports, 23 live) |
 | radials | 4" galvanized snap-lock, one per terminal | 23 |
 | trunks and risers | 6" galvanized | 4 |
-| outdoor legs | 6" galvanized inside an R-8 vapour-sealed wrap | 2 |
+| outdoor legs | `DU-ERV-OA` 6", `DU-ERV-EA` **8"**, both inside an R-8 vapour-sealed wrap | 2 |
 | terminals | 4"-collar commodity diffusers and grilles | 26 |
 
 Developed lengths and elbow counts below are read off the resolved model
@@ -78,8 +80,18 @@ Fundamentals Ch. 21** and belong to the house, authored on `DuctProductType`:
 |---|---|---|---|
 | 4" galvanized snap-lock | 0.0003 ft (galvanized, longitudinal seam — "medium smooth") | 2'-6" | C = 0.22 (smooth r/D = 1.5), L_e = C·D/f = 0.22 x 0.3333 / 0.0324 = 2.26 ft, rounded up for a stamped adjustable elbow |
 | 6" galvanized | 0.0003 ft | 4'-6" | 0.22 x 0.5 / 0.0225 = 4.89 ft, rounded down to the nearest half foot |
+| 8" galvanized | 0.0003 ft | 6'-6" | 0.22 x 0.6667 / 0.0234 = 6.27 ft, rounded up to the nearest half foot |
 | 4" semi-rigid aluminium | 0.0009144 m = 0.003 ft (flexible metallic, fully extended) | 3'-6" | bore 3.8", not 4.0" |
 | 6" insulated flex | 0.003 ft | 7'-0" | the rejected alternative — §6 |
+
+**The 8" row's friction factor is HIGHER than the 6" row's, and the upsize still pays.** At
+210 cfm an 8" pipe runs 602 fpm against 1,070 fpm at 6", so Re falls ~54,700 -> ~41,000 and
+Colebrook returns 0.0234 rather than 0.0225. The bend equivalent length rises with both f and
+D, 4'-6" -> 6'-6", so an elbow on this pipe costs half as much again in developed feet. What
+falls is the velocity pressure, as V²: 0.07131 -> 0.02256, a factor of 3.16, against an L/D
+that falls by 0.75. **The upsize is bought with velocity pressure and pays part of it back in
+friction factor and elbow length** — which is why `DU-ERV-EA`'s five elbows make its term
+0.0490 rather than the 0.0407 a 6" bend length would have given (§6).
 
 **Roughness is read fully extended, and that is the honest reading only if the duct is
 installed fully extended.** A compressed flex run is several times worse and is a defect,
@@ -185,15 +197,15 @@ that radial lands in (at the sum of that plenum's radial flows) + every trunk on
 | plenum `EQ-B-ERV-MAN-EXH` at 46 cfm | below the curve's first point (60, 0.5), so clamped to it | 0.0020 |
 | `DU-ERV-RISER-EXH` | 210 cfm, 36.20 ft + 6 x 4.5, f 0.0225, P_v 0.07131 | 0.2028 |
 | `DU-B-ERV-RET-TRUNK` | 210 cfm, 5.62 ft + 3 x 4.5 | 0.0614 |
-| `DU-ERV-EA` | 210 cfm in **8"**, 29.32 ft + 5 x 4.5, f 0.0232, P_v 0.02256 | 0.0407 |
-| | | **0.3465** |
+| `DU-ERV-EA` | 210 cfm in **8"**, 29.32 ft + 5 x **6.5**, f 0.0234, P_v 0.02256 | 0.0490 |
+| | | **0.3548** |
 
 **The riser is in this column although the sauna's own air never enters it**, and that is
 §6's stated method rather than an oversight: the path is "worst radial + its terminal + its
 plenum + EVERY trunk on that side". `DU-B-ERV-R-SAUNA-EXH` lands in the BASEMENT plenum, so
 its air goes straight out the return trunk; the riser above carries the two upper storeys'
 share into the same box. Summing it is the conservative reading and it is §9's second listed
-conservatism — now worth **0.203 of the 0.347, 59% of the column**, and by a wide margin the
+conservatism — now worth **0.203 of the 0.355, 57% of the column**, and by a wide margin the
 largest single term in this note.
 
 **Two things moved this column on 2026-09-15 and they moved it in opposite directions.**
@@ -236,7 +248,7 @@ it, its basement leg shrank by it, and its developed length is identical to the 
 `DU-ERV-RISER-SUP`'s basement leg shrank 4 5/8" (-0.0015) and `DU-S-ERV-HP-FEED`'s attic jog
 shrank from 7" to 2 3/8" (-0.0003) because the riser head came out to meet it.
 
-**THE SUPPLY SIDE GOVERNS NOW, at 0.4064 in. w.g. against extract's 0.3465.** Off the
+**THE SUPPLY SIDE GOVERNS NOW, at 0.4064 in. w.g. against extract's 0.3548.** Off the
 authored fan curve, between (0.4, 206) and (0.5, 201):
 
 > 206 − (0.0064 / 0.1) x 5 = **205.7 cfm delivered**
@@ -248,13 +260,13 @@ the code rate by 0.3 % and falls 2.0 % short of the intent.**
 > 2026-09-15 rebalance left extract governing by 0.0086 in. and this note said in as many
 > words that "the next improvement to the extract side buys almost nothing, because the
 > supply side takes over within a hundredth of an inch". `DU-ERV-EA` 6" -> 8" was then bought
-> and extract fell 0.0704 — of which only the first 0.0086 bought anything. **The remaining
-> 0.062 in. of extract margin is not a saving; it is headroom nobody is spending.**
+> and extract fell 0.0621 — of which only the first 0.0086 bought anything. **The remaining
+> 0.052 in. of extract margin is not a saving; it is headroom nobody is spending.**
 >
 > So the two extract levers still on the table — the elbow audit (11 six-inch elbows on the
 > extract trunks) and riser segmentation — are now worth **nothing at all** to the delivered
 > figure, and should not be bought for this reason. They may still be worth buying to get the
-> riser's 0.203 down as insurance, since that one term is 59% of its column and is the thing
+> riser's 0.203 down as insurance, since that one term is 57% of its column and is the thing
 > that grew when the feed was drawn honestly. Every lever that moves the DELIVERED number
 > from here is on the SUPPLY side: `DU-ERV-RISER-SUP` (0.1367), `DU-ERV-OA` (0.1318) and
 > `DU-S-ERV-HP-FEED` (0.0630) are 82% of the governing column.
@@ -293,25 +305,38 @@ The B210E75RT installation manual carries one distribution instruction: **above 
 long runs or many elbows, take the trunk up to 8 in.** This system is 210 cfm with 30 ft of
 outdoor leg and eleven elbows on it, so the instruction is squarely aimed at it.
 
-Worked at 8" galvanized (ε unchanged, bend equivalent 6'-6" = 0.22 x 0.6667 / 0.0232):
+Worked at 8" galvanized (ε unchanged, bend equivalent 6'-6" — §2):
 
-| run | at 6" | at 8" | saved |
-|---|---|---|---|
-| `DU-ERV-EA` | 0.1666 | 0.0486 | 0.1180 |
-| `DU-ERV-OA` | 0.1318 | 0.0416 | 0.0902 |
+| run | at 6" | at 8" | saved | status |
+|---|---|---|---|---|
+| `DU-ERV-EA` | 0.1666 | 0.0490 | 0.1176 | **BOUGHT 2026-09-15** |
+| `DU-ERV-OA` | 0.1318 | 0.0416 | 0.0902 | blocked — see below |
 
-Upsizing the two outdoor legs alone takes the extract path to about **0.339 in. w.g.** and
-delivered flow to about **207 cfm**, plus roughly 0.02 in. for a 6→8 transition at each ERV
-collar and each hood — call it **0.36 in. and 206.5 cfm**. It buys about 3 cfm.
+**HALF OF THIS SECTION HAS BEEN BOUGHT, AND IT BOUGHT ALMOST NOTHING.** `DU-ERV-EA` went to
+8" and the extract column fell 0.4169 -> 0.3548. Only the first 0.0086 of that reached the
+delivered figure, because supply took over as the governing side within a hundredth of an
+inch — §6's callout predicted exactly this before the change was made. The other 0.052 in. is
+headroom nobody is spending.
 
-**It is priced here and not built.** What it costs: ~43 LF of 8" pipe in place of 6" (about
-$60–130 of material), two 8" wall hoods and two enlarged flashed penetrations in place of
-the 6" pair already modelled (`AO-M-ERV-OA`, `AO-S-ERV-EA` are 7" rough openings; a 9"
-opening still lands inside a stud bay and still takes no header, but it cuts a second girt
-course), and four 6→8 transitions. Roughly **$400–900 all in**, for 3 cfm the house does not
-need. The NW chase has the room — four 6" insulated risers at about 25 % fill — so if the
-commissioning measurement in §8 comes in under 205, this is the lever, and it is the first
-one to pull.
+**`DU-ERV-OA` IS THE LEVER THAT WOULD STILL PAY, AND IT IS BLOCKED ON GEOMETRY, NOT ON
+MONEY.** It is 0.1318 of the 0.4064 governing supply column — 32% of it, the second-largest
+term — and 8" would take that to 0.0416. That is worth about 4.5 cfm delivered, which is
+several times the present 0.7 cfm of code margin. What stops it is the chase:
+
+> ⚠ **"The NW chase has the room — four 6" insulated risers at about 25 % fill" was the
+> sentence that used to close this section, and it is FALSE.** Measured off the resolved
+> model on 2026-09-15, the shaft's clear is 24" x 26 1/8" and it already carries four ERV
+> risers, `VR-M-RADON-VENT` at x=1'-0" and nine conduits on the y=34'-6" line. At its
+> present station an 8" `DU-ERV-OA` spans x 23 5/8"..31 5/8" and **overruns the shaft's east
+> face by an inch.** Re-stationing it is not a free move either: see `plan/mep_erv.py`'s
+> riser prose for the four measured duct-on-duct interpenetrations already in that shaft and
+> why no ordering of four risers packs out of them.
+
+So the honest statement is: the remaining lever is worth ~4.5 cfm, it costs ~$200–500 in
+pipe, one enlarged penetration and two transitions, and **it cannot be drawn until the chase
+question is settled.** If the commissioning measurement in §8 comes in under 205, this is the
+lever — but the chase has to be resolved first, and that is a design decision, not a
+purchase.
 
 ## 8. Commissioning — and the real risk is the measurement
 

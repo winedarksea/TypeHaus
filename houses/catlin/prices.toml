@@ -5262,7 +5262,13 @@
 "exhaust:semi_rigid:3.0" = { material = { low = 2.25, high = 4.5 }, labour = { low = 2.75, high = 6.5 } }  # 0 LF since 2026-09-12 — was 217.5 LF of 75 mm ERV branch
 "exhaust:semi_rigid:6.0" = { material = { low = 4, high = 8 }, labour = { low = 3.5, high = 8 } }  # 0 LF since 2026-09-12 — was 43.0 LF of 6" ERV trunk
 "exhaust:galvanized:4.0" = { material = { low = 2.75, high = 5.5 }, labour = { low = 3.25, high = 7.5 } }  # 211.7 LF of 4" snap-lock radial, extract side
-"exhaust:galvanized:6.0" = { material = { low = 4.5, high = 9 }, labour = { low = 4, high = 9 } }  # 61.6 LF — DU-ERV-RISER-EXH + DU-ERV-EA
+"exhaust:galvanized:6.0" = { material = { low = 4.5, high = 9 }, labour = { low = 4, high = 9 } }  # 36.2 LF — DU-ERV-RISER-EXH alone since DU-ERV-EA went 8"
+# ** NEW 2026-09-15, AND IT WAS 29.3 LF PRICED ON A FALLBACK. ** DU-ERV-EA went 6" -> 8" for
+# the static budget and no row went with it, so it fell through to `exhaust:galvanized`, the
+# row whose own comment calls itself a fallback. Material scales with the steel — 8" is 1.33x
+# the 6" perimeter — while labour barely moves, because a crimp and three screws are a crimp
+# and three screws whatever the diameter. That asymmetry is the shape of these two bands.
+"exhaust:galvanized:8.0" = { material = { low = 5.75, high = 11.5 }, labour = { low = 4.5, high = 10 } }  # 29.3 LF — DU-ERV-EA
 "exhaust:galvanized" = { material = { low = 3.5, high = 7 }, labour = { low = 3.5, high = 8 } }  # fallback for a diameter not priced above
 "exhaust:semi_rigid" = { material = { low = 2.5, high = 5 }, labour = { low = 3, high = 7 } }  # fallback for a diameter not priced above
 "outdoor_air" = { material = { low = 6, high = 13 }, labour = { low = 8.5, high = 19 } }  # sheet-metal fallback, 0 LF today

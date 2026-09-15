@@ -302,6 +302,24 @@ DUCT_PRODUCT_TYPES_ERV = (
                     # stamped-elbow reason as the 4" row.
                     bend_equivalent_length=inch(54),
                     source="Commodity 26 ga galvanized round pipe. The OA and EA legs carry it inside an R-8 wrap with a sealed vapour jacket (DuctRun.insulation), which changes what the run costs and nothing about what it resists."),
+    # ** THE DISCHARGE, AND THE ROW THAT SHOULD HAVE LANDED WITH THE UPSIZE. ** DU-ERV-EA
+    # went 6" -> 8" for the static budget and no 8" row went with it, so
+    # `mep.erv_static_budget` reported "no DuctProductType for (galvanized, 8.0")" and could
+    # not resist the one leg the upsize was bought for — the check went UNKNOWN on exactly
+    # the term the change was about. The take-off fell through to the un-diametered
+    # `exhaust:galvanized` fallback at the same time, 29.3 LF of it.
+    DuctProductType(tag="DUCT-T-GALV-8",
+                    name="8\" galvanized round duct, 26 ga",
+                    material="galvanized", nominal_diameter=inch(8),
+                    bore_diameter=inch(8),
+                    roughness_m=0.0000914,
+                    # 1,270 fpm on 0.349 ft2, the same trunk velocity the 6" row is set at.
+                    max_cfm=440.0,
+                    # 0.22 x 0.667 ft / 0.0232 = 6.32 ft, rounded UP to 6'-6" for the same
+                    # stamped-elbow reason as the rows above. f is lower here than at 6"
+                    # because Re falls with velocity, which is most of why the upsize pays.
+                    bend_equivalent_length=inch(78),
+                    source="Commodity 26 ga galvanized round pipe, one size up from the trunk row. Carries DU-ERV-EA's 210 cfm inside an R-8 vapour-sealed wrap. Roughness is the same ASHRAE Ch. 21 read as the 4\" and 6\" rows; the bend length is re-worked at this diameter's own friction factor in notes/erv_static_budget.md §2."),
     # ** THE REJECTED ALTERNATIVE, KEPT SO THE NOTE'S ARITHMETIC IS READABLE. ** Insulated
     # flex is what a Twin Cities contractor reaches for on a 6" ERV leg, and it is why this
     # system is built out of rigid pipe instead: at this roughness the OA and EA legs alone
