@@ -93,7 +93,11 @@ _ON_CI = bool(os.environ.get("CI"))
 
 def test_rebuild_stays_inside_its_order_of_magnitude() -> None:
     result = subprocess.run(
-        [sys.executable, str(BENCH), "--house", str(CATLIN), "--iters", "5",
+        # Best-of-3, not best-of-5. The budgets below are 2.2-2.5x the measured minimum,
+        # so this stays an order-of-magnitude tripwire rather than a stopwatch, and two
+        # fewer rebuilds is ~40% of this module. Raise the ITERS, never the budget, if it
+        # turns noisy.
+        [sys.executable, str(BENCH), "--house", str(CATLIN), "--iters", "3",
          "--skip-macro", "--assert-under", str(REBUILD_BUDGET_MS),
          *(arg for stage, ms in STAGE_BUDGETS_MS.items()
            for arg in ("--assert-stage-under", f"{stage}={ms}"))],

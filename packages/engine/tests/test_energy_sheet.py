@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 
 import pytest
 
@@ -53,10 +52,9 @@ def test_unconditioned_garage_excluded(catlin_model):
     assert "GARAGE_WALL_2X6" not in tags
 
 
-def test_block_load_and_wwr_appear_on_sheet(catlin_model, tmp_path: Path):
+def test_block_load_and_wwr_appear_on_sheet(catlin_model, catlin_permit_set):
     from typehaus.checks.building_science.wwr import wwr_summary
     from typehaus.checks.registry import Preferences
-    from typehaus.emit.draw import write_permit_set
     from typehaus.energy import estimate_block_load
 
     load = estimate_block_load(catlin_model, Preferences())
@@ -65,7 +63,11 @@ def test_block_load_and_wwr_appear_on_sheet(catlin_model, tmp_path: Path):
     assert 0.0 <= wwr["overall"] <= 1.0
     assert len(wwr["per_facade"]) == 4
 
-    path, _ = write_permit_set(catlin_model, tmp_path / "permit_set.pdf")
+    # The shared render (→ ``catlin_permit_set``), not a second one: this module was
+    # composing the whole permit set — 69 s, the single most expensive call in it — to
+    # assert the file is not empty, which `test_sheet_index.py` already asserts. The
+    # numbers above are what this test actually owns.
+    path, _ = catlin_permit_set
     assert path.stat().st_size > 0
 
 
