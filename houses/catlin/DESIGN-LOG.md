@@ -2264,8 +2264,11 @@ real: a 5 1/2" post centred 3" off a 12" round puts two corners 3/8" outside the
 Three things had to be built for it, and each is a fact the model did not hold before:
 
 * **A framed chase at each pillar.** `FO-SG-BF2`/`-BR2`, 9" square, `CHASE`: the joist line at
-  x=18'-0" is cut and headed off the two lines 16" either side, and the post passes up through
-  it. **No hanger on the post's north or south faces** — four connectors will not fit on a
+  x=17'-10" is cut and headed, and the post passes up through it. (This said "headed off the
+  two lines 16" either side" until 2026-09-15. The resolver frames the authored opening's own
+  edges, so the trimmers stand at 17'-7 1/2"/18'-4 1/2" and each bears 4 1/2" on the beam
+  below — a sleeve on the beam, which is the better detail and the reason the opening was not
+  widened to match the sentence.) **No hanger on the post's north or south faces** — four connectors will not fit on a
   5 1/2" face, and the two beams already have the east and west. The porch joists' south
   oversail went 2 3/4" → 4 1/4" so the front rim band clears the pillar it used to run through.
 * **A post is the WOOD, not the clear distance between its bearings.** `StructuralHardware`

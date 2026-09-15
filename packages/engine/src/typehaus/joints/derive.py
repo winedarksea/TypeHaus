@@ -164,10 +164,14 @@ def _gable_tie_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> li
     item = hardware_for_role(ROLE_GABLE_END_TIE)
     out: list[Joint] = []
     for end in gable_end_ties(model, config.gable_end_ties):
-        for station_m in end.stations_m:
+        # ``station_z_m``, never the scalar ``end.z_m``: a gable wall RAKES, and its
+        # ``z1_m`` is the bounding prism's ridge height rather than the plate the tie is
+        # nailed to. Zipped strict — the two tuples are built together and a length
+        # mismatch would silently drop or mislocate ties.
+        for station_m, station_z in zip(end.stations_m, end.station_z_m, strict=True):
             out.append(_joint(
                 ROLE_GABLE_END_TIE, item.model, end.storey,
-                point_along(end.p0, end.p1, station_m), end.z_m, end.axis, embedded=False,
+                point_along(end.p0, end.p1, station_m), station_z, end.axis, embedded=False,
                 members=(end.wall_tag, end.roof_tag), anchor_tag=end.wall_tag,
                 grid_m=grid_m))
     return out

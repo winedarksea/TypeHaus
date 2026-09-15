@@ -492,7 +492,17 @@ class Connector(Element):
     size: str = ""  # product model, e.g. "APVKB", "H2.5A", "LUS28", "ABU66"
     connects: tuple[str, ...] = ()  # member/wall/post tags the hardware joins
     source: str | None = None  # design specification for custom fabricated hardware
-    axis: str | None = None  # optional in-plane run direction ("x" | "y") for braces
+    #: Optional in-plane run direction ("x" | "y") — the part's own orientation at the joint.
+    #:
+    #: Read by ``KneeBrace``-style geometry and, since 2026-09-15, by ``_resolve_connector``,
+    #: which turns the marker box by it exactly as ``connector_markers`` turns every derived
+    #: marker. ``None`` means "this part claims no orientation" and draws project-square, so
+    #: setting it is always an addition of information and never a silent move.
+    #:
+    #: Set it where the orientation is a BUILDABILITY constraint rather than a drawing
+    #: preference — an ABU stirrup's two side plates landing on the faces a face-mount hanger
+    #: needs is the worked example (catlin ``CN-SG-BASE-R2``/``-F2``).
+    axis: str | None = None
     #: A POST_BASE landing on concrete WITHOUT a cast-in anchor bolt.
     #:
     #: Simpson publish an ABU's uplift and lateral values *through* a 5/8" anchor the base

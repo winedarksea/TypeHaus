@@ -596,6 +596,34 @@ _y_ax_mid = _y_ax_front - SPEC.side_wall_south_extension_in / 12.0  # -11.0'
 _y_in_s = _y_in_n - SPEC.clear_length_ft
 _y_ax_s = _y_in_s - _half
 
+# ============================================================================
+# ** THE PORCH DECK'S OWN NORTH EDGE — IT IS NOT `_y_in_n` (2026-09-15). **
+# ============================================================================
+# `_y_in_n` is datumed off the house's ABOVE-GRADE cladding face. The porch deck is not
+# above grade. At the deck's own elevation the house's south face is `W-B-BRICK` — a
+# freestanding wythe standing 3 11/16" SOUTH of that line — so joists run to `_y_in_n`
+# passed straight THROUGH the full 3 5/8" of brick and died 1/16" inside the air gap
+# behind it. Nothing in the engine caught it and nothing would: a cantilevered end is pure
+# arithmetic on the authored value (`resolve/floor_ends.py`), and
+# `structural.member_interference` builds its candidates from members and column/beam
+# solids only — a wall layer is not a candidate, so a masonry wythe is invisible to it.
+#
+# The arithmetic, not the answer, in the same spirit as `_veneer_beam_top` below:
+_y_brick_air_gap_int = inch(-6.06)   # = N-B-BRICK-W/-E; W-B-BRICK is alignment=face("air-gap-int")
+# BASEMENT_BRICK_VENEER builds SOUTH from that face: 4" drained cavity, then the wythe.
+_y_brick_exposed_face = _y_brick_air_gap_int - inch(4.0) - inch(3.625)   # -13.685"
+# 1" of daylight between the deck and the masonry — the owner's number. It is a gap to see
+# and to sweep, not a tolerance: the two structures are separately founded (see DW-SG-*-STEM)
+# and nothing should bridge them.
+_PORCH_BRICK_CLEARANCE = inch(1.0)
+_y_porch_deck_n = (_y_brick_exposed_face - _PORCH_BRICK_CLEARANCE).inches / 12.0  # -14.685"
+#
+# **`_y_in_n` ITSELF DOES NOT MOVE**, and that is the point of a separate name. It carries
+# the side walls' north ends and the 5" insulation gap, the back-beam and column line, the
+# balcony deck and its caps, the court slab and the walk — none of which is the porch deck's
+# front board. Only what stands ON the porch deck reads this: `_PORCH_OUTLINE`, the guard
+# path and its NE stub, and the joists' north cantilever.
+
 # ** THE COURT SURFACE. ** -109 7/16": the basement floor plane less the flood step,
 # which is now zero.
 # Everything that is walked on, or measured down from, inside this court reads this and not
@@ -2548,7 +2576,7 @@ def _guard_post_stations(path_ft, spacing_ft):
 
 
 _PORCH_OUTLINE = (pt(ft(_x_in_w), ft(_y_ax_front)), pt(ft(_x_in_e), ft(_y_ax_front)),
-                  pt(ft(_x_in_e), ft(_y_in_n)), pt(ft(_x_in_w), ft(_y_in_n)))
+                  pt(ft(_x_in_e), ft(_y_porch_deck_n)), pt(ft(_x_in_w), ft(_y_porch_deck_n)))
 
 # The porch guard: the same product as RL-SG-BALCONY one storey up, SURFACE-mounted where
 # the balcony's is fascia-mounted. A pair of LVL beams cannot carry the ~420 plf a masonry
@@ -2639,7 +2667,7 @@ _PORCH_STAIR_Y1 = -9.0   # its SOUTH side — a 36" flight
 # at the two front corners; land the rail ends on the columns**, Titen Turbo at >=3" edge
 # distance, the same fastener and edge rule the HGAM10 beam seat above uses. The engine
 # models no baseplate and will never ask about this.
-_PORCH_GUARD_PATH = (pt(ft(_x_in_w), ft(_y_in_n)), pt(ft(_x_in_w), ft(_y_ax_front)),
+_PORCH_GUARD_PATH = (pt(ft(_x_in_w), ft(_y_porch_deck_n)), pt(ft(_x_in_w), ft(_y_ax_front)),
                      pt(ft(_x_in_e), ft(_y_ax_front)), pt(ft(_x_in_e), ft(_PORCH_STAIR_Y1)))
 PORCH_GUARD = Railing(
     uid="SGRA02AAAA", tag="RL-SG-PORCH", type_ref="RAILING-EXT-ALUMINUM-SURFACE",
@@ -2657,7 +2685,7 @@ PORCH_GUARD = Railing(
 # billed as part of the same run, which is why it shares the type_ref and the assembly.
 PORCH_GUARD_NE = Railing(
     uid="SGRA07AAAA", tag="RL-SG-PORCH-NE", type_ref="RAILING-EXT-ALUMINUM-SURFACE",
-    path=(pt(ft(_x_in_e), ft(_PORCH_STAIR_Y0)), pt(ft(_x_in_e), ft(_y_in_n))),
+    path=(pt(ft(_x_in_e), ft(_PORCH_STAIR_Y0)), pt(ft(_x_in_e), ft(_y_porch_deck_n))),
     kind=RailingKind.METAL_SURFACE_MOUNT,
     height=ft(SPEC.railing_height_ft),
     base_elevation=_porch_walking_surface,
@@ -3373,12 +3401,27 @@ _PORCH_JOIST_START_CANT_IN = 4.25
 # through, and a post and a joist cannot occupy the same 7 1/4".
 #
 # A 9" square is the framed answer and it is the same 9" the field detail already called
-# for in the composite plank: ``resolve/floors.py`` subtracts the opening's along-span
-# interval from the joist line inside it and heads the cut with a trimmer pair on the two
-# lines 16" either side, so **the joists frame to a header spanning between the two joist
-# lines adjacent to x = 18'-0" and the post passes up through the framed opening**. At 9"
-# the opening is inside R502.10.1's short-opening allowance, so the header and trimmers are
-# single-ply joist stock rather than a designed beam.
+# for in the composite plank. The 5 1/2" pillar sits dead-centre in it with 1 3/4" clear on
+# all four sides, and the joist line the pillar lands on — x = 17'-10", the 16" module's
+# nearest, whose 1 1/2" width is entirely inside the pillar's footprint — is cut over the
+# opening and headed. At 9" the opening is inside R502.10.1's short-opening allowance, so
+# the header and trimmers are single-ply joist stock rather than a designed beam.
+#
+# ** WHAT IS BUILT IS A SLEEVE ON THE BEAM, NOT A TRIMMER PAIR ON THE 16" LINES. ** This
+# comment claimed the latter until 2026-09-15 and the resolver never did it: ``resolve/
+# floors.py`` frames the AUTHORED opening's own edges, so the trimmers stand on the
+# opening's two x edges (17'-7 1/2" and 18'-4 1/2") and run only the opening's 9" of y.
+# The claim was checked against the resolved model rather than repaired, and the framing
+# turns out to be the better of the two: **each of the four trimmers crosses its beam and
+# takes the full 4 1/2" of it** (BR2's pair onto BM-SG-BKW/BKE, BF2's onto BM-SG-FRW/FRE),
+# so the cage is a box bearing directly on the beam — which is how a post penetration
+# beside a beam is actually blocked out — and the headers land on the trimmers.
+#
+# **Widening the opening to the 198"/230" lines was considered and REJECTED**, though it
+# would have made the old sentence literally true. ``_subtract_interval`` fires on any line
+# with ``opening_perp0 <= perp <= opening_perp1``, so the two neighbouring joists would
+# each lose a 9" bite for no reason, and the header would grow from 9" to 32" — two sound
+# full-length joists cut and a longer header, to move framing off a beam and into the air.
 #
 # ** NO HANGER ON THE POST'S NORTH OR SOUTH FACES, AND THAT IS THE REASON FOR THE HEADER. **
 # Four connectors will not fit on a 5 1/2" face: the two beams already take the east and
@@ -3416,23 +3459,32 @@ PORCH_JOISTS = FloorSystem(
                      # Keep any oversail well inside the 8" ``bearing_plan_tolerance_in``:
                      # past it the uplift check finds neither a derived tie nor a hanger
                      # and FAILs all 32 members.
-                     # North (end): the joists run the column's south-offset past the
-                     # back-beam line to the deck edge, which is the porch's real overhang.
-                     # One symmetric value cannot say both.
+                     # North (end): the joists run past the back-beam line to the deck
+                     # edge, which is the porch's real overhang. One symmetric value cannot
+                     # say both.
+                     # ** IT WAS `SPEC.column_south_offset_in` (17") UNTIL 2026-09-15 **,
+                     # which put every tip on `_y_in_n` (-10") — the ABOVE-GRADE cladding
+                     # line, 3 11/16" north of the brick's exposed face, so all 31 joists
+                     # ran through the whole wythe. Derived off the deck edge now (12.315"),
+                     # so the tip and the front board can never disagree again.
                      cantilever=inch(SPEC.porch_joist_cantilever_in),
                      cantilever_start=inch(_PORCH_JOIST_START_CANT_IN),
-                     cantilever_end=inch(SPEC.column_south_offset_in),
+                     cantilever_end=ft(_y_porch_deck_n - _y_col),
                      # The NORTH band (rim-0, y = -9'-8 3/4") is the porch's exposed front
                      # edge: it closes the joist tips over the garden walk, in the same plane
                      # as the white pillars and knee braces above it, and no fascia covers it
                      # the way TR-SG-FASCIA covers the balcony's. So it is painted with them,
                      # exactly as FS-SG-DECK's bands are.
                      # ** IT PAINTS BOTH BANDS. ** `rim_material` is a JoistSpec field, not a
-                     # per-band one, so the SOUTH band at y = -10" takes the same paint and
-                     # the same qualified price key — and that one dies against W-B-BRICK's
-                     # wythe face at -10.05", where nothing will ever see it. 19 LF of paint
-                     # on a hidden board is the honest cost of saying the front one is white;
-                     # a board that tight to masonry is back-primed off the truck anyway.
+                     # per-band one, so the NORTH band takes the same paint and the same
+                     # qualified price key — and that one faces the house across a 1" gap,
+                     # where nothing will ever see it. 19 LF of paint on a hidden board is
+                     # the honest cost of saying the front one is white; a board that tight
+                     # to masonry is back-primed off the truck anyway.
+                     # (This read "dies against W-B-BRICK's wythe face at -10.05"" until
+                     # 2026-09-15. That was the brick's INNER, air-gap face; the exposed
+                     # face is 3 5/8" further south, and misreading which of the two the
+                     # deck stopped on IS the bug that ran every joist through the wythe.)
                      # The joists behind both stay bare PT.
                      rim_material="post-paint-white",
                      # Four boundaries with two duplicate pairs: front and back are each two
@@ -3446,8 +3498,10 @@ PORCH_JOISTS = FloorSystem(
     # ``_WALL_UNDER_PILLAR``), so there is no pillar load in these joists to spread and no
     # cross-grain plane here to grade: ``engineering/post_bearing.py`` enumerates a post
     # whose ``supported_by`` names a FloorSystem, and neither does. What stands at x = 18'-0"
-    # instead is ``PILLAR_CHASES`` — a framed 9" opening at each pillar, headed off the two
-    # joist lines 16" either side.
+    # instead is ``PILLAR_CHASES`` — a framed 9" opening at each pillar, its cut joist line
+    # headed onto a trimmer pair that bears on the beam below (see PILLAR_CHASES; this read
+    # "headed off the two joist lines 16\" either side" until 2026-09-15, which the resolver
+    # never did and which would be the worse detail if it had).
     #
     # **The guard post needs no blocking here either, and that is not an oversight.** The
     # RL-SG-PORCH south-leg station at x = 18'-0" is PT-SG-BF2 itself, and the R301.5 200 lb
@@ -3937,6 +3991,19 @@ for _row, _y, _rise in _PILLAR_ROWS:
         kind=ConnectorKind.POST_BASE,
         position=pt(ft(_cx), ft(_post_y)),
         elevation=_bearing_top, anchored=True,
+        # ** THE STIRRUP'S SIDE PLATES RUN NORTH-SOUTH, AND THAT IS NOT A PREFERENCE. ** An
+        # ABU is a U: two side plates stand ~3-5/8" up off the 1 3/16" standoff on TWO
+        # OPPOSITE faces of the post, and the other two faces are open. Put those plates on
+        # the pillar's WEST and EAST faces and they occupy the very wood the four HU212-3
+        # beam hangers are nailed to — each hanger's back flange rises from the beam soffit
+        # (= the column top) 10-5/16" up those same two faces, so the overlap is total in z
+        # and the joint cannot be built. North/south, the plates clear every hanger: nothing
+        # else lands on those two faces at all. ``axis`` is how the model says so
+        # (accessories.py::_resolve_connector turns the marker by it).
+        axis="y",
+        source="ABU66SS set with its side plates N-S. The W and E faces of PT-SG-B*2 are "
+               "the HU212-3 back-flange faces (CN-SG-HGR-C*2-W/E) and the flange occupies "
+               "the soffit-to-10-5/16 band the stirrup plates also want.",
         size="ABU66SS", connects=(f"PT-SG-B{_row}2", _bearing_tag)))
     # ** AND THE FOUR PORCH BEAMS HANG OFF THE PILLAR. ** Each beam used to run to the
     # column's own axis and BEAR on the pour; the pillar stands on that pour now, so the

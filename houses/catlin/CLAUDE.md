@@ -1589,9 +1589,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   columns stay 12" round rather than growing to span beam face to pillar face.
   `PT-SG-BR2` moved 3" north onto the column axis with it.
 - Each centre pillar passes through a framed 9" chase in `FS-SG-PORCH`
-  (`FO-SG-BF2`/`-BR2`); the joist at x=18'-0" is headed off the two lines 16"
-  either side. **No hanger on the post's N/S faces** — four will not fit on a
-  5-1/2" face.
+  (`FO-SG-BF2`/`-BR2`), 1 3/4" clear on all four sides; the joist at x=17'-10"
+  (the module's nearest line, wholly inside the pillar) is cut and headed. **The
+  trimmers stand on the OPENING's own edges and bear on the beam** — each of the
+  four takes its beam's full 4 1/2" — not on the joist lines 16" either side,
+  which is what this line claimed until 2026-09-15; widening the opening to make
+  that true would cut two sound joists for a longer header off the beam.
+  **No hanger on the post's N/S faces** — four will not fit on a 5-1/2" face.
 - Porch joists CROSS both beams (`JoistSpec.cantilever_start = 4-1/4"`, was
   2-3/4" — the extra 1-1/2" is what takes the front rim band clear of
   `PT-SG-BF2`). The composite sheet ends 4-1/4" outboard of `RL-SG-PORCH`'s
