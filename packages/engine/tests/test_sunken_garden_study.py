@@ -77,14 +77,76 @@ def test_blocked_drain_adds_the_independent_five_foot_water_triangle() -> None:
 
 
 def test_corrected_veneer_beam_uses_strength_load_and_aci_minimum() -> None:
+    """Hand pass at **U = 1.4D**, ACI 318-19 Eq. (5.3.1a). Oracle: note §3.
+
+    ** THE LOAD FACTOR WAS 1.2 UNTIL 2026-09-14 (636 plf, Mu 30,230 ft-lb). ** The member
+    carries a brick wythe and its own concrete and nothing else, so (5.3.1b) ``1.2D + 1.6L``
+    reduces to 1.2D, which is not a combination ACI publishes; (5.3.1a) governs a dead-only
+    member. Re-derived independently:
+
+    * w  = 308 + 222                                  = 530 plf service
+    * wu = 1.4 x 530                                  = **742 plf**
+    * L  = min(19.0 + d/12, 19.0 + 0.5)               = **19.5 ft** (centre-to-centre)
+    * Mu = 742 x 19.5^2 / 8                           = **35,268 ft-lb**
+    * Vu = 742 x 19.5 / 2                             = **7,234 lb**
+    """
     result = check_veneer_beam()
     assert result.effective_span_ft == pytest.approx(19.5)
-    assert result.factored_load_plf == pytest.approx(636.0)
-    assert result.factored_moment_ftlb == pytest.approx(30229.875)
-    assert result.minimum_steel_in2 == pytest.approx(0.63905, rel=1e-4)
+    assert result.service_load_plf == pytest.approx(530.0)
+    assert result.factored_load_plf == pytest.approx(742.0)
+    assert result.factored_moment_ftlb == pytest.approx(35268.1875)
+    assert result.factored_shear_lb == pytest.approx(7234.5)
     assert result.provided_steel_in2 == pytest.approx(0.93)
     assert result.flexure_ratio < 1.0
     assert result.shear_ratio < 1.0
+
+
+def test_two_number_fives_do_not_clear_aci_minimum_steel_at_the_real_mix() -> None:
+    """**R6.** The note selected 2 #5 on a minimum computed at f'c 4,000. The mix is 5,000.
+
+    ACI 318-19 §9.6.1.2 takes the **greater** of the two expressions, at d = 15.0625":
+
+    * 3 sqrt(5000) x 12 x 15.0625 / 60000 = **0.639 in^2**   <- governs
+    * 200 x 12 x 15.0625 / 60000          = **0.603 in^2**
+
+    2 #5 is 0.620 in^2 and falls about 3% short. §9.6.1.3's exception — steel one third over
+    the demand — does not rescue it either: 4/3 x 0.578 = 0.771 in^2, larger still. Three #5
+    is the study section and clears both.
+    """
+    result = check_veneer_beam()
+    assert result.effective_depth_in == pytest.approx(15.0625)
+    assert result.minimum_steel_in2 == pytest.approx(0.63905, rel=1e-4)
+    assert result.minimum_steel_in2 > 2 * 0.31
+    assert result.required_steel_in2 * 4.0 / 3.0 > 2 * 0.31
+    assert result.provided_steel_in2 > result.minimum_steel_in2
+
+
+def test_the_beams_torsion_is_computed_and_is_above_the_threshold() -> None:
+    """**The note asserted this away; the arithmetic does not agree, in a useful direction.**
+
+    Note §4 said "compatibility torsion may be neglected below the cracking threshold" and
+    compared against a T_cr it put at "on the order of 9 ft-k" at f'c 4,000. Two provisions
+    were being conflated. At the real 5,000 psi mix, Acp = 12 x 17.75 = 213 in^2,
+    pcp = 59.5 in, Acp^2/pcp = 762.5 in^3:
+
+    * threshold  phi x 0.25 sqrt(f'c) Acp^2/pcp = 0.75 x 0.25 x 70.71 x 762.5 / 12
+                                                = **842 ft-lb**  (§22.7.4.1)
+    * cracking   phi x 4.00 sqrt(f'c) Acp^2/pcp = **13,479 ft-lb**  (§22.7.5.1)
+    * demand     1.4 x 106.26 x 19.5 / 2        = **1,450 ft-lb**
+
+    So the twist **does** redistribute — it is 9% of cracking, and §22.7.3.2 applies — and it
+    is also **1.7x the threshold**, which means §9.6.4's minimum torsional reinforcement is
+    owed whatever the compatibility argument concludes. Closed hoops with 135-degree hooks
+    and longitudinal steel, not the open #3 stirrups the note specified.
+    """
+    result = check_veneer_beam()
+    assert result.torsion_ftlb_per_ft == pytest.approx(106.26, rel=1e-4)
+    assert result.factored_torsion_ftlb == pytest.approx(1450.45, rel=1e-4)
+    assert result.phi_threshold_torsion_ftlb == pytest.approx(842.46, rel=1e-4)
+    assert result.phi_cracking_torsion_ftlb == pytest.approx(13479.3, rel=1e-4)
+    assert result.torsion_redistributes
+    assert not result.torsion_may_be_neglected
+    assert any("§9.6.4" in item for item in result.unresolved), result.unresolved
 
 
 def test_catlin_variants_are_isolated_and_keep_wall_identity() -> None:

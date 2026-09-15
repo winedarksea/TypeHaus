@@ -162,9 +162,31 @@ def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
     # roof it did not frame) and folded into ``rafter/<tag>``, whose fabricator publishes the
     # uplift reactions as part of the component design they were already sealing. That
     # deferral's own `deliverable` now says so.
+    # ** FOURTEEN SINCE 2026-09-14, UP FROM FOUR: the sunken garden's three silent gaps. **
+    # None of the ten new items is new WORK — every one of them was already undesigned, and
+    # every one was invisible, which reads exactly like a thing with no problem.
+    #  - `veneer_beam/W-SG-BRKBM`: a cast beam carrying a masonry wythe. It had a screening
+    #    calculation and no record, because that calculation is a free function writing a
+    #    report — it reads no plan and nothing can be sealed against it.
+    #  - `thermal_break_transfer/DW-*`: 24 GFRP bars tie a heated house footing to a
+    #    freestanding court wall across an insulating board, with ZERO computed demand. The
+    #    bar count comes from the board's width and a spacing rule, which is detailing.
+    #  - `tiered_retaining/W-RG-*`: the apron. `foundation_unbalanced_fill` reads PASS on it
+    #    and that verdict is CORRECT — IRC R404.1.1 does not engage at 3'-4" — so the PASS is
+    #    deliberately left alone. The defect was that nothing else then looked at a tiered
+    #    segmental wall standing beside a ten-foot cut.
+    # `_retaining_walls` is deliberately NOT widened to reach the apron: an
+    # isolated-cantilever record for a wall whose whole problem is that it is not isolated
+    # would make the register less true.
     assert {r.item_id for r in deferred} == {
         "column_support/W-SG-E1", "column_support/W-SG-W1",
-        "rafter/RF-BW-CANOPY", "rafter/RF-GARAGE"}
+        "rafter/RF-BW-CANOPY", "rafter/RF-GARAGE",
+        "veneer_beam/W-SG-BRKBM",
+        "thermal_break_transfer/DW-SG-W1", "thermal_break_transfer/DW-SG-E1",
+        "thermal_break_transfer/DW-SG-W1-STEM", "thermal_break_transfer/DW-SG-E1-STEM",
+        "tiered_retaining/W-RG-BLOCK",
+        "tiered_retaining/W-RG-WEST", "tiered_retaining/W-RG-EAST",
+        "tiered_retaining/W-RG-WEST-BALCONY", "tiered_retaining/W-RG-EAST-BALCONY"}
     for record in deferred:
         assert record.kind in DEFERRALS, record.item_id
         assert "no calculation is registered for this kind" not in record.summary

@@ -91,20 +91,71 @@ Loads, per foot of span:
 | beam self-weight | (12/12) × (17.75/12) × 150 pcf | 222 plf |
 | **w** | | **530 plf** |
 
-Simple span, 19.0 ft (bearing is 6" each end; taking the clear span is conservative):
+### ⚠ Corrected 2026-09-14. The superseded pass is kept below it.
+
+Two things were wrong with the original and they compounded: a **service** moment was
+divided by a **φ-reduced** resistance, and the minimum steel was computed at **f'c 4,000**
+on a member cast from a 5,000 psi mix. The first understated the demand, the second
+understated the minimum, and between them the selected 2 #5 read as clearing a bar it does
+not clear.
+
+**Load factor.** ACI 318-19 Table 5.3.1: this member carries a brick wythe and its own
+concrete and nothing else, so (5.3.1b) `1.2D + 1.6L` collapses to 1.2D — which is not a
+combination the code publishes — and **(5.3.1a) `U = 1.4D` governs**.
+
+**Effective span.** §6.3.2.1: the lesser of clear span + d and centre-to-centre of supports.
+With 6" of bearing each end, centre-to-centre is 19.5 ft and clear + d is 20.26 ft, so
+**19.5 ft** governs. (The original took 19.0 ft "conservatively"; on a simple span the
+longer span is the conservative one, so that reasoning had the sign backwards too.)
 
 ```
-M  = w L^2 / 8   = 0.530 × 19.0^2 / 8            = 23.9 ft-k
+w   = 308 + 222                                       =   530 plf   (service, dead only)
+wu  = 1.4 × 530                                       =   742 plf
+L   = min(19.0 + 15.06/12, 19.0 + 0.5)                =  19.5 ft
+Mu  = 742 × 19.5² / 8                                 = 35,268 ft-lb  = 35.3 ft-k
+Vu  = 742 × 19.5 / 2                                  =  7,234 lb
+d   = 17.75 − 2.0 cover − 0.375 stirrup − 0.625/2     =  15.0625 in
+As  = Mu × 12 / (0.9 × 60,000 × 0.9 × 15.0625)        =  0.578 in²   (demand)
+```
+
+**ACI 318-19 §9.6.1.2 is the GREATER of two expressions, at the mix actually specified:**
+
+```
+3 √5,000 × 12 × 15.0625 / 60,000                      =  0.639 in²   <- governs
+200 × 12 × 15.0625 / 60,000                           =  0.603 in²
+```
+
+**2 #5 is 0.620 in² and does not clear 0.639.** It is about 3% short — small, and a minimum
+is a minimum. §9.6.1.3's escape (steel one third over the demand) does not rescue it either:
+4/3 × 0.578 = **0.771 in²**, larger still.
+
+**3 #5 bottom (0.93 in²) is the section.** Checking it:
+
+```
+a     = 0.93 × 60,000 / (0.85 × 5,000 × 12)           =  1.094 in
+φMn   = 0.9 × 0.93 × 60,000 × (15.0625 − 0.547) / 12  = 60,747 ft-lb   d/c 0.58  ✓
+φVc   = 0.75 × 2 √5,000 × 12 × 15.0625                = 19,174 lb      d/c 0.38  ✓
+```
+
+Mirror 3 #5 top for the pocket restraint at each end. **The stirrups are no longer
+detailing** — see §4: the torsion is above ACI's threshold, so they must be closed hoops
+with 135° hooks, not the open #3 the superseded pass called for.
+
+#### Superseded: the 1.2D / f'c 4,000 pass (retired 2026-09-14)
+
+```
+M  = w L^2 / 8   = 0.530 × 19.0^2 / 8            = 23.9 ft-k     <- SERVICE moment
 d  = 17.75 - 2.5 (cover + bar)                   = 15.25 in
 As = M / (phi × fy × 0.9d)
-   = 23.9 × 12 / (0.9 × 60 × 0.9 × 15.25)        = 0.39 in^2
+   = 23.9 × 12 / (0.9 × 60 × 0.9 × 15.25)        = 0.39 in^2     <- service ÷ φ-reduced
 ```
 
-**2-#5 bottom (0.62 in²) governs by detailing, not by demand** — d/c on the steel is 0.63,
-and ACI 318-19 §9.6.1.2 minimum (3√f'c·b·d/fy = 3√4000 × 12 × 15.25 / 60000 = 0.58 in²)
-is the binding number, not the moment. Mirror 2-#5 top for the pocket restraint at each end,
-#3 stirrups at 8" o.c. Shear: V = wL/2 = 5.0 k against φVc = 0.75 × 2√4000 × 12 × 15.25 /
-1000 = 17.4 k, d/c **0.29** — stirrups are detailing too.
+It concluded "2-#5 bottom (0.62 in²) governs by detailing, not by demand — d/c on the steel
+is 0.63, and ACI 318-19 §9.6.1.2 minimum (3√f'c·b·d/fy = 3√4000 × 12 × 15.25 / 60000 = 0.58
+in²) is the binding number", with #3 stirrups at 8" o.c. and shear d/c 0.29 at f'c 4,000.
+Every number in that paragraph is superseded. **The engine moved to 3 #5 before this note
+did**, which is the wrong way round and is why the correction is written out in full here
+rather than quietly swapped.
 
 ## 4. Torsion from the eccentric wythe
 
@@ -117,11 +168,38 @@ e  = beam centre (-16") - wythe centre (-11.86")   = 4.14 in
 t  = 308 plf × (4.14/12) ft                        = 106 ft-lb per foot
 ```
 
-Equilibrium torsion is not the case here — the beam is cast into both side walls and the
-garden slab bears against its full south face for the whole span, so the twist is compatible
-and sheds into the slab. ACI 318-19 §22.7.1 permits compatibility torsion to be neglected
-below the cracking threshold; T_cr for a 12×17.75 section at f'c 4000 is on the order of
-9 ft-k against 106 ft-lb/ft × 19 ft / 2 = **1.0 ft-k** at the support. d/c ≈ 0.11.
+### ⚠ Corrected 2026-09-14: two provisions, two answers, and only one was quoted
+
+The original said "compatibility torsion may be neglected below the cracking threshold" and
+compared the demand against a T_cr it put "on the order of 9 ft-k at f'c 4000". That
+conflates ACI 318-19 **§22.7.4.1**, the *threshold* below which torsion may be ignored
+outright, with **§22.7.5.1**, the *cracking* torsion below which an indeterminate member may
+redistribute. They differ by a factor of sixteen — 0.25 against 4.0 on the same section
+term — and the demand lands between them.
+
+At the mix actually specified, Acp = 12 × 17.75 = 213 in², pcp = 2(12 + 17.75) = 59.5 in,
+so Acp²/pcp = 762.5 in³:
+
+```
+Tu     = 1.4 × 106.26 ft-lb/ft × 19.5 / 2               =  1,450 ft-lb   (factored, support)
+φT_th  = 0.75 × 0.25 √5,000 × 762.5 / 12                =    842 ft-lb   §22.7.4.1
+φT_cr  = 0.75 × 4.00 √5,000 × 762.5 / 12                = 13,479 ft-lb   §22.7.5.1
+```
+
+**Below cracking, so it does redistribute.** Tu is 11% of φT_cr. The beam is cast into both
+side walls and the garden slab bears against its full south face for the whole span, so
+§22.7.3.2's redistribution is available and the beam is not asked to resist the twist in
+equilibrium. That part of the original conclusion stands.
+
+**Above the threshold, so the detailing is still owed.** Tu is **1.7×** φT_th, and §22.7.4.1
+only permits torsion to be ignored *below* that line. So §9.6.4's minimum torsional
+reinforcement applies: **closed hoops with 135° hooks plus longitudinal torsional steel**,
+not the open #3 stirrups §3 originally specified. That is a real change to what gets tied,
+and it was hidden by comparing against the wrong provision.
+
+The redistribution argument depends on the slab bearing being real. It is carried as an
+unresolved item rather than assumed, because a slab that is poured short of the beam's face
+takes the twist from compatibility back to equilibrium.
 
 ## 5. What is NOT graded here, and what needs a seal
 
@@ -160,10 +238,30 @@ below the cracking threshold; T_cr for a 12×17.75 section at f'c 4000 is on the
    an anchor. Restraining a long wythe between two rigid concrete returns is how you crack
    it. The end condition is a sealant joint over compressible filler; **the model does not
    carry one and nothing in the engine grades it.**
-2. **The pocket bearing** into `W-SG-W1`/`W-SG-E1`: 6" of bearing on a 12" wall, chipped and
-   doweled into an existing pour. Reaction 5.0 k over 12"×6" = 139 psi against 4000 psi
-   concrete is not the question; the question is the dowel development into a wall that was
-   cast first, and that is the engineer's.
+2. **The end condition: CAST MONOLITHIC, settled 2026-09-14.** This note contradicted
+   itself for as long as it existed — §4's torsion argument rested on the beam being "cast
+   into both side walls", and this bullet described it as "chipped and doweled into an
+   existing pour". Those are different members with different end restraints, and the
+   `AN-SG-PLACEMENTS` record named `W-SG-BRKBM` in **no placement at all**, so the model
+   broke no tie either way.
+
+   It is cast with placement (2), in the same form as the five court walls. Three reasons,
+   and the first is decisive: **the pour is not there yet.** Placement (2) is where
+   `W-SG-W1`/`W-SG-E1` themselves are cast, so there is no "existing pour" to chip into
+   unless the beam is deliberately deferred to a fourth placement — which
+   `AN-SG-COLDWEATHER` is specifically about not doing. Second, the beam's top (−8'-6 7/16")
+   and bottom (−10'-0 3/16") both sit inside placement (2)'s single form height, so it costs
+   a blockout and no extra mobilisation. Third, §4's redistribution argument needs the fixed
+   ends, and a doweled pocket into cured concrete is the one detail that would not provide
+   them.
+
+   The bearing itself was never the question: 7.2 k over 12"×6" = 100 psi against a 5,000 psi
+   mix. What a doweled pocket *would* have made the question is dowel development into a wall
+   cast first — and casting monolithic is how that question stops being asked.
+
+   **What is still the engineer's** is the reinforcement continuity through the corner: the
+   beam's 3 #5 top and bottom have to develop into the side walls' vertical steel, and this
+   note does not design that lap.
 3. **The thermal path itself.** §1 says the old detail was wrong and the new one routes the
    load into structure that is already broken from the house at `DW-SG-W1/E1-FOAM`. It does
    **not** compute a frost isotherm. A 2" XPS board at R-10 across 12.7 SF replaces a

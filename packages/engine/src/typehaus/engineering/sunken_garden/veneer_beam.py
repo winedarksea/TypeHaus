@@ -1,14 +1,49 @@
 """Corrected gravity-beam screening for W-SG-BRKBM.
 
-The historical note remains untouched. This calculation uses actual 5,000 psi concrete,
-strength-design load factors, ACI's effective-span rule and both minimum-steel equations.
-Connection restraint, compatibility torsion and long-term properties remain named limits.
+Actual 5,000 psi concrete, strength-design load factors, ACI's effective-span rule and both
+minimum-steel equations. Oracled against ``houses/catlin/notes/sunken_garden_veneer_beam.md``
+§3 and §4, whose arithmetic is worked by hand at the same inputs.
+
+**The load factor is 1.4, not 1.2** — see :data:`DEAD_LOAD_FACTOR`. This module carried 1.2
+from the day it was written until 2026-09-14, which understated every demand by 17% on a
+member whose load is dead weight and nothing else.
+
+**Torsion is computed, not dismissed.** :func:`check_veneer_beam` returns the threshold and
+cracking torsions beside the demand, because the note's original "compatibility torsion may
+be neglected" is only half true here: the demand is comfortably below cracking and
+comfortably ABOVE the threshold, and those two facts have different consequences.
 """
 
 from __future__ import annotations
 
 import math
 from dataclasses import dataclass
+
+#: ACI 318-19 Table 5.3.1, Eq. (5.3.1a): ``U = 1.4D``. For a member whose load is dead
+#: weight and nothing else — a brick wythe and the beam's own concrete — (5.3.1a) governs
+#: and (5.3.1b) ``1.2D + 1.6L`` does not, because L is zero.
+#:
+#: ** THIS WAS 1.2 UNTIL 2026-09-14. ** The outside review said so and the correction had
+#: gone the wrong way: 1.2D is (5.3.1b) with its live-load term dropped, which is not a
+#: combination ACI publishes. Every demand this module returns rose 17%, and the 3-#5
+#: selection still clears — the two-#5 conclusion the note carried does not, and did not at
+#: 1.2D either (see :func:`check_veneer_beam` on ACI §9.6.1.2).
+DEAD_LOAD_FACTOR = 1.4
+
+#: ACI 318-19 Table 21.2.1 — shear and torsion.
+PHI_SHEAR_TORSION = 0.75
+
+#: ACI 318-19 §22.7.4.1 (threshold) and §22.7.5.1 (cracking), as multiples of
+#: ``lambda sqrt(f'c) * Acp^2 / pcp`` for a non-prestressed section.
+#:
+#: The two answer different questions and the note conflated them. **Below the threshold**,
+#: torsion may be neglected outright. **Above it**, the member needs at least §9.6.4's
+#: minimum torsional reinforcement — closed hoops with 135-degree hooks plus longitudinal
+#: steel — even where the torsion is a compatibility effect. **Below cracking**, §22.7.3.2
+#: lets an indeterminate member redistribute, so the design torsion need not exceed the
+#: cracking value; it does not excuse the detailing the threshold triggers.
+TORSION_THRESHOLD_COEFFICIENT = 0.25
+TORSION_CRACKING_COEFFICIENT = 4.0
 
 
 @dataclass(frozen=True)
@@ -28,7 +63,23 @@ class VeneerBeamResult:
     long_term_deflection_in: float
     deflection_limit_in: float
     torsion_ftlb_per_ft: float
+    #: The FACTORED torsion at the support, ft-lb. ``t * L / 2`` at the dead-load factor.
+    factored_torsion_ftlb: float
+    #: ``phi * T_th`` — below this, ACI 318-19 §22.7.4.1 permits torsion to be ignored.
+    phi_threshold_torsion_ftlb: float
+    #: ``phi * T_cr`` — below this an indeterminate member may redistribute (§22.7.3.2).
+    phi_cracking_torsion_ftlb: float
     unresolved: tuple[str, ...]
+
+    @property
+    def torsion_may_be_neglected(self) -> bool:
+        """True only below the §22.7.4.1 threshold — which on this beam it is NOT."""
+        return self.factored_torsion_ftlb <= self.phi_threshold_torsion_ftlb
+
+    @property
+    def torsion_redistributes(self) -> bool:
+        """True below cracking: the twist sheds into the slab rather than being resisted."""
+        return self.factored_torsion_ftlb <= self.phi_cracking_torsion_ftlb
 
 
 def check_veneer_beam(*, clear_span_ft: float = 19.0, bearing_in: float = 6.0,
@@ -38,12 +89,25 @@ def check_veneer_beam(*, clear_span_ft: float = 19.0, bearing_in: float = 6.0,
                        longitudinal_bar_diameter_in: float = 0.625,
                        provided_bar_count: int = 3, provided_bar_area_in2: float = 0.31,
                        veneer_load_plf: float = 308.0,
-                       beam_load_plf: float = 222.0) -> VeneerBeamResult:
+                       beam_load_plf: float = 222.0,
+                       eccentricity_in: float = 4.14) -> VeneerBeamResult:
+    """Screening flexure, shear, deflection and torsion for the court's veneer beam.
+
+    ``eccentricity_in`` is the wythe's centre off the beam's, 4.14" as built — the wythe is
+    deliberately off-centre so the cavity survives, which §4 of the note works out.
+
+    **On the steel selection and ACI §9.6.1.2.** The minimum is the GREATER of
+    ``3 sqrt(f'c) b d / fy`` and ``200 b d / fy``. At the real mix — 5,000 psi, not the
+    4,000 the note computed at — those are 0.639 and 0.603 in^2, so 0.639 governs and
+    **2 #5 (0.620 in^2) does not clear it**. Nor does the §9.6.1.3 one-third-over exception
+    rescue it: 4/3 of the demand steel is 0.771 in^2, larger still. Three #5 is the study
+    section and it clears both.
+    """
     d = depth_in - clear_cover_in - stirrup_diameter_in - longitudinal_bar_diameter_in / 2.0
     center_span_ft = clear_span_ft + bearing_in / 12.0
     effective_span_ft = min(clear_span_ft + d / 12.0, center_span_ft)
     service_load = veneer_load_plf + beam_load_plf
-    factored_load = 1.2 * service_load
+    factored_load = DEAD_LOAD_FACTOR * service_load
     moment = factored_load * effective_span_ft ** 2 / 8.0
     shear = factored_load * effective_span_ft / 2.0
     required = moment * 12.0 / (0.9 * fy_psi * 0.9 * d)
@@ -55,6 +119,23 @@ def check_veneer_beam(*, clear_span_ft: float = 19.0, bearing_in: float = 6.0,
     a = provided * fy_psi / (0.85 * fc_psi * width_in)
     phi_mn_ftlb = 0.9 * provided * fy_psi * (d - a / 2.0) / 12.0
     phi_vc_lb = 0.75 * 2.0 * math.sqrt(fc_psi) * width_in * d
+
+    # --- Torsion, computed rather than dismissed (ACI 318-19 §22.7) -------------------
+    # The wythe sits on the beam's north edge, so its weight arrives at an eccentricity and
+    # twists the section. The note asserted this away as "compatibility torsion, neglected";
+    # the arithmetic says the demand is below CRACKING (so it does redistribute) and above
+    # the THRESHOLD (so §9.6.4's closed hoops and longitudinal steel are still owed). Two
+    # different provisions, two different answers, and only one of them was quoted.
+    torsion_per_ft = veneer_load_plf * eccentricity_in / 12.0
+    factored_torsion = DEAD_LOAD_FACTOR * torsion_per_ft * effective_span_ft / 2.0
+    area_cp_in2 = width_in * depth_in
+    perimeter_cp_in = 2.0 * (width_in + depth_in)
+    section_modulus_in3 = area_cp_in2 ** 2 / perimeter_cp_in
+    # In-lb from the ACI expression; /12 to the ft-lb everything else here is in.
+    threshold_torsion = (TORSION_THRESHOLD_COEFFICIENT * math.sqrt(fc_psi)
+                         * section_modulus_in3 / 12.0)
+    cracking_torsion = (TORSION_CRACKING_COEFFICIENT * math.sqrt(fc_psi)
+                        * section_modulus_in3 / 12.0)
 
     span_in = effective_span_ft * 12.0
     inertia_in4 = width_in * depth_in ** 3 / 12.0
@@ -72,10 +153,21 @@ def check_veneer_beam(*, clear_span_ft: float = 19.0, bearing_in: float = 6.0,
         flexure_ratio=moment / phi_mn_ftlb, shear_ratio=shear / phi_vc_lb,
         immediate_deflection_in=immediate, long_term_deflection_in=long_term,
         deflection_limit_in=span_in / 240.0,
-        torsion_ftlb_per_ft=veneer_load_plf * 4.14 / 12.0,
+        torsion_ftlb_per_ft=torsion_per_ft,
+        factored_torsion_ftlb=factored_torsion,
+        phi_threshold_torsion_ftlb=PHI_SHEAR_TORSION * threshold_torsion,
+        phi_cracking_torsion_ftlb=PHI_SHEAR_TORSION * cracking_torsion,
         unresolved=(
             "verify beam-to-wall pocket restraint and bar development",
-            "verify slab-to-beam compatibility before neglecting torsion",
+            # ** NOT "before neglecting torsion" ANY MORE. ** The threshold test is computed
+            # and the demand is above it, so the detailing is owed whatever the
+            # compatibility argument concludes; what is still open is the redistribution,
+            # which needs the slab bearing to be real.
+            "provide ACI 318-19 §9.6.4 minimum torsional reinforcement — closed hoops with "
+            "135-degree hooks plus longitudinal steel — the factored torsion exceeds the "
+            "§22.7.4.1 threshold even though it redistributes below cracking",
+            "verify the garden slab bears on the beam's full south face before relying on "
+            "§22.7.3.2 redistribution",
             "confirm sustained-load fraction, cracking and shrinkage restraint",
             "design masonry anchors for the full insulated standoff",
         ),
