@@ -11,10 +11,17 @@
 # One sub, one mobilisation, three stops — which is exactly what checkpoints are for. The
 # footing inspection sits BETWEEN the first and the second, and before checkpoints existed
 # the only way to say so was to invent two visits for one arrival.
+# ** THE ROW IS `pad:PIER_BASE_12`, NOT `footing`, SINCE 2026-09-14. ** The eight isolated
+# pours this visit places — the north entry's six piers and the two centre-garden ones —
+# became `Pad`s that day, which is what took their `spread_footing/` items out of the
+# engineering register (a flat pad is the shape IRC Table R507.3.1 publishes; a 36" bell is
+# not). Same eight pours, same arrival, same 1.06 cy; the BOM key moved under them and this
+# row followed it. The house's own strip footings are `task/concrete/basement/*` and never
+# were in this package, which is why nothing here replaces the old key.
 [visits."task/concrete/building/footings"]
-label = "Footings and the thermal break — house, court, breezeway"
-rows = ["concrete:footing", "concrete:thermal_break", "allowances:concrete-pumping"]
-element_tags = ["FT-*"]
+label = "Isolated pier pads and the thermal break — house, court, breezeway"
+rows = ["concrete:pad:PIER_BASE_12", "concrete:thermal_break", "allowances:concrete-pumping"]
+element_tags = ["FT-*", "PD-*"]
 depends_on = ["task/earth/basement", "task/earth/building", "insp/erosion"]
 checkpoints = [
   { id = "forms", label = "Forms, steel and the thermal-break board set" },
