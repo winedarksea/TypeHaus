@@ -332,6 +332,15 @@ def cross_section(profile: str) -> CrossSection:
     if text == "tapered tread":
         return _rect(1.5, 11.25)
 
+    # A named product, not a nominal: 25 ga. RC-1 is a 1/2" deep hat whose 2 1/2" flat
+    # face takes the screws. Laid flat (``furring._layout_horizontal``) ``width_m`` is the
+    # standoff through the band and ``depth_m`` the face — so the order here is NOT the
+    # lumber order. The fallback drew it as a 2x6, protruding 1" through the finish gypsum
+    # into the room. The string itself must not be renamed: it is the ``[framing]`` price
+    # key (``prices.toml``), and renaming drops 536 LF into ``unpriced``.
+    if text == "25 ga. resilient channel":
+        return _rect(0.5, 2.5)
+
     return _rect(*_FALLBACK_ACTUAL_IN)
 
 
@@ -347,7 +356,9 @@ _PARSED_PATTERNS = (
 )
 #: The profile strings :func:`cross_section` answers by literal comparison rather than by
 #: pattern. Kept beside the branches that spell them so the two cannot drift apart.
-_PARSED_LITERALS = frozenset({"engineered-LVL", "hanger", "tapered tread"})
+_PARSED_LITERALS = frozenset({
+    "engineered-LVL", "hanger", "tapered tread", "25 ga. resilient channel",
+})
 
 
 def parses(profile: str) -> bool:

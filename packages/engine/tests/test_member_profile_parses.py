@@ -11,8 +11,9 @@ The silence stays — ``cross_section`` is called from 31 modules inside ``resol
 a raise aborts the build instead of reporting a defect. These tests pin the four things
 that make the guard right rather than merely loud: that ``parses()`` agrees with
 ``cross_section``'s *actual* behaviour, that no pattern can be added to ``profiles.py``
-without the predicate being told, that the check is registered, and that it finds catlin's
-one real hit without turning the reference house red.
+without the predicate being told, that the check is registered, and that catlin — whose one
+real hit, the resilient channel, is now read by a named-product literal — comes back clean
+without ever having been turned red.
 """
 
 from __future__ import annotations
@@ -48,10 +49,11 @@ _READABLE = (
     "1.75x11.875 LSL", "1.5x11.875 rim", "deck 42x1.5", "11.875 I-joist", "11.875 TJI 230",
     "11.875 floor truss", "24 roof truss", "24 gable roof truss", "6.125x6.125", "12 round",
     "48x0.75 panel", "48x0.75 corner panel", "engineered-LVL", "hanger", "tapered tread",
+    "25 ga. resilient channel",
 )
 #: The trap. Every one of these resolves to the 1 1/2" x 5 1/2" fallback today.
 _UNREADABLE = (
-    "3.5x3.5 STEEL", "L3-1/2x3-1/2x1/4", "16x16", "3-16x16", "25 ga. resilient channel",
+    "3.5x3.5 STEEL", "L3-1/2x3-1/2x1/4", "16x16", "3-16x16",
     "HSS4x4x1/4", "W8x10", "", "   ", "2x", "x6",
 )
 
@@ -218,9 +220,9 @@ def test_a_product_model_in_a_size_field_is_not_swept() -> None:
 def test_a_framing_spec_names_its_assembly_and_layer() -> None:
     """The fix goes where the string was authored, so that is what the finding points at."""
     assembly = _Element("Assembly", "PARTITION")
-    assembly.layers = (_Layer("channel", _Spec(member="25 ga. resilient channel")),)
+    assembly.layers = (_Layer("channel", _Spec(member="HSS4x4x1/4")),)
     findings = _run(assemblies=[assembly],
-                    members=[_Member("25 ga. resilient channel", f"rc-{i:03d}")
+                    members=[_Member("HSS4x4x1/4", f"rc-{i:03d}")
                              for i in range(64)])
     assert len(findings) == 1
     assert findings[0].element_tags == ("PARTITION/channel",)
@@ -259,11 +261,28 @@ def test_catlin_is_graded_and_stays_out_of_the_red(catlin_findings) -> None:
     assert {f.severity.value for f in catlin_findings} == {"warn"}
 
 
-def test_catlin_finds_the_resilient_channel(catlin_findings) -> None:
-    """The one real hit in the reference house, and it is in the shared library, not the
-    house: ``INT_2X4_RC``'s FURRING layer frames a 1/2" hat channel that every lumber
-    pattern must miss, and 64 resolved strapping members were drawing as 2x6."""
-    unread = [f for f in catlin_findings if f.result is Result.UNKNOWN]
-    assert len(unread) == 1
-    assert "25 ga. resilient channel" in unread[0].message
-    assert unread[0].element_tags == ("INT_2X4_RC/resilient-channel",)
+def test_catlin_reads_every_profile_it_authors(catlin_findings) -> None:
+    """The house's last unreadable string is gone, so the check PASSes outright.
+
+    It used to be ``INT_2X4_RC``'s FURRING layer: a 1/2" hat channel that every lumber
+    pattern must miss, resolving 64 strapping members to the 1 1/2" x 5 1/2" fallback and
+    drawing them as 2x6 — 1" proud of the finish gypsum, into the room. Now a named-product
+    literal in ``profiles.cross_section``. A new UNKNOWN here is a real regression, not
+    noise.
+    """
+    assert [f.result for f in catlin_findings] == [Result.PASS]
+
+
+def test_the_resilient_channel_is_the_hat_and_not_the_fallback() -> None:
+    """The point of the literal, pinned against the fallback it replaced.
+
+    Laid flat, ``width_m`` is the standoff through the band and ``depth_m`` the screw
+    face — so 1/2" x 2 1/2", not the lumber order. Asserted against ``cross_section``
+    directly: this is the number the drawn solid, the clash graders and the cut list all
+    read.
+    """
+    section = cross_section("25 ga. resilient channel")
+    assert section.shape == "rect"
+    assert section.width_m == pytest.approx(inch(0.5).meters)
+    assert section.depth_m == pytest.approx(inch(2.5).meters)
+    assert section != cross_section("2x6")

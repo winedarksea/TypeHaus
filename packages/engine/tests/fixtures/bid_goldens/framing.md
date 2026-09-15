@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** 1d01d8c243f7534b  
+**Model hash:** b4074cae0354b4ef  
 **Lines:** 113
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -35,7 +35,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2-2x8 — header (2-2x8) | 184 | LF ordered | 57 pcs, 153.5 LF cut | building |
 | 24 gable roof truss — roof truss (24 gable roof truss) | 2 | ea | 2 pcs, 48.0 LF cut; 48.0 LF in the takeoff | building |
 | 24 roof truss — roof truss (24 roof truss) | 14 | ea | 14 pcs, 336.0 LF cut; 336.0 LF in the takeoff | building |
-| 25 ga. resilient channel 1/2" resilient channel — girt strapping (25 ga. resilient channel:resilient-channel) | 536 | LF ordered | 64 pcs, 427.3 LF cut | building |
+| 25 ga. resilient channel 1/2" resilient channel — girt strapping (25 ga. resilient channel:resilient-channel) | 536 | LF ordered | 64 pcs, 431.4 LF cut | building |
 | 2x10 — hanger board (2x10) | 58 | LF ordered | 12 pcs, 45.6 LF cut | building |
 | 2x10 SPF framing lumber — blocking (2x10:spf) | 114 | LF ordered | 23 pcs, 86.3 LF cut | building |
 | 2x2 — blocking, plate, stud (2x2) | 288 | LF ordered | 100 pcs, 262.3 LF cut | building |
