@@ -13145,16 +13145,16 @@
 "64d216ed9a9c"
 ],
 "geometry/CGW103AAAA::framing/member:trackjamb-0-l": [
--0.2667,
+-0.8636,
 1.27,
 8,
-"203429f1a6fd"
+"bf85eb1592b0"
 ],
 "geometry/CGW103AAAA::framing/member:trackjamb-0-r": [
--0.2667,
+-0.8636,
 1.27,
 8,
-"203429f1a6fd"
+"bf85eb1592b0"
 ],
 "geometry/CGW104AAAA/layer:cdx": [
 -0.3048,
@@ -53573,16 +53573,16 @@
 "0acc3c6639eb"
 ],
 "member/CGW103AAAA/trackjamb-0-l": [
--0.2667,
+-0.8636,
 1.27,
 2,
-"e6d546d658eb"
+"9d8df78270b2"
 ],
 "member/CGW103AAAA/trackjamb-0-r": [
--0.2667,
+-0.8636,
 1.27,
 2,
-"e6d546d658eb"
+"9d8df78270b2"
 ],
 "member/CGW104AAAA/W-G-W-closure-0-cdx": [
 2.2352,

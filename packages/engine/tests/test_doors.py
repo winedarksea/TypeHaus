@@ -475,6 +475,37 @@ def test_overhead_door_gets_track_jamb_legs_and_head_backing():
     assert backing[0].z0_m == pytest.approx(header.z1_m)
 
 
+def test_a_dropped_sill_takes_the_track_legs_down_with_it():
+    """The branch ``_overhead_members`` above can never reach: its sill is 0.0.
+
+    A garage overhead door drops its sill to the slab below the stem its wall bears on, and
+    ``sole_plate_breaks`` then takes the bottom plate out from under the opening entirely.
+    Legs bottomed on ``z0`` were left standing in the air by the whole drop *plus* the
+    plate — catlin's D-G-OVERHEAD by 23 1/2" — so this pins the bottom against the sill and
+    the length against the bottom, which is the pair that actually went wrong.
+    """
+    plan, wall = _wall_and_plan()
+    drop = -0.5588  # 22", catlin's garage slab below its wall's framing base
+    opening = WallOpening(center_m=4.0, width_m=GARAGE_DOOR_WIDTH.meters,
+                          height_m=GARAGE_DOOR_HEIGHT.meters, sill_m=drop, is_door=True,
+                          operation=DoorOperation.OVERHEAD)
+    members = frame_wall(plan, wall, openings=[opening])
+
+    legs = [m for m in members if m.child_key.startswith("trackjamb-")]
+    assert len(legs) == 2
+    plates = [m for m in members if m.child_key.startswith("plate-bottom")]
+    assert plates, "the plate is broken around the door, not absent from the wall"
+
+    for leg in legs:
+        assert leg.z0_m == pytest.approx(wall.z0_m + drop), "the leg reaches the slab"
+        assert leg.z0_m < min(p.z1_m for p in plates), "and starts below the plate top"
+        # The length term is the other half of the bug: fixing only ``z0`` leaves a leg
+        # that starts at the slab and stops 23 1/2" short of its own header.
+        assert leg.length_m == pytest.approx(leg.z1_m - leg.z0_m)
+    header = next(m for m in members if m.category == "header")
+    assert all(m.z1_m == pytest.approx(header.z0_m) for m in legs)
+
+
 def test_overhead_header_carries_a_real_engineered_depth():
     header = next(m for m in _overhead_members() if m.category == "header")
     assert header.profile == ENGINEERED_LVL

@@ -1554,10 +1554,21 @@ def test_garage_overhead_door_opens_from_the_slab_at_grade(catlin_model):
         node = catlin_model.plan.by_tag(node_tag)
         assert node is not None, f"{node_tag} is what makes the stem step down here"
         assert plate_end[0] == pytest.approx(node.position.xy_m[0], abs=1e-6)
-    # Deliberately silent about the track jambs. `_append_track_jamb_legs` still puts
-    # trackjamb-0-l/r inside the rough opening, bottoming on the plate this cut removes —
-    # they were already wrong (they stop 22" above the slab) and fixing them is its own
-    # change (plans/TODO.md).
+    # And the track jambs land on the slab. They stand inside the rough opening, so the
+    # plate this cut removes was never under them: bottoming them on z0 left both legs
+    # 23 1/2" in the air — the 22" sill drop plus the 1 1/2" plate — carrying a 16'-9"
+    # overhead door on nothing. They bear where the door does.
+    legs = sorted((m for m in catlin_model.all_members()
+                   if m.parent_uid == wall.uid
+                   and m.child_key.startswith("trackjamb-")),
+                  key=lambda m: m.child_key)
+    assert [m.child_key for m in legs] == ["trackjamb-0-l", "trackjamb-0-r"]
+    for leg in legs:
+        assert leg.z0_m == pytest.approx(threshold), "a track leg bears on the slab"
+        assert leg.z1_m == pytest.approx(header.z0_m), "and stops under the header"
+        assert leg.length_m == pytest.approx(leg.z1_m - leg.z0_m)
+    # The plate top is where they used to stop; the gap is the whole defect.
+    assert legs[0].z0_m < plates[0].z1_m - ft(1.0).meters
 
 
 def test_garage_base_skin_is_the_stem_band_alone_and_its_top_is_flashed(catlin_model):

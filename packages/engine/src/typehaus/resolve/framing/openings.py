@@ -308,7 +308,7 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
 
     if pattern.needs_track_jamb_legs:
         _append_track_jamb_legs(out, rw, direction, wall_start, opening, opening_index,
-                                z0, header_bottom)
+                                z0, header_bottom, sill_datum)
     # Cripples above the header bear on whatever the header actually carries: the flat
     # track nailer where one is emitted, the header itself otherwise.
     cripple_bottom = header_bottom + depth
@@ -375,19 +375,29 @@ def _append_pocket_cavity(out: list[FramedMember], rw, direction, wall_start,
 
 def _append_track_jamb_legs(out: list[FramedMember], rw, direction, wall_start,
                             opening: WallOpening, opening_index: int, z0: float,
-                            header_bottom: float) -> None:
+                            header_bottom: float, sill_datum: float) -> None:
     """Continuous jamb legs inside the rough opening carrying the vertical door track.
 
     They stop at the header: above it the panels are already on the horizontal track, and
     running them through the header would only clash with it.
+
+    **They start at the opening's own sill, not at ``z0``.** ``z0`` is the top of the
+    bottom plate, and for exactly the openings that need track legs
+    :func:`sole_plate_breaks` has already taken that plate away — an overhead door with a
+    negative sill opens the floor beneath itself. Bearing the legs on ``z0`` stood both of
+    catlin's D-G-OVERHEAD legs 23 1/2" clear of the slab they are supposed to land on
+    (a 22" sill drop plus the 1 1/2" plate), carrying the door on nothing. The same term
+    ``header_bottom`` is already built from at :func:`_append_opening_framing`.
     """
     leg_thickness = member_actual(OVERHEAD_TRACK_MEMBER)[0] * M_PER_IN
+    leg_bottom = z0 if opening.sill_m >= -1e-9 else sill_datum + opening.sill_m
     for side, sign in (("l", -1), ("r", +1)):
         station = opening.center_m + sign * (opening.width_m / 2 - leg_thickness / 2)
         position = add(wall_start, scale(direction, station))
         out.append(FramedMember(rw.uid, f"trackjamb-{opening_index}-{side}", "jack",
-                                OVERHEAD_TRACK_MEMBER, position, position, z0,
-                                header_bottom, header_bottom - z0, orient=direction))
+                                OVERHEAD_TRACK_MEMBER, position, position, leg_bottom,
+                                header_bottom, header_bottom - leg_bottom,
+                                orient=direction))
 
 
 def _append_track_backing(out: list[FramedMember], rw, header_left, header_right,
