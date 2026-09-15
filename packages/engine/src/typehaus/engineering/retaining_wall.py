@@ -76,6 +76,38 @@ KIND = "retaining_wall"
 BASIS_VERSION = "3"
 
 
+def _drainage_note(ctx: EngineeringContext, wall) -> str:  # type: ignore[no-untyped-def]
+    """The no-hydrostatic-case caveat, and WHAT it is resting on.
+
+    ** THIS USED TO REST ON NOTHING, AND SAID SO WITHOUT NOTICING. ** The note read "every
+    number presumes the drainage behind the wall works perfectly" — a presumption with no
+    referent, on a wall whose assembly carried two layers, a wash and the pour. The
+    presumption is the same one; what changed on 2026-09-14 is that it can now be checked
+    against the model instead of asserted into it.
+
+    A wall whose assembly declares a ``LayerFunction.DRAINAGE`` layer gets the layer NAMED,
+    so a reviewer can go and look at the thing the calculation is leaning on. A wall with
+    none gets told, in the record, that the assumption has no modelled basis — which is a
+    materially different sentence from the one that used to be printed on both.
+
+    Either way the arithmetic is identical: no hydrostatic case is run. The saturated thrust
+    is roughly double and it is the wet case's business, not this row's.
+    """
+    from typehaus.model.enums import LayerFunction
+
+    assembly = ctx.plan.library.resolve_assembly(wall.assembly)
+    drained = [layer.name for layer in (assembly.layers if assembly is not None else ())
+               if layer.function is LayerFunction.DRAINAGE]
+    if drained:
+        return ("No hydrostatic case — every number presumes the drained face behind this "
+                f"wall works: {', '.join(drained)} on assembly {wall.assembly}, discharging "
+                f"to the footing collector. A saturated backfill roughly doubles the thrust.")
+    return ("No hydrostatic case — every number presumes the drainage behind the wall works "
+            f"perfectly, AND ASSEMBLY {wall.assembly} DECLARES NO DRAINED LAYER, so that "
+            "presumption rests on nothing this model carries. A saturated backfill roughly "
+            "doubles the thrust.")
+
+
 def _retaining_walls(ctx: EngineeringContext) -> list:
     """Free retaining walls — the ones IRC R404.4 sends to an engineered design.
 
@@ -320,8 +352,7 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
         f"Retained soil: {soil.soil_class}. Base bears on: {base.soil_class} "
         f"(friction {base.friction_coefficient:.2f}, allowable "
         f"{base.allowable_bearing_psf:,.0f} psf).",
-        "No hydrostatic case — every number presumes the drainage behind the wall works "
-        "perfectly. A saturated backfill roughly doubles the thrust.",
+        _drainage_note(ctx, wall),
         "No seismic increment, no reinforcement design, no global-stability or settlement "
         "check. Passive resistance on the toe is neglected unless an embedment is derived.",
         f"Soil unit weight is a band, not a value ({low:.0f}-{high:.0f} pcf): no code table "

@@ -93,6 +93,11 @@ LAYER_FUNCTION_TRADE: dict[str, str] = {
     "structure": "framing",
     "sheathing": "framing",
     "membrane": "siding",
+    # A drained plane is the DRAINAGE trade's, not siding's: it goes on with the tile, the
+    # stone and the backfill, by the crew that is already in the hole, and it is inspected
+    # at `insp/foundation_backfill` alongside them. Sending it to siding would schedule a
+    # buried drainage board after the roof was on.
+    "drainage": "drainage",
     "insulation": "insulation",
     "insulation (cavity)": "insulation",
     "airgap": "siding",

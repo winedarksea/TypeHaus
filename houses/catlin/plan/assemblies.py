@@ -963,6 +963,34 @@ _WASH_FILM = inch(0.125)
 # ** THE SILANE IS GONE WHERE THIS WASH GOES ** (see SUNKEN_GARDEN_COLUMN_12 below). A
 # silane/siloxane repellent makes concrete hydrophobic and non-absorbent, which is the one
 # condition a potassium silicate cannot bond to. They are alternatives, never a stack.
+# ** THE RETAINED FACE HAD NOTHING ON IT UNTIL 2026-09-14, AND THE CALCULATION ASSUMED IT
+# DID. ** This assembly was two layers — wash and concrete — over 9.12 ft of retained face,
+# while `engineering/retaining_wall._one` declines to run a hydrostatic case on the stated
+# grounds that "the drainage behind the wall works perfectly". That assumption pointed at no
+# modelled element at all. Compare `BASEMENT_12`, which carries a waterproofing membrane on
+# a wall retaining LESS.
+#
+# Two layers outboard, and they do different jobs:
+#
+#   * **waterproofing** STOPS water. It is the same 60-mil self-adhered sheet the basement
+#     carries, and it is also the F3/C2 exposure argument's other half — the court note's
+#     §6a chloride reasoning is about the concrete, and a membrane is what keeps the water
+#     off it.
+#   * **drainage composite** MOVES water. A dimpled HDPE core with a bonded filter fabric on
+#     the soil side: it protects the membrane and gives water a vertical path to the leads
+#     at the footing, which is the element the retaining calculation's assumption now names.
+#     `LayerFunction.DRAINAGE` exists for it; an AIRGAP would have been the wrong spelling
+#     (a rainscreen dries a cladding, a drainage plane carries a head of soil water down).
+#
+# It discharges into the SAME stone the five bearing beds are, which `FD-SG-LEAD-W`/`-E`
+# already take to `DRW-SG-MAIN` — no new collector, and `drainage.tile_lead` establishes the
+# continuity from geometry rather than from this sentence.
+#
+# ** THE ALIGNMENT MOVED WITH IT, AND THAT IS THE TRAP. ** See `_WASH_AXIS_SHIFT` in
+# `params/sunken_garden.py`: the offset is the concrete's centre measured from the INTERIOR
+# face, less half the total stack, and adding 0.46" outboard changes the second term. Left
+# alone, the 12" pour slides 0.23" off the grid — silently, at 0 FAIL. The constant is now
+# written as the arithmetic rather than as a number.
 SUNKEN_GARDEN_WALL = Assembly(
     tag="SUNKEN_GARDEN_WALL",
     layers=(
@@ -972,7 +1000,57 @@ SUNKEN_GARDEN_WALL = Assembly(
               function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
     ),
     interfaces=(_CONCRETE_BEARING,),
-    source="catlin-house sunken_garden_retaining_wall_detail.py; court face washed with an untinted white mineral silicate (2 coats) 2026-09-13 — see the note above and DESIGN-LOG.md",
+    source="catlin-house sunken_garden_retaining_wall_detail.py; court face washed with an untinted white mineral silicate (2 coats) 2026-09-13; W-SG-W1/E1 only since 2026-09-14, when the retaining U took the drained outboard face — see SUNKEN_GARDEN_WALL_DRAINED and the note above",
+)
+
+# W-SG-W2 / W-SG-E2 / W-SG-S — the three FREE retaining walls, and the only three whose
+# outboard face is buried for its whole height.
+#
+# ** THE RETAINED FACE HAD NOTHING ON IT UNTIL 2026-09-14, AND THE CALCULATION ASSUMED IT
+# DID. ** `SUNKEN_GARDEN_WALL` was two layers — wash and concrete — over 9.12 ft of retained
+# face, while `engineering/retaining_wall._one` declines to run a hydrostatic case on the
+# stated grounds that "the drainage behind the wall works perfectly". That presumption
+# pointed at no modelled element at all. Compare `BASEMENT_12`, which carries a waterproofing
+# membrane on a wall retaining LESS.
+#
+# Two layers outboard, doing different jobs:
+#
+#   * **waterproofing** STOPS water — the same 60-mil self-adhered sheet the basement
+#     carries, and the other half of the note's F3/C2 chloride argument: that reasoning is
+#     about the concrete, and a membrane is what keeps the water off it.
+#   * **drainage composite** MOVES water. Dimpled HDPE with a bonded filter fabric on the
+#     soil side: it protects the membrane and gives water a vertical path to
+#     `FD-SG-LEAD-W`/`-E` at the footing, which is the element the calculation's assumption
+#     now names. `LayerFunction.DRAINAGE` exists for it; an AIRGAP would be the wrong
+#     spelling — a rainscreen dries a cladding, a drainage plane carries a head of soil
+#     water down.
+#
+# ** WHY THIS IS A SEPARATE TAG, AND THE MISTAKE THAT MADE IT ONE. ** The layers went onto
+# `SUNKEN_GARDEN_WALL` first, which put them on all five court walls — including
+# `W-SG-W1`/`W-SG-E1`, whose outboard face is EXPOSED above the yard and carries
+# `ED-M-HP2-DISC` and `ED-M-STAIR-LT`. The face moved 0.46" outboard and buried both
+# devices; `test_catlin_contract_m3` caught it. Those two are the porch box's side walls,
+# braced top and bottom, answered prescriptively by IRC Table R404.1.2(8) and outside
+# `_retaining_walls`' scope entirely. Decision 5's scope is the walls the RETAINING
+# CALCULATION leans on, and that is these three. The split follows
+# `SUNKEN_GARDEN_GRADE_BEAM_12`'s precedent exactly: the shared pour stays shared, and the
+# face that differs takes the tag.
+SUNKEN_GARDEN_WALL_DRAINED = Assembly(
+    tag="SUNKEN_GARDEN_WALL_DRAINED",
+    layers=(
+        Layer(name="wash", material_ref="silicate-wash-white", thickness=_WASH_FILM,
+              function=LayerFunction.FINISH),
+        Layer(name="concrete", material_ref="concrete", thickness=inch(12.0),
+              function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
+        Layer(name="waterproofing", material_ref="waterproofing", thickness=inch(0.06),
+              function=LayerFunction.MEMBRANE,
+              control={ControlLayer.AIR, ControlLayer.WATER}),
+        Layer(name="drainage-composite", material_ref="drainage-composite",
+              thickness=inch(0.4), function=LayerFunction.DRAINAGE,
+              control={ControlLayer.DRAINAGE}),
+    ),
+    interfaces=(_CONCRETE_BEARING,),
+    source="catlin-house W-SG-W2/E2/S — SUNKEN_GARDEN_WALL's pour and wash, plus the waterproofed and drained retained face added 2026-09-14 (owner decision 5) so engineering/retaining_wall's drainage assumption names a modelled element",
 )
 
 # W-SG-ARCH, the BURIED grade beam / strut on the MW-ME line: the identical 12" court pour off
@@ -4687,6 +4765,7 @@ ASSEMBLIES = [
     FOUNDATION_WALL_12_INT,
     SUNKEN_GARDEN_WALL,
     SUNKEN_GARDEN_GRADE_BEAM_12,
+    SUNKEN_GARDEN_WALL_DRAINED,
     SG_VENEER_BEAM_14,
     SUNKEN_GARDEN_COLUMN_12,
     BASEMENT_BRICK_VENEER,

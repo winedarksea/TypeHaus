@@ -113,11 +113,68 @@ from params.sunken_garden_options import OPTION
 # centre is 6 1/8" from the interior face where the default axis is 6 1/16". Hence +1/16" —
 # HALF THE WASH — and the pour lands back on 90"..102" exactly as before.
 #
-# ** IF `_WASH_FILM` EVER CHANGES, THIS CHANGES WITH IT. ** It is half of that value, and nothing
-# derives one from the other across the params/plan boundary. The sign is positive because the
-# wash is layer 0 (inboard); the fireplace surround carries its wash LAST and so takes the
-# negative of the same rule.
-_WASH_AXIS_SHIFT = face("center", offset=inch(0.0625))
+# ** IT IS NO LONGER HALF THE WASH, BECAUSE THE RETAINED FACE GREW A STACK (2026-09-14). **
+# The rule was always the same and the number was a special case of it:
+#
+#     offset = (the concrete's centre, measured from the interior face)
+#              − (half the whole stack, which is where the default axis lands)
+#
+# With two layers that was `(w + c/2) − (w + c)/2 = w/2` — half the wash, +1/16". Owner
+# decision 5 put a 0.06" waterproofing membrane and a 0.4" drainage composite on the
+# OUTBOARD face (`SUNKEN_GARDEN_WALL`, plan/assemblies.py), so the stack is 12.585" and the
+# same rule gives `(0.125 + 6) − 12.585/2 = -0.1675"`. The sign FLIPS: there is now more
+# outboard of the pour than inboard of it.
+#
+# ** LEFT AT +1/16" THE POUR WOULD HAVE SLID 0.23" AND NOTHING WOULD HAVE SAID SO. ** The
+# last time this stack moved 1/16" it broke three things and a check caught exactly one:
+# `SP-SG-W1-CD-SPA` fell out of its host (a FAIL), while the corner columns stopped being
+# flush with the wall faces they stand on and the raised garden stopped closing on the court
+# walls — both only by test, at 0 FAIL. The faces of these walls are NOT `axis ±
+# thickness/2`, and `test_masonry_finish.py::test_court_wash_faces_the_court` plus
+# `test_catlin_outdoor_structures.py`'s `_pour_faces` are what hold them.
+#
+# ** WRITTEN AS THE ARITHMETIC, NOT AS A NUMBER, SO THE NEXT LAYER CANNOT DO THIS AGAIN. **
+# The layer thicknesses are transcribed rather than imported because a params module cannot
+# import the plan that imports it — the same constraint `SPEC.site_grade_in` lives under —
+# and `test_retaining_court` asserts the two agree.
+# ** TWO SHIFTS, BECAUSE THE FIVE WALLS ARE NO LONGER ONE ASSEMBLY. ** `W-SG-W1`/`E1` are
+# the porch box's side walls, exposed above the yard and carrying wall devices on that face;
+# `W-SG-W2`/`E2`/`S` are the free retaining U, buried for their whole height and drained. The
+# first pair keeps `SUNKEN_GARDEN_WALL` and the second takes `SUNKEN_GARDEN_WALL_DRAINED`.
+#
+# ** PUTTING THE DRAINED LAYERS ON ALL FIVE MOVED THE PORCH WALLS' EXPOSED FACE 0.46" AND
+# BURIED TWO DEVICES. ** `ED-M-HP2-DISC` and `ED-M-STAIR-LT` hang on W-SG-E1's east face at
+# -0'-8", 32" clear of the yard; `test_catlin_contract_m3` caught them buried 0.65" and
+# 0.50". That is the same blast radius the note above records for the 1/16" wash, at seven
+# times the distance. A face here is NOT `axis ± thickness/2`.
+_WASH_FILM_IN = 0.125
+_SG_POUR_IN = 12.0
+_SG_RETAINED_FACE_IN = 0.06 + 0.4      # waterproofing + drainage composite
+
+
+def _pour_on_grid_offset(outboard_in: float):
+    """The alignment that keeps the 12" pour centred on its own node line.
+
+    One rule, both assemblies, and the number is a consequence of it rather than a literal:
+
+        offset = (the concrete's centre, measured from the INTERIOR face)
+                 − (half the whole stack, which is where the default axis lands)
+
+    With nothing outboard that is `+w/2` — half the wash, +1/16", which is what this file
+    carried from the day the wash arrived. With 0.46" outboard it is −0.1675": the sign
+    FLIPS, because there is now more outboard of the pour than inboard of it.
+
+    ** THE THICKNESSES ARE TRANSCRIBED, NOT IMPORTED. ** A params module cannot import the
+    plan that imports it — the same constraint `SPEC.site_grade_in` lives under — and
+    `test_retaining_court` asserts the two agree.
+    """
+    return face("center", offset=inch(
+        (_WASH_FILM_IN + _SG_POUR_IN / 2.0)
+        - (_WASH_FILM_IN + _SG_POUR_IN + outboard_in) / 2.0))
+
+
+_WASH_AXIS_SHIFT = _pour_on_grid_offset(0.0)
+_DRAINED_AXIS_SHIFT = _pour_on_grid_offset(_SG_RETAINED_FACE_IN)
 
 
 @dataclass(frozen=True)
@@ -1081,21 +1138,24 @@ WALLS = [
     # this wall", and none has. The engine computes a court that checks out — a draft
     # verdict, not a stamp.
     FoundationWall(uid="SGW105AAAA", tag="W-SG-W2", start_node="N-SG-MW",
-                   end_node="N-SG-SW", assembly="SUNKEN_GARDEN_WALL", alignment=_WASH_AXIS_SHIFT,
+                   end_node="N-SG-SW", assembly="SUNKEN_GARDEN_WALL_DRAINED",
+                   alignment=_DRAINED_AXIS_SHIFT,
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom,
                    unbalanced_fill=_ret_unbalanced_fill,
                    vertical_reinforcement=_RET_REBAR,
                    reinforcement=_RET_STEM_STEEL,
                    lateral_support="base", base_restraint_ref="W-SG-ARCH"),
     FoundationWall(uid="SGW106AAAA", tag="W-SG-E2", start_node="N-SG-SE",
-                   end_node="N-SG-ME", assembly="SUNKEN_GARDEN_WALL", alignment=_WASH_AXIS_SHIFT,
+                   end_node="N-SG-ME", assembly="SUNKEN_GARDEN_WALL_DRAINED",
+                   alignment=_DRAINED_AXIS_SHIFT,
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom,
                    unbalanced_fill=_ret_unbalanced_fill,
                    vertical_reinforcement=_RET_REBAR,
                    reinforcement=_RET_STEM_STEEL,
                    lateral_support="base", base_restraint_ref="W-SG-ARCH"),
     FoundationWall(uid="SGW107AAAA", tag="W-SG-S", start_node="N-SG-SW",
-                   end_node="N-SG-SE", assembly="SUNKEN_GARDEN_WALL", alignment=_WASH_AXIS_SHIFT,
+                   end_node="N-SG-SE", assembly="SUNKEN_GARDEN_WALL_DRAINED",
+                   alignment=_DRAINED_AXIS_SHIFT,
                    unbalanced_fill=_ret_unbalanced_fill,
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom,
                    vertical_reinforcement=_RET_REBAR,
@@ -1742,7 +1802,21 @@ GARDEN_DRYWELL = Drywell(
     # string rather than swept up, because the field's plan coordinates are derived below
     # this point and the well is what they are derived towards.
     inlet_refs=tuple(b.tag for b in FOOTING_BEDDING)
-    + ("FD-SG-FIELD", "FD-SG-LEAD-W", "FD-SG-LEAD-E"),
+    + ("FD-SG-FIELD", "FD-SG-LEAD-W", "FD-SG-LEAD-E", "FD-SG-COL-LEAD"),
+    # ** THE WELL'S OWN WAY OUT, WHICH IT DID NOT HAVE (2026-09-14). ** `FD-SG-OVERFLOW` is
+    # the PLANTING FIELD's overflow, not the well's: it tees off the field at -127 7/16" and
+    # runs north to the sump. When the WELL filled past its own top of stone there was no
+    # modelled route at all — the water backed up into the connected wall-bed stone and left,
+    # if it left, implicitly through that stone into the field lateral. Nothing drew it and
+    # nothing checked it.
+    #
+    # Naming it makes the implicit route the authored one and puts a level on it. The well
+    # spills at -127 7/16" — `FD-SG-OVERFLOW`'s own invert, the profile underside, which is
+    # the elevation the overflow note already argues for: storage in a soakaway is only the
+    # volume BENEATH its inlet, so the well must fill and spill rather than back up into the
+    # rootzone gravel. One number, stated once, on the run that already carries it.
+    overflow_ref="FD-SG-OVERFLOW",
+    overflow_invert=_court_top - inch(SPEC.field_depth_in),
 )
 
 # --- garden floor: a concrete RIM around an open gravel field ---------------------
@@ -1835,9 +1909,23 @@ GARDEN_UNDERDRAIN = FrenchDrain(
     # `_field_*` names so it cannot drift from the field it drains.
     path=(pt(ft(_field_x_mid), ft(_field_y_s)),
           pt(ft(_field_x_mid), ft((_y_in_s + _y_in_n) / 2.0))),
-    # The trench floor: 8" into the subgrade below the profile's underside, derived from
-    # the court plane and the profile depth. NEVER a literal — `SPEC.field_depth_in` moves.
+    # The trench floor AT THE SOUTH END: 8" into the subgrade below the profile's underside,
+    # derived from the court plane and the profile depth. NEVER a literal —
+    # `SPEC.field_depth_in` moves.
     invert=_court_top - inch(SPEC.field_depth_in) - inch(8),
+    # ** IT FALLS INTO THE WELL, AND UNTIL 2026-09-14 IT DID NOT. ** `FrenchDrain` carried
+    # ONE invert and the resolver extruded the whole trench dead level, so this run ended at
+    # -135 7/16" — **28" above `_SG_DRYWELL_TOP`**, discharging into undisturbed clay above
+    # the stone it is drawn to feed. `drainage.discharge_consistency` resolved the name and
+    # never asked where the pipe went, exactly as it did for the five wall-bed tiles that
+    # ended 9" over this same well before it was moved onto their plane. The precedent for
+    # the fix is `_WELL_LEAD` below: write the far end as **the same expression the well's
+    # top is**, so the two cannot drift into a run that ends in the air.
+    #
+    # 28" over the run's 10'-0" is 2.3 in/ft. Steep against USGA's 0.5% minimum and that is
+    # the right direction — a lateral outfall dropping into a soakaway wants fall, and only
+    # too flat is a defect. `drainage.trench_fall` refuses the reverse.
+    end_invert=_SG_WALL_BED_BOTTOM,
     trench_width=inch(6), trench_depth=inch(8),
     tile=DrainTile(diameter=inch(4), sock=False, discharge="DRW-SG-MAIN"),
     discharge_ref="DRW-SG-MAIN",
@@ -1906,10 +1994,55 @@ GARDEN_LEAD_E = FrenchDrain(
     **_WELL_LEAD,
 )
 
+# ** THE THIRD LEAD, AND IT EXISTS FOR THE SAME REASON THE OTHER TWO DO (2026-09-14). **
+# `FB-SG-COL` names DRW-SG-MAIN, the well names it back, and its stone reached nothing:
+# `drainage.tile_lead` walks the connected body of stone under this court and finds the rear
+# pier's levelling course **alone in a body of one**, 8'-10" from the well in plan with
+# nothing between. Its twin `FB-SG-FCOL` needs no lead only because `FB-SG-ARCH`'s 33"
+# section happens to run between it and the shaft — an accident of position, not a design,
+# and the rear pier simply sits too far north to catch it.
+#
+# The bedding comment above already says these two courses are "the host for the tile that
+# has to get water out of these two excavations". This is the pipe that does it.
+#
+# It FALLS: 5" from the bell's levelling course at -13'-2 7/16" to `_SG_WALL_BED_BOTTOM` at
+# -13'-7 7/16", over 11'-4" — 0.44 in/ft, comfortably over any minimum and comfortably
+# under anything that would need a drop structure. Both ends are written as the expressions
+# the bed and the well are built from, so neither can drift into a run that ends in the air.
+#
+# It passes UNDER W-SG-ARCH at -13'-2 7/16" to -13'-7 7/16", below the beam's own underside
+# at -10'-10 7/16" and inside `FB-SG-ARCH`'s own 33" bed for the last of its length — the
+# same stone, not a second excavation crossing the strut. Compare `FD-SG-OVERFLOW`, which
+# crosses the beam ABOVE its underside and is therefore a sleeve rather than a trench.
+#
+# uid minted by hand, deliberately: `haus fmt` does not visit `params/*.py`.
+GARDEN_LEAD_COL = FrenchDrain(
+    uid="SGFD05AAAA", tag="FD-SG-COL-LEAD",
+    path=(pt(ft(_cx), ft(_y_col) - inch(_PIER_PAD_SIDE_IN) / 2.0 - inch(6)),
+          pt(ft(_cx), ft(_sg_well_y))),
+    invert=ft(_pier_bell_bottom_ft) - inch(SPEC.pier_levelling_bedding_in),
+    end_invert=_SG_WALL_BED_BOTTOM,
+    trench_width=inch(12), trench_depth=inch(8),
+    tile=DrainTile(diameter=inch(4), sock=True, discharge="DRW-SG-MAIN"),
+    discharge_ref="DRW-SG-MAIN",
+)
+
+# ** IT NOW REACHES THE HOUSE STONE, AND IT USED TO STOP SIX INCHES SHORT. ** The trench
+# ended at `_y_in_n` (-0'-10"), which is the porch deck's north edge and not a drainage
+# elevation at all — the run stopped there because that is where the court's own geometry
+# stops, and the sentence above ("North of the court it ties into the house collector") was
+# the whole of the connection. `FB-B-S2`/`FB-B-S3`'s bedding stone starts 6" further north
+# at -0'-4", so what lay between the two was six inches of undisturbed clay, and
+# `drainage.outfall_connection` says so.
+#
+# `_HOUSE_BED_FACE_Y_FT` is that face, measured. Six inches is a trivial amount of digging
+# and the defect it fixes is not trivial: this is the court's SECOND way out, and the leg
+# that was missing is the one at the far end of it.
+_HOUSE_BED_FACE_Y_FT = -4.0 / 12.0
 GARDEN_OVERFLOW = FrenchDrain(
     uid="SGFD02AAAA", tag="FD-SG-OVERFLOW",
     path=(pt(ft(_field_x_mid), ft(_field_y_n + 1.0)),
-          pt(ft(_field_x_mid), ft(_y_in_n))),
+          pt(ft(_field_x_mid), ft(_HOUSE_BED_FACE_Y_FT))),
     invert=_court_top - inch(SPEC.field_depth_in),
     trench_width=inch(6), trench_depth=inch(8),
     tile=DrainTile(diameter=inch(4), sock=False, discharge="SM-B-RADON"),
@@ -4276,7 +4409,7 @@ BALCONY_BEAM_CAPS = [c for c in BEAM_CAPS if c not in PORCH_BEAM_CAPS]
 SEQUENCE_NOTES = [
     Annotation(
         uid="SGAN01AAAA", tag="AN-SG-PLACEMENTS", position=pt(ft(_cx), ft(-20)),
-        text="THREE PLACEMENTS, NOT FOUR — AND THE ORDER IS THE DESIGN. (1) FOOTINGS AND PIERS: the five strip footings FT-SG-W1/E1/W2/E2/S and BOTH column pads in one placement. THE PADS ARE FORMED, NOT UNDER-REAMED, SINCE 2026-09-14: 30in square by 12in thick, bearing at -12ft 7-7/16in, with the 12in round cast on top of each. There is no auger and no under-reamer on this job any more — the excavation is dug and the pad is formed in the bottom of it, which is why the levelling bed under each (FB-SG-COL/-FCOL) is still 7in of washed stone and not a 42in replacement section. Dig both pits WITH THE OPEN BASEMENT EXCAVATION: PD-SG-COL reaches to within 8in of FT-B-S2/S3 in plan and bears 34in below them, inside their 1:1 influence line, so excavating after backfill undermines the house footing. (2) WALLS AND GRADE BEAM: all five court walls and W-SG-ARCH, one form height (every top is the porch datum 0ft 0in), one strip-and-set. THE HOUSE BASEMENT WALL MUST BE POURED, CURED AND SURVEYED FIRST — the upper thermal-break dowels are epoxied into it with about 1in of drill tolerance. (3) RIM SLAB AND COLUMNS: SL-SG-FLOOR with all six 12in cast rounds in the same placement, the four balcony corners braced off the court floor and the wall tops rather than off porch framing that does not exist yet. EVERY COURT PLACEMENT NEEDS THE BOOM PUMP and the pumping allowance is already recorded as probably short. This saves one mobilisation and one below-minimum load against the four-pour sequence it replaces"),
+        text="THREE PLACEMENTS, NOT FOUR — AND THE ORDER IS THE DESIGN. (1) FOOTINGS AND PIERS: the five strip footings FT-SG-W1/E1/W2/E2/S and BOTH column pads in one placement. THE PADS ARE FORMED, NOT UNDER-REAMED, SINCE 2026-09-14: 30in square by 12in thick, bearing at -12ft 7-7/16in, with the 12in round cast on top of each. There is no auger and no under-reamer on this job any more — the excavation is dug and the pad is formed in the bottom of it, which is why the levelling bed under each (FB-SG-COL/-FCOL) is still 7in of washed stone and not a 42in replacement section. Dig both pits WITH THE OPEN BASEMENT EXCAVATION: PD-SG-COL reaches to within 8in of FT-B-S2/S3 in plan and bears 34in below them, inside their 1:1 influence line, so excavating after backfill undermines the house footing. (2) WALLS AND GRADE BEAM: all five court walls, W-SG-ARCH and W-SG-BRKBM, one form height (every wall top is the porch datum 0ft 0in), one strip-and-set. W-SG-BRKBM IS CAST MONOLITHIC WITH THE TWO SIDE WALLS, NOT DOWELLED INTO THEM (settled 2026-09-14): it is a blockout inside this same form between -8ft 6-7/16in and -10ft 0-3/16in, its 3 #5 top and bottom lapping into W-SG-W1/W-SG-E1s vertical steel. It was named in NO placement until now, while notes/sunken_garden_veneer_beam.md called it cast in one section and chipped-and-dowelled in another - and there is no existing pour to chip, because this placement is where those side walls are themselves cast. THE HOUSE BASEMENT WALL MUST BE POURED, CURED AND SURVEYED FIRST — the upper thermal-break dowels are epoxied into it with about 1in of drill tolerance. (3) RIM SLAB AND COLUMNS: SL-SG-FLOOR with all six 12in cast rounds in the same placement, the four balcony corners braced off the court floor and the wall tops rather than off porch framing that does not exist yet. EVERY COURT PLACEMENT NEEDS THE BOOM PUMP and the pumping allowance is already recorded as probably short. This saves one mobilisation and one below-minimum load against the four-pour sequence it replaces"),
     Annotation(
         uid="SGAN02AAAA", tag="AN-SG-MIX", position=pt(ft(_cx), ft(-23)),
         text="MIX SUBSTITUTION, PERMITTED: the court comes off ONE ticket. PIER_BASE_12 (the two belled pier bases) specifies BURIED_MIX and everything else here specifies EXPOSED_MIX. Both are 5,000 psi at w/cm <= 0.40; EXPOSED_MIX adds class F3+C2 air entrainment and SCM caps, so it satisfies every requirement BURIED_MIX states and is the richer of the two. SUPPLY THE WHOLE COURT WITH EXPOSED_MIX. Do not read this as an assembly change — PIER_BASE_12 is shared with the north entry's pads, where the buried mix is correct and cheaper, and retyping it would move concrete that is not in this court. This note is the substitution; the schedule is not wrong"),
@@ -4288,7 +4421,7 @@ SEQUENCE_NOTES = [
 BASEMENT_ELEMENTS = [*NODES, *WALLS, COLUMN, FRONT_COLUMN, *FOOTINGS,
                      *FOOTING_BEDDING, GARDEN_DRYWELL, GARDEN_UNDERDRAIN, GARDEN_OVERFLOW,
                      GARDEN_OVERFLOW_SLEEVE, GARDEN_OVERFLOW_BEAM_PIPE,
-                     GARDEN_LEAD_W, GARDEN_LEAD_E, *SEQUENCE_NOTES,
+                     GARDEN_LEAD_W, GARDEN_LEAD_E, GARDEN_LEAD_COL, *SEQUENCE_NOTES,
                      *GARDEN_FLOOR_OPENINGS, GARDEN_SLAB,
                      GARDEN_FIELD, *FROST_WINGS, *DOWELS, *STEM_DOWELS]
 # --- the porch enclosure's north deck-slot closure (2026-09-03) -----------------------

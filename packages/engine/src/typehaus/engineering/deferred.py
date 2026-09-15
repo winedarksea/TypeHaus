@@ -176,3 +176,201 @@ def _rafter_keys(ctx: EngineeringContext) -> list[str]:
     """
     return sorted(roof.tag for roof in ctx.model.roofs
                   if not any(member.category == "rafter" for member in roof.members))
+
+
+# --- The sunken garden's three silent gaps (2026-09-14) -----------------------------------
+#
+# All three were found by an outside review of the court. What they had in common is the
+# thing a deferral fixes: each is a real piece of engineering that this engine computes
+# nothing for, and each was invisible — not UNKNOWN, not INCOMPLETE, simply absent from
+# ``haus engineering`` and from ``out/calcs/03-open-items.md``. An absence reads exactly like
+# a thing with no problem.
+#
+# **Two cautions, recorded because the obvious fixes are worse.** ``_retaining_walls`` is NOT
+# widened to reach the apron: minting isolated-cantilever records for walls whose whole
+# problem is that they are *not* isolated makes the register less true, not more. And
+# ``foundation.py``'s ``fill_ft < 4.0`` PASS on the apron is left exactly as it is: the check
+# says honestly that IRC R404.1.1 does not engage at 3'-4", which is correct. The defect was
+# never that check's verdict — it was that nothing else then looked.
+
+_declare(Deferral(
+    kind="veneer_beam",
+    reason="a cast concrete beam spans between two walls and carries a masonry wythe, and "
+           "no registered calculation grades it. `engineering/sunken_garden/veneer_beam.py` "
+           "screens flexure, shear, deflection and torsion — at 1.4D on the real mix since "
+           "2026-09-14 — but it is a free function that writes a REPORT: it reads no plan, "
+           "mints no record, and nothing can be sealed against it. Four things follow and "
+           "this engine computes none of them. (1) The END RESTRAINT: the beam is cast "
+           "monolithic with the side walls (AN-SG-PLACEMENTS, placement 2), and the "
+           "reinforcement continuity through that corner — the top and bottom bars' lap "
+           "into the walls' vertical steel — is nobody's number here. (2) TORSION "
+           "DETAILING: the wythe is deliberately off-centre, and the factored twist is "
+           "below cracking but 1.7x ACI 318-19 §22.7.4.1's threshold, so §9.6.4's closed "
+           "hoops and longitudinal steel are owed — the screening says so, no record "
+           "carries it. (3) The MASONRY ANCHORS over a ~10in insulated standoff, which no "
+           "prescriptive table contemplates and this engine has no calculation for at all. "
+           "(4) The SOFT JOINT at each end of the wythe, which the model does not carry",
+    designer="structural engineer of record, with the mason's anchor supplier for the "
+             "standoff — two roles because the anchor is a product selection against a "
+             "published thickness and the beam is not",
+    deliverable="a sealed beam design at the as-built section carrying the wythe at 1.4D — "
+                "flexural and torsional reinforcement, the lap into each side wall, and the "
+                "stirrup form — plus a TMS 402 anchor design for the full insulated "
+                "standoff and a movement-joint detail at each end of the wythe",
+    unblocks="Foundations — the S-100 beam schedule and the veneer anchorage detail",
+    oracle=(Oracle(note="sunken_garden_veneer_beam.md",
+                   test="tests/test_sunken_garden_study.py"),),
+))
+
+_declare(Deferral(
+    kind="thermal_break_transfer",
+    reason="a row of bars ties two separate pours across a deliberate insulating break, and "
+           "the force in them is authored rather than computed. This engine derives NO "
+           "demand for the joint: not the differential settlement between a heated house "
+           "footing and a freestanding court wall standing in an open excavation, not the "
+           "thermal movement the break exists to permit, not the shear the two pours "
+           "exchange. The bar count is set by the board's width and a spacing rule, which "
+           "is a detailing rule and not a limit state, and the GFRP bars' own stiffness and "
+           "development are manufacturer data the model does not hold. NOTHING GRADES A "
+           "THERMAL BREAK FOR CONTINUITY EITHER, so the board's own integrity — it is a "
+           "Layer against the fresh head of a pour, held against floating and racking by "
+           "nothing — is equally uncomputed",
+    designer="structural engineer of record, with the GFRP manufacturer's published bond "
+             "and modulus data",
+    deliverable="a stated design shear and differential movement across each break, the bar "
+                "size, count and embedment that carry them, and the bracing that holds the "
+                "board in position during the pour",
+    unblocks="Foundations — the thermal-break detail on S-100 and the pour-sequence hold "
+             "point it depends on",
+    oracle=(Oracle(note="sunken_garden_court_free_body.md", section="§9",
+                   test="tests/test_retaining_court.py"),),
+))
+
+_declare(Deferral(
+    kind="tiered_retaining",
+    reason="this wall retains fill, names no lateral support and stands on no footing of its "
+           "own — a segmental gravity wall, and one that is TIERED above a taller cut rather "
+           "than standing alone. Three things follow. The prescriptive path does not reach "
+           "it: `structural.foundation_unbalanced_fill` correctly reports that IRC R404.1.1 "
+           "does not engage below 48in of fill, and that verdict is right and is not the "
+           "gap — the gap is that nothing else then looks. The engineered path does not "
+           "reach it either: `retaining_wall` scopes to walls that declare a lateral "
+           "support, and widening it to here would mint an ISOLATED-CANTILEVER record for a "
+           "wall whose whole problem is that it is not isolated, which is worse than "
+           "silence. And the real question is neither: an upper tier surcharges the lower "
+           "wall, the two share a failure surface, and global stability of the pair is a "
+           "slope-stability problem this engine has no method for",
+    designer="geotechnical engineer for global stability and the surcharge on the lower "
+             "wall, with the segmental wall supplier's engineer for the unit, the "
+             "reinforcement and the levelling pad",
+    deliverable="a sealed tiered-wall design — internal and external stability of the upper "
+                "wall, the surcharge it delivers to the lower one, and a global stability "
+                "analysis of the pair on a common failure surface — against a measured soil "
+                "profile rather than presumptive table values",
+    unblocks="Site and Foundations — the landscape wall sections and the court wall's own "
+             "design surcharge",
+    oracle=(Oracle(note="sunken_garden_court_free_body.md", section="§9",
+                   test="tests/test_retaining_court.py"),),
+))
+
+
+def _footingless_walls(ctx: EngineeringContext) -> list:
+    """Every ``FoundationWall`` with no ``Footing`` naming it — it spans or it is a gravity
+    unit, and either way the strip-footing calculations do not apply to it."""
+    from typehaus.model.structure import Footing, FoundationWall
+
+    hosted = {f.under for f in ctx.plan.all_elements() if isinstance(f, Footing)}
+    return [w for w in ctx.plan.all_elements()
+            if isinstance(w, FoundationWall) and w.tag not in hosted]
+
+
+@keys("veneer_beam")
+def _veneer_beam_keys(ctx: EngineeringContext) -> list[str]:
+    """Footingless walls that something else bears its whole weight on.
+
+    The relation, not a tag or an assembly name: a wall with no footing whose TOP is another
+    footingless wall's BOTTOM, where that other wall declares no lateral support of its own.
+    That is a veneer wythe standing on a beam — the wythe has nowhere else to go, and the
+    beam is the only thing under it.
+
+    Plan overlap is required as well as the elevation match, so two unrelated members that
+    happen to share a level are not read as bearing on each other. It is a screening
+    predicate and it is stated as one: a beam carrying something other than a wall — a slab
+    edge, a stair — is not found here, and a house that builds one should widen this rather
+    than assume the silence means no.
+    """
+    supports: set[str] = set()
+    walls = _footingless_walls(ctx)
+    axes = {w.tag: _plan_extent(ctx, w.tag) for w in walls}
+    for beam in walls:
+        if beam.top_elevation is None:
+            continue
+        for carried in walls:
+            if carried.tag == beam.tag or carried.bottom_elevation is None:
+                continue
+            if getattr(carried, "lateral_support", None) is not None:
+                continue
+            if abs(carried.bottom_elevation.meters - beam.top_elevation.meters) > 1e-6:
+                continue
+            if _extents_overlap(axes.get(beam.tag), axes.get(carried.tag)):
+                supports.add(beam.tag)
+    return sorted(supports)
+
+
+@keys("thermal_break_transfer")
+def _thermal_break_keys(ctx: EngineeringContext) -> list[str]:
+    """Every ``Dowel`` carrying a foam block — a structural tie across a deliberate break.
+
+    ``foam_thickness`` is the whole test and it is the right one: a dowel with no block is an
+    ordinary pour-joint tie between two pieces of the same structure, which needs no
+    assignment. A dowel with one is holding two structures together *through* an insulator
+    that was put there to keep them apart, and the force in it is a design question.
+    """
+    from typehaus.model.structure import Dowel
+
+    return sorted(d.tag for d in ctx.plan.all_elements()
+                  if isinstance(d, Dowel) and d.foam_thickness is not None)
+
+
+@keys("tiered_retaining")
+def _tiered_retaining_keys(ctx: EngineeringContext) -> list[str]:
+    """Walls that retain fill, declare no restraint, and have no footing.
+
+    Deliberately NOT ``_retaining_walls``' predicate, and deliberately not an extension of
+    it. That function scopes to ``lateral_support in ("unsupported", "base")`` — a wall that
+    has said something about how it stands. This one scopes to the walls that have said
+    nothing and have no strip footing either, which in practice is a segmental gravity unit
+    on a levelling pad. The two sets are disjoint by construction, so no wall gets both an
+    isolated-cantilever record and this assignment.
+    """
+    out = []
+    for wall in _footingless_walls(ctx):
+        if getattr(wall, "lateral_support", None) is not None:
+            continue
+        fill = getattr(wall, "unbalanced_fill", None)
+        if fill is not None and fill.meters > 0.0:
+            out.append(wall.tag)
+    return sorted(out)
+
+
+def _plan_extent(ctx: EngineeringContext, tag: str):
+    """``(x0, y0, x1, y1)`` bounding box of a resolved wall's axis, metres, or ``None``."""
+    wall = next((w for w in ctx.model.walls if w.tag == tag), None)
+    if wall is None:
+        return None
+    (ax, ay), (bx, by) = wall.axis
+    return min(ax, bx), min(ay, by), max(ax, bx), max(ay, by)
+
+
+#: How far apart two axis boxes may sit and still be read as one bearing on the other,
+#: metres. 1 ft — a wall bearing on a beam is within its own thickness of it, and anything
+#: further apart is two members that share an elevation and nothing else.
+_BEARING_PLAN_TOLERANCE_M = 0.3048
+
+
+def _extents_overlap(first, second) -> bool:
+    if first is None or second is None:
+        return False
+    tol = _BEARING_PLAN_TOLERANCE_M
+    return (first[0] - tol <= second[2] and second[0] - tol <= first[2]
+            and first[1] - tol <= second[3] and second[1] - tol <= first[3])

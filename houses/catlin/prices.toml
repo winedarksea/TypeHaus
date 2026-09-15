@@ -3275,6 +3275,27 @@
 # (25-60 F) with `Primer B2 LVC` is a premium grade, and it is not optional if the foundation
 # lands below 40 F. The high end carries it.
 "waterproofing" = { material = { low = 1.10, high = 1.55 }, labour = { low = 1.70, high = 3.80 } }  # the below-grade face
+# ** THE DRAINED PLANE ON THE COURT'S RETAINED FACE (2026-09-14, owner decision 5). ** A
+# dimpled HDPE core with a bonded non-woven filter fabric, hung over the waterproofing above
+# and carrying water down to FD-SG-LEAD-W/-E at the footing. It is what
+# `engineering/retaining_wall`'s "no hydrostatic case" note now names instead of presuming.
+#
+# MATERIAL. Published metro pricing for the 0.4"-core class, 4' x 50' roll (200 SF):
+#   Delta-Drain 6000    $205-245/roll = $1.03-1.23/SF
+#   Mar-flex ShoreDri   $180-220/roll = $0.90-1.10/SF
+#   Platon Double Drain $195-235/roll = $0.98-1.18/SF
+# Plus the termination bar, the fabric-wrapped top edge and 6" laps: +10-15% of sheet.
+# 0.90 + 10% -> 0.99; 1.23 + 15% -> 1.41.
+#
+# LABOUR. It hangs on the membrane it protects, in the same open excavation, by the same
+# crew on the same day — which is why `emit/trade_rules.py` puts it in the DRAINAGE trade
+# rather than siding. It is markedly faster work than the sheet under it: no primer, no
+# cant fillet, no two-ply corners, mechanically fastened at the top and lapped down. Taken
+# at roughly half the waterproofing labour above.
+#
+# ⚠ SAME CAVEAT AS THE ROW ABOVE, AND IT IS THE SAME QUOTE. Whoever prices the membrane
+# prices this with it; do not carry these two to a bid separately.
+"drainage-composite" = { material = { low = 0.99, high = 1.41 }, labour = { low = 0.85, high = 1.90 } }  # the retained face
 # THE TRUSS WALL'S 4" OF CLOSED-CELL SPRAY FOAM (2026-08-23), keyed by MATERIAL:THICKNESS —
 # see `cli/prices.QUALIFIED_KEY_FIELD`.
 #
@@ -4556,7 +4577,13 @@
 # and not the 42" masonry parapet over it — neither returns, and the $5,395-$11,257 that
 # retiring them saved is not being given back. (That measurement is in git history; the
 # 2026-08-31 rewrite of plans/cost-options.md keeps live options only.)
-"SUNKEN_GARDEN_WALL" = { material = { low = 215, high = 280 }, labour = { low = 285, high = 620 } }  # 24.87 CY — the five COURT walls only since 2026-09-13; was merged $500-900
+"SUNKEN_GARDEN_WALL" = { material = { low = 215, high = 280 }, labour = { low = 285, high = 620 } }  # W-SG-W1/E1 — the porch box's side walls, since the 2026-09-14 split
+# The three FREE retaining walls, split off SUNKEN_GARDEN_WALL on 2026-09-14 for the same
+# reason SUNKEN_GARDEN_GRADE_BEAM_12 was: one face differs. Same 12" pour, same EXPOSED_MIX,
+# same ticket, SAME RATE — the waterproofing and the drainage composite bill by the square
+# foot in [envelope_layers] and are not in this number. An unpriced assembly tag is dropped
+# from the takeoff SILENTLY and the total falls, which is why this row exists at all.
+"SUNKEN_GARDEN_WALL_DRAINED" = { material = { low = 215, high = 280 }, labour = { low = 285, high = 620 } }  # W-SG-W2/E2/S — the retaining U
 # ** W-SG-ARCH SPLIT OFF 2026-09-13 AT THE IDENTICAL RATE, AND THE SPLIT IS RATE-NEUTRAL. ** The
 # buried grade beam / strut on the MW-ME line is the same 12" pour off the same ready-mix ticket as
 # the five court walls, so material and labour are byte-identical here and 1.08 + 24.87 = 25.95 CY

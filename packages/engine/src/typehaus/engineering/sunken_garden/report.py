@@ -373,11 +373,27 @@ def write_study(output_dir: Path, design: SunkenGardenDesignInput | None = None,
         "removed ties, missing-input refusal, global equilibrium and 4/3/2-foot mesh response.", "",
         "## Corrected veneer beam", "",
         f"Effective span {beam.effective_span_ft:.2f} ft; factored load "
-        f"{beam.factored_load_plf:.0f} plf; Mu {beam.factored_moment_ftlb / 1000:.1f} kip-ft; "
+        f"{beam.factored_load_plf:.0f} plf at **U = 1.4D** (ACI 318-19 Eq. 5.3.1a — the "
+        "member carries dead weight and nothing else, so 1.2D + 1.6L does not govern and "
+        f"1.2D alone is not a combination ACI publishes); Mu "
+        f"{beam.factored_moment_ftlb / 1000:.1f} kip-ft; "
         f"Vu {beam.factored_shear_lb / 1000:.1f} kip. Required steel by demand is "
-        f"{beam.required_steel_in2:.2f} in² and ACI minimum is {beam.minimum_steel_in2:.2f} "
-        f"in². Three #5 ({beam.provided_steel_in2:.2f} in²) is the study section; the old "
-        "two-#5 conclusion is superseded. Torsion restraint and development remain open.", "",
+        f"{beam.required_steel_in2:.2f} in² and ACI §9.6.1.2's minimum — the **greater** of "
+        f"3√f'c·b·d/fy and 200·b·d/fy, at the real 5,000 psi mix — is "
+        f"{beam.minimum_steel_in2:.3f} in². **Two #5 is 0.620 in² and does not clear it**, "
+        "and §9.6.1.3's one-third-over exception does not rescue it either (4/3 of the "
+        f"demand steel is {beam.required_steel_in2 * 4.0 / 3.0:.3f} in²). Three #5 "
+        f"({beam.provided_steel_in2:.2f} in²) is the study section, at d/c "
+        f"{beam.flexure_ratio:.2f} flexure and {beam.shear_ratio:.2f} shear.", "",
+        f"**Torsion is computed, not asserted.** The wythe's eccentric weight gives "
+        f"{beam.torsion_ftlb_per_ft:.0f} ft-lb per foot, "
+        f"{beam.factored_torsion_ftlb:,.0f} ft-lb factored at the support. That is **below "
+        f"cracking** (φTcr {beam.phi_cracking_torsion_ftlb:,.0f} ft-lb), so ACI §22.7.3.2 "
+        "lets the twist redistribute into the slab — and **above the threshold** (φTth "
+        f"{beam.phi_threshold_torsion_ftlb:,.0f} ft-lb), so §9.6.4's minimum torsional "
+        "reinforcement is owed regardless: closed hoops with 135° hooks plus longitudinal "
+        "steel. The two provisions answer different questions and only one of them used to "
+        "be quoted. Pocket restraint and development remain open.", "",
         "## Drainage and water envelope", "",
         "| Scenario | Model action | Required disposition |", "|---|---|---|",
         "| Normal infiltration | Wall drain to drywell and overflow | Survey every invert |",

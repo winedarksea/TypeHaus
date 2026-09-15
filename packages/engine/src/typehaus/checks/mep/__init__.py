@@ -8,6 +8,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     drain_geometry,
     drain_tie_in,
     drainage,
+    drainage_network,
     duct_connectivity,
     electrical,
     electrical_code,

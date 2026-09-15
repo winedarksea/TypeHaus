@@ -60,6 +60,11 @@ _BILLABLE = (
     LayerFunction.SHEATHING,
     LayerFunction.CLADDING,
     LayerFunction.MEMBRANE,
+    #: A drained plane bills exactly like the membrane it protects: a manufactured sheet
+    #: bought and hung by the square foot. Unlike AIRGAP, which is genuinely nothing, this
+    #: is a roll of dimpled HDPE with a fabric bonded to it, and a retained face that
+    #: carries one and orders none is the defect ``test_framing_takeoff`` refuses.
+    LayerFunction.DRAINAGE,
     LayerFunction.FINISH,
 )
 

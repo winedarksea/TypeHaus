@@ -46,6 +46,15 @@ not instruction: when it disagrees with this file or the model, it is the one th
   by STOREY, which is how `plan/manifest.py` already consumes both. An editable file cannot
   `from plan import ...`, so the manifest composes; nothing imports across.
 - `plan/assemblies.py`, `plan/site.py`, `plan/placeables.py` — editable assemblies/site/placeables.
+- ⚠ **`params/sunken_garden.py` is ~4,480 lines against `AGENTS.md`'s 500, and it is the
+  largest single violation in this house.** Logged 2026-09-14 rather than fixed: the file is
+  under concurrent edit by more than one session, and a 4,000-line move is the one change
+  where a merge silently keeps both halves of a constant. It is a real debt and the split is
+  a pass of its own, on a quiet tree. The seams are already visible and the file's own
+  section banners name them — the court's structure, its drainage, the thermal-break dowels,
+  the porch enclosure, the leader and gutter run. Take the DRAINAGE half first: it is the
+  most self-contained (`GARDEN_DRYWELL`, the four `FrenchDrain`s, the sleeve and the beam
+  pipe) and the only one with no derived-elevation constants shared across the seam.
 - `plan/mep*.py` — MEP *instances*, split by system so no file runs past ~400 lines:
   `mep_sleeves` (cast penetrations), `mep_drainage`, `mep_venting`, `mep_supply` +
   `mep_supply_devices`, `mep_hvac` (System 1's conditioned-air chase, equipment, terminal
@@ -1761,7 +1770,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   became a derived reaction rather than half the largest member's thrust — the south wall's,
   which cannot compress an E-W strut. `notes/..._court_free_body.md` §8.) What holds 12" x 17 1/2" is the SEQUENCING argument — the loop
   must close before backfill, and a strut whose bottom is tied to a surface that moves is a
-  residue, not a chosen depth — plus no redundancy and a ~1.1 CY saving. Read
+  residue, not a chosen depth — plus no redundancy and a saving of **0.45 CY**, not the
+  ~1.1 CY this line claimed until 2026-09-14 (1.1 CY is the WHOLE beam; the shallower
+  section keeps most of it, and the delta is the 87 in² difference). Read
   `notes/sunken_garden_court_free_body.md` §8's three-reason block before shrinking it. Its
   top and `_rim_underside_in` are the same expression. `FO-SG-ARCH` is retired with the stoop.
   `W-SG-BRKBM` carries no structural load — it is the veneer's thermal foundation only.
@@ -2080,7 +2091,7 @@ haus analysis . --solve                     # the engineered frame, solved in Py
 ```
 
 - **`notes/` is the oracle set** and `notes/README.md` is its index: which note checks which
-  calculation, which are design reasoning, and which 11 are *drawing content* pinned by
+  calculation, which are design reasoning, and which **six** are *drawing content* pinned by
   `test_section_goldens.py` and must not be edited as documentation. `notes/TEMPLATE.md` is
   the shape a new calculation note takes; `notes/superseded/` holds designs that are not
   built, each with a `⛔ SUPERSEDED` banner naming what replaced it.

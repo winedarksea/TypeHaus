@@ -352,6 +352,23 @@ class Sump(Element):
     # None means the pit takes water and lets it go by gravity. A pit with a pump exports an
     # IfcPump/SUMPPUMP joined to the stormwater system.
     pump: SumpPump | None = None
+    #: What discharges INTO this pit, named from the pit's side — the mirror of
+    #: :attr:`~typehaus.model.structure.Drywell.inlet_refs`, and added for the same reason
+    #: (2026-09-14). A receiver that cannot say what feeds it can be claimed by anything: 19
+    #: perimeter rings named this sump and nothing on the sump named them back, so nothing
+    #: could tell an authored connection from an aspiration.
+    inlet_refs: tuple[str, ...] = ()
+    #: The elevation water ENTERS at — the pit's inlet knockout, not its floor and not the
+    #: slab. ``None`` means the model does not say, and a run discharging here cannot be
+    #: checked for invert continuity against it. Without this a receiver has no level at all
+    #: and "it discharges to the sump" is a sentence rather than a gradient.
+    inlet_invert: Length | None = None
+    #: Where this pit lets go when it cannot cope — power out, pump failed, inflow past the
+    #: pump's rate. Distinct from ``pump.discharge``, which is where it goes when it WORKS.
+    overflow_ref: str | None = None
+    #: The level at which that happens: the rim, a weir, a gravity tie. ``None`` with an
+    #: ``overflow_ref`` set means the tie is at the inlet invert.
+    overflow_invert: Length | None = None
 
 
 @register_element

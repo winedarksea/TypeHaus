@@ -671,7 +671,50 @@ RADON_SUMP = [
          # declaring it here puts an IfcPump/SUMPPUMP in the export and gives the
          # discharge something to check against.
          pump=SumpPump(model="1/3 hp cast-iron submersible", horsepower=0.33,
-                       discharge="daylight", circuit_ref="CKT-SUMP")),
+                       discharge="daylight", circuit_ref="CKT-SUMP"),
+         # ** WHAT FEEDS IT, NAMED FROM THE PIT'S SIDE (2026-09-14). ** Nineteen perimeter
+         # rings and the court's overflow leg all named this pit and nothing on the pit
+         # named them back, so there was no way to tell an authored connection from an
+         # aspiration — and the pit's capacity was being reasoned about with no list of what
+         # arrives in it. `Drywell.inlet_refs` has always carried the mirror of this;
+         # `Sump` did not.
+         #
+         # The perimeter rings are ONE connected body of washed stone that abuts this pit —
+         # `drainage.tile_lead` establishes that from the geometry rather than from a
+         # sentence, and it is why no lead pipe is owed here the way one is in the court.
+         inlet_refs=("FB-B-S1", "FB-B-S2", "FB-B-S3", "FB-B-S4",
+                     "FB-B-E1", "FB-B-E2",
+                     "FB-B-N1", "FB-B-N2", "FB-B-N3", "FB-B-N4",
+                     "FB-B-W1", "FB-B-W2",
+                     "FB-B-CS", "FB-B-CS2", "FB-B-CN", "FB-B-CN2",
+                     "FB-B-STR", "FB-B-STR3", "FB-B-STR3B",
+                     "FD-SG-OVERFLOW"),
+         # The level water ARRIVES at, which is not the pit floor (-11'-4 15/16") and not
+         # the slab. The perimeter beds bottom at -10'-4 7/16" and the derived tile floats
+         # one course of bedding above that, so -10'-3 7/16" is the invert every ring
+         # presents. A literal because this file is `# haus: editable` and may hold only
+         # literals; the derivation is here so the next reader can re-shoot it.
+         inlet_invert=inch(-123.4375),
+         # ** THE BRIDGE (owner decision 6, 2026-09-14): ONE TIE, AT ONE INVERT. **
+         # This pit is a SEALED RADON sump with a 1/3 hp pump on the backup panel, and it is
+         # the storm collector for the whole house perimeter. Its two failure modes are a
+         # pump that stops and an inflow past the pump's rate, and until now nothing said
+         # where the water went in either case.
+         #
+         # It goes to the court's soakaway, and **the path is downhill and needs no pump**:
+         # DRW-SG-MAIN's top of stone is -13'-7 7/16", **36" below this tie and 26 1/2"
+         # below this pit's own floor**. That elevation is why `foundations.py`'s "the only
+         # collector below this invert" reasoning for sending the house tile to the sump is
+         # a false premise — the well was never considered.
+         #
+         # The tie is at -10'-7 7/16", **the same invert `FD-SG-OVERFLOW` arrives at**: one
+         # penetration level, no valves, no high-water device, no directional control.
+         # Deliberately 4" BELOW the inlet invert above, so the pit relieves to the court
+         # before it backs up into the house footing tile — which is the only ordering this
+         # design asks for. Water finding its way to the drywell instead of the pump is
+         # acceptable; so is the reverse.
+         overflow_ref="DRW-SG-MAIN",
+         overflow_invert=inch(-127.4375)),
 ]
 
 
