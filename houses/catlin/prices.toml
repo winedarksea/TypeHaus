@@ -409,11 +409,18 @@
 # `framing_by_size` keyed on its profile.
 #
 # ** Without this row the house gets CHEAPER by upgrading, and the saving is an artifact. **
-# 312 LF ordered / 42 pieces priced at $0 while the retype also moves 400 SF of cavity from
-# mineral wool to fiberglass — so the total FALLS about $480-680 and the report says the
-# acoustic upgrade paid for itself. Confirm it is not in `estimate["unpriced"]` after any
-# change here (`haus takeoff --json | jq '.cost_estimate.unpriced'`).
-"25 ga. resilient channel" = { material = { low = 0.55, high = 0.75 }, labour = { low = 0.8, high = 1.5 } }  # 312 LF
+# 536 LF ordered / 64 pieces would price at $0 while the retype also moves 400 SF of cavity
+# from mineral wool to fiberglass — so the total FALLS and the report says the acoustic
+# upgrade paid for itself. Confirm it is not in `estimate["unpriced"]` after any change here
+# (`haus takeoff --json | jq '.cost_estimate.unpriced'`).
+#
+# The counts were 312 LF / 42 pieces until 2026-09-15 and the quantity never moved: the
+# profile string was simply unreadable, so all 64 members resolved to the 1 1/2" x 5 1/2"
+# fallback and the cut list was measuring a 2x6. With the hat section authored
+# (`resolve/framing/profiles.py`) it is 64 pcs / 431.4 LF cut / 536 LF ordered, priced at
+# $723.60-$1,206.00. ** DO NOT RENAME THE KEY ** — it is the [framing] price key, and the
+# rename is what would drop the whole row into `unpriced`.
+"25 ga. resilient channel" = { material = { low = 0.55, high = 0.75 }, labour = { low = 0.8, high = 1.5 } }  # 536 LF
 # THE CATLIN TRUSS'S ONE GIRT TIER (2026-08-26; the only tier since 2026-09-01), and the
 # single biggest cost lever in the wall. 2,774 LF ordered of KDAT southern yellow pine 2x4,
 # all of it laid FLAT: the girt courses, the jamb posts and the head/sill courses at every
