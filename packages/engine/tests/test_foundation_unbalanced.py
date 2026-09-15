@@ -274,7 +274,17 @@ def test_catlin_basement_passes_and_the_free_garden_walls_stay_engineered(catlin
     # The east wall, the only perimeter run SL-M-DECK bears on, is still 12" and still NR.
     assert "BASEMENT_12" in passes
     assert "needs no vertical reinforcement" in passes
-    assert "GARAGE_ICF_6" in passes
+    # ** THE GARAGE STEM LEFT THIS LIST ON 2026-09-15, AND THAT IS THE FINDING. ** It used
+    # to report nine GARAGE_ICF_6 walls retaining 3'-6", which was the derived proxy talking:
+    # grade down to the bottom of the wall, counted as though the garage side were open to
+    # that depth. It is not. Grade is -2'-10", the stem runs -6'-4"..-1'-0", and
+    # SL-G-FLOOR's TOP is -2'-10" — exactly grade — so the fill stands level on both faces
+    # and there is no differential to retain. `unbalanced_fill=ft(0)` is now authored on
+    # `_STEM` and `_GRADE_BEAM` in params/foundations.py and the check skips them at
+    # `fill <= 0`, exactly as it already skips W-B-S2 for the same reason and by the same
+    # rule described below. An assembly leaves this list by ceasing to retain earth.
+    assert "GARAGE_ICF_6" not in passes
+    assert "GARAGE_ICF_6" not in fails and "GARAGE_ICF_6" not in unknowns
     # The other nine segments are 8", which the same table permits ONLY with vertical
     # steel. The flat bearing seat makes the pour exactly 8'-0" instead of 9'-4", which is
     # the 8' unsupported row rather than the 10' one, and that cell reads #5 @ 41" o.c. —

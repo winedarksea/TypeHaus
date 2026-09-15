@@ -388,11 +388,32 @@ GARAGE_STEM_NODES = [
 # thickness lands the exterior foam face on the node line.
 _ALIGN = face("concrete-ext", offset=GARAGE_ICF_EPS)
 
+# ** THE GARAGE STEM RETAINS NOTHING, AND SAYING SO IS THE MODEL CATCHING UP (2026-09-15). **
+# `_unbalanced_fill_ft`'s derived answer is grade down to the bottom of the wall, which its
+# own docstring calls a conservative proxy and says depends on two things the model does not
+# carry: the finished grade at each face, and whether a slab braces the inside. Both are
+# knowable here and both say zero.
+#
+# Measured: grade is -2'-10", the stem runs -6'-4" to -1'-0", and SL-G-FLOOR's TOP is
+# -2'-10" — exactly grade. So the fill stands at the same level on both faces and there is
+# no differential to retain; the proxy's 3'-6" is the depth from grade to the stem bottom,
+# counted as though the garage side were open to that depth. It is not: it is filled to
+# grade, with the top few inches foam and slab rather than soil (which is the owner's own
+# description of it, 2026-09-14).
+#
+# Worth authoring whatever happens to the footings. It is the difference between a wall the
+# register reports as retaining 3'-6" and one that retains nothing, and it is the
+# prerequisite for any claim under 2024 IRC R403.5, which reaches NONRETAINING
+# cast-in-place foundations only.
+_NO_RETAINED_FILL = ft(0)
+
 _STEM = dict(assembly="GARAGE_ICF_6", alignment=_ALIGN, top_elevation=_STEM_TOP,
-             bottom_elevation=ft(_GRADE_FT - _FROST))
+             bottom_elevation=ft(_GRADE_FT - _FROST),
+             unbalanced_fill=_NO_RETAINED_FILL)
 _GRADE_BEAM = dict(assembly="GARAGE_ICF_6", alignment=_ALIGN,
                    top_elevation=_GRADE_BEAM_TOP,
-                   bottom_elevation=ft(_GRADE_FT - _FROST))
+                   bottom_elevation=ft(_GRADE_FT - _FROST),
+                   unbalanced_fill=_NO_RETAINED_FILL)
 
 GARAGE_STEM_WALLS = [
     # South stem, split four ways: two fossil splits (N-GF-S-DRW/-DRE, N-GF-S-BRICK) and no
