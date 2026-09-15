@@ -272,11 +272,36 @@ class FrenchDrain(Element):
     """
 
     path: tuple[Point2D, ...]  # plan centreline, start → discharge end
-    invert: Length             # trench floor elevation
+    invert: Length             # trench floor elevation AT THE START of the path
     trench_width: Length
     trench_depth: Length
     tile: DrainTile | None = None
     discharge_ref: str | None = None
+    #: The trench floor at the **discharge end**, where the run has fall. ``None`` means the
+    #: run is authored dead level, which is what every french drain in this engine was until
+    #: 2026-09-14 — ``invert`` was one scalar and the resolver extruded the whole trench at
+    #: it. A level interceptor is a real thing and stays legal; what was not legal, and was
+    #: unsayable, is a run that falls, which is most of them.
+    #:
+    #: Below ``invert`` is downhill. The pair is authored rather than a slope because an
+    #: invert is a survey quantity and a slope is a consequence of two of them: authoring the
+    #: slope makes the far end a derived number nobody can shoot, and the far end is exactly
+    #: what has to match whatever it discharges into.
+    end_invert: Length | None = None
+    #: Where this run lets go when its **primary** receiver cannot take the water — a well
+    #: that has filled, a frozen outlet, a pump with no power. ``None`` means there is no
+    #: fallback, which is a legitimate design and an answerable question; it is not the same
+    #: fact as ``discharge_ref``, and one field could never carry both.
+    overflow_ref: str | None = None
+    #: The elevation at which that fallback engages: the lip water has to reach before it
+    #: goes the other way. ``None`` with an ``overflow_ref`` set means the fallback is at the
+    #: run's own invert — the two share a level and water takes whichever it finds.
+    overflow_invert: Length | None = None
+
+    @property
+    def falls(self) -> bool:
+        """True where the run has an authored fall. A level run is not a broken one."""
+        return self.end_invert is not None
 
 
 @register_element
@@ -298,6 +323,15 @@ class Drywell(Element):
     # site grade rather than to the storey datum — a drywell outside the garage authored on
     # the basement storey would otherwise start at the basement floor.
     top_elevation: Length | None = None
+    #: Where the water goes when the well is **full** — the thing a soakaway has no answer
+    #: for on its own. A drywell's whole design is that the soil takes water faster than it
+    #: arrives; when it does not, the water backs up through whatever stone is connected to
+    #: it and leaves by a route nobody drew. Naming the route is the difference between a
+    #: fallback and a hope.
+    overflow_ref: str | None = None
+    #: The elevation the well has to fill to before that fallback engages. Defaults to the
+    #: top of stone, which is where a full well is.
+    overflow_invert: Length | None = None
 
 
 @register_element

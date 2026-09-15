@@ -1742,7 +1742,21 @@ GARDEN_DRYWELL = Drywell(
     # string rather than swept up, because the field's plan coordinates are derived below
     # this point and the well is what they are derived towards.
     inlet_refs=tuple(b.tag for b in FOOTING_BEDDING)
-    + ("FD-SG-FIELD", "FD-SG-LEAD-W", "FD-SG-LEAD-E"),
+    + ("FD-SG-FIELD", "FD-SG-LEAD-W", "FD-SG-LEAD-E", "FD-SG-COL-LEAD"),
+    # ** THE WELL'S OWN WAY OUT, WHICH IT DID NOT HAVE (2026-09-14). ** `FD-SG-OVERFLOW` is
+    # the PLANTING FIELD's overflow, not the well's: it tees off the field at -127 7/16" and
+    # runs north to the sump. When the WELL filled past its own top of stone there was no
+    # modelled route at all — the water backed up into the connected wall-bed stone and left,
+    # if it left, implicitly through that stone into the field lateral. Nothing drew it and
+    # nothing checked it.
+    #
+    # Naming it makes the implicit route the authored one and puts a level on it. The well
+    # spills at -127 7/16" — `FD-SG-OVERFLOW`'s own invert, the profile underside, which is
+    # the elevation the overflow note already argues for: storage in a soakaway is only the
+    # volume BENEATH its inlet, so the well must fill and spill rather than back up into the
+    # rootzone gravel. One number, stated once, on the run that already carries it.
+    overflow_ref="FD-SG-OVERFLOW",
+    overflow_invert=_court_top - inch(SPEC.field_depth_in),
 )
 
 # --- garden floor: a concrete RIM around an open gravel field ---------------------
@@ -1835,9 +1849,23 @@ GARDEN_UNDERDRAIN = FrenchDrain(
     # `_field_*` names so it cannot drift from the field it drains.
     path=(pt(ft(_field_x_mid), ft(_field_y_s)),
           pt(ft(_field_x_mid), ft((_y_in_s + _y_in_n) / 2.0))),
-    # The trench floor: 8" into the subgrade below the profile's underside, derived from
-    # the court plane and the profile depth. NEVER a literal — `SPEC.field_depth_in` moves.
+    # The trench floor AT THE SOUTH END: 8" into the subgrade below the profile's underside,
+    # derived from the court plane and the profile depth. NEVER a literal —
+    # `SPEC.field_depth_in` moves.
     invert=_court_top - inch(SPEC.field_depth_in) - inch(8),
+    # ** IT FALLS INTO THE WELL, AND UNTIL 2026-09-14 IT DID NOT. ** `FrenchDrain` carried
+    # ONE invert and the resolver extruded the whole trench dead level, so this run ended at
+    # -135 7/16" — **28" above `_SG_DRYWELL_TOP`**, discharging into undisturbed clay above
+    # the stone it is drawn to feed. `drainage.discharge_consistency` resolved the name and
+    # never asked where the pipe went, exactly as it did for the five wall-bed tiles that
+    # ended 9" over this same well before it was moved onto their plane. The precedent for
+    # the fix is `_WELL_LEAD` below: write the far end as **the same expression the well's
+    # top is**, so the two cannot drift into a run that ends in the air.
+    #
+    # 28" over the run's 10'-0" is 2.3 in/ft. Steep against USGA's 0.5% minimum and that is
+    # the right direction — a lateral outfall dropping into a soakaway wants fall, and only
+    # too flat is a defect. `drainage.trench_fall` refuses the reverse.
+    end_invert=_SG_WALL_BED_BOTTOM,
     trench_width=inch(6), trench_depth=inch(8),
     tile=DrainTile(diameter=inch(4), sock=False, discharge="DRW-SG-MAIN"),
     discharge_ref="DRW-SG-MAIN",
@@ -1906,10 +1934,55 @@ GARDEN_LEAD_E = FrenchDrain(
     **_WELL_LEAD,
 )
 
+# ** THE THIRD LEAD, AND IT EXISTS FOR THE SAME REASON THE OTHER TWO DO (2026-09-14). **
+# `FB-SG-COL` names DRW-SG-MAIN, the well names it back, and its stone reached nothing:
+# `drainage.tile_lead` walks the connected body of stone under this court and finds the rear
+# pier's levelling course **alone in a body of one**, 8'-10" from the well in plan with
+# nothing between. Its twin `FB-SG-FCOL` needs no lead only because `FB-SG-ARCH`'s 33"
+# section happens to run between it and the shaft — an accident of position, not a design,
+# and the rear pier simply sits too far north to catch it.
+#
+# The bedding comment above already says these two courses are "the host for the tile that
+# has to get water out of these two excavations". This is the pipe that does it.
+#
+# It FALLS: 5" from the bell's levelling course at -13'-2 7/16" to `_SG_WALL_BED_BOTTOM` at
+# -13'-7 7/16", over 11'-4" — 0.44 in/ft, comfortably over any minimum and comfortably
+# under anything that would need a drop structure. Both ends are written as the expressions
+# the bed and the well are built from, so neither can drift into a run that ends in the air.
+#
+# It passes UNDER W-SG-ARCH at -13'-2 7/16" to -13'-7 7/16", below the beam's own underside
+# at -10'-10 7/16" and inside `FB-SG-ARCH`'s own 33" bed for the last of its length — the
+# same stone, not a second excavation crossing the strut. Compare `FD-SG-OVERFLOW`, which
+# crosses the beam ABOVE its underside and is therefore a sleeve rather than a trench.
+#
+# uid minted by hand, deliberately: `haus fmt` does not visit `params/*.py`.
+GARDEN_LEAD_COL = FrenchDrain(
+    uid="SGFD05AAAA", tag="FD-SG-COL-LEAD",
+    path=(pt(ft(_cx), ft(_y_col) - inch(_PIER_PAD_SIDE_IN) / 2.0 - inch(6)),
+          pt(ft(_cx), ft(_sg_well_y))),
+    invert=ft(_pier_bell_bottom_ft) - inch(SPEC.pier_levelling_bedding_in),
+    end_invert=_SG_WALL_BED_BOTTOM,
+    trench_width=inch(12), trench_depth=inch(8),
+    tile=DrainTile(diameter=inch(4), sock=True, discharge="DRW-SG-MAIN"),
+    discharge_ref="DRW-SG-MAIN",
+)
+
+# ** IT NOW REACHES THE HOUSE STONE, AND IT USED TO STOP SIX INCHES SHORT. ** The trench
+# ended at `_y_in_n` (-0'-10"), which is the porch deck's north edge and not a drainage
+# elevation at all — the run stopped there because that is where the court's own geometry
+# stops, and the sentence above ("North of the court it ties into the house collector") was
+# the whole of the connection. `FB-B-S2`/`FB-B-S3`'s bedding stone starts 6" further north
+# at -0'-4", so what lay between the two was six inches of undisturbed clay, and
+# `drainage.outfall_connection` says so.
+#
+# `_HOUSE_BED_FACE_Y_FT` is that face, measured. Six inches is a trivial amount of digging
+# and the defect it fixes is not trivial: this is the court's SECOND way out, and the leg
+# that was missing is the one at the far end of it.
+_HOUSE_BED_FACE_Y_FT = -4.0 / 12.0
 GARDEN_OVERFLOW = FrenchDrain(
     uid="SGFD02AAAA", tag="FD-SG-OVERFLOW",
     path=(pt(ft(_field_x_mid), ft(_field_y_n + 1.0)),
-          pt(ft(_field_x_mid), ft(_y_in_n))),
+          pt(ft(_field_x_mid), ft(_HOUSE_BED_FACE_Y_FT))),
     invert=_court_top - inch(SPEC.field_depth_in),
     trench_width=inch(6), trench_depth=inch(8),
     tile=DrainTile(diameter=inch(4), sock=False, discharge="SM-B-RADON"),
@@ -4288,7 +4361,7 @@ SEQUENCE_NOTES = [
 BASEMENT_ELEMENTS = [*NODES, *WALLS, COLUMN, FRONT_COLUMN, *FOOTINGS,
                      *FOOTING_BEDDING, GARDEN_DRYWELL, GARDEN_UNDERDRAIN, GARDEN_OVERFLOW,
                      GARDEN_OVERFLOW_SLEEVE, GARDEN_OVERFLOW_BEAM_PIPE,
-                     GARDEN_LEAD_W, GARDEN_LEAD_E, *SEQUENCE_NOTES,
+                     GARDEN_LEAD_W, GARDEN_LEAD_E, GARDEN_LEAD_COL, *SEQUENCE_NOTES,
                      *GARDEN_FLOOR_OPENINGS, GARDEN_SLAB,
                      GARDEN_FIELD, *FROST_WINGS, *DOWELS, *STEM_DOWELS]
 # --- the porch enclosure's north deck-slot closure (2026-09-03) -----------------------

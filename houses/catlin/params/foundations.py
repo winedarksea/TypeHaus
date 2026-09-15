@@ -608,6 +608,21 @@ GARAGE_HYDRANT_DRYWELL = Drywell(
     diameter=inch(18), depth=inch(18),
     top_elevation=ft(_GRADE_FT - (HYDRANT_BURY_FT - 0.5)),
     geotextile=True, inlet_refs=("FX-G-HYDRANT",),
+    # ** ITS FALLBACK IS THE GROUND ABOVE IT, AND THAT IS THE HONEST ANSWER (2026-09-14). **
+    # `drainage.network_fallback` asks every soakaway where the water goes when the soil
+    # stops taking it, because a below-grade court with one outfall has no answer. This one
+    # does, and it is allowed to be unglamorous: 2.6 cu ft of stone taking ONE frost-free
+    # hydrant's weep — a few quarts of clean potable water per use, and nothing else. When
+    # it is full the next weep stands in the hydrant's barrel and then surcharges up its own
+    # 18" shaft to the yard.
+    #
+    # Saying "daylight" here is therefore a statement about this soakaway's DUTY, not a
+    # discovery that there is daylight at -6'-0" on this lot (there is not, and
+    # `foundations.py`'s garage reasoning turns on exactly that). It would be the wrong
+    # answer for anything carrying foundation or roof water; it is the right one for a weep
+    # hole, and the distinction is the reason it is written out rather than left blank.
+    overflow_ref="daylight",
+    overflow_invert=ft(_GRADE_FT),
 )
 
 BASEMENT_ELEMENTS = [*HOUSE_FOOTINGS, *HOUSE_FOOTING_BEDDING, *VENEER_PLINTH,

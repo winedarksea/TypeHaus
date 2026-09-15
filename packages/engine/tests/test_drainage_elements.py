@@ -355,3 +355,127 @@ def test_a_thermal_break_is_foam_not_the_concrete_it_breaks(catlin_model):
     assert blocks
     for block in blocks:
         assert solid_material_ref(catlin_model.plan, block) == "xps"
+
+
+# --- the drainage NETWORK (2026-09-14) ----------------------------------------------------
+#
+# Everything above this line tests elements. These test the GRAPH between them, which did not
+# exist until the outside review of the sunken garden asked where the water actually goes.
+
+
+def _network(catlin_model):
+    from typehaus.resolve.drainage_network import build_network
+
+    return build_network(catlin_model.plan)
+
+
+def test_every_drainage_source_reaches_something_that_disposes_of_water(catlin_model):
+    """The walk, end to end, on the real house.
+
+    Disposal is daylight, a soakaway (the soil takes it) or a pit with a pump. Before this
+    existed a discharge was a string beside a string: ``FD-SG-FIELD`` named ``DRW-SG-MAIN``,
+    the name resolved perfectly, and the trench ended 28 inches above the stone.
+    """
+    from typehaus.resolve.drainage_network import EdgeKind
+
+    network = _network(catlin_model)
+    assert network.unresolved == [], network.unresolved
+    sources = network.sources()
+    assert len(sources) >= 30, sources
+    for source in sources:
+        reached, path, problem = network.reaches_disposal(
+            source, first_hop=EdgeKind.PRIMARY)
+        assert reached, f"{source}: {problem} (followed {path})"
+
+
+def test_the_bridge_runs_both_ways_and_it_is_one_tie(catlin_model):
+    """**Owner decision 6, as a graph rather than as a paragraph.**
+
+    The sump and the court's soakaway each fall back to the other. That is deliberately a
+    CYCLE — one tie at a common invert, no valves, no high-water device, no directional
+    control — and the walk has to tolerate it rather than call it a fault, because the
+    design is what it is checking.
+
+    Gravity runs sump -> drywell and it comes free: ``DRW-SG-MAIN``'s top of stone is
+    -13'-7 7/16", 26 1/2" below the pit's own floor. That is the power-loss fallback, and it
+    needs no pump.
+    """
+    from typehaus.resolve.drainage_network import EdgeKind
+
+    network = _network(catlin_model)
+    reached, path, problem = network.reaches_disposal(
+        "SM-B-RADON", first_hop=EdgeKind.OVERFLOW, not_being="SM-B-RADON")
+    assert reached, problem
+    assert path[-1] == "DRW-SG-MAIN", path
+
+    reached, path, problem = network.reaches_disposal(
+        "DRW-SG-MAIN", first_hop=EdgeKind.OVERFLOW, not_being="DRW-SG-MAIN")
+    assert reached, problem
+    assert path[-1] == "SM-B-RADON", path
+    # The court's own overflow leg is the route, not a second tie invented for the occasion.
+    assert "FD-SG-OVERFLOW" in path, path
+
+    sump = catlin_model.plan.by_tag("SM-B-RADON")
+    well = catlin_model.plan.by_tag("DRW-SG-MAIN")
+    # One invert, and it is the one FD-SG-OVERFLOW already arrives at.
+    assert sump.overflow_invert.inches == pytest.approx(-127.4375)
+    assert (catlin_model.plan.by_tag("FD-SG-OVERFLOW").invert.inches
+            == pytest.approx(-127.4375))
+    # Downhill without a pump: the well's stone top is below the pit's floor.
+    pit_floor = next(s.z0_m for s in catlin_model.solids if s.tag == "SM-B-RADON")
+    assert well.top_elevation.meters < pit_floor
+
+
+def test_the_field_lateral_falls_into_the_well_it_feeds(catlin_model):
+    """**D1.** It discharged 28" above the stone, and nothing could see it.
+
+    ``FrenchDrain`` carried one scalar invert; the resolver extruded every trench dead level.
+    The far end is now written as the same expression the well's top is — the precedent
+    ``_WELL_LEAD`` set — so the two cannot drift into a run that ends in the air.
+    """
+    run = catlin_model.plan.by_tag("FD-SG-FIELD")
+    well = catlin_model.plan.by_tag("DRW-SG-MAIN")
+    assert run.end_invert is not None, "the field lateral is authored level again"
+    assert run.end_invert.meters == pytest.approx(well.top_elevation.meters)
+    assert run.end_invert.meters < run.invert.meters, "it must fall toward the well"
+    # And the resolved trench follows it, rather than being drawn level.
+    bands = sorted((s for s in catlin_model.solids
+                    if s.tag.startswith("FD-SG-FIELD-") and s.category == "french_drain"),
+                   key=lambda s: s.z0_m)
+    assert bands and bands[0].z0_m < bands[-1].z0_m - 0.01, [b.z0_m for b in bands]
+
+
+def test_every_bedding_that_names_a_receiver_has_a_way_to_reach_it(catlin_model):
+    """**D2, and the half of it that turned out to be false.**
+
+    The review read the nineteen house perimeter rings as "19 independent loops with no
+    lead". The RINGS are independent — ``resolve/drain_tile.py`` derives a closed loop per
+    bedding and never a lead — but the STONE is not: all nineteen beds are one connected
+    body, and that body abuts the radon pit. So the connection is real, and it is real in
+    the same way the court's own authoring argues ``FB-SG-ARCH`` feeds the well through its
+    side. What was genuinely orphaned was ``FB-SG-COL``, alone in a body of one, 8'-10" from
+    the well with nothing between — which is why ``FD-SG-COL-LEAD`` now exists.
+    """
+    from typehaus.resolve.drainage_network import stone_bodies
+
+    bodies = stone_bodies(catlin_model)
+    house = bodies["FB-B-W1"]
+    assert len(house) == 19, sorted(house)
+    court = bodies["FB-SG-W1"]
+    assert "FB-SG-COL" not in court, "the rear pier bed is not part of the court body"
+    assert catlin_model.plan.by_tag("FD-SG-COL-LEAD") is not None
+
+
+def test_the_sump_names_what_feeds_it(catlin_model):
+    """A receiver that cannot say what feeds it can be claimed by anything.
+
+    ``Drywell.inlet_refs`` has always carried this; ``Sump`` did not, so twenty runs named
+    the pit and nothing named them back.
+    """
+    sump = catlin_model.plan.by_tag("SM-B-RADON")
+    assert len(sump.inlet_refs) == 20, sump.inlet_refs
+    assert "FD-SG-OVERFLOW" in sump.inlet_refs
+    assert sum(1 for tag in sump.inlet_refs if tag.startswith("FB-B-")) == 19
+    for tag in sump.inlet_refs:
+        assert catlin_model.plan.by_tag(tag) is not None, tag
+    assert sump.inlet_invert is not None, "a receiver with no level cannot be checked against"

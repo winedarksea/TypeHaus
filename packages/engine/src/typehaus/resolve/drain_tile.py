@@ -45,12 +45,19 @@ def resolved_spec(spec) -> ResolvedDrainTile | None:
 
 def drain_tile_solids(uid: str, tag: str, storey: str, path, floor_z_m: float,
                       spec: ResolvedDrainTile | None,
-                      closed: bool = True) -> list[ResolvedSolid]:
-    """One band per run segment, from ``floor_z_m`` up one pipe diameter.
+                      closed: bool = True,
+                      segment_floor_z_m: list[float] | None = None) -> list[ResolvedSolid]:
+    """One band per run segment, from the excavation floor up one pipe diameter.
 
     ``path`` is a plan polyline; ``closed`` runs the segment back to the start, which is what
     a footing-bedding perimeter does and an open french-drain run does not. ``floor_z_m`` is
     the excavation floor — the invert lifts off it by :data:`PIPE_BEDDING_M`.
+
+    ``segment_floor_z_m`` is the floor **at each vertex**, for a run that falls: the pipe
+    follows the trench rather than sitting level in a sloping one. Omitted, every band takes
+    ``floor_z_m`` and the output is byte-identical to before ``FrenchDrain.end_invert``
+    existed — which is every footing-bedding ring, and every french drain that is genuinely
+    level.
     """
     points = [tuple(point) for point in path]
     if len(points) < 2:
@@ -59,12 +66,15 @@ def drain_tile_solids(uid: str, tag: str, storey: str, path, floor_z_m: float,
         points.append(points[0])
     diameter = tile_diameter_m(spec)
     half = diameter / 2.0
-    z0 = floor_z_m + PIPE_BEDDING_M
     solids: list[ResolvedSolid] = []
     # strict=True: two slices of the same list, both length len(points) - 1.
     for index, (start, end) in enumerate(zip(points[:-1], points[1:], strict=True)):
         if start == end:
             continue
+        floor = floor_z_m
+        if segment_floor_z_m is not None and index + 1 < len(segment_floor_z_m):
+            floor = min(segment_floor_z_m[index], segment_floor_z_m[index + 1])
+        z0 = floor + PIPE_BEDDING_M
         solids.append(ResolvedSolid(
             uid=f"{uid}-DT-{index:02d}", tag=f"{tag}-DT-{index + 1}", storey=storey,
             category=SOLID_CATEGORY, outline=rect_between(start, end, -half, half),
