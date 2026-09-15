@@ -192,11 +192,17 @@ def test_authored_sections_join_the_a301_series(catlin_model_ro, catlin_model_re
     # pytest builds it before ``setattr`` runs.
     sheets = build_sheet_index(catlin_model_ro, report=catlin_model_report)
     numbers = [s.number for s in sheets]
-    assert "A-301.1" in numbers
+    # catlin authors one real SECTION of its own — SL-S-FIRE, the fireplace breast — so the
+    # series starts with it and the patched slice lands *after* it. That is the stronger
+    # assertion: the block is contiguous, follows A-301 immediately, and runs in authoring
+    # order rather than in any order the composer happens to visit elements in.
     assert numbers.index("A-301.1") == numbers.index("A-301") + 1
-    spec = next(s for s in sheets if s.number == "A-301.1")
-    assert spec.title == "Test cross section"
-    assert spec.scene is not None
+    assert numbers.index("A-301.2") == numbers.index("A-301.1") + 1
+    first = next(s for s in sheets if s.number == "A-301.1")
+    assert first.title == "Fireplace breast section"
+    second = next(s for s in sheets if s.number == "A-301.2")
+    assert second.title == "Test cross section"
+    assert first.scene is not None and second.scene is not None
 
 
 def test_every_sheet_has_the_same_paper_size(catlin_sheet_index):

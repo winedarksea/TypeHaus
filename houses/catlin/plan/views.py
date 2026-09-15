@@ -121,4 +121,38 @@ DETAIL_SLICES = [
          title="Stair hall void section",
          cut_origin=pt(ft(0), ft(30)), cut_direction="x",
          crop=(pt(ft(6), ft(8)), pt(ft(22), ft(33)))),
+    # ** THE FIREPLACE BREAST, AND THE ONLY SliceKind.SECTION IN THE HOUSE. ** Every other
+    # slice here is a DETAIL and lands in the A-5xx block; a SECTION joins the A-301 series
+    # straight after the auto centre section (`emit/draw/sheets.py`), so this prints as
+    # A-301.1 with no engine change at all.
+    #
+    # W-M-FIRE is five walls chained by hand — each base_elevation is the one below plus
+    # that one's top — and `integrity.wall_stack_continuous` now grades that chain. This is
+    # the same chain DRAWN, which is the other half of trusting it: a reviewer can see the
+    # courses land on each other instead of taking a PASS on faith.
+    #
+    # y=8'-8" is derived, not rounded to. The panel runs y 6'-9 1/4"..10'-6 3/4" and the
+    # two jambs stop at 7'-5 1/4" and restart at 9'-10 3/4", so the firebox is y 7.438..
+    # 9.896 ft and its mid-station is 8.667 ft. The cut therefore passes THROUGH the
+    # opening — catching STUB, PLINTH and HEAD, which span the full panel, and missing both
+    # jambs, which is exactly what puts the 20 5/8" firebox on the paper as a void.
+    #
+    # Verified against the resolved model at this station, bottom to top: FT-B-E1
+    # (-9'-9 1/2"..-9'-1 1/2"), SL-B-FLOOR, the gym ceiling at -1'-0 1/2", W-B-E1/W-M-E1
+    # carrying the breast, then STUB (-1'-1 7/16"..0'-0 15/16"), PLINTH (..2'-0 15/16"),
+    # the firebox, BM-M-FIRE-LINTEL (3'-9 5/8"..4'-1 1/8") and HEAD (..5'-4 15/16"), with
+    # CEIL-RM-M-LIVING closing the volume at 9'-0 1/8". The crop's -10'-6" reaches under the
+    # footing and its 10'-0" clears that ceiling, so the whole load path reads at once.
+    #
+    # ** TWO THINGS THIS SHEET WILL NOT SHOW, AND NEITHER IS A BUG. ** `build_section` never
+    # draws placeables, so EQ-M-FIREPLACE and FURN-M-FIRE-MANTEL are absent — the masonry
+    # is the subject and the appliance is not. And an AUTHORED section is not annotated:
+    # only `build_center_section` adds datum lines and room names, so this one carries its
+    # geometry unlabelled. Do not "fix" either by reaching for the centre-section path.
+    Slice(uid="CVD908AAAA", tag="SL-S-FIRE", kind=SliceKind.SECTION,
+         title="Fireplace breast section",
+         cut_origin=pt(ft(0), ft(8, 8)), cut_direction="x",
+         # ft(-10, 6) would be -10*12+6 = -9'-6", not -10'-6" — ft(f, i) is f*12+i and the
+         # sign does not distribute. Written as a single negative foot value on purpose.
+         crop=(pt(ft(30), ft(-10.5)), pt(ft(38), ft(10)))),
 ]
