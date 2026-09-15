@@ -360,8 +360,10 @@ all. Two PLAN dimensions did, and they act on opposite halves of the system row:
   because the E-W thrusts cancel identically (§1) and the resultant is the south wall's
   alone. The south wall is the court's WIDTH, which did not change. So the demand term
   `3,072.3 × 20.0` is untouched and the capacity falls 7%. **Court length is not the lever
-  it looks like**, and this is the arithmetic of why: there is a hard structural floor at
-  **23'-11" clear**, where the capacity has fallen to the 1.50 line —
+  it looks like**, and this is the arithmetic of why: the capacity reaches the 1.50 line at
+  **23'-11" clear** on today's inputs — a DERIVED floor, and one that has already moved once
+  (23'-3" at the 8'-0" strip). Re-derive it, never quote it; "hard" overstates a number that
+  is a consequence of the footing width and the friction coefficient —
   `run = 61,446 × 1.50 / 1,899.6 = 48.520'`, and `run = 2(L − 9.6667) + 20`.
 
   ** ⚠ THE FLOOR MOVED WITH THE FOOTING, AND IT MOVED THE WRONG WAY. ** At the 8'-0" strip
@@ -638,11 +640,21 @@ feet away; nothing washes off it to here.
 
 The real argument is the one that made the class necessary in the first place: salt reaches
 this court on boots, a shovel and the dog, from the north walk and the entry tiers, and
-once here it **cannot leave**. There is no grade to daylight. The only outlet is
-`DRW-SG-MAIN`, a soakaway inside the excavation, so every chloride that arrives stays in
-the stone against these faces and cycles through them with each thaw. A drive sheds its
-salt to a ditch. A sunken court concentrates it. **Keep the class; the correction is to the
-sentence.**
+once here it **cannot leave**. There is no grade to daylight. The bearing stone's only
+gravity outlet is `DRW-SG-MAIN`, a soakaway inside the excavation, so every chloride that
+arrives stays in the stone against these faces and cycles through them with each thaw. A
+drive sheds its salt to a ditch. A sunken court concentrates it. **Keep the class; the
+correction is to the sentence.**
+
+⚠ **Read "the only outlet" narrowly, and do not carry it further than this paragraph.** It
+is a statement about where the water against these FACES goes, and it is still true. It is
+not a statement about the court's network: `FD-SG-OVERFLOW` has always named `SM-B-RADON`,
+and since 2026-09-14 the well has an authored overflow to it and the sump has a gravity tie
+back (owner decision 6). Those are relief paths above the stone, engaging at -10'-7 7/16"
+and above; nothing drains the bearing bed itself anywhere but here. A 2026-09-14 outside
+review read the sentence as a claim about the network and proposed retiring the F3/C2 class
+on the strength of it — **the class stays**, and the reason is the sentence's own: chloride
+in the stone against these faces, not the absence of a network.
 
 The wall still passes at 0.61, and the structure's governing limit state is unchanged: base
 restraint at FS 1.63, d/c 0.92 (§4). Nothing about this trade moves the number that governs.
@@ -967,10 +979,13 @@ The garden slab is cheaper and does not work:
      friction credit — an assumption this section itself calls conservative-by-construction
      rather than derived. λ is applied on the 20'-0" clear span and the 12" dimension, and φ
      is the plain-concrete 0.60. Any of those could move a few percent on review.
-  3. **The saving is not real.** 87 in² of concrete over 20 feet is about 1.1 CY. The 9"
-     step in the dig this depth creates is the genuine cost, and it is being paid down from
-     the other end — the beam's *bedding undercut* is what gets trimmed to the wall-bed
-     plane, not the beam.
+  3. **The saving is not real.** 87 in² of concrete over 20 feet is about **0.45 CY**, not
+     the 1.1 CY this line read until 2026-09-14 — 1.1 CY is the WHOLE beam at 210 in², and
+     the shallower section keeps 123 of those. The delta is what a saving would be, and it
+     is less than half a yard. The 9" step in the dig this depth creates is the genuine
+     cost, and it is being paid down from the other end — the beam's *bedding undercut* is
+     what gets trimmed to the wall-bed plane, not the beam. The conclusion is unchanged and
+     was never resting on this figure: the other two reasons are what hold the section.
 
   The 12" × 17 1/2" section this note grades is therefore the one that gets built. The beam
   stands 9" proud below the retaining footings' undersides, which is deliberate and is what
@@ -1125,10 +1140,18 @@ added:
   **isolated** free body, which is conservative twice over: it neglects the strut's own
   restoring moment, and it neglects the horizontal spanning that carries much of the thrust
   to the corners of a 16'-4" wall tied at both ends. Both would help. Neither is claimed.
-- **The apron is itself documented as defective** (`params/raised_garden.py`: negative base-
-  course embedment) and it is what creates the terrace these
+- **The apron is itself documented as un-designed** and it is what creates the terrace these
   walls retain. The two are **one coupled tiered system** and fixing either in isolation is
-  guesswork.
+  guesswork. ⚠ **The embedment is no longer negative** — this bullet said "negative
+  base-course embedment" until 2026-09-14 and that had been stale since the drop went to
+  4'-0": the base course is buried **8"** in the authored yard, against the ~6" the guidance
+  wants on a 3-foot wall. `params/raised_garden.py` says so, and says the rest in the same
+  breath — 8" is "the number the arithmetic gives, not a number anyone has designed to", and
+  sliding, overturning and global stability of the pair are still ungraded. The defect is
+  reduced from "the toe is in the air" to "the toe is buried 8" and nobody has checked the
+  wall", which is the version of it that is true. It now has an owner:
+  `tiered_retaining/W-RG-*` in `engineering/deferred.py`, and it reaches
+  `out/calcs/03-open-items.md`.
 - **MN Rules 1309.0402 amends IRC Table R402.2 and adds a FOOTINGS row at 5,000 psi**
   (footnote g allows 2,500 with an approved water/vapour-resistance admixture; footnote h
   exempts deck/porch post footings, wood foundations and floating slabs — none of which is a

@@ -491,6 +491,20 @@ _GARAGE_FOOTING = dict(width=inch(20), depth=inch(8), center_on="wall",
 # no sump in the garage and no gravity outlet below -7'-0" on this lot. An undrained bed is a
 # defensible thing to specify (the raised garden's are `drain_tile=False`) but it is an
 # excavation and a stone order nobody has costed, and it is a decision, not a correction.
+#
+# ** ⚠ THAT PREMISE IS FALSE, AND IT HAS BEEN SINCE THE COURT WAS DUG (noted 2026-09-14). **
+# "No gravity outlet below -7'-0" on this lot" is the load-bearing sentence above, and
+# `DRW-SG-MAIN`'s top of stone is at **-13'-7 7/16"** — six and a half feet below the level
+# this paragraph says nothing gets under. The same claim appears above for the house tile;
+# `drainage.network_fallback` and the sump's own overflow to the well now say otherwise, and
+# the gravity path from the house side to the court's soakaway needs no pump at all.
+#
+# ** THE DECISION IS STILL OPEN AND THIS IS NOT AN INSTRUCTION TO AUTHOR IT. ** Whether the
+# garage wants beds is a cost and a scope question — nine footings, an excavation and a
+# stone order — and it is deliberately out of scope here. What is recorded is that the
+# reason currently given for NOT doing it is not a fact about the lot. Revisit it on the
+# merits: the run from the garage to the court is long, crosses the drive and would want its
+# own fall, and none of that has been looked at. The false premise is what had to go.
 
 GARAGE_FOOTINGS = [
     Footing(uid="CGF201AAAA", tag="FT-GF-S1", under="W-GF-S1", **_GARAGE_FOOTING),
