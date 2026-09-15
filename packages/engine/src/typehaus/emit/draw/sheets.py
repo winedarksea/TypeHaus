@@ -124,7 +124,7 @@ def _derived_detail_scene(model: ResolvedModel, derived: DerivedDetail) -> Scene
 
 if TYPE_CHECKING:
     from typehaus.checks.jurisdiction import JurisdictionProfile
-    from typehaus.checks.registry import Preferences
+    from typehaus.checks.registry import CheckReport, Preferences
 
 SceneFn = Callable[[ResolvedModel], Scene]
 PageFn = Callable[["object", ResolvedModel, str, str], None]  # pdf: PdfPages
@@ -173,7 +173,8 @@ def build_sheet_index(model: ResolvedModel,
                       details: str | None = None,
                       paper: tuple[float, float] = LEDGER,
                       house_dir: Path | None = None,
-                      sets: str = FULL_SET) -> list[SheetSpec]:
+                      sets: str = FULL_SET,
+                      report: CheckReport | None = None) -> list[SheetSpec]:
     """Assemble the ordered sheet list — the one place sheet order/content lives.
 
     ``sets="full"`` (the library default) is everything this engine can draw;
@@ -190,7 +191,12 @@ def build_sheet_index(model: ResolvedModel,
     set printed half on 11x17 and half on 24x36 should not be expressible. A bigger sheet
     is not just a bigger picture — ``select_scale`` gets a bigger viewport, so the drawing
     climbs the ladder for free: catlin's A-101 goes from 1/16" = 1'-0" on ledger to
-    3/16" = 1'-0" on ARCH D, and its main floor plan from 1/8" to 3/8"."""
+    3/16" = 1'-0" on ARCH D, and its main floor plan from 1/8" to 3/8".
+
+    ``report`` is an optional registry run for this same model, house and jurisdiction,
+    supplied by a caller that already has one. Only S-603 reads it (→
+    ``_has_engineered_items``); the index is otherwise identical either way. Omitted, the
+    registry runs here, which on catlin is the most expensive thing this function does."""
     # NCS discipline order is G -> C -> S -> A -> P -> M -> E, and the second digit is the
     # SHEET TYPE: 0 general, 1 plans, 2 elevations, 3 sections, 4 large-scale views,
     # 5 details, 6 schedules, 7-8 user-defined, 9 3D. Sequence within a type is
@@ -293,7 +299,7 @@ def build_sheet_index(model: ResolvedModel,
     # S-105 only where the house actually has engineering in it. A set answered entirely by
     # prescriptive tables gets no page saying so — an empty register reads as an omission,
     # and the cover already states the checklist verdict for that case.
-    if _has_engineered_items(model, house_dir):
+    if _has_engineered_items(model, house_dir, report):
         sheets.append(SheetSpec("S-603", "Engineering register",
                                 page=partial(_write_engineering_register,
                                              house_dir=house_dir)))
@@ -435,6 +441,7 @@ def write_permit_set(model: ResolvedModel, output: Path,
                      paper: tuple[float, float] = LEDGER,
                      house_dir: Path | None = None,
                      sets: str = FULL_SET,
+                     report: CheckReport | None = None,
                      ) -> tuple[Path, dict[str, object]]:
     """Compose the permit-set baseline into one multi-page PDF.
 
@@ -457,7 +464,7 @@ def write_permit_set(model: ResolvedModel, output: Path,
         profile = resolve_profile(preferences or Preferences())
     output.parent.mkdir(parents=True, exist_ok=True)
     sheets = build_sheet_index(model, preferences, profile, details=details,
-                               paper=paper, house_dir=house_dir, sets=sets)
+                               paper=paper, house_dir=house_dir, sets=sets, report=report)
     index = [(sheet.number, sheet.title) for sheet in sheets]
     # ``set_paper`` is how the table pages learn the paper: they compose their own figures
     # inside ``schedules/`` against a preset name, and this is the only place that knows
@@ -490,14 +497,25 @@ def write_plan_dxfs(model: ResolvedModel, output_dir: Path) -> list[Path]:
     return paths
 
 
-def _has_engineered_items(model: ResolvedModel, house_dir: Path | None) -> bool:
+def _has_engineered_items(model: ResolvedModel, house_dir: Path | None,
+                          report: CheckReport | None = None) -> bool:
     """Whether any check in this house delegates to the engineering register.
 
     Asked by running the registry, not by enumerating the suite: which requirements a house
     puts outside the prescriptive path is a conclusion the checks reach, and a second
     enumeration here would be that judgement written twice.
+
+    ``report`` is that same registry run, already in hand. It is not a different answer —
+    it is the identical one, not computed twice: ``haus print`` runs the registry for the
+    permit checklist immediately before composing the set, and this function was re-running
+    every check in the house (~19 s on catlin) to append one sheet. A caller that holds a
+    report for THIS model, house and jurisdiction passes it; anyone else passes nothing and
+    the registry runs here as before.
     """
+    if report is not None:
+        return any(finding.engineering_item for finding in report.findings)
+
     from typehaus.checks import run_from_model
 
-    report = run_from_model(model, [], house_dir)
-    return any(finding.engineering_item for finding in report.findings)
+    fresh = run_from_model(model, [], house_dir)
+    return any(finding.engineering_item for finding in fresh.findings)

@@ -184,8 +184,11 @@ def print_sheets(
     # One jurisdiction decides both the gate and what the sheets say they were composed
     # against; `--profile` overrides the house's own `[project].jurisdiction`.
     jurisdiction = resolve_profile(preferences, profile)
-    checklist = evaluate_permit_checklist(run(result.plan, d, profile=jurisdiction.name),
-                                          jurisdiction)
+    # One registry run for the whole command. The checklist gate below reads it, and so
+    # does the sheet index (S-603) — which used to run every check a second time to decide
+    # whether to append one page.
+    report = run(result.plan, d, profile=jurisdiction.name)
+    checklist = evaluate_permit_checklist(report, jurisdiction)
     if not checklist.ok:
         console.print(
             "[red]permit print blocked: declared checklist has failures or unknowns[/red]")
@@ -241,7 +244,7 @@ def print_sheets(
         with set_issue_status(issue):
             path, composed = write_permit_set(model, out / name, preferences,
                                               profile=jurisdiction, sets=chosen,
-                                              paper=size, house_dir=d)
+                                              paper=size, house_dir=d, report=report)
         console.print(f"wrote {path}")
         # The set's own table of contents, on disk. A vector PDF says nothing about which
         # page carries S-101; the viewer's Drawings tab, and anyone scripting against the
@@ -253,11 +256,11 @@ def print_sheets(
             content_hash=result.content_hash)
         console.print(f"wrote {write_sheet_manifest(path.with_suffix('.json'), manifest)}")
     if handoff:
-        _write_handoff_bundle(d, model, preferences, jurisdiction, size)
+        _write_handoff_bundle(d, model, preferences, jurisdiction, size, report)
 
 
 def _write_handoff_bundle(house: Path, model, preferences=None, profile=None,
-                          paper=None) -> None:
+                          paper=None, report=None) -> None:
     """Copy only generated/project-owned artifacts into the architect handoff."""
     import shutil
 
@@ -276,7 +279,7 @@ def _write_handoff_bundle(house: Path, model, preferences=None, profile=None,
     # not a choice between two papers. It is the paper the command was asked for.
     write_permit_set(model, handoff / "permit_set.pdf", preferences, profile=profile,
                      house_dir=house,
-                     paper=paper or LEDGER)
+                     paper=paper or LEDGER, report=report)
     write_plan_dxfs(model, handoff / "dxfs")
     write_model_json(model, handoff / "model.json")
     for source, destination in ((house / "brief.md", handoff / "brief.md"),
