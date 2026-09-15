@@ -106,6 +106,11 @@ class _Member:
     #: at ``+outward_sign * normal(start->end)`` (``resolve/orientation``), so the soil
     #: pushes the other way.
     push: tuple[float, float]
+    #: The stem's own section, feet — what the wall has to pass in-plane shear THROUGH when
+    #: its base cannot hold its own thrust. Zero where the model does not say, which
+    #: :func:`_corner_transfer` reports rather than defaults around.
+    stem_thickness_ft: float = 0.0
+    stem_height_ft: float = 0.0
 
     @property
     def demand_lb(self) -> float:
@@ -114,6 +119,20 @@ class _Member:
     @property
     def capacity_lb(self) -> float:
         return self.friction * self.weight_plf * self.length_ft
+
+    @property
+    def unassisted_shortfall_lb(self) -> float:
+        """What this member's OWN base cannot hold of its OWN thrust.
+
+        **The quantity R2 said nothing was checked against.** The group free body sums
+        isotropic friction against one resultant, which is the right rigid-body statement
+        for a verified cast loop — but it says nothing about any individual footing, and on
+        this court no individual footing holds its own wall: the south wall alone wants
+        61,446 lb against 37,993 lb of its own friction. The 23,453 lb difference does not
+        vanish because the resultant is smaller than the sum; it travels through the corners
+        as in-plane shear, and until 2026-09-14 nothing named it, let alone graded it.
+        """
+        return max(0.0, self.demand_lb - self.capacity_lb)
 
 
 def _foundation_walls(ctx: EngineeringContext) -> list:
@@ -308,7 +327,9 @@ def _members(ctx: EngineeringContext, walls: list, *, soil, soil_pcf: float
         out.append(_Member(
             tag=wall.tag, length_ft=length_m / _M_PER_FT, thrust_plf=case.thrust_plf,
             weight_plf=case.weight_plf, friction=base.friction_coefficient,
-            push=(-sign * nx, -sign * ny)))
+            push=(-sign * nx, -sign * ny),
+            stem_thickness_ft=geometry.stem_thickness_ft,
+            stem_height_ft=geometry.stem_height_ft))
     return out, missing
 
 
@@ -390,6 +411,65 @@ def strut_reaction_lb(axis: tuple[float, float], members: list[_Member],
         if reaction > best:
             best, source = reaction, member.tag
     return best, source
+
+
+#: ACI 318-19 Table 21.2.1 — the strength reduction factor for shear.
+_PHI_SHEAR = 0.75
+
+#: ACI 318-19 §11.5.4.3: for a wall, the effective depth in the direction of shear may be
+#: taken as ``0.8 * lw`` — 0.8 of the length of the wall in the plane the shear acts in.
+#: In-plane shear on a court wall acts in its VERTICAL plane, so ``lw`` here is the stem
+#: height and the section is (stem thickness) x 0.8 (stem height).
+_WALL_SHEAR_DEPTH_FACTOR = 0.8
+
+
+def _corner_transfer(members: list[_Member], fc_psi: float
+                     ) -> tuple[float, float, str]:
+    """``(Vu, phi_Vn, how)`` — the in-plane shear the cancellation is bought with.
+
+    **R2, and the honest form of it.** The review's complaint was that ``_free_body`` sums
+    isotropic friction against a resultant magnitude while each footing's own thrust is
+    assumed to cancel through concrete, and that "no footing is checked against its own
+    resultant". Half of that is a misreading and half of it is a real gap, and they are
+    worth separating because the fix follows from which is which:
+
+    * **Summing friction against the group resultant is correct** for a loop whose closure
+      :func:`_verify` has actually established. A rigid body on a uniform interface has one
+      capacity disc, and the cancelled component is carried by concrete precisely so that
+      none of that disc is spent on it. Apportioning the resultant back to the footings by
+      their own capacity and re-checking each is algebraically the same inequality — it
+      would add a row and no information.
+    * **What is genuinely unchecked is the delivery.** Cancellation is not free: a wall
+      whose base friction cannot hold its own thrust has to pass the difference through its
+      corners as in-plane shear, and this module's own note has always said corner bar
+      development "is not something this engine has looked at". Naming the force is the
+      first half of looking.
+
+    So each member's shortfall against its OWN friction is computed, the largest governs,
+    and it is graded as one-way shear on that wall's vertical section — ACI 318-19 §22.5.5.1
+    ``Vc = 2 lambda sqrt(f'c) b d``, phi 0.60... no: phi 0.75 (Table 21.2.1), with
+    ``d = 0.8 lw`` per §11.5.4.3. Concrete alone, no horizontal steel credited, because the
+    corner reinforcement is exactly what the model does not carry.
+
+    ``Vu = 1.6 V`` for the same reason the strut row factors: this is a strength check
+    against a nominal capacity, and IBC §1605.2's factor on lateral earth pressure applies.
+    """
+    governing = max(members, key=lambda m: m.unassisted_shortfall_lb, default=None)
+    if governing is None or governing.unassisted_shortfall_lb <= 0.0:
+        return 0.0, 0.0, ("every member's own base friction holds its own thrust; no "
+                          "in-plane transfer is demanded of the corners")
+    service = governing.unassisted_shortfall_lb
+    demand = EARTH_PRESSURE_LOAD_FACTOR * service
+    width_in = governing.stem_thickness_ft * 12.0
+    depth_in = _WALL_SHEAR_DEPTH_FACTOR * governing.stem_height_ft * 12.0
+    basis = (f"{service:,.0f} lb from {governing.tag} — its own thrust "
+             f"{governing.demand_lb:,.0f} lb less its own friction "
+             f"{governing.capacity_lb:,.0f} lb")
+    if width_in <= 0.0 or depth_in <= 0.0:
+        return demand, 0.0, f"no resolvable stem section on {governing.tag} — {basis}"
+    capacity = _PHI_SHEAR * 2.0 * (fc_psi ** 0.5) * width_in * depth_in
+    return demand, capacity, (
+        f"{basis}, through {width_in:.0f}\" x {depth_in:.1f}\" (0.8 lw) of plain section")
 
 
 def _strut(ctx: EngineeringContext, cross, members: list[_Member],
@@ -514,12 +594,16 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
     for pcf, built in built_by_pcf.items():
         demand, capacity, cancelled = _free_body(built)
         strut_demand, strut_capacity, how = _strut(ctx, cross, built, _cross_span(ctx, cross))
+        corner_demand, corner_capacity, corner_how = _corner_transfer(
+            built, PRESUMPTIVE_FC_PSI)
         states_by_pcf[pcf] = (
             (LimitState("sliding", REQUIRED_FS,
                         capacity / demand if demand else float("inf"), "",
                         "IRC R404.4", is_safety_factor=True),
              LimitState("strut compression", strut_demand, strut_capacity, "lb",
-                        f"ACI 318 §14.5.4, phi 0.60 at 1.6H — {how}")),
+                        f"ACI 318 §14.5.4, phi 0.60 at 1.6H — {how}"),
+             LimitState("corner shear transfer", corner_demand, corner_capacity, "lb",
+                        f"ACI 318 §22.5.5.1 / §11.5.4.3, phi 0.75 at 1.6H — {corner_how}")),
             demand, capacity, cancelled)
 
     over_low = any(not state.ok for state in states_by_pcf[low][0])
@@ -552,7 +636,16 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
         "enough to shed to active. See the module docstring.",
         "SCREENING on presumptive code values, not a design. The cancellation depends on "
         "the loop being CAST — corner bar development is ordinary practice and is not "
-        "something this engine has looked at.",
+        "something this engine has looked at, though `corner shear transfer` now puts a "
+        "force on what it would have to develop.",
+        "PER FOOTING, against its OWN thrust and its OWN friction — the check the group "
+        "resultant does not make: " + "; ".join(
+            f"{m.tag} {m.demand_lb:,.0f} lb vs {m.capacity_lb:,.0f} lb"
+            + (f" (short {m.unassisted_shortfall_lb:,.0f})"
+               if m.unassisted_shortfall_lb else " (holds its own)")
+            for m in built_by_pcf[low]) + ". A shortfall is not a failure — it is the force "
+        "that has to reach the loop, and the `corner shear transfer` row is where it is "
+        "graded.",
         "Sequence is the objection this answers: the cross-member is cast WITH the walls, "
         "so the loop is closed before any backfill goes in. A floor slab strut would not be.",
     )

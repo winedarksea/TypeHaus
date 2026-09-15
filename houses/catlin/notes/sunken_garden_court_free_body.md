@@ -490,6 +490,57 @@ that supported μ = 0.40 on the native soil would take the case above from 1.16 
 it would do something no amount of concrete can: remove the design's dependence on how the
 stone bed gets built.
 
+### 5a. What the cancellation is bought with — per footing, and the corner shear it costs
+
+Added 2026-09-14, answering the outside review's R2: *"no footing is checked against its own
+resultant"*. Half of that complaint is a misreading and half is a real gap, and separating
+them is what the fix follows from.
+
+**The group sum is right.** §4 sums isotropic friction against one 2-D resultant. For a loop
+whose closure has been established — and `_verify` establishes it, or the record is
+INCOMPLETE — that is the correct rigid-body statement: one body, one capacity disc, and the
+cancelled component is carried by concrete precisely so that none of the disc is spent on it.
+Apportioning the resultant back to the footings by their own capacity and re-checking each is
+the same inequality rearranged; it would add a row and no information.
+
+**What was genuinely unchecked is the delivery.** Cancellation is not free. Look at each
+footing against its own wall, which nothing did until now:
+
+```
+                own thrust      own friction      short by
+  W-SG-W2       50,181 lb        31,027 lb        19,154 lb
+  W-SG-E2       50,181 lb        31,027 lb        19,154 lb
+  W-SG-S        61,446 lb        37,992 lb        23,454 lb   <- governs
+```
+
+*No footing in this court holds its own wall.* Every one of them is short, and the shortfall
+is not a failure — it is the force that has to reach the loop, through the corners, as
+in-plane shear in the wall's own vertical section. §4's resultant is smaller than the sum of
+the thrusts exactly because that transfer happens; the transfer had never been named.
+
+The south wall governs. Grading its shortfall as one-way shear on its own section, concrete
+alone, no horizontal steel credited — because corner reinforcement is precisely what the
+model does not carry:
+
+```
+V     = 61,446 − 37,992                                  = 23,454 lb  (service)
+Vu    = 1.6 × 23,454                                     = 37,526 lb
+b     = 12 in                                   (stem thickness)
+d     = 0.8 × 109.44                            = 87.55 in   (ACI 318-19 §11.5.4.3, 0.8 lw)
+φVn   = 0.75 × 2 × √3,000 × 12 × 87.55                   = 86,322 lb   d/c 0.43  ✓
+```
+
+ACI 318-19 §22.5.5.1 for `Vc = 2 λ √f'c b d`, Table 21.2.1 for φ = 0.75, §11.5.4.3 for the
+0.8 `lw` effective depth. λ = 1.0, normalweight.
+
+**It clears by better than two to one, and that is the useful result.** The cancellation the
+whole court depends on is bought with a force the plain section can pass without any help
+from the corner bars — so the corner reinforcement is a detailing and development question,
+not a capacity one. That is a materially weaker statement than "the corners are fine", and it
+is the strongest one this model supports: §5's warning about the stone bed is untouched, and
+so is the module's standing note that corner bar development is not something this engine has
+looked at. What has changed is that there is now a number to develop *for*.
+
 ---
 
 ## 6. The stem — the limit state nothing had computed, and the steel it wants

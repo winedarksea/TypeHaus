@@ -70,6 +70,19 @@ _NOTE_STRUT_PHI_PN_LB = 103_655.0
 #: Asserted so the record cannot quietly stop publishing the range.
 _NOTE_STRUT_FIXED_CORNER_P_LB = 18_818.0
 _NOTE_STRUT_PINNED_CORNER_P_LB = 25_090.0
+
+# §5a: the delivery the cancellation is bought with. NO FOOTING IN THIS COURT HOLDS ITS OWN
+# WALL — every one is short against its own thrust, and the shortfall travels through the
+# corners as in-plane shear. The south wall governs at 23,454 lb service; graded as one-way
+# shear on its own 12" x 0.8-lw section, concrete alone, it clears by better than two to one.
+_NOTE_CORNER_SHORTFALL_LB = 23_454.0
+_NOTE_CORNER_VU_LB = 37_526.0
+_NOTE_CORNER_PHI_VN_LB = 86_322.0
+#: Every member's own-thrust-less-own-friction, §5a's table. Asserted in full because the
+#: headline of that subsection is that the list has NO zero in it.
+_NOTE_SHORTFALL_BY_TAG = {
+    "W-SG-W2": 19_154.0, "W-SG-E2": 19_154.0, "W-SG-S": 23_454.0,
+}
 # The exposure of the run above the authored yard, which is a RESULT of the flush tops and
 # not the driver it used to be. `params/sunken_garden.RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN`.
 _NOTE_EXPOSURE_IN = 40.0
@@ -108,6 +121,21 @@ def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
     # strut, not along it; naming it here was the whole defect.
     assert "W-SG-E2" in citation or "W-SG-W2" in citation, citation
     assert "W-SG-S" not in citation.split(" on ")[0], citation
+
+    # §5a. The row that says what the cancellation is bought with.
+    corner = states["corner shear transfer"]
+    assert corner.demand == pytest.approx(_NOTE_CORNER_VU_LB, rel=0.001)
+    assert corner.capacity == pytest.approx(_NOTE_CORNER_PHI_VN_LB, rel=0.001)
+    assert corner.ok
+    assert f"{_NOTE_CORNER_SHORTFALL_LB:,.0f} lb from W-SG-S" in corner.citation, \
+        corner.citation
+    # The whole point of §5a: not one footing holds its own wall. A future pass that made
+    # one of them self-sufficient would be welcome — and would have to come here and say so.
+    per_footing = next(note for note in record.notes if note.startswith("PER FOOTING"))
+    for tag, shortfall in _NOTE_SHORTFALL_BY_TAG.items():
+        assert f"{tag} " in per_footing, per_footing
+        assert f"(short {shortfall:,.0f})" in per_footing, (tag, per_footing)
+    assert "holds its own" not in per_footing, per_footing
     assert states["strut compression"].ok
 
     # The resultant and the capacity themselves, not just their ratio: two errors can cancel
