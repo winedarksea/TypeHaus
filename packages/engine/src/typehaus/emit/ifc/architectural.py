@@ -28,6 +28,7 @@ from typehaus.emit.ifc.structural import _emit_framed_member
 from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.geometry import rect_between
+from typehaus.resolve.geometry_walls import layer_solids
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
 from typehaus.resolve.room_floor import room_finished_floor_elevation
 from typehaus.resolve.topology import _added_thicknesses
@@ -108,7 +109,8 @@ def _emit_wall_types(f: Any, model: ResolvedModel,
 
 def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
                project_uuid: Any, lod: str,
-               wall_types: dict[tuple, tuple[Any, Any]]) -> Any:
+               wall_types: dict[tuple, tuple[Any, Any]],
+               openings: Any = ()) -> Any:
     guid = derive_guid(project_uuid, rw.uid)
     ifc_class = "IfcWall"
     wall = ll.create_entity(f, ifc_class, name=rw.tag)
@@ -134,7 +136,7 @@ def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
         ll.ensure_pset(f, wall, "Pset_HF_FoundationWall", {"IsFoundation": True})
     ll.assign_container(f, wall, storeys[rw.storey])
 
-    children = _emit_banded_layer_parts(f, body, rw, project_uuid)
+    children = _emit_banded_layer_parts(f, body, rw, project_uuid, openings)
     if lod == "framed" and rw.members:
         for m in sorted(rw.members, key=lambda x: x.child_key):
             children.append(_emit_framed_member(f, body, rw.tag, rw.uid, m, project_uuid))
@@ -146,7 +148,7 @@ def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
 
 
 def _emit_banded_layer_parts(f: Any, body: Any, rw: ResolvedWall,
-                             project_uuid: Any) -> list[Any]:
+                             project_uuid: Any, openings: Any = ()) -> list[Any]:
     """Each vertically banded layer of ``rw``, as its own aggregated part.
 
     A layer with a ``Layer.extent`` — catlin's above-grade foundation protection panel is
@@ -163,6 +165,20 @@ def _emit_banded_layer_parts(f: Any, body: Any, rw: ResolvedWall,
     lapis field, both gold registers and the upper field, four of five regions on one 3 5/8"
     wythe, were absent from the IFC entirely. ``geometry_build`` and the GLB walk the same
     list, so the IR and the exports can no longer disagree about a wall's part count.
+
+    **The openings go through the parts too.** This used to extrude ``layer.polygon``
+    straight from band floor to band top, so a banded layer crossing a door or window ran
+    right across it in the IFC. That is not hypothetical: catlin's sauna liner —
+    ``shiplap-liner``, ``liner-furring`` and ``foil-polyiso`` on ``W-B-S2-FR`` and
+    ``W-B-CS`` — is 6 of the house's 45 banded layers, and every one of the six was covering
+    its own door or window. ``layer_solids`` is the call glTF and ``geometry_build`` already
+    make, so going through it is also what stops the three from disagreeing.
+
+    **A single-solid layer keeps its old key, and that is deliberate.** A GlobalId is an
+    identity a federated model and its issue log hold onto, so the 39 layers that do not
+    split must not be re-keyed just because the call around them changed. Only a layer that
+    genuinely becomes several parts takes indexed keys, because there is no longer one part
+    for the old key to mean.
     """
     parts = []
     for layer in rw.body_layers():
@@ -172,11 +188,21 @@ def _emit_banded_layer_parts(f: Any, body: Any, rw: ResolvedWall,
         if z1 - z0 <= 1e-9:
             continue
         key = f"{rw.uid}/{layer.name}"
-        parts.append(ll.create_building_element_part(
-            f, body, f"{rw.tag}:{layer.name}",
-            derive_child_guid(project_uuid, "wall-parts", key),
-            list(layer.polygon), z0, z1, layer.material_ref,
-        ))
+        pieces = layer_solids(rw, layer.polygon, openings, band=(z0, z1))
+        for index, piece in enumerate(pieces):
+            ring = getattr(piece, "ring", None)
+            if ring is None or len(ring) < 3:
+                continue  # a GMesh has no plan ring to extrude; nothing to export here
+            # One piece keeps the bare key; several take indexed ones.
+            piece_key = key if len(pieces) == 1 else f"{key}#{index}"
+            name = (f"{rw.tag}:{layer.name}" if len(pieces) == 1
+                    else f"{rw.tag}:{layer.name} ({index + 1}/{len(pieces)})")
+            parts.append(ll.create_building_element_part(
+                f, body, name,
+                derive_child_guid(project_uuid, "wall-parts", piece_key),
+                [(point[0], point[1]) for point in ring],
+                piece.z0_m, piece.z1_m, layer.material_ref,
+            ))
     return parts
 
 

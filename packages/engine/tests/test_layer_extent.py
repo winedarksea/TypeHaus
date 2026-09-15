@@ -212,13 +212,19 @@ def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
                     if name.startswith("W-B-S") and name.endswith(_PANEL)}
     assert south_banded == {f"W-B-S1:{_PANEL}", f"W-B-S4:{_PANEL}"}
     # The sauna's south liner is the other banded stack in the house, and it exports the
-    # same way: three parts stopping at the room's 7'-6" ceiling, not at the wall's top.
+    # same way: three layers stopping at the room's 7'-6" ceiling, not at the wall's top.
     # W-B-S2-FR's south face is a framed wall on a curb; the curb's own liner is unbanded
     # (it runs the curb's full 7 1/4"), so only the framed wall's three layers are partial
     # and only they aggregate.
+    #
+    # Each of those three is FOUR parts, not one: W-B-S2-FR carries the sauna window, and a
+    # banded layer is cut around the openings in its own wall exactly as the wall is. Until
+    # 2026-09-15 the liner extruded straight across the glass.
     assert {n for n in parts if n.startswith("W-B-S")} == {
         f"W-B-S1:{_PANEL}", f"W-B-S4:{_PANEL}",
-        "W-B-S2-FR:shiplap-liner", "W-B-S2-FR:liner-furring", "W-B-S2-FR:foil-polyiso"}
+        *(f"W-B-S2-FR:{layer} ({index}/4)"
+          for layer in ("shiplap-liner", "liner-furring", "foil-polyiso")
+          for index in range(1, 5))}
 
     part = parts[f"W-B-N1:{_PANEL}"]
     parents = [rel.RelatingObject for rel in model.by_type("IfcRelAggregates")

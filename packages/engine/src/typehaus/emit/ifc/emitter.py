@@ -146,10 +146,17 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
     ll.aggregate(f, building, list(storeys.values()))
 
     wall_types = _emit_wall_types(f, model, project_uuid)
+    # Grouped once. A banded layer's parts are cut around the openings in their own wall
+    # (``_emit_banded_layer_parts``), and re-scanning model.openings per wall would make
+    # that quadratic on a house with hundreds of each.
+    openings_by_wall: dict[str, list[Any]] = {}
+    for opening in model.openings:
+        openings_by_wall.setdefault(opening.host_wall, []).append(opening)
     wall_entities: dict[str, Any] = {}
     for rw in sorted(model.walls, key=lambda w: w.uid):
         wall_entities[rw.tag] = _emit_wall(
-            f, body, rw, storeys, project_uuid, lod, wall_types
+            f, body, rw, storeys, project_uuid, lod, wall_types,
+            openings_by_wall.get(rw.tag, ()),
         )
 
     opening_types = _emit_opening_types(f, model, project_uuid)

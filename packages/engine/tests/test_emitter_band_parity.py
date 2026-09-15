@@ -136,8 +136,17 @@ def banded_ifc(banded_model, tmp_path_factory):
     return ifcopenshell.open(str(emit_ifc(banded_model, out)))
 
 
-def _banded_part_names(wall) -> set[str]:
-    """The ``IfcBuildingElementPart`` names ``_emit_banded_layer_parts`` owes this wall."""
+def _banded_part_names(wall, openings=()) -> set[str]:
+    """The ``IfcBuildingElementPart`` names ``_emit_banded_layer_parts`` owes this wall.
+
+    A banded layer is cut around the openings in its own wall, so a layer crossing a door
+    or window owes one part per surviving region rather than one part. ``layer_solids`` is
+    the same call the emitter makes — the point of this test is that the IFC agrees with
+    the geometry, so restating the split here instead of asking for it would only pin the
+    restatement.
+    """
+    from typehaus.resolve.geometry_walls import layer_solids
+
     names = set()
     for layer in wall.body_layers():
         if not layer.is_banded or len(layer.polygon) < 3:
@@ -145,7 +154,13 @@ def _banded_part_names(wall) -> set[str]:
         z0, z1 = layer.band(wall)
         if z1 - z0 <= 1e-9:
             continue
-        names.add(f"{wall.tag}:{layer.name}")
+        pieces = [p for p in layer_solids(wall, layer.polygon, openings, band=(z0, z1))
+                  if getattr(p, "ring", None) is not None and len(p.ring) >= 3]
+        if len(pieces) == 1:
+            names.add(f"{wall.tag}:{layer.name}")
+            continue
+        for index in range(len(pieces)):
+            names.add(f"{wall.tag}:{layer.name} ({index + 1}/{len(pieces)})")
     return names
 
 
@@ -156,8 +171,13 @@ def catlin_ifc(catlin_ifc_path):
     return ifcopenshell.open(str(catlin_ifc_path))
 
 
-def test_every_wall_exports_one_ifc_part_per_banded_body_layer(catlin_model_ro, catlin_ifc):
-    """Wall by wall, over the whole house — not just the one that regressed."""
+def test_every_wall_exports_one_ifc_part_per_banded_body_layer_region(catlin_model_ro,
+                                                                      catlin_ifc):
+    """Wall by wall, over the whole house — not just the one that regressed.
+
+    Per REGION, not per layer: a banded layer crossing an opening is several parts, because
+    the opening goes through the part the same way it goes through the wall.
+    """
     parts_by_parent: dict[str, set[str]] = {}
     for rel in catlin_ifc.by_type("IfcRelAggregates"):
         parent = rel.RelatingObject
@@ -167,13 +187,54 @@ def test_every_wall_exports_one_ifc_part_per_banded_body_layer(catlin_model_ro, 
             if child.is_a("IfcBuildingElementPart"):
                 parts_by_parent.setdefault(parent.Name, set()).add(child.Name)
 
+    by_wall: dict[str, list] = {}
+    for opening in catlin_model_ro.openings:
+        by_wall.setdefault(opening.host_wall, []).append(opening)
+
     mismatches = []
     for wall in catlin_model_ro.walls:
-        expected = _banded_part_names(wall)
+        expected = _banded_part_names(wall, by_wall.get(wall.tag, ()))
         actual = parts_by_parent.get(wall.tag, set())
         if expected != actual:
             mismatches.append((wall.tag, sorted(expected - actual), sorted(actual - expected)))
     assert not mismatches, mismatches
+
+
+def test_the_sauna_liner_no_longer_runs_across_its_own_door_and_window(catlin_model_ro,
+                                                                      catlin_ifc):
+    """The defect, named and counted.
+
+    Six of catlin's 45 banded layers overlap an opening, and all six are the sauna liner:
+    ``shiplap-liner``, ``liner-furring`` and ``foil-polyiso`` on ``W-B-S2-FR`` (a window,
+    4 regions) and ``W-B-CS`` (a door, 3 regions — no sill strip, because a door has no
+    sill). Every one of them used to extrude straight across the hole.
+    """
+    names = {p.Name for p in catlin_ifc.by_type("IfcBuildingElementPart")}
+    for layer in ("shiplap-liner", "liner-furring", "foil-polyiso"):
+        assert f"W-B-S2-FR:{layer}" not in names, "the unsplit part must be gone"
+        assert {n for n in names if n.startswith(f"W-B-S2-FR:{layer} (")} == {
+            f"W-B-S2-FR:{layer} ({i}/4)" for i in range(1, 5)}
+        assert {n for n in names if n.startswith(f"W-B-CS:{layer} (")} == {
+            f"W-B-CS:{layer} ({i}/3)" for i in range(1, 4)}
+
+
+def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc):
+    """39 of the 45 do not split, and their GUIDs must not move because the call changed.
+
+    A GlobalId is an identity a federated model and its issue log hold onto. Re-keying a
+    part that still means exactly what it meant before would break those references for
+    nothing — so only a layer that genuinely becomes several parts takes indexed keys.
+    """
+    from typehaus.model.ids import derive_child_guid
+
+    project_uuid = catlin_model_ro.plan.project.project_uuid
+    parts = {p.Name: p.GlobalId for p in catlin_ifc.by_type("IfcBuildingElementPart")}
+    unsplit = [(w, ly) for w in catlin_model_ro.walls for ly in w.body_layers()
+               if f"{w.tag}:{ly.name}" in parts]
+    assert len(unsplit) == 39, f"expected the 45 banded layers less the 6 that split, got {len(unsplit)}"
+    for wall, layer in unsplit:
+        assert parts[f"{wall.tag}:{layer.name}"] == derive_child_guid(
+            project_uuid, "wall-parts", f"{wall.uid}/{layer.name}")
 
 
 def test_the_split_wythe_exports_every_region_not_just_the_bottom_one(banded_model,
