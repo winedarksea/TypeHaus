@@ -74,6 +74,8 @@ def frame_furring(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     # to carry.
     by_host: dict[str, list[ResolvedOpening]] = {}
     for op in model.openings:
+        if not framed_around(op):
+            continue  # a bored penetration is drilled through the strip, not framed around
         by_host.setdefault(op.host_wall, []).append(op)
 
     findings: list[Finding] = []
@@ -269,6 +271,13 @@ def opening_margin(spec: Any) -> float:
     if getattr(spec, "standoff", "none") != "block":
         return 0.0
     return OPENING_MARGIN_IN * 0.0254
+
+
+# The bore rule lives with the opening framing it also governs; imported rather than
+# restated so the cladding and the studs can never disagree about what a bore is.
+from typehaus.resolve.framing.openings import BORE_MAX_IN, framed_around  # noqa: E402
+
+__all__ = ["BORE_MAX_IN", "framed_around"]
 
 
 def band_tops(rw: ResolvedWall) -> tuple[float, float]:

@@ -63,6 +63,7 @@ from typehaus.resolve.framing.furring import (
     VERTICAL,
     _furring_module_signature,
     course_elevations,
+    framed_around,
     opening_margin,
 )
 from typehaus.resolve.framing.solver import continuation_roles
@@ -498,17 +499,25 @@ def frame_wall_girts(plan: PlanModel, wall: ResolvedWall, openings: list[Resolve
         rake = f"{prefix}rake-"
         field[tier] = [m for m in members_of if not m.child_key.startswith(rake)]
         rakes[tier] = [m for m in members_of if m.child_key.startswith(rake)]
+    # A bored PENETRATION is invisible to this whole pass — not a void, not a butt, not a
+    # frame, not a buck (``furring.frames_the_cladding``). It is drilled through the cladding
+    # after the rainscreen stands, wherever its escutcheon lands, and if a block is behind it
+    # the plumber drills the block. Carrying it here instead framed a 3/8" buck and three
+    # 3-ply blocks around a 2 1/2" hole, reverted this wall's block module from every-other
+    # stud to every stud, and stretched a girt bay to 37". The girt field a wall resolves is
+    # therefore exactly what it was before the hole was modelled, which is the point.
+    clad = [op for op in openings if framed_around(op)]
     voids = [(op.center_along_m - op.width_m / 2.0,
               op.center_along_m + op.width_m / 2.0,
               wall.base_ref_z_m + op.sill_m,
               wall.base_ref_z_m + op.sill_m + op.height_m)
-             for op in openings]
+             for op in clad]
     # Where a field course stops against an opening's jamb post rather than in open wall —
     # the post's outer face, which is the RO edge plus exactly the margin the field is held
     # back by (``furring.opening_margin``). Read from the same function the courses were cut
     # with, so the two cannot drift apart by a sixteenth and quietly reinstate the end block.
     margin = opening_margin(bands[1].framing)
-    butts = tuple(x for op in openings
+    butts = tuple(x for op in clad
                   for x in (op.center_along_m - op.width_m / 2.0 - margin,
                             op.center_along_m + op.width_m / 2.0 + margin))
     # The wall's own vertical framing, so a block near an opening lands on the stick that
@@ -519,7 +528,12 @@ def frame_wall_girts(plan: PlanModel, wall: ResolvedWall, openings: list[Resolve
     members, findings = frame.blocks(field, voids, butts, verticals)
     members.extend(frame.rake_blocks(rakes, voids, verticals))
     elevations = course_elevations(wall, bands[1].framing, frame.stock_face)
+    # `index` still runs over EVERY opening, penetrations included, so a member's child_key
+    # keeps naming the same opening it always did — renumbering here would move every buck
+    # and jamb tag on any wall that gains a penetration.
     for index, opening in enumerate(openings):
+        if not framed_around(opening):
+            continue
         members.extend(frame.opening_frame(opening, index, elevations))
         members.extend(frame.buck(opening, index))
     return tuple(members), findings

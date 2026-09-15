@@ -139,10 +139,12 @@ def run_through_opening(ctx: CheckContext) -> list[Finding]:
             segment = LineString([a, b])
             standing = segment.length <= OPENING_EDGE_M
             for otag, is_door, host, prism, low, high, penetration_for in prisms:
-                if penetration_for == tag:
+                if tag in penetration_for:
                     # This hole exists FOR this run: it is the penetration, not an opening
-                    # the run was drawn across. Only this pairing is exempt — another run
-                    # through this opening, or this run through another, still reports.
+                    # the run was drawn across. Only the named pairings are exempt — a run
+                    # this hole does NOT name, or a named run through some OTHER opening,
+                    # still reports. A hydrant hole names two: the barrel through it, and
+                    # the feed that stops on the seat inside it.
                     continue
                 if standing:
                     if not prism.covers(Point(a)):

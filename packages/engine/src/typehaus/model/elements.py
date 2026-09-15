@@ -135,12 +135,19 @@ class RoughOpening(Element):
     height: Length
     sill_height: Length | None = None
     arch: Arch | None = None
-    #: The tag of the run this hole exists FOR — a duct, pipe or raceway penetration rather
-    #: than a pass-through. ``mep.run_through_opening`` grades "a run drawn across the hole
-    #: the trades left for something else"; when the something else IS that run, the crossing
-    #: is the point. Naming the run here exempts that ONE pairing and nothing else: any other
-    #: run crossing this opening is still a finding, and so is this run crossing any other.
-    penetration_for: str | None = None
+    #: The tags of the runs this hole exists FOR — a duct, pipe or raceway penetration
+    #: rather than a pass-through. ``mep.run_through_opening`` grades "a run drawn across the
+    #: hole the trades left for something else"; when the something else IS one of these
+    #: runs, the crossing is the point. Naming a run here exempts exactly that pairing and
+    #: nothing else: any run NOT named crossing this opening is still a finding, and so is a
+    #: named run crossing any other opening.
+    #:
+    #: A TUPLE because one hole routinely serves more than one run. A wall hydrant is the
+    #: worked case: the barrel passes through the hole, and the feed that lands on the
+    #: hydrant's seat terminates INSIDE it — both belong to the penetration, and naming only
+    #: the barrel reported the feed as "a riser in a window". A 1-tuple needs its trailing
+    #: comma in the editable dialect; ``haus build --inspect`` is what says so.
+    penetration_for: tuple[str, ...] = ()
 
 
 for _name, _obj in (

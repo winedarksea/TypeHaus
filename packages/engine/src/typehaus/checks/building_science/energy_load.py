@@ -291,7 +291,7 @@ def estimate_block_load(
     window_area = window_ua = window_solar = door_area = door_ua = door_solar = 0.0
     solar_orientation = {"N": 0.25, "E": 0.70, "S": 1.0, "W": 0.85}
     for opening in envelope_openings:
-        if opening.penetration_for is not None:
+        if opening.penetration_for:
             # A duct/pipe penetration is not fenestration: the hole is filled by the run and
             # its exterior hood, so there is no glass to state an SHGC about and no leaf to
             # give a U-factor. Billing it as a window at ``preferences.window_u`` would be

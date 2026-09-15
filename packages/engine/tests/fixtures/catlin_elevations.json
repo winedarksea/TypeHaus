@@ -17839,50 +17839,50 @@
 "geometry/CMW101AAAA/layer:cladding": [
 -0.3413125,
 3.048,
-14,
-"d7163a07ca29"
+20,
+"16d797592a25"
 ],
 "geometry/CMW101AAAA/layer:gwb-int": [
 -0.3413125,
 3.048,
-14,
-"d7163a07ca29"
+20,
+"16d797592a25"
 ],
 "geometry/CMW101AAAA/layer:outer-girt": [
 -0.3413125,
 3.048,
-14,
-"d7163a07ca29"
+20,
+"16d797592a25"
 ],
 "geometry/CMW101AAAA/layer:paint": [
 -0.3413125,
 3.048,
-14,
-"d7163a07ca29"
+20,
+"16d797592a25"
 ],
 "geometry/CMW101AAAA/layer:sheathing": [
 -0.3413125,
 3.048,
-14,
-"d7163a07ca29"
+20,
+"16d797592a25"
 ],
 "geometry/CMW101AAAA/layer:spray-foam": [
 -0.3413125,
 3.048,
-14,
-"d7163a07ca29"
+20,
+"16d797592a25"
 ],
 "geometry/CMW101AAAA/layer:stud": [
 -0.3413125,
 3.048,
-14,
-"d7163a07ca29"
+20,
+"16d797592a25"
 ],
 "geometry/CMW101AAAA/layer:vent-gap": [
 -0.3413125,
 3.048,
-14,
-"d7163a07ca29"
+20,
+"16d797592a25"
 ],
 "geometry/CMW101AAAA::framing/member:backing-0-000": [
 0.5334,
@@ -28783,56 +28783,56 @@
 "geometry/CSW101AAAA/layer:cladding": [
 3.048,
 6.096,
-20,
-"e2ceb76d32db"
+26,
+"833b4153731e"
 ],
 "geometry/CSW101AAAA/layer:humid-membrane": [
 3.048,
 6.096,
-20,
-"e2ceb76d32db"
+26,
+"833b4153731e"
 ],
 "geometry/CSW101AAAA/layer:liner-furring": [
 3.048,
 6.096,
-20,
-"e2ceb76d32db"
+26,
+"833b4153731e"
 ],
 "geometry/CSW101AAAA/layer:outer-girt": [
 3.048,
 6.096,
-20,
-"e2ceb76d32db"
+26,
+"833b4153731e"
 ],
 "geometry/CSW101AAAA/layer:pvc-panel": [
 3.048,
 6.096,
-20,
-"e2ceb76d32db"
+26,
+"833b4153731e"
 ],
 "geometry/CSW101AAAA/layer:sheathing": [
 3.048,
 6.096,
-20,
-"e2ceb76d32db"
+26,
+"833b4153731e"
 ],
 "geometry/CSW101AAAA/layer:spray-foam": [
 3.048,
 6.096,
-20,
-"e2ceb76d32db"
+26,
+"833b4153731e"
 ],
 "geometry/CSW101AAAA/layer:stud": [
 3.048,
 6.096,
-20,
-"e2ceb76d32db"
+26,
+"833b4153731e"
 ],
 "geometry/CSW101AAAA/layer:vent-gap": [
 3.048,
 6.096,
-20,
-"e2ceb76d32db"
+26,
+"833b4153731e"
 ],
 "geometry/CSW101AAAA::framing/member:backing-0-000": [
 3.5814,

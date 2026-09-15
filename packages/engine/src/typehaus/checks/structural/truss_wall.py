@@ -38,7 +38,17 @@ def truss_wall_opening_support(ctx: CheckContext) -> list[Finding]:
 
     Advisory, like everything else in this module: a flange bearing is a fastening detail,
     not an engineered connection.
+
+    **A bored PENETRATION is out of scope, and is skipped rather than passed.** A hydrant
+    barrel or a duct sleeve has no nailing flange to bear anything, so "an RO jamb is far
+    from an outrigger" is not a defect about it — it is a question that does not apply. The
+    cladding framing takes the same view and builds it no jamb post, no head or sill course
+    and no buck (``resolve/framing/furring.frames_the_cladding``), so grading one here would
+    report the absence of something nothing is supposed to build. It does not become
+    NOT_APPLICABLE either: N/A is a verdict about a BUILDING, and these walls have real
+    windows in them that this rule does govern.
     """
+    from typehaus.resolve.framing.openings import framed_around
     from typehaus.resolve.framing.truss_wall import (
         FLANGE_BEARING,
         nearest_bearing_gap,
@@ -53,7 +63,8 @@ def truss_wall_opening_support(ctx: CheckContext) -> list[Finding]:
         layer_name = truss_layer_name(ctx.plan, wall.assembly)
         if layer_name is None:
             continue
-        openings = [op for op in ctx.model.openings if op.host_wall == wall.tag]
+        openings = [op for op in ctx.model.openings
+                    if op.host_wall == wall.tag and framed_around(op)]
         if not openings:
             continue
         spans = _truss_stations(wall, layer_name,

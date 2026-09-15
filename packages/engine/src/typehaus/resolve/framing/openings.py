@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any
 
 from typehaus.model.enums import DoorOperation
 from typehaus.quantities import M_PER_IN
@@ -29,6 +30,46 @@ from typehaus.resolve.framing.tables import (
 )
 from typehaus.resolve.geometry import add, scale
 from typehaus.resolve.model import FramedMember
+
+#: A penetration at or under this, in inches, is a BORE: too small for any framing to be
+#: organised around it. The number is the board — a 2x4 laid flat is 3 1/2" — and a hole
+#: narrower than that cannot be given a rough sill, a head, a jamb post or a buck cut FROM
+#: that board, because every one of them would be wider than the hole it frames.
+#:
+#: Above it a penetration interrupts a wall exactly as a sash does and is framed the same
+#: way. catlin has one of each, which is why the line is drawn on SIZE and not on "is it a
+#: penetration": the two 7" ERV sleeves DO take a rough sill and DO pack girt block stations
+#: at their jambs (`test_hardware_takeoff` has carried that arithmetic since 2026-09-11, +9),
+#: and the two 2 1/2" hydrant bores must not.
+#:
+#: What framing a bore cost, measured: a 3/8" buck and three 3-ply blocks around each hole; a
+#: rough sill and rough head spanning the FULL 13 1/4" bay, which in turn broke the authored
+#: `WallBacking` the hydrant mounts to — clipping BK-M-S1-HYD from 29 1/4" to 16" and
+#: deleting BK-S-S1-HYD outright, at 0 FAIL; W-M-S1's girt block module reverted from every
+#: other stud to every stud; and a girt bay stretched to 37", past the module plus a board.
+BORE_MAX_IN = 4.0
+
+
+def framed_around(opening: Any) -> bool:
+    """Whether framing is organised AROUND this opening, or drilled THROUGH what is there.
+
+    A window or a door is always framed around: its jambs, head and sill are what the studs
+    pack out to and what the siding dies into.
+
+    A PENETRATION is framed around only if it is big enough to interrupt the field — see
+    :data:`BORE_MAX_IN`. A hose bib's barrel is drilled after the wall is standing, through
+    whatever it meets; the blocking it mounts to is AUTHORED (`WallBacking`), and the bore
+    goes through that board rather than replacing it with a rough sill.
+
+    Read by the stud framing (`solver.frame_model`), the cladding framing
+    (`furring`/`truss_wall`) and `structural.truss_wall_opening_support`. The hole is still a
+    VOID in the wall's layers either way — it is cut through sheathing and cladding, and it
+    draws and emits — so what this governs is lumber, not geometry.
+    """
+    if not getattr(opening, "penetration_for", ()):
+        return True
+    bore = BORE_MAX_IN * M_PER_IN
+    return opening.width_m > bore or opening.height_m > bore
 
 _PLATE_THICKNESS_M = 1.5 * M_PER_IN
 # Shorter than a plate is not a buildable stud, it is a sliver: a header landing

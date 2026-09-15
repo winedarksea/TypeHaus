@@ -51,6 +51,10 @@ MAIN_ELEMENTS = [*mep_sleeves.SLEEVES,
                  *mep_supply.WATER_SUPPLY,
                  *mep_supply.HYDRANT_BRANCH_MAIN,
                  *mep_supply.KITCHEN_STUB_MAIN,
+                 # The hole FX-M-PORCH-HYD's barrel goes through. A PipeAccessory
+                 # bills the escutcheon but resolves no void, so the wall carried
+                 # none — the same gap AO-M-ERV-OA answers for the ERV hood.
+                 *mep_supply.PENETRATIONS_HYDRANT_MAIN,
                  *mep_supply_devices.SUPPLY_DEVICES_MAIN,
                  *mep_hvac.DUCTS_MAIN,
                  *mep_erv.EQUIPMENT_ERV_MAIN,
@@ -115,6 +119,7 @@ SECOND_ELEMENTS = [*mep_hvac.DUCTS,
                    *mep_venting.VENT_BRANCHES_SECOND,
                    *mep_electrical.SECOND_DEVICES,
                    *mep_supply.HYDRANT_BRANCH_SECOND,
+                   *mep_supply.PENETRATIONS_HYDRANT_SECOND,
                    *mep_supply_devices.SUPPLY_DEVICES_SECOND]
 ATTIC_ELEMENTS = [*mep_venting.VENT_BRANCHES_ATTIC,
                   # STUDIO_SUPPLY and STUDIO_DRAINS are NOT here — both are filed on `main`

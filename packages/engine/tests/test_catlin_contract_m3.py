@@ -592,13 +592,21 @@ def test_opening_framing_registers_with_the_opening_it_frames(catlin_model):
     the ladder blocking, the furring cuts, the IFC void, the elevations. This test checks the
     two against each other directly.
     """
+    from typehaus.resolve.framing.openings import framed_around
+
     plate_h = inch(1.5).meters
     checked = 0
     for wall in catlin_model.walls:
         members = [m for m in catlin_model.all_members() if m.parent_uid == wall.uid]
         if not any(m.category in ("plate", "stud") for m in members):
             continue  # concrete, brick, strapping-only: no stud pack to register
-        openings = [o for o in catlin_model.openings if o.host_wall == wall.tag]
+        # Bores are excluded, because nothing frames them: a penetration at or under
+        # `BORE_MAX_IN` is drilled through whatever it meets rather than given a rough sill
+        # and a head (`resolve/framing/openings.framed_around`). Framing catlin's 2 1/2"
+        # hydrant barrels put a sill and a head across the FULL 13 1/4" bay each sat in,
+        # which is also what deleted the WallBacking the hydrant mounts to.
+        openings = [o for o in catlin_model.openings
+                    if o.host_wall == wall.tag and framed_around(o)]
         heads = sorted(wall.base_ref_z_m + o.sill_m + o.height_m for o in openings)
         # A rough sill only exists where the opening leaves room for one under it: a cased
         # opening running to the floor has the bottom plate as its sill and gets no member.

@@ -659,7 +659,21 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
     # belong here precisely BECAUSE the rule is about width against the module and says
     # nothing about what fills the hole — which is what makes a duct penetration and a 14"
     # window the same framing problem.
-    assert len(framed) == 15, [o.tag for o in framed]
+    #
+    # ** 17 ON 2026-09-15, AND THE TWO ADDITIONS ARE THE PARAGRAPH ABOVE AGAIN. **
+    # `AO-M-PORCH-HYD` and `AO-S-BALC-HYD` are the wall hydrants' 2 1/2" barrel bores
+    # (plan/mep_supply.py). They join for exactly the reason the ERV pair did: each lands
+    # wholly inside a bay, takes no header, no jack and no king, and leaves the bay's
+    # bounding studs to carry its rough sill. FX-M-PORCH-HYD had to MOVE to earn that — at
+    # 12'-0" it was dead on stud-006 and its barrel was bored through the stud — and 12'-8"
+    # is the clear bay's centre to the nearest inch.
+    #
+    # Note this list and the CLADDING framing part company here, and deliberately: a bore
+    # is a stud-framing problem (it is a hole in a bay) and NOT a cladding one (it grows no
+    # buck, jamb post or course — `resolve/framing/furring.frames_the_cladding`). The rule
+    # this test states is why: it is about width against the module and says nothing about
+    # what fills the hole. The cladding rule is about a board being wider than the hole.
+    assert len(framed) == 17, [o.tag for o in framed]
     for opening in framed:
         wall = walls[opening.host_wall]
         start, end = _framing_axis(wall)
@@ -682,9 +696,19 @@ def test_catlin_small_windows_have_no_header_and_keep_their_flanking_studs(catli
         # opening within 1 m of 10.97, and WIN-M-KIT-E (station 10.36 m) was reported as
         # headered by WIN-M-EAST-MID's header 16 feet away. It has no header — its stud
         # stations at 33'-4" and 34'-8" are both intact, which is the assertion above.
-        headers = [m for m in wall.members if m.category == "header"
-                   and abs((station(m.p0) + station(m.p1)) / 2
-                           - opening.center_along_m) < 1.0]
+        # ** OVERLAP, NOT PROXIMITY — 2026-09-15. ** "within 1 m of the centre" is the same
+        # shape of bug as the axis mix-up above, just in the other coordinate, and the 2 1/2"
+        # hydrant bores found it: AO-M-PORCH-HYD sits at 152" and WIN-M-BED-S1's header spans
+        # 158 3/4"..193 1/4", whose MIDPOINT is 24" away — inside the metre, and reported as
+        # this bore's header. A header is this opening's only if it actually stands over it,
+        # so the test is now the overlap it always meant.
+        headers = []
+        for m in wall.members:
+            if m.category != "header":
+                continue
+            span = sorted((station(m.p0), station(m.p1)))
+            if span[0] < high - 1e-9 and span[1] > low + 1e-9:
+                headers.append(m)
         assert not headers, opening.tag
 
 

@@ -113,7 +113,7 @@ def test_the_jamb_tolerance_does_not_swallow_a_real_crossing() -> None:
 
 
 def test_a_penetration_is_exempt_only_for_the_run_it_exists_for(catlin_model) -> None:
-    """``RoughOpening.penetration_for`` names the one run whose crossing IS the point.
+    """``RoughOpening.penetration_for`` names the runs whose crossing IS the point.
 
     The check's premise is "this is the hole the trades leave for something else". When the
     something else is the run itself — catlin's two ERV wall penetrations, `AO-M-ERV-OA` for
@@ -121,23 +121,36 @@ def test_a_penetration_is_exempt_only_for_the_run_it_exists_for(catlin_model) ->
     Before the field existed the choice was to leave the hole unmodelled (an outdoor hood on
     a facade with no opening under it, at 0 FAIL) or to suppress a true finding.
 
-    The exemption is a PAIRING, not a flag on the opening: any other run through this hole
-    still reports, and so does this run through any other hole. That is what the second half
-    of this test pins, because a blanket exemption on the opening would have been the easy
-    and wrong implementation.
+    The exemption is a PAIRING, not a flag on the opening: a run this hole does not name
+    still reports, and so does a named run through any OTHER hole. That is what the last
+    assertion pins, because a blanket exemption on the opening would have been the easy and
+    wrong implementation.
+
+    ** A TUPLE SINCE 2026-09-15, BECAUSE ONE HOLE CAN SERVE TWO RUNS. ** The two wall
+    hydrants are the case that forced it. `AO-M-PORCH-HYD` is bored for the hydrant, and two
+    runs meet it: `PR-M-CW-PORCH-HYD-CU`, the barrel, passes straight through, and
+    `PR-M-CW-PORCH-HYD`, the PEX feed, drops the wall cavity and STOPS on the seat — which
+    sits inside the hole, because ``opening_prisms`` builds the prism through the whole wall
+    thickness. Naming only the barrel reported the feed as "a riser in a window". Both belong
+    to the penetration and both are named; nothing else at either hole is.
     """
     from typehaus.checks.mep.routing_openings import opening_prisms
 
     class _Ctx:
         model = catlin_model
 
-    named = {tag: pen for tag, _d, _h, _p, _lo, _hi, pen in opening_prisms(_Ctx())
-             if pen is not None}
-    assert named == {"AO-M-ERV-OA": "DU-ERV-OA", "AO-S-ERV-EA": "DU-ERV-EA"}
+    named = {tag: pen for tag, _d, _h, _p, _lo, _hi, pen in opening_prisms(_Ctx()) if pen}
+    assert named == {
+        "AO-M-ERV-OA": ("DU-ERV-OA",),
+        "AO-S-ERV-EA": ("DU-ERV-EA",),
+        "AO-M-PORCH-HYD": ("PR-M-CW-PORCH-HYD-CU", "PR-M-CW-PORCH-HYD"),
+        "AO-S-BALC-HYD": ("PR-S-CW-BALC-HYD-CU", "PR-M-CW-BALC-HYD"),
+    }
 
-    # The pairing is one-to-one: no opening claims a run that another opening also claims,
-    # and no run is exempted at more than one hole.
-    assert len(set(named.values())) == len(named)
+    # Still one-to-one the other way: no run is exempted at more than one hole, so a duct
+    # named here cannot quietly buy itself a pass through somebody else's window.
+    claimed = [run for runs in named.values() for run in runs]
+    assert len(set(claimed)) == len(claimed)
 
 
 def test_the_opening_band_is_measured_from_the_framing_base(catlin_model) -> None:

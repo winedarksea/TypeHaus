@@ -38,6 +38,7 @@ from typehaus.resolve.framing.corners import (
 from typehaus.resolve.framing.openings import (
     WallOpening,
     frame_opening,
+    framed_around,
     in_exclusion,
     jamb_pack_stations,
     merge_spans,
@@ -657,6 +658,8 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
     lines_for_wall = lines_by_wall(model.layout_lines)
     by_host: dict[str, list[WallOpening]] = {}
     for op in model.openings:
+        if not framed_around(op):
+            continue  # a bore is drilled through the framing, not framed around
         by_host.setdefault(op.host_wall, []).append(WallOpening(
             center_m=op.center_along_m, width_m=op.width_m, height_m=op.height_m,
             sill_m=op.sill_m, is_door=op.is_door,

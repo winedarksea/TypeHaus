@@ -807,9 +807,15 @@ ATTIC_FIXTURES = (
 # self-drains outward when closed. Not buried, not shut down for winter — the owner's ask.
 #
 # Both on the south face, serving the porch (0'-0") and balcony (10' up) outdoor rooms:
-#   FX-M-PORCH-HYD  x=12'-0" on W-M-S1, the blank stretch between WIN-M-BED-S1 and
-#                   WIN-M-BED-S2 (RO 13'-5"..15'-11"), leaving 1'-5" of clear wall to that
-#                   jamb.
+#   FX-M-PORCH-HYD  x=12'-8" on W-M-S1, the blank stretch between WIN-M-BED-S1 and
+#                   WIN-M-BED-S2 (RO 13'-5"..15'-11"), leaving 9" of clear wall to that
+#                   jamb. **12'-0" until 2026-09-15, which was dead on stud-006**: the
+#                   barrel was bored straight through a stud and nothing in the model
+#                   graded it. W-M-S1 resolves stud-006 at 144"..145 1/2" and king-1-l0 at
+#                   158 3/4", so the clear bay is 145 1/2"..158 3/4" and its centre is
+#                   152 1/8". 12'-8" is that centre to the nearest inch — the same rounding
+#                   FX-S-BALC-HYD already carries (authored 88", clear centre 88 1/8").
+#                   BK-M-S1-HYD spans 128 3/4"..158" and covers the new station unchanged.
 #   FX-S-BALC-HYD   x=7'-4" on W-S-S1, a 16" module bay centre behind RM-S-PLANT (which
 #                   the balcony irrigation this hydrant feeds actually waters). It lands in
 #                   the 2'-10" of blank wall between WIN-S-PLANT1 and WIN-S-PLANT2 — the
@@ -841,7 +847,7 @@ ATTIC_FIXTURES = (
 # the writer can round-trip.
 PORCH_HYDRANT = (
     Fixture(uid="7QK2M4XR0B", tag="FX-M-PORCH-HYD", type_ref="FX-HYDRANT-SD34",
-            room="RM-M-BED", position=pt(ft(12), ft(0)), wall_ref="W-M-S1",
+            room="RM-M-BED", position=pt(ft(12, 8), ft(0)), wall_ref="W-M-S1",
             mount=Mount(kind=MountKind.WALL, elevation=inch(24))),
 )
 BALCONY_HYDRANT = (

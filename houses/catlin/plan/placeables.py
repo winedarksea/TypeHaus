@@ -1096,7 +1096,10 @@ MAIN_PLACEABLES = [
     # is deliberate; the arms are the table until the owner buys one and the chairs slide.
     #
     # ** y = -3'-6" IS SET BY THE HOSE BIB, NOT BY THE VIEW. ** FX-M-PORCH-HYD is on W-M-S1
-    # at x=12'-0", 24" up — directly behind the west chair. The back edge at -2'-3 1/4" keeps
+    # at x=12'-8", 24" up. It moved there on 2026-09-15 to get off stud-006, and it landed
+    # BETWEEN the chairs rather than behind the west one: the pair is centred on 13'-0" with
+    # 15" of gap, so the gap runs 12'-4 1/2"..13'-7 1/2" and the bib is 3 1/2" into it. That
+    # is a better place for a hose than behind an arm. The back edge at -2'-3 1/4" keeps
     # 22 1/4" of clear deck between chair and cladding face (-0'-5"), which is reach-in room
     # for a hose. In front there is 4'-9 1/4" to the guard.
     #

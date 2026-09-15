@@ -10,7 +10,9 @@
 from typehaus import (
     PipeRun,
     PipeSystem,
+    RoughOpening,
     ft,
+    from_node,
     inch,
     pt,
 )
@@ -499,7 +501,8 @@ HYDRANT_BRANCH_MAIN = [
     # Porch leg: south into the wall's own plane (y=3 1/4", the 2x6 cavity's centre line),
     # then straight down inside W-M-S1 to the hydrant's seat at 2'-0".
     PipeRun(uid="B6HD0NKX3M", tag="PR-M-CW-PORCH-HYD", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(12), ft(0, 9)), pt(ft(12), ft(0, 3.25)), pt(ft(12), ft(0, 3.25))),
+            path=(pt(ft(12, 8), ft(0, 9)), pt(ft(12, 8), ft(0, 3.25)),
+                  pt(ft(12, 8), ft(0, 3.25))),
             diameter=inch(0.75), material="pex",
             elevations=(ft(9, 3), ft(9, 3), ft(2)),
             wall_refs=(None, "W-M-S1"),
@@ -529,7 +532,7 @@ HYDRANT_BRANCH_MAIN = [
     # of metal from the seat out through sheathing/polyiso/EPS/rainscreen to the escutcheon
     # at y=-5". PEX stops at the seat so the thermal bridge doesn't extend into the room.
     PipeRun(uid="T8WQ3E5AZC", tag="PR-M-CW-PORCH-HYD-CU", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(12), ft(0, 3.25)), pt(ft(12), inch(-5))),
+            path=(pt(ft(12, 8), ft(0, 3.25)), pt(ft(12, 8), inch(-5))),
             diameter=inch(0.75), material="copper",
             insulation='1/2" closed-cell elastomeric sleeve, foil-faced, over the barrel',
             elevations=(ft(2), ft(2)),
@@ -598,6 +601,58 @@ HYDRANT_BRANCH_SECOND = [
             insulation='1/2" closed-cell elastomeric sleeve, foil-faced, over the barrel',
             elevations=(ft(2), ft(2)),
             serves=("FX-S-BALC-HYD",)),
+]
+
+# ======================== THE TWO HYDRANT BARREL PENETRATIONS =========================
+#
+# Each wall hydrant drives a 10" barrel through a 2x6 wall with 4" of continuous exterior
+# insulation, and until 2026-09-15 the hole it needs was in no file. `PA-*-HYD-SEAL` bills
+# the escutcheon and the foam; what it could not do is cut the wall, because a
+# `PipeAccessory` resolves no void. The same argument `mep_erv.py` makes for AO-M-ERV-OA
+# applies here and the same element answers it.
+#
+# ** BOTH LAND IN A CLEAR BAY, AND ONE OF THEM ONLY JUST STARTED TO. ** An RO on a stud
+# centreline grows a king/jack/header pack and shoves the 16" module sideways; that is what
+# a trial of these two produced before FX-M-PORCH-HYD moved off stud-006 (plan/fixtures.py
+# carries the stations and the arithmetic). Measured bays, from the resolved walls:
+#   W-M-S1  stud-006 144"..145 1/2", king-1-l0 158 3/4"  -> clear 145 1/2"..158 3/4"
+#   W-S-S1  stud-002  80"..81 1/2",  king-1-l0  94 3/4"  -> clear  81 1/2"..94 3/4"
+# A 2 1/2" hole centred on each hydrant leaves 5" and 4 3/4" of clear framing to the nearer
+# stud face — it is a drilled hole in a bay, not a framed opening, and no pack is generated.
+#
+# ** 2 1/2" IS THE HOLE SAW, NOT THE ARITHMETIC. ** The barrel is 3/4" copper inside a 1/2"
+# elastomeric sleeve, so 1 7/8" over the sleeve, and `PA-*-HYD-SEAL` foams a 1/4" annulus:
+# 2 3/8" is the computed minimum and 2 1/2" is the size that exists. The extra 1/16" of
+# annulus per side is foam, which is what the seal's install_parts already buy.
+#
+# `sill_height` is STOREY-RELATIVE, the trap AO-S-ERV-EA documents. Both barrels run at
+# 2'-0" on their own storey, so both sills are 1'-10 3/4" and the balcony's resolves to
+# +11'-10 3/4" absolute on the +10'-0" datum.
+#
+# ** THESE CUT THE FULL WALL, INTERIOR FINISH INCLUDED, AND THAT IS ONE INCH TOO FAR. ** A
+# `RoughOpening` is a hole through the whole assembly -- it has no depth field -- so each of
+# these takes 2 1/2" out of the gypsum and its paint as well. A wall hydrant is operated from
+# OUTSIDE: the barrel stops at its seat inside the cavity (PA-*-HYD-SEAT) and nothing pierces
+# the room side. The over-cut is 6.25 sq in of board per hydrant, it is deliberate rather
+# than missed, and closing it means giving RoughOpening a depth, which is a schema change
+# earning 12.5 sq in across the house. The ERV's two sleeves are not affected: a duct really
+# does go all the way through.
+#
+# What these DO cost correctly is the sheathing: 3,263.2 -> 3,263.1 SF net in the framing bid
+# golden, which is the two holes and nothing else. They cost no LUMBER at all -- a bore is
+# drilled through whatever it meets rather than framed around, which is
+# `resolve/framing/openings.framed_around` and the reason BK-M-S1-HYD survives it.
+PENETRATIONS_HYDRANT_MAIN = [
+    RoughOpening(uid="H72PNVX9AV", tag="AO-M-PORCH-HYD", host="W-M-S1",
+                 position=from_node("N-M-SW", inch(150.75)),
+                 width=inch(2.5), height=inch(2.5), sill_height=inch(22.75),
+                 penetration_for=("PR-M-CW-PORCH-HYD-CU", "PR-M-CW-PORCH-HYD")),
+]
+PENETRATIONS_HYDRANT_SECOND = [
+    RoughOpening(uid="AZMYHB7P8J", tag="AO-S-BALC-HYD", host="W-S-S1",
+                 position=from_node("N-S-SW", inch(86.75)),
+                 width=inch(2.5), height=inch(2.5), sill_height=inch(22.75),
+                 penetration_for=("PR-S-CW-BALC-HYD-CU", "PR-M-CW-BALC-HYD")),
 ]
 
 

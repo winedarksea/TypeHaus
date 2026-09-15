@@ -25,6 +25,7 @@ from typehaus.resolve.framing.furring import (
     course_elevations,
     course_phase,
 )
+from typehaus.resolve.framing.openings import framed_around
 from typehaus.resolve.framing.truss_wall import truss_girt_bands, truss_kind
 from typehaus.resolve.geometry import length, sub, unit
 
@@ -290,7 +291,11 @@ def test_no_field_course_lands_in_the_shadow_of_a_head_or_sill_course(catlin_mod
         elevations = course_elevations(wall, _spec(catlin_model, wall), _STOCK_FACE)
         if not elevations:
             continue
-        for opening in (o for o in catlin_model.openings if o.host_wall == wall.tag):
+        # Cladding openings only. A bored penetration grows no head or sill course, so it
+        # casts no shadow for a field course to land in — see
+        # `resolve/framing/furring.framed_around`.
+        for opening in (o for o in catlin_model.openings
+                        if o.host_wall == wall.tag and framed_around(o)):
             sill = wall.base_ref_z_m + opening.sill_m
             for name, course_z in (("sill", sill - _STOCK_FACE),
                                    ("head", sill + opening.height_m)):

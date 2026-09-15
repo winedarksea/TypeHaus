@@ -289,7 +289,7 @@ SUPPLY_DEVICES_GARAGE = [
 SUPPLY_DEVICES_MAIN = [
     PipeAccessory(uid="A5VK7BND3T", tag="PA-M-PORCH-HYD-SEAT",
                   kind=PipeAccessoryKind.SHUTOFF, pipe_ref="PR-M-CW-PORCH-HYD",
-                  position=pt(ft(12), ft(0, 3.25)), room="RM-M-BED",
+                  position=pt(ft(12, 8), ft(0, 3.25)), room="RM-M-BED",
                   model="hydrant's own compression seat, inboard end of the barrel",
                   serves=("FX-M-PORCH-HYD",)),
     # The penetration itself: says "protected by the envelope, not bury depth", which
@@ -298,7 +298,7 @@ SUPPLY_DEVICES_MAIN = [
     # stocks as a hydrant — properties of this hole in this wall.
     PipeAccessory(uid="U3FP6ZMG8B", tag="PA-M-PORCH-HYD-SEAL",
                   kind=PipeAccessoryKind.PENETRATION_SEAL, pipe_ref="PR-M-CW-PORCH-HYD-CU",
-                  position=pt(ft(12), ft(0)),
+                  position=pt(ft(12, 8), ft(0)),
                   model="gasketed escutcheon over a foamed barrel penetration",
                   install_parts=("silicone gasket, hydrant escutcheon",
                                  "plastic mounting bracket, non-conductive",

@@ -165,7 +165,18 @@ def _z_at(member, fraction: float) -> tuple[float, float]:
 
 
 def _openings(model, wall):
-    return [op for op in model.openings if op.host_wall == wall.tag]
+    """This wall's openings that the CLADDING has to be framed around.
+
+    Bored penetrations are excluded, and every assertion in this file depends on that: a
+    hydrant barrel or a duct sleeve gets no jamb post, no head or sill course, no buck and
+    no void, because it is drilled through the rainscreen after it stands. See
+    ``resolve/framing/furring.framed_around`` for the whole argument, and
+    ``test_a_bored_penetration_is_invisible_to_the_cladding_framing`` below for the pin.
+    """
+    from typehaus.resolve.framing.openings import framed_around
+
+    return [op for op in model.openings
+            if op.host_wall == wall.tag and framed_around(op)]
 
 
 def _modal_phase(stations_in: list[float]) -> float:
@@ -693,3 +704,57 @@ def test_the_frame_reads_the_band_the_same_way_the_members_were_placed(catlin_mo
     assert frame.tiers == ("2",)
     # Every other stud: the block module is twice the wall's 16" stud spacing.
     assert frame.block_spacing / IN == pytest.approx(32.0, abs=1e-6)
+
+
+def test_a_bored_penetration_is_invisible_to_the_cladding_framing(catlin_model) -> None:
+    """A 2 1/2" hole for a hose bib is not a window, and gets none of a window's framing.
+
+    Every other test in this file asks what a rough opening GROWS — a jamb post in each
+    band, a head and a sill course spanning it, four buck panels lining it out, and a void
+    no girt member may stand in. A penetration grows none of them. It is drilled through the
+    cladding once the rainscreen is up, wherever its escutcheon lands, and if a block is
+    behind it the plumber drills the block.
+
+    This is pinned because the alternative was measured and was clearly wrong: modelling
+    catlin's two hydrant bores as ordinary ROs built a 3/8" buck and three 3-ply blocks
+    around each 2 1/2" hole, reverted W-M-S1's block module from every-other stud to every
+    stud, stretched a girt bay to 37" — past the module plus a board — and made
+    `structural.truss_wall_opening_support` FAIL for a hole that has no nailing flange.
+
+    The rule is keyed on ``penetration_for``, the same field ``mep.run_through_opening``
+    reads, so a hole can only escape the cladding framing by NAMING the run it exists for.
+    """
+    from typehaus.resolve.framing.openings import framed_around
+
+    from typehaus.resolve.framing.openings import BORE_MAX_IN
+
+    bores = [op for op in catlin_model.openings if not framed_around(op)]
+    assert {op.tag for op in bores} == {"AO-M-PORCH-HYD", "AO-S-BALC-HYD"}
+    assert all(op.penetration_for for op in bores), "the exemption IS the named run"
+
+    # ** AND THE LINE IS SIZE, NOT KIND — THE TWO ERV SLEEVES ARE ON THE OTHER SIDE OF IT. **
+    # At 7" they interrupt the girt field and are framed exactly as a sash is, which is what
+    # `test_hardware_takeoff` has recorded as +9 block stations since 2026-09-11. Asserted
+    # here so the day someone "simplifies" this predicate to `not penetration_for`, the two
+    # halves of the rule fail together instead of one of them going quiet.
+    ducts = [op for op in catlin_model.openings
+             if op.penetration_for and framed_around(op)]
+    assert {op.tag for op in ducts} == {"AO-M-ERV-OA", "AO-S-ERV-EA"}
+    bore_m = BORE_MAX_IN * 0.0254
+    assert all(max(op.width_m, op.height_m) <= bore_m for op in bores)
+    assert all(max(op.width_m, op.height_m) > bore_m for op in ducts)
+
+    walls = {w.tag: w for w in catlin_model.walls}
+    for bore in bores:
+        wall = walls[bore.host_wall]
+        index = [op.tag for op in catlin_model.openings
+                 if op.host_wall == wall.tag].index(bore.tag)
+        # Nothing keyed to this opening's own index exists on its wall.
+        for key in (f"buck-jamb-{index:03d}-0", f"buck-jamb-{index:03d}-1",
+                    f"buck-head-{index:03d}", f"buck-sill-{index:03d}",
+                    f"ladder-head-outer-girt-{index:03d}",
+                    f"ladder-sill-outer-girt-{index:03d}"):
+            assert not [m for m in wall.members if m.child_key == key], (bore.tag, key)
+        assert not [m for m in wall.members
+                    if m.child_key.startswith(f"strapping-jamb-outer-girt-{index:03d}-")], (
+            bore.tag)

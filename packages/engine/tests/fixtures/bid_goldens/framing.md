@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** 074edde0d216f489  
-**Lines:** 114
+**Model hash:** ae66a62d66fed333  
+**Lines:** 116
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -61,7 +61,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Structural 1 plywood, 5/7" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 2 | sheets 4x8 | 2 sheets 4x8 over 50.1 SF net | building |
 | Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 9 | sheets 4x8 | 9 sheets 4x8 over 229.1 SF net | building |
 | Structural 1 plywood, 1/2" ceiling (struct-1-plywood:ceiling) | 3 | sheets 4x8 | 3 sheets 4x8 over 91.7 SF net | building |
-| Structural 1 plywood, 1/2" exterior wall (struct-1-plywood:exterior wall) | 98 | sheets 4x8 | 98 sheets 4x8 over 3113.7 SF net | building |
+| Structural 1 plywood, 1/2" exterior wall (struct-1-plywood:exterior wall) | 98 | sheets 4x8 | 98 sheets 4x8 over 3113.6 SF net | building |
 | Structural 1 plywood, 5/8" roof (struct-1-plywood:roof) | 49 | sheets 4x8 | 49 sheets 4x8 over 1547.9 SF net | building |
 | Structural 1 plywood, 3/4" roof (struct-1-plywood:roof) | 28 | sheets 4x8 | 28 sheets 4x8 over 882.8 SF net | building |
 | Structural 1 plywood, 1/2" sheathing rip (struct-1-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 3.3 SF net | building |
@@ -154,7 +154,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | 5/8" CDX sheathing plywood, 5/8" — wall (cdx-plywood:0.625) | 690.2 | SF net |  | building |
-| Structural 1 plywood sheathing, 1/2" — wall (struct-1-plywood:0.5) | 3,263.2 | SF net |  | building |
+| Structural 1 plywood sheathing, 1/2" — wall (struct-1-plywood:0.5) | 3,263.1 | SF net |  | building |
 | Structural 1 plywood sheathing, 5/8" — roof (struct-1-plywood:0.625) | 1,547.9 | SF net |  | building |
 | Structural 1 plywood sheathing, 3/4" — roof (struct-1-plywood:0.75) | 882.8 | SF net |  | building |
 | Structural 1 plywood sheathing, 3/4" — slab (struct-1-plywood:0.75) | 7.3 | SF net |  | building |
@@ -169,6 +169,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
+| rough opening, 2.5" x 2.5" (no type) (None) | 1 | ea | 2 1/2" x 2 1/2" | main |
+| rough opening, 2.5" x 2.5" (no type) (None) | 1 | ea | 2 1/2" x 2 1/2" | second |
 | rough opening, 7" x 7" (no type) (None) | 2 | ea | 7" x 7" | main, second |
 | rough opening, 14" x 20" arched (no type) (None) | 1 | ea | 14" x 20" | basement |
 | rough opening, 30" x 80" (no type) (None) | 1 | ea | 30" x 80" | second |
@@ -288,6 +290,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Structural 1 plywood sheathing, 3/4" — roof (struct-1-plywood:0.75) | — |
 | Structural 1 plywood sheathing, 3/4" — slab (struct-1-plywood:0.75) | — |
 | STAIRWELL_PARTITION_4H, SPF framing lumber (STAIRWELL_PARTITION_4H:spf) | W-B-WELL |
+| rough opening, 2.5" x 2.5" (no type) (None) | AO-M-PORCH-HYD |
+| rough opening, 2.5" x 2.5" (no type) (None) | AO-S-BALC-HYD |
 | rough opening, 7" x 7" (no type) (None) | AO-M-ERV-OA, AO-S-ERV-EA |
 | rough opening, 14" x 20" arched (no type) (None) | AO-B-BRICK-WIN |
 | rough opening, 30" x 80" (no type) (None) | D-S-STUDY2 |

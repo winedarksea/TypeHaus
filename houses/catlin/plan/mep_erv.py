@@ -371,7 +371,7 @@ PENETRATIONS_ERV_MAIN = [
     RoughOpening(uid="PNDXBSMTFB", tag="AO-M-ERV-OA", host="W-M-W1B",
                  position=from_node("N-M-NW", inch(21.5)),
                  width=inch(7), height=inch(7), sill_height=inch(44.5),
-                 penetration_for="DU-ERV-OA"),
+                 penetration_for=("DU-ERV-OA",)),
 ]
 PENETRATIONS_ERV_SECOND = [
     # W-S-W1B runs N-S-NW (y=36'-0") south to N-S-CH3. DU-ERV-EA leaves at y=34'-0", so the
@@ -381,7 +381,7 @@ PENETRATIONS_ERV_SECOND = [
     RoughOpening(uid="SMGEY3KGXE", tag="AO-S-ERV-EA", host="W-S-W1B",
                  position=from_node("N-S-NW", inch(20.5)),
                  width=inch(7), height=inch(7), sill_height=inch(80.5),
-                 penetration_for="DU-ERV-EA"),
+                 penetration_for=("DU-ERV-EA",)),
 ]
 
 # ====================================== RISERS =======================================
