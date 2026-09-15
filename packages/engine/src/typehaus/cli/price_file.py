@@ -202,6 +202,17 @@ class Prices:
     """The parsed ``prices.toml``: per-section unit prices, each an exact $ or a $-range."""
 
     path: Path
+    #: Rows this house KEEPS on purpose although the BOM visits none of them —
+    #: ``"section:key"`` (or a bare ``"section"``) -> the reason, in the author's words.
+    #:
+    #: The house convention is that a retired product keeps its row: ``glazed-green-brick``,
+    #: ``EXT_2X6_SWINBURNE``, the 26 ga cladding rows, a dozen catalog-only window types. A
+    #: revert is then a one-line change instead of a price nobody can find again. But that
+    #: makes "no BOM row visits this key" useless as a lint on its own — catlin has ~90 such
+    #: keys — so this is the opt-out that turns the noise into a report. Anything NOT listed
+    #: here and NOT visited is a row that quietly prices nothing, which is the case worth
+    #: seeing: a renamed key, a deleted element, a typo.
+    retired: Mapping[str, str] = field(default_factory=dict)
     framing: Mapping[str, PriceRange] = field(default_factory=dict)
     sheet_goods: Mapping[str, PriceRange] = field(default_factory=dict)
     hardware: Mapping[str, PriceRange] = field(default_factory=dict)
@@ -519,7 +530,7 @@ def _price(section: str, key: str, raw: object, path: Path,
 #: Tables that are *not* price sections: they describe the file rather than price a row.
 #: Split out so an unknown-section error still names real typos.
 _META_SECTIONS = ("basis", "basis_notes", "waste", "contingency", "markup", "tax",
-                  "tax_included", "codes", "rebar_inclusive")
+                  "tax_included", "codes", "rebar_inclusive", "retired")
 
 #: The $/cy sections whose rate has historically CONTAINED its own reinforcing steel.
 #: Keyed to what the money is, because "your rate includes rebar" is useless without
@@ -693,8 +704,9 @@ def load_prices(house_dir: Path) -> Prices | None:
         raise ValueError(f"{path}: {both} priced in both [placeables] and [furnishings]; "
                          "each catalog type belongs to exactly one (furnishings are "
                          "reported beside the construction total, not inside it)")
+    retired = {str(k): str(v) for k, v in (data.get("retired") or {}).items()}
     return Prices(path=path, basis=basis, basis_notes=notes, codes=codes,
-                  basis_declared=bool(data.get("basis")),
+                  retired=retired, basis_declared=bool(data.get("basis")),
                   adjustments=_load_adjustments(data, path), **sections)
 
 

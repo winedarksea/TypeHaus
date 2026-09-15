@@ -7082,6 +7082,35 @@ solar_modules = true
 concrete       = true
 wall_structure = true
 
+# ** ROWS THIS HOUSE KEEPS ON PURPOSE THOUGH NOTHING BILLS THEM. **
+#
+# `haus takeoff` reports every price row no BOM row ever visits — the mirror of `unpriced`,
+# and the half nothing could see before 2026-09-15. `rate_for` is called per BOM ROW, so a
+# key nothing visits is simply never looked up: a renamed material, a deleted element's row
+# or a typo in a key all price exactly nothing and say exactly nothing, while the row still
+# LOOKS like coverage.
+#
+# But this house keeps a retired product's row deliberately — the `glazed-green-brick`
+# convention — so a revert is a one-line change instead of a price nobody can find again.
+# Around a hundred keys are dead that way, and a report that printed all of them would be
+# noise nobody reads twice. Each entry here declares one, WITH ITS REASON, and takes it out
+# of the report. What is left is the class actually worth looking at.
+#
+# The reason is not decoration: "why is this row here" is the whole question a reader has.
+[retired]
+"envelope_layers:corrugated-panel-26" = "the 26 ga gauge revert; every metal face went 24 ga PVDF on 2026-09-14"
+"envelope_layers:pbr-panel-26" = "the 26 ga gauge revert, with corrugated-panel-26"
+"envelope_layers:standing-seam-nailstrip-26" = "kept with the garage's green revert (standing-seam-nailstrip-26-green)"
+"envelope_layers:foundation-protection-panel" = "the named alternate to the acrylic coating, kept priced so the swap stays costed"
+"envelope_layers:white-brick" = "the fireplace surround's blend until 2026-09-13; brown-brick washed white replaced it"
+"envelope_layers:zip-r" = "named alternate to the CDX + ccSPF garage wall; never specified here"
+"openings:WT-1448" = "catalog-only: superseded by WT-1436 under the 6:12 south rake"
+"openings:WT-2464" = "catalog-only window size, kept per the retired-sizes-stay-priced convention"
+"openings:WT-2764" = "catalog-only: the Juliet pair grew to WT-2754 on 2026-09-10"
+"concrete:glazing:BREEZEWAY_ROOF_GLAZING" = "the breezeway's polycarbonate canopy, retired 2026-09-10 for RF-BW-CANOPY"
+"concrete:bug_screen:GARAGE_WALL_2X6" = "reads 0 SF for a corrugated wall by design — the closures bill as an allowance"
+"floor_finishes:polished-concrete" = "the costed fallback to the 2K PU coating on SL-M-DECK (2026-09-12)"
+
 [basis]
 framing              = "material"
 sheet_goods          = "material"

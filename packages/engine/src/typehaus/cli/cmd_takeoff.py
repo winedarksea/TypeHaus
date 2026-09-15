@@ -469,6 +469,15 @@ def _print_takeoff_summary(payload: dict, console: Console) -> None:
     if estimate["unpriced"]:
         console.print(f"  [yellow]{len(estimate['unpriced'])} unpriced row group(s) "
                       "(add to prices.toml)[/yellow]")
+    # The mirror: a price with no quantity. Dim rather than yellow — an unpriced row makes
+    # the total WRONG, a dead row only makes it silent about coverage the reader thinks
+    # they have. Declared-[retired] rows are already subtracted, so what prints is the
+    # class worth looking at.
+    unused = estimate.get("unused_price_rows") or []
+    if unused:
+        console.print(f"  [dim]{len(unused)} price row(s) no BOM row visits — a renamed "
+                      r"key, a deleted element, or a deliberate revert (declare it in "
+                      r"\[retired])[/dim]")
 
 
 def _print_basis(estimate: dict) -> None:

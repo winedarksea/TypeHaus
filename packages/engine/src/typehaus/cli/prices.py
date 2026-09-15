@@ -550,6 +550,47 @@ def _allowance_rows(prices: Prices, bom: Mapping[str, Any],
     return rows, consumed
 
 
+def _unused_price_rows(prices, priced: Mapping[str, set[str]]) -> list[dict[str, Any]]:
+    """Authored price rows no BOM row ever looked up, less the ones declared ``[retired]``.
+
+    The mirror of ``unpriced``, and the half nothing could see. ``rate_for`` is called per
+    BOM ROW, so a key no row visits is simply never looked up: a renamed material, a deleted
+    element's row, a typo in a key all price exactly nothing and say exactly nothing. The
+    estimate is not wrong — it is silent, which is worse, because the row LOOKS like
+    coverage.
+
+    ** THE OPT-OUT IS WHAT MAKES THIS READABLE. ** This house keeps a retired product's row
+    on purpose (``glazed-green-brick``, ``EXT_2X6_SWINBURNE``, the 26 ga cladding rows, the
+    catalog-only window types) so a revert is one line. Around ninety keys are dead that way,
+    and a lint that printed all of them would be noise nobody reads by the second run. A
+    ``[retired]`` entry — ``"section:key"`` or a bare ``"section"`` — declares one with its
+    reason and takes it out of this list, so what is left is the class actually worth seeing.
+    """
+    from dataclasses import fields as dataclass_fields
+
+    from typehaus.cli.price_file import _META_SECTIONS
+
+    retired = dict(getattr(prices, "retired", {}) or {})
+    out: list[dict[str, Any]] = []
+    for spec in dataclass_fields(prices):
+        # ``Prices`` carries the meta tables as fields too — [basis], [basis_notes], [codes]
+        # and friends describe the file rather than price a row, so "no BOM row visited this
+        # key" is not a statement about them at all.
+        if spec.name in _META_SECTIONS:
+            continue
+        table = getattr(prices, spec.name, None)
+        if not isinstance(table, Mapping) or not table:
+            continue
+        if spec.name in retired:
+            continue  # a whole section declared retired
+        seen = priced.get(spec.name, set())
+        for key in sorted(table):
+            if key in seen or f"{spec.name}:{key}" in retired:
+                continue
+            out.append({"section": spec.name, "key": key})
+    return out
+
+
 def _driver_overlaps(consumed: Mapping[str, list[tuple[str, Mapping[str, Any]]]],
                      priced: Mapping[str, set[str]]) -> list[dict[str, Any]]:
     """Driven allowances whose quantity was measured off rows another section also PRICED.
@@ -643,6 +684,8 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
     # reading that table priced the key. Collect misses first, then drop the ones another
     # plan caught — otherwise every furnished row would read as unpriced in the other.
     priced: dict[str, set[str]] = {}
+    #: Price section -> the keys a BOM row actually looked up there (→ _unused_price_rows).
+    visited: dict[str, set[str]] = {}
     misses: list[tuple[str, dict[str, Any]]] = []
     section_buckets: dict[str, dict[str, PriceRange]] = {}
     section_waste: dict[str, PriceRange] = {}
@@ -729,6 +772,11 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
                                          "unit": unit, "driver": driver}))
                 continue
             priced.setdefault(bom_key, set()).add(key)
+            # Also by PRICE SECTION, which is the axis ``_unused_price_rows`` asks about:
+            # ``priced`` above is keyed by BOM table because a table may feed two sections,
+            # and "did any section catch this quantity" is a different question from "did any
+            # quantity visit this row".
+            visited.setdefault(name, set()).add(key)
             # Rounded to the cent *before* it is split or summed, so the three basis
             # subtotals, the section subtotal and the grand total are all sums of the same
             # numbers. Splitting the unrounded value instead lands the bid ladder a cent
@@ -808,6 +856,9 @@ def estimate_costs(bom: dict[str, Any], prices: Prices,
                # Driven allowances measured off rows another section also priced. A finding
                # for a reader, not an error — see ``_driver_overlaps``.
                "driver_overlaps": _driver_overlaps(driver_consumed, priced),
+               # The mirror of ``unpriced``: a price with no quantity. Declared-retired rows
+               # are subtracted, so this is the silent class and not the deliberate one.
+               "unused_price_rows": _unused_price_rows(prices, visited),
                "unpriced": unpriced}
     if areas:
         payload["areas"] = dict(areas)

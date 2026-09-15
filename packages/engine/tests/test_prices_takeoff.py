@@ -339,3 +339,51 @@ def _prices_from(body: str):
         prices = load_prices(Path(tmp))
     assert prices is not None
     return prices
+
+
+def _estimate_with_retired(tmp_path: Path, retired: str = "") -> tuple:
+    """The sample file plus an optional ``[retired]`` block, priced against one BOM row."""
+    (tmp_path / "prices.toml").write_text(_SAMPLE + retired)
+    prices = load_prices(tmp_path)
+    bom = {"framing_by_size": [{"profile": "2x4", "order_length_ft": 100}]}
+    return estimate_costs(bom, prices), prices
+
+
+def test_unused_price_rows_reports_the_mirror_of_unpriced(tmp_path: Path) -> None:
+    """A price with no quantity — the half nothing could see.
+
+    ``rate_for`` is called per BOM ROW, so a key no row visits is never looked up: a renamed
+    material, a deleted element's row, a typo all price exactly nothing and say exactly
+    nothing, while the row still LOOKS like coverage. ``unpriced`` is the other direction (a
+    quantity with no price) and has always been reported.
+    """
+    estimate, _ = _estimate_with_retired(tmp_path)
+    rows = estimate.get("unused_price_rows")
+    assert rows is not None, "the estimate must carry the lint even when it is empty"
+    assert all({"section", "key"} <= set(row) for row in rows)
+    reported = {(r["section"], r["key"]) for r in rows}
+    # The one row a quantity actually visited is NOT here; its unvisited sibling is.
+    assert ("framing", "2x4") not in reported
+    assert ("framing", "2x6") in reported
+    # Meta tables describe the file rather than price a row, so they are out of scope.
+    assert not [r for r in rows if r["section"] in ("basis", "basis_notes", "retired")]
+
+
+def test_a_declared_retired_row_leaves_the_report_and_moves_no_money(tmp_path: Path) -> None:
+    """``[retired]`` is the opt-out that turns ~100 dead keys into a readable report.
+
+    A house keeps a retired product's row on purpose (catlin's ``glazed-green-brick``
+    convention), so without a declaration the lint is noise nobody reads twice. The declared
+    key must leave the report — and the section is pure metadata, so it cannot move a total.
+    """
+    plain, _ = _estimate_with_retired(tmp_path)
+    declared, prices = _estimate_with_retired(
+        tmp_path, '\n[retired]\n"framing:2x6" = "kept as a documented revert"\n')
+
+    assert prices.retired == {"framing:2x6": "kept as a documented revert"}
+    before = {(r["section"], r["key"]) for r in plain["unused_price_rows"]}
+    after = {(r["section"], r["key"]) for r in declared["unused_price_rows"]}
+    assert ("framing", "2x6") in before
+    assert before - after == {("framing", "2x6")}
+    # Metadata only: declaring a row retired must not move a single number.
+    assert declared["total"] == plain["total"]
