@@ -142,10 +142,23 @@ EQUIPMENT_ERV_BASEMENT = [
 # Wall-hung at 8'-0", under the 9'-0" plate.
 #
 # **Both manifolds are east of x=2'-8", and that is the whole siting argument.** The closet's
-# west end is not free space: the four ERV risers stand at x=5"/14"/23" (y=33'-7 1/2") and
-# x=5" (y=35'-6"), the six plumbing vents and the radon riser cluster at (1'-0", 34'-6"), and
+# west end is not free space: the four 6" ERV risers all stand on ONE line at y=33'-7 1/2",
+# at x=5" (DU-ERV-RISER-SUP), 12" (DU-S-ERV-HP-FEED), 14" (DU-ERV-RISER-EXH) and 23"
+# (DU-ERV-OA); the six plumbing vents and the radon riser cluster at (1'-0", 34'-6"); and
 # eight conduits fill x=1'-6"..2'-6" at y=34'-6"..35'-0". What is left is a 39" x 31" bay
 # along the closet's east end, and that is exactly where these hang.
+#
+# ** THIS SAID x=5"/14"/23" AND "x=5" (y=35'-6")" UNTIL 2026-09-15, AND BOTH HALVES WERE
+# WRONG. ** There is no riser at y=35'-6" at all. The fourth is DU-S-ERV-HP-FEED and it
+# stands at x=12" in the SAME row as the other three — which is not a bookkeeping detail,
+# because at x=12" and x=14" two 6" ducts are on 2" centres and share 4" of plan. The
+# standpipe and the exhaust riser interpenetrate, and prose that put one of them six feet
+# away at y=35'-6" is exactly why nobody had noticed. Measured off the resolved model.
+#
+# The clash is NOT fixed here: this is a prose pass and moving a duct in it would make the
+# correction unreviewable. It is the re-pack's, and the re-pack is what the four-in-a-row
+# geometry above is the argument for — 5", 12", 14", 23" leaves gaps of 1", -4" and 3" in a
+# 24" shaft, which is not a row anybody can build.
 #
 # The supply manifold is the smaller because the main storey wants three fresh outlets while
 # the extract side gathers eight wet and dry pickups off TWO storeys — the main storey's
@@ -715,8 +728,10 @@ DUCTS_ERV_LEVEL2 = [
     # what makes a ceiling supply work in a 148 cf box, feeding overhead by ED-M-STUDY-SPOT.
     #
     # ** IT RIDES THE 20'-8" BAY, AND THAT COSTS NOTHING BECAUSE IT IS ONE BAY. **
-    # FS-S-WEST's joist lines are at 8" + n*16", so the terminal's 20'-8" sits between the
-    # joists at 20'-0" and 21'-4" for the whole ride
+    # FS-S-WEST's JOISTS are at n*16", so its BAY CENTRES are at 8" + n*16" — this line read
+    # the second formula onto the first until 2026-09-15, which got the right answer for the
+    # wrong reason. 20'-8" is a bay centre, sitting between the joists at 20'-0" and 21'-4"
+    # for the whole ride
     # from x=4'-6" to x=17'-2" — no jog, no crossing, one straight length of snap-lock pipe.
     # Stopping short of the joist at 21'-4" is also why the grille cannot sit on the
     # sconce's own 21'-5" line; the argument is on REG-M-SUP4 in plan/mep_registers.py.
@@ -795,13 +810,6 @@ DUCTS_ERV_LEVEL2 = [
     # from a seated occupant's feet, against ~115 fpm at 4" — in the one room built to be
     # quiet, downsizing is the expensive direction.
     #
-    # Route: east along the 20'-8" bay to the laundry head, on east to x=15'-0", SOUTH
-    # across the joists at 20'-0" and 18'-8" — legal and graded, FS-S-WEST is open-web floor
-    # truss with an 8 7/8" chord-to-chord opening — then east along the 18'-0" bay, which is
-    # a bay centre AND sits directly over W-M-CLN2's staggered cavity, so the last point is
-    # a pure riser into the wall. x=15'-0" for the crossing is 3'-0" clear of the trusses'
-    # east bearing at W-M-C2/C3, well out of the end panels; -108" is storey-relative on the
-    # `second` datum (+10'-0"), i.e. 12" above the main floor.
     # ** ONE CORNER, NOT THREE, ON A TWO-HEADED RUN WHOSE WHOLE RISK IS ACCUMULATED BEND
     # LOSS. ** REG-M-RET-STUDY sits at 14'-6" (out from under FURN-M-STUDY-DESK-LEAF's
     # stowed envelope — the argument is on the register), so the radial turns south once
