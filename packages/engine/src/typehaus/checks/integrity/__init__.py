@@ -9,4 +9,5 @@ from typehaus.checks.integrity import (  # noqa: F401 - registers checks
     roof_clearance,
     sheet_notes,
     wall_layer_material,
+    wall_stack,
 )
