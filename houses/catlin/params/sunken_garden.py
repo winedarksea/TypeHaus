@@ -622,9 +622,10 @@ _ret_unbalanced_fill = _ret_top - _wall_bottom
 #
 # ** IT CANNOT FOLLOW THE COURT DOWN — AND THE REASON CHANGED ON 2026-09-10. ** Drop the
 # top to the rim underside and the section is 10 1/4". That USED to fail outright: phi-Pn
-# 60,712 lb against Pu 62,051 at the thrust of the day, d/c 1.02. Three height cuts have
-# taken Pu to 49,157 lb and **the 10 1/4" section now passes at d/c 0.81**, so the
-# arithmetic no longer rejects it and this comment must not be read as though it does.
+# 60,712 lb against Pu 62,051 at the thrust of the day, d/c 1.02. Three height cuts took Pu
+# to 49,157 lb, and the 2026-09-14 correction to the strut reaction takes it to 40,145 lb —
+# **the 10 1/4" section now passes at d/c 0.66**, so the arithmetic no longer rejects it and
+# this comment must not be read as though it does.
 #
 # What holds the section is the SEQUENCING argument, which did not move:
 # `notes/sunken_garden_court_free_body.md` §8 exists because the loop must be closed before
@@ -644,8 +645,8 @@ _grade_beam_top = ft(-SPEC.basement_depth_ft) - inch(SPEC.slab_thickness_in)
 # the section from 12" x 17 1/2" to 12" x 8 1/2", Ag 210 in² to ~102 in², and taking the
 # strut check from d/c 0.60 to about 1.23, which FAILED at the thrust of that day.
 #
-# ** IT NO LONGER FAILS, AND THE DECOUPLING IS STILL RIGHT. ** At today's Pu 49,157 lb the
-# 8 1/2" section reads d/c 0.98 — it passes, by 2%. That is the point of decoupling rather
+# ** IT NO LONGER FAILS, AND THE DECOUPLING IS STILL RIGHT. ** At today's Pu 40,145 lb the
+# 8 1/2" section reads d/c 0.80 — it passes comfortably. That is the point of decoupling rather
 # than an argument against it: a section arrived at by subtraction between two surfaces
 # that both move is not a design, and the margin it happens to land on this revision is not
 # a reason to accept it.
@@ -935,7 +936,7 @@ WALLS = [
     # the giveaway never happened is exactly the sentence a later reader "restores".
     # Its TOP is the rim slab's underside,
     # so the court floor bears on it and nothing of it shows. See `_grade_beam_top` for why
-    # the top does not move: at 10 1/4" the strut is d/c 0.81 and PASSES since the flush
+    # the top does not move: at 10 1/4" the strut is d/c 0.66 and PASSES since the flush
     # tops, so what holds the section is sequencing and margin, not the strength ratio.
     #
     # `unbalanced_fill=inch(0)` is authored and is not a formality: without it

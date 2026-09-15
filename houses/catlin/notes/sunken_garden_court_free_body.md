@@ -886,15 +886,19 @@ The garden slab is cheaper and does not work:
 
   **⚠ BOTH OF THOSE SECTIONS NOW PASS, AND THIS PARAGRAPH USED TO REJECT THEM BECAUSE THEY
   FAILED. READ ON BEFORE SHRINKING THIS BEAM.** They failed at the thrust of their day —
-  10 1/4" at d/c 1.02 against Pu 62,051 lb, 8 1/2" at d/c ~1.01 against Pu 50,789 lb — and
-  three height cuts have since taken the demand to **Pu 49,157 lb**, where the arithmetic
-  reads:
+  10 1/4" at d/c 1.02 against Pu 62,051 lb, 8 1/2" at d/c ~1.01 against Pu 50,789 lb — three
+  height cuts then took the demand to Pu 49,157 lb, and the 2026-09-14 correction to the
+  strut reaction (above) takes it to **Pu 40,145 lb**, where the arithmetic reads:
 
 ```
-  12" x 17 1/2"   Ag 210 in²   φPn 103,655 lb    d/c 0.47   ✓  as built
-  12" x 10 1/4"   Ag 123 in²   φPn  60,712 lb    d/c 0.81   ✓  passes now
-  12" x  8 1/2"   Ag 102 in²   φPn  50,347 lb    d/c 0.98   ✓  passes now, by 2%
+  12" x 17 1/2"   Ag 210 in²   φPn 103,655 lb    d/c 0.39   ✓  as built
+  12" x 10 1/4"   Ag 123 in²   φPn  60,712 lb    d/c 0.66   ✓  passes now
+  12" x  8 1/2"   Ag 102 in²   φPn  50,347 lb    d/c 0.80   ✓  passes now
 ```
+
+  **The margin widened again, and the conclusion is unchanged.** Each time the demand has
+  fallen, the shallower sections have passed by more; the section has never been held on the
+  ratio since 2026-09-10 and is not held on it now.
 
   **The section is held, and it is no longer held on the strength ratio.** Three reasons,
   in the order they bind:
@@ -923,23 +927,70 @@ The garden slab is cheaper and does not work:
 
 ### The strut check
 
-Force: **half the largest member's whole thrust, with no friction credit.** A wall tied at
-both ends delivers about half its thrust to each end; netting base friction off first would
-spend that friction twice, once here and once in §4's sliding row. Taking the *largest*
-member (the south wall, which the strut does not directly tie) rather than a side wall is
-conservative by **22%** — 30,723 lb against 25,090 lb — and keeps the check from having to
-know which walls face each other. (It was 9% while the side walls were 18'-4"; shortening
-them to 16'-4" widened the gap. **The demand itself does not move**: it is half the south
-wall's whole thrust, and the south wall is the court's WIDTH, which the 2026-09-10 pass did
-not touch. Nothing in this subsection changes but that one comparison.)
+Force: **a reaction, derived from compatibility.** Revised 2026-09-14 — see the superseded
+block below for what it was and why the change is a correction rather than a relaxation.
+
+A side leg spans **in plan** between two supports: the monolithic corner with the south wall
+at one end, and the cross-member at the other. It carries its own base shear as a uniform
+load along that span, and the share arriving at the strut is set by how fixed the corner is:
 
 ```
-P     = 0.5 × 61,446                                     = 30,723 lb  (service)
-Pu    = 1.6 × 30,723                                     = 49,157 lb
+corner fully fixed   propped cantilever   R_prop = 3wL/8  = 0.375 wL
+corner pinned        simple span          R_prop =  wL/2  = 0.500 wL
+```
+
+The real corner is a cast concrete L and is neither. A **softer** corner pushes more into
+the strut, so the pinned end is the conservative one and is what the record grades; the
+fixed end is published beside it so a reviewer sees the family and not one number.
+
+Only the along-axis component of a member's thrust can compress the strut. Projecting each
+member's thrust resultant onto the strut's own E–W axis retires the old "which walls face
+each other" problem by geometry rather than by naming: the south wall pushes due north,
+projects to zero, and drops out on its own.
+
+```
+w     = 3,072.31 plf          (at-rest 60 psf/ft, 110 pcf — §4's graded case)
+L     = 16.333 ft             (a side leg, W-SG-E2 / W-SG-W2)
+wL    = 3,072.31 × 16.333                                = 50,181 lb  (one leg's whole thrust)
+
+pinned corner (GRADED):
+P     = 0.500 × 50,181                                   = 25,090 lb  (service)
+Pu    = 1.6 × 25,090                                     = 40,145 lb
+fixed corner (reported):
+P     = 0.375 × 50,181                                   = 18,818 lb  (service)
+Pu    = 1.6 × 18,818                                     = 30,109 lb
+
 Ag    = 12 × 17.5                                        =    210 in²
 λ     = 1 − (240 / (32 × 12))²                           =  0.609
-φPn   = 0.60 × 0.45 × 3,000 × 210 × 0.609                = 103,655 lb   d/c 0.47  ✓
+φPn   = 0.60 × 0.45 × 3,000 × 210 × 0.609                = 103,655 lb   d/c 0.39  ✓
 ```
+
+The strut is a **compression member between two opposing legs**, so the governing value is
+the larger single reaction and **not** the sum: the two legs push toward each other and the
+force passes through the member once. Where the two differ, the difference is net base shear
+on the group, and §4's sliding row is where that is answered — not here.
+
+Base friction is still **not** netted off first, for the reason it never was: it is spent in
+§4 already, and spending it twice is how a load path stops being one.
+
+#### Superseded: "half the largest member's whole thrust" (retired 2026-09-14)
+
+The graded force used to be `0.5 × max(member thrust)` — half the **largest** thrust in the
+loop, whichever wall that was and whichever way it pointed. On this court the largest member
+is the **south** wall, whose thrust runs perpendicular to the strut and cannot compress it at
+all, so the number graded was one wall's load applied to a member it does not push:
+
+```
+P     = 0.5 × 61,446 (the resultant, i.e. the south wall's thrust) = 30,723 lb
+Pu    = 1.6 × 30,723                                              = 49,157 lb   d/c 0.47
+```
+
+This subsection already carried 25,090 lb, as the "conservative by 22%" comparison — the
+right number was worked here and the engine graded the surrogate beside it. What changed is
+which of the two is the record, and it is a correction: 49,157 lb was not a bound on the
+strut's demand, it was a different wall's load that happened to be larger. **Do not read the
+falling Pu as permission to shrink the beam** — that is settled by the three reasons below,
+not by the ratio.
 
 ACI 318-19 §14.5.4 (§22.6.5.2 in 318-11). **Note the section number**: §14.5.6 is *bearing*
 and carries 0.85 rather than 0.45 — using it here would nearly double the allowable, and it

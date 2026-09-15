@@ -62,7 +62,10 @@ from typehaus.engineering.soil import SOIL_UNIT_WEIGHT_BAND_PCF, presumptive
 KIND = "retaining_system"
 
 #: Bumped whenever the arithmetic below changes — it rides in the fingerprint.
-BASIS_VERSION = "1"
+#: ``"2"``: the strut force stopped being ``0.5 * max(member thrust)`` and became a derived
+#: reaction projected onto the cross-member's own axis (2026-09-14). Every seal on this kind
+#: stales, which is correct — the graded demand moved.
+BASIS_VERSION = "2"
 
 #: **The graded case is at-rest, not active, and that is a consequence of the restraint and
 #: not a preference.** You cannot cite a permanent base restraint in the resistance term and
@@ -324,16 +327,86 @@ def _free_body(members: list[_Member]) -> tuple[float, float, float]:
     return demand, sum(m.capacity_lb for m in members), scalar - demand
 
 
+#: The share of a propped member's thrust that arrives at the **prop**, for the two ends of
+#: the corner-fixity family. A retaining leg spans IN PLAN between the monolithic corner at
+#: one end and the cross-member at the other, carrying its own base shear as a uniform load:
+#:
+#: * corner **fully fixed** — propped cantilever, prop reaction ``3wL/8`` -> 0.375
+#: * corner **pinned** — simple span, each end ``wL/2`` -> 0.500
+#:
+#: The real corner is a cast concrete L that is neither. A *softer* corner pushes more into
+#: the strut, so the pinned end is the conservative one and is what the record grades; the
+#: fixed end is published beside it so a reviewer can see the whole family rather than one
+#: number. Nothing here needs a soil spring, which is the point: the coupled model
+#: (``analytical/sunken_garden_coupled.py``) is INCOMPLETE without a geotechnical report,
+#: and this row must not be.
+STRUT_PROP_SHARE = (0.375, 0.500)
+
+
+def _strut_axis(ctx: EngineeringContext, cross) -> tuple[float, float] | None:
+    """The cross-member's unit vector in plan, or ``None`` where it does not resolve."""
+    resolved = next((w for w in ctx.model.walls if w.tag == cross.tag), None)
+    if resolved is None:
+        return None
+    (x0, y0), (x1, y1) = resolved.axis
+    dx, dy = x1 - x0, y1 - y0
+    length = (dx * dx + dy * dy) ** 0.5
+    if not length:
+        return None
+    return dx / length, dy / length
+
+
+def strut_reaction_lb(axis: tuple[float, float], members: list[_Member],
+                      share: float) -> tuple[float, str]:
+    """The compression the cross-member carries, and the member that sets it.
+
+    **This replaced an assertion on 2026-09-14.** The force used to be
+    ``0.5 * max(m.demand_lb for m in members)`` — half the largest thrust in the loop,
+    whichever wall that was and whichever way it pointed. It bounded nothing in particular:
+    on the catlin court the largest member is the SOUTH wall, whose thrust runs
+    perpendicular to the strut and cannot compress it at all, so the number graded was a
+    wall's load applied to a member it does not push.
+
+    What is computed instead is a reaction. Each member's thrust resultant is projected onto
+    the strut's own axis — a wall pushing across the strut contributes nothing, and falls
+    out by geometry rather than by being excluded by name — and that along-axis thrust is
+    shared between the member's two in-plan supports by ``share`` (see
+    :data:`STRUT_PROP_SHARE`).
+
+    The strut is a **compression member between two opposing legs**, so the governing value
+    is the LARGER single reaction and not the sum: the two legs push toward each other and
+    the strut carries the force that passes through it, once. Where they differ, the
+    difference is net base shear on the group and the ``sliding`` row above is where it is
+    answered.
+
+    Base friction is still **not** netted off first, for the reason it never was: it is
+    already spent in the sliding row, and spending it twice is how a load path stops being
+    one.
+    """
+    best, source = 0.0, ""
+    for member in members:
+        along = abs(member.push[0] * axis[0] + member.push[1] * axis[1])
+        reaction = share * member.demand_lb * along
+        if reaction > best:
+            best, source = reaction, member.tag
+    return best, source
+
+
 def _strut(ctx: EngineeringContext, cross, members: list[_Member],
            span_ft: float) -> tuple[float, float, str]:
     """``(Pu, phi_Pn, how)`` in the cross-member, pounds. ACI 318-19 §14.5.4.
 
-    The force taken is **half the largest member's whole thrust**, with no friction credit.
-    A wall tied at both ends delivers about half its thrust to each; refusing to net the base
-    friction off first is deliberate, because that friction is already spent in the sliding
-    row above and spending it twice is how a load path stops being one. Taking the LARGEST
-    member rather than the ones the strut actually ties is conservative by about 9% here, and
-    is what keeps this row from having to know which walls face each other.
+    The force is a **derived reaction**, not an assertion — see :func:`strut_reaction_lb`
+    for what moved and why. Graded at the conservative end of the corner-fixity family; the
+    other end is reported in ``how`` so the record carries the range a reviewer needs.
+
+    **One cross-member per loop is all this data model can express**, because ``_loops``
+    keys a group by the single ``base_restraint_ref`` its walls name. That is not a
+    simplification of the catlin court, it is the court: ``W-SG-BRKBM`` restrains
+    ``W-SG-W1``/``W-SG-E1``, which are braced top and bottom, name no base restraint and are
+    not members of this loop — its own authoring says in as many words that it "reinforces
+    nothing". If a future court is ever strutted twice at the same level, the two would
+    share this reaction by ``EA/L`` and that is the change to make here.
 
     Strength design, unlike every row above it and for the same reason ``stem flexure`` is:
     ``0.45 f'c Ag [1 - (lc/32h)^2]`` is a nominal strength, so comparing a service force to
@@ -350,14 +423,22 @@ def _strut(ctx: EngineeringContext, cross, members: list[_Member],
     if cross.top_elevation is not None and cross.bottom_elevation is not None:
         height_in = cross.top_elevation.inches - cross.bottom_elevation.inches
     area_in2 = thickness_in * height_in
-    force_lb = 0.5 * max((m.demand_lb for m in members), default=0.0)
+
+    axis = _strut_axis(ctx, cross)
+    if axis is None:
+        return 0.0, 0.0, f"no resolved plan axis on {cross.tag} to project thrusts onto"
+    fixed_share, pinned_share = STRUT_PROP_SHARE
+    force_lb, source = strut_reaction_lb(axis, members, pinned_share)
+    lower_lb, _ = strut_reaction_lb(axis, members, fixed_share)
     demand = EARTH_PRESSURE_LOAD_FACTOR * force_lb
+    basis = (f"{force_lb:,.0f} lb service reaction from {source or 'no member'} at a pinned "
+             f"corner ({lower_lb:,.0f} lb if the corner is fully fixed)")
     if not area_in2 or not thickness_in:
-        return demand, 0.0, "no resolvable section on the cross-member"
+        return demand, 0.0, f"no resolvable section on the cross-member — {basis}"
     slenderness = 1.0 - (span_ft * 12.0 / (32.0 * thickness_in)) ** 2
     capacity = (0.60 * STRUT_STRESS_COEFFICIENT * PRESUMPTIVE_FC_PSI * area_in2
                 * max(slenderness, 0.0))
-    return demand, capacity, (f"{force_lb:,.0f} lb service on {thickness_in:.0f}\" x "
+    return demand, capacity, (f"{basis} on {thickness_in:.0f}\" x "
                               f"{height_in:.1f}\" ({area_in2:,.0f} in2), {span_ft:.1f}' clear, "
                               f"slenderness factor {max(slenderness, 0.0):.2f}")
 

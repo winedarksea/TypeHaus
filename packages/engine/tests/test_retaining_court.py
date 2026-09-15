@@ -46,15 +46,30 @@ _NOTE_RESULTANT_LB = 61_446.0
 _NOTE_CAPACITY_LB = 100_047.0
 _NOTE_CANCELLED_LB = 100_362.0
 _NOTE_SYSTEM_FS = 1.63
-# §8: half the largest member's whole thrust, factored, against phi-Pn on a 12" x 17.5"
+# §8: the **derived reaction** at the strut, factored, against phi-Pn on a 12" x 17.5"
 # section over a 20'-0" clear span. phi-Pn does not move with the wall height; Pu does.
 #
+# ** THIS WAS 49,157 lb UNTIL 2026-09-14, AND THAT NUMBER WAS NOT A BOUND. ** It was
+# `0.5 * max(member thrust)` — half the largest thrust in the loop, which on this court is
+# the SOUTH wall, whose thrust runs perpendicular to the strut and cannot compress it. The
+# engine graded one wall's load against a member it does not push. §8 already carried the
+# right figure beside it, as the "conservative by 22%" comparison; it is the record now.
+#
+# A side leg spans in plan from the monolithic south corner to the strut and delivers
+# 0.500 wL there at a pinned corner (graded) or 0.375 wL fully fixed (reported):
+#   w = 3,072.31 plf, L = 16.333 ft -> wL = 50,181 lb
+#   P = 25,090 lb service, Pu = 1.6 x 25,090 = 40,145 lb
+#
 # ** DO NOT READ A FALLING Pu AS PERMISSION TO SHRINK THE BEAM. ** The two shallower
-# sections §8 once rejected (10 1/4" and 8 1/2") both PASS at this Pu, at d/c 0.81 and
-# 0.98. What holds 17.5" is the sequencing argument and the absence of redundancy, not the
-# ratio; §8's three-reason block is where that now lives.
-_NOTE_STRUT_PU_LB = 49_157.0
+# sections §8 once rejected (10 1/4" and 8 1/2") pass at this Pu by an even wider margin
+# than they did at the old one. What holds 17.5" is the sequencing argument and the absence
+# of redundancy, not the ratio; §8's three-reason block is where that lives.
+_NOTE_STRUT_PU_LB = 40_145.0
 _NOTE_STRUT_PHI_PN_LB = 103_655.0
+#: The other end of the corner-fixity family, hand-worked in §8 beside the graded one.
+#: Asserted so the record cannot quietly stop publishing the range.
+_NOTE_STRUT_FIXED_CORNER_P_LB = 18_818.0
+_NOTE_STRUT_PINNED_CORNER_P_LB = 25_090.0
 # The exposure of the run above the authored yard, which is a RESULT of the flush tops and
 # not the driver it used to be. `params/sunken_garden.RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN`.
 _NOTE_EXPOSURE_IN = 40.0
@@ -84,6 +99,15 @@ def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
     assert states["strut compression"].demand == pytest.approx(_NOTE_STRUT_PU_LB, rel=0.001)
     assert states["strut compression"].capacity == pytest.approx(
         _NOTE_STRUT_PHI_PN_LB, rel=0.001)
+    # The record must publish BOTH ends of the corner-fixity family, or the reader gets one
+    # number where §8 worked a range — which is how the old assertion read as a derivation.
+    citation = states["strut compression"].citation
+    assert f"{_NOTE_STRUT_PINNED_CORNER_P_LB:,.0f} lb service reaction" in citation, citation
+    assert f"{_NOTE_STRUT_FIXED_CORNER_P_LB:,.0f} lb if the corner is fully fixed" in citation
+    # And it must name the wall whose reaction it is. The south wall pushes across the
+    # strut, not along it; naming it here was the whole defect.
+    assert "W-SG-E2" in citation or "W-SG-W2" in citation, citation
+    assert "W-SG-S" not in citation.split(" on ")[0], citation
     assert states["strut compression"].ok
 
     # The resultant and the capacity themselves, not just their ratio: two errors can cancel

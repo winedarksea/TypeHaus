@@ -1756,8 +1756,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   governing case is snowmelt over a frozen grate, where `DRW-SG-MAIN` contributes nothing.
 - **`W-SG-ARCH` must not move, and since 2026-09-10 the reason is no longer the ratio.**
   Dropping its top to the rim underside gives a 10 1/4" section at phi-Pn 60,712 lb, which
-  FAILED at Pu 62,051 (d/c 1.02) and **passes at today's Pu 49,157 (d/c 0.81)**; the 8 1/2"
-  section passes too, by 2%. What holds 12" x 17 1/2" is the SEQUENCING argument — the loop
+  FAILED at Pu 62,051 (d/c 1.02) and **passes at today's Pu 40,145 (d/c 0.66)**; the 8 1/2"
+  section passes too, at d/c 0.80. (Pu was 49,157 until 2026-09-14, when the strut force
+  became a derived reaction rather than half the largest member's thrust — the south wall's,
+  which cannot compress an E-W strut. `notes/..._court_free_body.md` §8.) What holds 12" x 17 1/2" is the SEQUENCING argument — the loop
   must close before backfill, and a strut whose bottom is tied to a surface that moves is a
   residue, not a chosen depth — plus no redundancy and a ~1.1 CY saving. Read
   `notes/sunken_garden_court_free_body.md` §8's three-reason block before shrinking it. Its
