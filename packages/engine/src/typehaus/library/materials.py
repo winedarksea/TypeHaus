@@ -154,6 +154,21 @@ STARTER_MATERIALS: tuple[Material, ...] = (
              source="GCP Bituthene 3000 data sheet: 0.05 perm (ASTM E96 B), 300% "
                     "elongation (D412), 200 ft hydrostatic head (D5385), 50 lb puncture "
                     "(E154), crack-cycled 100x at -25 F unaffected (C836), 60 mil"),
+    # The drained plane on a retained face: a dimpled HDPE core with a bonded non-woven
+    # filter fabric on the soil side. It is not a membrane and does not try to be — it
+    # protects the membrane behind it and gives water a vertical path to the collector at
+    # the footing, which is the thing a retaining-wall calculation assumes when it declines
+    # to run a hydrostatic case. `vapor_permeance_perms` is deliberately high: a drainage
+    # composite must not trap water against the waterproofing it protects.
+    Material(tag="drainage-composite",
+             name="Dimpled drainage composite with bonded filter fabric (0.4 in core)",
+             r_per_inch=0.0, density=45.0, vapor_permeance_perms=10.0, hatch="membrane",
+             color="#3f5a6b",
+             source="generic HDPE dimple-sheet class (e.g. Cosella-Dorken Delta-Drain / "
+                    "Mar-flex ShoreDri): 0.4 in core, >=15 gal/min/ft in-plane flow at 1 ft "
+                    "head (ASTM D4716), 3,000+ psf compressive (D1621), AASHTO M288 class 2 "
+                    "non-woven bonded to the soil face. A PRODUCT CLASS, not a selection — "
+                    "the submittal is the engineer's"),
     # Closed-cell (2 lb) spray polyurethane foam — what fills a rim cavity that no sheet
     # membrane can reach. It is the insulation, the air barrier AND the vapour retarder in
     # one bonded, seamless application, which is exactly why it is specified where a floor

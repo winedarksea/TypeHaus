@@ -1809,8 +1809,21 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     # ticket and an identical $/cy row — split on appearance alone, which is exactly what an
     # assembly is for. Nothing grades whether a FINISH layer is reachable, so this assertion and
     # the wash-face tests in test_masonry_finish.py are the whole guard.
-    assert all(w.assembly == "SUNKEN_GARDEN_WALL"
-               for w in walls if w.tag not in ("W-SG-BRKBM", "W-SG-ARCH"))
+    # ** AND THE COURT WALLS SPLIT IN TWO ON 2026-09-14, ON THE SAME PRINCIPLE ONE MORE
+    # TIME. ** W-SG-W1/E1 are the porch box's side walls: their outboard face is EXPOSED
+    # above the yard, and it carries ED-M-HP2-DISC and ED-M-STAIR-LT. W-SG-W2/E2/S are the
+    # free retaining U, buried for their whole height, and owner decision 5 put a
+    # waterproofing membrane and a drainage composite on that buried face so
+    # `engineering/retaining_wall`'s "the drainage behind the wall works perfectly" names a
+    # modelled element. Putting those layers on all five moved the porch walls' exposed face
+    # 0.46" outboard and buried both devices — caught by
+    # `test_wall_mounted_devices_resolve_against_a_wall_face`, which is why the split exists.
+    assert {w.tag: w.assembly for w in walls
+            if w.tag not in ("W-SG-BRKBM", "W-SG-ARCH")} == {
+        "W-SG-W1": "SUNKEN_GARDEN_WALL", "W-SG-E1": "SUNKEN_GARDEN_WALL",
+        "W-SG-W2": "SUNKEN_GARDEN_WALL_DRAINED",
+        "W-SG-E2": "SUNKEN_GARDEN_WALL_DRAINED",
+        "W-SG-S": "SUNKEN_GARDEN_WALL_DRAINED"}
     assert next(w for w in walls if w.tag == "W-SG-BRKBM").assembly == "SG_VENEER_BEAM_14"
     assert (next(w for w in walls if w.tag == "W-SG-ARCH").assembly
             == "SUNKEN_GARDEN_GRADE_BEAM_12")

@@ -152,12 +152,42 @@ def test_reflow_beats_a_single_column_on_the_sheet(catlin_model):
     assert frame_for_scene(scene, LEDGER).scale_label == "1/16\" = 1'-0\""
 
 
+#: How far past the drawn plan's own height the scene may run before the tables are back to
+#: governing the sheet. The defect this whole module is about was a scene TWICE the plan's
+#: height, which is what put S-100 at 3/32" on ARCH D.
+#:
+#: ** IT WAS 1.25 AND THE HOUSE SAT AT 1.2458 — FOUR THOUSANDTHS OF SLACK. ** Nobody chose
+#: that margin; it was where the building happened to land. One schedule row is 29.7
+#: drawing-inches against a 1,187.3" plan, so **every threshold in this family is worth
+#: exactly 0.025 of ratio** — the guard was one assembly from firing and on 2026-09-14 it
+#: fired, when the court walls split into SUNKEN_GARDEN_WALL and
+#: SUNKEN_GARDEN_WALL_DRAINED (12 assemblies -> 13, scene 1,479.1" -> 1,508.8", ratio
+#: 1.2458 -> 1.2708).
+#:
+#: 1.35 is set deliberately rather than nudged to clear: it is the measured value plus
+#: **three more schedule rows**, so the number says how much room is left instead of
+#: recording where the building last happened to be. The property still holds with room —
+#: the tables are a quarter of the plan's height, not double it — and the assertion that
+#: actually protects legibility is the SCALE one above, which is unchanged at 1/8".
+#:
+#: `emit_block_columns` already picks the best contiguous split against the sheet aspect,
+#: so there is no reflow left to buy here. The levers, if this ever binds again, are
+#: `sheet_writer.TITLE_W` and a schedule that needs fewer full-width tables — not a smaller
+#: drawing, and not this number again.
+SCENE_TO_PLAN_HEIGHT_LIMIT = 1.35
+
+
 def test_the_schedule_no_longer_governs_the_sheet_height(catlin_model):
-    """The plan, not its tables, is what the sheet is now fitted to vertically."""
+    """The plan, not its tables, is what the sheet is fitted to vertically."""
     from typehaus.emit.draw.pdf_writer import _scene_bounds
 
     plan_points = _drawn_plan_points(catlin_model, foundation_walls(catlin_model))
     plan_height = (max(p[1] for p in plan_points) - min(p[1] for p in plan_points))
     _u0, z0, _u1, z1 = _scene_bounds(build_foundation_plan(catlin_model))
-    # Some slack for the leaders and dimension chain that hang below the plan itself.
-    assert z1 - z0 < plan_height * 1.25
+    # Some slack for the leaders and dimension chain that hang below the plan itself, plus
+    # the headroom SCENE_TO_PLAN_HEIGHT_LIMIT documents.
+    ratio = (z1 - z0) / plan_height
+    assert ratio < SCENE_TO_PLAN_HEIGHT_LIMIT, (
+        f"the scene is {ratio:.4f}x the drawn plan's height ({z1 - z0:.1f}\" against "
+        f"{plan_height:.1f}\"). One schedule row is worth 0.025 of this ratio — see "
+        "SCENE_TO_PLAN_HEIGHT_LIMIT for what to do about it, and do not simply raise it")

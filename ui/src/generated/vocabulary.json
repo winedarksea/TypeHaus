@@ -11,6 +11,7 @@
     "air_gap": "siding",
     "airgap": "siding",
     "cladding": "siding",
+    "drainage": "drainage",
     "finish": "drywall",
     "furring": "siding",
     "insulation": "insulation",

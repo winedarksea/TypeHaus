@@ -11,6 +11,18 @@ class LayerFunction(Enum):
     STRUCTURE = "structure"
     SHEATHING = "sheathing"
     MEMBRANE = "membrane"
+    #: A drained plane: a dimpled composite, a drainage board, a filtered aggregate face.
+    #: **Not a MEMBRANE and not an AIRGAP**, and the distinction is what it exists for. A
+    #: membrane STOPS water; this one MOVES it, and every retaining-wall calculation in this
+    #: engine assumes something does — ``retaining_wall._one`` presumes "the drainage behind
+    #: the wall works perfectly" and runs no hydrostatic case on the strength of it. Until
+    #: 2026-09-14 that assumption pointed at nothing: ``SUNKEN_GARDEN_WALL`` had exactly two
+    #: layers, wash and concrete, over 9.12 ft of retained face.
+    #:
+    #: An AIRGAP is the wrong spelling for it. A rainscreen cavity is ventilated to dry a
+    #: cladding; a drainage plane is buried, carries water down a head of soil to a
+    #: collector, and is the thing whose failure the blocked-drain case models.
+    DRAINAGE = "drainage"
     INSULATION = "insulation"
     AIRGAP = "airgap"
     FURRING = "furring"
@@ -51,6 +63,11 @@ class ControlLayer(Enum):
     WATER = "water"
     VAPOR = "vapor"
     THERMAL = "thermal"
+    #: Provides a DRAINED path, which is a different claim from stopping water. A layer may
+    #: hold both — a composite with a bonded filter fabric drains and also protects the
+    #: membrane behind it — and a layer may hold this one alone, which a free-draining
+    #: aggregate face does.
+    DRAINAGE = "drainage"
 
 
 class JunctionPolicy(Enum):
