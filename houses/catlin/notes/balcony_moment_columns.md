@@ -227,15 +227,22 @@ So it is a slender column and the moment must be magnified. It barely moves, bec
 magnification needs axial load to bite and there is almost none:
 
 ```
-E_c = 57,000 √3,000            = 3.12e6 psi
+E_c = 57,000 √5,000            = 4.03e6 psi
 I_g = π·12⁴/64                 = 1,018 in⁴
 β_dns = 1.2 D / P_u = 1.2×1,564/4,971 = 0.378
-EI = 0.4 E_c I_g /(1+β_dns)    = 9.23e8 lb-in²
-P_c = π² EI /(k·lu)²           = π² × 9.23e8 / (227.06)² = 1.77e5 lb
-δ  = 1/(1 − P_u/0.75 P_c) = 1/(1 − 4,971/132,470) = 1.039
+EI = 0.4 E_c I_g /(1+β_dns)    = 1.19e9 lb-in²
+P_c = π² EI /(k·lu)²           = π² × 1.19e9 / (227.06)² = 2.28e5 lb
+δ  = 1/(1 − P_u/0.75 P_c) = 1/(1 − 4,971/171,037) = 1.030
 ```
 
-**Magnified design moment M_u = 2,502 × 1.039 = 2,600 lb-ft.**
+**Magnified design moment M_u = 2,502 × 1.030 = 2,577 lb-ft.**
+
+(Worked at **f'c 5,000 psi**, the mix §4a settled on 2026-09-10. This section stood at
+3,000 until 2026-09-15 — E_c 3.12e6, EI 9.23e8, P_c 1.77e5, δ 1.039, M_u 2,600 lb-ft —
+while §4 four pages later printed the 5,000 answer, so the note contradicted itself. The
+richer mix stiffens the column, so magnification *falls*: δ 1.039 → 1.030 and M_u 2,600 →
+2,577 lb-ft. The direction is the reassuring one and the change is 0.9%, which is why the
+contradiction survived as long as it did — nothing downstream moved enough to notice.)
 
 (`P_u` is 4,971 lb rather than the 3,845 this section carried before 2026-09-03's
 beam-weighted tributary — see §2a. More axial makes the magnifier slightly larger and the
@@ -346,6 +353,17 @@ the weaker — which is backwards, since they come off the same truck. The assem
 states `concrete=EXPOSED_MIX` and all six of the court's 12" rounds are on it. §4 above is
 re-worked by hand at 5,000 psi accordingly, and the engine was checked against that pass
 and not the other way round.
+
+**§3 and §7 were missed by that pass and stayed at 3,000 until 2026-09-15.** So for five
+days the note *contradicted itself* — §4 printing the 5,000 answer while the slenderness
+magnification four pages earlier and the development length three pages later were still
+reading the old mix. Both are now re-worked, and the two behaved very differently:
+§3's δ moved 1.039 → 1.030 (M_u 2,600 → 2,577 lb-ft, 0.9%, in the reassuring direction),
+while §7's `ld` goes as 1/√f'c and moved 23%, which had been making the authored dowel
+projection read 5 1/2" short of a splice it in fact clears. **A note that disagrees with
+itself is worse than one that is uniformly conservative**, because a reviewer cannot tell
+which half to trust — so the rule going forward is that a mix change re-works every section
+that names f'c, and `grep "√3,000"` is the whole audit.
 
 **What did NOT change.** The demands. Wind is a pressure on a guard and a deck, the guard
 case is R301.5's 200 lb, and neither has any opinion about the concrete. Every d/c in the
@@ -534,10 +552,18 @@ each** at (4) #5 with galvanizing.
 1.2-1.5, and reading the epoxy row here would lengthen every lap in this house by half.
 
 ```
-ld  = (60,000 / (25 √3,000)) × 0.625 = 27.4"     §25.4.2.4, #6 and smaller
-class B lap = 1.3 × 27.4             = 35.6"     §25.5.2.1 — every bar spliced at one section
+ld  = (60,000 / (25 √5,000)) × 0.625 = 21.2"     §25.4.2.4, #6 and smaller
+class B lap = 1.3 × 21.2             = 27.6"     §25.5.2.1 — every bar spliced at one section
 authored: 4 #5 galvanized dowels projecting ~30"+ from the wall pour
 ```
+
+**This one was worth correcting for more than tidiness.** Worked at 3,000 psi — as it was
+until 2026-09-15, while §4a had specified 5,000 since 2026-09-10 — ld came out 27.4" and the
+class B lap 35.6", against ~30" of authored projection: the note read as though the dowels
+were **5 1/2" short of their own splice**. At the real f'c they need 27.6" and the authored
+30" covers it with 2 1/2" to spare. The bar never moved; the note was reading the wrong mix.
+`ld` goes as 1/√f'c, so this is the term the mix change moves *most* — 23% — which is why it
+showed up here as an apparent deficiency and nowhere else.
 
 **The wall-top cold joint is the wettest, saltiest elevation on the column** and a documented
 chloride path. Roughen it to 1/4" amplitude, remove laitance, set a bentonite or crystalline
