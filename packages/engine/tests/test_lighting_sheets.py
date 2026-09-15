@@ -14,19 +14,19 @@ import pytest
 
 from typehaus.emit.draw.lightingplan import build_lighting_plan, has_lighting_content
 from typehaus.emit.draw.scene import Polyline, Symbol, Text
-from typehaus.emit.draw.sheets import build_sheet_index
 from typehaus.model.placeable_symbols import SYMBOL_NAMES
 
 
-def test_the_sheet_index_carries_a_lighting_plan_per_level_plus_the_schedule(catlin_model):
+def test_the_sheet_index_carries_a_lighting_plan_per_level_plus_the_schedule(
+        catlin_model_ro, catlin_sheet_index):
     # Per LEVEL, not per storey: the garage's luminaires are drawn on the main floor's
     # lighting plan, the floor it opens onto (→ emit/draw/datum).
     from typehaus.emit.draw.datum import model_at_level
 
-    numbers = [sheet.number for sheet in build_sheet_index(catlin_model)]
+    numbers = [sheet.number for sheet in catlin_sheet_index()]
     lighting = [number for number in numbers if number.startswith("E-2")]
-    expected = [primary.tag for primary, _here in catlin_model.plan.levels()
-                if has_lighting_content(model_at_level(catlin_model, primary.tag),
+    expected = [primary.tag for primary, _here in catlin_model_ro.plan.levels()
+                if has_lighting_content(model_at_level(catlin_model_ro, primary.tag),
                                         primary.tag)]
     assert lighting == [f"E-{200 + index}" for index in range(1, len(expected) + 1)]
     assert "E-602" in numbers
@@ -35,7 +35,7 @@ def test_the_sheet_index_carries_a_lighting_plan_per_level_plus_the_schedule(cat
     assert numbers.index("E-601") < numbers.index("E-602")
     # ...and neither reaches the permit set: DSI's checklist names no E drawings, and
     # E-602 exists to serve the E-2xx sheets.
-    permit = {sheet.number for sheet in build_sheet_index(catlin_model, sets="permit")}
+    permit = {sheet.number for sheet in catlin_sheet_index(sets="permit")}
     assert not [n for n in permit if n.startswith("E-2")]
     assert "E-602" not in permit and "E-601" in permit
 

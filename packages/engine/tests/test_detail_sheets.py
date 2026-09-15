@@ -19,8 +19,8 @@ from _helpers import CATLIN as CATLIN_DIR
 
 
 
-def test_catlin_emits_authored_then_derived_detail_sheets(catlin_model):
-    sheets = build_sheet_index(catlin_model)
+def test_catlin_emits_authored_then_derived_detail_sheets(catlin_sheet_index):
+    sheets = catlin_sheet_index()
     detail_numbers = [s.number for s in sheets if s.number.startswith("A-5")]
     # The four authored details keep A-501..A-504, in order, ahead of derived details.
     assert detail_numbers[:4] == ["A-501", "A-502", "A-503", "A-504"]
@@ -34,9 +34,10 @@ def test_catlin_emits_authored_then_derived_detail_sheets(catlin_model):
     assert nums == list(range(501, 501 + len(nums)))
 
 
-def test_deckbrg_scene_contains_deck_hatch_spanning_its_thickness(catlin_model):
-    sheets = {s.number: s for s in build_sheet_index(catlin_model)}
-    scene = sheets["A-502"].scene(catlin_model)
+def test_deckbrg_scene_contains_deck_hatch_spanning_its_thickness(catlin_model_ro,
+                                                                  catlin_sheet_index):
+    sheets = {s.number: s for s in catlin_sheet_index()}
+    scene = sheets["A-502"].scene(catlin_model_ro)
     slab_hatches = [n for n in scene.nodes if isinstance(n, Hatch) and n.pattern == "concrete"]
     assert slab_hatches
     # the 9" deck spans z in [-0.2286m, 0] — some hatch boundary must cover that band
@@ -49,10 +50,10 @@ def test_deckbrg_scene_contains_deck_hatch_spanning_its_thickness(catlin_model):
     assert covers_deck
 
 
-def test_detail_sheets_snapshot_deterministic(catlin_model):
-    sheets = {s.number: s for s in build_sheet_index(catlin_model)}
-    a = sheets["A-501"].scene(catlin_model)
-    b = sheets["A-501"].scene(catlin_model)
+def test_detail_sheets_snapshot_deterministic(catlin_model_ro, catlin_sheet_index):
+    sheets = {s.number: s for s in catlin_sheet_index()}
+    a = sheets["A-501"].scene(catlin_model_ro)
+    b = sheets["A-501"].scene(catlin_model_ro)
     assert a.to_json() == b.to_json()
 
 
@@ -66,7 +67,7 @@ def test_starter_emits_one_detail_sheet(starter_dir: Path):
     assert detail_numbers == ["A-501"]
 
 
-def test_ridge_detail_scene_is_nonempty(catlin_model):
-    sheets = {s.number: s for s in build_sheet_index(catlin_model)}
-    scene = sheets["A-504"].scene(catlin_model)
+def test_ridge_detail_scene_is_nonempty(catlin_model_ro, catlin_sheet_index):
+    sheets = {s.number: s for s in catlin_sheet_index()}
+    scene = sheets["A-504"].scene(catlin_model_ro)
     assert scene.nodes

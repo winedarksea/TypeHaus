@@ -24,7 +24,6 @@ from typehaus.emit.draw.bracedwallplan import (
     has_braced_wall_content,
 )
 from typehaus.emit.draw.scene import Polyline, Text
-from typehaus.emit.draw.sheets import build_sheet_index
 from typehaus.findings import Result
 
 
@@ -98,7 +97,8 @@ def test_the_sheet_says_on_itself_that_the_panels_are_missing(catlin_model_ro):
     assert [n for n in scene.nodes if isinstance(n, Polyline) and n.layer == BWL_LAYER]
 
 
-def test_a_sheet_exists_for_every_level_that_has_lines(catlin_model_ro):
+def test_a_sheet_exists_for_every_level_that_has_lines(catlin_model_ro,
+                                                       catlin_sheet_index):
     # One sheet per LEVEL. MNSPECT runs a braced-wall inspection per floor, and the garage's
     # shear panels are on the floor the garage is attached to — not a sheet of their own
     # (→ emit/draw/datum, PlanModel.levels).
@@ -107,7 +107,7 @@ def test_a_sheet_exists_for_every_level_that_has_lines(catlin_model_ro):
     levels = [primary.tag for primary, _here in catlin_model_ro.plan.levels()
               if has_braced_wall_content(model_at_level(catlin_model_ro, primary.tag),
                                          primary.tag)]
-    numbers = [s.number for s in build_sheet_index(catlin_model_ro)
+    numbers = [s.number for s in catlin_sheet_index()
                if s.number.startswith("S-103")]
     assert len(numbers) == len(levels) > 0
 

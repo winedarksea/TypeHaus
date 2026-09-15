@@ -16,10 +16,9 @@ from typehaus.emit.draw.callouts import (
 )
 from typehaus.emit.draw.scene import Polyline, Text
 from typehaus.emit.draw.section import build_center_section
-from typehaus.emit.draw.sheets import build_sheet_index
 
 
-def test_the_two_numberings_agree(catlin_model_ro):
+def test_the_two_numberings_agree(catlin_model_ro, catlin_sheet_index):
     """The load-bearing assertion in this module.
 
     ``callouts.detail_sheet_numbers`` cannot import ``build_sheet_index`` — ``sheets``
@@ -28,27 +27,28 @@ def test_the_two_numberings_agree(catlin_model_ro):
     callout naming a sheet the set does not emit is worse than no callout.
     """
     derived = detail_sheet_numbers(catlin_model_ro)
-    index = [s.number for s in build_sheet_index(catlin_model_ro, sets="full")
+    index = [s.number for s in catlin_sheet_index(sets="full")
              if s.number.startswith(f"A-{FIRST_DETAIL_SHEET // 100}")]
     assert sorted(derived.values()) == sorted(index)
 
 
-def test_a_detail_keeps_its_number_in_both_sets(catlin_model_ro):
+def test_a_detail_keeps_its_number_in_both_sets(catlin_sheet_index):
     """``FIRST_DETAIL_SHEET`` numbers EVERY derived detail, so the permit set drops sheets
     without renumbering the ones it keeps. A callout pointing at A-560 must not move
     because an unstarred sheet ahead of it was filtered out."""
-    full = {s.number: s.title for s in build_sheet_index(catlin_model_ro, sets="full")}
-    for sheet in build_sheet_index(catlin_model_ro, sets="permit"):
+    full = {s.number: s.title for s in catlin_sheet_index(sets="full")}
+    for sheet in catlin_sheet_index(sets="permit"):
         assert full[sheet.number] == sheet.title
 
 
-def test_the_section_calls_out_the_details_it_passes_through(catlin_model_ro):
+def test_the_section_calls_out_the_details_it_passes_through(catlin_model_ro,
+                                                            catlin_sheet_index):
     scene = build_center_section(catlin_model_ro)
     sheets = {n.content for n in scene.nodes
               if isinstance(n, Text) and n.layer == CALLOUT_LAYER
               and n.content.startswith("A-")}
     assert sheets, "the building section references no detail at all"
-    emitted = {s.number for s in build_sheet_index(catlin_model_ro)}
+    emitted = {s.number for s in catlin_sheet_index()}
     assert sheets <= emitted, f"callouts point at sheets that do not exist: {sheets - emitted}"
 
 

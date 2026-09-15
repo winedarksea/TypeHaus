@@ -318,10 +318,8 @@ def test_catlin_circuit_refs_reconcile(catlin_model):
     assert [f.result.value for f in findings] == ["pass"]
 
 
-def test_panel_schedule_sheet_is_in_the_permit_set(catlin_model):
-    from typehaus.emit.draw.sheets import build_sheet_index
-
-    numbers = {sheet.number for sheet in build_sheet_index(catlin_model)}
+def test_panel_schedule_sheet_is_in_the_permit_set(catlin_sheet_index):
+    numbers = {sheet.number for sheet in catlin_sheet_index()}
     assert "E-601" in numbers
     # Four levels, not the five storey-keyed sheets this once asserted: the garage is drawn
     # on the main floor's power plan (→ emit/draw/datum, PlanModel.levels).
@@ -329,7 +327,7 @@ def test_panel_schedule_sheet_is_in_the_permit_set(catlin_model):
     assert "E-105" not in numbers
     # The panel schedule is what a plan checker wants; the power plans are not on the
     # checklist (electrical is permitted by the State Board of Electricity).
-    permit = {sheet.number for sheet in build_sheet_index(catlin_model, sets="permit")}
+    permit = {sheet.number for sheet in catlin_sheet_index(sets="permit")}
     assert "E-601" in permit
     assert not [n for n in permit if n.startswith("E-1")]
 

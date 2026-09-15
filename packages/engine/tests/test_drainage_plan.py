@@ -73,22 +73,22 @@ def test_the_site_plan_carries_the_stormwater_overlay(catlin_model):
     assert drywells and drywells <= tags
 
 
-def test_drainage_sheets_join_the_index_in_the_p200_series(catlin_model):
+def test_drainage_sheets_join_the_index_in_the_p200_series(catlin_model_ro,
+                                                           catlin_sheet_index):
     from typehaus.emit.draw.datum import model_at_level
-    from typehaus.emit.draw.sheets import build_sheet_index
 
-    sheets = {s.number: s for s in build_sheet_index(catlin_model)}
+    sheets = {s.number: s for s in catlin_sheet_index()}
     numbers = [n for n in sheets if n.startswith("P-2")]
     assert numbers, "the drainage plans must reach the permit set"
     # One sheet per LEVEL, not per storey. A storey is a datum within one building, so the
     # sunken garden's drainage and the basement's are the same sheet, and the garage's is
     # drawn with the main floor it is attached to (→ emit/draw/datum, PlanModel.levels).
-    expected = sum(1 for primary, _here in catlin_model.plan.levels()
-                   if has_drainage_content(model_at_level(catlin_model, primary.tag),
+    expected = sum(1 for primary, _here in catlin_model_ro.plan.levels()
+                   if has_drainage_content(model_at_level(catlin_model_ro, primary.tag),
                                            primary.tag))
     assert len(numbers) == expected
     assert "P-201" in sheets and sheets["P-201"].title.startswith("Drainage plan")
     assert sheets["P-201"].north_arrow
     # Full set only: the grading and discharge story a reviewer wants is on C-101.
-    permit = {s.number for s in build_sheet_index(catlin_model, sets="permit")}
+    permit = {s.number for s in catlin_sheet_index(sets="permit")}
     assert not [n for n in permit if n.startswith("P-2")]

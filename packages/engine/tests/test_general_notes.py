@@ -16,7 +16,6 @@ from typehaus.emit.draw.schedules.architectural import (
     _sheet_note_index,
     specification_sections,
 )
-from typehaus.emit.draw.sheets import build_sheet_index
 
 
 def test_g002_is_bounded_by_construction_not_by_the_notes(catlin_model_ro):
@@ -44,11 +43,11 @@ def test_g002_never_truncates_silently(catlin_model_ro):
         plt.close(fig)
 
 
-def test_the_note_index_points_at_sheets_that_exist(catlin_model_ro):
+def test_the_note_index_points_at_sheets_that_exist(catlin_model_ro, catlin_sheet_index):
     """What G-002 owes a reader is a way to FIND a note, not a second copy of it."""
     index = _sheet_note_index(catlin_model_ro)
     assert index
-    emitted = {s.number for s in build_sheet_index(catlin_model_ro)}
+    emitted = {s.number for s in catlin_sheet_index()}
     for line in index:
         for token in line.replace(",", " ").replace("..", " ").split():
             if token.startswith("A-"):
@@ -90,9 +89,9 @@ def test_a_procedure_is_on_the_spec_sheet_and_not_on_the_detail(catlin_model_ro)
     assert "bucks before spraying" not in " ".join(scene.notes)
 
 
-def test_both_specification_sheets_are_in_the_set(catlin_model_ro):
+def test_both_specification_sheets_are_in_the_set(catlin_sheet_index):
     """A-002 keeps its own sheet; the structural half moved onto S-001's block 5."""
-    sheets = {s.number: s.title for s in build_sheet_index(catlin_model_ro)}
+    sheets = {s.number: s.title for s in catlin_sheet_index()}
     assert sheets["A-002"] == "Architectural specifications"
     assert "S-002" not in sheets, "the structural spec sheet is now a block on S-001"
     assert sheets["S-001"] == "General structural notes"

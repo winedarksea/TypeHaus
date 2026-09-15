@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from typehaus.emit.draw.sheets import build_sheet_index, write_permit_set
+from typehaus.emit.draw.sheets import build_sheet_index
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
 
@@ -25,16 +25,16 @@ def starter_model(starter_dir: Path):
     return model
 
 
-def test_sheet_numbers_are_unique(catlin_model):
-    sheets = build_sheet_index(catlin_model)
+def test_sheet_numbers_are_unique(catlin_sheet_index):
+    sheets = catlin_sheet_index()
     numbers = [s.number for s in sheets]
     assert len(numbers) == len(set(numbers))
 
 
-def test_catlin_has_one_framing_sheet_per_framed_storey(catlin_model):
+def test_catlin_has_one_framing_sheet_per_framed_storey(catlin_sheet_index):
     """Three, not ten: the S-101 series is per STOREY, and catlin's main floor is six
     framed bays that used to be six sheets of one floor."""
-    sheets = build_sheet_index(catlin_model)
+    sheets = catlin_sheet_index()
     numbers = [s.number for s in sheets]
     assert "S-100" in numbers
     assert [n for n in numbers if n.startswith("S-101")] == ["S-101.1", "S-101.2",
@@ -55,12 +55,12 @@ def test_starter_omits_s100_and_uses_bare_s101(starter_model):
     assert not any(n.startswith("S-101.") for n in numbers)
 
 
-def test_s100_and_s101_no_longer_alias_floorplan_builder(catlin_model):
+def test_s100_and_s101_no_longer_alias_floorplan_builder(catlin_sheet_index):
     from typehaus.emit.draw.floorplan import build_floorplan
     from typehaus.emit.draw.foundationplan import build_foundation_plan
     from typehaus.emit.draw.framingplan import build_framing_plan
 
-    sheets = {s.number: s for s in build_sheet_index(catlin_model)}
+    sheets = {s.number: s for s in catlin_sheet_index()}
     # S-100 is a partial now: the jurisdiction profile that states the frost depth in
     # its notes is bound at index time, not re-looked-up inside the builder.
     assert sheets["S-100"].scene.func is build_foundation_plan
@@ -68,26 +68,25 @@ def test_s100_and_s101_no_longer_alias_floorplan_builder(catlin_model):
     assert sheets["S-101.1"].scene is not build_floorplan
 
 
-def test_cover_index_matches_emitted_pages(catlin_model, tmp_path: Path):
-    _, meta = write_permit_set(catlin_model, tmp_path / "permit_set.pdf")
+def test_cover_index_matches_emitted_pages(catlin_permit_set, catlin_sheet_index):
+    _, meta = catlin_permit_set
     index = meta["index"]
-    sheets = build_sheet_index(catlin_model)
-    assert index == [(s.number, s.title) for s in sheets]
+    assert index == [(s.number, s.title) for s in catlin_sheet_index()]
 
 
-def test_write_permit_set_produces_a_nonempty_pdf(catlin_model, tmp_path: Path):
-    path, _ = write_permit_set(catlin_model, tmp_path / "permit_set.pdf")
+def test_write_permit_set_produces_a_nonempty_pdf(catlin_permit_set):
+    path, _ = catlin_permit_set
     assert path.stat().st_size > 0
 
 
 # --- permit vs full -----------------------------------------------------------
 
 
-def test_the_permit_set_is_an_ordered_subset_of_the_full_one(catlin_model):
+def test_the_permit_set_is_an_ordered_subset_of_the_full_one(catlin_sheet_index):
     """Two sets, one composer. The permit set may drop sheets; it may never REORDER them,
     invent one, or renumber one — a callout that moved between sets would be a lie."""
-    full = build_sheet_index(catlin_model, sets="full")
-    permit = build_sheet_index(catlin_model, sets="permit")
+    full = catlin_sheet_index(sets="full")
+    permit = catlin_sheet_index(sets="permit")
     full_numbers = [s.number for s in full]
     permit_numbers = [s.number for s in permit]
     assert set(permit_numbers) <= set(full_numbers)
@@ -96,7 +95,7 @@ def test_the_permit_set_is_an_ordered_subset_of_the_full_one(catlin_model):
     assert all(s.title == titles[s.number] for s in permit)
 
 
-def test_the_permit_set_fits_what_a_plan_checker_will_read(catlin_model):
+def test_the_permit_set_fits_what_a_plan_checker_will_read(catlin_sheet_index):
     """The ask that started this: 109 sheets is not a set anybody reviews.
 
     The cap is a judgement about a reviewer's patience, not a code limit, and it moved 55 ->
@@ -107,7 +106,7 @@ def test_the_permit_set_fits_what_a_plan_checker_will_read(catlin_model):
     two sheets to hold a round number — would have removed drawings somebody deliberately
     starred. **Raise this only with a reason written here.**
     """
-    permit = build_sheet_index(catlin_model, sets="permit")
+    permit = catlin_sheet_index(sets="permit")
     assert len(permit) <= 60, [s.number for s in permit]
     numbers = {s.number for s in permit}
     # What DSI's new-construction checklist asks for.
@@ -118,12 +117,20 @@ def test_the_permit_set_fits_what_a_plan_checker_will_read(catlin_model):
     assert "S-601" not in numbers and "A-603" not in numbers and "E-603" not in numbers
 
 
-def test_a_house_can_put_a_dropped_series_back_in_one_line(catlin_model):
-    """``[print] permit_add`` is the escape hatch for a reviewer who asks for E-1xx."""
+def test_a_house_can_put_a_dropped_series_back_in_one_line(catlin_model_ro,
+                                                          catlin_model_report):
+    """``[print] permit_add`` is the escape hatch for a reviewer who asks for E-1xx.
+
+    Called directly rather than through ``catlin_sheet_index`` because a ``Preferences``
+    memo key would be a fragile one, but handed the shared report: ``permit_add`` and
+    ``permit_drop`` are print options, and no print option can change a check's verdict, so
+    the one sheet that reads the report (S-603) has the same answer either way.
+    """
     from typehaus.checks.registry import Preferences, PrintPreferences
 
     prefs = Preferences(print_options=PrintPreferences(permit_add=("E-1", "P-1")))
-    numbers = {s.number for s in build_sheet_index(catlin_model, prefs, sets="permit")}
+    numbers = {s.number for s in build_sheet_index(catlin_model_ro, prefs, sets="permit",
+                                                   report=catlin_model_report)}
     assert "E-101" in numbers and "P-101" in numbers
 
     # ...and drop beats add, so a house cannot author a contradiction that silently
@@ -131,4 +138,5 @@ def test_a_house_can_put_a_dropped_series_back_in_one_line(catlin_model):
     both = Preferences(print_options=PrintPreferences(permit_add=("E-1",),
                                                       permit_drop=("E-1",)))
     assert "E-101" not in {s.number
-                           for s in build_sheet_index(catlin_model, both, sets="permit")}
+                           for s in build_sheet_index(catlin_model_ro, both, sets="permit",
+                                                      report=catlin_model_report)}

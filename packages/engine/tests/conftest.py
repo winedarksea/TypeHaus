@@ -315,3 +315,161 @@ def wall_assembly():
                               function=LayerFunction.FINISH),),
     )
     return materials, asm
+
+
+# --------------------------------------------------------------------------------------
+# The expensive compositions, shared.
+#
+# A full ``run()`` on catlin is ~20 s and does not get cheaper on a repeat; composing the
+# sheet index was ~19 s of hidden check run until ``build_sheet_index`` learned to take a
+# report. Both were being paid dozens of times over for the same bytes (→ AGENTS.md §3:
+# take the highest-scoped fixture you can).
+#
+# **Scoping rule.** Under ``-n 6 --dist loadfile`` a session fixture is built once *per
+# worker*, and loadfile keeps a whole module on one worker. So a session fixture used by
+# two modules or fewer saves nothing over module scope and only widens the window for a
+# cross-module leak. Prefer module scope there.
+# --------------------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="session")
+def catlin_ctx(catlin_plan):
+    """``build_context(catlin_plan, CATLIN)[0]`` — once per worker, **read-only**.
+
+    Holds the same mutable ``ResolvedModel`` that ``catlin_model_ro`` does, and carries the
+    same rule in the same words: take this when the test does not mutate the model, and
+    build your own context the moment it might. ``run_checks`` does not mutate it.
+
+    ``ctx.engineering`` memoises each record on first read, which is *why* sharing pays:
+    the engineering suite is computed once for every module that grades against it rather
+    than once per test.
+
+    Two contexts must NOT take this and build their own instead, for reasons that are about
+    correctness and not about speed:
+
+    * a test that edits ``ctx.model`` (``test_member_interference.py`` has one);
+    * a test that asserts the results map is still lazy (``ctx.engineering._records == {}``)
+      — this fixture has been read by then, so the map is populated;
+    * any call with an explicit ``profile=``, or with no ``house_dir`` at all. Neither is
+      this context: the first resolves a different jurisdiction, the second an empty
+      ``Preferences`` and so a different suppression set.
+    """
+    from typehaus.checks.run import build_context
+
+    ctx, _ = build_context(catlin_plan, CATLIN)
+    return ctx
+
+
+@pytest.fixture(scope="session")
+def catlin_check_report(catlin_ctx):
+    """A ``report(tier=None)`` **factory**, memoised per tier — once per worker.
+
+    A factory rather than a value because ``tier`` varies across the suite and a re-run
+    costs the full ~20 s; memoising on the tier gives every caller the value it asked for
+    at the price of the first one.
+
+    ``run(plan, house_dir, tier=t)`` *is* ``build_context(plan, house_dir)`` +
+    ``run_checks(ctx, t)`` (``checks/run.py``), so what comes back is value-identical to
+    what an un-fixtured call site computed for itself.
+
+    ``CheckReport.findings`` is a plain list and this one is shared: read it, never sort or
+    append to it. Do not take this for a call carrying an explicit ``profile=`` or no
+    ``house_dir`` — see ``catlin_ctx`` for why those are different reports, not cheaper ones.
+    """
+    from typehaus.checks.registry import run_checks
+
+    cache: dict[object, object] = {}
+
+    def report(tier=None):
+        if tier not in cache:
+            cache[tier] = run_checks(catlin_ctx, tier)
+        return cache[tier]
+
+    return report
+
+
+@pytest.fixture(scope="session")
+def catlin_model_report(catlin_model_ro):
+    """``run_from_model(catlin_model_ro, [], None)`` — the registry with **no house_dir**.
+
+    Not the same report as ``catlin_check_report()``: with no directory there are no loaded
+    ``Preferences``, so a different suppression set and a different jurisdiction. This is
+    the one a bare ``build_sheet_index(model)`` computes for itself, and it exists so the
+    composition can be handed it instead (→ ``catlin_sheet_index``).
+
+    Shared and read-only, like every report here.
+    """
+    from typehaus.checks import run_from_model
+
+    return run_from_model(catlin_model_ro, [], None)
+
+
+@pytest.fixture(scope="session")
+def catlin_sheet_index(catlin_model_ro, catlin_model_report):
+    """An ``index(sets="full", details=None, paper=LEDGER)`` factory — tuples, read-only.
+
+    Composed against ``catlin_model_ro``, which is why a module converting to this fixture
+    converts to that model in the same change: the derived-detail specs close over slices
+    built from the model they were composed against, and rendering a spec against a
+    *different* model quietly mixes two.
+
+    Returns a ``tuple``, not the list ``build_sheet_index`` returns. ``SheetSpec`` is frozen
+    but the list was not, and one ``.sort()`` in one test would poison every later module on
+    that worker. Every call site is tuple-compatible.
+
+    The registry runs once, in ``catlin_model_report``, and is handed to every variant as
+    ``report=`` — that is the same answer each call would have computed for itself (same
+    model, same absent ``house_dir``), and it is what makes a composition 0.3 s, not 19 s.
+
+    A call passing ``preferences=`` or ``house_dir=`` is not this fixture: both change what
+    is composed, and a ``Preferences`` memo key would be a fragile one. Call the function.
+    """
+    from typehaus.emit.draw.sheet_writer import LEDGER
+    from typehaus.emit.draw.sheets import build_sheet_index
+
+    cache: dict[object, tuple] = {}
+
+    def index(sets: str = "full", details: str | None = None, paper=LEDGER) -> tuple:
+        key = (sets, details, tuple(paper))
+        if key not in cache:
+            cache[key] = tuple(build_sheet_index(catlin_model_ro, details=details,
+                                                 paper=paper, sets=sets,
+                                                 report=catlin_model_report))
+        return cache[key]
+
+    return index
+
+
+@pytest.fixture(scope="session")
+def catlin_details(catlin_model_ro):
+    """``{key: (derived, scene, findings)}`` for every derived detail — once per worker.
+
+    Genuinely immutable, unlike the fixtures above: ``DerivedDetail`` is a frozen dataclass
+    and ``Scene``/IR are frozen pydantic. Share freely.
+
+    Five modules were each sweeping all ~76 details, and one of them swept them five times
+    over because its helper was uncached.
+    """
+    from typehaus.emit.draw.detail_derive import derive_detail_slices
+    from typehaus.emit.draw.details import build_detail
+
+    out = {}
+    for derived in derive_detail_slices(catlin_model_ro):
+        scene, findings = build_detail(catlin_model_ro, derived)
+        out[derived.key] = (derived, scene, findings)
+    return out
+
+
+@pytest.fixture(scope="module")
+def catlin_permit_set(catlin_model_ro, catlin_model_report, tmp_path_factory):
+    """``(path, composed)`` from one ``write_permit_set`` — **module** scope, read-only.
+
+    Module rather than session on purpose: only two modules consume it, and under
+    ``--dist loadfile`` that makes session scope pure downside (see the scoping rule above).
+
+    A real multi-page PDF on disk. Open it, never write to it.
+    """
+    from typehaus.emit.draw import write_permit_set
+
+    out = tmp_path_factory.mktemp("catlin-permit-set") / "permit_set.pdf"
+    return write_permit_set(catlin_model_ro, out, report=catlin_model_report)

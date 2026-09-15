@@ -30,8 +30,8 @@ def profile():
     return get_profile("mn-2020")
 
 
-def test_s001_is_in_the_set_unconditionally(catlin_model_ro):
-    sheets = {s.number: s.title for s in build_sheet_index(catlin_model_ro)}
+def test_s001_is_in_the_set_unconditionally(catlin_sheet_index):
+    sheets = {s.number: s.title for s in catlin_sheet_index()}
     assert sheets["S-001"] == "General structural notes"
 
 

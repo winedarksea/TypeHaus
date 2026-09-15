@@ -148,16 +148,16 @@ def test_compose_sheet_draws_scale_bar_on_scaled_sheets(catlin_model):
 # --- index integration --------------------------------------------------------
 
 
-def test_index_gains_general_notes_after_cover(catlin_model):
-    sheets = build_sheet_index(catlin_model)
+def test_index_gains_general_notes_after_cover(catlin_sheet_index):
+    sheets = catlin_sheet_index()
     numbers = [s.number for s in sheets]
     assert numbers[0] == "G-001"
     assert numbers[1] == "G-002"
     assert sheets[1].page is not None
 
 
-def test_plan_sheets_carry_north_arrows(catlin_model):
-    sheets = {s.number: s for s in build_sheet_index(catlin_model)}
+def test_plan_sheets_carry_north_arrows(catlin_sheet_index):
+    sheets = {s.number: s for s in catlin_sheet_index()}
     assert sheets["C-101"].north_arrow
     assert sheets["S-100"].north_arrow
     assert sheets["S-101.1"].north_arrow
@@ -167,7 +167,8 @@ def test_plan_sheets_carry_north_arrows(catlin_model):
     assert not sheets["A-201"].north_arrow
 
 
-def test_authored_sections_join_the_a301_series(catlin_model, monkeypatch):
+def test_authored_sections_join_the_a301_series(catlin_model_ro, catlin_model_report,
+                                                monkeypatch):
     from typehaus.model.enums import SliceKind
     from typehaus.model.plan import PlanModel
     from typehaus.model.views import Slice
@@ -185,7 +186,11 @@ def test_authored_sections_join_the_a301_series(catlin_model, monkeypatch):
         return items
 
     monkeypatch.setattr(PlanModel, "elements_of_kind", patched)
-    sheets = build_sheet_index(catlin_model)
+    # Composed directly, not through ``catlin_sheet_index``: this test patches the model
+    # under the composer, and a memoised index would answer from before the patch (or cache
+    # the patched answer for everyone after it). ``catlin_model_report`` is a parameter so
+    # pytest builds it before ``setattr`` runs.
+    sheets = build_sheet_index(catlin_model_ro, report=catlin_model_report)
     numbers = [s.number for s in sheets]
     assert "A-301.1" in numbers
     assert numbers.index("A-301.1") == numbers.index("A-301") + 1
@@ -194,8 +199,8 @@ def test_authored_sections_join_the_a301_series(catlin_model, monkeypatch):
     assert spec.scene is not None
 
 
-def test_every_sheet_has_the_same_paper_size(catlin_model):
-    sheets = build_sheet_index(catlin_model)
+def test_every_sheet_has_the_same_paper_size(catlin_sheet_index):
+    sheets = catlin_sheet_index()
     assert all(s.paper == LEDGER for s in sheets)
     # E-602 is the one deliberate orientation exception, and it is a *rotation* of the
     # set's paper rather than a second preset — so it follows the set onto any paper.
@@ -203,15 +208,15 @@ def test_every_sheet_has_the_same_paper_size(catlin_model):
     assert [s.number for s in sheets if s.portrait] == ["E-602"]
     # E-602 serves the E-2xx lighting plans, which the permit set does not carry, so the
     # permit set has no portrait sheet at all.
-    permit = build_sheet_index(catlin_model, sets="permit")
+    permit = catlin_sheet_index(sets="permit")
     assert [s.number for s in permit if s.portrait] == []
 
 
 # --- paper, threaded through the whole set ------------------------------------
 
 
-def test_paper_is_stamped_on_every_sheet_in_the_set(catlin_model):
-    sheets = build_sheet_index(catlin_model, paper=ARCH_D)
+def test_paper_is_stamped_on_every_sheet_in_the_set(catlin_sheet_index):
+    sheets = catlin_sheet_index(paper=ARCH_D)
     assert all(s.paper == ARCH_D for s in sheets)
     assert {s.size for s in sheets} == {ARCH_D, paper_for(ARCH_D, portrait=True)}
     e602 = next(s for s in sheets if s.number == "E-602")

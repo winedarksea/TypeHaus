@@ -34,7 +34,6 @@ from typehaus.emit.draw.roofframingplan import (
     roof_pitch_note,
 )
 from typehaus.emit.draw.scene import Leader, Polyline, Text
-from typehaus.emit.draw.sheets import build_sheet_index
 
 
 def _texts(scene) -> list[str]:
@@ -399,8 +398,8 @@ def test_s102_names_its_missing_inputs(catlin_model):
 # --- index --------------------------------------------------------------------
 
 
-def test_sheet_index_keeps_one_structural_series(catlin_model):
-    sheets = {sheet.number: sheet.title for sheet in build_sheet_index(catlin_model)}
+def test_sheet_index_keeps_one_structural_series(catlin_sheet_index):
+    sheets = {sheet.number: sheet.title for sheet in catlin_sheet_index()}
     assert sheets["S-100"] == "Foundation plan"
     assert any(number.startswith("S-101") for number in sheets)
     assert sheets["S-102.1"].startswith("Roof framing plan")
@@ -431,16 +430,14 @@ def test_structural_sheets_round_trip_to_dxf(catlin_model, tmp_path: Path):
         assert "A-ANNO-TABL" in {layer.dxf.name for layer in document.layers}
 
 
-def test_hardware_schedule_is_its_own_sheet(catlin_model):
+def test_hardware_schedule_is_its_own_sheet(catlin_sheet_index):
     """S-602 must appear in the index, or the derived hardware counts reach no reader.
 
     ``hardware_takeoff`` produced screw, anchor and connector quantities that the lumber
     cut list on S-601 structurally cannot carry (a screw has no cut length), and they were
     reaching the CLI only.
     """
-    from typehaus.emit.draw.sheets import build_sheet_index
-
-    sheets = {spec.number: spec for spec in build_sheet_index(catlin_model)}
+    sheets = {spec.number: spec for spec in catlin_sheet_index()}
     assert "S-602" in sheets
     assert sheets["S-602"].title == "Connection hardware schedule"
     # A schedule page composes tables directly rather than building a Scene.

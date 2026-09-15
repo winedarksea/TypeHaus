@@ -13,7 +13,6 @@ from types import SimpleNamespace
 
 
 from typehaus.emit.draw.details import derive_detail_slices, detail_index
-from typehaus.emit.draw.sheets import build_sheet_index
 from typehaus.source import load_plan
 from typehaus.source.coordinator import ProjectCoordinator
 from typehaus.source.ops import PatchOp
@@ -22,8 +21,8 @@ from _helpers import CATLIN as CATLIN_DIR, copy_house
 _DETAIL_NUMBER = re.compile(r"A-5\d\d$")
 
 
-def test_star_reaches_the_detail_index(catlin_model):
-    rows = detail_index(catlin_model)
+def test_star_reaches_the_detail_index(catlin_model_ro):
+    rows = detail_index(catlin_model_ro)
     starred = {r["key"] for r in rows if r["star"]}
     unstarred = {r["key"] for r in rows if not r["star"]}
     # The eave transition is authored star=True; the interior-opening one is not.
@@ -31,9 +30,9 @@ def test_star_reaches_the_detail_index(catlin_model):
     assert any("INT_" in k for k in unstarred)
 
 
-def test_permit_sheet_set_keeps_only_starred_derived_details(catlin_model):
-    everything = build_sheet_index(catlin_model, sets="full")
-    permit = build_sheet_index(catlin_model, sets="permit")
+def test_permit_sheet_set_keeps_only_starred_derived_details(catlin_sheet_index):
+    everything = catlin_sheet_index(sets="full")
+    permit = catlin_sheet_index(sets="permit")
     det_all = [s for s in everything if _DETAIL_NUMBER.match(s.number)]
     det_permit = [s for s in permit if _DETAIL_NUMBER.match(s.number)]
     # The filter drops exactly the unstarred derived sheets, and every one it keeps is in
@@ -47,12 +46,12 @@ def test_permit_sheet_set_keeps_only_starred_derived_details(catlin_model):
                                           if s.number in {p.number for p in permit}]
 
 
-def test_details_primary_is_still_an_alias_for_the_permit_set(catlin_model):
+def test_details_primary_is_still_an_alias_for_the_permit_set(catlin_sheet_index):
     """One test on the deprecated name. ``primary`` -> ``permit``, ``all`` -> ``full``."""
-    assert ([s.number for s in build_sheet_index(catlin_model, details="primary")]
-            == [s.number for s in build_sheet_index(catlin_model, sets="permit")])
-    assert ([s.number for s in build_sheet_index(catlin_model, details="all")]
-            == [s.number for s in build_sheet_index(catlin_model, sets="full")])
+    assert ([s.number for s in catlin_sheet_index(details="primary")]
+            == [s.number for s in catlin_sheet_index(sets="permit")])
+    assert ([s.number for s in catlin_sheet_index(details="all")]
+            == [s.number for s in catlin_sheet_index(sets="full")])
 
 
 def test_haus_print_composes_the_permit_set_by_default():
@@ -112,9 +111,10 @@ def test_stars_precedence_unstar_wins_and_star_is_the_default():
                        unstarred_conditions=(key,)).stars(key) is False
 
 
-def test_per_condition_overrides_curate_the_permit_sheet_set(catlin_model):
+def test_per_condition_overrides_curate_the_permit_sheet_set(catlin_model_ro,
+                                                             catlin_sheet_index):
     """The interior rim/foundation keys are unstarred while their siblings stay primary."""
-    rows = {r["key"]: r for r in detail_index(catlin_model)}
+    rows = {r["key"]: r for r in detail_index(catlin_model_ro)}
     # TR-CATLIN-EAVE is the live case since the 2026-09-08 star reduction: `star=False`
     # with two `starred_conditions` named. The house eave and the garage eave are two
     # different drawings; an interior partition dying into the roof deck is not an eave at
@@ -127,7 +127,7 @@ def test_per_condition_overrides_curate_the_permit_sheet_set(catlin_model):
     assert rows[interior]["star"] is False and rows[exterior]["star"] is True
     assert exterior in rows[exterior]["starred_conditions"]
 
-    derived = derive_detail_slices(catlin_model)
+    derived = derive_detail_slices(catlin_model_ro)
     starred = {d.key for d in derived if d.transition.stars(d.key)}
     assert exterior in starred and interior not in starred
     # Every eave condition carries the same pattern-wide star, yet only some are in the
@@ -136,19 +136,19 @@ def test_per_condition_overrides_curate_the_permit_sheet_set(catlin_model):
     assert not any(d.transition.star for d in eaves)
     assert 0 < len({d.key for d in eaves} & starred) < len(eaves)
     # The primary sheet set drops exactly the details ``stars()`` says are not primary.
-    det_all = [s for s in build_sheet_index(catlin_model, sets="full")
+    det_all = [s for s in catlin_sheet_index(sets="full")
                if _DETAIL_NUMBER.match(s.number)]
-    det_permit = [s for s in build_sheet_index(catlin_model, sets="permit")
+    det_permit = [s for s in catlin_sheet_index(sets="permit")
                   if _DETAIL_NUMBER.match(s.number)]
     assert len(det_all) - len(det_permit) == len(derived) - len(starred)
 
 
-def test_stale_override_keys_are_reported(catlin_model):
+def test_stale_override_keys_are_reported(catlin_model_ro):
     from typehaus.checks.code.mn_residential.profile import MN_2020
     from typehaus.checks.integrity.checks import condition_star_override
     from typehaus.checks.registry import CheckContext, Preferences
 
-    ctx = CheckContext(plan=catlin_model.plan, model=catlin_model,
+    ctx = CheckContext(plan=catlin_model_ro.plan, model=catlin_model_ro,
                        preferences=Preferences(), profile=MN_2020)
     assert condition_star_override(ctx) == []
     # A renamed assembly leaves an override addressing a key nothing derives any more —
