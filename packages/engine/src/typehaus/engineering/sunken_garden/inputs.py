@@ -95,6 +95,24 @@ class SunkenGardenDesignInput:
         return tuple(name for item, name in checks if item.value is None)
 
 
+#: The ordinary yard the court walls stand in, measured **up from the footing top**, feet.
+#:
+#: ** THIS WAS 5.0 UNTIL 2026-09-14 AND THE MODEL HAS NEVER SAID 5.0. ** The authored yard
+#: is -3'-4" and the footing top is -9'-1 7/16", so the ordinary fill against the stem is
+#: 5.7865 ft; the 40" terrace above it makes up the rest of the 9.1198 ft stem
+#: (5.7865 + 3.3333 = 9.1198 exactly). The old literal understated it by nine inches in the
+#: **unsafe** direction: height taken out of "ordinary" lands in the finite-strip surcharge
+#: instead, and the strip solution is gentler than direct at-rest pressure.
+#:
+#: It remains a literal only because this module must build a design input with no plan in
+#: hand — the report's standalone path and the load benchmarks in
+#: ``tests/test_sunken_garden_study.py``. **The model supersedes it**:
+#: ``model_inputs.design_input_from_model`` reads the yard from the site's own grade spots,
+#: and that is the path ``haus sunken-garden-study`` takes. If the two ever disagree,
+#: ``tests/test_sunken_garden_study.py`` says so and the model is right.
+CATLIN_ORDINARY_RETAINED_HEIGHT_FT = 5.786458333333333
+
+
 def default_design_input(*, stem_thickness_in: float = 12.0,
                          footing_width_ft: float = 7.0,
                          toe_ft: float = 3.0) -> SunkenGardenDesignInput:
@@ -108,7 +126,9 @@ def default_design_input(*, stem_thickness_in: float = 12.0,
             footing_width_ft=footing_width_ft, toe_ft=toe_ft,
         ),
         soil=SoilProfile(
-            ordinary_retained_height_ft=BasedValue(5.0, "owner profile; verify by survey"),
+            ordinary_retained_height_ft=BasedValue(
+                CATLIN_ORDINARY_RETAINED_HEIGHT_FT,
+                "authored yard grade less the footing top; superseded by the model"),
             unit_weight_pcf=BasedValue(120.0, "midpoint of 110-130 pcf screening band"),
             at_rest_efp_pcf=BasedValue(60.0, "IBC 2018 Table 1610.1 presumptive SM"),
             active_efp_pcf=BasedValue(45.0, "IBC 2018 Table 1610.1 presumptive SM"),

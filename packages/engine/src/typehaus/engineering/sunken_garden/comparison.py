@@ -152,12 +152,29 @@ def _cost_lines(design: SunkenGardenDesignInput, planting: PlantingProfile,
     )
 
 
+#: Why the two asymmetric cases are **not** in :func:`_cases`, said once so the next reader
+#: does not put them back. ``"one-side-only"`` and ``"staged-backfill"`` were listed here
+#: until 2026-09-14 and passed **no differentiating argument**: both called
+#: :func:`analyse_stability` exactly as ``"symmetric-service"`` did, so all three returned
+#: byte-identical results and ``max(...)`` printed whichever the tie landed on as
+#: "governing". A case that cannot differ is worse than a missing one — it reads as coverage.
+#:
+#: They cannot differ *here* because this free body is **one lineal foot of one wall**.
+#: Backfilling one leg before the other, or in unequal lifts, changes nothing about that
+#: foot: it changes how the legs share thrust through the cross-member and the corners,
+#: which is a question about the whole U. ``analytical/sunken_garden_coupled.py`` is where
+#: it is asked — it already runs with and without the veneer tie and with unequal east/west
+#: load — and ``engineering/retaining_system.py`` is where the closed loop is summed.
+ASYMMETRIC_CASES_ARE_SYSTEM_LEVEL = (
+    "one-side-only and staged-backfill are system cases, not per-foot ones: see "
+    "analytical/sunken_garden_coupled.py and engineering/retaining_system.py"
+)
+
+
 def _cases(design: SunkenGardenDesignInput,
            planting: PlantingProfile) -> tuple[StabilityResult, ...]:
     return (
         analyse_stability(design, planting, case="symmetric-service"),
-        analyse_stability(design, planting, case="one-side-only"),
-        analyse_stability(design, planting, case="staged-backfill"),
         analyse_stability(design, planting, case="construction-compaction",
                           compaction_surcharge_psf=250.0),
         analyse_stability(design, planting, case="blocked-drain-wet", wet=True),

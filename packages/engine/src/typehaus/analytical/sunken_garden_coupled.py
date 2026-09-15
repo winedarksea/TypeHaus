@@ -34,6 +34,11 @@ PSF_TO_PA = 47.88025898033584
 PCI_TO_N_M3 = 27144790.0
 CONCRETE_E_PA = 30.0e9
 
+#: Midpoint strips per plate when averaging the earth-pressure profile over its height.
+#: 32 resolves the ordinary-yard knee and the strip-surcharge curvature to well under a
+#: percent on any mesh this model is run at, and the cost is one arithmetic loop per plate.
+_PRESSURE_SUBDIVISIONS = 32
+
 
 @dataclass(frozen=True)
 class CoupledAnalysisResult:
@@ -78,7 +83,7 @@ class _Mesh:
                     e_pa=CONCRETE_E_PA, poisson=0.2,
                     basis="monolithic formed wall; cracked stiffness sensitivity required",
                 ))
-                pressure(plate_id, (z0 + z1) / 2.0, pressure_multiplier)
+                pressure(plate_id, z0, z1, pressure_multiplier)
 
     def footing(self, *, tag: str, x0_ft: float, x1_ft: float, y0_ft: float, y1_ft: float,
                 depth_ft: float, mesh_ft: float) -> None:
@@ -124,11 +129,36 @@ def build_coupled_model(design: SunkenGardenDesignInput, planting: PlantingProfi
     mesh = _Mesh()
     pressures: list[PlatePressure] = []
 
-    def add_pressure(plate_id: str, z_ft: float, multiplier: float) -> None:
-        value = pressure_at_height_psf(design, planting, z_ft)
+    def add_pressure(plate_id: str, z0_ft: float, z1_ft: float, multiplier: float) -> None:
+        """The plate's **band average**, not a midpoint sample.
+
+        A shell element carries one uniform pressure, so the only question is which single
+        number it gets. Sampling the profile at the plate's centre was exact for a linear
+        profile and wrong for this one: the earth pressure has a knee where the ordinary
+        yard line meets the stem, and the finite-strip surcharge is curved everywhere. Where
+        that knee lands inside a coarse element, a midpoint sample can miss the element's
+        true mean badly — which is why the 4-ft and 2-ft meshes drifted 22% apart the moment
+        the ordinary retained height moved to the model's 5.7865 ft.
+
+        Averaging over the band fixes the mesh-convergence claim at its cause rather than by
+        widening the tolerance, and it conserves total thrust for any profile this
+        subdivision resolves.
+        """
+        low, high = sorted((z0_ft, z1_ft))
+        span = high - low
+        if span <= 0.0:
+            value = pressure_at_height_psf(design, planting, low)
+        else:
+            steps = _PRESSURE_SUBDIVISIONS
+            step = span / steps
+            value = sum(
+                pressure_at_height_psf(design, planting, low + (index + 0.5) * step)
+                for index in range(steps)
+            ) / steps
         pressures.append(PlatePressure(LoadCaseKind.EARTH, plate_id,
                                        multiplier * value * PSF_TO_PA,
-                                       "actual profile plus FHWA finite-strip surcharge"))
+                                       "band-averaged actual profile plus FHWA finite-strip "
+                                       "surcharge"))
 
     width = design.geometry.clear_width_ft + design.geometry.stem_thickness_in / 12.0
     north, middle, south = -8.0, 0.0, design.geometry.retained_side_length_ft

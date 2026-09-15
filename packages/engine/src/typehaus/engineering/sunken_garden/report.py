@@ -9,12 +9,17 @@ from pathlib import Path
 
 from typehaus.engineering.sunken_garden.comparison import (
     COURTYARD_LAYOUTS,
+    REFERENCE_LAYOUT,
     CostRange,
     LayoutResult,
     compare_layouts,
     sizing_study,
 )
-from typehaus.engineering.sunken_garden.inputs import default_design_input
+from typehaus.engineering.sunken_garden.inputs import (
+    PlantingProfile,
+    SunkenGardenDesignInput,
+    default_design_input,
+)
 from typehaus.engineering.sunken_garden.veneer_beam import check_veneer_beam
 
 BASIS_VERSION = "sunken-garden-study-1.0"
@@ -34,6 +39,44 @@ def _saving_or_premium(value: CostRange) -> str:
 def _fingerprint(payload: object) -> str:
     encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str).encode()
     return hashlib.sha256(BASIS_VERSION.encode() + b":" + encoded).hexdigest()[:16]
+
+
+def _basis_lines(design: SunkenGardenDesignInput,
+                 fell_back: tuple[str, ...]) -> list[str]:
+    """What this run was driven from — the half the study used to leave unsaid.
+
+    Until 2026-09-14 this report was written from literals that disagreed with the authored
+    house (ordinary retained height 5.0 ft against the model's 5.7865 ft), and nothing in
+    the output said so. Every derived value now names its basis, and anything that stayed a
+    literal is listed as a gap rather than passing as a measurement.
+    """
+    geometry = design.geometry
+    height = design.soil.ordinary_retained_height_ft
+    lines = [
+        "## Basis of this run", "",
+        "| Input | Value | Basis |", "|---|---:|---|",
+        f"| court clear width | {geometry.clear_width_ft:.2f} ft | resolved wall axes |",
+        f"| retained leg length | {geometry.retained_side_length_ft:.2f} ft | "
+        "resolved wall axes |",
+        f"| concrete stem height | {geometry.concrete_stem_height_ft:.4f} ft | "
+        "authored top/bottom elevations |",
+        f"| stem thickness | {geometry.stem_thickness_in:.1f} in | assembly STRUCTURE layer |",
+        f"| footing | {geometry.footing_width_ft:.2f} ft wide x "
+        f"{geometry.footing_depth_ft:.2f} ft, toe {geometry.toe_ft:.2f} ft | authored Footing |",
+        f"| ordinary retained height | {height.value:.4f} ft | {height.basis} |",
+        "",
+    ]
+    if fell_back:
+        lines.extend(["**Not derived from the model — literal screening values:**", ""])
+        lines.extend(f"- {item}" for item in fell_back)
+        lines.append("")
+    else:
+        lines.extend([
+            "Every geometric input above was read from the resolved model. Soil strength, "
+            "stiffness, groundwater and the balcony reactions are **not** in the model and "
+            "remain unresolved below; nothing here invents them.", "",
+        ])
+    return lines
 
 
 def _layout_table(results: tuple[LayoutResult, ...]) -> list[str]:
@@ -82,13 +125,97 @@ def _cost_detail(result: LayoutResult) -> list[str]:
     return lines + [""]
 
 
-def _sizing_lines() -> list[str]:
+def _smallest(layout: PlantingProfile, design: SunkenGardenDesignInput):
+    """The lightest section in the bounded sweep that clears screening for ``layout``.
+
+    Falls back to the least-overstressed candidate when none passes, so the caller can say
+    "nothing in the set works" rather than raising.
+    """
+    candidates = sizing_study(layout, design)
+    passing = [item for item in candidates if item.passes_screening]
+    return min(passing or candidates,
+               key=lambda item: (item.governing_ratio, item.concrete_cy)), bool(passing)
+
+
+def _terrace_verdict(design: SunkenGardenDesignInput) -> list[str]:
+    """**Decision 1, answered on evidence rather than on preference.**
+
+    The owner's standing position is that the raised terrace stays *unless removing it buys
+    a materially smaller section* — footings above all. That question was already being
+    answered by the sweep, but from a court 9" shorter than the authored one; at the
+    corrected ordinary retained height it is worth re-reading, because the terrace's
+    contribution is exactly the height the old literal had mislaid.
+
+    Both sides are run through the same bounded sweep, so the comparison is like for like:
+    ``REFERENCE_LAYOUT`` is the terrace as authored (40" against the wall) and
+    ``yard-grade`` is the same court with the terrace removed.
+    """
+    yard = next(item for item in COURTYARD_LAYOUTS if item.layout == "yard-grade")
+    with_terrace, terrace_passes = _smallest(REFERENCE_LAYOUT, design)
+    without, without_passes = _smallest(yard, design)
+    concrete_delta = with_terrace.concrete_cy - without.concrete_cy
+    same_section = (with_terrace.stem_in == without.stem_in
+                    and abs(with_terrace.footing_width_ft - without.footing_width_ft) < 1e-9
+                    and abs(with_terrace.toe_ft - without.toe_ft) < 1e-9)
+    lines = [
+        "## Does removing the terrace buy a smaller section?", "",
+        "| Court | Stem | Footing | Toe / heel | Concrete | Governing |",
+        "|---|---:|---:|---:|---:|---|",
+    ]
+    for name, item, passes in (("as authored (40-inch terrace)", with_terrace, terrace_passes),
+                               ("terrace removed (yard-grade)", without, without_passes)):
+        note = "" if passes else " — **no candidate in the set passes**"
+        lines.append(
+            f"| {name} | {item.stem_in:.0f} in | {item.footing_width_ft:.1f} ft | "
+            f"{item.toe_ft:.1f} / {item.heel_ft:.1f} ft | {item.concrete_cy:.1f} cy | "
+            f"{item.governing_case} ({item.governing_ratio:.2f}){note} |")
+    lines.append("")
+    both_fail = not terrace_passes and not without_passes
+    shown = ("least-overstressed candidate" if both_fail else "lightest passing candidate")
+    if same_section:
+        lines.extend([
+            f"**No. The section does not move.** The {shown} is the same stem, the same "
+            "footing width and the same toe on both sides of the comparison, and the "
+            f"concrete differs by {abs(concrete_delta):.2f} cy — which is the court's own "
+            "geometry, not a structural saving. The terrace is deferred construction "
+            "carrying no cash cost today, so on this evidence **it stays**.", "",
+            "That is a statement about the *bounded sweep*, not a proof that no smaller wall "
+            "exists: 10- and 12-inch stems and 4- to 7-foot footings are the whole search. "
+            "It does say that the terrace is not what is sizing this wall.", "",
+        ])
+    else:
+        lines.extend([
+            f"**Yes — removing the terrace moves the section**, from a "
+            f"{with_terrace.stem_in:.0f}-inch stem on a "
+            f"{with_terrace.footing_width_ft:.1f}-foot footing to "
+            f"{without.stem_in:.0f} inches on {without.footing_width_ft:.1f} feet, a "
+            f"concrete difference of {concrete_delta:.2f} cy. Decision 1's condition is met "
+            "and the terrace should be re-opened on its merits.", "",
+        ])
+    if both_fail:
+        lines.extend([
+            "**Read the ratios before reading the verdict.** *Nothing in the bounded sweep "
+            f"clears screening on either side* — {with_terrace.governing_case} governs both, "
+            f"at {with_terrace.governing_ratio:.2f} with the terrace and "
+            f"{without.governing_ratio:.2f} without it. Removing the terrace therefore buys "
+            "a real reduction in **demand** while buying no reduction in **section**, "
+            "because the section is being set by something else: the blocked-drain wet case "
+            "is a five-foot hydrostatic head on a buoyant free body, and no 12-inch stem on "
+            "a 7-foot footing survives it. What that case actually asks for is a retained-face "
+            "drain that is modelled and verified, not a bigger wall. Until the drainage "
+            "network can be walked to an outfall, this table is a statement about the wet "
+            "envelope and not a sizing recommendation.", "",
+        ])
+    return lines
+
+
+def _sizing_lines(design: SunkenGardenDesignInput) -> list[str]:
     lines = [
         "| Layout | Stem | Footing | Toe / heel | Concrete | Governing | Status |",
         "|---|---:|---:|---:|---:|---|---|",
     ]
     for layout in COURTYARD_LAYOUTS:
-        candidates = sizing_study(layout)
+        candidates = sizing_study(layout, design)
         passing = [item for item in candidates if item.passes_screening]
         shown = min(passing or candidates,
                     key=lambda item: (item.governing_ratio, item.concrete_cy))
@@ -183,9 +310,17 @@ def _svg(layout: str, raised_in: float, width_in: float, setback_in: float) -> s
     ))
 
 
-def write_study(output_dir: Path) -> Path:
+def write_study(output_dir: Path, design: SunkenGardenDesignInput | None = None,
+                fell_back: tuple[str, ...] = ()) -> Path:
+    """``design`` is normally :func:`model_inputs.design_input_from_model`'s answer.
+
+    ``None`` keeps the standalone literal basis, which is a *screening* basis and is
+    labelled as one in the report. ``fell_back`` names every value that could not be derived
+    from the model and kept its literal — printed, because a study that silently agrees with
+    itself is the failure this whole path was rebuilt to stop.
+    """
     output_dir.mkdir(parents=True, exist_ok=True)
-    design = default_design_input()
+    design = design or default_design_input()
     results = compare_layouts(design)
     beam = check_veneer_beam()
     for layout in COURTYARD_LAYOUTS:
@@ -201,6 +336,7 @@ def write_study(output_dir: Path) -> Path:
         f"Engineering fingerprint: `{_fingerprint(asdict(design))}`", "",
         "The existing plan remains the default. All proposed layouts are comparison variants; "
         "none is selected for construction by this report.", "",
+        *_basis_lines(design, fell_back),
         "## Common-structure comparison", "", *_layout_table(results), "",
         "Costs are planning ranges. Concrete stays rebar-inclusive and no separate steel cost "
         "is added. Shared mobilization and the existing whole-site excavation allowance are "
@@ -210,7 +346,8 @@ def write_study(output_dir: Path) -> Path:
     for result in results:
         lines.extend(_cost_detail(result))
     lines.extend([
-        "## Conditional structural optimization", "", *_sizing_lines(), "",
+        *_terrace_verdict(design),
+        "## Conditional structural optimization", "", *_sizing_lines(design), "",
         "The bounded sweep covers 10- and 12-inch stems, 4- through 7-foot footings in "
         "6-inch steps, and 6-inch toe allocations with at least 12 inches at toe and heel. "
         "A screening pass is not a construction size: development, local balcony zones, soil "

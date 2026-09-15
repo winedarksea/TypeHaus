@@ -42,13 +42,30 @@ def test_fhwa_finite_strip_benchmark() -> None:
 
 
 def test_partial_height_soil_is_less_than_frozen_full_height_comparison() -> None:
+    """Hand pass at the model's OWN ordinary retained height, 5.786458 ft.
+
+    ** THE OLD EXPECTATIONS (750 plf / 1250 ft-lb) WERE THE 5.0 ft LITERAL. ** They were
+    arithmetically right and described a wall the house does not build; see
+    ``inputs.CATLIN_ORDINARY_RETAINED_HEIGHT_FT``. Re-derived independently at H = 5.786458:
+
+    * thrust  = efp H^2 / 2 = 60 x 5.786458^2 / 2 = **1,004.49 plf**
+    * moment  = efp H^3 / 6 = 60 x 5.786458^3 / 6 = **1,937.44 ft-lb/ft**
+
+    Both terms scale as a power of the height, which is why nine inches moved the thrust by
+    a third: the literal was not a rounding, it was a different wall.
+    """
     design = default_design_input()
     layout = PlantingProfile("yard-grade", 0.0, 0.0, 0.0)
+    height = design.soil.ordinary_retained_height_ft.value
+    assert height == pytest.approx(5.786458333, abs=1e-6)
     partial = integrate_pressure(design, layout)
     historical = integrate_pressure(design, layout, full_height_comparison=True)
-    assert partial.thrust_plf == pytest.approx(750.0, rel=2e-3)
-    assert partial.moment_at_footing_top_ftlb_per_ft == pytest.approx(1250.0, rel=2e-3)
-    assert historical.thrust_plf > partial.thrust_plf * 3.0
+    assert partial.thrust_plf == pytest.approx(60.0 * height ** 2 / 2.0, rel=2e-3)
+    assert partial.thrust_plf == pytest.approx(1004.49, rel=2e-3)
+    assert partial.moment_at_footing_top_ftlb_per_ft == pytest.approx(
+        60.0 * height ** 3 / 6.0, rel=2e-3)
+    assert partial.moment_at_footing_top_ftlb_per_ft == pytest.approx(1937.44, rel=2e-3)
+    assert historical.thrust_plf > partial.thrust_plf * 2.0
 
 
 def test_blocked_drain_adds_the_independent_five_foot_water_triangle() -> None:
@@ -130,13 +147,37 @@ def test_coupled_model_refuses_missing_site_and_column_inputs() -> None:
 
 
 def test_coupled_plate_model_equilibrates_and_converges() -> None:
+    """Convergence asserted where it exists, and the coarse mesh labelled for what it is.
+
+    ** THIS USED TO COMPARE 4 ft AGAINST 2 ft AT rel=0.15, AND IT PASSED BY LUCK. ** The
+    load was a triangle whose apex sat at the old 5.0 ft literal; at the model's own 5.7865
+    the same two meshes are 22% apart and the assertion failed — not because anything
+    regressed, but because a 3-by-5 element wall was never converged and the old load shape
+    happened to hide it. (Band-averaging the plate pressure, added in the same pass, moved
+    it by a fifth of a percent: the discretisation is the shell, not the load lumping.)
+
+    Measured sweep, max translation in inches:
+    4.0 -> 0.009627, 3.0 -> 0.008739, 2.0 -> 0.007898, 1.5 -> 0.007622, 1.0 -> 0.007806.
+
+    So the honest claims are the two asserted here: **2 ft is converged** (within 5% of a
+    1 ft mesh), and 4 ft is a screening mesh that runs high — bounded, but not a result to
+    quote. Equilibrium holds to machine precision at every mesh, which is the separate and
+    stronger statement.
+    """
     design = _solvable_design()
     coarse = analyse_coupled(design, COURTYARD_LAYOUTS[0], mesh_ft=4.0)
     fine = analyse_coupled(design, COURTYARD_LAYOUTS[0], mesh_ft=2.0)
+    finest = analyse_coupled(design, COURTYARD_LAYOUTS[0], mesh_ft=1.0)
     assert coarse.successful, coarse.unresolved
     assert fine.successful, fine.unresolved
-    assert fine.equilibrium_error is not None and fine.equilibrium_error < 0.01
-    assert coarse.maximum_translation_in == pytest.approx(fine.maximum_translation_in, rel=0.15)
+    assert finest.successful, finest.unresolved
+    for result in (coarse, fine, finest):
+        assert result.equilibrium_error is not None and result.equilibrium_error < 0.01
+    assert fine.maximum_translation_in == pytest.approx(
+        finest.maximum_translation_in, rel=0.05)
+    assert coarse.maximum_translation_in > fine.maximum_translation_in
+    assert coarse.maximum_translation_in == pytest.approx(
+        fine.maximum_translation_in, rel=0.25)
     assert fine.model is not None
     assert {plate.tag for plate in fine.model.plates} >= {
         "W-SG-W1", "W-SG-W2", "W-SG-E1", "W-SG-E2", "W-SG-S",
@@ -164,3 +205,93 @@ def test_sizing_sweep_is_bounded_and_never_claims_development() -> None:
     assert max(item.footing_width_ft for item in candidates) == 7.0
     assert all(item.toe_ft >= 1.0 and item.heel_ft >= 1.0 for item in candidates)
     assert not any(item.development_resolved for item in candidates)
+
+
+def _catlin_context():
+    from typehaus.engineering.registry import EngineeringContext
+    from typehaus.resolve import resolve
+
+    catlin = Path(__file__).resolve().parents[3] / "houses" / "catlin"
+    result = load_plan(catlin)
+    assert result.plan is not None, [f.message for f in result.findings]
+    model, _ = resolve(result.plan)
+    return EngineeringContext(plan=result.plan, model=model)
+
+
+def test_the_study_reads_the_authored_court_and_not_a_literal() -> None:
+    """**The lint that stops the two bodies of code drifting apart again.**
+
+    Until 2026-09-14 the study package hard-coded its court and nothing compared that court
+    with the one the house authors. It did not match: the ordinary retained height was 5.0 ft
+    against the model's 5.7865, so every case in the report — including the terrace decision
+    it exists to answer — ran on a wall nine inches short.
+
+    Each expectation below is the authored model measured independently: the stem is
+    ``W-SG-S``'s own top-to-bottom dimension, the footing is ``FT-SG-S``, the clear width is
+    the E/W wall axes 20 ft apart less one 12-inch stem, and the ordinary height is the
+    authored -3'-4" south yard above the -9'-1 7/16" footing top.
+    """
+    from typehaus.engineering.sunken_garden.model_inputs import design_input_from_model
+
+    design, fell_back = design_input_from_model(_catlin_context())
+    assert fell_back == (), fell_back
+    geometry = design.geometry
+    assert geometry.concrete_stem_height_ft == pytest.approx(9.119791666, abs=1e-6)
+    assert geometry.stem_thickness_in == pytest.approx(12.0, abs=1e-6)
+    assert geometry.footing_width_ft == pytest.approx(7.0, abs=1e-6)
+    assert geometry.footing_depth_ft == pytest.approx(1.0, abs=1e-6)
+    assert geometry.toe_ft == pytest.approx(3.0, abs=1e-6)
+    assert geometry.heel_ft == pytest.approx(3.0, abs=1e-6)
+    assert geometry.clear_width_ft == pytest.approx(19.0, abs=1e-6)
+    assert geometry.retained_side_length_ft == pytest.approx(16.0 + 4.0 / 12.0, abs=1e-6)
+    height = design.soil.ordinary_retained_height_ft
+    assert height.value == pytest.approx(5.786458333, abs=1e-6)
+    assert height.measured is True
+    # The two halves of the stem, and they have to add up: ordinary yard plus the 40-inch
+    # terrace IS the full wall. 5.7865 + 3.3333 = 9.1198 exactly.
+    assert height.value + 40.0 / 12.0 == pytest.approx(
+        geometry.concrete_stem_height_ft, abs=1e-6)
+
+
+def test_the_literal_basis_agrees_with_the_model_it_stands_in_for() -> None:
+    """``default_design_input()`` is the no-plan fallback; a fallback that lies is worse.
+
+    It is allowed to exist — the load benchmarks above and the report's standalone path both
+    need a design input with no house in hand — but it is not allowed to describe a
+    different building. This is the assertion that was missing when it did.
+    """
+    from typehaus.engineering.sunken_garden.model_inputs import design_input_from_model
+
+    literal = default_design_input()
+    derived, _ = design_input_from_model(_catlin_context())
+    for field in ("clear_width_ft", "retained_side_length_ft", "footing_depth_ft",
+                  "stem_thickness_in", "footing_width_ft", "toe_ft"):
+        assert getattr(literal.geometry, field) == pytest.approx(
+            getattr(derived.geometry, field), abs=1e-3), field
+    assert literal.geometry.concrete_stem_height_ft == pytest.approx(
+        derived.geometry.concrete_stem_height_ft, abs=1e-3)
+    assert literal.soil.ordinary_retained_height_ft.value == pytest.approx(
+        derived.soil.ordinary_retained_height_ft.value, abs=1e-6)
+
+
+def test_no_stability_case_is_a_silent_duplicate_of_another() -> None:
+    """**R3.** ``one-side-only`` and ``staged-backfill`` were byte-identical to
+    ``symmetric-service`` and ``max(...)`` could print any of the three as governing.
+
+    They are gone — they are system cases, not per-foot ones — and this is the rule that
+    keeps a new inert case from taking their place: every case in the sweep must differ from
+    every other in the numbers a reader would act on.
+    """
+    from typehaus.engineering.sunken_garden.comparison import _cases
+
+    design = default_design_input()
+    cases = _cases(design, COURTYARD_LAYOUTS[0])
+    assert len(cases) >= 3
+    assert len({case.case for case in cases}) == len(cases)
+    fingerprints = {
+        case.case: (round(case.pressure.thrust_plf, 6),
+                    round(case.pressure.moment_at_footing_top_ftlb_per_ft, 6),
+                    round(case.vertical_weight_plf, 6))
+        for case in cases
+    }
+    assert len(set(fingerprints.values())) == len(cases), fingerprints
