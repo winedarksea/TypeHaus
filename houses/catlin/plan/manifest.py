@@ -110,6 +110,26 @@ assert abs(_site.grade.meters - sunken_garden.SPEC.site_grade_in * 0.0254) < 1e-
     f"plan/site.py grade {_site.grade.meters}m disagrees with "
     f"params/sunken_garden.py SPEC.site_grade_in {sunken_garden.SPEC.site_grade_in}in")
 
+# ``LOCAL_YARD_GRADE_IN`` is the SOUTH YARD, and it is a fourth transcription of a plane —
+# the one the sunken-garden retaining walls actually stand in, which is **not** the -2'-10"
+# global bench above. It is a hard literal in ``params/sunken_garden.py``
+# (``-RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN``) bound to ``plan/site.py``'s spot elevations
+# by nothing but ``test_retaining_court``, while its two siblings above are asserted here.
+#
+# ** IT NOW CARRIES REAL ENGINEERING. ** Since 2026-09-14 the courtyard study derives its
+# ordinary retained height from these same spot elevations
+# (``engineering/sunken_garden/model_inputs.py``), so a spot that moves without this
+# constant moving makes the study and the params file describe two different yards — which
+# is precisely the split that pass was written to close. Asserted at load, beside the
+# others, so it is loud rather than a test somebody runs.
+_yard_spots = [spot.elevation.meters for spot in _site.spot_elevations
+               if spot.kind == "grade"]
+assert _yard_spots, "plan/site.py authors no grade spot elevations"
+assert abs(min(_yard_spots) - sunken_garden.LOCAL_YARD_GRADE_IN * 0.0254) < 1e-9, (
+    f"plan/site.py's lowest grade spot {min(_yard_spots)}m disagrees with "
+    f"params/sunken_garden.py LOCAL_YARD_GRADE_IN "
+    f"{sunken_garden.LOCAL_YARD_GRADE_IN}in")
+
 # --- The structures on this site ---------------------------------------------------------
 #
 # A STOREY IS A DATUM PLANE; THE CONTAINER IS THE BUILDING. Revit's Level, IFC's

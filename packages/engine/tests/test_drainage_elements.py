@@ -129,9 +129,14 @@ def test_the_garden_drywell_sits_below_the_bearing_bed_it_is_not_part_of(catlin_
     daylight to.
 
     ``min`` over the beds is what pins the well: the two porch piers' bells are augered
-    to frost depth and take a 7" levelling course instead, so their beds stop 2'-9" above
-    this plane. They still drain here, which is the other half of the
-    assertion below — every FT-SG-* bed discharges to DRW-SG-MAIN, deep section or not."""
+    to frost depth and take a 7" levelling course instead, so their beds (``FB-SG-COL`` /
+    ``FB-SG-FCOL``, z0 -158 7/16") stop **5"** above this plane, not the 2'-9" this
+    docstring claimed until 2026-09-14. They still drain here, which is the other half of
+    the assertion below — every FT-SG-* bed discharges to DRW-SG-MAIN, deep section or not.
+
+    Five inches is the real margin and it is worth reading as one: the pier beds and the
+    soakaway very nearly swap places, and ``_SG_DRYWELL_TOP = _SG_WALL_BED_BOTTOM`` is what
+    holds them apart. See ``params/sunken_garden.py`` around ``_SG_DRYWELL_TOP``."""
     well = next(s for s in catlin_model.solids if s.tag == "DRW-SG-MAIN")
     assert well.category == "drywell"
     beds = [b for b in catlin_model.footing_beddings if b.host.startswith("FT-SG-")]
@@ -173,10 +178,16 @@ def test_the_garden_field_has_a_real_underdrain_and_not_a_prose_one(catlin_model
     xs = {round(point.x._m, 6) for point in plan_drain.path}
     assert len(xs) == 1, "one straight lateral on the centreline"
 
-    # ** `sock=False` — the only tile in this house that carries it. ** USGA: "any piping
+    # ** `sock=False`, which in this house means the two FrenchDrains in the sand profile —
+    # this field lateral and `FD-SG-OVERFLOW`. ** (This comment said "the only tile in this
+    # house" until 2026-09-14; the overflow has always carried it too.) USGA: "any piping
     # encased in geotextile sleeves are not recommended"; a sock in a sand profile clogs
     # with fines and seals the line. Every bearing bed in clay keeps its sock.
     assert plan_drain.tile is not None and plan_drain.tile.sock is False
+    sockless = {drain.tag for drain in catlin_model.plan.all_elements()
+                if getattr(drain, "element_kind", None) == "FrenchDrain"
+                and getattr(drain, "tile", None) is not None and drain.tile.sock is False}
+    assert sockless == {"FD-SG-FIELD", "FD-SG-OVERFLOW"}, sockless
     beds = [b for b in catlin_model.footing_beddings if b.drain_tile_spec is not None]
     assert beds and all(b.drain_tile_spec.sock for b in beds)
 

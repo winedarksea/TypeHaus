@@ -199,7 +199,7 @@ class SunkenGardenSpec:
     # one at ``base_elevation=inch(-102.1875)`` and carries the door at
     # ``sill_height=inch(0)``.
     #
-    # The retained height on W-SG-E2/S/W2 is 9.29', far past the 48" that sends R404.1.1 to
+    # The retained height on W-SG-E2/S/W2 is 9.1198', far past the 48" that sends R404.1.1 to
     # an engineered design, so those three walls stay engineered — PASS with a d/c, not
     # UNKNOWN, since ``engineering/retaining.py`` started grading them.
     basement_depth_ft: float = 109.4375 / 12.0
@@ -926,9 +926,14 @@ WALLS = [
     # question ASCE 32 soil replacement closes. FB-SG-ARCH below carries the same 42"
     # undercut, the same NFS claim and the same tile to DRW-SG-MAIN.
     #
-    # **The underside is flush with the retaining footings' at -10'-10 7/16"**, which is one
-    # excavation level and one stone plane rather than two, and lets the strut engage those
-    # footings directly instead of hanging above them. Its TOP is the rim slab's underside,
+    # **The underside sits at -10'-10 7/16", 9" PROUD BELOW the retaining footings'** — their
+    # underside is -10'-1 7/16" (`_wall_bottom` less the 12" strip). This paragraph read
+    # "flush with the retaining footings'" until 2026-09-14, and it had been stale since
+    # `_grade_beam_bottom` was decoupled from `_wall_bottom` on 2026-09-05: see that
+    # constant, which states the 9" and says `test_retaining_court` asserts it. Flush is the
+    # thing that was given up to keep the section at 12" x 17 1/2", and a comment claiming
+    # the giveaway never happened is exactly the sentence a later reader "restores".
+    # Its TOP is the rim slab's underside,
     # so the court floor bears on it and nothing of it shows. See `_grade_beam_top` for why
     # the top does not move: at 10 1/4" the strut is d/c 0.81 and PASSES since the flush
     # tops, so what holds the section is sequencing and margin, not the strength ratio.
@@ -1006,25 +1011,30 @@ WALLS = [
     # `structural.foundation_unbalanced_fill` measures from the single global `Site.grade`
     # (-2'-10") down to the footing and reports the fill below that plane — wrong here,
     # because `params/raised_garden.py` builds an SRW apron whose `TOP =
-    # ft(RETAINING_WALL_TOP_FT)` — level with these walls' own tops at +0'-2", which is 36"
-    # over the yard — standing 3'-0" out from their outer faces and
+    # ft(RETAINING_WALL_TOP_FT)` — level with these walls' own tops at **0'-0"**, the porch
+    # datum, which is **40"** over the authored yard at -3'-4" — standing 3'-0" out from
+    # their outer faces and
     # holding a terrace of soil at that level *against them*. Grade is a plane, and a plane
     # cannot describe a terrace sitting 3'-0" above it. The real retained height is the
-    # wall's full top-to-footing dimension, **9.29'** — 10.37' until 2026-09-05, when these
+    # wall's full top-to-footing dimension, **9.1198'** — 10.37' until 2026-09-05, when these
     # three footings rose 9" to become the court's walking surface (9.62') and the run was
-    # then capped at 36" above grade, taking 4" off the top.
+    # then capped at 40" above the authored yard, taking the top to 0'-0".
     #
     # It is deliberately written as the same arithmetic `_wall_bottom` and `_ret_top` are
     # built from rather than as a literal, so it moves with either — and both ends HAVE
     # moved: the bottom rose 9" when the footings became the court floor, and the top fell
-    # 4" when the run was capped at 36" out of the yard. Stem 10.37' -> 9.62' -> 9.29';
-    # engineered retained height H 11.37' -> 10.62' -> 10.29'. There is no separate
+    # when the run was capped out of the yard. Stem 10.37' -> 9.62' -> **9.1198'**;
+    # engineered retained height H 11.37' -> 10.62' -> **10.1198'**. (9.29'/10.29' stood in
+    # these lines until 2026-09-14 and had never been the resolved value; the live pair is
+    # `_ret_top - _wall_bottom` and that plus the 12" strip. Do not quote either from
+    # memory — `haus engineering houses/catlin --item retaining_wall/W-SG-E2` prints them.)
+    # There is no separate
     # "terrace top" number and there must not be: `SPEC.retaining_top_ft` IS the terrace top,
     # because `raised_garden.py` reads that very constant to place its own apron. A second
     # copy would be exactly the divergence the "publish, do not re-derive" note further down
     # this file exists to prevent.
     #
-    # Both 7.0' and 9.62' are far past the 48" at which R404.1.1 sends a wall to an
+    # Both 7.0' and 9.1198' are far past the 48" at which R404.1.1 sends a wall to an
     # engineered design, so the correction cannot flip the verdict — all three stay UNKNOWN,
     # engineered — but it changes what the engineer is asked to design for by nearly half
     # again, which is the whole point. `notes/sunken_garden_retaining_screening.md` works
@@ -1458,7 +1468,7 @@ _RETAINING_FOOTING_MAT = ReinforcementSpec(
         BarSpec(role="bottom-x", bar=5, spacing=inch(12.0),
                 note="transverse, resists the 3'-0\" toe cantilever; hook the toe end"),
         BarSpec(role="top-x", bar=5, spacing=inch(12.0),
-                note="transverse, resists the 3'-0\" heel carrying 9.29' of soil"),
+                note="transverse, resists the 3'-0\" heel carrying 9.12' of soil"),
         BarSpec(role="bottom-y", bar=4, spacing=inch(18.0),
                 note="longitudinal distribution steel; carries no graded limit state"),
     ),
@@ -3586,7 +3596,8 @@ THERMAL_BREAK_PSI = 40.0
 #
 # One size (#5 GFRP, 0.625"), one spacing (8" o.c., the coarser of the two that existed —
 # no new number is invented here), and the COUNT derived from the board it holds. The
-# footing block is 96" wide and takes 12 bars on an 88" row, 4" clear of each end; the stem
+# footing block is 84" wide and takes 10 bars on a 76" row, 4" clear of each end — see
+# `_break_bar_count`, whose docstring works the 84" tie out bar by bar; the stem
 # block is 12" and takes the minimum 2 on an 8" row. **Three bars over eight feet was the
 # old footing figure**, which held the middle of the board and left 44" of it either side
 # free to float and rack against the head of a 12" pour — with no check anywhere that would
@@ -3664,13 +3675,14 @@ DOWELS = [
           connects=(f"FT-SG-{name}", house_footing),
           foam_thickness=inch(THERMAL_BREAK_IN),
           foam_height=inch(_HOUSE_FOOTING_DEPTH_IN),
-          # ** THE JOINT IS AS WIDE AS THE FOOTING, AND THE FOOTING WENT 84" -> 96" ON
-          # 2026-09-10. ** This read `SPEC.footing_width_in`, which is the retired porch
-          # width; it is `_RETAINING_FOOTING_WIDTH_IN` now, the one width all five court
-          # strips share. Left at 84" the board would have covered 84" of a 96" joint and
-          # left a foot of footing-to-footing concrete running straight from a heated
-          # basement strip into a wall standing in an open court — the same defect this
-          # authored length was introduced to fix, re-opened by widening the footing.
+          # ** THE JOINT IS AS WIDE AS THE FOOTING, WHATEVER THE FOOTING IS. ** This read a
+          # separate literal once, and a board narrower than the joint leaves bare
+          # footing-to-footing concrete running straight from a heated basement strip into a
+          # wall standing in an open court — the defect this authored length exists to fix,
+          # and one that reopens silently every time the footing width moves. Written as
+          # `_RETAINING_FOOTING_WIDTH_IN` so it cannot. (The 84" -> 96" widening this
+          # paragraph used to narrate was reverted; the strips are 84" and
+          # `SPEC.footing_width_in` is the one place that says so.)
           # Nothing grades a thermal break for continuity.
           foam_length=inch(_RETAINING_FOOTING_WIDTH_IN), foam_psi=THERMAL_BREAK_PSI)
     for i, (name, x, house_footing, court) in enumerate(_DOWEL_AT, start=1)

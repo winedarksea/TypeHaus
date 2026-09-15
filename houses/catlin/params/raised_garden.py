@@ -56,6 +56,26 @@ Section, at a side leg, west (yard) to east (sunken garden):
     -4'-0"   +----+          |    |   <- apron base, 8" buried, levelling pad below it
         (yard)                     |
 
+**NOBODY WALKS ON THIS. IT IS THE GARDEN (owner decision, 2026-09-14).** The terrace is a
+**planting bed**, not a surface — the raised garden IS the garden, and the 3'-4" of soil it
+holds is what is planted, not something stood on. Recorded here because the question keeps
+being re-raised from the section above: a 3'-4" terrace whose far edge is the top of a
+9-foot cut *looks* like a walking surface owed a guard at the court edge, and it is not one.
+
+Two consequences, and they are the reason this is written down rather than left to be
+re-derived:
+
+* **No guard is owed at the court edge, so keeping the terrace carries no guard cost.**
+  That is the whole of the guard argument in the 2026-09-14 outside review, settled.
+* **It is verified, not asserted.** The terrace is authored as a walking surface nowhere —
+  no Room, no Slab, no Deck, no Stair lands on it. The one walked thing on any court wall
+  top is ``ST-SG-PORCH`` arriving onto ``W-SG-E1``, which
+  ``checks/code/mn_residential/stair_guards.py`` already grades under R311.7.1 (12" of that
+  wall top is decked flush with the porch plank; see ``_WALL_TOP_ARRIVAL_TOL_M``).
+
+If a path, a step or a seat is ever authored onto this terrace, **this paragraph stops being
+true** and the guard question is live again. Change it in the same edit.
+
 Plan — a U whose north corners return three feet to the balcony railing:
 
     y = -9.5'    +--+---- . . . . . . . . . . . . . . . ----+--+   <- balcony returns
