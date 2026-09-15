@@ -7,10 +7,10 @@ from pathlib import Path
 
 import pytest
 
+from typehaus.analytical.sunken_garden_coupled import analyse_coupled
 from typehaus.diff.compare import variant_plan
 from typehaus.diff.variants import find_variant, load_variants
 from typehaus.engineering.sunken_garden.comparison import COURTYARD_LAYOUTS, sizing_study
-from typehaus.engineering.sunken_garden.coupled import analyse_coupled
 from typehaus.engineering.sunken_garden.inputs import (
     BasedValue,
     PlantingProfile,
@@ -83,6 +83,7 @@ def test_catlin_variants_are_isolated_and_keep_wall_identity() -> None:
     reference_wall = next(item for item in reference_items if item.tag == "W-SG-W2")
     assert against_wall.uid == reference_wall.uid
     assert any(item.tag == "SP-SG-ARCH-OVERFLOW" for item in reference_items)
+    assert any(item.tag == "PR-SG-ARCH-OVERFLOW" for item in reference_items)
 
 
 def test_parameter_context_restores_and_unknown_house_parameter_fails() -> None:

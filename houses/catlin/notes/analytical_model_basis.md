@@ -111,7 +111,8 @@ the graph's dead + snow line loads on each beam sum to `uniform_load` exactly.
 - Retaining walls and the retaining system (`retaining_wall/*`, `retaining_system/W-SG-ARCH`)
   and the board-and-batten panel item are not in the graph. Their oracle is
   `sunken_garden_court_free_body.md`, a free body a surface model would not check better.
-- The trussed roofs and the uplift path (`rafter/*`, `lateral_uplift/*`, `column_support/*`)
+- The trussed roofs and the uplift path (`rafter/*`, which carries the uplift reactions
+  too since 2026-09-14, and `column_support/*`)
   resolve to no curve member; the gaps say so by item id.
 - **The canopy roof's tributary on PT-BW-E/W/GE/GW** reaches those piers through framing the
   graph carries only as BM-BW-RE/RW, so a solve there under-runs the record's `dead_load`

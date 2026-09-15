@@ -123,12 +123,12 @@ def test_a_record_carries_the_oracle_of_its_kind(catlin_engineering):
     assert not unoracled, unoracled
 
 
-def test_the_seven_deferred_items_name_a_designer_of_record(catlin_engineering):
+def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
     """The items that exist by accident now exist on purpose.
 
-    ``lateral_uplift/RF-*``, the two trussed roofs' ``rafter/*`` and the two
-    ``column_support`` wall tops are computed by nothing and must stay that way; what
-    changed is that each says *who* designs it. The summary must not fall back to the
+    The two trussed roofs' ``rafter/*`` and the two ``column_support`` wall tops are
+    computed by nothing and must stay that way; what changed is that each says *who*
+    designs it. The summary must not fall back to the
     generic "no calculation is registered" sentence, which names nobody.
     """
     from typehaus.engineering.deferred import DEFERRALS
@@ -153,9 +153,17 @@ def test_the_seven_deferred_items_name_a_designer_of_record(catlin_engineering):
     # act. They are graded by `checks/structural/published.py` against a `PublishedSpan`
     # authored on the element. The trussed roofs stay: no member exists for a table to
     # describe.
+    # ** FOUR SINCE 2026-09-14, DOWN FROM SEVEN: the whole ``lateral_uplift`` kind went. **
+    # It carried one item per roof and none of the three needed a seal. A rafter-framed roof
+    # reads IRC Table R802.11 for the uplift demand and the connector's published allowable
+    # for the capacity — two table reads compared, which is a prescriptive act on exactly
+    # the footing the header and the I-joist span above took. A TRUSSED roof has no R802.11
+    # row at all (the table is indexed by a span and spacing this engine cannot read off a
+    # roof it did not frame) and folded into ``rafter/<tag>``, whose fabricator publishes the
+    # uplift reactions as part of the component design they were already sealing. That
+    # deferral's own `deliverable` now says so.
     assert {r.item_id for r in deferred} == {
         "column_support/W-SG-E1", "column_support/W-SG-W1",
-        "lateral_uplift/RF-BW-CANOPY", "lateral_uplift/RF-GARAGE", "lateral_uplift/RF-HOUSE",
         "rafter/RF-BW-CANOPY", "rafter/RF-GARAGE"}
     for record in deferred:
         assert record.kind in DEFERRALS, record.item_id

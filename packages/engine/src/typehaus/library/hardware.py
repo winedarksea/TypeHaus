@@ -1316,9 +1316,15 @@ HGAM10_MASONRY_GUSSET = StructuralHardware(
     # temptation exists. With gussets on opposing faces, whichever way the load goes one of
     # them takes it as force INTO the connector, so the 795 is always available to *some*
     # gusset. That is a real observation and it is still not a capacity to record here: which
-    # gusset, under which load case, is a question this model cannot answer, and the three
-    # `lateral_uplift` items are UNKNOWN pending a PE seal regardless. The recorded value
-    # stays 460.
+    # gusset, under which load case, is a question this model cannot answer. The recorded
+    # value stays 460.
+    #
+    # (That sentence used to lean on a second argument — "the three `lateral_uplift` items
+    # are UNKNOWN pending a PE seal regardless" — which stopped being true on 2026-09-14
+    # when that kind retired. It was never the load-bearing half: an unanswerable question
+    # is not recordable whether or not something downstream is blocked, and a capacity that
+    # only held while a register entry happened to be open would be the wrong kind of
+    # number to carry here.)
     #
     # This part is used here as a masonry gusset angle at a beam-on-cast-column joint — its
     # actual published application ("anchor wood trusses, rafters, joists, or beams to

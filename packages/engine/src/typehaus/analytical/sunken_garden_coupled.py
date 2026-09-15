@@ -1,7 +1,8 @@
 """Coupled five-wall PyNite shell model for the sunken courtyard.
 
-This model is deliberately unavailable when site/connection stiffness or balcony reactions
-are missing.  It never substitutes fixed supports or zero column loads and calls that a pass.
+The analytical layer owns solver orchestration. This model is deliberately unavailable when
+site/connection stiffness or balcony reactions are missing. It never substitutes fixed
+supports or zero column loads and calls that a pass.
 """
 
 from __future__ import annotations

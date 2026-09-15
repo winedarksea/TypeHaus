@@ -1,7 +1,8 @@
 """The items this engine will never compute, declared rather than discovered.
 
-The trussed roofs and their uplift path — ``lateral_uplift/RF-*`` and ``rafter/RF-*``,
-plus the two ``column_support`` wall tops — reach ``haus engineering`` only because a check
+The trussed roofs and their uplift path — ``rafter/RF-*``, which since 2026-09-14 carries
+the uplift reactions too — plus the two ``column_support`` wall tops, reach
+``haus engineering`` only because a check
 names an ``engineering_item`` of a kind nobody registered, and
 ``EngineeringResults.__getitem__`` synthesises a bare ``NO_CALC`` for it. They exist by
 accident, and their record says only "no calculation is registered for this kind", which is
@@ -69,29 +70,45 @@ _declare(Deferral(
            "component manufacturer's sealed design governs. A roof framed in an ENGINEERED "
            "PROFILE is not here: its maker publishes a span table, reading one is a "
            "prescriptive act, and `structural.rafter_span` grades it against an authored "
-           "`Roof.published_span` instead (2026-09-11)",
-    designer="truss or I-joist manufacturer's engineer of record",
+           "`Roof.published_span` instead (2026-09-11). RF-BW-CANOPY carries a DRIFT "
+           "case the fabricator has to be quoted against — a quote priced on \"50 psf "
+           "ground snow\" buys ordinary trusses (notes/north_entry_piers.md §3, and "
+           "preferences.toml [structural] roof_beam_snow_psf)",
+    designer="truss or I-joist manufacturer's engineer of record, with the structural "
+             "engineer of record for the continuous uplift load path BELOW the heel — two "
+             "roles because the fabricator's seal stops at the component: they publish the "
+             "uplift reaction, and somebody else owns the chain that carries it to the "
+             "footing",
     deliverable="a sealed component design and placement plan for the roof, covering the "
                 "profile, the bearing reactions, the web stiffener and hanger schedule, "
-                "and the ground-snow case this site carries",
-    unblocks="Roof framing — the S-105 rafter/truss line and the roof-load permit item",
+                "the ground-snow case this site carries, and — since 2026-09-14, when the "
+                "`lateral_uplift` deferral folded into this one — the UPLIFT reactions at "
+                "every bearing with a connector schedule sized against them from the heel "
+                "down to the foundation",
+    unblocks="Roof framing — the S-105 rafter/truss line, the roof-load permit item, and "
+             "the wind uplift load path (structural.uplift_capacity)",
     oracle=(Oracle(note="catlin_truss_engineering.md",
-                   test="tests/test_wind_loads.py"),),
+                   test="tests/test_wind_loads.py"),
+            Oracle(note="uplift_load_path.md",
+                   test="tests/test_uplift_load_path.py")),
 ))
 
-_declare(Deferral(
-    kind="lateral_uplift",
-    reason="the uplift connection schedule over this roof is covered joint by joint, but "
-           "its CAPACITY is not evaluated: this engine derives no tributary area, no force "
-           "coefficient and no share of the storey shear for any joint in it",
-    designer="truss fabricator's engineer of record (uplift reactions), with the "
-             "structural engineer of record for the continuous load path below them",
-    deliverable="uplift reactions at every bearing, and a connector schedule sized against "
-                "them from the truss heel to the foundation",
-    unblocks="Wind uplift load path — structural.uplift_capacity",
-    oracle=(Oracle(note="uplift_load_path.md",
-                   test="tests/test_uplift_load_path.py"),),
-))
+# NOTE — there is NO ``lateral_uplift`` deferral any more, and its absence is deliberate
+# (2026-09-14). It carried one item per roof, three of them, all UNKNOWN and all waiting on
+# a seal, on the reasoning that this engine derives no wind demand for a joint. It does not,
+# and it does not have to: the two halves of that question both turned out to be documents.
+#
+#  - **A rafter-framed roof reads IRC Table R802.11.** The required resistance per
+#    connection is published — adopted law, indexed by exposure, spacing, span, speed and
+#    pitch — and the connector's allowable is published by its maker. Two table reads
+#    compared is a prescriptive act, so ``structural.uplift_capacity`` grades an authored
+#    ``Roof.published_uplift`` and mints nothing. ``typehaus/wind_tables.py`` holds the grid.
+#  - **A trussed roof folds into ``rafter/<tag>``**, immediately below. No R802.11 row
+#    describes a roof that resolves no truss member, and the fabricator who seals the
+#    component design is the same person who publishes its uplift reactions. Two items
+#    naming one designer and one document was the redundancy, not the deferral.
+#
+# ``uplift_load_path.md`` stays an oracle, on the ``rafter`` deferral where the work now is.
 
 # NOTE — there is NO ``header`` deferral, and its absence is deliberate (2026-09-11).
 # A wide opening's header was deferred here on the reasoning that the IRC table stops at 8'.
@@ -146,13 +163,6 @@ def _column_support_keys(ctx: EngineeringContext) -> list[str]:
         if support:
             out.add(support)
     return sorted(out)
-
-
-@keys("lateral_uplift")
-def _uplift_keys(ctx: EngineeringContext) -> list[str]:
-    """Every roof. ``structural.uplift_capacity`` names one item per roof unconditionally,
-    so this enumeration cannot drift from the check that consumes it."""
-    return sorted(roof.tag for roof in ctx.model.roofs)
 
 
 @keys("rafter")

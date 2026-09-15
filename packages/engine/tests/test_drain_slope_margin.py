@@ -41,7 +41,7 @@ def test_the_engine_default_is_a_sixteenth(catlin_plan, catlin_model_ro) -> None
     assert MepPreferences().min_drain_slope_margin_in_per_ft == 0.0625
     fails = [f for f in _run(catlin_plan, catlin_model_ro, 0.0625)
              if f.result is Result.FAIL]
-    assert len(fails) == 12
+    assert len(fails) == 13
     assert all(f.severity is Severity.WARN for f in fails), "ADVISORY, not a permit blocker"
 
 

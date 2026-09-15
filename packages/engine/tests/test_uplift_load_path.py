@@ -66,30 +66,75 @@ def test_a_covered_link_passes_and_says_where_the_capacity_question_went(finding
     assert all("[advisory, not engineering]" in f.message for f in findings)
     for finding in covered:
         assert "CAPACITY is not graded here" in finding.message
-        assert "lateral_uplift/<roof>" in finding.message
+        # It must still say WHERE, and since 2026-09-14 that is a rule rather than an item:
+        # `lateral_uplift/<roof>` was the answer until the kind was retired.
+        assert "structural.uplift_capacity" in finding.message
+        assert "lateral_uplift" not in finding.message
 
 
-def test_the_capacity_question_is_a_named_item_not_a_retired_one(ctx) -> None:
-    """#64's concern, kept: folding coverage into a PASS must not retire the question.
+def test_the_capacity_question_moved_rather_than_vanished(ctx) -> None:
+    """#64's concern, kept: folding coverage into a PASS must not retire the QUESTION.
 
-    It is not retired; it is hoisted. One ENGINEERED item per roof, which a signoff in
-    engineering.toml has to cover and which `haus engineering` lists until somebody does —
-    two rows a reviewer must act on, rather than 59 they scroll past.
+    ** THIS TEST WAS WRITTEN TO PREVENT EXACTLY THE CHANGE IT NOW ASSERTS, AND IT IS KEPT
+    RATHER THAN DELETED FOR THAT REASON. ** Its original form pinned three ENGINEERED items,
+    ``lateral_uplift/RF-{HOUSE,GARAGE,BW-CANOPY}``, on the reasoning below — which was right
+    about the danger and wrong about the remedy:
+
+        "It is not retired; it is hoisted. One ENGINEERED item per roof, which a signoff in
+        engineering.toml has to cover and which `haus engineering` lists until somebody does
+        — two rows a reviewer must act on, rather than 59 they scroll past."
+
+    **Why this changed, 2026-09-14.** Hoisting was the right move when the alternative was 59
+    disclaimers. It was never right that the question needed a SEAL. Both halves of it turned
+    out to be documents a reviewer opens:
+
+    * the DEMAND is IRC Table R802.11, adopted law, indexed by exposure, spacing, span, speed
+      and pitch — the five things a rafter-framed roof has;
+    * the CAPACITY is the connector manufacturer's own published allowable.
+
+    A comparison between two published tables is a prescriptive read (the same argument that
+    took PBR cladding and the garage-door header out of the register), so RF-HOUSE is graded
+    and names no item. A TRUSSED roof has no R802.11 row — the table is indexed by a span and
+    spacing this engine cannot read off a roof it did not frame — and folds into
+    ``rafter/<tag>``, whose fabricator publishes the uplift reactions anyway.
+
+    So the question did not vanish and it did not lose its teeth: what changed is that two of
+    the three roofs point at an item somebody was always going to seal, and the third is
+    answered on the page. The assertions below are the same ones in spirit — every roof still
+    accounts for its uplift capacity, out loud.
     """
     from typehaus.checks.structural.uplift_path import uplift_capacity_items
     from typehaus.findings import Authority
 
     items = uplift_capacity_items(ctx)
-    # RF-BW-CANOPY joined them on 2026-09-10. One item per ROOF, so the north entry's truss
-    # canopy raises its own capacity question rather than being folded into the garage's —
-    # it is a different span on different bearings under a different drift case.
-    assert {f.engineering_item for f in items} == {"lateral_uplift/RF-HOUSE",
-                                                   "lateral_uplift/RF-GARAGE",
-                                                   "lateral_uplift/RF-BW-CANOPY"}
-    assert all(f.authority is Authority.ENGINEERED for f in items)
-    # Still blocking, exactly as the UNKNOWNs it replaced were. Adopting the register moved
-    # no gate; it only gave the outstanding work a name.
-    assert all(f.result is Result.UNKNOWN for f in items)
+    assert items, "no roof accounts for its uplift capacity at all"
+
+    # ** THE RETIRED KIND MAY NOT COME BACK. ** Nothing registers `lateral_uplift` any more,
+    # so an item of that kind would synthesise a bare "no calculation is registered for this
+    # kind" record — which `engineering/deferred.py` calls true and useless.
+    named = {f.engineering_item for f in items if f.engineering_item}
+    assert not [item for item in named if item.startswith("lateral_uplift/")]
+
+    # The two TRUSSED roofs, on the item their fabricator seals.
+    assert named == {"rafter/RF-GARAGE", "rafter/RF-BW-CANOPY"}
+    deferred = [f for f in items if f.engineering_item]
+    assert all(f.authority is Authority.ENGINEERED for f in deferred)
+    # Still blocking, exactly as before. The fold moved no gate.
+    assert all(f.result is Result.UNKNOWN for f in deferred)
+
+    # RF-HOUSE, graded against its published rows — PASS, prescriptive, and no item.
+    house = [f for f in items if "RF-HOUSE" in f.element_tags]
+    assert house, "RF-HOUSE reports nothing about its uplift capacity"
+    assert all(f.engineering_item is None for f in house)
+    assert all(f.authority is Authority.PRESCRIPTIVE for f in house)
+    assert all(f.result is Result.PASS for f in house)
+    # Both halves of the read have to be visible on the findings, or a reviewer cannot
+    # reproduce it: the code table that sets the demand, and the parts that carry it.
+    text = " ".join(f.message for f in house)
+    assert "R802.11" in text
+    assert "212 lb" in text
+    for member in ("H2.5A", "LSSR"):
+        assert member in text
 
 
 def test_every_roof_is_covered_at_its_bearings(findings) -> None:

@@ -136,6 +136,11 @@ def test_roof_beam_line_loads_sum_to_the_records_uniform_load(solved):
 def test_the_gaps_name_what_the_note_says_is_not_modelled(solved):
     _, model, _, _ = solved
     joined = "\n".join(model.gaps)
+    # ``lateral_uplift/RF-HOUSE`` was the fourth of these until 2026-09-14, when the kind
+    # retired: RF-HOUSE's uplift is a published read now and raises no item, so there is no
+    # id left for a gap line to name. ``rafter/RF-GARAGE`` takes its place — the trussed
+    # roof the uplift question folded INTO, which the graph still cannot draw.
     for item in ("retaining_system/W-SG-ARCH", "wall_panel/W-A-N1", "girt_screw/W-A-N1",
-                 "lateral_uplift/RF-HOUSE"):
+                 "rafter/RF-GARAGE"):
         assert item in joined
+    assert "lateral_uplift/" not in joined

@@ -24,6 +24,13 @@ def _money(value: CostRange) -> str:
     return f"${value.low:,.0f}-${value.high:,.0f}"
 
 
+def _saving_or_premium(value: CostRange) -> str:
+    low, high = sorted((value.low, value.high))
+    if high < 0.0:
+        return f"premium ${abs(high):,.0f}-${abs(low):,.0f}"
+    return f"saving ${low:,.0f}-${high:,.0f}"
+
+
 def _fingerprint(payload: object) -> str:
     encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str).encode()
     return hashlib.sha256(BASIS_VERSION.encode() + b":" + encoded).hexdigest()[:16]
@@ -32,7 +39,7 @@ def _fingerprint(payload: object) -> str:
 def _layout_table(results: tuple[LayoutResult, ...]) -> list[str]:
     reference = results[0].installed_cost
     lines = [
-        "| Alternative | Material | Labor | Installed | Direct savings | "
+        "| Alternative | Material | Labor | Installed | Direct result | "
         "Governing check | Status |",
         "|---|---:|---:|---:|---:|---|---|",
     ]
@@ -58,7 +65,7 @@ def _layout_table(results: tuple[LayoutResult, ...]) -> list[str]:
         lines.append(
             f"| {result.name} | {_money(material)} | {_money(labor)} | "
             f"{_money(result.installed_cost)} | "
-            f"{_money(direct_savings)} | "
+            f"{_saving_or_premium(direct_savings)} | "
             f"{governing.case} ({ratio:.2f}) | {status} |"
         )
     return lines

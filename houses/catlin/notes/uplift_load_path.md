@@ -4,12 +4,43 @@
 **Structure:** the continuous uplift path, roof sheathing to footing, over `RF-HOUSE` and
 `RF-GARAGE`.
 **Written:** 2026-08-28.
-**Oracle for:** the `lateral_uplift/RF-*` deferral in `engineering/deferred.py`, reported by
-`structural.uplift_capacity`; the derived joints are reproduced by
+**Oracle for:** the `rafter/RF-*` deferral in `engineering/deferred.py` — the two TRUSSED
+roofs — reported by `structural.uplift_capacity`; the derived joints are reproduced by
 `tests/test_uplift_load_path.py`.
 **What is asked of the reviewer:** this note derives a COVERAGE schedule and no capacity.
-The uplift reactions themselves are the truss fabricator's, and the register carries that as
-an open item rather than pretending otherwise.
+The uplift reactions over a trussed roof are the fabricator's, and the register carries that
+as an open item rather than pretending otherwise.
+
+> ## THE `lateral_uplift` KIND RETIRED ON 2026-09-14, AND THIS NOTE MOVED WITH IT
+>
+> There were three items, one per roof, all UNKNOWN and all waiting on a seal. None of them
+> needed one, and the reason is that the capacity question has two halves and **both of them
+> are documents**:
+>
+> - the **demand** is IRC Table R802.11, *Required Strength of Truss/Rafter Connections to
+>   Resist Wind Uplift Forces* — adopted law, indexed by exposure, spacing, span, ultimate
+>   wind speed and whether the pitch reaches 5:12. For `RF-HOUSE` (exposure B, 24" o.c., the
+>   36' row covering its 35.9' span, V_ult 115, 6:12) that is **212 lb per connection**,
+>   already net of footnote b's 15 psf dead-load allowance and taken at the full corner-zone
+>   value with no footnote d reduction claimed.
+> - the **capacity** is each connector's own published allowable: **615 lbf** for the eave
+>   H2.5A in SPF/HF (Simpson C-C-2024 p.288) and **510 lbf** uplift for the ridge LSSR2.37Z
+>   (C-C-2026 p.178). d/c **0.34** and **0.42**.
+>
+> Comparing two published tables is a prescriptive read, so `RF-HOUSE` is graded and mints
+> nothing — the same argument that took PBR cladding and the garage-door header out of the
+> register. `typehaus/wind_tables.py` holds the R802.11 grid beside the ASCE force
+> coefficients, and `Roof.published_uplift` carries the two connector rows.
+>
+> **The two trussed roofs folded into `rafter/<tag>` instead.** No R802.11 row describes a
+> roof that resolves no truss member — the table is indexed by a span and spacing this
+> engine cannot read off a roof it did not frame — and the fabricator who seals the component
+> design is the same person who publishes its uplift reactions. That deferral's `deliverable`
+> now says so explicitly. Two items naming one designer and one document was the redundancy;
+> nothing about the outstanding work changed, and it still blocks.
+>
+> **What did NOT change:** §§ below derive COVERAGE and still do. A joint with no connector
+> is still a FAIL, and this note is still the oracle for the schedule.
 
 The house had connectors at the ends of the load path and nothing in the middle. The sill was
 anchored (MASA at 4' o.c.), the studs were tied to their top plates (SP6), the stacked corners

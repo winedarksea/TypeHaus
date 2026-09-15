@@ -38,10 +38,17 @@ _EXPECTED = {
     # `engineering/pier_basis._piers_below` is what hands the load to the item that does.
     "PT-SG-BR2": (Result.NOT_APPLICABLE, "PT-SG-COL"),
     "PT-SG-BF2": (Result.NOT_APPLICABLE, "PT-SG-FCOL"),
-    # These two DO bear on soil through their own belled piers. R507.3 has no row for a
-    # 30"/36" bell, so they are real engineered items and must stay so.
-    "PT-SG-COL": (Result.UNKNOWN, "FT-SG-COL"),
-    "PT-SG-FCOL": (Result.UNKNOWN, "FT-SG-FCOL"),
+    # ** PT-SG-COL AND PT-SG-FCOL LEFT THIS TABLE ON 2026-09-14, AND THEIR ABSENCE IS THE
+    # WHOLE POINT OF THE CHANGE. ** They were `(Result.UNKNOWN, "FT-SG-COL")` and
+    # `(Result.UNKNOWN, "FT-SG-FCOL")` — the last two engineered piers in the house, on the
+    # honest reasoning that "R507.3 has no row for a 30\"/36\" bell". It does not. So the
+    # bells went: both are flat `Pad`s now, which is exactly the shape R507.3.1 publishes,
+    # and they are graded PASS against it like any other pad.
+    #
+    # They are not merely re-keyed, they are GONE from this dict, because the finding does
+    # not name a `PT-` tag any more — it names `PD-SG-COL` / `PD-SG-FCOL`, the pad itself.
+    # The `graded` assertion below is scoped to `PT-SG-*`, so a stale entry here would fail
+    # as a missing post rather than as a moved one. See `pads` at the foot of the module.
 }
 
 
@@ -95,18 +102,34 @@ def test_only_the_belled_piers_remain_engineered(findings) -> None:
     own posts never reached it — not graded lightly: not graded. It is reached now, and it is
     a ``Pad``, so it is graded and not engineered.
 
-    The three GARAGE-side piers stay: they are cast on the garage strip footing's own plane
-    and lap ~7 1/2" into it, and the pier line is 4 1/2" from that footing's face, so no
-    rectangle clears it — one pour, which only ``Footing.under`` can say. See
-    ``params/north_entry_frame.py``.
+    ** AND LATER THE SAME DAY THE LAST FIVE WENT TOO, SO THIS ASSERTS AN EMPTY SET. ** The
+    paragraph above closed by saying the three GARAGE-side piers had to stay ``Footing``:
+    they lap the garage strip footing by ~7 1/2" on its own plane, the pier line is 4 1/2"
+    from that footing's face, and no rectangle clears it. All true — and the wrong conclusion
+    to draw from it. The lap is real, so the answer is to DECLARE it rather than dodge it:
+    ``Pad.cast_with`` says the two are one monolithic pour, which is what a builder does
+    anyway, and ``structural.concrete_interference`` grades the lap as a joint instead of a
+    clash. The declaration explicitly buys no bearing-area credit (ACI 318-19 §13.3.4's
+    combined-footing line), so nothing about the R507.3.1 read changes.
+
+    The two sunken-garden bells went in the same pass, for the plainer reason that a flat pad
+    IS the shape the table publishes and a 36" bell is not.
+
+    **So the register holds no ``spread_footing`` item at all, and this test now guards that
+    from the other direction** — the question is no longer "did the right ones stay?" but
+    "has one come back?". The calculation did not go with them: ``engineering/
+    spread_footing.py`` still ships and is still oracled, against piers ``conftest``'s
+    ``catlin_retired_bells`` reconstructs.
     """
+    # ** NONE SINCE 2026-09-14, AND THE EMPTY SET IS THE RESULT, NOT A BROKEN TEST. **
     engineered = {f.element_tags[1] for f in findings
                   if f.authority is Authority.ENGINEERED and len(f.element_tags) > 1
-                  and str(f.element_tags[1]).startswith("PT-")}
-    assert engineered == {"PT-SG-COL", "PT-SG-FCOL",
-                          "PT-BW-GW", "PT-BW-GE", "PT-BW-RNE"}
+                  and str(f.element_tags[1]).startswith(("PT-", "PD-"))}
+    assert engineered == set(), (
+        "a pier is engineered again — if that is intended, say which row of IRC Table "
+        "R507.3.1 stopped describing it")
     items = {f.engineering_item for f in findings if f.engineering_item}
-    assert items == {f"spread_footing/{tag}" for tag in engineered}
+    assert not [item for item in items if item.startswith("spread_footing/")]
 
 
 def test_no_post_is_reported_as_unsupported_when_the_model_says_otherwise(findings) -> None:
@@ -126,8 +149,13 @@ def test_no_post_is_reported_as_unsupported_when_the_model_says_otherwise(findin
     # only by a unit fixture. It was vacuous in between — the four passage pads it used to
     # grade went with the foundation bridge.
     pads = {f.element_tags[1] for f in findings
-            if len(f.element_tags) > 1 and str(f.element_tags[1]).startswith("PD-BW-")}
-    assert pads == {"PD-BW-W", "PD-BW-E", "PD-BW-RE"}
+            if len(f.element_tags) > 1 and str(f.element_tags[1]).startswith("PD-")}
+    assert pads == {"PD-BW-W", "PD-BW-E", "PD-BW-RE",
+                    # The three GARAGE-side pads, which declare `cast_with` against the
+                    # garage strip footing rather than being pulled clear of it.
+                    "PD-BW-GW", "PD-BW-GE", "PD-BW-RNE",
+                    # And the two centre-garden pads, the retired bells.
+                    "PD-SG-COL", "PD-SG-FCOL"}
 
 
 def test_a_post_that_declares_no_bearing_is_unknown_not_na(catlin_plan) -> None:

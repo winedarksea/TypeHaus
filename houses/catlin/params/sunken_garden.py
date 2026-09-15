@@ -77,6 +77,8 @@ from typehaus import (
     JoistSpec,
     Node,
     Pad,
+    PipeRun,
+    PipeSystem,
     Post,
     pt,
     PublishedSpan,
@@ -1909,8 +1911,19 @@ GARDEN_OVERFLOW_SLEEVE = SleevePenetration(
     uid="SGSP01AAAA", tag="SP-SG-ARCH-OVERFLOW", host_ref="W-SG-ARCH",
     position=pt(ft(_field_x_mid), ft(_y_ax_mid)),
     pipe_diameter=inch(4), sleeve_diameter=inch(6),
-    serves_fixture="FD-SG-OVERFLOW", purpose=Service.DRAIN,
-    axis="horizontal", center_elevation=GARDEN_OVERFLOW.invert,
+    purpose=Service.DRAIN,
+    axis="horizontal", center_elevation=GARDEN_OVERFLOW.invert + inch(2),
+)
+GARDEN_OVERFLOW_BEAM_PIPE = PipeRun(
+    uid="SGPR01AAAA", tag="PR-SG-ARCH-OVERFLOW", system=PipeSystem.DRAIN,
+    path=(pt(ft(_field_x_mid), ft(_y_ax_mid - 1.0)),
+          pt(ft(_field_x_mid), ft(_y_ax_mid + 1.0))),
+    diameter=inch(4), material="pvc",
+    # A half-inch fall over this two-foot crossing supplies the minimum 1/4 in/ft slope;
+    # its midpoint remains concentric with the sleeve above.
+    elevations=(GARDEN_OVERFLOW.invert - _court_top + inch(0.25),
+                GARDEN_OVERFLOW.invert - _court_top - inch(0.25)),
+    serves=(),
 )
 
 GARDEN_SLAB = Slab(
@@ -4261,7 +4274,8 @@ SEQUENCE_NOTES = [
 
 BASEMENT_ELEMENTS = [*NODES, *WALLS, COLUMN, FRONT_COLUMN, *FOOTINGS,
                      *FOOTING_BEDDING, GARDEN_DRYWELL, GARDEN_UNDERDRAIN, GARDEN_OVERFLOW,
-                     GARDEN_OVERFLOW_SLEEVE, GARDEN_LEAD_W, GARDEN_LEAD_E, *SEQUENCE_NOTES,
+                     GARDEN_OVERFLOW_SLEEVE, GARDEN_OVERFLOW_BEAM_PIPE,
+                     GARDEN_LEAD_W, GARDEN_LEAD_E, *SEQUENCE_NOTES,
                      *GARDEN_FLOOR_OPENINGS, GARDEN_SLAB,
                      GARDEN_FIELD, *FROST_WINGS, *DOWELS, *STEM_DOWELS]
 # --- the porch enclosure's north deck-slot closure (2026-09-03) -----------------------

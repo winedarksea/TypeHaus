@@ -22,12 +22,13 @@ is a drawing, not a calculation. ``wind.py`` owns the wording, so the site's act
 quoted rather than a stale absence claim.
 
 **The rule is named for what it grades, and passes when it passes.** A covered link is a
-PASS of the coverage rule that actually runs; it never claims the joint is adequate (#64) —
-that capacity question is hoisted into one ENGINEERED item per roof
-(``lateral_uplift/RF-HOUSE``, ``lateral_uplift/RF-GARAGE``): two rows a reviewer must act on,
-that a professional seal has to cover and that ``haus engineering`` lists.
-``checks/structural/lateral_racking.py`` is the one place that does compute a wind demand,
-and it covers the balcony's braced bays only.
+PASS of the coverage rule that actually runs; it never claims the joint is adequate (#64).
+That capacity question is ``structural.uplift_capacity``, at the foot of this module, and
+since 2026-09-14 it is not an engineered item for any roof: a rafter-framed roof reads IRC
+Table R802.11 for the demand and the connector's published allowable for the capacity, and a
+trussed roof folds into the ``rafter/<tag>`` deferral its fabricator already seals.
+``checks/structural/lateral_racking.py`` is the one place that computes a wind demand from
+first principles, and it covers the balcony's braced bays only.
 
 An **uncovered** link is a FAIL. A joint with no connector at all is not a judgement call.
 
@@ -73,9 +74,12 @@ from typehaus.wind_tables import (
 #: (see ``uplift_capacity_items`` below).
 _CHECK_ID = "structural.uplift_path_coverage"
 
-#: The house-level items the capacity question now lives on, one per roof. Two rows a
-#: reviewer must act on, instead of 59 identical UNKNOWNs a reviewer scrolls past.
-_CAPACITY_KIND = "lateral_uplift"
+# ** THERE IS NO ``_CAPACITY_KIND`` ANY MORE (2026-09-14). ** It held "lateral_uplift", the
+# kind this module minted one item of per roof, and the kind is retired — see
+# ``uplift_capacity_items`` below for where the two halves of that question went, and the
+# dated NOTE in ``engineering/deferred.py`` for why neither half needed a seal.
+#: Feet per metre, for the plan extents R802.11's span is read off.
+_M_PER_FT = 0.3048
 _CONFIG = DEFAULT_HARDWARE_TAKEOFF_CONFIG
 _RULES = _CONFIG.uplift
 
@@ -149,7 +153,9 @@ def _finding(link: Link, site) -> Finding:
         severity=Severity.WARN, check_id=_CHECK_ID, result=Result.PASS,
         message=(f"[advisory, not engineering] {link.name} is connected by {link.hardware} "
                  f"— the joint is covered; its CAPACITY is not graded here and belongs to "
-                 f"`{_CAPACITY_KIND}/<roof>` in the engineering register "
+                 f"`structural.uplift_capacity`, which reads it off IRC Table R802.11 and "
+                 f"the connector's own published allowable where the roof authors them, "
+                 f"and defers it to `rafter/<roof>` where the roof is trussed "
                  f"({capacity_caveat(site)})"),
         element_tags=link.tags)
 
@@ -473,18 +479,17 @@ def uplift_capacity_items(ctx: CheckContext) -> list[Finding]:
       naming one designer and one document was the redundancy; the finding still blocks,
       still UNKNOWN, and now points at the item somebody is actually going to seal.
 
-    What is left here is the third case — a rafter-framed roof that authors no row — which
-    keeps its own item, because a demand nobody looked up is not a read.
+    The third case — a rafter-framed roof that authors no row — is an **UNKNOWN with the
+    authoring hint**, and pointedly NOT an item of its own. ``lateral_uplift`` is a retired
+    kind: nothing registers it any more, so minting one would produce exactly the bare
+    "no calculation is registered for this kind" record ``engineering/deferred.py``'s own
+    docstring calls true and useless. A roof nobody has read the table for is a roof nobody
+    has read the table for — the finding says so and says which two documents to open.
     """
     from typehaus.engineering import item_id
 
     out: list[Finding] = []
     for roof in sorted(ctx.model.roofs, key=lambda r: r.tag):
-        published = _authored_uplift(ctx, roof.tag)
-        if published:
-            out.extend(_published_uplift_findings(ctx, roof, published))
-            continue
-
         if not any(member.category == "rafter" for member in roof.members):
             out.append(_engineered(
                 ctx, "structural.uplift_capacity", item_id("rafter", roof.tag),
@@ -498,17 +503,7 @@ def uplift_capacity_items(ctx: CheckContext) -> list[Finding]:
                     f"covers the uplift reactions and the connector schedule under them"))
             continue
 
-        out.append(_engineered(
-            ctx, "structural.uplift_capacity", item_id(_CAPACITY_KIND, roof.tag),
-            f"the uplift connection schedule over {roof.tag} is covered joint by joint "
-            f"(structural.uplift_path_coverage) but its CAPACITY is not evaluated: this "
-            f"engine derives no tributary area, no force coefficient and no share of the "
-            f"storey shear for any joint in it, and a connector schedule without a load is "
-            f"a drawing rather than a calculation",
-            (roof.tag,), code="ASCE 7-16 §26-30 / IRC R802.11",
-            fix=f"author Roof.published_uplift with IRC Table R802.11's row for this roof "
-                f"and each connector's published allowable, or seal "
-                f"`{_CAPACITY_KIND}/{roof.tag}` in engineering.toml"))
+        out.extend(_published_uplift_findings(ctx, roof, _authored_uplift(ctx, roof.tag)))
     return out
 
 
@@ -536,8 +531,9 @@ def _published_uplift_findings(ctx: CheckContext, roof, published: tuple) -> lis
     from typehaus.checks.structural.snow import _spacing_in
 
     spacing_in = round(_spacing_in(roof, rafters), 1) if rafters else None
-    span_ft = _roof_span_ft(roof, rafters)
-    pitch = _pitch_rise_per_12(roof)
+    element = ctx.plan.by_tag(roof.tag) if ctx.plan is not None else None
+    span_ft = _roof_span_ft(roof, rafters, element)
+    pitch = _pitch_rise_per_12(element)
 
     missing = [name for name, value in (("wind exposure", exposure),
                                         ("design wind speed", speed),
@@ -555,12 +551,23 @@ def _published_uplift_findings(ctx: CheckContext, roof, published: tuple) -> lis
             f"roof {roof.tag} authors a published uplift capacity but its DEMAND cannot be "
             f"read: {why}", (roof.tag,))]
 
+    if not published:
+        # No row authored. ``graded_against_published_capacity`` owns this sentence already —
+        # it is the same "nothing authored" UNKNOWN every published-table check gives — and
+        # crucially it names no engineering item, which is what keeps the retired
+        # ``lateral_uplift`` kind retired.
+        return [graded_against_published_capacity(
+            "structural.uplift_capacity", f"the uplift connections over {roof.tag}",
+            (roof.tag,), demand_lb, None, None,
+            fix=f"author Roof.published_uplift on {roof.tag}: IRC Table R802.11 requires "
+                f"{demand_lb:,.0f} lb per connection here, and each connector's own "
+                f"published allowable is the other half of the read")]
+
     out: list[Finding] = []
     for row in published:
         out.append(graded_against_published_capacity(
             "structural.uplift_capacity",
-            f"the {row.member} at {roof.tag}'s {row.table.split(';')[0].strip()}"
-            if ";" in row.table else f"the {row.member} at {roof.tag}",
+            _joint_subject(roof.tag, row),
             (roof.tag,), demand_lb, row, row.member,
             spacing_in=spacing_in, wind_speed_mph=speed, exposure=exposure,
             fix="re-read IRC Table R802.11 and the connector's own allowable at this "
@@ -576,41 +583,50 @@ def _published_uplift_findings(ctx: CheckContext, roof, published: tuple) -> lis
     return out
 
 
+def _joint_subject(tag: str, row) -> str:
+    """"the H2.5A at RF-HOUSE's eave tie" — the row names which joint it is for.
+
+    A ``PublishedCapacity.table`` on a roof leads with the joint ("the eave tie; H2.5A,
+    ...") because one roof authors several and a finding that said only "H2.5A at RF-HOUSE"
+    would not say which of them. Falls back to the part alone where a row names no joint.
+    """
+    joint = row.table.split(";")[0].strip() if ";" in row.table else ""
+    if joint.lower().startswith("the "):
+        joint = joint[4:]
+    return f"the {row.member} at {tag}'s {joint}" if joint else f"the {row.member} at {tag}"
+
+
 def _advisory_unknown(message: str, tags: tuple) -> Finding:
     return Finding(severity=Severity.WARN, check_id="structural.uplift_capacity",
                    result=Result.UNKNOWN, message=message, element_tags=tags)
 
 
-def _roof_span_ft(roof, rafters) -> float | None:
+def _roof_span_ft(roof, rafters, element) -> float | None:
     """The roof's eave-to-eave SPAN, which is what R802.11 is indexed by.
 
     Not the rafter run and not its sloped length: the table's "roof span" is the building
-    dimension the roof covers, so a gable's two runs are one span. Derived from the rafters'
-    own horizontal projection rather than a wall dimension, because that is the geometry the
-    roof actually has.
+    dimension the roof covers, so a gable's two runs are one span. Taken as the rafters' own
+    plan extent ACROSS the ridge, which needs no gable-vs-shed classification — a shed's
+    single slope and a gable's two give the right answer from the same measurement, and a
+    roof whose two runs are unequal is measured rather than assumed symmetric.
     """
     if not rafters:
         return None
-    from typehaus.checks.structural.snow import _horizontal_run_ft
-
-    run_ft = _horizontal_run_ft(roof, rafters)
-    if not run_ft:
+    ridge = (getattr(element, "ridge_direction", None) or "").strip().lower()
+    if ridge not in ("x", "y"):
         return None
-    return run_ft * 2.0 if _is_double_sloped(roof) else run_ft
+    # The ridge runs along one axis, so the span is the extent along the OTHER one.
+    axis = 0 if ridge == "y" else 1
+    values = [point[axis] for member in rafters for point in (member.p0, member.p1)]
+    if not values:
+        return None
+    return (max(values) - min(values)) / _M_PER_FT
 
 
-def _is_double_sloped(roof) -> bool:
-    """A gable/hip carries rafters both ways off one ridge; a shed carries them one way."""
-    planes = {round(getattr(member, "azimuth_deg", 0.0) or 0.0, 1) for member in roof.members
-              if member.category == "rafter"}
-    return len(planes) > 1
-
-
-def _pitch_rise_per_12(roof) -> float | None:
-    pitch = getattr(roof, "pitch", None)
-    inner = getattr(pitch, "pitch", pitch)
-    rise = getattr(inner, "rise", None)
-    run = getattr(inner, "run", None)
+def _pitch_rise_per_12(element) -> float | None:
+    """Rise per 12 of run, off the AUTHORED roof — ``ResolvedRoof`` carries no pitch."""
+    pitch = getattr(element, "pitch", None)
+    rise, run = getattr(pitch, "rise", None), getattr(pitch, "run", None)
     if rise is None or not run:
         return None
     return float(rise) * 12.0 / float(run)

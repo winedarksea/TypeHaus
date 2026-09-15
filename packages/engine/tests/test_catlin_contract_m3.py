@@ -135,7 +135,10 @@ def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables(
     for tag in ("FT-SG-W1", "FT-SG-W2", "FT-SG-E1", "FT-SG-E2", "FT-SG-S"):
         assert by_tag[tag].result is Result.PASS, tag
         assert "ASCE 32" in by_tag[tag].message, tag
-    for tag in ("FT-SG-COL", "FT-SG-FCOL"):
+    # The two column bases, `PD-SG-*` since 2026-09-14 (30" square pads, not 36" bells).
+    # They still PASS and still must NOT carry the ASCE 32 citation: they reach frost depth
+    # on their own cover, where the five wall strips lean on a declared 42" section.
+    for tag in ("PD-SG-COL", "PD-SG-FCOL"):
         assert by_tag[tag].result is Result.PASS, tag
         assert "ASCE 32" not in by_tag[tag].message, tag
 

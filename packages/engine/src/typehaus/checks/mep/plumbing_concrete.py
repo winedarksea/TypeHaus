@@ -203,7 +203,8 @@ def under_slab_burial(ctx: CheckContext) -> list[Finding]:
                   for room in ctx.model.rooms if len(room.clear_face) >= 3]
     slabs = []
     for s in ctx.model.solids:
-        if s.category != "slab" or len(s.outline) < 3:
+        if (s.category != "slab" or len(s.outline) < 3
+                or _is_non_concrete_slab(ctx, s)):
             continue
         footprint = Polygon(s.outline)
         suspended = any(elev < s.z0_m - 0.1 and poly.intersects(footprint)

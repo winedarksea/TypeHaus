@@ -87,11 +87,17 @@ def test_footing_bedding_undercut_and_insulation(catlin_model):
     assert "#57" in bedding.aggregate
 
 
-#: The two porch piers. Their bells are augered to frost depth, so they
-#: bear on undisturbed soil and take a levelling course rather than the wall footings'
-#: 42" replacement section — see
+#: The two porch piers. Their pours go to frost depth, so they bear on undisturbed soil and
+#: take a levelling course rather than the wall footings' 42" replacement section — see
 #: test_catlin_outdoor_structures.py::test_the_two_porch_piers_are_belled_to_frost_depth...
-_SUNKEN_GARDEN_PIER_BELLS = {"FT-SG-COL", "FT-SG-FCOL"}
+#:
+#: ** EMPTY SINCE 2026-09-14, AND DELIBERATELY KEPT. ** Both became 30" square `Pad`s that
+#: day, so neither is an `FT-SG-*` any longer and the exclusion below has nothing left to
+#: exclude. The set stays because the RULE it encodes has not changed: a pour that reaches
+#: frost depth on its own cover takes a levelling course and not a 42" replacement section,
+#: and the next garden pier authored as a `Footing` must land here rather than be silently
+#: swept into the wall-footing assertion.
+_SUNKEN_GARDEN_PIER_BELLS: set = set()
 
 
 def test_sunken_garden_t_wall_footings_bear_on_42_inches_of_aggregate(catlin_model):

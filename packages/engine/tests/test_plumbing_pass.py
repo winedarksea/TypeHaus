@@ -218,9 +218,11 @@ def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
     # The two balcony condensers' defrost lines (PR-S-HP1-COND / PR-S-HP2-COND) used to be
     # the most literal air gaps on this list, discharging over TR-SG-GUTTER's rim. Both
     # units moved to a ground pad on 2026-09-02 and drip onto it, so there is no pipe at all
-    # any more — see houses/catlin/notes/heat_pump_ground_pad.md.
+    # any more — see houses/catlin/notes/heat_pump_ground_pad.md. The garden overflow is the
+    # other deliberate sleeve termination: beyond the beam, its open collector is a
+    # FrenchDrain rather than another PipeRun.
     assert terminals == {"PR-B-MAIN-DRAIN", "PR-M-DRYER-COND", "PR-B-WH-TPR",
-                         "PR-B-ERV-COND"}
+                         "PR-B-ERV-COND", "PR-SG-ARCH-OVERFLOW"}
 
 
 def test_rollup_is_a_union_never_a_sum_and_unknown_never_partial():

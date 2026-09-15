@@ -320,9 +320,11 @@ def test_the_net_rim_laps_no_footing(catlin_model) -> None:
         net = net.difference(Polygon(list(void)))
     assert net.area > 0, "the rim voided away entirely"
 
-    # The five WALL strips, not all seven FT-SG-*. FT-SG-COL and FT-SG-FCOL are the belled
-    # piers' bases: they top out at -11.62', two and a half feet under the rim's -9.41'
-    # underside, and their shafts pass up through it. A plan lap there is not a lap.
+    # The five WALL strips. The two column bases are not among them and never were — they
+    # top out at -11.62', two and a half feet under the rim's -9.41' underside, and their
+    # shafts pass up through it, so a plan lap there is not a lap. They are `PD-SG-COL` /
+    # `PD-SG-FCOL` since 2026-09-14 and no longer `FT-SG-*` at all, so the prefix filter
+    # below now selects the five on its own rather than by exclusion.
     footings = ("FT-SG-W1", "FT-SG-W2", "FT-SG-E1", "FT-SG-E2", "FT-SG-S")
     assert set(footings) <= set(solids), sorted(set(footings) - set(solids))
     for tag in footings:
@@ -388,12 +390,14 @@ def test_the_front_columns_bell_does_not_reach_the_beam(catlin_model) -> None:
     at midspan, halving its span. It is worth pinning that this is NOT what is built, because
     the strut's slenderness in §7 is computed on the full 20'-0" because of it.
     """
-    bell = next(s for s in catlin_model.solids if s.tag == "FT-SG-FCOL")
+    bell = next(s for s in catlin_model.solids if s.tag == "PD-SG-FCOL")
     beam = next(w for w in catlin_model.walls if w.tag == "W-SG-ARCH")
     # 9", and back to 9" the long way round. It was 9" while the bell bore 42" under a flush
     # court; 16.25" while the bell followed the court's 7 1/4" flood step down and the beam
-    # did not; and 9" again now that the court is flush and the bell is derived from the
-    # 42" rule instead of pinned to where it happened to be. The span §7 grades is the full
+    # did not; and 9" again now that the court is flush and the pour is derived from the
+    # 42" rule instead of pinned to where it happened to be. The bell became a 30" square
+    # `Pad` on 2026-09-14 and this gap did not move with it: only the plan shape changed,
+    # and `bottom_elevation` and the 12" thickness are both what they were. The span §7 grades is the full
     # 20'-0" in every one of those states, which is the point of pinning the gap at all.
     gap_in = (beam.z0_m - bell.z1_m) / _M_PER_FT * 12
     assert gap_in == pytest.approx(9.0, abs=0.01), "the bell and the beam must not touch"

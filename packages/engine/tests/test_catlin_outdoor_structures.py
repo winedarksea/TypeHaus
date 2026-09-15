@@ -818,13 +818,20 @@ def test_sonotube_column_and_bell_tuck_south_of_the_house_gap(catlin_model) -> N
     assert column_y < deck_edge_y - 6 * INCH  # a real tuck, not "on the line"
     assert max(p[1] for p in column.outline) < deck_edge_y  # tube fully inside the edge
 
-    bell = _solid(catlin_model, "FT-SG-COL")
+    # ** A 30" SQUARE PAD SINCE 2026-09-14, NOT A 36" BELL, AND THE GAP GREW BECAUSE OF IT. **
+    # The 5" this asserted was measured off the bell's DRAWN square — `resolve/envelope.py`
+    # draws a post-hosted footing as a square of side `width`, and the bell's 36" was a
+    # DIAMETER, so the gap on the drawing was always tighter than the gap in the ground. The
+    # pad is a real 30" square, 3" closer on each face, and the clearance is a true 8".
+    pad = _solid(catlin_model, "PD-SG-COL")
     house_footing_s = min(y for _, y in _solid(catlin_model, "FT-B-S2").outline)
-    bell_north = max(p[1] for p in bell.outline)
-    assert bell_north < house_footing_s, "the bell stops short of the house's own footing"
-    assert house_footing_s - bell_north == pytest.approx(5 * INCH)
-    # And they never meet in section, which is why 5" of plan gap is comfortable.
-    assert (_solid(catlin_model, "FT-B-S2").z0_m - bell.z1_m) == pytest.approx(22 * INCH)
+    pad_north = max(p[1] for p in pad.outline)
+    assert pad_north < house_footing_s, "the pad stops short of the house's own footing"
+    assert house_footing_s - pad_north == pytest.approx(8 * INCH)
+    # And they never meet in section, which is why the plan gap is comfortable. Unchanged:
+    # `bottom_elevation` is still the derived `_pier_bell_bottom_ft` and the pour is still
+    # 12" thick, so nothing about the vertical stack moved when the bell became a pad.
+    assert (_solid(catlin_model, "FT-B-S2").z0_m - pad.z1_m) == pytest.approx(22 * INCH)
     assert catlin_model.plan.by_tag("DW-SG-COL") is None
     assert {d.tag for d in catlin_model.plan.all_elements()
             if d.element_kind == "Dowel"} == {"DW-SG-W1", "DW-SG-E1",
@@ -860,8 +867,12 @@ def test_the_two_porch_piers_are_belled_to_frost_depth_without_moving_a_beam_sof
     frost_m = MN_2020.frost_depth_in * INCH
     floor_top = _solid(catlin_model, "SL-SG-FLOOR").z1_m
 
-    for bell_tag, post_tag, beam_tag in (("FT-SG-COL", "PT-SG-COL", "BM-SG-BKW"),
-                                         ("FT-SG-FCOL", "PT-SG-FCOL", "BM-SG-FRW")):
+    # The tags are `PD-` since 2026-09-14 — flat pads, not belled piers — but every
+    # assertion in this loop is about ELEVATION, and not one of them moved: the pour is the
+    # same 12" thick with its underside on the same derived `_pier_bell_bottom_ft`. Only the
+    # plan shape changed, and that is asserted above.
+    for bell_tag, post_tag, beam_tag in (("PD-SG-COL", "PT-SG-COL", "BM-SG-BKW"),
+                                         ("PD-SG-FCOL", "PT-SG-FCOL", "BM-SG-FRW")):
         bell = _solid(catlin_model, bell_tag)
         post = _solid(catlin_model, post_tag)
         beam = _solid(catlin_model, beam_tag)
@@ -880,7 +891,7 @@ def test_the_two_porch_piers_are_belled_to_frost_depth_without_moving_a_beam_sof
         # direction is the failure, the equality says the constant is derived and not held.
         assert bell.z0_m <= floor_top - frost_m + 1e-9, bell_tag
         assert (floor_top - bell.z0_m) / INCH == pytest.approx(42.0, abs=0.05), bell_tag
-        assert bell.z1_m - bell.z0_m == pytest.approx(12 * INCH), "12\" bell, not 42\""
+        assert bell.z1_m - bell.z0_m == pytest.approx(12 * INCH), "12\" pad, not 42\""
         # The shaft picks up exactly where the bell stops...
         assert post.z0_m == pytest.approx(bell.z1_m)
         # ...and still dies on its beam's soffit. Both porch beam pairs carry a joist drop,
@@ -893,12 +904,15 @@ def test_the_two_porch_piers_are_belled_to_frost_depth_without_moving_a_beam_sof
     # what puts PT-SG-BF2 on concrete. The authored height must not be "corrected" to match.
     assert _solid(catlin_model, "PT-SG-FCOL").z1_m == pytest.approx(-18.5 * INCH)
 
-    # A bell bearing on undisturbed soil at frost depth takes a levelling course, not a
+    # A pour bearing on undisturbed soil at frost depth takes a levelling course, not a
     # 42" replacement section. 42" under the NEW underside would bottom the excavation
     # 1'-9" below the soakaway it is meant to stack on top of.
     beds = {b.host: b for b in catlin_model.footing_beddings}
     well_top = _solid(catlin_model, "DRW-SG-MAIN").z1_m
-    for host in ("FT-SG-COL", "FT-SG-FCOL"):
+    # `resolve/envelope.py` hosts a bedding on a `Pad` as well as a `Footing`, which is what
+    # carries this claim across the conversion — a levelling course under a formed pad is
+    # the same 7" of washed stone it was under an augered bell.
+    for host in ("PD-SG-COL", "PD-SG-FCOL"):
         bed = beds[host]
         assert bed.z1_m - bed.z0_m == pytest.approx(7 * INCH)
         assert bed.z0_m > well_top, "the levelling course clears the drywell's stone"

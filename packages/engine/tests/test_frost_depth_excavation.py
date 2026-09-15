@@ -174,10 +174,16 @@ def test_without_the_wing_insulation_the_same_three_footings_fail(catlin_plan, c
 #: the court floor and the 42" aggregate section under it is what reaches frost depth.
 _THE_RETAINING_WALL_FOOTINGS = ("FT-SG-W1", "FT-SG-W2", "FT-SG-E1", "FT-SG-E2", "FT-SG-S")
 
-#: The two that stand under a ``Post``, not a ``FoundationWall``. Belled to frost depth
+#: The two that stand under a ``Post``, not a ``FoundationWall``. Taken to frost depth
 #: (→ houses/catlin/params/sunken_garden.py), so unlike the five above they
 #: pass on plain cover and lean on no section at all.
-_THE_FREESTANDING_COLUMN_PADS = ("FT-SG-COL", "FT-SG-FCOL")
+#:
+#: ** ``PD-``, NOT ``FT-``, SINCE 2026-09-14. ** These were 36" belled piers and are 30"
+#: square `Pad`s now — the conversion that retired the last two `spread_footing` items from
+#: the register, a flat pad being exactly the shape IRC Table R507.3.1 publishes. Nothing in
+#: THIS module's subject changed: the underside is still the derived `_pier_bell_bottom_ft`,
+#: so the cover these pass on is the same cover, measured the same way.
+_THE_FREESTANDING_COLUMN_PADS = ("PD-SG-COL", "PD-SG-FCOL")
 
 #: The garden's own seven.
 _THE_GARDENS_OWN = _THE_RETAINING_WALL_FOOTINGS + _THE_FREESTANDING_COLUMN_PADS
@@ -327,13 +333,13 @@ def test_the_aggregate_section_only_counts_when_drained_deep_and_declared(catlin
 
 
 def test_the_declared_section_is_what_moves_the_verdict(catlin_model):
-    """The before-and-after, on one model: strip only the declaration and FT-SG-FCOL flips.
+    """The before-and-after, on one model: strip only the declaration and FT-SG-S flips.
 
     This is the pair that stops the branch from being unfalsifiable — if the check passed
     these footings for some other reason, clearing the flag would not change the answer.
 
     The subject is a wall footing, and it has to be. The column pads were the probe before
-    they were belled to frost depth, which gave them cover of their own, so clearing the
+    they were taken to frost depth, which gave them cover of their own, so clearing the
     flag now leaves them PASS — which is correct, and useless as a control. ``FT-SG-S`` is
     the far side of the court, out of reach of every R403.3 wing, and has nothing but its
     section.

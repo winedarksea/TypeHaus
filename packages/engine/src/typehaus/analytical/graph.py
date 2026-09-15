@@ -235,7 +235,9 @@ class AnalyticalModel:
     #: rigid-link convention at a post top, the load split. Printed in every export.
     assumptions: tuple[str, ...] = ()
     #: What the model does NOT carry, in words: "retaining walls W-SG-* not modelled as
-    #: surface members", "lateral_uplift/RF-HOUSE has no analytical representation".
+    #: surface members", "rafter/RF-GARAGE has no analytical representation". (The example
+    #: used to read ``lateral_uplift/RF-HOUSE``; that kind retired on 2026-09-14 when the
+    #: roof's uplift became a published read, so there is no such id to name.)
     gaps: tuple[str, ...] = ()
     _index: dict[str, Node] = field(default_factory=dict, repr=False, compare=False)
 
