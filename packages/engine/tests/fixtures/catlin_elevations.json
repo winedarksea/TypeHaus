@@ -496,8 +496,8 @@
 "canvas_objects/FX-M-KITCH-SINK/z_m": 0.7096125,
 "canvas_objects/FX-M-LAUNDRY-SINK/z_m": 0.0250495,
 "canvas_objects/FX-M-LAUNDRY/z_m": 0.0250495,
-"canvas_objects/FX-M-PORCH-HYD/z_m": 0.03175,
-"canvas_objects/FX-S-BALC-HYD/z_m": 3.069049,
+"canvas_objects/FX-M-PORCH-HYD/z_m": 0.64135,
+"canvas_objects/FX-S-BALC-HYD/z_m": 3.678649,
 "canvas_objects/FX-S-BATH1-LAV/z_m": 3.07975,
 "canvas_objects/FX-S-BATH1-SH/z_m": 3.07975,
 "canvas_objects/FX-S-BATH1-WC/z_m": 3.07975,
@@ -17860,6 +17860,12 @@
 14,
 "d7163a07ca29"
 ],
+"geometry/CMW101AAAA::framing/member:backing-0-000": [
+0.5334,
+0.71755,
+8,
+"0c2544548105"
+],
 "geometry/CMW101AAAA::framing/member:block-2-000-00": [
 -0.3413125,
 -0.2524125,
@@ -28803,6 +28809,12 @@
 6.096,
 20,
 "e2ceb76d32db"
+],
+"geometry/CSW101AAAA::framing/member:backing-0-000": [
+3.5814,
+3.76555,
+8,
+"d4b2eeeebace"
 ],
 "geometry/CSW101AAAA::framing/member:block-2-000-00": [
 3.048,
@@ -54226,6 +54238,12 @@
 2,
 "07a4d7ea6917"
 ],
+"member/CMW101AAAA/backing-0-000": [
+0.5334,
+0.71755,
+2,
+"c550ef7bc2f6"
+],
 "member/CMW101AAAA/block-2-000-00": [
 -0.3413125,
 -0.2524125,
@@ -63447,6 +63465,12 @@
 3.6576,
 2,
 "744849cb2c8d"
+],
+"member/CSW101AAAA/backing-0-000": [
+3.5814,
+3.76555,
+2,
+"522f4fb55158"
 ],
 "member/CSW101AAAA/block-2-000-00": [
 3.048,

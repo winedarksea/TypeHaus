@@ -169,6 +169,21 @@ MAIN_BACKING = [
     WallBacking(uid="2WV5J50Q0C", tag="BK-M-TUBDK-AP", wall_ref="W-M-TUBDK-W",
                 elevation=inch(2), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="bath 2 tub deck access panel frame"),
+    # FX-M-PORCH-HYD's seat. The hydrant states a WALL/24" mount on the element as of
+    # 2026-09-15 (plan/fixtures.py); before that it inherited a default FLOOR mount and
+    # resolved at 1 1/4", so there was nothing at 24" for a band to be missing behind.
+    #
+    # ** THE BAND SPANS TWO BAYS BECAUSE THE STATION IS NOT SETTLED. ** The hydrant is
+    # authored at x=12'-0" and W-M-S1's stud-006 is at 144.000" — the barrel is bored
+    # through a stud today, and nothing in the engine grades that. The open question is
+    # whether it moves to the bay centre (~151 1/2") or the bore is accepted; 128 3/4"..158"
+    # backs it either way, so settling that question later costs no framing. Both ends land
+    # on a stud face — stud-005's east at 128 3/4" and king-1-l0's west at 158" — which is
+    # what advisory.wall_backing_bearing asks for. Two blocks in the field, one run here.
+    WallBacking(uid="HTKFF371E9", tag="BK-M-S1-HYD", wall_ref="W-M-S1",
+                start=inch(128.75), length=inch(29.25),
+                elevation=inch(21), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="wall hydrant seat (FX-M-PORCH-HYD, 24 in.)"),
 ]
 
 SECOND_BACKING = [
@@ -181,6 +196,14 @@ SECOND_BACKING = [
     WallBacking(uid="W2XZ7J1J2X", tag="BK-S-SN3-AP", wall_ref="W-S-SN3",
                 elevation=inch(4), height=inch(7.25), profile="2x8",
                 material_ref="spf", purpose="suite bath access panel frame"),
+    # FX-S-BALC-HYD's seat, the balcony half of the same 2026-09-15 mount fix. This one sits
+    # cleanly in a bay: W-S-S1's stud-002 is at 80.000" and king-1-l0 at 94.750", so the
+    # hydrant at x=7'-4" (88") has 3 15/16" to the nearest stud face either side. One bay,
+    # one block, both ends bearing (80 3/4"..94").
+    WallBacking(uid="E5817BZ266", tag="BK-S-S1-HYD", wall_ref="W-S-S1",
+                start=inch(80.75), length=inch(13.25),
+                elevation=inch(21), height=inch(7.25), profile="2x8",
+                material_ref="spf", purpose="wall hydrant seat (FX-S-BALC-HYD, 24 in.)"),
 ]
 
 GARAGE_BACKING = [

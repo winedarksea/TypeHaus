@@ -821,14 +821,31 @@ ATTIC_FIXTURES = (
 # escutcheon is outdoors; leaving `room` unset would trade that for a worse
 # `advisory.fixture_room_unassigned` FAIL with a blank permit-schedule cell.
 #
-# Mount is WALL/24" from the type. The pierced wall is EXT_2X6 with 4" continuous
-# exterior insulation, so the hydrant's seat and feed stay on the warm side of the thermal
-# break — a cavity-only wall would freeze this detail.
+# The pierced wall is EXT_2X6 with 4" continuous exterior insulation, so the hydrant's seat
+# and feed stay on the warm side of the thermal break — a cavity-only wall would freeze this
+# detail.
+#
+# ** THE MOUNT IS RE-STATED ON THE ELEMENT, AND IT HAS TO BE (2026-09-15). ** This block
+# used to say "Mount is WALL/24" from the type" and that was simply not true of the model.
+# `Placeable.mount` is NON-OPTIONAL (`model/spatial.py`), so an element that says nothing
+# still carries a default `Mount()` — FLOOR, no elevation — and a default beats a type. Both
+# hydrants were therefore resolving at their storey's floor: FX-M-PORCH-HYD at 1 1/4", and
+# FX-S-BALC-HYD a full 24" BELOW the ft(2) supply barrel that feeds it (plan/mep_supply.py).
+#
+# The fix is not a resolver-wide "fall back to the type when the element is silent", because
+# a non-optional field cannot tell "the author said FLOOR" from "the author said nothing" —
+# such a fallback would silently overrule every deliberate floor mount in every house. The
+# convention is to re-state it on the element, as FURN-M-LAUNDRY-RACK already does. Written
+# out at each element rather than shared through a module constant: this file is
+# `# haus: editable` and a UI drag rewrites these calls, so every argument stays a literal
+# the writer can round-trip.
 PORCH_HYDRANT = (
     Fixture(uid="7QK2M4XR0B", tag="FX-M-PORCH-HYD", type_ref="FX-HYDRANT-SD34",
-            room="RM-M-BED", position=pt(ft(12), ft(0)), wall_ref="W-M-S1"),
+            room="RM-M-BED", position=pt(ft(12), ft(0)), wall_ref="W-M-S1",
+            mount=Mount(kind=MountKind.WALL, elevation=inch(24))),
 )
 BALCONY_HYDRANT = (
     Fixture(uid="D3NLW8VC5T", tag="FX-S-BALC-HYD", type_ref="FX-HYDRANT-SD34",
-            room="RM-S-PLANT", position=pt(ft(7, 4), ft(0)), wall_ref="W-S-S1"),
+            room="RM-S-PLANT", position=pt(ft(7, 4), ft(0)), wall_ref="W-S-S1",
+            mount=Mount(kind=MountKind.WALL, elevation=inch(24))),
 )
