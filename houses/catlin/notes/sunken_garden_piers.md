@@ -431,9 +431,7 @@ the one already priced into the number we compared against.
 Both columns land at d/c 0.056 — a factor of eighteen. **Nobody should read that as room to
 shrink them, and the cage is not what is holding them at this size.**
 
-* Both are 12" because that is the smallest sonotube the beam pockets and the HGAM gusset's
-  1½" edge distance will take (`params/sunken_garden.py`, the `CN-SG-TIE-COL` note) — and
-  because 12" is what 2" of cover needs on a #5 cage, which is the durability case the
+* Both are 12" because 12" is what 2" of cover needs on a #5 cage, which is the durability case the
   balcony redesign made house-wide (`notes/balcony_moment_columns.md` §1).
 * `PT-SG-FCOL` was 20" for a **bearing-width** reason and is not any more: it seated
   `PT-SG-BF2` on its top as well as the two front beams, and that is what took it from 16" to

@@ -495,9 +495,8 @@ def test_the_front_column_is_centred_on_the_span_its_top_has_to_reach(
     ends and nothing else — and a column carrying two collinear beam ends belongs on their
     axis.
 
-    12" and not 10", for the reason the four balcony corners are 12": it leaves 3 3/4" of
-    concrete beside each beam end for the HGAM10's Titen Turbo screws, against Simpson's
-    1 1/2" minimum, where a 10" round would leave 2 3/4".
+    12" and not 10", for the reason the four balcony corners are 12": one assembly and one
+    price row for all five cast columns.
     """
     column = _solid(catlin_model, "PT-SG-FCOL")
     ys = [p[1] for p in column.outline]
@@ -514,24 +513,18 @@ def test_the_front_column_is_centred_on_the_span_its_top_has_to_reach(
     assert COLUMN_RADIUS_IN * INCH - beam_half == pytest.approx(3.75 * INCH, abs=1e-3)
 
 
-def test_the_two_beam_on_column_ties_reach_concrete(catlin_model) -> None:
-    """CN-SG-TIE-COL and CN-SG-TIE-FCOL hold two beam ends down to a cast column top.
+def test_the_porch_column_tops_carry_no_gusset(catlin_model) -> None:
+    """PT-SG-COL / PT-SG-FCOL carry a pillar on an ABU66SS, and the beams hang off that pillar.
 
-    Both are HGAM10 masonry gusset angles: #14 screws into the wood leg, Titen Turbo into
-    the concrete — an H2.5A's published values are nails into lumber on BOTH legs, which
-    would splice the two beam ends across the pour instead of holding either down to it.
-    Every HGAM10 in the house is a HURRICANE_TIE as of 2026-09-13: the part is a hurricane
-    tie wherever it lands, and sitting on a cast column top does not make it a post cap.
-    The ten that used to be POST_CAP joined these two, which merged the BOM's split
-    2 + 10 rows into one row of twelve at the same money and left every finding byte
-    identical — ``_POST_TOP_KINDS`` already held both kinds. No authored H2.5A is left in
-    the house.
+    The HGAM10 pairs that held the beams down to the pour went on 2026-09-16: no beam bears
+    on these tops any more, so a gusset there holds nothing and piles up on the ABU and the
+    HU212-3 flanges. No authored H2.5A is left in the house either.
     """
-    for tag, column in (("CN-SG-TIE-COL", "PT-SG-COL"), ("CN-SG-TIE-FCOL", "PT-SG-FCOL")):
-        tie = catlin_model.plan.by_tag(tag)
-        assert tie.kind.value == "hurricane_tie", tag
-        assert tie.size == "HGAM10", tag
-        assert column in tie.connects, tag
+    for column in ("PT-SG-COL", "PT-SG-FCOL"):
+        on_top = [el for el in catlin_model.plan.all_elements()
+                  if el.element_kind == "Connector" and column in el.connects]
+        assert not [el for el in on_top if el.size == "HGAM10"], column
+        assert [el.size for el in on_top if el.kind.value == "post_base"] == ["ABU66SS"]
 
     authored = [el for el in catlin_model.plan.all_elements()
                 if el.element_kind == "Connector" and getattr(el, "size", None) == "H2.5A"]

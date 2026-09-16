@@ -18,8 +18,8 @@ and a frost-foundation bridge landing under the garage gable extension.
   - 30" RO max on non-load-bearing walls (one stud broken).
   - 27" RO max on load-bearing walls (one stud broken, jacks added).
 - **Envelope:** 2x6 **throughout**, main
-  and upper, + **4" of exterior closed-cell spray foam in two passes** carried on a
-  two-tier flat-girt standoff (`notes/catlin_truss_engineering.md`) — not polyiso+EPS,
+  and upper, + **4" of exterior high-lift HFO closed-cell spray foam, one visit** (`notes/ccspf_spec.md`)
+  carried on a one-tier flat-girt standoff (`notes/catlin_truss_engineering.md`) — not polyiso+EPS,
   and there is no sheet WRB above it because the foam is the water plane. House walls are
   clad in **exposed-fastener PBR panel** (26 ga); standing seam stays on
   both roofs and on the garage walls. Hot roof (4:12, zero overhang) with 6" exterior

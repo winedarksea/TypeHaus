@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** eafac28f0e2a666d  
+**Model hash:** b8556c38229b93f6  
 **Lines:** 116
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -84,7 +84,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | H2.5A hurricane/seismic tie | 10 | ea |  | building |
 | H2.5ASS stainless hurricane/seismic tie | 6 | ea |  | building |
 | H2.5AZ ZMAX hurricane/seismic tie | 30 | ea |  | building |
-| HGAM10 masonry gusset angle | 24 | ea |  | building |
+| HGAM10 masonry gusset angle | 20 | ea |  | building |
 | HU212-3 face-mount hanger, triple 2x12 | 4 | ea |  | building |
 | HU28-2Z face-mount hanger, double 2x8 (ZMAX) | 4 | ea |  | building |
 | HUC concealed-flange masonry/concrete hanger | 2 | ea |  | building |

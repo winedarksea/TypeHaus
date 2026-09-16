@@ -257,8 +257,7 @@ def test_a_tie_naming_the_back_span_bearing_wall_counts() -> None:
 
 def test_a_tie_on_the_cantilevered_bearing_line_answers_a_different_load() -> None:
     """W-N is the bearing the joists oversail. Hardware there holds that joint together; it
-    is not the back-span hold-down the overhang's prying calls for. (catlin authors exactly
-    this shape — CN-SG-TIE-COL on the back beams — so the distinction is not academic.)"""
+    is not the back-span hold-down the overhang's prying calls for."""
     finding = _one(posts=(_TIP_POST,),
                    extras=(_tie(y_ft=_SPAN_FT, connects=("PT-TIP", "W-N")),))
     assert finding.result is Result.FAIL

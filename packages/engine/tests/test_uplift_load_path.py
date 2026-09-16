@@ -247,19 +247,19 @@ def test_an_undeclared_bearing_is_still_reported_as_un_gradeable(ctx) -> None:
     assert "declares no `supported_by`" in finding.message
 
 
-def test_a_gusset_on_a_cast_column_connects_a_beam_to_it(findings) -> None:
-    """``CN-SG-TIE-COL`` / ``CN-SG-TIE-FCOL`` are the uplift connection at the two columns.
+def test_a_beam_hung_off_the_post_on_its_seat_is_connected(findings) -> None:
+    """The porch beams name the cast columns as their seat but hang off the pillar on top.
 
-    They are HGAM10 masonry gussets, authored HURRICANE_TIE like every other HGAM10 in the
-    house — a beam landing on a pour is held down by a tie, not capped by a post cap. A
-    ``_POST_TOP_KINDS`` that named only the strap and the cap reported all four of these
-    beam ends as breaks while the plan had already modelled them.
+    No gusset at the column top since 2026-09-16: the HU212-3 into PT-SG-B*2 is the joint,
+    and that pillar's ABU66SS carries it on down. Without the rule all four read as breaks.
     """
-    for beam, column in (("BM-SG-BKW", "PT-SG-COL"), ("BM-SG-BKE", "PT-SG-COL"),
-                         ("BM-SG-FRW", "PT-SG-FCOL"), ("BM-SG-FRE", "PT-SG-FCOL")):
+    for beam, column, pillar in (("BM-SG-BKW", "PT-SG-COL", "PT-SG-BR2"),
+                                 ("BM-SG-BKE", "PT-SG-COL", "PT-SG-BR2"),
+                                 ("BM-SG-FRW", "PT-SG-FCOL", "PT-SG-BF2"),
+                                 ("BM-SG-FRE", "PT-SG-FCOL", "PT-SG-BF2")):
         finding = next(f for f in findings if f.element_tags == (beam, column))
         assert finding.result is Result.PASS
-        assert "an authored strap or cap" in finding.message
+        assert f"an authored hanger off {pillar}" in finding.message
 
 
 def test_the_canopy_headers_are_covered_at_both_of_their_joints(findings):
@@ -275,7 +275,7 @@ def test_the_canopy_headers_are_covered_at_both_of_their_joints(findings):
     # Only the WEST header still lands on wood. PT-BW-RE and PT-BW-RNE became full-height
     # cast concrete columns on 2026-09-10 — the canopy's east lateral system — so BM-BW-RE
     # lands on a pour and its joint is a shim pack plus an HGAM10 gusset, which is the
-    # concrete-to-wood detail the two seat beams and the porch columns already use. A
+    # concrete-to-wood detail the balcony corner seats already use. A
     # beam-on-WOOD-post strap rule has nothing to say about it, and should not.
     for header, column in (("BM-BW-RW", "PT-BW-CW"), ("BM-BW-RW", "PT-BW-CNW")):
         below = next(f for f in findings if f.element_tags == (header, column))

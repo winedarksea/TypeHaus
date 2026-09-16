@@ -237,14 +237,19 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   invisible once the foam is on — inspect the pattern before the sprayer arrives. Head seats
   FLUSH; a head that will not pull down means the wrong screw.
 - There is no WRB — the foam is air/water/vapour/thermal; `plan/transitions.py` names
-  `spray-foam-ext` as the water/thermal plane. THE FOAM IS **HUNTSMAN HEATLOK HFO HIGH
-  LIFT** (ICC-ES ESR-4073): §4.2 permits 6-1/2" per pass, so 4" is ONE application below
-  80 F (the TDS ladder is 6.5"/4"/3.25" by substrate temperature). Heatlok HFO *Pro*
-  (ESL-1372) is 2"/pass and would force a second mobilisation — do not let it be
-  substituted. **ESR-4073 does NOT evaluate WRB**, so the water plane is an open
-  alternate-approval item under Minn. R. 1300.0110 on Huntsman's own E331/E2178 data
-  (notes/catlin_truss_engineering.md §9). Wood and the screw pass happen on the FLAT
-  wall before tilt; fillet the foam against the block sides (BSI-048), never butt square.
+  `spray-foam-ext` as the water/thermal plane. **THE FOAM IS A PERFORMANCE SPEC, NOT A
+  BRAND** (owner, 2026-09-16): `notes/ccspf_spec.md` §1 is the requirement and §2 the
+  qualifying list — Enverge OnePass HFO, Heatlok HFO High Lift, SealTite PRO HFO,
+  InsulStar OPTIMAXX (report unread). The one that cannot slip: **≥ 4" per pass by the
+  evaluation report**, or the wall needs a cooling wait or a second visit — Heatlok HFO
+  *Pro* (2"/pass) and Corbond IV (ER-146 lapsed 2026-07) do not qualify. Spray only at
+  60-80 F on dry (< 16% MC) sheathing, as two back-to-back passes in one visit (1" picture-
+  frame pass, then 3"); one 4" pass is acceptable. **Never a sub-1" flash coat** — Huntsman
+  and JM both say it under-cures and loses adhesion. **WRB listing is the tiebreaker**:
+  only OnePass carries it in its report (ER-859); on any other product the water plane is
+  an open Minn. R. 1300.0110 alternate-approval item (notes/catlin_truss_engineering.md §9).
+  Wood and the screw pass happen on the FLAT wall before tilt; fillet the foam against the
+  block sides (BSI-048), never butt square.
 - Everything outboard of sheathing is KDAT — one BOM row, plus `3-2x4:kdat` for the block.
   Blocks are on the STUD module, every OTHER stud, at 32" from the wall's LAYOUT LINE (girts
   run their own 24" module) — 32"x24"=5.33 ft2 is the crossing tributary in

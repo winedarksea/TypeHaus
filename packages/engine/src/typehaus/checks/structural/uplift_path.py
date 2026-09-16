@@ -88,9 +88,8 @@ _RULES = _CONFIG.uplift
 #: down — the same hand-off ``takeoff/uplift.py`` makes, read from the same field.
 _SEATED_UPLIFT_KINDS = frozenset({ConnectorKind.HURRICANE_TIE, ConnectorKind.HOLD_DOWN})
 #: What can make a beam-to-post connection. HURRICANE_TIE belongs here with the strap and
-#: the cap: on the sunken garden's two cast columns an H2.5A on the bearing plane IS the
-#: uplift connection (``CN-SG-TIE-COL`` / ``CN-SG-TIE-FCOL``), and a set that named only
-#: the strap reported four connected joints as breaks.
+#: the cap: an HGAM10 gusset on a bearing plane is an uplift connection (catlin's balcony
+#: corner seats, CN-SG-SEAT-*).
 _POST_TOP_KINDS = frozenset({ConnectorKind.HOLD_DOWN, ConnectorKind.POST_CAP,
                              ConnectorKind.HURRICANE_TIE})
 
@@ -379,13 +378,21 @@ def _post_links(ctx: CheckContext) -> list:
 
     beams = sorted((e for e in ctx.plan.all_elements() if isinstance(e, Beam)),
                    key=lambda e: e.tag)
+    # A beam hung off a post that stands on its seat: the hanger is the uplift joint, and the
+    # standing post's own base carries it on down (catlin's porch beams off PT-SG-B*2).
+    hung = authored_joints(ctx.model, _POST_TOP_KINDS | {ConnectorKind.JOIST_HANGER})
     for beam in beams:
         for ref in beam.bearing_refs:
             seat = posts.get(ref)
             if seat is None:
                 continue  # bears on a wall, which is links 1-4's business
+            carrier = next((t for t, p in sorted(posts.items())
+                            if p.supported_by == ref and frozenset({beam.tag, t}) in hung),
+                           None)
             if frozenset({beam.tag, ref}) in topped:
                 hardware = "an authored strap or cap"
+            elif carrier is not None:
+                hardware = f"an authored hanger off {carrier}, which stands on {ref}"
             elif seat.size in stocked and not _is_concrete(ctx, seat):
                 hardware = "a derived KBS1Z strap"
             else:

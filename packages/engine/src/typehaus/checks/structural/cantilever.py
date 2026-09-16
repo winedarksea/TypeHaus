@@ -203,9 +203,8 @@ def _back_span_bearings(ctx: CheckContext, deck: _Cantilever,
 
     Arm (c) is an uplift tie at the back span: the overhang levers that bearing upward and
     a tie there is what holds it down. A tie on the *cantilevered* bearing line answers a
-    different load — catlin authors one (CN-SG-TIE-COL, tying the back beams to their
-    sonotube column) and it must not be mistaken for this one — so the end each bearing sits
-    at decides whether naming it counts.
+    different load and must not be mistaken for this one, so the end each bearing sits at
+    decides whether naming it counts.
     """
     axis_lo, axis_hi, _perp_lo, _perp_hi = extent
     start, end = deck.overhangs

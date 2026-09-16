@@ -252,7 +252,8 @@ Three, and the first is worth more than the other two together.
    bay by bay. Do not spray a wet deck. What wets a sandwiched deck is not diffusion and not
    a leak — it is the water already in the panel the day it was foamed, and after the foam
    goes on there is no drying path in either direction. $30 and an hour.
-2. **Full contact, no voids.** Minimum 1.5" first lift, full adhesion to the deck underside,
+2. **Full contact, no voids.** Minimum 1.5" first lift (two back-to-back passes, 1.5-2" then
+   the balance, per `notes/ccspf_spec.md` §3), full adhesion to the deck underside,
    and a visual void inspection of every bay before the batts go in. A void holds water AND
    air, which is what a sandwich rots from. After the batts the deck underside is invisible
    for the life of the house.

@@ -642,13 +642,13 @@ lifts any more, which is what used to force a second mobilisation.
    no amount of driver is the answer.
 6. **Jamb posts and head/sill courses at each RO**, on their own blocks, screwed at ≤ 24".
 7. **Tilt.**
-8. **Foam: one 4" application** of **Huntsman Heatlok HFO High Lift (ICC-ES ESR-4073)**,
-   sprayed through the 20-1/2" clear between courses and behind them — the girt stands 1/2"
-   off the foam face, so the whole plane is reachable from outside. **§4.2 permits 6-1/2" per
-   pass**, and the TDS ladder is 6.5" at or below 70 F, 4" at 70-80 F, 3.25" above 80 F, so
-   4" in one application holds **below 80 F** and substrate temperature on the day is the
-   condition. Heatlok HFO *Pro* is a different product (ESL-1372, 2" per pass) and would force
-   a second lift and a second mobilisation; do not let a supplier substitute it silently. **Fillet against the block sides** (BSI-048), do not butt square. **Shave to a
+8. **Foam: 4" in one visit**, of any product qualifying under `notes/ccspf_spec.md` (this
+   note's ESR citations are to Heatlok HFO High Lift, ESR-4073), sprayed
+   through the 20-1/2" clear between courses and behind them — the girt stands 1/2" off the
+   foam face, so the whole plane is reachable from outside. **Dry sheathing, 60-80 F.**
+   Recommended: a 1" pass picture-framing every block, buck and jamb, then 3" back to back;
+   one 4" pass is acceptable. Never a sub-1" flash coat, and never a 2"/pass product
+   (Heatlok HFO *Pro*, ESL-1372), which forces a cooling wait. **Fillet against the block sides** (BSI-048), do not butt square. **Shave to a
    gauge 1/2" behind the block's outer face**; the blocks stand proud at every crossing and
    are the gauge.
 9. **Sill pans, jamb trim, windows, head flashing, head trim, cladding.**
@@ -665,10 +665,11 @@ the cladding installer rather than letting them discover it.
 **THE FOAM IS THE ONLY WATER PLANE, AND ITS WRB LISTING IS AN OPEN ALTERNATE-APPROVAL ITEM.**
 This wall has no housewrap, no building paper and no membrane: the ccSPF is air, water,
 vapour and thermal in one application, and §1 says so. **ICC-ES ESR-4073 does not evaluate
-water-resistive barrier.** The only ccSPF report found granting a WRB listing is Icynene
-ProSeal Eco (ESR-3493 §4.6, 1-1/2" minimum) and it **expired in 2021**, so it cannot be
-leaned on. Approval here runs through **Minn. R. 1300.0110** (alternate materials and
-methods) on **Huntsman's own ASTM E331 and ASTM E2178 data for the product actually bought**.
+water-resistive barrier.** Icynene ProSeal Eco's listing (ESR-3493 §4.6) expired in 2021.
+**Holcim Enverge OnePass HFO (IAPMO ER-859) does list WRB, at ≥ 1-1/2" on ASTM E331**
+(found 2026-09-16, `notes/ccspf_spec.md`), and buying it closes this item. On any other
+product, approval runs through **Minn. R. 1300.0110** (alternate materials and methods) on
+**the maker's own ASTM E331 and ASTM E2178 data for the product actually bought**.
 That data has to be in hand before the order, not at inspection. It is stated here as an open
 item rather than buried, because a reviewer reading §1 would otherwise reasonably assume the
 WRB question was closed by the ESR, and it is not.

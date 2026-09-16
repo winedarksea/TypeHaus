@@ -1408,10 +1408,7 @@ COLUMN = Post(uid="SGP001AAAA", tag="PT-SG-COL",
 # where a column carrying two collinear beam ends belongs.
 #
 # **12", not 10".** 12" matches PT-SG-COL and the four new balcony corner columns, so ONE
-# assembly (SUNKEN_GARDEN_COLUMN_12) and one price row serve all five. It also leaves
-# 3-3/4" of concrete beside each beam end for the HGAM10's Titen Turbo screws against
-# Simpson's 1-1/2" minimum, where a 10" round would leave 2-3/4". Bearing was never what
-# governed and still is not: ~30 psi under the two beam ends on 5,000 psi concrete.
+# assembly (SUNKEN_GARDEN_COLUMN_12) and one price row serve all five.
 #
 # ``size="12 round"``. Never a nominal form like "12x12": that matches ``_RE_NOMINAL`` in
 # resolve/framing/profiles.py, misses LUMBER_ACTUAL and silently resolves to 1.5x5.5. The
@@ -1423,8 +1420,8 @@ COLUMN = Post(uid="SGP001AAAA", tag="PT-SG-COL",
 # lip, and a beam seat CAST TO LINE with a stainless standoff and NO grout island.
 #
 # **Round, not square.** Connector SIDE COVER is the test, and nothing at this top is
-# bolted through the column: two beam ends land on the pour and an authored HGAM10 masonry
-# gusset (CN-SG-TIE-FCOL) holds them down. See notes/uplift_load_path.md.
+# bolted through the column: PT-SG-BF2 stands on it through an ABU66SS, and the two beams
+# hang off that pillar (HU212-3). See notes/uplift_load_path.md.
 _front_beam_depth_ft = _back_beam_depth_ft  # same member (SPEC.back_beam), same soffit drop
 # ZERO, since 2026-09-03: the column seats two collinear beam ends and nothing else, so its
 # axis is the beams' axis. It was 4 7/8" while PT-SG-BF2 stood on this top and the pour had
@@ -2499,8 +2496,7 @@ MAIN_NODES = [
 
 # Two 3-ply KDAT 2x12 back beams: cast column -> side-wall pockets (two ~9'6" spans).
 # **Not "treated LVL"** — that product does not exist at this depth, and ``SPEC.back_beam``
-# has read "3-2x12" with BEAM_KDAT since 2026-08-23; the HGAM10 comment below already
-# called it "the 3-ply KDAT beam". This header was the last line still saying LVL.
+# has read "3-2x12" with BEAM_KDAT since 2026-08-23.
 BACK_BEAMS = [
     Beam(uid="SGBM01AAAA", tag="BM-SG-BKW", start_node="N-SGM-COLW", end_node="N-SGM-NW",
          size=SPEC.back_beam, assembly="BEAM_KDAT",
@@ -4042,9 +4038,7 @@ for _row, _y, _rise in _PILLAR_ROWS:
 # keeps both IFC GlobalIds continuous across the whole history of this joint.
 
 # THE FOUR CORNER BEAM SEATS. Each 12" column top carries ONE balcony beam end (the west
-# and east beams' two ends each), held down by an HGAM10 masonry gusset angle — the same
-# part and the same detail the two porch columns already carry at CN-SG-TIE-COL and
-# CN-SG-TIE-FCOL. #14 screws to the wood, Titen Turbo to the concrete at >=3" edge distance
+# and east beams' two ends each), held down by an HGAM10 masonry gusset angle. #14 screws to the wood, Titen Turbo to the concrete at >=3" edge distance
 # on the 12" round (Simpson's minimum is 1-1/2"), and an EPDM or HDPE isolator between the
 # gusset and the stainless standoff under the beam soffit.
 #
@@ -4153,49 +4147,17 @@ CONNECTORS += [
     # notes/balcony_differential_movement.md and notes/beam_water_protection.md.
     #
     # uid, tag, position and elevation are unchanged, so the IFC GlobalIds survive the
-    # retype, exactly as the HGAM10 retype below was careful to do.
+    # retype.
     Connector(uid="SGCH01AAAA", tag="CN-SG-HGR-W", kind=ConnectorKind.JOIST_HANGER,
               position=pt(ft(_x_ax_w), ft(_y_col)), elevation=_back_beam_mid,
               size="HUC212-3", connects=("BM-SG-BKW", "W-SG-W1")),
     Connector(uid="SGCH02AAAA", tag="CN-SG-HGR-E", kind=ConnectorKind.JOIST_HANGER,
               position=pt(ft(_x_ax_e), ft(_y_col)), elevation=_back_beam_mid,
               size="HUC212-3", connects=("BM-SG-BKE", "W-SG-E1")),
-    # HGAM10, not H2.5A. An H2.5A is a wood-to-wood tie; library/hardware.py's
-    # own record says "rafter/joist-to-plate" and its published values are nails into lumber
-    # on BOTH legs. At this joint one leg has the 3-ply KDAT beam and the other has a cast
-    # column top it cannot nail to, so as drawn the tie spliced the two beam ends across the
-    # pour rather than holding either down to it. The HGAM masonry gusset angle is the part
-    # that actually reaches: #14 screws into the wood leg, Titen Turbo into the concrete,
-    # 1 1/2" minimum edge distance — which both rounds satisfy as cast (a 12" round gives
-    # 6" to its centre, a 16" round 8"). It is catalogued now under ROLE_MASONRY_GUSSET_ANGLE
-    # and priced in prices.toml, which is what the old note was waiting for.
-    #
-    # This is a CORRECTNESS change, not a check improvement: ``takeoff/uplift.py`` keys the
-    # beam-to-post link on ``ConnectorKind``, never on ``size``, so every uplift finding is
-    # byte-identical afterward. What moves is the BOM — ``authored_connector_rows`` groups by
-    # ``(kind, size)``, and before the catalog entry existed ``hardware_by_model("HGAM10")``
-    # would have returned None and dropped the row into ``unpriced`` with ``role=None``.
-    #
-    # NOT the CCQM/CCTQM embedded column-cap family: Simpson publish its loads for solid
-    # concrete piers a minimum of 14" SQUARE with (4) #7 verticals. PT-SG-COL is a 12" round
-    # (113 in^2) and the price basis carries a 4-bar #4 cage. And do NOT delete these two
-    # Connectors instead — ``_is_concrete(seat)`` is true here and "12 round"/"16 round" are
-    # not stocked post sizes, so with no ``_POST_TOP_KINDS`` connector at the joint all four
-    # beam-end links go ``hardware=None`` and the check reports four FAILs.
-    # Same part at CN-SG-TIE-FCOL below. See notes/uplift_load_path.md.
-    # ** PAIRED SINCE 2026-09-14, one gusset each side of the beam line. ** See the corner
-    # seats above for the reasoning (NDS 3.3.3, FL11473 fn.4) and the edge-distance check.
-    # The back beams run EAST-WEST, so their faces are north and south and the offset is in
-    # y; 2-1/4" is half the 4-1/2" 3-2x12. That is the tight case on a 12" round — anchors
-    # land in the 2-1/4" to 3" band off the axis — and it holds on both sides.
-    Connector(uid="SGCT01AAAA", tag="CN-SG-TIE-COL", kind=ConnectorKind.HURRICANE_TIE,
-              position=pt(ft(_cx), ft(_y_col) - inch(2.25)),
-              elevation=_back_beam_soffit, size="HGAM10",
-              connects=("BM-SG-BKW", "BM-SG-BKE", "PT-SG-COL")),
-    Connector(uid="SGCT01BAAA", tag="CN-SG-TIE-COLB", kind=ConnectorKind.HURRICANE_TIE,
-              position=pt(ft(_cx), ft(_y_col) + inch(2.25)),
-              elevation=_back_beam_soffit, size="HGAM10",
-              connects=("BM-SG-BKW", "BM-SG-BKE", "PT-SG-COL")),
+    # CN-SG-TIE-COL/-COLB (SGCT01AAAA/SGCT01BAAA) are RETIRED, 2026-09-16: HGAM10 gussets
+    # from when these beams bore on the pour. They hang off PT-SG-BR2 now (HU212-3, above),
+    # which stands on the column through its ABU66SS — nothing left for a gusset to hold.
+    # Spent uids, do not reuse.
     # CN-SG-TIE-BR2 (uid J6XRAXQG5T) is retired, with the joist reinforcement above. It held
     # the *front* bearing of PT-SG-BR2's joist line down against the prying
     # a loaded cantilever tip put there; with the pillar row moved onto the back-beam line
@@ -4207,30 +4169,21 @@ CONNECTORS += [
     Connector(uid="SGCH04AAAA", tag="CN-SG-HGR-FE", kind=ConnectorKind.JOIST_HANGER,
               position=pt(ft(_x_ax_e), ft(_y_ax_front)), elevation=_back_beam_mid,
               size="HUC212-3", connects=("BM-SG-FRE", "W-SG-E1")),
-    # Paired, exactly as CN-SG-TIE-COL above and for the same reasons.
-    Connector(uid="SGCT02AAAA", tag="CN-SG-TIE-FCOL", kind=ConnectorKind.HURRICANE_TIE,
-              position=pt(ft(_cx), ft(_y_ax_front) - inch(2.25)),
-              elevation=_back_beam_soffit, size="HGAM10",
-              connects=("BM-SG-FRW", "BM-SG-FRE", "PT-SG-FCOL")),
-    Connector(uid="SGCT02BAAA", tag="CN-SG-TIE-FCOLB", kind=ConnectorKind.HURRICANE_TIE,
-              position=pt(ft(_cx), ft(_y_ax_front) + inch(2.25)),
-              elevation=_back_beam_soffit, size="HGAM10",
-              connects=("BM-SG-FRW", "BM-SG-FRE", "PT-SG-FCOL")),
+    # CN-SG-TIE-FCOL/-FCOLB (SGCT02AAAA/SGCT02BAAA): retired with the pair above.
 ]
 
-# THE SIX BEAM STANDOFF SHIM PACKS — every wood beam soffit in this garden that lands on a
+# THE FOUR BEAM STANDOFF SHIM PACKS — every wood beam soffit in this garden that lands on a
 # pour. They existed as prose inside SUNKEN_GARDEN_COLUMN_12.source and PIER_CONCRETE_12
 # .source ("tolerance taken in a 1/2\"-1\" stainless standoff shim pack") and nowhere else:
 # a real purchased part at a real joint with nothing in the BOM, nothing in 3D and nothing a
 # reviewer could click. SS316-SHIM-35 carries the detailing now — no grout island, 316
 # stainless or HDG with an isolator, EPDM/HDPE where the pack meets an HGAM10 — and these
-# six make it countable.
+# four make it countable.
 #
 # One per column top, beside the gusset that holds the beam down to it. The four balcony
 # corners land on `_balcony_beam_soffit` PLUS THEIR ROW'S RISE — the rear row's two seats are
-# 2" above the front row's, because the beams tilt (see `_balcony_rise_at`); PT-SG-COL and
-# PT-SG-FCOL each carry a PAIR of porch beams meeting over one top, which is one seat and one
-# pack, on `_back_beam_soffit`.
+# 2" above the front row's, because the beams tilt (see `_balcony_rise_at`). PT-SG-COL and
+# PT-SG-FCOL take none: no beam bears on them, their pillars stand on ABU66SS.
 #
 # ** THE FOUR BALCONY PACKS ARE LAPPED, NOT FLAT, AND THE SHAPE IS THE SPEC. ** A tilted beam
 # on a level cast seat bears on a LINE: at 0.0227 in/in the uphill edge of a 6" bearing stands

@@ -244,13 +244,16 @@ keeps the sunken garden's and the breezeway's twenty connectors from being bough
   columns themselves.
 
   **Nothing bolts to any of the six cast columns.** Beams land on their tops and an authored
-  HGAM10 gusset angle on the bearing plane holds them down — six of those now, two at the
-  porch and four at the balcony seats. The side-cover arithmetic that ran through three
+  HGAM10 gusset angle on the bearing plane holds them down — at the four balcony seats (the
+  two porch columns carry pillars on ABU66SS instead, since 2026-09-16). The side-cover arithmetic that ran through three
   section shapes here (16" square at $478-1,327 against $304-633 for a fibre tube, then 16"
   round at 3.76" of cover, then 20" round at 5.76") is **retired with the question it was
   serving**: `PT-SG-FCOL` is a 12" round like the rest, sized by the 2" of cover its cage
   needs rather than by a connector plate nobody is specifying.
-- **The SKU at the two beam-on-column bearings.**
+- **The SKU at the two beam-on-column bearings.** *Superseded 2026-09-16: no beam bears on
+  either column top any more. The porch beams hang off PT-SG-BR2/BF2 on HU212-3s, those
+  pillars stand on ABU66SS, and `CN-SG-TIE-COL`/`-FCOL` are deleted. The history below is
+  kept for why HGAM10 is the part at the balcony corners.*
   `CN-SG-TIE-COL` and `CN-SG-TIE-FCOL` sit on the bearing plane (the beam soffit = the
   column top) and were authored `H2.5A`, which `structural.uplift_load_path` accepted as
   coverage. But an H2.5A is a **wood-to-wood** tie — its own catalog record says so,

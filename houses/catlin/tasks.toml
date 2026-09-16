@@ -220,6 +220,8 @@ constraints = [
   { label = "girt screws verified on every wall — one 8\" screw per three-ply block, counted wall by wall" },
   { label = "girt course phase checked against the window heads" },
   { label = "sprayer, rig and installer booked — this foam is SPRAYED (4\" ccSPF), not boards and tape" },
+  { label = "foam product is on the notes/ccspf_spec.md qualifying list — no 2\"/pass product substituted" },
+  { label = "spray day forecast 60-80 F and dry; sheathing under 16% MC on a pin meter" },
   { label = "all wall penetrations set — nothing goes through the plane afterwards" },
   { label = "confirmed with the sub 48 hours ahead" },
 ]

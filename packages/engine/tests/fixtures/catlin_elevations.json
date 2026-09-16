@@ -42495,30 +42495,6 @@
 2,
 "23ddce789dbd"
 ],
-"geometry/SGCT01AAAA/body": [
--0.5461,
--0.3937,
-2,
-"864abf1c1f5e"
-],
-"geometry/SGCT01BAAA/body": [
--0.5461,
--0.3937,
-2,
-"864abf1c1f5e"
-],
-"geometry/SGCT02AAAA/body": [
--0.5461,
--0.3937,
-2,
-"864abf1c1f5e"
-],
-"geometry/SGCT02BAAA/body": [
--0.5461,
--0.3937,
-2,
-"864abf1c1f5e"
-],
 "geometry/SGDR01AAAA-00/body": [
 -5.9801125,
 -4.1513125,
@@ -77126,14 +77102,6 @@
 "solids/CN-SG-STDF-R1/z1_m": 2.6087917,
 "solids/CN-SG-STDF-R3/z0_m": 2.5833917,
 "solids/CN-SG-STDF-R3/z1_m": 2.6087917,
-"solids/CN-SG-TIE-COL/z0_m": -0.5461,
-"solids/CN-SG-TIE-COL/z1_m": -0.3937,
-"solids/CN-SG-TIE-COLB/z0_m": -0.5461,
-"solids/CN-SG-TIE-COLB/z1_m": -0.3937,
-"solids/CN-SG-TIE-FCOL/z0_m": -0.5461,
-"solids/CN-SG-TIE-FCOL/z1_m": -0.3937,
-"solids/CN-SG-TIE-FCOLB/z0_m": -0.5461,
-"solids/CN-SG-TIE-FCOLB/z1_m": -0.3937,
 "solids/CN~H10A~W-A-N1~01/z0_m": 9.144,
 "solids/CN~H10A~W-A-N1~01/z1_m": 9.2964,
 "solids/CN~H10A~W-A-N1~02/z0_m": 8.4582,
