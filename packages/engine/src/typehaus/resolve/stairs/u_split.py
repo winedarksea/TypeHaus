@@ -71,6 +71,13 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     # landing decks. See ``_notch_z``.
     thickness = _tread_thickness(stair)
     flight_len = tread * lower_treads  # ``tread`` is the riser-to-riser going here.
+    # Each flight is anchored to the storey edge it actually MEETS, not to the longer
+    # flight's line: the lower springs from s=0 (the departing deck) and the upper arrives
+    # at s=0 (the arrival deck). When the tread counts differ — ``flight_treads`` odd — the
+    # slack falls in the landing zone, where a deeper half-landing absorbs it, instead of
+    # leaving a ``tread``-wide strip of open floor opening at the head of the stair. See
+    # ``notes/u_stair_split_landing.md``.
+    upper_flight_len = tread * upper_treads
     lower_landing_z = z0 + riser * (lower_treads + 1)
     upper_landing_z = lower_landing_z + riser
     arrival = z0 + riser * risers
@@ -80,7 +87,7 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     # flight → the arrival deck). The subfloor clip clamps the springing dip.
     for prefix, lane_lo, s_lo, s_hi, spring_z, bear_z, count in (
         ("lower", lower_lane, 0.0, flight_len, z0, lower_landing_z, lower_treads),
-        ("upper", upper_lane, flight_len, flight_len - tread * upper_treads,
+        ("upper", upper_lane, upper_flight_len, 0.0,
          upper_landing_z, arrival, upper_treads),
     ):
         if not count:
@@ -110,22 +117,27 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
                                             at(tread * index, lower_lane + width))))
     # Upper flight climbs back toward the start edge; its first tread leaves the upper
     # landing, and its top tread ends one riser below the arrival deck. Its riser faces run
-    # back from the landing-zone edge — ``flight_len - tread * index`` is the face a walker
-    # steps up at to reach tread ``index``, so the drawn grid stays flush at both ends.
+    # back from ITS OWN landing edge — ``upper_flight_len - tread * index`` is the face a
+    # walker steps up at to reach tread ``index``, so the drawn grid stays flush at both
+    # ends and the top nosing lands exactly on the arrival deck edge at s=0.
     for index in range(upper_treads):
         top = z0 + riser * (lower_treads + 3 + index)
-        s = flight_len - tread * (index + 1) + (tread - nosing) / 2.0
+        s = upper_flight_len - tread * (index + 1) + (tread - nosing) / 2.0
         out.append(FramedMember(stair.uid, f"tread-upper-{index:03d}", "tread", tread_profile,
                                 at(s, upper_lane), at(s, upper_lane + width),
                                 _notch_z(top, thickness), top, width,
-                                riser_line=(at(flight_len - tread * index, upper_lane),
-                                            at(flight_len - tread * index,
+                                riser_line=(at(upper_flight_len - tread * index, upper_lane),
+                                            at(upper_flight_len - tread * index,
                                                upper_lane + width))))
     # Two landing platforms in the landing zone beyond the flight ends, each on its own
     # flight's side of the well partition.
     out.extend(_landing_platform(stair, "lower", at, flight_len, landing_depth_m,
                                  *lower_half, lower_landing_z, thickness))
-    out.extend(_landing_platform(stair, "upper", at, flight_len, landing_depth_m,
+    # The two half-landings stay FLUSH at the far end of the well — that is what makes the
+    # 180° crossing work and keeps the opening budget unchanged — so the upper half simply
+    # gets one going deeper when the flights carry different tread counts.
+    out.extend(_landing_platform(stair, "upper", at, upper_flight_len,
+                                 flight_len + landing_depth_m - upper_flight_len,
                                  *upper_half, upper_landing_z, thickness))
     # Well partition between the up and down flights: generated stud framing (not an
     # authored Wall) centred in the gap the two lanes leave, bearing on the subfloor the
@@ -133,8 +145,10 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     # foundation (the flight-clip guard is the backstop). Both flights' inner stringers
     # bear on it. It stops at the flight end; the landing platforms take over beyond. The
     # 0.20 m inset holds its ends off the opening perimeter framing.
+    # It stops at the SHORTER flight's end: its studs run z0 → arrival, so carrying it to
+    # the longer flight's line drives them straight through the upper landing's deck.
     inset = 0.20
-    lo_s, hi_s = inset, flight_len - inset
+    lo_s, hi_s = inset, min(flight_len, upper_flight_len) - inset
     if hi_s > lo_s:
         plate = 0.0381  # a 2x4 plate laid flat
         pa, pb = at(lo_s, partition_centre), at(hi_s, partition_centre)

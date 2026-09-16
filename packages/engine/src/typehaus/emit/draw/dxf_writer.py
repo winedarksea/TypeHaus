@@ -66,6 +66,10 @@ _LAYER_STYLE = {
     "S-WALL": (7, 70),
     "S-WALL-BELW": (9, 15),
     "S-FRAM-OPEN": (30, 25),
+    # The ARCHITECTURAL read of the same hole: S-FRAM-OPEN says what heads and trims it,
+    # A-FLOR-OPEN says it is a hole. A plan is a view down, and a hole in a deck and a deck
+    # look identical from above.
+    "A-FLOR-OPEN": (30, 35),
     "A-WALL-BELW": (9, 15),
     "P-SANR-PIPE": (33, 30),
     "P-DOMW-PIPE": (5, 30),

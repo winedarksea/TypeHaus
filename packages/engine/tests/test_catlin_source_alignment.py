@@ -18,7 +18,7 @@ from pathlib import Path
 
 import pytest
 
-from typehaus.quantities import ft
+from typehaus.quantities import ft, inch
 
 TOL_M = 0.0254 / 2.0  # half an inch
 
@@ -146,11 +146,20 @@ def test_attic_stair_well_sits_on_the_source_and_inside_the_finished_faces(catli
     this opening at x 22'-8"..36', y 8'-8"..12' — over RM-S-BED1, not RM-S-STUDY2, and with
     its east edge on the sheathing plane where the carriage's wall ledger resolved outside
     the building.
+
+    ** THE WEST EDGE IS NOT THE SOURCE'S. ** It came off 21'-2" on 2026-09-15 and onto the
+    stair head at 22'-5 3/8": the flight spends 3'-0" on the winder box and 12 goings at 10"
+    on the straight run, so 21'-2" left a 15 3/8" x 3'-0" strip of open floor opening
+    beyond anywhere ST-S2A reaches. Which is what that edge is asserted against now — the
+    arithmetic, not the port — and it is `code.R311_7_6_stair_arrival_floor` that found it.
     """
     well = catlin_plan.by_tag("FO-A-STAIR")
     xs = [p.xy_m[0] for p in well.outline]
     ys = [p.xy_m[1] for p in well.outline]
-    assert min(xs) == pytest.approx(ft(21, 2).meters, abs=TOL_M)
+    stair_head = (ft(35, 5.375).meters - ft(3).meters
+                  - 12 * inch(10).meters)   # winder box + 12 goings
+    assert min(xs) == pytest.approx(stair_head, abs=1e-9)
+    assert min(xs) == pytest.approx(ft(22, 5.375).meters, abs=TOL_M)
     assert max(xs) == pytest.approx(ft(35, 5.375).meters, abs=TOL_M)
     assert min(ys) == pytest.approx(ft(5, 9.625).meters, abs=TOL_M)
     assert max(ys) == pytest.approx(ft(8, 9.625).meters, abs=TOL_M)

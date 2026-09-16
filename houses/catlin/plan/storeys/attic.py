@@ -753,12 +753,24 @@ BEAMS = [
 # 3'-0" back for ST-S2A's width. This puts the outer winder carriage on a wall it can bear
 # on — an earlier version had this edge on the sheathing plane, with the ledger resolving
 # outside the building. Lands in RM-S-STUDY2 below, matching the source's flight.
+#
+# ** THE WEST EDGE IS THE STAIR HEAD, AND IT MOVED 2026-09-15 FROM 21'-2" TO 22'-5 3/8". **
+# The source's 21'-2" was 15 3/8" west of anywhere ST-S2A reaches: the flight spends 3'-0"
+# on the winder box and 12 goings at 10" on the straight run, so it tops out at
+# x = 35'-5 3/8" - 3'-0" - 10'-0" = 22'-5 3/8", and the strip beyond it was 15 3/8" x 3'-0"
+# of open floor opening at the head of the stair. Nothing in the engine could see it:
+# `code.R311_7_5_1_stair_end_risers` reads the arrival deck through `deck_owning_opening`,
+# so a flight ending over the hole arrives at exactly the right ELEVATION and passes.
+# `code.R311_7_6_stair_arrival_floor` is the rule that asks in plan, and it was written for
+# the same defect in `resolve/stairs/u_split.py` (notes/u_stair_split_landing.md).
+# The deck simply grows east to meet the nosing; nothing else about the well moves, and the
+# north edge W-A-SN covers is unchanged.
 FLOOR_OPENINGS = [
     FloorOpening(uid="CAF601AAAA", tag="FO-A-STAIR",
-                 outline=(pt(ft(21, 2), ft(5, 9.625)),
+                 outline=(pt(ft(22, 5.375), ft(5, 9.625)),
                           pt(ft(35, 5.375), ft(5, 9.625)),
                           pt(ft(35, 5.375), ft(8, 9.625)),
-                          pt(ft(21, 2), ft(8, 9.625)))),
+                          pt(ft(22, 5.375), ft(8, 9.625)))),
 ]
 
 FLOOR = [

@@ -393,8 +393,29 @@ the future.
 - Almost every flat roof I have seen uses joists on hangers between beams. Yet our balcony here has joists above the beams (presumably held down by hurricane ties). If we put the joists lower onto the beams, we end up with the 6x6 posts being possibly too tall (over 10' it said earlier, but R507.4 says it's good up to 14').
 - Figure out a space for a cat litter box.
 - Have the UI resolve pages and reports under /app, so we can give a URL to them directly, type-haus.com/app/?= (for example)
-- Part of the attic is open to the stairs below. It should say that in the printed plan.
-- The printed plans draw the stair lines wrong (the 3d model seems more accurate)
+- ~~Part of the attic is open to the stairs below. It should say that in the printed plan.~~
+  **DONE 2026-09-15.** A-1xx never read `FloorSystem.openings` at all — the framing plan was
+  the only sheet that drew a floor opening, and `views.py` answered the question with a
+  SECTION (`SL-D-STAIRVOID`) because the plan could not. `emit/draw/plan_voids.py` now draws
+  every opening's true ring on `A-FLOR-OPEN` and captions it; `FO-A-HALL` reads
+  `OPEN TO STAIR BELOW` with nothing authored, derived from the stair whose footprint it
+  sits over.
+- ~~The printed plans draw the stair lines wrong (the 3d model seems more accurate)~~
+  **DONE 2026-09-15.** The treads were always right — they are the same resolved members
+  glTF extrudes. Everything around them was not: both flights of a U-stair were drawn in
+  full, superimposed, in one well, which is the whole of "two tread widths", "an extra one
+  on the right" and "two stairs north of the landing". `emit/draw/stair_symbol.py` cuts a
+  departing flight at the 4'-0" plan cut plane, breaks it there, occludes the arriving
+  flight under it surface by surface, and replaces the floor-opening bounding-box
+  centreline with a travel line that follows the walk. One line per riser face, one owner
+  per line (a segment ledger), so no landing edge or well ring is drawn twice.
+  - And one MODEL defect found while measuring: `resolve/stairs/u_split.py` laid the upper
+    flight out backwards from the LOWER flight's line, so on an odd tread split it stopped
+    a going short — a 10" x 3'-6 3/8" strip of open `FO-S-STAIR` at the head of ST-M2S,
+    which `code.R311_7_5_1_stair_end_risers` passed because it compares elevations and
+    never plan position. Fixed, oracled in `notes/u_stair_split_landing.md`, and guarded by
+    the new `code.R311_7_6_stair_arrival_floor` — which then found the same defect AUTHORED
+    in catlin: `FO-A-STAIR` ran 15 3/8" west of anywhere ST-S2A reaches. Both closed.
 
 # Project Management
 

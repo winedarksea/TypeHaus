@@ -2,6 +2,59 @@
 
 All notable changes to `typehaus`. This project follows [semantic versioning](https://semver.org).
 
+## Unreleased
+
+- **The plan stair symbol is a stair symbol now, and A-1xx draws its floor openings.** Two
+  reported defects with one root cause each. (1) *"Part of the attic is open to the stairs
+  below; it should say that in the printed plan."* The architectural plan never read
+  `FloorSystem.openings` at all — the framing plan was the only sheet that drew a floor
+  opening — so a hole in a deck and a deck looked identical from above, and `views.py`
+  answered the question with a whole SECTION because the plan could not. New
+  `emit/draw/plan_voids.py` draws every opening's true authored ring on the new
+  `A-FLOR-OPEN` layer and captions it: `OPEN TO STAIR BELOW` where a flight is visible
+  through it (derived from the stairs' own footprints, nothing authored), `OPEN TO BELOW`,
+  `CHASE — OPEN TO BELOW` or `ACCESS HATCH` otherwise. (2) *"The printed plans draw the
+  stair lines wrong."* The treads were always right — they are the same resolved members
+  glTF and IFC extrude. Everything around them was not: **both flights of a U-stair were
+  drawn in full, superimposed, in the same well**, which is the whole of "two tread widths",
+  "an extra one on the right" and "two stairs north of the landing". New
+  `emit/draw/stair_symbol.py` + `stair_travel.py` (moved out of a 542-line `floorplan.py`)
+  cut a departing flight at a **4'-0" plan cut plane** — one predicate, no storey branch —
+  **break** it there with two skewed diagonals placed where the walk line crosses the cut,
+  and **occlude** the arriving flight surface by surface on the point its line marks rather
+  than on a fraction of its area. The floor-opening bounding-box centreline that served as a
+  direction line, and which on a U landed exactly on the well partition *between* the lanes,
+  is replaced by a **travel line that follows the walk** — station midpoints in climb order,
+  clipped at the break, with an arrowhead and a start tick as plain IR geometry. A **segment
+  ledger** enforces one line per riser face with exactly one owner, so a landing edge or a
+  well ring is never drawn twice; a stair with no floor opening draws its own footprint ring
+  instead. `A-FLOR-OPEN` is styled in both writers and grouped under the shell in the review
+  stack.
+- **`resolve/stairs/u_split.py`: each flight is anchored to the storey edge it MEETS.** Found
+  while measuring the above, and the more serious of the two. The upper flight was laid out
+  backwards from the *lower* flight's line, which is the same line only while the two carry
+  the same number of treads. On an odd tread split it stopped one going short: ST-M2S's head
+  stood 10" out into `FO-S-STAIR` — **a 10" x 3'-6 3/8" strip of open floor opening at the
+  top of the stair**. `code.R311_7_5_1_stair_end_risers` passed it, because it compares
+  elevations and never plan position. The slack now falls in the landing zone, where the
+  upper half-landing takes one going of extra depth (the two stay flush at the far end of the
+  well, so the opening budget is unchanged); the well partition stops at the shorter flight,
+  or its studs run through the upper landing's deck. Hand-worked in
+  `houses/catlin/notes/u_stair_split_landing.md`, which is the oracle this arithmetic never
+  had — part of why it went unseen. New `stair_walk_stations` in `resolve/stairs/walkline.py`
+  chains the per-flight stations into one route, orienting each flat landing toward where the
+  previous line left off; `flight_walklines` is untouched, so the R311.7 checks and the
+  railing rake are unaffected.
+- **New check `code.R311_7_6_stair_arrival_floor`** — is there a floor, or the hole it is cut
+  in, where the top nosing puts a foot down? Both R311.7.5.1 rules read the arrival deck
+  through the well itself, so a flight ending over the opening arrives at exactly the right
+  *elevation* and passes; this one steps half a going off the top nosing and asks what is
+  there. It reports UNKNOWN where nothing is modelled at all and NOT_APPLICABLE for a stair
+  that perforates no deck. **It immediately found the same defect authored in the reference
+  house**: `FO-A-STAIR` ran 15 3/8" west of anywhere ST-S2A reaches, so catlin's attic well
+  had a 15 3/8" x 3'-0" hole at the head of the stair. Both that and the resolver defect are
+  fixed.
+
 ## 0.1.1 — 2026-09-13
 
 **The first working publish.** 0.1.0 was tagged but never reached PyPI: its CI could not go

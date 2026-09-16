@@ -1118,15 +1118,27 @@ def test_stairs_render_on_both_connected_storey_plans(catlin_model):
 
     expected_uids = {
         "basement": {"CST701AAAA"},
-        # ST-B2M and ST-M2S have the same footprint here; the departing main flight wins.
-        "main": {"CST702AAAA"},
+        # BOTH, and that is the fix. The old comment here said "ST-B2M and ST-M2S have the
+        # same footprint here; the departing main flight wins" — a whole-stair footprint
+        # dedupe that dropped the arriving flight from the sheet. They do not have the same
+        # footprint (they occupy different lanes of one well), and the departing flight now
+        # occludes the arriving one surface by surface rather than wholesale: main shows
+        # ST-M2S's east lane up to the break and ST-B2M's west lane and landings beyond it.
+        # ...plus the two within-storey step-downs that also land on this sheet: the
+        # breezeway entry flight and the porch stair to grade. Neither crosses a storey, so
+        # neither is cut, and both were always here — the old pre-filter simply hid them.
+        "main": {"CST701AAAA", "CST702AAAA", "BWST01AAAA", "SGST01AAAA"},
         "second": {"CST702AAAA", "CST703AAAA"},
         "attic": {"CST703AAAA"},
     }
     for storey, expected in expected_uids.items():
-        seen = {getattr(node, "uid", None) for node in build_floorplan(catlin_model, storey).nodes
-                if getattr(node, "uid", None) in expected}
-        assert seen == expected
+        # Collected WITHOUT pre-filtering by ``expected`` — filtering first made the
+        # assertion unable to fail on a stair that should not be here.
+        stair_uids = {stair.uid for stair in catlin_model.stairs}
+        seen = {getattr(node, "uid", None)
+                for node in build_floorplan(catlin_model, storey).nodes
+                if getattr(node, "uid", None) in stair_uids}
+        assert seen == expected, storey
 
 
 def test_deck_slabs_render_on_their_storey_plans(catlin_model):

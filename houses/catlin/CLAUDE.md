@@ -546,6 +546,19 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - `code.N1103_6_whole_house_ventilation` sits at 210 cfm provided against 205 required
     (MN 1322 R403.5) — a seventh bedroom or ~250 sf more conditioned floor fails it.
 
+- **`FO-A-STAIR`'s WEST edge is the stair head, `x=22'-5 3/8"`, not the source's 21'-2"**
+  (moved 2026-09-15). ST-S2A spends 3'-0" on its winder box and 12 goings at 10" on the
+  straight run, so it tops out there; 21'-2" left a **15 3/8" x 3'-0" hole at the head of the
+  stair**, which `code.R311_7_5_1_stair_end_risers` passed because it reads the arrival deck
+  through the well and never asks where in it the flight ends.
+  `code.R311_7_6_stair_arrival_floor` is the rule that asks in plan and the one that found
+  it. The north, east and south edges did not move.
+- **`P-M-STRWELL-SS` is ST-M2S's third well post** (`y=31'-0 3/8"`, 2026-09-15). The two
+  half-landings are no longer the same rectangle: ST-M2S carries 13 treads over two flights,
+  7 and 6, so the upper half-landing starts one going further south — at its own flight's
+  springing — and that corner is a rim end no host wall reaches. Over `FO-M-STAIR`'s hole, so
+  full-height to `SL-B-FLOOR` like the two beside it, not a squash block like
+  `P-M-STRLAND-SE`. See `notes/u_stair_split_landing.md`; move ST-M2S and all three move.
 - `W-A-SN` is a 12 3/4" bookcase wall (`INT_2X4_BOOKCASE_12`); its south face is the only
   cover for `FO-A-STAIR`'s north edge — moving it north FAILs `code.R312_1_guard` (~14'-3"
   unguarded well). It was thickened, not moved (face held at 8'-9 5/8"), why

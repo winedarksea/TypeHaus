@@ -182,14 +182,24 @@ def test_riser_grid_is_flush_at_the_springing_and_the_landing_zone(catlin_model)
             by_flight.setdefault(tread.child_key.rsplit("-", 1)[0], []).append(tread)
         lower = sorted(by_flight["tread-lower"], key=lambda member: member.z0_m)
         upper = sorted(by_flight["tread-upper"], key=lambda member: member.z0_m)
-        landing = next(member for member in stair.members
-                       if member.child_key == "landing-lower")
-        near_edge = landing.p0[along]  # the landing zone's edge toward the flights
-        # The upper flight's first riser face IS the landing-zone edge...
-        assert upper[0].riser_line[0][along] == pytest.approx(near_edge, abs=1e-9), stair.tag
-        # ...and the lower flight's last riser sits exactly one going before it.
-        assert abs(near_edge - lower[-1].riser_line[0][along]) == pytest.approx(
-            going, abs=1e-9), stair.tag
+        # ** EACH FLIGHT AGAINST ITS OWN LANDING. ** The two half-landings no longer share
+        # one near edge: a flight is anchored to the storey edge it MEETS, so when the tread
+        # counts differ (``flight_treads`` odd, ST-M2S) the upper half-landing starts one
+        # going further back and absorbs the slack. Reading the upper flight against
+        # ``landing-lower`` was passing only because the upper flight used to be laid out
+        # backwards from the lower flight's line — the bug, not the rule
+        # (notes/u_stair_split_landing.md).
+        for flight, landing_key in (("lower", "landing-lower"), ("upper", "landing-upper")):
+            landing = next(member for member in stair.members
+                           if member.child_key == landing_key)
+            near_edge = landing.p0[along]  # this landing's edge toward its own flight
+            treads = lower if flight == "lower" else upper
+            # The riser face a walker steps up at to LEAVE this landing (upper) or to
+            # ARRIVE on it (lower) is exactly one going from its near edge.
+            adjacent = treads[-1] if flight == "lower" else treads[0]
+            gap = abs(near_edge - adjacent.riser_line[0][along])
+            expected = going if flight == "lower" else 0.0
+            assert gap == pytest.approx(expected, abs=1e-9), (stair.tag, flight)
 
 
 # ------------------------------------------------------------- winder narrow ends

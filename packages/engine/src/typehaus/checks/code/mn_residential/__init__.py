@@ -24,6 +24,7 @@ from typehaus.checks.code.mn_residential import (  # noqa: F401 - registers chec
     illumination,
     radon,
     rules,
+    stair_arrival,
     stair_guards,
     stairs,
     ventilation,

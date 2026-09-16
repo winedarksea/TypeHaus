@@ -2376,6 +2376,16 @@ POSTS = [
          height=ft(9, 1.4375), assembly="POST_WHITE_PAINT", supported_by="SL-B-FLOOR"),
     Post(uid="CZE3N5C14R", tag="P-M-STRWELL-N", position=pt(ft(14), ft(34, 8.9)), size="4x4",
          height=ft(9, 1.4375), assembly="POST_WHITE_PAINT", supported_by="SL-B-FLOOR"),
+    # A THIRD one on the well centreline, 2026-09-15, and it is the visible half of the
+    # `resolve/stairs/u_split.py` arrival fix (notes/u_stair_split_landing.md). ST-M2S
+    # carries 13 treads over two flights — 7 lower, 6 upper — so its two half-landings are
+    # no longer the same rectangle: the upper one starts one going FURTHER SOUTH, at
+    # y=31'-0 3/8", because that is where its own flight springs from. That south-west
+    # corner is a rim end no host wall reaches, `bearing.py` stands a 4x4 on it, and it is
+    # over FO-M-STAIR's hole — so, like the two above and unlike P-M-STRLAND-SE, it is a
+    # full-height column to the basement slab rather than a squash block in a joist bay.
+    Post(uid="H8TV2XS6B2", tag="P-M-STRWELL-SS", position=pt(ft(14), ft(31, 0.375)), size="4x4",
+         height=ft(9, 1.4375), assembly="POST_WHITE_PAINT", supported_by="SL-B-FLOOR"),
     # ST-M2S's lower landing gained a THIRD corner post on 2026-08-24, and it is a direct
     # consequence of splitting W-M-C5 for RM-M-PANTRY.
     #

@@ -26,7 +26,7 @@ from typehaus.emit.draw.door_symbols import (
     symbol_is_centre_anchored,
     symbol_name_for_operation,
 )
-from typehaus.emit.draw.lineweights import CUT, LIGHT, PROFILE
+from typehaus.emit.draw.lineweights import LIGHT, PROFILE
 from typehaus.emit.draw.plan_dimensions import emit_interior_dimension_chains
 from typehaus.emit.draw.plan_labels import emit_room_blocks
 from typehaus.emit.draw.plan_marks import (
@@ -34,7 +34,12 @@ from typehaus.emit.draw.plan_marks import (
     opening_type_marks,
     preferred_normal,
 )
+from typehaus.emit.draw.plan_voids import (
+    emit_floor_opening_notes,
+    emit_floor_opening_rings,
+)
 from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Symbol, Text
+from typehaus.emit.draw.stair_symbol import emit_stairs
 from typehaus.emit.draw.typography import (
     CHAR_ASPECT,
     DIM_TEXT_PT,
@@ -43,8 +48,7 @@ from typehaus.emit.draw.typography import (
 )
 from typehaus.model.enums import DoorOperation
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_m
-from typehaus.resolve.geometry import opening_center, rect_between, wall_frame
+from typehaus.resolve.geometry import opening_center, wall_frame
 from typehaus.resolve.model import ResolvedModel
 
 #: The placeable domains an ARCHITECTURAL plan draws. Electrical (``E-POWR``) and mechanical
@@ -64,15 +68,23 @@ def build_floorplan(model: ResolvedModel, storey: str) -> Scene:
         emit_wall(b, wall)
     _emit_slabs(b, model, storey)
     mark_boxes = _emit_openings(b, model, {w.tag for w in walls}, storey)
-    _emit_stairs(b, model, storey)
+    # The floor opening's RING before the stair and its NOTE after, for two different
+    # reasons. The ring seeds the stair symbol's segment ledger — a well's own edge is the
+    # arrival nosing of the flight that comes up through it, and drawing both is the doubled
+    # line a reader counts as an extra riser. The note has to dodge ``UP 16 R``, which does
+    # not exist until the stair has been placed.
+    opening_segments = emit_floor_opening_rings(b, model, storey)
+    stair_boxes = emit_stairs(b, model, storey, opening_segments)
     _emit_railings(b, model, storey)
+    void_boxes = emit_floor_opening_notes(b, model, storey, avoid=stair_boxes)
     # Order is the whole argument here. A mark bubble is pinned to its opening and an alarm
     # glyph to its device — neither can move — so the room block, which is the one thing on
     # the plan free to sit anywhere inside its own room, is placed last among the three and
     # told where the other two already are. Its caption then goes back the other way: the
     # block is fixed by the time the alarm's SD/CO label picks a side.
     room_boxes = emit_room_blocks(b, model, storey,
-                                  avoid=mark_boxes + _alarm_glyph_boxes(model, storey),
+                                  avoid=mark_boxes + void_boxes
+                                  + _alarm_glyph_boxes(model, storey),
                                   prefer=_placeable_boxes(model, storey))
     # Floor heat is MECHANICAL and now lives in ``_shared.emit_floor_heat`` for the HVAC
     # plan to adopt; the smoke/CO alarms stay, because A-1xx is where a plan reviewer looks
@@ -300,104 +312,6 @@ def _has_enclosing_walls(model: ResolvedModel, floor) -> bool:
             if x0 - 1e-9 <= point[0] <= x1 + 1e-9 and y0 - 1e-9 <= point[1] <= y1 + 1e-9:
                 return True
     return False
-
-
-def _member_footprint(member) -> list[tuple[float, float]]:
-    """A member's plan rectangle: its axis swept by the section face it shows in plan.
-
-    The same construction every emitter builds a member's footprint from, so a landing
-    drawn here covers exactly the plan area the 3D deck occupies — which means reading
-    the flat-vs-on-edge rule from ``plan_cross_section_m`` rather than assuming either.
-    """
-    half = plan_cross_section_m(cross_section(member.profile),
-                                member.z1_m - member.z0_m) / 2.0
-    return rect_between(member.p0, member.p1, -half, half)
-
-
-#: How far a descending flight's label sits below an ascending one sharing the same well,
-#: metres. One line of plan lettering at the scale plan annotation reserves against.
-_STAIR_LABEL_PITCH_M = TEXT_PT * model_in_per_pt(PLAN_RESERVATION_SCALE) * M_PER_IN * 1.6
-
-#: Gap between the flight's travel line and the near edge of its label, metres. The line is
-#: the heaviest thing drawn on the flight (0.5 mm against the treads' 0.25) and it ran
-#: through the middle of the lettering. The label is CENTRED on its anchor, so clearing the
-#: line means moving it half its own width plus this — a fixed offset only clears a label
-#: of one particular length, and "DN 15 R" and "UP 6 R" are not that length.
-_STAIR_LABEL_GAP_M = TEXT_PT * model_in_per_pt(PLAN_RESERVATION_SCALE) * M_PER_IN * 0.5
-
-
-def _emit_stairs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
-    """Draw every stair on both connected plans, without duplicate coincident symbols."""
-    candidates = [stair for stair in model.stairs
-                  if len(stair.outline) >= 3 and storey in {stair.storey, stair.to_storey}]
-    # At a shared footprint, the departing flight is more useful than the one below.
-    candidates.sort(key=lambda stair: (stair.storey != storey, stair.uid))
-    seen_outlines: set[tuple[tuple[float, float], ...]] = set()
-    for stair in candidates:
-        outline_key = tuple(sorted((round(x, 6), round(y, 6)) for x, y in stair.outline))
-        if outline_key in seen_outlines:
-            continue
-        seen_outlines.add(outline_key)
-        xs, ys = [point[0] for point in stair.outline], [point[1] for point in stair.outline]
-        minx, maxx, miny, maxy = min(xs), max(xs), min(ys), max(ys)
-        along_x = stair.run_direction == "x"
-        for member in stair.members:
-            # Walking surfaces only. The framing *under* a landing — joists on a 16" grid,
-            # perimeter rims, posts — is category ``landing_framing`` and belongs on a
-            # framing plan, not here: drawing it put ~14 stray polylines through every
-            # landing zone, which read as uneven tread marks and a split down the middle.
-            if member.category not in {"tread", "winder", "landing"}:
-                continue
-            if member.p0 == member.p1:
-                continue  # a vertical member (post/newel) is a point in plan, not a line
-            if member.plan_outline is not None:
-                b.add(Polyline(points=tuple(_in(p) for p in member.plan_outline), closed=True,
-                               layer="A-STAIR", lineweight=LIGHT, uid=stair.uid,
-                               tag=member.child_key))
-                continue
-            if member.category == "landing":
-                # A landing's symbol is its *outline*, not its axis: the deck member is a
-                # board with a width, and one centreline down the middle of a platform is
-                # the "weird split on the landing".
-                b.add(Polyline(points=tuple(_in(p) for p in _member_footprint(member)),
-                               closed=True, layer="A-STAIR", lineweight=LIGHT,
-                               uid=stair.uid, tag=member.child_key))
-                continue
-            # A tread's mark is its riser face, not its board centreline: the centreline
-            # sits half a going past the riser, which drew a (going - nosing)/2 sliver at
-            # one end of every flight and (going + nosing)/2 at the other — uniform steps
-            # that read as non-uniform.
-            a, c = member.riser_line if member.riser_line is not None else (member.p0,
-                                                                            member.p1)
-            b.add(Polyline(points=(_in(a), _in(c)), layer="A-STAIR",
-                           lineweight=LIGHT, uid=stair.uid, tag=member.child_key))
-        start = (minx, (miny + maxy) / 2) if along_x else ((minx + maxx) / 2, miny)
-        end = (maxx, (miny + maxy) / 2) if along_x else ((minx + maxx) / 2, maxy)
-        if stair.run_reversed:
-            start, end = end, start
-        b.add(Polyline(points=(_in(start), _in(end)), layer="A-STAIR", lineweight=CUT,
-                       uid=stair.uid, tag=f"{stair.tag}-direction"))
-        # Which way the flight goes is a fact about the READER's storey, not about the
-        # stair. A stair is authored departing ``storey`` and arriving ``to_storey``, and it
-        # is drawn on both plans — so on the plan it arrives at, it descends. Both flights
-        # through catlin's stair hall read "UP" until now: "UP 16 R" for the flight to the
-        # second floor, and "UP 15 R" for the one down to the basement, printed on top of
-        # each other in the middle of the same well.
-        going_up = stair.storey == storey
-        label = f"{'UP' if going_up else 'DN'} {stair.riser_count} R"
-        # Placed on two axes, for two different reasons. ALONG the run, the descending
-        # flight steps clear of the ascending one — two flights sharing a well share a bbox
-        # centre, which is how "UP 16 R" and "UP 15 R" came to be printed on top of each
-        # other. ACROSS it, both step off the travel line, which is the heaviest thing on
-        # the flight and otherwise runs straight through the lettering.
-        anchor = [(minx + maxx) / 2, (miny + maxy) / 2]
-        run_axis = 0 if along_x else 1
-        anchor[run_axis] -= _STAIR_LABEL_PITCH_M * (0 if going_up else 1)
-        half_label = (len(label) * TEXT_PT * CHAR_ASPECT
-                      * model_in_per_pt(PLAN_RESERVATION_SCALE) * M_PER_IN / 2.0)
-        anchor[1 - run_axis] += half_label + _STAIR_LABEL_GAP_M
-        b.add(Text(anchor=_in((anchor[0], anchor[1])), content=label,
-                   height_pt=TEXT_PT, layer="A-STAIR", align="center"))
 
 
 def _emit_railings(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:

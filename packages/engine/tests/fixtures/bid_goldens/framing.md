@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** cce00b08fbc41dbe  
+**Model hash:** 00e1762e0c307533  
 **Lines:** 116
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -21,7 +21,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1.25x7.25 rim White-painted PT lumber — rim board (1.25x7.25 rim:post-paint-white) | 60 | LF ordered | 4 pcs, 57.3 LF cut | building |
 | 1.5x11.25 SPF framing lumber — blocking (1.5x11.25:spf) | 8 | LF ordered | 1 pcs, 1.9 LF cut | building |
 | 1.75x11.875 LSL — rim board (1.75x11.875 LSL) | 72 | LF ordered | 2 pcs, 72.0 LF cut | building |
-| 11.875 I-joist — blocking, joist, sister joist, trimmer (11.875 I-joist) | 2,472 | LF ordered | 166 pcs, 2211.4 LF cut | building |
+| 11.875 I-joist — blocking, joist, sister joist, trimmer (11.875 I-joist) | 2,472 | LF ordered | 166 pcs, 2208.9 LF cut | building |
 | 11.875 TJI 230 — rafter (11.875 TJI 230) | 760 | LF ordered | 38 pcs, 756.8 LF cut | building |
 | 11.875 floor truss — joist, trimmer (11.875 floor truss) | 32 | ea | 32 pcs, 469.2 LF cut; 480.0 LF in the takeoff | building |
 | 1x4 SPF framing lumber — girt strapping (1x4:spf) | 454 | LF ordered | 59 pcs, 403.2 LF cut | building |
@@ -36,14 +36,14 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 24 gable roof truss — roof truss (24 gable roof truss) | 2 | ea | 2 pcs, 48.0 LF cut; 48.0 LF in the takeoff | building |
 | 24 roof truss — roof truss (24 roof truss) | 14 | ea | 14 pcs, 336.0 LF cut; 336.0 LF in the takeoff | building |
 | 25 ga. resilient channel 1/2" resilient channel — girt strapping (25 ga. resilient channel:resilient-channel) | 536 | LF ordered | 64 pcs, 431.4 LF cut | building |
-| 2x10 — hanger board (2x10) | 58 | LF ordered | 12 pcs, 45.6 LF cut | building |
+| 2x10 — hanger board (2x10) | 58 | LF ordered | 12 pcs, 45.9 LF cut | building |
 | 2x10 SPF framing lumber — blocking (2x10:spf) | 114 | LF ordered | 23 pcs, 86.3 LF cut | building |
 | 2x2 — blocking, plate, stud (2x2) | 288 | LF ordered | 100 pcs, 262.3 LF cut | building |
-| 2x4 — blocking, corner stud, cripple stud, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,984 | LF ordered | 661 pcs, 4244.9 LF cut | building |
+| 2x4 — blocking, corner stud, cripple stud, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,966 | LF ordered | 660 pcs, 4233.5 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,830 | LF ordered | 462 pcs, 2441.4 LF cut | building |
 | 2x4 SPF framing lumber — girt strapping (2x4:spf) | 84 | LF ordered | 14 pcs, 62.6 LF cut | building |
 | 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | 8,514 | LF ordered | 1214 pcs, 7411.8 LF cut | building |
-| 2x8 — blocking, header, joist, landing framing, trimmer (2x8) | 566 | LF ordered | 100 pcs, 482.9 LF cut | building |
+| 2x8 — blocking, header, joist, landing framing, trimmer (2x8) | 566 | LF ordered | 100 pcs, 484.6 LF cut | building |
 | 2x8 SPF framing lumber — blocking (2x8:spf) | 438 | LF ordered | 76 pcs, 358.3 LF cut | building |
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | 8 | LF ordered | 1 pcs, 3.2 LF cut | building |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 352 | LF ordered | 1130 pcs, 329.6 LF cut | building |
@@ -55,7 +55,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|---|---|---|
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 22 | sheets 4x8 | 22 sheets 4x8 over 690.2 SF net | building |
 | 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 5.0 SF net | building |
-| 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 100 | sheets 4x8 | 100 sheets 4x8 over 3184.0 SF net | building |
+| 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 100 | sheets 4x8 | 100 sheets 4x8 over 3187.9 SF net | building |
 | SPF framing lumber, 3/4" ceiling (spf:ceiling) | 5 | sheets 4x8 | 5 sheets 4x8 over 159.2 SF net | building |
 | SPF framing lumber, 11 1/4" ceiling (spf:ceiling) | 3 | sheets 4x8 | 3 sheets 4x8 over 91.7 SF net | building |
 | Structural 1 plywood, 5/7" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 2 | sheets 4x8 | 2 sheets 4x8 over 50.1 SF net | building |
@@ -70,7 +70,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| ABU44 standoff post base (4x4) | 2 | ea |  | building |
+| ABU44 standoff post base (4x4) | 3 | ea |  | building |
 | ABU44 standoff post base (4x4) | 2 | ea |  | building |
 | ABU66SS standoff post base (6x6), 316L stainless | 4 | ea |  | building |
 | CCQ46SDS2.5 column cap (4x beam on 6x6 post) | 4 | ea |  | building |
@@ -121,7 +121,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Column — ELM_TIMBER (column:ELM_TIMBER) | 111.6 | bf | 4 placed, 1.0 SF plan; 0.34 cy in the takeoff | second |
 | Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | 12 | ea | 12 placed, 0.3 SF plan; 0.02 cy in the takeoff | main |
 | Column — POST_KDAT (column:POST_KDAT) | 42 | bf | 4 placed, 0.6 SF plan; 0.13 cy in the takeoff | main |
-| Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | 19.2 | bf | 3 placed, 0.3 SF plan; 0.06 cy in the takeoff | main |
+| Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | 28.8 | bf | 4 placed, 0.3 SF plan; 0.09 cy in the takeoff | main |
 | Column — POST_WHITE_PAINT_DF (column:POST_WHITE_PAINT_DF) | 50.4 | bf | 2 placed, 0.4 SF plan; 0.16 cy in the takeoff | second |
 | Slab — TUBDECK_INT_PLY_CAP (slab:TUBDECK_INT_PLY_CAP) | 7.3 | SF | 1 placed, 7.3 SF plan; 0.05 cy in the takeoff | main |
 
@@ -272,7 +272,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Column — ELM_TIMBER (column:ELM_TIMBER) | P-S-TUDOR1, P-S-TUDOR2, P-S-TUDOR3, P-S-TUDOR4 |
 | Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | PT-M-HP1-L1, PT-M-HP1-L2, PT-M-HP1-L3, PT-M-HP1-L4, PT-M-HP3-L1, PT-M-HP3-L2, PT-M-HP3-L3, PT-M-HP3-L4, PT-SG-HPB1, PT-SG-HPB2, PT-SG-HPB3, PT-SG-HPB4 |
 | Column — POST_KDAT (column:POST_KDAT) | PT-BW-CNW, PT-BW-CW, PT-BW-IC, PT-BW-IE |
-| Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | P-M-STRLAND-SE, P-M-STRWELL-N, P-M-STRWELL-S |
+| Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | P-M-STRLAND-SE, P-M-STRWELL-N, P-M-STRWELL-S, P-M-STRWELL-SS |
 | Column — POST_WHITE_PAINT_DF (column:POST_WHITE_PAINT_DF) | PT-SG-BF2, PT-SG-BR2 |
 | Slab — TUBDECK_INT_PLY_CAP (slab:TUBDECK_INT_PLY_CAP) | SL-M-TUBDK |
 | butyl-tape, 1 1/4" on deck (butyl-tape) | FS-BW-FLOOR, FS-BW-GARAGE, FS-SG-DECK, FS-SG-PORCH |

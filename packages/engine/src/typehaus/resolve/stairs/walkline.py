@@ -144,3 +144,50 @@ def walkline_z_at(lines: list[list[tuple[float, float, float]]],
     if best is None or best[0] > max_lateral_m:
         return None
     return best[1]
+
+
+#: Two stations whose elevations agree within this are on one flat surface — a landing,
+#: whose two edges are its two stations. A riser is never this small.
+_FLAT_Z_TOLERANCE_M = 1e-6
+
+
+def stair_walk_stations(stair) -> list[tuple[tuple[float, float],
+                                             tuple[float, float], float]]:
+    """The whole stair's walking route as ONE ordered list of stations, bottom to top.
+
+    :func:`flight_stations` answers "where are this flight's nosings"; the plan symbol asks
+    a different question — "where does a person walking this stair actually go" — and the
+    answer has to cross flights: it is what the travel line follows, and interpolating it in
+    ``z`` is what locates the plan cut's break line on a tread, a landing edge or a winder
+    fan alike.
+
+    Stations, not midpoints, because the drawing needs the ``(a, b)`` segment itself: at the
+    break it gives the flight's width *and* its orientation, and on a winder that segment is
+    the fan line, which is exactly perpendicular to travel where a bounding box is not.
+
+    Flights are ordered by their first station's elevation. One wrinkle: a **landing**'s two
+    stations sit at equal ``z``, so their order is whichever way its deck member happens to
+    be drawn, and naive chaining zig-zags a U. Each successive *flat* line is oriented so it
+    starts at the end nearer where the previous line left off. A sloped flight is never
+    reversed — its climb order is meaning, not convention.
+
+    :func:`flight_walklines` is untouched, so the R311.7 checks and the railing rake go on
+    measuring per flight, which is the question they ask.
+    """
+    def _mid(station) -> tuple[float, float]:
+        (ax, ay), (bx, by), _ = station
+        return ((ax + bx) / 2.0, (ay + by) / 2.0)
+
+    flights = [(key, stations) for key, stations in flight_stations(stair).items()
+               if len(stations) >= 2]
+    flights.sort(key=lambda item: (item[1][0][2], item[0]))
+    route: list[tuple[tuple[float, float], tuple[float, float], float]] = []
+    for _key, stations in flights:
+        used = list(stations)
+        flat = abs(used[-1][2] - used[0][2]) <= _FLAT_Z_TOLERANCE_M
+        if route and flat:
+            tail = _mid(route[-1])
+            if (math.dist(tail, _mid(used[-1])) < math.dist(tail, _mid(used[0]))):
+                used.reverse()
+        route.extend(used)
+    return route

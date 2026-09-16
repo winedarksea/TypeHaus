@@ -21,7 +21,7 @@ reviewer would switch off**, and the mapping is `review_layers.layer_for`.
 | 1 | Background | the white ground, the caption, a sheet's border and title block |
 | 2 | Reference Underlay | the `preferences.toml` survey rasters |
 | 3 | Site / Context | `C-*`, `L-*`, `A-SITE-*` |
-| 4 | Building Shell | `A-WALL*`, `A-ROOF*`, `A-SLAB` |
+| 4 | Building Shell | `A-WALL*`, `A-ROOF*`, `A-SLAB`, `A-FLOR-OPEN` |
 | 5 | Structure | `S-*` |
 | 6 | Openings | `A-DOOR`, `A-GLAZ*`, `S-FRAM-OPEN` |
 | 7 | Stairs / Rails | `A-STAIR`, `A-RAIL` |

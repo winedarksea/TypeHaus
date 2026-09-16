@@ -474,26 +474,44 @@ def test_plan_symbols_skip_zero_length_stair_members(catlin_model):
 # split down the middle of each landing.
 
 def _stair_polylines(catlin_model, storey: str, stair_uid: str) -> list:
+    """The MEMBER polylines of one stair on one plan — its walking surfaces, nothing else.
+
+    A denylist on ``-direction`` is not enough any more: the symbol also draws its break
+    line, its travel line, an arrowhead, a start tick, a well ring and two side edges per
+    flight, and every one of them would leak into the counts below. The allowlist is
+    "the tag is a member's ``child_key``", which is exactly what these tests are about.
+    """
+    keys = {member.child_key for stair in catlin_model.stairs if stair.uid == stair_uid
+            for member in stair.members}
     return [node for node in build_floorplan(catlin_model, storey).nodes
             if isinstance(node, Polyline) and node.layer == "A-STAIR"
-            and node.uid == stair_uid and not node.tag.endswith("-direction")]
+            and node.uid == stair_uid and node.tag in keys]
 
 
 @pytest.mark.parametrize("storey", ["basement", "main"])
 def test_a_u_stair_plan_draws_its_surfaces_and_none_of_its_framing(catlin_model, storey):
-    """One polyline per walking surface — treads and landing decks — and nothing else."""
+    """Only walking surfaces reach A-STAIR — never the framing under a landing.
+
+    This was ``len(drawn) == len(surfaces)``, and it cannot be that any more: on the
+    basement plan the flight is CUT at the 4'-0" plan cut plane, and on main most of it is
+    OCCLUDED by ST-M2S coming up the same well. WHICH surfaces appear is now owned by
+    ``test_stair_plan_symbol.py``. The subject here survives untouched: the joists, rims
+    and posts under a landing are ``landing_framing``, they belong on a framing plan, and
+    drawing them put ~12 stray polylines through every landing zone that read as uneven
+    tread marks and a split down the middle.
+    """
     stair = next(s for s in catlin_model.stairs if s.tag == "ST-B2M")
     surfaces = [m for m in stair.members if m.category in ("tread", "winder", "landing")]
     framing = [m for m in stair.members
                if m.category == "landing_framing" and m.p0 != m.p1]
     assert framing, "the landing is still framed — the fix is in how it is drawn"
 
-    drawn = _stair_polylines(catlin_model, storey, stair.uid)
-    assert len(drawn) == len(surfaces)
-    assert {node.tag for node in drawn} == {m.child_key for m in surfaces}
+    drawn = {node.tag for node in _stair_polylines(catlin_model, storey, stair.uid)}
+    assert drawn, storey
+    assert drawn <= {m.child_key for m in surfaces}
     # The framing is what used to leak through; name it explicitly so a future filter
     # change that re-admits it fails here rather than on someone's permit set.
-    assert not {node.tag for node in drawn} & {m.child_key for m in framing}
+    assert not drawn & {m.child_key for m in framing}
 
 
 def test_a_landing_draws_as_its_outline_not_its_axis(catlin_model):
@@ -507,7 +525,10 @@ def test_a_landing_draws_as_its_outline_not_its_axis(catlin_model):
     decks = {m.child_key: m for m in stair.members if m.category == "landing"}
     assert len(decks) == 2  # two half-landings, one riser apart
 
-    drawn = {node.tag: node for node in _stair_polylines(catlin_model, "basement", stair.uid)}
+    # ON MAIN, not basement. ST-B2M's two landing decks sit at -57.9" and -50.5", both
+    # ABOVE the basement plan's cut plane at -61.4" — so neither is drawn there any more.
+    # Main is the plan ST-B2M arrives at, where both draw whole and unoccluded.
+    drawn = {node.tag: node for node in _stair_polylines(catlin_model, "main", stair.uid)}
     # ST-B2M runs in y, so the deck's axis is its depth and its board width is across x.
     # (They are close but not equal — 39¾" deep by 42" wide — so an axis-agnostic check
     # would pass on a rectangle drawn the wrong way round.)
@@ -522,52 +543,129 @@ def test_a_landing_draws_as_its_outline_not_its_axis(catlin_model):
         assert along == pytest.approx(deck.length_m / M_PER_IN, rel=1e-6), key
 
 
-@pytest.mark.parametrize("tag,storey", [("ST-B2M", "basement"), ("ST-M2S", "main")])
-def test_tread_marks_along_a_flight_are_evenly_spaced(catlin_model, tag, storey):
+def test_tread_marks_along_a_flight_are_evenly_spaced(catlin_model):
     """The complaint was "uneven stair marks". The tread math was never wrong — the
     landing joists sat on a 16" grid that terminated on the flight width (0, 16", 32",
     39¾" for ST-B2M), so a 16/16/7¾ pattern butted against ~11" tread marks. With the
     framing out of the drawing, every gap in a flight is one going.
+
+    Over every storey and every stair now, rather than one flight of one stair on one
+    plan: no plan shows both flights of a U-stair any more (that is the point — the near
+    one hides the far one), so the question has to be asked of whatever a plan does draw.
     """
-    stair = next(s for s in catlin_model.stairs if s.tag == tag)
-    drawn = {node.tag: node for node in _stair_polylines(catlin_model, storey, stair.uid)}
-    cross = 0 if stair.run_direction == "y" else 1   # the axis a tread mark spans
-    along = 1 - cross
-    for flight in ("lower", "upper"):
-        marks = sorted(node.points[0][along] for tag_, node in drawn.items()
-                       if tag_.startswith(f"tread-{flight}-"))
-        assert len(marks) >= 2, flight
-        gaps = [b - a for a, b in zip(marks, marks[1:])]
-        assert max(gaps) - min(gaps) < 1e-6, (flight, gaps)
-        # ...and that one gap is the resolved going, not some other spacing.
-        assert gaps[0] == pytest.approx(
-                stair.going_depth_m / M_PER_IN, rel=1e-6)
+    seen = 0
+    for storey in (s.tag for s in catlin_model.plan.storeys):
+        for stair in catlin_model.stairs:
+            drawn = _stair_polylines(catlin_model, storey, stair.uid)
+            cross = 0 if stair.run_direction == "y" else 1   # the axis a mark spans
+            along = 1 - cross
+            flights: dict[str, list[float]] = {}
+            for node in drawn:
+                if not node.tag.startswith("tread"):
+                    continue
+                flights.setdefault(node.tag.rsplit("-", 1)[0], []).append(
+                    node.points[0][along])
+            for flight, marks in flights.items():
+                if len(marks) < 2:
+                    continue
+                seen += 1
+                gaps = [b - a for a, b in zip(sorted(marks), sorted(marks)[1:])]
+                assert max(gaps) - min(gaps) < 1e-6, (storey, stair.tag, flight, gaps)
+                # ...and that one gap is the resolved going, not some other spacing.
+                assert gaps[0] == pytest.approx(
+                    stair.going_depth_m / M_PER_IN, rel=1e-6), (storey, stair.tag, flight)
+    assert seen >= 6, "no plan drew a measurable flight — the symbol drew nothing"
 
 
-@pytest.mark.parametrize("tag,storey", [("ST-B2M", "basement"), ("ST-M2S", "main")])
-def test_tread_marks_are_flush_with_the_flight_ends(catlin_model, tag, storey):
+@pytest.mark.parametrize("flight,storey", [("lower", "basement"), ("upper", "main")])
+def test_tread_marks_are_flush_with_the_flight_ends(catlin_model, flight, storey):
     """The drawn grid is the riser faces, flush at the flight boundaries.
 
     The old symbols drew each board's *centreline*, half a going past its riser — so
     every flight showed a (going - nosing)/2 sliver at the springing and
     (going + nosing)/2 against the landing, framing 10" interiors with 4.5"/5.5" ends.
     The risers were uniform; the drawing said they were not.
+
+    ** EACH FLIGHT AGAINST ITS OWN LANDING, AND ON THE PLAN THAT DRAWS IT. ** ``max(upper)
+    == landing-lower's edge`` was passing because of a resolver bug: the upper flight was
+    laid out backwards from the LOWER flight's line, so the two only coincided while the
+    tread counts were equal (notes/u_stair_split_landing.md). ST-B2M is the stair here
+    because it is the one whose lower flight the basement plan draws below the cut and
+    whose upper flight and both landings main draws whole.
     """
-    stair = next(s for s in catlin_model.stairs if s.tag == tag)
+    stair = next(s for s in catlin_model.stairs if s.tag == "ST-B2M")
     drawn = {node.tag: node for node in _stair_polylines(catlin_model, storey, stair.uid)}
     along = 1 if stair.run_direction == "y" else 0
     going = stair.going_depth_m / M_PER_IN
-    springing = min(point[along] for point in stair.outline) / M_PER_IN
-    lower = [node.points[0][along] for tag_, node in drawn.items()
-             if tag_.startswith("tread-lower-")]
-    upper = [node.points[0][along] for tag_, node in drawn.items()
-             if tag_.startswith("tread-upper-")]
-    landing_edge = min(point[along] for point in drawn["landing-lower"].points)
-    # The first lower mark sits ON the springing edge, the last one going before the
-    # landing, and the first upper mark ON the landing-zone edge.
-    assert min(lower) == pytest.approx(springing, abs=1e-6)
-    assert max(lower) == pytest.approx(landing_edge - going, abs=1e-6)
-    assert max(upper) == pytest.approx(landing_edge, abs=1e-6)
+    marks = sorted(node.points[0][along] for tag_, node in drawn.items()
+                   if tag_.startswith(f"tread-{flight}-"))
+    assert len(marks) >= 2, (flight, storey)
+    landing = next(m for m in stair.members if m.child_key == f"landing-{flight}")
+    near_edge = landing.p0[along] / M_PER_IN     # the landing's edge toward its flight
+    if flight == "lower":
+        springing = min(point[along] for point in stair.outline) / M_PER_IN
+        # The first mark sits ON the springing edge and the last one a going before the
+        # landing it climbs onto.
+        assert min(marks) == pytest.approx(springing, abs=1e-6)
+        assert max(marks) == pytest.approx(near_edge - going, abs=1e-6)
+    else:
+        # The upper flight leaves its own landing's near edge. That first riser face is
+        # DRAWN BY THE LANDING RECTANGLE — one line per riser face, one owner per line —
+        # so the first mark of its own is one going in from it.
+        assert max(marks) == pytest.approx(near_edge - going, abs=1e-6)
+        # ...and its arrival nosing is the well ring's own edge, so the last mark is one
+        # going short of the deck edge rather than on it.
+        arrival = min(point[along] for point in stair.outline) / M_PER_IN
+        assert min(marks) == pytest.approx(arrival + going, abs=1e-6)
+
+
+# ------------------------------------- 8c. each flight meets the storey edge it arrives at
+#
+# notes/u_stair_split_landing.md is the hand-worked oracle for both of these.
+
+@pytest.mark.parametrize("tag", ["ST-B2M", "ST-M2S"])
+def test_a_u_split_upper_flight_lands_on_the_storey_edge_it_meets(catlin_model, tag):
+    """The upper flight's arrival nosing IS the arrival deck's edge — no strip of well left.
+
+    It used to be laid out backwards from the LOWER flight's line, which is the same line
+    only while the two carry the same number of treads. ST-M2S carries 7 and 6, so its head
+    stopped one going short and left a 10" x 3'-6 3/8" strip of open ``FO-S-STAIR`` at the
+    top of the stair. ``code.R311_7_5_1_stair_end_risers`` passed it — it compares
+    elevations and never plan position — and ST-B2M (15 risers, 6/6) was clean, which is
+    why nothing caught it.
+    """
+    stair = next(s for s in catlin_model.stairs if s.tag == tag)
+    along = 1 if stair.run_direction == "y" else 0
+    going = stair.going_depth_m
+    upper = sorted((m for m in stair.members
+                    if m.child_key.startswith("tread-upper-")),
+                   key=lambda m: m.z1_m)
+    arrival_edge = min(point[along] for point in stair.outline)
+    # The top tread's riser face is one going in from the deck edge; the walking line runs
+    # that last going out onto the deck itself.
+    assert upper[-1].riser_line[0][along] == pytest.approx(arrival_edge + going, abs=1e-9)
+
+
+@pytest.mark.parametrize("tag", ["ST-B2M", "ST-M2S"])
+def test_the_upper_half_landing_absorbs_the_odd_tread(catlin_model, tag):
+    """The two half-landings stay flush at the FAR end; the upper one gets the slack.
+
+    That flushness is what makes the 180° crossing work and what holds the opening budget
+    fixed — ``_stair_fits_opening`` still binds on ``landing_depth + going * lower_treads``.
+    So an odd tread split buys the upper half-landing exactly one going of extra depth, and
+    both stay at or over R311.7.6's 36".
+    """
+    stair = next(s for s in catlin_model.stairs if s.tag == tag)
+    along = 1 if stair.run_direction == "y" else 0
+    decks = {m.child_key: m for m in stair.members if m.category == "landing"}
+    lower, upper = decks["landing-lower"], decks["landing-upper"]
+    odd = (stair.riser_count - 3) % 2
+    assert upper.length_m - lower.length_m == pytest.approx(
+        stair.going_depth_m * odd, abs=1e-9), stair.tag
+    assert min(lower.length_m, upper.length_m) >= inch(36).meters - 1e-9
+    # Flush at the far end of the well, however deep either one is.
+    assert max(lower.p0[along], lower.p1[along]) == pytest.approx(
+        max(upper.p0[along], upper.p1[along]), abs=1e-9)
 
 
 # --------------------------------------------------------------- 9. the winder turn

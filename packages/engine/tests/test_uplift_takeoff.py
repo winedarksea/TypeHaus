@@ -270,14 +270,16 @@ def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> N
     # `CN-BW-BASE-W` / `-NW` author those two joints as ABU66SS instead, which stands the
     # derivation down, and `CN-BW-IBASE-C` / `-E` do the same for the two interior landing
     # posts (ABU44, authored for the standoff detail). The 4x4 rung that is left is the
-    # stairwell pair on the basement slab.
+    # stairwell posts on the basement slab — a TRIO since 2026-09-15, when ST-M2S's upper
+    # half-landing gained a going of depth and with it a third corner over FO-M-STAIR's
+    # hole (P-M-STRWELL-SS, houses/catlin/notes/u_stair_split_landing.md).
     #
     # An ABU66 row reappearing is the failure now, and it means an authored base stopped
     # matching. An ABU66SS row would be a different failure — that is the balcony centre
     # pillars' part, and it means TENSION_TIE fell out of the covered set.
     assert [row["part_number"] for row in rows] == ["ABU44"]
     counts = {row["part_number"]: row["count"] for row in rows}
-    assert counts == {"ABU44": 2}
+    assert counts == {"ABU44": 3}
     for row in rows:
         for tag in AUTHORED_POST_BASES | AUTHORED_TENSION_TIES:
             assert tag not in row["basis"]
@@ -298,7 +300,7 @@ def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> N
             if isinstance(e, Post) and e.supported_by
             and e.size in {"6x6", "4x4"}}
     assert wood == AUTHORED_POST_BASES | AUTHORED_TENSION_TIES | {
-        "P-M-STRWELL-S", "P-M-STRWELL-N", "P-M-STRLAND-SE",
+        "P-M-STRWELL-S", "P-M-STRWELL-SS", "P-M-STRWELL-N", "P-M-STRLAND-SE",
         "PT-BW-CW", "PT-BW-CNW", "PT-BW-IC", "PT-BW-IE"}
 
 
@@ -364,15 +366,17 @@ def test_every_post_base_on_concrete_is_bought_its_anchor(catlin_model_ro) -> No
     # ``test_a_base_on_a_pour_is_bought_its_cast_in_bolt``, which was the test asserting the
     # opposite about these same two posts while they stood on a deck. A base that bears on
     # concrete and says it is anchored buys its bolt; nothing about the rule changed.
-    assert row["count"] == 6
+    #
+    # 6 -> 7 on 2026-09-15: P-M-STRWELL-SS, the third stairwell post, on the same slab.
+    assert row["count"] == 7
     # The population is the union of DERIVED and AUTHORED bases, stated as that sum rather
     # than as one number, because the two halves move independently: the derived rows are the
-    # 2 ABU44 ladder rungs, and the authored-and-anchored-on-concrete half is 4 — the
+    # 3 ABU44 ladder rungs, and the authored-and-anchored-on-concrete half is 4 — the
     # canopy's CN-BW-BASE-W / -NW plus the garden's CN-SG-BASE-R2 / -F2. (The other two
     # authored bases, CN-BW-IBASE-C / -E, are on concrete and ``anchored=False``, so they are
     # in neither half; that is the interesting case above.)
     derived = sum(r["count"] for r in post_base_rows(catlin_model_ro, RULES))
-    assert derived == 2
+    assert derived == 3
     assert row["count"] == derived + 4
     assert "PT-BW-IC" not in row["basis"] and "PT-BW-IE" not in row["basis"], \
         "a bearing-only base must not be billed a cast-in anchor"

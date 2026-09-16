@@ -79,6 +79,9 @@ _LAYER_STYLE = {
     "S-WALL": ("#1a1a1a", 1.4),
     "S-WALL-BELW": ("#aaaaaa", 0.3),
     "S-FRAM-OPEN": ("#a05a20", 0.5),
+    # The architectural ring around the same hole — see the DXF table. Heavier than the
+    # framing one because on A-1xx it is an edge a person could fall through, not a callout.
+    "A-FLOR-OPEN": ("#a05a20", 0.7),
     "A-WALL-BELW": ("#aaaaaa", 0.3),
     "P-SANR-PIPE": ("#6a4a2a", 0.6),
     "P-DOMW-PIPE": ("#3a6a8a", 0.6),

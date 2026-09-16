@@ -89,6 +89,9 @@ _EXACT: dict[str, str] = {
     "A-STAIR": STAIRS,
     "A-RAIL": STAIRS,
     "A-SLAB": SHELL,
+    # A hole in a deck is a hole in the SHELL, beside the slab it perforates — not an
+    # opening in the ``A-DOOR``/``A-GLAZ`` sense, which is a leaf in a wall.
+    "A-FLOR-OPEN": SHELL,
     "L-SITE-GRAD": SITE,
 }
 
