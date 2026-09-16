@@ -1299,12 +1299,12 @@ SECOND_LIGHTING = [
     # edge-lit ring backlights the face and is useless to shave or do makeup by. The
     # controller has to remember its last setting and its standby LED has to be dim.
     ElectricalDevice(uid="QTS000HAAA", tag="ED-S-BATH1-CAN1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(3), ft(29)), type_ref="ED-T-LT-CAN4-WET",
+                     position=pt(m(1.22226), m(9.29491)), type_ref="ED-T-LT-CAN4-WET",
                      circuit="CKT-LT-UPPER", room="RM-S-BATH1",
                      controlled_by=("ED-S-BATH1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTS000JAAA", tag="ED-S-BATH1-CAN2", kind=DeviceKind.LIGHT,
-                     position=pt(ft(5), ft(33)), type_ref="ED-T-LT-CAN4-WET",
+                     position=pt(m(1.6574), m(10.3827)), type_ref="ED-T-LT-CAN4-WET",
                      circuit="CKT-LT-UPPER", room="RM-S-BATH1",
                      controlled_by=("ED-S-BATH1-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
