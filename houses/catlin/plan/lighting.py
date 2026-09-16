@@ -974,6 +974,63 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-MUDROOM", rotation=deg(-90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
+    # ** THE MUDROOM ITSELF HAD NO LIGHT AT ALL UNTIL 2026-09-15. ** It is the front door,
+    # and both devices standing in it switched lights somewhere else: ED-M-STORAGE-SW the
+    # two closet cans, ED-M-ENTRY-SW the exterior sconce above. Nothing reported it —
+    # `electrical.room_lighting` walks habitable rooms and this one is Occupancy.STORAGE,
+    # so a windowlit vestibule with a 32" door at the far end read as fine.
+    #
+    # ** ONLY HALF THIS CEILING IS USABLE, AND IT IS NOT THE HALF THE BENCH IS UNDER. **
+    # The ceiling is FS-S-WEST — 11 7/8" open-web floor trusses at 16" o.c. running in x,
+    # 5/8" gypsum under them. The room is an L. Its WEST BAND (x 6 5/8"..72", between the
+    # two closets, where the window and FURN-M-MUD-BENCH are) is where all THIRTEEN
+    # DU-M-ERV-R-* radials fan out of the manifolds in RM-M-MECH — every JOIST_BAY duct on
+    # FS-S-WEST is in this band. ED-T-LT-CAN3 is 5" tall and does not go there. The EAST
+    # STRIP (x 74"..116 1/8", the walk from D-M-ENTRY to D-M-MUD) carries no ERV radial at
+    # all: only CD-M-DATA-KITCH at 9'-2 1/4" and PR-M-S-BATH1-LAV-DRAIN's leg at
+    # 9'-6 11/16"..9'-9 3/4", both above a 5" housing hung off a 106 1/4" ceiling.
+    #
+    # So: the cans go on the walk, the bench gets a sconce instead. Two 3" cans at x=8'-0",
+    # which is D-M-ENTRY's RO centreline AND D-M-MUD's — the walk is one straight line and
+    # the lights are on it. y=28'-8" and y=34'-0" are both mid-bay on the truss module
+    # (chords at 16" off y=0, so 8" + n x 16"), 6" of clear chord either side of a 3 3/4"
+    # housing, and 24" / 17" off the two end walls.
+    ElectricalDevice(uid="1QB0DSS28T", tag="ED-M-MUDROOM-CAN1", kind=DeviceKind.LIGHT,
+                     position=pt(ft(8), ft(28, 8)), type_ref="ED-T-LT-CAN3",
+                     circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
+                     controlled_by=("ED-M-MUDROOM-SW",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="CZBCJDJJ6G", tag="ED-M-MUDROOM-CAN2", kind=DeviceKind.LIGHT,
+                     position=pt(ft(8), ft(34)), type_ref="ED-T-LT-CAN3",
+                     circuit="CKT-LT-MAIN", room="RM-M-MUDROOM",
+                     controlled_by=("ED-M-MUDROOM-SW",),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # The bench's own light, and a sconce rather than a can for two reasons: the ceiling
+    # over it is full of ERV radials (above), and a downlight puts light on the top of a
+    # bowed head. This is mark H, the up/down already bought 15 times in this house — no
+    # new type, no new prices.toml row. Centred y=31'-4" on the bench and on WIN-M-MUD,
+    # which the bench centreline fixes; at 6'-8" it clears the window's 5'-6" head by 8"
+    # and the 106 1/4" ceiling by 20". x=8 11/16" is the face convention: W-M-W1's paint
+    # plane is 6.635" and the 4"-deep body is centred on its own position.
+    ElectricalDevice(uid="FPDTQVFPTK", tag="ED-M-MUDROOM-SCONCE", kind=DeviceKind.LIGHT,
+                     position=pt(inch(8.6875), ft(31, 4)), type_ref="ED-T-LT-SCONCE-UD",
+                     circuit="CKT-LT-MAIN", room="RM-M-MUDROOM", rotation=deg(90),
+                     controlled_by=("ED-M-MUDROOM-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(6, 8))),
+    # ** A DIMMER, AND IT IS NOT ON THE NORTH WALL. ** D-M-ENTRY fills W-M-N3 to within 6"
+    # of both ends — the note on ED-M-ENTRY-SW above already settled that there is no
+    # north-wall station here — so this banks against ED-M-ENTRY-SW on W-M-STRW's mudroom
+    # face, its south edge at y=34'-6" abutting that switch's plate at 34'-8". One 2-gang
+    # plate inside the front door: house light, porch light.
+    #
+    # ED-T-SWITCH-DIM carries no load_va, so the dimmer is free electrically; what it buys
+    # is arriving at 11pm into something other than a bright white box. All three fixtures
+    # above are dimmable=True. The whole addition is 30 VA (2 x 9 + 12) on CKT-LT-MAIN.
+    ElectricalDevice(uid="0ZZNRE9AV0", tag="ED-M-MUDROOM-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(9, 8.125), ft(34, 6)), type_ref="ED-T-SWITCH-DIM",
+                     circuit="CKT-LT-MAIN", room="RM-M-MUDROOM", rotation=deg(-90),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
+
     # RM-M-HALL: three 3" cans down the run, on a 3-way pair — a 14' hall switched from
     # one end only is the classic thing to get wrong.
     ElectricalDevice(uid="QTM0010AAA", tag="ED-M-HALL-CAN1", kind=DeviceKind.LIGHT,
