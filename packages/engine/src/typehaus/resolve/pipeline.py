@@ -19,6 +19,7 @@ from typehaus.resolve.ceilings import resolve_ceilings
 from typehaus.resolve.construction import apply_construction_rules
 from typehaus.resolve.drainage import resolve_drainage
 from typehaus.resolve.envelope import resolve_columns_and_beams, resolve_envelope_geometry
+from typehaus.resolve.floor_blocking import resolve_bearing_blocking
 from typehaus.resolve.floor_heat import resolve_floor_heat
 from typehaus.resolve.floors import resolve_floors
 from typehaus.resolve.framing.furring import frame_furring
@@ -124,6 +125,8 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_floors(model))
     with _stage("mep"):
         findings.extend(resolve_mep(model))
+        # Needs the runs: a bay a run crosses gets a 2x6 box instead of a solid block.
+        resolve_bearing_blocking(model)
     with _stage("solar"):
         # After framing: panels ride the resolved roof planes.
         findings.extend(resolve_solar(model))

@@ -23,6 +23,7 @@ from typehaus.hardware.catalog import (
     ROLE_GABLE_END_TIE,
     ROLE_GABLE_TRUSS_ANCHOR,
     ROLE_HURRICANE_TIE,
+    ROLE_IJOIST_FACE_MOUNT_HANGER,
     ROLE_LATERAL_TIE_PLATE,
     ROLE_MUDSILL_ANCHOR,
     ROLE_POST_BASE,
@@ -31,12 +32,12 @@ from typehaus.hardware.catalog import (
     ROLE_SLOPED_JOIST_HANGER,
     hardware_for_role,
     hardware_for_role_and_nominal,
-    sized_hanger_model,
 )
 from typehaus.hardware.config import (
     DEFAULT_HARDWARE_TAKEOFF_CONFIG,
     HardwareTakeoffConfig,
 )
+from typehaus.joints.authored import hanger_part, hanger_specs
 from typehaus.joints.bearing import bearing_connections, continuous_bearing_members
 from typehaus.joints.gable import gable_end_ties
 from typehaus.joints.hosts import member_storeys
@@ -63,6 +64,7 @@ COVERED_ROLES = frozenset({
     ROLE_MUDSILL_ANCHOR,
     ROLE_SLOPED_JOIST_HANGER,
     ROLE_FACE_MOUNT_JOIST_HANGER,
+    ROLE_IJOIST_FACE_MOUNT_HANGER,
     ROLE_RIDGE_TIE_STRAP,
     ROLE_EMBEDDED_STRAP_HOLDOWN,
     ROLE_LATERAL_TIE_PLATE,
@@ -183,17 +185,10 @@ def _gable_tie_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> li
 def _hanger_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> list[Joint]:
     """A hanger at every hung end, sloped and level being two different parts."""
     storeys = _carrier_storeys(model)
+    specs = hanger_specs(model)
     out: list[Joint] = []
     for connection in hung_connections(model, config.hanger_detection):
-        role = (ROLE_SLOPED_JOIST_HANGER if connection.sloped
-                else ROLE_FACE_MOUNT_JOIST_HANGER)
-        if role == ROLE_FACE_MOUNT_JOIST_HANGER:
-            exposure = EXPOSURE_TREATED if connection.carrier_treated else EXPOSURE_DRY
-            item = hardware_for_role(role, exposure=exposure)
-            part = sized_hanger_model(item, connection.member_profile)
-        else:
-            item = hardware_for_role(role)
-            part = item.model
+        role, _item, part = hanger_part(connection, specs)
         out.append(_joint(
             role, part, storeys.get(connection.carrier_tag, ""),
             connection.point_m, connection.carrier_soffit_m, connection.axis,

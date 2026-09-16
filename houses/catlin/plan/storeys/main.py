@@ -2273,6 +2273,13 @@ BEAMS = [
     Beam(uid="CMBM01AAAA", tag="BM-M-HALL", start_node="N-M-C2", end_node="N-M-C3",
          size="3-1.75x11.875 LVL", bearing_refs=("W-M-C3", "W-M-C5"),
          assembly="BEAM_LVL", top_elevation=ft(10)),
+    # IUS2.56/11.88 at every hung end of FS-S-EAST in this beam: a level I-joist face-mount
+    # for a 2-1/2" to 2-9/16" flange (not the roof's sloped LSSR). One spec, count derived.
+    # FS-S-WEST's floor trusses hang here too and stay on the derived part until the truss
+    # supplier names their hanger.
+    Connector(uid="F7KNJ3E7XT", tag="CN-M-HGR-HALL-E", kind=ConnectorKind.JOIST_HANGER,
+              position=pt(ft(18), ft(24, 1)), size="IUS2.56/11.88",
+              connects=("BM-M-HALL", "FS-S-EAST")),
     # W-M-FIRE-*'s lintel, MODELLED SINCE 2026-09-11 — it was prose in three files and an
     # element in none, so nothing carried it into the BOM, the section or the 3D.
     #

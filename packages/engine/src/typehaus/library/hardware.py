@@ -51,6 +51,7 @@ from typehaus.hardware.catalog import (
     ROLE_GIRT_STANDOFF_SCREW,
     ROLE_GLAZING_PANEL_FASTENER,
     ROLE_HURRICANE_TIE,
+    ROLE_IJOIST_FACE_MOUNT_HANGER,
     ROLE_KNEE_BRACE,
     ROLE_LAPPED_BRACE_BOLT,
     ROLE_LATERAL_TIE_PLATE,
@@ -213,6 +214,20 @@ LUSZ_FACE_MOUNT_HANGER = StructuralHardware(
     source="Simpson Strong-Tie LUS in ZMAX (G185), e.g. LUS28Z (strongtie.com/lus) — the "
            "LUS above where the carrier is preservative-treated, per IRC R317.3.1 and "
            "Simpson's own treated-wood guidance; same stamping and allowables",
+)
+
+#: Level I-joist face-mount. Size reads flange/depth: IUS2.56/11.88 takes a 2-1/2" to 2-9/16"
+#: flange at 11-7/8", and IUS2.37 the 2-5/16" (TJI 110/210/230) one step down. Not sloped —
+#: the roof's raked rafters take the LSSR. No allowable: no table row has been read yet.
+IUS_FACE_MOUNT_HANGER = StructuralHardware(
+    tag="simpson-ius-ijoist-face-mount-hanger",
+    name="IUS face-mount I-joist hanger",
+    role=ROLE_IJOIST_FACE_MOUNT_HANGER,
+    manufacturer=_SIMPSON,
+    model="IUS",
+    source="Simpson Strong-Tie IUS face-mount I-joist hanger (strongtie.com/ius) — "
+           "nailless-seat hanger for a level I-joist into the face of a wood carrier; "
+           "IUS2.56/11.88 is published for 2-1/2\" to 2-9/16\" joist flanges",
 )
 
 #: The Simpson C-C masonry/concrete hanger table, read once and cited by all three records
@@ -1796,6 +1811,7 @@ STRUCTURAL_HARDWARE: tuple = (
     LSTA24_RIDGE_STRAP,
     LUS_FACE_MOUNT_HANGER,
     LUSZ_FACE_MOUNT_HANGER,
+    IUS_FACE_MOUNT_HANGER,
     HUC_CONCRETE_HANGER,
     APVB_BRACE_BOLT,
     MASA_MUDSILL_ANCHOR,

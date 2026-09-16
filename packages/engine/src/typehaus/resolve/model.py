@@ -619,6 +619,9 @@ class ResolvedFloor:
     # every reader: the bearing check grades these seats and the fabrication report prints
     # them, and neither may reach a different answer than the members were cut to.
     ends: FloorEnds | None = None
+    #: Runs crossing a bearing-line blocking bay that its 2x6 pass-through box cannot clear
+    #: (``resolve/floor_blocking.py``); ``mep.run_through_blocking`` fails each.
+    blocking_conflicts: tuple = ()
 
 
 @dataclass(frozen=True)

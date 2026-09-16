@@ -24,6 +24,8 @@ from typehaus import (
     Alarm,
     AlarmKind,
     Beam,
+    Connector,
+    ConnectorKind,
     ControlLayer,
     Door,
     FloorHeat,
@@ -1375,6 +1377,11 @@ BEAMS = [
     Beam(uid="CSBM01AAAA", tag="BM-S-HALL", start_node="N-S-C2C", end_node="N-S-C3D",
          size="3-1.75x11.875 LVL", bearing_refs=("W-S-C2C", "W-S-C4B"),
          assembly="BEAM_LVL", top_elevation=ft(20)),
+    # IUS2.56/11.88 at every hung end of FS-ATTIC in this beam: a level I-joist face-mount
+    # for a 2-1/2" to 2-9/16" flange (not the roof's sloped LSSR). One spec, count derived.
+    Connector(uid="XRKBVXHEYV", tag="CN-S-HGR-HALL", kind=ConnectorKind.JOIST_HANGER,
+              position=pt(ft(18), ft(26, 7)), size="IUS2.56/11.88",
+              connects=("BM-S-HALL", "FS-ATTIC")),
 ]
 
 # Guards on the two open sides of the stair well: attic RL-A-STAIR product, 42" height,

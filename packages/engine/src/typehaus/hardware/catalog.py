@@ -40,6 +40,10 @@ ROLE_SLOPED_JOIST_HANGER = "sloped_joist_hanger"
 # from 1/4:12. One per opposing PAIR, so it can never be derived per hung end.
 ROLE_RIDGE_TIE_STRAP = "ridge_tie_strap"
 ROLE_FACE_MOUNT_JOIST_HANGER = "face_mount_joist_hanger"
+# An I-joist into a flush carrier's face: sized by FLANGE width and depth, never by a nominal.
+# Never derived on its own — a house authors the part for the joint (a ``Connector`` naming
+# the beam and the FloorSystem), and every hung end of that pair takes it.
+ROLE_IJOIST_FACE_MOUNT_HANGER = "ijoist_face_mount_hanger"
 ROLE_CONCRETE_FACE_MOUNT_HANGER = "concrete_face_mount_hanger"
 ROLE_KNEE_BRACE = "knee_brace"
 ROLE_BRACE_THROUGH_BOLT = "brace_through_bolt"

@@ -930,9 +930,17 @@ DUCTS_ERV_LEVEL2 = [
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=20),
+    # ** 24'-8" -> 22'-0" ON 2026-09-16: AT 24'-8" IT RAN THROUGH BM-M-HALL. ** The flush LVL
+    # fills x=18' from y 22'-4" to 25'-10" (mep.run_through_beam). 22'-0" is the one bay south
+    # of it a lane can reach without crossing STUDY's 20'-8" ride at the same z, and it crosses
+    # x=18' over W-M-C3, through a 2x6 box in the bearing-line blocking. It turns at its own
+    # port lane — no jog across the trusses' bearing ends, which the hole chart forbids.
+    # 21'-9 3/4", with BED2 at 22'-1 3/4": the pair side by side in the bay, tangent, 2" off the
+    # 21'-4" chord and 1/4" short of the beam's end. On one centreline KITCH's end would land
+    # on BED2 and read as a tee (`ducts_are_joined`), hiding the pair from the bay check.
     DuctRun(uid="YEXGZK2KW2", tag="DU-M-ERV-R-KITCH", system=DuctSystem.RETURN,
-            path=(pt(ft(3, 8), ft(35)), pt(ft(3, 8), ft(35)), pt(ft(3, 8), ft(24, 8)),
-                  pt(ft(20, 10.7), ft(24, 8))),
+            path=(pt(ft(3, 8), ft(35)), pt(ft(3, 8), ft(35)), pt(ft(3, 8), ft(21, 9.75)),
+                  pt(ft(20, 10.7), ft(21, 9.75))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=6),
@@ -1014,21 +1022,14 @@ DUCTS_ERV_LEVEL2 = [
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=5),
-    # ** ITS EAST LEG MOVED ONE BAY NORTH ON 2026-09-12, 22'-0" -> 23'-4", AND THE 4" RETYPE
-    # IS WHY. ** A 3" duct on this lane spanned y 21'-10 1/2"..22'-1 1/2"; at 4" it spans
-    # 21'-10"..22'-2", half an inch further south — and that half inch closed the only lane
-    # `haus route` could find for PR-M-S-SUITE-TUB-DRAIN, whose terminal sits at
-    # y=21'-9 1/8". Nothing FAILED: the authored drain is unchanged and `haus check` never
-    # moved. What broke was the ROUTER's ability to re-derive that run, which is the honest
-    # early warning that the corridor had no slack left in it.
-    # 23'-4" (280" = 8 + 17 x 16) is a bay centre, it is free — LIVING/BED/STUDY/BATH1/
-    # VANITY/KITCH/SUITEBATH/LAUNDRY/MUD/BED1/PLANT take 12'-8"/6'-0"/20'-8"/24'-8"/19'-4"/
-    # 18'-0"/31'-4"/14'-0"/7'-4" and none of them is on it — and it is still well inside
-    # RM-S-BED2 (y 18'-27'). REG-S-RET-BED2 moved with it; a floor boot against the east
-    # wall is as good at 23'-4" as at 22'-0".
+    # ** IN THE 22'-0" BAY SINCE 2026-09-16, SIDE BY SIDE WITH KITCH (22'-1 3/4"). ** At 23'-4"
+    # its east leg ran through BM-M-HALL (see KITCH above). Two 4" ducts in the 12 1/2" clear
+    # bay fit. The cost is known: on 2026-09-12 a 4" duct at 22'-0" closed the last lane
+    # `haus route` had for PR-M-S-SUITE-TUB-DRAIN. The authored drain is unchanged and checks;
+    # only its re-derivation loses slack.
     DuctRun(uid="2QHYF71DBS", tag="DU-M-ERV-R-BED2", system=DuctSystem.RETURN,
-            path=(pt(ft(5, 8), ft(35)), pt(ft(5, 8), ft(35)), pt(ft(5, 8), ft(23, 4)),
-                  pt(ft(29), ft(23, 4))),
+            path=(pt(ft(5, 8), ft(35)), pt(ft(5, 8), ft(35)), pt(ft(5, 8), ft(22, 1.75)),
+                  pt(ft(29), ft(22, 1.75))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=5),

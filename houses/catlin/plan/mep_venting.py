@@ -63,15 +63,20 @@ VENT_BRANCHES_MAIN = [
     # RO (33'-5".."34'-7") — rather than under the sink itself, which sits inside
     # WIN-M-KITCH's. (WIN-S-HALL-N one storey up used to stack on it and be the second RO in
     # this argument; it moved to 24'-0" on 2026-09-06 and is no longer anywhere near.) From there it turns
-    # west in the same joist bay (FS-S-EAST here, FS-S-WEST once it crosses x=18'), y=24'-8"
-    # (bays are 8"+n*16"; this one passes south of FO-S-STAIR, which starts at y=25'-2 3/8",
-    # and north of both trunk ducts at 20'-8" and 23'-4"), then north to the shared
-    # radon/vent chase at (1', 34'-6"). It rises 6" over its length so condensate drains back
-    # to the fixture.
+    # south to y=19'-4", west across x=18', north at x=15' and west again on 24'-8" to the
+    # shared radon/vent chase at (1', 34'-6").
+    # ** SINCE 2026-09-16: THE OLD 24'-8" CROSSING RAN IT THROUGH BM-M-HALL ** (flush LVL, x=18',
+    # y 22'-4"..25'-10"). 19'-4" crosses x=18' over W-M-C3. x=15' is the north leg because it is
+    # clear of the suite lav (13'-9 1/2") and tub (16'-5 5/8") drains in plan. Elevations per
+    # vertex: LOW under the tub drain's 19'-4" crossing (centre <= 9'-6 1/2"), HIGH over the
+    # STUDY, KITCH and BED2 ducts at x=15' (invert >= 9'-5 5/8") and over the ERV lanes on
+    # 24'-8"; crown <= 9'-10 1/2", the truss web window. Rising all the way to the chase, so
+    # condensate still drains back to the fixture.
     PipeRun(uid="ZTQRPPRATP", tag="PR-M-KITCH-VENT", system=PipeSystem.VENT,
-            path=(pt(ft(32, 8), ft(35, 9)), pt(ft(32, 8), ft(24, 8)),
-                  pt(ft(1), ft(24, 8)), pt(ft(1), ft(34, 6))),
-            diameter=inch(1.5), start_elevation=ft(9, 3), end_elevation=ft(9, 9),
+            path=(pt(ft(32, 8), ft(35, 9)), pt(ft(32, 8), ft(19, 4)), pt(ft(15), ft(19, 4)),
+                  pt(ft(15), ft(24, 8)), pt(ft(1), ft(24, 8)), pt(ft(1), ft(34, 6))),
+            diameter=inch(1.5),
+            elevations=(ft(9, 3), ft(9, 4), ft(9, 6.375), ft(9, 8.75), ft(9, 9), ft(9, 9.25)),
             serves=("FX-M-KITCH-SINK",)),
 ]
 

@@ -30,6 +30,8 @@ from typehaus import (
     Alarm,
     AlarmKind,
     Beam,
+    Connector,
+    ConnectorKind,
     Door,
     FloorOpening,
     FloorOpeningPurpose,
@@ -80,6 +82,11 @@ SECOND_ELEMENTS = [
          size="3-1.75x11.875 LVL",
          bearing_refs=("W-S-BD-N1B", "W-S-BA-E1B"),
          assembly="BEAM_LVL", top_elevation=ft(20)),
+    # IUS2.56/11.88 at every hung end of FS-ATTIC in this beam: a level I-joist face-mount
+    # for a 2-1/2" to 2-9/16" flange (not the roof's sloped LSSR). One spec, count derived.
+    Connector(uid="TBDEHJ6FCE", tag="CN-S-HGR-BATH-E", kind=ConnectorKind.JOIST_HANGER,
+              position=pt(ft(10), ft(24, 5)), size="IUS2.56/11.88",
+              connects=("BM-S-BATH-E", "FS-ATTIC")),
 ]
 
 # ================================= THE VOID ===========================================

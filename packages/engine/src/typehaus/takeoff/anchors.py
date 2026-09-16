@@ -308,6 +308,8 @@ def authored_connector_rows(model: ResolvedModel) -> list:
     for _storey, element in _authored_connectors(model):
         if element.kind is ConnectorKind.KNEEBRACE:
             continue
+        if element.hanger_spec_pair(model.plan) is not None:
+            continue  # a per-joint hanger spec: joist_hanger_rows bills every hung end
         groups[(element.kind.value, element.size)] += 1
         item = hardware_by_model(element.size)
         if item is not None and item.requires_role is not None:

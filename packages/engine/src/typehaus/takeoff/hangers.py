@@ -13,16 +13,15 @@ from collections import Counter
 
 from typehaus.hardware.catalog import (
     EXPOSURE_DRY,
-    EXPOSURE_TREATED,
     ROLE_CONCRETE_FACE_MOUNT_HANGER,
     ROLE_FACE_MOUNT_JOIST_HANGER,
     ROLE_RIDGE_TIE_STRAP,
     ROLE_SLOPED_JOIST_HANGER,
     hardware_for_role,
-    sized_hanger_model,
 )
 from typehaus.hardware.config import HangerDetectionRules
 from typehaus.hardware.plan_geometry import distance_point_to_segment
+from typehaus.joints.authored import hanger_part, hanger_specs
 from typehaus.joints.hung import hung_connections, ridge_strap_pairs
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.hardware_row import hardware_row
@@ -101,26 +100,29 @@ def _supporting_wall(model: ResolvedModel, member):
 
 
 def joist_hanger_rows(model: ResolvedModel, rules: HangerDetectionRules) -> list:
-    """BOM lines for every hung framing connection, sloped and level billed separately."""
+    """BOM lines for every hung framing connection, sloped and level billed separately.
+
+    An authored hanger spec for a (carrier, floor) joint names the part; the count is still
+    every hung end the framing derives there."""
+    specs = hanger_specs(model)
     groups: Counter = Counter()
+    parts: dict = {}
     for connection in hung_connections(model, rules):
-        role = ROLE_SLOPED_JOIST_HANGER if connection.sloped else ROLE_FACE_MOUNT_JOIST_HANGER
-        groups[(role, connection.carrier_tag, connection.member_profile,
-                connection.carrier_treated)] += 1
+        role, item, part = hanger_part(connection, specs)
+        key = (role, connection.carrier_tag, connection.member_profile, part)
+        groups[key] += 1
+        parts[key] = (item, connection.sloped)
 
     rows = []
-    for (role, carrier_tag, profile, treated), count in sorted(groups.items()):
-        if role == ROLE_FACE_MOUNT_JOIST_HANGER:
-            item = hardware_for_role(
-                role, exposure=EXPOSURE_TREATED if treated else EXPOSURE_DRY)
-            part = sized_hanger_model(item, profile)
-        else:
-            item = hardware_for_role(role)
-            part = item.model
+    for key, count in sorted(groups.items()):
+        role, carrier_tag, profile, part = key
+        item, sloped = parts[key]
         carrier_name = carrier_tag.split(":")[-1]
+        authored = role not in (ROLE_FACE_MOUNT_JOIST_HANGER, ROLE_SLOPED_JOIST_HANGER)
         rows.append(hardware_row(
             item, scope="hung framing", count=count, size=profile, part_number=part,
             basis=(f"{count} x {profile} hung in the depth of {carrier_name} "
-                   f"({'sloped/skewed' if role == ROLE_SLOPED_JOIST_HANGER else 'level'} "
-                   f"connection derived from the resolved framing)")))
+                   f"({'sloped/skewed' if sloped else 'level'} connection derived from the "
+                   f"resolved framing"
+                   f"{'; part authored for this joint' if authored else ''})")))
     return rows + _explicit_hanger_rows(model)

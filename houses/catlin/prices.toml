@@ -992,7 +992,10 @@
 # Home Depot, 2026); the low end is the contractor carton this section discounts to
 # throughout, the high end carries the twelve 10d x 1-1/2" nails H5S specifies per strap.
 "LSTA24" = { low = 2.75, high = 5.5 }  # 26 ea — 19 derived over the house ridge, 7 authored as CN-BW-JOINT-1..7, the diaphragm continuity ties across the garage south wall line
-"LUS" = { low = 2, high = 6 }  # 29 ea
+"LUS" = { low = 2, high = 6 }  # 15 ea
+# Level I-joist hangers authored on the three flush LVLs (BM-M-HALL, BM-S-HALL, BM-S-BATH-E).
+# ESTIMATE, unconfirmed: single-piece retail band for an IUS2.56/11.88, carton at the low end.
+"IUS2.56/11.88" = { low = 4, high = 9 }  # 14 ea
 # ZMAX (G185) LUS where the carrier is preservative-treated (IRC R317.3.1): the breezeway's
 # treated beams, and the balcony centre glulam. Sized by the engine off the joist; ~25% over G90.
 "LUS28Z" = { low = 2.5, high = 7.5 }  # 32 ea — 18 at BM-SG-BLC, 14 in the breezeway beams

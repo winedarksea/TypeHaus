@@ -461,6 +461,8 @@ _CONNECTOR_MARKER_DEFAULT = (2.5, 2.5, 3.0)
 
 
 def _resolve_connector(model: ResolvedModel, el: Connector, storey: str) -> None:
+    if el.hanger_spec_pair(model.plan) is not None:
+        return  # names a part for every hung end of a floor; the derived joints draw those
     cx, cy = el.position.xy_m
     z = el.elevation.meters if el.elevation is not None else \
         next((s.elevation.meters for s in model.plan.storeys if s.tag == storey), 0.0)

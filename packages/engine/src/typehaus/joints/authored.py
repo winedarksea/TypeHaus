@@ -70,3 +70,45 @@ def authored_joints(model: ResolvedModel, kinds: frozenset) -> set:
             for right in tags[index + 1:]:
                 joints.add(frozenset({left, right}))
     return joints
+
+
+def hanger_specs(model: ResolvedModel) -> dict[tuple[str, str], str]:
+    """Authored part per ``(carrier tag, floor tag)`` — see ``Connector.hanger_spec_pair``."""
+    specs: dict[tuple[str, str], str] = {}
+    for element in _authored_connectors(model):
+        pair = element.hanger_spec_pair(model.plan)
+        if pair is not None and element.size:
+            specs[pair] = element.size
+    return specs
+
+
+def hanger_part(connection, specs: dict[tuple[str, str], str]):
+    """``(role, catalog item, part number)`` for one hung end.
+
+    An authored spec for its (carrier, floor) wins and bills under its own catalog role.
+    Otherwise the derived family: LSSR sloped, LUS/LUSZ level by the carrier's treatment.
+    """
+    from typehaus.hardware.catalog import (
+        EXPOSURE_DRY,
+        EXPOSURE_TREATED,
+        ROLE_FACE_MOUNT_JOIST_HANGER,
+        ROLE_SLOPED_JOIST_HANGER,
+        hardware_by_model,
+        hardware_for_role,
+        sized_hanger_model,
+    )
+
+    authored = specs.get((connection.carrier_tag, connection.member_floor))
+    if authored is not None and not connection.sloped:
+        item = hardware_by_model(authored)
+        if item is None:
+            raise LookupError(f"authored hanger {authored!r} on {connection.carrier_tag} x "
+                              f"{connection.member_floor} is not in the hardware catalog")
+        return item.role, item, authored
+    if connection.sloped:
+        item = hardware_for_role(ROLE_SLOPED_JOIST_HANGER)
+        return ROLE_SLOPED_JOIST_HANGER, item, item.model
+    exposure = EXPOSURE_TREATED if connection.carrier_treated else EXPOSURE_DRY
+    item = hardware_for_role(ROLE_FACE_MOUNT_JOIST_HANGER, exposure=exposure)
+    return (ROLE_FACE_MOUNT_JOIST_HANGER, item,
+            sized_hanger_model(item, connection.member_profile))

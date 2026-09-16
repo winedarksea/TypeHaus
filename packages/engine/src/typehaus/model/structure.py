@@ -568,6 +568,22 @@ class Connector(Element):
     #: gravity — catlin's PT-BW-IC/-IE carry a landing inside a garage, where uplift is nil.
     anchored: bool = True
 
+    def hanger_spec_pair(self, plan) -> tuple[str, str] | None:
+        """``(carrier, floor)`` when this JOIST_HANGER names a ``FloorSystem`` and one carrier.
+
+        Such a connector is a spec, not one part at one point: every derived hung end of that
+        floor in that carrier takes ``size``. It draws no marker and bills no unit itself.
+        """
+        from typehaus.model.floors import FloorSystem
+
+        if self.kind is not ConnectorKind.JOIST_HANGER or len(self.connects) != 2:
+            return None
+        floors = {e.tag for e in plan.all_elements() if isinstance(e, FloorSystem)}
+        first, second = self.connects
+        if (second in floors) == (first in floors):
+            return None
+        return (first, second) if second in floors else (second, first)
+
 
 @register_element
 class KneeBrace(Element):

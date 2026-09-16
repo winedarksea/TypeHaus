@@ -78,6 +78,9 @@ class HungConnection:
     #: The carrier line, snapped to ``"x"``/``"y"``. A hanger straddles the carrier, so the
     #: carrier's direction is what orients it.
     axis: str = "x"
+    #: Tag of the ``FloorSystem`` the hung member belongs to, or ``""``. With the carrier it
+    #: keys an authored hanger spec (:func:`typehaus.joints.authored.hanger_specs`).
+    member_floor: str = ""
 
 
 def _member_carriers(model: ResolvedModel, rules: HangerDetectionRules) -> list:
@@ -124,6 +127,7 @@ def hung_connections(model: ResolvedModel, rules: HangerDetectionRules) -> list:
     gap_tolerance_m = rules.end_gap_tolerance_in * M_PER_IN
     seat_tolerance_m = rules.bearing_seat_tolerance_in * M_PER_IN
 
+    floor_of = {id(member): floor.tag for floor in model.floors for member in floor.members}
     found: list = []
     for member in model.all_members():
         if member.category not in rules.hangable_member_categories:
@@ -149,7 +153,8 @@ def hung_connections(model: ResolvedModel, rules: HangerDetectionRules) -> list:
                     station_m=_station_along(point, carrier),
                     point_m=(point[0], point[1]), carrier_soffit_m=carrier_z0,
                     member_depth_m=max(top_z - bottom_z, 0.0),
-                    axis=axis_of(carrier.p0, carrier.p1)))
+                    axis=axis_of(carrier.p0, carrier.p1),
+                    member_floor=floor_of.get(id(member), "")))
                 break  # one hanger per end, even where carriers overlap in plan
     return found
 

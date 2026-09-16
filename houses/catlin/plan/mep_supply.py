@@ -370,8 +370,10 @@ SUPPLY = [
                   pt(ft(13, 7.2), ft(16, 10.8)), pt(ft(13, 7.2), ft(22, 4)),
                   pt(ft(13, 7.2), ft(22, 4)), pt(ft(13, 7.2), ft(22, 4))),
             diameter=inch(0.75), material="copper", finish="lacquered",
-            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(18, 7.1875),
-                        ft(18, 7.1875), ft(19, 1.4375), ft(21, 7.4375)),
+            # +5/16" on 2026-09-16 (7.1875 -> 7.5): the 4" ERV ducts' crowns are at 9'-5 5/8",
+            # and KITCH/BED2 now cross this jog at y=21'-10"/22'-2". 5/16" left under the tub drain.
+            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(18, 7.5),
+                        ft(18, 7.5), ft(19, 1.4375), ft(21, 7.4375)),
             wall_refs=(None, None, None, None, "W-S-SN3"),
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
                     "FX-S-SUITEBATH-TUBSH")),
