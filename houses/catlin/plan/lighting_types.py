@@ -1,4 +1,4 @@
-"""Catlin luminaire *type* catalog — the E-602 schedule's marks A through W.
+"""Catlin luminaire *type* catalog — the E-602 schedule's marks A through X.
 
 NOT ``# haus: editable``: like ``fixture_types.py`` these are catalog type definitions,
 not placed instances, and ``ElectricalDeviceType.needs`` is a ``frozenset``, which the

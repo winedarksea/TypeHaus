@@ -3076,3 +3076,80 @@ composes.
 **Left out as scope.** `FURN-M-BATH2-CAB` is 60" tall from 48", so its top rail lands near
 104" — above every course, old and new. A fourth course on `W-M-HS1` alone (2x8 flat at 98",
 topping at 105 1/4", on a 120" wall) would close it.
+
+## The interior pass: lighting, switching, quiet walls, the suite's north wall
+
+2026-09-15. A reviewer noticed `RM-M-BED` has no room for a bedside table on the side the
+doors are. Investigating it turned up a pattern rather than one bad dimension: **the
+furniture in this house exists to satisfy clearance checks, not to plan rooms**, and the
+lighting was struck against a can grid rather than against where people sleep and read. The
+house priorities do not move — noise, air quality, thermal performance — and nothing below
+touches a plumbing stack, a bearing line, a window station or an envelope detail.
+
+**The mudroom had no light at all.** `RM-M-MUDROOM` is the front door and carried zero
+luminaires; both devices standing in it switched lights somewhere else. Nothing reported it,
+because `electrical.room_lighting` walks habitable rooms and this one is
+`Occupancy.STORAGE`. Only half its ceiling was available: every `JOIST_BAY` duct on
+`FS-S-WEST` — all thirteen `DU-M-ERV-R-*` radials — fans out through the WEST band, over the
+bench and the window, and a 5" `ED-T-LT-CAN3` does not go there. So the cans went on the
+east walk (on `D-M-ENTRY`'s and `D-M-MUD`'s shared RO centreline, both mid-bay on the truss
+module) and the bench got a mark H sconce instead. The switch is a dimmer banked against
+`ED-M-ENTRY-SW`, **not** on the north wall: `D-M-ENTRY` fills `W-M-N3` to within 6" of both
+ends, which is the same reason that switch is where it is.
+
+**`D-M-BED` moved 16" east and that was the only lever.** `from_node` resolves to the near
+jamb, so the RO was x 154"..186" and the king's east face is at 143 7/8" — 10 1/8", against
+a 24" nightstand. The bed cannot solve it by moving: west blocks `D-M-BATH2`, south and west
+are the glazed walls, and the east wall carries `D-M-BED2`. One stud bay east keeps the
+residue mod 16 and opens 26 1/8". The hinge stays at the east jamb so the leaf tucks into
+the corner instead of sweeping the new nightstand.
+
+**`ED-M-BED-RC2` stays behind the headboard, and that is the finding.** Relocating it east
+with everything else opened an `electrical.receptacle_spacing` FAIL. The north wall's middle
+space is 115 3/8" between the two ROs, so the single box that keeps every point within 6'
+has to stand between x=98" and x=126 5/8" — and the bed covers all of it. 210.52(A) measures
+wall, not furniture. The answer was a second box for the nightstand, not a move.
+
+**Three quiet walls.** `W-M-BDN1`, `W-S-SBS` and `W-S-C2B` all had an empty cavity and no
+channel; `INT_2X4_PARTITION` has been uninsulated since 2026-08-31, so there was not even a
+batt to fall back on. All three went to a resilient-channel assembly, STC 34 → 48. `W-S-C2B`
+is the one the docs never named — the 2026-08-30 pass walked the bedroom *partitions* and
+this is a bearing wall. It is also the only one of the three collinear `W-S-C2*` segments
+that could move alone: both its ends are tees, so the channel's 1/2" is absorbed at two
+inside corners and no face steps in the open. `W-S-C2C` and `W-M-C2` are recorded as
+accepted gaps for exactly that reason.
+
+**Door widths, and a correction to the plan that prompted this.** `D-M-BED2` 2'-6" → 3'-0"
+(still trimless — `trimless` lives on the DoorType, so `DT-INT-SWING36-TRIMLESS` had to be
+minted, and it *replaced* the 30" rather than joining it, which would have left a catalog
+entry this house does not hang). `D-M-BATH2` 2'-6" → 2'-8", growing **east**: the plan said
+widen west, but this RO's west jamb is flush against `FX-M-BATH2-SINK` — the deliberate
+2026-09-09 detail — and widening west would have put the opening into the vanity. 32" and
+not 36" because `FURN-M-BED`'s west face is the binding dimension, not the wall run.
+`D-M-BATH1` 2'-0" → 2'-6", with a `door_framing_module` suppression beside `D-M-BATH2`'s:
+a 30" RO on `W-M-BAE` cuts a fourth stud at *every* station, so it is not a move that
+moving can fix, and both legal stations are worse for the room.
+
+### The laundry is not acoustically treated, by decision
+
+`RM-M-LAUNDRY`'s ceiling gets nothing, and this is a decision recorded rather than a gap.
+The LG WashTower sits under `RM-S-SUITEBATH` for 71.7% of the laundry footprint and under
+`RM-S-SUITE` — the sleeping room — for the other 26.3%. `FS-S-WEST` has **no cavity
+insulation** (`FloorSystem` has no field for it; it cannot even be expressed), **no
+resilient channel**, and one 5/8" gypsum layer screwed direct to **open-web** trusses.
+
+The house bought 522.2 LF of ceiling channel under exactly this argument —
+`CR-LIVING-CEIL-RC` (`plan/assemblies.py`), scoped to `RM-M-LIVING` because bedrooms sit
+over it. The laundry did not get it, and the structure is no excuse: it stands on
+`FS-M-WEST`, a joisted deck, exactly like the living room does. The argument for leaving it
+is scheduling and use, not construction — the machine runs when people are awake, and the
+room is a dead-end off the hall behind a shut door, where the living room is the space the
+household sits in of an evening under a bedroom. **Left as is, 2026-09-15**, and it is the
+weaker half of the pair on its own merits.
+
+The fix, if it is ever wanted, is one more `ConstructionRule` with
+`applies_to="floor:ceiling_channel"` and `scope_ref="RM-M-LAUNDRY"` — the same shape as
+`CR-LIVING-CEIL-RC`, and nothing else has to move for it.
+
+`RM-B-ESS`, the 20 sf battery closet, also has no luminaire. Not in this pass's scope —
+recorded so it reads as a choice rather than an oversight.

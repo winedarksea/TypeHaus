@@ -104,8 +104,12 @@ not instruction: when it disagrees with this file or the model, it is the one th
   instead of a circuit. The `ED-*-LT` fixtures still live in `plan/mep_electrical.py` — they were
   re-typed in place from the old generic `ED-T-LIGHT` so their uids (and IFC GlobalIds)
   survived — and each is one corner of a grid completed here.
-- `plan/lighting_types.py` — the `LuminaireType` catalog, schedule marks A–P (NOT
-  editable: `frozenset` again). Marks must stay unique; the E-602 schedule is keyed on
+- `plan/lighting_types.py` — the `LuminaireType` catalog, schedule marks A–X (NOT
+  editable: `frozenset` again). It said A–P until 2026-09-15 and had been wrong for a
+  while: the run is A…X with `I` and `O` never used (they read as digits on a drawing),
+  plus numbered variants of an existing family (`A1`, `E1`, `J1`, `P1`…), 31 marks in all.
+  Only `Y` and `Z` are free — `V` is held by a retained revert. Prefer reusing a mark's
+  family over minting a letter. Marks must stay unique; the E-602 schedule is keyed on
   them. Also holds the two 24V supply types and the dimmer/timer switch types.
 - `params/solar.py` — rooftop PV array (12 × 440 W on the gable ridge, computed max fit).
 - `params/roof_trim.py` — the eave water chain on RF-HOUSE's west/east eaves: drip edge →
@@ -282,7 +286,22 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `analysis._layer_rsi` bills the stud layer as solid SPF (R-6.4 vs honest ~R-2.5-3),
     harmless only because `INT` excludes it from `mn_energy` — never quote the card here.
   - Knowingly left uninsulated (fix, if wanted, is a retype to `INT_2X4_RC`, not a batt):
-    `W-S-SBS`, `W-M-BDN1`, `W-A-BATH-S`, `W-M-HS3`.
+    `W-A-BATH-S`, `W-M-HS3`. `W-M-HS3` (laundry ↔ living) is a decision, not an oversight
+    — see DESIGN-LOG.md, "The laundry is not acoustically treated".
+  - **`W-S-SBS` and `W-M-BDN1` left this list on 2026-09-15**, both retyped to `INT_2X4_RC`:
+    each is a wall between a bed and a bathroom, which is the case the STC 34 preset is
+    worst at. On `W-M-BDN1` the channel faces the BEDROOM (RM-M-BATH2's face carries the
+    shower, the vanity, the floor-heat stat and the bath switch, all flush; the bedroom's
+    face carries nothing), leaving a 1/2" step at x=8'-2" behind the king's headboard where
+    `W-M-BDN2` stays plain. On `W-S-SBS` the channel faces the BATH and `interior_room` does
+    not select it — the alignment does, and both spellings resolve identically.
+- `INT_2X6_BRG` also has an EMPTY cavity and no channel, and two segments of it stand
+  between a sleeping room and something noisy: **`W-S-C2C`** (RM-S-SUITE ↔ the second
+  storey's east rooms) and **`W-M-C2`** (RM-M-BED's line continued north past N-M-C1).
+  Both are known, accepted gaps as of 2026-09-15 — the fix is the same retype `W-S-C2B`
+  took that day, to `INT_2X6_BRG_RC` with `alignment=face("stud-ext", offset=inch(-2.75))`.
+  Neither was done, because unlike `W-S-C2B` neither has tees at both ends to absorb the
+  channel's 1/2", so each would step a face in the open.
   - On `W-S-SS2` the channel must stay on the NORTH face: the south face carries ST-S2A's
     stringer ledger/handrail and a void boundary `attic.py` defines off it; moving it south
     leaves 35-1/2" against R311.7.1's 36".
@@ -574,7 +593,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   9 7/8" pocket (2 1/8" proud into the well). Priced via `prices.toml [allowances]` lump
   `cabinet-study-bookcase-wall`. `D-A-STUDY` is `DT-INT-BOOKCASE30` (retyped in place);
   `trimless=True` means a millwork case here, NOT the drywall return jamb it means
-  elsewhere — never price off `DT-INT-SWING30-TRIMLESS`.
+  elsewhere — never price off `DT-INT-SWING36-TRIMLESS` (which replaced
+  `DT-INT-SWING30-TRIMLESS` on 2026-09-15 when `D-M-BED2`, its only door, widened).
 
 - **Roof is flash-and-batt in the joist bay**: 11-7/8" TJI 230 @ 24" o.c., 5" ccSPF
   against the deck underside + R-30C batt in the remaining 6-7/8", 5/8" CDX plywood,
