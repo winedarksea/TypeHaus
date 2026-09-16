@@ -51,6 +51,7 @@ is already parallel.
 .venv/bin/haus fmt houses/catlin          # mints uids, formats plan source
 .venv/bin/haus serve houses/catlin        # editor; does NOT reload engine code — restart it
 .venv/bin/haus takeoff houses/catlin      # BOM (+ costs when prices.toml exists)
+.venv/bin/haus render houses/catlin --view plan --fmt png|svg|psd   # docs/review-exports.md
 .venv/bin/haus takeoff houses/catlin --csv out/estimate.csv   # estimating-software intake
 .venv/bin/haus tasks houses/catlin --csv out/tasks.csv        # work packages for a PM tool
 .venv/bin/haus millwork houses/catlin                         # hardwood cut list for the mill
@@ -60,6 +61,13 @@ is already parallel.
 scripts/verify.sh --fast                  # tests + ruff, skipping builds/bench/npm
 scripts/ci_local.sh                       # the CI engine job in a THROWAWAY venv, declared deps only
 ```
+
+All three `haus render` formats share one **review-layer stack** (`emit/draw/review_layers.py`,
+`docs/review-exports.md`): the SVG groups by it, the PSD is one raster layer per entry (for
+markup in Procreate — open it from the **Gallery**, inserting flattens it), and the PNG is the
+same picture flattened. Rasters size by `--long-edge` (default 4096) **or** `--dpi`, never both.
+`haus print` is deliberately outside all of this — the review stack re-orders, and the submittal
+deliverable does not get restacked as a side effect.
 
 `haus check` exits 1 on any FAIL, not only on an ERROR — `--exit-on error` is the older,
 looser gate, and `scripts/verify.sh` does **not** use it on catlin: the reference house is

@@ -336,34 +336,6 @@ the future.
   — deliberately not re-specified; would widen each 2" and re-open condition coverage on a
   line nothing else asked about. Revisit only if that wall line opens for another reason.
 - Make sure the EV charger is a Leviton 1450r 50A EV Charging Receptacle
-- **The two porch column tops, the pillar chase and the porch joist tips — DONE 2026-09-15**,
-  with one consequence left open below. What was found, against the original complaint:
-  - **The ABU66SS was never lost.** All four still resolve and still bill (`haus takeoff`
-    reads 4 ea ABU66SS, 24 ea HGAM10). The column top carries FOUR coincident markers at one
-    x, y and elevation — the base, a pair of HGAM10 gussets and a shim pack — and the gussets
-    draw over the base. **The gussets are NOT stale and must not be deleted**: measured in
-    `out/model.json`, each of the four porch beams still lands 3 1/4" onto the column top
-    with its soffit flush on the pour, so deleting them costs four `structural.uplift_path`
-    FAILs. The ABU66SS now carries `axis="y"` and a `source` recording WHY — its stirrup
-    plates must stand north/south or they occupy the same wood as the `HU212-3` hangers'
-    back flanges, which rise the pillar's west and east faces from the beam soffit up
-    10-5/16". `Connector.axis` is honoured by `_resolve_connector` since the same day.
-  - **STILL OPEN — the marker is square, so the rotation does not yet show.** `POST_BASE` and
-    `HURRICANE_TIE` both fall to `_CONNECTOR_MARKER_DEFAULT`'s 5" x 5" x 6" box, which is why
-    three real parts at one joint render as one cube and why the base looked "lost". Giving
-    each its own `_CONNECTOR_MARKER_IN` entry is the fix and is what every other entry in
-    that table exists for — but the catalog carries no plan dimensions for an ABU66 or an
-    HGAM10, and inventing them is worse than the cube. **Source the two parts' footprints,
-    then size the markers.**
-  - **The chase trimmers are RIGHT; the comment was wrong.** All four trimmers cross their
-    beam and take its full 4 1/2" — the cage is a sleeve bearing on the beam, not the
-    floating 9" box it reads as. The claim that it is "headed off the two joist lines 16"
-    either side" is corrected in four places. Widening the opening to make that claim true
-    was rejected: `_subtract_interval` would take a 9" bite out of two sound full-length
-    joists and grow the header from 9" to 32", to move framing off a beam and into the air.
-  - **The joists were worse than 3.5" long — 3.685"** — and now stop 1" clear of
-    `W-B-BRICK`'s exposed face (`_y_porch_deck_n`, −14.685"). They had run through the whole
-    3 5/8" wythe and died 1/16" inside the air gap behind it.
 - **OPEN, and it is the root cause above: `_y_in_n` is datumed off the ABOVE-GRADE cladding
   face, and nothing at the porch deck's own elevation faces cladding.** Below z=0 the house's
   south face is `W-B-BRICK`, which stands **6.435" south of that line** (cladding −7.25",

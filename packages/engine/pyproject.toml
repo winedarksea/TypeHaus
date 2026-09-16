@@ -30,6 +30,14 @@ dependencies = [
     "ifcopenshell>=0.8,<0.9",
     "ezdxf>=1.1",
     "matplotlib>=3.8",
+    # Read and written directly by the raster/PSD review exports (emit/draw/psd_writer.py).
+    # It arrived for years as a matplotlib transitive, which is exactly the undeclared
+    # dependency `.venv` is blind to and `scripts/ci_local.sh` exists to catch.
+    "pillow>=10.0",
+    # `haus render --fmt psd`: the layered review artifact. 1.11 is the floor because
+    # `PSDImage.new` + `create_pixel_layer` — building a layered file from nothing rather
+    # than editing one that exists — is what that release added.
+    "psd-tools>=1.11",
     "pyproj>=3.6",
     "trimesh>=4.0",
 ]
