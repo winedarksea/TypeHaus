@@ -78,18 +78,15 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # `length_ft` is the PLAN run of the path, so the two raked PSTAIR runs read ~1.9 LF
     # light between them against the rail actually cut — flagged on the price row.
     #
-    # **41.9, not 42.7, since 2026-09-15**: the porch deck's north edge came 4.685" south,
-    # off `_y_in_n` (the ABOVE-GRADE cladding line) and onto `_y_porch_deck_n`, 1" clear of
-    # W-B-BRICK's exposed face — the joists had been running through the whole wythe. The
-    # guard follows the deck it stands on, so RL-SG-PORCH's west leg and RL-SG-PORCH-NE's
-    # stub each lost that 4.685": 2 x 4.685" = 0.78 LF, and 42.7 - 0.78 = 41.9. Exactly two
-    # legs, because only those two ended on the deck's north line.
+    # 42.7 again since 2026-09-16: for one day the porch deck's north edge sat 4.685" south
+    # (1" off W-B-BRICK's face), which took 0.78 LF off RL-SG-PORCH's west leg and the NE
+    # stub. The wythe dropped to -8" instead and the deck went back to the cladding line.
     #
     # 40.8, not 40.3, since 2026-09-03: RL-SG-BALCONY follows the deck edge, and
     # `joist_cantilever_in` went 6" -> 9" so the plank drips clear of the 12" columns
     # instead of onto them. The U gained 3" on each of its two side legs.
     assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(40.8, abs=0.1)
-    assert by_type["RAILING-EXT-ALUMINUM-SURFACE"] == pytest.approx(41.9, abs=0.1)
+    assert by_type["RAILING-EXT-ALUMINUM-SURFACE"] == pytest.approx(42.7, abs=0.1)
     # 27.3 for RAILING-INT-STAIR-GUARD: RL-M-STAIRHEAD's 4 1/2" and RL-A-STAIR's run join the
     # group, but the well's east leg is inside the roof past x=29'-4 1/2" (a 42" guard's top
     # at 282" meets the roof underside there) and carries nothing — a raked ToRoof partition,

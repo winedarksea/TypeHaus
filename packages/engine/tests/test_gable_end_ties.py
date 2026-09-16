@@ -5,7 +5,7 @@ put every one of them at one scalar elevation for the whole run. On a flat-plate
 gable that is right. On a RAKED one it is not: a ``ToRoof`` wall keeps its full bounding
 prism in ``z1_m`` on purpose (``resolve/model.py`` says so, for consumers that only
 understand prisms), and the raked top lives in ``top_z0_m``/``top_z1_m`` instead — so the
-fallback put sixteen of catlin's thirty-six H10A markers in the air over the roof, the worst
+fallback put sixteen of catlin's thirty-six (then H10A) markers in the air over the roof, the worst
 by 9'-0".
 
 Nothing caught it because nothing tested it. ``test_uplift_takeoff`` and
@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import pytest
 
-from typehaus.hardware.catalog import ROLE_GABLE_END_TIE
+from typehaus.hardware.catalog import ROLE_GABLE_END_TIE, ROLE_GABLE_TRUSS_ANCHOR
 from typehaus.hardware.config import DEFAULT_HARDWARE_TAKEOFF_CONFIG
 from typehaus.joints import derived_joints
 from typehaus.joints.gable import gable_end_ties
@@ -79,3 +79,16 @@ def test_no_derived_gable_tie_floats_above_its_wall(catlin_model_ro) -> None:
         wall = catlin_model_ro.wall(joint.members[0])
         assert wall is not None, joint.members
         assert abs(joint.z_m - wall_top_at(wall, *joint.point)) < _TOL_M, joint.key
+
+
+def test_a_trussed_gable_holds_its_truss_down_and_takes_no_stud_ties(ends) -> None:
+    """A gable-end truss carries the gable's lateral load itself; its wall only anchors it."""
+    trussed = [e for e in ends if e.gable_truss]
+    assert trussed, "catlin's garage gable ends sit under gable-end trusses"
+    per_truss = DEFAULT_HARDWARE_TAKEOFF_CONFIG.gable_end_ties.anchors_per_gable_truss
+    for end in trussed:
+        assert end.role == ROLE_GABLE_TRUSS_ANCHOR, end.wall_tag
+        assert len(end.stations_m) == per_truss, end.wall_tag
+    for end in ends:
+        if not end.gable_truss:
+            assert end.role == ROLE_GABLE_END_TIE, end.wall_tag

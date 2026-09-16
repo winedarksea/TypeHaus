@@ -21,6 +21,7 @@ from typehaus.hardware.catalog import (
     ROLE_EMBEDDED_STRAP_HOLDOWN,
     ROLE_FACE_MOUNT_JOIST_HANGER,
     ROLE_GABLE_END_TIE,
+    ROLE_GABLE_TRUSS_ANCHOR,
     ROLE_HURRICANE_TIE,
     ROLE_LATERAL_TIE_PLATE,
     ROLE_MUDSILL_ANCHOR,
@@ -80,6 +81,9 @@ MARKER_RULES: dict[str, MarkerRule] = {
     # Drawn: it is roof-level, visible, and the whole point of adding the leg was that
     # nobody could see it was missing. An LS30: 3-3/8" across the wall, 2-1/4" legs.
     ROLE_GABLE_END_TIE: MarkerRule(draw=True, along_in=1.13, across_in=1.69, half_h_in=1.13),
+    # An HGA10 on the plate beside the gable truss's chord.
+    ROLE_GABLE_TRUSS_ANCHOR: MarkerRule(draw=True, along_in=1.75, across_in=1.25,
+                                        half_h_in=1.25),
     ROLE_FACE_MOUNT_JOIST_HANGER: MarkerRule(draw=False, along_in=1.50, across_in=0.75,
                                              half_h_in=None,
                                              category=CATEGORY_CONNECTOR_HANGER),

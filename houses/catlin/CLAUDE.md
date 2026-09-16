@@ -1715,7 +1715,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   because `FS-SG-DECK`'s aluminium plank is the porch roof and carries no other
   penetrations — do not switch to surface mounting. Needs rim blocking in
   `FS-SG-DECK.reinforcements`.
-- Veneer `W-B-BRICK` (129 SF, both faces exposed) stands on `W-SG-BRKBM`, a 12"
+- Veneer `W-B-BRICK` (112.5 SF, both faces exposed; top at -8" so `FS-SG-PORCH`'s joists
+  pass over it with 3/4" of air — nothing grades that gap) stands on `W-SG-BRKBM`, a 12"
   x 17-3/4" grade beam spanning 19'-0" between `W-SG-W1`/`W-SG-E1` — not on the
   house footing (`FT-B-BRICK`, retired). Basis:
   `notes/sunken_garden_veneer_beam.md` (2026-09-05).
@@ -2040,7 +2041,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     §5 — at μ = 0.25 the court is at FS 1.16 against 1.50). Do not take it on a takeoff
     reading.
 - **`W-B-BRICK` is one flat field of unglazed `brown-brick` (`#a07c5c`)**, ASTM C216 Grade SW,
-  full height (plinth to top), **124.9 SF** (18'-8" x 102 7/16" = 159.3 SF gross, less
+  full height (plinth to top), **112.5 SF** (18'-8" x 94 7/16" = 146.9 SF gross, less
   `AO-B-BRICK-WIN` 1.94 and `AO-B-BRICK-DOOR` 32.5), one BOM row
   `BASEMENT_BRICK_VENEER:brown-brick`. The 129.2 SF this line and `prices.toml` used to claim was
   stale and is reconciled (2026-09-13); no dollar moved.

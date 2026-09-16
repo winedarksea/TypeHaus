@@ -982,12 +982,16 @@ WALLS = [
     #
     # The reveals below still measure from N-B-BRICK-W: ``from_node`` counts back from the
     # far end, so naming the west node still works when it's where the run finishes.
+    #
+    # ** TOP AT -8", UNDER THE PORCH JOISTS (2026-09-16). ** FS-SG-PORCH's 2x8s (soffit
+    # -7 1/4") run north over the wythe to the cladding line, so D-M-BALC keeps its R311.3
+    # landing; 3 courses down leaves 3/4" of air and the two structures never touch.
     FoundationWall(uid="CBW126AAAA", tag="W-B-BRICK", start_node="N-B-BRICK-E",
                    end_node="N-B-BRICK-W",
                    assembly="BASEMENT_BRICK_VENEER",
                    alignment=face("air-gap-int"),
                    unbalanced_fill=ft(0),
-                   top_elevation=ft(0), bottom_elevation=inch(-102.4375)),
+                   top_elevation=inch(-8), bottom_elevation=inch(-102.4375)),
 ]
 
 OPENINGS = [

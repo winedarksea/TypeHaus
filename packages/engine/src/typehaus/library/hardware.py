@@ -47,6 +47,7 @@ from typehaus.hardware.catalog import (
     ROLE_EXTERIOR_INSULATION_SCREW,
     ROLE_FACE_MOUNT_JOIST_HANGER,
     ROLE_GABLE_END_TIE,
+    ROLE_GABLE_TRUSS_ANCHOR,
     ROLE_GIRT_STANDOFF_SCREW,
     ROLE_GLAZING_PANEL_FASTENER,
     ROLE_HURRICANE_TIE,
@@ -1208,8 +1209,8 @@ LS30_GABLE_END_TIE = StructuralHardware(
     exposure=EXPOSURE_DRY,
     source="Simpson Strong-Tie LS30 skewable angle, 18 ga, 3-3/8 in long, 2-1/4 in legs, "
            "field-bent 0-135 degrees (once). One leg on the 5-1/2 in face of a gable-end "
-           "stud, the other bent to the bottom flange of the rafter above (a TJI 230 at the "
-           "house, the gable-end truss chord at the garage). **The joint is lateral, not "
+           "stud, the other bent to the bottom flange of the TJI 230 rafter above. A trussed "
+           "gable takes the HGA10 instead. **The joint is lateral, not "
            "uplift:** no rafter bears on a non-bearing gable wall, and what the tie carries "
            "is the wall's out-of-plane reaction into the roof. Replaced the H10A on "
            "2026-09-16 (owner): that row assumes a sawn 2x rafter (ESR-2613 Table 1 fn.1) "
@@ -1230,6 +1231,31 @@ LS30_GABLE_END_TIE = StructuralHardware(
                   "Wind/Seismic (160) column, read 2026-09-16. Installation note: the joist "
                   "must be constrained against rotation when a single LS is used per "
                   "connection"),
+    ),
+)
+
+HGA10_GABLE_TRUSS_ANCHOR = StructuralHardware(
+    tag="simpson-hga10-gable-truss-anchor",
+    name="HGA10 gusset angle, gable-end truss to top plate",
+    role=ROLE_GABLE_TRUSS_ANCHOR,
+    manufacturer=_SIMPSON,
+    model="HGA10",
+    exposure=EXPOSURE_DRY,
+    source="Simpson Strong-Tie HGA10 (sold as HGA10KT), 14 ga gusseted angle. Holds a "
+           "gable-end truss's bottom chord down on the wall's top plate. The truss is "
+           "designed for the gable's out-of-plane load itself, so no stud-to-chord tie is "
+           "used (owner, 2026-09-16). One per gable truss.",
+    allowable=AllowableLoads(
+        uplift_lb=375.0,
+        lateral_f1_lb=775.0,
+        lateral_f2_lb=815.0,
+        load_duration_factor=1.6,
+        species="SPF — the column this house is framed in (DF/SP: 435 / 1165 / 940 lbf)",
+        fasteners="4 - SDS 1/4 in x 1-1/2 in to the truss, 4 - SDS 1/4 in x 3 in to the plate",
+        citation=("Florida Product Approval FL11470-R2, Jax Apex Technology evaluation of "
+                  "Simpson Strong-Tie wood connectors (2008), Table 1 HGA10 row and "
+                  "footnote 7, read 2026-09-16. An old report; re-read the current Simpson "
+                  "catalog before relying on the numbers"),
     ),
 )
 
@@ -1776,6 +1802,7 @@ STRUCTURAL_HARDWARE: tuple = (
     H25A_HURRICANE_TIE,
     H25AZ_HURRICANE_TIE,
     LS30_GABLE_END_TIE,
+    HGA10_GABLE_TRUSS_ANCHOR,
     HGAM10_MASONRY_GUSSET,
     S5_SEAM_CLAMP,
     S5_S_SNAP_LOCK_CLAMP,

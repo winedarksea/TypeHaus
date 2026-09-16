@@ -26,6 +26,10 @@ This catches both shapes in one rule without knowing which it is looking at: cat
 roof is rafters on a ridge beam, where the gable wall climbs to the ridge and the ties follow
 its raking plate; the garage is trussed, where the wall stops at plate height and the
 gable-end truss sits on it. Both are "the exterior wall across the end of the span".
+
+The two take different parts. A stud gable's wall is tied to the rafter above it (LS30). A
+gable-end truss is designed for the gable's out-of-plane load itself, so its wall needs no
+such tie: the truss is only held down on the plate (HGA10), one per truss.
 """
 
 from __future__ import annotations
@@ -33,6 +37,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
+from typehaus.hardware.catalog import ROLE_GABLE_END_TIE, ROLE_GABLE_TRUSS_ANCHOR
 from typehaus.hardware.config import FT_TO_M, GableEndTieRules
 from typehaus.hardware.plan_geometry import point_in_ring
 from typehaus.joints.hung import point_along
@@ -64,18 +69,38 @@ class GableEnd:
     #: where it stands, not where the wall happens to top out. Until 2026-09-15 every station
     #: took the scalar ``z_m`` above, which on a ``ToRoof`` wall is ``z1_m`` — the BOUNDING
     #: PRISM height, deliberately the ridge (``resolve/model.py`` says so) — so sixteen of
-    #: catlin's thirty-six H10A markers drew in the air over the roof, the worst by 9'-0".
+    #: catlin's thirty-six (then H10A) markers drew in the air over the roof, the worst by 9'-0".
     #: On a flat-plate wall (the garage's trussed gables) every entry equals ``z_m`` and
     #: nothing moves.
     station_z_m: tuple[float, ...]
     axis: str
     length_m: float
+    #: The gable-end truss seated on this wall's plate, by member key; ``None`` on a stud gable.
+    gable_truss: str | None = None
+
+    @property
+    def role(self) -> str:
+        """The hardware role at these stations: a truss anchor, or a stud-to-rafter tie."""
+        return ROLE_GABLE_TRUSS_ANCHOR if self.gable_truss else ROLE_GABLE_END_TIE
 
 
 def _is_exterior_framed_wall(wall) -> bool:
     """A wall with a weather skin *and* studs. Same test ``stud_plate_tie_rows`` applies."""
     return (any(layer.function == "cladding" for layer in wall.layers)
             and any(member.category == "stud" for member in wall.members))
+
+
+def _seated_gable_truss(roof, wall, along) -> str | None:
+    """The gable-end truss lying over ``wall``'s axis, parallel and within a plate's width."""
+    (x0, y0) = wall.axis[0]
+    for member in roof.members:
+        if member.truss is None or not member.truss.gable:
+            continue
+        mid = ((member.p0[0] + member.p1[0]) / 2.0, (member.p0[1] + member.p1[1]) / 2.0)
+        # Perpendicular offset of the truss line from the wall axis.
+        if abs((mid[0] - x0) * along[1] - (mid[1] - y0) * along[0]) < 0.15:
+            return member.child_key
+    return None
 
 
 def _bearing_direction(model: ResolvedModel, refs) -> tuple[float, float] | None:
@@ -129,8 +154,10 @@ def gable_end_ties(model: ResolvedModel, rules: GableEndTieRules) -> list[GableE
             along = ((x1 - x0) / length_m, (y1 - y0) / length_m)
             if abs(along[0] * direction[0] + along[1] * direction[1]) > 0.09:
                 continue
-            count = max(rules.minimum_ties_per_wall,
-                        int(math.floor(length_m / pitch_m + 1e-9)) + 1)
+            truss = _seated_gable_truss(roof, wall, along)
+            count = (rules.anchors_per_gable_truss if truss else
+                     max(rules.minimum_ties_per_wall,
+                         int(math.floor(length_m / pitch_m + 1e-9)) + 1))
             claimed.add(wall.tag)
             stations = tuple(
                 (length_m / 2.0 if count == 1 else index * length_m / (count - 1))
@@ -150,5 +177,6 @@ def gable_end_ties(model: ResolvedModel, rules: GableEndTieRules) -> list[GableE
                 p0=wall.axis[0], p1=wall.axis[1],
                 z_m=wall.plate_top_z_m if wall.plate_top_z_m is not None else wall.z1_m,
                 station_z_m=station_z,
-                axis=axis_of(wall.axis[0], wall.axis[1]), length_m=length_m))
+                axis=axis_of(wall.axis[0], wall.axis[1]), length_m=length_m,
+                gable_truss=truss))
     return found

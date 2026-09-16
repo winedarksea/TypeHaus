@@ -28,6 +28,9 @@ ROLE_GIRT_STANDOFF_SCREW = "girt_standoff_screw"
 # for a joint whose governing load is lateral. The gable end is the classic wind failure in
 # a house that has everything else tied, which is exactly why it gets its own leg.
 ROLE_GABLE_END_TIE = "gable_end_tie"
+# A trussed gable end instead: the gable-end truss is designed for its own out-of-plane load,
+# so the joint only holds the truss down on the plate. Its own role so the stud tie is not it.
+ROLE_GABLE_TRUSS_ANCHOR = "gable_truss_anchor"
 ROLE_SLOPED_JOIST_HANGER = "sloped_joist_hanger"
 # The strap that carries a rafter's tension THROUGH the ridge to its opposite number.
 # Its own role, not a variant of the sloped hanger: the hanger holds one rafter up in

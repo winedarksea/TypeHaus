@@ -210,7 +210,9 @@ def test_the_sunken_garden_brick_wythe_is_billed(catlin_model) -> None:
     # north end. Moving the veneer south for its 6" cavity walked its east 6" INSIDE the
     # retaining wall — 4.25 SF of brick billed into solid concrete, at 0 FAIL. The node is on
     # the court's clear face at 27'-6" now, so this bound drops with it.
-    assert 122 < float(row["net_area_sqft"]) < 128
+    #
+    # 112.5 since 2026-09-16: the head came down to -8" so the porch joists pass over it.
+    assert 110 < float(row["net_area_sqft"]) < 115
 
 
 def test_the_garden_walls_are_distinguishable_from_house_concrete(catlin_model) -> None:

@@ -91,6 +91,9 @@ Loads, per foot of span:
 | beam self-weight | (12/12) × (17.75/12) × 150 pcf | 222 plf |
 | **w** | | **530 plf** |
 
+The wythe top dropped to −8" on 2026-09-16 (under the porch joists): 7.87 ft, 285 plf. 308 is
+kept as a conservative envelope; nothing below is re-worked.
+
 ### ⚠ Corrected 2026-09-14. The superseded pass is kept below it.
 
 Two things were wrong with the original and they compounded: a **service** moment was

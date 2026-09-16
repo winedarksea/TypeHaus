@@ -45,6 +45,7 @@ from typehaus.hardware.catalog import (
     EXPOSURE_DRY,
     EXPOSURE_TREATED,
     ROLE_GABLE_END_TIE,
+    ROLE_GABLE_TRUSS_ANCHOR,
     ROLE_HURRICANE_TIE,
     ROLE_LATERAL_TIE_PLATE,
     hardware_for_role,
@@ -194,31 +195,36 @@ def lateral_tie_plate_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
 
 
 def gable_end_tie_rows(model: ResolvedModel, rules: GableEndTieRules) -> list:
-    """LS30 angles along every gable-end wall, stud to rafter.
+    """The gable-end hardware: LS30 stud-to-rafter ties, and HGA10s under gable-end trusses.
 
     The leg that had nothing. ``bearing_connections`` cannot see a gable end because no
     rafter bears on one, so the wall that takes the largest out-of-plane wind pressure in the
     house was the only link in the chain with no hardware against it.
 
-    Grouped into ONE row rather than per wall: a framer buys a box of LS30, and the walls
-    belong in the basis where they can be audited. See ``joints/gable.py`` for how a gable end
-    is told from an eave wall and from an interior partition that happens to run the same way.
+    One row per part rather than per wall: a framer buys a box, and the walls belong in the
+    basis where they can be audited. See ``joints/gable.py`` for how a gable end is told from
+    an eave wall, and a trussed gable from a stud one.
     """
     ends = gable_end_ties(model, rules)
-    if not ends:
-        return []
-    by_storey: Counter = Counter()
-    for end in ends:
-        by_storey[end.storey] += len(end.stations_m)
-    item = hardware_for_role(ROLE_GABLE_END_TIE)
-    walls = ", ".join(f"{end.wall_tag} x{len(end.stations_m)}"
-                      for end in sorted(ends, key=lambda e: e.wall_tag))
-    return [hardware_row(
-        item, scope="gable end wall", count=int(sum(by_storey.values())),
-        by_storey=dict(sorted(by_storey.items())),
-        basis=(f"{rules.tie_pitch_ft:g} ft o.c. plus both ends (min "
-               f"{rules.minimum_ties_per_wall} per wall) along the top plate of "
-               f"{len(ends)} gable-end walls: {walls}"))]
+    rows = []
+    for role in (ROLE_GABLE_END_TIE, ROLE_GABLE_TRUSS_ANCHOR):
+        group = sorted((e for e in ends if e.role == role), key=lambda e: e.wall_tag)
+        if not group:
+            continue
+        by_storey: Counter = Counter()
+        for end in group:
+            by_storey[end.storey] += len(end.stations_m)
+        walls = ", ".join(f"{end.wall_tag} x{len(end.stations_m)}" for end in group)
+        basis = (f"{rules.tie_pitch_ft:g} ft o.c. plus both ends (min "
+                 f"{rules.minimum_ties_per_wall} per wall) along {len(group)} gable-end "
+                 f"walls: {walls}" if role == ROLE_GABLE_END_TIE else
+                 f"{rules.anchors_per_gable_truss} per gable-end truss, truss to top plate: "
+                 + ", ".join(f"{e.roof_tag} {e.gable_truss} on {e.wall_tag}" for e in group))
+        rows.append(hardware_row(
+            hardware_for_role(role), scope="gable end wall",
+            count=int(sum(by_storey.values())), by_storey=dict(sorted(by_storey.items())),
+            basis=basis))
+    return rows
 
 
 def uplift_rows(model: ResolvedModel, rules: UpliftTieRules,

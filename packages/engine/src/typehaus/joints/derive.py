@@ -21,6 +21,7 @@ from typehaus.hardware.catalog import (
     ROLE_EMBEDDED_STRAP_HOLDOWN,
     ROLE_FACE_MOUNT_JOIST_HANGER,
     ROLE_GABLE_END_TIE,
+    ROLE_GABLE_TRUSS_ANCHOR,
     ROLE_HURRICANE_TIE,
     ROLE_LATERAL_TIE_PLATE,
     ROLE_MUDSILL_ANCHOR,
@@ -56,6 +57,7 @@ from typehaus.quantities import M_PER_IN
 #: Every role :func:`derived_joints` accounts for. See the module docstring.
 COVERED_ROLES = frozenset({
     ROLE_GABLE_END_TIE,
+    ROLE_GABLE_TRUSS_ANCHOR,
     ROLE_HURRICANE_TIE,
     ROLE_MUDSILL_ANCHOR,
     ROLE_SLOPED_JOIST_HANGER,
@@ -161,16 +163,16 @@ def _gable_tie_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> li
     The leg no bearing rule can see, because no rafter bears on a gable end. See
     :mod:`typehaus.joints.gable` for how one is told from an eave wall.
     """
-    item = hardware_for_role(ROLE_GABLE_END_TIE)
     out: list[Joint] = []
     for end in gable_end_ties(model, config.gable_end_ties):
+        item = hardware_for_role(end.role)
         # ``station_z_m``, never the scalar ``end.z_m``: a gable wall RAKES, and its
         # ``z1_m`` is the bounding prism's ridge height rather than the plate the tie is
         # nailed to. Zipped strict — the two tuples are built together and a length
         # mismatch would silently drop or mislocate ties.
         for station_m, station_z in zip(end.stations_m, end.station_z_m, strict=True):
             out.append(_joint(
-                ROLE_GABLE_END_TIE, item.model, end.storey,
+                end.role, item.model, end.storey,
                 point_along(end.p0, end.p1, station_m), station_z, end.axis, embedded=False,
                 members=(end.wall_tag, end.roof_tag), anchor_tag=end.wall_tag,
                 grid_m=grid_m))

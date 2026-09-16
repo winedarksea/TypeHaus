@@ -597,32 +597,15 @@ _y_in_s = _y_in_n - SPEC.clear_length_ft
 _y_ax_s = _y_in_s - _half
 
 # ============================================================================
-# ** THE PORCH DECK'S OWN NORTH EDGE — IT IS NOT `_y_in_n` (2026-09-15). **
+# ** THE PORCH DECK'S NORTH EDGE IS `_y_in_n`, OVER THE BRICK (2026-09-16). **
 # ============================================================================
-# `_y_in_n` is datumed off the house's ABOVE-GRADE cladding face. The porch deck is not
-# above grade. At the deck's own elevation the house's south face is `W-B-BRICK` — a
-# freestanding wythe standing 3 11/16" SOUTH of that line — so joists run to `_y_in_n`
-# passed straight THROUGH the full 3 5/8" of brick and died 1/16" inside the air gap
-# behind it. Nothing in the engine caught it and nothing would: a cantilevered end is pure
-# arithmetic on the authored value (`resolve/floor_ends.py`), and
-# `structural.member_interference` builds its candidates from members and column/beam
-# solids only — a wall layer is not a candidate, so a masonry wythe is invisible to it.
-#
-# The arithmetic, not the answer, in the same spirit as `_veneer_beam_top` below:
-_y_brick_air_gap_int = inch(-6.06)   # = N-B-BRICK-W/-E; W-B-BRICK is alignment=face("air-gap-int")
-# BASEMENT_BRICK_VENEER builds SOUTH from that face: 4" drained cavity, then the wythe.
-_y_brick_exposed_face = _y_brick_air_gap_int - inch(4.0) - inch(3.625)   # -13.685"
-# 1" of daylight between the deck and the masonry — the owner's number. It is a gap to see
-# and to sweep, not a tolerance: the two structures are separately founded (see DW-SG-*-STEM)
-# and nothing should bridge them.
-_PORCH_BRICK_CLEARANCE = inch(1.0)
-_y_porch_deck_n = (_y_brick_exposed_face - _PORCH_BRICK_CLEARANCE).inches / 12.0  # -14.685"
-#
-# **`_y_in_n` ITSELF DOES NOT MOVE**, and that is the point of a separate name. It carries
-# the side walls' north ends and the 5" insulation gap, the back-beam and column line, the
-# balcony deck and its caps, the court slab and the walk — none of which is the porch deck's
-# front board. Only what stands ON the porch deck reads this: `_PORCH_OUTLINE`, the guard
-# path and its NE stub, and the joists' north cantilever.
+# The deck reaches the cladding line so D-M-BALC's 36" R311.3 patch is covered (~89%;
+# pulled 1" off the brick face at -14.685" it was 78%, a FAIL). The joists clear
+# `W-B-BRICK` VERTICALLY: its top is -8", their soffit -7 1/4". Nothing grades that gap —
+# `structural.member_interference` ignores wall layers — so hold the two numbers together.
+# Kept as its own name for what stands ON the deck: `_PORCH_OUTLINE`, the guard path and
+# its NE stub, and the joists' north cantilever.
+_y_porch_deck_n = _y_in_n
 
 # ** THE COURT SURFACE. ** -109 7/16": the basement floor plane less the flood step,
 # which is now zero.
@@ -3458,11 +3441,8 @@ PORCH_JOISTS = FloorSystem(
                      # North (end): the joists run past the back-beam line to the deck
                      # edge, which is the porch's real overhang. One symmetric value cannot
                      # say both.
-                     # ** IT WAS `SPEC.column_south_offset_in` (17") UNTIL 2026-09-15 **,
-                     # which put every tip on `_y_in_n` (-10") — the ABOVE-GRADE cladding
-                     # line, 3 11/16" north of the brick's exposed face, so all 31 joists
-                     # ran through the whole wythe. Derived off the deck edge now (12.315"),
-                     # so the tip and the front board can never disagree again.
+                     # Derived off the deck edge, so the tip and the front board cannot
+                     # disagree. The tips pass OVER W-B-BRICK (top -8"); see `_y_porch_deck_n`.
                      cantilever=inch(SPEC.porch_joist_cantilever_in),
                      cantilever_start=inch(_PORCH_JOIST_START_CANT_IN),
                      cantilever_end=ft(_y_porch_deck_n - _y_col),
@@ -3473,14 +3453,9 @@ PORCH_JOISTS = FloorSystem(
                      # exactly as FS-SG-DECK's bands are.
                      # ** IT PAINTS BOTH BANDS. ** `rim_material` is a JoistSpec field, not a
                      # per-band one, so the NORTH band takes the same paint and the same
-                     # qualified price key — and that one faces the house across a 1" gap,
-                     # where nothing will ever see it. 19 LF of paint on a hidden board is
-                     # the honest cost of saying the front one is white; a board that tight
-                     # to masonry is back-primed off the truck anyway.
-                     # (This read "dies against W-B-BRICK's wythe face at -10.05"" until
-                     # 2026-09-15. That was the brick's INNER, air-gap face; the exposed
-                     # face is 3 5/8" further south, and misreading which of the two the
-                     # deck stopped on IS the bug that ran every joist through the wythe.)
+                     # qualified price key — and that one sits over the brick cavity, where
+                     # nothing will ever see it. 19 LF of paint on a hidden board is the
+                     # honest cost of saying the front one is white.
                      # The joists behind both stay bare PT.
                      rim_material="post-paint-white",
                      # Four boundaries with two duplicate pairs: front and back are each two
