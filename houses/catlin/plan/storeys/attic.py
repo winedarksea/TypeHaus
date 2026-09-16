@@ -687,7 +687,10 @@ ROOFS = [
          # Ordered in the casings' charcoal instead, its 4" leg draws a 4-1/2" dark band
          # down both rakes, round both eaves and along the ridge: one outline, no new
          # geometry, no custom fabrication, just a second coil colour.
-         edge_trim_material="metal-dark-exterior"),
+         edge_trim_material="metal-dark-exterior",
+         # 2x6 on edge on the plate, tight to the sheathing: lateral restraint at bearing and
+         # the back-nailer for the gutter girt. Lower bay only, so the ccSPF fills over it.
+         eave_blocking="2x6"),
 ]
 
 BEAMS = [

@@ -33,8 +33,8 @@ def _tags(scene):
 def test_eave_overlay_defers_to_the_authored_gutter(catlin_model):
     """The house eave carries an authored Gutter + drip (params/roof_trim.py) riding the
     roofing plane, so the overlay must NOT add its schematic pair a storey of roof stack
-    lower — one eave, one gutter. The apron and vent screen have no authored counterpart
-    and still come from the overlay."""
+    lower — one eave, one gutter. The derived corner trim caps the panel heads, so no
+    schematic apron either; the gutter's support is drawn off the resolved girt."""
     scene, findings = build_detail(catlin_model, _eave(catlin_model))
     assert not findings
     tags = _tags(scene)
@@ -44,7 +44,9 @@ def test_eave_overlay_defers_to_the_authored_gutter(catlin_model):
     assert "detail-component:box-gutter" not in tags, \
         "overlay must defer to the authored gutter, not double it"
     assert "detail-component:drip-edge" not in tags
-    assert "detail-component:apron-flashing" in tags
+    assert "detail-component:apron-flashing" not in tags, "the corner trim caps the head"
+    assert {"detail-component:girt-standoff", "detail-component:tlok08",
+            "detail-component:gutter-hanger"} <= tags
     # Flashings are polyline+hatch geometry, never a bare Symbol.
     assert not any(getattr(n, "node", None) == "symbol" for n in scene.nodes)
 
@@ -152,35 +154,47 @@ def _garage_foundation(model):
     return detail
 
 
+def _garage_eave(model):
+    return next(d for d in derive_detail_slices(model)
+                if d.key.startswith("wall_roof:GARAGE_ROOF"))
+
+
 def test_eave_overlay_emits_apron_flashing(catlin_model):
-    scene, _ = build_detail(catlin_model, _eave(catlin_model))
+    """Where no corner trim caps the cladding head (the garage), the apron draws."""
+    scene, _ = build_detail(catlin_model, _garage_eave(catlin_model))
     assert "detail-component:apron-flashing" in _tags(scene), (
         "apron flashing is a named component distinct from the drip/Z/L flashings")
 
 
-def test_the_overlay_hangs_off_the_cladding_head_not_the_structural_deck(catlin_model):
-    """A roof's elevation is quoted at the top of its *structure*; its metal is not there.
+def test_the_gutter_support_is_drawn_off_the_resolved_members(catlin_model):
+    """Standoff, TLOK08s and hanger come from the resolved girt and blocking, not constants.
 
-    ``roof_height_at`` returns the deck plane, and the eave overlay registered everything on
-    it — so on catlin the apron flashing, the piece whose whole name is "over the head of the
-    wall cladding", was drawn 7.9" lower than that head, floating inside the wall's exterior
-    foam with its leader pointing into the middle of a foam board. The vent screen had the
-    same disease in miniature: the band offsets are perpendicular to a 4:12 plane and were
-    being read as vertical, which is a third of an inch — most of a layer, on a stack whose
-    layers are a quarter-inch thick.
+    The screws run from the girt's outer face to the block's inner face (girt 1.5 +
+    standoff 4.5 + sheathing 0.5 + 1.5 into the block = TLOK08's 8"), and the hanger's screw
+    lands inside the girt (notes/eave_gutter_girt.md).
     """
     scene, _ = build_detail(catlin_model, _eave(catlin_model))
-    apron = next(n for n in scene.nodes
-                 if isinstance(n, Polyline) and n.tag == "detail-component:apron-flashing")
-    # The cladding's own head, straight off the band the section drew for it.
-    cladding = next(n for n in scene.nodes if isinstance(n, Polyline)
-                    and (n.tag or "").endswith("closure-0-cladding"))
-    head = max(z for (_u, z) in cladding.points)
 
-    top = max(z for (_u, z) in apron.points)
-    assert head - 0.5 <= top <= head + 0.5, \
-        f"the apron caps the cladding head at {head:.2f}, not {top:.2f}"
-    assert min(z for (_u, z) in apron.points) < head, "and it laps DOWN over that head"
+    def band(tag):
+        node = next(n for n in scene.nodes if isinstance(n, Polyline) and n.tag == tag)
+        us = [u for (u, _z) in node.points]
+        zs = [z for (_u, z) in node.points]
+        return min(us), max(us), min(zs), max(zs)
+
+    girt = band("W-S-E1-eave-girt")
+    block = next(band(n.tag) for n in scene.nodes
+                 if isinstance(n, Polyline) and (n.tag or "").startswith("eave-block-hi-"))
+    screws = [n for n in scene.nodes
+              if isinstance(n, Polyline) and n.tag == "detail-component:tlok08"]
+    assert len(screws) == 2
+    for screw in screws:
+        us = sorted(u for (u, _z) in screw.points)
+        assert us == pytest.approx([block[0], girt[1]])
+        assert us[1] - us[0] == pytest.approx(8.0)
+        assert all(block[2] < z < block[3] for (_u, z) in screw.points)
+    fix = band("detail-component:hanger-screw")
+    assert girt[0] < fix[0] < girt[1], "the hanger screw lands in the girt"
+    assert girt[2] < fix[2] < girt[3]
 
 
 def test_garage_foundation_draws_slab_thermal_break(catlin_model):

@@ -173,10 +173,13 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     from typehaus.resolve.framing.truss_wall import girt_block_tier
 
     all_rows = hardware_takeoff(catlin_model)
-    rows = [row for row in all_rows if row["role"] == ROLE_EXTERIOR_INSULATION_SCREW]
+    # The eave blocking's toe screws are SDWS parts too, but wood-to-wood, not through foam.
+    rows = [row for row in all_rows if row["role"] == ROLE_EXTERIOR_INSULATION_SCREW
+            and not row["scope"].startswith("eave blocking")]
     # The girt crossing screw has its OWN role since 2026-09-12: it is selected on thread
     # length, which the length-ordered exterior-insulation ladder cannot see.
-    girt_rows = [row for row in all_rows if row["role"] == ROLE_GIRT_STANDOFF_SCREW]
+    girt_rows = [row for row in all_rows if row["role"] == ROLE_GIRT_STANDOFF_SCREW
+                 and row["scope"] != "eave gutter girt standoffs"]
     # ONE "exterior wall furring" row, and it is the garage ICF stem's protection band.
     # `GARAGE_ICF_6`'s stem walls are filed on `g-foundation` — the GARAGE's own frost-depth
     # storey since 2026-09-13, `basement` before that — which is what separates them from the
@@ -233,6 +236,12 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # row with it. The 224 on the insulation role are the garage ICF stem's protection band
     # (see above), which is a different building.
     assert girt_rows == [row], "the girt crossing screw is one row and one part"
+    # The gutter girt on RF-HOUSE's eaves takes the same screw, two per standoff, as its own row.
+    eave = [r for r in all_rows if r["scope"] == "eave gutter girt standoffs"]
+    standoffs = sum(1 for roof in catlin_model.roofs for m in roof.members
+                    if m.child_key.split("-eave-girt-")[-1].startswith("block-"))
+    assert len(eave) == 1 and eave[0]["part_number"] == "TLOK08"
+    assert eave[0]["count"] == 2 * standoffs > 0
     assert furring[0]["count"] == sum(r["count"] for r in rows) > 0
     # 1114 since 2026-09-03: the garden/garage window work moved the openings the girt
     # courses pack around, and the block count follows the blocks, not a literal here — the

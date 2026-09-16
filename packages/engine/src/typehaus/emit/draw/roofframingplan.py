@@ -46,6 +46,8 @@ ROOF_MEMBER_CATEGORIES = (
     ("outlooker", "OL", "GABLE OUTLOOKER"),
     ("barge_rafter", "BR", "BARGE RAFTER"),
     ("stud", "GS", "GABLE-END STUD"),
+    # ``Roof.eave_blocking``: one block per bay at a plumb-cut eave.
+    ("blocking", "BK", "EAVE BLOCKING"),
 )
 _RIDGE_CATEGORY = "ridge_beam"
 _LEADER_DROP_M = 1.0

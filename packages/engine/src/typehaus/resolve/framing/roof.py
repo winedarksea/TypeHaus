@@ -34,6 +34,7 @@ from typehaus.model.spatial import Roof
 from typehaus.model.structure import Beam
 from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import cross_section, panel_profile
+from typehaus.resolve.framing.roof_eave import eave_blocking
 from typehaus.resolve.framing.roof_gable import (
     build_truss_layout,
     gable_end_members,
@@ -98,7 +99,10 @@ def frame_roofs(model: ResolvedModel) -> list[Finding]:
             model.conditions.append(_ridge_condition(roof, beam_member))
         rafters = _seat_rafters(model, roof, rafters)
         rafters = tuple(replace(r, connection=_RAFTER_CONNECTION) for r in rafters)
-        members = (rafters + _bearing_stiffeners(rafters, beam_member is not None)
+        element = _roof_element(model, roof)
+        blocks = eave_blocking(roof, element.eave_blocking if element else None, rafters,
+                               _eave_plumb_cuts(model, roof), _bearing_plate_top(model, roof))
+        members = (rafters + _bearing_stiffeners(rafters, beam_member is not None) + blocks
                    + ((beam_member,) if beam_member is not None else ()))
         # ``replace`` (not reconstruction) so bearing_z_m / layer_edge_setbacks survive.
         framed.append(replace(roof, members=members))

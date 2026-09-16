@@ -514,6 +514,11 @@
 # no plumbing, no second plane. The three plies are what buy the 4-1/2" of thermal break
 # under the screw head and the 1/2" of proud that IS the vent gap.
 "3-2x4:kdat" = { material = { low = 3.9, high = 5.7 }, labour = { low = 0.5, high = 1 } }  # 352 LF (1,128 blocks x 3 plies)
+# RF-HOUSE's gutter girt (2026-09-16, notes/eave_gutter_girt.md): a flat 2x6 KDAT girt on
+# three-ply 2x6 standoffs, one per rafter bay. 2x6 because the gutter's couple needs two
+# screws 3-1/2" apart. Rates scaled 1.5x from the 2x4 rows by section.
+"2x6:kdat" = { material = { low = 2.0, high = 2.9 }, labour = { low = 0.8, high = 1.4 } }  # 72 LF ordered
+"3-2x6:kdat" = { material = { low = 6.0, high = 8.7 }, labour = { low = 0.5, high = 1 } }  # 24 LF (36 standoffs x 3 plies)
 # The eave and rake RETURN at the top of the wall — each layer's own depth carried out to
 # close the cladding cavity under the roof edge — is no longer one 3-1/2" piece. The catlin
 # truss authors the stand-off as layers, so the return follows as one thin run per layer:
@@ -1241,6 +1246,10 @@
 # is silent on. Also rejected: Rothoblaas HBS/TBS 8 mm (3-1/8" thread at every length;
 # ESR-4645 is dry service only) and HECO TOPIX-plus (no US evaluation report).
 "TLOK08" = { low = 0.81, high = 1.10 }  # 1131 ea — the catlin truss's one girt screw
+# RF-HOUSE eave blocking toe screws (notes/eave_gutter_girt.md §4): 2 per end into the
+# stiffener pair (3") and 2 per block down into the rafter plate (4").
+"SDWS22300DB" = { low = 0.55, high = 0.85 }  # 144 ea
+"SDWS22400DB" = { low = 0.6, high = 0.95 }  # 72 ea
 # The garage ICF stem's exterior protection band, 224 ea at 5". DERIVED, and the part is a
 # PROXY rather than a purchase instruction: `exterior_insulation_fastening` reads the band's
 # 1/4" vented standoff over 2.5" of `eps-ext` as screwed-furring-through-foam, which is the

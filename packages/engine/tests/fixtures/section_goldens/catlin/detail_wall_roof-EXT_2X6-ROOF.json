@@ -511,19 +511,19 @@
       "node": "polyline",
       "points": [
         [
-          437.75,
+          436.00000000000006,
           252.0737712429687
         ],
         [
-          442.8333333464567,
+          441.0,
           252.0737712429687
         ],
         [
-          442.8333333464567,
+          441.0,
           252.5737712429687
         ],
         [
-          437.75,
+          436.00000000000006,
           252.5737712429687
         ]
       ],
@@ -539,19 +539,19 @@
       "node": "hatch",
       "boundary": [
         [
-          437.75,
+          436.00000000000006,
           252.0737712429687
         ],
         [
-          442.8333333464567,
+          441.0,
           252.0737712429687
         ],
         [
-          442.8333333464567,
+          441.0,
           252.5737712429687
         ],
         [
-          437.75,
+          436.00000000000006,
           252.5737712429687
         ]
       ],
@@ -567,19 +567,19 @@
       "node": "polyline",
       "points": [
         [
-          442.3333333464567,
+          440.50000000000006,
           247.07377124296866
         ],
         [
-          442.8333333464567,
+          441.0,
           247.07377124296866
         ],
         [
-          442.8333333464567,
+          441.0,
           252.0737712429687
         ],
         [
-          442.3333333464567,
+          440.50000000000006,
           252.0737712429687
         ]
       ],
@@ -595,19 +595,19 @@
       "node": "hatch",
       "boundary": [
         [
-          442.3333333464567,
+          440.50000000000006,
           247.07377124296866
         ],
         [
-          442.8333333464567,
+          441.0,
           247.07377124296866
         ],
         [
-          442.8333333464567,
+          441.0,
           252.0737712429687
         ],
         [
-          442.3333333464567,
+          440.50000000000006,
           252.0737712429687
         ]
       ],
@@ -1599,6 +1599,62 @@
       "node": "polyline",
       "points": [
         [
+          430.00000000000006,
+          242.25000000000003
+        ],
+        [
+          431.50000000000006,
+          242.25000000000003
+        ],
+        [
+          431.50000000000006,
+          247.75000000000003
+        ],
+        [
+          430.00000000000006,
+          247.75000000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CARF01AAAA",
+      "tag": "eave-block-hi-002"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          430.00000000000006,
+          242.25000000000003
+        ],
+        [
+          431.50000000000006,
+          242.25000000000003
+        ],
+        [
+          431.50000000000006,
+          247.75000000000003
+        ],
+        [
+          430.00000000000006,
+          247.75000000000003
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           431.50000000000006,
           240.75
         ],
@@ -1768,11 +1824,11 @@
       "points": [
         [
           436.5,
-          240.75
+          247.75000000000003
         ],
         [
           438.0,
-          240.75
+          247.75000000000003
         ],
         [
           438.0,
@@ -1796,11 +1852,11 @@
       "boundary": [
         [
           436.5,
-          240.75
+          247.75000000000003
         ],
         [
           438.0,
-          240.75
+          247.75000000000003
         ],
         [
           438.0,
@@ -1873,6 +1929,62 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "pbr-panel-24"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          436.5,
+          242.25000000000003
+        ],
+        [
+          438.0,
+          242.25000000000003
+        ],
+        [
+          438.0,
+          247.75000000000003
+        ],
+        [
+          436.5,
+          247.75000000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CARF01AAAA",
+      "tag": "W-S-E1-eave-girt"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          436.5,
+          242.25000000000003
+        ],
+        [
+          438.0,
+          242.25000000000003
+        ],
+        [
+          438.0,
+          247.75000000000003
+        ],
+        [
+          436.5,
+          247.75000000000003
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
     },
     {
       "space": "model",
@@ -2579,31 +2691,99 @@
     },
     {
       "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          432.0,
+          242.25000000000003
+        ],
+        [
+          436.5,
+          242.25000000000003
+        ],
+        [
+          436.5,
+          247.75000000000003
+        ],
+        [
+          432.0,
+          247.75000000000003
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.25,
+      "linetype": "HIDDEN",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:girt-standoff"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          438.00000000000006,
+          246.75000000000003
+        ],
+        [
+          430.00000000000006,
+          246.75000000000003
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.25,
+      "linetype": "HIDDEN",
+      "closed": false,
+      "uid": null,
+      "tag": "detail-component:tlok08"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          438.00000000000006,
+          243.25000000000003
+        ],
+        [
+          430.00000000000006,
+          243.25000000000003
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.25,
+      "linetype": "HIDDEN",
+      "closed": false,
+      "uid": null,
+      "tag": "detail-component:tlok08"
+    },
+    {
+      "space": "model",
       "node": "hatch",
       "boundary": [
         [
-          436.6500000000001,
-          252.36849260251867
+          444.9833333333334,
+          248.15849260251866
         ],
         [
-          439.30000000000007,
-          252.36849260251867
+          440.24333333333345,
+          248.15849260251866
         ],
         [
-          439.30000000000007,
-          249.11849260251867
+          440.24333333333345,
+          245.00000000000003
         ],
         [
-          438.80000000000007,
-          249.11849260251867
+          440.12333333333345,
+          245.00000000000003
         ],
         [
-          438.80000000000007,
-          251.86849260251867
+          440.12333333333345,
+          248.27849260251867
         ],
         [
-          436.6500000000001,
-          251.86849260251867
+          444.9833333333334,
+          248.27849260251867
         ]
       ],
       "pattern": "metal",
@@ -2611,43 +2791,63 @@
       "angle": 0.0,
       "layer": "A-DETL-CMPT",
       "uid": null,
-      "material": "flashing"
+      "material": "metal"
     },
     {
       "space": "model",
       "node": "polyline",
       "points": [
         [
-          436.6500000000001,
-          252.36849260251867
+          444.9833333333334,
+          248.15849260251866
         ],
         [
-          439.30000000000007,
-          252.36849260251867
+          440.24333333333345,
+          248.15849260251866
         ],
         [
-          439.30000000000007,
-          249.11849260251867
+          440.24333333333345,
+          245.00000000000003
         ],
         [
-          438.80000000000007,
-          249.11849260251867
+          440.12333333333345,
+          245.00000000000003
         ],
         [
-          438.80000000000007,
-          251.86849260251867
+          440.12333333333345,
+          248.27849260251867
         ],
         [
-          436.6500000000001,
-          251.86849260251867
+          444.9833333333334,
+          248.27849260251867
         ]
       ],
       "layer": "A-DETL-CMPT",
-      "lineweight": 0.7,
+      "lineweight": 0.25,
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": null,
-      "tag": "detail-component:apron-flashing"
+      "tag": "detail-component:gutter-hanger"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          440.18333333333345,
+          245.00000000000003
+        ],
+        [
+          436.75000000000006,
+          245.00000000000003
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.25,
+      "linetype": "HIDDEN",
+      "closed": false,
+      "uid": null,
+      "tag": "detail-component:hanger-screw"
     },
     {
       "space": "model",
@@ -2680,7 +2880,7 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          440.2916666666668,
+          438.5000000000001,
           249.8237712429687
         ],
         "name": ""
@@ -2690,10 +2890,10 @@
         246.85250959689364
       ],
       "to": [
-        440.2916666666668,
+        438.5000000000001,
         249.8237712429687
       ],
-      "text": "drip edge lies ON the top deck;\nunderlayment laps OVER it",
+      "text": "drip edge ON the deck, face tight to the\ntrim; membrane laps OVER it",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2718,7 +2918,7 @@
         442.5833333333334,
         246.11849260251867
       ],
-      "text": "box gutter, back edge tucked BEHIND the\ntrim face",
+      "text": "box gutter, back sheet tucked BEHIND the\ntrim face",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2730,20 +2930,120 @@
       "anchor": {
         "kind": "point",
         "xy": [
-          440.4500000000001,
-          250.61849260251867
+          440.0833333333334,
+          250.39800109970616
         ],
         "name": ""
       },
       "at": [
         454.2500000000001,
-        237.55806515244922
+        238.6469540413381
       ],
       "to": [
-        440.4500000000001,
-        250.61849260251867
+        440.0833333333334,
+        250.39800109970616
       ],
-      "text": "apron flashing over the cladding head,\nbehind the drip",
+      "text": "corner trim caps the wall panel heads",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          430.75000000000006,
+          245.9166666666667
+        ],
+        "name": ""
+      },
+      "at": [
+        454.2500000000001,
+        235.08862070800475
+      ],
+      "to": [
+        430.75000000000006,
+        245.9166666666667
+      ],
+      "text": "2x6 eave block on the plate; ccSPF over\nit",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          437.25000000000006,
+          245.00000000000003
+        ],
+        "name": ""
+      },
+      "at": [
+        454.2500000000001,
+        230.44139848578254
+      ],
+      "to": [
+        437.25000000000006,
+        245.00000000000003
+      ],
+      "text": "2x6 gutter girt on a 3-2x6 standoff each\nbay (beyond)",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          434.25,
+          246.75000000000003
+        ],
+        "name": ""
+      },
+      "at": [
+        454.2500000000001,
+        226.8830651524492
+      ],
+      "to": [
+        434.25,
+        246.75000000000003
+      ],
+      "text": "2 TLOK08 per standoff into the block",
+      "height": 1.6,
+      "height_pt": 7.0,
+      "layer": "A-ANNO-TEXT",
+      "uid": null
+    },
+    {
+      "space": "model",
+      "node": "leader",
+      "anchor": {
+        "kind": "point",
+        "xy": [
+          442.5833333333334,
+          248.21849260251867
+        ],
+        "name": ""
+      },
+      "at": [
+        454.2500000000001,
+        223.32473181911587
+      ],
+      "to": [
+        442.5833333333334,
+        248.21849260251867
+      ],
+      "text": "hidden hanger at each standoff, screwed\nto the girt",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2838,240 +3138,6 @@
       "style": "ARCH",
       "layer": "A-ANNO-TEXT",
       "align": "left",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          440.3473333333333,
-          180.375
-        ],
-        [
-          440.14282301068033,
-          181.40314282162086
-        ],
-        [
-          439.5604268854545,
-          182.27476021878786
-        ],
-        [
-          438.6888094882875,
-          182.85715634401365
-        ],
-        [
-          437.66066666666666,
-          183.06166666666667
-        ],
-        [
-          436.6325238450458,
-          182.85715634401365
-        ],
-        [
-          435.7609064478788,
-          182.27476021878786
-        ],
-        [
-          435.178510322653,
-          181.40314282162086
-        ],
-        [
-          434.974,
-          180.375
-        ],
-        [
-          435.178510322653,
-          179.34685717837914
-        ],
-        [
-          435.7609064478788,
-          178.47523978121214
-        ],
-        [
-          436.6325238450458,
-          177.89284365598635
-        ],
-        [
-          437.66066666666666,
-          177.68833333333333
-        ],
-        [
-          438.6888094882875,
-          177.89284365598635
-        ],
-        [
-          439.5604268854545,
-          178.47523978121214
-        ],
-        [
-          440.14282301068033,
-          179.3468571783791
-        ]
-      ],
-      "layer": "A-ANNO-KEYN",
-      "lineweight": 0.25,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": null
-    },
-    {
-      "space": "model",
-      "node": "text",
-      "anchor": [
-        437.66066666666666,
-        180.375
-      ],
-      "content": "K3",
-      "height": 3.0,
-      "height_pt": 6.5,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-KEYN",
-      "align": "center",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          431.75,
-          180.375
-        ],
-        "name": ""
-      },
-      "at": [
-        437.66066666666666,
-        180.375
-      ],
-      "to": [
-        431.75,
-        180.375
-      ],
-      "text": "",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          442.59733333333344,
-          174.733
-        ],
-        [
-          442.39282301068044,
-          175.76114282162087
-        ],
-        [
-          441.8104268854546,
-          176.63276021878787
-        ],
-        [
-          440.93880948828763,
-          177.21515634401365
-        ],
-        [
-          439.91066666666677,
-          177.41966666666667
-        ],
-        [
-          438.8825238450459,
-          177.21515634401365
-        ],
-        [
-          438.01090644787894,
-          176.63276021878787
-        ],
-        [
-          437.4285103226531,
-          175.76114282162087
-        ],
-        [
-          437.2240000000001,
-          174.733
-        ],
-        [
-          437.4285103226531,
-          173.70485717837914
-        ],
-        [
-          438.01090644787894,
-          172.83323978121214
-        ],
-        [
-          438.8825238450459,
-          172.25084365598636
-        ],
-        [
-          439.91066666666677,
-          172.04633333333334
-        ],
-        [
-          440.93880948828763,
-          172.25084365598636
-        ],
-        [
-          441.8104268854546,
-          172.83323978121214
-        ],
-        [
-          442.39282301068044,
-          173.70485717837911
-        ]
-      ],
-      "layer": "A-ANNO-KEYN",
-      "lineweight": 0.25,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": null
-    },
-    {
-      "space": "model",
-      "node": "text",
-      "anchor": [
-        439.91066666666677,
-        174.733
-      ],
-      "content": "K4",
-      "height": 3.0,
-      "height_pt": 6.5,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-KEYN",
-      "align": "center",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          434.0000000000001,
-          180.375
-        ],
-        "name": ""
-      },
-      "at": [
-        439.91066666666677,
-        174.733
-      ],
-      "to": [
-        434.0000000000001,
-        180.375
-      ],
-      "text": "",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
       "uid": null
     },
     {
@@ -4017,100 +4083,26 @@
       "layer": "A-ANNO-TEXT",
       "align": "left",
       "uid": null
-    },
-    {
-      "space": "paper",
-      "node": "hatch",
-      "boundary": [
-        [
-          4.8,
-          1.158
-        ],
-        [
-          4.9399999999999995,
-          1.158
-        ],
-        [
-          4.9399999999999995,
-          1.298
-        ],
-        [
-          4.8,
-          1.298
-        ]
-      ],
-      "pattern": "metal",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "flashing"
-    },
-    {
-      "space": "paper",
-      "node": "polyline",
-      "points": [
-        [
-          4.8,
-          1.158
-        ],
-        [
-          4.9399999999999995,
-          1.158
-        ],
-        [
-          4.9399999999999995,
-          1.298
-        ],
-        [
-          4.8,
-          1.298
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.25,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": null
-    },
-    {
-      "space": "paper",
-      "node": "text",
-      "anchor": [
-        4.999999999999999,
-        1.228
-      ],
-      "content": "flashing",
-      "height": 3.0,
-      "height_pt": 6.5,
-      "rotation": 0.0,
-      "style": "ARCH",
-      "layer": "A-ANNO-TEXT",
-      "align": "left",
-      "uid": null
     }
   ],
   "notes": [
     "NOTES:",
-    "• Roof framing: 11-7/8\" TJI 230 at 24\" o.c., LSSR hangers to a structural ridge beam.",
-    "• Roof cavity: 5\" closed-cell foam to the deck, R-30C batt below it.",
-    "• Air and vapour barrier is the foam. Interior is paint on gypsum only.",
-    "• Deck: 5/8\" CDX, 40/20, oversailing the last rafter at the eave.",
-    "• Membrane: self-adhered butyl, 240 F min, full field over the whole deck.",
-    "• Roofing: 24 ga standing seam on concealed floating clips, field-seamed.",
-    "• Wall: 2x6, 1/2\" sheathing, 4\" foam around a 2x4 truss at 16\" o.c. No WRB.",
-    "• Cladding face stands 5-1/2\" proud of the sheathing; the foam is the water plane.",
+    "• Roof: 11-7/8\" TJI 230 at 24\" o.c., LSSR hangers to a structural ridge beam.",
+    "• Bay: 5\" ccSPF on the deck, R-30C batt below. The foam is the air and vapour barrier; paint-only ceiling.",
+    "• Deck: 5/8\" CDX, 40/20, oversailing the rafter ends to the girt face.",
+    "• Butyl membrane, 240 F min, full field. 24 ga standing seam on floating clips.",
+    "• Wall: 2x6, 1/2\" sheathing, 4\" ccSPF around 3-ply blocks, 1/2\" vent gap, 1-1/2\" KDAT girts at 24\", 1-1/4\" PBR. No WRB.",
     "",
     "KEYED NOTES:",
-    "K1  Birdsmouth seat: beveled stiffeners per APA D710 10h, or beveled plate 10q.",
+    "K1  Birdsmouth seat: beveled web stiffeners per APA D710 10h; H2.5A each rafter.",
     "K2  Foam first lift 1-1/2\" min. Lap onto ridge beam and hanger flanges in one pass.",
-    "K3  Eave bay blocking: rigid foam in the sheathing plane, sealed to web and plate.",
+    "K3  2x6 eave block on edge on the plate, every bay. ccSPF over it.",
     "K4  Roof-to-wall foam angle: closed-cell fill. No high-expansion foam.",
-    "K5  Drip flange on the deck, 1-1/2\" back, underside 0.70\" up. Turn down at the trough mid-width.",
+    "K5  Drip flange 2\" onto the deck, underside 0.70\" up. Face tight to the trim.",
     "K6  Lap the membrane over the drip. Nothing else reaches that plane.",
     "K7  6\" box gutter, rim 2.76\" below the deck datum, back sheet behind the trim.",
-    "K8  Corner trim, not fascia and soffit."
+    "K8  Corner trim, not fascia and soffit.",
+    "K9  2x6 girt on 3-2x6 standoffs, 2 TLOK08 each. Gutter hanger at each standoff."
   ],
   "frame": {
     "paper": [

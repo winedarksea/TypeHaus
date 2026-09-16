@@ -220,7 +220,9 @@ def exterior_insulation_screw_rows(model: ResolvedModel,
         add("roof top deck", roof.storey, fastening,
             int(math.ceil(roof.surface_area_m2 / cell_m2)))
 
-    rows = [*truss_wall_block_screw_rows(model, rules)]
+    from typehaus.takeoff.eave_fasteners import eave_screw_rows
+
+    rows = [*truss_wall_block_screw_rows(model, rules), *eave_screw_rows(model, rules)]
     for (scope, part_number), group in sorted(groups.items()):
         fastening = group["fastening"]
         rows.append(hardware_row(

@@ -154,13 +154,20 @@ def test_the_gutter_is_mounted_tight_to_the_wall(eave) -> None:
     assert back[3] > trim[2], "and reaches above its lower edge, so the two overlap"
 
 
-def test_the_drip_throws_water_into_the_middle_of_the_trough(eave) -> None:
-    """Where the turn-down ends is the whole detail: inside the channel, below its rim."""
+def test_the_drip_hangs_tight_to_the_trim_and_into_the_trough(eave) -> None:
+    """The turn-down hugs the corner trim's face and ends inside the channel, below its rim.
+
+    Published eave-with-gutter details (Best Buy Metals p.26, Western States WSD-D4) hang
+    the drip face on the fascia line with the gutter back behind it. At the trough's
+    mid-width it cantilevered 5" of flange over nothing.
+    """
     turn_down = eave.solid("TR-RF-DRIP-E-1-DRIP")
+    trim = eave.member("eave-hi-corner-trim")
     bottom = eave.solid("TR-RF-GUTTER-E-1-BOTTOM")
     front = eave.solid("TR-RF-GUTTER-E-1-FRONT")
     back = eave.solid("TR-RF-GUTTER-E-1-BACK")
 
+    assert turn_down[0] == pytest.approx(trim[1]), "the turn-down lies on the trim's face"
     assert back[1] < turn_down[0] and turn_down[1] < front[0], \
         "the turn-down hangs clear inside the trough, touching neither sheet"
     assert turn_down[2] < back[3], "it reaches below the rim, so water cannot blow back out"
@@ -182,7 +189,8 @@ def test_the_drip_flange_lies_on_the_top_deck_and_nothing_else_reaches_it(eave) 
     flange = eave.solid("TR-RF-DRIP-E-1-LAP")
     assert flange[2] == pytest.approx(DRIP_CEILING_IN), \
         "the flange's underside IS the deck surface — it is nailed to it, not hung near it"
-    assert flange[0] < 0.0, "and it reaches back ONTO the deck, inboard of the roof edge"
+    # The deck stops 1 1/4" (the PBR panel) inboard of the roof edge; 2" of flange bears on it.
+    assert flange[0] <= -1.25 - 2.0 + 1e-6, "and it bears 2\" ONTO the plywood, not the panel head"
     # The turn-down is the drip's own second leg, so it is allowed to reach the flange it is
     # folded from — but no higher, or the fold points back up the slope.
     assert eave.solid("TR-RF-DRIP-E-1-DRIP")[3] <= flange[2] + 1e-9

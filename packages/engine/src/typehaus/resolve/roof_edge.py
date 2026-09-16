@@ -30,6 +30,7 @@ from dataclasses import replace
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.framing.profiles import panel_profile
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedRoof, ResolvedWall
+from typehaus.resolve.roof_eave_girt import eave_girts
 from typehaus.resolve.roof_edge_geometry import (
     CLOSURE_TOLERANCE_M,
     MatingFaces,
@@ -53,8 +54,8 @@ def resolve_roof_edges(model: ResolvedModel) -> None:
     for roof in model.roofs:
         walls = tuple(w for w in _walls_under_roof(model, roof)
                       if claimed.get(w.tag, roof.tag) == roof.tag)
-        extra = (_closure_members(model, roof, walls)
-                 + roof_trim_members(model, roof, walls))
+        closure, girts = eave_girts(roof, _closure_members(model, roof, walls))
+        extra = closure + girts + roof_trim_members(model, roof, walls)
         resolved.append(replace(roof, members=roof.members + extra) if extra else roof)
     model.roofs = resolved
 

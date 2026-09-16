@@ -216,7 +216,8 @@ def test_no_detail_component_is_ever_a_symbol(catlin_model):
     # schematic pair is exercised on the garage eave, which has no authored trim yet.
     ("wall_roof:GARAGE_ROOF", "box-gutter"),
     ("wall_roof:GARAGE_ROOF", "drip-edge"),
-    ("wall_roof:EXT_2X6", "apron-flashing"),
+    # The house eave's corner trim caps the head, so the apron is exercised on the garage.
+    ("wall_roof:GARAGE_ROOF", "apron-flashing"),
     # There is no ``insect-screen`` row here, which is a coverage loss worth stating rather
     # than quietly dropping. The screen closes the eave end of an OVER-DECK VENT CHANNEL,
     # and no assembly in this house has one: ROOF has no vent mat, and the garage is

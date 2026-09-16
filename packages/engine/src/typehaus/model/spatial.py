@@ -270,6 +270,10 @@ class Roof(Element):
     # seam roof gets an accent trim, and it is a *product* choice, so it belongs on the roof
     # rather than in the resolver (the garage's white fascia must not follow the house's).
     edge_trim_material: str | None = None
+    # Solid blocking between the rafters at a plumb-cut (zero-overhang, wall-borne) eave, as a
+    # member profile ("2x6"). It stands on the plate against the sheathing and restrains each
+    # rafter at its bearing. ``None`` = no blocking.
+    eave_blocking: str | None = None
 
 
 @register_element

@@ -17,34 +17,30 @@ source:
 ## Sheet notes
 
 ### General
-- Roof framing: 11-7/8" TJI 230 at 24" o.c., LSSR hangers to a structural ridge beam.
-- Roof cavity: 5" closed-cell foam to the deck, R-30C batt below it.
-- Air and vapour barrier is the foam. Interior is paint on gypsum only.
-- Deck: 5/8" CDX, 40/20, oversailing the last rafter at the eave.
-- Membrane: self-adhered butyl, 240 F min, full field over the whole deck.
-- Roofing: 24 ga standing seam on concealed floating clips, field-seamed.
-- Wall: 2x6, 1/2" sheathing, 4" foam around a 2x4 truss at 16" o.c. No WRB.
-
-- Cladding face stands 5-1/2" proud of the sheathing; the foam is the water plane.
+- Roof: 11-7/8" TJI 230 at 24" o.c., LSSR hangers to a structural ridge beam.
+- Bay: 5" ccSPF on the deck, R-30C batt below. The foam is the air and vapour barrier; paint-only ceiling.
+- Deck: 5/8" CDX, 40/20, oversailing the rafter ends to the girt face.
+- Butyl membrane, 240 F min, full field. 24 ga standing seam on floating clips.
+- Wall: 2x6, 1/2" sheathing, 4" ccSPF around 3-ply blocks, 1/2" vent gap, 1-1/2" KDAT girts at 24", 1-1/4" PBR. No WRB.
 
 ### Keyed
-- [K1] Birdsmouth seat: beveled stiffeners per APA D710 10h, or beveled plate 10q.
+- [K1] Birdsmouth seat: beveled web stiffeners per APA D710 10h; H2.5A each rafter.
 - [K2] Foam first lift 1-1/2" min. Lap onto ridge beam and hanger flanges in one pass.
-- [K3 @ host#layer:sheathing:out] Eave bay blocking: rigid foam in the sheathing plane, sealed to web and plate.
-- [K4 @ host#layer:spray-foam:out] Roof-to-wall foam angle: closed-cell fill. No high-expansion foam.
-- [K5] Drip flange on the deck, 1-1/2" back, underside 0.70" up. Turn down at the trough mid-width.
+- [K3] 2x6 eave block on edge on the plate, every bay. ccSPF over it.
+- [K4] Roof-to-wall foam angle: closed-cell fill. No high-expansion foam.
+- [K5] Drip flange 2" onto the deck, underside 0.70" up. Face tight to the trim.
 - [K6] Lap the membrane over the drip. Nothing else reaches that plane.
 - [K7] 6" box gutter, rim 2.76" below the deck datum, back sheet behind the trim.
 - [K8] Corner trim, not fascia and soffit.
+- [K9] 2x6 girt on 3-2x6 standoffs, 2 TLOK08 each. Gutter hanger at each standoff.
 
 ### Spec 07 21 00
-- Hold point: verify the plywood under 16% MC, bay by bay, before spraying foam.
-- Batt arrives oversized: friction-fit the flange pockets and pack each bay solid.
+- Hold point: plywood under 16% MC, bay by bay, before foam.
 - Hold point: inspect every bay for voids before the batts go in.
 
 ### Spec 07 61 00
 - Measure every eave offset off the corner trim face.
-- Build order: block the bays, deck, drip edge, membrane, standing seam, gutter. Insulate from inside afterward.
+- Build order: block, girt, deck, drip edge, membrane, standing seam, gutter. Insulate from inside after.
 
 # Notes
 
@@ -107,16 +103,24 @@ reinstate, and each of them was load-bearing only for the stack it belonged to.
 
 - Roofing: 24 ga architectural standing seam, mechanically field-seamed, concealed floating clips.
 
-- Eave bay blocking: close every rafter bay over the top plate with rigid foam blocking set in the plane of the wall sheathing, sealed to the joist webs and the plate with canned foam. This is what carries the air barrier across the eave from the wall sheathing up to the ROOF BAY'S OWN FOAM. With a paint-only interior there is no second line of defence inboard of it, and an unblocked bay vents the ceiling into the joist bay itself.
+- Eave bay blocking: a **2x6 on edge in every rafter bay**, standing on the rafter plate with its outer face tight to the wall sheathing band (`Roof.eave_blocking`). It restrains each rafter laterally at its bearing and is the back-nailer the gutter girt screws into. It fills only the lower 5-1/2" of the 11-7/8" bay, so the cold upper corner stays wood-free and the ccSPF fills over the block, sealing to the webs, the deck and the sheathing. **The air barrier across the eave is the sheathing band plus that foam**, not the block. With a paint-only interior there is no second line of defence inboard of it, and an unsealed bay vents the ceiling into the joist bay itself.
 
-- Wall: 2x6 studs (LSL on the main storey), 1/2" sheathing, then **4" of closed-cell spray foam around an intermittent 2x4 truss** — a flat block on the sheathing, a 1/2" plywood tab, a KDAT 2x4 outrigger on edge at 16" o.c. — and standing-seam cladding clipped to the outriggers. Class III interior paint on drywall. **No WRB:** the foam is the water plane. The cladding face is 5-1/2" proud of the sheathing, which is what `params/roof_trim.py::_WALL_OUTBOARD_IN` carries and what sets the whole eave water chain out with it.
+- Wall: 2x6 studs (LSL on the main storey), 1/2" sheathing, then **4" of closed-cell spray foam around three-ply KDAT blocks**, a 1/2" vent gap, one tier of 1-1/2" KDAT girts at 24" courses, and 1-1/4" PBR panel screwed to the girts. Class III interior paint on drywall. **No WRB:** the foam is the water plane. The cladding face is 7-1/4" proud of the sheathing (`params/roof_trim.py::_WALL_OUTBOARD_IN`), and the eave water chain is set out from it.
+
+- Gutter support (`notes/eave_gutter_girt.md`): a flat 2x6 KDAT girt in the girt layer at the eave, on a 3-2x6 standoff at every rafter bay centre, two TLOK08 per standoff through girt, standoff and sheathing into the 2x6 eave block. The gutter hangs on a hidden hanger at each standoff (24" o.c., inside the usual 36" max), screwed through the panel into the girt. **The hanger is drawn, not modelled or billed.**
 
 - Foam interface: leave the angled mismatch between roof foam and wall foam; fill with closed-cell spray polyurethane foam. Avoid high-expansion foams — they lift the roof foam off the deck barrier.
 
-- Drip edge: its flange lies ON the structural deck (underside at 0.70" vertical above the deck datum), running 1-1/2" back onto the deck from the roof edge, with the adhered membrane lapped OVER it. Nothing ELSE in the eave chain may reach that plane — the underlayment has to ride over exactly one thing to bond to the deck. The turn-down hangs at the trough mid-width, throwing runoff into the middle of the gutter rather than down the wall behind it.
+- Drip edge: its flange lies ON the structural deck (underside at 0.70" vertical above the deck datum), bearing 2" on the plywood inboard of the deck edge (the deck stops at the girt face, 1-1/4" inside the cladding face), with the adhered membrane lapped OVER it. Nothing ELSE in the eave chain may reach that plane. The turn-down lies tight on the corner trim's face and drops 2" below the gutter rim. Until 2026-09-16 it hung at the trough mid-width, 3.3" past the cladding with 1/4" of flange on wood.
 
 - Gutter: 6" box gutter, back sheet tucked a lap BEHIND the corner trim's formed face — behind the sheet itself, not merely inboard of the 1.25" of plan depth it hangs at the end of. Rim 2.76" BELOW the deck datum, because the 4" trim leg it laps under hangs 3.26" below a roofing underside only 0.74" up, a lap under the trim's lower edge. Downspout steadied with conduit pipe clamps (not primary support).
 
 - No fascia and no soffit: roof and wall are one continuous standing-seam skin over a flush zero-overhang edge, so the resolver draws a corner trim angle instead. Every eave offset is measured off that trim's face.
 
 - Build order (water laps downhill, so the eave chain is the part that gets built backwards): frame and block the eave bays -> 5/8" CDX deck, oversailing the girts -> **moisture-meter hold point, < 16% MC** -> DRIP EDGE -> adhered butyl membrane lapped OVER the drip, full field -> standing seam -> gutter, back sheet behind the trim; then, from inside, 5" ccSPF against the deck underside -> **void inspection, every bay** -> R-30C batt -> 5/8" gypsum -> paint. The drip edge goes on before the membrane, not after. **The insulation is an INTERIOR operation and follows the roof being closed in**: the deck can be dried in on day one and the foam sprayed against a dry deck weeks later.
+
+- Eave references (2026-09-16), what set the drip and gutter:
+  - Best Buy Metals, *Standing Seam Architectural Install Guide* p.26, "Eave Detail (with gutter)": extended eave drip edge on the deck, panel hemmed around its kick, gutter back flange up behind the drip face, hidden hanger fixed at the fascia line.
+  - Western States Metal Roofing WSD-D4 "Eave with Gutter": pre-hung box gutter with an 8" back sheet whose 6" flange runs onto the deck, a gutter eave trim over it (6" flange, 3-1/8" face into the trough, 1/2" hem), joggle cleat, strap at 1/2" clear for thermal movement.
+  - Weyerhaeuser TJ-4000: beveled bearing plate and beveled web stiffeners both sides above 1/4:12; roof joists laterally restrained at end bearings (the 2x6 eave block).
+  - Gutter hangers at 36" o.c. max is the common industry rule (SMACNA *Architectural Sheet Metal Manual* governs; not read directly). Catlin's 24" follows the standoffs.

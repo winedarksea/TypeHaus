@@ -73,7 +73,12 @@ def run_polylines(ctx: CheckContext) -> list[tuple[str, str, tuple[tuple[float, 
         z = tuple(duct.z_m) if len(duct.z_m) == len(duct.path) else ()
         out.append(("duct", duct.tag, tuple(duct.path), z))
     for raceway in ctx.model.conduits:
-        out.append(("conduit", raceway.tag, tuple(raceway.path), conduit_vertex_z(raceway)))
+        path, z = tuple(raceway.path), conduit_vertex_z(raceway)
+        # The rise is a riser AT the last point, not a slope along the last segment: repeat
+        # that vertex so the flat run and the vertical are separate segments.
+        if len(path) >= 2 and z[-1] != z[-2]:
+            path, z = (*path, path[-1]), (*z[:-1], z[-2], z[-1])
+        out.append(("conduit", raceway.tag, path, z))
     return out
 
 

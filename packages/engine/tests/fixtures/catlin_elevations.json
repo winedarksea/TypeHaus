@@ -4744,10 +4744,10 @@
 "048aed910165"
 ],
 "geometry/CARF01AAAA::framing/member:W-S-E1-closure-0-outer-girt": [
-6.11505,
+6.29285,
 6.4292097,
 8,
-"bad7b733e8f6"
+"7225ade0e657"
 ],
 "geometry/CARF01AAAA::framing/member:W-S-E1-closure-0-sheathing": [
 6.11505,
@@ -4767,6 +4767,36 @@
 8,
 "2738308dbb6c"
 ],
+"geometry/CARF01AAAA::framing/member:W-S-E1-eave-girt": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-E1-eave-girt-block-000": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-E1-eave-girt-block-001": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-E1-eave-girt-block-002": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-E1-eave-girt-block-003": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
 "geometry/CARF01AAAA::framing/member:W-S-E2-closure-0-cladding": [
 6.11505,
 6.4117472,
@@ -4774,10 +4804,10 @@
 "048aed910165"
 ],
 "geometry/CARF01AAAA::framing/member:W-S-E2-closure-0-outer-girt": [
-6.11505,
+6.29285,
 6.4292097,
 8,
-"bad7b733e8f6"
+"7225ade0e657"
 ],
 "geometry/CARF01AAAA::framing/member:W-S-E2-closure-0-sheathing": [
 6.11505,
@@ -4797,6 +4827,42 @@
 8,
 "2738308dbb6c"
 ],
+"geometry/CARF01AAAA::framing/member:W-S-E2-eave-girt": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-E2-eave-girt-block-000": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-E2-eave-girt-block-001": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-E2-eave-girt-block-002": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-E2-eave-girt-block-003": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-E2-eave-girt-block-004": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
 "geometry/CARF01AAAA::framing/member:W-S-E3-closure-0-cladding": [
 6.11505,
 6.4117472,
@@ -4804,10 +4870,10 @@
 "048aed910165"
 ],
 "geometry/CARF01AAAA::framing/member:W-S-E3-closure-0-outer-girt": [
-6.11505,
+6.29285,
 6.4292097,
 8,
-"bad7b733e8f6"
+"7225ade0e657"
 ],
 "geometry/CARF01AAAA::framing/member:W-S-E3-closure-0-sheathing": [
 6.11505,
@@ -4827,6 +4893,36 @@
 8,
 "2738308dbb6c"
 ],
+"geometry/CARF01AAAA::framing/member:W-S-E3-eave-girt": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-E3-eave-girt-block-000": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-E3-eave-girt-block-001": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-E3-eave-girt-block-002": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-E3-eave-girt-block-003": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
 "geometry/CARF01AAAA::framing/member:W-S-E4-closure-0-cladding": [
 6.11505,
 6.4117472,
@@ -4834,10 +4930,10 @@
 "048aed910165"
 ],
 "geometry/CARF01AAAA::framing/member:W-S-E4-closure-0-outer-girt": [
-6.11505,
+6.29285,
 6.4292097,
 8,
-"bad7b733e8f6"
+"7225ade0e657"
 ],
 "geometry/CARF01AAAA::framing/member:W-S-E4-closure-0-sheathing": [
 6.11505,
@@ -4856,6 +4952,42 @@
 6.4419097,
 8,
 "2738308dbb6c"
+],
+"geometry/CARF01AAAA::framing/member:W-S-E4-eave-girt": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-E4-eave-girt-block-000": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-E4-eave-girt-block-001": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-E4-eave-girt-block-002": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-E4-eave-girt-block-003": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-E4-eave-girt-block-004": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
 ],
 "geometry/CARF01AAAA::framing/member:W-S-N1B-closure-0-cladding": [
 6.096,
@@ -4924,10 +5056,10 @@
 "048aed910165"
 ],
 "geometry/CARF01AAAA::framing/member:W-S-W1-closure-0-outer-girt": [
-6.11505,
+6.29285,
 6.4292097,
 8,
-"bad7b733e8f6"
+"7225ade0e657"
 ],
 "geometry/CARF01AAAA::framing/member:W-S-W1-closure-0-sheathing": [
 6.11505,
@@ -4947,6 +5079,36 @@
 8,
 "2738308dbb6c"
 ],
+"geometry/CARF01AAAA::framing/member:W-S-W1-eave-girt": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-W1-eave-girt-block-000": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-W1-eave-girt-block-001": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-W1-eave-girt-block-002": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-W1-eave-girt-block-003": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
 "geometry/CARF01AAAA::framing/member:W-S-W1B-closure-0-cladding": [
 6.11505,
 6.4117472,
@@ -4954,10 +5116,10 @@
 "048aed910165"
 ],
 "geometry/CARF01AAAA::framing/member:W-S-W1B-closure-0-outer-girt": [
-6.11505,
+6.29285,
 6.4292097,
 8,
-"bad7b733e8f6"
+"7225ade0e657"
 ],
 "geometry/CARF01AAAA::framing/member:W-S-W1B-closure-0-sheathing": [
 6.11505,
@@ -4977,6 +5139,18 @@
 8,
 "2738308dbb6c"
 ],
+"geometry/CARF01AAAA::framing/member:W-S-W1B-eave-girt": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-W1B-eave-girt-block-000": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
 "geometry/CARF01AAAA::framing/member:W-S-W2-closure-0-cladding": [
 6.11505,
 6.4117472,
@@ -4984,10 +5158,10 @@
 "048aed910165"
 ],
 "geometry/CARF01AAAA::framing/member:W-S-W2-closure-0-outer-girt": [
-6.11505,
+6.29285,
 6.4292097,
 8,
-"bad7b733e8f6"
+"7225ade0e657"
 ],
 "geometry/CARF01AAAA::framing/member:W-S-W2-closure-0-sheathing": [
 6.11505,
@@ -5007,6 +5181,24 @@
 8,
 "2738308dbb6c"
 ],
+"geometry/CARF01AAAA::framing/member:W-S-W2-eave-girt": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-W2-eave-girt-block-000": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-W2-eave-girt-block-001": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
 "geometry/CARF01AAAA::framing/member:W-S-W3-closure-0-cladding": [
 6.11505,
 6.4117472,
@@ -5014,10 +5206,10 @@
 "048aed910165"
 ],
 "geometry/CARF01AAAA::framing/member:W-S-W3-closure-0-outer-girt": [
-6.11505,
+6.29285,
 6.4292097,
 8,
-"bad7b733e8f6"
+"7225ade0e657"
 ],
 "geometry/CARF01AAAA::framing/member:W-S-W3-closure-0-sheathing": [
 6.11505,
@@ -5037,6 +5229,54 @@
 8,
 "2738308dbb6c"
 ],
+"geometry/CARF01AAAA::framing/member:W-S-W3-eave-girt": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-W3-eave-girt-block-000": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-W3-eave-girt-block-001": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-W3-eave-girt-block-002": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-W3-eave-girt-block-003": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-W3-eave-girt-block-004": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-W3-eave-girt-block-005": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-W3-eave-girt-block-006": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
 "geometry/CARF01AAAA::framing/member:W-S-W4-closure-0-cladding": [
 6.11505,
 6.4117472,
@@ -5044,10 +5284,10 @@
 "048aed910165"
 ],
 "geometry/CARF01AAAA::framing/member:W-S-W4-closure-0-outer-girt": [
-6.11505,
+6.29285,
 6.4292097,
 8,
-"bad7b733e8f6"
+"7225ade0e657"
 ],
 "geometry/CARF01AAAA::framing/member:W-S-W4-closure-0-sheathing": [
 6.11505,
@@ -5066,6 +5306,252 @@
 6.4419097,
 8,
 "2738308dbb6c"
+],
+"geometry/CARF01AAAA::framing/member:W-S-W4-eave-girt": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-W4-eave-girt-block-000": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-W4-eave-girt-block-001": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-W4-eave-girt-block-002": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:W-S-W4-eave-girt-block-003": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-hi-000": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-hi-001": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-hi-002": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-hi-003": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-hi-004": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-hi-005": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-hi-006": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-hi-007": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-hi-008": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-hi-009": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-hi-010": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-hi-011": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-hi-012": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-hi-013": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-hi-014": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-hi-015": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-hi-016": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-hi-017": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-lo-000": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-lo-001": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-lo-002": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-lo-003": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-lo-004": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-lo-005": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-lo-006": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-lo-007": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-lo-008": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-lo-009": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-lo-010": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-lo-011": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-lo-012": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-lo-013": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-lo-014": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-lo-015": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-lo-016": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
+],
+"geometry/CARF01AAAA::framing/member:eave-block-lo-017": [
+6.15315,
+6.29285,
+8,
+"76c691f8a58a"
 ],
 "geometry/CARF01AAAA::framing/member:eave-hi-corner-trim-cleat": [
 6.4074254,
@@ -49059,6 +49545,492 @@
 2,
 "ee0eeebd4433"
 ],
+"member/CARF01AAAA/W-S-E1-eave-girt": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-E1-eave-girt-block-000": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-E1-eave-girt-block-001": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-E1-eave-girt-block-002": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-E1-eave-girt-block-003": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-E2-eave-girt": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-E2-eave-girt-block-000": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-E2-eave-girt-block-001": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-E2-eave-girt-block-002": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-E2-eave-girt-block-003": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-E2-eave-girt-block-004": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-E3-eave-girt": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-E3-eave-girt-block-000": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-E3-eave-girt-block-001": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-E3-eave-girt-block-002": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-E3-eave-girt-block-003": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-E4-eave-girt": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-E4-eave-girt-block-000": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-E4-eave-girt-block-001": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-E4-eave-girt-block-002": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-E4-eave-girt-block-003": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-E4-eave-girt-block-004": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W1-eave-girt": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W1-eave-girt-block-000": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W1-eave-girt-block-001": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W1-eave-girt-block-002": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W1-eave-girt-block-003": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W1B-eave-girt": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W1B-eave-girt-block-000": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W2-eave-girt": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W2-eave-girt-block-000": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W2-eave-girt-block-001": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W3-eave-girt": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W3-eave-girt-block-000": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W3-eave-girt-block-001": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W3-eave-girt-block-002": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W3-eave-girt-block-003": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W3-eave-girt-block-004": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W3-eave-girt-block-005": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W3-eave-girt-block-006": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W4-eave-girt": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W4-eave-girt-block-000": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W4-eave-girt-block-001": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W4-eave-girt-block-002": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/W-S-W4-eave-girt-block-003": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-hi-000": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-hi-001": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-hi-002": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-hi-003": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-hi-004": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-hi-005": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-hi-006": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-hi-007": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-hi-008": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-hi-009": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-hi-010": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-hi-011": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-hi-012": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-hi-013": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-hi-014": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-hi-015": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-hi-016": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-hi-017": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-lo-000": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-lo-001": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-lo-002": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-lo-003": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-lo-004": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-lo-005": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-lo-006": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-lo-007": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-lo-008": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-lo-009": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-lo-010": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-lo-011": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-lo-012": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-lo-013": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-lo-014": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-lo-015": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-lo-016": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
+"member/CARF01AAAA/eave-block-lo-017": [
+6.15315,
+6.29285,
+2,
+"0d268d0815ef"
+],
 "member/CARF01AAAA/eave-hi-corner-trim-cleat": [
 6.4074254,
 6.4180087,
@@ -66028,10 +67000,10 @@
 "d41c0200d25e"
 ],
 "member/CSW102BAAA/W-S-E2-closure-0-outer-girt": [
-6.11505,
+6.29285,
 6.4292097,
 4,
-"484dae841e25"
+"209cae6b3f7e"
 ],
 "member/CSW102BAAA/W-S-E2-closure-0-sheathing": [
 6.11505,
@@ -66424,10 +67396,10 @@
 "d41c0200d25e"
 ],
 "member/CSW103AAAA/W-S-E1-closure-0-outer-girt": [
-6.11505,
+6.29285,
 6.4292097,
 4,
-"484dae841e25"
+"209cae6b3f7e"
 ],
 "member/CSW103AAAA/W-S-E1-closure-0-sheathing": [
 6.11505,
@@ -66844,10 +67816,10 @@
 "d41c0200d25e"
 ],
 "member/CSW104AAAA/W-S-E3-closure-0-outer-girt": [
-6.11505,
+6.29285,
 6.4292097,
 4,
-"484dae841e25"
+"209cae6b3f7e"
 ],
 "member/CSW104AAAA/W-S-E3-closure-0-sheathing": [
 6.11505,
@@ -67252,10 +68224,10 @@
 "d41c0200d25e"
 ],
 "member/CSW105AAAA/W-S-E4-closure-0-outer-girt": [
-6.11505,
+6.29285,
 6.4292097,
 4,
-"484dae841e25"
+"209cae6b3f7e"
 ],
 "member/CSW105AAAA/W-S-E4-closure-0-sheathing": [
 6.11505,
@@ -68740,10 +69712,10 @@
 "d41c0200d25e"
 ],
 "member/CSW110AAAA/W-S-W1-closure-0-outer-girt": [
-6.11505,
+6.29285,
 6.4292097,
 4,
-"484dae841e25"
+"209cae6b3f7e"
 ],
 "member/CSW110AAAA/W-S-W1-closure-0-sheathing": [
 6.11505,
@@ -69106,10 +70078,10 @@
 "d41c0200d25e"
 ],
 "member/CSW111AAAA/W-S-W2-closure-0-outer-girt": [
-6.11505,
+6.29285,
 6.4292097,
 4,
-"484dae841e25"
+"209cae6b3f7e"
 ],
 "member/CSW111AAAA/W-S-W2-closure-0-sheathing": [
 6.11505,
@@ -69364,10 +70336,10 @@
 "d41c0200d25e"
 ],
 "member/CSW112AAAA/W-S-W3-closure-0-outer-girt": [
-6.11505,
+6.29285,
 6.4292097,
 4,
-"484dae841e25"
+"209cae6b3f7e"
 ],
 "member/CSW112AAAA/W-S-W3-closure-0-sheathing": [
 6.11505,
@@ -69928,10 +70900,10 @@
 "d41c0200d25e"
 ],
 "member/CSW113AAAA/W-S-W4-closure-0-outer-girt": [
-6.11505,
+6.29285,
 6.4292097,
 4,
-"484dae841e25"
+"209cae6b3f7e"
 ],
 "member/CSW113AAAA/W-S-W4-closure-0-sheathing": [
 6.11505,
@@ -73858,10 +74830,10 @@
 "d41c0200d25e"
 ],
 "member/CSW154AAAA/W-S-W1B-closure-0-outer-girt": [
-6.11505,
+6.29285,
 6.4292097,
 4,
-"484dae841e25"
+"209cae6b3f7e"
 ],
 "member/CSW154AAAA/W-S-W1B-closure-0-sheathing": [
 6.11505,

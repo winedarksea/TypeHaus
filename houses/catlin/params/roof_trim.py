@@ -20,9 +20,8 @@ get behind the siding:
     roofing → corner trim (derived) → drip edge → box gutter → downspout
 
 - a DRIP EDGE whose flange lies ON the top deck, under the field underlayment, and whose
-  turn-down hangs at the trough's mid-width, so the roof's runoff is thrown into the middle
-  of the gutter instead of down the wall behind it ("drip edge nailed to roof furring and
-  empties into gutter");
+  turn-down hangs tight outside the corner trim's face and drops below the gutter rim, so
+  runoff lands in the trough and never behind its back sheet;
 - a 6" BOX GUTTER hung **tight to the wall plane** — its back sheet tucked *behind* the
   corner trim's outer face rather than standing off in mid-air, which is what closes the
   open slot that used to run the length of the eave;
@@ -45,9 +44,10 @@ geometry lives here), so the editable-writeback rule does not apply.
 
 Geometry facts this module derives from (see plan/storeys/attic.py + plan/assemblies.py):
 - sheathing-ext datum plane at x = 0 / 36'; wall stack outboard of it =
-  wrb 0.02" + polyiso 2" + eps 2" + furring 0.5" + cladding 0.5" = 5.02" (cladding face
-  == roof footprint edge, where eave_z_m is defined) — and the footprint runs to that same
-  face in **y** as well, which is how far the eave runs have to reach to close the corner;
+  ccSPF 4" + vent gap 0.5" + outer girt 1.5" + PBR 1.25" = 7.25" (``_WALL_OUTBOARD_IN``;
+  cladding face == roof footprint edge, where eave_z_m is defined) — and the footprint runs
+  to that same face in **y** as well, which is how far the eave runs have to reach to close
+  the corner;
 - RAFTER-PLATE top at 20'-2 1/4" (attic datum 20'-0" + 3/4" subfloor + 1 1/2" of 2x6 laid
   flat, no knee wall — see plan/assemblies.py's RAFTER_PLATE); deck plane (eave_z_m)
   rides the I-joist rise above it: 11.875" - 5.5" x 6/12 seat drop = 9.125", so eave_z is
@@ -89,8 +89,9 @@ _HOUSE_FT = 36.0
 # exactly the roof footprint edge (the zero-overhang roof laps the cladding).
 #
 # **The one constant the cladding face is measured by**, and deliberately spelled as the
-# stack it is: 1 1/2" band A foam + 1 1/2" inner girt + 1" band C foam + 1/2" vent gap +
-# 1 1/2" outer girt + 1 1/4" PBR panel (plan/assemblies.py EXT_2X6). A ribbed panel
+# stack it is: 4" ccSPF (around the three-ply standoff blocks) + 1/2" vent gap +
+# 1 1/2" outer girt + 1 1/4" PBR panel (plan/assemblies.py EXT_2X6; one girt tier since
+# 2026-09-01). A ribbed panel
 # stands off by its rib height, where a snap-lock pan stands off by its pan. Every param in
 # this house that measures off the cladding moves with it.
 #
@@ -98,7 +99,7 @@ _HOUSE_FT = 36.0
 #   6.5"  — the girts under 1/2" snap-lock seam
 #   5.5"  — the Swinburne truss: 1.5 foam + 3.5 outrigger band + 0.5 seam
 #   5.02" — the CI boards before it: 0.02 WRB + 2" polyiso + 2" EPS + 0.5 furring + 0.5 seam
-_WALL_OUTBOARD_IN = 1.5 + 1.5 + 1.0 + 0.5 + 1.5 + 1.25  # 7.25"
+_WALL_OUTBOARD_IN = 4.0 + 0.5 + 1.5 + 1.25  # 7.25"
 _EAVE_X_W = ft(0) - inch(_WALL_OUTBOARD_IN)
 _EAVE_X_E = ft(_HOUSE_FT) + inch(_WALL_OUTBOARD_IN)
 
@@ -167,27 +168,32 @@ _GUTTER_DEPTH = inch(5)                      # channel height
 _GUTTER_BACK_IN = _TRIM_FACE_IN - _TRIM_SHEET_IN - _LAP_IN   # 0.33"
 _GUTTER_RIM_IN = _TRIM_BOTTOM_IN + _LAP_IN                   # -2.76" (was +4.38")
 
-#: Mid-width of the trough — where a drip wants to land, being the furthest it can be from
-#: both the back sheet and the front lip. The shell closes a half-shell at each side.
+#: Mid-width of the trough, where the leader takes its outlet. The shell closes a half-shell
+#: at each side.
 _TROUGH_MID_IN = _GUTTER_BACK_IN + _LAP_IN + (_GUTTER_THICK_IN - 2.0 * _LAP_IN) / 2.0
 
-# --- Drip edge ----------------------------------------------------------------------------
+# --- Drip edge ---------------------------------------------------------------------------
 # A bent angle (resolve/trim_bands.py::drip_edge_bands): a flat leg lying **on the top deck**
-# and running out over the trough, with a turn-down at its outboard end.
+# and a turn-down at its outboard end. Nailed to the deck, membrane lapped over the flange,
+# then the turn-down drops into the trough.
 #
-# A drip edge is a roof-plane piece: it is nailed to the deck, the field underlayment is
-# lapped over its flange, and only then does its turn-down reach down into the trough. So
-# the flange lands on ``_DRIP_CEILING_IN`` and everything else follows from where the deck
-# is, not from where the gutter ends up.
-#: How far the flange runs back onto the deck from the roof edge — ordinary drip-edge stock.
-_DRIP_DECK_BEARING_IN = 1.5
-_DRIP_INNER_IN = -_DRIP_DECK_BEARING_IN
-_DRIP_THICK_IN = _TROUGH_MID_IN + _LAP_IN / 2.0 - _DRIP_INNER_IN
+# **Where the turn-down hangs is the published detail, not the trough's mid-width.** Both
+# manufacturer eave-with-gutter details (Best Buy Metals install guide p.26, Western States
+# WSD-D4) hang the drip face tight to the fascia line, the gutter back tucked behind it and
+# only the kick inside the trough. It used to hang at the trough mid-width, 3.3" out past the
+# cladding with a 5" flange cantilevered over nothing. Now it hugs the corner trim's face.
+#: The deck stops at the girt layer's face; the PBR panel stands 1 1/4" beyond it.
+_DECK_EDGE_IN = -1.25
+#: Flange bearing ON the plywood, measured off the deck edge — not off the cladding face,
+#: which left 1/4" of it on wood.
+_DRIP_DECK_BEARING_IN = 2.0
+_DRIP_INNER_IN = _DECK_EDGE_IN - _DRIP_DECK_BEARING_IN        # -3.25"
+#: The turn-down's inner face on the corner trim's outer face.
+_DRIP_THICK_IN = _TRIM_FACE_IN + _LAP_IN - _DRIP_INNER_IN     # 5.0"
 #: The flange's *underside* is the deck surface; the drawn shell is a lap thick, so the top
 #: face — the one the underlayment bonds over — stands exactly one nominal sheet above it.
 _DRIP_TOP_IN = _DRIP_CEILING_IN + _LAP_IN
-#: Deep enough to reach a lap below the trough's rim from a flange that now starts three
-#: inches higher up, and still stop well above the floor.
+#: Reaches 2" below the trough's rim and stops 2.4" above its floor.
 _DRIP_DEPTH = inch(5.5)
 
 
@@ -197,7 +203,7 @@ def _above_deck(vertical_in: float):
 
 
 # The eaves run the full roof footprint, which reaches the *cladding* face at both gable
-# ends — not the sheathing datum. Stopping at ft(0)/ft(36) left 5.02" of open roof stack
+# ends — not the sheathing datum. Stopping at ft(0)/ft(36) left 7.25" of open roof stack
 # at each rake corner with no gutter under it, which is the hole the 3D view showed.
 _EAVE_Y0 = ft(0) - inch(_WALL_OUTBOARD_IN)
 _EAVE_Y1 = ft(_HOUSE_FT) + inch(_WALL_OUTBOARD_IN)

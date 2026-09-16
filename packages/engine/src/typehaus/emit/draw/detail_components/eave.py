@@ -1,16 +1,17 @@
-"""The zero-overhang eave: box gutter, drip edge, apron flashing, screened vent path.
+"""The zero-overhang eave: box gutter, drip edge, head cap, gutter support, vent screen.
 
-Reference: ``roof_wall_eave_detail_ifc.png``. Catlin's attic is a hot-roofed cathedral space
-with **zero overhang**, so there is no soffit to hang a gutter under and no soffit vent to
-draw. Water is caught by a fascia-mounted box gutter, and the roof's ventilation path enters
-at the eave through an insect-screened slot in the wall plane rather than through a soffit.
-Neither reads in the drawing unless they are drawn, because neither is a model element.
+A zero-overhang eave has no soffit to hang a gutter under. Where the house authors its own
+gutter and drip (and the roof derives a corner trim) those are cut into the drawing and this
+overlay only names them and draws what carries the gutter (``eave_framing.py``). Elsewhere
+it draws a schematic drip, gutter and apron. The vent screen draws only over a roof whose
+assembly carries an air gap above the deck; an unvented roof gets none.
 """
 
 from __future__ import annotations
 
 from typehaus.emit.draw.annotate import LabelSpec, dodge, place_column, wrap_label
 from typehaus.emit.draw.detail_components.config import SHEET_METAL
+from typehaus.emit.draw.detail_components.eave_framing import eave_gutter_support
 from typehaus.emit.draw.detail_components.geometry import (
     face_of,
     flashing_nodes,
@@ -56,19 +57,15 @@ def zero_overhang_eave(model, wall, crop, direction, station,
     cfg = SHEET_METAL
 
     nodes: list[IRNode] = []
-    # Apron flashing: laps down off the roof edge over the head of the wall cladding, behind
-    # the drip edge — the reference's roofing-membrane-return-to-wall executed in metal. It
-    # is drawn even where a derived corner trim already caps the edge (the flush
-    # continuous-cladding case, resolve/roof_trim.py::_corner_trim_members): the trim is cut
-    # into the drawing as a plain rectangle of roof member, and this is the piece that
-    # carries the *name* and the lap direction a builder reads the detail for.
-    #
-    # It hangs off ``head_z``, the head of the cladding it caps — **not** ``junction_z``,
-    # which is the top of the roof *structure*, a whole roof stack below (7.9" on catlin).
-    apron = path_from_steps(
-        (clad_out - out_sign * cfg.apron_back_in, head_z),
-        [(out_sign * cfg.apron_run_in, 0.0), (0.0, -cfg.apron_drop_in)])
-    nodes += flashing_nodes(apron, tag="apron-flashing")
+    # Apron flashing over the cladding head, hung off ``head_z`` (not ``junction_z``, a roof
+    # stack lower). Only where no derived corner trim already caps that head: drawing both
+    # buried a second piece of metal inside the girt layer, behind the trim.
+    trim = _corner_trim_at(roof, clad_out, direction)
+    if trim is None:
+        apron = path_from_steps(
+            (clad_out - out_sign * cfg.apron_back_in, head_z),
+            [(out_sign * cfg.apron_run_in, 0.0), (0.0, -cfg.apron_drop_in)])
+        nodes += flashing_nodes(apron, tag="apron-flashing")
 
     # Authored eave-water trim (a Gutter element with its drip, e.g. the Catlin house's
     # params/roof_trim.py pair riding the roofing plane) is already cut into the drawing.
@@ -85,9 +82,32 @@ def zero_overhang_eave(model, wall, crop, direction, station,
 
     nodes += eave_vent_intake(model, roof, clad_out, junction_z, out_sign, cz0 / M_PER_IN,
                               slope)
+    support, support_labels = eave_gutter_support(model, clad_out, out_sign, direction,
+                                                  station)
+    nodes += support
     nodes += eave_labels(model, roof, clad_out, junction_z, out_sign,
-                         direction, station, scale, slope, head_z)
+                         direction, station, scale, slope, head_z,
+                         trim=trim, extra=support_labels)
     return nodes
+
+
+def _corner_trim_at(roof, clad_out: float, direction: str):
+    """``(u_lo, u_hi, z_lo, z_hi)`` inches of the roof's derived corner trim at this eave."""
+    if roof is None:
+        return None
+    axis = 0 if direction == "x" else 1
+    boxes = []
+    for member in roof.members:
+        if member.category != "corner_trim":
+            continue
+        u = member.p0[axis] / M_PER_IN
+        if member.p1[axis] / M_PER_IN != u or abs(u - clad_out) > 3.0:
+            continue  # a rake run, or the other eave
+        boxes.append((u, member.z0_m / M_PER_IN, member.z1_m / M_PER_IN))
+    if not boxes:
+        return None
+    us = [b[0] for b in boxes]
+    return (min(us), max(us), min(b[1] for b in boxes), max(b[2] for b in boxes))
 
 
 def _cladding_head_z(model, roof, junction_z: float, slope: float) -> float:
@@ -201,14 +221,9 @@ def _above_structure_bands(model, roof) -> list:
 
 def eave_vent_intake(model, roof, clad_out: float, junction_z: float, out_sign: float,
                      crop_bottom_z: float, slope: float = 1.0) -> list[IRNode]:
-    """The screened intake for whatever air gap the roof assembly actually carries.
+    """The screened intake at the eave end of an air gap above the deck.
 
-    Catlin's roof vents through a ~1/4" mat rolled *above* the top deck, under the standing
-    seam, not through a slot in the wall plane: the intake is a screened opening at the eave
-    edge of that band, and the wall plane below it stays continuous air barrier.
-
-    A roof with no air gap at all is unvented by design and gets no screen, rather than a
-    screen over an opening that does not exist.
+    A roof with no such gap (catlin's unvented flash-and-batt roof) gets no screen.
     """
     cfg = SHEET_METAL
     gaps = [(lo, hi) for (layer, lo, hi) in _above_structure_bands(model, roof)
@@ -280,7 +295,7 @@ def _water_anchor(model, direction: str, station: float, clad_out: float,
 
 def eave_labels(model, roof, clad_out: float, junction_z: float, out_sign: float,
                 direction: str, station: float, scale=None, slope: float = 1.0,
-                head_z: float | None = None) -> list[IRNode]:
+                head_z: float | None = None, trim=None, extra=()) -> list[IRNode]:
     """Name the eave water chain on the drawing, not only in the notes.
 
     The chain is a *lap order* — deck, drip edge, underlayment over the drip, metal, gutter
@@ -320,14 +335,23 @@ def eave_labels(model, roof, clad_out: float, junction_z: float, out_sign: float
         entries.append(((clad_out - out_sign * 3.0, mid("airgap")),
                         "vent mat intake, insect screened — the roof's only outward "
                         "drying path"))
-    entries += [
-        (drip, "drip edge lies ON the top deck; underlayment laps OVER it"),
-        (gutter, "box gutter, back edge tucked BEHIND the trim face"),
-        # The apron is drawn from its own back/run/drop legs off the cladding head, so its
-        # mid-height is derived the same way rather than guessed off the roof plane.
-        ((clad_out + out_sign * cfg.apron_run_in / 2.0, head_z - cfg.apron_drop_in / 2.0),
-         "apron flashing over the cladding head, behind the drip"),
-    ]
+    if trim is not None:
+        entries += [
+            (drip, "drip edge ON the deck, face tight to the trim; membrane laps OVER it"),
+            (gutter, "box gutter, back sheet tucked BEHIND the trim face"),
+            (((trim[0] + trim[1]) / 2.0, (trim[2] + trim[3]) / 2.0),
+             "corner trim caps the wall panel heads"),
+        ]
+    else:
+        entries += [
+            (drip, "drip edge lies ON the top deck; underlayment laps OVER it"),
+            (gutter, "box gutter, back edge tucked BEHIND the trim face"),
+        ]
+        # Derived from the apron's own back/run/drop legs off the cladding head.
+        entries.append(((clad_out + out_sign * cfg.apron_run_in / 2.0,
+                         head_z - cfg.apron_drop_in / 2.0),
+                        "apron flashing over the cladding head, behind the drip"))
+    entries += list(extra)
     specs = [LabelSpec(text=wrap_label(text), target=target) for (target, text) in entries]
     placed = place_column(specs, x=clad_out + out_sign * 15.0, z_top=deck_top + 1.0,
                           step_pt=14.0, height_pt=TEXT_PT, scale=scale,
