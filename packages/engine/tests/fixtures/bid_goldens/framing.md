@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** 66e4d04aeb4eec05  
-**Lines:** 117
+**Model hash:** 43496149cc152d28  
+**Lines:** 116
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -21,12 +21,12 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1.25x7.25 rim White-painted PT lumber — rim board (1.25x7.25 rim:post-paint-white) | 60 | LF ordered | 4 pcs, 57.3 LF cut | building |
 | 1.5x11.25 SPF framing lumber — blocking (1.5x11.25:spf) | 8 | LF ordered | 1 pcs, 1.9 LF cut | building |
 | 1.75x11.875 LSL — rim board (1.75x11.875 LSL) | 72 | LF ordered | 2 pcs, 72.0 LF cut | building |
-| 11.875 I-joist — blocking, joist, sister joist, trimmer (11.875 I-joist) | 2,460 | LF ordered | 156 pcs, 2204.4 LF cut | building |
+| 11.875 I-joist — blocking, joist, sister joist, trimmer (11.875 I-joist) | 2,472 | LF ordered | 166 pcs, 2211.4 LF cut | building |
 | 11.875 TJI 230 — rafter (11.875 TJI 230) | 760 | LF ordered | 38 pcs, 756.8 LF cut | building |
 | 11.875 floor truss — joist, trimmer (11.875 floor truss) | 32 | ea | 32 pcs, 469.2 LF cut; 480.0 LF in the takeoff | building |
 | 1x4 SPF framing lumber — girt strapping (1x4:spf) | 454 | LF ordered | 59 pcs, 403.2 LF cut | building |
 | 1x4 Structural 1 plywood — girt strapping (1x4:struct-1-plywood) | 332 | LF ordered | 44 pcs, 264.6 LF cut | building |
-| 2-1.75x11.875 LVL — header (2-1.75x11.875 LVL) | 16 | LF ordered | 3 pcs, 10.0 LF cut | building |
+| 2-1.75x11.875 LVL — header (2-1.75x11.875 LVL) | 16 | LF ordered | 7 pcs, 13.6 LF cut | building |
 | 2-1.75x14 LVL — header (2-1.75x14 LVL) | 20 | LF ordered | 1 pcs, 16.7 LF cut | building |
 | 2-1.75x16 LVL — ridge beam (2-1.75x16 LVL) | 36 | LF ordered | 1 pcs, 36.0 LF cut | building |
 | 2-1x4 — stud (2-1x4) | 24 | LF ordered | 3 pcs, 19.6 LF cut | building |
@@ -40,13 +40,13 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x10 SPF framing lumber — blocking (2x10:spf) | 114 | LF ordered | 23 pcs, 86.3 LF cut | building |
 | 2x2 — blocking, plate, stud (2x2) | 288 | LF ordered | 100 pcs, 262.3 LF cut | building |
 | 2x4 — blocking, corner stud, cripple stud, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,984 | LF ordered | 661 pcs, 4244.9 LF cut | building |
-| 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,822 | LF ordered | 462 pcs, 2439.6 LF cut | building |
+| 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,830 | LF ordered | 462 pcs, 2441.4 LF cut | building |
 | 2x4 SPF framing lumber — girt strapping (2x4:spf) | 84 | LF ordered | 14 pcs, 62.6 LF cut | building |
-| 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | 8,524 | LF ordered | 1215 pcs, 7419.9 LF cut | building |
+| 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | 8,514 | LF ordered | 1214 pcs, 7411.8 LF cut | building |
 | 2x8 — blocking, header, joist, landing framing, trimmer (2x8) | 566 | LF ordered | 100 pcs, 489.1 LF cut | building |
 | 2x8 SPF framing lumber — blocking (2x8:spf) | 438 | LF ordered | 76 pcs, 358.3 LF cut | building |
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | 8 | LF ordered | 1 pcs, 3.2 LF cut | building |
-| 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 352 | LF ordered | 1131 pcs, 329.9 LF cut | building |
+| 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 352 | LF ordered | 1130 pcs, 329.6 LF cut | building |
 | hanger — hanger board (hanger) | 16 | LF ordered | 2 pcs, 9.6 LF cut | building |
 
 ## Sheet goods, by the sheet
@@ -55,13 +55,13 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|---|---|---|
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 22 | sheets 4x8 | 22 sheets 4x8 over 690.2 SF net | building |
 | 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 5.0 SF net | building |
-| 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 100 | sheets 4x8 | 100 sheets 4x8 over 3186.1 SF net | building |
+| 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 100 | sheets 4x8 | 100 sheets 4x8 over 3184.0 SF net | building |
 | SPF framing lumber, 3/4" ceiling (spf:ceiling) | 5 | sheets 4x8 | 5 sheets 4x8 over 159.2 SF net | building |
 | SPF framing lumber, 11 1/4" ceiling (spf:ceiling) | 3 | sheets 4x8 | 3 sheets 4x8 over 91.7 SF net | building |
 | Structural 1 plywood, 5/7" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 2 | sheets 4x8 | 2 sheets 4x8 over 50.1 SF net | building |
-| Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 9 | sheets 4x8 | 9 sheets 4x8 over 229.5 SF net | building |
+| Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 9 | sheets 4x8 | 9 sheets 4x8 over 229.8 SF net | building |
 | Structural 1 plywood, 1/2" ceiling (struct-1-plywood:ceiling) | 3 | sheets 4x8 | 3 sheets 4x8 over 91.7 SF net | building |
-| Structural 1 plywood, 1/2" exterior wall (struct-1-plywood:exterior wall) | 98 | sheets 4x8 | 98 sheets 4x8 over 3113.4 SF net | building |
+| Structural 1 plywood, 1/2" exterior wall (struct-1-plywood:exterior wall) | 98 | sheets 4x8 | 98 sheets 4x8 over 3113.2 SF net | building |
 | Structural 1 plywood, 5/8" roof (struct-1-plywood:roof) | 49 | sheets 4x8 | 49 sheets 4x8 over 1547.9 SF net | building |
 | Structural 1 plywood, 3/4" roof (struct-1-plywood:roof) | 28 | sheets 4x8 | 28 sheets 4x8 over 882.8 SF net | building |
 | Structural 1 plywood, 1/2" sheathing rip (struct-1-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 3.3 SF net | building |
@@ -105,9 +105,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS face-mount joist hanger | 7 | ea |  | building |
 | LUS face-mount joist hanger | 12 | ea |  | building |
 | SP4 stud plate tie (2x4) | 6 | ea |  | building |
-| SP6 stud plate tie (2x6) | 319 | ea |  | building |
+| SP6 stud plate tie (2x6) | 318 | ea |  | building |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | 12 | ea |  | building |
-| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 1,131 | ea |  | building |
+| TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 1,130 | ea |  | building |
 
 ## Pours and structural solids
 
@@ -154,7 +154,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
 | 5/8" CDX sheathing plywood, 5/8" — wall (cdx-plywood:0.625) | 690.2 | SF net |  | building |
-| Structural 1 plywood sheathing, 1/2" — wall (struct-1-plywood:0.5) | 3,262.9 | SF net |  | building |
+| Structural 1 plywood sheathing, 1/2" — wall (struct-1-plywood:0.5) | 3,262.6 | SF net |  | building |
 | Structural 1 plywood sheathing, 5/8" — roof (struct-1-plywood:0.625) | 1,547.9 | SF net |  | building |
 | Structural 1 plywood sheathing, 3/4" — roof (struct-1-plywood:0.75) | 882.8 | SF net |  | building |
 | Structural 1 plywood sheathing, 3/4" — slab (struct-1-plywood:0.75) | 7.3 | SF net |  | building |
@@ -171,8 +171,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|---|---|---|
 | rough opening, 2.5" x 2.5" (no type) (None) | 1 | ea | 2 1/2" x 2 1/2" | main |
 | rough opening, 2.5" x 2.5" (no type) (None) | 1 | ea | 2 1/2" x 2 1/2" | second |
-| rough opening, 7" x 7" (no type) (None) | 1 | ea | 7" x 7" | main |
-| rough opening, 9" x 9" (no type) (None) | 1 | ea | 9" x 9" | second |
+| rough opening, 9" x 9" (no type) (None) | 2 | ea | 9" x 9" | main, second |
 | rough opening, 14" x 20" arched (no type) (None) | 1 | ea | 14" x 20" | basement |
 | rough opening, 30" x 80" (no type) (None) | 1 | ea | 30" x 80" | second |
 | rough opening, 32" x 80" (no type) (None) | 1 | ea | 32" x 80" | second |
@@ -293,8 +292,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | STAIRWELL_PARTITION_4H, SPF framing lumber (STAIRWELL_PARTITION_4H:spf) | W-B-WELL |
 | rough opening, 2.5" x 2.5" (no type) (None) | AO-M-PORCH-HYD |
 | rough opening, 2.5" x 2.5" (no type) (None) | AO-S-BALC-HYD |
-| rough opening, 7" x 7" (no type) (None) | AO-M-ERV-OA |
-| rough opening, 9" x 9" (no type) (None) | AO-S-ERV-EA |
+| rough opening, 9" x 9" (no type) (None) | AO-M-ERV-OA, AO-S-ERV-EA |
 | rough opening, 14" x 20" arched (no type) (None) | AO-B-BRICK-WIN |
 | rough opening, 30" x 80" (no type) (None) | D-S-STUDY2 |
 | rough opening, 32" x 80" (no type) (None) | O-S-VANITY |

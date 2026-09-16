@@ -129,9 +129,35 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 - **Duct-against-duct crossings are ungraded outside a modelled `Soffit`.** Radials cross in
   the `FS-S-WEST` field; fits in an 11 7/8" bay with an 8 7/8" web opening but the model can't
   say so. `mep.duct_soffit_occupancy` is the shape a joist-bay version would take.
-- **`DU-ERV-RISER-EXH` passes 2" from `DU-A-ERV-R-BATH1`** at the same elevation but is 46"
-  short of the manifold it's described as reaching — an interference, not a tee. Same issue on
-  `DU-S-ERV-HP-FEED`.
+- ~~**`DU-ERV-RISER-EXH` passes 2" from `DU-A-ERV-R-BATH1`** ... 46" short of the manifold~~
+  — **FIXED 2026-09-15.** Re-stationed 4 5/8" east and the feed drawn north to y=34'-6" then
+  east into `EQ-A-ERV-MAN-EXH`. It cost 3.94 ft, three elbows and 0.056 in. w.g., which is the
+  honest number that column never carried.
+- **Nothing can grade a duct against a conduit, because a conduit has no elevation.**
+  `ResolvedConduit` carries `z_start_m`/`z_end_m` and no per-vertex `z_m`, so the NW chase's
+  nine conduits resolve as two-point schematics — `CD-B-ATTIC-RISER` "rises" 24 ft while
+  travelling 5'-6" horizontally. **This, and not the radial plane, is what actually blocks
+  `mep.duct_interference`**: a duct cannot be proven clear of something the model does not
+  place in z. Per-vertex elevations on `ConduitRun` are the prerequisite.
+- **`haus route --run` refuses every duct.** `cli/cmd_route.py`'s `_endpoints` indexes only
+  `model.pipe_runs`, so `--run DU-ERV-OA` answers "not a run in this model" — and so does the
+  `--run DU-M-ERV-R-KITCH` example the repo `CLAUDE.md` advertises. `routing/trades/duct.py`
+  exists and is wired into `corridors.py`/`obstacles.py`; only the dispatch is missing.
+- **37 MEP interpenetrations remain in the NW column** (x 0..7', y 32'..36'-6"), ducts and
+  pipes only, measured 2026-09-15. The ERV's own twelve were cleared by moving both outdoor
+  hoods to the north face; what is left is plumbing against plumbing and plumbing against the
+  main-storey radial lanes — `PR-M-WC-VENT`'s westward leg at y=34'-6" crosses ten radials,
+  and `PR-B-BATH-VENT`/`PR-B-SAUNA-VENT` share solid with `PR-B-KITCH-DRAIN`. None of it is
+  the ERV's to fix and nothing grades any of it.
+- **`EQ-M-ERV-MAN-SUP` and `EQ-M-ERV-MAN-EXH` still have no drawn feed.** Thirteen radials
+  leave them and no trunk arrives; `mep.erv_manifold_ports` passes both because it counts
+  ports, and only the two plenums with a drawn trunk report a "trunk collar". Until they are
+  drawn there is also no tap elevation, which is why `notes/erv_static_budget.md` §9 had to
+  withdraw its segmented-riser figure rather than restate it.
+- **`FS-M-MECH` still carries the vents, the radon riser and nine conduits through its joist
+  field undrawn.** `FO-M-ERV-OA` and `FO-M-ERV-EA` were added 2026-09-15 for the two ERV
+  risers; the rest of the chase cluster has no floor opening, and nothing grades a duct or a
+  pipe against a floor member.
 - **`REG-S-HP-PLANT` throw is 11'-7" across an 18'x9' room** (deliberate — see
   `plan/mep_registers.py`), leaving the west 14' unswept by the room's only moisture-removal
   extract. A middle station (~x 12'-6") would halve the duct run if the saving is wanted.

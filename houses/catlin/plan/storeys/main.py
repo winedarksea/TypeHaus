@@ -1962,6 +1962,60 @@ FLOOR_OPENINGS = [
                           pt(ft(7, 7.435), ft(16, 11.926)),
                           pt(ft(7, 7.435), ft(21, 9.614)),
                           pt(ft(4, 9.685), ft(21, 9.614)))),
+    # --- the ERV intake riser's hole through FS-M-MECH ------------------------------------
+    #
+    # ** FS-M-MECH HAS CARRIED FOUR RISERS AND DECLARED NO OPENING AT ALL. ** Until this pass
+    # every duct, vent and conduit through the mech closet's floor passed through the deck as
+    # if the deck were not there: `FloorSystem.openings` was empty, so the resolver framed a
+    # continuous joist field and the risers simply occupied the same air as it. Nothing grades
+    # a duct against a floor member — `mep.run_member_crossing` walks runs travelling ALONG a
+    # bay, not through one — so it sat at 0 FAIL, the same way DU-ERV-RISER-SUP stood inside
+    # W-M-W1B's stud cavity for months before an unrelated upsize made a check look.
+    #
+    # This and FO-M-ERV-EA below are the first two drawn, because this pass is what moved
+    # both ducts. DU-ERV-OA's riser is at (3'-4", 33'-11") and 8": it occupies
+    # y 33'-7"..34'-3", and FS-M-MECH's joists run EAST-WEST at y 32'-5 3/8" / 33'-9 3/8" /
+    # 35'-1 3/8". The duct straddles the 33'-9 3/8" line, 2 3/8" of it south and 5 5/8" north. That joist is cut and headed; there is no
+    # station in this closet that avoids it (the two bays either side are 13 1/2" clear, and
+    # the south one is under W-M-MECH-S while the north one is crossed by the y=34'-6" vent
+    # bundle — see the run's own note in plan/mep_erv.py).
+    #
+    # ** THE OUTLINE IS THE DUCT PLUS THE FRAMING, NOT THE DUCT. ** `resolve/floors.py` puts
+    # the first trimmer ply's AXIS on the y edges and the header's axis on the x edges, so a
+    # hole drawn at the duct's own 8" would have 1 1/4" of trimmer and 1 3/4" of header
+    # standing inside it — the mistake FO-M-FIRE's note records at length. x 2'-9"..3'-11"
+    # and y 33'-5 1/2"..34'-4 1/2" leave the 8" duct 1 1/4" of air on all four sides once
+    # both allowances are made.
+    #
+    # ** I-JOISTS, SO THE MANUFACTURER'S HEADER TABLE GOVERNS, NOT R502.10. ** Same caveat
+    # FO-M-FIRE carries: cutting and heading 11 7/8" I-joists follows the joist maker's
+    # literature and needs their hangers and web stiffeners. R502.10.1's short-opening
+    # allowance is a sawn-lumber rule and does not reach this deck at any span.
+    #
+    # No `bearing_refs`: both y edges land mid-bay in FS-M-MECH's own joist field, so the
+    # trimmers carry the header and no wall is asked to receive a cut joist.
+    FloorOpening(uid="6KE3VP3HY1", tag="FO-M-ERV-OA", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(ft(2, 9), ft(33, 5.5)), pt(ft(3, 11), ft(33, 5.5)),
+                          pt(ft(3, 11), ft(34, 4.5)), pt(ft(2, 9), ft(34, 4.5)))),
+    # --- the ERV discharge riser's hole through FS-M-MECH -------------------------------
+    #
+    # The second of the chase risers to be drawn, and the same argument as FO-M-ERV-OA
+    # above. DU-ERV-EA's riser is at (2'-0", 35'-0") and 8", occupying y 34'-8"..35'-4", and
+    # it straddles FS-M-MECH's 35'-1 3/8" joist line, 5 3/8" south of it and 2 5/8" north.
+    #
+    # ** THAT STATION IS PINNED FROM BOTH SIDES AND THE JOIST IS IN THE MIDDLE OF WHAT IS
+    # LEFT. ** South, the six-vent bundle crosses at y=34'-6": an 8" riser must keep its
+    # face north of 34'-5", so y >= 34'-11". North, W-S-N3B's stud cavity starts at
+    # 35'-5 3/8" one storey up, so y <= 35'-1 3/8". The whole legal band is 2 3/8" wide and
+    # the joist line sits inside it — there is no station that avoids the cut.
+    #
+    # Outline is the duct plus the framing, as above: x 1'-5"..2'-7" and y 34'-6 1/2"..
+    # 35'-5 1/4" leave 1 1/4" of air round an 8" duct once the header's 1 3/4" and the
+    # trimmer's 1 1/4" are allowed for. The north trimmer lands 1/8" inside W-M-N3B's
+    # interior face, which is where a joist under a wall belongs.
+    FloorOpening(uid="YXTAPJ7WFE", tag="FO-M-ERV-EA", purpose=FloorOpeningPurpose.CHASE,
+                 outline=(pt(ft(1, 5), ft(34, 6.5)), pt(ft(2, 7), ft(34, 6.5)),
+                          pt(ft(2, 7), ft(35, 5.25)), pt(ft(1, 5), ft(35, 5.25)))),
 ]
 
 # The tub deck's cap: 3/4" exterior-grade plywood over W-M-TUBDK-W/-S and the two room walls

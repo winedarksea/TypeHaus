@@ -584,7 +584,12 @@ def test_a_ceiling_below_bills_with_the_subfloor_it_shares_a_deck_with(catlin_mo
     # The main storey's wood bays are four systems, not two: the west half split at the
     # bathroom node line so the mechanical-room and stair bays could bear on the x=10' line.
     # FO-M-STAIR moved to FS-M-STAIR with the hole it cuts.
-    others = (_gross_sqft("FS-M-WEST") + _gross_sqft("FS-M-MECH")
+    # FS-M-MECH gained FO-M-ERV-OA and FO-M-ERV-EA on 2026-09-15 — the ERV risers' own
+    # holes, the first this deck has ever declared. 2.1 SF between them, and the board stops
+    # at each exactly as the deck does.
+    others = (_gross_sqft("FS-M-WEST")
+              + _gross_sqft("FS-M-MECH") - _opening_sqft("FO-M-ERV-OA")
+              - _opening_sqft("FO-M-ERV-EA")
               + _gross_sqft("FS-M-STAIR") - _opening_sqft("FO-M-STAIR")
               + _gross_sqft("FS-M-EAST"))
     # SL-M-DECK — the concrete band over the media room — bills the same board, and the two

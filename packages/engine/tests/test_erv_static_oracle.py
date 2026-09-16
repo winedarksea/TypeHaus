@@ -162,51 +162,53 @@ def test_the_broan_carries_the_whole_published_curve(catlin_plan) -> None:
     assert broan.fan_curve_max_static_in_wg == pytest.approx(1.3)
 
 
-def test_the_governing_side_is_now_supply(catlin_model_ro) -> None:
-    """Note §6, and the governing SIDE swapped on 2026-09-15 — twice over, in one day.
+def test_the_governing_side_is_extract_again(catlin_model_ro) -> None:
+    """Note §6, and the governing SIDE swapped THREE times on 2026-09-15.
 
     The machine's curve is an external static PER SIDE, so what governs is the worse of two
-    paths and never their sum. Extract had governed since this note was written. Two changes
-    took it below supply:
+    paths and never their sum. In order:
 
-    * the extract side was rebalanced 265 -> 210 cfm, which took the worst radial off
-      ``DU-M-ERV-R-PLANT`` (a 5x cut in flow is a 25x cut in friction) and the column from
-      0.459 to 0.417;
-    * ``DU-ERV-EA`` went 6" -> 8", which took the discharge term from 0.1666 to 0.0407 and
-      the column to 0.3465 — against supply's 0.4064.
+    * extract governed at 0.4169 after the 265 -> 210 cfm rebalance took the worst radial off
+      ``DU-M-ERV-R-PLANT`` (a 5x cut in flow is a 25x cut in friction);
+    * ``DU-ERV-EA`` 6" -> 8" took the discharge term from 0.1666 to 0.0490 and the column to
+      0.3548, handing the lead to SUPPLY at 0.4064 — of which only the first 0.0086 in. ever
+      reached the delivered figure, exactly as §6 had predicted before the change was bought;
+    * both hoods then moved to the NORTH face, which let ``DU-ERV-OA`` go 6" -> 8" as well
+      (0.1318 -> 0.0315) and handed the lead **back to extract** at 0.3495 against supply's
+      0.3061.
 
-    The previous revision of §6 PREDICTED this in as many words, having measured the margin
-    at 0.0086 in., and the prediction is the reason the assertion is written this way round:
-    what matters is not that the number moved but that the LEVER moved with it. Every
-    remaining extract lever — the elbow audit, riser segmentation — is now worth nothing to
-    the delivered figure, and §6 says so.
+    The assertion is written this way round because what matters is the LEVER, not the
+    number. With extract in front by 0.0434 in., the two extract levers that were worth
+    nothing after the second swap — the elbow audit and riser segmentation — are worth
+    something again, up to that gap. §6 says so.
     """
     message = _machine_finding(catlin_model_ro).message
-    assert "supply side via DU-B-ERV-R-PLAY" in message
-    assert "extract side" not in message
+    assert "extract side via DU-B-ERV-R-SAUNA-EXH" in message
+    assert "supply side" not in message
 
 
 def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> None:
-    """Note §6: 0.406 in. w.g. and 205.7 cfm, on the SUPPLY side.
+    """Note §6: 0.3495 in. w.g. and 207.0 cfm, on the EXTRACT side.
 
     Hand-worked in the note before this assertion was changed, which is the order that makes
-    it an oracle. Supply column, term by term: ``DU-B-ERV-R-PLAY`` 0.0134 + terminal
-    9.00/249.089 + plenum 0.50/249.089 + ``DU-ERV-OA`` 0.1318 + ``DU-B-ERV-SUP-TRUNK`` 0.0234
-    + ``DU-ERV-RISER-SUP`` 0.1367 + ``DU-S-ERV-HP-FEED`` 0.0630 = **0.4064**. Delivered off
-    the curve between (0.4, 206) and (0.5, 201): 206 - 0.064 x 5 = 205.7.
+    it an oracle. Extract column, term by term: ``DU-B-ERV-R-SAUNA-EXH`` 0.0135 + terminal
+    6.50/249.089 + plenum 0.50/249.089 + ``DU-ERV-RISER-EXH`` 0.2028 + ``DU-B-ERV-RET-TRUNK``
+    0.0614 + ``DU-ERV-EA`` 0.0437 = **0.3495**. Delivered off the curve between (0.3, 208)
+    and (0.4, 206): 208 - 0.495 x 2 = 207.0.
 
-    The engine reads 0.407 and 206. The eighth-thousandth between the two is the note's own
-    f estimates at the 8" Reynolds number, and it is smaller than the rounding either figure
-    is printed at.
+    Supply, for the comparison that decides which side governs: 0.0134 + 0.0361 + 0.0020 +
+    ``DU-ERV-OA`` 0.0315 + ``DU-B-ERV-SUP-TRUNK`` 0.0234 + ``DU-ERV-RISER-SUP`` 0.1367 +
+    ``DU-S-ERV-HP-FEED`` 0.0630 = 0.3061. Extract leads by 0.0434.
 
-    ** THE CODE MARGIN IS 0.7 cfm. ** 205.7 against MN 1322 R403.5's 205. It was 203.0 —
-    BELOW the rate — before any of this, so the day's work moved the delivered figure up past
-    the line. It is still thin enough that §8's "measure it at commissioning with a low-flow
-    hood" is the operative sentence, and now it is the SUPPLY side to hood.
+    ** THE CODE MARGIN IS 2.0 cfm. ** 207.0 against MN 1322 R403.5's 205. It was 203.0 —
+    BELOW the rate — at the start of the day, then 205.7, and the hoods' move to the north
+    face is what bought the rest. It is still thin enough that §8's "measure it at
+    commissioning with a low-flow hood" is the operative sentence, and it is the EXTRACT side
+    to hood again.
     """
     message = _machine_finding(catlin_model_ro).message
-    assert "0.407 in. w.g." in message
-    assert "delivering 206 cfm" in message
+    assert "0.350 in. w.g." in message
+    assert "delivering 207 cfm" in message
 
 
 def test_the_shortfall_against_the_design_rate_is_unknown_and_never_a_fail(

@@ -1744,7 +1744,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CMFS03AAAA",
-      "tag": "joist-0-010-0"
+      "tag": "joist-0-010-1"
     },
     {
       "space": "model",
@@ -1792,7 +1792,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS03AAAA",
-      "tag": "joist-0-010-0/flange"
+      "tag": "joist-0-010-1/flange"
     },
     {
       "space": "model",
@@ -1812,7 +1812,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CMFS03AAAA",
-      "tag": "joist-0-010-0/flange"
+      "tag": "joist-0-010-1/flange"
     },
     {
       "space": "model",

@@ -5272,7 +5272,17 @@
 "exhaust:galvanized" = { material = { low = 3.5, high = 7 }, labour = { low = 3.5, high = 8 } }  # fallback for a diameter not priced above
 "exhaust:semi_rigid" = { material = { low = 2.5, high = 5 }, labour = { low = 3, high = 7 } }  # fallback for a diameter not priced above
 "outdoor_air" = { material = { low = 6, high = 13 }, labour = { low = 8.5, high = 19 } }  # sheet-metal fallback, 0 LF today
-"outdoor_air:galvanized" = { material = { low = 5, high = 10 }, labour = { low = 4.5, high = 10 } }  # 14.0 LF of 6" galvanized inside an R-8 vapour-sealed wrap — dearer than a bare trunk, it is the run that sweats
+# ** NEW 2026-09-15, THE SECOND HALF OF THE SAME GAP. ** DU-ERV-OA went 6" -> 8" when its
+# hood moved to the north wall and its riser left the chase, and like DU-ERV-EA before it it
+# fell straight through to the un-diametered row below.
+#
+# The band is the 6" outdoor-air row stepped to 8" the same way exhaust was: material x1.28
+# with the steel (4.50 -> 5.75 on the bare rows), labour x1.12, because a crimp and three
+# screws are a crimp and three screws whatever the diameter. It stays ABOVE the 8" exhaust
+# row by the same ~11% the 6" rows differ by — the R-8 vapour-sealed wrap this run carries
+# and a bare trunk does not. 5.00 x 1.28 = 6.4; 4.50 x 1.12 = 5.0.
+"outdoor_air:galvanized:8.0" = { material = { low = 6.25, high = 12.5 }, labour = { low = 5, high = 11 } }  # 13.7 LF — DU-ERV-OA
+"outdoor_air:galvanized" = { material = { low = 5, high = 10 }, labour = { low = 4.5, high = 10 } }  # fallback for a diameter not priced above; 0 LF since DU-ERV-OA went 8"
 "outdoor_air:semi_rigid" = { material = { low = 3.5, high = 7 }, labour = { low = 3.5, high = 8 } }  # 0 LF since 2026-09-12 — was 37.6 LF of 6" insulated
 "return" = { material = { low = 7, high = 13 }, labour = { low = 12, high = 28 } }  # 0.5 LF of galvanized stub
 "return:galvanized:4.0" = { material = { low = 2.75, high = 5.5 }, labour = { low = 3.25, high = 7.5 } }  # 251.4 LF of 4" snap-lock radial, return side

@@ -287,7 +287,12 @@ def test_catlin_bills_no_through_foam_screw_on_wall_or_roof(catlin_model) -> Non
     # station moved" arithmetic as every entry above, and the assertion tying this to the
     # resolved blocks is the one that proves it is only that. Its cost is in
     # test_truss_girt_courses, whose exact-hit floor fell 12 -> 8 and was re-swept there.
-    assert row["count"] == 1131 and furring[0]["count"] == 224
+    # ** 1131 -> 1130 ON 2026-09-15, AND ONE CUT GIRT IS THE WHOLE OF IT. ** AO-M-ERV-OA
+    # moved from W-M-W1B to W-M-N3B with its hood and rose 44 1/2" -> 55 1/2". On the west
+    # wall it landed squarely on girt course 003 (z 48"..51 1/2"), breaking it in one bay and
+    # buying the blocks that carry the two cut ends. On the north wall it sits in the clear
+    # between that course and the 72" one — 4" under, 7 1/2" over — and cuts nothing.
+    assert row["count"] == 1130 and furring[0]["count"] == 224
 
 
 # --- hangers -------------------------------------------------------------------------

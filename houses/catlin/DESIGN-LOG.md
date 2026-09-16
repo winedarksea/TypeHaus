@@ -848,6 +848,39 @@ bearing wall, matching every other bearing wall in the house.
 
 ## Ventilation, ducts and soffits
 
+### The ERV hoods went to the north wall, and the chase was the wrong question (2026-09-15)
+
+`DU-ERV-OA` had been stuck at 6" for weeks. `notes/erv_static_budget.md` §7 priced the 8"
+upsize Broan's manual asks for at ~4.5 cfm delivered against a code margin of 0.7, and the
+answer was always "blocked on the chase": at the riser's station an 8" envelope overran the
+shaft's east face by an inch, and a four-step proof showed no ordering of four risers packed
+out of it. That proof was correct and it answered the wrong question.
+
+`DU-ERV-OA` runs main to basement only. It is the one leg in this system that never needed a
+continuous basement-to-attic shaft, and it was in the shaft **solely because its hood was on
+the WEST facade with the shaft in between**. Moving the hood to the north wall of `RM-M-MECH`
+put the riser in the open closet at x=3'-4", where 8" is not tight. The upsize followed for
+nothing, took the term 0.1318 -> 0.0315, and handed the governing side back to extract.
+`DU-ERV-EA` went the same way and lost its jog: riser and hood now share one station.
+
+**What the measurement found on the way there is the more useful half.** The original scan
+was duct-against-duct and reported four interpenetrations in the chase. Re-run against pipes
+as well, the two outdoor legs carried **twelve** — including `DU-ERV-EA`'s basement leg
+running *inside* `PR-B-KITCH-DRAIN` for 4'-3", and its riser skewered at five separate
+elevations by the six-vent bundle that crosses the chase westward at y=34'-6". None of that
+had ever been graded, because nothing in this engine pairs a duct against a pipe. Both runs
+are now clear of every duct and pipe in the house and of each other; the NW column's total
+fell 45 -> 37, and the 37 that remain are plumbing's, not the ERV's.
+
+**Three things this turned up that outlive it.** `ResolvedConduit` carries no per-vertex
+elevations, only a start and an end, so the chase's nine conduits resolve as two-point
+schematics — `CD-B-ATTIC-RISER` "rises" 24 ft while travelling 5'-6" horizontally. That, and
+not the schematic radial plane, is what actually blocks `mep.duct_interference`. `haus route
+--run` refuses every duct, though `routing/trades/duct.py` exists and the repo guide
+advertises the flag. And `FS-M-MECH` had carried four risers through its joist field with no
+floor opening declared at all; `FO-M-ERV-OA` and `FO-M-ERV-EA` are the first two drawn, and
+the vents, the radon riser and the conduits still are not.
+
 **ERV outdoor hoods moved off the north gable.** They used to sit at 8'/28' on the north
 gable, and the argument for the gable did not survive measurement. It said "RM-M-MECH is
 5'-11" x 2'-7", so no pair of hoods near the shaft can make ten feet" — the room is really

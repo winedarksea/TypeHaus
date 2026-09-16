@@ -131,10 +131,17 @@ def test_every_riser_stands_INSIDE_the_chase_with_its_whole_envelope(catlin_mode
     ENVELOPE — centreline plus radius, not the centreline — lies inside the measured clear
     extent, and no two of them overlap in plan unless they are the same air path meeting at
     a joint.
+
+    ** THE SET IS THREE, NOT FOUR, SINCE 2026-09-15. ** ``DU-ERV-OA`` left this shaft when
+    its hood moved to the north wall. It runs main -> basement only and never needed a
+    continuous basement-to-attic route; it was in the shaft solely because its hood was on the
+    WEST facade with the shaft in between. Its riser now stands in the open closet at
+    x=3'-4", which is what let it go to 8" — an 8" envelope overran the shaft's east face.
+    ``test_the_intake_riser_is_out_of_the_chase_and_in_the_closet`` below pins that.
     """
     risers = {d.tag: d for d in catlin_model.ducts
-              if d.tag in ("DU-ERV-RISER-SUP", "DU-ERV-RISER-EXH", "DU-ERV-OA", "DU-ERV-EA")}
-    assert len(risers) == 4
+              if d.tag in ("DU-ERV-RISER-SUP", "DU-ERV-RISER-EXH", "DU-ERV-EA")}
+    assert len(risers) == 3
 
     bands: dict[str, tuple[float, float, float, float]] = {}
     for tag, duct in risers.items():
@@ -164,6 +171,40 @@ def test_every_riser_stands_INSIDE_the_chase_with_its_whole_envelope(catlin_mode
                 continue
             assert not (x0 < u1 and x1 > u0 and y0 < v1 and y1 > v0), (
                 f"{one_tag} and {other_tag} overlap in plan")
+
+
+#: RM-M-MECH's clear, read off the resolved wall LAYERS the same way ``_SHAFT_X`` is:
+#: x 0'-0 5/8"..5'-11 3/8" by y 33'-6 3/8"..35'-5 3/8".
+_CLOSET_X = (0.625, 71.375)
+
+
+def test_the_intake_riser_is_out_of_the_chase_and_in_the_closet(catlin_model) -> None:
+    """``DU-ERV-OA``'s riser is in RM-M-MECH, EAST of the shaft, and that is what bought 8".
+
+    Three separate things have to hold and each was measured:
+
+    * its envelope is wholly outside ``_SHAFT_X`` — otherwise it is back in the four-in-a-
+      shaft problem that no ordering of risers packs out of;
+    * its envelope is wholly inside the closet's own clear, so it is not in a wall cavity —
+      the defect ``DU-ERV-RISER-SUP`` carried for months;
+    * it is 8". At 6" this assertion would still pass and the static budget would be 0.10 in.
+      worse, so the diameter is pinned here too rather than only in the sizes test.
+    """
+    oa = next(d for d in catlin_model.ducts if d.tag == "DU-ERV-OA")
+    assert oa.diameter_m == pytest.approx(8 * M_PER_IN)
+    radius = oa.diameter_m / M_PER_IN / 2.0
+
+    verticals = [a for a, b in zip(oa.path, oa.path[1:])
+                 if abs(a[0] - b[0]) < 1e-9 and abs(a[1] - b[1]) < 1e-9]
+    # Two: the storey drop at x=3'-4" and the short fall onto the machine's port at x=3'-8".
+    assert len(verticals) == 2, [v[0] / M_PER_IN for v in verticals]
+    for vertex in verticals:
+        x = vertex[0] / M_PER_IN
+        lo, hi = x - radius, x + radius
+        assert lo > _SHAFT_X[1], f"DU-ERV-OA spans x {lo:.3f}..{hi:.3f}, back inside the shaft"
+        assert _CLOSET_X[0] <= lo and hi <= _CLOSET_X[1], (
+            f"DU-ERV-OA spans x {lo:.3f}..{hi:.3f}, outside RM-M-MECH's "
+            f"{_CLOSET_X[0]}..{_CLOSET_X[1]}")
 
 
 def test_the_outdoor_pair_is_vapour_sealed_and_the_distribution_pair_is_not(catlin_model) -> None:
@@ -201,15 +242,20 @@ def test_the_hoods_are_stacked_with_the_discharge_on_top(catlin_plan) -> None:
     does not apply to a pair that is no longer on a gable.
 
     What replaces it is the arrangement that makes the pair legal without ten feet of facade:
-    both on the west wall at the NW chase, EXHAUST ABOVE INTAKE. Two independent things want
-    that order. An exhaust plume rises, so an intake under it is the safe one. And IRC M1506.3
-    waives the 10 ft separation entirely "where the exhaust opening is located not less than
-    3 feet above the air intake opening" — the engine does not implement that exception, and
-    this pair does not need it (13'-0" of rise clears the 10 ft on 3-D distance alone), but
-    the ORDER is what the code blesses and reversing it would be wrong on both counts.
+    stacked at one corner, EXHAUST ABOVE INTAKE. Two independent things want that order. An
+    exhaust plume rises, so an intake under it is the safe one. And IRC M1506.3 waives the
+    10 ft separation entirely "where the exhaust opening is located not less than 3 feet above
+    the air intake opening" — the engine does not implement that exception, and this pair does
+    not need it (12'-0" of rise clears the 10 ft on 3-D distance alone, 12'-2" between the two
+    boxes), but the ORDER is what the code blesses and reversing it would be wrong on both
+    counts.
 
-    Both must also stay south of ``TR-RF-LEADER-W``, the roof leader on this facade at
-    y=35'-6", and clear of the second-storey chase notch's +19'-0" cap.
+    ** THEY MOVED OFF THE WEST FACADE TO THE NORTH WALL ON 2026-09-15. ** Off the west wall
+    each run had to sweep the NW chase to reach its hood, and the two sweeps carried twelve
+    measured interpenetrations between them. Out the north wall each leaves at its own
+    station. The intake rose +4'-0" -> +5'-0" at the same time, and that foot is NEC 110.26:
+    ``ED-M-HP3-DISC`` is on this wall and its working space runs to the top of the can at
+    +4'-3 1/2", so a 12" hood box centred on +4'-0" sat inside it.
 
     ** THE x IT PINS MOVED ON 2026-09-11, AND THE OLD VALUE WAS THE BUG. ** It used to
     require x = +0'-6" "at the wall". +6" is the middle of the stud cavity: W-M-W1B and
@@ -228,16 +274,20 @@ def test_the_hoods_are_stacked_with_the_discharge_on_top(catlin_plan) -> None:
     # Storey-relative mounts on datums 0'-0" and +10'-0": +4'-0" and +17'-0" absolute.
     intake_z = hoods["EQ-M-ERV-HOOD-OA"].mount.elevation.meters / _FT
     exhaust_z = 10.0 + hoods["EQ-S-ERV-HOOD-EA"].mount.elevation.meters / _FT
-    assert intake_z == pytest.approx(4.0, abs=0.01)
+    assert intake_z == pytest.approx(5.0, abs=0.01)
     assert exhaust_z == pytest.approx(17.0, abs=0.01)
     assert exhaust_z - intake_z >= 3.0, "IRC M1506.3 wants the exhaust >= 3 ft over the intake"
+    # NEC 110.26 over ED-M-HP3-DISC: the can is 9 1/2" tall on a +3'-6" base, so its working
+    # space tops at +4'-3 1/2" and a 12" box has to start above that.
+    assert intake_z - 0.5 >= 4.0 + 3.5 / 12.0, "the intake box is inside the disconnect's space"
 
     for tag, hood in hoods.items():
         x, y = (v / _FT for v in hood.position.xy_m)
-        # The west facade at the chase, not the north gable: x is at the wall, y is in the
-        # chase band. If either drifts back onto the gable this reads it immediately.
-        assert x == pytest.approx(-13.25 / 12.0, abs=0.01), tag
-        assert 33.0 < y < 35.5, f"{tag} must stay south of the roof leader at y=35'-6\""
+        # The NORTH wall, not the west facade and not the north gable: y is outboard of the
+        # cladding at 36'-7 1/4", x is inside the house's width. A negative x on either of
+        # these is the old west-facade station; a y near 36'-0" is the stud-cavity bug.
+        assert y == pytest.approx(445.25 / 12.0, abs=0.01), tag
+        assert 0.0 < x < 6.0, f"{tag} must stand on W-M-N3B / W-S-N3B, which end at x=6'-0\""
 
 
 # --- the mixing box --------------------------------------------------------------------
@@ -331,28 +381,32 @@ def test_every_radial_is_four_inch_galvanized_and_there_are_twenty_three(catlin_
 
 
 def test_every_trunk_riser_and_outdoor_leg_is_galvanized_at_its_stated_size(catlin_model) -> None:
-    """Six inches everywhere except the discharge, which was BOUGHT at eight on 2026-09-15.
+    """Six inches everywhere except BOTH outdoor legs, which are eight as of 2026-09-15.
 
     Broan's manual asks for an 8" trunk above 200 cfm with long runs, and
     ``notes/erv_static_budget.md`` §7 priced that upsize as a fallback for months rather than
-    building it, because at 6" the worst path still cleared MN's rate. Drawing the attic
-    extract feed honestly — the riser had been reading as connected only because its head sat
-    within the 3" joint tolerance of a bath radial — put 0.056 in. w.g. back on the extract
-    column and took the delivered figure to 202 cfm, BELOW MN 1322 R403.5's 205. ``DU-ERV-EA``
-    at 8" is what paid for that and more: the term falls 0.1666 -> 0.0407, because area goes
-    as d² while friction goes as V².
+    building it. Both halves were bought in one day and for different reasons:
 
-    Only the discharge. The intake ``DU-ERV-OA`` stays 6": it is 0.1318 of the SUPPLY column,
-    which now governs, and upsizing it is the next lever rather than a done one — §6 says
-    which levers are still worth anything and which are not.
+    * ``DU-ERV-EA`` first, because drawing the attic extract feed honestly — the riser had
+      been reading as connected only because its head sat within the 3" joint tolerance of a
+      bath radial — put 0.056 in. w.g. back on the extract column and took the delivered
+      figure to 202 cfm, BELOW MN 1322 R403.5's 205. The term falls 0.1666 -> 0.0437.
+    * ``DU-ERV-OA`` second, and it had been blocked on geometry rather than money: at its old
+      chase station an 8" envelope overran the shaft's east face by an inch. Moving its hood
+      to the north wall took the riser out of the chase entirely and the block with it. The
+      term falls 0.1318 -> 0.0315, which is the single largest saving in the note.
+
+    Area goes as d² while friction goes as V², which is why a 6" -> 8" step takes roughly
+    three quarters off a term even against a slightly higher friction factor.
     """
     by_tag = {d.tag: d for d in catlin_model.ducts}
     for tag in ("DU-ERV-RISER-SUP", "DU-ERV-RISER-EXH", "DU-B-ERV-SUP-TRUNK",
-                "DU-B-ERV-RET-TRUNK", "DU-ERV-OA", "DU-S-ERV-HP-FEED"):
+                "DU-B-ERV-RET-TRUNK", "DU-S-ERV-HP-FEED"):
         assert by_tag[tag].diameter_m == pytest.approx(6 * M_PER_IN), tag
         assert by_tag[tag].material == "galvanized", tag
-    assert by_tag["DU-ERV-EA"].diameter_m == pytest.approx(8 * M_PER_IN)
-    assert by_tag["DU-ERV-EA"].material == "galvanized"
+    for tag in ("DU-ERV-OA", "DU-ERV-EA"):
+        assert by_tag[tag].diameter_m == pytest.approx(8 * M_PER_IN), tag
+        assert by_tag[tag].material == "galvanized", tag
 
 
 def test_no_run_in_the_house_is_semi_rigid_any_more(catlin_model) -> None:

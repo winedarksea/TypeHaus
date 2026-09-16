@@ -176,5 +176,7 @@ def test_the_opening_band_is_measured_from_the_framing_base(catlin_model) -> Non
     bands = {tag: (low, high)
              for tag, _d, _h, _p, low, high, _pen in opening_prisms(_Ctx())}
     low, _high = bands["AO-M-ERV-OA"]
-    # Authored sill 44.5" on a framing base of 0'-0", which is where the duct is at +4'-0".
-    assert low == pytest.approx(44.5 * 0.0254, abs=1e-6)
+    # Authored sill 55.5" on a framing base of 0'-0", which is where the duct is at +5'-0".
+    # It was 44.5"/+4'-0" on W-M-W1B until 2026-09-15; the hood moved to the north wall and
+    # rose a foot to clear ED-M-HP3-DISC's NEC 110.26 working space.
+    assert low == pytest.approx(55.5 * 0.0254, abs=1e-6)

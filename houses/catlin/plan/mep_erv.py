@@ -3,9 +3,9 @@
 #
 # Split out of plan/mep_hvac.py (which keeps System 1's conditioned-air chase) because the
 # ERV stopped being four rectangular trunks and became a system: a real machine with four
-# ports, an outdoor side that did not exist before, four risers up one shaft, five
-# distribution plenums and twenty-three radials. mep_hvac.py was at its page budget with
-# the trunks alone.
+# ports, an outdoor side that did not exist before, three risers up one shaft and one beside
+# it, five distribution plenums and twenty-three radials. mep_hvac.py was at its page budget
+# with the trunks alone.
 #
 # =============================== THE SYSTEM, IN BRIEF ==================================
 #
@@ -17,12 +17,18 @@
 # "210 at 0.2"" and "206 at 0.4"" were never two claims; they are two stations on one curve,
 # and `EQ-T-BROAN-B210E75RT.fan_curve` carries all ten published points (214 @ 0.1" down to
 # 176 @ 1.2", ceiling 1.3" where the core deforms). `mep.erv_static_budget` computes what
-# THIS duct system costs and reads the curve at it: **0.407" w.g. worst path, 206 cfm
-# delivered**, the worst path being DU-B-ERV-R-PLAY on the SUPPLY side. The oracle is
-# notes/erv_static_budget.md. The 8" upsize Broan's manual asks for above 200 cfm is no
-# longer refused wholesale: DU-ERV-EA was bought at 8" on 2026-09-15 and it is what moved
-# the governing side from extract to supply. The note's §6 says which levers are left and
-# that all of them are now on the supply side.
+# THIS duct system costs and reads the curve at it: **0.350" w.g. worst path, 207 cfm
+# delivered**, the worst path being DU-B-ERV-R-SAUNA-EXH on the EXTRACT side. The oracle is
+# notes/erv_static_budget.md.
+#
+# ** THE 8" UPSIZE BROAN'S MANUAL ASKS FOR ABOVE 200 cfm IS NOW OBEYED IN FULL. ** Both
+# outdoor legs went to 8" on 2026-09-15. DU-ERV-EA first, which moved the governing side
+# from extract to supply and bought almost nothing because the two columns were 0.0086"
+# apart; then DU-ERV-OA, which had been blocked on geometry rather than money until both
+# hoods moved to the NORTH face and its riser left the chase. That one took 0.1318 -> 0.0315
+# and handed the governing side back to extract. The delivered figure went 203 -> 205.7 ->
+# 207.0 cfm against MN's 205. The note's §7 is now spent; §6 says the only large term left
+# anywhere is DU-ERV-RISER-EXH, at 58% of the governing column on its own.
 # `ventilation_cfm=210` stays authored — see plan/mep_erv_types.py for why moving it is a
 # separate decision with a live verdict behind it. It is a design INTENT: 210 is the curve's
 # value at 0.2" w.g. and no real duct system lands there. **205 (MN 1322 R403.5) is the
@@ -144,23 +150,29 @@ EQUIPMENT_ERV_BASEMENT = [
 # Wall-hung at 8'-0", under the 9'-0" plate.
 #
 # **Both manifolds are east of x=2'-8", and that is the whole siting argument.** The closet's
-# west end is not free space: the four 6" ERV risers all stand on ONE line at y=33'-7 1/2",
-# at x=5" (DU-ERV-RISER-SUP), 12" (DU-S-ERV-HP-FEED), 14" (DU-ERV-RISER-EXH) and 23"
-# (DU-ERV-OA); the six plumbing vents and the radon riser cluster at (1'-0", 34'-6"); and
-# eight conduits fill x=1'-6"..2'-6" at y=34'-6"..35'-0". What is left is a 39" x 31" bay
-# along the closet's east end, and that is exactly where these hang.
+# west end is not free space. Measured off the resolved model on 2026-09-15, what stands
+# there is:
 #
-# ** THIS SAID x=5"/14"/23" AND "x=5" (y=35'-6")" UNTIL 2026-09-15, AND BOTH HALVES WERE
-# WRONG. ** There is no riser at y=35'-6" at all. The fourth is DU-S-ERV-HP-FEED and it
-# stands at x=12" in the SAME row as the other three — which is not a bookkeeping detail,
-# because at x=12" and x=14" two 6" ducts are on 2" centres and share 4" of plan. The
-# standpipe and the exhaust riser interpenetrate, and prose that put one of them six feet
-# away at y=35'-6" is exactly why nobody had noticed. Measured off the resolved model.
+#     DU-ERV-RISER-SUP    x  9 5/8"   y 33'-7 1/2"   full height
+#     DU-S-ERV-HP-FEED    x 12"       y 33'-7 1/2"   attic standpipe off SUP's head
+#     DU-ERV-RISER-EXH    x 18 5/8"   y 33'-7 1/2"   full height
+#     DU-ERV-EA           x  2'-0"    y 35'-0"       full height, basement to +17'-0"
+#     VR-M-RADON-VENT     x  1'-0"    y 34'-6"       radon + plumbing vent together
+#     six plumbing vents  x  1'-0"    y 34'-6"       all landing on that one riser
+#     nine conduits       x 1'-6"/2'-0"/2'-6", y 34'-6" (one at y=35'-3")
 #
-# The clash is NOT fixed here: this is a prose pass and moving a duct in it would make the
-# correction unreviewable. It is the re-pack's, and the re-pack is what the four-in-a-row
-# geometry above is the argument for — 5", 12", 14", 23" leaves gaps of 1", -4" and 3" in a
-# 24" shaft, which is not a row anybody can build.
+# What is left is a 39" x 31" bay along the closet's east end, and that is exactly where
+# these hang. DU-ERV-OA is no longer in that list: its riser moved east to x=3'-4" on
+# 2026-09-15 and now stands in the bay's own west edge, 5 1/2" clear of EQ-M-ERV-MAN-SUP's
+# west end and 3'-0" below it.
+#
+# ** THIS BLOCK CARRIED THE PRE-REPACK ROW FOR ONE COMMIT AND IT WAS STALE THE WHOLE TIME. **
+# It read "x=5", 12", 14" and 23", all on ONE line at y=33'-7 1/2"" and went on to say the
+# clash between the 12" standpipe and the 14" riser "is NOT fixed here ... it is the
+# re-pack's". The re-pack landed in the same session and this paragraph was never brought
+# forward with it, so the file described a defect it had already corrected. The row above is
+# the built one; 9 5/8"/12"/18 5/8" leaves 5/8" between HP-FEED and EXH, and HP-FEED overlaps
+# SUP only across the 3/4" of z where the two are joined, which is a joint and not a clash.
 #
 # The supply manifold is the smaller because the main storey wants three fresh outlets while
 # the extract side gathers eight wet and dry pickups off TWO storeys — the main storey's
@@ -253,9 +265,19 @@ EQUIPMENT_ERV_SECOND = [
               mount=Mount(kind=MountKind.CEILING)),
 ]
 
-# THE TWO EXTERIOR HOODS — west facade at the NW chase, stacked, exhaust over intake.
+# THE TWO EXTERIOR HOODS — NORTH facade, stacked, exhaust over intake.
 #
-# ** THE NORTH GABLE IS NOT A VIABLE ROUTE FOR THESE. ** A horizontal leg at +23'-0" would
+# ** THEY MOVED OFF THE WEST FACADE ON 2026-09-15, AND THE CLASHES ARE WHY. ** Each run had
+# to sweep the NW chase to reach a west hood — DU-ERV-OA across x -0'-8"..2'-3 5/8" at
+# +4'-0", DU-ERV-EA across x 1'-11"..-0'-8" at +17'-0" — and the pair carried TWELVE measured
+# interpenetrations between them. Out the north wall each leaves at its own station and
+# sweeps nothing. The RISERS block below has the twelve, term by term, and the argument for
+# why this also bought DU-ERV-OA its 8".
+#
+# ** THE NORTH GABLE IS STILL NOT A VIABLE ROUTE, AND IT IS A DIFFERENT WALL. ** What
+# follows rejects the ATTIC gable at +23'-0" (W-A-N*), not the main and second storey north
+# walls these hoods now use. The gable objection stands unchanged; it never applied to
+# W-M-N3B or W-S-N3B, which are twelve and six feet below it. A horizontal leg at +23'-0" would
 # pass squarely through the rough openings of BOTH gable windows — WIN-A-N1 (x
 # 10'-9"..13'-3") and WIN-A-N2 (x 22'-9"..25'-3"), each sill +22'-0", head +25'-0" — 8"
 # above the sill, 100% inside the glass, across 2'-6" of each unit. WIN-A-N1 is the only
@@ -272,37 +294,51 @@ EQUIPMENT_ERV_SECOND = [
 # face), and the "20"-34" above grade" figure is the 13 7/16" RIM BAND, not the 10'-0" wall.
 # The ten-foot separation is the real constraint and is tested horizontally.
 #
-# 13'-0" of rise clears `mep.erv_outdoor_terminals`' 10'-0" on 3-D distance alone, and
-# IRC M1506.3 independently waives the ten feet "where the exhaust opening is located not
-# less than 3 feet above the air intake opening". EXHAUST ON TOP is therefore not arbitrary
-# and must stay: the plume rises away from the intake. The 9" y-offset is only so the two are
-# not perfectly co-axial; it is not what makes the pair legal.
+# 12'-0" of rise clears `mep.erv_outdoor_terminals`' 10'-0" on 3-D distance alone (12'-2"
+# between the two boxes, the intake 1'-10" east), and IRC M1506.3 independently waives the
+# ten feet "where the exhaust opening is located not less than 3 feet above the air intake
+# opening". EXHAUST ON TOP is therefore not arbitrary and must stay: the plume rises away
+# from the intake. The 1'-10" x-offset is only so the two are not perfectly co-axial; it is
+# not what makes the pair legal. It was 13'-0" and a 9" y-offset on the west facade; the
+# intake's rise to +5'-0" (NEC, see the hood) spends the extra foot.
 #
-# The west face is blank at the chase on both storeys (W-M-W1B, W-S-W1B carry no openings)
-# and faces the open west yard rather than the 3'-8" breezeway slot the north face discharges
-# into. Both hoods stay south of TR-RF-LEADER-W, the roof leader at y=35'-6".
+# ** WHAT THE NORTH FACE COSTS, AND IT IS NOT NOTHING. ** The west face was blank and faced
+# the open west yard. The north face is the slot between the house and the garage, and it is
+# already occupied: EQ-M-HP3-OD's cabinet holds x 0'-0"..2'-10 3/8" with a 12" rear coil
+# clearance to the cladding, ED-M-HP3-DISC holds x 3'-1"..5'-7" up to +4'-3 1/2", and
+# D-M-ENTRY's rough opening holds x 6'-6"..9'-6". The intake's station is what is LEFT: the
+# 32"..48" stud bay of W-M-N3B, above the disconnect. On the second storey W-S-N3B is only
+# 2'-9" long (N-S-CH2 to N-S-NW) and carries nothing, so the discharge has its pick of it.
 #
-# A 6" duct with R-8 wrap is ~8" OD against a 5 1/2" stud cavity, so NEITHER hood may turn and
-# travel inside the wall — each is a straight through-wall penetration, wrap terminated at the
-# wall line, flashed curb through the PBR-26 cladding, on the outer girt. That is the one part
-# of the old west-facade objection that stands, and it only bites a run travelling ALONG the
-# facade. Coming straight out of the chase, neither does.
+# Both hoods clear TR-RF-LEADER-W, the roof leader at y=35'-6" on the WEST face, by leaving
+# that face entirely.
 #
-# ** BOTH HOOD BOXES HANG ON THE CLADDING, NOT INSIDE IT (2026-09-11). ** Read off the
-# resolved layers of W-M-W1B / W-S-W1B, the west wall stacks paint +6 5/8", gwb +6", stud
-# +6"..+0 1/2", sheathing +0 1/2"..0", spray foam 0"..-4", vent gap -4"..-4 1/2", outer girt
-# -4 1/2"..-6", PBR-26 cladding -6"..-7 1/4". **The outdoor face is x = -0'-7 1/4".** Both
-# hoods were authored at x=+0'-6" — dead centre of the stud cavity, a foot INSIDE the house —
-# which no more placed them on the facade than the -6" duct ends carried the ducts out of it.
-# `Equipment.footprint` is a PLAN rectangle centred on `position`, so a 12" x 12" hood box
-# whose back plate lands flat on the cladding has its centre 6" outboard of that face:
-# x = -7 1/4" - 6" = **-1'-1 1/4"**. The box then occupies x -1'-7 1/4"..-0'-7 1/4", entirely
-# in the open west yard, touching the cladding and nothing else.
+# An 8" duct with R-8 wrap is ~10" OD against a 5 1/2" stud cavity, so NEITHER hood may turn
+# and travel inside the wall — each is a straight through-wall penetration, wrap terminated
+# at the wall line, flashed curb through the board-and-batten cladding, on the outer girt.
+# That is the one part of the old west-facade objection that stands, and it only bites a run
+# travelling ALONG the facade. Coming straight out at its own station, neither does.
 #
-# Both therefore carry `room=None`. EQ-S-ERV-HOOD-EA already did, for the chase reason below;
-# EQ-M-ERV-HOOD-OA named RM-M-MECH only because at +6" it happened to fall inside that room's
-# polygon. Outdoors it is not in a room at all, and naming the nearest one raises
-# `integrity.placeable_room_mismatch` — the same call EQ-M-HP3-OD and the porch AP make.
+# ** BOTH HOOD BOXES HANG ON THE CLADDING, NOT INSIDE IT (2026-09-11, re-derived on the
+# NORTH wall 2026-09-15). ** Read off the resolved layers of W-M-N3B / W-S-N3B, which carry
+# the same EXT_2X6 stack the west wall does but outward in +y: paint 35'-5 3/8", gwb
+# 35'-5 3/8"..35'-6", stud 35'-6"..36'-0", sheathing to 36'-0", spray foam to 36'-4", vent
+# gap to 36'-4 1/2", outer girt to 36'-6", board-and-batten cladding to 36'-7 1/4".
+# **The outdoor face is y = 36'-7 1/4".** `Equipment.footprint` is a PLAN rectangle centred
+# on `position`, so a 12" x 12" box whose back plate lands flat on the cladding has its
+# centre 6" outboard of that face: y = 36'-7 1/4" + 6" = **37'-1 1/4"**. Each box then
+# occupies y 36'-7 1/4"..37'-7 1/4", clear of EQ-M-HP3-OD's cabinet (which starts at
+# 37'-7 1/4", its own 12" rear clearance) by nothing at all in y — which is exactly why the
+# intake is at x=3'-4" and the cabinet stops at x=2'-10 3/8". They pass each other in PLAN,
+# not in depth.
+#
+# The mistake this replaced is worth keeping: both hoods were once authored at x=+0'-6" on
+# the west wall — dead centre of the stud cavity, a foot INSIDE the house — which no more
+# placed them on the facade than the -6" duct ends carried the ducts out of it.
+#
+# Both therefore carry `room=None`. Outdoors they are not in a room at all, and naming the
+# nearest one raises `integrity.placeable_room_mismatch` — the same call EQ-M-HP3-OD and the
+# porch AP make.
 #
 # NOT MODELLED, deliberately: the sealed hole itself. A framed-wall penetration is spelled
 # `PipeAccessory(PENETRATION_SEAL)` here (PA-M-PORCH-HYD-SEAL; `SleevePenetration` is cast
@@ -313,18 +349,28 @@ EQUIPMENT_ERV_SECOND = [
 # host; the take-off under-bills two escutcheon-and-foam kits, which is the honest gap.
 EQUIPMENT_ERV_HOODS_MAIN = [
     Equipment(uid="0NF97ZR9Z3", tag="EQ-M-ERV-HOOD-OA", kind=EquipmentKind.DUCT_MANIFOLD,
-              position=pt(inch(-13.25), ft(33, 11)), footprint=(inch(12), inch(12)),
+              position=pt(ft(3, 4), inch(445.25)), footprint=(inch(12), inch(12)),
               # The intake, and it is the LOW one deliberately: an exhaust plume rises, so
-              # the intake belongs under it, not over it. +4'-0" on the main storey is
-              # 6'-10" above the -2'-10" grade plane — twice `erv_terminals`' 36" rule of
-              # thumb, and clear of any drift a 50 psf ground-snow site puts against a wall.
-              # 25'-11" from VR-M-RADON-VENT against a 3'-0" minimum.
+              # the intake belongs under it, not over it. Still twice `erv_terminals`' 36"
+              # rule of thumb off the -2'-10" grade plane, and clear of any drift a 50 psf
+              # ground-snow site puts against a wall.
+              #
+              # ** +5'-0", AND THE EXTRA FOOT IS NEC 110.26, NOT SNOW. ** ED-M-HP3-DISC
+              # stands on this wall at (4'-4", +3'-6"). Its working space is 30" wide —
+              # x 3'-1"..5'-7", which this hood is inside — and runs from grade to
+              # **the greater of 6'-6" above grade or the top of the equipment**. The can is
+              # 9 1/2" tall on a 3'-6" base, so its top is +4'-3 1/2" and IT, not the 6'-6"
+              # (= +3'-8"), sets the ceiling of the space. A 12" box centred on +4'-0" would
+              # sit from +3'-6" to +4'-6", squarely in it; centred on +5'-0" it starts at
+              # +4'-6" and clears by 6". An air intake is not "equipment associated with the
+              # electrical installation", so 110.26(A)(3)'s 6"-overhang allowance does not
+              # reach it — the box has to be wholly out.
               room=None, type_ref="EQ-T-ERV-HOOD-6",
-              mount=Mount(kind=MountKind.WALL, elevation=ft(4))),
+              mount=Mount(kind=MountKind.WALL, elevation=ft(5))),
 ]
 EQUIPMENT_ERV_HOODS_SECOND = [
     Equipment(uid="38M0D2FNXH", tag="EQ-S-ERV-HOOD-EA", kind=EquipmentKind.DUCT_MANIFOLD,
-              position=pt(inch(-13.25), ft(34, 0)), footprint=(inch(12), inch(12)),
+              position=pt(ft(2), inch(445.25)), footprint=(inch(12), inch(12)),
               # ** y=34'-0" IS A STUD BAY, AND 34'-8" WAS A STUD (2026-09-11). ** W-S-W1B
               # frames studs at y 400"/416"/430 3/4"; the hood and its duct sat at y=416"
               # dead on `stud-001`, so the 6" penetration bored the middle out of a bearing
@@ -345,12 +391,13 @@ EQUIPMENT_ERV_HOODS_SECOND = [
 
 # =============================== THE TWO WALL PENETRATIONS =============================
 #
-# ** THE HOLE IS NOW AN ELEMENT (2026-09-11). ** Until this pass the two outdoor legs ran to
-# x=-0'-8", 3/4" past the cladding, and the hoods stood flat on it — and NOTHING DREW THE
-# HOLE. An `Equipment` placeable resolves no solid at all, so neither hood appears in any
-# elevation, section or exported GLB; the wall's own layers carried no void, so `W-M-W1B`
-# and `W-S-W1B` read as unbroken cladding straight across both ducts. The model asserted a
-# hood on a facade with no opening under it, at 0 FAIL.
+# ** THE HOLE IS NOW AN ELEMENT (2026-09-11). ** Until that pass the two outdoor legs ran
+# 3/4" past the cladding and the hoods stood flat on it — and NOTHING DREW THE HOLE. An
+# `Equipment` placeable resolves no solid at all, so neither hood appears in any elevation,
+# section or exported GLB; the wall's own layers carried no void, so the host read as
+# unbroken cladding straight across both ducts. The model asserted a hood on a facade with
+# no opening under it, at 0 FAIL. Both holes moved to the NORTH wall on 2026-09-15 with
+# their hoods, and both grew 7" -> 9" for the 8" ducts behind them.
 #
 # A `RoughOpening` is the spelling that exists: "a bare framed/cut opening (pass-through,
 # future penetration host)". It resolves a real void through every layer of the wall, and
@@ -362,14 +409,17 @@ EQUIPMENT_ERV_HOODS_SECOND = [
 # terminates at the wall line (see the hood note above), so the wrap's ~8" OD never enters
 # the opening.
 #
-# ** WHAT EACH ONE CUTS, AND THE TWO ARE NOT ALIKE. **
-#   - `AO-M-ERV-OA` (intake, +4'-0") clears both studs by 2 29/32" but lands squarely on
-#     girt course 003, which runs z 48"..51 1/2" across the whole wall. That cut is
-#     ACCEPTED and is the detail the hood note already describes — a KDAT 2x4 laid flat in
-#     free air, broken in one 14 1/2" bay, with the curb screwed to the two cut ends. A girt
-#     carries the panel's wind load into the blocks either side, not gravity.
-#   - `AO-S-ERV-EA` (discharge, +17'-0") cuts NOTHING. It clears every girt course by
-#     5 3/16" and, since the hood moved to the y=34'-0" bay, both studs by 3 15/16".
+# ** NEITHER ONE CUTS ANYTHING ANY MORE, AND THAT IS NEW. ** Measured off the resolved
+# strapping on 2026-09-15:
+#   - `AO-M-ERV-OA` (intake, +5'-0", z 55 1/2"..64 1/2") sits in the clear between girt
+#     course 003 (z 48"..51 1/2") and course 004 (z 72"..75 1/2") — 4" under and 7 1/2" over
+#     — and clears the 2'-8" and 4'-0" studs by 2 3/4" and 3 3/4". **On the west wall at
+#     +4'-0" it landed squarely ON course 003 and broke it in one bay**, which cost a KDAT
+#     2x4 laid flat in free air with the curb screwed to its two cut ends, plus the blocks
+#     carrying them. That detail is retired; the girt screw count fell 1131 -> 1130 and
+#     `test_hardware_takeoff` pins the drop.
+#   - `AO-S-ERV-EA` (discharge, +17'-0", z 199 1/2"..208 1/2") cuts nothing either, clearing
+#     courses at z=192" and z=216" by 4" and 7 1/2" and both studs by 2 3/4".
 #
 # Still NOT MODELLED, deliberately, and unchanged by this: the sealed hole's PRODUCT. A
 # framed-wall penetration is spelled `PipeAccessory(PENETRATION_SEAL)` here
@@ -380,31 +430,49 @@ EQUIPMENT_ERV_HOODS_SECOND = [
 # what it sits on. The take-off still under-bills two escutcheon-and-foam kits; the hole
 # itself is no longer missing, only the kit that seals it.
 PENETRATIONS_ERV_MAIN = [
-    # W-M-W1B runs N-M-NW (y=36'-0") south to N-M-MECH1 (y=33'-4"). DU-ERV-OA leaves at
-    # y=33'-11", so the 7" opening spans y 33'-8 1/2"..34'-3 1/2" and its near jamb is
-    # 1'-9 1/2" along from N-M-NW. Sill 3'-8 1/2" puts its centre on the duct's +4'-0".
-    RoughOpening(uid="PNDXBSMTFB", tag="AO-M-ERV-OA", host="W-M-W1B",
-                 position=from_node("N-M-NW", inch(21.5)),
-                 width=inch(7), height=inch(7), sill_height=inch(44.5),
+    # W-M-N3B runs N-M-MECH3 (x=6'-0") west to N-M-NW (x=0'-0"), studs at x 5'-4"/4'-0"/
+    # 2'-8"/1'-4"/0'-6 3/4". DU-ERV-OA leaves at x=3'-4", so the 9" opening spans
+    # x 2'-11 1/2"..3'-8 1/2", clearing the 2'-8" stud by 2 3/4" and the 4'-0" stud by
+    # 3 3/4" — one bay, no king/jack/header pack.
+    #
+    # `from_node` measures to the NEAR JAMB, not the centre: 27 1/2" + half of 9" puts
+    # `center_along` at 32", i.e. x = 6'-0" - 2'-8" = 3'-4". That 32" is one of the four
+    # stations `structural.door_framing_module` will accept on this wall (16" centres off an
+    # 8" residue), and it is the ONLY one the duct can stand on too — see the run itself for
+    # why the other three are each inside a pipe. Sill 4'-7 1/2" centres the hole on the
+    # duct's +5'-0".
+    RoughOpening(uid="PNDXBSMTFB", tag="AO-M-ERV-OA", host="W-M-N3B",
+                 position=from_node("N-M-MECH3", inch(27.5)),
+                 width=inch(9), height=inch(9), sill_height=inch(55.5),
                  penetration_for=("DU-ERV-OA",)),
 ]
 PENETRATIONS_ERV_SECOND = [
-    # W-S-W1B runs N-S-NW (y=36'-0") south to N-S-CH3. DU-ERV-EA leaves at y=34'-0", so the
-    # opening spans y 33'-8 1/2"..34'-3 1/2" and its near jamb is 1'-8 1/2" along from
-    # N-S-NW. Sill is STOREY-RELATIVE: 6'-8 1/2" on a +10'-0" datum centres the hole on
-    # +17'-0" in the project frame, which is where the duct and the hood are.
-    RoughOpening(uid="SMGEY3KGXE", tag="AO-S-ERV-EA", host="W-S-W1B",
-                 position=from_node("N-S-NW", inch(20.5)),
+    # W-S-N3B runs N-S-CH2 (x=2'-9") west to N-S-NW (x=0'-0"). DU-ERV-EA leaves at x=2'-0",
+    # so the 9" opening spans x 1'-7 1/2"..2'-4 1/2" and its near jamb is 4 1/2" along from
+    # N-S-CH2 — `center_along` 9", i.e. x = 2'-9" - 9" = 2'-0". It sits inside the
+    # 16"..32" bay with 2 3/4" to each stud and takes NO jamb pack. Sill is STOREY-RELATIVE:
+    # 6'-7 1/2" on a +10'-0" datum centres the hole on +17'-0" in the project frame, which is
+    # where the duct and the hood are.
+    #
+    # ** IT SAT 1" OFF ITS OWN DUCT UNTIL THIS PASS, AND THE SILL IS NOT WHY. ** When this
+    # opening grew 7" -> 9" for the 8" duct, the `from_node` distance stayed at its 7" value
+    # of 1'-8 1/2". That distance is the NEAR JAMB, so the centre moves with the width: the
+    # hole resolved at y=33'-11" against a duct at y=34'-0", and the duct's far edge stood
+    # 1/2" outside its own opening. The sill was always right — a 9" hole on a 6'-7 1/2" sill
+    # is centred on +17'-0" either way, which is exactly why only the horizontal drifted.
+    # Nothing grades a duct against the opening it is declared `penetration_for`, which is
+    # why a 1" error survived a full verification run.
+    RoughOpening(uid="SMGEY3KGXE", tag="AO-S-ERV-EA", host="W-S-N3B",
+                 position=from_node("N-S-CH2", inch(4.5)),
                  width=inch(9), height=inch(9), sill_height=inch(79.5),
                  penetration_for=("DU-ERV-EA",)),
 ]
 
 # ====================================== RISERS =======================================
 #
-# Four round risers — three 6" and DU-ERV-EA at 8" — up the radon/plumbing chase at
-# (1', 34'-6"), the house's one
-# continuous basement-to-attic shaft: RM-M-MECH's floor on main, the 2'-9" x 2'-2 1/8" notch
-# walled by W-S-CH-W/W-S-CH-S in RM-S-BATH1's NW corner on second, out onto the attic deck.
+# Three round risers up the radon/plumbing chase at (1', 34'-6"), the house's one continuous
+# basement-to-attic shaft: RM-M-MECH's floor on main, the 2'-9" x 2'-2 1/8" notch walled by
+# W-S-CH-W/W-S-CH-S in RM-S-BATH1's NW corner on second, out onto the attic deck.
 #
 # ** MEASURED OFF WALL LAYERS, NOT ROOM POLYGONS. ** `resolve/rooms.py` polygonizes from
 # wall AXES and insets only by the lining, and these walls are `face("sheathing-ext")`, so
@@ -412,89 +480,68 @@ PENETRATIONS_ERV_SECOND = [
 # stud as shaft on each such face. Against the resolved wall LAYERS the notch is
 # **x 0'-6 5/8"..2'-6 5/8" by y 33'-3 1/4"..35'-5 3/8" — 24" wide by 26 1/8" deep.**
 #
-# ** RE-PACKED 2026-09-15, AND THE ROW IS NOW INSIDE THE SHAFT. ** It was not: the row read
-# x=5"/12"/14"/23" against a west face at 6 5/8", so **DU-ERV-RISER-SUP stood 4 5/8" inside
-# W-M-W1B / W-S-W1B's stud cavity for its whole height**, and DU-S-ERV-HP-FEED at 12" and
-# DU-ERV-RISER-EXH at 14" were two 6" ducts on 2" centres sharing 4" of plan. Both were
-# recorded as live defects here and neither was graded by anything.
+# ** IT WAS FOUR RISERS THIS MORNING AND THE FOURTH IS WHY EVERYTHING ELSE MOVED. ** The
+# measured pack, envelope by envelope:
 #
-# The measured pack, envelope by envelope against the 6 5/8"..30 5/8" clear:
+#     DU-ERV-RISER-SUP   x  9 5/8"    6 5/8" .. 12 5/8"   y 33'-7 1/2", flush to the west face
+#     DU-S-ERV-HP-FEED   x 12"        9"     .. 15"       y 33'-7 1/2", joins SUP's head
+#     DU-ERV-RISER-EXH   x 18 5/8"   15 5/8" .. 21 5/8"   y 33'-7 1/2", 5/8" clear of HP-FEED
+#     DU-ERV-EA          x  2'-0"    1'-8"  .. 2'-4"      y 35'-0", 8", basement to +17'-0"
 #
-#     DU-ERV-RISER-SUP   x  9 5/8"    6 5/8" .. 12 5/8"   flush to the west face
-#     DU-S-ERV-HP-FEED   x 12"        9"     .. 15"       joins SUP's head, see below
-#     DU-ERV-RISER-EXH   x 18 5/8"   15 5/8" .. 21 5/8"   5/8" clear of HP-FEED
-#     DU-ERV-OA          x 27 5/8"   24 5/8" .. 30 5/8"   flush to the east face
+# Three full-height risers on 9" centres fill the 24" exactly at y=33'-7 1/2", which is why
+# a fourth could never join that row: HP-FEED is a 12 7/8" STANDPIPE between FS-ATTIC's
+# bottom chord and the deck, not a riser, so it overlaps SUP in plan only across the 3/4" of
+# z where the two are joined. That is a joint and not a clash, and it is the whole reason
+# four ducts fit where four risers could not.
 #
-# Three full-height risers on 9" centres fill 24" exactly, which is why the fourth cannot be
-# one: HP-FEED is a 12 7/8" STANDPIPE between FS-ATTIC's bottom chord and the deck, not a
-# riser, so it overlaps SUP in plan only across the 3/4" of z where the two are joined — it
-# comes off SUP's head. That is a joint and not a clash, and it is the whole reason four
-# ducts fit where four risers could not. Its jog also shortened 7" -> 2 3/8", because the
-# riser head moved out to meet it.
+# ============ WHAT THE WEST FACADE COST, MEASURED AND THEN PAID OFF 2026-09-15 ============
 #
-# ** THE ORDER WAS FORCED AND IS WORTH RECORDING. ** DU-ERV-EA went 6" -> 8" for the static
-# budget; AO-S-ERV-EA grew 7" -> 9" to pass it; the bigger hole then caught DU-ERV-RISER-SUP
-# standing in that same wall, which `mep.run_through_opening` reported as a FAIL. The stud
-# cavity defect had been sitting at 0 FAIL for months and it took an unrelated duct upsize to
-# make anything say so.
+# ** THE TWO OUTDOOR LEGS CARRIED TWELVE INTERPENETRATIONS BETWEEN THEM. ** Not near-misses
+# — shared solid, measured off the resolved model as the overlap of swept envelopes, ducts
+# and pipes together:
 #
-# The hoods stacking at the NW chase makes the above tractable rather than urgent: DU-ERV-OA
-# stops at the main storey and DU-ERV-EA at the second, so the four-in-a-shaft problem
-# exists only below main; above the second storey the shaft carries two ducts, not four.
-# DU-ERV-EA's own riser sits at y=34'-8", clear of the NORTH wall's stud cavity.
+#                                             segs  worst shared solid
+#     DU-ERV-OA entry @ +4'-0"  x RISER-SUP     2    6     x 2 1/2 x 6"
+#     DU-ERV-OA entry @ +4'-0"  x RISER-EXH     1    6     x 2 1/2 x 6"
+#     DU-ERV-EA exit  @ +17'-0" x RISER-SUP     1    6     x 2 1/2 x 8"
+#     DU-ERV-EA exit  @ +17'-0" x RISER-EXH     2    6     x 2 1/2 x 8"
+#     DU-ERV-EA basement leg    x PR-B-KITCH-DRAIN  3    2 x 51 x 6 5/16"  <- runs INSIDE it
+#     DU-ERV-EA riser y=34'-8"  x PR-B-BATH-VENT    1    8 x 1 1/2 x 2"
+#     DU-ERV-EA riser y=34'-8"  x PR-B-SAUNA-VENT   1    8 x 2 x 2 1/2"
+#     DU-ERV-EA riser y=34'-8"  x PR-M-WC-VENT      1    8 x 2 x 2 7/16"
+#                                            ----
+#                                             12
 #
-# The shaft also carries VR-M-RADON-VENT at (1'-0", 34'-6") — ONE 3" riser carrying radon and
-# plumbing vent together, which is what the six vent branches land on rather than six risers
-# of their own — and nine conduits at x=1'-6"/2'-0"/2'-6", y=34'-6" (one at y=35'-3"). It is not roomy, and
-# **nothing else should be added to this chase**. The fallback the plan named — a framed shaft
-# in RM-M-MECH's dead corner — is not needed for the MANIFOLDS, and the closet's own dead
-# corner is now theirs instead. Whether it is needed for a RISER is the open question below.
+# Both sweeps existed for ONE reason: the hoods were on the WEST facade, and the shaft lay
+# between each run and its own hood. **Moving both hoods to the north wall removed every one
+# of them.** DU-ERV-OA left the chase entirely — it runs main -> basement and never needed a
+# continuous shaft — and DU-ERV-EA's riser moved from y=34'-8" to y=35'-0", out of the
+# six-vent bundle that crosses at y=34'-6" and skewered it at five separate elevations.
+# Re-scanned after the move, **both runs are clear of every duct and pipe in the house and of
+# each other**, and the NW column's total fell from 45 interpenetrating pairs to 37.
 #
-# ================== THE SHAFT IS OVER-SUBSCRIBED, MEASURED 2026-09-15 ==================
+# ** WHAT IT BOUGHT, BESIDES BUILDABILITY. ** DU-ERV-OA's riser at x=3'-4" in the open closet
+# has room for 8" where the shaft's east lane did not: an 8" envelope there overran the
+# shaft's east face by an inch, and notes/erv_static_budget.md §7 had the upsize blocked on
+# that for weeks. At 8" the term falls 0.1318 -> 0.0315 and the delivered figure reaches
+# 207.0 cfm against MN's 205.
 #
-# ** FOUR DUCT-ON-DUCT INTERPENETRATIONS ARE LIVE IN THIS CHASE. ** Not near-misses — shared
-# solid, measured off the resolved model as the overlap of the two swept envelopes:
+# ** NOTHING GRADES ANY OF THIS, AND THAT IS STILL TRUE. ** There is no `mep.duct_interference`;
+# the plan named one and it was never built. Two things block it, and both are worth writing
+# down because they outlive this change:
+#   * the main-storey radial layer is deliberately schematic — every radial is drawn on one
+#     z=+9'-3 5/8" plane and about forty pairs of them cross there — so a guard has to be
+#     scoped to full-height runs in a chase or it reports the drawing convention;
+#   * `ResolvedConduit` carries no per-vertex elevations at all, only `z_start_m`/`z_end_m`,
+#     so the chase's nine conduits are two-point schematics (CD-B-ATTIC-RISER "rises" 24 ft
+#     while travelling 5'-6" horizontally). A duct cannot be proven clear of a conduit whose
+#     elevation the model does not hold.
 #
-#     DU-ERV-OA  horizontal entry  @ +4'-0"   x DU-ERV-RISER-SUP   2 3/8 x 2 1/2 x 6"
-#     DU-ERV-OA  horizontal entry  @ +4'-0"   x DU-ERV-RISER-EXH   6     x 2 1/2 x 6"
-#     DU-ERV-EA  horizontal exit   @ +17'-0"  x DU-ERV-RISER-SUP   6     x 2 1/2 x 8"
-#     DU-ERV-EA  horizontal exit   @ +17'-0"  x DU-ERV-RISER-EXH   2 5/8 x 2 1/2 x 8"
-#
-# ** NOTHING GRADES THIS. ** There is no `mep.duct_interference`; the plan named one and it
-# was never built. It cannot simply be added either, because the main-storey radial layer is
-# deliberately schematic — every radial is drawn on one z=+9'-3 5/8" plane and about forty
-# pairs of them cross there. A guard has to be scoped to full-height runs in a chase, or it
-# reports the drawing convention rather than the building.
-#
-# ** AND NO ORDERING OF FOUR RISERS PACKS OUT OF IT. ** Worked exhaustively:
-#
-#   1. OA enters the west wall at y=33'-11" and EA leaves it at y=34'-0", so BOTH sweep the
-#      shaft's full width at that latitude. A riser standing in that sweep is hit — unless it
-#      is absent at that elevation. OA tops out at +4'-0", so OA may stand in EA's sweep;
-#      SUP and EXH are full height and may stand in neither.
-#   2. So EA must be the WESTERNMOST full-height riser, with only OA west of it.
-#   3. EA's jog from any northern row down to y=34'-0" must cross the y=34'-6" utility line.
-#      The free windows there, between VR-M-RADON-VENT (x 10 1/2"..13 1/2") and the conduits
-#      at x=18"/24"/30", are 3 3/8", 3 1/2", 5" and 5". **None takes a 6" duct, let alone an
-#      8" one.** So EA cannot be in a northern row at all: it must sit in OA's row.
-#   4. That row must then carry OA, EA and both trunks: 6 + 8 + 6 + 6 = 26" of metal in a
-#      24" shaft, or 28" if DU-ERV-OA is ever taken to 8". It does not fit.
-#
-# Today's layout evades (3) only by letting EA jog at x=1'-11", where it clips
-# CD-B-DATA-CHASE, and evades (1) by letting the two horizontal legs pass through the two
-# risers — which is the four rows above.
-#
-# ** WHAT THIS BLOCKS. ** notes/erv_static_budget.md §7: DU-ERV-OA at 8" is the one remaining
-# lever on the GOVERNING (supply) column, worth 0.090 in. and about 4.5 cfm against a present
-# code margin of 0.7 cfm. At its station an 8" envelope spans x 23 5/8"..31 5/8" and overruns
-# the shaft's east face by an inch, and the re-stationing that would fix that runs into the
-# four steps above. **The upsize is blocked on this, not on money.**
-#
-# ** THE OPEN DECISION (owner). ** Three ways out, none free: widen the second-storey notch
-# (W-S-CH-W/W-S-CH-S are non-bearing, and RM-S-BATH1's NW corner is where the width comes
-# from); take one riser out of this chase into a second shaft; or accept the four
-# interpenetrations as a coordination item for the sheet-metal sub and say so on the drawing.
-# Until one is chosen, **nothing else should be added to this chase** and DU-ERV-OA stays 6".
+# The 37 pairs that remain in this column are pipe-against-pipe and pipe-against-radial, and
+# none of them is this system's to fix. The six vents converging on (1'-0", 34'-6") cross the
+# thirteen main-storey radial lanes at four elevations; PR-B-BATH-VENT and PR-B-SAUNA-VENT
+# share solid with PR-B-KITCH-DRAIN. **They are recorded here because somebody measured them,
+# not because this pass touched them.**
 # ======================================================================================
 #
 # The supply and extract risers run the full height, basement manifolds to attic manifold.
@@ -586,48 +633,99 @@ DUCTS_ERV_RISERS = [
     # check-driven number outlived the geometry it was standing in for.
     # -0'-8" carries each run 3/4" past the cladding, into the hood's collar.
     DuctRun(uid="MW0MY7GDME", tag="DU-ERV-OA", system=DuctSystem.OUTDOOR_AIR,
-            # Hood first, then inward and down to the basement manifold. The riser keeps its
-            # x=1'-11" station in the shaft; only the top of it changed. y=33'-11" puts the
-            # horizontal leg 5 5/8" north of RM-M-MECH's south face and 8'-0" under the two
-            # wall-hung manifolds at +8'-0", so it crosses nothing in a 5'-3" x 1'-11" room.
-            path=(pt(inch(-8), ft(33, 11)), pt(inch(6), ft(33, 11)),
-                  pt(inch(27.625), ft(33, 11)), pt(inch(27.625), ft(33, 7.5)),
-                  pt(inch(27.625), ft(33, 7.5)), pt(inch(27.625), ft(32, 6)),
-                  pt(ft(3, 8), ft(32, 6)), pt(ft(3, 8), ft(31, 1)),
-                  pt(ft(3, 8), ft(31, 1))),
-            elevations=(inch(48), inch(48), inch(48), inch(48), inch(-27),
-                        inch(-27), inch(-27), inch(-27), inch(-33.8375)),
-            diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
+            # ** IT LEFT THE CHASE ENTIRELY ON 2026-09-15, AND THAT IS THE POINT. ** This run
+            # only ever goes main -> basement; it is the one ERV leg that does NOT need a
+            # continuous basement-to-attic shaft, and it was in the chase purely because its
+            # hood was on the west facade and the chase was what lay between. Hood on the
+            # NORTH wall, riser at x=3'-4", and it touches the chase nowhere.
+            #
+            # It is a straight drop, and every station is a measured clearance:
+            #   x=3'-4"   — W-M-N3B's stud module. The wall frames on 16" centres off an 8"
+            #               residue, so `structural.door_framing_module` takes an opening at
+            #               x=2'-0", 3'-4", 4'-8" or 6'-0" and nowhere else without cutting a
+            #               stud. 2'-0" is inside DU-ERV-RISER-EXH's lane; 4'-8" and 6'-0"
+            #               put the riser through PR-B-KITCH-DRAIN (x 4'-5"..4'-7") and
+            #               PR-B-CW-TRUNK (x 4'-11 3/8"..5'-0 5/8"). 3'-4" is the one legal
+            #               station the duct can also stand on: at 8" its metal runs
+            #               x 3'-0"..3'-8", 9" clear of the kitchen drain and 1'-3 3/8" of
+            #               the cold-water trunk.
+            #   y=33'-11" — 4 5/8" north of W-M-MECH-S's face (the wall spans y 33'-1 5/8"..
+            #               33'-6 3/8"), so the duct's own edge clears it by 5/8"; and its
+            #               north edge is 2" short of the y=34'-6" vent bundle, which
+            #               crosses the closet at -15", -16 1/2", +112" and +117" and is
+            #               what makes every other latitude in this bay unusable.
+            #   +5'-0"    — NEC 110.26 over ED-M-HP3-DISC; see the hood.
+            #   -2'-3"    — the basement radial layer, joined 4" short of the machine so the
+            #               last leg is a straight east run onto the port.
+            #
+            # ** IT IS SHORTER AND STRAIGHTER THAN WHAT IT REPLACED. ** 13'-9" and four
+            # elbows against the west-facade route's 14'-0" and six — which is why the 6" ->
+            # 8" step buys more here than the note's §7 priced it at, and why the governing
+            # side of the whole system moved back to extract when this landed.
+            #
+            # PR-M-S-BATH1-TUB-DRAIN looks like it is in this lane and is not: it drops at
+            # (3'-3 1/4", 34'-1 1/2") but between +10'-0 3/4" and +9'-7 15/16", in the SECOND
+            # storey's floor zone. It never reaches the main deck or this riser's +5'-0".
+            path=(pt(ft(3, 4), ft(36, 8)), pt(ft(3, 4), ft(33, 11)),
+                  pt(ft(3, 4), ft(33, 11)), pt(ft(3, 4), ft(31, 1)),
+                  pt(ft(3, 8), ft(31, 1)), pt(ft(3, 8), ft(31, 1))),
+            elevations=(inch(60), inch(60), inch(-27), inch(-27),
+                        inch(-27), inch(-33.8375)),
+            # ** 8", AND THE MOVE IS WHAT PAID FOR IT. ** notes/erv_static_budget.md §7 had
+            # priced this upsize for weeks as the one remaining lever on what was then the
+            # governing supply column, and it was blocked not by money but by the chase: at
+            # the old x=2'-3 5/8" station an 8" envelope overran the shaft's east face by an
+            # inch and no re-ordering of four risers avoided it. Out here the lane between
+            # the chase conduits and PR-B-KITCH-DRAIN is 1'-10". The term fell 0.1318 ->
+            # 0.0315, which took the governing side back to EXTRACT — so §7 is now spent and
+            # the lever it named no longer exists.
+            diameter=inch(8), routing=DuctRouting.CHASE, material="galvanized",
             insulation="R-8 wrap, vapour-sealed", design_cfm=210),
     DuctRun(uid="BYAVBJKRS6", tag="DU-ERV-EA", system=DuctSystem.EXHAUST,
             # Manifold first, hood last — the direction the air goes, and the direction
             # `erv_outdoor_terminals` reads an EXHAUST run.
             #
-            # ** y=34'-8", CLEAR OF THE NORTH WALL. ** The shaft clear is x 0'-6 5/8"..2'-6
-            # 5/8" by y 33'-3 1/4"..35'-5 3/8" — 24" x 26". At y=35'-6" an 8" envelope would
-            # stand 4 5/8" inside W-M-N3B / W-S-N3B's stud cavity for its whole height;
-            # y=34'-8" is 9" clear of the shaft's north face.
-            # ** THE RISER STAYS AT y=34'-8"; ONLY THE HEAD JOGS SOUTH. ** The hood moved to
-            # the y=34'-0" stud bay (see EQUIPMENT_ERV_HOODS_SECOND), and carrying the whole
-            # leg with it would have stood this riser at (1'-11", 34'-0") against DU-ERV-OA's
-            # at (1'-11", 33'-7 1/2") — 4 1/2" apart, two 6" ducts overlapping outright. So
-            # the riser holds its station and the run turns south 8" at +17'-0", inside the
-            # shaft (clear x 0'-6 5/8"..2'-6 5/8"), then leaves the wall square. Two elbows
-            # bought, and the penetration is still the straight through-wall shot the hood
-            # note requires — the turn happens in the chase, not in the stud cavity.
-            path=(pt(ft(4, 7), ft(31, 1)), pt(ft(4, 7), ft(31, 1)),
-                  pt(ft(4, 7), ft(34, 8)), pt(ft(1, 11), ft(34, 8)),
-                  pt(ft(1, 11), ft(34, 8)), pt(ft(1, 11), ft(34, 0)),
-                  pt(inch(-8), ft(34, 0))),
-            elevations=(inch(-33.8375), inch(-27), inch(-27), inch(-27),
-                        inch(204), inch(204), inch(204)),
+            # ** y=35'-0", AND IT IS THE VENT BUNDLE THAT SETS IT, NOT THE WALL. ** The
+            # shaft clear is x 0'-6 5/8"..2'-6 5/8" by y 33'-3 1/4"..35'-5 3/8" — 24" x 26".
+            # At y=35'-6" an 8" envelope would stand 4 5/8" inside W-S-N3B's stud cavity for
+            # its whole height, so the north face bounds it at y=35'-1 3/8". The SOUTH bound
+            # is the six-vent bundle that crosses the chase westward at y=34'-6": it is there
+            # at -15", -16 1/2", +112", +117" and +232", so anything whose envelope reaches
+            # y=34'-5" is skewered at five separate elevations. At y=35'-0" an 8" riser spans
+            # y 34'-8"..35'-4": 1" clear of the bundle, 1 3/8" clear of the stud cavity.
+            #
+            # ** y=34'-8" WAS INSIDE THAT BUNDLE AND NOBODY SAID SO. ** The old station's
+            # envelope reached y=34'-4", and three of the six vents run through it —
+            # PR-B-BATH-VENT, PR-B-SAUNA-VENT and PR-M-WC-VENT, 8 x 1 1/2 x 2" and better.
+            # The prose that chose y=34'-8" reasoned only about the north wall, because the
+            # north wall is the thing a duct check looks at; nothing in this engine pairs a
+            # duct against a pipe at all.
+            #
+            # ** THE JOG IS GONE. ** The riser used to turn south 8" at +17'-0" to reach a
+            # hood on the WEST facade, and that turn is what swept x 1'-11"..-0'-8" through
+            # both trunks. On the north wall the riser and its hood share one station: the
+            # run goes straight up and straight out, two elbows fewer.
+            #
+            # ** THE BASEMENT LEG RIDES THE PORT ELEVATION, NOT THE RADIAL LAYER. ** It used
+            # to rise to -2'-3" at the machine and run the radial layer; it now holds
+            # -2'-9 7/8" — the port's own height — the whole way to the riser. That ducks it
+            # under the vent bundle at -15", under the 4" radial field at -2'-3", and out of
+            # PR-B-KITCH-DRAIN's lane, which it previously ran INSIDE for 4'-3". The cost is
+            # headroom: the duct's underside sits 6'-7" over the basement floor in
+            # RM-B-FURNACE, 17" below the 8'-0 15/16" ceiling. That is a mechanical room and
+            # it is walkable, but it is lower than anything else down there and should be on
+            # the drawing.
+            path=(pt(ft(4, 7), ft(31, 1)), pt(ft(5, 2), ft(31, 1)),
+                  pt(ft(5, 2), ft(35)), pt(ft(2), ft(35)),
+                  pt(ft(2), ft(35)), pt(ft(2), ft(36, 8))),
+            elevations=(inch(-33.8375), inch(-33.8375), inch(-33.8375), inch(-33.8375),
+                        inch(204), inch(204)),
             # ** 8", NOT 6" (owner, in the measured package). ** This is the single biggest
-            # lever in the static budget and the note prices it: the discharge leg is 29'-4"
-            # of the extract chain's worst path, and area goes as d^2 while friction goes as
-            # V^2, so a 6" -> 8" step takes roughly two-thirds off this term. The prose above
-            # already sized the shaft for it — "at y=35'-6" an 8" envelope would stand 4 5/8"
-            # inside the stud cavity; y=34'-8" is 9" clear" was written against THIS diameter,
-            # months before it was bought. `AO-S-ERV-EA` grows 7" -> 9" to match.
+            # lever in the static budget and the note prices it: the discharge leg is the
+            # long one on the extract chain's worst path, and area goes as d^2 while friction
+            # goes as V^2, so a 6" -> 8" step takes roughly two-thirds off this term. The
+            # shaft was sized for THIS diameter months before it was bought.
+            # `AO-S-ERV-EA` grows 7" -> 9" to match.
             diameter=inch(8), routing=DuctRouting.CHASE, material="galvanized",
             insulation="R-8 wrap, vapour-sealed", design_cfm=210),
 ]

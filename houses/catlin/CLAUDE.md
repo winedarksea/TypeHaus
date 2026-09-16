@@ -523,9 +523,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     piece keeping a hosted opening. Exception: `W-A-STU-W`'s north end dies short into
     `W-A-STU-N`'s face, so `N-A-WW-N` carries `open_end=True`. `RB-HOUSE.bearing_refs`
     names all five segments; `test_ridge_beam_depth.py` pins the tuple.
-  - ERV hoods: west face at the NW chase, intake +4'-0" (main), discharge +17'-0" (second)
-    — moved off the north gable entirely (`plan/mep_erv.py`). (→ log4.md, why the gable
-    failed)
+  - ERV hoods: NORTH face, intake +5'-0" at x=3'-4" (main), discharge +17'-0" at x=2'-0"
+    (second) — off the attic GABLE (where the leg crossed both gable windows' ROs) and, since
+    2026-09-15, off the WEST facade too (`plan/mep_erv.py`). The gable objection is about
+    W-A-N* at +23'-0" and never applied to W-M-N3B/W-S-N3B. (→ log4.md, why the gable failed)
   - `DU-A-ERV-R-BED3` and `CD-A-DATA-NE` both route SOUTH — the only option, since
     `FO-A-HALL`'s maxy is `W-A-N2`'s gwb face, severing every west→east route north of the
     studio. BED3 (5 cfm) runs ~53'-6"; `DU-S-ERV-HP-FEED` (100 cfm) sets the x=1'-0" chase
@@ -954,14 +955,17 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     keep — no real duct system lands under 0.2" w.g. The number that governs is MN 1322
     R403.5's **205**.
   - **Three new checks.** `mep.erv_static_budget` (ADVISORY) computes Darcy-Weisbach/Colebrook
-    over the whole system and reads the curve at it: **0.407" w.g. worst path, 206 cfm
-    delivered**, on the SUPPLY side. It reports the 4 cfm against the 210 design rate as
-    UNKNOWN, never a FAIL — whether 206 is ENOUGH is
+    over the whole system and reads the curve at it: **0.350" w.g. worst path, 207 cfm
+    delivered**, on the EXTRACT side. It reports the 3 cfm against the 210 design rate as
+    UNKNOWN, never a FAIL — whether 207 is ENOUGH is
     `code.N1103_6_whole_house_ventilation`'s question, asked against MN's 205 and not against
     a designer's hope. **The extract side was authored at 265 cfm against a 210 cfm machine
-    until 2026-09-15** — summed per plenum and never per side, which is why nothing caught it;
-    rebalancing it took the worst path off DU-M-ERV-R-PLANT and the static 0.459 -> 0.417,
-    and DU-ERV-EA at 8" then took extract to 0.347 and handed the governing side to supply. `mep.erv_manifold_ports` (INTEGRITY, **blocks**) grades the "10 of 10" prose.
+    until 2026-09-15** — summed per plenum and never per side, which is why nothing caught it.
+    The governing side swapped three times that day: rebalancing took the worst path off
+    DU-M-ERV-R-PLANT and the static 0.459 -> 0.417; `DU-ERV-EA` at 8" took extract to 0.355
+    and handed the lead to supply at 0.406; moving both hoods to the NORTH face let
+    `DU-ERV-OA` go to 8" as well (0.132 -> 0.032) and handed it back to extract at 0.350.
+    `mep.erv_manifold_ports` (INTEGRITY, **blocks**) grades the "10 of 10" prose.
     `mep.room_heat_source` (ADVISORY) is the radiant arithmetic. Oracles:
     `notes/erv_static_budget.md`, `notes/room_heat_loss_baths.md`.
   - **`DuctProductType` is keyed exactly like `prices.toml`'s `[ducts]`** — the
@@ -970,11 +974,15 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     bend coefficients, on the row. A run whose pair names no row is UNKNOWN by that pair,
     never given a default epsilon.
   - **Broan's manual asks for an 8" trunk above 200 cfm with long runs, and this house now
-    half-obeys it.** `DU-ERV-EA` was bought at 8" on 2026-09-15 — the discharge term fell
-    0.167 -> 0.041 — and `notes/erv_static_budget.md` §6 records that only the first 0.009 of
-    that bought anything, because supply took over as the governing side within a hundredth
-    of an inch. **The remaining extract levers are worth nothing to the delivered figure.**
-    Every lever that still moves it is on the supply side, and §7 prices them.
+    obeys it in full.** Both outdoor legs went to 8" on 2026-09-15. `DU-ERV-EA` first
+    (0.167 -> 0.044), which bought almost nothing because supply took over as the governing
+    side within a hundredth of an inch; then `DU-ERV-OA` (0.132 -> 0.032), which had been
+    blocked on GEOMETRY rather than money — at its old chase station an 8" envelope overran
+    the shaft's east face by an inch — until its hood moved to the north wall and its riser
+    left the chase. **`notes/erv_static_budget.md` §7 is now spent.** The only large term
+    left anywhere is `DU-ERV-RISER-EXH` at 0.203, 58% of the governing column on its own;
+    with extract in front by 0.043 the extract elbow audit and riser segmentation are worth
+    something again, up to that gap.
     §8 is the commissioning spec, and its real point is that an ordinary flow hood reads
     25-30% low below 150 cfm: a **TSI Alnor LoFlo-class** instrument is required equipment.
   - **Three manifolds map to CAVITIES, not storeys.** Level 1 = basement ceiling, machine in
@@ -987,14 +995,37 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `advisory.ess_clearance`; this station leaves 1 1/2" clear and also clears
     `ED-B-BACKUP-ENCL`'s 36" NEC 110.26 working space. Nothing downstream is anchored to the
     machine, so moving it back would cost a FAIL for no savings.
-  - **The radon/plumbing chase at (1', 34'-6") is the only riser and is full**: four 6"
-    insulated ducts, six plumbing vents, `VR-M-RADON-VENT`, and eight conduits, ~25% fill of a
-    30 1/8" x 32 3/8" shaft (`plan/mep_erv.py`). Nothing else goes in that chase.
-  - **The two outdoor hoods are STACKED on the west face at the NW chase**: `EQ-M-ERV-HOOD-OA`
-    intake (-1'-1 1/4", 33'-11") +4'-0"; `EQ-S-ERV-HOOD-EA` discharge (-1'-1 1/4", 34'-0")
-    +17'-0", 13'-0" apart, exhaust over intake, south of `TR-RF-LEADER-W` at y=35'-6". The x
-    is the CLADDING face (-0'-7 1/4") plus half a 12" box — both hoods hang ON the panel and
-    are entirely outdoors, which is why both carry `room=None`.
+  - **The radon/plumbing chase at (1', 34'-6") is the only riser and is full**: THREE ERV
+    risers (`DU-ERV-RISER-SUP` 9 5/8", `DU-S-ERV-HP-FEED` 12", `DU-ERV-RISER-EXH` 18 5/8",
+    all at y=33'-7 1/2"; `DU-ERV-EA` 8" at (2'-0", 35'-0")), six plumbing vents,
+    `VR-M-RADON-VENT` and nine conduits. The clear is **24" x 26 1/8"** measured off the wall
+    LAYERS — a room-polygon reading counts 6" of exterior stud as shaft on each
+    `face("sheathing-ext")` face, which is where the old "~25% fill of 30 1/8" x 32 3/8""
+    came from. Nothing else goes in that chase. `DU-ERV-OA` came OUT of it on 2026-09-15 and
+    now stands at (3'-4", 33'-11") in the open closet, which is what let it go to 8".
+  - **`FS-M-MECH` carries the risers through TWO drawn floor openings** (`FO-M-ERV-OA`,
+    `FO-M-ERV-EA`, both `purpose=CHASE`), added 2026-09-15. It declared NONE before that and
+    four risers passed through its joist field undrawn — nothing grades a duct against a floor
+    member, so it sat at 0 FAIL. Each cuts one 11 7/8" I-joist and gets a 2-ply LVL header and
+    doubled trimmers; the joist maker's header table governs, not R502.10.1, which is a
+    sawn-lumber rule. The remaining vents and conduits through that deck are still undrawn.
+  - **The two outdoor hoods are STACKED on the NORTH face** (moved off the west facade
+    2026-09-15): `EQ-M-ERV-HOOD-OA` intake (3'-4", 37'-1 1/4") +5'-0" on `W-M-N3B`;
+    `EQ-S-ERV-HOOD-EA` discharge (2'-0", 37'-1 1/4") +17'-0" on `W-S-N3B`, 12'-0" apart,
+    exhaust over intake. The y is the CLADDING face (36'-7 1/4") plus half a 12" box — both
+    hoods hang ON the panel and are entirely outdoors, which is why both carry `room=None`.
+    - **They left the west face because each run had to sweep the chase to reach its hood**,
+      and the two sweeps carried twelve measured interpenetrations between them — including
+      `DU-ERV-EA`'s basement leg running INSIDE `PR-B-KITCH-DRAIN` for 4'-3". Both runs are
+      now clear of every duct and pipe in the house and of each other.
+    - **The intake is at +5'-0" and the extra foot is NEC 110.26, not snow.** `ED-M-HP3-DISC`
+      is on this wall at (4'-4", +3'-6"); its working space is x 3'-1"..5'-7" and runs to the
+      greater of 6'-6" above grade or the top of the equipment — the can is 9 1/2" tall, so
+      +4'-3 1/2" governs and a 12" box centred on +4'-0" sat inside it.
+    - The north face is crowded and the intake's station is what is LEFT: `EQ-M-HP3-OD`'s
+      cabinet holds x 0'-0"..2'-10 3/8" with a 12" rear coil clearance, and `D-M-ENTRY`'s RO
+      holds x 6'-6"..9'-6". x=3'-4" is also the only one of `W-M-N3B`'s four legal stud-module
+      stations the duct can stand on — the other three are each inside a pipe.
     - Exhaust must stay the UPPER hood: `mep.erv_outdoor_terminals` measures 3-D distance and
       13' of rise alone clears its 10' rule (→ DESIGN-LOG.md, "Ventilation, ducts and
       soffits"). Neither hood may turn and travel inside the wall: an R-8 wrapped 6" duct is

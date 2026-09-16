@@ -161,12 +161,17 @@ def test_two_decks_at_one_elevation_stay_one_ceiling(catlin_model) -> None:
     carrying the same board, deliberately (`houses/catlin/CLAUDE.md`), so neither room
     steps: every piece hangs at one elevation with one stack.
 
-    `RM-B-FURNACE` has nothing punched through the deck over it and keeps the plain
-    unsuffixed tag outright. `RM-M-LIVING` does not, and the reason is not a step: the
-    second floor's `FO-S-STAIR` well is open above it, and a hole in the deck is a hole in
-    the ceiling under it. A `Ring` carries no interior loop, so the piece around the well
-    is delivered as several simple outlines rather than one donut — same plane, same board,
-    same elevation, which is what this test is about.
+Neither room keeps a single unsuffixed piece any more, and for the same reason in both
+    cases: a hole in the deck is a hole in the ceiling under it. `RM-M-LIVING` has the second
+    floor's `FO-S-STAIR` well open above it; `RM-B-FURNACE` gained `FO-M-ERV-OA` and
+    `FO-M-ERV-EA` through `FS-M-MECH` on 2026-09-15, the ERV risers' own holes. A `Ring`
+    carries no interior loop, so the piece around each hole is delivered as several simple
+    outlines rather than one donut — same plane, same board, same elevation, which is what
+    this test is about. The FIRST piece keeps the plain tag and the rest are suffixed.
+
+    ** `RM-B-FURNACE` USED TO ASSERT THE UNSUFFIXED TAG OUTRIGHT, AND THAT WAS ONLY TRUE
+    WHILE `FS-M-MECH` DECLARED NO OPENINGS. ** It had carried four risers through its joist
+    field undrawn for months; drawing two of them is what split this ceiling.
     """
     for room_tag in ("RM-M-LIVING", "RM-B-FURNACE"):
         ceilings = _ceilings(catlin_model, room_tag)
@@ -175,8 +180,10 @@ def test_two_decks_at_one_elevation_stay_one_ceiling(catlin_model) -> None:
         assert len({c.z1_m for c in ceilings}) == 1
         assert len({tuple(l.material_ref for l in c.layers) for c in ceilings}) == 1
 
-    assert [c.tag for c in _ceilings(catlin_model, "RM-B-FURNACE")] == [
-        "CEIL-RM-B-FURNACE"]
+    for room_tag in ("RM-M-LIVING", "RM-B-FURNACE"):
+        tags = [c.tag for c in _ceilings(catlin_model, room_tag)]
+        assert tags[0] == f"CEIL-{room_tag}"
+        assert tags[1:] == [f"CEIL-{room_tag}-{n}" for n in range(2, len(tags) + 1)]
 
 
 def test_a_deck_opening_is_not_ceilinged_over(catlin_model) -> None:
@@ -187,9 +194,16 @@ def test_a_deck_opening_is_not_ceilinged_over(catlin_model) -> None:
     room's whole clear face when its ceiling comes back as a single plane — the take-off is
     always right (`takeoff/framing.py` bills ``gross - openings``), but the geometry must
     show the well as open, or every section cut through a stair well shows a board across it.
+
+    `FO-M-ERV-OA` and `FO-M-ERV-EA` join the list on 2026-09-15 — the ERV risers' holes
+    through `FS-M-MECH`, over `RM-B-FURNACE`. They are 1 SF each rather than a stair well,
+    which is the point: the rule is about a hole, not about a big one, and a 12" duct
+    ceilinged over reads as a board across the duct in every basement RCP.
     """
     for room_tag, opening_tag in (("RM-S-STUDY2", "FO-A-STAIR"),
-                                  ("RM-M-LIVING", "FO-S-STAIR")):
+                                  ("RM-M-LIVING", "FO-S-STAIR"),
+                                  ("RM-B-FURNACE", "FO-M-ERV-OA"),
+                                  ("RM-B-FURNACE", "FO-M-ERV-EA")):
         opening = catlin_model.plan.by_tag(opening_tag)
         well = Polygon([point.xy_m for point in opening.outline])
         for ceiling in _ceilings(catlin_model, room_tag):

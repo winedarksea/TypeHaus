@@ -459,6 +459,13 @@ MECH_FLOOR = FloorSystem(
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     ceiling_below=_CEILING_GWB,
     outline=_rect(_ZERO, _MECH_Y, _STR_X, _HOUSE),
+    # The two ERV risers' own holes, added 2026-09-15 — the FIRST openings this deck has ever
+    # declared, though four risers have been passing through its joist field all along.
+    # FO-M-ERV-OA is the intake, which moved into this closet out of the NW chase that day;
+    # FO-M-ERV-EA is the discharge, which stayed in the chase but re-stationed. Each cuts one
+    # joist. The vents, the radon riser and the conduits through this deck are still undrawn —
+    # see the openings' own notes in plan/storeys/main.py.
+    openings=("FO-M-ERV-OA", "FO-M-ERV-EA"),
     source="catlin main floor, over the furnace room — same joists as FS-M-WEST, spanning "
            "10'-0\" east-west from the west wall to the x=10' bearing line",
 )
