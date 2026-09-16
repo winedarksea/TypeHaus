@@ -100,11 +100,11 @@ def _support(model: ResolvedModel, tag: str, fallback_half_width_m: float):
         top = wall.plate_top_z_m if wall.plate_top_z_m is not None else wall.z1_m
         return BearingSupport(tag=tag, p0=wall.axis[0], p1=wall.axis[1], top_z_m=top,
                               half_width_m=wall.thickness_m / 2.0,
-                              treated=_is_treated(model, wall.assembly))
+                              treated=is_treated(model, wall.assembly))
     for solid in model.solids:
         if solid.tag != tag or solid.category != "beam":
             continue
-        treated = _is_treated(model, solid.assembly, material_ref=solid.material)
+        treated = is_treated(model, solid.assembly, material_ref=solid.material)
         band = straight_sweep_band(solid)
         if band is not None:
             (start, end), depth, soffit0, soffit1 = band
@@ -117,7 +117,7 @@ def _support(model: ResolvedModel, tag: str, fallback_half_width_m: float):
     return None
 
 
-def _is_treated(model: ResolvedModel, assembly_tag: str | None,
+def is_treated(model: ResolvedModel, assembly_tag: str | None,
                 material_ref: str | None = None) -> bool:
     """Does this support present preservative-treated wood to a connector landing on it?
 
@@ -214,6 +214,27 @@ def _member_ends(member) -> list:
     ]
 
 
+def _crossing(member, support: BearingSupport):
+    """Where a LEVEL member passes over a support between its ends, as ``(point, underside)``.
+
+    A deck joist cantilevered past its outer beam has no END near that beam — the tip is 9"
+    out on catlin's balcony, past the 8" plan tolerance — yet it bears there and needs a tie.
+    Level members only: a rafter crosses its plate at a birdsmouth, which is its seat end
+    already, and its raked underside is not a bearing plane.
+    """
+    if member.z0_end_m is not None:
+        return None
+    (ax, ay), (bx, by) = member.p0, member.p1
+    (cx, cy), (dx, dy) = support.p0, support.p1
+    rx, ry, sx, sy = bx - ax, by - ay, dx - cx, dy - cy
+    denom = rx * sy - ry * sx
+    if abs(denom) < 1e-12:
+        return None
+    t = ((cx - ax) * sy - (cy - ay) * sx) / denom
+    u = ((cx - ax) * ry - (cy - ay) * rx) / denom
+    if not (0.0 < t < 1.0 and -1e-9 <= u <= 1.0 + 1e-9):
+        return None
+    return (ax + t * rx, ay + t * ry), member.z0_m
 
 
 def _tied_assemblies(model: ResolvedModel, elements_by_tag: dict, rules: UpliftTieRules):
@@ -295,19 +316,29 @@ def bearing_connections(model: ResolvedModel, rules: UpliftTieRules) -> list:
         for member in resolved.members:
             if member.category not in categories:
                 continue
+            ties: list = []  # (point, support)
             for point, bottom_z in _member_ends(member):
                 for support in supports:
-                    if not _bears_on(point, bottom_z, support, rules):
-                        continue
-                    key_point = (round(point[0] / grid_m), round(point[1] / grid_m))
-                    found[(support.tag, key_point)] = BearingConnection(
-                        support_tag=support.tag, storey=resolved.storey,
-                        assembly_tag=resolved.tag, member_profile=member.profile,
-                        member_category=member.category, key_point=key_point,
-                        support_treated=support.treated,
-                        point_m=(point[0], point[1]), z_m=_seat_z(point, support),
-                        axis=axis_of(support.p0, support.p1))
-                    break  # one tie per end, even where two declared bearings overlap
+                    if _bears_on(point, bottom_z, support, rules):
+                        ties.append((point, support))
+                        break  # one tie per end, even where two declared bearings overlap
+            # Every support an end bears on, not only the one the break above tied: a
+            # collinear second segment is the same bearing, not a crossing.
+            tied = {support.tag for point, bottom_z in _member_ends(member)
+                    for support in supports if _bears_on(point, bottom_z, support, rules)}
+            for support in supports:
+                crossing = None if support.tag in tied else _crossing(member, support)
+                if crossing is not None and _bears_on(*crossing, support, rules):
+                    ties.append((crossing[0], support))
+            for point, support in ties:
+                key_point = (round(point[0] / grid_m), round(point[1] / grid_m))
+                found[(support.tag, key_point)] = BearingConnection(
+                    support_tag=support.tag, storey=resolved.storey,
+                    assembly_tag=resolved.tag, member_profile=member.profile,
+                    member_category=member.category, key_point=key_point,
+                    support_treated=support.treated,
+                    point_m=(point[0], point[1]), z_m=_seat_z(point, support),
+                    axis=axis_of(support.p0, support.p1))
     return sorted(found.values(), key=lambda c: (c.support_tag, c.key_point))
 
 

@@ -12,11 +12,14 @@ from __future__ import annotations
 from collections import Counter
 
 from typehaus.hardware.catalog import (
+    EXPOSURE_DRY,
+    EXPOSURE_TREATED,
     ROLE_CONCRETE_FACE_MOUNT_HANGER,
     ROLE_FACE_MOUNT_JOIST_HANGER,
     ROLE_RIDGE_TIE_STRAP,
     ROLE_SLOPED_JOIST_HANGER,
     hardware_for_role,
+    sized_hanger_model,
 )
 from typehaus.hardware.config import HangerDetectionRules
 from typehaus.hardware.plan_geometry import distance_point_to_segment
@@ -67,7 +70,8 @@ def _explicit_hanger_rows(model: ResolvedModel) -> list:
     rows = []
     for role in sorted(hosts_by_role):
         hosts = hosts_by_role[role]
-        item = hardware_for_role(role)
+        # A resolver-emitted hanger is a stair member on an interior wall: dry.
+        item = hardware_for_role(role, exposure=EXPOSURE_DRY)
         rows.append(hardware_row(
             item, scope="hung framing", count=int(sum(hosts.values())),
             basis=("resolver-emitted hanger members on " + ", ".join(
@@ -101,14 +105,21 @@ def joist_hanger_rows(model: ResolvedModel, rules: HangerDetectionRules) -> list
     groups: Counter = Counter()
     for connection in hung_connections(model, rules):
         role = ROLE_SLOPED_JOIST_HANGER if connection.sloped else ROLE_FACE_MOUNT_JOIST_HANGER
-        groups[(role, connection.carrier_tag, connection.member_profile)] += 1
+        groups[(role, connection.carrier_tag, connection.member_profile,
+                connection.carrier_treated)] += 1
 
     rows = []
-    for (role, carrier_tag, profile), count in sorted(groups.items()):
-        item = hardware_for_role(role)
+    for (role, carrier_tag, profile, treated), count in sorted(groups.items()):
+        if role == ROLE_FACE_MOUNT_JOIST_HANGER:
+            item = hardware_for_role(
+                role, exposure=EXPOSURE_TREATED if treated else EXPOSURE_DRY)
+            part = sized_hanger_model(item, profile)
+        else:
+            item = hardware_for_role(role)
+            part = item.model
         carrier_name = carrier_tag.split(":")[-1]
         rows.append(hardware_row(
-            item, scope="hung framing", count=count, size=profile,
+            item, scope="hung framing", count=count, size=profile, part_number=part,
             basis=(f"{count} x {profile} hung in the depth of {carrier_name} "
                    f"({'sloped/skewed' if role == ROLE_SLOPED_JOIST_HANGER else 'level'} "
                    f"connection derived from the resolved framing)")))

@@ -40,9 +40,11 @@ What replaced it is a PRESCRIPTIVE read rather than nothing. Both pillars are no
   off the bottom and the CCQ46SDS2.5's 7 ga seat off the top. Without it `PT-SG-BR2` read
   121.375" against a 120" limit.
 * **The drainage fall became the authored number.** `SPEC.balcony_fall_in_per_ft` is 1/4" per
-  foot; it was a flat 2" rise, which over this run was 0.27 in/ft. `PT-SG-BR2` is the tallest
-  of the six and has 5/32" of margin under R507.4, so **raising the fall again spends that
-  margin at 1/64" of post per 1/64 in/ft.**
+  foot; it was a flat 2" rise, which over this run was 0.27 in/ft.
+
+**Superseded 2026-09-16:** the 10'-0" cap was an engine table bug. 2018 IRC Table R507.4 gives
+a 6x6 a flat 14', with no tributary rows. `BM-SG-BLC` then went flush-framed, and the two
+centre pillars now stand 10.59' / 10.44'.
 
 **This note is NOT superseded and is not archived.** `post_bearing` stays a registered kind
 with a declared oracle, `tests/test_calc_package.py` lints that every registered kind names

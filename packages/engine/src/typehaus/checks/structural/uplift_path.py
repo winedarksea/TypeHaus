@@ -188,9 +188,14 @@ def _seated_links(ctx: CheckContext) -> list:
     # and summing that wall's ties credited each of them with the other's, which read as 51
     # ties on an eighteen-joist floor.
     ties_by_assembly: dict = {}
+    # Support tags carrying ANY tie. Not per assembly: two decks meeting over one plate share
+    # one tie per joint (``key_point``), and it is filed under whichever came last.
+    tied_supports: set = set()
     for connection in bearing_connections(ctx.model, _RULES):
         ties_by_assembly[connection.assembly_tag] = \
             ties_by_assembly.get(connection.assembly_tag, 0) + 1
+        tied_supports.add(connection.support_tag)
+    pairs = authored_joints(ctx.model, _SEATED_UPLIFT_KINDS)
     # A member end either bears on its support or hangs in it, and BOTH are connected: the
     # hung ones by the LUS/LSSR/HUCQ hangers ``takeoff/hangers.py`` bills. Counting only the
     # ties reported the breezeway deck — whose four 2x8 joists are framed flush into their
@@ -227,6 +232,17 @@ def _seated_links(ctx: CheckContext) -> list:
         # roof share one rule and one category set, and printing both at every roof told the
         # reader the house had truss heels in its cathedral ceiling.
         present = sorted({m.category for m in seated})
+        # A total is not coverage: catlin's balcony tied its centre beam eight times and its
+        # two cantilevered edge beams not at all, and the count read as covered. Each
+        # declared line has to carry something of its own.
+        for ref in refs if covers else ():  # nothing at all is the one link below
+            ref_line = bearing_line_tags(ctx.model, (ref,), _RULES) or {ref}
+            if (ref_line & tied_supports
+                    or ref_line & hangers_by_carrier.keys()
+                    or any(frozenset({tag, resolved.tag}) in pairs for tag in ref_line)):
+                continue
+            links.append(Link(f"{noun} {resolved.tag}'s bearing line {ref}",
+                              (resolved.tag, ref), None))
         links.append(Link(
             f"{len(seated)} {'/'.join(present)} members of {noun} "
             f"{resolved.tag} bearing on {', '.join(refs)}",

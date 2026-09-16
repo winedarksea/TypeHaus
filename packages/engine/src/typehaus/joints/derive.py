@@ -31,6 +31,7 @@ from typehaus.hardware.catalog import (
     ROLE_SLOPED_JOIST_HANGER,
     hardware_for_role,
     hardware_for_role_and_nominal,
+    sized_hanger_model,
 )
 from typehaus.hardware.config import (
     DEFAULT_HARDWARE_TAKEOFF_CONFIG,
@@ -186,9 +187,15 @@ def _hanger_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> list[
     for connection in hung_connections(model, config.hanger_detection):
         role = (ROLE_SLOPED_JOIST_HANGER if connection.sloped
                 else ROLE_FACE_MOUNT_JOIST_HANGER)
-        item = hardware_for_role(role)
+        if role == ROLE_FACE_MOUNT_JOIST_HANGER:
+            exposure = EXPOSURE_TREATED if connection.carrier_treated else EXPOSURE_DRY
+            item = hardware_for_role(role, exposure=exposure)
+            part = sized_hanger_model(item, connection.member_profile)
+        else:
+            item = hardware_for_role(role)
+            part = item.model
         out.append(_joint(
-            role, item.model, storeys.get(connection.carrier_tag, ""),
+            role, part, storeys.get(connection.carrier_tag, ""),
             connection.point_m, connection.carrier_soffit_m, connection.axis,
             embedded=False, members=(connection.carrier_tag, connection.member_profile),
             anchor_tag=connection.carrier_tag, grid_m=grid_m,

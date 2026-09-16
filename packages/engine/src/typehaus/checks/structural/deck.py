@@ -577,7 +577,7 @@ def _tributaries_ft2(ctx: CheckContext, deck: _Deck) -> dict[str, float] | None:
 
 @check(Tier.STRUCTURAL, "structural.deck_post_size")
 def deck_post_size(ctx: CheckContext) -> list[Finding]:
-    """Deck posts vs. IRC R507.4: minimum nominal size, and height capped by tributary area."""
+    """Deck posts vs. IRC R507.4: maximum height by post size (tributary area is reported)."""
     decks = _decks(ctx)
     if not decks:
         return []  # no exterior deck — R507 does not apply

@@ -3153,3 +3153,20 @@ The fix, if it is ever wanted, is one more `ConstructionRule` with
 
 `RM-B-ESS`, the 20 sf battery closet, also has no luminaire. Not in this pass's scope —
 recorded so it reads as a choice rather than an oversight.
+
+## 2026-09-16 — BM-SG-BLC goes flush; R507.4 is a flat 14' for a 6x6
+
+The balcony is the porch roof, and flat roofs hang their joists. **Only the centre glulam went
+flush.** The joists hang either side of it on LUS28Z hangers and still bear on top of BLW/BLE,
+so the 9" drip cantilever and the four cast corner columns (and the moment arm in
+`notes/balcony_moment_columns.md`) do not move. PT-SG-BR2/BF2 grow the joist depth to
+10.59'/10.44'.
+
+That was only possible because the "10'-0" at 48.3 ft², 5/32" of room" recorded on 2026-09-14
+(above) was an **engine table bug**. `deck_tables.DECK_POST_HEIGHT_FT` stepped by tributary
+area, and the 2018 IRC Table R507.4 that MN adopts is one height per size: 4x4 6'-9", 4x6 8',
+6x6 14', 8x8 14', measured to the underside of the beam. Two engine gaps closed with it:
+- A joist that crosses its bearing and cantilevers more than 8" past it was never tied. That
+  left 0 ties on BLW/BLE and on the porch back beams, at 0 FAIL, and
+  `uplift_path_coverage` now grades every declared bearing line.
+- A derived face-mount hanger into a treated carrier is ZMAX and sized (LUS28Z).

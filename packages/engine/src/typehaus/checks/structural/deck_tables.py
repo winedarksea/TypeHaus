@@ -98,18 +98,21 @@ def deck_beam_span_limit(size: str, joist_span_ft: float) -> tuple[float, float]
 
 
 # --- IRC R507.4 / Table R507.4 — deck posts -------------------------------------------
-# R507.4 sets a minimum nominal post size for a deck; the table then caps unbraced post
-# height by the tributary deck area the post carries. Below 4x4/4x6 there is no row: those
-# sizes are limited outright.
+# 2018 IRC Table R507.4 (the edition MN adopts): one maximum height per post size, measured
+# to the underside of the beam, 40 psf live, for beams sized per Table R507.5. It has no
+# tributary-area rows — those arrived in 2021 (by species and snow load). The area-stepped
+# rows this replaced (6x6 at 10' past 48 ft2) matched neither edition. Footnote: a 4x4 may go
+# to 8' under a one- or two-ply beam; 6'-9" is the three-ply-on-cap value, kept as the floor.
 MIN_DECK_POST_NOMINAL = "6x6"
 
 # {nominal post size: ((max tributary area ft2, max height ft), ...)}, ascending by area.
+# The row shape is kept for a later edition that does step by area; 2018 is one flat row.
+_ANY_AREA = float("inf")
 DECK_POST_HEIGHT_FT: dict[str, tuple[tuple[float, float], ...]] = {
-    "4x4": ((48.0, 6.75),),
-    "4x6": ((48.0, 8.0),),
-    "6x6": ((36.0, 14.0), (48.0, 12.0), (64.0, 10.0)),
-    "6x8": ((36.0, 14.0), (48.0, 14.0), (64.0, 12.0)),
-    "8x8": ((36.0, 14.0), (48.0, 14.0), (64.0, 14.0)),
+    "4x4": ((_ANY_AREA, 6.75),),
+    "4x6": ((_ANY_AREA, 8.0),),
+    "6x6": ((_ANY_AREA, 14.0),),
+    "8x8": ((_ANY_AREA, 14.0),),
 }
 
 

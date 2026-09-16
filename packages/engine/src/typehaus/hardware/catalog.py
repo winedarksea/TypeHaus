@@ -8,6 +8,7 @@ manufacturer part number with a citable source.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 
 # Stable role keys the take-off selects hardware by. A role is a *condition* in the resolved
@@ -335,6 +336,17 @@ def hardware_for_role(role: str, *, exposure: str | None = None) -> StructuralHa
                           + (f" at exposure {exposure!r}" if exposure is not None else "")
                           + f", found {[item.tag for item in items]}")
     return items[0]
+
+
+def sized_hanger_model(item: StructuralHardware, profile: str) -> str:
+    """The orderable size of a face-mount hanger family for one member: LUS + 2x8 -> LUS28,
+    and the ZMAX record's trailing ``Z`` kept (LUS28Z). A profile that is not a single
+    dimensional-lumber ply (an I-joist, a 3-ply) stays the family name — no guessed size."""
+    match = re.fullmatch(r"2x(4|6|8|10)", profile.split(":")[0].strip())
+    if match is None:
+        return item.model
+    family, coated = item.model.removesuffix("Z"), item.model.endswith("Z")
+    return f"{family}2{match.group(1)}{'Z' if coated else ''}"
 
 
 def hardware_for_role_and_nominal(role: str, nominal: str) -> StructuralHardware:

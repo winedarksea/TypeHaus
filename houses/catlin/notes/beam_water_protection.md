@@ -119,9 +119,10 @@ nothing a reviewer could click; it is priced in `prices.toml` and drawn on S-101
 assembly `source` strings still describe the detail, but they name the part rather than
 inventing it a second time.
 
-**3. Sequencing — FIVE OF THE SEVEN caps go on before the joists do.** The balcony's three
-beams and the porch's back pair carry their joists on top; the porch's front pair is
-flush-framed with an open top. A cap over a
+**3. Sequencing — ALL SEVEN caps go on before the joists do.** The four porch beams and the
+balcony's outer pair carry their joists on top. `BM-SG-BLC` is flush-framed (2026-09-16): its
+cap sits under the plank, and its legs lap under the LUS28Z flanges, so it too precedes the
+hangers. A cap over a
 beam that will be joisted has to be laid while
 the beam top is still open, and the joists then bear on it. That is fine for a coil cap under
 a 2x8's bearing area and **impossible to retrofit without pulling the deck**. It is the whole

@@ -55,11 +55,9 @@ which is the trade standard for a walking deck and still twice AridDek's publish
 | AridDek recommended minimum | manufacturer | 0.125 in/ft |
 | margin | 0.250 / 0.125 | **2.0×** |
 
-The slope is correct and generous. **One thing now asks it not to rise again**: `PT-SG-BR2`
-is the tallest of the six pillars, and since it came down onto `PT-SG-COL` it is graded
-against IRC Table R507.4 — a 6x6 at this deck's 48.3 ft² tributary is capped at 10'-0". The
-wood measures 119.85" with the ABU66SS standoff and the CCQ46SDS2.5 seat taken off it, so
-there is **5/32" of room**, and every 1/64 in/ft of extra fall spends 1/64" of it.
+The slope is correct and generous. `PT-SG-BR2` is graded against IRC Table R507.4. The
+"10'-0" at 48.3 ft², 5/32" of room" once recorded here was an engine table bug: the 2018 IRC
+gives a 6x6 a flat 14'. Since `BM-SG-BLC` went flush-framed (2026-09-16), BR2 stands 10.59'.
 
 Two answers that close the parts of the open item that were about the *mechanism*:
 

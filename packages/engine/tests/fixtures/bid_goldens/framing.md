@@ -4,7 +4,7 @@
 **Trade:** Framing  
 **Engine:** 0.1.1  
 **Model hash:** 3c4ff16b064066f2  
-**Lines:** 120
+**Lines:** 121
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -84,7 +84,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | H2.5A hurricane/seismic tie | 22 | ea |  | building |
 | H2.5A hurricane/seismic tie | 10 | ea |  | building |
 | H2.5ASS stainless hurricane/seismic tie | 6 | ea |  | building |
-| H2.5AZ ZMAX hurricane/seismic tie | 30 | ea |  | building |
+| H2.5AZ ZMAX hurricane/seismic tie | 57 | ea |  | building |
 | HGA10 gusset angle, gable-end truss to top plate | 2 | ea |  | building |
 | HGAM10 masonry gusset angle | 20 | ea |  | building |
 | HU212-3 face-mount hanger, triple 2x12 | 4 | ea |  | building |
@@ -98,15 +98,16 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 19 | ea |  | building |
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 7 | ea |  | building |
 | LTP4 lateral tie plate | 122 | ea |  | building |
-| LUS face-mount joist hanger | 2 | ea |  | building |
-| LUS face-mount joist hanger | 7 | ea |  | building |
-| LUS face-mount joist hanger | 4 | ea |  | building |
-| LUS face-mount joist hanger | 7 | ea |  | building |
 | LUS face-mount joist hanger | 3 | ea |  | building |
 | LUS face-mount joist hanger | 3 | ea |  | building |
 | LUS face-mount joist hanger | 4 | ea |  | building |
 | LUS face-mount joist hanger | 7 | ea |  | building |
 | LUS face-mount joist hanger | 12 | ea |  | building |
+| LUS ZMAX face-mount joist hanger (LUS28Z) | 7 | ea |  | building |
+| LUS ZMAX face-mount joist hanger (LUS28Z) | 7 | ea |  | building |
+| LUS ZMAX face-mount joist hanger (LUS28Z) | 18 | ea |  | building |
+| LUS ZMAX face-mount joist hanger (LUSZ) | 2 | ea |  | building |
+| LUS ZMAX face-mount joist hanger (LUSZ) | 4 | ea |  | building |
 | SP4 stud plate tie (2x4) | 6 | ea |  | building |
 | SP6 stud plate tie (2x6) | 318 | ea |  | building |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | 12 | ea |  | building |
@@ -126,7 +127,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Column — EQUIP_STAND_ALUM (column:EQUIP_STAND_ALUM) | 12 | ea | 12 placed, 0.3 SF plan; 0.02 cy in the takeoff | main |
 | Column — POST_KDAT (column:POST_KDAT) | 42 | bf | 4 placed, 0.6 SF plan; 0.13 cy in the takeoff | main |
 | Column — POST_WHITE_PAINT (column:POST_WHITE_PAINT) | 28.8 | bf | 4 placed, 0.3 SF plan; 0.09 cy in the takeoff | main |
-| Column — POST_WHITE_PAINT_DF (column:POST_WHITE_PAINT_DF) | 50.4 | bf | 2 placed, 0.4 SF plan; 0.16 cy in the takeoff | second |
+| Column — POST_WHITE_PAINT_DF (column:POST_WHITE_PAINT_DF) | 52.8 | bf | 2 placed, 0.4 SF plan; 0.16 cy in the takeoff | second |
 | Slab — TUBDECK_INT_PLY_CAP (slab:TUBDECK_INT_PLY_CAP) | 7.3 | SF | 1 placed, 7.3 SF plan; 0.05 cy in the takeoff | main |
 
 ## Member protection tape
@@ -263,10 +264,11 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LUS face-mount joist hanger | — |
 | LUS face-mount joist hanger | — |
 | LUS face-mount joist hanger | — |
-| LUS face-mount joist hanger | — |
-| LUS face-mount joist hanger | — |
-| LUS face-mount joist hanger | — |
-| LUS face-mount joist hanger | — |
+| LUS ZMAX face-mount joist hanger (LUS28Z) | — |
+| LUS ZMAX face-mount joist hanger (LUS28Z) | — |
+| LUS ZMAX face-mount joist hanger (LUS28Z) | — |
+| LUS ZMAX face-mount joist hanger (LUSZ) | — |
+| LUS ZMAX face-mount joist hanger (LUSZ) | — |
 | SP4 stud plate tie (2x4) | — |
 | SP6 stud plate tie (2x6) | — |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | — |

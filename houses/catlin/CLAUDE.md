@@ -1685,9 +1685,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   standoff (Simpson's 1" over the stirrup's own 7 ga plate) off the bottom and
   the `CCQ46SDS2.5`'s 7 ga seat off the top, from the catalog record. Without it
   `PT-SG-BR2` reads 121-3/8" against IRC Table R507.4's 120".
-- **`SPEC.balcony_fall_in_per_ft` = 1/4 in/ft, and `PT-SG-BR2` has 5/32" under
-  R507.4.** The fall is authored and the rise derived (was a flat 2"). Raising
-  the fall spends that margin at 1/64" of post per 1/64 in/ft.
+- **`SPEC.balcony_fall_in_per_ft` = 1/4 in/ft** — authored; the rise is derived.
+- **`BM-SG-BLC` is flush-framed** (2026-09-16): the joists hang in it on LUS28Z and bear
+  on top of BLW/BLE, keeping the 9" drip cantilever and the corner columns unchanged. BR2/BF2
+  stand 10.59'/10.44' against 2018 IRC Table R507.4's flat 14' for a 6x6 (the engine's old
+  area-stepped 10' row was a table bug).
 - `structural.deck_post_bearing` is now NOT_APPLICABLE house-wide and
   `post_bearing/*` has left the engineering register — no post in catlin stands
   on a floor system. `notes/centre_pillar_bearing.md` is KEPT (registered kinds

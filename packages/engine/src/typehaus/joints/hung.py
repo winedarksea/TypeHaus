@@ -15,6 +15,7 @@ from dataclasses import dataclass
 
 from typehaus.hardware.config import HangerDetectionRules
 from typehaus.hardware.plan_geometry import centerline_endpoints, distance_point_to_segment
+from typehaus.joints.bearing import is_treated
 from typehaus.joints.model import axis_of
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedModel
@@ -31,6 +32,8 @@ class CarryingElement:
     z0_m: float
     z1_m: float
     category: str = "beam"
+    #: Preservative-treated carrier wood — decides the hanger's COATING (IRC R317.3.1).
+    treated: bool = False
     #: Soffit and top at ``p1``, for a carrier that is not level — a TILTED beam
     #: (``Beam.top_rise_end``). ``None`` is a level carrier and the flat pair above answers
     #: for the whole run. Without this the run's bounding box stands in for its section, and
@@ -59,6 +62,8 @@ class HungConnection:
     # What the carrier IS, not what it is called. A ridge beam takes a strap across it that
     # a girder does not, and reading that off the tag string would be reading a uid.
     carrier_category: str = "beam"
+    #: The carrier is preservative-treated wood, so the hanger is ZMAX (IRC R317.3.1).
+    carrier_treated: bool = False
     # Where along the carrier the hung end lands. Two rafters meeting over a ridge share this
     # station, which is what lets a per-PAIR part be counted without dividing by two and
     # hoping.
@@ -87,15 +92,16 @@ def _member_carriers(model: ResolvedModel, rules: HangerDetectionRules) -> list:
         if solid.category not in rules.carrier_solid_categories:
             continue
         band = straight_sweep_band(solid)
+        treated = is_treated(model, solid.assembly, material_ref=solid.material)
         if band is not None:
             (start, end), depth, soffit0, soffit1 = band
             carriers.append(CarryingElement(
                 tag=solid.tag, p0=start, p1=end, z0_m=soffit0, z1_m=soffit0 + depth,
-                z0_end_m=soffit1, z1_end_m=soffit1 + depth))
+                z0_end_m=soffit1, z1_end_m=soffit1 + depth, treated=treated))
             continue
         start, end = centerline_endpoints(list(solid.outline))
         carriers.append(CarryingElement(tag=solid.tag, p0=start, p1=end,
-                                        z0_m=solid.z0_m, z1_m=solid.z1_m))
+                                        z0_m=solid.z0_m, z1_m=solid.z1_m, treated=treated))
     return carriers
 
 
@@ -139,7 +145,7 @@ def hung_connections(model: ResolvedModel, rules: HangerDetectionRules) -> list:
                 found.append(HungConnection(
                     member_key=f"{member.parent_uid}:{member.child_key}",
                     member_profile=member.profile, carrier_tag=carrier.tag, sloped=sloped,
-                    carrier_category=carrier.category,
+                    carrier_category=carrier.category, carrier_treated=carrier.treated,
                     station_m=_station_along(point, carrier),
                     point_m=(point[0], point[1]), carrier_soffit_m=carrier_z0,
                     member_depth_m=max(top_z - bottom_z, 0.0),

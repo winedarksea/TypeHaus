@@ -89,7 +89,11 @@ def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_r
     # though they should: the four porch beams now stop at the pillar faces and hang there on
     # authored HU212-3 hangers (CN-SG-HGR-C*), and an authored connector stands the
     # derivation down rather than adding to it.
-    assert joints["hurricane_tie"] == 334
+    # 334 -> 369 ON 2026-09-16: a joist that CROSSES its bearing and cantilevers past it is
+    # tied there too (``joints/bearing._crossing``). The balcony's edge beams BLW/BLE (+16),
+    # the porch back beams BKW/BKE (+15) and the breezeway house seat (+4) had none. Then
+    # -8 the same day: BM-SG-BLC went flush, and its joists hang rather than bear.
+    assert joints["hurricane_tie"] == 361
     assert joints["mudsill_anchor"] == 137
     assert joints["sloped_joist_hanger"] == 39
     assert joints["ridge_tie_strap"] == 19

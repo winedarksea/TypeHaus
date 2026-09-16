@@ -398,7 +398,8 @@ def test_catlin_hangs_every_rafter_off_the_ridge_beam(catlin_model) -> None:
     # BM-SG-FRW/FRE are not flush-framed: dropping them put PT-SG-FCOL's top, and
     # PT-SG-BF2 with it, on concrete. Those 18 hangers are 32 derived uplift ties now; the
     # joists bear on top.
-    flush_beams = ("BM-S-HALL", "BM-M-HALL", "BM-S-BATH-E")
+    # BM-SG-BLC since 2026-09-16: the balcony joists hang in it and bear on the outer pair.
+    flush_beams = ("BM-S-HALL", "BM-M-HALL", "BM-S-BATH-E", "BM-SG-BLC")
     flush_beam_keys = {item.member_key for item in connections
                        if item.carrier_tag in flush_beams}
     for beam in flush_beams:

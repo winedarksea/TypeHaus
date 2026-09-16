@@ -199,8 +199,20 @@ LUS_FACE_MOUNT_HANGER = StructuralHardware(
     role=ROLE_FACE_MOUNT_JOIST_HANGER,
     manufacturer=_SIMPSON,
     model="LUS",
+    exposure=EXPOSURE_DRY,
     source="Simpson Strong-Tie LUS/LUS2 face-mount joist hanger family "
            "(strongtie.com/lus) — level joist into the face of a wood carrier",
+)
+LUSZ_FACE_MOUNT_HANGER = StructuralHardware(
+    tag="simpson-lusz-face-mount-hanger",
+    name="LUS ZMAX face-mount joist hanger",
+    role=ROLE_FACE_MOUNT_JOIST_HANGER,
+    exposure=EXPOSURE_TREATED,
+    manufacturer=_SIMPSON,
+    model="LUSZ",
+    source="Simpson Strong-Tie LUS in ZMAX (G185), e.g. LUS28Z (strongtie.com/lus) — the "
+           "LUS above where the carrier is preservative-treated, per IRC R317.3.1 and "
+           "Simpson's own treated-wood guidance; same stamping and allowables",
 )
 
 #: The Simpson C-C masonry/concrete hanger table, read once and cited by all three records
@@ -1783,6 +1795,7 @@ STRUCTURAL_HARDWARE: tuple = (
     LSSR_SLOPED_HANGER,
     LSTA24_RIDGE_STRAP,
     LUS_FACE_MOUNT_HANGER,
+    LUSZ_FACE_MOUNT_HANGER,
     HUC_CONCRETE_HANGER,
     APVB_BRACE_BOLT,
     MASA_MUDSILL_ANCHOR,

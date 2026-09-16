@@ -164,9 +164,12 @@ def test_every_pillar_top_lands_on_the_same_beam_soffit(catlin_model) -> None:
     # plane — which is the thing that has to be true, and the thing this test was always
     # about. Asserting equal post tops would now be asserting that the engine ignores the
     # steel in the joint.
+    # And since 2026-09-16 BM-SG-BLC is flush-framed, so the centre bearing plane sits one
+    # balcony joist depth (7 1/4") above the corners' — by design, not drift.
     seat = inch(0.1793).meters
+    flush = inch(7.25).meters
     for row in (rear, front):
-        soffits = [s.z1_m + (seat if s.tag in CENTRE_PILLAR_COLUMN else 0.0)
+        soffits = [s.z1_m + (seat - flush if s.tag in CENTRE_PILLAR_COLUMN else 0.0)
                    for s in row.values()]
         assert max(soffits) - min(soffits) < 1e-9, sorted(row)
     # The rear row rides `SPEC.balcony_fall_in_per_ft` x the run proud of the front so the
@@ -214,8 +217,8 @@ def test_only_the_two_wood_pillars_take_a_base_and_it_is_an_abu_on_concrete(
     1 3/16" of standoff — Simpson's published 1" over the stirrup's own 7 ga base plate —
     comes off the bottom of the wood, and the CCQ46SDS2.5 cap's 7 ga seat off the top, both
     read from the catalog by ``resolve/envelope.py::_post_connector_insets``. That 1 3/8"
-    is why ``PT-SG-BR2`` measures 119.85" against IRC Table R507.4's 120" rather than
-    121 3/8" — see ``test_the_centre_pillars_bear_on_the_cast_columns``.
+    is why ``PT-SG-BR2``'s wood is 1 3/8" shorter than the clear seat-to-soffit distance —
+    see ``test_the_centre_pillars_bear_on_the_cast_columns``.
 
     ** WHY NOT A DTT2Z, AND WHY NOT AN INVERTED CCQ. ** Kept because both were live answers
     at this joint and both failed for reasons that outlast the geometry. A DTT2 is one-sided:

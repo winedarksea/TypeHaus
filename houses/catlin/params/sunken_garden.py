@@ -2854,6 +2854,10 @@ _beam_soffit = ft(SPEC.balcony_level_ft - _balcony_beam_depth_ft)
 # the plane the three balcony beams bear at.
 _balcony_beam_soffit = ft(SPEC.balcony_level_ft - _balcony_joist_depth_ft
                           - _balcony_beam_depth_ft)  # 8.458'
+# BM-SG-BLC is FLUSH (2026-09-16): its top is the deck datum and the joists hang in it, so
+# its soffit — and the two centre pillar tops — sit a joist depth above the outer pair's.
+_balcony_centre_beam_top = ft(SPEC.balcony_level_ft)
+_balcony_centre_beam_soffit = _beam_soffit  # 9.010'
 _PILLAR_X = (_x_ax_w, _cx, _x_ax_e)
 # (row, x index) -> (the concrete wall top that pillar bears on, its elevation). Anything
 # not in the map bears on the porch decking instead.
@@ -3276,15 +3280,17 @@ _BALCONY_BEAM_PUBLISHED = PublishedSpan(
 # Nothing reads the node pair as a direction (every consumer treats it as a segment), so the
 # swap costs nothing, and putting the high end second is what makes the rise read as a rise.
 #
-# ** NOTHING AUTHORS ``top_elevation`` HERE, AND THAT IS A DELIBERATE 3/16". ** Authoring it
-# would pin the beams absolutely — and ``_bearing_stack_drops`` skips a beam that does, so the
-# six posts under them would lose their joist-depth drop and every one of their authored
-# heights would have to be restated. Those heights are an ENGINEERING input: `deck_post` reads
-# `Post.height` for the cantilever moment arm at the four cast columns, and
-# notes/balcony_moment_columns.md hand-works it at 108.125". Changing a sealed demand as a
-# side effect of a drainage fix is not a trade this file may make.
+# ** ONLY BM-SG-BLC AUTHORS ``top_elevation`` — IT IS FLUSH-FRAMED (2026-09-16). ** The
+# joists hang either side of it on LUS28Z hangers, the way a flat roof frames, and the two
+# outer glulams keep the joists ON TOP so the 9" drip cantilever and the four cast columns
+# stay exactly as they were. Pinning a beam takes it out of ``_bearing_stack_drops``, so
+# PT-SG-BR2/BF2 grow the joist depth (~10.6'/10.4', inside 2018 IRC Table R507.4's 14' for a
+# 6x6) with no edit to their heights. The outer pair stays derived on purpose: `deck_post`
+# reads the corner columns' `Post.height` as the moment arm, hand-worked at 108.125" in
+# notes/balcony_moment_columns.md, and that sealed demand does not move.
 #
-# So the datum stays derived and lands at the south NODE, which is 8" south of the front
+# The datum at the south NODE is the deck's own walking surface. For the outer pair it stays
+# derived and lands at the south NODE, which is 8" south of the front
 # bearing (`_FRONT_COLUMN_CANTILEVER_IN` + the round's radius). At 0.0227 in/in that is
 # **0.18" of seat gap, identical at all six columns** — the slope between the bearings is
 # exact, and the uniform 3/16" is taken up in the 1/2"-1" SS316-SHIM-35 standoff pack that is
@@ -3303,6 +3309,7 @@ BALCONY_BEAMS = [
          size=SPEC.balcony_beam, assembly="BEAM_GLULAM_TREATED",
          published_span=_BALCONY_BEAM_PUBLISHED,
          top_protection=_BEAM_TAPE_WIDE,
+         top_elevation=_balcony_centre_beam_top,
          top_rise_end=_balcony_beam_rise,
          bearing_refs=("PT-SG-BR2", "PT-SG-BF2")),
     Beam(uid="SGBB03AAAA", tag="BM-SG-BLE", start_node="N-SGB-SE", end_node="N-SGB-NE",
@@ -3366,8 +3373,8 @@ _BALCONY_GUARD_STATIONS = [
     if _deck_x_w + 0.01 < _gx < _deck_x_e - 0.01]
 
 # --- joist framing under the two decks (rendered members beneath the surface slabs) ---
-# Porch: PT 2x8 @ 16" o.c. running N-S between the two beam lines — hung flush in the front
-# pair, bearing on the back pair and cantilevering the column's offset past it.
+# Porch: PT 2x8 @ 16" o.c. running N-S across the two beam lines — bearing on top of both
+# pairs, oversailing the front pair and cantilevering the column's offset past the back.
 #: The porch joists' SOUTH oversail past the front beam axis, and the BF2 chase's own south
 #: edge — one number, because the chase has to reach the joist tips exactly. See
 #: ``PORCH_JOISTS`` for what the oversail buys and ``PILLAR_CHASES`` for why the chase ends
@@ -4072,7 +4079,7 @@ for _row, _y, _rise in _PILLAR_ROWS:
         uid=_CENTRE_CAP_UID[_row], tag=f"CN-SG-CAP-{_row}2",
         kind=ConnectorKind.POST_CAP,
         position=pt(ft(_cx), ft(_y_bf2 if _row == "F" else _y)),
-        elevation=_balcony_beam_soffit + _rise, size="CCQ46SDS2.5",
+        elevation=_balcony_centre_beam_soffit + _rise, size="CCQ46SDS2.5",
         connects=("BM-SG-BLC", f"PT-SG-B{_row}2")))
 # Porch beam pockets, back and front: a hanger into each side wall + a hurricane tie over
 # each column.
@@ -4326,9 +4333,10 @@ BALCONY_REAR_FLASH = Flashing(
 # aluminium cap on bare KDAT would be a new defect rather than a fix. The tape under it is
 # the dielectric. Anything that removes the tape from these beams must change this metal too.
 #
-# ** FIVE OF THE SEVEN GO ON BEFORE THE JOISTS DO, AND THAT IS NOT A PREFERENCE. ** The
-# balcony's three beams and the porch's back pair carry their joists ON TOP; only the porch's
-# front pair is flush-framed with an unobstructed top (see FRONT_BEAMS). A cap over a beam
+# ** ALL SEVEN GO ON BEFORE THE JOISTS DO, AND THAT IS NOT A PREFERENCE. ** The four porch
+# beams and the balcony's outer pair carry their joists ON TOP. BM-SG-BLC is flush-framed
+# (2026-09-16): its cap is under the plank, not the joists, but its 1 1/2" legs must lap
+# UNDER the LUS28Z flanges on both faces, so it still precedes the hangers. A cap over a beam
 # that will be joisted has to be laid while the beam top is still open, and the joists then
 # bear on it — which is fine for a 0.019" coil cap under a 2x8's bearing area, and impossible
 # to retrofit without pulling the deck. That sequencing is the whole labour half of the
@@ -4376,7 +4384,7 @@ _BEAM_CAP_AT = (
     ("SGCP05AAAA", "TR-SG-CAP-BLW", (_x_ax_w, _y_in_n), (_x_ax_w, _y_balcony_front),
      _balcony_beam_top, _balcony_cap_thickness, "BM-SG-BLW"),
     ("SGCP06AAAA", "TR-SG-CAP-BLC", (_cx, _y_in_n), (_cx, _y_balcony_front),
-     _balcony_beam_top, _balcony_cap_thickness, "BM-SG-BLC"),
+     _balcony_centre_beam_top, _balcony_cap_thickness, "BM-SG-BLC"),
     ("SGCP07AAAA", "TR-SG-CAP-BLE", (_x_ax_e, _y_in_n), (_x_ax_e, _y_balcony_front),
      _balcony_beam_top, _balcony_cap_thickness, "BM-SG-BLE"),
 )
