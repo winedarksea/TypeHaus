@@ -39,8 +39,19 @@ DEFAULT_DPI = 110
 #: details`` and ``haus explain --detail`` alike, or the same drawing looks like two.
 DETAIL_DPI = 300
 
+#: Longest edge, in pixels, when neither ``--dpi`` nor ``--long-edge`` is given. A raster
+#: sized by dpi is sized by accident: a frameless figure's inch dimensions fall out of how
+#: much there happened to be to draw, so "110 dpi" names no pixel count a reader can rely
+#: on. 4096 is chosen to be legible under a pencil on a tablet and to sit inside Procreate's
+#: canvas budget on the hardware that budget is tightest on.
+DEFAULT_LONG_EDGE = 4096
+
 #: Every view ``--view all`` runs, in the order a reader would open them.
 VIEWS = ("plan", "site", "section", "elevation", "details", "3d")
+
+#: What ``--fmt`` accepts. ``psd`` is the layered review artifact (→ psd_writer); ``svg`` is
+#: vector and ignores every raster sizing option.
+FORMATS = ("png", "svg", "psd")
 
 
 @dataclass(frozen=True)
@@ -72,17 +83,36 @@ def resolve_underlays(house_dir: Path, reference_underlays) -> list[Underlay]:
             for item in reference_underlays]
 
 
-def render_plan(model: ResolvedModel, storey: str, path: Path, dpi: int = DEFAULT_DPI,
-                underlays=(), paper=None, scale: str | None = None) -> Path:
+def resolve_size(dpi: int | None, long_edge: int | None) -> tuple[int, int | None]:
+    """``(dpi, long_edge)`` for a raster, from the two options a caller may pass.
+
+    One rule, so every entry point agrees: they are mutually exclusive, and given neither
+    the output is sized by ``DEFAULT_LONG_EDGE``. ``render_plan`` and ``render_views``
+    quietly disagreeing about that default is how two renders of the same storey came out at
+    two different sizes.
+    """
+    if dpi is not None and long_edge is not None:
+        raise ValueError("--dpi and --long-edge both size the raster; pass one")
+    if dpi is None and long_edge is None:
+        return DEFAULT_DPI, DEFAULT_LONG_EDGE
+    return (DEFAULT_DPI if dpi is None else dpi), long_edge
+
+
+def render_plan(model: ResolvedModel, storey: str, path: Path, dpi: int | None = None,
+                underlays=(), paper=None, scale: str | None = None,
+                long_edge: int | None = None) -> Path:
+    dpi, long_edge = resolve_size(dpi, long_edge)
     scene = build_floorplan(model, storey)
     return _write_view(model, scene, path,
                        _SheetId("PLAN", f"{storey.title()} floor plan",
                                 f"plan · {storey}", north_arrow=True),
-                       dpi=dpi, underlays=underlays, paper=paper, scale=scale)
+                       dpi=dpi, underlays=underlays, paper=paper, scale=scale,
+                       long_edge=long_edge)
 
 
 def _write_view(model: ResolvedModel, scene, path: Path, sheet: _SheetId, *,
-                dpi: int, underlays=(), paper=None, scale: str | None = None) -> Path:
+                dpi: int, underlays=(), paper=None, scale: str | None = None,
+                long_edge: int | None = None) -> Path:
     """One snapshot, on paper or not — the single place the two writers are chosen between.
 
     On paper the scene is given a real :class:`Frame` first (``frame_for_scene``) so the
@@ -91,9 +121,10 @@ def _write_view(model: ResolvedModel, scene, path: Path, sheet: _SheetId, *,
     changes from before: the frameless fit, which is what a quick look wants.
     """
     if paper is None:
-        return write_raster(scene, path, title=sheet.caption, dpi=dpi, underlays=underlays)
+        return write_scene(scene, path, sheet.caption, dpi, long_edge, underlays)
 
-    from typehaus.emit.draw.pdf_writer import _close
+    from typehaus.emit.draw.artist_tags import ArtistTagger
+    from typehaus.emit.draw.pdf_writer import _close, dpi_for_long_edge
     from typehaus.emit.draw.sheet_writer import compose_sheet, frame_for_scene
     from typehaus.emit.draw.sheets import SheetSpec
 
@@ -102,16 +133,63 @@ def _write_view(model: ResolvedModel, scene, path: Path, sheet: _SheetId, *,
         scene = scene.model_copy(update={"frame": frame})
     spec = SheetSpec(sheet.number, sheet.title, paper=paper,
                      north_arrow=sheet.north_arrow)
-    fig = compose_sheet(scene, spec, model, size=spec.size, underlays=underlays)
+    tagger = ArtistTagger.detached()
+    fig = compose_sheet(scene, spec, model, size=spec.size, underlays=underlays,
+                        tagger=tagger)
     path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(path, dpi=dpi)
+    if path.suffix.lower() == ".psd":
+        # A composed sheet has chosen its paper, so the whole sheet is the crop and its
+        # longest edge is a real inch dimension rather than a fitted one.
+        return _finish_psd(fig, tagger, path, None, max(spec.size), long_edge)
+    if path.suffix.lower() == ".svg":
+        import io
+
+        from typehaus.emit.draw.svg_layers import regroup_svg
+
+        buffer = io.StringIO()
+        fig.savefig(buffer, format="svg")
+        _close(fig)
+        path.write_text(regroup_svg(buffer.getvalue()), encoding="utf-8")
+        return path
+    out_dpi = dpi_for_long_edge(long_edge, max(spec.size)) if long_edge else dpi
+    fig.savefig(path, dpi=out_dpi)
     _close(fig)
     return path
+
+
+def write_scene(scene, path: Path, title: str, dpi: int,
+                long_edge: int | None = None, underlays=()) -> Path:
+    """A frameless scene to PNG, SVG or PSD, chosen by ``path``'s suffix.
+
+    The one door for every snapshot that has not chosen a sheet — the plan/section/elevation
+    views and the detail cards alike — so a format added here is a format all of them get.
+    """
+    from typehaus.emit.draw.pdf_writer import figure_for, save_box
+
+    if path.suffix.lower() != ".psd":
+        return write_raster(scene, path, title=title, dpi=dpi, underlays=underlays,
+                            long_edge=long_edge)
+    fig, tagger = figure_for(scene, title, underlays)
+    box, long_in = save_box(fig, scene)
+    return _finish_psd(fig, tagger, path, box, long_in, long_edge)
+
+
+def _finish_psd(fig, tagger, path: Path, box, long_in: float,
+                long_edge: int | None) -> Path:
+    from typehaus.emit.draw.pdf_writer import _close
+    from typehaus.emit.draw.psd_writer import write_psd
+
+    try:
+        return write_psd(fig, tagger, path, box=box, long_in=long_in,
+                         long_edge=long_edge or DEFAULT_LONG_EDGE)
+    finally:
+        _close(fig)
 
 
 def render_views(
     model: ResolvedModel, out_dir: Path, view: str = "plan", fmt: str = "png",
     underlays=(), dpi: int | None = None, paper=None, scale: str | None = None,
+    long_edge: int | None = None,
 ) -> list[Path]:
     """Render one view (or ``"all"``) for every storey; returns the written snapshot paths.
 
@@ -122,17 +200,26 @@ def render_views(
     to that loop only — pass none for anything anybody else will read (→ 30 §Scaled
     underlays), which is what ``haus render --no-underlay`` is for.
 
-    ``dpi`` overrides the per-view default; ``paper`` and ``scale`` put the drawing on a
-    real sheet (→ module docstring).
+    ``dpi`` and ``long_edge`` are the two ways to size a raster and they are mutually
+    exclusive — one names a physical resolution, the other a pixel count, and an output can
+    only honour one. Given neither, the longest edge is ``DEFAULT_LONG_EDGE``: sizing by dpi
+    alone leaves the pixel count to whatever the drawing's fitted inch size happened to be.
+    ``paper`` and ``scale`` put the drawing on a real sheet (→ module docstring).
     """
+    if fmt not in FORMATS:
+        raise ValueError(f"unknown format {fmt!r} ({'|'.join(FORMATS)})")
+    page_dpi, long_edge = resolve_size(dpi, long_edge)
+    # What to hand on to anything that resolves again (the recursion, ``render_plan``):
+    # ``resolve_size`` fills one of the pair in, and passing both back would trip its own
+    # mutual-exclusion guard.
+    call_dpi = None if long_edge else page_dpi
     out_dir.mkdir(parents=True, exist_ok=True)
     if view == "all":
         return [path for one in VIEWS
-                for path in render_views(model, out_dir, one, fmt, underlays, dpi,
-                                         paper, scale)]
+                for path in render_views(model, out_dir, one, fmt, underlays, call_dpi,
+                                         paper, scale, long_edge)]
     written: list[Path] = []
     storeys = [s.tag for s in sorted(model.plan.storeys, key=lambda x: x.elevation.meters)]
-    page_dpi = DEFAULT_DPI if dpi is None else dpi
     # A composed sheet gets its paper in the filename, exactly as ``haus print`` does. The
     # frameless review raster and a 24x36 plot of the same storey are different artifacts
     # and must not be the same file — the last command run would silently win.
@@ -142,9 +229,9 @@ def render_views(
             if not any(w.storey == storey for w in model.walls):
                 continue
             written.append(render_plan(
-                model, storey, out_dir / f"plan_{storey}{sfx}.{fmt}", dpi=page_dpi,
+                model, storey, out_dir / f"plan_{storey}{sfx}.{fmt}", dpi=call_dpi,
                 underlays=[u for u in underlays if u.storey == storey],
-                paper=paper, scale=scale))
+                paper=paper, scale=scale, long_edge=long_edge))
     elif view == "3d":
         # 3D is the offscreen glTF artifact (#51): emit a self-contained .glb the UI panel
         # and a glTF viewer both read. A raster snapshot needs an offscreen GL context (M3);
@@ -160,14 +247,14 @@ def render_views(
         written.append(_write_view(
             model, build_site_plan(model), out_dir / f"site_plan{sfx}.{fmt}",
             _SheetId("SITE", "Site plan", "site · C-101", north_arrow=True),
-            dpi=page_dpi, paper=paper, scale=scale))
+            dpi=page_dpi, paper=paper, scale=scale, long_edge=long_edge))
     elif view == "section":
         from typehaus.emit.draw.section import build_center_section
 
         written.append(_write_view(
             model, build_center_section(model), out_dir / f"section_house{sfx}.{fmt}",
             _SheetId("SECT", "Building section", "section · house center"),
-            dpi=page_dpi, paper=paper, scale=scale))
+            dpi=page_dpi, paper=paper, scale=scale, long_edge=long_edge))
     elif view == "elevation":
         from typehaus.emit.draw.elevation import build_elevation
 
@@ -176,7 +263,7 @@ def render_views(
                 model, build_elevation(model, facing), out_dir / f"elev_{facing}{sfx}.{fmt}",
                 _SheetId("ELEV", f"{facing.title()} exterior elevation",
                          f"elevation · {facing}"),
-                dpi=page_dpi, paper=paper, scale=scale))
+                dpi=page_dpi, paper=paper, scale=scale, long_edge=long_edge))
     elif view == "details":
         from typehaus.emit.draw.details import (
             build_authored_detail_scene,
@@ -194,16 +281,17 @@ def render_views(
                 continue
             scene = build_authored_detail_scene(model, detail)
             slug = detail.tag.replace("/", "_")
-            written.append(write_raster(scene, out_dir / f"detail_{slug}.{fmt}",
-                                        title=f"detail · {detail.title or detail.tag}",
-                                        dpi=detail_dpi))
+            written.append(write_scene(scene, out_dir / f"detail_{slug}.{fmt}",
+                                       f"detail · {detail.title or detail.tag}",
+                                       detail_dpi, long_edge))
         for derived in derive_detail_slices(model):
             scene, _findings = build_detail(model, derived)
             slug = derived.view.tag.replace("/", "_")
-            written.append(write_raster(scene, out_dir / f"detail_{slug}.{fmt}",
-                                        title=f"detail · {derived.key}", dpi=detail_dpi))
+            written.append(write_scene(scene, out_dir / f"detail_{slug}.{fmt}",
+                                       f"detail · {derived.key}", detail_dpi, long_edge))
             written.extend(_note_continuations(scene, out_dir, slug, fmt,
-                                               f"detail · {derived.key}", detail_dpi))
+                                               f"detail · {derived.key}", detail_dpi,
+                                               long_edge))
     else:
         raise ValueError(
             f"unknown view {view!r} ({'|'.join(VIEWS)}|all)")
@@ -211,7 +299,7 @@ def render_views(
 
 
 def _note_continuations(scene, out_dir, slug: str, fmt: str, title: str,
-                        dpi: int = DETAIL_DPI) -> list:
+                        dpi: int = DETAIL_DPI, long_edge: int | None = None) -> list:
     """``detail_<slug>-2.png`` … for notes that outrun one card's band.
 
     Paginate, don't truncate. With lettering fixed by definition, a note column that does
@@ -219,7 +307,7 @@ def _note_continuations(scene, out_dir, slug: str, fmt: str, title: str,
     continuation carries the notes alone — the drawing is on page 1 and repeating it would
     make a reader compare two copies of the same cut.
     """
-    from typehaus.emit.draw.pdf_writer import note_pages, write_raster
+    from typehaus.emit.draw.pdf_writer import note_pages
 
     frame = getattr(scene, "frame", None)
     if frame is None or not scene.notes:
@@ -239,8 +327,8 @@ def _note_continuations(scene, out_dir, slug: str, fmt: str, title: str,
             "nodes": (),
             "notes": tuple(line for column in columns for line in column),
             "frame": wide})
-        out.append(write_raster(page, out_dir / f"detail_{slug}-{index}.{fmt}",
-                                title=f"{title} — notes {index}/{len(pages)}", dpi=dpi))
+        out.append(write_scene(page, out_dir / f"detail_{slug}-{index}.{fmt}",
+                               f"{title} — notes {index}/{len(pages)}", dpi, long_edge))
     # Notes shrink as well as grow. A continuation left over from a longer run reads as a
     # page of the current set, so the ones this render did not write are removed.
     for stale in out_dir.glob(f"detail_{slug}-*.{fmt}"):

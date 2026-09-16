@@ -63,10 +63,19 @@ def render(
     house: Path | None = typer.Argument(None),
     view: str = typer.Option(
         "plan", help="plan | site | section | elevation | details | 3d | all (#52 agent eyes)"),
-    fmt: str = typer.Option("png", help="png | svg"),
+    fmt: str = typer.Option(
+        "png", help="png | svg | psd. svg carries named review layers a vector editor can "
+                    "switch off; psd is the same stack as raster layers, for markup on a "
+                    "tablet (open it from the Procreate GALLERY — inserting a PSD into an "
+                    "existing canvas flattens it)"),
     dpi: int | None = typer.Option(
-        None, help="raster resolution; default 110 (screen), 300 for details. An ARCH D "
-                   "sheet at plate quality is --dpi 300 → 10800 x 7200 px"),
+        None, help="raster resolution, INSTEAD OF --long-edge. An ARCH D sheet at plate "
+                   "quality is --dpi 300 → 10800 x 7200 px"),
+    long_edge: int | None = typer.Option(
+        None, "--long-edge",
+        help="size the raster by its longest side in pixels; default 4096. A frameless "
+             "snapshot's inch size falls out of how much there was to draw, so a dpi alone "
+             "names no pixel count. Ignored by --fmt svg, which has no resolution"),
     paper: str | None = typer.Option(
         None, help="ledger | arch-d — compose onto a real sheet (border, title block, "
                    "graphic scale bar, north arrow) at TRUE architectural scale"),
@@ -109,7 +118,8 @@ def render(
         if paper is not None:
             size = resolve_paper(paper)
         paths = render_views(model, d / "out" / "render", view=view, fmt=fmt,
-                             underlays=underlays, dpi=dpi, paper=size, scale=scale)
+                             underlays=underlays, dpi=dpi, paper=size, scale=scale,
+                             long_edge=long_edge)
     except ValueError as exc:
         console.print(f"[red]{exc}[/red]")
         raise typer.Exit(1) from None

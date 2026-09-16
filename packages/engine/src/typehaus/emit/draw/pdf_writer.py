@@ -13,8 +13,10 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
+from typehaus.emit.draw.artist_tags import ArtistTagger, NullTagger
 from typehaus.emit.draw.door_symbols import DOOR_SYMBOL_NAMES, door_symbol_geometry
 from typehaus.emit.draw.palette import detail_fill
+from typehaus.emit.draw.review_layers import SHELL, UNDERLAY
 from typehaus.emit.draw.scene import (
     ArchDimension,
     Hatch,
@@ -26,6 +28,7 @@ from typehaus.emit.draw.scene import (
     Symbol,
     Text,
 )
+from typehaus.emit.draw.svg_layers import regroup_svg
 from typehaus.emit.draw.typography import (
     CHAR_ASPECT,
     LINE_SPACING,
@@ -326,7 +329,8 @@ def _wrap_notes(lines, columns: int) -> list[str]:
     return wrapped
 
 
-def _framed_fig(scene: Scene, title: str | None, underlays=()):
+def _framed_fig(scene: Scene, title: str | None, underlays=(),
+                tag: bool = True) -> tuple[object, object]:
     """Lay the scene onto the paper it chose — the card path.
 
     The inversion. ``_fig`` below sizes the figure from the *content*, so the drawn scale is
@@ -352,11 +356,13 @@ def _framed_fig(scene: Scene, title: str | None, underlays=()):
     ax = fig.add_axes([vx / paper_w, vy / paper_h, vw / paper_w, vh / paper_h])
     ax.set_aspect("equal")
     ax.axis("off")
+    tagger = ArtistTagger(ax) if tag else NullTagger()
     if underlays:
         _draw_underlays(ax, underlays)
+        tagger.claim(UNDERLAY)
     model_nodes = tuple(n for n in scene.nodes if getattr(n, "space", "model") == "model")
     paper_nodes = tuple(n for n in scene.nodes if getattr(n, "space", "model") == "paper")
-    scaled_text = _render_nodes(ax, scene.model_copy(update={"nodes": model_nodes}))
+    scaled_text = _render_nodes(ax, scene.model_copy(update={"nodes": model_nodes}), tagger)
 
     # Model inches across the viewport at the chosen scale (paper inches per model foot).
     half_u = vw * 12.0 / frame.scale / 2.0
@@ -374,9 +380,10 @@ def _framed_fig(scene: Scene, title: str | None, underlays=()):
         ax_paper.set_xlim(0.0, paper_w)
         ax_paper.set_ylim(0.0, paper_h)
         ax_paper.patch.set_alpha(0.0)
+        tagger.attach(ax_paper)
         _apply_text_scale(
             fig, ax_paper,
-            _render_nodes(ax_paper, scene.model_copy(update={"nodes": paper_nodes})))
+            _render_nodes(ax_paper, scene.model_copy(update={"nodes": paper_nodes}), tagger))
 
     notes_band = frame.bands.get("notes")
     if scene.notes and notes_band is not None:
@@ -409,7 +416,7 @@ def _framed_fig(scene: Scene, title: str | None, underlays=()):
         fig.text((vx + vw) / paper_w, (vy - 0.16) / paper_h, frame.scale_label,
                  fontsize=7, family="monospace", ha="right", va="top", color="#555")
     _apply_text_scale(fig, ax, scaled_text)
-    return fig
+    return fig, tagger
 
 
 def _in_band(anchor, band) -> bool:
@@ -487,7 +494,8 @@ def _draw_notes_band(fig, frame, columns_of_lines, band) -> None:
                  color="#222", linespacing=LINE_SPACING)
 
 
-def _fig(scene: Scene, title: str | None, underlays=()):
+def _fig(scene: Scene, title: str | None, underlays=(),
+         tag: bool = True) -> tuple[object, object]:
     """Fit the figure to its content — the frameless path, for a scene with no paper.
 
     Every plan, elevation and schedule still comes through here. A detail that has chosen a
@@ -499,7 +507,7 @@ def _fig(scene: Scene, title: str | None, underlays=()):
     import matplotlib.pyplot as plt
 
     if scene.frame is not None:
-        return _framed_fig(scene, title, underlays)
+        return _framed_fig(scene, title, underlays, tag)
 
     bounds = _scene_bounds(scene)
     figsize = (11.0, 8.5)
@@ -529,11 +537,16 @@ def _fig(scene: Scene, title: str | None, underlays=()):
         fig, ax = plt.subplots(figsize=figsize)
     ax.set_aspect("equal")
     ax.axis("off")
+    # Created after the notes panel above, so the notes axes' lettering is never claimed for
+    # a drawing layer: it is chrome around the drawing, not part of it.
+    tagger = ArtistTagger(ax) if tag else NullTagger()
     if underlays:
         _draw_underlays(ax, underlays)
-    scaled_text = _render_nodes(ax, scene)
+        tagger.claim(UNDERLAY)
+    scaled_text = _render_nodes(ax, scene, tagger)
     if title:
         ax.set_title(title, fontsize=9, family="monospace", loc="left")
+        tagger.discard()
     if bounds is not None:
         u0, z0, u1, z1 = bounds
         pad = max(u1 - u0, z1 - z0) * 0.02
@@ -543,7 +556,7 @@ def _fig(scene: Scene, title: str | None, underlays=()):
         ax.autoscale_view()
     fig.tight_layout()
     _apply_text_scale(fig, ax, scaled_text)
-    return fig
+    return fig, tagger
 
 
 def _apply_text_scale(fig, ax, scaled_text) -> None:
@@ -850,9 +863,15 @@ def _poche_for(scene: Scene, ax: object) -> _WallPoche | None:
     return _WallPoche(ax)
 
 
-def _render_nodes(ax: object, scene: Scene) -> None:
+def _render_nodes(ax: object, scene: Scene, tagger: ArtistTagger | None = None) -> None:
     from matplotlib.patches import Arc, PathPatch, Polygon
     from matplotlib.path import Path as MplPath
+
+    # Everything this function draws is claimed for the review layer of the node that drew
+    # it (→ artist_tags). A caller that passes none wants neither the provenance nor the
+    # re-ordering that comes with it, and gets a no-op rather than a branch at every claim
+    # site — see NullTagger for why the permit set is that caller.
+    tagger = tagger if tagger is not None else NullTagger()
 
     # (artist, model-space height in inches, height_pt or None) — sized once the data
     # limits are known. ``Text.height`` is model space (→ scene.py), so it cannot be handed
@@ -921,8 +940,12 @@ def _render_nodes(ax: object, scene: Scene) -> None:
                                   pad=0.5)),
                 node.height or _LEADER_TEXT_H, node.height_pt,
             ))
+        tagger.claim_node(node)
     if poche is not None:
         poche.draw()
+        # The poché is the whole storey's wall sandwich merged into two paths (→
+        # _WallPoche): it has no single node, and the shell is the only layer it can be on.
+        tagger.claim(SHELL)
     _ = (PathPatch, MplPath)  # imported for parity with richer node kinds
     return scaled_text
 
@@ -1000,30 +1023,81 @@ def _feet_inches(total_in: float) -> str:
 
 
 def write_pdf(scene: Scene, path: Path, title: str | None = None) -> Path:
-    fig = _fig(scene, title or scene.name)
+    # tag=False: the PDF is the deliverable, and it stacks exactly as it always has.
+    fig, _ = _fig(scene, title or scene.name, tag=False)
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path, format="pdf")
     _close(fig)
     return path
 
 
+#: Padding around a frameless figure's content, in inches. Was an inline ``pad_inches``;
+#: named because the pinned-bbox path has to apply it itself (see :func:`save_box`).
+FRAMELESS_PAD_IN = 0.1
+
+
+def figure_for(scene: Scene, title: str | None = None, underlays=()):
+    """The drawn figure plus the review-layer provenance of everything on it.
+
+    The seam the PSD writer needs: it renders the same figure once per review layer by
+    toggling artist visibility, which only works if it is handed the *one* figure the PNG
+    would have come from rather than building its own.
+    """
+    return _fig(scene, title or scene.name, underlays)
+
+
+def save_box(fig, scene: Scene) -> tuple[object | None, float]:
+    """``(bbox_inches for savefig, longest edge in inches)`` for this figure.
+
+    A framed scene has chosen its paper and saves it whole. A frameless one is fitted to its
+    content, and the fit is **pinned here, once**: ``bbox_inches="tight"`` recomputes the
+    crop from whatever is *visible* at save time, so a PSD's per-layer passes — each with
+    most of the drawing hidden — would every one of them come out a different size and
+    none of them aligned. Pinning the box costs nothing on the single-pass PNG path and is
+    the whole reason the layered one lines up.
+    """
+    if scene.frame is not None:
+        w, h = fig.get_size_inches()
+        return None, max(w, h)
+    bbox = fig.get_tightbbox(fig.canvas.get_renderer()).padded(FRAMELESS_PAD_IN)
+    return bbox, max(bbox.width, bbox.height)
+
+
+def dpi_for_long_edge(long_edge_px: int, long_in: float) -> float:
+    """The dpi that lands a figure ``long_in`` inches across on ``long_edge_px`` pixels."""
+    if long_in <= 0.0:
+        raise ValueError("cannot size a figure with no extent")
+    return long_edge_px / long_in
+
+
 def write_raster(scene: Scene, path: Path, title: str | None = None, dpi: int = 110,
-                 underlays=()) -> Path:
+                 underlays=(), long_edge: int | None = None) -> Path:
     """Render the scene to PNG or SVG (by suffix) — the ``haus render`` backend.
 
     ``underlays`` are ``Underlay`` rectangles drawn behind the linework. Only the agent-eyes
     snapshot takes them; ``write_pdf`` (the permit set) deliberately does not, because a
     survey drawing is reference material and must never print on a permit sheet.
+
+    ``long_edge`` sizes the output by its longest side in pixels and wins over ``dpi``, which
+    it has to: a frameless figure's inch size is a consequence of how much there was to
+    draw, so asking for 110 dpi asks for an image whose size nobody chose. SVG has no
+    resolution and ignores both — what it gets instead is :func:`regroup_svg`, which gathers
+    its linework into named review layers a vector editor can switch off.
     """
-    fig = _fig(scene, title or scene.name, underlays)
+    fig, _ = figure_for(scene, title, underlays)
     path.parent.mkdir(parents=True, exist_ok=True)
-    if scene.frame is not None:
-        # ``bbox_inches="tight"`` re-crops the figure to whatever it happens to contain —
-        # the same re-fit that made content the independent variable, in raster form. A
-        # card has chosen its paper; save that paper.
-        fig.savefig(path, dpi=dpi)
-    else:
-        fig.savefig(path, dpi=dpi, bbox_inches="tight", pad_inches=0.1)
+    if path.suffix.lower() == ".svg":
+        import io
+
+        buffer = io.StringIO()
+        box, _ = save_box(fig, scene)
+        fig.savefig(buffer, format="svg", bbox_inches=box, pad_inches=0.0)
+        _close(fig)
+        path.write_text(regroup_svg(buffer.getvalue()), encoding="utf-8")
+        return path
+    box, long_in = save_box(fig, scene)
+    out_dpi = dpi_for_long_edge(long_edge, long_in) if long_edge else dpi
+    fig.savefig(path, dpi=out_dpi, bbox_inches=box, pad_inches=0.0)
     _close(fig)
     return path
 

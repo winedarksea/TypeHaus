@@ -1251,7 +1251,10 @@ BASEMENT_BRICK_VENEER = Assembly(
         # The 6" between this wall's finished face and the brick is FIXED and always was:
         # W-SG-BRKBM's north face can reach y=-10" and no further (FT-B-S2/S3 hold the 2"
         # isolation joint north of it), and the wythe bears on the beam, so the brick sits
-        # at -10.05..-13.675" and cannot move north. The only question was ever how to
+        # at **-10.06..-13.685"** and cannot move north. (This read "-10.05..-13.675" until
+        # 2026-09-15: it was struck off a -6.05" node and N-B-BRICK-W/-E are at -6.06".
+        # -13.685" is the resolved south face, and it is the line the porch deck stops
+        # 1" clear of — see `_y_porch_deck_n` in params/sunken_garden.py.) The only question was ever how to
         # SPLIT that 6", and the answer is 2" of EPS on the backup (see _GARDEN_CURB_CORE
         # and _GARDEN_FRAMED_OUTBOARD, which carry the two bounds that set that 2") plus 4"
         # of drained air here.

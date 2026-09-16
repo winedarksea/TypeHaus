@@ -35,7 +35,9 @@ from dataclasses import dataclass
 
 from typehaus.hardware.config import FT_TO_M, GableEndTieRules
 from typehaus.hardware.plan_geometry import point_in_ring
+from typehaus.joints.hung import point_along
 from typehaus.joints.model import axis_of
+from typehaus.resolve.geometry_walls import wall_top_at
 from typehaus.resolve.model import ResolvedModel
 
 
@@ -51,8 +53,21 @@ class GableEnd:
     stations_m: tuple[float, ...]
     p0: tuple
     p1: tuple
-    #: The plate the tie lands on — the wall's own top.
+    #: The plate the tie lands on — the wall's own top. **A scalar, so on a raked wall it is
+    #: only one point of the plate**; ``station_z_m`` is what a tie's own elevation comes
+    #: from. Kept because a consumer that wants one number for the run (a label, a storey
+    #: band) should not have to pick a station, and because it is the flat-plate answer.
     z_m: float
+    #: The plate elevation AT each station, parallel to ``stations_m``.
+    #:
+    #: A gable wall rakes: its plate climbs from eave to ridge, and a tie lands on the plate
+    #: where it stands, not where the wall happens to top out. Until 2026-09-15 every station
+    #: took the scalar ``z_m`` above, which on a ``ToRoof`` wall is ``z1_m`` — the BOUNDING
+    #: PRISM height, deliberately the ridge (``resolve/model.py`` says so) — so sixteen of
+    #: catlin's thirty-six H10A markers drew in the air over the roof, the worst by 9'-0".
+    #: On a flat-plate wall (the garage's trussed gables) every entry equals ``z_m`` and
+    #: nothing moves.
+    station_z_m: tuple[float, ...]
     axis: str
     length_m: float
 
@@ -117,12 +132,23 @@ def gable_end_ties(model: ResolvedModel, rules: GableEndTieRules) -> list[GableE
             count = max(rules.minimum_ties_per_wall,
                         int(math.floor(length_m / pitch_m + 1e-9)) + 1)
             claimed.add(wall.tag)
+            stations = tuple(
+                (length_m / 2.0 if count == 1 else index * length_m / (count - 1))
+                for index in range(count))
+            # Each tie's OWN plate elevation. ``wall_top_at`` interpolates ``top_z0_m`` ->
+            # ``top_z1_m`` along the axis and falls back to ``z1_m`` where the wall has no
+            # rake, which is exactly the two cases this rule catches in one: catlin's gable
+            # walls are split AT THE RIDGE, so each is one monotonic rake and a linear
+            # interpolation is the plate; the garage's are trussed and flat, and get ``z1_m``
+            # unchanged. **A wall spanning a whole triangle would need the roof plane, not
+            # this** — none exists here, so it is said rather than coded.
+            station_z = tuple(wall_top_at(wall, *point_along(wall.axis[0], wall.axis[1], s))
+                              for s in stations)
             found.append(GableEnd(
                 wall_tag=wall.tag, roof_tag=roof.tag, storey=wall.storey,
-                stations_m=tuple(
-                    (length_m / 2.0 if count == 1 else index * length_m / (count - 1))
-                    for index in range(count)),
+                stations_m=stations,
                 p0=wall.axis[0], p1=wall.axis[1],
                 z_m=wall.plate_top_z_m if wall.plate_top_z_m is not None else wall.z1_m,
+                station_z_m=station_z,
                 axis=axis_of(wall.axis[0], wall.axis[1]), length_m=length_m))
     return found

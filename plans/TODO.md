@@ -362,9 +362,39 @@ the future.
   — deliberately not re-specified; would widen each 2" and re-open condition coverage on a
   line nothing else asked about. Revisit only if that wall line opens for another reason.
 - Make sure the EV charger is a Leviton 1450r 50A EV Charging Receptacle
-- The ABU66SS on top of PT-SG-COL and PT-SG-FCOL seems to have been lost and accidentally replaced with HGAM10 there, which is incorrect. I'm also not sure the trimmers for JOIST-0-007-0 between there are quite right, and all of the joists there are a bit too long by about 3.5", they extend into the brick veneer wall
+- **OPEN, and it is the root cause above: `_y_in_n` is datumed off the ABOVE-GRADE cladding
+  face, and nothing at the porch deck's own elevation faces cladding.** Below z=0 the house's
+  south face is `W-B-BRICK`, which stands **6.435" south of that line** (cladding −7.25",
+  brick −13.685"). `house_ext_layers_in = 5.0` is itself stale against `_WALL_OUTBOARD_IN`'s
+  7.25" — `houses/catlin/CLAUDE.md` lists it as a consumer that must move with it and it
+  never did. Two things fall out:
+  - **`code.R311_3_exterior_landing` now FAILs (ERROR) on `D-M-BALC`**, and it is an honest
+    finding rather than a regression: the deck covers 78.5% of the 36" patch and the check
+    wants 85%, which needs a north edge at −12.3425" — **inside the wythe**. There is no deck
+    position that both clears the masonry and lands the door. The previous PASS was bought by
+    burying the joists in brick. **This needs an owner decision, not a nudge**: the gap at the
+    door is 7.435" of which 3 5/8" is brick top (at z=0, level with the threshold) and 4" is
+    the veneer's open drainage cavity. A threshold saddle over it, dropping the brick's top
+    course, or cantilevering the deck boards north on `FloorSystem.subfloor_outline` (the
+    plank plane, z 0..+1", clears the brick top — the JOISTS are what could not) are the three
+    options; each decides whether the cavity gets capped and whether the two separately
+    founded structures touch. **Do not author the board oversail blind** — it lands flush on
+    the brick at 0" clearance, trading a visible defect for an invisible one.
+  - **The check cannot union two surfaces into one landing.** A landing built of a threshold
+    plate plus a deck — which is what this door actually wants — fails
+    `_landing_surfaces`/`_LANDING_COVERAGE` however it is built, because each surface is
+    tested alone. Worth fixing in the check independently of the design decision.
+- **Nothing in the engine can catch a framing member buried in a wall layer.** A cantilevered
+  floor end is pure arithmetic on the authored value (`resolve/floor_ends.py`), and
+  `structural.member_interference` builds candidates from members and `column`/`beam` solids
+  only — wall layers and masonry wythes are not candidates. That is why 31 porch joists ran
+  through a brick wythe at 0 FAIL for as long as they did, and nothing will catch the next
+  one. Scope: framing-member vs. wall-structure-layer plan overlap.
 - Almost every flat roof I have seen uses joists on hangers between beams. Yet our balcony here has joists above the beams (presumably held down by hurricane ties). If we put the joists lower onto the beams, we end up with the 6x6 posts being possibly too tall (over 10' it said earlier, but R507.4 says it's good up to 14').
 - Figure out a space for a cat litter box.
+- Have the UI resolve pages and reports under /app, so we can give a URL to them directly, type-haus.com/app/?= (for example)
+- Part of the attic is open to the stairs below. It should say that in the printed plan.
+- The printed plans draw the stair lines wrong (the 3d model seems more accurate)
 
 # Project Management
 

@@ -50,6 +50,7 @@ from typehaus.emit.draw.pdf_writer import (
     _render_nodes,
     _scene_bounds,
 )
+from typehaus.emit.draw.review_layers import UNDERLAY
 from typehaus.emit.draw.scene import Frame, Scene
 from typehaus.emit.draw.title_block import (  # noqa: F401 — re-exported, see __all__
     _INK,
@@ -173,7 +174,7 @@ def frame_for_scene(scene: Scene, size: tuple[float, float] = LEDGER, *,
 
 
 def compose_sheet(scene: Scene, spec: object, model: ResolvedModel,
-                  size: tuple[float, float] | None = None, underlays=()):
+                  size: tuple[float, float] | None = None, underlays=(), tagger=None):
     """Compose one Scene onto a fixed-size sheet at true printed scale.
 
     ``spec`` is duck-typed (``sheets.SheetSpec``): ``number``/``title`` are required,
@@ -197,8 +198,16 @@ def compose_sheet(scene: Scene, spec: object, model: ResolvedModel,
     ax = fig.add_axes([view[0] / size[0], view[1] / size[1],
                        view[2] / size[0], view[3] / size[1]])
     ax.axis("off")
+    if tagger is not None:
+        # The PSD path hands one in to learn which review layer every artist belongs to
+        # (→ artist_tags). Nothing else about composing the sheet changes; the border, title
+        # block and scale bar below are drawn after the nodes and stay unclaimed, which is
+        # what puts them on the PSD's single opaque Background rather than on all fifteen.
+        tagger.attach(ax)
     if underlays:
         _draw_underlays(ax, underlays)
+        if tagger is not None:
+            tagger.claim(UNDERLAY)
 
     # A scene that arrived with its own Frame keeps it — a detail card chose its paper
     # before it was cut, and re-choosing here would print one scale over a drawing laid
@@ -214,7 +223,7 @@ def compose_sheet(scene: Scene, spec: object, model: ResolvedModel,
     frame = scene.frame if scene.frame is not None else frame_for_scene(scene, size)
     if frame is not None and scene.frame is None:
         scene = scene.model_copy(update={"frame": frame})
-    scaled_text = _render_nodes(ax, scene)
+    scaled_text = _render_nodes(ax, scene, tagger)
     scale_label = NTS_LABEL
     if frame is None:  # nothing measurable on the sheet — nothing to scale
         ax.set_aspect("equal")

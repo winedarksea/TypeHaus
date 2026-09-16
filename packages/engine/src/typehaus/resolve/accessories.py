@@ -468,6 +468,15 @@ def _resolve_connector(model: ResolvedModel, el: Connector, storey: str) -> None
     # measured off this solid, so the marker only has to read at the right place — and at
     # roughly the right size, which is what ``_CONNECTOR_MARKER_IN`` is for.
     half_x, half_y, half_z = _CONNECTOR_MARKER_IN.get(el.kind, _CONNECTOR_MARKER_DEFAULT)
+    # ``axis`` is the part's own in-plane run direction, and the table's two plan
+    # half-dimensions are (along, across) that run — the same convention
+    # ``connector_markers._marker_outline`` applies to every DERIVED marker, where
+    # orientation is what makes five hundred siblings legible. An authored connector went
+    # without it until 2026-09-15 for no better reason than that the field's docstring said
+    # "for braces". ``None`` keeps the project-axis box, so every connector that does not
+    # claim an orientation draws exactly as before.
+    if el.axis == "y":
+        half_x, half_y = half_y, half_x
     model.solids.append(ResolvedSolid(
         uid=el.uid or f"{el.tag}-conn", tag=el.tag, storey=storey,
         category=_CONNECTOR_CATEGORY.get(el.kind, "connector"),
