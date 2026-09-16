@@ -5,6 +5,7 @@ import { registerPwa } from "./pwa/register";
 import { initializeTheme, initializeDensity } from "./theme/theme";
 import { useStore } from "./state/store";
 import { installRouteSync } from "./state/route";
+import { installViewUrlSync } from "./state/viewUrl";
 import "./styles/index.css";
 
 initializeTheme();
@@ -23,6 +24,8 @@ registerPwa();
 // workbench first — which would mount the canvas and fetch the three.js chunk on a phone
 // that is not going to use either.
 installRouteSync(useStore);
+// Query params name the design view (`?preset=framer`); the address bar stays a shareable link.
+installViewUrlSync(useStore);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

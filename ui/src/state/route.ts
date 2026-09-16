@@ -64,7 +64,8 @@ export function installRouteSync(store: RoutableStore): () => void {
     // replaceState, not a hash assignment: the surface switch is a mode, not a page in the
     // history the back button walks. The one navigation that IS history is the phone's own
     // back gesture out of the app.
-    window.history.replaceState(null, "", next || window.location.pathname);
+    // The query is the deep-linked view (viewUrl.ts), so leaving the site keeps it.
+    window.history.replaceState(null, "", next || window.location.pathname + window.location.search);
   });
 
   window.addEventListener("hashchange", fromHash);

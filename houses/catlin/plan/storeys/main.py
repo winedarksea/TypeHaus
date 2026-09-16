@@ -2275,11 +2275,15 @@ BEAMS = [
          assembly="BEAM_LVL", top_elevation=ft(10)),
     # IUS2.56/11.88 at every hung end of FS-S-EAST in this beam: a level I-joist face-mount
     # for a 2-1/2" to 2-9/16" flange (not the roof's sloped LSSR). One spec, count derived.
-    # FS-S-WEST's floor trusses hang here too and stay on the derived part until the truss
-    # supplier names their hanger.
     Connector(uid="F7KNJ3E7XT", tag="CN-M-HGR-HALL-E", kind=ConnectorKind.JOIST_HANGER,
               position=pt(ft(18), ft(24, 1)), size="IUS2.56/11.88",
               connects=("BM-M-HALL", "FS-S-EAST")),
+    # FS-S-WEST's open-web floor trusses hang here too, on a different family: THA422, a
+    # top-flange hanger for a 4" wide, 2" thick chord — FS-S-WEST's flat 2x4 bottom chord —
+    # not IUS, which is cut for an I-joist's thin flange.
+    Connector(uid="R8P3N0AY15", tag="CN-M-HGR-HALL-W", kind=ConnectorKind.JOIST_HANGER,
+              position=pt(ft(18), ft(23, 0)), size="THA422",
+              connects=("BM-M-HALL", "FS-S-WEST")),
     # W-M-FIRE-*'s lintel, MODELLED SINCE 2026-09-11 — it was prose in three files and an
     # element in none, so nothing carried it into the BOM, the section or the 3D.
     #

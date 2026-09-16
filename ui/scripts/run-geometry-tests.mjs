@@ -45,10 +45,12 @@ try {
   const { runInspectionTests } = await server.ssrLoadModule("/src/model/inspections.test.ts");
   const { runSiteStoreTests } = await server.ssrLoadModule("/src/state/site.test.ts");
   const { runRouteTests } = await server.ssrLoadModule("/src/state/route.test.ts");
+  const { runViewUrlTests } = await server.ssrLoadModule("/src/state/viewUrl.test.ts");
   runScheduleTests();
   runInspectionTests();
   runSiteStoreTests();
   runRouteTests();
+  runViewUrlTests();
   runPlanGeometryTests();
   runOpeningGeometryTests();
   runArchGeometryTests();

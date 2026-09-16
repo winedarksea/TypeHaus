@@ -2,6 +2,7 @@ import { useCallback, useRef, useState, type CSSProperties } from "react";
 import { useStore } from "../state/store";
 import { activeLevelKey, levelsOf } from "../model/levels";
 import { DEFAULT_EARTH_OPACITY, type LabelMode, type Representation, type ViewMode, type ThreeMode, type ViewTransform, type Workspace } from "../state/vocabulary";
+import { viewParamsFor } from "../state/viewUrl";
 import { migrateSavedVisibility, type VisibleTrades } from "../model/tradeVisibility";
 import { DisciplinesGrid } from "./views/DisciplinesGrid";
 import { Icon } from "../icons/Icon";
@@ -136,6 +137,20 @@ export function ViewsPanel() {
     s.setView(v.view);
   };
 
+  // The same query the address bar carries, rebuilt here so a link copied from a hash route
+  // still opens the design view.
+  const copyLink = async () => {
+    const s = useStore.getState();
+    const query = viewParamsFor(s);
+    const url = window.location.origin + window.location.pathname + (query ? `?${query}` : "");
+    try {
+      await navigator.clipboard.writeText(url);
+      s.toast("Link to this view copied.");
+    } catch {
+      s.toast(url);
+    }
+  };
+
   const deleteView = (name: string) => {
     const next = views.filter((v) => v.name !== name);
     setViews(next);
@@ -242,6 +257,7 @@ export function ViewsPanel() {
           style={{ flex: 1, padding: "5px 7px" }}
         />
         <button className="btn" onClick={saveCurrent}>Save</button>
+        <button className="btn" onClick={copyLink} title="Copy a link that opens this view">Copy link</button>
       </div>
       {views.length === 0 ? (
         <div className="muted" style={{ marginTop: 6 }}>No saved views yet.</div>

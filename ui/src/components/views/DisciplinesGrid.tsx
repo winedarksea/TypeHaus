@@ -11,23 +11,11 @@ import { useStore } from "../../state/store";
 import type { Trade } from "../../state/vocabulary";
 import { TRADE_SURFACES } from "../../model/visibility";
 import {
-  ALL_VISIBILITY_KEYS, baseTrade, expandRolePreset, groupState, TRADE_GROUPS, type RolePreset,
+  ALL_VISIBILITY_KEYS, baseTrade, expandRolePreset, groupState, ROLE_PRESETS, TRADE_GROUPS,
   type VisibilityKey, visibilityKeyLabel, visibilityKeysOf, type VisibleTrades,
 } from "../../model/tradeVisibility";
 import { TriStateCheckbox } from "../ui/TriStateCheckbox";
 import { Icon } from "../../icons/Icon";
-
-// Role presets: the trades each discipline reviews. Selecting one shows exactly those and
-// hides the rest, so Structure can read stair continuity with the finish floors dropped.
-export const ROLE_PRESETS: Record<string, RolePreset> = {
-  Architecture: { groups: ["walls", "openings", "finishes", "roof", "furniture"],
-    trades: ["stairs"] },
-  Structure: { groups: ["structure", "concrete_masonry"], trades: ["roofing"] },
-  // Drainage sits in both MEP and Site: it is a service run an MEP reviewer sizes, and the
-  // half of it that matters on site is read against the grade sheet.
-  MEP: { groups: ["plumbing", "electrical", "mechanical"], trades: ["drainage"] },
-  Site: { groups: ["site", "concrete_masonry"] },
-};
 
 export function roleMatches(role: string, visible: VisibleTrades): boolean {
   const wanted = new Set<VisibilityKey>(expandRolePreset(ROLE_PRESETS[role]));

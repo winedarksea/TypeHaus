@@ -46,6 +46,34 @@ npm run dev            # proxies /model,/plan,/events,… to $HAUS_ENGINE (defau
 `pip install typehaus && haus serve` works without node (→ 02). `npm run typecheck` is the CI
 gate (`tsc -b --noEmit`, strict).
 
+## Deep links
+
+The query string names the design view, and the address bar keeps it current, so any URL
+is a shareable link (Views panel → **Copy link**). The hash stays the surface (`#/site/board`).
+Unknown values are ignored; defaults are omitted. Code: `src/state/viewUrl.ts`.
+
+```
+/app/?preset=framer                        # 3D, fabrication, structure sticks
+/app/?mode=3d&show=framing,concrete&storey=basement
+/app/?group=mep&reader=bom
+```
+
+| param | values |
+|---|---|
+| `preset` | `framer`, `architecture`, `structure`, `mep`, `site` (explicit params override it) |
+| `mode` | `2d`, `split`, `3d` |
+| `rep` | `conceptual`, `schematic`, `detailed`, `fabrication` |
+| `three` | `nordic`, `schematic` |
+| `show` | comma-separated trades or framing facets (`framing:connector`), exactly those on |
+| `group` | trade group ids (`concrete_masonry`) or role names (`mep`), added to `show` |
+| `storey` | a storey tag or level key |
+| `labels` | `all`, `hover`, `off` |
+| `lens` | `air`, `water`, `thermal`, `vapor` |
+| `ws` | `design`, `analyze`, `document` |
+| `reader` | `bom`, `estimate`, `documents`, `circuits`, `lighting`, `hvac`, `plumbing`, `data`, `assembly` |
+
+The 3D camera and 2D pan/zoom are not in the link.
+
 ## Offline PWA (M4)
 
 The built app is an installable PWA. When the engine is unreachable, on a File System

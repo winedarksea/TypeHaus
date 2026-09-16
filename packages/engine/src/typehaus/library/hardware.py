@@ -46,6 +46,7 @@ from typehaus.hardware.catalog import (
     ROLE_EXPOSED_FASTENER_PANEL_SCREW,
     ROLE_EXTERIOR_INSULATION_SCREW,
     ROLE_FACE_MOUNT_JOIST_HANGER,
+    ROLE_FLOOR_TRUSS_HANGER,
     ROLE_GABLE_END_TIE,
     ROLE_GABLE_TRUSS_ANCHOR,
     ROLE_GIRT_STANDOFF_SCREW,
@@ -228,6 +229,20 @@ IUS_FACE_MOUNT_HANGER = StructuralHardware(
     source="Simpson Strong-Tie IUS face-mount I-joist hanger (strongtie.com/ius) — "
            "nailless-seat hanger for a level I-joist into the face of a wood carrier; "
            "IUS2.56/11.88 is published for 2-1/2\" to 2-9/16\" joist flanges",
+)
+
+#: Level open-web floor truss face-mount. THA422: a 4" wide top-flange hanger seat for a
+#: flat 2x4 ("4x2") bottom chord, which is exactly FS-S-WEST's chord (3.5"w x 1.5"t) — not
+#: the narrower IUS family, which is cut for an I-joist's thin flange. No allowable: no
+#: table row has been read yet.
+THA_FLOOR_TRUSS_HANGER = StructuralHardware(
+    tag="simpson-tha422-floor-truss-hanger",
+    name="THA422 top-flange floor truss hanger",
+    role=ROLE_FLOOR_TRUSS_HANGER,
+    manufacturer=_SIMPSON,
+    model="THA422",
+    source="Simpson Strong-Tie THA top-flange truss hanger (strongtie.com/tha) — THA422 is "
+           "published for a 4\" wide, 2\" (nominal) thick wood floor-truss chord",
 )
 
 #: The Simpson C-C masonry/concrete hanger table, read once and cited by all three records
@@ -1812,6 +1827,7 @@ STRUCTURAL_HARDWARE: tuple = (
     LUS_FACE_MOUNT_HANGER,
     LUSZ_FACE_MOUNT_HANGER,
     IUS_FACE_MOUNT_HANGER,
+    THA_FLOOR_TRUSS_HANGER,
     HUC_CONCRETE_HANGER,
     APVB_BRACE_BOLT,
     MASA_MUDSILL_ANCHOR,

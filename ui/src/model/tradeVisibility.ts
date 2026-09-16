@@ -176,6 +176,18 @@ export function expandRolePreset(preset: RolePreset): VisibilityKey[] {
   return ALL_TRADES.filter((trade) => out.has(trade)).flatMap(visibilityKeysOf);
 }
 
+// Role presets: the trades each discipline reviews. Selecting one shows exactly those and
+// hides the rest, so Structure can read stair continuity with the finish floors dropped.
+export const ROLE_PRESETS: Record<string, RolePreset> = {
+  Architecture: { groups: ["walls", "openings", "finishes", "roof", "furniture"],
+    trades: ["stairs"] },
+  Structure: { groups: ["structure", "concrete_masonry"], trades: ["roofing"] },
+  // Drainage sits in both MEP and Site: it is a service run an MEP reviewer sizes, and the
+  // half of it that matters on site is read against the grade sheet.
+  MEP: { groups: ["plumbing", "electrical", "mechanical"], trades: ["drainage"] },
+  Site: { groups: ["site", "concrete_masonry"] },
+};
+
 // The 13-name vocabulary a saved view may have been captured with, and the assembly-layer
 // groups that sat beside it. Each old name maps to the trades it covered; a legacy layer group
 // hidden in the recipe hides the trade that band now belongs to.

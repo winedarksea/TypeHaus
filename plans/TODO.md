@@ -392,7 +392,7 @@ the future.
 - Almost every flat roof I have seen uses joists on hangers between beams. Yet our balcony here has joists above the beams (presumably held down by hurricane ties). If we put the joists lower onto the beams, we end up with the 6x6 posts being possibly too tall (over 10' it said earlier, but R507.4 says it's good up to 14').
 - We don't show the centerline wall's joist to joist blocking. This is necessary to carry the load of the walls above. For where pipes, ducts, etc need to run, we would frame out 2x6 boxes instead (so there is room to pass through). There is also a clear bug here right now, we have ducts passing straight through BM-M-HALL. BM-M-HALL also needs hangers for the joists on it (IUS2.56/11.88 I believe). BM-S-BATH-E and BM-S-HALL also need these hangers for their joists
 - Figure out a space for a cat litter box.
-- Have the UI resolve pages and reports under /app, so we can give a URL to them directly, type-haus.com/app/?= (for example)
+- ~~Have the UI resolve pages and reports under /app, so we can give a URL to them directly, type-haus.com/app/?= (for example)~~ DONE 2026-09-16: `?preset=framer`, `?mode=3d&show=framing`, `?reader=bom` (`ui/README.md` → Deep links).
 
 # Project Management
 
