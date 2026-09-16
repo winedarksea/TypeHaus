@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** 3c4ff16b064066f2  
-**Lines:** 121
+**Model hash:** 40f7032d68bd7ced  
+**Lines:** 119
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -21,9 +21,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1.25x7.25 rim White-painted PT lumber — rim board (1.25x7.25 rim:post-paint-white) | 60 | LF ordered | 4 pcs, 57.3 LF cut | building |
 | 1.5x11.25 SPF framing lumber — blocking (1.5x11.25:spf) | 8 | LF ordered | 1 pcs, 1.9 LF cut | building |
 | 1.75x11.875 LSL — rim board (1.75x11.875 LSL) | 72 | LF ordered | 2 pcs, 72.0 LF cut | building |
-| 11.875 I-joist — blocking, joist, sister joist, trimmer (11.875 I-joist) | 2,472 | LF ordered | 166 pcs, 2208.9 LF cut | building |
+| 11.875 I-joist — blocking, joist, sister joist, trimmer (11.875 I-joist) | 2,552 | LF ordered | 236 pcs, 2285.0 LF cut | building |
 | 11.875 TJI 230 — rafter (11.875 TJI 230) | 760 | LF ordered | 38 pcs, 756.8 LF cut | building |
-| 11.875 floor truss — joist, trimmer (11.875 floor truss) | 32 | ea | 32 pcs, 469.2 LF cut; 480.0 LF in the takeoff | building |
+| 11.875 floor truss — blocking, joist, trimmer (11.875 floor truss) | 44 | ea | 44 pcs, 481.7 LF cut; 504.0 LF in the takeoff | building |
 | 1x4 SPF framing lumber — girt strapping (1x4:spf) | 454 | LF ordered | 59 pcs, 403.2 LF cut | building |
 | 1x4 Structural 1 plywood — girt strapping (1x4:struct-1-plywood) | 332 | LF ordered | 44 pcs, 264.6 LF cut | building |
 | 2-1.75x11.875 LVL — header (2-1.75x11.875 LVL) | 16 | LF ordered | 7 pcs, 13.6 LF cut | building |
@@ -42,7 +42,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 — blocking, corner stud, cripple stud, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,956 | LF ordered | 659 pcs, 4224.7 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,830 | LF ordered | 462 pcs, 2441.4 LF cut | building |
 | 2x4 SPF framing lumber — girt strapping (2x4:spf) | 84 | LF ordered | 14 pcs, 62.6 LF cut | building |
-| 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | 8,568 | LF ordered | 1250 pcs, 7469.2 LF cut | building |
+| 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | 8,616 | LF ordered | 1298 pcs, 7512.5 LF cut | building |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — girt strapping (2x6:kdat) | 88 | LF ordered | 9 pcs, 72.0 LF cut | building |
 | 2x8 — blocking, header, joist, landing framing, trimmer (2x8) | 566 | LF ordered | 100 pcs, 490.8 LF cut | building |
 | 2x8 SPF framing lumber — blocking (2x8:spf) | 430 | LF ordered | 76 pcs, 357.3 LF cut | building |
@@ -77,8 +77,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | ABU66SS standoff post base (6x6), 316L stainless | 4 | ea |  | building |
 | CCQ46SDS2.5 column cap (4x beam on 6x6 post) | 4 | ea |  | building |
 | CS16 coiled strap, 16 ga | 2 | ea |  | building |
-| H2.5A hurricane/seismic tie | 202 | ea |  | building |
-| H2.5A hurricane/seismic tie | 28 | ea |  | building |
 | H2.5A hurricane/seismic tie | 38 | ea |  | building |
 | H2.5A hurricane/seismic tie | 4 | ea |  | building |
 | H2.5A hurricane/seismic tie | 22 | ea |  | building |
@@ -86,11 +84,14 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | H2.5ASS stainless hurricane/seismic tie | 6 | ea |  | building |
 | H2.5AZ ZMAX hurricane/seismic tie | 57 | ea |  | building |
 | HGA10 gusset angle, gable-end truss to top plate | 2 | ea |  | building |
-| HGAM10 masonry gusset angle | 20 | ea |  | building |
+| HGAM10 masonry gusset angle | 16 | ea |  | building |
 | HU212-3 face-mount hanger, triple 2x12 | 4 | ea |  | building |
 | HU28-2Z face-mount hanger, double 2x8 (ZMAX) | 4 | ea |  | building |
 | HUC concealed-flange masonry/concrete hanger | 2 | ea |  | building |
 | HUC212-3 concealed-flange hanger, triple 2x12 | 4 | ea |  | building |
+| IUS face-mount I-joist hanger (IUS2.56/11.88) | 3 | ea |  | building |
+| IUS face-mount I-joist hanger (IUS2.56/11.88) | 4 | ea |  | building |
+| IUS face-mount I-joist hanger (IUS2.56/11.88) | 7 | ea |  | building |
 | KBS1Z knee-brace / beam strap (ZMAX) | 2 | ea |  | building |
 | LS30 skewable angle, gable-end stud to rafter | 22 | ea |  | building |
 | LSSR field-adjustable slope/skew hanger | 1 | ea |  | building |
@@ -98,10 +99,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 19 | ea |  | building |
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 7 | ea |  | building |
 | LTP4 lateral tie plate | 122 | ea |  | building |
-| LUS face-mount joist hanger | 3 | ea |  | building |
-| LUS face-mount joist hanger | 3 | ea |  | building |
-| LUS face-mount joist hanger | 4 | ea |  | building |
-| LUS face-mount joist hanger | 7 | ea |  | building |
 | LUS face-mount joist hanger | 12 | ea |  | building |
 | LUS ZMAX face-mount joist hanger (LUS28Z) | 7 | ea |  | building |
 | LUS ZMAX face-mount joist hanger (LUS28Z) | 7 | ea |  | building |
@@ -111,6 +108,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | SP4 stud plate tie (2x4) | 6 | ea |  | building |
 | SP6 stud plate tie (2x6) | 318 | ea |  | building |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | 12 | ea |  | building |
+| THA422 top-flange floor truss hanger | 3 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 1,130 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 72 | ea |  | building |
 
@@ -194,7 +192,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1.75x11.875 LSL — rim board (1.75x11.875 LSL) | — |
 | 11.875 I-joist — blocking, joist, sister joist, trimmer (11.875 I-joist) | — |
 | 11.875 TJI 230 — rafter (11.875 TJI 230) | — |
-| 11.875 floor truss — joist, trimmer (11.875 floor truss) | — |
+| 11.875 floor truss — blocking, joist, trimmer (11.875 floor truss) | — |
 | 1x4 SPF framing lumber — girt strapping (1x4:spf) | — |
 | 1x4 Structural 1 plywood — girt strapping (1x4:struct-1-plywood) | — |
 | 2-1.75x11.875 LVL — header (2-1.75x11.875 LVL) | — |
@@ -242,8 +240,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | H2.5A hurricane/seismic tie | — |
 | H2.5A hurricane/seismic tie | — |
 | H2.5A hurricane/seismic tie | — |
-| H2.5A hurricane/seismic tie | — |
-| H2.5A hurricane/seismic tie | — |
 | H2.5ASS stainless hurricane/seismic tie | — |
 | H2.5AZ ZMAX hurricane/seismic tie | — |
 | HGA10 gusset angle, gable-end truss to top plate | — |
@@ -252,6 +248,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HU28-2Z face-mount hanger, double 2x8 (ZMAX) | — |
 | HUC concealed-flange masonry/concrete hanger | — |
 | HUC212-3 concealed-flange hanger, triple 2x12 | — |
+| IUS face-mount I-joist hanger (IUS2.56/11.88) | — |
+| IUS face-mount I-joist hanger (IUS2.56/11.88) | — |
+| IUS face-mount I-joist hanger (IUS2.56/11.88) | — |
 | KBS1Z knee-brace / beam strap (ZMAX) | — |
 | LS30 skewable angle, gable-end stud to rafter | — |
 | LSSR field-adjustable slope/skew hanger | — |
@@ -259,10 +258,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | — |
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | — |
 | LTP4 lateral tie plate | — |
-| LUS face-mount joist hanger | — |
-| LUS face-mount joist hanger | — |
-| LUS face-mount joist hanger | — |
-| LUS face-mount joist hanger | — |
 | LUS face-mount joist hanger | — |
 | LUS ZMAX face-mount joist hanger (LUS28Z) | — |
 | LUS ZMAX face-mount joist hanger (LUS28Z) | — |
@@ -272,6 +267,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | SP4 stud plate tie (2x4) | — |
 | SP6 stud plate tie (2x6) | — |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | — |
+| THA422 top-flange floor truss hanger | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | — |
 | Beam (beam) | BM-M-FIRE-LINTEL |

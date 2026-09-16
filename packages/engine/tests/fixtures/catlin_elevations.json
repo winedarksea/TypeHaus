@@ -1527,6 +1527,192 @@
 2,
 "dbdc4f7bae24"
 ],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-000": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-001": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-002": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-003": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-004": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-005-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-005-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-005-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-005-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-006": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-007": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-008": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-009-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-009-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-009-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-009-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-010-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-010-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-010-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-010-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-011": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-012": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-013": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-014-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-014-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-014-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-014-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-015": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-016-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-016-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:bearing-block-1-016-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
 "geometry/1JXQ975X9E::framing/member:joist-0-000-0": [
 2.746375,
 3.048,
@@ -3519,19 +3705,7 @@
 16,
 "cfca3a7b87b0"
 ],
-"geometry/BWSA0AAAAA/body": [
--0.4699,
--0.3175,
-2,
-"0544e819afdc"
-],
 "geometry/BWSA1AAAAA/body": [
--0.4699,
--0.3175,
-2,
-"0544e819afdc"
-],
-"geometry/BWSA2AAAAA/body": [
 -0.4699,
 -0.3175,
 2,
@@ -3543,19 +3717,7 @@
 2,
 "0544e819afdc"
 ],
-"geometry/BWSB0AAAAA/body": [
--0.4699,
--0.3175,
-2,
-"0544e819afdc"
-],
 "geometry/BWSB1AAAAA/body": [
--0.4699,
--0.3175,
-2,
-"0544e819afdc"
-],
-"geometry/BWSB2AAAAA/body": [
 -0.4699,
 -0.3175,
 2,
@@ -4184,6 +4346,156 @@
 6.11505,
 2,
 "9862144f4392"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-000": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-001": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-002-cheek-hi": [
+5.832475,
+6.0579,
+8,
+"d89b30a50f4b"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-002-cheek-lo": [
+5.832475,
+6.0579,
+8,
+"d89b30a50f4b"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-002-rail-bottom": [
+5.794375,
+5.832475,
+8,
+"28aa1cfa4289"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-002-rail-top": [
+6.0579,
+6.096,
+8,
+"68c3cbb6391b"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-003": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-004": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-005": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-006": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-007": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-008": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-009": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-010": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-011": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-012": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-013": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-014": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-015": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-016-cheek-lo": [
+5.794375,
+6.0579,
+8,
+"2b1516083fda"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-016-rail-top": [
+6.0579,
+6.096,
+8,
+"68c3cbb6391b"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-025": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-026": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-027": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:bearing-block-1-028": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
 ],
 "geometry/CAF602AAAA::framing/member:header-FO-A-STAIR-0": [
 5.794375,
@@ -9781,7 +10093,7 @@
 -0.385445,
 3.81,
 120,
-"53833e917c0f"
+"83aeeda38636"
 ],
 "geometry/CBPW43AAAA-run/body": [
 -0.415925,
@@ -13941,24 +14253,6 @@
 2,
 "72ccc722b643"
 ],
-"geometry/CM-0084fc25dca1/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-00bfe51073ee/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-00dc4c03d65e/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
 "geometry/CM-00eb3bb9aa63/body": [
 -0.2413,
 -0.127,
@@ -13971,23 +14265,11 @@
 2,
 "384b3b284c4b"
 ],
-"geometry/CM-01a85bbef0b0/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
 "geometry/CM-021cfeeeb8fa/body": [
 -0.2413,
 -0.127,
 2,
 "d95f2410e6e1"
-],
-"geometry/CM-021e617a7824/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-03a212dd935c/body": [
 2.8680833,
@@ -14013,24 +14295,6 @@
 2,
 "2f7cafc6a437"
 ],
-"geometry/CM-055340dee35e/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-06c46c8b97b2/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-070d03c42b9d/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
 "geometry/CM-0717be90418f/body": [
 8.8138,
 9.115425,
@@ -14042,6 +14306,12 @@
 8.029702,
 2,
 "fd9d89c5d279"
+],
+"geometry/CM-078ed317df5b/body": [
+-0.20955,
+-0.0254,
+2,
+"795a4564c3f4"
 ],
 "geometry/CM-07d330b99fea/body": [
 -0.0762,
@@ -14055,18 +14325,6 @@
 2,
 "d95f2410e6e1"
 ],
-"geometry/CM-08afe43e0293/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
-"geometry/CM-0958d0952d96/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
 "geometry/CM-0b6c98e4945a/body": [
 6.448298,
 6.505702,
@@ -14078,18 +14336,6 @@
 6.2103,
 2,
 "b2ed8bfb92ea"
-],
-"geometry/CM-0d095c19010d/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
-"geometry/CM-0e31101ed391/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-0e4c65dba026/body": [
 -0.4175125,
@@ -14151,18 +14397,6 @@
 2,
 "11e612643aa8"
 ],
-"geometry/CM-117c3df721e4/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-11a32d87c7d5/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
 "geometry/CM-11ca6c983fbc/body": [
 -0.0762,
 0.0762,
@@ -14175,23 +14409,11 @@
 2,
 "384b3b284c4b"
 ],
-"geometry/CM-12bbcb2fb88c/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-1415822aee76/body": [
 -3.0337125,
 -2.5257125,
 2,
 "469ed6b89083"
-],
-"geometry/CM-148dd0859291/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
 ],
 "geometry/CM-1492abba8370/body": [
 -0.2413,
@@ -14205,29 +14427,11 @@
 2,
 "e243320eaff0"
 ],
-"geometry/CM-16061488ead2/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
-"geometry/CM-176c52583b1f/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-17d81e043b02/body": [
 -0.2667,
 -0.1524,
 2,
 "1502bc750b64"
-],
-"geometry/CM-185a84da597a/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
 ],
 "geometry/CM-18a23ea64f3e/body": [
 6.096,
@@ -14246,12 +14450,6 @@
 -0.2286,
 2,
 "bcc30a4b5785"
-],
-"geometry/CM-1a629b155acc/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
 ],
 "geometry/CM-1aa187b4decf/body": [
 -0.4175125,
@@ -14295,12 +14493,6 @@
 2,
 "d08a26871ccf"
 ],
-"geometry/CM-1df6252f226d/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
 "geometry/CM-1e349f4524a7/body": [
 8.8138,
 9.115425,
@@ -14318,12 +14510,6 @@
 -0.127,
 2,
 "d95f2410e6e1"
-],
-"geometry/CM-2132663d23a9/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
 ],
 "geometry/CM-213e89c079b4/body": [
 6.096,
@@ -14343,35 +14529,11 @@
 2,
 "21631258f19b"
 ],
-"geometry/CM-21d696559fcf/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-21fc7bef0fee/body": [
 -0.381,
 -0.2286,
 2,
 "bcc30a4b5785"
-],
-"geometry/CM-220f78e9583b/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-221cfb5c296d/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-22e53b50d851/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
 ],
 "geometry/CM-23978f032666/body": [
 -2.8559125,
@@ -14385,23 +14547,11 @@
 2,
 "1502bc750b64"
 ],
-"geometry/CM-24834d494b05/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
 "geometry/CM-25144f7e52cc/body": [
 -0.5953125,
 -0.0873125,
 2,
 "c4fbde770ecc"
-],
-"geometry/CM-251d90ff8810/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-254085d53b07/body": [
 -0.381,
@@ -14409,23 +14559,11 @@
 2,
 "bcc30a4b5785"
 ],
-"geometry/CM-25983b494767/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-26318493129f/body": [
 -0.4175125,
 -0.2651125,
 2,
 "6eaf648a4efb"
-],
-"geometry/CM-263ef2e49075/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-26c89ac3e6e2/body": [
 6.096,
@@ -14438,12 +14576,6 @@
 2.29235,
 2,
 "384b3b284c4b"
-],
-"geometry/CM-2782911c1cfc/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
 ],
 "geometry/CM-27bad98f8db4/body": [
 6.096,
@@ -14487,59 +14619,23 @@
 2,
 "b2ed8bfb92ea"
 ],
-"geometry/CM-2a9904e68346/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-2b0f1cda29da/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-2b1aa4b87083/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
-"geometry/CM-2cd570640379/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-2d755aadbff3/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-2d9d79dc2812/body": [
 -0.381,
 -0.2286,
 2,
 "bcc30a4b5785"
 ],
-"geometry/CM-2eaa8ba63fea/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-2ed22ccc0a71/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
 "geometry/CM-2fb7d82e6655/body": [
 -0.381,
 -0.2286,
 2,
 "bcc30a4b5785"
+],
+"geometry/CM-302e91c65d65/body": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
 ],
 "geometry/CM-305cb725a8d9/body": [
 -0.4175125,
@@ -14552,24 +14648,6 @@
 -0.0873125,
 2,
 "c4fbde770ecc"
-],
-"geometry/CM-3097b7c7f161/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-30caff0b032c/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
-"geometry/CM-3112859e5a59/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
 ],
 "geometry/CM-313ad11211d9/body": [
 9.21385,
@@ -14607,29 +14685,17 @@
 2,
 "384b3b284c4b"
 ],
-"geometry/CM-34f3a43d6365/body": [
-2.68605,
-2.80035,
+"geometry/CM-34822ee2db83/body": [
+-2.8813125,
+-2.6781125,
 2,
-"5a82f5e8e3ed"
+"758348dd7afc"
 ],
 "geometry/CM-34fdafa4c6bc/body": [
 6.096,
 6.2103,
 2,
 "b2ed8bfb92ea"
-],
-"geometry/CM-35287430cb97/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-352e5a43d65b/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-35620f617f16/body": [
 -0.9398,
@@ -14643,30 +14709,6 @@
 2,
 "384b3b284c4b"
 ],
-"geometry/CM-35c97bab71fe/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-35e7811abfee/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-3682ec2d8e02/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-368d76470021/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-37765e80aeca/body": [
 -3.0337125,
 -2.5257125,
@@ -14678,12 +14720,6 @@
 -2.7035125,
 2,
 "791a7d356cb0"
-],
-"geometry/CM-38a00c8ed09f/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-3940190e4cb5/body": [
 -2.8559125,
@@ -14703,23 +14739,17 @@
 2,
 "8e3467ea0a69"
 ],
+"geometry/CM-39e15a52fba6/body": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
 "geometry/CM-3ac24b0c140c/body": [
 -0.0762,
 0.0762,
 2,
 "9cda49579abe"
-],
-"geometry/CM-3b01583619de/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-3b1928a05221/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-3bd0c8ff59c2/body": [
 9.21385,
@@ -14727,11 +14757,11 @@
 2,
 "2f7cafc6a437"
 ],
-"geometry/CM-3bde718435c5/body": [
--0.3984625,
--0.2841625,
+"geometry/CM-3cab5f651370/body": [
+5.794375,
+6.096,
 2,
-"1dea285841ec"
+"ee0eeebd4433"
 ],
 "geometry/CM-3cd21efa9154/body": [
 -0.381,
@@ -14739,11 +14769,11 @@
 2,
 "bcc30a4b5785"
 ],
-"geometry/CM-3ebbcfb47827/body": [
-2.68605,
-2.80035,
+"geometry/CM-3d0d4c4da3ec/body": [
+-0.20955,
+-0.0254,
 2,
-"5a82f5e8e3ed"
+"795a4564c3f4"
 ],
 "geometry/CM-3f3a67af3af7/body": [
 8.8138,
@@ -14751,35 +14781,11 @@
 2,
 "11e612643aa8"
 ],
-"geometry/CM-3f90dd447011/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
 "geometry/CM-401dbddc562e/body": [
 -0.4175125,
 -0.2651125,
 2,
 "6eaf648a4efb"
-],
-"geometry/CM-40905455a5bf/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-40b414a87b48/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-4100e2ebd5c9/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
 ],
 "geometry/CM-4135a797a367/body": [
 2.8680833,
@@ -14792,24 +14798,6 @@
 6.2103,
 2,
 "b2ed8bfb92ea"
-],
-"geometry/CM-4148836b02a8/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
-"geometry/CM-41b6a8e95584/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-41ddb0a12184/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
 ],
 "geometry/CM-41ffe93c1ab7/body": [
 2.20345,
@@ -14859,17 +14847,17 @@
 2,
 "0bd2ea40785d"
 ],
+"geometry/CM-489dc2b94de5/body": [
+2.8056417,
+2.9897917,
+2,
+"85d0d8aef20a"
+],
 "geometry/CM-48ef0c6387ae/body": [
 6.096,
 6.2103,
 2,
 "b2ed8bfb92ea"
-],
-"geometry/CM-492cebb9c303/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-49a36e50a7ee/body": [
 6.096,
@@ -14877,23 +14865,11 @@
 2,
 "b2ed8bfb92ea"
 ],
-"geometry/CM-49c17606b4e2/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-4a0b05af7546/body": [
 -0.2413,
 -0.127,
 2,
 "d95f2410e6e1"
-],
-"geometry/CM-4a14a7a8539b/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
 ],
 "geometry/CM-4a772bb8b356/body": [
 -2.8559125,
@@ -14901,23 +14877,11 @@
 2,
 "525777202e84"
 ],
-"geometry/CM-4b651f25fc46/body": [
--0.3984625,
--0.2841625,
+"geometry/CM-4c67210ef9d8/body": [
+2.746375,
+2.930525,
 2,
-"1dea285841ec"
-],
-"geometry/CM-4bb40faf9de9/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
-"geometry/CM-4c51d2b937c8/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
+"60ecc36a8ee0"
 ],
 "geometry/CM-4c821b3ab9c5/body": [
 9.21385,
@@ -14931,23 +14895,11 @@
 2,
 "b2ed8bfb92ea"
 ],
-"geometry/CM-4ca29b02f64e/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
 "geometry/CM-4d14870a805d/body": [
 2.17805,
 2.29235,
 2,
 "384b3b284c4b"
-],
-"geometry/CM-4deefe80117e/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
 ],
 "geometry/CM-4e7c444e3312/body": [
 2.8405667,
@@ -14961,41 +14913,17 @@
 2,
 "469ed6b89083"
 ],
-"geometry/CM-4fb0efde088b/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
 "geometry/CM-4fb7622e8371/body": [
 2.17805,
 2.29235,
 2,
 "384b3b284c4b"
 ],
-"geometry/CM-4fee5d359b30/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-5022d4d5b072/body": [
 6.096,
 6.2103,
 2,
 "b2ed8bfb92ea"
-],
-"geometry/CM-506bcd778445/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
-"geometry/CM-510a37cba045/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-5128bd3589df/body": [
 8.8138,
@@ -15009,17 +14937,17 @@
 2,
 "384b3b284c4b"
 ],
+"geometry/CM-5251a095a41a/body": [
+2.771775,
+2.955925,
+2,
+"a467bd1f0c21"
+],
 "geometry/CM-52d781d66afa/body": [
 -0.5588,
 -0.0508,
 2,
 "3168e778a9be"
-],
-"geometry/CM-52d97885f229/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-5300ada26cd6/body": [
 6.096,
@@ -15039,71 +14967,23 @@
 2,
 "6eaf648a4efb"
 ],
-"geometry/CM-53f4f6f0e10f/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-544e6b45fbb3/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-5455374afa1d/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
 "geometry/CM-546ca364e37d/body": [
 -0.5588,
 -0.0508,
 2,
 "3168e778a9be"
 ],
-"geometry/CM-54baf4d080b9/body": [
-5.73405,
-5.84835,
+"geometry/CM-556bb40c41d1/body": [
+2.746375,
+3.048,
 2,
-"e3861c159b08"
+"e76b7cb538bf"
 ],
-"geometry/CM-5505f82406b0/body": [
-2.68605,
-2.80035,
+"geometry/CM-57df4d473881/body": [
+-0.20955,
+-0.0254,
 2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-5527d99e4e85/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-55cf248ad506/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-5675d76d2ed5/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
-"geometry/CM-5683b281c82b/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-5784d73cd2ca/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
+"795a4564c3f4"
 ],
 "geometry/CM-57e02d3e4dd4/body": [
 9.21385,
@@ -15117,18 +14997,6 @@
 2,
 "fd9d89c5d279"
 ],
-"geometry/CM-594c5597a809/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
-"geometry/CM-596465723406/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-59b37a53f046/body": [
 -0.5953125,
 -0.0873125,
@@ -15140,18 +15008,6 @@
 -0.2651125,
 2,
 "6eaf648a4efb"
-],
-"geometry/CM-5a546beb5483/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-5ae823df4084/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
 ],
 "geometry/CM-5bbef9c4cbe5/body": [
 -0.381,
@@ -15177,17 +15033,17 @@
 2,
 "3168e778a9be"
 ],
+"geometry/CM-5d6306da90ae/body": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
 "geometry/CM-5dae1fa8e54b/body": [
 -2.8559125,
 -2.7035125,
 2,
 "791a7d356cb0"
-],
-"geometry/CM-5e34dc4be888/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
 ],
 "geometry/CM-5ed0ecfa0f1b/body": [
 -2.6781125,
@@ -15195,29 +15051,17 @@
 2,
 "fadc98f9d6c9"
 ],
-"geometry/CM-5f072a59f104/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-604252d8b195/body": [
 -2.8559125,
 -2.7035125,
 2,
 "791a7d356cb0"
 ],
-"geometry/CM-6063728600e9/body": [
-5.73405,
-5.84835,
+"geometry/CM-612fdb8683ce/body": [
+5.794375,
+6.096,
 2,
-"e3861c159b08"
-],
-"geometry/CM-6123af65cee3/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
+"ee0eeebd4433"
 ],
 "geometry/CM-6145ad302d20/body": [
 -0.2667,
@@ -15237,53 +15081,17 @@
 2,
 "11e612643aa8"
 ],
-"geometry/CM-624598fd0c8e/body": [
--0.3984625,
--0.2841625,
+"geometry/CM-6290b802fdd9/body": [
+5.794375,
+6.096,
 2,
-"1dea285841ec"
-],
-"geometry/CM-62ce1f28f8ce/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-62e9c29b4b3e/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
-"geometry/CM-6347098fc6c3/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-635ef6981ca4/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-63a327f9c9f8/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
+"ee0eeebd4433"
 ],
 "geometry/CM-647169c8fe27/body": [
 -0.2413,
 -0.127,
 2,
 "d95f2410e6e1"
-],
-"geometry/CM-64af8090688d/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
 ],
 "geometry/CM-64f7ce3e35d2/body": [
 -2.8559125,
@@ -15308,18 +15116,6 @@
 6.2103,
 2,
 "b2ed8bfb92ea"
-],
-"geometry/CM-66dbeec2f9e8/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-67708c19de2e/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
 ],
 "geometry/CM-67a0fd6b7621/body": [
 6.096,
@@ -15351,12 +15147,6 @@
 2,
 "d95f2410e6e1"
 ],
-"geometry/CM-698a2ec1b749/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-6993299f0e1a/body": [
 8.8138,
 9.115425,
@@ -15369,47 +15159,17 @@
 2,
 "b2ed8bfb92ea"
 ],
-"geometry/CM-6a1d9e4ffec8/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
 "geometry/CM-6a23adcf80b9/body": [
 -0.381,
 -0.2286,
 2,
 "bcc30a4b5785"
 ],
-"geometry/CM-6aac1a0ef0ae/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-6ac4a26c74b4/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
 "geometry/CM-6ac4aaa7be09/body": [
 -0.9398,
 -0.7874,
 2,
 "950b451b234e"
-],
-"geometry/CM-6b00e9498fa1/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-6b43747a827b/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-6b5514f0938c/body": [
 6.096,
@@ -15429,6 +15189,12 @@
 2,
 "11e612643aa8"
 ],
+"geometry/CM-6d7c7d747208/body": [
+-0.20955,
+-0.0254,
+2,
+"795a4564c3f4"
+],
 "geometry/CM-6eae8d68b454/body": [
 -0.4175125,
 -0.2651125,
@@ -15441,29 +15207,11 @@
 2,
 "2f7cafc6a437"
 ],
-"geometry/CM-6f42f56052af/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-6faad20360d1/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-7016107ca100/body": [
 -0.381,
 -0.2286,
 2,
 "bcc30a4b5785"
-],
-"geometry/CM-71ee0123fa64/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-72151dc5bffb/body": [
 -3.0337125,
@@ -15476,12 +15224,6 @@
 -0.127,
 2,
 "d95f2410e6e1"
-],
-"geometry/CM-731a7df363ca/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-738a8664eeb0/body": [
 -2.8559125,
@@ -15507,23 +15249,17 @@
 2,
 "2f7cafc6a437"
 ],
+"geometry/CM-73fff40eb67d/body": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
 "geometry/CM-74936aa29fb9/body": [
 -0.2413,
 -0.127,
 2,
 "d95f2410e6e1"
-],
-"geometry/CM-7496508a97d5/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-74e85dc019f6/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
 ],
 "geometry/CM-75eaecee634d/body": [
 -0.4175125,
@@ -15542,18 +15278,6 @@
 -2.7035125,
 2,
 "791a7d356cb0"
-],
-"geometry/CM-768e1d66e949/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-7831ff50fe32/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
 ],
 "geometry/CM-79993fb0abfb/body": [
 9.21385,
@@ -15585,11 +15309,11 @@
 2,
 "11e612643aa8"
 ],
-"geometry/CM-7c1317d39dbd/body": [
--0.3984625,
--0.2841625,
+"geometry/CM-7bbe5be6655f/body": [
+2.7802417,
+2.9643917,
 2,
-"1dea285841ec"
+"0d161e75ecf6"
 ],
 "geometry/CM-7c3684b28448/body": [
 2.8575,
@@ -15597,41 +15321,17 @@
 2,
 "b18afce8b18a"
 ],
-"geometry/CM-7c45536ce07d/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-7ccf196719ee/body": [
 9.21385,
 9.22655,
 2,
 "2f7cafc6a437"
 ],
-"geometry/CM-7cf4042412de/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-7d1317705788/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-7dbcb5a481e4/body": [
 -0.381,
 -0.2286,
 2,
 "bcc30a4b5785"
-],
-"geometry/CM-7ebfbfe1fb21/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
 ],
 "geometry/CM-7efb4b3cc800/body": [
 -2.8559125,
@@ -15651,12 +15351,6 @@
 2,
 "6eaf648a4efb"
 ],
-"geometry/CM-7f9196c7b389/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-803cfeacc391/body": [
 9.21385,
 9.22655,
@@ -15668,12 +15362,6 @@
 -2.7035125,
 2,
 "791a7d356cb0"
-],
-"geometry/CM-81e42255b14f/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-82888e81e93d/body": [
 7.108698,
@@ -15717,29 +15405,23 @@
 2,
 "1b379a47f18f"
 ],
-"geometry/CM-86d3528cbcf3/body": [
--0.3984625,
--0.2841625,
+"geometry/CM-87b8a549039f/body": [
+5.794375,
+6.096,
 2,
-"1dea285841ec"
+"ee0eeebd4433"
 ],
-"geometry/CM-8731328f6384/body": [
--0.3984625,
--0.2841625,
+"geometry/CM-87d671b36888/body": [
+5.794375,
+6.096,
 2,
-"1dea285841ec"
+"ee0eeebd4433"
 ],
 "geometry/CM-88b499bec417/body": [
 -0.381,
 -0.2286,
 2,
 "bcc30a4b5785"
-],
-"geometry/CM-89fde14ae237/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
 ],
 "geometry/CM-8a44bfd4a7f7/body": [
 -3.0337125,
@@ -15765,29 +15447,11 @@
 2,
 "d95f2410e6e1"
 ],
-"geometry/CM-8c83243c9152/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-8d1d0536f9f4/body": [
 6.096,
 6.2103,
 2,
 "b2ed8bfb92ea"
-],
-"geometry/CM-8d366f573bf7/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
-"geometry/CM-8d47d2d529ed/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
 ],
 "geometry/CM-8da5bda58a8e/body": [
 9.191498,
@@ -15819,12 +15483,6 @@
 2,
 "791a7d356cb0"
 ],
-"geometry/CM-903189cc0101/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-907357fb6b9e/body": [
 8.75665,
 8.87095,
@@ -15848,12 +15506,6 @@
 2.29235,
 2,
 "384b3b284c4b"
-],
-"geometry/CM-939c24c7a632/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-93cb934460b7/body": [
 -0.2667,
@@ -15879,12 +15531,6 @@
 2,
 "d95f2410e6e1"
 ],
-"geometry/CM-95557a50336a/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-95aa337fdf18/body": [
 -2.8559125,
 -2.7035125,
@@ -15896,18 +15542,6 @@
 6.2103,
 2,
 "b2ed8bfb92ea"
-],
-"geometry/CM-97552bd1413f/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-978afce6964a/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-978caea9b9ab/body": [
 6.448298,
@@ -15951,23 +15585,11 @@
 2,
 "31191e8d83e0"
 ],
-"geometry/CM-9a66b4001b35/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
 "geometry/CM-9a6a19950493/body": [
 6.096,
 6.2103,
 2,
 "b2ed8bfb92ea"
-],
-"geometry/CM-9a72752864dd/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
 ],
 "geometry/CM-9abb81cb5f81/body": [
 6.096,
@@ -15987,12 +15609,6 @@
 2,
 "bcc30a4b5785"
 ],
-"geometry/CM-9b1338ab24ca/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
 "geometry/CM-9d697bb8a08c/body": [
 6.448298,
 6.505702,
@@ -16005,47 +15621,17 @@
 2,
 "1502bc750b64"
 ],
-"geometry/CM-9e71136cdaca/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
 "geometry/CM-9eca00f7e60a/body": [
 -0.2413,
 -0.127,
 2,
 "d95f2410e6e1"
 ],
-"geometry/CM-a03d78fbd3c3/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
 "geometry/CM-a067c6e7e08d/body": [
 -2.6717625,
 -2.5193625,
 2,
 "72ccc722b643"
-],
-"geometry/CM-a0c2152a7945/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-a0c7f49e6859/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-a189d51edbde/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-a22b2f567907/body": [
 -2.8559125,
@@ -16065,6 +15651,18 @@
 2,
 "d95f2410e6e1"
 ],
+"geometry/CM-a2f5414dc24f/body": [
+-0.5715,
+-0.3683,
+2,
+"36dee45a9191"
+],
+"geometry/CM-a32fe138222b/body": [
+2.7633083,
+2.9474583,
+2,
+"e3051eaf9c7a"
+],
 "geometry/CM-a357eabe03a8/body": [
 -0.2413,
 -0.127,
@@ -16077,23 +15675,11 @@
 2,
 "d95f2410e6e1"
 ],
-"geometry/CM-a3c7a41dee1a/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
 "geometry/CM-a3e88c83f7bb/body": [
 -0.381,
 -0.2286,
 2,
 "bcc30a4b5785"
-],
-"geometry/CM-a3e9d88a25cc/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-a4adcdd90678/body": [
 2.17805,
@@ -16131,41 +15717,11 @@
 2,
 "d95f2410e6e1"
 ],
-"geometry/CM-a699d6540bb4/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-a71b03d473d9/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-a77d588c2208/body": [
 6.096,
 6.2103,
 2,
 "b2ed8bfb92ea"
-],
-"geometry/CM-a7ad17b0882b/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-a8bfa7ee03c3/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-a922480b2896/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-a959feb7792d/body": [
 -3.0337125,
@@ -16173,29 +15729,23 @@
 2,
 "469ed6b89083"
 ],
-"geometry/CM-a9ff453bbd68/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
 "geometry/CM-aa125cbd0edf/body": [
 9.191498,
 9.248902,
 2,
 "0bd2ea40785d"
 ],
+"geometry/CM-aa5258479b33/body": [
+-0.20955,
+-0.0254,
+2,
+"795a4564c3f4"
+],
 "geometry/CM-aa59531d38db/body": [
 -0.4175125,
 -0.2651125,
 2,
 "6eaf648a4efb"
-],
-"geometry/CM-aa6f0043a971/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-aa85a35b9120/body": [
 -0.4175125,
@@ -16227,12 +15777,6 @@
 2,
 "791a7d356cb0"
 ],
-"geometry/CM-ab2ea44ba8d5/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
 "geometry/CM-abca5e5afd68/body": [
 2.17805,
 2.29235,
@@ -16251,23 +15795,17 @@
 2,
 "8e3467ea0a69"
 ],
-"geometry/CM-ad1b45840ce0/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
-"geometry/CM-adc9da0fcb2b/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
 "geometry/CM-ae97347d2b4e/body": [
 -0.4175125,
 -0.2651125,
 2,
 "6eaf648a4efb"
+],
+"geometry/CM-aebef6bcc236/body": [
+-0.20955,
+-0.0254,
+2,
+"795a4564c3f4"
 ],
 "geometry/CM-aeed52ddbac4/body": [
 2.17805,
@@ -16275,35 +15813,17 @@
 2,
 "384b3b284c4b"
 ],
-"geometry/CM-af0fb8909a54/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
 "geometry/CM-af3c3e17f9bf/body": [
 -0.2413,
 -0.127,
 2,
 "d95f2410e6e1"
 ],
-"geometry/CM-b011edbd3768/body": [
-5.73405,
-5.84835,
+"geometry/CM-b01f93438d1d/body": [
+-0.20955,
+-0.0254,
 2,
-"e3861c159b08"
-],
-"geometry/CM-b0d99928de38/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-b1b38fe35ff2/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
+"795a4564c3f4"
 ],
 "geometry/CM-b1fb47baf148/body": [
 -0.381,
@@ -16311,11 +15831,11 @@
 2,
 "bcc30a4b5785"
 ],
-"geometry/CM-b283db22309b/body": [
-2.68605,
-2.80035,
+"geometry/CM-b2a960b57328/body": [
+2.7548417,
+2.9389917,
 2,
-"5a82f5e8e3ed"
+"e7bfe18438f6"
 ],
 "geometry/CM-b301dc8f05f8/body": [
 6.096,
@@ -16323,23 +15843,11 @@
 2,
 "b2ed8bfb92ea"
 ],
-"geometry/CM-b3352b853677/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
 "geometry/CM-b3485a6c23ab/body": [
 2.17805,
 2.29235,
 2,
 "384b3b284c4b"
-],
-"geometry/CM-b3cc921b5aeb/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
 ],
 "geometry/CM-b3da950fc3b7/body": [
 8.75665,
@@ -16359,23 +15867,11 @@
 2,
 "6eaf648a4efb"
 ],
-"geometry/CM-b4c6d9d6e531/body": [
-2.68605,
-2.80035,
+"geometry/CM-b5312f8013a6/body": [
+2.797175,
+2.981325,
 2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-b4defadf757b/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
-"geometry/CM-b5e025cc0495/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
+"e7e482ac5954"
 ],
 "geometry/CM-b6edc96487cc/body": [
 -1.1176,
@@ -16383,35 +15879,11 @@
 2,
 "615c766bf65e"
 ],
-"geometry/CM-b706ee54bf8d/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-b734dbb11bbb/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-b7498c97c660/body": [
 -2.8559125,
 -2.7035125,
 2,
 "791a7d356cb0"
-],
-"geometry/CM-b7de4ad56540/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-b7f09bce0d0e/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
 ],
 "geometry/CM-b83ca701b487/body": [
 -0.2413,
@@ -16437,17 +15909,11 @@
 2,
 "384b3b284c4b"
 ],
-"geometry/CM-b8efb790df9e/body": [
-2.68605,
-2.80035,
+"geometry/CM-b8e03400ad88/body": [
+5.794375,
+6.096,
 2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-b8ff52b90fcc/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
+"ee0eeebd4433"
 ],
 "geometry/CM-b90323eed8a1/body": [
 -0.4175125,
@@ -16461,41 +15927,23 @@
 2,
 "2f7cafc6a437"
 ],
-"geometry/CM-b9590fec46e9/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
 "geometry/CM-b9a845bf90ca/body": [
 6.096,
 6.2103,
 2,
 "b2ed8bfb92ea"
 ],
-"geometry/CM-ba9dc8f8d4d6/body": [
-2.68605,
-2.80035,
+"geometry/CM-b9b13722a28b/body": [
+-2.8813125,
+-2.6781125,
 2,
-"5a82f5e8e3ed"
+"758348dd7afc"
 ],
 "geometry/CM-bb1f5188f75b/body": [
 7.769098,
 7.826502,
 2,
 "6044a832a4ac"
-],
-"geometry/CM-bb6aae2623eb/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
-"geometry/CM-bb878a0b04be/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
 ],
 "geometry/CM-bb9f29d7fd16/body": [
 -0.381,
@@ -16509,29 +15957,23 @@
 2,
 "d95f2410e6e1"
 ],
-"geometry/CM-bc44cac652e9/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-bcb03e8c6309/body": [
 2.8321,
 2.9464,
 2,
 "42d64249914d"
 ],
+"geometry/CM-be16806281a4/body": [
+-0.20955,
+-0.0254,
+2,
+"795a4564c3f4"
+],
 "geometry/CM-bf0ff4f2ab9a/body": [
 2.17805,
 2.29235,
 2,
 "384b3b284c4b"
-],
-"geometry/CM-bf8038c7bcd5/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
 ],
 "geometry/CM-bf964f4b0dda/body": [
 6.096,
@@ -16551,23 +15993,17 @@
 2,
 "8e3467ea0a69"
 ],
-"geometry/CM-c023410a6416/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-c086291782c9/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
 "geometry/CM-c13c9372bcfd/body": [
 -3.0337125,
 -2.5257125,
 2,
 "469ed6b89083"
+],
+"geometry/CM-c245a73cd9d8/body": [
+-0.20955,
+-0.0254,
+2,
+"795a4564c3f4"
 ],
 "geometry/CM-c2a02d20dd2e/body": [
 -0.5588,
@@ -16593,23 +16029,11 @@
 2,
 "6eaf648a4efb"
 ],
-"geometry/CM-c3b6d4ebb57a/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
 "geometry/CM-c3fa5c751017/body": [
 -0.4175125,
 -0.2651125,
 2,
 "6eaf648a4efb"
-],
-"geometry/CM-c493bcef2858/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
 ],
 "geometry/CM-c500a911d6fa/body": [
 2.20345,
@@ -16641,6 +16065,12 @@
 2,
 "2f7cafc6a437"
 ],
+"geometry/CM-c7c97df998ea/body": [
+-0.20955,
+-0.0254,
+2,
+"795a4564c3f4"
+],
 "geometry/CM-c87a322597bc/body": [
 8.75665,
 8.87095,
@@ -16653,17 +16083,11 @@
 2,
 "6eaf648a4efb"
 ],
-"geometry/CM-ca178a7600c6/body": [
-5.73405,
-5.84835,
+"geometry/CM-ca9ae36c7cd4/body": [
+5.794375,
+6.096,
 2,
-"e3861c159b08"
-],
-"geometry/CM-caa5097ae8b1/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
+"ee0eeebd4433"
 ],
 "geometry/CM-cab2cf0b5167/body": [
 7.819898,
@@ -16671,11 +16095,11 @@
 2,
 "2ef6cacc8a66"
 ],
-"geometry/CM-cab695ccfaee/body": [
-2.68605,
-2.80035,
+"geometry/CM-cabc92370829/body": [
+2.7887083,
+2.9728583,
 2,
-"5a82f5e8e3ed"
+"c828eed53122"
 ],
 "geometry/CM-cae14b3f2c0e/body": [
 -0.5588,
@@ -16689,12 +16113,6 @@
 2,
 "791a7d356cb0"
 ],
-"geometry/CM-cb47ff02bd81/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
 "geometry/CM-cb5b0fa555c3/body": [
 -0.4175125,
 -0.2651125,
@@ -16707,23 +16125,11 @@
 2,
 "8e3467ea0a69"
 ],
-"geometry/CM-cc6cff8b7ec9/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
 "geometry/CM-cd0b491f7224/body": [
 -0.4175125,
 -0.2651125,
 2,
 "6eaf648a4efb"
-],
-"geometry/CM-cdd66a1ed5d3/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
 ],
 "geometry/CM-cea10e5cac51/body": [
 -0.9398,
@@ -16736,6 +16142,18 @@
 -0.2651125,
 2,
 "6eaf648a4efb"
+],
+"geometry/CM-cf4aeca69b59/body": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"geometry/CM-cf6043ca9fa5/body": [
+-0.4953,
+-0.2921,
+2,
+"a22cb0032e0f"
 ],
 "geometry/CM-cfdc2f81ce35/body": [
 8.75665,
@@ -16755,6 +16173,12 @@
 2,
 "b2ed8bfb92ea"
 ],
+"geometry/CM-d0550d10c6f9/body": [
+-0.4953,
+-0.2921,
+2,
+"a22cb0032e0f"
+],
 "geometry/CM-d173463ffbd6/body": [
 -0.4175125,
 -0.2651125,
@@ -16773,23 +16197,11 @@
 2,
 "d95f2410e6e1"
 ],
-"geometry/CM-d2866ad370e9/body": [
-2.68605,
-2.80035,
+"geometry/CM-d413f0fcbfde/body": [
+-0.20955,
+-0.0254,
 2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-d2a1c59d9ba5/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
-"geometry/CM-d37fd654beef/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
+"795a4564c3f4"
 ],
 "geometry/CM-d41f74caec76/body": [
 -0.20955,
@@ -16803,23 +16215,17 @@
 2,
 "d95f2410e6e1"
 ],
-"geometry/CM-d4b6737861d5/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-d4c326b727ad/body": [
 8.8138,
 9.115425,
 2,
 "11e612643aa8"
 ],
-"geometry/CM-d56a030731cf/body": [
-5.73405,
-5.84835,
+"geometry/CM-d502011b85ad/body": [
+-0.20955,
+-0.0254,
 2,
-"e3861c159b08"
+"795a4564c3f4"
 ],
 "geometry/CM-d57928e3882b/body": [
 2.17805,
@@ -16827,59 +16233,17 @@
 2,
 "384b3b284c4b"
 ],
-"geometry/CM-d5df477c14e3/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
-"geometry/CM-d74a594f88b0/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
-"geometry/CM-d77ad6681c68/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-d78f47d9de65/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
 "geometry/CM-d7af89aeb9ec/body": [
 8.581898,
 8.639302,
 2,
 "543de86b6287"
 ],
-"geometry/CM-d7c85b63b991/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
-"geometry/CM-d854ec043c93/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
 "geometry/CM-d96997787aaa/body": [
 -0.5588,
 -0.0508,
 2,
 "3168e778a9be"
-],
-"geometry/CM-da2bcb04dcd2/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
 ],
 "geometry/CM-da3ef95a3150/body": [
 -0.5588,
@@ -16899,23 +16263,11 @@
 2,
 "384b3b284c4b"
 ],
-"geometry/CM-dc06b103c22b/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-dc146950c005/body": [
 9.21385,
 9.22655,
 2,
 "2f7cafc6a437"
-],
-"geometry/CM-dc7b2a58b1fe/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
 ],
 "geometry/CM-dc883a556f5a/body": [
 2.8575,
@@ -16941,23 +16293,17 @@
 2,
 "fadc98f9d6c9"
 ],
-"geometry/CM-e03335304b75/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-e044788e90da/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-e0b1439bcc38/body": [
 -0.2413,
 -0.127,
 2,
 "d95f2410e6e1"
+],
+"geometry/CM-e0e3f6c9dfed/body": [
+-0.20955,
+-0.0254,
+2,
+"795a4564c3f4"
 ],
 "geometry/CM-e14e3db3cecf/body": [
 9.21385,
@@ -16970,18 +16316,6 @@
 0.254,
 2,
 "9cbb1e0ab81d"
-],
-"geometry/CM-e24fbf7b878f/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-e31adc9c3201/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
 ],
 "geometry/CM-e3c30269e411/body": [
 -0.254,
@@ -17007,29 +16341,11 @@
 2,
 "803ff5e05574"
 ],
-"geometry/CM-e514d9b74ae1/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-e560838d398c/body": [
 -3.0337125,
 -2.5257125,
 2,
 "469ed6b89083"
-],
-"geometry/CM-e5e149f66452/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-e60e4aff9859/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-e69ec3b3cc99/body": [
 2.17805,
@@ -17043,35 +16359,11 @@
 2,
 "6eaf648a4efb"
 ],
-"geometry/CM-e7b93631dc0b/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
-"geometry/CM-e7ec493ebeed/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-e7f095db223b/body": [
 -0.5588,
 -0.0508,
 2,
 "3168e778a9be"
-],
-"geometry/CM-e82e3f9df3f3/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-e84237c65445/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
 ],
 "geometry/CM-e855ddb79713/body": [
 -0.2413,
@@ -17085,35 +16377,17 @@
 2,
 "803ff5e05574"
 ],
-"geometry/CM-eaf33fa00bd1/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-eb47af206eec/body": [
 7.134098,
 7.191502,
 2,
 "d4fd4c87eaff"
 ],
-"geometry/CM-eb62ee873af5/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
 "geometry/CM-eb9a0afaf091/body": [
 -3.0337125,
 -2.5257125,
 2,
 "469ed6b89083"
-],
-"geometry/CM-ec99bcf997a0/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-eca06a51f2f7/body": [
 -3.0337125,
@@ -17145,12 +16419,6 @@
 2,
 "469ed6b89083"
 ],
-"geometry/CM-f102710735e8/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
 "geometry/CM-f128540003a8/body": [
 -0.381,
 -0.2286,
@@ -17162,12 +16430,6 @@
 -0.127,
 2,
 "d95f2410e6e1"
-],
-"geometry/CM-f2314c14bb54/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
 ],
 "geometry/CM-f2499eaf37a5/body": [
 9.21385,
@@ -17181,18 +16443,6 @@
 2,
 "b2ed8bfb92ea"
 ],
-"geometry/CM-f26903eae502/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-f290bd1ad4e3/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
 "geometry/CM-f2e24b91e551/body": [
 -0.5953125,
 -0.0873125,
@@ -17204,18 +16454,6 @@
 -2.7035125,
 2,
 "791a7d356cb0"
-],
-"geometry/CM-f358d5ca5fc2/body": [
-2.68605,
-2.80035,
-2,
-"5a82f5e8e3ed"
-],
-"geometry/CM-f3cfbe957f08/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
 ],
 "geometry/CM-f55fbbb7747b/body": [
 8.8138,
@@ -17229,41 +16467,17 @@
 2,
 "6eaf648a4efb"
 ],
-"geometry/CM-f68b8372dd53/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
 "geometry/CM-f69ac336d44f/body": [
 2.17805,
 2.29235,
 2,
 "384b3b284c4b"
 ],
-"geometry/CM-f795fff1648d/body": [
-5.73405,
-5.84835,
+"geometry/CM-f7e35dc62063/body": [
+-2.8813125,
+-2.6781125,
 2,
-"e3861c159b08"
-],
-"geometry/CM-f801b2d38875/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-f8c538b885be/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
-"geometry/CM-f8e6ddaaa946/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
+"758348dd7afc"
 ],
 "geometry/CM-f9349931a8a0/body": [
 -0.2413,
@@ -17271,23 +16485,17 @@
 2,
 "d95f2410e6e1"
 ],
-"geometry/CM-f9383c4a93da/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
 "geometry/CM-f9af6c56a858/body": [
 -0.4175125,
 -0.2651125,
 2,
 "6eaf648a4efb"
 ],
-"geometry/CM-f9e8f4c9e93b/body": [
-2.68605,
-2.80035,
+"geometry/CM-f9b0877c9a80/body": [
+-0.5715,
+-0.3683,
 2,
-"5a82f5e8e3ed"
+"36dee45a9191"
 ],
 "geometry/CM-fa02d3c3a5bd/body": [
 -0.4175125,
@@ -17301,11 +16509,11 @@
 2,
 "b2ed8bfb92ea"
 ],
-"geometry/CM-faf6fc7eb5e3/body": [
-2.68605,
-2.80035,
+"geometry/CM-fb086b3b3220/body": [
+5.794375,
+6.096,
 2,
-"5a82f5e8e3ed"
+"ee0eeebd4433"
 ],
 "geometry/CM-fc1b81fae159/body": [
 -0.4175125,
@@ -17319,18 +16527,6 @@
 2,
 "72ccc722b643"
 ],
-"geometry/CM-fc6729fd46e4/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
-],
-"geometry/CM-fca4adc1ae8d/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
 "geometry/CM-fcf0b4c95c80/body": [
 -0.4175125,
 -0.2651125,
@@ -17343,23 +16539,11 @@
 2,
 "469ed6b89083"
 ],
-"geometry/CM-fe3007fe827e/body": [
--0.3984625,
--0.2841625,
-2,
-"1dea285841ec"
-],
 "geometry/CM-ff05125c1109/body": [
 -2.8559125,
 -2.7035125,
 2,
 "791a7d356cb0"
-],
-"geometry/CM-ff209c3c17fd/body": [
-5.73405,
-5.84835,
-2,
-"e3861c159b08"
 ],
 "geometry/CM-ff58472eb262/body": [
 -0.2413,
@@ -17625,6 +16809,102 @@
 2,
 "6dc455ea4c5e"
 ],
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-000": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-001": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-002": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-003": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-004": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-005": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-006": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-007": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-008": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-009": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-010": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-011": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-012": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-013": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-014": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:bearing-block-1-016": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
 "geometry/CMFS01AAAA::framing/member:joist-0-000-0": [
 -0.301625,
 0.0,
@@ -17811,6 +17091,66 @@
 2,
 "6dc455ea4c5e"
 ],
+"geometry/CMFS02AAAA::framing/member:bearing-block-0-000": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS02AAAA::framing/member:bearing-block-0-001": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS02AAAA::framing/member:bearing-block-0-002": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS02AAAA::framing/member:bearing-block-0-003": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS02AAAA::framing/member:bearing-block-0-004": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS02AAAA::framing/member:bearing-block-0-005": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS02AAAA::framing/member:bearing-block-0-006": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS02AAAA::framing/member:bearing-block-0-007": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS02AAAA::framing/member:bearing-block-0-008": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS02AAAA::framing/member:bearing-block-0-009": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
 "geometry/CMFS02AAAA::framing/member:header-FO-M-FIRE-0": [
 -0.301625,
 0.0,
@@ -17918,6 +17258,54 @@
 0.01905,
 2,
 "6dc455ea4c5e"
+],
+"geometry/CMFS03AAAA::framing/member:bearing-block-1-003": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS03AAAA::framing/member:bearing-block-1-004": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS03AAAA::framing/member:bearing-block-1-005": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS03AAAA::framing/member:bearing-block-1-006": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS03AAAA::framing/member:bearing-block-1-007": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS03AAAA::framing/member:bearing-block-1-008": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS03AAAA::framing/member:bearing-block-1-009": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS03AAAA::framing/member:bearing-block-1-010": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
 ],
 "geometry/CMFS03AAAA::framing/member:header-FO-M-ERV-EA-0": [
 -0.301625,
@@ -18086,6 +17474,18 @@
 0.01905,
 2,
 "6dc455ea4c5e"
+],
+"geometry/CMFS04AAAA::framing/member:bearing-block-0-006": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS04AAAA::framing/member:bearing-block-1-006": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
 ],
 "geometry/CMFS04AAAA::framing/member:joist-0-000-0": [
 -0.301625,
@@ -28280,6 +27680,234 @@
 3.06705,
 2,
 "dbdc4f7bae24"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-000": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-001": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-002": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-003": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-004": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-005-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-005-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-005-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-005-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-006": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-007": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-008": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-009-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-009-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-009-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-009-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-010-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-010-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-010-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-010-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-011": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-012": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-013": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-014-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-014-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-014-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-014-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-015": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-016-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-016-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-016-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-023": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-024": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-025": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-026-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-026-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-026-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/CSF603AAAA::framing/member:bearing-block-0-026-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
 ],
 "geometry/CSF603AAAA::framing/member:joist-0-000-0": [
 2.746375,
@@ -43053,24 +42681,6 @@
 2,
 "ab695b63ca35"
 ],
-"geometry/SGCP05AAAA-00/body": [
-2.82575,
-2.86385,
-2,
-"23ddce789dbd"
-],
-"geometry/SGCP06AAAA-00/body": [
-3.0099,
-3.048,
-2,
-"4f5bebcd882e"
-],
-"geometry/SGCP07AAAA-00/body": [
-2.82575,
-2.86385,
-2,
-"23ddce789dbd"
-],
 "geometry/SGDR01AAAA-00/body": [
 -5.9801125,
 -4.1513125,
@@ -47422,10 +47032,10 @@
 "da69afed69eb"
 ],
 "geometry/ZTQRPPRATP-run/body": [
-2.8003509,
-2.9908491,
-72,
-"bb78e6a692e0"
+2.8003502,
+2.9972,
+120,
+"b0de8126afed"
 ],
 "geometry/ZY2V3KWMVK-run/body": [
 5.9118591,
@@ -47582,8 +47192,8 @@
 "light_runs/LR-B-SAUNA-BENCH-L/z_m": -2.3733125,
 "light_runs/LR-B-SAUNA-BENCH-N/z_m": -2.3733125,
 "light_runs/LR-B-STAIR-RAIL/z_m": -1.9161125,
-"light_runs/LR-G-EAVE-E/z_m": 2.1336,
-"light_runs/LR-G-EAVE-W/z_m": 2.1336,
+"light_runs/LR-G-EAVE-E/z_m": 2.2838918,
+"light_runs/LR-G-EAVE-W/z_m": 2.2838918,
 "light_runs/LR-G-GABLE-N/z_m": 1.524,
 "light_runs/LR-M-KIT-E-WN1/z_m": 1.7272,
 "light_runs/LR-M-KIT-E-WN3/z_m": 1.3462,
@@ -48014,6 +47624,192 @@
 -0.8747125,
 2,
 "9b97ebb11206"
+],
+"member/1JXQ975X9E/bearing-block-1-000": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/bearing-block-1-001": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/bearing-block-1-002": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/bearing-block-1-003": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/bearing-block-1-004": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/bearing-block-1-005-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/bearing-block-1-005-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/bearing-block-1-005-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/bearing-block-1-005-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/bearing-block-1-006": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/bearing-block-1-007": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/bearing-block-1-008": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/bearing-block-1-009-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/bearing-block-1-009-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/bearing-block-1-009-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/bearing-block-1-009-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/bearing-block-1-010-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/bearing-block-1-010-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/bearing-block-1-010-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/bearing-block-1-010-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/bearing-block-1-011": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/bearing-block-1-012": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/bearing-block-1-013": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/bearing-block-1-014-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/bearing-block-1-014-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/bearing-block-1-014-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/bearing-block-1-014-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/bearing-block-1-015": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/bearing-block-1-016-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/bearing-block-1-016-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/bearing-block-1-016-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
 ],
 "member/1JXQ975X9E/joist-0-000-0": [
 2.746375,
@@ -49238,6 +49034,156 @@
 9.2202,
 2,
 "46b0860a9f82"
+],
+"member/CAF602AAAA/bearing-block-1-000": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-001": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-002-cheek-hi": [
+5.832475,
+6.0579,
+2,
+"afa7fad6631e"
+],
+"member/CAF602AAAA/bearing-block-1-002-cheek-lo": [
+5.832475,
+6.0579,
+2,
+"afa7fad6631e"
+],
+"member/CAF602AAAA/bearing-block-1-002-rail-bottom": [
+5.794375,
+5.832475,
+2,
+"12ceeb91b6df"
+],
+"member/CAF602AAAA/bearing-block-1-002-rail-top": [
+6.0579,
+6.096,
+2,
+"c0916300b024"
+],
+"member/CAF602AAAA/bearing-block-1-003": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-004": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-005": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-006": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-007": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-008": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-009": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-010": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-011": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-012": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-013": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-014": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-015": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-016-cheek-lo": [
+5.794375,
+6.0579,
+2,
+"4414f72e66fc"
+],
+"member/CAF602AAAA/bearing-block-1-016-rail-top": [
+6.0579,
+6.096,
+2,
+"c0916300b024"
+],
+"member/CAF602AAAA/bearing-block-1-025": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-026": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-027": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/bearing-block-1-028": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
 ],
 "member/CAF602AAAA/header-FO-A-STAIR-0": [
 5.794375,
@@ -55641,6 +55587,102 @@
 2,
 "eaca74db251b"
 ],
+"member/CMFS01AAAA/bearing-block-1-000": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/bearing-block-1-001": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/bearing-block-1-002": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/bearing-block-1-003": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/bearing-block-1-004": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/bearing-block-1-005": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/bearing-block-1-006": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/bearing-block-1-007": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/bearing-block-1-008": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/bearing-block-1-009": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/bearing-block-1-010": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/bearing-block-1-011": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/bearing-block-1-012": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/bearing-block-1-013": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/bearing-block-1-014": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/bearing-block-1-016": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
 "member/CMFS01AAAA/joist-0-000-0": [
 -0.301625,
 0.0,
@@ -55821,6 +55863,66 @@
 2,
 "07a4d7ea6917"
 ],
+"member/CMFS02AAAA/bearing-block-0-000": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS02AAAA/bearing-block-0-001": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS02AAAA/bearing-block-0-002": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS02AAAA/bearing-block-0-003": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS02AAAA/bearing-block-0-004": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS02AAAA/bearing-block-0-005": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS02AAAA/bearing-block-0-006": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS02AAAA/bearing-block-0-007": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS02AAAA/bearing-block-0-008": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS02AAAA/bearing-block-0-009": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
 "member/CMFS02AAAA/header-FO-M-FIRE-0": [
 -0.301625,
 0.0,
@@ -55918,6 +56020,54 @@
 "07a4d7ea6917"
 ],
 "member/CMFS02AAAA/trimmer-FO-M-FIRE-1-1": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS03AAAA/bearing-block-1-003": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS03AAAA/bearing-block-1-004": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS03AAAA/bearing-block-1-005": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS03AAAA/bearing-block-1-006": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS03AAAA/bearing-block-1-007": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS03AAAA/bearing-block-1-008": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS03AAAA/bearing-block-1-009": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS03AAAA/bearing-block-1-010": [
 -0.301625,
 0.0,
 2,
@@ -56080,6 +56230,18 @@
 "07a4d7ea6917"
 ],
 "member/CMFS03AAAA/trimmer-FO-M-ERV-OA-1-1": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS04AAAA/bearing-block-0-006": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS04AAAA/bearing-block-1-006": [
 -0.301625,
 0.0,
 2,
@@ -64484,6 +64646,234 @@
 5.7404,
 2,
 "ba854dd4564e"
+],
+"member/CSF603AAAA/bearing-block-0-000": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/bearing-block-0-001": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/bearing-block-0-002": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/bearing-block-0-003": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/bearing-block-0-004": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/bearing-block-0-005-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/CSF603AAAA/bearing-block-0-005-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/CSF603AAAA/bearing-block-0-005-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/CSF603AAAA/bearing-block-0-005-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/CSF603AAAA/bearing-block-0-006": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/bearing-block-0-007": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/bearing-block-0-008": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/bearing-block-0-009-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/CSF603AAAA/bearing-block-0-009-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/CSF603AAAA/bearing-block-0-009-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/CSF603AAAA/bearing-block-0-009-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/CSF603AAAA/bearing-block-0-010-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/CSF603AAAA/bearing-block-0-010-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/CSF603AAAA/bearing-block-0-010-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/CSF603AAAA/bearing-block-0-010-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/CSF603AAAA/bearing-block-0-011": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/bearing-block-0-012": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/bearing-block-0-013": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/bearing-block-0-014-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/CSF603AAAA/bearing-block-0-014-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/CSF603AAAA/bearing-block-0-014-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/CSF603AAAA/bearing-block-0-014-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/CSF603AAAA/bearing-block-0-015": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/bearing-block-0-016-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/CSF603AAAA/bearing-block-0-016-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/CSF603AAAA/bearing-block-0-016-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/CSF603AAAA/bearing-block-0-023": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/bearing-block-0-024": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/bearing-block-0-025": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/CSF603AAAA/bearing-block-0-026-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/CSF603AAAA/bearing-block-0-026-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/CSF603AAAA/bearing-block-0-026-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/CSF603AAAA/bearing-block-0-026-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
 ],
 "member/CSF603AAAA/joist-0-000-0": [
 2.746375,
@@ -77205,7 +77595,7 @@
 -0.37592,
 3.81,
 6,
-"01e8b0a5017c"
+"02530d6066c2"
 ],
 "pipe_runs/PR-B-CW-SUITE/z_start_m": -0.37592,
 "pipe_runs/PR-B-CW-TRUNK/z_end_m": 1.0668,
@@ -77488,12 +77878,12 @@
 "5208e3377c23"
 ],
 "pipe_runs/PR-M-DRYER-COND/z_start_m": 1.524,
-"pipe_runs/PR-M-KITCH-VENT/z_end_m": 2.9718,
+"pipe_runs/PR-M-KITCH-VENT/z_end_m": 2.97815,
 "pipe_runs/PR-M-KITCH-VENT/z_m": [
 2.8194,
-2.9718,
-4,
-"86155e8de1b1"
+2.97815,
+6,
+"a58a396104a8"
 ],
 "pipe_runs/PR-M-KITCH-VENT/z_start_m": 2.8194,
 "pipe_runs/PR-M-S-BATH1-DRAIN/z_end_m": -0.7111898,
@@ -78034,10 +78424,6 @@
 "solids/CN-BW-TIE-GEA/z1_m": -0.3175,
 "solids/CN-BW-TIE-GEB/z0_m": -0.4699,
 "solids/CN-BW-TIE-GEB/z1_m": -0.3175,
-"solids/CN-BW-TIE-GWA/z0_m": -0.4699,
-"solids/CN-BW-TIE-GWA/z1_m": -0.3175,
-"solids/CN-BW-TIE-GWB/z0_m": -0.4699,
-"solids/CN-BW-TIE-GWB/z1_m": -0.3175,
 "solids/CN-BW-TIE-REA/z0_m": 1.87325,
 "solids/CN-BW-TIE-REA/z1_m": 2.02565,
 "solids/CN-BW-TIE-REB/z0_m": 1.87325,
@@ -78046,10 +78432,6 @@
 "solids/CN-BW-TIE-RNEA/z1_m": 2.02565,
 "solids/CN-BW-TIE-RNEB/z0_m": 1.87325,
 "solids/CN-BW-TIE-RNEB/z1_m": 2.02565,
-"solids/CN-BW-TIE-WA/z0_m": -0.4699,
-"solids/CN-BW-TIE-WA/z1_m": -0.3175,
-"solids/CN-BW-TIE-WB/z0_m": -0.4699,
-"solids/CN-BW-TIE-WB/z1_m": -0.3175,
 "solids/CN-BW-TRTIE-E1/z0_m": 2.159,
 "solids/CN-BW-TRTIE-E1/z1_m": 2.3114,
 "solids/CN-BW-TRTIE-E2/z0_m": 2.159,
@@ -78176,6 +78558,20 @@
 "solids/CN-SG-STDF-R1/z1_m": 2.6087917,
 "solids/CN-SG-STDF-R3/z0_m": 2.5833917,
 "solids/CN-SG-STDF-R3/z1_m": 2.6087917,
+"solids/CN~AB-058-10-SS~P-M-STRWELL-N~01/z0_m": -2.8813125,
+"solids/CN~AB-058-10-SS~P-M-STRWELL-N~01/z1_m": -2.6781125,
+"solids/CN~AB-058-10-SS~P-M-STRWELL-SS~02/z0_m": -2.8813125,
+"solids/CN~AB-058-10-SS~P-M-STRWELL-SS~02/z1_m": -2.6781125,
+"solids/CN~AB-058-10-SS~P-M-STRWELL-S~03/z0_m": -2.8813125,
+"solids/CN~AB-058-10-SS~P-M-STRWELL-S~03/z1_m": -2.6781125,
+"solids/CN~AB-058-10-SS~PT-BW-CNW~04/z0_m": -0.4953,
+"solids/CN~AB-058-10-SS~PT-BW-CNW~04/z1_m": -0.2921,
+"solids/CN~AB-058-10-SS~PT-BW-CW~05/z0_m": -0.4953,
+"solids/CN~AB-058-10-SS~PT-BW-CW~05/z1_m": -0.2921,
+"solids/CN~AB-058-10-SS~PT-SG-BF2~06/z0_m": -0.5715,
+"solids/CN~AB-058-10-SS~PT-SG-BF2~06/z1_m": -0.3683,
+"solids/CN~AB-058-10-SS~PT-SG-BR2~07/z0_m": -0.5715,
+"solids/CN~AB-058-10-SS~PT-SG-BR2~07/z1_m": -0.3683,
 "solids/CN~H2.5AZ~BM-BW-GARAGE-SEAT~01/z0_m": -0.2667,
 "solids/CN~H2.5AZ~BM-BW-GARAGE-SEAT~01/z1_m": -0.1524,
 "solids/CN~H2.5AZ~BM-BW-GARAGE-SEAT~02/z0_m": -0.2667,
@@ -78290,26 +78686,26 @@
 "solids/CN~H2.5AZ~BM-SG-FRW~56/z1_m": -0.127,
 "solids/CN~H2.5AZ~BM-SG-FRW~57/z0_m": -0.2413,
 "solids/CN~H2.5AZ~BM-SG-FRW~57/z1_m": -0.127,
-"solids/CN~H2.5A~2-1.75x16 LVL~295/z0_m": 8.75665,
-"solids/CN~H2.5A~2-1.75x16 LVL~295/z1_m": 8.87095,
-"solids/CN~H2.5A~2-1.75x16 LVL~296/z0_m": 8.75665,
-"solids/CN~H2.5A~2-1.75x16 LVL~296/z1_m": 8.87095,
-"solids/CN~H2.5A~2-1.75x16 LVL~297/z0_m": 8.75665,
-"solids/CN~H2.5A~2-1.75x16 LVL~297/z1_m": 8.87095,
-"solids/CN~H2.5A~2-1.75x16 LVL~298/z0_m": 8.75665,
-"solids/CN~H2.5A~2-1.75x16 LVL~298/z1_m": 8.87095,
-"solids/CN~H2.5A~2-1.75x16 LVL~299/z0_m": 8.75665,
-"solids/CN~H2.5A~2-1.75x16 LVL~299/z1_m": 8.87095,
-"solids/CN~H2.5A~2-1.75x16 LVL~300/z0_m": 8.75665,
-"solids/CN~H2.5A~2-1.75x16 LVL~300/z1_m": 8.87095,
-"solids/CN~H2.5A~2-1.75x16 LVL~301/z0_m": 8.75665,
-"solids/CN~H2.5A~2-1.75x16 LVL~301/z1_m": 8.87095,
-"solids/CN~H2.5A~2-1.75x16 LVL~302/z0_m": 8.75665,
-"solids/CN~H2.5A~2-1.75x16 LVL~302/z1_m": 8.87095,
-"solids/CN~H2.5A~2-1.75x16 LVL~303/z0_m": 8.75665,
-"solids/CN~H2.5A~2-1.75x16 LVL~303/z1_m": 8.87095,
-"solids/CN~H2.5A~2-1.75x16 LVL~304/z0_m": 8.75665,
-"solids/CN~H2.5A~2-1.75x16 LVL~304/z1_m": 8.87095,
+"solids/CN~H2.5A~2-1.75x16 LVL~65/z0_m": 8.75665,
+"solids/CN~H2.5A~2-1.75x16 LVL~65/z1_m": 8.87095,
+"solids/CN~H2.5A~2-1.75x16 LVL~66/z0_m": 8.75665,
+"solids/CN~H2.5A~2-1.75x16 LVL~66/z1_m": 8.87095,
+"solids/CN~H2.5A~2-1.75x16 LVL~67/z0_m": 8.75665,
+"solids/CN~H2.5A~2-1.75x16 LVL~67/z1_m": 8.87095,
+"solids/CN~H2.5A~2-1.75x16 LVL~68/z0_m": 8.75665,
+"solids/CN~H2.5A~2-1.75x16 LVL~68/z1_m": 8.87095,
+"solids/CN~H2.5A~2-1.75x16 LVL~69/z0_m": 8.75665,
+"solids/CN~H2.5A~2-1.75x16 LVL~69/z1_m": 8.87095,
+"solids/CN~H2.5A~2-1.75x16 LVL~70/z0_m": 8.75665,
+"solids/CN~H2.5A~2-1.75x16 LVL~70/z1_m": 8.87095,
+"solids/CN~H2.5A~2-1.75x16 LVL~71/z0_m": 8.75665,
+"solids/CN~H2.5A~2-1.75x16 LVL~71/z1_m": 8.87095,
+"solids/CN~H2.5A~2-1.75x16 LVL~72/z0_m": 8.75665,
+"solids/CN~H2.5A~2-1.75x16 LVL~72/z1_m": 8.87095,
+"solids/CN~H2.5A~2-1.75x16 LVL~73/z0_m": 8.75665,
+"solids/CN~H2.5A~2-1.75x16 LVL~73/z1_m": 8.87095,
+"solids/CN~H2.5A~2-1.75x16 LVL~74/z0_m": 8.75665,
+"solids/CN~H2.5A~2-1.75x16 LVL~74/z1_m": 8.87095,
 "solids/CN~H2.5A~W-A-E1~01/z0_m": 6.096,
 "solids/CN~H2.5A~W-A-E1~01/z1_m": 6.2103,
 "solids/CN~H2.5A~W-A-E1~02/z0_m": 6.096,
@@ -78386,522 +78782,90 @@
 "solids/CN~H2.5A~W-A-W1~37/z1_m": 6.2103,
 "solids/CN~H2.5A~W-A-W1~38/z0_m": 6.096,
 "solids/CN~H2.5A~W-A-W1~38/z1_m": 6.2103,
-"solids/CN~H2.5A~W-B-CN2~39/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CN2~39/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-CN~40/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CN~40/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-CN~41/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CN~41/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-CN~42/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CN~42/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-CN~43/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CN~43/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-CN~44/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CN~44/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-CS2~45/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CS2~45/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-CS2~46/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CS2~46/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-CS2~47/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CS2~47/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-CS2~48/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CS2~48/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-CS3~49/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CS3~49/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-CS3~50/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CS3~50/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-CS3~51/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CS3~51/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-CS3~52/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CS3~52/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-CS~53/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CS~53/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-CS~54/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CS~54/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-CS~55/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CS~55/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-CS~56/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CS~56/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-CS~57/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CS~57/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-CS~58/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CS~58/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-CS~59/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CS~59/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-CS~60/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-CS~60/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-E1~61/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-E1~61/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-E1~62/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-E1~62/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-E1~63/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-E1~63/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-E1~64/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-E1~64/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-E1~65/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-E1~65/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-E1~66/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-E1~66/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-E1~67/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-E1~67/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-STR3B~68/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-STR3B~68/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-STR3B~69/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-STR3B~69/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-STR3B~70/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-STR3B~70/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-STR3B~71/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-STR3B~71/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-STR3~72/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-STR3~72/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-STR3~73/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-STR3~73/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-STR3~74/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-STR3~74/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-STR~75/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-STR~75/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-STR~76/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-STR~76/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-STR~77/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-STR~77/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-STR~78/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-STR~78/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-STR~79/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-STR~79/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W1~80/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W1~80/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W1~81/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W1~81/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W1~82/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W1~82/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W1~83/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W1~83/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W1~84/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W1~84/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W1~85/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W1~85/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W1~86/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W1~86/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W1~87/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W1~87/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W1~88/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W1~88/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W1~89/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W1~89/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W1~90/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W1~90/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W1~91/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W1~91/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W1~92/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W1~92/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W1~93/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W1~93/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W1~94/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W1~94/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W2~100/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W2~100/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W2~101/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W2~101/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W2~102/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W2~102/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W2~103/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W2~103/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W2~104/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W2~104/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W2~105/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W2~105/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W2~106/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W2~106/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W2~107/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W2~107/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W2~108/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W2~108/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W2~95/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W2~95/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W2~96/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W2~96/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W2~97/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W2~97/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W2~98/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W2~98/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-B-W2~99/z0_m": -0.3984625,
-"solids/CN~H2.5A~W-B-W2~99/z1_m": -0.2841625,
-"solids/CN~H2.5A~W-G-E~109/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-E~109/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-E~110/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-E~110/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-E~111/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-E~111/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-E~112/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-E~112/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-E~113/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-E~113/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-E~114/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-E~114/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-E~115/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-E~115/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-E~116/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-E~116/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-E~117/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-E~117/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-E~118/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-E~118/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-E~119/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-E~119/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-E~120/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-E~120/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-E~121/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-E~121/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-W~122/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-W~122/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-W~123/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-W~123/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-W~124/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-W~124/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-W~125/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-W~125/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-W~126/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-W~126/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-W~127/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-W~127/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-W~128/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-W~128/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-W~129/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-W~129/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-W~130/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-W~130/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-W~131/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-W~131/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-W~132/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-W~132/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-W~133/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-W~133/z1_m": 2.29235,
-"solids/CN~H2.5A~W-G-W~134/z0_m": 2.17805,
-"solids/CN~H2.5A~W-G-W~134/z1_m": 2.29235,
-"solids/CN~H2.5A~W-M-C1~135/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C1~135/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C1~136/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C1~136/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C1~137/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C1~137/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C1~138/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C1~138/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C1~139/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C1~139/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C1~140/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C1~140/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C1~141/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C1~141/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C1~142/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C1~142/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C1~143/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C1~143/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C1~144/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C1~144/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C2~145/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C2~145/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C2~146/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C2~146/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C2~147/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C2~147/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C2~148/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C2~148/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C3~149/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C3~149/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C3~150/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C3~150/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C3~151/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C3~151/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C3~152/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C3~152/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C5B~153/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C5B~153/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C5B~154/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C5B~154/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C5~155/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C5~155/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C5~156/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C5~156/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C5~157/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C5~157/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C5~158/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C5~158/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C5~159/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C5~159/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C5~160/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C5~160/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-C5~161/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-C5~161/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~162/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~162/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~163/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~163/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~164/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~164/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~165/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~165/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~166/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~166/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~167/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~167/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~168/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~168/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~169/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~169/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~170/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~170/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~171/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~171/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~172/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~172/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~173/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~173/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~174/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~174/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~175/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~175/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~176/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~176/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~177/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~177/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~178/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~178/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~179/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~179/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~180/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~180/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~181/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~181/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~182/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~182/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~183/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~183/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~184/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~184/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~185/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~185/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~186/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~186/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~187/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~187/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~188/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~188/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-E1~189/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-E1~189/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W1B~190/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W1B~190/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W1B~191/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W1B~191/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W1B~192/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W1B~192/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W1C~193/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W1C~193/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W1~194/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W1~194/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W1~195/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W1~195/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W1~196/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W1~196/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W2~197/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W2~197/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W2~198/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W2~198/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W2~199/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W2~199/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W2~200/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W2~200/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W3~201/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W3~201/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W3~202/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W3~202/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W3~203/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W3~203/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W3~204/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W3~204/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W3~205/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W3~205/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W3~206/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W3~206/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W3~207/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W3~207/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W4~208/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W4~208/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W4~209/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W4~209/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W4~210/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W4~210/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W4~211/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W4~211/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W4~212/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W4~212/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W4~213/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W4~213/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W4~214/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W4~214/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W4~215/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W4~215/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W4~216/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W4~216/z1_m": 2.80035,
-"solids/CN~H2.5A~W-M-W4~217/z0_m": 2.68605,
-"solids/CN~H2.5A~W-M-W4~217/z1_m": 2.80035,
-"solids/CN~H2.5A~W-S-C1~218/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C1~218/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C1~219/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C1~219/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C1~220/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C1~220/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C1~221/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C1~221/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C1~222/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C1~222/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C1~223/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C1~223/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C1~224/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C1~224/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C1~225/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C1~225/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C2B~226/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C2B~226/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C2B~227/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C2B~227/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C2B~228/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C2B~228/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C2C~229/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C2C~229/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C2C~230/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C2C~230/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C2C~231/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C2C~231/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C2C~232/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C2C~232/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C2C~233/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C2C~233/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C2~234/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C2~234/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C2~235/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C2~235/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C4B~236/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C4B~236/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C4B~237/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C4B~237/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C4B~238/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C4B~238/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C4B~239/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C4B~239/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-C4B~240/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-C4B~240/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E1~241/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E1~241/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E1~242/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E1~242/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E1~243/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E1~243/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E1~244/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E1~244/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E1~245/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E1~245/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E2~246/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E2~246/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E2~247/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E2~247/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E2~248/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E2~248/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E2~249/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E2~249/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E2~250/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E2~250/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E2~251/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E2~251/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E2~252/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E2~252/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E3~253/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E3~253/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E3~254/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E3~254/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E3~255/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E3~255/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E3~256/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E3~256/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E3~257/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E3~257/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E3~258/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E3~258/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E3~259/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E3~259/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E4~260/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E4~260/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E4~261/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E4~261/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E4~262/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E4~262/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E4~263/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E4~263/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E4~264/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E4~264/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E4~265/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E4~265/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-E4~266/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-E4~266/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W1B~267/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W1B~267/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W1B~268/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W1B~268/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W1B~269/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W1B~269/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W1~270/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W1~270/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W1~271/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W1~271/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W1~272/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W1~272/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W1~273/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W1~273/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W1~274/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W1~274/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W2~275/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W2~275/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W2~276/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W2~276/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W3~277/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W3~277/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W3~278/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W3~278/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W3~279/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W3~279/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W3~280/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W3~280/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W3~281/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W3~281/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W3~282/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W3~282/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W3~283/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W3~283/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W3~284/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W3~284/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W3~285/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W3~285/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W3~286/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W3~286/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W3~287/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W3~287/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W4~288/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W4~288/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W4~289/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W4~289/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W4~290/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W4~290/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W4~291/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W4~291/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W4~292/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W4~292/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W4~293/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W4~293/z1_m": 5.84835,
-"solids/CN~H2.5A~W-S-W4~294/z0_m": 5.73405,
-"solids/CN~H2.5A~W-S-W4~294/z1_m": 5.84835,
+"solids/CN~H2.5A~W-G-E~39/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~39/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~40/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~40/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~41/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~41/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~42/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~42/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~43/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~43/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~44/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~44/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~45/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~45/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~46/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~46/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~47/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~47/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~48/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~48/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~49/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~49/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~50/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~50/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-E~51/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-E~51/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~52/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~52/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~53/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~53/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~54/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~54/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~55/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~55/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~56/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~56/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~57/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~57/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~58/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~58/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~59/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~59/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~60/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~60/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~61/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~61/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~62/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~62/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~63/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~63/z1_m": 2.29235,
+"solids/CN~H2.5A~W-G-W~64/z0_m": 2.17805,
+"solids/CN~H2.5A~W-G-W~64/z1_m": 2.29235,
 "solids/CN~HGA10~W-G-N~01/z0_m": 2.20345,
 "solids/CN~HGA10~W-G-N~01/z1_m": 2.26695,
 "solids/CN~HGA10~W-G-S~02/z0_m": 2.20345,
 "solids/CN~HGA10~W-G-S~02/z1_m": 2.26695,
+"solids/CN~IUS2.56/11.88~BM-M-HALL~01/z0_m": 2.746375,
+"solids/CN~IUS2.56/11.88~BM-M-HALL~01/z1_m": 3.048,
+"solids/CN~IUS2.56/11.88~BM-M-HALL~02/z0_m": 2.746375,
+"solids/CN~IUS2.56/11.88~BM-M-HALL~02/z1_m": 3.048,
+"solids/CN~IUS2.56/11.88~BM-M-HALL~03/z0_m": 2.746375,
+"solids/CN~IUS2.56/11.88~BM-M-HALL~03/z1_m": 3.048,
+"solids/CN~IUS2.56/11.88~BM-S-BATH-E~04/z0_m": 5.794375,
+"solids/CN~IUS2.56/11.88~BM-S-BATH-E~04/z1_m": 6.096,
+"solids/CN~IUS2.56/11.88~BM-S-BATH-E~05/z0_m": 5.794375,
+"solids/CN~IUS2.56/11.88~BM-S-BATH-E~05/z1_m": 6.096,
+"solids/CN~IUS2.56/11.88~BM-S-BATH-E~06/z0_m": 5.794375,
+"solids/CN~IUS2.56/11.88~BM-S-BATH-E~06/z1_m": 6.096,
+"solids/CN~IUS2.56/11.88~BM-S-BATH-E~07/z0_m": 5.794375,
+"solids/CN~IUS2.56/11.88~BM-S-BATH-E~07/z1_m": 6.096,
+"solids/CN~IUS2.56/11.88~BM-S-HALL~08/z0_m": 5.794375,
+"solids/CN~IUS2.56/11.88~BM-S-HALL~08/z1_m": 6.096,
+"solids/CN~IUS2.56/11.88~BM-S-HALL~09/z0_m": 5.794375,
+"solids/CN~IUS2.56/11.88~BM-S-HALL~09/z1_m": 6.096,
+"solids/CN~IUS2.56/11.88~BM-S-HALL~10/z0_m": 5.794375,
+"solids/CN~IUS2.56/11.88~BM-S-HALL~10/z1_m": 6.096,
+"solids/CN~IUS2.56/11.88~BM-S-HALL~11/z0_m": 5.794375,
+"solids/CN~IUS2.56/11.88~BM-S-HALL~11/z1_m": 6.096,
+"solids/CN~IUS2.56/11.88~BM-S-HALL~12/z0_m": 5.794375,
+"solids/CN~IUS2.56/11.88~BM-S-HALL~12/z1_m": 6.096,
+"solids/CN~IUS2.56/11.88~BM-S-HALL~13/z0_m": 5.794375,
+"solids/CN~IUS2.56/11.88~BM-S-HALL~13/z1_m": 6.096,
+"solids/CN~IUS2.56/11.88~BM-S-HALL~14/z0_m": 5.794375,
+"solids/CN~IUS2.56/11.88~BM-S-HALL~14/z1_m": 6.096,
 "solids/CN~LS30~W-A-N1~01/z0_m": 9.191498,
 "solids/CN~LS30~W-A-N1~01/z1_m": 9.248902,
 "solids/CN~LS30~W-A-N1~02/z0_m": 8.505698,
@@ -79024,6 +78988,48 @@
 "solids/CN~LSTA24~CABM01AAAA:ridge-beam~18/z1_m": 9.22655,
 "solids/CN~LSTA24~CABM01AAAA:ridge-beam~19/z0_m": 9.21385,
 "solids/CN~LSTA24~CABM01AAAA:ridge-beam~19/z1_m": 9.22655,
+"solids/CN~LUS28Z~BM-BW-FC~01/z0_m": -0.20955,
+"solids/CN~LUS28Z~BM-BW-FC~01/z1_m": -0.0254,
+"solids/CN~LUS28Z~BM-BW-FC~02/z0_m": -0.20955,
+"solids/CN~LUS28Z~BM-BW-FC~02/z1_m": -0.0254,
+"solids/CN~LUS28Z~BM-BW-FC~03/z0_m": -0.20955,
+"solids/CN~LUS28Z~BM-BW-FC~03/z1_m": -0.0254,
+"solids/CN~LUS28Z~BM-BW-FC~04/z0_m": -0.20955,
+"solids/CN~LUS28Z~BM-BW-FC~04/z1_m": -0.0254,
+"solids/CN~LUS28Z~BM-BW-FC~05/z0_m": -0.20955,
+"solids/CN~LUS28Z~BM-BW-FC~05/z1_m": -0.0254,
+"solids/CN~LUS28Z~BM-BW-FC~06/z0_m": -0.20955,
+"solids/CN~LUS28Z~BM-BW-FC~06/z1_m": -0.0254,
+"solids/CN~LUS28Z~BM-BW-FC~07/z0_m": -0.20955,
+"solids/CN~LUS28Z~BM-BW-FC~07/z1_m": -0.0254,
+"solids/CN~LUS28Z~BM-BW-FE~08/z0_m": -0.20955,
+"solids/CN~LUS28Z~BM-BW-FE~08/z1_m": -0.0254,
+"solids/CN~LUS28Z~BM-BW-FE~09/z0_m": -0.20955,
+"solids/CN~LUS28Z~BM-BW-FE~09/z1_m": -0.0254,
+"solids/CN~LUS28Z~BM-BW-FE~10/z0_m": -0.20955,
+"solids/CN~LUS28Z~BM-BW-FE~10/z1_m": -0.0254,
+"solids/CN~LUS28Z~BM-BW-FE~11/z0_m": -0.20955,
+"solids/CN~LUS28Z~BM-BW-FE~11/z1_m": -0.0254,
+"solids/CN~LUS28Z~BM-BW-FE~12/z0_m": -0.20955,
+"solids/CN~LUS28Z~BM-BW-FE~12/z1_m": -0.0254,
+"solids/CN~LUS28Z~BM-BW-FE~13/z0_m": -0.20955,
+"solids/CN~LUS28Z~BM-BW-FE~13/z1_m": -0.0254,
+"solids/CN~LUS28Z~BM-SG-BLC~14/z0_m": 2.7802417,
+"solids/CN~LUS28Z~BM-SG-BLC~14/z1_m": 2.9643917,
+"solids/CN~LUS28Z~BM-SG-BLC~15/z0_m": 2.771775,
+"solids/CN~LUS28Z~BM-SG-BLC~15/z1_m": 2.955925,
+"solids/CN~LUS28Z~BM-SG-BLC~16/z0_m": 2.7633083,
+"solids/CN~LUS28Z~BM-SG-BLC~16/z1_m": 2.9474583,
+"solids/CN~LUS28Z~BM-SG-BLC~17/z0_m": 2.7548417,
+"solids/CN~LUS28Z~BM-SG-BLC~17/z1_m": 2.9389917,
+"solids/CN~LUS28Z~BM-SG-BLC~18/z0_m": 2.746375,
+"solids/CN~LUS28Z~BM-SG-BLC~18/z1_m": 2.930525,
+"solids/CN~LUS28Z~BM-SG-BLC~19/z0_m": 2.8056417,
+"solids/CN~LUS28Z~BM-SG-BLC~19/z1_m": 2.9897917,
+"solids/CN~LUS28Z~BM-SG-BLC~20/z0_m": 2.797175,
+"solids/CN~LUS28Z~BM-SG-BLC~20/z1_m": 2.981325,
+"solids/CN~LUS28Z~BM-SG-BLC~21/z0_m": 2.7887083,
+"solids/CN~LUS28Z~BM-SG-BLC~21/z1_m": 2.9728583,
 "solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~01/z0_m": -0.4175125,
 "solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~01/z1_m": -0.2651125,
 "solids/CN~MASA~CR-CONC-TO-FRAMED-SILL~02/z0_m": -2.8559125,
@@ -80086,8 +80092,8 @@
 "solids/PR-M-CW-PORCH-HYD-RUN/z1_m": 2.828925,
 "solids/PR-M-DRYER-COND-RUN/z0_m": 0.9084878,
 "solids/PR-M-DRYER-COND-RUN/z1_m": 1.530999,
-"solids/PR-M-KITCH-VENT-RUN/z0_m": 2.8003509,
-"solids/PR-M-KITCH-VENT-RUN/z1_m": 2.9908491,
+"solids/PR-M-KITCH-VENT-RUN/z0_m": 2.8003502,
+"solids/PR-M-KITCH-VENT-RUN/z1_m": 2.9972,
 "solids/PR-M-S-BATH1-DRAIN-RUN/z0_m": -0.7492297,
 "solids/PR-M-S-BATH1-DRAIN-RUN/z1_m": 3.1242,
 "solids/PR-M-S-BATH1-LAV-DRAIN-RUN/z0_m": 2.894029,
@@ -81302,12 +81308,6 @@
 "solids/TR-SG-CAP-BKE-1/z1_m": -0.18415,
 "solids/TR-SG-CAP-BKW-1/z0_m": -0.22225,
 "solids/TR-SG-CAP-BKW-1/z1_m": -0.18415,
-"solids/TR-SG-CAP-BLC-1/z0_m": 3.0099,
-"solids/TR-SG-CAP-BLC-1/z1_m": 3.048,
-"solids/TR-SG-CAP-BLE-1/z0_m": 2.82575,
-"solids/TR-SG-CAP-BLE-1/z1_m": 2.86385,
-"solids/TR-SG-CAP-BLW-1/z0_m": 2.82575,
-"solids/TR-SG-CAP-BLW-1/z1_m": 2.86385,
 "solids/TR-SG-CAP-FRE-1/z0_m": -0.22225,
 "solids/TR-SG-CAP-FRE-1/z1_m": -0.18415,
 "solids/TR-SG-CAP-FRW-1/z0_m": -0.22225,

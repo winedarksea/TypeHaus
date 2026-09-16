@@ -52,6 +52,9 @@ export default defineConfig({
     // site ships put together — to every visitor. Set HAUS_SOURCEMAP=1 for a build you intend
     // to debug.
     sourcemap: process.env.HAUS_SOURCEMAP === "1",
+    // three.js alone is ~540 kB and already isolated below as a lazy vendor chunk; the
+    // 500 kB default warned about a split that cannot get smaller. App chunks stay far under.
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
         // three.js is the one dependency big enough to be worth its own chunk, and it is

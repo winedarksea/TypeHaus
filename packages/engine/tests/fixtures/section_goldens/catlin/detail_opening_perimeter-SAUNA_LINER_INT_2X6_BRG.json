@@ -919,6 +919,118 @@
       "node": "polyline",
       "points": [
         [
+          213.50000000000003,
+          -11.875
+        ],
+        [
+          216.0,
+          -11.875
+        ],
+        [
+          216.0,
+          -11.720964566929133
+        ],
+        [
+          213.50000000000003,
+          -11.720964566929133
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMFS01AAAA",
+      "tag": "bearing-block-1-003"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          213.50000000000003,
+          -11.875
+        ],
+        [
+          216.0,
+          -11.875
+        ],
+        [
+          216.0,
+          -11.720964566929133
+        ],
+        [
+          213.50000000000003,
+          -11.720964566929133
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          216.0,
+          -11.875
+        ],
+        [
+          218.5,
+          -11.875
+        ],
+        [
+          218.5,
+          -11.720964566929133
+        ],
+        [
+          216.0,
+          -11.720964566929133
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMFS02AAAA",
+      "tag": "bearing-block-0-003"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          216.0,
+          -11.875
+        ],
+        [
+          218.5,
+          -11.875
+        ],
+        [
+          218.5,
+          -11.720964566929133
+        ],
+        [
+          216.0,
+          -11.720964566929133
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           213.25,
           -109.4375
         ],

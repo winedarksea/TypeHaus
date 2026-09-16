@@ -71,3 +71,9 @@ addopts = "-q -n 6 --dist loadfile -p no:cacheprovider"
 markers = [
   "slow: full IFC emission, permit-set rendering, golden comparison, subprocess benchmarks",
 ]
+# Third-party noise only, not ours: FastAPI 0.141's own Body() on pydantic 2.13, and
+# Starlette 1.6's TestClient asking for httpx2. Drop each when the library fixes it.
+filterwarnings = [
+  "ignore:The 'alias' attribute with value:pydantic.warnings.UnsupportedFieldAttributeWarning",
+  "ignore:Using `httpx` with `starlette.testclient` is deprecated",
+]

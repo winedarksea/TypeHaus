@@ -1,5 +1,9 @@
 import { createServer } from "vite";
 
+// Node 25+ ships a warning-on-touch localStorage getter; the code under test treats Node as storage-less.
+delete globalThis.localStorage;
+delete globalThis.sessionStorage;
+
 const server = await createServer({
   configFile: false,
   server: { middlewareMode: true },

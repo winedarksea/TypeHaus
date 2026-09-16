@@ -763,6 +763,102 @@
       "node": "polyline",
       "points": [
         [
+          214.75,
+          228.12500000000003
+        ],
+        [
+          217.25000000000003,
+          228.12500000000003
+        ],
+        [
+          217.25000000000003,
+          240.0
+        ],
+        [
+          214.75,
+          240.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAF602AAAA",
+      "tag": "bearing-block-1-003"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          214.75,
+          228.12500000000003
+        ],
+        [
+          217.25000000000003,
+          228.12500000000003
+        ],
+        [
+          217.25000000000003,
+          240.0
+        ],
+        [
+          214.75,
+          240.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          214.75,
+          229.50000000000003
+        ],
+        [
+          217.25000000000003,
+          229.50000000000003
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CAF602AAAA",
+      "tag": "bearing-block-1-003/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          214.75,
+          238.625
+        ],
+        [
+          217.25000000000003,
+          238.625
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.13,
+      "linetype": "CONTINUOUS",
+      "closed": false,
+      "uid": "CAF602AAAA",
+      "tag": "bearing-block-1-003/flange"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           202.11748031496066,
           240.0
         ],
