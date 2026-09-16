@@ -1779,11 +1779,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   10-year recoat obligation went with the silane.
 - **The wash layer's side is held by ONE thing: the closed walk through `W-SG-ARCH`.** The
   `N-SG-*` component resolves to outward sign **-1.0** only because `W-SG-ARCH` supplies the
-  N-SG-MW/N-SG-ME leg. Delete it, or rename either node, and the sign falls to +1 and the wash
-  moves to the outboard, buried face of all five walls — **silently, at 0 FAIL**, because no check
-  grades a FINISH layer's side. `test_masonry_finish.py::test_court_wash_faces_the_court` is the
-  guard. The stale comment claiming this component had already lost its loop is corrected in
-  `params/sunken_garden.py`.
+  N-SG-MW/N-SG-ME leg. It is a concrete `Beam`, not a wall, since 2026-09-16:
+  `resolve/orientation` counts a cast beam between two wall nodes as a loop edge
+  (`assembly_material.is_cast_beam`). Delete it, retype it to wood, or rename either node, and the
+  sign falls to +1 and the wash moves to the outboard, buried face of all five walls — **silently,
+  at 0 FAIL**. `test_masonry_finish.py::test_court_wash_faces_the_court` is the guard.
 - **The POUR DOES NOT MOVE, and `alignment` is what holds it.** Every washed wall carries
   `alignment=face("center", offset=±_WASH_FILM/2)` — `+` where the wash is layer 0 (the court
   walls, the RG legs), `−` where it is last (the fireplace). Without it the resolver centres the
@@ -1793,12 +1793,18 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   flush with the walls they stand on and the raised garden stopped closing on the court walls —
   both at 0 FAIL, by test only. **If `_WASH_FILM` changes, every alignment offset changes with
   it**; nothing derives one from the other across the params/plan boundary.
-- **`W-SG-ARCH` is `SUNKEN_GARDEN_GRADE_BEAM_12`, not `SUNKEN_GARDEN_WALL`, and must stay so.**
-  Identical 12" pour, identical `EXPOSED_MIX`, identical ticket, identical `$/cy` row — split on
-  2026-09-13 for one reason: it is the BURIED strut, the court floor bears on its top and nothing
-  of it shows, so sharing the court walls' assembly billed 3.6 SF of paint under a slab. Nothing
-  grades whether a FINISH layer is reachable; `test_catlin_contract_m3` is the guard. Both price
-  rows are mandatory — an assembly tag with no row drops from the takeoff silently.
+- **`W-SG-ARCH` is a concrete `Beam` (`GRADE_BEAMS`), not a `FoundationWall`, so plans and the UI
+  draw it as a hidden grade beam instead of a cut wall.** Uid, tag and the item id
+  `retaining_system/W-SG-ARCH` are unchanged; `retaining_system` reads its section from `size` and
+  its axis from the resolved solid. It keeps `SUNKEN_GARDEN_GRADE_BEAM_12` (no wash: nothing of it
+  shows) and bills in `prices.toml` `[concrete] "beam:SUNKEN_GARDEN_GRADE_BEAM_12"` at the court
+  walls' rate. `size` keeps a decimal point (`12.0x17.5`) so `cross_section` reads actual
+  dimensions. `W-SG-BRKBM` stays a wall because a `Beam` has no layers for its XPS break.
+- **W-SG-W1/W2 and E1/E2 are one pour each but stay two elements.** The halves differ in
+  assembly, alignment, `lateral_support`, `unbalanced_fill`, reinforcement and
+  `base_restraint_ref`, and nothing in the schema varies those along one wall. Merging would
+  mis-state the engineering (a false fill on the braced half, an inflated court FS). The layout
+  lines already chain each side as one run on the drawings.
 - **A wall's faces are NOT `axis ± thickness_m/2` any more.** That shorthand is only right while
   every layer bears and the stack straddles the node line. On a washed wall `thickness_m` is
   12 1/8" while the pour is 12" exactly where it always was. Read the STRUCTURE layer's polygon

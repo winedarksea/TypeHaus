@@ -71,7 +71,7 @@ from typehaus.emit.gltf.walls import (
 )
 from typehaus.emit.trade_rules import RECORD_FAMILY_TRADES, assembly_trades, solid_trades
 from typehaus.resolve.assembly_material import solid_material_ref
-from typehaus.resolve.geometry import light_run_band_profiles
+from typehaus.resolve.geometry import light_run_band_shells
 from typehaus.resolve.geometry_build import wall_trades
 from typehaus.resolve.geometry_ir import GBox
 from typehaus.resolve.model import FramedMember, ResolvedModel, ResolvedRoom, Ring
@@ -392,11 +392,13 @@ _LIGHT_RUN_BAND_ROLE = {"back": "cove_channel", "base": "cove_channel", "lip": "
 def _add_light_run(mb: _MeshBuilder, run) -> None:
     """The cove channel + tape, one prism per band per leg (→ resolve/geometry.py
     ``light_run_band_profiles``, mirrored in ui/src/three/builders/structure.ts)."""
-    for key, profiles, bottom_drop, top_drop in light_run_band_profiles(list(run.path)):
-        color = _color(_LIGHT_RUN_BAND_ROLE[key])
-        z0, z1 = run.z_m - bottom_drop, run.z_m - top_drop
-        for profile in profiles:
-            mb.add_prism(profile, z0, z1, color)
+    for key, faces in light_run_band_shells(list(run.path), run.vertex_z()):
+        triangles = []
+        for face in faces:
+            quad = [_to_gltf(*point) for point in face]
+            triangles.append((quad[0], quad[1], quad[2]))
+            triangles.append((quad[0], quad[2], quad[3]))
+        mb.add_triangles(triangles, _color(_LIGHT_RUN_BAND_ROLE[key]))
 
 
 def _add_solar_panel(mb: _MeshBuilder, panel) -> None:

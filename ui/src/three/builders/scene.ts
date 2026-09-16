@@ -21,11 +21,12 @@ import {
   projectPlanRotationToSceneRadians, projectPointToScene, type PlanCenter,
 } from "../planGeometry";
 import { ALL_TRADES, type Trade } from "../../state/vocabulary";
+import { buildLightRun } from "./lightRun";
 import { tagTrades } from "./registry";
 import { buildCanvasObject, buildEarth } from "./site";
 import { buildOpening, buildWall } from "./walls";
 import {
-  buildBrace, buildFloor, buildFootingBedding, buildLightRun, buildRoof, buildRoomFloor,
+  buildBrace, buildFloor, buildFootingBedding, buildRoof, buildRoomFloor,
   buildPaneling, buildSoffitFraming, buildSolarPanel, buildSolid, buildStair,
   storeyFloorTopM,
 } from "./structure";

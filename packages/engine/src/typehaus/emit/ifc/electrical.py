@@ -18,7 +18,7 @@ from typehaus._meta import PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.geometry import light_run_band_profiles, rect_between
+from typehaus.resolve.geometry import light_run_band_shells, rect_between
 from typehaus.resolve.model import ResolvedModel
 
 _M_TO_FT = 3.280839895013123
@@ -92,18 +92,7 @@ def _strip_shells(run: Any) -> list[list[list[tuple[float, ...]]]]:
     """One closed box shell per band per plan leg: the channel (back/base/lip) and the tape
     it carries, not one plain bar — see :func:`~typehaus.resolve.geometry.light_run_band_profiles`.
     """
-    shells: list[list[list[tuple[float, ...]]]] = []
-    for _key, profiles, bottom_drop, top_drop in light_run_band_profiles(list(run.path)):
-        z0, z1 = run.z_m - bottom_drop, run.z_m - top_drop
-        for profile in profiles:
-            bottom = [(x, y, z0) for x, y in profile]
-            top = [(x, y, z1) for x, y in profile]
-            faces: list[list[tuple[float, ...]]] = [list(reversed(bottom)), list(top)]
-            for corner in range(len(bottom)):
-                following = (corner + 1) % len(bottom)
-                faces.append([bottom[corner], bottom[following], top[following], top[corner]])
-            shells.append(faces)
-    return shells
+    return [faces for _key, faces in light_run_band_shells(list(run.path), run.vertex_z())]
 
 
 def emit_solar_panels(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, Any],

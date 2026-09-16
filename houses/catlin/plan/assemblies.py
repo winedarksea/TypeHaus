@@ -949,7 +949,8 @@ _WASH_FILM = inch(0.125)
 # `resolve/topology.py` places layer 0 on the `-outward_sign * normal(start->end)` side, and
 # the note in params/sunken_garden.py used to claim this component had lost its only closed
 # loop and so took `UNRECOVERABLE_WINDING_OUTWARD_SIGN = +1`. That claim is STALE: `W-SG-ARCH`
-# is a live FoundationWall on the N-SG-MW -> N-SG-ME pair, which closes the walk
+# is a cast concrete Beam on the N-SG-MW -> N-SG-ME pair, which `resolve/orientation` counts as
+# a loop edge, so it closes the walk
 # ME->SE->SW->MW->ME, and `resolve_storey_windings(plan, "court-low")` resolves the `N-SG-ME`
 # component to **-1.0**. With sign -1 layer 0 lands on the +normal side, which is the court
 # side for all five walls (W1, E1, W2, E2 and S) — the consistency the params note means by

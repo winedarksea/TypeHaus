@@ -230,3 +230,34 @@ def light_run_band_profiles(
             profiles.append(rect_between(p0, p1, left, right))
         out.append((key, profiles, bottom_drop, top_drop))
     return out
+
+
+Vec3 = tuple[float, float, float]
+
+
+def light_run_band_shells(path: list[Vec], z_path: list[float]) -> list[tuple[str, list[list[Vec3]]]]:
+    """:func:`light_run_band_profiles` as closed 3-D box shells that follow ``z_path``.
+
+    One ``(key, faces)`` per band per leg; faces wind outward (bottom reversed, top, sides).
+    Each corner takes the height of its station along the leg, so a raked leg is a sheared
+    box and a level one is the plain prism."""
+    shells: list[tuple[str, list[list[Vec3]]]] = []
+    legs = [(path[i], path[i + 1], z_path[i], z_path[i + 1]) for i in range(len(path) - 1)
+            if length(sub(path[i + 1], path[i])) >= 1e-6]
+    for key, profiles, bottom_drop, top_drop in light_run_band_profiles(path):
+        for (p0, p1, za, zb), profile in zip(legs, profiles, strict=True):
+            d = sub(p1, p0)
+            run2 = d[0] * d[0] + d[1] * d[1]
+
+            def z_at(c: Vec, p0=p0, d=d, run2=run2, za=za, zb=zb) -> float:
+                t = ((c[0] - p0[0]) * d[0] + (c[1] - p0[1]) * d[1]) / run2
+                return za + min(max(t, 0.0), 1.0) * (zb - za)
+
+            bottom = [(x, y, z_at((x, y)) - bottom_drop) for x, y in profile]
+            top = [(x, y, z_at((x, y)) - top_drop) for x, y in profile]
+            faces: list[list[Vec3]] = [list(reversed(bottom)), list(top)]
+            for corner in range(len(bottom)):
+                following = (corner + 1) % len(bottom)
+                faces.append([bottom[corner], bottom[following], top[following], top[corner]])
+            shells.append((key, faces))
+    return shells

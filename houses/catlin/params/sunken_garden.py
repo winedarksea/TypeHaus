@@ -1671,7 +1671,7 @@ _SG_WALL_BED_BOTTOM = (_wall_bottom
                        - inch(SPEC.aggregate_bedding_depth_in))
 
 # W-SG-ARCH's bed, appended rather than swept up by the comprehension above because it is
-# hosted on the WALL and not on a Footing — the grade beam has none (see WALLS). Same NFS
+# hosted on the Beam and not on a Footing — the grade beam has none (see GRADE_BEAMS). Same NFS
 # claim about the same stone, same 4" sock-wrapped tile to DRW-SG-MAIN, so it joins the
 # existing takeoff group rather than starting a second one.
 #
@@ -1698,7 +1698,7 @@ _SG_WALL_BED_BOTTOM = (_wall_bottom
 # `cast_foam_in_aggregate`: that is for the house-adjacent footings' thermal break, and this
 # beam is 11'-0" south of the house with unconditioned court on both faces.
 #
-# `width` is authored because a wall-hosted bed defaults to the wall's own thickness, and a
+# `width` is authored because a beam-hosted bed defaults to the beam's own width, and a
 # 12" trench is not something anyone can dig, compact or lay tile in. 24" is the beam plus 6"
 # of working room each side.
 #

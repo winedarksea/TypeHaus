@@ -1760,32 +1760,28 @@ GARAGE_LIGHTING = [
              path=(pt(ft(30, 2.125), ft(43, 2.625)), pt(ft(30, 2.125), ft(67, 2.625))),
              circuit="CKT-LT-MAIN", controlled_by=("ED-G-SOFFIT-SW",),
              mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 5.917))),
-    # The gable face, over the overhead door. SURFACE mounted because there is nothing to
-    # recess into: no soffit on a rake, and the wall behind is GARAGE_WALL_2X6 under a
-    # corrugated panel. It spans the rough opening exactly — x 10'-0"..26'-0", four 4'
-    # sections — so the two end caps line up with the door jambs.
+    # The north gable: under RF-GARAGE's two RAKE soffits, corner -> ridge -> corner, tight
+    # to W-G-N's cladding, aperture down — the eave runs' detail turned up the 4:12 rake.
+    # (It was 16' on the wall face over D-G-OVERHEAD at 5'-0" absolute, feet below any soffit.)
     #
-    # ** CLEAR OF EVERYTHING ON THIS ELEVATION, IN THREE DIRECTIONS. ** D-G-OVERHEAD's RO is
-    # 16'-0" at a 4'-0" offset along W-G-N (x 10'..26'), head 7'-0" over the apron = 5'-2"
-    # storey-relative; this run is at 6'-0" storey-relative, 10" above that head and outside
-    # the opening, and an overhead door's panels retract INSIDE the building, so the face
-    # over the head is permanently clear. ED-G-EXT-LT-E/-W stand on the 4'-0" piers at
-    # x=28'-0" and x=8'-0", so each is 2'-0" clear of an end of this run in plan.
+    # x runs cladding face to cladding face (5'-11 1/8" .. 30'-0 7/8"), exactly the rake
+    # soffit's extent, with the vertex at the 18'-0" ridge. y is W-G-N's cladding face
+    # 67'-3 1/2" plus half the 2 1/2" channel.
     #
-    # y is the centreline the same way theirs is: W-G-N's cladding face is 67'-3 1/2"
-    # (GARAGE_Y_NORTH + 7/8") and a 2 1/2" channel wants 1 1/4" of it.
+    # Heights are stated, not derived, like the eave runs: 8'-10 23/24" storey-relative is
+    # the rake soffit's underside at the corners (7'-10 23/24" absolute, the fascia bottom at
+    # the eave), and `rise` climbs 144 7/8" of plan at 4:12 = 4'-0 7/24" to the ridge.
+    # Developed length ~25'-5", so the channel is cut, not a 4' module.
     #
-    # `wet_rated` on the type is doing real work here and only here: the two runs above are
-    # under a soffit, this one is on an open wall with 16" of rake above it, which stops
-    # nothing at this height. `full_cutoff` is likewise a DETAIL — the channel is screwed
-    # through its back web with the aperture aimed down — and `advisory.dark_sky_lighting`
-    # grades this run on it, since a WALL mount gets no shelter exemption the way the two
-    # CEILING-mounted soffit runs do.
+    # `full_cutoff` is a DETAIL (aperture aimed down), and CEILING under the rake soffit
+    # takes the same shelter reading as the two eave runs.
     LightRun(uid="12K1TBK2FC", tag="LR-G-GABLE-N", type_ref="ED-T-LT-LINEAR-EXT",
-             path=(pt(ft(10), ft(67, 4.75)), pt(ft(26), ft(67, 4.75))),
+             path=(pt(ft(5, 11.125), ft(67, 4.75)), pt(ft(18), ft(67, 4.75)),
+                   pt(ft(30, 0.875), ft(67, 4.75))),
+             rise=(ft(0), ft(4, 0.292), ft(0)),
              circuit="CKT-LT-MAIN", controlled_by=("ED-G-SOFFIT-SW",),
-             mount=Mount(kind=MountKind.WALL, elevation=ft(6))),
-    # ** ITS OWN CONTROL, NOT ED-G-EXT-SW, AND THE REASON IS DUTY CYCLE. ** Ganging 64 LF of
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 10.958))),
+    # ** ITS OWN CONTROL, NOT ED-G-EXT-SW, AND THE REASON IS DUTY CYCLE. ** Ganging ~73 LF of
     # perimeter linear onto the door pair's switch would force one of two bad habits: either
     # the two sconces burn all evening because somebody wanted the building lit, or the
     # building is never lit because nobody wants to leave the sconces on. They are two

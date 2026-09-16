@@ -45525,7 +45525,7 @@
 8,
 "93baa95b94ed"
 ],
-"geometry/SGW102AAAA/layer:concrete": [
+"geometry/SGW102AAAA/body": [
 -3.3131125,
 -2.8686125,
 2,
@@ -47179,8 +47179,6 @@
 "layout_lines/LL-W-S-SBS/top_z_m": 5.7912,
 "layout_lines/LL-W-S-VE/base_z_m": 3.048,
 "layout_lines/LL-W-S-VE/top_z_m": 5.7912,
-"layout_lines/LL-W-SG-ARCH/base_z_m": -3.3131125,
-"layout_lines/LL-W-SG-ARCH/top_z_m": -2.8686125,
 "layout_lines/LL-W-SG-BRKBM/base_z_m": -3.0527625,
 "layout_lines/LL-W-SG-BRKBM/top_z_m": -2.6019125,
 "layout_lines/LL-W-SG-E1/base_z_m": -2.7797125,
@@ -47194,7 +47192,13 @@
 "light_runs/LR-B-STAIR-RAIL/z_m": -1.9161125,
 "light_runs/LR-G-EAVE-E/z_m": 2.2838918,
 "light_runs/LR-G-EAVE-W/z_m": 2.2838918,
-"light_runs/LR-G-GABLE-N/z_m": 1.524,
+"light_runs/LR-G-GABLE-N/z_m": 2.4119332,
+"light_runs/LR-G-GABLE-N/z_path_m": [
+2.4119332,
+3.63855,
+3,
+"0fca7da78ed6"
+],
 "light_runs/LR-M-KIT-E-WN1/z_m": 1.7272,
 "light_runs/LR-M-KIT-E-WN3/z_m": 1.3462,
 "light_runs/LR-M-KIT-N-WE1/z_m": 1.3462,
@@ -81422,6 +81426,8 @@
 "solids/W-M-W3-BUGSCREEN/z1_m": -0.3032125,
 "solids/W-M-W4-BUGSCREEN/z0_m": -0.3413125,
 "solids/W-M-W4-BUGSCREEN/z1_m": -0.3032125,
+"solids/W-SG-ARCH/z0_m": -3.3131125,
+"solids/W-SG-ARCH/z1_m": -2.8686125,
 "stairs/ST-B2M/arrival_elevation_m": 0.0250495,
 "stairs/ST-B2M/base_elevation_m": -2.7797125,
 "stairs/ST-BW-ENTRY/arrival_elevation_m": 0.0,
@@ -81897,8 +81903,6 @@
 "walls/W-S-W4/plate_top_z_m": 5.7912,
 "walls/W-S-W4/z0_m": 3.048,
 "walls/W-S-W4/z1_m": 6.11505,
-"walls/W-SG-ARCH/z0_m": -3.3131125,
-"walls/W-SG-ARCH/z1_m": -2.8686125,
 "walls/W-SG-BRKBM/z0_m": -3.0527625,
 "walls/W-SG-BRKBM/z1_m": -2.6019125,
 "walls/W-SG-E1/z0_m": -2.7797125,

@@ -143,8 +143,9 @@ def baseline_elems(model: ResolvedModel) -> list[DiffElem]:
         # not zero. Reading the bare path would report every run as resized.
         swept = [point for profile in light_run_segment_profiles(list(run.path))
                  for point in profile]
+        heights = run.vertex_z()
         centroid, bbox = _bounds(swept or [tuple(point) for point in run.path],
-                                 run.z_m - LIGHT_STRIP_HEIGHT_M, run.z_m)
+                                 min(heights) - LIGHT_STRIP_HEIGHT_M, max(heights))
         elems.append(DiffElem(
             global_id=_guid(puid, run.uid), tag=run.tag, ifc_class="IfcLightFixture",
             storey=run.storey, centroid=centroid, bbox=bbox, axis_dir=(0.0, 0.0),

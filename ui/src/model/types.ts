@@ -1335,6 +1335,7 @@ export interface LightRun {
   storey: string;
   path: Vec2[];
   z_m: number;
+  z_path_m?: number[]; // per path vertex; a raked run under a gable
   length_m: number;
   type: string;
   room: string | null;

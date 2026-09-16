@@ -376,8 +376,8 @@ CIRCUITS = (
             gfci=True, afci=True, load_va=1500,
             description="Laundry receptacle (washer)"),
     # The garage's exterior linear runs landed here on 2026-09-11: LR-G-EAVE-W/-E (24'-0"
-    # each, in the two eave soffits) and LR-G-GABLE-N (16'-0" over D-G-OVERHEAD), 64 LF of
-    # ED-T-LT-LINEAR-EXT at 2.5 W/ft. They are on this circuit rather than CKT-RC-GARAGE for
+    # each, in the two eave soffits) and LR-G-GABLE-N (~25'-5" raked up the north gable's rake
+    # soffits), ~73 LF of ED-T-LT-LINEAR-EXT at 2.5 W/ft. They are on this circuit rather than CKT-RC-GARAGE for
     # the same reason ED-G-LT1/2/3 are: a tool tripping a garage GFCI must not take the
     # lights with it. The panel schedule derives their VA from the resolved run length
     # (takeoff/electrical._connected_va), so no `load_va` is authored here — an authored

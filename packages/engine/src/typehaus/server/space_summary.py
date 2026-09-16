@@ -169,7 +169,7 @@ def _exterior_shells_by_storey(model: ResolvedModel) -> dict[str, list]:
             # spelling and it under-kept: one floor yields ONE representative point, so a
             # floor spanning several rings anchors only the ring that point happens to land
             # in and the rest get filled. The sunken court is exactly that shape —
-            # `W-SG-ARCH` crosses it and splits the void into a porch bay and a field bay,
+            # `W-SG-ARCH` (then a wall) split the void into a porch bay and a field bay,
             # both of them SL-SG-FLOOR. It went unnoticed only because SL-SG-STOOP sat in
             # the other bay and anchored it; retiring the stoop on 2026-09-05 filled 281 sf
             # of open court and put it on the basement's gross area. Area overlap asks the

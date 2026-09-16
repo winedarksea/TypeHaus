@@ -65,6 +65,7 @@ def systems_json(
         "light_runs": [
             {"uid": run.uid, "tag": run.tag, "storey": run.storey,
              "path": [list(point) for point in run.path], "z_m": run.z_m,
+             "z_path_m": run.vertex_z(),
              "length_m": run.length_m, "type": run.type_ref, "room": run.room,
              "circuit": run.circuit, "psu_ref": run.psu_ref,
              "controlled_by": list(run.controlled_by),

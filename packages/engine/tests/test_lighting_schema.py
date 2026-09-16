@@ -100,6 +100,21 @@ def test_light_run_resolves_to_its_plan_length_at_its_mounted_height():
     assert run.psu_ref == "ED-M-LT-PSU" and run.controlled_by == ("ED-M-LIVING-SW1",)
 
 
+def test_raked_light_run_follows_its_rise_and_bills_the_slope():
+    model, _ = resolve(_plan(_run(path=(pt(ft(0), ft(0)), pt(ft(12), ft(0))),
+                                  rise=(ft(0), ft(4)))))
+    run = model.light_runs[0]
+    assert run.z_m == pytest.approx(ft(9).meters)
+    assert run.vertex_z() == pytest.approx([ft(9).meters, ft(13).meters])
+    assert run.length_m == pytest.approx(ft(160 ** 0.5).meters)  # hypot(12', 4')
+
+
+def test_light_run_rise_must_match_its_path():
+    _, findings = resolve(_plan(_run(rise=(ft(0), ft(1)))))  # three points, two rises
+    assert any(f.check_id == "integrity.light_run_path" and f.severity.value == "error"
+               for f in findings)
+
+
 def test_light_run_with_one_point_is_an_integrity_error():
     _model, findings = resolve(_plan(_run(path=(pt(ft(0), ft(0)),))))
     assert any(f.check_id == "integrity.light_run_path" and f.severity.value == "error"

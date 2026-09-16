@@ -6590,15 +6590,15 @@ hvac-range-hood-recirculation-filters = { low = 150, high = 450 }
 # is the can and the main only; every branch breaker in a 2026 MN dwelling is AFCI, GFCI or
 # both, at $39-81 apiece. The retired $1,400-2,900 was this arithmetic on the same 36.
 electrical-afci-gfci-breakers = { low = 39, high = 81, unit = "ea", driver = "panel_schedule.rows" }
-# The garage's three exterior linear runs (two eave soffits + the gable face over the
-# overhead door), mark W / `ED-T-LT-LINEAR-EXT`, 2026-09-11. **An ALLOWANCE and not a
+# The garage's three exterior linear runs (two eave soffits + the north gable's rake
+# soffits), mark W / `ED-T-LT-LINEAR-EXT`, 2026-09-11. **An ALLOWANCE and not a
 # `[placeables]` row, and that is not a style choice**: `light_run_materials` is an UNREAD
 # table in `cli/prices.py` — it is keyed on `item` ("channel", "tape"), not on a luminaire
 # type — so a per-each row under `[placeables]` would match nothing at all and bill $0 with
 # no warning. A driven allowance is the one vehicle that reaches these three runs without
 # disturbing the 24V tape that shares the table.
-# Rate is the extrusion, the lens, the LED board and the end caps, plus hanging 64 LF of
-# channel at an eave off a ladder and making three damp-location terminations.
+# Rate is the extrusion, the lens, the LED board and the end caps, plus hanging ~73 LF of
+# channel at the eaves and up a rake off a ladder and making three damp-location terminations.
 # The table itself stays unpriced house-wide, so `channel` and `tape` keep appearing in the
 # takeoff's `unpriced` list exactly as they do today — including this run's own footage.
 # That is the fallback being honest, not this row failing.
