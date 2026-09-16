@@ -971,8 +971,35 @@ WALLS = [
          base_elevation=inch(0.75), top=inch(19.25),
          structural_role=StructuralRole.NONBEARING),
     # --- bedroom north wall ------------------------------------------------------
+    # ** W-M-BDN1 IS INT_2X4_RC SINCE 2026-09-15, AND THE CHANNEL FACES THE BEDROOM. **
+    # This is the only wall between a bed and a toilet in this house. It was
+    # INT_2X4_PARTITION — STC 34, and UNINSULATED since 2026-08-31, so there was not even a
+    # batt to fall back on. Same 2x4 stud and same 5/8" board with 1/2" channel on one face:
+    # STC 48. The second storey's sleeping side has been decoupled since 2026-08-30
+    # (storeys/second.py); the main-floor suite had been left behind.
+    #
+    # ** THE FACE IS NOT A FREE CHOICE HERE, THE WAY IT WAS ON W-S-SS2. ** Acoustically
+    # either leaf works, but RM-M-BATH2's face at y=13'-2 3/8" has FOUR things flush against
+    # it — FX-M-BATH2-SH, FX-M-BATH2-SINK, ED-M-BATH2-FH-STAT and ED-M-BATH2-SW — and the
+    # bedroom's face at 12'-9 5/8" has NOTHING on it at all. So the channel goes south and
+    # the 1/2" comes out of the bedroom.
+    #
+    # What that costs: a 1/2" step at x=8'-2" where this wall meets W-M-BDN2, which stays on
+    # the plain preset (it fronts RM-M-CLOSET, a dressing corridor that opens off this room
+    # through D-M-BED — decoupling a wall with a door in it buys nothing). The step is
+    # behind FURN-M-BED's 6'-8" headboard, which covers x 5'-3 7/8"..11'-11 7/8", and it
+    # lands on the framing tee where W-M-BA2E2 branches north. The bed's head clears the new
+    # face by 5/8". Room AREAS do not move — `resolve/rooms.py` polygonises from AXES — so
+    # no R303.1, R304 or egress verdict changes.
+    #
+    # `alignment` IS NOT OPTIONAL: the channel makes the stack asymmetric, and a default
+    # centred alignment would slide every stud 1/4" off the line. -1 3/4" is half the 2x4,
+    # which puts the axis back on the stud centre. Same figure as the six INT_2X4_RC walls
+    # upstairs. PR-M-BATH2-* rides this 3 1/2" cavity; a batt around a 3/4" PEX riser is
+    # ordinary, and D-M-BATH2 (widened to 2'-8" the same day) is hosted here.
     Wall(uid="CMW131AAAA", tag="W-M-BDN1", start_node="N-M-W3",
-         end_node="N-M-D3", assembly="INT_2X4_PARTITION", top=ft(9)),
+         end_node="N-M-D3", assembly="INT_2X4_RC", interior_room="RM-M-BED", top=ft(9),
+         alignment=face("stud-ext", offset=inch(-1.75))),
     Wall(uid="CMW132AAAA", tag="W-M-BDN2", start_node="N-M-D3",
          end_node="N-M-C1", assembly="INT_2X4_PARTITION", top=ft(9)),
     # --- RM-M-MECH: framed MEP shaft closet, NW corner -------------

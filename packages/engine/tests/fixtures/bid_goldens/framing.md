@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** 15916c08925ce1a1  
+**Model hash:** eafac28f0e2a666d  
 **Lines:** 116
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -35,11 +35,11 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2-2x8 — header (2-2x8) | 192 | LF ordered | 57 pcs, 154.7 LF cut | building |
 | 24 gable roof truss — roof truss (24 gable roof truss) | 2 | ea | 2 pcs, 48.0 LF cut; 48.0 LF in the takeoff | building |
 | 24 roof truss — roof truss (24 roof truss) | 14 | ea | 14 pcs, 336.0 LF cut; 336.0 LF in the takeoff | building |
-| 25 ga. resilient channel 1/2" resilient channel — girt strapping (25 ga. resilient channel:resilient-channel) | 536 | LF ordered | 64 pcs, 429.4 LF cut | building |
+| 25 ga. resilient channel 1/2" resilient channel — girt strapping (25 ga. resilient channel:resilient-channel) | 632 | LF ordered | 94 pcs, 511.5 LF cut | building |
 | 2x10 — hanger board (2x10) | 58 | LF ordered | 12 pcs, 45.9 LF cut | building |
 | 2x10 SPF framing lumber — blocking (2x10:spf) | 114 | LF ordered | 23 pcs, 85.8 LF cut | building |
 | 2x2 — blocking, plate, stud (2x2) | 288 | LF ordered | 100 pcs, 262.3 LF cut | building |
-| 2x4 — blocking, corner stud, cripple stud, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,956 | LF ordered | 659 pcs, 4224.8 LF cut | building |
+| 2x4 — blocking, corner stud, cripple stud, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,956 | LF ordered | 659 pcs, 4224.7 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,830 | LF ordered | 462 pcs, 2441.4 LF cut | building |
 | 2x4 SPF framing lumber — girt strapping (2x4:spf) | 84 | LF ordered | 14 pcs, 62.6 LF cut | building |
 | 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | 8,504 | LF ordered | 1214 pcs, 7404.6 LF cut | building |

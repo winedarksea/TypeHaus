@@ -364,8 +364,12 @@ SECOND_DEVICES = [
                      position=pt(ft(11, 6), ft(18)), type_ref="ED-T-LT-CAN4-WET", circuit="CKT-LT-UPPER",
                      room="RM-S-SUITEBATH", controlled_by=("ED-S-SUITEBATH-SW",),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # y moved 1/2" north on 2026-09-15, following its wall: W-S-SBS went INT_2X4_PARTITION
+    # -> INT_2X4_RC and the resilient channel lands on this, the bath face, taking it from
+    # 16'-1 3/8" to 16'-1 7/8". The box has to follow or it resolves inside the channel —
+    # test_wall_mounted_devices_resolve_against_a_wall_face caught it at 0.71" buried.
     ElectricalDevice(uid="CED013K2AA", tag="ED-S-SUITEBATH-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(12, 9), ft(16, 2.375)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
+                     position=pt(ft(12, 9), ft(16, 2.875)), type_ref="ED-T-SWITCH", circuit="CKT-LT-UPPER",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
     ElectricalDevice(uid="CED014K1AA", tag="ED-S-VANITY-LT", kind=DeviceKind.LIGHT,
                      position=pt(ft(3), ft(23, 6)), type_ref="ED-T-LT-CAN4-WET", circuit="CKT-LT-UPPER",

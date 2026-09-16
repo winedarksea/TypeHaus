@@ -25905,13 +25905,19 @@
 8,
 "1ce2bb9fca09"
 ],
-"geometry/CMW131AAAA/layer:gwb-a": [
+"geometry/CMW131AAAA/layer:gwb-direct": [
 0.0,
 2.7432,
 6,
 "c3d978f4eede"
 ],
-"geometry/CMW131AAAA/layer:gwb-b": [
+"geometry/CMW131AAAA/layer:gwb-resilient": [
+0.0,
+2.7432,
+6,
+"c3d978f4eede"
+],
+"geometry/CMW131AAAA/layer:resilient-channel": [
 0.0,
 2.7432,
 6,
@@ -25976,6 +25982,66 @@
 2.7051,
 8,
 "ba74e63dc3f4"
+],
+"geometry/CMW131AAAA::framing/member:strapping-resilient-channel-000": [
+0.0,
+0.0635,
+8,
+"2a8fe9836b57"
+],
+"geometry/CMW131AAAA::framing/member:strapping-resilient-channel-001": [
+0.0,
+0.0635,
+8,
+"2a8fe9836b57"
+],
+"geometry/CMW131AAAA::framing/member:strapping-resilient-channel-002": [
+0.6096,
+0.6731,
+8,
+"fcb5b869c44e"
+],
+"geometry/CMW131AAAA::framing/member:strapping-resilient-channel-003": [
+0.6096,
+0.6731,
+8,
+"fcb5b869c44e"
+],
+"geometry/CMW131AAAA::framing/member:strapping-resilient-channel-004": [
+1.2192,
+1.2827,
+8,
+"7b0ef8587f2a"
+],
+"geometry/CMW131AAAA::framing/member:strapping-resilient-channel-005": [
+1.2192,
+1.2827,
+8,
+"7b0ef8587f2a"
+],
+"geometry/CMW131AAAA::framing/member:strapping-resilient-channel-006": [
+1.8288,
+1.8923,
+8,
+"b6bce95122b9"
+],
+"geometry/CMW131AAAA::framing/member:strapping-resilient-channel-007": [
+1.8288,
+1.8923,
+8,
+"b6bce95122b9"
+],
+"geometry/CMW131AAAA::framing/member:strapping-resilient-channel-008": [
+2.4384,
+2.5019,
+8,
+"84c12a21c9ed"
+],
+"geometry/CMW131AAAA::framing/member:strapping-resilient-channel-009": [
+2.6797,
+2.7432,
+8,
+"a7426edad95a"
 ],
 "geometry/CMW131AAAA::framing/member:stud-000": [
 0.0381,
@@ -37731,6 +37797,12 @@
 6,
 "3de6516c3dfc"
 ],
+"geometry/CSW138AAAA/layer:resilient-channel": [
+3.048,
+6.096,
+6,
+"3de6516c3dfc"
+],
 "geometry/CSW138AAAA/layer:stud": [
 3.048,
 6.096,
@@ -37790,6 +37862,66 @@
 5.7531,
 8,
 "f6380622d682"
+],
+"geometry/CSW138AAAA::framing/member:strapping-resilient-channel-000": [
+3.048,
+3.1115,
+8,
+"68f35ea47029"
+],
+"geometry/CSW138AAAA::framing/member:strapping-resilient-channel-001": [
+3.048,
+3.1115,
+8,
+"68f35ea47029"
+],
+"geometry/CSW138AAAA::framing/member:strapping-resilient-channel-002": [
+3.6576,
+3.7211,
+8,
+"9f1cb44a6adc"
+],
+"geometry/CSW138AAAA::framing/member:strapping-resilient-channel-003": [
+3.6576,
+3.7211,
+8,
+"9f1cb44a6adc"
+],
+"geometry/CSW138AAAA::framing/member:strapping-resilient-channel-004": [
+4.2672,
+4.3307,
+8,
+"012e0d0552d6"
+],
+"geometry/CSW138AAAA::framing/member:strapping-resilient-channel-005": [
+4.2672,
+4.3307,
+8,
+"012e0d0552d6"
+],
+"geometry/CSW138AAAA::framing/member:strapping-resilient-channel-006": [
+4.8768,
+4.9403,
+8,
+"4eee4fc23f2a"
+],
+"geometry/CSW138AAAA::framing/member:strapping-resilient-channel-007": [
+4.8768,
+4.9403,
+8,
+"4eee4fc23f2a"
+],
+"geometry/CSW138AAAA::framing/member:strapping-resilient-channel-008": [
+5.4864,
+5.5499,
+8,
+"1cf39f8f20c2"
+],
+"geometry/CSW138AAAA::framing/member:strapping-resilient-channel-009": [
+6.0325,
+6.096,
+8,
+"dd4520f6714d"
 ],
 "geometry/CSW138AAAA::framing/member:tee-N-S-C2B-block-00": [
 3.6957,
@@ -38319,13 +38451,19 @@
 8,
 "50ef2552dcd5"
 ],
-"geometry/CSW144AAAA/layer:gwb-a": [
+"geometry/CSW144AAAA/layer:gwb-direct": [
 3.048,
 5.7912,
 6,
 "fa155017d4b3"
 ],
-"geometry/CSW144AAAA/layer:gwb-b": [
+"geometry/CSW144AAAA/layer:gwb-resilient": [
+3.048,
+5.7912,
+6,
+"fa155017d4b3"
+],
+"geometry/CSW144AAAA/layer:resilient-channel": [
 3.048,
 5.7912,
 6,
@@ -38390,6 +38528,66 @@
 5.7531,
 8,
 "f6380622d682"
+],
+"geometry/CSW144AAAA::framing/member:strapping-resilient-channel-000": [
+3.048,
+3.1115,
+8,
+"68f35ea47029"
+],
+"geometry/CSW144AAAA::framing/member:strapping-resilient-channel-001": [
+3.048,
+3.1115,
+8,
+"68f35ea47029"
+],
+"geometry/CSW144AAAA::framing/member:strapping-resilient-channel-002": [
+3.6576,
+3.7211,
+8,
+"9f1cb44a6adc"
+],
+"geometry/CSW144AAAA::framing/member:strapping-resilient-channel-003": [
+3.6576,
+3.7211,
+8,
+"9f1cb44a6adc"
+],
+"geometry/CSW144AAAA::framing/member:strapping-resilient-channel-004": [
+4.2672,
+4.3307,
+8,
+"012e0d0552d6"
+],
+"geometry/CSW144AAAA::framing/member:strapping-resilient-channel-005": [
+4.2672,
+4.3307,
+8,
+"012e0d0552d6"
+],
+"geometry/CSW144AAAA::framing/member:strapping-resilient-channel-006": [
+4.8768,
+4.9403,
+8,
+"4eee4fc23f2a"
+],
+"geometry/CSW144AAAA::framing/member:strapping-resilient-channel-007": [
+4.8768,
+4.9403,
+8,
+"4eee4fc23f2a"
+],
+"geometry/CSW144AAAA::framing/member:strapping-resilient-channel-008": [
+5.4864,
+5.5499,
+8,
+"1cf39f8f20c2"
+],
+"geometry/CSW144AAAA::framing/member:strapping-resilient-channel-009": [
+5.7277,
+5.7912,
+8,
+"d7abe06b4c2b"
 ],
 "geometry/CSW144AAAA::framing/member:stud-000": [
 3.0861,
@@ -61917,6 +62115,66 @@
 2,
 "1446726e93b5"
 ],
+"member/CMW131AAAA/strapping-resilient-channel-000": [
+0.0,
+0.0635,
+2,
+"8ca774a75304"
+],
+"member/CMW131AAAA/strapping-resilient-channel-001": [
+0.0,
+0.0635,
+2,
+"8ca774a75304"
+],
+"member/CMW131AAAA/strapping-resilient-channel-002": [
+0.6096,
+0.6731,
+2,
+"2b15ad0138a4"
+],
+"member/CMW131AAAA/strapping-resilient-channel-003": [
+0.6096,
+0.6731,
+2,
+"2b15ad0138a4"
+],
+"member/CMW131AAAA/strapping-resilient-channel-004": [
+1.2192,
+1.2827,
+2,
+"3e9c7bd6c32e"
+],
+"member/CMW131AAAA/strapping-resilient-channel-005": [
+1.2192,
+1.2827,
+2,
+"3e9c7bd6c32e"
+],
+"member/CMW131AAAA/strapping-resilient-channel-006": [
+1.8288,
+1.8923,
+2,
+"daf7377bc93a"
+],
+"member/CMW131AAAA/strapping-resilient-channel-007": [
+1.8288,
+1.8923,
+2,
+"daf7377bc93a"
+],
+"member/CMW131AAAA/strapping-resilient-channel-008": [
+2.4384,
+2.5019,
+2,
+"177e97f7729e"
+],
+"member/CMW131AAAA/strapping-resilient-channel-009": [
+2.6797,
+2.7432,
+2,
+"8ae5be150979"
+],
 "member/CMW131AAAA/stud-000": [
 0.0381,
 2.667,
@@ -72135,6 +72393,66 @@
 2,
 "2608551f5a15"
 ],
+"member/CSW138AAAA/strapping-resilient-channel-000": [
+3.048,
+3.1115,
+2,
+"68ff990b75fa"
+],
+"member/CSW138AAAA/strapping-resilient-channel-001": [
+3.048,
+3.1115,
+2,
+"68ff990b75fa"
+],
+"member/CSW138AAAA/strapping-resilient-channel-002": [
+3.6576,
+3.7211,
+2,
+"cdf3f7b4cb1e"
+],
+"member/CSW138AAAA/strapping-resilient-channel-003": [
+3.6576,
+3.7211,
+2,
+"cdf3f7b4cb1e"
+],
+"member/CSW138AAAA/strapping-resilient-channel-004": [
+4.2672,
+4.3307,
+2,
+"49753e88df19"
+],
+"member/CSW138AAAA/strapping-resilient-channel-005": [
+4.2672,
+4.3307,
+2,
+"49753e88df19"
+],
+"member/CSW138AAAA/strapping-resilient-channel-006": [
+4.8768,
+4.9403,
+2,
+"bbd4cb6278b7"
+],
+"member/CSW138AAAA/strapping-resilient-channel-007": [
+4.8768,
+4.9403,
+2,
+"bbd4cb6278b7"
+],
+"member/CSW138AAAA/strapping-resilient-channel-008": [
+5.4864,
+5.5499,
+2,
+"2c81a509fee2"
+],
+"member/CSW138AAAA/strapping-resilient-channel-009": [
+6.0325,
+6.096,
+2,
+"2f1ce0ed6afe"
+],
 "member/CSW138AAAA/tee-N-S-C2B-block-00": [
 3.6957,
 3.7338,
@@ -72590,6 +72908,66 @@
 5.7531,
 2,
 "2608551f5a15"
+],
+"member/CSW144AAAA/strapping-resilient-channel-000": [
+3.048,
+3.1115,
+2,
+"68ff990b75fa"
+],
+"member/CSW144AAAA/strapping-resilient-channel-001": [
+3.048,
+3.1115,
+2,
+"68ff990b75fa"
+],
+"member/CSW144AAAA/strapping-resilient-channel-002": [
+3.6576,
+3.7211,
+2,
+"cdf3f7b4cb1e"
+],
+"member/CSW144AAAA/strapping-resilient-channel-003": [
+3.6576,
+3.7211,
+2,
+"cdf3f7b4cb1e"
+],
+"member/CSW144AAAA/strapping-resilient-channel-004": [
+4.2672,
+4.3307,
+2,
+"49753e88df19"
+],
+"member/CSW144AAAA/strapping-resilient-channel-005": [
+4.2672,
+4.3307,
+2,
+"49753e88df19"
+],
+"member/CSW144AAAA/strapping-resilient-channel-006": [
+4.8768,
+4.9403,
+2,
+"bbd4cb6278b7"
+],
+"member/CSW144AAAA/strapping-resilient-channel-007": [
+4.8768,
+4.9403,
+2,
+"bbd4cb6278b7"
+],
+"member/CSW144AAAA/strapping-resilient-channel-008": [
+5.4864,
+5.5499,
+2,
+"2c81a509fee2"
+],
+"member/CSW144AAAA/strapping-resilient-channel-009": [
+5.7277,
+5.7912,
+2,
+"8778c0409a24"
 ],
 "member/CSW144AAAA/stud-000": [
 3.0861,

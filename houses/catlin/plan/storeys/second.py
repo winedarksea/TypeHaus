@@ -238,8 +238,27 @@ WALLS = [
     Wall(uid="CSW115AAAA", tag="W-S-C2", start_node="N-S-C1", end_node="N-S-C2",
          assembly="INT_2X6_BRG", top=ft(9),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C1"),
+    # ** W-S-C2B IS INT_2X6_BRG_RC SINCE 2026-09-15 — the suite's own door wall. ** It is
+    # the segment between RM-S-SUITE and RM-S-HALL, it hosts D-S-SUITE, and it carried an
+    # EMPTY 5 1/2" cavity and no channel: the one wall on the sleeping side that the
+    # 2026-08-30 retype missed, because that pass walked the bedroom partitions and this is
+    # a bearing wall. W-M-C1 downstairs is the precedent for the whole move, down to the
+    # -2 3/4" alignment (half the 2x6, putting the axis back on the stud centre against the
+    # channel's asymmetric 7.27" stack).
+    #
+    # ** IT LEAVES NO STEP, WHICH IS WHY ONLY THIS SEGMENT MOVES. ** W-S-C2/C2B/C2C are
+    # collinear on x=18'-0" and only the middle one changes, so the 1/2" has to go
+    # somewhere: both of its ends are TEES — W-S-CLN runs west at y=12'-5" and W-S-SBS runs
+    # west at y=15'-11" — so the offset is absorbed at two inside corners of the suite and
+    # no face steps in the open. C2 and C2C stay as they are and are recorded as accepted
+    # gaps in houses/catlin/CLAUDE.md.
+    #
+    # The centreline bearing line is unaffected: the alignment holds the studs on x=18'-0"
+    # exactly as W-M-C1's does downstairs, which is what
+    # test_the_centreline_bearing_wall_is_one_stud_grid_on_every_storey reads.
     Wall(uid="CSW138AAAA", tag="W-S-C2B", start_node="N-S-C2", end_node="N-S-C2B",
-         assembly="INT_2X6_BRG", top=ft(9),
+         assembly="INT_2X6_BRG_RC", interior_room="RM-S-SUITE", top=ft(9),
+         alignment=face("stud-ext", offset=inch(-2.75)),
          structural_role=StructuralRole.BEARING, stacks_on="W-M-C2"),
     Wall(uid="CSW139AAAA", tag="W-S-C2C", start_node="N-S-C2B", end_node="N-S-C2C",
          assembly="INT_2X6_BRG", top=ft(9),
@@ -385,8 +404,26 @@ WALLS = [
     # instead (10.5" north of its centreline, `plan/fixtures.py`'s `FX-S-SUITEBATH-LAV`), and
     # the `wall_ref` moved there with it, so `advisory.wet_wall_depth` no longer reads this
     # wall at all.
+    # ** INT_2X4_RC SINCE 2026-09-15, CHANNEL ON THE BATH FACE. ** RM-S-SUITE sleeps on one
+    # side of this and RM-S-SUITEBATH runs a shower and a WC on the other, and it was on the
+    # plain uninsulated preset at STC 34 — the upstairs twin of W-M-BDN1, and it was missed
+    # by the same 2026-08-30 pass.
+    #
+    # ** THE FACE IS NOT SELECTABLE HERE AND `interior_room` DOES NOT PICK IT. ** On this
+    # wall the alignment fixes which leaf the channel lands on; authoring `interior_room` as
+    # RM-S-SUITE and as RM-S-SUITEBATH resolves to the identical stack, with the channel on
+    # the north (bath) leaf both ways. It is written as RM-S-SUITEBATH so the source agrees
+    # with the geometry instead of stating an intent the model does not honour. Acoustically
+    # nothing is lost — decoupling one leaf works whichever leaf it is (see W-S-SS2's note
+    # above) — and the bath is the noise source, so this is the leaf one would pick anyway.
+    #
+    # The 1/2" therefore comes out of RM-S-SUITEBATH, not the sleeping room, and exactly ONE
+    # thing follows it: ED-S-SUITEBATH-SW (plan/mep_electrical.py). ED-S-SUITE-RC1 and
+    # ED-S-SUITE-RC8 sit on the suite face, which does not move. Both ends are tees —
+    # W-S-DC2 at x=9'-7 1/2", W-S-C2B at x=18'-0" — so nothing steps in the open.
     Wall(uid="CSW144AAAA", tag="W-S-SBS", start_node="N-S-D3", end_node="N-S-C2B",
-         assembly="INT_2X4_PARTITION", top=ft(9)),
+         assembly="INT_2X4_RC", interior_room="RM-S-SUITEBATH", top=ft(9),
+         alignment=face("stud-ext", offset=inch(-1.75))),
     # The suite's north wall: RM-S-SUITE (sleeping) on one face, the vanity alcove and the
     # suite bath on the other. Both runs are the library's staggered-stud partition (2x4
     # studs alternating on 2x6 plates, 3.5" fiberglass) rather than the house's default

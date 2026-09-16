@@ -27,8 +27,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW113AAAA",
-      "tag": "W-M-C2/paint-a"
+      "uid": "CMW114AAAA",
+      "tag": "W-M-C3/paint-a"
     },
     {
       "space": "model",
@@ -55,8 +55,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW113AAAA",
-      "tag": "W-M-C2/gwb-a"
+      "uid": "CMW114AAAA",
+      "tag": "W-M-C3/gwb-a"
     },
     {
       "space": "model",
@@ -111,8 +111,8 @@
       "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW113AAAA",
-      "tag": "W-M-C2/stud"
+      "uid": "CMW114AAAA",
+      "tag": "W-M-C3/stud"
     },
     {
       "space": "model",
@@ -167,8 +167,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW113AAAA",
-      "tag": "W-M-C2/gwb-b"
+      "uid": "CMW114AAAA",
+      "tag": "W-M-C3/gwb-b"
     },
     {
       "space": "model",
@@ -223,8 +223,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW113AAAA",
-      "tag": "W-M-C2/paint-b"
+      "uid": "CMW114AAAA",
+      "tag": "W-M-C3/paint-b"
     },
     {
       "space": "model",
@@ -251,8 +251,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CSW138AAAA",
-      "tag": "W-S-C2B/paint-a"
+      "uid": "CSW139AAAA",
+      "tag": "W-S-C2C/paint-a"
     },
     {
       "space": "model",
@@ -279,8 +279,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CSW138AAAA",
-      "tag": "W-S-C2B/gwb-a"
+      "uid": "CSW139AAAA",
+      "tag": "W-S-C2C/gwb-a"
     },
     {
       "space": "model",
@@ -335,8 +335,8 @@
       "lineweight": 0.35,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CSW138AAAA",
-      "tag": "W-S-C2B/stud"
+      "uid": "CSW139AAAA",
+      "tag": "W-S-C2C/stud"
     },
     {
       "space": "model",
@@ -391,8 +391,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CSW138AAAA",
-      "tag": "W-S-C2B/gwb-b"
+      "uid": "CSW139AAAA",
+      "tag": "W-S-C2C/gwb-b"
     },
     {
       "space": "model",
@@ -447,8 +447,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CSW138AAAA",
-      "tag": "W-S-C2B/paint-b"
+      "uid": "CSW139AAAA",
+      "tag": "W-S-C2C/paint-b"
     },
     {
       "space": "model",
@@ -531,8 +531,8 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMR407AAAA-ceiling",
-      "tag": "CEIL-RM-M-CLOSET"
+      "uid": "CMR406AAAA-ceiling",
+      "tag": "CEIL-RM-M-STUDY"
     },
     {
       "space": "model",
@@ -699,7 +699,7 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW113AAAA",
+      "uid": "CMW114AAAA",
       "tag": "plate-top-0"
     },
     {
@@ -755,7 +755,7 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CMW113AAAA",
+      "uid": "CMW114AAAA",
       "tag": "plate-top-1"
     },
     {
@@ -811,7 +811,7 @@
       "lineweight": 0.18,
       "linetype": "CONTINUOUS",
       "closed": true,
-      "uid": "CSW138AAAA",
+      "uid": "CSW139AAAA",
       "tag": "plate-bottom"
     },
     {
@@ -833,62 +833,6 @@
         [
           213.25,
           121.50000000000001
-        ]
-      ],
-      "pattern": "lumber",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": null
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          213.25,
-          121.50000000000001
-        ],
-        [
-          218.75000000000003,
-          121.50000000000001
-        ],
-        [
-          218.75000000000003,
-          141.6535433070866
-        ],
-        [
-          213.25,
-          141.6535433070866
-        ]
-      ],
-      "layer": "S-FRAM",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CSW138AAAA",
-      "tag": "jack-0-r0"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          213.25,
-          121.50000000000001
-        ],
-        [
-          218.75000000000003,
-          121.50000000000001
-        ],
-        [
-          218.75000000000003,
-          141.6535433070866
-        ],
-        [
-          213.25,
-          141.6535433070866
         ]
       ],
       "pattern": "lumber",
@@ -1147,6 +1091,426 @@
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
       "uid": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          182.615,
+          116.9862
+        ],
+        [
+          212.61500000000004,
+          116.9862
+        ],
+        [
+          212.61500000000004,
+          120.9862
+        ],
+        [
+          182.615,
+          120.9862
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:shower-recess"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          196.115,
+          115.9862
+        ],
+        [
+          199.115,
+          115.9862
+        ],
+        [
+          199.115,
+          117.9862
+        ],
+        [
+          196.115,
+          117.9862
+        ]
+      ],
+      "pattern": "SOLID",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "metal-dark"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          196.115,
+          115.9862
+        ],
+        [
+          199.115,
+          115.9862
+        ],
+        [
+          199.115,
+          117.9862
+        ],
+        [
+          196.115,
+          117.9862
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:shower-drain"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          211.61500000000004,
+          116.9862
+        ],
+        [
+          212.61500000000004,
+          116.9862
+        ],
+        [
+          212.61500000000004,
+          204.9862
+        ],
+        [
+          211.61500000000004,
+          204.9862
+        ]
+      ],
+      "pattern": "gypsum",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "gwb"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          211.61500000000004,
+          116.9862
+        ],
+        [
+          212.61500000000004,
+          116.9862
+        ],
+        [
+          212.61500000000004,
+          204.9862
+        ],
+        [
+          211.61500000000004,
+          204.9862
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:shower-backer"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          210.86500000000004,
+          116.9862
+        ],
+        [
+          211.61500000000004,
+          116.9862
+        ],
+        [
+          211.61500000000004,
+          204.9862
+        ],
+        [
+          210.86500000000004,
+          204.9862
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "tile"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          210.86500000000004,
+          116.9862
+        ],
+        [
+          211.61500000000004,
+          116.9862
+        ],
+        [
+          211.61500000000004,
+          204.9862
+        ],
+        [
+          210.86500000000004,
+          204.9862
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:shower-tile"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          182.615,
+          120.2362
+        ],
+        [
+          210.86500000000004,
+          120.2362
+        ],
+        [
+          210.86500000000004,
+          120.9862
+        ],
+        [
+          182.615,
+          120.9862
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "tile"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          182.615,
+          120.2362
+        ],
+        [
+          210.86500000000004,
+          120.2362
+        ],
+        [
+          210.86500000000004,
+          120.9862
+        ],
+        [
+          182.615,
+          120.9862
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:shower-tile"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          182.615,
+          121.9862
+        ],
+        [
+          183.115,
+          121.9862
+        ],
+        [
+          183.115,
+          204.9862
+        ],
+        [
+          182.615,
+          204.9862
+        ]
+      ],
+      "pattern": "glass",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          182.615,
+          121.9862
+        ],
+        [
+          183.115,
+          121.9862
+        ],
+        [
+          183.115,
+          204.9862
+        ],
+        [
+          182.615,
+          204.9862
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:shower-glass"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          172.0,
+          206.9862
+        ],
+        [
+          176.0,
+          206.9862
+        ],
+        [
+          176.0,
+          210.9862
+        ],
+        [
+          172.0,
+          210.9862
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "metal"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          172.0,
+          206.9862
+        ],
+        [
+          176.0,
+          206.9862
+        ],
+        [
+          176.0,
+          210.9862
+        ],
+        [
+          172.0,
+          210.9862
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:shower-hrv-duct"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          225.0,
+          206.9862
+        ],
+        [
+          243.0,
+          206.9862
+        ],
+        [
+          243.0,
+          214.9862
+        ],
+        [
+          225.0,
+          214.9862
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-DETL-CMPT",
+      "uid": null,
+      "material": "metal"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          225.0,
+          206.9862
+        ],
+        [
+          243.0,
+          206.9862
+        ],
+        [
+          243.0,
+          214.9862
+        ],
+        [
+          225.0,
+          214.9862
+        ]
+      ],
+      "layer": "A-DETL-CMPT",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": null,
+      "tag": "detail-component:shower-hrv-duct"
     },
     {
       "space": "model",
