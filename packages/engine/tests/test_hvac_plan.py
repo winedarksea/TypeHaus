@@ -4,9 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-
 from typehaus.emit.draw.hvacplan import build_hvac_plan, has_hvac_content
-from typehaus.emit.draw.scene import Leader, Polyline, Symbol
+from typehaus.emit.draw.scene import Polyline, Symbol, Text
 
 
 def test_every_storey_has_hvac_content(catlin_model):
@@ -33,10 +32,15 @@ def test_hvac_plan_symbol_census(catlin_model):
     assert duct_polys
 
 
-def test_hvac_plan_has_bearing_crossing_leader(catlin_model):
+def test_hvac_plan_deduplicates_bearing_crossings_into_layout_requests(catlin_model):
     scene = build_hvac_plan(catlin_model, "second")
-    leaders = [n for n in scene.nodes if isinstance(n, Leader)]
-    assert any("FIRE BLOCKING" in leader.text for leader in leaders)
+    notes = [n for n in scene.nodes if isinstance(n, Text) and "FIRE BLOCKING" in n.content]
+    crossed_ducts = [duct for duct in catlin_model.ducts
+                     if duct.storey == "second" and duct.crossings]
+    assert len(notes) == len(crossed_ducts), "one readable note per duct, not one per crossing"
+    assert all("MARKED BEARING-WALL CROSSINGS" in " ".join(note.content.split())
+               for note in notes)
+    assert len(scene.annotation_requests) >= len(notes)
 
 
 def test_hvac_plan_dxf_round_trips(catlin_model, tmp_path: Path):

@@ -144,12 +144,14 @@ system = "imperial"
 # a set is being submitted for permit, so it is said here and nowhere in the engine.
 [print]
 issue = "ISSUED FOR PERMIT"
-# Sheet-number prefixes forced into / out of the `--set permit` set. Both empty: the
-# default split (no E-1xx power, no P-1xx plumbing) is what the Saint Paul DSI new-
-# construction checklist asks for — fixtures go on the floor plans. `permit_add =
-# ["E-1", "P-1"]` puts them back in one line if a reviewer asks.
+# Sheet-number prefixes forced into / out of the `--set permit` set. The default split
+# already omits separate E-1xx power and P-1xx plumbing plans; fixtures remain on the floor
+# plans. A-502's deck-bearing crop adds no bearing information beyond the structural plans,
+# and A-506's generic hall-shower crop adds no permit-review information. They remain in the
+# full set at their authored numbers. `permit_add = ["E-1", "P-1"]` restores the trade plans
+# in one line if a reviewer asks.
 permit_add = []
-permit_drop = []
+permit_drop = ["A-502", "A-506"]
 
 
 # --- decided advisories -------------------------------------------------------------------

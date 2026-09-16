@@ -282,9 +282,9 @@ ABBREVIATIONS = (
 SYMBOLS = (
     ("D1, W3 in a bubble", "door / window mark, keyed to A-601 and A-602 (plan_marks.py)"),
     ("K1 in a circle", "keyed note, listed in the notes band on that sheet (keyed_notes.py)"),
-    ("Split circle, 2 over A-502",
-     "detail callout: detail 2, drawn on sheet A-502 (callouts.py)"),
-    ("Heavy red line on S-103", "braced wall line (bracedwallplan.py)"),
+    ("Split circle, 1 over A-501",
+     "detail callout: detail 1, drawn on sheet A-501 (callouts.py)"),
+    ("Heavy red line on S-103.1", "braced wall line (bracedwallplan.py)"),
     ("Triangle with a level name", "storey datum, on sections and elevations"),
     ("Hatched band in a wall cut", "material, named in that sheet's own legend"),
 )

@@ -39,7 +39,9 @@ from typehaus.emit.draw.site_metrics import (
     coverage_table,
     lot_line_dimensions,
 )
+from typehaus.emit.draw.siteplan_labels import add_line_label, add_point_label
 from typehaus.emit.draw.structural_common import feet_inches
+from typehaus.emit.draw.typography import DIM_TEXT_PT, TEXT_PT
 from typehaus.model.project import Site
 from typehaus.resolve.model import ResolvedModel
 
@@ -50,17 +52,7 @@ EROSION_LAYER = "C-EROS"
 TABLE_LAYER = "C-ANNO-TABL"
 BENCHMARK_LAYER = "C-ANNO-BMRK"
 
-# Lettering for the field annotation, in model inches at ``REFERENCE_PLAN_EXTENT_IN``. A
-# lot is an order of magnitude bigger than a floor plan and prints an order of magnitude
-# smaller, so these are scaled by the parcel's own extent (``BlockMetrics``, the same
-# factor the coverage table is drawn at) rather than fixed like the spot-elevation
-# callouts — an unscaled lot-line dimension is a smudge at 3/32" = 1'-0".
-_LOT_LINE_TEXT_IN = 2.0
-_LABEL_TEXT_IN = 1.8
-_SETBACK_TEXT_IN = 2.0
-_STREET_TEXT_IN = 2.4
-_LOT_LINE_OFFSET_IN = 3.0  # lettering sits outboard of the line it measures, per text height
-_ENTRANCE_MARK_IN = 4.0  # half-diagonal of a point-located mark, in text heights
+_ENTRANCE_MARK_IN = 8.0
 
 
 def emit_site_annotations(builder: SceneBuilder, model: ResolvedModel, site: Site) -> None:
@@ -113,17 +105,9 @@ def _emit_parcel_and_setbacks(builder: SceneBuilder, model: ResolvedModel, site:
         if nearest is not None:
             provided_m = math.dist(nearest, _project_onto_segment(nearest, a, b))
             label += f" / {feet_inches(provided_m)} PROVIDED"
-        # Read along the setback line, clear of it: a horizontal label on a vertical side
-        # setback crosses the lot line it is measured from and becomes unreadable.
-        height = _scaled(metrics, _SETBACK_TEXT_IN)
-        mid = _in(((offset_a[0] + offset_b[0]) / 2, (offset_a[1] + offset_b[1]) / 2))
-        ax, ay = _in(a)
-        bx, by = _in(b)
-        run = math.hypot(bx - ax, by - ay) or 1.0
-        inward = (-(by - ay) / run, (bx - ax) / run)
-        builder.add(Text(anchor=(mid[0] + inward[0] * height, mid[1] + inward[1] * height),
-                         content=label, height=height, rotation=_reading_angle(bx - ax, by - ay),
-                         layer="C-PROP-SETB", align="center"))
+        add_line_label(builder, key=f"setback-{spec.edge}", text=label,
+                       start=_in(offset_a), end=_in(offset_b), layer="C-PROP-SETB",
+                       height_pt=TEXT_PT, priority=90, preferred_side=1)
         if nearest is not None:
             foot = _project_onto_segment(nearest, a, b)
             builder.add(ArchDimension(
@@ -142,19 +126,10 @@ def _emit_lot_line_dimensions(builder: SceneBuilder, site: Site, metrics: BlockM
     parcel = [p.xy_m for p in site.parcel]
     for edge, length_ft, bearing in lot_line_dimensions(site):
         a, b = parcel[edge], parcel[(edge + 1) % len(parcel)]
-        dx, dy = b[0] - a[0], b[1] - a[1]
-        run = math.hypot(dx, dy) or 1.0
-        # Outward normal of a CCW ring is the right-hand normal — the mirror of the inward
-        # offset the setback lines use, so the dimension never lands inside the lot.
-        ox, oy = dy / run, -dx / run
-        mid = ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
-        anchor = _in(mid)
-        height = _scaled(metrics, _LOT_LINE_TEXT_IN)
-        gap = height * _LOT_LINE_OFFSET_IN
-        anchor = (anchor[0] + ox * gap, anchor[1] + oy * gap)
-        builder.add(Text(anchor=anchor, content=f"{length_ft:.2f}'  {bearing}",
-                         height=height, rotation=_reading_angle(dx, dy), layer="C-PROP",
-                         align="center"))
+        add_line_label(builder, key=f"lot-line-{edge}",
+                       text=f"{length_ft:.2f}'  {bearing}", start=_in(a), end=_in(b),
+                       layer="C-PROP", height_pt=DIM_TEXT_PT, priority=100,
+                       preferred_side=-1)
 
 
 def _emit_streets(builder: SceneBuilder, site: Site, metrics: BlockMetrics) -> None:
@@ -171,7 +146,6 @@ def _emit_streets(builder: SceneBuilder, site: Site, metrics: BlockMetrics) -> N
     n = len(parcel)
     for street in site.streets:
         a, b = parcel[street.edge % n], parcel[(street.edge + 1) % n]
-        mid = ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
         label = street.name.upper()
         if street.right_of_way_ft is not None:
             label += f" — {street.right_of_way_ft:.0f}' R.O.W."
@@ -179,18 +153,9 @@ def _emit_streets(builder: SceneBuilder, site: Site, metrics: BlockMetrics) -> N
             centre_a, centre_b = _offset_edge(a, b, -half_m)
             builder.add(Polyline(points=(_in(centre_a), _in(centre_b)), layer="C-PROP",
                                  lineweight=LIGHT, linetype="CENTER"))
-            mid = ((centre_a[0] + centre_b[0]) / 2, (centre_a[1] + centre_b[1]) / 2)
-        height = _scaled(metrics, _STREET_TEXT_IN)
-        run = math.hypot(b[0] - a[0], b[1] - a[1]) or 1.0
-        # Off the line it names, on the far side from the lot — lettering struck through by
-        # its own centreline is the commonest way a site plan becomes unreadable.
-        outward = ((b[1] - a[1]) / run, -(b[0] - a[0]) / run)
-        anchor = _in(mid)
-        builder.add(Text(anchor=(anchor[0] + outward[0] * height,
-                                 anchor[1] + outward[1] * height), content=label,
-                         height=height,
-                         rotation=_reading_angle(b[0] - a[0], b[1] - a[1]),
-                         layer="C-PROP", align="center"))
+        add_line_label(builder, key=f"street-{street.edge}", text=label,
+                       start=_in(a), end=_in(b), layer="C-PROP", height_pt=TEXT_PT,
+                       priority=80, preferred_side=-1)
 
 
 def _emit_easements(builder: SceneBuilder, site: Site, metrics: BlockMetrics) -> None:
@@ -200,7 +165,7 @@ def _emit_easements(builder: SceneBuilder, site: Site, metrics: BlockMetrics) ->
     from its recorded outline rather than reconstructed from a centreline and a width; the
     stated width is printed beside the kind when the instrument gives one.
     """
-    for easement in site.easements:
+    for easement_index, easement in enumerate(site.easements):
         ring = [p.xy_m for p in easement.outline]
         if len(ring) < 3:
             continue
@@ -213,9 +178,9 @@ def _emit_easements(builder: SceneBuilder, site: Site, metrics: BlockMetrics) ->
             label += f" ({easement.description})"
         cx = sum(p[0] for p in ring) / len(ring)
         cy = sum(p[1] for p in ring) / len(ring)
-        builder.add(Text(anchor=_in((cx, cy)), content=label,
-                         height=_scaled(metrics, _LABEL_TEXT_IN),
-                         layer=EASEMENT_LAYER, align="center"))
+        add_point_label(builder, key=f"easement-{easement_index}",
+                        text=label, target=_in((cx, cy)), layer=EASEMENT_LAYER,
+                        height_pt=TEXT_PT, priority=70)
 
 
 #: How each erosion-control measure reads on the sheet. A silt fence is a run, an entrance
@@ -230,8 +195,7 @@ _EROSION_LABELS = {
 
 def _emit_erosion_controls(builder: SceneBuilder, site: Site, metrics: BlockMetrics) -> None:
     """Silt fence, rock entrance and inlet protection, each drawn as what it is."""
-    height = _scaled(metrics, _LABEL_TEXT_IN)
-    for control in site.erosion_controls:
+    for control_index, control in enumerate(site.erosion_controls):
         path = [p.xy_m for p in control.path]
         if not path:
             continue
@@ -241,20 +205,25 @@ def _emit_erosion_controls(builder: SceneBuilder, site: Site, metrics: BlockMetr
         if len(path) >= 2:
             builder.add(Polyline(points=tuple(_in(p) for p in path), layer=EROSION_LAYER,
                                  lineweight=PROFILE, linetype="DASHED"))
-            anchor = _in(path[len(path) // 2])
+            start, end = _in(path[0]), _in(path[-1])
+            add_line_label(builder, key=f"erosion-{control.kind}-{control_index}",
+                           text=label, start=start, end=end, layer=EROSION_LAYER,
+                           height_pt=TEXT_PT, priority=60)
+            continue
         else:
             # A point-located measure: an X on the spot. Drawn rather than symbolised —
             # the symbol vocabulary the writers carry has no erosion-control glyph, and an
             # unlisted name draws as window glazing.
             (x, y) = _in(path[0])
-            d = height * _ENTRANCE_MARK_IN
+            d = _ENTRANCE_MARK_IN
             builder.add(Polyline(points=((x - d, y - d), (x + d, y + d)),
                                  layer=EROSION_LAYER, lineweight=PROFILE))
             builder.add(Polyline(points=((x - d, y + d), (x + d, y - d)),
                                  layer=EROSION_LAYER, lineweight=PROFILE))
-            anchor = (x, y + d)
-        builder.add(Text(anchor=(anchor[0], anchor[1] + height), content=label,
-                         height=height, layer=EROSION_LAYER, align="center"))
+            anchor = (x, y)
+        add_point_label(builder, key=f"erosion-{control.kind}-{control_index}",
+                        text=label, target=anchor, layer=EROSION_LAYER,
+                        height_pt=TEXT_PT, priority=60)
 
 
 def _emit_benchmark(builder: SceneBuilder, site: Site, metrics: BlockMetrics) -> None:
@@ -263,16 +232,15 @@ def _emit_benchmark(builder: SceneBuilder, site: Site, metrics: BlockMetrics) ->
     if benchmark is None:
         return
     x, y = _in(benchmark.position.xy_m)
-    height = _scaled(metrics, _LABEL_TEXT_IN)
-    d = height * _ENTRANCE_MARK_IN / 2.0
+    d = _ENTRANCE_MARK_IN / 2.0
     builder.add(Polyline(points=((x - d, y - d), (x + d, y - d), (x, y + d)), closed=True,
                          layer=BENCHMARK_LAYER, lineweight=PROFILE))
     elevation_ft = benchmark.elevation.meters * FT_PER_M
     label = f"BENCHMARK EL. {elevation_ft:+.2f}'"
     if benchmark.description:
         label += f" — {benchmark.description.upper()}"
-    builder.add(Text(anchor=(x + d + height, y), content=label, height=height,
-                     layer=BENCHMARK_LAYER))
+    add_point_label(builder, key="benchmark", text=label, target=(x, y),
+                    layer=BENCHMARK_LAYER, height_pt=TEXT_PT, priority=85)
 
 
 def _survey_notes(site: Site) -> list[str]:

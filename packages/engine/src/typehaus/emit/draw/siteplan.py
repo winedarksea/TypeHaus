@@ -25,6 +25,8 @@ from typehaus.emit.draw.scene import (
     Text,
 )
 from typehaus.emit.draw.siteplan_annotate import emit_site_annotations
+from typehaus.emit.draw.siteplan_labels import add_point_label
+from typehaus.emit.draw.typography import DIM_TEXT_PT, TEXT_PT
 from typehaus.resolve.model import ResolvedModel
 
 _DRAINAGE_RADIUS_FT = 40.0
@@ -54,16 +56,18 @@ def build_site_plan(model: ResolvedModel) -> Scene:
 
 def _emit_contours(builder: SceneBuilder, site) -> None:
     """Draw the GeoJSON survey contours as the site basemap, each labeled with its grade."""
-    for contour in getattr(site, "contours", ()):
+    for contour_index, contour in enumerate(getattr(site, "contours", ())):
         pts = [p.xy_m for p in contour.points]
         if len(pts) < 2:
             continue
         builder.add(Polyline(points=tuple(_in(p) for p in pts), layer="C-TOPO-MINR",
                              lineweight=REFERENCE, linetype="CONTINUOUS"))
         elevation_ft = contour.elevation.meters * 3.280839895
-        builder.add(Text(anchor=_in((pts[0][0], pts[0][1])),
-                         content=f"{elevation_ft:+.1f}'", height=1.6,
-                         layer="C-TOPO-MINR"))
+        add_point_label(builder, key=f"contour-{contour_index}",
+                        text=f"{elevation_ft:+.1f}'", target=_in(pts[0]),
+                        layer="C-TOPO-MINR", height_pt=DIM_TEXT_PT, priority=20,
+                        preferred_direction=(-1.0, 0.0), leader=False,
+                        avoid_obstacles=False)
 
 
 def _emit_foundation_grading(builder: SceneBuilder, model: ResolvedModel, site) -> None:
@@ -83,7 +87,7 @@ def _emit_foundation_grading(builder: SceneBuilder, model: ResolvedModel, site) 
     boundary = footprint.exterior
     grade_m = site.grade.meters
     band_m = 10.0 * 0.3048
-    for spot in site.spot_elevations:
+    for spot_index, spot in enumerate(site.spot_elevations):
         point = Point(spot.position.xy_m)
         if footprint.covers(point):
             continue
@@ -98,8 +102,10 @@ def _emit_foundation_grading(builder: SceneBuilder, model: ResolvedModel, site) 
         builder.add(Symbol(name="span-arrow", insert=_in(tip),
                            rotation=math.degrees(math.atan2(tip[1] - tail[1], tip[0] - tail[0])),
                            scale=10.0, layer="C-TOPO-GRAD"))
-        builder.add(Text(anchor=_in((tip[0] + 0.2, tip[1] - 0.6)),
-                         content=f"{slope * 100:.0f}% AWAY", height=1.8, layer="C-TOPO-GRAD"))
+        add_point_label(builder, key=f"foundation-grade-{spot_index}",
+                        text=f"{slope * 100:.0f}% AWAY", target=_in(tip),
+                        layer="C-TOPO-GRAD", height_pt=TEXT_PT, priority=55,
+                        preferred_direction=(1.0, -1.0))
 
 
 def _emit_impervious_grading(builder: SceneBuilder, model: ResolvedModel, site) -> None:
@@ -139,9 +145,10 @@ def _emit_impervious_grading(builder: SceneBuilder, model: ResolvedModel, site) 
                            rotation=math.degrees(math.atan2(tip[1] - tail[1], tip[0] - tail[0])),
                            scale=10.0, layer="C-TOPO-IMPV"))
         mid = ((tail[0] + tip[0]) / 2, (tail[1] + tip[1]) / 2)
-        builder.add(Text(anchor=_in((mid[0] + 0.2, mid[1] - 0.6)),
-                         content=f"{surface.label.upper()} {slope * 100:.0f}% AWAY", height=1.8,
-                         layer="C-TOPO-IMPV"))
+        add_point_label(builder, key=f"impervious-grade-{surface.label}",
+                        text=f"{surface.label.upper()} {slope * 100:.0f}% AWAY",
+                        target=_in(mid), layer="C-TOPO-IMPV", height_pt=TEXT_PT,
+                        priority=55, preferred_direction=(1.0, -1.0))
 
 
 def _primary_footprint(model: ResolvedModel):
@@ -166,7 +173,7 @@ def _emit_roofs_or_wall_footprints(builder: SceneBuilder, model: ResolvedModel) 
     for roof in model.roofs:
         builder.add(Polyline(points=tuple(_in(point) for point in roof.footprint), closed=True,
                              layer="A-SITE-ROOF", lineweight=CUT, uid=roof.uid, tag=roof.tag))
-        _label(builder, roof.tag, roof.footprint)
+        _label(builder, roof.uid, roof.tag, roof.footprint)
 
     # A freestanding concrete garden can have no roof. The lowest wall loop provides its
     # honest footprint, while roofed storeys avoid redundant wall outlines.
@@ -221,12 +228,13 @@ def _emit_drainage_overlay(builder: SceneBuilder, model: ResolvedModel) -> None:
             labelled.add(base)
             x = sum(p[0] for p in points) / len(points)
             y = max(p[1] for p in points)
-            builder.add(Text(anchor=(x, y + 0.5), content=base, height=1.8,
-                             layer="C-STRM-DRAN", align="center"))
+            add_point_label(builder, key=f"drainage-{base}", text=base, target=(x, y),
+                            layer="C-STRM-DRAN", height_pt=TEXT_PT, priority=50,
+                            preferred_direction=(0.0, 1.0))
 
 
 def _emit_utilities(builder: SceneBuilder, site) -> None:
-    for line in site.utilities:
+    for utility_index, line in enumerate(site.utilities):
         path = [p.xy_m for p in line.path]
         if len(path) < 2:
             continue
@@ -235,19 +243,20 @@ def _emit_utilities(builder: SceneBuilder, site) -> None:
                              lineweight=PROFILE, linetype="DASHED"))
         entry = line.entry.xy_m
         builder.add(Symbol(name="utility-entry", insert=_in(entry), layer=layer))
-        builder.add(Text(anchor=_in((entry[0] + 0.5, entry[1] + 0.5)),
-                         content=line.kind.value.upper(), height=2.0, layer=layer))
+        add_point_label(builder, key=f"utility-{utility_index}-{line.kind.value}",
+                        text=line.kind.value.upper(), target=_in(entry), layer=layer,
+                        height_pt=TEXT_PT, priority=75)
 
 
 def _emit_spot_elevations_and_drainage(builder: SceneBuilder, site) -> None:
     spots = [(spot.position.xy_m, spot.elevation.meters) for spot in site.spot_elevations]
-    for (x, y), elevation_m in spots:
+    for spot_index, ((x, y), elevation_m) in enumerate(spots):
         builder.add(Symbol(name="spot-elev", insert=_in((x, y)), layer="A-SITE-ANNO"))
         elevation_ft = elevation_m * 3.280839895
         sign = "+" if elevation_ft >= 0 else "-"
-        builder.add(Text(anchor=_in((x + 0.3, y + 0.3)),
-                         content=f"EL. {sign}{abs(elevation_ft):.1f}'", height=2.0,
-                         layer="A-SITE-ANNO"))
+        add_point_label(builder, key=f"spot-elevation-{spot_index}",
+                        text=f"EL. {sign}{abs(elevation_ft):.1f}'", target=_in((x, y)),
+                        layer="A-SITE-ANNO", height_pt=DIM_TEXT_PT, priority=65)
     radius_m = _DRAINAGE_RADIUS_FT * 0.3048
     for (x, y), elevation_m in spots:
         candidates = [
@@ -273,14 +282,17 @@ def _emit_north_arrow(builder: SceneBuilder, model: ResolvedModel) -> None:
     radians = model.plan.project.site.true_north.radians
     tip = (origin[0] + math.sin(radians) * 3.0, origin[1] + math.cos(radians) * 3.0)
     builder.add(Polyline(points=(_in(origin), _in(tip)), layer="A-SITE-ANNO", lineweight=CUT_HEAVY))
-    builder.add(Text(anchor=_in((tip[0], tip[1] + 0.4)), content="N", height=4.0,
+    builder.add(Text(anchor=_in((tip[0], tip[1] + 0.4)), content="N", height_pt=TEXT_PT,
                      layer="A-SITE-ANNO", align="center"))
 
 
-def _label(builder: SceneBuilder, tag: str, footprint: list[tuple[float, float]]) -> None:
+def _label(builder: SceneBuilder, key: str, tag: str,
+           footprint: list[tuple[float, float]]) -> None:
     if not footprint:
         return
     x = sum(point[0] for point in footprint) / len(footprint)
     y = sum(point[1] for point in footprint) / len(footprint)
-    builder.add(Text(anchor=_in((x, y)), content=tag, height=3.5, layer="A-SITE-ANNO",
-                     align="center"))
+    add_point_label(builder, key=f"footprint-{key}", text=tag, target=_in((x, y)),
+                    layer="A-SITE-ANNO", height_pt=TEXT_PT, priority=45,
+                    preferred_direction=(0.0, 0.0), leader=False,
+                    avoid_obstacles=False)

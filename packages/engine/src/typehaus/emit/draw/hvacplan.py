@@ -15,8 +15,10 @@ from __future__ import annotations
 
 from typehaus.emit.draw._shared import emit_floor_heat, emit_ghost_walls
 from typehaus.emit.draw._shared import to_in as _in
+from typehaus.emit.draw.annotation_requests import add_point_label
 from typehaus.emit.draw.lineweights import FAINT, PROFILE
-from typehaus.emit.draw.scene import Leader, NamedPoint, Polyline, Scene, SceneBuilder, Symbol, Text
+from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Symbol, Text
+from typehaus.emit.draw.typography import TEXT_PT
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry import rect_between
 from typehaus.resolve.model import ResolvedModel
@@ -60,17 +62,26 @@ def build_hvac_plan(model: ResolvedModel, storey: str) -> Scene:
         mid = duct.path[len(duct.path) // 2]
         label = (f'{duct.width_m / M_PER_IN:.0f}×{duct.depth_m / M_PER_IN:.0f} '
                 f'{duct.system.upper()}')
-        b.add(Text(anchor=_in((mid[0], mid[1] + duct.width_m / 2 + 0.05)), content=label,
-                   height=3.0, layer=layer))
+        add_point_label(b, key=f"duct-{duct.uid}", text=label, target=_in(mid), layer=layer,
+                        height_pt=TEXT_PT, priority=50, leader=False,
+                        preferred_direction=(0.0, 1.0), avoid_obstacles=False)
         for x, y in duct.crossings:
-            b.add(Leader(
-                anchor=NamedPoint(xy=_in((x, y)), name=duct.tag), at=_in((x, y)),
-                to=_in((x + 1.0, y + 1.0)),
+            cx, cy = _in((x, y))
+            mark = 1.5
+            b.add(Polyline(points=((cx - mark, cy - mark), (cx + mark, cy + mark)),
+                           layer=layer, lineweight=PROFILE))
+            b.add(Polyline(points=((cx - mark, cy + mark), (cx + mark, cy - mark)),
+                           layer=layer, lineweight=PROFILE))
+        if duct.crossings:
+            target = _in(duct.crossings[0])
+            add_point_label(
+                b, key=f"duct-crossings-{duct.uid}", target=target, layer=layer,
+                height_pt=TEXT_PT, priority=70,
+                avoid_obstacles=False,
                 text=(f'{duct.width_m / M_PER_IN:.0f}×{duct.depth_m / M_PER_IN:.0f} '
-                     f'{duct.system.upper()} IN JOIST BAY — CROSSES BRG WALL BETWEEN '
-                     'JOISTS, FIRE BLOCKING REQ\'D'),
-                layer=layer,
-            ))
+                      f'{duct.system.upper()} IN JOIST BAY — MARKED BEARING-WALL '
+                      'CROSSINGS REQUIRE FIRE BLOCKING'),
+            )
 
     _emit_registers(b, model, storey)
     _emit_equipment(b, model, storey)
@@ -97,5 +108,5 @@ def _emit_equipment(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
                    (x + width / 2, y + depth / 2), (x - width / 2, y + depth / 2))
         b.add(Polyline(points=tuple(_in(p) for p in outline), layer="M-HVAC-EQPM",
                        closed=True, lineweight=PROFILE, uid=element.uid, tag=element.tag))
-        b.add(Text(anchor=_in((x, y)), content=element.kind.value.upper(), height=2.5,
+        b.add(Text(anchor=_in((x, y)), content=element.kind.value.upper(), height_pt=TEXT_PT,
                    layer="M-HVAC-EQPM", align="center"))

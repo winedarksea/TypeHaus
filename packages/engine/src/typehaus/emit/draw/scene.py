@@ -200,6 +200,10 @@ class Scene(_IRBase):
     # The paper this drawing is laid out on. ``None`` preserves the frameless behaviour
     # exactly: the writer fits the figure to the content.
     frame: Frame | None = None
+    # Internal layout intents are deliberately excluded from the serialized drawing IR.
+    # They exist only between scene construction and the scale-aware sheet layout pass.
+    annotation_requests: tuple[object, ...] = Field(default=(), exclude=True)
+    annotation_diagnostics: tuple[object, ...] = Field(default=(), exclude=True)
 
     def to_json(self) -> str:
         """Deterministic JSON snapshot for golden tests (→ 20 §Drawing IR pure-data)."""
@@ -219,6 +223,7 @@ class SceneBuilder:
         self.name = name
         self.units = units
         self._nodes: list[IRNode] = []
+        self._annotation_requests: list[object] = []
 
     def add(self, node: IRNode) -> IRNode:
         self._nodes.append(node)
@@ -227,5 +232,9 @@ class SceneBuilder:
     def extend(self, nodes: list[IRNode]) -> None:
         self._nodes.extend(nodes)
 
+    def add_annotation_request(self, request: object) -> None:
+        self._annotation_requests.append(request)
+
     def build(self) -> Scene:
-        return Scene(name=self.name, units=self.units, nodes=tuple(self._nodes))
+        return Scene(name=self.name, units=self.units, nodes=tuple(self._nodes),
+                     annotation_requests=tuple(self._annotation_requests))

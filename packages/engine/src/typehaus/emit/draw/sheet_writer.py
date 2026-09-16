@@ -223,6 +223,10 @@ def compose_sheet(scene: Scene, spec: object, model: ResolvedModel,
     frame = scene.frame if scene.frame is not None else frame_for_scene(scene, size)
     if frame is not None and scene.frame is None:
         scene = scene.model_copy(update={"frame": frame})
+    if frame is not None and scene.annotation_requests:
+        from typehaus.emit.draw.annotation_scene import resolve_scene_annotations
+
+        scene = resolve_scene_annotations(scene, frame)
     scaled_text = _render_nodes(ax, scene, tagger)
     scale_label = NTS_LABEL
     if frame is None:  # nothing measurable on the sheet — nothing to scale

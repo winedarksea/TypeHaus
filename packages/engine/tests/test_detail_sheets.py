@@ -7,16 +7,17 @@ type 5. See ``emit/draw/sheets.build_sheet_index``.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
-import pytest
-
-from typehaus.emit.draw import build_sheet_index
-from typehaus.emit.draw.scene import Hatch, Text
-from typehaus.resolve import resolve
-from typehaus.source import load_plan
 from _helpers import CATLIN as CATLIN_DIR
 
+from typehaus.checks import load_preferences
+from typehaus.emit.draw import build_sheet_index
+from typehaus.emit.draw.scene import Hatch
+from typehaus.emit.draw.schedules.architectural import SYMBOLS
+from typehaus.resolve import resolve
+from typehaus.source import load_plan
 
 
 def test_catlin_emits_authored_then_derived_detail_sheets(catlin_sheet_index):
@@ -71,3 +72,35 @@ def test_ridge_detail_scene_is_nonempty(catlin_model_ro, catlin_sheet_index):
     sheets = {s.number: s for s in catlin_sheet_index()}
     scene = sheets["A-504"].scene(catlin_model_ro)
     assert scene.nodes
+
+
+def test_catlin_omits_low_value_details_only_from_its_permit_set(catlin_model_ro,
+                                                                 catlin_model_report):
+    preferences = load_preferences(CATLIN_DIR)
+    full = build_sheet_index(catlin_model_ro, preferences, sets="full",
+                             report=catlin_model_report)
+    permit = build_sheet_index(catlin_model_ro, preferences, sets="permit",
+                               report=catlin_model_report)
+    full_by_number = {sheet.number: sheet.title for sheet in full}
+    permit_by_number = {sheet.number: sheet.title for sheet in permit}
+
+    assert full_by_number["A-502"] == "Deck bearing detail"
+    assert full_by_number["A-506"] == "Hall bath shower section"
+    assert {"A-502", "A-506"}.isdisjoint(permit_by_number)
+
+    # Filtering never renumbers or retitles the retained sheets.
+    assert all(full_by_number[number] == title
+               for number, title in permit_by_number.items())
+
+
+def test_symbols_legend_uses_a_detail_retained_in_catlin_permit_set(catlin_model_ro,
+                                                                    catlin_model_report):
+    preferences = load_preferences(CATLIN_DIR)
+    permit_numbers = {sheet.number for sheet in build_sheet_index(
+        catlin_model_ro, preferences, sets="permit", report=catlin_model_report)}
+    legend = " ".join(f"{symbol} {meaning}" for symbol, meaning in SYMBOLS)
+    referenced_sheets = set(re.findall(r"\b[A-Z]-\d{3}(?:\.\d+)?\b", legend))
+
+    assert "A-501" in referenced_sheets
+    assert referenced_sheets <= permit_numbers
+    assert "A-502" not in legend
