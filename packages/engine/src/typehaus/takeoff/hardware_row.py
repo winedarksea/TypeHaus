@@ -14,13 +14,14 @@ from typehaus.hardware.catalog import StructuralHardware
 def hardware_row(item: StructuralHardware | None, *, scope: str, count: int, basis: str,
                  part_number: str | None = None, size: str | None = None,
                  length_ft: float | None = None, coils: int | None = None,
-                 by_storey: dict | None = None) -> dict:
+                 by_storey: dict | None = None, tags: list | None = None) -> dict:
     """One BOM line: what it is, how many, and the rule that produced the number.
 
     ``basis`` is not decoration — a hardware count is only auditable if the line carries
-    the spacing/condition it came from, so every row states it.
+    the spacing/condition it came from, so every row states it. ``tags`` names where the
+    parts go — the pour a cast-in part is set into — and is left off a row that omits it.
     """
-    return {
+    row = {
         "scope": scope,
         "role": item.role if item else None,
         "hardware_tag": item.tag if item else None,
@@ -36,3 +37,6 @@ def hardware_row(item: StructuralHardware | None, *, scope: str, count: int, bas
         "source": item.source if item else None,
         "by_storey": by_storey,
     }
+    if tags is not None:
+        row["tags"] = sorted(set(tags))
+    return row

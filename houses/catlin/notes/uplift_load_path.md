@@ -62,7 +62,7 @@ wall that moves takes its hardware with it.
 | Joint | Part | Count | Rule |
 |---|---|---|---|
 | Rafter / truss heel on its bearing wall | H2.5A | 56 + 34 | one per seated end |
-| Floor joist on its bearing line | H2.5A | 258 | one per bearing joint (a lap is one joint) |
+| Floor joist on a deck beam | H2.5AZ | 57 | one per bearing joint; joists on WALL plates are toe-nailed, no tie (2026-09-16) |
 | Beam landing on a wood post | KBS1Z | 8 | one per beam end |
 | Bottom plate of a framed wall on a framed floor band | LTP4 | 108 | 4' o.c., min 2 per wall |
 | Across the floor band where framed walls stack | CS16 | 72 straps (2 coils) | 8 at the corners + 64 along the runs at 4' o.c. |
@@ -210,7 +210,7 @@ keeps the sunken garden's and the breezeway's twenty connectors from being bough
   the TIE beside a bearing, never the bearing itself** — the wood sits on an `SS316-SHIM-35`
   pack, twelve of those too. Six in the garden: the two porch columns (`H2.5A` until
   2026-08-28) plus, since 2026-09-03, the four balcony corner columns. Six at the north entry
-  (`CN-BW-TIE-W`/`-E`/`-GW`/`-GE` at the landing seats, `-RE`/`-RNE` at the east header),
+  (`CN-BW-TIE-E`/`-GE` at the landing seats — `-W`/`-GW` retired 2026-09-16, those seat beams hang off the west canopy columns, `-RE`/`-RNE` at the east header),
   authored 2026-09-10 when that side went to full-height cast columns. **The BOM prints them
   as two rows, 2 + 10**, because the two porch ties are filed `HURRICANE_TIE` and the other
   ten `POST_CAP`; the total of 12 is right and the kind split is an inconsistency, not a

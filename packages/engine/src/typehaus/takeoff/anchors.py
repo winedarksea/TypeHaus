@@ -42,6 +42,14 @@ from typehaus.takeoff.hardware_row import hardware_row
 
 _M_TO_FT = 3.280839895013123
 
+#: Parts set wet in the pour. The concrete crew places them, so their rows say where.
+_CAST_IN_ROLES = frozenset({ROLE_MUDSILL_ANCHOR, ROLE_EMBEDDED_STRAP_HOLDOWN})
+
+
+def _pours(returns) -> list:
+    """The concrete each sill run sits on: where the crew sets its cast-in parts."""
+    return [ret.element_tags[0] for ret in returns if ret.element_tags]
+
 
 def mudsill_anchor_rows(model: ResolvedModel, rules: SillPlateAnchorRules,
                         sill_category: str) -> list:
@@ -65,6 +73,7 @@ def mudsill_anchor_rows(model: ResolvedModel, rules: SillPlateAnchorRules,
     return [hardware_row(
         item, scope="sill plate on concrete", count=int(sum(by_storey.values())),
         by_storey=dict(sorted(by_storey.items())), length_ft=total_length_m * _M_TO_FT,
+        tags=_pours(returns),
         basis=(f"{rules.mudsill_anchor_pitch_ft:g} ft o.c. (min "
                f"{rules.minimum_anchors_per_run} per plate run) over "
                f"{len(returns)} sill runs totalling {total_length_m * _M_TO_FT:.1f} LF"))]
@@ -106,7 +115,7 @@ def strap_holdown_rows(model: ResolvedModel, rules: SillPlateAnchorRules,
     count = len(locations) * rules.holdowns_per_run_end
     item = hardware_for_role(ROLE_EMBEDDED_STRAP_HOLDOWN)
     return [hardware_row(
-        item, scope="sill plate on concrete", count=count,
+        item, scope="sill plate on concrete", count=count, tags=_pours(returns),
         basis=(f"{rules.holdowns_per_run_end} per distinct sill-run end; "
                f"{len(returns)} runs share {len(locations)} end locations"))]
 
@@ -304,6 +313,7 @@ def authored_connector_rows(model: ResolvedModel) -> list:
     is a BOM-only distinction, not a second solid.
     """
     groups: Counter = Counter()
+    where: dict = {}
     carried: Counter = Counter()
     for _storey, element in _authored_connectors(model):
         if element.kind is ConnectorKind.KNEEBRACE:
@@ -311,6 +321,7 @@ def authored_connector_rows(model: ResolvedModel) -> list:
         if element.hanger_spec_pair(model.plan) is not None:
             continue  # a per-joint hanger spec: joist_hanger_rows bills every hung end
         groups[(element.kind.value, element.size)] += 1
+        where.setdefault((element.kind.value, element.size), []).extend(element.connects)
         item = hardware_by_model(element.size)
         if item is not None and item.requires_role is not None:
             # Keyed by (carrier role, requiring part) so the basis text can name what asked
@@ -324,6 +335,9 @@ def authored_connector_rows(model: ResolvedModel) -> list:
         item = hardware_by_model(size)
         row = hardware_row(
             item, scope="modeled connector", count=count, part_number=size,
+            # Where a cast-in part goes, so the concrete crew's list says which pour.
+            tags=(where[(kind, size)] if item is not None and item.role in _CAST_IN_ROLES
+                  else None),
             basis=f"{count} modeled {kind.replace('_', ' ')} connector(s) in the plan")
         rows.append(row)
 

@@ -832,7 +832,7 @@
 # UNTREATED wood. The split is derived, not authored — `takeoff/uplift.py::_exposure` reads
 # `Material.preservative_treated` off the support — so it follows a retype of the beam rather
 # than needing a count kept here.
-"H2.5A" = { low = 0.8, high = 1.75 }  # 304 ea — all derived, DRY bearings only
+"H2.5A" = { low = 0.8, high = 1.75 }  # 74 ea — all derived, roof bearings only (floor joists on walls untied since 2026-09-16)
 # ** THE GABLE ENDS. ** The leg of the uplift chain that had no hardware at all until
 # 2026-09-14: no rafter bears on a gable end, so every bearing rule looked past the wall that
 # takes the largest out-of-plane wind pressure in the house. Twenty-two ties at 4' o.c. along
@@ -894,7 +894,7 @@
 # quoted number the next time this table is refreshed against a supplier list. Material only,
 # like every row here; the driving is inside the framing rate. The Titen Turbo screws are a
 # concrete anchor bought with the angle and are inside this range.
-"HGAM10" = { low = 5.0, high = 20.0 }  # 20 ea, all authored — TEN JOINTS, TWO GUSSETS EACH since 2026-09-14: one gusset is an eccentric rotation restraint and NDS 3.3.3 wants beam ends restrained against rotation (FL11473 fn.4 permits the two-sided install at a minimum 2-1/2" member; every beam here is 3" or wider). The ten joints are the four balcony beam seats on the corner columns (CN-SG-SEAT-R1/R3/F1/F3) since 2026-09-03, and six at the north entry since 2026-09-10, the canopy's EAST header on PT-BW-RE/-RNE among them. This row read "6 ea" until 2026-09-11, "12 ea" until the pairing, and "24 ea" until 2026-09-16, when the porch pair's four left (the porch beams hang off PT-SG-B*2 on HU212-3s); the count has now been wrong twice, both times by lagging a real change, which is why each revision says what moved
+"HGAM10" = { low = 5.0, high = 20.0 }  # 16 ea, all authored — EIGHT JOINTS, TWO GUSSETS EACH since 2026-09-14: one gusset is an eccentric rotation restraint and NDS 3.3.3 wants beam ends restrained against rotation (FL11473 fn.4 permits the two-sided install at a minimum 2-1/2" member; every beam here is 3" or wider). The eight joints are the four balcony beam seats on the corner columns (CN-SG-SEAT-R1/R3/F1/F3) since 2026-09-03, and four at the north entry since 2026-09-10 (the E/GE seats and the canopy's EAST header on PT-BW-RE/-RNE). This row read "6 ea" until 2026-09-11, "12 ea" until the pairing, and "24 ea" until 2026-09-16, when the porch pair's four left (the porch beams hang off PT-SG-B*2 on HU212-3s); "20 ea" until later that day, when the west seat pair on PT-BW-W/-GW left (those seat beams hang off PT-BW-CW/-CNW on HU28-2Zs); the count has now been wrong twice, both times by lagging a real change, which is why each revision says what moved
 # The two CENTRE balcony pillars' post caps, and since 2026-09-10 the canopy's two WEST
 # columns as well. A 3-1/2" glulam landing on a 6x6 is a CCQ, not the PC6Z: that cap is
 # published for EQUAL post and beam widths. The four balcony CORNER columns are cast

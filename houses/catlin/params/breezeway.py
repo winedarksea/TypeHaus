@@ -392,6 +392,11 @@ for _i, (_t, _x, _y, _beam) in enumerate((
         kind=ConnectorKind.BEARING_STANDOFF, position=pt(ft(_x), ft(_y)),
         elevation=ft(BEARING_TOP_FT), size="SS316-SHIM-35",
         connects=(_beam, f"PT-BW-{_t}")))
+    # ** NONE ON THE WEST PIERS (owner, 2026-09-16). ** At W and GW the seat beam hangs off
+    # PT-BW-CW/-CNW on an HU28-2Z, and that column's anchored ABU66SS already ties it to the
+    # pier, so a gusset there restrains nothing the hanger does not.
+    if _t in ("W", "GW"):
+        continue
     # ** A PAIR, ONE EACH SIDE OF THE BEAM. ** A single gusset restrains the beam end
     # against rotation from one face only, which is an ECCENTRIC restraint: NDS 3.3.3
     # requires beam ends to be restrained against rotation, and a one-sided angle leaves the

@@ -98,7 +98,7 @@ def post_base_anchor_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
         return []
     item = hardware_for_role(ROLE_POST_BASE_ANCHOR)
     return [hardware_row(
-        item, scope="post base anchor", count=len(tags),
+        item, scope="post base anchor", count=len(tags), tags=tags,
         by_storey=dict(sorted(by_storey.items())),
         basis=("one per post base landing on concrete (a base on framing is fastened to it "
                "and those fixings are in the framing rate): " + ", ".join(sorted(tags))))]

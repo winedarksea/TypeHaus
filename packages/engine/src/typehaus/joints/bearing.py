@@ -53,6 +53,9 @@ class BearingSupport:
     #: because the support is the leg the model can answer for: a joist carries no material
     #: ref of its own, while a beam has an assembly and a wall has a layer stack.
     treated: bool = False
+    #: A wall, not a beam. A floor joist on a wall plate is toe-nailed (IRC Table R602.3(1))
+    #: and held down by the wall above it; only a joist on a beam takes a tie.
+    wall: bool = False
 
 
 @dataclass(frozen=True)
@@ -100,7 +103,7 @@ def _support(model: ResolvedModel, tag: str, fallback_half_width_m: float):
         top = wall.plate_top_z_m if wall.plate_top_z_m is not None else wall.z1_m
         return BearingSupport(tag=tag, p0=wall.axis[0], p1=wall.axis[1], top_z_m=top,
                               half_width_m=wall.thickness_m / 2.0,
-                              treated=is_treated(model, wall.assembly))
+                              treated=is_treated(model, wall.assembly), wall=True)
     for solid in model.solids:
         if solid.tag != tag or solid.category != "beam":
             continue
@@ -164,7 +167,8 @@ def _bearing_line(model: ResolvedModel, declared: BearingSupport,
         if max(offsets) > max(declared.half_width_m, wall.thickness_m / 2.0):
             continue
         line.append(BearingSupport(tag=wall.tag, p0=wall.axis[0], p1=wall.axis[1],
-                                   top_z_m=top, half_width_m=wall.thickness_m / 2.0))
+                                   top_z_m=top, half_width_m=wall.thickness_m / 2.0,
+                                   wall=True))
     return line
 
 
@@ -238,7 +242,7 @@ def _crossing(member, support: BearingSupport):
 
 
 def _tied_assemblies(model: ResolvedModel, elements_by_tag: dict, rules: UpliftTieRules):
-    """``(resolved assembly, declared bearing tags, member categories to tie)`` triples.
+    """``(assembly, bearing tags, member categories to tie, tie on walls?)`` per roof/floor.
 
     Roofs and floors are walked separately because each names its bearings on a different
     field — a ``Roof`` on ``bearing_refs``, a ``FloorSystem`` on ``joists.bearing_refs`` —
@@ -250,13 +254,13 @@ def _tied_assemblies(model: ResolvedModel, elements_by_tag: dict, rules: UpliftT
         element = elements_by_tag.get(roof.tag)
         refs = tuple(getattr(element, "bearing_refs", ()) or ())
         if refs:
-            yield roof, refs, rules.tied_roof_categories
+            yield roof, refs, rules.tied_roof_categories, True
     for floor in model.floors:
         element = elements_by_tag.get(floor.tag)
         joists = getattr(element, "joists", None)
         refs = tuple(getattr(joists, "bearing_refs", ()) or ())
         if refs:
-            yield floor, refs, rules.tied_floor_categories
+            yield floor, refs, rules.tied_floor_categories, rules.tie_floor_joists_on_walls
 
 
 def bearing_line_tags(model: ResolvedModel, refs: tuple, rules: UpliftTieRules) -> set:
@@ -294,7 +298,7 @@ def bearing_connections(model: ResolvedModel, rules: UpliftTieRules) -> list:
                        for element in model.plan.storey_elements(storey.tag)}
 
     found: dict = {}
-    for resolved, refs, categories in _tied_assemblies(model, elements_by_tag, rules):
+    for resolved, refs, categories, on_walls in _tied_assemblies(model, elements_by_tag, rules):
         if resolved.tag in covered:
             continue
         supports: list = []
@@ -310,7 +314,8 @@ def bearing_connections(model: ResolvedModel, rules: UpliftTieRules) -> list:
                         or frozenset({support.tag, resolved.tag}) in joints):
                     continue
                 seen.add(support.tag)
-                supports.append(support)
+                if on_walls or not support.wall:
+                    supports.append(support)
         if not supports:
             continue
         for member in resolved.members:

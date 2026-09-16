@@ -39,12 +39,13 @@ def run_through_blocking(ctx: CheckContext) -> list[Finding]:
                 (conflict.run_tag, floor.tag),
                 fix=("move the run to a bay where it clears a 2x6 box, lower or raise it "
                      "within the joist depth, or cross the line where no wall stands above")))
-        if not floor.blocking_conflicts:
+        if boxes and not floor.blocking_conflicts:
             out.append(_pass(
                 _CID,
                 f"{floor.tag}: {len(boxes)} run pass-through(s) in its bearing-line blocking, "
                 "each framed as a 2x6 box the runs clear", (floor.tag,)))
-    if blocked == 0:
-        return [_na(_CID, "no floor carries bearing-line blocking: no wall above stands on "
-                          "an interior or shared bearing line")]
+    if not out:
+        return [_na(_CID, f"{blocked} floor(s) carry bearing-line blocking and no run crosses "
+                          "any of it" if blocked else "no floor carries bearing-line "
+                          "blocking: no wall above stands on an interior or shared line")]
     return out

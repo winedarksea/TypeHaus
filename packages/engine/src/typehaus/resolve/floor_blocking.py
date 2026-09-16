@@ -89,7 +89,7 @@ def _floor_blocking(model, floor: ResolvedFloor, system, runs):
     conflicts: list[BlockingConflict] = []
     lines_below = _walls_below(model, floor.storey, _line_coords(model, spec, axis_i),
                                z0, axis_i, perp_i)
-    for line_index, (coord, lo, hi) in enumerate(lines_below):
+    for line_index, (coord, spans) in enumerate(_merge_lines(lines_below)):
         # A shared end's joists stop inside the plate, just short of the line; its blocks
         # stay on its own side, flush with those tips. An interior line is blocked on centre.
         if ends.shared_lo and abs(coord - ends.tip_lo) < _LINE_TOL_M:
@@ -100,7 +100,8 @@ def _floor_blocking(model, floor: ResolvedFloor, system, runs):
             tip, inward = coord, 0.0
         else:
             continue
-        above = _overlap_above(walls_above, coord, lo, hi, axis_i, perp_i)
+        above = [span for lo, hi in spans
+                 for span in _overlap_above(walls_above, coord, lo, hi, axis_i, perp_i)]
         if not above:
             continue
         blocked = _carrier_spans(model, coord, z0, z1, axis_i, perp_i)
@@ -170,6 +171,27 @@ def _walls_below(model, storey: str, coords: list[float], z0: float, axis_i: int
         coord = (span[0] + span[1]) / 2.0 if span else a[axis_i]
         out.append((coord, min(a[perp_i], b[perp_i]), max(a[perp_i], b[perp_i])))
     return sorted(out)
+
+
+def _merge_lines(lines):
+    """Collinear walls under one line, their perp extents merged: one course per line.
+
+    Two walls overlapping in plan on one line (catlin's x=18' basement run) would otherwise
+    lay two blocks in each shared bay.
+    """
+    merged: list[tuple[float, list[tuple[float, float]]]] = []
+    for coord, lo, hi in sorted(lines):
+        if merged and abs(coord - merged[-1][0]) <= _LINE_TOL_M:
+            spans = merged[-1][1]
+        else:
+            spans = []
+            merged.append((coord, spans))
+        if spans and lo <= spans[-1][1]:
+            spans[-1] = (spans[-1][0], max(spans[-1][1], hi))
+        else:
+            spans.append((lo, hi))
+        spans.sort()
+    return merged
 
 
 def _overlap_above(walls_above, coord: float, lo: float, hi: float,

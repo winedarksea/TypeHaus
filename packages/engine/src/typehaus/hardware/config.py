@@ -191,6 +191,10 @@ class UpliftTieRules:
     # Floors tie the joist only. A rim closes the joist ends and a trimmer frames an
     # opening; neither lands on a bearing line of its own.
     tied_floor_categories: frozenset = frozenset({"joist"})
+    # Off: a joist on a wall plate is toe-nailed and pinned by the wall above; storey-to-storey
+    # uplift is the band's CS16/LTP4, not a tie per joist (owner, 2026-09-16). Joists on beams
+    # (decks) are still tied.
+    tie_floor_joists_on_walls: bool = False
     # One tie per bearing joint. Two joists lapping over an interior bearing wall are one
     # joint: the lap is nailed and the tie holds the pair to the plate. Raise this to two
     # for a schedule that ties each member of a lap separately.

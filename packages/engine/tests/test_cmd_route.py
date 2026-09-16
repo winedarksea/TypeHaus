@@ -46,8 +46,10 @@ def test_a_fixture_proposal_prints_source_and_writes_nothing(runner) -> None:
 
 def test_explain_prints_the_terms_the_route_was_chosen_on(runner) -> None:
     """A router that cannot say why it chose a line is one nobody will take a line from."""
+    # Not PR-M-S-SUITE-TUB-DRAIN since 2026-09-16: the KITCH/BED2 returns moved into its
+    # 22'-0" bay (off BM-M-HALL) and cover its terminal in plan, so it has no lane to explain.
     result = runner.invoke(app, ["route", str(_CATLIN), "--run",
-                                 "PR-M-S-SUITE-TUB-DRAIN", "--explain"])
+                                 "PR-B-KITCH-DRAIN", "--explain"])
     assert result.exit_code == 0, result.output
     assert "travel_in" in result.output
     assert "gravity:" in result.output

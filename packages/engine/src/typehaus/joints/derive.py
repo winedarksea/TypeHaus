@@ -257,7 +257,7 @@ def _post_joints(model, config: HardwareTakeoffConfig, grid_m: float) -> list[Jo
     for storey, post in post_base_anchor_joints(model, config.uplift):
         point, axis = _post_point(model, post)
         out.append(_joint(ROLE_POST_BASE_ANCHOR, anchor.model, storey, point,
-                          _post_base_z(model, post), axis, embedded=True,
+                          _pour_top_z(model, post), axis, embedded=True,
                           members=(post.tag, post.supported_by or ""),
                           anchor_tag=post.tag, grid_m=grid_m))
     strap = hardware_for_role(ROLE_BEAM_HOLD_DOWN)
@@ -298,6 +298,14 @@ def _post_point(model, post) -> tuple[tuple[float, float], str]:
 def _post_base_z(model, post) -> float:
     solid = _post_solid(model, post)
     return solid.z0_m if solid is not None else 0.0
+
+
+def _pour_top_z(model, post) -> float:
+    """The concrete top a post base bolts into; below the post by the base's standoff."""
+    base = _post_base_z(model, post)
+    tops = [solid.z1_m for solid in model.solids if solid.tag == post.supported_by]
+    tops += [wall.z1_m for wall in model.walls if wall.tag == post.supported_by]
+    return next((top for top in tops if top <= base + 1e-6), base)
 
 
 def _post_top_z(model, post) -> float:

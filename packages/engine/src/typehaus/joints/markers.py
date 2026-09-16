@@ -94,7 +94,8 @@ MARKER_RULES: dict[str, MarkerRule] = {
     ROLE_LATERAL_TIE_PLATE: MarkerRule(draw=False, along_in=1.50, across_in=0.25,
                                        half_h_in=1.50),
     ROLE_POST_BASE: MarkerRule(draw=False, along_in=2.75, across_in=2.75, half_h_in=1.50),
-    ROLE_POST_BASE_ANCHOR: MarkerRule(draw=False, along_in=0.31, across_in=0.31,
+    # Drawn: a cast-in bolt is set wet, so the concrete sub has to see it before the pour.
+    ROLE_POST_BASE_ANCHOR: MarkerRule(draw=True, along_in=0.31, across_in=0.31,
                                       half_h_in=4.00,
                                       category=CATEGORY_CONNECTOR_EMBEDDED),
     ROLE_BEAM_HOLD_DOWN: MarkerRule(draw=False, along_in=0.63, across_in=0.25, half_h_in=6.00),

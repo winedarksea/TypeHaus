@@ -221,6 +221,11 @@ def _seated_links(ctx: CheckContext) -> list:
             continue
         line = bearing_line_tags(ctx.model, refs, _RULES)
         tied = ties_by_assembly.get(resolved.tag, 0)
+        # A floor on wall plates is toe-nailed, not tied; the wall above holds it down and the
+        # band's straps carry the storey below (link 3).
+        nailed = set()
+        if noun == "floor" and not _RULES.tie_floor_joists_on_walls:
+            nailed = {ref for ref in refs if ctx.model.wall(ref) is not None}
         hung = sum(count for tag, count in hangers_by_carrier.items()
                    if tag in line or tag in refs)
         covers = []
@@ -228,6 +233,8 @@ def _seated_links(ctx: CheckContext) -> list:
             covers.append(f"{tied} derived uplift ties")
         if hung:
             covers.append(f"{hung} hangers")
+        if nailed:
+            covers.append("toe-nails to the wall plates (IRC Table R602.3(1))")
         # Name only the categories this assembly actually framed. A rafter roof and a truss
         # roof share one rule and one category set, and printing both at every roof told the
         # reader the house had truss heels in its cathedral ceiling.
@@ -236,6 +243,8 @@ def _seated_links(ctx: CheckContext) -> list:
         # two cantilevered edge beams not at all, and the count read as covered. Each
         # declared line has to carry something of its own.
         for ref in refs if covers else ():  # nothing at all is the one link below
+            if ref in nailed:
+                continue
             ref_line = bearing_line_tags(ctx.model, (ref,), _RULES) or {ref}
             if (ref_line & tied_supports
                     or ref_line & hangers_by_carrier.keys()

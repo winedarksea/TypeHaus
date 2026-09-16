@@ -170,8 +170,7 @@ def test_a_truss_roof_is_tied_at_both_ends_of_every_truss(catlin_model_ro,
                 if c.member_category in {"top_chord", "bottom_chord", "truss_heel"}]
 
 
-def test_a_floor_is_tied_along_its_whole_bearing_line(catlin_model_ro,
-                                                      connections) -> None:
+def test_a_floor_is_tied_along_its_whole_bearing_line(catlin_model_ro) -> None:
     """``FS-S-WEST`` names one wall of a line the resolver split into six.
 
     Its ``joists.bearing_refs`` is ``('W-M-W2', 'W-M-C2', 'BM-M-HALL')``, but its 28 floor
@@ -179,12 +178,26 @@ def test_a_floor_is_tied_along_its_whole_bearing_line(catlin_model_ro,
     twenty-eight and reported the order complete — which is what ``_bearing_line`` exists to
     prevent, and this test is what would catch its removal.
     """
+    # Floors on walls are untied by default, so the line rule is exercised with them on.
+    from dataclasses import replace
+    wall_ties = bearing_connections(catlin_model_ro,
+                                    replace(RULES, tie_floor_joists_on_walls=True))
     floor = next(f for f in catlin_model_ro.floors if f.tag == "FS-S-WEST")
     joists = [m for m in floor.members if m.category == "joist"]
-    trussed = [c for c in connections if c.member_profile == "11.875 floor truss"]
+    trussed = [c for c in wall_ties if c.member_profile == "11.875 floor truss"]
     assert len(trussed) == len(joists) == 28
     assert len({c.support_tag for c in trussed}) > 1, \
         "the west bearing line is more than one wall; a single support means _bearing_line died"
+
+
+def test_a_floor_joist_on_a_wall_takes_no_tie(catlin_model_ro, connections) -> None:
+    """Hurricane ties are for the roof. A joist on a wall plate is toe-nailed and held down
+    by the wall above; the band's CS16/LTP4 carry uplift storey to storey."""
+    walls = {w.tag for w in catlin_model_ro.walls}
+    floors = {f.tag for f in catlin_model_ro.floors}
+    on_walls = [c for c in connections if c.assembly_tag in floors and c.support_tag in walls]
+    assert not on_walls
+    assert [c for c in connections if c.assembly_tag in floors], "deck joists on beams stay tied"
 
 
 def test_a_hung_end_is_never_also_a_bearing(catlin_model_ro, connections) -> None:
