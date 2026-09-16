@@ -61,9 +61,10 @@ balcony's beams were a different case: they carry the deck plank and were being 
 anyway. Revisit only if the porch is reworked, and re-check the 9" joist-span headroom in
 `plans/TODO.md` before changing any porch beam section.
 
-**2. Formed aluminium cap, on all seven garden beams.** `TR-SG-CAP-*`, 69 LF over two
-widths since the balcony's three went to glulam: 40 LF of 5 1/2" cap on the porch's
-4 1/2" ply beams and 29 LF of 4 1/2" cap on the balcony's 3 1/2" glulams. The
+**2. Formed aluminium cap, on the four porch beams only.** `TR-SG-CAP-*`: 5 1/2" cap on the
+porch's 4 1/2" ply beams. The three balcony glulams have none (2026-09-16), butyl only: flush
+`BM-SG-BLC` is covered by the plank, and on `BM-SG-BLW/BLE` a cap would be cut into bits
+between joists that already cantilever 9" past the beam and shelter it. The
 cap laps 1/2" past each beam face and turns down 1 1/2"; `thickness` is derived from
 `SPEC.back_beam` / `SPEC.balcony_beam`, not written down.
 
@@ -119,12 +120,9 @@ nothing a reviewer could click; it is priced in `prices.toml` and drawn on S-101
 assembly `source` strings still describe the detail, but they name the part rather than
 inventing it a second time.
 
-**3. Sequencing — ALL SEVEN caps go on before the joists do.** The four porch beams and the
-balcony's outer pair carry their joists on top. `BM-SG-BLC` is flush-framed (2026-09-16): its
-cap sits under the plank, and its legs lap under the LUS28Z flanges, so it too precedes the
-hangers. A cap over a
-beam that will be joisted has to be laid while
-the beam top is still open, and the joists then bear on it. That is fine for a coil cap under
+**3. Sequencing — all four caps go on before the joists do.** The porch beams carry their
+joists on top. A cap over a beam that will be joisted has to
+be laid while the beam top is still open, and the joists then bear on it. That is fine for a coil cap under
 a 2x8's bearing area and **impossible to retrofit without pulling the deck**. It is the whole
 labour half of the `beam_cap` price row; it is not a return-visit trade.
 
@@ -182,7 +180,7 @@ grounds that the sill carries the load.
 
 **`FS-SG-DECK` carries no penetrations at all.** Two balcony heat-pump stands were bolted
 through it — eight lags through the waterproof plank, every one landing in sacrificial 2x8
-blocking rather than in a beam, so that no lag pierced `TR-SG-CAP-BL*` or the butyl under it
+blocking rather than in a beam, so that no lag pierced the balcony beam caps (since removed) or the butyl under it
 or seated in the ply seams this note exists to close. Both condensers moved to a ground pad
 on 2026-09-02 (`notes/heat_pump_ground_pad.md`) and the stand, its blocking and its holes
 went with them.

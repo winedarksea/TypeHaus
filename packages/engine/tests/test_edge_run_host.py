@@ -64,21 +64,13 @@ def test_a_tilted_beam_is_graded_over_its_range_not_its_box(catlin_model_ro) -> 
     """The false FAIL the obvious rule produces, pinned as numbers.
 
     BM-SG-BLW carries top_rise_end, so its solid is swept and the bounding z1_m is the HIGH
-    end. TR-SG-CAP-BLW sits at the LOW end — which is exactly right, because an _EdgeRun has
-    a single top_elevation and cannot be raked. Against the box that is a 2.4" FAIL on a cap
-    that is where it belongs.
+    end. A flat _EdgeRun at the LOW end (TR-SG-CAP-BLW, until the balcony caps were dropped
+    2026-09-16) is where it belongs, and against the box that was a 2.4" false FAIL.
     """
     beam = next(s for s in catlin_model_ro.solids if s.tag == "BM-SG-BLW")
     low, high = _top_range(beam)
     assert high == pytest.approx(beam.z1_m)
     assert (high - low) / M_PER_IN == pytest.approx(2.42, abs=0.05)
-
-    cap = next(e for e in catlin_model_ro.plan.elements_of_kind("Flashing")
-               if e.tag == "TR-SG-CAP-BLW")
-    top = cap.top_elevation.meters
-    assert low - 1e-6 <= top <= high, "the cap must land inside the beam's swept top"
-    assert (beam.z1_m - top) / M_PER_IN == pytest.approx(2.42, abs=0.05), (
-        "and comparing it to the box top instead is the 2.4\" false FAIL")
 
 
 def test_a_level_beam_still_gets_a_tight_test(catlin_model_ro) -> None:

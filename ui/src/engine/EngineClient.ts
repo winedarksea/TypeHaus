@@ -125,6 +125,13 @@ export interface SheetManifest {
   content_hash: string;
 }
 
+/** One `haus render` view in `out/render/` and the formats written for it (GET /renders). */
+export interface RenderImage {
+  stem: string;
+  group: "plan" | "elevation" | "section" | "site" | "detail" | "other";
+  files: { name: string; format: string; bytes: number; href: string }[];
+}
+
 /** One markdown note in the house (emit/notes_index.py::NoteEntry). */
 export interface NoteEntry {
   /** `brief.md` or `notes/<...>.md`, relative to the house. */
@@ -452,6 +459,8 @@ export interface EngineClient {
   // The printed permit set's table of contents. Rejects with a 404 EngineError when
   // `haus print` has not run (served) or no set was bundled (offline).
   getSheets(): Promise<SheetManifest>;
+  // Rendered images to download. Empty when none exist, and always offline (none bundled).
+  getRenders(): Promise<RenderImage[]>;
   // The house's markdown notes, and one note's text. Read-only on both surfaces.
   getNotes(): Promise<NoteEntry[]>;
   getNote(path: string): Promise<string>;

@@ -60,9 +60,9 @@ class MarkerRule:
     category: str = CATEGORY_CONNECTOR
 
 
-#: Start narrow: the roof ties, the mudsill anchors, the ridge straps, the sloped hangers
-#: and the embedded holdowns — the families a person asked to be able to see. The rest are
-#: located and billed exactly as before and simply not drawn yet.
+#: Start narrow: the roof ties, the mudsill anchors, the ridge straps, every joist hanger
+#: but the floor-truss one, and the embedded holdowns — the families a person asked to see.
+#: The rest are located and billed exactly as before and simply not drawn yet.
 MARKER_RULES: dict[str, MarkerRule] = {
     # Straddling the plate top. Long in the support's direction, thin across it.
     ROLE_HURRICANE_TIE: MarkerRule(draw=True, along_in=1.00, across_in=0.25, half_h_in=2.25),
@@ -86,10 +86,10 @@ MARKER_RULES: dict[str, MarkerRule] = {
     # An HGA10 on the plate beside the gable truss's chord.
     ROLE_GABLE_TRUSS_ANCHOR: MarkerRule(draw=True, along_in=1.75, across_in=1.25,
                                         half_h_in=1.25),
-    ROLE_FACE_MOUNT_JOIST_HANGER: MarkerRule(draw=False, along_in=1.50, across_in=0.75,
+    ROLE_FACE_MOUNT_JOIST_HANGER: MarkerRule(draw=True, along_in=1.50, across_in=0.75,
                                              half_h_in=None,
                                              category=CATEGORY_CONNECTOR_HANGER),
-    ROLE_IJOIST_FACE_MOUNT_HANGER: MarkerRule(draw=False, along_in=1.50, across_in=0.75,
+    ROLE_IJOIST_FACE_MOUNT_HANGER: MarkerRule(draw=True, along_in=1.50, across_in=0.75,
                                               half_h_in=None,
                                               category=CATEGORY_CONNECTOR_HANGER),
     ROLE_FLOOR_TRUSS_HANGER: MarkerRule(draw=False, along_in=1.50, across_in=0.75,

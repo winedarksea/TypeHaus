@@ -3255,8 +3255,7 @@ SECOND_NODES = [
 #
 # `top_protection=_BEAM_TAPE_WIDE` is unchanged and still correct: the roll width derives
 # from the section's own width, so the 3-1/2" glulam takes the same wide roll the 4-1/2"
-# 3-2x12 did. The formed aluminium caps (TR-SG-CAP-BL*) likewise size themselves off
-# `SPEC.balcony_beam` and follow the new width without a literal moving.
+# 3-2x12 did. (The glulams carry no aluminium cap since 2026-09-16; butyl only.)
 # The published row that answers all three balcony beams' spans — a PRESCRIPTIVE read
 # (2026-09-11; they were engineering items before). Anthony/Canfor tabulate this exact
 # section against this exact joist span, and a reviewer opens the guide and closes the
@@ -4321,7 +4320,7 @@ BALCONY_REAR_FLASH = Flashing(
     material="aluminum", host_ref="FS-SG-DECK")
 
 # ============================================================================
-# Beam cap flashing — formed metal over the top of all seven built-up beams.
+# Beam cap flashing — formed metal over the four porch beams.
 # ============================================================================
 # The tape (``_BEAM_TAPE``, on every beam's ``top_protection``) is the primary defence and
 # the cap is the second one. Both, not either: they fail differently. The tape is a bonded
@@ -4333,10 +4332,12 @@ BALCONY_REAR_FLASH = Flashing(
 # aluminium cap on bare KDAT would be a new defect rather than a fix. The tape under it is
 # the dielectric. Anything that removes the tape from these beams must change this metal too.
 #
-# ** ALL SEVEN GO ON BEFORE THE JOISTS DO, AND THAT IS NOT A PREFERENCE. ** The four porch
-# beams and the balcony's outer pair carry their joists ON TOP. BM-SG-BLC is flush-framed
-# (2026-09-16): its cap is under the plank, not the joists, but its 1 1/2" legs must lap
-# UNDER the LUS28Z flanges on both faces, so it still precedes the hangers. A cap over a beam
+# ** NO CAPS ON THE BALCONY GLULAMS (2026-09-16); butyl only. ** BM-SG-BLC is flush: the plank
+# covers it. BM-SG-BLW/BLE carry 2x8s at 16" o.c. that cantilever 9" past them, so a cap
+# would be cut into short bits between joists that the plank above already shelters.
+#
+# ** ALL FOUR GO ON BEFORE THE JOISTS DO, AND THAT IS NOT A PREFERENCE. ** The porch beams
+# carry their joists ON TOP. A cap over a beam
 # that will be joisted has to be laid while the beam top is still open, and the joists then
 # bear on it — which is fine for a 0.019" coil cap under a 2x8's bearing area, and impossible
 # to retrofit without pulling the deck. That sequencing is the whole labour half of the
@@ -4355,16 +4356,12 @@ BALCONY_REAR_FLASH = Flashing(
 _CAP_LAP_IN = 0.5          # cap overhang past each beam face, before the turn-down
 _CAP_LEG_IN = 1.5          # turn-down leg depth
 _porch_beam_width_ft = cross_section(SPEC.back_beam).width_m / 0.3048
-_balcony_beam_width_ft = cross_section(SPEC.balcony_beam).width_m / 0.3048
 _porch_cap_thickness = ft(_porch_beam_width_ft) + inch(2 * _CAP_LAP_IN)
-_balcony_cap_thickness = ft(_balcony_beam_width_ft) + inch(2 * _CAP_LAP_IN)
 
-# Each beam's resolved TOP — the plane the cap sits on. Three different derivations, because
-# the three beam families hang three different ways, and a cap authored on the storey datum
+# Each beam's resolved TOP — the plane the cap sits on. A cap authored on the storey datum
 # would float above the beam instead.
 _back_beam_top = _porch_top - ft(_porch_joist_depth_ft)   # joists bear on top
 _front_beam_top = _back_beam_top                          # joists bear on top
-_balcony_beam_top = _balcony_beam_soffit + ft(_balcony_beam_depth_ft)  # 9.3958333'
 
 # (uid, tag, node pair, top, section width). The paths are the beams' own node coordinates,
 # so a cap cannot drift off the beam it caps.
@@ -4377,16 +4374,6 @@ _BEAM_CAP_AT = (
      _front_beam_top, _porch_cap_thickness, "BM-SG-FRW"),
     ("SGCP04AAAA", "TR-SG-CAP-FRE", (_cx, _y_ax_front), (_x_ax_e, _y_ax_front),
      _front_beam_top, _porch_cap_thickness, "BM-SG-FRE"),
-    # The balcony's three run N-S on the deck's own 2"-in-8'-8" southward fall (the rear
-    # pillars are ``_rear_pillar_rise_in`` taller), so each cap sheds to its south end — which
-    # is the front edge, where TR-SG-GUTTER already hangs. The caps discharge into the
-    # trough rather than onto the pillar tops and the front rail below them.
-    ("SGCP05AAAA", "TR-SG-CAP-BLW", (_x_ax_w, _y_in_n), (_x_ax_w, _y_balcony_front),
-     _balcony_beam_top, _balcony_cap_thickness, "BM-SG-BLW"),
-    ("SGCP06AAAA", "TR-SG-CAP-BLC", (_cx, _y_in_n), (_cx, _y_balcony_front),
-     _balcony_centre_beam_top, _balcony_cap_thickness, "BM-SG-BLC"),
-    ("SGCP07AAAA", "TR-SG-CAP-BLE", (_x_ax_e, _y_in_n), (_x_ax_e, _y_balcony_front),
-     _balcony_beam_top, _balcony_cap_thickness, "BM-SG-BLE"),
 )
 BEAM_CAPS = [
     Flashing(uid=uid, tag=tag, kind=TrimKind.BEAM_CAP,
@@ -4395,9 +4382,7 @@ BEAM_CAPS = [
              thickness=thickness, material="aluminum", host_ref=host)
     for uid, tag, p0, p1, top, thickness, host in _BEAM_CAP_AT
 ]
-PORCH_BEAM_CAPS = [c for c in BEAM_CAPS if c.host_ref in
-                   ("BM-SG-BKW", "BM-SG-BKE", "BM-SG-FRW", "BM-SG-FRE")]
-BALCONY_BEAM_CAPS = [c for c in BEAM_CAPS if c not in PORCH_BEAM_CAPS]
+PORCH_BEAM_CAPS = BEAM_CAPS
 
 # ============================================================================
 # Per-storey exports (spliced into plan/manifest.py).
@@ -4479,5 +4464,4 @@ MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, *FRONT_BEAMS, PORCH_JOISTS, *PILLAR_C
                  *PORCH_STAIR_THRESHOLD_RAILS]
 SECOND_ELEMENTS = [*SECOND_NODES, *BALCONY_BEAMS, *PILLARS,
                    BALCONY_JOISTS, BALCONY_GUARD, BALCONY_FASCIA,
-                   BALCONY_GUTTER, BALCONY_LEADER, BALCONY_DRIP, BALCONY_REAR_FLASH,
-                   *BALCONY_BEAM_CAPS]
+                   BALCONY_GUTTER, BALCONY_LEADER, BALCONY_DRIP, BALCONY_REAR_FLASH]

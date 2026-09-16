@@ -5536,7 +5536,7 @@
 # Sources: homeguide.com 2026 soffit and fascia replacement, angi.com aluminum soffit cost,
 # homewyse.com aluminum fascia, homeguide.com drip edge cost 2026.
 # $/LF, by trim category (fascia, soffit, flashings, formed roof trim)
-"beam_cap" = { material = { low = 1.50, high = 4 }, labour = { low = 2, high = 4.50 } }  # 66.0 LF — formed aluminium cap over all seven built-up 3-2x12 beams (sunken garden). ~8" of coil girth: a 5.5" top plus two 1.5" turn-downs, so material sits just above `drip_flashing`'s narrower bend. Labour is the dear half and it is a SEQUENCING cost, not a fabrication one — five of the seven beams carry joists on top, so their caps go on before the deck frames and a cap missed at that moment costs a torn-out joist field, not a return trip. See params/sunken_garden.py::_BEAM_CAP_AT
+"beam_cap" = { material = { low = 1.50, high = 4 }, labour = { low = 2, high = 4.50 } }  # 40.0 LF — formed aluminium cap over the four porch beams (the balcony glulams are butyl only). ~8" of coil girth: a 5.5" top plus two 1.5" turn-downs, so material sits just above `drip_flashing`'s narrower bend. Labour is the dear half and it is a SEQUENCING cost, not a fabrication one — all four carry joists on top, so their caps go on before the deck frames and a cap missed at that moment costs a torn-out joist field, not a return trip. See params/sunken_garden.py::_BEAM_CAP_AT
 # NEW 2026-09-03 with the porch enclosure. TR-SG-SLOT, the closure over the 5" insulation
 # gap between the porch deck's north edge and the house cladding (params/sunken_garden.py) —
 # a formed 4" aluminium band screwed to the deck's north rim, sloped south to drain, with a

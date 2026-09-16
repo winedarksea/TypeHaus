@@ -15,9 +15,9 @@ run with no host claims nothing to check.
 so it is not the rule:
 
 * **A tilted beam.** ``BM-SG-BLW``/``BLC``/``BLE`` carry ``top_rise_end``, so their solids
-  are swept, not prismatic, and the bounding box's ``z1_m`` is the HIGH end. ``TR-SG-CAP-BLW``
-  sits at 112.75" — exactly the beam's top at its low end — against a box top of 115.17".
-  Compared against the box that is a 2.42" FAIL on a cap that is exactly where it belongs.
+  are swept, not prismatic, and the bounding box's ``z1_m`` is the HIGH end. A cap at
+  its low end (``TR-SG-CAP-BLW``, removed 2026-09-16) sat 2.42" under the box top — a false
+  FAIL against the box on a cap exactly where it belongs.
   An ``_EdgeRun`` has a single ``top_elevation`` and **cannot be raked**, so a cap on a
   tilted beam is a flat run against a sloping top and lands somewhere in that range by
   construction. Graded against the swept range, derived from the box top and the path's own

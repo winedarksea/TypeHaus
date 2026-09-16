@@ -28,6 +28,7 @@ import {
   type PatchOp,
   type PatchResult,
   type NoteEntry,
+  type RenderImage,
   type PreviewGeometry,
   type SchedulePayload,
   type SetVisitOp,
@@ -240,6 +241,10 @@ export class PyodideEngineClient implements EngineClient {
       throw new EngineError("no permit set bundled with this build", res.status);
     }
     return (await res.json()) as SheetManifest;
+  }
+
+  async getRenders(): Promise<RenderImage[]> {
+    return [];
   }
 
   async getNotes(): Promise<NoteEntry[]> {

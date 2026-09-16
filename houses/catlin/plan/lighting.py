@@ -1748,17 +1748,18 @@ GARAGE_LIGHTING = [
     # width, the same arithmetic ED-G-EXT-LT-E/-W's comment does for a 5" sconce.
     #
     # The elevation is stated, not derived: a `LightRun` outside every room has no room
-    # ceiling to hang from, and 8'-0" (storey-relative, so 7'-0" absolute) is the soffit
-    # plane about 4" under W-G-E/W-G-W's 8'-4" plate. It is a mounting height, not a
-    # structural datum — if the raised heel moves, this follows by hand.
+    # ceiling to hang from. 8'-5 11/12" storey-relative (7'-5 11/12" absolute) is the
+    # resolved underside of RF-GARAGE's eave soffit — the fascia bottom, which the raised
+    # heel lifts ABOVE the 8'-4" plate. The old 8'-0" hung the channel a foot under the
+    # soffit. If the heel or fascia depth moves, this follows by hand.
     LightRun(uid="N2XWJEVXGS", tag="LR-G-EAVE-W", type_ref="ED-T-LT-LINEAR-EXT",
              path=(pt(ft(5, 9.875), ft(43, 2.625)), pt(ft(5, 9.875), ft(67, 2.625))),
              circuit="CKT-LT-MAIN", controlled_by=("ED-G-SOFFIT-SW",),
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 5.917))),
     LightRun(uid="QPT63YW4TW", tag="LR-G-EAVE-E", type_ref="ED-T-LT-LINEAR-EXT",
              path=(pt(ft(30, 2.125), ft(43, 2.625)), pt(ft(30, 2.125), ft(67, 2.625))),
              circuit="CKT-LT-MAIN", controlled_by=("ED-G-SOFFIT-SW",),
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 5.917))),
     # The gable face, over the overhead door. SURFACE mounted because there is nothing to
     # recess into: no soffit on a rake, and the wall behind is GARAGE_WALL_2X6 under a
     # corrugated panel. It spans the rough opening exactly — x 10'-0"..26'-0", four 4'

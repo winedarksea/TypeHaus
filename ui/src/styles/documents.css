@@ -260,3 +260,33 @@
 .md-body > table { display: block; overflow-x: auto; max-width: 100%; }
 .md-body img { max-width: 100%; height: auto; }
 .md-body hr { border: 0; border-top: 1px solid var(--md-outline-variant, var(--panel-line)); margin: 16px 0; }
+
+/* ── Download images (out/render) ────────────────────────────────────────────────────── */
+.doc-download { position: relative; }
+.doc-download > summary { list-style: none; cursor: pointer; }
+.doc-download > summary::-webkit-details-marker { display: none; }
+.doc-download-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 20;
+  width: min(420px, 90vw);
+  max-height: min(60vh, 560px);
+  overflow: auto;
+  padding: 8px 10px;
+  background: var(--md-surface-container, var(--panel));
+  border: 1px solid var(--md-outline, var(--panel-line));
+  border-radius: var(--md-shape-sm, 8px);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.18);
+}
+.doc-download-panel summary { cursor: pointer; }
+.doc-download-row { display: flex; gap: 6px; align-items: center; padding: 2px 0; }
+.doc-download-stem {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+}
+.doc-download-row .doc-chip { text-decoration: none; }

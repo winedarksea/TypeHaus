@@ -23,6 +23,7 @@ import {
   type PatchResult,
   type NoteEntry,
   type PreviewGeometry,
+  type RenderImage,
   type SchedulePayload,
   type VisitOp,
   RevisionConflict,
@@ -212,6 +213,14 @@ export class HttpEngineClient implements EngineClient {
     const res = await fetch(this.url("/sheets"));
     if (!res.ok) throw new EngineError(await readError(res), res.status);
     return (await res.json()) as SheetManifest;
+  }
+
+  async getRenders(): Promise<RenderImage[]> {
+    const res = await fetch(this.url("/renders"));
+    if (!res.ok) throw new EngineError(await readError(res), res.status);
+    const body = (await res.json()) as { renders: RenderImage[] };
+    return body.renders.map((r) => ({ ...r, files: r.files.map((f) => (
+      { ...f, href: this.url(`/renders/${encodeURIComponent(f.name)}`) })) }));
   }
 
   async getNotes(): Promise<NoteEntry[]> {

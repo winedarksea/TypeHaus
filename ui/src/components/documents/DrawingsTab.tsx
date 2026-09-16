@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useStore } from "../../state/store";
 import { Icon } from "../../icons/Icon";
 import { findSheet, groupSheets, nextSheet, prevSheet } from "../../model/sheets";
-import type { SheetManifest } from "../../engine/EngineClient";
+import type { RenderImage, SheetManifest } from "../../engine/EngineClient";
+import { DownloadImagesMenu } from "./DownloadImagesMenu";
 import { PdfPage } from "./PdfPage";
 
 /**
@@ -21,10 +22,13 @@ export function DrawingsTab() {
   const [manifest, setManifest] = useState<SheetManifest | null>(null);
   const [blob, setBlob] = useState<Blob | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [renders, setRenders] = useState<RenderImage[]>([]);
 
   useEffect(() => {
     let live = true;
     setError(null);
+    // Independent of the set: a missing render is no reason to hide the drawings.
+    client.getRenders().then((found) => { if (live) setRenders(found); }, () => {});
     void (async () => {
       try {
         const found = await client.getSheets();
@@ -115,6 +119,7 @@ export function DrawingsTab() {
             {active ? `page ${active.page} of ${sheets.length}` : "—"}
           </span>
           <span className="spacer" style={{ flex: 1 }} />
+          <DownloadImagesMenu renders={renders} />
           <OpenPdfButton blob={blob} name={manifest.pdf} />
         </div>
 

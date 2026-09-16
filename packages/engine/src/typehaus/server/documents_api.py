@@ -43,6 +43,32 @@ def find_manifest(house_dir: Path) -> tuple[Path, dict[str, Any]] | None:
     return None
 
 
+#: What ``haus render`` leaves in ``out/render/``, with the type each is served as.
+RENDER_FORMATS = {".png": "image/png", ".svg": "image/svg+xml",
+                  ".psd": "image/vnd.adobe.photoshop"}
+
+#: Stem prefix -> menu group. First match wins; anything else is "other".
+_RENDER_GROUPS = (("plan_", "plan"), ("elev_", "elevation"), ("section_", "section"),
+                  ("site_", "site"), ("detail_", "detail"))
+
+
+def list_renders(house_dir: Path) -> list[dict[str, Any]]:
+    """Every rendered image in ``out/render/``, one entry per stem with its formats."""
+    root = house_dir / "out" / "render"
+    if not root.is_dir():
+        return []
+    by_stem: dict[str, list[dict[str, Any]]] = {}
+    for path in sorted(root.iterdir()):
+        if path.suffix in RENDER_FORMATS and path.is_file():
+            by_stem.setdefault(path.stem, []).append(
+                {"name": path.name, "format": path.suffix[1:], "bytes": path.stat().st_size})
+    return [{"stem": stem,
+             "group": next((g for prefix, g in _RENDER_GROUPS if stem.startswith(prefix)),
+                           "other"),
+             "files": files}
+            for stem, files in sorted(by_stem.items())]
+
+
 def register_documents_routes(app: Any, state: Any) -> None:
     """Register the read-only document routes on ``app``.
 
@@ -73,6 +99,22 @@ def register_documents_routes(app: Any, state: Any) -> None:
             return JSONResponse({"error": f"{name} not printed — run `haus print`"},
                                 status_code=404)
         return FileResponse(path, media_type="application/pdf")
+
+    @app.get("/renders")
+    def get_renders() -> Any:
+        """What ``haus render`` left, for download. Empty, not a 404, when nothing ran."""
+        return JSONResponse({"renders": list_renders(state.house_dir)})
+
+    @app.get("/renders/{name}")
+    def get_render(name: str) -> Any:
+        """One rendered image as an attachment. Allow-listed by the directory's own
+        listing, so a name that is not a file in it never becomes a path."""
+        listed = {f["name"] for r in list_renders(state.house_dir) for f in r["files"]}
+        if name not in listed:
+            return JSONResponse({"error": f"no rendered image {name!r} — run `haus render`"},
+                                status_code=404)
+        path = state.house_dir / "out" / "render" / name
+        return FileResponse(path, media_type=RENDER_FORMATS[path.suffix], filename=name)
 
     @app.get("/notes")
     def get_notes() -> Any:

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 
 import pytest
@@ -96,3 +97,32 @@ def test_the_manifest_round_trips_as_json(catlin_house):
     assert found is not None
     path, manifest = found
     assert manifest == json.loads(path.read_text(encoding="utf-8"))
+
+
+def test_renders_list_groups_formats_by_stem(client, catlin_house):
+    render = catlin_house / "out" / "render"
+    if render.exists():
+        shutil.rmtree(render)
+    assert client.get("/renders").json() == {"renders": []}
+    render.mkdir(parents=True)
+    for name in ("plan_main.png", "plan_main.svg", "plan_main.psd", "elev_east.png",
+                 "detail_D-x.png", "model.glb", "notes.txt"):
+        (render / name).write_bytes(b"x")
+    renders = {r["stem"]: r for r in client.get("/renders").json()["renders"]}
+    assert set(renders) == {"plan_main", "elev_east", "detail_D-x"}
+    assert [f["format"] for f in renders["plan_main"]["files"]] == ["png", "psd", "svg"]
+    assert renders["elev_east"]["group"] == "elevation"
+    assert renders["detail_D-x"]["group"] == "detail"
+
+
+def test_render_download_is_an_attachment_and_allow_listed(client, catlin_house):
+    render = catlin_house / "out" / "render"
+    render.mkdir(parents=True, exist_ok=True)
+    (render / "plan_main.png").write_bytes(b"\x89PNG stub")
+    (render / "notes.txt").write_bytes(b"no")
+    ok = client.get("/renders/plan_main.png")
+    assert ok.status_code == 200
+    assert ok.content == b"\x89PNG stub"
+    assert "attachment" in ok.headers["content-disposition"]
+    assert client.get("/renders/notes.txt").status_code == 404
+    assert client.get("/renders/..%2Fpermit_set.json").status_code == 404
