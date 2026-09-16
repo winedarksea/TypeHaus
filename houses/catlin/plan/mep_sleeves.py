@@ -135,8 +135,9 @@ WALL_SLEEVES = [
     # With the service entry at the front of the lot (plan/site.py) the lateral enters the
     # house exactly once: this is the ENTRY, the only crossing, and the point
     # PR-B-CW-TRUNK tees off at.
-    SleevePenetration(uid="CBPW20AAAA", tag="SP-B-N3-HYD", host_ref="W-B-N4",
-                      position=pt(ft(5), ft(35, 6)), pipe_diameter=inch(0.75),
+    # x=11'-0" since 2026-09-16, under ST-B2M's upper landing, in W-B-N2; the tag is kept.
+    SleevePenetration(uid="CBPW20AAAA", tag="SP-B-N3-HYD", host_ref="W-B-N2",
+                      position=pt(ft(11), ft(35, 6)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-8, -10)),
 ]
@@ -147,7 +148,7 @@ WALL_SLEEVES = [
 #
 # `mep.footing_clearance` requires the run to actually thread the sleeve, not merely pass
 # near the footing (checks/mep/plumbing_concrete.py) — see params/foundations.py for the
-# hydrant's station at (5'-0", 59'-6"), chosen to clear the west footing entirely.
+# hydrant's station at (11'-0", 48'-6"), chosen to clear the west and south footings.
 GARAGE_SLEEVES = [
     # It crosses the garage's south foundation line at x=11'-0", at -8'-10", inside a 2"
     # protection sleeve. `host_ref=FT-GF-S-DR`: the garage moved 6'-0" east on 2026-09-07 and

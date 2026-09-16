@@ -22,18 +22,17 @@ from typehaus import (
 # valve sitting on its pipe). Only devices off that line — a stub, a breaker at handle
 # height — author one.
 SUPPLY_DEVICES_BASEMENT = [
-    # P2903.9.1. The service (buried -8'-10", PR-G-HYDRANT-CW) tees off at (5', 35'-6") —
-    # SP-B-N3-HYD, the north wall crossing — and rises to the basement ceiling; this valve
-    # sits on that riser at 4'-0", head height, reachable with one hand, which is what
-    # "accessible" means. The shutoff belongs where the water comes in, which is the north.
+    # P2903.9.1. The service (buried -8'-10", PR-G-HYDRANT-CW) enters at (11', 35'-6") —
+    # SP-B-N3-HYD, under ST-B2M's upper landing — and rises to the basement ceiling; this
+    # valve sits on that riser at 3'-0", under the open landing (4'-2" clear beneath it).
     #
     # The garage hydrant is deliberately upstream, on the service itself: routing the yard
     # line up to an indoor valve and back down would put a high point above frost mid-run —
     # exactly the failure `mep.hydrant_freeze_depth` catches.
     PipeAccessory(uid="N5PK9WQ2TB", tag="PA-B-MAIN-SHUTOFF",
                   kind=PipeAccessoryKind.MAIN_SHUTOFF, pipe_ref="PR-B-CW-TRUNK",
-                  position=pt(ft(5), ft(35, 6)), elevation=ft(4), accessible=True,
-                  room="RM-B-FURNACE",
+                  position=pt(ft(11), ft(35, 6)), elevation=ft(3), accessible=True,
+                  room="RM-B-STAIR",
                   model='1 1/4" full-port bronze ball valve, lever handle',
                   serves=("PR-B-CW-TRUNK",)),
     # P2902, the owner's request (plans/TODO.md §Plumbing). Two rather than one: the two
@@ -248,12 +247,12 @@ SUPPLY_STOPS = [
 # it at 0'-0".
 SUPPLY_DEVICES_GARAGE = [
     PipeAccessory(uid="C9GW5PXV2R", tag="PA-G-HYD-SEAT", kind=PipeAccessoryKind.SHUTOFF,
-                  pipe_ref="PR-G-HYDRANT-CW", position=pt(ft(11), ft(62)),
+                  pipe_ref="PR-G-HYDRANT-CW", position=pt(ft(11), ft(48, 6)),
                   room="RM-GARAGE", model="hydrant's own compression seat, 6' bury",
                   serves=("FX-G-HYDRANT",)),
     PipeAccessory(uid="J1DS4RQZ8X", tag="PA-G-HYD-VB",
                   kind=PipeAccessoryKind.VACUUM_BREAKER, pipe_ref="PR-G-HYDRANT-CW",
-                  position=pt(ft(11), ft(62)), elevation=ft(0), room="RM-GARAGE",
+                  position=pt(ft(11), ft(48, 6)), elevation=ft(0), room="RM-GARAGE",
                   model="screw-on hose-bib vacuum breaker, ASSE 1011",
                   serves=("FX-G-HYDRANT",)),
     # The weep. PA-G-HYD-VB above protects the hose thread (the only

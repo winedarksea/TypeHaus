@@ -654,41 +654,28 @@ GARAGE_STEPS = []
 
 # --- garage hydrant: supply sleeve, gravel pit -------------------------------------
 #
-# FX-G-HYDRANT stands on the west wall near the NW corner. The sleeve and drywell below it
-# are not UI-movable, so they live here rather than in editable plan/fixtures.py.
+# FX-G-HYDRANT stands free near the SW corner, 1'-0" east of ST-G-SERVICE's flight. The
+# sleeve and drywell below it are not UI-movable, so they live here rather than in editable
+# plan/fixtures.py.
 #
 # ``_FROST`` above is the *footing* frost depth (42"); the hydrant's 72" bury is a separate
-# number — its own shutoff-valve depth, 2'-6" below the ICF stem bottom, consistent but not
-# the same thing.
+# number — its own shutoff-valve depth, consistent with but not the same as frost.
 #
-# The hydrant is freestanding, not wall-mounted: nowhere on a wall clears the footings'
-# 45° bearing-influence line at this bury depth. The clear zone is x >= 10'-10 1/2",
-# y <= 59'-7 7/8", floor not wall — no wall
-# position works here, so it stands free like a yard hydrant should (Y34 barrel, unlike the
-# two wall hydrants in plan/fixtures.py).
+# Freestanding, not wall-mounted: at this bury the shutoff sits 22" and the weep stone 34"
+# below the garage footings' -7'-0" bearing plane, so the 45° influence line keeps the stone
+# 34" off every footing edge. Against FT-GF-W that is x >= 10'-10 1/2"; against the south
+# strip (north face 44'-6 1/4") it is y >= 48'-1". No wall position clears both.
 #
-# ** x=11'-0" SINCE 2026-09-07, AND IT IS THE SAME STATION. ** It is 5'-0" east of the west
-# wall, exactly where it always stood; the wall moved 6'-0" east and the hydrant with it,
-# because the clear zone is derived from FT-GF-W's 45° influence line and travels with the
-# footing. Left at x=5'-0" absolute it would stand INSIDE FT-GF-W's own 20" strip.
+# ** (11'-0", 48'-6") SINCE 2026-09-16. ** It stood at y=62'-0" in the NW corner and the
+# service jogged east in the yard to reach it. Moved south beside the service stair, on the
+# line the house entry now uses (SP-B-N3-HYD at x=11'-0"), the buried run is one straight
+# 13'-0" leg crossing FT-GF-S-DR perpendicular inside SP-GF-S-HYD. The stone clears the
+# south strip by 38 3/4" and FT-GF-W by 35 1/2".
 #
-# ** THE LATERAL NOW JOGS, AND THAT IS WHAT THE MOVE COST. ** PR-G-HYDRANT-CW used to run
-# dead straight north at x=5'-0" from the house entry; it turns east 4'-0" in the yard slot
-# at y=38'-0" (plan/mep_supply.py) and crosses the garage's south foundation at x=11'-0",
-# under FT-GF-S-DR inside SP-GF-S-HYD's protection sleeve — 22" below its bearing plane,
-# which is the documented worst case. That footing carried a grade beam until 2026-09-11
-# and carries plain stem now; its two nodes are pinned so the host never moves off the
-# crossing again. y=59'-6" clears the north
-# stem footing by 35 7/8" (34" required). That strip is continuous along GARAGE_Y_NORTH and
-# unchanged by the 2026-09-07 door rotation — only its tag over x=5'-0" changed, from
-# FT-GF-N to the grade beam's FT-GF-N-DR, and the grade beam's footing keeps the same
-# bottom elevation, so the 45° influence line is the same line.
-#
-# Consequence: the hydrant sits 5' out into the parking area, not against the wall — every
-# compliant position here is in the room. Mitigate with a bollard/wheel stop if needed;
-# don't move it back to the wall.
-HYDRANT_X_FT = 11.0         # 5'-0" east of the west wall — the footing-clear station
-HYDRANT_Y_FT = GARAGE_Y_NORTH.feet - (64 + 8.625 / 12 - 59.5)
+# Consequence: a post standing 4'-1" off the west stem face beside the stair foot. Don't
+# move it onto a wall.
+HYDRANT_X_FT = 11.0         # the FT-GF-W-clear station, and the service line
+HYDRANT_Y_FT = 48.5         # beside ST-G-SERVICE's foot; FT-GF-S binds
 HYDRANT_BURY_FT = 6.0       # shutoff depth below grade — the code number for this fixture
 
 # A 4" topping pedestal (SL-G-HYDRANT-PED) that lifted the slab penetration above the
@@ -721,8 +708,7 @@ GARAGE_HYDRANT_SLEEVE = SleevePenetration(
 # Re-sized from 2'x4' deep (12.6 cu ft, bottom -9'-0", overlapped FT-GF-W by 4"
 # in plan — nothing was grading it, since `mep.footing_clearance` only walks pipe runs) down
 # to 1'-6"x1'-6" deep, top -5'-6", ~2.6 cu ft. Bottom -7'-0" is 34" below bearing; the
-# stone's edge stands 35 1/2" off FT-GF-W and 35 7/8" off the north footing strip (which is
-# FT-GF-N-DR over this x since 2026-09-07) — no slack left in either.
+# stone's edge stands 35 1/2" off FT-GF-W (no slack) and 38 3/4" off the south strip.
 GARAGE_HYDRANT_DRYWELL = Drywell(
     uid="CGP603AAAA", tag="DRW-G-HYDRANT",
     position=pt(ft(HYDRANT_X_FT), ft(HYDRANT_Y_FT)),

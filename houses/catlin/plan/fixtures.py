@@ -603,11 +603,11 @@ SECOND_FIXTURES = (
 GARAGE_FIXTURES = (
     # No `wall_ref`, deliberately: a 6'-0"-bury yard hydrant can't stand against a wall here
     # without its shutoff/weep stone entering the perimeter footing's 45° influence line.
-    # Stands free at (11'-0", 59'-6") on the buried service line (see params/foundations.py)
-    # — 5'-0" east of the garage's west wall, which is where it has always stood; the wall
-    # went east 6'-0" on 2026-09-07 and the hydrant travelled with its footing's clear zone.
+    # Stands free at (11'-0", 48'-6") on the buried service line (see params/foundations.py):
+    # 1'-0" east of ST-G-SERVICE's flight, near its foot. Moved south from y=62'-0" on
+    # 2026-09-16 so the service runs dead straight at x=11'-0" into the house.
     Fixture(uid="CGQ801AAAA", tag="FX-G-HYDRANT", type_ref="FX-HYDRANT-Y34SS",
-            room="RM-GARAGE", position=pt(ft(11), ft(62))),
+            room="RM-GARAGE", position=pt(ft(11), ft(48, 6))),
 )
 
 # --- the guest studio: bath + wet bar ---------------------------------------------------

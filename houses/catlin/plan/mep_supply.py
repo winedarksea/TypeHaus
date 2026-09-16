@@ -20,39 +20,22 @@ from typehaus.model import m
 
 # --- Water supply: the service lateral, hydrant to house ---------------------------
 #
-# The project's first WATER_COLD run: the water service lateral, from the entry at the
-# garage yard hydrant (11', 59'-6") south to the house's north foundation, staying at the
-# service's own 6' bury the whole way — a supply line that rises above frost anywhere along
-# its length freezes there. Filed on ``main`` (datum 0'-0") so the authored elevations read
-# straight off the drawing set; on ``basement`` (-9' datum) they would resolve nine feet
-# lower.
+# The project's first WATER_COLD run: the water service lateral, from the garage yard
+# hydrant (11', 48'-6") south to the house's north foundation at the service's own 6' bury
+# — a supply line that rises above frost anywhere along its length freezes there. Filed on
+# ``main`` (datum 0'-0") so the authored elevations read straight off the drawing set.
 #
-# With the entry at the front the lateral is 24'-0" of yard, the hydrant sits on the entry
-# itself, and the house taps the lateral where it reaches the foundation. PR-B-CW-TRUNK
-# tees off at (5', 35'-6") through SP-B-N3-HYD.
+# ** ONE STRAIGHT LEG, NO BURIED TURN (2026-09-16). ** It used to enter the house at x=5'-0"
+# and jog east at y=38'-0" to a hydrant at y=62'-0", 30'-6" of trench and two elbows. The
+# hydrant moved south beside ST-G-SERVICE and the entry moved east to x=11'-0", under
+# ST-B2M's upper landing (SP-B-N3-HYD): 13'-0" of trench. The water goes west to the old
+# x=5'-0" riser INSIDE the heated basement, at the ceiling, as PR-B-CW-TRUNK.
 #
-# The bury is 6' below *grade*, and grade is -2'-10", so the run sits at -8'-10" — the same
-# drop the garage foundation it passes under took: FT-GF-S-DR's bearing plane is -7'-0"
-# against this run's -8'-10", so the 22" of cover between them holds.
-#
-# ** IT JOGS, AND IT DID NOT USED TO. ** This was a dead-straight run at x=5'-0" from the
-# house entry to the hydrant, touching only FT-GF-S-DR. The garage went 4'-0" east on
-# 2026-09-07 and took FT-GF-W's 45° influence line with it: at x=5'-0" the crossing would
-# now sit inside that west footing's own 20" strip. The hydrant moved to x=11'-0" (5'-0"
-# east of the west wall, its unchanged station relative to the garage) and the lateral turns
-# east to meet it.
-#
-# ** THE TURN IS AT y=38'-0", IN THE YARD SLOT, AND THAT IS THE ONLY PLACE IT CAN BE. **
-# South of 36'-0" is the house; north of 40'-8 5/8" the run is under the garage foundation,
-# where an east leg would travel along FT-GF-S1/FT-GF-S-DR's influence cone instead of
-# crossing it perpendicular. Between the two the run is in open yard 6'-0" down, clear of
-# both structures' footings; SL-M-HP3PAD and the front walk overhead are surface pours.
-#
-# The garage crossing is at x=11'-0", under the grade beam, 22" below its bearing plane
-# inside SP-GF-S-HYD's protection sleeve — being *under* a footing is the worst case in its
-# 45° cone, not clearance from it, and the sleeve is what answers it (plan/mep_sleeves.py).
-# `mep.hydrant_freeze_depth` checks every buried vertex holds the full 72" bury; the
-# terminal rise is the hydrant's own self-draining barrel and exempt.
+# The bury is 6' below *grade* (-2'-10"), so the run sits at -8'-10". It crosses the
+# garage's south foundation at x=11'-0", 22" under FT-GF-S-DR's -7'-0" bearing plane, inside
+# SP-GF-S-HYD (plan/mep_sleeves.py) — perpendicular, which is why the leg stays orthogonal.
+# The north-entry piers all bear below this invert. `mep.hydrant_freeze_depth` holds every
+# buried vertex to 72"; the terminal rise is the hydrant's own self-draining barrel.
 WATER_SUPPLY = [
     PipeRun(uid="CMP920AAAA", tag="PR-G-HYDRANT-CW", system=PipeSystem.WATER_COLD,
             # ** THIS RUN DID NOT MOVE FOR THE 2026-09-10 NORTH ENTRY PIERS; THEY MOVED
@@ -61,10 +44,9 @@ WATER_SUPPLY = [
             # footing. What actually resolves it is depth: all five north-entry footings now
             # bear BELOW this invert, so `mep.footing_clearance` sees the pipe above their
             # bearing planes and no influence at all. Keep it that way if a pier ever moves.
-            path=(pt(ft(5), ft(35, 6)), pt(ft(5), ft(38)), pt(ft(11), ft(38)),
-                  pt(ft(11), ft(62)), pt(ft(11), ft(62))),
+            path=(pt(ft(11), ft(35, 6)), pt(ft(11), ft(48, 6)), pt(ft(11), ft(48, 6))),
             diameter=inch(0.75), material="pex",
-            elevations=(ft(-8, -10), ft(-8, -10), ft(-8, -10), ft(-8, -10), ft(-2, -5.2)),
+            elevations=(ft(-8, -10), ft(-8, -10), ft(-2, -5.2)),
             serves=("FX-G-HYDRANT",)),
 ]
 
@@ -80,17 +62,18 @@ WATER_SUPPLY = [
 # WSFU, taking it from 30 to 34 against the 32 a 1" branch carries (Table 610.4, 46-60 psi /
 # <100'). Hot trunk stays 1" at 21.5 WSFU; SP-B-CS2-CW (the trunk's cast crossing) grew with it.
 SUPPLY = [
-    # With the entry at the front (plan/site.py) the tee is at the north wall: the riser
-    # sits at (5', 35'-6") — SP-B-N3-HYD's station — and starts at +0'-2", which IS -8'-10"
-    # absolute, on the lateral. It then runs south down the RM-B-FURNACE ceiling band to
-    # y=16', crossing W-B-CW (framed, and a plumbing wall) with a bored hole rather than a
-    # sleeve.
+    # The service enters at (11', 35'-6") — SP-B-N3-HYD, under ST-B2M's upper landing — at
+    # +0'-2" (-8'-10" absolute) and rises tight to the wall, where PA-B-MAIN-SHUTOFF sits.
+    # At the ceiling it steps 6" off the concrete and runs west to x=5'-0" over RM-B-ESS
+    # (bored through W-B-STR and the closet partition; firestop the ESS penetrations), then
+    # south down the RM-B-FURNACE ceiling band to y=16', crossing W-B-CW with a bored hole.
     PipeRun(uid="CBPW30AAAA", tag="PR-B-CW-TRUNK", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(5), ft(35, 6)), pt(ft(5), ft(35, 6)), pt(ft(5), ft(16)),
+            path=(pt(ft(11), ft(35, 6)), pt(ft(11), ft(35, 6)), pt(ft(11), ft(35)),
+                  pt(ft(5), ft(35)), pt(ft(5), ft(16)),
                   pt(ft(8), ft(16)), pt(ft(29, 9.6), ft(16)),
                   pt(ft(29, 9.6), ft(34, 1.2)), pt(ft(29, 9.6), ft(34, 1.2))),
             diameter=inch(1.25), material="copper", finish="lacquered",
-            elevations=(inch(2), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(12, 7.4375)),
+            elevations=(inch(2), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(12, 7.4375)),
             serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV", "FX-M-BATH2-WC",
                     "FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-SINK",
                     "FX-M-LAUNDRY", "FX-M-KITCH-SINK",

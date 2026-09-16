@@ -91,7 +91,7 @@ def test_the_hydrant_is_on_the_garage_storey_at_the_authored_spot(catlin_model):
     # hydrant went with it: the clear zone is derived from FT-GF-W's 45° influence line, so
     # holding the absolute x would have put the shutoff inside that footing's own 20" strip.
     assert x * _M_TO_FT == pytest.approx(11.0, abs=1e-6)
-    assert y * _M_TO_FT == pytest.approx(62.0, abs=1e-6)
+    assert y * _M_TO_FT == pytest.approx(48.5, abs=1e-6)
     # It stands free, and that is the design rather than a missing reference: a 6'-0" bury
     # cannot sit against a wall whose footing bears at -4'-2" without putting its shutoff
     # and weep stone inside the 45° influence line. → test_the_hydrant_assembly_clears_...
@@ -106,9 +106,8 @@ def test_the_hydrant_stands_clear_of_everything_else_in_the_garage(catlin_model)
     needs is plan clearance in both axes: room to swing a hose onto the spout and to get a
     hand on the handle, from whatever else the corner is asked to hold.
 
-    12" is the number, and FURN-G-WORKBENCH at 17 1/2" is the one that binds it — the bench
-    is 30" deep off the west wall and the hydrant stands 4'-9" out from the same wall. All
-    three moved 6'-0" east together on 2026-09-07, so every distance here is unchanged.
+    12" is the number. Since the 2026-09-16 move beside ST-G-SERVICE the NW-corner bench
+    and heater are far off; the nearest placeable is ED-G-LT3, 31" away.
     """
     from shapely.geometry import Polygon
 
@@ -119,9 +118,9 @@ def test_the_hydrant_stands_clear_of_everything_else_in_the_garage(catlin_model)
              for obj in garage if obj.tag != hydrant.tag}
     assert tight, "the garage resolves no other placeable to grade against"
     assert min(tight.values()) >= 12, sorted(tight.items(), key=lambda kv: kv[1])[:3]
-    # The two the corner is shared with, named so a future move reads as a decision.
-    assert tight["FURN-G-WORKBENCH"] == pytest.approx(17.5, abs=0.5)
-    assert tight["EQ-G-HEATER"] == pytest.approx(44.1, abs=0.5)
+    # Named so a future move reads as a decision.
+    assert min(tight, key=tight.get) == "ED-G-LT3"
+    assert tight["ED-G-LT3"] == pytest.approx(31.1, abs=0.5)
 
 
 # --- 3. the supply run --------------------------------------------------------------------
@@ -245,7 +244,7 @@ def test_the_gravel_pit_is_the_only_drainage_path(catlin_model):
     # x=11'-0" since 2026-09-07: the pit rides HYDRANT_X_FT, and the hydrant moved 6'-0"
     # east with the garage that sets its footing clearances.
     assert x_ft == pytest.approx(11.0, abs=1e-6)
-    assert y_ft == pytest.approx(62.0, abs=1e-6)
+    assert y_ft == pytest.approx(48.5, abs=1e-6)
     # Stone from 5'-6" to 7'-0" *below grade*: the 6' shutoff sits 6" below the top of it
     # with a foot of stone under the weep. → test_the_hydrant_assembly_clears_the_footings.
     # Depths are read from grade, not from the house datum: grade is at -2'-6", so the
@@ -278,14 +277,9 @@ def test_the_hydrant_assembly_clears_the_footings(catlin_model):
     crossing that stays, PR-G-HYDRANT-CW passing beneath FT-GF-S-DR, is sleeved rather than
     spaced.
 
-    ** THE RUN JOGS SINCE 2026-09-07, AND THAT IS WHAT THE GARAGE MOVE COST. ** It used to
-    be one straight leg north at x=5'-0" from the house entry to the hydrant. The garage went
-    6'-0" east onto the house ridge and took FT-GF-W's influence line with it, so the hydrant
-    moved to x=11'-0" — its unchanged 5'-0" off the west wall — and the lateral turns east
-    4 legs' worth at y=38'-0", in the yard slot, which is the only band clear of both
-    structures' footings. The geometry assertions below are the point and are unchanged; what
-    changed is that "one straight leg" is now "one jog in open yard, and the crossing still
-    perpendicular". See notes/garage_orientation_lot.md §6.2.
+    ** ONE STRAIGHT LEG SINCE 2026-09-16. ** The hydrant moved south to (11', 48'-6"),
+    beside ST-G-SERVICE, and the service enters the basement at x=11'-0" under ST-B2M's
+    landing: no buried turn, and the one footing crossing is perpendicular.
     """
     from shapely.geometry import Point, Polygon
     from shapely.ops import unary_union
@@ -307,18 +301,10 @@ def test_the_hydrant_assembly_clears_the_footings(catlin_model):
     assert riser.distance(pour.boundary) + 1e-9 >= bearing - min(run.z_m), \
         "the hydrant riser is inside the footings' 45° influence line"
 
-    # The jog is in the YARD, not under either structure, and each leg is orthogonal — a
-    # diagonal would travel ALONG a footing's cone instead of crossing it. Five vertices:
-    # entry, turn, turn, hydrant, rise.
-    assert len(run.path) == 5
-    for a, b in zip(run.path, run.path[1:]):
-        dx = abs(a[0] - b[0])
-        dy = abs(a[1] - b[1])
-        assert dx < 1e-9 or dy < 1e-9, "every leg is orthogonal; no diagonal under a footing"
-    # The turn sits between the house's north wall (y=36') and the garage's south stem
-    # (y=40'-8 5/8") — open yard, 6'-0" down, clear of both structures' footings.
-    turn_y = run.path[1][1] / 0.3048
-    assert 36.0 < turn_y < 40.7, f"the jog must happen in the yard slot, not under a pour"
+    # Entry, hydrant, rise: no buried turn, so nothing travels along a footing's cone.
+    assert len(run.path) == 3
+    xs = {round(p[0], 9) for p in run.path}
+    assert len(xs) == 1, "the buried service is one straight north-south leg"
 
 
 # --- 4. the check -------------------------------------------------------------------------

@@ -205,3 +205,21 @@ knows what a weep is, and nothing needs to — the rule stopped discarding the r
 branch, which is what made the weep's answer invisible. The same pass gave `serves` a
 grader it never had: a device naming a tag the model does not contain now FAILs rather than
 passing on its own say-so.
+
+## Moved beside the service stair (2026-09-16)
+
+**Supersedes the positions above.** The hydrant is at **(11'-0", 48'-6")**, 1'-0" east of
+`ST-G-SERVICE`'s flight near its foot, and `PR-G-HYDRANT-CW` is one straight 13'-0" leg at
+x = 11'-0" with no buried turn. It was at (11', 62') with the service entering the house at
+x = 5'-0" and jogging east at y = 38' — 30'-6" of trench and two buried elbows.
+
+- **Entry.** `SP-B-N3-HYD` (tag kept) moved to x = 11'-0" in `W-B-N2`, under `ST-B2M`'s upper
+  landing. The service rises tight to the wall there; `PA-B-MAIN-SHUTOFF` is on that riser at
+  3'-0", reached from under the open landing (4'-2" clear). `PR-B-CW-TRUNK` steps 6" off the
+  concrete at the ceiling and runs west over `RM-B-ESS` to the old x = 5'-0" riser line, inside
+  the heated envelope. Firestop its bores through `W-B-STR` and the ESS partition.
+- **Footings.** The south strip now binds: its north face is 44'-6 1/4", so the weep stone
+  (9" radius) clears it by 38 3/4" against 34". `FT-GF-W` is unchanged at 35 1/2". The one
+  crossing is still `FT-GF-S-DR` inside `SP-GF-S-HYD`, now perpendicular with no elbow near it.
+- **Consequence to accept:** the hydrant stands in the walk path off the stair foot, not the
+  parking bay. Hose swing is toward the east.

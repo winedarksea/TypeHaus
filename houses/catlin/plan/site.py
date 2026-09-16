@@ -594,8 +594,8 @@ SITE = Site(
         # label="FRONT")) and grade "at the street/north side") — a municipal water main
         # does not run behind the house. Terminates at the hydrant, the first thing it
         # reaches.
-        UtilityLine(kind=UtilityKind.WATER, path=(pt(ft(11), ft(72)), pt(ft(11), ft(62))),
-                    entry=pt(ft(11), ft(62)), depth=ft(6)),
+        UtilityLine(kind=UtilityKind.WATER, path=(pt(ft(11), ft(72)), pt(ft(11), ft(48, 6))),
+                    entry=pt(ft(11), ft(48, 6)), depth=ft(6)),
         # Runs in from the WEST lot line, which sits at x=-7' on the 50'-wide parcel (it
         # was x=-32' on the retired 100' ring).
         UtilityLine(kind=UtilityKind.POWER, path=(pt(ft(-7), ft(18)), pt(ft(0), ft(18))),

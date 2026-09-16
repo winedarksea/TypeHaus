@@ -1359,9 +1359,7 @@ GARAGE_EQUIPMENT = [
     # case tops at 7'-3", blows down over a bench.
     # Hard-wired, not cord-and-plug: NEC 210.8(A)(2) GFCI applies to garage *receptacles*
     # only, so CKT-GAR-HEAT carries none — a plug-in unit would need CKT-RC-GARAGE instead.
-    # The case clears FX-G-HYDRANT's own y band by 12" — the hydrant is the one thing in
-    # this corner someone stands over with a hose — without moving the heater off
-    # FURN-G-WORKBENCH, which it is here to blow down over.
+    # FX-G-HYDRANT left this corner for the SW stair foot on 2026-09-16.
     Equipment(uid="CEE023AAAA", tag="EQ-G-HEATER", kind=EquipmentKind.SPACE_HEATER,
               position=pt(m(2.042254), m(18.62)), footprint=(inch(14), inch(9)),
               room="RM-GARAGE", type_ref="EQ-T-GARAGE-HEATER", rotation=deg(90),
