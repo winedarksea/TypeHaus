@@ -80,13 +80,25 @@ DOOR_TYPES = [
     DoorType(tag="DT-INT-SWING30-GLAZED", width=ft(2, 6), height=ft(6, 8), glazed=True,
              tempered=True),
     # Frameless jamb system (no applied casing — drywall return jamb), flush with the gwb.
-    DoorType(tag="DT-INT-SWING30-TRIMLESS", width=ft(2, 6), height=ft(6, 8), trimless=True),
+    # DT-INT-SWING30-TRIMLESS retired 2026-09-15 and REPLACED by the 36" below, not joined
+    # by it: D-M-BED2 was its only door and widened, which would have left a catalog entry
+    # this house does not hang — the trap this file's own note about the five spliced
+    # STARTER_DOOR_TYPES records. The jamb system and the drywall premium are unchanged;
+    # only the leaf got wider.
+    #
+    # D-M-BED2 is the main-floor suite's entry and the one door here a walker or a chair has
+    # to get through: a 36" RO is ~33" clear where the 30" was ~27". `trimless` lives on the
+    # TYPE, not the instance, so retyping that door to the plain DT-INT-SWING36 would have
+    # silently dropped the drywall return jamb it was designed around — see this row's own
+    # note in prices.toml for what that reveal actually costs.
+    DoorType(tag="DT-INT-SWING36-TRIMLESS", width=ft(3), height=ft(6, 8), trimless=True,
+             source="2026-09-15 aging-in-place pass — D-M-BED2 only; replaces DT-INT-SWING30-TRIMLESS"),
     # The study's bookcase door — a leaf that IS a bookcase, hung in W-A-SN's built-in.
     # Everything that says "Murphy" lives here on the type, which is what let D-A-STUDY be a
     # retype in place and keep its uid and IFC GlobalId. See source= for the trimless trap.
     DoorType(tag="DT-INT-BOOKCASE30", width=ft(2, 6), height=ft(6, 8), core="solid",
              trimless=True, product_ref="PROD-MURPHY-BOOKCASE-30",
-             source="plans/TODO.md — D-A-STUDY only: a flush-mount Murphy-style BOOKCASE DOOR in W-A-SN's built-in (INT_2X4_BOOKCASE_12). Same 2'-6\"x6'-8\" RO as DT-INT-SWING30, so nothing re-phases and the jamb pack is unchanged; operation stays SWING because a bookcase door IS a swinging door. core=\"solid\" is the only schema field that says a ~250 lb leaf. ** trimless=True HERE MEANS A MILLWORK CASE, NOT THE DRYWALL RETURN JAMB IT MEANS EVERYWHERE ELSE IN THIS HOUSE ** — a flush bookcase door has no casing, and a drawn frame box is the one thing that gives it away in 3D; do not price it off the DT-INT-SWING30-TRIMLESS row. No header_spec: the real requirement is the HINGE-SIDE JAMB (a 250 lb leaf on a 10\" moment arm is torsion, not bending) — a full-depth 3-ply post through-bolted to the sole plate and the assembly's 4'-0\" blocking row, for which there is no field. The case depth must match case-pocket + stud-case (9 7/8\" clear); see that assembly's note for what moves if the ordered unit needs a full 12\" case"),
+             source="plans/TODO.md — D-A-STUDY only: a flush-mount Murphy-style BOOKCASE DOOR in W-A-SN's built-in (INT_2X4_BOOKCASE_12). Same 2'-6\"x6'-8\" RO as DT-INT-SWING30, so nothing re-phases and the jamb pack is unchanged; operation stays SWING because a bookcase door IS a swinging door. core=\"solid\" is the only schema field that says a ~250 lb leaf. ** trimless=True HERE MEANS A MILLWORK CASE, NOT THE DRYWALL RETURN JAMB IT MEANS EVERYWHERE ELSE IN THIS HOUSE ** — a flush bookcase door has no casing, and a drawn frame box is the one thing that gives it away in 3D; do not price it off the DT-INT-SWING36-TRIMLESS row. No header_spec: the real requirement is the HINGE-SIDE JAMB (a 250 lb leaf on a 10\" moment arm is torsion, not bending) — a full-depth 3-ply post through-bolted to the sole plate and the assembly's 4'-0\" blocking row, for which there is no field. The case depth must match case-pocket + stud-case (9 7/8\" clear); see that assembly's note for what moves if the ordered unit needs a full 12\" case"),
     DoorType(tag="DT-INT-SWING24", width=ft(2), height=ft(6, 8)),
     # 2'-0" x 3'-6" — the attic pocket's ACCESS door, and the house's only
     # door that is not 6'-8" tall. D-A-POCKET hosts on W-A-STU-N, which runs in x under the
@@ -1170,7 +1182,21 @@ OPENINGS = [
     # have slid north with it — the exact silent drift main.py's WIN-M-MUD-W note records.
     # The opening stays at y 23'-4"..25'-4": it is dimensioned by the hall side (the switch
     # ED-M-BATH1-SW sits 2 3/8" north of its RO) and BATH1 grew at the other end.
-    Door(uid="CMD205AAAA", tag="D-M-BATH1", host="W-M-BAE", type_ref="DT-INT-SWING24",
+    # ** 2'-6" SINCE 2026-09-15, WAS 2'-0". ** A 24" leaf is the narrowest thing in the
+    # house and this is the powder room every guest uses. The swing is into the HALL, not
+    # the room (hinged at the south jamb), so the 23.9 sf fixture layout is untouched by the
+    # extra 6" — FX-M-BATH1-WC and -LAV are both west of W-M-BAE and the arc never reaches
+    # them. `from_node` anchors the north jamb at 1'-0", so the RO grows SOUTH and
+    # ** AND IT STAYS AT 1'-0", OFF THE MODULE, SUPPRESSED — see preferences.toml. ** A 30"
+    # leaf costs one extra cut stud on this wall at EVERY station, and the stations that
+    # would save it are all worse for the room: W-M-BAE lays out from a 6" residue mod 8"
+    # (INT_2X6_STAGGERED_PLUMBING, non-bearing), and the check's own answer — centre 24",
+    # RO y 23'-3"..25'-9" — runs the opening straight through ED-M-BATH1-SW's box at
+    # y 25'-6 3/8"..25'-10 3/8". Centre 30" clears the switch but leaves 5" of wall at the
+    # south end. 1'-0" keeps the north jamb exactly where it has always been, 2 3/8" under
+    # that switch, and leaves 8" at the south end. One cut stud in a non-bearing plumbing
+    # wall is the price of the 6", and it is worth it.
+    Door(uid="CMD205AAAA", tag="D-M-BATH1", host="W-M-BAE", type_ref="DT-INT-SWING30",
          position=from_node("N-M-BA1", ft(1))),
     # RM-M-MECH's hinged utility door, not the mudroom closets' bypass style.
     # Pulled 2" west of its original 3'-2 15/16": at that offset the king stud
@@ -1224,7 +1250,16 @@ OPENINGS = [
     # gets easier, not harder, since the arc is now further from the bed. `flip_hinge` picks
     # the jamb (W-M-BDN1 runs +x, so the unflipped jamb is the EAST one) and `flip_swing`
     # picks the side, independently, per the 2026-09-09 fix that split the two flags apart.
-    Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING30",
+    # ** 2'-8" SINCE 2026-09-15, WAS 2'-6", AND IT GREW EAST. ** The 2026-09-09 note above
+    # is the constraint: this RO's WEST jamb is flush against FX-M-BATH2-SINK's east face at
+    # 24 5/8", zero gap, and `from_node` anchors exactly that jamb — so widening moves the
+    # EAST jamb and the vanity detail survives untouched. Widening west would have put the
+    # opening into the vanity.
+    #
+    # 32" and not 36": the east jamb lands at 56 5/8" and FURN-M-BED's west face is at
+    # 63 7/8", so 32" keeps 7 1/4" of wall between the casing and the bed where 36" would
+    # leave 3 1/4". That is the binding dimension on this door, not the wall run.
+    Door(uid="CMD206AAAA", tag="D-M-BATH2", host="W-M-BDN1", type_ref="DT-INT-SWING32",
          position=from_node("N-M-W3", inch(24.635)), flip_swing=True, flip_hinge=True),
     # Pocket, not the 56" bifold it was. The leaf parks east inside W-M-HS4,
     # which hosts nothing and now never may: `mep.pocket_occupancy` refuses a pipe, a
@@ -1304,7 +1339,12 @@ OPENINGS = [
     # Trimless (drywall return jamb, no casing) so it reads as a slot in the wall from
     # both rooms. W-M-C1 is BEARING, so the solver's framing tables put a structural
     # header over the 2'-6" opening on their own — nothing extra to author here.
-    Door(uid="CMD212AAAA", tag="D-M-BED2", host="W-M-C1", type_ref="DT-INT-SWING30-TRIMLESS",
+    # ** 3'-0" SINCE 2026-09-15, WAS 2'-6". ** `from_node` anchors the SOUTH jamb at
+    # y=5'-5", so the RO grows north to 8'-5" and ED-M-BED-SW2 stays 4" clear of the latch
+    # side. 4'-7" of wall still stands north of it. STILL TRIMLESS — the type is the only
+    # place that flag lives, which is why DT-INT-SWING36-TRIMLESS had to be minted above
+    # rather than reusing DT-INT-SWING36.
+    Door(uid="CMD212AAAA", tag="D-M-BED2", host="W-M-C1", type_ref="DT-INT-SWING36-TRIMLESS",
          position=from_node("N-M-S1", ft(5, 5))),
     # O-M-HALL (the old cased pass-through) retired 2026-07-28 with its host wall W-M-C4:
     # the full 4'-2" is open now. Sills raised 2'-0" -> 3'-0" (2026-07-30 facade pass) so

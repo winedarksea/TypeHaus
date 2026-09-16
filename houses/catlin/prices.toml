@@ -5037,7 +5037,11 @@
 # 4-5x premium, and $75-200 of it lands on the DRYWALL sub rather than the carpenter. Drywall
 # subs frequently exclude cracking at a reveal from their warranty, so carry a rework
 # contingency this file cannot express.
-"DT-INT-SWING30-TRIMLESS" = { material = { low = 600, high = 1400 }, labour = { low = 620, high = 1400 } }  # 1 ea
+# 2026-09-15: was "DT-INT-SWING30-TRIMLESS", $600-1,400 / $620-1,400. D-M-BED2 widened to
+# 3'-0" and it was that row's only door, so the row moved with it rather than being left
+# behind at 0 ea. The reveal detail is what costs, not the leaf — everything above still
+# applies — so only the wider slab and a little more return jamb move the numbers.
+"DT-INT-SWING36-TRIMLESS" = { material = { low = 640, high = 1480 }, labour = { low = 640, high = 1440 } }  # 1 ea
 
 # D-A-STUDY's Murphy-style bookcase door in W-A-SN's built-in. ** DO NOT PRICE THIS OFF THE
 # TRIMLESS ROW ABOVE. ** Both types carry `trimless=True` and they mean different things: that

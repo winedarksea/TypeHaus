@@ -24027,6 +24027,12 @@
 8,
 "dcb16b4147dc"
 ],
+"geometry/CMW112AAAA::framing/member:cripple-head-0-02": [
+2.21615,
+2.667,
+8,
+"dcb16b4147dc"
+],
 "geometry/CMW112AAAA::framing/member:header-0": [
 2.032,
 2.21615,
@@ -24886,18 +24892,6 @@
 "1ce2bb9fca09"
 ],
 "geometry/CMW121AAAA::framing/member:stud-001": [
-0.0381,
-2.667,
-8,
-"1ce2bb9fca09"
-],
-"geometry/CMW121AAAA::framing/member:stud-002": [
-0.0381,
-2.667,
-8,
-"1ce2bb9fca09"
-],
-"geometry/CMW121AAAA::framing/member:stud-003": [
 0.0381,
 2.667,
 8,
@@ -60369,6 +60363,12 @@
 2,
 "cc5034aea423"
 ],
+"member/CMW112AAAA/cripple-head-0-02": [
+2.21615,
+2.667,
+2,
+"cc5034aea423"
+],
 "member/CMW112AAAA/header-0": [
 2.032,
 2.21615,
@@ -61060,18 +61060,6 @@
 "eebc11b3c6f0"
 ],
 "member/CMW121AAAA/stud-001": [
-0.0381,
-2.667,
-2,
-"eebc11b3c6f0"
-],
-"member/CMW121AAAA/stud-002": [
-0.0381,
-2.667,
-2,
-"eebc11b3c6f0"
-],
-"member/CMW121AAAA/stud-003": [
 0.0381,
 2.667,
 2,

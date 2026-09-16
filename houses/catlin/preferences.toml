@@ -194,4 +194,15 @@ suppress = [
   # NONBEARING — one extra cut stud, not a header redesign. Left suppressed because
   # missing the module IS the trade this move makes, not an oversight.
   "structural.door_framing_module:D-M-BATH2",
+
+  # D-M-BATH1 went 2'-0" -> 2'-6" on 2026-09-15 (the aging-in-place pass): a 24" leaf was
+  # the narrowest thing in the house and this is the powder room every guest uses. A 30"
+  # RO on W-M-BAE cuts a fourth stud where three would do at EVERY position, so this is not
+  # a move that can be fixed by moving. The two legal stations the check names are both
+  # worse for the room — centre 24" runs the opening through ED-M-BATH1-SW's box, centre
+  # 30" leaves 5" of wall at the south end — so the opening keeps the station it has had,
+  # 2 3/8" under that switch with 8" to spare at the far end. W-M-BAE is
+  # INT_2X6_STAGGERED_PLUMBING and NONBEARING: one extra cut stud, not a header redesign.
+  # Same shape of trade, and the same reasoning, as D-M-BATH2 above.
+  "structural.door_framing_module:D-M-BATH1",
 ]

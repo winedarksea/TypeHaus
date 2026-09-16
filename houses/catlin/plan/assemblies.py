@@ -2673,7 +2673,7 @@ INT_2X6_BRG = Assembly(
 # ** WHAT MOVES: the bedroom face, 1/2" west, and nothing else. ** The living-room face
 # stays at x=219.385". RM-M-BED loses 1/2" of real width that the model does not record
 # (`resolve/rooms.py` polygonises from wall AXES and insets by lining only), so no area,
-# glazing or egress verdict changes. `D-M-BED2` is `DT-INT-SWING30-TRIMLESS` — a drywall
+# glazing or egress verdict changes. `D-M-BED2` is `DT-INT-SWING36-TRIMLESS` — a drywall
 # return jamb, no casing — so its reveal simply gets 1/2" deeper on the bedroom side; there
 # is no casing to re-cut and nothing else is hosted on either face.
 #

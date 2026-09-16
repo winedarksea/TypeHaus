@@ -79,7 +79,11 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
         "DT-INT-SWING36": (36.0, DoorOperation.SWING, False, False),
         "DT-INT-SWING30": (30.0, DoorOperation.SWING, False, False),
         "DT-INT-SWING30-GLAZED": (30.0, DoorOperation.SWING, False, True),
-        "DT-INT-SWING30-TRIMLESS": (30.0, DoorOperation.SWING, False, False),
+        # 2026-09-15: was DT-INT-SWING30-TRIMLESS. D-M-BED2 is the only trimless swing in
+        # the house and it widened to 3'-0" for the aging-in-place pass, so the catalog
+        # entry moved with it — leaving the 30" behind would have been exactly the 0-ea
+        # entry the note below says a catalog is not for.
+        "DT-INT-SWING36-TRIMLESS": (36.0, DoorOperation.SWING, False, False),
         "DT-INT-SWING24": (24.0, DoorOperation.SWING, False, False),
         "DT-INT-BIFOLD56": (56.0, DoorOperation.BIFOLD, False, False),
         # RM-M-MUD-CLOSET's bypass slider: the framed replacement for FURN-M-MUD-CLOSET-S,
