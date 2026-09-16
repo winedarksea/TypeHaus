@@ -48,6 +48,12 @@ def _walls(plan: PlanModel, storey_tag: str) -> list:
     ]
 
 
+def _cast_beams(plan: PlanModel, storey_tag: str) -> list:
+    from typehaus.resolve.assembly_material import is_cast_beam
+
+    return [e for e in plan.storey_elements(storey_tag) if is_cast_beam(plan, e)]
+
+
 def _turn(d: Vec, e: Vec) -> float:
     """Signed turn angle from direction ``d`` to ``e``, in (-pi, pi]."""
     cross = d[0] * e[1] - d[1] * e[0]
@@ -79,6 +85,14 @@ def _storey_wall_graph(plan: PlanModel, storey_tag: str) -> _StoreyWallGraph:
         adjacency.setdefault(a, []).append(b)
         adjacency.setdefault(b, []).append(a)
         authored_directions.add((a, b))
+    # A cast beam between two wall nodes closes the loop it is poured into (the sunken
+    # garden's grade beam W-SG-ARCH), so it is an edge of the trace. It has no layer faces,
+    # so its authored direction casts no vote.
+    for beam in _cast_beams(plan, storey_tag):
+        a, b = beam.start_node, beam.end_node
+        if a in adjacency and b in adjacency and a != b:
+            adjacency[a].append(b)
+            adjacency[b].append(a)
     return _StoreyWallGraph(node_positions, adjacency, authored_directions)
 
 

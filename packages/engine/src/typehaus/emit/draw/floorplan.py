@@ -48,6 +48,7 @@ from typehaus.emit.draw.typography import (
 )
 from typehaus.model.enums import DoorOperation
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.assembly_material import is_cast_beam
 from typehaus.resolve.geometry import opening_center, wall_frame
 from typehaus.resolve.model import ResolvedModel
 
@@ -67,6 +68,7 @@ def build_floorplan(model: ResolvedModel, storey: str) -> Scene:
     for wall in walls:
         emit_wall(b, wall)
     _emit_slabs(b, model, storey)
+    _emit_grade_beams(b, model, storey)
     mark_boxes = _emit_openings(b, model, {w.tag for w in walls}, storey)
     # The floor opening's RING before the stair and its NOTE after, for two different
     # reasons. The ring seeds the stair symbol's segment ledger — a well's own edge is the
@@ -254,6 +256,22 @@ def _emit_slabs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
         if not rooms and floor.storey in walled and _has_enclosing_walls(model, floor):
             continue
         _draw(floor.deck_outline, floor.uid, floor.tag)
+
+
+def _emit_grade_beams(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
+    """A cast beam is buried below the cut: dashed hidden outline, labelled, never a wall."""
+    for solid in sorted((s for s in model.solids
+                         if s.category == "beam" and s.storey == storey),
+                        key=lambda s: s.uid):
+        if not is_cast_beam(model.plan, model.plan.by_tag(solid.tag)):
+            continue
+        b.add(Polyline(points=tuple(_in(p) for p in solid.outline), layer="A-SLAB",
+                       closed=True, lineweight=LIGHT, linetype="HIDDEN2",
+                       uid=solid.uid, tag=solid.tag))
+        cx = sum(p[0] for p in solid.outline) / len(solid.outline)
+        cy = sum(p[1] for p in solid.outline) / len(solid.outline)
+        b.add(Text(anchor=_in((cx, cy)), content=f"GRADE BEAM ({solid.tag}), BELOW",
+                   height_pt=TEXT_PT, layer="A-SLAB", align="center"))
 
 
 def _surface_name(tag: str) -> str:

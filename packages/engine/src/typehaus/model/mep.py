@@ -477,11 +477,15 @@ class LightRun(Element):
     for a shadow gap, ``Mount(WALL, elevation=inch(34))`` for a stair railing light.
     ``psu_ref`` names the AC/DC supply feeding it when ``type_ref`` is a 24V type — a
     24V strip has no branch circuit of its own, its PSU does.
+
+    ``rise`` slopes a run under a rake: one height per ``path`` vertex, added to the mount
+    elevation. Empty is a level run.
     """
 
     path: tuple[Point2D, ...]  # plan-frame polyline, >= 2 points
     type_ref: str  # a LuminaireType with form=STRIP
     mount: Mount = Mount()
+    rise: tuple[Length, ...] = ()  # per path vertex, above mount; () = level
     circuit: str | None = None  # line-voltage runs only; 24V runs feed from psu_ref
     controlled_by: tuple[str, ...] = ()
     psu_ref: str | None = None  # ElectricalDevice tag of the AC/DC supply (24V runs)

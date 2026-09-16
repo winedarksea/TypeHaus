@@ -1791,8 +1791,9 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     ``houses/catlin/notes/balcony_moment_columns.md``.
     """
     walls = [w for w in catlin_model.walls if w.tag.startswith("W-SG-")]
-    # 7 concrete: two porch side walls (W1/E1), the retaining U (W2/E2/S), and TWO buried
-    # grade beams — W-SG-ARCH at the court's south end and W-SG-BRKBM at its north.
+    # 6 concrete walls: two porch side walls (W1/E1), the retaining U (W2/E2/S), and the
+    # buried veneer beam W-SG-BRKBM. The other grade beam, W-SG-ARCH, is a concrete `Beam`
+    # since 2026-09-16 so plans stop drawing it as a wall; it is asserted as a solid below.
     # No north wall, no front wall, and no masonry railing over any of them.
     #
     # W-SG-BRKBM (2026-09-05) is the second beam and it does a different job from the first.
@@ -1811,7 +1812,7 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     # uid deliberately. See `engineering/retaining_system.py` and
     # `notes/sunken_garden_court_free_body.md`.
     assert {w.tag for w in walls} == {"W-SG-W1", "W-SG-E1", "W-SG-W2", "W-SG-E2", "W-SG-S",
-                                      "W-SG-ARCH", "W-SG-BRKBM"}
+                                      "W-SG-BRKBM"}
     # It was BURIED until 2026-09-03: its top was the garden floor's underside. The court
     # dropped 7 1/4" for the flood step at D-B-PATIO and the beam DID NOT FOLLOW — a 10 1/4"
     # section fails as a strut (d/c 1.02) and lowering its bottom instead puts its bed under
@@ -1820,7 +1821,8 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     # the court floor bears on it, nothing shows, and FO-SG-ARCH is retired. What must stay
     # true either way is that it is nowhere near underfoot on the PORCH: its top is below the
     # porch deck by the whole basement depth.
-    beam = next(w for w in walls if w.tag == "W-SG-ARCH")
+    beam = next(s for s in catlin_model.solids if s.tag == "W-SG-ARCH")
+    assert beam.category == "beam"
     court = next(s for s in catlin_model.solids if s.tag == "SL-SG-FLOOR")
     assert (court.z1_m - beam.z1_m) / 0.0254 == pytest.approx(3.5, abs=1e-6)
     assert beam.z1_m < 0.0
@@ -1849,15 +1851,13 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     # modelled element. Putting those layers on all five moved the porch walls' exposed face
     # 0.46" outboard and buried both devices — caught by
     # `test_wall_mounted_devices_resolve_against_a_wall_face`, which is why the split exists.
-    assert {w.tag: w.assembly for w in walls
-            if w.tag not in ("W-SG-BRKBM", "W-SG-ARCH")} == {
+    assert {w.tag: w.assembly for w in walls if w.tag != "W-SG-BRKBM"} == {
         "W-SG-W1": "SUNKEN_GARDEN_WALL", "W-SG-E1": "SUNKEN_GARDEN_WALL",
         "W-SG-W2": "SUNKEN_GARDEN_WALL_DRAINED",
         "W-SG-E2": "SUNKEN_GARDEN_WALL_DRAINED",
         "W-SG-S": "SUNKEN_GARDEN_WALL_DRAINED"}
     assert next(w for w in walls if w.tag == "W-SG-BRKBM").assembly == "SG_VENEER_BEAM_14"
-    assert (next(w for w in walls if w.tag == "W-SG-ARCH").assembly
-            == "SUNKEN_GARDEN_GRADE_BEAM_12")
+    assert beam.assembly == "SUNKEN_GARDEN_GRADE_BEAM_12"
     assert not any(w.tag.startswith("W-SG-RAIL-") for w in walls)
 
     # Both open porch edges are a column at midspan carrying two beams into the side walls.

@@ -1424,6 +1424,11 @@
 # member's own height would be inventing a number. notes/rebar_backout.md §4 lists it
 # among six named omissions. Read that note before concluding a bar is missing here.
 "column:SUNKEN_GARDEN_COLUMN_12" = { material = { low = 1150, high = 2100 }, labour = { low = 920, high = 1700 } }  # 1.53 cy = 57.7 LF over six columns (PT-SG-FCOL, PT-SG-COL and the four balcony corners); $/cy, so the line scales
+# W-SG-ARCH, the buried grade beam / strut on the MW-ME line. A concrete Beam since 2026-09-16, so
+# it bills here by the yard rather than under [wall_structure]. Same 12" court pour off the same
+# ticket as SUNKEN_GARDEN_WALL, so the SAME RATE: re-rate both together. An unpriced key drops
+# from the takeoff silently.
+"beam:SUNKEN_GARDEN_GRADE_BEAM_12" = { material = { low = 215, high = 280 }, labour = { low = 285, high = 620 } }  # 1.08 CY — no wash, nothing of it shows
 # The six 12" round shafts of the NORTH ENTRY: PT-BW-W/E/RE bottoming at -9'-9 7/16" and
 # PT-BW-GW/GE/RNE at -7'-0". **Two of the six are not piers** — PT-BW-RE (15.35 LF) and
 # PT-BW-RNE (12.73 LF) do not stop at the bearing plane, they run on to the canopy header
@@ -4636,16 +4641,6 @@
 # foot in [envelope_layers] and are not in this number. An unpriced assembly tag is dropped
 # from the takeoff SILENTLY and the total falls, which is why this row exists at all.
 "SUNKEN_GARDEN_WALL_DRAINED" = { material = { low = 215, high = 280 }, labour = { low = 285, high = 620 } }  # W-SG-W2/E2/S — the retaining U
-# ** W-SG-ARCH SPLIT OFF 2026-09-13 AT THE IDENTICAL RATE, AND THE SPLIT IS RATE-NEUTRAL. ** The
-# buried grade beam / strut on the MW-ME line is the same 12" pour off the same ready-mix ticket as
-# the five court walls, so material and labour are byte-identical here and 1.08 + 24.87 = 25.95 CY
-# prices exactly as the single 25.95 CY row would. It has its own ASSEMBLY only because the court
-# walls took a white mineral silicate wash and this beam must not: the court floor bears on its top
-# and nothing of it shows, so a wash there would bill 3.6 SF of paint under a slab (see
-# plan/assemblies.py). ** BOTH ROWS ARE MANDATORY ** — an assembly tag with no row drops from the
-# takeoff silently and the total falls. If the court's mix is ever re-rated, re-rate both: they are
-# one pour and there is no argument for them diverging.
-"SUNKEN_GARDEN_GRADE_BEAM_12" = { material = { low = 215, high = 280 }, labour = { low = 285, high = 620 } }  # 1.08 CY — W-SG-ARCH, the buried strut; same pour, no wash
 
 # The veneer grade beam, NEW 2026-09-05. Same ready-mix anchor as SUNKEN_GARDEN_WALL — it is
 # the same pour, the same day, off the same ticket — but the labour half is materially

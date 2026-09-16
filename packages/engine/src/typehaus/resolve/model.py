@@ -987,10 +987,10 @@ class ResolvedConduitRun:
 class ResolvedLightRun:
     """One linear luminaire run: plan polyline, mounted height, developed length.
 
-    A ``ResolvedConduitRun`` sibling. ``z_m`` is the project-frame absolute height the
-    strip sits at (resolved from the authored ``Mount`` against its storey), and
-    ``length_m`` is plan length — a strip does not rise at its end the way a conduit
-    trunk does, so there is nothing to add (→ model/mep.py LightRun)."""
+    A ``ResolvedConduitRun`` sibling. ``z_m`` is the project-frame absolute height of the
+    authored ``Mount``; ``z_path_m`` is the height at every ``path`` vertex (``z_m`` plus
+    the run's ``rise``), and ``length_m`` is the developed length along that slope
+    (→ model/mep.py LightRun)."""
 
     uid: str
     tag: str
@@ -1003,6 +1003,10 @@ class ResolvedLightRun:
     psu_ref: str | None = None
     controlled_by: tuple[str, ...] = ()
     room: str | None = None
+    z_path_m: tuple[float, ...] = ()  # per path vertex; empty reads as level at z_m
+
+    def vertex_z(self) -> list[float]:
+        return list(self.z_path_m) if self.z_path_m else [self.z_m] * len(self.path)
 
 
 @dataclass(frozen=True)

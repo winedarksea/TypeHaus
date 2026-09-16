@@ -111,7 +111,10 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # skin's single layer IS its STRUCTURE layer, so it prices on the assembly tag here rather
     # than through `[envelope_layers]`. Its `prices.toml` row carries the zero-ready-mix
     # warning the [basis_notes] entry already states for the other two.
-    assert len({tag for row in rows for tag in row["tags"]}) == 44
+    #
+    # **43 AGAIN SINCE 2026-09-16:** W-SG-ARCH became a concrete `Beam` and bills as a
+    # `beam` solid in [concrete], not here.
+    assert len({tag for row in rows for tag in row["tags"]}) == 43
     # **`aluminum-flat-pvdf` LEFT THIS TABLE ON 2026-09-03, and it did not leave the house.**
     # The garage's base skin is now the 24" `coil-ext` band on the ICF stem, which is a
     # banded LAYER inside GARAGE_ICF_6 and bills through `[envelope_layers]` — 156.2 SF,

@@ -180,7 +180,7 @@ def test_footing_bedding_rejects_missing_host():
     from typehaus.resolve.model import ResolvedModel
 
     class _Plan:
-        pass
+        storeys = ()
 
     bedding = FootingBedding(uid="FB1", tag="FB-MISSING", host_ref="FT-NOPE",
                              undercut=inch(7))

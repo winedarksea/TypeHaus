@@ -108,6 +108,24 @@ export const SlabOutlines = memo(function SlabOutlines({ slabs, project }: {
   );
 });
 
+// Cast grade beams: buried below the cut, so a dashed hidden outline and never a wall
+// (the sheet mirror is emit/draw/floorplan.py::_emit_grade_beams).
+export const GradeBeamOutlines = memo(function GradeBeamOutlines({ beams, project }: {
+  beams: Solid[];
+  project: (p: Vec2) => Vec2;
+}) {
+  return (
+    <g pointerEvents="none">
+      {beams.map((beam) => (
+        <polygon key={beam.uid} points={beam.outline.map(project).map((p) => p.join(",")).join(" ")}
+          fill="none" stroke="var(--material-concrete)" strokeWidth={1.25} strokeDasharray="6 4">
+          <title>{`Grade beam ${beam.tag} (below)`}</title>
+        </polygon>
+      ))}
+    </g>
+  );
+});
+
 // Guards and handrails on the active storey. A railing's frame resolves to one solid per post
 // and per rail (engine resolve/railings/frame.py), and each is drawn as its own plan outline:
 // a post reads at its true section, a rail as the 1 1/2" band it sweeps along the path. That

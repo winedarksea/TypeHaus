@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from typehaus.model.enums import DuctRouting
 from typehaus.quantities import M_PER_IN, inch
+from typehaus.resolve.assembly_material import is_cast_beam
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.mep_crossings import member_window
@@ -211,7 +212,7 @@ def concrete_crossings(model: ResolvedModel) -> list[dict]:
     """Every point where a routed pipe or raceway passes through concrete — the pour-day list.
 
     Walks each resolved run with vertical information against every concrete solid
-    (slab/footing) and foundation wall. A solid is walked band by band rather than as one
+    (slab/footing/cast beam) and foundation wall. A solid is walked band by band rather than as one
     prism — see :func:`concrete_bands`, which is what keeps a run lying in an EPS deck
     form's foam from reading as embedded in the pour. Returns plain dicts: run, host,
     host_category,
@@ -228,6 +229,10 @@ def concrete_crossings(model: ResolvedModel) -> list[dict]:
              for s in model.solids
              if s.category in _CONCRETE_SOLID_CATEGORIES and len(s.outline) >= 3
              for z0, z1 in concrete_bands(model, s)]
+    hosts.extend((s.tag, "beam", Polygon(s.outline), s.z0_m, s.z1_m)
+                 for s in model.solids
+                 if s.category == "beam" and len(s.outline) >= 3
+                 and is_cast_beam(model.plan, model.plan.by_tag(s.tag)))
     for wall in model.walls:
         if not wall.is_foundation:
             continue

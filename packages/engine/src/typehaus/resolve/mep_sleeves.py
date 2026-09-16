@@ -21,6 +21,7 @@ from typehaus.model.enums import Service
 from typehaus.model.mep import SleevePenetration
 from typehaus.model.placeables import MountKind
 from typehaus.model.spatial import Appliance, Fixture
+from typehaus.resolve.assembly_material import is_cast_beam
 from typehaus.resolve.framing.carriers import backing_wall
 from typehaus.resolve.geometry import circle_outline, length, sub
 from typehaus.resolve.mep_queries import _CONCRETE_SOLID_CATEGORIES
@@ -36,12 +37,15 @@ from typehaus.resolve.round_solids import PIPE_FACETS, round_run_bands
 def _sleeve_host(model: ResolvedModel, host_ref: str):
     """A sleeve's concrete host: (footprint, z0, z1, category, tag) or None.
 
-    A slab or footing is a ResolvedSolid; a foundation/concrete wall is a ResolvedWall
-    whose structure layer supplies the footprint."""
+    A slab, footing or cast beam is a ResolvedSolid; a foundation/concrete wall is a
+    ResolvedWall whose structure layer supplies the footprint."""
     solid = next((s for s in model.solids
                   if s.tag == host_ref and s.category in _CONCRETE_SOLID_CATEGORIES), None)
     if solid is not None:
         return solid.outline, solid.z0_m, solid.z1_m, solid.category, solid.tag
+    beam = next((s for s in model.solids if s.tag == host_ref and s.category == "beam"), None)
+    if beam is not None and is_cast_beam(model.plan, model.plan.by_tag(host_ref)):
+        return beam.outline, beam.z0_m, beam.z1_m, "beam", beam.tag
     wall = model.wall(host_ref)
     if wall is not None:
         structure = next((ly for ly in wall.layers if ly.function == "structure"), None)
@@ -59,7 +63,7 @@ def _resolve_sleeve(model: ResolvedModel, sleeve: SleevePenetration,
         return [Finding(
             severity=Severity.ERROR, check_id="integrity.sleeve_host",
             message=(f"sleeve {sleeve.tag} references {sleeve.host_ref}, which is no "
-                     "slab, footing, or concrete wall"),
+                     "slab, footing, cast beam or concrete wall"),
             element_tags=(sleeve.tag,), result=Result.FAIL,
         )]
     outline, z0, z1, category, host_tag = host

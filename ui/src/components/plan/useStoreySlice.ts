@@ -22,6 +22,7 @@ export interface StoreySlice {
   slabsOnStorey: Solid[];
   railingsOnStorey: Solid[];
   sumpsOnStorey: Solid[];
+  gradeBeamsOnStorey: Solid[];
   snapNodes: Map<string, GeoNode>;
   defaultAssembly: string;
   serviceOptions: string[];
@@ -98,6 +99,13 @@ export function useStoreySlice(model: Model, activeStorey: string | null, tolM: 
       onLevel(solid.storey) && solid.outline.length >= 3),
     [model.solids, onLevel],
   );
+  // Cast beams (a buried grade beam): a "beam" solid the engine files under concrete.
+  const gradeBeamsOnStorey = useMemo(
+    () => (model.solids ?? []).filter((solid) => solid.category === "beam" &&
+      (solid.trades ?? []).includes("concrete") && onLevel(solid.storey) &&
+      solid.outline.length >= 3),
+    [model.solids, onLevel],
+  );
   const snapNodes = useMemo(() => {
     const m = new Map<string, GeoNode>();
     for (const n of storeyNodes) m.set(n.tag, { id: n.tag, p: [n.x_m, n.y_m], walls: [] });
@@ -161,7 +169,7 @@ export function useStoreySlice(model: Model, activeStorey: string | null, tolM: 
 
   return {
     wallsOnStorey, nodes, openEnds, storeyNodes, stairsOnStorey, slabsOnStorey, railingsOnStorey,
-    sumpsOnStorey,
+    sumpsOnStorey, gradeBeamsOnStorey,
     snapNodes,
     defaultAssembly, serviceOptions, canvasTypes, warningMarkers, nearestNodeTag, storeyHintFile,
   };

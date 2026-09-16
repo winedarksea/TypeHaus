@@ -38,6 +38,7 @@ from typing import Any
 from typehaus.checks._authoring import structural_advisory
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result, not_applicable, passed, unknown
+from typehaus.resolve.assembly_material import is_cast_beam
 from typehaus.resolve.concrete import concrete_spec_for
 
 #: ACI 318-19 Table 19.3.2.1 — the mix each exposure class requires, as
@@ -68,7 +69,8 @@ _POUR_KINDS = ("FoundationWall", "Footing", "Pad", "Slab", "Post")
 @check(Tier.STRUCTURAL, "structural.concrete_mix_matches_exposure")
 def concrete_mix_matches_exposure(ctx: CheckContext) -> list[Finding]:
     """Every authored exposure class, against the mix ACI 318-19 Table 19.3.2.1 requires."""
-    pours = [el for el in ctx.plan.all_elements() if el.element_kind in _POUR_KINDS
+    pours = [el for el in ctx.plan.all_elements()
+             if (el.element_kind in _POUR_KINDS or is_cast_beam(ctx.plan, el))
              and getattr(el, "assembly", None)]
     specs = [(el, concrete_spec_for(ctx.plan, el)) for el in pours]
     with_spec = [(el, spec) for el, spec in specs if spec is not None]

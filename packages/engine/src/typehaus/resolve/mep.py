@@ -101,7 +101,7 @@ def resolve_mep(model: ResolvedModel) -> list[Finding]:
 
 
 def _resolve_light_run(model: ResolvedModel, run: LightRun, storey) -> list[Finding]:
-    """Validate a linear-luminaire run and record its plan length at its mounted height.
+    """Validate a linear-luminaire run and record its developed length and vertex heights.
 
     Two integrity gates, both hard: a polyline needs two points to have a length, and the
     named type must be a ``LuminaireType`` of a linear form — a run pointing at a can
@@ -131,12 +131,23 @@ def _resolve_light_run(model: ResolvedModel, run: LightRun, storey) -> list[Find
                     f"{form.value} — a run needs a STRIP-form luminaire type",
             element_tags=(run.tag,), result=Result.FAIL,
         )]
-    plan_len = sum(length(sub(path[i], path[i + 1])) for i in range(len(path) - 1))
+    if run.rise and len(run.rise) != len(path):
+        return [Finding(
+            severity=Severity.ERROR, check_id="integrity.light_run_path",
+            message=f"light run {run.tag} has {len(run.rise)} rise values for "
+                    f"{len(path)} path points — one per point, or none for a level run",
+            element_tags=(run.tag,), result=Result.FAIL,
+        )]
+    z_m = resolved_mount_elevation(storey, run)
+    z_path = [z_m + r.meters for r in run.rise] if run.rise else [z_m] * len(path)
+    developed = sum(math.hypot(length(sub(path[i], path[i + 1])), z_path[i + 1] - z_path[i])
+                    for i in range(len(path) - 1))
     model.light_runs.append(ResolvedLightRun(
         uid=run.uid, tag=run.tag, storey=storey.tag, path=path,
-        z_m=resolved_mount_elevation(storey, run), length_m=plan_len,
+        z_m=z_m, length_m=developed,
         type_ref=run.type_ref, circuit=run.circuit, psu_ref=run.psu_ref,
         controlled_by=tuple(run.controlled_by), room=run.room,
+        z_path_m=tuple(z_path) if run.rise else (),
     ))
     return []
 

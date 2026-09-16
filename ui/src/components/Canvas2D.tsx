@@ -18,7 +18,7 @@ import { CanvasObjectFootprint, ClearanceOverlays, NodeHandle } from "./plan/Obj
 import { WallDimension, WallShape } from "./plan/WallShapes";
 import { OpeningShape, StairShape } from "./plan/OpeningShapes";
 import {
-  DetailMarkerLayer, PlanNodesLayer, RailingOutlines, RoomLayer, SlabOutlines, SumpOutlines,
+  DetailMarkerLayer, PlanNodesLayer, GradeBeamOutlines, RailingOutlines, RoomLayer, SlabOutlines, SumpOutlines,
   WallDraftLayer, WarningMarkerLayer,
 } from "./plan/PlanMarkers";
 import { CanvasOverlays } from "./plan/CanvasOverlays";
@@ -116,7 +116,7 @@ export function Canvas2D() {
 
   const {
     wallsOnStorey, nodes, openEnds, storeyNodes, stairsOnStorey, slabsOnStorey, railingsOnStorey,
-    sumpsOnStorey,
+    sumpsOnStorey, gradeBeamsOnStorey,
     snapNodes,
     defaultAssembly, serviceOptions, canvasTypes, warningMarkers, nearestNodeTag, storeyHintFile,
   } = useStoreySlice(model, activeStorey, tolM);
@@ -437,6 +437,7 @@ export function Canvas2D() {
           {visibleTrades.concrete && <SlabOutlines slabs={slabsOnStorey} project={project} />}
           {/* sump pits sit on that same plate (solid_trade: "drainage") */}
           {visibleTrades.drainage && <SumpOutlines sumps={sumpsOnStorey} project={project} />}
+          {visibleTrades.concrete && <GradeBeamOutlines beams={gradeBeamsOnStorey} project={project} />}
           {/* rooms next (tinted fills, behind walls; → plan/PlanMarkers.tsx::RoomLayer) */}
           <RoomLayer rooms={roomsOnStorey}
             previewGeom={previewGeom} tool={tool} labelMode={labelMode}

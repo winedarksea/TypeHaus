@@ -275,11 +275,20 @@ def _bedding_host_footprint(
                  if s.tag == bedding.host_ref and s.category in ("footing", "pad")), None)
     if host is not None:
         return host.outline, host.z0_m, []
+    # A grade beam beds a band on its own centreline, like a wall with no footing. Beams
+    # resolve after beddings, so the host is resolved here on demand.
+    beam = _bedding_host_beam(model, bedding.host_ref)
+    if beam is not None:
+        a, b, c, d = beam.outline
+        axis = (((a[0] + d[0]) / 2, (a[1] + d[1]) / 2), ((b[0] + c[0]) / 2, (b[1] + c[1]) / 2))
+        half = (bedding.width.meters if bedding.width is not None
+                else math.dist(a, d)) / 2.0
+        return rect_between(axis[0], axis[1], -half, half), beam.z0_m, []
     wall = model.wall(bedding.host_ref)
     if wall is None:
         return None, None, [element_error(
             "integrity.footing_bedding_host",
-            f"footing bedding {bedding.tag} references missing footing or wall "
+            f"footing bedding {bedding.tag} references missing footing, beam or wall "
             f"{bedding.host_ref!r}", bedding.tag)]
     # The band the layers actually occupy — a ``face(...)``-aligned wall does not straddle
     # its node line, and a bed centred on that line would be off by half the wall.
@@ -297,6 +306,18 @@ def _bedding_host_footprint(
     axis = band_axis(wall.axis, [point for layer in bearing for point in layer.polygon])
     half = (bedding.width.meters if bedding.width is not None else wall.thickness_m) / 2.0
     return rect_between(axis[0], axis[1], -half, half), wall.z0_m, []
+
+
+def _bedding_host_beam(model: ResolvedModel, tag: str) -> ResolvedSolid | None:
+    for storey in model.plan.storeys:
+        for element in model.plan.storey_elements(storey.tag):
+            if isinstance(element, Beam) and element.tag == tag:
+                nodes = {e.tag: e.position.xy_m for e in model.plan.storey_elements(storey.tag)
+                         if e.element_kind == "Node"}
+                solid = _resolve_beam(element, storey.tag, storey.elevation.meters, nodes,
+                                      _bearing_stack_drops(model)[0])
+                return solid if solid is not None and solid.sweep is None else None
+    return None
 
 
 def _resolve_footing_bedding(

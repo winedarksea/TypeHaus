@@ -60,6 +60,8 @@ if TYPE_CHECKING:
     from typehaus.checks.jurisdiction import JurisdictionProfile
 
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.assembly_material import is_cast_beam
+from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
 # Leader drops in metres, so a callout clears the geometry it points at.
@@ -105,6 +107,7 @@ def build_foundation_plan(model: ResolvedModel,
     _emit_footings_and_pads(b, model, marks, metrics)
     _emit_slabs(b, model, marks)
     _emit_posts_and_beams(b, model, storey)
+    _emit_grade_beams(b, model, metrics)
     _emit_step_callouts(b, model)
     _emit_footing_bedding_note(b, model)
     _emit_sleeve_pour_dimensions(b, model, walls, storey)
@@ -204,13 +207,36 @@ def _emit_posts_and_beams(b: SceneBuilder, model: ResolvedModel, storey: str | N
             ))
     nodes = {n.tag: n for n in model.plan.storey_elements(storey)} if storey else {}
     for element in model.plan.storey_elements(storey) if storey else ():
-        if element.element_kind != "Beam":
+        if element.element_kind != "Beam" or is_cast_beam(model.plan, element):
             continue
         start, end = nodes.get(element.start_node), nodes.get(element.end_node)
         if start is None or end is None:
             continue
         b.add(Polyline(points=(_in(start.position.xy_m), _in(end.position.xy_m)),
                        layer="S-BEAM", lineweight=CUT, uid=element.uid, tag=element.tag))
+
+
+def _emit_grade_beams(b: SceneBuilder, model: ResolvedModel, metrics: BlockMetrics) -> None:
+    """Cast beams on any storey: a buried grade beam is foundation work, drawn hidden like
+    the footings and called out as GB rather than scheduled as a wall."""
+    for solid in model.solids:
+        element = model.plan.by_tag(solid.tag)
+        if solid.category != "beam" or not is_cast_beam(model.plan, element):
+            continue
+        b.add(Polyline(points=tuple(_in(p) for p in solid.outline), layer="S-BEAM",
+                       closed=True, lineweight=PROFILE, linetype="HIDDEN2",
+                       uid=solid.uid, tag=solid.tag))
+        cx, cy = outline_center(solid.outline)
+        emit_mark(b, _in((cx, cy)), "GB", metrics, layer="S-BEAM")
+        section = cross_section(element.size)
+        b.add(Leader(
+            anchor=NamedPoint(xy=_in((cx, cy)), name=solid.tag),
+            at=_in((cx, cy)), to=_in((cx, cy - _LEADER_DROP_M)),
+            text=f"GB — {solid.tag} {inches_text(section.width_m / M_PER_IN)} × "
+                 f"{inches_text(section.depth_m / M_PER_IN)} CONC. GRADE BEAM, T.O.B. EL. "
+                 f"{elevation_feet(solid.z1_m)}",
+            layer="S-BEAM",
+        ))
 
 
 def _emit_step_callouts(b: SceneBuilder, model: ResolvedModel) -> None:

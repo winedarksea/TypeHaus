@@ -414,7 +414,7 @@ def test_the_grade_beam_holds_its_section_and_carries_the_court_floor(
 
     The 17 1/2" is the assertion that matters: it is the section §8 of the note grades.
     """
-    beam = next(w for w in catlin_model.walls if w.tag == "W-SG-ARCH")
+    beam = next(s for s in catlin_model.solids if s.tag == "W-SG-ARCH")
     court = next(s for s in catlin_model.solids if s.tag == "SL-SG-FLOOR")
     footing = next(s for s in catlin_model.solids if s.tag == "FT-SG-W2")
 
@@ -443,7 +443,7 @@ def test_the_front_columns_bell_does_not_reach_the_beam(catlin_model) -> None:
     the strut's slenderness in §7 is computed on the full 20'-0" because of it.
     """
     bell = next(s for s in catlin_model.solids if s.tag == "PD-SG-FCOL")
-    beam = next(w for w in catlin_model.walls if w.tag == "W-SG-ARCH")
+    beam = next(s for s in catlin_model.solids if s.tag == "W-SG-ARCH")
     # 9", and back to 9" the long way round. It was 9" while the bell bore 42" under a flush
     # court; 16.25" while the bell followed the court's 7 1/4" flood step down and the beam
     # did not; and 9" again now that the court is flush and the pour is derived from the
@@ -492,8 +492,8 @@ def test_opening_the_loop_is_incomplete_not_ok(tmp_path) -> None:
     OK, the field would be a switch that turns the calculation off.
     """
     plan = _mutated(tmp_path, [(
-        '    FoundationWall(uid="SGW102AAAA", tag="W-SG-ARCH", start_node="N-SG-MW",',
-        '    FoundationWall(uid="SGW102AAAA", tag="W-SG-ARCH-GONE", start_node="N-SG-MW",')])
+        'Beam(uid="SGW102AAAA", tag="W-SG-ARCH",',
+        'Beam(uid="SGW102AAAA", tag="W-SG-ARCH-GONE",')])
     record = _court(plan)
     assert record.status is Status.INCOMPLETE, record.summary
     assert any("W-SG-ARCH" in m for m in record.missing)
@@ -534,10 +534,8 @@ def test_a_ref_that_names_a_wall_off_the_loop_is_incomplete(tmp_path) -> None:
 def test_a_cross_member_with_no_concrete_is_incomplete(tmp_path) -> None:
     """The loop has to be CAST. A framed cross-member cannot deliver the strut force."""
     plan = _mutated(tmp_path, [(
-        '''                   end_node="N-SG-ME", assembly="SUNKEN_GARDEN_GRADE_BEAM_12",
-                   top_elevation=_grade_beam_top, bottom_elevation=_grade_beam_bottom,''',
-        '''                   end_node="N-SG-ME", assembly="EXT_2X6",
-                   top_elevation=_grade_beam_top, bottom_elevation=_grade_beam_bottom,''')])
+        'assembly="SUNKEN_GARDEN_GRADE_BEAM_12",\n         top_elevation=_grade_beam_top)',
+        'assembly="EXT_2X6",\n         top_elevation=_grade_beam_top)')])
     record = _court(plan)
     assert record.status is Status.INCOMPLETE, record.summary
     assert any("concrete" in m for m in record.missing)

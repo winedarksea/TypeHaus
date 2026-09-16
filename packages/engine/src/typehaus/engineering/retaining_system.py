@@ -236,12 +236,48 @@ def _cycle_components(edges: list[tuple[str, str, str]]) -> dict[str, int]:
 
 
 
+def _cast_beams(ctx: EngineeringContext) -> list:
+    from typehaus.resolve.assembly_material import is_cast_beam
+
+    return [e for e in ctx.plan.all_elements() if is_cast_beam(ctx.plan, e)]
+
+
+def _cross_axis(ctx: EngineeringContext, cross
+                ) -> tuple[tuple[float, float], tuple[float, float]] | None:
+    """The cross-member's plan axis, metres: a wall's resolved axis, or a cast beam's
+    centreline read off its resolved solid."""
+    resolved = next((w for w in ctx.model.walls if w.tag == cross.tag), None)
+    if resolved is not None:
+        return resolved.axis
+    solid = next((s for s in ctx.model.solids
+                  if s.tag == cross.tag and s.category == "beam"), None)
+    if solid is None or len(solid.outline) != 4:
+        return None
+    a, b, c, d = solid.outline
+    return (((a[0] + d[0]) / 2, (a[1] + d[1]) / 2), ((b[0] + c[0]) / 2, (b[1] + c[1]) / 2))
+
+
+def _cross_section_in(ctx: EngineeringContext, cross) -> tuple[float, float]:
+    """``(thickness, height)`` of the cross-member, inches; zero where unstated."""
+    from typehaus.model.structure import Beam
+    from typehaus.resolve.framing.profiles import cross_section
+
+    if isinstance(cross, Beam):
+        cs = cross_section(cross.size)
+        return cs.width_m / _M_PER_FT * 12.0, cs.depth_m / _M_PER_FT * 12.0
+    thickness_in = _structure_thickness_in(ctx, cross.assembly) or 0.0
+    height_in = 0.0
+    if cross.top_elevation is not None and cross.bottom_elevation is not None:
+        height_in = cross.top_elevation.inches - cross.bottom_elevation.inches
+    return thickness_in, height_in
+
+
 def _cross_span(ctx: EngineeringContext, cross) -> float:
     """The cross-member's own clear span, in feet — what its slenderness is measured on."""
-    resolved = next((w for w in ctx.model.walls if w.tag == cross.tag), None)
-    if resolved is None:
+    axis = _cross_axis(ctx, cross)
+    if axis is None:
         return 0.0
-    (x0, y0), (x1, y1) = resolved.axis
+    (x0, y0), (x1, y1) = axis
     return ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5 / _M_PER_FT
 
 
@@ -254,15 +290,16 @@ def _verify(ctx: EngineeringContext, ref: str, members: list) -> list[str]:
     """
     from typehaus.model.enums import LayerFunction
     from typehaus.model.structure import FoundationWall
+    from typehaus.resolve.assembly_material import is_cast_beam
 
     missing: list[str] = []
     cross = ctx.plan.by_tag(ref)
-    if not isinstance(cross, FoundationWall):
-        return [f"a FoundationWall tagged {ref} — {len(members)} wall(s) name it as the "
-                f"element restraining their base and the model has no such wall"]
+    if not (isinstance(cross, FoundationWall) or is_cast_beam(ctx.plan, cross)):
+        return [f"a FoundationWall or concrete Beam tagged {ref} — {len(members)} wall(s) name "
+                f"it as the element restraining their base and the model has no such member"]
 
-    walls = _foundation_walls(ctx)
-    edges = [(w.tag, w.start_node, w.end_node) for w in walls
+    edges = [(w.tag, w.start_node, w.end_node) for w in [*_foundation_walls(ctx),
+                                                          *_cast_beams(ctx)]
              if w.start_node and w.end_node and w.start_node != w.end_node]
     components = _cycle_components(edges)
 
@@ -366,10 +403,10 @@ STRUT_PROP_SHARE = (0.375, 0.500)
 
 def _strut_axis(ctx: EngineeringContext, cross) -> tuple[float, float] | None:
     """The cross-member's unit vector in plan, or ``None`` where it does not resolve."""
-    resolved = next((w for w in ctx.model.walls if w.tag == cross.tag), None)
+    resolved = _cross_axis(ctx, cross)
     if resolved is None:
         return None
-    (x0, y0), (x1, y1) = resolved.axis
+    (x0, y0), (x1, y1) = resolved
     dx, dy = x1 - x0, y1 - y0
     length = (dx * dx + dy * dy) ** 0.5
     if not length:
@@ -498,10 +535,7 @@ def _strut(ctx: EngineeringContext, cross, members: list[_Member],
     and it is applied rather than argued away because a claim about bracing is exactly the
     kind of claim this module exists to refuse.
     """
-    thickness_in = _structure_thickness_in(ctx, cross.assembly) or 0.0
-    height_in = 0.0
-    if cross.top_elevation is not None and cross.bottom_elevation is not None:
-        height_in = cross.top_elevation.inches - cross.bottom_elevation.inches
+    thickness_in, height_in = _cross_section_in(ctx, cross)
     area_in2 = thickness_in * height_in
 
     axis = _strut_axis(ctx, cross)
@@ -618,12 +652,8 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
             Quantity(f"friction_{member.tag}", member.friction, "", 0.01),
         )
     ) + (
-        Quantity("cross_thickness",
-                 _structure_thickness_in(ctx, cross.assembly) or 0.0, "in", 0.5),
-        Quantity("cross_height",
-                 (cross.top_elevation.inches - cross.bottom_elevation.inches)
-                 if cross.top_elevation is not None and cross.bottom_elevation is not None
-                 else 0.0, "in", 0.01),
+        Quantity("cross_thickness", _cross_section_in(ctx, cross)[0], "in", 0.5),
+        Quantity("cross_height", _cross_section_in(ctx, cross)[1], "in", 0.01),
     )
     notes = (
         f"ONE free body, not {len(members)}: the members are cast into a closed loop through "

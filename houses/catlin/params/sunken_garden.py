@@ -946,81 +946,17 @@ WALLS = [
     # (2026-09-13). ** SUNKEN_GARDEN_WALL carries a white mineral silicate wash at layer 0 and
     # layer 0 must land on the COURT face, so the component's winding is no longer latent.
     #
-    # ** AND THE CLAIM THAT USED TO STAND HERE WAS STALE. ** It said retiring the arched
-    # cross-wall broke this component's only closed loop, leaving one open chain
-    # NW→MW→SW→SE→ME→NE whose signed area is zero, so ``resolve_storey_windings`` returned
-    # ``UNRECOVERABLE_WINDING_OUTWARD_SIGN`` (+1) instead of the -1 it used to. It does not:
-    # ``W-SG-ARCH`` below is a LIVE FoundationWall on the N-SG-MW → N-SG-ME pair, so the graph
-    # still contains the closed walk ME→SE→SW→MW→ME, ``_closed_walks`` finds it, and
-    # ``resolve_storey_windings(plan, "court-low")`` resolves the ``N-SG-ME`` component to
-    # **-1.0**. (Walks from the other nodes escape up the dangling W1/E1 legs and never close,
-    # which is presumably how the stale reading arose. Note the storey is ``court-low``, not
-    # ``basement``.) With sign -1, layer 0 lands on the +normal side, and that is the court face
-    # for all five walls — W1, E1, W2, E2 and S — which is what "both side walls wind the same
-    # way" buys.
-    #
-    # ** RE-RUN THAT DIAGNOSTIC BEFORE MOVING ANY NODE IN THIS COMPONENT, AND DO NOT DELETE
-    # W-SG-ARCH WITHOUT IT. ** Losing the MW–ME leg really would drop the sign to +1 and put
-    # the wash on the outboard, buried face of all five walls — silently, at 0 FAIL, because no
-    # check grades a FINISH layer's side. See RETAINING_BLOCK_12_WASHED in plan/assemblies.py
-    # for the sibling case where the sign genuinely is unrecoverable and the geometry happens
-    # to work out anyway.
+    # The court's winding (-1, `court-low`) comes from the closed walk ME→SE→SW→MW→ME, whose
+    # MW–ME leg is the cast grade beam W-SG-ARCH (GRADE_BEAMS below): `resolve/orientation`
+    # counts a concrete Beam between wall nodes as a loop edge. Delete or move that beam and
+    # the sign falls to +1, putting the wash on the buried face of all five walls at 0 FAIL.
+    # `test_masonry_finish::test_court_wash_faces_the_court` pins it.
     FoundationWall(uid="SGW104AAAA", tag="W-SG-E1", start_node="N-SG-ME",
                    end_node="N-SG-NE", assembly="SUNKEN_GARDEN_WALL", alignment=_WASH_AXIS_SHIFT,
                    top_elevation=_porch_top, bottom_elevation=_wall_bottom,
                    lateral_support="top_and_bottom",
                    vertical_reinforcement='#6 @ 38" o.c.',
                    reinforcement=_BRACED_STEM_STEEL),
-    # ============================================================================
-    # W-SG-ARCH IS A BURIED GRADE BEAM — NOT AN ARCH.
-    # ============================================================================
-    # A strut on the MW-ME node pair, 12" x 17 1/2", entirely below the garden floor,
-    # invisible, doing one job: closing the loop that makes W-SG-W2 and W-SG-E2 face each
-    # other instead of standing as two free cantilevers. It reuses a retired uid, which is
-    # exactly what the `_WALL_FOOTING_UID` literal-map pattern below was built for.
-    #
-    # **Why a beam and not the garden slab.** A slab strut is cheaper and does not work:
-    # the walls would stand as free cantilevers at FS 0.73 until the floor cures, and
-    # BACKFILL IS WHAT LOADS THEM. Table R404.1.2(8) footnote g says the same thing about
-    # its own walls — "laterally supported at the top and bottom BEFORE backfilling". This
-    # beam is cast with the walls, so the loop is closed before any soil goes in. It also
-    # needs no control joints, closes no shrinkage gap, does not bear on the compressible
-    # FPSF wing foam, and leaves the SL-SG-FLOOR rim free to be saw-cut for ever.
-    #
-    # **No Footing under it, deliberately.** It carries its own weight (219 plf) over 12" of
-    # bearing — 219 psf against 3,000 allowable — so a strip footing would be concrete spent
-    # on nothing. `FootingBedding.host_ref` takes a FoundationWall directly (the five
-    # `W-RG-*` beds are the precedent), and `structural.frost_depth` iterates footing and pad
-    # SOLIDS, so a `FT-SG-ARCH` would land inside the excavation and reopen the frost
-    # question ASCE 32 soil replacement closes. FB-SG-ARCH below carries the same 42"
-    # undercut, the same NFS claim and the same tile to DRW-SG-MAIN.
-    #
-    # **The underside sits at -10'-10 7/16", 9" PROUD BELOW the retaining footings'** — their
-    # underside is -10'-1 7/16" (`_wall_bottom` less the 12" strip). This paragraph read
-    # "flush with the retaining footings'" until 2026-09-14, and it had been stale since
-    # `_grade_beam_bottom` was decoupled from `_wall_bottom` on 2026-09-05: see that
-    # constant, which states the 9" and says `test_retaining_court` asserts it. Flush is the
-    # thing that was given up to keep the section at 12" x 17 1/2", and a comment claiming
-    # the giveaway never happened is exactly the sentence a later reader "restores".
-    # Its TOP is the rim slab's underside,
-    # so the court floor bears on it and nothing of it shows. See `_grade_beam_top` for why
-    # the top does not move: at 10 1/4" the strut is d/c 0.66 and PASSES since the flush
-    # tops, so what holds the section is sequencing and margin, not the strength ratio.
-    #
-    # `unbalanced_fill=inch(0)` is authored and is not a formality: without it
-    # `_unbalanced_fill_ft`'s grade-plane proxy invents a retained height for a wall buried
-    # inside the excavation, and this beam retains nothing — the court is on one side of it
-    # and the porch box on the other, both at the same level.
-    # ** ASSEMBLY IS SUNKEN_GARDEN_GRADE_BEAM_12, NOT SUNKEN_GARDEN_WALL, SINCE 2026-09-13. **
-    # Same 12" pour, same EXPOSED_MIX, same ticket, same $/cy — and no white mineral silicate
-    # wash, because of what the paragraph above says: the court floor bears on this beam's top and
-    # nothing of it shows. Sharing the court walls' assembly would bill 3.6 SF of paint on a face
-    # under the slab. See plan/assemblies.py.
-    FoundationWall(uid="SGW102AAAA", tag="W-SG-ARCH", start_node="N-SG-MW",
-                   end_node="N-SG-ME", assembly="SUNKEN_GARDEN_GRADE_BEAM_12",
-                   top_elevation=_grade_beam_top, bottom_elevation=_grade_beam_bottom,
-                   unbalanced_fill=inch(0),
-                   lateral_support="top_and_bottom"),
     # ============================================================================
     # W-SG-BRKBM — the SECOND buried grade beam, and the whole answer to the veneer's
     # thermal bridge.
@@ -1132,7 +1068,7 @@ WALLS = [
     # CONCLUSION and not its arithmetic.
     #
     # `base_restraint_ref` is authored and never derived, and naming it GRANTS nothing:
-    # `retaining_system._verify` goes and checks that W-SG-ARCH is a real FoundationWall, on
+    # `retaining_system._verify` goes and checks that W-SG-ARCH is a real cast member, on
     # a real cycle of the wall graph, on the SAME cycle as this wall, cast in concrete, and
     # with a section that carries the strut force. Break any one and the record is
     # INCOMPLETE, never PASS.
@@ -1172,6 +1108,25 @@ WALLS = [
                    vertical_reinforcement=_RET_REBAR,
                    reinforcement=_RET_STEM_STEEL,
                    lateral_support="base", base_restraint_ref="W-SG-ARCH"),
+]
+
+# W-SG-ARCH: a BURIED GRADE BEAM (strut), not a wall and not an arch. 12" x 17 1/2" on the
+# MW–ME pair, wholly below the garden floor, closing the loop so W-SG-W2/E2's thrusts cancel
+# through it (`engineering/retaining_system.py`, `notes/sunken_garden_court_free_body.md`
+# §8). It is a `Beam` so plans draw it as a hidden grade beam rather than a cut wall; the
+# uid and tag are the wall's, so `retaining_system/W-SG-ARCH` and its GlobalId survive.
+#
+# - Cast WITH the walls, so the loop closes before backfill loads them. A slab strut would
+#   leave them free cantilevers at FS 0.73 until the floor cured.
+# - No Footing: 219 plf on its own 12" of bearing. FB-SG-ARCH beds it directly.
+# - Section is held, not derived: see `_grade_beam_top` / `_grade_beam_bottom`. The size
+#   string keeps a decimal point so `cross_section` reads it as actual dimensions.
+# - SUNKEN_GARDEN_GRADE_BEAM_12 carries no wash: nothing of it shows.
+_GRADE_BEAM_DEPTH_IN = _grade_beam_top.inches - _grade_beam_bottom.inches
+GRADE_BEAMS = [
+    Beam(uid="SGW102AAAA", tag="W-SG-ARCH", start_node="N-SG-MW", end_node="N-SG-ME",
+         size=f"12.0x{_GRADE_BEAM_DEPTH_IN:g}", assembly="SUNKEN_GARDEN_GRADE_BEAM_12",
+         top_elevation=_grade_beam_top),
 ]
 
 # --- public geometry for structures that build on this one ------------------------------
@@ -4406,7 +4361,7 @@ SEQUENCE_NOTES = [
         text="MILESTONE, HARD: the court's LAST placement (3) is before 1 NOVEMBER. Cold-weather protection is priced at zero on a summer-pour assumption and is worth $8,000-21,000 if it slips — heated enclosure, blankets, admixture and extended cure over a 9ft hole with no drainage, which is the expensive end of that range. This placement sits at the end of the longest dependency chain of any concrete in the house: house basement wall poured, cured and surveyed, then the footing trim at FT-B-S2/S3 signed off, then placements (1) and (2), then this. Pulling the six columns forward into (3) rather than leaving them to a fourth pour behind the porch carpentry is as much a schedule hedge as a saving"),
 ]
 
-BASEMENT_ELEMENTS = [*NODES, *WALLS, COLUMN, FRONT_COLUMN, *FOOTINGS,
+BASEMENT_ELEMENTS = [*NODES, *WALLS, *GRADE_BEAMS, COLUMN, FRONT_COLUMN, *FOOTINGS,
                      *FOOTING_BEDDING, GARDEN_DRYWELL, GARDEN_UNDERDRAIN, GARDEN_OVERFLOW,
                      GARDEN_OVERFLOW_SLEEVE, GARDEN_OVERFLOW_BEAM_PIPE,
                      GARDEN_LEAD_W, GARDEN_LEAD_E, GARDEN_LEAD_COL, *SEQUENCE_NOTES,

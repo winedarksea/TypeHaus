@@ -55,3 +55,13 @@ def solid_material_ref(plan, solid) -> str:
         if not size.strip().endswith("round"):
             return "spf"
     return "concrete"
+
+
+def is_cast_beam(plan, element) -> bool:
+    """A ``Beam`` poured in concrete — a grade beam or strut, not framing.
+
+    Read off the assembly's STRUCTURE material, the same reduction that makes a sonotube
+    ``Post`` a pour, so every consumer agrees on which beams are cast."""
+    return (getattr(element, "element_kind", None) == "Beam"
+            and assembly_structure_material(plan, getattr(element, "assembly", None))
+            == "concrete")

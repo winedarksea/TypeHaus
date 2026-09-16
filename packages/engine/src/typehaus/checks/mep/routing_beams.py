@@ -28,14 +28,19 @@ _TOLERANCE_M = 0.125 * M_PER_IN
 
 
 def _beams(ctx: CheckContext) -> list[tuple[str, object, float, float]]:
-    """``(tag, plan polygon, z0, z1)`` for every beam solid and beam framed member."""
+    """``(tag, plan polygon, z0, z1)`` for every beam solid and beam framed member.
+
+    A cast beam is left out: a run through concrete is a sleeve question, graded by
+    ``mep.sleeve_coverage`` against ``concrete_crossings``."""
     from shapely.geometry import MultiPoint, Polygon
 
+    from typehaus.resolve.assembly_material import is_cast_beam
     from typehaus.resolve.geometry_members import member_box
 
     out = []
     for solid in ctx.model.solids:
-        if solid.category == "beam" and len(solid.outline) >= 3:
+        if (solid.category == "beam" and len(solid.outline) >= 3
+                and not is_cast_beam(ctx.plan, ctx.plan.by_tag(solid.tag))):
             out.append((solid.tag, Polygon(solid.outline), solid.z0_m, solid.z1_m))
     for member in ctx.model.all_members():
         if member.category not in _BEAM_MEMBER_CATEGORIES:

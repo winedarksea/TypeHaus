@@ -27,6 +27,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+from typehaus.emit.draw.datum import model_at_level
 from typehaus.emit.draw.floorplan import build_floorplan
 from typehaus.emit.draw.paper import suffix_for_size
 from typehaus.emit.draw.pdf_writer import Underlay, write_raster
@@ -102,7 +103,9 @@ def render_plan(model: ResolvedModel, storey: str, path: Path, dpi: int | None =
                 underlays=(), paper=None, scale: str | None = None,
                 long_edge: int | None = None) -> Path:
     dpi, long_edge = resolve_size(dpi, long_edge)
-    scene = build_floorplan(model, storey)
+    # A plan is a level, not a storey: the garage, entry and porch draw with ``main``, as
+    # they do on A-1xx and in the UI (-> ``emit/draw/datum``).
+    scene = build_floorplan(model_at_level(model, storey), storey)
     return _write_view(model, scene, path,
                        _SheetId("PLAN", f"{storey.title()} floor plan",
                                 f"plan · {storey}", north_arrow=True),
@@ -219,18 +222,18 @@ def render_views(
                 for path in render_views(model, out_dir, one, fmt, underlays, call_dpi,
                                          paper, scale, long_edge)]
     written: list[Path] = []
-    storeys = [s.tag for s in sorted(model.plan.storeys, key=lambda x: x.elevation.meters)]
+    levels = [(primary.tag, {s.tag for s in here}) for primary, here in model.plan.levels()]
     # A composed sheet gets its paper in the filename, exactly as ``haus print`` does. The
     # frameless review raster and a 24x36 plot of the same storey are different artifacts
     # and must not be the same file — the last command run would silently win.
     sfx = suffix_for_size(paper)
     if view == "plan":
-        for storey in storeys:
-            if not any(w.storey == storey for w in model.walls):
+        for storey, here in levels:
+            if not any(w.storey in here for w in model.walls):
                 continue
             written.append(render_plan(
                 model, storey, out_dir / f"plan_{storey}{sfx}.{fmt}", dpi=call_dpi,
-                underlays=[u for u in underlays if u.storey == storey],
+                underlays=[u for u in underlays if u.storey in here],
                 paper=paper, scale=scale, long_edge=long_edge))
     elif view == "3d":
         # 3D is the offscreen glTF artifact (#51): emit a self-contained .glb the UI panel
