@@ -1199,73 +1199,37 @@ H25AZ_HURRICANE_TIE = StructuralHardware(
                   "footnote 5 states the uplift already carries the wind increase"),
     ),
 )
-H10A_GABLE_END_TIE = StructuralHardware(
-    tag="simpson-h10a-gable-end-tie",
-    name="H10A gable-end wall tie",
+LS30_GABLE_END_TIE = StructuralHardware(
+    tag="simpson-ls30-gable-end-tie",
+    name="LS30 skewable angle, gable-end stud to rafter",
     role=ROLE_GABLE_END_TIE,
     manufacturer=_SIMPSON,
-    model="H10A",
+    model="LS30",
     exposure=EXPOSURE_DRY,
-    source="Simpson Strong-Tie H10A tie, ICC-ES ESR-2613 Table 1 (Hurricane Ties), H10A "
-           "row, reissued June 2026, read 2026-09-14. **A prescriptive read, not a design:** "
-           "the reviewer opens the report, finds the row, and the part\'s capacity is "
-           "closed. What the row does NOT decide is how many, which is this house\'s own "
-           "spacing rule (``GableEndTieRules``) and is recorded as such rather than dressed "
-           "up as engineering.\n\n"
-           "**Why this part and not an LGT or an HGT.** ESR-2613 carries no LGT at all, and "
-           "its HGT is a *girder tiedown bracket* (§3.1.8, Table 8) — a U-shaped bracket "
-           "carrying a girder truss down to a threaded rod, not a gable-wall tie. A part "
-           "picked for its name would have been the wrong part with a real report number "
-           "stapled to it. The H10A is in the same table as the H2.5A this house already "
-           "buys, at roughly twice its numbers in every direction, and the 9-nail pattern "
-           "each side is what carries the gable wall\'s out-of-plane reaction into the roof.",
-    # ESR-2613 Table 1, H10A row: 9-0.148" x 1-1/2" to the rafter and 9 more to the plates.
-    #
-    # **F2 is the column that matters here and it is the small one.** A gable-end tie is not
-    # resisting uplift on a rafter that bears on the plate — no rafter bears on a gable end.
-    # It is resisting the wall\'s OUT-OF-PLANE reaction, which is lateral, and 285 lbf is
-    # what the report publishes for it against 1,040 lbf of uplift. A check that compared a
-    # gable-wall reaction against "the H10A\'s 1,040 lb capacity" would pass a joint nearly
-    # four times overloaded. Footnote 2 goes further and requires a unity equation across
-    # all three directions when a joint sees more than one at once.
-    #
-    # **Published for SG 0.50 lumber and this house frames SPF at SG 0.42** — §3.2.2 requires
-    # an assigned minimum specific gravity of 0.50 for every connector in the report except
-    # the SPH (Table 5) and the SSP/DSP (Table 7, which does publish an 0.43 column).
-    #
-    # ** 1,040 -> 1,015 ON 2026-09-14, FOR THE REASON THE H2.5A MOVED. ** The sentence that
-    # stood here — "there is no SPF column for the hurricane ties, so there is no honest SPF
-    # number to record" — was right about the REPORT and wrong about Simpson. The catalog
-    # splits the H/TSP table by species and publishes **1,015 lbf** for this tie in SPF/HF.
-    # A gable end is framed in the same SPF as the rest of this house, so that is the column.
-    #
-    # **It barely moves, and the reason is worth knowing when choosing an upgrade.** The
-    # H2.5A loses 12% going from DF/SP to SPF (700 -> 615); the H10A loses 2% (1,040 ->
-    # 1,015), because its capacity is governed by the steel rather than by nail withdrawal
-    # from the plate. In SPF the H10A is therefore a far better buy per pound of capacity
-    # than its DF/SP ratio suggests — the efficient upgrade from an H2.5A here is one H10A,
-    # not a pair of H2.5As (and a PAIR is not a published row at all: it is licensed by
-    # footnote 1 / catalog note 2 and requires a 2-1/2" minimum rafter thickness, which a
-    # single 2x cannot give).
+    source="Simpson Strong-Tie LS30 skewable angle, 18 ga, 3-3/8 in long, 2-1/4 in legs, "
+           "field-bent 0-135 degrees (once). One leg on the 5-1/2 in face of a gable-end "
+           "stud, the other bent to the bottom flange of the rafter above (a TJI 230 at the "
+           "house, the gable-end truss chord at the garage). **The joint is lateral, not "
+           "uplift:** no rafter bears on a non-bearing gable wall, and what the tie carries "
+           "is the wall's out-of-plane reaction into the roof. Replaced the H10A on "
+           "2026-09-16 (owner): that row assumes a sawn 2x rafter (ESR-2613 Table 1 fn.1) "
+           "and its rafter-leg nails do not fit a 1-1/2 in I-joist flange; the H6 was "
+           "rejected because ESR-2613 publishes it for uplift only (F1/F2 blank).",
+    # C-C-2019 p.284 publishes the LS in F1 ONLY — no F2, no uplift — and draws F1 for a
+    # member crossing its support, loaded along itself. This joint loads the angle across
+    # the wall; the owner's detail, not a table read. Unverified: Weyerhaeuser's rules for
+    # nailing up into a TJI flange (1-1/2 in nails, so they stay inside it).
     allowable=AllowableLoads(
-        uplift_lb=1015.0,
-        lateral_f1_lb=565.0,
-        lateral_f2_lb=285.0,
+        lateral_f1_lb=275.0,
         load_duration_factor=1.6,
-        species="SPF / HF (assigned SG 0.42 / 0.43) — the column this house is framed in. "
-                "The same tie carries 1,040 lbf in DF-L (SG 0.50), which is the only figure "
-                "ESR-2613 §3.2.2 publishes; the SPF/HF column is the catalog's",
-        fasteners="9 - 0.148 in x 1-1/2 in to the rafter and 9 - 0.148 in x 1-1/2 in to the "
-                  "plates; footnote 4 requires both connectors in one area on the SAME side "
-                  "of the wall for the tabulated uplift and a continuous load path",
-        citation=(_C_C_H_TIES + ". The SPF/HF uplift is 1,015 lbf; the DF/SP half of the "
-                  "same row reads 1,040 and reproduces ICC-ES ESR-2613 (Simpson hurricane "
-                  "ties) Table 1, H10A row, reissued June 2026, read 2026-09-14. There "
-                  "footnote 2 requires a unity check across "
-                  "uplift + both lateral directions for simultaneous loading, footnote 5 "
-                  "states the uplift is already increased for wind with no further increase "
-                  "allowed, and footnote 6 forbids using the F1 value to replace diaphragm "
-                  "boundary nailing or the solid blocking code requires at a rafter end"),
+        species="SPF / HF — the column this house is framed in (DF/SP reads 320 lbf)",
+        fasteners="6 - 0.148 in x 1-1/2 in, three per leg. The 3 in nail row (340 lbf SPF) "
+                  "is not used: it would pass through a 1-1/2 in flange",
+        citation=("Simpson Strong-Tie Wood Construction Connectors C-C-2019 p.284, "
+                  "\"L/LS/GA Reinforcing and Skewable Angles\", LS30 row, SPF/HF "
+                  "Wind/Seismic (160) column, read 2026-09-16. Installation note: the joist "
+                  "must be constrained against rotation when a single LS is used per "
+                  "connection"),
     ),
 )
 
@@ -1811,7 +1775,7 @@ STRUCTURAL_HARDWARE: tuple = (
     SILL_ANCHOR_BOLT,
     H25A_HURRICANE_TIE,
     H25AZ_HURRICANE_TIE,
-    H10A_GABLE_END_TIE,
+    LS30_GABLE_END_TIE,
     HGAM10_MASONRY_GUSSET,
     S5_SEAM_CLAMP,
     S5_S_SNAP_LOCK_CLAMP,

@@ -75,7 +75,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | ABU66SS standoff post base (6x6), 316L stainless | 4 | ea |  | building |
 | CCQ46SDS2.5 column cap (4x beam on 6x6 post) | 4 | ea |  | building |
 | CS16 coiled strap, 16 ga | 2 | ea |  | building |
-| H10A gable-end wall tie | 36 | ea |  | building |
 | H2.5A hurricane/seismic tie | 202 | ea |  | building |
 | H2.5A hurricane/seismic tie | 28 | ea |  | building |
 | H2.5A hurricane/seismic tie | 38 | ea |  | building |
@@ -90,6 +89,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HUC concealed-flange masonry/concrete hanger | 2 | ea |  | building |
 | HUC212-3 concealed-flange hanger, triple 2x12 | 4 | ea |  | building |
 | KBS1Z knee-brace / beam strap (ZMAX) | 2 | ea |  | building |
+| LS30 skewable angle, gable-end stud to rafter | 36 | ea |  | building |
 | LSSR field-adjustable slope/skew hanger | 1 | ea |  | building |
 | LSSR field-adjustable slope/skew hanger | 38 | ea |  | building |
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 19 | ea |  | building |
@@ -231,7 +231,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | ABU66SS standoff post base (6x6), 316L stainless | — |
 | CCQ46SDS2.5 column cap (4x beam on 6x6 post) | — |
 | CS16 coiled strap, 16 ga | — |
-| H10A gable-end wall tie | — |
 | H2.5A hurricane/seismic tie | — |
 | H2.5A hurricane/seismic tie | — |
 | H2.5A hurricane/seismic tie | — |
@@ -246,6 +245,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HUC concealed-flange masonry/concrete hanger | — |
 | HUC212-3 concealed-flange hanger, triple 2x12 | — |
 | KBS1Z knee-brace / beam strap (ZMAX) | — |
+| LS30 skewable angle, gable-end stud to rafter | — |
 | LSSR field-adjustable slope/skew hanger | — |
 | LSSR field-adjustable slope/skew hanger | — |
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | — |

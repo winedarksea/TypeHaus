@@ -835,11 +835,9 @@
 # house's six attic segments (W-A-S1/S2/S3, W-A-N1/N2/N2B, where the wall climbs to the
 # ridge). All derived; see `joints/gable.py` for how a gable end is told from an eave wall.
 #
-# An H10A is about twice an H2.5A in steel and in every published direction, and it prices
-# like it: the big-box and supply-house spread on an H10A sits around $2.00-$4.00 each in
-# small quantities. Same shape of band as the H2.5A row above, scaled — this is a commodity
-# price band, not a quote.
-"H10A" = { low = 2.0, high = 4.25 }  # 36 ea — all derived, gable-end top plates
+# LS30 skewable angles since 2026-09-16 (were H10A): stud to rafter flange, a lateral joint
+# rather than uplift. Commodity list band, not a quote.
+"LS30" = { low = 1.25, high = 3.0 }  # 36 ea — all derived, gable-end walls
 # ** THE SAME TIE IN ZMAX (G185), AND THE COATING IS THE WHOLE ROW. ** Twenty-eight derived
 # bearing joints land on preservative-treated wood: BM-SG-BLC (treated SYP glulam) x8,
 # BM-SG-FRW/FRE (3-ply KDAT 2x12) x16, BM-BW-GARAGE-SEAT (KDAT) x4. IRC R317.3.1 requires a

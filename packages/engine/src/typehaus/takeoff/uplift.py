@@ -194,13 +194,13 @@ def lateral_tie_plate_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
 
 
 def gable_end_tie_rows(model: ResolvedModel, rules: GableEndTieRules) -> list:
-    """H10As along every gable-end wall's top plate.
+    """LS30 angles along every gable-end wall, stud to rafter.
 
     The leg that had nothing. ``bearing_connections`` cannot see a gable end because no
     rafter bears on one, so the wall that takes the largest out-of-plane wind pressure in the
     house was the only link in the chain with no hardware against it.
 
-    Grouped into ONE row rather than per wall: a framer buys a box of H10A, and the walls
+    Grouped into ONE row rather than per wall: a framer buys a box of LS30, and the walls
     belong in the basis where they can be audited. See ``joints/gable.py`` for how a gable end
     is told from an eave wall and from an interior partition that happens to run the same way.
     """

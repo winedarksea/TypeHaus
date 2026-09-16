@@ -193,8 +193,10 @@ def test_the_species_the_numbers_belong_to_is_recorded_wherever_it_matters():
     """
     assert "SPF / HF" in allowable_for_model("H2.5A").species
     assert allowable_for_model("H2.5A").uplift_lb == 615.0
-    assert "SPF / HF" in allowable_for_model("H10A").species
-    assert allowable_for_model("H10A").uplift_lb == 1015.0
+    # The gable-end tie is an LS30 since 2026-09-16: F1 only, SPF column.
+    assert "SPF / HF" in allowable_for_model("LS30").species
+    assert allowable_for_model("LS30").lateral_f1_lb == 275.0
+    assert allowable_for_model("LS30").uplift_lb is None
     # The two that legitimately stay in the DF/SP column, and say why in the same field.
     for model in ("H2.5AZ", "H2.5ASS"):
         species = allowable_for_model(model).species

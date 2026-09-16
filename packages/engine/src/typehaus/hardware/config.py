@@ -239,8 +239,8 @@ class GableEndTieRules:
 
     A *schedule*, not a design: this says how many ties and where, at a spacing this house
     chose. It reads no wind field and compares nothing against the part's allowable — that
-    is ``checks/structural`` work, and the H10A's governing number for this joint is its
-    285 lbf F2, not its 1,040 lbf uplift (see ``library/hardware.H10A_GABLE_END_TIE``).
+    is ``checks/structural`` work. The joint is lateral, not uplift, which is why the part is
+    an LS30 angle (see ``library/hardware.LS30_GABLE_END_TIE``).
     """
 
     #: Along the gable wall's top plate. 48 in is the house's own module and matches the
