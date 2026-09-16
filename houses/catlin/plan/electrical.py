@@ -1530,7 +1530,7 @@ CONDUIT_TRUNKS = [
     # passed only because the buffer includes the boundary.
     #
     # It was FOUND because SUNKEN_GARDEN_WALL took a 1/8" mineral silicate wash at layer 0
-    # (2026-09-13): before `_WASH_AXIS_SHIFT` was authored on those walls the stack re-centred and
+    # (2026-09-13): before the court axis shift was authored on those walls the stack re-centred and
     # the pour's court face slid 1/16" west, and this sleeve dropped out of its own host with a
     # FAIL. The pour does NOT move any more — the alignment holds it on 90"..102" and the wash
     # oversails into the court — so the tangency would work again. ** THE LEG STAYS AT 8'-5 7/8"

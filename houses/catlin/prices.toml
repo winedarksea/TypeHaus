@@ -843,8 +843,8 @@
 # rather than uplift. Commodity list band, not a quote.
 "LS30" = { low = 1.25, high = 3.0 }  # 22 ea — all derived, attic gable-end walls
 # The garage's two gable ends take no LS30 since 2026-09-16: the gable-end truss carries the
-# gable's lateral load in its design, and one HGA10 holds each truss down on W-G-S/N's plate.
-"HGA10" = { low = 4.0, high = 8.0 }  # 2 ea — derived, one per gable-end truss
+# gable's lateral load in its design; one LTP4 ties each truss to W-G-S/N's plate (billed
+# under "LTP4" below, was an HGA10) and the H2.5A at each heel takes uplift.
 # ** THE SAME TIE IN ZMAX (G185), AND THE COATING IS THE WHOLE ROW. ** Twenty-eight derived
 # bearing joints land on preservative-treated wood: BM-SG-BLC (treated SYP glulam) x8,
 # BM-SG-FRW/FRE (3-ply KDAT 2x12) x16, BM-BW-GARAGE-SEAT (KDAT) x4. IRC R317.3.1 requires a
@@ -3331,27 +3331,20 @@
 # (25-60 F) with `Primer B2 LVC` is a premium grade, and it is not optional if the foundation
 # lands below 40 F. The high end carries it.
 "waterproofing" = { material = { low = 1.10, high = 1.55 }, labour = { low = 1.70, high = 3.80 } }  # the below-grade face
-# ** THE DRAINED PLANE ON THE COURT'S RETAINED FACE (2026-09-14, owner decision 5). ** A
-# dimpled HDPE core with a bonded non-woven filter fabric, hung over the waterproofing above
-# and carrying water down to FD-SG-LEAD-W/-E at the footing. It is what
-# `engineering/retaining_wall`'s "no hydrostatic case" note now names instead of presuming.
+# ** DIMPLEBOARD ON THE COURT WALLS' OUTBOARD FACE (2026-09-16). ** A plain 5/16" DELTA-MS-class
+# HDPE sheet, dimples to the wall, carrying soil water down to FD-SG-LEAD-W/-E at the footing.
+# Full height on W-SG-W2/E2/S, below grade only on W-SG-W1/E1. It replaced a bonded-fabric
+# drainage composite hung over a 60-mil membrane; both faces of these walls are exterior.
 #
-# MATERIAL. Published metro pricing for the 0.4"-core class, 4' x 50' roll (200 SF):
-#   Delta-Drain 6000    $205-245/roll = $1.03-1.23/SF
-#   Mar-flex ShoreDri   $180-220/roll = $0.90-1.10/SF
-#   Platon Double Drain $195-235/roll = $0.98-1.18/SF
-# Plus the termination bar, the fabric-wrapped top edge and 6" laps: +10-15% of sheet.
-# 0.90 + 10% -> 0.99; 1.23 + 15% -> 1.41.
+# MATERIAL. DELTA-MS 5' x 65.6' roll (328 SF), retail, 2026-09-16:
+#   Spycor Building  $267.45 = $0.82/SF
+#   Overlake Supply  $714.12 = $2.18/SF (list retail; a supplier quote will land near the low end)
+# Plus termination moulding, fasteners and 6" laps: +10-15% of sheet. 0.82 + 10% -> 0.90;
+# 2.18 + 15% -> 2.51.
 #
-# LABOUR. It hangs on the membrane it protects, in the same open excavation, by the same
-# crew on the same day — which is why `emit/trade_rules.py` puts it in the DRAINAGE trade
-# rather than siding. It is markedly faster work than the sheet under it: no primer, no
-# cant fillet, no two-ply corners, mechanically fastened at the top and lapped down. Taken
-# at roughly half the waterproofing labour above.
-#
-# ⚠ SAME CAVEAT AS THE ROW ABOVE, AND IT IS THE SAME QUOTE. Whoever prices the membrane
-# prices this with it; do not carry these two to a bid separately.
-"drainage-composite" = { material = { low = 0.99, high = 1.41 }, labour = { low = 0.85, high = 1.90 } }  # the retained face
+# LABOUR. Hung on bare concrete in the open excavation before backfill, fastened along the top
+# under the moulding and lapped. Held at the composite's former rate.
+"dimple-board" = { material = { low = 0.90, high = 2.51 }, labour = { low = 0.85, high = 1.90 } }  # the court walls' outboard face
 # THE TRUSS WALL'S 4" OF CLOSED-CELL SPRAY FOAM (2026-08-23), keyed by MATERIAL:THICKNESS —
 # see `cli/prices.QUALIFIED_KEY_FIELD`.
 #

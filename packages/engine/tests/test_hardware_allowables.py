@@ -197,9 +197,6 @@ def test_the_species_the_numbers_belong_to_is_recorded_wherever_it_matters():
     assert "SPF / HF" in allowable_for_model("LS30").species
     assert allowable_for_model("LS30").lateral_f1_lb == 275.0
     assert allowable_for_model("LS30").uplift_lb is None
-    # A trussed gable end's truss is held to the plate by an HGA10 (FL11470 Table 1, SPF).
-    assert allowable_for_model("HGA10").uplift_lb == 375.0
-    assert allowable_for_model("HGA10").lateral_f2_lb == 815.0
     # The two that legitimately stay in the DF/SP column, and say why in the same field.
     for model in ("H2.5AZ", "H2.5ASS"):
         species = allowable_for_model(model).species

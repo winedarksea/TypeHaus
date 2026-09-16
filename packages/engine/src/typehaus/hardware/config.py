@@ -254,7 +254,7 @@ class GableEndTieRules:
     #: middle is a hinge; both ends have to be caught.
     minimum_ties_per_wall: int = 2
     #: A trussed gable end takes no stud ties; its gable-end truss is held to the plate by
-    #: this many anchors (HGA10). The truss carries the gable's lateral load in its design.
+    #: this many LTP4s; uplift is the H2.5A at each heel. The truss carries the gable's lateral load.
     anchors_per_gable_truss: int = 1
     #: How far above its own top plate a wall must rise before it is a GABLE end rather than
     #: an eave wall. A wall carrying a rafter or truss bears at its plate and rises only the

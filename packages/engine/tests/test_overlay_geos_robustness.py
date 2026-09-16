@@ -89,12 +89,13 @@ def test_the_grid_is_free_on_every_catlin_storey(catlin_model) -> None:
         buffed = [body.buffer(0) for body in bodies]
         gridded = shapely.union_all(buffed, grid_size=overlay.GRID_SIZE_M).area
         plain = unary_union(buffed).area
-        # One square millimetre. Snap-rounding to a micron grid can move a vertex by up to
-        # half a micron, so over ~900 polygons per storey the areas differ in the 8th
-        # decimal place of a square metre — 1e-8 m2 is 1e-7 sq ft, and the takeoff rounds
-        # to 0.1 sq ft. A mm2 is still four orders of magnitude below anything that could
-        # change a reported number, so this stays a real assertion and not a rubber stamp.
-        assert gridded == pytest.approx(plain, abs=1e-6), storey
+        # Ten square millimetres. Snap-rounding to a micron grid moves a vertex by up to half
+        # a micron, so the error scales with edge length: a sub-micron coordinate on a 6 m
+        # wall edge is ~3e-6 m2 on its own (the court's 5/16" dimpleboard put mitre vertices
+        # on quarter-micron coordinates, 2026-09-16, and measured 3.2 mm2 on `court-low` with
+        # every vertex coincident to 1e-15 m). The takeoff rounds to 0.1 sq ft (9,300 mm2),
+        # so 10 mm2 is still three orders below any reported number.
+        assert gridded == pytest.approx(plain, abs=1e-5), storey
 
 
 def test_no_resolved_layer_ring_has_consecutive_duplicate_vertices(catlin_model) -> None:

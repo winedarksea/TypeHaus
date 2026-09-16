@@ -414,12 +414,8 @@ def test_catlin_assembly_change_noise_is_gone(catlin_model):
         # stopping against another is still a change of construction on one line.
         ("assembly_change:STAIRWALL_INT_2X6_BRG_TYPEX|"
          "STAIRWALL_INT_2X6_BRG_UNDERSTAIR"),
-        # N-SG-MW and N-SG-ME, new 2026-09-14 with the court walls' split. The porch box's
-        # side walls (W-SG-W1/E1) and the free retaining U (W-SG-W2/E2/S) meet on these two
-        # nodes, and the retaining side carries a waterproofing membrane and a drainage
-        # composite on its buried outboard face that the porch side does not — so the face
-        # jogs 0.46" as it crosses and the drained plane has to be TERMINATED there. That
-        # termination is a detail the field needs, nothing else draws it, and it is a change
-        # of construction on one line: exactly what this key is for, and not noise.
-        "assembly_change:SUNKEN_GARDEN_WALL|SUNKEN_GARDEN_WALL_DRAINED",
+        # (N-SG-MW/ME carried `SUNKEN_GARDEN_WALL|SUNKEN_GARDEN_WALL_DRAINED` from 2026-09-14,
+        # while the retaining U's membrane + composite jogged the face 0.46". Since 2026-09-16
+        # both sides are one stack depth with dimpleboard outboard, and all that changes there
+        # is the board's top edge stepping down to grade — a lap, not a change of construction.)
     ]

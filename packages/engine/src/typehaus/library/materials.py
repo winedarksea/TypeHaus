@@ -169,6 +169,17 @@ STARTER_MATERIALS: tuple[Material, ...] = (
                     "head (ASTM D4716), 3,000+ psf compressive (D1621), AASHTO M288 class 2 "
                     "non-woven bonded to the soil face. A PRODUCT CLASS, not a selection — "
                     "the submittal is the engineer's"),
+    # Plain dimpled foundation membrane — the standard "dimpleboard": an HDPE sheet hung dimples
+    # to the wall, no bonded fabric. The air gap behind it carries water down to the footing
+    # drain. The sheet itself is vapour-tight; the permeance is the sheet's, not the gap's.
+    Material(tag="dimple-board",
+             name="Dimpled HDPE foundation membrane (5/16 in dimple)",
+             r_per_inch=0.0, density=45.0, vapor_permeance_perms=0.1, hatch="membrane",
+             color="#2f3a33",
+             source="generic HDPE dimple-sheet class (e.g. Dorken DELTA-MS): 8 mm (5/16 in) "
+                    "dimple, ~5,200 psf compressive (ASTM D6364), 0.13 gal/SF air-gap "
+                    "volume, water- and vapour-impermeable sheet. A PRODUCT CLASS, not a "
+                    "selection"),
     # Closed-cell (2 lb) spray polyurethane foam — what fills a rim cavity that no sheet
     # membrane can reach. It is the insulation, the air barrier AND the vapour retarder in
     # one bonded, seamless application, which is exactly why it is specified where a floor

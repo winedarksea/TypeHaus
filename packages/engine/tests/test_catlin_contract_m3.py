@@ -1842,15 +1842,10 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     # ticket and an identical $/cy row — split on appearance alone, which is exactly what an
     # assembly is for. Nothing grades whether a FINISH layer is reachable, so this assertion and
     # the wash-face tests in test_masonry_finish.py are the whole guard.
-    # ** AND THE COURT WALLS SPLIT IN TWO ON 2026-09-14, ON THE SAME PRINCIPLE ONE MORE
-    # TIME. ** W-SG-W1/E1 are the porch box's side walls: their outboard face is EXPOSED
-    # above the yard, and it carries ED-M-HP2-DISC and ED-M-STAIR-LT. W-SG-W2/E2/S are the
-    # free retaining U, buried for their whole height, and owner decision 5 put a
-    # waterproofing membrane and a drainage composite on that buried face so
-    # `engineering/retaining_wall`'s "the drainage behind the wall works perfectly" names a
-    # modelled element. Putting those layers on all five moved the porch walls' exposed face
-    # 0.46" outboard and buried both devices — caught by
-    # `test_wall_mounted_devices_resolve_against_a_wall_face`, which is why the split exists.
+    # ** AND THE COURT WALLS ARE TWO TAGS. ** All five carry dimpleboard outboard (2026-09-16).
+    # W-SG-W2/E2/S are buried their whole height and take it full height; W-SG-W1/E1 are
+    # exposed above the yard, carry ED-M-HP2-DISC and ED-M-STAIR-LT there, and take it below
+    # grade only. `test_wall_mounted_devices_resolve_against_a_wall_face` holds the devices.
     assert {w.tag: w.assembly for w in walls if w.tag != "W-SG-BRKBM"} == {
         "W-SG-W1": "SUNKEN_GARDEN_WALL", "W-SG-E1": "SUNKEN_GARDEN_WALL",
         "W-SG-W2": "SUNKEN_GARDEN_WALL_DRAINED",
@@ -2447,12 +2442,16 @@ def test_wall_mounted_devices_resolve_against_a_wall_face(catlin_model):
     # it is poured with the sunken garden and tops out at 0'-0" — a storey-keyed search
     # reported all three as floating three feet off a wall they are bolted to. `z` is the
     # question that actually disambiguates, and it is asked below.
+    #
+    # A banded layer (``extent``) is only there over its own z range: W-SG-E1's dimpleboard
+    # stops at grade, and the devices above it hang on bare concrete.
     walls: list = []
     for wall in catlin_model.walls:
-        parts = [Polygon(layer.polygon) for layer in wall.layers if len(layer.polygon) >= 3]
-        parts = [p for p in parts if p.is_valid and p.area > 1e-9]
+        parts = [(Polygon(layer.polygon), layer.z0_m, layer.z1_m)
+                 for layer in wall.layers if len(layer.polygon) >= 3]
+        parts = [p for p in parts if p[0].is_valid and p[0].area > 1e-9]
         if parts:
-            walls.append((unary_union(parts), wall.z0_m, wall.z1_m))
+            walls.append((parts, wall.z0_m, wall.z1_m))
 
     offenders = []
     for item in catlin_model.canvas_objects:
@@ -2463,9 +2462,15 @@ def test_wall_mounted_devices_resolve_against_a_wall_face(catlin_model):
             continue
         body = Polygon(item.footprint)
         best = None
-        for solid, z0, z1 in walls:
+        for parts, z0, z1 in walls:
             if z1 <= item.z_m + 1e-6 or z0 >= item.z_m + 1e-6:
                 continue  # this wall is not there at the height the device hangs
+            present = [poly for poly, lz0, lz1 in parts
+                       if (lz0 is None or lz0 <= item.z_m + 1e-6)
+                       and (lz1 is None or lz1 >= item.z_m - 1e-6)]
+            if not present:
+                continue
+            solid = unary_union(present)
             overlap = solid.intersection(body).area
             gap = solid.distance(body)
             if best is None or (overlap, -gap) > (best[0], -best[1]):

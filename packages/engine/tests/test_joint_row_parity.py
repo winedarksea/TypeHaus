@@ -101,7 +101,7 @@ def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_r
     assert joints["ridge_tie_strap"] == 19
     assert joints["embedded_strap_holdown"] == 40
     # The leg that had nothing until 2026-09-14: six attic gable-end walls, 22 ties, plus one
-    # HGA10 under each of the garage's two gable-end trusses (2026-09-16). Worth
+    # LTP4 (was HGA10) under each of the garage's two gable-end trusses (2026-09-16). Worth
     # pinning hard, because the rule that finds them is four predicates and dropping any one
     # of them silently changes the set (the interior partitions run the same way and rise to
     # the same height; the breezeway canopy shares the garage's storey).

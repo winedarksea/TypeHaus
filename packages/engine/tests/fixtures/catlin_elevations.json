@@ -45537,6 +45537,12 @@
 2,
 "267caf0e8cc8"
 ],
+"geometry/SGW103AAAA/layer:dimple-board": [
+-2.7797125,
+-0.8636,
+2,
+"e43eb8e4edfa"
+],
 "geometry/SGW103AAAA/layer:wash": [
 -2.7797125,
 0.0,
@@ -45548,6 +45554,12 @@
 0.0,
 2,
 "267caf0e8cc8"
+],
+"geometry/SGW104AAAA/layer:dimple-board": [
+-2.7797125,
+-0.8636,
+2,
+"e43eb8e4edfa"
 ],
 "geometry/SGW104AAAA/layer:wash": [
 -2.7797125,
@@ -45561,7 +45573,7 @@
 2,
 "267caf0e8cc8"
 ],
-"geometry/SGW105AAAA/layer:drainage-composite": [
+"geometry/SGW105AAAA/layer:dimple-board": [
 -2.7797125,
 0.0,
 2,
@@ -45573,19 +45585,13 @@
 2,
 "267caf0e8cc8"
 ],
-"geometry/SGW105AAAA/layer:waterproofing": [
--2.7797125,
-0.0,
-2,
-"267caf0e8cc8"
-],
 "geometry/SGW106AAAA/layer:concrete": [
 -2.7797125,
 0.0,
 2,
 "267caf0e8cc8"
 ],
-"geometry/SGW106AAAA/layer:drainage-composite": [
+"geometry/SGW106AAAA/layer:dimple-board": [
 -2.7797125,
 0.0,
 2,
@@ -45597,31 +45603,19 @@
 2,
 "267caf0e8cc8"
 ],
-"geometry/SGW106AAAA/layer:waterproofing": [
--2.7797125,
-0.0,
-2,
-"267caf0e8cc8"
-],
 "geometry/SGW107AAAA/layer:concrete": [
 -2.7797125,
 0.0,
 2,
 "267caf0e8cc8"
 ],
-"geometry/SGW107AAAA/layer:drainage-composite": [
+"geometry/SGW107AAAA/layer:dimple-board": [
 -2.7797125,
 0.0,
 2,
 "267caf0e8cc8"
 ],
 "geometry/SGW107AAAA/layer:wash": [
--2.7797125,
-0.0,
-2,
-"267caf0e8cc8"
-],
-"geometry/SGW107AAAA/layer:waterproofing": [
 -2.7797125,
 0.0,
 2,

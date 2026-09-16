@@ -1784,15 +1784,24 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   (`assembly_material.is_cast_beam`). Delete it, retype it to wood, or rename either node, and the
   sign falls to +1 and the wash moves to the outboard, buried face of all five walls — **silently,
   at 0 FAIL**. `test_masonry_finish.py::test_court_wash_faces_the_court` is the guard.
-- **The POUR DOES NOT MOVE, and `alignment` is what holds it.** Every washed wall carries
-  `alignment=face("center", offset=±_WASH_FILM/2)` — `+` where the wash is layer 0 (the court
-  walls, the RG legs), `−` where it is last (the fireplace). Without it the resolver centres the
+- **The POUR DOES NOT MOVE, and `alignment` is what holds it.** Every washed wall carries an
+  offset: `±_WASH_FILM/2` on the RG legs (`+`) and the fireplace (`−`), and on the five court
+  walls `_COURT_AXIS_SHIFT`, derived from the wash inboard AND the 5/16" dimpleboard outboard. Without it the resolver centres the
   whole 12 1/8" stack on the node line and the concrete slides 1/16" off the grid, which is not
   what gets built. That 1/16" broke three things and only one was caught by a check:
   `SP-SG-W1-CD-SPA` fell out of its own host (a FAIL), while the corner columns stopped being
   flush with the walls they stand on and the raised garden stopped closing on the court walls —
-  both at 0 FAIL, by test only. **If `_WASH_FILM` changes, every alignment offset changes with
-  it**; nothing derives one from the other across the params/plan boundary.
+  both at 0 FAIL, by test only. **If `_WASH_FILM` or the board thickness changes, every
+  alignment offset changes with it**; nothing derives one from the other across the params/plan
+  boundary.
+- **The court walls' outboard face is DIMPLEBOARD, not membrane + composite (2026-09-16).** A
+  plain 5/16" DELTA-MS-class sheet (`dimple-board`, library material): full height on
+  W-SG-W2/E2/S (`SUNKEN_GARDEN_WALL_DRAINED`), below grade only on W-SG-W1/E1
+  (`SUNKEN_GARDEN_WALL`, `extent` top at GRADE in `slot="retained-face"`, so the exposed face
+  above the yard is bare concrete and ED-M-HP2-DISC / ED-M-STAIR-LT stay on it). Both walls are
+  exterior on both faces, the steel is galvanized, and `engineering/retaining_wall` reads only
+  the DRAINAGE layer, so the 60-mil membrane was dropped. Keep the slot: an unslotted band still
+  occupies its row full height.
 - **`W-SG-ARCH` is a concrete `Beam` (`GRADE_BEAMS`), not a `FoundationWall`, so plans and the UI
   draw it as a hidden grade beam instead of a cut wall.** Uid, tag and the item id
   `retaining_system/W-SG-ARCH` are unchanged; `retaining_system` reads its section from `size` and
@@ -1801,10 +1810,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   walls' rate. `size` keeps a decimal point (`12.0x17.5`) so `cross_section` reads actual
   dimensions. `W-SG-BRKBM` stays a wall because a `Beam` has no layers for its XPS break.
 - **W-SG-W1/W2 and E1/E2 are one pour each but stay two elements.** The halves differ in
-  assembly, alignment, `lateral_support`, `unbalanced_fill`, reinforcement and
-  `base_restraint_ref`, and nothing in the schema varies those along one wall. Merging would
+  `lateral_support`, `unbalanced_fill`, reinforcement, `base_restraint_ref` and how far the
+  dimpleboard runs, and nothing in the schema varies those along one wall. Merging would
   mis-state the engineering (a false fill on the braced half, an inflated court FS). The layout
-  lines already chain each side as one run on the drawings.
+  lines already chain each side as one run on the drawings. **Nor can the court go prescriptive
+  by treating it as a basement:** with W2/E2/S relabelled `top_and_bottom`, Table R404.1.2(8)
+  passes them easily (#6 @ 10" vs #6 @ 38" required), but nothing braces their TOPS — the porch
+  beams brace W1/E1 only, and ARCH, BRKBM and the corners act at the base and ends — so R404.4
+  governs. Prescriptive would need new top struts across the open court.
 - **A wall's faces are NOT `axis ± thickness_m/2` any more.** That shorthand is only right while
   every layer bears and the stack straddles the node line. On a washed wall `thickness_m` is
   12 1/8" while the pour is 12" exactly where it always was. Read the STRUCTURE layer's polygon

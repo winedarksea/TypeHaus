@@ -1154,7 +1154,7 @@ WALLS = [
     # corbels 5/8" over it at each end AT THE FLOOR LINE, buried under the lvp and invisible.
     # That 1 1/4" is what lets FO-M-FIRE come in at 47 3/4" instead of 49" — see the opening.
     # ** THE BRICK DOES NOT MOVE WHEN THE WASH IS ADDED. ** Same rule as
-    # `params/sunken_garden._WASH_AXIS_SHIFT`, opposite sign. FIREPLACE_BRICK_WYTHE is
+    # `params/sunken_garden._COURT_AXIS_SHIFT`, opposite sign. FIREPLACE_BRICK_WYTHE is
     # `layers=(brick, wash)` — the wash is LAST because these walls are authored S->N on their own
     # open_end pairs and so take outward sign +1, which lands layer 0 EAST against W-M-E1's studs.
     # Measuring from the interior face the stack is brick 0..3 5/8", wash 3 5/8"..3 3/4", so the

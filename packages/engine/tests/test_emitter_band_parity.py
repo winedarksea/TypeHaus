@@ -204,7 +204,7 @@ def test_the_sauna_liner_no_longer_runs_across_its_own_door_and_window(catlin_mo
                                                                       catlin_ifc):
     """The defect, named and counted.
 
-    Six of catlin's 45 banded layers overlap an opening, and all six are the sauna liner:
+    Six of catlin's 47 banded layers overlap an opening, and all six are the sauna liner:
     ``shiplap-liner``, ``liner-furring`` and ``foil-polyiso`` on ``W-B-S2-FR`` (a window,
     4 regions) and ``W-B-CS`` (a door, 3 regions — no sill strip, because a door has no
     sill). Every one of them used to extrude straight across the hole.
@@ -219,7 +219,9 @@ def test_the_sauna_liner_no_longer_runs_across_its_own_door_and_window(catlin_mo
 
 
 def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc):
-    """39 of the 45 do not split, and their GUIDs must not move because the call changed.
+    """41 of the 47 do not split, and their GUIDs must not move because the call changed.
+
+    47 since 2026-09-16: W-SG-W1/E1's dimpleboard stops at grade.
 
     A GlobalId is an identity a federated model and its issue log hold onto. Re-keying a
     part that still means exactly what it meant before would break those references for
@@ -231,7 +233,7 @@ def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc)
     parts = {p.Name: p.GlobalId for p in catlin_ifc.by_type("IfcBuildingElementPart")}
     unsplit = [(w, ly) for w in catlin_model_ro.walls for ly in w.body_layers()
                if f"{w.tag}:{ly.name}" in parts]
-    assert len(unsplit) == 39, f"expected the 45 banded layers less the 6 that split, got {len(unsplit)}"
+    assert len(unsplit) == 41, f"expected the 47 banded layers less the 6 that split, got {len(unsplit)}"
     for wall, layer in unsplit:
         assert parts[f"{wall.tag}:{layer.name}"] == derive_child_guid(
             project_uuid, "wall-parts", f"{wall.uid}/{layer.name}")

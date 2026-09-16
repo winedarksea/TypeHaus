@@ -306,7 +306,7 @@ _APRON = dict(
 # where the east and west legs each catch half a day. All three are in scope; that is the order
 # if the scope is ever cut.
 # ** THE BLOCK DOES NOT MOVE WHEN THE WASH IS ADDED. ** Same rule and same reason as
-# `params/sunken_garden._WASH_AXIS_SHIFT` — read that comment, it carries the derivation. Without
+# `params/sunken_garden._COURT_AXIS_SHIFT` — read that comment, it carries the derivation. Without
 # an alignment the resolver centres the whole 12 1/8" stack on the node line and the SRW units
 # slide 1/16" toward the court, which is not what gets built (a 12" block wall on its levelling
 # pad, painted on its yard face) and which stopped the apron closing on the sunken-garden walls.

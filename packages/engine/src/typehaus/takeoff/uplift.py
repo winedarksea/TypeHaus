@@ -195,7 +195,7 @@ def lateral_tie_plate_rows(model: ResolvedModel, rules: UpliftTieRules) -> list:
 
 
 def gable_end_tie_rows(model: ResolvedModel, rules: GableEndTieRules) -> list:
-    """The gable-end hardware: LS30 stud-to-rafter ties, and HGA10s under gable-end trusses.
+    """The gable-end hardware: LS30 stud-to-rafter ties, and LTP4s under gable-end trusses.
 
     The leg that had nothing. ``bearing_connections`` cannot see a gable end because no
     rafter bears on one, so the wall that takes the largest out-of-plane wind pressure in the

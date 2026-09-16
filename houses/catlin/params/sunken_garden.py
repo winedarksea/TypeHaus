@@ -113,68 +113,32 @@ from params.sunken_garden_options import OPTION
 # centre is 6 1/8" from the interior face where the default axis is 6 1/16". Hence +1/16" —
 # HALF THE WASH — and the pour lands back on 90"..102" exactly as before.
 #
-# ** IT IS NO LONGER HALF THE WASH, BECAUSE THE RETAINED FACE GREW A STACK (2026-09-14). **
-# The rule was always the same and the number was a special case of it:
+# ** IT IS NO LONGER HALF THE WASH: THE OUTBOARD FACE CARRIES DIMPLEBOARD. ** The rule is
 #
 #     offset = (the concrete's centre, measured from the interior face)
 #              − (half the whole stack, which is where the default axis lands)
 #
-# With two layers that was `(w + c/2) − (w + c)/2 = w/2` — half the wash, +1/16". Owner
-# decision 5 put a 0.06" waterproofing membrane and a 0.4" drainage composite on the
-# OUTBOARD face (`SUNKEN_GARDEN_WALL`, plan/assemblies.py), so the stack is 12.585" and the
-# same rule gives `(0.125 + 6) − 12.585/2 = -0.1675"`. The sign FLIPS: there is now more
-# outboard of the pour than inboard of it.
+# and a 5/16" dimpleboard outboard (plan/assemblies.py) flips its sign. All five court walls
+# share this one stack depth — W1/E1's board stops at grade inside a `slot`, so its row keeps
+# its depth — and so one `_COURT_AXIS_SHIFT`.
 #
-# ** LEFT AT +1/16" THE POUR WOULD HAVE SLID 0.23" AND NOTHING WOULD HAVE SAID SO. ** The
-# last time this stack moved 1/16" it broke three things and a check caught exactly one:
-# `SP-SG-W1-CD-SPA` fell out of its host (a FAIL), while the corner columns stopped being
-# flush with the wall faces they stand on and the raised garden stopped closing on the court
-# walls — both only by test, at 0 FAIL. The faces of these walls are NOT `axis ±
-# thickness/2`, and `test_masonry_finish.py::test_court_wash_faces_the_court` plus
-# `test_catlin_outdoor_structures.py`'s `_pour_faces` are what hold them.
-#
-# ** WRITTEN AS THE ARITHMETIC, NOT AS A NUMBER, SO THE NEXT LAYER CANNOT DO THIS AGAIN. **
-# The layer thicknesses are transcribed rather than imported because a params module cannot
-# import the plan that imports it — the same constraint `SPEC.site_grade_in` lives under —
-# and `test_retaining_court` asserts the two agree.
-# ** TWO SHIFTS, BECAUSE THE FIVE WALLS ARE NO LONGER ONE ASSEMBLY. ** `W-SG-W1`/`E1` are
-# the porch box's side walls, exposed above the yard and carrying wall devices on that face;
-# `W-SG-W2`/`E2`/`S` are the free retaining U, buried for their whole height and drained. The
-# first pair keeps `SUNKEN_GARDEN_WALL` and the second takes `SUNKEN_GARDEN_WALL_DRAINED`.
-#
-# ** PUTTING THE DRAINED LAYERS ON ALL FIVE MOVED THE PORCH WALLS' EXPOSED FACE 0.46" AND
-# BURIED TWO DEVICES. ** `ED-M-HP2-DISC` and `ED-M-STAIR-LT` hang on W-SG-E1's east face at
-# -0'-8", 32" clear of the yard; `test_catlin_contract_m3` caught them buried 0.65" and
-# 0.50". That is the same blast radius the note above records for the 1/16" wash, at seven
-# times the distance. A face here is NOT `axis ± thickness/2`.
+# `test_masonry_finish.py::test_court_wash_faces_the_court` and
+# `test_catlin_outdoor_structures.py`'s `_pour_faces` hold the faces. Thicknesses are
+# transcribed (a params module cannot import the plan that imports it); a mismatch slides the
+# pour, and the pour-on-grid assertion in `test_court_wash_faces_the_court` catches it.
 _WASH_FILM_IN = 0.125
 _SG_POUR_IN = 12.0
-_SG_RETAINED_FACE_IN = 0.06 + 0.4      # waterproofing + drainage composite
+_SG_RETAINED_FACE_IN = 0.3125          # dimpleboard, 5/16"
 
 
 def _pour_on_grid_offset(outboard_in: float):
-    """The alignment that keeps the 12" pour centred on its own node line.
-
-    One rule, both assemblies, and the number is a consequence of it rather than a literal:
-
-        offset = (the concrete's centre, measured from the INTERIOR face)
-                 − (half the whole stack, which is where the default axis lands)
-
-    With nothing outboard that is `+w/2` — half the wash, +1/16", which is what this file
-    carried from the day the wash arrived. With 0.46" outboard it is −0.1675": the sign
-    FLIPS, because there is now more outboard of the pour than inboard of it.
-
-    ** THE THICKNESSES ARE TRANSCRIBED, NOT IMPORTED. ** A params module cannot import the
-    plan that imports it — the same constraint `SPEC.site_grade_in` lives under — and
-    `test_retaining_court` asserts the two agree.
-    """
+    """The alignment that keeps the 12" pour centred on its own node line."""
     return face("center", offset=inch(
         (_WASH_FILM_IN + _SG_POUR_IN / 2.0)
         - (_WASH_FILM_IN + _SG_POUR_IN + outboard_in) / 2.0))
 
 
-_WASH_AXIS_SHIFT = _pour_on_grid_offset(0.0)
-_DRAINED_AXIS_SHIFT = _pour_on_grid_offset(_SG_RETAINED_FACE_IN)
+_COURT_AXIS_SHIFT = _pour_on_grid_offset(_SG_RETAINED_FACE_IN)
 
 
 @dataclass(frozen=True)
@@ -934,7 +898,7 @@ WALLS = [
     # spacing changes mid-pour at y = -11'-0" (`_y_ax_mid`) — #6 @ 38" north of it,
     # #6 @ 10" on the retained face south of it, in one form.**
     FoundationWall(uid="SGW103AAAA", tag="W-SG-W1", start_node="N-SG-NW",
-                   end_node="N-SG-MW", assembly="SUNKEN_GARDEN_WALL", alignment=_WASH_AXIS_SHIFT,
+                   end_node="N-SG-MW", assembly="SUNKEN_GARDEN_WALL", alignment=_COURT_AXIS_SHIFT,
                    top_elevation=_porch_top, bottom_elevation=_wall_bottom,
                    lateral_support="top_and_bottom",
                    vertical_reinforcement='#6 @ 38" o.c.',
@@ -952,7 +916,7 @@ WALLS = [
     # the sign falls to +1, putting the wash on the buried face of all five walls at 0 FAIL.
     # `test_masonry_finish::test_court_wash_faces_the_court` pins it.
     FoundationWall(uid="SGW104AAAA", tag="W-SG-E1", start_node="N-SG-ME",
-                   end_node="N-SG-NE", assembly="SUNKEN_GARDEN_WALL", alignment=_WASH_AXIS_SHIFT,
+                   end_node="N-SG-NE", assembly="SUNKEN_GARDEN_WALL", alignment=_COURT_AXIS_SHIFT,
                    top_elevation=_porch_top, bottom_elevation=_wall_bottom,
                    lateral_support="top_and_bottom",
                    vertical_reinforcement='#6 @ 38" o.c.',
@@ -1086,7 +1050,7 @@ WALLS = [
     # verdict, not a stamp.
     FoundationWall(uid="SGW105AAAA", tag="W-SG-W2", start_node="N-SG-MW",
                    end_node="N-SG-SW", assembly="SUNKEN_GARDEN_WALL_DRAINED",
-                   alignment=_DRAINED_AXIS_SHIFT,
+                   alignment=_COURT_AXIS_SHIFT,
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom,
                    unbalanced_fill=_ret_unbalanced_fill,
                    vertical_reinforcement=_RET_REBAR,
@@ -1094,7 +1058,7 @@ WALLS = [
                    lateral_support="base", base_restraint_ref="W-SG-ARCH"),
     FoundationWall(uid="SGW106AAAA", tag="W-SG-E2", start_node="N-SG-SE",
                    end_node="N-SG-ME", assembly="SUNKEN_GARDEN_WALL_DRAINED",
-                   alignment=_DRAINED_AXIS_SHIFT,
+                   alignment=_COURT_AXIS_SHIFT,
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom,
                    unbalanced_fill=_ret_unbalanced_fill,
                    vertical_reinforcement=_RET_REBAR,
@@ -1102,7 +1066,7 @@ WALLS = [
                    lateral_support="base", base_restraint_ref="W-SG-ARCH"),
     FoundationWall(uid="SGW107AAAA", tag="W-SG-S", start_node="N-SG-SW",
                    end_node="N-SG-SE", assembly="SUNKEN_GARDEN_WALL_DRAINED",
-                   alignment=_DRAINED_AXIS_SHIFT,
+                   alignment=_COURT_AXIS_SHIFT,
                    unbalanced_fill=_ret_unbalanced_fill,
                    top_elevation=_ret_top, bottom_elevation=_wall_bottom,
                    vertical_reinforcement=_RET_REBAR,

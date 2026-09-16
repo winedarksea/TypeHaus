@@ -214,17 +214,15 @@ def test_court_wash_faces_the_court(catlin_plan, catlin_model_ro) -> None:
             f"{tag}: the N-SG-* component must resolve to -1.0; a +1 here means the closed walk "
             "through W-SG-ARCH was lost and every wash face is now on the wrong side")
         depth = {ly.name: ly for ly in wall.depth_layers()}
-        # ** THE FIVE ARE TWO ASSEMBLIES SINCE 2026-09-14. ** W-SG-W2/E2/S are the free
-        # retaining U and carry a waterproofing membrane and a drainage composite on their
-        # buried outboard face (owner decision 5), so `engineering/retaining_wall`'s "the
-        # drainage behind the wall works perfectly" names a modelled element. W-SG-W1/E1 are
-        # the porch box's side walls, exposed above the yard and carrying wall devices on
-        # that face, and they do NOT — putting the layers on all five moved their face 0.46"
-        # and buried ED-M-HP2-DISC and ED-M-STAIR-LT.
-        drained = tag in {"W-SG-W2", "W-SG-E2", "W-SG-S"}
-        expected = {"wash", "concrete"} | (
-            {"waterproofing", "drainage-composite"} if drained else set())
-        assert set(depth) == expected, f"{tag}: {sorted(depth)}"
+        # All five carry dimpleboard outboard (2026-09-16): full height on the buried
+        # retaining U, below grade only on W-SG-W1/E1 (checked below).
+        assert set(depth) == {"wash", "concrete", "dimple-board"}, f"{tag}: {sorted(depth)}"
+        board = depth["dimple-board"]
+        if tag in {"W-SG-W1", "W-SG-E1"}:
+            assert board.z1_m is not None and board.z1_m < wall.z1_m - 0.5, (
+                f"{tag}: the board must stop at grade, below the exposed face's devices")
+        else:
+            assert board.z1_m is None, f"{tag}: the retained face is drained full height"
         i = 0 if axis == "x" else 1
         wash = _centroid(depth["wash"].polygon)[i]
         concrete = _centroid(depth["concrete"].polygon)[i]
@@ -236,14 +234,14 @@ def test_court_wash_faces_the_court(catlin_plan, catlin_model_ro) -> None:
         # on the retained face would be paint under nine feet of soil. Both are silent
         # errors — nothing grades which side a layer lands on — and the outward sign that
         # decides it is the same one this test exists to pin.
-        for name in ("waterproofing", "drainage-composite") if drained else ():
+        for name in ("dimple-board",):
             buried = _centroid(depth[name].polygon)[i]
             assert (buried - concrete) * sign < 0, (
                 f"{tag}: {name} must sit on the RETAINED side of the pour along {axis} "
                 f"(expected sign {-sign:+d}), got {buried:.5f} concrete={concrete:.5f}")
         # ** THE POUR IS STILL ON THE GRID. ** This is the assertion the alignment re-strike
-        # exists for: adding 0.46" outboard re-centres the stack, and an unrevised
-        # `_WASH_AXIS_SHIFT` slides the 12" concrete 0.23" off its node line — silently, at
+        # exists for: a layer outboard re-centres the stack, and an unrevised
+        # `_COURT_AXIS_SHIFT` slides the 12" concrete off its node line — silently, at
         # 0 FAIL. The axis coordinate is 8.0 / 28.0 ft on the x-axis walls.
         axis_coord = wall.axis[0][i]
         assert concrete == pytest.approx(axis_coord, abs=1e-6), (

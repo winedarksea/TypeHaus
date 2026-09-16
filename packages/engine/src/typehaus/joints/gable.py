@@ -29,7 +29,7 @@ gable-end truss sits on it. Both are "the exterior wall across the end of the sp
 
 The two take different parts. A stud gable's wall is tied to the rafter above it (LS30). A
 gable-end truss is designed for the gable's out-of-plane load itself, so its wall needs no
-such tie: the truss is only held down on the plate (HGA10), one per truss.
+such tie: the truss is tied to the plate by one LTP4 mid-span; the H2.5A at each heel takes uplift.
 """
 
 from __future__ import annotations

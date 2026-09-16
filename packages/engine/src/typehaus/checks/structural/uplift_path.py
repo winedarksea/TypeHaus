@@ -466,7 +466,7 @@ def _gable_links(ctx: CheckContext) -> list:
         links.append(Link(
             f"gable-end wall {end.wall_tag} to {end.roof_tag} over "
             f"{end.length_m * 3.28084:.1f} ft of top plate",
-            tags, (f"{ties} derived HGA10 anchoring {end.gable_truss}" if end.gable_truss
+            tags, (f"{ties} derived LTP4 tying {end.gable_truss}" if end.gable_truss
                    else f"{ties} derived gable-end ties") if ties else None))
     return links
 
