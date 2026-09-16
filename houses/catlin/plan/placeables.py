@@ -846,13 +846,25 @@ MAIN_PLACEABLES = [
     Furniture(uid="J49EW9WWTQ", tag="FURN-M-PANTRY-SHELVES", type_ref="FT-KIT-PANTRY-SHELVES-70",
               room="RM-M-PANTRY", position=pt(ft(21, 2.5), ft(34, 8.375))),
 
-    # The main-floor bedroom's queen, head north (rotation 0) against the interior wall, so
-    # the two window walls — west (WIN-M-BED-W1/W2) and south (WIN-M-BED-S1/S2) — stay free.
-    # x=5' is what keeps the west side zone off ED-M-BED-RC7 on the west wall and the east
-    # one off ED-M-BED-RC1; y=9'-3" holds the foot zone clear of that same pair. This is the
-    # one bedroom where the queen keeps all three zones whole with room left over.
+    # The main-floor bedroom's KING — 6'-8" x 7'-0" — head north (rotation 0) against the
+    # interior wall, so the two window walls — west (WIN-M-BED-W1/W2) and south
+    # (WIN-M-BED-S1/S2) — stay free. This block said "queen" three times until 2026-09-15
+    # and cited x=5' / y=9'-3" against a position that has been x 8'-7 7/8", y 9'-2 1/2"
+    # for some time; the type_ref was always FURN-BED-KING. The real figures: the bed spans
+    # x 5'-3 7/8"..11'-11 7/8" and y 5'-8 1/2"..12'-8 1/2", which keeps the west side zone
+    # off ED-M-BED-RC7 and the foot zone clear of ED-M-BED-RC1/RC5 on the south wall.
     Furniture(uid="CMB701AAAA", tag="FURN-M-BED", type_ref="FURN-BED-KING", room="RM-M-BED",
               position=pt(m(2.63862), m(2.80531))),
+    # ** THE BEDSIDE TABLE THE ROOM DID NOT HAVE. ** D-M-BED moved 16" east on 2026-09-15
+    # (storeys/main.py) precisely to open this 26 1/8" of north wall between the king's east
+    # face at 11'-11 7/8" and the new rough opening at 14'-2". The nightstand is pushed tight
+    # to the bed rather than centred in the gap, which leaves 2 1/8" clear of the RO and
+    # keeps the door casing off its side. Back to the wall: W-M-BDN2's bedroom face is
+    # 12'-9 5/8", so a 16" carcass stands at y 11'-5 5/8"..12'-9 5/8".
+    #
+    # ONLY the east side. The west side of this bed is the walk to D-M-BATH2 and stays clear.
+    Furniture(uid="SM4T9MMNVP", tag="FURN-M-BED-NIGHTSTAND-E", type_ref="FURN-NIGHTSTAND-24", room="RM-M-BED",
+              position=pt(inch(155.875), inch(145.625))),
 
     # --- mudroom (RM-M-MUDROOM) --------------------------------------------------------
     # Both mudroom closets are framed rooms, not furniture (RM-M-MECH, RM-M-MUD-CLOSET,

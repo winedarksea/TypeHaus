@@ -82,10 +82,19 @@ TV_98 = FurnitureType(
 _BED_HEIGHT = ft(3, 4)
 
 
+#: A bedside table is what a bed's side access is FOR, so it joins the bed's group instead
+#: of reporting against it — the dining-chair rule applied to the other universal pairing.
+#: The FOOT zone deliberately does not name it: a nightstand at the foot of a bed is not an
+#: arrangement, it is something in the way.
+NIGHTSTAND_TAG = "FURN-NIGHTSTAND-24"
+
+
 def _bed_clearances(width, depth):
     """Compact side access both sides plus foot access — how a bed is actually used."""
-    return (side_zone(width, depth, ft(1, 6), "bed side access", sign=1),
-            side_zone(width, depth, ft(1, 6), "bed side access", sign=-1),
+    return (side_zone(width, depth, ft(1, 6), "bed side access", sign=1,
+                      occupant_types=(NIGHTSTAND_TAG,)),
+            side_zone(width, depth, ft(1, 6), "bed side access", sign=-1,
+                      occupant_types=(NIGHTSTAND_TAG,)),
             front_zone(width, depth, ft(1, 6), "bed foot access"))
 
 
@@ -128,7 +137,7 @@ WARDROBE_48 = FurnitureType(
     height=ft(6, 6), plan_symbol="tall-cabinet-double", storage=True, source=REFERENCE,
 )
 NIGHTSTAND = FurnitureType(
-    tag="FURN-NIGHTSTAND-24", name="Nightstand", footprint=(ft(2), ft(1, 4)), height=ft(2, 2),
+    tag=NIGHTSTAND_TAG, name="Nightstand", footprint=(ft(2), ft(1, 4)), height=ft(2, 2),
     plan_symbol="nightstand", storage=True, source=REFERENCE,
 )
 

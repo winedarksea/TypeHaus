@@ -40,13 +40,19 @@ def front_zone(width: Length, depth: Length, reach: Length, purpose: str,
 
 
 def side_zone(width: Length, depth: Length, reach: Length, purpose: str,
-              sign: int = 1) -> ClearanceZone:
-    """The band alongside the object — bed side access, appliance service space."""
+              sign: int = 1, *, occupant_types: tuple[str, ...] = ()) -> ClearanceZone:
+    """The band alongside the object — bed side access, appliance service space.
+
+    ``occupant_types`` names what the band exists to hold, the same way ``front_zone`` and
+    ``surround_zone`` do: a nightstand in a bed's side access is the arrangement working,
+    not an encroachment on it.
+    """
     edge = sign * width.meters / 2
     far = edge + sign * reach.meters
     half_depth = depth.meters / 2
     return _zone(((min(edge, far), -half_depth), (max(edge, far), -half_depth),
-                  (max(edge, far), half_depth), (min(edge, far), half_depth)), purpose)
+                  (max(edge, far), half_depth), (min(edge, far), half_depth)), purpose,
+                 occupant_types=occupant_types)
 
 
 def surround_zone(width: Length, depth: Length, reach: Length, purpose: str,

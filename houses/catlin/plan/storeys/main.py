@@ -1278,8 +1278,28 @@ OPENINGS = [
     # 2026-08-29 `exterior_only` fix there could not be one anyway.
     Door(uid="CMD208AAAA", tag="D-M-STUDY", host="W-M-C3", type_ref="DT-INT-SWING30-GLAZED",
          position=from_node("N-M-E4", inch(9)), flip_swing=True),
+    # ** 6'-0" OFF N-M-D3 SINCE 2026-09-15, WAS 4'-8", AND THE BED IS WHY. ** `from_node`
+    # resolves to the NEAR JAMB, so the old offset put the RO at x 154"..186" and left
+    # 10 1/8" between it and FURN-M-BED's east face at 143 7/8" — a king with nowhere to
+    # stand a bedside table on the side people actually get out of it.
+    #
+    # The bed cannot solve it by moving. Its west face is 9 3/8" off D-M-BATH2's east jamb,
+    # so going west blocks the ensuite door; south and west are the two glazed walls; the
+    # east wall is 13'-0" with D-M-BED2 in it and takes no 80" headboard either. The north
+    # wall is the only headboard wall in this room and this door is the only lever on it.
+    #
+    # 16" east — one full stud bay — puts the RO at 170"..202" and opens 26 1/8" east of the
+    # bed, which takes a 24" FURN-NIGHTSTAND-24 with 2 1/8" to spare. It stays on the same
+    # 16" residue off x=98", so it still interrupts exactly the two studs any 32" opening
+    # must and `structural.door_framing_module` reads the same as before. The remnant to
+    # W-M-C1's bedroom face at 212 1/8" drops to 10 1/8", which is jamb-pack room and no
+    # more — going further east is not available, and does not need to be.
+    #
+    # The hinge stays at the EAST jamb: the open leaf tucks into that corner instead of
+    # sweeping the nightstand. Three devices moved with the opening — see ED-M-BED-SW
+    # (mep_electrical.py), ED-M-BED-RC2 (electrical.py) and ED-M-BED-SW2 (lighting.py).
     Door(uid="CMD210AAAA", tag="D-M-BED", host="W-M-BDN2", type_ref="DT-INT-SWING32",
-         position=from_node("N-M-D3", ft(4, 8)), flip_hinge=False, flip_swing=True),
+         position=from_node("N-M-D3", ft(6, 0)), flip_hinge=False, flip_swing=True),
     # Second bedroom <-> living connection, straight through the centre bearing wall.
     # Trimless (drywall return jamb, no casing) so it reads as a slot in the wall from
     # both rooms. W-M-C1 is BEARING, so the solver's framing tables put a structural

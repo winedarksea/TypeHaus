@@ -763,22 +763,59 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-M-LIVING", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
-    # RM-M-BED: a four-can grid (ED-M-BED-LT is the SW corner of it, plan/mep.py).
+    # RM-M-BED: a four-can grid (ED-M-BED-LT is the SW corner of it, plan/mep.py), on a
+    # 3-WAY since 2026-09-15. The only switch in this room stood at the CLOSET door. There
+    # was none at D-M-BED2, which is the room's actual entry from the living room — you
+    # crossed a dark bedroom to reach the light. ED-M-BED-SW2 below fixes that.
     ElectricalDevice(uid="QTM000EAAA", tag="ED-M-BED-CAN2", kind=DeviceKind.LIGHT,
                      position=pt(ft(13), ft(4)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-BED",
-                     controlled_by=("ED-M-BED-SW",),
+                     controlled_by=("ED-M-BED-SW", "ED-M-BED-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000FAAA", tag="ED-M-BED-CAN3", kind=DeviceKind.LIGHT,
                      position=pt(ft(5), ft(10)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-BED",
-                     controlled_by=("ED-M-BED-SW",),
+                     controlled_by=("ED-M-BED-SW", "ED-M-BED-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     ElectricalDevice(uid="QTM000GAAA", tag="ED-M-BED-CAN4", kind=DeviceKind.LIGHT,
                      position=pt(ft(13), ft(10)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-MAIN", room="RM-M-BED",
-                     controlled_by=("ED-M-BED-SW",),
+                     controlled_by=("ED-M-BED-SW", "ED-M-BED-SW2"),
                      mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    # The other end of the 3-way, on W-M-C1's bedroom face beside D-M-BED2. That door
+    # hinges at y=7'-11" and latches at y=5'-5", so the strike side is SOUTH of the RO:
+    # y=4'-11" leaves 4" of clear wall to the jamb. x=211.115" is this wall's own face
+    # convention (ED-M-BED-RC3/RC4 are authored to the same number) — W-M-C1 is
+    # INT_2X6_BRG_RC and its bedroom face is the paint plane at 212.115".
+    #
+    # CKT-LT-MAIN, the same circuit as every can it switches. Both ends are
+    # ED-T-SWITCH-DIM, which is the house's own 3-way convention (ED-S-HALL-SW/-SW2).
+    ElectricalDevice(uid="08SZS6SKK5", tag="ED-M-BED-SW2", kind=DeviceKind.SWITCH,
+                     position=pt(inch(211.115), ft(4, 11)), type_ref="ED-T-SWITCH-DIM",
+                     circuit="CKT-LT-MAIN", room="RM-M-BED", rotation=deg(270),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+    # ** A READING LIGHT, WHICH THIS ROOM ALSO DID NOT HAVE. ** Four cans on a grid light a
+    # floor; nothing in here lit a book. Mark G, ED-T-LT-WALL-LINEAR — the same 36" bar
+    # RM-S-SUITE carries as ED-S-SUITE-LAMP, at the same 5'-6". No new type and no new
+    # prices.toml row.
+    #
+    # Over the bed's EAST half, the side FURN-M-BED-NIGHTSTAND-E is now on: centred x=10'-4"
+    # puts the bar at x 8'-10"..11'-10", stopping 2" short of the nightstand and 28" short of
+    # D-M-BED's rough opening. y=12'-8 1/8" backs it onto W-M-BDN2's face at 12'-9 5/8".
+    #
+    # ** SWITCHED LOCALLY, NOT OFF THE ROOM SWITCH. ** A reading lamp wired to the 3-way is
+    # only ever on when the cans are, which is the opposite of what it is for. Its own
+    # switch stands beside it at x=12'-4", between the bar's end and ED-M-BED-RC2 — 4" clear
+    # of each, reachable lying down, and over a 26" nightstand at 46".
+    ElectricalDevice(uid="FVEG6VJPGG", tag="ED-M-BED-LAMP", kind=DeviceKind.LIGHT,
+                     position=pt(ft(10, 4), inch(152.125)), type_ref="ED-T-LT-WALL-LINEAR",
+                     circuit="CKT-LT-MAIN", room="RM-M-BED", rotation=deg(0),
+                     controlled_by=("ED-M-BED-LAMP-SW",),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(5, 6))),
+    ElectricalDevice(uid="4MYVGDXN3Y", tag="ED-M-BED-LAMP-SW", kind=DeviceKind.SWITCH,
+                     position=pt(ft(12, 4), ft(12, 8.625)), type_ref="ED-T-SWITCH-DIM",
+                     circuit="CKT-LT-MAIN", room="RM-M-BED", rotation=deg(0),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
     # RM-M-STUDY has no exterior wall, so the notes' "sconce to the side of the window"
     # applies to the two studies that do (RM-S-STUDY2, RM-A-STUDY). This one gets a down

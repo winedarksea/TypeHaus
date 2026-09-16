@@ -2187,8 +2187,26 @@ NEC_FILL_MAIN = [
                      position=pt(ft(16, 1.25), ft(22, 7.375)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    # ** THIS ONE STAYS AT 8'-6 1/4", AND IT WAS TRIED THE OTHER WAY. ** It is behind
+    # FURN-M-BED's headboard (the king runs x 5'-3 7/8"..11'-11 7/8") and unreachable, which
+    # reads like a mistake to fix — but it is the box that holds the NEC ring. The north
+    # wall's middle space runs x 54 5/8"..170" between D-M-BATH2's and D-M-BED's rough
+    # openings: 115 3/8", so the ONE receptacle that keeps every point within 6' of an outlet
+    # has to stand between x=98" and x=126 5/8", and the bed covers all of that. Moving it to
+    # the new bedside zone on 2026-09-15 opened a `electrical.receptacle_spacing` FAIL at
+    # (4.6', 12.9') within the hour. 210.52(A) measures wall, not furniture; the answer is a
+    # SECOND box for the nightstand (ED-M-BED-RC8 below), not a relocation of this one.
     ElectricalDevice(uid="NEC013AAAA", tag="ED-M-BED-RC2", kind=DeviceKind.RECEPTACLE_GFCI,
                      position=pt(ft(8, 6.25), ft(12, 8.625)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     circuit="CKT-RC-MAIN",
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
+    # The nightstand's own outlet, new with FURN-M-BED-NIGHTSTAND-E on 2026-09-15. It sits
+    # behind a 16"-deep, 26"-tall carcass with a cord gap behind it, which is where a bedside
+    # outlet belongs — not behind the 80" flush headboard that makes RC2 above unusable. x=13'-0" is behind the 24" carcass (x 11'-11 7/8"..
+    # 13'-11 7/8"), 4" clear of ED-M-BED-LAMP-SW at 12'-4" and 4" clear of ED-M-BED-SW at
+    # 13'-8", the two devices that share this 26 1/8" of wall at 46" and 48" AFF.
+    ElectricalDevice(uid="M6KEXK18GY", tag="ED-M-BED-RC8", kind=DeviceKind.RECEPTACLE_GFCI,
+                     position=pt(ft(13), ft(12, 8.625)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-MAIN",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     ElectricalDevice(uid="NEC014AAAA", tag="ED-M-BED-RC3", kind=DeviceKind.RECEPTACLE,
