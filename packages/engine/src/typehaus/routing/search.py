@@ -52,6 +52,10 @@ class Route:
     #: How many states were popped. Reported rather than hidden: it is the number that says
     #: whether a heuristic is doing any work, and §4's oracle asserts it exactly.
     expansions: int = 0
+    #: Which corridors the winning legs rode, in the order first met. A proposal prints
+    #: ``floor_ref=``/``soffit_ref=`` from these, so what the run claims about where it is
+    #: concealed is what the search actually priced it at rather than a later guess.
+    corridor_tags: tuple[str, ...] = ()
 
     def polyline(self) -> list[tuple[float, float, float]]:
         """The path with collinear interior vertices removed — what a proposal prints.
@@ -161,23 +165,45 @@ def _rebuild(graph: Graph, space: RoutingSpace,
         state = came[state]
         chain.append(state)
     chain.reverse()
-    indices = [index for index, _axis in chain]
-    points = [(graph.nodes[i].x, graph.nodes[i].y, graph.nodes[i].z) for i in indices]
+    route = price_route(graph, space, [index for index, _axis in chain])
+    return Route(nodes=route.nodes, points=route.points, cost=route.cost,
+                 terms=route.terms, bends=route.bends, expansions=expansions,
+                 corridor_tags=route.corridor_tags)
+
+
+def price_route(graph: Graph, space: RoutingSpace, nodes: list[int]) -> Route:
+    """Price a node chain against THIS graph's weights — the alternatives' honest ruler.
+
+    Extracted from ``_rebuild`` because a penalty re-search finds a route on a graph whose
+    weights have been multiplied, and a route quoted at its penalised price is not
+    comparable to the one it is being offered against. :mod:`typehaus.routing.alternatives`
+    searches on the penalised graph and prices on the original, so what a reader compares
+    is two real costs.
+
+    The axis of each step is re-derived from the geometry rather than carried, which is the
+    same function ``polyline`` uses and cannot disagree with the points it is given.
+    """
+    points = [(graph.nodes[i].x, graph.nodes[i].y, graph.nodes[i].z) for i in nodes]
+    axes = [_axis_of(a, b) for a, b in zip(points, points[1:], strict=False)]
 
     terms: dict[str, float] = {}
+    corridors: list[str] = []
     bends = 0
     total = 0.0
-    for (a, axis_a), (b, axis_b) in zip(chain, chain[1:], strict=False):
+    for step, (a, b) in enumerate(zip(nodes, nodes[1:], strict=False)):
         total += graph.weights.get((a, b), 0.0)
         for key, value in graph.terms.get((a, b), {}).items():
             terms[key] = terms.get(key, 0.0) + value
-        if axis_a and axis_b != axis_a:
+        tag = graph.corridors.get((a, b))
+        if tag is not None and tag not in corridors:
+            corridors.append(tag)
+        if step and axes[step] != axes[step - 1]:
             bends += 1
             total += space.cost.bend_in
     if bends:
         terms["bend_in"] = bends * space.cost.bend_in
-    return Route(nodes=indices, points=points, cost=total, terms=terms,
-                 bends=bends, expansions=expansions)
+    return Route(nodes=list(nodes), points=points, cost=total, terms=terms,
+                 bends=bends, corridor_tags=tuple(corridors))
 
 
 def _axis_of(a: tuple[float, float, float], b: tuple[float, float, float]) -> str:

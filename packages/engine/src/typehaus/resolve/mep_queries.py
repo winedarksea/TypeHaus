@@ -136,7 +136,16 @@ def conduit_vertical_profile(run: ResolvedConduitRun) -> tuple[Ring, list[float]
     Public because ``typehaus.routing`` needs the same reconstruction and may not import
     ``takeoff`` (the leaf rule, ``tests/test_package_leaves.py``), where the other reading of
     "a ConduitRun rises at its last point" lives as ``takeoff.runs.conduit_vertex_z``. One
-    fact, and the copy on the ``resolve`` side is the one a leaf can reach."""
+    fact, and the copy on the ``resolve`` side is the one a leaf can reach.
+
+    **The reconstruction is the FALLBACK.** A run that authors ``elevations`` is placed in z
+    and its own numbers are returned unchanged; only a run holding two endpoints and the
+    convention gets a rebuilt profile, and :func:`schematic_conduits` is how a check reports
+    that it is grading a drawing convention rather than a measurement."""
+    if getattr(run, "z_m", None) and len(run.z_m) == len(run.path) >= 2:
+        # A run that AUTHORS a per-vertex profile is placed in z, and its own numbers
+        # outrank the convention. Nothing is repeated and nothing is invented.
+        return list(run.path), list(run.z_m)
     if run.z_start_m is None or run.z_end_m is None or len(run.path) < 2:
         return None
     path = list(run.path)
@@ -561,3 +570,16 @@ def duct_bay_occupancy(path: list[tuple[float, float]], width_m: float, depth_m:
                 perp_at = pa + t * (pb - pa)
                 crossings.append((wc, perp_at) if along_x else (perp_at, wc))
     return conflicts, crossings, depth_ok
+
+
+def schematic_conduits(model: ResolvedModel) -> tuple[str, ...]:
+    """Tags of raceways whose z is a reconstruction rather than an authored profile.
+
+    Two end elevations say where a run starts and where it ends and nothing about what it
+    does in between. Grading such a run against the "rises at its last point" convention and
+    reporting a PASS is the failure mode this exists to prevent: the PASS would be about the
+    convention, not about the building. A consumer names these as a coverage gap.
+    """
+    return tuple(sorted(run.tag for run in model.conduits
+                        if not (getattr(run, "z_m", None)
+                                and len(run.z_m) == len(run.path))))

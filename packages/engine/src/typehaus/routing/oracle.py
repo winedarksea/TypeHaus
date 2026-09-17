@@ -33,6 +33,10 @@ ORACLES: dict[str, tuple[Oracle, ...]] = {
                       test="tests/test_routing_oracle.py"),),
     "tree": (Oracle(note="mep_drain_routing_basis.md", section="§5",
                     test="tests/test_routing_oracle.py"),),
+    "alternatives": (Oracle(note="mep_drain_routing_basis.md", section="§7",
+                            test="tests/test_routing_alternatives.py"),),
+    "gravity_search": (Oracle(note="mep_drain_routing_basis.md", section="§8",
+                              test="tests/test_gravity_search.py"),),
     "trades/duct": (Oracle(note="mep_duct_routing_basis.md", section="§1, §3",
                            test="tests/test_routing_oracle.py"),),
 }
@@ -40,9 +44,11 @@ ORACLES: dict[str, tuple[Oracle, ...]] = {
 #: Modules that compute nothing and so oracle nothing, named so their absence is a
 #: statement rather than a gap: ``space`` and ``obstacles`` assemble geometry the resolved
 #: model already carries, ``cost`` is a table of house preferences, ``proposal`` is a
-#: printer, and ``trades/{pipe,conduit}`` are adapters over the modules above.
+#: printer, ``timing`` is a stopwatch, ``diagnostics`` reads back the space the
+#: search was given, and ``trades/{pipe,conduit}`` are adapters over the modules above.
 NOT_A_CALCULATION = frozenset({
-    "__init__", "space", "obstacles", "cost", "proposal", "oracle",
+    "__init__", "space", "obstacles", "cost", "proposal", "oracle", "timing",
+    "diagnostics",
     "trades/__init__", "trades/pipe", "trades/conduit",
 })
 

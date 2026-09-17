@@ -428,6 +428,19 @@ class ConduitRun(Element):
     trade_size: Length  # EMT trade size, e.g. inch(1)
     start_elevation: Length | None = None  # project-frame absolute
     end_elevation: Length | None = None
+    #: Project-frame absolute height at EVERY path vertex, mirroring ``PipeRun.elevations``
+    #: and ``DuctRun.elevations`` — one per vertex, or absent.
+    #:
+    #: **The endpoint pair above is a SCHEMATIC profile, not a placed run.** Two elevations
+    #: say where a raceway starts and where it ends and nothing whatever about the six feet
+    #: in between; every consumer that wants a z has had to reconstruct one from the
+    #: convention "it rises at its last point", which is a drawing convention rather than a
+    #: measurement. A run that authors this is placed in z and is graded as such; a run that
+    #: does not is reported as schematic — a coverage gap — rather than graded against a
+    #: reconstruction nobody authored. That distinction is what lets a duct-against-conduit
+    #: check exist at all (``plans/TODO.md``: "a duct cannot be proven clear of something
+    #: the model does not place in z").
+    elevations: tuple[Length, ...] | None = None
     from_ref: str | None = None  # feeding device, e.g. "ED-B-PANEL"
     to_ref: str | None = None  # served device/area, e.g. "ED-A-PV-JB"
     # What this raceway carries. One service per run, never a set: NEC 800.133/725 forbids

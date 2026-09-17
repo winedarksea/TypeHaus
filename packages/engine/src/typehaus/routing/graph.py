@@ -75,6 +75,10 @@ class Graph:
     #: content of ``--explain``: a router that cannot say why it chose a line is one nobody
     #: will take a line from.
     terms: dict[tuple[int, int], dict[str, float]] = field(default_factory=dict)
+    #: Which corridor each edge rides, keyed the same way; absent when it rides none. This
+    #: is what lets a duct proposal print ``floor_ref=``/``soffit_ref=`` from the lanes the
+    #: winning legs actually took rather than from a guess about where the run ought to be.
+    corridors: dict[tuple[int, int], str] = field(default_factory=dict)
     #: Tags of hard prisms that a terminal node was standing in. Kept rather than dropped —
     #: see :func:`build_graph` — and reported by the caller.
     blocked_terminals: list[str] = field(default_factory=list)
@@ -149,6 +153,15 @@ def candidate_lines(space: RoutingSpace,
     xs = _unique(v for v in xs if minx - _LINE_TOL_M <= v <= maxx + _LINE_TOL_M)
     ys = _unique(v for v in ys if miny - _LINE_TOL_M <= v <= maxy + _LINE_TOL_M)
     zs = _unique(zs)
+    if space.z_band is not None:
+        # ``--level``: the lattice keeps only the planes inside one storey's band. A
+        # terminal outside it is the caller's refusal to report, not this function's to
+        # paper over — dropping a terminal's own level silently would make the search
+        # answer a question about a route that cannot start where it was told to.
+        low, high = space.z_band
+        inside = [z for z in zs if low - _LINE_TOL_M <= z <= high + _LINE_TOL_M]
+        if inside:
+            zs = inside
     if max(len(xs), len(ys)) > MAX_CANDIDATE_LINES:
         raise RoutingSpaceTooLarge(
             f"{len(xs)} x-lines and {len(ys)} y-lines exceed MAX_CANDIDATE_LINES="
@@ -190,6 +203,10 @@ def build_graph(space: RoutingSpace,
     # can say so instead of the graph swallowing it.
     fixed = {(round(t[0], 6), round(t[1], 6)) for t in terminals}
     blocked_terminals: list[str] = []
+    #: Terminal nodes kept despite standing in a hard prism. The edges LEAVING one of them
+    #: are kept too — see below — because a node a route may not move off is a node it may
+    #: as well not have.
+    lenient: set[int] = set()
     nodes: list[Node] = []
     lookup: dict[tuple[int, int, int], int] = {}
     for kz, z in enumerate(zs):
@@ -200,6 +217,7 @@ def build_graph(space: RoutingSpace,
                     if (round(x, 6), round(y, 6)) not in fixed:
                         continue
                     blocked_terminals.append(offender)
+                    lenient.add(len(nodes))
                 lookup[(kx, ky, kz)] = len(nodes)
                 nodes.append(Node(index=len(nodes), x=x, y=y, z=z))
 
@@ -212,11 +230,23 @@ def build_graph(space: RoutingSpace,
             other = lookup.get(key)
             if other is None:
                 continue
-            priced = _price(space, nodes[index], nodes[other], axis)
+            # **One lattice step of leniency at a blocked terminal, and exactly one.** The
+            # node rule above keeps a terminal that stands inside something — a branch's
+            # tie point usually sits on the very run it ties into, and an ERV manifold
+            # packs ten ports four inches apart so every lane out of one is inside its
+            # neighbour. Keeping the node and dropping every edge off it produces "no
+            # route in plan; every lane is blocked" about a route whose only obstruction is
+            # the fitting at its own end. The blockage is not hidden: it is already in
+            # `blocked_terminals` and the caller prints it as a detail somebody has to draw.
+            priced = _price(space, nodes[index], nodes[other], axis,
+                            lenient=index in lenient or other in lenient)
             if priced is None:
                 continue
-            weight, terms = priced
+            weight, terms, corridor = priced
             by_axis.setdefault(axis, []).append(other)
+            if corridor is not None:
+                graph.corridors[(index, other)] = corridor
+                graph.corridors[(other, index)] = corridor
             graph.edges.setdefault(other, {}).setdefault(axis, []).append(index)
             graph.weights[(index, other)] = weight
             graph.weights[(other, index)] = weight
@@ -229,17 +259,20 @@ def build_graph(space: RoutingSpace,
     return graph
 
 
-def _price(space: RoutingSpace, a: Node, b: Node,
-           axis: str) -> tuple[float, dict[str, float]] | None:
-    """One edge's cost and terms, or None when a hard prism sits between the two nodes.
+def _price(space: RoutingSpace, a: Node, b: Node, axis: str, *,
+           lenient: bool = False) -> tuple[float, dict[str, float], str | None] | None:
+    """``(cost, terms, corridor tag)`` for one edge, or None when a hard prism is between.
 
     The midpoint test is the cheap approximation and it is honest here: the lattice's own
     lines are the offset edges of every hard prism, so a segment between two adjacent nodes
     cannot enter and leave one — if it touches a prism at all, its midpoint is inside it.
+
+    ``lenient`` is set for the one step off a terminal that stands inside something. See
+    :func:`build_graph`; it buys one lattice step and never a lane.
     """
     mid = ((a.x + b.x) / 2.0, (a.y + b.y) / 2.0)
     midz = (a.z + b.z) / 2.0
-    if space.blocked(mid, midz) is not None:
+    if not lenient and space.blocked(mid, midz) is not None:
         return None
 
     length_m = abs(b.x - a.x) + abs(b.y - a.y) + abs(b.z - a.z)
@@ -273,7 +306,7 @@ def _price(space: RoutingSpace, a: Node, b: Node,
         terms["room_in"] = room_ft * space.cost.room_penalty(occupancy)
     if in_wall_ft:
         terms["in_wall_in"] = in_wall_ft * space.cost.in_wall_travel_per_ft
-    return cost, terms
+    return cost, terms, (corridor.tag if corridor is not None else None)
 
 
 def _unique(values: Iterable[float]) -> list[float]:

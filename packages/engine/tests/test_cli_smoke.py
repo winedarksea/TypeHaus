@@ -21,7 +21,7 @@ EXPECTED_COMMANDS = {
     "engineering", "explain", "export", "fmt", "handoff",
     "import", "import-project", "ls", "millwork", "new", "permit-check", "print",
     "inspections", "record", "render", "route", "schedule",
-    "serve", "sunken-garden-study", "takeoff", "tasks", "version",
+    "serve", "sunken-garden-study", "takeoff", "tasks", "trial", "version",
 }
 
 runner = CliRunner()

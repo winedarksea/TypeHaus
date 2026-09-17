@@ -139,16 +139,48 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   travelling 5'-6" horizontally. **This, and not the radial plane, is what actually blocks
   `mep.duct_interference`**: a duct cannot be proven clear of something the model does not
   place in z. Per-vertex elevations on `ConduitRun` are the prerequisite.
-- **`haus route --run` refuses every duct.** `cli/cmd_route.py`'s `_endpoints` indexes only
-  `model.pipe_runs`, so `--run DU-ERV-OA` answers "not a run in this model" — and so does the
-  `--run DU-M-ERV-R-KITCH` example the repo `CLAUDE.md` advertises. `routing/trades/duct.py`
-  exists and is wired into `corridors.py`/`obstacles.py`; only the dispatch is missing.
-- **37 MEP interpenetrations remain in the NW column** (x 0..7', y 32'..36'-6"), ducts and
-  pipes only, measured 2026-09-15. The ERV's own twelve were cleared by moving both outdoor
-  hoods to the north face; what is left is plumbing against plumbing and plumbing against the
-  main-storey radial lanes — `PR-M-WC-VENT`'s westward leg at y=34'-6" crosses ten radials,
-  and `PR-B-BATH-VENT`/`PR-B-SAUNA-VENT` share solid with `PR-B-KITCH-DRAIN`. None of it is
-  the ERV's to fix and nothing grades any of it.
+- ~~**`haus route --run` refuses every duct.**~~ **Done 2026-09-17.** `cli/route_support.py`'s
+  `_endpoints` now branches over `model.ducts` and `model.conduits`; a duct keeps its own two
+  ends and searches the full multi-level lattice, and a proposal prints
+  `routing=`/`floor_ref=`/`soffit_ref=` read back out of the corridors the winning legs rode.
+  `routing/trades/duct.crossing_admissible` imported a name that has never existed and raised
+  on every call, so it was dead code with a note behind it; it is fixed and `test_routing_trades.py`
+  calls it. `--run DU-M-ERV-R-KITCH` still refuses on catlin, but now for the true reason and
+  with the tags: the ERV manifold packs ten ports 4" apart, so every lane out of one is inside
+  a neighbour's envelope and 3 of 33,439 lattice nodes are reachable.
+- **A whole-storey duct problem exceeds `MAX_LATTICE_NODES`.** `--run DU-B-ERV-R-GYM --margin 3`
+  wants 148,960 nodes against the 120,000 cap. `--timing` says where it goes: on the ERV-KITCH
+  problem, build-space 53 ms, **build-graph 4,128 ms**, search 0.0 ms. That is the measurement
+  the roadmap's Phase 7 is gated on, and it says plainly that jump-point pruning of the SEARCH
+  would buy nothing — a true escape graph (lines ending at the first prism) is the lever.
+- **155 MEP interpenetrations house-wide, and they are now GRADED.** `mep.run_interference`
+  (`checks/mep/run_interference.py`, added 2026-09-17) compares every pair of runs envelope
+  against envelope — real outside diameter plus insulation, one prism per segment over that
+  segment's own z range — and exempts a pair only where one run ENDS on the other (a wye, a
+  tee, an elbow, a riser into a trunk) or a rough opening names them both. 72 duct-against-
+  pipe, 62 pipe-against-pipe, 21 duct-against-duct; median overlap **1.99"**, worst **4.00"**,
+  which is one 4" duct entirely inside another. The hand count of "37 in the NW column"
+  (x 0..7', y 32'..36'-6", 2026-09-15) was the same defect seen through a keyhole.
+  **Suppressed in `houses/catlin/preferences.toml` with the count and the date on it**, as an
+  open campaign rather than a decision: landing it red takes `haus print`, the handoff bundle
+  and the CI gate with it. Working it down is what `haus route --alternatives --evaluate` and
+  `haus trial` were built for. Delete the entry, run `haus check houses/catlin --only fail`,
+  and the count is the score.
+  - **A schematic raceway is excluded and disclosed, not graded.** A `ConduitRun` holding two
+    end elevations says nothing about what it clears in between, so grading it against the
+    "rises at its last point" convention reports clashes with a drawing. `ConduitRun.elevations`
+    (per-vertex, project-frame absolute) now exists; catlin authors none yet, so all three of
+    its raceways come back as one UNKNOWN naming them. Authoring those profiles is what closes
+    "nothing can grade a duct against a conduit".
+- ~~**Notching and boring limits are not covered.**~~ **Done 2026-09-17.** R502.8.1,
+  R602.6 and R602.6.1 are off `mn_residential`'s not-covered list. The rules live in
+  `resolve/mep_bores.py` where the router can reach them too, graded against the ACTUAL
+  resolved members rather than a spacing — `W-S-SN3`, the staggered wet wall, bores 11 studs
+  at its axis and 5 two inches north of it, which is the number a rule applied to "the wall"
+  cannot produce. Oracled by `houses/catlin/notes/framing_bore_limits.md`. An engineered
+  member is UNKNOWN and never graded; a penetration as wide as the member is a framed
+  opening and not a bore, and **nothing in this engine grades the header over one** — that
+  is the next hole in this area.
 - **`EQ-M-ERV-MAN-SUP` and `EQ-M-ERV-MAN-EXH` still have no drawn feed.** Thirteen radials
   leave them and no trunk arrives; `mep.erv_manifold_ports` passes both because it counts
   ports, and only the two plenums with a drawn trunk report a "trunk collar". Until they are

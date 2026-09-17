@@ -166,11 +166,27 @@ def _resolve_conduit_run(model: ResolvedModel, run: ConduitRun, storey_tag: str)
     z0 = run.start_elevation.meters if run.start_elevation is not None else None
     z1 = run.end_elevation.meters if run.end_elevation is not None else None
     rise = abs(z1 - z0) if z0 is not None and z1 is not None else 0.0
+    z_m: tuple[float, ...] | None = None
+    if run.elevations is not None:
+        if len(run.elevations) != len(path):
+            return [Finding(
+                severity=Severity.ERROR, check_id="integrity.conduit_run_path",
+                message=(f"conduit run {run.tag} authors {len(run.elevations)} elevation(s) "
+                         f"for {len(path)} path point(s) — one per vertex, or none"),
+                element_tags=(run.tag,), result=Result.FAIL)]
+        z_m = tuple(e.meters for e in run.elevations)
+        z0 = z_m[0] if z0 is None else z0
+        z1 = z_m[-1] if z1 is None else z1
+        # Developed pull length over the authored profile, not plan + one end rise: a run
+        # that steps twice pulls further than a run that steps once, and the endpoint pair
+        # cannot tell the two apart.
+        rise = sum(abs(b - a) for a, b in zip(z_m, z_m[1:], strict=False))
     resolved = ResolvedConduitRun(
         uid=run.uid, tag=run.tag, storey=storey_tag, path=path,
         trade_size_m=run.trade_size.meters, z_start_m=z0, z_end_m=z1,
         length_m=plan_len + rise, from_ref=run.from_ref, to_ref=run.to_ref,
         service=run.service.value if run.service is not None else None,
+        z_m=z_m,
     )
     model.conduits.append(resolved)
     # Geometry from the same profile ``concrete_crossings`` walks, so the raceway a reader

@@ -44,6 +44,16 @@ DFU_BY_SYMBOL: dict[str, float] = {
     "floor-drain": 2.0,
 }
 
+# MN Plumbing Code 710.1 (UPC 710.1): no water closet discharges to a drain smaller than
+# 3". Table 703.2 alone does not say so — a 3 DFU closet sits comfortably inside the 2"
+# row's 6 DFU — and sizing a closet branch from capacity alone is the classic table-only
+# error. Only the fixtures the rule actually names appear here; a symbol with no row has no
+# floor, which is the honest reading rather than a defensive one.
+MINIMUM_DRAIN_IN_BY_SYMBOL: dict[str, float] = {
+    "toilet": 3.0,
+    "toilet-wall-hung": 3.0,
+}
+
 # MN Plumbing Code Table 610.3 (private): (total, hot, cold) WSFU per fixture.
 WSFU_BY_SYMBOL: dict[str, tuple[float, float, float]] = {
     "toilet": (2.5, 0.0, 2.5),   # flush tank

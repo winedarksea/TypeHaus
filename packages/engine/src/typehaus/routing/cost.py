@@ -90,6 +90,29 @@ class RouteCost:
                 + in_wall_ft * self.in_wall_travel_per_ft
                 + room_ft * self.room_penalty(occupancy))
 
+    def table(self) -> list[str]:
+        """The weights actually in force, as lines — the whole of ``--explain``'s header.
+
+        Printed rather than assumed, because a house may pin any of them in
+        ``[mep.routing]`` and a proposal argued from defaults the house overrode is an
+        argument about the wrong building. Only the room penalties that differ from the
+        built-in table are listed: the point is what THIS run was priced at, and twenty
+        unchanged rows bury it.
+        """
+        lines = [
+            f'weights: bend {self.bend_in:.0f}" each, riser {self.riser_per_ft:.2f}x '
+            f"horizontal, corridor -{self.corridor_discount_per_ft:.0f}\"/ft (capped), "
+            f'in-wall +{self.in_wall_travel_per_ft:.0f}"/ft past one bay',
+        ]
+        overrides = {k: v for k, v in sorted(self.room_per_ft.items())
+                     if abs(v - _ROOM_PENALTY_PER_FT.get(k, -1.0)) > 1e-9}
+        if overrides:
+            lines.append("  room penalties overridden by the house: "
+                         + ", ".join(f'{k} {v:.0f}"/ft' for k, v in overrides.items()))
+        lines.append(f"  cheapest possible inch of travel (the heuristic's scale): "
+                     f"{self.heuristic_floor():.3f}")
+        return lines
+
     def heuristic_floor(self) -> float:
         """The cheapest an inch of plan travel can ever be — the heuristic's scale factor.
 

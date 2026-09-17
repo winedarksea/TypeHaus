@@ -28,9 +28,11 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     routing,
     routing_beams,
     routing_blocking,
+    routing_bores,
     routing_ceiling,
     routing_members,
     routing_openings,
+    run_interference,
     supply_protection,
     water_heater,
 )

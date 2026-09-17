@@ -5,7 +5,8 @@ Two kinds, and the distinction is not a matter of degree:
 **Hard** — a rough opening, a deck void with no wall under it, unsleeved concrete, an
 existing run, anything ``--avoid`` names. A route through one of these is not expensive,
 it is wrong, and the search may not take it at any weight. (A door's *swing* is not among
-them — see :func:`_opening_prisms` — and the buck it swings in is.)
+them — see :func:`~typehaus.resolve.mep_envelopes.opening_prisms` — and the buck it swings
+in is.)
 
 **Soft** — a room's open volume below its finished ceiling, priced by occupancy; in-wall
 travel past one stud bay. These are buildable and undesirable, which is exactly what a
@@ -13,9 +14,17 @@ cost function is for. ``mep.run_in_finished_volume`` is the hard version of the 
 *after the fact*; here it is a number.
 
 Everything is inflated by ``radius + clearance`` **once**, when the space is built, rather
-than re-derived per query. ``checks/mep/routing_geometry.run_radii`` makes that correction
-on every call because a check grades many runs against one geometry; a router grades one
-run against many geometries and the correction belongs in the world.
+than re-derived per query. A check makes that correction on every call because it grades
+many runs against one geometry; a router grades one run against many geometries and the
+correction belongs in the world.
+
+**The geometry itself is not derived here any more.** Rough-opening bucks and existing-run
+envelopes both live in :mod:`typehaus.resolve.mep_envelopes`, which is the layer a router
+and a check may both reach. They used to be stated twice — once here and once in
+``checks/mep`` — and the two readings had drifted: this one put every opening at its wall's
+``z0_m`` rather than its ``base_ref_z_m``, 13 7/16" out on catlin's main-storey exterior
+walls, and banded a whole run over ``min(z)..max(z)`` so one riser blocked a wall along the
+run's entire length.
 """
 
 from __future__ import annotations
@@ -93,16 +102,24 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
     concerned with are the two it may not reach — a branch cannot land on the main it
     discharges to, because the main is a hard prism sitting exactly where the tie is.
 
-    **Rough openings are re-derived here, deliberately.**
-    ``checks/mep/routing_openings`` derives the same footprints for
-    ``mep.opening_interference``, and the leaf rule forbids importing it — so the two
-    readings are stated twice and :func:`_opening_prisms` says which parts must agree and
-    which must not. Sharing one derivation would mean the router importing a check.
+    **Rough openings and run envelopes come from ``resolve/mep_envelopes``**, which is the
+    layer both this package and ``checks/mep`` may import. The leaf rule constrains
+    DIRECTION — routing reads resolve, nothing reads routing — not self-sufficiency, and
+    two hand-copied derivations that had already drifted apart is what it cost to read it
+    the other way.
     """
+    from typehaus.resolve.mep_envelopes import opening_prisms
+
     inflate = radius_m + clearance_m
     out: list[HardPrism] = []
 
-    for tag, prism, low, high in _opening_prisms(model):
+    # **Un-eroded, and that is the whole difference from the check's reading.** A raceway
+    # strapped to a jack stud shares a coordinate with the opening beside it, and
+    # ``mep.run_through_opening`` must not report that; a router must not PROPOSE it
+    # either, and half an inch of tolerance is exactly the width of the lane it would
+    # propose. The check's tolerance is forgiveness after the fact and the router has
+    # nothing to forgive, so the two are one derivation with one parameter.
+    for tag, _is_door, _host, prism, low, high, _for in opening_prisms(model, erode_m=0.0):
         grown = prism.buffer(inflate)
         if grown.is_empty:
             continue
@@ -147,17 +164,20 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
     # Existing runs. A proposal that occupies a lane something else already has is not a
     # proposal, and this is the only obstacle class whose membership the caller edits by
     # deleting the run it is re-routing.
-    for tag, path, z, other_radius in _existing_runs(model):
-        if tag in avoid or tag in touch or len(path) < 2 or len(z) != len(path):
-            continue
-        from shapely.geometry import LineString
+    #
+    # **One prism per SEGMENT, over that segment's own z range.** What stood here buffered
+    # a run's whole plan polyline and banded it over ``min(z)..max(z)``, so a branch that
+    # drops six feet at one end blocked a full-height wall along its entire length — which
+    # is how a perfectly clear lane comes back as "every lane is blocked". The per-segment
+    # reading is ``resolve/mep_envelopes``, which the checks read too.
+    from typehaus.resolve.mep_envelopes import envelopes
 
-        line = LineString(path).buffer(inflate + other_radius)
-        if line.is_empty:
+    for envelope in envelopes(model, inflate_m=inflate):
+        if envelope.tag in avoid or envelope.tag in touch:
             continue
-        out.append(HardPrism(tag=tag, kind="run", footprint=line,
-                             z0_m=min(z) - inflate - other_radius,
-                             z1_m=max(z) + inflate + other_radius))
+        for prism in envelope.prisms:
+            out.append(HardPrism(tag=envelope.tag, kind="run", footprint=prism.footprint,
+                                 z0_m=prism.z0_m, z1_m=prism.z1_m))
 
     for tag in sorted(avoid):
         element = model.plan.by_tag(tag)
@@ -200,54 +220,6 @@ def soft_prisms(model: ResolvedModel) -> list[SoftPrism]:
     return out
 
 
-def _opening_prisms(model: ResolvedModel) -> list[tuple[str, Any, float, float]]:
-    """``(tag, plan footprint, sill z, head z)`` for every rough opening in the model.
-
-    The buck is the opening's width along the wall axis by the wall's FULL thickness
-    across it — a window buck runs the whole depth of the assembly, so a run crossing the
-    width anywhere in that depth is in it. ``checks/mep/routing_openings.opening_prisms``
-    derives the same rectangle for ``mep.run_through_opening``; the leaf rule forbids
-    importing it, so the derivation is stated twice and this says which way the two differ.
-
-    **The check erodes the buck by ``OPENING_EDGE_M`` and this does not.** A raceway
-    strapped to a jack stud shares a coordinate with the opening beside it, and the check
-    must not report that; a router must not *propose* it either, and half an inch of
-    tolerance is exactly the width of the lane it would propose. The check's tolerance is
-    forgiveness after the fact and the router has nothing to forgive. :func:`hard_prisms`
-    then grows this by ``radius + clearance`` once, for the same reason.
-
-    A door's swing is not modelled here. The swing is a hard obstacle in its own right and
-    would need the leaf's own reading of hinge side and hand, which this package has not
-    got; a route through a closed door's buck is already refused by the buck itself.
-    """
-    import math
-
-    from shapely.geometry import Polygon
-
-    walls = {wall.tag: wall for wall in model.walls}
-    out = []
-    for opening in model.openings:
-        wall = walls.get(opening.host_wall)
-        if wall is None or len(wall.axis) < 2:
-            continue
-        (ax, ay), (bx, by) = wall.axis[0], wall.axis[-1]
-        length = math.dist((ax, ay), (bx, by))
-        if length <= 0:
-            continue
-        ux, uy = (bx - ax) / length, (by - ay) / length
-        nx, ny = -uy, ux
-        half, depth = opening.width_m / 2.0, wall.thickness_m / 2.0
-        near, far = opening.center_along_m - half, opening.center_along_m + half
-        corners = [(ax + ux * s + nx * depth * side, ay + uy * s + ny * depth * side)
-                   for s in (near, far) for side in (1, -1)]
-        prism = Polygon([corners[0], corners[1], corners[3], corners[2]])
-        if prism.is_empty or not prism.is_valid:
-            continue
-        low = wall.z0_m + opening.sill_m
-        out.append((opening.tag, prism, low, low + opening.height_m))
-    return out
-
-
 def _wall_union(model: ResolvedModel) -> Any:
     from shapely.geometry import Polygon
 
@@ -258,30 +230,6 @@ def _wall_union(model: ResolvedModel) -> Any:
                 if len(layer.polygon) >= 3]
     valid = [p for p in polygons if p.is_valid and not p.is_empty]
     return union_all(valid) if valid else None
-
-
-def _existing_runs(
-        model: ResolvedModel
-) -> list[tuple[str, tuple[tuple[float, float], ...], tuple[float, ...], float]]:
-    """``(tag, path, per-vertex z, radius)`` for every routed thing already in the model."""
-    from typehaus.resolve.mep_queries import conduit_vertical_profile
-
-    out = []
-    for run in model.pipe_runs:
-        z = tuple(run.z_m) if run.z_m and len(run.z_m) == len(run.path) else ()
-        out.append((run.tag, tuple(run.path), z, (run.diameter_m or 0.0) / 2.0))
-    for duct in model.ducts:
-        z = tuple(duct.z_m) if len(duct.z_m) == len(duct.path) else ()
-        radius = ((duct.diameter_m or max(duct.width_m, duct.depth_m)) / 2.0)
-        out.append((duct.tag, tuple(duct.path), z, radius))
-    for raceway in model.conduits:
-        profile = conduit_vertical_profile(raceway)
-        if profile is None:
-            continue
-        raceway_path, raceway_z = profile
-        out.append((raceway.tag, tuple(raceway_path), tuple(raceway_z),
-                    (raceway.trade_size_m or 0.0) / 2.0))
-    return out
 
 
 def inches(metres: float) -> float:

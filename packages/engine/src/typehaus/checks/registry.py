@@ -138,6 +138,16 @@ class MepPreferences:
     #: and every PASS still prints its margin, which is most of the check's value.
     min_drain_slope_margin_in_per_ft: float = 0.0625
 
+    # --- [mep.routing] (typehaus/routing/cost.py) ---
+    #: The raw ``[mep.routing]`` table, carried as a **dict** and not as a ``RouteCost``.
+    #: These are the router's weights, and ``checks`` may not import ``routing`` — the leaf
+    #: rule is about direction, and a check that could reach a router would be a check
+    #: gradeable against its own optimiser. So the table is carried verbatim and
+    #: ``routing/cost.cost_from_preferences`` turns it into weights at the one place the two
+    #: packages meet, which is ``cli/cmd_route.py`` and nowhere else. Nothing in ``checks``
+    #: reads it.
+    routing: dict = field(default_factory=dict)
+
 
 @dataclass
 class StructuralPreferences:

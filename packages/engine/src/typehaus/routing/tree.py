@@ -23,6 +23,7 @@ It is never dropped, and never silently rounded into feasibility.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Any
 
 from typehaus.routing.graph import Graph
 from typehaus.routing.gravity import HeadBudget
@@ -81,8 +82,15 @@ def order_terminals(terminals: list[Terminal]) -> list[Terminal]:
 
 
 def build_tree(graph: Graph, space: RoutingSpace, root: int,
-               terminals: list[Terminal], *, root_nodes: set[int] | None = None) -> Tree:
+               terminals: list[Terminal], *, root_nodes: set[int] | None = None,
+               search: Any = None) -> Tree:
     """Route every terminal to the root, deepest first, joining the tree as it grows.
+
+    ``search`` is the search function, defaulting to the plain A*. A gravity tree passes
+    ``gravity_search.sloped_route`` bound to its own problem, so every branch is searched
+    where it actually falls rather than lowered onto a lane already chosen — see the drain
+    note's §8. It is a parameter rather than an import because this module has no opinion
+    about gravity beyond the ORDER, which is the whole of its argument.
 
     ``root_nodes`` is the set of arrivals the root accepts — for a stack, every node on its
     barrel rather than the head alone. Defaulting to ``{root}`` is the degenerate case and
@@ -98,7 +106,7 @@ def build_tree(graph: Graph, space: RoutingSpace, root: int,
         if terminal.budget is not None and not terminal.budget.feasible:
             tree.unserved[terminal.tag] = terminal.budget.shortfall_in()
             continue
-        route = shortest_route(graph, space, terminal.node, reachable)
+        route = (search or shortest_route)(graph, space, terminal.node, reachable)
         if route is None:
             # No route in PLAN, which is a different failure from no head and is reported
             # as such: a shortfall of infinity is not a number, so it is stated as one.

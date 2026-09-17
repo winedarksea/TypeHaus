@@ -91,24 +91,43 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
         window = member_window(floor)
         if window is None:
             continue
-        for kind, tag, path, z in runs:
+        # Every crossing on this floor first, keyed by member, because R502.8.1's spacing
+        # rule is a question about the OTHER holes in the same joist and no per-run pass can
+        # see them. Two 2" drains 1 1/2" apart each fit the window and each clear D/3; the
+        # pair is what the section forbids.
+        by_member: dict[str, list[tuple[str, float, float]]] = {}
+        per_run: dict[str, list] = {}
+        for _kind, tag, path, z in runs:
             if len(path) < 2 or len(z) != len(path):
                 continue
             radius = radii.get(tag, 0.0)
-            tightest: tuple[float, float, float, str, float] | None = None
             for index in range(len(path) - 1):
                 for crossing in leg_crossings(floor, path[index], path[index + 1],
                                               z[index], z[index + 1]):
-                    crown_gap = window.z1_m - (crossing.z_m + radius)
-                    invert_gap = (crossing.z_m - radius) - window.z0_m
-                    worst = min(crown_gap, invert_gap)
-                    if tightest is None or worst < tightest[0]:
-                        tightest = (worst, crown_gap, invert_gap,
-                                    crossing.member_key, crossing.station_m)
+                    per_run.setdefault(tag, []).append(crossing)
+                    by_member.setdefault(crossing.member_key, []).append(
+                        (tag, crossing.station_m, radius))
+
+        for kind, tag, _path, _z in runs:
+            crossings = per_run.get(tag)
+            if not crossings:
+                continue
+            radius = radii.get(tag, 0.0)
+            tightest: tuple[float, float, float, str, float] | None = None
+            for crossing in crossings:
+                crown_gap = window.z1_m - (crossing.z_m + radius)
+                invert_gap = (crossing.z_m - radius) - window.z0_m
+                worst = min(crown_gap, invert_gap)
+                if tightest is None or worst < tightest[0]:
+                    tightest = (worst, crown_gap, invert_gap,
+                                crossing.member_key, crossing.station_m)
             if tightest is None:
                 continue
             graded += 1
             out.append(_finding(kind, tag, floor.tag, radius, window, tightest))
+            bore = _bore_finding(ctx, floor, window, tag, radius, crossings, by_member)
+            if bore is not None:
+                out.append(bore)
 
     if graded == 0:
         return [_na(_CID, f"{len(floors)} resolved floor(s) and {len(runs)} routed run(s), "
@@ -147,3 +166,50 @@ def _finding(kind: str, tag: str, floor_tag: str, radius_m: float,
         f"{where}: crown {crown_gap / M_PER_IN:+.3f}\", invert "
         f"{invert_gap / M_PER_IN:+.3f}\" ({sizes}) — {window.basis}",
         (tag, floor_tag))
+
+
+def _bore_finding(ctx, floor, window: CrossingWindow, tag: str, radius_m: float,
+                  crossings: list, by_member: dict) -> Finding | None:
+    """R502.8.1's other two limits: the hole's DIAMETER, and its distance to the next cut.
+
+    The z window says a run fits between the chords. It does not say the hole is legal, and
+    on a solid-sawn joist those are different questions: a 3" hole in a 2x8 sits comfortably
+    inside a 3 1/4" window and is still half an inch over D/3. Nothing asked until now, which
+    is what "notching and boring limits (R502.8/R602.6)" on the profile's not-covered list
+    meant in practice.
+
+    **Only where a code table reaches.** An open-web truss hands a service its web space and
+    cuts nothing; an I-joist and an LVL are the fabricator's chart. This returns ``None`` for
+    both rather than applying a solid-sawn rule to a product it has never governed.
+    """
+    from typehaus.resolve.mep_bores import JOIST_HOLE_SPACING_IN, joist_bore
+
+    if window.kind != "solid_sawn":
+        return None
+    member = next((m for m in floor.members if m.category == "joist"), None)
+    if member is None:
+        return None
+    diameter_in = 2 * radius_m / M_PER_IN
+
+    # The nearest OTHER cut in any member this run crosses — clear distance between the two
+    # holes' edges, not between their centres.
+    nearest_in: float | None = None
+    for crossing in crossings:
+        for other_tag, station_m, other_radius in by_member.get(crossing.member_key, ()):
+            if other_tag == tag:
+                continue
+            clear = (abs(station_m - crossing.station_m) - radius_m - other_radius)
+            clear_in = clear / M_PER_IN
+            if nearest_in is None or clear_in < nearest_in:
+                nearest_in = clear_in
+
+    verdict = joist_bore(member.profile, diameter_in, nearest_cut_in=nearest_in)
+    if verdict.ok is not False:
+        return None
+    spacing = (f' and its nearest neighbour is {nearest_in:.2f}" away (2" minimum)'
+               if nearest_in is not None and nearest_in < JOIST_HOLE_SPACING_IN else "")
+    return _fail(
+        _CID, f"{tag} bores {floor.tag}: {verdict.basis}{spacing}", (tag, floor.tag),
+        fix="take the leg along a bay instead of across the members, or split the run "
+            "into two smaller ones if its load allows. Never a notch, and never a "
+            "reinforcement this engine added on its own")

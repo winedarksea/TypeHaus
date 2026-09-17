@@ -80,6 +80,19 @@ class RouteProposal:
     cost: float = 0.0
     bends: int = 0
     terms: dict[str, float] = field(default_factory=dict)
+    #: Rectangular duct section. Both zero for anything round, and a duct that carries both
+    #: a diameter and a width would be an element ``integrity.duct_run_section`` refuses —
+    #: so exactly one of the two is ever printed.
+    width_m: float = 0.0
+    depth_m: float = 0.0
+    #: Where the winning legs actually rode, filled from ``Route.corridor_tags``. A duct
+    #: claiming ``routing=JOIST_BAY`` and a ``floor_ref`` it never entered is the one kind
+    #: of proposal that passes a plan reader and fails ``mep.duct_bay_occupancy``.
+    routing: str | None = None
+    floor_ref: str | None = None
+    soffit_ref: str | None = None
+    #: Extra constructor keywords to echo verbatim — a raceway's ``from_ref``/``to_ref``.
+    echo: dict[str, str] = field(default_factory=dict)
     #: Free-form lines the caller wants printed with the proposal — a legalisation notice,
     #: a head-budget shortfall, a firestop somebody has to detail. Never silent.
     notes: list[str] = field(default_factory=list)
@@ -100,7 +113,9 @@ class RouteProposal:
         return RouteProposal(
             tag=self.tag, kind=self.kind, points=points, diameter_m=self.diameter_m,
             serves=self.serves, system=self.system, cost=self.cost, bends=self.bends,
-            terms=dict(self.terms), notes=list(self.notes))
+            terms=dict(self.terms), notes=list(self.notes), width_m=self.width_m,
+            depth_m=self.depth_m, routing=self.routing, floor_ref=self.floor_ref,
+            soffit_ref=self.soffit_ref, echo=dict(self.echo))
 
     def developed_ft(self) -> float:
         total = 0.0
@@ -112,14 +127,20 @@ class RouteProposal:
         """The constructor a person pastes, in dialect source.
 
         ``storey_datum_m`` subtracts the storey the run will be **filed on**, because
-        ``PipeRun.elevations`` are storey-relative while a route is solved in project
-        coordinates. Getting that wrong is silent — memory's "pipe elevations are
-        storey-relative" — so it is a required decision at the call site rather than a
-        default that happens to be right for ``main``.
+        ``PipeRun.elevations`` and ``DuctRun.elevations`` are storey-relative while a route
+        is solved in project coordinates. Getting that wrong is silent — memory's "pipe
+        elevations are storey-relative" — so it is a required decision at the call site
+        rather than a default that happens to be right for ``main``.
+
+        **A raceway ignores it.** ``ConduitRun``'s elevations are project-frame absolute
+        (``model/mep.py``), so subtracting a datum from them would move the run by a storey
+        and nothing would say so.
 
         No ``uid=``. ``haus fmt`` mints one, and a hand-written uid is the one thing this
         repo's own rules forbid outright.
         """
+        if self.kind == "conduit":
+            return self._conduit_source()
         from typehaus.source.serialize import value_source
 
         path = tuple(Point2D(length_source(x), length_source(y))
@@ -130,14 +151,78 @@ class RouteProposal:
             f'{_CONSTRUCTOR[self.kind]}(tag="{self.tag}", '
             f"system={_system_source(self.kind, self.system)},",
             *_wrapped("path", path),
-            f"        diameter={value_source(length_source(self.diameter_m))},",
-            *_wrapped("elevations", elevations),
         ]
-        if self.serves:
-            lines.append(f"        serves={value_source(self.serves)}),")
+        if self.width_m or self.depth_m:
+            lines.append(f"        width={value_source(length_source(self.width_m))}, "
+                         f"depth={value_source(length_source(self.depth_m))},")
         else:
-            lines[-1] = lines[-1].rstrip(",") + "),"
+            lines.append(
+                f"        diameter={value_source(length_source(self.diameter_m))},")
+        lines.extend(_wrapped("elevations", elevations))
+        if self.routing:
+            lines.append(f"        routing=DuctRouting.{self.routing.upper()},")
+        for name, value in (("floor_ref", self.floor_ref),
+                            ("soffit_ref", self.soffit_ref),
+                            *sorted(self.echo.items())):
+            if value:
+                lines.append(f'        {name}="{value}",')
+        if self.serves:
+            lines.append(f"        serves={value_source(self.serves)},")
+        lines[-1] = lines[-1].rstrip(",") + "),"
         return "\n".join(lines)
+
+    def _conduit_source(self) -> str:
+        """One ``ConduitRun`` per flat plane, and a note when there is more than one.
+
+        A raceway travels flat and rises only at its last vertex, so a route with two
+        changes of elevation is not one element. ``trades/conduit.legalize`` splits it and
+        ``disclosure`` says so; emitting the 3-D polyline anyway and letting the resolver
+        flatten it produces geometry nobody authored and no check catches.
+        """
+        from typehaus.routing.trades.conduit import legalize
+        from typehaus.source.serialize import value_source
+
+        blocks = []
+        legs = legalize(self.points)
+        for index, leg in enumerate(legs):
+            suffix = f"-{index + 1}" if len(legs) > 1 else ""
+            end = leg.rise_to_m if leg.rise_to_m is not None else leg.z_m
+            path = tuple(Point2D(length_source(x), length_source(y))
+                         for x, y in leg.points)
+            lines = [f'ConduitRun(tag="{self.tag}{suffix}",', *_wrapped("path", path),
+                     f"        trade_size={value_source(length_source(self.diameter_m))},",
+                     f"        start_elevation={value_source(length_source(leg.z_m))},",
+                     f"        end_elevation={value_source(length_source(end))},",
+                     f"        service={_system_source('conduit', self.system)},"]
+            for name, value in sorted(self.echo.items()):
+                lines.append(f'        {name}="{value}",')
+            lines[-1] = lines[-1].rstrip(",") + "),"
+            blocks.append("\n".join(lines))
+        return "\n".join(blocks)
+
+    def as_dict(self, *, storey_datum_m: float = 0.0) -> dict:
+        """Contract 2 of the roadmap: the network proposal, as JSON-able data.
+
+        Both the **structured** geometry and the **source** a person pastes, because the two
+        readers are different: an agent wants points and diameters it can reason about, and a
+        person wants the constructor. Emitting only one of them makes the other reader
+        re-derive it, and a re-derivation is a place for the two to drift.
+        """
+        return {
+            "tag": self.tag, "kind": self.kind, "system": self.system,
+            "points_m": [list(p) for p in self.points],
+            "diameter_m": self.diameter_m,
+            "width_m": self.width_m, "depth_m": self.depth_m,
+            "serves": list(self.serves),
+            "routing": self.routing, "floor_ref": self.floor_ref,
+            "soffit_ref": self.soffit_ref,
+            "developed_ft": round(self.developed_ft(), 4),
+            "bends": self.bends,
+            "cost_in_equivalent": round(self.cost, 4),
+            "terms_in": {k: round(v, 4) for k, v in sorted(self.terms.items())},
+            "notes": list(self.notes),
+            "source": self.source(storey_datum_m=storey_datum_m),
+        }
 
     def explain(self) -> list[str]:
         """The cost breakdown, biggest term first, in one unit."""

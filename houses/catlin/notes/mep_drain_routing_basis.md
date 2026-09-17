@@ -286,6 +286,152 @@ route lands in `unserved` with its shortfall in inches; it is never dropped.
 
 ---
 
+## 7. Two lanes, and why there is no third
+
+`routing/alternatives.py` offers more than one route by **penalty re-search**: route A is the
+plain search, then the lanes A rode are multiplied by a factor and the search is run again on
+the dearer copy, with every result re-priced on the *original* weights. §4's lattice is the
+smallest world where the whole mechanism is checkable by hand, so it is reused here.
+
+**The world is §4's**, unchanged: eight nodes, E removed, every edge 24", BEND = 24",
+start A, goal I.
+
+**How many simple paths are there, really?** Enumerate them. From A the only moves are to B
+(+x) and to D (+y).
+
+* Take **B**. B's surviving neighbours are A and C — E is gone — so the path is forced to C.
+  C's are B and F, so it is forced to F. F's are C and I. Path: **A–B–C–F–I**.
+* Take **D**. By the same argument through G and H: **A–D–G–H–I**.
+
+A path may not revisit a node, so there are **exactly two**, and they share **no edge at
+all**. Both are 96" of travel with one bend, so both cost **120**.
+
+**Round 0.** The unpenalised search returns A–D–G–H–I — §4's answer, and the tie against
+A–B–C–F–I is broken at the last pop by the axis rule, not by this module. **Route A must be
+byte-identical to §4 and is.**
+
+**Round 1.** A's legs are the vertical x = 0 from y = 0 to 48, and the horizontal y = 48 from
+x = 0 to 48. The band round a leg is `max(2 × (radius + clearance), 12")`, and in this world
+radius and clearance are both zero, so it is **12"**. The grid step is 24", so the band round
+x = 0 reaches x = ±12 and catches the two edges *on* x = 0 and nothing on x = 24. Six edges
+are tripled: A–D, D–G (x = 0, axis y) and G–H, H–I (y = 48, axis x). The penalised cost of
+A–D–G–H–I is therefore 4 × 72 + 24 = **312**, and A–B–C–F–I is untouched at **120**, so the
+second search returns it.
+
+**Re-priced on the original graph it is 120**, which is the number a reader compares — not
+the 120 it happened to have on the penalised copy, and never the 312 the incumbent was
+quoted at there.
+
+**Accepted?** Shared fraction is measured by length against every route already accepted.
+The two are edge-disjoint, so it is **0.0**, comfortably under the 0.5 line. Accepted.
+
+**Round 2.** Both lanes are now dear. Every edge in the world lies on one of them, so the
+search returns whichever is cheapest — A–D–G–H–I again, at 312 penalised — and its shared
+fraction against an accepted route is **1.0**. Rejected. Nothing changes on any later round,
+and the loop stops at its `3 × k` bound.
+
+**So `k = 3` yields exactly 2.** That is the assertion, and it is the one that matters: this
+module returns *fewer* than asked rather than padding the list with the same route wearing a
+jog. A lane that is the only lane is a fact about the building.
+
+**What a reviewer should confirm from the above.**
+
+* **The factor must be ≥ 1.** At 0.5 the tripled lane would be *halved* instead and round 1
+  would return A–D–G–H–I at 60, which is the same route offered as an alternative to itself.
+* **Nodes are never removed.** I is on both lanes and is penalised on round 2; it is still
+  reachable, so a forced tie-in can always be reached. Deleting taken edges would have made
+  round 2 report "no route" — a refusal manufactured by the alternatives machinery rather
+  than by the building.
+* **The band is a lane, not a line.** Penalising only literally-collinear edges would let a
+  2" branch find "another route" one candidate line — sometimes a sixteenth of an inch —
+  away from the one just offered.
+
+---
+
+## 8. A drain searched where it falls, by hand
+
+`routing/gravity_search.py` puts the developed length **into the search state**, so the
+invert is known at every relaxation rather than applied to a finished plan route. This
+section is the smallest world where that changes the answer, and the answer it changes is
+the important kind: the search returns a **dearer** route because the cheaper one runs out
+of head at a truss.
+
+**The world.** A 24" grid, two rows of four, every node at z = 0. Ids in `(z, y, x)` order,
+as §4 states:
+
+          y=24   E(4)   F(5)   G(6)   H(7)
+          y= 0   A(0)   B(1)   C(2)   D(3)
+                 x=0    x=24   x=48   x=72
+
+**Start** A, **goal** D. Two simple paths, and they are the whole of the world:
+
+* **S, the short one:** A→B→C→D. Three 24" edges, **72" of travel, 0 bends, 6.00 ft
+  developed.**
+* **L, the long one:** A→E→F→G→H→D. Five edges, **120" of travel, 2 bends, 10.00 ft
+  developed.**
+
+**The upper row is a corridor and the lower one crosses a bedroom.** E–F, F–G and G–H ride
+a joist bay at `corridor_discount_per_ft` = 8, so each 2 ft edge prices at 24 − 2×8 = **8**.
+B–C crosses a finished room and pays 24" of penalty on top of its travel, so it prices at
+**48**. `BEND` is **6"** here rather than §4's 24", which is the only other change from §4
+and is what makes the comparison turn on head instead of on fittings.
+
+**Costs, on the plain search's ruler.**
+
+| path | travel | bends | cost |
+|---|---|---|---|
+| S | 24 + 48 + 24 = **96** | 0 | **96** |
+| L | 24 + 8 + 8 + 8 + 24 = **72** | 2 × 6 = 12 | **84** |
+
+**So `search.shortest_route` returns L.** It is cheaper by twelve inches of equivalent
+travel, and everything about that answer is correct as far as the plain search can see.
+
+(The discount is 8 and not 12 for a reason worth stating: `heuristic_floor()` returns
+1 − 8/12 = **1/3**, so the A* heuristic at A is 72 × 1/3 = 24, comfortably under L's true
+84. Price the bay at zero without telling `RouteCost` and the heuristic stops being a lower
+bound — A* then never pops E at all and returns S for the wrong reason, which looks exactly
+like this section passing.)
+
+**Now the gravity.** The flange sets the ceiling at **116.50"**; the grade is the code
+minimum **0.25"/ft**; the tie at D accepts anything at or above **114.00"**. And `FS-ORACLE`
+crosses the bay at the middle of edge F–G, where the truss's web gives the centreline
+**115.50" … 116.50"**.
+
+* **S at the goal.** 6.00 ft × 0.25 = 1.50" of fall. Invert at D = 116.50 − 1.50 =
+  **115.00"**, which clears the 114.00" tie by a full inch. Nothing on S crosses `FS-ORACLE`.
+* **L at the goal.** 10.00 ft × 0.25 = 2.50". Invert at D = **114.00"** — exactly the tie,
+  and feasible. A head-budget test taken at the END would pass this route.
+* **L at the truss.** The crossing is the midpoint of F–G. Developed there is
+  (24 + 24)/12 = 4.00 ft to F, plus half of F–G's 2.00 ft, = **5.00 ft**. Invert =
+  116.50 − 1.25 = **115.25"**, and the window's floor is 115.50". **L is 0.250" below the
+  web and is not a route.**
+
+That quarter inch is the whole of §8. It is invisible to a search that solves the plan and
+then lowers the pipe, because by then the lane is chosen and the only report available is
+"the head budget does not close" — about a budget that closes perfectly well at the goal.
+
+**What the label-setting search returns: S, at 96.** Twelve inches dearer, and the only one
+of the two that can be built.
+
+**Why the Pareto frontier is needed, and why dominance is safe.** At one `(node, axis)` a
+label carries a cost *and* a developed length, and neither implies the other: the corridor
+buys length with money, which is exactly what L does. So a state keeps every label that is
+not beaten on both. A label is dropped only when another is **no dearer and no longer** (and
+starts no lower), and that is sound because every constraint tested is monotone in the
+invert once the ceiling is fixed — a longer route arrives lower, and lower is worse at a
+window and worse at a tie.
+
+**The one case that is NOT monotone, and is refused rather than exploited.** An existing
+run's prism could in principle be passed *under* by a longer route that has fallen further.
+Those are treated as blocking anywhere in the drain's possible band, `[required, ceiling]`,
+and the refusal says so. Lengthening a drain to slip beneath a duct is a decision with a
+head cost somebody has to want; the search will not make it quietly.
+
+**Rises never.** A vertical edge downward lowers the ceiling for the remainder — a drop is
+free fall and takes no grade — and a vertical edge upward is not relaxed at all.
+
+---
+
 ## 6. What this note does not do
 
 * **No fittings.** Everything here grades polylines. A route that passes still has to be

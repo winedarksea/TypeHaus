@@ -45,10 +45,21 @@ def crossing_admissible(model: ResolvedModel, floor: ResolvedFloor, *,
     route through.
     """
     del model  # the floor carries its own members; the model is the caller's handle
-    from typehaus.routing.corridors import _open_web_opening
+    from typehaus.resolve.framing.profiles import cross_section, open_web_opening_m
+    from typehaus.resolve.mep_crossings import member_window
 
-    members = [m for m in floor.members if m.z0_m is not None]
-    opening = _open_web_opening(members[0].profile) if members else None
+    # `_open_web_opening` was imported from `routing.corridors` and has never existed
+    # there, so this function raised `ImportError` at every call and nothing called it.
+    # The reading it wanted lives in `resolve/framing/profiles`, and the member to read it
+    # off is `mep_crossings.member_window`'s — the floor's first JOIST, never `members[0]`,
+    # which is a rim board on most floors and is never an open web.
+    window = member_window(floor)
+    if window is None or window.kind != "open_web":
+        return False
+    placed = [m for m in floor.members if m.z0_m is not None]
+    member = next((m for m in placed if m.category == "joist"), placed[0] if placed else None)
+    opening = (open_web_opening_m(cross_section(member.profile))
+               if member is not None else None)
     if not opening:
         return False
     return opening >= 2.0 * radius_m(diameter_m=diameter_m, width_m=width_m,

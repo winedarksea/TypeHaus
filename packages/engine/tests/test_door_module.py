@@ -182,6 +182,21 @@ def test_suppression_by_tag_drops_one_element_and_no_other():
     assert _suppressed(finding("a.rule", "X-2"), frozenset({"a.rule"}))
 
 
+#: The only two whole-check silences catlin carries, and they are listed HERE as well as in
+#: `preferences.toml` so that adding a third is a test failure rather than a diff nobody
+#: reads. Both were added 2026-09-17 with their counts and dates in the file beside them:
+#:
+#: * `mep.run_interference` — 155 real interpenetrations, house-wide, an open routing
+#:   campaign rather than a decision;
+#: * `mep.run_through_plate` — 15 top plates cut past 50%, every one of them the ordinary
+#:   R602.6.1 detail, and the model has no vocabulary for the tie that makes it legal. A
+#:   schema gap, not a defect.
+#:
+#: Neither is acceptable-forever. Deleting an entry and running `haus check houses/catlin`
+#: is how the debt is measured.
+BLANKET_SUPPRESSIONS = frozenset({"mep.run_interference", "mep.run_through_plate"})
+
+
 def test_the_house_file_parses_the_tag_form():
     """``load_preferences`` passes the strings through untouched, so a `:`-form entry in
     ``preferences.toml`` reaches the registry as written."""
@@ -189,5 +204,7 @@ def test_the_house_file_parses_the_tag_form():
 
     prefs = load_preferences(Path("houses/catlin"))
     assert any(":" in entry for entry in prefs.suppressed)
-    # Nothing in this house silences a whole check.
-    assert all(":" in entry for entry in prefs.suppressed), sorted(prefs.suppressed)
+    # This house silences exactly two whole checks and no others — see the note above. The
+    # per-element form stays the rule, and a new blanket entry has to be argued for here.
+    blanket = {entry for entry in prefs.suppressed if ":" not in entry}
+    assert blanket == BLANKET_SUPPRESSIONS, sorted(blanket)

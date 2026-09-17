@@ -215,6 +215,12 @@ haus route houses/catlin --unconnected                 # one per fixture_drain_r
 haus route houses/catlin --run DU-M-ERV-R-KITCH --explain
 ```
 
+- **`--alternatives N` offers more than one lane** (penalty re-search, oracled by the drain
+  note's §7), `--evaluate` runs the MEP checks against a candidate model *holding* each
+  proposal and prints the diff, `--json` emits both as data, and `--timing` says where the
+  milliseconds went. Ducts and raceways are routed too; `haus trial houses/catlin` scores
+  the working tree against a recorded baseline after you paste. The whole loop is
+  `houses/catlin/.claude/skills/route-run/SKILL.md`.
 - **There is no `--write`.** The prose in a plan file *is* the design record; and accepting
   a route is a judgement, exactly as `haus engineering --fingerprint` prints a value for a
   person to paste. The reason once given first here — "`_content_hash` stales every pinned
@@ -224,10 +230,19 @@ haus route houses/catlin --run DU-M-ERV-R-KITCH --explain
   "this drain hangs 8" into the gym", "this fixture is 48" from every pipe in the house" —
   belongs in `checks/`, and the router is aimed at it. A verdict that moved when a cost
   weight moved would not be a verdict.
-- **A drain searches in PLAN.** Its z is a derived monotone potential
-  (`routing/gravity.py`), so a 3-D search would optimise an elevation the profile then
-  overwrites. `routing/tree.py` orders terminals **deepest first** — least head slack, not
-  cheapest — because route length is not a proxy for slack.
+- **A drain searches in PLAN, with its profile in the search state.** Its z is a derived
+  monotone potential (`routing/gravity.py`), so a 3-D search would optimise an elevation the
+  profile then overwrites — but the invert is a function of developed length alone, so
+  `routing/gravity_search.py` puts the developed length in the label and carries the BAND of
+  legal start elevations, testing every member window at the station it is met. The head
+  budget is the goal test, not a post-check (§8 of the drain note). `routing/tree.py` orders
+  terminals **deepest first** — least head slack, not cheapest — because route length is not
+  a proxy for slack.
+- **`resolve/mep_envelopes.py` and `resolve/mep_bores.py` are the shared readings.** What a
+  run occupies (real OD + insulation, one prism per segment over that segment's own z range)
+  and what a trade may cut out of a member (R502.8.1, R602.6, R602.6.1) live in `resolve`,
+  where a router and a check may both reach them. A check that measured a different solid
+  from the one the router plans against makes the loop impossible to close.
 - Both notes are oracles and are reproduced by `tests/test_routing_oracle.py`:
   `notes/mep_drain_routing_basis.md` (§4 *is* the graph spec) and
   `notes/mep_duct_routing_basis.md`. `routing/oracle.py` declares which module each verifies

@@ -982,6 +982,12 @@ class ResolvedConduitRun:
     to_ref: str | None = None
     # ``Service`` value, or None for a capped spare (→ model/mep.py ConduitRun.service).
     service: str | None = None
+    #: Project-frame absolute height at every path vertex, when the run AUTHORS one
+    #: (→ model/mep.py ConduitRun.elevations). ``None`` means the model holds two end
+    #: elevations and a drawing convention — a **schematic profile**, which
+    #: ``mep_queries.conduit_vertical_profile`` will still reconstruct and which a check
+    #: must report as a coverage gap rather than grade as placed.
+    z_m: tuple[float, ...] | None = None
 
 
 @dataclass(frozen=True)

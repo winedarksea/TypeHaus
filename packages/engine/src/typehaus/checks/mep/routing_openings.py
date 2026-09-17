@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from shapely.geometry import MultiLineString, Polygon
+from shapely.geometry import MultiLineString
 
 from typehaus.checks._authoring import advisory, passed, unknown
 from typehaus.checks.mep.routing_geometry import (
@@ -19,57 +19,35 @@ from typehaus.checks.mep.routing_geometry import (
 )
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
+from typehaus.resolve.mep_envelopes import OPENING_EDGE_M as _OPENING_EDGE_M
 
 #: A run whose surface comes within this of a rough opening's edge is not reported. A raceway
 #: strapped to a jack stud shares a coordinate with the opening it is beside, and grading that
 #: as "through the window" would be wrong in exactly the case the trade does on purpose. Half
-#: an inch is under any framing member and over any coordinate noise.
-OPENING_EDGE_M = 0.0127
+#: an inch is under any framing member and over any coordinate noise. Owned by
+#: :mod:`typehaus.resolve.mep_envelopes`, where the router can see it too.
+OPENING_EDGE_M = _OPENING_EDGE_M
 #: How much of an opening a run must actually cross before it is reported. Below this it is a
 #: corner clip, which is a dimension to check rather than a route to redraw.
 MIN_CROSSING_FT = 0.1
 
 
 def opening_prisms(
-        ctx: CheckContext) -> list[tuple[str, bool, str, Any, float, float, str | None]]:
+        ctx: CheckContext) -> list[tuple[str, bool, str, Any, float, float, tuple[str, ...]]]:
     """Each opening as ``(tag, is_door, host, footprint, z low, z high, penetration_for)``.
 
-    The footprint is the opening's slice of its host wall through the WHOLE wall thickness,
-    because that is the hole: a window buck runs the full depth of the assembly, and a run
-    that crosses the opening's width anywhere in that depth is in it. The band is the host
-    wall's FRAMING base plus the authored sill, which is how ``resolve`` places the buck.
-
-    ``base_ref_z_m``, not ``z0_m``: a wall extended down over the rim keeps its floor where
-    the framing is, and every other consumer that adds a sill to an elevation already reads
-    it. Reading ``z0_m`` put every opening in catlin's main-storey exterior walls 13 7/16"
-    below where it is built, which is exactly far enough to miss a run crossing it.
+    A delegation to :func:`~typehaus.resolve.mep_envelopes.opening_prisms`, which is now the
+    one place the buck is derived. ``routing/obstacles`` derived it a second time — and put
+    every opening at its wall's ``z0_m`` rather than its ``base_ref_z_m``, 13 7/16" out on
+    catlin's main-storey exterior walls, far enough to miss a run crossing one. The erosion
+    is the honest difference between the two readings and is now a parameter: this check
+    forgives :data:`OPENING_EDGE_M` at an opening's edge because a raceway strapped to a
+    jack stud shares a coordinate with it, and a router proposing that same lane passes 0.0
+    because it has nothing to forgive.
     """
-    import math
+    from typehaus.resolve.mep_envelopes import opening_prisms as _prisms
 
-    walls = {wall.tag: wall for wall in ctx.model.walls}
-    out = []
-    for opening in ctx.model.openings:
-        wall = walls.get(opening.host_wall)
-        if wall is None or len(wall.axis) < 2:
-            continue
-        (ax, ay), (bx, by) = wall.axis[0], wall.axis[-1]
-        length = math.dist((ax, ay), (bx, by))
-        if length <= 0:
-            continue
-        ux, uy = (bx - ax) / length, (by - ay) / length
-        nx, ny = -uy, ux
-        half, depth = opening.width_m / 2.0, wall.thickness_m / 2.0
-        near, far = opening.center_along_m - half, opening.center_along_m + half
-        corners = [(ax + ux * s + nx * depth * side, ay + uy * s + ny * depth * side)
-                   for s in (near, far) for side in (1, -1)]
-        prism = Polygon([corners[0], corners[1], corners[3], corners[2]])
-        prism = prism.buffer(-OPENING_EDGE_M)
-        if prism.is_empty or not prism.is_valid:
-            continue
-        low = wall.base_ref_z_m + opening.sill_m
-        out.append((opening.tag, bool(opening.is_door), wall.tag, prism,
-                    low, low + opening.height_m, opening.penetration_for))
-    return out
+    return _prisms(ctx.model, erode_m=OPENING_EDGE_M)
 
 
 @check(Tier.ADVISORY, "mep.run_through_opening")

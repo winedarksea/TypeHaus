@@ -50,69 +50,29 @@ def run_polylines(ctx: CheckContext) -> list[tuple[str, str, tuple[tuple[float, 
                                                    tuple[float, ...]]]:
     """Every routed thing, as ``(kind, tag, plan path, per-vertex z)``.
 
-    No storey: which floor a run is *in* is decided by elevation, not by filing (see
-    ``routing.py``'s module note), so carrying the storey would only invite something to
-    start reading it.
-
-    Pipe, duct and raceway together: a hole in a deck, a rough opening and a room's air do
-    not care which trade drew the line, and three near-identical loops would be three places
-    for the rule to drift. A raceway's z is reconstructed by
-    :func:`~typehaus.takeoff.runs.conduit_vertex_z`, which owns the one reading of "a
-    ConduitRun rises at its last point".
-
-    The z values are **centrelines** — see ``model/mep.py``'s note on ``PipeRun.elevations``.
-    Anything asking about the run's surface adds :func:`run_radii`.
+    A three-line delegation to :func:`~typehaus.resolve.mep_envelopes.run_polylines`, which
+    is now the one place this is derived. ``routing/obstacles`` derived it a second time
+    because the leaf rule forbids a router importing a check; ``resolve`` is the layer both
+    may reach, so the derivation moved there and both sides became readers.
     """
-    from typehaus.takeoff.runs import conduit_vertex_z
+    from typehaus.resolve.mep_envelopes import run_polylines as _polylines
 
-    out = []
-    for run in ctx.model.pipe_runs:
-        z = tuple(run.z_m) if run.z_m and len(run.z_m) == len(run.path) else ()
-        out.append(("pipe", run.tag, tuple(run.path), z))
-    for duct in ctx.model.ducts:
-        z = tuple(duct.z_m) if len(duct.z_m) == len(duct.path) else ()
-        out.append(("duct", duct.tag, tuple(duct.path), z))
-    for raceway in ctx.model.conduits:
-        path, z = tuple(raceway.path), conduit_vertex_z(raceway)
-        # The rise is a riser AT the last point, not a slope along the last segment: repeat
-        # that vertex so the flat run and the vertical are separate segments.
-        if len(path) >= 2 and z[-1] != z[-2]:
-            path, z = (*path, path[-1]), (*z[:-1], z[-2], z[-1])
-        out.append(("conduit", raceway.tag, path, z))
-    return out
+    return _polylines(ctx.model)
 
 
 def run_radii(ctx: CheckContext) -> dict[str, float]:
-    """Half the **real** outside dimension of each run, keyed by tag.
+    """Half the real outside dimension of each run — see
+    :func:`~typehaus.resolve.mep_envelopes.run_radii`, which owns it.
 
     A run is a centreline and an opening is a hole; whether the two meet is a question about
-    the run's SURFACE. Six inches of duct with an inch of wrap either side is eight inches of
-    obstruction, and grading its centreline alone under-reports by four.
-
-    The nominal→outside conversion is :mod:`typehaus.resolve.pipe_sections`, which this
-    function's previous docstring confessed the need for: "a raceway's trade size is a
-    nominal bore rather than an outside diameter, but the error is under an eighth of an inch
-    on 3/4" EMT and in the conservative direction". The error is 0.172" on 3/4" EMT, it is
-    half an inch on 3" DWV, and on catlin it was hiding two raceways bored into a chord. Five
-    consumers read this one function, so they get one notion of a run's surface and cannot
-    drift into three.
-
-    A duct's authored diameter **is** its outside dimension — sheet metal is specified by the
-    size it measures, not by a nominal — so ducts pass through unconverted.
+    the run's SURFACE. This is the ROUND reading, one number per run; a rectangular duct's
+    real pair (``width`` across, ``depth`` vertically) is
+    :func:`~typehaus.resolve.mep_envelopes.run_sections`, and a consumer that cares about
+    the difference should ask for that instead.
     """
-    from typehaus.resolve.pipe_sections import (
-        pipe_outside_diameter_m,
-        raceway_outside_diameter_m,
-    )
+    from typehaus.resolve.mep_envelopes import run_radii as _radii
 
-    radii: dict[str, float] = {}
-    for run in ctx.model.pipe_runs:
-        radii[run.tag] = pipe_outside_diameter_m(run.diameter_m or 0.0, run.material) / 2.0
-    for duct in ctx.model.ducts:
-        radii[duct.tag] = (duct.diameter_m or 0.0) / 2.0
-    for raceway in ctx.model.conduits:
-        radii[raceway.tag] = raceway_outside_diameter_m(raceway.trade_size_m or 0.0) / 2.0
-    return radii
+    return _radii(ctx.model)
 
 
 def crossing_band(segment: Any, za: float, zb: float, piece: Any) -> tuple[float, float]:

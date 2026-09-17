@@ -136,6 +136,11 @@ class MemberCrossing:
     station_m: float
     #: The run's centreline there.
     z_m: float
+    #: Where along the LEG the meeting happened, 0 at ``a`` and 1 at ``b``. Carried because
+    #: a gravity search needs the developed length at the crossing, and the developed length
+    #: is a fraction of the leg — recovering it from ``station_m`` is impossible on a leg
+    #: that runs square to the member lines, where every crossing shares one station.
+    t: float = 0.0
 
 
 def leg_crossings(floor: ResolvedFloor,
@@ -180,5 +185,5 @@ def leg_crossings(floor: ResolvedFloor,
         top = getattr(member, "z1_m", None) or floor.deck_z0_m
         if not (member.z0_m <= z <= top):
             continue
-        out.append(MemberCrossing(member.child_key, station, z))
+        out.append(MemberCrossing(member.child_key, station, z, t))
     return out

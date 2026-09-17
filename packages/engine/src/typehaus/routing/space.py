@@ -79,6 +79,11 @@ class RoutingSpace:
     #: Per-floor z windows for a run CROSSING that floor's members — see
     #: ``corridors.crossing_window``. Keyed by floor tag.
     crossings: dict[str, tuple[float, float]] = field(default_factory=dict)
+    #: ``--level``'s band: the z range of one storey, or None for the whole model.
+    #: ``candidate_lines`` drops every level outside it, which is what makes the option
+    #: *do* something — it used to validate the storey name and then change nothing, so a
+    #: route asked to stay on one floor happily rode a bay on another.
+    z_band: tuple[float, float] | None = None
     #: Plan indices over ``hard`` and ``soft``, built lazily on first query. A lattice asks
     #: "what is here" once per node and twice per edge, so a linear scan over a hundred
     #: prisms is the whole cost of building a graph. Measured on the catlin suite-bath
@@ -175,6 +180,7 @@ def build_space(model: ResolvedModel, *, radius_m: float,
                 margin_ft: float = DEFAULT_MARGIN_FT,
                 avoid: frozenset[str] = frozenset(),
                 touch: frozenset[str] = frozenset(),
+                z_band: tuple[float, float] | None = None,
                 clearance_m: float = CLEARANCE_M) -> RoutingSpace:
     """Inflate the world once for a run of this radius, bounded around its terminals.
 
@@ -226,7 +232,7 @@ def build_space(model: ResolvedModel, *, radius_m: float,
     return RoutingSpace(radius_m=radius_m, clearance_m=clearance_m,
                         cost=cost or RouteCost(), hard=hard, soft=soft,
                         corridors=corridors, bbox=(minx, miny, maxx, maxy),
-                        storeys=storeys, crossings=crossings)
+                        storeys=storeys, crossings=crossings, z_band=z_band)
 
 
 def _corridor_in(corridor: Corridor, minx: float, miny: float,

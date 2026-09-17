@@ -92,21 +92,31 @@ def test_an_unknown_run_is_refused_rather_than_crashing(runner) -> None:
     assert "Traceback" not in result.output
 
 
-def test_the_tree_mode_routes_every_fixture_the_main_serves(runner) -> None:
+def test_the_tree_mode_routes_each_branch_at_its_own_derived_size(runner) -> None:
     """`--tree` builds the branch→main topology, not a re-route of the main.
 
-    Three assertions, and the middle one is the whole difference from running `--fixture`
-    three times: every fixture the main names gets a proposal, they are ordered by head
-    slack rather than by tag, and the tree's own cost is reported. A `--tree` that quietly
-    behaved like `--run` printed one proposal and looked fine.
+    **One lattice per branch SIZE.** Every branch used to be 2" because the CLI held one
+    literal; each is now sized from its own fixture's drainage load, so the suite bath is
+    3" / 1 1/2" / 1 1/4" and each size gets its own world — inflating one shared world at
+    the widest walls the narrow branches out of lanes they fit perfectly well.
+
+    **One of three routes, and the other two are named with their size.** That is the
+    honest report of this bath as it stands, and two corrections made it so: branches are
+    sized from the fixture rather than assumed at 2", and every existing run is now
+    inflated by its REAL outside diameter plus its insulation rather than by its nominal
+    bore (3" DWV is 3.500" and `PR-A-HW-STUBATH` carries a 1/2" sleeve). The suite bath is
+    genuinely tight, the refusals name the runs standing in the way, and the roadmap's own
+    decision is that catlin is not to be forced green while its fixed design holds
+    unresolved conflicts.
     """
     before = _plan_digest()
     result = runner.invoke(app, ["route", str(_CATLIN),
                                  "--tree", "PR-M-S-SUITE-DRAIN", "--explain"])
     assert result.exit_code == 0, result.output
-    for fixture in ("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV", "FX-S-SUITEBATH-TUBSH"):
-        assert f'{fixture}-PROPOSED' in result.output
-    assert "routed 3 terminal(s), 0 unserved" in result.output
+    assert "FX-S-SUITEBATH-LAV-PROPOSED" in result.output
+    assert "diameter=inch(1.25)" in result.output
+    assert 'FX-S-SUITEBATH-WC: no route in plan' in result.output
+    assert 'at 3"' in result.output and 'at 1.5"' in result.output
     assert "deepest first" in result.output
     assert _plan_digest() == before
 
@@ -125,8 +135,8 @@ def test_a_tree_branch_ties_at_the_stack_and_not_at_its_basement_leg(runner) -> 
     assert result.exit_code == 0, result.output
     slacks = [float(line.split('"')[0].split()[-1])
               for line in result.output.splitlines() if "of head to spare" in line]
-    assert len(slacks) == 3
-    # A second-floor bath on a 2" branch has inches of head, not feet. Ten is far past
+    assert slacks, "a routed branch prints the head it holds"
+    # A second-floor bath on a 1 1/4" branch has inches of head, not feet. Ten is far past
     # anything the geometry allows and far short of the 140" the basement leg reported.
     assert max(slacks) < 10.0, slacks
 
@@ -143,3 +153,115 @@ def test_a_tree_terminal_short_of_head_is_reported_with_the_number(runner) -> No
     assert result.exit_code == 1, result.output
     assert "of head" in result.output
     assert "PROPOSED" not in result.output
+
+
+def test_a_branch_is_sized_from_its_own_drainage_load(runner) -> None:
+    """3", not 2", for a water closet — and the table alone does not say so.
+
+    Table 703.2 puts a 3 DFU closet comfortably inside the 2" row's 6 DFU, which is why
+    sizing from capacity alone is the classic error. 710.1 sets the floor and
+    `plumbing_calc.MINIMUM_DRAIN_IN_BY_SYMBOL` carries it, so the proposal comes out at the
+    size the house itself authors.
+    """
+    result = runner.invoke(app, ["route", str(_CATLIN),
+                                 "--fixture", "FX-S-SUITEBATH-WC"])
+    assert result.exit_code == 0, result.output
+    assert "diameter=inch(3)" in result.output
+
+
+def test_a_duct_run_is_routed_rather_than_called_not_a_run(runner) -> None:
+    """`_endpoints` indexed `model.pipe_runs` alone, so every duct came back "not a run in
+    this model" — a true sentence about the wrong index.
+
+    A duct keeps its own two ends (it is not a tree onto a main), searches the full
+    multi-level lattice, and prints `routing=`/`floor_ref=` read back out of the corridors
+    the winning legs actually rode rather than asserted.
+    """
+    result = runner.invoke(app, ["route", str(_CATLIN), "--run", "DU-S-HP-SUITE",
+                                 "--margin", "2"])
+    assert result.exit_code == 0, result.output
+    assert "DuctRun(tag=" in result.output
+    assert "system=DuctSystem.SUPPLY" in result.output
+    assert "routing=DuctRouting." in result.output
+    assert "width=" in result.output and "depth=" in result.output
+
+
+def test_a_congested_terminal_is_refused_with_the_tags_that_block_it(runner) -> None:
+    """"Every lane is blocked" is true and useless.
+
+    `CD-B-PV-INV` leaves the basement NW chase, where 37 known interpenetrations sit and
+    five runs stand on the raceway's own terminal. The refusal names them and says how much
+    of the lattice was reachable at all, which is the difference between "move something"
+    and "give up".
+    """
+    result = runner.invoke(app, ["route", str(_CATLIN), "--run", "CD-B-PV-INV",
+                                 "--margin", "2"])
+    assert result.exit_code == 1, result.output
+    assert "lattice nodes are reachable" in result.output
+    assert "CD-B-" in result.output
+    assert "Traceback" not in result.output
+
+
+def test_timing_reports_where_the_time_went_even_on_a_refusal(runner) -> None:
+    """The measurement Phase 7 is gated on, and a refusal is exactly the case whose
+    build-space and lattice counts say why."""
+    result = runner.invoke(app, ["route", str(_CATLIN), "--run", "CD-B-PV-INV",
+                                 "--margin", "2", "--timing"])
+    assert "build-space" in result.output
+    assert "build-graph" in result.output
+    assert "nodes" in result.output
+
+
+def test_explain_prints_the_weights_the_route_was_actually_priced_at(runner) -> None:
+    """`cost_from_preferences` existed and nothing called it, so every route was priced at
+    the module defaults while `--explain` printed a breakdown from a table the house had
+    never been asked about."""
+    result = runner.invoke(app, ["route", str(_CATLIN), "--fixture",
+                                 "FX-S-SUITEBATH-WC", "--explain"])
+    assert result.exit_code == 0, result.output
+    assert "weights:" in result.output
+    assert "cheapest possible inch of travel" in result.output
+
+
+def test_alternatives_offers_more_than_one_lane_and_says_to_paste_one(runner) -> None:
+    result = runner.invoke(app, ["route", str(_CATLIN), "--fixture",
+                                 "FX-S-SUITEBATH-WC", "--alternatives", "3"])
+    assert result.exit_code == 0, result.output
+    assert "paste exactly ONE" in result.output or "-PROPOSED-A" in result.output
+
+
+def test_alternatives_is_refused_with_tree_rather_than_multiplying_trees(runner) -> None:
+    result = runner.invoke(app, ["route", str(_CATLIN), "--tree",
+                                 "PR-M-S-SUITE-DRAIN", "--alternatives", "3"])
+    assert result.exit_code == 2, result.output
+
+
+def test_an_unknown_level_is_refused_rather_than_silently_ignored(runner) -> None:
+    """`--level` was implemented as a validation and nothing else: it checked the storey
+    name and then changed no part of the lattice."""
+    result = runner.invoke(app, ["route", str(_CATLIN), "--fixture",
+                                 "FX-S-SUITEBATH-WC", "--level", "not-a-storey"])
+    assert result.exit_code == 2, result.output
+
+
+def test_json_emits_the_proposal_and_its_evaluation_together(runner) -> None:
+    """Contracts 2 and 3 of the roadmap, in one shape.
+
+    A proposal and what it does to the house are one answer: shipping the first without the
+    second is what "the engine proposes" would mean with nobody judging it. Both the
+    structured geometry and the source a person pastes are carried, because the two readers
+    are different and a re-derivation is a place for them to drift.
+    """
+    import json
+
+    result = runner.invoke(app, ["route", str(_CATLIN), "--fixture",
+                                 "FX-S-SUITEBATH-WC", "--json"])
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert set(payload) == {"house", "storey", "proposals", "evaluations",
+                            "problems", "notices"}
+    proposal = payload["proposals"][0]
+    assert proposal["diameter_m"] == pytest.approx(3 * 0.0254)
+    assert proposal["points_m"] and len(proposal["points_m"][0]) == 3
+    assert "PipeRun(tag=" in proposal["source"]
+    assert payload["evaluations"][0]["tag"] == proposal["tag"]
