@@ -1,16 +1,18 @@
 """A ``ReinforcementSpec`` the layout engine can lay out, and one it did.
 
-Five questions of every authored schedule (decision #75):
+Six questions of every authored schedule (decision #75):
 
 * exactly one of ``spacing`` / ``count`` — claimed in ``BarSpec``'s docstring, enforced here
   (``dowels`` take neither: they follow the host's verticals);
 * the role belongs on this kind of host;
 * a ``rib`` or rib ``stirrups`` role on a slab needs ``ReinforcementSpec.ribs``;
 * every role placed at least one bar (a dowel with no base, a mat narrower than its cover);
-* the section is thick enough for cover on both faces plus the bars between them.
+* the section is thick enough for cover on both faces plus the bars between them;
+* a bar hooked into the pour below (a dowel, a continuous vertical) reaches ldh into it,
+  ACI 318-19 §25.4.3.1 — the layout records both lengths on the bar.
 
-The first three are ERRORs — the layout cannot honour them. The last two are WARN-severity
-FAILs: the steel is authored, the drawing and the BOM are short of it.
+The first three are ERRORs — the layout cannot honour them. The last three are WARN-severity
+FAILs: the steel is authored, and the drawing, the BOM or the anchorage is short of it.
 """
 
 from __future__ import annotations
@@ -42,6 +44,7 @@ _ALLOWED: dict[str, set[str]] = {
 def reinforcement_layout(ctx: CheckContext) -> list[Finding]:
     placed: dict[str, Counter] = {s.host_tag: Counter(b.role for b in s.bars)
                                   for s in ctx.model.rebar}
+    bars = {s.host_tag: s.bars for s in ctx.model.rebar}
     out: list[Finding] = []
     for element in ctx.plan.all_elements():
         spec = getattr(element, "reinforcement", None)
@@ -62,6 +65,9 @@ def reinforcement_layout(ctx: CheckContext) -> list[Finding]:
         thin = _too_thin(ctx, element, spec)
         if thin:
             warnings.append(f"{tag}: {thin}")
+        short = _short_anchorage(bars.get(tag, ()))
+        if short:
+            warnings.append(f"{tag}: {short}")
         for message in warnings:
             out.append(advisory(_CHECK_ID, message, (tag,), Result.FAIL,
                                 severity=Severity.WARN))
@@ -115,3 +121,21 @@ def _too_thin(ctx: CheckContext, element, spec) -> str | None:
         return None
     return (f"{have:.2f}\" of concrete cannot hold {cover:.2f}\" cover each face and "
             f"{need - 2 * cover:.2f}\" of bar ({need:.2f}\" needed)")
+
+
+def _short_anchorage(bars) -> str | None:
+    """The worst hooked bar whose embedment into the pour below is under its ldh."""
+    worst = None
+    for b in bars:
+        if b.embedment_m is None or b.development_m is None:
+            continue
+        gap = b.development_m - b.embedment_m
+        if gap > 1e-4 and (worst is None or gap > worst[0]):
+            worst = (gap, b)
+    if worst is None:
+        return None
+    b = worst[1]
+    count = sum(1 for x in bars if x.embedment_m is not None and x.development_m is not None
+                and x.development_m - x.embedment_m > 1e-4)
+    return (f"{count} {b.role} #{b.bar} hooked {b.embedment_m / 0.0254:.2f}\" into the pour "
+            f"below, short of ldh {b.development_m / 0.0254:.2f}\" (ACI 318-19 §25.4.3.1)")

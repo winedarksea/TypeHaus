@@ -143,6 +143,17 @@ def test_the_bar_schedule_agrees_with_the_bill_of_materials(enriched):
     # The BOM rounds each aggregated row to a tenth of a foot; that rounding is the only
     # difference the two may have.
     assert in_model == pytest.approx(in_bom, abs=1.0)
+    rows = reinforcement_takeoff(model)
+    for field, pset_key in (("placed_length_ft", "PlacedLengthFt"),
+                            ("lap_length_ft", "LapLengthFt"), ("hook_length_ft", "HookLengthFt")):
+        got = sum(ue.get_psets(b)["Pset_TH_Reinforcement"][pset_key] for b in bars)
+        assert got == pytest.approx(sum(float(r[field]) for r in rows), abs=1.0), pset_key
+    pieces = sum(ue.get_psets(b)["Pset_TH_Reinforcement"]["Pieces"] for b in bars)
+    assert pieces == sum(int(r["pieces"]) for r in rows)
+    for bar in bars:
+        pset = ue.get_psets(bar)["Pset_TH_Reinforcement"]
+        parts = pset["PlacedLengthFt"] + pset["LapLengthFt"] + pset["HookLengthFt"]
+        assert pset["TotalLengthFt"] == pytest.approx(parts, abs=0.05), bar.Name
 
 
 def test_each_bar_hangs_under_the_pour_it_is_in(enriched):
@@ -171,8 +182,8 @@ def test_a_bar_carries_its_size_in_metres_not_inches(enriched):
 
 
 def test_the_bars_have_no_body_representation(enriched):
-    """Drawing a cage would invent hooks, laps and cover the model does not carry — and a
-    drawn cage read as a placement drawing is worse than none, because it looks like one."""
+    """The IFC stays non-geometric (decision #75): the laid-out bars are drawn in the viewer
+    and the glTF, and the IFC carries the schedule per host and role, not a placement model."""
     f, _model, _ctx = enriched
     bars = [b for b in f.by_type("IfcReinforcingBar")
             if "Pset_TH_Reinforcement" in ue.get_psets(b)]

@@ -6,10 +6,11 @@ with two 135° seismic hooks and a 6" overlap (decision D5). A rectangular colum
 rectangular ties and verticals shared out around the tie's inside corners. Ties sit at
 ``s/2 … H − s/2`` by the D3 fencepost.
 
-A dowel (decision D6) is an L: a standard 90° foot resting on the base pour's bottom steel,
-up through the base, and a lap above its top — at every vertical the host lays out. The base
-is the footing under a wall, or the pad, footing or wall a post is ``supported_by``. No base,
-no dowel; ``integrity.reinforcement_layout`` reports the role that placed nothing.
+A dowel (decision D6) is an L: a standard 90° foot resting ON the base pour's bottom mat, up
+through the base, and a full lap above the underside of the verticals it laps — beside each
+vertical, one contact diameter inboard. The base is the pad, footing or wall a post is
+``supported_by``. No base, no dowel; ``integrity.reinforcement_layout`` reports the role
+that placed nothing.
 """
 
 from __future__ import annotations
@@ -92,20 +93,24 @@ def _vertical_positions(count: int, cx: float, cy: float, hx: float, hy: float,
     return out
 
 
-def lay_dowels(sink: Sink, entry, points: list[tuple[float, float]],
-               base_bottom: float, base_top: float, cover: float,
-               foot_dir: tuple[float, float], *, compression: bool = False) -> None:
-    """One L per plan point: foot at the base's bottom steel, lap above ``base_top``."""
+def lay_dowels(sink: Sink, entry, points, base_top: float, rest: float, lap_top: float,
+               foot_dirs, *, anchorage=None, compression: bool = False) -> None:
+    """One L per ``points[i]``: its foot resting at ``rest`` (atop the base's bottom mat)
+    turned along ``foot_dirs[i]``, straight up to a lap above ``lap_top`` — the underside of
+    the verticals it laps."""
     db = BARS[entry.bar].diameter_in * _IN
     lap = sink.lap_m(entry.bar, compression=compression)
-    z_foot = base_bottom + cover + db / 2
+    z_foot = rest + db / 2
     if base_top - z_foot < 3 * _IN:
         return
-    _, bend, extension = det.hook_geometry_in(entry.bar, "std90")
+    galv = sink.galvanized(entry)
+    _, bend, extension = det.hook_geometry_in(entry.bar, "std90", galvanized=galv)
     leg = (bend / 2.0 + BARS[entry.bar].diameter_in + extension) * _IN
-    hook = det.hook_allowance_in(entry.bar, "std90") * _IN
-    for x, y in points:
-        foot = (x + foot_dir[0] * leg, y + foot_dir[1] * leg, z_foot)
-        sink.polyline(entry, [foot, (x, y, z_foot), (x, y, base_top + lap)],
-                      placed_m=base_top - z_foot, lap_m=lap, hook_m=hook,
-                      hook_kinds=("std90",))
+    hook = det.hook_allowance_in(entry.bar, "std90", galvanized=galv) * _IN
+    top = lap_top + lap
+    for (x, y), d in zip(points, foot_dirs, strict=True):
+        foot = (x + d[0] * leg, y + d[1] * leg, z_foot)
+        sink.polyline(entry, [foot, (x, y, z_foot), (x, y, top)],
+                      placed_m=top - z_foot - lap, lap_m=lap, hook_m=hook,
+                      hook_kinds=("std90",),
+                      anchorage=None if anchorage is None else anchorage(entry, z_foot, db))

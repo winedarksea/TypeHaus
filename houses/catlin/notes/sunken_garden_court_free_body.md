@@ -254,7 +254,7 @@ the correction of record; anyone reading that note's §3 should read this one al
 | resisting face | inboard, court floor at −9'-1 7/16" — **the toe top IS that floor**, so the toe is buried 0" and `toe_embedment_ft` stays the hardcoded 0.0 it always was |
 | side wall length | **16'-4"** each (`W-SG-W2`, `W-SG-E2`); `W-SG-S` 20'-0"; total run **52'-8"** |
 | cross-member | `W-SG-ARCH`, 12" × 17 1/2", 20'-0" clear, buried |
-| stem reinforcement | **`#6 @ 10" o.c.` vertical, retained face**, 2" cover — sized in §6 |
+| stem reinforcement | **`#5 @ 7" o.c.` vertical, retained face**, continuous from the footing on a 90° foot, 3" cover — sized in §6, bar chosen in §6b |
 | footing reinforcement | **`#5 @ 12" o.c.` transverse, top AND bottom**, 3" cover — sized in §7; `#4 @ 18"` longitudinal |
 | mix | **`EXPOSED_MIX`** — f'c **5,000 psi**, w/cm 0.40, 6% ±1.5 air, ACI class **F3 + C2**, ASTM A767 cl. 1 galvanized bar (galvanized AFTER fabrication; A780 repair at any cut or field bend), macro-synthetic fibre |
 
@@ -579,19 +579,23 @@ outside the Code.**
 **Reinforced**, ACI 318 §22.3, φ = 0.90. Steel on the **retained** face — that is where the
 cantilever puts the tension, and putting it on the wrong face is the classic way a correctly
 sized wall falls over. Cover **3"**, which is not the Code minimum and is the point: ACI
-Table 20.5.1.3.1 asks 2" of a #6 on a formed face exposed to weather (as does IRC Table
-R404.1.2(8) footnote i for bars larger than #5), and `structural.concrete_cover_meets_minimum`
-grades against that 2". The extra inch is bought for class **C2** — see §6a.
+Table 20.5.1.3.1 asks 1 1/2" of a #5 (2" of a #6) on a formed face exposed to weather, and
+`structural.concrete_cover_meets_minimum` grades against that. The extra is bought for
+class **C2** — see §6a.
 
 | schedule | Aₛ in²/ft | d in | a in | φMn ft-lb/ft | d/c | |
 |---|---|---|---|---|---|---|
 | `#6 @ 16"` | 0.330 | 8.625 | 0.388 | 12,520 | 0.97 | ✓ sufficient, not selected |
 | `#5 @ 10"` | 0.372 | 8.688 | 0.438 | 14,177 | 0.86 | ✓ sufficient, not selected |
 | `#6 @ 12"` | 0.440 | 8.625 | 0.518 | 16,565 | 0.73 | ✓ sufficient, not selected |
-| **`#6 @ 10"`** | **0.528** | **8.625** | **0.621** | **19,755** | **0.61** | **✓ selected** |
+| `#6 @ 10"` | 0.528 | 8.625 | 0.621 | 19,755 | 0.61 | ✓ selected until 2026-09-17 — its hook does not fit (§6b) |
+| **`#5 @ 7"`** | **0.531** | **8.688** | **0.625** | **20,028** | **0.61** | **✓ selected** |
 | `#6 @ 8"` | 0.660 | 8.625 | 0.776 | 24,463 | 0.50 | ✓ more than needed |
 
-**`#6 @ 10" o.c.` is retained, and it stopped being the arithmetic minimum on 2026-09-05.**
+**`#5 @ 7" o.c.` replaced `#6 @ 10"` on 2026-09-17 as the same steel in a bar whose hook fits
+the footing — §6b.** Everything below about the *amount* of steel was argued for `#6 @ 10"`
+and carries over unchanged, because 0.531 in²/ft is 0.528. **`#6 @ 10"` stopped being the
+arithmetic minimum on 2026-09-05.**
 **The table has gained a row under it at each height cut since, and the flush tops gained
 the last one**: `#6 @ 12"` crossed first, then `#5 @ 10"`, and `#6 @ 16"` — the coarsest
 spacing listed, which failed outright at 1.02 two revisions ago — now clears at 0.97. Every
@@ -625,8 +629,10 @@ wall got shorter three times underneath it.
 ### 6a. What the third inch costs, and why it is spent anyway
 
 Cover comes straight off `d`, so this is not a free durability upgrade — it is a purchase,
-and the price is legible: `d` 9.625" → 8.625", φMn 22,131 → 19,755 ft-lb/ft, **d/c 0.55 →
-0.61**. An 11% capacity write-down on the same steel.
+and the price is legible. For `#5 @ 7"` the Code's 1 1/2" gives `d` 10.188" and 3" gives 8.688":
+φMn 23,615 → 20,028 ft-lb/ft, **d/c 0.51 → 0.61**, a 15% write-down on the same steel.
+(For the `#6 @ 10"` this was worked at, 2" → 3" was `d` 9.625" → 8.625", φMn 22,131 →
+19,755, d/c 0.55 → 0.61, 11%.)
 
 It is spent because cover is the only term in the chloride problem that buys **distance**.
 Every other lever this wall pulls buys *time* against a front that is still advancing —
@@ -661,7 +667,7 @@ restraint at FS 1.63, d/c 0.92 (§4). Nothing about this trade moves the number 
 
 It is authored on the **schedule** (`_RET_STEM_STEEL.cover`) and not on the mix, and that
 distinction is load-bearing. `EXPOSED_MIX` pours the footings under these walls too,
-where 3" is the Code figure and free; on the stem it costs 11%. One mix, two faces, two
+where 3" is the Code figure and free; on the stem it costs 15%. One mix, two faces, two
 covers — which is exactly why `resolve/concrete.cover_for` reads the element's schedule
 before its mix.
 
@@ -686,24 +692,56 @@ Checked alongside:
 
 * **tension-controlled**, so φ = 0.90 is the right factor. `β1` is **0.80** at 5,000 psi,
   not 0.85 — ACI 318-19 Table 22.2.2.4.3 steps it down 0.05 per 1,000 psi above 4,000, and
-  taking 0.85 here is the standard slip. `c = a/β1 = 0.621/0.80 = 0.777"`,
-  `εt = 0.003 (8.625 − 0.777)/0.777 = 0.0303`, far past 0.005.
-* **minimum reinforcement**, ACI 318-19 §11.6.1: ρl ≥ 0.0015 for bars larger than #5 →
-  0.216 in²/ft. This is a fraction of the GROSS section and so does not move with cover.
+  taking 0.85 here is the standard slip. At `#5 @ 7"`: `c = a/β1 = 0.625/0.80 = 0.782"`,
+  `εt = 0.003 (8.688 − 0.782)/0.782 = 0.0303`, far past 0.005. (`#6 @ 10"`: c 0.777", 0.0303.)
+* **minimum reinforcement**, ACI 318-19 §11.6.1: ρl ≥ 0.0012 for #5 and smaller → 0.173
+  in²/ft (0.0015 → 0.216 for the `#6` it replaced). A fraction of the GROSS section, so it
+  does not move with cover. **Maximum spacing**, §11.7.2.1: the lesser of 3h = 36" and 18";
+  7" clears it.
   §11.6.2 raises it to 0.0025 → 0.360 in²/ft where `Vu > 0.5 φVc`, and this wall is under
   that line with room: `V = ½ × 60 × 9.1198² = 2,495 lb/ft`, `Vu = 1.6 × 2,495 = 3,992 lb/ft`
-  against `0.5 φVc = 0.5 × 0.75 × 2√5,000 × 12 × 8.625 = 5,489 lb/ft`, a 27% margin.
+  against `0.5 φVc = 0.5 × 0.75 × 2√5,000 × 12 × 8.688 = 5,529 lb/ft`, a 28% margin
+  (5,489 at the `#6`'s 8.625").
   (An earlier revision printed `1.6 × 3,226` here and called the margin 6%. The 3,226 was
   `½ × 60 × 10.37²` — the stem height from *before* the footings rose — left behind when the
   rest of the section was re-worked. It never changed a verdict, and it is the exact kind of
-  survival this note's term-by-term discipline exists to catch.) **0.528 clears both figures
+  survival this note's term-by-term discipline exists to catch.) **0.531 clears both figures
   either way**, so the selection has never depended on which side of §11.6.2 the wall falls.
-* **one-way shear** at the base: `φVc = 10,978 lb/ft` against `Vu = 3,992 lb/ft`,
-  d/c 0.36 ✓.
+* **one-way shear** at the base: `φVc = 0.75 × 2√5,000 × 12 × 8.688 = 11,057 lb/ft` against
+  `Vu = 3,992 lb/ft`, d/c 0.36 ✓.
 
 **Authoring reinforcement makes the SECTION work. It does not make the DETAILING anything
-this engine has looked at** — bar development into the footing, the corner cold joints, the
-splice at the top of the pour. Those are the engineer's, and §9 says so.
+this engine has looked at** — the corner cold joints, the splice at the top of the pour.
+Those are the engineer's, and §9 says so. Development of the vertical into the footing is
+worked by hand in §6b because it chose the bar.
+
+### 6b. Addendum 2026-09-17 — `#6 @ 10"` → `#5 @ 7"`, because the hook has to fit
+
+The stem vertical no longer laps a dowel at the base: it runs continuous from the footing,
+its 90° foot resting on the bottom mat (`hooks=("start",)` on `_RET_STEM_STEEL`), so there is
+no splice where the moment is greatest. The tension bar must then develop as a standard
+hook inside the 12" footing, and the depth available below the stem–footing joint is:
+
+```
+embedment = 12 - 3 cover - 0.625 #5 bottom-x - 0.5 #4 bottom-y   = 7.875 in
+```
+
+ACI 318-19 §25.4.3.1(a), `ℓdh = fy ψe ψr ψo ψc / (55 λ √f'c) × db^1.5`, with ψe 1.0 (A767
+galvanized, not epoxy), ψr 1.0 (spacing ≥ 6db), ψo 1.0 (hook terminating inside the footing
+with cover), λ 1.0, and ψc = f'c/15,000 + 0.6 = 0.933 at 5,000 psi:
+
+```
+coefficient = 60,000 x 0.933 / (55 x 70.71)                   = 14.40
+#6  ℓdh = 14.40 x 0.75^1.5  = 14.40 x 0.6495                  =  9.35 in   > 7.875  ✗
+#5  ℓdh = 14.40 x 0.625^1.5 = 14.40 x 0.4941                  =  7.11 in   < 7.875  ✓
+floor, §25.4.3.1(b)(c): max(8db, 6") = 6.0 in                              governs neither
+```
+
+A `#6` hook does not fit a 12" footing on this mat and a `#5` does, with 0.77" over. The
+spacing is chosen to keep the steel: `0.31 × 12/7 = 0.531 in²/ft` against `#6 @ 10"`'s
+0.528, so the §6 argument about *how much* steel stands untouched and the section reads
+φMn 20,028 at d/c 0.61. The price is bar count — 12/7 per foot against 12/10 — and one bar
+size fewer on the pour: the stem and the §7e mat both take `#5` now.
 
 ---
 
@@ -866,9 +904,10 @@ non-prestressed footing, `0.0018 Ag = 0.0018 × 12 × 12 = 0.259 in²/ft`. `#5 @
 0.310 and clears it by 20%. The 12" spacing clears §24.4.3.3's 18" maximum for shrinkage and
 temperature reinforcement with room over.
 
-**One bar size on this pour is gone, and it was worth losing.** §6 chose `#6 @ 10"` for the
-stem partly so the footing could share it — one bundle, one bender's setup. The footing now
-takes `#5` and the stem keeps `#6`, which is two sizes on the pour. The 832 lb the change
+**One bar size on this pour went, and came back (§6b).** §6 chose `#6 @ 10"` for the
+stem partly so the footing could share it — one bundle, one bender's setup. The footing went
+to `#5` while the stem kept `#6`, two sizes on the pour, until 2026-09-17, when the stem's
+hook forced it to `#5 @ 7"` and the pour is one vertical/transverse size again. The 832 lb the change
 saves across the three retaining runs is the reason; so is not carrying 43% of unused
 capacity in a mat that ACI's minimum would have sized anyway. §6's rejection of `#6 @ 16"` on
 the stem loses its "one bar, one spacing" half here and survives on its own 3% margin, which
@@ -892,8 +931,8 @@ graded limit state here and is ordinary detailing practice for a strip footing.
 
 The mat makes the **section** work. It does not make the **detailing** anything this engine
 has looked at — development of the toe bars into and past the stem face, the hook at the toe
-end, the corner mats where three footings meet, and the lap of the stem's own dowels into
-this mat. §6 said the same thing about the stem and it is no less true here.
+end, the corner mats where three footings meet, and the stem vertical's foot bearing on
+this mat (its hooked development is §6b). §6 said the same thing about the stem and it is no less true here.
 
 And the whole of §7 rests on §4's pressure diagram, which rests on the washed-stone bed
 being built as specified. A softer bearing plane redistributes the trapezoid and every

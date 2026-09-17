@@ -229,12 +229,13 @@ def test_s100_schedules_the_authored_reinforcement(catlin_model):
     assert table.columns == ("MARK", "ELEMENT", "STEEL", "COVER", "LAP")
     rows = {(row[2], row[3], row[4]) for row in table.rows}
     # `_B8_STEEL` on the basement walls: R404.1.2(8) verticals and R404.1.2(1)'s three rows,
-    # 2" cover, no lap class authored — "—" rather than an assumed class.
-    assert ('V #5 @ 41" + H #4 (3)', '2"', "—") in rows
+    # 1-1/4" off the inside face (R404.1.3.3.7.2), no lap class authored — "—" rather than
+    # an assumed class.
+    assert ('V #5 @ 41" + H #4 (3)', '1-1/4"', "—") in rows
     # The court footing mat: cover from ReinforcementSpec.cover (3"), both directions print.
     assert ('BX #5 @ 12" + TX #5 @ 12" + BY #4 @ 18"', '3"', "B") in rows
-    # The retaining stems: retained-face #6, both-face horizontals, dowels (decision #75).
-    assert ('V #6 @ 10" + H #4 @ 16" x2 + DWL #6', '3"', "B") in rows
+    # The retaining stems: retained-face #5 hooked into the mat, both-face horizontals.
+    assert ('V #5 @ 7" + H #4 @ 16" x2', '3"', "B") in rows
     # Nothing is invented for the pours that carry no spec, and a suspended deck is not a
     # foundation pour.
     assert all("#" in row[2] for row in table.rows)

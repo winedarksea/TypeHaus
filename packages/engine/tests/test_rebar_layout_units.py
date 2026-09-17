@@ -1,7 +1,9 @@
 """Unit fixtures for ``resolve/rebar``: the cases catlin does not exercise.
 
-An opening splitting bars, a raked top, a slab void, a circular tie's billed perimeter, and a
-run split across stock. Each builds the smallest host the layout will accept.
+An opening splitting bars, a raked top, a slab void, a circular tie's billed perimeter, a run
+split across stock (and its staggered neighbour), corner bars at an L, a mat stopping at an
+earlier pour and a vertical hooked into the pour below. Each builds the smallest host the
+layout will accept.
 """
 
 from __future__ import annotations
@@ -15,9 +17,10 @@ from typehaus import BarSpec, ReinforcementSpec, inch
 from typehaus.resolve.model import ResolvedLayer, ResolvedSolid, ResolvedWall
 from typehaus.resolve.rebar import detailing as det
 from typehaus.resolve.rebar.cages import lay_column
+from typehaus.resolve.rebar.junctions import lay_junction_bars
 from typehaus.resolve.rebar.mats import lay_mat
 from typehaus.resolve.rebar.stock import Sink
-from typehaus.resolve.rebar.walls import lay_wall
+from typehaus.resolve.rebar.walls import WallBase, lay_wall
 
 _IN = 0.0254
 
@@ -45,7 +48,7 @@ def test_an_opening_splits_the_verticals_that_cross_it() -> None:
     opening = SimpleNamespace(host_wall="W", width_m=36 * _IN, height_m=36 * _IN,
                               sill_m=30 * _IN, center_along_m=60 * _IN)
     lay_wall(sink, _spec(BarSpec(role="vertical", bar=4, spacing=inch(12))), wall, 2 * _IN,
-             (opening,), (None, None))
+             (opening,))
     xs = sorted({round(b.path[0][0] / _IN, 3) for b in sink.bars})
     split = [x for x in xs if 40 <= x <= 80]  # within the opening ± cover
     assert split
@@ -62,7 +65,7 @@ def test_a_raked_top_shortens_verticals_and_horizontals() -> None:
     wall = _wall(top_in=96.0, top0=48 * _IN, top1=96 * _IN)
     lay_wall(sink, _spec(BarSpec(role="vertical", bar=4, spacing=inch(12)),
                          BarSpec(role="horizontal", bar=4, spacing=inch(12))),
-             wall, 2 * _IN, (), (None, None))
+             wall, 2 * _IN, ())
     verts = sorted((b for b in sink.bars if b.role == "vertical"), key=lambda b: b.path[0][0])
     assert verts[0].path[1][2] < verts[-1].path[1][2]
     for b in verts:
@@ -102,13 +105,13 @@ def test_a_circular_tie_bills_two_pi_r_plus_hooks_and_overlap() -> None:
     assert tie.closed
     assert tie.placed_length_m / _IN == pytest.approx(2 * math.pi * (6 - 2 - 0.1875))
     assert tie.hook_length_m / _IN == pytest.approx(
-        2 * det.hook_allowance_in(3, "tie135") + det.CIRCULAR_TIE_OVERLAP_IN)
+        2 * det.hook_allowance_in(3, "tie135") + det.CIRCULAR_TIE_OVERLAP_IN)  # black bar
 
 
 def test_a_run_over_stock_is_lapped_into_equal_pieces() -> None:
     sink = _sink(stock_in=240.0)
     entry = BarSpec(role="bottom-x", bar=5, spacing=inch(12))
-    sink.straight(entry, (0.0, 0.0, 0.0), (500 * _IN, 0.0, 0.0))
+    sink.straight(entry, (0.0, 0.0, 0.0), (500 * _IN, 0.0, 0.0))  # run 1: not staggered
     lap = det.tension_lap_in(5, 4000, "B")
     assert len(sink.bars) == math.ceil((500 - lap) / (240 - lap))
     cuts = [b.cut_length_m / _IN for b in sink.bars]
@@ -117,3 +120,89 @@ def test_a_run_over_stock_is_lapped_into_equal_pieces() -> None:
     assert sum(b.placed_length_m for b in sink.bars) / _IN == pytest.approx(500.0)
     assert sum(cuts) == pytest.approx(500.0 + (len(cuts) - 1) * lap)
     assert sink.bars[-1].lap_length_m == 0.0
+
+
+def test_every_other_run_staggers_its_splices_by_half_a_pitch() -> None:
+    sink = _sink(stock_in=240.0)
+    entry = BarSpec(role="bottom-x", bar=5, spacing=inch(12))
+    sink.straight(entry, (0.0, 0.0, 0.0), (500 * _IN, 0.0, 0.0))
+    first = len(sink.bars)
+    sink.straight(entry, (0.0, 1.0, 0.0), (500 * _IN, 1.0, 0.0))
+    second = sink.bars[first:]
+    assert len(second) == first + 1
+    lap = det.tension_lap_in(5, 4000, "B")
+    cuts = [b.cut_length_m / _IN for b in second]
+    assert max(cuts) <= 240.0 + 1e-9
+    assert sum(b.placed_length_m for b in second) / _IN == pytest.approx(500.0)
+    starts_a = sorted(round(min(b.path[0][0], b.path[-1][0]) / _IN, 3) for b in sink.bars[:first])
+    starts_b = sorted(round(min(b.path[0][0], b.path[-1][0]) / _IN, 3) for b in second)
+    pitch = (500 - lap) / first
+    assert starts_b[1] == pytest.approx(starts_a[1] - pitch / 2, abs=0.01)
+
+
+def _l_walls():
+    """Two 8" walls meeting at an L at the origin: A runs +x, B runs +y."""
+    t, L = 4 * _IN, 120 * _IN
+    a_ring = ((-t, -t), (L, -t), (L, t), (t, t))
+    b_ring = ((-t, -t), (t, t), (t, L), (-t, L))
+    walls = []
+    for tag, axis, ring in (("A", ((0.0, 0.0), (L, 0.0)), a_ring),
+                            ("B", ((0.0, 0.0), (0.0, L)), b_ring)):
+        layer = ResolvedLayer("concrete", "concrete", "structure", 8 * _IN, ring)
+        walls.append(ResolvedWall(uid=tag, tag=tag, storey="s", assembly="X", axis=axis,
+                                  layers=(layer,), z0_m=0.0, z1_m=48 * _IN,
+                                  is_foundation=True))
+    return walls
+
+
+def test_an_l_corner_gets_one_lapped_corner_bar_per_row_per_face() -> None:
+    walls = _l_walls()
+    spec = _spec(BarSpec(role="horizontal", bar=4, spacing=inch(16), layers=2))
+    sinks, steel = {}, {}
+    for w in walls:
+        sinks[w.tag] = Sink(w.tag, "", 4000.0, "B", 480 * _IN, wall=True)
+        steel[w.tag] = lay_wall(sinks[w.tag], spec, w, 2 * _IN, ())
+    inc = [SimpleNamespace(wall_tag="A", direction=(1.0, 0.0), z0_m=0.0, z1_m=48 * _IN),
+           SimpleNamespace(wall_tag="B", direction=(0.0, 1.0), z0_m=0.0, z1_m=48 * _IN)]
+    junction = SimpleNamespace(node_tag="N", point=(0.0, 0.0), incidents=inc, through_walls=())
+    rows = len({round(b.path[0][2], 6) for b in sinks["A"].bars})
+    before = len(sinks["A"].bars)
+    lay_junction_bars([junction], steel, sinks)
+    corners = sinks["A"].bars[before:]
+    assert len(corners) == 2 * rows  # owned by A, the first tag
+    assert all(len(b.path) == 2 for b in sinks["B"].bars)
+    for bar in corners:
+        assert len(bar.path) == 3 and bar.hook_length_m == 0.0
+        # One wall lap each leg: IRC's 30", or class B top-cast (32.07") above 12".
+        top_cast = bar.path[1][2] > 12 * _IN
+        assert bar.lap_length_m == pytest.approx(2 * sinks["A"].lap_m(4, top_cast=top_cast))
+        (x0, y0, _), (cx, cy, _), (x1, y1, _) = bar.path
+        assert abs(cy - y0) < 1e-9 and abs(cx - x1) < 1e-9  # one leg along A, one along B
+        assert (x0 - cx) / _IN > 30.0 and (y1 - cy) / _IN > 30.0
+    assert all(not b.hook_kinds for b in sinks["A"].bars + sinks["B"].bars)
+
+
+def test_a_later_mat_stops_at_an_earlier_pours_concrete() -> None:
+    sink = _sink()
+    outline = ((0.0, 0.0), (120 * _IN, 0.0), (120 * _IN, 48 * _IN), (0.0, 48 * _IN))
+    earlier = ((96 * _IN, 0.0), (144 * _IN, 0.0), (144 * _IN, 48 * _IN), (96 * _IN, 48 * _IN))
+    pad = ResolvedSolid(uid="u", tag="P", storey="s", category="pad", outline=outline,
+                        z0_m=0.0, z1_m=12 * _IN)
+    lay_mat(sink, _spec(BarSpec(role="bottom-x", bar=4, spacing=inch(12))), pad, 2 * _IN,
+            earlier=(earlier,))
+    assert sink.bars
+    assert max(max(p[0] for p in b.path) for b in sink.bars) / _IN == pytest.approx(96.0)
+
+
+def test_a_hooked_vertical_runs_from_the_pour_below_and_records_its_anchorage() -> None:
+    sink = _sink()
+    base = WallBase(top=0.0, rest=-8 * _IN)
+    entry = BarSpec(role="vertical", bar=5, spacing=inch(12), face="exterior", hooks=("start",))
+    lay_wall(sink, _spec(entry), _wall(), 2 * _IN, (), base)
+    for bar in sink.bars:
+        assert bar.hook_kinds == ("std90",) and len(bar.path) == 3
+        assert bar.path[1][2] / _IN == pytest.approx(-8 + 0.3125)
+        assert bar.embedment_m / _IN == pytest.approx(8.0)
+        assert bar.development_m / _IN == pytest.approx(
+            det.hooked_development_in(5, 4000, confined_spacing=True, side_cover_ok=True))
+        assert abs(bar.path[0][2] - bar.path[1][2]) < 1e-9  # the foot is level

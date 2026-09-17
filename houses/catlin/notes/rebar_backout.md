@@ -47,26 +47,42 @@ Pieces are what gets cut; bars are runs (a lapped run is one bar in two pieces).
 
 | scope | bar | coating | pieces | bars | placed | lap | hook | cut | weight |
 |---|---|---|---:|---:|---:|---:|---:|---:|---:|
-| column | #3 | hdg-a767 | 139 | 139 | 277.5 | 0.0 | 164.1 | 441.6 LF | 166.0 lb |
-| column | #5 | hdg-a767 | 80 | 80 | 449.7 | 73.5 | 22.5 | 545.8 LF | 569.3 lb |
-| footing | #4 | hdg-a767 | 30 | 30 | 426.8 | 0.0 | 0.0 | 426.8 LF | 285.1 lb |
-| footing | #5 | hdg-a767 | 154 | 154 | 1,001.0 | 0.0 | 0.0 | 1,001.0 LF | 1,044.0 lb |
-| foundation wall | #3 | hdg-a767 | 49 | 49 | 171.5 | 0.0 | 33.4 | 204.9 LF | 77.0 lb |
-| foundation wall | #4 | hdg-a767 | 232 | 206 | 2,039.2 | 59.9 | 72.0 | 2,171.1 LF | 1,450.3 lb |
-| foundation wall | #5 | hdg-a767 | 45 | 45 | 417.0 | 0.0 | 0.0 | 417.0 LF | 434.9 lb |
-| foundation wall | #6 | hdg-a767 | 144 | 144 | 711.9 | 184.8 | 56.5 | 953.2 LF | 1,431.7 lb |
-| slab | #3 | black | 220 | 220 | 517.9 | 0.0 | 149.7 | 667.7 LF | 251.1 lb |
-| slab | #4 | black | 62 | 43 | 863.6 | 50.8 | 0.0 | 914.4 LF | 610.8 lb |
+| column | #3 | hdg-a767 | 139 | 139 | 277.5 | 0.0 | 175.9 | 453.4 LF | 170.5 lb |
+| column | #5 | hdg-a767 | 80 | 80 | 459.1 | 73.5 | 22.5 | 555.1 LF | 579.0 lb |
+| footing | #4 | hdg-a767 | 30 | 30 | 407.3 | 0.0 | 0.0 | 407.3 LF | 272.1 lb |
+| footing | #5 | hdg-a767 | 154 | 154 | 949.0 | 0.0 | 0.0 | 949.0 LF | 989.8 lb |
+| foundation wall | #3 | hdg-a767 | 49 | 49 | 171.5 | 0.0 | 37.5 | 209.0 LF | 78.6 lb |
+| foundation wall | #4 | hdg-a767 | 307 | 307 | 2,075.6 | 505.0 | 0.0 | 2,580.6 LF | 1,723.8 lb |
+| foundation wall | #5 | hdg-a767 | 139 | 139 | 1,314.9 | 0.0 | 66.1 | 1,381.0 LF | 1,440.4 lb |
+| foundation wall | #6 | hdg-a767 | 10 | 10 | 86.2 | 0.0 | 0.0 | 86.2 LF | 129.5 lb |
+| slab | #3 | black | 220 | 220 | 481.3 | 0.0 | 149.7 | 631.0 LF | 237.3 lb |
+| slab | #4 | black | 43 | 43 | 863.6 | 0.0 | 0.0 | 863.6 LF | 576.9 lb |
 | slab | #5 | black | 22 | 22 | 393.2 | 0.0 | 0.0 | 393.2 LF | 410.1 lb |
-| | | | **1,177** | | | | | | **6,730.3 lb** |
+| | | | **1,193** | | | | | | **6,608.0 lb** |
 
 **Checked by hand, not only by the machine.** Three elements in these rows are laid out bar
 for bar in `notes/rebar_layout_basis.md` and reproduced by `tests/test_rebar_layout_oracle.py`:
 `FT-SG-S`'s mat (142.37 + 142.37 lb of #5, 78.16 lb of #4 — part of the footing rows),
-`W-SG-S`'s stem (323.67 lb #6 verticals, 244.58 lb #4 horizontals in 32 pieces, 162.22 lb #6
-dowels) and `PT-SG-COL`'s cage (40.66 lb #5, 15.53 lb #3).
+`W-SG-S`'s stem (383.10 lb of #5 verticals continuous from the footing, 266.64 lb of #4
+horizontals and SW corner bars in 32 pieces) and `PT-SG-COL`'s cage (40.66 lb #5, 15.94 lb #3).
 
-**What moved from 3,514.7 lb, and why: +3,215.6 lb in three parts.**
+**Revised the same day after a detailing review: 6,730.3 → 6,608.0 lb, −122.3 lb**, row by row:
+
+* **Court stems (−296.7 lb across #5/#6):** #6 @ 10" with lapped #6 dowels became #5 @ 7"
+  continuous from the footing on a foot (`sunken_garden_court_free_body.md` §6b — a #6
+  could not develop in the 12" footing). The #6 row keeps only `W-SG-W1/E1`'s braced #6 @ 38".
+* **Wall horizontals (+273.5 lb #4):** hooks into the neighbour gave way to 101 corner and
+  splice bars (360.2 lb, the 505.0 LF of lap), laps at the IRC R608.5.4(1) length; 40' stock
+  removed the stock laps on the court rows.
+* **Overlapping footings (−67.2 lb):** `FT-SG-W2/E2` no longer lay a second mat in the 42"
+  squares `FT-SG-S` already reinforces.
+* **A767 tie bends (+6.1 lb #3 hdg):** ties bent before galvanizing bend at 6 db.
+* **Deck (−47.7 lb black):** stirrup tops sit under the cap's top mat; 40' stock removes the
+  top-y laps.
+* **Pier dowels (+9.7 lb #5):** each now laps a full lap above the underside of the verticals
+  it laps, and rests on the base's bottom mat.
+
+**What moved from 3,514.7 lb to the first layout's 6,730.3, and why: +3,215.6 lb in three parts.**
 
 * **Newly authored steel (§4 closed): +2,899.9 lb.** The basement's R404.1.2(1) horizontal
   rows and the 12" east walls (`notes/basement_wall_horizontal_steel.md`); the garage ICF
@@ -289,7 +305,8 @@ A specification change should cost nothing, and this one did.)
 ## 3. The test, and the gate is CLOSED BY DECISION
 
 ```
-billed          6,730 lb / 143.58 cy   =  46.9 lb/cy   (2026-09-17, laid out, §4 authored)
+billed          6,608 lb / 143.71 cy   =  46.0 lb/cy   (2026-09-17, detailing review)
+  was           6,730 lb / 143.58 cy   =  46.9 lb/cy   (2026-09-17, laid out, §4 authored)
   was           3,515 lb / 143.58 cy   =  24.5 lb/cy   (2026-09-15, garage to stone)
   was           3,515 lb / 147.64 cy   =  23.8 lb/cy   (2026-09-10, second pass)
   was           4,828 lb / 152.69 cy   =  31.6 lb/cy   (2026-09-10, first pass)
@@ -302,7 +319,8 @@ where the 3,215.6 lb came from — mostly steel that existed in the building and
 nowhere, plus laps and hooks leaving `[waste]`. 46.9 now sits inside the 40–80 lb/cy a lightly
 reinforced residential foundation runs, which is the sanity check this section asked for.
 
-At $1.05–1.35/lb, **6,730 lb is $7,067–9,086**: still under the register's $10,000–18,000,
+At $1.05–1.35/lb, **6,608 lb is $6,938–8,921** (6,730 lb was $7,067–9,086 before the same
+day's detailing review): still under the register's $10,000–18,000,
 though no longer by half. **The gate stays closed, and from today that is a DECISION rather
 than an arithmetic result** (decision #75 D14). The price back-out is out of the layout's
 scope: `[reinforcement]` stays empty, `[rebar_inclusive]` stays `true`, and
@@ -445,7 +463,7 @@ not modelled anywhere.
 ## 5. What has to happen before the cut
 
 > **2026-09-17:** the first three bullets are done (§4). The re-run of §3 lands at
-> $7,067–9,086 and the gate is held closed by decision, not by that figure. What remains is
+> $6,938–8,921 and the gate is held closed by decision, not by that figure. What remains is
 > the cut itself, below, whenever it is chosen.
 
 In order, and the first is most of the money:

@@ -219,14 +219,15 @@ def test_catlin_is_clean(catlin_plan) -> None:
 def test_the_third_inch_on_the_garden_stems_is_pinned(catlin_plan, catlin_model) -> None:
     """§6a of ``notes/sunken_garden_court_free_body.md``, both halves.
 
-    The 3" is a durability decision above the 2" Code minimum, and it is paid for in section:
-    d 9.625" -> 8.625", phi*Mn 22,131 -> 19,755 ft-lb/ft, d/c 0.55 -> 0.61 (re-oracled three
+    The 3" is a durability decision above the 1.5" Code minimum for the #5 @ 7" stem (§6b),
+    paid for in section: d 10.188" -> 8.688", phi*Mn 23,615 -> 20,028 ft-lb/ft, d/c 0.51 ->
+    0.61 (re-oracled three
     times: the stem shortened 10.37' -> 9.62' when the footings rose, -> 9.2865' when the
     wall tops were capped at 36" above grade, and -> 9.1198' when all five court walls came
     flush with the porch datum on 2026-09-10; the demand fell with each). Pinned
-    because a later reader "restoring" the Table 20.5.1.3.1 minimum would silently buy 11%
+    because a later reader "restoring" the Table 20.5.1.3.1 minimum would silently buy 15%
     of capacity back — and because the 3" is what keeps the note's selection table honest
-    about how much margin `#6 @ 10"` really carries over `#6 @ 12"`.
+    about how much margin the stem really carries over `#6 @ 12"`.
     """
     from typehaus.engineering import EngineeringContext, EngineeringResults
 
@@ -236,5 +237,5 @@ def test_the_third_inch_on_the_garden_stems_is_pinned(catlin_plan, catlin_model)
         stem = next(s for s in results[f"retaining_wall/{tag}"].limit_states
                     if s.name == "stem flexure")
         assert 'cover 3.00"' in stem.citation, stem.citation
-        assert stem.capacity == pytest.approx(19_755, rel=0.002)
-        assert stem.ratio == pytest.approx(0.614, abs=0.005)
+        assert stem.capacity == pytest.approx(20_028, rel=0.002)
+        assert stem.ratio == pytest.approx(0.606, abs=0.005)

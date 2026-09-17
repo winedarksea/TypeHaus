@@ -439,6 +439,12 @@ ENTRY_MOMENT_CAGE = ReinforcementSpec(
     source="ENTRY_PIER_CAGE plus its base dowels; notes/north_entry_piers.md §6",
 )
 _MOMENT_PIERS = frozenset({"PT-BW-E", "PT-BW-RE", "PT-BW-GE", "PT-BW-RNE"})
+#: ** 12" UNDER EVERY MOMENT PIER, AND THE BOTTOM GOES DOWN (owner, 2026-09-17). ** The #5 dowel
+#: foot rests at 3" bottom cover, so embedment is thickness - 3": 10" gave 7.00", 8" gave 5.00",
+#: against ACI 318-19 §25.4.3.1 ldh 7.11". 12" gives 9.00". Tops stay put -- pier heights, the
+#: hydrant's 1 7/16" over the house-side tops, and the garage strip's aligned top all hold.
+#: notes/north_entry_piers.md, 2026-09-17 addendum.
+MOMENT_PAD_DEPTH_FT = 1.0
 
 PIERS = []
 def _pad_outline(x_ft, y_ft, side_in, along_in=None):
@@ -511,8 +517,10 @@ for _uid, _tag, _x, _height, _top in (
     FOOTINGS.append(Pad(
         uid=f"BWF{_uid[4:8]}AA", tag=f"PD-BW-{_tag.split('-')[-1]}",
         outline=_pad_outline(_x, PIER_LINE_Y_FT, _PAD_WIDE_IN, _PAD_DEPTH_IN),
-        thickness=ft(FOOTING_DEPTH_FT), assembly="PIER_BASE_12",
-        bottom_elevation=ft(PIER_BOTTOM_FT)))
+        thickness=ft(MOMENT_PAD_DEPTH_FT if _tag in _MOMENT_PIERS else FOOTING_DEPTH_FT),
+        assembly="PIER_BASE_12",
+        bottom_elevation=ft(FOOTING_TOP_FT - MOMENT_PAD_DEPTH_FT if _tag in _MOMENT_PIERS
+                            else PIER_BOTTOM_FT)))
 
 # ** THE GARAGE SIDE IS THE MIRROR: TWO PIERS OF ITS OWN, NOT A PLATE ON THE STEM. **
 # BM-BW-GARAGE-SEAT used to bear through brackets standing off the GARAGE_ICF_6 stem's face,
@@ -600,8 +608,12 @@ for _uid, _tag, _x, _pad_in, _top in (
     FOOTINGS.append(Pad(
         uid=f"BWFG{_uid[4:6]}AAAA"[:10], tag=f"PD-BW-{_tag.split('-')[-1]}",
         outline=_pad_outline(_x, GARAGE_SEAT_Y_FT, _pad_in),
-        thickness=ft(GARAGE_FOOTING_THICKNESS_FT),
-        assembly="PIER_BASE_12", bottom_elevation=ft(GARAGE_PIER_BOTTOM_FT),
+        thickness=ft(MOMENT_PAD_DEPTH_FT if _tag in _MOMENT_PIERS
+                     else GARAGE_FOOTING_THICKNESS_FT),
+        assembly="PIER_BASE_12",
+        # A moment pad keeps the strip's top and drops its bottom 4" below the strip's plane.
+        bottom_elevation=ft(GARAGE_FOOTING_TOP_FT - MOMENT_PAD_DEPTH_FT
+                            if _tag in _MOMENT_PIERS else GARAGE_PIER_BOTTOM_FT),
         cast_with=_GARAGE_PIER_CAST_WITH[_tag]))
 
 # The two roof columns. Pier/pedestal top -0'-8 1/4" to header soffit +6'-4 3/4" = 7'-1".

@@ -708,13 +708,12 @@ _veneer_beam_bottom = inch(-120.1875)
 # Vertical steel on the three retaining walls' stems, on the RETAINED face — that is
 # where a cantilever puts its tension, and getting it on the wrong face is the classic
 # way a correctly-sized wall falls over. Sized in
-# `notes/sunken_garden_court_free_body.md` §6: Mu = 1.6 x 11,151 = 17,841 ft-lb/ft at
-# at-rest against phi-Mn 22,131 at #6 @ 10" (d/c 0.81, on the 5,000 psi mix
-# `SUNKEN_GARDEN_WALL` states). #6 @ 12" is the arithmetic minimum at d/c 0.96 and is too
-# thin a margin for a screening on presumptive soil values; the `#6 @ 38"` the braced porch
-# walls carry is nowhere near. 2" cover per ACI 318-19 Table 20.5.1.3.1 (earth and weather,
-# #6 and larger), which is also IRC Table R404.1.2(8) footnote i's outside-face figure for
-# bars larger than #5.
+# `notes/sunken_garden_court_free_body.md` §6: Mu = 1.6 x 7,585 = 12,136 ft-lb/ft at
+# at-rest against phi-Mn 20,028 at #5 @ 7" (d = 8.6875", d/c 0.61, 5,000 psi mix), 3" cover.
+# ** #5 @ 7", NOT #6 @ 10" (2026-09-17). ** Same steel (0.531 vs 0.528 in2/ft); the bar
+# changed because the vertical now runs continuous from the footing on a 90° foot, not a
+# lapped dowel. The 12" footing leaves 12 - 3 - 0.625 - 0.5 = 7.875" for the hook; ACI
+# 318-19 §25.4.3.1(a) ldh (psi_c 0.933) is 9.35" for a #6 and 7.11" for a #5 (§6b).
 #
 # ** AUTHORED TWICE, AND THAT IS THE MIGRATION CONTRACT. ** The string is what prints on the
 # drawing; the struct is what `stem_flexure` grades and what `takeoff/reinforcement.py`
@@ -763,7 +762,7 @@ _MOMENT_COLUMN_CAGE = ReinforcementSpec(
 
 # The two BRACED porch walls' vertical steel, structured. `#6 @ 38"` is IRC Table
 # R404.1.2(8) for a 12" wall braced top and bottom — a different row and a much lighter
-# schedule than the three retaining runs' `#6 @ 10"`, because these two have a floor
+# schedule than the three retaining runs' `#5 @ 7"`, because these two have a floor
 # diaphragm at the head and no cantilever to carry.
 _BRACED_STEM_STEEL = ReinforcementSpec(
     bars=(BarSpec(role="vertical", bar=6, spacing=inch(38.0)),),
@@ -786,19 +785,20 @@ _VENEER_BEAM_STEEL = ReinforcementSpec(
     source="notes/sunken_garden_veneer_beam.md §3 and §4a",
 )
 
-_RET_REBAR = '#6 @ 10" o.c.'
+_RET_REBAR = '#5 @ 7" o.c.'
 _RET_STEM_STEEL = ReinforcementSpec(
     bars=(
-        BarSpec(role="vertical", bar=6, spacing=inch(10.0), face="exterior",
-                note="RETAINED face — that is where the cantilever puts the tension"),
+        # Continuous from the footing: foot on the bottom mat, turned across the stem into
+        # the joint. No lap at the base, where the moment is greatest.
+        BarSpec(role="vertical", bar=5, spacing=inch(7.0), face="exterior", hooks=("start",),
+                note="RETAINED face, continuous from the footing mat with a 90° foot"),
         # #4 @ 16" each face is the same steel as the #4 @ 8" this was, and puts it where the
         # note always said: on both faces (decision #75 D11).
         BarSpec(role="horizontal", bar=4, spacing=inch(16.0), layers=2,
                 note="ACI 318-19 §11.6.1 temperature and shrinkage, both faces"),
-        BarSpec(role="dowels", bar=6, note="one per vertical, hooked into the footing mat"),
     ),
     # ** 3", AND IT IS BOUGHT WITH SECTION RATHER THAN FOUND LYING AROUND. **
-    # ACI 318-19 Table 20.5.1.3.1 asks 2" of a #6 on a formed face exposed to weather, and
+    # ACI 318-19 Table 20.5.1.3.1 asks 1-1/2" of a #5 on a formed face exposed to weather, and
     # `structural.concrete_cover_meets_minimum` grades against that. This is 3" — a
     # durability decision, not a code one, and the reason is class C2.
     #
@@ -817,9 +817,9 @@ _RET_STEM_STEEL = ReinforcementSpec(
     # Cover is the only term in the whole chloride problem that buys DISTANCE; every other
     # lever (w/cm 0.40, the galvanizing, the fly ash) buys time.
     #
-    # It costs 1" straight off `d`, which is ~11% of the stem's flexural capacity: the
-    # #6 @ 10" section goes from d/c 0.81 to 0.90 (notes/sunken_garden_court_free_body.md
-    # §6). That is a real spend of margin and it is why this number is authored on the
+    # It costs 1-1/2" straight off `d` over the Code figure, ~15% of the stem's flexural
+    # capacity: the #5 @ 7" section goes from d/c 0.51 to 0.61
+    # (notes/sunken_garden_court_free_body.md §6a). That is a real spend of margin and it is why this number is authored on the
     # SCHEDULE and not on the mix — the mix pours the footings too, and a 3" default there
     # is free where here it is not.
     cover=inch(3.0),
@@ -927,7 +927,7 @@ WALLS = [
     #
     # The buildability consequence, and the thing a crew gets wrong: **the vertical bar
     # spacing changes mid-pour at y = -11'-0" (`_y_ax_mid`) — #6 @ 38" north of it,
-    # #6 @ 10" on the retained face south of it, in one form.**
+    # #5 @ 7" on the retained face south of it, in one form.**
     FoundationWall(uid="SGW103AAAA", tag="W-SG-W1", start_node="N-SG-NW",
                    end_node="N-SG-MW", assembly="SUNKEN_GARDEN_WALL", alignment=_COURT_AXIS_SHIFT,
                    top_elevation=_porch_top, bottom_elevation=_wall_bottom,

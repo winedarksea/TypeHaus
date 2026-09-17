@@ -35,23 +35,24 @@ _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 #: W-SG-BRKBM's cage, SL-M-DECK's BuildDeck schedule, dowels), and the deck cap is the one
 #: BLACK pour because DECK_CAP_MIX says so — a new scope, not a second coating in an old one.
 _SCHEDULE = {
-    ("column", "#3", "hdg-a767"): (139, 166.0),
-    ("column", "#5", "hdg-a767"): (80, 569.3),
-    ("footing", "#4", "hdg-a767"): (30, 285.1),
-    ("footing", "#5", "hdg-a767"): (154, 1044.0),
-    ("foundation wall", "#3", "hdg-a767"): (49, 77.0),
-    ("foundation wall", "#4", "hdg-a767"): (232, 1450.3),
-    ("foundation wall", "#5", "hdg-a767"): (45, 434.9),
-    ("foundation wall", "#6", "hdg-a767"): (144, 1431.7),
-    ("slab", "#3", "black"): (220, 251.1),
-    ("slab", "#4", "black"): (62, 610.8),
+    ("column", "#3", "hdg-a767"): (139, 170.5),
+    ("column", "#5", "hdg-a767"): (80, 579.0),
+    ("footing", "#4", "hdg-a767"): (30, 272.1),
+    ("footing", "#5", "hdg-a767"): (154, 989.8),
+    ("foundation wall", "#3", "hdg-a767"): (49, 78.6),
+    ("foundation wall", "#4", "hdg-a767"): (307, 1723.8),
+    ("foundation wall", "#5", "hdg-a767"): (139, 1440.4),
+    ("foundation wall", "#6", "hdg-a767"): (10, 129.5),
+    ("slab", "#3", "black"): (220, 237.3),
+    ("slab", "#4", "black"): (43, 576.9),
     ("slab", "#5", "black"): (22, 410.1),
 }
-# +3,215.6 lb on 2026-09-17 over the area/spacing era's 3,514.7, in three parts the note's §1
-# works out: +2,899.9 newly authored, +110.5 laps and hooks leaving [waste] on the steel that
-# was already authored, +205.2 of fencepost (spacing is a maximum, so ceil(L/s) + 1 bars).
-_TOTAL_LB = 6730.3
-_TOTAL_PIECES = 1177
+# +3,215.6 lb on 2026-09-17 over the area/spacing era's 3,514.7 (newly authored steel, laps and
+# hooks out of [waste], the fencepost), then −122.3 the same day after the detailing review:
+# the court stems continuous at #5 @ 7", corner/splice bars, one mat per overlap, A767 bends.
+# Note §1 works both out row by row.
+_TOTAL_LB = 6608.0
+_TOTAL_PIECES = 1193
 
 #: §3, decision #75 D14. The back-out gate is CLOSED BY DECISION, not by a dollar comparison:
 #: authoring steel may lift the tonnage into the register's band without opening it. Opening
@@ -82,7 +83,7 @@ def test_the_backout_gate_is_still_CLOSED(rows) -> None:
     """**Closed by decision (§3, decision #75 D14), and asserted as that.**
 
     Until 2026-09-17 this compared the billed steel's dollars against the register's
-    $10,000-18,000. The layout lifted the tonnage to 6,730 lb ($7,067-9,086), and further
+    $10,000-18,000. The layout lifted the tonnage to 6,608 lb ($6,938-8,921), and further
     authoring could lift it into the band — which must not open the gate by itself. So the
     gate is a constant tied to the note, and this test holds the three things that make it
     true: the constant, the empty ``[reinforcement]`` table and the inclusive $/cy rates.
@@ -187,5 +188,6 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     # ** 24.5 -> 46.9 ON 2026-09-17, AND THIS RISE IS THE GAP CLOSING. ** Laid out (decision
     # #75), with §4's steel authored: +2,899.9 lb of steel that existed and was stated
     # nowhere, laps and hooks out of [waste], the fencepost. No concrete moved. 46.9 is inside
-    # the 40-80 a lightly reinforced residential foundation runs.
-    assert total_lb / total_cy == pytest.approx(46.87, rel=0.03)
+    # the 40-80 a lightly reinforced residential foundation runs. 46.0 after the same day's
+    # detailing review (note §1): the stems continuous at #5 @ 7", one mat per overlap.
+    assert total_lb / total_cy == pytest.approx(45.98, rel=0.03)

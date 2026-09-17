@@ -57,13 +57,15 @@ def compression_lap_in(bar: int) -> float:
     return max(MIN_LENGTH_IN, 0.0005 * FY_PSI * BARS[bar].diameter_in)
 
 
-def hook_geometry_in(bar: int, kind: HookKind) -> tuple[float, float, float]:
+def hook_geometry_in(bar: int, kind: HookKind, *,
+                     galvanized: bool = False) -> tuple[float, float, float]:
     """``(angle°, inside bend diameter, straight extension)`` for a hook.
 
     Standard hooks, Table 25.3.1 (#3–#8): 90° bends 6 db, extension 12 db; 180° bends 6 db,
     extension max(4 db, 2.5"). Stirrup/tie/hoop hooks, Table 25.3.2 (#3–#5): bend 4 db;
     90° and 135° extensions max(6 db, 3"); 180° max(4 db, 2.5"). A 135° tie hook is also the
-    §25.3.4 seismic hook. #6+ ties bend at 6 db and extend 12 db at 90°.
+    §25.3.4 seismic hook. #6+ ties bend at 6 db and extend 12 db at 90°. A bar bent before
+    galvanizing (ASTM A767) bends no tighter than 6 db, ties included.
     """
     db = BARS[bar].diameter_in
     if kind == "std90":
@@ -71,7 +73,7 @@ def hook_geometry_in(bar: int, kind: HookKind) -> tuple[float, float, float]:
     if kind == "std180":
         return 180.0, 6.0 * db, max(4.0 * db, 2.5)
     small = bar <= 5
-    bend = (4.0 if small else 6.0) * db
+    bend = (4.0 if small and not galvanized else 6.0) * db
     if kind == "tie180":
         return 180.0, bend, max(4.0 * db, 2.5)
     if kind == "tie90":
@@ -79,19 +81,52 @@ def hook_geometry_in(bar: int, kind: HookKind) -> tuple[float, float, float]:
     return 135.0, bend, max(6.0 * db, 3.0)
 
 
-def hook_allowance_in(bar: int, kind: HookKind) -> float:
+def hook_allowance_in(bar: int, kind: HookKind, *, galvanized: bool = False) -> float:
     """Cut length a hook adds beyond the bar's out-to-out placed dimension.
 
     The placed run ends at the outside face of the bend, ``D/2 + db`` past the start of the
     arc; the hook is the arc on the bar centreline, ``θ (D + db)/2``, plus the extension.
     """
-    angle, bend, extension = hook_geometry_in(bar, kind)
+    angle, bend, extension = hook_geometry_in(bar, kind, galvanized=galvanized)
     db = BARS[bar].diameter_in
     arc = math.radians(angle) * (bend + db) / 2.0
     return arc + extension - (bend / 2.0 + db)
 
 
+def bent_before_galvanizing(coating: str | None) -> bool:
+    """ASTM A767 bar is fabricated, then galvanized: its bends follow A767's diameters."""
+    return "a767" in (coating or "").lower()
+
+
+#: IRC Table R608.5.4(1), Grade 60 tension laps — where R404.1.3.3.7.5 sends a foundation
+#: wall's splices. Walls lap at the greater of this and ACI class B.
+IRC_WALL_LAP_IN = {4: 30.0, 5: 38.0, 6: 45.0}
+
+
+def wall_lap_in(bar: int, fc_psi: float, lap_class: str | None = None, *,
+                top_cast: bool = False) -> float:
+    return max(IRC_WALL_LAP_IN.get(bar, 0.0),
+               tension_lap_in(bar, fc_psi, lap_class, top_cast=top_cast))
+
+
+def hooked_development_in(bar: int, fc_psi: float, *, confined_spacing: bool,
+                          side_cover_ok: bool, epoxy: bool = False) -> float:
+    """ldh, §25.4.3.1(a): ``fy ψe ψr ψo ψc / (55 λ √f'c) · db^1.5``, ≥ max(8 db, 6").
+
+    ψr 1.0 where hooked bars sit ≥ 6 db apart (``confined_spacing``), else 1.6; ψo 1.0 where
+    side cover normal to the hook's plane is ≥ 6 db, else 1.25; ψc = f'c/15,000 + 0.6 below
+    6,000 psi.
+    """
+    db = BARS[bar].diameter_in
+    psi_r = 1.0 if confined_spacing else 1.6
+    psi_o = 1.0 if side_cover_ok else 1.25
+    psi_c = fc_psi / 15000.0 + 0.6 if fc_psi < 6000.0 else 1.0
+    root = min(SQRT_FC_CAP, math.sqrt(fc_psi))
+    ldh = FY_PSI * (1.2 if epoxy else 1.0) * psi_r * psi_o * psi_c / (55.0 * root) * db ** 1.5
+    return max(8.0 * db, 6.0, ldh)
+
+
 #: D5: a circular tie closes with this much overlap beyond its two hooks.
 CIRCULAR_TIE_OVERLAP_IN = 6.0
-#: D2: the mill length when a spec states none.
-DEFAULT_STOCK_IN = 240.0
+#: D2: the mill length when a spec states none — 40'-0", what a fabricator cuts #4–#6 from.
+DEFAULT_STOCK_IN = 480.0

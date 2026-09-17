@@ -10,7 +10,7 @@ import { projectPointToScene, type PlanCenter } from "./planGeometry";
 import { standardMaterial } from "./surfaces";
 import { pushSweepLegs, sweepLegs, type Vec3 } from "./tubeGeometry";
 
-// Mirrors emit/gltf/palette.py::_REBAR_COATING (linear RGB, as glTF's baseColorFactor).
+// Mirrors emit/gltf/rebar.py::_REBAR_COATING (linear RGB, as glTF's baseColorFactor).
 const COATING_RGB: Record<string, [number, number, number]> = {
   "hdg-a767": [0.70, 0.72, 0.74],
   "hdg-a1094": [0.70, 0.72, 0.74],

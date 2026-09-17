@@ -100,7 +100,8 @@ class BarSpec(HausModel):
     #: two. Interior/exterior follow the assembly's layer order (layer 0 is interior).
     face: Literal["interior", "exterior", "center"] | None = None
     #: Standard 90° hooks (ACI 318-19 §25.3.1) at these ends of a straight bar. ``None`` is
-    #: straight; ties, stirrups and dowels carry their own hooks regardless.
+    #: straight; ties, stirrups and dowels carry their own hooks regardless. On a wall
+    #: ``vertical``, ``"start"`` runs the bar continuous from the footing below on a foot.
     hooks: tuple[Literal["start", "end"], ...] | None = None
     #: Stirrups/ties only: the distance from EACH end of the member they are confined to.
     zone: Length | None = None
@@ -153,7 +154,7 @@ class ReinforcementSpec(HausModel):
     #: is spliced at one section, which a column base always is.
     lap_class: Literal["A", "B"] | None = None
     #: Mill length the bars are bought in; runs longer than it are lapped. ``None`` is the
-    #: engine default of 20'-0".
+    #: engine default of 40'-0".
     stock_length: Length | None = None
     #: The rib module of a ribbed (joist-form) slab, which ``rib`` and ``stirrups`` roles need.
     ribs: RibLayout | None = None

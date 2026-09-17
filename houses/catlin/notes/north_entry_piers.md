@@ -68,7 +68,7 @@ comes from. If §3 is wrong, every ratio in §5 and §6 is wrong by the same fac
 | site grade | `params/foundations.py::SITE_GRADE` | −2'-10" |
 | pier top above grade | 34" − 15.5" | 18 1/2" |
 | footing underside | house footing underside | −9'-9 7/16" |
-| footing thickness | authored | 10" |
+| footing thickness | authored | 10" (12" under the four moment piers, 2026-09-17) |
 | roof column length | 6'-4 3/4" − (−1'-3 1/2") | 7'-8 1/4" |
 | header span, node to node | 43'-2 5/8" − 37'-6" | 5'-8 5/8" = 5.719 ft |
 | header back span, bearing to bearing | `GARAGE_SEAT_Y_FT` 42'-5 3/4" − 37'-6" | 4'-11 3/4" = 4.979 ft |
@@ -449,6 +449,61 @@ the beam chain (0.90 against 0.51 before the 2026-09-11 narrowing). **0.81 is th
 bearing ratio in this structure** and it is the first number to revisit if a boring log comes
 back under 2,000 psf. The retired `PR-BW-*` pads were 1.78 ft² against a 1,240 lb load; they
 do not cover any of this, which is why 2'-0" is authored on five of the six.
+
+### 2026-09-17 — the four moment-pier pads are 12" deep (owner)
+
+`PD-BW-E`, `-RE` (were 10") and `PD-BW-GE`, `-RNE` (were 8") are **1'-0"**. `PD-BW-W` (10") and
+`PD-BW-GW` (8") carry no dowels and are unchanged. Plan sizes are unchanged.
+
+**Why.** Each moment pier's four #5 base dowels are laid as an L whose 90° foot rests at the
+pad's 3" bottom cover, so embedment = thickness − 3". ACI 318-19 §25.4.3.1(a), f_y 60,000,
+f'c 5,000 (√ = 70.71), λ 1.0, ψ_e 1.0 (galvanized), ψ_r 1.0 (bars ≥ 6 d_b apart), ψ_o 1.0,
+ψ_c = 5,000/15,000 + 0.6 = 0.933:
+
+| term | working | value |
+|---|---|---|
+| ℓ_dh | 60,000 × 0.933 / (55 × 1.0 × 70.71) × 0.625^1.5 = 14.40 × 0.4941 | **7.11"** |
+| §25.4.3.1 floors | max(8 d_b = 5.00", 6") | 6.00" — ℓ_dh governs |
+| embedment, 10" / 8" pad | 10 − 3 / 8 − 3 | 7.00" / 5.00" — **short** |
+| embedment, 12" pad | 12 − 3 | **9.00"** (ℓ_dh / have = 0.79) |
+
+**The tops stay; the bottoms go down.** House side: top −8'-11 7/16", bottom −9'-9 7/16" →
+**−9'-11 7/16"**. Garage side: top −6'-4" (flush with the strip), bottom −7'-0" → **−7'-4"**.
+Raising the tops instead was rejected on three counts: `PR-G-HYDRANT-CW` crosses over
+`PD-BW-E` in plan (x = 11'-0" inside 9'-4" .. 11'-10") at −8'-10", 1 7/16" above today's top, so
+a −8'-9 7/16" top would swallow it (why `FOOTING_DEPTH_FT` was 10" to begin with); a garage pad
+would stand 4" proud of the strip it is cast monolithic with; and every shaft height — the §8
+lever arms, the cage lengths — would move. Kept this way, column heights (91.9 / 184.2 / 60.5 / 152.8 in) and §8 are untouched.
+
+Consequences, all benign: frost cover rises 2" (85.4" house side) and 4" (54" at −2'-10"
+grade, garage side) against 42"; the house-side two now step 2" below `FT-B-N1..N4`'s plane
+1 1/16" away in plan, which the existing open-excavation sequencing already covers (pour the
+pads with or before that strip); the garage two are a 4" local deepening under their
+monolithic lap; the hydrant passes 1'-6" under `PD-BW-GE` (was 1'-10") and still 1 7/16" over `PD-BW-E`. `PT-BW-RNE`'s
+embedment below grade (§8d) is 4'-6", was 4'-2". Added concrete 0.123 cy
+(2 × 3.75 × 2/12 + 2.25 × 4/12 + 4.00 × 4/12 = 3.33 ft³).
+
+**Bearing, gross** (service D + L from the `deck_post` records, plus the pad at 150 pcf,
+against the mn-2020 profile's 1,500 psf; displaced soil not netted, so conservative):
+
+| pad | area | D + L column | pad wt 10"/8" → 12" | pressure before → after | ratio |
+|---|---|---|---|---|---|
+| `PD-BW-E` | 3.75 ft² | 1,166 + 1,148 = 2,315 lb | 469 → 563 lb | 742 → 767 psf | 0.49 → 0.51 |
+| `PD-BW-RE` | 3.75 ft² | 2,208 + 2,000 = 4,208 lb | 469 → 563 lb | 1,247 → 1,272 psf | 0.83 → 0.85 |
+| `PD-BW-GE` | 2.25 ft² | 858 + 1,148 = 2,006 lb | 225 → 338 lb | 992 → 1,042 psf | 0.66 → 0.69 |
+| `PD-BW-RNE` | 4.00 ft² | 1,900 + 2,000 = 3,900 lb | 400 → 600 lb | 1,075 → 1,125 psf | 0.72 → 0.75 |
+
+**Uplift and overturning improve** by the added pad weight: +94 lb under E/RE, +113 under GE,
++200 under RNE — at 0.6D, +56 lb on `PT-BW-RE` and +120 lb on `PT-BW-RNE` against the ~230 lb
+net column uplift `params/north_entry_frame.py` states, and the same weight over half the pad
+width as extra resisting moment. None of this is claimed as fixity (§8d stands).
+
+**Engine agreement.** No engineering record moves, and that is correct rather than blind:
+`deck_post` reads column height and cage (both unchanged), and `pier_basis` carries no footing
+weight for a pad-hosted pier (`footing_depth_in` 0), so the pad weight above is this note's
+alone. `structural.deck_footing_size` grades area (unchanged) and a minimum thickness (now
+exceeded by more). `integrity.reinforcement_layout`'s four anchorage FAILs (7.00" / 5.00"
+against 7.11") are gone.
 
 ## 7. What is NOT graded here
 

@@ -1,8 +1,8 @@
 """``resolve/rebar`` against ``houses/catlin/notes/rebar_layout_basis.md`` §2–§4.
 
 Three elements laid out bar for bar by hand before the layout code existed: the FT-SG-S mat,
-the W-SG-S stem (verticals, two-face horizontals with laps and corner hooks, footing
-dowels) and the PT-SG-COL cage. Counts are exact; lengths match the note to 0.01".
+the W-SG-S stem (verticals continuous from the footing, two-face horizontals and their corner
+bars) and the PT-SG-COL cage. Counts are exact; lengths match the note to 0.01".
 """
 
 from __future__ import annotations
@@ -48,44 +48,41 @@ def test_ft_sg_s_mat(catlin_model_ro) -> None:
 
 
 def test_w_sg_s_verticals(catlin_model_ro) -> None:
-    """§3: 25 #6 at 103.4375", on the retained face 2.625" inside it."""
+    """§3: 36 #5 continuous from the footing, 114.0" + a 8.436" foot, 2.6875" inside the
+    retained face, 7.875" of the 7.115" ldh embedded."""
     bars = _role(catlin_model_ro, "W-SG-S", "vertical")
-    assert len(bars) == 25
-    assert all(b.placed_length_m / _IN == pytest.approx(103.4375, abs=0.01) for b in bars)
-    assert _lb(bars) == pytest.approx(323.67, abs=0.01)
+    assert len(bars) == 36
+    for b in bars:
+        assert b.placed_length_m / _IN == pytest.approx(114.0, abs=0.01)
+        assert b.hook_length_m / _IN == pytest.approx(8.436, abs=0.001)
+        assert b.lap_length_m == 0.0 and b.hook_kinds == ("std90",)
+        assert b.embedment_m / _IN == pytest.approx(7.875, abs=0.001)
+        assert b.development_m / _IN == pytest.approx(7.115, abs=0.001)
+    assert _lb(bars) == pytest.approx(383.10, abs=0.01)
     wall = catlin_model_ro.wall("W-SG-S")
-    t = (bars[0].path[0][1] - wall.axis[0][1]) / _IN
-    assert t == pytest.approx(-2.625, abs=0.001)
+    t = (bars[0].path[1][1] - wall.axis[0][1]) / _IN
+    assert t == pytest.approx(-2.6875, abs=0.001)
+    assert not _role(catlin_model_ro, "W-SG-S", "dowels")
 
 
 def test_w_sg_s_horizontals(catlin_model_ro) -> None:
-    """§3: 16 runs of 2 equal-cut pieces, laps and hooks exactly as tabulated."""
+    """§3: 16 straight one-piece rows and 16 SW corner bars of 6.0" placed + 60.0" lap."""
     bars = _role(catlin_model_ro, "W-SG-S", "horizontal")
     assert len(bars) == 32
-    assert all(b.pieces == 2 and len(b.hook_kinds) == 1 for b in bars)
-    firsts = sorted((round(b.placed_length_m / _IN, 3), round(b.lap_length_m / _IN, 3),
-                     round(b.cut_length_m / _IN, 3)) for b in bars if b.piece == 1)
-    assert firsts == sorted([(107.969, 22.062, 136.78)] + [(104.66, 28.68, 140.089)] * 7
-                            + [(103.219, 22.062, 132.03)] + [(99.91, 28.68, 135.339)] * 7)
-    seconds = sorted(round(b.placed_length_m / _IN, 3) for b in bars if b.piece == 2)
-    assert seconds == sorted([130.031] + [133.34] * 7 + [125.281] + [128.59] * 7)
-    assert sum(b.cut_length_m for b in bars) / _IN == pytest.approx(4393.612, abs=0.01)
-    assert _lb(bars) == pytest.approx(244.58, abs=0.01)
-
-
-def test_w_sg_s_dowels(catlin_model_ro) -> None:
-    """§3: 25 #6 L-dowels, 8.625" embedded, 33.093" lap, 10.123" foot."""
-    bars = _role(catlin_model_ro, "W-SG-S", "dowels")
-    assert len(bars) == 25
-    for b in bars:
-        assert b.placed_length_m / _IN == pytest.approx(8.625, abs=0.001)
-        assert b.lap_length_m / _IN == pytest.approx(33.093, abs=0.001)
-        assert b.hook_length_m / _IN == pytest.approx(10.123, abs=0.001)
-    assert _lb(bars) == pytest.approx(162.22, abs=0.01)
+    assert all(b.pieces == 1 and not b.hook_kinds for b in bars)
+    straight = sorted(round(b.placed_length_m / _IN, 3) for b in bars if len(b.path) == 2)
+    assert straight == [228.5] * 8 + [238.25] * 8
+    corners = [b for b in bars if len(b.path) == 3]
+    assert len(corners) == 16
+    for b in corners:
+        assert b.placed_length_m / _IN == pytest.approx(6.0, abs=0.001)
+        assert b.lap_length_m / _IN == pytest.approx(60.0, abs=0.001)
+    assert sum(b.cut_length_m for b in bars) / _IN == pytest.approx(4790.0, abs=0.01)
+    assert _lb(bars) == pytest.approx(266.64, abs=0.01)
 
 
 def test_pt_sg_col_cage(catlin_model_ro) -> None:
-    """§4: 4 #5 at 116.9375"; 13 circular #3 ties, 23.955" placed + 14.168" hooks."""
+    """§4: 4 #5 at 116.9375"; 13 circular #3 ties, 23.955" placed + 15.185" A767 hooks."""
     verts = _role(catlin_model_ro, "PT-SG-COL", "vertical")
     ties = _role(catlin_model_ro, "PT-SG-COL", "ties")
     assert len(verts) == 4 and len(ties) == 13
@@ -94,6 +91,6 @@ def test_pt_sg_col_cage(catlin_model_ro) -> None:
     for tie in ties:
         assert tie.closed
         assert tie.placed_length_m / _IN == pytest.approx(23.955, abs=0.001)
-        assert tie.hook_length_m / _IN == pytest.approx(14.168, abs=0.001)
-    assert _lb(ties) == pytest.approx(15.53, abs=0.01)
+        assert tie.hook_length_m / _IN == pytest.approx(15.185, abs=0.001)
+    assert _lb(ties) == pytest.approx(15.94, abs=0.01)
     assert not _role(catlin_model_ro, "PT-SG-COL", "dowels")

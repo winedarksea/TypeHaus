@@ -18,8 +18,11 @@ _TABLE = {
     5: (21.21, 27.58, 35.85, 23.72, 30.83, 18.75),
     6: (25.46, 33.09, 43.02, 28.46, 37.00, 22.50),
 }
-#: bar -> (standard 90° allowance, tie 135° allowance)
-_HOOKS = {3: (5.062, 4.084), 4: (6.749, 4.445), 5: (8.436, 5.557), 6: (10.123, 7.685)}
+#: bar -> (standard 90° allowance, tie 135° black, tie 135° A767)
+_HOOKS = {3: (5.062, 4.084, 4.5925), 4: (6.749, 4.445, 5.1233), 5: (8.436, 5.557, 6.4042),
+          6: (10.123, 7.685, 7.685)}
+#: bar -> (IRC-governed wall lap 5,000, ldh 5,000 at every ψ 1.0)
+_WALL = {3: (16.55, 6.0), 4: (30.0, 6.0), 5: (38.0, 7.115), 6: (45.0, 9.353)}
 
 
 @pytest.mark.parametrize("bar", sorted(_TABLE))
@@ -35,9 +38,26 @@ def test_development_and_laps_reproduce_the_note(bar: int) -> None:
 
 @pytest.mark.parametrize("bar", sorted(_HOOKS))
 def test_hook_allowances_reproduce_the_note(bar: int) -> None:
-    std, tie = _HOOKS[bar]
+    std, tie, tie_galv = _HOOKS[bar]
     assert det.hook_allowance_in(bar, "std90") == pytest.approx(std, abs=0.0006)
     assert det.hook_allowance_in(bar, "tie135") == pytest.approx(tie, abs=0.0006)
+    assert det.hook_allowance_in(bar, "tie135", galvanized=True) == pytest.approx(
+        tie_galv, abs=0.0006)
+    assert det.hook_allowance_in(bar, "std90", galvanized=True) == pytest.approx(std, abs=0.0006)
+
+
+@pytest.mark.parametrize("bar", sorted(_WALL))
+def test_wall_laps_and_hooked_development_reproduce_the_note(bar: int) -> None:
+    lap, ldh = _WALL[bar]
+    assert det.wall_lap_in(bar, 5000, "B") == pytest.approx(lap, abs=0.006)
+    assert det.hooked_development_in(bar, 5000, confined_spacing=True,
+                                     side_cover_ok=True) == pytest.approx(ldh, abs=0.001)
+
+
+def test_only_a767_bends_at_a767_diameters() -> None:
+    assert det.bent_before_galvanizing("hdg-a767")
+    assert not det.bent_before_galvanizing("black")
+    assert not det.bent_before_galvanizing(None)
 
 
 def test_class_a_is_ld_and_every_length_has_the_12_inch_floor() -> None:

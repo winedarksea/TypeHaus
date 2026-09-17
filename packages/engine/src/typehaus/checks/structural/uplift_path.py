@@ -346,15 +346,16 @@ def _post_links(ctx: CheckContext) -> list:
             # own bar cage. There is no connector to specify, so grading it against a post
             # base would report a break at a joint that has none and hand the reader an ABU
             # that does not fit a 12" round pour. Nor is the joint unpriced: a house's
-            # [concrete] column rate is struck including the cage. What is missing is rebar
-            # as an ELEMENT, which is why this is un-gradeable rather than covered.
+            # [concrete] column rate is struck including the cage. The bars are laid out
+            # (``model.rebar``) but the lap's uplift capacity is ungraded, hence un-gradeable.
             links.append(Link(
                 f"column {tag} ({post.size}) to {post.supported_by or 'its footing'}",
                 (tag,), None,
                 not_governed=("it is cast concrete on concrete — a doweled lap into the "
-                               "column's own bar cage, not a connector, and this model "
-                               "carries no rebar to point at (the steel is inside the "
-                               "column's own $/cy rate, not missing from the order)")))
+                               "column's own bar cage, not a connector; the bars are "
+                               "laid out and counted (priced inside the column's own "
+                               "$/cy rate, not missing from the order), but no rule here "
+                               "grades the lap against uplift")))
         elif tag in bearing_only:
             links.append(Link(
                 f"post {tag} to {post.supported_by or 'its bearing'}", (tag,), None,

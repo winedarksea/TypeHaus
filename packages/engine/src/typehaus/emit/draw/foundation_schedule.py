@@ -531,7 +531,7 @@ def _cover_text(spec: ReinforcementSpec, concrete: ConcreteSpec | None) -> str:
     mix by design: a stem cast against earth buys cover the plant ticket knows nothing
     about."""
     if spec.cover is not None:
-        return f'{spec.cover.inches:.2g}"'
+        return inches_text(spec.cover.inches)
     if concrete is not None and concrete.cover is not None:
-        return f'{concrete.cover.inches:.2g}" (MIX)'
+        return f"{inches_text(concrete.cover.inches)} (MIX)"
     return "NOT STATED"

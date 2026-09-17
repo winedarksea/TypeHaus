@@ -1815,7 +1815,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   mis-state the engineering (a false fill on the braced half, an inflated court FS). The layout
   lines already chain each side as one run on the drawings. **Nor can the court go prescriptive
   by treating it as a basement:** with W2/E2/S relabelled `top_and_bottom`, Table R404.1.2(8)
-  passes them easily (#6 @ 10" vs #6 @ 38" required), but nothing braces their TOPS — the porch
+  passes them easily (#5 @ 7" vs #6 @ 38" required), but nothing braces their TOPS — the porch
   beams brace W1/E1 only, and ARCH, BRKBM and the corners act at the base and ends — so R404.4
   governs. Prescriptive would need new top struts across the open court.
 - **A wall's faces are NOT `axis ± thickness_m/2` any more.** That shorthand is only right while
@@ -1895,7 +1895,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **`W-SG-W1`+`W2` are ONE pour, and so are `E1`+`E2`** — one 12" section, one form height,
   placement 2. They are two elements because the restraint condition changes at `N-SG-MW` /
   `N-SG-ME`: braced top-and-bottom north, R404.4 base-restrained south. So does the steel —
-  **#6 @ 38" north of y = -11'-0" and #6 @ 10" (retained face) south of it, in one form.**
+  **#6 @ 38" north of y = -11'-0" and #5 @ 7" (retained face) south of it, in one form.**
 - **One footing type in the court, `COURT_FOOTING_12`** (was `RETAINING_FOOTING_96` +
   `PORCH_FOOTING_84`). Identical stacks — 12" of EXPOSED_MIX — split on a width an Assembly
   does not carry, and the porch card declared **13"** where every strip is built at 12". The
@@ -1978,9 +1978,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `run = 2(L - 9.6667) + 20`, so it moves with the strip width. It was 23'-3" at 8'-0".
 - Current stem/toe state: system FS **1.63** (d/c 0.921), stem flexure **0.61**, toe
   flexure **0.70**, heel flexure **0.70**, stem length **9.1198'**. Every schedule in the
-  stem bar table clears, `#6 @ 16"` included at 0.97; `#6 @ 10"` is held on that 3% margin
-  and on §5's stone-bed dependence. The one-bar-one-spacing half of that argument is gone —
-  the footing mat is `#5` now, so the pour already carries two bar sizes.
+  stem bar table clears, `#6 @ 16"` included at 0.97; the 0.53 in²/ft is held on that 3%
+  margin and on §5's stone-bed dependence. **It is `#5 @ 7"`, not `#6 @ 10"` (2026-09-17)**:
+  the vertical runs continuous on a 90° foot on the footing mat, 7.875" is available, and
+  ACI 318-19 §25.4.3.1(a) ldh is 9.35" for a #6, 7.11" for a #5 (free body §6b).
 - **ALL FIVE court strips are 7'-0" x 1'-0" CENTRED on the wall axis, zero offset, with a
   `#5 @ 12"` mat (2026-09-10).** They were 96" with a 6" court-side offset for one revision
   and the 96" was a fossil: §3 widened the strip because the resultant fell outside the

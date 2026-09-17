@@ -333,11 +333,13 @@ NODES = [
 # Horizontals: IRC Table R404.1.2(1) places ROWS of #4, not a spacing, so `count` is rows —
 # top − 6", mid-height and 6" off the base (decision #75 D8; notes/basement_wall_horizontal_
 # steel.md §1). Verticals stay first: `retaining_basis.bar_for_roles` reads the first entry.
+# Verticals from R404.1.2(8) sit at most 1 1/4" from the INSIDE face (R404.1.3.3.7.2), and
+# the rows are tied to them there.
 _B8_STEEL = ReinforcementSpec(
-    bars=(BarSpec(role="vertical", bar=5, spacing=inch(41.0)),
-          BarSpec(role="horizontal", bar=4, count=3)),
-    cover=inch(2.0),
-    source="IRC R404.1.2(8) verticals (the string beside it); R404.1.2(1) horizontal rows",
+    bars=(BarSpec(role="vertical", bar=5, spacing=inch(41.0), face="interior"),
+          BarSpec(role="horizontal", bar=4, count=3, face="interior")),
+    cover=inch(1.25),
+    source="IRC R404.1.2(8) verticals (the string beside it), R404.1.3.3.7.2 location; R404.1.2(1) horizontal rows",
 )
 # The 12" east walls read NR for verticals (R404.1.2(8) at 12"/45/8'/7'), and R404.1.2(1)'s
 # horizontal rows apply regardless (notes/basement_wall_horizontal_steel.md §2).

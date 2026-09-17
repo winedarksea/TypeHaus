@@ -9,7 +9,8 @@ from the soffit in authored order, top roles down from the top.
 A ribbed slab (``ReinforcementSpec.ribs``) holds its mat in the cap: the cap is the assembly's
 STRUCTURE layer at the top of the solid, and each rib hangs ``ribs.depth`` below it. ``rib``
 bars are ``count`` per rib at the rib bottom; ``stirrups`` are closed loops from the rib
-bottom to the cap top, within ``zone`` of each rib end.
+bottom to under the cap's top mat, within ``zone`` of each rib end. A mat stops where an
+``earlier`` pour's concrete is, so an overlap between two pours carries one mat.
 """
 
 from __future__ import annotations
@@ -52,12 +53,15 @@ def _segments(region, runs_x: bool, q: float, lo: float, hi: float):
 
 
 def lay_mat(sink: Sink, spec, solid, cover: float, *, ey=(0.0, 1.0),
-            cap_thickness: float | None = None) -> None:
+            cap_thickness: float | None = None, earlier=()) -> None:
+    """``earlier``: plan outlines of pours already reinforced — this mat stops at them."""
     frame = _Frame(ey)
     ribs = spec.ribs
     concrete = Polygon([frame.local(p) for p in solid.outline],
                        [[frame.local(p) for p in v] for v in solid.voids]).buffer(0)
     region = concrete.buffer(-cover, join_style="mitre")
+    for ring in earlier:
+        region = region.difference(Polygon([frame.local(p) for p in ring]).buffer(0))
     if region.is_empty:
         return
     minx, miny, maxx, maxy = region.bounds
@@ -98,6 +102,8 @@ def _lay_ribs(sink: Sink, spec, concrete, region, frame: _Frame, cover: float,
     rib_bottom = cap_bottom - ribs.depth.meters
     half = ribs.width.meters / 2.0
     stir = next((e for e in spec.bars if e.role == "stirrups"), None)
+    top_mat = sum(BARS[e.bar].diameter_in * _IN * max(1, e.layers) for e in spec.bars
+                  if e.role.startswith("top-") and e.spacing is not None)
     dst = BARS[stir.bar].diameter_in * _IN if stir else 0.0
     centres: list[float] = []
     q = q_min + ribs.offset.meters
@@ -125,7 +131,7 @@ def _lay_ribs(sink: Sink, spec, concrete, region, frame: _Frame, cover: float,
                         positions = [p for p in positions
                                      if p - s_a <= zone + 1e-6 or s_b - p <= zone + 1e-6]
                     t0, t1 = q - half + cover + db / 2, q + half - cover - db / 2
-                    zb, zt = rib_bottom + cover + db / 2, z_top - cover - db / 2
+                    zb, zt = rib_bottom + cover + db / 2, z_top - cover - top_mat - db / 2
                     for s in positions:
                         corners = [(s, t0, zb), (s, t1, zb), (s, t1, zt), (s, t0, zt)]
                         sink.loop(entry, [frame.world(*((c[0], c[1]) if runs_x

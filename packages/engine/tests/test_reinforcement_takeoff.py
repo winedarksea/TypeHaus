@@ -50,8 +50,8 @@ def test_a_row_bills_cut_length_by_counted_piece(rows) -> None:
         parts = row["placed_length_ft"] + row["lap_length_ft"] + row["hook_length_ft"]
         assert row["length_ft"] == pytest.approx(parts, abs=0.15), row
         assert row["pieces"] >= row["count"] > 0
-    # Runs over stock split into lapped pieces; a dowel laps without splitting.
-    assert any(r["pieces"] > r["count"] for r in rows)
+    # Laps are billed: corner, splice and dowel bars carry them without splitting a run.
+    assert any(r["lap_length_ft"] > 0 for r in rows)
 
 
 def test_weight_is_the_astm_unit_mass(rows) -> None:

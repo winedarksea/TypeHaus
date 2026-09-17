@@ -22,6 +22,10 @@ A pour with no ``ConcreteSpec`` is not graded here at all. That is not a hole â€
 ``integrity.element_assembly`` and ``structural.concrete_mix_matches_exposure``'s subject,
 and two rules reporting one gap is how a fix gets counted twice.
 
+A wall whose every bar is authored ``face="interior"`` is graded on that face: the steel sits
+behind the room side, which is neither weathered nor against ground whatever the mix says
+of the other face (IRC R404.1.3.3.7.2 puts R404.1.2(8) verticals there on purpose).
+
 The bar governing is the LARGEST in the schedule, because row 2's threshold moves at #6 and
 a bundle graded on its smallest bar is graded on the one that does not govern.
 """
@@ -46,6 +50,8 @@ _INTERIOR_COLUMN_IN = 1.5
 _GROUND_CAST_KINDS = ("Footing", "Pad")
 #: Kinds graded as a column rather than as a slab or wall in row 3.
 _COLUMN_KINDS = ("Post",)
+
+_WALL_KINDS = ("FoundationWall",)
 
 _POUR_KINDS = ("FoundationWall", "Footing", "Pad", "Slab", "Post")
 
@@ -114,7 +120,9 @@ def _required_cover_in(element: Any, spec: Any, schedule: Any) -> tuple[float, s
             f"a {element.element_kind} bears on soil, so its mat is cast against and "
             f"permanently in contact with ground")
 
-    if _is_exposed(spec):
+    interior_only = (element.element_kind in _WALL_KINDS
+                     and all(bar.face == "interior" for bar in schedule.bars))
+    if _is_exposed(spec) and not interior_only:
         largest = max(bar.bar for bar in schedule.bars)
         declared = ", ".join(sorted(
             value for value in (spec.exposure_f, spec.exposure_s, spec.exposure_w,
@@ -128,6 +136,10 @@ def _required_cover_in(element: Any, spec: Any, schedule: Any) -> tuple[float, s
         return _INTERIOR_COLUMN_IN, (
             "its mix declares no wet, salted or freezing exposure, and a column's primary "
             "bar and ties take 1-1/2\" even dry")
+    if interior_only:
+        return _INTERIOR_SLAB_OR_WALL_IN, (
+            "every bar sits behind the wall's INTERIOR face, which is neither weathered nor "
+            "against ground")
     return _INTERIOR_SLAB_OR_WALL_IN, (
         "its mix declares no wet, salted or freezing exposure, so it is a dry interior "
         "slab or wall")

@@ -6,7 +6,9 @@ TOLERANCE ORACLE. The layout counts ``ceil(L/s) + 1`` bars where the area reads 
 the expected count is one bar per layer over the area figure, ±1 bar per layer for the ceil
 and the cover strip the area ignores: ``[area/s − 1, area/s + 2]`` bars a layer, each bar
 the longest the role lays. A layout that dropped a row, doubled a face or ran bars through
-the cover lands outside it.
+the cover lands outside it. Two things the old arithmetic never knew are taken out first:
+the leg of a vertical continued into the pour below, and the part of a mat's outline that a
+larger overlapping pour reinforces instead.
 """
 
 from __future__ import annotations
@@ -35,9 +37,20 @@ def _wall_area_m2(model, wall) -> float:
     return max(0.0, area)
 
 
-def _solid_area_m2(solid) -> float:
-    return abs(polygon_area(list(solid.outline))) - sum(
+def _solid_area_m2(model, solid) -> float:
+    from shapely.geometry import Polygon
+
+    own = Polygon(solid.outline)
+    area = abs(polygon_area(list(solid.outline))) - sum(
         abs(polygon_area(list(v))) for v in solid.voids)
+    reinforced = {s.host_tag for s in model.rebar}
+    for other in model.solids:
+        if (other.tag != solid.tag and other.tag in reinforced and not other.derived
+                and other.category in ("footing", "pad", "slab")
+                and other.z0_m < solid.z1_m and solid.z0_m < other.z1_m
+                and (Polygon(other.outline).area, other.tag) > (own.area, solid.tag)):
+            area -= own.intersection(Polygon(other.outline)).area
+    return area
 
 
 def test_every_spaced_role_is_within_one_bar_per_layer_of_area_over_spacing(
@@ -51,14 +64,18 @@ def test_every_spaced_role_is_within_one_bar_per_layer_of_area_over_spacing(
         spec = element.reinforcement
         placed: dict[str, float] = defaultdict(float)
         longest: dict[str, float] = defaultdict(float)
-        for bar in rebar_set.bars:
-            placed[bar.role] += bar.placed_length_m
-            longest[bar.role] = max(longest[bar.role], bar.placed_length_m + bar.lap_length_m)
         wall = model.wall(rebar_set.host_tag)
+        for bar in rebar_set.bars:
+            below = 0.0
+            if wall is not None and bar.role == "vertical":
+                below = max(0.0, wall.z0_m - min(p[2] for p in bar.path))
+            placed[bar.role] += bar.placed_length_m - below
+            longest[bar.role] = max(longest[bar.role], bar.placed_length_m + bar.lap_length_m)
         if wall is not None:
             area = _wall_area_m2(model, wall)
         else:
-            area = _solid_area_m2(next(s for s in model.solids if s.tag == rebar_set.host_tag))
+            area = _solid_area_m2(model, next(s for s in model.solids
+                                              if s.tag == rebar_set.host_tag))
         for entry in spec.bars:
             if entry.role not in _SPACED or entry.spacing is None:
                 continue

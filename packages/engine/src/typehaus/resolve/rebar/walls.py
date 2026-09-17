@@ -4,24 +4,47 @@ Frame: ``s`` along the axis from its start, ``t`` along the left normal, ``z`` a
 Bars stay inside the concrete layer's own polygon (so a mitred corner is honoured), inside
 its band (``Layer.extent``) and under a raked top. Openings split the bars that cross them
 at cover; no trim bars are added — the schema carries none. Horizontals sit inboard of
-the verticals on the same face. A horizontal ending at a junction with another reinforced
-wall turns a standard 90° hook into it (decision D5); a free end stops straight at cover.
-Faces follow the assembly's layer order — layer 0 is the interior, which is the side
-``resolve/orientation.wall_outward_sign`` already put there.
+the verticals on the same face; where both are centred they straddle the centreline.
+Horizontals stop straight at cover: ``junctions.py`` laps them across a node with separate
+corner and splice bars. A vertical authored ``hooks=("start",)`` runs continuous from the
+pour below — its foot on that pour's bottom mat, turned across the wall — instead of a
+lapped dowel. Faces follow the assembly's layer order — layer 0 is the interior, which is
+the side ``resolve/orientation.wall_outward_sign`` already put there.
 """
 
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass, field
 
 from typehaus.model.enums import LayerFunction
 from typehaus.model.rebar import BARS
+from typehaus.resolve.rebar import detailing as det
 from typehaus.resolve.rebar.beams import BEAM_ROLES, LinearFrame, fence, lay_beam
 from typehaus.resolve.rebar.stock import Sink
 
 _IN = 0.0254
 _MIN_BAR_M = 3 * _IN
 _ROW_FROM_EDGE_M = 6 * _IN
+
+
+@dataclass(frozen=True)
+class WallBase:
+    """The pour a wall stands on: its top, and where a foot rests (atop its bottom mat)."""
+
+    top: float
+    rest: float
+
+
+@dataclass
+class WallSteel:
+    """What ``junctions.py`` needs of a laid wall: its frame and each horizontal line."""
+
+    frame: LinearFrame
+    layer: object
+    top_at: object
+    cover: float
+    lines: list = field(default_factory=list)  # (entry, t, zs)
 
 
 def structure_layer(wall):
@@ -71,50 +94,77 @@ def _s_range_at(layer_ring, frame: LinearFrame, t: float) -> tuple[float, float]
     return (min(hits), max(hits)) if hits else None
 
 
-def lay_wall(sink: Sink, spec, wall, cover: float, openings, hook_ends: tuple) -> None:
-    """``hook_ends[i]`` is the plan direction to hook into at the start/end node, or None."""
+def lay_wall(sink: Sink, spec, wall, cover: float, openings,
+             base: WallBase | None = None) -> WallSteel | None:
     layer = structure_layer(wall)
     if layer is None:
-        return
+        return None
     frame, ext = wall_frame(wall, layer)
+    top_at = _top_fn(wall, frame)
+    steel = WallSteel(frame, layer, top_at, cover)
     beam_entries = [e for e in spec.bars if e.role in BEAM_ROLES]
     if beam_entries:
         side = [e for e in spec.bars if e.role == "horizontal"]
         lay_beam(sink, beam_entries + side, frame, cover)
-        return
+        return steel
     vert = next((e for e in spec.bars if e.role == "vertical"), None)
+    horiz = next((e for e in spec.bars if e.role == "horizontal"), None)
     dv = BARS[vert.bar].diameter_in * _IN if vert else 0.0
+    dh = BARS[horiz.bar].diameter_in * _IN if horiz else 0.0
     vert_faces = set(_face_names(vert)) if vert else set()
+    horiz_faces = set(_face_names(horiz)) if horiz else set()
     holes = [_hole(o, wall) for o in openings]
-    top_at = _top_fn(wall, frame)
+    inward = 1.0 if ext > 0 else -1.0
     for entry in spec.bars:
         if entry.role not in ("vertical", "horizontal"):
             continue
         db = BARS[entry.bar].diameter_in * _IN
-        behind = 0.0 if entry.role == "vertical" else dv
-        for t in _faces(entry, frame, ext, cover, db, behind, vert_faces):
+        if entry.role == "vertical":
+            behind, centre = 0.0, (dv / 2 if "center" in horiz_faces else 0.0)
+        else:
+            behind, centre = dv, (-dh / 2 if "center" in vert_faces else 0.0)
+        for t, face in _faces(entry, frame, ext, cover, db, behind, vert_faces, centre):
             rng = _s_range_at(layer.polygon, frame, t)
             if rng is None:
                 continue
             a, b = rng[0] + cover, rng[1] - cover
             if entry.role == "vertical" and entry.spacing is not None:
+                hooked = base is not None and bool(entry.hooks) and "start" in entry.hooks
+                z_start = base.rest + db / 2 if hooked else frame.z0 + cover
+                foot = _d3(_scale(frame.n, -inward if face == "exterior" else inward)) \
+                    if hooked else None
+                anchor = _anchorage(sink, entry, base, z_start, db) if hooked else None
                 for s in fence(a + db / 2, b - db / 2, entry.spacing.meters):
                     zt = top_at(s) - cover
-                    for z_lo, z_hi in _cut(frame.z0 + cover, zt, s, holes, cover, vertical=True):
+                    runs = _cut(z_start, zt, s, holes, cover, vertical=True)
+                    for k, (z_lo, z_hi) in enumerate(runs):
+                        first = k == 0 and abs(z_lo - z_start) < 1e-6
                         sink.straight(entry, frame.world(s, t, z_lo), frame.world(s, t, z_hi),
-                                      lap_offset=frame.dir3, compression=False)
+                                      hook_dirs=(foot if first else None, None),
+                                      lap_offset=frame.dir3,
+                                      anchorage=anchor if first else None)
             elif entry.role == "horizontal":
-                for z in _rows(entry, frame, cover, db, top_at):
+                zs = _rows(entry, frame, cover, db, top_at)
+                steel.lines.append((entry, t, zs))
+                for z in zs:
                     lo, hi = _under_rake(a, b, z + cover, top_at)
-                    runs = _cut(lo, hi, z, holes, cover, vertical=False)
-                    for k, (s_lo, s_hi) in enumerate(runs):
-                        hook0 = hook_ends[0] if k == 0 and abs(s_lo - a) < 1e-6 else None
-                        hook1 = (hook_ends[1] if k == len(runs) - 1 and abs(s_hi - b) < 1e-6
-                                 else None)
+                    for s_lo, s_hi in _cut(lo, hi, z, holes, cover, vertical=False):
                         sink.straight(entry, frame.world(s_lo, t, z), frame.world(s_hi, t, z),
-                                      hook_dirs=(_d3(hook0), _d3(hook1)),
                                       lap_offset=(0.0, 0.0, 1.0),
                                       top_cast=z - frame.z0 > 12 * _IN)
+    return steel
+
+
+def _scale(v, k: float) -> tuple[float, float]:
+    return (v[0] * k, v[1] * k)
+
+
+def _anchorage(sink: Sink, entry, base: WallBase, z_foot: float, db: float):
+    """``(embedment, ldh)``: top of the pour below to the outside of the foot, against §25.4.3."""
+    need = det.hooked_development_in(
+        entry.bar, sink.fc_psi, confined_spacing=entry.spacing.meters >= 6 * db,
+        side_cover_ok=True) * _IN
+    return base.top - (z_foot - db / 2), need
 
 
 def _d3(d):
@@ -129,26 +179,27 @@ def _face_names(entry) -> list[str]:
 
 
 def _faces(entry, frame: LinearFrame, ext: float, cover: float, db: float, behind: float,
-           vert_faces: set[str]) -> list[float]:
-    """``t`` of each layer of ``entry``. A horizontal sits ``behind`` (the vertical's
+           vert_faces: set[str], centre: float = 0.0) -> list[tuple[float, str]]:
+    """``(t, face)`` of each layer of ``entry``. A horizontal sits ``behind`` (the vertical's
     diameter) inboard only on a face the verticals actually occupy; repeats of one face
-    stack a bar diameter further in."""
+    stack a bar diameter further in. ``centre`` shifts a centred bar toward the exterior
+    (negative: the interior), so a centred vertical and horizontal touch rather than cross."""
     t_int = frame.t0 if ext > 0 else frame.t1
     t_ext = frame.t1 if ext > 0 else frame.t0
     inward = 1.0 if ext > 0 else -1.0  # interior face -> exterior face
-    out: list[float] = []
+    out: list[tuple[float, str]] = []
     seen: dict[str, int] = {}
     for name in _face_names(entry):
         k = seen.get(name, 0)
         seen[name] = k + 1
         extra = (behind if name in vert_faces else 0.0) + k * db
         if name == "center":
-            shift = (behind + db) / 2.0 if name in vert_faces else 0.0
-            out.append((frame.t0 + frame.t1) / 2.0 - inward * (shift + k * db))
+            step = k * db if centre >= 0 else -k * db
+            out.append(((frame.t0 + frame.t1) / 2.0 + inward * (centre + step), name))
         elif name == "interior":
-            out.append(t_int + inward * (cover + extra + db / 2))
+            out.append((t_int + inward * (cover + extra + db / 2), name))
         else:
-            out.append(t_ext - inward * (cover + extra + db / 2))
+            out.append((t_ext - inward * (cover + extra + db / 2), name))
     return out
 
 

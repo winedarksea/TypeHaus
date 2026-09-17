@@ -12,12 +12,28 @@ node carries the host's own kind + uid, trade ``concrete``, and ``extras.facet =
 from __future__ import annotations
 
 from typehaus.emit.gltf.mesh import _MeshBuilder
-from typehaus.emit.gltf.palette import rebar_color
 from typehaus.resolve.geometry_ir import GBox
 from typehaus.resolve.model import ResolvedModel, SolidSweep
 from typehaus.resolve.sweep import round_profile, sweep_legs
 
 REBAR_FACET = "concrete:rebar"
+
+#: Reinforcing bar by its coating (decision #75): galvanized reads zinc grey, black bar mill-scale
+#: brown, epoxy green. Mirrored in ui/src/three/rebar.ts — keep the two in step.
+_REBAR_COATING = {
+    "hdg-a767": (0.70, 0.72, 0.74, 1.0),
+    "hdg-a1094": (0.70, 0.72, 0.74, 1.0),
+    "black": (0.33, 0.25, 0.21, 1.0),
+    "epoxy": (0.30, 0.52, 0.30, 1.0),
+    "stainless": (0.80, 0.81, 0.82, 1.0),
+    "gfrp": (0.78, 0.70, 0.36, 1.0),
+}
+
+
+def rebar_color(coating: str) -> tuple[float, float, float, float]:
+    return _REBAR_COATING.get(coating, _REBAR_COATING["black"])
+
+
 _FACETS = 4
 _CIRCLE_STRIDE = 3
 
