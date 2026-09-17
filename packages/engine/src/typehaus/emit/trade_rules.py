@@ -231,6 +231,7 @@ STAIR_MEMBER_CATEGORIES = frozenset({
 MEMBER_CATEGORY_TRADE: dict[str, str] = {
     **{category: "stairs" for category in STAIR_MEMBER_CATEGORIES},
     "gutter": "drainage",
+    "rebar": "concrete",
     "insulation": "insulation",
     "airgap": "siding", "air_gap": "siding", "furring": "siding",
     "corner_trim": "siding", "fascia": "siding", "soffit": "siding", "cladding": "siding",

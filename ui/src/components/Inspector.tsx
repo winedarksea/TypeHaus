@@ -8,8 +8,7 @@ import { StairDesigner } from "./StairDesigner";
 import { Provenance } from "./Provenance";
 import { ProductRows } from "./ProductRows";
 import { productFor } from "../model/products";
-import { FloorInspector, FootingBeddingInspector, LightRunInspector, MemberInspector, RoofInspector, SolarPanelInspector, SolidInspector } from "./DerivedInspectors";
-import { locateMember } from "../model/memberIdentity";
+import { FloorInspector, FootingBeddingInspector, LightRunInspector, MemberUidInspector, RoofInspector, SolarPanelInspector, SolidInspector } from "./DerivedInspectors";
 import { locateUid } from "../state/locate";
 import { useIsCompact } from "../hooks/useBreakpoint";
 import { Sheet } from "./ui/Sheet";
@@ -257,8 +256,7 @@ function SelectionInspector({
     return floor ? <FloorInspector floor={floor} /> : null;
   }
   if (kind === "member") {
-    const located = locateMember(model, uid);
-    return located ? <MemberInspector located={located} /> : null;
+    return <MemberUidInspector model={model} uid={uid} />;
   }
   return null;
 }

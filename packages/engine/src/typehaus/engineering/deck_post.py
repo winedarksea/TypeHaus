@@ -47,6 +47,7 @@ from typehaus.engineering.retaining_basis import (
     PRESUMPTIVE_FC_PSI,
     REINFORCEMENT_FY_PSI,
 )
+from typehaus.resolve.rebar.detailing import development_length_raw_in
 from typehaus.wind import ASD_WIND_FACTOR
 
 KIND = "deck_post"
@@ -507,9 +508,7 @@ def _class_b_lap_in(cage: _Cage, fc_psi: float = PRESUMPTIVE_FC_PSI) -> float:
     ACI 318-19's coating factor is written for EPOXY, and §25.4.2.5's zinc-coated (galvanized)
     reinforcement row carries psi_e = 1.0. Zinc does not debond the way epoxy does.
     """
-    length = (REINFORCEMENT_FY_PSI / (25.0 * math.sqrt(fc_psi))) \
-        * cage.bar_diameter_in
-    return 1.3 * length
+    return 1.3 * development_length_raw_in(cage.bar_diameter_in, fc_psi)
 
 
 def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: float,

@@ -3,6 +3,7 @@
 // Split out of components/Panel3D.tsx: this is a pure contract test between two codebases —
 // which node names / glTF `extras` the emitter writes and what the viewer will accept — and it
 // is easier to keep the two in step when it is not buried in a React component.
+import { FACET_KEYS, type FacetKey } from "../model/visibilityFacets";
 import type { SelectionKind, Trade } from "../state/vocabulary";
 import { ALL_SELECTION_KINDS, ALL_TRADES } from "../state/vocabulary";
 
@@ -33,6 +34,9 @@ export const WHOLE_HOUSE_GLB_PRIMARY = false;
 export interface GlbNodeAssignment {
   /** The primary trade — the container the node files under. */
   trade: Trade;
+  /** A viewer facet the node answers to INSTEAD of its trades (`extras.facet`, e.g. the
+   *  rebar nodes' `concrete:rebar`), so the facet's own chip reaches it. */
+  facet?: FacetKey | null;
   /** The full set; the node draws iff any of these is visible. */
   trades: Trade[];
   uid: string | null;
@@ -57,5 +61,7 @@ export function wholeHouseGlbAssignment(
     ? kindRaw as SelectionKind : null;
   const uidRaw = typeof userData?.uid === "string" ? userData.uid : parts[2];
   const trades = tradesRaw as Trade[];
-  return { trade: trades[0], trades, uid: uidRaw || null, kind };
+  const facet = typeof userData?.facet === "string"
+    && (FACET_KEYS as readonly string[]).includes(userData.facet) ? userData.facet as FacetKey : null;
+  return { trade: trades[0], trades, uid: uidRaw || null, kind, facet };
 }

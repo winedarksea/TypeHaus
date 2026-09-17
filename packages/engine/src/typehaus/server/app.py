@@ -93,6 +93,15 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
         # brings it the geometry that code produced — see server/engine_stamp.py.
         return JSONResponse(state.model_json() | {"engine": engine_stamp()})
 
+    @app.get("/model/rebar")
+    def get_model_rebar() -> Any:
+        """Every laid-out bar (decision #75), fetched lazily — see server/model_json_rebar."""
+        from typehaus.server.model_json_rebar import rebar_bars_json
+
+        if state.model is None:
+            return JSONResponse({"error": "model does not resolve"}, status_code=409)
+        return JSONResponse(rebar_bars_json(state.model, state.provenance))
+
     @app.get("/checks")
     def get_checks() -> Any:
         return JSONResponse({"findings": state.findings_json()})

@@ -223,25 +223,22 @@ def test_s100_schedules_the_sill_anchorage_it_already_derived(catlin_model):
 
 
 def test_s100_schedules_the_authored_reinforcement(catlin_model):
+    """One row per group of identical schedules, the roles in one STEEL cell: rows are this
+    sheet's height, and so its scale (test_schedule_columns.py)."""
     table = reinforcement_schedule(catlin_model)
-    assert table.columns == ("MARK", "ELEMENT", "ROLE", "BAR", "SPACING", "LYRS",
-                             "COVER", "LAP")
-    rows = {(row[2], row[3], row[4], row[6], row[7]) for row in table.rows}
-    # `_B8_STEEL` on the basement walls: IRC Table R404.1.2(8), 2" cover, no lap class
-    # authored — and the schedule says "NOT STATED" rather than assuming a class.
-    assert ("VERTICAL", "#5", '41" O.C.', '2"', "—") in rows
-    # The sunken-garden court footing mat: cover comes from ReinforcementSpec.cover (3"),
-    # which outranks the mix's, and both mat directions print. It was `#6 @ 10"` until
-    # 2026-09-10, when all five strips narrowed 96" -> 84" and took 22% off the toe moment
-    # with them (notes/sunken_garden_court_free_body.md §7e).
-    assert ("BOTTOM-X", "#5", '12" O.C.', '3"', "B") in rows
-    assert ("TOP-X", "#5", '12" O.C.', '3"', "B") in rows
-    # The stem keeps `#6 @ 10"` at 2" cover, so the sheet carries two bar sizes on one pour
-    # and a reader must not collapse them. That is a real change from the one-bar schedule
-    # the mat and the stem shared before the narrowing.
-    assert ("VERTICAL", "#6", '10" O.C.', '3"', "B") in rows
-    # Nothing is invented for the pours that carry no spec.
-    assert all(row[3].startswith("#") for row in table.rows)
+    assert table.columns == ("MARK", "ELEMENT", "STEEL", "COVER", "LAP")
+    rows = {(row[2], row[3], row[4]) for row in table.rows}
+    # `_B8_STEEL` on the basement walls: R404.1.2(8) verticals and R404.1.2(1)'s three rows,
+    # 2" cover, no lap class authored — "—" rather than an assumed class.
+    assert ('V #5 @ 41" + H #4 (3)', '2"', "—") in rows
+    # The court footing mat: cover from ReinforcementSpec.cover (3"), both directions print.
+    assert ('BX #5 @ 12" + TX #5 @ 12" + BY #4 @ 18"', '3"', "B") in rows
+    # The retaining stems: retained-face #6, both-face horizontals, dowels (decision #75).
+    assert ('V #6 @ 10" + H #4 @ 16" x2 + DWL #6', '3"', "B") in rows
+    # Nothing is invented for the pours that carry no spec, and a suspended deck is not a
+    # foundation pour.
+    assert all("#" in row[2] for row in table.rows)
+    assert not any("SL-M-DECK" in row[1] for row in table.rows)
     assert "FOUNDATION REINFORCEMENT SCHEDULE" in _joined(build_foundation_plan(catlin_model))
 
 

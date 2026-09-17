@@ -83,7 +83,10 @@ STAGE_BUDGETS_MS = {"resolve": 4000, "resolve.junctions": 900, "draw.details": 6
                     # that table is a one-character edit. ~530 markers measured at a 20 ms
                     # minimum under two-way contention; budgeted well above a six-way one,
                     # because what this has to catch is somebody drawing five thousand.
-                    "resolve.connector_markers": 300}
+                    "resolve.connector_markers": 300,
+                    # The rebar layout (decision #75): ~1,180 pieces at a 14 ms minimum.
+                    # What this catches is a layout that went quadratic in bars per host.
+                    "resolve.rebar": 150}
 
 
 #: A GitHub runner's wall clock is not a measurement of this engine (→ module docstring),

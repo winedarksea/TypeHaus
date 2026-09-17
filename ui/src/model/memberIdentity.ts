@@ -11,7 +11,9 @@
 //
 // Members are *derived* geometry, like solids and floors: pickable and inspectable, never
 // directly editable. The edit lives on the wall / roof / floor / stair that generated them.
-import type { Brace, Floor, Member, Model, Roof, SoffitFraming, Stair, Wall } from "./types";
+import type {
+  Brace, Floor, Member, Model, RebarBar, RebarSet, Roof, SoffitFraming, Stair, Wall,
+} from "./types";
 
 // ":" cannot appear in a minted uid (base32-ish) and the resolver never puts one in a child
 // key, so this separator can never be ambiguous with the parts it joins.
@@ -19,7 +21,9 @@ export const MEMBER_UID_SEPARATOR = "::";
 
 // "brace" and "wedge" are one pool (a ResolvedBrace hosts both) but two owner kinds: the
 // Inspector says "select the wedge", not "select the brace", for a drainage shim.
-export type MemberOwnerKind = "wall" | "roof" | "floor" | "stair" | "soffit" | "brace" | "wedge";
+// "rebar" is a host (wall, footing, slab, post) whose bars came from the lazy rebar payload.
+export type MemberOwnerKind =
+  "wall" | "roof" | "floor" | "stair" | "soffit" | "brace" | "wedge" | "rebar";
 
 export function memberUid(ownerUid: string, memberKey: string): string {
   return `${ownerUid}${MEMBER_UID_SEPARATOR}${memberKey}`;
@@ -44,6 +48,8 @@ export interface LocatedMember {
   ownerUid: string;
   ownerTag: string;
   storey: string | null;
+  /** Set when the member is a reinforcing bar: the record behind `member`. */
+  bar?: RebarBar;
 }
 
 function ownerPools(model: Model): [MemberOwnerKind, (Wall | Roof | Floor | Stair | SoffitFraming | Brace)[]][] {
@@ -79,11 +85,40 @@ function adoptedMember(model: Model, ownerUid: string, memberKey: string): Membe
   return undefined;
 }
 
-/** Resolve a member uid against the live model. Null when the uid names no current member —
- *  a rebuild that deleted the wall, or a stale selection carried across a reload. */
-export function locateMember(model: Model, uid: string): LocatedMember | null {
+/** A bar read as a framed member, so centroid, locate and search code need no special case. */
+export function rebarAsMember(bar: RebarBar): Member {
+  return {
+    key: bar.key, parent_uid: bar.parent_uid, category: bar.category, profile: bar.profile,
+    p0: bar.p0, p1: bar.p1, z0_m: bar.z0_m, z1_m: bar.z1_m, length_m: bar.length_m,
+    z0_end_m: null, z1_end_m: null, shape: "rect", width_m: bar.width_m, depth_m: bar.depth_m,
+    flange_width_m: null, flange_thickness_m: null, web_thickness_m: null, plies: 1,
+    orient: null, connection: null, material: null, trade: "concrete",
+  };
+}
+
+/** The rebar pool: a bar by `<host uid>::<bar key>`, from the lazily loaded sets. */
+export function locateRebarBar(
+  rebar: readonly RebarSet[] | null | undefined, ownerUid: string, memberKey: string,
+): LocatedMember | null {
+  const host = (rebar ?? []).find((set) => set.uid === ownerUid);
+  const bar = host?.members.find((candidate) => candidate.key === memberKey);
+  if (!host || !bar) return null;
+  return { member: rebarAsMember(bar), ownerKind: "rebar", ownerUid: host.uid,
+           ownerTag: host.tag, storey: host.storey, bar };
+}
+
+/** Resolve a member uid against the live model (and the rebar pool, once loaded). Null when
+ *  the uid names no current member — a rebuild that deleted the wall, or a stale selection
+ *  carried across a reload. */
+export function locateMember(
+  model: Model, uid: string, rebar?: readonly RebarSet[] | null,
+): LocatedMember | null {
   const parsed = parseMemberUid(uid);
   if (!parsed) return null;
+  // Bars first: a wall is both a framed owner and a rebar host, and a bar key is never a
+  // framing child key ("W-SG-S/horizontal/009-1" carries the host tag and slashes).
+  const bar = locateRebarBar(rebar, parsed.ownerUid, parsed.memberKey);
+  if (bar) return bar;
   for (const [ownerKind, pool] of ownerPools(model)) {
     const owner = pool.find((candidate) => candidate.uid === parsed.ownerUid);
     if (!owner) continue;

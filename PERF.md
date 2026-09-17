@@ -32,6 +32,7 @@ in one process so drift hits both arms — not as two separate runs.
 | &nbsp;&nbsp;↳ `resolve.framing` | 12 |
 | &nbsp;&nbsp;↳ `resolve.construction` | 10 |
 | &nbsp;&nbsp;↳ `resolve.connector_markers` | ~6 |
+| &nbsp;&nbsp;↳ `resolve.rebar` | ~14 |
 | ↳ `load_plan` | 71 |
 | &nbsp;&nbsp;↳ `load_plan.import` | 64 |
 | &nbsp;&nbsp;↳ `load_plan.lint_provenance` | 4.8 |
@@ -39,6 +40,10 @@ in one process so drift hits both arms — not as two separate runs.
 
 `resolve` is now ~79% of a rebuild and `resolve.junctions` is ~41% of resolve. That is where
 the next win is, and it is the polygon clipping in `topology.py`, not the stage around it.
+
+`resolve.rebar` lays out ~1,180 bar pieces (2026-09-17, min of 8 resolves on a quiet
+machine, not the 20-rebuild median above). Budgeted at 150 ms in the perf guard; the
+stirrups under `SL-M-DECK` are about half of it.
 
 `resolve.connector_markers` draws the ~530 derived connectors and measured at **3.0% of
 resolve** — the row above is that share, not a direct reading: the machine was under

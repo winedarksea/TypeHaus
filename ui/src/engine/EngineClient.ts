@@ -3,7 +3,7 @@
 // HttpEngineClient; a PyodideEngineClient (in-browser engine in a Web Worker) can slot in
 // for the offline PWA (→ 40) without touching any editor code.
 
-import type { Finding, Model } from "../model/types";
+import type { Finding, Model, RebarPayload } from "../model/types";
 // The site surface's payloads. They live in model/scheduleTypes.ts rather than here
 // because that file is the frozen contract the engine was built against, and it deliberately
 // imports nothing.
@@ -423,6 +423,9 @@ export interface EngineClient {
   getDetail(key: string): Promise<DetailPayload>;
   // The bill of materials — computed by the engine, never in the browser (see EngineBom).
   getBom(): Promise<EngineBom>;
+  // Every laid-out bar, filed under its host (decision #75). Lazy and large: callers go
+  // through engine/rebarCache.ts, which fetches once per model revision.
+  getRebar(): Promise<RebarPayload>;
   // Cost tracking: the costs.toml state joined against the live BOM and price estimate.
   getCosts(): Promise<EngineCosts>;
   // Fold ops over costs.toml and return the fresh payload; rejects OfflineUnsupported

@@ -219,6 +219,14 @@ class OfflineEngine:
             return {}
         return bill_of_materials(self.model)
 
+    def rebar_json(self) -> dict[str, Any]:
+        """Every laid-out bar, offline. Mirrors the served ``GET /model/rebar``."""
+        from typehaus.server.model_json_rebar import rebar_bars_json
+
+        if self.model is None:
+            return {"rebar": []}
+        return rebar_bars_json(self.model, self.provenance)
+
     def costs_json(self) -> dict[str, Any]:
         """The cost-tracking payload, offline. Mirrors the served ``GET /costs`` — the
         worker's house snapshot carries prices.toml/costs.toml when the house has them, so

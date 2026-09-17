@@ -39,23 +39,19 @@ def _row(rows, bar, scope):
     return found[0]
 
 
-def test_a_mat_bills_at_area_over_spacing(rows) -> None:
-    """``length = area / spacing`` is the whole derivation, and it is worth pinning as such.
+def test_a_row_bills_cut_length_by_counted_piece(rows) -> None:
+    """Cut = placed + laps + hooks, summed over the laid-out pieces (decision #75).
 
-    A bar every ``s`` inches across a plane of area ``A`` is ``A/s`` of bar whichever way it
-    runs — the run length cancels. That one expression serves a wall's verticals, a wall's
-    horizontals, a footing's transverse mat and a slab's mat alike.
-
-    All five court footings carry ``#5 @ 12"`` top AND bottom, so their #5 is exactly twice
-    their #4 @ 18" bottom-only mat scaled by the spacing ratio: (2 / (12/12)) against
-    (1 / (18/12)), i.e. 3.0x. It was ``#6 @ 10"`` and 3.6x until 2026-09-10, when the strips
-    narrowed 96" -> 84" and took 22% off the toe moment with them. **The point of this test
-    is the CANCELLATION, not either figure**: the mat's plan area divides out, so this ratio
-    depends only on the two spacings and never on how wide or long the strips are.
+    The old ``area / spacing`` arithmetic is a tolerance oracle now
+    (``test_rebar_layout_vs_area.py``); what this module bills is the pieces a fabricator
+    cuts, so the three parts must add up and a lapped run must count as one bar.
     """
-    five = _row(rows, "#5", "footing")
-    four = _row(rows, "#4", "footing")
-    assert five["length_ft"] / four["length_ft"] == pytest.approx(3.0, rel=0.01)
+    for row in rows:
+        parts = row["placed_length_ft"] + row["lap_length_ft"] + row["hook_length_ft"]
+        assert row["length_ft"] == pytest.approx(parts, abs=0.15), row
+        assert row["pieces"] >= row["count"] > 0
+    # Runs over stock split into lapped pieces; a dowel laps without splitting.
+    assert any(r["pieces"] > r["count"] for r in rows)
 
 
 def test_weight_is_the_astm_unit_mass(rows) -> None:
@@ -96,10 +92,10 @@ def test_the_coating_comes_from_the_pours_mix_not_the_schedule(rows) -> None:
     assert by_scope["footing"] == {"hdg-a767"}
     assert by_scope["foundation wall"] == {"hdg-a767"}
     assert by_scope["column"] == {"hdg-a767"}
-    assert set().union(*by_scope.values()) == {"hdg-a767"}, (
-        "a coating other than A767 has appeared. Every bar in this house is galvanized by "
-        "the 2026-09-02 owner call; a second coating is either a new decision or a pour "
-        "that lost its mix.")
+    # The one black pour is the interior deck cap, and its MIX says so (DECK_CAP_MIX: no
+    # chloride, no freeze-thaw) — the same route, a different answer.
+    assert by_scope["slab"] == {"black"}
+    assert all(len(coatings) == 1 for coatings in by_scope.values()), by_scope
 
 
 def test_the_bom_bills_only_what_the_house_authored(catlin_model) -> None:
@@ -136,18 +132,21 @@ def test_the_bom_bills_only_what_the_house_authored(catlin_model) -> None:
         f"a record would move every time a calc moved")
 
 
-def test_dowels_are_not_billed(catlin_model) -> None:
-    """A dowel's length is a lap into the pour below, and nothing in this model carries it.
+def test_dowels_bill_only_where_authored_as_l_bars(catlin_model) -> None:
+    """A dowel bills when a house authors role ``dowels``, and then as an L (decision #75 D6).
 
-    Billing it at the member's own height would be inventing a number, which is worse than
-    the hole it fills.
+    Its length is a hooked foot in the pour below plus a lap above, so every piece carries a
+    lap and a hook. A pour that authors none bills none: nothing here invents one.
     """
-    from typehaus.model.rebar import BarSpec
-    from typehaus.quantities import inch
-    from typehaus.takeoff.reinforcement import _spaced_length_ft
-
-    dowel = BarSpec(role="dowels", bar=5, spacing=inch(12.0))
-    assert _spaced_length_ft(dowel, 1000.0) == 0.0
+    dowels = [(s.host_tag, b) for s in catlin_model.rebar for b in s.bars
+              if b.role == "dowels"]
+    assert dowels
+    authored = {el.tag for el in catlin_model.plan.all_elements()
+                if getattr(el, "reinforcement", None) is not None
+                and any(b.role == "dowels" for b in el.reinforcement.bars)}
+    assert {tag for tag, _ in dowels} == authored
+    for _tag, bar in dowels:
+        assert bar.lap_length_m > 0 and bar.hook_kinds == ("std90",) and len(bar.path) == 3
 
 
 def test_an_empty_reinforcement_table_moves_no_money() -> None:

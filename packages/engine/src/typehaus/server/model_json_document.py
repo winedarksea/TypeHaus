@@ -24,6 +24,7 @@ from typehaus.resolve.model import ResolvedModel
 from typehaus.server.model_json_catalog import catalog_json
 from typehaus.server.model_json_fabric import framing_json, shell_json, wall_graph_json
 from typehaus.server.model_json_placeables import placeables_json
+from typehaus.server.model_json_rebar import rebar_summary_json
 from typehaus.server.model_json_shared import _findings_json, _provenance
 from typehaus.server.model_json_spaces import spaces_json
 from typehaus.server.model_json_systems import systems_json
@@ -178,6 +179,7 @@ def model_to_dict(
         **shell_json(model, provenance),
         **systems_json(model, provenance, preferences),
         **framing_json(model, provenance),
+        **rebar_summary_json(model, provenance),
         **spaces_json(model, provenance),
         "building_science": _building_science(model, preferences),
         **catalog_json(model, provenance, variants),

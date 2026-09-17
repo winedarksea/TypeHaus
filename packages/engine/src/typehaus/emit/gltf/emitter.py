@@ -63,6 +63,7 @@ from typehaus.emit.gltf.palette import (  # noqa: F401
     _solid_color,
     authored_colors,
 )
+from typehaus.emit.gltf.rebar import add_rebar
 from typehaus.emit.gltf.roofs import _add_roof
 from typehaus.emit.gltf.scene import _SceneBuilder
 from typehaus.emit.gltf.walls import (
@@ -279,6 +280,7 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         scene.add_object(mb, ("framing",), kind="solid", uid=soffit.uid)
 
     _add_canvas_objects(scene, model)
+    add_rebar(scene, model)
 
     earth = _MeshBuilder()
     _add_earth(earth, model)

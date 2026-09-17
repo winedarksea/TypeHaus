@@ -203,10 +203,6 @@ class MasonrySpec(HausModel):
     unit_size: str  # e.g. "8x8x16 CMU", "ICF-6"
     coursing: Length | None = None
     core_fill: bool = False
-    #: SUPERSEDED by ``Layer.concrete`` + the elements' ``ReinforcementSpec``, and read by
-    #: nothing today. Kept only so no house's authored value has to move in the same change
-    #: that introduces the replacement; removing it is a separate cleanup.
-    rebar_spacing: Length | None = None
 
 
 class FiberSpec(HausModel):

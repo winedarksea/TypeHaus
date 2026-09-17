@@ -44,10 +44,19 @@ scripts/verify.sh                                     # the CI gate; --fast skip
 ```
 
 ## UI Start
+Two terminal sessions are needed:
+
 Terminal 1
 ```bash
 .venv/bin/haus serve houses/starter --port 8000
 ```
+Using a local dev environment, terminal 1 may look more like this:
+```bash
+alias haus='PYTHONPATH=packages/engine/src python3 -m typehaus.cli.app'
+haus build houses/catlin
+PYTHONPATH=packages/engine/src /Users/colincatlin/mambaforge/bin/python3.11 -m typehaus.cli.app serve houses/catlin --port 8000
+```
+
 Terminal 2
 ```bash
 cd ui && HAUS_ENGINE=http://127.0.0.1:8000 npm run dev

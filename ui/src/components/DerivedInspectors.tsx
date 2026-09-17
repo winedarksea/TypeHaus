@@ -8,7 +8,8 @@ import type {
   FootingBedding, Floor, LightRun, Model, Roof, Solid, SolarPanel, Vec2,
 } from "../model/types";
 import { formatFtIn } from "../model/geometry";
-import type { LocatedMember, MemberOwnerKind } from "../model/memberIdentity";
+import { locateMember, type LocatedMember, type MemberOwnerKind } from "../model/memberIdentity";
+import { RebarInspector, rebarHostSelectionKind } from "./RebarInspector";
 import type { SelectionKind } from "../state/vocabulary";
 import { solidCategoryLabel, solidMaterialRef } from "../model/solidLabels";
 import { useStore } from "../state/store";
@@ -186,8 +187,18 @@ function sectionSummary(located: LocatedMember): string {
 // "select the soffit" has to ask for the solid, or the click resolves to nothing.
 const OWNER_SELECTION_KIND: Record<MemberOwnerKind, SelectionKind> = {
   wall: "wall", roof: "roof", floor: "floor", stair: "stair", soffit: "solid",
-  brace: "brace", wedge: "wedge",
+  brace: "brace", wedge: "wedge", rebar: "solid",
 };
+
+/** A picked member uid, resolved against the model and the lazily loaded rebar pool. */
+export function MemberUidInspector({ model, uid }: { model: Model; uid: string }) {
+  const rebarSets = useStore((s) => s.rebarSets);
+  const located = locateMember(model, uid, rebarSets);
+  if (!located) return null;
+  return located.bar
+    ? <RebarInspector located={located} bar={located.bar} />
+    : <MemberInspector located={located} />;
+}
 
 export function MemberInspector({ located }: { located: LocatedMember }) {
   const select = useStore((s) => s.select);
@@ -214,7 +225,8 @@ export function MemberInspector({ located }: { located: LocatedMember }) {
     </div>
     {/* A stair (and a roof's framing) is nothing but members, so a click in 3D can only land
         on a stick. This is how you get back up to the thing that is actually editable. */}
-    <button className="btn" style={{ marginTop: 8 }} onClick={() => select(OWNER_SELECTION_KIND[ownerKind], ownerUid)}>
+    <button className="btn" style={{ marginTop: 8 }} onClick={() => select(ownerKind === "rebar"
+      ? rebarHostSelectionKind(model, ownerUid) : OWNER_SELECTION_KIND[ownerKind], ownerUid)}>
       Select the {ownerKind} ({ownerTag})
     </button>
     <DerivedNote source={`the ${ownerKind} ${ownerTag} it frames`} />

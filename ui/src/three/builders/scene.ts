@@ -10,7 +10,7 @@
 // the real glb lands); a plain array parameter could not carry that back out.
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import type { Model } from "../../model/types";
+import type { Model, RebarSet } from "../../model/types";
 import type { ResolvedNordicPalette } from "../../nordic/palette";
 import { disposeGroup, type SkinLine } from "../members";
 import {
@@ -22,6 +22,7 @@ import {
 } from "../planGeometry";
 import { ALL_TRADES, type Trade } from "../../state/vocabulary";
 import { buildLightRun } from "./lightRun";
+import type { RebarLayer } from "./rebar";
 import { tagStorey as tagStoreyChildren, tagTrades } from "./registry";
 import { buildCanvasObject, buildEarth } from "./site";
 import { buildOpening, buildWall } from "./walls";
@@ -53,6 +54,9 @@ export interface PopulateSceneOptions {
   /** The trade and level filters at the moment an async placeable asset lands, so it arrives
    *  hidden when its trade or storey is. Optional: a caller with no filter shows everything. */
   tradeVisible?: (trades: readonly string[], storey: string | null) => boolean;
+  /** The lazily fetched bars already loaded for THIS model, and the layer they draw into.
+   *  Absent until the Rebar chip first turns on (→ engine/rebarCache.ts). */
+  rebar?: { layer: RebarLayer; sets: readonly RebarSet[] | null };
 }
 
 /**
@@ -160,7 +164,7 @@ function instantiatePlaceableAsset(prototype: THREE.Object3D): THREE.Object3D {
 export function populateScene(options: PopulateSceneOptions) {
   const {
     tradeGroups, model, center, mode, palette, earthOpacity, registry, generation,
-    currentGeneration, requestRender, tradeVisible,
+    currentGeneration, requestRender, tradeVisible, rebar,
   } = options;
   const build = (trades: readonly VisibilityKey[], storey: string | null | undefined,
     run: () => void) => {
@@ -258,6 +262,12 @@ export function populateScene(options: PopulateSceneOptions) {
   for (const brace of model.braces ?? []) {
     build(family("brace"), brace.storey, () => buildBrace(tradeGroups.framing, brace, center, mode, palette,
       registry.picks, registry.byUid, model.catalog?.materials));
+  }
+
+  // Bars ride their own layer (builders/rebar.ts), tagged with the facet alone.
+  if (rebar) {
+    if (rebar.sets) rebar.layer.show(rebar.sets, center, mode);
+    else rebar.layer.clear();
   }
 
   const types = new Map((model.catalog?.canvas_object_types ?? []).map((type) => [type.tag, type]));

@@ -305,6 +305,8 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     "walls": ("framing", "envelope_layers", "wall_structure"),
     "openings": ("openings",),
     "solids": ("structural_solids",),
+    # Laid-out bars (decision #75), billed as counted pieces by `takeoff/reinforcement.py`.
+    "rebar": ("reinforcement",),
     "construction_returns": ("construction_returns",),
     "floor_heat": ("floor_heat",),
     "rooms": ("floor_finishes",),

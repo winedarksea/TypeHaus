@@ -142,6 +142,28 @@ def test_the_package_is_a_leaf(package: str) -> None:
         f"{sorted(_ALLOWED[package])}:\n  " + "\n  ".join(offences))
 
 
+def test_the_rebar_layout_is_a_leaf_of_resolve() -> None:
+    """``resolve/rebar`` reads the model and resolved records and nothing else (decision #75).
+
+    It sits inside ``resolve`` so the pipeline can run it, but a layout that reached for
+    ``takeoff``, ``checks`` or ``engineering`` would make a bar's position depend on a bill
+    or a verdict. Only ``pipeline.py`` and ``model.py`` (for the record type) may name it
+    from the rest of ``resolve``.
+    """
+    root = _SRC / "resolve" / "rebar"
+    offences = [f"{path.relative_to(_SRC)} imports typehaus.{top}"
+                for path in sorted(root.rglob("*.py"))
+                for top in sorted(_typehaus_imports(path) - {"model", "quantities", "resolve"})]
+    assert not offences, "\n  ".join(offences)
+    reachers = []
+    for path in sorted((_SRC / "resolve").rglob("*.py")):
+        if root in path.parents or path.name in ("pipeline.py", "model.py"):
+            continue
+        if "typehaus.resolve.rebar" in path.read_text():
+            reachers.append(str(path.relative_to(_SRC)))
+    assert not reachers, reachers
+
+
 @pytest.mark.parametrize("leaf", sorted(_UPSTREAM))
 def test_nothing_upstream_reaches_for_the_leaf(leaf: str) -> None:
     """The other direction, and the more important one.

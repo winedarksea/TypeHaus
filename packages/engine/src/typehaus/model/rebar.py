@@ -17,7 +17,7 @@ from typing import Literal, NamedTuple
 
 from typehaus.model.base import HausModel
 from typehaus.model.registry import register_constructor
-from typehaus.quantities import Length
+from typehaus.quantities import Length, inch
 
 
 class Bar(NamedTuple):
@@ -71,10 +71,17 @@ class BarSpec(HausModel):
     wants the bar on the tension face and nothing else, and a tie is not a flexural bar at
     any spacing. ``dowels`` is the lap into the pour below, which is a length of bar the BOM
     must carry and no limit state grades.
+
+    Axes (decision D7): on a LINEAR host — a strip footing, a beam, a wall acting as one —
+    ``x`` runs across the axis and ``y`` along it; on a slab, pad or post footing they are
+    plan X/Y. A ``-x`` role is a bar that RUNS in x. ``stirrups`` are open-or-closed shear
+    loops in a beam or rib; ``rib`` is the longitudinal bar in each ``ReinforcementSpec.ribs``
+    rib. On a wall, a ``horizontal`` authored as ``count`` is that many ROWS (IRC Table
+    R404.1.2(1) states rows, not a spacing). ``resolve/rebar`` lays all of it out.
     """
 
     role: Literal["vertical", "horizontal", "top-x", "top-y", "bottom-x", "bottom-y",
-                  "ties", "dowels"]
+                  "ties", "stirrups", "dowels", "rib"]
     #: Bar designation number: 5 for a ``#5``. Unknown sizes report rather than crash.
     bar: int
     #: Centre-to-centre spacing — the wall-and-slab shape. Exclusive with ``count``.
@@ -89,9 +96,33 @@ class BarSpec(HausModel):
     #: a cage whose ties are black inside a galvanized vertical bar is a false economy, but
     #: a dowel lapped into a black-bar pour below is not.
     coating: str | None = None
+    #: Which wall face the bars sit behind. ``None``: centred for one layer, both faces for
+    #: two. Interior/exterior follow the assembly's layer order (layer 0 is interior).
+    face: Literal["interior", "exterior", "center"] | None = None
+    #: Standard 90° hooks (ACI 318-19 §25.3.1) at these ends of a straight bar. ``None`` is
+    #: straight; ties, stirrups and dowels carry their own hooks regardless.
+    hooks: tuple[Literal["start", "end"], ...] | None = None
+    #: Stirrups/ties only: the distance from EACH end of the member they are confined to.
+    zone: Length | None = None
     #: Prose the struct cannot hold — a hook, a stagger, a "top of footing to 6\" below
     #: grade". For the drawing; nothing grades it.
     note: str | None = None
+
+
+class RibLayout(HausModel):
+    """The concrete ribs of a stay-in-place joist form, as the form's published detail gives them.
+
+    ``direction`` is the plan axis the ribs RUN in; rib centrelines sit at ``offset`` +
+    k·``spacing`` across it, measured from the slab outline's minimum coordinate. ``width``
+    is the rib's narrowest width (what cover is taken from) and ``depth`` its concrete depth
+    below the cap's underside.
+    """
+
+    direction: Literal["x", "y"]
+    spacing: Length
+    width: Length
+    depth: Length
+    offset: Length = inch(0)
 
 
 class ReinforcementSpec(HausModel):
@@ -121,8 +152,14 @@ class ReinforcementSpec(HausModel):
     #: ACI 318-19 §25.5.2.1 splice class. ``"B"`` is the ordinary answer wherever every bar
     #: is spliced at one section, which a column base always is.
     lap_class: Literal["A", "B"] | None = None
+    #: Mill length the bars are bought in; runs longer than it are lapped. ``None`` is the
+    #: engine default of 20'-0".
+    stock_length: Length | None = None
+    #: The rib module of a ribbed (joist-form) slab, which ``rib`` and ``stirrups`` roles need.
+    ribs: RibLayout | None = None
     source: str | None = None
 
 
-for _name, _obj in (("BarSpec", BarSpec), ("ReinforcementSpec", ReinforcementSpec)):
+for _name, _obj in (("BarSpec", BarSpec), ("ReinforcementSpec", ReinforcementSpec),
+                    ("RibLayout", RibLayout)):
     register_constructor(_name, _obj)

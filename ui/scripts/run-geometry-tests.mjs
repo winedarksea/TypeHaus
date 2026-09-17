@@ -50,6 +50,7 @@ try {
   const { runSiteStoreTests } = await server.ssrLoadModule("/src/state/site.test.ts");
   const { runRouteTests } = await server.ssrLoadModule("/src/state/route.test.ts");
   const { runViewUrlTests } = await server.ssrLoadModule("/src/state/viewUrl.test.ts");
+  const { runTradeVisibilityFacetTests } = await server.ssrLoadModule("/src/model/tradeVisibility.test.ts");
   runScheduleTests();
   runInspectionTests();
   runSiteStoreTests();
@@ -67,6 +68,7 @@ try {
   runSelectionRegistrationTests();
   runViewFramingTests();
   runVisibilityTests();
+  runTradeVisibilityFacetTests();
   runTradeRoutingTests();
   runConnectorFacetTests();
   runTagNewFacetTests();

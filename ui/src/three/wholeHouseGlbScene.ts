@@ -74,7 +74,7 @@ export function applyWholeHouseGlb(
     // never sees. Whoever promotes the GLB has to carry the function into the extras first,
     // or "just the wooden sticks" comes back as a plywood box.
     // Nor is `userData.storey` stamped, so the 3D level filter would not reach these meshes.
-    mesh.userData.trades = [...assignment.trades];
+    mesh.userData.trades = assignment.facet ? [assignment.facet] : [...assignment.trades];
     if (assignment.uid) {
       const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
       registry.byUid.set(assignment.uid, [...(registry.byUid.get(assignment.uid) ?? []), ...materials]);

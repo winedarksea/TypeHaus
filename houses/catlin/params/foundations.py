@@ -12,6 +12,7 @@ The breezeway's pads/piers/posts belong to the whole structure in ``params/breez
 from __future__ import annotations
 
 from typehaus import (
+    BarSpec,
     CrushedStoneSpec,
     DrainTile,
     Drywell,
@@ -20,6 +21,7 @@ from typehaus import (
     FoundationWall,
     Length,
     Node,
+    ReinforcementSpec,
     Service,
     Slab,
     SlabThermalBreak,
@@ -408,13 +410,26 @@ _ALIGN = face("concrete-ext", offset=GARAGE_ICF_EPS)
 # cast-in-place foundations only.
 _NO_RETAINED_FILL = ft(0)
 
+# The ICF core's steel: #4 @ 16" each way, one layer at the core — the form's own web module,
+# three times IRC R404.1.2(8) footnote d's #4 @ 48" for a 6" stay-in-place wall. No dowels:
+# the stems stand on crushed stone (decision #75 D10; notes/basement_wall_horizontal_steel.md §3).
+# Cover 1 1/2", not the mix's 3": the core is FORMED against the EPS, never cast against earth,
+# so ACI 318-19 Table 20.5.1.3.1's formed-face row (#5 and smaller, ground) governs — and 3"
+# each side of a centred mat does not fit in 6".
+_ICF_STEM_STEEL = ReinforcementSpec(
+    bars=(BarSpec(role="vertical", bar=4, spacing=inch(16)),
+          BarSpec(role="horizontal", bar=4, spacing=inch(16))),
+    cover=inch(1.5),
+    source="IRC Table R404.1.2(8) footnote d floor (#4 @ 48\"), authored at the ICF's 16\" module",
+)
+
 _STEM = dict(assembly="GARAGE_ICF_6", alignment=_ALIGN, top_elevation=_STEM_TOP,
              bottom_elevation=ft(_GRADE_FT - _FROST),
-             unbalanced_fill=_NO_RETAINED_FILL)
+             unbalanced_fill=_NO_RETAINED_FILL, reinforcement=_ICF_STEM_STEEL)
 _GRADE_BEAM = dict(assembly="GARAGE_ICF_6", alignment=_ALIGN,
                    top_elevation=_GRADE_BEAM_TOP,
                    bottom_elevation=ft(_GRADE_FT - _FROST),
-                   unbalanced_fill=_NO_RETAINED_FILL)
+                   unbalanced_fill=_NO_RETAINED_FILL, reinforcement=_ICF_STEM_STEEL)
 
 GARAGE_STEM_WALLS = [
     # South stem, split four ways: two fossil splits (N-GF-S-DRW/-DRE, N-GF-S-BRICK) and no
@@ -553,9 +568,8 @@ _GARAGE_FOOTING = dict(width=inch(20), depth=inch(8), center_on="wall",
 # The original five, kept verbatim below because they are what the answer is made of:
 
 #
-# 1. **There is nothing to dowel into.** `GARAGE_ICF_6` states
-#    `MasonrySpec(unit_size="ICF-6", core_fill=True, rebar_spacing=inch(16))`: a cast-in-
-#    place ICF wall with vertical bars at 16" o.c., and those bars lap dowels cast into the
+# 1. **There is nothing to dowel into.** `GARAGE_ICF_6` is a cast-in-place ICF wall with
+#    vertical bars at 16" o.c. (`_ICF_STEM_STEEL`), and those bars lap dowels cast into the
 #    footing. The IRC does list "crushed stone footings" among the supports a foundation
 #    wall may bear on, but the design for one lives in R403.4, *Footings for precast
 #    concrete foundations* — it is written for a precast panel set on compacted stone, not

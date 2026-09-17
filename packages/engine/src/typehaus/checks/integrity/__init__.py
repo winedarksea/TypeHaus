@@ -6,6 +6,7 @@ from typehaus.checks.integrity import (  # noqa: F401 - registers checks
     drip_flashing,
     edge_run_host,
     member_profile,
+    reinforcement_layout,
     reveal_alignment,
     roof_clearance,
     sheet_notes,

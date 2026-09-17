@@ -747,6 +747,19 @@ _CAST_COLUMN_CAGE = ReinforcementSpec(
     lap_class="B",
     source='8" cage, (4) #5 + #3 rings @ 10", one of twelve house-wide; notes/sunken_garden_piers.md §4, balcony_moment_columns.md §7',
 )
+# The four CORNER columns are fixed at the base, so the same cage plus the dowels that fix it:
+# a #5 L at each vertical, hooked into the W-SG-W1/E1 wall top and lapped class B above it
+# (balcony_moment_columns.md §7; laid out by resolve/rebar, decision #75 D6).
+_MOMENT_COLUMN_CAGE = ReinforcementSpec(
+    bars=(
+        BarSpec(role="vertical", bar=5, count=4),
+        BarSpec(role="ties", bar=3, spacing=inch(10.0)),
+        BarSpec(role="dowels", bar=5, note="one per vertical, class B lap into the column"),
+    ),
+    cover=inch(2.0),
+    lap_class="B",
+    source='the _CAST_COLUMN_CAGE section plus its base dowels; notes/balcony_moment_columns.md §7',
+)
 
 # The two BRACED porch walls' vertical steel, structured. `#6 @ 38"` is IRC Table
 # R404.1.2(8) for a 12" wall braced top and bottom — a different row and a much lighter
@@ -758,13 +771,31 @@ _BRACED_STEM_STEEL = ReinforcementSpec(
     source="IRC Table R404.1.2(8), braced top and bottom; 3\" cover with the rest of the court (see _RET_STEM_STEEL)",
 )
 
+# W-SG-BRKBM's steel: flexure (3 #5 each face) from notes/sunken_garden_veneer_beam.md §3,
+# closed #3 hoops @ 5" and one #4 side bar per face from the §4a torsion addendum.
+_VENEER_BEAM_STEEL = ReinforcementSpec(
+    bars=(
+        BarSpec(role="top-y", bar=5, count=3, note="mirrors the bottom for the pocket restraint"),
+        BarSpec(role="bottom-y", bar=5, count=3),
+        BarSpec(role="ties", bar=3, spacing=inch(5.0),
+                note="closed hoops, 135° hooks — ACI 318-19 §9.7.6.3.3, ph/8 = 5.25\""),
+        BarSpec(role="horizontal", bar=4, count=1, layers=2,
+                note="torsion longitudinal bar at mid-depth, each face — §9.7.5.1"),
+    ),
+    cover=inch(2.0),
+    source="notes/sunken_garden_veneer_beam.md §3 and §4a",
+)
+
 _RET_REBAR = '#6 @ 10" o.c.'
 _RET_STEM_STEEL = ReinforcementSpec(
     bars=(
-        BarSpec(role="vertical", bar=6, spacing=inch(10.0),
+        BarSpec(role="vertical", bar=6, spacing=inch(10.0), face="exterior",
                 note="RETAINED face — that is where the cantilever puts the tension"),
-        BarSpec(role="horizontal", bar=4, spacing=inch(8.0),
+        # #4 @ 16" each face is the same steel as the #4 @ 8" this was, and puts it where the
+        # note always said: on both faces (decision #75 D11).
+        BarSpec(role="horizontal", bar=4, spacing=inch(16.0), layers=2,
                 note="ACI 318-19 §11.6.1 temperature and shrinkage, both faces"),
+        BarSpec(role="dowels", bar=6, note="one per vertical, hooked into the footing mat"),
     ),
     # ** 3", AND IT IS BOUGHT WITH SECTION RATHER THAN FOUND LYING AROUND. **
     # ACI 318-19 Table 20.5.1.3.1 asks 2" of a #6 on a formed face exposed to weather, and
@@ -973,7 +1004,8 @@ WALLS = [
                    end_node="N-SG-BME", assembly="SG_VENEER_BEAM_14",
                    top_elevation=_veneer_beam_top, bottom_elevation=_veneer_beam_bottom,
                    unbalanced_fill=inch(0),
-                   lateral_support="top_and_bottom"),
+                   lateral_support="top_and_bottom",
+                   reinforcement=_VENEER_BEAM_STEEL),
     # Garden retaining run (to just above grade), the U south of the porch.
     #
     # ** THE FILL AGAINST THESE THREE IS AUTHORED. ** Left derived,
@@ -1088,6 +1120,10 @@ WALLS = [
 # - SUNKEN_GARDEN_GRADE_BEAM_12 carries no wash: nothing of it shows.
 _GRADE_BEAM_DEPTH_IN = _grade_beam_top.inches - _grade_beam_bottom.inches
 GRADE_BEAMS = [
+    # ** PLAIN BY DESIGN, FOR A 100-YEAR LIFE (decision #75 D9). ** A soil-bedded compression
+    # strut graded as plain concrete (ACI 318-19 §14.1.3) in wet stone: embedded steel doing no
+    # work is only a place for corrosion to start. Leave `reinforcement` unset;
+    # notes/sunken_garden_court_free_body.md §8.
     Beam(uid="SGW102AAAA", tag="W-SG-ARCH", start_node="N-SG-MW", end_node="N-SG-ME",
          size=f"12.0x{_GRADE_BEAM_DEPTH_IN:g}", assembly="SUNKEN_GARDEN_GRADE_BEAM_12",
          top_elevation=_grade_beam_top),
@@ -3101,7 +3137,7 @@ for _i, _x in enumerate(_PILLAR_X, start=1):
                             supported_by=_bears_on,
                             vertical_reinforcement=(SPEC.corner_column_cage
                                                     if _is_corner else None),
-                            reinforcement=(_CAST_COLUMN_CAGE if _is_corner else None),
+                            reinforcement=(_MOMENT_COLUMN_CAGE if _is_corner else None),
                             assembly=("SUNKEN_GARDEN_COLUMN_12" if _is_corner
                                       else "POST_WHITE_PAINT_DF")))
 

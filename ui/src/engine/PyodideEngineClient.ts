@@ -7,7 +7,7 @@
 // surfaces a clear "requires local install" degradation. This is the second implementation of
 // the same interface HttpEngineClient satisfies.
 
-import type { Finding, Model } from "../model/types";
+import type { Finding, Model, RebarPayload } from "../model/types";
 import PyodideWorker from "./pyodide/worker?worker";
 import {
   type BuildResult,
@@ -134,6 +134,11 @@ export class PyodideEngineClient implements EngineClient {
   async getBom(): Promise<EngineBom> {
     await this.initialized;
     return this.call<EngineBom>("bom");
+  }
+
+  async getRebar(): Promise<RebarPayload> {
+    await this.initialized;
+    return this.call<RebarPayload>("rebar");
   }
 
   async getDetail(key: string): Promise<DetailPayload> {

@@ -2224,8 +2224,8 @@ haus analysis . --solve                     # the engineered frame, solved in Py
   the authored post height, 1 % longer than the built column. Both are findings, not errors.
 - **The IFC in that bundle is enriched** and the one from `haus build` is not: section
   profiles on every member, `Pset_TH_Engineering_<kind>` carrying each record and its
-  fingerprint, and a 55-row bar schedule under the pours, summing to the same 3,650 LF the
-  BOM bills. See `docs/handoff-bundle-format.md`.
+  fingerprint, and a 102-row bar schedule under the pours, summing to the same 8,137 LF of
+  cut length the BOM bills (laid out and counted as pieces since decision #75). See `docs/handoff-bundle-format.md`.
 - **A published manufacturer table is a PRESCRIPTIVE read and stays out of the register**
   (2026-09-11). Three requirements left the engineered lane that way, none of them stamped:
   `D-G-OVERHEAD`'s header (Weyerhaeuser TJ-9000, `notes/garage_door_header.md`),

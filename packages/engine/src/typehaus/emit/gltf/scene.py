@@ -74,7 +74,8 @@ class _SceneBuilder:
         return index
 
     def add_object(self, mb: _MeshBuilder, trades: tuple[str, ...] | str,
-                   kind: str | None = None, uid: str | None = None) -> None:
+                   kind: str | None = None, uid: str | None = None,
+                   facet: str | None = None) -> None:
         """Emit one node for ``mb``'s geometry, tagged so the UI can classify and select it.
 
         ``kind`` is one of ``_SELECTION_KINDS`` — the same vocabulary the live viewer's pick
@@ -121,6 +122,9 @@ class _SceneBuilder:
             extras["kind"] = kind
         if uid is not None:
             extras["uid"] = uid
+        # A sub-trade the viewer toggles on its own (``concrete:rebar``): same trade, its own chip.
+        if facet is not None:
+            extras["facet"] = facet
         # A "<trade>|<kind|>|<uid|>" name is a belt-and-suspenders fallback; extras is primary.
         name = "|".join((trade, kind or "", uid or ""))
         self._nodes.append({"mesh": mesh_index, "name": name, "extras": extras})

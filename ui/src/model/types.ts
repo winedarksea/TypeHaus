@@ -166,6 +166,65 @@ export interface Member {
   trade: string | null;
 }
 
+// Reinforcing steel (decision #75). model.json carries one SUMMARY row per reinforced host;
+// the bars themselves are lazy (`GET /model/rebar`, the worker's `rebar`) because ~1,200 of
+// them would outgrow the model.json poll budget, and the Rebar chip starts off.
+export interface RebarSummary {
+  uid: string; // the HOST element's uid (wall, footing, pad, slab, column)
+  tag: string;
+  storey: string;
+  host_kind: string;
+  scope: string; // the BOM member family
+  trades: string[];
+  provenance: Provenance | null;
+  bar_count: number;
+  weight_lb: number;
+}
+
+// One cut piece of bar. Member-compatible (key/parent_uid/category/profile/p0/p1/z0_m/z1_m
+// read like a framed member's), plus its centreline and what the Inspector shows.
+export interface RebarBar {
+  key: string; // unique house-wide, e.g. "W-SG-S/horizontal/009-1"
+  parent_uid: string; // the host uid
+  category: "rebar";
+  profile: string; // "#5"
+  shape: "bar";
+  width_m: number;
+  depth_m: number; // both the bar diameter
+  p0: Vec2;
+  p1: Vec2;
+  z0_m: number;
+  z1_m: number;
+  length_m: number; // geometric path length, not the cut length
+  // Metres, project frame, absolute z. Two points: a straight bar; more: a hooked bar or an
+  // L-dowel; `closed`: a hoop or tie whose last point is NOT repeated.
+  path: [number, number, number][];
+  closed: boolean;
+  rebar: {
+    role: string;
+    bar: number;
+    coating: string;
+    spacing_in: number | null;
+    piece: number; // 1-based of `pieces` along one run
+    pieces: number;
+    placed_m: number;
+    lap_m: number;
+    hook_m: number;
+    cut_m: number;
+    hook_kinds: string[];
+    weight_lb: number;
+    note: string | null;
+  };
+}
+
+export interface RebarSet extends Omit<RebarSummary, "bar_count" | "weight_lb"> {
+  members: RebarBar[];
+}
+
+export interface RebarPayload {
+  rebar: RebarSet[];
+}
+
 export interface Wall {
   uid: string;
   tag: string;
@@ -1507,6 +1566,7 @@ export interface Model {
   stairs?: Stair[];
   braces?: Brace[];
   soffits?: SoffitFraming[];
+  rebar?: RebarSummary[]; // one row per reinforced host; bars are lazy (→ RebarPayload)
   fixtures?: Fixture[];
   furniture?: Furniture[];
   alarms?: Alarm[];

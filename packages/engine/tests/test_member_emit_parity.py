@@ -86,3 +86,40 @@ def test_soffit_ladder_framing_is_in_the_payload(catlin_model_ro):
     rails = {m["profile"] for m in hp1["members"] if m["category"] == "plate"}
     rungs = {m["profile"] for m in hp1["members"] if m["key"].startswith("soffit-rung-")}
     assert rails == {"2x2"} and rungs == {"2x4"}
+
+
+def test_every_rebar_piece_reaches_both_emitters(catlin_model_ro):
+    """Bars are not framing (decision #75), so they get their own parity: every piece is in
+    ``/model/rebar`` under its host, the model.json summary counts the same pieces, and the
+    glTF carries one ``concrete:rebar`` node per host whose geometry is exactly one tube per
+    leg of every bar's path."""
+    from typehaus.emit.gltf.emitter import emit_gltf_dict
+    from typehaus.emit.gltf.rebar import _CIRCLE_STRIDE, _FACETS, REBAR_FACET
+    from typehaus.server.model_json_rebar import rebar_bars_json
+
+    model = catlin_model_ro
+    bars = rebar_bars_json(model, None)["rebar"]
+    summary = {host["uid"]: host["bar_count"] for host in model_to_dict(model)["rebar"]}
+    by_host = {host["uid"]: host["members"] for host in bars}
+    resolved = {s.host_uid: s.bars for s in model.rebar}
+    assert summary == {uid: len(pieces) for uid, pieces in resolved.items()}
+    assert {uid: [m["key"] for m in members] for uid, members in by_host.items()} == \
+        {uid: [b.key for b in pieces] for uid, pieces in resolved.items()}
+
+    gltf, _blob = emit_gltf_dict(model)
+    nodes = {n["extras"]["uid"]: n for n in gltf["nodes"]
+             if n.get("extras", {}).get("facet") == REBAR_FACET}
+    assert set(nodes) == set(resolved)
+    # A GBox of an F-facet profile de-indexes to 2F side triangles and 2(F-2) cap triangles.
+    per_leg = 3 * (2 * _FACETS + 2 * (_FACETS - 2))
+    for uid, pieces in resolved.items():
+        legs = 0
+        for bar in pieces:
+            points = len(bar.path)
+            if bar.closed and points > 8:
+                points = len(bar.path[::_CIRCLE_STRIDE])
+            legs += points if bar.closed else points - 1
+        vertices = sum(gltf["accessors"][p["attributes"]["POSITION"]]["count"]
+                       for p in gltf["meshes"][nodes[uid]["mesh"]]["primitives"])
+        assert vertices == legs * per_leg, uid
+        assert nodes[uid]["extras"]["trades"] == ["concrete"]

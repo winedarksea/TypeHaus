@@ -483,26 +483,45 @@ def reinforcement_schedule(model: ResolvedModel) -> ScheduleTable:
         element_kind, _identity, cover = key
         keys = _abbreviate(", ".join(sorted({mark for mark, _tag in members})), 20)
         lap = spec.lap_class or "—"
-        for bar in spec.bars:
-            quantity = (f'{bar.spacing.inches:g}" O.C.' if bar.spacing is not None
-                        else f"({bar.count})" if bar.count is not None else "NOT STATED")
-            rows.append((f"R{index}", f"{keys} ({len(members)})",
-                         bar.role.upper(), f"#{bar.bar}", quantity,
-                         str(bar.layers), cover, lap))
+        # One row per group, the roles in one cell: rows are this sheet's height and its scale
+        # (tests/test_schedule_columns.py), and a group reads as one schedule line anyway.
+        rows.append((f"R{index}", f"{keys} ({len(members)})",
+                     " + ".join(_bar_text(bar) for bar in spec.bars), cover, lap))
     return ScheduleTable(
         title="FOUNDATION REINFORCEMENT SCHEDULE",
-        columns=("MARK", "ELEMENT", "ROLE", "BAR", "SPACING", "LYRS", "COVER", "LAP"),
+        columns=("MARK", "ELEMENT", "STEEL", "COVER", "LAP"),
         rows=tuple(rows),
     )
 
 
+_ROLE_ABBREV = {"vertical": "V", "horizontal": "H", "top-x": "TX", "top-y": "TY",
+                "bottom-x": "BX", "bottom-y": "BY", "ties": "TIES", "stirrups": "STIR",
+                "dowels": "DWL", "rib": "RIB"}
+
+
+def _bar_text(bar) -> str:
+    """``V #5 @ 41"``, ``H (3) #4``, ``DWL #6`` — role, count or spacing, layers, zone."""
+    quantity = (f' @ {bar.spacing.inches:g}"' if bar.spacing is not None
+                else f" ({bar.count})" if bar.count is not None else "")
+    text = f"{_ROLE_ABBREV.get(bar.role, bar.role.upper())} #{bar.bar}{quantity}"
+    if bar.layers > 1:
+        text += f" x{bar.layers}"
+    if bar.zone is not None:
+        text += f" {bar.zone.feet:g}' EA END"
+    return text
+
+
 def _reinforced_elements(model: ResolvedModel) -> list[Any]:
     """Foundation-scope pours carrying an authored ``ReinforcementSpec``, in tag order.
-    The four kinds this sheet draws as foundation; a cast pier is a ``Post`` with a cage of
-    its own, scheduled with the column it is."""
-    kinds = {"FoundationWall", "Footing", "Pad", "Slab"}
+    The four kinds this sheet draws as foundation, plus a cast ``Beam`` (a grade beam); a cast
+    pier is a ``Post`` with a cage of its own, scheduled with the column it is."""
+    kinds = {"FoundationWall", "Footing", "Pad", "Slab", "Beam"}
+    # A slab only where the sheet marks it (on grade): a suspended deck's steel is not a
+    # foundation schedule's, and its rows cost this sheet its scale.
+    on_grade = {slab.tag for slab in slabs_on_grade(model)}
     return sorted((element for element in model.plan.all_elements()
                    if element.element_kind in kinds
+                   and (element.element_kind != "Slab" or element.tag in on_grade)
                    and getattr(element, "reinforcement", None) is not None),
                   key=lambda element: element.tag)
 

@@ -65,10 +65,11 @@ and carries three things more:
   importer reads.
 - **The reinforcing steel.** One `IfcReinforcingBar` per `(host, role)` — a pier cage is
   "(4) #5 vertical", which is the unit the model authors, the BOM bills and ACI 318 grades.
-  Lengths come from the same two helpers `takeoff/reinforcement.py` uses, and a test sums
-  them back up against the bill of materials. **No Body representation**: drawing a cage
-  would invent hook geometry, laps and cover the model does not carry, and a drawn cage read
-  as a placement drawing is worse than none because it looks like one.
+  Lengths are summed off the same laid-out pieces `takeoff/reinforcement.py` bills — cut
+  length, with `Pset_TH_Reinforcement` splitting it into placed, lap and hook and counting
+  pieces — and a test sums them back up against the bill of materials. **No Body
+  representation** (decision #75 keeps the IFC non-geometric): the bars' 3D paths are in the
+  glTF and behind `GET /model/rebar`, where the viewer draws and picks them.
 
 ## The analytical model — one graph, four files
 

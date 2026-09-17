@@ -118,6 +118,19 @@ export function createSweepGeometry(solid: Solid, center: PlanCenter): THREE.Buf
   if (!legs.length) return null;
   const positions: number[] = [];
   const indices: number[] = [];
+  pushSweepLegs(positions, indices, legs, center);
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  geo.setIndex(indices);
+  geo.computeVertexNormals();
+  return geo;
+}
+
+/** Append `legs` in scene space to a merge; returns the triangles added. Shared with the
+ *  rebar tubes (three/rebar.ts), which merge many sweeps into one draw call. */
+export function pushSweepLegs(positions: number[], indices: number[],
+  legs: readonly [Vec3[], Vec3[]][], center: PlanCenter): number {
+  let triangles = 0;
   for (const [start, end] of legs) {
     const base = positions.length / 3;
     const count = start.length;
@@ -136,10 +149,7 @@ export function createSweepGeometry(solid: Solid, center: PlanCenter): THREE.Buf
       indices.push(base + i, base + next, base + count + next);
       indices.push(base + i, base + count + next, base + count + i);
     }
+    triangles += 2 * (count - 2) + 2 * count;
   }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-  geo.setIndex(indices);
-  geo.computeVertexNormals();
-  return geo;
+  return triangles;
 }

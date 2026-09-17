@@ -8,12 +8,10 @@ enforced in none.
 It is enforced now, and this module pins the two halves of that:
 
 * :func:`test_the_billed_tonnage_reproduces_the_note` — §1's schedule, term by term.
-* :func:`test_the_backout_gate_is_still_CLOSED` — **the important one.** The plan's
-  acceptance condition is that the billed subtotal must land inside the register's
-  $10,000-18,000 before any rate is cut. It lands at less than half, because the model does
-  not yet carry the basement walls' horizontal steel, the garage ICF stems' bar size, or the
-  deck cap's schedule. This test asserts the gate is CLOSED and is expected to fail the day
-  that changes — which is the point. When it does, read §5 of the note and cut the rates.
+* :func:`test_the_backout_gate_is_still_CLOSED` — **the important one.** Since 2026-09-17
+  the gate is closed BY DECISION (decision #75 D14, note §3): a constant, the empty
+  ``[reinforcement]`` table and the inclusive $/cy rates, so authoring more steel cannot open
+  it by crossing a dollar line. Opening it is §5's one-commit rate cut.
 
 Uses catlin's real ``prices.toml``; there is precedent for house-specific price tests.
 """
@@ -28,56 +26,37 @@ from typehaus.takeoff.reinforcement import reinforcement_takeoff
 
 _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
-#: §1 of the note. Weight in lb, keyed (scope, bar, coating).
-# Seven rows, not nine: PIER_CONCRETE_12 gained a ConcreteSpec on 2026-09-03 and
-# `bar_coating` is a property of the POUR, so 149 lb of column steel went black -> A767 and
-# the two black rows folded into their galvanized siblings. No pound moved; every bar in this
-# house is galvanized now, which also removes the dissimilar-metal couple a black cage lapped
-# to galvanized dowels would have been.
+#: §1 of the note, as laid out (decision #75, 2026-09-17): (pieces, weight lb), keyed
+#: (scope, bar, coating). Cut lengths — placed + laps + hooks — by counted piece. Three of the
+#: hosts in these rows are laid out bar for bar in notes/rebar_layout_basis.md and pinned by
+#: test_rebar_layout_oracle.py; this pins the house-wide sum they sit inside.
+#:
+#: Eleven rows, not seven: §4's gaps are authored (basement horizontals, the garage ICF stems,
+#: W-SG-BRKBM's cage, SL-M-DECK's BuildDeck schedule, dowels), and the deck cap is the one
+#: BLACK pour because DECK_CAP_MIX says so — a new scope, not a second coating in an old one.
 _SCHEDULE = {
-    # The north entry's SIX 12" cast piers, each (4) #5 vertical with #3 ties at 10" o.c.
-    # See notes/north_entry_piers.md §6. This read 118.6 / 504.5 for a few hours on
-    # 2026-09-10, when there were thirteen: the eight tier piers went with the framed
-    # terrace they were holding up (they stood east of a flight that runs west, under open
-    # ground), and PT-BW-RNE arrived with the canopy's fourth column.
-    ("column", "#3", "hdg-a767"): 104.3,
-    ("column", "#5", "hdg-a767"): 448.9,
-    # ** THE FOOTING MAT ROW CHANGED BAR SIZE ON 2026-09-10: #6 @ 10" -> #5 @ 12". **
-    # It went +37% earlier the same day, when FT-SG-W1/E1 gained the retaining set's mat —
-    # nothing in the engine grades a footing's own flexure except on the retaining set, so
-    # their 3'-0" PLAIN cantilever under the two walls carrying the balcony's four
-    # moment-fixed columns had never been run, and the HEEL alone is Mu 8,303 against a
-    # plain 12" strip's 3,536, d/c 2.35. The mat is still owed. What changed is the bar:
-    # all five strips narrowed 96" -> 84", which removed 22% of the toe moment and brought
-    # `#5 @ 12"` from 0.90 to 0.70. See sunken_garden_court_free_body.md §7e — and note
-    # that `#4 @ 12"` is NOT available below this, on ACI 318-19 §7.6.1.1 minimum steel.
-    #
-    # ** THE ROW IS KEYED ON THE BAR, SO THIS IS A SHAPE CHANGE AND NOT A VALUE ONE. **
-    # ("footing", "#6") is gone and ("footing", "#5") is new, which the shape assertion
-    # catches before the per-row one. The footing #5 row and the foundation-wall #5 row are
-    # different scopes and do not merge.
-    ("footing", "#4", "hdg-a767"): 229.5,
-    ("footing", "#5", "hdg-a767"): 1075.2,
-    ("foundation wall", "#4", "hdg-a767"): 481.3,
-    ("foundation wall", "#5", "hdg-a767"): 219.0,
-    ("foundation wall", "#6", "hdg-a767"): 956.5,
+    ("column", "#3", "hdg-a767"): (139, 166.0),
+    ("column", "#5", "hdg-a767"): (80, 569.3),
+    ("footing", "#4", "hdg-a767"): (30, 285.1),
+    ("footing", "#5", "hdg-a767"): (154, 1044.0),
+    ("foundation wall", "#3", "hdg-a767"): (49, 77.0),
+    ("foundation wall", "#4", "hdg-a767"): (232, 1450.3),
+    ("foundation wall", "#5", "hdg-a767"): (45, 434.9),
+    ("foundation wall", "#6", "hdg-a767"): (144, 1431.7),
+    ("slab", "#3", "black"): (220, 251.1),
+    ("slab", "#4", "black"): (62, 610.8),
+    ("slab", "#5", "black"): (22, 410.1),
 }
-# ** -1,312.9 lb ON 2026-09-10, AND IT COMES FROM TWO SEPARATE MOVES. **
-#
-# The mat's bar size (above) is the larger half: #6 @ 10" -> #5 @ 12" on all five strips,
-# about -1,164 lb, and it takes out steel and NO concrete.
-#
-# The court's clear length went 28'-0" -> 26'-0" for the rest. That shortens W-SG-W2 and
-# W-SG-E2 by 2'-0" each, which is 4'-0" off the retaining run and 4'-0" off two of the five
-# footing strips. Steel authored as a SPACING is `area / spacing`, so a foot off what is now
-# a 52'-8" run of retaining wall is 4.75 sf of plane gone from both the horizontal (#4) and
-# the vertical (#6) mats. Same bars, same spacings, less wall — and the wall #6 row also
-# carries W-SG-W1/E1, whose lengths did not move.
-_TOTAL_LB = 3514.7
+# +3,215.6 lb on 2026-09-17 over the area/spacing era's 3,514.7, in three parts the note's §1
+# works out: +2,899.9 newly authored, +110.5 laps and hooks leaving [waste] on the steel that
+# was already authored, +205.2 of fencepost (spacing is a maximum, so ceil(L/s) + 1 bars).
+_TOTAL_LB = 6730.3
+_TOTAL_PIECES = 1177
 
-#: §3. The allowance register's figure, and the black-bar material price bracketing it.
-_REGISTER_LOW, _REGISTER_HIGH = 10_000.0, 18_000.0
-_BLACK_BAR_LOW, _BLACK_BAR_HIGH = 1.05, 1.35
+#: §3, decision #75 D14. The back-out gate is CLOSED BY DECISION, not by a dollar comparison:
+#: authoring steel may lift the tonnage into the register's band without opening it. Opening
+#: it is §5's one-commit rate cut, and flipping this constant is part of that commit.
+_BACKOUT_GATE_CLOSED_BY_DECISION = True
 
 
 @pytest.fixture(scope="module")
@@ -88,45 +67,42 @@ def rows(catlin_model):
 def test_the_billed_tonnage_reproduces_the_note(rows) -> None:
     """§1, row for row. A total that happens to match while two rows are wrong is not a
     reconciliation, which is why the schedule is pinned and not just its sum."""
-    got = {(r["scope"], r["bar"], r["coating"]): r["weight_lb"] for r in rows}
+    got = {(r["scope"], r["bar"], r["coating"]): (r["pieces"], r["weight_lb"]) for r in rows}
     assert set(got) == set(_SCHEDULE), (
         f"the schedule changed shape: extra {sorted(set(got) - set(_SCHEDULE))}, "
         f"missing {sorted(set(_SCHEDULE) - set(got))}. Update notes/rebar_backout.md §1.")
-    for key, want in _SCHEDULE.items():
-        assert got[key] == pytest.approx(want, rel=0.002), key
-    assert sum(got.values()) == pytest.approx(_TOTAL_LB, rel=0.002)
+    for key, (pieces, weight) in _SCHEDULE.items():
+        assert got[key][0] == pieces, key
+        assert got[key][1] == pytest.approx(weight, rel=0.002), key
+    assert sum(w for _p, w in got.values()) == pytest.approx(_TOTAL_LB, rel=0.002)
+    assert sum(p for p, _w in got.values()) == _TOTAL_PIECES
 
 
 def test_the_backout_gate_is_still_CLOSED(rows) -> None:
-    """**This test is expected to fail one day, and that is what it is for.**
+    """**Closed by decision (§3, decision #75 D14), and asserted as that.**
 
-    The rate cut is authorised only when the billed steel's material value lands inside the
-    allowance register's $10,000-18,000. It does not: the model carries 2.09 of roughly 5
-    tons, because the basement walls' horizontal steel is authored nowhere, `GARAGE_ICF_6`
-    states a spacing with no bar size, and `SL-M-DECK`'s cap schedule cannot be derived from
-    a form whose rib spacing the model does not carry. The RATIO got worse on 2026-09-03
-    (28.2 -> 27.0 lb/cy) when 6.5 cy of previously unclassifiable pours gained assemblies:
-    what that sweep found was more unreinforced concrete, not more steel.
+    Until 2026-09-17 this compared the billed steel's dollars against the register's
+    $10,000-18,000. The layout lifted the tonnage to 6,730 lb ($7,067-9,086), and further
+    authoring could lift it into the band — which must not open the gate by itself. So the
+    gate is a constant tied to the note, and this test holds the three things that make it
+    true: the constant, the empty ``[reinforcement]`` table and the inclusive $/cy rates.
 
-    2026-09-05 took 64 lb of steel and 2.32 cy of concrete out together — shorter walls,
-    shorter shafts, and rim voided off the two porch footings — and left the ratio at 26.8,
-    which is the reassuring direction: the steel that came out came out WITH its concrete.
-
-    Cutting the full embedded rebar out of the $/cy rates while billing 42% of it would make
-    the estimate FALL by about $6,000 and read as a saving. So the gate stays shut, and this
-    asserts that it is shut for the reason the note gives rather than by accident.
-
-    When this fails: re-run §3 of `notes/rebar_backout.md`, and if the number is now inside
-    the band, follow §5 and cut the rates.
+    When the rate cut is taken (§5), flip the constant in the same commit.
     """
-    total_lb = sum(r["weight_lb"] for r in rows)
-    low = total_lb * _BLACK_BAR_LOW
-    high = total_lb * _BLACK_BAR_HIGH
-    assert high < _REGISTER_LOW, (
-        f"THE BACK-OUT GATE HAS OPENED: {total_lb:,.0f} lb is ${low:,.0f}-{high:,.0f}, which "
-        f"now reaches the register's ${_REGISTER_LOW:,.0f}-{_REGISTER_HIGH:,.0f}. This is "
-        f"good news, not a regression — read notes/rebar_backout.md §5 and cut the "
-        f"[concrete]/[wall_structure] rates, then delete this assertion.")
+    import tomllib
+
+    from typehaus.cli.price_file import load_prices, rebar_is_inclusive
+
+    note = (_CATLIN / "notes" / "rebar_backout.md").read_text()
+    assert "## 3. The test, and the gate is CLOSED BY DECISION" in note
+    assert _BACKOUT_GATE_CLOSED_BY_DECISION, (
+        "the gate is open by decision: the [reinforcement] rates and the "
+        "[rebar_inclusive] flip belong in this same commit — see §5")
+    data = tomllib.loads((_CATLIN / "prices.toml").read_text())
+    assert rebar_is_inclusive(data, "concrete") and rebar_is_inclusive(data, "wall_structure")
+    prices = load_prices(_CATLIN)
+    assert prices is not None and prices.reinforcement == {}
+    assert sum(r["weight_lb"] for r in rows) > 0
 
 
 def test_the_rates_still_declare_themselves_rebar_inclusive() -> None:
@@ -207,4 +183,9 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
     # runs 40-80. The gap is still the unauthored steel §3 lists, not this cut — but the cut
     # has eaten into the margin this figure had, and a further DESIGN reduction in steel is
     # now the thing to look at twice.
-    assert total_lb / total_cy == pytest.approx(23.81, rel=0.03)
+    #
+    # ** 24.5 -> 46.9 ON 2026-09-17, AND THIS RISE IS THE GAP CLOSING. ** Laid out (decision
+    # #75), with §4's steel authored: +2,899.9 lb of steel that existed and was stated
+    # nowhere, laps and hooks out of [waste], the fencepost. No concrete moved. 46.9 is inside
+    # the 40-80 a lightly reinforced residential foundation runs.
+    assert total_lb / total_cy == pytest.approx(46.87, rel=0.03)

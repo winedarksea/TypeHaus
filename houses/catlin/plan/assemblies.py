@@ -1860,8 +1860,7 @@ GARAGE_ICF_6 = Assembly(
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
         Layer(name="concrete", material_ref="concrete", thickness=GARAGE_ICF_CORE,
               function=LayerFunction.STRUCTURE, concrete=BURIED_MIX,
-              masonry=MasonrySpec(unit_size="ICF-6", core_fill=True,
-                                  rebar_spacing=inch(16))),
+              masonry=MasonrySpec(unit_size="ICF-6", core_fill=True)),
         Layer(name="eps-ext", material_ref="icf-eps", thickness=GARAGE_ICF_EPS,
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
         # THE EXTERIOR HALF OF A REQUIREMENT THAT WAS ONLY EVER HALF-BUILT.

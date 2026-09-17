@@ -132,6 +132,7 @@ found for any of the four EPS deck systems examined — see plans/buildability.m
 """
 
 from typehaus import (
+    BarSpec,
     DeckLayer,
     FloorSystem,
     JoistReinforcement,
@@ -140,6 +141,8 @@ from typehaus import (
     LayerFunction,
     Point2D,
     PublishedSpan,
+    ReinforcementSpec,
+    RibLayout,
     Slab,
     ft,
     inch,
@@ -544,6 +547,24 @@ DECK = Slab(
     # ``structural.mixed_deck_bearing_seat`` FAILs on either if it stops meeting the wood.
     # SL-G-FLOOR pins itself the same way.
     top_elevation=DECK_TOP,
+    # ** THE ROW'S OWN SCHEDULE, AUTHORED (decision #75 D12). ** BuildDeck names the steel with
+    # the span it publishes: 2-#5 in each beam rib, #3 stirrups at 5" over 4'-0" from each end,
+    # and a 12"x12" grid of #4 in the cap. The ribs run with the 18' span (x), one per 24"
+    # panel joint (detail sheet 5E). Cover 3/4": ACI 318-19 Table 20.5.1.3.1, joists and slabs
+    # not exposed to weather or earth.
+    reinforcement=ReinforcementSpec(
+        bars=(
+            BarSpec(role="top-x", bar=4, spacing=inch(12), note="cap grid, BuildDeck row"),
+            BarSpec(role="top-y", bar=4, spacing=inch(12), note="cap grid, BuildDeck row"),
+            BarSpec(role="rib", bar=5, count=2, note="2-#5 beam bars per rib, BuildDeck row"),
+            BarSpec(role="stirrups", bar=3, spacing=inch(5), zone=ft(4),
+                    note="#3 @ 5\" within 4'-0\" of each end, BuildDeck row"),
+        ),
+        cover=inch(0.75),
+        ribs=RibLayout(direction="x", spacing=inch(24), width=inch(6), depth=inch(7.5),
+                       offset=inch(24)),
+        source="BuildDeck manual (BuildBlock, 2022): 10\" deck / 4\" cap / 2-#5 row; sheet 5E",
+    ),
     # ** THE DECK'S STRUCTURE IS A PRESCRIPTIVE READ, NOT A SEAL (2026-09-12). ** Nothing
     # graded this span before: no engineering/ kind for a suspended slab, no check reading
     # one. It needs no seal — BuildDeck publishes the row (docstring above), and
@@ -556,7 +577,7 @@ DECK = Slab(
         member="10\" BuildDeck EPS deck form under a 4 3/8\" cast cap",
         span=ft(20),
         load_psf=62.0,
-        condition="f'c 4,000 psi, fy 60 ksi, +15 psf additional dead load, deflection < L/480, #3 stirrups 4'-0\" each end at 5\" o.c., slab reinforcement a 12\"x12\" grid of #4. The manual states its tables are for estimation and that the Engineer of Record reviews and approves. The cap here is 4 3/8\" against the row's 4\" — more section, not less. The stirrup and grid schedule is NOT yet authored as a ReinforcementSpec (notes/rebar_backout.md)",
+        condition="f'c 4,000 psi, fy 60 ksi, +15 psf additional dead load, deflection < L/480, #3 stirrups 4'-0\" each end at 5\" o.c., slab reinforcement a 12\"x12\" grid of #4. The manual states its tables are for estimation and that the Engineer of Record reviews and approves. The cap here is 4 3/8\" against the row's 4\" — more section, not less. Form module (detail sheet 5E, BuildDeck 10\"): 24\" nominal panels, one beam rib per panel joint at 24\" o.c., rib 6\" wide at the bars and 4 1/2\" at the neck, 7 1/2\" deep below the cap. The schedule is authored as SL-M-DECK.reinforcement",
     ),
 )
 

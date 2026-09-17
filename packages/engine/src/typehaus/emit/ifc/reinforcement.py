@@ -5,22 +5,19 @@ Until now a reviewer opening ``model.ifc`` saw concrete and no steel. The bars e
 column's cage against ACI 318 — but nothing put them in the model, so the one file a PE is
 handed said nothing about the thing they most want to check.
 
-**One ``IfcReinforcingBar`` per ``(host, role)``, not per physical stick.** A pier cage is
-"(4) #5 vertical" and a footing mat is "#4 at 12" o.c. each way": those are the units the
-model authors, the units the BOM bills and the units a calculation grades. Splitting them
-into individual sticks would invent a bar layout nobody designed, and IFC's own
-``BarCount``/``TotalCrossSectionArea`` fields exist precisely so that a schedule bar does
-not have to be one object.
+**One ``IfcReinforcingBar`` per ``(host, role)``, not per physical stick.** The layout
+(``resolve/rebar``, decision #75) does count every piece, and the glTF draws them; the IFC
+carries the schedule instead — size, pieces, total cut length and its split into placed,
+lap and hook, area, role and coating, aggregated to the host so no bar reads as belonging to
+the wrong pour. ``BarCount``/``TotalCrossSectionArea`` exist so a schedule bar need not be
+one object.
 
-**No Body representation, deliberately.** Drawing the bars would mean inventing hook
-geometry, lap positions and clear-cover offsets that the model does not carry — a drawn
-cage read as a placement drawing would be worse than no cage, because it would look like
-one. What is here is the schedule: size, count, total length, area, role and coating,
-aggregated to the host so it is impossible to read a bar as belonging to the wrong pour.
+**No Body representation, deliberately** (decision #75 keeps the IFC non-geometric): the
+bars' 3D paths live in ``model.json`` and the glTF, where a viewer can pick one.
 
-The lengths come from ``takeoff/reinforcement.reinforcement_by_host``, the same two helpers
-the BOM uses, so the IFC and the estimate cannot drift apart. A test sums these back up and
-compares.
+The lengths come from ``takeoff/reinforcement.reinforcement_by_host``, summed off the same
+pieces the BOM bills, so the IFC and the estimate cannot drift apart. A test sums these back
+up and compares.
 """
 
 from __future__ import annotations
@@ -44,6 +41,8 @@ _ROLE = {
     "bottom-x": "MAIN",
     "bottom-y": "MAIN",
     "ties": "LIGATURE",
+    "stirrups": "SHEAR",
+    "rib": "MAIN",
     "dowels": "ANCHORING",
 }
 
@@ -53,18 +52,24 @@ def emit_reinforcement(f: Any, model: Any, element_entities: dict[str, Any]) -> 
     from typehaus.takeoff.reinforcement import reinforcement_by_host
 
     written = 0
+    seen: set[tuple[str, str]] = set()
     for row in reinforcement_by_host(model):
         host = element_entities.get(str(row["tag"]))
         if host is None:
             # A reinforced element with no IFC representation. Skipping is right for an
             # annotation pass; `haus takeoff` is where the steel is guaranteed to be counted.
             continue
-        if _emit_bar(f, model, host, row):
+        # The GlobalId keys on (host, role); a second bar size in one role takes a suffix so
+        # the first keeps the id it has always had.
+        slot = (str(row["tag"]), str(row["role"]))
+        suffix = f"-{row['bar']}" if slot in seen else ""
+        seen.add(slot)
+        if _emit_bar(f, model, host, row, suffix):
             written += 1
     return written
 
 
-def _emit_bar(f: Any, model: Any, host: Any, row: dict[str, Any]) -> bool:
+def _emit_bar(f: Any, model: Any, host: Any, row: dict[str, Any], suffix: str = "") -> bool:
     role = str(row["role"])
     diameter_m = float(row["diameter_in"]) * _IN_TO_M
     length_m = float(row["length_ft"]) * _FT_TO_M
@@ -72,14 +77,14 @@ def _emit_bar(f: Any, model: Any, host: Any, row: dict[str, Any]) -> bool:
 
     bar = ll.create_entity(f, "IfcReinforcingBar", name=name)
     bar.GlobalId = derive_child_guid(
-        model.plan.project.project_uuid, str(row["tag"]), f"rebar-{role}")
+        model.plan.project.project_uuid, str(row["tag"]), f"rebar-{role}{suffix}")
     bar.PredefinedType = _ROLE.get(role, "USERDEFINED")
     if bar.PredefinedType == "USERDEFINED":
         bar.ObjectType = role
     bar.NominalDiameter = diameter_m
     bar.CrossSectionArea = float(row["area_in2"]) * _IN_TO_M * _IN_TO_M
-    # BarLength is the TOTAL length of this role in this host, which is what the BOM bills
-    # and what a placer orders. IFC4 does not require it to be one stick.
+    # BarLength is the TOTAL cut length of this role in this host, which is what the BOM
+    # bills and what a placer orders. IFC4 does not require it to be one stick.
     bar.BarLength = length_m
     bar.SteelGrade = "ASTM A615 Gr. 60"
 
@@ -98,6 +103,10 @@ def _emit_bar(f: Any, model: Any, host: Any, row: dict[str, Any]) -> bool:
         "Scope": str(row["scope"]),
         "Coating": str(row["coating"]) or "uncoated",
         "TotalLengthFt": float(row["length_ft"]),
+        "PlacedLengthFt": float(row["placed_length_ft"]),
+        "LapLengthFt": float(row["lap_length_ft"]),
+        "HookLengthFt": float(row["hook_length_ft"]),
+        "Pieces": int(row["pieces"]),
         "WeightLb": float(row["weight_lb"]),
         "Host": str(row["tag"]),
     })

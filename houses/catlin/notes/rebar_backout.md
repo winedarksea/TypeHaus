@@ -22,15 +22,16 @@
 **Subject:** the reinforcing-steel back-out out of the `[concrete]` and `[wall_structure]`
 $/cy rates.
 **Written:** 2026-09-03, by hand in a separate pass.
-**Oracle for:** `takeoff/reinforcement.py`'s back-out. **It does not pass yet** — §5 says
-what has to be authored first.
+**Oracle for:** `takeoff/reinforcement.py`'s back-out. The steel §4 named is authored as of
+2026-09-17 and billed as laid-out pieces; the rate cut is **closed by decision** (§3).
 
 **Status: the quantity ships, the dollar does not.** `takeoff/reinforcement.py` bills
 reinforcing steel by the pound as of 2026-09-03. `[reinforcement]` in `prices.toml` is
 present and **empty**, so every row lands in the estimate's `unpriced` list and the total
 does not move by one cent. This note is the independent oracle the back-out has to pass
 before those rates are filled in and the `[concrete]` / `[wall_structure]` $/cy rates are
-cut — and **it does not pass yet.** §5 says exactly what has to be authored first.
+cut. Since 2026-09-17 the steel is laid out and counted as pieces, §4's gaps are authored,
+and the cut is **held closed by decision** (§3) rather than by the arithmetic.
 
 Worked by hand in a separate pass, in the discipline every calculation in this repo is held
 to: *a back-out that only agrees with itself is not verified.*
@@ -39,9 +40,54 @@ to: *a back-out that only agrees with itself is not verified.*
 
 ## 1. What is billed today
 
-`haus takeoff houses/catlin`, section `reinforcement`. Lengths are **net** — laps and
-splices ride in `[waste]`, chairs, bolsters, tie wire and tie hooks ride inside the $/lb
-rate.
+`haus takeoff houses/catlin`, section `reinforcement`, **as laid out** (decision #75,
+2026-09-17). Lengths are **cut** lengths — placed + laps + hooks, by counted piece — so laps
+no longer ride in `[waste]`; chairs, bolsters and tie wire still ride inside the $/lb rate.
+Pieces are what gets cut; bars are runs (a lapped run is one bar in two pieces).
+
+| scope | bar | coating | pieces | bars | placed | lap | hook | cut | weight |
+|---|---|---|---:|---:|---:|---:|---:|---:|---:|
+| column | #3 | hdg-a767 | 139 | 139 | 277.5 | 0.0 | 164.1 | 441.6 LF | 166.0 lb |
+| column | #5 | hdg-a767 | 80 | 80 | 449.7 | 73.5 | 22.5 | 545.8 LF | 569.3 lb |
+| footing | #4 | hdg-a767 | 30 | 30 | 426.8 | 0.0 | 0.0 | 426.8 LF | 285.1 lb |
+| footing | #5 | hdg-a767 | 154 | 154 | 1,001.0 | 0.0 | 0.0 | 1,001.0 LF | 1,044.0 lb |
+| foundation wall | #3 | hdg-a767 | 49 | 49 | 171.5 | 0.0 | 33.4 | 204.9 LF | 77.0 lb |
+| foundation wall | #4 | hdg-a767 | 232 | 206 | 2,039.2 | 59.9 | 72.0 | 2,171.1 LF | 1,450.3 lb |
+| foundation wall | #5 | hdg-a767 | 45 | 45 | 417.0 | 0.0 | 0.0 | 417.0 LF | 434.9 lb |
+| foundation wall | #6 | hdg-a767 | 144 | 144 | 711.9 | 184.8 | 56.5 | 953.2 LF | 1,431.7 lb |
+| slab | #3 | black | 220 | 220 | 517.9 | 0.0 | 149.7 | 667.7 LF | 251.1 lb |
+| slab | #4 | black | 62 | 43 | 863.6 | 50.8 | 0.0 | 914.4 LF | 610.8 lb |
+| slab | #5 | black | 22 | 22 | 393.2 | 0.0 | 0.0 | 393.2 LF | 410.1 lb |
+| | | | **1,177** | | | | | | **6,730.3 lb** |
+
+**Checked by hand, not only by the machine.** Three elements in these rows are laid out bar
+for bar in `notes/rebar_layout_basis.md` and reproduced by `tests/test_rebar_layout_oracle.py`:
+`FT-SG-S`'s mat (142.37 + 142.37 lb of #5, 78.16 lb of #4 — part of the footing rows),
+`W-SG-S`'s stem (323.67 lb #6 verticals, 244.58 lb #4 horizontals in 32 pieces, 162.22 lb #6
+dowels) and `PT-SG-COL`'s cage (40.66 lb #5, 15.53 lb #3).
+
+**What moved from 3,514.7 lb, and why: +3,215.6 lb in three parts.**
+
+* **Newly authored steel (§4 closed): +2,899.9 lb.** The basement's R404.1.2(1) horizontal
+  rows and the 12" east walls (`notes/basement_wall_horizontal_steel.md`); the garage ICF
+  stems at #4 @ 16" each way; `W-SG-BRKBM`'s beam cage (`sunken_garden_veneer_beam.md`
+  §3–§4a); `SL-M-DECK`'s BuildDeck schedule — the whole `slab` scope, black bar because
+  `DECK_CAP_MIX` says so; and dowels on the three retaining stems and the eight moment
+  columns. Every dowel is counted here, laps and feet included.
+* **Laps and hooks on the steel that was already authored: +110.5 lb** (24.8 lap, 85.7
+  hook). They rode in `[waste]` before. Most of it is the columns' 135° tie hooks and the
+  6" overlap on every circular tie.
+* **The fencepost, on the same steel: +205.2 lb** of placed length. Spacing is a maximum, so a
+  run of `L` takes `ceil(L/s) + 1` bars where `area / spacing` read `L/s` — up to two bars a
+  run, which `tests/test_rebar_layout_vs_area.py` holds the layout to. The retaining
+  horizontals' move to #4 @ 16" each face (D11, same area/spacing pounds as #4 @ 8") is
+  inside this figure: two faces take two end rows.
+
+### History: the area/spacing era (2026-09-03 → 2026-09-17)
+
+The table below and every paragraph down to §2 describe the takeoff as it was billed
+**before** the layout — `area / spacing`, net of laps. Kept as the record of how each row
+moved; the numbers are superseded by the table above.
 
 | scope | bar | coating | length | weight | elements |
 |---|---|---|---:|---:|---|
@@ -240,15 +286,32 @@ flatters a ratio by hiding from it is the worst kind.
 line — per-group rounding as one group split into three — and changed no quantity anywhere.
 A specification change should cost nothing, and this one did.)
 
-## 3. The test, and it FAILS
+## 3. The test, and the gate is CLOSED BY DECISION
 
 ```
-billed          3,515 lb / 143.58 cy   =  24.5 lb/cy   (2026-09-15, garage to stone)
+billed          6,730 lb / 143.58 cy   =  46.9 lb/cy   (2026-09-17, laid out, §4 authored)
+  was           3,515 lb / 143.58 cy   =  24.5 lb/cy   (2026-09-15, garage to stone)
   was           3,515 lb / 147.64 cy   =  23.8 lb/cy   (2026-09-10, second pass)
   was           4,828 lb / 152.69 cy   =  31.6 lb/cy   (2026-09-10, first pass)
   was           3,992 lb / 148.78 cy   =  26.8 lb/cy
 register ~5 t  10,000 lb / 143.58 cy   =  69.6 lb/cy
 ```
+
+**2026-09-17: the ratio nearly doubles, 24.5 → 46.9 lb/cy, with no concrete moved.** §1 says
+where the 3,215.6 lb came from — mostly steel that existed in the building and was authored
+nowhere, plus laps and hooks leaving `[waste]`. 46.9 now sits inside the 40–80 lb/cy a lightly
+reinforced residential foundation runs, which is the sanity check this section asked for.
+
+At $1.05–1.35/lb, **6,730 lb is $7,067–9,086**: still under the register's $10,000–18,000,
+though no longer by half. **The gate stays closed, and from today that is a DECISION rather
+than an arithmetic result** (decision #75 D14). The price back-out is out of the layout's
+scope: `[reinforcement]` stays empty, `[rebar_inclusive]` stays `true`, and
+`tests/test_rebar_backout.py` pins that as a closed-by-decision constant tied to this
+section. It no longer asserts a dollar figure, so a future authoring pass that lifts the
+tonnage into the register's band does not open the gate by accident. Opening it is §5's
+one-commit rate cut, taken on purpose.
+
+The paragraphs below are the area/spacing era's record and keep their numbers.
 
 **+0.7 lb/cy on 2026-09-15, and the numerator did not move at all.** 3.95 cy of the garage's
 unreinforced footings stopped being concrete (§2), so the same steel now sits in less of it.
@@ -292,6 +355,18 @@ already contain the steel, so pricing a bar is a hard error. The 1,313 lb is rea
 and worth nothing in the estimate until §5's rate cut happens.
 
 ## 4. Where the missing ~2.9 tons is
+
+> **CLOSED 2026-09-17 (decision #75).** Items 1–3 are authored, and item 4's dowels bill
+> wherever they are authored as role `dowels`: the three retaining stems and the eight moment
+> columns. The rest of this section is the record of the gap as it stood.
+> 1. Basement horizontals: `_B8_STEEL` / `_B12_STEEL`, three #4 rows each
+>    (`notes/basement_wall_horizontal_steel.md` §1–§2).
+> 2. `GARAGE_ICF_6`: `_ICF_STEM_STEEL`, #4 @ 16" each way; `MasonrySpec.rebar_spacing` retired
+>    (same note, §3).
+> 3. `SL-M-DECK`: the BuildDeck row's schedule, with the rib module read off detail sheet 5E
+>    (`params/main_deck.py`).
+> 4. Dowels: L-bars, hooked below and lapped class B above (`rebar_layout_basis.md` §3). The
+>    plain pours in item 5 and 6 are unchanged, and `W-SG-ARCH` joins §7's plain-by-design list.
 
 Every item here is a **modelling** gap, not a design one. The steel exists in the building;
 the model has nowhere to state it, or states it in a form nothing can read.
@@ -369,6 +444,10 @@ not modelled anywhere.
 
 ## 5. What has to happen before the cut
 
+> **2026-09-17:** the first three bullets are done (§4). The re-run of §3 lands at
+> $7,067–9,086 and the gate is held closed by decision, not by that figure. What remains is
+> the cut itself, below, whenever it is chosen.
+
 In order, and the first is most of the money:
 
 - author horizontal T&S steel on the basement walls (and the retaining walls already have
@@ -411,8 +490,13 @@ Three independent mechanical checks. Two are already runnable.
 2. **Quantities must be identical.** Same two refs, `haus takeoff --csv`, `diff`. The only
    permitted new rows are `reinforcement:*`. Anything else moving means an assembly-naming
    pass silently re-grouped a pour.
-3. **This note.** `tests/test_rebar_backout.py` pins §1's tonnage and §3's verdict, so the
-   day the tonnage rises past the gate a test says so out loud.
+3. **This note.** `tests/test_rebar_backout.py` pins §1's rows (pieces and pounds) and §3's
+   closed-by-decision gate. Since 2026-09-17 the gate is a constant, not a dollar comparison
+   (decision #75 D14): the test fails when someone prices `[reinforcement]` or flips
+   `[rebar_inclusive]`, not when authoring moves the tonnage.
+4. **The layout.** `tests/test_rebar_layout_oracle.py` reproduces three elements of §1 bar for
+   bar against `rebar_layout_basis.md`, and `test_rebar_layout_vs_area.py` holds every spaced
+   role to within a bar of `area / spacing`.
 
 ---
 
@@ -438,6 +522,12 @@ gap and authors steel to close it.
   `DECK_CAP_MIX`'s plastic-shrinkage-only micro-monofilament. Control joints are still
   required on that slab and are still not modelled anywhere — that IS a gap, and it is a
   jointing gap, not a steel one.
+
+- **`W-SG-ARCH`, the court's buried grade-beam strut.** Plain by design for a 100-year life:
+  a soil-bedded compression member (ACI 318-19 §14.1.3) sitting in wet bedding stone, where
+  embedded-steel corrosion is the main long-term deterioration mode and a bar that does no
+  structural work is only a place for rust to start. §8 of
+  `sunken_garden_court_free_body.md` grades it plain and says why it stays that way.
 
 So S-100's reinforcement schedule prints the walls, the retaining footings and the column
 cages that carry bar, and prints nothing for the pours above, correctly. What it must not do

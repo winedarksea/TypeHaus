@@ -719,6 +719,7 @@ WASTE_IN_QUANTITY = {
     "sheet_goods": "takeoff/framing.py + takeoff/glazing.py (`sheets_4x8` ceiling)",
     "floor_finishes": "takeoff/finishes.py::_WASTE",
     "wood_surfaces": "takeoff/wood_surfaces.py::_WASTE",
+    "reinforcement": "resolve/rebar (cut length = placed + laps + hooks, by counted piece)",
 }
 
 

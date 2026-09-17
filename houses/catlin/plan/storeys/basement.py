@@ -330,16 +330,21 @@ NODES = [
 # what `takeoff/reinforcement.py` bills, and `integrity.reinforcement_spec_agrees` raises an
 # ERROR if they ever drift apart.
 #
-# ** VERTICAL ONLY, AND THAT IS A 1:1 MIGRATION RATHER THAN A DESIGN. ** These walls have
-# horizontal temperature-and-shrinkage steel in reality and this house has never stated any,
-# so none is invented here: adding a schedule nobody authored would put tonnage into the
-# estimate on my judgement instead of on a decision. The gap is named in
-# `notes/rebar_backout.md`, where it is part of why the billed tonnage falls short of the
-# allowance register's ~5 tons.
+# Horizontals: IRC Table R404.1.2(1) places ROWS of #4, not a spacing, so `count` is rows —
+# top − 6", mid-height and 6" off the base (decision #75 D8; notes/basement_wall_horizontal_
+# steel.md §1). Verticals stay first: `retaining_basis.bar_for_roles` reads the first entry.
 _B8_STEEL = ReinforcementSpec(
-    bars=(BarSpec(role="vertical", bar=5, spacing=inch(41.0)),),
+    bars=(BarSpec(role="vertical", bar=5, spacing=inch(41.0)),
+          BarSpec(role="horizontal", bar=4, count=3)),
     cover=inch(2.0),
-    source="IRC Table R404.1.2(8); verbatim from the vertical_reinforcement string beside it",
+    source="IRC R404.1.2(8) verticals (the string beside it); R404.1.2(1) horizontal rows",
+)
+# The 12" east walls read NR for verticals (R404.1.2(8) at 12"/45/8'/7'), and R404.1.2(1)'s
+# horizontal rows apply regardless (notes/basement_wall_horizontal_steel.md §2).
+_B12_STEEL = ReinforcementSpec(
+    bars=(BarSpec(role="horizontal", bar=4, count=3),),
+    cover=inch(2.0),
+    source="IRC Table R404.1.2(1) horizontal rows; verticals NR per R404.1.2(8)",
 )
 
 WALLS = [
@@ -564,12 +569,14 @@ WALLS = [
                    end_node="N-B-E1", assembly="BASEMENT_12",
                    alignment=face("concrete-ext"),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
-                   lateral_support="top_and_bottom"),
+                   lateral_support="top_and_bottom",
+                   reinforcement=_B12_STEEL),
     FoundationWall(uid="CBW105AAAA", tag="W-B-E2", start_node="N-B-E1",
                    end_node="N-B-NE", assembly="BASEMENT_12",
                    alignment=face("concrete-ext"),
                    top_elevation=inch(-13.4375), bottom_elevation=inch(-109.4375),
-                   lateral_support="top_and_bottom"),
+                   lateral_support="top_and_bottom",
+                   reinforcement=_B12_STEEL),
     FoundationWall(uid="CBW106AAAA", tag="W-B-N1", start_node="N-B-NE",
                    end_node="N-B-N1", assembly="BASEMENT_8",
                    alignment=face("concrete-ext"),

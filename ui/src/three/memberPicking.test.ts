@@ -1,7 +1,8 @@
 import * as THREE from "three";
-import type { Member, Model } from "../model/types";
+import type { Member, Model, RebarBar, RebarSet } from "../model/types";
 import { isMemberUid, locateMember, memberUid, parseMemberUid } from "../model/memberIdentity";
 import { buildMembers } from "./members";
+import { buildRebarMeshes, isStraightBar, tubePath } from "./rebar";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 import { seatedProfileVertices, TRIANGLES_PER_MEMBER_BOX } from "./memberBox";
 import {
@@ -218,6 +219,62 @@ function checkLocateMemberAgainstTheModel() {
     "A knee brace with no kind on the record still resolves as a brace");
 }
 
+function bar(key: string, path: [number, number, number][], closed: boolean): RebarBar {
+  const zs = path.map((p) => p[2]);
+  return {
+    key, parent_uid: "FT1", category: "rebar", profile: "#4", shape: "bar",
+    width_m: 0.0127, depth_m: 0.0127, p0: [path[0][0], path[0][1]],
+    p1: [path[path.length - 1][0], path[path.length - 1][1]],
+    z0_m: Math.min(...zs), z1_m: Math.max(...zs), length_m: 1, path, closed,
+    rebar: { role: closed ? "ties" : "vertical", bar: 4, coating: "hdg-a767", spacing_in: 12,
+      piece: 1, pieces: 1, placed_m: 1, lap_m: 0, hook_m: 0, cut_m: 1, hook_kinds: [],
+      weight_lb: 0.67, note: null },
+  };
+}
+
+// A hoop is one closed tube among many in a merged mesh: a ray through its side must resolve
+// to THAT hoop — not its neighbour, and not the host footing.
+function checkRebarHoopPickResolvesToOneHoop() {
+  const square = (x0: number, z: number): [number, number, number][] =>
+    [[x0, 0, z], [x0 + 0.3, 0, z], [x0 + 0.3, 0.3, z], [x0, 0.3, z]];
+  const hoopA = bar("PT-1/ties/001", square(0, 0.5), true);
+  const hoopB = bar("PT-1/ties/002", square(1, 0.8), true);
+  const dowel = bar("PT-1/dowel/001", [[2, 0, 0], [2, 0, 1], [2.3, 0, 1]], false);
+  const straight = bar("PT-1/vertical/001", [[3, 0, 0], [3, 0, 2]], false);
+  assert(isStraightBar(straight) && !isStraightBar(hoopA) && !isStraightBar(dowel),
+    "Two-point open bars instance; hoops and hooked bars are tubes");
+  assert(tubePath(hoopA).length === 5 && tubePath(hoopA)[4].join() === hoopA.path[0].join(), "A closed loop repeats its first point");
+
+  const sets = [{ uid: "FT1", tag: "PT-1", storey: "L1", host_kind: "Post", scope: "column",
+    trades: ["concrete"], provenance: null, members: [hoopA, hoopB, dowel, straight] }] as RebarSet[];
+  const meshes = buildRebarMeshes(sets, CENTER, "schematic");
+  const tube = meshes.find((mesh) => !(mesh instanceof THREE.InstancedMesh));
+  const instanced = meshes.find((mesh) => mesh instanceof THREE.InstancedMesh);
+  assert(tube && instanced && meshes.every(carriesMemberIdentity), "Both buckets carry identity");
+  assert(resolveMemberPickUid(instanced, 0, null) === "FT1::PT-1/vertical/001",
+    "The straight bar is instance 0");
+
+  const hits = (x: number) => {
+    const ray = new THREE.Raycaster(new THREE.Vector3(x, 3, 0), new THREE.Vector3(0, -1, 0));
+    tube.updateMatrixWorld(true);
+    return ray.intersectObject(tube, false)
+      .map((hit) => resolveMemberPickUid(tube, hit.instanceId, hit.faceIndex));
+  };
+  const throughA = hits(0.15);
+  assert(throughA.length > 0 && throughA.every((uid) => uid === "FT1::PT-1/ties/001"),
+    `A ray through hoop A resolves to hoop A alone: ${throughA.join()}`);
+  const throughB = hits(1.15);
+  assert(throughB.length > 0 && throughB.every((uid) => uid === "FT1::PT-1/ties/002"),
+    `…and one through hoop B to hoop B alone: ${throughB.join()}`);
+
+  const model = { walls: [], roofs: [], floors: [], stairs: [] } as unknown as Model;
+  const located = locateMember(model, "FT1::PT-1/ties/002", sets);
+  assert(located?.bar === hoopB && located.ownerKind === "rebar" && located.ownerTag === "PT-1",
+    "The rebar pool resolves a bar uid to its bar and host");
+  assert(locateMember(model, "FT1::PT-1/ties/002") === null,
+    "Before the lazy payload lands, a bar uid resolves to nothing");
+}
+
 export function runMemberPickingTests() {
   checkMemberUidScheme();
   checkInstancedBucketResolvesPerStud();
@@ -228,4 +285,5 @@ export function runMemberPickingTests() {
   checkSkippedMemberDoesNotShiftIdentities();
   checkHighlightOutlineMatchesTheMember();
   checkLocateMemberAgainstTheModel();
+  checkRebarHoopPickResolvesToOneHoop();
 }

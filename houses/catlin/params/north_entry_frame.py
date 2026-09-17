@@ -426,6 +426,20 @@ ENTRY_PIER_CAGE = ReinforcementSpec(
     source='8" cage, (4) #5 + #3 rings @ 10", one of twelve house-wide; notes/north_entry_piers.md §6 — the ACI 318-19 §10.6.1.1 1% floor, four bars per §10.7.3.1(b)',
 )
 
+#: The four piers that are a lateral system (fixed-base moment columns, `deck_post`'s bending
+#: records) take the cage plus a #5 dowel at each vertical into their pad (decision #75 D6).
+ENTRY_MOMENT_CAGE = ReinforcementSpec(
+    bars=(
+        BarSpec(role="vertical", bar=5, count=4),
+        BarSpec(role="ties", bar=3, spacing=inch(10.0)),
+        BarSpec(role="dowels", bar=5, note="one per vertical, hooked into the pad"),
+    ),
+    cover=inch(2.0),
+    lap_class="B",
+    source="ENTRY_PIER_CAGE plus its base dowels; notes/north_entry_piers.md §6",
+)
+_MOMENT_PIERS = frozenset({"PT-BW-E", "PT-BW-RE", "PT-BW-GE", "PT-BW-RNE"})
+
 PIERS = []
 def _pad_outline(x_ft, y_ft, side_in, along_in=None):
     """A square (or rectangle) pad footprint centred on the pier, in plan.
@@ -492,7 +506,7 @@ for _uid, _tag, _x, _height, _top in (
         # that is why these bars are here -- the 1% floor is a creep/shrinkage/accidental-
         # moment rule, indifferent to load. Galvanized, house-wide (EXPOSED_MIX, A767).
         vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
-        reinforcement=ENTRY_PIER_CAGE,
+        reinforcement=ENTRY_MOMENT_CAGE if _tag in _MOMENT_PIERS else ENTRY_PIER_CAGE,
         supported_by=f"PD-BW-{_tag.split('-')[-1]}"))
     FOOTINGS.append(Pad(
         uid=f"BWF{_uid[4:8]}AA", tag=f"PD-BW-{_tag.split('-')[-1]}",
@@ -560,7 +574,7 @@ for _uid, _tag, _x, _pad_in, _top in (
         uid=_uid, tag=_tag, position=pt(ft(_x), ft(GARAGE_SEAT_Y_FT)), size="12 round",
         height=ft(_top - GARAGE_FOOTING_TOP_FT), assembly="PIER_CONCRETE_12",
         vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
-        reinforcement=ENTRY_PIER_CAGE,
+        reinforcement=ENTRY_MOMENT_CAGE if _tag in _MOMENT_PIERS else ENTRY_PIER_CAGE,
         supported_by=f"PD-BW-{_tag.split('-')[-1]}"))
     # ** THESE THREE LAP THE GARAGE STRIP FOOTING, AND THE LAP IS THE JOINT. ** They are cast
     # at -7'-0" on `FT-GF-S1`/`-S3`'s own plane, in the same excavation and at the same time,

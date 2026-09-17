@@ -53,8 +53,8 @@ export function runViewUrlTests(): void {
   assert(parseViewParams("?preset=FRAMER&show=roofing").visible?.join() === "roofing",
     "and so does an explicit show");
 
-  assert(parseViewParams("?group=concrete_masonry").visible?.join() === "concrete,masonry",
-    "a group id expands to its trades");
+  assert(parseViewParams("?group=concrete_masonry").visible?.join() === "concrete,masonry,concrete:rebar",
+    "a group id expands to its trades and their facets");
   assert(parseViewParams("?group=mep").visible?.includes("drainage"),
     "a role preset name is a group too");
 

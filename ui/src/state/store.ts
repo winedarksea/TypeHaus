@@ -19,7 +19,7 @@ import { loadBundledHouse, pickHouseDirectory } from "../engine/openHouse";
 // Catlin house in the in-browser pyodide engine by default. `haus serve` builds leave this unset
 // and keep the HttpEngineClient default.
 const PWA_STANDALONE = import.meta.env.VITE_PWA_STANDALONE === "1";
-import type { Model, Severity } from "../model/types";
+import type { Model, RebarSet, Severity } from "../model/types";
 import {
   allVisibleTrades, defaultVisibleTrades, onlyTrades, type VisibilityKey, type VisibleTrades,
 } from "../model/tradeVisibility";
@@ -72,6 +72,10 @@ export interface StoreState extends MutationActions, SiteSlice {
   visibleTrades: VisibleTrades;
   // Level keys (→ model/levels.ts) whose storeys the 3D view hides. Empty = every level.
   hiddenLevels: string[];
+  // The lazily fetched bars (→ engine/rebarCache.ts), for the Inspector to resolve a picked
+  // bar. Null until the Rebar chip first turns on.
+  rebarSets: RebarSet[] | null;
+  setRebarSets: (sets: RebarSet[] | null) => void;
   // How solid the 3D site sheet is drawn, 0..1. Independent of `visibleTrades.earth`, which
   // is still what turns the ground off entirely: this only says how much of the basement the
   // ground you *are* showing lets through, from the translucent default up to real dirt.
@@ -192,6 +196,8 @@ export const useStore = create<StoreState>((set, get, store) => ({
   labelMode: "hover",
   visibleTrades: defaultVisibleTrades(),
   hiddenLevels: [],
+  rebarSets: null,
+  setRebarSets: (rebarSets) => set({ rebarSets }),
   earthOpacity: DEFAULT_EARTH_OPACITY,
   detailView: "none",
   documentsTab: "drawings",

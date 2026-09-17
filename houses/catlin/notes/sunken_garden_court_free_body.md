@@ -1110,6 +1110,18 @@ the tag and never asks where the pipe goes. `_SG_DRYWELL_TOP` is `_SG_WALL_BED_B
 the two lead runs `FD-SG-LEAD-W/E` carry the ring into it at that invert, and `FB-SG-ARCH`
 feeds the column through its side 9" further down instead of standing on it.
 
+### W-SG-ARCH stays plain, by design (2026-09-17)
+
+The strut carries no steel and none is to be added. It is a soil-bedded member in pure
+compression: §8's check is **plain concrete** at φ 0.60, which ACI 318-19 §14.1.3 permits for
+a member continuously supported by soil, and every term above passes without a bar. The
+reason to keep it that way is durability rather than cost. This beam is buried in wet
+bedding stone at the bottom of a drained court for the life of the house, and corrosion of
+embedded steel is the dominant long-term deterioration mode of buried concrete: a bar that
+does no structural work can only ever be a place for rust to start. With no steel there is
+nothing to corrode, and the 100-year life rests on the concrete alone. `Beam.reinforcement`
+exists for a future cast beam that bends; this one is left `None` deliberately.
+
 ---
 
 ## 9. What this note does NOT do

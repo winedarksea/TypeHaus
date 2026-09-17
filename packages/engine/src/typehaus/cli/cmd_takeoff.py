@@ -212,14 +212,19 @@ def takeoff(
             console.print(f"  {item['category']}{assembly}: {item['count']} × / "
                           f"{item['volume_cubic_yards']} cy")
     if payload["reinforcement"]:
-        console.print("[bold]Reinforcing steel (by the pound, NET of laps)[/bold]")
+        console.print("[bold]Reinforcing steel (cut length = placed + laps + hooks)[/bold]")
         total_lb = 0.0
+        pieces = 0
         for item in payload["reinforcement"]:
             coating = f" {item['coating']}" if item["coating"] else ""
             total_lb += float(item["weight_lb"])
-            console.print(f"  {item['bar']}{coating} in {item['scope']}: "
-                          f"{item['length_ft']} LF / {item['weight_lb']} lb")
-        console.print(f"  [dim]total {total_lb:,.0f} lb ({total_lb / 2000.0:.2f} ton)[/dim]")
+            pieces += int(item["pieces"])
+            console.print(f"  {item['bar']}{coating} in {item['scope']}: {item['pieces']} pc / "
+                          f"{item['length_ft']} LF cut ({item['placed_length_ft']} placed + "
+                          f"{item['lap_length_ft']} lap + {item['hook_length_ft']} hook) / "
+                          f"{item['weight_lb']} lb")
+        console.print(f"  [dim]total {pieces:,} pieces, {total_lb:,.0f} lb "
+                      f"({total_lb / 2000.0:.2f} ton)[/dim]")
     if payload["construction_returns"]:
         console.print("[bold]Construction returns (#45 pre-framing laps)[/bold]")
         for item in payload["construction_returns"]:

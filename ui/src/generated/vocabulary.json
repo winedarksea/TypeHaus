@@ -33,6 +33,7 @@
     "landing": "stairs",
     "landing_framing": "stairs",
     "newel": "stairs",
+    "rebar": "concrete",
     "ridge_cap": "roofing",
     "riser": "stairs",
     "soffit": "siding",

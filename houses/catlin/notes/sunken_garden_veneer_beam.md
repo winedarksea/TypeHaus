@@ -204,6 +204,41 @@ The redistribution argument depends on the slab bearing being real. It is carrie
 unresolved item rather than assumed, because a slab that is poured short of the beam's face
 takes the twist from compatibility back to equilibrium.
 
+### 4a. The steel §4 owes, sized (addendum 2026-09-17)
+
+§4 established that the torsion is above ACI 318-19's threshold and below cracking, so the
+beam needs §9.6.4's **minimum** torsional reinforcement and no more. Section 12" × 17 3/4",
+cover 2", #3 hoops, f'c 5,000, fy = fyt = 60,000.
+
+```
+hoop centreline  x1 = 12 − 2(2) − 0.375   = 7.625"     y1 = 17.75 − 4 − 0.375 = 13.375"
+ph = 2 (7.625 + 13.375)                   = 42.0"
+§9.7.6.3.3  s ≤ min(ph/8, 12")            = min(5.25, 12) = 5.25"    -> #3 closed hoops @ 5"
+§9.6.4.2    (Av + 2At)/s ≥ max(0.75 √f'c bw/fyt, 50 bw/fyt)
+                         = max(0.01061, 0.01000) = 0.0106 in²/in
+            provided 2 legs × 0.11 / 5    = 0.0440 in²/in             ✓
+§9.6.4.3    Al,min = 5 √f'c Acp / fy − (At/s) ph (fyt/fy)
+            At/s at its floor 25 bw/fyt   = 0.0050 in²/in   (the conservative reading:
+                                             no torsion is designed, so none is credited)
+                   = 5 × 70.711 × 213 / 60,000 − 0.0050 × 42.0 = 1.255 − 0.210 = 1.045 in²
+```
+
+**Where it goes (§9.7.5.1–.2).** Longitudinal torsion steel runs inside the hoops, one bar in
+each corner, at no more than 12" around the perimeter, each bar at least 0.042 s = 0.21" and
+not smaller than #3. The 3 #5 top and 3 #5 bottom already occupy the corners, but their
+centres are 15.0625 − 2.6875 = **12.375" apart** vertically — over 12" — so each side face
+takes **one #4 at mid-depth**. Total longitudinal steel against the combined demand, flexure
+plus torsion (§9.5.4.3 permits combining them):
+
+```
+required   0.639 (§3, flexural minimum) + 1.045 (Al,min)   = 1.684 in²
+provided   3 #5 + 3 #5 + 2 #4 = 0.93 + 0.93 + 0.40        = 2.260 in²   ✓
+```
+
+Authored on `W-SG-BRKBM` (`params/sunken_garden.py`): `top-y` 3 #5, `bottom-y` 3 #5,
+`ties` #3 @ 5" (closed, 135° hooks), `horizontal` #4 count 1 per face (`layers=2`). The
+corner continuity into the side walls (§5.2) is still the engineer's.
+
 ## 5. What is NOT graded here, and what needs a seal
 
 1. **The veneer ties — still engineered, but for a different reason since 2026-09-05.**

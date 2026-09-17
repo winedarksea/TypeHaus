@@ -37,9 +37,12 @@ def _solid(row: Row) -> str:
 
 
 def _bar(row: Row) -> str:
-    length = row.get("length_ft")
-    count = row.get("count")
-    return f"{length} LF over {count} element(s)" if length is not None else ""
+    """Pieces and cut length, laps and hooks in (decision #75): what a fabricator ships."""
+    length, pieces = row.get("length_ft"), row.get("pieces")
+    if length is None:
+        return ""
+    return (f"{pieces} pc, {length} LF cut incl. {row.get('lap_length_ft')} LF laps + "
+            f"{row.get('hook_length_ft')} LF hooks")
 
 
 def _runs(row: Row) -> str:

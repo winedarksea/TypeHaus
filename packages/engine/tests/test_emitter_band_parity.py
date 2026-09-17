@@ -297,7 +297,8 @@ def test_the_glb_draws_every_body_layer_of_every_wall(catlin_model_ro):
     # so the trade set is what picks the body out: the members are exactly ("framing",).
     nodes = {n["extras"]["uid"]: n for n in gltf["nodes"]
              if n.get("extras", {}).get("kind") == "wall"
-             and n["extras"].get("trades") != ["framing"]}
+             and n["extras"].get("trades") != ["framing"]
+             and "facet" not in n["extras"]}  # a wall's rebar is its own facet node
     # The body node also carries the wall's closure bands: the roof resolves them (only the
     # roof planes say how high each layer climbs) but they are this wall's own skin carried
     # past the top plate, and they draw with the wall so the walls toggle keeps them. Their

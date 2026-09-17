@@ -2,7 +2,7 @@
 // (server/app.py). Same-origin relative paths — the Vite dev proxy and the wheel-served
 // production build both route these to the engine (→ 21 §EngineClient boundary).
 
-import type { Finding, Model } from "../model/types";
+import type { Finding, Model, RebarPayload } from "../model/types";
 import {
   type BuildResult,
   type CostsOp,
@@ -85,6 +85,12 @@ export class HttpEngineClient implements EngineClient {
     const res = await fetch(this.url("/bom"));
     if (!res.ok) throw new EngineError(await readError(res), res.status);
     return (await res.json()) as EngineBom;
+  }
+
+  async getRebar(): Promise<RebarPayload> {
+    const res = await fetch(this.url("/model/rebar"));
+    if (!res.ok) throw new EngineError(await readError(res), res.status);
+    return (await res.json()) as RebarPayload;
   }
 
   async getCosts(): Promise<EngineCosts> {

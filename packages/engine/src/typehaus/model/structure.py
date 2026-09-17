@@ -493,6 +493,9 @@ class Beam(Element):
     # as ``FloorSystem.top_protection``; see that docstring. A built-up beam is the member
     # that wants it most: every ply seam is an open joint running the beam's whole length.
     top_protection: str | None = None
+    #: The steel of a CAST beam (``resolve/assembly_material.is_cast_beam``); a wood beam
+    #: carrying one is an integrity finding. Top/bottom roles run along the beam (``-y``).
+    reinforcement: ReinforcementSpec | None = None
 
 
 @register_element

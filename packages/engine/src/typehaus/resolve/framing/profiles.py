@@ -22,6 +22,7 @@ from dataclasses import dataclass
 from functools import lru_cache
 
 from typehaus.model.assembly import FramingSpec
+from typehaus.model.rebar import BARS
 from typehaus.quantities import inch
 from typehaus.resolve.framing.tables import LUMBER_ACTUAL
 from typehaus.resolve.geometry import circle_outline
@@ -43,6 +44,7 @@ _FALLBACK_ACTUAL_IN = (1.5, 5.5)
 # emits this literal for headers wider than the prescriptive table covers).
 _ENGINEERED_LVL_ACTUAL_IN = (3.5, 11.25)
 
+_RE_BAR = re.compile(r"^#(?P<n>\d{1,2})$")
 _RE_MULTI_LVL = re.compile(
     r"^(?P<plies>\d+)-(?P<width>\d+(?:\.\d+)?)x(?P<depth>\d+(?:\.\d+)?)\s+LVL$"
 )
@@ -244,6 +246,13 @@ def cross_section(profile: str) -> CrossSection:
     if ":" in text:
         text = text.split(":", 1)[0]
 
+    if match := _RE_BAR.match(text):
+        # A deformed bar (``#5``): its nominal diameter, ASTM A615 (``model/rebar.BARS``).
+        size = BARS.get(int(match["n"]))
+        if size is not None:
+            d = inch(size.diameter_in).meters
+            return CrossSection(shape="bar", width_m=d, depth_m=d)
+
     if match := _RE_MULTI_LVL.match(text):
         plies = int(match["plies"])
         ply_width = float(match["width"])
@@ -372,7 +381,7 @@ def cross_section(profile: str) -> CrossSection:
 #: every ``_RE_*`` in this module is accounted for on one side or the other.
 _PARSED_PATTERNS = (
     _RE_MULTI_LVL, _RE_SINGLE_LVL, _RE_RIM, _RE_LSL, _RE_DECK, _RE_TJI, _RE_IJOIST,
-    _RE_FLOOR_TRUSS, _RE_ROOF_TRUSS, _RE_ACTUAL, _RE_PANEL, _RE_ROUND, _RE_ANGLE,
+    _RE_FLOOR_TRUSS, _RE_ROOF_TRUSS, _RE_ACTUAL, _RE_PANEL, _RE_ROUND, _RE_ANGLE, _RE_BAR,
 )
 #: The profile strings :func:`cross_section` answers by literal comparison rather than by
 #: pattern. Kept beside the branches that spell them so the two cannot drift apart.
@@ -396,6 +405,8 @@ def parses(profile: str) -> bool:
     Parse-only and total: never raises, never touches the catalog, never mutates.
     """
     text = profile.strip().split(":", 1)[0]
+    if match := _RE_BAR.match(text):
+        return int(match["n"]) in BARS
     if match := _RE_MULTI_NOMINAL.match(text):
         return match["nominal"] in LUMBER_ACTUAL
     if _RE_NOMINAL.match(text):

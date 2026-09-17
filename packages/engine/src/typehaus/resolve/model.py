@@ -15,6 +15,7 @@ from typehaus.model.assembly import Layer
 from typehaus.model.enums import ConditionKind
 from typehaus.model.plan import PlanModel
 from typehaus.resolve.layout_lines import ResolvedLayoutLine
+from typehaus.resolve.rebar.records import ResolvedRebarSet
 
 if TYPE_CHECKING:  # the IR imports this module, so the reference stays type-only
     from typehaus.model.placeables import Mount
@@ -1197,6 +1198,9 @@ class ResolvedModel:
     # final stage so the emitters serialize rather than re-derive it. Optional because
     # ``resolve_preview`` (the drag-overlay path) skips the stage.
     geometry: GeometryModel | None = None
+    # Laid-out reinforcing bars, one set per reinforced host (→ resolve/rebar). Deliberately
+    # NOT framed members: nothing that walks ``all_members()`` may see a bar.
+    rebar: list[ResolvedRebarSet] = field(default_factory=list)
     # Per-stage resolve timings in milliseconds (Phase 0 instrumentation). Not serialized
     # as source; surfaced to the UI via the `perf` payload for measurement, not correctness.
     timings: dict[str, float] = field(default_factory=dict)

@@ -165,6 +165,11 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         findings.extend(resolve_connector_markers(model))
     with _stage("conditions"):
         _assembly_change_conditions(model)
+    with _stage("rebar"):
+        # After every host (walls, openings, solids) and before geometry, which ignores it.
+        from typehaus.resolve.rebar.build import resolve_rebar
+
+        model.rebar = resolve_rebar(model)
     with _stage("geometry"):
         # Last: every earlier stage's records are inputs to it. The emitters read this
         # instead of re-deriving solids from the records themselves.

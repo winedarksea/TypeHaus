@@ -11,6 +11,10 @@ import { RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/p
 import { createViewportBackground, viewportBackgroundCss } from "../three/viewportBackground";
 import { disposeGroup } from "../three/members";
 import { locateMember } from "../model/memberIdentity";
+import type { RebarSet } from "../model/types";
+import { loadRebar, rebarKeyOf } from "../engine/rebarCache";
+import { createRebarLayer } from "../three/builders/rebar";
+import { buildRebarHighlight } from "../three/rebar";
 import { buildMemberHighlight, resolveMemberPickUid } from "../three/memberPicking";
 import {
   clampDollyRadius, frameRadiusForBounds, normalizedWheelDeltaPx, pinchDollyRadius,
@@ -70,6 +74,8 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
   [model, hiddenLevels]);
   const earthOpacity = useStore((s) => s.earthOpacity);
   const client = useStore((s) => s.client);
+  const rebarOn = visibleTrades["concrete:rebar"];
+  const setRebarSets = useStore((s) => s.setRebarSets);
   const { theme } = useTheme();
   const mountRef = useRef<HTMLDivElement>(null);
   const compassRef = useRef<SVGSVGElement>(null);
@@ -118,6 +124,19 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
       .catch(() => { /* keep the model.json baseline */ });
     return () => { cancelled = true; };
   }, [model, threeMode, theme, client]);
+
+  // Bars are fetched the first time the Rebar chip is on, and again per model revision while
+  // it stays on (→ engine/rebarCache.ts). Off never unloads: the facet hides them.
+  useEffect(() => {
+    if (!model || !rebarOn) return;
+    let cancelled = false;
+    loadRebar(client, model).then((sets) => {
+      if (cancelled) return;
+      setRebarSets(sets);
+      api.current?.setRebar(model, sets);
+    }).catch(() => { /* no bars: the chip shows nothing, the rest of the scene stands */ });
+    return () => { cancelled = true; };
+  }, [model, rebarOn, client, setRebarSets]);
 
   useEffect(() => {
     api.current?.highlight(selection.uid);
@@ -193,6 +212,7 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
 interface SceneApi {
   setModel: (m: Model, mode: "nordic" | "schematic", palette: ResolvedNordicPalette, preserveView: boolean) => void;
   setWholeHouseGlb: (blob: Blob) => void;
+  setRebar: (model: Model, sets: RebarSet[]) => void;
   setPalette: (palette: ResolvedNordicPalette) => void;
   pan: (direction: PanDirection) => void;
   zoomBy: (factor: number) => void;
@@ -282,12 +302,17 @@ function createScene(
   // The raycast set and the uid -> materials index, together: the async furniture loader
   // in populateScene *replaces* the pick list, so it has to be reachable by reference.
   const registry: SceneRegistry = { picks: [], byUid: new Map() };
+  // The lazily fetched bars, remembered with the model they were fetched for so a rebuild of
+  // the SAME model (a theme flip) redraws them and a new revision drops them until refetched.
+  const rebarLayer = createRebarLayer(content, registry);
+  let rebar: { key: string; sets: RebarSet[] } | null = null;
   let sceneGeneration = 0;
   let highlighted: string | null = null;
   // What `highlight` needs to rebuild a member outline: the model the scene was built from and
   // the plan centre it was projected around.
   let highlightSourceModel: Model | null = null;
   let highlightPlanCenter: PlanCenter = [0, 0];
+  let sceneMode: "nordic" | "schematic" = "nordic";
   let activePalette = RESOLVED_NORDIC_PALETTE.light;
   // Trade visibility lives on the meshes, which setModel rebuilds — unlike the trade groups,
   // which persist. Remembering the filter here is what lets a rebuild land with the user's
@@ -566,6 +591,7 @@ function createScene(
       tradeGroups[trade].clear();
     }
     clearMemberHighlight();
+    rebarLayer.clear();
     registry.picks = [];
     registry.byUid.clear();
     highlighted = null;
@@ -682,12 +708,15 @@ function createScene(
     if (!preserveView) target = new THREE.Vector3(0, 1.2, 0);
 
     const center = planCenterOf(m);
+    if (rebar && rebar.key !== rebarKeyOf(m)) rebar = null;
+    sceneMode = mode;
     highlightSourceModel = m;
     highlightPlanCenter = center;
     populateScene({
       tradeGroups, model: m, center, mode, palette, earthOpacity, registry,
       generation: sceneGeneration, currentGeneration: () => sceneGeneration, requestRender,
       tradeVisible: (trades, storey) => objectVisible({ trades, storey }, visibleTrades, hiddenStoreys),
+      rebar: { layer: rebarLayer, sets: rebar?.sets ?? null },
     });
 
     // Frame the building bounds (earth excluded, or the site sheet dominates), including its
@@ -728,6 +757,15 @@ function createScene(
     });
   };
 
+  const setRebar = (m: Model, sets: RebarSet[]) => {
+    rebar = { key: rebarKeyOf(m), sets };
+    // A fetch that resolves after the next model landed waits for its own refetch.
+    if (!highlightSourceModel || rebarKeyOf(highlightSourceModel) !== rebar.key) return;
+    rebarLayer.show(sets, highlightPlanCenter, sceneMode);
+    applyVisibility(content, visibleTrades, hiddenStoreys);
+    highlight(highlighted);
+  };
+
   const setPalette = (palette: ResolvedNordicPalette) => {
     activePalette = palette;
     applyBackground(palette);
@@ -745,8 +783,11 @@ function createScene(
         (mat as THREE.MeshStandardMaterial).emissive?.set(activePalette.highlight);
     // A member uid names one stick inside a shared bucket; outline it rather than tinting the
     // bucket's material, which would light every stud in the wall.
-    const located = uid && highlightSourceModel ? locateMember(highlightSourceModel, uid) : null;
-    if (located) {
+    const located = uid && highlightSourceModel
+      ? locateMember(highlightSourceModel, uid, rebar?.sets) : null;
+    if (located?.bar) {
+      memberHighlightGroup.add(buildRebarHighlight(located.bar, highlightPlanCenter, activePalette.highlight));
+    } else if (located) {
       const outline = buildMemberHighlight(located.member, highlightPlanCenter, activePalette.highlight);
       if (outline) memberHighlightGroup.add(outline);
     }
@@ -777,6 +818,7 @@ function createScene(
   return {
     setModel,
     setWholeHouseGlb,
+    setRebar,
     setPalette,
     pan,
     zoomBy,
