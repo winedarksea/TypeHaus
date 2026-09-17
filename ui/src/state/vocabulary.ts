@@ -9,6 +9,8 @@
 import vocabulary from "../generated/vocabulary.json";
 
 export type Tool = "select" | "wall" | "opening" | "placeable" | "room" | "stair" | "dimension" | "measure";
+// Room tool: two taps draw a walled rectangle, or one tap claims an enclosed loop.
+export type RoomMode = "rect" | "claim";
 // Task-rail groups (Phase 2): high-level buckets whose flyout palettes expand to the
 // concrete Tools above. `null` = no flyout open.
 export type ToolGroup = "select" | "build" | "openings" | "components" | "measure";

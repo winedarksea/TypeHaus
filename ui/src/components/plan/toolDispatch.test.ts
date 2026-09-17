@@ -3,7 +3,7 @@
 // a function call — no canvas, no store, no engine.
 import type { MutableRefObject } from "react";
 import type { Vec2 } from "../../model/types";
-import type { MeasureDraft } from "./canvasTypes";
+import type { MeasureDraft, RoomRectDraft } from "./canvasTypes";
 import { dispatchTap, type TapDeps } from "./toolDispatch";
 import { thumbScale } from "./PlaceableGlyph";
 
@@ -75,8 +75,48 @@ function runPlaceableDispatchTests() {
   if (Math.abs(thumbScale(null, 48, 4) - 40 / 0.45) > 1e-9) throw new Error("thumbScale falls back to the default footprint");
 }
 
+// The Room tool: rect mode is two snapped taps and one commit; claim mode opens the popover.
+function roomHarness(roomMode: "rect" | "claim") {
+  const log = { committed: [] as [Vec2, Vec2][], placements: [] as unknown[] };
+  const state: { roomDraft: RoomRectDraft | null } = { roomDraft: null };
+  const noop = () => {};
+  const tap = (world: Vec2) => dispatchTap({
+    tool: "room", offline: false, scale: 100, placement: null, draft: null, measure: null,
+    shiftRef: { current: false }, wallsOnStorey: [], stairsOnStorey: [], warningMarkers: [],
+    snapNodes: new Map(), tolM: 0.2, gridM: 1, activeStorey: "main", project: (p: Vec2) => p,
+    select: noop, toast: noop, setPlacement: (p: unknown) => { if (p) log.placements.push(p); },
+    setDraft: noop, setMeasure: noop, setDimWall: noop, setWallAssemblyPopup: noop,
+    setWarningPopup: noop, setDoorPopup: noop, setWindowPopup: noop,
+    commitWall: async () => {}, commitStair: async () => {},
+    roomMode, roomDraft: state.roomDraft,
+    setRoomDraft: (d: RoomRectDraft | null) => { state.roomDraft = d; },
+    commitRoomRect: async (a: Vec2, b: Vec2) => { log.committed.push([a, b]); },
+  } as unknown as TapDeps, world, [0, 0]);
+  return { log, state, tap };
+}
+
+function runRoomDispatchTests() {
+  const rect = roomHarness("rect");
+  rect.tap([1.1, 0.9]);
+  if (!rect.state.roomDraft || rect.state.roomDraft.start.join() !== "1,1" || rect.log.committed.length !== 0) {
+    throw new Error("Rect mode: the first tap sets a snapped corner and commits nothing");
+  }
+  rect.tap([4.2, 3.1]);
+  const commits = rect.log.committed as [Vec2, Vec2][]; // re-read: the first check narrowed length to 0
+  const corners = commits.map(([p, q]) => `${p.join()}|${q.join()}`).join(";");
+  if (corners !== "1,1|4,3" || rect.state.roomDraft) {
+    throw new Error("Rect mode: the second tap commits both snapped corners and clears the draft");
+  }
+  const claim = roomHarness("claim");
+  claim.tap([2, 2]);
+  if (claim.log.placements.length !== 1 || claim.state.roomDraft || claim.log.committed.length !== 0) {
+    throw new Error("Claim mode: a tap opens the seed popover and draws nothing");
+  }
+}
+
 export function runToolDispatchTests() {
   runPlaceableDispatchTests();
+  runRoomDispatchTests();
   // Tap one anchors, tap two fixes the segment.
   const basic = harness();
   basic.tap([1, 2]);

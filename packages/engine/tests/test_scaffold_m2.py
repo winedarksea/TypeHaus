@@ -98,3 +98,27 @@ def test_scaffolded_house_can_place_furniture(tmp_path: Path):
     reloaded = load_plan(house)
     placed = next(e for e in reloaded.plan.storey_elements("main") if e.tag == tag)
     assert placed.room == "RM-Main"
+
+
+def test_empty_template_loads_and_accepts_a_room(tmp_path: Path):
+    """P2: one blank storey loads clean, and the editor's add flow lands in main.py."""
+    from typehaus.server.state import ProjectState
+
+    house = tmp_path / "blank"
+    scaffold_house(house, "Blank", template="empty")
+    base = load_plan(house)
+    assert base.ok, [f.message for f in base.findings if f.severity.value == "error"]
+    assert [s.tag for s in base.plan.storeys] == ["main"]
+    assert list(base.plan.storey_elements("main")) == []
+
+    state = ProjectState.open(house)
+    state.apply_macro({"macro": "draw_room_rect", "storey": "main", "a": [0.0, 0.0],
+                       "b": [6.0, 5.0], "assembly": "HOUSE_WALL_2X6_WITH_ZIPR",
+                       "occupancy": "living"})
+    state._flush_writes()
+
+    assert "RM-" in (house / "plan" / "storeys" / "main.py").read_text()
+    reloaded = load_plan(house)
+    assert reloaded.ok, [f.message for f in reloaded.findings if f.severity.value == "error"]
+    model, _ = resolve(reloaded.plan)
+    assert len(model.walls) == 4 and len(model.rooms) == 1

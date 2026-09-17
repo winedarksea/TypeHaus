@@ -66,6 +66,9 @@ class PatchOp:
     # of different kinds share one list, so kind alone can't pick it; the delete inverse
     # records the origin list so undo re-adds to exactly the right one.
     hint_list: str | None = None
+    # The storey an ``add`` lands on in memory; without it the fast path guesses from refs,
+    # which misfiles the first element of an empty storey.
+    storey: str | None = None
 
     @staticmethod
     def from_json(raw: dict[str, Any]) -> PatchOp:
@@ -74,11 +77,16 @@ class PatchOp:
             raise ValueError(f"unknown op {op!r} (add|update|delete)")
         if "type" not in raw or "tag" not in raw:
             raise ValueError("op requires 'type' and 'tag'")
+        storey = raw.get("storey")
         return PatchOp(op=op, type=str(raw["type"]), tag=str(raw["tag"]),
-                       fields=dict(raw.get("fields") or {}))
+                       fields=dict(raw.get("fields") or {}),
+                       storey=str(storey) if storey else None)
 
     def to_json(self) -> dict[str, Any]:
-        return {"op": self.op, "type": self.type, "tag": self.tag, "fields": self.fields}
+        out = {"op": self.op, "type": self.type, "tag": self.tag, "fields": self.fields}
+        if self.storey is not None:
+            out["storey"] = self.storey
+        return out
 
 
 # --- field-type introspection ------------------------------------------------

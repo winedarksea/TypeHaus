@@ -86,10 +86,12 @@ from typehaus.source.macros_placeables import (
     set_placeable_mount,
     slide_placeable,
 )
+from typehaus.source.macros_rooms import delete_wall, draw_room_rect
+from typehaus.source.macros_storeys import copy_storey_layout
 from typehaus.source.macros_walls import (
     _opening_param,
     _pending_nodes,
-    _rehost_openings,
+    _rehost_along_wall,
     _rooms_with_moved_boundaries,
     _wall_list,
     draw_wall,
@@ -103,6 +105,7 @@ from typehaus.source.macros_walls import (
 # they are not an invitation to reach for more.
 __all__ = [
     "COLLINEAR_TOL", "MacroError", "ROOM_BOUNDARY_NODE_TOLERANCE_M", "ROTATION_SNAP_DEGREES",
+    "copy_storey_layout", "delete_wall", "draw_room_rect",
     "SNAP_M", "XY", "assign_placeable_room", "attach_placeable", "delete_placeable",
     "detach_placeable",
     "draw_wall", "duplicate_canvas_object", "heal_walls", "move_nodes", "move_opening",
@@ -115,7 +118,7 @@ __all__ = [
     "_floor_openings",
     "_meters", "_next_tag", "_nodes", "_opening_param", "_opening_start_offset",
     "_opening_width", "_openings", "_pending_nodes", "_placeable", "_placeable_type",
-    "_point_expr", "_point_expr_m", "_point_in_polygon", "_project_param", "_rehost_openings",
+    "_point_expr", "_point_expr_m", "_point_in_polygon", "_project_param", "_rehost_along_wall",
     "_rooms", "_rooms_with_moved_boundaries", "_round_len", "_stairs", "_storey_above",
     "_validate_opening_station", "_wall_list", "_walls",
 ]

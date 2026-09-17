@@ -22,7 +22,7 @@ def _dupes(report) -> list:
     return [f for f in report.findings if f.check_id == "integrity.duplicate_catalog_tag"]
 
 
-@pytest.mark.parametrize("house", ["starter", "catlin"])
+@pytest.mark.parametrize("house", ["starter", "empty", "catlin"])
 def test_shipped_houses_have_no_duplicate_catalog_tags(house: str) -> None:
     """The precondition for the library dedupe: both houses are clean *before* any retag."""
     result = load_plan(HOUSES / house)

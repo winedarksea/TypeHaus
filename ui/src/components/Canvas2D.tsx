@@ -19,7 +19,7 @@ import { WallNodeHandles } from "./plan/WallNodeHandles";
 import { OpeningShape, StairShape } from "./plan/OpeningShapes";
 import {
   DetailMarkerLayer, MeasureTapeLayer, PlanNodesLayer, GradeBeamOutlines, RailingOutlines, RoomLayer, SlabOutlines, SumpOutlines,
-  WallDraftLayer, WarningMarkerLayer,
+  RoomRectDraftLayer, WallDraftLayer, WarningMarkerLayer,
 } from "./plan/PlanMarkers";
 import { CanvasOverlays } from "./plan/CanvasOverlays";
 import { PlanLabelLayer } from "./plan/PlanLabelLayer";
@@ -31,7 +31,7 @@ import { useCanvasCommits } from "./plan/useCanvasCommits";
 import { usePlaceableKeys } from "./plan/usePlaceableKeys";
 import { PlaceableGhost } from "./plan/PlaceableGhost";
 import type {
-  DoorPopup, LengthEntry, MeasureDraft, NodeDrag, OpeningDragPreview, Pending, Placement,
+  DoorPopup, LengthEntry, MeasureDraft, NodeDrag, OpeningDragPreview, Pending, Placement, RoomRectDraft,
   WallAssemblyPopup, WallDraft,
 } from "./plan/canvasTypes";
 
@@ -73,6 +73,7 @@ export function Canvas2D() {
   const placementType = useStore((s) => s.placementType);
   const placementRotation = useStore((s) => s.placementRotation);
   const setPlacementCatalogOpen = useStore((s) => s.setPlacementCatalogOpen);
+  const roomMode = useStore((s) => s.roomMode);
 
   const svgRef = useRef<SVGSVGElement>(null);
   const shift = useRef(false);
@@ -85,6 +86,7 @@ export function Canvas2D() {
   const [pending, setPending] = useState<Pending | null>(null);
   const [draft, setDraft] = useState<WallDraft | null>(null);
   const [measure, setMeasure] = useState<MeasureDraft | null>(null); // read-only two-tap tape
+  const [roomDraft, setRoomDraft] = useState<RoomRectDraft | null>(null); // room tool first corner
   const [cursor, setCursor] = useState<Vec2 | null>(null); // world-space hover/rubber-band
   const [nodeDrag, setNodeDrag] = useState<NodeDrag | null>(null);
   // Live cascading geometry for the wall(s)/room(s) touched by an in-progress node drag
@@ -193,7 +195,7 @@ export function Canvas2D() {
   }, [warningMarkers, warningPopup]);
 
   // ---- commits (→ plan/useCanvasCommits.ts) ---------------------------------
-  const { commitWall, commitStair, commitDim, commitPlaceable, splitWall, healNode } = useCanvasCommits({
+  const { commitWall, commitStair, commitDim, commitPlaceable, commitRoomRect, splitWall, healNode } = useCanvasCommits({
     model, activeStorey, wallAssembly, wallsOnStorey, canvasTypes, nearestNodeTag, storeyHintFile, setDraft,
   });
 
@@ -220,6 +222,7 @@ export function Canvas2D() {
     toast, setPlacement, setDraft, setMeasure, setDimWall, setWallAssemblyPopup, setWarningPopup,
     setDoorPopup, setWindowPopup, commitWall, commitStair,
     placementType, commitPlaceable, openPlacementCatalog: () => setPlacementCatalogOpen(true),
+    roomMode, roomDraft, setRoomDraft, commitRoomRect,
   }, world, screen);
 
   const { zoomBy, onPointerDown, onPointerMove, onPointerUp, onClickCapture } = usePanZoom({
@@ -234,7 +237,7 @@ export function Canvas2D() {
       if (target && (target.tagName === "INPUT" || target.tagName === "SELECT" || target.tagName === "TEXTAREA")) return;
       if (e.key === "Escape") {
         setDraft(null); setMeasure(null); setPlacement(null); setWallAssemblyPopup(null); setDimWall(null); setNodeDrag(null); setPending(null); setDoorPopup(null); setWindowPopup(null);
-        setPreviewGeom(null); setLengthEntry(null); setWarningPopup(null);
+        setPreviewGeom(null); setLengthEntry(null); setWarningPopup(null); setRoomDraft(null);
       } else if ((e.key === "Enter" || /^[0-9]$/.test(e.key)) && draftRef.current && !lengthEntryOpen.current) {
         // Precise segment: type a length to place the next corner at an exact distance along the
         // current rubber-band direction (falls back to +x when the pointer sits on the start).
@@ -258,7 +261,8 @@ export function Canvas2D() {
   }, [selection.uid, selection.kind, offline, deleteSelection, duplicateSelection]);
 
   // End a wall run when leaving the wall tool; the cursor also feeds the Place tool's ghost.
-  useEffect(() => { if (tool !== "wall") setDraft(null); if (tool !== "wall" && tool !== "placeable") setCursor(null); }, [tool]);
+  useEffect(() => { if (tool !== "wall") setDraft(null); if (tool !== "wall" && tool !== "placeable" && tool !== "room") setCursor(null); }, [tool]);
+  useEffect(() => { if (tool !== "room" || roomMode !== "rect") setRoomDraft(null); }, [tool, roomMode]);
   usePlaceableKeys(wallsOnStorey);
   // Measurements are scratch, not model state: drop them when the tape is put away.
   useEffect(() => { if (tool !== "measure") setMeasure(null); }, [tool]);
@@ -266,7 +270,7 @@ export function Canvas2D() {
   // Mirror the in-flight draw gesture into the store so the ContextBar / interaction-state
   // label and App's Esc hierarchy (Phase 2) can see it.
   const setSubOperation = useStore((s) => s.setSubOperation);
-  useEffect(() => { setSubOperation(draft != null); }, [draft, setSubOperation]);
+  useEffect(() => { setSubOperation(draft != null || roomDraft != null); }, [draft, roomDraft, setSubOperation]);
 
   // Live rubber-band endpoint (snapped, ortho-locked under shift).
   const rubber = useMemo(() => {
@@ -430,6 +434,8 @@ export function Canvas2D() {
               walls={wallsOnStorey} project={project} scale={view.scale} />}
           {tool === "wall" && <WallDraftLayer draft={draft} rubber={rubber} cursor={cursor}
             snapNodes={snapNodes} tolM={tolM} gridM={gridM} project={project} />}
+          {tool === "room" && roomDraft && cursor && <RoomRectDraftLayer draft={roomDraft}
+            end={snapWorld(cursor, snapNodes, tolM, gridM).point} project={project} />}
           {workspace === "document" && <DetailMarkerLayer model={model} activeStorey={activeStorey}
             project={project} onSelectWall={selectWall} />}
           {measure && measureEnd && <MeasureTapeLayer measure={measure} end={measureEnd} project={project} />}

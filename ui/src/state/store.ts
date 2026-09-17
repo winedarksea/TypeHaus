@@ -10,7 +10,7 @@
 // EngineClient, which is why they are not re-exported from here.
 
 import { create } from "zustand";
-import type { EngineClient, EngineEvent } from "../engine/EngineClient";
+import type { EngineClient, EngineEvent, ProjectInfo } from "../engine/EngineClient";
 import { HttpEngineClient } from "../engine/HttpEngineClient";
 import { PyodideEngineClient } from "../engine/PyodideEngineClient";
 import { loadBundledHouse, pickHouseDirectory } from "../engine/openHouse";
@@ -33,7 +33,7 @@ import { emptySessionEdits, type SessionEdits } from "./sessionEdits";
 import {
   DEFAULT_EARTH_OPACITY,
   type Conflict, type DetailView, type DocumentsTab, type LabelMode, type Lens, type Selection,
-  type ThreeMode, type Toast, type Tool,
+  type RoomMode, type ThreeMode, type Toast, type Tool,
   type ViewMode, type ViewTransform, type Workspace,
 } from "./vocabulary";
 
@@ -50,6 +50,8 @@ export interface StoreState extends MutationActions, SiteSlice, PendingSlice, Pl
   subOperation: boolean; // true mid-draw (e.g. wall chain in progress) — drives Esc hierarchy
   drawAssembly: string | null; // ContextBar-selected wall assembly for new walls
   chainDraw: boolean; // keep the wall tool armed after each segment
+  roomMode: RoomMode;
+  roomOccupancy: string; // Occupancy enum value for rooms drawn by rectangle
   // One left-hand panel at a time. Replaced three independent booleans whose mutual
   // exclusion was only half-wired (Issues closed neither of the other two).
   activePanel: PanelId | null;
@@ -97,6 +99,9 @@ export interface StoreState extends MutationActions, SiteSlice, PendingSlice, Pl
   toasts: Toast[];
   // What this session changed (→ state/sessionEdits.ts); reset when a house is (re)opened.
   sessionEdits: SessionEdits;
+  // GET /project: the house path and the engine's capabilities; null until fetched or on an
+  // older server, and then controls that need a capability stay hidden.
+  project: ProjectInfo | null;
 
   // actions
   init: () => Promise<void>;
@@ -109,6 +114,8 @@ export interface StoreState extends MutationActions, SiteSlice, PendingSlice, Pl
   setSubOperation: (v: boolean) => void;
   setDrawAssembly: (tag: string | null) => void;
   setChainDraw: (v: boolean) => void;
+  setRoomMode: (mode: RoomMode) => void;
+  setRoomOccupancy: (occupancy: string) => void;
   // Passing the id that is already active closes it, so a rail item toggles.
   setActivePanel: (panel: PanelId | null) => void;
   // Open (never toggle closed) the issues drawer, narrowed to `severity`.
@@ -186,6 +193,8 @@ export const useStore = create<StoreState>((set, get, store) => ({
   subOperation: false,
   drawAssembly: null,
   chainDraw: true,
+  roomMode: "rect",
+  roomOccupancy: "living",
   activePanel: null,
   issuesSeverityFilter: null,
   commandPaletteOpen: false,
@@ -214,6 +223,7 @@ export const useStore = create<StoreState>((set, get, store) => ({
   writebackFailure: null,
   toasts: [],
   sessionEdits: emptySessionEdits(),
+  project: null,
 
   init: async () => {
     // Standalone PWA first boot: replace the default HttpEngineClient with the offline pyodide
@@ -240,6 +250,10 @@ export const useStore = create<StoreState>((set, get, store) => ({
       (e) => handleEvent(get, set, e),
       (up) => set({ connected: up }),
     );
+    set({ project: null });
+    void client.getProject().then((project) => {
+      if (get().client === client) set({ project });
+    }).catch(() => undefined);
     await get().reload();
   },
 
@@ -317,6 +331,8 @@ export const useStore = create<StoreState>((set, get, store) => ({
   setSubOperation: (subOperation) => set({ subOperation }),
   setDrawAssembly: (drawAssembly) => set({ drawAssembly }),
   setChainDraw: (chainDraw) => set({ chainDraw }),
+  setRoomMode: (roomMode) => set({ roomMode }),
+  setRoomOccupancy: (roomOccupancy) => set({ roomOccupancy }),
   // Left side hosts one large panel at a time (reviewer rule).
   setActivePanel: (panel) => set((s) => ({ activePanel: s.activePanel === panel ? null : panel,
     // A hand-driven open starts unfiltered; only openIssues narrows it.
@@ -434,8 +450,9 @@ export function handleEvent(
     case "saved": {
       set({ savedRevision: e.revision });
       markSavedIfDrained(get, set);
-      // The server bumps the revision when a writeback gives new elements their source.
-      void get().reloadIfStale(e.revision);
+      // The server bumps the revision when a writeback gives new elements their source; the
+      // chip can only settle once that reload lands.
+      void get().reloadIfStale(e.revision).then(() => markSavedIfDrained(get, set));
       break;
     }
     case "checks": {

@@ -29,6 +29,11 @@ import {
   RevisionConflict,
   type SheetManifest,
   type UnderlayCalibration,
+  type AddStoreyRequest,
+  type AddStoreyResult,
+  type NewProjectRequest,
+  type NewProjectResult,
+  type ProjectInfo,
 } from "./EngineClient";
 
 const ARTIFACT_PATHS: Record<EngineArtifact, string> = {
@@ -253,6 +258,30 @@ export class HttpEngineClient implements EngineClient {
       body: JSON.stringify(calibration),
     });
     if (!res.ok) throw new EngineError(await readError(res), res.status);
+  }
+
+  async getProject(): Promise<ProjectInfo> {
+    const res = await fetch(this.url("/project"));
+    if (!res.ok) throw new EngineError(await readError(res), res.status);
+    return (await res.json()) as ProjectInfo;
+  }
+
+  addStorey(request: AddStoreyRequest): Promise<AddStoreyResult> {
+    return this.postJson<AddStoreyResult>("/storeys", request);
+  }
+
+  newProject(request: NewProjectRequest): Promise<NewProjectResult> {
+    return this.postJson<NewProjectResult>("/project/new", request);
+  }
+
+  private async postJson<T>(path: string, body: unknown): Promise<T> {
+    const res = await fetch(this.url(path), {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new EngineError(await readError(res), res.status);
+    return (await res.json()) as T;
   }
 
   events(onEvent: (e: EngineEvent) => void, onStatus?: (up: boolean) => void): () => void {

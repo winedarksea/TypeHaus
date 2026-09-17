@@ -235,6 +235,13 @@ export function snapWorld(
   return { point: world, nodeId: null };
 }
 
+// Two opposite corners in any order → min/max corners plus width and height (metres).
+export function normalizeRect(a: Vec2, b: Vec2): { min: Vec2; max: Vec2; w: number; h: number } {
+  const min: Vec2 = [Math.min(a[0], b[0]), Math.min(a[1], b[1])];
+  const max: Vec2 = [Math.max(a[0], b[0]), Math.max(a[1], b[1])];
+  return { min, max, w: max[0] - min[0], h: max[1] - min[1] };
+}
+
 // Ortho-lock a point to the horizontal/vertical from an anchor (whichever axis is dominant).
 export function orthoLock(anchor: Vec2, p: Vec2): Vec2 {
   return Math.abs(p[0] - anchor[0]) >= Math.abs(p[1] - anchor[1])
@@ -257,4 +264,19 @@ export function orthoLock(anchor: Vec2, p: Vec2): Vec2 {
 export function swingArcSweepFlag(center: Vec2, from: Vec2, to: Vec2): 0 | 1 {
   const cross = (from[0] - center[0]) * (to[1] - center[1]) - (from[1] - center[1]) * (to[0] - center[0]);
   return cross > 0 ? 1 : 0;
+}
+
+/** The assembly a wall/room draw uses when none is picked: the storey's most common wall
+ * assembly, else the catalog's first. The toolbar and the canvas must agree on it. */
+export function defaultWallAssembly(
+  walls: readonly { storey?: string | null; assembly?: string | null }[],
+  storey: string | null,
+  catalogFirst: string | undefined,
+): string {
+  const counts = new Map<string, number>();
+  for (const w of walls) if (w.storey === storey && w.assembly) counts.set(w.assembly, (counts.get(w.assembly) ?? 0) + 1);
+  let best = "";
+  let n = -1;
+  for (const [a, c] of counts) if (c > n) [best, n] = [a, c];
+  return best || catalogFirst || "";
 }

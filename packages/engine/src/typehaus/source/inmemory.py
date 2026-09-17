@@ -107,6 +107,9 @@ def _add_storey(
 ) -> str | None:
     """Best-effort storey for an ``add``: a referenced element's storey, else the storey that
     already holds this kind, else the first storey. Reconciliation corrects any miss."""
+    if op.storey is not None and any(s.tag == op.storey for s in plan.storeys):
+        elements.setdefault(op.storey, [])
+        return op.storey
     for ref_field in ("host", "start_node", "end_node", "room", "wall_ref"):
         ref = op.fields.get(ref_field)
         if isinstance(ref, str):

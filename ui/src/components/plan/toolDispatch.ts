@@ -8,11 +8,11 @@ import type { PlanWarningMarker } from "../../model/planWarnings";
 import type { Stair, Vec2, Wall } from "../../model/types";
 import type { Node as GeoNode } from "../../model/geometry";
 import { nearestWallHit, orthoLock, snapWorld } from "../../model/geometry";
-import type { Selection, Tool } from "../../state/vocabulary";
+import type { RoomMode, Selection, Tool } from "../../state/vocabulary";
 import { pointInPolygon } from "./OpeningShapes";
 import {
   HIT_PX, WARNING_MARKER_HIT_PX,
-  type DoorPopup, type MeasureDraft, type Placement, type WallAssemblyPopup, type WallDraft,
+  type DoorPopup, type MeasureDraft, type Placement, type RoomRectDraft, type WallAssemblyPopup, type WallDraft,
 } from "./canvasTypes";
 
 export interface TapDeps {
@@ -48,6 +48,11 @@ export interface TapDeps {
   placementType: string | null;
   commitPlaceable: (world: Vec2) => Promise<void>;
   openPlacementCatalog: () => void;
+  // The Room tool: rect mode draws two snapped corners; claim mode opens the seed popover.
+  roomMode: RoomMode;
+  roomDraft: RoomRectDraft | null;
+  setRoomDraft: (draft: RoomRectDraft | null) => void;
+  commitRoomRect: (a: Vec2, b: Vec2) => Promise<void>;
 }
 
 export function dispatchTap(deps: TapDeps, world: Vec2, screen: Vec2): void {
@@ -56,7 +61,7 @@ export function dispatchTap(deps: TapDeps, world: Vec2, screen: Vec2): void {
     warningMarkers, snapNodes, tolM, gridM, activeStorey, project, select, toast,
     setPlacement, setDraft, setMeasure, setDimWall, setWallAssemblyPopup, setWarningPopup,
     setDoorPopup, setWindowPopup, commitWall, commitStair, placementType, commitPlaceable,
-    openPlacementCatalog,
+    openPlacementCatalog, roomMode, roomDraft, setRoomDraft, commitRoomRect,
   } = deps;
   if (placement) { setPlacement(null); return; }
   // Measure is read-only (nothing is journaled), so it survives offline alongside select.
@@ -132,6 +137,16 @@ export function dispatchTap(deps: TapDeps, world: Vec2, screen: Vec2): void {
       break;
     }
     case "room": {
+      if (roomMode === "rect") {
+        const corner = snapWorld(world, snapNodes, tolM, gridM).point;
+        if (!roomDraft) {
+          setRoomDraft({ start: corner });
+        } else {
+          setRoomDraft(null);
+          void commitRoomRect(roomDraft.start, corner);
+        }
+        break;
+      }
       const [sx, sy] = project(world);
       setPlacement({ kind: "room", screen: [sx, sy], seed: world });
       break;

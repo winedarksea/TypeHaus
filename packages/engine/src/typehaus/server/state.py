@@ -20,6 +20,7 @@ edits in the watcher.
 
 from __future__ import annotations
 
+import dataclasses
 import logging
 import os
 import queue
@@ -283,8 +284,7 @@ class ProjectState:
         pinned: list[PatchOp] = []
         for op in ops:
             if op.op == "add" and op.tag in minted and "uid" not in op.fields:
-                pinned.append(PatchOp(op.op, op.type, op.tag, {**op.fields, "uid": minted[op.tag]},
-                                      hint_file=op.hint_file, hint_list=op.hint_list))
+                pinned.append(dataclasses.replace(op, fields={**op.fields, "uid": minted[op.tag]}))
             else:
                 pinned.append(op)
         timings: dict[str, float] = {}

@@ -34,6 +34,11 @@ import {
   type SetVisitOp,
   type SheetManifest,
   type UnderlayCalibration,
+  type AddStoreyRequest,
+  type AddStoreyResult,
+  type NewProjectRequest,
+  type NewProjectResult,
+  type ProjectInfo,
 } from "./EngineClient";
 
 // A house loaded from disk via the File System Access API: relative path -> text content.
@@ -271,6 +276,19 @@ export class PyodideEngineClient implements EngineClient {
 
   calibrateUnderlay(_calibration: UnderlayCalibration): Promise<void> {
     return Promise.reject(new OfflineUnsupported("Saving underlay calibration"));
+  }
+
+  // No path to publish and no macros (runMacro rejects), so the capability subset is empty.
+  getProject(): Promise<ProjectInfo> {
+    return Promise.resolve({ house_dir: null, name: "", revision: "", templates: [], capabilities: [] });
+  }
+
+  addStorey(_request: AddStoreyRequest): Promise<AddStoreyResult> {
+    return Promise.reject(new OfflineUnsupported("Adding a floor"));
+  }
+
+  newProject(_request: NewProjectRequest): Promise<NewProjectResult> {
+    return Promise.reject(new OfflineUnsupported("Creating a house"));
   }
 
   // --- Mutation surface: the pure-Python (libcst-free) writeback backend runs in-worker (U9).

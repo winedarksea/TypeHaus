@@ -1,8 +1,8 @@
 // The Canvas2D commits: each turns a finished gesture (a wall stroke, a stair seed, a driven
-// length, a split, a heal, a placement tap) into one engine macro and selects what it made.
+// length, a split, a heal, a placement tap, a room rectangle) into one engine macro and selects what it made.
 // Split from components/Canvas2D.tsx, which keeps the gesture state these are handed.
 import type { CanvasObjectType, Model, Vec2, Wall } from "../../model/types";
-import { formatFtIn, wallLength } from "../../model/geometry";
+import { formatFtIn, normalizeRect, wallLength } from "../../model/geometry";
 import { useStore } from "../../state/store";
 import { WALL_SNAP_CONFIG } from "./editorConfig";
 import { DEFAULT_FOOTPRINT_M } from "./PlaceableGlyph";
@@ -16,6 +16,7 @@ export interface CanvasCommits {
   commitStair: (seed: Vec2) => Promise<void>;
   commitDim: (wall: Wall | null, newLenM: number) => Promise<void>;
   commitPlaceable: (world: Vec2) => Promise<void>;
+  commitRoomRect: (a: Vec2, b: Vec2) => Promise<void>;
   splitWall: (wall: Wall) => Promise<void>;
   healNode: (tag: string) => Promise<void>;
 }
@@ -130,6 +131,28 @@ export function useCanvasCommits(args: {
     if (!after.placementRepeat) after.setTool("select");
   };
 
+  // Two corners → walls for the missing edges plus a Room, then select that room. The minted
+  // RM- tag names it; failing that, the one room on this storey that was not there before.
+  const commitRoomRect = async (a: Vec2, b: Vec2) => {
+    const { w, h } = normalizeRect(a, b);
+    if (w < 0.3 || h < 0.3) { toast("Room too small", "error"); return; }
+    if (!activeStorey) { toast("Pick a storey first", "error"); return; }
+    if (!wallAssembly) { toast("No assembly to draw with", "error"); return; }
+    const before = new Set(model.rooms.map((room) => room.uid));
+    const res = await runMacro({
+      macro: "draw_room_rect", storey: activeStorey, a, b, assembly: wallAssembly,
+      occupancy: useStore.getState().roomOccupancy, hint_file: storeyHintFile(),
+    });
+    if (!res) return;
+    const after = useStore.getState();
+    const tag = Object.keys(res.minted).find((candidate) => candidate.startsWith("RM-"))
+      ?? after.model?.rooms.find((room) => room.storey === activeStorey && !before.has(room.uid))?.tag;
+    if (tag) {
+      after.selectByTag("room", tag);
+      toast(`${tag} drawn`);
+    }
+  };
+
   const splitWall = async (w: Wall) => {
     if (!activeStorey) return;
     const [a, b] = w.axis;
@@ -146,5 +169,5 @@ export function useCanvasCommits(args: {
     if (res) toast("Joint healed");
   };
 
-  return { commitWall, commitStair, commitDim, commitPlaceable, splitWall, healNode };
+  return { commitWall, commitStair, commitDim, commitPlaceable, commitRoomRect, splitWall, healNode };
 }

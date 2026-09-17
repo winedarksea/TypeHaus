@@ -56,7 +56,8 @@ export function usePanZoom(args: {
       ...model.rooms.filter((room) => room.storey === activeStorey)
         .flatMap((room) => room.clear_face),
     ];
-    if (!points.length) return;
+    // An empty storey counts as fitted: the first room drawn on it must not jump the camera.
+    if (!points.length) { fittedStorey.current = activeStorey; return; }
 
     const fit = () => {
       const { width, height } = svg.getBoundingClientRect();
@@ -147,7 +148,7 @@ export function usePanZoom(args: {
   const onPointerMove = (e: React.PointerEvent) => {
     shiftRef.current = e.shiftKey;
     // Rubber-band / snap preview (wall) and the placement ghost follow the bare pointer.
-    if (tool === "wall" || tool === "placeable") setCursor(unproject(e.clientX, e.clientY));
+    if (tool === "wall" || tool === "placeable" || tool === "room") setCursor(unproject(e.clientX, e.clientY));
     if (!pointers.current.has(e.pointerId)) return;
     pointers.current.set(e.pointerId, [e.clientX, e.clientY]);
     if (pointers.current.size === 2 && pinch.current) {

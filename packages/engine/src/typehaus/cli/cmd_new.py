@@ -20,7 +20,8 @@ def new(
     directory: Path = typer.Argument(..., help="new house directory to scaffold"),
     name: str = typer.Option("My House", help="project display name"),
     template: str = typer.Option(
-        "starter", help="starter (small, buildable) | catlin (the real house, #22)"),
+        "starter",
+        help="starter (small, buildable) | empty (one blank floor) | catlin (the real house, #22)"),
 ) -> None:
     """Scaffold a new house: brief.md, preferences.toml, plan/ skeleton (WP2.12, #22)."""
     from typehaus.cli.scaffold import scaffold_house

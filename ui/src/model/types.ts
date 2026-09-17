@@ -298,6 +298,7 @@ export interface PlanNode {
   x_m: number;
   y_m: number;
   open_end: boolean;
+  anchored?: boolean; // pinned: move_nodes holds it (absent on older json)
   provenance: Provenance | null;
 }
 

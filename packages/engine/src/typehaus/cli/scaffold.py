@@ -2,7 +2,8 @@
 
 Copies a shipped house as the starting point rather than writing one out of inline string
 constants: ``houses/starter`` by default (a small, immediately-buildable two-storey house)
-or ``houses/catlin`` with ``--template catlin``.
+``houses/empty`` (one storey, no walls) with ``--template empty``, or ``houses/catlin``
+with ``--template catlin``.
 """
 
 from __future__ import annotations
@@ -17,7 +18,7 @@ class ScaffoldError(RuntimeError):
     """No copy of the requested template house is reachable from here."""
 
 
-TEMPLATES = ("starter", "catlin")
+TEMPLATES = ("starter", "empty", "catlin")
 
 
 def scaffold_house(directory: Path, name: str, template: str = "starter") -> list[Path]:

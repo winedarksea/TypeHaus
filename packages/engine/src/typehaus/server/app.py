@@ -16,6 +16,7 @@ from typing import Any
 from typehaus.server.documents_api import register_documents_routes
 from typehaus.server.events import EventBus
 from typehaus.server.state import ProjectState
+from typehaus.server.storeys_api import register_storeys_routes
 from typehaus.source.coordinator import ExternalEdit, RevisionMismatch
 from typehaus.source.ops import PatchOp
 from typehaus.source.writeback import WritebackError
@@ -555,6 +556,7 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
     # The contractor reference — `/sheets`, `/notes` — lives in its own module: read-only,
     # sharing nothing with the editing loop, and this file is at its size limit.
     register_documents_routes(app, state)
+    register_storeys_routes(app, state, bus)
 
     # V6 — serve the compiled SPA (must be registered LAST so every API route above wins the
     # match; this GET catch-all only fires for paths no API route claimed).

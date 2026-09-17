@@ -1,4 +1,4 @@
-import { openingFitsWall, openingHostWall, openingStartFromCenter } from "./geometry";
+import { normalizeRect, openingFitsWall, openingHostWall, openingStartFromCenter } from "./geometry";
 import type { Opening, Wall } from "./types";
 
 export function runModelGeometryTests() {
@@ -16,5 +16,9 @@ export function runModelGeometryTests() {
   }
   if (openingFitsWall(host, .2, 1)) {
     throw new Error("Opening drag previews must reject a width that extends beyond the host wall");
+  }
+  const rect = normalizeRect([3, 1], [1, 4]);
+  if (rect.min.join() !== "1,1" || rect.max.join() !== "3,4" || rect.w !== 2 || rect.h !== 3) {
+    throw new Error(`normalizeRect must order corners in any drag direction: ${JSON.stringify(rect)}`);
   }
 }

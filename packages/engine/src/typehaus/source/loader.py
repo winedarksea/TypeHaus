@@ -455,7 +455,9 @@ def _import_manifest_locked(house_dir: Path, findings: list[Finding]) -> PlanMod
                 )
             )
             return None
-        return plan
+        from typehaus.source.storey_modules import append_storey_modules
+
+        return append_storey_modules(house_dir, plan, findings)
     except Exception as exc:  # noqa: BLE001 - surfaced as a finding
         findings.append(
             Finding(

@@ -24,6 +24,7 @@ class Node(Element):
 
     position: Point2D
     open_end: bool = False  # a legitimate wing-wall terminus (suppresses gap error)
+    anchored: bool = False  # pinned: move_nodes holds it in place
 
 
 @register_element

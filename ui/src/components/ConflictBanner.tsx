@@ -64,13 +64,15 @@ export function LoadErrorBanner() {
   const toasted = useRef<string | null>(null);
 
   const errors = (model?.findings ?? []).filter((f) => f.severity === "error");
-  const revision = model?.revision ?? null;
+  // Keyed on the errors themselves, not the revision: every edit bumps the revision, and a
+  // house mid-authoring carries the same code reds through dozens of them.
+  const signature = errors.map((f) => `${f.code ?? f.check_id}|${f.message}`).sort().join("\n");
 
   useEffect(() => {
-    if (!revision || errors.length === 0 || toasted.current === revision) return;
-    toasted.current = revision;
+    if (errors.length === 0 || toasted.current === signature) return;
+    toasted.current = signature;
     toast(`${errors.length} error${errors.length === 1 ? "" : "s"} loading the plan`, "error");
-  }, [revision, errors.length, toast]);
+  }, [signature, errors.length, toast]);
 
   if (errors.length === 0) return null;
   return (

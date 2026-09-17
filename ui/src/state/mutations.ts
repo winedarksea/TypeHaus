@@ -220,8 +220,13 @@ export function createMutationActions(
     let type: string | null = null;
     let tag: string | null = null;
     if (selection.kind === "wall") {
+      // A macro: it merges the rooms either side, drops orphan nodes, and refuses while a
+      // backing or MEP run still names the wall.
       const w = model.walls.find((x) => x.uid === selection.uid);
-      type = w?.kind ?? "Wall"; tag = w?.tag ?? null;
+      if (!w) { get().toast("Nothing deletable is selected", "info"); return; }
+      const result = await get().runMacro({ macro: "delete_wall", storey: w.storey, wall: w.tag });
+      if (result) { get().toast(`${w.tag} deleted`); select(null, null); }
+      return;
     } else if (selection.kind === "opening") {
       const o = model.openings.find((x) => x.uid === selection.uid);
       type = o?.kind === "rough_opening" ? "RoughOpening" : o?.is_door ? "Door" : "Window";

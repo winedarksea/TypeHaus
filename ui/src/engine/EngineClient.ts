@@ -16,6 +16,11 @@ import type {
 } from "../model/scheduleTypes";
 
 export type { InspectionOp, InspectionsPayload, SchedulePayload, SetVisitOp, VisitOp };
+// House-level routes (server/storeys_api.py) — their payloads live in projectTypes.ts.
+import type {
+  AddStoreyRequest, AddStoreyResult, NewProjectRequest, NewProjectResult, ProjectInfo,
+} from "./projectTypes";
+export type { AddStoreyRequest, AddStoreyResult, NewProjectRequest, NewProjectResult, ProjectInfo };
 
 // A patch op mirrors the server's PatchOp (source/ops.py): element-level and flat.
 // `fields` carry authored-unit strings ("12'-6\"") and plain scalars; the server encodes
@@ -147,43 +152,8 @@ export interface NoteEntry {
   chars: number;
 }
 
-// A server-side geometry macro (server/macros_api.py). The UI sends screen intent (draw
-// endpoints, the wall to split, a drag delta) as authored-unit strings; the engine owns all
-// geometry math and returns ordinary journaled ops plus the #33 reference remap.
-export type MacroRequest =
-  | { macro: "draw_wall"; storey: string; start: [string, string]; end: [string, string]; assembly: string; tag?: string; hint_file?: string }
-  | { macro: "move_nodes"; storey: string; nodes: string[]; dx: number | string; dy: number | string }
-  | { macro: "split_wall"; storey: string; wall: string; at: [string, string] }
-  | { macro: "heal_walls"; storey: string; node: string }
-  | { macro: "place_opening"; storey: string; host: string; type_ref: string; along: string; is_door: boolean; sill?: string; hint_file?: string }
-  | { macro: "place_rough_opening"; storey: string; host: string; width: string; height: string; along: string; sill?: string; hint_file?: string }
-  | { macro: "move_opening"; storey: string; tag: string; along: string }
-  | { macro: "rehost_opening"; storey: string; tag: string; host: string; along: string }
-  | { macro: "place_room"; storey: string; seed: [string, string]; occupancy: string; floor_finish?: string; hint_file?: string }
-  | { macro: "place_stair"; storey: string; seed: [string, string]; to_storey?: string; hint_file?: string; tag?: string }
-  | { macro: "move_placeable"; storey: string; tag: string; position: [number | string, number | string] }
-  | { macro: "rotate_placeable"; storey: string; tag: string; degrees: number; free_rotation?: boolean }
-  | { macro: "attach_placeable"; storey: string; tag: string; wall: string; face: "left" | "right"; distance: number | string; gap?: number | string; rotation_offset?: number }
-  | { macro: "set_placeable_mount"; storey: string; tag: string; elevation: number | string }
-  | { macro: "detach_placeable"; storey: string; tag: string; position?: [string, string] }
-  | { macro: "place_placeable"; storey: string; type_ref: string; position: [string, string]; hint_file?: string; tag?: string; rotation?: number; kind?: string }
-  // Slide a wall-attached object along its host: replaces only distance_from_start (metres).
-  | { macro: "slide_placeable"; storey: string; tag: string; distance: number }
-  // Refused (400) while a run, sleeve, control or host references the tag.
-  | { macro: "delete_placeable"; storey: string; tag: string }
-  | { macro: "assign_placeable_room"; storey: string; tag: string; room?: string | null }
-  | { macro: "duplicate_canvas_object"; storey: string; tag: string }
-  // Swap a placeable's product type; the engine re-anchors a wall-backed unit's mounted
-  // face under the footprint change and returns warnings for authored references
-  // (serves lists, sleeves, …) that were sized against the old type.
-  | { macro: "retype_placeable"; storey: string; tag: string; type_ref: string }
-  // Library macros (no storey): the assembly-editor clone-and-tweak flow (→ 21b WP2.4d/e).
-  | { macro: "duplicate_assembly"; source: string; tag: string }
-  | { macro: "blank_assembly"; tag: string }
-  | { macro: "edit_assembly_layers"; tag: string; layers: { name: string; material: string; function: string; thickness: number | string }[] }
-  | { macro: "add_material"; material: { tag: string; name: string; r_per_inch?: number; perm_rating?: number; density?: number } }
-  // Materialize a transition detail's seed annotations into authored source (→ 11b WP3).
-  | { macro: "seed_detail_annotations"; condition_key: string; annotations: { kind: string; anchor_uid: string; anchor_face: string; text: string; offset?: [number, number] }[] };
+export type { MacroRequest } from "./macroTypes";
+import type { MacroRequest } from "./macroTypes";
 
 // A transition detail — a live-cut junction drawing (→ 11b). The index lists scaffolded
 // details; getDetail returns the scene JSON (rendered client-side by DetailCanvas) plus its
@@ -485,6 +455,13 @@ export interface EngineClient {
   getNotes(): Promise<NoteEntry[]>;
   getNote(path: string): Promise<string>;
   calibrateUnderlay(calibration: UnderlayCalibration): Promise<void>;
+  // The house this engine serves and what it can do; controls a client lacks stay hidden.
+  getProject(): Promise<ProjectInfo>;
+  // Writes plan/storeys/<tag>.py (seals undo); `copy_from` then copies that floor's layout
+  // as one undoable edit. Rejects OfflineUnsupported without `haus serve`.
+  addStorey(request: AddStoreyRequest): Promise<AddStoreyResult>;
+  // Scaffolds a house into a new/empty directory; the server keeps serving this one.
+  newProject(request: NewProjectRequest): Promise<NewProjectResult>;
   // Subscribe to server push; returns an unsubscribe function.
   events(onEvent: (e: EngineEvent) => void, onStatus?: (up: boolean) => void): () => void;
 }

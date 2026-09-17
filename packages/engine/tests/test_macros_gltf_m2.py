@@ -136,10 +136,26 @@ def test_split_missing_wall_rejected(plan):
 
 # --- remap registry ----------------------------------------------------------
 
+_REF_VOCABULARY = {"wall_ref", "wall_refs", "host", "start_node", "end_node", "stacks_on",
+                   "bearing_refs", "within_wall", "location", "serves", "serves_fixture"}
+
+
 def test_remap_registry_covers_reference_fields():
+    """Decision #33: every ref-bearing field is carried by a handler or explicitly UNCOVERED
+    (which ``delete_wall`` refuses on and split/heal report as ``needs_review``)."""
+    from typehaus.model.registry import element_kinds
+    from typehaus.model.remap import UNCOVERED
+
     fields = registered_ref_fields()
-    assert "start_node" in fields["Wall"] and "end_node" in fields["Wall"]
+    kinds = element_kinds()
+    missing = [f"{kind}.{name}" for kind, cls in kinds.items()
+               for name in sorted(_REF_VOCABULARY & set(cls.model_fields))
+               if name not in fields.get(kind, ()) and name not in UNCOVERED.get(kind, ())]
+    assert not missing
+    for kind, names in UNCOVERED.items():
+        assert set(names) <= set(kinds[kind].model_fields), kind
     assert fields["Door"] == ("host",)
+    assert fields["Fixture"] == ("wall_ref", "location")
 
 
 def test_remap_rewrites_wall_node_ref(plan):

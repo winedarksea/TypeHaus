@@ -34,7 +34,13 @@ class ReferenceRemap:
 
     renamed: dict[str, str] = field(default_factory=dict)
     deleted: frozenset[str] = frozenset()
-    rehost: dict[str, str] = field(default_factory=dict)  # opening_tag -> new host wall tag
+    rehost: dict[str, str] = field(default_factory=dict)  # element tag -> new host wall tag
+    # Wall-attached placeables: metres added to ``distance_from_start``; a ``reversed`` tag's
+    # new wall runs the other way, so its distance becomes ``shift - distance`` and its face
+    # flips. The station is the one ``resolve/placeables._resolve_location`` reads: from the
+    # start node, along the node-to-node axis.
+    shift: dict[str, float] = field(default_factory=dict)
+    reversed: frozenset[str] = frozenset()
 
     def resolve(self, ref: str) -> str | None:
         """Return the surviving tag for ``ref``, or ``None`` if it was deleted."""
@@ -125,7 +131,8 @@ def remap_ops_for(element: Element, remap: ReferenceRemap) -> list[PatchOp]:
 
 def _register_builtins() -> None:
     from typehaus.model.elements import Door, RoughOpening, Wall, Window
-    from typehaus.model.spatial import Room, Stair
+    from typehaus.model.mep import ElectricalDevice, Equipment, Register
+    from typehaus.model.spatial import Appliance, Fixture, Furniture, Room, Stair
 
     @remap_handler(Wall, ref_fields=("start_node", "end_node", "stacks_on", "bearing_refs"))
     def _wall(el: Element, remap: ReferenceRemap) -> list[PatchOp]:
@@ -162,6 +169,33 @@ def _register_builtins() -> None:
     for _cls in (Door, Window, RoughOpening):
         remap_handler(_cls, ref_fields=("host",))(_opening_handler(_cls.__name__))
 
+    def _placeable_handler(kind: str) -> RemapHandler:
+        def handler(el: Element, remap: ReferenceRemap) -> list[PatchOp]:
+            changed: dict[str, object] = {}
+            loc = getattr(el, "location", None)
+            att = getattr(loc, "attachment", None)
+            explicit = remap.rehost.get(el.tag)
+            if att is not None:
+                target = explicit or remap.resolve(att.wall_ref)
+                shift, flip = remap.shift.get(el.tag, 0.0), el.tag in remap.reversed
+                if target is not None and (target != att.wall_ref or shift or flip):
+                    changed["location"] = _relocated(loc, att, target, shift, flip)
+            ref = getattr(el, "wall_ref", None)
+            if ref:
+                # An explicit rehost names the attachment's wall; a different wet wall only
+                # follows a plain rename.
+                follows = explicit if att is None or att.wall_ref == ref else None
+                target = follows or remap.resolve(ref)
+                if target is not None and target != ref:
+                    changed["wall_ref"] = target
+            return [PatchOp("update", kind, el.tag, changed)] if changed else []
+
+        return handler
+
+    for _cls in (Furniture, Fixture, Appliance, Equipment, Register, ElectricalDevice):
+        fields = tuple(f for f in ("wall_ref", "location") if f in _cls.model_fields)
+        remap_handler(_cls, ref_fields=fields)(_placeable_handler(_cls.__name__))
+
     @remap_handler(Stair, ref_fields=("bearing_refs",))
     def _stair(el: Element, remap: ReferenceRemap) -> list[PatchOp]:
         refs = getattr(el, "bearing_refs", ()) or ()
@@ -176,6 +210,47 @@ def _register_builtins() -> None:
         # whole-field replacement; a dangling ref surfaces as an integrity finding rather
         # than an auto-rewrite, so this handler only reports (no ops) — coverage satisfied.
         return []
+
+
+def _relocated(loc, att, wall: str, shift: float, flip: bool):
+    """The ``location`` rewritten onto ``wall`` at the mapped station, as dialect source."""
+    from typehaus.quantities import deg
+    from typehaus.source.macros_common import _round_len
+    from typehaus.source.ops import RawExpr
+    from typehaus.source.serialize import value_source
+
+    d = att.distance_from_start.meters
+    update: dict[str, object] = {
+        "wall_ref": wall,
+        "distance_from_start": _round_len(round(max(0.0, shift - d if flip else d + shift), 6))}
+    if flip:
+        # The tangent turns 180 degrees: the same world face and heading need the other side
+        # and a half-turn offset.
+        update["face"] = "right" if att.face == "left" else "left"
+        turned = (float(getattr(att.rotation_offset, "degrees", 0.0)) + 180.0) % 360.0
+        update["rotation_offset"] = deg(turned)
+    new_loc = loc.model_copy(update={"attachment": att.model_copy(update=update)})
+    return RawExpr(value_source(new_loc))
+
+
+# Ref-bearing fields no handler carries (decision #33). ``delete_wall`` refuses while one
+# names the wall; split/heal report them as ``needs_review``. The completeness test holds
+# every ref field to either a handler or this list.
+UNCOVERED: dict[str, tuple[str, ...]] = {
+    "WallBacking": ("wall_ref",),
+    "WallPaneling": ("walls",),
+    "PipeRun": ("wall_ref", "wall_refs", "serves"),
+    "PipeAccessory": ("wall_ref", "serves"),
+    "VentRun": ("wall_ref",),
+    "SleevePenetration": ("serves_fixture",),
+    "ShelfBank": ("host",),
+    "Post": ("within_wall",),
+    "Beam": ("start_node", "end_node", "bearing_refs"),
+    "FoundationWall": ("start_node", "end_node", "stacks_on", "bearing_refs"),
+    "FloorSystem": ("joists",),
+    "FloorOpening": ("bearing_refs",),
+    "Roof": ("bearing_refs",),
+}
 
 
 _register_builtins()

@@ -9,7 +9,7 @@ import {
   openEndMarker,
   type PlanWarningMarker,
 } from "../../model/planWarnings";
-import { deriveNodes, type Node as GeoNode } from "../../model/geometry";
+import { defaultWallAssembly, deriveNodes, type Node as GeoNode } from "../../model/geometry";
 import { openEndKeys } from "./PlanChrome";
 import { storeysAtDatum } from "../../model/levels";
 
@@ -112,14 +112,9 @@ export function useStoreySlice(model: Model, activeStorey: string | null, tolM: 
     return m;
   }, [storeyNodes]);
 
-  const defaultAssembly = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const w of wallsOnStorey) if (w.assembly) counts.set(w.assembly, (counts.get(w.assembly) ?? 0) + 1);
-    let best = "";
-    let n = -1;
-    for (const [a, c] of counts) if (c > n) [best, n] = [a, c];
-    return best || model.catalog?.assemblies[0]?.tag || "";
-  }, [wallsOnStorey, model.catalog]);
+  const defaultAssembly = useMemo(
+    () => defaultWallAssembly(wallsOnStorey, activeStorey, model.catalog?.assemblies[0]?.tag),
+    [wallsOnStorey, activeStorey, model.catalog]);
 
   const serviceOptions = useMemo(() => [...new Set((model.catalog?.canvas_object_types ?? [])
     .flatMap((type) => type.ports.map((port) => port.service)))].sort(), [model.catalog?.canvas_object_types]);
@@ -163,7 +158,9 @@ export function useStoreySlice(model: Model, activeStorey: string | null, tolM: 
       ?? wallsOnStorey.find((w) => w.storey === activeStorey && w.provenance?.editable)
         ?.provenance?.file
       ?? storeyNodes.find((n) => n.provenance?.editable)?.provenance?.file
-      ?? wallsOnStorey.find((w) => w.provenance?.editable)?.provenance?.file,
+      ?? wallsOnStorey.find((w) => w.provenance?.editable)?.provenance?.file
+      // An empty storey module (Add floor) has no element to read provenance from.
+      ?? `plan/storeys/${activeStorey}.py`,
     [storeyNodes, wallsOnStorey, activeStorey],
   );
 

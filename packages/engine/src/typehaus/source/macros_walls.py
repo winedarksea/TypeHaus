@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from typehaus.model.elements import Wall
 from typehaus.model.plan import PlanModel
-from typehaus.model.remap import MutationResult, ReferenceRemap, remap_ops_for
+from typehaus.model.remap import MutationResult
 from typehaus.source.macros_common import (
     _PLACEABLE_KINDS,
     ROOM_BOUNDARY_NODE_TOLERANCE_M,
@@ -20,15 +20,17 @@ from typehaus.source.macros_common import (
     MacroError,
     _find_node_near,
     _meters,
-    _next_tag,
+    _next_plan_tag,
     _nodes,
     _point_expr,
     _point_expr_m,
     _resolved_rooms,
     _rooms,
+    _storey_file_hint,
     _walls,
 )
-from typehaus.source.macros_geometry import _collinear, _dist, _project_param
+from typehaus.source.macros_geometry import _dist, _project_param
+from typehaus.source.macros_split import heal_ops, rehost_along_wall, split_wall_ops
 from typehaus.source.ops import PatchOp
 
 
@@ -54,27 +56,29 @@ def draw_wall(
         raise MacroError("degenerate wall: endpoints coincide")
 
     ops: list[PatchOp] = []
-    node_list = "NODES" if any(_nodes(plan, storey)) else None
-    minted_tags: list[str] = []
+    # A storey module wins over the UI's guess; with a file resolved, name the list outright
+    # (an empty ``NODES = []`` holds no call for kind-based routing to find).
+    hint_file = _storey_file_hint(plan, storey) or hint_file
+    node_list = "NODES" if hint_file is not None or any(_nodes(plan, storey)) else None
+    wall_list = "WALLS" if hint_file is not None else _wall_list(plan, storey)
+    minted: set[str] = set()
 
     def node_at(pt: XY, at_m: tuple[float, float]) -> str:
         existing = _find_node_near(plan, storey, at_m)
         if existing is not None:
             return existing.tag
-        pending = _pending_nodes(plan, storey, minted_tags)
-        new_tag = _next_tag(pending, "N-")
-        minted_tags.append(new_tag)
+        new_tag = _next_plan_tag(plan, "N-", minted)
         ops.append(PatchOp("add", "Node", new_tag,
                            {"position": _point_expr(pt[0], pt[1])},
-                           hint_file=hint_file, hint_list=node_list))
+                           hint_file=hint_file, hint_list=node_list, storey=storey))
         return new_tag
 
     a = node_at(start, (sx, sy))
     b = node_at(end, (ex, ey))
-    wall_tag = tag or _next_tag(_walls(plan, storey), "W-")
+    wall_tag = tag or _next_plan_tag(plan, "W-", minted)
     ops.append(PatchOp("add", "Wall", wall_tag,
                        {"start_node": a, "end_node": b, "assembly": assembly},
-                       hint_file=hint_file, hint_list=_wall_list(plan, storey)))
+                       hint_file=hint_file, hint_list=wall_list, storey=storey))
     return MutationResult(ops=ops)
 
 
@@ -169,9 +173,8 @@ def _rooms_with_moved_boundaries(plan: PlanModel, storey: str, moved_nodes: set[
 def split_wall(plan: PlanModel, storey: str, wall_tag: str, at: XY) -> MutationResult:
     """Split a wall at a point — 1 wall → 2, the original uid staying with the a-side (#33).
 
-    The survivor keeps ``wall_tag``; a fresh segment is added. A midnode is inserted, openings
-    re-host to whichever segment their position falls in, and a :class:`ReferenceRemap` reports
-    the identity change so hosted openings and stack refs carry through.
+    The survivor keeps ``wall_tag``; a fresh segment is added at a midnode. Openings and
+    wall-attached placeables follow the segment their station falls in (``macros_split``).
     """
     wall = next((w for w in _walls(plan, storey) if w.tag == wall_tag), None)
     if wall is None:
@@ -180,50 +183,15 @@ def split_wall(plan: PlanModel, storey: str, wall_tag: str, at: XY) -> MutationR
     a, b = by_tag.get(wall.start_node), by_tag.get(wall.end_node)
     if a is None or b is None:
         raise MacroError(f"wall {wall_tag!r} has an unresolved node")
-    ax, ay = a.position.xy_m
-    bx, by = b.position.xy_m
-    px, py = _meters(at[0]), _meters(at[1])
-    t = _project_param((ax, ay), (bx, by), (px, py))
+    t = _project_param(a.position.xy_m, b.position.xy_m, (_meters(at[0]), _meters(at[1])))
     if not (SNAP_M < t < 1 - SNAP_M):
         raise MacroError("split point is at or beyond a wall end")
-
-    mid_tag = _next_tag(_nodes(plan, storey), "N-")
-    new_wall_tag = _next_tag(_walls(plan, storey), "W-")
-    seg_fields = {"start_node": mid_tag, "end_node": wall.end_node, "assembly": wall.assembly}
-    ops = [
-        PatchOp("add", "Node", mid_tag,
-                {"position": _point_expr_m(ax + t * (bx - ax), ay + t * (by - ay))},
-                hint_list="NODES"),
-        # survivor keeps the a-side: its end becomes the midnode
-        PatchOp("update", "Wall", wall_tag, {"end_node": mid_tag}),
-        PatchOp("add", "Wall", new_wall_tag, seg_fields, hint_list="WALLS"),
-    ]
-    remap, refit_ops, warnings = _rehost_openings(
-        plan, storey, wall, new_wall_tag, t
-    )
-    ops.extend(refit_ops)
-    return MutationResult(ops=ops, remap=remap, warnings=warnings)
+    minted: set[str] = set()
+    return split_wall_ops(plan, storey, wall, t, _next_plan_tag(plan, "N-", minted),
+                          _next_plan_tag(plan, "W-", minted))
 
 
-def _rehost_openings(
-    plan: PlanModel, storey: str, wall: Wall, new_tag: str, split_t: float
-) -> tuple[ReferenceRemap, list[PatchOp], tuple[str, ...]]:
-    """Re-host openings on the split wall onto the segment their position falls in."""
-    rehost: dict[str, str] = {}
-    warnings: list[str] = []
-    for el in plan.storey_elements(storey):
-        if getattr(el, "host", None) != wall.tag:
-            continue
-        along = _opening_param(el, wall, plan, storey)
-        if along is not None and along > split_t:
-            rehost[el.tag] = new_tag
-            warnings.append(f"opening {el.tag} re-hosted to {new_tag}")
-    remap = ReferenceRemap(renamed={}, rehost=rehost)
-    ops: list[PatchOp] = []
-    for el in plan.storey_elements(storey):
-        if getattr(el, "host", None) == wall.tag:
-            ops.extend(remap_ops_for(el, remap))
-    return remap, ops, tuple(warnings)
+_rehost_along_wall = rehost_along_wall
 
 
 def _opening_param(el: object, wall: Wall, plan: PlanModel, storey: str) -> float | None:
@@ -244,39 +212,13 @@ def _opening_param(el: object, wall: Wall, plan: PlanModel, storey: str) -> floa
     return base + frac if base == 0.0 else base - frac
 
 
+
 # --- heal / merge ------------------------------------------------------------
 
 def heal_walls(plan: PlanModel, storey: str, node_tag: str) -> MutationResult:
     """Fuse two collinear walls meeting at ``node_tag`` back into one edge (inverse of split).
 
-    The survivor is the wall contributing the fused edge's a-node (#33). The shared node and
-    the second wall are deleted; a :class:`ReferenceRemap` renames the absorbed wall to the
-    survivor so hosted openings and refs follow.
+    The survivor keeps its uid (#33); openings and attached placeables on the absorbed wall
+    map onto the fused axis, and a :class:`ReferenceRemap` renames the absorbed wall.
     """
-    incident = [w for w in _walls(plan, storey)
-                if node_tag in (w.start_node, w.end_node)]
-    if len(incident) != 2:
-        raise MacroError(
-            f"heal needs exactly two walls at {node_tag!r}, found {len(incident)}"
-        )
-    w1, w2 = incident
-    by_tag = {nd.tag: nd for nd in _nodes(plan, storey)}
-    if not _collinear(w1, w2, node_tag, by_tag):
-        raise MacroError(f"walls at {node_tag!r} are not collinear; cannot heal")
-    # Survivor is the wall whose a-node is not the shared node (keeps its start).
-    survivor, absorbed = (w1, w2) if w1.start_node != node_tag else (w2, w1)
-    far_end = absorbed.end_node if absorbed.start_node == node_tag else absorbed.start_node
-    remap = ReferenceRemap(renamed={absorbed.tag: survivor.tag},
-                           deleted=frozenset({node_tag}))
-    ops = [
-        PatchOp("update", "Wall", survivor.tag, {"end_node": far_end}),
-        PatchOp("delete", "Wall", absorbed.tag, {}),
-        PatchOp("delete", "Node", node_tag, {}),
-    ]
-    warnings: list[str] = []
-    for el in plan.storey_elements(storey):
-        if getattr(el, "host", None) == absorbed.tag:
-            ops = remap_ops_for(el, remap) + ops
-            warnings.append(f"opening {el.tag} re-hosted to {survivor.tag}")
-    return MutationResult(ops=ops, remap=remap,
-                          deleted_tags=(absorbed.tag, node_tag), warnings=tuple(warnings))
+    return heal_ops(plan, storey, node_tag)

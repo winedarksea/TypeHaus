@@ -15,13 +15,13 @@ import type { PlanWarningMarker } from "../../model/planWarnings";
 import { projectedExtentPx, spaceLabel, spaceLabelLineBudget } from "../../model/spaceLabels";
 import type { Model, Room, Solid, Vec2, Wall } from "../../model/types";
 import {
-  formatFtIn, snapWorld, type Node as GeoNode,
+  formatFtIn, normalizeRect, snapWorld, type Node as GeoNode,
 } from "../../model/geometry";
 import { NORDIC_ACCENT, NORDIC_INK, NORDIC_LINE } from "../../nordic/palette";
 import { PLAN_TEXT_HALO, PlanLabel } from "./PlanLabelLayer";
 import { collinearAt } from "./PlanChrome";
 import type { LabelMode } from "../../state/vocabulary";
-import type { MeasureDraft, RubberBand, WallDraft } from "./canvasTypes";
+import type { MeasureDraft, RoomRectDraft, RubberBand, WallDraft } from "./canvasTypes";
 
 // Rooms (tinted fills, behind walls) — a live drag's preview cascades into neighboring
 // rooms' clear-face polygons, matched by tag against the last preview. Labels drop from the
@@ -182,11 +182,16 @@ export const PlanNodesLayer = memo(function PlanNodesLayer({ nodes, openEnds, mo
   nearestNodeTag: (p: Vec2) => string | null;
   onHeal: (tag: string) => void;
 }) {
+  const pinned = new Set((model.nodes ?? []).filter((n) => n.anchored).map((n) => n.tag));
   return (
     <>
       {[...nodes.values()].filter((n) => !openEnds.has(n.id)).map((n) => {
         const [x, y] = project(n.p);
-        const tag = tool === "select" ? nearestNodeTag(n.p) : null;
+        const tag = tool === "select" || pinned.size ? nearestNodeTag(n.p) : null;
+        if (tag && pinned.has(tag)) {
+          return <rect key={n.id} x={x - 4.5} y={y - 4.5} width={9} height={9} fill={NORDIC_LINE}
+            pointerEvents="none"><title>Pinned node {tag}</title></rect>;
+        }
         const healable = tool === "select" && n.walls.length === 2 && collinearAt(n, model);
         return (
           <g key={n.id}>
@@ -310,6 +315,32 @@ export const DetailMarkerLayer = memo(function DetailMarkerLayer({ model, active
 });
 
 // The measure tape: a scratch two-tap segment with a dual-unit readout, never written back.
+// The room tool's rectangle in progress: dashed outline from the first corner to `end` (the
+// snapped cursor) with a `w × h` readout. Plain, like WallDraftLayer: it moves with the pointer.
+export function RoomRectDraftLayer({ draft, end, project }: {
+  draft: RoomRectDraft;
+  end: Vec2;
+  project: (p: Vec2) => Vec2;
+}) {
+  const { min, max, w, h } = normalizeRect(draft.start, end);
+  const [x0, y0] = project(min);
+  const [x1, y1] = project(max);
+  const [sx, sy] = project(draft.start);
+  return (
+    <g pointerEvents="none">
+      <rect x={Math.min(x0, x1)} y={Math.min(y0, y1)} width={Math.abs(x1 - x0)} height={Math.abs(y1 - y0)}
+        fill={NORDIC_ACCENT} fillOpacity={0.08} stroke={NORDIC_ACCENT} strokeWidth={2} strokeDasharray="6 4" />
+      <circle cx={sx} cy={sy} r={5} fill={NORDIC_ACCENT} />
+      {w > 0.01 && h > 0.01 && (
+        <text x={(x0 + x1) / 2} y={(y0 + y1) / 2} fill={NORDIC_INK} fontSize={12} textAnchor="middle"
+          dominantBaseline="middle" style={{ paintOrder: "stroke" }} stroke="var(--canvas-white)" strokeWidth={3}>
+          {`${formatFtIn(w)} × ${formatFtIn(h)}`}
+        </text>
+      )}
+    </g>
+  );
+}
+
 export function MeasureTapeLayer({ measure, end, project }: {
   measure: MeasureDraft;
   end: Vec2;

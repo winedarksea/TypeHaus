@@ -13,6 +13,7 @@ import { locateUid } from "../state/locate";
 import { useIsCompact } from "../hooks/useBreakpoint";
 import { Sheet } from "./ui/Sheet";
 import { CanvasObjectInspector } from "./inspector/CanvasObjectInspector";
+import { WallPinControls } from "./inspector/WallPinControls";
 
 // Strict contextual inspector (Phase 3): answers only "what can I change about the selected
 // thing?" — hidden when nothing is selected. Extracted from the retired Sidebar; the
@@ -411,6 +412,7 @@ function WallInspector({ model, w, onShowDetails }: { model: Model; w: Wall; onS
         <span className="k">Members</span>
         <span>{w.members.length}</span>
       </div>
+      <WallPinControls model={model} w={w} />
       <Provenance p={w.provenance} />
       <div style={{ height: 10 }} />
       <SectionCard layers={w.layers} title={w.assembly || "Assembly"}

@@ -9,6 +9,8 @@ import { Icon } from "../icons/Icon";
 import { useIsCompact } from "../hooks/useBreakpoint";
 import { useLightDismiss } from "../hooks/useLightDismiss";
 import { buildHandoff } from "../model/handoff";
+import { AddFloorForm } from "./AddFloorForm";
+import { ProjectHouseSection } from "./ProjectHouseSection";
 
 // Left project drawer (Phase 3 relocation; Phase 6 grows the object hierarchy + Views).
 // Houses the always-on dashboards evicted from the strict inspector. Opens as one of the
@@ -39,6 +41,7 @@ export function ProjectDrawer() {
       </div>
 
       <DrawerSection title="Project" defaultOpen right={<CopyHandoffButton model={model} />}>
+        <ProjectHouseSection />
         <Hierarchy model={model} />
       </DrawerSection>
 
@@ -73,9 +76,9 @@ export function ProjectDrawer() {
 function CopyHandoffButton({ model }: { model: Model }) {
   const toast = useStore((s) => s.toast);
   const copy = async () => {
-    const { sessionEdits, activeStorey } = useStore.getState();
-    // No GET /project yet, so the house path is unknown here; the name stands in.
-    const text = buildHandoff(model, sessionEdits, { name: model.project.name, houseDir: null }, activeStorey);
+    const { sessionEdits, activeStorey, project } = useStore.getState();
+    const houseDir = project?.house_dir ?? null;
+    const text = buildHandoff(model, sessionEdits, { name: model.project.name, houseDir }, activeStorey);
     try {
       await navigator.clipboard.writeText(text);
       toast("Agent handoff copied");
@@ -116,6 +119,8 @@ function DrawerSection({ title, defaultOpen = false, right, children }: {
 function Hierarchy({ model }: { model: Model }) {
   const activeStorey = useStore((s) => s.activeStorey);
   const setActiveStorey = useStore((s) => s.setActiveStorey);
+  const canAddFloor = useStore((s) => s.project?.capabilities.includes("add_storey") ?? false);
+  const [addingFloor, setAddingFloor] = useState(false);
   // Storeys under the building that holds them, buildings in the order the project declares
   // them. An older model.json names no building, and then there is one implicit group.
   const buildingGroups = useMemo(() => {
@@ -162,6 +167,9 @@ function Hierarchy({ model }: { model: Model }) {
           </div>
         </div>
       ))}
+      {canAddFloor && (addingFloor
+        ? <AddFloorForm model={model} onDone={() => setAddingFloor(false)} />
+        : <button className="btn" style={{ marginTop: 6 }} onClick={() => setAddingFloor(true)}>Add floor</button>)}
       <div className="kv" style={{ marginTop: 8 }}>
         {counts.map(([label, n]) => (
           <Fragment key={label}>

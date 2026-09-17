@@ -16,6 +16,12 @@ export interface WallDraft {
   startNode: string | null;
 }
 
+// The room tool's two-tap rectangle: `start` is the snapped first corner; the second tap
+// (or the live cursor, while pending) is the opposite corner.
+export interface RoomRectDraft {
+  start: Vec2;
+}
+
 // A two-tap measurement. `start` is already snapped; `end` is null while the second tap is
 // still pending (the canvas rubber-bands to the cursor), and set once the segment is fixed.
 // A tap on a fixed segment starts the next measurement — nothing is ever written to the model.

@@ -6,84 +6,30 @@
 // Real pointer and key events over CDP against `haus serve` on a throwaway copy of
 // houses/starter, with TYPEHAUS_DEBUG_DELAY_MS=800 so every commit is slow enough to race.
 // State is read through `window.__haus.store`. Exits 1 on any failed scenario.
-import { spawn, execFileSync } from "node:child_process";
-import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync } from "node:fs";
-import { createServer } from "node:net";
-import { tmpdir } from "node:os";
+import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 import {
-  attachToPage, captureScreenshot, click, drag, evaluate, key, launchChromium, navigate,
-  setViewport, waitFor,
+  captureScreenshot, click, drag, evaluate, key, navigate, setViewport, waitFor,
 } from "./lib/cdp.mjs";
+import {
+  S, UI, assert, buildUi, finish, near, openLiveHouse, scenarioRunner, sleep, toScreen as screenAt,
+} from "./lib/liveHouse.mjs";
 
-const UI = join(dirname(fileURLToPath(import.meta.url)), "..");
-const ROOT = join(UI, "..");
 const SHOTS = join(UI, "out", "edit-check");
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-const freePort = () => new Promise((resolve) => {
-  const srv = createServer().listen(0, "127.0.0.1", () => {
-    const { port } = srv.address();
-    srv.close(() => resolve(port));
-  });
+buildUi("EDIT_CHECK_SKIP_BUILD");
+const { house, base, session, log, close } = await openLiveHouse("starter", {
+  env: { TYPEHAUS_DEBUG_DELAY_MS: "800" },
 });
 
-if (!process.env.EDIT_CHECK_SKIP_BUILD) execFileSync("npm", ["run", "build"], { cwd: UI, stdio: "inherit" });
+const { scenario, results } = scenarioRunner(session, SHOTS, () => evaluate(session, `const s = ${S};
+  return { save: s.saveState, saved: s.savedRevision, rev: s.model?.revision, conflict: s.conflict,
+           pending: s.pendingTransforms, toasts: s.toasts.map((t) => t.message).slice(-4),
+           chair: (s.model?.canvas_objects ?? []).filter((o) => o.tag === ${JSON.stringify(chair ?? "")})
+             .map((o) => [o.position_m, o.rotation]),
+           server: await fetch("/model").then((r) => r.json()).then((m) => [m.revision,
+             (m.canvas_objects ?? []).filter((o) => o.tag === ${JSON.stringify(chair ?? "")}).map((o) => o.position_m)]) };`));
 
-const house = join(mkdtempSync(join(tmpdir(), "haus-edit-")), "starter");
-cpSync(join(ROOT, "houses", "starter"), house, {
-  recursive: true, filter: (src) => !/(__pycache__|[/\\]out)$/.test(src),
-});
-const port = await freePort();
-let serverLog = "";
-const server = spawn(join(ROOT, ".venv", "bin", "haus"),
-  ["serve", house, "--port", String(port), "--ui-dir", join(UI, "dist")],
-  { env: { ...process.env, TYPEHAUS_DEBUG_DELAY_MS: "800" }, stdio: ["ignore", "pipe", "pipe"] });
-for (const stream of [server.stdout, server.stderr]) stream.on("data", (d) => { serverLog += d; });
-const base = `http://127.0.0.1:${port}`;
-for (let deadline = Date.now() + 60_000; ; await sleep(250)) {
-  // A busy port makes serve exit while another process answers: trust only our own log.
-  if (/address already in use/i.test(serverLog) || server.exitCode !== null) {
-    throw new Error(`haus serve failed to start:\n${serverLog}`);
-  }
-  if (/Uvicorn running/.test(serverLog)) break;
-  if (Date.now() > deadline) throw new Error(`haus serve never came up:\n${serverLog}`);
-}
-
-const cdpPort = await freePort();
-const browser = await launchChromium({ port: cdpPort });
-const session = await attachToPage(cdpPort);
-const S = "window.__haus.store.getState()";
-const results = [];
-
-const scenario = async (name, body) => {
-  const started = Date.now();
-  try {
-    await body();
-    results.push({ name, ok: true });
-    console.log(`PASS ${name} (${Date.now() - started} ms)`);
-  } catch (error) {
-    results.push({ name, ok: false });
-    console.log(`FAIL ${name}: ${error.message}`);
-    const state = await evaluate(session, `const s = ${S};
-      return { save: s.saveState, saved: s.savedRevision, rev: s.model?.revision, conflict: s.conflict,
-               pending: s.pendingTransforms, toasts: s.toasts.map((t) => t.message).slice(-4),
-               chair: (s.model?.canvas_objects ?? []).filter((o) => o.tag === ${JSON.stringify(chair ?? "")})
-                 .map((o) => [o.position_m, o.rotation]),
-               server: await fetch("/model").then((r) => r.json()).then((m) => [m.revision,
-                 (m.canvas_objects ?? []).filter((o) => o.tag === ${JSON.stringify(chair ?? "")}).map((o) => o.position_m)]) };`).catch((e) => e.message);
-    console.log(`     ${JSON.stringify(state)}`);
-    const png = await captureScreenshot(session).catch(() => null);
-    if (png) writeFileSync(join(SHOTS, `${name.replace(/\W+/g, "-")}.png`), png);
-  }
-};
-const assert = (cond, message) => { if (!cond) throw new Error(message); };
-const near = (a, b, tol = 0.02) => Math.abs(a - b) <= tol;
-
-const toScreen = ([x, y]) => evaluate(session, `const s = ${S};
-  const r = document.querySelector("svg.canvas-svg").getBoundingClientRect();
-  return [r.left + s.view.tx + ${x} * s.view.scale, r.top + s.view.ty - ${y} * s.view.scale];`);
+const toScreen = (xy) => screenAt(session, evaluate, xy);
 // The pose the canvas shows: the pending overlay first, then the authoritative model.
 const shown = (tag) => evaluate(session, `const s = ${S};
   const o = (s.model?.canvas_objects ?? []).find((c) => c.tag === ${JSON.stringify(tag)});
@@ -97,7 +43,6 @@ const settled = (label = "settled") => waitFor(session, `const s = ${S};
 
 let chair;
 try {
-  mkdirSync(SHOTS, { recursive: true });
   await setViewport(session, { width: 1600, height: 1000 });
   await navigate(session, `${base}/`);
   await evaluate(session, `window.__errs = []; addEventListener("error", (e) => __errs.push(String(e.message))); return 1;`);
@@ -233,16 +178,7 @@ try {
   const errors = await evaluate(session, `return window.__errs;`);
   if (errors.length) { console.log(`page errors: ${JSON.stringify(errors)}`); results.push({ name: "no page errors", ok: false }); }
 } finally {
-  session.close();
-  await browser.close();
-  server.kill();
-  rmSync(dirname(house), { recursive: true, force: true });
+  await close();
 }
 
-// Reconcile adopting source means the in-memory fast path and the writeback disagreed.
-const diverged = serverLog.split("\n").filter((line) => /diverged from source/.test(line));
-results.push({ name: "no in-memory/source divergence", ok: diverged.length === 0 });
-if (diverged.length) console.log(`FAIL server diverged:\n${diverged.join("\n")}`);
-const failed = results.filter((r) => !r.ok);
-console.log(`\n${results.length - failed.length}/${results.length} scenarios passed`);
-if (failed.length) process.exit(1);
+finish(results, log.text);

@@ -68,6 +68,40 @@ def _next_tag(existing: list, prefix: str) -> str:
     return f"{prefix}{n}"
 
 
+def _plan_tags(plan: PlanModel) -> set[str]:
+    return {el.tag for group in plan.elements.values() for el in group}
+
+
+def _next_plan_tag(plan: PlanModel, prefix: str, pending: set[str] | None = None) -> str:
+    """The lowest free ``<prefix><n>`` across the whole plan — tags are unique plan-wide
+    (``loader._identity_check``), so a per-storey count collides on a second floor.
+    ``pending`` holds tags this macro already minted; the new tag is added to it."""
+    used = _plan_tags(plan) | (pending or set())
+    n = 1
+    while f"{prefix}{n}" in used:
+        n += 1
+    tag = f"{prefix}{n}"
+    if pending is not None:
+        pending.add(tag)
+    return tag
+
+
+def _storey_file_hint(plan: PlanModel, storey: str) -> str | None:
+    """``plan/storeys/<storey>.py`` when that editable storey module exists, else None."""
+    if not plan.source_root:
+        return None
+    from pathlib import Path
+
+    from typehaus.source.dialect import is_editable
+
+    rel = f"plan/storeys/{storey}.py"
+    path = Path(plan.source_root) / rel
+    try:
+        return rel if path.is_file() and is_editable(path.read_text()) else None
+    except OSError:
+        return None
+
+
 def _copy_tag(plan: PlanModel, source_tag: str) -> str:
     """Return a readable unused duplicate tag without changing the original identity."""
     used = {item.tag for storey in plan.storeys for item in plan.storey_elements(storey.tag)}

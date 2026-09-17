@@ -8,6 +8,7 @@ and revision-hash-guarded exactly like a hand op — no separate write path.
 
 from __future__ import annotations
 
+import dataclasses
 from typing import Any
 
 from typehaus.model.materials import Material
@@ -36,15 +37,26 @@ def build_macro_ops(plan: PlanModel, body: dict[str, Any], *,
         raise MacroRequestError(
             f"unknown macro {name!r} ({', '.join(sorted(_DISPATCH))})"
         ) from None
+    storey = body.get("storey", "")
     try:
         if name in _ROOM_AWARE:
             rooms = model.rooms if model is not None else None
-            return handler(plan, body.get("storey", ""), body, rooms=rooms)
-        return handler(plan, body.get("storey", ""), body)
-    except macros.MacroError as exc:
+            result = handler(plan, storey, body, rooms=rooms)
+        else:
+            result = handler(plan, storey, body)
+    except ValueError as exc:  # MacroError, and an unparseable length
         raise MacroRequestError(str(exc)) from exc
     except (KeyError, TypeError) as exc:
         raise MacroRequestError(f"bad arguments for {name!r}: {exc}") from exc
+    return _stamp_storey(result, storey) if storey else result
+
+
+def _stamp_storey(result: MutationResult, storey: str) -> MutationResult:
+    """Every add a storey macro emits lands on that storey unless the macro said otherwise —
+    the fast path's ref-based guess misfiles the first element of an empty storey."""
+    ops = [dataclasses.replace(op, storey=storey)
+           if op.op == "add" and op.storey is None else op for op in result.ops]
+    return dataclasses.replace(result, ops=ops)
 
 
 def _xy(raw: Any) -> tuple[Any, Any]:
@@ -174,6 +186,20 @@ def _duplicate_canvas_object(plan: PlanModel, storey: str, body: dict[str, Any],
     return macros.duplicate_canvas_object(plan, storey, tag=body["tag"], rooms=rooms)
 
 
+def _copy_storey_layout(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+    return macros.copy_storey_layout(plan, body["from"], storey, hint_file=body.get("hint_file"))
+
+
+def _draw_room_rect(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+    return macros.draw_room_rect(plan, storey, _xy(body["a"]), _xy(body["b"]), body["assembly"],
+                                 body["occupancy"], floor_finish=body.get("floor_finish"),
+                                 hint_file=body.get("hint_file"))
+
+
+def _delete_wall(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+    return macros.delete_wall(plan, storey, body["wall"], keep_room=body.get("keep_room"))
+
+
 def _duplicate_assembly(plan: PlanModel, _s: str, body: dict[str, Any]) -> MutationResult:
     return assembly_ops.duplicate_assembly(plan, body["source"], body["tag"])
 
@@ -213,9 +239,12 @@ def _add_material(plan: PlanModel, _s: str, body: dict[str, Any]) -> MutationRes
 
 _DISPATCH = {
     "draw_wall": _draw_wall,
+    "copy_storey_layout": _copy_storey_layout,
     "move_nodes": _move_nodes,
     "split_wall": _split_wall,
     "heal_walls": _heal_walls,
+    "draw_room_rect": _draw_room_rect,
+    "delete_wall": _delete_wall,
     "place_opening": _place_opening,
     "place_rough_opening": _place_rough_opening,
     "move_opening": _move_opening,

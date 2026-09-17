@@ -97,3 +97,43 @@ def test_place_placeable_add_equivalent(house: Path):
     for op in ops:
         op.fields["uid"] = new_uid()
     _assert_equivalent(house, ops)
+
+
+def _wire_empty_attic(house: Path) -> None:
+    """A third storey whose module holds only empty lists (what Add floor writes)."""
+    (house / "plan/storeys/attic.py").write_text(
+        "# haus: editable\nfrom typehaus import Node, Wall\n\nNODES = []\nWALLS = []\n")
+    manifest = house / "plan/manifest.py"
+    src = manifest.read_text()
+    src = src.replace("from plan.storeys import main, upper",
+                      "from plan.storeys import attic, main, upper")
+    src = src.replace(
+        '    Storey(uid="STUPPRAAAA", tag="upper", elevation=ft(9), default_ceiling_height=ft(9)),\n',
+        '    Storey(uid="STUPPRAAAA", tag="upper", elevation=ft(9), default_ceiling_height=ft(9)),\n'
+        '    Storey(uid="STATTCAAAA", tag="attic", elevation=ft(18), default_ceiling_height=ft(8)),\n')
+    src = src.rstrip().removesuffix(")") + '    .with_elements("attic", [*attic.NODES, *attic.WALLS])\n)\n'
+    manifest.write_text(src)
+
+
+def test_add_to_empty_storey_lands_on_that_storey(house: Path):
+    _wire_empty_attic(house)
+    base = load_plan(house).plan
+    ops = draw_wall(base, "attic", (0.0, 0.0), (3.0, 0.0), assembly="EXT").ops
+    assert {op.storey for op in ops} == {"attic"}
+    mem_plan, _ = apply_ops_to_plan(base, ops)
+    assert {e.tag for e in mem_plan.storey_elements("attic")} == {op.tag for op in ops}
+
+
+def test_draw_wall_routes_into_empty_nodes_list(house: Path):
+    _wire_empty_attic(house)
+    base = load_plan(house).plan
+    ops = draw_wall(base, "attic", (0.0, 0.0), (3.0, 0.0), assembly="EXT").ops
+    assert all(op.hint_file == "plan/storeys/attic.py" for op in ops)
+    # Tags are minted plan-wide: main already holds N-1.. and W-1..
+    main_tags = {e.tag for e in base.all_elements()}
+    assert not main_tags & {op.tag for op in ops}
+    for op in ops:
+        op.fields["uid"] = new_uid()
+    _assert_equivalent(house, ops)
+    reloaded = load_plan(house).plan
+    assert {e.tag for e in reloaded.storey_elements("attic")} == {op.tag for op in ops}

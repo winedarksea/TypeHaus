@@ -24,6 +24,7 @@ REQUIRED = (
     "typehaus/library/materials.py",
     "typehaus/templates/starter/plan/manifest.py",
     "typehaus/templates/starter/preferences.toml",
+    "typehaus/templates/empty/plan/manifest.py",
 )
 
 

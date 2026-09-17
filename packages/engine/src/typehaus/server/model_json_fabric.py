@@ -136,7 +136,8 @@ def wall_graph_json(
         "nodes": [
             {"tag": node.tag, "storey": storey.tag,
              "x_m": node.position.xy_m[0], "y_m": node.position.xy_m[1],
-             "open_end": node.open_end, "provenance": _provenance(provenance, node.tag)}
+             "open_end": node.open_end, "anchored": node.anchored,
+             "provenance": _provenance(provenance, node.tag)}
             for storey in model.plan.storeys
             for node in model.plan.storey_elements(storey.tag)
             if node.element_kind == "Node"
