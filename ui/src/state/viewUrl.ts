@@ -11,16 +11,17 @@ import {
   type VisibilityKey, type VisibleTrades,
 } from "../model/tradeVisibility";
 import type {
-  DetailView, LabelMode, Lens, Representation, ThreeMode, ViewMode, Workspace,
+  DetailView, LabelMode, Lens, ThreeMode, ViewMode, Workspace,
 } from "./vocabulary";
 
 export interface ViewParams {
   viewMode?: ViewMode;
-  representation?: Representation;
   threeMode?: ThreeMode;
   /** Exactly these keys on, everything else off. */
   visible?: VisibilityKey[];
   activeStorey?: string;
+  /** Level keys hidden in 3D; checked against the model on apply. */
+  hiddenLevels?: string[];
   labelMode?: LabelMode;
   activeLens?: Lens;
   activeWorkspace?: Workspace;
@@ -28,7 +29,6 @@ export interface ViewParams {
 }
 
 const MODES: ViewMode[] = ["2d", "split", "3d"];
-const REPS: Representation[] = ["conceptual", "schematic", "detailed", "fabrication"];
 const THREE: ThreeMode[] = ["nordic", "schematic"];
 const LABELS: LabelMode[] = ["all", "hover", "off"];
 const LENSES: Lens[] = ["none", "air", "water", "thermal", "vapor"];
@@ -39,13 +39,13 @@ const READERS: DetailView[] = [
 
 /** The store's initial values (store.ts). A param equal to one of these is not printed. */
 const DEFAULTS = {
-  viewMode: "2d", representation: "detailed", threeMode: "nordic", labelMode: "hover",
+  viewMode: "2d", threeMode: "nordic", labelMode: "hover",
   activeLens: "none", activeWorkspace: "design", detailView: "none",
 } as const;
 
 /** Every query key this module owns; anything else in the search string is left alone. */
 const OWN_KEYS = [
-  "preset", "mode", "rep", "three", "show", "group", "storey", "labels", "lens", "ws", "reader",
+  "preset", "mode", "three", "show", "group", "storey", "hideLevels", "labels", "lens", "ws", "reader",
 ];
 
 const structure = () => expandRolePreset(ROLE_PRESETS.Structure);
@@ -54,7 +54,7 @@ const sticks = () => structure().filter((k) => !(DEFAULT_OFF_KEYS as readonly st
 
 /** Named bundles. Explicit params override a preset's. */
 export const URL_PRESETS: Record<string, () => ViewParams> = {
-  framer: () => ({ viewMode: "3d", representation: "fabrication", visible: sticks() }),
+  framer: () => ({ viewMode: "3d", visible: sticks() }),
   architecture: () => ({ visible: expandRolePreset(ROLE_PRESETS.Architecture) }),
   structure: () => ({ visible: structure() }),
   mep: () => ({ visible: expandRolePreset(ROLE_PRESETS.MEP) }),
@@ -83,13 +83,14 @@ export function parseViewParams(search: string): ViewParams {
     if (value !== undefined) out[key] = value;
   };
   set("viewMode", pick(q.get("mode"), MODES));
-  set("representation", pick(q.get("rep"), REPS));
   set("threeMode", pick(q.get("three"), THREE));
   set("labelMode", pick(q.get("labels"), LABELS));
   set("activeLens", pick(q.get("lens"), LENSES));
   set("activeWorkspace", pick(q.get("ws"), WORKSPACES));
   set("detailView", pick(q.get("reader"), READERS));
   set("activeStorey", q.get("storey") || undefined);
+  const hidden = list(q.get("hideLevels"));
+  if (hidden.length) out.hiddenLevels = hidden;
   if (q.has("show") || q.has("group")) {
     const known = new Set<string>(ALL_VISIBILITY_KEYS);
     const keys = new Set<VisibilityKey>(
@@ -103,9 +104,9 @@ export function parseViewParams(search: string): ViewParams {
 
 export interface ViewSnapshot {
   viewMode: ViewMode;
-  representation: Representation;
   threeMode: ThreeMode;
   visibleTrades: VisibleTrades;
+  hiddenLevels: string[];
   activeStorey: string | null;
   labelMode: LabelMode;
   activeLens: Lens;
@@ -126,12 +127,12 @@ export function viewParamsFor(state: ViewSnapshot): string {
     if (value !== fallback) q.set(key, value);
   };
   put("mode", state.viewMode, DEFAULTS.viewMode);
-  put("rep", state.representation, DEFAULTS.representation);
   put("three", state.threeMode, DEFAULTS.threeMode);
   const base = defaultVisibleTrades();
   if (ALL_VISIBILITY_KEYS.some((k) => (state.visibleTrades[k] !== false) !== base[k])) {
     q.set("show", ALL_VISIBILITY_KEYS.filter((k) => state.visibleTrades[k] !== false).join(","));
   }
+  if (state.hiddenLevels.length) q.set("hideLevels", state.hiddenLevels.join(","));
   if (state.activeStorey) put("storey", state.activeStorey, defaultStorey(state.model));
   put("labels", state.labelMode, DEFAULTS.labelMode);
   put("lens", state.activeLens, DEFAULTS.activeLens);
@@ -152,7 +153,7 @@ export function mergeSearch(search: string, params: string): string {
 
 interface ViewSetters {
   setActiveStorey: (tag: string | null) => void;
-  setRepresentation: (r: Representation) => void;
+  setHiddenLevels: (keys: readonly string[]) => void;
   setThreeMode: (m: ThreeMode) => void;
   showOnlyTrades: (keys: readonly VisibilityKey[]) => void;
   setLabelMode: (m: LabelMode) => void;
@@ -170,7 +171,6 @@ type ViewStore = {
 
 /** Params that stand without a model. */
 function applyModelFree(s: ViewSetters, p: ViewParams): void {
-  if (p.representation) s.setRepresentation(p.representation);
   if (p.threeMode) s.setThreeMode(p.threeMode);
   if (p.visible) s.showOnlyTrades(p.visible);
   if (p.labelMode) s.setLabelMode(p.labelMode);
@@ -185,6 +185,10 @@ function applyWithModel(s: ViewSetters, model: Model, p: ViewParams): void {
   if (storey && (model.storeys.some((st) => st.tag === storey)
       || levelsOf(model).some((l) => l.key === storey))) {
     s.setActiveStorey(storey);
+  }
+  if (p.hiddenLevels) {
+    const known = new Set(levelsOf(model).map((l) => l.key));
+    s.setHiddenLevels(p.hiddenLevels.filter((k) => known.has(k)));
   }
   if (p.detailView === "documents") s.openDocuments();
   else if (p.detailView) s.setDetailView(p.detailView);

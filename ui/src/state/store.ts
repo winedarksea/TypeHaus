@@ -29,7 +29,7 @@ import { createMutationActions, type MutationActions } from "./mutations";
 import { createSiteSlice, type SiteSlice } from "./site";
 import {
   DEFAULT_EARTH_OPACITY,
-  type Conflict, type DetailView, type DocumentsTab, type LabelMode, type Lens, type Representation, type Selection,
+  type Conflict, type DetailView, type DocumentsTab, type LabelMode, type Lens, type Selection,
   type ThreeMode, type Toast, type Tool,
   type ViewMode, type ViewTransform, type Workspace,
 } from "./vocabulary";
@@ -57,7 +57,6 @@ export interface StoreState extends MutationActions, SiteSlice {
   commandPaletteOpen: boolean; // ⌘K fuzzy command surface (Phase 4)
   recentCommands: string[]; // command ids, most-recent first (Phase 4)
   activeWorkspace: Workspace; // DESIGN / ANALYZE / DOCUMENT (Phase 6)
-  representation: Representation; // conceptual → fabrication detail level (Phase 6)
   workbench: "assembly" | "stair" | null; // focus-mode workbench for complex edits (Phase 7)
   activeLens: Lens; // building-science lens (Phase 9)
   preview3DOpen: boolean; // floating synchronized 3D preview over the 2D plan (Phase 10)
@@ -67,13 +66,12 @@ export interface StoreState extends MutationActions, SiteSlice {
   hoverUid: string | null;
   activeStorey: string | null;
   view: ViewTransform;
-  // Derived from `representation`, never set directly: a separate toggle could disagree
-  // with the representation the Views panel was reporting.
-  showFraming: boolean;
   labelMode: LabelMode; // how much name text the 2D plan draws (rooms + objects; default hover)
   // One visibility model, read by both Canvas2D and Panel3D (→ model/visibility.ts): trades
   // answer "which discipline", layer groups answer "which band of the assembly".
   visibleTrades: VisibleTrades;
+  // Level keys (→ model/levels.ts) whose storeys the 3D view hides. Empty = every level.
+  hiddenLevels: string[];
   // How solid the 3D site sheet is drawn, 0..1. Independent of `visibleTrades.earth`, which
   // is still what turns the ground off entirely: this only says how much of the basement the
   // ground you *are* showing lets through, from the translucent default up to real dirt.
@@ -109,7 +107,6 @@ export interface StoreState extends MutationActions, SiteSlice {
   setCommandPaletteOpen: (v: boolean) => void;
   pushRecentCommand: (id: string) => void;
   setActiveWorkspace: (w: Workspace) => void;
-  setRepresentation: (r: Representation) => void;
   setWorkbench: (w: "assembly" | "stair" | null) => void;
   setActiveLens: (l: Lens) => void;
   setPreview3DOpen: (v: boolean) => void;
@@ -120,6 +117,9 @@ export interface StoreState extends MutationActions, SiteSlice {
   // Several at once (a group header), and the isolation gesture: exactly these, nothing else.
   setTradesVisible: (keys: readonly VisibilityKey[], visible: boolean) => void;
   showOnlyTrades: (keys: readonly VisibilityKey[]) => void;
+  toggleHiddenLevel: (key: string) => void;
+  setHiddenLevels: (keys: readonly string[]) => void;
+  showAllLevels: () => void;
   setEarthOpacity: (opacity: number) => void;
   showEverything: () => void; // one-tap escape from an over-filtered view
   setDetailView: (v: DetailView) => void;
@@ -180,7 +180,6 @@ export const useStore = create<StoreState>((set, get, store) => ({
   commandPaletteOpen: false,
   recentCommands: [],
   activeWorkspace: "design",
-  representation: "detailed",
   workbench: null,
   activeLens: "none",
   preview3DOpen: false,
@@ -190,9 +189,9 @@ export const useStore = create<StoreState>((set, get, store) => ({
   hoverUid: null,
   activeStorey: null,
   view: { scale: 120, tx: 80, ty: 80 },
-  showFraming: true,
   labelMode: "hover",
   visibleTrades: defaultVisibleTrades(),
+  hiddenLevels: [],
   earthOpacity: DEFAULT_EARTH_OPACITY,
   detailView: "none",
   documentsTab: "drawings",
@@ -308,10 +307,6 @@ export const useStore = create<StoreState>((set, get, store) => ({
   pushRecentCommand: (id) =>
     set((s) => ({ recentCommands: [id, ...s.recentCommands.filter((c) => c !== id)].slice(0, 6) })),
   setActiveWorkspace: (activeWorkspace) => set({ activeWorkspace }),
-  // Representation generalizes showFraming: detailed/fabrication show framing, conceptual/
-  // schematic show wall fills only.
-  setRepresentation: (representation) =>
-    set({ representation, showFraming: representation === "detailed" || representation === "fabrication" }),
   setWorkbench: (workbench) => set({ workbench }),
   setActiveLens: (activeLens) => set({ activeLens }),
   setPreview3DOpen: (preview3DOpen) => set({ preview3DOpen }),
@@ -325,6 +320,10 @@ export const useStore = create<StoreState>((set, get, store) => ({
       ...s.visibleTrades, ...Object.fromEntries(keys.map((key) => [key, visible])),
     } })),
   showOnlyTrades: (keys) => set({ visibleTrades: onlyTrades(keys) }),
+  toggleHiddenLevel: (key) => set((s) => ({ hiddenLevels: s.hiddenLevels.includes(key)
+    ? s.hiddenLevels.filter((k) => k !== key) : [...s.hiddenLevels, key] })),
+  setHiddenLevels: (keys) => set({ hiddenLevels: [...new Set(keys)] }),
+  showAllLevels: () => set({ hiddenLevels: [] }),
   setEarthOpacity: (opacity) => set({ earthOpacity: Math.min(1, Math.max(0, opacity)) }),
   showEverything: () => set({ visibleTrades: allVisibleTrades() }),
   // Leaving for the canvas always clears the origin: whatever opened the reader, the user

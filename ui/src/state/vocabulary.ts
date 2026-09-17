@@ -19,7 +19,6 @@ export type ThreeMode = "nordic" | "schematic";
 // "hover" shows a label only under the pointer (a selected element always shows its own).
 export type LabelMode = "all" | "hover" | "off";
 export type Workspace = "design" | "analyze" | "document"; // tool/drawer emphasis
-export type Representation = "conceptual" | "schematic" | "detailed" | "fabrication"; // detail level
 // Building-science lenses (Phase 9): a lens semantically re-frames the model to answer one
 // question. Air · water · thermal shipped first; vapour joined them once materials carried a
 // sourced permeance (Material.vapor_permeance_at), which is what lets that lens report the

@@ -9,8 +9,8 @@ import {
 } from "../model/tradeVisibility";
 import { RESOLVED_NORDIC_PALETTE } from "../nordic/palette";
 import { ALL_TRADES, type Trade } from "../state/vocabulary";
-import { applyTradeVisibility, tagTrades } from "./builders/registry";
-import { snapshot, tagNew } from "./builders/scene";
+import { applyTradeVisibility, applyVisibility, tagTrades } from "./builders/registry";
+import { snapshot, tagNew, tagStorey } from "./builders/scene";
 import { buildWall } from "./builders/walls";
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -184,4 +184,39 @@ export function runTagNewFacetTests() {
   // the container with no framing key of its own.
   assert(tagOne(["concrete"]) === "framing",
     "A caller that named no framing facet is still force-tagged framing");
+}
+
+// The 3D level filter: a storey-tagged element hides with its storey, whatever its trades, and
+// the two filters compose. Routed through the real wall builder and the scene's tagging.
+export function runLevelVisibilityTests() {
+  const tradeGroups = groups();
+  const root = new THREE.Group();
+  for (const trade of ALL_TRADES) root.add(tradeGroups[trade]);
+  const before = snapshot(tradeGroups);
+  buildWall(tradeGroups, wall(), [], [0, 0], "schematic", RESOLVED_NORDIC_PALETTE.light,
+    [], new Map());
+  tagNew(tradeGroups, before, ["siding", "insulation", "drywall", "framing"]);
+  tagStorey(tradeGroups, before, "S-1");
+  const earthBefore = snapshot(tradeGroups);
+  tradeGroups.earth.add(new THREE.Mesh());
+  tagNew(tradeGroups, earthBefore, ["earth"]);
+  tagStorey(tradeGroups, earthBefore, null);
+  const bands = tradeGroups.siding.children;
+  const earth = tradeGroups.earth.children[0];
+  assert(bands.every((b) => b.userData.storey === "S-1"), "Every band carries the wall's storey");
+  assert(earth.userData.storey === undefined, "The site sheet carries no storey");
+
+  applyVisibility(root, allVisibleTrades(), new Set(["S-1"]));
+  assert(bands.every((b) => !b.visible), "A hidden storey hides every band, whatever its trades");
+  assert(earth.visible, "Untagged earth is unaffected by the level filter");
+
+  applyVisibility(root, onlyTrades(["drywall"]), new Set(["S-2"]));
+  const drywall = bands.filter((b) => (b.userData.trades as string[]).includes("drywall"));
+  assert(drywall.length === 1 && drywall[0].visible, "A shown level defers to the trade rule");
+  assert(bands.filter((b) => !drywall.includes(b)).every((b) => !b.visible),
+    "A trade-off band stays hidden when its level is shown");
+  assert(!earth.visible, "Earth still answers to its own trade");
+
+  applyVisibility(root, allVisibleTrades(), new Set());
+  assert(bands.every((b) => b.visible) && earth.visible, "Showing every level restores the wall");
 }

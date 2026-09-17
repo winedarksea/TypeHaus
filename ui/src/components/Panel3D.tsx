@@ -1,9 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { useStore } from "../state/store";
 import { ALL_TRADES, DEFAULT_EARTH_OPACITY, type SelectionKind, type Trade } from "../state/vocabulary";
-import { anyTradeVisible, defaultVisibleTrades, type VisibleTrades } from "../model/tradeVisibility";
+import { defaultVisibleTrades, type VisibleTrades } from "../model/tradeVisibility";
+import { levelsOf } from "../model/levels";
 import type { Model } from "../model/types";
 import type { EngineClient } from "../engine/EngineClient";
 import { RESOLVED_NORDIC_PALETTE, type ResolvedNordicPalette } from "../nordic/palette";
@@ -17,7 +18,7 @@ import {
 } from "../three/cameraFraming";
 import { WHOLE_HOUSE_GLB_PRIMARY } from "../three/wholeHouseGlb";
 import { applyWholeHouseGlb, loadWholeHouseGlb } from "../three/wholeHouseGlbScene";
-import { applyTradeVisibility, isRenderedInScene } from "../three/builders/registry";
+import { applyVisibility, isRenderedInScene, objectVisible } from "../three/builders/registry";
 import { planCenterOf, populateScene, type SceneRegistry } from "../three/builders/scene";
 import { applyEarthOpacity } from "../three/builders/site";
 import {
@@ -62,6 +63,11 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
   const select = useStore((s) => s.select);
   const selection = useStore((s) => s.selection);
   const visibleTrades = useStore((s) => s.visibleTrades);
+  const hiddenLevels = useStore((s) => s.hiddenLevels);
+  // A hidden level hides every storey on its datum.
+  const hiddenStoreys = useMemo(() => new Set(model ? levelsOf(model)
+    .filter((l) => hiddenLevels.includes(l.key)).flatMap((l) => l.storeys) : []),
+  [model, hiddenLevels]);
   const earthOpacity = useStore((s) => s.earthOpacity);
   const client = useStore((s) => s.client);
   const { theme } = useTheme();
@@ -118,8 +124,8 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
   }, [selection]);
 
   useEffect(() => {
-    api.current?.setVisibleTrades(visibleTrades);
-  }, [visibleTrades]);
+    api.current?.setVisibility(visibleTrades, hiddenStoreys);
+  }, [visibleTrades, hiddenStoreys]);
 
   // Retarget the site sheet's material in place. Deliberately not a setModel dependency: a
   // slider drag would otherwise rebuild every wall, stick and placeable per frame.
@@ -192,7 +198,7 @@ interface SceneApi {
   zoomBy: (factor: number) => void;
   resetView: () => void;
   highlight: (uid: string | null) => void;
-  setVisibleTrades: (visible: VisibleTrades) => void;
+  setVisibility: (visible: VisibleTrades, hiddenStoreys: ReadonlySet<string>) => void;
   setEarthOpacity: (opacity: number) => void;
   dispose: () => void;
 }
@@ -254,7 +260,7 @@ function createScene(
   // One persistent THREE.Group per trade (→ WP7): created once, repopulated by setModel. The
   // containers are keyed by an element's PRIMARY trade; visibility is never flipped on the
   // container, because an element rides a SET of trades (a wall body is siding + insulation
-  // + drywall) and draws iff any of them is on — `applyTradeVisibility` walks the tagged
+  // + drywall) and draws iff any of them is on — `applyVisibility` walks the tagged
   // meshes instead (→ model/tradeVisibility.ts).
   const tradeGroups = Object.fromEntries(
     ALL_TRADES.map((trade) => [trade, new THREE.Group()]),
@@ -287,6 +293,7 @@ function createScene(
   // which persist. Remembering the filter here is what lets a rebuild land with the user's
   // filter still applied.
   let visibleTrades: VisibleTrades = defaultVisibleTrades();
+  let hiddenStoreys: ReadonlySet<string> = new Set();
   // Ground opacity is remembered here for the same reason: the sheet is one of the meshes a
   // rebuild throws away, so populateScene reads this rather than the default.
   let earthOpacity = DEFAULT_EARTH_OPACITY;
@@ -680,7 +687,7 @@ function createScene(
     populateScene({
       tradeGroups, model: m, center, mode, palette, earthOpacity, registry,
       generation: sceneGeneration, currentGeneration: () => sceneGeneration, requestRender,
-      tradeVisible: (trades) => anyTradeVisible(trades, visibleTrades),
+      tradeVisible: (trades, storey) => objectVisible({ trades, storey }, visibleTrades, hiddenStoreys),
     });
 
     // Frame the building bounds (earth excluded, or the site sheet dominates), including its
@@ -702,7 +709,7 @@ function createScene(
       key.target.updateMatrixWorld();
     }
     if (!preserveView) applyFraming(false);
-    applyTradeVisibility(content, visibleTrades); // the rebuild dropped the tagged meshes
+    applyVisibility(content, visibleTrades, hiddenStoreys); // the rebuild dropped the tagged meshes
     requestRender();
   };
 
@@ -716,7 +723,7 @@ function createScene(
       // the rebuilt materials.
       sceneGeneration++;
       highlighted = null;
-      applyTradeVisibility(content, visibleTrades);
+      applyVisibility(content, visibleTrades, hiddenStoreys);
       highlight(selectedUid);
     });
   };
@@ -746,9 +753,10 @@ function createScene(
     requestRender();
   };
 
-  const setVisibleTrades = (visible: VisibleTrades) => {
+  const setVisibility = (visible: VisibleTrades, hidden: ReadonlySet<string>) => {
     visibleTrades = visible;
-    applyTradeVisibility(content, visibleTrades);
+    hiddenStoreys = hidden;
+    applyVisibility(content, visibleTrades, hiddenStoreys);
     requestRender();
   };
 
@@ -774,7 +782,7 @@ function createScene(
     zoomBy,
     resetView,
     highlight,
-    setVisibleTrades,
+    setVisibility,
     setEarthOpacity,
     dispose: () => {
       cancelAnimationFrame(raf);

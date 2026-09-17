@@ -12,8 +12,8 @@ const model = { storeys: [{ tag: "basement" }, { tag: "main" }] } as unknown as 
 
 function snapshot(over: Partial<ViewSnapshot> = {}): ViewSnapshot {
   return {
-    viewMode: "2d", representation: "detailed", threeMode: "nordic",
-    visibleTrades: defaultVisibleTrades(), activeStorey: "main", labelMode: "hover",
+    viewMode: "2d", threeMode: "nordic",
+    visibleTrades: defaultVisibleTrades(), hiddenLevels: [], activeStorey: "main", labelMode: "hover",
     activeLens: "none", activeWorkspace: "design", detailView: "none", model, ...over,
   };
 }
@@ -22,26 +22,29 @@ export function runViewUrlTests(): void {
   assert(viewParamsFor(snapshot()) === "", "the default view prints nothing");
 
   const view = snapshot({
-    viewMode: "3d", representation: "fabrication", threeMode: "schematic",
+    viewMode: "3d", threeMode: "schematic", hiddenLevels: ["basement", "attic"],
     visibleTrades: onlyTrades(["framing", "concrete"]), activeStorey: "basement",
     labelMode: "off", activeLens: "thermal", activeWorkspace: "analyze", detailView: "bom",
   });
   const printed = viewParamsFor(view);
   assert(printed.includes("show=concrete,framing"), `commas unescaped: ${printed}`);
   const back = parseViewParams(`?${printed}`);
-  assert(back.viewMode === "3d" && back.representation === "fabrication"
+  assert(back.viewMode === "3d"
     && back.threeMode === "schematic" && back.labelMode === "off" && back.activeLens === "thermal"
     && back.activeWorkspace === "analyze" && back.detailView === "bom"
     && back.activeStorey === "basement", "round-trips every field");
   assert(back.visible?.join() === "concrete,framing", "visibility round-trips literally");
+  assert(printed.includes("hideLevels=basement,attic"), `hidden levels print: ${printed}`);
+  assert(back.hiddenLevels?.join() === "basement,attic", "hidden levels round-trip");
+  assert(Object.keys(parseViewParams("?rep=conceptual")).length === 0, "a retired ?rep= is ignored");
 
-  const junk = parseViewParams("?mode=4d&rep=x&reader=none&show=nope&lens=");
+  const junk = parseViewParams("?mode=4d&rep=x&reader=none&show=nope&lens=&hideLevels=");
   assert(Object.keys(junk).length === 0, `unknown values are dropped: ${JSON.stringify(junk)}`);
   assert(parseViewParams("?show=framing:connector").visible?.join() === "framing:connector",
     "a facet is addressable");
 
   const framer = parseViewParams("?preset=framer");
-  assert(framer.viewMode === "3d" && framer.representation === "fabrication", "preset expands");
+  assert(framer.viewMode === "3d", "preset expands");
   assert(framer.visible?.join() === expandRolePreset(ROLE_PRESETS.Structure)
     .filter((k) => !(DEFAULT_OFF_KEYS as readonly string[]).includes(k)).join(),
     "framer shows the Structure role, sticks without the stand-in bands");

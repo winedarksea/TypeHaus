@@ -49,7 +49,6 @@ export function CommandPalette() {
   const setTradeVisible = useStore((s) => s.setTradeVisible);
   const visibleTrades = useStore((s) => s.visibleTrades);
   const setActivePanel = useStore((s) => s.setActivePanel);
-  const setRepresentation = useStore((s) => s.setRepresentation);
   const setActiveWorkspace = useStore((s) => s.setActiveWorkspace);
   const setActiveLens = useStore((s) => s.setActiveLens);
   const setTradesVisible = useStore((s) => s.setTradesVisible);
@@ -84,10 +83,6 @@ export function CommandPalette() {
       { id: "ws-design", title: "Workspace: Design", group: "Workspace", run: () => setActiveWorkspace("design") },
       { id: "ws-analyze", title: "Workspace: Analyze", group: "Workspace", run: () => setActiveWorkspace("analyze") },
       { id: "ws-document", title: "Workspace: Document", group: "Workspace", run: () => setActiveWorkspace("document") },
-      { id: "rep-conceptual", title: "Detail: Conceptual", group: "View", run: () => setRepresentation("conceptual") },
-      { id: "rep-schematic", title: "Detail: Schematic", group: "View", run: () => setRepresentation("schematic") },
-      { id: "rep-detailed", title: "Detail: Detailed", group: "View", run: () => setRepresentation("detailed") },
-      { id: "rep-fabrication", title: "Detail: Fabrication", group: "View", run: () => setRepresentation("fabrication") },
       { id: "lens-none", title: "Lens: Normal", group: "Lens", run: () => setActiveLens("none") },
       { id: "lens-air", title: "Lens: Air", group: "Lens", run: () => setActiveLens("air") },
       { id: "lens-water", title: "Lens: Water", group: "Lens", run: () => setActiveLens("water") },
@@ -142,7 +137,7 @@ export function CommandPalette() {
     void threeMode;
     return list;
   }, [undo, redo, setTool, setViewMode, setThreeMode, threeMode, setTradeVisible, visibleTrades,
-    setActivePanel, setRepresentation, setActiveWorkspace, setActiveLens,
+    setActivePanel, setActiveWorkspace, setActiveLens,
     setTradesVisible, showEverything, setDetailView, openDocuments,
     reload, offline, setSurface, setSitePage]);
 

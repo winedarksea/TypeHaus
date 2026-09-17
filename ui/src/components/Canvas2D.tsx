@@ -54,7 +54,6 @@ export function Canvas2D() {
   const selection = useStore((s) => s.selection);
   const select = useStore((s) => s.select);
   const hoverUid = useStore((s) => s.hoverUid);
-  const showFraming = useStore((s) => s.showFraming);
   const labelMode = useStore((s) => s.labelMode);
   // The plan reads the same visibility model the 3D panel does (→ model/visibility.ts), so a
   // discipline or an assembly layer hidden in one view is hidden in the other.
@@ -457,7 +456,7 @@ export function Canvas2D() {
                 project={project}
                 selected={selection.uid === w.uid}
                 hovered={hoverUid === w.uid}
-                showFraming={showFraming && visibleTrades.framing}
+                showFraming={visibleTrades.framing}
                 showLayers={layersVisible}
                 visibleTrades={visibleTrades}
                 activeLens={activeLens}

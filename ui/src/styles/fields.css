@@ -58,7 +58,7 @@
   outline-offset: 1px;
 }
 
-/* Filter chips: single-select rows inside a panel (representation, shading, labels,
+/* Filter chips: single-select rows inside a panel (shading, labels,
    roles). Full-round, full hit target. */
 .seg-row {
   gap: var(--space-1);

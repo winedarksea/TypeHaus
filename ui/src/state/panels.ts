@@ -27,7 +27,7 @@ export const PANELS: PanelSpec[] = [
     id: "views",
     label: "Views",
     icon: "layers",
-    hint: "Level, disciplines, representation, saved view recipes",
+    hint: "Level, disciplines, saved view recipes",
   },
   {
     id: "project",

@@ -7,13 +7,13 @@ import { Menu } from "../ui/Menu";
 /**
  * The bottom status rail: a quiet, tabular readout of the view you are looking at.
  *
- * Its content (level, disciplines, representation) is *status*, not control, so it belongs
+ * Its content (level, disciplines, hidden 3D levels) is *status*, not control, so it belongs
  * here rather than the top-centre of the drawing, where a floor plan's subject usually sits.
  */
 export function StatusRail() {
   const model = useStore((s) => s.model);
   const activeStorey = useStore((s) => s.activeStorey);
-  const representation = useStore((s) => s.representation);
+  const hiddenLevels = useStore((s) => s.hiddenLevels);
   const visibleTrades = useStore((s) => s.visibleTrades);
   const activeLens = useStore((s) => s.activeLens);
   const setActiveLens = useStore((s) => s.setActiveLens);
@@ -35,15 +35,17 @@ export function StatusRail() {
       <button
         className={`status-view-readout${activePanel === "views" ? " active" : ""}`}
         onClick={() => setActivePanel("views")}
-        title="Open Views — level, disciplines, representation"
+        title="Open Views — level, disciplines, 3D levels"
       >
         <span>{activeStorey ?? "—"}</span>
         <span className="sep">·</span>
         <span>
           {shownTrades === ALL_TRADES.length ? "All trades" : `${shownTrades} of ${ALL_TRADES.length} trades`}
         </span>
-        <span className="sep">·</span>
-        <span>{representation[0].toUpperCase() + representation.slice(1)}</span>
+        {hiddenLevels.length > 0 && (<>
+          <span className="sep">·</span>
+          <span>{`${hiddenLevels.length} level${hiddenLevels.length === 1 ? "" : "s"} hidden in 3D`}</span>
+        </>)}
       </button>
 
       <span className="sep">·</span>

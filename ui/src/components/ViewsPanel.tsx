@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState, type CSSProperties } from "react";
 import { useStore } from "../state/store";
 import { activeLevelKey, levelsOf } from "../model/levels";
-import { DEFAULT_EARTH_OPACITY, type LabelMode, type Representation, type ViewMode, type ThreeMode, type ViewTransform, type Workspace } from "../state/vocabulary";
+import { DEFAULT_EARTH_OPACITY, type LabelMode, type ViewMode, type ThreeMode, type ViewTransform, type Workspace } from "../state/vocabulary";
 import { viewParamsFor } from "../state/viewUrl";
 import { migrateSavedVisibility, type VisibleTrades } from "../model/tradeVisibility";
 import { DisciplinesGrid } from "./views/DisciplinesGrid";
@@ -9,12 +9,10 @@ import { Icon } from "../icons/Icon";
 import { useIsCompact } from "../hooks/useBreakpoint";
 import { useLightDismiss } from "../hooks/useLightDismiss";
 
-// Views (Phase 6): untangles workspace / visibility / representation, and adds saved view
+// Views (Phase 6): untangles workspace / visibility, and adds saved view
 // recipes. Consolidates the loose 3D trade toggles + nordic/schematic switch (relocated out
 // of Panel3D) into one shared control usable by both 2D and 3D. The discipline grid and the
 // role presets live in views/DisciplinesGrid.tsx.
-
-const REPRESENTATIONS: Representation[] = ["conceptual", "schematic", "detailed", "fabrication"];
 
 const WORKSPACES: Workspace[] = ["design", "analyze", "document"];
 const WORKSPACE_HINT: Record<Workspace, string> = {
@@ -34,7 +32,10 @@ interface SavedView {
   activeStorey: string | null;
   viewMode: ViewMode;
   threeMode: ThreeMode;
-  representation: Representation;
+  // Retired (2026-09-16): the Framing discipline covers it. Kept so old recipes parse; ignored.
+  representation?: string;
+  // Optional: recipes saved before the 3D level filter existed show every level.
+  hiddenLevels?: string[];
   // Keyed by trade. A recipe saved under the older 13-name vocabulary, or carrying the
   // retired per-layer groups, is folded onto the current trades by migrateSavedVisibility.
   visibleTrades: Record<string, boolean>;
@@ -75,8 +76,8 @@ export function ViewsPanel() {
 
   const activeStorey = useStore((s) => s.activeStorey);
   const setActiveStorey = useStore((s) => s.setActiveStorey);
-  const representation = useStore((s) => s.representation);
-  const setRepresentation = useStore((s) => s.setRepresentation);
+  const hiddenLevels = useStore((s) => s.hiddenLevels);
+  const toggleHiddenLevel = useStore((s) => s.toggleHiddenLevel);
   const threeMode = useStore((s) => s.threeMode);
   const setThreeMode = useStore((s) => s.setThreeMode);
   const visibleTrades = useStore((s) => s.visibleTrades);
@@ -108,7 +109,7 @@ export function ViewsPanel() {
       activeStorey: s.activeStorey,
       viewMode: s.viewMode,
       threeMode: s.threeMode,
-      representation: s.representation,
+      hiddenLevels: [...s.hiddenLevels],
       visibleTrades: { ...s.visibleTrades },
       earthOpacity: s.earthOpacity,
       labelMode: s.labelMode,
@@ -126,7 +127,7 @@ export function ViewsPanel() {
     s.setActiveStorey(v.activeStorey);
     s.setViewMode(v.viewMode);
     s.setThreeMode(v.threeMode);
-    s.setRepresentation(v.representation);
+    s.setHiddenLevels(v.hiddenLevels ?? []);
     const migrated: VisibleTrades = migrateSavedVisibility(v.visibleTrades, v.visibleLayerGroups);
     s.showOnlyTrades(Object.entries(migrated).flatMap(([trade, on]) => (on ? [trade] : [])) as
       Parameters<typeof s.showOnlyTrades>[0]);
@@ -189,14 +190,20 @@ export function ViewsPanel() {
       </div>
       <div className="muted views-hint">{WORKSPACE_HINT[workspace]}</div>
 
-      <h3>Representation</h3>
-      <div className="seg-row">
-        {REPRESENTATIONS.map((r) => (
-          <button key={r} className={`seg-btn${representation === r ? " active" : ""}`} onClick={() => setRepresentation(r)}>
-            {r[0].toUpperCase() + r.slice(1)}
-          </button>
-        ))}
+      {/* Any subset, unlike the Level select above, which picks the one level the plan draws. */}
+      <h3>Levels in 3D</h3>
+      <div className="trade-grid">
+        {[...levelsOf(model)].sort((a, b) => a.elevation_m - b.elevation_m).map((l) => {
+          const on = !hiddenLevels.includes(l.key);
+          return (
+            <label key={l.key} className={`trade-chip${on ? " on" : ""}`}>
+              <input type="checkbox" checked={on} onChange={() => toggleHiddenLevel(l.key)} />
+              {l.key}
+            </label>
+          );
+        })}
       </div>
+      <div className="muted views-hint">Hides every element filed on that level's storeys.</div>
 
       <h3>3D shading</h3>
       <div className="seg-row">

@@ -32,14 +32,41 @@ export function tagTrades(
   }
 }
 
-/** Apply the trade filter to everything under `root`: an object draws iff any trade in its
- *  set is visible. Objects with no set are left alone — their ancestors decide. One
- *  traversal, one bool per tagged object, no geometry work, so it runs on every rebuild. */
-export function applyTradeVisibility(root: THREE.Object3D, visible: VisibleTrades) {
+/** Stamp every object a builder just added to `parent` with the storey it is filed on, so a
+ *  hidden level can flip it without a rebuild. `null` (the site sheet) stays untagged. */
+export function tagStorey(parent: THREE.Object3D, firstChildIndex: number, storey: string | null) {
+  if (!storey) return;
+  for (let index = firstChildIndex; index < parent.children.length; index++) {
+    parent.children[index].userData.storey = storey;
+  }
+}
+
+/** Whether a tagged object draws: a hidden storey wins over any trade, then the trade rule. */
+export function objectVisible(
+  userData: Record<string, unknown>, visible: VisibleTrades, hiddenStoreys: ReadonlySet<string>,
+): boolean {
+  const storey = userData.storey as string | undefined;
+  if (storey && hiddenStoreys.has(storey)) return false;
+  const trades = userData.trades as string[] | undefined;
+  return trades ? anyTradeVisible(trades, visible) : true;
+}
+
+/** Apply the trade and level filters to everything under `root`. Objects with neither tag are
+ *  left alone — their ancestors decide. One traversal, no geometry work, so it runs on every
+ *  rebuild. */
+export function applyVisibility(
+  root: THREE.Object3D, visible: VisibleTrades, hiddenStoreys: ReadonlySet<string>,
+) {
   root.traverse((object) => {
-    const trades = object.userData.trades as string[] | undefined;
-    if (trades) object.visible = anyTradeVisible(trades, visible);
+    if (object.userData.trades || object.userData.storey) {
+      object.visible = objectVisible(object.userData, visible, hiddenStoreys);
+    }
   });
+}
+
+/** The trade filter alone. */
+export function applyTradeVisibility(root: THREE.Object3D, visible: VisibleTrades) {
+  applyVisibility(root, visible, new Set());
 }
 
 // Make every mesh a builder just added to `parent` resolve to one model element: snapshot
@@ -87,4 +114,3 @@ export function registerMemberPicks(parent: THREE.Object3D, firstChildIndex: num
   }
 }
 
-/** Whether an object and every ancestor above it is visible — three's own render-time test. */
