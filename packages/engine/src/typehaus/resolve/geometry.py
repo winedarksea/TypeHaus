@@ -235,7 +235,8 @@ def light_run_band_profiles(
 Vec3 = tuple[float, float, float]
 
 
-def light_run_band_shells(path: list[Vec], z_path: list[float]) -> list[tuple[str, list[list[Vec3]]]]:
+def light_run_band_shells(path: list[Vec],
+                          z_path: list[float]) -> list[tuple[str, list[list[Vec3]]]]:
     """:func:`light_run_band_profiles` as closed 3-D box shells that follow ``z_path``.
 
     One ``(key, faces)`` per band per leg; faces wind outward (bottom reversed, top, sides).

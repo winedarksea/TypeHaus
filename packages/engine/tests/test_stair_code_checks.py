@@ -237,9 +237,12 @@ def test_catlin_flights_have_graded_handrails(catlin_ctx):
     same pattern. The COUNT assertion had already moved to 10 and the tag set had not, so
     this read red for a rail that was authored and passing — which is the failure mode a
     census test exists to prevent and has to be able to survive itself.
+
+    Nine since 2026-09-16: RL-A-FLIGHT-GUARD is a plain `guard` now; RL-A-HANDRAIL is
+    ST-S2A's one continuous rail.
     """
     findings = stair_handrail(catlin_ctx)
-    assert [f.result for f in findings] == [Result.PASS] * 10, \
+    assert [f.result for f in findings] == [Result.PASS] * 9, \
         [f.message for f in findings]
     assert {f.message.split()[0] for f in findings} == {
         "ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE", "ST-SG-PORCH", "ST-BW-ENTRY"}
@@ -250,9 +253,8 @@ def test_handrail_is_unknown_when_no_handrail_is_authored_anywhere(catlin_ctx):
     never a silent pass and never a fabricated deficiency."""
     from typehaus.model.structure import Railing
 
-    # Both roles, not just "handrail": RL-A-FLIGHT-GUARD is a `guard_and_handrail`, and
-    # leaving it standing would leave ST-S2A with a rail while the premise says the house
-    # has none.
+    # Both roles, not just "handrail": the porch and entry stair rails are
+    # `guard_and_handrail`, and leaving them standing would contradict the premise.
     ctx = _ctx_with_elements(
         catlin_ctx,
         lambda e: None if isinstance(e, Railing)
@@ -315,7 +317,8 @@ def test_catlin_guards_pass_the_four_inch_sphere_rule(catlin_ctx):
     # line, so R312.1.3 has no fall to protect there and the screen declares `role="screen"`
     # rather than claiming to be a guard beside one. RL-BW-GARAGE-W left on 2026-09-11: the
     # interior landing moved into the garage's SW corner and W-G-W closes that edge.
-    assert tags == ["RL-A-FLIGHT-GUARD", "RL-A-STAIR", "RL-BW-ENTRY", "RL-BW-GARAGE-E",
+    # RL-A-FLIGHT-SKIRT since 2026-09-16: the panel skirt under the attic deck's edge.
+    assert tags == ["RL-A-FLIGHT-GUARD", "RL-A-FLIGHT-SKIRT", "RL-A-STAIR", "RL-BW-ENTRY", "RL-BW-GARAGE-E",
                     "RL-M-STAIRHEAD", "RL-S-STAIR",
                     "RL-S-STAIRHEAD", "RL-SG-BALCONY", "RL-SG-PORCH", "RL-SG-PORCH-NE",
                     "RL-SG-PSTAIR-N", "RL-SG-PSTAIR-S", "RL-SG-PTHRESH-N",

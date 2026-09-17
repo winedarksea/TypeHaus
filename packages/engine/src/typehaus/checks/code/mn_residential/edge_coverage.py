@@ -102,7 +102,7 @@ def _uncovered_runs(p0, p1, closures, railings, stair_quads, *, gap_tol_m: float
     Runs at or under ``gap_tol_m`` are dropped: a corner lap or a resolution sliver is not
     an open side.
     """
-    from typehaus.resolve.floors import _subtract_interval
+    from typehaus.resolve.floor_openings import _subtract_interval
     from typehaus.resolve.geometry import length, sub
 
     run = length(sub(p1, p0))

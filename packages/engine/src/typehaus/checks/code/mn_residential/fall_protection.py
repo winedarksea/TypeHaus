@@ -53,7 +53,7 @@ def stairwell_guard(ctx: CheckContext) -> list[Finding]:
     no stair wells reports UNKNOWN — never PASS by absence.
     """
     from typehaus.model.floors import FloorOpening, FloorOpeningPurpose, FloorSystem
-    from typehaus.resolve.floors import _rectangular_opening_box
+    from typehaus.resolve.floor_openings import _rectangular_opening_box
 
     cid, code = "code.R312_1_guard", "R312.1"
     openings_by_tag = {e.tag: e for e in ctx.plan.all_elements()

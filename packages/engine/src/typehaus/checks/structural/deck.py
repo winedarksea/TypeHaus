@@ -1207,8 +1207,10 @@ def deck_guard(ctx: CheckContext) -> list[Finding]:
             ))
             continue
         # A guard is required. It has to actually sit on this deck, at full height.
+        # A rail raked with a stair (``serves_stair``) stands on no deck, whatever its datum.
         on_deck = [r for r in railings
-                   if abs(r.base_elevation.meters - surface_m) < 0.15]
+                   if abs(r.base_elevation.meters - surface_m) < 0.15
+                   and not getattr(r.source, "serves_stair", None)]
         walls_on_deck = [w for w in guard_walls if abs(w.z0_m - surface_m) < 0.15]
         if not on_deck and not walls_on_deck:
             # Before failing it for having no guard, ask whether it has an open edge at

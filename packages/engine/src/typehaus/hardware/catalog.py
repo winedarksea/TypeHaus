@@ -47,6 +47,9 @@ ROLE_IJOIST_FACE_MOUNT_HANGER = "ijoist_face_mount_hanger"
 # A level open-web floor truss into a flush carrier's face: sized for a flat 2x4 (nominal
 # "4x2") bottom chord, never derived — same per-joint authoring as the I-joist role above.
 ROLE_FLOOR_TRUSS_HANGER = "floor_truss_hanger"
+# A multi-ply LVL floor-opening header into its trimmer pack: sized by the pack's width and
+# depth (``fits_nominal`` names the profile), derived wherever the header hangs.
+ROLE_SCL_FACE_MOUNT_HANGER = "scl_face_mount_hanger"
 ROLE_CONCRETE_FACE_MOUNT_HANGER = "concrete_face_mount_hanger"
 ROLE_KNEE_BRACE = "knee_brace"
 ROLE_BRACE_THROUGH_BOLT = "brace_through_bolt"

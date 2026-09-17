@@ -13440,7 +13440,7 @@
       "linetype": "CONTINUOUS",
       "closed": true,
       "uid": "CAF602AAAA",
-      "tag": "bearing-block-1-013"
+      "tag": "bearing-block-1-016"
     },
     {
       "space": "model",
@@ -13488,7 +13488,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CAF602AAAA",
-      "tag": "bearing-block-1-013/flange"
+      "tag": "bearing-block-1-016/flange"
     },
     {
       "space": "model",
@@ -13508,7 +13508,7 @@
       "linetype": "CONTINUOUS",
       "closed": false,
       "uid": "CAF602AAAA",
-      "tag": "bearing-block-1-013/flange"
+      "tag": "bearing-block-1-016/flange"
     },
     {
       "space": "model",

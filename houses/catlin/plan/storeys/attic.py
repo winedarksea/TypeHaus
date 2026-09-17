@@ -88,7 +88,7 @@ NODES = [
     # The stair well's south closure — see W-A-GC-S for why the guard stops and a wall
     # takes over at x=29'-4 1/2". Both axes are set by pinning a FACE to the well edge and
     # growing INT_2X4_PARTITION's 4 3/4" AWAY from the opening, the same rule W-A-SN uses on
-    # the north edge: 5'-9 5/8" - 2 3/8" = 5'-7 1/4" south, 35'-5 3/8" + 2 3/8" = 35'-7 3/4"
+    # the north edge: 5'-4" - 2 3/8" = 5'-1 5/8" south, 35'-5 3/8" + 2 3/8" = 35'-7 3/4"
     # east. A wall centred ON the edge would hang half its thickness over the void.
     #
     # Both ends are `open_end` and both for a real reason, not to quiet the loop check:
@@ -97,9 +97,9 @@ NODES = [
     # plate. Neither terminus closes a polygon, so `integrity.wall_loop_open` is answering
     # correctly and the flag is the authored way to say so. N-A-GC3 (SDBE5SHZGH) existed for
     # a day to carry W-A-GC-E's north end and went with it.
-    Node(uid="BPSA3Z9JYP", tag="N-A-GC1", position=pt(ft(29, 4.5), ft(5, 7.25)),
+    Node(uid="BPSA3Z9JYP", tag="N-A-GC1", position=pt(ft(29, 4.5), ft(5, 1.625)),
          open_end=True),
-    Node(uid="67H4TA4EDQ", tag="N-A-GC2", position=pt(ft(35, 5.375), ft(5, 7.25)),
+    Node(uid="67H4TA4EDQ", tag="N-A-GC2", position=pt(ft(35, 5.375), ft(5, 1.625)),
          open_end=True),
 ]
 
@@ -757,23 +757,18 @@ BEAMS = [
 # on — an earlier version had this edge on the sheathing plane, with the ledger resolving
 # outside the building. Lands in RM-S-STUDY2 below, matching the source's flight.
 #
-# ** THE WEST EDGE IS THE STAIR HEAD, AND IT MOVED 2026-09-15 FROM 21'-2" TO 22'-5 3/8". **
-# The source's 21'-2" was 15 3/8" west of anywhere ST-S2A reaches: the flight spends 3'-0"
-# on the winder box and 12 goings at 10" on the straight run, so it tops out at
-# x = 35'-5 3/8" - 3'-0" - 10'-0" = 22'-5 3/8", and the strip beyond it was 15 3/8" x 3'-0"
-# of open floor opening at the head of the stair. Nothing in the engine could see it:
-# `code.R311_7_5_1_stair_end_risers` reads the arrival deck through `deck_owning_opening`,
-# so a flight ending over the hole arrives at exactly the right ELEVATION and passes.
-# `code.R311_7_6_stair_arrival_floor` is the rule that asks in plan, and it was written for
-# the same defect in `resolve/stairs/u_split.py` (notes/u_stair_split_landing.md).
-# The deck simply grows east to meet the nosing; nothing else about the well moves, and the
-# north edge W-A-SN covers is unchanged.
+# West edge = stair head, 22'-5 3/8" (moved 2026-09-15 from 21'-2"): the flight tops out at
+# 35'-5 3/8" - 3'-0" winder box - 10'-0" of goings. North edge: W-A-SN's face, unchanged.
+# South edge ON the y=5'-4" joist line (2026-09-16), 5 5/8" south of the 3'-0" stair: the
+# trimmer pack takes that joist's place instead of crowding it 5/8" away. East edge bears on
+# W-S-E1, the stair's own box wall, so no header stands 4 5/8" off the rim.
 FLOOR_OPENINGS = [
     FloorOpening(uid="CAF601AAAA", tag="FO-A-STAIR",
-                 outline=(pt(ft(22, 5.375), ft(5, 9.625)),
-                          pt(ft(35, 5.375), ft(5, 9.625)),
+                 outline=(pt(ft(22, 5.375), ft(5, 4)),
+                          pt(ft(35, 5.375), ft(5, 4)),
                           pt(ft(35, 5.375), ft(8, 9.625)),
-                          pt(ft(22, 5.375), ft(8, 9.625)))),
+                          pt(ft(22, 5.375), ft(8, 9.625))),
+                 bearing_refs=("W-S-E1",)),
 ]
 
 FLOOR = [
@@ -836,25 +831,17 @@ FLOOR = [
                 openings=("FO-A-STAIR", "FO-A-HALL")),
 ]
 
-# Guard the open south AND EAST edges of the attic stair well in RM-A-STUDY. This reuses
-# the balcony guard's 42" metal fascia-mounted railing family and post spacing, but starts
-# at the attic walking surface rather than the exterior deck datum.
-#
-# ** THE RAILING STOPS AT x=29'-4 1/2" AND W-A-GC-S CLOSES THE REST. **
-# It ran the full south edge and turned north up the east one for a day, which was wrong in
-# 3D and right in plan — the guard check is 2D and never asked whether 42" of railing fits
-# under a 6:12 rake that is 4 3/4" tall at the east end. The whole derivation, and why a
-# wall rather than a shorter railing is the honest answer, is on W-A-GC-S in WALLS above.
-#
-# What the east end used to have was the inside gwb face of the W-A-E1 knee wall, which
-# landed on the well edge exactly: EXT_2X6 is 13 1/4" deep off a sheathing datum at
-# x=36'-0", so its finish face stood at 35'-5 3/8". W-A-E1 is a 1 1/2" rafter plate now and
-# a plate guards nothing, so the closure is the honest price of the ~360 sf of knee wall the
-# storey stopped building — 6'-1" of low partition instead of 9'-1" of railing.
+# The attic deck's edge along the well's south side, y=5'-4": 42" metal fascia guard from the
+# stair head (with a 5 5/8" return to the flight) east to x=29'-4 1/2", where the 6:12 rake
+# leaves no room for it and W-A-GC-S closes the rest (derivation on that wall). The well's east
+# edge has no walking surface to guard. West of the 26'-5 3/8" newel this rail also guards the
+# flight below it (see RL-A-FLIGHT-GUARD).
 STAIR_GUARD = Railing(
     uid="CARL01AAAA", tag="RL-A-STAIR", type_ref="RAILING-INT-STAIR-GUARD", path=(
-        pt(ft(21, 2), ft(5, 9.625)),
-        pt(ft(29, 4.5), ft(5, 9.625)),
+        # Return across the head edge's 5 5/8" strip south of the flight, to the head newel.
+        pt(ft(22, 5.375), ft(5, 9.625)),
+        pt(ft(22, 5.375), ft(5, 4)),
+        pt(ft(29, 4.5), ft(5, 4)),
     ),
     kind=RailingKind.METAL_FASCIA_MOUNT, height=ft(3.5),
     base_elevation=ft(20), post_spacing=inch(60), post_size="2x2", rail_count=2,
@@ -863,61 +850,49 @@ STAIR_GUARD = Railing(
     infill="balusters", baluster_spacing=inch(4),
 )
 
-# ** THE FLIGHT'S OWN OPEN SIDE. ** RL-A-STAIR above guards the *attic deck*
-# edge at 20'-0"; W-A-GC-S closes the rest of that line. Neither of them guards ST-S2A
-# itself. The well is cut to exactly the stair's 3'-0" width, and the north face of the
-# flight is W-S-SS2 — but the SOUTH face, y=5'-9 5/8", stands open over RM-S-STUDY2's floor
-# at 10'-0" for the whole straight run. Measured off the resolved nosing line, the walking
-# surface there is 30" above that floor at the first straight riser (x=32'-5 3/8") and 120"
-# at the top, so R312.1.1 asks for a guard over 10'-0" of it and nothing in the plan was
-# providing one. Every check passed: `code.R312_1_guard` grades the four edges of a floor
-# OPENING against the deck that hosts it, and a flight's own open side is not one of them.
+# ** THE FLIGHT'S OWN OPEN SIDE. ** RL-A-STAIR guards the attic deck edge; nothing there
+# guards ST-S2A, whose south side stands open over RM-S-STUDY2 (30" at the first straight
+# riser x=32'-5 3/8", 120" at the top), so R312.1.1 wants a guard over the straight run.
+# The winders stay outside it: their treads are under the 30" trigger.
 #
-# The three winders below x=32'-5 3/8" are deliberately outside this run. Their treads sit
-# 7 1/2", 15" and 22 1/2" above the study floor — under R312.1.1's 30" trigger — and their
-# south side is the narrow inside of the turn, where a guard would have to be built to the
-# fan rather than to a line. The newel lands on the first straight riser instead, which is
-# both the 30" station and the corner a builder would set it on.
+# ONE LINE ON y=5'-4" WITH A NEWEL TRANSITION, NO TAPER. This run holds 36" over the
+# nosings from the first straight riser to x=26'-5 3/8", where its cap meets the level 42"
+# RL-A-STAIR; west of that RL-A-STAIR stands >= 36" over every nosing and guards the flight
+# too. Constant rake height, so a stock adjustable stair panel kit fits (confirm with a
+# dealer). The deck edge sits 5 5/8" off the stair's south face: the triangle between the
+# nosing line and the deck framing, x ~24'-11"..26'-5 3/8" (<= ~15"), gets a raked skirt
+# board to close the 4" sphere — no schema for it; finish carpentry.
 #
-# ONE ELEMENT, TWO SECTIONS. R312.1.2 exception 1 measures a stair guard from the line
-# joining the nosings and asks 34"; R311.7.8.1 wants a handrail 34"-38" off the same line.
-# A single 36" top bar with a Type I section satisfies both, so this is `guard_and_handrail`
-# rather than a guard with a second rail bolted to it — and it is what makes the run
-# affordable, since RAILING-INT-STAIR-GUARD is priced as a component system in prices.toml
-# and a separately-billed handrail on top of it would double-count the same bar.
-#
-# ** IT OVERLAPS RL-A-STAIR, AND THAT IS THE HONEST READING, NOT A SLIP. ** Both run on
-# y=5'-9 5/8". East of x=26'-5 3/8" the rake's 36" band is entirely under the attic deck
-# and the two never touch; west of it the rake climbs through 20'-0" and the bands cross,
-# 0" at x=26'-5 3/8" growing to the full 36" at the top nosing — 4'-0" of double cover. On
-# site this is ONE balustrade whose cap rakes up and lands on the level run at the top
-# newel; a `Railing` is a path with one height over one base, so two elements is the only
-# way to say it. The alternative — stopping this run at x=26'-5 3/8" — reads tidier and is
-# actually unsafe: RL-A-STAIR's *base* is the attic deck, so the flight below it would then
-# carry 0"-36" of open edge over an 84" fall with nothing but daylight under the rail. The
-# takeoff bills both runs at full length, which over-counts the line by 4'-0" and roughly
-# pays for the raked triangle of infill the box IR cannot draw.
-#
-# RL-A-HANDRAIL below STAYS. It is the rail that reaches the winder fan (R311.7.8.2 wants
-# continuity from above the lowest riser), which this one cannot, and two rails on a 36"
-# flight still clear 32 1/2" — R311.7.1 allows 27" with a rail on both sides, against
-# 31 1/2" with one. `base_elevation` is the second storey's 10'-0", not the attic's 20'-0": the
-# rake comes from `serves_stair`, and the datum is the floor this guard stops a fall onto.
+# `guard`, not `guard_and_handrail`: RL-A-HANDRAIL on the north wall is the continuous
+# R311.7.8 rail, and one rail leaves 31 1/2" of R311.7.1 clear width on the 36" flight.
+# `base_elevation` is the second storey's 10'-0": the rake comes from `serves_stair`.
 FLIGHT_GUARD = Railing(
     uid="C75VZB9VX8", tag="RL-A-FLIGHT-GUARD", type_ref="RAILING-INT-STAIR-GUARD", path=(
-        pt(ft(32, 5.375), ft(5, 9.625)),
-        pt(ft(22, 5.375), ft(5, 9.625)),
+        pt(ft(32, 5.375), ft(5, 4)),
+        pt(ft(26, 5.375), ft(5, 4)),
     ),
-    # 60" o.c., the spacing RL-A-STAIR, RL-S-STAIR and RL-S-STAIRHEAD all use: over a
-    # 10'-0" run that is 3 posts where 48" is 4, and the baluster count does not move —
-    # 24 either way, because the 4" sphere sets it, not the post rhythm.
+    # 60" o.c., the spacing RL-A-STAIR, RL-S-STAIR and RL-S-STAIRHEAD all use.
     kind=RailingKind.METAL_FASCIA_MOUNT, height=inch(36),
     base_elevation=ft(10), post_spacing=inch(60), post_size="2x2", rail_count=2,
     mount="fascia", assembly="RAILING_DARK_METAL",
-    role="guard_and_handrail", serves_stair="ST-S2A", top_height=inch(36),
-    graspable_profile="1.5in round — Type I",
+    role="guard", serves_stair="ST-S2A", top_height=inch(36),
     # R312.1.3: 4" clear between balusters — the largest opening the sphere rule admits.
     infill="balusters", baluster_spacing=inch(4),
+)
+
+# The raked skirt under the newel transition: west of RL-A-FLIGHT-GUARD the flight is guarded
+# by RL-A-STAIR on the deck above, and between the nosings and the underside of FS-ATTIC's
+# framing (228 1/8") a band up to ~22" stays open. A finish board fastened under the trimmer
+# pack, raked with the flight; 18 3/4" over the nosings reaches within 4" of the framing at
+# the newel and stays under the deck line at its west end. Billed by run with the untyped rails.
+FLIGHT_SKIRT = Railing(
+    uid="CEF7HWWGNP", tag="RL-A-FLIGHT-SKIRT", path=(
+        pt(ft(26, 5.375), ft(5, 4)),
+        pt(ft(24, 9), ft(5, 4)),
+    ),
+    kind=RailingKind.METAL_FASCIA_MOUNT, height=inch(18.75),
+    base_elevation=ft(10), post_spacing=inch(48), post_size="2x2", rail_count=1,
+    mount="fascia", role="guard", serves_stair="ST-S2A", infill="panel",
 )
 
 # ST-S2A handrail (R311.7.8), wall-mounted on W-S-SS2, raked along the flight's nosing line
@@ -969,4 +944,5 @@ STAIRS = [
 ]
 
 ELEMENTS = [*NODES, *WALLS, *OPENINGS, *ROOMS, *ALARMS, *ROOFS, *BEAMS, *FLOOR_OPENINGS,
-            *FLOOR, STAIR_GUARD, FLIGHT_GUARD, STAIR_HANDRAIL, *STAIRS]
+            *FLOOR, STAIR_GUARD, FLIGHT_GUARD, FLIGHT_SKIRT, STAIR_HANDRAIL,
+            *STAIRS]

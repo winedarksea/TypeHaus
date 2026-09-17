@@ -14,16 +14,15 @@ table rather than letting the drawn member imply a prescriptive answer.
 
 from __future__ import annotations
 
-
 import pytest
+from _helpers import CATLIN as CATLIN_DIR
 
 from typehaus.checks import build_context
 from typehaus.checks.structural.checks import floor_opening_header_within_prescriptive
 from typehaus.findings import Result
 from typehaus.quantities import ft, inch
-from typehaus.resolve.floors import opening_header_profile
+from typehaus.resolve.floor_openings import opening_header_profile
 from typehaus.resolve.framing.profiles import cross_section
-from _helpers import CATLIN as CATLIN_DIR
 
 
 def _members(model, category):
@@ -85,7 +84,7 @@ def test_opening_headers_are_multi_ply_and_deck_deep(catlin_model):
     short opening at all, so "always >= 2" and "doubled unless short" were the same
     assertion; the 9" pillar chases in ``FS-SG-PORCH`` separated them.
     """
-    from typehaus.resolve.floors import _prescriptive_short_opening
+    from typehaus.resolve.floor_openings import _prescriptive_short_opening
 
     headers = _members(catlin_model, "header")
     assert headers
@@ -212,7 +211,7 @@ def test_engineered_decks_keep_the_engineered_header_at_every_span():
 
 
 def test_trimmer_plies_follow_the_same_line():
-    from typehaus.resolve.floors import _trimmer_plies
+    from typehaus.resolve.floor_openings import _trimmer_plies
     assert _trimmer_plies(ft(3, 4).meters, "2x8") == 1
     assert _trimmer_plies(ft(4, 1).meters, "2x8") == 2
     assert _trimmer_plies(ft(3, 4).meters, "11.875 I-joist") == 2
@@ -225,3 +224,142 @@ def test_catlin_is_unchanged_by_the_short_opening_allowance(catlin_model):
     assert {key for key in trimmers if key.endswith("-1")}, "doubled pairs survive"
     for key in trimmers:
         assert key.endswith(("-0", "-1")), key
+
+
+# ------------------------------------------------ bearing-to-bearing trimmers + hangers
+# A 24'x12' I-joist deck in x on three bearing lines (x = 0, 12', 24'); the opening sits in
+# the east span at y 4'-0"..7'-4", so the y=4'-0" joist line is ON its south edge and the
+# 5'-4"/6'-8" lines are inside it.
+def _deck_plan(*, east_edge=None, opening_bearing=(), member="11.875 I-joist"):
+    import uuid
+
+    from typehaus.model import (
+        Assembly,
+        Building,
+        FloorOpening,
+        FloorSystem,
+        FramingSpec,
+        JoistSpec,
+        Layer,
+        LayerFunction,
+        Library,
+        Material,
+        Node,
+        PlanModel,
+        Project,
+        Site,
+        Storey,
+        Wall,
+    )
+    from typehaus.quantities import degF, pt
+
+    east_edge = east_edge or ft(20)
+    stud = Assembly(tag="EXT", layers=(
+        Layer(name="stud", material_ref="wood", thickness=inch(5.5),
+              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6")),))
+    project = Project(
+        name="Deck", project_uuid=uuid.UUID("00000000-0000-4000-8000-0000000000b1"),
+        site=Site(lat=44.9, lon=-93.2, elevation=ft(830), design_temp_heating=degF(-15),
+                  design_temp_cooling=degF(90)), building=Building(name="Deck"))
+    main = Storey(uid="STMAIN0001", tag="main", elevation=ft(0), default_ceiling_height=ft(9))
+    second = Storey(uid="STSEC00001", tag="second", elevation=ft(9),
+                    default_ceiling_height=ft(9))
+    nodes, walls = [], []
+    for index, x in enumerate((0, 12, 24)):
+        south, north = f"N-{index}S", f"N-{index}N"
+        nodes += [Node(uid=f"N{index:08d}S", tag=south, position=pt(ft(x), ft(0)), open_end=True),
+                  Node(uid=f"N{index:08d}N", tag=north, position=pt(ft(x), ft(12)), open_end=True)]
+        walls.append(Wall(uid=f"W{index:09d}", tag=f"W-{x}", start_node=south,
+                          end_node=north, assembly="EXT", top=ft(9)))
+    plan = PlanModel(project=project, library=Library(
+        materials=(Material(tag="wood", name="Wood", r_per_inch=1.25),),
+        assemblies=(stud,)), storeys=(main, second))
+    deck = (
+        FloorOpening(uid="FO00000001", tag="FO-1", bearing_refs=opening_bearing, outline=(
+            pt(ft(14), ft(4)), pt(east_edge, ft(4)), pt(east_edge, ft(7, 4)),
+            pt(ft(14), ft(7, 4)))),
+        FloorSystem(uid="FS00000001", tag="FS-1", openings=("FO-1",), joists=JoistSpec(
+            member=member, spacing=inch(16), direction="x",
+            bearing_refs=("W-0", "W-12", "W-24"))),
+    )
+    return plan.with_elements("main", (*nodes, *walls)).with_elements("second", deck)
+
+
+def _deck(**fields):
+    from typehaus.resolve import resolve
+
+    model, findings = resolve(_deck_plan(**fields))
+    assert not [f for f in findings if f.severity.value == "error"], findings
+    return model, {member.child_key: member for member in model.floors[0].members}
+
+
+def test_trimmers_run_bearing_to_bearing_at_a_header_edge():
+    model, members = _deck()
+    tip_hi = model.floors[0].ends.tip_hi
+    for key in ("trimmer-FO-1-0-0", "trimmer-FO-1-0-1", "trimmer-FO-1-1-0"):
+        trimmer = members[key]
+        assert trimmer.p0[0] == pytest.approx(ft(12).meters), key  # the x=12' bearing
+        assert trimmer.p1[0] == pytest.approx(tip_hi), key
+        assert trimmer.length_m == pytest.approx(tip_hi - ft(12).meters), key
+    assert {"header-FO-1-0", "header-FO-1-1"} <= members.keys()
+
+
+def test_trimmers_stop_at_a_declared_bearing_edge():
+    edge = ft(23, 9.25)  # inside W-24's 5 1/2" footprint
+    _model, members = _deck(east_edge=edge, opening_bearing=("W-24",))
+    assert "header-FO-1-1" not in members
+    trimmer = members["trimmer-FO-1-0-0"]
+    assert trimmer.p0[0] == pytest.approx(ft(12).meters)
+    assert trimmer.p1[0] == pytest.approx(edge.meters)
+
+
+def test_an_absorbed_joist_line_leaves_no_stub_and_inside_lines_keep_tails():
+    _model, members = _deck()
+    east_span = (ft(12).meters, ft(24).meters)
+    on_edge = [m for m in members.values() if m.category == "joist"
+               and m.p0[1] == pytest.approx(ft(4).meters)
+               and m.p1[0] > east_span[0] + 1e-6]
+    assert on_edge == [], "the y=4' line is the trimmer pack across the whole east span"
+    tails = sorted((round(m.p0[0] / inch(1).meters, 3), round(m.p1[0] / inch(1).meters, 3))
+                   for m in members.values() if m.category == "joist"
+                   and m.p0[1] == pytest.approx(ft(5, 4).meters) and m.p1[0] > east_span[0])
+    assert tails[0] == (144.0, 168.0) and tails[1][0] == 240.0
+
+
+def test_i_joist_trimmers_are_band_deep_lvl_and_sawn_decks_keep_their_stock():
+    from typehaus.resolve.floor_openings import opening_trimmer_profile
+
+    _model, members = _deck()
+    assert members["trimmer-FO-1-0-0"].profile == "1.75x11.875 LVL"
+    band = cross_section("11.875 I-joist").depth_m
+    assert opening_trimmer_profile("11.875 TJI 230", band) == "1.75x11.875 LVL"
+    assert opening_trimmer_profile("2x10", cross_section("2x10").depth_m) == "2x10"
+    assert opening_trimmer_profile("11.875 floor truss", band) == "11.875 floor truss"
+
+
+def test_tails_hang_on_the_header_and_the_header_hangs_on_the_trimmers():
+    from typehaus.hardware.config import HangerDetectionRules
+    from typehaus.joints.hung import hung_connections
+
+    model, _members = _deck()
+    hung = {(c.member_key.split(":")[1], c.carrier_tag.split(":")[1])
+            for c in hung_connections(model, HangerDetectionRules())}
+    tails = {(member, carrier) for member, carrier in hung if carrier.startswith("header-")}
+    assert len(tails) == 4, "two cut lines, each hung at both headers"
+    assert {(member, carrier) for member, carrier in hung if member.startswith("header-")} == {
+        ("header-FO-1-0", "trimmer-FO-1-0-0"), ("header-FO-1-0", "trimmer-FO-1-1-0"),
+        ("header-FO-1-1", "trimmer-FO-1-0-0"), ("header-FO-1-1", "trimmer-FO-1-1-0")}
+    assert not any(carrier.startswith("trimmer-") and member.startswith("joist-")
+                   for member, carrier in hung)
+
+
+def test_a_short_sawn_opening_is_end_nailed_not_hung():
+    """IRC R502.10: a sawn header takes hangers past a 6' span and a tail past 12'. This
+    opening's 3'-4" header and 2' tails are nailed, so no opening joint buys a hanger."""
+    from typehaus.hardware.config import HangerDetectionRules
+    from typehaus.joints.hung import hung_connections
+
+    model, members = _deck(member="2x10")
+    assert "header-FO-1-0" in members
+    assert not [c for c in hung_connections(model, HangerDetectionRules())
+                if c.carrier_tag.split(":")[1].startswith(("header-", "trimmer-"))]

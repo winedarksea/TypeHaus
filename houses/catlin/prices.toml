@@ -365,6 +365,9 @@
 # by this row and under-billed by nothing.
 "2-1x4" = { material = { low = 0.9, high = 1.4 }, labour = { low = 0.35, high = 0.7 } }  # 20 LF
 # "1x6.81165 panel" =    # 112 LF — cellular-PVC fascia, billed in [edge_trim]
+# One ply of the row below: floor-opening trimmer packs on the I-joist decks run bearing to
+# bearing in band-deep LVL since 2026-09-16. Half the 2-ply material; labour per ply a bit over half.
+"1.75x11.875 LVL" = { material = { low = 7, high = 13 }, labour = { low = 5, high = 10 } }  # 284 LF
 "2-1.75x11.875 LVL" = { material = { low = 14, high = 26 }, labour = { low = 8, high = 18 } }  # 16 LF
 # 56 LF over TWO pieces since 2026-08-28: one 16.7' opening header, plus RB-HOUSE, which
 # moved onto this row when the ridge went 3-ply 11 7/8" -> 2-ply 14" (see attic.py). The
@@ -999,6 +1002,9 @@
 # Floor truss hanger, BM-M-HALL x FS-S-WEST (3 hung ends). ESTIMATE, unconfirmed: a THA-series
 # top-flange hanger is a similar single-piece retail band to the IUS above.
 "THA422" = { low = 4, high = 9 }  # 3 ea
+# Floor-opening LVL header ends into their trimmer packs. ESTIMATE, unconfirmed: single-piece
+# retail band for a 12-ga HHUS face-mount.
+"HHUS410" = { low = 14, high = 24 }  # 12 ea
 # ZMAX (G185) LUS where the carrier is preservative-treated (IRC R317.3.1): the breezeway's
 # treated beams, and the balcony centre glulam. Sized by the engine off the joist; ~25% over G90.
 "LUS28Z" = { low = 2.5, high = 7.5 }  # 32 ea — 18 at BM-SG-BLC, 14 in the breezeway beams

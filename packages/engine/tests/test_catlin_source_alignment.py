@@ -161,13 +161,16 @@ def test_attic_stair_well_sits_on_the_source_and_inside_the_finished_faces(catli
     assert min(xs) == pytest.approx(stair_head, abs=1e-9)
     assert min(xs) == pytest.approx(ft(22, 5.375).meters, abs=TOL_M)
     assert max(xs) == pytest.approx(ft(35, 5.375).meters, abs=TOL_M)
-    assert min(ys) == pytest.approx(ft(5, 9.625).meters, abs=TOL_M)
+    # The south edge left the source on 2026-09-16 for the y=5'-4" joist line, 5 5/8" south
+    # of the 3'-0" flight; the north edge is still W-A-SN's face.
+    assert min(ys) == pytest.approx(ft(5, 4).meters, abs=1e-9)
     assert max(ys) == pytest.approx(ft(8, 9.625).meters, abs=TOL_M)
-    assert max(ys) - min(ys) == pytest.approx(ft(3).meters, abs=1e-9)
 
     stair = catlin_plan.by_tag("ST-S2A")
-    # run_reversed on x makes `start` the well's SE corner (resolve/stairs/dispatch.py).
-    assert stair.start.xy_m == pytest.approx((max(xs), min(ys)), abs=1e-9)
+    # run_reversed on x makes `start` the flight's SE corner (resolve/stairs/dispatch.py),
+    # and the flight's north side is the well's.
+    assert stair.start.xy_m == pytest.approx((max(xs), ft(5, 9.625).meters), abs=1e-9)
+    assert stair.start.xy_m[1] + stair.width.meters == pytest.approx(max(ys), abs=1e-9)
     assert stair.width.meters == pytest.approx(ft(3).meters, abs=1e-9)
     assert stair.layout == "right_angle_winder" and stair.run_reversed is True
 

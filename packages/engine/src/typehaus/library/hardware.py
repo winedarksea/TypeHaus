@@ -67,6 +67,7 @@ from typehaus.hardware.catalog import (
     ROLE_POST_TENSION_TIE,
     ROLE_PV_SEAM_CLAMP,
     ROLE_RIDGE_TIE_STRAP,
+    ROLE_SCL_FACE_MOUNT_HANGER,
     ROLE_SILL_ANCHOR_BOLT,
     ROLE_SLOPED_JOIST_HANGER,
     ROLE_SNAP_LOCK_SEAM_CLAMP,
@@ -229,6 +230,22 @@ IUS_FACE_MOUNT_HANGER = StructuralHardware(
     source="Simpson Strong-Tie IUS face-mount I-joist hanger (strongtie.com/ius) — "
            "nailless-seat hanger for a level I-joist into the face of a wood carrier; "
            "IUS2.56/11.88 is published for 2-1/2\" to 2-9/16\" joist flanges",
+)
+
+#: A 2-ply 1 3/4" x 11 7/8" LVL floor-opening header into its LVL trimmer pack. Identity only,
+#: like HU28-2Z below: which row of Simpson's SCL face-mount table, and its allowables, have
+#: not been transcribed — confirm the HHUS410 row for a 3-1/2" x 11-7/8" member before ordering.
+HHUS410_SCL_FACE_MOUNT_HANGER = StructuralHardware(
+    tag="simpson-hhus410-scl-face-mount-hanger",
+    name="HHUS410 face-mount hanger, 2-ply 1-3/4\" LVL",
+    role=ROLE_SCL_FACE_MOUNT_HANGER,
+    manufacturer=_SIMPSON,
+    model="HHUS410",
+    exposure=EXPOSURE_DRY,
+    fits_nominal=("2-1.75x11.875 LVL",),
+    source="Simpson Strong-Tie HHUS face-mount hanger (strongtie.com/hhus) — HHUS410 for a "
+           "3-1/2\" wide structural-composite-lumber member. DIMENSIONS AND ALLOWABLES NOT "
+           "YET TRANSCRIBED: read the SCL face-mount table's row before sizing this joint",
 )
 
 #: Level open-web floor truss face-mount. THA422: a 4" wide top-flange hanger seat for a
@@ -1815,6 +1832,7 @@ STRUCTURAL_HARDWARE: tuple = (
     LUS_FACE_MOUNT_HANGER,
     LUSZ_FACE_MOUNT_HANGER,
     IUS_FACE_MOUNT_HANGER,
+    HHUS410_SCL_FACE_MOUNT_HANGER,
     THA_FLOOR_TRUSS_HANGER,
     HUC_CONCRETE_HANGER,
     APVB_BRACE_BOLT,

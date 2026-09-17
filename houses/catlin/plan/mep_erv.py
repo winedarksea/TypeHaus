@@ -78,8 +78,8 @@
 #
 # Hard exclusions, all of them checked: W-M-HS4 (the laundry pocket) takes nothing ever;
 # FO-S-STAIR (x 10'-3 3/8"..17'-8 5/8", y 26'-0 3/8"..35'-5 3/8") blocks every FS-S bay
-# between those y values across the middle of the house; FO-A-STAIR (x 21'-2"..35'-5 3/8",
-# y 5'-9 5/8"..8'-9 5/8"); FS-ATTIC's trimmers at y=5'-7"/5'-9 5/8" spoil the 6'-0" bay.
+# between those y values across the middle of the house; FO-A-STAIR (x 22'-5 3/8"..35'-5 3/8",
+# y 5'-4"..8'-9 5/8"); FS-ATTIC's trimmer pack at y=5'-2 1/4"/5'-4" runs x 18'..35'-5 3/8".
 #
 # **One forced deviation from the port budget: REG-S-RET-BED3.** It was to be a level-2
 # floor boot like BED1 and BED2. It cannot be: FO-S-STAIR blocks EVERY FS-S bay between

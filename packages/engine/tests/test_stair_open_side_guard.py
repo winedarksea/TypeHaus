@@ -66,13 +66,27 @@ def test_the_defect_this_rule_was_written_for(ctx):
         _with(ctx, lambda e: None if getattr(e, "tag", None) == "RL-A-FLIGHT-GUARD" else e))
     by_stair = _by_stair(findings)
     assert by_stair["ST-S2A"].result is Result.FAIL
-    # 10 nosing ends: the straight flight's 12 treads less the two lowest, which stand 30"
-    # and 22 1/2" over the study floor — R312.1.1 reaches neither.
-    assert "10 nosing end(s)" in by_stair["ST-S2A"].message
-    assert "105\" fall" in by_stair["ST-S2A"].message
+    # 6 nosing ends since 2026-09-16: east of the 26'-5 3/8" newel, less the two lowest
+    # (30" and 22 1/2" over the study floor, which R312.1.1 reaches neither of). West of it
+    # RL-A-STAIR on the deck and RL-A-FLIGHT-SKIRT beneath it still stand.
+    assert "6 nosing end(s)" in by_stair["ST-S2A"].message
+    assert "75\" fall" in by_stair["ST-S2A"].message
     assert {by_stair[tag].result
             for tag in ("ST-B2M", "ST-M2S", "ST-G-SERVICE", "ST-SG-PORCH")} \
         == {Result.PASS}
+
+
+def test_the_skirt_closes_the_band_under_the_deck_guard(ctx):
+    """ST-S2A's well is 5 5/8" wider than the flight, so its south side faces a void strip,
+    not "its own well" — a 1" probe alone read it as inside the shaft and passed with no guard
+    at all. West of the newel RL-A-STAIR on the attic deck stands over the nosings, and the
+    deck framing closes the band under it only to within 4" of the first two; the skirt closes
+    the rest."""
+    findings = stair_open_side_guard(
+        _with(ctx, lambda e: None if getattr(e, "tag", None) == "RL-A-FLIGHT-SKIRT" else e))
+    finding = _by_stair(findings)["ST-S2A"]
+    assert finding.result is Result.FAIL
+    assert "2 nosing end(s)" in finding.message
 
 
 def test_a_short_guard_fails_on_height_rather_than_reading_as_a_missing_one(ctx):
@@ -98,7 +112,7 @@ def test_a_guard_at_exactly_34_inches_passes(ctx):
 
 
 def test_a_partition_standing_above_a_flight_does_not_close_its_side(ctx):
-    """W-A-GC-S sits 1 3/8" outboard of ST-S2A's south side in plan and would close it on a
+    """W-A-GC-S's face sits 5 5/8" outboard of ST-S2A's south side in plan and would close it on a
     plan-only test — but it stands on the attic deck at 20'-0", five feet over the treads it
     passes. The wall clause brackets the nosing between ``z0`` and ``z1`` for this reason;
     without the lower half, the rule silently exempts the very flight it was written for."""

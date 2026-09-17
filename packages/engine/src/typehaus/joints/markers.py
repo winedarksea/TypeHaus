@@ -30,6 +30,7 @@ from typehaus.hardware.catalog import (
     ROLE_POST_BASE,
     ROLE_POST_BASE_ANCHOR,
     ROLE_RIDGE_TIE_STRAP,
+    ROLE_SCL_FACE_MOUNT_HANGER,
     ROLE_SLOPED_JOIST_HANGER,
 )
 
@@ -92,6 +93,9 @@ MARKER_RULES: dict[str, MarkerRule] = {
     ROLE_IJOIST_FACE_MOUNT_HANGER: MarkerRule(draw=True, along_in=1.50, across_in=0.75,
                                               half_h_in=None,
                                               category=CATEGORY_CONNECTOR_HANGER),
+    ROLE_SCL_FACE_MOUNT_HANGER: MarkerRule(draw=True, along_in=1.50, across_in=0.75,
+                                           half_h_in=None,
+                                           category=CATEGORY_CONNECTOR_HANGER),
     ROLE_FLOOR_TRUSS_HANGER: MarkerRule(draw=False, along_in=1.50, across_in=0.75,
                                         half_h_in=None,
                                         category=CATEGORY_CONNECTOR_HANGER),

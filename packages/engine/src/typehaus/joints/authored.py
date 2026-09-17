@@ -92,10 +92,12 @@ def hanger_part(connection, specs: dict[tuple[str, str], str]):
         EXPOSURE_DRY,
         EXPOSURE_TREATED,
         ROLE_FACE_MOUNT_JOIST_HANGER,
+        ROLE_SCL_FACE_MOUNT_HANGER,
         ROLE_SLOPED_JOIST_HANGER,
         hardware_by_model,
         hardware_for_role,
         sized_hanger_model,
+        structural_hardware_catalog,
     )
 
     authored = specs.get((connection.carrier_tag, connection.member_floor))
@@ -109,6 +111,13 @@ def hanger_part(connection, specs: dict[tuple[str, str], str]):
         item = hardware_for_role(ROLE_SLOPED_JOIST_HANGER)
         return ROLE_SLOPED_JOIST_HANGER, item, item.model
     exposure = EXPOSURE_TREATED if connection.carrier_treated else EXPOSURE_DRY
+    # A multi-ply LVL (a floor-opening header) takes the part catalogued for its profile.
+    scl = next((item for item in structural_hardware_catalog()
+                if item.role == ROLE_SCL_FACE_MOUNT_HANGER
+                and connection.member_profile in item.fits_nominal
+                and item.exposure in (None, exposure)), None)
+    if scl is not None:
+        return ROLE_SCL_FACE_MOUNT_HANGER, scl, scl.model
     item = hardware_for_role(ROLE_FACE_MOUNT_JOIST_HANGER, exposure=exposure)
     return (ROLE_FACE_MOUNT_JOIST_HANGER, item,
             sized_hanger_model(item, connection.member_profile))

@@ -1011,6 +1011,118 @@
       "node": "polyline",
       "points": [
         [
+          104.75,
+          228.12500000000003
+        ],
+        [
+          106.5,
+          228.12500000000003
+        ],
+        [
+          106.5,
+          240.0
+        ],
+        [
+          104.75,
+          240.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAF602AAAA",
+      "tag": "trimmer-FO-A-STAIR-1-0"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          104.75,
+          228.12500000000003
+        ],
+        [
+          106.5,
+          228.12500000000003
+        ],
+        [
+          106.5,
+          240.0
+        ],
+        [
+          104.75,
+          240.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          106.5,
+          228.12500000000003
+        ],
+        [
+          108.25000000000001,
+          228.12500000000003
+        ],
+        [
+          108.25000000000001,
+          240.0
+        ],
+        [
+          106.5,
+          240.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CAF602AAAA",
+      "tag": "trimmer-FO-A-STAIR-1-1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          106.5,
+          228.12500000000003
+        ],
+        [
+          108.25000000000001,
+          228.12500000000003
+        ],
+        [
+          108.25000000000001,
+          240.0
+        ],
+        [
+          106.5,
+          240.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           95.78248031496064,
           240.0
         ],

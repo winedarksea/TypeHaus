@@ -4783,6 +4783,230 @@
       "node": "polyline",
       "points": [
         [
+          411.62500000000006,
+          -11.875
+        ],
+        [
+          413.375,
+          -11.875
+        ],
+        [
+          413.375,
+          0.0
+        ],
+        [
+          411.62500000000006,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMFS03AAAA",
+      "tag": "trimmer-FO-M-ERV-OA-1-0"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          411.62500000000006,
+          -11.875
+        ],
+        [
+          413.375,
+          -11.875
+        ],
+        [
+          413.375,
+          0.0
+        ],
+        [
+          411.62500000000006,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          413.375,
+          -11.875
+        ],
+        [
+          415.125,
+          -11.875
+        ],
+        [
+          415.125,
+          0.0
+        ],
+        [
+          413.375,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMFS03AAAA",
+      "tag": "trimmer-FO-M-ERV-OA-1-1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          413.375,
+          -11.875
+        ],
+        [
+          415.125,
+          -11.875
+        ],
+        [
+          415.125,
+          0.0
+        ],
+        [
+          413.375,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          424.37500000000006,
+          -11.875
+        ],
+        [
+          426.125,
+          -11.875
+        ],
+        [
+          426.125,
+          0.0
+        ],
+        [
+          424.37500000000006,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMFS03AAAA",
+      "tag": "trimmer-FO-M-ERV-EA-1-0"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          424.37500000000006,
+          -11.875
+        ],
+        [
+          426.125,
+          -11.875
+        ],
+        [
+          426.125,
+          0.0
+        ],
+        [
+          424.37500000000006,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          426.125,
+          -11.875
+        ],
+        [
+          427.875,
+          -11.875
+        ],
+        [
+          427.875,
+          0.0
+        ],
+        [
+          426.125,
+          0.0
+        ]
+      ],
+      "layer": "S-FRAM",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMFS03AAAA",
+      "tag": "trimmer-FO-M-ERV-EA-1-1"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          426.125,
+          -11.875
+        ],
+        [
+          427.875,
+          -11.875
+        ],
+        [
+          427.875,
+          0.0
+        ],
+        [
+          426.125,
+          0.0
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": null
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           414.25000000000006,
           108.125
         ],

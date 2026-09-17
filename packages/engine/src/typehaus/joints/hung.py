@@ -17,7 +17,8 @@ from typehaus.hardware.config import HangerDetectionRules
 from typehaus.hardware.plan_geometry import centerline_endpoints, distance_point_to_segment
 from typehaus.joints.bearing import is_treated
 from typehaus.joints.model import axis_of
-from typehaus.quantities import M_PER_IN
+from typehaus.quantities import M_PER_FT, M_PER_IN
+from typehaus.resolve.framing.profiles import is_sawn_lumber
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.sweep import interpolate_along, straight_sweep_band
 
@@ -41,6 +42,8 @@ class CarryingElement:
     #: joist BEARING on it to read as hung inside it.
     z0_end_m: float | None = None
     z1_end_m: float | None = None
+    #: The ``FloorSystem`` tag of a floor-opening header/trimmer carrier, else ``""``.
+    floor: str = ""
 
     def band_at(self, point) -> tuple[float, float]:
         """``(soffit, top)`` at plan ``point`` along this carrier."""
@@ -91,6 +94,13 @@ def _member_carriers(model: ResolvedModel, rules: HangerDetectionRules) -> list:
         for member in model.all_members()
         if member.category in rules.carrier_member_categories
     ]
+    carriers.extend(
+        CarryingElement(tag=f"{member.parent_uid}:{member.child_key}", p0=member.p0,
+                        p1=member.p1, z0_m=member.z0_m, z1_m=member.z1_m,
+                        category=member.category, floor=floor.tag)
+        for floor in model.floors for member in floor.members
+        if member.category in rules.floor_opening_carrier_categories
+    )
     for solid in model.solids:
         if solid.category not in rules.carrier_solid_categories:
             continue
@@ -128,14 +138,34 @@ def hung_connections(model: ResolvedModel, rules: HangerDetectionRules) -> list:
     seat_tolerance_m = rules.bearing_seat_tolerance_in * M_PER_IN
 
     floor_of = {id(member): floor.tag for floor in model.floors for member in floor.members}
+    # A floor-opening header hangs; a wall-opening header of the same category does not.
+    opening_hangable = {id(member) for floor in model.floors for member in floor.members
+                        if member.category in rules.floor_opening_hangable_categories}
     found: list = []
     for member in model.all_members():
-        if member.category not in rules.hangable_member_categories:
+        if (member.category not in rules.hangable_member_categories
+                and id(member) not in opening_hangable):
             continue
+        member_key = f"{member.parent_uid}:{member.child_key}"
+        member_floor = floor_of.get(id(member), "")
+        member_axis = axis_of(member.p0, member.p1)
         sloped = member.z0_end_m is not None or member.z1_end_m is not None
         for point, bottom_z, top_z in _member_ends(member):
+            best = None
             for carrier in carriers:
-                if distance_point_to_segment(point, carrier.p0, carrier.p1) > gap_tolerance_m:
+                if carrier.tag == member_key:
+                    continue
+                distance = distance_point_to_segment(point, carrier.p0, carrier.p1)
+                if distance > gap_tolerance_m:
+                    continue
+                # A floor-opening carrier takes only its own deck's joists and headers framing
+                # INTO it — a stringer head is the stair's detail, and a joist or rim running
+                # beside a trimmer pack bears on a plate.
+                if carrier.floor and (
+                        member_floor != carrier.floor
+                        or member.category not in rules.floor_opening_hung_categories
+                        or axis_of(carrier.p0, carrier.p1) == member_axis
+                        or _end_nailed(member, rules)):
                     continue
                 # Bearing on top of the carrier is not a hanger; hanging means the member's
                 # depth is developed inside the carrier's depth. Measured AT THE HUNG END's
@@ -146,17 +176,32 @@ def hung_connections(model: ResolvedModel, rules: HangerDetectionRules) -> list:
                     continue
                 if top_z <= carrier_z0 or bottom_z >= carrier_z1:
                     continue
-                found.append(HungConnection(
-                    member_key=f"{member.parent_uid}:{member.child_key}",
-                    member_profile=member.profile, carrier_tag=carrier.tag, sloped=sloped,
-                    carrier_category=carrier.category, carrier_treated=carrier.treated,
-                    station_m=_station_along(point, carrier),
-                    point_m=(point[0], point[1]), carrier_soffit_m=carrier_z0,
-                    member_depth_m=max(top_z - bottom_z, 0.0),
-                    axis=axis_of(carrier.p0, carrier.p1),
-                    member_floor=floor_of.get(id(member), "")))
-                break  # one hanger per end, even where carriers overlap in plan
+                # One hanger per end, even where carriers overlap in plan: the nearest wins
+                # (a header end sits on its own trimmer, not a neighbouring chase's).
+                if best is None or distance < best[0] - 1e-9:
+                    best = (distance, carrier, carrier_z0)
+            if best is None:
+                continue
+            _distance, carrier, carrier_z0 = best
+            found.append(HungConnection(
+                member_key=member_key,
+                member_profile=member.profile, carrier_tag=carrier.tag, sloped=sloped,
+                carrier_category=carrier.category, carrier_treated=carrier.treated,
+                station_m=_station_along(point, carrier),
+                point_m=(point[0], point[1]), carrier_soffit_m=carrier_z0,
+                member_depth_m=max(top_z - bottom_z, 0.0),
+                axis=axis_of(carrier.p0, carrier.p1),
+                member_floor=member_floor))
     return found
+
+
+def _end_nailed(member, rules: HangerDetectionRules) -> bool:
+    """A sawn opening joint short enough for R502.10 to allow nails instead of a hanger."""
+    if not is_sawn_lumber(member.profile):
+        return False
+    if member.category == "header":
+        return member.length_m <= rules.sawn_header_hanger_over_ft * M_PER_FT + 1e-9
+    return member.length_m <= rules.sawn_tail_hanger_over_ft * M_PER_FT + 1e-9
 
 
 def _station_along(point, carrier: CarryingElement) -> float:

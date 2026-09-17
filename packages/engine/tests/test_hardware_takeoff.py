@@ -364,6 +364,8 @@ def test_catlin_hangs_every_rafter_off_the_ridge_beam(catlin_model) -> None:
     #    have one — a partition there would seal the hall bath off from the landing. Flush
     #    (`top_elevation=ft(20)`) so the stub keeps its unbroken 9'-0" ceiling, which is
     #    again exactly what makes the joists hang rather than bear.
+    #  - floor-opening framing, since 2026-09-16: cut joists hang on the opening header and
+    #    the header's ends hang on the trimmer packs (IRC R502.10; always on an I-joist deck).
     #
     # Nothing else may hang.
     # FS-BW-FLOOR left this list on 2026-09-10. Its joists hung flush IN three north-south
@@ -410,7 +412,11 @@ def test_catlin_hangs_every_rafter_off_the_ridge_beam(catlin_model) -> None:
                     for floor in catlin_model.floors for member in floor.members
                     if floor.tag not in ("FS-BW-FLOOR", "FS-BW-GARAGE")}
     assert bearing_keys
-    assert not (bearing_keys & hung_keys - flush_beam_keys - breezeway_keys - landing_keys)
+    opening_keys = {item.member_key for item in connections
+                    if item.carrier_tag.split(":")[-1].startswith(("header-", "trimmer-"))}
+    assert opening_keys, "FO-A-STAIR's tails and header hang"
+    assert not (bearing_keys & hung_keys - flush_beam_keys - breezeway_keys - landing_keys
+                - opening_keys)
 
 
 # --- sill anchorage ------------------------------------------------------------------

@@ -76,7 +76,9 @@ def test_floor_joist_counts_match_old_model(catlin_model):
     for tag in ("FS-ATTIC",):
         floor = next(f for f in catlin_model.floors if f.tag == tag)
         joists = [m for m in floor.members if m.category == "joist"]
-        assert len(joists) == expected_pair_count, tag
+        # Less one: FO-A-STAIR's south edge is ON the y=5'-4" line, and its east-span joist
+        # is the trimmer pack now (resolve/floor_openings.py).
+        assert len(joists) == expected_pair_count - 1, tag
         # A full-bay joist is NOT ``GRID_FT`` long, and the difference is the point of
         # ``resolve/floor_ends.py``: the 18'-0" grid is the line the joists are cut *at*,
         # while the stick runs from behind the 1 3/4" LSL rim at the west framing face to

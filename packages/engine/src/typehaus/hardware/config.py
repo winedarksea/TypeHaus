@@ -130,6 +130,17 @@ class HangerDetectionRules:
     # Members that can hang off a carrier.
     hangable_member_categories: frozenset = frozenset(
         {"joist", "rafter", "rim", "landing", "landing_framing", "stringer", "roof_truss"})
+    # Floor-opening framing, read from ``model.floors`` only — a wall-opening header shares
+    # the category and carries nothing hung. The cut joists hang on the header, and the
+    # header ends hang on the trimmer packs.
+    floor_opening_carrier_categories: frozenset = frozenset({"header", "trimmer"})
+    floor_opening_hangable_categories: frozenset = frozenset({"header"})
+    # What an opening carrier accepts: the same deck's cut joists and headers, nothing else.
+    floor_opening_hung_categories: frozenset = frozenset({"joist", "header"})
+    # IRC R502.10, sawn lumber: hangers where a header spans more than 6 ft or a tail joist
+    # runs more than 12 ft; shorter joints are end-nailed. Engineered decks always hang.
+    sawn_header_hanger_over_ft: float = 6.0
+    sawn_tail_hanger_over_ft: float = 12.0
     # A hung member's cut end stops short of the carrier centreline by about half the
     # carrier width; this bounds that gap (a 3-ply LVL is ~2.6" of it).
     end_gap_tolerance_in: float = 6.0
@@ -254,7 +265,8 @@ class GableEndTieRules:
     #: middle is a hinge; both ends have to be caught.
     minimum_ties_per_wall: int = 2
     #: A trussed gable end takes no stud ties; its gable-end truss is held to the plate by
-    #: this many LTP4s; uplift is the H2.5A at each heel. The truss carries the gable's lateral load.
+    #: this many LTP4s; uplift is the H2.5A at each heel. The truss carries the gable's
+    #: lateral load.
     anchors_per_gable_truss: int = 1
     #: How far above its own top plate a wall must rise before it is a GABLE end rather than
     #: an eave wall. A wall carrying a rafter or truss bears at its plate and rises only the

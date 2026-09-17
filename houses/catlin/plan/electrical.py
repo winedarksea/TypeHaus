@@ -1644,7 +1644,7 @@ ATTIC_DATA_TRUNKS = [
     # RM-A-POCKET side of the wall line at x=2'-0" to y=22'-6", then into W-A-STU-N's sole
     # plate and up its 3 1/2" cavity to the AP at +23'-0".
     #
-    # The x=2'-0" lane is clear of both FS-ATTIC deck voids (x 21'-2"..35'-5 3/8" / y 5'-9 5/8"
+    # The x=2'-0" lane is clear of both FS-ATTIC deck voids (x 22'-5 3/8"..35'-5 3/8" / y 5'-4"
     # ..8'-9 5/8", and x 10'-0"..18'-0" / y 22'-6 3/8"..35'-5 3/8"), and it parallels
     # DU-A-ERV-R-ATTIC and -STUBATH, which take x=1'-0" at +20'-4" — 1'-0" of plan separation
     # and 2" of elevation. A 3/4" EMT in a 2x4 stud is a 1" bore, 29% of depth, inside R602.6
