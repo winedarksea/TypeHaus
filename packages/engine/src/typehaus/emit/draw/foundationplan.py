@@ -10,10 +10,13 @@ geometric input already exists in the ``ResolvedModel``; this builder only proje
 
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import TYPE_CHECKING
 
 from typehaus.emit.draw._shared import emit_bbox_dimension_chain, emit_wall
 from typehaus.emit.draw._shared import to_in as _in
+from typehaus.emit.draw.annotation_layout_config import FOUNDATION_SCHEDULE_LETTERING_ALLOWANCE
+from typehaus.emit.draw.foundation_annotations import foundation_annotations
 from typehaus.emit.draw.foundation_schedule import (
     FoundationMarks,
     bearing_solids,
@@ -100,6 +103,9 @@ def build_foundation_plan(model: ResolvedModel,
     storey = _foundation_storey(model)
     plan_points = _drawn_plan_points(model, walls)
     metrics = metrics_for(plan_points)
+    metrics = replace(
+        metrics, text_height=metrics.text_height * FOUNDATION_SCHEDULE_LETTERING_ALLOWANCE,
+        title_height=metrics.title_height * FOUNDATION_SCHEDULE_LETTERING_ALLOWANCE)
 
     for wall in walls:
         emit_wall(b, wall, layer_override="S-FNDN")
@@ -113,7 +119,8 @@ def build_foundation_plan(model: ResolvedModel,
     _emit_sleeve_pour_dimensions(b, model, walls, storey)
     if walls:
         emit_bbox_dimension_chain(b, walls)
-    _emit_schedule_column(b, model, plan_points, metrics, profile)
+    b, callouts = foundation_annotations(b.build())
+    _emit_schedule_column(b, model, plan_points, metrics, profile, callouts)
     return b.build()
 
 
@@ -332,10 +339,13 @@ def _emit_footing_bedding_note(b: SceneBuilder, model: ResolvedModel) -> None:
 
 
 def _schedule_blocks(model: ResolvedModel,
-                     profile: JurisdictionProfile | None = None) -> list[ScheduleBlock]:
+                     profile: JurisdictionProfile | None = None,
+                     callouts: tuple[str, ...] = ()) -> list[ScheduleBlock]:
     """The non-geometry half of the sheet, in reading order: keyed schedules, then the
     general notes, then what the model could not supply."""
     blocks: list[ScheduleBlock] = list(build_foundation_schedules(model))
+    if callouts:
+        blocks.append(NoteBlock(title="FOUNDATION CALLOUTS — K KEYS ON PLAN", notes=callouts))
     blocks.append(NoteBlock(title="FOUNDATION NOTES",
                             notes=tuple(foundation_general_notes(model, profile))))
     blocks.append(NoteBlock(
@@ -348,7 +358,8 @@ def _schedule_blocks(model: ResolvedModel,
 def _emit_schedule_column(b: SceneBuilder, model: ResolvedModel,
                           plan_points: list[tuple[float, float]],
                           metrics: BlockMetrics,
-                          profile: JurisdictionProfile | None = None) -> None:
+                          profile: JurisdictionProfile | None = None,
+                          callouts: tuple[str, ...] = ()) -> None:
     """Reflow the keyed schedules, the general notes and the missing-input list into
     balanced columns beside the plan.
 
@@ -356,7 +367,7 @@ def _emit_schedule_column(b: SceneBuilder, model: ResolvedModel,
     stack ran to twice the plan's height, and it is the *scene* box the sheet is fitted
     to, so the building paid for its own tables. ``emit_block_columns`` picks the split.
     """
-    emit_block_columns(b, _schedule_blocks(model, profile), plan_points, metrics)
+    emit_block_columns(b, _schedule_blocks(model, profile, callouts), plan_points, metrics)
 
 
 __all__ = ["build_foundation_plan", "has_foundation_content"]

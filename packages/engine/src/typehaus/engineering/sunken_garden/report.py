@@ -4,16 +4,22 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import Mapping
 from dataclasses import asdict
 from pathlib import Path
 
 from typehaus.engineering.sunken_garden.comparison import (
     COURTYARD_LAYOUTS,
     REFERENCE_LAYOUT,
-    CostRange,
-    LayoutResult,
+    CostLine,
     compare_layouts,
     sizing_study,
+)
+from typehaus.engineering.sunken_garden.cost_report import (
+    cost_basis,
+    cost_detail,
+    layout_table,
+    recommendation_lines,
 )
 from typehaus.engineering.sunken_garden.inputs import (
     PlantingProfile,
@@ -23,17 +29,6 @@ from typehaus.engineering.sunken_garden.inputs import (
 from typehaus.engineering.sunken_garden.veneer_beam import check_veneer_beam
 
 BASIS_VERSION = "sunken-garden-study-1.0"
-
-
-def _money(value: CostRange) -> str:
-    return f"${value.low:,.0f}-${value.high:,.0f}"
-
-
-def _saving_or_premium(value: CostRange) -> str:
-    low, high = sorted((value.low, value.high))
-    if high < 0.0:
-        return f"premium ${abs(high):,.0f}-${abs(low):,.0f}"
-    return f"saving ${low:,.0f}-${high:,.0f}"
 
 
 def _fingerprint(payload: object) -> str:
@@ -77,52 +72,6 @@ def _basis_lines(design: SunkenGardenDesignInput,
             "remain unresolved below; nothing here invents them.", "",
         ])
     return lines
-
-
-def _layout_table(results: tuple[LayoutResult, ...]) -> list[str]:
-    reference = results[0].installed_cost
-    lines = [
-        "| Alternative | Material | Labor | Installed | Direct result | "
-        "Governing check | Status |",
-        "|---|---:|---:|---:|---:|---|---|",
-    ]
-    for result in results:
-        material = CostRange(0.0, 0.0)
-        labor = CostRange(0.0, 0.0)
-        for line in result.costs:
-            material += line.material
-            labor += line.labor
-        governing = max(
-            result.cases,
-            key=lambda item: max(1.5 / item.sliding_fs, 1.5 / item.overturning_fs,
-                                 item.bearing_max_psf / 3000.0),
-        )
-        ratio = max(1.5 / governing.sliding_fs, 1.5 / governing.overturning_fs,
-                    governing.bearing_max_psf / 3000.0)
-        status = ("screening pass" if all(case.passes_screening for case in result.cases)
-                  else "revise")
-        direct_savings = CostRange(
-            reference.low - result.installed_cost.low,
-            reference.high - result.installed_cost.high,
-        )
-        lines.append(
-            f"| {result.name} | {_money(material)} | {_money(labor)} | "
-            f"{_money(result.installed_cost)} | "
-            f"{_saving_or_premium(direct_savings)} | "
-            f"{governing.case} ({ratio:.2f}) | {status} |"
-        )
-    return lines
-
-
-def _cost_detail(result: LayoutResult) -> list[str]:
-    lines = [f"### {result.name}", "",
-             "| Item | Quantity | Material | Labor | Installed |",
-             "|---|---:|---:|---:|---:|"]
-    for item in result.costs:
-        lines.append(f"| {item.item} | {item.quantity:.1f} {item.unit} | "
-                     f"{_money(item.material)} | {_money(item.labor)} | "
-                     f"{_money(item.installed)} |")
-    return lines + [""]
 
 
 def _smallest(layout: PlantingProfile, design: SunkenGardenDesignInput):
@@ -177,8 +126,9 @@ def _terrace_verdict(design: SunkenGardenDesignInput) -> list[str]:
             f"**No. The section does not move.** The {shown} is the same stem, the same "
             "footing width and the same toe on both sides of the comparison, and the "
             f"concrete differs by {abs(concrete_delta):.2f} cy — which is the court's own "
-            "geometry, not a structural saving. The terrace is deferred construction "
-            "carrying no cash cost today, so on this evidence **it stays**.", "",
+            "geometry, not a structural saving. The terrace's own cost is the yard-grade "
+            "delta in the layout table; it buys no section, so the structure gives no reason "
+            "to remove it and the reference stays the default until the owner chooses.", "",
             "That is a statement about the *bounded sweep*, not a proof that no smaller wall "
             "exists: 10- and 12-inch stems and 4- to 7-foot footings are the whole search. "
             "It does say that the terrace is not what is sizing this wall.", "",
@@ -231,38 +181,6 @@ def _sizing_lines(design: SunkenGardenDesignInput) -> list[str]:
     return lines
 
 
-def _recommendation_lines(results: tuple[LayoutResult, ...]) -> list[str]:
-    by_name = {result.name: result for result in results}
-    reference = by_name["reference-brick"].installed_cost
-
-    def saving(name: str) -> CostRange:
-        cost = by_name[name].installed_cost
-        return CostRange(reference.low - cost.low, reference.high - cost.high)
-
-    return [
-        "## Pragmatic shortlist", "",
-        "1. **Yard-grade planting with fiber-cement is the pragmatic cost and engineering "
-        "choice.** It removes the planter surcharge and saves about "
-        f"{_money(saving('yard-grade-fiber-cement'))} "
-        "in the directly compared scope. It also removes masonry gravity support from the "
-        "veneer beam, subject to a smaller transverse tie being confirmed by the coupled model.",
-        "2. **Yard-grade planting with brick is the pragmatic appearance-first alternate.** "
-        "It retains the full-depth masonry expression and saves about "
-        f"{_money(saving('yard-grade-brick'))}. "
-        "It requires the corrected veneer beam, three-#5 study reinforcement, masonry-anchor "
-        "design and verified pocket development.",
-        "3. **If a raised bed is essential, use the separate 24-inch bed with fiber-cement as "
-        "the engineering-led fallback.** The 36-inch clear strip sharply reduces surcharge at "
-        "the court, but the second planter wall, foundations and drainage make this the most "
-        "expensive family and require a utility/circulation check.",
-        "",
-        "The against-wall variants are not shortlisted. They retain most of the lateral load, "
-        "add a 42-inch metal guard, and save little construction compared with the reference. "
-        "The 36-inch setback bed is also dominated by the 24-inch setback bed unless the extra "
-        "planting width has owner value.", "",
-    ]
-
-
 def _svg(layout: str, raised_in: float, width_in: float, setback_in: float) -> str:
     yard_y = 90
     wall_x = 250
@@ -311,17 +229,23 @@ def _svg(layout: str, raised_in: float, width_in: float, setback_in: float) -> s
 
 
 def write_study(output_dir: Path, design: SunkenGardenDesignInput | None = None,
-                fell_back: tuple[str, ...] = ()) -> Path:
+                fell_back: tuple[str, ...] = (),
+                costs: Mapping[str, tuple[CostLine, ...]] | None = None,
+                cost_source: str | None = None,
+                allowances: tuple = ()) -> Path:
     """``design`` is normally :func:`model_inputs.design_input_from_model`'s answer.
 
     ``None`` keeps the standalone literal basis, which is a *screening* basis and is
     labelled as one in the report. ``fell_back`` names every value that could not be derived
     from the model and kept its literal — printed, because a study that silently agrees with
     itself is the failure this whole path was rebuilt to stop.
+
+    ``costs`` is each ``variants.toml`` entry's priced BOM lines (``cli/sunken_garden_costs``)
+    and ``cost_source`` the price file; both ``None`` prints every layout unpriced.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
     design = design or default_design_input()
-    results = compare_layouts(design)
+    results = compare_layouts(design, costs)
     beam = check_veneer_beam()
     for layout in COURTYARD_LAYOUTS:
         name = ("yard-grade" if not layout.clear_width_ft else
@@ -337,14 +261,12 @@ def write_study(output_dir: Path, design: SunkenGardenDesignInput | None = None,
         "The existing plan remains the default. All proposed layouts are comparison variants; "
         "none is selected for construction by this report.", "",
         *_basis_lines(design, fell_back),
-        "## Common-structure comparison", "", *_layout_table(results), "",
-        "Costs are planning ranges. Concrete stays rebar-inclusive and no separate steel cost "
-        "is added. Shared mobilization and the existing whole-site excavation allowance are "
-        "excluded from deltas until bidder scope is reconciled.", "",
+        "## Common-structure comparison", "",
+        *layout_table(results, priced=cost_source is not None), "",
+        *cost_basis(cost_source, allowances),
         "## Itemized variable work", "",
     ]
-    for result in results:
-        lines.extend(_cost_detail(result))
+    lines.extend(cost_detail(results))
     lines.extend([
         *_terrace_verdict(design),
         "## Conditional structural optimization", "", *_sizing_lines(design), "",
@@ -423,7 +345,7 @@ def write_study(output_dir: Path, design: SunkenGardenDesignInput | None = None,
         "equipment and stockpiles out of the surcharge zone unless included in the case.",
         "4. Coordinate reinforcement, corner bars, beam pockets, balcony-column zones, GFRP "
         "thermal-break dowels, sleeves, waterstops and drains before either wall placement.", "",
-        *_recommendation_lines(results),
+        *recommendation_lines(results),
         "## Unresolved requirements", "",
     ])
     lines.extend(f"- {item}" for item in design.unresolved_requirements())

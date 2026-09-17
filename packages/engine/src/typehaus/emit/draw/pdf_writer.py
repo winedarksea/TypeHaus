@@ -920,7 +920,8 @@ def _render_nodes(ax: object, scene: Scene, tagger: ArtistTagger | None = None) 
             ha = {"left": "left", "center": "center", "right": "right"}[node.align]
             scaled_text.append((
                 ax.text(node.anchor[0], node.anchor[1], node.content,
-                        ha=ha, va="center", rotation=node.rotation, family="monospace",
+                        ha=ha, va="center", rotation=node.rotation, rotation_mode="anchor",
+                        family="monospace",
                         color="#222"),
                 node.height, node.height_pt,
             ))

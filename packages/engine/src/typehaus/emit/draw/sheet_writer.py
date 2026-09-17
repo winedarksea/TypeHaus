@@ -227,6 +227,14 @@ def compose_sheet(scene: Scene, spec: object, model: ResolvedModel,
         from typehaus.emit.draw.annotation_scene import resolve_scene_annotations
 
         scene = resolve_scene_annotations(scene, frame)
+        if scene.annotation_diagnostics:
+            import logging
+
+            for diagnostic in scene.annotation_diagnostics:
+                logging.getLogger(__name__).warning(
+                    "%s annotation %s: %s (%s)", spec.number, diagnostic.key,
+                    diagnostic.reason, ", ".join(diagnostic.conflicts),
+                )
     scaled_text = _render_nodes(ax, scene, tagger)
     scale_label = NTS_LABEL
     if frame is None:  # nothing measurable on the sheet — nothing to scale

@@ -292,8 +292,11 @@ def _emit_wall_cut(b, model, wall: ResolvedWall, plane: CutPlane, crop,
                 ru0, ru1 = ru0 - grow, ru1 + grow
                 exaggerated = True
             if is_detail and name not in label_entries:
-                # True-dimension label per layer (exaggeration labels true size, #36).
-                label = f'{name} {true_thickness / M_PER_IN:.3g}"'
+                # An oblique or longitudinal cut measures a visible run, not the layer's
+                # thickness. The catalog retains the authored thickness even after crop.
+                label_thickness = (catalog.thickness_m if catalog.thickness_m is not None
+                                   else true_thickness)
+                label = f'{name} {label_thickness / M_PER_IN:.3g}"'
                 if exaggerated:
                     label += " (NTS)"
                 label_entries[name] = (label, ((ru0 + ru1) / 2) / M_PER_IN)

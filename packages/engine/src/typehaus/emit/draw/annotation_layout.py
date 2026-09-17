@@ -13,9 +13,16 @@ from dataclasses import dataclass
 
 from shapely.geometry import LineString, Polygon
 from shapely.geometry import box as shapely_box
+from shapely.strtree import STRtree
 
 from typehaus.emit.draw.annotate import model_in_per_pt, text_extent
-from typehaus.emit.draw.annotation_layout_config import LABEL_CLEARANCE_PT
+from typehaus.emit.draw.annotation_layout_config import (
+    COLUMN_MARGIN_PT,
+    COLUMN_PITCH_PT,
+    COLUMN_SEARCH_STEPS,
+    COLUMN_WIDTH_ALLOWANCE,
+    LABEL_CLEARANCE_PT,
+)
 from typehaus.emit.draw.typography import TEXT_PT
 
 Pt = tuple[float, float]
@@ -171,6 +178,7 @@ def resolve_annotations(requests: tuple[AnnotationRequest, ...] | list[Annotatio
             (item.clearance_pt + LABEL_CLEARANCE_PT) * per_pt)
         if isinstance(item, SegmentObstacle) else shapely_box(*item.bounds), item)
         for item in obstacles)
+    obstacle_index = STRtree([shape for shape, _ in obstacle_shapes])
     placed: list[Placement] = []
     diagnostics: list[LayoutDiagnostic] = []
     targets = [item.target for item in requests if item.target is not None]
@@ -184,13 +192,14 @@ def resolve_annotations(requests: tuple[AnnotationRequest, ...] | list[Annotatio
         # are derived from the final viewport, so ledger and ARCH D resolve independently.
         if request.target is not None and any(item.leader for item in candidates):
             x0, y0, x1, y1 = viewport.bounds
-            margin = 10.0 * per_pt
-            pitch = 12.0 * per_pt
-            width = text_extent(request.text, request.height_pt)[0] * per_pt * 1.08
+            margin = COLUMN_MARGIN_PT * per_pt
+            pitch = COLUMN_PITCH_PT * per_pt
+            width = (text_extent(request.text, request.height_pt)[0]
+                     * per_pt * COLUMN_WIDTH_ALLOWANCE)
             left_anchor = max(x0 + margin + width, target_x0 - margin)
             right_anchor = min(x1 - margin - width, target_x1 + margin)
             target_y = min(max(request.target[1], y0 + margin), y1 - margin)
-            for step in range(0, 21):
+            for step in range(COLUMN_SEARCH_STEPS + 1):
                 signed_steps = (0,) if step == 0 else (step, -step)
                 for signed_step in signed_steps:
                     y = min(max(target_y + signed_step * pitch, y0 + margin), y1 - margin)
@@ -198,10 +207,16 @@ def resolve_annotations(requests: tuple[AnnotationRequest, ...] | list[Annotatio
                                        Candidate((right_anchor, y), "left", leader=True)))
         if not candidates:
             diagnostics.append(LayoutDiagnostic(request.key, "no candidates"))
-            continue
+            candidates.append(Candidate(request.target or viewport_shape.centroid.coords[0]))
         ranked = []
         for index, candidate in enumerate(candidates):
             candidate = _at_scale(candidate, scale)
+            # Leader writers align lettering away from its target. Reserve exactly that
+            # block, including vertical leaders, whose text is left-aligned, not centered.
+            if candidate.leader and request.target is not None:
+                candidate = Candidate(candidate.at,
+                                      "right" if candidate.at[0] < request.target[0] else "left",
+                                      leader=True)
             polygon = annotation_polygon(candidate, request.text, request.height_pt, scale)
             label_conflicts = tuple(item.request.key for item in placed
                                     if polygon.intersects(Polygon(item.polygon)))
@@ -213,12 +228,10 @@ def resolve_annotations(requests: tuple[AnnotationRequest, ...] | list[Annotatio
                 and item.request.target is not None
                 and leader.crosses(LineString((item.request.target, item.candidate.at)))
             )
-            hard = (sum(1 for shape, obstacle in obstacle_shapes
-                        if obstacle.hard and polygon.intersects(shape))
-                    if request.avoid_obstacles else 0)
-            soft = (sum(1 for shape, obstacle in obstacle_shapes
-                        if not obstacle.hard and polygon.intersects(shape))
-                    if request.avoid_obstacles else 0)
+            intersecting = (obstacle_index.query(polygon, predicate="intersects")
+                            if request.avoid_obstacles else ())
+            hard = sum(obstacle_shapes[index][1].hard for index in intersecting)
+            soft = len(intersecting) - hard
             outside = polygon.difference(viewport_shape).area
             distance = math.dist(candidate.at, request.target) if request.target else 0.0
             score = (bool(outside), len(label_conflicts), hard, leader_crossings,

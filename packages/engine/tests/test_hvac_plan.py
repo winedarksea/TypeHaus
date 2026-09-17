@@ -5,7 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 
 from typehaus.emit.draw.hvacplan import build_hvac_plan, has_hvac_content
-from typehaus.emit.draw.scene import Polyline, Symbol, Text
+from typehaus.emit.draw.scene import Polyline, Symbol
+from typehaus.quantities import M_PER_IN
 
 
 def test_every_storey_has_hvac_content(catlin_model):
@@ -32,15 +33,20 @@ def test_hvac_plan_symbol_census(catlin_model):
     assert duct_polys
 
 
-def test_hvac_plan_deduplicates_bearing_crossings_into_layout_requests(catlin_model):
+def test_hvac_plan_marks_every_crossing_and_explains_fire_blocking_once(catlin_model):
     scene = build_hvac_plan(catlin_model, "second")
-    notes = [n for n in scene.nodes if isinstance(n, Text) and "FIRE BLOCKING" in n.content]
     crossed_ducts = [duct for duct in catlin_model.ducts
                      if duct.storey == "second" and duct.crossings]
-    assert len(notes) == len(crossed_ducts), "one readable note per duct, not one per crossing"
-    assert all("MARKED BEARING-WALL CROSSINGS" in " ".join(note.content.split())
-               for note in notes)
-    assert len(scene.annotation_requests) >= len(notes)
+    assert sum("fire blocking" in note for note in scene.notes) == 1
+    assert "every marked crossing" in scene.notes[0]
+    for duct in crossed_ducts:
+        for x, y in duct.crossings:
+            center = (x / M_PER_IN, y / M_PER_IN)
+            marks = [node for node in scene.nodes if isinstance(node, Polyline)
+                     and len(node.points) == 2
+                     and all(abs((node.points[0][axis] + node.points[1][axis]) / 2
+                                 - center[axis]) < 1e-6 for axis in (0, 1))]
+            assert len(marks) >= 2
 
 
 def test_hvac_plan_dxf_round_trips(catlin_model, tmp_path: Path):

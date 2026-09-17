@@ -18,6 +18,7 @@ def sunken_garden_study(
     """Write the layout, engineering, sizing and cost comparison."""
 
     from typehaus.cli._shared import _resolve_house
+    from typehaus.cli.sunken_garden_costs import price_variants
     from typehaus.engineering.registry import EngineeringContext
     from typehaus.engineering.sunken_garden.model_inputs import design_input_from_model
     from typehaus.engineering.sunken_garden.report import write_study
@@ -41,8 +42,14 @@ def sunken_garden_study(
     model, _ = resolve(result.plan)
     design, fell_back = design_input_from_model(
         EngineeringContext(plan=result.plan, model=model))
-    report = write_study(output, design, fell_back)
+    priced = price_variants(root)
+    report = write_study(output, design, fell_back,
+                         costs=priced.lines if priced else None,
+                         cost_source=priced.source if priced else None,
+                         allowances=priced.allowances if priced else ())
     console.print(f"wrote {report} and five coordinated SVG sections")
+    if priced is None:
+        console.print("[yellow]no prices.toml: every layout is reported unpriced[/]")
     if fell_back:
         console.print(f"[yellow]{len(fell_back)} input(s) kept a literal basis:[/]")
         for item in fell_back:

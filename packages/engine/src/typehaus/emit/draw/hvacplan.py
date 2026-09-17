@@ -2,7 +2,7 @@
 
 One sheet per storey owning duct or floor-heat content. Ducts draw as a double-line plan
 rectangle (``rect_between`` — the same wall-band helper the resolver's geometry module
-uses); bearing-line crossings get a Leader calling out fire blocking per R302.11.
+uses); bearing-line crossings are marked and explained once in the sheet notes.
 
 Electric floor heat lives here rather than on the architectural plan. It is mechanical, and
 a serpentine sweeping a whole bathroom floor buries the room it is drawn over — see
@@ -63,7 +63,7 @@ def build_hvac_plan(model: ResolvedModel, storey: str) -> Scene:
         label = (f'{duct.width_m / M_PER_IN:.0f}×{duct.depth_m / M_PER_IN:.0f} '
                 f'{duct.system.upper()}')
         add_point_label(b, key=f"duct-{duct.uid}", text=label, target=_in(mid), layer=layer,
-                        height_pt=TEXT_PT, priority=50, leader=False,
+                        height_pt=TEXT_PT, priority=50, leader=True,
                         preferred_direction=(0.0, 1.0), avoid_obstacles=False)
         for x, y in duct.crossings:
             cx, cy = _in((x, y))
@@ -72,21 +72,19 @@ def build_hvac_plan(model: ResolvedModel, storey: str) -> Scene:
                            layer=layer, lineweight=PROFILE))
             b.add(Polyline(points=((cx - mark, cy + mark), (cx + mark, cy - mark)),
                            layer=layer, lineweight=PROFILE))
-        if duct.crossings:
-            target = _in(duct.crossings[0])
-            add_point_label(
-                b, key=f"duct-crossings-{duct.uid}", target=target, layer=layer,
-                height_pt=TEXT_PT, priority=70,
-                avoid_obstacles=False,
-                text=(f'{duct.width_m / M_PER_IN:.0f}×{duct.depth_m / M_PER_IN:.0f} '
-                      f'{duct.system.upper()} IN JOIST BAY — MARKED BEARING-WALL '
-                      'CROSSINGS REQUIRE FIRE BLOCKING'),
-            )
 
     _emit_registers(b, model, storey)
     _emit_equipment(b, model, storey)
     emit_floor_heat(b, model, storey)
-    return b.build()
+    scene = b.build()
+    if any(duct.storey == storey and duct.crossings for duct in model.ducts):
+        scene = scene.model_copy(update={"notes": (
+            "DUCTS IN JOIST BAYS: X marks bearing-wall crossings requiring fire blocking. "
+            "Provide fire blocking at every marked crossing.",
+            "Duct labels indicate width × depth in inches and air system. "
+            "Leaders identify the associated duct run.",
+        )})
+    return scene
 
 
 def _emit_registers(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:

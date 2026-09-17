@@ -8,10 +8,10 @@ from pathlib import Path
 import pytest
 
 from typehaus.emit.draw.foundationplan import build_foundation_plan, has_foundation_content
-from typehaus.emit.draw.scene import Leader, Polyline
+from typehaus.emit.draw.scene import Polyline, Text
+from typehaus.quantities import inch
 from typehaus.resolve import resolve
 from typehaus.source import load_plan
-from typehaus.quantities import inch
 
 
 @pytest.fixture(scope="module")
@@ -62,11 +62,14 @@ def test_foundation_plan_draws_basement_walls_and_slab(catlin_model):
         for tag in wall_tags)
 
 
-def test_foundation_plan_has_footing_leaders(catlin_model):
+def test_foundation_plan_keys_have_a_complete_callout_register(catlin_model):
     scene = build_foundation_plan(catlin_model)
-    leaders = [n for n in scene.nodes if isinstance(n, Leader)]
-    assert leaders
-    assert any("CONT. FTG." in leader.text for leader in leaders)
+    text = "\n".join(node.content for node in scene.nodes if isinstance(node, Text))
+    assert "CONT. FTG." in text
+    keys = [request.text for request in scene.annotation_requests
+            if request.key.startswith("foundation:")]
+    assert keys
+    assert all(f"{key}:" in text for key in keys)
 
 
 def test_catlin_house_footings_resolve_bedding(catlin_model):
@@ -142,7 +145,7 @@ def test_bedding_drain_tile_resolves_as_a_ring_of_solids(catlin_model):
     assert tile, "a bedding that runs tile must resolve one"
 
     ring = list(bedding.outline)
-    perimeter = sum(math.dist(a, b) for a, b in zip(ring, ring[1:] + ring[:1]))
+    perimeter = sum(math.dist(a, b) for a, b in zip(ring, ring[1:] + ring[:1], strict=True))
     # Each band is the run's own length; the ends butt rather than mitre, which is the same
     # simplification the take-off's perimeter measure makes.
     length = sum(max(_span(s.outline)) for s in tile)
@@ -161,11 +164,11 @@ def _span(outline) -> tuple[float, float]:
     return (max(xs) - min(xs), max(ys) - min(ys))
 
 
-def test_foundation_plan_has_footing_bedding_leader(catlin_model):
+def test_foundation_plan_retains_bedding_specifications_in_callout_register(catlin_model):
     scene = build_foundation_plan(catlin_model)
-    leaders = [n for n in scene.nodes if isinstance(n, Leader)]
-    assert any("WASHED CRUSHED STONE" in leader.text for leader in leaders)
-    assert any("GEOTEXTILE" in leader.text for leader in leaders)
+    text = " ".join(node.content for node in scene.nodes if isinstance(node, Text))
+    assert "WASHED CRUSHED STONE" in text
+    assert "GEOTEXTILE" in text
 
 
 def test_starter_foundation_plan_is_empty(starter_model):

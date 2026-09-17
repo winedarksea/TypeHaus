@@ -12,6 +12,7 @@ from __future__ import annotations
 from typing import NamedTuple
 
 from typehaus.emit.draw.annotate import LEGACY_IN_PER_PT, LabelSpec, dodge, place_column
+from typehaus.emit.draw.annotation_ladders import LadderRequest
 from typehaus.emit.draw.scene import Leader, NamedPoint
 from typehaus.emit.draw.typography import TEXT_PT
 from typehaus.quantities import M_PER_IN
@@ -179,13 +180,16 @@ def emit_ladders(b, ladder_labels, scale: float | None = None) -> None:
     that same order, so the two sequences descend together and order-preserving lines do
     not cross.
     """
-    for placed in dodge(ladder_labels, scale=scale):
+    for index, placed in enumerate(dodge(ladder_labels, scale=scale)):
         mid_u, target_z = placed.spec.target
         rung_z = placed.at[1]
         # A wall's layers separate in *u* and run the full height of the cut, so a flat rung
         # at the label's own elevation already lands inside the band; ``target_z`` is 0 to
         # say so. A roof's separate in *z*, and nothing but the band's own elevation will do.
         tip = (mid_u, target_z if target_z else rung_z)
-        b.add(Leader(anchor=NamedPoint(xy=tip), at=placed.at, to=tip,
-                     text=placed.spec.text, height_pt=placed.height_pt,
-                     layer="A-ANNO-TEXT"))
+        node = Leader(anchor=NamedPoint(xy=tip), at=placed.at, to=tip,
+                      text=placed.spec.text, height_pt=placed.height_pt,
+                      layer="A-ANNO-TEXT")
+        b.add(node)
+        if scale is None:
+            b.add_annotation_request(LadderRequest(f"layer-rung:{index}", node))

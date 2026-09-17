@@ -103,3 +103,48 @@ def test_impossible_placement_is_retained_and_diagnosed() -> None:
     diagnostic = result.diagnostics[0]
     assert diagnostic.key == "required-setback"
     assert diagnostic.conflicts
+
+
+def test_vertical_leader_reserves_the_renderers_left_aligned_text() -> None:
+    request = AnnotationRequest(
+        key="vertical", text="UTILITY SERVICE", target=(5.0, 4.0),
+        candidates=(Candidate((5.0, 6.0), "center", leader=True),),
+    )
+    result = resolve_annotations((request,), Viewport((0, 0, 30, 30)), scale=1.0)
+    placement = result.placements[0]
+    assert placement.candidate.align == "left"
+    assert placement.box[0] == placement.candidate.at[0]
+
+
+def test_required_text_without_candidates_is_retained() -> None:
+    request = AnnotationRequest(key="missing", text="REQUIRED", target=(1, 1), candidates=())
+    result = resolve_annotations((request,), Viewport((0, 0, 30, 30)), scale=1.0)
+    assert result.placements[0].request == request
+    assert any(item.reason == "no candidates" for item in result.diagnostics)
+
+
+def test_reserved_bounds_contain_actual_rendered_multiline_text() -> None:
+    from matplotlib.backends.backend_agg import FigureCanvasAgg
+    from matplotlib.figure import Figure
+
+    from typehaus.emit.draw.annotation_layout import annotation_polygon
+
+    figure = Figure(figsize=(4, 4), dpi=72)
+    canvas = FigureCanvasAgg(figure)
+    axes = figure.add_axes((0, 0, 1, 1))
+    axes.set_xlim(0, 288)
+    axes.set_ylim(0, 288)
+    for rotation in (0, 30, 90, 180):
+        for align in ("left", "center", "right"):
+            content = "N 01° E — UTILITY\n120.00'"
+            artist = axes.text(144, 144, content, fontsize=7, family="monospace",
+                               ha=align, va="center", rotation=rotation,
+                               rotation_mode="anchor")
+            canvas.draw()
+            actual = artist.get_window_extent(canvas.get_renderer())
+            # At scale 1/6, one model inch is one printed point.
+            reserved = annotation_polygon(Candidate((144, 144), align, rotation),
+                                          content, 7, 1 / 6).bounds
+            assert reserved[0] <= actual.x0 and reserved[1] <= actual.y0
+            assert reserved[2] >= actual.x1 and reserved[3] >= actual.y1
+            artist.remove()

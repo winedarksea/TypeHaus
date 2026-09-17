@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from typehaus.emit.draw.scene import Hatch, Polyline
+from typehaus.emit.draw.scene import Hatch, Leader, Polyline
 from typehaus.emit.draw.section import build_section
 from typehaus.model.enums import SliceKind
 
@@ -16,6 +16,14 @@ def _slice(model, tag: str):
 def _tags(scene, layer: str) -> set[str]:
     return {node.tag for node in scene.nodes
             if isinstance(node, Polyline) and node.layer == layer and node.tag}
+
+
+def test_layer_thickness_label_is_not_the_length_of_a_longitudinal_cut(catlin_model_ro):
+    scene = build_section(catlin_model_ro, _slice(catlin_model_ro, "SL-D-WALLTYP"))
+    labels = [node.text for node in scene.nodes if isinstance(node, Leader)
+              and node.text.startswith("foil-polyiso ")]
+    assert labels
+    assert set(labels) == {'foil-polyiso 2"'}
 
 
 def test_the_brick_veneers_wythe_draws_in_the_wall_type_section(catlin_model):

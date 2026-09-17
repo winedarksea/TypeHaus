@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from typehaus.emit.draw.annotation_ladders import resolve_ladders
 from typehaus.emit.draw.annotation_layout import (
     AnnotationRequest,
     BoxObstacle,
@@ -57,6 +58,7 @@ def _obstacles(scene: Scene, request_uids: set[str], frame: Frame,
 
 def resolve_scene_annotations(scene: Scene, frame: Frame) -> Scene:
     """Resolve requests once at the chosen sheet scale and replace their seed text nodes."""
+    scene = resolve_ladders(scene, _model_viewport(frame), frame.scale)
     requests = tuple(item for item in scene.annotation_requests
                      if isinstance(item, AnnotationRequest))
     if not requests:
@@ -83,4 +85,5 @@ def resolve_scene_annotations(scene: Scene, frame: Frame) -> Scene:
                               height_pt=request.height_pt, rotation=candidate.rotation,
                               layer=request.layer, align=candidate.align, uid=request.uid))
     return scene.model_copy(update={"nodes": tuple(nodes), "frame": frame,
-                                    "annotation_diagnostics": result.diagnostics})
+                                    "annotation_diagnostics": scene.annotation_diagnostics
+                                    + result.diagnostics})

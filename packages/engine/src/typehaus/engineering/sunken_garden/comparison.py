@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, replace
 
 from typehaus.engineering.sunken_garden.inputs import (
@@ -31,31 +32,21 @@ class CostRange:
 
 
 @dataclass(frozen=True)
-class UnitCost:
+class CostLine:
+    """One priced section of one variant's courtyard scope, from its resolved BOM.
+
+    ``merged`` is installed money with no declared split; it is never divided.
+    """
+
+    item: str
+    quantity: str
     material: CostRange
     labor: CostRange
-
-
-@dataclass(frozen=True)
-class CostLine:
-    item: str
-    quantity: float
-    unit: str
-    unit_cost: UnitCost
-
-    @property
-    def material(self) -> CostRange:
-        return CostRange(self.quantity * self.unit_cost.material.low,
-                         self.quantity * self.unit_cost.material.high)
-
-    @property
-    def labor(self) -> CostRange:
-        return CostRange(self.quantity * self.unit_cost.labor.low,
-                         self.quantity * self.unit_cost.labor.high)
+    merged: CostRange
 
     @property
     def installed(self) -> CostRange:
-        return self.material + self.labor
+        return self.material + self.labor + self.merged
 
 
 @dataclass(frozen=True)
@@ -91,65 +82,8 @@ class SizingCandidate:
     concrete_cy: float
 
 
-_UNIT_COST = {
-    "excavation": UnitCost(CostRange(0.0, 0.0), CostRange(38.0, 75.0)),
-    "replacement stone": UnitCost(CostRange(50.0, 75.0), CostRange(25.0, 50.0)),
-    # Concrete remains rebar-inclusive; no separate reinforcing-dollar line is emitted.
-    "concrete": UnitCost(CostRange(450.0, 650.0), CostRange(400.0, 600.0)),
-    "formwork": UnitCost(CostRange(5.0, 8.0), CostRange(13.0, 24.0)),
-    "planter block": UnitCost(CostRange(35.0, 55.0), CostRange(55.0, 95.0)),
-    "metal guard": UnitCost(CostRange(170.0, 270.0), CostRange(90.0, 160.0)),
-    "brick": UnitCost(CostRange(13.0, 19.0), CostRange(21.0, 33.0)),
-    "fiber-cement": UnitCost(CostRange(11.0, 18.0), CostRange(13.0, 22.0)),
-    "drainage": UnitCost(CostRange(18.0, 30.0), CostRange(37.0, 65.0)),
-    "waterproofing": UnitCost(CostRange(3.0, 6.0), CostRange(5.0, 9.0)),
-}
-
-
 def _court_length_ft(design: SunkenGardenDesignInput) -> float:
     return 2.0 * design.geometry.retained_side_length_ft + design.geometry.clear_width_ft + 1.0
-
-
-def _planter_length_ft(design: SunkenGardenDesignInput,
-                       planting: PlantingProfile) -> float:
-    if planting.layout == "yard-grade":
-        return 0.0
-    base_u = _court_length_ft(design)
-    if planting.layout in {"against-wall", "reference"}:
-        return base_u + 4.0 * planting.clear_width_ft
-    inner_u = base_u + 4.0 * planting.setback_ft
-    outer_u = inner_u + 4.0 * planting.clear_width_ft + 4.0
-    return inner_u + outer_u + 2.0 * planting.clear_width_ft
-
-
-def _cost_lines(design: SunkenGardenDesignInput, planting: PlantingProfile,
-                cladding: str) -> tuple[CostLine, ...]:
-    length = _court_length_ft(design)
-    face_sf = length * design.geometry.concrete_stem_height_ft
-    planter_length = _planter_length_ft(design, planting)
-    guard_length = length if planting.layout == "against-wall" else 0.0
-    cladding_sf = 129.0
-    concrete_cy = _concrete_volume_cy(design)
-    replacement_stone_cy = 89.82  # current resolved Catlin takeoff
-    excavation_cy = replacement_stone_cy + concrete_cy
-    # Common structural dimensions are intentionally held fixed here. The sizing study
-    # reports structural deltas separately, conditional on the missing site inputs.
-    return (
-        CostLine("court excavation", excavation_cy, "cy", _UNIT_COST["excavation"]),
-        CostLine("washed replacement stone", replacement_stone_cy, "cy",
-                 _UNIT_COST["replacement stone"]),
-        CostLine("court reinforced concrete", concrete_cy, "cy", _UNIT_COST["concrete"]),
-        CostLine("planter construction", planter_length * 3.0, "face sf",
-                 _UNIT_COST["planter block"]),
-        CostLine("planter drainage", planter_length, "lf", _UNIT_COST["drainage"]),
-        CostLine("court metal guard", guard_length, "lf", _UNIT_COST["metal guard"]),
-        CostLine(f"{cladding} walkout finish", cladding_sf, "sf", _UNIT_COST[cladding]),
-        CostLine("retained-face drainage", length, "lf", _UNIT_COST["drainage"]),
-        CostLine("retained-face waterproofing",
-                 length * design.soil.ordinary_retained_height_ft.value,
-                 "sf", _UNIT_COST["waterproofing"]),
-        CostLine("court wall formwork", face_sf * 2.0, "sf", _UNIT_COST["formwork"]),
-    )
 
 
 #: Why the two asymmetric cases are **not** in :func:`_cases`, said once so the next reader
@@ -183,8 +117,13 @@ def _cases(design: SunkenGardenDesignInput,
     )
 
 
-def compare_layouts(design: SunkenGardenDesignInput | None = None) -> tuple[LayoutResult, ...]:
+def compare_layouts(design: SunkenGardenDesignInput | None = None,
+                    costs: Mapping[str, tuple[CostLine, ...]] | None = None,
+                    ) -> tuple[LayoutResult, ...]:
+    """``costs`` maps a ``variants.toml`` name to its priced lines; absent means unpriced."""
+
     design = design or default_design_input()
+    costs = costs or {}
     out: list[LayoutResult] = []
     for planting in (REFERENCE_LAYOUT, *COURTYARD_LAYOUTS):
         width = int(planting.clear_width_ft * 12) if planting.clear_width_ft else 0
@@ -195,9 +134,10 @@ def compare_layouts(design: SunkenGardenDesignInput | None = None) -> tuple[Layo
             conflicts = ()
             if planting.layout == "setback":
                 conflicts = ("verify 36-inch strip plus planter against utilities and circulation",)
+            name = "reference" if planting.layout == "reference" else f"{base_name}-{cladding}"
             out.append(LayoutResult(
-                name=f"{base_name}-{cladding}", planting=planting, cladding=cladding,
-                cases=_cases(design, planting), costs=_cost_lines(design, planting, cladding),
+                name=name, planting=planting, cladding=cladding,
+                cases=_cases(design, planting), costs=costs.get(name, ()),
                 unresolved=design.unresolved_requirements() + conflicts,
             ))
     return tuple(out)
