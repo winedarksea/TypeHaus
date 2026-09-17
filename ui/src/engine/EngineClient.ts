@@ -94,7 +94,11 @@ export type EngineEvent =
   | { type: "file-changed"; revision: string; ok: boolean }
   // A queued source writeback failed; the server reverted to source truth, so the edit the
   // user already saw applied is gone. Detail is the engine's WritebackError message.
-  | { type: "writeback-failed"; revision: string; detail: string };
+  | { type: "writeback-failed"; revision: string; detail: string }
+  // The source writeback queue drained: every accepted edit is on disk.
+  | { type: "saved"; revision: string }
+  // The background check tier landed for `revision`.
+  | { type: "checks"; revision: string; ok: boolean; findings: Finding[] };
 
 export type EngineArtifact = "ifc" | "glb" | "permit_pdf";
 
@@ -162,7 +166,11 @@ export type MacroRequest =
   | { macro: "attach_placeable"; storey: string; tag: string; wall: string; face: "left" | "right"; distance: number | string; gap?: number | string; rotation_offset?: number }
   | { macro: "set_placeable_mount"; storey: string; tag: string; elevation: number | string }
   | { macro: "detach_placeable"; storey: string; tag: string; position?: [string, string] }
-  | { macro: "place_placeable"; storey: string; type_ref: string; position: [string, string]; hint_file?: string; tag?: string }
+  | { macro: "place_placeable"; storey: string; type_ref: string; position: [string, string]; hint_file?: string; tag?: string; rotation?: number; kind?: string }
+  // Slide a wall-attached object along its host: replaces only distance_from_start (metres).
+  | { macro: "slide_placeable"; storey: string; tag: string; distance: number }
+  // Refused (400) while a run, sleeve, control or host references the tag.
+  | { macro: "delete_placeable"; storey: string; tag: string }
   | { macro: "assign_placeable_room"; storey: string; tag: string; room?: string | null }
   | { macro: "duplicate_canvas_object"; storey: string; tag: string }
   // Swap a placeable's product type; the engine re-anchors a wall-backed unit's mounted
@@ -409,10 +417,19 @@ export interface ReferenceRemap {
   rehost: Record<string, string>;
 }
 
+// What an edit did to the elements around it (model/remap.py Impact).
+export interface Impact {
+  tag: string;
+  kind: "carried" | "left_behind" | "needs_review";
+  reason: string;
+}
+
 export interface MacroResult extends PatchResult {
   remap: ReferenceRemap;
   deleted: string[];
   warnings: string[];
+  // Absent on an older server, which reports only `warnings`.
+  impacts?: Impact[];
 }
 
 export interface EngineClient {

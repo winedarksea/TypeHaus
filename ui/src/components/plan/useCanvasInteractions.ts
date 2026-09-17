@@ -9,7 +9,7 @@ import type { Selection } from "../../state/vocabulary";
 import type { CanvasObject, Opening, Vec2, Wall } from "../../model/types";
 import { formatFtIn, openingFitsWall, openingStartFromCenter } from "../../model/geometry";
 import { nearestOpeningHost } from "./OpeningShapes";
-import type { DoorPopup, OpeningDragPreview, WallAssemblyPopup } from "./canvasTypes";
+import type { DoorPopup, OpeningDragPreview, PlaceableDrop, WallAssemblyPopup } from "./canvasTypes";
 
 export interface CanvasInteractions {
   project: (p: Vec2) => Vec2;
@@ -17,7 +17,7 @@ export interface CanvasInteractions {
   selectEl: (kind: Selection["kind"], uid: string) => void;
   hoverEl: (uid: string | null) => void;
   editOpeningStable: (o: Opening, screen: Vec2) => void;
-  movePlaceableFromDrag: (item: CanvasObject, position: Vec2) => void;
+  dropPlaceable: (item: CanvasObject, drop: PlaceableDrop) => void;
   rotatePlaceableFromHandle: (item: CanvasObject, degrees: number, freeRotation: boolean) => void;
   moveOpeningFromDrag: (opening: Opening, host: Wall, position: Vec2) => void;
   previewOpeningFromDrag: (opening: Opening, host: Wall, position: Vec2) => void;
@@ -73,16 +73,30 @@ export function useCanvasInteractions(args: {
       setWindowPopup({ opening: o, screen });
     }
   }, [setDoorPopup, setWindowPopup]);
-  const movePlaceableFromDrag = useCallback((item: CanvasObject, position: Vec2) => {
-    if (useStore.getState().tool !== "select") return;
-    void runMacro({ macro: "move_placeable", storey: item.storey, tag: item.tag,
-      position });
-  }, [runMacro]);
+  // Both commit through commitTransform: the overlay holds the object where it was dropped
+  // until the engine's model catches up, and the queue orders back-to-back drags.
+  const dropPlaceable = useCallback((item: CanvasObject, drop: PlaceableDrop) => {
+    const s = useStore.getState();
+    if (s.tool !== "select") return;
+    if (drop.kind === "slide") {
+      void s.commitTransform(item, { position_m: drop.position },
+        { macro: "slide_placeable", storey: item.storey, tag: item.tag, distance: drop.station });
+      return;
+    }
+    void s.commitTransform(item, { position_m: drop.position },
+      { macro: "move_placeable", storey: item.storey, tag: item.tag, position: drop.position });
+    // The wall snap squared it: a second queued commit, merged into the same overlay.
+    if (drop.rotation !== undefined) {
+      void s.commitTransform(item, { rotation: drop.rotation },
+        { macro: "rotate_placeable", storey: item.storey, tag: item.tag, degrees: drop.rotation, free_rotation: true });
+    }
+  }, []);
   const rotatePlaceableFromHandle = useCallback((item: CanvasObject, degrees: number, freeRotation: boolean) => {
-    if (useStore.getState().tool !== "select") return;
-    void runMacro({ macro: "rotate_placeable", storey: item.storey, tag: item.tag, degrees,
-      free_rotation: freeRotation });
-  }, [runMacro]);
+    const s = useStore.getState();
+    if (s.tool !== "select") return;
+    void s.commitTransform(item, { rotation: degrees },
+      { macro: "rotate_placeable", storey: item.storey, tag: item.tag, degrees, free_rotation: freeRotation });
+  }, []);
   const moveOpeningFromDrag = useCallback((opening: Opening, host: Wall, position: Vec2) => {
     if (useStore.getState().tool !== "select") return;
     const target = nearestOpeningHost(walls, host.storey, position);
@@ -120,7 +134,7 @@ export function useCanvasInteractions(args: {
   }, [svgRef, setWallAssemblyPopup]);
 
   return {
-    project, unproject, selectEl, hoverEl, editOpeningStable, movePlaceableFromDrag,
+    project, unproject, selectEl, hoverEl, editOpeningStable, dropPlaceable,
     rotatePlaceableFromHandle, moveOpeningFromDrag, previewOpeningFromDrag, selectWallWithPopup,
   };
 }

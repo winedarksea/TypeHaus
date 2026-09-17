@@ -94,7 +94,14 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
     api.current?.setPalette(RESOLVED_NORDIC_PALETTE[theme]);
   }, [theme]);
 
+  // The rebuild keys on the revision, not the model object: a `checks` event patches findings
+  // into a fresh model object at the same revision, and that must not rebuild the scene. Every
+  // edit mints a new revision (a uuid served; the source content hash offline).
+  const modelRef = useRef(model);
+  modelRef.current = model;
+  const revision = model?.revision;
   useEffect(() => {
+    const model = modelRef.current;
     if (!model) return;
     // Re-frame the camera only when this is a different *building*, not a different model
     // object: every reload/edit re-parses model.json into a fresh object, and content hash /
@@ -123,7 +130,8 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
       .then((blob) => { if (!cancelled) api.current?.setWholeHouseGlb(blob); })
       .catch(() => { /* keep the model.json baseline */ });
     return () => { cancelled = true; };
-  }, [model, threeMode, theme, client]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [revision, threeMode, theme, client]);
 
   // Bars are fetched the first time the Rebar chip is on, and again per model revision while
   // it stays on (→ engine/rebarCache.ts). Off never unloads: the facet hides them.

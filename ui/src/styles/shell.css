@@ -176,6 +176,13 @@
   cursor: pointer;
   font-variant-numeric: tabular-nums;
 }
+.status-save.saving {
+  color: var(--line);
+}
+.status-save.failed {
+  color: var(--error);
+  font-weight: 600;
+}
 .health-pill .hp-err {
   color: var(--error);
 }
@@ -378,6 +385,76 @@
 }
 .ctx-warn {
   color: var(--warn);
+}
+
+.hud.placeable-catalog {
+  position: absolute;
+  top: calc(var(--topbar-h) + var(--gutter) + 32px + 48px);
+  left: calc(var(--rail-w) + var(--gutter) + var(--safe-l));
+  z-index: var(--z-context);
+  bottom: auto;
+  width: min(380px, calc(100vw - 2 * var(--gutter)));
+  max-width: none;
+  max-height: min(60vh, 520px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.placeable-catalog-search {
+  width: 100%;
+}
+.placeable-catalog-domains {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.placeable-catalog-domains .seg-btn {
+  min-height: 28px;
+  text-transform: capitalize;
+}
+.placeable-catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 6px;
+  overflow-y: auto;
+}
+.placeable-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 4px;
+  border: 1px solid var(--panel-line);
+  border-radius: var(--md-shape-sm);
+  background: var(--panel);
+  color: var(--ink);
+  font-size: 11px;
+  text-align: center;
+  cursor: pointer;
+}
+.placeable-card.active {
+  border-color: var(--accent);
+  background: var(--md-secondary-container);
+}
+.placeable-card-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.placeable-card-tag {
+  font-size: 10px;
+}
+.placeable-catalog-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.ctx-placeable-type {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .stage {

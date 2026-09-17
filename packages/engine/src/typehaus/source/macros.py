@@ -41,6 +41,12 @@ from typehaus.source.macros_common import (
     _round_len,
     _walls,
 )
+from typehaus.source.macros_followers import (
+    _convention_drain_point,
+    _drain_follower_ops,
+    _follower_ops,
+    _placeable_type,
+)
 from typehaus.source.macros_geometry import (
     COLLINEAR_TOL,
     _collinear,
@@ -68,11 +74,9 @@ from typehaus.source.macros_openings import (
 )
 from typehaus.source.macros_placeables import (
     _containing_room,
-    _convention_drain_point,
-    _drain_follower_ops,
-    _placeable_type,
     assign_placeable_room,
     attach_placeable,
+    delete_placeable,
     detach_placeable,
     duplicate_canvas_object,
     move_placeable,
@@ -80,6 +84,7 @@ from typehaus.source.macros_placeables import (
     retype_placeable,
     rotate_placeable,
     set_placeable_mount,
+    slide_placeable,
 )
 from typehaus.source.macros_walls import (
     _opening_param,
@@ -98,14 +103,16 @@ from typehaus.source.macros_walls import (
 # they are not an invitation to reach for more.
 __all__ = [
     "COLLINEAR_TOL", "MacroError", "ROOM_BOUNDARY_NODE_TOLERANCE_M", "ROTATION_SNAP_DEGREES",
-    "SNAP_M", "XY", "assign_placeable_room", "attach_placeable", "detach_placeable",
+    "SNAP_M", "XY", "assign_placeable_room", "attach_placeable", "delete_placeable",
+    "detach_placeable",
     "draw_wall", "duplicate_canvas_object", "heal_walls", "move_nodes", "move_opening",
     "move_placeable", "place_opening", "place_placeable", "place_room", "place_rough_opening",
     "place_stair", "rehost_opening", "retype_placeable", "rotate_placeable",
-    "set_placeable_mount", "split_wall",
+    "set_placeable_mount", "slide_placeable", "split_wall",
     "_PLACEABLE_KINDS", "_STAIR_DEFAULT_WIDTH", "_STAIR_MAX_RISER", "_STAIR_TREAD",
     "_as_length", "_collinear", "_containing_room", "_convention_drain_point", "_copy_tag",
-    "_destination_deck", "_dist", "_drain_follower_ops", "_find_node_near", "_floor_openings",
+    "_destination_deck", "_dist", "_drain_follower_ops", "_find_node_near", "_follower_ops",
+    "_floor_openings",
     "_meters", "_next_tag", "_nodes", "_opening_param", "_opening_start_offset",
     "_opening_width", "_openings", "_pending_nodes", "_placeable", "_placeable_type",
     "_point_expr", "_point_expr_m", "_point_in_polygon", "_project_param", "_rehost_openings",

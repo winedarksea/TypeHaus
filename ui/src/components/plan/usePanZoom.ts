@@ -146,8 +146,8 @@ export function usePanZoom(args: {
 
   const onPointerMove = (e: React.PointerEvent) => {
     shiftRef.current = e.shiftKey;
-    // Rubber-band / snap preview follows the bare pointer for the wall tool (desktop hover).
-    if (tool === "wall") setCursor(unproject(e.clientX, e.clientY));
+    // Rubber-band / snap preview (wall) and the placement ghost follow the bare pointer.
+    if (tool === "wall" || tool === "placeable") setCursor(unproject(e.clientX, e.clientY));
     if (!pointers.current.has(e.pointerId)) return;
     pointers.current.set(e.pointerId, [e.clientX, e.clientY]);
     if (pointers.current.size === 2 && pinch.current) {

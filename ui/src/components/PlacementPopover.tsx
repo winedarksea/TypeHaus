@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { MacroRequest, MacroResult } from "../engine/EngineClient";
-import type { Catalog, Vec2, Wall } from "../model/types";
+import type { Catalog } from "../model/types";
+import type { Placement } from "./plan/canvasTypes";
 import { formatFtIn, openingStartFromCenter } from "../model/geometry";
 import { doorTypeLabel } from "./DoorSettingsPopover";
 
@@ -8,11 +9,8 @@ import { doorTypeLabel } from "./DoorSettingsPopover";
 // wall (opening tool) or in open space (room tool) anchors a small screen-pixel popover here
 // rather than a modal, so placement stays fast for repeated taps. Confirming fires the
 // server macro (place_opening / place_room) and, on success, selects the minted element.
+// Placeables are armed from the Place tool's catalog instead (→ PlaceableCatalog.tsx).
 
-type Placement =
-  | { kind: "opening"; screen: Vec2; wall: Wall; along_m: number }
-  | { kind: "placeable"; screen: Vec2; position: Vec2 }
-  | { kind: "room"; screen: Vec2; seed: Vec2 };
 
 const DEFAULT_ROUGH_OPENING_WIDTH_M = .9144; // 3 ft construction placeholder
 
@@ -28,10 +26,9 @@ export function PlacementPopover({ placement, catalog, hintFile, storey, runMacr
 }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [query, setQuery] = useState("");
   const [occupancy, setOccupancy] = useState(catalog?.occupancies?.[0] ?? "living");
 
-  const place = async (request: MacroRequest, kind: "opening" | "room" | "canvas_object") => {
+  const place = async (request: MacroRequest, kind: "opening" | "room") => {
     if (!storey || busy) return;
     setError(null);
     setBusy(true);
@@ -40,7 +37,7 @@ export function PlacementPopover({ placement, catalog, hintFile, storey, runMacr
     if (res) {
       const tag = Object.keys(res.minted).find((t) =>
         kind === "opening" ? t.startsWith("WIN-") || t.startsWith("D-") || t.startsWith("RO-")
-          : kind === "room" ? t.startsWith("RM-") : true)
+          : t.startsWith("RM-"))
         ?? Object.keys(res.minted)[0];
       if (tag) {
         selectByTag(kind, tag);
@@ -109,34 +106,6 @@ export function PlacementPopover({ placement, catalog, hintFile, storey, runMacr
         <button className="btn" disabled={busy} onClick={onClose}>Cancel</button>
       </div>
     );
-  }
-
-  if (placement.kind === "placeable") {
-    const types = (catalog?.canvas_object_types ?? []).filter((type) => type.placement !== "opening_hosted" &&
-      `${type.name} ${type.tag} ${type.domain}`.toLowerCase().includes(query.trim().toLowerCase()));
-    const byDomain = types.reduce<Record<string, typeof types>>((groups, type) => {
-      (groups[type.domain] ??= []).push(type);
-      return groups;
-    }, {});
-    return <div className="hud popover" style={style} onClick={(e) => e.stopPropagation()}>
-      <div style={{ fontWeight: 700, marginBottom: 4 }}>Place object</div>
-      <label className="muted" style={{ display: "block", fontSize: 11, marginBottom: 8 }}>Find catalog type
-        <input aria-label="Find catalog type" value={query} onChange={(event) => setQuery(event.target.value)}
-          placeholder="Name, tag, or category" style={{ display: "block", width: "100%", marginTop: 3 }} />
-      </label>
-      {types.length === 0 && <div className="muted">No placeable types in the catalog.</div>}
-      {Object.entries(byDomain).sort(([a], [b]) => a.localeCompare(b)).map(([domain, entries]) => <div key={domain}>
-        <div className="muted" style={{ fontSize: 11, fontWeight: 700, margin: "6px 0 4px" }}>{domain}</div>
-        {entries.sort((a, b) => a.name.localeCompare(b.name)).map((type) => <button key={type.tag} className="btn" disabled={busy}
-          style={{ display: "block", width: "100%", marginBottom: 4 }}
-          onClick={() => void place({ macro: "place_placeable", storey: storey!, type_ref: type.tag,
-            position: [formatFtIn(placement.position[0]), formatFtIn(placement.position[1])], hint_file: hintFile }, "canvas_object")}>
-          {busy ? "Adding…" : `${type.name} · ${type.tag}`}
-        </button>)}
-      </div>)}
-      {error && <div role="alert" style={{ color: "var(--error)", fontSize: 11, margin: "6px 0" }}>{error}</div>}
-      <button className="btn" disabled={busy} onClick={onClose}>Cancel</button>
-    </div>;
   }
 
   const occupancies = catalog?.occupancies ?? [];

@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useStore } from "../state/store";
 import type { Model, Opening, Stair, Wall } from "../model/types";
-import { formatFtIn, openingHostWall, openingStartFromCenter, parseFtIn, wallLength } from "../model/geometry";
+import { formatFtIn, openingHostWall, openingStartFromCenter, wallLength } from "../model/geometry";
 import { SectionCard } from "./SectionCard";
 import { DetailViewer } from "./DetailViewer";
 import { StairDesigner } from "./StairDesigner";
@@ -12,6 +12,7 @@ import { FloorInspector, FootingBeddingInspector, LightRunInspector, MemberUidIn
 import { locateUid } from "../state/locate";
 import { useIsCompact } from "../hooks/useBreakpoint";
 import { Sheet } from "./ui/Sheet";
+import { CanvasObjectInspector } from "./inspector/CanvasObjectInspector";
 
 // Strict contextual inspector (Phase 3): answers only "what can I change about the selected
 // thing?" — hidden when nothing is selected. Extracted from the retired Sidebar; the
@@ -230,7 +231,7 @@ function SelectionInspector({
   if (kind === "canvas_object") {
     const item = (model.canvas_objects ?? []).find((object) => object.uid === uid);
     if (!item) return null;
-    return <CanvasObjectInspector model={model} item={item} />;
+    return <CanvasObjectInspector key={item.uid} model={model} item={item} />;
   }
   // Derived geometry, selectable in 3D since B7 (→ components/DerivedInspectors.tsx).
   if (kind === "solid") {
@@ -259,172 +260,6 @@ function SelectionInspector({
     return <MemberUidInspector model={model} uid={uid} />;
   }
   return null;
-}
-
-function CanvasObjectInspector({ model, item }: { model: Model; item: NonNullable<Model["canvas_objects"]>[number] }) {
-  const runMacro = useStore((state) => state.runMacro);
-  const toast = useStore((state) => state.toast);
-  const setDetailView = useStore((state) => state.setDetailView);
-  const type = model.catalog?.canvas_object_types?.find((candidate) => candidate.tag === item.type);
-  const compatibleTypes = (model.catalog?.canvas_object_types ?? []).filter((candidate) => candidate.kind === item.kind);
-  const [rotation, setRotation] = useState(String(item.rotation ?? 0));
-  const [freeRotation, setFreeRotation] = useState(false);
-  const [wall, setWall] = useState(item.attachment?.wall ?? "");
-  const [face, setFace] = useState<"left" | "right">(item.attachment?.face === "right" ? "right" : "left");
-  const [distance, setDistance] = useState("0\"");
-  // Every dimension in this panel is ft-in, like the rest of the app. Edits go back out as
-  // *canonical* ft-in strings (parse to validate, format to normalize), not as metres: the
-  // engine's Length.parse keeps the authored unit, so a plan file written in feet stays in
-  // feet instead of gaining an `m(1.8796)` where an `ft(6, 2)` belongs.
-  const [x, setX] = useState(() => formatFtIn(item.position_m?.[0] ?? 0));
-  const [y, setY] = useState(() => formatFtIn(item.position_m?.[1] ?? 0));
-  const mount = item.mount ?? null;
-  // `z_m` is an *absolute* height (storey datum + mount), and this field speaks above-floor —
-  // a basement fixture would otherwise read as a negative height. Prefill from the authored
-  // elevation when there is one, else from the resolved height rebased onto its own storey
-  // (a pendant authored as a drop below the ceiling has no elevation of its own).
-  const storeyElevationM = model.storeys.find((candidate) => candidate.tag === item.storey)?.elevation_m ?? 0;
-  const [elevation, setElevation] = useState(() =>
-    formatFtIn(mount?.elevation_m ?? ((item.z_m ?? 0) - storeyElevationM)));
-  const [room, setRoom] = useState(item.room ?? "");
-  const updateRotation = async () => {
-    const degrees = Number(rotation);
-    if (!Number.isFinite(degrees)) return toast("Rotation must be numeric", "error");
-    const result = await runMacro({ macro: "rotate_placeable", storey: item.storey, tag: item.tag, degrees, free_rotation: freeRotation });
-    if (!result) toast("Could not rotate object", "error");
-  };
-  const attach = async () => {
-    const distanceM = parseFtIn(distance);
-    if (!wall || distanceM === null) return toast("Choose a wall and a distance like 3'-6\"", "error");
-    const result = await runMacro({ macro: "attach_placeable", storey: item.storey, tag: item.tag,
-      wall, face, distance: formatFtIn(distanceM) });
-    if (!result) toast("Could not attach object", "error");
-  };
-  const move = async () => {
-    const [xm, ym] = [parseFtIn(x), parseFtIn(y)];
-    if (xm === null || ym === null) return toast("Position must be a length like 12'-6\"", "error");
-    const result = await runMacro({ macro: "move_placeable", storey: item.storey, tag: item.tag,
-      position: [formatFtIn(xm), formatFtIn(ym)] });
-    if (!result) toast("Could not move object", "error");
-  };
-  // The one edit that had no path at all before: a wall sconce authored at 46" could only be
-  // raised by hand-editing the plan file.
-  const setMountHeight = async () => {
-    const elevationM = parseFtIn(elevation);
-    if (elevationM === null || elevationM < 0) return toast("Height must be a length like 6'-0\"", "error");
-    const result = await runMacro({ macro: "set_placeable_mount", storey: item.storey, tag: item.tag,
-      elevation: formatFtIn(elevationM) });
-    if (!result) toast("Could not change the mount height", "error");
-  };
-  const assignRoom = async () => {
-    const result = await runMacro({ macro: "assign_placeable_room", storey: item.storey, tag: item.tag,
-      room: room || null });
-    if (!result) toast("Could not update room", "error");
-  };
-  const changeType = async (typeRef: string) => {
-    if (!typeRef || typeRef === item.type) return;
-    // A macro, not a raw type_ref PATCH: the engine re-anchors a wall-backed unit's
-    // mounted face under the footprint change and returns reference warnings (which
-    // runMacro already surfaces as toasts).
-    const result = await runMacro({ macro: "retype_placeable", storey: item.storey,
-      tag: item.tag, type_ref: typeRef });
-    if (!result) toast("Could not change object type", "error");
-  };
-  const lightingControls = model.electrical?.lighting?.controls ?? [];
-  const controlledBy = lightingControls.find((row) => row.tag === item.tag)?.switches ?? [];
-  const controls = lightingControls
-    .filter((row) => row.switches.includes(item.tag))
-    .map((row) => row.tag);
-  return <div>
-    <h3>{type?.name ?? item.kind} · {item.tag}</h3>
-    <div className="kv">
-      <span className="k">Category</span><span>{item.domain}</span>
-      <span className="k">Type</span><span>{item.type ?? "—"}</span>
-      {/* Brand and model, where the type names a chosen product. Absent — not blank —
-          when it does not: most of a house is bought against a specification, and an
-          empty "Brand" row would read as missing data rather than as an open choice. */}
-      <ProductRows product={productFor(model.catalog, type?.product_ref)} />
-      <span className="k">Room</span><span>{item.room ?? "unassigned"}</span>
-      {item.circuit && <>
-        <span className="k">Circuit</span>
-        <span>
-          <button className="badge" style={{ cursor: "pointer" }} title="Open the panel schedule"
-            onClick={() => setDetailView("circuits")}>{item.circuit}</button>
-        </span>
-      </>}
-      {/* The control edge, read from the same lighting take-off the E-602 sheet prints:
-          a luminaire shows what switches it, a switch shows what it drives. Both directions
-          come off one derivation, so the inspector cannot disagree with the schedule. */}
-      {controlledBy.length > 0 && <>
-        <span className="k">Controlled by</span>
-        <span>
-          {controlledBy.map((tag) => (
-            <button key={tag} className="badge" style={{ cursor: "pointer" }}
-              title="Open the lighting schedule" onClick={() => setDetailView("lighting")}>
-              {tag}
-            </button>
-          ))}
-        </span>
-      </>}
-      {controls.length > 0 && <>
-        <span className="k">Controls</span>
-        <span>
-          {controls.map((tag) => (
-            <button key={tag} className="badge" style={{ cursor: "pointer" }}
-              title="Open the lighting schedule" onClick={() => setDetailView("lighting")}>
-              {tag}
-            </button>
-          ))}
-        </span>
-      </>}
-      <span className="k">Mount</span><span>{item.attachment ? `attached to ${item.attachment.wall} (${item.attachment.face})` : "free"}</span>
-      <span className="k">Ports</span><span>{type?.ports.map((port) => port.service).join(", ") || "—"}</span>
-      <span className="k">Source</span><span><Provenance p={item.provenance ?? null} /></span>
-    </div>
-    <label className="field-label">Product type
-      <select value={item.type ?? ""} onChange={(event) => void changeType(event.target.value)}>
-        {compatibleTypes.map((candidate) => <option key={candidate.tag} value={candidate.tag}>
-          {candidate.tag} · {candidate.name}
-        </option>)}
-      </select>
-    </label>
-    <label className="field-label">Rotation °
-      <span><input value={rotation} inputMode="decimal" onChange={(event) => setRotation(event.target.value)} />
-        <button className="btn" onClick={() => void updateRotation()}>Apply</button></span>
-    </label>
-    <label className="muted" style={{ display: "block", fontSize: 11 }}><input type="checkbox" checked={freeRotation} onChange={(event) => setFreeRotation(event.target.checked)} /> Free rotation (otherwise snaps to 15°)</label>
-    {/* Mount height only appears on an object that has an authored mount to edit — a sofa
-        sits on the floor and has no height to state. */}
-    {mount && <label className="field-label">
-      {mount.kind === "ceiling" ? "Height above floor (ceiling-mounted)" : mount.kind === "wall"
-        ? "Mount height above floor" : "Height above floor"}
-      <span><input value={elevation} onChange={(event) => setElevation(event.target.value)} />
-        <button className="btn" onClick={() => void setMountHeight()}>Apply</button></span>
-    </label>}
-    <label className="field-label">Position X
-      <span><input value={x} onChange={(event) => setX(event.target.value)} /></span>
-    </label>
-    <label className="field-label">Position Y
-      <span><input value={y} onChange={(event) => setY(event.target.value)} />
-        <button className="btn" onClick={() => void move()}>Move</button></span>
-    </label>
-    <label className="field-label">Room
-      <span><select value={room} onChange={(event) => setRoom(event.target.value)}><option value="">Unassigned</option>
-        {model.rooms.filter((candidate) => candidate.storey === item.storey).map((candidate) => <option key={candidate.uid} value={candidate.tag}>{candidate.tag}</option>)}</select>
-        <button className="btn" onClick={() => void assignRoom()}>Apply</button></span>
-    </label>
-    <div className="field-label">
-      <span>Wall attachment</span>
-      <select value={wall} onChange={(event) => setWall(event.target.value)}>
-        <option value="">Choose wall…</option>{model.walls.filter((candidate) => candidate.storey === item.storey)
-          .map((candidate) => <option key={candidate.uid} value={candidate.tag}>{candidate.tag}</option>)}</select>
-      <select value={face} onChange={(event) => setFace(event.target.value as "left" | "right")}><option value="left">Left face</option><option value="right">Right face</option></select>
-      <input value={distance} aria-label="Distance from wall start" placeholder="3'-6&quot;"
-        onChange={(event) => setDistance(event.target.value)} />
-      <button className="btn" onClick={() => void attach()}>Attach</button>
-      {item.attachment && <button className="btn" onClick={() => void runMacro({ macro: "detach_placeable", storey: item.storey, tag: item.tag })}>Detach</button>}
-    </div>
-  </div>;
 }
 
 function OpeningInspector({ model, opening }: { model: Model; opening: Opening }) {

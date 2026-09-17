@@ -80,3 +80,21 @@ def test_a_fresh_project_uuid_is_minted_per_scaffold(tmp_path: Path):
 def test_an_unknown_template_is_rejected(tmp_path: Path):
     with pytest.raises(ValueError):
         scaffold_house(tmp_path / "nope", "Nope", template="minimal")
+
+
+def test_scaffolded_house_can_place_furniture(tmp_path: Path):
+    """A `haus new` house ships the catalog and a placeables list, so the Place tool lands."""
+    from typehaus.server.state import ProjectState
+
+    house = tmp_path / "placing"
+    scaffold_house(house, "Placing")
+    state = ProjectState.open(house)
+    result, _edit = state.apply_macro({"macro": "place_placeable", "storey": "main",
+                                       "type_ref": "FURN-ARMCHAIR-35",
+                                       "position": [3.5, 3.0]})
+    state._flush_writes()
+    tag = result.ops[0].tag
+    assert tag in (house / "plan" / "placeables.py").read_text()
+    reloaded = load_plan(house)
+    placed = next(e for e in reloaded.plan.storey_elements("main") if e.tag == tag)
+    assert placed.room == "RM-Main"

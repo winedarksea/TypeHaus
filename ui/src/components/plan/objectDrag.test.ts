@@ -32,6 +32,9 @@ export function runPlaceableDragTests(): void {
   assert(placeableDragBlockedReason(obj(null)),
     "an object with no captured authorship has nowhere to write a move back to");
 
+  assert(placeableDragBlockedReason(obj(null), true) === null,
+    "an object this session placed drags before the engine has captured its source line");
+
   // Older model.json payloads publish no provenance at all; absence must not disable
   // dragging for every object in the house.
   assert(placeableDragBlockedReason(obj(undefined)) === null,

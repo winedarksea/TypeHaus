@@ -8,6 +8,7 @@ import { DetailsNavigator } from "./DetailsNavigator";
 import { Icon } from "../icons/Icon";
 import { useIsCompact } from "../hooks/useBreakpoint";
 import { useLightDismiss } from "../hooks/useLightDismiss";
+import { buildHandoff } from "../model/handoff";
 
 // Left project drawer (Phase 3 relocation; Phase 6 grows the object hierarchy + Views).
 // Houses the always-on dashboards evicted from the strict inspector. Opens as one of the
@@ -37,7 +38,7 @@ export function ProjectDrawer() {
         </button>
       </div>
 
-      <DrawerSection title="Project" defaultOpen>
+      <DrawerSection title="Project" defaultOpen right={<CopyHandoffButton model={model} />}>
         <Hierarchy model={model} />
       </DrawerSection>
 
@@ -66,6 +67,25 @@ export function ProjectDrawer() {
       </DrawerSection>
     </aside>
   );
+}
+
+// Copies a Markdown brief of this session's edits and the open reds, for an agent chat.
+function CopyHandoffButton({ model }: { model: Model }) {
+  const toast = useStore((s) => s.toast);
+  const copy = async () => {
+    const { sessionEdits, activeStorey } = useStore.getState();
+    // No GET /project yet, so the house path is unknown here; the name stands in.
+    const text = buildHandoff(model, sessionEdits, { name: model.project.name, houseDir: null }, activeStorey);
+    try {
+      await navigator.clipboard.writeText(text);
+      toast("Agent handoff copied");
+    } catch (err) {
+      toast(`Could not copy the handoff: ${(err as Error).message}`, "error");
+    }
+  };
+  return <button className="btn" onClick={() => void copy()} title="Copy a Markdown brief of this session for an agent">
+    Copy agent handoff
+  </button>;
 }
 
 // Lightweight collapsible section: owns its own open/closed state and renders a header button

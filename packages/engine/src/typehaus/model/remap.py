@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from typing import Literal
 
 from typehaus.model.base import Element
 from typehaus.source.ops import PatchOp
@@ -42,14 +43,39 @@ class ReferenceRemap:
         return self.renamed.get(ref, ref)
 
 
+ImpactKind = Literal["carried", "left_behind", "needs_review"]
+
+
+@dataclass(frozen=True)
+class Impact:
+    """What an edit did to something other than its target: ``carried`` (followed it),
+    ``left_behind`` (a relationship the edit dropped), ``needs_review`` (a person must look)."""
+
+    tag: str
+    kind: ImpactKind
+    reason: str
+
+    def to_json(self) -> dict[str, str]:
+        return {"tag": self.tag, "kind": self.kind, "reason": self.reason}
+
+
 @dataclass(frozen=True)
 class MutationResult:
-    """The full outcome of a topology-changing op (→ 21b §Mutation contract)."""
+    """The full outcome of a topology-changing op (→ 21b §Mutation contract).
+
+    ``warnings`` is the older, prose-only surface: when a macro supplies none, the reasons of
+    its non-``carried`` impacts stand in, so callers reading only warnings still see them."""
 
     ops: list[PatchOp] = field(default_factory=list)
     remap: ReferenceRemap = field(default_factory=ReferenceRemap)
     deleted_tags: tuple[str, ...] = ()
     warnings: tuple[str, ...] = ()
+    impacts: tuple[Impact, ...] = ()
+
+    def __post_init__(self) -> None:
+        if self.impacts and not self.warnings:
+            object.__setattr__(self, "warnings", tuple(
+                i.reason for i in self.impacts if i.kind != "carried"))
 
 
 # --- handler registry --------------------------------------------------------

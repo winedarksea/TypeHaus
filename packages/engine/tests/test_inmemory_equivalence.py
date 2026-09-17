@@ -86,3 +86,14 @@ def test_draw_wall_add_equivalent(house: Path):
         if op.op == "add" and "uid" not in op.fields:
             op.fields["uid"] = new_uid()
     _assert_equivalent(house, ops)
+
+
+def test_place_placeable_add_equivalent(house: Path):
+    from typehaus.source.macros import place_placeable
+
+    base = load_plan(house).plan
+    ops = place_placeable(base, "main", type_ref="FURN-SOFA-84", position=(3.0, 2.0),
+                          rotation=90).ops
+    for op in ops:
+        op.fields["uid"] = new_uid()
+    _assert_equivalent(house, ops)

@@ -128,3 +128,13 @@ _PLACEABLE_KINDS = (Furniture, Fixture, Appliance, Equipment, Register, Electric
 def _placeable(plan: PlanModel, storey: str, tag: str):
     return next((item for item in plan.storey_elements(storey)
                  if isinstance(item, _PLACEABLE_KINDS) and item.tag == tag), None)
+
+
+def _resolved_rooms(plan: PlanModel, rooms=None) -> list:
+    """Resolved room faces for a point-in-polygon: the caller's live model's when supplied
+    (the server already holds one for this plan), else a reduced preview resolve."""
+    if rooms is not None:
+        return list(rooms)
+    from typehaus.resolve import resolve_preview
+
+    return list(resolve_preview(plan).rooms)

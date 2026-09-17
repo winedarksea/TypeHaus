@@ -151,6 +151,13 @@ class ProjectCoordinator:
         routed: dict[Path, list[PatchOp]] = {}
         for op in ops:
             path = self._locate(op, files)
+            if path is None and op.op == "add" and op.hint_list is not None:
+                raise WritebackError(
+                    f"no editable file declares a {op.hint_list} list to add "
+                    f"{op.type} {op.tag!r} to — add `{op.hint_list} = []` to a "
+                    "`# haus: editable` file wired into manifest.py (the starter's is "
+                    "plan/placeables.py)"
+                )
             if path is None:
                 raise WritebackError(
                     f"no editable file hosts {op.op} {op.type} {op.tag!r}"

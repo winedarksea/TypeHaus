@@ -66,6 +66,13 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
             loop.call_soon_threadsafe(lambda: asyncio.create_task(_broadcast()))
 
         state._notify_writeback_failed = _notify_writeback_failed
+
+        def _notify_saved(revision: str) -> None:
+            async def _broadcast() -> None:
+                await bus.broadcast({"type": "saved", "revision": revision})
+            loop.call_soon_threadsafe(lambda: asyncio.create_task(_broadcast()))
+
+        state._notify_saved = _notify_saved
         task = asyncio.create_task(_watch(state, bus))
         try:
             yield
@@ -79,6 +86,7 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
             state._notify_diverged = None
             state._notify_checks = None
             state._notify_writeback_failed = None
+            state._notify_saved = None
 
     app = FastAPI(title="Type:Haus serve", lifespan=lifespan)
     app.state.project = state
@@ -364,7 +372,7 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
         except ValueError as exc:
             return JSONResponse({"error": str(exc)}, status_code=400)
         try:
-            result = state.apply_edit(ops, body.get("revision"))
+            result = await _offload(state.apply_edit, ops, body.get("revision"))
         except RevisionMismatch as exc:
             return JSONResponse({"error": str(exc)}, status_code=409)
         except (WritebackError, ExternalEdit) as exc:
@@ -411,7 +419,7 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
         if state.model is None:
             return JSONResponse({"error": "model does not resolve"}, status_code=409)
         try:
-            result = build_macro_ops(state.model.plan, body)
+            result = build_macro_ops(state.model.plan, body, model=state.model)
         except MacroRequestError as exc:
             return JSONResponse({"error": str(exc)}, status_code=400)
         if body.get("rehearse"):
@@ -427,16 +435,16 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
 
     @app.post("/macro")
     async def post_macro(body: dict[str, Any]) -> Any:
-        from typehaus.server.macros_api import MacroRequestError, build_macro_ops
+        from typehaus.server.macros_api import MacroRequestError
 
         if state.model is None:
             return JSONResponse({"error": "model does not resolve"}, status_code=409)
+        # Off the event loop: a resolve here would otherwise freeze every other request and
+        # the WS broadcast for its whole duration.
         try:
-            result = build_macro_ops(state.model.plan, body)
+            result, patch = await _offload(state.apply_macro, body)
         except MacroRequestError as exc:
             return JSONResponse({"error": str(exc)}, status_code=400)
-        try:
-            patch = state.apply_edit(result.ops, body.get("revision"))
         except RevisionMismatch as exc:
             return JSONResponse({"error": str(exc)}, status_code=409)
         except (WritebackError, ExternalEdit) as exc:
@@ -452,6 +460,7 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
                       "rehost": result.remap.rehost},
             "deleted": list(result.deleted_tags),
             "warnings": list(result.warnings),
+            "impacts": [impact.to_json() for impact in result.impacts],
         })
 
     # Revision the glb sitting in out/model.glb was emitted from, so a repeat request for an
@@ -507,14 +516,14 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
             _write_underlay_calibration(state.house_dir / "preferences.toml", body)
         except (KeyError, TypeError, ValueError) as exc:
             return JSONResponse({"error": str(exc)}, status_code=422)
-        state.rebuild()
+        await _offload(state.rebuild)
         await bus.broadcast({"type": "file-changed", "revision": state.revision(),
                              "ok": state.ok})
         return JSONResponse({"ok": state.ok})
 
     @app.post("/build")
     async def post_build() -> Any:
-        state.rebuild()
+        await _offload(state.rebuild)
         await bus.broadcast({"type": "build", "revision": state.revision()})
         return JSONResponse({"ok": state.ok, "revision": state.revision()})
 
@@ -623,7 +632,7 @@ async def _history(state: ProjectState, bus: EventBus, undo: bool) -> Any:
     from fastapi.responses import JSONResponse
 
     try:
-        result = state.history(undo=undo)
+        result = await _offload(state.history, undo)
     except RuntimeError as exc:
         return JSONResponse({"error": str(exc)}, status_code=409)
     await bus.broadcast({"type": "undo" if undo else "redo", "revision": result.revision,
@@ -643,8 +652,8 @@ async def _watch(state: ProjectState, bus: EventBus) -> None:
         if not any(_is_project_source_change(state.house_dir, Path(path))
                    for _kind, path in changes):
             continue
-        if state.coordinator.check_external_edit():
-            state.rebuild()
+        if await _offload(state.coordinator.check_external_edit):
+            await _offload(state.rebuild)
             await bus.broadcast({"type": "file-changed",
                                  "revision": state.revision(),
                                  "ok": state.ok})
@@ -656,3 +665,10 @@ def _is_project_source_change(house_dir: Path, path: Path) -> bool:
     except ValueError:
         return False
     return relative.parts[:1] in {("plan",), ("assets",)}
+
+
+async def _offload(fn: Any, *args: Any) -> Any:
+    """Run a blocking resolve/load off the event loop (deferred import: the `serve` extra)."""
+    from starlette.concurrency import run_in_threadpool
+
+    return await run_in_threadpool(fn, *args)

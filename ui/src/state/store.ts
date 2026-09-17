@@ -25,8 +25,11 @@ import {
 } from "../model/tradeVisibility";
 import { locateUid } from "./locate";
 import type { PanelId } from "./panels";
-import { createMutationActions, type MutationActions } from "./mutations";
+import { createMutationActions, markSavedIfDrained, type MutationActions } from "./mutations";
 import { createSiteSlice, type SiteSlice } from "./site";
+import { createPendingSlice, type PendingSlice } from "./pending";
+import { createPlacementSlice, type PlacementSlice } from "./placement";
+import { emptySessionEdits, type SessionEdits } from "./sessionEdits";
 import {
   DEFAULT_EARTH_OPACITY,
   type Conflict, type DetailView, type DocumentsTab, type LabelMode, type Lens, type Selection,
@@ -34,7 +37,7 @@ import {
   type ViewMode, type ViewTransform, type Workspace,
 } from "./vocabulary";
 
-export interface StoreState extends MutationActions, SiteSlice {
+export interface StoreState extends MutationActions, SiteSlice, PendingSlice, PlacementSlice {
   client: EngineClient;
   offline: boolean; // true once running against the in-browser pyodide engine
   offlineHouse: string | null;
@@ -92,6 +95,8 @@ export interface StoreState extends MutationActions, SiteSlice {
   // applied has been reverted to source truth, so this must be shown, not swallowed.
   writebackFailure: string | null;
   toasts: Toast[];
+  // What this session changed (→ state/sessionEdits.ts); reset when a house is (re)opened.
+  sessionEdits: SessionEdits;
 
   // actions
   init: () => Promise<void>;
@@ -166,6 +171,8 @@ export const useStore = create<StoreState>((set, get, store) => ({
   // The site surface (→ state/site.ts). A separate slice, not a separate store: it needs
   // the same EngineClient and the same zoomToUid, and click-to-locate crosses between them.
   ...createSiteSlice(set, get, store),
+  ...createPendingSlice(set, get, store),
+  ...createPlacementSlice(set, get, store),
 
   client: new HttpEngineClient(),
   offline: false,
@@ -206,6 +213,7 @@ export const useStore = create<StoreState>((set, get, store) => ({
   conflict: null,
   writebackFailure: null,
   toasts: [],
+  sessionEdits: emptySessionEdits(),
 
   init: async () => {
     // Standalone PWA first boot: replace the default HttpEngineClient with the offline pyodide
@@ -226,6 +234,7 @@ export const useStore = create<StoreState>((set, get, store) => ({
       }
     }
     const { client } = get();
+    set({ sessionEdits: emptySessionEdits(), pendingTransforms: {}, saveState: "idle", savedRevision: null });
     unsubscribeEvents?.();
     unsubscribeEvents = client.events(
       (e) => handleEvent(get, set, e),
@@ -300,7 +309,11 @@ export const useStore = create<StoreState>((set, get, store) => ({
     return promise;
   },
 
-  setTool: (tool) => set({ tool, subOperation: false }),
+  // Arming Place with no type chosen opens the catalog: there is nothing to tap with yet.
+  setTool: (tool) => set((s) => ({
+    tool, subOperation: false,
+    placementCatalogOpen: tool === "placeable" && s.placementType === null,
+  })),
   setSubOperation: (subOperation) => set({ subOperation }),
   setDrawAssembly: (drawAssembly) => set({ drawAssembly }),
   setChainDraw: (chainDraw) => set({ chainDraw }),
@@ -412,9 +425,28 @@ export function handleEvent(
     }
     case "writeback-failed": {
       // The engine already reverted to source truth; reload so the canvas matches, and say
-      // why the edit disappeared instead of hot-reloading it away silently.
-      set({ writebackFailure: e.detail });
+      // why the edit disappeared instead of hot-reloading it away silently. Overlays go too:
+      // they show edits that are no longer true.
+      set({ writebackFailure: e.detail, saveState: "failed", pendingTransforms: {} });
+      void get().reloadIfStale(e.revision).then(() => markSavedIfDrained(get, set));
+      break;
+    }
+    case "saved": {
+      set({ savedRevision: e.revision });
+      markSavedIfDrained(get, set);
+      // The server bumps the revision when a writeback gives new elements their source.
       void get().reloadIfStale(e.revision);
+      break;
+    }
+    case "checks": {
+      // Same revision → patch the findings in place (no reload, no 3D rebuild); otherwise
+      // the model is behind and a fetch brings findings with it.
+      const model = get().model;
+      if (model && model.revision === e.revision) {
+        set({ model: { ...model, findings: e.findings, ok: e.ok, checksPending: false } });
+      } else {
+        void get().reloadIfStale(e.revision);
+      }
       break;
     }
     case "patched":

@@ -24,6 +24,7 @@ from typehaus.source.macros_common import (
     _nodes,
     _point_expr,
     _point_expr_m,
+    _resolved_rooms,
     _rooms,
     _walls,
 )
@@ -92,7 +93,8 @@ def _wall_list(plan: PlanModel, storey: str) -> str | None:
 # --- rubber-band stretch -----------------------------------------------------
 
 def move_nodes(
-    plan: PlanModel, storey: str, node_tags: list[str], dx: float | str, dy: float | str
+    plan: PlanModel, storey: str, node_tags: list[str], dx: float | str, dy: float | str,
+    *, rooms=None,
 ) -> MutationResult:
     """Translate a rigid node set by (dx, dy) — the atomic op behind stretch + driven dims.
 
@@ -118,7 +120,7 @@ def move_nodes(
                            {"position": _point_expr_m(px + dxm, py + dym)}))
     # A completed room-boundary translation is a rigid move; a partial boundary selection
     # is a resize and intentionally leaves contents at their project coordinates.
-    translated_rooms = _rooms_with_moved_boundaries(plan, storey, set(movable))
+    translated_rooms = _rooms_with_moved_boundaries(plan, storey, set(movable), rooms=rooms)
     for room in _rooms(plan, storey):
         if room.tag not in translated_rooms:
             continue
@@ -139,17 +141,15 @@ def move_nodes(
     return MutationResult(ops=ops, warnings=warnings)
 
 
-def _rooms_with_moved_boundaries(plan: PlanModel, storey: str, moved_nodes: set[str]) -> set[str]:
+def _rooms_with_moved_boundaries(plan: PlanModel, storey: str, moved_nodes: set[str], *,
+                                 rooms=None) -> set[str]:
     """Return rooms whose complete authored boundary node set participates in this move."""
     try:
         from shapely.geometry import Point, Polygon
 
-        from typehaus.resolve import resolve
-
-        model, _ = resolve(plan)
         nodes = _nodes(plan, storey)
         translated: set[str] = set()
-        for room in model.rooms:
+        for room in _resolved_rooms(plan, rooms):
             if room.storey != storey or len(room.clear_face) < 3:
                 continue
             boundary = Polygon(room.clear_face).boundary

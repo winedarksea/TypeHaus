@@ -10,8 +10,13 @@ from __future__ import annotations
 import uuid
 
 from typehaus import Building, Library, PlanModel, Project, Storey, ft
+from typehaus.library import (
+    STARTER_APPLIANCE_TYPES,
+    STARTER_FIXTURE_TYPES,
+    STARTER_FURNITURE_TYPES,
+)
 
-from plan import assemblies, circuits, electrical, mep, site, views
+from plan import assemblies, circuits, electrical, mep, placeables, site, views
 from plan.storeys import main, upper
 
 format_version = 1
@@ -26,6 +31,9 @@ _library = Library(
     door_types=tuple(main.DOOR_TYPES),
     window_types=tuple(main.WINDOW_TYPES),
     electrical_device_types=tuple(electrical.DEVICE_TYPES),
+    furniture_types=tuple(STARTER_FURNITURE_TYPES),
+    fixture_types=tuple(STARTER_FIXTURE_TYPES),
+    appliance_types=tuple(STARTER_APPLIANCE_TYPES),
     circuits=tuple(circuits.CIRCUITS),
 )
 
@@ -49,11 +57,11 @@ PLAN = (
         "main",
         [*main.NODES, *main.WALLS, *main.OPENINGS, *main.ROOMS, *main.FLOOR,
          *main.ALARMS, *mep.SUMP, *mep.RISER, *mep.FAN_BOX, *electrical.MAIN_DEVICES,
-         *views.DETAIL_SLICES],
+         *views.DETAIL_SLICES, *placeables.MAIN_PLACEABLES],
     )
     .with_elements(
         "upper",
         [*upper.NODES, *upper.WALLS, *upper.OPENINGS, *upper.ROOMS, *upper.ALARMS,
-         *electrical.UPPER_DEVICES],
+         *electrical.UPPER_DEVICES, *placeables.UPPER_PLACEABLES],
     )
 )

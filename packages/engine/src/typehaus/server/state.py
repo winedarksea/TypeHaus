@@ -21,6 +21,7 @@ edits in the watcher.
 from __future__ import annotations
 
 import logging
+import os
 import queue
 import threading
 import time
@@ -33,6 +34,7 @@ from typing import Any
 from typehaus.checks import load_preferences
 from typehaus.findings import Finding, Severity
 from typehaus.model.plan import PlanModel
+from typehaus.model.remap import MutationResult
 from typehaus.resolve import resolve, resolve_preview
 from typehaus.resolve.model import ResolvedModel
 from typehaus.server.model_json import load_variant_catalog, model_to_dict, preview_to_dict
@@ -80,6 +82,9 @@ class ProjectState:
     _revision: str = field(default_factory=lambda: uuid.uuid4().hex[:16])
     # Optimistic undo/redo depths shown in the UI. Each fast edit adds one undo entry; the
     # authoritative journal is built by the background writeback and reconciled if it drifts.
+    # Revisions that differ from ``_revision`` only in serialized provenance, not in plan:
+    # a commit precondition naming one is still current. Cleared by any real plan change.
+    _revision_aliases: set[str] = field(default_factory=set)
     _undo_depth: int = 0
     _redo_depth: int = 0
     _model_cache: tuple[str, dict[str, Any]] | None = None
@@ -89,12 +94,20 @@ class ProjectState:
     _write_q: queue.Queue[list[PatchOp] | None] = field(default_factory=queue.Queue)
     _worker: threading.Thread | None = None
     _idle: threading.Event = field(default_factory=threading.Event)
+    # Tags added by a queued writeback not yet on disk: routing can't find them in source, so
+    # an edit to one rides the add's own routing (it lands in the same file, in order).
+    _unwritten_adds: set[str] = field(default_factory=set)
+    # Its own lock: the worker must never wait on `_lock`, which `_flush_writes` callers hold.
+    _adds_lock: threading.Lock = field(default_factory=threading.Lock)
     # Optional callback (app-provided) to notify clients when reconciliation adopts source
     # truth after a divergence — scheduled thread-safely onto the server event loop.
     _notify_diverged: Callable[[], None] | None = None
     # Optional callback (app-provided) reporting a *failed* async source writeback, whose
     # edit the following reconcile silently reverts. Takes the failure detail.
     _notify_writeback_failed: Callable[[str], None] | None = None
+    # Optional callback (app-provided) fired once the source writeback has landed: the
+    # queue drained and reconciled, or a slow-path apply rebuilt. Takes the revision.
+    _notify_saved: Callable[[str], None] | None = None
     # Background checks worker (Phase 3): a single-slot request coalesces to the latest
     # resolve, so an edit landing mid-check supersedes the in-flight check job's result.
     _checks_cv: threading.Condition = field(default_factory=threading.Condition)
@@ -119,6 +132,7 @@ class ProjectState:
 
     def _bump_revision(self) -> None:
         self._revision = uuid.uuid4().hex[:16]
+        self._revision_aliases.clear()
         self._model_cache = None
 
     # --- full rebuild from source (open, undo/redo, watcher, build) ----------
@@ -203,7 +217,7 @@ class ProjectState:
             report = run_from_model(model, rfindings, self.house_dir)
             elapsed = (time.perf_counter() - t0) * 1000.0
             with self._lock:
-                stale = revision != self._revision
+                stale = revision != self._revision and revision not in self._revision_aliases
                 if not stale:
                     self.findings = report.findings
                     self.ok = report.ok
@@ -221,6 +235,19 @@ class ProjectState:
         self._checks_idle.wait()
 
     # --- unified mutation entry ---------------------------------------------
+    def apply_macro(self, body: dict[str, Any]) -> tuple[MutationResult, EditResult]:
+        """Build a macro's ops against the live model and apply them under one lock hold, so
+        the ops are built from exactly the plan they apply to. Blocking: call it off the
+        event loop. Raises MacroRequestError plus everything :meth:`apply_edit` raises."""
+        from typehaus.server.macros_api import MacroRequestError, build_macro_ops
+
+        _debug_delay()
+        with self._lock:
+            if self.model is None:
+                raise MacroRequestError("model does not resolve")
+            result = build_macro_ops(self.model.plan, body, model=self.model)
+            return result, self.apply_edit(result.ops, body.get("revision"))
+
     def apply_edit(
         self, ops: list[PatchOp], expected_revision: str | None
     ) -> EditResult:
@@ -230,14 +257,18 @@ class ProjectState:
         from typehaus.source.coordinator import RevisionMismatch
 
         with self._lock:
-            if expected_revision is not None and expected_revision != self._revision:
+            if (expected_revision is not None and expected_revision != self._revision
+                    and expected_revision not in self._revision_aliases):
                 raise RevisionMismatch(
                     f"revision {expected_revision} != {self._revision}; reload and retry"
                 )
             # Rehearse routing first: an op targeting a non-`# haus: editable` file can be
             # applied in memory but never written back, so without this the edit would 200,
             # render, and then silently snap back when the async writeback failed.
-            self.coordinator.can_route(ops)
+            with self._adds_lock:
+                unwritten = set(self._unwritten_adds)
+            self.coordinator.can_route(
+                [op for op in ops if op.op == "add" or op.tag not in unwritten])
             if self.plan is not None and can_apply_in_memory(self.plan, ops):
                 try:
                     return self._apply_fast(ops)
@@ -270,8 +301,13 @@ class ProjectState:
         result = self.coordinator.apply_patch(ops, None)
         self.rebuild()
         self._undo_depth, self._redo_depth = result.undo_depth, result.redo_depth
+        self._saved()
         return EditResult(self._revision, result.minted_uids,
                           self._undo_depth, self._redo_depth, fast=False)
+
+    def _saved(self) -> None:
+        if self._notify_saved is not None:
+            self._notify_saved(self._revision)
 
     def rehearse(self, ops: list[PatchOp]) -> None:
         """Ask *before* the gesture whether ``ops`` could ever be written back, raising the
@@ -308,6 +344,7 @@ class ProjectState:
             result = self.coordinator.undo() if undo else self.coordinator.redo()
             self.rebuild()
             self._undo_depth, self._redo_depth = result.undo_depth, result.redo_depth
+            self._saved()
             return EditResult(self._revision, {}, self._undo_depth, self._redo_depth, fast=False)
 
     # --- background writeback worker ----------------------------------------
@@ -321,6 +358,8 @@ class ProjectState:
     def _enqueue_writeback(self, ops: list[PatchOp]) -> None:
         self._ensure_worker()
         self._idle.clear()
+        with self._adds_lock:
+            self._unwritten_adds.update(op.tag for op in ops if op.op == "add")
         self._write_q.put(ops)
 
     def _writeback_loop(self) -> None:
@@ -339,10 +378,13 @@ class ProjectState:
                 if self._notify_writeback_failed is not None:
                     self._notify_writeback_failed(str(exc) or exc.__class__.__name__)
             finally:
+                with self._adds_lock:
+                    self._unwritten_adds.difference_update(op.tag for op in ops if op.op == "add")
                 self._write_q.task_done()
             if self._write_q.empty():
                 self._reconcile()
                 self._idle.set()
+                self._saved()
 
     def _flush_writes(self) -> None:
         """Block until all queued writebacks have landed on disk (used before undo/external)."""
@@ -353,6 +395,8 @@ class ProjectState:
         """Compare the source-of-truth reload against the in-memory plan; on divergence adopt
         source and notify. Divergence should never happen (equivalence gate) — it bounds the
         blast radius of an applicator bug to a brief flicker + a loud log, not corruption."""
+        with self._lock:
+            loaded_against = self.plan
         try:
             reloaded = load_plan(self.house_dir)
         except Exception:  # noqa: BLE001
@@ -362,7 +406,11 @@ class ProjectState:
             in_mem = self.plan
             if reloaded.plan is None or in_mem is None:
                 return
-            if reloaded.plan.model_dump() != in_mem.model_dump():
+            if in_mem is not loaded_against or not self._write_q.empty():
+                # An edit, undo or rebuild landed while the source loaded: this reload
+                # predates it and would "diverge" by reverting it. That change reconciles itself.
+                return
+            if _plan_dump(reloaded.plan) != _plan_dump(in_mem):
                 log.error(
                     "in-memory plan diverged from source after writeback; adopting source"
                 )
@@ -378,8 +426,15 @@ class ProjectState:
                     self._notify_diverged()
             else:
                 # Refresh provenance (line numbers shifted by the writeback) for pick→source.
+                gained = reloaded.provenance.tags() - self.provenance.tags()
                 self.provenance = reloaded.provenance
                 self._model_cache = None
+                if gained:
+                    # A freshly added element only now has a source location; a new revision
+                    # makes clients refetch it, and the alias keeps their pending commits valid.
+                    previous = {self._revision, *self._revision_aliases}
+                    self._revision = uuid.uuid4().hex[:16]
+                    self._revision_aliases = previous
 
     # --- serialization ------------------------------------------------------
     def model_json(self) -> dict[str, Any]:
@@ -417,3 +472,17 @@ class ProjectState:
     def findings_json(self) -> list[dict[str, Any]]:
         with self._lock:
             return [f.model_dump(mode="json") for f in self.findings]
+
+
+def _plan_dump(plan: PlanModel) -> tuple[dict[str, Any], dict[str, Any]]:
+    """A comparable dump: ``PlanModel.model_dump`` serializes elements as the base
+    ``Element`` (uid and tag only), so each element is dumped with its own fields."""
+    return (plan.model_dump(exclude={"elements"}),
+            {el.tag: el.model_dump() for el in plan.all_elements()})
+
+
+def _debug_delay() -> None:
+    """``TYPEHAUS_DEBUG_DELAY_MS`` injects latency into a mutation, for the browser harness."""
+    delay_ms = os.environ.get("TYPEHAUS_DEBUG_DELAY_MS")
+    if delay_ms:
+        time.sleep(float(delay_ms) / 1000.0)

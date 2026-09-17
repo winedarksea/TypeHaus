@@ -224,3 +224,66 @@ export async function captureScreenshot(session) {
   });
   return Buffer.from(data, "base64");
 }
+
+const MODIFIER_BITS = { alt: 1, ctrl: 2, meta: 4, shift: 8 };
+const modifierMask = (modifiers = []) =>
+  modifiers.reduce((mask, name) => mask | (MODIFIER_BITS[name] ?? 0), 0);
+
+/**
+ * Press at `from`, move through `steps` intermediate points, release at `to` — real pointer
+ * events, so pointer capture, drag thresholds and the release handler all run. `holdMs` waits
+ * before the release (a hover/snap feedback frame); `release: false` leaves the button down.
+ */
+export async function drag(session, from, to, { steps = 8, modifiers = [], holdMs = 0, release = true } = {}) {
+  const mask = modifierMask(modifiers);
+  const mouse = (type, [x, y], buttons) => session.send("Input.dispatchMouseEvent", {
+    type, x, y, button: "left", buttons, clickCount: 1, modifiers: mask, pointerType: "mouse",
+  });
+  await mouse("mouseMoved", from, 0);
+  await mouse("mousePressed", from, 1);
+  for (let i = 1; i <= steps; i++) {
+    const t = i / steps;
+    await mouse("mouseMoved", [from[0] + (to[0] - from[0]) * t, from[1] + (to[1] - from[1]) * t], 1);
+    await sleep(16);
+  }
+  if (holdMs) await sleep(holdMs);
+  if (release) await mouse("mouseReleased", to, 0);
+}
+
+export async function click(session, [x, y], { modifiers = [] } = {}) {
+  const mask = modifierMask(modifiers);
+  for (const type of ["mouseMoved", "mousePressed", "mouseReleased"]) {
+    await session.send("Input.dispatchMouseEvent", {
+      type, x, y, button: "left", buttons: type === "mousePressed" ? 1 : 0, clickCount: 1,
+      modifiers: mask, pointerType: "mouse",
+    });
+  }
+}
+
+const KEY_CODES = {
+  Escape: 27, Enter: 13, ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40,
+  Delete: 46, Backspace: 8,
+};
+
+/** One key press (keyDown + keyUp) with the `key`/`code` pair React handlers read. */
+export async function key(session, name, { modifiers = [] } = {}) {
+  const mask = modifierMask(modifiers);
+  const single = name.length === 1;
+  const code = single ? `Key${name.toUpperCase()}` : name;
+  const keyCode = KEY_CODES[name] ?? (single ? name.toUpperCase().charCodeAt(0) : 0);
+  const base = { key: name, code, windowsVirtualKeyCode: keyCode, nativeVirtualKeyCode: keyCode, modifiers: mask };
+  await session.send("Input.dispatchKeyEvent", { type: single ? "keyDown" : "rawKeyDown", ...base, ...(single ? { text: name } : {}) });
+  await session.send("Input.dispatchKeyEvent", { type: "keyUp", ...base });
+}
+
+/** Poll a page expression (a function body returning truthy) until it holds or time runs out. */
+export async function waitFor(session, body, timeoutMs = 10_000, label = body) {
+  const deadline = Date.now() + timeoutMs;
+  let last;
+  while (Date.now() < deadline) {
+    last = await evaluate(session, body);
+    if (last) return last;
+    await sleep(50);
+  }
+  throw new Error(`timed out after ${timeoutMs} ms waiting for: ${label} (last: ${JSON.stringify(last)})`);
+}

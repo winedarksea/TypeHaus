@@ -10,11 +10,13 @@
 // model and `set()` to raise the conflict banner, so the store spreads this factory into its
 // initializer and every call site keeps working unchanged.
 import type {
-  MacroRequest, MacroResult, PatchOp, PreviewGeometry, UnderlayCalibration,
+  Impact, MacroRequest, MacroResult, PatchOp, PreviewGeometry, UnderlayCalibration,
 } from "../engine/EngineClient";
 import { EngineError, RevisionConflict } from "../engine/EngineClient";
 import { locateUid } from "./locate";
 import { DERIVED_SELECTION_KINDS } from "./vocabulary";
+import { foldMacroResult, foldPatchOps } from "./sessionEdits";
+import type { SaveState } from "./pending";
 import type { StoreState } from "./store";
 
 export interface MutationActions {
@@ -43,50 +45,134 @@ export interface MutationActions {
 let previewInFlight = false;
 let pendingPreviewRequest: MacroRequest | null = null;
 
+// Every journaled write runs one at a time and reads `model.revision` when its turn starts,
+// so a second drag queued behind the first sends the revision the first produced instead of
+// a stale one (→ a spurious 409). A module-level chain: there is one engine per page.
+let mutationChain: Promise<unknown> = Promise.resolve();
+let queuedMutations = 0;
+
+export function mutationQueueIdle(): boolean {
+  return queuedMutations === 0;
+}
+
+export function serialize<T>(job: () => Promise<T>): Promise<T> {
+  queuedMutations += 1;
+  const run = mutationChain.then(job).finally(() => { queuedMutations -= 1; });
+  mutationChain = run.then(() => undefined, () => undefined);
+  return run;
+}
+
+// Saved = the engine's writeback drained at the revision on screen and nothing is queued.
+export function markSavedIfDrained(
+  get: () => StoreState, set: (partial: Partial<StoreState>) => void,
+): void {
+  const state = get();
+  if (mutationQueueIdle() && state.saveState === "saving" && state.savedRevision !== null
+      && state.savedRevision === state.model?.revision) {
+    set({ saveState: "saved" });
+  }
+}
+
+// "2 carried, 1 needs review": one toast per edit rather than one per affected element.
+export function impactSummary(impacts: Impact[]): string {
+  const labels: [Impact["kind"], string][] = [
+    ["carried", "carried"], ["left_behind", "left behind"], ["needs_review", "needs review"],
+  ];
+  return labels
+    .map(([kind, label]) => [impacts.filter((impact) => impact.kind === kind).length, label] as const)
+    .filter(([count]) => count > 0)
+    .map(([count, label]) => `${count} ${label}`)
+    .join(", ");
+}
+
 export function createMutationActions(
   set: (partial: Partial<StoreState>) => void,
   get: () => StoreState,
 ): MutationActions {
+  // A write is starting: the chip says Saving… until the engine's `saved` event. Returns the
+  // prior state so a write that turns out to be a no-op can put it back.
+  const beginWrite = (): SaveState => {
+    const prior = get().saveState;
+    if (!get().offline) set({ saveState: "saving" });
+    return prior;
+  };
+  const pausedOnConflict = (): boolean => {
+    if (!get().conflict) return false;
+    get().toast("Resolve the conflict before editing again", "error");
+    return true;
+  };
+  // A rejected request (4xx) wrote nothing, so the chip returns to what it said before; a
+  // conflict, a writeback refusal (422) or a transport failure leaves the edit unsaved.
+  const failWrite = (err: unknown, prior: SaveState) => {
+    const rejected = err instanceof EngineError && err.status >= 400 && err.status < 500
+      && err.status !== 422;
+    set({ saveState: rejected ? prior : "failed" });
+    if (err instanceof RevisionConflict) set({ conflict: { message: err.message } });
+    else get().toast((err as Error).message, "error");
+  };
+  // The `saved` event can beat the HTTP response home, so the queue re-checks on drain.
+  const queued = async <T>(job: () => Promise<T>): Promise<T> => {
+    const result = await serialize(job);
+    markSavedIfDrained(get, set);
+    return result;
+  };
+
+  const stepHistory = async (direction: "undo" | "redo") => {
+    const prior = beginWrite();
+    try {
+      const res = await (direction === "undo" ? get().client.undo() : get().client.redo());
+      await get().reloadIfStale(res.revision);
+    } catch (err) {
+      // An empty history (409) isn't an error — a stray Undo after a no-op edit
+      // shouldn't flash a red toast; report it as neutral info instead. Nothing was written.
+      if (err instanceof EngineError && err.status === 409) {
+        set({ saveState: prior });
+        get().toast(err.message, "info");
+      } else {
+        set({ saveState: "failed" });
+        get().toast((err as Error).message, "error");
+      }
+    }
+  };
+
   return {
-  applyOps: async (ops) => {
+  applyOps: (ops) => queued(async () => {
     const { client, model } = get();
-    if (!model) return false;
+    if (!model || pausedOnConflict()) return false;
+    const prior = beginWrite();
     try {
       const res = await client.patchPlan(ops, model.revision);
+      set({ sessionEdits: foldPatchOps(get().sessionEdits, ops) });
       // The server broadcasts "patched"; the WS handler also reloads. reloadIfStale keyed on
       // the post-patch revision coalesces the two into a single GET /model (1a).
       await get().reloadIfStale(res.revision);
       return true;
     } catch (err) {
-      if (err instanceof RevisionConflict) {
-        set({ conflict: { message: err.message } });
-      } else {
-        get().toast((err as Error).message, "error");
-      }
+      failWrite(err, prior);
       return false;
     }
-  },
+  }),
 
   // Geometry / library macros (server owns the math, → 21b). Same journaled patch path as
   // applyOps, but returns the MacroResult so callers can select minted elements and surface
-  // any warnings (pinned nodes held, openings re-hosted on a split).
-  runMacro: async (request) => {
+  // what the edit did to its neighbours (impacts; `warnings` from an older server).
+  runMacro: (request) => queued(async () => {
     const { client, model } = get();
-    if (!model) return null;
+    if (!model || pausedOnConflict()) return null;
+    const prior = beginWrite();
     try {
       const result = await client.runMacro(request, model.revision);
+      set({ sessionEdits: foldMacroResult(get().sessionEdits, request, result) });
       await get().reloadIfStale(result.revision);
-      for (const warning of result.warnings ?? []) get().toast(warning);
+      const summary = result.impacts ? impactSummary(result.impacts) : "";
+      if (summary) get().toast(summary);
+      else if (!result.impacts?.length) for (const warning of result.warnings ?? []) get().toast(warning);
       return result;
     } catch (err) {
-      if (err instanceof RevisionConflict) {
-        set({ conflict: { message: err.message } });
-      } else {
-        get().toast((err as Error).message, "error");
-      }
+      failWrite(err, prior);
       return null;
     }
-  },
+  }),
 
   previewMacro: async (request, rehearse = false) => {
     if (previewInFlight) {
@@ -147,8 +233,13 @@ export function createMutationActions(
       const stair = (model.stairs ?? []).find((x) => x.uid === selection.uid);
       type = "Stair"; tag = stair?.tag ?? null;
     } else if (selection.kind === "canvas_object") {
+      // A macro, not a raw delete: the engine refuses (and names them) while a run, sleeve,
+      // control or host still references the object.
       const item = (model.canvas_objects ?? []).find((x) => x.uid === selection.uid);
-      type = item?.kind ?? null; tag = item?.tag ?? null;
+      if (!item) { get().toast("Nothing deletable is selected", "info"); return; }
+      const result = await get().runMacro({ macro: "delete_placeable", storey: item.storey, tag: item.tag });
+      if (result) { get().toast(`${item.tag} deleted`); select(null, null); }
+      return;
     }
     // Nothing above claimed the selection (an unhandled kind, or a record the model no longer
     // carries). Say so — a Del key that does nothing at all reads as a broken keyboard.
@@ -197,26 +288,7 @@ export function createMutationActions(
     }
   },
 
-  undo: async () => {
-    try {
-      const res = await get().client.undo();
-      await get().reloadIfStale(res.revision);
-    } catch (err) {
-      // An empty history (409) isn't an error — a stray Undo after a no-op edit
-      // shouldn't flash a red toast; report it as neutral info instead.
-      if (err instanceof EngineError && err.status === 409) get().toast(err.message, "info");
-      else get().toast((err as Error).message, "error");
-    }
-  },
-
-  redo: async () => {
-    try {
-      const res = await get().client.redo();
-      await get().reloadIfStale(res.revision);
-    } catch (err) {
-      if (err instanceof EngineError && err.status === 409) get().toast(err.message, "info");
-      else get().toast((err as Error).message, "error");
-    }
-  },
+  undo: () => queued(() => stepHistory("undo")),
+  redo: () => queued(() => stepHistory("redo")),
   };
 }

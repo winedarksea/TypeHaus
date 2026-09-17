@@ -40,8 +40,13 @@ try {
   const { runWallBandShapeTests } = await server.ssrLoadModule("/src/three/builders/wallBandShape.test.ts");
   const { runWallBandSolidTests } = await server.ssrLoadModule("/src/three/builders/wallBandSolid.test.ts");
   const { runToolDispatchTests } = await server.ssrLoadModule("/src/components/plan/toolDispatch.test.ts");
+  const { runObjectKeyTests } = await server.ssrLoadModule("/src/components/plan/objectKeys.test.ts");
+  const { runWallSnapTests } = await server.ssrLoadModule("/src/components/plan/wallSnap.test.ts");
   const { runPlaceableDragTests, runObjectDragMathTests } = await server.ssrLoadModule("/src/components/plan/objectDrag.test.ts");
   const { runStoreEventTests } = await server.ssrLoadModule("/src/state/storeEvents.test.ts");
+  const { runHandoffTests } = await server.ssrLoadModule("/src/model/handoff.test.ts");
+  const { runMutationQueueTests } = await server.ssrLoadModule("/src/state/mutationQueue.test.ts");
+  const { runPendingTransformTests } = await server.ssrLoadModule("/src/state/pending.test.ts");
   const { runSheetGroupingTests } = await server.ssrLoadModule("/src/model/sheets.test.ts");
   const { runNoteGroupingTests } = await server.ssrLoadModule("/src/model/notes.test.ts");
   const { runPublicSiteTests } = await server.ssrLoadModule("/src/state/public.test.ts");
@@ -105,9 +110,14 @@ try {
   runWallBandShapeTests();
   runWallBandSolidTests();
   runToolDispatchTests();
+  runObjectKeyTests();
+  runWallSnapTests();
   runPlaceableDragTests();
   runObjectDragMathTests();
   runStoreEventTests();
+  await runMutationQueueTests();
+  await runPendingTransformTests();
+  runHandoffTests();
   runSheetGroupingTests();
   runNoteGroupingTests();
   runPublicSiteTests();

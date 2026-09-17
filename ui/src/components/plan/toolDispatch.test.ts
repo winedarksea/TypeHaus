@@ -5,6 +5,7 @@ import type { MutableRefObject } from "react";
 import type { Vec2 } from "../../model/types";
 import type { MeasureDraft } from "./canvasTypes";
 import { dispatchTap, type TapDeps } from "./toolDispatch";
+import { thumbScale } from "./PlaceableGlyph";
 
 // A minimal TapDeps: the measure branch only reads tool/offline/measure/shiftRef and the snap
 // inputs, so the rest are no-op stubs. `state` is the measure slot the taps drive.
@@ -38,7 +39,44 @@ function expectMeasure(actual: MeasureDraft | null, start: Vec2, end: Vec2 | nul
   }
 }
 
+// The Place tool: a tap with nothing armed opens the catalog; with a type armed it places at
+// the tap point, with no popover in between.
+function placeableHarness(placementType: string | null) {
+  const log = { placed: [] as Vec2[], catalogOpened: 0, toasts: [] as string[] };
+  const noop = () => {};
+  const deps = {
+    tool: "placeable", offline: false, scale: 100, placement: null, draft: null, measure: null,
+    shiftRef: { current: false }, wallsOnStorey: [], stairsOnStorey: [], warningMarkers: [],
+    snapNodes: new Map(), tolM: 0.2, gridM: null, activeStorey: "main", project: (p: Vec2) => p,
+    select: noop, toast: (message: string) => { log.toasts.push(message); },
+    setPlacement: noop, setDraft: noop, setMeasure: noop, setDimWall: noop, setWallAssemblyPopup: noop,
+    setWarningPopup: noop, setDoorPopup: noop, setWindowPopup: noop,
+    commitWall: async () => {}, commitStair: async () => {},
+    placementType,
+    commitPlaceable: async (world: Vec2) => { log.placed.push(world); },
+    openPlacementCatalog: () => { log.catalogOpened += 1; },
+  } as unknown as TapDeps;
+  return { log, tap: (world: Vec2) => dispatchTap(deps, world, [0, 0]) };
+}
+
+function runPlaceableDispatchTests() {
+  const unarmed = placeableHarness(null);
+  unarmed.tap([1, 1]);
+  if (unarmed.log.placed.length !== 0 || unarmed.log.catalogOpened !== 1) {
+    throw new Error("A tap with no armed type opens the catalog and places nothing");
+  }
+  const armed = placeableHarness("FURN-ARMCHAIR-35");
+  armed.tap([2, 3]);
+  if (armed.log.placed.length !== 1 || armed.log.placed[0][0] !== 2 || armed.log.catalogOpened !== 0) {
+    throw new Error("A tap with an armed type places it at the tap point");
+  }
+  // A thumbnail fits the footprint's long side inside the card, margin included.
+  if (Math.abs(thumbScale([2, 0.5], 48, 4) - 20) > 1e-9) throw new Error("thumbScale fits the long side");
+  if (Math.abs(thumbScale(null, 48, 4) - 40 / 0.45) > 1e-9) throw new Error("thumbScale falls back to the default footprint");
+}
+
 export function runToolDispatchTests() {
+  runPlaceableDispatchTests();
   // Tap one anchors, tap two fixes the segment.
   const basic = harness();
   basic.tap([1, 2]);

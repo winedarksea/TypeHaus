@@ -1,4 +1,5 @@
 import { useStore } from "../state/store";
+import { PlaceableCatalog } from "./PlaceableCatalog";
 
 // Contextual tool bar (Phase 2): floats just under the top bar and renders the active
 // tool's parameters. Disappears when Select is active (nothing to configure). Option lists
@@ -12,14 +13,20 @@ export function ContextBar() {
   const chainDraw = useStore((s) => s.chainDraw);
   const setChainDraw = useStore((s) => s.setChainDraw);
   const activeStorey = useStore((s) => s.activeStorey);
+  const placementType = useStore((s) => s.placementType);
+  const placementRepeat = useStore((s) => s.placementRepeat);
+  const setPlacementRepeat = useStore((s) => s.setPlacementRepeat);
+  const placementCatalogOpen = useStore((s) => s.placementCatalogOpen);
+  const setPlacementCatalogOpen = useStore((s) => s.setPlacementCatalogOpen);
 
   if (tool === "select") return null;
 
   const assemblies = model?.catalog?.assemblies ?? [];
+  const armedType = model?.catalog?.canvas_object_types?.find((type) => type.tag === placementType);
   const defaultAssembly =
     drawAssembly ?? assemblies[0]?.tag ?? null;
 
-  return (
+  return (<>
     <div className="contextbar" role="toolbar" aria-label={`${tool} options`}>
       <span className="ctx-tool-name">{TOOL_TITLES[tool]}</span>
       <span className="ctx-sep" />
@@ -59,7 +66,19 @@ export function ContextBar() {
       )}
 
       {tool === "placeable" && (
-        <span className="ctx-static">Tap the plan to place a component</span>
+        <>
+          <button className="btn ctx-placeable-type" aria-expanded={placementCatalogOpen}
+            onClick={() => setPlacementCatalogOpen(!placementCatalogOpen)}>
+            {armedType ? `${armedType.name} · ${armedType.tag}` : "Choose component…"}
+          </button>
+          <label className="ctx-field ctx-check">
+            <input type="checkbox" checked={placementRepeat} onChange={(e) => setPlacementRepeat(e.target.checked)} />
+            <span>Repeat</span>
+          </label>
+          <span className="ctx-static">
+            {armedType ? "Tap to place · R rotates · Esc done" : "Pick a type, then tap the plan"}
+          </span>
+        </>
       )}
 
       {tool === "room" && (
@@ -74,7 +93,9 @@ export function ContextBar() {
         <span className="ctx-static ctx-warn">Editing needs `haus serve`</span>
       )}
     </div>
-  );
+    {/* A sibling, not a child: the bar scrolls horizontally, which would clip a dropdown. */}
+    {tool === "placeable" && placementCatalogOpen && <PlaceableCatalog />}
+  </>);
 }
 
 const TOOL_TITLES: Record<string, string> = {

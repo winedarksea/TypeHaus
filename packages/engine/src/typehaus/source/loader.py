@@ -396,7 +396,9 @@ _IMPORT_LOCK = threading.RLock()
 
 def _import_manifest(house_dir: Path, findings: list[Finding]) -> PlanModel | None:
     """Import ``plan/manifest.py`` and read its module-level ``PLAN: PlanModel``."""
-    with _IMPORT_LOCK:
+    from typehaus.source.fresh_import import fresh_house_imports
+
+    with _IMPORT_LOCK, fresh_house_imports():
         return _import_manifest_locked(house_dir, findings)
 
 
@@ -434,7 +436,10 @@ def _import_manifest_locked(house_dir: Path, findings: list[Finding]) -> PlanMod
                     or m.startswith(("plan.", "params.", "library.", "typehaus.library."))]:
             del sys.modules[mod]
         _alias_library()
-        spec = importlib.util.spec_from_file_location("plan.manifest", manifest)
+        from typehaus.source.fresh_import import FreshSourceLoader
+
+        spec = importlib.util.spec_from_file_location(
+            "plan.manifest", manifest, loader=FreshSourceLoader("plan.manifest", str(manifest)))
         assert spec and spec.loader
         module = importlib.util.module_from_spec(spec)
         sys.modules["plan.manifest"] = module

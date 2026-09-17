@@ -168,3 +168,112 @@ def test_model_json_kind_is_what_the_writeback_accepts(tmp_path: Path) -> None:
     state._flush_writes()
     assert 'assembly="BASEMENT_12"' in (
         dst / "plan" / "storeys" / "basement.py").read_text()
+
+
+def test_missing_placeables_list_is_a_clear_422(starter_dir: Path, tmp_path: Path) -> None:
+    fastapi_testclient = pytest.importorskip("fastapi.testclient")
+    from typehaus.server.app import create_app
+
+    dst = tmp_path / "starter"
+    copy_house(starter_dir, dst)
+    placeables = dst / "plan" / "placeables.py"
+    placeables.write_text(placeables.read_text().replace("# haus: editable\n", "", 1))
+    with fastapi_testclient.TestClient(create_app(dst)) as c:
+        response = c.post("/macro", json={"macro": "place_placeable", "storey": "main",
+                                          "type_ref": "FURN-ARMCHAIR-35",
+                                          "position": [3.5, 3.0]})
+    assert response.status_code == 422
+    assert "MAIN_PLACEABLES" in response.json()["error"]
+    assert "plan/placeables.py" in response.json()["error"]
+
+
+def test_saved_callback_fires_after_queue_drains(starter_dir: Path, tmp_path: Path) -> None:
+    dst = tmp_path / "starter"
+    copy_house(starter_dir, dst)
+    state = ProjectState.open(dst)
+    saved: list[str] = []
+    state._notify_saved = saved.append
+    assert state.model is not None
+    edit = state.apply_edit([PatchOp("update", "Window", "WIN-101",
+                                     {"sill_height": "3'-0\""})], None)
+    assert edit.fast
+    state._flush_writes()
+    state._idle.wait(5)
+    assert saved == [state.revision()]
+    window = next(e for e in load_plan(dst).plan.all_elements() if e.tag == "WIN-101")
+    assert window.sill_height.inches == pytest.approx(36)
+
+
+def test_placed_element_gains_provenance_without_invalidating_pending_commits(
+        starter_dir: Path, tmp_path: Path) -> None:
+    """A fresh add has no source location until its writeback lands; the reconcile then bumps
+    the revision so clients refetch it — while a commit naming the old revision still applies."""
+    dst = tmp_path / "starter"
+    copy_house(starter_dir, dst)
+    state = ProjectState.open(dst)
+    result, edit = state.apply_macro({"macro": "place_placeable", "storey": "main",
+                                      "type_ref": "FURN-ARMCHAIR-35", "position": [3.5, 3.0]})
+    tag = result.ops[0].tag
+    assert state.provenance.location(tag) is None
+    state._flush_writes()
+    state._idle.wait(5)
+    assert state.provenance.location(tag) is not None
+    assert state.revision() != edit.revision
+    state.apply_macro({"macro": "move_placeable", "storey": "main", "tag": tag,
+                       "position": [4.0, 3.0], "revision": edit.revision})
+
+
+def test_edit_to_an_element_whose_add_is_still_queued_routes(
+        starter_dir: Path, tmp_path: Path) -> None:
+    """Place then drag at once: the add is not on disk yet, and that must not be a 422."""
+    dst = tmp_path / "starter"
+    copy_house(starter_dir, dst)
+    state = ProjectState.open(dst)
+    state._ensure_worker()
+    gate = __import__("threading").Event()
+    real = state.coordinator.apply_patch
+    state.coordinator.apply_patch = lambda *a, **k: (gate.wait(10), real(*a, **k))[1]  # type: ignore[method-assign]
+    result, _ = state.apply_macro({"macro": "place_placeable", "storey": "main",
+                                   "type_ref": "FURN-ARMCHAIR-35", "position": [3.5, 3.0]})
+    tag = result.ops[0].tag
+    state.apply_macro({"macro": "move_placeable", "storey": "main", "tag": tag,
+                       "position": [4.0, 3.0]})
+    gate.set()
+    state._flush_writes()
+    moved = next(e for e in load_plan(dst).plan.all_elements() if e.tag == tag)
+    assert moved.position.xy_m == pytest.approx((4.0, 3.0))
+
+
+def test_reconcile_never_adopts_a_reload_older_than_the_plan(
+        starter_dir: Path, tmp_path: Path) -> None:
+    """An undo landing while the reconcile's source load runs must not be reverted by it."""
+    dst = tmp_path / "starter"
+    copy_house(starter_dir, dst)
+    state = ProjectState.open(dst)
+    result, _ = state.apply_macro({"macro": "place_placeable", "storey": "main",
+                                   "type_ref": "FURN-ARMCHAIR-35", "position": [3.5, 3.0]})
+    tag = result.ops[0].tag
+    state.apply_macro({"macro": "retype_placeable", "storey": "main", "tag": tag,
+                       "type_ref": "FURN-SOFA-84"})
+    state._flush_writes()
+    state._idle.wait(5)
+    stale = load_plan(dst)
+    print("DBG stale", [e.type_ref for e in stale.plan.all_elements() if e.tag == tag], state._undo_depth)  # the sofa; the undo below puts the armchair back on disk
+    import typehaus.server.state as state_mod
+
+    original = state_mod.load_plan
+    fired: list[bool] = []
+
+    def load_then_undo(house):
+        if fired:  # the undo's own rebuild loads for real
+            return original(house)
+        fired.append(True)
+        state.history(True)  # lands mid-reconcile, after the reload started
+        return stale
+
+    state_mod.load_plan = load_then_undo
+    try:
+        state._reconcile()
+    finally:
+        state_mod.load_plan = original
+    assert next(e for e in state.plan.all_elements() if e.tag == tag).type_ref == "FURN-ARMCHAIR-35"

@@ -208,3 +208,40 @@ def test_event_bus_broadcasts_to_clients():
         assert ws.accepted and ws.events == [{"type": "build"}]
 
     asyncio.run(run())
+
+
+def test_macro_resolves_once(client, monkeypatch):
+    """A room-aware macro reads the live model's rooms: one resolve per commit, not two."""
+    import typehaus.resolve as resolve_pkg
+    import typehaus.server.state as state_mod
+
+    c, _ = client
+    calls: list[str] = []
+    real_resolve, real_preview = state_mod.resolve, resolve_pkg.resolve_preview
+    monkeypatch.setattr(state_mod, "resolve",
+                        lambda plan: (calls.append("resolve"), real_resolve(plan))[1])
+    monkeypatch.setattr(resolve_pkg, "resolve_preview",
+                        lambda plan: (calls.append("preview"), real_preview(plan))[1])
+    revision = c.get("/model").json()["revision"]
+    response = c.post("/macro", json={"macro": "place_placeable", "storey": "main",
+                                      "type_ref": "FURN-ARMCHAIR-35", "position": [3.5, 3.0],
+                                      "revision": revision})
+    assert response.status_code == 200, response.json()
+    assert calls == ["resolve"]
+
+
+def test_macro_response_carries_structured_impacts(client):
+    c, _ = client
+    placed = c.post("/macro", json={"macro": "place_placeable", "storey": "main",
+                                    "type_ref": "FURN-ARMCHAIR-35", "position": [3.5, 3.0]})
+    assert placed.status_code == 200, placed.json()
+    tag = next(iter(placed.json()["minted"]))
+    c.post("/macro", json={"macro": "attach_placeable", "storey": "main", "tag": tag,
+                           "wall": "W-101", "face": "left", "distance": 2})
+    moved = c.post("/macro", json={"macro": "move_placeable", "storey": "main", "tag": tag,
+                                   "position": [4.0, 4.0]}).json()
+    assert moved["impacts"] == [{"tag": tag, "kind": "left_behind",
+                                 "reason": f"{tag} attachment to W-101 dropped by a free move"}]
+    refused = c.post("/macro", json={"macro": "delete_placeable", "storey": "main",
+                                     "tag": "ED-Main-SW1"})
+    assert refused.status_code in (200, 400)

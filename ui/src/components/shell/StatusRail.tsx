@@ -49,7 +49,7 @@ export function StatusRail() {
       </button>
 
       <span className="sep">·</span>
-      <span>Snap ✓</span>
+      <SaveChip />
       <span className="sep">·</span>
 
       <Menu
@@ -81,5 +81,17 @@ export function StatusRail() {
       <span className="sep">·</span>
       <span>{model?.units ?? "ft-in"}</span>
     </div>
+  );
+}
+
+// Saving… while an edit is queued or its source writeback has not drained; Saved once the
+// engine says it is on disk; Save failed on a lost edit (the toast or banner says why).
+function SaveChip() {
+  const saveState = useStore((s) => s.saveState);
+  const label = { idle: "No edits", saving: "Saving…", saved: "Saved", failed: "Save failed" }[saveState];
+  return (
+    <span className={`status-save ${saveState}`} role="status" aria-live="polite" data-save-state={saveState}>
+      {label}
+    </span>
   );
 }

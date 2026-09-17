@@ -21,7 +21,7 @@ import { NORDIC_ACCENT, NORDIC_INK, NORDIC_LINE } from "../../nordic/palette";
 import { PLAN_TEXT_HALO, PlanLabel } from "./PlanLabelLayer";
 import { collinearAt } from "./PlanChrome";
 import type { LabelMode } from "../../state/vocabulary";
-import type { RubberBand, WallDraft } from "./canvasTypes";
+import type { MeasureDraft, RubberBand, WallDraft } from "./canvasTypes";
 
 // Rooms (tinted fills, behind walls) — a live drag's preview cascades into neighboring
 // rooms' clear-face polygons, matched by tag against the last preview. Labels drop from the
@@ -308,3 +308,29 @@ export const DetailMarkerLayer = memo(function DetailMarkerLayer({ model, active
     </>
   );
 });
+
+// The measure tape: a scratch two-tap segment with a dual-unit readout, never written back.
+export function MeasureTapeLayer({ measure, end, project }: {
+  measure: MeasureDraft;
+  end: Vec2;
+  project: (p: Vec2) => Vec2;
+}) {
+  const [sx, sy] = project(measure.start);
+  const [ex, ey] = project(end);
+  const d_m = Math.hypot(end[0] - measure.start[0], end[1] - measure.start[1]);
+  return (
+    <g pointerEvents="none">
+      <line x1={sx} y1={sy} x2={ex} y2={ey} stroke="var(--canvas-ink)" strokeWidth={1.5}
+        strokeDasharray={measure.end ? undefined : "5 4"} />
+      <circle cx={sx} cy={sy} r={4} fill="var(--canvas-white)" stroke="var(--canvas-ink)" strokeWidth={1.5} />
+      <circle cx={ex} cy={ey} r={4} fill="var(--canvas-white)" stroke="var(--canvas-ink)" strokeWidth={1.5} />
+      {d_m > 0.001 && (
+        <text x={(sx + ex) / 2} y={(sy + ey) / 2 - 8} fill="var(--canvas-ink)" fontSize={12}
+          textAnchor="middle" style={{ paintOrder: "stroke" }}
+          stroke="var(--canvas-white)" strokeWidth={3}>
+          {`${formatFtIn(d_m)} / ${d_m.toFixed(2)} m`}
+        </text>
+      )}
+    </g>
+  );
+}

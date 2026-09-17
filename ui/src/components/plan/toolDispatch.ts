@@ -43,6 +43,11 @@ export interface TapDeps {
   setWindowPopup: (popup: DoorPopup | null) => void;
   commitWall: (start: Vec2, end: Vec2) => Promise<void>;
   commitStair: (seed: Vec2) => Promise<void>;
+  // The Place tool: the armed catalog type, the tap commit, and the catalog to open when
+  // nothing is armed yet.
+  placementType: string | null;
+  commitPlaceable: (world: Vec2) => Promise<void>;
+  openPlacementCatalog: () => void;
 }
 
 export function dispatchTap(deps: TapDeps, world: Vec2, screen: Vec2): void {
@@ -50,7 +55,8 @@ export function dispatchTap(deps: TapDeps, world: Vec2, screen: Vec2): void {
     tool, offline, scale, placement, draft, measure, shiftRef, wallsOnStorey, stairsOnStorey,
     warningMarkers, snapNodes, tolM, gridM, activeStorey, project, select, toast,
     setPlacement, setDraft, setMeasure, setDimWall, setWallAssemblyPopup, setWarningPopup,
-    setDoorPopup, setWindowPopup, commitWall, commitStair,
+    setDoorPopup, setWindowPopup, commitWall, commitStair, placementType, commitPlaceable,
+    openPlacementCatalog,
   } = deps;
   if (placement) { setPlacement(null); return; }
   // Measure is read-only (nothing is journaled), so it survives offline alongside select.
@@ -117,8 +123,12 @@ export function dispatchTap(deps: TapDeps, world: Vec2, screen: Vec2): void {
       break;
     }
     case "placeable": {
-      const [sx, sy] = project(world);
-      setPlacement({ kind: "placeable", screen: [sx, sy], position: world });
+      if (!placementType) {
+        toast("Choose a component to place", "info");
+        openPlacementCatalog();
+        break;
+      }
+      void commitPlaceable(world);
       break;
     }
     case "room": {

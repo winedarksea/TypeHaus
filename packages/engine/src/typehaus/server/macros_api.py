@@ -13,6 +13,7 @@ from typing import Any
 from typehaus.model.materials import Material
 from typehaus.model.plan import PlanModel
 from typehaus.model.remap import MutationResult
+from typehaus.resolve.model import ResolvedModel
 from typehaus.source import assembly_ops, detail_ops, macros
 
 
@@ -20,7 +21,10 @@ class MacroRequestError(ValueError):
     """The macro request was malformed (unknown macro, missing arg, bad geometry)."""
 
 
-def build_macro_ops(plan: PlanModel, body: dict[str, Any]) -> MutationResult:
+def build_macro_ops(plan: PlanModel, body: dict[str, Any], *,
+                    model: ResolvedModel | None = None) -> MutationResult:
+    """``model``, when given, must be the resolve of ``plan``: its rooms stand in for the
+    second resolve a room-aware macro would otherwise run."""
     name = body.get("macro")
     if not name:
         raise MacroRequestError("missing 'macro'")
@@ -33,6 +37,9 @@ def build_macro_ops(plan: PlanModel, body: dict[str, Any]) -> MutationResult:
             f"unknown macro {name!r} ({', '.join(sorted(_DISPATCH))})"
         ) from None
     try:
+        if name in _ROOM_AWARE:
+            rooms = model.rooms if model is not None else None
+            return handler(plan, body.get("storey", ""), body, rooms=rooms)
         return handler(plan, body.get("storey", ""), body)
     except macros.MacroError as exc:
         raise MacroRequestError(str(exc)) from exc
@@ -53,8 +60,9 @@ def _draw_wall(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationRe
     )
 
 
-def _move_nodes(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
-    return macros.move_nodes(plan, storey, list(body["nodes"]), body["dx"], body["dy"])
+def _move_nodes(plan: PlanModel, storey: str, body: dict[str, Any], rooms=None) -> MutationResult:
+    return macros.move_nodes(plan, storey, list(body["nodes"]), body["dx"], body["dy"],
+                             rooms=rooms)
 
 
 def _split_wall(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
@@ -105,8 +113,10 @@ def _place_stair(plan: PlanModel, storey: str, body: dict[str, Any]) -> Mutation
     )
 
 
-def _move_placeable(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
-    return macros.move_placeable(plan, storey, tag=body["tag"], position=_xy(body["position"]))
+def _move_placeable(plan: PlanModel, storey: str, body: dict[str, Any],
+                    rooms=None) -> MutationResult:
+    return macros.move_placeable(plan, storey, tag=body["tag"], position=_xy(body["position"]),
+                                 rooms=rooms)
 
 
 def _rotate_placeable(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
@@ -121,20 +131,34 @@ def _attach_placeable(plan: PlanModel, storey: str, body: dict[str, Any]) -> Mut
                                    rotation_offset=float(body.get("rotation_offset", 0)))
 
 
+def _slide_placeable(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+    return macros.slide_placeable(plan, storey, tag=body["tag"], distance=body["distance"])
+
+
+def _delete_placeable(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+    return macros.delete_placeable(plan, storey, tag=body["tag"])
+
+
 def _set_placeable_mount(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
     return macros.set_placeable_mount(plan, storey, tag=body["tag"], elevation=body["elevation"])
 
 
-def _detach_placeable(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+def _detach_placeable(plan: PlanModel, storey: str, body: dict[str, Any],
+                      rooms=None) -> MutationResult:
     return macros.detach_placeable(
         plan, storey, tag=body["tag"],
-        position=_xy(body["position"]) if body.get("position") is not None else None)
+        position=_xy(body["position"]) if body.get("position") is not None else None,
+        rooms=rooms)
 
 
-def _place_placeable(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
+def _place_placeable(plan: PlanModel, storey: str, body: dict[str, Any],
+                     rooms=None) -> MutationResult:
+    rotation = body.get("rotation")
     return macros.place_placeable(plan, storey, type_ref=body["type_ref"],
                                   position=_xy(body["position"]),
-                                  hint_file=body.get("hint_file"), tag=body.get("tag"))
+                                  hint_file=body.get("hint_file"), tag=body.get("tag"),
+                                  rotation=float(rotation) if rotation is not None else None,
+                                  kind=body.get("kind"), rooms=rooms)
 
 
 def _assign_placeable_room(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
@@ -145,8 +169,9 @@ def _retype_placeable(plan: PlanModel, storey: str, body: dict[str, Any]) -> Mut
     return macros.retype_placeable(plan, storey, tag=body["tag"], type_ref=body["type_ref"])
 
 
-def _duplicate_canvas_object(plan: PlanModel, storey: str, body: dict[str, Any]) -> MutationResult:
-    return macros.duplicate_canvas_object(plan, storey, tag=body["tag"])
+def _duplicate_canvas_object(plan: PlanModel, storey: str, body: dict[str, Any],
+                             rooms=None) -> MutationResult:
+    return macros.duplicate_canvas_object(plan, storey, tag=body["tag"], rooms=rooms)
 
 
 def _duplicate_assembly(plan: PlanModel, _s: str, body: dict[str, Any]) -> MutationResult:
@@ -200,6 +225,8 @@ _DISPATCH = {
     "move_placeable": _move_placeable,
     "rotate_placeable": _rotate_placeable,
     "attach_placeable": _attach_placeable,
+    "slide_placeable": _slide_placeable,
+    "delete_placeable": _delete_placeable,
     "set_placeable_mount": _set_placeable_mount,
     "detach_placeable": _detach_placeable,
     "place_placeable": _place_placeable,
@@ -212,6 +239,12 @@ _DISPATCH = {
     "add_material": _add_material,
     "seed_detail_annotations": _seed_detail_annotations,
 }
+
+# Macros that look up a containing room; they take the live model's rooms, not a resolve.
+_ROOM_AWARE = frozenset({
+    "move_nodes", "move_placeable", "detach_placeable", "place_placeable",
+    "duplicate_canvas_object",
+})
 
 # Macros that operate on the project library rather than a storey (no 'storey' required).
 _LIBRARY_MACROS = frozenset({

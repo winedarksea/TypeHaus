@@ -38,10 +38,16 @@ export interface OpeningDragPreview {
 }
 
 // A placement popover request (opening on a wall, or a room seed) anchored at screen px.
+// Placeables have no popover: the Place tool's catalog arms a type and a tap places it.
 export type Placement =
   | { kind: "opening"; screen: Vec2; wall: Wall; along_m: number }
-  | { kind: "placeable"; screen: Vec2; position: Vec2 }
   | { kind: "room"; screen: Vec2; seed: Vec2 };
+
+// Where a released placeable drag lands. A free object moves (squared to a wall when the snap
+// took it); a wall-attached one slides to a station along its host.
+export type PlaceableDrop =
+  | { kind: "move"; position: Vec2; rotation?: number }
+  | { kind: "slide"; position: Vec2; station: number };
 
 // A read-only wall summary kept local to the canvas. The inspector remains the source for
 // edits; this card only makes the essential assembly information available at the click.
