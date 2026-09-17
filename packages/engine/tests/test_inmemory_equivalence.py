@@ -16,7 +16,7 @@ from typehaus.source import load_plan
 from typehaus.source.coordinator import ProjectCoordinator
 from typehaus.source.inmemory import apply_ops_to_plan, can_apply_in_memory
 from typehaus.model.ids import new_uid
-from typehaus.source.macros import draw_wall, move_nodes
+from typehaus.source.macros import draw_wall, move_nodes, place_stair
 from typehaus.source.ops import PatchOp
 from _helpers import copy_house
 
@@ -137,3 +137,18 @@ def test_draw_wall_routes_into_empty_nodes_list(house: Path):
     _assert_equivalent(house, ops)
     reloaded = load_plan(house).plan
     assert {e.tag for e in reloaded.storey_elements("attic")} == {op.tag for op in ops}
+
+
+def test_place_stair_files_both_adds_on_the_storey_above(house: Path):
+    """A stair tapped on `main` belongs to `upper`, opening and all.
+
+    ``macros_api._stamp_storey`` fills a blank ``storey`` with the request's own, so a stair
+    left unstamped lands on the wrong floor in memory and only rights itself on the reload.
+    """
+    base = load_plan(house).plan
+    ops = place_stair(base, "main", seed=(1.0, 1.0)).ops
+    adds = [op for op in ops if op.op == "add"]
+    assert len(adds) == 2
+    assert {op.storey for op in adds} == {"upper"}
+    mem_plan, _ = apply_ops_to_plan(base, ops)
+    assert {op.tag for op in adds} <= {e.tag for e in mem_plan.storey_elements("upper")}

@@ -183,15 +183,28 @@ def test_delete_wall_keep_room(plan):
     assert alarm.fields == {"room": "RM-1"}
 
 
-def test_delete_wall_refuses_on_backing_ref(plan):
+def test_delete_wall_reports_a_ref_it_cannot_carry_and_still_deletes(plan):
+    """A dangling reference is a ``needs_review`` impact, never a refusal.
+
+    Refusing read well on a partition drawn a moment ago and made the macro useless on a
+    modelled house: ``W-103`` is named by a ``FloorSystem.joists`` list and by the wall
+    stacked on it, so nothing exterior could ever be deleted. Editing a developed house
+    leaves a hole; the macro's job is to name it.
+    """
     backing = PatchOp("add", "WallBacking", "WB-1", {
         "wall_ref": "W-102", "elevation": RawExpr("ft(3)"), "height": RawExpr("inch(12)")},
         storey="main")
     with_backing = apply_ops_to_plan(plan, [backing])[0]
-    with pytest.raises(macros.MacroError, match="WB-1.wall_ref"):
-        macros.delete_wall(with_backing, "main", "W-102")
-    with pytest.raises(macros.MacroError, match="names W-103"):
-        macros.delete_wall(plan, "main", "W-103")
+    result = macros.delete_wall(with_backing, "main", "W-102")
+    assert "W-102" in result.deleted_tags
+    review = [i for i in result.impacts if i.kind == "needs_review"]
+    assert any(i.tag == "WB-1" and "wall_ref" in i.reason for i in review), review
+
+    # The exterior wall the old refusal made undeletable, with its two kinds of dangling ref.
+    exterior = macros.delete_wall(plan, "main", "W-103")
+    assert "W-103" in exterior.deleted_tags
+    reasons = " ".join(i.reason for i in exterior.impacts if i.kind == "needs_review")
+    assert "W-103" in reasons
 
 
 def test_delete_wall_cascades_openings(plan):

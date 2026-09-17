@@ -8,6 +8,7 @@ with ``--template catlin``.
 
 from __future__ import annotations
 
+import json
 import re
 import shutil
 import uuid
@@ -80,6 +81,14 @@ def _copy_template(source: Path, directory: Path, name: str) -> list[Path]:
                   f'PROJECT_UUID = uuid.UUID("{uuid.uuid4()}")', text)
     if name and name != "My House":
         # The Project's own name, not the Building's: match the first `name=` kwarg only.
-        text = re.sub(r'name="[^"]*"', f'name="{name}"', text, count=1)
+        #
+        # Both halves of this are load-bearing now that ``POST /project/new`` reaches it from
+        # the editor rather than only an argv. ``json.dumps`` writes the name as an escaped
+        # literal, so a quote or a newline in it cannot close the string and append statements
+        # to a manifest that is *executed* the next time the house is served — and the
+        # replacement is a function, so a name holding ``\1`` or ``\g`` is written verbatim
+        # instead of being read as a backreference into the pattern.
+        literal = f"name={json.dumps(name)}"
+        text = re.sub(r'name="[^"]*"', lambda _m: literal, text, count=1)
     manifest.write_text(text)
     return written

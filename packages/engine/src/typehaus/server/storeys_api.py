@@ -63,14 +63,31 @@ def add_storey(state: Any, body: dict[str, Any]) -> Any:
                                   "from": copy_from})
 
 
-def new_project(body: dict[str, Any]) -> dict[str, Any]:
-    """Scaffold a house into a new or empty directory; never switches the live state."""
+def new_project(body: dict[str, Any], root: Path | None = None) -> dict[str, Any]:
+    """Scaffold a house into a new or empty directory; never switches the live state.
+
+    ``root`` is where new houses are allowed to land — the served house's own parent, which
+    is where a person keeps their houses. It is a real boundary, not tidiness: this route
+    creates directories and writes files, and ``haus serve --host 0.0.0.0`` puts it on the
+    LAN. Without it any caller names any path the server process can write to.
+    """
     from typehaus.cli.scaffold import TEMPLATES, ScaffoldError, scaffold_house
 
     raw = str(body.get("directory") or "").strip()
     if not raw:
         raise StoreyRequestError("missing 'directory'")
-    directory = Path(raw).expanduser().resolve()
+    directory = Path(raw).expanduser()
+    if root is not None:
+        # Resolve against the root, then check containment on the RESOLVED path, so neither
+        # "../.." nor a symlink already sitting inside the root walks back out of it.
+        root = root.resolve()
+        directory = (root / directory).resolve() if not directory.is_absolute() \
+            else directory.resolve()
+        if not directory.is_relative_to(root):
+            raise StoreyRequestError(
+                f"a new house must go under {root} — {directory} is outside it")
+    else:
+        directory = directory.resolve()
     template = str(body.get("template") or "starter")
     if template not in TEMPLATES:
         raise StoreyRequestError(f"unknown template {template!r} ({' | '.join(TEMPLATES)})")
@@ -110,7 +127,8 @@ def register_storeys_routes(app: Any, state: Any, bus: Any) -> None:
     @app.post("/project/new")
     async def post_project_new(body: dict[str, Any]) -> Any:
         try:
-            return JSONResponse(await run_in_threadpool(new_project, body))
+            root = Path(state.house_dir).resolve().parent
+            return JSONResponse(await run_in_threadpool(new_project, body, root))
         except StoreyRequestError as exc:
             return JSONResponse({"error": str(exc)}, status_code=422)
 

@@ -198,18 +198,27 @@ def delete_wall(plan: PlanModel, storey: str, wall: str, *,
                 keep_room: str | None = None) -> MutationResult:
     """Delete a wall: its openings go with it, attached placeables move to the nearest
     collinear survivor, orphaned nodes go, straight-through nodes heal, and rooms that now
-    share a face merge into ``keep_room`` (or the larger)."""
+    share a face merge into ``keep_room`` (or the larger).
+
+    ** A REFERENCE LEFT DANGLING IS REPORTED, NOT REFUSED. ** This used to raise on anything
+    naming the wall, which in a house that is actually modelled means a ``FloorSystem.joists``
+    list and the wall stacked above it — so an exterior wall could never be deleted at all,
+    only a partition drawn a moment ago. That is the wrong trade. Editing a well-developed
+    house leaves a hole in it by nature: the router re-runs over what it can, and an agent
+    tidies the rest. What the macro owes the person is an honest list of what it broke, which
+    is what the ``needs_review`` impacts are, and a UI that shows it before the delete lands.
+    """
     target = next((w for w in _walls(plan, storey) if w.tag == wall), None)
     if target is None:
         raise MacroError(f"no wall {wall!r} on storey {storey!r}")
     if keep_room is not None and keep_room not in {r.tag for r in _rooms(plan, storey)}:
         raise MacroError(f"no room {keep_room!r} on storey {storey!r}")
-    for el, name in uncovered_refs(plan, wall, carried=set()):
-        raise MacroError(f"{el.tag}.{name} names {wall}; re-point it before deleting")
+    dangling = [Impact(el.tag, "needs_review", f"{el.tag}.{name} still names deleted {wall}")
+                for el, name in uncovered_refs(plan, wall, carried=set())]
     hosted = [o for o in _openings(plan, storey) if o.host == wall]
-    for op in hosted:
-        for el, name in references_to(plan, op.tag):
-            raise MacroError(f"{el.tag}.{name} names opening {op.tag} on {wall}")
+    dangling += [Impact(el.tag, "needs_review",
+                        f"{el.tag}.{name} still names opening {op.tag}, deleted with {wall}")
+                 for op in hosted for el, name in references_to(plan, op.tag)]
     faces = _storey_faces(plan, storey)
     before = {r.tag: next((f.area for f in faces if f.contains(Point(r.seed.xy_m))), 0.0)
               for r in _rooms(plan, storey)}
@@ -230,6 +239,7 @@ def delete_wall(plan: PlanModel, storey: str, wall: str, *,
         elif degree(view.plan, storey, node) == 2:
             _try_heal(view, node)
     _merge_rooms(view, before, keep_room)
+    view.impacts.extend(dangling)
     return view.result()
 
 

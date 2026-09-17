@@ -15,6 +15,3 @@ COLUMN_MARGIN_PT = 10.0
 COLUMN_PITCH_PT = 12.0
 COLUMN_SEARCH_STEPS = 20
 COLUMN_WIDTH_ALLOWANCE = 1.08
-
-# Reserve foundation register widths near the renderer's minimum printed lettering size.
-FOUNDATION_SCHEDULE_LETTERING_ALLOWANCE = 2.5

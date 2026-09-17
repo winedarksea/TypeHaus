@@ -298,9 +298,13 @@ def place_stair(
         tag=stair_tag, floor_opening=fo_tag, from_storey=storey, to_storey=up,
         width=width, layout="straight", run_direction="x", start=pt(sx, sy),
     )
+    # Both belong to the storey above, not the one the tap landed on: without ``storey=up``
+    # the in-memory fast path files them under ``storey`` and disagrees with the writeback.
     ops = [
-        element_add_op(floor_opening, tag=fo_tag, hint_list="FLOOR_OPENINGS", hint_file=hint_file),
-        element_add_op(stair, tag=stair_tag, hint_list="STAIRS", hint_file=hint_file),
+        element_add_op(floor_opening, tag=fo_tag, hint_list="FLOOR_OPENINGS",
+                       hint_file=hint_file, storey=up),
+        element_add_op(stair, tag=stair_tag, hint_list="STAIRS",
+                       hint_file=hint_file, storey=up),
     ]
     # A stair's FloorOpening must be owned by the destination deck (integrity.stair_opening).
     deck = _destination_deck(plan, up, (x0, y0))

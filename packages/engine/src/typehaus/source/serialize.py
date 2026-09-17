@@ -80,12 +80,17 @@ def _sort_key(value: Any) -> str:
 
 
 def element_add_op(
-    element: Element, *, tag: str, hint_list: str, hint_file: str | None = None
+    element: Element, *, tag: str, hint_list: str, hint_file: str | None = None,
+    storey: str | None = None,
 ) -> PatchOp:
     """Build an ``add`` PatchOp that writes ``element`` as an inline declaration under ``tag``.
 
     All authored fields become :class:`RawExpr` values (already dialect source), so the
     writeback inserts them verbatim; ``uid`` is left for the coordinator to mint fresh.
+
+    ``storey`` names the storey the element belongs to when that is not the storey the macro
+    was called on — a stair's opening lands on the deck above. Left ``None``, the server
+    stamps the request's own storey (``macros_api._stamp_storey``).
     """
     fields: dict[str, Any] = {}
     for name, field in type(element).model_fields.items():
@@ -96,4 +101,4 @@ def element_add_op(
             continue
         fields[name] = RawExpr(value_source(value))
     return PatchOp("add", type(element).__name__, tag, fields,
-                   hint_file=hint_file, hint_list=hint_list)
+                   hint_file=hint_file, hint_list=hint_list, storey=storey)

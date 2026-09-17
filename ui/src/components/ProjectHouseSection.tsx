@@ -25,6 +25,10 @@ export function ProjectHouseSection() {
 
 function HouseForm({ templates }: { templates: string[] }) {
   const client = useStore((s) => s.client);
+  // New houses land beside the served one, and the server refuses anything outside that
+  // folder — so say where that is rather than letting a plausible ~/... path come back 422.
+  const houseDir = useStore((s) => s.project?.house_dir ?? null);
+  const root = houseDir ? houseDir.replace(/[\\/][^\\/]*$/, "") : null;
   const [directory, setDirectory] = useState("");
   const [name, setName] = useState("");
   const [template, setTemplate] = useState(templates[0] ?? "starter");
@@ -54,8 +58,9 @@ function HouseForm({ templates }: { templates: string[] }) {
   return (
     <div>
       <label className="field-label">Directory
-        <input value={directory} placeholder="~/houses/my-house" onChange={(e) => { setDirectory(e.target.value); setCreated(null); }} />
+        <input value={directory} placeholder="my-house" onChange={(e) => { setDirectory(e.target.value); setCreated(null); }} />
       </label>
+      {root && <p className="muted" style={{ fontSize: 12, marginTop: 0 }}>Created in {root}.</p>}
       {templates.length > 0 && <>
         <label className="field-label">Name
           <input value={name} placeholder="My House" onChange={(e) => setName(e.target.value)} />

@@ -140,3 +140,38 @@ def test_place_placeable_carries_rotation_and_kind(starter_plan):
     gfci = place_placeable(starter_plan, "main", type_ref="ED-T-RECEPTACLE", position=(1, 1),
                            kind="gfci")
     assert gfci.ops[0].fields["kind"].expr == "DeviceKind.RECEPTACLE_GFCI"
+
+
+def test_equipment_kind_inference_matches_catlin(catlin_plan):
+    """Placing equipment from the catalog must not file every machine as a furnace.
+
+    ``EquipmentType`` carries no kind, so the macro reads the product's own words. Catlin's
+    21 authored equipment types are the oracle: each one's authored kind is what a person
+    chose for that product, and the inference has to reproduce all of them. A new product
+    whose name defeats the tokens fails here rather than landing silently as a FURNACE.
+    """
+    from typehaus.source.macros_placeables import _infer_equipment_kind
+
+    authored = {el.type_ref: el.kind for el in catlin_plan.all_elements()
+                if type(el).__name__ == "Equipment"}
+    assert len(authored) >= 20
+    wrong = {ref: (_infer_equipment_kind(catlin_plan, ref), kind)
+             for ref, kind in authored.items()
+             if _infer_equipment_kind(catlin_plan, ref) is not kind}
+    assert not wrong, f"inferred != authored: {wrong}"
+
+
+def test_register_kind_inference_reads_the_exhaust_products(catlin_plan):
+    """A grille's system is a guess — but the clear-cut products must come out right.
+
+    One product serves two systems (catlin files ``REG-T-ERV-EXH`` as both EXHAUST and
+    RETURN), so this pins only what the words do settle, and that the fallback is SUPPLY.
+    """
+    from typehaus.model.enums import DuctSystem
+    from typehaus.source.macros_placeables import _infer_register_kind
+
+    assert _infer_register_kind(catlin_plan, "REG-T-HP-SUP") is DuctSystem.SUPPLY
+    assert _infer_register_kind(catlin_plan, "REG-T-HP-RET") is DuctSystem.RETURN
+    assert _infer_register_kind(catlin_plan, "REG-T-ERV-EXH") is DuctSystem.EXHAUST
+    assert _infer_register_kind(catlin_plan, "REG-T-TRANSFER-1210") is DuctSystem.TRANSFER
+    assert _infer_register_kind(catlin_plan, "REG-T-ERV-SUP") is DuctSystem.SUPPLY

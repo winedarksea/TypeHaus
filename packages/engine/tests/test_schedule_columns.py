@@ -16,6 +16,7 @@ from typehaus.emit.draw.paper import ARCH_D, LEDGER
 from typehaus.emit.draw.scene import SceneBuilder, Text
 from typehaus.emit.draw.schedule_block import (
     CHARACTER_WIDTH_RATIO,
+    SHEET_VIEWPORT_ASPECT,
     NoteBlock,
     ScheduleTable,
     block_extent,
@@ -146,48 +147,56 @@ def test_reflow_beats_a_single_column_on_the_sheet(catlin_model):
     The lever, if 3/16" is wanted back, is `sheet_writer.TITLE_W` — and the honest options
     are a narrower block or a schedule that does not need a full column, not a smaller
     drawing.
+
+    ** THE LEDGER CHECK PRINT WENT 1/16" -> 1" = 20' ON 2026-09-17, AND THE SCHEDULE BOUGHT
+    IT. ** The rebar work gave S-100 two blocks it did not have: the FOUNDATION
+    REINFORCEMENT SCHEDULE and the 25-entry FOUNDATION CALLOUTS key. At 1/8" no split of the
+    stack puts the scene under 2,848" wide, and ledger's viewport needs 2,669" for 1/16".
+    ARCH D — the sheet that gets sealed — is unaffected and still 1/8"; ledger is the check
+    print, and one step there is the price of scheduling the reinforcement at all. Getting
+    it back means fewer full-width tables, not a tighter drawing.
     """
     scene = build_foundation_plan(catlin_model)
     assert frame_for_scene(scene, ARCH_D).scale_label == "1/8\" = 1'-0\""
-    assert frame_for_scene(scene, LEDGER).scale_label == "1/16\" = 1'-0\""
+    assert frame_for_scene(scene, LEDGER).scale_label == "1\" = 20'"
 
 
-#: How far past the drawn plan's own height the scene may run before the tables are back to
-#: governing the sheet. The defect this whole module is about was a scene TWICE the plan's
-#: height, which is what put S-100 at 3/32" on ARCH D.
+#: What "the tables do not govern the sheet" is actually worth, as a ratio against the drawn
+#: plan's own height. Kept as a *reported* number rather than the assertion: the guard below
+#: asserts the property directly, and this is here so a failure can say how far the tables
+#: have drifted from the drawing they annotate.
 #:
-#: ** IT WAS 1.25 AND THE HOUSE SAT AT 1.2458 — FOUR THOUSANDTHS OF SLACK. ** Nobody chose
-#: that margin; it was where the building happened to land. One schedule row is 29.7
-#: drawing-inches against a 1,187.3" plan, so **every threshold in this family is worth
-#: exactly 0.025 of ratio** — the guard was one assembly from firing and on 2026-09-14 it
-#: fired, when the court walls split into SUNKEN_GARDEN_WALL and
-#: SUNKEN_GARDEN_WALL_DRAINED (12 assemblies -> 13, scene 1,479.1" -> 1,508.8", ratio
-#: 1.2458 -> 1.2708).
-#:
-#: 1.35 is set deliberately rather than nudged to clear: it is the measured value plus
-#: **three more schedule rows**, so the number says how much room is left instead of
-#: recording where the building last happened to be. The property still holds with room —
-#: the tables are a quarter of the plan's height, not double it — and the assertion that
-#: actually protects legibility is the SCALE one above, which is unchanged at 1/8".
-#:
-#: `emit_block_columns` already picks the best contiguous split against the sheet aspect,
-#: so there is no reflow left to buy here. The levers, if this ever binds again, are
-#: `sheet_writer.TITLE_W` and a schedule that needs fewer full-width tables — not a smaller
-#: drawing, and not this number again.
-SCENE_TO_PLAN_HEIGHT_LIMIT = 1.35
+#: ** THIS USED TO BE THE ASSERTION, AT 1.35, AND IT WAS MEASURING THE WRONG THING. ** The
+#: defect the module is about is a scene TWICE the plan's height, which put S-100 at 3/32"
+#: on ARCH D — but the plain ratio only stands in for that while HEIGHT is what
+#: ``select_scale`` runs out of. Catlin's foundation plan is 446" wide against 1,187" deep,
+#: a portrait drawing on a landscape sheet, so the schedule columns fill width the plan
+#: was never going to use and WIDTH is what binds. On 2026-09-17 the ratio read 1.354
+#: against a 1.35 limit while the sheet printed at full 1/8" with 172" of vertical room to
+#: spare — a red test over a sheet with nothing wrong with it.
+SCENE_TO_PLAN_HEIGHT_REPORTED = 1.4
 
 
 def test_the_schedule_no_longer_governs_the_sheet_height(catlin_model):
-    """The plan, not its tables, is what the sheet is fitted to vertically."""
+    """The plan, not its tables, is what the sheet is fitted to.
+
+    Stated as ``select_scale`` sees it: of the two spans it fits, the one that runs out
+    first must be the width — the schedule stack may not be the taller constraint. That is
+    the property the reflow buys, and it holds no matter which way round the plan is.
+    """
     from typehaus.emit.draw.pdf_writer import _scene_bounds
 
     plan_points = _drawn_plan_points(catlin_model, foundation_walls(catlin_model))
     plan_height = (max(p[1] for p in plan_points) - min(p[1] for p in plan_points))
-    _u0, z0, _u1, z1 = _scene_bounds(build_foundation_plan(catlin_model))
-    # Some slack for the leaders and dimension chain that hang below the plan itself, plus
-    # the headroom SCENE_TO_PLAN_HEIGHT_LIMIT documents.
+    u0, z0, u1, z1 = _scene_bounds(build_foundation_plan(catlin_model))
+    binding_width = (u1 - u0) / SHEET_VIEWPORT_ASPECT
+    assert z1 - z0 < binding_width, (
+        f"the schedule stack is what the sheet is fitted to: {z1 - z0:.1f}\" of scene height "
+        f"against {binding_width:.1f}\" of width-equivalent, and the drawn plan is only "
+        f"{plan_height:.1f}\" tall. Split the stack differently or shorten a table — do not "
+        "reach for a lettering multiplier, which widens every table and costs printed scale")
     ratio = (z1 - z0) / plan_height
-    assert ratio < SCENE_TO_PLAN_HEIGHT_LIMIT, (
-        f"the scene is {ratio:.4f}x the drawn plan's height ({z1 - z0:.1f}\" against "
-        f"{plan_height:.1f}\"). One schedule row is worth 0.025 of this ratio — see "
-        "SCENE_TO_PLAN_HEIGHT_LIMIT for what to do about it, and do not simply raise it")
+    assert ratio < SCENE_TO_PLAN_HEIGHT_REPORTED, (
+        f"the scene is {ratio:.4f}x the drawn plan's height. One schedule row is worth "
+        "0.025 of this ratio. This is the loose bound, not the property above — if it fires "
+        "the tables have grown a long way past the drawing they annotate")

@@ -432,7 +432,12 @@ def create_app(house_dir: Path, ui_dist: Path | None = None) -> Any:
         if preview is None:
             return JSONResponse({"error": "macro ops cannot be previewed in memory"},
                                 status_code=422)
-        return JSONResponse(preview)
+        # The impacts ride along so a destructive macro can be *shown* before it is run:
+        # ``delete_wall`` reports what it is about to leave dangling rather than refusing,
+        # and the editor asks before committing. Geometry-only callers ignore the key.
+        return JSONResponse({**preview,
+                             "impacts": [impact.to_json() for impact in result.impacts],
+                             "deleted": list(result.deleted_tags)})
 
     @app.post("/macro")
     async def post_macro(body: dict[str, Any]) -> Any:

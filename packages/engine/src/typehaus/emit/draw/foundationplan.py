@@ -10,12 +10,10 @@ geometric input already exists in the ``ResolvedModel``; this builder only proje
 
 from __future__ import annotations
 
-from dataclasses import replace
 from typing import TYPE_CHECKING
 
 from typehaus.emit.draw._shared import emit_bbox_dimension_chain, emit_wall
 from typehaus.emit.draw._shared import to_in as _in
-from typehaus.emit.draw.annotation_layout_config import FOUNDATION_SCHEDULE_LETTERING_ALLOWANCE
 from typehaus.emit.draw.foundation_annotations import foundation_annotations
 from typehaus.emit.draw.foundation_schedule import (
     FoundationMarks,
@@ -102,10 +100,17 @@ def build_foundation_plan(model: ResolvedModel,
     walls = foundation_walls(model)
     storey = _foundation_storey(model)
     plan_points = _drawn_plan_points(model, walls)
+    # ** DO NOT REINSTATE A LETTERING MULTIPLIER HERE (removed 2026-09-17). ** A x2.5 on
+    # text_height and title_height stood here to reserve column width against the
+    # ``typography.MIN_PT`` floor, and it was self-defeating: a schedule cell's width is
+    # ``len(text) * text_height * CHAR_ASPECT``, so tripling the lettering tripled every
+    # table's width, the scene went 446" of plan plus 3,800" of tables, and S-100 dropped
+    # from 1/8" to 1/16" on ARCH D. At 1/8" the nominal lettering prints at 7.4 pt — well
+    # clear of the 4 pt floor — so the multiplier manufactured the small scale it was
+    # defending against. The floor only bites on the ledger check print, and the precedent
+    # for that (``elevation_annotate._COLUMN_GAP_IN``) is additive slack between columns,
+    # never a multiplier on the glyph.
     metrics = metrics_for(plan_points)
-    metrics = replace(
-        metrics, text_height=metrics.text_height * FOUNDATION_SCHEDULE_LETTERING_ALLOWANCE,
-        title_height=metrics.title_height * FOUNDATION_SCHEDULE_LETTERING_ALLOWANCE)
 
     for wall in walls:
         emit_wall(b, wall, layer_override="S-FNDN")

@@ -1,6 +1,6 @@
 // The mutation queue: journaled writes run one at a time, each reading the revision its
 // predecessor produced, and an external conflict pauses the queue instead of stacking 409s.
-import type { MacroRequest, MacroResult } from "../engine/EngineClient";
+import type { MacroRequest, MacroResult, PreviewGeometry } from "../engine/EngineClient";
 import { RevisionConflict } from "../engine/EngineClient";
 import { createMutationActions, impactSummary, mutationQueueIdle } from "./mutations";
 import { emptySessionEdits } from "./sessionEdits";
@@ -116,5 +116,45 @@ export async function runMutationQueueTests(): Promise<void> {
   assert(edits.impacts["F-1"]?.length === 3, "impacts are filed under the element the edit addressed");
   assert(impactSummary([]) === "", "no impacts, no summary");
 
+  await deletingAWallWarnsBeforeItDangles();
   console.log("Mutation queue tests passed.");
+}
+
+// Deleting a wall no longer refuses when something still names it — the engine reports what
+// will dangle and the first Delete shows it, so a house is never quietly holed.
+async function deletingAWallWarnsBeforeItDangles() {
+  const wall = { uid: "u-w1", tag: "W-1", storey: "main" };
+  const previews: PreviewGeometry[] = [];
+  const toasts: string[] = [];
+  const ran: MacroRequest[] = [];
+  const sentCount = () => ran.length;  // via a call, or tsc narrows the length to a literal
+  const selection = { kind: "wall" as const, uid: wall.uid };
+  const state: Record<string, unknown> = { model: { revision: "r0", walls: [wall] }, selection };
+  const get = () => ({
+    ...state,
+    selection,
+    client: { previewMacro: async () => previews.shift() ?? { walls: [], openings: [], rooms: [] } },
+    toast: (message: string) => { toasts.push(message); },
+    runMacro: async (request: MacroRequest) => { ran.push(request); return result("r1"); },
+    select: () => {},
+  }) as never;
+  const actions = createMutationActions((() => {}) as never, get);
+
+  const dangling = { walls: [], openings: [], rooms: [],
+    impacts: [{ tag: "FS-Main", kind: "needs_review" as const, reason: "FS-Main.joists names W-1" },
+              { tag: "W-201", kind: "needs_review" as const, reason: "W-201.stacks_on names W-1" }] };
+  previews.push(dangling);
+  await actions.deleteSelection();
+  assert(sentCount() === 0, "the first Delete must not delete");
+  assert(toasts.length === 1 && toasts[0].includes("2 references") && toasts[0].includes("FS-Main"),
+    `the warning names what dangles, got ${JSON.stringify(toasts)}`);
+
+  await actions.deleteSelection();  // armed by the warning: this one goes through
+  assert(sentCount() === 1 && ran[0].macro === "delete_wall", "the second Delete deletes");
+
+  // A wall nothing names is deleted on the first press — no confirmation theatre.
+  ran.length = 0;
+  toasts.length = 0;
+  await actions.deleteSelection();
+  assert(sentCount() === 1, "a clean wall deletes straight away");
 }

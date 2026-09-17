@@ -6,6 +6,7 @@ is by construction one the test suite already builds.
 
 from __future__ import annotations
 
+import ast
 import filecmp
 from pathlib import Path
 
@@ -122,3 +123,28 @@ def test_empty_template_loads_and_accepts_a_room(tmp_path: Path):
     assert reloaded.ok, [f.message for f in reloaded.findings if f.severity.value == "error"]
     model, _ = resolve(reloaded.plan)
     assert len(model.walls) == 4 and len(model.rooms) == 1
+
+
+def test_a_hostile_project_name_cannot_write_code_into_the_manifest(tmp_path: Path):
+    """``POST /project/new`` puts the name in a file the loader *executes*.
+
+    A quote closes the string literal, a newline starts a statement, and a backslash escape
+    is a regex backreference on the way in. None of the three may survive into
+    ``manifest.py`` as anything but characters of the project's own name.
+    """
+    hostile = 'Ha"\nimport os; os.environ["PWNED"] = "1"\nPROJECT_NAME = "x'
+    house = tmp_path / "hostile"
+    scaffold_house(house, hostile)
+    manifest = (house / "plan" / "manifest.py").read_text()
+    # The name may appear as characters inside the literal; what it may not do is become
+    # code, so compare the module's own top-level statements against the template's.
+    scaffold_house(tmp_path / "plain", "Plain")
+    plain = (tmp_path / "plain" / "plan" / "manifest.py").read_text()
+    assert ([type(node).__name__ for node in ast.parse(manifest).body]
+            == [type(node).__name__ for node in ast.parse(plain).body])
+    plan = load_plan(house).plan
+    assert plan.project.name == hostile
+
+    house2 = tmp_path / "backref"
+    scaffold_house(house2, r"House \1 \g<0>")
+    assert load_plan(house2).plan.project.name == r"House \1 \g<0>"

@@ -51,6 +51,16 @@ let pendingPreviewRequest: MacroRequest | null = null;
 let mutationChain: Promise<unknown> = Promise.resolve();
 let queuedMutations = 0;
 
+// A destructive wall delete is armed by the press that warned about it, and only by that
+// one: a different wall, or a long enough pause that the warning has scrolled away, and the
+// next press warns again rather than deleting something the user has stopped looking at.
+const DELETE_ARM_MS = 12_000;
+let armedDelete: { uid: string; at: number } | null = null;
+const armedForDelete = (uid: string) =>
+  armedDelete !== null && armedDelete.uid === uid && Date.now() - armedDelete.at < DELETE_ARM_MS;
+const armDelete = (uid: string) => { armedDelete = { uid, at: Date.now() }; };
+const clearArmedDelete = () => { armedDelete = null; };
+
 export function mutationQueueIdle(): boolean {
   return queuedMutations === 0;
 }
@@ -220,11 +230,32 @@ export function createMutationActions(
     let type: string | null = null;
     let tag: string | null = null;
     if (selection.kind === "wall") {
-      // A macro: it merges the rooms either side, drops orphan nodes, and refuses while a
-      // backing or MEP run still names the wall.
+      // A macro: it merges the rooms either side, drops orphan nodes, carries what it can.
+      //
+      // It no longer refuses while a backing or MEP run names the wall — in a developed
+      // house a floor system's joist list and the wall stacked above always do, which made
+      // the macro useless on anything but a partition drawn a moment ago. So the engine
+      // reports what will dangle and the *first* Delete shows it: press again to go through
+      // with it. Leaving a hole is the normal shape of editing a house that is already well
+      // defined; what must not happen is leaving it without being told.
       const w = model.walls.find((x) => x.uid === selection.uid);
       if (!w) { get().toast("Nothing deletable is selected", "info"); return; }
-      const result = await get().runMacro({ macro: "delete_wall", storey: w.storey, wall: w.tag });
+      const request: MacroRequest = { macro: "delete_wall", storey: w.storey, wall: w.tag };
+      if (!armedForDelete(w.uid)) {
+        const preview = await get().client.previewMacro(request).catch(() => null);
+        const dangling = (preview?.impacts ?? []).filter((i) => i.kind === "needs_review");
+        if (dangling.length) {
+          armDelete(w.uid);
+          const named = dangling.slice(0, 3).map((i) => i.tag).join(", ");
+          const rest = dangling.length > 3 ? ` and ${dangling.length - 3} more` : "";
+          get().toast(
+            `Deleting ${w.tag} leaves ${dangling.length} reference${dangling.length > 1 ? "s" : ""} `
+            + `dangling (${named}${rest}). Press Delete again to go ahead.`, "info");
+          return;
+        }
+      }
+      clearArmedDelete();
+      const result = await get().runMacro(request);
       if (result) { get().toast(`${w.tag} deleted`); select(null, null); }
       return;
     } else if (selection.kind === "opening") {

@@ -127,6 +127,32 @@ def test_post_project_new_scaffolds_a_loadable_house(client, tmp_path: Path) -> 
     assert c.post("/project/new", json={"directory": str(target)}).status_code == 422
 
 
+def test_post_project_new_will_not_write_outside_the_house_root(client, tmp_path: Path) -> None:
+    """The route creates directories and writes files, and --host 0.0.0.0 puts it on the LAN.
+
+    New houses land beside the served one. A relative name resolves under that root; an
+    absolute path or a ``..`` walk outside it is refused rather than clamped, and so is a
+    symlink inside the root that points out of it.
+    """
+    c, house = client
+    outside = tmp_path.parent / "escaped-house"
+    for directory in (str(outside), "../escaped-house", f"{house}/../../escaped-house"):
+        res = c.post("/project/new", json={"directory": directory})
+        assert res.status_code == 422, f"{directory} was allowed: {res.text}"
+        assert "outside it" in res.json()["error"]
+    assert not outside.exists()
+
+    link = house.parent / "sideways"
+    link.symlink_to(tmp_path.parent, target_is_directory=True)
+    res = c.post("/project/new", json={"directory": "sideways/escaped-house"})
+    assert res.status_code == 422, res.text
+    assert not outside.exists()
+
+    # A plain relative name is the ordinary case and still works.
+    assert c.post("/project/new", json={"directory": "next-door"}).status_code == 200
+    assert (house.parent / "next-door" / "plan" / "manifest.py").is_file()
+
+
 def _assembly(house: Path) -> str:
     return next(e.assembly for e in load_plan(house).plan.storey_elements("main")
                 if isinstance(e, Wall))

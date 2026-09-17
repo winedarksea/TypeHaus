@@ -77,6 +77,11 @@ export interface PreviewGeometry {
   walls: PreviewWall[];
   openings: PreviewOpening[];
   rooms: PreviewRoom[];
+  // What the macro would do to the elements around it, had it been run. A destructive macro
+  // is shown before it lands: `delete_wall` reports the references it is about to leave
+  // dangling instead of refusing, and the editor asks. Absent on an older server.
+  impacts?: Impact[];
+  deleted?: string[];
 }
 
 export interface UnderlayCalibration {

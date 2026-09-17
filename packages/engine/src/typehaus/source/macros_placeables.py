@@ -14,7 +14,7 @@ from __future__ import annotations
 import math
 
 from typehaus.model.elements import Door, RoughOpening
-from typehaus.model.enums import DeviceKind, DuctSystem, EquipmentKind
+from typehaus.model.enums import DeviceKind, DuctSystem, EquipmentKind, Service
 from typehaus.model.mep import ElectricalDevice, Equipment, Register
 from typehaus.model.placeables import Mount
 from typehaus.model.plan import PlanModel
@@ -393,10 +393,12 @@ def place_placeable(plan: PlanModel, storey: str, *, type_ref: str, position: XY
     if rotation is not None and float(rotation) % 360.0:
         common["rotation"] = deg(float(rotation) % 360.0)
     if cls is Equipment:
-        item = Equipment(**common, kind=EquipmentKind(kind or EquipmentKind.FURNACE.value),
+        item = Equipment(**common, kind=EquipmentKind(kind) if kind
+                         else _infer_equipment_kind(plan, type_ref),
                          footprint=(ft(2), ft(2)))
     elif cls is Register:
-        item = Register(**common, kind=DuctSystem(kind or DuctSystem.SUPPLY.value))
+        item = Register(**common, kind=DuctSystem(kind) if kind
+                        else _infer_register_kind(plan, type_ref))
     elif cls is ElectricalDevice:
         item = ElectricalDevice(**common, kind=DeviceKind(kind) if kind
                                 else _infer_device_kind(plan, type_ref))
@@ -443,3 +445,73 @@ def _infer_device_kind(plan: PlanModel, type_ref: str) -> DeviceKind:
         getattr(product, "plan_symbol", None), type_ref, getattr(product, "name", None))).lower()
     return next((kind for token, kind in _DEVICE_KIND_TOKENS if token in words),
                 DeviceKind.RECEPTACLE)
+
+
+def _product_words(product, type_ref: str) -> str:
+    return " ".join(str(part or "") for part in (
+        getattr(product, "plan_symbol", None), type_ref, getattr(product, "name", None))).lower()
+
+
+#: Ordered: the FIRST token found wins, so a more specific product is listed before the
+#: family it is a member of ("water heater" before "heat pump", the ERV's own plenums and
+#: hoods before "erv" itself, which their tags also carry).
+_EQUIPMENT_KIND_TOKENS = (
+    ("mixing", EquipmentKind.MIXING_BOX),
+    ("manifold", EquipmentKind.DUCT_MANIFOLD), ("plenum", EquipmentKind.DUCT_MANIFOLD),
+    ("hood", EquipmentKind.DUCT_MANIFOLD),
+    ("water heater", EquipmentKind.WATER_HEATER),
+    ("sauna", EquipmentKind.SAUNA_HEATER),
+    ("batt", EquipmentKind.BATTERY), ("inverter", EquipmentKind.INVERTER),
+    ("fireplace", EquipmentKind.SPACE_HEATER),
+    ("heat kit", EquipmentKind.SPACE_HEATER), ("heatkit", EquipmentKind.SPACE_HEATER),
+    ("ducted", EquipmentKind.DUCTED_AIR_HANDLER),
+    ("head", EquipmentKind.INDOOR_HEAD), ("cassette", EquipmentKind.INDOOR_HEAD),
+    ("outdoor", EquipmentKind.HEAT_PUMP), ("condenser", EquipmentKind.HEAT_PUMP),
+    ("heat pump", EquipmentKind.HEAT_PUMP),
+    ("erv", EquipmentKind.ERV), ("hrv", EquipmentKind.ERV),
+    ("heater", EquipmentKind.SPACE_HEATER),
+    ("air handler", EquipmentKind.AIR_HANDLER), ("furnace", EquipmentKind.FURNACE),
+)
+
+_REGISTER_KIND_TOKENS = (
+    ("transfer", DuctSystem.TRANSFER), ("dryer", DuctSystem.DRYER),
+    ("-ret", DuctSystem.RETURN), ("return", DuctSystem.RETURN),
+    ("-exh", DuctSystem.EXHAUST), ("exhaust", DuctSystem.EXHAUST),
+    ("extract", DuctSystem.EXHAUST), ("stale", DuctSystem.EXHAUST),
+)
+
+
+def _infer_equipment_kind(plan: PlanModel, type_ref: str) -> EquipmentKind:
+    """Guess the machine from its product, so the catalog does not place every box as a furnace.
+
+    Nothing on ``EquipmentType`` states the kind — ``needs`` is a service list, not a family —
+    so this reads the product's own words, the way :func:`_infer_device_kind` does. It is
+    oracled against catlin's 21 authored equipment types, which it reproduces exactly
+    (``test_canvas_placeable_edits.py::test_equipment_kind_inference_matches_catlin``). A
+    caller that knows better passes ``kind``; FURNACE stays the fallback.
+    """
+    product = next((t for t in plan.library.equipment_types if t.tag == type_ref), None)
+    words = _product_words(product, type_ref)
+    return next((kind for token, kind in _EQUIPMENT_KIND_TOKENS if token in words),
+                EquipmentKind.FURNACE)
+
+
+def _infer_register_kind(plan: PlanModel, type_ref: str) -> DuctSystem:
+    """Which air system a grille belongs to — a guess the product genuinely cannot settle.
+
+    One grille serves two systems: catlin files ``REG-T-ERV-EXH`` as EXHAUST six times and as
+    RETURN seven, same product both ways. So this reads the words for the clear cases and
+    falls back to the ``needs`` service, and SUPPLY last; the Inspector is where a placement
+    that guessed wrong gets corrected. Never let a check treat this as authored intent.
+    """
+    product = next((t for t in plan.library.register_types if t.tag == type_ref), None)
+    words = _product_words(product, type_ref)
+    hit = next((system for token, system in _REGISTER_KIND_TOKENS if token in words), None)
+    if hit is not None:
+        return hit
+    needs = getattr(product, "needs", frozenset()) or frozenset()
+    if Service.RETURN_AIR in needs:
+        return DuctSystem.RETURN
+    if Service.EXHAUST_AIR in needs:
+        return DuctSystem.EXHAUST
+    return DuctSystem.SUPPLY
