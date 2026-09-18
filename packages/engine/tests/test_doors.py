@@ -15,7 +15,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from typehaus.library import STARTER_DOOR_TYPES
+from typehaus.library import POCKET_DOOR_TYPES
 from typehaus.emit.draw import build_floorplan, write_dxf, write_raster
 from typehaus.emit.draw.door_symbols import (
     BYPASS_OVERLAP_IN,
@@ -120,7 +120,7 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
     # The house and library tag sets must still stay disjoint — `integrity.duplicate_catalog_tag`
     # proves it at load time, and this pins that the promotion did not shadow a house type.
     house_pockets = {"DT-POCKET-INT-48"}
-    library_pockets = {door_type.tag for door_type in STARTER_DOOR_TYPES}
+    library_pockets = {door_type.tag for door_type in POCKET_DOOR_TYPES}
     assert house_pockets < library_pockets
     assert set(types) == set(expected) | house_pockets
     assert not (set(expected) & library_pockets)

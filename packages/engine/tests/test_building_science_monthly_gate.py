@@ -237,9 +237,9 @@ def test_library_walls_earn_a_real_permeance_verdict() -> None:
     Glaser walk truncates at the vented cavity and the unrated fiber-cement outside it no
     longer forces UNKNOWN. No permeance is invented: the fiber-cement material still
     carries no vapour rating."""
-    from typehaus.library import HOUSE_WALL_2X4_WITH_CI, HOUSE_WALL_2X6_WITH_ZIPR, STARTER_MATERIALS
+    from typehaus.library import ALL_MATERIALS, HOUSE_WALL_2X4_WITH_CI, HOUSE_WALL_2X6_WITH_ZIPR
 
-    library = Library(materials=STARTER_MATERIALS,
+    library = Library(materials=ALL_MATERIALS,
                       assemblies=(HOUSE_WALL_2X4_WITH_CI, HOUSE_WALL_2X6_WITH_ZIPR))
     for assembly in (HOUSE_WALL_2X4_WITH_CI, HOUSE_WALL_2X6_WITH_ZIPR):
         kept = glaser_layers(list(assembly.default_lining) + list(assembly.layers))
@@ -252,6 +252,6 @@ def test_library_walls_earn_a_real_permeance_verdict() -> None:
         gate = analyze_assembly_monthly(assembly, library, monthly_normals=_NORMALS,
                                         preferences=Preferences())
         assert gate is not None and gate.analysis.known
-    fiber_cement = next(m for m in STARTER_MATERIALS if m.tag == "fiber-cement")
+    fiber_cement = next(m for m in ALL_MATERIALS if m.tag == "fiber-cement")
     assert fiber_cement.perm_rating is None
     assert fiber_cement.vapor_permeance_perms is None

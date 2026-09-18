@@ -25,11 +25,11 @@ def test_elements_are_frozen(project) -> None:
 
 
 def test_card_renders_for_every_library_assembly() -> None:
-    from typehaus.library import STARTER_MATERIALS
+    from typehaus.library import ALL_MATERIALS
     from typehaus.library.assemblies import ALL_ASSEMBLIES
     from typehaus.emit.draw import render_card_svg
 
-    lib = Library(materials=STARTER_MATERIALS, assemblies=ALL_ASSEMBLIES)
+    lib = Library(materials=ALL_MATERIALS, assemblies=ALL_ASSEMBLIES)
     for asm in ALL_ASSEMBLIES:
         svg = render_card_svg(lib.resolve_assembly(asm.tag), lib)
         assert svg.startswith("<svg") and svg.endswith("</svg>")

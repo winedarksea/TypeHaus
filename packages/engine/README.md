@@ -31,7 +31,7 @@ haus serve my-house                 # the browser editor and 3D viewer, no node 
 window, fixture and furniture types from the reviewed catalog that ships with the engine:
 
 ```python
-from library import HOUSE_WALL_2X6_WITH_ZIPR, STARTER_MATERIALS
+from library import ALL_MATERIALS, HOUSE_WALL_2X6_WITH_ZIPR
 ```
 
 ## The rest of the CLI

@@ -34,7 +34,7 @@ from library import (
     INT_2X4_STAGGERED_GWB,
     INT_2X6_PLUMBING,
     INT_2X6_STAGGERED_PLUMBING,
-    STARTER_MATERIALS,
+    ALL_MATERIALS,
 )
 
 
@@ -3228,7 +3228,7 @@ STAIRWELL_PARTITION_4H = Assembly(
 )
 
 MATERIALS = [
-    *STARTER_MATERIALS,
+    *ALL_MATERIALS,
     # --- THE 2026-09-06 INTERIOR SELECTIONS PASS -----------------------------------------
     #
     # ** THE FIRST MATERIALS IN THIS REPO TO CARRY A ``product_ref``. ** The field has existed

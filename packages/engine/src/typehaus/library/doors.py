@@ -23,7 +23,7 @@ height the standard series is built for, and a taller pocket is a made-to-order 
 
 from __future__ import annotations
 
-from typehaus import DoorType
+from typehaus import DoorType, u_us
 from typehaus.quantities import ft
 
 # The commodity ladder. One frame kit per door width, all-steel split studs on an extruded
@@ -53,7 +53,7 @@ DT_POCKET_INT_36 = DoorType(tag="DT-POCKET-INT-36", width=ft(3), height=ft(6, 8)
 DT_POCKET_INT_48 = DoorType(tag="DT-POCKET-INT-48", width=ft(4), height=ft(6, 8),
                             operation="pocket", source=_CAVITY_SLIDER)
 
-STARTER_DOOR_TYPES = (
+POCKET_DOOR_TYPES = (
     DT_POCKET_INT_24,
     DT_POCKET_INT_28,
     DT_POCKET_INT_30,
@@ -61,3 +61,33 @@ STARTER_DOOR_TYPES = (
     DT_POCKET_INT_36,
     DT_POCKET_INT_48,
 )
+
+_STANDARD_SOURCE = "Commodity door product class; select a listed product meeting the declared dimensions and performance."
+
+STANDARD_DOOR_TYPES = (
+    DoorType(tag="DT-EXT-SWING36", width=ft(3), height=ft(6, 8), exterior=True,
+             u_factor=u_us(0.20), source=_STANDARD_SOURCE),
+    DoorType(tag="DT-EXT-FRENCH60", width=ft(5), height=ft(6, 8), exterior=True,
+             operation="double_swing", glazed=True, tempered=True, u_factor=u_us(0.20),
+             shgc=0.35, vt=0.5, source=_STANDARD_SOURCE),
+    DoorType(tag="DT-INT-SWING24", width=ft(2), height=ft(6, 8), source=_STANDARD_SOURCE),
+    DoorType(tag="DT-INT-SWING30", width=ft(2, 6), height=ft(6, 8), source=_STANDARD_SOURCE),
+    DoorType(tag="DT-INT-SWING32", width=ft(2, 8), height=ft(6, 8), source=_STANDARD_SOURCE),
+    DoorType(tag="DT-INT-SWING36", width=ft(3), height=ft(6, 8), source=_STANDARD_SOURCE),
+    DoorType(tag="DT-INT-SWING30-GLAZED", width=ft(2, 6), height=ft(6, 8), glazed=True,
+             tempered=True, source=_STANDARD_SOURCE),
+    DoorType(tag="DT-INT-SWING36-TRIMLESS", width=ft(3), height=ft(6, 8), trimless=True,
+             source=_STANDARD_SOURCE),
+    DoorType(tag="DT-INT-BIFOLD56", width=ft(4, 8), height=ft(6, 8), operation="bifold",
+             source=_STANDARD_SOURCE),
+    DoorType(tag="DT-INT-BYPASS48", width=ft(4), height=ft(6, 8), operation="slide",
+             source=_STANDARD_SOURCE),
+    DoorType(tag="DT-INT-BYPASS60", width=ft(5), height=ft(6, 8), operation="slide",
+             source=_STANDARD_SOURCE),
+    DoorType(tag="DT-INT-DOUBLE60", width=ft(5), height=ft(6, 8), operation="double_swing",
+             core="solid", source=_STANDARD_SOURCE),
+    DoorType(tag="DT-EXT-OVERHEAD192", width=ft(16), height=ft(7), exterior=True,
+             operation="overhead", source=_STANDARD_SOURCE),
+)
+
+ALL_DOOR_TYPES = (*POCKET_DOOR_TYPES, *STANDARD_DOOR_TYPES)

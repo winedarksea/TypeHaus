@@ -23,4 +23,11 @@ RAILING_INT_STAIR_GUARD = RailingType(
     source="Interior stair guard product class",
 )
 
-STARTER_RAILING_TYPES = (RAILING_EXT_ALUMINUM_FASCIA, RAILING_INT_STAIR_GUARD)
+RAILING_EXT_ALUMINUM_SURFACE = RailingType(
+    tag="RAILING-EXT-ALUMINUM-SURFACE",
+    name="Exterior aluminum surface-mounted guard",
+    source="Surface-mounted aluminum guard product class.",
+)
+
+ALL_RAILING_TYPES = (RAILING_EXT_ALUMINUM_FASCIA, RAILING_INT_STAIR_GUARD,
+                     RAILING_EXT_ALUMINUM_SURFACE)
