@@ -275,3 +275,57 @@ def test_json_emits_the_proposal_and_its_evaluation_together(runner) -> None:
     assert proposal["points_m"] and len(proposal["points_m"][0]) == 3
     assert "PipeRun(tag=" in proposal["source"]
     assert payload["evaluations"][0]["tag"] == proposal["tag"]
+
+
+# --- Phase 6: the whole-house campaign ---------------------------------------------------
+
+def test_a_campaign_lays_many_runs_against_one_occupancy_and_writes_no_plan(runner) -> None:
+    """The deliverable: a coordinated set, and the plan still untouched.
+
+    Scoped to one storey and one trade so the test is minutes rather than an hour; the
+    property being asserted is the same at any scope. Catlin's basement drainage does NOT
+    come back fully served, and it is not meant to — the roadmap's decision is that the
+    reference house need not be forced green while its fixed design holds unresolved
+    conflicts, and what a campaign owes is an accurate account of which ones.
+    """
+    before = _plan_digest()
+    result = runner.invoke(app, ["route", str(_CATLIN), "--house",
+                                 "--trades", "drain", "--storey", "basement"])
+    # Exit 1 is the honest code here: something was refused, and a script should find out.
+    assert result.exit_code in (0, 1), result.output
+    assert "target(s)" in result.output
+    assert "targets laid" in result.output
+    assert _plan_digest() == before
+
+
+def test_a_campaign_writes_its_report_and_its_source_only_where_it_is_told(
+        runner, tmp_path) -> None:
+    """``--out`` is two files for two readers, and neither of them is under ``plan/``."""
+    import json
+
+    before = _plan_digest()
+    out = tmp_path / "route"
+    result = runner.invoke(app, ["route", str(_CATLIN), "--house",
+                                 "--trades", "drain", "--storey", "basement",
+                                 "--out", str(out)])
+    assert result.exit_code in (0, 1), result.output
+    report = json.loads((out / "report.json").read_text())
+    assert report["settings"]["trade_order"] == [
+        "drain", "vent", "duct", "supply", "conduit"]
+    assert report["termination"]
+    assert "PROPOSED, NOT WRITTEN" in (out / "proposed.py").read_text()
+    assert _plan_digest() == before
+
+
+def test_a_campaign_refuses_a_trade_it_does_not_lay_with_the_list(runner) -> None:
+    """A typo empties a campaign silently; a refusal that names the five does not."""
+    result = runner.invoke(app, ["route", str(_CATLIN), "--house", "--trades", "plumbing"])
+    assert result.exit_code == 2
+    assert "is not a trade this campaign lays" in result.output
+
+
+def test_house_is_exclusive_with_the_single_target_selectors(runner) -> None:
+    result = runner.invoke(app, ["route", str(_CATLIN), "--house",
+                                 "--run", "PR-B-KITCH-DRAIN"])
+    assert result.exit_code == 2
+    assert "exactly one of" in result.output

@@ -100,6 +100,12 @@ def _storey_band(model: ResolvedModel, level: str) -> tuple[float, float] | None
     return (datum, min(above) if above else float("inf"))
 
 
+#: The trades ``--house`` lays, named here so a typo is refused with the list rather than
+#: silently emptying the campaign. Kept in step with ``routing.campaign.TRADE_ORDER`` by
+#: ``tests/test_routing_campaign.py``.
+_CAMPAIGN_TRADES = ("drain", "vent", "duct", "supply", "conduit")
+
+
 @app.command()
 def route(
     house: Path | None = typer.Argument(None, help="House directory (default: cwd)"),
@@ -113,6 +119,26 @@ def route(
     unconnected: bool = typer.Option(
         False, "--unconnected",
         help="One proposal per mep.fixture_drain_reach FAIL."),
+    whole_house: bool = typer.Option(
+        False, "--house", help="Lay every run in scope as one coordinated campaign: a "
+                               "stated trade order, one shared occupancy, bounded rip-up."),
+    storey: str | None = typer.Option(
+        None, "--storey", help="With --house: lay only the runs FILED on this storey. "
+                               "Distinct from --level, which restricts the search's z "
+                               "band: a basement drain is filed on the basement and hangs "
+                               "below its datum, so scoping and banding are two questions."),
+    trades: list[str] = typer.Option(
+        [], "--trades", help="With --house: limit the campaign to these trades "
+                             "(drain, vent, duct, supply, conduit)."),
+    locked: list[str] = typer.Option(
+        [], "--locked", help="With --house: these runs stay exactly where they are and "
+                             "are obstacles, never targets."),
+    rip_up_budget: int = typer.Option(
+        4, "--rip-up", help="With --house: how many accepted proposals the campaign may "
+                            "lift to make room for a refused one."),
+    out_dir: Path | None = typer.Option(
+        None, "--out", help="With --house: write report.json and proposed.py here. "
+                            "Nothing under plan/ is touched either way."),
     slope: float | None = typer.Option(
         None, "--slope", help="Inches per foot for a gravity run (default: the code "
                               "minimum for its diameter)."),
@@ -151,10 +177,10 @@ def route(
     from typehaus.routing.proposal import render
 
     directory, model = _load(house)
-    selectors = [bool(run), bool(fixture), bool(tree), unconnected]
+    selectors = [bool(run), bool(fixture), bool(tree), unconnected, whole_house]
     if sum(selectors) != 1:
         console.print("[red]choose exactly one of --run, --fixture, --tree, "
-                      "--unconnected[/red]")
+                      "--unconnected, --house[/red]")
         raise typer.Exit(2)
     if not 1 <= alternatives <= len(_LETTERS):
         console.print(f"[red]--alternatives wants 1..{len(_LETTERS)}[/red]")
@@ -173,6 +199,23 @@ def route(
             raise typer.Exit(2)
 
     cost = _route_cost(directory)
+
+    if whole_house:
+        from typehaus.cli.cmd_route_house import run_house_campaign
+
+        unknown = sorted(set(trades) - set(_CAMPAIGN_TRADES))
+        if unknown:
+            console.print(f"[red]--trades {unknown} is not a trade this campaign lays; "
+                          f"the trades are {', '.join(_CAMPAIGN_TRADES)}[/red]")
+            raise typer.Exit(2)
+        code = run_house_campaign(
+            model, directory=directory, trades=list(trades) or None, storey=storey,
+            locked=frozenset(locked), margin_ft=margin_ft, band=band,
+            avoid=frozenset(avoid), cost=cost, slope=slope, alternatives=alternatives,
+            rip_up_budget=rip_up_budget, out_dir=out_dir, as_json=as_json,
+            explain=explain)
+        raise typer.Exit(code)
+
     clock: list[str] = [] if timing else None  # type: ignore[assignment]
 
     targets: list[str]
@@ -274,13 +317,18 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
              slope: float | None, margin_ft: float, band: tuple[float, float] | None,
              avoid: frozenset[str], via: list[tuple[float, float]], explain: bool,
              cost: RouteCost, alternatives: int = 1, timing: list[str] | None = None,
-             counterfactual: bool = False
+             counterfactual: bool = False, extra_prisms: list | None = None
              ) -> tuple[list[tuple[RouteProposal, str]], list[str], list[str], list]:
     """The one place the router is driven. ``(proposals, problems, notices, refusals)``.
 
     Every refusal comes back as a *line*, never as a silent omission: a fixture whose drain
     point cannot be derived, a run whose root cannot be identified, a head budget that does
     not close. ``routing`` says why it refused and this prints it.
+
+    ``extra_prisms`` are obstacles that are not in the model: a campaign's own accepted
+    proposals (→ :mod:`typehaus.routing.campaign`). They are appended to the space rather
+    than authored into a candidate model, because a proposal is not an element — inventing
+    one to make it an obstacle would mean the campaign routed against a house nobody has.
     """
     from typehaus.routing.alternatives import alternative_routes
     from typehaus.routing.diagnostics import Refusal, refusal
@@ -307,6 +355,12 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
                     space = build_space(model, radius_m=ends.radius_m, terminals=terminals,
                                         margin_ft=margin_ft, avoid=avoid, touch=ends.touch,
                                         cost=cost, z_band=band)
+                    if extra_prisms:
+                        # Appended after the build so the space's own inflation is not
+                        # applied twice: a campaign's prisms are already grown by the
+                        # clearance the campaign chose.
+                        space.hard.extend(extra_prisms)
+                        space._hard_index = None
             except RoutingSpaceTooLarge as exc:
                 problems.append(f"{target}: {exc}")
                 continue

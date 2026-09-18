@@ -53,9 +53,15 @@ ORACLES: dict[str, tuple[Oracle, ...]] = {
 #: by hand, and a note reproducing one would be reproducing ``search``'s §4. What it adds
 #: is a policy (relax only ``Mobility.MOVABLE``, one at a time, bounded), and a policy is
 #: argued in prose, which its docstring does.
+#:
+#: ``campaign`` is the second one worth a sentence. It runs no search — ``propose`` is a
+#: parameter — and every route it reports is the already-oracled search's own. What it adds
+#: is an ORDER and a rip-up policy, and an order is argued rather than worked: a note
+#: reproducing "drains first, deepest first" by hand would be reproducing the sentence that
+#: chose it. ``tests/test_routing_campaign.py`` pins the order and the policy instead.
 NOT_A_CALCULATION = frozenset({
     "__init__", "space", "obstacles", "cost", "proposal", "oracle", "timing",
-    "diagnostics", "counterfactual",
+    "diagnostics", "counterfactual", "campaign",
     "trades/__init__", "trades/pipe", "trades/conduit",
 })
 
