@@ -1,8 +1,22 @@
 """The block load's two air-side terms: blower-door infiltration and ERV ventilation.
 
-Known-answer arithmetic (1.08 · CFM · ΔT, with CFMnat = CFM50 / N from the LBL model) plus
-the tri-state contract: an unauthored input is *named* in ``unknown_inputs`` and its term is
-dropped, never replaced by a leakage or recovery rule of thumb.
+Known-answer arithmetic plus the tri-state contract: an unauthored input is *named* in
+``unknown_inputs`` and its term is dropped, never replaced by a leakage or recovery rule of
+thumb.
+
+**The arithmetic is 1.08 × ACF × CFM × ΔT, and two of those four moved** (2026-09-18, the
+block-load correction). The flat ``1.08 · CFMnat · ΔT`` this file pinned was wrong twice
+over and the fixture could not see it, because the fixture authors its own N:
+
+* ``1.08`` is the sensible factor at SEA LEVEL. At this fixture's 830 ft the air is 3%
+  thinner and carries 3% less heat per CFM — ``altitude_correction_factor``.
+* ``CFMnat = CFM50 / N`` is an ANNUAL AVERAGE (that is what Sherman's N yields). A design
+  hour is the coldest and windiest of the year, and Manual J's heating design rate below
+  four storeys is 1.5× the annual average; the cooling design rate is 0.84×.
+
+The uplift is on infiltration only. An ERV's airflow is a machine setting and does not move
+with the weather, which is why ``_HEATING_UPLIFT`` appears in the infiltration expectations
+and not in the ventilation ones.
 """
 
 from __future__ import annotations
@@ -37,7 +51,16 @@ from typehaus.model import (
 )
 from typehaus.resolve import resolve
 
-_AIR = 1.08
+from typehaus.checks.building_science.energy_load import (
+    _COOLING_DESIGN_INFILTRATION_UPLIFT as _COOLING_UPLIFT,
+)
+from typehaus.checks.building_science.energy_load import (
+    _HEATING_DESIGN_INFILTRATION_UPLIFT as _HEATING_UPLIFT,
+)
+from typehaus.checks.building_science.energy_load import altitude_correction_factor
+
+# 1.08 at sea level, corrected for this fixture's 830 ft site (→ 1.048).
+_AIR = 1.08 * altitude_correction_factor(830.0)
 _SETPOINT_F = 70.0
 _DESIGN_F = -15.0
 _HEATING_DELTA = _SETPOINT_F - _DESIGN_F  # 85 F
@@ -102,12 +125,14 @@ def _volume_ft3(model) -> float:
 # --- infiltration ---------------------------------------------------------------------
 
 def test_cfm50_gives_the_lbl_known_answer() -> None:
-    """CFM50 is the measurement, so it needs no volume at all: 1080/18 = 60 CFMnat."""
+    """CFM50 is the measurement, so it needs no volume at all: 1080/18 = 60 CFMnat,
+    then × 1.5 for the heating design hour."""
     model = _resolved(_plan())
     report = estimate_block_load(
         model, Preferences(cfm50=1080.0, infiltration_n_factor=18.0,
                            interior_setpoint_f=_SETPOINT_F, window_u=0.25))
-    assert report.infiltration_btu_per_hour == pytest.approx(_AIR * 60.0 * _HEATING_DELTA)
+    assert report.infiltration_btu_per_hour == pytest.approx(
+        _AIR * 60.0 * _HEATING_UPLIFT * _HEATING_DELTA)
     assert not any("ach50" in item for item in report.unknown_inputs)
 
 
@@ -118,7 +143,7 @@ def test_ach50_is_normalized_through_the_conditioned_volume() -> None:
     report = estimate_block_load(model, prefs)
     expected_cfm = (1.0 * _volume_ft3(model) / 60.0) / 18.0
     assert report.infiltration_btu_per_hour == pytest.approx(
-        _AIR * expected_cfm * _HEATING_DELTA)
+        _AIR * expected_cfm * _HEATING_UPLIFT * _HEATING_DELTA)
 
 
 def test_cfm50_wins_over_ach50_when_both_are_authored() -> None:
@@ -127,7 +152,8 @@ def test_cfm50_wins_over_ach50_when_both_are_authored() -> None:
     report = estimate_block_load(
         model, Preferences(cfm50=1080.0, ach50=99.0, infiltration_n_factor=18.0,
                            interior_setpoint_f=_SETPOINT_F, window_u=0.25))
-    assert report.infiltration_btu_per_hour == pytest.approx(_AIR * 60.0 * _HEATING_DELTA)
+    assert report.infiltration_btu_per_hour == pytest.approx(
+        _AIR * 60.0 * _HEATING_UPLIFT * _HEATING_DELTA)
 
 
 def test_n_factor_divides_the_blower_door_result() -> None:
@@ -159,6 +185,33 @@ def test_infiltration_is_included_in_the_heating_load() -> None:
         envelope_only + total.infiltration_btu_per_hour)
 
 
+def test_the_design_hour_uplift_is_asymmetric_between_the_seasons() -> None:
+    """A heating design hour is the year's coldest and windiest; a cooling one is nearly
+    still. Sherman's N gives the annual average, so the two seasons take different
+    multipliers off it — 1.5 and 0.84 — and a single figure for both would overstate the
+    cooling infiltration by 79%. Fails if anyone re-symmetrises them.
+    """
+    model = _resolved(_plan())
+    prefs = Preferences(cfm50=1080.0, infiltration_n_factor=18.0,
+                        interior_setpoint_f=_SETPOINT_F, window_u=0.25)
+    report = estimate_block_load(model, prefs)
+    envelope_only = estimate_block_load(
+        model, Preferences(interior_setpoint_f=_SETPOINT_F, window_u=0.25))
+    cooling_delta = 90.0 - prefs.cooling_setpoint_f
+    assert (report.cooling_load_btu_per_hour
+            - envelope_only.cooling_load_btu_per_hour) == pytest.approx(
+        _AIR * 60.0 * _COOLING_UPLIFT * cooling_delta)
+    assert _HEATING_UPLIFT / _COOLING_UPLIFT == pytest.approx(1.786, abs=0.001)
+
+
+def test_the_altitude_correction_thins_the_air() -> None:
+    """1.08 Btu/h·cfm·°F is a SEA-LEVEL figure. Fails if the correction is dropped back to
+    a bare constant — silently 3% high at this site and 21% high in Denver."""
+    assert altitude_correction_factor(0.0) == pytest.approx(1.0)
+    assert altitude_correction_factor(830.0) == pytest.approx(0.970, abs=0.001)
+    assert altitude_correction_factor(5280.0) == pytest.approx(0.823, abs=0.001)
+
+
 # --- ventilation ----------------------------------------------------------------------
 
 def _erv(**kwargs) -> tuple:
@@ -176,7 +229,8 @@ def test_ventilation_is_airflow_net_of_sensible_recovery() -> None:
     model = _resolved(_plan(types, units))
     report = estimate_block_load(
         model, Preferences(interior_setpoint_f=_SETPOINT_F, window_u=0.25))
-    # 200 cfm at 75% recovery leaves 50 cfm to temper.
+    # 200 cfm at 75% recovery leaves 50 cfm to temper. No design uplift: an ERV runs at
+    # its commissioned airflow whatever the weather outside is doing.
     assert report.ventilation_btu_per_hour == pytest.approx(_AIR * 50.0 * _HEATING_DELTA)
 
 

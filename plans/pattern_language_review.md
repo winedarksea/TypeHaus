@@ -749,9 +749,19 @@ glazing or shading recommendation has to be written per storey, not per facade.*
 W 0.85 — and it feeds **cooling only**. **There is no solar heating credit anywhere in the
 engine.**
 
-Measured baseline (`model.json` `building_science.energy`): heating **30,866 Btu/h**; cooling
-**17,355 Btu/h** (1.446 tons), of which **10,965 Btu/h — 63% — is window solar gain**; windows
-in the thermal envelope 247.2 sf at UA 58.85. WWR **N 1.29 / E 1.78 / S 4.46 / W 2.64 %**.
+Measured baseline (`model.json` `building_science.energy`), **re-measured 2026-09-18 after the
+block-load correction** — the figures below it were a record of an older run (30,866 / 17,355 /
+1.446 tons / 247.2 sf at UA 58.85) and every one of them moved: heating **31,714 Btu/h**;
+cooling **22,154 Btu/h** (1.846 tons), of which **17,435 Btu/h — 79% — is window and door
+solar gain**; windows in the thermal envelope 261.0 sf at UA 61.21 (plus 120.0 sf of glazed
+door at UA 24.00). WWR **N 1.29 / E 1.78 / S 4.46 / W 2.64 %** — unchanged, because WWR is a
+ratio of authored areas and none of them moved.
+
+The solar SHARE went up, not down, and that is the point this section is about: the cooling
+setpoint split (Manual J's 75 °F, where one setpoint had served both seasons) took a quarter
+off every conduction term in the cooling column and left the solar term untouched. The term
+is now four fifths of the cooling load, and it is still computed with orientation weights
+that put south at the peak.
 
 So raising south SHGC makes the *measured* number worse and shows no measured benefit. Any
 claim about winter gain has to be sourced externally, not "measured" — and honestly, at ~20 sf

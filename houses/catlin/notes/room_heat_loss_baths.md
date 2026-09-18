@@ -113,10 +113,25 @@ interior, and three of its four walls bound conditioned space.
 
 | room | pass A (envelope only) | pass B (engine) | difference |
 |---|---|---|---|
-| `RM-M-BATH2` | 303 Btu/h | **673 Btu/h** | +370 |
-| `RM-S-BATH1` | not worked by hand | **591 Btu/h** | — |
+| `RM-M-BATH2` | 303 Btu/h | **567 Btu/h** | +264 |
+| `RM-S-BATH1` | not worked by hand | **619 Btu/h** | — |
 
-**The 370 Btu/h is air, and it is charged by volume share.** Pass A is envelope conduction
+**\*\* BOTH PASS-B FIGURES MOVED 2026-09-18, AND THEY MOVED IN OPPOSITE DIRECTIONS. \*\***
+They were 673 and 591. The block-load correction changed five terms at once and the net
+per room depends on which of them that room's share is dominated by:
+
+* **down** — the raked gable walls stopped being billed as prisms, and the walkout walls'
+  above-grade band stopped being charged a soil ΔT while their buried band gained the
+  soil-path resistance. `RM-M-BATH2`'s volume share of a smaller whole-house air term
+  falls with it.
+* **up** — the below-grade ΔT went from 23 °F to 45, the heating design hour takes 1.5×
+  Sherman's annual-average infiltration, and the envelope scope gained the two framed
+  walkout walls.
+
+That a total can absorb five corrections of 0.5–2.0 kBtu/h each and move 1% is the whole
+argument for writing the components down rather than the sum.
+
+**The remaining 264 Btu/h is air, and it is charged by volume share.** Pass A is envelope conduction
 only. Pass B adds the two air-side terms — blower-door infiltration and ERV ventilation air
 — apportioned by this room's share of the house's conditioned volume, which is the method
 `estimate_block_load`'s own docstring describes and calls approximate.
@@ -125,23 +140,27 @@ only. Pass B adds the two air-side terms — blower-door infiltration and ERV ve
 
 | | delivered | load (engine) | margin | verdict |
 |---|---|---|---|---|
-| `RM-M-BATH2` | 399 Btu/h | 673 Btu/h | **−274 (41 % short)** | UNKNOWN |
-| `RM-S-BATH1` | 623 Btu/h | 591 Btu/h | **+31 (5 % over)** | PASS |
+| `RM-M-BATH2` | 399 Btu/h | 567 Btu/h | **−168 (30 % short)** | UNKNOWN |
+| `RM-S-BATH1` | 623 Btu/h | 619 Btu/h | **+4 (0.6 % over)** | PASS |
 
-**`RM-S-BATH1` carries its room and needs no decision.** A 5 % margin at the 99 % design
-temperature, in a room occupied in bursts, on a covering with no surface-temperature cap, is
-a real margin.
+**`RM-S-BATH1` still carries its room, and its margin is now 0.6 %, not 5 %.** The verdict
+did not change and the decision it supports did: 31 Btu/h of slack on a 591 Btu/h load was a
+real margin, and 4 Btu/h on a 619 Btu/h load is arithmetic landing on the line. What keeps
+this a PASS rather than a coin toss is §5's argument, which applies to `RM-S-BATH1` exactly
+as it does to `RM-M-BATH2`: the engine's room-scoped load over-charges a small interior
+bathroom on continuous extract, so 619 is the high end of a range. It is worth re-reading if
+anything about this floor, its covering or the house's air-tightness moves again.
 
 **`RM-M-BATH2` does not, on this load, and a bigger cable cannot fix it.** This is the part
 worth writing down plainly: the DHEHK12016 already **draws** 693 Btu/h, more than the room's
 whole load. What it cannot do is get that heat out through 17.52 ft² of floor. Covering
-673 Btu/h at 22.8 needs **29.5 ft² of heated floor** in a room that has 74.4 ft² total and
+567 Btu/h at 22.8 needs **24.9 ft² of heated floor** in a room that has 74.4 ft² total and
 whose vanity, water closet, shower pan and tub deck take the difference. **The constraint is
 square feet, not watts**, and no cable in the ladder changes it.
 
 The three real options, in the order they should be considered:
 
-1. **Work the room by hand (Manual J).** §5 says the 673 is over-charged; if the true load
+1. **Work the room by hand (Manual J).** §5 says the 567 is over-charged; if the true load
    is nearer 400 the room is already covered and nothing is bought.
 2. **Add a second heat source** — a small panel, a toe-kick heater, or a supply register off
    `EQ-M-HP2-BED`'s branch, which already claims this room in `zone_rooms` but reaches it
@@ -172,7 +191,7 @@ than a failure.
 - **There are no per-room ceiling planes**, and this room's ceiling is interior.
 
 All four push the same way. The honest statement is that `RM-M-BATH2`'s load is somewhere
-between 303 and 673 Btu/h and nothing in this model can say where — which is why
+between 303 and 567 Btu/h and nothing in this model can say where — which is why
 `mep.room_heat_source` prints both numbers and returns UNKNOWN rather than converting an
 approximation into a verdict.
 

@@ -203,8 +203,10 @@ class ReferenceUnderlay:
 class Preferences:
     """`preferences.toml` values the warn-tier checks consume (→ 12)."""
 
-    wall_r: float | None = None
-    roof_r: float | None = None
+    # (``wall_r`` / ``roof_r`` were here and were read by NOTHING — no check, no sheet, no
+    # emitter — so both houses' ``[envelope]`` entries were decorative. Deleted 2026-09-18.
+    # A prescriptive requirement is the engine's (``checks.code.mn_energy``) and an as-built
+    # R-value is the assembly's; a preference had nothing to say between them.)
     window_u: float | None = None
     ach50: float | None = None
     # Blower-door result in CFM at 50 Pa. An alternative to ``ach50`` for the same fact —
@@ -215,8 +217,21 @@ class Preferences:
     # single-family figure for a two-storey house in a sheltered, moderately windy climate
     # (the published range is roughly 14–24, tighter shelter and more storeys lowering it).
     # Authored per house because it is a climate/shelter judgement, not a measurement.
-    infiltration_n_factor: float = 18.0
+    # LBL infiltration model divisor: CFMnat = CFM50 / N. ``None`` means the house has not
+    # stated one and it is DERIVED from the LBL table below — base x height x shielding —
+    # which is what the table is: N is not one number, and the flat 18.0 this defaulted to
+    # was the two-storey-normal-shelter cell read as though it were the whole table.
+    infiltration_n_factor: float | None = None
+    # Storeys the LBL height correction is read at: 1, 1.5, 2 or 3. Authored, not counted
+    # off the model — "how many storeys" in the LBL sense is above-grade conditioned height
+    # over the leakage plane, and a storey list that holds a basement, an attic pocket and a
+    # detached garage on the house's own keys cannot answer it. ``None`` names the gap.
+    infiltration_storeys: float | None = None
     interior_setpoint_f: float = 70.0
+    # Manual J's cooling indoor design condition. It was ``interior_setpoint_f`` for both
+    # seasons, which made catlin's cooling ΔT 20 °F where Manual J's is 15 — nobody holds a
+    # house at 70 °F in July, and a 33% overstated ΔT reaches every cooling component line.
+    cooling_setpoint_f: float = 75.0
     interior_relative_humidity: float = 0.35
     exterior_relative_humidity: float = 0.80
     # Interior winter design RH for the monthly (ISO 13788-style) condensation gate.

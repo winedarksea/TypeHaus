@@ -1140,7 +1140,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `# TODO verify datasheet` that stood here is gone because the figure was verified, not
     because it was waived: **21,000 Btu/h at -15 F, COP 1.57**, read verbatim from Gree's
     `GREE_FLEXX_ULTRA_EXTENDED RATINGS_08272024`, model FXU24, 70 F return, **"MAX OUTPUT"
-    band** (137% of the zone's 15,164 Btu/h block load, unaided). NEEP ccASHP **id 504980**
+    band** (136% of the zone's 15,410 Btu/h block load, unaided — **the load figure was
+    15,164 until the block-load correction of 2026-09-18 and the percentage 137; neither the
+    unit nor the argument moved, and `notes/block_load_basis.md` says what did**). NEEP ccASHP **id 504980**
     lists the unit as ENERGY STAR Cold Climate with a -22 F maximum of 18,000 Btu/h at
     **COP 1.36** — same capacity as Gree's own -22 F row, lower COP; quote NEEP's when a
     figure must be conservative.

@@ -10,7 +10,7 @@ from typehaus.energy import estimate_block_load
 from typehaus.model import (
     Assembly, Beam, Building, FloorOpening, FloorSystem, Footing, FoundationWall, FramingSpec,
     JoistSpec, Layer, LayerFunction, Library, Material, Node, PlanModel, Project, Roof, RoofForm,
-    Site, Slab, Stair, Storey, Wall, degF, ft, inch, pt,
+    Occupancy, Room, Site, Slab, Stair, Storey, Wall, degF, ft, inch, pt,
 )
 from typehaus.quantities import Pitch
 from typehaus.resolve import resolve
@@ -53,7 +53,24 @@ def _envelope_plan() -> PlanModel:
     plan = PlanModel(project=project, library=Library(
         materials=(Material(tag="wood", name="Wood", r_per_inch=1.25),), assemblies=(assembly,)),
                      storeys=(basement, main))
+    # ONE CONDITIONED ROOM PER STOREY, and it is load-bearing for this fixture. The
+    # envelope scope used to admit a storey with no rooms at all under the
+    # roomless-storey policy, so this plan passed while authoring no ``Room``; the scope is
+    # now derived per element from conditioned-room adjacency, and a house with no room has
+    # no envelope. The room is the interior face of the four walls it stands in.
+    seed = pt(ft(10), ft(7))
     basement_elements = (*foundation_nodes, *foundation_walls,
+                         Room(uid="RM00000001", tag="RM-B", seed=seed,
+                              occupancy=Occupancy.STORAGE, conditioned=True),
+                         # The basement FLOOR, not a slab at the main datum. It was filed
+                         # on ``main`` and is an interior floor there — conditioned space
+                         # above and below — so the derived envelope scope rightly drops it,
+                         # and the fixture was only ever reaching the slab branch because
+                         # the old scope asked no such question.
+                         Slab(uid="SL00000001", tag="SL-1", outline=(
+                             pt(ft(0), ft(0)), pt(ft(20), ft(0)),
+                             pt(ft(20), ft(14)), pt(ft(0), ft(14)),
+                         ), thickness=inch(4), assembly="EXT"),
                          Footing(uid="FT00000001", tag="FT-1", under="F-1", width=ft(2),
                                  depth=ft(1)),
                          Stair(uid="SR00000001", tag="S-1", floor_opening="FO-1",
@@ -67,14 +84,13 @@ def _envelope_plan() -> PlanModel:
         Node(uid="NBEAM0002", tag="N-B2", position=pt(ft(20), ft(7))),
     )
     main_elements = (*nodes, *main_walls, *ridge_nodes,
+                     Room(uid="RM00000002", tag="RM-M", seed=seed,
+                          occupancy=Occupancy.LIVING, conditioned=True),
                      FloorOpening(uid="FO00000001", tag="FO-1", outline=(
                          pt(ft(0), ft(0)), pt(ft(12), ft(0)), pt(ft(12), ft(3)), pt(ft(0), ft(3)),
                      )),
                      FloorSystem(uid="FS00000001", tag="FS-1", joists=JoistSpec(),
                                  openings=("FO-1",)),
-                     Slab(uid="SL00000001", tag="SL-1", outline=(
-                         pt(ft(0), ft(0)), pt(ft(20), ft(0)), pt(ft(20), ft(14)), pt(ft(0), ft(14)),
-                     ), thickness=inch(4), assembly="EXT"),
                      Roof(uid="RF00000001", tag="R-1", form=RoofForm.GABLE, pitch=Pitch(4),
                           bearing_refs=("W-1", "W-3"), assembly="EXT", overhang=ft(1)),
                      Beam(uid="BM00000001", tag="RB-1", start_node="N-B1", end_node="N-B2"))

@@ -61,6 +61,10 @@ _NORMALS = (
     MonthlyNormal(temp_f=63.5, rh=67.0), MonthlyNormal(temp_f=49.5, rh=65.1),
     MonthlyNormal(temp_f=34.8, rh=69.4), MonthlyNormal(temp_f=22.0, rh=75.0),
 )
+# The same twelve dry-bulbs, for the tests that need their MEAN: the design ground-surface
+# temperature is ``annual_mean - ground_surface_amplitude_f``, so this list IS the input to
+# the below-grade ΔT and not only to the condensation gate.
+_MSP_MONTHLY_MEANS_F = tuple(normal.temp_f for normal in _NORMALS)
 
 _GYPSUM = Material(tag="gwb", name="Gypsum board", r_per_inch=0.9, perm_rating=18.8)
 _STUD = Material(tag="spf", name="SPF framing", r_per_inch=1.25, perm_rating=2.9)
@@ -121,7 +125,8 @@ def test_monthly_gate_needs_twelve_months() -> None:
     assert partial is None
 
 
-def _plan(*, monthly_normals=(), soil_temp_f=None, second_storey_conditioned=None):
+def _plan(*, monthly_normals=(), soil_temp_f=None, second_storey_conditioned=None,
+          ground_surface_amplitude_f=None, grade=None):
     """One conditioned storey of clad 2x6 walls; optionally a second storey of the same
     walls whose single room is (un)conditioned."""
     assembly = _framed_wall(
@@ -134,7 +139,9 @@ def _plan(*, monthly_normals=(), soil_temp_f=None, second_storey_conditioned=Non
     project = Project(name="BS", project_uuid="00000000-0000-4000-8000-0000000000b5",
                       site=Site(lat=44.9, lon=-93.2, elevation=ft(830),
                                 design_temp_heating=degF(-15), design_temp_cooling=degF(90),
-                                monthly_normals=monthly_normals, soil_temp_f=soil_temp_f),
+                                monthly_normals=monthly_normals, soil_temp_f=soil_temp_f,
+                                ground_surface_amplitude_f=ground_surface_amplitude_f,
+                                grade=grade),
                       building=Building(name="BS"))
     storeys = [Storey(uid="ST000000b1", tag="s1", elevation=ft(0),
                       default_ceiling_height=ft(9))]
@@ -191,32 +198,79 @@ def test_gate_is_unknown_without_monthly_normals_but_screen_still_runs() -> None
     assert len(screen) == 1 and screen[0].result in (Result.PASS, Result.FAIL)
 
 
-def test_below_grade_components_use_the_soil_delta() -> None:
-    plan = _plan(soil_temp_f=47.0)
+def test_below_grade_components_use_the_ground_surface_design_delta() -> None:
+    """The below-grade ΔT is to the ground SURFACE at the bottom of its annual swing.
+
+    It was ``70 - Site.soil_temp_f`` — the ANNUAL MEAN — which is the right boundary for an
+    annual energy model and the wrong one for a 99% design hour: the surface swings
+    ±``ground_surface_amplitude_f`` about that mean and the design hour sits at the bottom.
+    Fails if anyone puts the annual mean back: 23 °F where the real figure here is 45.
+    """
+    plan = _plan(monthly_normals=_NORMALS, soil_temp_f=47.0,
+                 ground_surface_amplitude_f=22.0, grade=ft(4.5))
     model, findings = resolve(plan)
     assert not [f for f in findings if f.severity.value == "error"], findings
-    # Recast one resolved wall as a foundation wall: the block load must put the soil ΔT
-    # (70-47 = 23 F), not the 85 F design-air ΔT, across it.
-    model.walls = [dataclasses.replace(w, is_foundation=(w.tag == "W-s1-1"))
-                   for w in model.walls]
     report = estimate_block_load(model, Preferences())
     foundation = next(c for c in report.components if c.kind == "foundation_walls")
     walls = next(c for c in report.components if c.kind == "walls")
-    assert foundation.heating_delta_f == pytest.approx(23.0)
+    mean = sum(_MSP_MONTHLY_MEANS_F) / 12
+    assert foundation.heating_delta_f == pytest.approx(70.0 - (mean - 22.0))
+    assert foundation.heating_delta_f == pytest.approx(45.14, abs=0.01)
     assert walls.heating_delta_f == pytest.approx(85.0)
+    # The invariant holds only because this fixture authors no ``cfm50``/``ach50`` and no
+    # ERV, so both air-side terms are zero. It is not a general identity.
     assert report.heating_load_btu_per_hour == pytest.approx(sum(
         c.ua_btu_per_hour_f * c.heating_delta_f for c in report.components))
-    assert not any("soil_temp_f" in item for item in report.unknown_inputs)
+    assert not any("ground_surface_amplitude" in item for item in report.unknown_inputs)
 
 
-def test_missing_soil_temp_is_a_named_unknown_not_a_silent_air_delta() -> None:
-    model, _ = resolve(_plan())
+def test_the_buried_band_carries_the_soil_path_resistance_too() -> None:
+    """Latta: the conductance of a basement wall falls with depth, because the path out
+    through the soil lengthens. Fails if the below-grade band is billed at ``A / R``, which
+    understated catlin's basement wall about 1.5×."""
+    model, _ = resolve(_plan(monthly_normals=_NORMALS, soil_temp_f=47.0,
+                             ground_surface_amplitude_f=22.0, grade=ft(4.5)))
+    report = estimate_block_load(model, Preferences())
+    foundation = next(c for c in report.components if c.kind == "foundation_walls")
+    walls = next(c for c in report.components if c.kind == "walls")
+    # Same assembly and the same area on both bands, so a bare ``A / R`` would give an
+    # identical U either side. The buried band's is 0.81 of it at this fixture's 4.5 ft and
+    # R-17.6; catlin's is 0.79 at 6.29 ft and R-21.7. The bound is deliberately loose —
+    # what must not regress is the SIGN, and equality means the soil path is gone.
+    assert (foundation.ua_btu_per_hour_f / foundation.area_ft2) == pytest.approx(
+        0.811 * walls.ua_btu_per_hour_f / walls.area_ft2, rel=0.01)
+
+
+def test_a_foundation_wall_proud_of_grade_sees_air_not_soil() -> None:
+    """A foundation wall's above-grade band is its own component, at the AIR ΔT.
+
+    catlin's walkout is 251 sf of it. Folding that band into ``foundation_walls`` charged
+    open-air concrete a soil ΔT; folding it into ``walls`` would claim it carries cladding.
+    """
+    model, _ = resolve(_plan(monthly_normals=_NORMALS, soil_temp_f=47.0,
+                             ground_surface_amplitude_f=22.0, grade=ft(4.5)))
     model.walls = [dataclasses.replace(w, is_foundation=(w.tag == "W-s1-1"))
                    for w in model.walls]
+    model._envelope_geometry = None
+    report = estimate_block_load(model, Preferences())
+    proud = next(c for c in report.components
+                 if c.kind == "foundation_walls_above_grade")
+    assert proud.area_ft2 > 0
+    assert proud.heating_delta_f == pytest.approx(85.0)
+    assert next(c for c in report.components if c.kind == "foundation_walls"
+                ).heating_delta_f == pytest.approx(45.14, abs=0.01)
+
+
+def test_a_missing_ground_amplitude_is_a_named_unknown_not_a_silent_air_delta() -> None:
+    """No amplitude authored means no design ground temperature, so the below-grade band
+    falls back to the outdoor design AIR ΔT — which oversizes rather than undersizes — and
+    says so. Fails if the fallback ever goes quiet."""
+    model, _ = resolve(_plan(soil_temp_f=47.0, grade=ft(4.5)))
     report = estimate_block_load(model, Preferences())
     foundation = next(c for c in report.components if c.kind == "foundation_walls")
     assert foundation.heating_delta_f == pytest.approx(85.0)  # the stated fallback
-    assert any("Site.soil_temp_f" in item for item in report.unknown_inputs)
+    assert any("monthly_normals" in item or "ground_surface_amplitude_f" in item
+               for item in report.unknown_inputs)
 
 
 def test_unconditioned_storey_is_excluded_from_the_block_load() -> None:

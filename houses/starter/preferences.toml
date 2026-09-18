@@ -3,10 +3,13 @@
 jurisdiction = "mn-2020"
 
 [envelope]
-wall_r = 40
-roof_r = 60
 window_u = 0.25
 ach50 = 1.0
+# LBL height correction for the infiltration divisor N (base x height x shielding). Two
+# storeys, which is a reading of this house's own storey list, not a judgement about it.
+# Shielding is not stated — no `Site.wind_exposure` here, and a template has no business
+# claiming its surroundings — so N takes the table's reference condition for that column.
+infiltration_storeys = 2
 interior_setpoint_f = 70
 interior_relative_humidity = 0.35
 exterior_relative_humidity = 0.80

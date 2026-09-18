@@ -14,12 +14,20 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from typehaus.analysis import assembly_r_value
+
+# ``envelope_geometry`` is imported from the defining module rather than through the
+# ``typehaus.energy`` facade: ``typehaus.energy -> checks -> mn_energy -> typehaus.energy``
+# is a live cycle that only resolves because ``checks/__init__`` happens to be imported
+# first. ``condensation.py`` reaches into ``building_science`` the same way, for the same
+# reason.
+from typehaus.checks.building_science.envelope_geometry import (
+    carries_a_weather_skin,
+    envelope_geometry,
+)
 from typehaus.checks.registry import CheckContext, Preferences, Tier, check
-from typehaus.energy import _storey_is_conditioned
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.plan import PlanModel
-from typehaus.resolve.model import ResolvedModel, ResolvedWall
-from typehaus.resolve.roof_edge_geometry import skin_layers
+from typehaus.resolve.model import ResolvedModel
 
 
 @dataclass(frozen=True)
@@ -57,129 +65,6 @@ class PrescriptiveRow:
 
 
 
-def _walls_bounding_conditioned_space(model: ResolvedModel) -> frozenset[str]:
-    """Uids of the walls that actually enclose conditioned space.
-
-    This was a tag-prefix list — ``("W-SG-", "W-RG-")`` — i.e. one house's naming convention
-    compiled into the engine's Minnesota energy check. Any other house's porch walls were
-    checked against R-21 and failed, and renaming catlin's would have silently changed the
-    result. The relation is derivable: a wall is part of the thermal envelope when it runs
-    along the boundary of a conditioned room on its own storey, which is what the freestanding
-    porch, retaining, planter, and detached-garage walls do not do.
-
-    **Measured from the wall's BODY, not from ``axis`` +/- half its thickness.** ``axis`` is
-    the wall's *alignment reference*, and only a centreline-aligned wall puts that in the
-    middle: a wall authored ``alignment=face(...)`` carries its whole depth to ONE side of
-    the axis, so half-thickness is both the wrong distance and the wrong direction. For a
-    centreline wall the two formulations are identical — the body reaches exactly half the
-    thickness either way — so nothing that was classified correctly moves.
-
-    It matters at real margins. catlin's `W-B-BRICK` is a freestanding glazed-brick wythe
-    standing in the open air of the sunken garden court, separated from the conditioned
-    basement by the court wall's concrete and 4" of XPS; it is not an envelope wall and its
-    R-1.6 is not a defect. Under the old formulation it sat 0.27" outside the reach and was
-    excluded by luck. Growing its air gap by 1/2" (2026-09-04, the parge-deletion fix) moved
-    the axis 1/2" inboard AND the half-thickness 1/4" outward, which flipped it in and
-    reported a spurious R-15 FAIL. From the body its nearest face is 4.05" off the room
-    polygon and it is excluded on the geometry rather than on a coincidence.
-    """
-    from shapely.geometry import Polygon
-
-    rooms: dict[str, list[Polygon]] = {}
-    for room in model.rooms:
-        if room.conditioned and len(room.clear_face) >= 3:
-            rooms.setdefault(room.storey, []).append(Polygon(room.clear_face))
-    bounding: set[str] = set()
-    for wall in model.walls:
-        near = rooms.get(wall.storey, ())
-        if not near:
-            continue
-        # The room polygon is the *interior face*, so a bounding wall's body lands on it or
-        # just off it; the tolerance absorbs lining/junction resolution. Distances are taken
-        # per layer rather than over a union — an overlay of every wall's layers would be a
-        # lot of GEOS work to answer a question min() already answers.
-        bodies = [Polygon(ly.polygon) for ly in wall.depth_layers() if len(ly.polygon) >= 3]
-        if not bodies:
-            continue
-        if any(body.distance(poly) <= _ENVELOPE_ADJACENCY_TOLERANCE_M
-               for poly in near for body in bodies):
-            bounding.add(wall.uid)
-    return frozenset(bounding)
-
-
-# How far a wall's BODY may sit off a conditioned room's interior face and still be that
-# room's enclosure. It was "beyond the wall's own half-thickness" while the measurement was
-# taken from ``axis``; the half-thickness is now in the body itself, so this is the whole
-# slack and it absorbs lining and junction resolution only.
-_ENVELOPE_ADJACENCY_TOLERANCE_M = 0.05
-
-
-# Tag prefixes of slabs belonging to a freestanding structure that is not part of the
-# conditioned envelope, but which are filed on one of the house's own storey keys because
-# they share the plan frame (→ Phase 2's sleeve check hit the same "one storey key, several
-# physical structures" seam). ``_storey_is_conditioned`` therefore cannot see past them.
-_FREESTANDING_SLAB_PREFIXES = (
-    # The sunken-garden structure's decks: the porch composite deck and the balcony aluminum
-    # deck are exterior walking surfaces over open air, not thermal-envelope floors.
-    "SL-SG-",
-    # The detached garage's slab-on-grade. Its storey datum is the ICF stem top, so the slab
-    # is filed on "main"; the same structure's GARAGE_ROOF/GARAGE_WALL_2X6 are already
-    # excluded here by RM-GARAGE's ``conditioned=False``, and its floor is no different.
-    "SL-G-",
-    # The breezeway's composite decking. It is an unheated exterior walking surface on
-    # joists over open air between two structures, filed on "main" because that is the datum
-    # its joists top out at — no more a thermal-envelope slab than the porch deck above.
-    "SL-BW-",
-    # The north-side heat-pump equipment pad (catlin's SL-M-HP3PAD, params/hp3_pad.py). It
-    # is filed on "main" because that is the plan frame, but it is a 6.9 sf pour on grade in
-    # the yard slot carrying an outdoor condenser on 18" legs — nothing above it is
-    # conditioned, and there is no envelope for an R-10 slab edge to belong to. Named in
-    # full rather than by a family prefix: it is one pad, not a zone, and "SL-M-" is the
-    # house's own storey key.
-    "SL-M-HP3PAD",
-    # The north-face heat-pump equipment pad (catlin's SL-M-HP1PAD,
-    # params/hp1_north_pad.py), added 2026-09-04 when System 1's condenser crossed from the
-    # south pocket. Same argument as SL-M-HP3PAD one entry up, and named in full for the
-    # same reason: 9.27 sf on grade east of the garage under an outdoor unit on 18" legs,
-    # with nothing conditioned above it.
-    "SL-M-HP1PAD",
-)
-
-
-def _is_freestanding_exterior_slab(tag: str) -> bool:
-    """Whether a slab floors a freestanding structure outside the conditioned envelope, so
-    the R-10 slab minimum does not bind it.
-
-    Slabs carry no room-adjacency relation to derive this from the way walls do (→
-    ``_walls_bounding_conditioned_space``), so this one is still a naming convention."""
-    return tag.startswith(_FREESTANDING_SLAB_PREFIXES)
-
-
-def _carries_a_weather_skin(wall: ResolvedWall) -> bool:
-    """Whether this wall has an outboard side for the prescriptive table to bind.
-
-    ``_walls_bounding_conditioned_space`` asks a PLAN question — does this wall run along a
-    conditioned room's boundary — and that is the right question for a wall. It is the
-    wrong one for a bearing element that is not a wall in the enclosure sense: a 2x plate
-    laid flat on a deck under a story-and-a-half roof runs along the room's edge and
-    encloses nothing, because there is no sheathing, no foam and no cladding on it. The
-    thermal envelope at that line runs from the wall BELOW the plate up to the roof
-    ABOVE it, and the plate sits inside both.
-
-    Grading such a course against R-21 is a category error, and it is the same category
-    error whichever way it is dressed: a bare plate cannot reach R-21 at any thickness,
-    so the row is a permanent FAIL that says nothing about the building.
-
-    The signal is the one ``resolve/roof_edge.py`` and ``resolve/envelope.py`` already use
-    for exactly this element — an empty ``skin_layers()``, i.e. no SHEATHING layer and so
-    nothing outboard of one. A wall with a skin is checked as it always was; this only
-    reaches the framing courses. Note that a *forgotten* cladding is not silently excused:
-    an assembly with a SHEATHING layer and nothing over it still carries a skin and still
-    earns its row.
-    """
-    return bool(skin_layers(wall))
-
-
 def _is_interior_assembly(tag: str) -> bool:
     """Interior partitions/cross-walls carry no prescriptive R-value requirement — they
     aren't part of the thermal envelope. This codebase's own naming convention already
@@ -208,24 +93,28 @@ def evaluate_envelope(model: ResolvedModel, plan: PlanModel,
     the EN-1 sheet both consume this directly."""
     rows: list[PrescriptiveRow] = []
 
+    geometry = envelope_geometry(model)
     for tag in sorted({roof.assembly for roof in model.roofs
-                       if _storey_is_conditioned(plan, roof.storey)}):
+                       if geometry.is_envelope_roof(roof)[0]}):
         rows.append(_row_for_assembly(plan, tag, "roof", envelope.ceiling_r))
-    envelope_walls = _walls_bounding_conditioned_space(model)
     for tag in sorted({w.assembly for w in model.walls
-                       if not w.is_foundation and w.uid in envelope_walls
-                       and _carries_a_weather_skin(w)}):
+                       if not w.is_foundation and geometry.bounds_conditioned_space(w)
+                       and carries_a_weather_skin(w)}):
         if _is_interior_assembly(tag):
             continue
         rows.append(_row_for_assembly(plan, tag, "above-grade wall", envelope.wood_wall_r))
     for tag in sorted({w.assembly for w in model.walls
-                       if w.is_foundation and w.uid in envelope_walls}):
+                       if w.is_foundation and geometry.bounds_conditioned_space(w)}):
         if _is_interior_assembly(tag):
             continue
         rows.append(_row_for_assembly(plan, tag, "foundation wall", envelope.basement_wall_r))
+    # A slab earns a row when it is a thermal-boundary floor — derived, not read off a
+    # tag prefix. ``is_envelope_slab`` answers "exactly one side conditioned", which drops
+    # the interior floors (catlin's 9" main-floor deck, conditioned above and below), the
+    # yard pads and the porch decks in one geometric test; the retired
+    # ``_FREESTANDING_SLAB_PREFIXES`` was a list of this house's names for them.
     for slab in sorted((s for s in model.solids if s.category == "slab"
-                       and _storey_is_conditioned(plan, s.storey)
-                       and not _is_freestanding_exterior_slab(s.tag)), key=lambda s: s.tag):
+                       and geometry.is_envelope_slab(s)[0]), key=lambda s: s.tag):
         if slab.assembly is None:
             rows.append(PrescriptiveRow(slab.tag, "slab", f"R-{envelope.slab_r:.0f}",
                                         "UNKNOWN (no assembly authored)", "unknown"))

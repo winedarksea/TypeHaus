@@ -100,14 +100,22 @@ def test_both_bath_zones_state_the_corrected_delivered_output(catlin_plan) -> No
 
 
 def test_bath1_carries_its_room_and_bath2_does_not(catlin_model_ro) -> None:
-    """Note §4's table: 623 against 591 (PASS), and 399 against 673 (41% short)."""
+    """Note §4's table: 623 against 619 (PASS), and 399 against 567 (30% short).
+
+    **Both design loads moved with the block-load correction (2026-09-18)** and the note's
+    §4 moved with them: 591 -> 619 on BATH1 and 673 -> 567 on BATH2. The direction differs
+    per room because more than one term moved — the raked-wall and grade-split fixes take
+    area off, the below-grade ΔT and the air-side design uplift put load on — which is
+    exactly the point the correction was making about a total that was right by
+    cancellation. Neither verdict changed.
+    """
     rows = _by_room(catlin_model_ro)
     assert rows["RM-S-BATH1"].result is Result.PASS
-    assert "delivers 623 Btu/h against a 591 Btu/h design load" in rows["RM-S-BATH1"].message
+    assert "delivers 623 Btu/h against a 619 Btu/h design load" in rows["RM-S-BATH1"].message
 
     bath2 = rows["RM-M-BATH2"]
-    assert "delivers 399 Btu/h against a 673 Btu/h design load" in bath2.message
-    assert "274 Btu/h (41%) short" in bath2.message
+    assert "delivers 399 Btu/h against a 567 Btu/h design load" in bath2.message
+    assert "168 Btu/h (30%) short" in bath2.message
 
 
 def test_the_shortfall_is_unknown_because_a_room_scoped_load_is_approximate(

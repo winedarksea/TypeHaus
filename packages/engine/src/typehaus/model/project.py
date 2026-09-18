@@ -61,6 +61,18 @@ class Site(HausModel):
     # Below-grade boundary temperature, °F (≈ annual mean deep-ground temperature).
     # Below-grade envelope ΔT uses this instead of treating soil as 99% design-hour air.
     soil_temp_f: float | None = None
+    # Peak-to-mean swing of the GROUND SURFACE temperature about that annual mean, °F.
+    # ASHRAE Fundamentals Ch. 18 Fig. 13's amplitude map; 22 °F for the North Central US.
+    # The same class of fact as ``ground_snow_load_psf`` and ``design_wind_speed_mph``: one
+    # figure read off one published map for this location, citable, not derivable.
+    #
+    # It is the other half of ``soil_temp_f``, and the below-grade load needs both.
+    # ``soil_temp_f`` is where the ground sits on ANNUAL AVERAGE, which is the right
+    # boundary for an annual energy model; a 99% heating design hour sits at the BOTTOM of
+    # the swing, ``annual_mean - amplitude``. Charging a basement wall the annual mean at
+    # the design hour understated its ΔT by that amplitude — 23 °F where the real figure is
+    # 45 (→ ``checks/building_science/ground.py``).
+    ground_surface_amplitude_f: float | None = None
     # The site's own soil, when it has been established for THIS parcel — the same class of
     # fact as ``ground_snow_load_psf`` and ``design_wind_speed_mph`` above, and stated here
     # for the same reason: a code profile is shared by every house that names it, so a

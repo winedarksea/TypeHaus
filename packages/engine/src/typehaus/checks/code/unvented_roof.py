@@ -55,9 +55,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+# Defining module, not the ``typehaus.energy`` facade: that facade imports ``checks``,
+# which imports this, so the cycle only resolves by accident of import order.
+from typehaus.checks.building_science.energy_scope import _storey_is_conditioned
 from typehaus.checks.code.mn_residential._common import _fail, _na, _pass, _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.energy import _storey_is_conditioned
 from typehaus.findings import Finding
 from typehaus.model.assembly import Assembly, Layer
 from typehaus.model.enums import LayerFunction

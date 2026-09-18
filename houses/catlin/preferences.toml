@@ -3,10 +3,14 @@
 jurisdiction = "mn-2020"
 
 [envelope]
-wall_r = 40
-roof_r = 60
 window_u = 0.25
 ach50 = 1.0
+# LBL height correction. Two storeys over the leakage plane: `main` and `second`. The
+# basement is below it and the attic pocket is inside the roof, neither of which is a
+# storey in the LBL sense — which is why this is authored rather than counted off the
+# storey list. Shielding is read off `Site.wind_exposure` ("B" = suburban/wooded =
+# well-shielded), so N derives to 18.5 x 0.8 x 1.2 = 17.8, not the old flat 18.0.
+infiltration_storeys = 2
 interior_setpoint_f = 70
 interior_relative_humidity = 0.35
 exterior_relative_humidity = 0.80

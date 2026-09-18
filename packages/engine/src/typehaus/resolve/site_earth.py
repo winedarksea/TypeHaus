@@ -266,3 +266,62 @@ def nearest_grade_station(model: ResolvedModel, here: Any) -> tuple[str, float] 
             best_distance = distance
             best = (f"grade station {index} at ({x_ft:.1f}', {y_ft:.1f}')", elevation)
     return best
+
+
+# --- the directional grade strip ---------------------------------------------------------
+# How far out from a wall's exterior face to look for the ground surface that grades it.
+# 18": a wall is graded by the soil against IT, and an excavation a foot and a half away is
+# past the backfill wedge and no longer the surface heat leaves to.
+_GRADE_STRIP_REACH_M = 18 * 0.0254
+# What share of that strip an excavation floor must cover to be the grade there. A court
+# floor clipping a corner of a thirty-foot wall's strip is not that wall's grade.
+_GRADE_STRIP_MIN_OVERLAP = 0.10
+
+
+def grade_strip(face_line: Any, outward: tuple[float, float],
+                reach_m: float = _GRADE_STRIP_REACH_M) -> Any:
+    """The strip of ground swept off a wall's exterior face, as a plan polygon.
+
+    ``face_line`` is that face (or a probe line just off it) and ``outward`` a unit vector
+    pointing away from the building. The strip is one-sided on purpose: a wall's grade is
+    the soil on its *outside*, and a symmetric buffer reaches back through the wall into the
+    room, where a court floor on the far side of the building would grade it.
+    """
+    coords = list(face_line.coords)
+    far = [(x + outward[0] * reach_m, y + outward[1] * reach_m) for x, y in coords]
+    ring = coords + list(reversed(far))
+    polygon = Polygon(ring)
+    return polygon if polygon.is_valid else polygon.buffer(0)
+
+
+def strip_grade_elevation_m(
+    model: ResolvedModel, strip: Any,
+    floors: list[tuple[str, Any, float]] | None = None,
+) -> tuple[float, str | None]:
+    """The lowest exterior ground surface over ``strip``, and what set it.
+
+    The sibling of :func:`local_grade_elevation_m` and the reason it has one: that function
+    measures distance **radially**, which is right for frost (frost drives in from every
+    exposed face) and wrong for a thermal ΔT (a wall is graded by the soil it is backfilled
+    against, on one side). catlin's ``W-B-S1`` is collinear with the walkout and clips the
+    sunken court's corner, so a radius cannot separate it from ``W-B-S2-FR`` — 0.148 m
+    against 0.100 m — and a global plane buries 1.73 m of open-air walkout wall in soil ΔT,
+    a 3.7× understatement on exactly the walls the envelope scope has just added. The strip
+    separates them by about 25×.
+
+    Never raises a grade: an excavation only lowers one, and
+    :func:`nearest_grade_station` is already clamped at ``Site.grade``.
+    """
+    grade = site_grade_elevation_m(model)
+    if strip is None or strip.is_empty or strip.area <= 0.0:
+        return grade, None
+    lowest, governing = grade, None
+    for tag, polygon, top_m in (open_excavation_floors(model) if floors is None else floors):
+        if top_m >= lowest:
+            continue
+        if strip.intersection(polygon).area / strip.area >= _GRADE_STRIP_MIN_OVERLAP:
+            lowest, governing = top_m, tag
+    station = nearest_grade_station(model, strip)
+    if station is not None and station[1] < lowest:
+        governing, lowest = station
+    return lowest, governing

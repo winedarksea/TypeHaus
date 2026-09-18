@@ -48,6 +48,7 @@ each is kept because the *rule* it established usually outlives the design that 
 | `soffit_rung_deflection.md` | `checks/structural/soffit.py` | live |
 | `erv_static_budget.md` | `checks/mep/erv_static.py` — the whole ERV distribution's pressure budget against the Broan's published fan curve (`tests/test_erv_static_oracle.py`) | live |
 | `room_heat_loss_baths.md` | `checks/mep/room_heat.py` — the two radiant floors that are the sole heat in their room (`tests/test_room_heat_source.py`) | live |
+| `block_load_basis.md` | `checks/building_science/ground.py` (Latta basement wall + floor, the ASHRAE 90.1 slab F-factors), the local-grade wall split in `energy_load.py` + `resolve/site_earth.strip_grade_elevation_m`, the raked-wall area and the air side (`tests/test_energy_ground.py`, `tests/test_energy_envelope_scope.py`) | live |
 
 ### Published-table reads
 

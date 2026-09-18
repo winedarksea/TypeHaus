@@ -109,6 +109,14 @@ SITE = Site(
     # monthly TAVG normals above, rounded to 47. Below-grade walls and slabs see this, not
     # the -15 F design air.
     soil_temp_f=47.0,
+    # ** THE GROUND-SURFACE SWING, AND IT IS WHY 47 F IS NOT THE DESIGN-HOUR ΔT. ** ASHRAE
+    # Fundamentals Ch. 18 Fig. 13's ground-surface temperature amplitude map: 22 F for the
+    # North Central US. `soil_temp_f` above is the annual MEAN and the block load charged
+    # every below-grade surface against it, i.e. a 23 F ΔT at the 99% heating hour. The
+    # ground surface swings +/- this amplitude about that mean and the design hour sits at
+    # the bottom of the swing, so the design ground-surface temperature is 46.9 - 22 =
+    # 24.9 F and the real below-grade ΔT is 45 F. Nearly a factor of two on the basement.
+    ground_surface_amplitude_f=22.0,
     # ** THE PARCEL'S OWN SOIL, STATED HERE RATHER THAN INHERITED. ** The mn-2020 profile
     # carries GM as a regional Twin Cities presumption for any house with no soils report.
     # (It cited the **Hennepin County** survey by name until 2026-09-10 — the same

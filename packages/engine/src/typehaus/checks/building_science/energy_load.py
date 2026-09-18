@@ -2,12 +2,33 @@
 
 The arithmetic only: exposed UA by component, orientation-weighted window solar gain, and
 the two air-side terms (blower-door infiltration, ERV ventilation air). What counts as
-envelope, and how much of a plane a zone owns, is answered next door in ``energy_scope`` —
+envelope is answered in ``envelope_geometry``, how much of a plane a zone owns in
+``energy_scope``, and what a below-grade surface's conductance and ΔT are in ``ground`` —
 this module takes those answers and sums them.
 
 Every area comes from the resolved IR. A missing U-factor or R-value is named in
 ``EnergyReport.unknown_inputs`` and dropped from the sum, never replaced by a rule of
 thumb: a load that silently invented an input is a load nobody can size equipment against.
+
+**The heating total used to be right only by cancellation.** Every component line was wrong,
+in both directions, by 0.5-2.0 kBtu/h, and the sum survived review while none of its parts
+would have. What moved, and where the derivation for each lives:
+
+* Envelope scope is derived, not read off this house's tag prefixes → ``envelope_geometry``.
+* A raked gable wall is a trapezoid, not a prism. ``length x (z1 - z0)`` ignored
+  ``top_z0_m``/``top_z1_m`` and billed catlin's attic gables 657.6 sf against 414.0 sf real.
+* A below-grade wall's conductance rises with depth and its ΔT is to the ground SURFACE at
+  its design-hour minimum, not to the annual mean → ``ground``.
+* A wall is split at its LOCAL grade, not at the global ``Site.grade`` plane, which buried
+  1.73 m of open-air walkout wall in soil ΔT → ``resolve.site_earth.strip_grade_elevation_m``.
+* Cooling ΔT is to a 75 °F cooling setpoint, not to the 70 °F heating one.
+* The air side carries the LBL table's N (not its two-storey cell as a flat default), the
+  heating design-hour uplift over Sherman's annual-average N, and an altitude correction.
+
+Solar is deliberately NOT touched here: the orientation weights are wrong, but the term is
+71% of the cooling load and a partial fix moves it the WRONG way — raising E/W without
+adding shading or fixing the all-orientations-peak-at-once error makes the number worse.
+It changes exactly once, with the hourly method, in ``solar``.
 """
 
 from __future__ import annotations
@@ -16,11 +37,8 @@ from dataclasses import dataclass
 
 from typehaus.analysis import assembly_r_value
 from typehaus.checks.building_science.energy_scope import (
-    _FREESTANDING_SLAB_PREFIXES,
-    _FREESTANDING_WALL_PREFIXES,
     _M2_TO_FT2,
     _conditioned_rooms,
-    _is_envelope_wall,
     _opening_in_scope,
     _polygon_scope_fraction,
     _room_scope,
@@ -28,20 +46,88 @@ from typehaus.checks.building_science.energy_scope import (
     _volume_ft3,
     _wall_scope_fraction,
 )
+from typehaus.checks.building_science.envelope_geometry import envelope_geometry
+from typehaus.checks.building_science.ground import (
+    basement_floor_u,
+    basement_wall_u_avg,
+    ground_design_temp_f,
+    ground_summer_temp_f,
+    slab_on_grade_f_factor,
+    slab_on_grade_q,
+)
 from typehaus.checks.building_science.wwr import _facade_for_wall, _wall_length
 from typehaus.checks.registry import Preferences
 from typehaus.resolve.geometry import polygon_area
-from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.model import ResolvedModel, ResolvedWall
+from typehaus.resolve.site_earth import (
+    heated_floor_footprint,
+    local_grade_elevation_m,
+    open_excavation_floors,
+    strip_grade_elevation_m,
+)
 
 # Component kinds whose exterior boundary is the ground, not the outdoor design air.
+# ``foundation_walls_above_grade`` is deliberately NOT here: the band of a foundation wall
+# that stands proud of its local grade sees weather, and on catlin's walkout that band is
+# 251 sf of it.
 _GROUND_COUPLED_KINDS = ("foundation_walls", "slab")
 
 # Sensible heat of air at sea level: 0.075 lb/ft3 × 0.24 Btu/lb·°F × 60 min/h.
 _AIR_SENSIBLE_BTU_PER_CFM_F = 1.08
 
+# Sherman's N yields an ANNUAL AVERAGE infiltration rate; a design-hour load wants the
+# design-hour rate. ACCA Manual J Table 5 / ASHRAE: below four storeys the heating design
+# rate is about 1.5× the annual average (the design hour is the coldest and windiest of the
+# year, which is what drives stack and wind pressure) and the cooling design rate is about
+# 0.84× it (a summer design hour is nearly still). Applied to infiltration only — an ERV's
+# airflow is a machine setting and does not move with the weather.
+_HEATING_DESIGN_INFILTRATION_UPLIFT = 1.5
+_COOLING_DESIGN_INFILTRATION_UPLIFT = 0.84
+
+# LBL N-factor table (Sherman & Grimsrud), as ``base × height × shielding``. The flat 18.0
+# this replaced is the two-storey / normal-shelter cell — one entry read as the whole table.
+_LBL_N_BASE = 18.5
+_LBL_N_HEIGHT = {1.0: 1.0, 1.5: 0.9, 2.0: 0.8, 3.0: 0.7}
+# Shielding is read off ``Site.wind_exposure``, which a house already authors for wind:
+# ASCE 7 §26.7.3's B (suburban/wooded), C (open terrain) and D (open water) are the same
+# three surroundings the LBL shielding classes name, so there is nothing new to keep in sync.
+_LBL_N_SHIELDING = {"B": 1.2, "C": 1.0, "D": 0.9}
+
+
+def altitude_correction_factor(elevation_ft: float) -> float:
+    """Air-density correction on the 1.08 sensible factor (barometric, standard atmosphere).
+
+    ``(1 - 6.8754e-6 · z)^5.2559``. 0.97 at catlin's 830 ft: thinner air carries 3% less
+    heat per CFM, which is a 3% error on both air-side terms that nothing corrected.
+    """
+    return max(0.0, 1.0 - 6.8754e-6 * elevation_ft) ** 5.2559
+
+
+def _n_factor(
+    preferences: Preferences, wind_exposure: str | None, unknown: list[str],
+) -> float | None:
+    """The LBL divisor: authored if the house states one, else read off the table."""
+    if preferences.infiltration_n_factor is not None:
+        if preferences.infiltration_n_factor <= 0:
+            unknown.append("Preferences infiltration_n_factor (must be > 0)")
+            return None
+        return preferences.infiltration_n_factor
+    storeys = preferences.infiltration_storeys
+    height = _LBL_N_HEIGHT.get(storeys) if storeys is not None else None
+    if height is None:
+        unknown.append("Preferences infiltration_storeys (LBL height correction; "
+                       f"one of {sorted(_LBL_N_HEIGHT)})")
+        return None
+    # Shielding defaults to the table's own REFERENCE condition (1.0, "normal"), which is
+    # declining to apply a correction rather than inventing a value — unlike the height
+    # correction above, where 1.0 would be the positive claim "one storey".
+    shielding = _LBL_N_SHIELDING.get(wind_exposure or "", 1.0)
+    return _LBL_N_BASE * height * shielding
+
 
 def _infiltration_cfm(
     preferences: Preferences, volume_ft3: float, unknown: list[str],
+    n_factor: float | None = None,
 ) -> float:
     """Natural-condition infiltration airflow from the authored blower-door result.
 
@@ -60,10 +146,8 @@ def _infiltration_cfm(
     if cfm50 is None:
         unknown.append("Preferences ach50/cfm50 (infiltration term omitted)")
         return 0.0
-    n_factor = preferences.infiltration_n_factor
-    if not n_factor or n_factor <= 0:
-        unknown.append("Preferences infiltration_n_factor (must be > 0)")
-        return 0.0
+    if n_factor is None or n_factor <= 0:
+        return 0.0  # the gap is already named by ``_n_factor``
     return cfm50 / n_factor
 
 
@@ -163,17 +247,42 @@ def estimate_block_load(
     site = model.plan.project.site
     if site.design_temp_heating is None or site.design_temp_cooling is None:
         return EnergyReport(0.0, 0.0, 0.0, (), unknown_inputs=("Site design temperatures",))
+    components: list[LoadComponent] = []
+    unknown: list[str] = []
     heating_delta = preferences.interior_setpoint_f - site.design_temp_heating.fahrenheit
-    cooling_delta = site.design_temp_cooling.fahrenheit - preferences.interior_setpoint_f
-    # Below-grade components are ground-coupled: their exterior boundary is the soil (near
-    # its annual-mean temperature), not the 99% design air. With no authored soil
-    # temperature the air ΔT stands in and the gap is named in ``unknown_inputs``.
-    soil_temp_f = site.soil_temp_f
-    if soil_temp_f is not None:
-        ground_heating_delta = preferences.interior_setpoint_f - soil_temp_f
-        ground_cooling_delta = max(0.0, soil_temp_f - preferences.interior_setpoint_f)
-    else:
+    # Manual J's cooling indoor design condition is 75 °F, not the heating setpoint. One
+    # ``interior_setpoint_f`` for both seasons made catlin's cooling ΔT 20 where it is 15.
+    cooling_delta = site.design_temp_cooling.fahrenheit - preferences.cooling_setpoint_f
+    # Below-grade components are ground-coupled, and the boundary is the ground SURFACE at
+    # the bottom of its annual swing, not the annual mean (→ ``ground``). With the swing
+    # unauthored the air ΔT stands in and the gap is named, which is conservative: the air
+    # is colder than the ground at the design hour, so the term oversizes rather than under.
+    ground_design_f, ground_gap = ground_design_temp_f(
+        site.monthly_normals, site.ground_surface_amplitude_f)
+    ground_summer_f, _ = ground_summer_temp_f(
+        site.monthly_normals, site.ground_surface_amplitude_f)
+    ground_temperature_gap: str | None = None
+    if ground_design_f is None or ground_summer_f is None:
+        # Named only if a ground-coupled component actually turns up (below), the way
+        # ``Site.soil_temp_f`` was: a single-storey slab-less house has no below-grade
+        # surface for the gap to be a gap ABOUT, and reporting one there is noise.
         ground_heating_delta, ground_cooling_delta = heating_delta, cooling_delta
+        if ground_gap is not None:
+            ground_temperature_gap = (
+                f"{ground_gap} — below-grade surfaces use outdoor design air ΔT")
+    else:
+        ground_heating_delta = preferences.interior_setpoint_f - ground_design_f
+        ground_cooling_delta = max(0.0, ground_summer_f - preferences.cooling_setpoint_f)
+        # A free self-check, and it is free because the house authored the answer already:
+        # ``soil_temp_f`` IS the annual mean the swing is taken about, and a house whose
+        # hand-computed figure disagrees with its own twelve normals has one of the two
+        # wrong. Named, not silently overridden — the engine does not know which.
+        derived_mean = ground_design_f + (site.ground_surface_amplitude_f or 0.0)
+        if (site.soil_temp_f is not None
+                and abs(site.soil_temp_f - derived_mean) > _SOIL_TEMP_AGREEMENT_F):
+            unknown.append(
+                f"Site.soil_temp_f {site.soil_temp_f:.1f} °F disagrees with the annual mean "
+                f"of Site.monthly_normals ({derived_mean:.2f} °F)")
 
     def _deltas_for(kind: str) -> tuple[float, float]:
         if kind in _GROUND_COUPLED_KINDS:
@@ -190,33 +299,31 @@ def estimate_block_load(
     if rooms is not None:
         scope = _room_scope(model, rooms)
         conditioned_storeys &= set(scope)
+    geometry = envelope_geometry(model)
     envelope_walls = [wall for wall in model.walls
-                      if wall.storey in conditioned_storeys and _is_envelope_wall(wall, model)
-                      and not wall.tag.startswith(_FREESTANDING_WALL_PREFIXES)]
+                      if wall.storey in conditioned_storeys
+                      and geometry.is_envelope_wall(wall)]
     wall_fraction = {wall.tag: _wall_scope_fraction(wall, scope) for wall in envelope_walls}
     envelope_walls = [wall for wall in envelope_walls if wall_fraction[wall.tag] > 0.0]
     wall_by_tag = {wall.tag: wall for wall in envelope_walls}
-    wall_gross_ft2 = {
-        wall.tag: (_wall_length(wall) * (wall.z1_m - wall.z0_m) * _M2_TO_FT2
-                   * wall_fraction[wall.tag])
-        for wall in envelope_walls
-    }
     # An opening is discrete: it belongs wholly to the zone its own plan point stands in,
     # never split by a fraction, so a window is never counted twice across zones.
     envelope_openings = [opening for opening in model.openings
                          if opening.host_wall in wall_by_tag
                          and _opening_in_scope(wall_by_tag[opening.host_wall], opening, scope)]
-    opening_area_ft2: dict[str, float] = {tag: 0.0 for tag in wall_gross_ft2}
-    components: list[LoadComponent] = []
-    unknown: list[str] = []
-
+    opening_area_ft2: dict[str, float] = {wall.tag: 0.0 for wall in envelope_walls}
     for opening in envelope_openings:
         opening_area_ft2[opening.host_wall] = opening_area_ft2.get(opening.host_wall, 0.0) + (
             opening.width_m * opening.height_m * _M2_TO_FT2
         )
-    walls_area = walls_ua = foundation_area = foundation_ua = 0.0
+
+    # The excavation floors and the heated footprint are whole-model facts; derived once
+    # here rather than per wall, because ``open_excavation_floors`` walks every solid.
+    floors = open_excavation_floors(model)
+    sheltered = heated_floor_footprint(model)
+    above_area = above_ua = below_area = below_ua = 0.0
+    foundation_above_area = foundation_above_ua = 0.0
     for wall in envelope_walls:
-        area = max(0.0, wall_gross_ft2[wall.tag] - opening_area_ft2.get(wall.tag, 0.0))
         assembly = model.plan.library.resolve_assembly(wall.assembly)
         if assembly is None:
             unknown.append(f"assembly {wall.assembly}")
@@ -225,25 +332,71 @@ def estimate_block_load(
         if r_value.value is None or r_value.value.r_us <= 0:
             unknown.extend(r_value.unknown_materials or (f"R-value {assembly.tag}",))
             continue
-        if wall.is_foundation:
-            foundation_area += area
-            foundation_ua += area / r_value.value.r_us
-        else:
-            walls_area += area
-            walls_ua += area / r_value.value.r_us
+        r_us = r_value.value.r_us
+        buffer_room = geometry.buffer_adjacent(wall)
+        if buffer_room is not None:
+            unknown.append(
+                f"buffer temperature for {buffer_room} ({wall.tag} bounds it) — charged the "
+                "full outdoor design ΔT, which oversizes rather than undersizes")
+        # Grade is read off a strip swept from THIS wall's exterior face, never off the
+        # global plane: catlin's W-B-S2-FR/W-B-S3-FR span to -2.596 m with the sunken court
+        # floor at -2.869, and the global -0.864 buries 1.73 m of open-air walkout wall in
+        # soil ΔT — a 3.7x understatement on the very walls the scope fix has just added.
+        strip = geometry.exterior_grade_strip(wall)
+        grade_z = (strip_grade_elevation_m(model, strip, floors)[0] if strip is not None
+                   else local_grade_elevation_m(model, [], floors=floors,
+                                                sheltered_by=sheltered)[0])
+        length_m = _wall_length(wall)
+        top_z = _wall_top_z_m(wall)
+        gross_ft2 = max(0.0, length_m * (top_z - wall.z0_m)) * _M2_TO_FT2
+        split_z = min(max(grade_z, wall.z0_m), top_z)
+        below_ft2 = max(0.0, length_m * (split_z - wall.z0_m)) * _M2_TO_FT2
+        above_ft2 = max(0.0, gross_ft2 - below_ft2)
+        # Openings come off the ABOVE-grade band first: a window is in the part of the wall
+        # that is out of the ground. Only the remainder spills below, which is the honest
+        # answer for a walkout whose door head is above its own local grade.
+        holes = opening_area_ft2.get(wall.tag, 0.0)
+        above_net = max(0.0, above_ft2 - holes)
+        below_net = max(0.0, below_ft2 - max(0.0, holes - above_ft2))
+        fraction = wall_fraction[wall.tag]
+        above_net *= fraction
+        below_net *= fraction
+        if below_net > 0:
+            # Latta: the soil path lengthens with depth, so the conductance is a depth
+            # average over the buried band, not ``1 / r_us``.
+            depth_ft = (split_z - wall.z0_m) / 0.3048
+            below_area += below_net
+            below_ua += below_net * basement_wall_u_avg(r_us, depth_ft)
+        if above_net > 0:
+            if wall.is_foundation:
+                foundation_above_area += above_net
+                foundation_above_ua += above_net / r_us
+            else:
+                above_area += above_net
+                above_ua += above_net / r_us
+
     def _component(kind: str, area: float, ua: float,
                    solar: float = 0.0) -> LoadComponent:
         return LoadComponent(kind, area, ua, solar, heating_delta_f=_deltas_for(kind)[0])
 
-    components.append(_component("walls", walls_area, walls_ua))
-    if foundation_area:
-        components.append(_component("foundation_walls", foundation_area, foundation_ua))
+    components.append(_component("walls", above_area, above_ua))
+    if below_area:
+        components.append(_component("foundation_walls", below_area, below_ua))
+    if foundation_above_area:
+        # A third wall component, not a line folded into ``walls``: the band of a foundation
+        # wall standing proud of its own local grade sees air, and keeping it separate also
+        # keeps the ``walls.area_ft2 <= clad_wall_area_ft2`` bound the energy-sheet test
+        # asserts honest — a bare concrete band carries no cladding.
+        components.append(_component("foundation_walls_above_grade",
+                                     foundation_above_area, foundation_above_ua))
 
     roof_area = roof_ua = slab_area = slab_ua = 0.0
-    roofs = [roof for roof in model.roofs if roof.storey in conditioned_storeys]
+    slab_on_grade_heating = slab_on_grade_cooling = slab_on_grade_perimeter = 0.0
+    roofs = [roof for roof in model.roofs if roof.storey in conditioned_storeys
+             and geometry.is_envelope_roof(roof)[0]]
     slabs = [solid for solid in model.solids
              if solid.category == "slab" and solid.storey in conditioned_storeys
-             and not solid.tag.startswith(_FREESTANDING_SLAB_PREFIXES)]
+             and geometry.is_envelope_slab(solid)[0]]
     roof_fraction = {roof.tag: _polygon_scope_fraction(roof.footprint, roof.storey, scope)
                      for roof in roofs}
     slab_fraction = {slab.tag: _polygon_scope_fraction(slab.outline, slab.storey, scope)
@@ -269,6 +422,10 @@ def estimate_block_load(
             area = roof.surface_area_m2 * _M2_TO_FT2 * roof_fraction[roof.tag]
             roof_area += area
             roof_ua += area / r_value
+        under = geometry.is_envelope_roof(roof)[1]
+        if "buffer" in under:
+            unknown.append(f"buffer temperature under {roof.tag} ({under}) — charged the "
+                           "full outdoor design ΔT")
     if roof_area:
         components.append(_component("roof", roof_area, roof_ua))
     if not slabs and has_roofs and whole_house:
@@ -277,16 +434,52 @@ def estimate_block_load(
         if slab.assembly is None:
             unknown.append(f"slab {slab.tag} assembly")
             continue
-        r_value = _assembly_r_value(model, slab.assembly, unknown)
-        if r_value is not None:
-            area = (abs(polygon_area(slab.outline)) * _M2_TO_FT2
-                    * slab_fraction[slab.tag])
+        slab_r = _assembly_r_value(model, slab.assembly, unknown)
+        if slab_r is None:
+            continue
+        area = (abs(polygon_area(slab.outline)) * _M2_TO_FT2 * slab_fraction[slab.tag])
+        grade_z = local_grade_elevation_m(model, slab.outline, floors=floors,
+                                          sheltered_by=sheltered)[0]
+        depth_ft = (grade_z - slab.z1_m) / 0.3048
+        if depth_ft > _SLAB_BELOW_GRADE_MIN_FT:
+            # A below-grade floor: the soil is most of the resistance, and how much depends
+            # on the floor's shortest plan dimension and its depth (→ ``ground``). Billing
+            # ``A / r_assembly`` against a soil ΔT overstated catlin's basement floor ~2x.
+            short_ft = _short_plan_dimension_ft(slab.outline)
             slab_area += area
-            slab_ua += area / r_value
+            slab_ua += area * basement_floor_u(slab_r, short_ft, depth_ft)
+        else:
+            # A slab on grade loses heat around its EDGE, which is why every standard
+            # publishes it as an F-factor per linear foot against outdoor design air — not
+            # as an area against soil. Nothing in this model carries slab-edge insulation
+            # as a number, so the F-factor is a named gap rather than an invented row.
+            # catlin has no slab on grade inside its envelope; this is here so the first
+            # house that does gets a gap instead of a ~2-10x understatement.
+            perimeter_ft = _plan_perimeter_ft(slab.outline) * slab_fraction[slab.tag]
+            f_factor, gap = slab_on_grade_f_factor(_slab_edge_r(model, slab))
+            if f_factor is None:
+                unknown.append(f"slab {slab.tag}: {gap}")
+                continue
+            slab_on_grade_perimeter += perimeter_ft
+            slab_on_grade_heating += slab_on_grade_q(perimeter_ft, f_factor, heating_delta)
+            slab_on_grade_cooling += slab_on_grade_q(perimeter_ft, f_factor, cooling_delta)
+        buffered = geometry.is_envelope_slab(slab)[1]
+        if "buffer" in buffered:
+            unknown.append(f"buffer temperature across {slab.tag} ({buffered}) — charged "
+                           "the full outdoor design ΔT")
     if slab_area:
         components.append(_component("slab", slab_area, slab_ua))
-    if soil_temp_f is None and (foundation_area or slab_area):
-        unknown.append("Site.soil_temp_f (below-grade components use outdoor design air ΔT)")
+    if ground_temperature_gap is not None and (below_area or slab_area):
+        unknown.append(ground_temperature_gap)
+    if slab_on_grade_perimeter:
+        # An F-factor is Btu/h per LINEAR FOOT per °F, so it cannot ride in
+        # ``ua_btu_per_hour_f`` beside an area conductance without lying about what the
+        # column means. It is carried as its own component with the perimeter in
+        # ``area_ft2`` and the loss already multiplied out, and ``heating_delta_f`` states
+        # the air ΔT it was taken at so the sheet still reads term by term.
+        components.append(LoadComponent(
+            "slab_on_grade_edge", slab_on_grade_perimeter, 0.0,
+            solar_gain_btu_per_hour=0.0, heating_delta_f=heating_delta))
 
     window_area = window_ua = window_solar = door_area = door_ua = door_solar = 0.0
     solar_orientation = {"N": 0.25, "E": 0.70, "S": 1.0, "W": 0.85}
@@ -348,18 +541,27 @@ def estimate_block_load(
                        _volume_ft3(model, _conditioned_rooms(model, storeys, rooms)))
     share = 1.0 if whole_house else (
         zone_volume_ft3 / whole_volume_ft3 if whole_volume_ft3 > 0 else 0.0)
-    infiltration_cfm = _infiltration_cfm(preferences, whole_volume_ft3, unknown) * share
+    n_factor = _n_factor(preferences, site.wind_exposure, unknown)
+    infiltration_cfm = _infiltration_cfm(
+        preferences, whole_volume_ft3, unknown, n_factor) * share
     ventilation_cfm = _ventilation_cfm(model, unknown) * share
-    infiltration_heating = _AIR_SENSIBLE_BTU_PER_CFM_F * infiltration_cfm * heating_delta
-    ventilation_heating = _AIR_SENSIBLE_BTU_PER_CFM_F * ventilation_cfm * heating_delta
-    air_cooling = (_AIR_SENSIBLE_BTU_PER_CFM_F * (infiltration_cfm + ventilation_cfm)
-                   * cooling_delta)
+    # Thinner air carries less heat per CFM. 0.97 at catlin's 830 ft — a 3% error on both
+    # air-side terms that the flat 1.08 could not express.
+    air_sensible = _AIR_SENSIBLE_BTU_PER_CFM_F * altitude_correction_factor(
+        site.elevation.feet)
+    # Sherman's N is an annual average; the design hour is the year's coldest and windiest.
+    infiltration_heating = (air_sensible * infiltration_cfm
+                            * _HEATING_DESIGN_INFILTRATION_UPLIFT * heating_delta)
+    ventilation_heating = air_sensible * ventilation_cfm * heating_delta
+    air_cooling = air_sensible * cooling_delta * (
+        infiltration_cfm * _COOLING_DESIGN_INFILTRATION_UPLIFT + ventilation_cfm)
 
-    heating = sum(component.ua_btu_per_hour_f * _deltas_for(component.kind)[0]
-                  for component in components) + infiltration_heating + ventilation_heating
+    heating = (sum(component.ua_btu_per_hour_f * _deltas_for(component.kind)[0]
+                   for component in components)
+               + slab_on_grade_heating + infiltration_heating + ventilation_heating)
     # Solar is summed off the components rather than off ``window_solar``: it was the window
     # term by name, so the glazed doors' gain sat in the report and outside the load.
-    cooling = air_cooling + sum(
+    cooling = air_cooling + slab_on_grade_cooling + sum(
         component.solar_gain_btu_per_hour
         + component.ua_btu_per_hour_f * _deltas_for(component.kind)[1]
         for component in components
@@ -369,6 +571,66 @@ def estimate_block_load(
                         unknown_inputs=tuple(dict.fromkeys(unknown)),
                         infiltration_btu_per_hour=infiltration_heating,
                         ventilation_btu_per_hour=ventilation_heating)
+
+
+# How far apart the authored annual mean and the one derived from the twelve monthly
+# normals may sit before it is worth saying so. A tenth of a degree is rounding; a degree is
+# a different number.
+_SOIL_TEMP_AGREEMENT_F = 1.0
+# How far a slab's top must sit under its local grade to be a below-grade floor rather than
+# a slab on grade. 6": ``EARTH_PLANE_SLAB_TOP_TOLERANCE_M`` is the at-grade band and this is
+# past it, so a slab-on-grade whose top rounds either side of the plane stays one.
+_SLAB_BELOW_GRADE_MIN_FT = 0.5
+
+
+def _wall_top_z_m(wall: ResolvedWall) -> float:
+    """The wall's mean top elevation — **rake-aware**.
+
+    ``z1_m`` is the wall's bounding height, and for a ``ToRoof`` wall that is the RIDGE:
+    billing ``length × (z1 - z0)`` makes a gable a rectangle. ``top_z0_m``/``top_z1_m`` are
+    the real top at the two ends, and a straight rake between them makes the face a
+    trapezoid, whose area is the mean of the two heights. catlin's attic gables billed
+    657.6 sf against 414.0 sf real — 243.6 sf of invented wall, about 470 Btu/h of heating,
+    and a bigger error than the screen-wall phantom the scope fix removed.
+    """
+    if wall.top_z0_m is not None and wall.top_z1_m is not None:
+        return (wall.top_z0_m + wall.top_z1_m) / 2
+    return wall.z1_m
+
+
+def _short_plan_dimension_ft(outline) -> float:
+    """The shorter side of the outline's bounding box, in feet.
+
+    The quantity the below-grade floor method reads: heat leaves a basement floor sideways
+    to the nearest exterior wall, so it is the NARROW way across that sets the path length.
+    The bounding box rather than a minimum-width polygon measure because the method's own
+    charts are drawn for rectangular floors, and a bounding box is the reading that stays
+    honest for an L-shaped one — it never claims a shorter path than the floor has.
+    """
+    xs = [x for x, _ in outline]
+    ys = [y for _, y in outline]
+    return min(max(xs) - min(xs), max(ys) - min(ys)) / 0.3048
+
+
+def _plan_perimeter_ft(outline) -> float:
+    """Outline perimeter in feet — the length an F-factor multiplies."""
+    total = 0.0
+    for index, (x0, y0) in enumerate(outline):
+        x1, y1 = outline[(index + 1) % len(outline)]
+        total += ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
+    return total / 0.3048
+
+
+def _slab_edge_r(model: ResolvedModel, slab) -> float | None:
+    """R-value of the slab's EDGE insulation, or ``None`` where the model does not say.
+
+    Nothing in the IR carries a slab edge as its own surface: a ``Layer`` with
+    ``extent`` measured from ``GRADE`` is the closest thing, and it is a vertical band in
+    the *wall*, not a property of the slab. So this answers ``None`` today, deliberately —
+    the F-factor branch then names the gap rather than reading the slab's own R-value, which
+    is a horizontal resistance and answers a different question.
+    """
+    return None
 
 
 def _assembly_r_value(model: ResolvedModel, tag: str, unknown: list[str]) -> float | None:

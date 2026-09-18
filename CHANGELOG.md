@@ -4,6 +4,68 @@ All notable changes to `typehaus`. This project follows [semantic versioning](ht
 
 ## Unreleased
 
+- **The block load's total was right and every one of its parts was wrong.** A review found
+  `checks/building_science/energy_load.py` arithmetically correct and physically wrong in six
+  places, in both directions, by 0.5–2.0 kBtu/h each — and catlin's heating figure moved 17
+  Btu/h when all six were fixed, because they cancelled. **Nothing pinned any of it**:
+  `houses/catlin/out/` is gitignored and every energy assertion in the suite was relational,
+  so the scope could have drifted 20% either way and stayed green. New
+  `tests/test_energy_envelope_scope.py` and `tests/test_energy_ground.py` are the coverage
+  that would have caught it, hand-worked in the new `houses/catlin/notes/block_load_basis.md`.
+  What moved:
+  - **Envelope scope is derived, not read off one house's tag prefixes.** Both the block load
+    and the MN prescriptive table carried their own tuple of catlin names (`"W-SG-"`,
+    `"W-B-BRICK"`, `"SL-G-"`, …), so renaming a wall changed the answer and any other house's
+    porch was graded against R-21. New `checks/building_science/envelope_geometry.py` derives
+    it as three composed tests — bounds a conditioned room's face (measured from the wall
+    BODY, not `axis ± thickness/2`), carries a weather skin or is cast as foundation, and is
+    not interior on both faces — plus a prism table that answers the vertical half. The naive
+    single test ("conditioned on exactly one side") was measured and rejected: it moved 25
+    catlin walls, 12 right and 13 wrong. The derived rule moves exactly the audit's 12 and
+    **zero walls in `houses/starter`**. It also finally drops `SL-M-DECK` and `SL-M-TUBDK`
+    (interior floors, conditioned above AND below) and the two 7-sf equipment pads from the
+    load, and reads a garage floor as a **buffer** — a third answer, so the next house with an
+    attached garage gets a named gap instead of a silent ~40% overstatement.
+  - **Below grade: Latta depth-resistance and a derived ground design temperature.** Two
+    errors were fighting and the ΔT one won. New `checks/building_science/ground.py`:
+    `U(z) = 1/(R + πz/2k)` integrated over the buried depth (catlin's R-21.8 wall buried
+    6.12 ft is R_eff **27.4**), the ASHRAE below-grade floor relation (R-11.1 of assembly is
+    R-**50.9** in the ground — the soil is four fifths of it, and `A/R` overstated that floor
+    2×), and the two published ASHRAE 90.1 slab F-factors, because a slab on grade loses heat
+    around its **perimeter** against outdoor **air** and reading it as an area against soil is
+    ~10× low. **The ground design temperature is now derived**: `Site.soil_temp_f` is the
+    ANNUAL MEAN and the design hour sits at the bottom of the surface's annual swing, so it is
+    `annual_mean − amplitude` — the mean off `Site.monthly_normals` (46.86 °F, which
+    reproduces this house's hand-computed 47.0 as a free self-check) and the amplitude one new
+    authored field, `Site.ground_surface_amplitude_f`, off one published map. **ΔT 45 °F, not
+    23.**
+  - **Walls split at their LOCAL grade, not the `Site.grade` plane.** The global plane buried
+    1.73 m of catlin's open-air walkout wall in soil ΔT, a 3.7× understatement on the very
+    walls the scope fix had just added. `resolve/site_earth.py` gains
+    `strip_grade_elevation_m`, which sweeps an 18" strip off the wall's own exterior face:
+    the existing `local_grade_elevation_m` measures RADIALLY, which is right for frost and
+    cannot separate a wall collinear with the excavation from one facing it (0.148 m against
+    0.100 m). The strip separates them ~25×. The split emits **three** wall components —
+    `walls`, `foundation_walls`, and a new `foundation_walls_above_grade` (253 sf of catlin's
+    walkout, cast concrete in open air at the full air ΔT).
+  - **A raked gable wall is a trapezoid, not a prism.** `length × (z1_m − z0_m)` ignored
+    `top_z0_m`/`top_z1_m`, and `z1_m` on a `ToRoof` wall is the RIDGE: 657.6 sf billed against
+    414.0 sf real over catlin's attic gables, ≈470 Btu/h of invented heating.
+  - **A cooling setpoint of its own.** One `interior_setpoint_f` served both seasons, so the
+    cooling ΔT was 20 °F where Manual J's is 15. New `Preferences.cooling_setpoint_f = 75.0`.
+  - **The air side: three missing multipliers.** `N` is the LBL table `base × height ×
+    shielding`, not the flat 18.0 that was its two-storey/normal cell (catlin derives 17.76,
+    with shielding read off the `Site.wind_exposure` the house already authors for wind).
+    Sherman's N yields an ANNUAL AVERAGE, so a heating design hour takes 1.5× it and a cooling
+    one 0.84×. And 1.08 Btu/h·cfm·°F is a SEA-LEVEL figure — 0.97 at catlin's 830 ft.
+  - **Solar was deliberately left wrong** in this pass and is corrected in the next. The
+    weights `{N 0.25, E 0.70, S 1.00, W 0.85}` put south at the peak where at 45 °N in July
+    it is 0.70 of it, but the term is four fifths of the cooling load and a partial fix moves
+    the number the WRONG way.
+  - `Preferences.wall_r` / `.roof_r` are **deleted**: read by nothing, in three houses'
+    `[envelope]` tables. `preferences.toml` still has no schema and no unknown-key rejection —
+    the gap that let those two sit there unread, and that has bitten three times now.
+
 - **The plan stair symbol is a stair symbol now, and A-1xx draws its floor openings.** Two
   reported defects with one root cause each. (1) *"Part of the attic is open to the stairs
   below; it should say that in the printed plan."* The architectural plan never read

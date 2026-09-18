@@ -278,6 +278,11 @@ _BOM_WAIVED_COLLECTIONS: dict[str, str] = {
     "_tag_index": "a derived lookup cache over the collections above, not a collection of "
                   "its own material — every element it points to is billed under its own "
                   "collection's entry",
+    "_envelope_geometry": "the derived thermal boundary, cached beside `_tag_index` for "
+                          "the same reason (→ checks/building_science/envelope_geometry.py). "
+                          "A CLASSIFICATION of walls, slabs and roofs already billed under "
+                          "their own entries — it says which of them the block load sums, "
+                          "and orders nothing",
     "braces": "diagonal braces are FramedMembers under `all_members()`, so `framing` "
               "already carries them piece for piece",
     "soffits": "the framing host beside the soffit's own ResolvedSolid: its ladder "
