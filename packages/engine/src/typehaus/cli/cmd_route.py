@@ -119,6 +119,10 @@ def route(
     unconnected: bool = typer.Option(
         False, "--unconnected",
         help="One proposal per mep.fixture_drain_reach FAIL."),
+    space_of: str | None = typer.Option(
+        None, "--space", help="Classify the routing space this target would search — per "
+                              "level, what is clear, what is priced, what refuses and what "
+                              "is ungraded — instead of routing it."),
     whole_house: bool = typer.Option(
         False, "--house", help="Lay every run in scope as one coordinated campaign: a "
                                "stated trade order, one shared occupancy, bounded rip-up."),
@@ -137,8 +141,9 @@ def route(
         4, "--rip-up", help="With --house: how many accepted proposals the campaign may "
                             "lift to make room for a refused one."),
     out_dir: Path | None = typer.Option(
-        None, "--out", help="With --house: write report.json and proposed.py here. "
-                            "Nothing under plan/ is touched either way."),
+        None, "--out", help="With --house: write report.json and proposed.py here. With "
+                            "--space: write one SVG overlay per level. Nothing under plan/ "
+                            "is touched either way."),
     slope: float | None = typer.Option(
         None, "--slope", help="Inches per foot for a gravity run (default: the code "
                               "minimum for its diameter)."),
@@ -177,10 +182,11 @@ def route(
     from typehaus.routing.proposal import render
 
     directory, model = _load(house)
-    selectors = [bool(run), bool(fixture), bool(tree), unconnected, whole_house]
+    selectors = [bool(run), bool(fixture), bool(tree), unconnected, whole_house,
+                 bool(space_of)]
     if sum(selectors) != 1:
         console.print("[red]choose exactly one of --run, --fixture, --tree, "
-                      "--unconnected, --house[/red]")
+                      "--unconnected, --house, --space[/red]")
         raise typer.Exit(2)
     if not 1 <= alternatives <= len(_LETTERS):
         console.print(f"[red]--alternatives wants 1..{len(_LETTERS)}[/red]")
@@ -199,6 +205,13 @@ def route(
             raise typer.Exit(2)
 
     cost = _route_cost(directory)
+
+    if space_of:
+        from typehaus.cli.route_space import print_space_view
+
+        raise typer.Exit(print_space_view(
+            model, space_of, margin_ft=margin_ft, band=band, avoid=frozenset(avoid),
+            cost=cost, as_json=as_json, svg_path=out_dir))
 
     if whole_house:
         from typehaus.cli.cmd_route_house import run_house_campaign

@@ -10,6 +10,12 @@ The order is bottom-to-top, i.e. painting order: the last entry covers the first
 very nearly the order matplotlib already draws in (fills, then linework, then lettering), so
 regrouping an SVG into it is a re-parenting and not a restack.
 
+``ROUTING`` is the one group that is not a trade: it is the routing-space diagnosis — what
+is clear, what is priced, what refuses and what is ungraded — drawn over everything else so
+a reviewer can switch it on beside the plan it is about. It sits above ``NOTES`` because it
+is an overlay somebody reads the plan *through*, and below ``OTHER`` so the escape hatch
+stays the last real group.
+
 ``BACKGROUND`` and ``MARKUP`` carry no drawing nodes — they exist only in the PSD, as the
 white ground underneath and the empty sheet a reviewer draws on. ``OTHER`` is the escape
 hatch and it is deliberate: an unmapped layer must come out somewhere visible, because a
@@ -45,6 +51,7 @@ FURNITURE = "furniture"
 ROOMS = "rooms"
 DIMENSIONS = "dimensions"
 NOTES = "notes"
+ROUTING = "routing"
 OTHER = "other"
 MARKUP = "markup"
 
@@ -65,6 +72,7 @@ REVIEW_LAYERS: tuple[ReviewLayer, ...] = tuple(
         (ROOMS, "Rooms", False),
         (DIMENSIONS, "Dimensions", False),
         (NOTES, "Notes / Symbols", False),
+        (ROUTING, "Routing Space", False),
         (OTHER, "Other", False),
         (MARKUP, "Review Markup", True),
     ))
@@ -108,6 +116,10 @@ _PREFIXES: tuple[tuple[str, str], ...] = tuple(sorted((
     ("A-GLAZ", OPENINGS),
     ("S-FRAM-OPEN", OPENINGS),
     ("C-ANNO", NOTES),
+    # The routing-space overlay (→ ``emit/draw/routing_overlay.py``). Its own discipline
+    # letter because it is not a trade's drawing at all: it is a diagnosis ABOUT the space
+    # the trades share, and a reviewer switches it as one thing.
+    ("Z-ROUT", ROUTING),
     ("S-", STRUCTURE),
     ("P-", SERVICES),
     ("M-", SERVICES),

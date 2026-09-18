@@ -329,3 +329,38 @@ def test_house_is_exclusive_with_the_single_target_selectors(runner) -> None:
                                  "--run", "PR-B-KITCH-DRAIN"])
     assert result.exit_code == 2
     assert "exactly one of" in result.output
+
+
+# --- Phase 8: the space view -------------------------------------------------------------
+
+def test_the_space_view_classifies_instead_of_routing_and_writes_no_plan(runner) -> None:
+    before = _plan_digest()
+    result = runner.invoke(app, ["route", str(_CATLIN), "--space", "PR-B-KITCH-DRAIN"])
+    assert result.exit_code == 0, result.output
+    assert "classified region(s)" in result.output
+    assert "PROPOSED" not in result.output, "--space reports a space, it does not propose"
+    assert _plan_digest() == before
+
+
+def test_the_space_view_json_carries_the_classes_and_the_levels(runner) -> None:
+    import json
+
+    result = runner.invoke(app, ["route", str(_CATLIN), "--space", "PR-B-KITCH-DRAIN",
+                                 "--json"])
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["target"] == "PR-B-KITCH-DRAIN"
+    assert payload["levels_m"]
+    assert set(payload["summary"]["by_class"]) <= {"green", "orange", "red", "gray"}
+    assert all(region["action"] for region in payload["regions"])
+
+
+def test_the_space_view_writes_one_overlay_per_level(runner, tmp_path) -> None:
+    """A plan is one elevation; stacking eleven into one picture is a picture of nothing."""
+    out = tmp_path / "space"
+    result = runner.invoke(app, ["route", str(_CATLIN), "--space", "PR-B-KITCH-DRAIN",
+                                 "--out", str(out)])
+    assert result.exit_code == 0, result.output
+    svgs = sorted(out.glob("*.svg"))
+    assert svgs, "no overlay was written"
+    assert '<g id="routing">' in svgs[0].read_text()

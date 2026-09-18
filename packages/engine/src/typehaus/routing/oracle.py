@@ -59,9 +59,15 @@ ORACLES: dict[str, tuple[Oracle, ...]] = {
 #: is an ORDER and a rip-up policy, and an order is argued rather than worked: a note
 #: reproducing "drains first, deepest first" by hand would be reproducing the sentence that
 #: chose it. ``tests/test_routing_campaign.py`` pins the order and the policy instead.
+#: ``space_view`` computes an area and so looks like a third candidate. It is not: every
+#: polygon it reports is a prism ``obstacles`` already built, classified by the mapping
+#: ``diagnostics`` already declares, and green is derived by SUBTRACTION from the search
+#: bbox — so there is no number to work by hand that is not already somebody else's. What it
+#: adds is a vocabulary (four classes, each naming the action it implies), and a vocabulary
+#: is argued rather than reproduced.
 NOT_A_CALCULATION = frozenset({
     "__init__", "space", "obstacles", "cost", "proposal", "oracle", "timing",
-    "diagnostics", "counterfactual", "campaign",
+    "diagnostics", "counterfactual", "campaign", "space_view",
     "trades/__init__", "trades/pipe", "trades/conduit",
 })
 
