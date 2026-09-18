@@ -182,11 +182,50 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   `--sweep N` walks a fixture's derived drain point along its `wall_ref` in 2" steps, clamped
   ALONG the wall and skipped where it would land in a stud, and prints the best station as a
   `Fixture(...)` with `drain_position` set. Contract 3's `refusals` array is in `--json`.
-- **A whole-storey duct problem exceeds `MAX_LATTICE_NODES`.** `--run DU-B-ERV-R-GYM --margin 3`
-  wants 148,960 nodes against the 120,000 cap. `--timing` says where it goes: on the ERV-KITCH
-  problem, build-space 53 ms, **build-graph 4,128 ms**, search 0.0 ms. That is the measurement
-  the roadmap's Phase 7 is gated on, and it says plainly that jump-point pruning of the SEARCH
-  would buy nothing — a true escape graph (lines ending at the first prism) is the lever.
+- ~~**A whole-storey duct problem exceeds `MAX_LATTICE_NODES`.**~~ **Done 2026-09-17
+  (roadmap Phase 7).** The measurement was right about where the time goes — build-graph
+  4,128 ms against a 0.0 ms search, so pruning the SEARCH would have bought nothing — and
+  wrong about the lever. It was not that the lines ran too far; it was that **every** line was
+  laid down on **every** z level, so a footing nine feet under the attic nominated turn points
+  at its corners *in the attic*. `graph.candidate_lines_at` derives them per level, which is a
+  correction and not a heuristic: an obstacle a plane does not cut through has no corner on
+  that plane to turn at. `DU-M-ERV-R-KITCH` went 780,066 nodes (a flat refusal) -> 27,618 and
+  routes; the house's worst duct went 780,066 -> 123,248, and `MAX_LATTICE_NODES` is raised to
+  150,000 — this constant's own documented instruction followed, with the measurement behind
+  it. Two things stay level-independent on purpose: a corridor's plan line on a PLAN search (a
+  gravity run's z is a derived potential, not the plane it searches in — filtering those took
+  `PR-B-KITCH-DRAIN` from a route to a four-node lattice), and the world-query memo, which is
+  off by default because it costs ~45% of a single build and pays only across reuse.
+  `tests/test_routing_perf_guard.py` states the criterion in node COUNT rather than wall clock:
+  a count is exact, machine-independent, and is the quantity the cap is written in.
+- ~~**No fitting is a part; a turn is a mitre.**~~ **Done 2026-09-17 (roadmap Phase 5).**
+  `library/fittings.py` + `hardware/fittings.py` hold the catalogued patterns with their
+  standards (ASTM D3311 for DWV, ASME B16.22 for copper, SMACNA for round duct), and
+  `resolve/mep_fittings.py` is the one reading the pipe take-off, the duct take-off,
+  `mep.fitting_pattern`, the IFC emitter and the router's proposal all share. Two answers are
+  deliberately kept apart: what a turn is BILLED as (the row `prices.toml` joins, unchanged)
+  and what PART it is. They disagree on catlin and the disagreement is the point —
+  `elbow-22.5-1in` is a priced row for a fitting B16.22 does not make. **Every laying length
+  is `None` and says why**: no manufacturer submittal has been read into this repo, which is
+  also why no fitting BODY is drawn — without a centre-to-face there is no way to turn a
+  mitred vertex into a solid, and `mep.fitting_pattern` reports that rather than inventing a
+  dimension. 239 of catlin's 259 fittings name a catalogued pattern; the other 20 are
+  UNKNOWN with the reason and the remedy attached. `IfcPipeFitting`/`IfcDuctFitting` are
+  emitted as placed records with no body, for the same reason.
+- ~~**No whole-house coordination.**~~ **Done 2026-09-17 (roadmap Phase 6).**
+  `haus route --house` lays every run in scope against ONE occupancy ledger — every accepted
+  proposal becomes hard prisms via the same `run_envelope` the checks use — in a declared
+  order (`routing/campaign.TRADE_ORDER`), with bounded rip-up that never touches anything the
+  campaign did not lay. Still no `--write`; `--out` writes a report and a paste file, and the
+  test asserts every plan file's sha256 is unchanged. On catlin's basement drainage: 6 laid,
+  4 rip-ups, the rest refused with a reason.
+- ~~**Nothing can picture the routing space.**~~ **Done 2026-09-17 (roadmap Phase 8).**
+  `haus route --space <target>` classifies it into green / orange / red / gray, each naming
+  the action it implies, read off `HardPrism.kind` through the same `diagnostics.mobility_of`
+  the refusals use. `--json` carries the polygons; `--out` writes one SVG overlay per level on
+  a new `routing` review layer. `emit` does not import `routing` and cannot — the regions are
+  a parameter — which is also why `haus render --view plan` does not draw it on its own: a
+  render has no target, and "the routing space" is only defined for one.
 - **155 MEP interpenetrations house-wide, and they are now GRADED.** `mep.run_interference`
   (`checks/mep/run_interference.py`, added 2026-09-17) compares every pair of runs envelope
   against envelope — real outside diameter plus insulation, one prism per segment over that

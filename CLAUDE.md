@@ -215,6 +215,8 @@ haus route houses/catlin --unconnected                 # one per fixture_drain_r
 haus route houses/catlin --run DU-M-ERV-R-KITCH --explain
 haus route houses/catlin --fixture FX-S-SUITEBATH-WC --sweep 8   # move the DRAIN POINT?
 haus route houses/catlin --run PR-B-KITCH-DRAIN --counterfactual # what if X moved?
+haus route houses/catlin --house --trades drain --storey basement --out out/route
+haus route houses/catlin --space PR-B-KITCH-DRAIN --json      # what is clear, priced, refused
 ```
 
 - **`--alternatives N` offers more than one lane** (penalty re-search, oracled by the drain
@@ -248,6 +250,33 @@ haus route houses/catlin --run PR-B-KITCH-DRAIN --counterfactual # what if X mov
   equal-friction method at `[mep.routing] duct_friction_in_wg_per_100ft`. **An authored size
   always wins**; `--explain` prints what the air wants beside it, and only a real
   `DuctProductType` row may ever be proposed.
+- **`--house` is a campaign, not a batch.** Every accepted proposal becomes an obstacle for
+  the next target — one occupancy ledger, the same `run_envelope` the checks read — laid in
+  a declared order (`routing/campaign.TRADE_ORDER`: drains deepest first, then vents, then
+  bulky rigid duct largest first, then supply and conduit, which bend). Rip-up is bounded by
+  a COUNT and never touches anything the campaign did not lay: a blocker that is a fact about
+  the building is a finding, not a scheduling problem. `--storey` scopes which runs are
+  targets; `--level` restricts the search's z band; they are two questions.
+- **`--space` classifies instead of searching**: green (clear), orange (priced, or a movable
+  run with the command that would re-lane it), red (framed, poured or cut), gray (insufficient
+  geometry). Green is derived by SUBTRACTION from the search bbox, so it cannot claim a lane
+  something else claimed. The classes are read off `HardPrism.kind` through the same
+  `diagnostics.mobility_of` the refusals use. `--out` writes one SVG overlay per level on the
+  `routing` review layer; `haus render --view plan` does **not** carry it, because a render
+  has no target and the routing space is only defined for one.
+- **A turn is a part, and the catalog says which.** `resolve/mep_fittings.py` is the one
+  reading both take-offs, `mep.fitting_pattern`, the IFC emitter and a proposal share; the
+  patterns and their standards are in `library/fittings.py`. What a turn is **billed** as
+  (the `prices.toml` row) and what **part** it is are two answers kept apart on purpose —
+  they disagree on catlin, and `elbow-22.5-1in` is a priced row for a fitting ASME B16.22 does
+  not make. Every laying length is `None` with its reason, which is why no fitting body is
+  drawn and why `IfcPipeFitting` is emitted placed and unrepresented.
+- **The lattice is built per z level** (`graph.candidate_lines_at`). An obstacle a plane does
+  not cut through has no corner on that plane to turn at, and deriving the lines once for the
+  whole band made a footing under the basement nominate turn points in the attic — 780,066
+  nodes for one duct, which is a refusal. Two things stay level-independent and both are
+  load-bearing: a corridor's plan line on a **plan** search (a gravity run's z is a derived
+  potential, not the plane it searches in) and nothing else.
 - **There is no `--write`.** The prose in a plan file *is* the design record; and accepting
   a route is a judgement, exactly as `haus engineering --fingerprint` prints a value for a
   person to paste. The reason once given first here — "`_content_hash` stales every pinned

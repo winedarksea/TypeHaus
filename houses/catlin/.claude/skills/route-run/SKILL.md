@@ -121,16 +121,41 @@ also an answer: the obstruction is not where the fixture stands.
 
 Say it out loud in the commit message when it applies:
 
-* **fittings** are counted from turns and never modelled, so a turn no stock elbow makes
-  draws as a mitre and passes (roadmap Phase 5).
-* **whole-house coordination** — routing one run at a time cannot find the order that makes
-  all of them fit, and there is no rip-up-and-re-route (Phase 6).
+* **a fitting has no BODY.** A turn is matched against a catalogued pattern now
+  (`mep.fitting_pattern`, and `--explain` prints any corner no pattern makes), but no
+  manufacturer submittal has been read into this repo, so every laying length is `None` and
+  the vertex still draws as a mitre. Reading four submittals closes it; guessing does not.
 * **a duct's size is advised, never applied.** `--explain` prints what the air wants at the
   house's design friction rate; the authored size always wins. DU-B-ERV-SUP-TRUNK is drawn
   4x under it and that is a real, known, deliberate fact about this house.
 * **two lanes in one bay** are a capacity statement, not an arrangement: the model gives a
   run one centreline per bay, so `mep.duct_joist_bay_occupancy` can say the bay holds them
   and cannot say they were drawn side by side.
+
+## When one run at a time is the wrong question
+
+A single `--run` cannot find the ORDER that makes all of them fit. When two runs keep taking
+each other's lane, stop iterating on one and lay them together:
+
+```
+haus route houses/catlin --house --trades drain --storey basement --out out/route
+```
+
+It lays every target in scope against one occupancy ledger, in a declared order, and rips up
+within a budget — and it never touches a run it did not itself lay, so a blocker that is a
+fact about the building still comes back as a refusal with a reason. It writes a report and a
+paste file to `--out` and nothing under `plan/`; the accept-one-at-a-time rule is unchanged,
+and a hundred proposals is a reason to read more carefully rather than fewer.
+
+When the refusals stop telling you anything new, look at the space instead of the route:
+
+```
+haus route houses/catlin --space PR-B-KITCH-DRAIN
+```
+
+Green is what is left after everything else is taken out, orange is a price or a movable run
+with the command that would re-lane it, red does not negotiate, gray is geometry nobody
+authored well enough to grade. `--out` writes one SVG per level if you want to look at it.
 
 Run-vs-run interference and stud/plate bores used to be on this list. Both are graded now
 (`mep.run_interference`, `mep.run_through_stud`, `mep.run_through_plate`) — which is why
