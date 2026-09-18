@@ -241,7 +241,10 @@ class Preferences:
     monthly_interior_relative_humidity: float = 0.35
     south_wwr_threshold: float = 0.40
     adequate_overhang_ft: float = 2.0
-    cooling_solar_gain_btu_per_hour_ft2: float = 164.0
+    # (``cooling_solar_gain_btu_per_hour_ft2`` was here: a single peak irradiance the block
+    # load multiplied an orientation weight by. Deleted 2026-09-18 with the hourly method —
+    # the ASHRAE clear-sky model derives the irradiance at each hour for each orientation,
+    # so one number for all four at once has nothing left to say. No house authored it.)
     framing: FramingPreferences = field(default_factory=FramingPreferences)
     plumbing: PlumbingPreferences = field(default_factory=PlumbingPreferences)
     mep: MepPreferences = field(default_factory=MepPreferences)

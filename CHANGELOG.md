@@ -4,6 +4,64 @@ All notable changes to `typehaus`. This project follows [semantic versioning](ht
 
 ## Unreleased
 
+- **Manual-J-shaped cooling: the glass is walked hour by hour, and the peak is ONE hour.**
+  The sequel the block-load pass promised. New `checks/building_science/solar.py`, oracled by
+  the new `houses/catlin/notes/solar_gain_basis.md` and reproduced by
+  `tests/test_energy_solar.py`. What the term was:
+  `area × shgc × ORIENTATION_WEIGHT[facade] × 164.0`, weights `{N 0.25, E 0.70, S 1.00,
+  W 0.85}` — and it was wrong twice over.
+  - **The weights put south at the peak.** At 45 °N in July the clear-sky total on a vertical
+    surface at each orientation's own peak is N 54 / **E 230** / S 161 / **W 230** Btu/h·ft²:
+    south is 0.70 of the peak and east and west *are* it. (The noon sun is 66° up, so a south
+    window sees it 66° off normal and most of the beam slides past the glass.)
+  - **But the weights were not the expensive error.** Summed, they came within 4% of the
+    sum-of-own-peaks — they were wrong in a way that cancelled across four facades. The
+    expensive error was charging the east glass its 8 a.m. peak and the west glass its 4 p.m.
+    peak **in the same hour**, an hour that does not exist. catlin's real house-wide peak is
+    **12,271 Btu/h at solar 10:30** against the 17,435 reported: a **1.42× overstatement**,
+    essentially all of it hour-coincidence. This is why the block-load pass declined to fix
+    the weights alone: it would have changed almost nothing while looking like a fix.
+  - **Shading, from whatever is actually overhead.** `RF-HOUSE` projects *nothing* past
+    catlin's main-floor south wall, so an eave-only model finds no shading on `D-M-BALC` —
+    33 sf of glazed door and the largest piece of south glass in the house. What shades it is
+    a **floor**: the sunken-garden balcony deck, 2 3/4" clear of the wall face, reaching 9.9 ft
+    out, a metre above the door head. So any horizontal plane overhead counts (a roof
+    footprint, a slab outline, a floor deck) and a plane shades a **band** — its near edge
+    sets the top of the shadow and its far edge the bottom, of which an eave is the
+    degenerate `near = 0` case. Bands union rather than sum (two decks over one door), only
+    the DIRECT beam is shaded (45.6 of the 144.2 Btu/h·ft² on a fully shaded door still
+    reaches it), and the test is lateral too: the window 10 ft east of that door is *not*
+    shaded, because the balcony stops short of it.
+  - **The AED excursion** (ACCA TRB 2003-001a): `peak − 1.3 × average`, added when positive.
+    catlin pays **894 Btu/h, 7%** — it has good exposure diversity, and the term is written
+    down precisely because it is small here and would be 30% on a glass wall facing one way.
+  - **Internal gains, cooling only.** Manual J credits none against heating and neither does
+    this — a design heating hour is 4 a.m. in January with the house asleep. Occupants =
+    bedrooms + 1 (Manual J's own rule, and a fact the model already carries), 230 Btu/h
+    sensible + 200 latent each, plus the low end of the published 1,200–2,400 kitchen
+    appliance allowance. A model with **no conditioned room at all** gets no occupants,
+    which is a different answer from "no bedroom".
+  - **A latent load and an SHR**, and both honestly incomplete. Occupant latent only: an
+    air-side latent load needs the cooling design outdoor **humidity ratio** and nothing on
+    `Site` carries one (`monthly_normals`' RH is a monthly mean, not a design coincident wet
+    bulb), and the ERV's **latent** recovery is unstated. So SHR 0.94 is an upper bound and
+    the sizing checks say so. **`cooling_tons` is now a TOTAL** (sensible + latent over
+    12,000) — a ton of refrigeration is a total, not a sensible.
+  - **`EnergyReport.cooling_caveats`, a second list beside `unknown_inputs`.** An *unknown*
+    is an input the model does not have; a *caveat* is a term the method knowingly does not
+    carry. A reader who cannot tell them apart cannot tell a gap they could close from one
+    they cannot — and an omitted term must not take an equipment-sizing verdict to UNKNOWN.
+    `mep.cooling_capacity` prints them and calls its ratio an upper bound.
+  - **The roof's sol-air term is built and OPEN.** A roof is solar-dominated and nearly
+    ΔT-independent: at catlin's peak hour a black roof behaves as though it faced 144 °F, a
+    69 °F CTD against the wall's 15. New `Material.solar_absorptance` (a published optical
+    property — `color` is an sRGB triple and says nothing about the near-infrared). Nobody has
+    stated one for this roof's cladding, so the roof carries the plain air ΔT and the omission
+    is a **caveat, not an `unknown_input`**; the note's §6 prices the three candidate colours
+    at +329 / +881 / +1,572 Btu/h and asks for one number.
+  - `Preferences.cooling_solar_gain_btu_per_hour_ft2` is **deleted**: one peak irradiance for
+    all four orientations at once has nothing left to say. No house authored it.
+
 - **The block load's total was right and every one of its parts was wrong.** A review found
   `checks/building_science/energy_load.py` arithmetically correct and physically wrong in six
   places, in both directions, by 0.5–2.0 kBtu/h each — and catlin's heating figure moved 17

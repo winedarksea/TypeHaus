@@ -326,9 +326,17 @@ def cooling_capacity(ctx: CheckContext) -> list[Finding]:
                      "cooling_capacity_btuh", (zone.equipment_tag,)))
             continue
         margin = zone.cooling_margin_btuh or 0.0
+        # The caveats come off the block load itself rather than being restated here, so a
+        # term the method stops carrying (or starts) cannot drift out of step with the
+        # sentence a reviewer reads. They are NOT ``unknown_inputs``: an omitted term is a
+        # stated limitation of the method, and taking the verdict to UNKNOWN over one would
+        # make every house unsizeable.
+        caveats = ("; ".join(zone.cooling_caveats) if zone.cooling_caveats
+                   else "no stated omissions")
         detail = (f"{zone.name}: sensible cooling load {load:,.0f} Btu/h vs "
-                  f"{capacity:,.0f} Btu/h rated (margin {margin:+,.0f} Btu/h; UA + window "
-                  "solar only — no latent or internal gains)")
+                  f"{capacity:,.0f} Btu/h rated (margin {margin:+,.0f} Btu/h) "
+                  f"+ {zone.latent_btu_per_hour:,.0f} Btu/h latent. "
+                  f"An UPPER BOUND on the ratio: {caveats}")
         if zone.unknown_inputs:
             out.append(_unknown(cid, f"{detail}; block-load inputs missing: "
                                      + ", ".join(zone.unknown_inputs),

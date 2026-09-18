@@ -55,7 +55,14 @@ from typehaus.checks.building_science.ground import (
     slab_on_grade_f_factor,
     slab_on_grade_q,
 )
-from typehaus.checks.building_science.wwr import _facade_for_wall, _wall_length
+from typehaus.checks.building_science.solar import (
+    fenestration_gain,
+    horizontal_surface_irradiance,
+    internal_gains,
+    roof_absorptance,
+    sol_air_temperature_f,
+)
+from typehaus.checks.building_science.wwr import _wall_length
 from typehaus.checks.registry import Preferences
 from typehaus.resolve.geometry import polygon_area
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
@@ -206,18 +213,55 @@ class EnergyReport:
     # ``heating_load_btu_per_hour``.
     infiltration_btu_per_hour: float = 0.0
     ventilation_btu_per_hour: float = 0.0
+    # The cooling side's own three terms, reported apart from the components for the same
+    # reason: none of them is a UA against an area.
+    #
+    # ``cooling_load_btu_per_hour`` is SENSIBLE and stays sensible — that is the quantity a
+    # unit's ``cooling_capacity_btuh`` is rated against. ``latent_btu_per_hour`` is the
+    # moisture side, and ``cooling_tons`` is the TOTAL (sensible + latent) over 12,000,
+    # because a ton of refrigeration is a total, not a sensible.
+    latent_btu_per_hour: float = 0.0
+    #: Fenestration gain at the house's own peak solar hour (→ ``solar``), and that hour.
+    #: Already inside ``cooling_load_btu_per_hour``; carried so the sheet can print WHEN.
+    solar_btu_per_hour: float = 0.0
+    solar_peak_hour: float | None = None
+    #: The AED excursion (ACCA TRB 2003-001a), also already inside the cooling load.
+    solar_excursion_btu_per_hour: float = 0.0
+    #: Internal gains, cooling only — Manual J credits none against heating and nor does
+    #: this. Both already inside their respective totals.
+    internal_sensible_btu_per_hour: float = 0.0
+    #: Caveats a reader must see beside the number, distinct from ``unknown_inputs``: these
+    #: are terms the method knowingly does not carry, not inputs it is missing. The sizing
+    #: checks print them, so the number never travels without them.
+    cooling_caveats: tuple[str, ...] = ()
+
+    @property
+    def sensible_heat_ratio(self) -> float | None:
+        """``sensible / (sensible + latent)``, or ``None`` with no cooling load at all."""
+        total = self.cooling_load_btu_per_hour + self.latent_btu_per_hour
+        return None if total <= 0 else self.cooling_load_btu_per_hour / total
 
     def as_dict(self) -> dict[str, object]:
         return {"heating_load_btu_per_hour": self.heating_load_btu_per_hour,
                 "cooling_load_btu_per_hour": self.cooling_load_btu_per_hour,
+                "latent_btu_per_hour": self.latent_btu_per_hour,
+                "sensible_heat_ratio": self.sensible_heat_ratio,
                 "cooling_tons": self.cooling_tons,
                 "components": [component.as_dict() for component in self.components],
                 "infiltration_btu_per_hour": self.infiltration_btu_per_hour,
                 "ventilation_btu_per_hour": self.ventilation_btu_per_hour,
+                "solar_btu_per_hour": self.solar_btu_per_hour,
+                "solar_peak_hour": self.solar_peak_hour,
+                "solar_excursion_btu_per_hour": self.solar_excursion_btu_per_hour,
+                "internal_sensible_btu_per_hour": self.internal_sensible_btu_per_hour,
+                "cooling_caveats": list(self.cooling_caveats),
                 "wall_comparison": self.wall_comparison,
                 "unknown_inputs": list(self.unknown_inputs),
                 "scope": "resolved walls, foundations, roof, slabs, windows, and doors, "
-                         "plus blower-door infiltration and ERV ventilation air"}
+                         "plus blower-door infiltration and ERV ventilation air, hourly "
+                         "fenestration gain at the house's peak solar hour with its AED "
+                         "excursion, the roof's sol-air excess where an absorptance is "
+                         "stated, and Manual J occupant/appliance internal gains"}
 
 
 def estimate_block_load(
@@ -249,6 +293,9 @@ def estimate_block_load(
         return EnergyReport(0.0, 0.0, 0.0, (), unknown_inputs=("Site design temperatures",))
     components: list[LoadComponent] = []
     unknown: list[str] = []
+    # Terms the method knowingly does not carry, as opposed to inputs it is missing. The
+    # sizing checks print these beside the number so it never travels without them.
+    cooling_caveats: list[str] = []
     heating_delta = preferences.interior_setpoint_f - site.design_temp_heating.fahrenheit
     # Manual J's cooling indoor design condition is 75 °F, not the heating setpoint. One
     # ``interior_setpoint_f`` for both seasons made catlin's cooling ΔT 20 where it is 15.
@@ -316,6 +363,14 @@ def estimate_block_load(
         opening_area_ft2[opening.host_wall] = opening_area_ft2.get(opening.host_wall, 0.0) + (
             opening.width_m * opening.height_m * _M2_TO_FT2
         )
+    # Fenestration gain is an HOURLY walk with ONE peak hour for the whole house (→
+    # ``solar``), and it is taken here rather than in the opening loop below because the
+    # roof's sol-air term is evaluated at the same hour: the peak cooling condition is one
+    # instant, and charging the glass its peak and the roof its own separate peak is the
+    # every-orientation-peaks-at-once error in a different dress.
+    solar = fenestration_gain(model, wall_by_tag, envelope_openings)
+    solar_peak_hour = solar.peak_hour
+    unknown.extend(solar.unknown_inputs)
 
     # The excavation floors and the heated footprint are whole-model facts; derived once
     # here rather than per wall, because ``open_excavation_floors`` walks every solid.
@@ -426,8 +481,36 @@ def estimate_block_load(
         if "buffer" in under:
             unknown.append(f"buffer temperature under {roof.tag} ({under}) — charged the "
                            "full outdoor design ΔT")
+    # A roof is solar-dominated and nearly ΔT-independent, so its cooling term is a SOL-AIR
+    # excess over the air ΔT, not the air ΔT. Gated on an authored ``solar_absorptance``,
+    # which is a published optical property nobody has stated for catlin's roofing: with
+    # none the roof carries the plain air ΔT (the behaviour this replaced) and the caveat
+    # is CARRIED IN THE MESSAGE rather than in ``unknown_inputs``, because an omitted
+    # refinement is not a missing required input and must not take the sizing verdict to
+    # UNKNOWN over it.
+    roof_sol_air_cooling = 0.0
     if roof_area:
         components.append(_component("roof", roof_area, roof_ua))
+        absorptances = {roof.tag: roof_absorptance(model, roof.assembly) for roof in roofs}
+        unstated = sorted(tag for tag, value in absorptances.items() if value is None)
+        if unstated:
+            cooling_caveats.append(
+                "the roof carries no sol-air term — no solar_absorptance is authored on "
+                f"the outermost layer of {', '.join(unstated)}, so it is charged the plain "
+                "air ΔT and its cooling contribution is understated several-fold")
+        for roof in roofs:
+            absorptance = absorptances.get(roof.tag)
+            if absorptance is None:
+                continue
+            irradiance = horizontal_surface_irradiance(site.lat, solar_peak_hour)
+            sol_air = sol_air_temperature_f(
+                site.design_temp_cooling.fahrenheit, absorptance, irradiance)
+            area = roof.surface_area_m2 * _M2_TO_FT2 * roof_fraction[roof.tag]
+            roof_r = _assembly_r_value(model, roof.assembly, unknown)
+            if roof_r is None:
+                continue
+            excess = max(0.0, (sol_air - preferences.cooling_setpoint_f) - cooling_delta)
+            roof_sol_air_cooling += (area / roof_r) * excess
     if not slabs and has_roofs and whole_house:
         unknown.append("slab resolved geometry")
     for slab in slabs:
@@ -481,8 +564,7 @@ def estimate_block_load(
             "slab_on_grade_edge", slab_on_grade_perimeter, 0.0,
             solar_gain_btu_per_hour=0.0, heating_delta_f=heating_delta))
 
-    window_area = window_ua = window_solar = door_area = door_ua = door_solar = 0.0
-    solar_orientation = {"N": 0.25, "E": 0.70, "S": 1.0, "W": 0.85}
+    window_area = window_ua = door_area = door_ua = 0.0
     for opening in envelope_openings:
         if opening.penetration_for:
             # A duct/pipe penetration is not fenestration: the hole is filled by the run and
@@ -509,30 +591,18 @@ def estimate_block_load(
         if u_factor is None:
             unknown.append(f"{kind} {opening.tag} U-factor")
             continue
-        # A glazed door is fenestration under R202 and admits solar gain exactly as a window
-        # does. An opaque leaf transmits none, so it earns no solar term and no UNKNOWN —
-        # "no SHGC stated" is only a gap where there is glass to state one about.
-        glazed = not opening.is_door or bool(getattr(product, "glazed", False))
-        solar = 0.0
-        if glazed:
-            wall = wall_by_tag.get(opening.host_wall)
-            if product is None or product.shgc is None:
-                unknown.append(f"{'door' if opening.is_door else 'window'} "
-                               f"{opening.tag} SHGC")
-            elif wall is not None:
-                solar = (area * product.shgc
-                         * solar_orientation[_facade_for_wall(wall, model)]
-                         * preferences.cooling_solar_gain_btu_per_hour_ft2)
         if kind == "doors":
             door_area += area
             door_ua += area * u_factor
-            door_solar += solar
         else:
             window_area += area
             window_ua += area * u_factor
-            window_solar += solar
-    components.extend((_component("windows", window_area, window_ua, window_solar),
-                       _component("doors", door_area, door_ua, door_solar)))
+    # No per-component ``solar_gain_btu_per_hour`` any more: the answer is not separable
+    # per facade at a single hour the way a weighted sum pretended — the east glass's
+    # contribution AT THE HOUSE'S PEAK HOUR is not the east glass's own peak — so it is one
+    # house-level term (``EnergyReport.solar_btu_per_hour``) taken above.
+    components.extend((_component("windows", window_area, window_ua),
+                       _component("doors", door_area, door_ua)))
     # Air-side terms. Both the blower-door result and the ERV's airflow are whole-house
     # facts, so a zone gets its share of each by conditioned volume — the quantity the air
     # in a zone actually scales with.
@@ -559,18 +629,45 @@ def estimate_block_load(
     heating = (sum(component.ua_btu_per_hour_f * _deltas_for(component.kind)[0]
                    for component in components)
                + slab_on_grade_heating + infiltration_heating + ventilation_heating)
-    # Solar is summed off the components rather than off ``window_solar``: it was the window
-    # term by name, so the glazed doors' gain sat in the report and outside the load.
-    cooling = air_cooling + slab_on_grade_cooling + sum(
-        component.solar_gain_btu_per_hour
-        + component.ua_btu_per_hour_f * _deltas_for(component.kind)[1]
-        for component in components
-    )
-    return EnergyReport(heating, cooling, cooling / 12000.0, tuple(components),
+    # Internal gains are COOLING ONLY. Manual J credits none against a heating load and
+    # neither does this: a design heating hour is 4 a.m. in January with the house asleep
+    # and the appliances off, and crediting people against it is how a system ends up unable
+    # to recover from a setback. Apportioned to a zone by conditioned-volume share, the same
+    # way the air-side terms are — the alternative is a per-room occupant census the model
+    # does not carry.
+    gains = internal_gains(model)
+    internal_sensible = gains.sensible_btu_per_hour * share
+    internal_latent = gains.latent_btu_per_hour * share
+    # Latent is OCCUPANTS ONLY, and the two air-side latent terms are named rather than
+    # guessed: an infiltration or ventilation latent load needs the cooling design
+    # outdoor HUMIDITY RATIO, and nothing on ``Site`` carries one — ``monthly_normals``'
+    # RH is a monthly mean, not a 1% design coincident wet bulb. An ERV's latent recovery
+    # is a second gap: ``sensible_recovery_effectiveness`` is the only field there is.
+    latent = internal_latent
+    cooling_caveats.append(
+        "latent load is occupant-only: no design outdoor humidity ratio is authored on "
+        "Site, so the infiltration and ventilation latent terms are omitted (understated)")
+    if ventilation_cfm > 0:
+        cooling_caveats.append(
+            "the ERV's LATENT recovery is unstated (only sensible_recovery_effectiveness "
+            "exists), so its moisture load is not carried either")
+    cooling = (air_cooling + slab_on_grade_cooling + roof_sol_air_cooling
+               + solar.design_btu_per_hour * share + internal_sensible
+               + sum(component.ua_btu_per_hour_f * _deltas_for(component.kind)[1]
+                     for component in components))
+    # A ton of refrigeration is a TOTAL, not a sensible. ``cooling_load_btu_per_hour`` stays
+    # sensible because that is what a unit's ``cooling_capacity_btuh`` is rated against.
+    return EnergyReport(heating, cooling, (cooling + latent) / 12000.0, tuple(components),
                         wall_comparison=_two_by_four_vs_six(model, heating_delta),
                         unknown_inputs=tuple(dict.fromkeys(unknown)),
                         infiltration_btu_per_hour=infiltration_heating,
-                        ventilation_btu_per_hour=ventilation_heating)
+                        ventilation_btu_per_hour=ventilation_heating,
+                        latent_btu_per_hour=latent,
+                        solar_btu_per_hour=solar.peak_btu_per_hour * share,
+                        solar_peak_hour=solar.peak_hour,
+                        solar_excursion_btu_per_hour=solar.excursion_btu_per_hour * share,
+                        internal_sensible_btu_per_hour=internal_sensible,
+                        cooling_caveats=tuple(dict.fromkeys(cooling_caveats)))
 
 
 # How far apart the authored annual mean and the one derived from the twelve monthly

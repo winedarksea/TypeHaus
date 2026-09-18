@@ -38,6 +38,19 @@ class Material(HausModel):
     # own, for thermal mass), and nothing else reads this.
     areal_density_kg_m2: float | None = None
     specific_heat: float | None = None  # J/kg·K (dynamic-sim headroom, unused)
+    # Fraction of incident solar radiation this surface ABSORBS, 0..1 — i.e.
+    # ``1 − solar reflectance``. A published optical property (a metal roofing colour guide
+    # states SR; a cool-roof rating council listing states SR and SRI), not a preference and
+    # not derivable from ``color``, which is an sRGB presentation triple and says nothing
+    # about the near-infrared where most of the energy is.
+    #
+    # Read by the roof's SOL-AIR term in the cooling load
+    # (``checks/building_science/solar.py``): a roof is solar-dominated and nearly
+    # ΔT-independent, so charging it the same 15 °F cooling ΔT as a wall understates it
+    # several times over. ``None`` means nobody has stated the colour's optics, and the
+    # cooling load then carries the roof at the plain air ΔT and says so in the sizing
+    # checks' message — an omission a reader can see, rather than an assumed absorptance.
+    solar_absorptance: float | None = None
     # Presentation: hatch/color key into the Nordic palette (→ 21 §Nordic preset).
     hatch: str | None = None
     color: str | None = None

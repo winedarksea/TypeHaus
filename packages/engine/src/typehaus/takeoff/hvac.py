@@ -90,6 +90,14 @@ class HvacZone:
     supplemental_btuh: float
     supplemental_tags: tuple[str, ...]
     unknown_inputs: tuple[str, ...]
+    #: The zone's LATENT load (occupants only — see ``EnergyReport``). Apart from
+    #: ``cooling_load_btu_per_hour``, which stays SENSIBLE because a unit's
+    #: ``cooling_capacity_btuh`` is a sensible rating.
+    latent_btu_per_hour: float = 0.0
+    #: Terms the block load knowingly does not carry, as opposed to inputs it is missing.
+    #: The sizing checks print these beside the margin so the number never travels without
+    #: them — an omitted term is not an UNKNOWN and must not take the verdict with it.
+    cooling_caveats: tuple[str, ...] = ()
 
     @property
     def heating_margin_btuh(self) -> float | None:
@@ -117,6 +125,8 @@ class HvacZone:
             "cooling_load_btu_per_hour": self.cooling_load_btu_per_hour,
             "cooling_capacity_btuh": self.cooling_capacity_btuh,
             "cooling_margin_btuh": self.cooling_margin_btuh,
+            "latent_btu_per_hour": self.latent_btu_per_hour,
+            "cooling_caveats": list(self.cooling_caveats),
             "min_operating_temp_f": self.min_operating_temp_f,
             "unknown_inputs": list(self.unknown_inputs),
         }
@@ -417,6 +427,8 @@ def heating_zones(
             supplemental_tags=tuple(tag for tag, _btuh in contributions),
             unknown_inputs=tuple(report.unknown_inputs) if report else
             (f"{unit.tag} zone_rooms (no rooms authored)",),
+            latent_btu_per_hour=report.latent_btu_per_hour if report else 0.0,
+            cooling_caveats=tuple(report.cooling_caveats) if report else (),
         ))
     # A head whose ``outdoor_ref`` names no unit in the model claims nothing — only a rated
     # unit and its own heads add to ``claimed`` — so that authoring error surfaces on its own

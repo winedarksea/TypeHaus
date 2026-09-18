@@ -257,7 +257,12 @@ def test_cooling_passes_when_the_rating_covers_the_sensible_load() -> None:
         (_outdoor("EQ-COOL", "EQ-T-COOL", "EQ00000h13", _BOTH_ROOMS),)))
     findings = cooling_capacity(ctx)
     assert [f.result for f in findings] == [Result.PASS]
-    assert "no latent or internal gains" in findings[0].message
+    # The caveat sentence now comes off the block load itself rather than being restated
+    # in this check, so it names the terms the method actually omits today (the two
+    # air-side latent loads) instead of a fixed phrase that went stale the moment internal
+    # gains and a latent split landed.
+    assert "UPPER BOUND" in findings[0].message
+    assert "latent" in findings[0].message
 
 
 # --- catlin fixture -------------------------------------------------------------------

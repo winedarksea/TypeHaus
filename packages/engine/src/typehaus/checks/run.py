@@ -70,9 +70,6 @@ def load_preferences(house_dir: Path) -> Preferences:
         exterior_relative_humidity=env.get("exterior_relative_humidity", 0.80),
         south_wwr_threshold=env.get("south_wwr_threshold", 0.40),
         adequate_overhang_ft=env.get("adequate_overhang_ft", 2.0),
-        cooling_solar_gain_btu_per_hour_ft2=env.get(
-            "cooling_solar_gain_btu_per_hour_ft2", 164.0
-        ),
         framing=FramingPreferences(
             module_in=framing.get("module_in", 16.0),
             corner=framing.get("corner", "3-stud"),

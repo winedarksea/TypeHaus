@@ -1103,8 +1103,24 @@ export interface CondensationProfile {
 
 export interface EnergyReport {
   heating_load_btu_per_hour: number;
+  // SENSIBLE, and it stays sensible: that is the quantity a unit's cooling_capacity_btuh
+  // is rated against. `cooling_tons` is the TOTAL (sensible + latent) over 12,000.
   cooling_load_btu_per_hour: number;
+  latent_btu_per_hour: number;
+  sensible_heat_ratio: number | null;
   cooling_tons: number;
+  // Fenestration gain at the house's own peak solar hour, plus the ACCA AED excursion.
+  // Both already inside `cooling_load_btu_per_hour`.
+  solar_btu_per_hour: number;
+  solar_peak_hour: number | null;
+  solar_excursion_btu_per_hour: number;
+  internal_sensible_btu_per_hour: number;
+  infiltration_btu_per_hour: number;
+  ventilation_btu_per_hour: number;
+  // Terms the method knowingly does NOT carry — distinct from `unknown_inputs`, which are
+  // inputs it is missing. A reader who cannot tell them apart cannot tell a gap they could
+  // close from one they cannot.
+  cooling_caveats: string[];
   unknown_inputs: string[];
   wall_comparison: {
     baseline_assembly: string;

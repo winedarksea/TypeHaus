@@ -35,8 +35,17 @@ from typehaus.energy import estimate_block_load
 # --- the pinned result ---------------------------------------------------------------------
 
 _HEATING_BTUH = 31_713.5
-_COOLING_BTUH = 22_154.4
-_COOLING_TONS = 1.8462
+# SENSIBLE, and the tonnage is the TOTAL over 12,000. The Manual-J-shaped cooling pass
+# (hourly glass at one house-wide peak hour + AED excursion, internal gains, occupant
+# latent) moved this from 22,154.4 and the tonnage from 1.8462: the hourly walk took 5.2
+# kBtu/h off the glass, the internal gains put 2.8 back, the latent 1.4.
+_COOLING_SENSIBLE_BTUH = 20_695.0
+_LATENT_BTUH = 1_400.0
+_COOLING_TONS = 1.8413
+_SOLAR_PEAK_BTUH = 12_271.0
+_SOLAR_PEAK_HOUR = 10.5
+_AED_EXCURSION_BTUH = 894.0
+_INTERNAL_SENSIBLE_BTUH = 2_810.0
 
 # ``(kind, area_ft2, ua_btu_per_hour_f)`` in the order the report emits them.
 _COMPONENTS = (
@@ -93,8 +102,14 @@ def test_the_catlin_block_load_is_pinned(catlin_model_ro) -> None:
     report = _report(catlin_model_ro)
     assert report.unknown_inputs == (), report.unknown_inputs
     assert report.heating_load_btu_per_hour == pytest.approx(_HEATING_BTUH, rel=0.005)
-    assert report.cooling_load_btu_per_hour == pytest.approx(_COOLING_BTUH, rel=0.005)
+    assert report.cooling_load_btu_per_hour == pytest.approx(
+        _COOLING_SENSIBLE_BTUH, rel=0.005)
+    assert report.latent_btu_per_hour == pytest.approx(_LATENT_BTUH, rel=0.005)
     assert report.cooling_tons == pytest.approx(_COOLING_TONS, rel=0.005)
+    # A ton is a TOTAL, so the tonnage is the sensible AND the latent over 12,000. It was
+    # sensible-only, which under-stated every selection by the latent share.
+    assert report.cooling_tons == pytest.approx(
+        (report.cooling_load_btu_per_hour + report.latent_btu_per_hour) / 12000.0)
 
 
 def test_every_component_line_is_pinned_not_only_the_total(catlin_model_ro) -> None:

@@ -136,16 +136,40 @@ def _write_ventilation_sheet(pdf, model: ResolvedModel, number: str, name: str,
         load = estimate_block_load(model, prefs)
         load_rows = [(c.kind, f"{c.area_ft2:,.0f}", f"{c.ua_btu_per_hour_f:,.1f}")
                      for c in load.components]
+        # The air-side and cooling-side terms are not UA against an area, so they print as
+        # their own rows rather than being folded into a component's UA column — a reader
+        # who cannot see the infiltration and the solar terms cannot check the total.
+        load_rows.append(("infiltration", "", f"{load.infiltration_btu_per_hour:,.0f} BTU/h"))
+        load_rows.append(("ventilation air", "",
+                          f"{load.ventilation_btu_per_hour:,.0f} BTU/h"))
         load_rows.append(("TOTAL HEATING", "", f"{load.heating_load_btu_per_hour:,.0f} BTU/h"))
-        load_rows.append(("TOTAL COOLING", "",
-                          f"{load.cooling_load_btu_per_hour:,.0f} BTU/h "
-                          f"({load.cooling_tons:.1f} tons)"))
+        hour = ("" if load.solar_peak_hour is None
+                else f" at solar {load.solar_peak_hour:.1f}h")
+        load_rows.append(("glass solar (peak hour)", "",
+                          f"{load.solar_btu_per_hour:,.0f} BTU/h{hour}"))
+        load_rows.append(("AED excursion", "",
+                          f"{load.solar_excursion_btu_per_hour:,.0f} BTU/h"))
+        load_rows.append(("internal gains", "",
+                          f"{load.internal_sensible_btu_per_hour:,.0f} BTU/h"))
+        load_rows.append(("TOTAL COOLING (sensible)", "",
+                          f"{load.cooling_load_btu_per_hour:,.0f} BTU/h"))
+        shr = load.sensible_heat_ratio
+        load_rows.append(("latent / SHR", "",
+                          f"{load.latent_btu_per_hour:,.0f} BTU/h"
+                          + (f" · SHR {shr:.2f}" if shr is not None else "")))
+        load_rows.append(("TOTAL COOLING (with latent)", "", f"{load.cooling_tons:.1f} tons"))
         _add_table(fig, load_rows, ("Component", "Area (ft2)", "UA / total"),
                    bbox=(0.04, 0.13, 0.42, 0.30))
+        # Caveats and unknowns are printed apart on purpose: an unknown is an INPUT this
+        # model does not have, and a caveat is a TERM the method knowingly does not carry.
+        # A reader who cannot tell them apart cannot tell a gap they could close from one
+        # they cannot.
         fig.text(0.04, 0.115,
                  "NOT A MANUAL J — a transparent block-load estimate only."
                  + (" Unknown inputs: " + ", ".join(load.unknown_inputs)
-                    if load.unknown_inputs else ""),
+                    if load.unknown_inputs else "")
+                 + (" Terms not carried: " + " ".join(load.cooling_caveats)
+                    if load.cooling_caveats else ""),
                  fontsize=7, family="sans-serif", wrap=True)
 
         _draw_certificate(fig, model, prefs, vent, air_leakage_summary(prefs))
