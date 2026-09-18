@@ -387,12 +387,36 @@ def energy(
 
         console.print_json(json.dumps(report.as_dict()))
         return
-    console.print(f"[bold]Heating:[/bold] {report.heating_load_btu_per_hour:,.0f} BTU/h")
-    console.print(f"[bold]Cooling:[/bold] {report.cooling_load_btu_per_hour:,.0f} BTU/h "
-                  f"({report.cooling_tons:.2f} tons)")
+    # The per-component UA table is only half the load — the air-side and cooling-side terms
+    # are not UA against an area and printing the components alone made the total impossible
+    # to check by hand. Every line below appears because somebody adding it up needs it.
     for component in report.components:
-        console.print(f"  {component.kind:8} {component.area_ft2:,.0f} sf  "
-                      f"UA {component.ua_btu_per_hour_f:,.1f}")
+        console.print(f"  {component.kind:30} {component.area_ft2:>9,.0f} sf  "
+                      f"UA {component.ua_btu_per_hour_f:>7,.1f}  "
+                      f"ΔT {component.heating_delta_f or 0:.1f}")
+    console.print(f"  {'infiltration':30} {'':>12}  "
+                  f"{report.infiltration_btu_per_hour:>12,.0f} BTU/h")
+    console.print(f"  {'ventilation air':30} {'':>12}  "
+                  f"{report.ventilation_btu_per_hour:>12,.0f} BTU/h")
+    console.print(f"[bold]Heating:[/bold] {report.heating_load_btu_per_hour:,.0f} BTU/h")
+    hour = ("" if report.solar_peak_hour is None
+            else f" at solar {report.solar_peak_hour:.1f}h")
+    console.print(f"  {'glass solar (peak hour)':30} {'':>12}  "
+                  f"{report.solar_btu_per_hour:>12,.0f} BTU/h{hour}")
+    console.print(f"  {'AED excursion':30} {'':>12}  "
+                  f"{report.solar_excursion_btu_per_hour:>12,.0f} BTU/h")
+    console.print(f"  {'internal gains':30} {'':>12}  "
+                  f"{report.internal_sensible_btu_per_hour:>12,.0f} BTU/h")
+    shr = report.sensible_heat_ratio
+    console.print(f"[bold]Cooling:[/bold] {report.cooling_load_btu_per_hour:,.0f} BTU/h "
+                  f"sensible + {report.latent_btu_per_hour:,.0f} latent "
+                  f"({report.cooling_tons:.2f} tons"
+                  + (f", SHR {shr:.2f}" if shr is not None else "") + ")")
+    # Two lists, and the difference is the point: an UNKNOWN is an input this model does not
+    # have, a CAVEAT is a term the method knowingly does not carry. A reader who cannot tell
+    # them apart cannot tell a gap they could close from one they cannot.
     if report.unknown_inputs:
         console.print("[yellow]Not included / unknown: "
                       + ", ".join(report.unknown_inputs) + "[/yellow]")
+    for caveat in report.cooling_caveats:
+        console.print(f"[dim]Not carried: {caveat}[/dim]", soft_wrap=True)
