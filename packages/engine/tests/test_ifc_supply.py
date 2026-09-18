@@ -65,11 +65,18 @@ def test_each_system_owns_exactly_its_own_temperature(catlin_model_ro, catlin_if
         system = _system(catlin_ifc, predefined)
         members = _members(catlin_ifc, system)
         systems = set()
+        # Three member kinds now, each with its own pset: the segment, the in-line
+        # accessory, and — since the fitting catalog landed — the part at the corner. All
+        # three carry ``system`` under that name, and the pset a member actually holds is
+        # what selects: an ``IfcPipeFitting`` is *also* the class a shutoff accessory
+        # exports as, so branching on the IFC class puts three of catlin's valves in the
+        # wrong bucket and reads their system as absent.
         for member in members:
-            if member.is_a("IfcPipeSegment"):
-                systems.add(_pset(member, "TypeHaus_Pipe").get("system"))
-            else:
-                systems.add(_pset(member, "TypeHaus_PipeAccessory").get("system"))
+            systems.add(next(
+                (found for name in ("TypeHaus_Pipe", "TypeHaus_Fitting",
+                                    "TypeHaus_PipeAccessory")
+                 if (found := _pset(member, name).get("system")) is not None),
+                None))
         assert systems == {key}, f"{predefined} carries foreign members: {systems}"
 
         expected_segments = sum(

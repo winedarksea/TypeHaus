@@ -6,18 +6,27 @@ carries ``uid``/``tag`` so the reader can zoom the plan. The fixture-unit arithm
 imported from ``takeoff/plumbing_calc.py`` — the same functions ``checks/mep/plumbing.py``
 grades with — so the public page and the permit findings can never disagree.
 
-Fittings are *counted* off geometry rather than estimated: elbows are the measured turns of
-each run's own 3D polyline snapped to a stock angle, and wyes come from the drainage graph
-``drain_tie_ins`` already derives. No fitting element exists in the schema, and none needs
-to — a fitting is where two pipes meet, which the geometry already says.
+Fittings are *counted* off geometry rather than estimated, and the counting itself now lives
+in :mod:`typehaus.resolve.mep_fittings` — the one reading this take-off, the duct take-off,
+``mep.fitting_pattern`` and the router's proposal all share. No fitting element exists in
+the schema, and none needs to: a fitting is where two pipes meet, which the geometry already
+says. What this module keeps is the *row*, because a row is a price and the price list is
+the house's.
 """
 
 from __future__ import annotations
 
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.mep_queries import drain_tie_ins
-from typehaus.resolve.model import ResolvedModel, SolidSweep
-from typehaus.resolve.sweep import clean_path, sweep_turns
+from typehaus.resolve.mep_fittings import (
+    FAMILY_PIPE,
+    MIN_FITTING_TURN_DEG,
+    family_records,
+    fitting_records,
+    order_key,
+    size_text,
+    takeoff_rows,
+)
+from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.plumbing_calc import (
     branch_load,
     fixture_units,
@@ -93,98 +102,37 @@ def fixture_unit_rows(model: ResolvedModel) -> dict[str, object]:
     }
 
 
-#: Stock DWV/supply elbow angles, in degrees — the 1/4, 1/8 and 1/16 bends. A turn that
-#: lands on one of these within :data:`_STOCK_SNAP_DEG` is that fitting; anything else is a
-#: made bend, which is a real distinction on the invoice — a 57° turn is not a part you take
-#: off the shelf.
-_STOCK_ELBOW_DEG = (90.0, 45.0, 22.5)
-#: How far off a stock angle a *measured* turn may be and still be that fitting. This is the
-#: pitch a bend absorbs, not slop: a 1/4 bend taking a stack into a branch at 2"/ft measures
-#: 80.5°, not 90°, and 2"/ft is eight times ch. 4714 (UPC) 708.0's minimum. A trap arm dropping
-#: steeper than that is genuinely not a stock elbow and says so.
-_STOCK_SNAP_DEG = 10.0
-#: Below this, a vertex is not a fitting at all — it is where a run changes grade, which is
-#: the pipe flexing or two lengths glued straight. Half the smallest stock bend.
-_MIN_FITTING_TURN_DEG = 10.0
-
-
-def _size_text(diameter_m: float) -> str:
-    """A diameter as it is *ordered*: ``4in``, ``1.5in``, ``0.75in``."""
-    return f"{round(diameter_m / M_PER_IN, 2):g}in"
-
-
-#: A made bend's angle is rounded to this before it becomes a row. 71.4° and 71.6° are one
-#: bend made twice, not two rows; 71° and 57° are not, and were.
-_BEND_ROUND_DEG = 5.0
-
-
-def _elbow_key(angle_deg: float, diameter_m: float) -> str:
-    """The row a turn is *ordered* as: a stock elbow, or a made bend at its own angle.
-
-    The bend carries its angle because a row that does not is unbuildable: catlin's
-    ``bend-2in`` was three turns of 71°, 57° and 63°, and the plumber making them off that
-    line has been told the size and nothing else. A stock elbow needs no angle in the key —
-    it is *in* the key — which is the same reason.
-    """
-    for stock in _STOCK_ELBOW_DEG:
-        if abs(angle_deg - stock) <= _STOCK_SNAP_DEG:
-            return f"elbow-{stock:g}-{_size_text(diameter_m)}"
-    rounded = round(angle_deg / _BEND_ROUND_DEG) * _BEND_ROUND_DEG
-    return f"bend-{rounded:g}-{_size_text(diameter_m)}"
+#: Kept as this module's spelling of the shared constants, so a reader of the plumbing
+#: take-off does not have to go looking for where a turn stops being a grade change.
+_MIN_FITTING_TURN_DEG = MIN_FITTING_TURN_DEG
+_elbow_key = order_key
+_size_text = size_text
 
 
 def fitting_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """Elbows and wyes **counted off the geometry**, by system, fitting and size.
 
-    An elbow is a turn measured on the run's own 3D polyline — a vertical drop meeting a
-    horizontal branch is the 90° it actually is, a rolled offset the 45° it actually is —
-    and snapped to the stock angle it is bought as
-    (→ :func:`~typehaus.resolve.sweep.sweep_turns`). A wye comes from ``drain_tie_ins``'s
-    real geometric parent inference for the drainage graph — the same rollup
-    ``mep.pipe_sizing`` uses for fixture load — which yields *both* diameters, so the row is
-    sized correctly rather than at the larger of the two.
+    A reader of :func:`~typehaus.resolve.mep_fittings.fitting_records` now, filtered to the
+    pipe family. An elbow is a turn measured on the run's own 3D polyline — a vertical drop
+    meeting a horizontal branch is the 90° it actually is, a rolled offset the 45° it
+    actually is — and snapped to the stock angle it is bought as. A wye comes from
+    ``drain_tie_ins``' real geometric parent inference for the drainage graph, which yields
+    *both* diameters, so the row is sized correctly rather than at the larger of the two.
 
     Supply tees are not counted. There is no equivalent parent inference for a pressurised
     system (a water branch has no invert to arrive above, so nothing distinguishes a tee
     from two runs crossing), and a guess billed as a count is worse than an absence: the
     fittings a supply manifold takes are in the ``[pipe_runs]`` per-foot rate, whose basis
     note says so.
+
+    **Four keys, not seven.** ``takeoff_rows`` also carries the catalogued part and the
+    coverage gap; they are dropped here on purpose. This row joins ``prices.toml`` and lands
+    in ``model.json``, and what a fitting *is* belongs to ``mep.fitting_pattern``, which
+    grades it — not to the sheet the estimator prices off.
     """
-    counts: dict[tuple[str, str], dict[str, object]] = {}
-
-    def bump(system: str, fitting: str, tag: str) -> None:
-        entry = counts.setdefault((system, fitting), {"count": 0, "tags": set()})
-        entry["count"] = int(entry["count"]) + 1
-        tags = entry["tags"]
-        assert isinstance(tags, set)
-        tags.add(tag)
-
-    for run in model.pipe_runs:
-        if run.z_m is None:
-            continue
-        sweep = SolidSweep(
-            # strict=True: ResolvedPipeRun documents (and the resolver builds) z_m with
-            # len == len(path); a mismatch would be a resolver bug, not routing data.
-            path=clean_path(
-                [(x, y, z) for (x, y), z in zip(run.path, run.z_m, strict=True)]),
-            profile=((run.diameter_m / 2.0, 0.0),))
-        for turn in sweep_turns(sweep):
-            if turn.angle_deg < _MIN_FITTING_TURN_DEG:
-                continue  # a grade change, not a fitting
-            bump(run.system, _elbow_key(turn.angle_deg, run.diameter_m), run.tag)
-
-    by_tag = {run.tag: run for run in model.pipe_runs}
-    for child_tag, parent_tag in sorted(drain_tie_ins(model.pipe_runs).items()):
-        child, parent = by_tag.get(child_tag), by_tag.get(parent_tag)
-        if child is None or parent is None:
-            continue
-        bump(parent.system,
-             f"wye-{_size_text(parent.diameter_m)[:-2]}x{_size_text(child.diameter_m)}",
-             parent_tag)
-
-    return [{"system": system, "fitting": fitting, "count": int(entry["count"]),
-             "tags": sorted(entry["tags"])}
-            for (system, fitting), entry in sorted(counts.items())]
+    rows = takeoff_rows(family_records(fitting_records(model), FAMILY_PIPE))
+    return [{"system": row["system"], "fitting": row["fitting"],
+             "count": row["count"], "tags": row["tags"]} for row in rows]
 
 
 def cast_in_list(model: ResolvedModel) -> list[dict[str, object]]:

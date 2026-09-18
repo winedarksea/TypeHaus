@@ -225,8 +225,48 @@ class RouteProposal:
             "cost_in_equivalent": round(self.cost, 4),
             "terms_in": {k: round(v, 4) for k, v in sorted(self.terms.items())},
             "notes": list(self.notes),
+            # Contract 2 names the parts as well as the line: an agent choosing between two
+            # alternatives needs to know one of them needs a fitting nobody stocks.
+            "fittings": [
+                {"vertex": record.index, "angle_deg": round(record.angle_deg, 2),
+                 "order_key": record.order_key,
+                 "catalog": record.spec.tag if record.spec is not None else None,
+                 "gap": record.gap}
+                for record in self.fittings()],
             "source": self.source(storey_datum_m=storey_datum_m),
         }
+
+    def fittings(self) -> list:
+        """Every fitting this lane's corners would take, as shared records.
+
+        The same derivation that will bill the run once it is pasted
+        (:mod:`typehaus.resolve.mep_fittings`), run on the proposal's own snapped polyline —
+        so "this route needs three 1/4 bends and one turn nobody makes a part for" is
+        answerable *before* the paste rather than at the next take-off. A route that costs
+        two bends less and takes a fitting that does not exist is not the cheaper route.
+        """
+        from typehaus.resolve.mep_fittings import FAMILY_DUCT, FAMILY_PIPE, polyline_fittings
+
+        if len(self.points) < 3:
+            return []
+        family = FAMILY_DUCT if self.kind == "duct" else FAMILY_PIPE
+        rectangular = self.width_m > 0.0 or self.depth_m > 0.0
+        size = max(self.width_m, self.depth_m) if rectangular else self.diameter_m
+        if size <= 0.0:
+            return []
+        return polyline_fittings(self.tag, family, self.system, self.points, size,
+                                 rectangular=rectangular)
+
+    def fitting_lines(self) -> list[str]:
+        """What ``--explain`` and the proposal banner print about the parts.
+
+        Silent when every corner names a catalogued pattern: a route that takes four 1/4
+        bends takes four 1/4 bends, and saying so on every proposal trains the reader to
+        skip the block that matters.
+        """
+        records = [record for record in self.fittings() if record.spec is None]
+        return [f"FITTING at vertex {record.index} ({record.angle_deg:.1f}°): {record.gap}"
+                for record in records]
 
     def explain(self) -> list[str]:
         """The cost breakdown, biggest term first, in one unit."""
@@ -235,6 +275,7 @@ class RouteProposal:
         for key, value in sorted(self.terms.items(), key=lambda kv: -abs(kv[1])):
             out.append(f'    {key:16s} {value:+9.1f}"')
         out.extend(f"    NOTE {line}" for line in self.notes)
+        out.extend(f"    {line}" for line in self.fitting_lines())
         return out
 
 
@@ -292,6 +333,10 @@ def render(proposals: Sequence[RouteProposal], *, storey_datum_m: float = 0.0,
     for proposal in proposals:
         if explain:
             lines.extend(f"# {line}" for line in proposal.explain())
+        elif proposal.fitting_lines():
+            # Printed even without ``--explain``: a corner no catalogued pattern makes is
+            # not a cost breakdown, it is something the person pasting has to decide about.
+            lines.extend(f"# {line}" for line in proposal.fitting_lines())
         lines.append(proposal.source(storey_datum_m=storey_datum_m))
         lines.append("")
     return "\n".join(lines)

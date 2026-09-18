@@ -13,9 +13,13 @@ sections already follow.
 from __future__ import annotations
 
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.model import ResolvedModel, SolidSweep
-from typehaus.resolve.sweep import clean_path, sweep_turns
-from typehaus.takeoff.plumbing import _MIN_FITTING_TURN_DEG, _elbow_key
+from typehaus.resolve.mep_fittings import (
+    FAMILY_DUCT,
+    family_records,
+    fitting_records,
+    takeoff_rows,
+)
+from typehaus.resolve.model import ResolvedModel
 
 _M_TO_FT = 3.280839895
 
@@ -184,39 +188,21 @@ def duct_insulation_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
 def duct_fitting_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """Duct elbows counted **off the geometry**, by system, fitting and size.
 
-    The same derivation ``takeoff/plumbing.py::fitting_takeoff`` makes for pipe, reused
-    rather than restated: a run's own 3D polyline is walked by
-    :func:`~typehaus.resolve.sweep.sweep_turns`, each interior turn is measured in 3D — so
-    a riser meeting a horizontal branch is the 90° it actually is — and snapped to the
-    stock angle it is bought as. This is only possible now: a duct with no elevations had
-    no 3D polyline, so every one of its turns was a plan turn and every riser was invisible.
+    The same reading the pipe take-off makes, reused rather than restated: both are
+    :func:`~typehaus.resolve.mep_fittings.fitting_records` filtered to their own family. A
+    run's own 3D polyline is walked, each interior turn measured in 3D — so a riser meeting
+    a horizontal branch is the 90° it actually is — and snapped to the stock angle it is
+    bought as. This is only possible now: a duct with no elevations had no 3D polyline, so
+    every one of its turns was a plan turn and every riser was invisible.
 
     No tees. There is no parent inference for an air-side system the way ``drain_tie_ins``
     gives one for drainage, and a guessed count billed as a count is worse than an absence.
     A radial install barely has any: that is the point of a manifold, whose takeoffs are
     part of the manifold.
     """
-    counts: dict[tuple[str, str], dict[str, object]] = {}
-    for duct in model.ducts:
-        if len(duct.z_m) != len(duct.path):
-            continue
-        size = (duct.diameter_m if duct.diameter_m is not None
-                else max(duct.width_m, duct.depth_m))
-        sweep = SolidSweep(
-            path=clean_path([(x, y, z) for (x, y), z in zip(duct.path, duct.z_m, strict=False)]),
-            profile=((size / 2.0, 0.0),))
-        for turn in sweep_turns(sweep):
-            if turn.angle_deg < _MIN_FITTING_TURN_DEG:
-                continue  # a change of pitch, not a fitting
-            key = (duct.system, _elbow_key(turn.angle_deg, size))
-            entry = counts.setdefault(key, {"count": 0, "tags": set()})
-            entry["count"] = int(entry["count"]) + 1
-            tags = entry["tags"]
-            assert isinstance(tags, set)
-            tags.add(duct.tag)
-    return [{"system": system, "fitting": fitting, "count": int(entry["count"]),
-             "tags": sorted(entry["tags"])}
-            for (system, fitting), entry in sorted(counts.items())]
+    rows = takeoff_rows(family_records(fitting_records(model), FAMILY_DUCT))
+    return [{"system": row["system"], "fitting": row["fitting"],
+             "count": row["count"], "tags": row["tags"]} for row in rows]
 
 
 def sleeve_takeoff(model: ResolvedModel) -> list[dict[str, object]]:

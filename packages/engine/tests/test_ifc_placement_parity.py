@@ -30,7 +30,17 @@ _ELEVATED = "IfcBuildingStorey"
 
 
 def _placed_products(ifc_file) -> list:
-    return [p for p in ifc_file.by_type("IfcProduct") if p.ObjectPlacement is not None]
+    """Products that carry BOTH a placement and geometry.
+
+    The premise above is about geometry authored in world coordinates being read relative to
+    a parent, so it only bites on a product that has geometry. An element with a placement
+    and **no** ``Representation`` — an ``IfcPipeFitting`` whose laying length no submittal in
+    this repo publishes, say — is a located record: its position IS its placement, there is
+    no solid to double-offset, and ``test_an_unrepresented_element_is_placed_absolutely``
+    below asserts the property that actually matters for it.
+    """
+    return [p for p in ifc_file.by_type("IfcProduct")
+            if p.ObjectPlacement is not None and p.Representation is not None]
 
 
 @pytest.fixture(scope="module")
@@ -51,6 +61,23 @@ def test_every_product_but_a_storey_sits_at_the_world_origin(ifc_file):
         if product.is_a() != _ELEVATED
         and not np.allclose(placement_util.get_local_placement(product.ObjectPlacement),
                             np.eye(4), atol=1e-9)
+    ]
+    assert not offenders, offenders[:20]
+
+
+def test_an_unrepresented_element_is_placed_absolutely(ifc_file):
+    """A located record carries its position in an ABSOLUTE placement, never a relative one.
+
+    This is the half of the world-frame contract that applies to an element with no solid:
+    ``PlacementRelTo`` is ``None``, so the coordinates in the placement are world
+    coordinates, and ``assign_container`` re-basing nothing stays true for it as well.
+    """
+    offenders = [
+        (product.is_a(), product.Name)
+        for product in ifc_file.by_type("IfcProduct")
+        if product.ObjectPlacement is not None and product.Representation is None
+        and product.is_a() != _ELEVATED
+        and getattr(product.ObjectPlacement, "PlacementRelTo", None) is not None
     ]
     assert not offenders, offenders[:20]
 

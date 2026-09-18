@@ -56,6 +56,7 @@ from typehaus.emit.ifc.mep import (
     _emit_stormwater_system,
     _emit_sump_pumps,
 )
+from typehaus.emit.ifc.mep_fittings import emit_fittings
 from typehaus.emit.ifc.profiles import ProfileCollector, attach_profiles
 from typehaus.emit.ifc.reinforcement import emit_reinforcement
 from typehaus.emit.ifc.roof import emit_roof
@@ -234,6 +235,12 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
     for run in sorted(model.pipe_runs, key=lambda item: item.uid):
         segments = _emit_pipe_run(f, body, run, storeys, project_uuid)
         system_elements[run.system].extend(segments)
+    # The parts at the corners, filed into the same systems as the segments they sit
+    # between. Ducts come back in the same call and are grouped by their own emitter below.
+    fittings_by_system = emit_fittings(f, model, storeys, project_uuid)
+    for system_key, entities in fittings_by_system.items():
+        if system_key in system_elements:
+            system_elements[system_key].extend(entities)
     for accessory, entity in _emit_pipe_accessories(f, body, model, storeys, project_uuid):
         if (accessory.system or "") in system_elements:
             system_elements[accessory.system].append(entity)
