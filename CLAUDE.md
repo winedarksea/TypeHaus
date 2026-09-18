@@ -48,6 +48,7 @@ is already parallel.
 ```
 .venv/bin/haus doctor                     # environment sanity: venv, install, ui/dist, gitignore
 .venv/bin/haus check houses/catlin        # failures only; --only all restores every finding
+.venv/bin/haus check houses/catlin --no-suppress   # lift [checks] suppress: the open-campaign score
 .venv/bin/haus fmt houses/catlin          # mints uids, formats plan source
 .venv/bin/haus serve houses/catlin        # editor; does NOT reload engine code — restart it
 .venv/bin/haus takeoff houses/catlin      # BOM (+ costs when prices.toml exists)

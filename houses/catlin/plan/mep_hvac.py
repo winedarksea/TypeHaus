@@ -294,10 +294,16 @@ DUCTS_HVAC_SECOND = [
     #
     # 10 (x) x 18 (depth): 180 in2 at 750 cfm is 600 fpm, a return velocity. The 10" is what
     # the box's 36.50" clear width can spare beside the 21 1/4" cabinet and a 2 3/8" hanger
-    # gap; the 18" goes into the 18.25" cavity, which is why there is no `elevations` here —
+    # gap; the 18" goes into the 20.25" cavity, which is why there is no `elevations` here —
     # the run derives the cavity floor for itself. ** If `mep.duct_soffit_occupancy` ever
-    # objects to 18" in an 18 1/4" cavity, the fallback is 10x16 at 675 fpm. ** Let the
-    # check decide; never hand-author a clear width.
+    # objects to 18" in the cavity, the fallback is 10x16 at 675 fpm. ** Let the check
+    # decide; never hand-author a clear width.
+    #
+    # THE CAVITY WAS 18.25" until 2026-09-18, when the box went to a 23" drop to make room
+    # for the air handler's emergency drain pan. This run derives the floor, so it simply
+    # moved down with it — but the 2" the pan takes is the machine's AND this duct's: set on
+    # the pan, the cabinet reads 2 + 18 1/8 = 20 1/8 and this return 2 + 18 = 20, both
+    # inside 20.25. That is what the deepening was sized to, and it is why 18" survived.
     #
     # It carries the full 750: 650 of room air off the grille plus the ERV's 100, mixed in
     # the plenum behind it. Everything here is upstream of the coil and therefore upstream of

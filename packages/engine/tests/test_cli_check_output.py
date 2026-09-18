@@ -226,3 +226,25 @@ def test_json_summary_surfaces_a_fail_on_the_starter_house() -> None:
     assert payload["fail"] > 0
     assert payload["failing_check_ids"]
     assert sum(payload["fail_severity"].values()) == payload["fail"]
+
+
+def test_no_suppress_lifts_the_house_suppressions_and_writes_nothing() -> None:
+    """A ``[checks] suppress`` entry is a debt with a number on it — the entries in catlin's
+    own ``preferences.toml`` say exactly that. Measuring the number should not mean editing
+    the file and remembering to put it back, which is how a campaign loses its score."""
+    import hashlib
+    import json
+
+    prefs = CATLIN / "preferences.toml"
+    before = hashlib.sha256(prefs.read_bytes()).hexdigest()
+
+    quiet = json.loads(runner.invoke(
+        app, ["check", str(CATLIN), "--json-summary"]).output)
+    loud = json.loads(runner.invoke(
+        app, ["check", str(CATLIN), "--json-summary", "--no-suppress"]).output)
+
+    assert quiet["fail"] == 0, "the reference house is held to a clean report"
+    assert loud["fail"] > quiet["fail"], "the suppressed debt is real and is now visible"
+    assert "mep.run_interference" in loud["failing_check_ids"]
+    assert "mep.run_interference" not in quiet["failing_check_ids"]
+    assert hashlib.sha256(prefs.read_bytes()).hexdigest() == before, "it writes nothing"

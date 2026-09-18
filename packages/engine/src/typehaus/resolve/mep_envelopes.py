@@ -129,7 +129,36 @@ def run_radii(model: ResolvedModel) -> dict[str, float]:
         radii[duct.tag] = (duct.diameter_m or max(duct.width_m, duct.depth_m)) / 2.0
     for raceway in model.conduits:
         radii[raceway.tag] = raceway_outside_diameter_m(raceway.trade_size_m or 0.0) / 2.0
+    for tag, _path, _z, diameter_m in vent_risers(model):
+        radii[tag] = diameter_m / 2.0
     return radii
+
+
+def vent_risers(model: ResolvedModel
+                ) -> list[tuple[str, tuple[tuple[float, float], ...],
+                                tuple[float, ...], float]]:
+    """Every ``VentRun``'s bundled risers, as ``(tag, plan path, per-vertex z)``.
+
+    A ``VentRun`` is a parametric chase riser, not a polyline, and so it used to resolve to
+    ``ResolvedSolid``s alone: no envelope, nothing for ``mep.run_interference`` to grade,
+    and — since ``routing/obstacles`` iterates envelopes — **not a router obstacle**. A
+    campaign would lane a duct straight through the radon riser and call it clear.
+
+    The derivation is :func:`typehaus.resolve.vent_termination.riser_polylines`, which
+    ``resolve/accessories`` also reads to build the solids. One derivation, two readers.
+    """
+    from typehaus.model.mep import VentRun
+    from typehaus.resolve.vent_termination import riser_polylines
+
+    out = []
+    for element in model.plan.all_elements():
+        if not isinstance(element, VentRun):
+            continue
+        # A ``VentRun.diameter`` is the pipe as drawn — the solids are faceted circles of
+        # exactly that radius — so unlike a ``PipeRun`` there is no nominal to convert.
+        out.extend((tag, path, z, element.diameter.meters)
+                   for tag, path, z in riser_polylines(model, element))
+    return out
 
 
 def run_polylines(model: ResolvedModel
@@ -166,6 +195,10 @@ def run_polylines(model: ResolvedModel
             continue
         path, z = profile
         out.append(("conduit", raceway.tag, tuple(path), tuple(z)))
+    # A ``VentRun`` is a chase riser rather than an authored polyline, and is trade "pipe"
+    # because that is what it is: three storeys of 3" DWV standing in a chase.
+    for tag, path, z, _diameter_m in vent_risers(model):
+        out.append(("pipe", tag, path, z))
     return out
 
 
@@ -187,6 +220,8 @@ def run_sections(model: ResolvedModel) -> dict[str, tuple[float, float, str | No
             out[duct.tag] = (duct.width_m / 2.0, duct.depth_m / 2.0, duct.insulation)
     for raceway in model.conduits:
         out[raceway.tag] = (radii[raceway.tag], radii[raceway.tag], None)
+    for tag, _path, _z, diameter_m in vent_risers(model):
+        out[tag] = (diameter_m / 2.0, diameter_m / 2.0, None)
     return out
 
 
@@ -308,23 +343,39 @@ def joint_tolerance_m() -> float:
     return DUCT_JOINT_TOLERANCE_M
 
 
-def runs_are_joined(first: tuple[Any, Any], second: tuple[Any, Any]) -> bool:
-    """Whether either run **ends on** the other — a wye, a tee, an elbow, a riser into a trunk.
+def run_joints(first: tuple[Any, Any], second: tuple[Any, Any]
+               ) -> tuple[tuple[tuple[float, float], float | None], ...]:
+    """Where these two runs are plumbed together — each joint's ``(plan point, z)``.
 
-    Each argument is ``(path, z)``. Only an END counts, which is the rule
-    ``resolve/mep_soffit.ducts_are_joined`` already states for ducts and the reason it
-    states it: two runs crossing mid-span are two runs crossing, and that is precisely the
-    case an interference check exists to report. Generalised to every trade here because a
-    3" drain tee'd into a 4" main and a 6" branch tee'd into a trunk are the same geometry
-    and should not be two rules.
+    Only an END counts, which is the rule ``resolve/mep_soffit.ducts_are_joined`` already
+    states for ducts and the reason it states it: two runs crossing mid-span are two runs
+    crossing, and that is precisely the case an interference check exists to report.
+    Generalised to every trade here because a 3" drain tee'd into a 4" main and a 6" branch
+    tee'd into a trunk are the same geometry and should not be two rules.
+
+    **Locations, not a bool.** A pair may be jointed at one end and cross two feet away, and
+    a single bool exempted the whole pair — the crossing went unreported. A consumer gets
+    the joints and decides for itself whether the contact it is looking at is one of them.
     """
     from typehaus.resolve.mep_soffit import duct_joint_index
 
+    out: list[tuple[tuple[float, float], float | None]] = []
     for (near_path, near_z), (far_path, far_z) in ((first, second), (second, first)):
         if len(near_path) < 1 or len(far_path) < 2:
             continue
         for point, z in ((near_path[0], near_z[0] if near_z else None),
                          (near_path[-1], near_z[-1] if near_z else None)):
-            if duct_joint_index(point, z, far_path, far_z) is not None:
-                return True
-    return False
+            if duct_joint_index(point, z, far_path, far_z) is not None \
+                    and (point, z) not in out:
+                out.append((point, z))
+    return tuple(out)
+
+
+def runs_are_joined(first: tuple[Any, Any], second: tuple[Any, Any]) -> bool:
+    """Whether either run **ends on** the other — a wye, a tee, an elbow, a riser into a trunk.
+
+    Each argument is ``(path, z)``. A thin reader of :func:`run_joints`, kept because
+    ``checks/mep/duct_connectivity`` asks the yes/no question and means it: "are these two
+    plumbed together at all" is a different question from "is THIS contact the fitting".
+    """
+    return bool(run_joints(first, second))

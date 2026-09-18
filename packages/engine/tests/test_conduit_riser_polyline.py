@@ -11,7 +11,10 @@ from typehaus.checks.mep.routing_geometry import run_polylines
 
 
 def _ctx(*conduits):
-    model = SimpleNamespace(pipe_runs=(), ducts=(), conduits=conduits)
+    # `plan` is read by `run_polylines` for the VentRun risers, which a conduit fixture has
+    # none of — but the reading is real and the fake has to answer it.
+    model = SimpleNamespace(pipe_runs=(), ducts=(), conduits=conduits,
+                            plan=SimpleNamespace(all_elements=lambda: ()))
     return SimpleNamespace(model=model)
 
 

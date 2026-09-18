@@ -117,9 +117,30 @@ VENT_BRANCHES_SECOND = [
     # (it is what takes the tub-shower's arm to 39"). If that check is ever made
     # storey-aware, this header may go back on the axis.
     #
-    # It still turns north on the x=9'-7 1/2" line rather than joining the hall bath's run at
-    # x=1' so the two branches never share a leg — and at x=9'-7 1/2" that north leg is well
-    # clear of the pocket's x 12'-4"..16'-5" band. The chase is VR-M-RADON-VENT's, at
+    # It turns north on the x=9'-7 1/2" line rather than joining the hall bath's run at x=1',
+    # and at x=9'-7 1/2" that north leg is well clear of the pocket's x 12'-4"..16'-5" band.
+    #
+    # ** IT IS NOT BECAUSE "THE TWO BRANCHES MAY NEVER SHARE A LEG". ** That argument stood
+    # here and it was wrong: two branch vents on a common vent is ordinary IRC P3104 work,
+    # and the owner overruled it on 2026-09-18. What replaced it is a MEASUREMENT, and the
+    # measurement says the merge costs rather than saves.
+    #
+    # `haus route --run PR-S-BATH1-VENT` (which can now propose a merge at all — see
+    # `cli/route_support._vent_siblings`) reports that PR-S-BATH1-VENT's FIRST vertex
+    # (9'-8.4", 31'-0") already stands 0.9" off this run's north leg. That reads like an
+    # 18.5 ft saving and it is not one: that vertex is the hall-bath run's far EAST end and
+    # it serves nothing. Its five fixtures are all at x ~ 1'-10" (fixtures.py) and are picked
+    # up on its (1', 26'-6") leg. Joining here would take the header 8'-7" EAST to this line,
+    # which then carries it 8'-7" back WEST to the chase at (1', 34'-6") that both runs
+    # already reach — about 17 ft added, four trap arms (WC 94", SH 85", LAV1 108", LAV2 83")
+    # pushed past P3105.1, and `mep.vent_reachability` broken on three fixtures, because that
+    # check wants the fixture's OWN run to end at the chase and does not follow a merge.
+    # Measured 2026-09-18 by making the edit and running `haus check`; reverted.
+    #
+    # ** THE HALL-BATH RUN'S FIRST VERTEX AND ITS OWN COMMENT DISAGREE. ** That comment says
+    # the takeoff is "on W-S-BD-N (y=26'-4")"; the authored path starts at (9'-8.4", 31'-0").
+    # Whatever that vertex is for, it is not the takeoff the prose describes, and a merge is
+    # the wrong tool for reconciling them. The chase is VR-M-RADON-VENT's, at
     # (1', 34'-6") — the *same* shaft as the 2'x2' mechanical chase in the hall bath's NW
     # corner (W-S-CH-W/CH-S, moved there 2026-07-28 from the NE corner specifically so it
     # could carry this riser; storeys/second.py).
@@ -247,10 +268,18 @@ VENT_BRANCHES_ATTIC = [
 # 9'-7 1/2" is chosen from inside that band because it is **PR-A-STUBATH-VENT's own wet-wall
 # line**. Landing on it deletes that run's last leg outright: the bath vent goes up the wet
 # wall and straight into the stack instead of turning east for 3'-8" to meet it. Measured:
-#   * riser pair x 9'-3 5/8"..9'-11 3/8", so 9 5/8" clear of WIN-A-N1's west jamb — it was
-#     2'-1 5/8" until the window moved a bay west on 2026-09-06, and this is now the
-#     tightest thing about the station. A further move west of that window has nowhere to
-#     go (see attic.py's rake note), but if one is ever attempted, check this first;
+#   * the bundled pair spreads in Y, across the jog, so BOTH risers stand on x=9'-7 1/2" and
+#     the pair is one pipe wide in plan: x 9'-5 3/4"..9'-9 1/4", y 34'-1 7/8"..34'-10 1/8".
+#     It used to spread in X — perpendicular to the wall EXIT — which put the two pipes on
+#     one line for the whole 8'-7 1/2" jog (they cannot share a bore through a joist web)
+#     and drove the east one to 9'-9 9/10", 1 2/5" into W-A-BA-E's 2x4 studs. That was a 3"
+#     bore in a 2x4 and `mep.run_through_stud` reported it the day a VentRun first resolved
+#     an envelope; `resolve/vent_termination.riser_polylines` now spreads across the LONGEST
+#     horizontal leg. W-A-BA-E's stud face at x=10'-0"-1 3/4" is 1" clear of the pair;
+#   * 11 3/4" clear of WIN-A-N1's west jamb (it was 9 5/8" while the pair spread in x, and
+#     2'-1 5/8" until the window moved a bay west on 2026-09-06). A further move west of
+#     that window has nowhere to go (see attic.py's rake note), but if one is ever
+#     attempted, check this first;
 #   * termination 27'-8 3/4", 2'-8 3/4" over the window head (subpart 5 wants 2'-0");
 #   * the under-deck jog is 8'-7 1/2" of 3" PVC in the FS-ATTIC band.
 #

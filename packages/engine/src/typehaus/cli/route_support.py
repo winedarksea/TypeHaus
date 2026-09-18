@@ -54,6 +54,13 @@ class Endpoints:
     serves: tuple[str, ...] = ()
     #: Existing runs this proposal may occupy — the one it replaces, the one it ties into.
     touch: frozenset[str] = frozenset()
+    #: Whole plan polylines the tie may land ANYWHERE along, rather than at one nominated
+    #: vertex. Empty for a falling run: a drain's root is the invert it has to arrive at,
+    #: and that is one elevation at one point. A vent has no such constraint — two branch
+    #: vents joining a common vent is ordinary IRC P3104 work — and with a single root
+    #: vertex the router structurally could not propose the merge even where the two lines
+    #: pass within an inch of each other.
+    root_paths: tuple[tuple[tuple[float, float], ...], ...] = ()
     #: Extra constructor keywords to echo, e.g. a raceway's ``from_ref``/``to_ref``.
     echo: dict[str, str] = field(default_factory=dict)
     #: True when a gravity profile applies. Not ``system == "drain"`` at the call site,
@@ -63,6 +70,11 @@ class Endpoints:
     #: against the authored one, a terminal snapped to an exact port. Advice, never a
     #: change: an authored size wins, and saying why it is arguable is the whole service.
     advice: tuple[str, ...] = ()
+
+
+from typehaus.cli.route_roots import _discharge, _nearest_main, _vent_siblings  # noqa: E402
+
+__all__ = ["_discharge", "_nearest_main", "_vent_siblings"]
 
 
 def _load(house: Path | None) -> tuple[Path, Any]:
@@ -200,15 +212,28 @@ def _pipe_run_endpoints(model: ResolvedModel, run: Any,
     if not run.z_m or len(run.z_m) != len(run.path):
         problems.append(f"{run.tag}: no resolved elevations, so it cannot be routed")
         return None
-    found = _discharge(model, run, problems)
-    if found is None:
+    falls = run.system == "drain"
+    found = _discharge(model, run, problems if falls else [])
+    if found is None and falls:
         return None
-    root, chain = found
+    if found is not None:
+        root, chain, parent_path = found
+        paths: tuple[tuple[tuple[float, float], ...], ...] = ((), ) if falls else (parent_path,)
+    else:
+        # **A vent's downstream is a CHASE, not another run**, so ``drain_tie_ins`` derives
+        # nothing for it: on catlin all eight vents simply end at the VentRun station and
+        # none ends on a sibling. The legal tie points are that station and every sibling
+        # already reaching it — which is what IRC P3104 calls a common vent.
+        sibling = _vent_siblings(model, run, problems)
+        if sibling is None:
+            return None
+        root, chain, paths = sibling
     return Endpoints(
         origin=(run.path[0][0], run.path[0][1], run.z_m[0]), root=root, kind="pipe",
         radius_m=(run.diameter_m or 0.0) / 2.0, diameter_m=run.diameter_m,
         serves=run.serves, storey=run.storey, system=run.system,
-        falls=run.system == "drain", touch=frozenset({run.tag, *chain}))
+        falls=falls, touch=frozenset({run.tag, *chain}),
+        root_paths=() if falls else tuple(p for p in paths if p))
 
 
 def _duct_endpoints(model: ResolvedModel, duct: Any,
@@ -270,72 +295,6 @@ def _conduit_endpoints(model: ResolvedModel, raceway: Any,
         diameter_m=raceway.trade_size_m or 0.0, storey=raceway.storey,
         system=raceway.service or "power_120", falls=False, echo=echo,
         touch=frozenset({raceway.tag}))
-
-
-def _discharge(model: ResolvedModel, run: Any,
-               problems: list[str]) -> tuple[tuple[float, float, float], list[str]] | None:
-    """``(root point, the whole downstream chain)`` for a run, or None.
-
-    The chain, not just the parent, and that is what makes a tie reachable at all: a
-    branch's root vertex usually sits ON its parent, and its parent's root sits on the
-    GRANDparent, so leaving the rest of the chain hard walls the route off from the tie it
-    is being routed to. ``drain_tie_ins`` derives the topology from the geometry and this
-    walks it to the bottom.
-    """
-    from typehaus.resolve.mep_queries import drain_tie_ins
-
-    ties = drain_tie_ins([r for r in model.pipe_runs if r.system == run.system])
-    parent = ties.get(run.tag)
-    if parent is None:
-        problems.append(f"{run.tag}: nothing downstream of it is derivable, so there is "
-                        "no root to route to. Name a --via, or route the parent first")
-        return None
-    chain: list[str] = []
-    cursor: str | None = parent
-    while cursor is not None and cursor not in chain:
-        chain.append(cursor)
-        cursor = ties.get(cursor)
-    other = next(r for r in model.pipe_runs if r.tag == parent)
-    z = other.z_m or ()
-    if len(z) != len(other.path):
-        problems.append(f"{run.tag}: its discharge {parent} carries no resolved "
-                        "elevations, so there is no invert to tie into")
-        return None
-    index = min(range(len(other.path)), key=lambda i: z[i])
-    return ((other.path[index][0], other.path[index][1], z[index]), chain)
-
-
-def _nearest_main(model: ResolvedModel, point: tuple[float, float], floor_m: float,
-                  problems: list[str], target: str, *, exclude: str | None = None
-                  ) -> tuple[tuple[float, float, float], str] | None:
-    """The nearest drain run's vertex on this fixture's own floor.
-
-    The vertical gate is ``mep.fixture_drain_reach``'s: a run counts only where it passes
-    within two feet below and six inches above the fixture's storey datum. Without it the
-    nearest main is whatever happens to lie beneath, two storeys down.
-
-    **A run that already serves this fixture is excluded**, and that is not a nicety: asking
-    for a branch to a fixture that has one means asking for a REPLACEMENT, and routing to
-    the run being replaced finds its own start and reports a negative feasible slope — a
-    true statement about a question nobody asked.
-    """
-    best = None
-    for run in model.pipe_runs:
-        if run.system != "drain" or not run.z_m:
-            continue
-        if exclude is not None and exclude in run.serves:
-            continue
-        for (x, y), z in zip(run.path, run.z_m, strict=False):
-            if not (floor_m - 2.0 * 0.3048 <= z <= floor_m + 0.5 * 0.3048):
-                continue
-            distance = ((x - point[0]) ** 2 + (y - point[1]) ** 2) ** 0.5
-            if best is None or distance < best[0]:
-                best = (distance, (x, y, z), run.tag)
-    if best is None:
-        problems.append(f"{target}: no drain run passes on this fixture's own floor, so "
-                        "there is nothing to route it to")
-        return None
-    return (best[1], best[2])
 
 
 def _fall(points: list[tuple[float, float, float]],

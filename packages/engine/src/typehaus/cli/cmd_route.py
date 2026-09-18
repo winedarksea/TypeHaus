@@ -29,7 +29,7 @@ from typing import TYPE_CHECKING, Any
 import typer
 
 from typehaus.cli._shared import app, console
-from typehaus.cli.cmd_route_tree import _propose_tree
+from typehaus.cli.cmd_route_tree import _line_nodes, _propose_tree
 from typehaus.cli.route_support import (
     Endpoints,
     _endpoints,
@@ -364,6 +364,10 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
         if explain:
             notices.extend(ends.advice)
         terminals = [ends.origin, ends.root, *[(p[0], p[1], ends.root[2]) for p in via]]
+        # Seed the lattice along the whole parent line where the tie may land anywhere on
+        # it: a goal on a line the graph never built is worth nothing, which is the failure
+        # mode `routing/corridors` exists to avoid and the same one applies here.
+        terminals.extend((x, y, ends.root[2]) for path in ends.root_paths for x, y in path)
         clock = Timer(target, enabled=timing is not None)
         try:
             try:
@@ -405,7 +409,17 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
                 continue
             clock.lattice(graph)
             start = _nearest(graph, ends.origin)
-            goals = _root_nodes(graph, ends.root, with_z=not ends.falls)
+            # **A vent ties in ANYWHERE along its parent, a drain at its invert.** A branch
+            # vent joining a common vent is ordinary IRC P3104 work, and with the root
+            # modelled as one vertex the search structurally could not propose the merge —
+            # on catlin PR-S-BATH1-VENT runs 18.5 ft to the chase while its origin sits 0.9
+            # INCHES from PR-S-SUITEBATH-VENT's north leg. `--tree` already does this for
+            # drains (`cmd_route_tree._line_nodes`); vents never reached that code.
+            goals = set()
+            for path in ends.root_paths:
+                goals |= _line_nodes(graph, path)
+            if not goals:
+                goals = _root_nodes(graph, ends.root, with_z=not ends.falls)
             if start is None or not goals:
                 problems.append(
                     f"{target}: no lattice node at "
@@ -529,6 +543,19 @@ def _one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str
     from typehaus.routing.trades import conduit as conduit_trade
 
     points = found.polyline()
+    # **A route of one point is not a run.** It means the origin was already standing on the
+    # goal — which is a true and useful FINDING, and on catlin it is exactly the one the
+    # vent merge is about: PR-S-BATH1-VENT's origin sits 0.9" from PR-S-SUITEBATH-VENT's
+    # north leg. But "paste this" is the wrong thing to say about it, and printing a 1-tuple
+    # of points emits dialect that will not even parse. So it is reported, never proposed.
+    if len({(round(x, 6), round(y, 6)) for x, y, _z in points}) < 2:
+        problems.append(
+            f"{target + suffix}: its origin already stands on what it is being routed to, "
+            "so the shortest route is no route at all. That is not a lane to paste — it is "
+            "a finding: the two are already in one place, and what to do about it (land "
+            "this run's fixtures on the other, or move one of them) is a judgement, not a "
+            "search")
+        return None
     notes: list[str] = []
     if ends.falls:
         developed_ft = sum(((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5

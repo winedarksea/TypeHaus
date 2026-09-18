@@ -7,6 +7,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     data,
     deck_equipment,
     drain_geometry,
+    drain_inlet_spacing,
     drain_tie_in,
     drainage,
     drainage_network,

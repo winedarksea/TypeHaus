@@ -186,8 +186,9 @@ def test_suppression_by_tag_drops_one_element_and_no_other():
 #: `preferences.toml` so that adding a third is a test failure rather than a diff nobody
 #: reads. Both were added 2026-09-17 with their counts and dates in the file beside them:
 #:
-#: * `mep.run_interference` — 155 real interpenetrations, house-wide, an open routing
-#:   campaign rather than a decision;
+#: * `mep.run_interference` — 188 real interpenetrations, house-wide, an open routing
+#:   campaign rather than a decision. It was 155 until 2026-09-18, when two blind spots in
+#:   the checker closed: the engine can see more, the building did not get worse;
 #: * `mep.run_through_plate` — 15 top plates cut past 50%, every one of them the ordinary
 #:   R602.6.1 detail, and the model has no vocabulary for the tie that makes it legal. A
 #:   schema gap, not a defect.

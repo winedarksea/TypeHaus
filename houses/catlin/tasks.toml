@@ -410,7 +410,14 @@ materials = [
   { id = "floor-trusses", label = "FS-S-WEST open-web floor trusses, 18' trimmable blanks", source = "fabricator TBD" },
   { id = "windows", label = "Windows and glazed doors, against the RO schedule on A-601" },
   { id = "erv", label = "Broan B210E75RT and its manifolds" },
-  { id = "heat-pumps", label = "Gree FLEXX Ultra 24 air handler and outdoor units" },
+  # ** THE HAND IS ORDERED, NOT FIELD-FOUND. ** The FXU24 is a multi-position cabinet. Its
+  # submittal's clearances page says "Horizontal Left Configuration - No Modification
+  # Needed" and "Horizontal Right Configuration - Must Relocate Drain Pan", so which way
+  # EQ-S-HP1-AH's rotation=deg(90) hands is a question the order answers and the field
+  # should not have to. The pan below is the SECOND pan — the emergency one under the
+  # cabinet, which is a separate part from the factory one inside it.
+  { id = "heat-pumps", label = "Gree FLEXX Ultra 24 air handler and outdoor units — state the horizontal hand (LEFT or RIGHT) on the order; RIGHT means relocating the factory drain pan in the field" },
+  { id = "air-handler-drain-pan", label = "Emergency drain pan under EQ-S-HP1-AH, min 1 1/2\" deep x 3\" larger than the 43 1/2 x 21 1/4 cabinet each way (IRC M1411.3.1), corrosion-resistant, with its own drain to a conspicuous point — SF-S-HP1's 23\" drop carries 2\" of pan and no more" },
   { id = "lvl-and-glulam", label = "RB-HOUSE 2-1.75x16 LVL in three 12' pieces; the three treated SYP glulams" },
   { id = "galvanized-rebar", label = "Column cages, 12 off, galvanized — A1094 stock or A767 after fabrication, route named on the order" },
   { id = "cabinets", label = "Kitchen and bath casework" },

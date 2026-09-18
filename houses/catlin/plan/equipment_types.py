@@ -145,14 +145,18 @@ EQUIPMENT_TYPES = (
     # return on the opposite long face, so air crosses the short depth and the long dimension
     # sits ACROSS the duct axis. The FLEXX Ultra keeps that geometry; what it costs is depth,
     # 18 1/8 in against the DUC24's 11 13/16, which is what drives SF-S-HP1 from a 17 in drop
-    # to 21 in (storeys/second.py). It buys back nearly an inch of the box's GRADED axis in
+    # to 23 in (storeys/second.py — 21 in until the drain pan below was priced into the
+    # cavity, and 18 1/8 of cabinet never fitted a 21 in drop with a pan under it). It buys
+    # back nearly an inch of the box's GRADED axis in
     # exchange — 43 1/2 in wide against 44 1/2 — because `soffit_clear_section` measures every
     # occupant across the box's shorter plan dimension, and depth is not that dimension.
     #
-    # A 36k FLEXX Ultra was REJECTED: its cabinet's smallest dimension is 21 1/4 in, needing a
-    # 24 in drop, landing the soffit's underside exactly on IRC R305.1's 7'-0" floor, with
-    # 3.5x cooling oversizing against a 10,145 Btu/h load and 1,000 cfm into 750-cfm ducts.
-    # There is no 30k in the line (24 / 36 / 48 / 60 only).
+    # A 36k FLEXX Ultra was REJECTED: its cabinet's smallest dimension is 21 1/4 in, which
+    # with the pan and the box's own 2 3/4 in of lining and rung wants a 26 in drop — and
+    # even the 24 in read of it, made before the pan was counted, already landed the
+    # soffit's underside on IRC R305.1's 7'-0" floor. It also carries 3.5x cooling
+    # oversizing against a 10,145 Btu/h load and 1,000 cfm into 750-cfm ducts. There is no
+    # 30k in the line (24 / 36 / 48 / 60 only).
     #
     # LG's KNUJB241A/LHN248HV1 remains the one real loss on FIT — 9 21/32 in tall would have
     # sat in the original 14 in drop — but its published heating range FLOOR is -13 F, two
@@ -172,21 +176,36 @@ EQUIPMENT_TYPES = (
     #   "When installing in an area directly over a finished ceiling (such as an attic),
     #    an emergency drain pan is required directly under the unit."
     #
-    # So horizontal ceiling mounting is a factory configuration, the geometry authored below
-    # is the horizontal one (the cabinet rests on a 43 1/2 x 21 1/4 side, so 18 1/8 in is
-    # what the soffit has to swallow), and SF-S-HP1's 21 in drop is right.
+    # So horizontal ceiling mounting is a factory configuration and the geometry authored
+    # below is the horizontal one (the cabinet rests on a 43 1/2 x 21 1/4 side, so 18 1/8 in
+    # is what the soffit has to swallow). What was NOT right is the box it was swallowed by.
     #
-    #  1. ** A SECONDARY DRAIN PAN IS REQUIRED AND IS NOT MODELLED. ** This unit sits over
+    #  1. ** A SECONDARY DRAIN PAN IS REQUIRED, AND IT DID NOT FIT. ** This unit sits over
     #     RM-S-NCLOSET's finished ceiling. The manufacturer requires an emergency pan under
     #     it and so does the code (IRC M1411.3 / IMC 307.2.3, equipment over a finished
-    #     area). No element kind here can hold a drip pan and no check grades one — so this
-    #     comment is all there is, and it must reach the installer. The pan adds roughly
-    #     1 1/2 to 2 in UNDER the 18 1/8 in cabinet inside a 21 in drop, which is the whole
-    #     remaining slack: there is no room to also discover it on site.
+    #     area); IRC M1411.3.1 sizes it — 1 1/2 in deep minimum, 3 in larger than the unit
+    #     in width and length, corrosion-resistant, on its own drain.
+    #
+    #     ** THE ARITHMETIC THIS COMMENT FIRST CARRIED WAS WRONG, AND IT WAS WRONG IN THE
+    #     ** DIRECTION THAT MATTERS. ** It read the pan's 1 1/2-2 in against a 21 in drop
+    #     and called it "the whole remaining slack". A drop is not a cavity:
+    #     `soffit_clear_section` takes 5/8 in of lining top and bottom and the 1 1/2 in
+    #     bottom rung off it, and `haus check` reported SF-S-HP1 at 36.50 x 18.25 in. The
+    #     slack under an 18 1/8 in cabinet was 1/8 in. The pan did not fit at all — not
+    #     tightly, not at all — and the check that PASSED said nothing, because nothing in
+    #     the model knew the pan was coming.
+    #
+    #     SF-S-HP1's drop went 21 -> 23 in (storeys/second.py), which is 20.25 in of cavity:
+    #     2 in of pan under 18 1/8 in of cabinet, back to the same 1/8 in. RM-S-NCLOSET and
+    #     ~7'-9" of the north hall finish at 7'-1" instead of 7'-3" and that is the price.
+    #     The PAN ITSELF is still unmodelled — no element kind holds one, and authoring it
+    #     as `Equipment` would clash with the machine it catches, since the hanger-gap test
+    #     ignores z. It reaches the installer through `tasks.toml`, not through a check.
     #  2. ** WHICH HAND. ** `EQ-S-HP1-AH` is authored `rotation=deg(90)`. Horizontal LEFT
-    #     needs no modification and horizontal RIGHT needs the drain pan relocated in the
-    #     field. Which hand that rotation lands on is a fabrication question this model does
-    #     not answer; settle it on the order, not on site.
+    #     needs no modification and horizontal RIGHT needs the factory drain pan relocated
+    #     in the field. Which hand that rotation lands on is a fabrication question this
+    #     model does not answer; it is on the purchase order (`tasks.toml`,
+    #     `site/long-lead-orders`), because it is settled by what is ordered, not on site.
     EquipmentType(tag="EQ-T-GREE-FLEXX-ULTRA-24-AH",
                   name="Gree FLEXX Ultra R32 concealed ducted air handler, 24k",
                   footprint=(inch(43.5), inch(21.25)), height=inch(18.125),

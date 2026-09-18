@@ -226,14 +226,72 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   a new `routing` review layer. `emit` does not import `routing` and cannot — the regions are
   a parameter — which is also why `haus render --view plan` does not draw it on its own: a
   render has no target, and "the routing space" is only defined for one.
-- **155 MEP interpenetrations house-wide, and they are now GRADED.** `mep.run_interference`
+- **188 MEP interpenetrations house-wide, and they are now GRADED.** `mep.run_interference`
   (`checks/mep/run_interference.py`, added 2026-09-17) compares every pair of runs envelope
   against envelope — real outside diameter plus insulation, one prism per segment over that
-  segment's own z range — and exempts a pair only where one run ENDS on the other (a wye, a
-  tee, an elbow, a riser into a trunk) or a rough opening names them both. 72 duct-against-
-  pipe, 62 pipe-against-pipe, 21 duct-against-duct; median overlap **1.99"**, worst **4.00"**,
-  which is one 4" duct entirely inside another. The hand count of "37 in the NW column"
+  segment's own z range — and exempts a CONTACT only where it lies within a fitting's reach
+  of a joint between the two, a rough opening names them both, or the two are bundled risers
+  of one `VentRun`. 75 pipe-against-pipe, 74 duct-against-pipe, 37 duct-against-duct, 2
+  pipe-against-vent-riser; median overlap **2.06"**, worst **4.00"**, which is one 4" duct
+  entirely inside another. The hand count of "37 in the NW column"
   (x 0..7', y 32'..36'-6", 2026-09-15) was the same defect seen through a keyhole.
+  - **A `VentRun` is now a run everywhere, not only in the viewer.** Its riser route is
+    derived once in `resolve/vent_termination.riser_polylines`; `resolve/accessories` reads
+    it for the solids and `resolve/mep_envelopes` for the envelope, so the pipe the viewer
+    draws, the pipe `mep.run_interference` grades and the pipe `routing/obstacles` avoids are
+    one pipe. It also made `mep.run_through_stud` able to see the radon riser, which reported
+    a 3" bore in a 2x4 the day it could: the bundled risers spread perpendicular to the wall
+    EXIT, which on catlin put the two 3" pipes on ONE line for the whole 8'-7 1/2" jog (they
+    cannot share a bore through a joist web) and drove the east one into W-A-BA-E's studs.
+    The spread now takes the LONGEST horizontal leg. catlin is back to 0 FAIL.
+  - **`mep.drain_inlet_spacing` (new, 2026-09-18) grades two branches landing on one stack**
+    — and can only ever be UNKNOWN, which is the point. catlin's attic branch and suite WC
+    branch land 2 1/2" apart on `PR-M-S-SUITE-DRAIN`, and whether two wyes fit that close is a
+    question about laying length: every `center_to_face_in` in `library/fittings.py` is `None`
+    with a `data_note` saying no submittal has been read. It names the pair, the spacing and
+    the missing datum. Never a FAIL.
+  - **A floor bay's clear width is decremented by what is already in it**
+    (`routing/corridors.floor_corridors`), through the same `mep_packing.pack` tier sweep
+    `soffit_corridors` and `chase_corridors` already read. It was the purely structural
+    figure, so `admits` answered "does this fit the bay" rather than "is the bay free", and a
+    campaign would lay a fourteenth radial into a bay that already holds thirteen. Two limits
+    are disclosed on the corridor rather than papered over: one band per run at its MEAN z,
+    and a `ConduitRun` names no `floor_ref` and is not an occupant.
+  - **A branch vent can be proposed into a SIBLING** (`cli/route_roots._vent_siblings`). A
+    vent's downstream is a chase, not another run, so `drain_tie_ins` derives nothing for it
+    and `--run` refused outright — two branch vents on a common vent is ordinary IRC P3104
+    work and the router could not propose it. The goal set is now every sibling landing on
+    the same station, over its whole polyline. `--tree` still refuses a vent main, which is
+    honest: it is a directed Steiner tree under a gravity search, and head budgets, inverts
+    and a fall profile do not describe a vent.
+  - **A route that is already AT its goal is a finding, not a paste.** It used to print a
+    one-point polyline as dialect — a 1-tuple that will not parse.
+  - **`haus check --no-suppress` reads the campaign's score** without editing
+    `preferences.toml` and putting it back. 201 FAIL unsuppressed against 0 suppressed, on
+    2026-09-18.
+  - **THE ATTIC ERV RADIALS CANNOT BE RE-LANED BY SEARCH, AND THIS WAS TRIED.** The largest
+    class in the 188 is `DU-A-ERV-R-*`: several 4" radials drawn on ONE line at ONE elevation
+    out of the manifold at (5', 34'-6") — e.g. `DU-A-ERV-R-ATTIC` and `DU-A-ERV-R-BATH1` share
+    (5',34'-6")->(1',34'-6") at z=20'-4" exactly. A1 is why they report at all: they share a
+    joint at the manifold, so the old pair-wide bool exempted every one of them.
+    `haus route --house --trades duct --storey attic --alternatives 3 --evaluate` laid 4 of 5
+    and **its own `--evaluate` rejects the result**: every alternative lane bores 4.00"
+    through 2x6 studs (R602.6 allows 3.30") in `W-S-N1B`, `W-S-N2`, `W-S-N3`, `W-A-N1`,
+    `W-A-STU-W`, two run EXPOSED and ungraded, and `DU-A-ERV-R-BATH1` refuses outright
+    (blocked by `CD-A-PV-EAST`, movable). That is the same sentence this file's
+    `mep.run_through_stud` entry already carries: **a 4" round duct is not bored through a
+    stud at all** — it goes over the plate, through a soffit, or in a floor bay. So this
+    group needs a DESIGN answer (soffits, or distinct elevations in the attic floor band),
+    not another search, and pasting the campaign's output would trade interference FAILs for
+    stud-bore FAILs.
+  - **It rose from 155 to 188 on 2026-09-18 and nothing about the building got worse** — the
+    engine can see more. The joint exemption was a single bool for the PAIR, so two runs
+    sharing a fitting at one end interpenetrated anywhere else unreported (+31, among them a
+    3" drain 2.21" inside another 3" drain two feet from the suite stack head they share);
+    and a `VentRun` resolved to solids alone, so it was in no collision system whatsoever and
+    was not even a router obstacle (+2, both against the radon chase). Its riser route is now
+    derived once in `resolve/vent_termination.riser_polylines` and read by both the solids and
+    the envelope.
   **Suppressed in `houses/catlin/preferences.toml` with the count and the date on it**, as an
   open campaign rather than a decision: landing it red takes `haus print`, the handoff bundle
   and the CI gate with it. Working it down is what `haus route --alternatives --evaluate` and

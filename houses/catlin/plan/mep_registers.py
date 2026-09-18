@@ -243,15 +243,16 @@ REGISTERS_HVAC_SECOND = [
     # this grille draws is 650. Authoring 750 here double-counted the ERV's share. 336 in2
     # at 650 cfm is 279 fpm, inside Manual D SS4-10's 300 for a grille carrying the filter.
     #
-    # ** THE ELEVATION IS HAND-COUPLED AND UNCHECKED. ** 7'-3" is SF-S-HP1's finished
-    # underside (21" drop, storeys/second.py), not SF-S-DUCT's 7'-10". Change the drop and
+    # ** THE ELEVATION IS HAND-COUPLED AND UNCHECKED. ** 7'-1" is SF-S-HP1's finished
+    # underside (23" drop, storeys/second.py), not SF-S-DUCT's 7'-10". Change the drop and
     # this number must be changed with it, or the grille sits inside the box and nothing
-    # says so.
+    # says so. It has happened once: the drop went 21" -> 23" on 2026-09-18 to find room
+    # for the air handler's emergency drain pan, and this line followed it by hand.
     Register(uid="CSRH05AAAA", tag="REG-S-HP-RET", kind=DuctSystem.RETURN,
              room="RM-S-HALL", rotation=deg(90),
              position=pt(inch(251.5), inch(349.25)), duct_ref="DU-S-HP-RET",
              type_ref="REG-T-HP-RET", design_cfm=650,
-             mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 3))),
+             mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 1))),
 ]
 
 REGISTERS_HVAC_ATTIC = [

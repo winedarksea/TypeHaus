@@ -50,6 +50,9 @@ class Corridor:
     #: Plan extent along ``axis``; a bay does not run the width of the world.
     lo_m: float
     hi_m: float
+    #: Sentences a consumer must print rather than swallow — what the clear width was
+    #: derived from and what that derivation cannot see.
+    gaps: tuple[str, ...] = ()
 
     def admits(self, radius_m: float) -> bool:
         return 2.0 * radius_m <= self.clear_width_m + 1e-9
@@ -63,13 +66,25 @@ class Corridor:
 def floor_corridors(model: ResolvedModel) -> list[Corridor]:
     """One corridor per joist/truss bay, on every resolved floor.
 
-    The bay's own clear width comes from ``clear_bay_width_m``, which takes the MEDIAN
-    line-to-line step and the WIDEST member — an end strip and a doubled line at an opening
-    are both narrower than the field and neither is the bay a run rides in. Two consumers
-    now read that one derivation instead of two.
+    The bay's own STRUCTURAL clear width comes from ``clear_bay_width_m``, which takes the
+    MEDIAN line-to-line step and the WIDEST member — an end strip and a doubled line at an
+    opening are both narrower than the field and neither is the bay a run rides in. Two
+    consumers now read that one derivation instead of two.
+
+    **What is already in the bay is then subtracted**, through the same
+    ``resolve/mep_packing.pack`` tier sweep ``soffit_corridors`` and ``chase_corridors``
+    read. A floor bay's width was the purely structural figure, so ``admits`` answered "does
+    this fit the bay" rather than "is the bay free" — and a campaign would lay a fourteenth
+    ERV radial into the one truss bay that already holds thirteen at one elevation, which is
+    the class of defect ``mep.run_interference`` reports at 4.00" on catlin's ``FS-S-WEST``.
     """
+    from typehaus.resolve.mep_envelopes import run_polylines
+    from typehaus.resolve.mep_packing import run_occupants
     from typehaus.resolve.mep_queries import clear_bay_width_m, joist_line_stations
 
+    # Derived ONCE for the whole house, not once per bay: a floor has a hundred-odd bays and
+    # this reading now walks every VentRun's roof geometry as well.
+    lines_by_tag = {tag: path for _kind, tag, path, _z in run_polylines(model)}
     out: list[Corridor] = []
     for floor in model.floors:
         lines = joist_line_stations(floor)
@@ -81,6 +96,9 @@ def floor_corridors(model: ResolvedModel) -> list[Corridor]:
             continue
         low = min(m.z0_m for m in members)
         high = max(getattr(m, "z1_m", None) or floor.deck_z0_m for m in members)
+        # Once per FLOOR, not once per bay: ``run_occupants`` re-derives every run's
+        # section, and a floor has a hundred-odd bays.
+        occupants = run_occupants(model, channel_ref=floor.tag, attr="floor_ref")
         along = "x" if floor.direction == "x" else "y"
         span = _member_span(floor, along)
         if span is None:
@@ -90,11 +108,50 @@ def floor_corridors(model: ResolvedModel) -> list[Corridor]:
             if gap <= clear:
                 continue  # a doubled pair or an end strip, not a field bay
             centre = (lines[index] + lines[index + 1]) / 2.0
+            taken, gaps = _bay_taken(floor, occupants, lines_by_tag, along, centre, clear)
             out.append(Corridor(
                 tag=f"{floor.tag}:bay@{centre:.4f}", kind="bay", axis=along,
-                station=centre, z0_m=low, z1_m=high, clear_width_m=clear,
-                lo_m=span[0], hi_m=span[1]))
+                station=centre, z0_m=low, z1_m=high,
+                clear_width_m=max(clear - taken, 0.0),
+                lo_m=span[0], hi_m=span[1], gaps=gaps))
     return out
+
+
+def _bay_taken(floor: ResolvedFloor, occupants: list[Any],
+               lines_by_tag: dict[str, Any], along: str, station: float,
+               clear_m: float) -> tuple[float, tuple[str, ...]]:
+    """How much of THIS bay is already occupied, and what that reading cannot see.
+
+    ``floor_ref`` names the floor, not the bay, and a floor holds many: summing every
+    occupant of ``FS-S-WEST`` into each of its bays would price a clear bay out of existence
+    because a different bay is full. So the occupants are narrowed to the runs whose plan
+    polyline actually comes within half a bay of this station on the cross axis, and only
+    those are packed.
+
+    Two limits are **disclosed rather than papered over**, both inherited from
+    ``mep_packing.run_occupants``:
+
+    * a run presents ONE band, its mean z plus or minus half its depth — not one band per
+      segment — so a run that drops through the bay is banded where its average is;
+    * a ``ConduitRun`` is not an occupant at all, because it names no ``floor_ref``.
+    """
+    from typehaus.resolve.mep_packing import pack
+
+    if not occupants:
+        return 0.0, ()
+    cross = 1 if along == "x" else 0
+    present = [o for o in occupants
+               if any(abs(point[cross] - station) <= clear_m / 2.0
+                      for point in lines_by_tag.get(o.tag, ()))]
+    if not present:
+        return 0.0, ()
+    packing = pack(clear_m, present)
+    return packing.taken_m, (
+        f"{floor.tag} bay @{station:.4f}: {len(present)} run(s) already in it take "
+        f"{packing.taken_m / 0.0254:.2f}\" at the tightest tier. Each is banded at its MEAN "
+        "elevation +/- half its depth, one band per run rather than one per segment, so a "
+        "run that drops through the bay is priced where its average is; and a ConduitRun "
+        "names no floor_ref and is not an occupant here at all.",)
 
 
 def crossing_window(model: ResolvedModel,

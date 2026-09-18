@@ -209,6 +209,10 @@ def check(
     plain: bool = typer.Option(False, "--plain",
                                help="One unwrapped, uncoloured line per finding "
                                     "(implied by NO_COLOR or a piped stdout)."),
+    no_suppress: bool = typer.Option(
+        False, "--no-suppress",
+        help="Ignore [checks] suppress for this run. The diagnostic an open campaign is "
+             "worked against — it writes nothing and does not change the file."),
 ) -> None:
     """Run the checks registry (same registry pytest runs)."""
     from typehaus.checks import Tier, run
@@ -228,7 +232,7 @@ def check(
     if result.findings:
         _print_findings(result.findings, plain=plain_out)
     tier_enum = Tier(tier.value) if tier else None
-    report = run(result.plan, d, profile=profile, tier=tier_enum)
+    report = run(result.plan, d, profile=profile, tier=tier_enum, suppress=not no_suppress)
     tally = report.counts()
     if as_json:
         import json

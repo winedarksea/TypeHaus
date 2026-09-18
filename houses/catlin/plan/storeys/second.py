@@ -1228,9 +1228,18 @@ SOFFITS = [
     # the outline stops being a rectangle at all.
     #
     # 40 3/4" (x) x 7'-9 3/8" (y), so the LONG axis is y and `soffit_clear_section` measures
-    # every occupant ACROSS x: 36.50" clear across, 18.25" clear cavity at a 21" drop. That
+    # every occupant ACROSS x: 36.50" clear across, 20.25" clear cavity at a 23" drop. That
     # ordering is load-bearing — a box longer in x would have graded the trunk's travel as
     # its "width".
+    #
+    # ** THE DROP IS 23" AND NOT 21" BECAUSE OF THE DRAIN PAN (2026-09-18). ** A 21" drop is
+    # not 21" of cavity: `soffit_clear_section` takes 5/8" of lining top and bottom and the
+    # 1 1/2" bottom rung, leaving 18.25" for an 18 1/8" cabinet — 1/8". The FLEXX Ultra's
+    # submittal requires an emergency drain pan under a unit over a finished ceiling
+    # (equipment_types.py), and so does IRC M1411.3.1: 1 1/2" deep minimum. There was no
+    # room for it and no way to find that out on site. 23" gives 20.25", which is sized so
+    # that BOTH things that sit on the cavity floor can ride 2" up on the pan: the cabinet
+    # at 2 + 18 1/8 = 20 1/8, and DU-S-HP-RET at 2 + 18 = 20. The old 1/8" margin, kept.
     #
     # THE LANES, west -> east: 1 7/8 | cabinet 21 1/4 | 2 3/8 | return 10 | 1. The machine
     # is turned (rotation=deg(90)), so its 43 1/2" runs ALONG the box where there is 7'-9"
@@ -1239,11 +1248,21 @@ SOFFITS = [
     # heat strip sits south of the cabinet in the discharge, not beside it, and EQ-S-ERV-MIX
     # sits at the SOUTH end on the return: 16 + 2 + 10 = 28.00 against 36.50, 8 1/2" spare.
     #
-    # DROP 21", FACE 7'-3" — today's proven condition, kept deliberately. 24" was considered
-    # and rejected: `room_floor_elevation` measures from the storey datum, so a reported
-    # 7'-0" is about 6'-11 1/4" real and no check would ever report it. 7'-3" clears IRC
-    # R305.1's 7'-0" honestly, graded by `code.R305_ceiling_height` off the room's minimum
-    # underside.
+    # DROP 23", FACE 7'-1", AND THE REAL CLEAR IS 7'-0 1/8". That last figure is the one to
+    # quote: the section's own CLG tag, measured off the finished floor rather than the
+    # storey datum the face is struck from, and it read 7'-2 1/8" at the old 21" drop — the
+    # "7'-3"" this block used to claim was already an eighth of an inch shy of two inches
+    # optimistic. **So this box now clears IRC R305.1's 7'-0" by 1/8", and there is nothing
+    # left.** 24" was rejected for being under it and is still the line: at a 24" drop the
+    # clear is 6'-11 1/8", and `code.R305_ceiling_height` — which reads the room's minimum
+    # underside off the storey datum — would still have reported a passing 7'-0". A cabinet
+    # deeper than 18 1/8", or a pan deeper than 2", does not fit this house.
+    #
+    # ** THE PAN ITSELF IS NOT MODELLED, AND THE 2" IS NOT RESERVED. ** No element kind here
+    # holds a drip pan; authoring one as `Equipment` would sit under the cabinet in plan and
+    # `soffit_occupancy`'s hanger-gap test ignores z, so the pan would be reported as
+    # clashing with the machine it catches. So the bottom 2" of this cavity is spoken for by
+    # a comment and by tasks.toml, not by a check — do not spend it on a new occupant.
     #
     # `framing` is a LADDER WITH TWO STOCKS. `plate_member="2x2"` holds the RAILS at the
     # size that sets this cavity; `member="2x4"` gives the rungs I = 0.984 in^4 against
@@ -1252,7 +1271,7 @@ SOFFITS = [
     #
     # THE PRICE, STATED PLAINLY. RM-S-STUDY2 gets ~29 sf of its ceiling back to full height
     # and the remainder rises 7"; RM-S-NCLOSET's whole ceiling and about 7'-9" of the north
-    # hall drop to 7'-3", and the closet loses 1/2" of width to the RC channel. That is the
+    # hall drop to 7'-1", and the closet loses 1/2" of width to the RC channel. That is the
     # trade, made with open eyes: a study people work in against a closet and a hall's dead
     # end. `RM-S-HALL`'s graded clear_height is unchanged at 8'-11 1/2" — the check's
     # unsoffited-area escape holds. A modelled ceiling access panel goes in under the
@@ -1260,7 +1279,7 @@ SOFFITS = [
     Soffit(uid="6DAADXAD7P", tag="SF-S-HP1",
            outline=(pt(ft(18, 3.375), ft(27, 8)), pt(ft(21, 8.125), ft(27, 8)),
                     pt(ft(21, 8.125), ft(35, 5.375)), pt(ft(18, 3.375), ft(35, 5.375))),
-           drop=inch(21),
+           drop=inch(23),
            framing=FramingSpec(member="2x4", plate_member="2x2", spacing=inch(16)),
            # ** THE SERVICE HATCH IS FRAMED, NOT JUST DRAWN. ** The lid is
            # FURN-S-NCLOSET-AP (plan/placeables.py); THIS is the hole it covers, and until

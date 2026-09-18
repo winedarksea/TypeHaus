@@ -84,3 +84,81 @@ def derived_termination_elevation(model: ResolvedModel, vent: VentRun) -> float 
     skin_m = (sum(layer.thickness.meters for layer in above_structure_layers(assembly))
               if assembly is not None else 0.0)
     return roof_height_at(roof, exterior_riser_point(vent)) + skin_m + VENT_TERMINATION_CLEARANCE_M
+
+
+#: The five legs of a riser, in order, as ``(uid suffix, tag suffix, is horizontal)``. The
+#: polyline :func:`riser_polylines` returns has one segment per entry, and a leg the vent
+#: does not have — the jog, on a riser that authors none — is degenerate rather than absent,
+#: so the roles line up by index whatever the vent looks like.
+RISER_LEGS = (("riser", "CHASE", False), ("jog", "JOG", True),
+              ("riser2", "CHASE2", False), ("out", "OUT", True),
+              ("term", "TERM", False))
+
+
+def riser_polylines(model: ResolvedModel, vent: VentRun
+                    ) -> list[tuple[str, tuple[tuple[float, float], ...], tuple[float, ...]]]:
+    """Each bundled system's riser as ``(tag, plan path, per-vertex z)``.
+
+    **One derivation, two readers.** :func:`typehaus.resolve.accessories._resolve_vent`
+    builds its ``ResolvedSolid``s from this and ``resolve/mep_envelopes`` builds the
+    envelope from it, so what the viewer draws and what an interference check or a router
+    obstacle sees are the same pipe. They were not: a ``VentRun`` resolved only to solids,
+    so ``mep.run_interference`` could not grade it and ``routing/obstacles`` would happily
+    lane a duct through the radon riser.
+
+    The tag is ``{vent tag}-{system}``, which is the stem the solids already carry, so a
+    finding names what the viewer shows.
+
+    Six vertices, five segments, in :data:`RISER_LEGS` order: up the chase, the optional
+    in-building jog, the rest of the rise at the jogged station, out through the wall, and
+    up the siding to 12" above the roof. Returns ``[]`` when no termination is derivable —
+    a riser whose top is unknown is not a placed run, and guessing one would put a solid
+    where the building has none.
+    """
+    from typehaus.resolve.round_solids import PIPE_BUNDLE_SPACING
+
+    chase = vent.chase_position.xy_m
+    top = chase_top_point(vent)
+    exit_point = exterior_riser_point(vent)
+    offset_x, offset_y = vent.exit_offset.xy_m
+    z_start, z_exit = vent.start_elevation.meters, vent.exit_elevation.meters
+    z_jog = (vent.chase_offset_elevation.meters
+             if vent.chase_offset is not None and vent.chase_offset_elevation is not None
+             else z_exit)
+    derived_top = derived_termination_elevation(model, vent)
+    z_top = (derived_top if derived_top is not None
+             else vent.roof_termination_elevation.meters
+             if vent.roof_termination_elevation is not None else None)
+    if z_top is None:
+        return []
+
+    # Parallel risers, one per bundled system, spread perpendicular to the LONGEST
+    # horizontal leg — the in-building jog where there is one, the wall exit otherwise.
+    #
+    # **It used to be perpendicular to the wall exit always, and on catlin that put two 3"
+    # pipes on ONE line for 8'-7 1/2".** The riser jogs east and exits north, so no single
+    # axis is perpendicular to both legs and one of them must lose; losing the short one is
+    # the only defensible choice. Two pipes cannot share a bore through a joist web, and the
+    # jog is the leg that crosses them. It also drove the pair 2 2/5" east of its own
+    # station and into W-A-BA-E's studs — a 3" bore in a 2x4, which is what
+    # ``mep.run_through_stud`` reported the moment a VentRun gained an envelope.
+    #
+    # The short leg's two risers are still collinear, and ``mep.run_interference`` exempts
+    # them as one authored element rather than pretending otherwise.
+    jog_x, jog_y = top[0] - chase[0], top[1] - chase[1]
+    lead_x, lead_y = ((jog_x, jog_y) if max(abs(jog_x), abs(jog_y)) > 1e-9
+                      else (offset_x, offset_y))
+    perp_x = abs(lead_y) >= abs(lead_x)
+    count = max(len(vent.systems), 1)
+    out = []
+    for index, system in enumerate(vent.systems or (None,)):
+        spread = (index - (count - 1) / 2.0) * vent.diameter.meters * PIPE_BUNDLE_SPACING
+        dx, dy = (spread, 0.0) if perp_x else (0.0, spread)
+        here, there, out_there = ((chase[0] + dx, chase[1] + dy),
+                                  (top[0] + dx, top[1] + dy),
+                                  (exit_point[0] + dx, exit_point[1] + dy))
+        name = system.value if system is not None else "vent"
+        path = (here, here, there, there, out_there, out_there)
+        z = (z_start, z_jog, z_jog, z_exit, z_exit, z_top)
+        out.append((f"{vent.tag}-{name}", path, z))
+    return out

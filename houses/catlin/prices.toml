@@ -2610,8 +2610,10 @@
 # The FLEXX Ultra is dearer than the DUC24/VIR24 pair, and the two reasons are separable:
 # it is a cold-climate machine (21,000 Btu/h read at -15 F against 14,606) and it is a heavier
 # hang — 135.6 lb of cabinet on threaded rod with neoprene isolators, canvas connectors both
-# ends and a 1% condensate slope is a two-person lift, and 18 1/8" deep in a 18 1/4" cavity
-# leaves no room to work off-square. The outdoor unit doubles in weight (92.6 -> 187.4 lb),
+# ends and a 1% condensate slope is a two-person lift, and 18 1/8" of cabinet over a 2"
+# emergency pan in a 20 1/4" cavity leaves no room to work off-square. (The cavity was
+# 18 1/4" and the pan did not fit it at all; SF-S-HP1 went to a 23" drop on 2026-09-18. The
+# pan and its own drain line are NOT in this row — see `hvac-emergency-drain-pan` below.) The outdoor unit doubles in weight (92.6 -> 187.4 lb),
 # which is the labour line there: it is a two-person set onto a balcony stand at +10'.
 "EQ-T-GREE-FLEXX-ULTRA-24-AH" = { material = { low = 1750, high = 2500 }, labour = { low = 1150, high = 2400 } }  # 1 ea — FXU24HP230V1R32AH, 1.0 in. w.c. ESP, 760 cfm, 135.6 lb
 "EQ-T-GREE-FLEXX-ULTRA-24-OD" = { material = { low = 2100, high = 3000 }, labour = { low = 560, high = 1250 } }  # 1 ea — FXU24HP230V1R32AO, 187.4 lb, MCA 21 / MOCP 25
@@ -6670,6 +6672,15 @@ hvac-exhaust-boot-transitions = { low = 20, high = 50, unit = "ea", driver = "du
 # `pipe_runs`, and the count that would otherwise drive it — air handlers and the ERV — is
 # spread across [placeables] types rather than reported as a coil count.
 plumbing-condensate-drains-and-pumps = { low = 600, high = 1600 }
+# NEW 2026-09-18, and it is an ADDITION: nothing priced it before because nothing MODELS it.
+# EQ-S-HP1-AH hangs over RM-S-NCLOSET's finished ceiling, so its submittal and IRC M1411.3 /
+# IMC 307.2.3 both require an emergency pan under it — M1411.3.1 sizes it at 1 1/2" deep
+# minimum and 3" larger than the 43 1/2 x 21 1/4 cabinet each way, corrosion-resistant, on a
+# SEPARATE drain to a conspicuous point. No element kind holds a drip pan, so there is no BOM
+# row to drive this and it is a lump: the pan itself is $60-150 of it and the rest is the
+# second drain line out of a soffit with 1/8" of slack in it. The row above is the PRIMARY
+# condensate system and does not reach this part.
+hvac-emergency-drain-pan = { low = 300, high = 750 }
 # NEW 2026-08-31, and it is a MOVE, not an addition: the frame, the concealed tank and the
 # actuator plate came out of [placeables]"FX-TOILET-WH" (see that row) so the framing-stage
 # half of a wall-hung WC is billed where it is incurred. Nothing else prices this scope —

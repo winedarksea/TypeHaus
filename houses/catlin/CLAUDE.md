@@ -1107,7 +1107,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   the soffit's own drop, `FramingSpec` member, 5/8" lining, and a 2" hanger gap; an authored
   width is a second source of truth that drifts the first time framing changes. Current
   derived boxes: `SF-S-DUCT` 30 3/4" x 11 1/4"; `SF-S-HP1`
-  40 3/4" x 7'-9 3/8" (in `RM-S-NCLOSET`'s ceiling), drop 21", underside at 7'-3".
+  40 3/4" x 7'-9 3/8" (in `RM-S-NCLOSET`'s ceiling), drop 23", underside at 7'-1".
   **Three soffits were retired on 2026-09-13** — `SF-B-HALL`, `SF-B-GYM` and `SF-S-SUITE` —
   each one built only to satisfy `mep.run_in_finished_volume`, each replaced by a
   `Room.exposed_services` sentence on `RM-B-STAIR`, `RM-B-GYM` and `RM-S-SUITE`. Two soffits
@@ -1175,17 +1175,29 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - **`SF-S-HP1`'s box is 40 3/4" x 7'-9 3/8", flush on all four finished faces**, in
     `RM-S-NCLOSET`'s ceiling; the air handler is `rotation=deg(90)` so only its 21 1/4" case
     depth competes for the graded width. Consequences that must stay true:
-    - **A SECONDARY DRAIN PAN IS REQUIRED UNDER IT AND IS NOT MODELLED.** The FLEXX Ultra
-      AH is a MULTI-POSITION air handler (18 1/8 x 43 1/2 x 21 1/4 upflow cabinet, laid on
-      a side for horizontal ceiling mount — a factory configuration, "Horizontal Left: No
-      Modification Needed", confirmed 2026-09-18 against submittal
-      `GREE_FXU24_230V_R32_SUB_01272026`), **not** a slim ducted cassette. The same page
-      requires an emergency pan where the unit sits over a finished ceiling, and so does
-      IRC M1411.3 / IMC 307.2.3. **No element kind here can hold a drip pan and no check
-      grades one.** The pan is 1 1/2"–2" under an 18 1/8" cabinet inside a 21" drop — that
-      is the whole remaining slack, so it cannot be discovered on site. Also unsettled:
-      horizontal RIGHT requires relocating the factory drain pan, and which hand
-      `rotation=deg(90)` lands on is a question for the order, not the installer.
+    - **A SECONDARY DRAIN PAN IS REQUIRED UNDER IT, IT DID NOT FIT, AND THE BOX IS 2"
+      DEEPER BECAUSE OF IT (2026-09-18).** The FLEXX Ultra AH is a MULTI-POSITION air
+      handler (18 1/8 x 43 1/2 x 21 1/4 upflow cabinet, laid on a side for horizontal
+      ceiling mount — a factory configuration, "Horizontal Left: No Modification Needed",
+      against submittal `GREE_FXU24_230V_R32_SUB_01272026`), **not** a slim ducted cassette.
+      The same page requires an emergency pan where the unit sits over a finished ceiling,
+      and so does IRC M1411.3 / IMC 307.2.3 — sized by M1411.3.1 at 1 1/2" deep minimum and
+      3" larger than the unit each way. **A DROP IS NOT A CAVITY**: the 21" drop this
+      carried gave 18.25" of clear cavity (5/8" of lining top and bottom, 1 1/2" of bottom
+      rung), so the slack under an 18 1/8" cabinet was **1/8"** and the pan did not fit at
+      all — while `mep.duct_soffit_occupancy` PASSed, because nothing in the model knew the
+      pan was coming. The drop is **23"** now: 20.25" of cavity, sized so both things on the
+      cavity floor can ride 2" up on the pan — cabinet 2 + 18 1/8 = 20 1/8, `DU-S-HP-RET`
+      2 + 18 = 20. **The clear under the box is 7'-0 1/8" and that is the whole margin** —
+      the section's CLG tag, off the finished floor, where it read 7'-2 1/8" at the 21" drop
+      (the "7'-3"" this guide and the plan source both used to quote was the face struck
+      from the storey datum, ~2" optimistic). IRC R305.1 is cleared by 1/8". **The pan
+      itself is still unmodelled and the 2" is NOT reserved by any
+      check** — no element kind holds one, and authoring it as `Equipment` would clash with
+      the machine it catches, since the hanger-gap test ignores z. Do not spend that 2" on a
+      new occupant. It reaches the installer through `tasks.toml`'s `site/long-lead-orders`,
+      which also carries the other half: horizontal RIGHT requires relocating the factory
+      drain pan, so which hand `rotation=deg(90)` lands on goes on the ORDER.
     - **`W-S-BW4` must stay retyped `INT_2X4_RC`.** A plain partition jogs 1/2" at
       y=30'-10" and `_rectangle` returns `None` on a non-rectangle, sending every occupant to
       UNKNOWN.
@@ -1200,7 +1212,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     - **A wall grille on `W-S-C4B` is NOT buildable — do not re-propose it.** It is the
       x=18' bearing line (`RB-HOUSE`'s load path); the one bay overlapping the plenum band
       leaves 7 1/4" clear, and cutting the stud puts the plate at f≈1,940 psi against
-      Fb≈1,310. `RM-S-NCLOSET` and ~7'-9" of north hall are at 7'-3" clear in trade;
+      Fb≈1,310. `RM-S-NCLOSET` and ~7'-9" of north hall are at a 7'-1" face / 7'-0 1/8"
+      clear in trade;
       `RM-S-HALL`'s graded `clear_height` is unchanged at 8'-11 1/2".
     - **`Mount.elevation` on a `Register` is a number NO CHECK READS** (a Register resolves
       no solid) — author every ceiling terminal off its own room's ceiling, never a borrowed

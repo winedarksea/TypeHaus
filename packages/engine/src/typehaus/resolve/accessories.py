@@ -51,11 +51,7 @@ from typehaus.resolve.round_solids import (  # noqa: F401  # isort: skip  (see a
     round_run_bands as _round_run_bands,
 )
 from typehaus.resolve.trim_bands import drip_edge_bands, open_channel_bands
-from typehaus.resolve.vent_termination import (
-    chase_top_point,
-    derived_termination_elevation,
-    exterior_riser_point,
-)
+from typehaus.resolve.vent_termination import RISER_LEGS, riser_polylines
 
 # Trim ``TrimKind`` values collapse onto a small render/IFC category set.
 _TRIM_CATEGORY = {
@@ -620,65 +616,42 @@ def _resolve_sump(model: ResolvedModel, el: Sump, storey) -> None:
 
 
 def _resolve_vent(model: ResolvedModel, el: VentRun, storey: str) -> list[Finding]:
-    cx, cy = el.chase_position.xy_m
-    ox, oy = el.exit_offset.xy_m
-    # The station the riser rises at above its optional in-building jog: the chase itself
-    # unless ``chase_offset`` moves it. Everything from the wall exit upward hangs off this.
-    tx, ty = chase_top_point(el)
-    ex, ey = exterior_riser_point(el)
-    z_start, z_exit = el.start_elevation.meters, el.exit_elevation.meters
-    z_jog = (el.chase_offset_elevation.meters
-             if el.chase_offset is not None and el.chase_offset_elevation is not None
-             else None)
-    # The termination is a *derived* dimension: 12" above the roof plane at the riser, not
-    # an independent input. Authored elevations only stand in where no roof is derivable.
-    derived_top = derived_termination_elevation(model, el)
-    authored_top = (el.roof_termination_elevation.meters
-                    if el.roof_termination_elevation is not None else None)
-    z_top = derived_top if derived_top is not None else authored_top
-    if z_top is None:
+    """The bundled risers as solids — a **reader** of :func:`riser_polylines`.
+
+    The route itself is derived once, in ``resolve/vent_termination``, because an envelope
+    and a router obstacle read the same polyline: solids that drifted from the envelope
+    would put the viewer's pipe somewhere the collision checker's pipe is not.
+    """
+    risers = riser_polylines(model, el)
+    if not risers:
         return [Finding(
             severity=Severity.WARN, check_id="integrity.vent_termination_unresolved",
             message=(f"vent {el.tag} clears no derivable roof and authors no "
                      "roof_termination_elevation — its exterior riser is not resolved"),
             element_tags=(el.tag,), result=Result.FAIL)]
     radius = el.diameter.meters / 2.0
-    # Parallel risers, one per bundled system, offset perpendicular to the horizontal jog.
-    perp_x = abs(oy) >= abs(ox)  # offset in x when the jog is mostly along y
-    n = max(len(el.systems), 1)
-    for i, system in enumerate(el.systems or (None,)):
-        d = (i - (n - 1) / 2.0) * el.diameter.meters * _PIPE_BUNDLE_SPACING
-        dx, dy = (d, 0.0) if perp_x else (0.0, d)
-        sysname = system.value if system is not None else "vent"
+    for tag, path, z in risers:
+        sysname = tag.rsplit("-", 1)[-1]
         key = f"{el.uid}-{sysname}"
-        # 1) up the chase — to the jog if there is one, else straight to the wall exit
-        model.solids.append(ResolvedSolid(
-            uid=f"{key}-riser", tag=f"{el.tag}-{sysname}-CHASE", storey=storey,
-            category="vent", outline=circle_outline((cx + dx, cy + dy), radius, _PIPE_FACETS),
-            z0_m=z_start, z1_m=z_jog if z_jog is not None else z_exit))
-        if z_jog is not None:
-            # 1a) the horizontal jog, inside, and 1b) the rest of the rise at the new station
-            for band, (outline, z0, z1) in enumerate(
-                    _round_run_bands((cx + dx, cy + dy), (tx + dx, ty + dy), radius, z_jog)):
-                model.solids.append(ResolvedSolid(
-                    uid=f"{key}-jog{band:02d}", tag=f"{el.tag}-{sysname}-JOG{band + 1}",
-                    storey=storey, category="vent", outline=outline, z0_m=z0, z1_m=z1))
+        for leg, (uid_part, tag_part, horizontal) in enumerate(RISER_LEGS):
+            a, b, za, zb = path[leg], path[leg + 1], z[leg], z[leg + 1]
+            if horizontal:
+                # A leg the vent does not have — the jog on a riser authoring none — is
+                # degenerate, not absent, so the roles line up by index either way.
+                if a == b:
+                    continue
+                for band, (outline, z0, z1) in enumerate(_round_run_bands(a, b, radius, za)):
+                    model.solids.append(ResolvedSolid(
+                        uid=f"{key}-{uid_part}{band:02d}",
+                        tag=f"{el.tag}-{sysname}-{tag_part}{band + 1}",
+                        storey=storey, category="vent", outline=outline, z0_m=z0, z1_m=z1))
+                continue
+            if za == zb:
+                continue
             model.solids.append(ResolvedSolid(
-                uid=f"{key}-riser2", tag=f"{el.tag}-{sysname}-CHASE2", storey=storey,
-                category="vent",
-                outline=circle_outline((tx + dx, ty + dy), radius, _PIPE_FACETS),
-                z0_m=z_jog, z1_m=z_exit))
-        # 2) 90° out through the wall
-        for band, (outline, z0, z1) in enumerate(
-                _round_run_bands((tx + dx, ty + dy), (ex + dx, ey + dy), radius, z_exit)):
-            model.solids.append(ResolvedSolid(
-                uid=f"{key}-out{band:02d}", tag=f"{el.tag}-{sysname}-OUT{band + 1}", storey=storey,
-                category="vent", outline=outline, z0_m=z0, z1_m=z1))
-        # 3) 90° up the siding to 12" above the roof
-        model.solids.append(ResolvedSolid(
-            uid=f"{key}-term", tag=f"{el.tag}-{sysname}-TERM", storey=storey,
-            category="vent", outline=circle_outline((ex + dx, ey + dy), radius, _PIPE_FACETS),
-            z0_m=z_exit, z1_m=z_top))
+                uid=f"{key}-{uid_part}", tag=f"{el.tag}-{sysname}-{tag_part}", storey=storey,
+                category="vent", outline=circle_outline(a, radius, _PIPE_FACETS),
+                z0_m=min(za, zb), z1_m=max(za, zb)))
     return []
 
 

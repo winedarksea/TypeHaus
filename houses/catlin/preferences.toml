@@ -235,25 +235,39 @@ permit_drop = ["A-502", "A-506"]
 # element itself.
 [checks]
 suppress = [
-  # ** mep.run_interference: 155 REAL INTERPENETRATIONS, MEASURED 2026-09-17. NOT A
+  # ** mep.run_interference: 188 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-18. NOT A
   # DECISION — AN OPEN CAMPAIGN. **
   #
   # This is the one blanket entry in this file and it is the only one that is not about a
   # single element. The check is new and it is right: it compares every pair of runs
   # envelope against envelope, at the real outside diameter plus insulation, one prism per
-  # segment over that segment's own z range, and it exempts a pair only where one run ENDS
-  # on the other (a wye, a tee, an elbow, a riser into a trunk) or a rough opening names
-  # them both (a shared sleeve). What it reports is not marginal: the median overlap is
-  # 1.99" and the worst are 4.00", which is one 4" duct entirely inside another.
+  # segment over that segment's own z range, and it exempts a CONTACT only where it lies
+  # within a fitting's reach of a joint between the two (a wye, a tee, an elbow, a riser
+  # into a trunk), or a rough opening names them both (a shared sleeve), or the two are
+  # bundled risers of one VentRun (one authored element, not a pair). What it reports is
+  # not marginal: the median overlap is 2.06" and the worst are 4.00", which is one 4" duct
+  # entirely inside another.
   #
-  # `plans/TODO.md` has carried "37 MEP interpenetrations remain in the NW column" since
-  # 2026-09-15, hand-measured over x 0..7', y 32'..36'-6". 155 is that same defect counted
-  # house-wide by a machine for the first time: 72 duct-against-pipe, 62 pipe-against-pipe,
-  # 21 duct-against-duct. Nothing about the building changed on the day this entry was
-  # written; what changed is that the engine can finally see it.
+  # ** THE NUMBER ROSE FROM 155 TO 188 AND NOTHING ABOUT THE BUILDING GOT WORSE. ** The
+  # engine can see more. Two blind spots closed on 2026-09-18:
+  #
+  #   * the joint exemption was a single bool for the PAIR, so two runs sharing a fitting
+  #     at one end were free to interpenetrate anywhere else, unreported. It is now local
+  #     to the joint — three times the larger half-section, a stated convention because the
+  #     catalog records no laying length. +31, among them a 3" drain 2.21" inside another
+  #     3" drain two feet from the suite stack head they share;
+  #   * a `VentRun` resolved to solids alone and so was in NO collision system whatsoever —
+  #     no envelope, nothing to grade, and not a router obstacle either. Its riser route is
+  #     now derived once in `resolve/vent_termination.riser_polylines` and read by both the
+  #     solids and the envelope. +2, both against the radon chase.
+  #
+  # The breakdown, house-wide: 75 pipe-against-pipe, 74 duct-against-pipe, 37
+  # duct-against-duct, 2 pipe-against-vent-riser. `plans/TODO.md` has carried "37 MEP
+  # interpenetrations remain in the NW column" since 2026-09-15, hand-measured over
+  # x 0..7', y 32'..36'-6"; this is that same defect counted house-wide by a machine.
   #
   # ** WHY IT IS SUPPRESSED RATHER THAN FIXED TODAY. ** Fixing it is a routing campaign, not
-  # an edit: every one of the 155 is a pair of authored lanes, and moving either end of
+  # an edit: every one of the 188 is a pair of authored lanes, and moving either end of
   # either run re-opens its own head budget, its bay occupancy and its member crossings.
   # That campaign is what `haus route --alternatives --evaluate` and `haus trial` were built
   # for, and it is meant to run on a branch, pair by pair, with the count coming down.
@@ -263,7 +277,9 @@ suppress = [
   #
   # ** THIS SUPPRESSION IS A DEBT WITH A NUMBER ON IT. ** Re-open it deliberately: delete
   # this entry, run `haus check houses/catlin --only fail`, and the count is the score.
-  # Do not let a cleanup silently keep it, and do not let the number rise.
+  # Do not let a cleanup silently keep it, and do not let the number rise — unless the
+  # engine's eyesight improved, which is what happened on 2026-09-18 and which the entry
+  # has to say out loud when it does.
   "mep.run_interference",
 
   # ** mep.run_through_plate: 15 TOP PLATES CUT PAST 50%, AND THE MODEL HAS NO WAY TO SAY

@@ -2,10 +2,12 @@
 
 **Nothing under ``houses/<name>/plan/`` may change.** ``haus route`` prints dialect source
 for a person to paste and has no ``--write``; the reasons are in
-``typehaus/routing/proposal.py``, of which the fatal one is that
-``source/loader._content_hash`` hashes every plan file, so a machine edit would stale every
-pinned engineering seal in the house. A test that only checked the output would pass on a
-version that wrote the file as well.
+``typehaus/routing/proposal.py``, and they are that the prose in a plan file IS the design
+record and that accepting a route is a judgement. (The reason once given here — that
+``source/loader._content_hash`` would stale every pinned engineering seal — is FALSE and is
+retired: a seal pins ``engineering/fingerprint.fingerprint(record)``, which hashes a
+record's inputs and ratio and never the model's bytes. See CLAUDE.md.) A test that only
+checked the output would pass on a version that wrote the file as well.
 """
 
 from __future__ import annotations
@@ -364,3 +366,35 @@ def test_the_space_view_writes_one_overlay_per_level(runner, tmp_path) -> None:
     svgs = sorted(out.glob("*.svg"))
     assert svgs, "no overlay was written"
     assert '<g id="routing">' in svgs[0].read_text()
+
+
+def test_a_vent_may_be_proposed_into_a_SIBLING_and_not_only_its_own_chase(runner) -> None:
+    """A vent's downstream is a chase, not another run, so ``drain_tie_ins`` derives nothing
+    for it and ``--run`` used to refuse outright: "nothing downstream of it is derivable".
+    Two branch vents on a common vent is ordinary IRC P3104 work, and the router could not
+    propose it. The goal set is now every sibling vent landing on the same station."""
+    before = _plan_digest()
+    result = runner.invoke(app, ["route", str(_CATLIN), "--run", "PR-S-BATH1-VENT"])
+    # Exit 1: this particular vent turns out to be AT its goal already, so there is nothing
+    # to paste (see the test below). What must not appear is the old structural refusal.
+    assert "nothing downstream of it is derivable" not in result.output
+    assert _plan_digest() == before
+
+
+def test_a_route_that_is_already_AT_its_goal_is_a_finding_and_not_a_paste(runner) -> None:
+    """catlin's PR-S-BATH1-VENT starts 0.9" off PR-S-SUITEBATH-VENT's north leg, so the
+    shortest route to a sibling is no route at all. A one-point polyline printed as dialect
+    is a 1-tuple that will not even parse — so it is reported, never proposed."""
+    result = runner.invoke(app, ["route", str(_CATLIN), "--run", "PR-S-BATH1-VENT"])
+    assert "already stands on what it is being routed to" in result.output
+    assert "PR-S-BATH1-VENT-PROPOSED" not in result.output
+
+
+def test_a_vent_is_still_refused_as_a_TREE_main_with_a_reason(runner) -> None:
+    """``--tree`` builds a directed Steiner tree under a gravity search — head budgets,
+    inverts, a fall profile — and none of that describes a vent. The refusal is the honest
+    answer until that path exists; what it must NOT do is return the wrong tuple shape,
+    which every early return in ``_propose_tree`` did while the success path returned four."""
+    result = runner.invoke(app, ["route", str(_CATLIN), "--tree", "PR-S-SUITEBATH-VENT"])
+    assert result.exit_code == 1, result.output
+    assert "not a drain run in this model" in result.output

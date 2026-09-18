@@ -139,6 +139,47 @@ def test_the_bay_and_its_crossing_window_are_hand_derivable(catlin_model_ro) -> 
     assert {round(_in(c.station), 3) for c in bays} >= {8.0, 24.0, 40.0}
 
 
+def test_a_floor_bay_is_decremented_by_what_is_ALREADY_in_it(catlin_model_ro) -> None:
+    """A bay's clear width was the purely structural 12.5" of §3, so ``admits`` answered
+    "does this fit the bay" rather than "is the bay free" — and a campaign would lay a
+    fourteenth ERV radial into ``FS-S-WEST``'s bays, which already hold thirteen at one
+    elevation. ``soffit_corridors`` and ``chase_corridors`` already subtracted their
+    occupants through ``mep_packing.pack``; floor bays did not.
+
+    The two limits of that reading are DISCLOSED rather than papered over.
+    """
+    from typehaus.resolve.mep_queries import clear_bay_width_m
+    from typehaus.routing.corridors import floor_corridors
+
+    floor = next(f for f in catlin_model_ro.floors if f.tag == "FS-S-WEST")
+    structural = clear_bay_width_m(floor)
+    bays = [c for c in floor_corridors(catlin_model_ro) if c.tag.startswith("FS-S-WEST")]
+    occupied = [c for c in bays if c.gaps]
+    empty = [c for c in bays if not c.gaps]
+    assert occupied and empty, "FS-S-WEST holds the ERV radials in some of its bays"
+
+    assert all(c.clear_width_m == pytest.approx(structural) for c in empty)
+    assert all(c.clear_width_m < structural for c in occupied)
+    # A 4" duct in the bay takes 4" of it, and the next 4" duct is graded against what is
+    # left rather than against the joists.
+    assert _in(max(structural - c.clear_width_m for c in occupied)) >= 4.0 - 1e-6
+
+    disclosure = occupied[0].gaps[0]
+    assert "MEAN elevation" in disclosure, "one band per run, not one per segment"
+    assert "ConduitRun" in disclosure, "a raceway names no floor_ref and is not an occupant"
+
+
+def test_an_occupied_bay_stops_admitting_what_no_longer_fits(catlin_model_ro) -> None:
+    """The whole point of the decrement: ``admits`` is a question about free width."""
+    from typehaus.routing.corridors import floor_corridors
+
+    bays = [c for c in floor_corridors(catlin_model_ro) if c.tag.startswith("FS-S-WEST")]
+    occupied = min((c for c in bays if c.gaps), key=lambda c: c.clear_width_m)
+    radius = occupied.clear_width_m / 2.0 + 0.001
+    assert occupied.admits(occupied.clear_width_m / 2.0)
+    assert not occupied.admits(radius)
+
+
 def test_a_three_inch_pipe_fits_the_crossing_window_only_in_a_band(
         catlin_model_ro) -> None:
     """The number the collector's drop bottom is set by, **at 3" DWV's real 3.500" OD**.

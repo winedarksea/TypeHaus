@@ -29,7 +29,8 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
                   margin_ft: float, level: str | None, avoid: frozenset[str],
                   via: list[tuple[float, float]], explain: bool, cost: Any = None,
                   timing: list[str] | None = None
-                  ) -> tuple[list[tuple[RouteProposal, str]], list[str], list[str]]:
+                  ) -> tuple[list[tuple[RouteProposal, str]], list[str], list[str],
+                             list[Any]]:
     """A main and every fixture it serves, routed as one directed Steiner tree.
 
     This is the mode :mod:`typehaus.routing.tree` exists for, and the one where the order
@@ -57,17 +58,17 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
     if main is None or main.system != "drain":
         problems.append(f"{target}: not a drain run in this model, so there is no tree "
                         "to build round it")
-        return [], problems, []
+        return [], problems, [], []
     if not main.z_m or len(main.z_m) != len(main.path):
         problems.append(f"{target}: no resolved elevations, so there is no invert to tie "
                         "into anywhere along it")
-        return [], problems, []
+        return [], problems, [], []
 
     fixtures = [tag for tag in main.serves if tag.startswith("FX-")]
     if not fixtures:
         problems.append(f"{target}: serves no fixture, so nothing feeds it. `--run "
                         f"{target}` re-routes the main itself")
-        return [], problems, []
+        return [], problems, [], []
 
     points: dict[str, tuple[float, float]] = {}
     storeys: dict[str, str] = {}
@@ -87,7 +88,7 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
         storeys[tag] = _storey_of(model, tag)
         floors[tag] = _storey_datum(model, storeys[tag])
     if not points:
-        return [], problems, []
+        return [], problems, [], []
 
     # **One storey per tree.** The branches are searched in a single plane — a drain's z is
     # a derived potential, not a free dimension — so fixtures on two floors are two trees
@@ -98,7 +99,7 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
             f"{target}: its fixtures sit on {len(levels)} storeys "
             f"({', '.join(sorted({storeys[t] for t in points}))}) and a branch tree is "
             "searched in one plane. Route each storey's group on its own")
-        return [], problems, []
+        return [], problems, [], []
     floor_m = levels[0]
 
     # **The tie band is ``mep.fixture_drain_reach``'s**, and reusing it is the point: a
@@ -114,7 +115,7 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
             f"{target}: no vertex of it passes within 2 ft below and 6 in above the "
             f"{storeys[next(iter(points))]} floor, so nothing on that floor can tie into "
             "it — the same band mep.fixture_drain_reach grades against")
-        return [], problems, []
+        return [], problems, [], []
     root_z = max(z for _p, z in reachable)
     tie_path = [p for p, _z in reachable]
 

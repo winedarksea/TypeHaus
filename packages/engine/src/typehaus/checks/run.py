@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 
 try:  # tomllib is stdlib on 3.11+; fall back to tomli on older interpreters
@@ -167,8 +168,19 @@ def build_context(plan: PlanModel, house_dir: Path | None = None,
 
 
 def run(plan: PlanModel, house_dir: Path | None = None, profile: str | None = None,
-        tier: Tier | None = None) -> CheckReport:
+        tier: Tier | None = None, *, suppress: bool = True) -> CheckReport:
+    """The registry against a plan.
+
+    ``suppress=False`` lifts ``[checks] suppress`` for this run alone and writes nothing.
+    A suppression in ``preferences.toml`` is a debt with a number on it — the entries say so
+    themselves — and measuring that number should not mean editing the file and remembering
+    to put it back. It is the diagnostic an open campaign is worked against.
+    """
     ctx, _ = build_context(plan, house_dir, profile)
+    if not suppress:
+        # ctx is freshly built above and belongs to this call, so clearing the field on it
+        # cannot reach another reader; `replace` keeps every other preference intact.
+        ctx.preferences = replace(ctx.preferences, suppressed=frozenset())
     return run_checks(ctx, tier)
 
 
