@@ -47,8 +47,6 @@ from typehaus import (
 
 # --- library-of-the-house types ----------------------------------------------
 DOOR_TYPES = [
-    DoorType(tag="DT-EXT-SWING36", width=ft(3), height=ft(6, 8), exterior=True,
-             u_factor=u_us(0.20)),
     # Every glazed door in the house is tempered (2026-08-01, code.R308_4_safety_glazing).
     # R308.4.1 has no location test to fail: glazing *in a door* is a hazardous location by
     # definition, so this is a property of the product wherever it is hung — which is why it
@@ -58,32 +56,23 @@ DOOR_TYPES = [
     # average both want a number, and an unstated one is a permanent UNKNOWN rather than a
     # zero. 0.35 / 0.5 is the house's glazing package — the same numbers every WindowType
     # carries — and is the spec to hold the supplier to, not a measured NFRC label.
-    DoorType(tag="DT-EXT-FRENCH60", width=ft(5), height=ft(6, 8), exterior=True,
-             operation="double_swing", glazed=True, tempered=True, u_factor=u_us(0.20),
-             shgc=0.35, vt=0.5),
     # DT-EXT-SLIDE60 retired 2026-09-12: a 5'-0" glazed exterior slider that never hung.
     # All three exterior glazed openings (D-M-BALC, D-S-DECK-E, D-B-PATIO) are French pairs
     # on DT-EXT-FRENCH60 — a swing pair weathers better at a threshold this house raises
     # above a flood step, and a slider's fixed half buys nothing a window does not.
-    DoorType(tag="DT-INT-SWING32", width=ft(2, 8), height=ft(6, 8)),
     # 3'-0" interior leaf, new 2026-09-07: the basement equipment route. D-B-FURN and
     # D-B-SHOP are the two doors an appliance or a machine actually passes through, off a
     # 3'-5 1/16" stair flight, so both take the full 36" rather than the 32" the rest of
     # the interior doors carry.
-    DoorType(tag="DT-INT-SWING36", width=ft(3), height=ft(6, 8),
-             source="2026-09-07 basement equipment route — D-B-FURN and D-B-SHOP"),
     # DT-INT-SWING36-GLAZED and DT-INT-SWING32-GLAZED both retired 2026-09-09: D-B-GYM (the
     # only user of either) went from a 32" glazed leaf to a 36" ROUGH OPENING, no leaf at
     # all — the hall and the gym are one circulation space now, so there is nothing to
     # glaze. See D-B-GYM's own note in storeys/basement.py.
-    DoorType(tag="DT-INT-SWING30", width=ft(2, 6), height=ft(6, 8)),
-    DoorType(tag="DT-INT-SWING30-GLAZED", width=ft(2, 6), height=ft(6, 8), glazed=True,
-             tempered=True),
     # Frameless jamb system (no applied casing — drywall return jamb), flush with the gwb.
     # DT-INT-SWING30-TRIMLESS retired 2026-09-15 and REPLACED by the 36" below, not joined
     # by it: D-M-BED2 was its only door and widened, which would have left a catalog entry
     # this house does not hang — the trap this file's own note about the five spliced
-    # STARTER_DOOR_TYPES records. The jamb system and the drywall premium are unchanged;
+    # shared standard-door records. The jamb system and the drywall premium are unchanged;
     # only the leaf got wider.
     #
     # D-M-BED2 is the main-floor suite's entry and the one door here a walker or a chair has
@@ -91,15 +80,12 @@ DOOR_TYPES = [
     # TYPE, not the instance, so retyping that door to the plain DT-INT-SWING36 would have
     # silently dropped the drywall return jamb it was designed around — see this row's own
     # note in prices.toml for what that reveal actually costs.
-    DoorType(tag="DT-INT-SWING36-TRIMLESS", width=ft(3), height=ft(6, 8), trimless=True,
-             source="2026-09-15 aging-in-place pass — D-M-BED2 only; replaces DT-INT-SWING30-TRIMLESS"),
     # The study's bookcase door — a leaf that IS a bookcase, hung in W-A-SN's built-in.
     # Everything that says "Murphy" lives here on the type, which is what let D-A-STUDY be a
     # retype in place and keep its uid and IFC GlobalId. See source= for the trimless trap.
     DoorType(tag="DT-INT-BOOKCASE30", width=ft(2, 6), height=ft(6, 8), core="solid",
              trimless=True, product_ref="PROD-MURPHY-BOOKCASE-30",
              source="plans/TODO.md — D-A-STUDY only: a flush-mount Murphy-style BOOKCASE DOOR in W-A-SN's built-in (INT_2X4_BOOKCASE_12). Same 2'-6\"x6'-8\" RO as DT-INT-SWING30, so nothing re-phases and the jamb pack is unchanged; operation stays SWING because a bookcase door IS a swinging door. core=\"solid\" is the only schema field that says a ~250 lb leaf. ** trimless=True HERE MEANS A MILLWORK CASE, NOT THE DRYWALL RETURN JAMB IT MEANS EVERYWHERE ELSE IN THIS HOUSE ** — a flush bookcase door has no casing, and a drawn frame box is the one thing that gives it away in 3D; do not price it off the DT-INT-SWING36-TRIMLESS row. No header_spec: the real requirement is the HINGE-SIDE JAMB (a 250 lb leaf on a 10\" moment arm is torsion, not bending) — a full-depth 3-ply post through-bolted to the sole plate and the assembly's 4'-0\" blocking row, for which there is no field. The case depth must match case-pocket + stud-case (9 7/8\" clear); see that assembly's note for what moves if the ordered unit needs a full 12\" case"),
-    DoorType(tag="DT-INT-SWING24", width=ft(2), height=ft(6, 8)),
     # 2'-0" x 3'-6" — the attic pocket's ACCESS door, and the house's only
     # door that is not 6'-8" tall. D-A-POCKET hosts on W-A-STU-N, which runs in x under the
     # west rake at y=22'-4"; with the attic at 6:12 the roof underside there is
@@ -126,26 +112,19 @@ DOOR_TYPES = [
     # DT-INT-BIFOLD60 retired 2026-09-12: never hung. O-S-CLOSET is the house's only bifold
     # and W-S-CLN takes the 56" below; D-M-LAUN was the other candidate and became a pocket
     # (DT-POCKET-INT-48) on 2026-08-21, which is what retired the second BIFOLD56 as well.
-    DoorType(tag="DT-INT-BIFOLD56", width=ft(4, 8), height=ft(6, 8), operation="bifold"),
     # RM-M-MUD-CLOSET's bypass pair: no floor for a swing, same reasoning as
     # FURN-WARDROBE-48. 48" is the largest standard bypass whose RO (50") still fits the
     # partition's 63 1/8" framed span with jamb packs to spare — 60" would leave 1 1/8" total.
-    DoorType(tag="DT-INT-BYPASS48", width=ft(4), height=ft(6, 8), operation="slide"),
     # RM-M-PANTRY's bypass pair. The 60" leaf the mudroom closet could not
     # have: W-M-PAN-S offers a 71 1/2" framed span, so a 62" RO leaves 4 3/4" of jamb pack
     # at each end. ** THE MUDROOM CANNOT FOLLOW IT ** — the arithmetic three lines up still
     # holds, and D-M-MUDC stays at 48".
     # Bypass and not a bifold (a bifold's leaves fold out into the cold-storage run) and not
     # a pocket (a 24" leaf would have to park inside a 30"-deep reach-in).
-    DoorType(tag="DT-INT-BYPASS60", width=ft(5), height=ft(6, 8), operation="slide"),
     # D-B-PLAY's pair. Solid-core, unglazed: the play room wanted the acoustic
     # separation a solid leaf gives more than it wanted borrowed light, so this is a flush
     # double-swing pair rather than a French pair — hence DOUBLE60, not FRENCH60. With no
     # glazing there is no R308.4.1 tempering to state.
-    DoorType(tag="DT-INT-DOUBLE60", width=ft(5), height=ft(6, 8),
-             operation="double_swing", core="solid"),
-    DoorType(tag="DT-EXT-OVERHEAD192", width=ft(16), height=ft(7), exterior=True,
-             operation="overhead"),
 ]
 # One size per width family: every placement shares one height, the tallest that still
 # fits the family's most constrained wall in the house. The 42" family (old WT-4242 twin
@@ -172,8 +151,6 @@ WINDOW_TYPES = [
     # walls (WIN-A-W-S/W-N, WIN-A-E-S/E-N) have only that much room under the top plate
     # — the same 24" is what lets this size duck under the 4:12 south rake as well.
     # That combination makes it the house's fallback wherever a bigger unit will not go.
-    WindowType(tag="WT-1424", width=inch(14), height=ft(2), u_factor=u_us(0.25), frame_depth=inch(3.25),
-               shgc=0.35, vt=0.5, operation="awning"),
     # 14" RO, 36" tall — the south gable's flanker size SINCE 2026-08-29, and a THIRD
     # height in the 14" family. It exists because the attic went 6:12 with the eave on a
     # 1 1/2" plate: the roof underside is now `1 1/2" + x/2` above the attic floor, so a
@@ -187,16 +164,12 @@ WINDOW_TYPES = [
     # The SKU premium is near zero: same 14" width family, same buck, same header (none —
     # a 14" RO lands wholly inside a 16" bay), same flashing. Casement like WT-1448, not
     # WT-1424's awning; 36" is past what an awning projects.
-    WindowType(tag="WT-1436", width=inch(14), height=ft(3), u_factor=u_us(0.25), frame_depth=inch(3.25),
-               shgc=0.35, vt=0.5, operation="casement"),
     # 14" RO, 48" tall — the south gable's flanker size, and the one deliberate
     # break of "one height per family". The juliet family doesn't fit: it breaks a stud, taking a
     # 5.5"-deep header that at the nearest usable stud line (x 8'-0"/28'-0") clashes with the
     # 4:12 roof underside by 1.8". 14" lands wholly inside a bay so no header forms, and the
     # 6'-8" head (the main storey's head line) clears the rake by 2'-0". Casement, not
     # WT-1424's awning: a 48"-tall leaf is past what an awning projects.
-    WindowType(tag="WT-1448", width=inch(14), height=ft(4), u_factor=u_us(0.25), frame_depth=inch(3.25),
-               shgc=0.35, vt=0.5, operation="casement"),
     # 24" RO — the attic gable's juliet size (widened from 18" -> 24"). Still one stud
     # broken, but the pair no longer centres on the stud lines: each unit grew OUTWARD only,
     # since the 14" pier
@@ -210,13 +183,9 @@ WINDOW_TYPES = [
     # each), and WT-2464 is now referenced by nothing. Kept rather than
     # deleted, the convention WT-3660, glazed-green-brick and EXT_2X6_SWINBURNE are
     # all held under — a retired size is a priced, available product, not dead code.
-    WindowType(tag="WT-2464", width=inch(24), height=ft(5, 4), u_factor=u_us(0.25), frame_depth=inch(3.25),
-               shgc=0.35, vt=0.5, operation="casement"),
     # 27" RO — bearing-wall size (N*2-9): one stud broken, jacks added. 36" tall
     # because the garage's 8' wall can't take a 60" height at a 42" sill (header would
     # land above the top plate). 27x36 still clears R310 egress (6.75 sf > 5.7).
-    WindowType(tag="WT-2736", width=inch(27), height=ft(3), u_factor=u_us(0.25), frame_depth=inch(3.25),
-               shgc=0.35, vt=0.5, operation="casement"),
     # 27" RO x 48" — the same bearing cap as WT-2736 at WT-3048's height, for the one
     # bearing-wall unit whose head line had to survive the narrowing:
     # WIN-M-EAST-MID, the east living row's feature window, keeps its 2'-8" sill and
@@ -229,8 +198,6 @@ WINDOW_TYPES = [
     # stale at once. The row's head is therefore 6'-8" — THE HOUSE'S OWN DOOR-HEAD LINE — which
     # is a better fact than the one it replaced, not merely a correction. Corrected here,
     # at the row in OPENINGS, and in houses/catlin/CLAUDE.md on 2026-09-06.
-    WindowType(tag="WT-2748", width=inch(27), height=ft(4), u_factor=u_us(0.25), frame_depth=inch(3.25),
-               shgc=0.35, vt=0.5, operation="casement"),
     # 27" RO x 54" — the bearing-wall BEDROOM size. WIN-S-BED1/BED2 are
     # single-window rooms, so R303.1 binds on AREA and the 27" cap has to be paid for in
     # height: at 27x48 BED2 has 9.00 sf against its 9.945 sf requirement and FAILS. 27x54
@@ -242,8 +209,6 @@ WINDOW_TYPES = [
     # 9'-0" plate — room for a 2-2x8 header (7 1/4") and the double top plate with 7 3/4"
     # of cripple left over, which is what disproves that note's "27" cannot reach it at
     # any height that fits under the 9'-0" plate".
-    WindowType(tag="WT-2754", width=inch(27), height=ft(4, 6), u_factor=u_us(0.25), frame_depth=inch(3.25),
-               shgc=0.35, vt=0.5, operation="casement"),
     # 27" RO x 64" — the attic gable's juliet size, replacing WT-2464 at
     # WIN-A-S-JUL-W/E. Each unit widened 1 1/2" per side so the pair's CENTRES stayed on the
     # 16'-0"/20'-0" stud lines and the clear pier between them closed 24" -> 21", 7" over
@@ -252,55 +217,31 @@ WINDOW_TYPES = [
     # FOURTH height in the 27" family (36/48/54/64) and the fourth deliberate break of "one
     # height per family" — which is the RO ladder working as designed, not a drift: the cap
     # is on WIDTH, so composition has to be bought in HEIGHT (see WT-1448's note).
-    WindowType(tag="WT-2764", width=inch(27), height=ft(5, 4), u_factor=u_us(0.25), frame_depth=inch(3.25),
-               shgc=0.35, vt=0.5, operation="casement"),
     # 30" RO — non-load-bearing size (N*2-6): one stud broken. 36" tall keeps the
     # attic-gable heads below the cathedral-roof framing. The north-side size (attic gable
     # pair, hall).
-    WindowType(tag="WT-3036", width=inch(30), height=ft(3), u_factor=u_us(0.25), frame_depth=inch(3.25),
-               shgc=0.35, vt=0.5, operation="casement"),
     # 30" RO — the south-glazing size, narrowed from the 42" WT-4248. One stud
     # broken, not two: the module's ideal position moves with RO width, so the four facade
     # columns moved 8" inboard with it (3'-4"/8'-8" -> 4'-0"/9'-4", 28'-0"/33'-4" ->
     # 27'-4"/32'-8"); head line and storey stacking are untouched. Second deliberate break of
     # "one height per family" (see WT-1448) — WT-3036's 36" would drop the head off the
     # shared 6'-8" door-head line. Non-bearing walls only (preferences [framing]).
-    WindowType(tag="WT-3048", width=inch(30), height=ft(4), u_factor=u_us(0.25), frame_depth=inch(3.25),
-               shgc=0.35, vt=0.5, operation="casement"),
     # 36" RO — concrete basement wall only (no stud module to respect down there).
     # Catalog-only: WIN-B-SAUNA was its last instance and took WT-1424.
     # Kept as an available product for the next basement opening rather than deleted.
-    WindowType(tag="WT-3660", width=ft(3), height=ft(5), u_factor=u_us(0.25), frame_depth=inch(3.25),
-               shgc=0.35, vt=0.5, operation="casement"),
     # Same unit, same glass, no sash: a picture window for the openings that are there for
     # daylight and view only. It is a separate *type* rather than a note on WT-3660 because
     # a fixed unit is a different product on the quote and carries no ventilation or egress
     # credit — the existing tags stay as they are, since they are referenced house-wide.
-    WindowType(tag="WT-3660-FIX", width=ft(3), height=ft(5), u_factor=u_us(0.25), frame_depth=inch(3.25),
-               shgc=0.35, vt=0.5, operation="fixed"),
     # The mudroom's picture unit: same 14" RO / 24" tall glass as WT-1424 (still the one
     # size that clears a 16" stud bay unbroken), no sash — it is there for daylight over
     # the bench, not ventilation. A separate type for the same reason WT-3660-FIX is
     # separate from WT-3660: fixed vs. operable is a different product on the schedule.
-    WindowType(tag="WT-1424-FIX", width=inch(14), height=ft(2), u_factor=u_us(0.25), frame_depth=inch(3.25),
-               shgc=0.35, vt=0.5, operation="fixed"),
     # --- tempered twins (code.R308_4_safety_glazing) ----------------------
     # Four types, identical to their parent but for the glass — R308.4 makes a *location*
     # hazardous (wet room, within 24" of a door, within 60" of a stair), so only the unit
     # that lands there gets tempered. Not new width families; no facade/framing rule sees
     # them. Adding a tempered unit is a retype, never a move.
-    WindowType(tag="WT-1424-T", width=inch(14), height=ft(2), u_factor=u_us(0.25), frame_depth=inch(3.25),
-               shgc=0.35, vt=0.5, operation="awning", tempered=True),
-    WindowType(tag="WT-2736-T", width=inch(27), height=ft(3), u_factor=u_us(0.25), frame_depth=inch(3.25),
-               shgc=0.35, vt=0.5, operation="casement", tempered=True),
-    WindowType(tag="WT-2748-T", width=inch(27), height=ft(4), u_factor=u_us(0.25), frame_depth=inch(3.25),
-               shgc=0.35, vt=0.5, operation="casement", tempered=True),
-    WindowType(tag="WT-2754-T", width=inch(27), height=ft(4, 6), u_factor=u_us(0.25), frame_depth=inch(3.25),
-               shgc=0.35, vt=0.5, operation="casement", tempered=True),
-    WindowType(tag="WT-3036-T", width=inch(30), height=ft(3), u_factor=u_us(0.25), frame_depth=inch(3.25),
-               shgc=0.35, vt=0.5, operation="casement", tempered=True),
-    WindowType(tag="WT-3048-T", width=inch(30), height=ft(4), u_factor=u_us(0.25), frame_depth=inch(3.25),
-               shgc=0.35, vt=0.5, operation="casement", tempered=True),
     # --- high-performance twins (building_science.glazing_dew_point) -------
     # Two types for the plant room, identical in every dimension to their parents and
     # differing only in the glass package: triple/low-e at U-0.14 with a warm-edge spacer
@@ -330,16 +271,14 @@ WINDOW_TYPES = [
     # dampered), never by opening a window. R303.1's openable-area half is therefore carried
     # by Exception 1, which this room already meets on its grow tubes and its supply
     # terminal, and there is no egress duty on the second storey's SW corner.
-    WindowType(tag="WT-2736-HP", width=inch(27), height=ft(3), u_factor=u_us(0.14), frame_depth=inch(4),
-               shgc=0.35, vt=0.5, operation="fixed",
-               source="notes/plant_room.md — WT-2736 dimensions, triple/low-e warm-edge thermally broken frame at U-0.14 for RM-S-PLANT, fixed"),
-    WindowType(tag="WT-3048-HP", width=inch(30), height=ft(4), u_factor=u_us(0.14), frame_depth=inch(4),
-               shgc=0.35, vt=0.5, operation="fixed",
-               source="notes/plant_room.md — WT-3048 dimensions at U-0.14 for RM-S-PLANT, fixed"),
     # There was a third, WT-3048-HP-T: the tempered twin WIN-S-PLANT2 needed while it sat
     # within 24" of D-S-DECK-W. That door is gone (see second.py), the location is no longer
     # hazardous under R308.4.2, and the type went with it.
 ]
+
+# Placement files retain only house-specific type records in their executable catalog;
+# common door/window presets are composed by the manifest from ``typehaus.library``.
+LOCAL_DOOR_TYPES = DOOR_TYPES
 
 NODES = [
     # Perimeter (splits mirror the basement + partition tees)

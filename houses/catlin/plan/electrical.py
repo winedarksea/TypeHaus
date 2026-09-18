@@ -103,51 +103,17 @@ DEVICE_TYPES = (
     # is the Xcel MN residential socket above 200 A — there is no 225 A or 400 A service
     # class; the trade says "400 A" because 320 / 0.8 = 400. Two 200 A mains live in this
     # enclosure outdoors, which is also how the house meets 2026 NEC 230.70(A).
-    ElectricalDeviceType(tag="ED-T-METER",
-                          name="Class 320 HDLB meter-main, 320A continuous, two 200A mains outdoors (2026 NEC 230.70(A))",
-                          service_amps=320,
-                          # A meter-main is a tall combination enclosure, not a plain
-                          # socket: ~20" wide x 8" deep x 36" tall (Milbank/Eaton HD class).
-                          footprint=(inch(20), inch(8)), height=inch(36),
-                          # A meter socket is a plain galvanised can with a glass register,
-                          # not the yellow slab the electrical-domain fallback colour draws
-                          # (same reason ED-T-DISCONNECT-3R names a symbol) — `plan_symbol`
-                          # gives it both the steel grey and the round dial.
-                          plan_symbol="meter",
-                          ports=(ServicePort(tag="service", service=Service.POWER_240,
-                                             position=(ft(0), ft(0), ft(0))),)),
     # A 60A NEMA 3R safety switch is a small hooded grey can with a lever on its right side,
     # not the yellow slab the domain fallback colour draws — `plan_symbol` gives it both the
     # handle and the steel grey. Sized off the product (6-1/2" x 3-1/4" x 9-1/2"), about a
     # fifth under the placeholder it replaced.
-    ElectricalDeviceType(tag="ED-T-DISCONNECT-3R", name="NEMA 3R disconnect, 240V",
-                          footprint=(inch(6.5), inch(3.25)), height=inch(9.5),
-                          plan_symbol="disconnect",
-                          ports=(ServicePort(tag="power", service=Service.POWER_240,
-                                             position=(ft(0), ft(0), ft(0))),)),
     # EV receptacles (plans/electrical_notes.md lines 5-7). load_va is the continuous EV
     # load at 80% of the breaker: 6-20 -> 240x16, 14-50 -> 240x40.
-    ElectricalDeviceType(tag="ED-T-EV-620", name="EV receptacle, NEMA 6-20R",
-                          nema="6-20R", load_va=3840,
-                          footprint=(inch(4), inch(4)), height=inch(4),
-                          ports=(ServicePort(tag="power", service=Service.POWER_240,
-                                             position=(ft(0), ft(0), ft(0))),)),
     # The 14-50 EVSE outlet. The Emporia charger stays and is a listed EVSE (UL 2594 3rd
     # ed.); what it is NOT is a power control system, so its PowerSmart throttling earns no
     # credit in the 220.82 calculation (2026 NEC 625.42(A) -> Article 130 Part II, which
     # wants a UL 3141 listing). load_va is the unmanaged continuous rating, which is now
     # simply what the circuit draws.
-    ElectricalDeviceType(tag="ED-T-EV-1450",
-                          name="EV receptacle, NEMA 14-50R",
-                          nema="14-50R", load_va=9600,
-                          footprint=(inch(4), inch(4)), height=inch(4),
-                          ports=(ServicePort(tag="power", service=Service.POWER_240,
-                                             position=(ft(0), ft(0), ft(0))),)),
-    ElectricalDeviceType(tag="ED-T-RECEPTACLE-1430", name="Dryer receptacle, NEMA 14-30R",
-                          nema="14-30R", load_va=5000,
-                          footprint=(inch(4), inch(4)), height=inch(4),
-                          ports=(ServicePort(tag="power", service=Service.POWER_240,
-                                             position=(ft(0), ft(0), ft(0))),)),
     # The backup subsystem's physical presence: one DIN-rail enclosure beside the panel
     # (Shelly Pro 4PM relays, 24V PSUs, DIN UPS). The component list is derived by the
     # backup takeoff from the backup-flagged circuits; only the enclosure is modeled.
@@ -159,11 +125,6 @@ DEVICE_TYPES = (
                                              position=(ft(0), ft(0), ft(0))),)),
     # The PV array's wall box: same NEMA 3R shell as ED-T-JBOX but on the 2-pole backfeed
     # circuit, so its port is 240V (circuit_refs reconciles poles against ports).
-    ElectricalDeviceType(tag="ED-T-PV-JB", name="PV junction box, NEMA 3R",
-                          footprint=(inch(6), inch(6)), height=inch(4),
-                          plan_symbol="junction-box",
-                          ports=(ServicePort(tag="power", service=Service.POWER_240,
-                                             position=(ft(0), ft(0), ft(0))),)),
     # Sauna heaters are hard-wired: a 240V junction box at the heater corner, not a
     # receptacle. 50A/2p circuit feeding the 9 kW EQ-B-SAUNA-HTR -> 9000 VA connected.
     ElectricalDeviceType(tag="ED-T-SAUNA-JB", name="Sauna heater junction box, 240V",
@@ -177,10 +138,6 @@ DEVICE_TYPES = (
     # No `load_va`: one type serves three zones of different sizes, so a single figure would
     # be wrong. VA is authored per-zone on the circuit in plan/circuits.py instead, which is
     # what `takeoff.electrical._connected_va` prefers anyway.
-    ElectricalDeviceType(tag="ED-T-FLOOR-STAT", name="Radiant floor thermostat, 120V",
-                          footprint=(inch(4), inch(2)), height=inch(4),
-                          ports=(ServicePort(tag="power", service=Service.POWER_120,
-                                             position=(ft(0), ft(0), ft(0))),)),
     # --- structured cabling (plans/electrical_notes.md: "WiFi (energy efficient, POE") ----
     # All three are DeviceKind.DATA_OUTLET (plan-symbol axis only); `ifc_entity`/
     # `ifc_predefined_type` carry what each one *is*, so they reach Revit as Communication
@@ -188,60 +145,22 @@ DEVICE_TYPES = (
     # The enclosure (router + PoE switch + patch field, on CKT-HA) is the only one of the
     # three fed from a branch circuit; the APs draw power over their data cables (poe_watts,
     # no `circuit`), so the panel schedule can't see them — E-603 totals them instead.
-    ElectricalDeviceType(tag="ED-T-NET-ENCLOSURE",
-                          name="Structured media enclosure, 28in (router + PoE switch + patch)",
-                          footprint=(inch(15), inch(4)), height=inch(28),
-                          ifc_entity="IfcCommunicationsAppliance",
-                          ifc_predefined_type="NETWORKHUB",
-                          ports=(ServicePort(tag="power", service=Service.POWER_120,
-                                             position=(ft(0), ft(0), ft(0))),
-                                 ServicePort(tag="data", service=Service.DATA,
-                                             position=(ft(0), ft(0), ft(0))),)),
     # 15 W is the 802.3af class-4 ceiling a Wi-Fi 6/6E ceiling AP draws under load; the
     # allowance already carried in plan/circuits.py said the same number before there was
     # anywhere to put it.
-    ElectricalDeviceType(tag="ED-T-AP-CEILING",
-                          name="Wireless access point, ceiling, PoE 802.3af",
-                          poe_watts=15.0,
-                          footprint=(inch(8), inch(8)), height=inch(2),
-                          ifc_entity="IfcCommunicationsAppliance",
-                          ifc_predefined_type="NETWORKAPPLIANCE",
-                          ports=(ServicePort(tag="data", service=Service.DATA,
-                                             position=(ft(0), ft(0), ft(0))),)),
     # The same radio on a wall bracket, and it exists because ``footprint`` is a PLAN
     # rectangle: the ceiling type's 8x8 is the disc seen from below, and hung on a wall that
     # reads as 8" of DEPTH, so ED-A-STUDIO-AP buried 3" of itself in W-A-STU-N's studs at
     # 0 FAIL. Turned on edge the disc is 8" across the wall and 2" off it, which is what
     # these numbers are; ``height`` is the 8" diameter now that the diameter stands up.
-    ElectricalDeviceType(tag="ED-T-AP-WALL",
-                          name="Wireless access point, wall, PoE 802.3af",
-                          poe_watts=15.0,
-                          footprint=(inch(8), inch(2)), height=inch(8),
-                          ifc_entity="IfcCommunicationsAppliance",
-                          ifc_predefined_type="NETWORKAPPLIANCE",
-                          ports=(ServicePort(tag="data", service=Service.DATA,
-                                             position=(ft(0), ft(0), ft(0))),)),
     # A wall jack. The catalog had an enclosure and two access points and no way to say
     # "a cable ends here at a plate", so a hardwired drop could not be modelled at all —
     # which is why RM-M-STUDY and RM-B-PLAY-N had none. Receptacle-sized because it is a
     # single-gang plate in the same box family, and NO ``poe_watts``: a jack is passive, and
     # a number here would land in the PoE budget as load that does not exist.
-    ElectricalDeviceType(tag="ED-T-DATA-JACK",
-                          name="Data outlet, single-gang RJ45 (Cat 6A)",
-                          footprint=(inch(2.75), inch(2)), height=inch(4.5),
-                          ifc_entity="IfcCommunicationsAppliance",
-                          ifc_predefined_type="NETWORKAPPLIANCE",
-                          ports=(ServicePort(tag="data", service=Service.DATA,
-                                             position=(ft(0), ft(0), ft(0))),)),
-    ElectricalDeviceType(tag="ED-T-AP-OUTDOOR",
-                          name="Wireless access point, outdoor wet-rated, PoE 802.3af",
-                          poe_watts=15.0,
-                          footprint=(inch(9), inch(9)), height=inch(3),
-                          ifc_entity="IfcCommunicationsAppliance",
-                          ifc_predefined_type="NETWORKAPPLIANCE",
-                          ports=(ServicePort(tag="data", service=Service.DATA,
-                                             position=(ft(0), ft(0), ft(0))),)),
 )
+
+
 
 EQUIPMENT_TYPES = (
     # RM-B-SAUNA's heated zone measures 555 cf off the resolved liner faces (8'-3 15/16" x

@@ -48,14 +48,6 @@ DEVICE_TYPES = (
                          plan_symbol="panel", spaces=20, service_amps=100,
                          ports=(ServicePort(tag="service", service=Service.POWER_240,
                                             position=(ft(0), ft(0), ft(0))),)),
-    ElectricalDeviceType(tag="ED-T-SWITCH", name="Wall switch",
-                         footprint=(inch(4), inch(2)), height=inch(2),
-                         ports=(ServicePort(tag="power", service=Service.POWER_120,
-                                            position=(ft(0), ft(0), ft(0))),)),
-    ElectricalDeviceType(tag="ED-T-RECEPTACLE", name="Receptacle, 125V duplex",
-                         footprint=(inch(4), inch(2)), height=inch(2), nema="5-20R",
-                         ports=(ServicePort(tag="power", service=Service.POWER_120,
-                                            position=(ft(0), ft(0), ft(0))),)),
 )
 
 # --- main storey -------------------------------------------------------------------

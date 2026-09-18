@@ -18,16 +18,20 @@ from pathlib import Path
 
 from typehaus import Building, Library, PlanModel, Project, Storey, ft, load_basemap_geojson
 
-from library import (DT_POCKET_INT_48, SEKTION_CASEWORK_TYPES, STARTER_APPLIANCE_TYPES,
-                     STARTER_CASEWORK_TYPES, STARTER_FIXTURE_TYPES, STARTER_FURNITURE_TYPES,
-                     STARTER_RAILING_TYPES)
+from library import (
+    ALL_DUCT_PRODUCT_TYPES, ALL_ELECTRICAL_DEVICE_TYPES, ALL_RAILING_TYPES,
+    ALL_REGISTER_TYPES, ALL_VENTILATION_EQUIPMENT_TYPES, DT_POCKET_INT_48,
+    SEKTION_CASEWORK_TYPES, STANDARD_DOOR_TYPES, STARTER_APPLIANCE_TYPES,
+    STARTER_CASEWORK_TYPES, STARTER_FIXTURE_TYPES, STARTER_FURNITURE_TYPES,
+    WINDOW_TYPES_16_INCH_MODULE,
+)
 
 from params import (breezeway, foundations, hp1_north_pad, hp3_pad, main_deck, raised_garden,
                     roof_trim, second_deck, solar, sunken_garden)
 from plan import (appliance_types, assemblies, backing, backing_wet, circuits, countertops,
                   electrical, electrical_attic,
                   fixture_types, fixtures, furniture_types, lighting, lighting_attic,
-                  lighting_types, mep, millwork, placeables, products, railing_types,
+                  lighting_types, mep, millwork, placeables, products,
                   site, transitions, views, wind_clamps)
 from plan.storeys import attic, attic_studio, basement, garage, main, second
 
@@ -48,12 +52,12 @@ _library = Library(
     # another day, and `integrity.duplicate_catalog_tag` proves the tag sets stay disjoint.
     #
     # ** THE CATALOG CARRIES WHAT THE HOUSE HANGS, NOT THE WHOLE LADDER (2026-09-12). ** This
-    # was `*STARTER_DOOR_TYPES`, which pulled all six Johnson 1500PF sizes in and left five of
+    # was the whole pocket ladder, which pulled all six Johnson 1500PF sizes in and left five of
     # them with no door, no price row and nothing to bill — the same dead weight the two
     # retired house types in `main.DOOR_TYPES` carried. D-M-LAUN is the only pocket in the
     # house. A second pocket door adds its size back here by name.
-    door_types=(DT_POCKET_INT_48, *main.DOOR_TYPES),
-    window_types=tuple(main.WINDOW_TYPES),
+    door_types=(DT_POCKET_INT_48, *STANDARD_DOOR_TYPES, *main.LOCAL_DOOR_TYPES),
+    window_types=WINDOW_TYPES_16_INCH_MODULE,
     # The shared catalogs supply every plumbing fixture, appliance, and railing this house
     # uses; only the wall-fitted mudroom closets stay house-local. Tags are disjoint, and
     # `integrity.duplicate_catalog_tag` now proves it rather than asserting it.
@@ -62,7 +66,7 @@ _library = Library(
     # The library's fascia guard plus the house's own surface-mounted one — the porch
     # guard's baseplates land on concrete wall tops and buy no bracket kit, which is a
     # different order at a different rate. Tags are disjoint.
-    railing_types=(*STARTER_RAILING_TYPES, *railing_types.RAILING_TYPES),
+    railing_types=ALL_RAILING_TYPES,
     # The library's plumbing catalog is a planning ALLOWANCE (its own header says final
     # selection is the owner's). `plan/fixture_types.py` is that selection where one has
     # been made — so far the RM-M-BATH2 drop-in bath alone — and rides beside the
@@ -74,11 +78,12 @@ _library = Library(
     # hood are still unchosen and still correctly generic. Tags are disjoint (APPL-LG-*
     # vs APPL-*), which `integrity.duplicate_catalog_tag` proves rather than assumes.
     appliance_types=(*STARTER_APPLIANCE_TYPES, *appliance_types.APPLIANCE_TYPES),
-    register_types=mep.REGISTER_TYPES,
-    duct_product_types=mep.DUCT_PRODUCT_TYPES,
-    equipment_types=(*mep.EQUIPMENT_TYPES, *electrical.EQUIPMENT_TYPES),
-    electrical_device_types=(*mep.ELECTRICAL_DEVICE_TYPES, *electrical.DEVICE_TYPES,
-                             *lighting_types.LIGHTING_TYPES),
+    register_types=(*ALL_REGISTER_TYPES, *mep.REGISTER_TYPES),
+    duct_product_types=ALL_DUCT_PRODUCT_TYPES,
+    equipment_types=(*ALL_VENTILATION_EQUIPMENT_TYPES, *mep.EQUIPMENT_TYPES,
+                     *electrical.EQUIPMENT_TYPES),
+    electrical_device_types=(*ALL_ELECTRICAL_DEVICE_TYPES, *mep.ELECTRICAL_DEVICE_TYPES,
+                             *electrical.DEVICE_TYPES, *lighting_types.LIGHTING_TYPES),
     circuits=circuits.CIRCUITS,
     # No ``load_managements``: retired 2026-09-12 with the Class 320 service. See the
     # block at the foot of plan/circuits.py.

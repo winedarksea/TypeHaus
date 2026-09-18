@@ -669,7 +669,7 @@ ROOF = Assembly(
 # staggered 2" XPS courses (R-21.8 either way; the concrete's R-0.08/in is noise) — and each
 # wall below splats one of those cores and appends the one skin that covers the foam. What stays house-local is exactly that skin, because it is a colour and
 # exposure decision: neither `foundation-coating-acrylic` nor `stucco` resolves in
-# STARTER_MATERIALS, and the coating's colour is a stock-grey palette call that has no
+# ALL_MATERIALS, and the coating's colour is a stock-grey palette call that has no
 # business going upstream.
 #
 # **The perimeter is two thicknesses and one rule, not one default.** 8" is earned only
@@ -3342,30 +3342,12 @@ MATERIALS = [
     # that fills the ribs bridges it. BuildDeck publishes the R as installed per section,
     # and this deck is the 10" one at R-29 — R-2.9/inch through the finished deck. Name the
     # SECTION, not a per-inch constant carried over from another depth.
-    Material(tag="eps-deck-form", name="BuildDeck EPS deck form", r_per_inch=2.9,
-             perm_rating=3.9, hatch="rigid", color="#f0f0e6", foam_plastic=True,
-             source="BuildDeck published R-values as installed (ribs bridged by the pour): R-23 at 8\", R-29 at 10\", R-36 at 12\". This deck is the 10\" section, i.e. R-2.9/inch — 28% below the bare-foam figure, and the number that belongs in a thermal model of this floor. (Was 3.125/inch, the 8\" section's, until 2026-09-12.) Both faces of this deck are conditioned, so no energy or envelope check reads it. Permeance from ASHRAE UAF 'Expanded polystyrene, bead' 2.0-5.8 perm-in, midpoint, as `icf-eps`"),
     # --- the sunken-garden court's field build-up ---------------------------------
     # Five house-local materials, all specific to `GARDEN_PUTTING_GREEN`. None appears in any
     # other assembly, so retiring the turf field retires them with it. Every one of them is
     # a USGA *specification*, not a product: the gravel's bridging factor is computed against
     # the actual sand purchased, and the rootzone is qualified by an A2LA lab against USGA
     # Tables 3 and 4. An assembly can record the specification; it cannot record the test.
-    Material(tag="rootzone-sand", name="USGA rootzone sand, 12\" placed",
-             density=1600.0, hatch="earth", color="#8b7a5e",
-             source="USGA 2018 Table 3 particle size (coarse+medium sand 0.25-1.0 mm >=60%, gravel >2 mm <=3%, silt <=5%, clay <=3%, very fine+silt+clay <=10%, Cu 1.8-3.5) and Table 4 physical properties (total porosity 35-55%, air-filled 15-30%, capillary 15-25%, Ksat >=6 in/hr). 2018 sets NO fixed organic percentage — the mix is qualified by an A2LA lab against those tables, and \"80:20 sand:peat\" is common practice rather than the specification"),
-    Material(tag="usga-choker-sand", name="USGA intermediate (choker) sand, 2\" placed",
-             density=1600.0, hatch="earth", color="#b3a382",
-             source="USGA 2018 Table 2 intermediate layer: >=90% between 1 mm and 4 mm, placed 2-4\" uniform. Required here because no locally available gravel bridges directly against a USGA rootzone (Table 1); it is what replaces the fabric that must not sit at that interface"),
-    Material(tag="usga-bridging-gravel", name="USGA bridging gravel, 3/8\"",
-             density=1600.0, hatch="gravel", color="#a09a90",
-             source="USGA 2018 Table 2 gravel for use with an intermediate layer: <=10% larger than 12.7 mm, >=65% between 6.4 and 9.5 mm, <=10% smaller than 2 mm; Micro-Deval loss <=18% (ASTM D6928); neutral pH preferred — 2018 added the warning that a low-pH rootzone over limestone or dolomite gravel forms iron-oxide layers that impede drainage. Locally: Plaisted Companies (Elk River, MN) \"USGA Coarse Gravel (3/8 in.)\". NOT ASTM #57, which cannot meet Table 1 or Table 2 at any gradation"),
-    Material(tag="geotextile-separation", name="Non-woven geotextile separation fabric",
-             perm_rating=100.0, hatch="membrane", color="#9a9a8c",
-             source="AASHTO M288 Class 2 non-woven, at the ONE position USGA Step 3 permits — \"a barrier between the subsoil and the gravel layer\", keeping the clay subgrade out of the gravel voids. It is deliberately NOT run between rootzone and gravel (a permeability discontinuity that perches water) and never over the underdrain trench"),
-    Material(tag="kbg-sod", name="Kentucky bluegrass sod, washed or sand-grown",
-             density=1000.0, hatch="earth", color="#5f7a4a", finish="planted",
-             source="Kentucky bluegrass mown 2-2.5\", not creeping bentgrass: UMN Extension treats bentgrass as a weed in Minnesota lawns (reel mower at 0.25-0.75\", 3-4 mows/week, 5-10+ dollar-spot sprays/yr), while KBG is rhizomatous and self-repairing and per UMN's WinterTurf ICE-BREAKER trials is largely unaffected at 90 days of ice encasement. USGA Step 7 governs the product: sod over a sand rootzone must be grown on the same or similar rootzone, or washed — \"in no case is it acceptable to place unwashed sod grown on loam or fine-textured soil above a sand-based rootzone\". Sod rather than seed because this is a 9'-deep court that will be walked through before anything germinates"),
     # --- accent wall paint -------------------------------------------------------
     # The house's one interior accent: deep spruce green-blue on RM-S-BED1's feature wall
     # (storeys/second.py). Physically identical to `latex-paint` (same film, same Class III
@@ -3390,9 +3372,6 @@ MATERIALS = [
     # it (7/16" only reaches 1.21, and APA's own data has 1/2" at 0.70 perm against 5/8" at
     # 0.72, so the thickness lever is nearly flat in reality too). Making the sheathing-plane
     # control layer a real Class I barrier does: 0.89, with the interior left as paint.
-    Material(tag="roof-deck-vapor-barrier", name="Self-adhered roof deck vapour barrier",
-             r_per_inch=0.0, vapor_permeance_perms=0.04, hatch="membrane", color="#4a4a4a",
-             source="published SBS self-adhered deck vapour barriers (Soprema Sopravap'r, Carlisle VapAir Seal 725TR) ASTM E96 permeance 0.03-0.05 perm; midpoint of the published range — a sheet rating, not perm-in"),
     # The ventilated underlayment mat under the standing seam. NOT a furring strip: a ~1/4"
     # nylon-matrix mat rolled over the underlayment, which the panel clips screw straight
     # through into the top deck below. It is the assembly's only outward drying path, and
@@ -3400,9 +3379,6 @@ MATERIALS = [
     # plane inboard of it sits at interior vapour pressure and NO unvented stack under a
     # metal roof can pass the gate at all, at any foam thickness. Metal manufacturers now
     # ask for one over self-adhered underlayment for this exact reason.
-    Material(tag="roof-vent-mat", name="Ventilated underlayment mat (nylon matrix)",
-             r_per_inch=0.0, perm_rating=120.0, hatch="membrane", color="#8a8f94",
-             source="the vapour path through an open nylon-matrix mat is the air in it, so it is rated as `resilient-channel` above is: UAF 'Air, still' 120 perm-in"),
     # **The membrane that replaced all three of them** — the deck vapour barrier above,
     # the vent mat above it and the permeable synthetic below are all UNREFERENCED, kept
     # here so the nine-layer stack is a revert and not a re-derivation (see ROOF).
@@ -3419,27 +3395,15 @@ MATERIALS = [
     # Majvest SA, Pro Clima SOLITEX MENTO 3000 Connect, ~34-38 perms) would give permeability
     # with nowhere to go, and would give up the self-sealing that is the point. Named here so
     # the option is on the record and was rejected on purpose.
-    Material(tag="roof-adhered-butyl-ht",
-             name="High-temp self-adhered butyl roof membrane",
-             r_per_inch=0.0, vapor_permeance_perms=0.05, hatch="membrane", color="#2f3134",
-             source="published high-temperature self-adhered butyl roofing underlayments (GCP Grace Ultra, Henry Blueskin PE200HT) ASTM E96 permeance 0.03-0.05 perm and >= 240 F service temperature; high end of the published permeance range - a sheet rating, not perm-in. ASTM D1970 compliant, which is also the FORTIFIED Roof sealed-roof-deck Method 1 citation the full-deck application satisfies outright"),
     # --- mudroom exposed-stud wall ---------------------------------------------
     # Appearance-grade framing, because in W-M-STRW the studs ARE the finish. Select
     # Structural S4S with eased corners: the grade buys straightness and a clean face, the
     # eased arris keeps a hand running along an exposed edge off a sharp corner. Douglas
     # fir-larch rather than SPF: it is the denser species (~32 pcf vs SPF's ~29), which is
     # why its R/inch is *lower* than spf's 1.24 — conductivity tracks density in wood.
-    Material(tag="df-select-s4s", name="Douglas fir Select Structural S4S, eased corners",
-             r_per_inch=1.00, density=530.0, perm_rating=2.9, hatch="lumber",
-             color="#d9b077", finish="clear-satin-hardwax-oil",
-             source="plans/TODO.md — exposed mudroom studs; DF-L R ~0.99-1.06/in (vs SPF 1.24-1.25) per the softwood density series, permeability shares the softwood midpoint used for spf"),
     # The stair face. 3/4" rather than the 1/2" a plain panel finish would take, because
     # this panel is structural backing: coat hooks and the closet rail screw straight into
     # it anywhere along the wall, with no blocking behind and no stud to hunt for.
-    Material(tag="cabinet-plywood", name="Cabinet-grade hardwood plywood (3/4\")",
-             r_per_inch=1.25, density=610.0, perm_rating=0.30, hatch="lumber",
-             color="#c8a97a", finish="clear-satin-hardwax-oil",
-             source="plans/TODO.md — mudroom wall's stair face; 3/4\" is structural backing so coat hooks screw directly into it (a 1/2\" panel would need blocking); permeability per the plywood series used for struct-1-plywood"),
     # GARAGE_WALL_2X6's sheathing, replacing the 1.5" Zip-R.
     #
     # A SEPARATE TAG FROM `struct-1-plywood`, and deliberately. Structural 1 is a premium
@@ -3458,10 +3422,6 @@ MATERIALS = [
     # It carries NO `control` set in the assembly: the ccSPF in the bays behind it is the
     # air/water plane now, exactly as EXT_2X6 does it, and a bare CDX sheet is not
     # a WRB and must not be authored as one.
-    Material(tag="cdx-plywood", name="5/8\" CDX sheathing plywood",
-             r_per_inch=1.25, density=600.0, perm_rating=0.30, hatch="osb",
-             color="#c9a86a",
-             source="APA Rated Sheathing, CDX (C-face/D-back, exterior glue) — the ordinary sheathing grade, NOT the shear-rated Structural 1 the house walls carry; 5/8\" Performance Category spans the garage's 24\" o.c. studs. Thermal/vapour fields per the plywood series used for struct-1-plywood and plywood-subfloor"),
     # `ENTRY_SCREEN_WALL`'s EAST ply, and only that. One panel does two jobs there: it is a
     # rated wood structural panel (SDPWS Table 4.3B publishes shear values for Rated Siding
     # exactly as for Rated Sheathing) AND it is the finished, paint-ready face of the screen
@@ -3474,11 +3434,6 @@ MATERIALS = [
     # Thermal/vapour numbers are the plywood series' (cdx-plywood, struct-1-plywood,
     # plywood-subfloor) — the overlay is not modelled as a separate retarder, which is
     # conservative for drying to the east and is the only side that can dry here.
-    Material(tag="siding-303-mdo",
-             name="5/8\" APA Rated Siding 303, MDO smooth face (Exterior)",
-             r_per_inch=1.25, density=600.0, perm_rating=0.30, hatch="osb",
-             color="#b9a583",
-             source="APA Rated Siding 303 (apawood.org), Exterior bond, MDO smooth face; a wood structural panel carrying published shear values (SDPWS Table 4.3B) and a paint-ready overlay. Thermal/vapour fields per the plywood series used for cdx-plywood, struct-1-plywood and plywood-subfloor"),
     # FS-ATTIC's deck sheet, and only FS-ATTIC's. The two unfinished lofts
     # RM-A-WEST-UNFIN / RM-A-EAST-UNFIN take no floor covering at all, so this panel IS the
     # walking surface — it is walked on, swept and stacked on with nothing over it. A
@@ -3493,11 +3448,6 @@ MATERIALS = [
     # numbers are the plywood series' (r_per_inch, permeability) — it is the same veneer
     # panel as `plywood-subfloor`, sanded on one face and plugged, so nothing thermal or
     # hygric moves. Only the grade, the price and the drawing do.
-    Material(tag="plywood-underlayment-sanded",
-             name="23/32\" sanded-face underlayment plywood, T&G (Sturd-I-Floor 24 oc)",
-             r_per_inch=1.25, density=600.0, perm_rating=0.30, hatch="osb",
-             color="#dcc79a",
-             source="APA Underlayment/Subfloor (apawood.org/underlayment-subfloor): \"Underlayment C-C Plugged or veneer-faced Sturd-I-Floor with sanded face\" is the grade specified where the panel takes resilient flooring or is left exposed; 23/32 Performance Category = 24 oc Span Rating (APA RATED STURD-I-FLOOR datasheet). Thermal/vapour fields per the plywood series used for plywood-subfloor and struct-1-plywood"),
     # SHIPLAP, not T&G — a profile change and nothing else. The SPECIES
     # does not move and must not: American basswood / Canadian poplar / aspen is a BURN-SAFETY
     # spec (low thermal conductivity, a bench you can sit on at 190 F), not a finish choice.
@@ -3510,12 +3460,6 @@ MATERIALS = [
     # 5-1/2" face over a 5" coverage is 1.25 x 1.10 = 1.375 bf/sf, against 1.25 for the T&G
     # (which was authored as bare thickness, with no face allowance at all). The order goes
     # up; the wall area does not.
-    Material(tag="sauna-shiplap", name="Basswood/aspen shiplap sauna liner (5/4)",
-             r_per_inch=1.3,
-             perm_rating=20.0, hatch="lumber", color="#e6d4ae", finish="shiplap",
-             species="basswood", stock_bf_per_sqft=1.375,
-             nominal_quarters=5, milling_profile="shiplap",
-             source="notes/sauna_basement_wall_detail.md — low-conductivity species (American basswood, Canadian poplar, aspen); 5/4 stock, 5-1/2\" face over 5\" coverage = 1.375 bf/sf"),
     # --- species wood finishes (plans/TODO.md §Hardwood) -----------------------
     # RM-M-STUDY wainscot to 36". 4/4 stock: board feet = square feet.
     Material(tag="walnut-tg", name="Black walnut T&G wainscot (4/4)", r_per_inch=1.1,
@@ -3571,10 +3515,6 @@ MATERIALS = [
     # `paneling._band_thickness_m`, and leaving it unset draws the band at the 1/2" default,
     # which is exactly the panel thickness. Bills into prices.toml `[wood_surfaces]` on the
     # material tag, the same join WP-B-SAUNA-SPLASH's tile takes.
-    Material(tag="pet-felt-panel", name="PET acoustic felt panel, 1/2\" (9mm+ compressed)",
-             r_per_inch=3.5, density=200.0, perm_rating=10.0, hatch="insulation",
-             color="#6f7a72", finish="felted",
-             source="plans/TODO.md — RM-M-STUDY call booth. Recycled-PET needled felt board, the common 1/2\" architectural panel; NRC ~0.5-0.6 at this thickness direct-mounted, which is the first-reflection and flutter treatment the room needs rather than a bass trap"),
     # The suite's four 6-1/8\" square tudor posts, ordered as 10' sections and cut down.
     # `nominal_quarters=8` is not decoration: a clear 6\" elm timber would check badly
     # drying, so these are GLUED UP from 8/4 board stock (prices.toml records the same
@@ -3948,25 +3888,16 @@ MATERIALS = [
              panel_fastener_head_dia_in=0.40,
              fastener_coverage_in=12.0,
              source="Metal Sales BBD75-1212 (product nos. 2520741 ACG / 25207XX PVDF): 24 ga. PVDF-coated steel board & batten wall panel, 12\" net coverage, 3/4\" rib, concealed DIRECT-fastened at the nail strip over open framing; allowable 58 psf outward / 43 psf inward at 2'-0\" fastener spacing (AISI 2016, 3+ equal spans, L/180, no 1/3 stress increase, and by its own note 2 it does not address web crippling, fasteners, support material); PVDF Linen White (81), SR 0.73 / TE 0.86 / SRI 89 per ASTM C1549 / C1371 / E1980, CRRC-listed steep and low slope, 45-yr film / 35-yr chalk-fade warranty; same vapour-impermeable sheet steel as the five skins above"),
-    Material(tag="polyiso-foil", name="Foil-faced polyisocyanurate", r_per_inch=6.0,
-             perm_rating=0.03, hatch="rigid", color="#d9d2a8", foam_plastic=True,
-             source="foil facer is the sauna's vapour retarder as well as its CI"),
     # Loose-fill for the garage attic (GARAGE_ROOF). A separate tag from `fiberglass`
     # because blown wool is installed at roughly half batt density and rates R-2.5/in
     # rather than R-3.7 — reusing the batt tag would overstate the ceiling by ~48%.
     # House-local rather than library: only this roof uses it, so it stays here until a
     # second house wants it (CONTRIBUTING §Promotion flow).
-    Material(tag="blown-fiberglass", name="Blown (loose-fill) fiberglass", r_per_inch=2.5,
-             perm_rating=116.0, hatch="batt", color="#f6d9e1",
-             source="NAIMA/manufacturer published loose-fill glass wool R-2.2-2.7 per inch at attic settled density; midpoint. Permeance as `fiberglass` above — loose-fill glass wool is air-permeable at any density"),
     # The roof cavity batt (ROOF). A separate tag from `fiberglass` because the
     # library's 3.7/in is a HIGH-DENSITY value — right for an R-21 batt squeezed into 5.5",
     # wrong for a standard R-19 that reaches R-19 only by lofting to 6.25". Reusing the
     # library tag at 6.25" would read R-23 and overstate this roof by R-4. House-local until
     # a second house wants it (CONTRIBUTING §Promotion flow).
-    Material(tag="fiberglass-r19", name="Fiberglass batt, R-19 (6-1/4\")", r_per_inch=3.04,
-             perm_rating=116.0, hatch="batt", color="#f3c6d0",
-             source="R-19 nominal over the 6.25\" lofted thickness the rating is declared at = 3.04/in. Permeance as library `fiberglass` — glass wool is air-permeable at any density"),
     # The roof cavity batt, in front of the 5" ccSPF flash. An R-30C
     # CATHEDRAL batt — 8 1/4" nominal, the unfaced high-density product made for a rafter bay
     # — deliberately COMPRESSED into the 6 7/8" the foam leaves.
@@ -3982,10 +3913,6 @@ MATERIALS = [
     #
     # Not air-impermeable, at any density: it is the *air-permeable* half of R806.5 item 5.1.3,
     # and the ccSPF outboard of it is the half the table governs.
-    Material(tag="fiberglass-r30c",
-             name="Fiberglass cathedral batt, R-30C compressed to 6-7/8\"",
-             r_per_inch=3.78, perm_rating=116.0, hatch="batt", color="#f3c6d0",
-             source="manufacturer compressed-batt R-value charts (Owens Corning / CertainTeed) for an R-30 8-1/4\" batt: R-27 at 7-1/4\" and R-25 at 6-1/4\", so R-26 at 6-7/8\" = 3.78/in. Permeance as library `fiberglass` — glass wool is air-permeable at any density"),
     # The roof's field underlayment (ROOF), over the nailbase top deck.
     #
     # **Vapour-PERMEABLE synthetic, and that is not a preference.** High-temp peel-and-stick
@@ -3999,22 +3926,15 @@ MATERIALS = [
     # edge band a couple of feet wide, not a field layer, so it is priced as an allowance
     # (`roof-ice-and-water-barrier-code-minimum` in prices.toml) rather than modelled here.
     # It is small enough that sealing it does not close the field's drying path.
-    Material(tag="roof-underlayment-synthetic",
-             name="Vapour-permeable synthetic roof underlayment",
-             r_per_inch=0.0, vapor_permeance_perms=20.0, hatch="membrane", color="#3b3b3b",
-             source="published vapour-permeable synthetic roof underlayments (VaproShield SlopeShield, Cosella-Dorken DELTA-MAXX) ASTM E96 permeance 15-50 perm; low end of the published range — a sheet rating, not perm-in; ASTM D226 Type II / ICC-ES AC188 compliant, fastened with annular-ring/deformed-shank cap nails at 6\" o.c. laps / 12\" o.c. field (FORTIFIED Roof §4.4 sealed-deck citation)"),
     # The plant room's three materials — `pvc-panel`, `humid-room-membrane` and
     # `vinyl-sheet` — were authored here first and promoted to `library/materials.py`
     # (CONTRIBUTING §Promotion flow): none of them carries a project
     # coordinate, an owner choice or a house-specific dimension, all three are ordinary
     # catalog products with stable tags, and `takeoff/finishes.py::_WASTE` (engine code)
     # names `vinyl-sheet` — an engine table may not depend on a material only one house
-    # defines. They arrive through `STARTER_MATERIALS` above. See notes/plant_room.md for
+    # defines. They arrive through `ALL_MATERIALS` above. See notes/plant_room.md for
     # why the panel deliberately carries no permeance and the membrane carries a
     # specification value.
-    Material(tag="brick", name="Face brick", r_per_inch=0.20, density=1920.0,
-             perm_rating=1.0, hatch="concrete", color="#9c5a4a", finish="brick",
-             source="red face brick — the catalog default wythe"),
     # White (whitewashed / white-fired) face brick laid with a grey mortar joint. Same clay
     # unit and R-value as the red brick; only the finish differs, and `finish` names the
     # recipe explicitly so no renderer has to infer "white" from the tag spelling.
@@ -4090,7 +4010,7 @@ MATERIALS = [
              source="basement south veneer over the sunken garden — the Ishtar plinth 2026-08-20, the whole field since 2026-09-04; standard unglazed ASTM C216 Grade SW face brick, no special order"),
     # cmu, grout (porch railing wythe/balcony post bases) were promoted to
     # library/materials.py (CONTRIBUTING §Promotion flow); they arrive here
-    # through STARTER_MATERIALS above.
+    # through ALL_MATERIALS above.
     # The house's one exterior dark: every dark metal element on the
     # envelope — rake/eave/ridge trim coil, opening casings, guards — shares this value.
     # #1c1f24, not the #3a3d40 it started at: colour here is an albedo, and the viewer's
@@ -4284,11 +4204,6 @@ MATERIALS = [
     # divides a perm_rating by thickness, and at 1/8" that would invent a number no test
     # measured. ``perm_rating=0.0`` is worse than useless - it is inert, reads as "not
     # authored", and this is the opposite of a barrier.
-    Material(tag="foundation-coating-acrylic",
-             name="Trowel-applied acrylic foundation coating over mesh (1/8\")",
-             r_per_inch=0.0, density=1400.0, vapor_permeance_perms=5.0,
-             coating=True, hatch="concrete", color="#8e8f8c",
-             source="above-grade band over basement exterior XPS, N/E/W (BASEMENT_8, BASEMENT_12) - Styro Industries Tuff II, 100% acrylic, 1/8\" over Sticky Mesh HD, 80 SF/5-gal pail, 10 stock colours, permitted below grade (product data + \"Applying TUFF II Over Rigid Foam & ICF\"). Styro publishes NO ASTM E96 value and neither does this product class, so 5.0 perms is a band midpoint and is quoted as one: buildingscience.com Info-500 gives exterior acrylic paint 5.5 perms and polymer-modified stucco 2-3 perms where latex-finished, and the UAF/ASHRAE table gives 11-20 perms for 3/4\" plaster. A 1/8\" acrylic lamina sits between a film and a render and the band brackets it; what the number has to carry is that it is far more open than the 4\" of XPS beneath it (~0.28 perms), which decides the Glaser walk. Colour is Styro's stock grey approximated - no hex is published, a chip governs"),
     # **UNREFERENCED since 2026-09-04. The named alternate**, on the `glazed-green-brick`
     # convention: an aluminium-faced 1/2" rigid protection board, the other half of the
     # detail note's "rigid metal/PVC trim", fastened into the XPS with washered pins. Its
@@ -4310,15 +4225,10 @@ MATERIALS = [
     # manufacturer in its class publishes the test that would answer it. **Choosing the
     # coating is what answers it**, because a seamless lamina is a shape a published band
     # actually describes.
-    Material(tag="foundation-protection-panel",
-             name="Aluminium-faced foundation protection panel (1/2\")",
-             r_per_inch=0.0, density=1100.0, hatch="metal",
-             color="#1c1f24",
-             source="UNREFERENCED named alternate to `foundation-coating-acrylic` above; no ASTM E96 rating published for a butted, mechanically-fastened protection board in this class, so the vapour fields are unset and the Glaser walk reported UNKNOWN on both basement assemblies while it was in use"),
     # stucco (no instance in this house), composite-deck (porch
     # floor) and aluminum-deck (balcony plank) were promoted to library/materials.py
     # (CONTRIBUTING §Promotion flow); they arrive here through
-    # STARTER_MATERIALS above.
+    # ALL_MATERIALS above.
     # ``preservative_treated``: the paint is a finish over PT stock, which is what the name
     # has always said. It decides the COATING of any connector landing on a member wearing
     # this material (IRC R317.3.1 — copper preservative corrodes G90 zinc), and nothing else
@@ -4345,7 +4255,7 @@ MATERIALS = [
     # retaining-block (raised garden outer face), polycarbonate-multiwall (breezeway
     # glazing) and aluminum-extrusion (breezeway glazing trim) were promoted to
     # library/materials.py (CONTRIBUTING §Promotion flow); they arrive here
-    # through STARTER_MATERIALS above.
+    # through ALL_MATERIALS above.
 ]
 
 # --- plant room (RM-S-PLANT) ------------------------------------------------------

@@ -410,16 +410,12 @@ LIGHTING_DEVICE_TYPES = (
                          load_va=200.0, ports=_POWER_120,
                          product_ref="PROD-DIODE-OMNIDRIVE-X",
                          source="Diode LED OMNIDRIVE X, 200 W. Same family as the 60 W; see that entry for the no-minimum-load argument."),
-    ElectricalDeviceType(tag="ED-T-SWITCH-DIM", name="Wall dimmer, 120V LED-rated",
-                         footprint=(inch(4), inch(2)), height=inch(2),
-                         control="dimmer", ports=_POWER_120),
     # The plant room's tubes run on a schedule, not on somebody remembering — the notes
     # ask for it to be "smart" so it can be on a timer. A smart switch on a timer is the
     # same box; ``control`` records which behaviour was bought.
-    ElectricalDeviceType(tag="ED-T-SWITCH-TIMER", name="Wall timer switch, smart, 120V",
-                         footprint=(inch(4), inch(2)), height=inch(2),
-                         control="timer", ports=_POWER_120),
 )
+
+
 
 # Part 1 (this file) then part 2 (plan/lighting_types_decor.py), then the supplies and
 # switches. One catalog to the E-602 schedule; two files only for the 500-line rule.

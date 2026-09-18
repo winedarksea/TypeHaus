@@ -11,6 +11,8 @@ import uuid
 
 from typehaus import Building, Library, PlanModel, Project, Storey, ft
 from typehaus.library import (
+    ALL_ELECTRICAL_DEVICE_TYPES,
+    STANDARD_DOOR_TYPES,
     STARTER_APPLIANCE_TYPES,
     STARTER_FIXTURE_TYPES,
     STARTER_FURNITURE_TYPES,
@@ -28,9 +30,9 @@ PROJECT_UUID = uuid.UUID("6f6e0000-0000-4000-8000-000000000001")
 _library = Library(
     materials=tuple(assemblies.MATERIALS),
     assemblies=tuple(assemblies.ASSEMBLIES),
-    door_types=tuple(main.DOOR_TYPES),
+    door_types=STANDARD_DOOR_TYPES,
     window_types=tuple(main.WINDOW_TYPES),
-    electrical_device_types=tuple(electrical.DEVICE_TYPES),
+    electrical_device_types=(*ALL_ELECTRICAL_DEVICE_TYPES, *electrical.DEVICE_TYPES),
     furniture_types=tuple(STARTER_FURNITURE_TYPES),
     fixture_types=tuple(STARTER_FIXTURE_TYPES),
     appliance_types=tuple(STARTER_APPLIANCE_TYPES),

@@ -113,7 +113,7 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
     }
     # The house catalog is its own types plus the ONE library pocket size it hangs —
     # DT-POCKET-INT-48, which is what D-M-LAUN is typed from. It is not the whole 1500PF
-    # ladder: until 2026-09-12 the manifest spliced all six `STARTER_DOOR_TYPES` in and five
+    # ladder: until 2026-09-12 the manifest spliced all six `POCKET_DOOR_TYPES` in and five
     # of them had no door, no price row and nothing to bill. A catalog entry is a size this
     # house hangs, and that is what this asserts.
     #

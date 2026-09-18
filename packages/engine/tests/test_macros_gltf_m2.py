@@ -91,7 +91,7 @@ def test_move_opening_rejects_a_station_that_does_not_fit_the_host(plan):
 
 def test_place_opening_rejects_an_overlapping_host_station(plan):
     with pytest.raises(macros.MacroError, match="conflicts"):
-        macros.place_opening(plan, "main", host="W-101", type_ref="DT-EXT36",
+        macros.place_opening(plan, "main", host="W-101", type_ref="DT-EXT-SWING36",
                              along="5'", is_door=True)
 
 

@@ -37,6 +37,11 @@ from typehaus.library.doors import (
 )
 from typehaus.library.electrical import ALL_ELECTRICAL_DEVICE_TYPES
 from typehaus.library.hardware import STRUCTURAL_HARDWARE
+from typehaus.library.hvac import (
+    ALL_DUCT_PRODUCT_TYPES,
+    ALL_REGISTER_TYPES,
+    ALL_VENTILATION_EQUIPMENT_TYPES,
+)
 from typehaus.library.materials import ALL_MATERIALS
 from typehaus.library.placeables import (
     SEKTION_CASEWORK_TYPES,
@@ -44,11 +49,6 @@ from typehaus.library.placeables import (
     STARTER_CASEWORK_TYPES,
     STARTER_FIXTURE_TYPES,
     STARTER_FURNITURE_TYPES,
-)
-from typehaus.library.hvac import (
-    ALL_DUCT_PRODUCT_TYPES,
-    ALL_REGISTER_TYPES,
-    ALL_VENTILATION_EQUIPMENT_TYPES,
 )
 from typehaus.library.railings import ALL_RAILING_TYPES
 from typehaus.library.windows import WINDOW_TYPES_16_INCH_MODULE

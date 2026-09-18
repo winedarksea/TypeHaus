@@ -22,12 +22,9 @@ from typehaus import (
 
 # --- library-of-the-house types ---------------------------------------------
 DOOR_TYPES = [
-    DoorType(tag="DT-EXT36", width=ft(3), height=ft(6, 8), exterior=True,
-             u_factor=u_us(0.20)),
     # Interior passage leaf — the upper storey's bedroom door off the landing. The library
     # lives on this storey for the whole house, which is why an upper-storey door type is
     # declared here.
-    DoorType(tag="DT-INT32", width=ft(2, 8), height=ft(6, 8)),
 ]
 WINDOW_TYPES = [
     WindowType(tag="WT-3050", width=ft(3), height=ft(5),
@@ -63,7 +60,7 @@ WALLS = [
 # `from_node` positions an opening's *near jamb*, not its centre, so WIN-102 runs x
 # 16'..19'.
 OPENINGS = [
-    Door(uid="D101AAAAAA", tag="D-101", host="W-101", type_ref="DT-EXT36",
+    Door(uid="D101AAAAAA", tag="D-101", host="W-101", type_ref="DT-EXT-SWING36",
          position=from_node("N-1", ft(3))),
     # South (front) wall, east of the door: well clear of R308.4.2's 24" arc around the
     # leaf, which runs x 3'..6'.

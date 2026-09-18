@@ -13,7 +13,10 @@ name onto the packaged package, so authoring is unchanged.
 1. Author and exercise the item in `houses/<house>/`; keep the house-specific choice in
    that house.
 2. Verify the item is generally reusable, declarative, has a stable tag, and does not
-   include project coordinates, owner data, or proprietary mesh assets.
+   include project coordinates, owner data, or proprietary mesh assets. A second-house
+   consumer is useful evidence, not a prerequisite: promote intrinsic stable catalog facts
+   immediately; keep coordinates, sizing decisions, owner selections, and proprietary
+   assets local.
 3. Add the item to the focused module under `typehaus/library/` and export it from that
    package's `__init__.py`.
    Include the original technical source in `source`; empirical ratings such as STC must

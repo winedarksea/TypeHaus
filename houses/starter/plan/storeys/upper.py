@@ -71,7 +71,7 @@ OPENINGS = [
            position=centered(), sill_height=ft(2, 6)),
     Window(uid="WN23AAAAAA", tag="WIN-204", host="W-203B", type_ref="WT-3050",
            position=centered(), sill_height=ft(2, 6)),
-    Door(uid="D201AAAAAA", tag="D-201", host="W-205", type_ref="DT-INT32",
+    Door(uid="D201AAAAAA", tag="D-201", host="W-205", type_ref="DT-INT-SWING32",
          position=centered()),
 ]
 

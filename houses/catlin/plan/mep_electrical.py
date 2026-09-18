@@ -62,24 +62,9 @@ ELECTRICAL_DEVICE_TYPES = (
     # Every light in the house is a real product from plan/lighting_types.py carrying a
     # schedule mark — a generic fixture with no lamp, no lumens and no listing has no place
     # in a lighting plan; a schedule cannot print a row for it.
-    ElectricalDeviceType(tag="ED-T-SWITCH", name="Wall switch", footprint=(inch(4), inch(2)), height=inch(2),
-                          ports=(ServicePort(tag="power", service=Service.POWER_120,
-                                             position=(ft(0), ft(0), ft(0))),)),
-    ElectricalDeviceType(tag="ED-T-RECEPTACLE", name="Receptacle", footprint=(inch(4), inch(2)), height=inch(2),
-                          ports=(ServicePort(tag="power", service=Service.POWER_120,
-                                             position=(ft(0), ft(0), ft(0))),)),
     # NEMA 3R weatherproof exterior junction box with a gasketed blank cover plate.
-    ElectricalDeviceType(tag="ED-T-JBOX", name="NEMA 3R weatherproof junction box",
-                          footprint=(inch(6), inch(6)), height=inch(4),
-                          plan_symbol="junction-box",
-                          ports=(ServicePort(tag="power", service=Service.POWER_120,
-                                             position=(ft(0), ft(0), ft(0))),)),
     # Kitchen outlets. ED-T-RECEPTACLE above stays a plain 120V duplex — its port list is
     # pinned by a contract test — so the counter devices name their own types instead.
-    ElectricalDeviceType(tag="ED-T-RECEPTACLE-GFCI", name="GFCI receptacle",
-                          footprint=(inch(4), inch(2)), height=inch(2),
-                          ports=(ServicePort(tag="power", service=Service.POWER_120,
-                                             position=(ft(0), ft(0), ft(0))),)),
     # The plant room's outlets. NEC 2023 makes RM-S-PLANT a damp location
     # throughout and a wet one anywhere it is misted or hosed, which changes three things at
     # once about an ordinary duplex: WR listing (the receptacle body itself), a GFCI device
@@ -88,33 +73,13 @@ ELECTRICAL_DEVICE_TYPES = (
     # heat mats and humidifiers stay plugged in permanently and a flip lid is only weather-
     # tight with nothing in it. Non-metallic gasketed box: bare steel and standard EMT rust
     # at 70% RH.
-    ElectricalDeviceType(tag="ED-T-RECEPTACLE-WR-GFCI",
-                          name="WR GFCI receptacle, in-use cover, non-metallic gasketed box",
-                          footprint=(inch(4.5), inch(3)), height=inch(3), nema="5-20R",
-                          source="NEC 2023 406.9(B)/210.8 for a damp-to-wet interior location; notes/plant_room.md",
-                          ports=(ServicePort(tag="power", service=Service.POWER_120,
-                                             position=(ft(0), ft(0), ft(0))),)),
-    ElectricalDeviceType(tag="ED-T-RECEPTACLE-240", name="240V appliance receptacle, NEMA 14-50",
-                          footprint=(inch(4), inch(4)), height=inch(4),
-                          ports=(ServicePort(tag="power", service=Service.POWER_240,
-                                             position=(ft(0), ft(0), ft(0))),)),
     # Kettle outlet: a 5-20R and a 6-20R in one two-gang box, so a 120V and a 240V
     # appliance can share the spot. The disposer outlet is a *single* 5-20R, not a duplex —
     # it's the disconnect for one cord-and-plug appliance on its own 20A branch
     # (CKT-DISPOSAL); a duplex would invite a second load onto a motor-inrush-sized circuit.
-    ElectricalDeviceType(tag="ED-T-RECEPTACLE-520S",
-                          name="NEMA 5-20R single receptacle, 20A",
-                          footprint=(inch(4), inch(2)), height=inch(2),
-                          ports=(ServicePort(tag="power", service=Service.POWER_120,
-                                             position=(ft(0), ft(0), ft(0))),)),
-    ElectricalDeviceType(tag="ED-T-RECEPTACLE-620",
-                          name="NEMA 5-20R/6-20R duplex kettle outlet",
-                          footprint=(inch(4), inch(4)), height=inch(4),
-                          ports=(ServicePort(tag="power-120", service=Service.POWER_120,
-                                             position=(ft(0), ft(0), ft(0))),
-                                 ServicePort(tag="power-240", service=Service.POWER_240,
-                                             position=(ft(0), ft(0), ft(0))))),
 )
+
+
 
 # --- Electrical: symbols-only (decision 1 — panel/circuit schedule deferred) -------
 PANEL = [

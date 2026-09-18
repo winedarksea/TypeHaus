@@ -2,7 +2,7 @@
 
 Guards are required by code at every open edge over 30", so "which guard product" is a
 question every house asks — but the library had no railing catalog at all, and the only
-two entries in the repo lived in ``houses/catlin/plan/railing_types.py``. They are product
+two entries in the repo lived in house-local catalogs. They are product
 definitions with no house-specific geometry (each ``Railing`` instance authors its own run),
 so nothing about them was ever catlin-specific.
 """
@@ -29,5 +29,8 @@ RAILING_EXT_ALUMINUM_SURFACE = RailingType(
     source="Surface-mounted aluminum guard product class.",
 )
 
-ALL_RAILING_TYPES = (RAILING_EXT_ALUMINUM_FASCIA, RAILING_INT_STAIR_GUARD,
-                     RAILING_EXT_ALUMINUM_SURFACE)
+ALL_RAILING_TYPES = (
+    RAILING_EXT_ALUMINUM_FASCIA,
+    RAILING_INT_STAIR_GUARD,
+    RAILING_EXT_ALUMINUM_SURFACE,
+)

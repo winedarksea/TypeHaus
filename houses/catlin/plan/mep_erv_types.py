@@ -100,27 +100,6 @@ EQUIPMENT_TYPES_ERV = (
     # collar velocity pressure. It is worked at the house's LARGEST port flow (25 cfm,
     # DU-M-ERV-R-PLANT) and is therefore conservative at every other port. A submitted
     # shop drawing with a measured curve replaces these three points and nothing else.
-    EquipmentType(tag="EQ-T-ERV-MANIFOLD-6",
-                  name="Fabricated air plenum, 8\" inlet, 6 x 4\" dampered ports",
-                  footprint=(inch(24), inch(8)), height=inch(8),
-                  plan_symbol="erv",
-                  duct_ports=6, port_diameter=inch(4),
-                  static_loss_pa_at_cfm=((60.0, 0.5), (120.0, 1.8), (210.0, 5.5)),
-                  source="Fabricated galvanized plenum from any sheet-metal shop: one 8 in. inlet collar, six 4 in. start collars each with an integral butterfly balancing damper, seams sealed with mastic. Sized from the port count the level it serves needs. Replaced a 160 mm/75 mm proprietary radial manifold on 2026-09-12 (plans/buildability.md BLD-08): the proprietary part has no Minnesota dealer, the topology does not need it, and every piece of this one is a commodity. Loss curve derived in notes/erv_static_budget.md §4, not published by a maker.",
-                  ports=(ServicePort(tag="trunk", service=Service.SUPPLY_AIR,
-                                     position=(ft(0), ft(0), inch(4))),)),
-    EquipmentType(tag="EQ-T-ERV-MANIFOLD-10",
-                  name="Fabricated air plenum, 8\" inlet, 10 x 4\" dampered ports",
-                  footprint=(inch(34), inch(8)), height=inch(8),
-                  plan_symbol="erv",
-                  duct_ports=10, port_diameter=inch(4),
-                  # The same 8" inlet in the same 8" section, so the same curve: the box is
-                  # longer, not fatter, and the loss is set by the inlet velocity and one
-                  # collar, neither of which the extra length moves.
-                  static_loss_pa_at_cfm=((60.0, 0.5), (120.0, 1.8), (210.0, 5.5)),
-                  source="As EQ-T-ERV-MANIFOLD-6, ten ports in a longer box. The level-2 extract plenum is the only one in the house that needs this many: RM-M-MECH gathers both the main storey's wet rooms and the second storey's, because they share one floor cavity. All ten are spoken for, which mep.erv_manifold_ports now grades rather than a comment asserting.",
-                  ports=(ServicePort(tag="trunk", service=Service.RETURN_AIR,
-                                     position=(ft(0), ft(0), inch(4))),)),
     # The same six-port manifold, cast for the EXTRACT side. Identical part, identical
     # price, one field different: the trunk carries stale air away from the house, so the
     # port is RETURN_AIR — which is what EQ-T-ERV-MANIFOLD-10 has always declared, this
@@ -128,15 +107,6 @@ EQUIPMENT_TYPES_ERV = (
     # `mep.equipment_port_service` could only call them UNKNOWN, because a type that states
     # its direction once cannot describe a placement that reverses it, and a FAIL there
     # would have reported the catalog rather than the building.
-    EquipmentType(tag="EQ-T-ERV-MANIFOLD-6-EXH",
-                  name="Fabricated air plenum, 8\" inlet, 6 x 4\" dampered ports, extract",
-                  footprint=(inch(24), inch(8)), height=inch(8),
-                  plan_symbol="erv",
-                  duct_ports=6, port_diameter=inch(4),
-                  static_loss_pa_at_cfm=((60.0, 0.5), (120.0, 1.8), (210.0, 5.5)),
-                  source="EQ-T-ERV-MANIFOLD-6's part on the extract side: same fabricated galvanized box, same 8 in. inlet collar, same six 4 in. dampered start collars, same price. It is a separate catalog row only because the trunk's service is the direction, and the direction is what a check reads.",
-                  ports=(ServicePort(tag="trunk", service=Service.RETURN_AIR,
-                                     position=(ft(0), ft(0), inch(4))),)),
     # The mixing box: where the ERV's fresh leg joins System 1's return. A box and not a tee
     # because of the damper in it — a backdraft damper on the ERV leg is what keeps the
     # return working when the ERV is off, which is the behaviour the owner asked for and is
@@ -173,27 +143,6 @@ EQUIPMENT_TYPES_ERV = (
     # OUTDOOR_AIR, the discharge hood reached by an EXHAUST run could only be UNKNOWN, and
     # the UNKNOWN was about this catalog, not about the building. Split the row, keep the
     # rate, and the model says what the damper says.
-    EquipmentType(tag="EQ-T-ERV-HOOD-6",
-                  name="Exterior ventilation hood, 6\" round, bird screen + backdraft damper",
-                  footprint=(inch(12), inch(12)), height=inch(12),
-                  plan_symbol="erv",
-                  # A hood IS a one-port fitting, and saying so is what keeps it out of
-                  # `mep.erv_manifold_ports`'s UNKNOWN column. It carries EquipmentKind.
-                  # DUCT_MANIFOLD because there is no HOOD kind in the enum, so the port
-                  # census walks it; one 6" duct is exactly what may land on it, and a
-                  # second would be a real defect this now reports.
-                  duct_ports=1, port_diameter=inch(6),
-                  source="Generic 6\" wall/gable hood with 1/4\" bird screen and a gravity backdraft damper. Screen mesh is deliberately coarse: a fine mesh frosts shut on an intake at -15 F.",
-                  ports=(ServicePort(tag="duct", service=Service.OUTDOOR_AIR,
-                                     position=(ft(0), ft(0), inch(6))),)),
-    EquipmentType(tag="EQ-T-ERV-HOOD-6-EXH",
-                  name="Exterior ventilation hood, 6\" round, discharge, bird screen + backdraft damper",
-                  footprint=(inch(12), inch(12)), height=inch(12),
-                  plan_symbol="erv",
-                  duct_ports=1, port_diameter=inch(6),
-                  source="EQ-T-ERV-HOOD-6 with the damper reversed — the same casting, the same screen, the same price, on the discharge side. The screen stays the coarse 1/4\" mesh: a discharge hood carries humid room air and a fine mesh frosts shut on it as readily as on an intake.",
-                  ports=(ServicePort(tag="duct", service=Service.EXHAUST_AIR,
-                                     position=(ft(0), ft(0), inch(6))),)),
 )
 
 REGISTER_TYPES_ERV = (
@@ -247,92 +196,26 @@ DUCT_PRODUCT_TYPES_ERV = (
     # collar), but 3" dampers and grilles are a thin, Amazon-grade catalogue, while at 4"
     # every part is a bath-fan commodity off a shelf in Bloomington. Going up also bought
     # static back, which is how the system clears its budget on 6" trunks.
-    DuctProductType(tag="DUCT-T-GALV-4",
-                    name="4\" galvanized snap-lock round duct, 26 ga",
-                    material="galvanized", nominal_diameter=inch(4),
-                    # Snap-lock is a longitudinal seam, so the bore IS the nominal size.
-                    bore_diameter=inch(4),
-                    # ASHRAE Fundamentals Ch. 21 Table 1, galvanized steel with a
-                    # longitudinal seam: "medium smooth", 0.0003 ft.
-                    roughness_m=0.0000914,
-                    # 600 fpm. NOT a pressure limit and not the pipe's capacity — 4" round
-                    # carries 78 cfm before it is noisy in a duct sense. This is the QUIET
-                    # limit for a branch running continuously ten feet from a pillow, which
-                    # is the only limit a whole-house ventilation branch actually has.
-                    max_cfm=50.0,
-                    # 2'-6". ASHRAE Ch. 21's C = 0.22 for a smooth r/D = 1.5 elbow, converted
-                    # to a length at this product's own friction factor: 0.22 x 0.333 ft /
-                    # 0.0324 = 2.26 ft, rounded UP for a stamped adjustable elbow, which is
-                    # rougher than the smooth radius the coefficient was measured on.
-                    bend_equivalent_length=inch(30),
-                    source="Commodity 26 ga galvanized snap-lock round pipe with stamped adjustable elbows and start collars — the bath-fan aisle, stocked by every Twin Cities supply house. Roughness and bend coefficient are ASHRAE Fundamentals Ch. 21 reads, worked in notes/erv_static_budget.md §2-3."),
     # ** THE FLEXIBLE LEG, AND IT IS A ROW WITH NO RUN NAMING IT TODAY. ** A radial threading
     # an FS-S-WEST truss web wants a short flexible tail rather than a made-up offset in
     # rigid pipe. No run in this house is authored as one — every radial is drawn rigid end
     # to end — so this row prices nothing and grades nothing. It is here because the note's
     # comparison of the two products has to be reproducible from typed data rather than from
     # a paragraph, and because the first run that needs one should find the row waiting.
-    DuctProductType(tag="DUCT-T-SEMIRIGID-4",
-                    name="4\" semi-rigid aluminium duct",
-                    material="semi_rigid", nominal_diameter=inch(4),
-                    # Corrugated wall: the bore is under the nominal size, which is half of
-                    # why this product costs so much more static than the snap-lock above.
-                    bore_diameter=inch(3.8),
-                    # ASHRAE Ch. 21 Table 1, flexible metallic duct FULLY EXTENDED. A
-                    # compressed one is several times worse and is not a product, it is a
-                    # defect.
-                    roughness_m=0.0009144,
-                    max_cfm=40.0,
-                    bend_equivalent_length=inch(42),
-                    source="Semi-rigid corrugated aluminium, for a short leg through a floor-truss web where rigid pipe cannot be dressed. Referenced by no run today; kept so notes/erv_static_budget.md §6's rigid-versus-flexible comparison reads off typed data."),
     # ** THE TRUNK. ** Both risers, both basement trunks, the mixing-box feed and both
     # outdoor legs. 6" and not 8": Broan's manual asks for 8" above 200 cfm with long runs,
     # and notes/erv_static_budget.md §7 is where this house answers that — at 6" the worst
     # path lands inside the certified rating point, and the 8" upsize is PRICED there as the
     # fallback rather than built.
-    DuctProductType(tag="DUCT-T-GALV-6",
-                    name="6\" galvanized round duct, 26 ga",
-                    material="galvanized", nominal_diameter=inch(6),
-                    bore_diameter=inch(6),
-                    roughness_m=0.0000914,
-                    # 1,270 fpm — a TRUNK velocity, not the 600 fpm quiet-branch limit on
-                    # the 4" row. These runs are in a chase and a joist bay, not over a bed.
-                    max_cfm=250.0,
-                    # 0.22 x 0.5 ft / 0.0225 = 4.89 ft, rounded to 4'-6" for the same
-                    # stamped-elbow reason as the 4" row.
-                    bend_equivalent_length=inch(54),
-                    source="Commodity 26 ga galvanized round pipe. The OA and EA legs carry it inside an R-8 wrap with a sealed vapour jacket (DuctRun.insulation), which changes what the run costs and nothing about what it resists."),
     # ** THE DISCHARGE, AND THE ROW THAT SHOULD HAVE LANDED WITH THE UPSIZE. ** DU-ERV-EA
     # went 6" -> 8" for the static budget and no 8" row went with it, so
     # `mep.erv_static_budget` reported "no DuctProductType for (galvanized, 8.0")" and could
     # not resist the one leg the upsize was bought for — the check went UNKNOWN on exactly
     # the term the change was about. The take-off fell through to the un-diametered
     # `exhaust:galvanized` fallback at the same time, 29.3 LF of it.
-    DuctProductType(tag="DUCT-T-GALV-8",
-                    name="8\" galvanized round duct, 26 ga",
-                    material="galvanized", nominal_diameter=inch(8),
-                    bore_diameter=inch(8),
-                    roughness_m=0.0000914,
-                    # 1,270 fpm on 0.349 ft2, the same trunk velocity the 6" row is set at.
-                    max_cfm=440.0,
-                    # 0.22 x 0.667 ft / 0.0232 = 6.32 ft, rounded UP to 6'-6" for the same
-                    # stamped-elbow reason as the rows above. f is lower here than at 6"
-                    # because Re falls with velocity, which is most of why the upsize pays.
-                    bend_equivalent_length=inch(78),
-                    source="Commodity 26 ga galvanized round pipe, one size up from the trunk row. Carries DU-ERV-EA's 210 cfm inside an R-8 vapour-sealed wrap. Roughness is the same ASHRAE Ch. 21 read as the 4\" and 6\" rows; the bend length is re-worked at this diameter's own friction factor in notes/erv_static_budget.md §2."),
     # ** THE REJECTED ALTERNATIVE, KEPT SO THE NOTE'S ARITHMETIC IS READABLE. ** Insulated
     # flex is what a Twin Cities contractor reaches for on a 6" ERV leg, and it is why this
     # system is built out of rigid pipe instead: at this roughness the OA and EA legs alone
     # cost about 0.44 in. w.g., which is most of the machine's whole budget, and the upsize
     # to 8" that would buy it back does not pay for itself. Referenced by no run.
-    DuctProductType(tag="DUCT-T-FLEX-6",
-                    name="6\" insulated flexible duct, R-8 jacket",
-                    material="flex", nominal_diameter=inch(6),
-                    bore_diameter=inch(6),
-                    # ASHRAE Ch. 21, flexible metallic fully extended — an order of magnitude
-                    # over snap-lock, and the entire argument.
-                    roughness_m=0.0009144,
-                    max_cfm=250.0,
-                    bend_equivalent_length=inch(84),
-                    source="Insulated flex, the conventional Twin Cities ERV trunk. REFUSED for this house: notes/erv_static_budget.md §6 works the same two runs both ways and flex costs about three times the static of rigid pipe in the same wrap. Named by no run; the row exists so that comparison rests on typed data."),
 )

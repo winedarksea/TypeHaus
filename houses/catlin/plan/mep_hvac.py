@@ -50,56 +50,21 @@ from typehaus.model import m
 # of its own. A submitted product with a real curve replaces the three points and nothing
 # else. They feed `mep.erv_static_budget` and are read by nothing else.
 REGISTER_TYPES = (
-    RegisterType(tag="REG-T-ERV-SUP", name="ERV fresh-air supply diffuser, 4\" round collar",
-                 footprint=(inch(7), inch(7)), height=inch(1),
-                 plan_symbol="register", ventilation_terminal=True,
-                 static_loss_pa_at_cfm=((10.0, 1.0), (20.0, 4.0), (30.0, 9.0)),
-                 ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
-                                    position=(ft(0), ft(0), ft(0))),)),
     # REG-T-ERV-EXH-WALL below is the house's only wall-oriented ERV terminal type:
     # `footprint` is a PLAN rectangle, so a ceiling grille authors (face, face) with
     # `height` as its 1" thickness and a wall grille authors (face, DEPTH) with `height` as
     # the face. Mount a ceiling type on a wall and 3" of it draws inside the studs.
-    RegisterType(tag="REG-T-ERV-EXH", name="ERV stale-air extract diffuser, 4\" round collar",
-                 footprint=(inch(7), inch(7)), height=inch(1),
-                 plan_symbol="register", ventilation_terminal=True,
-                 static_loss_pa_at_cfm=((10.0, 1.0), (20.0, 4.0), (30.0, 9.0)),
-                 ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
-                                    position=(ft(0), ft(0), ft(0))),)),
     # A CEILING diffuser lies in the plane it is cut into (7x7 face, 1" deep); mounting that
     # type on a WALL tells the resolver the body reaches 7" off the wall into the room.
     # ``_body_profile`` measures a wall mount's projection as the local y extent of its
     # footprint, so REG-A-STUBATH-EXH — the house's one wall-hung extract — read as a 7"
     # protrusion, past A117.1 §307.2's 4", obstructing FX-A-STUBATH-WC's required clear
     # space. A sidewall grille is a 7" face 1" deep, which is what this type says.
-    RegisterType(tag="REG-T-ERV-EXH-WALL",
-                 name="ERV stale-air extract diffuser, 4\" round collar, sidewall",
-                 footprint=(inch(7), inch(1)), height=inch(7),
-                 plan_symbol="register", ventilation_terminal=True,
-                 static_loss_pa_at_cfm=((10.0, 1.0), (20.0, 4.0), (30.0, 9.0)),
-                 ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
-                                    position=(ft(0), ft(0), ft(0))),)),
     # The sauna's own pair, small and dampered. A sauna is run in sessions, not
     # continuously: during a session you want the room sealed and stratified, and after one
     # you want it turned over hard. Both terminals are 4"x4" with an adjustable, closable
     # damper at the face (plans/TODO.md §HVAC) so the room can be shut off the trunk and
     # opened wide, which a fixed 6" round diffuser cannot do.
-    RegisterType(tag="REG-T-ERV-SAUNA-SUP",
-                 name="Sauna fresh-air supply, 4x4, small adjustable/closable damper",
-                 footprint=(inch(4), inch(4)), height=inch(1),
-                 plan_symbol="register", ventilation_terminal=True,
-                 static_loss_pa_at_cfm=((10.0, 1.6), (20.0, 6.5), (30.0, 14.6)),
-                 source="plans/TODO.md §HVAC: sauna terminals small, adjustable/closable damper",
-                 ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
-                                    position=(ft(0), ft(0), ft(0))),)),
-    RegisterType(tag="REG-T-ERV-SAUNA-EXH",
-                 name="Sauna stale-air extract, 4x4, small adjustable/closable damper",
-                 footprint=(inch(4), inch(4)), height=inch(1),
-                 plan_symbol="register", ventilation_terminal=True,
-                 static_loss_pa_at_cfm=((10.0, 1.6), (20.0, 6.5), (30.0, 14.6)),
-                 source="plans/TODO.md §HVAC: sauna terminals small, adjustable/closable damper",
-                 ports=(ServicePort(tag="return", service=Service.RETURN_AIR,
-                                    position=(ft(0), ft(0), ft(0))),)),
     # The plant room's pair (notes/plant_room.md). The room is held at ~75 F / 70% RH
     # year-round, which makes its ventilation a pressure question before it is an air
     # question: natatorium practice holds such a room 0.05-0.15 in. w.g. NEGATIVE to the
@@ -134,11 +99,6 @@ REGISTER_TYPES = (
                  source="notes/plant_room.md — REG-T-HP-SUP with a motorised zone damper so System 1 can be isolated from a 70% RH room",
                  ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
                                     position=(ft(0), ft(0), ft(0))),)),
-    RegisterType(tag="REG-T-HP-SUP", name="Heat-pump supply register, 12x6",
-                 footprint=(inch(12), inch(6)), height=inch(1),
-                 plan_symbol="register",
-                 ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
-                                    position=(ft(0), ft(0), ft(0))),)),
     # The SIDEWALL twin of REG-T-HP-SUP, and the house's only System 1 terminal that is not
     # cut into a ceiling. It exists for REG-S-HP-STAIR, which was a ceiling diffuser dumping
     # 50 cfm straight down 6'-2" from a 650 cfm return in the same room — a short circuit that
@@ -156,13 +116,6 @@ REGISTER_TYPES = (
     # instead of being handed to the return. 72 in2 gross / ~50 in2 free at 50 cfm is 144 fpm
     # face velocity — silent — with the throw coming off the vane setting rather than off a
     # starved face.
-    RegisterType(tag="REG-T-HP-SUP-SIDE",
-                 name="Heat-pump supply register, 12x6, sidewall double-deflection",
-                 footprint=(inch(12), inch(1)), height=inch(6),
-                 plan_symbol="register",
-                 source="Sidewall supply register, 12 x 6 nominal, double-deflection core with an opposed-blade damper behind it. Takes off the side of DU-S-HP-SUP through the soffit's west lining — a collar, not a boot: the trunk's west face stands 3/8\" off the framed cavity's west edge, so the whole take-off is 2 1/2\" of build-up.",
-                 ports=(ServicePort(tag="supply", service=Service.SUPPLY_AIR,
-                                    position=(ft(0), ft(0), ft(0))),)),
     # REG-T-HP-RET is a filter-back return grille, and it is the only filter in this system:
     # with the machine hung in SF-S-HP1 there is no filter cabinet anywhere else, and this
     # grille is the serviceable face a person reaches from the hall floor.
@@ -201,13 +154,9 @@ REGISTER_TYPES = (
     # 12" face fits a 14 1/2" clear 2x6 bay without cutting a stud (10x8 free opening);
     # wider needs a header. `footprint`/`height` are swapped vs. the ceiling diffusers above
     # because this one mounts in a wall, not a ceiling — swap them back and it resolves flat.
-    RegisterType(tag="REG-T-TRANSFER-1210",
-                 name="Passive transfer louver, 12x10 face (10x8 free opening)",
-                 footprint=(inch(12), inch(1)), height=inch(10),
-                 plan_symbol="register",
-                 source="Passive door/wall transfer grille, single 2x6 bay — no duct, no damper",
-                 ports=()),
 )
+
+
 
 # No gas appliance in the house: all-electric (three Gree heat-pump systems + radiant
 # floor), and `plan/site.py` authors no GAS UtilityLine. Air-side ports live on

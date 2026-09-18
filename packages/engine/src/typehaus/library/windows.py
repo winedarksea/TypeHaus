@@ -9,15 +9,36 @@ from __future__ import annotations
 from typehaus import WindowType, u_us
 from typehaus.quantities import ft, inch
 
-_SOURCE = ("Reusable 16-inch framing-module window preset; select a listed manufacturer "
-           "configuration that meets the declared whole-window performance values.")
+_SOURCE = (
+    "Reusable 16-inch framing-module window preset; select a listed manufacturer "
+    "configuration that meets the declared whole-window performance values."
+)
+_STANDARD_U_FACTOR = u_us(0.25)
+_STANDARD_FRAME_DEPTH = inch(3.25)
 
 
-def _window(tag: str, width, height, operation: str, *, tempered: bool = False,
-            u_factor=u_us(0.25), frame_depth=inch(3.25)) -> WindowType:
-    return WindowType(tag=tag, width=width, height=height, operation=operation,
-                      tempered=tempered, u_factor=u_factor, frame_depth=frame_depth,
-                      shgc=0.35, vt=0.5, source=_SOURCE)
+def _window(
+    tag: str,
+    width,
+    height,
+    operation: str,
+    *,
+    tempered: bool = False,
+    u_factor=_STANDARD_U_FACTOR,
+    frame_depth=_STANDARD_FRAME_DEPTH,
+) -> WindowType:
+    return WindowType(
+        tag=tag,
+        width=width,
+        height=height,
+        operation=operation,
+        tempered=tempered,
+        u_factor=u_factor,
+        frame_depth=frame_depth,
+        shgc=0.35,
+        vt=0.5,
+        source=_SOURCE,
+    )
 
 
 WINDOW_TYPES_16_INCH_MODULE = (
@@ -40,8 +61,6 @@ WINDOW_TYPES_16_INCH_MODULE = (
     _window("WT-2754-T", inch(27), ft(4, 6), "casement", tempered=True),
     _window("WT-3036-T", inch(30), ft(3), "casement", tempered=True),
     _window("WT-3048-T", inch(30), ft(4), "casement", tempered=True),
-    _window("WT-2736-HP", inch(27), ft(3), "fixed", u_factor=u_us(0.14),
-            frame_depth=inch(4)),
-    _window("WT-3048-HP", inch(30), ft(4), "fixed", u_factor=u_us(0.14),
-            frame_depth=inch(4)),
+    _window("WT-2736-HP", inch(27), ft(3), "fixed", u_factor=u_us(0.14), frame_depth=inch(4)),
+    _window("WT-3048-HP", inch(30), ft(4), "fixed", u_factor=u_us(0.14), frame_depth=inch(4)),
 )
