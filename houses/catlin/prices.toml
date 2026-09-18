@@ -2613,7 +2613,8 @@
 # ends and a 1% condensate slope is a two-person lift, and 18 1/8" of cabinet over a 2"
 # emergency pan in a 20 1/4" cavity leaves no room to work off-square. (The cavity was
 # 18 1/4" and the pan did not fit it at all; SF-S-HP1 went to a 23" drop on 2026-09-18. The
-# pan and its own drain line are NOT in this row — see `hvac-emergency-drain-pan` below.) The outdoor unit doubles in weight (92.6 -> 187.4 lb),
+# pan and its own drain line are NOT in this row — see `hvac-emergency-drain-pan` below.)
+# The outdoor unit doubles in weight (92.6 -> 187.4 lb),
 # which is the labour line there: it is a two-person set onto a balcony stand at +10'.
 "EQ-T-GREE-FLEXX-ULTRA-24-AH" = { material = { low = 1750, high = 2500 }, labour = { low = 1150, high = 2400 } }  # 1 ea — FXU24HP230V1R32AH, 1.0 in. w.c. ESP, 760 cfm, 135.6 lb
 "EQ-T-GREE-FLEXX-ULTRA-24-OD" = { material = { low = 2100, high = 3000 }, labour = { low = 560, high = 1250 } }  # 1 ea — FXU24HP230V1R32AO, 187.4 lb, MCA 21 / MOCP 25
