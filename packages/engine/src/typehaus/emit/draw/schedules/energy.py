@@ -253,7 +253,7 @@ def _equipment_rows(model: ResolvedModel) -> list[tuple[str, ...]]:
                 element.tag,
                 str(getattr(element.kind, "value", element.kind or "—")).upper(),
                 element.type_ref or "—",
-                _btuh(getattr(spec, "heating_capacity_btuh", None)),
+                _heating_rating(spec),
                 _btuh(getattr(spec, "cooling_capacity_btuh", None)),
                 _efficiency(spec),
             ))
@@ -262,6 +262,24 @@ def _equipment_rows(model: ResolvedModel) -> list[tuple[str, ...]]:
 
 def _btuh(value: float | None) -> str:
     return f"{value:,.0f}" if value else "—"
+
+
+def _heating_rating(spec) -> str:
+    """The equipment schedule's heating column, off the published table.
+
+    The AHRI 47 °F row is what the retired ``heating_capacity_btuh`` scalar was, so that is
+    the figure printed — but a MODULATING unit's single number is a half-truth, so the
+    minimum goes beside it where the table states one. A reader of the MN energy certificate
+    needs to see that a 25,000 Btu/h unit has a 10,800 Btu/h floor.
+    """
+    rows = getattr(spec, "heating_ratings", ()) or ()
+    if not rows:
+        return _btuh(getattr(spec, "resistance_heating_btuh", None))
+    at_47 = next((row for row in rows if row.outdoor_db_f == 47.0), rows[-1])
+    top = at_47.rated_btuh if at_47.rated_btuh is not None else at_47.maximum_btuh
+    if at_47.minimum_btuh is None or at_47.minimum_btuh == top:
+        return _btuh(top)
+    return f"{at_47.minimum_btuh:,.0f}-{top:,.0f}" if top else _btuh(at_47.minimum_btuh)
 
 
 def _efficiency(spec) -> str:

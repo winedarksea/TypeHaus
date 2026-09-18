@@ -33,6 +33,78 @@ _VENTILATION_KINDS = frozenset({"erv"})
 
 
 @dataclass(frozen=True)
+class HeatPumpCapacity:
+    """A heat pump's three capacity levels read at ONE outdoor temperature, with provenance.
+
+    ``basis`` is a sentence, not an enum: a finding prints it so a reader sees where the
+    number came from — "read at −15 °F (manufacturer)" or "interpolated between −13 °F and
+    5 °F (neep)". A capacity with no provenance is the defect the ratings table closed, and
+    losing the provenance on the way out would reopen it one layer down.
+    """
+
+    outdoor_db_f: float
+    minimum_btuh: float | None
+    rated_btuh: float | None
+    maximum_btuh: float | None
+    basis: str
+
+
+def _interpolate(low_t: float, low: float | None, high_t: float, high: float | None,
+                 at: float) -> float | None:
+    """Linear between two rows, per column, and ``None`` unless BOTH state that column.
+
+    Per column and not per row, because the published tables are ragged: a manufacturer's
+    extended ratings state maximum at every temperature and minimum at three of them, and a
+    maximum interpolated across a gap in the minimum column would be fine while a minimum
+    interpolated from one endpoint would be invented.
+    """
+    if low is None or high is None:
+        return None
+    if high_t == low_t:
+        return low
+    return low + (high - low) * (at - low_t) / (high_t - low_t)
+
+
+def capacity_at(rows, odb_f: float) -> HeatPumpCapacity | None:
+    """Read a heat pump's capacity table at one outdoor temperature.
+
+    **Refuses to extrapolate at BOTH ends**, which is one more than ``erv_static._delivered``
+    does — and the difference is deliberate. A fan curve may be clamped at its low end
+    because a fan cannot beat its own free-air flow, so the clamp is a physical bound. There
+    is no such bound here: a compressor below the coldest published row is not "at least the
+    coldest row's output", it is a machine the manufacturer declined to characterise, and
+    quite possibly one that has locked out. Returning the endpoint would turn a gap in the
+    document into a number the check then passes on.
+
+    ``None`` where the table is empty, or where ``odb_f`` falls outside its span.
+    """
+    if not rows:
+        return None
+    if odb_f < rows[0].outdoor_db_f or odb_f > rows[-1].outdoor_db_f:
+        return None
+    exact = next((row for row in rows if row.outdoor_db_f == odb_f), None)
+    if exact is not None:
+        return HeatPumpCapacity(
+            odb_f, exact.minimum_btuh, exact.rated_btuh, exact.maximum_btuh,
+            f"read at {odb_f:g} °F ({exact.basis.value})")
+    low = max((row for row in rows if row.outdoor_db_f < odb_f),
+              key=lambda row: row.outdoor_db_f)
+    high = min((row for row in rows if row.outdoor_db_f > odb_f),
+               key=lambda row: row.outdoor_db_f)
+    bases = dict.fromkeys((low.basis.value, high.basis.value))
+    return HeatPumpCapacity(
+        odb_f,
+        _interpolate(low.outdoor_db_f, low.minimum_btuh,
+                     high.outdoor_db_f, high.minimum_btuh, odb_f),
+        _interpolate(low.outdoor_db_f, low.rated_btuh,
+                     high.outdoor_db_f, high.rated_btuh, odb_f),
+        _interpolate(low.outdoor_db_f, low.maximum_btuh,
+                     high.outdoor_db_f, high.maximum_btuh, odb_f),
+        f"interpolated between {low.outdoor_db_f:g} °F and {high.outdoor_db_f:g} °F "
+        f"({'/'.join(bases)})")
+
+
+@dataclass(frozen=True)
 class HvacUnit:
     """One authored ``Equipment`` instance joined to its ``EquipmentType``."""
 
@@ -46,8 +118,13 @@ class HvacUnit:
     zone_rooms: tuple[str, ...]
     outdoor_ref: str | None
     circuit: str | None
-    heating_capacity_btuh: float | None
-    heating_capacity_at_design_btuh: float | None
+    #: The type's published heating table (``HeatPumpRating`` rows), ascending in
+    #: temperature. The two scalars that were here — ``heating_capacity_btuh`` and
+    #: ``heating_capacity_at_design_btuh`` — are gone: *at design* is a question about the
+    #: SITE and this record never knew the site (→ decision #76).
+    heating_ratings: tuple
+    resistance_heating_btuh: float | None
+    aux_lockout_above_f: float | None
     cooling_capacity_btuh: float | None
     min_operating_temp_f: float | None
     ventilation_cfm: float | None
@@ -60,8 +137,9 @@ class HvacUnit:
             "name": self.name, "type_ref": self.type_ref, "room": self.room,
             "zone_rooms": list(self.zone_rooms), "outdoor_ref": self.outdoor_ref,
             "circuit": self.circuit,
-            "heating_capacity_btuh": self.heating_capacity_btuh,
-            "heating_capacity_at_design_btuh": self.heating_capacity_at_design_btuh,
+            "heating_ratings": [row.model_dump(mode="json") for row in self.heating_ratings],
+            "resistance_heating_btuh": self.resistance_heating_btuh,
+            "aux_lockout_above_f": self.aux_lockout_above_f,
             "cooling_capacity_btuh": self.cooling_capacity_btuh,
             "min_operating_temp_f": self.min_operating_temp_f,
             "ventilation_cfm": self.ventilation_cfm,
@@ -98,6 +176,45 @@ class HvacZone:
     #: The sizing checks print these beside the margin so the number never travels without
     #: them — an omitted term is not an UNKNOWN and must not take the verdict with it.
     cooling_caveats: tuple[str, ...] = ()
+    #: The site's 99% heating design temperature — the odb ``heating_load_btu_per_hour`` was
+    #: computed at, and the one ``heating_load_at_outdoor_f`` reproduces.
+    design_temp_f: float | None = None
+    #: The zone's heating load DECOMPOSED, so it can be re-evaluated at any outdoor
+    #: temperature without a second envelope walk. ``air_coupled_ua`` is the sum of
+    #: ``UA × 1`` over every component whose ΔT is the outdoor air, plus the two air-side
+    #: terms divided by that same ΔT; ``ground_coupled_btuh`` is everything charged the
+    #: ground boundary, which does not move with the weather at all. Read straight off
+    #: ``LoadComponent.heating_delta_f`` — no second pass, no perf cost.
+    air_coupled_ua: float = 0.0
+    ground_coupled_btuh: float = 0.0
+    #: The unit's published table, carried through so a check can walk it rather than ask
+    #: the model again.
+    heating_ratings: tuple = ()
+    resistance_at_design_btuh: float | None = None
+    capacity_basis: str | None = None
+
+    def heating_load_at_outdoor_f(self, odb_f: float) -> float:
+        """This zone's heating load at any outdoor temperature, Btu/h.
+
+        The turndown question is "at what temperature does the unit's MINIMUM output fall to
+        the load", and neither side of that is a single number. The load is
+        ``ground_coupled_btuh + air_coupled_ua × (setpoint − odb)`` — the decomposition the
+        two fields above carry, which is why this costs nothing.
+
+        **Pinned invariant:** ``heating_load_at_outdoor_f(design) == heating_load_btu_per_hour``
+        exactly, including in the degenerate case where the house authors no ground boundary
+        and every component was charged the air ΔT. The decomposition mirrors what
+        ``estimate_block_load`` actually did, not what it ideally would have.
+        """
+        if self.design_temp_f is None:
+            return self.heating_load_btu_per_hour
+        setpoint = self.design_temp_f + self._air_delta_at_design
+        return self.ground_coupled_btuh + self.air_coupled_ua * (setpoint - odb_f)
+
+    #: The air ΔT the zone's load was computed at. Stored rather than re-derived from a
+    #: preference, because the *decomposition* has to be exact against the number
+    #: ``estimate_block_load`` produced and the preference is one input to that.
+    _air_delta_at_design: float = 0.0
 
     @property
     def heating_margin_btuh(self) -> float | None:
@@ -127,6 +244,10 @@ class HvacZone:
             "cooling_margin_btuh": self.cooling_margin_btuh,
             "latent_btu_per_hour": self.latent_btu_per_hour,
             "cooling_caveats": list(self.cooling_caveats),
+            "design_temp_f": self.design_temp_f,
+            "air_coupled_ua": self.air_coupled_ua,
+            "ground_coupled_btuh": self.ground_coupled_btuh,
+            "capacity_basis": self.capacity_basis,
             "min_operating_temp_f": self.min_operating_temp_f,
             "unknown_inputs": list(self.unknown_inputs),
         }
@@ -150,9 +271,10 @@ def hvac_units(model: ResolvedModel) -> list[HvacUnit]:
                 zone_rooms=tuple(getattr(element, "zone_rooms", ())),
                 outdoor_ref=getattr(element, "outdoor_ref", None),
                 circuit=getattr(element, "circuit", None),
-                heating_capacity_btuh=getattr(product, "heating_capacity_btuh", None),
-                heating_capacity_at_design_btuh=getattr(
-                    product, "heating_capacity_at_design_btuh", None),
+                heating_ratings=tuple(getattr(product, "heating_ratings", ()) or ()),
+                resistance_heating_btuh=getattr(
+                    product, "resistance_heating_btuh", None),
+                aux_lockout_above_f=getattr(product, "aux_lockout_above_f", None),
                 cooling_capacity_btuh=getattr(product, "cooling_capacity_btuh", None),
                 min_operating_temp_f=getattr(product, "min_operating_temp_f", None),
                 ventilation_cfm=getattr(product, "ventilation_cfm", None),
@@ -180,8 +302,32 @@ def _rated(unit: HvacUnit) -> bool:
     """
     if unit.kind in _INDOOR_KINDS or unit.supplemental_heat:
         return False
-    return (unit.heating_capacity_btuh is not None
-            or unit.heating_capacity_at_design_btuh is not None)
+    return bool(unit.heating_ratings) or unit.resistance_heating_btuh is not None
+
+
+def _design_temp_f(model: ResolvedModel) -> float | None:
+    """The site's 99% heating design temperature, or ``None``. The number *at design* means."""
+    design = model.plan.project.site.design_temp_heating
+    return None if design is None else design.fahrenheit
+
+
+def _resistance_at_design(unit: HvacUnit, design_f: float | None) -> float | None:
+    """A resistance element's output at the site design temperature, Btu/h.
+
+    **Derived, where it used to be a hand-computed scalar in the catalog.** The heat kit in
+    catlin's System 1 cabinet was authored ``heating_capacity_at_design_btuh=0`` with prose
+    explaining that its control locks it out above −22 °F and the site designs at −15 °F.
+    That is a correct reading and it could go stale in silence the moment the site moved.
+    Now ``aux_lockout_above_f`` states the control setting and this does the comparison.
+
+    ``None`` where the unit carries no resistance rating at all.
+    """
+    if unit.resistance_heating_btuh is None:
+        return None
+    lockout = unit.aux_lockout_above_f
+    if lockout is None or design_f is None:
+        return unit.resistance_heating_btuh
+    return unit.resistance_heating_btuh if design_f <= lockout else 0.0
 
 
 def supplemental_heat_by_room(model: ResolvedModel) -> dict[str, list[tuple[str, float]]]:
@@ -207,12 +353,18 @@ def supplemental_heat_by_room(model: ResolvedModel) -> dict[str, list[tuple[str,
     def add(room: str, tag: str, btuh: float) -> None:
         out.setdefault(room, []).append((tag, btuh))
 
+    design_f = _design_temp_f(model)
     for unit in hvac_units(model):
         if not unit.supplemental_heat or unit.room is None:
             continue
-        rated = unit.heating_capacity_at_design_btuh
-        if rated is None:  # resistance heat has no derate, so 47 °F output stands in
-            rated = unit.heating_capacity_btuh
+        # Resistance heat is flat with outdoor temperature, so its scalar IS its at-design
+        # output — subject to a lockout, which is the one thing that can take it away.
+        rated = _resistance_at_design(unit, design_f)
+        if rated is None and unit.heating_ratings:
+            # A supplemental unit with a real compressor table (nothing in catlin, but the
+            # schema allows it): read the table like any other.
+            capacity = capacity_at(unit.heating_ratings, design_f) if design_f else None
+            rated = capacity.rated_btuh or capacity.maximum_btuh if capacity else None
         if rated is not None:
             add(unit.room, unit.tag, rated)
 
@@ -390,6 +542,7 @@ def heating_zones(
     from typehaus.energy import estimate_block_load
 
     units = hvac_units(model)
+    design_f = _design_temp_f(model)
     supplemental = supplemental_heat_by_room(model)
     heads_by_outdoor: dict[str, list[HvacUnit]] = {}
     for unit in units:
@@ -411,6 +564,17 @@ def heating_zones(
         contributions = [entry for room in sorted(rooms) for entry in supplemental.get(room, ())]
         report = estimate_block_load(model, preferences, rooms=frozenset(rooms)) \
             if rooms else None
+        capacity = (capacity_at(unit.heating_ratings, design_f)
+                    if unit.heating_ratings and design_f is not None else None)
+        # The at-design heating capacity is the RATED column where the table states one and
+        # the maximum where it does not: a check asks "can this unit carry the load", and
+        # the rated point is the one a manufacturer stands behind for continuous duty.
+        at_design = None if capacity is None else (
+            capacity.rated_btuh if capacity.rated_btuh is not None else capacity.maximum_btuh)
+        resistance = _resistance_at_design(unit, design_f)
+        if at_design is None and resistance is not None:
+            at_design = resistance  # a resistance-only unit IS its rating
+        air_ua, ground_btuh, air_delta = _decompose(report, preferences, design_f)
         zones.append(HvacZone(
             name=f"{unit.tag} zone" if not heads else
                  f"{unit.tag} + {'/'.join(head.tag for head in heads)} zone",
@@ -418,7 +582,7 @@ def heating_zones(
             indoor_tags=tuple(head.tag for head in heads),
             heating_load_btu_per_hour=(
                 report.heating_load_btu_per_hour if report else 0.0),
-            heating_capacity_at_design_btuh=unit.heating_capacity_at_design_btuh,
+            heating_capacity_at_design_btuh=at_design,
             cooling_load_btu_per_hour=(
                 report.cooling_load_btu_per_hour if report else 0.0),
             cooling_capacity_btuh=unit.cooling_capacity_btuh,
@@ -429,12 +593,56 @@ def heating_zones(
             (f"{unit.tag} zone_rooms (no rooms authored)",),
             latent_btu_per_hour=report.latent_btu_per_hour if report else 0.0,
             cooling_caveats=tuple(report.cooling_caveats) if report else (),
+            design_temp_f=design_f,
+            air_coupled_ua=air_ua,
+            ground_coupled_btuh=ground_btuh,
+            heating_ratings=unit.heating_ratings,
+            resistance_at_design_btuh=resistance,
+            capacity_basis=None if capacity is None else capacity.basis,
+            _air_delta_at_design=air_delta,
         ))
     # A head whose ``outdoor_ref`` names no unit in the model claims nothing — only a rated
     # unit and its own heads add to ``claimed`` — so that authoring error surfaces on its own
     # as unclaimed rooms rather than needing a special case here.
     conditioned = {room.tag for room in model.rooms if room.conditioned}
     return zones, frozenset(conditioned - claimed)
+
+
+def _decompose(report, preferences, design_f: float | None) -> tuple[float, float, float]:
+    """``(air-coupled UA, ground-coupled Btu/h, the air ΔT)`` for one zone's heating load.
+
+    Read straight off the report the zone already has — ``LoadComponent.heating_delta_f``
+    says which boundary each component was charged against — so this is a dictionary walk,
+    not a second envelope pass.
+
+    The air-side terms (infiltration, ventilation) are divided by the same air ΔT to become
+    part of the UA, which is exact: both were computed as ``coefficient × ΔT`` with that ΔT.
+
+    **Where a house authors no ground boundary the decomposition must mirror what
+    ``estimate_block_load`` ACTUALLY did, not the ideal.** With no ``monthly_normals`` the
+    below-grade components fall back to the air ΔT (and say so in ``unknown_inputs``), so
+    they belong in the air-coupled UA here — putting them in the constant would make
+    ``heating_load_at_outdoor_f(design)`` disagree with the load it is meant to reproduce.
+    Keying on the component's own ``heating_delta_f`` rather than on its ``kind`` is what
+    makes that automatic.
+    """
+    if report is None or design_f is None:
+        return 0.0, 0.0, 0.0
+    air_delta = preferences.interior_setpoint_f - design_f
+    if air_delta <= 0:
+        return 0.0, report.heating_load_btu_per_hour, 0.0
+    air_ua = 0.0
+    ground = 0.0
+    for component in report.components:
+        delta = component.heating_delta_f
+        if delta is None:
+            continue
+        if abs(delta - air_delta) < 1e-9:
+            air_ua += component.ua_btu_per_hour_f
+        else:
+            ground += component.ua_btu_per_hour_f * delta
+    air_ua += (report.infiltration_btu_per_hour + report.ventilation_btu_per_hour) / air_delta
+    return air_ua, ground, air_delta
 
 
 def duct_schedule(model: ResolvedModel) -> list[dict[str, object]]:

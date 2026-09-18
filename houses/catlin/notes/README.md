@@ -50,6 +50,7 @@ each is kept because the *rule* it established usually outlives the design that 
 | `room_heat_loss_baths.md` | `checks/mep/room_heat.py` — the two radiant floors that are the sole heat in their room (`tests/test_room_heat_source.py`) | live |
 | `block_load_basis.md` | `checks/building_science/ground.py` (Latta basement wall + floor, the ASHRAE 90.1 slab F-factors), the local-grade wall split in `energy_load.py` + `resolve/site_earth.strip_grade_elevation_m`, the raked-wall area and the air side (`tests/test_energy_ground.py`, `tests/test_energy_envelope_scope.py`) | live |
 | `solar_gain_basis.md` | `checks/building_science/solar.py` — the ASHRAE clear-sky irradiance, the single house-wide peak hour, the shading planes, the AED excursion, Manual J internal gains and the latent split, and the roof's sol-air excess (`tests/test_energy_solar.py`). §6 is OPEN: it wants the roof panel's published solar reflectance | live, one open item |
+| `heat_pump_turndown.md` | `checks/mep/hvac_sizing.py` (`mep.heat_pump_turndown`), the zone load decomposition in `takeoff/hvac.HvacZone.heating_load_at_outdoor_f`, and `capacity_at` (`tests/test_heat_pump_turndown.py`, `tests/test_heat_pump_ratings.py`). §6 is a PURCHASE DECISION on all three systems and is the largest open item in this house | live, open decision |
 
 ### Published-table reads
 

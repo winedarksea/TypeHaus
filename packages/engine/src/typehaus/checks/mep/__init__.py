@@ -21,6 +21,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     exhaust,
     fitting_pattern,
     hvac,
+    hvac_sizing,
     lighting,
     plumbing,
     pockets,

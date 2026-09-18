@@ -3,8 +3,13 @@
 A zone is the authored ``Equipment.zone_rooms`` of a rated unit, unioned with the rooms of
 every indoor head naming it through ``outdoor_ref``. The check reuses ``estimate_block_load``
 with a *room* filter; capacities come from the authored
-``EquipmentType.heating_capacity_at_design_btuh`` and are never invented, and a conditioned
-room no unit claims is reported as unclaimed rather than folded into a neighbour.
+``EquipmentType.heating_ratings`` — the published table, READ at ``Site.design_temp_heating``
+by ``takeoff/hvac.capacity_at`` — and are never invented, and a conditioned room no unit
+claims is reported as unclaimed rather than folded into a neighbour.
+
+The two scalars this file used to pass into ``_heater`` are gone from the schema; that
+helper now turns them into a two-row table, so every test below still names the number it
+always meant.
 """
 
 from __future__ import annotations
@@ -22,6 +27,7 @@ from typehaus.model import (
     Equipment,
     EquipmentKind,
     EquipmentType,
+    HeatPumpRating,
     Layer,
     LayerFunction,
     Library,
@@ -111,7 +117,46 @@ def _context(plan: PlanModel) -> CheckContext:
                         resolve_findings=list(findings))
 
 
-def _heater(tag: str, name: str, **kwargs) -> EquipmentType:
+def _heater(tag: str, name: str, at_design: float | None = None,
+            at_47: float | None = None, *, modulating: bool = False,
+            **kwargs) -> EquipmentType:
+    """A heat pump type whose table reads back the capacity this fixture means.
+
+    The two scalars this file used to pass — ``heating_capacity_btuh`` (47 °F) and
+    ``heating_capacity_at_design_btuh`` — are gone from the schema, because *at design* is a
+    question about the SITE and a type has never known the site (decision #76). The fixture
+    keeps saying what it meant, in the units it meant them: ``at_design`` becomes a row at
+    this fixture's −15 °F design temperature and ``at_47`` a row at 47 °F, so
+    ``capacity_at`` reads back exactly the number the test names.
+
+    ``modulating`` adds a minimum column at half the rated output, for the tests that need
+    ``mep.cooling_capacity``'s Manual S ceiling to be the 1.30 modulating one rather than
+    the 1.15 single-stage default.
+    """
+    rows = []
+    if at_design is not None:
+        rows.append(HeatPumpRating(
+            outdoor_db_f=-15.0, rated_btuh=at_design,
+            minimum_btuh=at_design / 2 if modulating else None,
+            maximum_btuh=at_design if modulating else None,
+            citation="test fixture: the at-design figure this test names"))
+    if at_47 is not None:
+        rows.append(HeatPumpRating(
+            outdoor_db_f=47.0, rated_btuh=at_47,
+            minimum_btuh=at_47 / 2 if modulating else None,
+            maximum_btuh=at_47 if modulating else None,
+            citation="test fixture: the 47 F rated point"))
+    if len(rows) == 1:
+        # A one-row table is refused by the validator (it is a rating, not a table), and
+        # rightly: it cannot be read between. Pad it at the other end with the same figure,
+        # which is what a single authored scalar always silently meant.
+        other = 47.0 if rows[0].outdoor_db_f == -15.0 else -15.0
+        rows.append(rows[0].model_copy(update={
+            "outdoor_db_f": other,
+            "citation": "test fixture: padded, because one row is not a table"}))
+        rows.sort(key=lambda row: row.outdoor_db_f)
+    if rows:
+        kwargs["heating_ratings"] = tuple(rows)
     return EquipmentType(tag=tag, name=name, footprint=(inch(30), inch(12)),
                          height=inch(22), **kwargs)
 
@@ -136,8 +181,7 @@ _BOTH_ROOMS = (_LOWER_ROOM, _UPPER_ROOM)
 
 def test_pass_when_capacity_covers_the_zone_load() -> None:
     ctx = _context(_plan(
-        (_heater("EQ-T-BIG", "Whole-house heat pump", heating_capacity_btuh=60000,
-                 heating_capacity_at_design_btuh=48000),),
+        (_heater("EQ-T-BIG", "Whole-house heat pump", at_47=60000, at_design=48000),),
         (_outdoor("EQ-BIG", "EQ-T-BIG", "EQ00000h01", _BOTH_ROOMS),)))
     findings = heating_capacity(ctx)
     assert [f.result for f in findings] == [Result.PASS]
@@ -148,8 +192,7 @@ def test_pass_when_capacity_covers_the_zone_load() -> None:
 
 def test_fail_when_capacity_falls_short_at_design() -> None:
     ctx = _context(_plan(
-        (_heater("EQ-T-TINY", "Undersized heat pump", heating_capacity_btuh=6000,
-                 heating_capacity_at_design_btuh=1000),),
+        (_heater("EQ-T-TINY", "Undersized heat pump", at_47=6000, at_design=1000),),
         (_outdoor("EQ-TINY", "EQ-T-TINY", "EQ00000h02", _BOTH_ROOMS),)))
     findings = heating_capacity(ctx)
     assert [f.result for f in findings] == [Result.FAIL]
@@ -163,21 +206,31 @@ def test_unknown_when_no_equipment_carries_a_rating() -> None:
         (_outdoor("EQ-ERV", "EQ-T-ERV", "EQ00000h03", _BOTH_ROOMS),)))
     findings = heating_capacity(ctx)
     assert [f.result for f in findings] == [Result.UNKNOWN, Result.UNKNOWN]
-    assert "heating_capacity" in findings[0].message
+    assert "heating_ratings" in findings[0].message
     # An unrated unit claims nothing, so both rooms are reported unclaimed.
     assert "in no equipment zone_rooms" in findings[1].message
 
 
 def test_unknown_when_only_the_rated_point_is_authored() -> None:
-    """A 47F rating without an at-design figure must stay UNKNOWN — the check never
-    invents a derate — while still reporting the computed zone load."""
+    """A table that STOPS at 5 °F says nothing about a −15 °F design hour, and the check
+    never reads the endpoint: ``capacity_at`` refuses to extrapolate at either end, so this
+    stays UNKNOWN while still reporting the computed zone load.
+
+    It used to be "a 47 F rating with no at-design figure authored beside it", which was the
+    same refusal wearing a scalar."""
+    warm_only = EquipmentType(
+        tag="EQ-T-47ONLY", name="Heat pump, rated above the design hour",
+        footprint=(inch(30), inch(12)), height=inch(22),
+        heating_ratings=(
+            HeatPumpRating(outdoor_db_f=5.0, rated_btuh=30000, citation="fixture"),
+            HeatPumpRating(outdoor_db_f=47.0, rated_btuh=36000, citation="fixture"),
+        ))
     ctx = _context(_plan(
-        (_heater("EQ-T-47ONLY", "Heat pump, rated point only",
-                 heating_capacity_btuh=36000),),
+        (warm_only,),
         (_outdoor("EQ-47", "EQ-T-47ONLY", "EQ00000h04", _BOTH_ROOMS),)))
     findings = heating_capacity(ctx)
     assert [f.result for f in findings] == [Result.UNKNOWN]
-    assert "no heating_capacity_at_design_btuh" in findings[0].message
+    assert "refuses to extrapolate" in findings[0].message
     assert "Btu/h at design" in findings[0].message  # the load is still reported
 
 
@@ -186,8 +239,8 @@ def test_zone_rooms_partition_and_nearly_sum_to_the_whole_house_load() -> None:
     is attributed by plan overlap), so the two zones sum to the whole-house block load to
     within a few percent rather than exactly — which is what the docstring promises."""
     ctx = _context(_plan(
-        (_heater("EQ-T-LOW", "Heat pump (lower)", heating_capacity_at_design_btuh=90000),
-         _heater("EQ-T-UP", "Heat pump (upper)", heating_capacity_at_design_btuh=90000)),
+        (_heater("EQ-T-LOW", "Heat pump (lower)", at_design=90000),
+         _heater("EQ-T-UP", "Heat pump (upper)", at_design=90000)),
         (_outdoor("EQ-LOW", "EQ-T-LOW", "EQ00000h05", (_LOWER_ROOM,)),
          _outdoor("EQ-UP", "EQ-T-UP", "EQ00000h06", (_UPPER_ROOM,)))))
     findings = heating_capacity(ctx)
@@ -207,7 +260,7 @@ def test_a_condensers_zone_is_the_union_of_its_heads_rooms() -> None:
     """One multi-zone condenser, two heads: the capacity is compared against the load of
     both rooms together, because one compressor has to make it all."""
     ctx = _context(_plan(
-        (_heater("EQ-T-MULTI", "Multi condenser", heating_capacity_at_design_btuh=90000),
+        (_heater("EQ-T-MULTI", "Multi condenser", at_design=90000),
          _heater("EQ-T-HEAD", "Wall head")),
         (_outdoor("EQ-MULTI", "EQ-T-MULTI", "EQ00000h07"),
          _head("EQ-H1", "EQ-T-HEAD", "EQ00000h08", "EQ-MULTI", (_LOWER_ROOM,)),
@@ -221,7 +274,7 @@ def test_a_condensers_zone_is_the_union_of_its_heads_rooms() -> None:
 
 def test_an_unclaimed_conditioned_room_is_named_not_absorbed() -> None:
     ctx = _context(_plan(
-        (_heater("EQ-T-ONE", "Heat pump", heating_capacity_at_design_btuh=90000),),
+        (_heater("EQ-T-ONE", "Heat pump", at_design=90000),),
         (_outdoor("EQ-ONE", "EQ-T-ONE", "EQ00000h10", (_LOWER_ROOM,)),)))
     findings = heating_capacity(ctx)
     unclaimed = [f for f in findings if f.result is Result.UNKNOWN]
@@ -232,7 +285,7 @@ def test_an_unclaimed_conditioned_room_is_named_not_absorbed() -> None:
 
 def test_a_rated_unit_with_no_zone_rooms_is_unknown_not_whole_house() -> None:
     ctx = _context(_plan(
-        (_heater("EQ-T-ORPHAN", "Heat pump", heating_capacity_at_design_btuh=90000),),
+        (_heater("EQ-T-ORPHAN", "Heat pump", at_design=90000),),
         (_outdoor("EQ-ORPHAN", "EQ-T-ORPHAN", "EQ00000h11"),)))
     findings = heating_capacity(ctx)
     assert all(f.result is Result.UNKNOWN for f in findings)
@@ -243,7 +296,7 @@ def test_a_rated_unit_with_no_zone_rooms_is_unknown_not_whole_house() -> None:
 
 def test_cooling_is_unknown_without_an_authored_cooling_rating() -> None:
     ctx = _context(_plan(
-        (_heater("EQ-T-HEATONLY", "Heat pump", heating_capacity_at_design_btuh=90000),),
+        (_heater("EQ-T-HEATONLY", "Heat pump", at_design=90000),),
         (_outdoor("EQ-HEATONLY", "EQ-T-HEATONLY", "EQ00000h12", _BOTH_ROOMS),)))
     findings = cooling_capacity(ctx)
     assert [f.result for f in findings] == [Result.UNKNOWN]
@@ -251,18 +304,49 @@ def test_cooling_is_unknown_without_an_authored_cooling_rating() -> None:
 
 
 def test_cooling_passes_when_the_rating_covers_the_sensible_load() -> None:
+    """Right-sized: a 3,131 Btu/h sensible load against a 4,000 Btu/h unit is a ratio of
+    1.28, inside Manual S's 1.30 modulating ceiling."""
     ctx = _context(_plan(
-        (_heater("EQ-T-COOL", "Heat pump", heating_capacity_at_design_btuh=90000,
-                 cooling_capacity_btuh=60000),),
+        (_heater("EQ-T-COOL", "Heat pump", at_design=90000, modulating=True,
+                 cooling_capacity_btuh=4000),),
         (_outdoor("EQ-COOL", "EQ-T-COOL", "EQ00000h13", _BOTH_ROOMS),)))
     findings = cooling_capacity(ctx)
     assert [f.result for f in findings] == [Result.PASS]
-    # The caveat sentence now comes off the block load itself rather than being restated
-    # in this check, so it names the terms the method actually omits today (the two
-    # air-side latent loads) instead of a fixed phrase that went stale the moment internal
-    # gains and a latent split landed.
-    assert "UPPER BOUND" in findings[0].message
+    assert "ratio 1.2" in findings[0].message
+    # The caveat sentence comes off the block load itself rather than being restated in this
+    # check, so it names the terms the method actually omits today instead of a fixed phrase
+    # that went stale the moment internal gains and a latent split landed.
+    assert "LOAD is an upper bound, so the RATIO is a LOWER one" in findings[0].message
     assert "latent" in findings[0].message
+
+
+def test_cooling_fails_when_the_unit_is_OVER_sized() -> None:
+    """**The half of this check that did not exist**: it was ``elif margin >= 0: PASS``,
+    with no upper bound anywhere, and catlin's System 3 sat at 276% of its zone's load and
+    passed. An over-sized compressor short-cycles, never reaches the steady-state coil
+    condition its latent rating was measured at, and leaves a house cold and damp."""
+    ctx = _context(_plan(
+        (_heater("EQ-T-HUGE", "Over-sized heat pump", at_design=90000, modulating=True,
+                 cooling_capacity_btuh=60000),),
+        (_outdoor("EQ-HUGE", "EQ-T-HUGE", "EQ00000h13", _BOTH_ROOMS),)))
+    findings = cooling_capacity(ctx)
+    assert [f.result for f in findings] == [Result.FAIL]
+    assert "OVER-SIZED" in findings[0].message
+    assert "Manual S caps cooling selection at 1.30" in findings[0].message
+
+
+def test_the_manual_s_cooling_ceiling_is_DERIVED_from_the_ratings_table() -> None:
+    """1.30 for a modulating unit, 1.15 for a single-stage one, and which binds is read off
+    the unit's OWN table — a row whose minimum and maximum differ is a unit that modulates.
+    No new authored flag, because a flag would be a second place for the same fact to be
+    wrong and the table already says it."""
+    for modulating, ceiling in ((True, "1.30"), (False, "1.15")):
+        ctx = _context(_plan(
+            (_heater("EQ-T-C", "Heat pump", at_design=90000, modulating=modulating,
+                     cooling_capacity_btuh=4000),),
+            (_outdoor("EQ-C", "EQ-T-C", "EQ00000h13", _BOTH_ROOMS),)))
+        findings = cooling_capacity(ctx)
+        assert f"Manual S ceiling of {ceiling}" in findings[0].message, modulating
 
 
 # --- catlin fixture -------------------------------------------------------------------
@@ -370,11 +454,11 @@ def _supplemental(tag: str, type_ref: str, uid: str, room: str) -> Equipment:
 
 def _undersized_plus_supplemental(capacity: float, supplemental: float) -> CheckContext:
     return _context(_plan(
-        (_heater("EQ-T-HP", "Heat pump", heating_capacity_at_design_btuh=capacity),
-         _heater("EQ-T-FP", "Electric fireplace",
-                 heating_capacity_btuh=supplemental,
-                 heating_capacity_at_design_btuh=supplemental,
-                 supplemental_heat=True)),
+        (_heater("EQ-T-HP", "Heat pump", at_design=capacity),
+         # Resistance heat: a SCALAR, because an element's output is flat with outdoor
+         # temperature. No lockout, so its at-design contribution is its nameplate.
+         _heater("EQ-T-FP", "Electric fireplace", supplemental_heat=True,
+                 resistance_heating_btuh=supplemental)),
         (_outdoor("EQ-HP", "EQ-T-HP", "EQ00000h20", _BOTH_ROOMS),
          _supplemental("EQ-FP", "EQ-T-FP", "EQ00000h21", _LOWER_ROOM))))
 
@@ -405,9 +489,9 @@ def test_supplemental_heat_in_an_unclaimed_room_is_not_counted() -> None:
     """The fireplace heats the *upper* room, which the heat pump's zone does not include, so
     it must not pad the lower zone's margin — and the upper room stays honestly unclaimed."""
     ctx = _context(_plan(
-        (_heater("EQ-T-HP", "Heat pump", heating_capacity_at_design_btuh=90000),
-         _heater("EQ-T-FP", "Electric fireplace", heating_capacity_at_design_btuh=5000,
-                 supplemental_heat=True)),
+        (_heater("EQ-T-HP", "Heat pump", at_design=90000),
+         _heater("EQ-T-FP", "Electric fireplace", supplemental_heat=True,
+                 resistance_heating_btuh=5000)),
         (_outdoor("EQ-HP", "EQ-T-HP", "EQ00000h22", (_LOWER_ROOM,)),
          _supplemental("EQ-FP", "EQ-T-FP", "EQ00000h23", _UPPER_ROOM))))
     findings = heating_capacity(ctx)
@@ -420,7 +504,7 @@ def test_supplemental_heat_in_an_unclaimed_room_is_not_counted() -> None:
 def test_a_zone_without_supplemental_heat_says_nothing_about_it() -> None:
     """No supplemental heat authored → the message stays the plain capacity-vs-load line."""
     ctx = _context(_plan(
-        (_heater("EQ-T-HP", "Heat pump", heating_capacity_at_design_btuh=90000),),
+        (_heater("EQ-T-HP", "Heat pump", at_design=90000),),
         (_outdoor("EQ-HP", "EQ-T-HP", "EQ00000h24", _BOTH_ROOMS),)))
     findings = heating_capacity(ctx)
     assert [f.result for f in findings] == [Result.PASS]

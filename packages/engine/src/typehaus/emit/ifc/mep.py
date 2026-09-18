@@ -478,10 +478,21 @@ def _emit_equipment(f: Any, body: Any, equipment: Any, storey: Any, storeys: dic
         "kind": equipment.kind.value, "circuit": equipment.circuit or "",
         "zone_rooms": ",".join(getattr(equipment, "zone_rooms", ()) or ()),
         "outdoor_ref": getattr(equipment, "outdoor_ref", None) or "",
-        "heating_capacity_btuh": float(
-            getattr(product_type, "heating_capacity_btuh", None) or 0.0),
-        "heating_capacity_at_design_btuh": float(
-            getattr(product_type, "heating_capacity_at_design_btuh", None) or 0.0),
+        # The published heating table, flattened to one string because IFC properties are
+        # scalars: ``odb:min/rated/max@basis`` per row, semicolon-separated. The two scalars
+        # this replaces (``heating_capacity_btuh`` and ``heating_capacity_at_design_btuh``)
+        # are gone from the schema — *at design* is a question about the SITE, which a type
+        # never knew (decision #76) — and a receiving tool that wants one number can read
+        # the 47 °F row, which is what the old 47 °F rating was.
+        "heating_ratings": ";".join(
+            f"{row.outdoor_db_f:g}:"
+            f"{'' if row.minimum_btuh is None else f'{row.minimum_btuh:g}'}/"
+            f"{'' if row.rated_btuh is None else f'{row.rated_btuh:g}'}/"
+            f"{'' if row.maximum_btuh is None else f'{row.maximum_btuh:g}'}"
+            f"@{row.basis.value}"
+            for row in getattr(product_type, "heating_ratings", ()) or ()),
+        "resistance_heating_btuh": float(
+            getattr(product_type, "resistance_heating_btuh", None) or 0.0),
         "cooling_capacity_btuh": float(
             getattr(product_type, "cooling_capacity_btuh", None) or 0.0),
         "min_operating_temp_f": float(

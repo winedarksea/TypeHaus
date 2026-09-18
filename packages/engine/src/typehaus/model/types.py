@@ -7,7 +7,13 @@ from typing import Literal
 from pydantic import model_validator
 
 from typehaus.model.base import HausModel
-from typehaus.model.enums import DoorOperation, LuminaireForm, Service, WindowOperation
+from typehaus.model.enums import (
+    DoorOperation,
+    LuminaireForm,
+    RatingBasis,
+    Service,
+    WindowOperation,
+)
 from typehaus.model.placeables import (
     ClearanceZone,
     Footprint2D,
@@ -277,13 +283,85 @@ class AirHandlingProductFacts(HausModel):
     static_loss_pa_at_cfm: tuple[tuple[float, float], ...] = ()
 
 
+class HeatPumpRating(HausModel):
+    """One row of a heat pump's published heating-capacity table.
+
+    **The defect this closes.** ``EquipmentType`` carried two scalars,
+    ``heating_capacity_btuh`` (the 47 °F rating) and ``heating_capacity_at_design_btuh``, and
+    the catalog's own preamble said the quiet part out loud: *"the engine does no curve
+    interpolation itself, so whatever is authored here IS the machine as far as every check
+    is concerned."* A scalar cannot express what a modulating heat pump actually does, and
+    two things fell through the gap:
+
+    * **Turn-down.** An inverter's MINIMUM output rises as it gets colder — the FLEXX Ultra
+      goes 10,800 Btu/h at 47 °F to 14,000 at 5 °F — while the zone load falls. catlin's
+      System 1 zone wants 4,056 Btu/h at 47 °F against a 10,800 Btu/h floor: it short-cycles
+      through most of the heating season, and the check PASSed with "+7,163 Btu/h margin"
+      because a single at-design scalar cannot see a minimum at all.
+    * **Staleness.** *At design* depends on ``Site.design_temp_heating``, which an
+      ``EquipmentType`` has never known. Move the house and the authored scalar is silently
+      a number for the wrong site. ``takeoff/hvac.capacity_at`` now reads the table at the
+      site's own design temperature (→ decision #76).
+
+    **Cooling stays out of this table, deliberately.** No document publishes heating and
+    cooling on one row: a manufacturer's extended ratings give heating against outdoor
+    dry-bulb at a stated return temperature, and cooling against a different outdoor
+    dry-bulb at a stated indoor wet-bulb. One row carrying both would be two reads pretending
+    to be one.
+    """
+
+    #: The key, and the table must be strictly ascending in it.
+    outdoor_db_f: float
+    #: The three capacity columns a modulating unit publishes, Btu/h. A single-stage unit
+    #: states ``minimum == rated == maximum``, which is a true statement about it and is what
+    #: earns the turndown check its NOT_APPLICABLE. At least one must be stated: a row with
+    #: no capacity at all is a temperature with nothing to say.
+    minimum_btuh: float | None = None
+    rated_btuh: float | None = None
+    maximum_btuh: float | None = None
+    #: COP at each of those three levels, where the document gives it. A COP for a level
+    #: whose capacity is absent is refused: it describes an operating point the row does not
+    #: claim exists.
+    cop_at_minimum: float | None = None
+    cop_at_rated: float | None = None
+    cop_at_maximum: float | None = None
+    #: The indoor return dry-bulb the row was measured at. Capacity moves with it, and two
+    #: tables read at different returns are not comparable — 70 °F is the usual residential
+    #: heating condition and the one every figure in catlin's catalog is read at.
+    return_db_f: float | None = None
+    #: Where the row came from. See :class:`RatingBasis`.
+    basis: RatingBasis = RatingBasis.MANUFACTURER
+    #: **Required, and it is the whole point.** A capacity with no provenance is the defect
+    #: this class exists to close: name the document, the model number, the page or table,
+    #: and — when sources disagree at this temperature — what the other one said and why
+    #: this row is the one the house sizes against.
+    citation: str
+
+
 class EquipmentType(FurnitureType, AirHandlingProductFacts):
     needs: frozenset[Service] = frozenset()
-    # Rated heating output (Btu/h at the AHRI 47 °F point), for heat-producing equipment.
-    heating_capacity_btuh: float | None = None
-    # Heating output at the *site* heating design temperature. The authored number IS the
-    # derate — no performance-curve modeling; leave None when the datasheet doesn't say.
-    heating_capacity_at_design_btuh: float | None = None
+    #: The published heating-capacity table, ascending in ``outdoor_db_f`` (→
+    #: :class:`HeatPumpRating`). This REPLACES the two scalars that were here —
+    #: ``heating_capacity_btuh`` (the 47 °F rating) and ``heating_capacity_at_design_btuh``
+    #: — with no back-compatibility shim, because a shim would let a house keep authoring
+    #: the defect. Empty means the type publishes no table, and the sizing checks say so
+    #: rather than assuming one.
+    heating_ratings: tuple[HeatPumpRating, ...] = ()
+    #: Electric resistance heat this unit can add, Btu/h. A SCALAR and not a table, and that
+    #: is physics rather than a simplification: a resistance element's output is flat with
+    #: outdoor temperature. A strip heater in a cabinet that can interlock it, an aux kit,
+    #: a baseboard.
+    resistance_heating_btuh: float | None = None
+    #: The outdoor temperature above which the control locks the resistance heat OUT — the
+    #: thermostat setting that stops a heat pump's aux stage running when the compressor
+    #: could carry the load alone. ``None`` means no lockout is configured, so the aux heat
+    #: is available at every temperature.
+    #:
+    #: This is what makes the heat kit's at-design contribution DERIVED rather than a
+    #: hand-computed zero: at a −15 °F design temperature a kit locked out above −22 °F
+    #: contributes nothing, and the engine can now say so instead of the catalog asserting
+    #: it. Move the site and the answer moves with it.
+    aux_lockout_above_f: float | None = None
     # Rated sensible cooling output (Btu/h at the AHRI 95 °F point). Advisory only: the
     # block load's cooling side is a UA + solar sum, not a Manual J latent split.
     cooling_capacity_btuh: float | None = None
@@ -346,6 +424,67 @@ class EquipmentType(FurnitureType, AirHandlingProductFacts):
     inverter_kw_surge: float | None = None
     # Maximum PV array the inverter accepts, kW DC.
     pv_input_kw: float | None = None
+
+    @model_validator(mode="after")
+    def _check_heating_ratings(self) -> EquipmentType:
+        """A ratings table is refused at load time, for ``_check_fan_curve``'s reason.
+
+        The ways a transcribed table goes wrong — rows out of order, a repeated
+        temperature, a COP for a level with no capacity, a minimum above a maximum — are
+        facts about the TYPING, not about the building, so they are not findings a check
+        could report. A capacity interpolated through them returns a plausible number that
+        means nothing.
+
+        **Monotonicity in temperature is deliberately NOT checked**, and someone will try to
+        add it. ``EQ-T-GREE-SAPPHIRE-9-OD`` publishes 8,900 Btu/h at 17 °F and **11,500 at
+        5 °F**: capacity RISING as it gets colder. That is not a transcription error, it is a
+        real boosted low-ambient map — the compressor is allowed to overspeed below a
+        threshold — and several cold-climate units publish one. A monotonicity rule would
+        refuse the machine this house actually bought.
+        """
+        rows = self.heating_ratings
+        if not rows:
+            return self
+        if len(rows) < 2:
+            raise ValueError(f"{self.tag}: heating_ratings needs at least two rows to read "
+                             "a capacity between; one row is a rating, not a table")
+        for previous, row in zip(rows, rows[1:], strict=False):
+            if row.outdoor_db_f <= previous.outdoor_db_f:
+                raise ValueError(
+                    f"{self.tag}: heating_ratings outdoor_db_f must strictly increase; "
+                    f"{row.outdoor_db_f} follows {previous.outdoor_db_f}")
+        for row in rows:
+            levels = (row.minimum_btuh, row.rated_btuh, row.maximum_btuh)
+            if all(value is None for value in levels):
+                raise ValueError(
+                    f"{self.tag}: heating_ratings row at {row.outdoor_db_f} °F states no "
+                    "capacity at all — a temperature with nothing to say is not a row")
+            stated = [value for value in levels if value is not None]
+            if any(value <= 0 for value in stated):
+                raise ValueError(
+                    f"{self.tag}: heating_ratings row at {row.outdoor_db_f} °F states a "
+                    "non-positive capacity")
+            ordered = [(row.minimum_btuh, row.rated_btuh), (row.rated_btuh, row.maximum_btuh),
+                       (row.minimum_btuh, row.maximum_btuh)]
+            for low, high in ordered:
+                if low is not None and high is not None and low > high:
+                    raise ValueError(
+                        f"{self.tag}: heating_ratings row at {row.outdoor_db_f} °F has "
+                        f"minimum <= rated <= maximum violated ({low} > {high})")
+            for capacity, cop, level in ((row.minimum_btuh, row.cop_at_minimum, "minimum"),
+                                         (row.rated_btuh, row.cop_at_rated, "rated"),
+                                         (row.maximum_btuh, row.cop_at_maximum, "maximum")):
+                if cop is None:
+                    continue
+                if cop <= 0:
+                    raise ValueError(f"{self.tag}: heating_ratings COP at {level} must be "
+                                     f"> 0 ({cop} at {row.outdoor_db_f} °F)")
+                if capacity is None:
+                    raise ValueError(
+                        f"{self.tag}: heating_ratings row at {row.outdoor_db_f} °F states a "
+                        f"COP at {level} but no {level} capacity — a COP describes an "
+                        "operating point, and the row does not claim that one exists")
+        return self
 
     @model_validator(mode="after")
     def _check_fan_curve(self) -> EquipmentType:
@@ -513,6 +652,7 @@ for _name, _obj in (
     ("FixtureType", FixtureType),
     ("ApplianceType", ApplianceType),
     ("EquipmentType", EquipmentType),
+    ("HeatPumpRating", HeatPumpRating),
     ("DuctProductType", DuctProductType),
     ("RegisterType", RegisterType),
     ("ElectricalDeviceType", ElectricalDeviceType),

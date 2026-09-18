@@ -597,3 +597,29 @@ class ConditionKind(Enum):
     STOREY_STACK = "storey_stack"
     STACK_WIDTH_CHANGE = "stack_width_change"
     ROOF_RIDGE = "roof_ridge"
+
+
+class RatingBasis(Enum):
+    """Where one row of a heat pump's capacity table came from.
+
+    A **provenance** column, not a quality ranking, and the distinction is the point. AHRI
+    215213329 certifies a FLEXX Ultra's SEER2/EER2/HSPF2 and its 47 °F and 17 °F capacity
+    points and nothing else; the −15 °F figure the same unit is sized against here is
+    manufacturer data with no certificate behind it; NEEP's ccASHP database republishes a
+    third set, usually more conservative than the manufacturer's own. All three are real and
+    they disagree, and a reviewer at plan review needs to know which one a number came from
+    before deciding whether to accept it.
+
+    The rule when sources disagree at one temperature is **one row, one basis**: author the
+    row the house sizes against and record the other in the row's ``citation`` prose. Never
+    blend them — an average of two published numbers is a number nobody published.
+    """
+
+    #: AHRI-certified, with a certificate number in the citation. The only basis that can be
+    #: pointed at during plan review without a caveat.
+    AHRI = "ahri"
+    #: The manufacturer's own extended-ratings table or submittal. Real data, no certificate.
+    MANUFACTURER = "manufacturer"
+    #: NEEP's cold-climate ASHP database (ashp.neep.org). The one public source that
+    #: publishes a MINIMUM capacity column, which is why the turndown check exists at all.
+    NEEP = "neep"

@@ -235,8 +235,18 @@ def heating_capacity(ctx: CheckContext) -> list[Finding]:
     """Per-zone block load at design temp vs the zone's outdoor unit at-design capacity.
 
     A zone is the authored ``Equipment.zone_rooms`` of a rated unit, unioned with the rooms
-    of every indoor head that names it through ``outdoor_ref``. Only equipment carrying an
-    authored ``heating_capacity*`` rating opens a zone.
+    of every indoor head that names it through ``outdoor_ref``. Only equipment carrying a
+    published ``heating_ratings`` table (or a resistance rating) opens a zone, and the
+    at-design capacity is READ from that table at ``Site.design_temp_heating`` rather than
+    authored — see ``takeoff/hvac.capacity_at`` and decision #76.
+
+    **There is deliberately NO upper bound here.** A cold-climate heat pump sized for −15 °F
+    is *supposed* to be enormous at 47 °F, and Manual S caps heat-pump selection through the
+    COOLING sizing factor, not a heating one. An upper bound on heating capacity would be a
+    rule this engine invented, and it would fail correctly-sized equipment. Heating over-size
+    is measured — correctly, and across the published rows rather than at one point — by
+    ``mep.heat_pump_turndown``. The defensible ``<= 1.40`` applies to COMBUSTION equipment
+    (a type carrying ``afue``), and catlin has none.
 
     Supplemental resistance heat inside a zone's rooms — sized radiant mats, the electric
     fireplace — is *added to* that zone's capacity rather than ignored: at the design
@@ -257,8 +267,8 @@ def heating_capacity(ctx: CheckContext) -> list[Finding]:
     zones, unclaimed = heating_zones(ctx.model, ctx.preferences)
     out: list[Finding] = []
     if not zones:
-        out.append(_unknown(cid, "no Equipment carries a heating_capacity_btuh / "
-                                 "heating_capacity_at_design_btuh rating"))
+        out.append(_unknown(cid, "no Equipment carries a heating_ratings table or a "
+                                 "resistance_heating_btuh rating"))
     for zone in zones:
         load = zone.heating_load_btu_per_hour
         served = ", ".join(sorted(zone.rooms)) or "no rooms"
@@ -268,19 +278,36 @@ def heating_capacity(ctx: CheckContext) -> list[Finding]:
                      "names it), so there is no zone to size against",
                 (zone.equipment_tag,)))
             continue
+        # A compressor lockout WARMER than the site design temperature is a FAIL before
+        # any margin arithmetic: the unit is off at the hour the load is being sized for,
+        # so whatever capacity it publishes is capacity the house does not have.
+        lockout = zone.min_operating_temp_f
+        if (lockout is not None and zone.design_temp_f is not None
+                and lockout > zone.design_temp_f):
+            out.append(_advisory_fail(
+                cid, f"{zone.name}: {zone.type_tag or zone.equipment_tag} locks out below "
+                     f"{lockout:g} °F and the site designs at {zone.design_temp_f:g} °F — "
+                     f"the unit is OFF at the design hour, so the zone's {load:,.0f} Btu/h "
+                     "load over " + served + " is carried by whatever else there is",
+                (zone.equipment_tag,)))
+            continue
         capacity = zone.heating_capacity_at_design_btuh
         if capacity is None:
+            reason = ("has no heating_ratings table" if not zone.heating_ratings
+                      else f"publishes no row spanning {zone.design_temp_f:g} °F, and "
+                           "capacity_at refuses to extrapolate past either end of a table")
             out.append(_unknown(
                 cid, f"{zone.name}: load {load:,.0f} Btu/h at design over {served}, but "
-                     f"{zone.type_tag or zone.equipment_tag} has no "
-                     "heating_capacity_at_design_btuh", (zone.equipment_tag,)))
+                     f"{zone.type_tag or zone.equipment_tag} {reason}",
+                (zone.equipment_tag,)))
             continue
         margin = zone.heating_margin_btuh or 0.0
         supplement = (f" + {zone.supplemental_btuh:,.0f} Btu/h supplemental "
                       f"({', '.join(zone.supplemental_tags)})"
                       if zone.supplemental_tags else "")
+        basis = f", {zone.capacity_basis}" if zone.capacity_basis else ""
         detail = (f"{zone.name}: block load {load:,.0f} Btu/h at design over {served} vs "
-                  f"{capacity:,.0f} Btu/h at-design capacity{supplement} "
+                  f"{capacity:,.0f} Btu/h at-design capacity{basis}{supplement} "
                   f"(margin {margin:+,.0f} Btu/h)")
         if zone.unknown_inputs:
             out.append(_unknown(
@@ -302,10 +329,20 @@ def heating_capacity(ctx: CheckContext) -> list[Finding]:
 def cooling_capacity(ctx: CheckContext) -> list[Finding]:
     """Per-zone cooling block load vs the unit's authored sensible cooling capacity.
 
-    Advisory and deliberately partial: the block load's cooling side is a UA + window-solar
-    sum with no latent split and no internal gains, so it is a screen for "wildly over/under
-    size", not a selection. A unit with no ``cooling_capacity_btuh`` stays UNKNOWN — a
-    heating rating is not a cooling rating.
+    **Two-sided now.** It was ``elif margin >= 0: PASS`` with no upper bound anywhere, which
+    is half a check: catlin's System 3 was at 276% of its zone's cooling load and passed.
+    Manual S caps cooling selection at 1.30 of the design load for a modulating unit and
+    1.15 for a single-stage one, and which one binds is DERIVED from the unit's own ratings
+    table (→ ``_cooling_sizing_ceiling``). Over-size is not a comfort preference: an
+    over-sized compressor short-cycles, never reaches the steady-state coil condition its
+    latent rating was measured at, and leaves a house cold and damp.
+
+    Advisory and deliberately partial. The block load's cooling side carries hourly glass at
+    one coincident peak hour, the AED excursion and Manual J internal gains, but no roof
+    sol-air term where no absorptance is stated and only occupant latent — so the LOAD is an
+    upper bound and the over-size RATIO is therefore a LOWER bound. Every message says so.
+    A unit with no ``cooling_capacity_btuh`` stays UNKNOWN — a heating rating is not a
+    cooling rating.
     """
     from typehaus.takeoff.hvac import heating_zones
 
@@ -333,17 +370,56 @@ def cooling_capacity(ctx: CheckContext) -> list[Finding]:
         # make every house unsizeable.
         caveats = ("; ".join(zone.cooling_caveats) if zone.cooling_caveats
                    else "no stated omissions")
+        ratio = capacity / load if load > 0 else None
+        ceiling = _cooling_sizing_ceiling(zone)
         detail = (f"{zone.name}: sensible cooling load {load:,.0f} Btu/h vs "
-                  f"{capacity:,.0f} Btu/h rated (margin {margin:+,.0f} Btu/h) "
-                  f"+ {zone.latent_btu_per_hour:,.0f} Btu/h latent. "
-                  f"An UPPER BOUND on the ratio: {caveats}")
+                  f"{capacity:,.0f} Btu/h rated (margin {margin:+,.0f} Btu/h"
+                  + (f", ratio {ratio:.2f} against a Manual S ceiling of {ceiling:.2f}"
+                     if ratio is not None else "")
+                  + f") + {zone.latent_btu_per_hour:,.0f} Btu/h latent. "
+                  f"The LOAD is an upper bound, so the RATIO is a LOWER one: {caveats}")
         if zone.unknown_inputs:
             out.append(_unknown(cid, f"{detail}; block-load inputs missing: "
                                      + ", ".join(zone.unknown_inputs),
                                 (zone.equipment_tag,)))
-        elif margin >= 0:
-            out.append(_pass(cid, detail, (zone.equipment_tag,)))
-        else:
+        elif margin < 0:
             out.append(_advisory_fail(cid, detail + " — under the sensible cooling load",
                                       (zone.equipment_tag,)))
+        elif ratio is not None and ratio > ceiling:
+            out.append(_advisory_fail(
+                cid, detail + f" — OVER-SIZED: Manual S caps cooling selection at "
+                              f"{ceiling:.2f} of the load, and an over-sized compressor "
+                              "short-cycles, never reaches its steady-state latent removal, "
+                              "and leaves the house cold and damp",
+                (zone.equipment_tag,)))
+        else:
+            out.append(_pass(cid, detail, (zone.equipment_tag,)))
     return out
+
+
+# Manual S §2 cooling sizing factors. A MODULATING unit may be selected to 1.30 of the
+# design cooling load because it can run down to the load at part load; a single-stage one
+# is capped at 1.15, because at 1.30 it is on for half the hour and off for the other half
+# and never reaches the steady-state coil condition its latent rating was measured at.
+_MODULATING_COOLING_CEILING = 1.30
+_SINGLE_STAGE_COOLING_CEILING = 1.15
+
+
+def _cooling_sizing_ceiling(zone) -> float:
+    """Which Manual S ceiling binds this unit — DERIVED from its own ratings table.
+
+    A row whose minimum and maximum differ is a unit that modulates; a table where every row
+    has ``minimum == maximum`` is single-stage, and that is a positive statement the type
+    made about itself rather than an absence. No new authored flag: a flag would be a second
+    place for the same fact to be wrong, and the table already says it.
+
+    A unit with no table at all takes the modulating ceiling, which is the permissive
+    reading — this check is about catching gross over-size, and inventing the stricter cap
+    for a machine nobody has characterised would fail it on the engine's ignorance.
+    """
+    rows = getattr(zone, "heating_ratings", ())
+    if not rows:
+        return _MODULATING_COOLING_CEILING
+    modulates = any(row.minimum_btuh is not None and row.maximum_btuh is not None
+                    and row.minimum_btuh < row.maximum_btuh for row in rows)
+    return _MODULATING_COOLING_CEILING if modulates else _SINGLE_STAGE_COOLING_CEILING
