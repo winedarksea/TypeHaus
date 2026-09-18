@@ -68,6 +68,13 @@ not instruction: when it disagrees with this file or the model, it is the one th
   round-trip). Only explicit constructors in any of these — no functions/generators.
 - `plan/electrical.py` — `# haus: editable` electrical service upgrade: meter, backup
   enclosure, 240V/EV/spa devices, conduit trunks, NEC 210.52 fill receptacles.
+- `plan/equipment_types.py` — the equipment *catalog* (sauna heater, the three Gree
+  heat-pump systems and their ratings tables, the garage heater). **NOT editable**, in the
+  `plan/fixture_types.py` idiom: a type definition is never written back by a UI drag, and
+  the heat-pump ratings tables need nesting and a wrapped `source=` that the editable
+  dialect forbids. Split out of `electrical.py` (2,412 lines) 2026-09-18; the split moved
+  `_content_hash` and nothing else in `model.json`. `electrical.py` is ~2,090 lines and
+  still four times the 500-line guideline — recorded, not fixed.
 - `plan/circuits.py` — the panel schedule (NOT editable: Circuits are schedule data, not
   geometry). Devices point at circuits via `circuit=`; `electrical.circuit_refs` reconciles.
   **BOTH MAIN-FLOOR WATER CLOSETS ARE BIDET TOILETS, AND THE ELECTRICAL FOR THEM IS TWO

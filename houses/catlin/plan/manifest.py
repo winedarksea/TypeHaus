@@ -29,7 +29,7 @@ from library import (
 from params import (breezeway, foundations, hp1_north_pad, hp3_pad, main_deck, raised_garden,
                     roof_trim, second_deck, solar, sunken_garden)
 from plan import (appliance_types, assemblies, backing, backing_wet, circuits, countertops,
-                  electrical, electrical_attic,
+                  electrical, electrical_attic, equipment_types,
                   fixture_types, fixtures, furniture_types, lighting, lighting_attic,
                   lighting_types, mep, millwork, placeables, products,
                   site, transitions, views, wind_clamps)
@@ -81,7 +81,7 @@ _library = Library(
     register_types=(*ALL_REGISTER_TYPES, *mep.REGISTER_TYPES),
     duct_product_types=ALL_DUCT_PRODUCT_TYPES,
     equipment_types=(*ALL_VENTILATION_EQUIPMENT_TYPES, *mep.EQUIPMENT_TYPES,
-                     *electrical.EQUIPMENT_TYPES),
+                     *equipment_types.EQUIPMENT_TYPES),
     electrical_device_types=(*ALL_ELECTRICAL_DEVICE_TYPES, *mep.ELECTRICAL_DEVICE_TYPES,
                              *electrical.DEVICE_TYPES, *lighting_types.LIGHTING_TYPES),
     circuits=circuits.CIRCUITS,
