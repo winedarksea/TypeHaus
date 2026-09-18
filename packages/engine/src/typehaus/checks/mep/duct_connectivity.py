@@ -234,7 +234,8 @@ def duct_connectivity(ctx: CheckContext) -> list[Finding]:
             if landed is not None:
                 out.append(passed(
                     "mep.duct_connectivity",
-                    f"duct {duct.tag} {label} lands on {landed}", (duct.tag,)))
+                    f"duct {duct.tag} {label} lands on {landed}"
+                    + _port_note(ctx, duct, point, z, landed), (duct.tag,)))
                 continue
             capped = _capped_past_a_takeoff(ctx, duct, point)
             if capped is not None:
@@ -259,3 +260,35 @@ def duct_connectivity(ctx: CheckContext) -> list[Finding]:
                 "or of the leg it ends, and "
                 "it is not outdoors", (duct.tag,)))
     return out
+
+
+def _port_note(ctx: CheckContext, duct: ResolvedDuct, point: tuple[float, float],
+               z: float | None, landed: str) -> str:
+    """How exact this landing is, when the machine states a DIMENSIONED port.
+
+    **Reporting, not a second verdict.** ``mep.equipment_port_service`` already FAILs a
+    dimensioned port with nothing on it, and a duplicate FAIL here would be the same defect
+    counted twice. What this adds is the distinction that check is organised the other way
+    round to see: *this duct end*, landing on the spigot or merely inside the case. An end
+    a foot from the collar passes connectivity either way — it is connected to that machine
+    — and an installer still has to know which of the two it is.
+
+    Silent where the machine states no exact port, which today is every machine in catlin:
+    a datasheet that gives a face has nothing to be near or far from.
+    """
+    from typehaus.resolve.mep_ports import placed_ports
+
+    system = duct.system.value if hasattr(duct.system, "value") else str(duct.system)
+    exact = [p for p in placed_ports(ctx.model)
+             if p.exact and p.equipment_tag == landed
+             and p.duct_system in (None, system)]
+    if not exact:
+        return ""
+    near = min(exact, key=lambda p: max(abs(p.x_m - point[0]), abs(p.y_m - point[1]))
+               + (0.0 if z is None else abs(p.z_m - z)))
+    off = max(abs(near.x_m - point[0]), abs(near.y_m - point[1]),
+              0.0 if z is None else abs(near.z_m - z))
+    if off <= JOINT_TOLERANCE_M:
+        return f" — on its dimensioned port {near.port_tag}, an exact connection"
+    return (f" — but {off / M_PER_IN:.1f}\" off its dimensioned port {near.port_tag}: "
+            "connected to the machine, not to the spigot")

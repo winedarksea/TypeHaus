@@ -79,11 +79,28 @@ class SoftPrism:
 
 
 def _polygon(ring: Any) -> Any:
+    """A shapely polygon from a ring of either spelling, or None.
+
+    **Two spellings reach here and only one used to work.** A resolved outline is a list of
+    ``(x, y)`` metre pairs, which is what shapely wants; an AUTHORED outline is a tuple of
+    :class:`~typehaus.quantities.Point2D`, which is not iterable and raises inside
+    ``Polygon``. Nothing noticed because the resolved path is the one the run and opening
+    prisms take — until ``--avoid`` names an element by tag and reads ``.outline`` straight
+    off the authored element, which crashed the whole command with a shapely ``TypeError``
+    for every soffit, room and floor opening anybody tried to avoid.
+
+    A degenerate or self-intersecting ring is None rather than an exception, which is the
+    behaviour every caller here already relies on.
+    """
     from shapely.geometry import Polygon
 
     if ring is None or len(ring) < 3:
         return None
-    poly = Polygon(ring)
+    points = [p.xy_m if hasattr(p, "xy_m") else p for p in ring]
+    try:
+        poly = Polygon(points)
+    except (TypeError, ValueError):
+        return None  # a ring of something this does not know how to read
     if not poly.is_valid or poly.is_empty:
         return None
     return poly

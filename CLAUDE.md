@@ -213,6 +213,8 @@ haus route houses/catlin --fixture FX-S-SUITEBATH-WC   # a branch for one fixtur
 haus route houses/catlin --tree PR-M-S-SUITE-DRAIN     # a main and every fixture on it
 haus route houses/catlin --unconnected                 # one per fixture_drain_reach FAIL
 haus route houses/catlin --run DU-M-ERV-R-KITCH --explain
+haus route houses/catlin --fixture FX-S-SUITEBATH-WC --sweep 8   # move the DRAIN POINT?
+haus route houses/catlin --run PR-B-KITCH-DRAIN --counterfactual # what if X moved?
 ```
 
 - **`--alternatives N` offers more than one lane** (penalty re-search, oracled by the drain
@@ -221,6 +223,31 @@ haus route houses/catlin --run DU-M-ERV-R-KITCH --explain
   milliseconds went. Ducts and raceways are routed too; `haus trial houses/catlin` scores
   the working tree against a recorded baseline after you paste. The whole loop is
   `houses/catlin/.claude/skills/route-run/SKILL.md`.
+- **A refusal names a cause, a class and a limit.** Every blocked terminal reports the tags
+  in the way with their conflict location and z, a **mobility class** on each (`fixed` for an
+  opening/void/concrete, `movable` for another run, `priced` for a soft prism, `unknown` for
+  `--avoid` or thin geometry — read off `HardPrism.kind`, never guessed from a tag), the
+  quantified shortage, what was attempted, and whether impossibility is *established* or only
+  "not within this search". `--counterfactual` then lifts one MOVABLE blocker at a time and
+  prices what opens — **a diagnosis, never a proposal**: the lifted run still has to go
+  somewhere and that is a search nobody has run. `--sweep N` asks the other half of the
+  two-way street, walking a fixture's drain point along its `wall_ref` and printing the best
+  station as a `Fixture(...)` to paste.
+- **A port may say how exact it is.** `ServicePort` carries `direction`, a section, and a
+  `PortCertainty` defaulting to `approximate` — because a datasheet gives a FACE ("all on
+  top, all 6" round"), which is why the catlin ERV authors four ports at one point. An
+  `exact` port is graded where it is and a router terminates on it; an approximate one stays
+  usable for a preliminary route and the report says the verdict is service-level.
+  `resolve/mep_ports.py` is the one placement both read.
+- **A channel's remaining width is a TIER, not a sum** (`resolve/mep_packing.py`). Runs that
+  share an elevation share a bay's or a soffit's clear width; runs that stack do not. Summing
+  made an 11 7/8" floor full of two 3" radials that never meet, and a full corridor is one the
+  router prices out of existence. An over-subscribed tier is a FAIL no arrangement can fix.
+- **A duct's size has a rule and it lives in `resolve/duct_sizing.py`** — Darcy-Weisbach with
+  Colebrook (moved out of `checks/mep/erv_static.py`, which now reads it) plus Manual D's
+  equal-friction method at `[mep.routing] duct_friction_in_wg_per_100ft`. **An authored size
+  always wins**; `--explain` prints what the air wants beside it, and only a real
+  `DuctProductType` row may ever be proposed.
 - **There is no `--write`.** The prose in a plan file *is* the design record; and accepting
   a route is a judgement, exactly as `haus engineering --fingerprint` prints a value for a
   person to paste. The reason once given first here — "`_content_hash` stales every pinned

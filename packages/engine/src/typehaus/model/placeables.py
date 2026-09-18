@@ -51,12 +51,66 @@ class ClearanceZone(HausModel):
     occupant_types: tuple[str, ...] = ()
 
 
+class PortCertainty(str, Enum):
+    """How much a port's ``position`` and ``direction`` are worth.
+
+    **The default is APPROXIMATE, and that is the whole point of the field.** A datasheet
+    normally gives a FACE — "ports are all on top and all 6" round" — not four coordinates,
+    and the Catlin ERV is authored the way every such sheet reads: four ports at the same
+    local ``(0, 0, 21.6")``. ``mep.equipment_port_service``'s docstring records what that
+    costs — a positional match against four coincident points is vacuous, so the check had
+    to drop to the service level for every machine in the house, including the ones whose
+    ports really are dimensioned.
+
+    Stating the certainty separates the two. An EXACT port is a dimensioned station with a
+    real outlet direction: a router may terminate on it, and a check may grade a duct end
+    against it positionally. An APPROXIMATE one stays usable for a preliminary route —
+    getting air to the case is still the right first answer — but it cannot establish an
+    exact connection, and every report that rests on one says so rather than implying a
+    precision the datasheet never gave.
+    """
+
+    EXACT = "exact"
+    APPROXIMATE = "approximate"
+
+
 class ServicePort(HausModel):
+    """One connection a product declares: where it is, which way it faces, how big it is.
+
+    ``direction`` is a unit vector in the PRODUCT frame, the same frame ``position`` is in,
+    so a placement's rotation carries both (``resolve/mep_sleeves.rotate_into_plan``). It
+    points the way air or water LEAVES the machine — an ERV's supply outlet on top points
+    ``(0, 0, 1)`` — which is what lets a router leave the port along its axis instead of
+    starting with a turn no fitting can make.
+
+    The section is the port's own, and is stated in the pair the product is: ``connection_
+    size`` for a round spigot, ``width``/``depth`` for a rectangular one. It is not the
+    connected run's size — a 6" spigot fed by a 6" duct is the ordinary case and a 6" spigot
+    on a transition off an 8" trunk is a real and different one.
+    """
+
     tag: str
     service: Service
     position: tuple[Length, Length, Length]
     connection_size: Length | None = None
+    #: Rectangular section, when the port is not round. Both or neither.
+    width: Length | None = None
+    depth: Length | None = None
+    #: Unit vector in the product frame; ``None`` when the sheet does not say.
+    direction: tuple[float, float, float] | None = None
+    certainty: PortCertainty = PortCertainty.APPROXIMATE
     notes: str | None = None
+
+    def is_exact(self) -> bool:
+        return self.certainty is PortCertainty.EXACT
+
+    def section_m(self) -> tuple[float, float] | None:
+        """``(width, depth)`` in metres, round or rectangular, or None if unstated."""
+        if self.connection_size is not None:
+            return self.connection_size.meters, self.connection_size.meters
+        if self.width is not None and self.depth is not None:
+            return self.width.meters, self.depth.meters
+        return None
 
 
 class PlanRepresentation(HausModel):

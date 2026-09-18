@@ -251,6 +251,12 @@ def test_json_emits_the_proposal_and_its_evaluation_together(runner) -> None:
     second is what "the engine proposes" would mean with nobody judging it. Both the
     structured geometry and the source a person pastes are carried, because the two readers
     are different and a re-derivation is a place for them to drift.
+
+    ``refusals`` is contract 3's other half, added in Phase 4: a terminal that was NOT
+    served, with the blockers standing on it, each one's conflict location and mobility
+    class, the shortage and whether impossibility is established. ``problems`` carries the
+    same facts as prose for a person; this is the half an agent reads, and the key set is
+    pinned here so adding one is a deliberate act.
     """
     import json
 
@@ -259,7 +265,11 @@ def test_json_emits_the_proposal_and_its_evaluation_together(runner) -> None:
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert set(payload) == {"house", "storey", "proposals", "evaluations",
-                            "problems", "notices"}
+                            "problems", "notices", "refusals"}
+    # This fixture routes, so there is nothing refused — the key is present regardless,
+    # because a consumer that has to branch on whether a field exists is a contract with a
+    # hole in it.
+    assert payload["refusals"] == []
     proposal = payload["proposals"][0]
     assert proposal["diameter_m"] == pytest.approx(3 * 0.0254)
     assert proposal["points_m"] and len(proposal["points_m"][0]) == 3

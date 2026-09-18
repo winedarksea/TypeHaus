@@ -163,6 +163,19 @@ corridor_discount_per_ft = 8.0
 # `mep.wet_wall_occupancy`, which reports the same thing after the fact.
 in_wall_travel_per_ft = 18.0
 
+# **The equal-friction design rate a duct is sized at**, in. w.g. per 100 ft — the
+# ASHRAE/ACCA Manual D method, and its residential default. Not a router weight: it decides
+# a SIZE, not a lane, and it is here because it is the same kind of thing as the weights
+# above — a house's own preference, arguable, and printed by `haus route --explain` so a
+# size nobody chose on purpose stops being invisible.
+#
+# An authored size always wins; this only says what the air wants. It is already saying
+# something about this house: DU-B-ERV-SUP-TRUNK carries 210 cfm in 6" galvanized and runs
+# at 0.322 in. w.g./100 ft against this 0.08, which is the same fact `notes/
+# erv_static_budget.md` reaches from the other end — the Broan's "210 at 0.2 or 206 at 0.4"
+# argument is a duct too small for its air, stated as a curve.
+duct_friction_in_wg_per_100ft = 0.08
+
 # Open air in a finished room, per foot, by occupancy. **The ordering is the point, not the
 # magnitudes**: a bedroom and a media room are where a bulkhead is least welcome, a hallway
 # is where one is normal, and a garage or a mechanical room is free because pipe hangs there

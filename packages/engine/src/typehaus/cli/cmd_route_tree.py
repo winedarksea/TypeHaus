@@ -157,7 +157,10 @@ def _propose_tree(model: ResolvedModel, target: str, *, slope: float | None,
         notices.extend(group_notices)
     if timing is not None:
         timing.extend(clock.lines())
-    return proposals, problems, notices
+    # No refusals channel yet: a tree refusal is reported per-terminal inside the RSPH
+    # loop and has no single blocked terminal to classify. The shape matches ``_propose``
+    # so the caller does not branch on which proposer it called.
+    return proposals, problems, notices, []
 
 
 def _route_group(model: ResolvedModel, target: str, group: list[str], *,

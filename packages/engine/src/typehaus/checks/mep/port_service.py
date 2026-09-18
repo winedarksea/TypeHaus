@@ -44,6 +44,15 @@ EQ-T-ERV-MANIFOLD-6 declares a SUPPLY_AIR trunk and is placed as an extract mani
 Nothing is wrong with the building in either case — what is missing is a model that can say
 "this type is directional and this placement reverses it", and reporting a FAIL would be
 reporting the catalog's shape rather than the house's.
+
+**A port that IS dimensioned now gets graded where it is.** The service-level verdict above
+was forced on every machine in the house by the authoring the ERV's datasheet permits, and
+that is a fair reading of a port stating four coincident points — but it was also applied to
+ports whose station is real, because nothing distinguished them.
+:class:`~typehaus.model.placeables.PortCertainty` is that distinction. An ``EXACT`` port is
+graded positionally, against the duct end that has to land on it; an ``APPROXIMATE`` one
+keeps the service-level verdict and the finding SAYS the verdict is service-level, so a
+reader can tell a machine that is properly connected from one that is merely fed.
 """
 
 from __future__ import annotations
@@ -142,6 +151,69 @@ def _port_stations(element: object, ports: list[ServicePort]) -> str:
     return ", ".join(seen)
 
 
+#: The one placement of a declared port — ``resolve/mep_ports``, which the ROUTER reads too
+#: so a duct is re-routed to the same spigot this grades it against.
+def _port_point(element: object, obj: ResolvedCanvasObject,
+                port: ServicePort) -> tuple[float, float, float]:
+    """The port's station in project coordinates, via ``resolve/mep_ports``' transform.
+
+    Plan through the placement's rotation, z off the object's own base — which is the datum
+    ``_reaches_vertically`` measures from, and the reason the z term is an addition here.
+    """
+    x, y = rotate_into_plan(element, (port.position[0].meters, port.position[1].meters))
+    return x, y, obj.z_m + port.position[2].meters
+
+
+def _lands_on(ctx: CheckContext, point: tuple[float, float, float],
+              system: str) -> str | None:
+    """The tag of a duct of ``system`` whose END is at ``point``, or None.
+
+    An END, never a pass-through: an exact port is a spigot, and a duct crossing over one
+    is not connected to it. The tolerance is ``JOINT_TOLERANCE_M``, the same figure
+    ``mep.duct_connectivity`` joins two runs at — a port is a joint like any other.
+    """
+    x, y, z = point
+    for duct in ctx.model.ducts:
+        if len(duct.path) < 2:
+            continue
+        if (duct.system.value if hasattr(duct.system, "value") else str(duct.system)) != system:
+            continue
+        for index in (0, len(duct.path) - 1):
+            px, py = duct.path[index]
+            if max(abs(px - x), abs(py - y)) > JOINT_TOLERANCE_M:
+                continue
+            pz = duct.z_m[index] if len(duct.z_m) > index else None
+            if pz is None or abs(pz - z) <= JOINT_TOLERANCE_M:
+                return duct.tag
+    return None
+
+
+def _exact_findings(ctx: CheckContext, element: object, obj: ResolvedCanvasObject,
+                    ports: list[ServicePort]) -> list[Finding]:
+    """One finding per EXACT port: the connection is established, or it is not."""
+    out: list[Finding] = []
+    for port in ports:
+        system = AIR_SERVICE_DUCT_SYSTEM[port.service].value
+        point = _port_point(element, obj, port)
+        tag = _lands_on(ctx, point, system)
+        where = (f"({point[0] / M_PER_IN / 12:.2f}', {point[1] / M_PER_IN / 12:.2f}', "
+                 f"{point[2] / M_PER_IN / 12:.2f}')")
+        if tag is not None:
+            out.append(passed(
+                CHECK_ID,
+                f"{element.tag} port {port.tag} ({system}) is an exact connection: "
+                f"{tag} ends on it at {where}", (element.tag, port.tag)))
+        else:
+            out.append(failed(
+                CHECK_ID,
+                f"{element.tag} port {port.tag} is a DIMENSIONED {system} port at {where} "
+                f"and no {system} run ends there (within "
+                f"{JOINT_TOLERANCE_M / M_PER_IN:.2f}\"). The port states its own station, "
+                "so this is a gap in the ductwork rather than a limit of the reading",
+                (element.tag, port.tag)))
+    return out
+
+
 @check(Tier.INTEGRITY, CHECK_ID)
 def equipment_port_service(ctx: CheckContext) -> list[Finding]:
     """Every air port a machine declares is reached by a duct of that port's system."""
@@ -157,6 +229,12 @@ def equipment_port_service(ctx: CheckContext) -> list[Finding]:
             continue
         ports = [port for port in machine_type.ports
                  if port.service in AIR_SERVICE_DUCT_SYSTEM]
+        if not ports:
+            continue
+        exact = [port for port in ports if port.is_exact()]
+        if exact:
+            out.extend(_exact_findings(ctx, element, obj, exact))
+        ports = [port for port in ports if not port.is_exact()]
         if not ports:
             continue
         wanted = {AIR_SERVICE_DUCT_SYSTEM[port.service].value for port in ports}
@@ -184,7 +262,10 @@ def equipment_port_service(ctx: CheckContext) -> list[Finding]:
             out.append(passed(
                 CHECK_ID,
                 f"{element.tag}'s declared air service is served: {served} "
-                f"({how} the case){note}", (element.tag,)))
+                f"({how} the case){note}. The port(s) state no dimensioned station "
+                "(certainty=approximate), so this is a service-level verdict: air reaches "
+                "the machine, and no exact connection is established",
+                (element.tag,)))
             continue
         out.append(unknown(
             CHECK_ID,

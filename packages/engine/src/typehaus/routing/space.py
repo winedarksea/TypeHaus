@@ -19,6 +19,7 @@ from typing import TYPE_CHECKING, Any
 
 from typehaus.routing.corridors import (
     Corridor,
+    chase_corridors,
     crossing_window,
     floor_corridors,
     soffit_corridors,
@@ -210,7 +211,7 @@ def build_space(model: ResolvedModel, *, radius_m: float,
             if prism.footprint.intersects(window)]
     corridors = [corridor for corridor in
                  (*floor_corridors(model), *soffit_corridors(model),
-                  *wall_corridors(model))
+                  *wall_corridors(model), *chase_corridors(model))
                  if corridor.admits(radius_m)
                  and _corridor_in(corridor, minx, miny, maxx, maxy)]
 

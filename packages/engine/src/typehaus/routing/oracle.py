@@ -46,9 +46,16 @@ ORACLES: dict[str, tuple[Oracle, ...]] = {
 #: model already carries, ``cost`` is a table of house preferences, ``proposal`` is a
 #: printer, ``timing`` is a stopwatch, ``diagnostics`` reads back the space the
 #: search was given, and ``trades/{pipe,conduit}`` are adapters over the modules above.
+#:
+#: ``counterfactual`` is the one that deserves a sentence. It runs a real search and so
+#: looks like a calculation, but every number it reports is the ALREADY-ORACLED search's
+#: own cost over a world with one prism lifted — there is no arithmetic of its own to work
+#: by hand, and a note reproducing one would be reproducing ``search``'s §4. What it adds
+#: is a policy (relax only ``Mobility.MOVABLE``, one at a time, bounded), and a policy is
+#: argued in prose, which its docstring does.
 NOT_A_CALCULATION = frozenset({
     "__init__", "space", "obstacles", "cost", "proposal", "oracle", "timing",
-    "diagnostics",
+    "diagnostics", "counterfactual",
     "trades/__init__", "trades/pipe", "trades/conduit",
 })
 

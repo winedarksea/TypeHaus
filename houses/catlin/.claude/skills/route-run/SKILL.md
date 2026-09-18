@@ -1,6 +1,6 @@
 ---
 name: route-run
-description: Propose, judge and commit one MEP route on a branch — haus route --alternatives --evaluate, paste, haus fmt, haus trial, look at the drawing. Use when asked to route or re-route a pipe, duct or raceway in this house, or to fix a mep.* finding about where a run goes.
+description: Propose, judge and commit one MEP route on a branch — haus route --alternatives --evaluate (--counterfactual, --sweep), paste, haus fmt, haus trial, look at the drawing. Use when asked to route or re-route a pipe, duct or raceway in this house, or to fix a mep.* finding about where a run goes.
 ---
 
 # Routing one run: the engine proposes, you commit
@@ -78,17 +78,61 @@ those words rather than re-running the search with a steeper `--slope` than the 
 allows.
 
 A refusal that names **tags** — "the lanes off the origin are inside DU-M-ERV-R-BATH2" —
-is congestion. Either `--avoid` something and see what it costs, or re-route the other run
-first. The catlin ERV manifold is genuinely full (ten ports at 4" centres); a route out of
-it is not a search problem.
+is congestion. Every blocker now carries a **mobility class**, and it tells you which move
+to make:
+
+* `movable` (another run) — re-route that one first, or run `--counterfactual` to find out
+  whether moving it is even enough before you spend the effort:
+
+  ```
+  .venv/bin/haus route houses/catlin --run PR-B-KITCH-DRAIN --counterfactual
+  ```
+
+  It lifts one movable blocker at a time and prices what opens. **It is a diagnosis, not a
+  proposal**: it does not say where the lifted run would go instead, and "a route exists if
+  X moved" is not permission for X to move.
+* `fixed` (a rough opening, a void, concrete) — nothing to negotiate. If every blocker is
+  fixed the refusal says so in those words ("established from the geometry"), and that is
+  the sentence to quote rather than re-running the search.
+* `unknown` — usually your own `--avoid`. Drop it and see.
+
+Read the refusal's last clause before anything else: **"not within this search"** means try
+a wider `--margin` or a different order; **"established from the geometry"** means stop.
+
+## Asking whether the FIXTURE should move
+
+Before concluding a fixture is in the wrong place, ask:
+
+```
+.venv/bin/haus route houses/catlin --fixture FX-S-SUITEBATH-WC --sweep 8
+```
+
+This walks the derived drain point along the fixture's `wall_ref` in 2" steps — clamped to
+the wall, skipping stations that would land in a stud — and prints what each buys. The best
+one comes back as a `Fixture(...)` with `drain_position` set.
+
+Two cautions. It moves the **drain point**, not the china: `drain_position` is the override
+the model already has for where the waste actually drops. And a station it calls feasible is
+feasible *to route* — whether the moved drain still clears its trap arm and its clearance
+zone is what `haus trial` tells you after you paste it. "NO station on this wall routes" is
+also an answer: the obstruction is not where the fixture stands.
 
 ## What this loop cannot see yet
 
 Say it out loud in the commit message when it applies:
 
-* **run-vs-run interference** outside a shared soffit or duct bay is not graded at all.
-  The NW basement column holds 37 known interpenetrations that nothing reports.
-* **stud bores and notches** — R502.8, R602.6 — are on the jurisdiction profile's
-  not-covered list.
 * **fittings** are counted from turns and never modelled, so a turn no stock elbow makes
-  draws as a mitre and passes.
+  draws as a mitre and passes (roadmap Phase 5).
+* **whole-house coordination** — routing one run at a time cannot find the order that makes
+  all of them fit, and there is no rip-up-and-re-route (Phase 6).
+* **a duct's size is advised, never applied.** `--explain` prints what the air wants at the
+  house's design friction rate; the authored size always wins. DU-B-ERV-SUP-TRUNK is drawn
+  4x under it and that is a real, known, deliberate fact about this house.
+* **two lanes in one bay** are a capacity statement, not an arrangement: the model gives a
+  run one centreline per bay, so `mep.duct_joist_bay_occupancy` can say the bay holds them
+  and cannot say they were drawn side by side.
+
+Run-vs-run interference and stud/plate bores used to be on this list. Both are graded now
+(`mep.run_interference`, `mep.run_through_stud`, `mep.run_through_plate`) — which is why
+`preferences.toml` carries two blanket suppressions with their counts and dates beside them.
+Deleting one and re-running `haus check` is how that debt gets measured.

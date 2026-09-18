@@ -623,6 +623,14 @@ class ResolvedFloor:
     #: Runs crossing a bearing-line blocking bay that its 2x6 pass-through box cannot clear
     #: (``resolve/floor_blocking.py``); ``mep.run_through_blocking`` fails each.
     blocking_conflicts: tuple = ()
+    #: ``(tag, ring)`` for each ``FloorOpening(purpose=CHASE)`` this deck is cut by — the
+    #: same shape ``ResolvedSoffit.openings`` carries, and here for the same reason. A chase
+    #: and a stair well frame identically and are both in ``deck_voids``, so by the time a
+    #: reader sees a void it can no longer tell a shaft a trade is meant to use from a hole
+    #: somebody walks down. ``routing/corridors.chase_corridors`` needs exactly that
+    #: distinction to offer a riser lane, and re-reading the plan for it would put an
+    #: authored-model read inside the router.
+    chases: tuple[tuple[str, Ring], ...] = ()
 
 
 @dataclass(frozen=True)

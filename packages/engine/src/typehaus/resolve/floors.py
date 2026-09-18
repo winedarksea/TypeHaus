@@ -8,6 +8,7 @@ Opening headers and trimmers: ``resolve/floor_openings.py``.
 from __future__ import annotations
 
 from typehaus.findings import Finding, Result, Severity
+from typehaus.model.enums import FloorOpeningPurpose
 from typehaus.model.floors import FloorSystem
 from typehaus.model.structure import Beam
 from typehaus.quantities import inch
@@ -222,9 +223,15 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
         )
         deck_z1_m = z1 + system.subfloor.thickness.meters
 
+    chases = tuple(
+        (f.opening.tag, [(f.minx, f.miny), (f.maxx, f.miny),
+                         (f.maxx, f.maxy), (f.minx, f.maxy)])
+        for f in opening_boxes
+        if getattr(f.opening, "purpose", None) is FloorOpeningPurpose.CHASE)
+
     return ResolvedFloor(
         uid=system.uid, tag=system.tag, storey=storey.tag,
-        direction=spec.direction, members=tuple(members),
+        direction=spec.direction, members=tuple(members), chases=chases,
         deck_outline=deck_outline, deck_voids=deck_voids,
         deck_z0_m=deck_z0_m, deck_z1_m=deck_z1_m, ends=ends,
         deck_material_ref=(system.subfloor.material_ref if system.subfloor else None),

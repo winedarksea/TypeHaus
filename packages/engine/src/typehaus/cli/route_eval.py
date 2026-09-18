@@ -241,7 +241,7 @@ def as_dict(item: Evaluation) -> dict:
 
 def payload(directory: Path, storey: str, datum_for, proposals: list[RouteProposal],
             evaluations: list[Evaluation], problems: list[str],
-            notices: list[str]) -> dict:
+            notices: list[str], refusals: list | None = None) -> dict:
     """Contracts 2 and 3 of the roadmap, together and in one shape.
 
     Together because a proposal and what it does to the house are one answer: shipping the
@@ -256,6 +256,10 @@ def payload(directory: Path, storey: str, datum_for, proposals: list[RoutePropos
         "evaluations": [as_dict(e) for e in evaluations],
         "problems": list(problems),
         "notices": list(notices),
+        # Contract 3's blocked terminals, structured: the tag, where the conflict is, and
+        # the mobility class that says what could be done about it. ``problems`` carries
+        # the same facts as prose for a human reader; this is the half an agent reads.
+        "refusals": [r.payload() for r in (refusals or [])],
     }
 
 

@@ -40,31 +40,24 @@ the two places the graded figure is deliberately conservative.
 
 from __future__ import annotations
 
-import math
-
 from typehaus.checks._authoring import advisory, failed, not_applicable, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.enums import DuctSystem, EquipmentKind
+from typehaus.resolve import duct_sizing
 
 #: Pascals per inch of water gauge. The two units in play, each the one its own source
 #: publishes in: a fan curve is in. w.g., a component loss is Pa.
 PA_PER_IN_WG = 249.089
 
-#: Kinematic viscosity of dry air at 70 F, ft^2/s. The Reynolds number is the only place
-#: air properties enter, and 70 F is the temperature the duct is in, not the outdoor design
-#: temperature — a static budget is a room-temperature calculation.
-_NU_FT2_S = 1.63e-4
-
-#: Colebrook is a TURBULENT correlation and several of this system's radials are not
-#: turbulent — a 5 cfm branch in 4" pipe runs at Re ~1,950. Below 2,300 the flow is laminar
-#: and Hagen-Poiseuille (f = 64/Re) is exact, so that is what is used; between 2,300 and
-#: 4,000 there is no correlation at all, and the conservative engineering read is the
-#: turbulent value at the top of the band. Neither case can govern — a 5 cfm branch's
-#: velocity pressure is two orders below a 210 cfm trunk's — but reporting it as a gap
-#: would be reporting a limitation of the correlation as a limitation of the model.
-_LAMINAR_RE = 2300.0
-_MIN_TURBULENT_RE = 4000.0
+#: The friction arithmetic itself — Colebrook across all three flow regimes, and
+#: Darcy-Weisbach over a length — now lives in ``resolve/duct_sizing.py``, which a router
+#: may import and this may not be. Re-exported under their old private names so the oracle
+#: note's terms and ``tests/test_erv_static_oracle.py`` read unchanged.
+_NU_FT2_S = duct_sizing.NU_FT2_S
+_LAMINAR_RE = duct_sizing.LAMINAR_RE
+_MIN_TURBULENT_RE = duct_sizing.MIN_TURBULENT_RE
+_friction_factor = duct_sizing.friction_factor
 
 #: Systems on the fresh-air side and on the stale-air side of a balanced ventilator. The
 #: curve is an external static PER SIDE, so the governing figure is the worse of the two and
@@ -86,18 +79,6 @@ def _equipment_kinds(ctx: CheckContext) -> dict[str, str]:
     return {element.tag: element.kind.value
             for element in ctx.plan.all_elements()
             if element.element_kind == "Equipment"}
-
-
-def _friction_factor(reynolds: float, relative_roughness: float) -> float:
-    """Darcy friction factor across all three flow regimes — see ``_LAMINAR_RE``."""
-    if reynolds < _LAMINAR_RE:
-        return 64.0 / reynolds
-    reynolds = max(reynolds, _MIN_TURBULENT_RE)
-    factor = 0.03
-    for _ in range(80):
-        factor = (-2.0 * math.log10(relative_roughness / 3.7
-                                    + 2.51 / (reynolds * math.sqrt(factor)))) ** -2
-    return factor
 
 
 class _Leg:
@@ -136,17 +117,12 @@ def _duct_drop(ctx: CheckContext, duct, elbows: int) -> _Leg:
                     f"{(diameter_m or 0.0) / _M_PER_IN:.1f}\")")
     if duct.design_cfm is None:
         return _Leg(duct.tag, None, "the run states no design_cfm")
-    bore_ft = product.bore_diameter.meters * _M_TO_FT
-    area_ft2 = math.pi * bore_ft * bore_ft / 4.0
-    velocity_fpm = duct.design_cfm / area_ft2
-    velocity_pressure = (velocity_fpm / 4005.0) ** 2
-    reynolds = (velocity_fpm / 60.0) * bore_ft / _NU_FT2_S
-    roughness_ft = product.roughness_m * _M_TO_FT
-    factor = _friction_factor(reynolds, roughness_ft / bore_ft)
-    bend_ft = (product.bend_equivalent_length.meters * _M_TO_FT
-               if product.bend_equivalent_length is not None else 0.0)
-    effective_ft = duct.length_m * _M_TO_FT + elbows * bend_ft
-    return _Leg(duct.tag, factor * (effective_ft / bore_ft) * velocity_pressure, None)
+    bend_m = (product.bend_equivalent_length.meters
+              if product.bend_equivalent_length is not None else 0.0)
+    effective_m = duct.length_m + elbows * bend_m
+    return _Leg(duct.tag, duct_sizing.leg_drop_in_wg(
+        duct.design_cfm, product.bore_diameter.meters, product.roughness_m, effective_m),
+        None)
 
 
 def _interpolate(curve: tuple[tuple[float, float], ...], cfm: float) -> float:

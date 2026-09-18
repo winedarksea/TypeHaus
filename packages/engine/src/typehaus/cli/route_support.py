@@ -59,6 +59,10 @@ class Endpoints:
     #: True when a gravity profile applies. Not ``system == "drain"`` at the call site,
     #: because a DuctSystem is also a string and "exhaust" does not fall.
     falls: bool = False
+    #: Lines ``--explain`` prints about the terminals themselves — the derived duct size
+    #: against the authored one, a terminal snapped to an exact port. Advice, never a
+    #: change: an authored size wins, and saying why it is arguable is the whole service.
+    advice: tuple[str, ...] = ()
 
 
 def _load(house: Path | None) -> tuple[Path, Any]:
@@ -230,9 +234,10 @@ def _duct_endpoints(model: ResolvedModel, duct: Any,
     joined = {other.tag for other in model.ducts
               if other.tag != duct.tag and ducts_are_joined(model, duct.tag, other.tag)}
     width, depth = (0.0, 0.0) if duct.diameter_m else (duct.width_m, duct.depth_m)
+    origin = _port_terminal(model, duct, 0)
+    root = _port_terminal(model, duct, len(duct.path) - 1)
     return Endpoints(
-        origin=(duct.path[0][0], duct.path[0][1], duct.z_m[0]),
-        root=(duct.path[-1][0], duct.path[-1][1], duct.z_m[-1]),
+        origin=origin, root=root, advice=_duct_size_advice(model, duct),
         kind="duct", radius_m=duct_trade.radius_m(
             diameter_m=duct.diameter_m, width_m=duct.width_m, depth_m=duct.depth_m),
         diameter_m=duct.diameter_m or 0.0, width_m=width, depth_m=depth,
@@ -405,3 +410,77 @@ def _root_nodes(graph: Graph, root: tuple[float, float, float],
     return {node.index for node in graph.nodes
             if abs(node.x - root[0]) < tolerance and abs(node.y - root[1]) < tolerance
             and (not with_z or abs(node.z - root[2]) < tolerance)}
+
+
+def _port_terminal(model: ResolvedModel, duct: Any, index: int) -> tuple[float, float, float]:
+    """One end of a duct, snapped to the EXACT service port it lands on if there is one.
+
+    An authored end inside a machine's case is a claim about which machine, not about which
+    spigot: the case is a couple of feet across and the ports are inches apart on it. Where
+    the type dimensions its port (``PortCertainty.EXACT``) the model knows the spigot's real
+    station, and terminating a foot away from it proposes a lane an installer then has to
+    re-aim. An APPROXIMATE port is left alone on purpose — see ``resolve/mep_ports.port_at``.
+
+    The tolerance is the CASE, not a joint: the whole point is to correct an end that landed
+    loosely inside one. Half a metre is wider than any residential air-handling case's half
+    diagonal and far narrower than the gap to the next machine.
+    """
+    from typehaus.resolve.mep_ports import port_at
+
+    point = duct.path[index]
+    z = duct.z_m[index]
+    system = duct.system.value if hasattr(duct.system, "value") else str(duct.system)
+    port = port_at(model, point, z, duct_system=system, tolerance_m=0.5)
+    return (point[0], point[1], z) if port is None else port.point
+
+
+def _duct_size_advice(model: ResolvedModel, duct: Any) -> tuple[str, ...]:
+    """What the equal-friction rule would size this duct at, beside what it is.
+
+    **Advice, and deliberately not a change.** An authored size is a decision — a trunk run
+    up a size for the static budget, a branch held down to clear a bay — and a router that
+    silently re-sized it would be overruling the design to make its own arithmetic come out.
+    What the router can do is say the number, so a size nobody chose on purpose stops being
+    invisible. A campaign that CREATES a branch has no authored size to defer to and calls
+    ``resolve/duct_sizing.size_for_cfm`` for the real answer.
+
+    Round ducts only: the equal-friction rule is stated on a bore, and an equivalent
+    diameter for a rectangle is a second reading this does not hold.
+    """
+    from typehaus.resolve.duct_sizing import friction_rate_in_wg_per_100ft, size_for_cfm
+
+    cfm = getattr(duct, "design_cfm", None)
+    if not cfm or not duct.diameter_m:
+        return ()
+    rate = _friction_rate(model)
+    want, basis = size_for_cfm(model.plan.library, cfm, material=duct.material,
+                               rate_in_wg_per_100ft=rate)
+    if want is None:
+        return (f"sizing: {basis}",)
+    if abs(want.nominal_m - duct.diameter_m) <= 1e-9:
+        return (f"sizing: {duct.tag} is the size {cfm:.0f} cfm wants — {basis}",)
+    from typehaus.quantities import M_PER_IN
+    row = next((r for r in model.plan.library.duct_product_types
+                if r.material == duct.material
+                and abs(r.nominal_diameter.meters - duct.diameter_m) <= 1e-6), None)
+    drawn = (None if row is None else friction_rate_in_wg_per_100ft(
+        cfm, row.bore_diameter.meters, row.roughness_m))
+    at = "" if drawn is None else f", against {drawn:.3f} in. w.g./100 ft as drawn"
+    return (f'sizing: {duct.tag} is drawn {duct.diameter_m / M_PER_IN:.3g}"; '
+            f"{cfm:.0f} cfm at the {rate:.3f} in. w.g./100 ft design rate wants {basis}{at}. "
+            "The authored size stands — this is the number, not a decision",)
+
+
+def _friction_rate(model: ResolvedModel) -> float:
+    """``[mep.routing] duct_friction_in_wg_per_100ft`` for this house, or the default."""
+    from typehaus.resolve.duct_sizing import (
+        DEFAULT_FRICTION_IN_WG_PER_100FT,
+        friction_rate_from_preferences,
+    )
+
+    root = getattr(model.plan, "source_root", None)
+    if root is None:
+        return DEFAULT_FRICTION_IN_WG_PER_100FT
+    from typehaus.checks import load_preferences
+
+    return friction_rate_from_preferences(load_preferences(Path(root)).mep.routing)

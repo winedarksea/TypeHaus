@@ -192,17 +192,69 @@ def _bounds(ring: Any) -> tuple[float, float, float, float] | None:
 def _remaining_taken(model: ResolvedModel, soffit: ResolvedSoffit) -> float:
     """How much of a soffit's across-axis width is already spoken for.
 
-    Ducts and pipes naming this soffit occupy it; the sum of their outside dimensions is
-    what a new route cannot have. Deliberately a sum rather than a packing: the model
-    gives each run one centreline per box, so it cannot say two things sit side by side —
-    the same limit ``mep.duct_joist_bay_occupancy`` reports UNKNOWN about, inherited here
-    rather than papered over.
+    What stood here was a **sum** of every occupant's outside dimension, with a comment
+    admitting it: the model gives each run one centreline per box, so it "cannot say two
+    things sit side by side". That is true and it is not a reason to sum. Summing makes a
+    2'-8" box full once the air handler's case and three branches are in it, even where the
+    branches run over the top of the case and never share an elevation with it, and a full
+    box is a corridor the router prices out of existence.
+
+    ``resolve/mep_packing`` answers it properly and both readers now share the answer: the
+    width taken is the widest TIER — the largest total over any one elevation — so runs that
+    stack cost the box nothing. See that module for what the reading still declines to
+    claim.
     """
-    taken = 0.0
-    for duct in model.ducts:
-        if getattr(duct, "soffit_ref", None) == soffit.tag:
-            taken += duct.diameter_m or max(duct.width_m, duct.depth_m)
-    for run in model.pipe_runs:
-        if getattr(run, "soffit_ref", None) == soffit.tag:
-            taken += run.diameter_m or 0.0
-    return taken
+    from typehaus.resolve.mep_packing import pack, run_occupants
+
+    return pack(0.0, run_occupants(model, channel_ref=soffit.tag)).taken_m
+
+
+def chase_corridors(model: ResolvedModel) -> list[Corridor]:
+    """One corridor per ``FloorOpening(purpose=CHASE)`` — a lane, not merely a hole.
+
+    A chase already reached the router, as a *void*: ``obstacles`` declines to block it, so
+    a run may pass through. That is only half of what a chase is. A chase is where a trade
+    PUTS a riser, and a lane nothing discounts is a lane the search takes only when it is
+    also the shortest — which is how a route ends up boring a plate eighteen inches from an
+    open shaft built for it.
+
+    The corridor runs on the opening's LONG plan axis, the same reading a soffit takes, and
+    its clear width is what the chase has left once the risers already in it are packed
+    (``mep_packing``). ``z0_m``/``z1_m`` span the floor it pierces, because that is the
+    extent over which the hole is a hole; a riser continuing above or below is travelling in
+    a wall or a bay and is priced there.
+    """
+    out: list[Corridor] = []
+    for floor in model.floors:
+        for tag, ring in getattr(floor, "chases", ()) or ():
+            bounds = _bounds(ring)
+            if bounds is None:
+                continue
+            minx, miny, maxx, maxy = bounds
+            wide = (maxx - minx) >= (maxy - miny)
+            axis = "x" if wide else "y"
+            across = (maxy - miny) if wide else (maxx - minx)
+            lo, hi = (minx, maxx) if wide else (miny, maxy)
+            out.append(Corridor(
+                tag=tag, kind="chase", axis=axis,
+                station=(miny + maxy) / 2.0 if wide else (minx + maxx) / 2.0,
+                z0_m=_floor_low(floor), z1_m=floor.deck_z0_m,
+                clear_width_m=max(across - _chase_taken(model, tag), 0.0),
+                lo_m=lo, hi_m=hi))
+    return out
+
+
+def _chase_taken(model: ResolvedModel, tag: str) -> float:
+    """The widest tier of runs naming this chase, through either ref a run may use."""
+    from typehaus.resolve.mep_packing import Occupant, pack, run_occupants
+
+    seen: dict[str, Occupant] = {}
+    for attr in ("chase_ref", "soffit_ref", "floor_ref"):
+        for occupant in run_occupants(model, channel_ref=tag, attr=attr):
+            seen[occupant.tag] = occupant
+    return pack(0.0, list(seen.values())).taken_m
+
+
+def _floor_low(floor: ResolvedFloor) -> float:
+    placed = [m.z0_m for m in floor.members if m.z0_m is not None]
+    return min(placed) if placed else floor.deck_z0_m

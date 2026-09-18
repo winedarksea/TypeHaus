@@ -148,6 +148,40 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   calls it. `--run DU-M-ERV-R-KITCH` still refuses on catlin, but now for the true reason and
   with the tags: the ERV manifold packs ten ports 4" apart, so every lane out of one is inside
   a neighbour's envelope and 3 of 33,439 lattice nodes are reachable.
+- ~~**Ports are position + service only; bay sharing is one centreline; no duct sizing rule.**~~
+  **Done 2026-09-17 (roadmap Phase 3).** `ServicePort` now carries `direction`, a rectangular
+  `width`/`depth` beside the round `connection_size`, and a `PortCertainty` whose default is
+  APPROXIMATE — so the catlin ERV's four ports at one point read as what the datasheet gave (a
+  face), and a DIMENSIONED port is graded where it is instead of dropping the whole house to a
+  service-level verdict. `resolve/mep_ports.py` is the one placement of a declared port and the
+  router reads it too, so a duct is re-routed to the same spigot `mep.equipment_port_service`
+  grades it against. `resolve/mep_packing.py` replaces the two "sum every occupant's width"
+  readings with a TIER reading — runs that stack do not share a channel's width — which
+  `mep.duct_joist_bay_occupancy` (now in `checks/mep/bay_packing.py`) grades and
+  `routing/corridors` prices; an over-subscribed bay is a FAIL no arrangement can fix.
+  `resolve/duct_sizing.py` holds the Darcy-Weisbach/Colebrook physics `erv_static` used to own
+  privately, plus the Manual D equal-friction rule at `[mep.routing]
+  duct_friction_in_wg_per_100ft` (0.08). `FloorOpening(purpose=CHASE)` survives resolution as
+  `ResolvedFloor.chases` and becomes a riser corridor rather than merely a void a run is
+  allowed through.
+  - **It found something.** `DU-B-ERV-SUP-TRUNK` carries 210 cfm in 6" galvanized at **0.322
+    in. w.g./100 ft**, four times the design rate — the same fact `notes/erv_static_budget.md`
+    reaches from the fan-curve end ("210 at 0.2 or 206 at 0.4" is a duct too small for its
+    air). Not a FAIL: an authored size is a decision. `--explain` prints it so it stops being
+    invisible.
+- ~~**No blocker mobility, no counterfactuals, no fixture-movement diagnostic.**~~
+  **Done 2026-09-17 (roadmap Phase 4).** `routing/diagnostics.py` classifies every blocker —
+  `fixed` (opening, void, concrete), `movable` (another run), `priced` (soft prism), `unknown`
+  (`--avoid`, or geometry too thin) — read off `HardPrism.kind` and never guessed from a tag,
+  and a `Refusal` record carries the blockers with their conflict locations and z, the
+  quantified shortage, what was attempted, and whether impossibility is **established** or
+  merely "not within this search". Those were one sentence before and they are different facts.
+  `--counterfactual` re-searches with one MOVABLE blocker lifted at a time (bounded, four deep)
+  and prices what opens; `routing/counterfactual.py` labels every exit a diagnosis rather than
+  a proposal, because the lifted run still has to go somewhere and that is a search nobody ran.
+  `--sweep N` walks a fixture's derived drain point along its `wall_ref` in 2" steps, clamped
+  ALONG the wall and skipped where it would land in a stud, and prints the best station as a
+  `Fixture(...)` with `drain_position` set. Contract 3's `refusals` array is in `--json`.
 - **A whole-storey duct problem exceeds `MAX_LATTICE_NODES`.** `--run DU-B-ERV-R-GYM --margin 3`
   wants 148,960 nodes against the 120,000 cap. `--timing` says where it goes: on the ERV-KITCH
   problem, build-space 53 ms, **build-graph 4,128 ms**, search 0.0 ms. That is the measurement

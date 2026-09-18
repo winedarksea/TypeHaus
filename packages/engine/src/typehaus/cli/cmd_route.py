@@ -135,6 +135,14 @@ def route(
                               "Implies --evaluate."),
     explain: bool = typer.Option(
         False, "--explain", help="Print the weights, the cost breakdown and the ordering."),
+    sweep: float = typer.Option(
+        0.0, "--sweep", help="With --fixture: walk the derived drain point this many "
+                             "inches either way along its wall_ref, search each station, "
+                             "and print the best as a Fixture(...) to paste."),
+    counterfactual: bool = typer.Option(
+        False, "--counterfactual", help="On a refusal, re-search with one MOVABLE blocker "
+                                        "lifted at a time and report what a route would "
+                                        "then cost. A diagnosis, never a proposal."),
     timing: bool = typer.Option(
         False, "--timing", help="Print build-space / build-graph / search ms and the "
                                 "lattice and expansion counts."),
@@ -180,18 +188,31 @@ def route(
     else:
         targets = [t for t in (run, fixture) if t]
 
+    if sweep > 0:
+        if not fixture:
+            console.print("[red]--sweep moves a fixture's drain point, so it needs "
+                          "--fixture[/red]")
+            raise typer.Exit(2)
+        from typehaus.cli.route_diagnose import run_sweep
+
+        run_sweep(model, fixture, margin_ft=margin_ft, band=band,
+                  avoid=frozenset(avoid), cost=cost, slope=slope, reach_in=sweep,
+                  search_for=_search_for)
+        return
+
     if tree:
-        proposals, problems, notices = _propose_tree(
+        proposals, problems, notices, refusals = _propose_tree(
             model, tree, slope=slope, margin_ft=margin_ft, level=level,
             avoid=frozenset(avoid), via=_points(via), explain=explain, cost=cost,
             timing=clock)
     else:
-        proposals, problems, notices = _propose(
+        proposals, problems, notices, refusals = _propose(
             model, targets, mode=("run" if run else "fixture" if fixture
                                   else "unconnected"),
             slope=slope, margin_ft=margin_ft, band=band,
             avoid=frozenset(avoid), via=_points(via), explain=explain, cost=cost,
-            alternatives=alternatives, timing=clock)
+            alternatives=alternatives, timing=clock,
+            counterfactual=counterfactual)
 
     if explain:
         for line in cost.table():
@@ -223,7 +244,8 @@ def route(
             directory, proposals[0][1],
             lambda p: (0.0 if p.kind == "conduit"
                        else _storey_datum(model, by_tag[p.tag])),
-            [p for p, _s in proposals], evaluations, problems, notices), default=str))
+            [p for p, _s in proposals], evaluations, problems, notices,
+            refusals), default=str))
         return
 
     if evaluations:
@@ -251,16 +273,17 @@ def route(
 def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
              slope: float | None, margin_ft: float, band: tuple[float, float] | None,
              avoid: frozenset[str], via: list[tuple[float, float]], explain: bool,
-             cost: RouteCost, alternatives: int = 1, timing: list[str] | None = None
-             ) -> tuple[list[tuple[RouteProposal, str]], list[str], list[str]]:
-    """The one place the router is actually driven. ``(proposals, problems, notices)``.
+             cost: RouteCost, alternatives: int = 1, timing: list[str] | None = None,
+             counterfactual: bool = False
+             ) -> tuple[list[tuple[RouteProposal, str]], list[str], list[str], list]:
+    """The one place the router is driven. ``(proposals, problems, notices, refusals)``.
 
     Every refusal comes back as a *line*, never as a silent omission: a fixture whose drain
     point cannot be derived, a run whose root cannot be identified, a head budget that does
     not close. ``routing`` says why it refused and this prints it.
     """
     from typehaus.routing.alternatives import alternative_routes
-    from typehaus.routing.diagnostics import refusal
+    from typehaus.routing.diagnostics import Refusal, refusal
     from typehaus.routing.graph import build_graph
     from typehaus.routing.space import RoutingSpaceTooLarge, build_space
     from typehaus.routing.timing import Timer
@@ -268,11 +291,14 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
     proposals: list[tuple[RouteProposal, str]] = []
     problems: list[str] = []
     notices: list[str] = []
+    refusals: list[Refusal] = []
 
     for target in targets:
         ends = _endpoints(model, target, mode, problems)
         if ends is None:
             continue
+        if explain:
+            notices.extend(ends.advice)
         terminals = [ends.origin, ends.root, *[(p[0], p[1], ends.root[2]) for p in via]]
         clock = Timer(target, enabled=timing is not None)
         try:
@@ -333,15 +359,32 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
             for found in found_all:
                 clock.route(found)
             if not found_all:
-                # A gravity refusal knows something a geometric one does not: whether the
-                # route ran out of HEAD, and where. Preferred when it has a number, because
-                # "the lanes off the origin are blocked" is a different instruction from
-                # "it was a quarter inch under the web fourteen feet in".
+                attempts = (f"{alternatives} alternative(s) asked for"
+                            if alternatives > 1 else "one search",
+                            f"{len(space.hard)} hard prism(s), "
+                            f"{len(space.corridors)} corridor(s) in the space",
+                            f"margin {margin_ft:.3g} ft"
+                            + ("" if band is None else ", pruned to the --level band"))
                 if report is not None and report.tightest is not None:
-                    problems.append(f"{target}: {report.sentence()}")
+                    # A gravity refusal knows something a geometric one does not: whether
+                    # the route ran out of HEAD, and where. Its number is the shortage, and
+                    # the geometric record carries it rather than replacing it — "a quarter
+                    # inch under the web fourteen feet in" and "what is standing there" are
+                    # both wanted, and the two used to be mutually exclusive.
+                    shortages = (report.sentence(),)
                 else:
-                    problems.append(f"{target}: "
-                                    + refusal(space, graph, start, goals))
+                    shortages = ()
+                refused = refusal(space, graph, start, goals, target=target,
+                                  service=str(ends.system), shortages=shortages,
+                                  attempts=attempts)
+                refusals.append(refused)
+                problems.append(refused.render())
+                if counterfactual and refused.movable():
+                    from typehaus.cli.route_diagnose import counterfactual_lines
+                    notices.extend(counterfactual_lines(
+                        model, ends, refused, margin_ft=margin_ft, band=band,
+                        avoid=avoid, cost=cost, via=via, slope=slope,
+                        search_for=_search_for))
                 continue
             if alternatives > 1 and len(found_all) < alternatives:
                 notices.append(f"{target}: {len(found_all)} distinct route(s) found of "
@@ -359,7 +402,7 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
             # exactly the one whose build-space and lattice counts say why.
             if timing is not None:
                 timing.extend(clock.lines())
-    return proposals, problems, notices
+    return proposals, problems, notices, refusals
 
 
 def _search_for(model: ResolvedModel, graph: Any, ends: Endpoints, slope: float | None):
@@ -412,7 +455,7 @@ def _one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str
                   problems: list[str]) -> RouteProposal | None:
     """One found route, given its elevations and its concealment, or None with a reason."""
     from typehaus.routing.gravity import HeadBudget, minimum_slope
-    from typehaus.routing.proposal import RouteProposal
+    from typehaus.routing.proposal import RouteProposal, bay_note, concealment
     from typehaus.routing.trades import conduit as conduit_trade
 
     points = found.polyline()
@@ -431,8 +474,8 @@ def _one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str
 
     routing, floor_ref, soffit_ref = (None, None, None)
     if ends.kind == "duct":
-        routing, floor_ref, soffit_ref = _concealment(model, found.corridor_tags)
-        note = _bay_note(model, found.corridor_tags, ends.radius_m)
+        routing, floor_ref, soffit_ref = concealment(model, found.corridor_tags)
+        note = bay_note(model, found.corridor_tags, ends.radius_m)
         if note:
             notes.append(note)
     if ends.kind == "conduit":
@@ -446,40 +489,3 @@ def _one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str
         serves=ends.serves, system=ends.system, cost=found.cost, bends=found.bends,
         terms=dict(found.terms) if explain else {}, notes=notes, routing=routing,
         floor_ref=floor_ref, soffit_ref=soffit_ref, echo=dict(ends.echo)).snapped()
-
-
-def _concealment(model: ResolvedModel, corridor_tags: tuple[str, ...]
-                 ) -> tuple[str | None, str | None, str | None]:
-    """``(routing, floor_ref, soffit_ref)`` from the lanes the winning legs actually rode.
-
-    A bay corridor is tagged ``<floor>:bay@<station>`` and a soffit corridor is the
-    soffit's own tag, so the claim a proposal makes about where it is concealed is read
-    back out of the search rather than asserted. A route that rode neither says
-    ``EXPOSED``, which is what it is; claiming ``JOIST_BAY`` with no bay under it is the
-    one proposal that reads well and fails ``mep.duct_bay_occupancy``.
-    """
-    soffits = {s.tag for s in model.soffits}
-    bay = next((t for t in corridor_tags if ":bay@" in t), None)
-    if bay is not None:
-        return ("joist_bay", bay.split(":", 1)[0], None)
-    soffit = next((t for t in corridor_tags if t in soffits), None)
-    if soffit is not None:
-        return ("soffit", None, soffit)
-    return ("exposed", None, None)
-
-
-def _bay_note(model: ResolvedModel, corridor_tags: tuple[str, ...],
-              radius_m: float) -> str | None:
-    """``duct.bay_occupancy_note`` for the channel the route rode, if it is a tight one."""
-    from typehaus.routing.corridors import floor_corridors, soffit_corridors
-    from typehaus.routing.trades import duct as duct_trade
-
-    by_tag = {c.tag: c for c in (*floor_corridors(model), *soffit_corridors(model))}
-    for tag in corridor_tags:
-        corridor = by_tag.get(tag)
-        if corridor is None:
-            continue
-        note = duct_trade.bay_occupancy_note(corridor, radius_m)
-        if note:
-            return note
-    return None

@@ -29,8 +29,12 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from typehaus.quantities import M_PER_IN, Length, Point2D, ft, inch
+
+if TYPE_CHECKING:  # pragma: no cover - typing only
+    from typehaus.resolve.model import ResolvedModel
 
 #: The grid every printed coordinate lands on. A sixteenth is what this house authors to
 #: and what a tape measures; printing a route to a millimetre would be claiming a precision
@@ -291,3 +295,46 @@ def render(proposals: Sequence[RouteProposal], *, storey_datum_m: float = 0.0,
         lines.append(proposal.source(storey_datum_m=storey_datum_m))
         lines.append("")
     return "\n".join(lines)
+
+
+# --- what a proposal may CLAIM about where it is concealed ---------------------------
+#
+# Read back out of the corridors the winning legs actually rode, never asserted. These sat
+# in ``cli/cmd_route`` and are routing knowledge: what a ``<floor>:bay@<station>`` tag means
+# is this package's own spelling, and a second reader of it in the CLI is a second place for
+# it to drift.
+def concealment(model: ResolvedModel, corridor_tags: tuple[str, ...]
+                 ) -> tuple[str | None, str | None, str | None]:
+    """``(routing, floor_ref, soffit_ref)`` from the lanes the winning legs actually rode.
+
+    A bay corridor is tagged ``<floor>:bay@<station>`` and a soffit corridor is the
+    soffit's own tag, so the claim a proposal makes about where it is concealed is read
+    back out of the search rather than asserted. A route that rode neither says
+    ``EXPOSED``, which is what it is; claiming ``JOIST_BAY`` with no bay under it is the
+    one proposal that reads well and fails ``mep.duct_bay_occupancy``.
+    """
+    soffits = {s.tag for s in model.soffits}
+    bay = next((t for t in corridor_tags if ":bay@" in t), None)
+    if bay is not None:
+        return ("joist_bay", bay.split(":", 1)[0], None)
+    soffit = next((t for t in corridor_tags if t in soffits), None)
+    if soffit is not None:
+        return ("soffit", None, soffit)
+    return ("exposed", None, None)
+
+
+def bay_note(model: ResolvedModel, corridor_tags: tuple[str, ...],
+              radius_m: float) -> str | None:
+    """``duct.bay_occupancy_note`` for the channel the route rode, if it is a tight one."""
+    from typehaus.routing.corridors import floor_corridors, soffit_corridors
+    from typehaus.routing.trades import duct as duct_trade
+
+    by_tag = {c.tag: c for c in (*floor_corridors(model), *soffit_corridors(model))}
+    for tag in corridor_tags:
+        corridor = by_tag.get(tag)
+        if corridor is None:
+            continue
+        note = duct_trade.bay_occupancy_note(corridor, radius_m)
+        if note:
+            return note
+    return None
