@@ -205,20 +205,78 @@ def proposal_prisms(proposal: RouteProposal, *, inflate_m: float) -> list[HardPr
             for prism in envelope.prisms]
 
 
+#: The orderings a campaign may try, named. The first IS :data:`TRADE_ORDER`'s own — a
+#: campaign asked for one alternative gets exactly what it gets today — and the rest vary
+#: the **conflict order**, which is the axis the roadmap names and the only one that can be
+#: varied without also varying what a route costs.
+ORDER_STRATEGIES: tuple[tuple[str, str], ...] = (
+    ("declared", "the trade order, each trade's own tie-break: drains deepest first, ducts "
+                 "largest first"),
+    ("biggest_first", "size descending ACROSS trades, trade order broken only to let a big "
+                      "run claim its lane before a small one that could have gone round"),
+    ("reversed_ties", "the trade order, but each trade's tie-break reversed — a shallow "
+                      "drain and a small duct go first, which is the opposite bet and "
+                      "sometimes the right one when the deep runs are the flexible ones"),
+)
+
+
+def reorder(targets: Sequence[CampaignTarget], strategy: str) -> list[CampaignTarget]:
+    """The same targets under one of :data:`ORDER_STRATEGIES`.
+
+    A different order is a different answer, and none of these is claimed to be better than
+    another — which is why the caller runs them and *ranks the results* rather than this
+    module picking one. The ranking is on the outcome (fewest refusals, then cost), because
+    that is the only evidence there is.
+    """
+    if strategy == "declared":
+        return sorted(targets, key=_sort_key)
+    if strategy == "biggest_first":
+        return sorted(targets, key=lambda t: (-t.size_m, _TRADE_INDEX.get(
+            t.trade, len(TRADE_ORDER)), t.tag))
+    if strategy == "reversed_ties":
+        return sorted(targets, key=lambda t: (
+            _TRADE_INDEX.get(t.trade, len(TRADE_ORDER)),
+            -(t.depth_m if t.depth_m is not None else 0.0) if t.trade == "drain"
+            else t.size_m if t.trade == "duct" else 0.0,
+            t.tag))
+    raise ValueError(f"unknown order strategy {strategy!r}; the strategies are "
+                     f"{', '.join(name for name, _why in ORDER_STRATEGIES)}")
+
+
+def rank(results: Sequence[CampaignResult]) -> list[CampaignResult]:
+    """Complete-and-validated first, then by the cost of what was laid.
+
+    **Fewest refusals outranks cheapest, always.** A campaign that serves every terminal at a
+    higher price is not a worse answer than one that leaves two fixtures unconnected for
+    less; those are not two points on one scale. Cost breaks the tie between two results that
+    serve the same number, and the underlying quantities stay on each proposal so a reader
+    can see what the ranking was made of.
+    """
+    return sorted(results, key=lambda r: (len(r.refused), len(r.skipped),
+                                          sum(p.cost for p in r.accepted),
+                                          r.settings.get("order_strategy", "")))
+
+
 def run_campaign(targets: Sequence[CampaignTarget],
                  propose: Callable[[CampaignTarget, list], Outcome],
                  *, inflate_m: float,
-                 rip_up_budget: int = DEFAULT_RIP_UP_BUDGET) -> CampaignResult:
+                 rip_up_budget: int = DEFAULT_RIP_UP_BUDGET,
+                 strategy: str = "declared") -> CampaignResult:
     """Lay every target in order against one growing occupancy, ripping up within budget.
 
     ``propose`` is handed the target and the prisms every accepted proposal so far
     contributes; what it does with them is the trade's business. It returns an
     :class:`Outcome`, and a refusal that names blockers is what a rip-up acts on.
+
+    ``targets`` is laid in the order it arrives in; ``strategy`` is recorded in the settings
+    so a ranked set of results says which ordering produced each. Use :func:`reorder` to
+    build the sequence.
     """
     result = CampaignResult(order=[t.tag for t in targets], settings={
         "trade_order": [trade for trade, _why in TRADE_ORDER],
         "rip_up_budget": rip_up_budget,
         "inflate_m": inflate_m,
+        "order_strategy": strategy,
     })
     accepted: dict[str, RouteProposal] = {}
     prisms: dict[str, list] = {}

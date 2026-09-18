@@ -109,8 +109,8 @@ def _evaluate_one(directory: Path, model: ResolvedModel, proposal: RouteProposal
     return result
 
 
-def _candidate_plan(model: ResolvedModel, proposal: RouteProposal) -> Any:
-    """The house's plan with this proposal's element added, and what it replaces removed.
+def candidate_element(model: ResolvedModel, proposal: RouteProposal) -> tuple[str, Any]:
+    """``(storey, element)`` for one proposal, built exactly as its printed source reads.
 
     The storey is the one the proposal's own source would be filed on — the list decides
     it, and the elevations are relative to it — so the element is built at the same datum
@@ -161,10 +161,82 @@ def _candidate_plan(model: ResolvedModel, proposal: RouteProposal) -> Any:
                                else leg.z_m),
             service=Service(proposal.system) if proposal.system else None)
 
+    return storey, element
+
+
+def _candidate_plan(model: ResolvedModel, proposal: RouteProposal) -> Any:
+    """The house's plan with this proposal's element added, and what it replaces removed."""
+    storey, element = candidate_element(model, proposal)
     replaced = _replaced_tags(model, proposal)
     keep = [e for e in model.plan.storey_elements(storey)
             if getattr(e, "tag", None) not in replaced]
     return model.plan.with_elements(storey, (*keep, element))
+
+
+def candidate_plan_for_all(model: ResolvedModel,
+                           proposals: list[RouteProposal]) -> Any:
+    """The house's plan holding **every** proposal at once, grouped by storey.
+
+    A campaign's result is a network, and a network is only as good as it is *together*: a
+    drain that clears the house one at a time and clashes with the vent laid after it passes
+    every per-route evaluation and fails the only one that matters. ``with_elements`` replaces
+    a storey's whole list, so the proposals are grouped and applied once per storey — applying
+    them one at a time would have each call overwrite the last.
+    """
+    by_storey: dict[str, list[Any]] = {}
+    replaced: set[str] = set()
+    for proposal in proposals:
+        storey, element = candidate_element(model, proposal)
+        by_storey.setdefault(storey, []).append(element)
+        replaced |= _replaced_tags(model, proposal)
+
+    plan = model.plan
+    for storey, elements in by_storey.items():
+        keep = [e for e in plan.storey_elements(storey)
+                if getattr(e, "tag", None) not in replaced]
+        plan = plan.with_elements(storey, (*keep, *elements))
+    return plan
+
+
+def evaluate_network(directory: Path, model: ResolvedModel,
+                     proposals: list[RouteProposal]) -> Evaluation:
+    """Contract 3 for a whole campaign: the MEP checks against ALL of it at once.
+
+    The per-route evaluation answers "does this lane work"; this answers "does this SET
+    work", which is a different question and the one a campaign is for. Drain capacity and
+    slope, vent connectivity, bay packing, run-against-run interference and the ERV static
+    budget are all network properties, and every one of them is already a check — so this
+    runs the same registry over a candidate model holding the whole result rather than
+    restating any of it here.
+    """
+    from typehaus.checks import build_context, run_checks
+
+    result = Evaluation(tag="campaign")
+    if not proposals:
+        result.refused = "nothing was laid, so there is no network to grade"
+        return result
+    try:
+        base_ctx, _ = build_context(model.plan, directory)
+        baseline = {_key(f): f for f in graded(run_checks(base_ctx).findings)}
+        candidate = candidate_plan_for_all(model, proposals)
+    except (ValueError, TypeError, KeyError) as exc:
+        result.refused = f"the candidate elements would not build: {exc}"
+        return result
+    try:
+        ctx, _ = build_context(candidate, directory)
+        findings = graded(run_checks(ctx).findings)
+    except Exception as exc:  # noqa: BLE001 - a resolver refusal is the answer, not a crash
+        result.refused = f"the candidate model would not resolve: {exc}"
+        return result
+
+    seen = {_key(f): f for f in findings}
+    result.introduced = [f for key, f in seen.items()
+                         if key not in baseline and f.result.value in ("fail", "unknown")]
+    result.resolved = [f for key, f in baseline.items()
+                       if key not in seen and f.result.value in ("fail", "unknown")]
+    result.coverage = sorted({gap for proposal in proposals
+                              for gap in _coverage_gaps(proposal, findings)})
+    return result
 
 
 def _storey_for(model: ResolvedModel, proposal: RouteProposal) -> str:
@@ -193,6 +265,14 @@ def _replaced_tags(model: ResolvedModel, proposal: RouteProposal) -> set[str]:
     runs = {r.tag for r in (*model.pipe_runs, *model.ducts, *model.conduits)}
     out = {base} & runs
     for run in model.pipe_runs:
+        # **Same system, and that is not a refinement.** A fixture is served by a drain AND
+        # a hot AND a cold run, all three naming it in ``serves``; without this test a drain
+        # proposal deleted the supply lines to its own basin, and every ``pipe_ref`` on the
+        # house's valves and fixtures then pointed at a run that no longer resolved. It is
+        # invisible on a single ``--evaluate`` of one branch and unmissable the moment a
+        # campaign evaluates seventeen at once.
+        if run.system != proposal.system:
+            continue
         if proposal.serves and any(tag in run.serves for tag in proposal.serves):
             out.add(run.tag)
     return out

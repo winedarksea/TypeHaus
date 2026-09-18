@@ -256,7 +256,10 @@ haus route houses/catlin --space PR-B-KITCH-DRAIN --json      # what is clear, p
   bulky rigid duct largest first, then supply and conduit, which bend). Rip-up is bounded by
   a COUNT and never touches anything the campaign did not lay: a blocker that is a fact about
   the building is a finding, not a scheduling problem. `--storey` scopes which runs are
-  targets; `--level` restricts the search's z band; they are two questions.
+  targets; `--level` restricts the search's z band; they are two questions. `--orders N`
+  tries up to three conflict orders and ranks them — **fewest refusals outranks cheapest,
+  always**, because those are not two points on one scale — and `--evaluate` grades the
+  whole accepted SET against the MEP checks, which is the only question a campaign is for.
 - **`--space` classifies instead of searching**: green (clear), orange (priced, or a movable
   run with the command that would re-lane it), red (framed, poured or cut), gray (insufficient
   geometry). Green is derived by SUBTRACTION from the search bbox, so it cannot claim a lane

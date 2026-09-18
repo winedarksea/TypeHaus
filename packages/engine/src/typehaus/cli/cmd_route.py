@@ -137,6 +137,9 @@ def route(
     locked: list[str] = typer.Option(
         [], "--locked", help="With --house: these runs stay exactly where they are and "
                              "are obstacles, never targets."),
+    orders: int = typer.Option(
+        1, "--orders", help="With --house: try up to this many conflict ORDERS (max 3) and "
+                            "rank the results — fewest refusals first, then cost."),
     rip_up_budget: int = typer.Option(
         4, "--rip-up", help="With --house: how many accepted proposals the campaign may "
                             "lift to make room for a refused one."),
@@ -226,7 +229,7 @@ def route(
             locked=frozenset(locked), margin_ft=margin_ft, band=band,
             avoid=frozenset(avoid), cost=cost, slope=slope, alternatives=alternatives,
             rip_up_budget=rip_up_budget, out_dir=out_dir, as_json=as_json,
-            explain=explain)
+            explain=explain, evaluate=evaluate or as_json, orders=orders)
         raise typer.Exit(code)
 
     clock: list[str] = [] if timing else None  # type: ignore[assignment]

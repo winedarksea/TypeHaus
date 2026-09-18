@@ -196,3 +196,84 @@ def test_the_default_budget_is_stated_in_the_settings_it_reports() -> None:
     assert result.settings["rip_up_budget"] == DEFAULT_RIP_UP_BUDGET
     assert result.settings["trade_order"] == [trade for trade, _why in TRADE_ORDER]
     assert result.as_dict()["termination"] == "all 0 targets laid with no rip-up"
+
+
+# --- alternative conflict orders, and how they are ranked --------------------------------
+
+def test_every_order_strategy_is_named_and_says_what_bet_it_makes() -> None:
+    from typehaus.routing.campaign import ORDER_STRATEGIES
+
+    assert [name for name, _why in ORDER_STRATEGIES] == [
+        "declared", "biggest_first", "reversed_ties"]
+    for name, why in ORDER_STRATEGIES:
+        assert len(why) > 20, f"{name} is offered on no stated reason"
+
+
+def test_the_declared_strategy_is_exactly_the_default_order() -> None:
+    """A campaign asked for one alternative gets exactly what it gets today."""
+    from typehaus.routing.campaign import _sort_key, reorder
+
+    targets = [_target("PR-A", "drain", depth_m=-1.0), _target("PR-B", "drain", depth_m=-3.0),
+               CampaignTarget(tag="DU-A", trade="duct", kind="duct", storey="main",
+                              size_m=inch(8).meters)]
+    assert reorder(targets, "declared") == sorted(targets, key=_sort_key)
+
+
+def test_reversing_the_ties_reverses_only_the_ties_and_not_the_trades() -> None:
+    """A drain still precedes a duct: the trade order is the design decision, not the tie."""
+    from typehaus.routing.campaign import reorder
+
+    shallow = _target("PR-SHALLOW", "drain", depth_m=-0.5)
+    deep = _target("PR-DEEP", "drain", depth_m=-3.0)
+    duct = CampaignTarget(tag="DU-A", trade="duct", kind="duct", storey="main",
+                          size_m=inch(8).meters)
+    order = [t.tag for t in reorder([deep, shallow, duct], "reversed_ties")]
+    assert order == ["PR-SHALLOW", "PR-DEEP", "DU-A"]
+
+
+def test_an_unknown_strategy_is_refused_with_the_list() -> None:
+    from typehaus.routing.campaign import reorder
+
+    with pytest.raises(ValueError, match="the strategies are"):
+        reorder([], "cheapest")
+
+
+def test_fewest_refusals_outranks_cheapest_always() -> None:
+    """They are not two points on one scale.
+
+    A campaign that serves every terminal at a higher price is not a worse answer than one
+    that leaves two fixtures unconnected for less.
+    """
+    from typehaus.routing.campaign import CampaignResult, rank
+
+    expensive = CampaignResult(settings={"order_strategy": "declared"})
+    expensive.accepted = [_proposal("PR-A")]
+    expensive.accepted[0].cost = 5000.0
+
+    cheap = CampaignResult(settings={"order_strategy": "biggest_first"})
+    cheap.accepted = [_proposal("PR-B")]
+    cheap.accepted[0].cost = 10.0
+    cheap.refused = [("PR-C", "no route")]
+
+    assert [r.settings["order_strategy"] for r in rank([cheap, expensive])] == [
+        "declared", "biggest_first"]
+
+
+def test_cost_breaks_the_tie_between_two_that_serve_the_same_number() -> None:
+    from typehaus.routing.campaign import CampaignResult, rank
+
+    dear = CampaignResult(settings={"order_strategy": "declared"})
+    dear.accepted = [_proposal("PR-A")]
+    dear.accepted[0].cost = 900.0
+    lean = CampaignResult(settings={"order_strategy": "biggest_first"})
+    lean.accepted = [_proposal("PR-B")]
+    lean.accepted[0].cost = 100.0
+    assert rank([dear, lean])[0] is lean
+
+
+def test_the_result_records_which_ordering_produced_it() -> None:
+    """A ranked set of results is unreadable if they cannot say which is which."""
+    result = run_campaign([_target("PR-A", "drain")],
+                          lambda t, o: Outcome(proposal=_proposal(t.tag)),
+                          inflate_m=0.0127, strategy="biggest_first")
+    assert result.settings["order_strategy"] == "biggest_first"

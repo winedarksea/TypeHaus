@@ -27,7 +27,8 @@ def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
                        band: tuple[float, float] | None, avoid: frozenset[str],
                        cost: Any, slope: float | None, alternatives: int,
                        rip_up_budget: int, out_dir: Path | None,
-                       as_json: bool, explain: bool) -> int:
+                       as_json: bool, explain: bool, evaluate: bool = False,
+                       orders: int = 1) -> int:
     """Lay every target in scope. Returns the process exit code.
 
     Exit 1 when anything was refused — a campaign that could not serve a terminal is a
@@ -35,8 +36,11 @@ def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
     """
     from typehaus.cli.cmd_route import _propose
     from typehaus.routing.campaign import (
+        ORDER_STRATEGIES,
         Outcome,
         order_targets,
+        rank,
+        reorder,
         run_campaign,
     )
     from typehaus.routing.obstacles import CLEARANCE_M
@@ -67,8 +71,20 @@ def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
                   else (problems[0] if problems else "no route, and no reason given"))
         return Outcome(reason=reason, blockers=blockers)
 
-    result = run_campaign(targets, propose, inflate_m=CLEARANCE_M,
-                          rip_up_budget=rip_up_budget)
+    strategies = [name for name, _why in ORDER_STRATEGIES][:max(1, orders)]
+    results = [run_campaign(reorder(targets, name), propose, inflate_m=CLEARANCE_M,
+                            rip_up_budget=rip_up_budget, strategy=name)
+               for name in strategies]
+    ranked = rank(results)
+    result = ranked[0]
+    if len(ranked) > 1:
+        console.print("[bold]orders tried, best first[/bold] — fewest refusals outranks "
+                      "cheapest, always: those are not two points on one scale")
+        for candidate in ranked:
+            console.print(f"  {candidate.settings['order_strategy']:>14}: "
+                          f"{len(candidate.accepted)} laid, {len(candidate.refused)} "
+                          f"refused, {sum(p.cost for p in candidate.accepted):.0f}\" "
+                          "equivalent")
     result.settings.update({
         "storey": storey, "trades": trades, "margin_ft": margin_ft,
         "locked": sorted(locked), "alternatives": alternatives,
@@ -80,6 +96,16 @@ def run_house_campaign(model: Any, *, directory: Path, trades: list[str] | None,
             (tag, "no trade for this run's system — a campaign's order is its whole "
                   "content, so an unassigned run is named rather than placed in it")
             for tag in unassigned)
+
+    if evaluate:
+        # **The network, not the routes.** Each lane was already graded as it was laid; this
+        # is the only question a campaign is actually for — does the SET work together.
+        from typehaus.cli.route_eval import evaluate_network, render_reports
+
+        evaluation = evaluate_network(directory, model, result.accepted)
+        result.settings["evaluated"] = True
+        for line in render_reports([evaluation]):
+            console.print(line)
 
     _print(result, explain=explain)
     if as_json:
