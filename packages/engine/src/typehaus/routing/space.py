@@ -46,14 +46,27 @@ MAX_CANDIDATE_LINES = 400
 
 #: How many lattice nodes the graph may build. The line caps above do not bound this —
 #: 400 x 400 x 60 is inside both of them and is nine million nodes — so this is the guard
-#: that actually holds. A hundred and twenty thousand is comfortably past a whole-storey
-#: problem and well inside a second of A*; it RAISES rather than coarsening, as above.
-MAX_LATTICE_NODES = 120_000
+#: that actually holds. It RAISES rather than coarsening, as above.
+#:
+#: **Raised from 120,000 to 150,000, having looked at why** (→ Phase 7,
+#: ``tests/test_routing_perf_guard.py``). When the lattice was derived over the whole z band
+#: and laid down on every plane in it, catlin's worst duct wanted 780,066 nodes and half the
+#: ducts in the house refused; per-level derivation took the worst case to 123,248, and the
+#: old cap sat 2.7% under it. One number away from letting every target in the house build a
+#: lattice is exactly the case this constant's own instruction was written for. It is NOT a
+#: statement that 150,000 nodes is quick: a lattice that size is tens of seconds of graph
+#: build, which ``--timing`` reports and nothing here hides.
+MAX_LATTICE_NODES = 150_000
 
 #: Default margin round the terminals' bounding box, in feet. Eight is about the width of
 #: a room: enough for a route to step out of the direct line and back, and small enough
 #: that a two-fixture branch does not build a lattice for the whole house.
 DEFAULT_MARGIN_FT = 8.0
+
+#: The grid the memos round onto: a sixteenth of an inch, which is what every coordinate in
+#: this repo is authored on. Finer would memoise float noise; coarser would answer a
+#: different question from the one asked.
+_GRID_M = 0.0015875
 
 
 class RoutingSpaceTooLarge(RuntimeError):
@@ -97,6 +110,20 @@ class RoutingSpace:
     #: building a graph — larger than the shapely work it sits beside.
     _corridor_index: dict[tuple[str, int], list[Corridor]] | None = field(
         default=None, repr=False, compare=False)
+    #: **Off by default, and measured.** A memo over ``blocked``/``soft_at`` keyed on the
+    #: 1/16" grid costs about 45% of a single graph build and saves nothing in it: one build
+    #: asks each node once, so every lookup is a miss plus a key. It pays only when one
+    #: space is searched more than once — a campaign over a storey, where the prism edges
+    #: are identical target to target and only the terminals' own lines differ. So the
+    #: caller that knows it is reusing turns it on, and a one-shot route does not pay for a
+    #: cache it will never read.
+    reuse: bool = False
+    #: The memo itself. Rounding onto the grid is safe because nothing in this package
+    #: authors a coordinate finer than it; a point that rounds onto another is that point.
+    _blocked_memo: dict[tuple[int, int, int], str | None] = field(
+        default_factory=dict, repr=False, compare=False)
+    _soft_memo: dict[tuple[int, int, int], list[SoftPrism]] = field(
+        default_factory=dict, repr=False, compare=False)
 
     def _index(self, which: str) -> Any:
         from shapely import STRtree
@@ -111,6 +138,9 @@ class RoutingSpace:
                 self._soft_index = cached
         return cached
 
+    def _grid_key(self, point: tuple[float, float], z: float) -> tuple[int, int, int]:
+        return (round(point[0] / _GRID_M), round(point[1] / _GRID_M), round(z / _GRID_M))
+
     def blocked(self, point: tuple[float, float], z: float) -> str | None:
         """The tag of the first hard prism containing this point, or None.
 
@@ -122,11 +152,23 @@ class RoutingSpace:
 
         if not self.hard:
             return None
+        if not self.reuse:
+            probe = Point(point)
+            for index in self._index("hard").query(probe):
+                prism = self.hard[int(index)]
+                if prism.z0_m <= z <= prism.z1_m and prism.footprint.covers(probe):
+                    return prism.tag
+            return None
+        key = self._grid_key(point, z)
+        if key in self._blocked_memo:
+            return self._blocked_memo[key]
         probe = Point(point)
         for index in self._index("hard").query(probe):
             prism = self.hard[int(index)]
             if prism.z0_m <= z <= prism.z1_m and prism.footprint.covers(probe):
+                self._blocked_memo[key] = prism.tag
                 return prism.tag
+        self._blocked_memo[key] = None
         return None
 
     def soft_at(self, point: tuple[float, float], z: float) -> list[SoftPrism]:
@@ -134,10 +176,18 @@ class RoutingSpace:
 
         if not self.soft:
             return []
+        key = self._grid_key(point, z) if self.reuse else None
+        if key is not None:
+            hit = self._soft_memo.get(key)
+            if hit is not None:
+                return hit
         probe = Point(point)
-        return [self.soft[int(i)] for i in self._index("soft").query(probe)
-                if self.soft[int(i)].z0_m <= z <= self.soft[int(i)].z1_m
-                and self.soft[int(i)].footprint.covers(probe)]
+        found = [self.soft[int(i)] for i in self._index("soft").query(probe)
+                 if self.soft[int(i)].z0_m <= z <= self.soft[int(i)].z1_m
+                 and self.soft[int(i)].footprint.covers(probe)]
+        if key is not None:
+            self._soft_memo[key] = found
+        return found
 
     def corridor_at(self, axis: str, station: float, lo: float, hi: float,
                     z: float) -> Corridor | None:

@@ -89,29 +89,77 @@ class Graph:
                 for other in others]
 
 
-def candidate_lines(space: RoutingSpace,
-                    terminals: list[tuple[float, float, float]],
-                    levels: list[float] | None = None
-                    ) -> tuple[list[float], list[float], list[float]]:
-    """``(xs, ys, zs)`` — the lines the lattice is built at, sorted and de-duplicated.
+def candidate_levels(space: RoutingSpace,
+                     terminals: list[tuple[float, float, float]],
+                     levels: list[float] | None = None) -> list[float]:
+    """The z planes the lattice is built at, sorted and de-duplicated.
+
+    **z is a level set, not a continuum.** A house's services live in a handful of planes:
+    bay centrelines, soffit interiors, the terminals' own elevations.
+
+    **A wall contributes a plan line and NOT a z level**, and that is the difference between
+    a lattice with three thousand nodes and one with three hundred thousand. A wall cavity
+    is a corridor a run may travel at any height inside it, so its mid-height is not a plane
+    anybody routes on; a bay's and a soffit's are. Catlin resolves ~99 walls in a two-fixture
+    window, and one z level each multiplied the lattice by thirty for nothing.
+
+    ``levels`` pins the set instead of deriving it, and **a gravity run must pass one.** A
+    drain's elevation is a derived monotone potential rather than a free dimension: search it
+    in 3-D and the found route is free to dive into a cheap plane and climb back, which the
+    profile then silently flattens into a plan detour. One level is a plan search, which is
+    what "z is derived" actually means.
+    """
+    zs = [t[2] for t in terminals] if levels is None else list(levels)
+    if levels is None:
+        for corridor in space.corridors:
+            window = corridor.z_window(space.radius_m)
+            if window is None or corridor.kind == "wall":
+                continue
+            zs.append((window[0] + window[1]) / 2.0)
+    zs = _unique(zs)
+    if space.z_band is not None:
+        # ``--level``: the lattice keeps only the planes inside one storey's band. A
+        # terminal outside it is the caller's refusal to report, not this function's to
+        # paper over — dropping a terminal's own level silently would make the search
+        # answer a question about a route that cannot start where it was told to.
+        low, high = space.z_band
+        inside = [z for z in zs if low - _LINE_TOL_M <= z <= high + _LINE_TOL_M]
+        if inside:
+            zs = inside
+    return zs
+
+
+def candidate_lines_at(space: RoutingSpace,
+                       terminals: list[tuple[float, float, float]],
+                       z: float, *,
+                       plan_search: bool = False) -> tuple[list[float], list[float]]:
+    """``(xs, ys)`` — the plan lines the lattice is built at **on one level**.
 
     Sources, in the order they matter:
 
-    1. **Each terminal's own x, y and z.** A route that cannot reach its own endpoint is
-       not a route, so these are non-negotiable and are added first.
-    2. **Every corridor centreline** on its own axis, plus the middle of its z window. This
-       is what puts a node *in* a bay rather than merely beside one.
+    1. **Each terminal's own x and y.** A route that cannot reach its own endpoint is not a
+       route, so these are non-negotiable and are added first, on every level.
+    2. **Every corridor centreline** whose z window this level reaches — unless this is a
+       ``plan_search``, in which case every corridor, full stop. The exception is not a
+       loosening: **a gravity run's z is a derived potential, not the plane it searches in.**
+       A drain searches one nominal level while its real invert falls the whole way along,
+       so the bay it ends up riding at station 14 ft is one whose z window the nominal plane
+       never touched. Filtering these took ``PR-B-KITCH-DRAIN`` from a route to a four-node
+       lattice with no lanes at all. A true 3-D search has no such excuse — it *is* at the
+       level it is searching — and filtering there is what keeps catlin's worst duct inside
+       the cap instead of 31,000 nodes over it.
     3. **Every hard prism's edges**, already offset outward by ``radius + clearance`` when
-       the space was built — but only for a prism whose z band the lattice can reach.
-       Offsetting here rather than at query time is what lets a route hug an obstacle
-       exactly and no closer; skipping the unreachable ones is what keeps the lattice a
-       lattice rather than a grid.
+       the space was built — but only for a prism this level actually cuts through.
 
-    ``levels`` pins the z set instead of deriving it, and **a gravity run must pass one.**
-    A drain's elevation is a derived monotone potential rather than a free dimension: search
-    it in 3-D and the found route is free to dive into a cheap plane and climb back, which
-    the profile then silently flattens into a plan detour. One level is a plan search, which
-    is what "z is derived" actually means.
+    **Per level, and that is the whole of Phase 7's first optimisation.** The lines used to
+    be derived once for the whole z band and laid down on every plane in it, so a footing
+    nine feet under the attic nominated two x-lines and two y-lines *in the attic* — turn
+    points at the corners of an obstacle that is not there. On catlin that is the difference
+    between ``DU-M-ERV-R-KITCH`` refusing at 159 x 161 x 8 = 204,792 nodes and routing.
+
+    A single-level search — every gravity run, and the oracle note's own 3x3 lattice — gets
+    exactly the lines it got before, because for one level "the band" and "this level" are
+    the same set. Nothing that worked moves.
 
     Raises :class:`RoutingSpaceTooLarge` past :data:`MAX_CANDIDATE_LINES` on either plan
     axis, for the reason ``space.py`` gives: coarsening to fit is answering a different
@@ -120,27 +168,17 @@ def candidate_lines(space: RoutingSpace,
     minx, miny, maxx, maxy = space.bbox
     xs = [t[0] for t in terminals]
     ys = [t[1] for t in terminals]
-    zs = [t[2] for t in terminals] if levels is None else list(levels)
 
     for corridor in space.corridors:
         window = corridor.z_window(space.radius_m)
         if window is None:
             continue
+        if not plan_search and not (window[0] - space.radius_m <= z
+                                    <= window[1] + space.radius_m):
+            continue
         (ys if corridor.axis == "x" else xs).append(corridor.station)
-        if corridor.kind != "wall" and levels is None:
-            # **A wall contributes a plan line and NOT a z level**, and that is the
-            # difference between a lattice with three thousand nodes and one with three
-            # hundred thousand. A wall cavity is a corridor a run may travel at any height
-            # inside it, so its mid-height is not a plane anybody routes on; a bay's and a
-            # soffit's are. Catlin resolves ~99 walls in a two-fixture window, and one z
-            # level each multiplied the lattice by thirty for nothing.
-            zs.append((window[0] + window[1]) / 2.0)
 
-    # **Only prisms whose z band the lattice can actually reach.** A footing nine feet
-    # under the terminals cannot block anything on the planes this route may use, and
-    # nominating two x-lines and two y-lines for it is four lines' worth of lattice bought
-    # for nothing. On catlin's suite-bath problem this is most of the plan lines.
-    reach = (min(zs) - space.radius_m, max(zs) + space.radius_m)
+    reach = (z - space.radius_m, z + space.radius_m)
     for prism in space.hard:
         if prism.footprint.is_empty:
             continue
@@ -152,30 +190,32 @@ def candidate_lines(space: RoutingSpace,
 
     xs = _unique(v for v in xs if minx - _LINE_TOL_M <= v <= maxx + _LINE_TOL_M)
     ys = _unique(v for v in ys if miny - _LINE_TOL_M <= v <= maxy + _LINE_TOL_M)
-    zs = _unique(zs)
-    if space.z_band is not None:
-        # ``--level``: the lattice keeps only the planes inside one storey's band. A
-        # terminal outside it is the caller's refusal to report, not this function's to
-        # paper over — dropping a terminal's own level silently would make the search
-        # answer a question about a route that cannot start where it was told to.
-        low, high = space.z_band
-        inside = [z for z in zs if low - _LINE_TOL_M <= z <= high + _LINE_TOL_M]
-        if inside:
-            zs = inside
     if max(len(xs), len(ys)) > MAX_CANDIDATE_LINES:
         raise RoutingSpaceTooLarge(
-            f"{len(xs)} x-lines and {len(ys)} y-lines exceed MAX_CANDIDATE_LINES="
-            f"{MAX_CANDIDATE_LINES}; narrow --margin or raise the cap deliberately")
-    if len(xs) * len(ys) * len(zs) > MAX_LATTICE_NODES:
-        # The line caps do not bound the lattice: 400 x 400 x 60 is inside both of them and
-        # is nine million nodes. This is the guard that actually holds, and it RAISES for
-        # the reason space.py gives — a router that coarsens to finish is answering a
-        # different question from the one asked.
-        raise RoutingSpaceTooLarge(
-            f"{len(xs)} x {len(ys)} x {len(zs)} = {len(xs) * len(ys) * len(zs):,} lattice "
-            f"nodes exceeds MAX_LATTICE_NODES={MAX_LATTICE_NODES:,}. Narrow --margin, "
-            "split the problem, or raise the cap having looked at why")
-    return xs, ys, zs
+            f"{len(xs)} x-lines and {len(ys)} y-lines at z={z:.3f} exceed "
+            f"MAX_CANDIDATE_LINES={MAX_CANDIDATE_LINES}; narrow --margin or raise the cap "
+            "deliberately")
+    return xs, ys
+
+
+def candidate_lines(space: RoutingSpace,
+                    terminals: list[tuple[float, float, float]],
+                    levels: list[float] | None = None
+                    ) -> tuple[list[float], list[float], list[float]]:
+    """The UNION of every level's lines, for a reader that wants the whole picture.
+
+    The lattice itself is built per level by :func:`build_graph`; this is what a diagnostic
+    or a space view asks when it wants "every line this problem considered" in one list.
+    """
+    zs = candidate_levels(space, terminals, levels)
+    xs: list[float] = []
+    ys: list[float] = []
+    for z in zs:
+        level_xs, level_ys = candidate_lines_at(space, terminals, z,
+                                                plan_search=levels is not None)
+        xs.extend(level_xs)
+        ys.extend(level_ys)
+    return _unique(xs), _unique(ys), zs
 
 
 def build_graph(space: RoutingSpace,
@@ -194,7 +234,22 @@ def build_graph(space: RoutingSpace,
     ``levels`` is passed through to :func:`candidate_lines`; a gravity run passes one level
     and searches in plan.
     """
-    xs, ys, zs = candidate_lines(space, terminals, levels)
+    zs = candidate_levels(space, terminals, levels)
+    # **Pinned levels mean a plan search**, which is what a gravity run is: the caller fixed
+    # the plane because the elevation is derived along the route rather than chosen by it.
+    per_level = [candidate_lines_at(space, terminals, z, plan_search=levels is not None)
+                 for z in zs]
+    total = sum(len(level_xs) * len(level_ys) for level_xs, level_ys in per_level)
+    if total > MAX_LATTICE_NODES:
+        # The line caps do not bound the lattice: 400 x 400 x 60 is inside both of them and
+        # is nine million nodes. This is the guard that actually holds, and it RAISES for
+        # the reason space.py gives — a router that coarsens to finish is answering a
+        # different question from the one asked.
+        shape = " + ".join(f"{len(lx)}x{len(ly)}" for lx, ly in per_level)
+        raise RoutingSpaceTooLarge(
+            f"{shape} = {total:,} lattice nodes exceeds "
+            f"MAX_LATTICE_NODES={MAX_LATTICE_NODES:,}. Narrow --margin, split the problem, "
+            "or raise the cap having looked at why")
     # **A terminal's own plan point is never dropped**, and this is a statement about what
     # the search is for rather than a leniency. A route has to start and end where it is
     # told; if the model puts something there — and it usually does, because a branch ties
@@ -209,9 +264,14 @@ def build_graph(space: RoutingSpace,
     lenient: set[int] = set()
     nodes: list[Node] = []
     lookup: dict[tuple[int, int, int], int] = {}
+    #: Per level, the node at each rounded plan point. A riser connects two levels at the
+    #: same (x, y), and the two levels no longer share a line INDEX — only a coordinate.
+    by_plan: list[dict[tuple[float, float], int]] = []
     for kz, z in enumerate(zs):
-        for ky, y in enumerate(ys):
-            for kx, x in enumerate(xs):
+        level_xs, level_ys = per_level[kz]
+        plan_index: dict[tuple[float, float], int] = {}
+        for ky, y in enumerate(level_ys):
+            for kx, x in enumerate(level_xs):
                 offender = space.blocked((x, y), z)
                 if offender is not None:
                     if (round(x, 6), round(y, 6)) not in fixed:
@@ -219,43 +279,51 @@ def build_graph(space: RoutingSpace,
                     blocked_terminals.append(offender)
                     lenient.add(len(nodes))
                 lookup[(kx, ky, kz)] = len(nodes)
+                plan_index[(round(x, 6), round(y, 6))] = len(nodes)
                 nodes.append(Node(index=len(nodes), x=x, y=y, z=z))
+        by_plan.append(plan_index)
 
     graph = Graph(nodes=nodes, blocked_terminals=sorted(set(blocked_terminals)))
+
+    def connect(index: int, other: int, axis: str) -> None:
+        # **One lattice step of leniency at a blocked terminal, and exactly one.** The node
+        # rule above keeps a terminal that stands inside something — a branch's tie point
+        # usually sits on the very run it ties into, and an ERV manifold packs ten ports
+        # four inches apart so every lane out of one is inside its neighbour. Keeping the
+        # node and dropping every edge off it produces "no route in plan; every lane is
+        # blocked" about a route whose only obstruction is the fitting at its own end. The
+        # blockage is not hidden: it is already in `blocked_terminals` and the caller prints
+        # it as a detail somebody has to draw.
+        priced = _price(space, nodes[index], nodes[other], axis,
+                        lenient=index in lenient or other in lenient)
+        if priced is None:
+            return
+        weight, terms, corridor = priced
+        if corridor is not None:
+            graph.corridors[(index, other)] = corridor
+            graph.corridors[(other, index)] = corridor
+        graph.edges.setdefault(index, {}).setdefault(axis, []).append(other)
+        graph.edges.setdefault(other, {}).setdefault(axis, []).append(index)
+        graph.weights[(index, other)] = weight
+        graph.weights[(other, index)] = weight
+        graph.terms[(index, other)] = terms
+        graph.terms[(other, index)] = terms
+
     for (kx, ky, kz), index in lookup.items():
-        by_axis: dict[str, list[int]] = {}
-        for axis, key in (("x", (kx + 1, ky, kz)),
-                          ("y", (kx, ky + 1, kz)),
-                          ("z", (kx, ky, kz + 1))):
+        for axis, key in (("x", (kx + 1, ky, kz)), ("y", (kx, ky + 1, kz))):
             other = lookup.get(key)
-            if other is None:
-                continue
-            # **One lattice step of leniency at a blocked terminal, and exactly one.** The
-            # node rule above keeps a terminal that stands inside something — a branch's
-            # tie point usually sits on the very run it ties into, and an ERV manifold
-            # packs ten ports four inches apart so every lane out of one is inside its
-            # neighbour. Keeping the node and dropping every edge off it produces "no
-            # route in plan; every lane is blocked" about a route whose only obstruction is
-            # the fitting at its own end. The blockage is not hidden: it is already in
-            # `blocked_terminals` and the caller prints it as a detail somebody has to draw.
-            priced = _price(space, nodes[index], nodes[other], axis,
-                            lenient=index in lenient or other in lenient)
-            if priced is None:
-                continue
-            weight, terms, corridor = priced
-            by_axis.setdefault(axis, []).append(other)
-            if corridor is not None:
-                graph.corridors[(index, other)] = corridor
-                graph.corridors[(other, index)] = corridor
-            graph.edges.setdefault(other, {}).setdefault(axis, []).append(index)
-            graph.weights[(index, other)] = weight
-            graph.weights[(other, index)] = weight
-            graph.terms[(index, other)] = terms
-            graph.terms[(other, index)] = terms
-        if by_axis:
-            existing = graph.edges.setdefault(index, {})
-            for axis, others in by_axis.items():
-                existing.setdefault(axis, []).extend(others)
+            if other is not None:
+                connect(index, other, axis)
+
+    # Vertical edges between consecutive levels, at every plan point BOTH levels hold. The
+    # two levels no longer nominate the same lines, so a riser lands where the work actually
+    # puts one: a terminal's own station, or a corridor both levels reach.
+    for kz in range(len(zs) - 1):
+        upper = by_plan[kz + 1]
+        for plan, index in by_plan[kz].items():
+            other = upper.get(plan)
+            if other is not None:
+                connect(index, other, "z")
     return graph
 
 
