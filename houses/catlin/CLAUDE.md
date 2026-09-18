@@ -1135,6 +1135,16 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       check.
   - **`CHASE` routing (a framed shaft not modeled as a `Soffit`) is a declared unchecked
     case** — do not rely on it for clearance.
+  - **EVERY HEAT PUMP NOW CARRIES ITS PUBLISHED RATINGS TABLE, NOT TWO SCALARS** —
+    `EquipmentType.heating_ratings` in `plan/equipment_types.py`, one `HeatPumpRating` row
+    per outdoor temperature with a `basis` and a required `citation`, read at the site's
+    design temperature by `takeoff/hvac.capacity_at` (decision #76). Rows are NEEP's ccASHP
+    listing except the two at −15 °F, where this site designs and NEEP publishes nothing.
+    **NEEP is the only public source with a MINIMUM column**, and the minimum is what
+    `mep.heat_pump_turndown` grades: **System 1 modulates down to its load only below
+    −5.9 °F and cycles above it**, which `mep.heating_capacity`'s +6,743 Btu/h margin cannot
+    see. All of it is ADVISORY, not FAIL (decision #77). The whole case, the three tables and
+    the owner's 2026-09-18 decisions are in `notes/heat_pump_turndown.md`.
   - **`EQ-T-GREE-FLEXX-ULTRA-24-AH`/`-OD` is the live heat-pump type for
     `EQ-S-HP1-AH`/`EQ-M-HP1-OD`, and its provenance is CLOSED (2026-09-12, BLD-08).** The
     `# TODO verify datasheet` that stood here is gone because the figure was verified, not
@@ -1165,6 +1175,17 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - **`SF-S-HP1`'s box is 40 3/4" x 7'-9 3/8", flush on all four finished faces**, in
     `RM-S-NCLOSET`'s ceiling; the air handler is `rotation=deg(90)` so only its 21 1/4" case
     depth competes for the graded width. Consequences that must stay true:
+    - **A SECONDARY DRAIN PAN IS REQUIRED UNDER IT AND IS NOT MODELLED.** The FLEXX Ultra
+      AH is a MULTI-POSITION air handler (18 1/8 x 43 1/2 x 21 1/4 upflow cabinet, laid on
+      a side for horizontal ceiling mount — a factory configuration, "Horizontal Left: No
+      Modification Needed", confirmed 2026-09-18 against submittal
+      `GREE_FXU24_230V_R32_SUB_01272026`), **not** a slim ducted cassette. The same page
+      requires an emergency pan where the unit sits over a finished ceiling, and so does
+      IRC M1411.3 / IMC 307.2.3. **No element kind here can hold a drip pan and no check
+      grades one.** The pan is 1 1/2"–2" under an 18 1/8" cabinet inside a 21" drop — that
+      is the whole remaining slack, so it cannot be discovered on site. Also unsettled:
+      horizontal RIGHT requires relocating the factory drain pan, and which hand
+      `rotation=deg(90)` lands on is a question for the order, not the installer.
     - **`W-S-BW4` must stay retyped `INT_2X4_RC`.** A plain partition jogs 1/2" at
       y=30'-10" and `_rectangle` returns `None` on a non-rectangle, sending every occupant to
       UNKNOWN.

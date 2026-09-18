@@ -158,6 +158,35 @@ EQUIPMENT_TYPES = (
     # sat in the original 14 in drop — but its published heating range FLOOR is -13 F, two
     # degrees short of this site's design temperature. Worth revisiting only if LG publishes
     # a lower floor.
+    # ** IS THIS CABINET EVEN A CEILING UNIT? CHECKED 2026-09-18, AND YES — BUT IT IS A
+    # ** MULTI-POSITION AIR HANDLER, NOT A SLIM DUCTED CASSETTE, AND TWO THINGS FOLLOW.
+    #
+    # The question was raised because Gree's marketing shows the FLEXX Ultra paired with a
+    # floor-standing upflow air handler, and 18 1/8 x 43 1/2 x 21 1/4 in IS an upflow
+    # cabinet's shape. It is not a Mitsubishi-style 8-inch-tall concealed duct unit and
+    # nothing here should imply it is. The submittal GREE_FXU24_230V_R32_SUB_01272026
+    # settles it on its own CLEARANCES page:
+    #
+    #   "Horizontal Left Configuration - No Modification Needed"
+    #   "Horizontal Right Configuration - Must Relocate Drain Pan"
+    #   "When installing in an area directly over a finished ceiling (such as an attic),
+    #    an emergency drain pan is required directly under the unit."
+    #
+    # So horizontal ceiling mounting is a factory configuration, the geometry authored below
+    # is the horizontal one (the cabinet rests on a 43 1/2 x 21 1/4 side, so 18 1/8 in is
+    # what the soffit has to swallow), and SF-S-HP1's 21 in drop is right.
+    #
+    #  1. ** A SECONDARY DRAIN PAN IS REQUIRED AND IS NOT MODELLED. ** This unit sits over
+    #     RM-S-NCLOSET's finished ceiling. The manufacturer requires an emergency pan under
+    #     it and so does the code (IRC M1411.3 / IMC 307.2.3, equipment over a finished
+    #     area). No element kind here can hold a drip pan and no check grades one — so this
+    #     comment is all there is, and it must reach the installer. The pan adds roughly
+    #     1 1/2 to 2 in UNDER the 18 1/8 in cabinet inside a 21 in drop, which is the whole
+    #     remaining slack: there is no room to also discover it on site.
+    #  2. ** WHICH HAND. ** `EQ-S-HP1-AH` is authored `rotation=deg(90)`. Horizontal LEFT
+    #     needs no modification and horizontal RIGHT needs the drain pan relocated in the
+    #     field. Which hand that rotation lands on is a fabrication question this model does
+    #     not answer; settle it on the order, not on site.
     EquipmentType(tag="EQ-T-GREE-FLEXX-ULTRA-24-AH",
                   name="Gree FLEXX Ultra R32 concealed ducted air handler, 24k",
                   footprint=(inch(43.5), inch(21.25)), height=inch(18.125),

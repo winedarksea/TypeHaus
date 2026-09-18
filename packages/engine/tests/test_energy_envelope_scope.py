@@ -38,10 +38,11 @@ _HEATING_BTUH = 31_713.5
 # SENSIBLE, and the tonnage is the TOTAL over 12,000. The Manual-J-shaped cooling pass
 # (hourly glass at one house-wide peak hour + AED excursion, internal gains, occupant
 # latent) moved this from 22,154.4 and the tonnage from 1.8462: the hourly walk took 5.2
-# kBtu/h off the glass, the internal gains put 2.8 back, the latent 1.4.
-_COOLING_SENSIBLE_BTUH = 20_695.0
+# kBtu/h off the glass, the internal gains put 2.8 back, the latent 1.4, and the roof's
+# sol-air term — live once the owner stated the panel colour — put 329 back on top.
+_COOLING_SENSIBLE_BTUH = 21_024.0
 _LATENT_BTUH = 1_400.0
-_COOLING_TONS = 1.8413
+_COOLING_TONS = 1.8687
 _SOLAR_PEAK_BTUH = 12_271.0
 _SOLAR_PEAK_HOUR = 10.5
 _AED_EXCURSION_BTUH = 894.0

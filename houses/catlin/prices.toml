@@ -3819,7 +3819,21 @@
 # 1,430.3 SF — RF-HOUSE, ROOF. Installed $10.50-18.50/SF, against $10-18 national and
 # $12-22 Minnesota for mechanically seamed. This is the roof that carries the PV array and
 # sheds onto occupied ground; the seam is the reason it is not being re-roofed in 25 years.
+#
+# ** THE ROOF MOVED TO `standing-seam-linen-white` ON 2026-09-18, AND THIS ROW STAYS. **
+# The house roof is now its own material tag, because the owner stated the panel colour
+# (Metal Sales PVDF Linen White 81, SR 0.73) and a published solar reflectance is the one
+# thing the shared library row cannot carry for every house — the roof's SOL-AIR cooling
+# term reads it (notes/solar_gain_basis.md section 6). SAME PANEL, SAME GAUGE, SAME SEAM
+# PROFILE, SAME COLOUR AS IT ALWAYS WAS: nothing about the purchase changed, so the row
+# below is this row's numbers verbatim and this one is kept because EXT_2X6_SWINBURNE and
+# the library's generic row still name `standing-seam`.
 "standing-seam" = { material = { low = 3.5, high = 6.5 }, labour = { low = 7, high = 12 } }
+# 1,430.3 SF — RF-HOUSE, and as of 2026-09-18 this is the row that prices it. Identical to
+# `standing-seam` above and deliberately not "cheaper because it is a house tag": a colour
+# is not a cost. Keep the two in step by hand; if they ever diverge it should be because
+# somebody priced a colour, not because one was edited and the other forgotten.
+"standing-seam-linen-white" = { material = { low = 3.5, high = 6.5 }, labour = { low = 7, high = 12 } }
 # NOT TAKEN as of 2026-08-26 — kept as the revert rate. It clad the house walls
 # (EXT_2X6, PLANT_EXT_2X6_HUMID) until the exposed-fastener PBR row below replaced
 # it, and EXT_2X6_SWINBURNE still names it, so the row stays and the swap back is a
@@ -6221,9 +6235,12 @@ site-survey-staking-and-erosion-control = { low = 2000, high = 6000 }
 # The rate is the row's own $1.00-1.85/SF, which is where the retired $1,450-2,650 lump came
 # from, so the line total barely moves. What moved is that it now FOLLOWS THE ROOF: shrink the
 # main roof and this shrinks with it, which the lump never did.
-# `standing-seam` matches only the house roof — the garage is `standing-seam-nailstrip` and
-# the walls are `standing-seam-nailstrip-26` — and that is correct: ROOF carried the
-# vent mat, RF-GARAGE does not.
+# `standing-seam-linen-white` matches only the house roof — the garage is
+# `standing-seam-nailstrip` and the walls are `standing-seam-nailstrip-26` — and that is
+# correct: ROOF carried the vent mat, RF-GARAGE does not. (The filter read `standing-seam`
+# until 2026-09-18, when the roof took its own tag to carry the panel's published solar
+# reflectance; an allowance driver filter matches a material EXACTLY, so it had to move
+# with it or drive to nothing.)
 #
 # ** RETIRED 2026-08-31 — SET TO ZERO, NOT DELETED. ** There is no mat. It and the vapour-
 # permeable synthetic under it were one decision, not two: above the underlayment sits a
@@ -6234,7 +6251,7 @@ site-survey-staking-and-erosion-control = { low = 2000, high = 6000 }
 # above ("without it the condensation gate cannot pass at any foam thickness") is still true
 # of a DRYING argument and is no longer the argument this roof makes. The driver is left
 # wired up so restoring the mat is a rate and not a re-derivation.
-roof-ventilated-underlayment-mat = { low = 0, high = 0, unit = "SF", driver = "envelope_layers.net_area_sqft[material=standing-seam]" }
+roof-ventilated-underlayment-mat = { low = 0, high = 0, unit = "SF", driver = "envelope_layers.net_area_sqft[material=standing-seam-linen-white]" }
 # THE PORCH ENCLOSURE'S TWO SEASONAL PANEL SETS (2026-09-03). The track they hang on is
 # hardware and is priced in [placeables] ("FT-PORCH-TRACK-106"/"-104"); these two rows are
 # the fabric, and fabric is why they are allowances. A hanging panel has no plan footprint

@@ -205,7 +205,8 @@ def test_the_eave_legend_names_the_roof_it_is_mostly_made_of(catlin_model):
                 if isinstance(t, Text) and t.space == "paper" and '"' in t.content}
     # What is legended is the deck, the membrane on it, the panel, and the two BAY FILLS —
     # the point of the roof's design and the easiest things in the drawing to leave unnamed.
-    for material in ("struct-1-plywood", "roof-adhered-butyl-ht", "standing-seam",
+    for material in ("struct-1-plywood", "roof-adhered-butyl-ht",
+                     "standing-seam-linen-white",
                      "closed-cell-spray-foam", "fiberglass-r30c"):
         assert material in legended, f"{material} is drawn but not legended"
 

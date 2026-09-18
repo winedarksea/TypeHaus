@@ -11,18 +11,17 @@ decomposition in `takeoff/hvac.HvacZone.heating_load_at_outdoor_f`, and `capacit
 Reproduced by `tests/test_heat_pump_turndown.py` and `tests/test_heat_pump_ratings.py`.
 **Companions:** `notes/block_load_basis.md` and `notes/solar_gain_basis.md` — the loads
 every number here is measured against.
-**What is asked of the reviewer:** **a purchase decision on all three systems, and it is
-the largest open item in this house.** Two of the three fail Manual S's minimum-compressor
-cap (HP3 by 3.7×), all three are over-sized on cooling by 2.8× to 45×, and the one that
-passes the cap still cycles above 27 °F. §6 lays out what each would have to be replaced
-with and what that costs in other decisions (soffit depth, the backup battery circuit, the
-ERV manifold). **Nothing in §6 is authored — this note is the case, not the change.**
+**What is asked of the reviewer:** **nothing is blocked; §7 records what the owner decided
+on 2026-09-18 and what stays open.** Two of the three systems exceed Manual S's
+minimum-compressor cap, all three are over-sized on cooling by 2.7× to 39×, and the one
+that passes the cap still cycles above 27 °F. **All of it is reported as ADVISORY, not as a
+FAIL** — see §7 — so none of it gates a build or a permit set.
 
 > ⚠ **`mep.heating_capacity` PASSES ALL THREE**, with margins of +6,743, +17,222 and
 > +7,531 Btu/h. It is not wrong; it is answering a different question. A heat pump that
 > cannot make enough heat on the coldest night is a house that gets cold once a year. A heat
 > pump that cannot turn down to the load is a house that short-cycles for seven months, and
-> that is the defect this note is about.
+> that is the subject of this note.
 
 ---
 
@@ -41,7 +40,7 @@ load(T) = ground_coupled_btuh + air_coupled_ua × (setpoint − T)
 |---|---|---|---|---|---|---|
 | HP1 upstairs + attic | 181.30 | **0** | 15,410 | 11,784 | 9,609 | **4,170** |
 | HP2 basement + main | 144.37 | **2,392** | 14,664 | 11,776 | 10,044 | **5,713** |
-| HP3 mudroom + mech | 10.96 | 0 | 932 | 713 | 581 | **252** |
+| HP3 mudroom + mech + closet | 12.27 | 0 | 1,043 | 797 | 650 | **282** |
 
 HP1's zone is the second storey and the attic, so it has **no** ground-coupled term at all
 and its load is pure air. HP2's holds the basement, and its 2,392 Btu/h is the floor the air
@@ -80,7 +79,7 @@ zone as a whole must absorb however the heads stage.
 
 **HP3 — Sapphire 9k**, NEEP 393164, AHRI 214802444: minimum 2,600 @ −22, 2,600 @ 5,
 2,800 @ 17, **2,700 @ 47**; turndown ratio 4.26 — the best of the three, and still nowhere
-near enough.
+near enough for a 1,043 Btu/h zone.
 
 Three notes on the data, each of which the schema exists to hold:
 
@@ -116,9 +115,9 @@ Two halves, and they are easy to run together:
 
 | | largest minimum, and where | design load | **sizing factor** | Manual S cap | verdict |
 |---|---|---|---|---|---|
-| HP1 | 14,000 @ **5 °F** | 15,410 | **0.91** | 12,328 Btu/h | **FAIL** |
+| HP1 | 14,000 @ **5 °F** | 15,410 | **0.91** | 12,328 Btu/h | **advisory** |
 | HP2 | 8,800 @ **5 °F** | 14,664 | **0.60** | 11,731 Btu/h | pass |
-| HP3 | 2,800 @ **17 °F** | 932 | **3.00** | 746 Btu/h | **FAIL** |
+| HP3 | 2,800 @ **17 °F** | 1,043 | **2.69** | 834 Btu/h | **advisory** |
 
 **None of the three binds at the design row**, which is the whole argument for the table
 over a scalar. A check reading only −15 °F would report HP1's minimum as 13,556 Btu/h
@@ -177,14 +176,14 @@ wrong in.
 
 | | sensible cooling load | rated | **ratio** |
 |---|---|---|---|
-| HP1 | 8,665 Btu/h | 24,000 | **2.77** |
+| HP1 | 8,982 Btu/h | 24,000 | **2.67** |
 | HP2 | 5,322 | 28,400 | **5.34** |
-| HP3 | 202 | 9,100 | **45.06** |
+| HP3 | 231 | 9,100 | **39.5** |
 
-**The load is an upper bound, so the ratio is a LOWER one.** The cooling side carries no
-roof sol-air term (no `solar_absorptance` is authored — `solar_gain_basis.md` §6) and only
+**The load is an upper bound, so the ratio is a LOWER one.** The cooling side now carries
+the roof's sol-air term (the owner stated the panel colour on 2026-09-18) but still only
 occupant latent, so the true loads are higher and the true ratios lower than these. Even
-so: 45× is not a rounding question, and an over-sized compressor does not merely waste
+so: 39× is not a rounding question, and an over-sized compressor does not merely waste
 money. It short-cycles, never reaches the steady-state coil condition its latent rating was
 measured at, and leaves a house **cold and damp** — which in a Minnesota August is the
 failure mode people describe as "the AC runs but it feels clammy".
@@ -194,8 +193,9 @@ failure mode people describe as "the AC runs but it feels clammy".
 **HP3 is the clearest and the cheapest to fix, and no product solves it.** A 932 Btu/h
 heating zone and a 202 Btu/h cooling zone do not want a 9,000 Btu/h heat pump; they want no
 heat pump. Searched against NEEP's whole cold-climate listing: the smallest ENERGY STAR
-cold-climate unit published anywhere has a minimum near 2,000 Btu/h, which is still 2.7×
-this zone's 746 Btu/h cap. **There is nothing to buy.** The two rooms are
+cold-climate unit published anywhere has a minimum near 2,000 Btu/h, which is still 2.4×
+this zone's 834 Btu/h cap. **There is nothing to buy.** §7 records that it stays anyway,
+and the one fact that argues for keeping it. The two rooms are
 a mudroom and a mechanical room. Options, roughly in order:
 
 1. **Delete the system.** Serve `RM-M-MUDROOM` from System 2's branch (it already reaches
@@ -246,7 +246,67 @@ proposing. What the engine now does is state the constraint in the units an equi
 selector shops in: *"find a unit whose minimum at 47 °F is under 12,328 Btu/h and whose
 cooling is under 11,265."*
 
-## 7. What is NOT graded here
+## 7. What the owner decided, 2026-09-18
+
+**Everything here is an ADVISORY, not a FAIL.** Both `mep.heat_pump_turndown` and the
+over-size branch of `mep.cooling_capacity` return PASS with the message led by
+`ADVISORY —`. The reasoning is the owner's and it is about what a verdict is for: *"an
+oversize unit is not ideal, but it is hardly a reason to fail an entire house — a permit
+department doesn't care about an oversized unit."* Short-cycling costs efficiency, comfort
+and compressor life; it is not a defect anybody grades at plan review, and calling a whole
+house failing over it makes the 0-FAIL gate mean less rather than more. The arithmetic is
+reported in full either way. **Under-size still FAILs**, and so does a compressor lockout
+warmer than the site design temperature — those are houses that do not work.
+
+**System 3 stays, for now.** *"We may keep it for now. We may remove it later."* Two
+changes went in with that decision:
+
+- **`RM-M-MUD-CLOSET` joined its zone.** It was one of three conditioned rooms no equipment
+  claimed. It opens off the mudroom, shares its air, and is on the wrong side of the house
+  for System 2's heads. The zone's design load goes 932 → 1,043 Btu/h and the sizing factor
+  3.00 → 2.69. (`RM-B-ESS` and `RM-M-PANTRY` remain unclaimed and still report UNKNOWN.)
+- **The modelled load for this zone is an under-count, and the reason is the front door.**
+  `estimate_block_load` apportions the house's blower-door infiltration by *conditioned
+  volume share* — a whole-house average. These rooms are the entry vestibule: on a moving
+  day, a delivery afternoon, or any evening with people coming and going, the air changes
+  here are several times the house average and the real load is correspondingly higher than
+  1,043 Btu/h. **Nothing in the engine can see a door being held open** — there is no
+  occupancy or door-use input anywhere — so it is recorded rather than modelled. It is also
+  the one argument that cuts *against* §6's case for deleting System 3: the zone this unit
+  is over-sized for is measured on a day nobody is using the front door.
+
+**System 1 keeps its cooling over-size.** *"It's perfectly fine that it is oversized for
+summer; it's unlikely we can find a unit that is perfectly balanced for both winter and
+summer needs."* §6's search bears that out — NEEP returns zero products meeting both caps —
+so the 2.67 ratio stands as a recorded decision rather than an open item.
+
+**The air handler was challenged and checked.** The concern was that Gree shows the FLEXX
+Ultra paired with a floor-standing upflow air handler rather than the low-profile ceiling
+unit modelled here. **It is a multi-position air handler and horizontal ceiling mounting is
+a factory configuration** — the January 2026 submittal's clearances page states "Horizontal
+Left Configuration – No Modification Needed" — so the 18 1/8" cabinet height and
+`SF-S-HP1`'s 21" drop are right. Two things came out of that check and are recorded in
+`plan/equipment_types.py` and `houses/catlin/CLAUDE.md`, neither modelled and neither
+graded: **a secondary drain pan is required** under equipment over a finished ceiling
+(manufacturer and IRC M1411.3 / IMC 307.2.3), eating 1 1/2"–2" of the drop's remaining
+slack; and **horizontal RIGHT requires relocating the factory drain pan**, so which hand
+`rotation=deg(90)` lands on belongs on the purchase order.
+
+**The roof's sol-air term is now live.** The owner confirmed the roof is the same Linen
+White as the walls on a different profile — 24 ga PVDF standing seam, SR 0.73, so
+`solar_absorptance` 0.27. `solar_gain_basis.md` §6 is closed and the roof adds 329 Btu/h of
+cooling load.
+
+## 8. What is still open
+
+- **System 1's turndown**, at 0.91 against the 0.80 cap. The constraint to shop against, if
+  it is ever revisited: *a unit whose minimum at any published temperature is under 12,328
+  Btu/h*, with the soffit-depth consequence in §6.
+- **System 3's existence.** Kept for now, explicitly reversible.
+- **`RM-B-ESS` and `RM-M-PANTRY`** belong to no zone and report UNKNOWN.
+
+## 9. What is NOT graded here
+
 
 - **Defrost.** A cold-climate unit spends real time in reverse below freezing and the
   published capacity tables are steady-state. Nothing here carries a defrost penalty.

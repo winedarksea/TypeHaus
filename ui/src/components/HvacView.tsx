@@ -22,6 +22,26 @@ function signedBtuh(value: number | null | undefined): string {
   return `${rounded >= 0 ? "+" : "−"}${Math.abs(rounded).toLocaleString()} Btu/h`;
 }
 
+// The 47 F row's min–max, and the ratio between them. A single-stage unit states one
+// number; a modulating one states a band, and the band is the thing the turndown check is
+// about — so the table shows it rather than the rated point alone.
+function heatingAt47(row: HvacEquipmentRow): string {
+  const rows = row.heating_ratings ?? [];
+  if (rows.length === 0) return btuh(row.resistance_heating_btuh);
+  const at47 = rows.find((r) => r.outdoor_db_f === 47) ?? rows[rows.length - 1];
+  const top = at47.maximum_btuh ?? at47.rated_btuh;
+  if (at47.minimum_btuh === null || at47.minimum_btuh === top) return btuh(top);
+  return `${btuh(at47.minimum_btuh)}–${btuh(top)}`;
+}
+
+function turndown(row: HvacEquipmentRow): string {
+  const rows = row.heating_ratings ?? [];
+  const at47 = rows.find((r) => r.outdoor_db_f === 47);
+  const top = at47?.maximum_btuh ?? at47?.rated_btuh ?? null;
+  if (!at47 || at47.minimum_btuh === null || top === null || at47.minimum_btuh <= 0) return "—";
+  return `${(top / at47.minimum_btuh).toFixed(2)}:1`;
+}
+
 // A zone's margin is the whole question the sheet asks, so it carries the badge. Three
 // states, not two: an unknown input is not a pass, and pretending otherwise is exactly what
 // the engine's tri-state findings exist to prevent.
@@ -225,10 +245,14 @@ export function HvacView() {
             cell: (r) => r.name || <span className="muted">{r.type_ref ?? "—"}</span> },
           { key: "storey", header: "Storey", cellClass: "reader-mono", cell: (r) => r.storey },
           { key: "room", header: "Room", cellClass: "reader-mono", cell: (r) => r.room ?? "—" },
-          { key: "heat47", header: "Heating @47", num: true,
-            cell: (r) => btuh(r.heating_capacity_btuh) },
-          { key: "heatdesign", header: "@ design", num: true,
-            cell: (r) => btuh(r.heating_capacity_at_design_btuh) },
+          // The 47 F row is what the retired heating_capacity_btuh scalar was — but a
+          // MODULATING unit's single number is a half-truth, so the minimum shows beside it.
+          // A reader needs to see that a 25,000 Btu/h unit has a 10,800 Btu/h floor.
+          { key: "heat47", header: "Heating @47 (min–max)", num: true,
+            cell: (r) => heatingAt47(r) },
+          // "@ design" is gone from this table on purpose: it is a fact about the SITE, not
+          // the unit, and it lives on the zone rows below where the site is known.
+          { key: "turndown", header: "Turndown", num: true, cell: (r) => turndown(r) },
           { key: "cool", header: "Cooling", num: true, cell: (r) => btuh(r.cooling_capacity_btuh) },
           { key: "mintemp", header: "Min °F", num: true, cell: (r) => r.min_operating_temp_f ?? "—" },
           { key: "pairs", header: "Pairs with", cellClass: "reader-mono muted",

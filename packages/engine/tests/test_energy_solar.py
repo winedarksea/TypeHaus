@@ -13,7 +13,7 @@ Section by section:
   nothing past that face.
 * **§4** — the AED excursion (ACCA TRB 2003-001a).
 * **§5** — internal gains, cooling only, and the latent split.
-* **§6** — the roof's sol-air excess, and why catlin does not carry one.
+* **§6** — the roof's sol-air excess, off the panel's published solar reflectance.
 """
 
 from __future__ import annotations
@@ -313,23 +313,61 @@ def test_the_horizontal_irradiance_sees_the_whole_sky_and_no_ground() -> None:
     assert horizontal_surface_irradiance(_LATITUDE, 4.0) == 0.0
 
 
-def test_catlins_roof_states_no_absorptance_so_it_carries_no_sol_air_term(
+def test_catlins_roof_carries_a_sol_air_term_off_its_published_reflectance(
         catlin_model_ro) -> None:
-    """§6's open item, pinned so it is not mistaken for a closed one.
+    """§6, and it was OPEN until the owner stated the panel colour (2026-09-18).
 
-    ``solar_absorptance`` is a published optical property (a metal-roofing colour guide
-    states SR; a Cool Roof Rating Council listing states SR and SRI) and nobody has stated
-    one for this roof's cladding. The load then carries the roof at the plain air ΔT — the
-    behaviour this replaced — and the omission is a CAVEAT in the report, not an entry in
-    ``unknown_inputs``: an omitted refinement must not take the sizing verdict to UNKNOWN,
-    and an assumed absorptance would be the rule of thumb this package forbids.
+    The roof is 24 ga PVDF standing seam in Metal Sales Linen White — a different profile
+    from the walls' PBR panel, the same colour — so SR 0.73 and ``solar_absorptance`` 0.27.
+    A light roof, and the term is still 329 Btu/h: the sol-air temperature at the peak hour
+    is 101 °F against a 90 °F design day, a 26 °F CTD where the plain air ΔT is 15. At
+    α 0.90 it would be 144 °F and a 69 °F CTD, five times the air ΔT.
+
+    ``color`` could not have stood in for this: it is an sRGB presentation triple and says
+    nothing about the near-infrared, where most of the energy is.
     """
     from typehaus.checks.registry import Preferences
     from typehaus.energy import estimate_block_load
 
     roof = next(r for r in catlin_model_ro.roofs if r.tag == "RF-HOUSE")
-    assert roof_absorptance(catlin_model_ro, roof.assembly) is None
+    assert roof_absorptance(catlin_model_ro, roof.assembly) == pytest.approx(0.27)
     report = estimate_block_load(catlin_model_ro, Preferences(
+        ach50=1.0, window_u=0.25, infiltration_storeys=2.0))
+    assert report.unknown_inputs == ()
+    # The caveat is GONE now that the input exists — that is what a caveat is for.
+    assert not any("solar_absorptance" in caveat for caveat in report.cooling_caveats)
+    # The two remaining caveats are the latent ones, which no authored colour can close.
+    assert all("latent" in caveat.lower() or "LATENT" in caveat
+               for caveat in report.cooling_caveats)
+
+
+def test_an_unstated_absorptance_is_a_CAVEAT_and_not_an_unknown_input(
+        catlin_model_ro) -> None:
+    """The distinction the report exists to make, exercised on a model whose roof states no
+    absorptance.
+
+    An *omitted refinement* must not take an equipment-sizing verdict to UNKNOWN, and an
+    *assumed* absorptance would be the rule of thumb this package forbids. So the roof falls
+    back to the plain air ΔT, ``unknown_inputs`` stays empty, and the omission rides in
+    ``cooling_caveats`` where ``mep.cooling_capacity`` prints it.
+    """
+    import dataclasses
+
+    from typehaus.checks.registry import Preferences
+    from typehaus.energy import estimate_block_load
+
+    library = catlin_model_ro.plan.library
+    materials = tuple(
+        item.model_copy(update={"solar_absorptance": None})
+        if item.tag == "standing-seam-linen-white" else item
+        for item in library.materials)
+    plan = catlin_model_ro.plan.model_copy(update={
+        "library": library.model_copy(update={"materials": materials})})
+    model = dataclasses.replace(catlin_model_ro, plan=plan, _envelope_geometry=None)
+
+    roof = next(r for r in model.roofs if r.tag == "RF-HOUSE")
+    assert roof_absorptance(model, roof.assembly) is None
+    report = estimate_block_load(model, Preferences(
         ach50=1.0, window_u=0.25, infiltration_storeys=2.0))
     assert report.unknown_inputs == ()
     assert any("solar_absorptance" in caveat and "RF-HOUSE" in caveat

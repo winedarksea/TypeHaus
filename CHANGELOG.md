@@ -4,6 +4,84 @@ All notable changes to `typehaus`. This project follows [semantic versioning](ht
 
 ## Unreleased
 
+- **A heat pump is a table, not two numbers — and it short-cycles.** The third and last pass
+  on the block load, and the one the first two were for. `EquipmentType` carried
+  `heating_capacity_btuh` (47 °F) and `heating_capacity_at_design_btuh`, and the catalog's own
+  preamble said the quiet part: *"the engine does no curve interpolation itself, so whatever
+  is authored here IS the machine as far as every check is concerned."* Two defects hid behind
+  that, and neither is visible in a scalar.
+  - **Turndown.** An inverter's MINIMUM output rises as it gets colder while the zone load
+    falls. catlin's System 1 PASSes `mep.heating_capacity` with a +6,743 Btu/h margin and
+    **modulates down to its load only below −5.9 °F** — it cycles for the rest of the season.
+    New `checks/mep/hvac_sizing.py` (`mep.heat_pump_turndown`) grades Manual S's
+    minimum-compressor sizing factor (largest published minimum ÷ **design** load, cap 0.80)
+    and reports the crossover temperature. **The binding row is never the design row**: all
+    three of catlin's systems have their largest minimum at 5 or 17 °F.
+  - **"At design" is a fact about the SITE**, which a type has never known, so an authored
+    scalar was right only until somebody moved the house. New `HeatPumpRating` rows
+    (`outdoor_db_f`, min/rated/max, three COPs, `return_db_f`, `basis`, and a **required**
+    `citation`) and `takeoff/hvac.capacity_at`, which reads the table at
+    `Site.design_temp_heating` and **refuses to extrapolate at both ends** — one more than
+    `erv_static._delivered`, which clamps low and is right to, because a fan cannot beat its
+    free-air flow and nothing here is physics. Decision #76.
+  - **The data came from NEEP's ccASHP API**, the one public source that publishes a minimum
+    column. All three of catlin's units have one at all four temperatures — the plan rated the
+    Multi's as "may not exist publicly", the highest risk of the three. Every row is NEEP's
+    except the two at −15 °F, where the site designs and NEEP publishes nothing: those carry a
+    manufacturer row rather than an interpolation of two. **One row, one basis** — the
+    validator refuses a repeated temperature, so a blend has nowhere to hide, and where two
+    documents disagree (NEEP says the Sapphire makes 12,000 Btu/h at 17 °F, Gree's submittal
+    says 8,900) the other figure goes in the row's `citation` prose.
+  - **Monotonicity in temperature is deliberately NOT validated.** `EQ-T-GREE-SAPPHIRE-9-OD`
+    publishes 12,000 Btu/h at 17 °F against 10,600 at 47 °F — capacity rising as it gets
+    colder. That is a real boosted low-ambient map, and a monotonicity rule would refuse the
+    machine this house bought.
+  - **`mep.cooling_capacity` gained its missing upper bound.** It was `elif margin >= 0: PASS`
+    with no ceiling anywhere; catlin's System 3 sat at 276% of its zone's load and passed.
+    Manual S caps cooling selection at 1.30 of the design load for a modulating unit and 1.15
+    for a single-stage one, and **which binds is derived from the unit's own ratings table** —
+    a row whose minimum and maximum differ is a unit that modulates. No new authored flag.
+  - **Over-size is an ADVISORY, under-size is a FAIL** (owner decision, 2026-09-18). Both new
+    verdicts return PASS with the message led by `ADVISORY —`: short-cycling costs efficiency,
+    comfort and compressor life, and is not a defect any permit authority grades — failing a
+    whole house over it makes the 0-FAIL gate mean less rather than more. A unit that cannot
+    cool the house, and a compressor lockout warmer than the site design temperature, still
+    FAIL.
+  - **`HvacZone.heating_load_at_outdoor_f`** decomposes the already-computed `EnergyReport`
+    into a ground-coupled constant plus an air-coupled UA, read straight off
+    `LoadComponent.heating_delta_f` — no second envelope walk, no perf cost — with
+    `load(design) == heating_load_btu_per_hour` pinned exactly. Where a house authors no
+    ground boundary the decomposition mirrors what `estimate_block_load` actually did, not
+    the ideal, which is why it keys on the component's own ΔT rather than on its `kind`.
+  - **The heat kit's at-design zero is now DERIVED.** It was authored as
+    `heating_capacity_at_design_btuh=0` with prose explaining that the control locks the
+    elements out above −22 °F and the site designs at −15 — a correct reading, and a
+    conclusion rather than an input. New `resistance_heating_btuh` + `aux_lockout_above_f`
+    state the nameplate and the control setting; the engine does the comparison.
+  - catlin's equipment stays, with the reasoning recorded in the new
+    `houses/catlin/notes/heat_pump_turndown.md` §7: System 1's cooling over-size is accepted
+    (NEEP returns **zero** products meeting both Manual S caps for a 1.8:1 heating-to-cooling
+    zone), System 3 is kept explicitly reversibly, and `RM-M-MUD-CLOSET` joined its zone. The
+    note records the one thing the engine cannot see: these rooms are the entry vestibule, and
+    a blower-door figure apportioned by volume share cannot know a front door is being held
+    open.
+  - **The FLEXX Ultra air handler was challenged and checked.** It is a multi-position
+    cabinet, not a slim ducted cassette — the January 2026 submittal's clearances page states
+    "Horizontal Left Configuration – No Modification Needed", so the 18 1/8" height and
+    `SF-S-HP1`'s 21" drop are right. Two things came out of it, neither modelled nor graded
+    and both now recorded: **a secondary drain pan is required** over a finished ceiling
+    (manufacturer, IRC M1411.3 / IMC 307.2.3) and eats 1 1/2"–2" of the drop's remaining
+    slack; and horizontal RIGHT requires relocating the factory drain pan, so which hand
+    `rotation=deg(90)` lands on belongs on the purchase order.
+  - **The roof's sol-air term went live**: the owner stated the panel colour (Metal Sales PVDF
+    Linen White, SR 0.73 → α 0.27, a **different profile** from the walls in the same colour),
+    so catlin gains a house-local `standing-seam-linen-white` and 329 Btu/h of roof cooling.
+    That rename surfaced a real seam worth naming: **`palette.DETAIL_HATCH` / `DETAIL_FILL`
+    key on a material TAG and duplicate two fields `Material` already carries**, so a
+    house-local material falls through to the layer-function fallback and a metal roof draws
+    with the batt stipple. Listed beside its siblings for now, with the proper fix written
+    down.
+
 - **Manual-J-shaped cooling: the glass is walked hour by hour, and the peak is ONE hour.**
   The sequel the block-load pass promised. New `checks/building_science/solar.py`, oracled by
   the new `houses/catlin/notes/solar_gain_basis.md` and reproduced by

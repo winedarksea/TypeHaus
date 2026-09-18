@@ -320,19 +320,35 @@ def test_cooling_passes_when_the_rating_covers_the_sensible_load() -> None:
     assert "latent" in findings[0].message
 
 
-def test_cooling_fails_when_the_unit_is_OVER_sized() -> None:
-    """**The half of this check that did not exist**: it was ``elif margin >= 0: PASS``,
-    with no upper bound anywhere, and catlin's System 3 sat at 276% of its zone's load and
-    passed. An over-sized compressor short-cycles, never reaches the steady-state coil
-    condition its latent rating was measured at, and leaves a house cold and damp."""
+def test_an_OVER_sized_unit_is_an_advisory_and_an_UNDER_sized_one_is_a_fail() -> None:
+    """**The half of this check that did not exist**, and the asymmetry it landed with.
+
+    It was ``elif margin >= 0: PASS`` with no upper bound anywhere, and catlin's System 3
+    sat at 276% of its zone's load and passed. Over-size is now reported — an over-sized
+    compressor short-cycles, never reaches the steady-state coil condition its latent rating
+    was measured at, and leaves a house cold and damp — but it is an **ADVISORY**, not a
+    FAIL: no permit authority grades equipment over-size, and failing a whole house over it
+    makes the 0-FAIL gate mean less rather than more (owner decision, 2026-09-18).
+
+    **Under-size stays a FAIL**, because that is a house that does not work.
+    """
     ctx = _context(_plan(
         (_heater("EQ-T-HUGE", "Over-sized heat pump", at_design=90000, modulating=True,
                  cooling_capacity_btuh=60000),),
         (_outdoor("EQ-HUGE", "EQ-T-HUGE", "EQ00000h13", _BOTH_ROOMS),)))
     findings = cooling_capacity(ctx)
-    assert [f.result for f in findings] == [Result.FAIL]
+    assert [f.result for f in findings] == [Result.PASS]
+    assert findings[0].message.startswith("ADVISORY — ")
     assert "OVER-SIZED" in findings[0].message
     assert "Manual S caps cooling selection at 1.30" in findings[0].message
+
+    ctx = _context(_plan(
+        (_heater("EQ-T-WEAK", "Under-sized heat pump", at_design=90000, modulating=True,
+                 cooling_capacity_btuh=100),),
+        (_outdoor("EQ-WEAK", "EQ-T-WEAK", "EQ00000h13", _BOTH_ROOMS),)))
+    findings = cooling_capacity(ctx)
+    assert [f.result for f in findings] == [Result.FAIL]
+    assert "under the sensible cooling load" in findings[0].message
 
 
 def test_the_manual_s_cooling_ceiling_is_DERIVED_from_the_ratings_table() -> None:
@@ -435,7 +451,7 @@ def test_catlin_zone_loads_do_not_exceed_the_whole_house_load(catlin_model) -> N
     # under the door. That is true about AIR, not about the HEATING ZONE: a 50 sf
     # conditioned room off a conditioned bedroom is inside System 1's zone whether or not
     # it has a boot of its own, and its load belongs in that zone's block load.
-    assert set(unclaimed) == {"RM-B-ESS", "RM-M-MUD-CLOSET", "RM-M-PANTRY"}
+    assert set(unclaimed) == {"RM-B-ESS", "RM-M-PANTRY"}
 
 
 # --- supplemental resistance heat ------------------------------------------------------

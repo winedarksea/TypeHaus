@@ -329,8 +329,13 @@ def heating_capacity(ctx: CheckContext) -> list[Finding]:
 def cooling_capacity(ctx: CheckContext) -> list[Finding]:
     """Per-zone cooling block load vs the unit's authored sensible cooling capacity.
 
-    **Two-sided now.** It was ``elif margin >= 0: PASS`` with no upper bound anywhere, which
-    is half a check: catlin's System 3 was at 276% of its zone's cooling load and passed.
+    **Two-sided now, but not symmetrically.** It was ``elif margin >= 0: PASS`` with no upper
+    bound anywhere, which is half a check: catlin's System 3 was at 276% of its zone's
+    cooling load and passed. Under-size is still a FAIL — that is a house that does not
+    work. **Over-size is an ADVISORY**: the message leads with ``ADVISORY —`` and the result
+    stays PASS, because no permit authority grades equipment over-size and calling a whole
+    house failing over it makes the 0-FAIL gate mean less rather than more (owner decision,
+    2026-09-18).
     Manual S caps cooling selection at 1.30 of the design load for a modulating unit and
     1.15 for a single-stage one, and which one binds is DERIVED from the unit's own ratings
     table (→ ``_cooling_sizing_ceiling``). Over-size is not a comfort preference: an
@@ -386,11 +391,16 @@ def cooling_capacity(ctx: CheckContext) -> list[Finding]:
             out.append(_advisory_fail(cid, detail + " — under the sensible cooling load",
                                       (zone.equipment_tag,)))
         elif ratio is not None and ratio > ceiling:
-            out.append(_advisory_fail(
-                cid, detail + f" — OVER-SIZED: Manual S caps cooling selection at "
-                              f"{ceiling:.2f} of the load, and an over-sized compressor "
-                              "short-cycles, never reaches its steady-state latent removal, "
-                              "and leaves the house cold and damp",
+            # **An over-sized unit is an ADVISORY, an under-sized one is a FAIL**, and the
+            # asymmetry is the point (owner decision, 2026-09-18). A unit that cannot cool
+            # the house is a house that does not work; one that is too big is a comfort and
+            # running-cost judgement no permit authority grades, and failing a whole house
+            # over it makes the 0-FAIL gate mean less rather than more.
+            out.append(_pass(
+                cid, "ADVISORY — " + detail + f" — OVER-SIZED: Manual S caps cooling "
+                     f"selection at {ceiling:.2f} of the load, and an over-sized compressor "
+                     "short-cycles, never reaches its steady-state latent removal, and "
+                     "leaves the house cold and damp",
                 (zone.equipment_tag,)))
         else:
             out.append(_pass(cid, detail, (zone.equipment_tag,)))

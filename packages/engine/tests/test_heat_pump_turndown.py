@@ -11,7 +11,8 @@ Section by section:
 * **§2** — Manual S's 0.80 minimum-compressor sizing factor, evaluated across the published
   rows and not only at design.
 * **§3** — the crossover temperature: where ``minimum(T) = load(T)``.
-* **§4** — the tri-state, including the NOT_APPLICABLE that must be *earned*.
+* **§4** — the tri-state, including the NOT_APPLICABLE that must be *earned*. Note that
+  FAIL is not among the states this check can return at all (note §7).
 """
 
 from __future__ import annotations
@@ -34,10 +35,15 @@ from typehaus.takeoff.hvac import heating_zones
 # is; walking the whole table is what finds the largest MINIMUM, which is rarely on the
 # design row. System 2 passes the cap at 0.60 and still cycles above 27 °F — the rule catches
 # gross over-size, the crossover describes the year, and they are not the same statement.
+# **Every verdict is PASS**: over the cap the message leads with ``ADVISORY —`` and the
+# result does not gate. Owner decision, 2026-09-18 — short-cycling costs efficiency, comfort
+# and compressor life, and is not a defect any permit authority grades. The last column is
+# whether the advisory fires, not whether the check failed.
+_ADVISED = True
 _CATLIN = {
-    "EQ-M-HP1-OD": (15_410, 14_000, 5.0, 0.91, -5.9, Result.FAIL),
-    "EQ-M-HP2-OD": (14_664, 8_800, 5.0, 0.60, 27.0, Result.PASS),
-    "EQ-M-HP3-OD": (932, 2_800, 17.0, 3.00, None, Result.FAIL),
+    "EQ-M-HP1-OD": (15_410, 14_000, 5.0, 0.91, -5.9, _ADVISED),
+    "EQ-M-HP2-OD": (14_664, 8_800, 5.0, 0.60, 27.0, not _ADVISED),
+    "EQ-M-HP3-OD": (1_043, 2_800, 17.0, 2.69, None, _ADVISED),
 }
 
 
@@ -96,16 +102,21 @@ def test_the_manual_s_verdict_on_all_three_catlin_systems(catlin_ctx) -> None:
     """§2's table. **The check that the audit was written to produce**, and the answer it
     gives is the one a scalar structurally could not: System 1 PASSes
     ``mep.heating_capacity`` with a +6,743 Btu/h margin and short-cycles anyway.
+
+    **Nothing here FAILs**, and that is the owner's call recorded in the note's §7: an
+    over-sized unit is not ideal and it is not a reason to call a whole house failing. The
+    arithmetic is reported in full; it just does not gate.
     """
     rows = _findings(catlin_ctx)
     assert set(rows) == set(_CATLIN)
-    for tag, (load, minimum, at_f, factor, _crossover, verdict) in _CATLIN.items():
+    for tag, (load, minimum, at_f, factor, _crossover, advised) in _CATLIN.items():
         finding = rows[tag]
-        assert finding.result is verdict, tag
+        assert finding.result is Result.PASS, tag
         assert f"minimum output {minimum:,.0f} Btu/h (at {at_f:g} °F)" in finding.message, tag
         assert f"sizing factor of {factor:.2f}" in finding.message, tag
         assert f"{load:,.0f} Btu/h design load" in finding.message, tag
-        assert ("SHORT-CYCLING" in finding.message) is (verdict is Result.FAIL), tag
+        assert finding.message.startswith("ADVISORY — ") is advised, tag
+        assert ("SHORT-CYCLING" in finding.message) is advised, tag
 
 
 def test_the_binding_row_is_NOT_the_design_row(catlin_ctx) -> None:
@@ -145,7 +156,7 @@ def test_the_crossover_is_the_sentence_an_owner_can_act_on(catlin_ctx) -> None:
     zones = {z.equipment_tag: z for z in heating_zones(
         catlin_ctx.model, catlin_ctx.preferences)[0]}
     rows = _findings(catlin_ctx)
-    for tag, (*_rest, crossover, _verdict) in _CATLIN.items():
+    for tag, (*_rest, crossover, _advised) in _CATLIN.items():
         if crossover is None:
             assert "never meets the load anywhere" in rows[tag].message, tag
             continue

@@ -11,13 +11,12 @@ internal gains and the latent split (§5) and the roof's sol-air excess (§6). R
 `tests/test_energy_solar.py`.
 **Companions:** `notes/block_load_basis.md` — the conduction and air-side half of the same
 load, and §8 of it is the promissory note this note pays.
-**What is asked of the reviewer:** **one thing, and it is a purchase decision, not an
-arithmetic one.** §6 needs the **solar reflectance of the roof panel** — a figure the
-colour guide publishes (Metal Sales publishes SR/TE/SRI per colour; the house already
-records SR 0.73 / SRI 89 for its *wall* panel in Linen White). Until somebody states it,
-the roof is charged a wall's 15 °F cooling ΔT where its real sol-air excess is several
-times that, and the cooling load is understated by a term §6 sizes at **0.3–1.6 kBtu/h**
-depending on the colour. Everything else here is closed.
+**What is asked of the reviewer:** **nothing — §6 closed on 2026-09-18.** It asked for the
+roof panel's solar reflectance, and the owner stated it: the roof is a **different profile
+from the walls in the same colour** — 24 ga PVDF standing seam, Metal Sales Linen White
+(81), SR 0.73, so `solar_absorptance` 0.27. The sol-air term is live and adds 329 Btu/h.
+A house-local material `standing-seam-linen-white` carries it, because a colour is this
+house's choice and the library's generic `standing-seam` is shared.
 
 > ⚠ **THIS IS STILL NOT A MANUAL J**, and what it now lacks is a shorter list: no duct
 > gains, no room-by-room distribution, no thermal-mass lag on anything, and a sol-air roof
@@ -195,7 +194,7 @@ caveat the sizing checks print.
 of refrigeration is a total, not a sensible. It was sensible-only, which understated every
 selection by the latent share.
 
-## 6. The roof's sol-air excess — OPEN, and it needs one number
+## 6. The roof's sol-air excess — CLOSED 2026-09-18
 
 A roof is **solar-dominated and nearly ΔT-independent**. Charging it the same 15 °F cooling
 ΔT as a wall is the last big error in the cooling column. ASHRAE's sol-air temperature is
@@ -220,17 +219,25 @@ diffuse, no ground bounce — a roof sees no ground). For three candidate roof c
 | Linen White, SR 0.73 | 0.27 | 101 °F | 26 °F | **+329** Btu/h |
 | *what the load carries today* | — | — | 15 °F | 0 |
 
-**`solar_absorptance` is not authored on this roof's cladding, so the roof carries the plain
-air ΔT and the omission is a CAVEAT in the report rather than an entry in
-`unknown_inputs`.** That distinction is deliberate and worth defending: an *omitted
-refinement* must not take the equipment-sizing verdict to UNKNOWN, and an *assumed*
-absorptance would be exactly the rule of thumb this package forbids. `color` cannot stand in
-— it is an sRGB presentation triple and says nothing about the near-infrared, where most of
-the energy is.
+**The roof is Linen White, α 0.27, and the third row is the answer: +329 Btu/h.** The owner
+confirmed on 2026-09-18 that the roof is the same Metal Sales PVDF Linen White (81) as the
+walls on a *different profile* — concealed-clip standing seam rather than the walls'
+exposed-fastener PBR panel. Same SR 0.73 / TE 0.86 / SRI 89 from the same colour guide.
 
-The figure is a one-line author once somebody reads it off the colour guide. The house
-already records SR 0.73 / TE 0.86 / SRI 89 for its **wall** panel (Metal Sales Linen White);
-if the roof is the same panel in the same colour, α is 0.27 and the row above is the answer.
+It is authored on a new house-local material `standing-seam-linen-white`, not on the
+library's generic `standing-seam`: a colour is this house's choice and the library row is
+the shared catalog entry that other houses read. Every other building-science number on it
+is `standing-seam`'s verbatim — continuous sheet steel carries no R and no vapour permeance
+whatever its colour — so nothing but the cooling load moves.
+
+**Until it was stated, the roof carried the plain air ΔT and the omission was a CAVEAT in
+the report rather than an entry in `unknown_inputs`.** That distinction is still the live
+design and it is worth keeping: an *omitted refinement* must not take the equipment-sizing
+verdict to UNKNOWN, and an *assumed* absorptance would be exactly the rule of thumb this
+package forbids. `color` could not have stood in — it is an sRGB presentation triple and
+says nothing about the near-infrared, where most of the energy is.
+``tests/test_energy_solar.py`` exercises both halves: the live term, and a stripped model
+where the caveat fires instead.
 
 **The term is an upper bound either way**, and stated as one: this is the *instantaneous*
 sol-air temperature with **no mass lag**. A real roof's peak flux arrives later and damped
@@ -245,19 +252,19 @@ conservative direction.
 | glass solar | 17,435 Btu/h | **12,271** at solar 10:30 |
 | AED excursion | — | **894** |
 | internal sensible | — | **2,810** |
-| cooling, sensible | 22,154 Btu/h | **20,695** |
+| roof sol-air | — | **329** |
+| cooling, sensible | 22,154 Btu/h | **21,024** |
 | latent | — | **1,400** (occupants only) |
 | SHR | — | **0.94** (an upper bound) |
-| tons | 1.846 (sensible only) | **1.841** (total) |
-| roof sol-air | — | **open** (§6) |
+| tons | 1.846 (sensible only) | **1.869** (total) |
 
-The sensible cooling load falls 6.6% and the tonnage barely moves, which — as in
-`block_load_basis.md` — is four real corrections cancelling. The glass came down 5.2 kBtu/h,
-the internal gains put 2.8 back, and the latent took the tonnage the other way.
+The sensible cooling load falls 5.1% and the tonnage barely moves, which — as in
+`block_load_basis.md` — is five real corrections cancelling. The glass came down 5.2 kBtu/h;
+the internal gains put 2.8 back, the roof 0.3, and the latent took the tonnage the other
+way.
 
 ## 8. What is still NOT in here
 
-- **The roof's sol-air term** (§6). The one open item, and it needs one published number.
 - **No thermal-mass lag anywhere.** Every term is instantaneous at one hour. A masonry house
   would behave very differently and this would not show it.
 - **No duct gains.** System 1's trunk runs in a conditioned soffit, so the omission is small

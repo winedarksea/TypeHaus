@@ -43,7 +43,10 @@ def test_every_wall_layer_part_is_catalogued(catlin_model):
 def test_roof_bands_and_members_and_decks_are_catalogued(catlin_model):
     roof_refs = {part.catalog.material_ref for (_e, part) in _parts(catlin_model, "roof")
                  if part.catalog is not None}
-    assert "standing-seam" in roof_refs
+    # `standing-seam-linen-white`, not the library's generic `standing-seam`: the roof took
+    # its own material tag on 2026-09-18 to carry the panel's published solar reflectance,
+    # which the shared library row cannot claim for every house.
+    assert "standing-seam-linen-white" in roof_refs
 
     members = [(element, part) for (element, part) in _parts(catlin_model, "framing")]
     assert members

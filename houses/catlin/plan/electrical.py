@@ -708,14 +708,31 @@ MAIN_EQUIPMENT = [
     # System 2 heads, -90 on EQ-M-FIREPLACE). Hangs over open well either way (FO-M-STAIR
     # stops at y=35').
     # `room` is RM-M-LIVING, which the stair well is part of. `zone_rooms` is not — it's the
-    # mudroom + mech closet; the stair volume it blows into belongs to EQ-M-HP2-LIVING's
-    # 768 sf claim, not counted twice here.
+    # mudroom, the mech closet and the mudroom closet; the stair volume it blows into
+    # belongs to EQ-M-HP2-LIVING's 768 sf claim, not counted twice here.
+    #
+    # ** RM-M-MUD-CLOSET JOINED THIS ZONE 2026-09-18. ** It was one of three conditioned
+    # rooms `mep.heating_capacity` reported as claimed by nobody. It opens off the mudroom,
+    # shares its air and is on the wrong side of the house for System 2's heads to reach, so
+    # this is where it belongs — and it is the head already nearest it.
+    #
+    # ** THE MODELLED LOAD FOR THIS ZONE IS AN UNDER-COUNT, AND THE REASON IS THE FRONT
+    # ** DOOR. `estimate_block_load` apportions the house's blower-door infiltration by
+    # CONDITIONED VOLUME SHARE (its own docstring says so and calls it approximate), which
+    # is a whole-house average. These two-and-a-bit rooms are the entry vestibule: on a
+    # moving day, a delivery afternoon, or any evening with people coming and going, the
+    # air changes here are several times the house average and the real load is
+    # correspondingly higher than the 932 Btu/h the model reports. Nothing in the engine can
+    # see a door being held open — there is no occupancy or door-use input anywhere — so
+    # this is recorded rather than modelled, and it is the one argument that cuts AGAINST
+    # `notes/heat_pump_turndown.md` §6's case for deleting System 3 outright: the zone this
+    # unit is over-sized for is measured on a day nobody is using the front door.
     Equipment(uid="CEE030AAAA", tag="EQ-M-HP3-STAIR", kind=EquipmentKind.INDOOR_HEAD,
               position=pt(m(3.66415), m(10.6761)), footprint=(inch(33), inch(8)),
               room="RM-M-LIVING", type_ref="EQ-T-GREE-SAPPHIRE-9", rotation=deg(0),
               outdoor_ref="EQ-M-HP3-OD",
               mount=Mount(kind=MountKind.WALL, elevation=ft(7)),
-              zone_rooms=("RM-M-MUDROOM", "RM-M-MECH")),
+              zone_rooms=("RM-M-MUDROOM", "RM-M-MECH", "RM-M-MUD-CLOSET")),
     # --- the fire, moved out of the SE corner 2026-09-06 --------------------------------
     #
     # ** IT WAS TOO LOW, NOTHING FACED IT, AND IT COULD NOT BE RAISED WHERE IT STOOD. **

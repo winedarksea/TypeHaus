@@ -134,6 +134,9 @@ const DETAIL_FILL: Record<string, string> = {
   // snap-lock, nail strip, 26 ga nail strip and the exposed-fastener PBR panel all draw
   // identically to a mechanically seamed pan. Mirrors emit/draw/palette.py DETAIL_FILL.
   "standing-seam-snaplock": "#2f2f2f", "standing-seam-nailstrip": "#2f2f2f",
+  // catlin's roof panel — the library's generic standing seam in a stated colour, so that
+  // the roof's sol-air cooling term has a published solar reflectance to read. Same ink.
+  "standing-seam-linen-white": "#2f2f2f",
   "standing-seam-nailstrip-26": "#2f2f2f", "pbr-panel-26": "#2f2f2f",
   "pbr-panel-24": "#2f2f2f",
   // Six metal skins now: the north/south board & batten panel (2026-08-31) draws the same

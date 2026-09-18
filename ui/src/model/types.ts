@@ -820,12 +820,38 @@ export interface HvacEquipmentRow {
   zone_rooms: string[];
   outdoor_ref: string | null;
   circuit: string | null;
-  heating_capacity_btuh: number | null;
-  heating_capacity_at_design_btuh: number | null;
+  // The published heating table, ascending in outdoor_db_f. It replaces the two scalars
+  // that were here (heating_capacity_btuh, heating_capacity_at_design_btuh): *at design*
+  // is a question about the SITE, which an equipment type never knew, so the capacity is
+  // now READ from this table at Site.design_temp_heating by the take-off.
+  heating_ratings: HeatPumpRatingRow[];
+  // Resistance heat: a scalar and not a table, because an element's output is flat with
+  // outdoor temperature. `aux_lockout_above_f` is the control setting that decides whether
+  // it contributes at design at all.
+  resistance_heating_btuh: number | null;
+  aux_lockout_above_f: number | null;
   cooling_capacity_btuh: number | null;
   min_operating_temp_f: number | null;
   ventilation_cfm: number | null;
   sensible_recovery_effectiveness: number | null;
+}
+
+export interface HeatPumpRatingRow {
+  outdoor_db_f: number;
+  // A modulating unit states all three; a single-stage one states min === max. At least one
+  // is always present. Published tables are ragged — a row may state a maximum and no
+  // minimum — so every column is nullable.
+  minimum_btuh: number | null;
+  rated_btuh: number | null;
+  maximum_btuh: number | null;
+  cop_at_minimum: number | null;
+  cop_at_rated: number | null;
+  cop_at_maximum: number | null;
+  return_db_f: number | null;
+  /** "ahri" | "manufacturer" | "neep" — provenance, not a quality ranking. */
+  basis: string;
+  /** Required. A capacity with no provenance is the defect this table closed. */
+  citation: string;
 }
 
 export interface HvacZoneRow {
@@ -835,18 +861,30 @@ export interface HvacZoneRow {
   rooms: string[];
   indoor_tags: string[];
   heating_load_btu_per_hour: number;
+  /** READ from the unit's heating_ratings at Site.design_temp_heating — see capacity_basis
+   *  for whether that was an exact row or an interpolation, and from which source. */
   heating_capacity_at_design_btuh: number | null;
+  capacity_basis: string | null;
+  design_temp_f: number | null;
+  /** The zone's heating load decomposed, so it can be re-evaluated at any outdoor
+   *  temperature: ground_coupled_btuh + air_coupled_ua × (setpoint − odb). */
+  air_coupled_ua: number;
+  ground_coupled_btuh: number;
   // Resistance heat inside the zone's rooms (mats, electric fireplace) and the tags it came
   // from. Already folded into heating_margin_btuh — shown separately so a margin that only
   // clears with supplemental heat reads as exactly that.
   supplemental_btuh: number;
   supplemental_tags: string[];
   heating_margin_btuh: number | null;
+  /** SENSIBLE — that is what a unit's cooling_capacity_btuh is rated against. */
   cooling_load_btu_per_hour: number;
+  latent_btu_per_hour: number;
   cooling_capacity_btuh: number | null;
   cooling_margin_btuh: number | null;
   min_operating_temp_f: number | null;
   unknown_inputs: string[];
+  /** Terms the block load knowingly does NOT carry, as opposed to inputs it is missing. */
+  cooling_caveats: string[];
 }
 
 export interface HvacDuctRow {

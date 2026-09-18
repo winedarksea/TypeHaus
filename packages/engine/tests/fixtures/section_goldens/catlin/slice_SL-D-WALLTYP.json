@@ -4944,7 +4944,7 @@
       "angle": 0.0,
       "layer": "A-WALL-PATT",
       "uid": "CARF01AAAA",
-      "material": "standing-seam"
+      "material": "standing-seam-linen-white"
     },
     {
       "space": "model",

@@ -23,12 +23,11 @@ Oracled by ``houses/catlin/notes/heat_pump_turndown.md``; reproduced by
 
 from __future__ import annotations
 
-from typehaus.checks._authoring import advisory
 from typehaus.checks._authoring import not_applicable as _na
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
-from typehaus.findings import Finding, Result
+from typehaus.findings import Finding
 
 # Manual S §2: the minimum-compressor heating sizing factor. A modulating heat pump's
 # MINIMUM output may be up to 0.80 of the design heating load — above that it cannot settle
@@ -37,10 +36,16 @@ from typehaus.findings import Finding, Result
 _MAX_MINIMUM_SIZING_FACTOR = 0.80
 
 
-def _advisory_fail(cid: str, msg: str, tags: tuple[str, ...]) -> Finding:
-    """WARN severity + FAIL result, the idiom ``checks/mep/hvac.py`` sets: the permit
-    integrity gate blocks on ERROR severity only, and this finding is advisory."""
-    return advisory(cid, msg, tags, Result.FAIL)
+# The advisory prefix. **Turndown never returns FAIL**, and that is a deliberate call about
+# what a verdict is FOR (owner decision, 2026-09-18): a unit whose minimum is above the load
+# short-cycles, which costs efficiency, comfort and compressor life — and is not a defect any
+# permit authority grades, nor a reason to call an entire house failing. The arithmetic is
+# reported in full either way; what changes is that it does not gate.
+#
+# The sibling half of the same decision is in ``checks/mep/hvac.py``: a cooling unit that is
+# OVER-sized is an advisory there too, while one that is UNDER-sized still FAILs, because
+# that is a house that does not work.
+_ADVISORY = "ADVISORY — "
 
 
 def _crossover_temp_f(zone, rows) -> float | None:
@@ -86,6 +91,13 @@ def heat_pump_turndown(ctx: CheckContext) -> list[Finding]:
     often the more useful sentence. catlin's System 2 passes the Manual S cap at 0.60 and
     still cycles above 27 °F, because its load falls faster than its floor does. The rule
     catches gross over-size; the crossover describes the year.
+
+    **It never returns FAIL**, and the reason is what a verdict is for. Short-cycling costs
+    efficiency, comfort and compressor life; it is not a defect a permit authority grades,
+    and calling a whole house failing over it makes the 0-FAIL gate mean less rather than
+    more. Over the cap, the message leads with ``ADVISORY —`` and carries the full
+    arithmetic; the result stays PASS. (Owner decision, 2026-09-18 — see
+    ``notes/heat_pump_turndown.md``.)
 
     Tri-state, and the third state is earned rather than assumed:
 
@@ -170,11 +182,12 @@ def heat_pump_turndown(ctx: CheckContext) -> list[Finding]:
             f"caps it at {_MAX_MINIMUM_SIZING_FACTOR:.2f} "
             f"({allowed:,.0f} Btu/h){where}")
         if factor > _MAX_MINIMUM_SIZING_FACTOR:
-            out.append(_advisory_fail(
-                cid, detail + ". SHORT-CYCLING: the unit cannot settle at the load, so it "
-                              "runs in bursts — which costs efficiency, comfort and "
-                              "compressor life, and no amount of capacity fixes it",
-                tags))
+            out.append(_pass(
+                cid, _ADVISORY + detail + ". SHORT-CYCLING: the unit cannot settle at the "
+                     "load, so it runs in bursts — which costs efficiency, comfort and "
+                     "compressor life, and no amount of capacity fixes it. Not a FAIL: no "
+                     "permit authority grades turndown, and this is a comfort and running-"
+                     "cost judgement for the owner to make", tags))
         else:
             out.append(_pass(cid, detail, tags))
     return out

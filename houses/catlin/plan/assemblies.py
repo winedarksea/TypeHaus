@@ -651,7 +651,10 @@ ROOF = Assembly(
         Layer(name="membrane", material_ref="roof-adhered-butyl-ht", thickness=inch(0.04),
               function=LayerFunction.MEMBRANE,
               control={ControlLayer.AIR, ControlLayer.WATER}),
-        Layer(name="roofing", material_ref="standing-seam", thickness=inch(0.5),
+        # `standing-seam-linen-white`, not the library's generic `standing-seam`: identical
+        # in every building-science number, and it carries the published SR this roof's
+        # SOL-AIR cooling term reads (notes/solar_gain_basis.md section 6).
+        Layer(name="roofing", material_ref="standing-seam-linen-white", thickness=inch(0.5),
               function=LayerFunction.CLADDING),
     ),
     default_lining=(
@@ -3684,6 +3687,34 @@ MATERIALS = [
     # corner-zone demand. This wall stays PRESCRIPTIVE — `exposed_fastener=True` keeps it
     # out of `engineering/wall_panel.py`'s enumeration, which is the correct scope: a
     # face-fastened panel's wall capacity is published.
+    # `standing-seam-linen-white` — the ROOF panel, and it exists for exactly one field the
+    # library's generic `standing-seam` cannot carry for every house: `solar_absorptance`.
+    #
+    # ** IT IS A DIFFERENT PANEL FROM THE WALLS AND THE SAME COLOUR. ** The walls are
+    # `pbr-panel-24`, an exposed-fastener PBR profile; this is a concealed-clip standing seam.
+    # Both are 24 ga PVDF steel in Metal Sales Linen White (81), SR 0.73 / TE 0.86 / SRI 89,
+    # which is where the absorptance comes from: alpha = 1 - SR = 0.27.
+    #
+    # ** WHY THE NUMBER MATTERS, AND WHY `color` COULD NOT STAND IN. ** A roof is
+    # solar-dominated and nearly delta-T-independent: at the cooling peak hour this roof's
+    # SOL-AIR temperature is 101 F against a 90 F design day, a 26 F CTD where the plain air
+    # delta-T is 15 (notes/solar_gain_basis.md section 6). At alpha 0.90 — a black roof — it
+    # would be 144 F and a 69 F CTD, five times the air delta-T. `color` is an sRGB
+    # presentation triple and says nothing about the near-infrared, where most of the energy
+    # is; only a published SR answers it.
+    #
+    # HOUSE-LOCAL rather than an edit to `library/materials.py`, for the same reason
+    # `pbr-panel-24` is: a colour is this house's choice and the library row is the shared,
+    # reviewed catalog entry (CONTRIBUTING section Promotion flow). Every other building-
+    # science number is `standing-seam`'s verbatim — continuous sheet steel carries no R and
+    # no vapour permeance whatever its colour — so nothing but the cooling load moves.
+    Material(tag="standing-seam-linen-white",
+             name="Standing-seam steel, 24 ga., PVDF Linen White (81)",
+             r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
+             color="#6b7076",
+             skin_family="standing-seam",
+             solar_absorptance=0.27,
+             source="Metal Sales 24 ga. PVDF-coated steel standing seam, concealed-clip snap-lock profile, in PVDF Linen White (81) — the same colour as `pbr-panel-24` on the walls and `corrugated-panel-24` on the garage, on a different profile. SR 0.73 / TE 0.86 / SRI 89 from the Metal Sales PVDF colour guide, so solar_absorptance = 1 - 0.73 = 0.27. Caveat carried from the wall panel's own record: SRI is NIR-weighted, no visible LRV is published, and it is NOT a low-gloss colour."),
     Material(tag="pbr-panel-24", name="Metal Sales PBR exposed-fastener steel panel, 24 ga., PVDF Linen White (81)",
              r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
              color="#6b7076", finish="ribbed-panel",

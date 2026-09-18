@@ -124,6 +124,7 @@ DETAIL_FILL: dict[str, str] = {
     # as one product — one is 54 perm and the other 0.05.
     "waterproofing": "#2f2b2a",
     "standing-seam": "#2f2f2f",
+    "standing-seam-linen-white": "#2f2f2f",
     "standing-seam-snaplock": "#2f2f2f",
     "standing-seam-nailstrip": "#2f2f2f",
     "standing-seam-nailstrip-26": "#2f2f2f",
@@ -243,6 +244,19 @@ DETAIL_HATCH: dict[str, str] = {
     # would draw the one layer in this roof that is mostly air as a solid sheet.
     "roof-vent-mat": "airgap",
     "standing-seam": "metal",
+    # ** THESE TWO TABLES CANNOT SEE A HOUSE-LOCAL MATERIAL, AND THAT IS A REAL SEAM. **
+    # They key on a material TAG and they duplicate two fields ``Material`` already carries
+    # (``hatch`` and ``color``), so a house that authors its own material — as catlin does
+    # for every panel it has picked a gauge or a colour for — falls through to the LAYER
+    # FUNCTION fallback and loses both. The failure is quiet and ugly: `section.py`'s roof
+    # path ends in ``or "batt"``, so a metal roof draws with the batt stipple.
+    #
+    # The right fix is for these to consult the resolved ``Material`` before the function
+    # fallback; what stops it today is that the six call sites hold a ``material_ref``
+    # string and no library. Until then a house-local tag has to be listed here beside its
+    # library sibling, which is what `pbr-panel-24`, `corrugated-panel-24`,
+    # `board-batten-24` and `standing-seam-nailstrip-26` already are.
+    "standing-seam-linen-white": "metal",
     "standing-seam-snaplock": "metal",
     "standing-seam-nailstrip": "metal",
     "standing-seam-nailstrip-26": "metal",
