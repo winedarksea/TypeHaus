@@ -378,6 +378,36 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     group needs a DESIGN answer (soffits, or distinct elevations in the attic floor band),
     not another search, and pasting the campaign's output would trade interference FAILs for
     stud-bore FAILs.
+  - **P1's FIRST BULLET CANNOT BE DONE AS WRITTEN, AND D1 IS THE REASON (measured
+    2026-09-19).** The campaign plan says to re-profile `PR-M-WC-VENT` "through the web
+    window so it takes the tier the radials do not at each crossing (2.375" OD + 4" duct =
+    6.375" in an 8.875" window)". That arithmetic was written against a HOME-RUN level 2.
+    D1 took level 2 trunk-and-branch, and `DU-M-ERV-EXH-TRUNK` is **8" galvanized at
+    +114 1/16"** running x=3'-10 1/2" from y=35'-0" to y=7'-4" — twenty-eight feet, the full
+    depth of the west half. FS-S-WEST's web window is 109 5/8"..118 1/2"; the trunk's
+    envelope is 110 1/16"..118 1/16". **That leaves 7/16" above it and 7/16" below it, and a
+    2" vent is 2 3/8" round.** Nothing passes that trunk inside the truss, at any tier.
+    `PR-M-WC-VENT` has to cross x=3'-10 1/2" to reach the chase at (1'-0", 34'-6"), so it
+    reports (4.39" today) and no per-vertex profile fixes it. The ways round, none of them a
+    duct-side edit:
+      * **North of the trunk's start.** Its riser stands at (3'-10 1/2", 35'-0") and an 8"
+        riser and a 2" vent want 5 3/16" between centres, so the vent would have to cross at
+        y >= 35'-5 1/4". The chase's north face is y=35'-5 3/8". The window is an eighth of
+        an inch.
+      * **Under the floor system**, below 108 7/16", which puts eight feet of vent in the
+        main storey's ceiling rather than inside it.
+      * **Move the trunk's first few feet**, which re-opens D1.
+    **AND A CONSTRAINT NOTHING IN THIS ENGINE GRADES DECIDES THE SHAPE OF ANY FIX:** a vent
+    must be graded to drain back to the drainage pipe (IRC P3104.1), so its profile has to be
+    MONOTONE from the fixture to the chase — there is no dipping under one duct and back up
+    over the next. `plan/mep_venting.py`'s own header says it ("fall ~1/8"/ft back toward the
+    fixtures so condensate returns to the drainage system rather than pooling"), and there is
+    no check in `checks/mep/` that reads it. A re-profile that zig-zagged would go green and
+    be wrong, which is the same class of silence as the header-over-opening gap D3 found.
+    Five of the seven duct pairs on this vent are on its x=8'-2" leg and WOULD tier cleanly;
+    they are stuck behind the two that cannot, because the grade rule makes the run one
+    decision rather than five.
+
   - ~~**THE BASEMENT (D3) IS NOT THE ATTIC, AND THE OBVIOUS FIX DOES NOT APPLY.**~~
     **DONE 2026-09-19 (D3). 175 -> 150, and the basement's 23 pairs are 2.** What landed is
     not the re-lane this entry said would not work, and not the soffit campaign it proposed
