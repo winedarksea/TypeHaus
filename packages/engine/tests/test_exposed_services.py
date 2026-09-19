@@ -162,8 +162,15 @@ def test_a_declaration_that_grades_nothing_says_so(catlin_model) -> None:
 
 def test_catlin_declares_its_two_rooms(catlin_model_ro) -> None:
     """The demonstration, pinned. Both rooms pass with their own sentence quoted, and the
-    gym's names both runs it is carrying — ``PR-B-COND`` and ``DU-B-ERV-R-GYM``, which
-    hang in its open ceiling since ``SF-B-GYM`` was retired on 2026-09-13.
+    gym's names the run it is carrying — ``PR-B-COND``, which hangs in its open ceiling
+    since ``SF-B-GYM`` was retired on 2026-09-13.
+
+    **It named two until D3 (2026-09-19) and now it names one, and the room's own sentence
+    moved with it.** ``DU-B-ERV-R-GYM`` used to cross the gym's width at y=10'-6 5/8"; it
+    comes down the stair hall's x=17'-0" lane now and enters on its terminal leg, so what
+    hangs in the gym's air is the condensate line alone. That is the half of this check
+    worth pinning: the PASS quotes the room back to itself, so a design that stops putting a
+    duct in a room has to stop saying it does.
 
     ``RM-S-SUITE`` names ``DU-S-HP-SUITE``. It named nothing until 2026-09-13, when
     ``SF-S-SUITE`` was retired — and the empty case's own sentence is what said so, which
@@ -173,7 +180,11 @@ def test_catlin_declares_its_two_rooms(catlin_model_ro) -> None:
               if f.result is Result.PASS and f.element_tags}
     assert "exposed services in the basement" in passes["RM-B-GYM"]
     assert "PR-B-COND" in passes["RM-B-GYM"]
-    assert "DU-B-ERV-R-GYM" in passes["RM-B-GYM"]
+    assert "DU-B-ERV-R-GYM" not in passes["RM-B-GYM"]
+    assert "the condensate line crossing it" in passes["RM-B-GYM"]
+    # Where it went. The hall carries three ERV branches and the sauna vent since D3.
+    assert "DU-B-ERV-R-GYM" in passes["RM-B-STAIR"]
+    assert "DU-B-ERV-R-PLAY" in passes["RM-B-STAIR"]
     assert "exposed duct in the primary suite" in passes["RM-S-SUITE"]
     assert "DU-S-HP-SUITE" in passes["RM-S-SUITE"]
     assert "nothing currently hangs in its open air" not in passes["RM-S-SUITE"]

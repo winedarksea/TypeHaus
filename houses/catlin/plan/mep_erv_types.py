@@ -193,6 +193,75 @@ EQUIPMENT_TYPES_ERV = (
                                      connection_size=inch(8),
                                      certainty=PortCertainty.EXACT))),
 
+    # ** THE TWO BASEMENT PLENUMS ARE 36" LONG AND THAT IS THE WHOLE DESIGN (D3). **
+    # They were 24 x 8 library manifolds stating six ports and no layout, and every radial
+    # left from the box's own centre point — three off each — which is why GYM and
+    # SAUNA-SUP shared a lane for twenty feet and BATH and SAUNA-EXH shared one for three.
+    #
+    # ** 24" COULD NOT HOLD FIVE CONNECTIONS. ** Each box takes a 6" trunk AND a 6" riser
+    # as well as three 4" collars: the basement plenums are where the machine's air and the
+    # upstairs air meet, unlike level 2's, which have one inlet each. `run_interference`
+    # wants 5" between a 6" duct and a 4" one and 6" between two 6"s, measured centre to
+    # centre where their drops run side by side — and on a 24" box every arrangement put
+    # some pair inside that. At 36" the two 6" ports sit 15" apart on the bottom face and
+    # the nearest 4" collar drop is 6". Eight inches of extra galvanized is the cheapest
+    # part of this campaign.
+    #
+    # ** THE 6" PORTS ARE ON THE BOTTOM FACE, THE 4" COLLARS ON THE SIDES. ** The trunk and
+    # the return come up from the machine, which sits below and west; the radials leave
+    # sideways into the ceiling layer, at the box's own mid-height. So the two big
+    # connections turn up into the underside and the small ones stay on the 36" faces where
+    # there is room to space them. Neither 6" port is a collar — no `connection_size`, so
+    # `mep.equipment_port_service` grades them at service level the way it always has.
+    EquipmentType(tag="EQ-T-ERV-PLENUM-B-SUP",
+                  name="Fabricated supply plenum, 6in trunk + 6in riser, 3 x 4in dampered collars",
+                  footprint=(inch(36), inch(8)), height=inch(8), plan_symbol="erv",
+                  duct_ports=3, port_diameter=inch(4),
+                  static_loss_pa_at_cfm=((60.0, 0.5), (120.0, 1.8), (210.0, 5.5)),
+                  source="Fabricated galvanized plenum for THIS house, 36 x 8 x 8 in: a 6 in trunk inlet and a 6 in riser takeoff in the underside, and three 4 in dampered start collars at the stations below. The collar layout is a shop drawing and is authored here rather than in library/hvac.py for that reason. No submittal has been read; the stations are the design's and the fabricator confirms them.",
+                  ports=(ServicePort(tag="trunk", service=Service.SUPPLY_AIR,
+                                     position=(inch(3), inch(0), inch(0))),
+                         ServicePort(tag="riser", service=Service.SUPPLY_AIR,
+                                     position=(inch(-12), inch(4), inch(4))),
+                         ServicePort(tag="collar-sauna", service=Service.SUPPLY_AIR,
+                                     position=(inch(-15), inch(-4), inch(4)),
+                                     connection_size=inch(4),
+                                     certainty=PortCertainty.EXACT),
+                         ServicePort(tag="collar-gym", service=Service.SUPPLY_AIR,
+                                     position=(inch(9), inch(-4), inch(4)),
+                                     connection_size=inch(4),
+                                     certainty=PortCertainty.EXACT),
+                         ServicePort(tag="collar-play", service=Service.SUPPLY_AIR,
+                                     position=(inch(18), inch(0), inch(4)),
+                                     connection_size=inch(4),
+                                     certainty=PortCertainty.EXACT))),
+    # The extract box is the same shell with the air going the other way: the riser brings
+    # the upstairs extract DOWN into it and the trunk carries the sum out to the machine.
+    # The collar on the east end is the only one that faces its terminal directly; the other
+    # two step clear of the riser's and the trunk's drops before they turn.
+    EquipmentType(tag="EQ-T-ERV-PLENUM-B-EXH",
+                  name="Fabricated extract plenum, 6in trunk + 6in riser, 3 x 4in dampered collars",
+                  footprint=(inch(36), inch(8)), height=inch(8), plan_symbol="erv",
+                  duct_ports=3, port_diameter=inch(4),
+                  static_loss_pa_at_cfm=((60.0, 0.5), (120.0, 1.8), (210.0, 5.5)),
+                  source="Fabricated galvanized plenum for THIS house, 36 x 8 x 8 in: a 6 in riser inlet and a 6 in trunk outlet in the underside, and three 4 in dampered start collars at the stations below. Same shell as EQ-T-ERV-PLENUM-B-SUP; a separate row because the declared services differ and the BOM should read which box is which.",
+                  ports=(ServicePort(tag="trunk", service=Service.RETURN_AIR,
+                                     position=(inch(10.5), inch(0), inch(0))),
+                         ServicePort(tag="riser", service=Service.RETURN_AIR,
+                                     position=(inch(-4.5), inch(0), inch(0))),
+                         ServicePort(tag="collar-sauna", service=Service.EXHAUST_AIR,
+                                     position=(inch(-15), inch(-4), inch(4)),
+                                     connection_size=inch(4),
+                                     certainty=PortCertainty.EXACT),
+                         ServicePort(tag="collar-bench", service=Service.RETURN_AIR,
+                                     position=(inch(0), inch(-4), inch(4)),
+                                     connection_size=inch(4),
+                                     certainty=PortCertainty.EXACT),
+                         ServicePort(tag="collar-bath", service=Service.EXHAUST_AIR,
+                                     position=(inch(18), inch(0), inch(4)),
+                                     connection_size=inch(4),
+                                     certainty=PortCertainty.EXACT))),
+
     # The two exterior hoods and the three plenum types are NOT here: they were promoted to
     # library/hvac.py in e5b64fff because nothing about them is this house's. The argument
     # their comment used to make is the library's now — an intake hood and a discharge hood

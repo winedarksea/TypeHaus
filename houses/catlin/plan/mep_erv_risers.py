@@ -134,7 +134,11 @@ DUCTS_ERV_RISERS = [
     # than jogging at the manifold. It reaches EQ-B-ERV-MAN-EXH from the NORTH at x=5'-10"
     # because the manifold's own west approach along y=28'-6" is DU-B-ERV-R-BENCH's.
     DuctRun(uid="1BMFGSMKJY", tag="DU-ERV-RISER-SUP", system=DuctSystem.SUPPLY,
-            path=(pt(ft(5, 10), ft(30, 6)), pt(ft(5, 10), ft(31, 8)),
+            # It lands on the plenum's NORTH FACE at x=5'-6" since D3 widened that box to
+            # 36" — the face the leg is already arriving at, rather than the west end it
+            # used to turn into. Four inches further west and four further south than
+            # before, and still inside RM-B-ESS's x=6'-0" wall.
+            path=(pt(ft(5, 6), ft(30, 10)), pt(ft(5, 6), ft(31, 8)),
                   pt(inch(9.625), ft(31, 8)), pt(inch(9.625), ft(33, 7.5)),
                   pt(inch(9.625), ft(33, 7.5))),
             elevations=(inch(-19.4375), inch(-19.4375), inch(-19.4375),
@@ -153,13 +157,23 @@ DUCTS_ERV_RISERS = [
             #
             # The north face was the other candidate and is worse: CD-B-SPARE-CHASE stands
             # up at (2'-6", 34'-10"), so a leg on y=34'-10" grazes it by a tenth of an inch.
+            #
+            # ** THE 9-DEGREE RAKE IS GONE (D3, 2026-09-19) AND SO IS THE PAIR IT MADE. **
+            # The leg used to climb from -27" to port level over the 46" between x=1'-6 5/8"
+            # and x=5'-0", which put its envelope right through PR-B-KITCH-DRAIN's x=4'-6"
+            # fall line at -19" — and `mep.fitting_pattern` could not name the part either,
+            # because a raked round duct is not a fitting anybody stocks. It now runs level
+            # at -27 1/2" the whole way east, ten inches under the drain, and turns UP into
+            # the plenum's underside at x=6'-1 1/2" on two 90s. Half an inch deeper than the
+            # old -27" so that the return trunk, which shares this y=28'-6" line at the
+            # machine's own -33 27/32", keeps 6 3/8" between the two envelopes; 78 15/16" of
+            # headroom under it, still over R305.1.1's 76" basement projection floor.
             path=(pt(ft(4, 2), ft(34, 6)), pt(inch(18.625), ft(34, 6)),
                   pt(inch(18.625), ft(33, 7.5)), pt(inch(18.625), ft(33, 7.5)),
-                  pt(inch(18.625), ft(29, 3)), pt(ft(5, 0), ft(29, 3)),
-                  pt(ft(5, 10), ft(29, 3)), pt(ft(5, 10), ft(28, 8))),
-            elevations=(inch(244), inch(244), inch(244), inch(-27),
-                        inch(-27), inch(-19.4375),
-                        inch(-19.4375), inch(-19.4375)),
+                  pt(inch(18.625), ft(28, 6)), pt(ft(6, 1.5), ft(28, 6)),
+                  pt(ft(6, 1.5), ft(28, 6))),
+            elevations=(inch(244), inch(244), inch(244), inch(-27.5),
+                        inch(-27.5), inch(-27.5), inch(-23.4375)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             insulation="R-8 wrap", design_cfm=210),
     # The outdoor side, which did not exist at all before this pass. Both legs carry

@@ -178,9 +178,11 @@ def test_the_governing_side_is_extract_again(catlin_model_ro) -> None:
       0.3061.
 
     The assertion is written this way round because what matters is the LEVER, not the
-    number. With extract in front by 0.0409 in., the two extract levers that were worth
-    nothing after the second swap — the elbow audit and riser segmentation — are worth
-    something again, up to that gap. §6 says so.
+    number — and the lever it named has since been spent. D3 (2026-09-19) took the sixth
+    elbow off ``DU-ERV-RISER-EXH`` and the third off ``DU-B-ERV-RET-TRUNK``, which IS the
+    elbow audit, and grew ``DU-B-ERV-SUP-TRUNK`` by one turn at the same time. Extract still
+    leads, but by 0.0051 in. rather than 0.0409: there is no cheap one-sided move left, and
+    the next real one has to take both columns down together. §6 says so.
     """
     message = _machine_finding(catlin_model_ro).message
     assert "extract side via DU-B-ERV-R-SAUNA-EXH" in message
@@ -188,34 +190,41 @@ def test_the_governing_side_is_extract_again(catlin_model_ro) -> None:
 
 
 def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> None:
-    """Note §6: 0.3470 in. w.g. and 207.1 cfm, on the EXTRACT side.
+    """Note §6: 0.3251 in. w.g. and 207.5 cfm, on the EXTRACT side.
 
     Hand-worked in the note before this assertion was changed, which is the order that makes
-    it an oracle. Extract column, term by term: ``DU-B-ERV-R-SAUNA-EXH`` 0.0135 + terminal
-    6.50/249.089 + plenum 0.50/249.089 + ``DU-ERV-RISER-EXH`` 0.2003 + ``DU-B-ERV-RET-TRUNK``
-    0.0614 + ``DU-ERV-EA`` 0.0437 = **0.3470**. Delivered off the curve between (0.3, 208)
-    and (0.4, 206): 208 - 0.470 x 2 = 207.1.
+    it an oracle. Extract column, term by term: ``DU-B-ERV-R-SAUNA-EXH`` 0.0173 + terminal
+    6.50/249.089 + plenum 0.50/249.089 + ``DU-ERV-RISER-EXH`` 0.1886 + ``DU-B-ERV-RET-TRUNK``
+    0.0477 + ``DU-ERV-EA`` 0.0433 = **0.3251**. Delivered off the curve between (0.3, 208)
+    and (0.4, 206): 208 - 0.251 x 2 = 207.5.
 
-    ** THE RISER TERM MOVED ON 2026-09-19 AND NOTHING ELSE DID. ** It was 0.2028 over 36.20
-    developed feet; D2 started ``DU-ERV-RISER-EXH``'s attic trunk leg 10" west of the
-    plenum's centre so it would stop crossing the four attic collars, and 35.37 ft is what
-    is left. The drop is linear in effective length at fixed flow and bore, so the term is
-    0.2028 x (748.44 / 758.44) = 0.2003 — six elbows either way. D2's four 4" radials do not
-    appear in this column at all: a radial reaches it only by being the WORST one, and none
-    of them is.
+    ** D3 MOVED THREE OF THOSE SIX TERMS AND ALL THREE MOVES ARE ELBOW COUNTS. ** An elbow
+    on a 6" duct is worth 4.5 ft of equivalent length against a real foot of pipe, which is
+    why a turn removed is worth several feet added:
 
-    Supply, for the comparison that decides which side governs: 0.0134 + 0.0361 + 0.0020 +
-    ``DU-ERV-OA`` 0.0315 + ``DU-B-ERV-SUP-TRUNK`` 0.0234 + ``DU-ERV-RISER-SUP`` 0.1367 +
-    ``DU-S-ERV-HP-FEED`` 0.0630 = 0.3061. Extract leads by 0.0409.
+    * ``DU-ERV-RISER-EXH`` 0.2006 -> 0.1886. Its 9-degree basement rake became a level run
+      and two 90s into the plenum's underside: 35.37 ft on six elbows (62.37 effective)
+      becomes 36.15 on five (58.65).
+    * ``DU-B-ERV-RET-TRUNK`` 0.0615 -> 0.0477. It used to detour under a radial lane D3 has
+      since moved: 5.62 ft on three elbows becomes 5.83 on two, 19.12 effective -> 14.83.
+    * ``DU-B-ERV-R-SAUNA-EXH`` 0.0135 -> 0.0173, the other way. The sauna's extract goes
+      west and down a clear corridor instead of straight through the drain field, which is
+      35.17 ft on two elbows becoming 39.08 on five. D3 paid 0.0038 in. w.g. for five
+      reported interpenetrations and that was the trade.
 
-    ** THE CODE MARGIN IS 2.0 cfm. ** 207.0 against MN 1322 R403.5's 205. It was 203.0 —
-    BELOW the rate — at the start of the day, then 205.7, and the hoods' move to the north
-    face is what bought the rest. It is still thin enough that §8's "measure it at
-    commissioning with a low-flow hood" is the operative sentence, and it is the EXTRACT side
-    to hood again.
+    Supply, for the comparison that decides which side governs: 0.0141 + 0.0361 + 0.0020 +
+    ``DU-ERV-OA`` 0.0312 + ``DU-B-ERV-SUP-TRUNK`` 0.0387 + ``DU-ERV-RISER-SUP`` 0.1348 +
+    ``DU-S-ERV-HP-FEED`` 0.0630 = 0.3200. Extract leads by 0.0051, where it led by 0.0409:
+    the supply trunk now leaves the machine level and turns up east of the kitchen drain
+    rather than standing straight off the port into it, which is one more elbow.
+
+    ** THE CODE MARGIN IS 2.5 cfm. ** 207.5 against MN 1322 R403.5's 205. It was 203.0 —
+    BELOW the rate — at the start of the day, then 205.7, 207.0, 207.1. It is still thin
+    enough that §8's "measure it at commissioning with a low-flow hood" is the operative
+    sentence, and it is the EXTRACT side to hood.
     """
     message = _machine_finding(catlin_model_ro).message
-    assert "0.347 in. w.g." in message
+    assert "0.325 in. w.g." in message
     assert "delivering 207 cfm" in message
 
 

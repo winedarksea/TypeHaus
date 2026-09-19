@@ -80,7 +80,11 @@ def test_a_duct_through_a_concrete_wall_is_graded_by_nothing_else(catlin_ctx) ->
     the cover left over it."""
     finding = next(f for f in _fails(catlin_ctx) if "DU-B-ERV-R-PLAY" in f.element_tags)
     assert "W-B-CN" in finding.element_tags
-    assert "1.0 ft of leg 1" in finding.message
+    # leg 3 since D3 (2026-09-19): the run turns south at x=17'-0" and crosses the pour on
+    # its last leg into REG-B-SUP2 instead of on its first one across the house. Same wall,
+    # same foot of it, same 4" of cover — which is the point of pinning the crossing and not
+    # the index alone.
+    assert "1.0 ft of leg 3" in finding.message
     assert '4.0" of concrete between it and the nearer face' in finding.message
 
 

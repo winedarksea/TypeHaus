@@ -26,7 +26,7 @@ is offered for checking, not for deciding.
 > risers are worked at their authored 210 cfm over their whole length though the real flow
 > below the level-2 tap is 200 and above it 54, and the trunk chain is summed whole though
 > `DU-S-ERV-HP-FEED` parallels the path rather than lying on it. The graded reading is
-> **0.3470 in. w.g. and 207.1 cfm**; the unsimplified one is lower still, and **it has not
+> **0.3251 in. w.g. and 207.5 cfm**; the unsimplified one is lower still, and **it has not
 > been re-worked for this revision** — see §9, where the reason is that the split it needs is
 > not a typed fact and the old figure was derived against a riser that has since grown. Both
 > readings clear 205; neither reaches 210.
@@ -114,8 +114,8 @@ Every radial is 4" galvanized. `Δp_duct` is §2's formula; `Δp_terminal` is §
 
 | run | Q (cfm) | developed (ft) | elbows | L_eff (ft) | V (fpm) | P_v (in.) | Re | f | Δp_duct (in.) |
 |---|---|---|---|---|---|---|---|---|---|
-| `DU-B-ERV-R-SAUNA-EXH` | 20 | 35.17 | 2 | 40.17 | 229 | 0.00327 | 7,811 | 0.0342 | **0.0135** |
-| `DU-B-ERV-R-PLAY` | 30 | 17.00 | 1 | 19.50 | 344 | 0.00737 | 11,717 | 0.0311 | **0.0134** |
+| `DU-B-ERV-R-SAUNA-EXH` | 20 | 39.08 | 5 | 51.58 | 229 | 0.00327 | 7,811 | 0.0342 | **0.0173** |
+| `DU-B-ERV-R-PLAY` | 30 | 15.50 | 2 | 20.50 | 344 | 0.00737 | 11,717 | 0.0311 | **0.0141** |
 | `DU-M-ERV-R-LIVING` | 20 | 46.01 | 2 | 51.01 | 229 | 0.00327 | 7,811 | 0.0342 | 0.0171 |
 | `DU-M-ERV-R-PLANT` | 5 | 53.00 | 3 | 60.50 | 57 | 0.00020 | 1,953 | — | ~0.001 |
 | `DU-A-ERV-R-BED3` | 5 | 56.15 | 5 | 68.65 | 57 | 0.00020 | 1,953 | — | ~0.001 |
@@ -203,35 +203,46 @@ that radial lands in (at the sum of that plenum's radial flows) + every trunk on
 
 | term | working | Δp (in. w.g.) |
 |---|---|---|
-| `DU-B-ERV-R-SAUNA-EXH` | §3 | 0.0135 |
+| `DU-B-ERV-R-SAUNA-EXH` | §3 | 0.0173 |
 | terminal `REG-T-ERV-SAUNA-EXH` | 20 cfm is the curve's own point, 6.50 Pa / 249.089 | 0.0261 |
 | plenum `EQ-B-ERV-MAN-EXH` at 46 cfm | below the curve's first point (60, 0.5), so clamped to it | 0.0020 |
-| `DU-ERV-RISER-EXH` | 210 cfm, 35.37 ft + 6 x 4.5, f 0.0225, P_v 0.07131 | 0.2003 |
-| `DU-B-ERV-RET-TRUNK` | 210 cfm, 5.62 ft + 3 x 4.5 | 0.0614 |
-| `DU-ERV-EA` | 210 cfm in **8"**, 29.15 ft + 4 x **6.5**, f 0.0234, P_v 0.02256 | 0.0437 |
-| | | **0.3470** |
+| `DU-ERV-RISER-EXH` | 210 cfm, 36.15 ft + **5** x 4.5, f 0.0225, P_v 0.07131 | 0.1886 |
+| `DU-B-ERV-RET-TRUNK` | 210 cfm, 5.83 ft + **2** x 4.5 | 0.0477 |
+| `DU-ERV-EA` | 210 cfm in **8"**, 29.15 ft + 4 x **6.5**, f 0.0234, P_v 0.02256 | 0.0433 |
+| | | **0.3251** |
 
 **The riser is in this column although the sauna's own air never enters it**, and that is
 §6's stated method rather than an oversight: the path is "worst radial + its terminal + its
 plenum + EVERY trunk on that side". `DU-B-ERV-R-SAUNA-EXH` lands in the BASEMENT plenum, so
 its air goes straight out the return trunk; the riser above carries the two upper storeys'
 share into the same box. Summing it is the conservative reading and it is §9's second listed
-conservatism — now worth **0.200 of the 0.347, 58 % of the column**, and by a wide margin the
+conservatism — now worth **0.189 of the 0.325, 58 % of the column**, and by a wide margin the
 largest single term in this note. With both 8" upsizes bought it is also the only large term
 left anywhere: the next revision of this system is a riser question or it is nothing.
 
-*The riser lost 10" on 2026-09-19, and it is the only thing D2 moved in this column.*
-`DU-ERV-RISER-EXH`'s trunk leg used to leave `EQ-A-ERV-MAN-EXH` at the box's own centre,
-x=5'-0"; D2 started it at x=4'-2" instead, west of all four attic collars, because a leg on
-the centre ran through every one of their stations 4" away (`plan/mep_erv_risers.py`). The
-run is 424.44" where it was 434.44" — 35.37 developed feet against 36.20 — and the drop is
-linear in effective length at fixed flow and diameter, so the term scales with it directly:
-0.2028 x (748.44 / 758.44) = **0.2003**. Six elbows either way; nothing else on this path
-changed. The column falls 0.3495 -> 0.3470 and the delivered figure rises 207.0 -> 207.1 cfm.
-**The attic redesign is otherwise invisible here**, which is the expected result and worth
-saying: D2 moved four 4" radials, and a radial is on this column only if it is the WORST
-one, which none of them is — `DU-A-ERV-R-STUBATH` carries 20 cfm over a shorter run than
-`DU-B-ERV-R-SAUNA-EXH`'s 35 ft.
+*D2 took 10" off the riser on 2026-09-19 and D3 took a turn out of it the same day, and
+the SECOND one is worth four times the first.* D2 moved `DU-ERV-RISER-EXH`'s trunk leg from
+`EQ-A-ERV-MAN-EXH`'s own centre at x=5'-0" to x=4'-2", west of all four attic collars
+(`plan/mep_erv_risers.py`), which shortened the run 434.44" -> 424.44". D3 then replaced its
+9-degree basement rake — one leg climbing -27" to port level over 46" — with a level run and
+two 90s into the plenum's underside. **An elbow on a 6" duct is worth 4.5 ft of equivalent
+length and the whole rake was worth 0.8 ft of real one**, so trading the sixth turn for a
+foot of straight pipe is a net 3.7 ft off the effective length: 62.37 ft -> 58.65 ft, and the
+drop is linear in effective length at fixed flow and diameter. **0.2006 -> 0.1886.**
+
+*The return trunk gave up a turn for the same reason and it is the second-biggest move here.*
+`DU-B-ERV-RET-TRUNK` used to leave the plenum's east end, drop, cross under the x=6'-6" lane
+two radials shared, and come back west — three elbows to get round ducts D3 has since moved
+out of its way. It now drops out of the plenum's underside and runs straight west on two.
+19.12 ft effective -> 14.83 ft, and **0.0615 -> 0.0477**.
+
+*The sauna's own radial paid part of it back, and that is the trade D3 made on purpose.*
+`DU-B-ERV-R-SAUNA-EXH` goes west and down the x=3'-9" corridor now instead of straight south
+down the middle of the drain field: 35.17 ft on two elbows becomes 39.08 on five, and
+**0.0135 -> 0.0173**. The five reported interpenetrations it walks away from cost
+0.0038 in. w.g., and D3 paid that on purpose.
+
+**The column falls 0.3470 -> 0.3251 and the delivered figure rises 207.1 -> 207.5 cfm.**
 
 **Two things moved this column on 2026-09-15 and they moved it in opposite directions.**
 
@@ -256,14 +267,14 @@ because "at y=35'-6" an 8" envelope would stand 4 5/8" inside the stud cavity".
 
 | term | working | Δp (in. w.g.) |
 |---|---|---|
-| `DU-B-ERV-R-PLAY` | §3 | 0.0134 |
+| `DU-B-ERV-R-PLAY` | §3 | 0.0141 |
 | terminal `REG-T-ERV-SUP` | linear at 30 cfm = the curve's own point, 9.00 Pa / 249.089 | 0.0361 |
 | plenum `EQ-B-ERV-MAN-SUP` at 60 cfm | the curve's own point, 0.50 Pa / 249.089 | 0.0020 |
 | `DU-ERV-OA` | 210 cfm in **8"**, 13.74 ft + 4 x **6.5**, f 0.0234, P_v 0.02256 | 0.0315 |
-| `DU-B-ERV-SUP-TRUNK` | 210 cfm, 2.78 ft + 1 x 4.5 | 0.0234 |
-| `DU-ERV-RISER-SUP` | 210 cfm, 29.10 ft + 3 x 4.5 | 0.1367 |
+| `DU-B-ERV-SUP-TRUNK` | 210 cfm, 3.03 ft + **2** x 4.5 | 0.0387 |
+| `DU-ERV-RISER-SUP` | 210 cfm, 28.43 ft + 3 x 4.5 | 0.1348 |
 | `DU-S-ERV-HP-FEED` | 100 cfm, 44.20 ft + 7 x 4.5 | 0.0630 |
-| | | **0.3061** |
+| | | **0.3200** |
 
 **This column barely moved and the chase re-pack is why it barely moved.** All four risers
 were re-stationed onto the shaft's own clear width — `DU-ERV-RISER-SUP` 0'-5" -> 9 5/8",
@@ -273,10 +284,10 @@ it, its basement leg shrank by it, and its developed length is identical to the 
 `DU-ERV-RISER-SUP`'s basement leg shrank 4 5/8" (-0.0015) and `DU-S-ERV-HP-FEED`'s attic jog
 shrank from 7" to 2 3/8" (-0.0003) because the riser head came out to meet it.
 
-**EXTRACT GOVERNS AGAIN, at 0.3470 in. w.g. against supply's 0.3061.** Off the authored fan
-curve, between (0.3, 208) and (0.4, 206):
+**EXTRACT GOVERNS, at 0.3251 in. w.g. against supply's 0.3200 — by five thousandths.** Off
+the authored fan curve, between (0.3, 208) and (0.4, 206):
 
-> 208 − (0.0470 / 0.1) x 2 = **207.1 cfm delivered**
+> 208 − (0.0251 / 0.1) x 2 = **207.5 cfm delivered**
 
 against 205 cfm required by MN 1322 R403.5 and 210 cfm of design intent. **The system clears
 the code rate by 1.0 % and falls 1.4 % short of the intent.**
@@ -290,11 +301,13 @@ the code rate by 1.0 % and falls 1.4 % short of the intent.**
 >
 > The lesson the first swap taught is worth keeping even though its arithmetic is spent: a
 > lever on the non-governing side buys only the gap between the two columns, and that gap was
-> 0.0086 in. It is **0.0409 in.** now, with extract in front — so the two extract levers that
-> were worth nothing this morning (the elbow audit on the extract trunks, and riser
-> segmentation) are worth something again, up to that 0.0409 before supply takes over.
+> 0.0086 in. It is **0.0051 in.** after D3 — the two columns are all but level again,
+> because D3 spent the extract side's elbow audit (the lever this paragraph named) and the
+> supply trunk grew a turn at the same time. **So there is no cheap extract lever left:
+> anything taken off extract below five thousandths buys nothing at all, and the next real
+> move has to take BOTH columns down or it is decoration.**
 >
-> **The one term that dominates everything is `DU-ERV-RISER-EXH` at 0.2003**, 58 % of the
+> **The one term that dominates everything is `DU-ERV-RISER-EXH` at 0.1886**, 58 % of the
 > governing column and more than twice the next term. Both 8" upsizes are bought; there is no
 > other large, cheap move left in this note. Anything that materially improves this system
 > from here is a change to that riser — shorter, straighter, or bigger — and §9's first
@@ -363,9 +376,11 @@ the static budget, end to end: **0.2985 -> 0.0752 in. w.g.**, and the delivered 
 
 **What is left is not in this section.** The governing column is extract and 58 % of it is
 `DU-ERV-RISER-EXH`. The remaining levers, in order of size: shorten or straighten that riser
-(0.2003), the extract elbow audit and riser segmentation (worth up to the 0.0409 gap before
-supply takes the lead back), and `DU-ERV-RISER-SUP` at 0.1367 on the side that is no longer
-governing. None of them is a purchase; all of them are geometry.
+(0.1886), riser segmentation, and `DU-ERV-RISER-SUP` at 0.1348 on the side that now sits
+five thousandths behind. **The extract elbow audit this list used to name is spent** — D3
+took the sixth turn off the extract riser and the third off the return trunk — and the gap
+it could work in is 0.0051 in., so the two columns must now come down together. None of them
+is a purchase; all of them are geometry.
 
 ## 8. Commissioning — and the real risk is the measurement
 
@@ -397,7 +412,7 @@ measured one.
   **THE SEGMENTED FIGURE THIS BULLET USED TO CARRY IS WITHDRAWN, NOT UPDATED.** It read
   "the extract riser costs 0.0700 in. instead of 0.1472 and the path total falls to 0.382 in.
   / 206.4 cfm", and every number in it is now wrong in a way that cannot be patched: the
-  riser is 0.2003 rather than 0.1472 since its attic feed was drawn honestly on 2026-09-15,
+  riser is 0.1886 rather than 0.1472 since its attic feed was drawn honestly on 2026-09-15,
   and the 17.4 effective feet that added sit ABOVE the tap, where the flow is 54 cfm and the
   saving is largest. So the conservatism is materially BIGGER than 0.077 in. now — but
   quantifying it needs a tap elevation, and there is not one, because the two main-storey
@@ -407,8 +422,8 @@ measured one.
   unquantified conservatism and is named as one.**
 - **The trunk chain is summed whole.** `DU-S-ERV-HP-FEED` is a parallel branch off the
   supply riser, not a segment of the path to `DU-B-ERV-R-PLAY`; summing it over-counts the
-  supply path by 0.0630 in. The supply path does not govern either way — and since the
-  outdoor legs moved north it does not govern by a wider margin than before, 0.0409 in.
+  supply path by 0.0630 in. The supply path does not govern either way — though after D3 it
+  is only 0.0051 in. behind, so this over-count is now larger than the gap it sits inside.
 - **Leakage.** Sealed rigid pipe leaks; nothing here models it. A duct-leakage test is the
   only answer and it is a commissioning item, not a calculation.
 - **Filter loading.** The curve is a clean-filter curve. MERV 8 at end of life adds

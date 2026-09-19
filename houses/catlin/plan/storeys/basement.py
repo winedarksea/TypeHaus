@@ -1262,9 +1262,17 @@ ROOMS = [
     # anywhere else; the box that hid them is gone and this sentence carries the room. Same
     # call the gym made, one wall west. `mep.run_in_finished_volume` quotes it and still
     # holds both runs to the 6'-8" headroom line — see the retirement note above SOFFITS.
+    #
+    # ** IT CARRIES FOUR RUNS SINCE D3 (2026-09-19), NOT TWO, AND THAT IS THE TRADE. ** The
+    # x=17'-0" strip between the stair and W-B-CN is the only north-south corridor in the
+    # east half of this basement that is neither inside the pour nor inside a finished
+    # room's air, so `DU-B-ERV-R-GYM` and `DU-B-ERV-R-PLAY` now ride it stacked — at -23 15/16"
+    # and -19 7/16" — and `DU-B-ERV-R-BATH` crosses the hall's north end. The gym stopped
+    # carrying its own radial in the same move. This room is where the basement's ductwork
+    # is visible, and it is visible here because the owner said it could be.
     Room(uid="CBR406AAAA", tag="RM-B-STAIR", seed=pt(inch(186), ft(22)),
          occupancy=Occupancy.STAIR, floor_finish="sealed-concrete",
-         exposed_services="owner accepts exposed services in the basement: the duct and the sauna vent cross the hall's south end in the open, painted out with the joists, the same as the gym next door"),
+         exposed_services="owner accepts exposed services in the basement: three ERV branches and the sauna vent cross the hall in the open, painted out with the joists, the same as the gym next door"),
     # ** THE VOLUME UNDER THE ARRIVING FLIGHT IS PART OF THIS ROOM AGAIN (2026-09-05,
     # round three), AND IT IS NOT A `Room` OF ITS OWN. ** It was RM-B-UNDERSTAIR, a 17.5 sf
     # closet walled off at y=31'-0" by W-B-CL-N. That wall is gone: the storage runs the
@@ -1382,9 +1390,17 @@ ROOMS = [
     # crossing this room is still measured against the 6'-8" headroom line. SF-B-GYM was
     # built for this room's two runs and is RETIRED on the strength of this sentence — see
     # the note where it stood, below SOFFITS.
+    #
+    # ** WHAT ACTUALLY CROSSES IT IS ONE PIPE NOW (D3, 2026-09-19). ** `DU-B-ERV-R-GYM` used
+    # to run the width of the room at y=10'-6 5/8" on its way to REG-B-SUP1; it comes down
+    # the hall's x=17'-0" lane instead and enters on its last leg. `PR-B-COND` is what is
+    # left overhead. The declaration stays — the ceiling is still open, the decision has not
+    # changed, and a room that says so is how this house answers
+    # `mep.run_in_finished_volume` — but the sentence should not promise a duct the design
+    # no longer runs here.
     Room(uid="CBR405AAAA", tag="RM-B-GYM", seed=pt(ft(27), ft(9)),
          occupancy=Occupancy.LIVING, floor_finish="rubber",
-         exposed_services="owner accepts exposed services in the basement: the gym ceiling is left open to the deck above, painted out, and the pipe and duct crossing it are part of how the room looks"),
+         exposed_services="owner accepts exposed services in the basement: the gym ceiling is left open to the deck above, painted out, and the condensate line crossing it is part of how the room looks"),
     # ESS closet: MECHANICAL like the room it's carved from — STORAGE would
     # trigger habitability rules a battery cabinet has no use for. R327.4 permits an ESS in
     # a utility closet, which is exactly what this is.

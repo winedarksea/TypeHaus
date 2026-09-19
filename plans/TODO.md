@@ -378,6 +378,44 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     group needs a DESIGN answer (soffits, or distinct elevations in the attic floor band),
     not another search, and pasting the campaign's output would trade interference FAILs for
     stud-bore FAILs.
+  - ~~**THE BASEMENT (D3) IS NOT THE ATTIC, AND THE OBVIOUS FIX DOES NOT APPLY.**~~
+    **DONE 2026-09-19 (D3). 175 -> 150, and the basement's 23 pairs are 2.** What landed is
+    not the re-lane this entry said would not work, and not the soffit campaign it proposed
+    either. Three moves:
+      * **Dimensioned collars on two 36" house-local plenums.** Every radial used to leave
+        its plenum's centre POINT, so three shared each start; each has its own hole now,
+        and the boxes grew 24" -> 36" because five connections (a 6" trunk, a 6" riser,
+        three 4" collars) do not fit 24" at the clearances the check wants.
+      * **Four measured corridors instead of one flat 7'-6" layer** — x=3'-3", x=3'-9",
+        x=2'-0", and the east chase down RM-B-STAIR's x=17'-0" lane. The corridor geography
+        this entry recorded was right; what it missed is that the east strip beside the
+        stair (x 17'-6"..18'-6") is the 12" POUR, which is why the lane is 17'-0".
+      * **Two of the three stud bores closed by moving the duct**, including the only two
+        BEARING-stud bores in the house: `DU-B-ERV-R-BATH` steps to y=27'-9" and crosses
+        W-B-STR3 in the cripple space over its door head instead of through two studs.
+    **What this entry got wrong, and it is worth saying:** it concluded D3 was a soffit
+    problem because the re-lane it tried put ducts in finished rooms. It did that because it
+    went DOWN into the low tiers. The rooms that have no plenum above them are real —
+    RM-B-PLAY-N clears 94.88" under SL-M-DECK's solid concrete — but the answer was to stay
+    in the unfinished corridor (FURNACE, WORKSHOP, ESS, and the two rooms that declare
+    `exposed_services`) and route around them, not to build ceilings.
+    **What survives, itemised in `preferences.toml`:**
+      * `DU-B-ERV-R-SAUNA-SUP` bores W-B-CW's king stud at 4.00" against 3.30". It cannot be
+        moved into a stud bay: W-B-CW's door runs x 3'-0 3/4"..6'-5 1/4", the clear bays are
+        west of x=3'-0", and `DU-B-ERV-R-BENCH` has the wide one — a third duct there pushes
+        into PR-B-SINK2-DRAIN. **The crossing nothing grades is the one that decides it:**
+        both sauna radials pass through that door's header band at the duct layer and the
+        header-over-opening check is deferred by name. This is a WALL decision for Phase 3,
+        filed with the three 2" vents.
+      * `DU-B-ERV-R-PLAY` crosses W-B-CN's 12" pour, square and on its terminal leg, and
+        owes a cast sleeve at (18'-0", 26'-0"). Every route to REG-B-SUP2 crosses that wall
+        once; it is a concrete decision taken before the pour.
+      * `DU-ERV-RISER-SUP` x `PR-B-KITCH-DRAIN` at (4'-6", 31'-5 3/4"). The supply riser is
+        pinned between the drain above it and `DU-ERV-OA`'s 8" riser at x=3'-4" below: the
+        window where it clears both is 0.11" wide, and the dip that would open it costs four
+        elbows on the side that is now five thousandths from governing.
+    The original entry follows, for the record.
+
   - **THE BASEMENT (D3) IS NOT THE ATTIC, AND THE OBVIOUS FIX DOES NOT APPLY.** Twenty-three
     pairs remain down here: three duct-on-duct and twenty against the drains and vents. The
     brief's answer was "lift the radials into FS-M-WEST's bays and drop below only to cross a
