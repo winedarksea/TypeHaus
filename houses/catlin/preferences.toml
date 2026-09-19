@@ -479,9 +479,10 @@ suppress = [
   #     mistakes. Eight ERV radials, five second-storey drains, two studio supply risers,
   #     the kitchen vent and the WC vent.
   #
-  # Itemised on the runs for run_member_crossing so a NEW crossing anywhere else in the
-  # house still reports; blanket on open_web_panel, whose two findings name their own runs.
-  "mep.open_web_panel",
+  # Itemised throughout: on the HOST DECK for open_web_panel (both findings are FS-S-WEST's
+  # and a second open-web deck anywhere in the house would still report), and on the RUN for
+  # run_member_crossing so a new crossing elsewhere still reports.
+  "mep.open_web_panel:FS-S-WEST",
   "mep.run_member_crossing:DU-M-ERV-R-BATH1",
   "mep.run_member_crossing:DU-M-ERV-R-BED1",
   "mep.run_member_crossing:DU-M-ERV-R-LAUNDRY",

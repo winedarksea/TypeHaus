@@ -31,12 +31,36 @@ def _crown_in(message: str) -> float:
     return float(token)
 
 
-def test_catlin_is_clean(catlin_plan, catlin_model_ro) -> None:
-    """Every crossing in the reference house clears its window — the 0-FAIL gate."""
+def test_every_catlin_crossing_clears_its_z_WINDOW(catlin_plan, catlin_model_ro) -> None:
+    """The 0-FAIL gate this check has always held: nothing in the reference house has its
+    crown or its invert inside a member.
+
+    **It is the z window's gate and no longer the whole check's** (2026-09-19). Since
+    FS-S-WEST states its fabricator's panel layout, this check asks a second question —
+    is the crossing in an OPENING, or on a web — and seventeen of catlin's are on a web.
+    Those are E8's finding and `preferences.toml` itemises every one of them; conflating
+    the two here would have let a real z-window regression hide behind them."""
     findings = _findings(catlin_plan, catlin_model_ro)
-    fails = [f for f in findings if f.result is Result.FAIL]
+    fails = [f for f in findings if f.result is Result.FAIL
+             and "ON A WEB" not in f.message]
     assert not fails, [f.message for f in fails]
     assert findings, "catlin routes services across framed members; something should grade"
+
+
+def test_the_web_verdict_is_a_SECOND_finding_and_not_a_changed_one(
+        catlin_plan, catlin_model_ro) -> None:
+    """A run on a web still gets its z-window verdict. The two are different questions —
+    "does it fit between the chords" and "is there a slot here at all" — and a run that
+    answers one well and the other badly has to be told both."""
+    findings = _findings(catlin_plan, catlin_model_ro)
+    web = [f for f in findings if "ON A WEB" in f.message]
+    assert len(web) == 17, [f.message for f in web]
+    for finding in web:
+        assert finding.result is Result.FAIL
+        tag = finding.element_tags[0]
+        window = [f for f in findings if tag in f.element_tags
+                  and "FS-S-WEST" in f.element_tags and "ON A WEB" not in f.message]
+        assert window, f"{tag} lost its z-window verdict"
 
 
 def test_per_crossing_beats_the_envelope_on_the_bld05_run(
@@ -114,7 +138,8 @@ def test_the_erv_radials_sit_on_the_chord_not_in_it(
     findings = _findings(catlin_plan, catlin_model_ro)
     radials = [f for f in findings
                if any(t.startswith("DU-M-ERV-R-") for t in f.element_tags)
-               and "FS-S-WEST" in f.element_tags]
+               and "FS-S-WEST" in f.element_tags
+               and "ON A WEB" not in f.message]
     assert len(radials) >= 13, [f.message for f in radials]
     for finding in radials:
         assert finding.result is Result.PASS, finding.message

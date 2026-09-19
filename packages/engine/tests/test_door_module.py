@@ -182,20 +182,33 @@ def test_suppression_by_tag_drops_one_element_and_no_other():
     assert _suppressed(finding("a.rule", "X-2"), frozenset({"a.rule"}))
 
 
-#: The only two whole-check silences catlin carries, and they are listed HERE as well as in
-#: `preferences.toml` so that adding a third is a test failure rather than a diff nobody
-#: reads. Both were added 2026-09-17 with their counts and dates in the file beside them:
+#: The only THREE whole-check silences catlin carries, and they are listed HERE as well as
+#: in `preferences.toml` so that adding a fourth is a test failure rather than a diff nobody
+#: reads. Each carries its count and its date in the file beside it:
 #:
-#: * `mep.run_interference` — 188 real interpenetrations, house-wide, an open routing
-#:   campaign rather than a decision. It was 155 until 2026-09-18, when two blind spots in
-#:   the checker closed: the engine can see more, the building did not get worse;
+#: * `mep.run_interference` — 150 real interpenetrations, house-wide, an open design
+#:   campaign rather than a decision. It was 155, then 188 on 2026-09-18 when two blind
+#:   spots in the checker closed, then 146, then 150 on 2026-09-19 when the prism stopped
+#:   being the verdict (-26) and seventeen raceways were placed in z (+29). The engine can
+#:   see more; the building did not get worse;
 #: * `mep.run_through_plate` — 15 top plates cut past 50%, every one of them the ordinary
 #:   R602.6.1 detail, and the model has no vocabulary for the tie that makes it legal. A
-#:   schema gap, not a defect.
+#:   schema gap, not a defect;
+#: * `mep.riser_through_deck` — 47 risers through a deck with no hole drawn, added
+#:   2026-09-19 with the check itself. **The argument for a blanket rather than 47 itemised
+#:   lines**: the finding is whole-house and splits into exactly two campaigns, not 47
+#:   decisions — 29 risers landing ON a member (unambiguous: the member is cut and nothing
+#:   headed it) and 18 clear of every member but wider than the house's own
+#:   `max_undrawn_deck_hole_in`, which is a DRAWING-SET argument and is tunable by the very
+#:   number it is graded against. A page of tags would bury both. Every one is WARN
+#:   severity, so this silence is not what keeps `haus print` open.
 #:
-#: Neither is acceptable-forever. Deleting an entry and running `haus check houses/catlin`
-#: is how the debt is measured.
-BLANKET_SUPPRESSIONS = frozenset({"mep.run_interference", "mep.run_through_plate"})
+#: None is acceptable-forever. Deleting an entry and running `haus check houses/catlin` is
+#: how the debt is measured. **`mep.open_web_panel` is deliberately NOT here**: it is two
+#: findings, both on FS-S-WEST, and it is itemised on that deck so a second open-web floor
+#: anywhere in the house still reports.
+BLANKET_SUPPRESSIONS = frozenset({"mep.run_interference", "mep.run_through_plate",
+                                  "mep.riser_through_deck"})
 
 
 def test_the_house_file_parses_the_tag_form():
@@ -205,7 +218,7 @@ def test_the_house_file_parses_the_tag_form():
 
     prefs = load_preferences(Path("houses/catlin"))
     assert any(":" in entry for entry in prefs.suppressed)
-    # This house silences exactly two whole checks and no others — see the note above. The
-    # per-element form stays the rule, and a new blanket entry has to be argued for here.
+    # This house silences exactly three whole checks and no others — see the note above.
+    # The per-element form stays the rule, and a new blanket entry is argued for there.
     blanket = {entry for entry in prefs.suppressed if ":" not in entry}
     assert blanket == BLANKET_SUPPRESSIONS, sorted(blanket)
