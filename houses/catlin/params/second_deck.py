@@ -78,12 +78,45 @@ def _rect(x0: object, y0: object, x1: object, y1: object) -> tuple[Point2D, ...]
     return (pt(x0, y0), pt(x1, y0), pt(x1, y1), pt(x0, y1))
 
 
+# ** THE WEB PANEL LAYOUT IS PROVISIONAL AND SAYS SO. **
+#
+# Until 2026-09-19 nothing in the engine narrowed an open-web member along its span, so
+# `profiles.open_web_opening_m`'s 8 7/8" chord-to-chord window read as a CONTINUOUS SLOT:
+# thirteen 4" ducts crossing every truss inside a 41" band all passed
+# `mep.run_member_crossing` without a word. A real truss has webs at panel points and a
+# duct lands in an opening or it lands on a web.
+#
+# These three numbers are a PLACEHOLDER for a fabricator's drawing nobody has yet asked
+# for. They are not read off a submittal, and the way they are derived is the whole of
+# their authority:
+#
+#   * 24" PANEL PITCH — an ordinary Warren layout for a parallel-chord wood floor truss at
+#     16" o.c. Panel points every 24" is the commonest spacing in the 11 7/8"–16" depth
+#     range, and it is a round number on purpose so nobody mistakes it for a reading.
+#   * 15" CLEAR OPENING — derived, not asserted. A diagonal crossing an 8 7/8" clear depth
+#     at 45 degrees advances 8 7/8" along the chord, so between two consecutive diagonals
+#     of a 24" panel there is 24 − 8 7/8 ≈ 15 1/8" of clear run. Rounded DOWN to 15".
+#   * 12" OFFSET — half a panel, so the first opening straddles the bearing rather than
+#     starting on it. A fabricator sets this off the actual span and nobody else can.
+#
+# ** THE OWNER REPLACES ALL THREE WHEN THE TRUSS SUBMITTAL ARRIVES, ** and plans/TODO.md
+# carries it. A marked placeholder beats an UNKNOWN here for one reason: without a datum
+# the level-2 duct design cannot be graded at all, and an ungraded design is how thirteen
+# ducts came to be drawn through one another in the first place. Delete these three fields
+# and `mep.open_web_panel` goes straight back to saying so, by name.
+_WEB_PANEL_PITCH = inch(24)
+_WEB_OPENING = inch(15)
+_WEB_PANEL_OFFSET = inch(12)
+
 # West half: open-web trusses, so every second-floor plumbing stack, supply riser and the
 # radon/plumbing chase can cross the deck through the webs instead of a soffit or chase.
 WEST_FLOOR = FloorSystem(
     uid="1JXQ975X9E", tag="FS-S-WEST",
     joists=JoistSpec(member=_TRUSS, spacing=_OC, direction="x",
                      bearing_refs=("W-M-W2", "W-M-C2", "BM-M-HALL"),
+                     web_panel_pitch=_WEB_PANEL_PITCH,
+                     web_opening_width=_WEB_OPENING,
+                     web_panel_offset=_WEB_PANEL_OFFSET,
                      end_bearing=(("W-M-C2", _TRUSS_BEARING),)),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     ceiling_below=_CEILING_GWB,

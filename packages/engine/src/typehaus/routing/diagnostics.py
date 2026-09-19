@@ -68,6 +68,11 @@ _KIND_MOBILITY = {
     "opening": Mobility.FIXED,
     "void": Mobility.FIXED,
     "concrete": Mobility.FIXED,
+    # An open-web truss's WEBS, where the deck states its fabricator's panel layout
+    # (2026-09-19). FIXED in the strongest sense this table has: a web is not bored,
+    # notched or moved by anybody, and lifting one in a counterfactual would be pricing a
+    # truss nobody will build.
+    "member": Mobility.FIXED,
     "run": Mobility.MOVABLE,
     "avoid": Mobility.UNKNOWN,
 }

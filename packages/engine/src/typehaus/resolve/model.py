@@ -643,6 +643,11 @@ class ResolvedFloor:
     #: exists only because THESE runs pass through it and a different run standing in it is
     #: still a defect. ``mep.riser_through_deck`` is the reader.
     penetrations: tuple[tuple[str, Ring, tuple[str, ...]], ...] = ()
+    #: ``(pitch, clear opening, offset)`` in metres for an open-web deck whose ``JoistSpec``
+    #: states its panel layout; ``None`` where it does not. Carried rather than re-read off
+    #: the plan because ``checks``, ``resolve/mep_crossings`` and ``routing/obstacles`` all
+    #: need it and only one of the three may reach a ``PlanModel``.
+    web_panels: tuple[float, float, float] | None = None
 
 
 @dataclass(frozen=True)

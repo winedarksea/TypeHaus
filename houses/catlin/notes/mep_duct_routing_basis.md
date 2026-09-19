@@ -52,6 +52,66 @@ router that reused the pipe rule here would propose crossings a fabricator would
 
 ---
 
+## 3a. The panel layout: where along a truss there is an opening at all
+
+§3 says how TALL the slot is. Until 2026-09-19 nothing said where along the member there was
+a slot, so `profiles.open_web_opening_m`'s 8 7/8" window read as a **continuous chase** — and
+thirteen 4" ducts crossing every truss inside a 41" band passed `mep.run_member_crossing`
+without a word. A real truss has webs at panel points. A duct lands in an opening or it lands
+on a web, and nothing bores, notches or moves a web.
+
+**The datum is the fabricator's and catlin does not have one yet.** `params/second_deck.py`
+authors a marked PROVISIONAL layout and says in its own `#:` how each number was arrived at;
+`mep.open_web_panel` reports UNKNOWN naming the floor for any deck that states none. What is
+worked here is the ARITHMETIC that layout feeds, not the layout.
+
+### Worked by hand on one truss — FS-S-WEST, `joist-0-019-0`
+
+Authored: pitch **24"**, clear opening **15"**, offset **12"** from the member start.
+
+    panel point n           at  12 + 24n
+    web band either side    (24 − 15)/2 = 4.5"  ⇒  web occupies  12 + 24n ± 4.5"
+    opening n               12 + 24n + 4.5  ..  12 + 24n + 19.5
+      n = 0                 16.5" .. 31.5"        (1'-4.5" .. 2'-7.5")
+      n = 1                 40.5" .. 55.5"        (3'-4.5" .. 4'-7.5")
+      n = 2                 64.5" .. 79.5"        (5'-4.5" .. 6'-7.5")
+
+**A run is clear when its whole outside is inside one opening**, so a run of outside
+diameter *d* centred at station *s* needs `low + d/2 ≤ s ≤ high − d/2`, which leaves
+`15 − d` of legal centreline in opening 1:
+
+    4" galvanized duct   42.5" .. 53.5"   11.0" of legal centreline
+    3" DWV (3.5" o.d.)   42.25" .. 53.75" 11.5"
+    8" galvanized duct   44.5" .. 51.5"    7.0"
+
+**Width along the MEMBER is not diameter.** A cylinder cut obliquely is an ellipse: a 4" duct
+crossing the truss square occupies 4.00" of its length, the same duct at 45° occupies
+4 / sin 45° = **5.66"**, and at 30° it occupies 8.00". The engine multiplies the outside
+dimension by `|leg| / |component across the member lines|`, which is `1 / sin`.
+
+### The over-subscription arithmetic, on the level-2 neck as drawn today
+
+Nine radials leave the two `RM-M-MECH` plenums and cross the truss field in one x-lane. Each
+is 4" galvanized, each crosses square, and all nine sit on `_BAY_Z` — one elevation.
+
+    9 runs x 4.00" (square crossing)   =  36.00"
+    opening 1's clear width            =  15.00"
+    over by                            =  21.00"
+
+**A TIER, not a sum.** Runs that share an elevation compete for one opening's width; runs
+that STACK do not compete at all. Two 4" ducts at 111 5/8" and 116 1/2" — the two tiers the
+8 7/8" window admits — use 4.00" of the opening each, not 8.00" between them. Summing them
+would call a 15" opening full of two ducts that never meet, which is the same error
+`resolve/mep_packing` was written to stop making about a bay's clear width.
+
+So the honest reading of the neck is: 15" takes **three** 4" radials at one elevation
+(3 x 4 = 12 ≤ 15; a fourth needs 16"), and the 8 7/8" window admits **two** tiers — so **six
+radials through one opening, and nine are drawn.** Nothing rearranges that; three of them
+take another opening, another tier, or another lane. That is D1's problem and this note only
+prices it.
+
+---
+
 ## 4. What the escape graph inherits, and the one thing it does not
 
 The lattice, the `(node, incoming axis)` state, the bend penalty and the admissible Manhattan

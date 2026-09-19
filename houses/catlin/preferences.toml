@@ -470,6 +470,59 @@ suppress = [
   # --only fail`, and the count is the score. Do not let a cleanup silently keep it.
   "mep.riser_through_deck",
 
+  # ** mep.open_web_panel + mep.run_member_crossing's WEB verdict: THE LEVEL-2 NECK, SEEN
+  # FOR THE FIRST TIME. NEW, 2026-09-19. AN OPEN CAMPAIGN — THIS IS D1's WHOLE SUBJECT. **
+  #
+  # `profiles.open_web_opening_m` gives FS-S-WEST an 8 7/8" chord-to-chord window and
+  # nothing narrowed it ALONG the span, so the engine read an open-web floor truss as a
+  # CONTINUOUS SLOT: thirteen 4" ducts crossing every truss inside a 41" band passed
+  # `mep.run_member_crossing` without a word. A real truss has webs at panel points.
+  # `JoistSpec` can now state the fabricator's layout and `params/second_deck.py` authors a
+  # marked PROVISIONAL one (24" pitch, 15" clear, 12" offset — derived in its own `#:` and
+  # in notes/mep_duct_routing_basis.md §3a, NOT read off a submittal).
+  #
+  # ** BOTH VERDICTS BELOW REST ON THAT PLACEHOLDER, AND THAT IS THE HONEST WAY ROUND. **
+  # Without a datum the level-2 duct design cannot be graded at all, and an ungraded design
+  # is how nine radials came to be drawn through one another in the first place. Delete the
+  # three fields and `mep.open_web_panel` goes straight back to saying the layout is
+  # missing, by name. The owner replaces all three when the truss submittal arrives
+  # (plans/TODO.md carries it), and these two entries are re-measured that day.
+  #
+  #   * mep.open_web_panel, 2 findings. The neck: nine 4" radials leave the two RM-M-MECH
+  #     plenums in one x-lane, cross square, and all nine sit on `_BAY_Z` — 36.00" of runs
+  #     at ONE elevation through a 15.00" opening, on 12 of the deck's members.
+  #     §3a prices the honest ceiling at SIX (three per tier, two tiers), so three
+  #     of them have to take another opening, another tier or another lane. The second
+  #     finding is the same shape at opening 0: PR-M-WC-VENT, DU-M-ERV-R-PLANT and
+  #     CD-M-DATA-PORCH want 24.97" of 15.00".
+  #   * mep.run_member_crossing, 17 NEW findings, all of the form "that is ON A WEB, not in
+  #     an opening". With a 24" pitch and a 9" web band, a station chosen against a
+  #     continuous slot lands on a web better than a third of the time — so this number is
+  #     a measure of how little the old reading constrained anything, not of seventeen new
+  #     mistakes. Eight ERV radials, five second-storey drains, two studio supply risers,
+  #     the kitchen vent and the WC vent.
+  #
+  # Itemised on the runs for run_member_crossing so a NEW crossing anywhere else in the
+  # house still reports; blanket on open_web_panel, whose two findings name their own runs.
+  "mep.open_web_panel",
+  "mep.run_member_crossing:DU-M-ERV-R-BATH1",
+  "mep.run_member_crossing:DU-M-ERV-R-BED1",
+  "mep.run_member_crossing:DU-M-ERV-R-LAUNDRY",
+  "mep.run_member_crossing:DU-M-ERV-R-LIVING",
+  "mep.run_member_crossing:DU-M-ERV-R-MUD",
+  "mep.run_member_crossing:DU-M-ERV-R-PLANT",
+  "mep.run_member_crossing:DU-M-ERV-R-STUDY",
+  "mep.run_member_crossing:DU-M-ERV-R-VANITY",
+  "mep.run_member_crossing:PR-A-CW-STUBATH",
+  "mep.run_member_crossing:PR-A-HW-STUBATH",
+  "mep.run_member_crossing:PR-A-STUBATH-DRAIN",
+  "mep.run_member_crossing:PR-M-KITCH-VENT",
+  "mep.run_member_crossing:PR-M-S-BATH1-LAV-DRAIN",
+  "mep.run_member_crossing:PR-M-S-BATH1-TUB-DRAIN",
+  "mep.run_member_crossing:PR-M-S-BATH1-WC-DRAIN",
+  "mep.run_member_crossing:PR-M-S-SUITE-WC-DRAIN",
+  "mep.run_member_crossing:PR-M-WC-VENT",
+
   # D-G-OVERHEAD's centre is at 12'-0", 12" off the 24" module, and it cuts 9 stud lines
   # where 8 would do. The decision is unchanged from the 16"-module reading it was first
   # taken against (2026-08-26) and the arithmetic under it got WORSE, which is the reason to

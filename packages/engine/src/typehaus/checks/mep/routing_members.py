@@ -68,7 +68,7 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
     of any of them meets a member line — rather than assumed. With no floors at all there is
     nothing to have a window, and that is an honest UNKNOWN.
     """
-    from typehaus.resolve.mep_crossings import leg_crossings
+    from typehaus.resolve.mep_crossings import leg_crossings, web_panels
 
     floors = list(ctx.model.floors)
     if not floors:
@@ -83,6 +83,11 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
         window = member_window(floor)
         if window is None:
             continue
+        # An open-web deck that states its fabricator's panel layout narrows the window
+        # ALONG the member as well as across it: a run lands in an opening or it lands on a
+        # web. Unauthored, this is None and the reading is unchanged — ``mep.open_web_panel``
+        # is the one that says the layout is missing, once, naming the floor.
+        panels = web_panels(floor) if window.kind == "open_web" else None
         # Every crossing on this floor first, keyed by member, because R502.8.1's spacing
         # rule is a question about the OTHER holes in the same joist and no per-run pass can
         # see them. Two 2" drains 1 1/2" apart each fit the window and each clear D/3; the
@@ -106,6 +111,7 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
                 continue
             radius = radii.get(tag, 0.0)
             tightest: tuple[float, float, float, str, float] | None = None
+            on_web: tuple[float, str, float] | None = None
             for crossing in crossings:
                 crown_gap = window.z1_m - (crossing.z_m + radius)
                 invert_gap = (crossing.z_m - radius) - window.z0_m
@@ -113,10 +119,18 @@ def run_member_crossing(ctx: CheckContext) -> list[Finding]:
                 if tightest is None or worst < tightest[0]:
                     tightest = (worst, crown_gap, invert_gap,
                                 crossing.member_key, crossing.station_m)
+                if panels is not None and not panels.clear_at(crossing.station_m, radius):
+                    low, high = panels.opening_at(crossing.station_m)
+                    bite = max(low + radius - crossing.station_m,
+                               crossing.station_m - (high - radius))
+                    if on_web is None or bite > on_web[0]:
+                        on_web = (bite, crossing.member_key, crossing.station_m)
             if tightest is None:
                 continue
             graded += 1
             out.append(_finding(kind, tag, floor.tag, radius, window, tightest))
+            if on_web is not None:
+                out.append(_web_finding(kind, tag, floor.tag, radius, panels, on_web))
             bore = _bore_finding(ctx, floor, window, tag, radius, crossings, by_member)
             if bore is not None:
                 out.append(bore)
@@ -158,6 +172,31 @@ def _finding(kind: str, tag: str, floor_tag: str, radius_m: float,
         f"{where}: crown {crown_gap / M_PER_IN:+.3f}\", invert "
         f"{invert_gap / M_PER_IN:+.3f}\" ({sizes}) — {window.basis}",
         (tag, floor_tag))
+
+
+def _web_finding(kind: str, tag: str, floor_tag: str, radius_m: float, panels,
+                 on_web: tuple[float, str, float]) -> Finding:
+    """A crossing that lands on a WEB rather than in an opening.
+
+    The other half of an open-web reading, and the half the engine could not make until the
+    panel layout was authorable: ``open_web_opening_m`` says how tall the slot is, and
+    nothing said where along the member there is a slot at all. Thirteen 4" ducts crossing
+    every truss inside a 41" band passed on the z window alone.
+    """
+    bite, member_key, station_m = on_web
+    low, high = panels.opening_at(station_m)
+    return _fail(
+        _CID,
+        f"{kind} {tag} crosses {floor_tag} at {member_key}, {feet_inches(station_m)} along "
+        f"it — and that is ON A WEB, not in an opening: it wants "
+        f"{bite / M_PER_IN:.2f}\" of the web either side of the "
+        f"{panels.opening_m / M_PER_IN:.3g}\" clear run between "
+        f"{feet_inches(low)} and {feet_inches(high)}. A truss web is not bored or notched "
+        "by anyone, ever",
+        (tag, floor_tag),
+        fix="move the leg along the member until its whole outside is inside one opening — "
+            f"the panel pitch is {panels.pitch_m / M_PER_IN:.3g}\" — or take it along a bay "
+            "instead of across the members")
 
 
 def _bore_finding(ctx, floor, window: CrossingWindow, tag: str, radius_m: float,

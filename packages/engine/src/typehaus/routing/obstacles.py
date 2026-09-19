@@ -162,6 +162,44 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
                                  z0_m=low - inflate,
                                  z1_m=floor.deck_z1_m + inflate))
 
+    # Open-web truss WEBS, where the deck states its fabricator's panel layout. An
+    # open-web member hands a service its 8 7/8" chord-to-chord space and nothing narrowed
+    # it ALONG the span, so the router read a floor truss as a continuous chase and would
+    # lane a duct straight through a web. These are ``fixed`` — a web is not bored, notched
+    # or moved by anybody — so a search threads the openings by construction rather than
+    # being told off by a check afterwards.
+    #
+    # Unauthored is silence here too: no layout, no prisms, and the reading is exactly what
+    # it was. ``mep.open_web_panel`` is the one that says the layout is missing.
+    from typehaus.resolve.mep_crossings import member_window, web_panels
+
+    for floor in model.floors:
+        panels = web_panels(floor)
+        window = member_window(floor) if panels is not None else None
+        if panels is None or window is None or window.kind != "open_web":
+            continue
+        along_x = floor.direction == "x"
+        for member in floor.members:
+            if member.category != "joist" or member.z0_m is None:
+                continue
+            low, high = sorted((member.p0[0], member.p1[0]) if along_x
+                               else (member.p0[1], member.p1[1]))
+            breadth = _member_breadth(member)
+            across = member.p0[1] if along_x else member.p0[0]
+            for start, end in panels.web_bands(low, high):
+                corners = ([(start, across - breadth), (end, across - breadth),
+                            (end, across + breadth), (start, across + breadth)]
+                           if along_x else
+                           [(across - breadth, start), (across + breadth, start),
+                            (across + breadth, end), (across - breadth, end)])
+                poly = _polygon(corners)
+                if poly is None:
+                    continue
+                out.append(HardPrism(tag=floor.tag, kind="member",
+                                     footprint=poly.buffer(inflate),
+                                     z0_m=window.z0_m - inflate,
+                                     z1_m=window.z1_m + inflate))
+
     # Concrete. Only the bands that are actually concrete — a stay-in-place foam deck form
     # is not a pour, and ``resolve/mep_queries.concrete_bands`` is the one place that
     # reading lives.
@@ -260,3 +298,16 @@ def _wall_union(model: ResolvedModel) -> Any:
 def inches(metres: float) -> float:
     """Metres to inches — the unit every cost term in this package is stated in."""
     return metres / M_PER_IN
+
+
+def _member_breadth(member) -> float:
+    """Half a member's plan width, for the web rectangles above.
+
+    Same reading and same fallback as ``mep_queries._JOIST_BREADTH_FALLBACK_M``: an
+    unparsed profile errs toward a NARROWER obstacle, so a router is never blocked by a
+    guess.
+    """
+    from typehaus.resolve.framing.profiles import cross_section
+
+    section = cross_section(member.profile)
+    return (getattr(section, "width_m", None) or 0.0381) / 2.0

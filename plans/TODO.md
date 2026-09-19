@@ -397,6 +397,14 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   ports, and only the two plenums with a drawn trunk report a "trunk collar". Until they are
   drawn there is also no tap elevation, which is why `notes/erv_static_budget.md` §9 had to
   withdraw its segmented-riser figure rather than restate it.
+- **The FS-S-WEST truss panel layout is a PROVISIONAL placeholder and the owner replaces it.**
+  `params/second_deck.py` authors `web_panel_pitch=24"`, `web_opening_width=15"`,
+  `web_panel_offset=12"` on FS-S-WEST, derived in its own `#:` from an ordinary Warren
+  layout rather than read off a submittal. Until 2026-09-19 nothing narrowed an open-web
+  member ALONG its span, so the engine read the truss as a continuous 8 7/8" chase and
+  thirteen ducts crossing one 41" band all passed. Ask the truss fabricator for the panel
+  drawing, replace all three numbers, and re-measure `mep.open_web_panel` and
+  `mep.run_member_crossing` that day — both entries in `preferences.toml` say so.
 - **`FS-M-MECH` still carries the vents, the radon riser and nine conduits through its joist
   field undrawn.** `FO-M-ERV-OA` and `FO-M-ERV-EA` were added 2026-09-15 for the two ERV
   risers; the rest of the chase cluster has no floor opening, and nothing grades a duct or a

@@ -24,6 +24,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     hvac,
     hvac_sizing,
     lighting,
+    open_web_panel,
     plumbing,
     pockets,
     port_service,

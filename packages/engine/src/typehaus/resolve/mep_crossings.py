@@ -187,3 +187,88 @@ def leg_crossings(floor: ResolvedFloor,
             continue
         out.append(MemberCrossing(member.child_key, station, z, t))
     return out
+
+
+# --- open-web PANEL layout (2026-09-19) -----------------------------------------------
+#
+# ``member_window`` above answers "how tall is the slot"; this answers "and where along the
+# member is there a slot at all". The two are a pair, and the engine has been asking only
+# the first: an open-web truss reads as a CONTINUOUS 8 7/8" chase, so thirteen 4" ducts
+# crossing every truss inside a 41" band all pass. Real trusses have webs at panel points.
+#
+# Unauthored is silence, not a pass: a fabricator's panel layout is a shop drawing, and
+# ``mep.open_web_panel`` reports UNKNOWN naming the floor rather than inventing a pitch.
+
+
+@dataclass(frozen=True)
+class WebPanels:
+    """One open-web deck's panel layout, in the member's own direction of travel.
+
+    ``pitch_m`` is centre to centre of the panel points, ``opening_m`` the CLEAR run
+    between two webs measured at the chord, and ``offset_m`` the station of the first
+    panel point. The web band either side of a panel point is therefore
+    ``pitch - opening`` wide, which is the solid the run has to miss.
+    """
+
+    pitch_m: float
+    opening_m: float
+    offset_m: float
+
+    @property
+    def web_width_m(self) -> float:
+        return max(0.0, self.pitch_m - self.opening_m)
+
+    def index_at(self, station_m: float) -> int:
+        """Which opening this station falls in — openings numbered from the offset."""
+        import math
+
+        return int(math.floor((station_m - self.offset_m) / self.pitch_m))
+
+    def opening_at(self, station_m: float) -> tuple[float, float]:
+        """The clear run ``(low, high)`` of the opening containing ``station_m``.
+
+        Every station is *in* an opening in this sense; whether it is CLEAR of the webs is
+        :meth:`clear_at`. Returning the span unconditionally is what lets a check say "this
+        opening holds three runs" about the one the crossing landed in.
+        """
+        index = self.index_at(station_m)
+        low = self.offset_m + index * self.pitch_m + self.web_width_m / 2.0
+        return low, low + self.opening_m
+
+    def clear_at(self, station_m: float, radius_m: float = 0.0) -> bool:
+        """Whether a run of this radius at this station misses both webs."""
+        low, high = self.opening_at(station_m)
+        return low + radius_m <= station_m <= high - radius_m
+
+    def web_bands(self, low_m: float, high_m: float) -> list[tuple[float, float]]:
+        """The solid web runs between ``low_m`` and ``high_m``, as ``(start, end)``.
+
+        The complement of the openings. ``routing/obstacles`` turns each into a ``fixed``
+        hard prism so a router threads the openings by construction rather than by being
+        told off afterwards.
+        """
+        width = self.web_width_m
+        if width <= 0.0 or self.pitch_m <= 0.0:
+            return []
+        out: list[tuple[float, float]] = []
+        index = self.index_at(low_m)
+        while True:
+            centre = self.offset_m + index * self.pitch_m
+            start, end = centre - width / 2.0, centre + width / 2.0
+            if start > high_m:
+                break
+            if end >= low_m:
+                out.append((max(start, low_m), min(end, high_m)))
+            index += 1
+        return out
+
+
+def web_panels(floor: ResolvedFloor) -> WebPanels | None:
+    """This deck's authored panel layout, or ``None`` where it states none."""
+    stated = getattr(floor, "web_panels", None)
+    if not stated:
+        return None
+    pitch, opening, offset = stated
+    if pitch <= 0.0 or opening <= 0.0 or opening > pitch:
+        return None
+    return WebPanels(pitch_m=pitch, opening_m=opening, offset_m=offset)

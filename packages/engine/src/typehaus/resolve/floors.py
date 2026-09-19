@@ -247,8 +247,14 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
         for f in opening_boxes
         if getattr(f.opening, "penetration_for", ()))
 
+    panels = None
+    if (spec.web_panel_pitch is not None and spec.web_opening_width is not None
+            and spec.web_panel_offset is not None):
+        panels = (spec.web_panel_pitch.meters, spec.web_opening_width.meters,
+                  spec.web_panel_offset.meters)
+
     return ResolvedFloor(
-        uid=system.uid, tag=system.tag, storey=storey.tag,
+        uid=system.uid, tag=system.tag, storey=storey.tag, web_panels=panels,
         direction=spec.direction, members=tuple(members), chases=chases,
         penetrations=penetrations,
         deck_outline=deck_outline, deck_voids=deck_voids,
