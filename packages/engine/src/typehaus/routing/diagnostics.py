@@ -85,6 +85,14 @@ class Blocker:
     z_m: float
 
     def describe(self) -> str:
+        """Where the blocker was met, in feet.
+
+        A ``run`` blocker's z is a point on a BAND: ``routing/obstacles`` bands each segment
+        over its own fall, so a sloping run stands in the way anywhere between its two ends.
+        ``mep.run_interference`` reads the same run differently — the real clearance at the
+        station — and the two are not in disagreement: a check reads a drawn run, a router
+        has to stay out of everywhere it might be.
+        """
         from typehaus.quantities import M_PER_IN
         return (f"{self.tag} ({self.kind}, {self.mobility.value}) at "
                 f"({self.x_m / M_PER_IN / 12:.2f}', {self.y_m / M_PER_IN / 12:.2f}', "

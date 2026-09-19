@@ -187,6 +187,14 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
     # drops six feet at one end blocked a full-height wall along its entire length — which
     # is how a perfectly clear lane comes back as "every lane is blocked". The per-segment
     # reading is ``resolve/mep_envelopes``, which the checks read too.
+    #
+    # **A segment is still BANDED over its own fall here, and that is deliberate.**
+    # ``mep.run_interference`` stopped grading the band on 2026-09-19 and measures the real
+    # clearance at the station instead (``resolve/mep_clearance``); a router may not. A
+    # check is READING a drawn run and can say where it is; a router is CHOOSING and has to
+    # stay out of everywhere the run might be, because the lane it picks has to survive the
+    # next person moving a vertex by an inch. The two readings differ on purpose and each
+    # says so.
     from typehaus.resolve.mep_envelopes import envelopes
 
     for envelope in envelopes(model, inflate_m=inflate):

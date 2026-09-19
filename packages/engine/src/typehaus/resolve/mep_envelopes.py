@@ -343,9 +343,16 @@ def joint_tolerance_m() -> float:
     return DUCT_JOINT_TOLERANCE_M
 
 
+#: How far above and below a joint's own z band a fitting's body may still reach. Same
+#: character as ``run_interference.JOINT_REACH_FACTOR`` and the same honesty: the catalog
+#: records no laying length, so this is a stated convention rather than a dimension. 3" is
+#: about the rise of a full-sweep fitting on the largest run in this house.
+JOINT_BAND_PAD_M = 0.0762
+
+
 def run_joints(first: tuple[Any, Any], second: tuple[Any, Any]
-               ) -> tuple[tuple[tuple[float, float], float | None], ...]:
-    """Where these two runs are plumbed together — each joint's ``(plan point, z)``.
+               ) -> tuple[tuple[tuple[float, float], float | None, float | None], ...]:
+    """Where these two runs are plumbed together — each joint's ``(plan point, z0, z1)``.
 
     Only an END counts, which is the rule ``resolve/mep_soffit.ducts_are_joined`` already
     states for ducts and the reason it states it: two runs crossing mid-span are two runs
@@ -356,19 +363,56 @@ def run_joints(first: tuple[Any, Any], second: tuple[Any, Any]
     **Locations, not a bool.** A pair may be jointed at one end and cross two feet away, and
     a single bool exempted the whole pair — the crossing went unreported. A consumer gets
     the joints and decides for itself whether the contact it is looking at is one of them.
+
+    **A BAND, not the vertex's own z** (2026-09-19). The vertex alone put a riser's joint at
+    the bottom of its drop rather than at the tee it lands in, so four real crossings read as
+    fittings and four fittings read as crossings. The band is the INTERSECTION of the near
+    run's adjacent-segment z range with the matched far segment's range, padded by
+    :data:`JOINT_BAND_PAD_M`.
+
+    **Never the union**, and this is the load-bearing half. ``PR-B-CW-BATH``'s adjacent
+    segment spans 73" on its own; a union would pardon every contact those two runs have
+    anywhere in six vertical feet — which is exactly the "riser ten feet below the stack
+    head" pardon ``_is_at_a_joint``'s z test was written to close. The intersection can
+    never be empty: ``duct_joint_index`` only calls it a joint when the near vertex's z is
+    already inside the far segment's range, so that z is in both.
+
+    A joint the model cannot place in z comes back ``(point, None, None)`` and the consumer
+    falls back to the plan test, which is what the model actually knows about it.
     """
     from typehaus.resolve.mep_soffit import duct_joint_index
 
-    out: list[tuple[tuple[float, float], float | None]] = []
+    out: list[tuple[tuple[float, float], float | None, float | None]] = []
+    seen: set[tuple[tuple[float, float], float | None]] = set()
     for (near_path, near_z), (far_path, far_z) in ((first, second), (second, first)):
         if len(near_path) < 1 or len(far_path) < 2:
             continue
-        for point, z in ((near_path[0], near_z[0] if near_z else None),
-                         (near_path[-1], near_z[-1] if near_z else None)):
-            if duct_joint_index(point, z, far_path, far_z) is not None \
-                    and (point, z) not in out:
-                out.append((point, z))
+        ends = ((near_path[0], near_z[0] if near_z else None, 0),
+                (near_path[-1], near_z[-1] if near_z else None, len(near_path) - 2))
+        for point, z, near_seg in ends:
+            index = duct_joint_index(point, z, far_path, far_z)
+            if index is None or (point, z) in seen:
+                continue
+            seen.add((point, z))
+            out.append((point, *_joint_band(z, near_z, near_seg, far_z, index)))
     return tuple(out)
+
+
+def _joint_band(z: float | None, near_z: Any, near_seg: int,
+                far_z: Any, far_seg: int) -> tuple[float | None, float | None]:
+    """The z band of one joint — see :func:`run_joints`."""
+    if z is None:
+        return None, None
+    low, high = z, z
+    for elevations, index in ((near_z, near_seg), (far_z, far_seg)):
+        if not elevations or index < 0 or len(elevations) <= index + 1:
+            continue
+        first, second = elevations[index], elevations[index + 1]
+        low = max(low, min(first, second))
+        high = min(high, max(first, second))
+    if low > high:  # cannot happen via duct_joint_index; do not invent a band if it does
+        low = high = z
+    return low - JOINT_BAND_PAD_M, high + JOINT_BAND_PAD_M
 
 
 def runs_are_joined(first: tuple[Any, Any], second: tuple[Any, Any]) -> bool:

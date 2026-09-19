@@ -13,6 +13,14 @@ prism per segment over that segment's own z range, all of it
 check that measured a different solid from the one the router plans against would make the
 loop impossible to close.
 
+**The prism is the COARSE FILTER, not the verdict** (2026-09-19). A prism bands a sloping
+leg over its whole fall, which is the right solid for a router choosing a lane and the
+wrong one for a reading: twenty-five of the 146 clashes this check reported on catlin were
+that band, not a contact. The STRtree over footprints still finds the candidates — it is
+what makes the pair loop affordable — and :func:`typehaus.resolve.mep_clearance.segment_clearance`
+then measures what actually happens at the station where the two are closest, which is also
+what lets a finding say WHERE and at what two elevations.
+
 **Contact is not always a clash.** Three things legitimately put two runs in one place and
 all three are earned from the model rather than from a naming convention:
 
@@ -44,6 +52,7 @@ from __future__ import annotations
 from typehaus.checks._authoring import failed as _fail
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
+from typehaus.checks.mep._format import feet_inches
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
 from typehaus.quantities import M_PER_IN
@@ -79,6 +88,7 @@ def run_interference(ctx: CheckContext) -> list[Finding]:
     """
     from shapely import STRtree
 
+    from typehaus.resolve.mep_clearance import Contact, segment_clearance
     from typehaus.resolve.mep_envelopes import envelopes, run_joints, run_sections
     from typehaus.resolve.mep_queries import schematic_conduits
 
@@ -95,13 +105,14 @@ def run_interference(ctx: CheckContext) -> list[Finding]:
 
     tracks = _tracks(ctx)
     sections = run_sections(ctx.model)
+    legs = _legs(tracks, sections)
     sleeved = _sleeved_pairs(ctx) | _bundled_pairs(ctx)
     joints: dict[tuple[str, str], tuple[tuple, float]] = {}
 
     flat = [(shell.tag, prism) for shell in shells for prism in shell.prisms]
     index = STRtree([prism.footprint for _tag, prism in flat])
 
-    worst: dict[tuple[str, str], tuple[float, float, float, int, int]] = {}
+    worst: dict[tuple[str, str], tuple[float, object, int, int]] = {}
     for position, (tag, prism) in enumerate(flat):
         for other_position in index.query(prism.footprint):
             other_position = int(other_position)
@@ -113,46 +124,49 @@ def run_interference(ctx: CheckContext) -> list[Finding]:
             pair = (tag, other_tag) if tag < other_tag else (other_tag, tag)
             if pair in sleeved:
                 continue
+            # The coarse filter: banded prisms that do not meet cannot have a contact, and
+            # this is the test that keeps the pair loop cheap.
+            if min(prism.z1_m, other.z1_m) - max(prism.z0_m, other.z0_m) <= TOUCH_TOLERANCE_M:
+                continue
+            if not prism.footprint.intersects(other.footprint):
+                continue
             if pair not in joints:
                 joints[pair] = (run_joints(tracks.get(pair[0], ((), ())),
                                            tracks.get(pair[1], ((), ()))),
-                                _joint_reach_m(sections, pair))
-            overlap_z = min(prism.z1_m, other.z1_m) - max(prism.z0_m, other.z0_m)
-            if overlap_z <= TOUCH_TOLERANCE_M:
+                                _joint_reach_m(legs, pair))
+            near = legs.get((tag, prism.segment))
+            far = legs.get((other_tag, other.segment))
+            if near is None or far is None:
                 continue
-            shared = prism.footprint.intersection(other.footprint)
-            if shared.is_empty or shared.area <= 0:
+            contact = segment_clearance(near, far, joints=joints[pair][0],
+                                        joint_reach_m=joints[pair][1])
+            if contact is None or contact.score_m <= TOUCH_TOLERANCE_M:
                 continue
-            if _is_at_a_joint(shared, max(prism.z0_m, other.z0_m),
-                              min(prism.z1_m, other.z1_m), *joints[pair]):
-                continue
-            # The plan measure is the SHORTER of the two widths the shared area implies,
-            # which is the depth one run is inside the other rather than the length of the
-            # overlap. A duct crossing a drain at right angles shares a long thin sliver;
-            # reporting its length would say "18 inches of clash" about a half-inch graze.
-            depth = _penetration_depth(shared)
-            if depth <= TOUCH_TOLERANCE_M:
-                continue
-            score = min(depth, overlap_z)
             # In PAIR order, not iteration order: the message names the runs sorted and
-            # would otherwise hang the first run's leg number off the second run's name.
-            legs = ((prism.segment, other.segment) if tag < other_tag
-                    else (other.segment, prism.segment))
-            if pair not in worst or score > worst[pair][0]:
-                worst[pair] = (score, depth, overlap_z, *legs)
+            # would otherwise hang the first run's leg number — and its elevation — off the
+            # second run's name.
+            ordered = contact if tag < other_tag else Contact(
+                contact.score_m, contact.plan_depth_m, contact.z_depth_m,
+                contact.point, contact.far_z_m, contact.near_z_m)
+            leg_pair = ((prism.segment, other.segment) if tag < other_tag
+                        else (other.segment, prism.segment))
+            if pair not in worst or contact.score_m > worst[pair][0]:
+                worst[pair] = (contact.score_m, ordered, *leg_pair)
 
     out: list[Finding] = [
         _fail(_CID,
-              f"{a} and {b} interpenetrate: {depth / M_PER_IN:.2f}\" of overlap in plan "
-              f"between leg {sa + 1} of {a} and leg {sb + 1} of {b}, and their envelopes "
-              f"share {overlap_z / M_PER_IN:.2f}\" of elevation — this contact is not within a "
-              "fitting's reach of any joint between them (so it is not a fitting) and no "
-              "rough opening names them both (so it is not a sleeve)",
+              f"{a} and {b} interpenetrate: at ({feet_inches(c.point[0])}, "
+              f"{feet_inches(c.point[1])}) leg {sa + 1} of {a} runs at "
+              f"{feet_inches(c.near_z_m)} and leg {sb + 1} of {b} at "
+              f"{feet_inches(c.far_z_m)} — {c.plan_depth_m / M_PER_IN:.2f}\" inside each "
+              f"other in plan and {c.z_depth_m / M_PER_IN:.2f}\" in elevation. This contact "
+              "is not within a fitting's reach of any joint between them (so it is not a "
+              "fitting) and no rough opening names them both (so it is not a sleeve)",
               (a, b),
               fix="re-route one of the two — `haus route --run <tag> --avoid <the other>` "
                   "proposes a lane and `--evaluate` grades it — or give them a shared "
                   "penetration if what is drawn is really one hole")
-        for (a, b), (_score, depth, overlap_z, sa, sb) in sorted(worst.items())]
+        for (a, b), (_score, c, sa, sb) in sorted(worst.items())]
 
     if not out:
         out.append(_pass(_CID, f"{len(shells)} runs resolve an envelope and no two of them "
@@ -168,31 +182,43 @@ def run_interference(ctx: CheckContext) -> list[Finding]:
     return out
 
 
-def _joint_reach_m(sections: dict[str, tuple[float, float, str | None]],
-                   pair: tuple[str, str]) -> float:
-    """How far from a joint a fitting may still reach — see :data:`JOINT_REACH_FACTOR`."""
-    half = max(max(sections.get(tag, (0.0, 0.0, None))[:2]) for tag in pair)
-    return JOINT_REACH_FACTOR * half
+def _legs(tracks: dict[str, tuple[tuple, tuple]],
+          sections: dict[str, tuple[float, float, str | None]]) -> dict:
+    """``(tag, leg index) -> Segment`` — the same geometry the prisms were built from.
 
-
-def _is_at_a_joint(shared, z0_m: float, z1_m: float,
-                   joints: tuple[tuple[tuple[float, float], float | None], ...],
-                   reach_m: float) -> bool:
-    """Whether this shared volume is the fitting these two runs are joined by.
-
-    Both measures have to agree. The plan test alone would exempt a riser crossing ten feet
-    below the stack head it eventually lands on — same plan point, different building. A
-    joint whose elevation the model never resolved falls back to the plan test, which is
-    what the model actually knows about it.
+    Built from ``run_polylines`` and ``run_sections`` rather than read back off a prism,
+    because a prism has already thrown the two things the measure needs away: which way the
+    leg falls, and where its centreline is.
     """
-    from shapely.geometry import Point
+    from typehaus.resolve.mep_clearance import Segment
+    from typehaus.resolve.mep_envelopes import insulation_thickness_m
 
-    for point, z in joints:
-        if shared.distance(Point(point)) > reach_m:
+    out: dict[tuple[str, int], Segment] = {}
+    for tag, (path, z) in tracks.items():
+        half_w, half_d, insulation = sections.get(tag, (0.0, 0.0, None))
+        lagging = insulation_thickness_m(insulation) or 0.0
+        if len(path) < 2 or len(z) != len(path):
             continue
-        if z is None or (z0_m - reach_m) <= z <= (z1_m + reach_m):
-            return True
-    return False
+        for leg in range(len(path) - 1):
+            out[(tag, leg)] = Segment(tag=tag, index=leg, a=path[leg], b=path[leg + 1],
+                                      za=z[leg], zb=z[leg + 1],
+                                      half_w_m=half_w + lagging, half_d_m=half_d + lagging)
+    return out
+
+
+def _joint_reach_m(legs: dict, pair: tuple[str, str]) -> float:
+    """How far from a joint a fitting may still reach — see :data:`JOINT_REACH_FACTOR`.
+
+    Off the **envelope's** half-section, lagging included, not the bare pipe's. The contact
+    being pardoned is a contact between envelopes: two 3/4" hot branches meeting at a tee
+    are 7/8" of copper and 2" of fiberglass sleeve, and a reach measured on the copper
+    (1.7") is shorter than the overlap the sleeves make at a plain perpendicular tee (3").
+    Every ordinary tee in the insulated hot trunk reported as a clash until this read the
+    same number the measure does.
+    """
+    half = max((max(leg.half_w_m, leg.half_d_m)
+                for (tag, _index), leg in legs.items() if tag in pair), default=0.0)
+    return JOINT_REACH_FACTOR * half
 
 
 def _tracks(ctx: CheckContext) -> dict[str, tuple[tuple, tuple]]:
@@ -234,15 +260,3 @@ def _bundled_pairs(ctx: CheckContext) -> set[tuple[str, str]]:
             for second in tags[i + 1:]:
                 out.add((first, second))
     return out
-
-
-def _penetration_depth(shared) -> float:
-    """How deep one envelope is inside the other, from their shared plan area.
-
-    The minimum width of the intersection, approximated as ``area / longest side of its
-    bounding box``. A right-angle crossing shares a long thin sliver; its LENGTH is the
-    other run's width and says nothing, and its WIDTH is the depth of the intrusion.
-    """
-    minx, miny, maxx, maxy = shared.bounds
-    longest = max(maxx - minx, maxy - miny)
-    return shared.area / longest if longest > 0 else 0.0
