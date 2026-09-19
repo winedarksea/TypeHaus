@@ -158,12 +158,19 @@ VENT_BRANCHES_SECOND = [
     # `end_elevation` to 9'-9", 9'-10" or 9'-11" leaves the pair count unchanged and only
     # moves the station where the two pass through each other. Measured, all three.
     #
-    # So the approach moves in PLAN, and it has to go round the EAST side. The chase jog
-    # occupies y=34'-6" from x=1'-0" to x=9'-7 1/2" and the riser stands at its east end, so
-    # a leg crossing y=34'-6" anywhere between those two x is inside it; only x > 9'-7 1/2"
-    # is clear. The run therefore holds x=9'-7 1/2" to y=34'-0", steps 11" east, crosses
-    # y=34'-6" at x=10'-6" (11" clear of the riser, which needs 2 15/16" for a 3" pipe
-    # beside a 2" one), runs west on y=35'-0" — 6" north of the jog — and drops the last 6"
+    # So the approach moves in PLAN, and it goes round the EAST side through a window
+    # FOUR AND A HALF INCHES WIDE. The chase jog occupies y=34'-6" from x=1'-0" to
+    # x=9'-7 1/2" with the riser standing at its east end, so a leg crossing y=34'-6"
+    # anywhere between those two x is inside it and only x > 9'-7 1/2" is clear. But
+    # `FO-A-HALL`, the stair void, starts at x=10'-0" — and a vent hanging over an open
+    # well is `mep.run_over_void`, which the first attempt at this (crossing at x=10'-6")
+    # duly earned. So the crossing stands at **x=9'-10 1/2"**, which is the only station
+    # that satisfies both: 3" clear of the 3" riser, where a 2" pipe beside it needs
+    # 2 15/16", and its own outside 3/8" short of the void's edge. ** DO NOT NUDGE THIS
+    # EITHER WAY. **
+    #
+    # The run therefore holds x=9'-7 1/2" to y=34'-0", steps 3" east, crosses y=34'-6" at
+    # x=9'-10 1/2", runs west on y=35'-0" — 6" north of the jog — and drops the last 6"
     # south into the chase at (1'-0", 34'-6").
     #
     # The 6" south stub is the only thing on x=1'-0" north of the chase, so it does not
@@ -173,8 +180,8 @@ VENT_BRANCHES_SECOND = [
     # tub-shower, 0" to the lav, 17" to the WC) are measured off it and are untouched.
     PipeRun(uid="CSP902AAAA", tag="PR-S-SUITEBATH-VENT", system=PipeSystem.VENT,
             path=(pt(ft(16, 4.5), ft(21, 11)), pt(ft(9, 7.5), ft(21, 11)),
-                  pt(ft(9, 7.5), ft(34)), pt(ft(10, 6), ft(34)),
-                  pt(ft(10, 6), ft(35)), pt(ft(1), ft(35)),
+                  pt(ft(9, 7.5), ft(34)), pt(ft(9, 10.5), ft(34)),
+                  pt(ft(9, 10.5), ft(35)), pt(ft(1), ft(35)),
                   pt(ft(1), ft(34, 6))),
             diameter=inch(2), start_elevation=ft(9, 3), end_elevation=ft(9, 5),
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
