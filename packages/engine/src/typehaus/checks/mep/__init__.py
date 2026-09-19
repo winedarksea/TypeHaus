@@ -36,6 +36,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     routing_ceiling,
     routing_members,
     routing_openings,
+    run_in_slab,
     run_interference,
     supply_protection,
     water_heater,

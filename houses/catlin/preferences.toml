@@ -411,6 +411,30 @@ suppress = [
   "mep.run_through_stud:DU-B-ERV-R-SAUNA-SUP",
   "mep.run_through_stud:DU-B-ERV-R-BATH",
 
+  # ** mep.run_in_slab: 2 RUNS INSIDE A POUR. NEW CHECK, 2026-09-19. AN OPEN CAMPAIGN. **
+  #
+  # The check this file's supply-band note above has asked for since the cold band moved
+  # ("**A `mep.run_in_slab` check is the honest follow-on and is not written yet.**"). It
+  # exists now, and the case that motivated it is already gone: PR-B-CW-TRUNK and
+  # PR-B-HW-KITCH step back to the old bands at x=17'-6", so nothing lies in SL-M-DECK.
+  # What it found instead is two things nothing else in the engine could see.
+  #
+  #   * DU-B-ERV-R-PLAY crosses W-B-CN, the 12" cast centre wall, with 4" of concrete over
+  #     it and NO void of any kind — no sleeve, no rough opening. `mep.sleeve_coverage`
+  #     never saw it because `concrete_crossings` walks pipe and raceway and not duct, so a
+  #     4" branch through a foundation wall has been ungraded for as long as it has been
+  #     drawn. This is D3's: the basement radials are re-laid there and a duct through a
+  #     cast wall is a cast sleeve or a different lane, never a core after the fact.
+  #   * PR-SG-ARCH-OVERFLOW's first leg straddles SL-SG-FIELD's underside — its envelope
+  #     breaks the slab's bottom face for six inches at the field's north edge. Either the
+  #     pipe drops 2" and runs clear beneath, or the slab edge owes it a cast void. It is
+  #     six inches of pipe and an owner-visible decision about neither; left open with the
+  #     rest of the campaign rather than nudged quietly.
+  #
+  # Itemised, not blanket: a NEW run in a pour anywhere in the house still reports.
+  "mep.run_in_slab:DU-B-ERV-R-PLAY",
+  "mep.run_in_slab:PR-SG-ARCH-OVERFLOW",
+
   # D-G-OVERHEAD's centre is at 12'-0", 12" off the 24" module, and it cuts 9 stud lines
   # where 8 would do. The decision is unchanged from the 16"-module reading it was first
   # taken against (2026-08-26) and the arithmetic under it got WORSE, which is the reason to
