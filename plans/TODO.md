@@ -326,6 +326,34 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     every baseline held zero interference findings and a route that made the campaign worse
     scored clean. The flag is now recorded into the baseline and a suppression mismatch
     between baseline and score raises rather than producing a scorecard.
+  - **THE 2026-09-19 CAMPAIGN CLOSED AT 145, AND WHAT IS LEFT IS NOT A SEARCH PROBLEM.**
+    Every routable class was run with `--alternatives 3 --evaluate` and the rule "a round
+    that does not lower the count does not land" was applied. What came back:
+    - **a vent is pinned at BOTH ends by the fixtures it serves.** PR-B-SAUNA-VENT,
+      PR-M-WC-VENT and PR-B-BATH-VENT touch 31 pairs between them and every alternative
+      for all three reports a NEW FAIL: the sauna's three drop it into RM-B-STAIR's or
+      RM-B-SAUNA's finished volume (77.8"/80.6" under the head line) or bore a 2x4 at
+      2.38"; the other two break `mep.vent_reachability` and `mep.trap_arm_length`
+      outright. A trap arm is measured to the NEAREST point of the serving run and
+      `vent_path.py` wants that run to land on the VentRun — so improving the middle of a
+      vent moves every arm hanging off it. The answer for this class is where the
+      fixtures are, not where the pipe goes.
+    - **the basement drains are out of head, as `min_drain_slope_margin_in_per_ft = 0.0`
+      already said.** PR-B-KITCH-DRAIN and PR-B-WC1-DRAIN's alternatives each break
+      `mep.drain_slope`, `mep.footing_clearance`, `mep.sewer_exit_invert` or
+      `mep.sleeve_coverage`. PR-M-S-BATH1-WC-DRAIN does not route at all: 1 of 4,016
+      lattice nodes is reachable from its origin, blocked by `DU-ERV-RISER-EXH` — the
+      18 5/8" exhaust riser, in the chase, which is a fact about the building.
+    - **`--level main` really is mandatory for a duct target, confirmed.**
+      `--run DU-M-ERV-R-STUDY` alone proposes a route diving to `inch(-124.625)`, ten feet
+      under the storey datum; with `--level main` every vertex comes back at `inch(-20)`.
+      It still does not land: the banded proposal bores 16 studs at 4.00", the same
+      arithmetic as the attic radials below.
+    - **PR-A-CW/HW-STUBATH are NOT the modelling gap they were recorded as.** Since the
+      supply tie-in derivation landed they derive their parents (PR-B-CW-SUITE /
+      PR-B-HW-SUITE) and the router proposes for both. Every alternative is still refused:
+      their clashes are at the TERMINALS (`DU-M-ERV-R-BED2`, `-LAUNDRY`) where a re-route
+      cannot reach, and the lanes that avoid those detour to x=0 — the exterior wall face.
   - **THE ATTIC ERV RADIALS CANNOT BE RE-LANED BY SEARCH, AND THIS WAS TRIED.** The largest
     class in the 145 is `DU-A-ERV-R-*`: several 4" radials drawn on ONE line at ONE elevation
     out of the manifold at (5', 34'-6") — e.g. `DU-A-ERV-R-ATTIC` and `DU-A-ERV-R-BATH1` share

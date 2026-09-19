@@ -323,6 +323,15 @@ suppress = [
   # interpenetrations remain in the NW column" since 2026-09-15, hand-measured over
   # x 0..7', y 32'..36'-6"; this is that same defect counted house-wide by a machine.
   #
+  # ** WHAT IS LEFT IS NOT A SEARCH PROBLEM, AND THAT WAS MEASURED ON 2026-09-19 RATHER
+  # THAN ASSUMED. ** Every routable class was run with `--alternatives 3 --evaluate`:
+  # the three worst vents (31 pairs between them) all break `mep.vent_reachability` or
+  # `mep.trap_arm_length` on every alternative, because a vent is pinned at BOTH ends by
+  # the fixtures it serves; the basement drains are out of head, which
+  # `min_drain_slope_margin_in_per_ft = 0.0` above already says; and the ERV ducts want a
+  # design answer (soffits, or authored lanes) because a 4" round duct is not bored
+  # through a stud. `plans/TODO.md` carries each refusal with its number.
+  #
   # ** WHY IT IS SUPPRESSED RATHER THAN FIXED TODAY. ** Fixing it is a routing campaign, not
   # an edit: every one of the 188 is a pair of authored lanes, and moving either end of
   # either run re-opens its own head budget, its bay occupancy and its member crossings.
