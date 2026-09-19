@@ -276,6 +276,85 @@ class GableEndTieRules:
 
 
 @dataclass(frozen=True)
+class PartitionDeflectionRules:
+    """The SDPW DEFLECTOR schedule at an interior partition's top plate.
+
+    A partition's framing stops a set distance clear of the structure above it
+    (``resolve/partition_top.py``) and a Strong-Drive SDPW spans that gap: a polymer sleeve
+    holds the plate off the joist or rafter, so the deck deflects onto nothing while the
+    wall is still braced laterally against out-of-plane load.
+
+    **A schedule, not a design** — the same footing as :class:`GableEndTieRules`. It says
+    how many screws and where; it grades nothing. Simpson DO publish allowables for this
+    screw (IAPMO UES ER-192 Table 37, transcribed onto the catalog records) and a maximum
+    spacing table with them, but this engine carries no interior-partition out-of-plane
+    load to compare either against, so the comparison is not available to be made here.
+    Every count below is well inside the published maximum spacing; grading that properly
+    is a ``PublishedSpan``, and it is named in ``plans/TODO.md``.
+
+    **The count is one screw per crossing, never a pitch along the plate**, because a screw
+    has to land IN something. That splits three ways and the third is a blocking condition
+    the model does not carry — see ``takeoff/partition_fasteners.py``.
+    """
+
+    #: The gap the sleeve sets, and the gap the plate was actually stopped at
+    #: (``resolve/partition.DEFLECTION_GAP_M``). Stated again here because this module may
+    #: not import ``resolve`` and because a schedule must be able to say what it assumed.
+    #: Simpson define it as "the space between the top surface of the top plate and the
+    #: lower surface of the supporting members", and warn that a 0" gap "may result in
+    #: unintended loading of the partition wall" — which is the failure this whole rule is
+    #: about (C-F-2025TECHSUP p. 100).
+    design_gap_in: float = 0.75
+    #: Into the supporting member, past the sleeve. **Published, not assumed**:
+    #: C-F-2025TECHSUP p. 100 — "Minimum penetration into the supporting member shall be
+    #: not less than 1/2 in for the SDPW14312 and SDPW14500. Minimum penetration into the
+    #: supporting member for the SDPW19600 shall be not less than 3/4 in. Penetration
+    #: length into the supporting member includes the point." One number here, and it is
+    #: the LARGER of the two: this house lands on the SDPW19600 (see
+    #: :attr:`built_up_plate_limit_in`), and 3/4 in is conservative for the 0.140 in ladder
+    #: rather than wrong for it.
+    minimum_embedment_in: float = 0.75
+    #: One top-plate course, nominal 2x laid flat.
+    single_plate_in: float = 1.5
+    #: **The number that decides the part.** Simpson publish the SDPW14500's allowables and
+    #: spacing "for the built-up top plate (maximum thickness 2-1/4 in) as well as the
+    #: single nominal 2x top plate", and the SDPW19600's "for the double 2x top plate and
+    #: thinner top plates" (C-F-2025TECHSUP p. 101). A double 2x is 3 in, so it is the 6 in
+    #: / 0.195 in screw that is published for it — not the 5 in, which reaches the joint
+    #: geometrically and is still the wrong row of the table.
+    built_up_plate_limit_in: float = 2.25
+    #: Beyond this the joint is not an SDPW joint at all: the 5 in and 6 in screws are
+    #: published for gaps up to 1-1/2 in and the 3-1/2 in only to 3/4 in (ER-192 Table 37
+    #: reads NA for the SDPW14312 at 1-1/2 in, and "cells with NA represent conditions that
+    #: should not be built"). Outside it the row is refused and reported, never billed.
+    maximum_gap_in: float = 1.5
+    #: How far below the design gap a measured crossing may read and still be that joint —
+    #: float slack plus the sub-1/32" a rake accumulates over a 20' wall.
+    gap_search_tolerance_in: float = 0.05
+    #: Resolved floor-member categories a screw may land in.
+    screwable_floor_categories: tuple = ("joist", "rim", "blocking")
+    #: And roof-member categories. A rafter and the ridge/eave blocking between them.
+    screwable_roof_categories: tuple = ("rafter", "blocking", "top_chord")
+    #: |sin| between the wall axis and the member above, under which the two are PARALLEL
+    #: and no crossing exists. ~5 degrees — the same bound ``joints/gable.py`` uses.
+    parallel_axis_tolerance: float = 0.09
+    #: How much of a parallel member has to stand over the plate before a screw can reach
+    #: it. Less than this and the wall is between members, not under one.
+    minimum_member_overlap_in: float = 1.0
+    #: Along a wall that runs UNDER a parallel member: fencepost both ends, so a 12'-0"
+    #: wall at 24" o.c. is seven screws and not six. The house module the tie plates,
+    #: mudsill anchors and gable-end ties already share, halved — a top-plate splice is the
+    #: joint this rhythm has to catch and it lands on the framing module.
+    along_member_pitch_in: float = 24.0
+    #: Screws per crossing. One: the plate cannot rotate about it, because the plate is
+    #: continuous and caught at every crossing along its run.
+    screws_per_crossing: int = 1
+    #: ``StructuralRole`` value a wall may not carry and still be a partition, as a STRING.
+    #: ``hardware`` is a leaf (``tests/test_package_leaves.py``) and may not import ``model``.
+    excluded_structural_role: str = "bearing"
+
+
+@dataclass(frozen=True)
 class HardwareTakeoffConfig:
     """The complete rule set behind :func:`typehaus.takeoff.hardware_takeoff`."""
 
@@ -289,6 +368,8 @@ class HardwareTakeoffConfig:
     knee_braces: KneeBraceRules = field(default_factory=KneeBraceRules)
     uplift: UpliftTieRules = field(default_factory=UpliftTieRules)
     gable_end_ties: GableEndTieRules = field(default_factory=GableEndTieRules)
+    partition_deflection: PartitionDeflectionRules = field(
+        default_factory=PartitionDeflectionRules)
     # The construction-return take-off category that marks a wood sill plate on concrete.
     sill_plate_takeoff_category: str = "pt-sill-plate"
 

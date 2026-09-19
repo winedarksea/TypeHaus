@@ -34,6 +34,10 @@ from typehaus.quantities import inch
 from typehaus.resolve.layer_bands import reband_for_platform
 from typehaus.resolve.layout_lines import lines_by_wall
 from typehaus.resolve.model import ResolvedModel
+
+# One definition of "partition", shared with ``partition_top``/``roof_geometry``:
+# three passes ask this and a second answer would be a second definition.
+from typehaus.resolve.partition import is_clad as _is_clad
 from typehaus.resolve.topology import site_grade_elevation_m_from_plan
 
 # A storey line is a joist band. Anything deeper is a real void (a stairwell, a
@@ -150,11 +154,6 @@ def _is_raked(model: ResolvedModel, wall: Any) -> bool:
     """
     authored = model.plan.by_tag(wall.tag)
     return isinstance(getattr(authored, "top", None), ToRoof)
-
-
-def _is_clad(wall: Any) -> bool:
-    """Does this wall carry a cladding layer — is it envelope, or is it partition?"""
-    return any(layer.function == "cladding" for layer in wall.layers)
 
 
 def _foundation_below(model: ResolvedModel, upper: Any) -> Any | None:

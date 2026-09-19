@@ -184,10 +184,14 @@ NODES = [
 # x=10' or anywhere else in here. The plates carry no less than the knee walls did; what
 # changed is that the load lands on the deck and the second-storey studs directly.
 #
-# ** DETAIL EVERY ToRoof TOP WITH A SLIP/DEFLECTION GAP ** so no partition picks up rafter load as
-# the ridge deflects. The model has no field for it, so it lives here — exactly as it does for
-# W-A-STU-N, the attic's other open-ended roof-height screen. (W-A-VE/W-A-VN were the precedent
-# cited here until 2026-08-29; the 6:12 rake retired both — see plan/storeys/attic.py's WALLS.)
+# ** THE SLIP/DEFLECTION GAP IS MODELLED NOW (2026-09-19) ** and this is no longer an
+# instruction to a framer reading source. `resolve/partition_top.py` tops every one of these
+# out 3/4" under the RAFTER SOFFIT — not the deck plane it used to rake to, which ran the
+# plate through the full 11-7/8" of the TJI — and a Simpson Strong-Drive SDPW19600 DEFLECTOR
+# screw spans the gap at every crossing: braced laterally, released vertically, so no
+# partition picks up rafter load as the ridge deflects. See notes/partition_top_deflection.md.
+# (W-A-VE/W-A-VN were the precedent cited here until 2026-08-29; the 6:12 rake retired both —
+# see plan/storeys/attic.py's WALLS.)
 WALLS = [
     # VOID | POCKET. Stands on W-S-BA-E1B / W-S-BA-E and, over the 4'-0" hall stub, on BM-S-BATH-E.
     #

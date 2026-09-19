@@ -76,6 +76,54 @@ because these are sized and their excavation is open for the basement anyway.
 
 ## Shell: framing module and envelope
 
+### Every interior partition top got a 3/4" deflection gap and an SDPW (2026-09-19)
+
+The attic's seven partitions resolved **11-7/8" too tall** — `apply_to_roof_wall_tops` rakes a
+`ToRoof` wall to the roof **deck** plane, so `W-A-STU-N` topped at 255"→315" where the TJI 230
+rafter soffit is 243-3/8"→303-3/8", and the studs and the raked double top plate ran through
+the whole rafter. `roof_underside_at` — docstring: *"what a wall below must reach"* — had been
+in that module the whole time, read by three checks and wired into no wall top. The other 51
+partitions carried the same error by the other route: `extend_walls_to_platform` lifts a wall
+to the storey datum, which is the **top** of the joists.
+
+Nothing caught it, and the reason is worth keeping: `checks/structural/interference.py`
+clears a plate-against-rafter contact unconditionally as a birdsmouth seat, which on a bearing
+wall it is.
+
+The fix is not "tight to the structure" but **3/4" clear of it**, because a partition packed
+against a deflecting deck is a prop carrying load it was never detailed for. That 3/4" is the
+sleeve on a Simpson **SDPW19600 DEFLECTOR** screw, which restrains the wall laterally and
+releases it vertically. 58 partitions, 188 screws. Full reasoning, the product table and the
+two open documents: `notes/partition_top_deflection.md`.
+
+Two things decided in passing that are easy to get wrong later:
+
+* **Only the FRAMING top moved.** Cutting the body (`z1_m`) at the joist soffit as well was
+  simulated and costs four new FAILs — a 12-5/8" slot in `ST-S2A`'s stair enclosure
+  (`code.R312_1_1_stair_open_side`) and three basement risers standing outside their own wet
+  wall (`mep.wet_wall_occupancy`). ~220 sf of gypsum is still billed through the joist band on
+  the storey lines as a result. That is a design pass, not a resolve fix.
+* **The part is the 6" screw and not because 6" reaches.** 4.50" is required and the 5"
+  SDPW14500 clears it — but Simpson publish that screw for a single 2x or a built-up plate to
+  2-1/4" and the SDPW19600 for the DOUBLE 2x this house frames. A different shank, pilot and
+  driver (T-40) followed.
+
+### The shortest stud on `W-A-STU-N` is 1-1/4", and that is a separate finding (2026-09-19)
+
+Dropping the attic plates to the rafter soffit made `integrity.wall_shorter_than_plates` fire
+UNKNOWN on `W-A-SN` and `W-A-STU-N` — both read **2-3/8"** against a 4.5" plate stack. Both are
+false positives and the members prove it: `_wall_top_elevations` reads the rake at station 0,
+and the framing on `W-A-STU-N` starts at station **6"** (its end stud is inset by the tee into
+`W-A-W1`) and on `W-A-SN` at 3-3/8". Nothing frames to a negative length at an elevation no
+member stands at, so the finding's own justifying docstring was false on that geometry. It now
+grades `max(_wall_top_elevations(rw))`; a wall short at *both* ends still fires. Suppressing it
+was rejected — `[checks] suppress` is for a debt with a number on it, and this was a wrong
+finding hiding a real one.
+
+**The real one, recorded here rather than fixed:** the shortest stud on `W-A-STU-N` really is
+**1-1/4"**. That is a MEMBER-level finding, not a wall-level one (`short_post_findings` is the
+precedent for the shape), and it will light up on walls this change never touched. Not done.
+
 ### The girt screw went engineered, and the screw itself was replaced (2026-09-12)
 
 `plans/buildability.md` BLD-01b's first finding was that the crossing screw has thread

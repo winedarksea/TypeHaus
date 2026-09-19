@@ -21,6 +21,45 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ## Remaining Work
 
+- **The SDPW's published spacing table is read but not GRADED, and the joist maker's side is
+  not read at all.** `takeoff/partition_fasteners.py` bills 188 SDPW19600s at every interior
+  partition top as a *schedule*: one per crossing, 24" o.c. under a parallel member, one
+  blocked bay per module between them. Simpson publish a **Maximum SDPW Deflector Screw
+  Spacing** table (8'/10' walls at 5 psf, C_D = 1.6) whose worst case for this part is
+  **42"/36"**, and the schedule sits inside it — but that is an assertion in a comment, not a
+  `PublishedSpan` a reviewer can re-read against the model. It should be one: it is a
+  published manufacturer table, so a prescriptive read and not an engineered item (root
+  `CLAUDE.md`). Not `engineered()` — this engine carries no interior-partition out-of-plane
+  load to compare a capacity against, so neither half of a ratio exists.
+  The other half is wholly unread: **every member these screws land in is an engineered
+  product** — 11-7/8" TJI 230 rafters, I-joists, open-web floor trusses. ER-192 permits them
+  at a flange ≥ 1-1/8", but the JOIST maker's own fastener rules govern as much as Simpson's
+  and nobody has opened TJ-4000 or a truss fabricator's schedule on this joint. Source for
+  both: IAPMO UES ER-192 Table 37 and C-F-2025TECHSUP pp. 100-101;
+  `houses/catlin/notes/partition_top_deflection.md`.
+
+- **The blocking an SDPW lands in, where a partition runs BETWEEN the framing above, is billed
+  nowhere.** 80 of the 188 screws are that case. It is a required framing condition the model
+  does not carry — `resolve/floor_blocking.py` blocks a bearing line *under* a wall, which is
+  the mirror joint. The row's `basis` says so; the lumber still is not on anybody's order.
+
+- **~220 sf of gypsum is still billed through the joist band** on every storey-line partition.
+  `resolve/partition_top.py` deliberately moves only the FRAMING top: cutting the body at the
+  joist soffit as well costs four FAILs (`code.R312_1_1_stair_open_side` on `ST-S2A`,
+  `mep.wet_wall_occupancy` x3 on the basement and suite risers). Answering it means moving
+  `W-S-SS2`'s guard coverage and re-authoring three riser extents — a design pass.
+
+- **`structural.member_interference` cannot see a plate inside a rafter.**
+  `checks/structural/interference.py` clears a plate-against-rafter contact unconditionally as
+  a birdsmouth seat, which is right for a bearing wall and is why the attic partitions stood
+  11-7/8" inside their rafters undetected for the life of the model. The clause's own comment
+  already calls moving interference onto the IR "a separate and larger job".
+
+- **A member-level short-framing finding.** `integrity.wall_shorter_than_plates` grades a
+  WALL; the real defect it was masking in the attic is that the shortest stud on `W-A-STU-N`
+  is **1-1/4"**. `resolve/framing/solver.py::short_post_findings` is the precedent for the
+  shape. It will light up on walls the partition-top change never touched.
+
 - **`PT-BW-W`/`-GW` carry a beam end and a 6x6's `ABU66SS` base on the same 12" circle.** A
   real volumetric overlap, ungraded at 0 FAIL. Same x=6'-0" congestion as the open
   `W-BW-SCREEN` plate item below, and exactly the condition the dead pedestal existed for.

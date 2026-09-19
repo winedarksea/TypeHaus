@@ -97,11 +97,20 @@ def test_the_basement_to_main_line_is_clad_over_the_mudsill_and_rim(catlin_model
 
 
 def test_lifted_walls_keep_their_plate_at_the_old_ceiling(catlin_model):
+    """The plate never rises above the body, and never sinks a whole storey below it.
+
+    ``plate_top_z_m`` has TWO writers now. ``extend_walls_to_platform`` sets it where it
+    lifts a wall through a joist band, and ``partition_top.apply_partition_tops`` sets it on
+    every full-height interior partition — stopping the framing 3/4" under the structure
+    over it. So ``<=`` rather than ``<``: a partition the second pass RAISED to meet the
+    joist soffit (catlin's basement authors 8'-0" in a 8'-0 1/16" storey) takes its body up
+    with it and the two end level, which is a wall with no band left, not a broken one.
+    """
     lifted = [w for w in catlin_model.walls if w.plate_top_z_m is not None]
     assert lifted, "expected catlin walls to be extended to the platform above"
     for w in lifted:
-        assert w.plate_top_z_m < w.z1_m
-        assert w.z1_m - w.plate_top_z_m <= inch(24).meters
+        assert w.plate_top_z_m <= w.z1_m + 1e-9, w.tag
+        assert w.z1_m - w.plate_top_z_m <= inch(24).meters, w.tag
 
 
 def test_catlin_exterior_loops_are_authored_counter_clockwise(catlin_model):

@@ -615,6 +615,21 @@ def _short_wall_finding(plan: PlanModel, rw: ResolvedWall) -> list[Finding]:
     fails. The wall that wants to be this short is a course of lumber laid flat, and there
     is a field that says so.
 
+    **Graded at the TALL end, not the short one**, which matters only on a raked wall and
+    matters absolutely there. ``_wall_top_elevations`` reports the rake read at stations 0
+    and 1 — the ends of the *axis* — and on a wall that rakes into an eave no member ever
+    stands at the low one: catlin's ``W-A-STU-N`` frames from station 6" (its end stud is
+    inset by the tee into ``W-A-W1``) and ``W-A-SN`` from 3 3/8", so the 2 3/8" this used to
+    read is an elevation of empty air. Nothing frames to a negative length there and nothing
+    stacks through the sole plate, so the paragraph above — the finding's own justification —
+    is simply false on that geometry. A wall 62" tall at its other end is not a course of
+    lumber laid flat, and ``wall_frame='plate'`` is nonsense advice for it. A wall short at
+    *both* ends still fires, which is the shape the finding was written for.
+
+    What this does NOT cover is the real defect underneath: the shortest stud on
+    ``W-A-STU-N`` is 1 1/4". That is a *member*-level finding (``short_post_findings`` is the
+    precedent) and is recorded as a follow-up rather than smuggled in here.
+
     WARN/UNKNOWN rather than ERROR on purpose. It is a modelling gap, not a violation, and
     the tri-state is what this repo uses to say "cannot evaluate" without turning a house red.
     """
@@ -627,7 +642,7 @@ def _short_wall_finding(plan: PlanModel, rw: ResolvedWall) -> list[Finding]:
         return []
     courses = 1 + (2 if spec.double_top_plate and not spec.advanced_framing else 1)
     stack_m = courses * 1.5 * 0.0254
-    height_m = min(_wall_top_elevations(rw)) - rw.base_ref_z_m
+    height_m = max(_wall_top_elevations(rw)) - rw.base_ref_z_m
     if height_m + 1e-9 >= stack_m:
         return []
     return [Finding(
@@ -819,8 +834,10 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             wall_post_bands = post_bands(wall_posts, rw.axis[0],
                                          unit(sub(rw.axis[1], rw.axis[0])))
             findings.extend(short_post_findings(
+                # ``max``, for the reason ``_short_wall_finding`` gives: on a raked wall
+                # the low axis end is an elevation no member stands at.
                 wall_posts, rw.tag,
-                min(_wall_top_elevations(rw)) - rw.base_ref_z_m))
+                max(_wall_top_elevations(rw)) - rw.base_ref_z_m))
         else:
             wall_post_bands = ()
         members = frame_wall(plan, rw, by_host.get(rw.tag, []),

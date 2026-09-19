@@ -33,6 +33,7 @@ from typehaus.resolve.mep import resolve_mep
 from typehaus.resolve.millwork import resolve_millwork
 from typehaus.resolve.model import BoundaryCondition, ResolvedModel, ResolvedOpening
 from typehaus.resolve.paneling import resolve_paneling
+from typehaus.resolve.partition_top import apply_partition_tops
 from typehaus.resolve.placeables import resolve_placeables
 from typehaus.resolve.platform import (
     extend_walls_to_foundation,
@@ -99,6 +100,11 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         # heel-plus-chord short of it (a band of daylight at the gable).
         apply_truss_heel_lift(model)
         apply_to_roof_wall_tops(model)
+        # An interior partition's framing stops 3/4" under whatever is over it — the
+        # rafter soffit in the attic, the joist or SIP soffit everywhere else. Strictly
+        # after the rake, which hands its partitions over rather than raking them, and
+        # strictly before framing, which reads the plate elevation this writes.
+        apply_partition_tops(model)
     with _stage("construction"):
         # Pre-framing (#45): apply authored ConstructionRule returns (sill/foam/liner/masonry
         # laps) as construction geometry + take-off + overlay data, before members are framed.
@@ -207,6 +213,9 @@ def resolve_preview(plan: PlanModel) -> ResolvedModel:
     resolve_envelope_geometry(model)
     apply_truss_heel_lift(model)
     apply_to_roof_wall_tops(model)
+    # Both call sites, always: a preview that skipped this would draw a different building
+    # from the one the build produces, which is the drag preview's whole contract.
+    apply_partition_tops(model)
     resolve_rooms(plan, model)
     resolve_placeables(plan, model)
     return model

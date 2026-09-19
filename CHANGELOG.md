@@ -4,6 +4,59 @@ All notable changes to `typehaus`. This project follows [semantic versioning](ht
 
 ## Unreleased
 
+- **A partition's top plate stops 3/4" clear of the structure above it, and an SDPW holds it
+  there.** The attic's seven partitions resolved **11-7/8" too tall**:
+  `resolve/roof_geometry.apply_to_roof_wall_tops` rakes a `ToRoof` wall to the roof **deck**
+  plane, so studs and the raked double top plate ran through the full depth of the TJI 230
+  rafter above. `roof_underside_at` — whose docstring reads *"what a wall below must reach"* —
+  had sat in that same module the whole time, read by three checks and wired into no wall top.
+  The other 51 partitions carried the same error by the other route:
+  `extend_walls_to_platform` lifts a wall to the storey datum, which is the **top** of the
+  joists. Nothing caught either, because `checks/structural/interference.py` clears a
+  plate-against-rafter contact unconditionally as a birdsmouth seat.
+  - **One rule, one writer.** New `resolve/partition.py` (the predicate three passes share)
+    and `resolve/partition_top.py` (the only thing that writes a partition's framing top).
+    The rake branch subtracts one constant from the rafter soffit at each end, which keeps the
+    plate parallel to the rafters; the deck branch takes the **minimum** underside over the
+    wall, because a `ResolvedWall` carries one flat top and the low reading is the one that
+    never runs into structure. No structure above ⇒ the wall is left alone, never guessed at.
+  - **Only the FRAMING top moves.** `plate_top_z_m`/`top_z*_m` are this pass's;
+    `z1_m` — the layer prisms, the gypsum bill, the stair-enclosure extent, the wet wall a
+    riser climbs — stays with `platform.py`. Cutting the body at the joist soffit too was
+    simulated against the full registry and costs **four new FAILs** (a 12-5/8" slot in
+    `ST-S2A`'s stair enclosure, three basement risers outside their own wet wall). The body
+    follows the plate DOWN where it falls and UP where it rises, and never below the storey
+    line it was lifted to. `tests/test_partition_top.py` states the contract so it cannot be
+    quietly re-collapsed.
+  - **Two gates that are not optional.** The `bearing_refs` sweep is generic over element
+    kinds — a `Stair` and a `FloorOpening` carry the field, and they hold `W-S-SS2` and
+    `W-S-SN3` — and `runs_full_storey_height` keeps a room inside a room out (the sauna hot
+    room, the tub-deck curbs, the fireplace wythe segments, the screen skirt). 58 walls move.
+  - **`integrity.wall_shorter_than_plates` now grades a raked wall at its TALL end.** It fired
+    2-3/8" on `W-A-SN`/`W-A-STU-N` — an elevation at which no member stands, since their
+    framing starts at station 3-3/8" and 6". A wall short at *both* ends still fires. Not
+    suppressed: a wrong finding hiding a real one (the 1-1/4" stud) is not a debt with a
+    number on it.
+  - **The SDPW DEFLECTOR is a new fastener role**, and the one screw in the catalog that must
+    **not clamp**: a polymer sleeve holds the plate clear while the point is driven home, so
+    the joint is restrained laterally and released vertically. `takeoff/partition_fasteners.py`
+    counts one per crossing, a 24" pitch under a parallel member, and one blocked bay per
+    framing module between them — never a pitch along the plate, because a screw has to land
+    in something. **The blocking lumber is billed nowhere** and the row's basis says so.
+    Catlin bills **188 SDPW19600**, and the part is the 6"/0.195" one *not* because 6" reaches
+    4.50": Simpson publish the 5" SDPW14500 for a single 2x or a built-up plate to 2-1/4" and
+    the SDPW19600 for the DOUBLE 2x this house frames. Allowables transcribed from IAPMO UES
+    ER-192 Table 37 (165 lbf lateral at a 3/4" gap, C_D = 1.6, SPF) with `uplift_lb` left
+    `None` and required to stay so.
+  - **A measured gap outside the sleeve's range bills nothing and is reported** — three catlin
+    partitions, two of them under `SL-M-DECK`'s SIP soffit, which has no wood in it. The
+    refusal rides on the basis of the rows that were billed: a zero-count line with no part
+    number reaches the per-trade RFQ and the S-series schedule as an order line for nothing.
+  - `joints/bearing._crossing` promoted to `hardware/plan_geometry.segment_crossing`, now
+    returning both fractions so a caller can interpolate an elevation on either member.
+  - Quantities: gypsum 5/8" **10,272.3 → 10,145.8 sf**, cabinet-plywood 276.6 → 257.6,
+    latex-paint −10.5 sf, cavity fibreglass −5.2 sf, 2x4 stud −67.9 LF cut.
+
 - **A heat pump is a table, not two numbers — and it short-cycles.** The third and last pass
   on the block load, and the one the first two were for. `EquipmentType` carried
   `heating_capacity_btuh` (47 °F) and `heating_capacity_at_design_btuh`, and the catalog's own

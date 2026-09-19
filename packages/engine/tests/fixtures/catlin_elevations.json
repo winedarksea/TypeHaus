@@ -1925,27 +1925,27 @@
 ],
 "geometry/21GE85HJDT/layer:gwb-a": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/21GE85HJDT/layer:gwb-b": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/21GE85HJDT/layer:stud": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/21GE85HJDT::framing/member:corner-start": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/21GE85HJDT::framing/member:plate-bottom": [
 0.0,
@@ -1954,40 +1954,40 @@
 "c1d27a37c961"
 ],
 "geometry/21GE85HJDT::framing/member:plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 8,
-"969cf62a92d4"
+"c0354c2dc5c5"
 ],
 "geometry/21GE85HJDT::framing/member:plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 8,
-"ba74e63dc3f4"
+"6d371ae8a315"
 ],
 "geometry/21GE85HJDT::framing/member:stud-000": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/21GE85HJDT::framing/member:stud-001": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/21GE85HJDT::framing/member:stud-002": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/21GE85HJDT::framing/member:stud-003": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/225MZ1YDWB-run/body": [
 -0.8594725,
@@ -2201,27 +2201,27 @@
 ],
 "geometry/3TKS0Y8EH7/layer:gwb-a": [
 6.096,
-8.001,
+7.680325,
 18,
-"5b9935052fae"
+"c5fcd313de74"
 ],
 "geometry/3TKS0Y8EH7/layer:gwb-b": [
 6.096,
-8.001,
+7.680325,
 18,
-"5b9935052fae"
+"c5fcd313de74"
 ],
 "geometry/3TKS0Y8EH7/layer:stud": [
 6.096,
-8.001,
+7.680325,
 18,
-"5b9935052fae"
+"c5fcd313de74"
 ],
 "geometry/3TKS0Y8EH7::framing/member:cripple-head-0-01": [
 7.19455,
-7.6708,
+7.350125,
 8,
-"4db2256cd84c"
+"0b245601fb09"
 ],
 "geometry/3TKS0Y8EH7::framing/member:header-0": [
 7.0104,
@@ -2243,15 +2243,15 @@
 ],
 "geometry/3TKS0Y8EH7::framing/member:king-0-l0": [
 6.1341,
-7.439025,
+7.11835,
 8,
-"88353b7215c7"
+"49e934cf5ce0"
 ],
 "geometry/3TKS0Y8EH7::framing/member:king-0-r0": [
 6.1341,
-7.800975,
+7.4803,
 8,
-"66ac89546fc0"
+"4f333e9c85ca"
 ],
 "geometry/3TKS0Y8EH7::framing/member:plate-bottom": [
 6.096,
@@ -2260,64 +2260,64 @@
 "fe8fba95edce"
 ],
 "geometry/3TKS0Y8EH7::framing/member:plate-raked-0": [
-6.5151,
-8.001,
+6.194425,
+7.680325,
 8,
-"abc593b57559"
+"d735a32a1e16"
 ],
 "geometry/3TKS0Y8EH7::framing/member:plate-raked-1": [
-6.477,
-7.9629,
+6.156325,
+7.642225,
 8,
-"6fa2bb4273a9"
+"3ea16330e294"
 ],
 "geometry/3TKS0Y8EH7::framing/member:stud-000": [
+6.1341,
+6.16585,
+8,
+"27462ca7cff9"
+],
+"geometry/3TKS0Y8EH7::framing/member:stud-001": [
+6.1341,
+6.283325,
+8,
+"c3614931873b"
+],
+"geometry/3TKS0Y8EH7::framing/member:stud-002": [
 6.1341,
 6.486525,
 8,
 "2fb33c72ae6f"
 ],
-"geometry/3TKS0Y8EH7::framing/member:stud-001": [
-6.1341,
-6.604,
-8,
-"ac7f29784bc9"
-],
-"geometry/3TKS0Y8EH7::framing/member:stud-002": [
-6.1341,
-6.8072,
-8,
-"7890b5c82930"
-],
 "geometry/3TKS0Y8EH7::framing/member:stud-003": [
 6.1341,
-7.0104,
+6.689725,
 8,
-"1f615bfdb1f1"
+"8689dca82d8e"
 ],
 "geometry/3TKS0Y8EH7::framing/member:stud-004": [
 6.1341,
-7.2136,
+6.892925,
 8,
-"ba99a9dfb97e"
+"5630be7afa6f"
 ],
 "geometry/3TKS0Y8EH7::framing/member:stud-005": [
 6.1341,
-7.4168,
+7.096125,
 8,
-"5bda6faa5abc"
+"1213cf63e593"
 ],
 "geometry/3TKS0Y8EH7::framing/member:stud-006": [
 6.1341,
-7.8232,
+7.502525,
 8,
-"ebf92104816b"
+"ad97da4249d4"
 ],
 "geometry/3TKS0Y8EH7::framing/member:stud-007": [
 6.1341,
-7.9248,
+7.604125,
 8,
-"c99a704833d2"
+"371594fad627"
 ],
 "geometry/3VR28WJF1E/body": [
 -0.45212,
@@ -2645,9 +2645,9 @@
 ],
 "geometry/8BRZAXSW73::framing/member:cripple-head-0-01": [
 -0.5635625,
--0.4175125,
+-0.396875,
 8,
-"b9462e373bac"
+"fb2c7d7f13d1"
 ],
 "geometry/8BRZAXSW73::framing/member:header-0": [
 -0.7477125,
@@ -2669,15 +2669,15 @@
 ],
 "geometry/8BRZAXSW73::framing/member:king-0-l0": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/8BRZAXSW73::framing/member:king-0-r0": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/8BRZAXSW73::framing/member:plate-bottom": [
 -2.7797125,
@@ -2686,64 +2686,64 @@
 "6feb3b34ad8e"
 ],
 "geometry/8BRZAXSW73::framing/member:plate-top-0": [
--0.3794125,
--0.3413125,
+-0.358775,
+-0.320675,
 8,
-"0ce1d8a6488d"
+"df5d874a4064"
 ],
 "geometry/8BRZAXSW73::framing/member:plate-top-1": [
--0.4175125,
--0.3794125,
+-0.396875,
+-0.358775,
 8,
-"3b0cbbb86f77"
+"d1e2739ad916"
 ],
 "geometry/8BRZAXSW73::framing/member:stud-000": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/8BRZAXSW73::framing/member:stud-001": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/8BRZAXSW73::framing/member:stud-002": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/8BRZAXSW73::framing/member:stud-003": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/8BRZAXSW73::framing/member:stud-004": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/8BRZAXSW73::framing/member:stud-005": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/8BRZAXSW73::framing/member:stud-006": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/8BRZAXSW73::framing/member:stud-007": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/8BRZAXSW73::framing/member:tee-N-B-BA-NE-block-00": [
 -2.1320125,
@@ -2801,21 +2801,21 @@
 ],
 "geometry/9AYPA03VAE/layer:gwb-a": [
 -2.7797125,
--0.3413125,
+-0.320675,
 2,
-"c0fa4924d6c7"
+"a1269395efc9"
 ],
 "geometry/9AYPA03VAE/layer:gwb-b": [
 -2.7797125,
--0.3413125,
+-0.320675,
 2,
-"c0fa4924d6c7"
+"a1269395efc9"
 ],
 "geometry/9AYPA03VAE/layer:stud": [
 -2.7797125,
--0.3413125,
+-0.320675,
 2,
-"c0fa4924d6c7"
+"a1269395efc9"
 ],
 "geometry/9HX5HSKNWD/layer:ply-bay": [
 0.01905,
@@ -2885,21 +2885,21 @@
 ],
 "geometry/9WC345CCP1/layer:gwb-a": [
 6.096,
-8.001,
+7.680325,
 6,
-"5b21386cb8ca"
+"612163f83ba7"
 ],
 "geometry/9WC345CCP1/layer:gwb-b": [
 6.096,
-8.001,
+7.680325,
 6,
-"5b21386cb8ca"
+"612163f83ba7"
 ],
 "geometry/9WC345CCP1/layer:stud": [
 6.096,
-8.001,
+7.680325,
 8,
-"f77b55698f1a"
+"65650ceffa99"
 ],
 "geometry/9WC345CCP1::framing/member:plate-bottom": [
 6.096,
@@ -2908,82 +2908,82 @@
 "fe8fba95edce"
 ],
 "geometry/9WC345CCP1::framing/member:plate-top-0": [
-7.9629,
-8.001,
+7.642225,
+7.680325,
 8,
-"f11ff93279c9"
+"fe5965e2a486"
 ],
 "geometry/9WC345CCP1::framing/member:plate-top-1": [
-7.9248,
-7.9629,
+7.604125,
+7.642225,
 8,
-"1df310a0bfb4"
+"adbf54cef178"
 ],
 "geometry/9WC345CCP1::framing/member:stud-000": [
 6.1341,
-7.9248,
+7.604125,
 8,
-"c99a704833d2"
+"371594fad627"
 ],
 "geometry/9WC345CCP1::framing/member:stud-001": [
 6.1341,
-7.9248,
+7.604125,
 8,
-"c99a704833d2"
+"371594fad627"
 ],
 "geometry/9WC345CCP1::framing/member:stud-002": [
 6.1341,
-7.9248,
+7.604125,
 8,
-"c99a704833d2"
+"371594fad627"
 ],
 "geometry/9WC345CCP1::framing/member:stud-003": [
 6.1341,
-7.9248,
+7.604125,
 8,
-"c99a704833d2"
+"371594fad627"
 ],
 "geometry/9WC345CCP1::framing/member:stud-004": [
 6.1341,
-7.9248,
+7.604125,
 8,
-"c99a704833d2"
+"371594fad627"
 ],
 "geometry/9WC345CCP1::framing/member:stud-005": [
 6.1341,
-7.9248,
+7.604125,
 8,
-"c99a704833d2"
+"371594fad627"
 ],
 "geometry/9WC345CCP1::framing/member:stud-006": [
 6.1341,
-7.9248,
+7.604125,
 8,
-"c99a704833d2"
+"371594fad627"
 ],
 "geometry/9WC345CCP1::framing/member:stud-007": [
 6.1341,
-7.9248,
+7.604125,
 8,
-"c99a704833d2"
+"371594fad627"
 ],
 "geometry/9WC345CCP1::framing/member:stud-008": [
 6.1341,
-7.9248,
+7.604125,
 8,
-"c99a704833d2"
+"371594fad627"
 ],
 "geometry/9WC345CCP1::framing/member:stud-009": [
 6.1341,
-7.9248,
+7.604125,
 8,
-"c99a704833d2"
+"371594fad627"
 ],
 "geometry/9WC345CCP1::framing/member:stud-010": [
 6.1341,
-7.9248,
+7.604125,
 8,
-"c99a704833d2"
+"371594fad627"
 ],
 "geometry/A4BAA399PA/exterior_trim": [
 4.2352,
@@ -9119,33 +9119,33 @@
 ],
 "geometry/CAW113AAAA/layer:case-back": [
 6.096,
-9.1772105,
+8.8565355,
 18,
-"2329ec06b057"
+"fd5e88605dc1"
 ],
 "geometry/CAW113AAAA/layer:case-pocket": [
 6.096,
-9.1772105,
+8.8565355,
 18,
-"2329ec06b057"
+"fd5e88605dc1"
 ],
 "geometry/CAW113AAAA/layer:gwb-n": [
 6.096,
-9.1772105,
+8.8565355,
 18,
-"2329ec06b057"
+"fd5e88605dc1"
 ],
 "geometry/CAW113AAAA/layer:nailer-n": [
 6.096,
-9.1772105,
+8.8565355,
 18,
-"2329ec06b057"
+"fd5e88605dc1"
 ],
 "geometry/CAW113AAAA/layer:stud-case": [
 6.096,
-9.1772105,
+8.8565355,
 18,
-"2329ec06b057"
+"fd5e88605dc1"
 ],
 "geometry/CAW113AAAA::framing/member:blocking-0-001": [
 7.3533,
@@ -9165,17 +9165,11 @@
 8,
 "38b1609d902b"
 ],
-"geometry/CAW113AAAA::framing/member:blocking-0-004": [
-7.3533,
-7.3914,
-8,
-"38b1609d902b"
-],
 "geometry/CAW113AAAA::framing/member:cripple-head-0-01": [
 8.31215,
-8.7249,
+8.404225,
 8,
-"aad5eb5645e9"
+"32ac4db32102"
 ],
 "geometry/CAW113AAAA::framing/member:header-0": [
 8.128,
@@ -9197,15 +9191,15 @@
 ],
 "geometry/CAW113AAAA::framing/member:king-0-l0": [
 6.1341,
-8.956675,
+8.636,
 8,
-"31048818df22"
+"488f79c86510"
 ],
 "geometry/CAW113AAAA::framing/member:king-0-r0": [
 6.1341,
-8.518525,
+8.19785,
 8,
-"4ac1817c64c6"
+"149da11999ea"
 ],
 "geometry/CAW113AAAA::framing/member:plate-bottom": [
 6.096,
@@ -9214,166 +9208,166 @@
 "fe8fba95edce"
 ],
 "geometry/CAW113AAAA::framing/member:plate-raked-0": [
-6.5151,
-9.1772105,
+6.194425,
+8.8565355,
 8,
-"909cf0927e87"
+"1e8b09acc5f5"
 ],
 "geometry/CAW113AAAA::framing/member:plate-raked-1": [
-6.477,
-9.1391105,
+6.156325,
+8.8184355,
 8,
-"4cbfa76ee7c5"
+"6f56577f6286"
 ],
 "geometry/CAW113AAAA::framing/member:strapping-nailer-n-000": [
 6.096,
-9.1549855,
+8.8343105,
 8,
-"3a2716352284"
+"49dc7edf8584"
 ],
 "geometry/CAW113AAAA::framing/member:strapping-nailer-n-001": [
 8.128,
-9.017,
+8.696325,
 8,
-"dcf01256d9cf"
+"9a71f3e985b2"
 ],
 "geometry/CAW113AAAA::framing/member:strapping-nailer-n-002": [
 8.128,
-8.8138,
+8.493125,
 8,
-"b46d21cb5578"
+"5168e8a5caed"
 ],
 "geometry/CAW113AAAA::framing/member:strapping-nailer-n-003": [
 8.128,
-8.6106,
+8.289925,
 8,
-"b39c47bd862b"
+"ee466fbfb438"
 ],
 "geometry/CAW113AAAA::framing/member:strapping-nailer-n-004": [
 6.096,
-8.4074,
+8.086725,
 8,
-"010a878c75e9"
+"a27609d2443d"
 ],
 "geometry/CAW113AAAA::framing/member:strapping-nailer-n-005": [
 6.096,
-8.2042,
+7.883525,
 8,
-"edd084e049db"
+"4f77580122b7"
 ],
 "geometry/CAW113AAAA::framing/member:strapping-nailer-n-006": [
 6.096,
-8.001,
+7.680325,
 8,
-"002d9c8915bf"
+"43eb88757879"
 ],
 "geometry/CAW113AAAA::framing/member:strapping-nailer-n-007": [
 6.096,
-7.7978,
+7.477125,
 8,
-"61de96e9cde5"
+"a6ff5d483b55"
 ],
 "geometry/CAW113AAAA::framing/member:strapping-nailer-n-008": [
 6.096,
-7.5946,
+7.273925,
 8,
-"6eedf121607b"
+"ef1d7eb7b701"
 ],
 "geometry/CAW113AAAA::framing/member:strapping-nailer-n-009": [
 6.096,
-7.3914,
+7.070725,
 8,
-"03ad68635f57"
+"1663b91d8b03"
 ],
 "geometry/CAW113AAAA::framing/member:strapping-nailer-n-010": [
 6.096,
-7.1882,
+6.867525,
 8,
-"8b7c4dd3f9f3"
+"fcc57e92d1bd"
 ],
 "geometry/CAW113AAAA::framing/member:strapping-nailer-n-011": [
 6.096,
-6.985,
+6.664325,
 8,
-"865e690aac88"
+"464c19313b0e"
 ],
 "geometry/CAW113AAAA::framing/member:strapping-nailer-n-012": [
 6.096,
-6.7818,
+6.461125,
 8,
-"0c7c2695156a"
+"faf75d181196"
 ],
 "geometry/CAW113AAAA::framing/member:strapping-nailer-n-013": [
 6.096,
-6.575425,
+6.25475,
 8,
-"4c4e40fa66aa"
+"a0760d5a9566"
 ],
 "geometry/CAW113AAAA::framing/member:stud-000": [
 6.1341,
-9.0914855,
+8.7708105,
 8,
-"44ab1f00542a"
+"504c0d54350b"
 ],
 "geometry/CAW113AAAA::framing/member:stud-001": [
 6.1341,
-8.3312,
+8.010525,
 8,
-"bfbf3c04d1eb"
+"c01af6959a85"
 ],
 "geometry/CAW113AAAA::framing/member:stud-002": [
 6.1341,
-8.128,
+7.807325,
 8,
-"c983d34397c3"
+"e47c93b06b04"
 ],
 "geometry/CAW113AAAA::framing/member:stud-003": [
 6.1341,
-7.9248,
+7.604125,
 8,
-"c99a704833d2"
+"371594fad627"
 ],
 "geometry/CAW113AAAA::framing/member:stud-004": [
 6.1341,
-7.7216,
+7.400925,
 8,
-"98c2a978a8d1"
+"502ac61892d2"
 ],
 "geometry/CAW113AAAA::framing/member:stud-005": [
 6.1341,
-7.5184,
+7.197725,
 8,
-"24e2ce3ad7d8"
+"d1faa022712f"
 ],
 "geometry/CAW113AAAA::framing/member:stud-006": [
 6.1341,
-7.3152,
+6.994525,
 8,
-"bae424f0e595"
+"e0530b722881"
 ],
 "geometry/CAW113AAAA::framing/member:stud-007": [
 6.1341,
-7.112,
+6.791325,
 8,
-"0aa2550200d7"
+"81c246d35ca8"
 ],
 "geometry/CAW113AAAA::framing/member:stud-008": [
 6.1341,
-6.9088,
+6.588125,
 8,
-"0d1a644fbc8c"
+"75e0b0365be3"
 ],
 "geometry/CAW113AAAA::framing/member:stud-009": [
 6.1341,
-6.7056,
+6.384925,
 8,
-"3b8b859180ed"
+"95cde312b078"
 ],
 "geometry/CAW113AAAA::framing/member:stud-010": [
 6.1341,
-6.486525,
+6.16585,
 8,
-"2fb33c72ae6f"
+"27462ca7cff9"
 ],
 "geometry/CAW115AAAA/layer:gwb-a": [
 6.096,
@@ -10733,33 +10727,33 @@
 ],
 "geometry/CBW114AAAA/layer:gwb-a": [
 -2.7797125,
--0.3413125,
+-0.320675,
 6,
-"9bbec3881b04"
+"d0d1b87134aa"
 ],
 "geometry/CBW114AAAA/layer:gwb-b": [
 -2.7797125,
--0.3413125,
+-0.320675,
 6,
-"9bbec3881b04"
+"d0d1b87134aa"
 ],
 "geometry/CBW114AAAA/layer:paint-a": [
 -2.7797125,
--0.3413125,
+-0.320675,
 6,
-"9bbec3881b04"
+"d0d1b87134aa"
 ],
 "geometry/CBW114AAAA/layer:paint-b": [
 -2.7797125,
--0.3413125,
+-0.320675,
 6,
-"9bbec3881b04"
+"d0d1b87134aa"
 ],
 "geometry/CBW114AAAA/layer:stud": [
 -2.7797125,
--0.3413125,
+-0.320675,
 6,
-"9bbec3881b04"
+"d0d1b87134aa"
 ],
 "geometry/CBW114AAAA::framing/member:backing-0-000": [
 -1.9669125,
@@ -10799,15 +10793,15 @@
 ],
 "geometry/CBW114AAAA::framing/member:cripple-head-0-01": [
 -0.5635625,
--0.4175125,
+-0.396875,
 8,
-"b9462e373bac"
+"fb2c7d7f13d1"
 ],
 "geometry/CBW114AAAA::framing/member:cripple-head-0-02": [
 -0.5635625,
--0.4175125,
+-0.396875,
 8,
-"b9462e373bac"
+"fb2c7d7f13d1"
 ],
 "geometry/CBW114AAAA::framing/member:header-0": [
 -0.7477125,
@@ -10829,15 +10823,15 @@
 ],
 "geometry/CBW114AAAA::framing/member:king-0-l0": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW114AAAA::framing/member:king-0-r0": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW114AAAA::framing/member:plate-bottom": [
 -2.7797125,
@@ -10846,70 +10840,70 @@
 "6feb3b34ad8e"
 ],
 "geometry/CBW114AAAA::framing/member:plate-top-0": [
--0.3794125,
--0.3413125,
+-0.358775,
+-0.320675,
 8,
-"0ce1d8a6488d"
+"df5d874a4064"
 ],
 "geometry/CBW114AAAA::framing/member:plate-top-1": [
--0.4175125,
--0.3794125,
+-0.396875,
+-0.358775,
 8,
-"3b0cbbb86f77"
+"d1e2739ad916"
 ],
 "geometry/CBW114AAAA::framing/member:stud-000": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW114AAAA::framing/member:stud-001": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW114AAAA::framing/member:stud-002": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW114AAAA::framing/member:stud-003": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW115AAAA/layer:gwb-a": [
 -2.7797125,
--0.3413125,
+-0.3603625,
 6,
-"9bbec3881b04"
+"7df58ae8367f"
 ],
 "geometry/CBW115AAAA/layer:gwb-b": [
 -2.7797125,
--0.3413125,
+-0.3603625,
 6,
-"9bbec3881b04"
+"7df58ae8367f"
 ],
 "geometry/CBW115AAAA/layer:paint-a": [
 -2.7797125,
--0.3413125,
+-0.3603625,
 6,
-"9bbec3881b04"
+"7df58ae8367f"
 ],
 "geometry/CBW115AAAA/layer:paint-b": [
 -2.7797125,
--0.3413125,
+-0.3603625,
 6,
-"9bbec3881b04"
+"7df58ae8367f"
 ],
 "geometry/CBW115AAAA/layer:staggered-studs": [
 -2.7797125,
--0.3413125,
+-0.3603625,
 6,
-"9bbec3881b04"
+"7df58ae8367f"
 ],
 "geometry/CBW115AAAA::framing/member:backing-0-000": [
 -1.9669125,
@@ -10949,21 +10943,21 @@
 ],
 "geometry/CBW115AAAA::framing/member:cripple-head-0-01": [
 -0.5127625,
--0.4175125,
+-0.4365625,
 8,
-"a1e55b99cfc2"
+"185634a88935"
 ],
 "geometry/CBW115AAAA::framing/member:cripple-head-0-02": [
 -0.5127625,
--0.4175125,
+-0.4365625,
 8,
-"a1e55b99cfc2"
+"185634a88935"
 ],
 "geometry/CBW115AAAA::framing/member:cripple-head-0-03": [
 -0.5127625,
--0.4175125,
+-0.4365625,
 8,
-"a1e55b99cfc2"
+"185634a88935"
 ],
 "geometry/CBW115AAAA::framing/member:header-0": [
 -0.7477125,
@@ -10985,15 +10979,15 @@
 ],
 "geometry/CBW115AAAA::framing/member:king-0-l0": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 8,
-"1f09581df6ba"
+"6ee6ca2730a3"
 ],
 "geometry/CBW115AAAA::framing/member:king-0-r0": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 8,
-"1f09581df6ba"
+"6ee6ca2730a3"
 ],
 "geometry/CBW115AAAA::framing/member:plate-bottom": [
 -2.7797125,
@@ -11002,118 +10996,118 @@
 "6feb3b34ad8e"
 ],
 "geometry/CBW115AAAA::framing/member:plate-top-0": [
--0.3794125,
--0.3413125,
+-0.3984625,
+-0.3603625,
 8,
-"0ce1d8a6488d"
+"9623caed89bc"
 ],
 "geometry/CBW115AAAA::framing/member:plate-top-1": [
--0.4175125,
--0.3794125,
+-0.4365625,
+-0.3984625,
 8,
-"3b0cbbb86f77"
+"2eb7d30de0c8"
 ],
 "geometry/CBW115AAAA::framing/member:stud-000": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 8,
-"1f09581df6ba"
+"6ee6ca2730a3"
 ],
 "geometry/CBW115AAAA::framing/member:stud-001": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 8,
-"1f09581df6ba"
+"6ee6ca2730a3"
 ],
 "geometry/CBW115AAAA::framing/member:stud-002": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 8,
-"1f09581df6ba"
+"6ee6ca2730a3"
 ],
 "geometry/CBW115AAAA::framing/member:stud-003": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 8,
-"1f09581df6ba"
+"6ee6ca2730a3"
 ],
 "geometry/CBW115AAAA::framing/member:stud-004": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 8,
-"1f09581df6ba"
+"6ee6ca2730a3"
 ],
 "geometry/CBW115AAAA::framing/member:stud-005": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 8,
-"1f09581df6ba"
+"6ee6ca2730a3"
 ],
 "geometry/CBW115AAAA::framing/member:stud-006": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 8,
-"1f09581df6ba"
+"6ee6ca2730a3"
 ],
 "geometry/CBW115AAAA::framing/member:stud-007": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 8,
-"1f09581df6ba"
+"6ee6ca2730a3"
 ],
 "geometry/CBW115AAAA::framing/member:stud-008": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 8,
-"1f09581df6ba"
+"6ee6ca2730a3"
 ],
 "geometry/CBW115AAAA::framing/member:stud-009": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 8,
-"1f09581df6ba"
+"6ee6ca2730a3"
 ],
 "geometry/CBW115AAAA::framing/member:stud-010": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 8,
-"1f09581df6ba"
+"6ee6ca2730a3"
 ],
 "geometry/CBW115AAAA::framing/member:stud-011": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 8,
-"1f09581df6ba"
+"6ee6ca2730a3"
 ],
 "geometry/CBW115AAAA::framing/member:stud-012": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 8,
-"1f09581df6ba"
+"6ee6ca2730a3"
 ],
 "geometry/CBW115AAAA::framing/member:stud-013": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 8,
-"1f09581df6ba"
+"6ee6ca2730a3"
 ],
 "geometry/CBW115AAAA::framing/member:stud-014": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 8,
-"1f09581df6ba"
+"6ee6ca2730a3"
 ],
 "geometry/CBW115AAAA::framing/member:stud-015": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 8,
-"1f09581df6ba"
+"6ee6ca2730a3"
 ],
 "geometry/CBW115AAAA::framing/member:stud-016": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 8,
-"1f09581df6ba"
+"6ee6ca2730a3"
 ],
 "geometry/CBW116AAAA/layer:gwb-x": [
 -2.7797125,
@@ -11506,40 +11500,40 @@
 "6feb3b34ad8e"
 ],
 "geometry/CBW119AAAA::framing/member:plate-top-0": [
--0.3794125,
--0.3413125,
+-0.358775,
+-0.320675,
 8,
-"0ce1d8a6488d"
+"df5d874a4064"
 ],
 "geometry/CBW119AAAA::framing/member:plate-top-1": [
--0.4175125,
--0.3794125,
+-0.396875,
+-0.358775,
 8,
-"3b0cbbb86f77"
+"d1e2739ad916"
 ],
 "geometry/CBW119AAAA::framing/member:stud-000": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW119AAAA::framing/member:stud-001": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW119AAAA::framing/member:stud-002": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW119AAAA::framing/member:stud-003": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW119AAAA::framing/member:tee-N-B-STR-block-00": [
 -2.1320125,
@@ -11561,21 +11555,21 @@
 ],
 "geometry/CBW120AAAA/layer:gwb-a": [
 -2.7797125,
--0.3413125,
+-0.320675,
 2,
-"c0fa4924d6c7"
+"a1269395efc9"
 ],
 "geometry/CBW120AAAA/layer:gwb-b": [
 -2.7797125,
--0.3413125,
+-0.320675,
 2,
-"c0fa4924d6c7"
+"a1269395efc9"
 ],
 "geometry/CBW120AAAA/layer:stud": [
 -2.7797125,
--0.3413125,
+-0.320675,
 2,
-"c0fa4924d6c7"
+"a1269395efc9"
 ],
 "geometry/CBW120AAAA::framing/member:plate-bottom": [
 -2.7797125,
@@ -11584,40 +11578,40 @@
 "6feb3b34ad8e"
 ],
 "geometry/CBW120AAAA::framing/member:plate-top-0": [
--0.3794125,
--0.3413125,
+-0.358775,
+-0.320675,
 8,
-"0ce1d8a6488d"
+"df5d874a4064"
 ],
 "geometry/CBW120AAAA::framing/member:plate-top-1": [
--0.4175125,
--0.3794125,
+-0.396875,
+-0.358775,
 8,
-"3b0cbbb86f77"
+"d1e2739ad916"
 ],
 "geometry/CBW120AAAA::framing/member:stud-000": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW120AAAA::framing/member:stud-001": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW120AAAA::framing/member:stud-002": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW120AAAA::framing/member:stud-003": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW121AAAA/layer:concrete": [
 -2.7797125,
@@ -11627,15 +11621,15 @@
 ],
 "geometry/CBW122AAAA/layer:ply-stair": [
 -2.7797125,
--0.3413125,
+-0.320675,
 2,
-"c0fa4924d6c7"
+"a1269395efc9"
 ],
 "geometry/CBW122AAAA/layer:stud": [
 -2.7797125,
--0.3413125,
+-0.320675,
 2,
-"c0fa4924d6c7"
+"a1269395efc9"
 ],
 "geometry/CBW122AAAA::framing/member:plate-bottom": [
 -2.7797125,
@@ -11644,34 +11638,34 @@
 "6feb3b34ad8e"
 ],
 "geometry/CBW122AAAA::framing/member:plate-top-0": [
--0.3794125,
--0.3413125,
+-0.358775,
+-0.320675,
 8,
-"0ce1d8a6488d"
+"df5d874a4064"
 ],
 "geometry/CBW122AAAA::framing/member:plate-top-1": [
--0.4175125,
--0.3794125,
+-0.396875,
+-0.358775,
 8,
-"3b0cbbb86f77"
+"d1e2739ad916"
 ],
 "geometry/CBW122AAAA::framing/member:stud-000": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW122AAAA::framing/member:stud-001": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW122AAAA::framing/member:stud-002": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW123AAAA/layer:gwb-a": [
 -2.7797125,
@@ -11728,40 +11722,40 @@
 "6feb3b34ad8e"
 ],
 "geometry/CBW123AAAA::framing/member:plate-top-0": [
--0.3794125,
--0.3413125,
+-0.358775,
+-0.320675,
 8,
-"0ce1d8a6488d"
+"df5d874a4064"
 ],
 "geometry/CBW123AAAA::framing/member:plate-top-1": [
--0.4175125,
--0.3794125,
+-0.396875,
+-0.358775,
 8,
-"3b0cbbb86f77"
+"d1e2739ad916"
 ],
 "geometry/CBW123AAAA::framing/member:stud-000": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW123AAAA::framing/member:stud-001": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW123AAAA::framing/member:stud-002": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW123AAAA::framing/member:stud-003": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW124AAAA/layer:gwb-x-a": [
 -2.7797125,
@@ -11795,9 +11789,9 @@
 ],
 "geometry/CBW124AAAA::framing/member:cripple-head-0-01": [
 -0.5635625,
--0.4175125,
+-0.396875,
 8,
-"b9462e373bac"
+"fb2c7d7f13d1"
 ],
 "geometry/CBW124AAAA::framing/member:header-0": [
 -0.7477125,
@@ -11819,15 +11813,15 @@
 ],
 "geometry/CBW124AAAA::framing/member:king-0-l0": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW124AAAA::framing/member:king-0-r0": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW124AAAA::framing/member:plate-bottom": [
 -2.7797125,
@@ -11836,76 +11830,76 @@
 "6feb3b34ad8e"
 ],
 "geometry/CBW124AAAA::framing/member:plate-top-0": [
--0.3794125,
--0.3413125,
+-0.358775,
+-0.320675,
 8,
-"0ce1d8a6488d"
+"df5d874a4064"
 ],
 "geometry/CBW124AAAA::framing/member:plate-top-1": [
--0.4175125,
--0.3794125,
+-0.396875,
+-0.358775,
 8,
-"3b0cbbb86f77"
+"d1e2739ad916"
 ],
 "geometry/CBW124AAAA::framing/member:stud-000": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW124AAAA::framing/member:stud-001": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW124AAAA::framing/member:stud-002": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW124AAAA::framing/member:stud-003": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW125AAAA/layer:gwb-x-a": [
 -2.7797125,
--0.3413125,
+-0.320675,
 2,
-"c0fa4924d6c7"
+"a1269395efc9"
 ],
 "geometry/CBW125AAAA/layer:gwb-x-b": [
 -2.7797125,
--0.3413125,
+-0.320675,
 2,
-"c0fa4924d6c7"
+"a1269395efc9"
 ],
 "geometry/CBW125AAAA/layer:paint-a": [
 -2.7797125,
--0.3413125,
+-0.320675,
 2,
-"c0fa4924d6c7"
+"a1269395efc9"
 ],
 "geometry/CBW125AAAA/layer:paint-b": [
 -2.7797125,
--0.3413125,
+-0.320675,
 2,
-"c0fa4924d6c7"
+"a1269395efc9"
 ],
 "geometry/CBW125AAAA/layer:steel-stud": [
 -2.7797125,
--0.3413125,
+-0.320675,
 2,
-"c0fa4924d6c7"
+"a1269395efc9"
 ],
 "geometry/CBW125AAAA::framing/member:corner-start": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW125AAAA::framing/member:plate-bottom": [
 -2.7797125,
@@ -11914,40 +11908,40 @@
 "6feb3b34ad8e"
 ],
 "geometry/CBW125AAAA::framing/member:plate-top-0": [
--0.3794125,
--0.3413125,
+-0.358775,
+-0.320675,
 8,
-"0ce1d8a6488d"
+"df5d874a4064"
 ],
 "geometry/CBW125AAAA::framing/member:plate-top-1": [
--0.4175125,
--0.3794125,
+-0.396875,
+-0.358775,
 8,
-"3b0cbbb86f77"
+"d1e2739ad916"
 ],
 "geometry/CBW125AAAA::framing/member:stud-000": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW125AAAA::framing/member:stud-001": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW125AAAA::framing/member:stud-002": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW125AAAA::framing/member:stud-003": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CBW126AAAA/layer:air-gap": [
 -2.6019125,
@@ -24641,21 +24635,21 @@
 ],
 "geometry/CMW119AAAA/layer:gwb-a": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW119AAAA/layer:gwb-b": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW119AAAA/layer:stud": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW119AAAA::framing/member:plate-bottom": [
 0.0,
@@ -24664,76 +24658,76 @@
 "c1d27a37c961"
 ],
 "geometry/CMW119AAAA::framing/member:plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 8,
-"969cf62a92d4"
+"c0354c2dc5c5"
 ],
 "geometry/CMW119AAAA::framing/member:plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 8,
-"ba74e63dc3f4"
+"6d371ae8a315"
 ],
 "geometry/CMW119AAAA::framing/member:stud-000": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW119AAAA::framing/member:stud-001": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW119AAAA::framing/member:stud-002": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW119AAAA::framing/member:stud-003": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW119AAAA::framing/member:stud-004": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW119AAAA::framing/member:stud-005": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW120AAAA/layer:gwb-a": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/CMW120AAAA/layer:gwb-b": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/CMW120AAAA/layer:stud": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/CMW120AAAA::framing/member:cripple-head-0-01": [
 2.21615,
-2.667,
+2.651125,
 8,
-"dcb16b4147dc"
+"b85b0b1e74b6"
 ],
 "geometry/CMW120AAAA::framing/member:header-0": [
 2.032,
@@ -24755,15 +24749,15 @@
 ],
 "geometry/CMW120AAAA::framing/member:king-0-l0": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW120AAAA::framing/member:king-0-r0": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW120AAAA::framing/member:plate-bottom": [
 0.0,
@@ -24772,52 +24766,52 @@
 "c1d27a37c961"
 ],
 "geometry/CMW120AAAA::framing/member:plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 8,
-"969cf62a92d4"
+"c0354c2dc5c5"
 ],
 "geometry/CMW120AAAA::framing/member:plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 8,
-"ba74e63dc3f4"
+"6d371ae8a315"
 ],
 "geometry/CMW120AAAA::framing/member:stud-000": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW121AAAA/layer:gwb-a": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/CMW121AAAA/layer:gwb-b": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/CMW121AAAA/layer:paint-a": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/CMW121AAAA/layer:paint-b": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/CMW121AAAA/layer:staggered-studs": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/CMW121AAAA::framing/member:backing-0-000": [
 0.8128,
@@ -24857,9 +24851,9 @@
 ],
 "geometry/CMW121AAAA::framing/member:cripple-head-0-01": [
 2.21615,
-2.667,
+2.651125,
 8,
-"dcb16b4147dc"
+"b85b0b1e74b6"
 ],
 "geometry/CMW121AAAA::framing/member:header-0": [
 2.032,
@@ -24881,15 +24875,15 @@
 ],
 "geometry/CMW121AAAA::framing/member:king-0-l0": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW121AAAA::framing/member:king-0-r0": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW121AAAA::framing/member:plate-bottom": [
 0.0,
@@ -24898,58 +24892,58 @@
 "c1d27a37c961"
 ],
 "geometry/CMW121AAAA::framing/member:plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 8,
-"969cf62a92d4"
+"c0354c2dc5c5"
 ],
 "geometry/CMW121AAAA::framing/member:plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 8,
-"ba74e63dc3f4"
+"6d371ae8a315"
 ],
 "geometry/CMW121AAAA::framing/member:stud-000": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW121AAAA::framing/member:stud-001": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW122AAAA/layer:gwb-a": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW122AAAA/layer:gwb-b": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW122AAAA/layer:paint-a": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW122AAAA/layer:paint-b": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW122AAAA/layer:staggered-studs": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW122AAAA::framing/member:backing-0-000": [
 0.5588,
@@ -24983,15 +24977,15 @@
 ],
 "geometry/CMW122AAAA::framing/member:carrier-0-cripple-000": [
 1.1962,
-2.667,
+2.651125,
 8,
-"0aacdade0c93"
+"25824404af3d"
 ],
 "geometry/CMW122AAAA::framing/member:carrier-0-cripple-001": [
 1.1962,
-2.667,
+2.651125,
 8,
-"0aacdade0c93"
+"25824404af3d"
 ],
 "geometry/CMW122AAAA::framing/member:carrier-0-head-1": [
 1.1581,
@@ -25001,15 +24995,15 @@
 ],
 "geometry/CMW122AAAA::framing/member:carrier-0-stud-0": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW122AAAA::framing/member:carrier-0-stud-1": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW122AAAA::framing/member:plate-bottom": [
 0.0,
@@ -25018,52 +25012,52 @@
 "c1d27a37c961"
 ],
 "geometry/CMW122AAAA::framing/member:plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 8,
-"969cf62a92d4"
+"c0354c2dc5c5"
 ],
 "geometry/CMW122AAAA::framing/member:plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 8,
-"ba74e63dc3f4"
+"6d371ae8a315"
 ],
 "geometry/CMW122AAAA::framing/member:stud-000": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW122AAAA::framing/member:stud-001": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW122AAAA::framing/member:stud-002": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW122AAAA::framing/member:stud-003": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW122AAAA::framing/member:stud-004": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW122AAAA::framing/member:stud-005": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW122AAAA::framing/member:tee-N-M-BA2-block-00": [
 0.6477,
@@ -25091,33 +25085,33 @@
 ],
 "geometry/CMW123AAAA/layer:gwb-a": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW123AAAA/layer:gwb-b": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW123AAAA/layer:paint-a": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW123AAAA/layer:paint-b": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW123AAAA/layer:staggered-studs": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW123AAAA::framing/member:backing-0-000": [
 0.8128,
@@ -25144,46 +25138,46 @@
 "c1d27a37c961"
 ],
 "geometry/CMW123AAAA::framing/member:plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 8,
-"969cf62a92d4"
+"c0354c2dc5c5"
 ],
 "geometry/CMW123AAAA::framing/member:plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 8,
-"ba74e63dc3f4"
+"6d371ae8a315"
 ],
 "geometry/CMW123AAAA::framing/member:stud-000": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW123AAAA::framing/member:stud-001": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW123AAAA::framing/member:stud-002": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW123AAAA::framing/member:stud-003": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW123AAAA::framing/member:stud-004": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW123AAAA::framing/member:tee-N-M-D1-block-00": [
 0.6477,
@@ -25211,33 +25205,33 @@
 ],
 "geometry/CMW124AAAA/layer:gwb-a": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/CMW124AAAA/layer:gwb-b": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/CMW124AAAA/layer:stud": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/CMW124AAAA::framing/member:cripple-head-0-01": [
 2.2098,
-2.667,
+2.651125,
 8,
-"e744cca8384b"
+"a49dfc1aa44b"
 ],
 "geometry/CMW124AAAA::framing/member:cripple-head-0-02": [
 2.2098,
-2.667,
+2.651125,
 8,
-"e744cca8384b"
+"a49dfc1aa44b"
 ],
 "geometry/CMW124AAAA::framing/member:header-0": [
 2.032,
@@ -25259,15 +25253,15 @@
 ],
 "geometry/CMW124AAAA::framing/member:king-0-l0": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW124AAAA::framing/member:king-0-r0": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW124AAAA::framing/member:plate-bottom": [
 0.0,
@@ -25276,16 +25270,16 @@
 "c1d27a37c961"
 ],
 "geometry/CMW124AAAA::framing/member:plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 8,
-"969cf62a92d4"
+"c0354c2dc5c5"
 ],
 "geometry/CMW124AAAA::framing/member:plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 8,
-"ba74e63dc3f4"
+"6d371ae8a315"
 ],
 "geometry/CMW124AAAA::framing/member:pocketsplit-0-01": [
 0.0381,
@@ -25307,9 +25301,9 @@
 ],
 "geometry/CMW124AAAA::framing/member:stud-000": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW124AAAA::framing/member:tee-N-M-E3-block-00": [
 0.6477,
@@ -25343,21 +25337,21 @@
 ],
 "geometry/CMW125AAAA/layer:gwb-a": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW125AAAA/layer:gwb-b": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW125AAAA/layer:stud": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW125AAAA::framing/member:plate-bottom": [
 0.0,
@@ -25366,58 +25360,58 @@
 "c1d27a37c961"
 ],
 "geometry/CMW125AAAA::framing/member:plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 8,
-"969cf62a92d4"
+"c0354c2dc5c5"
 ],
 "geometry/CMW125AAAA::framing/member:plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 8,
-"ba74e63dc3f4"
+"6d371ae8a315"
 ],
 "geometry/CMW125AAAA::framing/member:stud-000": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW125AAAA::framing/member:stud-001": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW126AAAA/layer:gwb-a": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW126AAAA/layer:gwb-b": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW126AAAA/layer:paint-a": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW126AAAA/layer:paint-b": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW126AAAA/layer:staggered-studs": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW126AAAA::framing/member:backing-0-000": [
 0.1016,
@@ -25450,64 +25444,64 @@
 "c1d27a37c961"
 ],
 "geometry/CMW126AAAA::framing/member:plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 8,
-"969cf62a92d4"
+"c0354c2dc5c5"
 ],
 "geometry/CMW126AAAA::framing/member:plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 8,
-"ba74e63dc3f4"
+"6d371ae8a315"
 ],
 "geometry/CMW126AAAA::framing/member:stud-000": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW126AAAA::framing/member:stud-001": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW126AAAA::framing/member:stud-002": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW126AAAA::framing/member:stud-003": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW126AAAA::framing/member:stud-004": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW126AAAA::framing/member:stud-005": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW126AAAA::framing/member:stud-006": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW126AAAA::framing/member:stud-007": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW126AAAA::framing/member:tee-N-M-D2-block-00": [
 0.6477,
@@ -25535,33 +25529,33 @@
 ],
 "geometry/CMW127AAAA/layer:gwb-a": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW127AAAA/layer:gwb-b": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW127AAAA/layer:paint-a": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW127AAAA/layer:paint-b": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW127AAAA/layer:staggered-studs": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW127AAAA::framing/member:backing-0-000": [
 0.8128,
@@ -25588,82 +25582,82 @@
 "c1d27a37c961"
 ],
 "geometry/CMW127AAAA::framing/member:plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 8,
-"969cf62a92d4"
+"c0354c2dc5c5"
 ],
 "geometry/CMW127AAAA::framing/member:plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 8,
-"ba74e63dc3f4"
+"6d371ae8a315"
 ],
 "geometry/CMW127AAAA::framing/member:stud-000": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW127AAAA::framing/member:stud-001": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW127AAAA::framing/member:stud-002": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW127AAAA::framing/member:stud-003": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW127AAAA::framing/member:stud-004": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW127AAAA::framing/member:stud-005": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW127AAAA::framing/member:stud-006": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW127AAAA::framing/member:stud-007": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW128AAAA/layer:gwb-a": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW128AAAA/layer:gwb-b": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW128AAAA/layer:staggered-studs": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW128AAAA::framing/member:plate-bottom": [
 0.0,
@@ -25672,76 +25666,76 @@
 "c1d27a37c961"
 ],
 "geometry/CMW128AAAA::framing/member:plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 8,
-"969cf62a92d4"
+"c0354c2dc5c5"
 ],
 "geometry/CMW128AAAA::framing/member:plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 8,
-"ba74e63dc3f4"
+"6d371ae8a315"
 ],
 "geometry/CMW128AAAA::framing/member:stud-000": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW128AAAA::framing/member:stud-001": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW128AAAA::framing/member:stud-002": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW128AAAA::framing/member:stud-003": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW128AAAA::framing/member:stud-004": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW128AAAA::framing/member:stud-005": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW128AAAA::framing/member:stud-006": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW129AAAA/layer:gwb-a": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW129AAAA/layer:gwb-b": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW129AAAA/layer:staggered-studs": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW129AAAA::framing/member:backing-0-000": [
 1.6256,
@@ -25756,70 +25750,70 @@
 "c1d27a37c961"
 ],
 "geometry/CMW129AAAA::framing/member:plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 8,
-"969cf62a92d4"
+"c0354c2dc5c5"
 ],
 "geometry/CMW129AAAA::framing/member:plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 8,
-"ba74e63dc3f4"
+"6d371ae8a315"
 ],
 "geometry/CMW129AAAA::framing/member:stud-000": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW129AAAA::framing/member:stud-001": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW129AAAA::framing/member:stud-002": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW129AAAA::framing/member:stud-003": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW129AAAA::framing/member:stud-004": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW129AAAA::framing/member:stud-005": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW129AAAA::framing/member:stud-006": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW129AAAA::framing/member:stud-007": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW129AAAA::framing/member:stud-008": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW129AAAA::framing/member:tee-N-M-E2-block-00": [
 0.6477,
@@ -25847,21 +25841,21 @@
 ],
 "geometry/CMW130AAAA/layer:gwb-a": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW130AAAA/layer:gwb-b": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW130AAAA/layer:staggered-studs": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW130AAAA::framing/member:plate-bottom": [
 0.0,
@@ -25870,94 +25864,94 @@
 "c1d27a37c961"
 ],
 "geometry/CMW130AAAA::framing/member:plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 8,
-"969cf62a92d4"
+"c0354c2dc5c5"
 ],
 "geometry/CMW130AAAA::framing/member:plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 8,
-"ba74e63dc3f4"
+"6d371ae8a315"
 ],
 "geometry/CMW130AAAA::framing/member:stud-000": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW130AAAA::framing/member:stud-001": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW130AAAA::framing/member:stud-002": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW130AAAA::framing/member:stud-003": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW130AAAA::framing/member:stud-004": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW130AAAA::framing/member:stud-005": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW130AAAA::framing/member:stud-006": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW130AAAA::framing/member:stud-007": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW131AAAA/layer:gwb-direct": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/CMW131AAAA/layer:gwb-resilient": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/CMW131AAAA/layer:resilient-channel": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/CMW131AAAA/layer:stud": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/CMW131AAAA::framing/member:cripple-head-0-01": [
 2.21615,
-2.667,
+2.651125,
 8,
-"dcb16b4147dc"
+"b85b0b1e74b6"
 ],
 "geometry/CMW131AAAA::framing/member:header-0": [
 2.032,
@@ -25979,15 +25973,15 @@
 ],
 "geometry/CMW131AAAA::framing/member:king-0-l0": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW131AAAA::framing/member:king-0-r0": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW131AAAA::framing/member:plate-bottom": [
 0.0,
@@ -25996,16 +25990,16 @@
 "c1d27a37c961"
 ],
 "geometry/CMW131AAAA::framing/member:plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 8,
-"969cf62a92d4"
+"c0354c2dc5c5"
 ],
 "geometry/CMW131AAAA::framing/member:plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 8,
-"ba74e63dc3f4"
+"6d371ae8a315"
 ],
 "geometry/CMW131AAAA::framing/member:strapping-resilient-channel-000": [
 0.0,
@@ -26062,46 +26056,46 @@
 "84c12a21c9ed"
 ],
 "geometry/CMW131AAAA::framing/member:strapping-resilient-channel-009": [
-2.6797,
-2.7432,
+2.663825,
+2.727325,
 8,
-"a7426edad95a"
+"82dc1903402e"
 ],
 "geometry/CMW131AAAA::framing/member:stud-000": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW131AAAA::framing/member:stud-001": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW131AAAA::framing/member:stud-002": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW131AAAA::framing/member:stud-003": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW131AAAA::framing/member:stud-004": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW131AAAA::framing/member:stud-005": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW131AAAA::framing/member:tee-N-M-D3-block-00": [
 0.6477,
@@ -26129,27 +26123,27 @@
 ],
 "geometry/CMW132AAAA/layer:gwb-a": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/CMW132AAAA/layer:gwb-b": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/CMW132AAAA/layer:stud": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/CMW132AAAA::framing/member:cripple-head-0-01": [
 2.21615,
-2.667,
+2.651125,
 8,
-"dcb16b4147dc"
+"b85b0b1e74b6"
 ],
 "geometry/CMW132AAAA::framing/member:header-0": [
 2.032,
@@ -26171,15 +26165,15 @@
 ],
 "geometry/CMW132AAAA::framing/member:king-0-l0": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW132AAAA::framing/member:king-0-r0": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW132AAAA::framing/member:plate-bottom": [
 0.0,
@@ -26188,52 +26182,52 @@
 "c1d27a37c961"
 ],
 "geometry/CMW132AAAA::framing/member:plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 8,
-"969cf62a92d4"
+"c0354c2dc5c5"
 ],
 "geometry/CMW132AAAA::framing/member:plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 8,
-"ba74e63dc3f4"
+"6d371ae8a315"
 ],
 "geometry/CMW132AAAA::framing/member:stud-000": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW132AAAA::framing/member:stud-001": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW132AAAA::framing/member:stud-002": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW132AAAA::framing/member:stud-003": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW132AAAA::framing/member:stud-004": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW132AAAA::framing/member:stud-005": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW134AAAA/layer:ply-stair": [
 0.0,
@@ -26849,27 +26843,27 @@
 ],
 "geometry/CMW137AAAA/layer:gwb-a": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/CMW137AAAA/layer:gwb-b": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/CMW137AAAA/layer:stud": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/CMW137AAAA::framing/member:cripple-head-0-01": [
 2.21615,
-2.667,
+2.651125,
 8,
-"dcb16b4147dc"
+"b85b0b1e74b6"
 ],
 "geometry/CMW137AAAA::framing/member:header-0": [
 2.032,
@@ -26891,15 +26885,15 @@
 ],
 "geometry/CMW137AAAA::framing/member:king-0-l0": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW137AAAA::framing/member:king-0-r0": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW137AAAA::framing/member:plate-bottom": [
 0.0,
@@ -26908,58 +26902,58 @@
 "c1d27a37c961"
 ],
 "geometry/CMW137AAAA::framing/member:plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 8,
-"969cf62a92d4"
+"c0354c2dc5c5"
 ],
 "geometry/CMW137AAAA::framing/member:plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 8,
-"ba74e63dc3f4"
+"6d371ae8a315"
 ],
 "geometry/CMW137AAAA::framing/member:stud-000": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW137AAAA::framing/member:stud-001": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW137AAAA::framing/member:stud-002": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW138AAAA/layer:gwb-a": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW138AAAA/layer:gwb-b": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW138AAAA/layer:stud": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/CMW138AAAA::framing/member:corner-start": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW138AAAA::framing/member:plate-bottom": [
 0.0,
@@ -26968,34 +26962,34 @@
 "c1d27a37c961"
 ],
 "geometry/CMW138AAAA::framing/member:plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 8,
-"969cf62a92d4"
+"c0354c2dc5c5"
 ],
 "geometry/CMW138AAAA::framing/member:plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 8,
-"ba74e63dc3f4"
+"6d371ae8a315"
 ],
 "geometry/CMW138AAAA::framing/member:stud-000": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW138AAAA::framing/member:stud-001": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMW138AAAA::framing/member:stud-002": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/CMX301AAAA/exterior_trim": [
 0.8824,
@@ -27413,33 +27407,33 @@
 ],
 "geometry/CQRJZCM0R1/layer:gwb-a": [
 -2.7797125,
--0.3413125,
+-0.320675,
 6,
-"9bbec3881b04"
+"d0d1b87134aa"
 ],
 "geometry/CQRJZCM0R1/layer:gwb-b": [
 -2.7797125,
--0.3413125,
+-0.320675,
 6,
-"9bbec3881b04"
+"d0d1b87134aa"
 ],
 "geometry/CQRJZCM0R1/layer:paint-a": [
 -2.7797125,
--0.3413125,
+-0.320675,
 6,
-"9bbec3881b04"
+"d0d1b87134aa"
 ],
 "geometry/CQRJZCM0R1/layer:paint-b": [
 -2.7797125,
--0.3413125,
+-0.320675,
 6,
-"9bbec3881b04"
+"d0d1b87134aa"
 ],
 "geometry/CQRJZCM0R1/layer:stud": [
 -2.7797125,
--0.3413125,
+-0.320675,
 6,
-"9bbec3881b04"
+"d0d1b87134aa"
 ],
 "geometry/CQRJZCM0R1::framing/member:backing-0-000": [
 -1.9669125,
@@ -27479,15 +27473,15 @@
 ],
 "geometry/CQRJZCM0R1::framing/member:cripple-head-0-01": [
 -0.5635625,
--0.4175125,
+-0.396875,
 8,
-"b9462e373bac"
+"fb2c7d7f13d1"
 ],
 "geometry/CQRJZCM0R1::framing/member:cripple-head-0-02": [
 -0.5635625,
--0.4175125,
+-0.396875,
 8,
-"b9462e373bac"
+"fb2c7d7f13d1"
 ],
 "geometry/CQRJZCM0R1::framing/member:header-0": [
 -0.7477125,
@@ -27509,15 +27503,15 @@
 ],
 "geometry/CQRJZCM0R1::framing/member:king-0-l0": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CQRJZCM0R1::framing/member:king-0-r0": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CQRJZCM0R1::framing/member:plate-bottom": [
 -2.7797125,
@@ -27526,40 +27520,40 @@
 "6feb3b34ad8e"
 ],
 "geometry/CQRJZCM0R1::framing/member:plate-top-0": [
--0.3794125,
--0.3413125,
+-0.358775,
+-0.320675,
 8,
-"0ce1d8a6488d"
+"df5d874a4064"
 ],
 "geometry/CQRJZCM0R1::framing/member:plate-top-1": [
--0.4175125,
--0.3794125,
+-0.396875,
+-0.358775,
 8,
-"3b0cbbb86f77"
+"d1e2739ad916"
 ],
 "geometry/CQRJZCM0R1::framing/member:stud-000": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CQRJZCM0R1::framing/member:stud-001": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CQRJZCM0R1::framing/member:stud-002": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CQRJZCM0R1::framing/member:stud-003": [
 -2.7416125,
--0.4175125,
+-0.396875,
 8,
-"1f09581df6ba"
+"0710bbf2ecf0"
 ],
 "geometry/CSBM01AAAA/body": [
 5.794375,
@@ -35945,39 +35939,39 @@
 ],
 "geometry/CSW118AAAA/layer:gwb-cold": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW118AAAA/layer:humid-membrane": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW118AAAA/layer:liner-furring": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW118AAAA/layer:paint-b": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW118AAAA/layer:pvc-panel": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW118AAAA/layer:stud": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW118AAAA::framing/member:plate-bottom": [
 3.048,
@@ -35986,16 +35980,16 @@
 "a5ef254b6050"
 ],
 "geometry/CSW118AAAA::framing/member:plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 8,
-"b99ce05bdfaa"
+"708c6a00acb7"
 ],
 "geometry/CSW118AAAA::framing/member:plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 8,
-"f6380622d682"
+"06106c4bc25d"
 ],
 "geometry/CSW118AAAA::framing/member:strapping-liner-furring-000": [
 3.048,
@@ -36040,64 +36034,64 @@
 "8673a785de16"
 ],
 "geometry/CSW118AAAA::framing/member:strapping-liner-furring-007": [
-5.7023,
-5.7912,
+5.686425,
+5.775325,
 8,
-"4cdc2cd28864"
+"9c301b091cb0"
 ],
 "geometry/CSW118AAAA::framing/member:stud-000": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW118AAAA::framing/member:stud-001": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW118AAAA::framing/member:stud-002": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW118AAAA::framing/member:stud-003": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW118AAAA::framing/member:stud-004": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW118AAAA::framing/member:stud-005": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW118AAAA::framing/member:stud-006": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW118AAAA::framing/member:stud-007": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW118AAAA::framing/member:stud-008": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW118AAAA::framing/member:tee-N-S-D1-block-00": [
 3.6957,
@@ -36125,39 +36119,39 @@
 ],
 "geometry/CSW119AAAA/layer:gwb-cold": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW119AAAA/layer:humid-membrane": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW119AAAA/layer:liner-furring": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW119AAAA/layer:paint-b": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW119AAAA/layer:pvc-panel": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW119AAAA/layer:stud": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW119AAAA::framing/member:plate-bottom": [
 3.048,
@@ -36166,16 +36160,16 @@
 "a5ef254b6050"
 ],
 "geometry/CSW119AAAA::framing/member:plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 8,
-"b99ce05bdfaa"
+"708c6a00acb7"
 ],
 "geometry/CSW119AAAA::framing/member:plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 8,
-"f6380622d682"
+"06106c4bc25d"
 ],
 "geometry/CSW119AAAA::framing/member:strapping-liner-furring-000": [
 3.048,
@@ -36220,76 +36214,76 @@
 "8673a785de16"
 ],
 "geometry/CSW119AAAA::framing/member:strapping-liner-furring-007": [
-5.7023,
-5.7912,
+5.686425,
+5.775325,
 8,
-"4cdc2cd28864"
+"9c301b091cb0"
 ],
 "geometry/CSW119AAAA::framing/member:stud-000": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW119AAAA::framing/member:stud-001": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW119AAAA::framing/member:stud-002": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW119AAAA::framing/member:stud-003": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW119AAAA::framing/member:stud-004": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW119AAAA::framing/member:stud-005": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW119AAAA::framing/member:stud-006": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW120AAAA/layer:gwb-a": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW120AAAA/layer:gwb-b": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW120AAAA/layer:stud": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW120AAAA::framing/member:cripple-head-0-01": [
 5.26415,
-5.715,
+5.699125,
 8,
-"4da7c210b6cf"
+"054bb5d05618"
 ],
 "geometry/CSW120AAAA::framing/member:header-0": [
 5.08,
@@ -36311,15 +36305,15 @@
 ],
 "geometry/CSW120AAAA::framing/member:king-0-l0": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW120AAAA::framing/member:king-0-r0": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW120AAAA::framing/member:plate-bottom": [
 3.048,
@@ -36328,28 +36322,28 @@
 "a5ef254b6050"
 ],
 "geometry/CSW120AAAA::framing/member:plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 8,
-"b99ce05bdfaa"
+"708c6a00acb7"
 ],
 "geometry/CSW120AAAA::framing/member:plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 8,
-"f6380622d682"
+"06106c4bc25d"
 ],
 "geometry/CSW120AAAA::framing/member:stud-000": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW120AAAA::framing/member:stud-001": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW120AAAA::framing/member:tee-N-S-B1-block-00": [
 3.6957,
@@ -36527,33 +36521,33 @@
 ],
 "geometry/CSW122AAAA/layer:gwb-direct": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW122AAAA/layer:gwb-resilient": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW122AAAA/layer:resilient-channel": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW122AAAA/layer:stud": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW122AAAA::framing/member:cripple-head-0-01": [
 5.26415,
-5.715,
+5.699125,
 8,
-"4da7c210b6cf"
+"054bb5d05618"
 ],
 "geometry/CSW122AAAA::framing/member:header-0": [
 5.08,
@@ -36575,15 +36569,15 @@
 ],
 "geometry/CSW122AAAA::framing/member:king-0-l0": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW122AAAA::framing/member:king-0-r0": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW122AAAA::framing/member:plate-bottom": [
 3.048,
@@ -36592,16 +36586,16 @@
 "a5ef254b6050"
 ],
 "geometry/CSW122AAAA::framing/member:plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 8,
-"b99ce05bdfaa"
+"708c6a00acb7"
 ],
 "geometry/CSW122AAAA::framing/member:plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 8,
-"f6380622d682"
+"06106c4bc25d"
 ],
 "geometry/CSW122AAAA::framing/member:strapping-resilient-channel-000": [
 3.048,
@@ -36658,40 +36652,40 @@
 "1cf39f8f20c2"
 ],
 "geometry/CSW122AAAA::framing/member:strapping-resilient-channel-009": [
-5.7277,
-5.7912,
+5.711825,
+5.775325,
 8,
-"d7abe06b4c2b"
+"b823eb23620f"
 ],
 "geometry/CSW122AAAA::framing/member:stud-000": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW122AAAA::framing/member:stud-001": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW122AAAA::framing/member:stud-002": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW122AAAA::framing/member:stud-003": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW122AAAA::framing/member:stud-004": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW122AAAA::framing/member:tee-N-S-B2-block-00": [
 3.6957,
@@ -36719,33 +36713,33 @@
 ],
 "geometry/CSW123AAAA/layer:gwb-direct": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW123AAAA/layer:gwb-resilient": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW123AAAA/layer:resilient-channel": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW123AAAA/layer:stud": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW123AAAA::framing/member:cripple-head-0-01": [
 5.26415,
-5.715,
+5.699125,
 8,
-"4da7c210b6cf"
+"054bb5d05618"
 ],
 "geometry/CSW123AAAA::framing/member:header-0": [
 5.08,
@@ -36767,15 +36761,15 @@
 ],
 "geometry/CSW123AAAA::framing/member:king-0-l0": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW123AAAA::framing/member:king-0-r0": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW123AAAA::framing/member:plate-bottom": [
 3.048,
@@ -36784,16 +36778,16 @@
 "a5ef254b6050"
 ],
 "geometry/CSW123AAAA::framing/member:plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 8,
-"b99ce05bdfaa"
+"708c6a00acb7"
 ],
 "geometry/CSW123AAAA::framing/member:plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 8,
-"f6380622d682"
+"06106c4bc25d"
 ],
 "geometry/CSW123AAAA::framing/member:strapping-resilient-channel-000": [
 3.048,
@@ -36850,40 +36844,40 @@
 "1cf39f8f20c2"
 ],
 "geometry/CSW123AAAA::framing/member:strapping-resilient-channel-009": [
-5.7277,
-5.7912,
+5.711825,
+5.775325,
 8,
-"d7abe06b4c2b"
+"b823eb23620f"
 ],
 "geometry/CSW123AAAA::framing/member:stud-000": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW123AAAA::framing/member:stud-001": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW123AAAA::framing/member:stud-002": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW123AAAA::framing/member:stud-003": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW123AAAA::framing/member:stud-004": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW123AAAA::framing/member:tee-N-S-B3-block-00": [
 3.6957,
@@ -36911,33 +36905,33 @@
 ],
 "geometry/CSW124AAAA/layer:gwb-direct": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW124AAAA/layer:gwb-resilient": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW124AAAA/layer:resilient-channel": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW124AAAA/layer:stud": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW124AAAA::framing/member:cripple-head-0-01": [
 5.26415,
-5.715,
+5.699125,
 8,
-"4da7c210b6cf"
+"054bb5d05618"
 ],
 "geometry/CSW124AAAA::framing/member:header-0": [
 5.08,
@@ -36959,15 +36953,15 @@
 ],
 "geometry/CSW124AAAA::framing/member:king-0-l0": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW124AAAA::framing/member:king-0-r0": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW124AAAA::framing/member:plate-bottom": [
 3.048,
@@ -36976,16 +36970,16 @@
 "a5ef254b6050"
 ],
 "geometry/CSW124AAAA::framing/member:plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 8,
-"b99ce05bdfaa"
+"708c6a00acb7"
 ],
 "geometry/CSW124AAAA::framing/member:plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 8,
-"f6380622d682"
+"06106c4bc25d"
 ],
 "geometry/CSW124AAAA::framing/member:strapping-resilient-channel-000": [
 3.048,
@@ -37042,28 +37036,28 @@
 "1cf39f8f20c2"
 ],
 "geometry/CSW124AAAA::framing/member:strapping-resilient-channel-009": [
-5.7277,
-5.7912,
+5.711825,
+5.775325,
 8,
-"d7abe06b4c2b"
+"b823eb23620f"
 ],
 "geometry/CSW124AAAA::framing/member:stud-000": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW124AAAA::framing/member:stud-001": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW124AAAA::framing/member:stud-002": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW124AAAA::framing/member:tee-N-S-B4-block-00": [
 3.6957,
@@ -37091,27 +37085,27 @@
 ],
 "geometry/CSW125AAAA/layer:gwb-direct": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW125AAAA/layer:gwb-resilient": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW125AAAA/layer:resilient-channel": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW125AAAA/layer:stud": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW125AAAA::framing/member:plate-bottom": [
 3.048,
@@ -37120,16 +37114,16 @@
 "a5ef254b6050"
 ],
 "geometry/CSW125AAAA::framing/member:plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 8,
-"b99ce05bdfaa"
+"708c6a00acb7"
 ],
 "geometry/CSW125AAAA::framing/member:plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 8,
-"f6380622d682"
+"06106c4bc25d"
 ],
 "geometry/CSW125AAAA::framing/member:strapping-resilient-channel-000": [
 3.048,
@@ -37162,64 +37156,64 @@
 "1cf39f8f20c2"
 ],
 "geometry/CSW125AAAA::framing/member:strapping-resilient-channel-005": [
-5.7277,
-5.7912,
+5.711825,
+5.775325,
 8,
-"d7abe06b4c2b"
+"b823eb23620f"
 ],
 "geometry/CSW125AAAA::framing/member:stud-000": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW125AAAA::framing/member:stud-001": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW125AAAA::framing/member:stud-002": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW125AAAA::framing/member:stud-003": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW125AAAA::framing/member:stud-004": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW126AAAA/layer:gwb-direct": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW126AAAA/layer:gwb-resilient": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW126AAAA/layer:resilient-channel": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW126AAAA/layer:stud": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW126AAAA::framing/member:plate-bottom": [
 3.048,
@@ -37228,16 +37222,16 @@
 "a5ef254b6050"
 ],
 "geometry/CSW126AAAA::framing/member:plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 8,
-"b99ce05bdfaa"
+"708c6a00acb7"
 ],
 "geometry/CSW126AAAA::framing/member:plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 8,
-"f6380622d682"
+"06106c4bc25d"
 ],
 "geometry/CSW126AAAA::framing/member:strapping-resilient-channel-000": [
 3.048,
@@ -37270,106 +37264,106 @@
 "1cf39f8f20c2"
 ],
 "geometry/CSW126AAAA::framing/member:strapping-resilient-channel-005": [
-5.7277,
-5.7912,
+5.711825,
+5.775325,
 8,
-"d7abe06b4c2b"
+"b823eb23620f"
 ],
 "geometry/CSW126AAAA::framing/member:stud-000": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW126AAAA::framing/member:stud-001": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW126AAAA::framing/member:stud-002": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW126AAAA::framing/member:stud-003": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW126AAAA::framing/member:stud-004": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW126AAAA::framing/member:stud-005": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW126AAAA::framing/member:stud-006": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW126AAAA::framing/member:stud-007": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW126AAAA::framing/member:stud-008": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW126AAAA::framing/member:stud-009": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW126AAAA::framing/member:stud-010": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW126AAAA::framing/member:stud-011": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW127AAAA/layer:gwb-direct": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW127AAAA/layer:gwb-resilient": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW127AAAA/layer:resilient-channel": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW127AAAA/layer:stud": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW127AAAA::framing/member:plate-bottom": [
 3.048,
@@ -37378,16 +37372,16 @@
 "a5ef254b6050"
 ],
 "geometry/CSW127AAAA::framing/member:plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 8,
-"b99ce05bdfaa"
+"708c6a00acb7"
 ],
 "geometry/CSW127AAAA::framing/member:plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 8,
-"f6380622d682"
+"06106c4bc25d"
 ],
 "geometry/CSW127AAAA::framing/member:strapping-resilient-channel-000": [
 3.048,
@@ -37420,100 +37414,100 @@
 "1cf39f8f20c2"
 ],
 "geometry/CSW127AAAA::framing/member:strapping-resilient-channel-005": [
-5.7277,
-5.7912,
+5.711825,
+5.775325,
 8,
-"d7abe06b4c2b"
+"b823eb23620f"
 ],
 "geometry/CSW127AAAA::framing/member:stud-000": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW127AAAA::framing/member:stud-001": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW127AAAA::framing/member:stud-002": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW127AAAA::framing/member:stud-003": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW127AAAA::framing/member:stud-004": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW127AAAA::framing/member:stud-005": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW127AAAA::framing/member:stud-006": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW127AAAA::framing/member:stud-007": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW127AAAA::framing/member:stud-008": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW127AAAA::framing/member:stud-009": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW127AAAA::framing/member:stud-010": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW127AAAA::framing/member:stud-011": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW129AAAA/layer:gwb-a": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW129AAAA/layer:gwb-b": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW129AAAA/layer:stud": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW129AAAA::framing/member:plate-bottom": [
 3.048,
@@ -37522,70 +37516,70 @@
 "a5ef254b6050"
 ],
 "geometry/CSW129AAAA::framing/member:plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 8,
-"b99ce05bdfaa"
+"708c6a00acb7"
 ],
 "geometry/CSW129AAAA::framing/member:plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 8,
-"f6380622d682"
+"06106c4bc25d"
 ],
 "geometry/CSW129AAAA::framing/member:stud-000": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW129AAAA::framing/member:stud-001": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW129AAAA::framing/member:stud-002": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW129AAAA::framing/member:stud-003": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW132AAAA/layer:gwb-a": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW132AAAA/layer:gwb-b": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW132AAAA/layer:paint-a": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW132AAAA/layer:paint-b": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW132AAAA/layer:staggered-studs": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW132AAAA::framing/member:backing-0-000": [
 3.8608,
@@ -37612,70 +37606,70 @@
 "a5ef254b6050"
 ],
 "geometry/CSW132AAAA::framing/member:plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 8,
-"b99ce05bdfaa"
+"708c6a00acb7"
 ],
 "geometry/CSW132AAAA::framing/member:plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 8,
-"f6380622d682"
+"06106c4bc25d"
 ],
 "geometry/CSW132AAAA::framing/member:stud-000": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW132AAAA::framing/member:stud-001": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW132AAAA::framing/member:stud-002": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW132AAAA::framing/member:stud-003": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW132AAAA::framing/member:stud-004": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW132AAAA::framing/member:stud-005": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW132AAAA::framing/member:stud-006": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW132AAAA::framing/member:stud-007": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW132AAAA::framing/member:stud-008": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW132AAAA::framing/member:tee-N-S-V2-block-00": [
 3.6957,
@@ -38357,27 +38351,27 @@
 ],
 "geometry/CSW141AAAA/layer:gwb-a": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW141AAAA/layer:gwb-b": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW141AAAA/layer:stud": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW141AAAA::framing/member:cripple-head-0-01": [
 5.26415,
-5.715,
+5.699125,
 8,
-"4da7c210b6cf"
+"054bb5d05618"
 ],
 "geometry/CSW141AAAA::framing/member:header-0": [
 5.08,
@@ -38399,15 +38393,15 @@
 ],
 "geometry/CSW141AAAA::framing/member:king-0-l0": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW141AAAA::framing/member:king-0-r0": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW141AAAA::framing/member:plate-bottom": [
 3.048,
@@ -38416,58 +38410,58 @@
 "a5ef254b6050"
 ],
 "geometry/CSW141AAAA::framing/member:plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 8,
-"b99ce05bdfaa"
+"708c6a00acb7"
 ],
 "geometry/CSW141AAAA::framing/member:plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 8,
-"f6380622d682"
+"06106c4bc25d"
 ],
 "geometry/CSW141AAAA::framing/member:stud-000": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW141AAAA::framing/member:stud-001": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW142AAAA/layer:gwb-a": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW142AAAA/layer:gwb-b": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW142AAAA/layer:paint-a": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW142AAAA/layer:paint-b": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW142AAAA/layer:staggered-studs": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW142AAAA::framing/member:backing-0-000": [
 3.8608,
@@ -38489,9 +38483,9 @@
 ],
 "geometry/CSW142AAAA::framing/member:corner-start": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW142AAAA::framing/member:plate-bottom": [
 3.048,
@@ -38500,118 +38494,118 @@
 "a5ef254b6050"
 ],
 "geometry/CSW142AAAA::framing/member:plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 8,
-"b99ce05bdfaa"
+"708c6a00acb7"
 ],
 "geometry/CSW142AAAA::framing/member:plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 8,
-"f6380622d682"
+"06106c4bc25d"
 ],
 "geometry/CSW142AAAA::framing/member:stud-000": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW142AAAA::framing/member:stud-001": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW142AAAA::framing/member:stud-002": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW142AAAA::framing/member:stud-003": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW142AAAA::framing/member:stud-004": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW142AAAA::framing/member:stud-005": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW142AAAA::framing/member:stud-006": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW142AAAA::framing/member:stud-007": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW142AAAA::framing/member:stud-008": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW142AAAA::framing/member:stud-009": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW143AAAA/layer:gwb-a": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW143AAAA/layer:gwb-b": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW143AAAA/layer:stud": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW143AAAA::framing/member:corner-start": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW143AAAA::framing/member:cripple-head-0-01": [
 5.2197,
-5.715,
+5.699125,
 8,
-"dc953147597c"
+"5a8956580700"
 ],
 "geometry/CSW143AAAA::framing/member:cripple-head-0-02": [
 5.2197,
-5.715,
+5.699125,
 8,
-"dc953147597c"
+"5a8956580700"
 ],
 "geometry/CSW143AAAA::framing/member:cripple-head-0-03": [
 5.2197,
-5.715,
+5.699125,
 8,
-"dc953147597c"
+"5a8956580700"
 ],
 "geometry/CSW143AAAA::framing/member:header-0": [
 5.08,
@@ -38633,15 +38627,15 @@
 ],
 "geometry/CSW143AAAA::framing/member:king-0-l0": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW143AAAA::framing/member:king-0-r0": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW143AAAA::framing/member:plate-bottom": [
 3.048,
@@ -38650,70 +38644,70 @@
 "a5ef254b6050"
 ],
 "geometry/CSW143AAAA::framing/member:plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 8,
-"b99ce05bdfaa"
+"708c6a00acb7"
 ],
 "geometry/CSW143AAAA::framing/member:plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 8,
-"f6380622d682"
+"06106c4bc25d"
 ],
 "geometry/CSW143AAAA::framing/member:stud-000": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW143AAAA::framing/member:stud-001": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW143AAAA::framing/member:stud-002": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW143AAAA::framing/member:stud-003": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW144AAAA/layer:gwb-direct": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW144AAAA/layer:gwb-resilient": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW144AAAA/layer:resilient-channel": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW144AAAA/layer:stud": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW144AAAA::framing/member:cripple-head-0-01": [
 5.26415,
-5.715,
+5.699125,
 8,
-"4da7c210b6cf"
+"054bb5d05618"
 ],
 "geometry/CSW144AAAA::framing/member:header-0": [
 5.08,
@@ -38735,15 +38729,15 @@
 ],
 "geometry/CSW144AAAA::framing/member:king-0-l0": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW144AAAA::framing/member:king-0-r0": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW144AAAA::framing/member:plate-bottom": [
 3.048,
@@ -38752,16 +38746,16 @@
 "a5ef254b6050"
 ],
 "geometry/CSW144AAAA::framing/member:plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 8,
-"b99ce05bdfaa"
+"708c6a00acb7"
 ],
 "geometry/CSW144AAAA::framing/member:plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 8,
-"f6380622d682"
+"06106c4bc25d"
 ],
 "geometry/CSW144AAAA::framing/member:strapping-resilient-channel-000": [
 3.048,
@@ -38818,52 +38812,52 @@
 "1cf39f8f20c2"
 ],
 "geometry/CSW144AAAA::framing/member:strapping-resilient-channel-009": [
-5.7277,
-5.7912,
+5.711825,
+5.775325,
 8,
-"d7abe06b4c2b"
+"b823eb23620f"
 ],
 "geometry/CSW144AAAA::framing/member:stud-000": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW144AAAA::framing/member:stud-001": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW144AAAA::framing/member:stud-002": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW144AAAA::framing/member:stud-003": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW145AAAA/layer:gwb-a": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW145AAAA/layer:gwb-b": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW145AAAA/layer:staggered-studs": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW145AAAA::framing/member:plate-bottom": [
 3.048,
@@ -38872,70 +38866,70 @@
 "a5ef254b6050"
 ],
 "geometry/CSW145AAAA::framing/member:plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 8,
-"b99ce05bdfaa"
+"708c6a00acb7"
 ],
 "geometry/CSW145AAAA::framing/member:plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 8,
-"f6380622d682"
+"06106c4bc25d"
 ],
 "geometry/CSW145AAAA::framing/member:stud-000": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW145AAAA::framing/member:stud-001": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW145AAAA::framing/member:stud-002": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW145AAAA::framing/member:stud-003": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW145AAAA::framing/member:stud-004": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW145AAAA::framing/member:stud-005": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW145AAAA::framing/member:stud-006": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW145AAAA::framing/member:stud-007": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW145AAAA::framing/member:stud-008": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW145AAAA::framing/member:tee-N-S-V1-block-00": [
 3.6957,
@@ -38963,21 +38957,21 @@
 ],
 "geometry/CSW146AAAA/layer:gwb-a": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW146AAAA/layer:gwb-b": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW146AAAA/layer:staggered-studs": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW146AAAA::framing/member:plate-bottom": [
 3.048,
@@ -38986,58 +38980,58 @@
 "a5ef254b6050"
 ],
 "geometry/CSW146AAAA::framing/member:plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 8,
-"b99ce05bdfaa"
+"708c6a00acb7"
 ],
 "geometry/CSW146AAAA::framing/member:plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 8,
-"f6380622d682"
+"06106c4bc25d"
 ],
 "geometry/CSW146AAAA::framing/member:stud-000": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW146AAAA::framing/member:stud-001": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW146AAAA::framing/member:stud-002": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW146AAAA::framing/member:stud-003": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW146AAAA::framing/member:stud-004": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW146AAAA::framing/member:stud-005": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW146AAAA::framing/member:stud-006": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW146AAAA::framing/member:tee-N-S-D4-block-00": [
 3.6957,
@@ -39215,27 +39209,27 @@
 ],
 "geometry/CSW148AAAA/layer:gwb-a": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW148AAAA/layer:gwb-b": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW148AAAA/layer:stud": [
 3.048,
-5.7912,
+5.775325,
 6,
-"fa155017d4b3"
+"e7d8ff18ab19"
 ],
 "geometry/CSW148AAAA::framing/member:cripple-head-0-01": [
 5.26415,
-5.715,
+5.699125,
 8,
-"4da7c210b6cf"
+"054bb5d05618"
 ],
 "geometry/CSW148AAAA::framing/member:header-0": [
 5.08,
@@ -39257,15 +39251,15 @@
 ],
 "geometry/CSW148AAAA::framing/member:king-0-l0": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW148AAAA::framing/member:king-0-r0": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW148AAAA::framing/member:plate-bottom": [
 3.048,
@@ -39274,22 +39268,22 @@
 "a5ef254b6050"
 ],
 "geometry/CSW148AAAA::framing/member:plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 8,
-"b99ce05bdfaa"
+"708c6a00acb7"
 ],
 "geometry/CSW148AAAA::framing/member:plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 8,
-"f6380622d682"
+"06106c4bc25d"
 ],
 "geometry/CSW148AAAA::framing/member:stud-000": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW149AAAA/layer:gwb-a": [
 3.048,
@@ -39533,21 +39527,21 @@
 ],
 "geometry/CSW151AAAA/layer:gwb-a": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW151AAAA/layer:gwb-b": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW151AAAA/layer:stud": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW151AAAA::framing/member:plate-bottom": [
 3.048,
@@ -39556,52 +39550,52 @@
 "a5ef254b6050"
 ],
 "geometry/CSW151AAAA::framing/member:plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 8,
-"b99ce05bdfaa"
+"708c6a00acb7"
 ],
 "geometry/CSW151AAAA::framing/member:plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 8,
-"f6380622d682"
+"06106c4bc25d"
 ],
 "geometry/CSW151AAAA::framing/member:stud-000": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW151AAAA::framing/member:stud-001": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW151AAAA::framing/member:stud-002": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW152AAAA/layer:gwb-a": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW152AAAA/layer:gwb-b": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW152AAAA/layer:stud": [
 3.048,
-5.7912,
+5.775325,
 2,
-"7981cbeae3a4"
+"b7b31aff550e"
 ],
 "geometry/CSW152AAAA::framing/member:backing-0-000": [
 3.6068,
@@ -39611,9 +39605,9 @@
 ],
 "geometry/CSW152AAAA::framing/member:corner-start": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW152AAAA::framing/member:plate-bottom": [
 3.048,
@@ -39622,34 +39616,34 @@
 "a5ef254b6050"
 ],
 "geometry/CSW152AAAA::framing/member:plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 8,
-"b99ce05bdfaa"
+"708c6a00acb7"
 ],
 "geometry/CSW152AAAA::framing/member:plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 8,
-"f6380622d682"
+"06106c4bc25d"
 ],
 "geometry/CSW152AAAA::framing/member:stud-000": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW152AAAA::framing/member:stud-001": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW152AAAA::framing/member:stud-002": [
 3.0861,
-5.715,
+5.699125,
 8,
-"50ef2552dcd5"
+"0dc10552628c"
 ],
 "geometry/CSW153AAAA/layer:cladding": [
 3.048,
@@ -40625,27 +40619,27 @@
 ],
 "geometry/HGVY43DYQH/layer:gwb-a": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/HGVY43DYQH/layer:gwb-b": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/HGVY43DYQH/layer:stud": [
 0.0,
-2.7432,
+2.727325,
 2,
-"08fa410dc44f"
+"4cd3770f4a5a"
 ],
 "geometry/HGVY43DYQH::framing/member:corner-start": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/HGVY43DYQH::framing/member:plate-bottom": [
 0.0,
@@ -40654,52 +40648,52 @@
 "c1d27a37c961"
 ],
 "geometry/HGVY43DYQH::framing/member:plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 8,
-"969cf62a92d4"
+"c0354c2dc5c5"
 ],
 "geometry/HGVY43DYQH::framing/member:plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 8,
-"ba74e63dc3f4"
+"6d371ae8a315"
 ],
 "geometry/HGVY43DYQH::framing/member:stud-000": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/HGVY43DYQH::framing/member:stud-001": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/HGVY43DYQH::framing/member:stud-002": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/HKFW104YS3/layer:gwb-a": [
 6.096,
-7.48665,
+7.165975,
 6,
-"926e3c7a8bea"
+"ebf703ccff1b"
 ],
 "geometry/HKFW104YS3/layer:gwb-b": [
 6.096,
-7.48665,
+7.165975,
 6,
-"926e3c7a8bea"
+"ebf703ccff1b"
 ],
 "geometry/HKFW104YS3/layer:stud": [
 6.096,
-7.48665,
+7.165975,
 6,
-"926e3c7a8bea"
+"ebf703ccff1b"
 ],
 "geometry/HKFW104YS3::framing/member:plate-bottom": [
 6.096,
@@ -40708,52 +40702,52 @@
 "fe8fba95edce"
 ],
 "geometry/HKFW104YS3::framing/member:plate-raked-0": [
-6.5230375,
-7.48665,
+6.2023625,
+7.165975,
 8,
-"8a42730f59cf"
+"aa6dc0769729"
 ],
 "geometry/HKFW104YS3::framing/member:plate-raked-1": [
-6.4849375,
-7.44855,
+6.1642625,
+7.127875,
 8,
-"542253455526"
+"efa109b87b9e"
 ],
 "geometry/HKFW104YS3::framing/member:stud-000": [
 6.1341,
-7.41045,
+7.089775,
 8,
-"e744398c931a"
+"96438943dfc7"
 ],
 "geometry/HKFW104YS3::framing/member:stud-001": [
 6.1341,
-7.20725,
+6.886575,
 8,
-"b0ed54b1c3ae"
+"83d998ae52b8"
 ],
 "geometry/HKFW104YS3::framing/member:stud-002": [
 6.1341,
-7.00405,
+6.683375,
 8,
-"b206d26943c3"
+"698fca03ce04"
 ],
 "geometry/HKFW104YS3::framing/member:stud-003": [
 6.1341,
-6.80085,
+6.480175,
 8,
-"a1445f69d79f"
+"9019837206cb"
 ],
 "geometry/HKFW104YS3::framing/member:stud-004": [
 6.1341,
-6.59765,
+6.276975,
 8,
-"71ee804529d4"
+"721cafec4501"
 ],
 "geometry/HKFW104YS3::framing/member:stud-005": [
 6.1341,
-6.4849375,
+6.1642625,
 8,
-"97589eae2144"
+"efa0580a27f6"
 ],
 "geometry/HNBWJNTS71-run/body": [
 2.9337057,
@@ -40811,33 +40805,33 @@
 ],
 "geometry/KKVYSAJKZF/layer:gwb-a": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/KKVYSAJKZF/layer:gwb-b": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/KKVYSAJKZF/layer:stud": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/KKVYSAJKZF::framing/member:cripple-head-0-01": [
 2.21615,
-2.667,
+2.651125,
 8,
-"dcb16b4147dc"
+"b85b0b1e74b6"
 ],
 "geometry/KKVYSAJKZF::framing/member:cripple-head-0-02": [
 2.21615,
-2.667,
+2.651125,
 8,
-"dcb16b4147dc"
+"b85b0b1e74b6"
 ],
 "geometry/KKVYSAJKZF::framing/member:header-0": [
 2.032,
@@ -40859,15 +40853,15 @@
 ],
 "geometry/KKVYSAJKZF::framing/member:king-0-l0": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/KKVYSAJKZF::framing/member:king-0-r0": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/KKVYSAJKZF::framing/member:plate-bottom": [
 0.0,
@@ -40876,28 +40870,28 @@
 "c1d27a37c961"
 ],
 "geometry/KKVYSAJKZF::framing/member:plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 8,
-"969cf62a92d4"
+"c0354c2dc5c5"
 ],
 "geometry/KKVYSAJKZF::framing/member:plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 8,
-"ba74e63dc3f4"
+"6d371ae8a315"
 ],
 "geometry/KKVYSAJKZF::framing/member:stud-000": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/KKVYSAJKZF::framing/member:stud-001": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/L8CY2WRT4K/body": [
 0.6858,
@@ -41309,39 +41303,39 @@
 ],
 "geometry/QY8YCE6XV3/layer:gwb-a": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/QY8YCE6XV3/layer:gwb-b": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/QY8YCE6XV3/layer:stud": [
 0.0,
-2.7432,
+2.727325,
 6,
-"c3d978f4eede"
+"279d618cde3c"
 ],
 "geometry/QY8YCE6XV3::framing/member:cripple-head-0-01": [
 2.26695,
-2.667,
+2.651125,
 8,
-"2d1e8931afc2"
+"60935f1f9368"
 ],
 "geometry/QY8YCE6XV3::framing/member:cripple-head-0-02": [
 2.26695,
-2.667,
+2.651125,
 8,
-"2d1e8931afc2"
+"60935f1f9368"
 ],
 "geometry/QY8YCE6XV3::framing/member:cripple-head-0-03": [
 2.26695,
-2.667,
+2.651125,
 8,
-"2d1e8931afc2"
+"60935f1f9368"
 ],
 "geometry/QY8YCE6XV3::framing/member:header-0": [
 2.032,
@@ -41363,15 +41357,15 @@
 ],
 "geometry/QY8YCE6XV3::framing/member:king-0-l0": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/QY8YCE6XV3::framing/member:king-0-r0": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/QY8YCE6XV3::framing/member:plate-bottom": [
 0.0,
@@ -41380,22 +41374,22 @@
 "c1d27a37c961"
 ],
 "geometry/QY8YCE6XV3::framing/member:plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 8,
-"969cf62a92d4"
+"c0354c2dc5c5"
 ],
 "geometry/QY8YCE6XV3::framing/member:plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 8,
-"ba74e63dc3f4"
+"6d371ae8a315"
 ],
 "geometry/QY8YCE6XV3::framing/member:stud-000": [
 0.0381,
-2.667,
+2.651125,
 8,
-"1ce2bb9fca09"
+"5b1c8c335af3"
 ],
 "geometry/R0STSQM95Y-bugscreen/body": [
 -0.3413125,
@@ -41723,21 +41717,21 @@
 ],
 "geometry/REREWJKFAZ/layer:gwb-a": [
 6.096,
-9.1772105,
+8.8565355,
 18,
-"3f2b6e70443e"
+"c03696943a62"
 ],
 "geometry/REREWJKFAZ/layer:gwb-b": [
 6.096,
-9.1772105,
+8.8565355,
 18,
-"87b296a8f0e6"
+"d128f3a99152"
 ],
 "geometry/REREWJKFAZ/layer:stud": [
 6.096,
-9.1772105,
+8.8565355,
 18,
-"535e0ea3967b"
+"29efd7fd28f9"
 ],
 "geometry/REREWJKFAZ::framing/member:backing-0-000": [
 7.2644,
@@ -41753,15 +41747,15 @@
 ],
 "geometry/REREWJKFAZ::framing/member:corner-start": [
 6.1341,
-7.8613,
+7.540625,
 8,
-"9980c4afa369"
+"4a447cf5c578"
 ],
 "geometry/REREWJKFAZ::framing/member:cripple-head-0-01": [
 8.31215,
-8.73125,
+8.410575,
 8,
-"cb7ad16d2055"
+"558267e834b1"
 ],
 "geometry/REREWJKFAZ::framing/member:header-0": [
 8.128,
@@ -41783,15 +41777,15 @@
 ],
 "geometry/REREWJKFAZ::framing/member:king-0-l0": [
 6.1341,
-8.499475,
+8.1788,
 8,
-"397964e7192e"
+"fa05fc6de3ca"
 ],
 "geometry/REREWJKFAZ::framing/member:king-0-r0": [
 6.1341,
-8.861425,
+8.54075,
 8,
-"15db4cbc7bbb"
+"ab5267f3556a"
 ],
 "geometry/REREWJKFAZ::framing/member:plate-bottom": [
 6.096,
@@ -41800,52 +41794,52 @@
 "fe8fba95edce"
 ],
 "geometry/REREWJKFAZ::framing/member:plate-raked-0": [
-7.870825,
-9.1772105,
+7.55015,
+8.8565355,
 8,
-"7805adf05da8"
+"7fd2969a0a2f"
 ],
 "geometry/REREWJKFAZ::framing/member:plate-raked-1": [
-7.902575,
-9.1391105,
+7.5819,
+8.8184355,
 8,
-"68baa1fb0a45"
+"ed3aca6e3db0"
 ],
 "geometry/REREWJKFAZ::framing/member:stud-000": [
 6.1341,
-7.84225,
+7.521575,
 8,
-"3260ff95957d"
+"05d11ba0a1dd"
 ],
 "geometry/REREWJKFAZ::framing/member:stud-001": [
 6.1341,
-8.07085,
+7.750175,
 8,
-"f7c12f858db2"
+"3021d826a054"
 ],
 "geometry/REREWJKFAZ::framing/member:stud-002": [
 6.1341,
-8.27405,
+7.953375,
 8,
-"be516a30d266"
+"3d7aa1571d56"
 ],
 "geometry/REREWJKFAZ::framing/member:stud-003": [
 6.1341,
-8.47725,
+8.156575,
 8,
-"d7f86bddaf5e"
+"92cc8482c161"
 ],
 "geometry/REREWJKFAZ::framing/member:stud-004": [
 6.1341,
-8.88365,
+8.562975,
 8,
-"d984d805b828"
+"5c957cbb8eda"
 ],
 "geometry/REREWJKFAZ::framing/member:stud-005": [
 6.1341,
-9.0914855,
+8.7708105,
 8,
-"44ab1f00542a"
+"504c0d54350b"
 ],
 "geometry/RGC7QGVF7Y/exterior_trim": [
 4.0828,
@@ -42083,21 +42077,21 @@
 ],
 "geometry/RV6PJZ6WWM/layer:gwb-a": [
 6.096,
-9.1772105,
+8.8565355,
 6,
-"bfea2de5117d"
+"951859b1a1ce"
 ],
 "geometry/RV6PJZ6WWM/layer:gwb-b": [
 6.096,
-9.1772105,
+8.8565355,
 6,
-"bfea2de5117d"
+"951859b1a1ce"
 ],
 "geometry/RV6PJZ6WWM/layer:stud": [
 6.096,
-9.1772105,
+8.8565355,
 7,
-"8b00da5d9f0f"
+"7896bd67cf4d"
 ],
 "geometry/RV6PJZ6WWM::framing/member:plate-bottom": [
 6.096,
@@ -42106,58 +42100,58 @@
 "fe8fba95edce"
 ],
 "geometry/RV6PJZ6WWM::framing/member:plate-raked-0": [
-7.9629,
-9.1772105,
+7.642225,
+8.8565355,
 8,
-"4e1873b62067"
+"37d104105af0"
 ],
 "geometry/RV6PJZ6WWM::framing/member:plate-raked-1": [
-7.9248,
-9.1391105,
+7.604125,
+8.8184355,
 8,
-"fec5bbad58f9"
+"ba9aa54e84fb"
 ],
 "geometry/RV6PJZ6WWM::framing/member:stud-000": [
 6.1341,
-7.9248,
+7.604125,
 8,
-"c99a704833d2"
+"371594fad627"
 ],
 "geometry/RV6PJZ6WWM::framing/member:stud-001": [
 6.1341,
-8.128,
+7.807325,
 8,
-"c983d34397c3"
+"e47c93b06b04"
 ],
 "geometry/RV6PJZ6WWM::framing/member:stud-002": [
 6.1341,
-8.3312,
+8.010525,
 8,
-"bfbf3c04d1eb"
+"c01af6959a85"
 ],
 "geometry/RV6PJZ6WWM::framing/member:stud-003": [
 6.1341,
-8.5344,
+8.213725,
 8,
-"fa0853712cfe"
+"9f0eb85d8dd1"
 ],
 "geometry/RV6PJZ6WWM::framing/member:stud-004": [
 6.1341,
-8.7376,
+8.416925,
 8,
-"a711dd1a8aa9"
+"99a1e055c736"
 ],
 "geometry/RV6PJZ6WWM::framing/member:stud-005": [
 6.1341,
-8.9408,
+8.620125,
 8,
-"f0dc50a944e2"
+"d0abad9e4fa1"
 ],
 "geometry/RV6PJZ6WWM::framing/member:stud-006": [
 6.1341,
-9.0914855,
+8.7708105,
 8,
-"44ab1f00542a"
+"504c0d54350b"
 ],
 "geometry/RV6PJZ6WWM::framing/member:tee-N-A-H1-block-00": [
 6.7437,
@@ -46913,33 +46907,33 @@
 ],
 "geometry/ZEF56D047J/layer:gwb-a": [
 6.096,
-7.94385,
+7.623175,
 6,
-"7d87fd5aca87"
+"817c77ab6878"
 ],
 "geometry/ZEF56D047J/layer:gwb-b": [
 6.096,
-7.94385,
+7.623175,
 6,
-"7d87fd5aca87"
+"817c77ab6878"
 ],
 "geometry/ZEF56D047J/layer:paint-a": [
 6.096,
-7.94385,
+7.623175,
 6,
-"7d87fd5aca87"
+"817c77ab6878"
 ],
 "geometry/ZEF56D047J/layer:paint-b": [
 6.096,
-7.94385,
+7.623175,
 6,
-"7d87fd5aca87"
+"817c77ab6878"
 ],
 "geometry/ZEF56D047J/layer:staggered-studs": [
 6.096,
-7.94385,
+7.623175,
 6,
-"7d87fd5aca87"
+"817c77ab6878"
 ],
 "geometry/ZEF56D047J::framing/member:backing-0-000": [
 6.9088,
@@ -46960,70 +46954,70 @@
 "fe8fba95edce"
 ],
 "geometry/ZEF56D047J::framing/member:plate-top-0": [
-7.90575,
-7.94385,
+7.585075,
+7.623175,
 8,
-"d50019ed0eb3"
+"0648ef703db1"
 ],
 "geometry/ZEF56D047J::framing/member:plate-top-1": [
-7.86765,
-7.90575,
+7.546975,
+7.585075,
 8,
-"68a3b54f7353"
+"6e9673bea994"
 ],
 "geometry/ZEF56D047J::framing/member:stud-000": [
 6.1341,
-7.86765,
+7.546975,
 8,
-"d358f70a0aac"
+"11c682cbbdfd"
 ],
 "geometry/ZEF56D047J::framing/member:stud-001": [
 6.1341,
-7.86765,
+7.546975,
 8,
-"d358f70a0aac"
+"11c682cbbdfd"
 ],
 "geometry/ZEF56D047J::framing/member:stud-002": [
 6.1341,
-7.86765,
+7.546975,
 8,
-"d358f70a0aac"
+"11c682cbbdfd"
 ],
 "geometry/ZEF56D047J::framing/member:stud-003": [
 6.1341,
-7.86765,
+7.546975,
 8,
-"d358f70a0aac"
+"11c682cbbdfd"
 ],
 "geometry/ZEF56D047J::framing/member:stud-004": [
 6.1341,
-7.86765,
+7.546975,
 8,
-"d358f70a0aac"
+"11c682cbbdfd"
 ],
 "geometry/ZEF56D047J::framing/member:stud-005": [
 6.1341,
-7.86765,
+7.546975,
 8,
-"d358f70a0aac"
+"11c682cbbdfd"
 ],
 "geometry/ZEF56D047J::framing/member:stud-006": [
 6.1341,
-7.86765,
+7.546975,
 8,
-"d358f70a0aac"
+"11c682cbbdfd"
 ],
 "geometry/ZEF56D047J::framing/member:stud-007": [
 6.1341,
-7.86765,
+7.546975,
 8,
-"d358f70a0aac"
+"11c682cbbdfd"
 ],
 "geometry/ZEF56D047J::framing/member:stud-008": [
 6.1341,
-7.86765,
+7.546975,
 8,
-"d358f70a0aac"
+"11c682cbbdfd"
 ],
 "geometry/ZG0Q6KGNXB/layer:brick": [
 -0.3413125,
@@ -48027,9 +48021,9 @@
 ],
 "member/21GE85HJDT/corner-start": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/21GE85HJDT/plate-bottom": [
 0.0,
@@ -48038,40 +48032,40 @@
 "216e2360d69a"
 ],
 "member/21GE85HJDT/plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 2,
-"28339fa9747a"
+"7d9042053194"
 ],
 "member/21GE85HJDT/plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 2,
-"1446726e93b5"
+"b82b89591363"
 ],
 "member/21GE85HJDT/stud-000": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/21GE85HJDT/stud-001": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/21GE85HJDT/stud-002": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/21GE85HJDT/stud-003": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/3BF9ZDQPT1/plate-bottom": [
 -2.5955625,
@@ -48195,9 +48189,9 @@
 ],
 "member/3TKS0Y8EH7/cripple-head-0-01": [
 7.19455,
-7.6708,
+7.350125,
 2,
-"3b87dbe0f54d"
+"d5ae18c8d11c"
 ],
 "member/3TKS0Y8EH7/header-0": [
 7.0104,
@@ -48219,15 +48213,15 @@
 ],
 "member/3TKS0Y8EH7/king-0-l0": [
 6.1341,
-7.439025,
+7.11835,
 2,
-"48249f194c6a"
+"55d48153017b"
 ],
 "member/3TKS0Y8EH7/king-0-r0": [
 6.1341,
-7.800975,
+7.4803,
 2,
-"02a797340b29"
+"2dcf47b9d81c"
 ],
 "member/3TKS0Y8EH7/plate-bottom": [
 6.096,
@@ -48236,64 +48230,64 @@
 "95399dba7c37"
 ],
 "member/3TKS0Y8EH7/plate-raked-0": [
-6.5151,
-8.001,
+6.194425,
+7.680325,
 4,
-"13d95c3f4cd4"
+"55f5076d6f0a"
 ],
 "member/3TKS0Y8EH7/plate-raked-1": [
-6.477,
-7.9629,
+6.156325,
+7.642225,
 4,
-"aee96f261808"
+"a4671b405432"
 ],
 "member/3TKS0Y8EH7/stud-000": [
+6.1341,
+6.16585,
+2,
+"91c89a3292f9"
+],
+"member/3TKS0Y8EH7/stud-001": [
+6.1341,
+6.283325,
+2,
+"76f19a4f1290"
+],
+"member/3TKS0Y8EH7/stud-002": [
 6.1341,
 6.486525,
 2,
 "a9d840da50c5"
 ],
-"member/3TKS0Y8EH7/stud-001": [
-6.1341,
-6.604,
-2,
-"1307fd070f7b"
-],
-"member/3TKS0Y8EH7/stud-002": [
-6.1341,
-6.8072,
-2,
-"72bc32a2e8a2"
-],
 "member/3TKS0Y8EH7/stud-003": [
 6.1341,
-7.0104,
+6.689725,
 2,
-"f756a56ecf5d"
+"32de240a222b"
 ],
 "member/3TKS0Y8EH7/stud-004": [
 6.1341,
-7.2136,
+6.892925,
 2,
-"6861ee0f2466"
+"137015d72d08"
 ],
 "member/3TKS0Y8EH7/stud-005": [
 6.1341,
-7.4168,
+7.096125,
 2,
-"29e19950b70a"
+"ba340ae5f7f7"
 ],
 "member/3TKS0Y8EH7/stud-006": [
 6.1341,
-7.8232,
+7.502525,
 2,
-"e15068267cdb"
+"c8d93d7e8c07"
 ],
 "member/3TKS0Y8EH7/stud-007": [
 6.1341,
-7.9248,
+7.604125,
 2,
-"e29844a59846"
+"be59298b6de7"
 ],
 "member/6DAADXAD7P/soffit-end-n": [
 5.26415,
@@ -48537,9 +48531,9 @@
 ],
 "member/8BRZAXSW73/cripple-head-0-01": [
 -0.5635625,
--0.4175125,
+-0.396875,
 2,
-"3dd06ed62d43"
+"f22c8396090d"
 ],
 "member/8BRZAXSW73/header-0": [
 -0.7477125,
@@ -48561,15 +48555,15 @@
 ],
 "member/8BRZAXSW73/king-0-l0": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/8BRZAXSW73/king-0-r0": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/8BRZAXSW73/plate-bottom": [
 -2.7797125,
@@ -48578,64 +48572,64 @@
 "2c6e5b3829a7"
 ],
 "member/8BRZAXSW73/plate-top-0": [
--0.3794125,
--0.3413125,
+-0.358775,
+-0.320675,
 2,
-"f93434adc01d"
+"0957785af78e"
 ],
 "member/8BRZAXSW73/plate-top-1": [
--0.4175125,
--0.3794125,
+-0.396875,
+-0.358775,
 2,
-"477bcc2507a6"
+"7ac7f834a0e8"
 ],
 "member/8BRZAXSW73/stud-000": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/8BRZAXSW73/stud-001": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/8BRZAXSW73/stud-002": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/8BRZAXSW73/stud-003": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/8BRZAXSW73/stud-004": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/8BRZAXSW73/stud-005": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/8BRZAXSW73/stud-006": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/8BRZAXSW73/stud-007": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/8BRZAXSW73/tee-N-B-BA-NE-block-00": [
 -2.1320125,
@@ -48734,82 +48728,82 @@
 "95399dba7c37"
 ],
 "member/9WC345CCP1/plate-top-0": [
-7.9629,
-8.001,
+7.642225,
+7.680325,
 2,
-"eba17ab8f00c"
+"a4c9e3bc93bd"
 ],
 "member/9WC345CCP1/plate-top-1": [
-7.9248,
-7.9629,
+7.604125,
+7.642225,
 2,
-"1027e0d4789e"
+"4c2d17828499"
 ],
 "member/9WC345CCP1/stud-000": [
 6.1341,
-7.9248,
+7.604125,
 2,
-"e29844a59846"
+"be59298b6de7"
 ],
 "member/9WC345CCP1/stud-001": [
 6.1341,
-7.9248,
+7.604125,
 2,
-"e29844a59846"
+"be59298b6de7"
 ],
 "member/9WC345CCP1/stud-002": [
 6.1341,
-7.9248,
+7.604125,
 2,
-"e29844a59846"
+"be59298b6de7"
 ],
 "member/9WC345CCP1/stud-003": [
 6.1341,
-7.9248,
+7.604125,
 2,
-"e29844a59846"
+"be59298b6de7"
 ],
 "member/9WC345CCP1/stud-004": [
 6.1341,
-7.9248,
+7.604125,
 2,
-"e29844a59846"
+"be59298b6de7"
 ],
 "member/9WC345CCP1/stud-005": [
 6.1341,
-7.9248,
+7.604125,
 2,
-"e29844a59846"
+"be59298b6de7"
 ],
 "member/9WC345CCP1/stud-006": [
 6.1341,
-7.9248,
+7.604125,
 2,
-"e29844a59846"
+"be59298b6de7"
 ],
 "member/9WC345CCP1/stud-007": [
 6.1341,
-7.9248,
+7.604125,
 2,
-"e29844a59846"
+"be59298b6de7"
 ],
 "member/9WC345CCP1/stud-008": [
 6.1341,
-7.9248,
+7.604125,
 2,
-"e29844a59846"
+"be59298b6de7"
 ],
 "member/9WC345CCP1/stud-009": [
 6.1341,
-7.9248,
+7.604125,
 2,
-"e29844a59846"
+"be59298b6de7"
 ],
 "member/9WC345CCP1/stud-010": [
 6.1341,
-7.9248,
+7.604125,
 2,
-"e29844a59846"
+"be59298b6de7"
 ],
 "member/A5K4RVWPWW/plate-bottom": [
 0.0,
@@ -53047,17 +53041,11 @@
 2,
 "043ba55c0de0"
 ],
-"member/CAW113AAAA/blocking-0-004": [
-7.3533,
-7.3914,
-2,
-"043ba55c0de0"
-],
 "member/CAW113AAAA/cripple-head-0-01": [
 8.31215,
-8.7249,
+8.404225,
 2,
-"0d02fb23908b"
+"da959ee117b1"
 ],
 "member/CAW113AAAA/header-0": [
 8.128,
@@ -53079,15 +53067,15 @@
 ],
 "member/CAW113AAAA/king-0-l0": [
 6.1341,
-8.956675,
+8.636,
 2,
-"51fc9f846cdf"
+"e55928e63d22"
 ],
 "member/CAW113AAAA/king-0-r0": [
 6.1341,
-8.518525,
+8.19785,
 2,
-"4455d23af151"
+"20fd1eab0b15"
 ],
 "member/CAW113AAAA/plate-bottom": [
 6.096,
@@ -53096,166 +53084,166 @@
 "95399dba7c37"
 ],
 "member/CAW113AAAA/plate-raked-0": [
-6.5151,
-9.1772105,
+6.194425,
+8.8565355,
 4,
-"447077866863"
+"d3eb308b74e4"
 ],
 "member/CAW113AAAA/plate-raked-1": [
-6.477,
-9.1391105,
+6.156325,
+8.8184355,
 4,
-"993e3b2e5472"
+"39e6190b59e4"
 ],
 "member/CAW113AAAA/strapping-nailer-n-000": [
 6.096,
-9.1549855,
+8.8343105,
 2,
-"38421bb593d2"
+"7bb94f3b8ffb"
 ],
 "member/CAW113AAAA/strapping-nailer-n-001": [
 8.128,
-9.017,
+8.696325,
 2,
-"227f42702988"
+"37111275c3a2"
 ],
 "member/CAW113AAAA/strapping-nailer-n-002": [
 8.128,
-8.8138,
+8.493125,
 2,
-"94d25806d1cb"
+"c0d67163b34b"
 ],
 "member/CAW113AAAA/strapping-nailer-n-003": [
 8.128,
-8.6106,
+8.289925,
 2,
-"840f4b7beb26"
+"18bd2177dd3e"
 ],
 "member/CAW113AAAA/strapping-nailer-n-004": [
 6.096,
-8.4074,
+8.086725,
 2,
-"825c8a805c6d"
+"49e8e694abdd"
 ],
 "member/CAW113AAAA/strapping-nailer-n-005": [
 6.096,
-8.2042,
+7.883525,
 2,
-"1db10dae646d"
+"0e6734259ddf"
 ],
 "member/CAW113AAAA/strapping-nailer-n-006": [
 6.096,
-8.001,
+7.680325,
 2,
-"0123333281e8"
+"7ca185430666"
 ],
 "member/CAW113AAAA/strapping-nailer-n-007": [
 6.096,
-7.7978,
+7.477125,
 2,
-"51b24b99e815"
+"601314c4174b"
 ],
 "member/CAW113AAAA/strapping-nailer-n-008": [
 6.096,
-7.5946,
+7.273925,
 2,
-"d6e4a191ef7c"
+"684f096974d0"
 ],
 "member/CAW113AAAA/strapping-nailer-n-009": [
 6.096,
-7.3914,
+7.070725,
 2,
-"b5c3b9b4204d"
+"f86c14bfb3ca"
 ],
 "member/CAW113AAAA/strapping-nailer-n-010": [
 6.096,
-7.1882,
+6.867525,
 2,
-"d77c61808a92"
+"2729824e42c8"
 ],
 "member/CAW113AAAA/strapping-nailer-n-011": [
 6.096,
-6.985,
+6.664325,
 2,
-"3a0606a89ffd"
+"89cd1c8aad33"
 ],
 "member/CAW113AAAA/strapping-nailer-n-012": [
 6.096,
-6.7818,
+6.461125,
 2,
-"91e1e94616ab"
+"6fa4394f4591"
 ],
 "member/CAW113AAAA/strapping-nailer-n-013": [
 6.096,
-6.575425,
+6.25475,
 2,
-"f94e8c9ee856"
+"c726e07d492e"
 ],
 "member/CAW113AAAA/stud-000": [
 6.1341,
-9.0914855,
+8.7708105,
 2,
-"7171bff0d0d2"
+"5117dbc35c18"
 ],
 "member/CAW113AAAA/stud-001": [
 6.1341,
-8.3312,
+8.010525,
 2,
-"d02e8891b3a1"
+"1546bde9b206"
 ],
 "member/CAW113AAAA/stud-002": [
 6.1341,
-8.128,
+7.807325,
 2,
-"67c7f33e0455"
+"e4fe153a9356"
 ],
 "member/CAW113AAAA/stud-003": [
 6.1341,
-7.9248,
+7.604125,
 2,
-"e29844a59846"
+"be59298b6de7"
 ],
 "member/CAW113AAAA/stud-004": [
 6.1341,
-7.7216,
+7.400925,
 2,
-"2fc0519d4ab3"
+"4fd82f0c7741"
 ],
 "member/CAW113AAAA/stud-005": [
 6.1341,
-7.5184,
+7.197725,
 2,
-"b9741220fa59"
+"63dca5f89bb4"
 ],
 "member/CAW113AAAA/stud-006": [
 6.1341,
-7.3152,
+6.994525,
 2,
-"5ecd295dee21"
+"9cb12450762c"
 ],
 "member/CAW113AAAA/stud-007": [
 6.1341,
-7.112,
+6.791325,
 2,
-"c45ac76aa031"
+"12f3db79eea6"
 ],
 "member/CAW113AAAA/stud-008": [
 6.1341,
-6.9088,
+6.588125,
 2,
-"32ce44fe2390"
+"c6e75b57c957"
 ],
 "member/CAW113AAAA/stud-009": [
 6.1341,
-6.7056,
+6.384925,
 2,
-"623ce8ad7464"
+"a62cfe5cd999"
 ],
 "member/CAW113AAAA/stud-010": [
 6.1341,
-6.486525,
+6.16585,
 2,
-"a9d840da50c5"
+"91c89a3292f9"
 ],
 "member/CAW115AAAA/cripple-head-0-01": [
 8.31215,
@@ -53571,15 +53559,15 @@
 ],
 "member/CBW114AAAA/cripple-head-0-01": [
 -0.5635625,
--0.4175125,
+-0.396875,
 2,
-"3dd06ed62d43"
+"f22c8396090d"
 ],
 "member/CBW114AAAA/cripple-head-0-02": [
 -0.5635625,
--0.4175125,
+-0.396875,
 2,
-"3dd06ed62d43"
+"f22c8396090d"
 ],
 "member/CBW114AAAA/header-0": [
 -0.7477125,
@@ -53601,15 +53589,15 @@
 ],
 "member/CBW114AAAA/king-0-l0": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW114AAAA/king-0-r0": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW114AAAA/plate-bottom": [
 -2.7797125,
@@ -53618,40 +53606,40 @@
 "2c6e5b3829a7"
 ],
 "member/CBW114AAAA/plate-top-0": [
--0.3794125,
--0.3413125,
+-0.358775,
+-0.320675,
 2,
-"f93434adc01d"
+"0957785af78e"
 ],
 "member/CBW114AAAA/plate-top-1": [
--0.4175125,
--0.3794125,
+-0.396875,
+-0.358775,
 2,
-"477bcc2507a6"
+"7ac7f834a0e8"
 ],
 "member/CBW114AAAA/stud-000": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW114AAAA/stud-001": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW114AAAA/stud-002": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW114AAAA/stud-003": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW115AAAA/backing-0-000": [
 -1.9669125,
@@ -53691,21 +53679,21 @@
 ],
 "member/CBW115AAAA/cripple-head-0-01": [
 -0.5127625,
--0.4175125,
+-0.4365625,
 2,
-"942d4722321d"
+"9e9b762e935f"
 ],
 "member/CBW115AAAA/cripple-head-0-02": [
 -0.5127625,
--0.4175125,
+-0.4365625,
 2,
-"942d4722321d"
+"9e9b762e935f"
 ],
 "member/CBW115AAAA/cripple-head-0-03": [
 -0.5127625,
--0.4175125,
+-0.4365625,
 2,
-"942d4722321d"
+"9e9b762e935f"
 ],
 "member/CBW115AAAA/header-0": [
 -0.7477125,
@@ -53727,15 +53715,15 @@
 ],
 "member/CBW115AAAA/king-0-l0": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 2,
-"f09603dc0119"
+"52eaec1617d9"
 ],
 "member/CBW115AAAA/king-0-r0": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 2,
-"f09603dc0119"
+"52eaec1617d9"
 ],
 "member/CBW115AAAA/plate-bottom": [
 -2.7797125,
@@ -53744,118 +53732,118 @@
 "2c6e5b3829a7"
 ],
 "member/CBW115AAAA/plate-top-0": [
--0.3794125,
--0.3413125,
+-0.3984625,
+-0.3603625,
 2,
-"f93434adc01d"
+"4bd4c3497f5b"
 ],
 "member/CBW115AAAA/plate-top-1": [
--0.4175125,
--0.3794125,
+-0.4365625,
+-0.3984625,
 2,
-"477bcc2507a6"
+"25ebd38898b1"
 ],
 "member/CBW115AAAA/stud-000": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 2,
-"f09603dc0119"
+"52eaec1617d9"
 ],
 "member/CBW115AAAA/stud-001": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 2,
-"f09603dc0119"
+"52eaec1617d9"
 ],
 "member/CBW115AAAA/stud-002": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 2,
-"f09603dc0119"
+"52eaec1617d9"
 ],
 "member/CBW115AAAA/stud-003": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 2,
-"f09603dc0119"
+"52eaec1617d9"
 ],
 "member/CBW115AAAA/stud-004": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 2,
-"f09603dc0119"
+"52eaec1617d9"
 ],
 "member/CBW115AAAA/stud-005": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 2,
-"f09603dc0119"
+"52eaec1617d9"
 ],
 "member/CBW115AAAA/stud-006": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 2,
-"f09603dc0119"
+"52eaec1617d9"
 ],
 "member/CBW115AAAA/stud-007": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 2,
-"f09603dc0119"
+"52eaec1617d9"
 ],
 "member/CBW115AAAA/stud-008": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 2,
-"f09603dc0119"
+"52eaec1617d9"
 ],
 "member/CBW115AAAA/stud-009": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 2,
-"f09603dc0119"
+"52eaec1617d9"
 ],
 "member/CBW115AAAA/stud-010": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 2,
-"f09603dc0119"
+"52eaec1617d9"
 ],
 "member/CBW115AAAA/stud-011": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 2,
-"f09603dc0119"
+"52eaec1617d9"
 ],
 "member/CBW115AAAA/stud-012": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 2,
-"f09603dc0119"
+"52eaec1617d9"
 ],
 "member/CBW115AAAA/stud-013": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 2,
-"f09603dc0119"
+"52eaec1617d9"
 ],
 "member/CBW115AAAA/stud-014": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 2,
-"f09603dc0119"
+"52eaec1617d9"
 ],
 "member/CBW115AAAA/stud-015": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 2,
-"f09603dc0119"
+"52eaec1617d9"
 ],
 "member/CBW115AAAA/stud-016": [
 -2.7416125,
--0.4175125,
+-0.4365625,
 2,
-"f09603dc0119"
+"52eaec1617d9"
 ],
 "member/CBW116AAAA/plate-bottom": [
 -2.7797125,
@@ -54152,40 +54140,40 @@
 "2c6e5b3829a7"
 ],
 "member/CBW119AAAA/plate-top-0": [
--0.3794125,
--0.3413125,
+-0.358775,
+-0.320675,
 2,
-"f93434adc01d"
+"0957785af78e"
 ],
 "member/CBW119AAAA/plate-top-1": [
--0.4175125,
--0.3794125,
+-0.396875,
+-0.358775,
 2,
-"477bcc2507a6"
+"7ac7f834a0e8"
 ],
 "member/CBW119AAAA/stud-000": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW119AAAA/stud-001": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW119AAAA/stud-002": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW119AAAA/stud-003": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW119AAAA/tee-N-B-STR-block-00": [
 -2.1320125,
@@ -54212,40 +54200,40 @@
 "2c6e5b3829a7"
 ],
 "member/CBW120AAAA/plate-top-0": [
--0.3794125,
--0.3413125,
+-0.358775,
+-0.320675,
 2,
-"f93434adc01d"
+"0957785af78e"
 ],
 "member/CBW120AAAA/plate-top-1": [
--0.4175125,
--0.3794125,
+-0.396875,
+-0.358775,
 2,
-"477bcc2507a6"
+"7ac7f834a0e8"
 ],
 "member/CBW120AAAA/stud-000": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW120AAAA/stud-001": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW120AAAA/stud-002": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW120AAAA/stud-003": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW122AAAA/plate-bottom": [
 -2.7797125,
@@ -54254,34 +54242,34 @@
 "2c6e5b3829a7"
 ],
 "member/CBW122AAAA/plate-top-0": [
--0.3794125,
--0.3413125,
+-0.358775,
+-0.320675,
 2,
-"f93434adc01d"
+"0957785af78e"
 ],
 "member/CBW122AAAA/plate-top-1": [
--0.4175125,
--0.3794125,
+-0.396875,
+-0.358775,
 2,
-"477bcc2507a6"
+"7ac7f834a0e8"
 ],
 "member/CBW122AAAA/stud-000": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW122AAAA/stud-001": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW122AAAA/stud-002": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW123AAAA/backing-0-000": [
 -1.9669125,
@@ -54308,46 +54296,46 @@
 "2c6e5b3829a7"
 ],
 "member/CBW123AAAA/plate-top-0": [
--0.3794125,
--0.3413125,
+-0.358775,
+-0.320675,
 2,
-"f93434adc01d"
+"0957785af78e"
 ],
 "member/CBW123AAAA/plate-top-1": [
--0.4175125,
--0.3794125,
+-0.396875,
+-0.358775,
 2,
-"477bcc2507a6"
+"7ac7f834a0e8"
 ],
 "member/CBW123AAAA/stud-000": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW123AAAA/stud-001": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW123AAAA/stud-002": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW123AAAA/stud-003": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW124AAAA/cripple-head-0-01": [
 -0.5635625,
--0.4175125,
+-0.396875,
 2,
-"3dd06ed62d43"
+"f22c8396090d"
 ],
 "member/CBW124AAAA/header-0": [
 -0.7477125,
@@ -54369,15 +54357,15 @@
 ],
 "member/CBW124AAAA/king-0-l0": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW124AAAA/king-0-r0": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW124AAAA/plate-bottom": [
 -2.7797125,
@@ -54386,46 +54374,46 @@
 "2c6e5b3829a7"
 ],
 "member/CBW124AAAA/plate-top-0": [
--0.3794125,
--0.3413125,
+-0.358775,
+-0.320675,
 2,
-"f93434adc01d"
+"0957785af78e"
 ],
 "member/CBW124AAAA/plate-top-1": [
--0.4175125,
--0.3794125,
+-0.396875,
+-0.358775,
 2,
-"477bcc2507a6"
+"7ac7f834a0e8"
 ],
 "member/CBW124AAAA/stud-000": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW124AAAA/stud-001": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW124AAAA/stud-002": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW124AAAA/stud-003": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW125AAAA/corner-start": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW125AAAA/plate-bottom": [
 -2.7797125,
@@ -54434,40 +54422,40 @@
 "2c6e5b3829a7"
 ],
 "member/CBW125AAAA/plate-top-0": [
--0.3794125,
--0.3413125,
+-0.358775,
+-0.320675,
 2,
-"f93434adc01d"
+"0957785af78e"
 ],
 "member/CBW125AAAA/plate-top-1": [
--0.4175125,
--0.3794125,
+-0.396875,
+-0.358775,
 2,
-"477bcc2507a6"
+"7ac7f834a0e8"
 ],
 "member/CBW125AAAA/stud-000": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW125AAAA/stud-001": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW125AAAA/stud-002": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CBW125AAAA/stud-003": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CEWX9GPQMQ/soffit-end-e": [
 -0.479425,
@@ -62252,58 +62240,58 @@
 "216e2360d69a"
 ],
 "member/CMW119AAAA/plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 2,
-"28339fa9747a"
+"7d9042053194"
 ],
 "member/CMW119AAAA/plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 2,
-"1446726e93b5"
+"b82b89591363"
 ],
 "member/CMW119AAAA/stud-000": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW119AAAA/stud-001": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW119AAAA/stud-002": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW119AAAA/stud-003": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW119AAAA/stud-004": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW119AAAA/stud-005": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW120AAAA/cripple-head-0-01": [
 2.21615,
-2.667,
+2.651125,
 2,
-"cc5034aea423"
+"51a5275bec9f"
 ],
 "member/CMW120AAAA/header-0": [
 2.032,
@@ -62325,15 +62313,15 @@
 ],
 "member/CMW120AAAA/king-0-l0": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW120AAAA/king-0-r0": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW120AAAA/plate-bottom": [
 0.0,
@@ -62342,22 +62330,22 @@
 "216e2360d69a"
 ],
 "member/CMW120AAAA/plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 2,
-"28339fa9747a"
+"7d9042053194"
 ],
 "member/CMW120AAAA/plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 2,
-"1446726e93b5"
+"b82b89591363"
 ],
 "member/CMW120AAAA/stud-000": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW121AAAA/backing-0-000": [
 0.8128,
@@ -62397,9 +62385,9 @@
 ],
 "member/CMW121AAAA/cripple-head-0-01": [
 2.21615,
-2.667,
+2.651125,
 2,
-"cc5034aea423"
+"51a5275bec9f"
 ],
 "member/CMW121AAAA/header-0": [
 2.032,
@@ -62421,15 +62409,15 @@
 ],
 "member/CMW121AAAA/king-0-l0": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW121AAAA/king-0-r0": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW121AAAA/plate-bottom": [
 0.0,
@@ -62438,28 +62426,28 @@
 "216e2360d69a"
 ],
 "member/CMW121AAAA/plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 2,
-"28339fa9747a"
+"7d9042053194"
 ],
 "member/CMW121AAAA/plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 2,
-"1446726e93b5"
+"b82b89591363"
 ],
 "member/CMW121AAAA/stud-000": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW121AAAA/stud-001": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW122AAAA/backing-0-000": [
 0.5588,
@@ -62493,15 +62481,15 @@
 ],
 "member/CMW122AAAA/carrier-0-cripple-000": [
 1.1962,
-2.667,
+2.651125,
 2,
-"04a29873c847"
+"42418f928de9"
 ],
 "member/CMW122AAAA/carrier-0-cripple-001": [
 1.1962,
-2.667,
+2.651125,
 2,
-"04a29873c847"
+"42418f928de9"
 ],
 "member/CMW122AAAA/carrier-0-head-1": [
 1.1581,
@@ -62511,15 +62499,15 @@
 ],
 "member/CMW122AAAA/carrier-0-stud-0": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW122AAAA/carrier-0-stud-1": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW122AAAA/plate-bottom": [
 0.0,
@@ -62528,52 +62516,52 @@
 "216e2360d69a"
 ],
 "member/CMW122AAAA/plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 2,
-"28339fa9747a"
+"7d9042053194"
 ],
 "member/CMW122AAAA/plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 2,
-"1446726e93b5"
+"b82b89591363"
 ],
 "member/CMW122AAAA/stud-000": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW122AAAA/stud-001": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW122AAAA/stud-002": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW122AAAA/stud-003": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW122AAAA/stud-004": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW122AAAA/stud-005": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW122AAAA/tee-N-M-BA2-block-00": [
 0.6477,
@@ -62624,46 +62612,46 @@
 "216e2360d69a"
 ],
 "member/CMW123AAAA/plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 2,
-"28339fa9747a"
+"7d9042053194"
 ],
 "member/CMW123AAAA/plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 2,
-"1446726e93b5"
+"b82b89591363"
 ],
 "member/CMW123AAAA/stud-000": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW123AAAA/stud-001": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW123AAAA/stud-002": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW123AAAA/stud-003": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW123AAAA/stud-004": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW123AAAA/tee-N-M-D1-block-00": [
 0.6477,
@@ -62691,15 +62679,15 @@
 ],
 "member/CMW124AAAA/cripple-head-0-01": [
 2.2098,
-2.667,
+2.651125,
 2,
-"ef3715cf42c9"
+"118d49407443"
 ],
 "member/CMW124AAAA/cripple-head-0-02": [
 2.2098,
-2.667,
+2.651125,
 2,
-"ef3715cf42c9"
+"118d49407443"
 ],
 "member/CMW124AAAA/header-0": [
 2.032,
@@ -62721,15 +62709,15 @@
 ],
 "member/CMW124AAAA/king-0-l0": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW124AAAA/king-0-r0": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW124AAAA/plate-bottom": [
 0.0,
@@ -62738,16 +62726,16 @@
 "216e2360d69a"
 ],
 "member/CMW124AAAA/plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 2,
-"28339fa9747a"
+"7d9042053194"
 ],
 "member/CMW124AAAA/plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 2,
-"1446726e93b5"
+"b82b89591363"
 ],
 "member/CMW124AAAA/pocketsplit-0-01": [
 0.0381,
@@ -62769,9 +62757,9 @@
 ],
 "member/CMW124AAAA/stud-000": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW124AAAA/tee-N-M-E3-block-00": [
 0.6477,
@@ -62810,28 +62798,28 @@
 "216e2360d69a"
 ],
 "member/CMW125AAAA/plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 2,
-"28339fa9747a"
+"7d9042053194"
 ],
 "member/CMW125AAAA/plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 2,
-"1446726e93b5"
+"b82b89591363"
 ],
 "member/CMW125AAAA/stud-000": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW125AAAA/stud-001": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW126AAAA/backing-0-000": [
 0.1016,
@@ -62864,64 +62852,64 @@
 "216e2360d69a"
 ],
 "member/CMW126AAAA/plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 2,
-"28339fa9747a"
+"7d9042053194"
 ],
 "member/CMW126AAAA/plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 2,
-"1446726e93b5"
+"b82b89591363"
 ],
 "member/CMW126AAAA/stud-000": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW126AAAA/stud-001": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW126AAAA/stud-002": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW126AAAA/stud-003": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW126AAAA/stud-004": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW126AAAA/stud-005": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW126AAAA/stud-006": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW126AAAA/stud-007": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW126AAAA/tee-N-M-D2-block-00": [
 0.6477,
@@ -62972,64 +62960,64 @@
 "216e2360d69a"
 ],
 "member/CMW127AAAA/plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 2,
-"28339fa9747a"
+"7d9042053194"
 ],
 "member/CMW127AAAA/plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 2,
-"1446726e93b5"
+"b82b89591363"
 ],
 "member/CMW127AAAA/stud-000": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW127AAAA/stud-001": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW127AAAA/stud-002": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW127AAAA/stud-003": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW127AAAA/stud-004": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW127AAAA/stud-005": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW127AAAA/stud-006": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW127AAAA/stud-007": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW128AAAA/plate-bottom": [
 0.0,
@@ -63038,58 +63026,58 @@
 "216e2360d69a"
 ],
 "member/CMW128AAAA/plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 2,
-"28339fa9747a"
+"7d9042053194"
 ],
 "member/CMW128AAAA/plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 2,
-"1446726e93b5"
+"b82b89591363"
 ],
 "member/CMW128AAAA/stud-000": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW128AAAA/stud-001": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW128AAAA/stud-002": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW128AAAA/stud-003": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW128AAAA/stud-004": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW128AAAA/stud-005": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW128AAAA/stud-006": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW129AAAA/backing-0-000": [
 1.6256,
@@ -63104,70 +63092,70 @@
 "216e2360d69a"
 ],
 "member/CMW129AAAA/plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 2,
-"28339fa9747a"
+"7d9042053194"
 ],
 "member/CMW129AAAA/plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 2,
-"1446726e93b5"
+"b82b89591363"
 ],
 "member/CMW129AAAA/stud-000": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW129AAAA/stud-001": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW129AAAA/stud-002": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW129AAAA/stud-003": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW129AAAA/stud-004": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW129AAAA/stud-005": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW129AAAA/stud-006": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW129AAAA/stud-007": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW129AAAA/stud-008": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW129AAAA/tee-N-M-E2-block-00": [
 0.6477,
@@ -63200,70 +63188,70 @@
 "216e2360d69a"
 ],
 "member/CMW130AAAA/plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 2,
-"28339fa9747a"
+"7d9042053194"
 ],
 "member/CMW130AAAA/plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 2,
-"1446726e93b5"
+"b82b89591363"
 ],
 "member/CMW130AAAA/stud-000": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW130AAAA/stud-001": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW130AAAA/stud-002": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW130AAAA/stud-003": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW130AAAA/stud-004": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW130AAAA/stud-005": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW130AAAA/stud-006": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW130AAAA/stud-007": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW131AAAA/cripple-head-0-01": [
 2.21615,
-2.667,
+2.651125,
 2,
-"cc5034aea423"
+"51a5275bec9f"
 ],
 "member/CMW131AAAA/header-0": [
 2.032,
@@ -63285,15 +63273,15 @@
 ],
 "member/CMW131AAAA/king-0-l0": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW131AAAA/king-0-r0": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW131AAAA/plate-bottom": [
 0.0,
@@ -63302,16 +63290,16 @@
 "216e2360d69a"
 ],
 "member/CMW131AAAA/plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 2,
-"28339fa9747a"
+"7d9042053194"
 ],
 "member/CMW131AAAA/plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 2,
-"1446726e93b5"
+"b82b89591363"
 ],
 "member/CMW131AAAA/strapping-resilient-channel-000": [
 0.0,
@@ -63368,46 +63356,46 @@
 "177e97f7729e"
 ],
 "member/CMW131AAAA/strapping-resilient-channel-009": [
-2.6797,
-2.7432,
+2.663825,
+2.727325,
 2,
-"8ae5be150979"
+"e33cd082d0bb"
 ],
 "member/CMW131AAAA/stud-000": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW131AAAA/stud-001": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW131AAAA/stud-002": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW131AAAA/stud-003": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW131AAAA/stud-004": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW131AAAA/stud-005": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW131AAAA/tee-N-M-D3-block-00": [
 0.6477,
@@ -63435,9 +63423,9 @@
 ],
 "member/CMW132AAAA/cripple-head-0-01": [
 2.21615,
-2.667,
+2.651125,
 2,
-"cc5034aea423"
+"51a5275bec9f"
 ],
 "member/CMW132AAAA/header-0": [
 2.032,
@@ -63459,15 +63447,15 @@
 ],
 "member/CMW132AAAA/king-0-l0": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW132AAAA/king-0-r0": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW132AAAA/plate-bottom": [
 0.0,
@@ -63476,52 +63464,52 @@
 "216e2360d69a"
 ],
 "member/CMW132AAAA/plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 2,
-"28339fa9747a"
+"7d9042053194"
 ],
 "member/CMW132AAAA/plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 2,
-"1446726e93b5"
+"b82b89591363"
 ],
 "member/CMW132AAAA/stud-000": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW132AAAA/stud-001": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW132AAAA/stud-002": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW132AAAA/stud-003": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW132AAAA/stud-004": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW132AAAA/stud-005": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW134AAAA/plate-bottom": [
 0.0,
@@ -64017,9 +64005,9 @@
 ],
 "member/CMW137AAAA/cripple-head-0-01": [
 2.21615,
-2.667,
+2.651125,
 2,
-"cc5034aea423"
+"51a5275bec9f"
 ],
 "member/CMW137AAAA/header-0": [
 2.032,
@@ -64041,15 +64029,15 @@
 ],
 "member/CMW137AAAA/king-0-l0": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW137AAAA/king-0-r0": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW137AAAA/plate-bottom": [
 0.0,
@@ -64058,40 +64046,40 @@
 "216e2360d69a"
 ],
 "member/CMW137AAAA/plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 2,
-"28339fa9747a"
+"7d9042053194"
 ],
 "member/CMW137AAAA/plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 2,
-"1446726e93b5"
+"b82b89591363"
 ],
 "member/CMW137AAAA/stud-000": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW137AAAA/stud-001": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW137AAAA/stud-002": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW138AAAA/corner-start": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW138AAAA/plate-bottom": [
 0.0,
@@ -64100,34 +64088,34 @@
 "216e2360d69a"
 ],
 "member/CMW138AAAA/plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 2,
-"28339fa9747a"
+"7d9042053194"
 ],
 "member/CMW138AAAA/plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 2,
-"1446726e93b5"
+"b82b89591363"
 ],
 "member/CMW138AAAA/stud-000": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW138AAAA/stud-001": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CMW138AAAA/stud-002": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/CQRJZCM0R1/backing-0-000": [
 -1.9669125,
@@ -64167,15 +64155,15 @@
 ],
 "member/CQRJZCM0R1/cripple-head-0-01": [
 -0.5635625,
--0.4175125,
+-0.396875,
 2,
-"3dd06ed62d43"
+"f22c8396090d"
 ],
 "member/CQRJZCM0R1/cripple-head-0-02": [
 -0.5635625,
--0.4175125,
+-0.396875,
 2,
-"3dd06ed62d43"
+"f22c8396090d"
 ],
 "member/CQRJZCM0R1/header-0": [
 -0.7477125,
@@ -64197,15 +64185,15 @@
 ],
 "member/CQRJZCM0R1/king-0-l0": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CQRJZCM0R1/king-0-r0": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CQRJZCM0R1/plate-bottom": [
 -2.7797125,
@@ -64214,40 +64202,40 @@
 "2c6e5b3829a7"
 ],
 "member/CQRJZCM0R1/plate-top-0": [
--0.3794125,
--0.3413125,
+-0.358775,
+-0.320675,
 2,
-"f93434adc01d"
+"0957785af78e"
 ],
 "member/CQRJZCM0R1/plate-top-1": [
--0.4175125,
--0.3794125,
+-0.396875,
+-0.358775,
 2,
-"477bcc2507a6"
+"7ac7f834a0e8"
 ],
 "member/CQRJZCM0R1/stud-000": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CQRJZCM0R1/stud-001": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CQRJZCM0R1/stud-002": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CQRJZCM0R1/stud-003": [
 -2.7416125,
--0.4175125,
+-0.396875,
 2,
-"f09603dc0119"
+"acb389d9be3e"
 ],
 "member/CSF601AAAA/soffit-end-n": [
 5.489575,
@@ -72044,16 +72032,16 @@
 "b6da518d5173"
 ],
 "member/CSW118AAAA/plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 2,
-"d296dfb8bb63"
+"0ca584cde7e3"
 ],
 "member/CSW118AAAA/plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 2,
-"2608551f5a15"
+"4c23aa7d0322"
 ],
 "member/CSW118AAAA/strapping-liner-furring-000": [
 3.048,
@@ -72098,64 +72086,64 @@
 "37ccea8542e9"
 ],
 "member/CSW118AAAA/strapping-liner-furring-007": [
-5.7023,
-5.7912,
+5.686425,
+5.775325,
 2,
-"aa78bda7154d"
+"c7563d0c7d19"
 ],
 "member/CSW118AAAA/stud-000": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW118AAAA/stud-001": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW118AAAA/stud-002": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW118AAAA/stud-003": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW118AAAA/stud-004": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW118AAAA/stud-005": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW118AAAA/stud-006": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW118AAAA/stud-007": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW118AAAA/stud-008": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW118AAAA/tee-N-S-D1-block-00": [
 3.6957,
@@ -72188,16 +72176,16 @@
 "b6da518d5173"
 ],
 "member/CSW119AAAA/plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 2,
-"d296dfb8bb63"
+"0ca584cde7e3"
 ],
 "member/CSW119AAAA/plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 2,
-"2608551f5a15"
+"4c23aa7d0322"
 ],
 "member/CSW119AAAA/strapping-liner-furring-000": [
 3.048,
@@ -72242,58 +72230,58 @@
 "37ccea8542e9"
 ],
 "member/CSW119AAAA/strapping-liner-furring-007": [
-5.7023,
-5.7912,
+5.686425,
+5.775325,
 2,
-"aa78bda7154d"
+"c7563d0c7d19"
 ],
 "member/CSW119AAAA/stud-000": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW119AAAA/stud-001": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW119AAAA/stud-002": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW119AAAA/stud-003": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW119AAAA/stud-004": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW119AAAA/stud-005": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW119AAAA/stud-006": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW120AAAA/cripple-head-0-01": [
 5.26415,
-5.715,
+5.699125,
 2,
-"94bae4d0eadb"
+"29759deee48d"
 ],
 "member/CSW120AAAA/header-0": [
 5.08,
@@ -72315,15 +72303,15 @@
 ],
 "member/CSW120AAAA/king-0-l0": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW120AAAA/king-0-r0": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW120AAAA/plate-bottom": [
 3.048,
@@ -72332,28 +72320,28 @@
 "b6da518d5173"
 ],
 "member/CSW120AAAA/plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 2,
-"d296dfb8bb63"
+"0ca584cde7e3"
 ],
 "member/CSW120AAAA/plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 2,
-"2608551f5a15"
+"4c23aa7d0322"
 ],
 "member/CSW120AAAA/stud-000": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW120AAAA/stud-001": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW120AAAA/tee-N-S-B1-block-00": [
 3.6957,
@@ -72507,9 +72495,9 @@
 ],
 "member/CSW122AAAA/cripple-head-0-01": [
 5.26415,
-5.715,
+5.699125,
 2,
-"94bae4d0eadb"
+"29759deee48d"
 ],
 "member/CSW122AAAA/header-0": [
 5.08,
@@ -72531,15 +72519,15 @@
 ],
 "member/CSW122AAAA/king-0-l0": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW122AAAA/king-0-r0": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW122AAAA/plate-bottom": [
 3.048,
@@ -72548,16 +72536,16 @@
 "b6da518d5173"
 ],
 "member/CSW122AAAA/plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 2,
-"d296dfb8bb63"
+"0ca584cde7e3"
 ],
 "member/CSW122AAAA/plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 2,
-"2608551f5a15"
+"4c23aa7d0322"
 ],
 "member/CSW122AAAA/strapping-resilient-channel-000": [
 3.048,
@@ -72614,40 +72602,40 @@
 "2c81a509fee2"
 ],
 "member/CSW122AAAA/strapping-resilient-channel-009": [
-5.7277,
-5.7912,
+5.711825,
+5.775325,
 2,
-"8778c0409a24"
+"cda20fa0e523"
 ],
 "member/CSW122AAAA/stud-000": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW122AAAA/stud-001": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW122AAAA/stud-002": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW122AAAA/stud-003": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW122AAAA/stud-004": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW122AAAA/tee-N-S-B2-block-00": [
 3.6957,
@@ -72675,9 +72663,9 @@
 ],
 "member/CSW123AAAA/cripple-head-0-01": [
 5.26415,
-5.715,
+5.699125,
 2,
-"94bae4d0eadb"
+"29759deee48d"
 ],
 "member/CSW123AAAA/header-0": [
 5.08,
@@ -72699,15 +72687,15 @@
 ],
 "member/CSW123AAAA/king-0-l0": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW123AAAA/king-0-r0": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW123AAAA/plate-bottom": [
 3.048,
@@ -72716,16 +72704,16 @@
 "b6da518d5173"
 ],
 "member/CSW123AAAA/plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 2,
-"d296dfb8bb63"
+"0ca584cde7e3"
 ],
 "member/CSW123AAAA/plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 2,
-"2608551f5a15"
+"4c23aa7d0322"
 ],
 "member/CSW123AAAA/strapping-resilient-channel-000": [
 3.048,
@@ -72782,40 +72770,40 @@
 "2c81a509fee2"
 ],
 "member/CSW123AAAA/strapping-resilient-channel-009": [
-5.7277,
-5.7912,
+5.711825,
+5.775325,
 2,
-"8778c0409a24"
+"cda20fa0e523"
 ],
 "member/CSW123AAAA/stud-000": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW123AAAA/stud-001": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW123AAAA/stud-002": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW123AAAA/stud-003": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW123AAAA/stud-004": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW123AAAA/tee-N-S-B3-block-00": [
 3.6957,
@@ -72843,9 +72831,9 @@
 ],
 "member/CSW124AAAA/cripple-head-0-01": [
 5.26415,
-5.715,
+5.699125,
 2,
-"94bae4d0eadb"
+"29759deee48d"
 ],
 "member/CSW124AAAA/header-0": [
 5.08,
@@ -72867,15 +72855,15 @@
 ],
 "member/CSW124AAAA/king-0-l0": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW124AAAA/king-0-r0": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW124AAAA/plate-bottom": [
 3.048,
@@ -72884,16 +72872,16 @@
 "b6da518d5173"
 ],
 "member/CSW124AAAA/plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 2,
-"d296dfb8bb63"
+"0ca584cde7e3"
 ],
 "member/CSW124AAAA/plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 2,
-"2608551f5a15"
+"4c23aa7d0322"
 ],
 "member/CSW124AAAA/strapping-resilient-channel-000": [
 3.048,
@@ -72950,28 +72938,28 @@
 "2c81a509fee2"
 ],
 "member/CSW124AAAA/strapping-resilient-channel-009": [
-5.7277,
-5.7912,
+5.711825,
+5.775325,
 2,
-"8778c0409a24"
+"cda20fa0e523"
 ],
 "member/CSW124AAAA/stud-000": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW124AAAA/stud-001": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW124AAAA/stud-002": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW124AAAA/tee-N-S-B4-block-00": [
 3.6957,
@@ -73004,16 +72992,16 @@
 "b6da518d5173"
 ],
 "member/CSW125AAAA/plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 2,
-"d296dfb8bb63"
+"0ca584cde7e3"
 ],
 "member/CSW125AAAA/plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 2,
-"2608551f5a15"
+"4c23aa7d0322"
 ],
 "member/CSW125AAAA/strapping-resilient-channel-000": [
 3.048,
@@ -73046,40 +73034,40 @@
 "2c81a509fee2"
 ],
 "member/CSW125AAAA/strapping-resilient-channel-005": [
-5.7277,
-5.7912,
+5.711825,
+5.775325,
 2,
-"8778c0409a24"
+"cda20fa0e523"
 ],
 "member/CSW125AAAA/stud-000": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW125AAAA/stud-001": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW125AAAA/stud-002": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW125AAAA/stud-003": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW125AAAA/stud-004": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW126AAAA/plate-bottom": [
 3.048,
@@ -73088,16 +73076,16 @@
 "b6da518d5173"
 ],
 "member/CSW126AAAA/plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 2,
-"d296dfb8bb63"
+"0ca584cde7e3"
 ],
 "member/CSW126AAAA/plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 2,
-"2608551f5a15"
+"4c23aa7d0322"
 ],
 "member/CSW126AAAA/strapping-resilient-channel-000": [
 3.048,
@@ -73130,82 +73118,82 @@
 "2c81a509fee2"
 ],
 "member/CSW126AAAA/strapping-resilient-channel-005": [
-5.7277,
-5.7912,
+5.711825,
+5.775325,
 2,
-"8778c0409a24"
+"cda20fa0e523"
 ],
 "member/CSW126AAAA/stud-000": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW126AAAA/stud-001": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW126AAAA/stud-002": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW126AAAA/stud-003": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW126AAAA/stud-004": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW126AAAA/stud-005": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW126AAAA/stud-006": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW126AAAA/stud-007": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW126AAAA/stud-008": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW126AAAA/stud-009": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW126AAAA/stud-010": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW126AAAA/stud-011": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW127AAAA/plate-bottom": [
 3.048,
@@ -73214,16 +73202,16 @@
 "b6da518d5173"
 ],
 "member/CSW127AAAA/plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 2,
-"d296dfb8bb63"
+"0ca584cde7e3"
 ],
 "member/CSW127AAAA/plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 2,
-"2608551f5a15"
+"4c23aa7d0322"
 ],
 "member/CSW127AAAA/strapping-resilient-channel-000": [
 3.048,
@@ -73256,82 +73244,82 @@
 "2c81a509fee2"
 ],
 "member/CSW127AAAA/strapping-resilient-channel-005": [
-5.7277,
-5.7912,
+5.711825,
+5.775325,
 2,
-"8778c0409a24"
+"cda20fa0e523"
 ],
 "member/CSW127AAAA/stud-000": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW127AAAA/stud-001": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW127AAAA/stud-002": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW127AAAA/stud-003": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW127AAAA/stud-004": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW127AAAA/stud-005": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW127AAAA/stud-006": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW127AAAA/stud-007": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW127AAAA/stud-008": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW127AAAA/stud-009": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW127AAAA/stud-010": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW127AAAA/stud-011": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW129AAAA/plate-bottom": [
 3.048,
@@ -73340,40 +73328,40 @@
 "b6da518d5173"
 ],
 "member/CSW129AAAA/plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 2,
-"d296dfb8bb63"
+"0ca584cde7e3"
 ],
 "member/CSW129AAAA/plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 2,
-"2608551f5a15"
+"4c23aa7d0322"
 ],
 "member/CSW129AAAA/stud-000": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW129AAAA/stud-001": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW129AAAA/stud-002": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW129AAAA/stud-003": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW132AAAA/backing-0-000": [
 3.8608,
@@ -73400,70 +73388,70 @@
 "b6da518d5173"
 ],
 "member/CSW132AAAA/plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 2,
-"d296dfb8bb63"
+"0ca584cde7e3"
 ],
 "member/CSW132AAAA/plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 2,
-"2608551f5a15"
+"4c23aa7d0322"
 ],
 "member/CSW132AAAA/stud-000": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW132AAAA/stud-001": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW132AAAA/stud-002": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW132AAAA/stud-003": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW132AAAA/stud-004": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW132AAAA/stud-005": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW132AAAA/stud-006": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW132AAAA/stud-007": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW132AAAA/stud-008": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW132AAAA/tee-N-S-V2-block-00": [
 3.6957,
@@ -74001,9 +73989,9 @@
 ],
 "member/CSW141AAAA/cripple-head-0-01": [
 5.26415,
-5.715,
+5.699125,
 2,
-"94bae4d0eadb"
+"29759deee48d"
 ],
 "member/CSW141AAAA/header-0": [
 5.08,
@@ -74025,15 +74013,15 @@
 ],
 "member/CSW141AAAA/king-0-l0": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW141AAAA/king-0-r0": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW141AAAA/plate-bottom": [
 3.048,
@@ -74042,28 +74030,28 @@
 "b6da518d5173"
 ],
 "member/CSW141AAAA/plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 2,
-"d296dfb8bb63"
+"0ca584cde7e3"
 ],
 "member/CSW141AAAA/plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 2,
-"2608551f5a15"
+"4c23aa7d0322"
 ],
 "member/CSW141AAAA/stud-000": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW141AAAA/stud-001": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW142AAAA/backing-0-000": [
 3.8608,
@@ -74085,9 +74073,9 @@
 ],
 "member/CSW142AAAA/corner-start": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW142AAAA/plate-bottom": [
 3.048,
@@ -74096,100 +74084,100 @@
 "b6da518d5173"
 ],
 "member/CSW142AAAA/plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 2,
-"d296dfb8bb63"
+"0ca584cde7e3"
 ],
 "member/CSW142AAAA/plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 2,
-"2608551f5a15"
+"4c23aa7d0322"
 ],
 "member/CSW142AAAA/stud-000": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW142AAAA/stud-001": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW142AAAA/stud-002": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW142AAAA/stud-003": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW142AAAA/stud-004": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW142AAAA/stud-005": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW142AAAA/stud-006": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW142AAAA/stud-007": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW142AAAA/stud-008": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW142AAAA/stud-009": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW143AAAA/corner-start": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW143AAAA/cripple-head-0-01": [
 5.2197,
-5.715,
+5.699125,
 2,
-"a101b55cb574"
+"7bb9d5866e93"
 ],
 "member/CSW143AAAA/cripple-head-0-02": [
 5.2197,
-5.715,
+5.699125,
 2,
-"a101b55cb574"
+"7bb9d5866e93"
 ],
 "member/CSW143AAAA/cripple-head-0-03": [
 5.2197,
-5.715,
+5.699125,
 2,
-"a101b55cb574"
+"7bb9d5866e93"
 ],
 "member/CSW143AAAA/header-0": [
 5.08,
@@ -74211,15 +74199,15 @@
 ],
 "member/CSW143AAAA/king-0-l0": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW143AAAA/king-0-r0": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW143AAAA/plate-bottom": [
 3.048,
@@ -74228,46 +74216,46 @@
 "b6da518d5173"
 ],
 "member/CSW143AAAA/plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 2,
-"d296dfb8bb63"
+"0ca584cde7e3"
 ],
 "member/CSW143AAAA/plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 2,
-"2608551f5a15"
+"4c23aa7d0322"
 ],
 "member/CSW143AAAA/stud-000": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW143AAAA/stud-001": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW143AAAA/stud-002": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW143AAAA/stud-003": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW144AAAA/cripple-head-0-01": [
 5.26415,
-5.715,
+5.699125,
 2,
-"94bae4d0eadb"
+"29759deee48d"
 ],
 "member/CSW144AAAA/header-0": [
 5.08,
@@ -74289,15 +74277,15 @@
 ],
 "member/CSW144AAAA/king-0-l0": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW144AAAA/king-0-r0": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW144AAAA/plate-bottom": [
 3.048,
@@ -74306,16 +74294,16 @@
 "b6da518d5173"
 ],
 "member/CSW144AAAA/plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 2,
-"d296dfb8bb63"
+"0ca584cde7e3"
 ],
 "member/CSW144AAAA/plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 2,
-"2608551f5a15"
+"4c23aa7d0322"
 ],
 "member/CSW144AAAA/strapping-resilient-channel-000": [
 3.048,
@@ -74372,34 +74360,34 @@
 "2c81a509fee2"
 ],
 "member/CSW144AAAA/strapping-resilient-channel-009": [
-5.7277,
-5.7912,
+5.711825,
+5.775325,
 2,
-"8778c0409a24"
+"cda20fa0e523"
 ],
 "member/CSW144AAAA/stud-000": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW144AAAA/stud-001": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW144AAAA/stud-002": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW144AAAA/stud-003": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW145AAAA/plate-bottom": [
 3.048,
@@ -74408,70 +74396,70 @@
 "b6da518d5173"
 ],
 "member/CSW145AAAA/plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 2,
-"d296dfb8bb63"
+"0ca584cde7e3"
 ],
 "member/CSW145AAAA/plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 2,
-"2608551f5a15"
+"4c23aa7d0322"
 ],
 "member/CSW145AAAA/stud-000": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW145AAAA/stud-001": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW145AAAA/stud-002": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW145AAAA/stud-003": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW145AAAA/stud-004": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW145AAAA/stud-005": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW145AAAA/stud-006": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW145AAAA/stud-007": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW145AAAA/stud-008": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW145AAAA/tee-N-S-V1-block-00": [
 3.6957,
@@ -74504,58 +74492,58 @@
 "b6da518d5173"
 ],
 "member/CSW146AAAA/plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 2,
-"d296dfb8bb63"
+"0ca584cde7e3"
 ],
 "member/CSW146AAAA/plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 2,
-"2608551f5a15"
+"4c23aa7d0322"
 ],
 "member/CSW146AAAA/stud-000": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW146AAAA/stud-001": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW146AAAA/stud-002": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW146AAAA/stud-003": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW146AAAA/stud-004": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW146AAAA/stud-005": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW146AAAA/stud-006": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW146AAAA/tee-N-S-D4-block-00": [
 3.6957,
@@ -74703,9 +74691,9 @@
 ],
 "member/CSW148AAAA/cripple-head-0-01": [
 5.26415,
-5.715,
+5.699125,
 2,
-"94bae4d0eadb"
+"29759deee48d"
 ],
 "member/CSW148AAAA/header-0": [
 5.08,
@@ -74727,15 +74715,15 @@
 ],
 "member/CSW148AAAA/king-0-l0": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW148AAAA/king-0-r0": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW148AAAA/plate-bottom": [
 3.048,
@@ -74744,22 +74732,22 @@
 "b6da518d5173"
 ],
 "member/CSW148AAAA/plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 2,
-"d296dfb8bb63"
+"0ca584cde7e3"
 ],
 "member/CSW148AAAA/plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 2,
-"2608551f5a15"
+"4c23aa7d0322"
 ],
 "member/CSW148AAAA/stud-000": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW149AAAA/backing-0-000": [
 3.8608,
@@ -74948,34 +74936,34 @@
 "b6da518d5173"
 ],
 "member/CSW151AAAA/plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 2,
-"d296dfb8bb63"
+"0ca584cde7e3"
 ],
 "member/CSW151AAAA/plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 2,
-"2608551f5a15"
+"4c23aa7d0322"
 ],
 "member/CSW151AAAA/stud-000": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW151AAAA/stud-001": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW151AAAA/stud-002": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW152AAAA/backing-0-000": [
 3.6068,
@@ -74985,9 +74973,9 @@
 ],
 "member/CSW152AAAA/corner-start": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW152AAAA/plate-bottom": [
 3.048,
@@ -74996,34 +74984,34 @@
 "b6da518d5173"
 ],
 "member/CSW152AAAA/plate-top-0": [
-5.7531,
-5.7912,
+5.737225,
+5.775325,
 2,
-"d296dfb8bb63"
+"0ca584cde7e3"
 ],
 "member/CSW152AAAA/plate-top-1": [
-5.715,
-5.7531,
+5.699125,
+5.737225,
 2,
-"2608551f5a15"
+"4c23aa7d0322"
 ],
 "member/CSW152AAAA/stud-000": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW152AAAA/stud-001": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW152AAAA/stud-002": [
 3.0861,
-5.715,
+5.699125,
 2,
-"015f08fd3431"
+"1c0200ec3328"
 ],
 "member/CSW153AAAA/W-S-N3B-closure-0-cladding": [
 6.096,
@@ -75471,9 +75459,9 @@
 ],
 "member/HGVY43DYQH/corner-start": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/HGVY43DYQH/plate-bottom": [
 0.0,
@@ -75482,34 +75470,34 @@
 "216e2360d69a"
 ],
 "member/HGVY43DYQH/plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 2,
-"28339fa9747a"
+"7d9042053194"
 ],
 "member/HGVY43DYQH/plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 2,
-"1446726e93b5"
+"b82b89591363"
 ],
 "member/HGVY43DYQH/stud-000": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/HGVY43DYQH/stud-001": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/HGVY43DYQH/stud-002": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/HKFW104YS3/plate-bottom": [
 6.096,
@@ -75518,64 +75506,64 @@
 "95399dba7c37"
 ],
 "member/HKFW104YS3/plate-raked-0": [
-6.5230375,
-7.48665,
+6.2023625,
+7.165975,
 4,
-"92739387828d"
+"092ddee4ff56"
 ],
 "member/HKFW104YS3/plate-raked-1": [
-6.4849375,
-7.44855,
+6.1642625,
+7.127875,
 4,
-"976839e5dfe8"
+"8564230f2389"
 ],
 "member/HKFW104YS3/stud-000": [
 6.1341,
-7.41045,
+7.089775,
 2,
-"01ca76452126"
+"9fda6c48ec54"
 ],
 "member/HKFW104YS3/stud-001": [
 6.1341,
-7.20725,
+6.886575,
 2,
-"c9503d7f2b23"
+"46c8b966d4e6"
 ],
 "member/HKFW104YS3/stud-002": [
 6.1341,
-7.00405,
+6.683375,
 2,
-"25a40370ac79"
+"848813a099de"
 ],
 "member/HKFW104YS3/stud-003": [
 6.1341,
-6.80085,
+6.480175,
 2,
-"33ba97ee3dd6"
+"fce5b5fb970a"
 ],
 "member/HKFW104YS3/stud-004": [
 6.1341,
-6.59765,
+6.276975,
 2,
-"d6718c9de9d1"
+"c41a1e63dd47"
 ],
 "member/HKFW104YS3/stud-005": [
 6.1341,
-6.4849375,
+6.1642625,
 2,
-"e7f18c114a13"
+"8c650e6bdb1e"
 ],
 "member/KKVYSAJKZF/cripple-head-0-01": [
 2.21615,
-2.667,
+2.651125,
 2,
-"cc5034aea423"
+"51a5275bec9f"
 ],
 "member/KKVYSAJKZF/cripple-head-0-02": [
 2.21615,
-2.667,
+2.651125,
 2,
-"cc5034aea423"
+"51a5275bec9f"
 ],
 "member/KKVYSAJKZF/header-0": [
 2.032,
@@ -75597,15 +75585,15 @@
 ],
 "member/KKVYSAJKZF/king-0-l0": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/KKVYSAJKZF/king-0-r0": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/KKVYSAJKZF/plate-bottom": [
 0.0,
@@ -75614,28 +75602,28 @@
 "216e2360d69a"
 ],
 "member/KKVYSAJKZF/plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 2,
-"28339fa9747a"
+"7d9042053194"
 ],
 "member/KKVYSAJKZF/plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 2,
-"1446726e93b5"
+"b82b89591363"
 ],
 "member/KKVYSAJKZF/stud-000": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/KKVYSAJKZF/stud-001": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/NJ21M7MF6R/cripple-head-0-01": [
 -0.5635625,
@@ -75699,21 +75687,21 @@
 ],
 "member/QY8YCE6XV3/cripple-head-0-01": [
 2.26695,
-2.667,
+2.651125,
 2,
-"ec7bd38df9f6"
+"040ee9b93762"
 ],
 "member/QY8YCE6XV3/cripple-head-0-02": [
 2.26695,
-2.667,
+2.651125,
 2,
-"ec7bd38df9f6"
+"040ee9b93762"
 ],
 "member/QY8YCE6XV3/cripple-head-0-03": [
 2.26695,
-2.667,
+2.651125,
 2,
-"ec7bd38df9f6"
+"040ee9b93762"
 ],
 "member/QY8YCE6XV3/header-0": [
 2.032,
@@ -75735,15 +75723,15 @@
 ],
 "member/QY8YCE6XV3/king-0-l0": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/QY8YCE6XV3/king-0-r0": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/QY8YCE6XV3/plate-bottom": [
 0.0,
@@ -75752,22 +75740,22 @@
 "216e2360d69a"
 ],
 "member/QY8YCE6XV3/plate-top-0": [
-2.7051,
-2.7432,
+2.689225,
+2.727325,
 2,
-"28339fa9747a"
+"7d9042053194"
 ],
 "member/QY8YCE6XV3/plate-top-1": [
-2.667,
-2.7051,
+2.651125,
+2.689225,
 2,
-"1446726e93b5"
+"b82b89591363"
 ],
 "member/QY8YCE6XV3/stud-000": [
 0.0381,
-2.667,
+2.651125,
 2,
-"eebc11b3c6f0"
+"e1eb918c8160"
 ],
 "member/R0STSQM95Y/block-2-000-00": [
 -0.3413125,
@@ -76023,15 +76011,15 @@
 ],
 "member/REREWJKFAZ/corner-start": [
 6.1341,
-7.8613,
+7.540625,
 2,
-"819bb7dff375"
+"0b126f6bd5d2"
 ],
 "member/REREWJKFAZ/cripple-head-0-01": [
 8.31215,
-8.73125,
+8.410575,
 2,
-"518ea873ae5e"
+"53777b23c21e"
 ],
 "member/REREWJKFAZ/header-0": [
 8.128,
@@ -76053,15 +76041,15 @@
 ],
 "member/REREWJKFAZ/king-0-l0": [
 6.1341,
-8.499475,
+8.1788,
 2,
-"337662a58ef3"
+"13f39eeba2ff"
 ],
 "member/REREWJKFAZ/king-0-r0": [
 6.1341,
-8.861425,
+8.54075,
 2,
-"143632644ac7"
+"d32b42cd50ec"
 ],
 "member/REREWJKFAZ/plate-bottom": [
 6.096,
@@ -76070,52 +76058,52 @@
 "95399dba7c37"
 ],
 "member/REREWJKFAZ/plate-raked-0": [
-7.870825,
-9.1772105,
+7.55015,
+8.8565355,
 4,
-"e62d2c875a6d"
+"1c525e6c2c4d"
 ],
 "member/REREWJKFAZ/plate-raked-1": [
-7.902575,
-9.1391105,
+7.5819,
+8.8184355,
 4,
-"6319ddc69594"
+"1d2068494135"
 ],
 "member/REREWJKFAZ/stud-000": [
 6.1341,
-7.84225,
+7.521575,
 2,
-"288d8398b938"
+"ece6751f0b95"
 ],
 "member/REREWJKFAZ/stud-001": [
 6.1341,
-8.07085,
+7.750175,
 2,
-"976fea40e8e1"
+"c57b43a77dd9"
 ],
 "member/REREWJKFAZ/stud-002": [
 6.1341,
-8.27405,
+7.953375,
 2,
-"524e8c889b4b"
+"38cf8b8bdf37"
 ],
 "member/REREWJKFAZ/stud-003": [
 6.1341,
-8.47725,
+8.156575,
 2,
-"fc694f826774"
+"5a09ecc78ce7"
 ],
 "member/REREWJKFAZ/stud-004": [
 6.1341,
-8.88365,
+8.562975,
 2,
-"306b17fb5416"
+"c1405a7f957e"
 ],
 "member/REREWJKFAZ/stud-005": [
 6.1341,
-9.0914855,
+8.7708105,
 2,
-"7171bff0d0d2"
+"5117dbc35c18"
 ],
 "member/RV6PJZ6WWM/plate-bottom": [
 6.096,
@@ -76124,58 +76112,58 @@
 "95399dba7c37"
 ],
 "member/RV6PJZ6WWM/plate-raked-0": [
-7.9629,
-9.1772105,
+7.642225,
+8.8565355,
 4,
-"e8ce5ce1b438"
+"9bd079aac22c"
 ],
 "member/RV6PJZ6WWM/plate-raked-1": [
-7.9248,
-9.1391105,
+7.604125,
+8.8184355,
 4,
-"481994b0ead4"
+"9a0862dff5d7"
 ],
 "member/RV6PJZ6WWM/stud-000": [
 6.1341,
-7.9248,
+7.604125,
 2,
-"e29844a59846"
+"be59298b6de7"
 ],
 "member/RV6PJZ6WWM/stud-001": [
 6.1341,
-8.128,
+7.807325,
 2,
-"67c7f33e0455"
+"e4fe153a9356"
 ],
 "member/RV6PJZ6WWM/stud-002": [
 6.1341,
-8.3312,
+8.010525,
 2,
-"d02e8891b3a1"
+"1546bde9b206"
 ],
 "member/RV6PJZ6WWM/stud-003": [
 6.1341,
-8.5344,
+8.213725,
 2,
-"e8e30cb241eb"
+"9e64a3400af5"
 ],
 "member/RV6PJZ6WWM/stud-004": [
 6.1341,
-8.7376,
+8.416925,
 2,
-"f6c26c76f86e"
+"5f164cd16f3e"
 ],
 "member/RV6PJZ6WWM/stud-005": [
 6.1341,
-8.9408,
+8.620125,
 2,
-"2e0504cba407"
+"1e171f13f966"
 ],
 "member/RV6PJZ6WWM/stud-006": [
 6.1341,
-9.0914855,
+8.7708105,
 2,
-"7171bff0d0d2"
+"5117dbc35c18"
 ],
 "member/RV6PJZ6WWM/tee-N-A-H1-block-00": [
 6.7437,
@@ -77276,70 +77264,70 @@
 "95399dba7c37"
 ],
 "member/ZEF56D047J/plate-top-0": [
-7.90575,
-7.94385,
+7.585075,
+7.623175,
 2,
-"10e1e94bc3b2"
+"2de9b5378037"
 ],
 "member/ZEF56D047J/plate-top-1": [
-7.86765,
-7.90575,
+7.546975,
+7.585075,
 2,
-"ba9a308747eb"
+"70c8fa86a3dc"
 ],
 "member/ZEF56D047J/stud-000": [
 6.1341,
-7.86765,
+7.546975,
 2,
-"ed398dbfa006"
+"e4c78bfb57d1"
 ],
 "member/ZEF56D047J/stud-001": [
 6.1341,
-7.86765,
+7.546975,
 2,
-"ed398dbfa006"
+"e4c78bfb57d1"
 ],
 "member/ZEF56D047J/stud-002": [
 6.1341,
-7.86765,
+7.546975,
 2,
-"ed398dbfa006"
+"e4c78bfb57d1"
 ],
 "member/ZEF56D047J/stud-003": [
 6.1341,
-7.86765,
+7.546975,
 2,
-"ed398dbfa006"
+"e4c78bfb57d1"
 ],
 "member/ZEF56D047J/stud-004": [
 6.1341,
-7.86765,
+7.546975,
 2,
-"ed398dbfa006"
+"e4c78bfb57d1"
 ],
 "member/ZEF56D047J/stud-005": [
 6.1341,
-7.86765,
+7.546975,
 2,
-"ed398dbfa006"
+"e4c78bfb57d1"
 ],
 "member/ZEF56D047J/stud-006": [
 6.1341,
-7.86765,
+7.546975,
 2,
-"ed398dbfa006"
+"e4c78bfb57d1"
 ],
 "member/ZEF56D047J/stud-007": [
 6.1341,
-7.86765,
+7.546975,
 2,
-"ed398dbfa006"
+"e4c78bfb57d1"
 ],
 "member/ZEF56D047J/stud-008": [
 6.1341,
-7.86765,
+7.546975,
 2,
-"ed398dbfa006"
+"e4c78bfb57d1"
 ],
 "panelings/WP-B-SAUNA-SPLASH/band_z0_m": 0.0,
 "panelings/WP-B-SAUNA-SPLASH/band_z1_m": 2.286,
@@ -77350,9 +77338,9 @@
 "panelings/WP-M-BATH2-SURR/z0_m": 0.0,
 "panelings/WP-M-BATH2-SURR/z1_m": 2.1336,
 "panelings/WP-M-STUDY-FELT/band_z0_m": 0.9144,
-"panelings/WP-M-STUDY-FELT/band_z1_m": 2.7432,
+"panelings/WP-M-STUDY-FELT/band_z1_m": 2.727325,
 "panelings/WP-M-STUDY-FELT/z0_m": 0.9144,
-"panelings/WP-M-STUDY-FELT/z1_m": 2.7432,
+"panelings/WP-M-STUDY-FELT/z1_m": 2.727325,
 "panelings/WP-M-STUDY-WAINSCOT/band_z0_m": 0.0,
 "panelings/WP-M-STUDY-WAINSCOT/band_z1_m": 0.9144,
 "panelings/WP-M-STUDY-WAINSCOT/z0_m": 0.0,
@@ -81418,14 +81406,14 @@
 "stairs/ST-S2A/base_elevation_m": 3.0861,
 "stairs/ST-SG-PORCH/arrival_elevation_m": 0.0254,
 "stairs/ST-SG-PORCH/base_elevation_m": -0.8128,
-"walls/W-A-BA-E/top_z0_m": 8.001,
-"walls/W-A-BA-E/top_z1_m": 8.001,
+"walls/W-A-BA-E/top_z0_m": 7.680325,
+"walls/W-A-BA-E/top_z1_m": 7.680325,
 "walls/W-A-BA-E/z0_m": 6.096,
-"walls/W-A-BA-E/z1_m": 8.001,
-"walls/W-A-BATH-S/top_z0_m": 7.94385,
-"walls/W-A-BATH-S/top_z1_m": 9.2202,
+"walls/W-A-BA-E/z1_m": 7.680325,
+"walls/W-A-BATH-S/top_z0_m": 7.623175,
+"walls/W-A-BATH-S/top_z1_m": 8.899525,
 "walls/W-A-BATH-S/z0_m": 6.096,
-"walls/W-A-BATH-S/z1_m": 9.2202,
+"walls/W-A-BATH-S/z1_m": 8.899525,
 "walls/W-A-C1/top_z0_m": 9.2202,
 "walls/W-A-C1/top_z1_m": 9.2202,
 "walls/W-A-C1/z0_m": 6.096,
@@ -81450,14 +81438,14 @@
 "walls/W-A-E1/z1_m": 6.15315,
 "walls/W-A-E2/z0_m": 6.11505,
 "walls/W-A-E2/z1_m": 6.15315,
-"walls/W-A-GC-S/top_z0_m": 7.48665,
-"walls/W-A-GC-S/top_z1_m": 6.5611375,
+"walls/W-A-GC-S/top_z0_m": 7.165975,
+"walls/W-A-GC-S/top_z1_m": 6.2404625,
 "walls/W-A-GC-S/z0_m": 6.096,
-"walls/W-A-GC-S/z1_m": 7.48665,
-"walls/W-A-HALL-S/top_z0_m": 8.001,
-"walls/W-A-HALL-S/top_z1_m": 9.2202,
+"walls/W-A-GC-S/z1_m": 7.165975,
+"walls/W-A-HALL-S/top_z0_m": 7.680325,
+"walls/W-A-HALL-S/top_z1_m": 8.899525,
 "walls/W-A-HALL-S/z0_m": 6.096,
-"walls/W-A-HALL-S/z1_m": 9.2202,
+"walls/W-A-HALL-S/z1_m": 8.899525,
 "walls/W-A-N1/top_z0_m": 6.477,
 "walls/W-A-N1/top_z1_m": 9.2202,
 "walls/W-A-N1/z0_m": 6.096,
@@ -81482,29 +81470,31 @@
 "walls/W-A-S3/top_z1_m": 6.477,
 "walls/W-A-S3/z0_m": 6.096,
 "walls/W-A-S3/z1_m": 9.2202,
-"walls/W-A-SN/top_z0_m": 9.2202,
-"walls/W-A-SN/top_z1_m": 6.477,
+"walls/W-A-SN/top_z0_m": 8.899525,
+"walls/W-A-SN/top_z1_m": 6.156325,
 "walls/W-A-SN/z0_m": 6.096,
-"walls/W-A-SN/z1_m": 9.2202,
-"walls/W-A-STU-N/top_z0_m": 6.477,
-"walls/W-A-STU-N/top_z1_m": 8.001,
+"walls/W-A-SN/z1_m": 8.899525,
+"walls/W-A-STU-N/top_z0_m": 6.156325,
+"walls/W-A-STU-N/top_z1_m": 7.680325,
 "walls/W-A-STU-N/z0_m": 6.096,
-"walls/W-A-STU-N/z1_m": 8.001,
-"walls/W-A-STU-W/top_z0_m": 7.94385,
-"walls/W-A-STU-W/top_z1_m": 7.94385,
+"walls/W-A-STU-N/z1_m": 7.680325,
+"walls/W-A-STU-W/top_z0_m": 7.623175,
+"walls/W-A-STU-W/top_z1_m": 7.623175,
 "walls/W-A-STU-W/z0_m": 6.096,
-"walls/W-A-STU-W/z1_m": 7.94385,
+"walls/W-A-STU-W/z1_m": 7.623175,
 "walls/W-A-W1/z0_m": 6.11505,
 "walls/W-A-W1/z1_m": 6.15315,
 "walls/W-A-W1B/z0_m": 6.11505,
 "walls/W-A-W1B/z1_m": 6.15315,
-"walls/W-B-BA-E/plate_top_z_m": -0.3413125,
+"walls/W-B-BA-E/plate_top_z_m": -0.320675,
 "walls/W-B-BA-E/z0_m": -2.7797125,
 "walls/W-B-BA-E/z1_m": 0.0,
+"walls/W-B-BA-N/plate_top_z_m": -0.320675,
 "walls/W-B-BA-N/z0_m": -2.7797125,
-"walls/W-B-BA-N/z1_m": -0.3413125,
+"walls/W-B-BA-N/z1_m": -0.320675,
 "walls/W-B-BRICK/z0_m": -2.6019125,
 "walls/W-B-BRICK/z1_m": -0.2032,
+"walls/W-B-CE/plate_top_z_m": -0.3603625,
 "walls/W-B-CE/z0_m": -2.7797125,
 "walls/W-B-CE/z1_m": -0.3413125,
 "walls/W-B-CN/z0_m": -2.7797125,
@@ -81519,25 +81509,28 @@
 "walls/W-B-CS3/plate_top_z_m": -0.3413125,
 "walls/W-B-CS3/z0_m": -2.7797125,
 "walls/W-B-CS3/z1_m": 0.0,
+"walls/W-B-CW/plate_top_z_m": -0.320675,
 "walls/W-B-CW/z0_m": -2.7797125,
-"walls/W-B-CW/z1_m": -0.3413125,
-"walls/W-B-CW2/plate_top_z_m": -0.3413125,
+"walls/W-B-CW/z1_m": -0.320675,
+"walls/W-B-CW2/plate_top_z_m": -0.320675,
 "walls/W-B-CW2/z0_m": -2.7797125,
 "walls/W-B-CW2/z1_m": 0.0,
-"walls/W-B-CW3/plate_top_z_m": -0.3413125,
+"walls/W-B-CW3/plate_top_z_m": -0.320675,
 "walls/W-B-CW3/z0_m": -2.7797125,
 "walls/W-B-CW3/z1_m": 0.0,
 "walls/W-B-E1/z0_m": -2.7797125,
 "walls/W-B-E1/z1_m": -0.3413125,
 "walls/W-B-E2/z0_m": -2.7797125,
 "walls/W-B-E2/z1_m": -0.3413125,
+"walls/W-B-ESS-S/plate_top_z_m": -0.320675,
 "walls/W-B-ESS-S/z0_m": -2.7797125,
-"walls/W-B-ESS-S/z1_m": -0.3413125,
-"walls/W-B-ESS-W/plate_top_z_m": -0.3413125,
+"walls/W-B-ESS-S/z1_m": -0.320675,
+"walls/W-B-ESS-W/plate_top_z_m": -0.320675,
 "walls/W-B-ESS-W/z0_m": -2.7797125,
 "walls/W-B-ESS-W/z1_m": 0.0,
+"walls/W-B-HALL-W/plate_top_z_m": -0.320675,
 "walls/W-B-HALL-W/z0_m": -2.7797125,
-"walls/W-B-HALL-W/z1_m": -0.3413125,
+"walls/W-B-HALL-W/z1_m": -0.320675,
 "walls/W-B-N1/z0_m": -2.7797125,
 "walls/W-B-N1/z1_m": -0.3413125,
 "walls/W-B-N2/z0_m": -2.7797125,
@@ -81569,8 +81562,9 @@
 "walls/W-B-STR/plate_top_z_m": -0.3413125,
 "walls/W-B-STR/z0_m": -2.7797125,
 "walls/W-B-STR/z1_m": 0.0,
+"walls/W-B-STR2/plate_top_z_m": -0.320675,
 "walls/W-B-STR2/z0_m": -2.7797125,
-"walls/W-B-STR2/z1_m": -0.3413125,
+"walls/W-B-STR2/z1_m": -0.320675,
 "walls/W-B-STR3/plate_top_z_m": -0.3413125,
 "walls/W-B-STR3/z0_m": -2.7797125,
 "walls/W-B-STR3/z1_m": 0.0,
@@ -81580,8 +81574,9 @@
 "walls/W-B-W1/z1_m": -0.3413125,
 "walls/W-B-W2/z0_m": -2.7797125,
 "walls/W-B-W2/z1_m": -0.3413125,
+"walls/W-B-WELL/plate_top_z_m": -0.320675,
 "walls/W-B-WELL/z0_m": -2.7797125,
-"walls/W-B-WELL/z1_m": -0.3413125,
+"walls/W-B-WELL/z1_m": -0.320675,
 "walls/W-BW-SCREEN-SKIRT/z0_m": -0.3683,
 "walls/W-BW-SCREEN-SKIRT/z1_m": -0.0254,
 "walls/W-BW-SCREEN/z0_m": -0.0254,
@@ -81612,15 +81607,19 @@
 "walls/W-GF-S3/z1_m": -0.3048,
 "walls/W-GF-W/z0_m": -1.9304,
 "walls/W-GF-W/z1_m": -0.3048,
+"walls/W-M-BA2E/plate_top_z_m": 2.727325,
 "walls/W-M-BA2E/z0_m": 0.0,
 "walls/W-M-BA2E/z1_m": 2.7432,
+"walls/W-M-BA2E2/plate_top_z_m": 2.727325,
 "walls/W-M-BA2E2/z0_m": 0.0,
 "walls/W-M-BA2E2/z1_m": 2.7432,
-"walls/W-M-BAE/plate_top_z_m": 2.7432,
+"walls/W-M-BAE/plate_top_z_m": 2.727325,
 "walls/W-M-BAE/z0_m": 0.0,
 "walls/W-M-BAE/z1_m": 3.048,
+"walls/W-M-BDN1/plate_top_z_m": 2.727325,
 "walls/W-M-BDN1/z0_m": 0.0,
 "walls/W-M-BDN1/z1_m": 2.7432,
+"walls/W-M-BDN2/plate_top_z_m": 2.727325,
 "walls/W-M-BDN2/z0_m": 0.0,
 "walls/W-M-BDN2/z1_m": 2.7432,
 "walls/W-M-C1/plate_top_z_m": 2.7432,
@@ -81638,8 +81637,10 @@
 "walls/W-M-C5B/plate_top_z_m": 2.7432,
 "walls/W-M-C5B/z0_m": 0.0,
 "walls/W-M-C5B/z1_m": 3.048,
+"walls/W-M-CLN/plate_top_z_m": 2.727325,
 "walls/W-M-CLN/z0_m": 0.0,
 "walls/W-M-CLN/z1_m": 2.7432,
+"walls/W-M-CLN2/plate_top_z_m": 2.727325,
 "walls/W-M-CLN2/z0_m": 0.0,
 "walls/W-M-CLN2/z1_m": 2.7432,
 "walls/W-M-E1/plate_base_z_m": 0.0,
@@ -81656,27 +81657,31 @@
 "walls/W-M-FIRE-PLINTH/z1_m": 0.6334125,
 "walls/W-M-FIRE-STUB/z0_m": -0.3413125,
 "walls/W-M-FIRE-STUB/z1_m": 0.0238125,
-"walls/W-M-HS1/plate_top_z_m": 2.7432,
+"walls/W-M-HS1/plate_top_z_m": 2.727325,
 "walls/W-M-HS1/z0_m": 0.0,
 "walls/W-M-HS1/z1_m": 3.048,
-"walls/W-M-HS2/plate_top_z_m": 2.7432,
+"walls/W-M-HS2/plate_top_z_m": 2.727325,
 "walls/W-M-HS2/z0_m": 0.0,
 "walls/W-M-HS2/z1_m": 3.048,
-"walls/W-M-HS3/plate_top_z_m": 2.7432,
+"walls/W-M-HS3/plate_top_z_m": 2.727325,
 "walls/W-M-HS3/z0_m": 0.0,
 "walls/W-M-HS3/z1_m": 3.048,
-"walls/W-M-HS4/plate_top_z_m": 2.7432,
+"walls/W-M-HS4/plate_top_z_m": 2.727325,
 "walls/W-M-HS4/z0_m": 0.0,
 "walls/W-M-HS4/z1_m": 3.048,
+"walls/W-M-LS/plate_top_z_m": 2.727325,
 "walls/W-M-LS/z0_m": 0.0,
 "walls/W-M-LS/z1_m": 2.7432,
+"walls/W-M-MECH-E/plate_top_z_m": 2.727325,
 "walls/W-M-MECH-E/z0_m": 0.0,
 "walls/W-M-MECH-E/z1_m": 2.7432,
-"walls/W-M-MECH-S/plate_top_z_m": 2.7432,
+"walls/W-M-MECH-S/plate_top_z_m": 2.727325,
 "walls/W-M-MECH-S/z0_m": 0.0,
 "walls/W-M-MECH-S/z1_m": 3.048,
+"walls/W-M-MUDC-E/plate_top_z_m": 2.727325,
 "walls/W-M-MUDC-E/z0_m": 0.0,
 "walls/W-M-MUDC-E/z1_m": 2.7432,
+"walls/W-M-MUDC-N/plate_top_z_m": 2.727325,
 "walls/W-M-MUDC-N/z0_m": 0.0,
 "walls/W-M-MUDC-N/z1_m": 2.7432,
 "walls/W-M-N1/plate_base_z_m": 0.0,
@@ -81699,8 +81704,10 @@
 "walls/W-M-N3B/plate_top_z_m": 2.7432,
 "walls/W-M-N3B/z0_m": -0.3413125,
 "walls/W-M-N3B/z1_m": 3.048,
+"walls/W-M-PAN-E/plate_top_z_m": 2.727325,
 "walls/W-M-PAN-E/z0_m": 0.0,
 "walls/W-M-PAN-E/z1_m": 2.7432,
+"walls/W-M-PAN-S/plate_top_z_m": 2.727325,
 "walls/W-M-PAN-S/z0_m": 0.0,
 "walls/W-M-PAN-S/z1_m": 2.7432,
 "walls/W-M-S1/plate_base_z_m": 0.0,
@@ -81711,10 +81718,10 @@
 "walls/W-M-S2/plate_top_z_m": 2.7432,
 "walls/W-M-S2/z0_m": -0.3413125,
 "walls/W-M-S2/z1_m": 3.048,
-"walls/W-M-STOS/plate_top_z_m": 2.7432,
+"walls/W-M-STOS/plate_top_z_m": 2.727325,
 "walls/W-M-STOS/z0_m": 0.0,
 "walls/W-M-STOS/z1_m": 3.048,
-"walls/W-M-STOS2/plate_top_z_m": 2.7432,
+"walls/W-M-STOS2/plate_top_z_m": 2.727325,
 "walls/W-M-STOS2/z0_m": 0.0,
 "walls/W-M-STOS2/z1_m": 3.048,
 "walls/W-M-STRW/plate_top_z_m": 2.7432,
@@ -81766,20 +81773,27 @@
 "walls/W-S-BA-E1B/plate_top_z_m": 5.7912,
 "walls/W-S-BA-E1B/z0_m": 3.048,
 "walls/W-S-BA-E1B/z1_m": 6.096,
+"walls/W-S-BD-N/plate_top_z_m": 5.775325,
 "walls/W-S-BD-N/z0_m": 3.048,
 "walls/W-S-BD-N/z1_m": 5.7912,
 "walls/W-S-BD-N1B/z0_m": 3.048,
 "walls/W-S-BD-N1B/z1_m": 5.7912,
+"walls/W-S-BD1/plate_top_z_m": 5.775325,
 "walls/W-S-BD1/z0_m": 3.048,
 "walls/W-S-BD1/z1_m": 5.7912,
+"walls/W-S-BD2/plate_top_z_m": 5.775325,
 "walls/W-S-BD2/z0_m": 3.048,
 "walls/W-S-BD2/z1_m": 5.7912,
+"walls/W-S-BW1/plate_top_z_m": 5.775325,
 "walls/W-S-BW1/z0_m": 3.048,
 "walls/W-S-BW1/z1_m": 5.7912,
+"walls/W-S-BW2/plate_top_z_m": 5.775325,
 "walls/W-S-BW2/z0_m": 3.048,
 "walls/W-S-BW2/z1_m": 5.7912,
+"walls/W-S-BW3/plate_top_z_m": 5.775325,
 "walls/W-S-BW3/z0_m": 3.048,
 "walls/W-S-BW3/z1_m": 5.7912,
+"walls/W-S-BW4/plate_top_z_m": 5.775325,
 "walls/W-S-BW4/z0_m": 3.048,
 "walls/W-S-BW4/z1_m": 5.7912,
 "walls/W-S-C1/plate_top_z_m": 5.7912,
@@ -81797,17 +81811,22 @@
 "walls/W-S-C4B/plate_top_z_m": 5.7912,
 "walls/W-S-C4B/z0_m": 3.048,
 "walls/W-S-C4B/z1_m": 6.096,
+"walls/W-S-CH-S/plate_top_z_m": 5.775325,
 "walls/W-S-CH-S/z0_m": 3.048,
 "walls/W-S-CH-S/z1_m": 5.7912,
+"walls/W-S-CH-W/plate_top_z_m": 5.775325,
 "walls/W-S-CH-W/z0_m": 3.048,
 "walls/W-S-CH-W/z1_m": 5.7912,
+"walls/W-S-CLN-S/plate_top_z_m": 5.775325,
 "walls/W-S-CLN-S/z0_m": 3.048,
 "walls/W-S-CLN-S/z1_m": 5.7912,
+"walls/W-S-CLN/plate_top_z_m": 5.775325,
 "walls/W-S-CLN/z0_m": 3.048,
 "walls/W-S-CLN/z1_m": 5.7912,
+"walls/W-S-DC1/plate_top_z_m": 5.775325,
 "walls/W-S-DC1/z0_m": 3.048,
 "walls/W-S-DC1/z1_m": 5.7912,
-"walls/W-S-DC2/plate_top_z_m": 5.7912,
+"walls/W-S-DC2/plate_top_z_m": 5.775325,
 "walls/W-S-DC2/z0_m": 3.048,
 "walls/W-S-DC2/z1_m": 6.096,
 "walls/W-S-E1/plate_top_z_m": 5.7912,
@@ -81837,8 +81856,10 @@
 "walls/W-S-N3B/plate_top_z_m": 5.7912,
 "walls/W-S-N3B/z0_m": 3.048,
 "walls/W-S-N3B/z1_m": 6.096,
+"walls/W-S-PS1/plate_top_z_m": 5.775325,
 "walls/W-S-PS1/z0_m": 3.048,
 "walls/W-S-PS1/z1_m": 5.7912,
+"walls/W-S-PS2/plate_top_z_m": 5.775325,
 "walls/W-S-PS2/z0_m": 3.048,
 "walls/W-S-PS2/z1_m": 5.7912,
 "walls/W-S-S1/plate_top_z_m": 5.7912,
@@ -81847,23 +81868,25 @@
 "walls/W-S-S2/plate_top_z_m": 5.7912,
 "walls/W-S-S2/z0_m": 3.048,
 "walls/W-S-S2/z1_m": 6.096,
+"walls/W-S-SBS/plate_top_z_m": 5.775325,
 "walls/W-S-SBS/z0_m": 3.048,
 "walls/W-S-SBS/z1_m": 5.7912,
-"walls/W-S-SN1/plate_top_z_m": 5.7912,
+"walls/W-S-SN1/plate_top_z_m": 5.775325,
 "walls/W-S-SN1/z0_m": 3.048,
 "walls/W-S-SN1/z1_m": 6.096,
-"walls/W-S-SN2/plate_top_z_m": 5.7912,
+"walls/W-S-SN2/plate_top_z_m": 5.775325,
 "walls/W-S-SN2/z0_m": 3.048,
 "walls/W-S-SN2/z1_m": 6.096,
 "walls/W-S-SN3/plate_top_z_m": 5.7912,
 "walls/W-S-SN3/z0_m": 3.048,
 "walls/W-S-SN3/z1_m": 6.096,
-"walls/W-S-SS1/plate_top_z_m": 5.7912,
+"walls/W-S-SS1/plate_top_z_m": 5.775325,
 "walls/W-S-SS1/z0_m": 3.048,
 "walls/W-S-SS1/z1_m": 6.096,
 "walls/W-S-SS2/plate_top_z_m": 5.7912,
 "walls/W-S-SS2/z0_m": 3.048,
 "walls/W-S-SS2/z1_m": 6.096,
+"walls/W-S-VE/plate_top_z_m": 5.775325,
 "walls/W-S-VE/z0_m": 3.048,
 "walls/W-S-VE/z1_m": 5.7912,
 "walls/W-S-W1/plate_top_z_m": 5.7912,

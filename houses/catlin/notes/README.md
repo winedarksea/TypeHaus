@@ -86,6 +86,7 @@ reproduces them; they are here because the reasoning is worth keeping.
 | `interior_selections.md` | the 2026-09-06 interior pass: what was chosen and why, the category-by-category import verdict, and the five things it found that were wrong rather than merely unspecified |
 | `mixed_deck_movement_joint.md` | the movement joint where two deck materials meet |
 | `pantry_climbable_shelving.md` | the climbable-shelving rule and what it retired |
+| `partition_top_deflection.md` | why an interior partition's framing stops 3/4" under the structure over it, the SDPW DEFLECTOR that holds it there and why it is the 6" one, the two-tops rule and the four FAILs that decided it, and what the schedule deliberately does not bill |
 | `pocket_door_at_laundry.md` | the pocket door and the wall it is cut into |
 | `porch_enclosure.md` | the seasonal curtain track that replaced the glazed enclosure |
 | `porch_stair.md` | the porch stair geometry |

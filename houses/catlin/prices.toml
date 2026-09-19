@@ -1268,6 +1268,18 @@
 # stiffener pair (3") and 2 per block down into the rafter plate (4").
 "SDWS22300DB" = { low = 0.55, high = 0.85 }  # 144 ea
 "SDWS22400DB" = { low = 0.6, high = 0.95 }  # 72 ea
+# The interior partitions' deflection screw at every top plate — one per crossing of the
+# framing above, a 24" pitch where a wall runs under a parallel member, one per blocked bay
+# where it runs between them (takeoff/partition_fasteners.py). The SIX-inch 0.195" screw and
+# not the 5" is the part for a reason that is not length: Simpson publish the SDPW14500's
+# allowables and spacing for a single 2x or a built-up plate to 2-1/4", and the SDPW19600's
+# for the DOUBLE 2x this house frames (C-F-2025TECHSUP p. 101). Different shank, different
+# driver (T-40, not T-25).
+# RESEARCHED 2026-09-19 — $/each off the 50-count carton (-R50), read per SKU:
+# ConnectorsOnly $125.96/50 = $2.52, Fasteners Plus $127.99/50 = $2.56, AFT Fasteners
+# $176.17/50 = $3.52. Not widened downward: these ARE carton rates, not single-piece retail.
+# For reference the 5" SDPW14500-R50 runs $1.70-2.38 ea and the 3-1/2" SDPW14312-R50 $1.40.
+"SDPW19600" = { low = 2.5, high = 3.55 }  # 188 ea
 # The garage ICF stem's exterior protection band, 224 ea at 5". DERIVED, and the part is a
 # PROXY rather than a purchase instruction: `exterior_insulation_fastening` reads the band's
 # 1/4" vented standoff over 2.5" of `eps-ext` as screwed-furring-through-foam, which is the

@@ -20,6 +20,15 @@ ROLE_EXTERIOR_INSULATION_SCREW = "exterior_insulation_screw"
 # ``screw_for_required_length`` hand back an 8" SDWS whose 3" thread stands in the clamped
 # stack and jacks it apart — the exact failure ``engineering/girt_screw.py`` grades.
 ROLE_GIRT_STANDOFF_SCREW = "girt_standoff_screw"
+# The screw at an interior partition's top plate, spanning the deflection gap to the
+# structure over it. Its own role for the deciding reason, which is the exact INVERSE of
+# every other screw in this catalog: **this one must not clamp.** An SDPW carries a polymer
+# sleeve that holds the plate a set distance clear of the joist or rafter above, so the
+# deck can deflect onto nothing while the wall is still braced laterally. Put it on a shared
+# screw role and ``screw_for_required_length`` would grade it through the clamped-stack rule
+# that exists to stop a girt jacking off its blocks — a rule whose whole premise is that
+# the members are meant to be drawn together, which here they are not.
+ROLE_PARTITION_DEFLECTION_SCREW = "partition_deflection_screw"
 # The tie from a GABLE-END wall's top plate to the roof framing above it. Its own role, not
 # a variant of ROLE_HURRICANE_TIE, for one reason that decides the part: an eave tie resists
 # UPLIFT on a rafter that bears on the plate, while a gable-end tie resists the wall's

@@ -367,7 +367,9 @@ WALLS = [
     #
     # Two prose citations pointed here as the free-end and slip-gap precedent
     # (attic_studio.py); they are repointed to W-A-STU-N, which is the storey's remaining
-    # open-ended wall.
+    # open-ended wall. The slip gap itself stopped being prose on 2026-09-19 — it is 3/4"
+    # under the rafter soffit, derived, with an SDPW19600 across it
+    # (notes/partition_top_deflection.md).
 ]
 
 OPENINGS = [

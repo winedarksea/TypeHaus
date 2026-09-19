@@ -230,6 +230,21 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   by one 8" FASTENMASTER TIMBERLOK (TLOK08) through girt + block + sheathing, 1-1/2" into
   the stud. There is only ONE tier — do not add a second inner one; the foam needs no
   backing (ESR-4073 §4.4.2) (→ DESIGN-LOG.md, "Shell: framing module and envelope").
+- **AN INTERIOR PARTITION'S FRAMING STOPS 3/4" CLEAR OF WHATEVER IS OVER IT** (2026-09-19) —
+  the rafter soffit in the attic, the joist or SIP soffit everywhere else — and a Simpson
+  **SDPW19600 DEFLECTOR** screw spans that gap: braced laterally, RELEASED VERTICALLY, so the
+  deck deflects onto nothing and no partition becomes a prop. 58 walls, 188 screws, one per
+  crossing (24" o.c. under a parallel member; one blocked bay per module between them — and
+  **that blocking is billed nowhere**). The part is the 6"/0.195" one and NOT because 6"
+  reaches: Simpson publish the 5" SDPW14500 for a single 2x or a built-up plate to 2-1/4"
+  and the SDPW19600 for the DOUBLE 2x this house frames. T-40, not T-25; 3/8" predrill
+  through the plate only.
+- **TWO TOPS, AND ONLY THE FRAMING ONE MOVED.** `plate_top_z_m`/`top_z*_m` are the framing
+  and belong to `resolve/partition_top.py`; `z1_m` is the BODY — the gypsum bill, the stair
+  enclosure, the wet wall a riser climbs — and stays with `resolve/platform.py`. Cutting the
+  body at the joist soffit too costs four FAILs (`code.R312_1_1_stair_open_side` on `ST-S2A`,
+  `mep.wet_wall_occupancy` x3). Do not re-collapse them; `tests/test_partition_top.py` says
+  so out loud.
 - THE SCREW IS CHOSEN ON THREAD, NOT LENGTH (2026-09-12). The CLAMPED STACK is 6.0" — girt
   1-1/2" + block 4-1/2"; the 1/2" ply is nailed to the stud and is NOT a member being drawn
   together — and plain shank has to span it. TimberLOK threads 2" (ESR-1078 Table 1A) and
@@ -509,7 +524,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   attic finished floor, mirrored past x=18'-0" — 9'-1 1/2" at the ridge, 7'-0" at
   x=13'-9", 5'-0" at x=9'-9", 3'-0" at x=5'-9". Every height quoted in `plan/` (window
   head, can light, receptacle, door, duct, furniture, vent riser) is measured from this
-  line. Corollary for an opening: a head at `h` needs `h + 2"` of rake: `x_outer_jamb >= 2
+  line — **and since 2026-09-19 the seven attic partitions answer to it too**: their raked
+  top plates stop 3/4" under it, where they used to rake to the roof DECK plane and run
+  11-7/8" of plate through the rafter above (`notes/partition_top_deflection.md`). Corollary for an opening: a head at `h` needs `h + 2"` of rake: `x_outer_jamb >= 2
   x (head + 2")`. (→ log4.md, "Attic and roof" — the 6:12/knee-wall history and cost
   delta)
 - `FS-ATTIC` is also the 2nd storey's ceiling: authors `ceiling_below` (5/8" gypsum)

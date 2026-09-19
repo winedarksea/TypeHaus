@@ -78,3 +78,30 @@ def point_in_ring(point: tuple, ring) -> bool:
                 inside = not inside
         previous = current
     return inside
+
+
+def segment_crossing(a0: tuple, a1: tuple, b0: tuple, b1: tuple) -> tuple | None:
+    """Where segment ``a`` crosses segment ``b`` in plan, as ``(point, t, u)``, or ``None``.
+
+    ``t`` is the fraction along ``a`` and ``u`` the fraction along ``b``, which is what lets
+    a caller interpolate an elevation on either member: a rafter's underside and a raked
+    top plate are both functions of the fraction along their own run, and a crossing that
+    reported only a point would make both unreadable.
+
+    ``a`` is open and ``b`` is closed — ``0 < t < 1`` against ``-eps <= u <= 1+eps``. The
+    asymmetry is deliberate and is the bearing case this was promoted out of
+    (``joints/bearing``): a deck joist cantilevered past its outer beam has no END near that
+    beam, yet it bears there, so a crossing strictly between ``a``'s ends is the question,
+    while ``b`` counts at its own ends too. Parallel segments return ``None``.
+    """
+    (ax, ay), (bx, by) = a0, a1
+    (cx, cy), (dx, dy) = b0, b1
+    rx, ry, sx, sy = bx - ax, by - ay, dx - cx, dy - cy
+    denom = rx * sy - ry * sx
+    if abs(denom) < 1e-12:
+        return None
+    t = ((cx - ax) * sy - (cy - ay) * sx) / denom
+    u = ((cx - ax) * ry - (cy - ay) * rx) / denom
+    if not (0.0 < t < 1.0 and -1e-9 <= u <= 1.0 + 1e-9):
+        return None
+    return (ax + t * rx, ay + t * ry), t, u

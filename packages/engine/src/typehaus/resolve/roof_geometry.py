@@ -242,13 +242,27 @@ def apply_truss_heel_lift(model: ResolvedModel) -> None:
 
 
 def apply_to_roof_wall_tops(model: ResolvedModel) -> None:
-    """Resolve raked wall endpoints after roof envelopes have been established."""
+    """Resolve raked wall endpoints after roof envelopes have been established.
+
+    Raking runs a wall up to the roof **deck** plane, which is right for a gable end
+    (its sheathing really does reach the deck) and wrong for an interior partition: the
+    plate would sit inside the full depth of the rafter above it. Those walls belong to
+    ``partition_top.apply_partition_tops``, which runs straight after this and rakes them
+    to the rafter *soffit* less a deflection gap — so they are handed over here rather
+    than raked twice to two different planes.
+    """
+    from typehaus.resolve.partition import bearing_ref_tags, takes_a_deflection_gap
+
+    bearing_refs = bearing_ref_tags(model.plan)
     roofs = {roof.tag: roof for roof in model.roofs}
     resolved: list[ResolvedWall] = []
     for wall in model.walls:
         authored = model.plan.by_tag(wall.tag)
         top = getattr(authored, "top", None)
         if not isinstance(top, ToRoof) or top.roof_ref not in roofs:
+            resolved.append(wall)
+            continue
+        if takes_a_deflection_gap(model, wall, bearing_refs):
             resolved.append(wall)
             continue
         roof = roofs[top.roof_ref]

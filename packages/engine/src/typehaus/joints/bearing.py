@@ -19,7 +19,11 @@ import math
 from dataclasses import dataclass
 
 from typehaus.hardware.config import FT_TO_M, UpliftTieRules
-from typehaus.hardware.plan_geometry import centerline_endpoints, distance_point_to_segment
+from typehaus.hardware.plan_geometry import (
+    centerline_endpoints,
+    distance_point_to_segment,
+    segment_crossing,
+)
 from typehaus.joints.authored import authored_joints, tags_covered_by
 from typehaus.joints.hosts import member_storeys
 from typehaus.joints.model import axis_of
@@ -228,17 +232,8 @@ def _crossing(member, support: BearingSupport):
     """
     if member.z0_end_m is not None:
         return None
-    (ax, ay), (bx, by) = member.p0, member.p1
-    (cx, cy), (dx, dy) = support.p0, support.p1
-    rx, ry, sx, sy = bx - ax, by - ay, dx - cx, dy - cy
-    denom = rx * sy - ry * sx
-    if abs(denom) < 1e-12:
-        return None
-    t = ((cx - ax) * sy - (cy - ay) * sx) / denom
-    u = ((cx - ax) * ry - (cy - ay) * rx) / denom
-    if not (0.0 < t < 1.0 and -1e-9 <= u <= 1.0 + 1e-9):
-        return None
-    return (ax + t * rx, ay + t * ry), member.z0_m
+    crossing = segment_crossing(member.p0, member.p1, support.p0, support.p1)
+    return None if crossing is None else (crossing[0], member.z0_m)
 
 
 def _tied_assemblies(model: ResolvedModel, elements_by_tag: dict, rules: UpliftTieRules):

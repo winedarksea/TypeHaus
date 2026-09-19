@@ -59,6 +59,7 @@ from typehaus.hardware.catalog import (
     ROLE_MASONRY_GUSSET_ANGLE,
     ROLE_MUDSILL_ANCHOR,
     ROLE_NAIL_STRIP_SEAM_CLAMP,
+    ROLE_PARTITION_DEFLECTION_SCREW,
     ROLE_PIPE_CLAMP,
     ROLE_POCKET_DOOR_FRAME_KIT,
     ROLE_POST_BASE,
@@ -121,6 +122,114 @@ FASTENMASTER_TIMBERLOK = StructuralHardware(
     source="FastenMaster TimberLOK, ICC-ES ESR-1078 (reissued 2026-01) Table 1A — 2 in "
            "thread at every length; coating rated for ACQ-D <= 0.40 pcf per §4.1.7 / "
            "Table 6",
+)
+
+# The two SDPW records are ONE role on two shank diameters — the same non-overlapping ladder
+# SDWS/SDWH make above. What picks between them here is NOT length, though: it is the
+# TOP-PLATE condition each is published for, which is why both carry ``fits_nominal`` and why
+# ``takeoff/partition_fasteners.py`` selects with ``hardware_for_role_and_nominal``.
+#
+# ** THIS IS THE ONE SCREW HERE THAT MUST NOT CLAMP. ** A polymer sleeve on the shank holds a
+# non-bearing partition's top plate a set distance below the joist or rafter over it, so the
+# deck deflects onto nothing while the wall stays braced against out-of-plane load. The gap is
+# "the space between the top surface of the top plate and the lower surface of the supporting
+# members", and Simpson warn that a 0" gap "may result in unintended loading of the partition
+# wall". The offset driver bit in the carton is what sets it.
+#
+# Installation facts that are constraints, not trivia (C-F-2025TECHSUP p. 100): the top plate
+# is PREDRILLED 3/8"; the supporting member is NOT predrilled; "the polymer sleeve shall not
+# penetrate the supporting member"; and the supporting member must be at least as thick as the
+# minimum penetration. A wall running parallel to and BETWEEN the framing above must be
+# fastened to code-prescribed blocking — which is the third case the take-off counts.
+#
+# ``thread_length_in_by_length_in`` is populated because ER-192 publishes it, but the
+# clamped-stack rule it feeds is inapplicable to this part by design.
+_SDPW_ALLOWABLE_NOTE = (
+    "Allowable lateral load, ASD, C_D = 1.6 (safety factor 5.0), at the 3/4 in gap this "
+    "house builds — IAPMO UES ER-192 Table 37 / C-F-2025TECHSUP pp. 100-101. The table is "
+    "indexed by GAP and by OFFSET (head clear of the plate), not by direction, and F1 "
+    "(parallel to the top plate) and F2 (perpendicular) read the same cell, which is why "
+    "both fields below carry it. Uplift is deliberately absent and must stay absent: this "
+    "joint releases vertically, which is the entire point of the sleeve."
+)
+
+SDPW_DEFLECTOR_SCREW = StructuralHardware(
+    tag="simpson-sdpw-deflector-screw",
+    name="Strong-Drive SDPW DEFLECTOR screw (0.140 in shank)",
+    role=ROLE_PARTITION_DEFLECTION_SCREW,
+    manufacturer=_SIMPSON,
+    model="SDPW14___",
+    exposure=EXPOSURE_DRY,
+    part_number_by_length_in={3.5: "SDPW14312", 5.0: "SDPW14500"},
+    thread_length_in_by_length_in={3.5: 2.0, 5.0: 2.0},
+    fits_nominal=("single 2x top plate", "built-up top plate to 2-1/4 in"),
+    source="Simpson Strong-Tie Strong-Drive SDPW DEFLECTOR screw, IAPMO UES ER-192 "
+           "(rev. 2026-09-08) and Fastening Systems Technical Guide C-F-2025TECHSUP "
+           "pp. 100-101 — washer-head 6-lobe T-25 screw with a polypropylene sleeve "
+           "(1.38 in on the 3-1/2 in, blue; 2.88 in on the 5 in, orange) setting a "
+           "deflection gap at a non-bearing partition's top plate. Type 17 point, e-coat, "
+           "INTERIOR DRY SERVICE ONLY (dry-service treatment chemicals and FRT wood are "
+           "permitted). Cartons of 50 (-R50) include the offset driver bit; PWKIT25T is "
+           "the replacement bit kit. Minimum penetration into the supporting member 1/2 in, "
+           "point included. Published gap capacity up to 3/4 in on the 3-1/2 in and 1-1/2 "
+           "in on the 5 in. **This record's allowables and spacings are published for a "
+           "single 2x or a built-up top plate to 2-1/4 in — NOT for a double 2x**, which "
+           "is the SDPW19600's row below",
+    allowable=AllowableLoads(
+        lateral_f1_lb=140.0,
+        lateral_f2_lb=140.0,
+        load_duration_factor=1.6,
+        species="SPF (minimum specific gravity 0.42); ER-192 Table 37 covers SPF/HF/DFL/SP "
+                "and the value recorded is the one that applies to what is built here. An "
+                "I-joist flange must be at least 1-1/8 in thick",
+        fasteners="The screw IS the fastener: one SDPW14500 through a predrilled 3/8 in "
+                  "hole in the top plate, the supporting member undrilled, the sleeve "
+                  "stopping short of it. 140 lbf is the 2x + 3/4 in WSP top-plate row at "
+                  "0 in offset and a 1/2 in, 3/4 in or 1-1/2 in gap; at a 3/4 in offset "
+                  "the same row falls to 105 / 80 / 45 lbf",
+        citation=_SDPW_ALLOWABLE_NOTE,
+    ),
+)
+
+#: The 0.195 in rung — a different shank, point, pilot and DRIVER (T-40, bit kit PWKIT40T).
+#: **It is this house's screw, and not because of its length.** Simpson publish the
+#: SDPW19600's allowables and spacing for the DOUBLE 2x top plate; the 5 in screw's stop at a
+#: 2-1/4 in built-up plate. Catlin frames a double 2x on all eleven interior assemblies.
+SDPW19_DEFLECTOR_SCREW = StructuralHardware(
+    tag="simpson-sdpw19-deflector-screw",
+    name="Strong-Drive SDPW DEFLECTOR screw (0.195 in shank)",
+    role=ROLE_PARTITION_DEFLECTION_SCREW,
+    manufacturer=_SIMPSON,
+    model="SDPW19___",
+    exposure=EXPOSURE_DRY,
+    part_number_by_length_in={6.0: "SDPW19600"},
+    thread_length_in_by_length_in={6.0: 3.0},
+    fits_nominal=("double 2x top plate",),
+    source="Simpson Strong-Tie Strong-Drive SDPW DEFLECTOR screw, IAPMO UES ER-192 "
+           "(rev. 2026-09-08) and C-F-2025TECHSUP pp. 100-101 — the 6 in length on the "
+           "0.195 in shank, sawtooth point, 6-lobe T-40, 3.10 in gray sleeve, e-coat, "
+           "interior dry service, cartons of 50 (-R50) with the offset bit. Minimum "
+           "penetration into the supporting member 3/4 in, point included; gap capacity to "
+           "1-1/2 in. **The row published for a DOUBLE 2x top plate and thinner**, which "
+           "is why this and not the 5 in is the part at a 3 in plate stack",
+    allowable=AllowableLoads(
+        lateral_f1_lb=165.0,
+        lateral_f2_lb=165.0,
+        load_duration_factor=1.6,
+        species="SPF (minimum specific gravity 0.42); ER-192 Table 37 covers SPF/HF/DFL/SP. "
+                "The supporting members here are engineered — 11-7/8 in TJI 230 rafters, "
+                "I-joists and open-web floor trusses — which ER-192 permits (dimension "
+                "lumber, truss, I-joist, glulam, SCL or CLT) at a flange thickness of at "
+                "least 1-1/8 in. **The joist maker's own fastener rules have NOT been read**",
+        fasteners="One SDPW19600 through a predrilled 3/8 in hole in the double top plate, "
+                  "the supporting member undrilled. 165 lbf is the (2) 2x row at a 3/4 in "
+                  "gap, IDENTICAL at 0 in and 3/4 in offset; the same row reads 295 lbf at "
+                  "a 0 in gap, 205 at 1/2 in and 75 at 1-1/2 in. The companion MAXIMUM "
+                  "SPACING table (8 ft / 10 ft walls at 5 psf, C_D = 1.6) bottoms out at "
+                  "42 in / 36 in for this part, which every count this house bills sits "
+                  "inside",
+        citation=_SDPW_ALLOWABLE_NOTE,
+    ),
 )
 
 SDWH_TIMBER_HEX_SCREW = StructuralHardware(
@@ -1826,6 +1935,8 @@ POCKET_FRAME_KIT_HEAVY = StructuralHardware(
 STRUCTURAL_HARDWARE: tuple = (
     SDWS_TIMBER_SCREW,
     SDWH_TIMBER_HEX_SCREW,
+    SDPW_DEFLECTOR_SCREW,
+    SDPW19_DEFLECTOR_SCREW,
     FASTENMASTER_TIMBERLOK,
     LSSR_SLOPED_HANGER,
     LSTA24_RIDGE_STRAP,
