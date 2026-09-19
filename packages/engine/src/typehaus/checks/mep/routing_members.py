@@ -39,6 +39,7 @@ from typehaus.checks._authoring import failed as _fail
 from typehaus.checks._authoring import not_applicable as _na
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks._authoring import unknown as _unknown
+from typehaus.checks.mep._format import feet_inches
 from typehaus.checks.mep.routing_geometry import run_polylines, run_radii
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding
@@ -46,15 +47,6 @@ from typehaus.quantities import M_PER_IN
 from typehaus.resolve.mep_crossings import CrossingWindow, member_window
 
 _CID = "mep.run_member_crossing"
-
-
-def _feet_inches(meters: float) -> str:
-    """A station a builder can find with a tape, not a float in metres."""
-    total_in = meters / M_PER_IN
-    sign = "-" if total_in < 0 else ""
-    total_in = abs(total_in)
-    feet, inches = divmod(total_in, 12.0)
-    return f"{sign}{int(feet)}'-{inches:.1f}\""
 
 
 @check(Tier.STRUCTURAL, _CID)
@@ -142,7 +134,7 @@ def _finding(kind: str, tag: str, floor_tag: str, radius_m: float,
     worst, crown_gap, invert_gap, member_key, station_m = tightest
     diameter_in = 2 * radius_m / M_PER_IN
     where = (f"{kind} {tag} crosses {floor_tag} at {member_key}, "
-             f"{_feet_inches(station_m)} along it")
+             f"{feet_inches(station_m)} along it")
     sizes = (f"{diameter_in:.3f}\" outside, {window.height_m / M_PER_IN:.3g}\" window")
 
     if worst < -1e-9:
