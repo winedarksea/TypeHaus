@@ -37,6 +37,37 @@ class Status(Enum):
     NO_CALC = "no_calc"          # no calculation is registered for this kind
 
 
+class Scope(Enum):
+    """How much of the QUESTION one record answers — orthogonal to :class:`Status`.
+
+    ** ``Status.OK`` MEANS "EVERY LIMIT STATE THE MODULE ENUMERATED IS UNDER 1", AND THE
+    BUNDLE'S README CALLED IT "computed ... with nothing missing". ** Those are different
+    claims, and every calc sheet's own §9 contradicts the second on every page: "only the
+    limit states listed in §4 are graded; a failure mode this engine does not enumerate is
+    not evaluated here and is not implied to pass." A reviewer reading OK beside a
+    completeness claim is being told something the sheet underneath them denies.
+
+    ``Status`` cannot carry it. It has fifteen consumer sites plus a documented IFC Pset
+    contract, three of which are exhaustive label maps that ``KeyError`` on a new member —
+    and more importantly the two facts are genuinely independent: a record can be arithmetic-
+    complete and scope-incomplete (every enumerated state passes, and the module enumerates
+    four of the seven a design needs), or scope-complete and over (it grades the whole
+    question and the answer is no). ``Freshness`` is the precedent: a fourth axis, carried
+    beside the status rather than folded into it, and read by renderers only.
+
+    Nothing gates on this. It is what the sheets and the README SAY, and the point is that
+    what they say becomes true.
+    """
+
+    #: The module enumerates every limit state this design needs. Rare and worth earning.
+    COMPLETE = "complete"
+    #: The module grades a real subset and the sheet's §9 says which. The ordinary case, and
+    #: the honest default: a screening tool is a screening tool.
+    SCREENING = "screening"
+    #: Somebody else designs this; the engine holds a name and a deliverable, not numbers.
+    EXTERNAL = "external"
+
+
 @dataclass(frozen=True)
 class Oracle:
     """The independent hand-worked check behind a calculation — a citation, not an input.
@@ -179,6 +210,13 @@ class EngineeringRecord:
     #: The hand-worked note(s) that independently reproduce this arithmetic. Prose, so it
     #: stays out of the fingerprint — see :class:`Oracle`.
     oracle: tuple[Oracle, ...] = ()
+    #: How much of the QUESTION this record answers — see :class:`Scope`. Orthogonal to
+    #: :attr:`status`, and deliberately defaulted to ``SCREENING`` rather than left None: a
+    #: module that has not thought about it is screening, and saying so is the honest
+    #: reading. **Not hashed by the fingerprint**, for the same reason ``oracle`` is not: a
+    #: seal is a statement about numbers, and re-classifying a module's coverage should not
+    #: stale a stamp over arithmetic that did not move.
+    scope: Scope = Scope.SCREENING
 
     @property
     def governing(self) -> LimitState | None:
@@ -228,5 +266,5 @@ def no_calc(kind: str, key: str, *, reason: str = "",
         item_id=item_id(kind, key), kind=kind, key=key, status=Status.NO_CALC,
         summary=reason or "no calculation is registered for this kind — an engineer's "
                           "design governs",
-        element_tags=(key,), oracle=oracle,
+        element_tags=(key,), oracle=oracle, scope=Scope.EXTERNAL,
     )

@@ -21,6 +21,9 @@ out/calcs/
   02-item-register.md     every item, its governing limit state, its seal, its oracle note
   03-open-items.md        the gap register — what is not finished, and who owns each one
   04-assumptions.md       every distinct record note, deduped, grouped by kind
+  05-scope-of-review.md   what a stamp on this package would and would not cover —
+                          the computed items by id, the deferred ones somebody else
+                          seals, and what is answered prescriptively and is not here
   calcs/
     retaining_wall__W-SG-E2.md      one sheet per item
     ...
@@ -90,12 +93,26 @@ mean less, not more.
 
 ## Deferred items
 
-Seven items in catlin are computed by nothing, by decision — a fabricator's or a supplier's
-sealed design governs: the two trussed roofs, all three roofs' uplift path, and the two
-foundation wall tops carrying the balcony's fixed-base columns. `engineering/deferred.py` declares each kind's designer of record,
-what they must produce, and which permit-set line it unblocks, and `03-open-items.md` is
-generated straight off that table. They are exactly as blocking as they were before they had
-names; what changed is that the outstanding work is now an assignment rather than an absence.
+**Thirty items in catlin** are computed by nothing, by decision. `engineering/deferred.py`
+declares each kind's designer of record, what they must produce and which permit-set line it
+unblocks, and `03-open-items.md` is generated straight off that table. They are exactly as
+blocking as they were before they had names; what changed is that the outstanding work is now
+an assignment rather than an absence.
+
+**Most of them are NOT the supplier's**, and this paragraph said the opposite until
+2026-09-18 — it read "a fabricator's or a supplier's sealed design governs" and named seven
+items, a count that had been stale through four separate expansions. Today: two trussed roofs
+and their uplift path are a fabricator's; the rest — the wall tops under the balcony's
+fixed-base columns, the court's veneer beam, the thermal-break transfer, the tiered apron,
+and (2026-09-18) the fixed bases' rotational stiffness and the column head joints — name the
+**structural engineer of record**, which is to say the person the handoff bundle is addressed
+to. A reviewer told "these are not yours" about twelve items that are theirs is the one
+sentence in a handoff that can cost a whole review cycle.
+
+**An exact count does not belong in this document.** It went stale four times because a
+number about one house was written into the format's own specification; `haus engineering`
+and `03-open-items.md` are generated and are always right. The figure above is a sense of
+scale, and the day it disagrees with the CLI, trust the CLI.
 
 **A deferral is not the only alternative to a calculation.** Where a manufacturer publishes
 a span table, reading a row is a *prescriptive* act and belongs in neither lane: the element

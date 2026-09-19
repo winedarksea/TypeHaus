@@ -1168,15 +1168,32 @@ exists for a future cast beam that bends; this one is left `None` deliberately.
 Inherited from `sunken_garden_retaining_screening.md` §5, all still open, plus what this pass
 added:
 
-- **No drainage or hydrostatic case — and NOTHING IN THE MODEL MAKES THE DRAINAGE WORK.**
-  Every number presumes the drainage behind these walls works perfectly and no water pressure
-  ever develops. A saturated backfill roughly doubles the thrust and would take the system
-  well under 1.0. **State the gap plainly: `SUNKEN_GARDEN_WALL` is one bare 12" `EXPOSED_MIX`
-  layer.** There is no drainage course behind the stem, no filter fabric, no free-draining
-  zone, no weeps. All the washed stone in this court is *under* the footings, plus the 4"
-  sock-wrapped tile in those beds — which drains the bearing plane, not the retained face
-  9 feet above it. Whatever provides the drained backfill this note presumes is not modelled,
-  is not priced, and is not drawn. It is the single largest unpriced assumption in §9.
+- **No hydrostatic case — and the reason has changed, so read this bullet as rewritten
+  rather than as it stood** (2026-09-18). Every number here still presumes no water pressure
+  develops behind these walls, and a saturated backfill roughly doubles the thrust and would
+  take the system well under 1.0. What is no longer true is the sentence this bullet used to
+  lead with. It read "**NOTHING IN THE MODEL MAKES THE DRAINAGE WORK** … `SUNKEN_GARDEN_WALL`
+  is one bare 12" `EXPOSED_MIX` layer … no drainage course behind the stem, no filter fabric,
+  no free-draining zone, no weeps", and that was accurate when it was written and went stale
+  on **2026-09-16**, when the court's retaining U moved onto `SUNKEN_GARDEN_WALL_DRAINED`:
+  the outboard face carries a 5/16" DELTA-MS-class **dimpleboard** full height
+  (`LayerFunction.DRAINAGE`, `ControlLayer.DRAINAGE`), giving soil water a path down to
+  `FD-SG-LEAD-W`/`-E`. It is modelled, it is priced, and it is drawn. Leaving the old
+  sentence standing meant the gap register's largest single entry described a condition the
+  building no longer had.
+
+  **Three things remain genuinely open, and they are what the bullet should have said all
+  along:**
+  - **The groundwater basis.** Nobody has established a design water table, a perched-water
+    condition or an infiltration rate for this parcel. A drained wall presumes water can
+    leave faster than it arrives, and nothing here measures either side of that.
+  - **Discharge continuity.** The dimpleboard delivers to `FD-SG-LEAD-W`/`-E` and those lead
+    somewhere; the path from there to daylight or to a drywell of adequate capacity, and its
+    slope, are not graded by anything in this engine.
+  - **The blocked-drain design case.** Every drained retaining wall is designed for the day
+    the drain does not work — a partial or full hydrostatic case at some stated height — and
+    that case is not run here. It is the case that decides whether the drainage is a comfort
+    measure or a structural dependency, and on a 10'-4" cut it is the latter.
 - **No seismic.** Minnesota is SDC A and soil and wind govern, but that is asserted here, not
   demonstrated, and no Mononobe-Okabe increment is applied.
 - **No global stability, no settlement.** A 10'-4" retained cut next to a tiered apron has a

@@ -19,7 +19,7 @@ from collections.abc import Mapping
 
 from typehaus.emit.md_writer import bullets, callout, document, heading, kv_block, table
 from typehaus.engineering.fingerprint import Freshness, fingerprint
-from typehaus.engineering.item import EngineeringRecord, Status
+from typehaus.engineering.item import EngineeringRecord, Scope, Status
 from typehaus.engineering.register import EngineeringRegister, Signoff
 
 #: How each local status letters on a sheet. Deliberately the same four words the CLI uses
@@ -30,6 +30,18 @@ STATUS_LABEL: Mapping[Status, str] = {
     Status.OVER: "OVER — a limit state exceeds its capacity",
     Status.INCOMPLETE: "INCOMPLETE — the calculation exists and an input it needs is absent",
     Status.NO_CALC: "NO LOCAL CALC — a designer of record owns this",
+}
+
+#: What ``Scope`` means on a sheet, in the words a reviewer needs. Orthogonal to the status
+#: above it: "every limit state this engine enumerated is under 1" and "this engine
+#: enumerated every limit state the design needs" are different claims, and the header used
+#: to print only the first while section 9 underneath denied the second.
+SCOPE_LABEL: Mapping[Scope, str] = {
+    Scope.COMPLETE: "COMPLETE — this module enumerates every limit state this design needs",
+    Scope.SCREENING: "SCREENING — a real subset of the limit states, listed in section 9. "
+                     "What is not enumerated is not evaluated and is not implied to pass",
+    Scope.EXTERNAL: "EXTERNAL — somebody else designs this; the engine holds a name and a "
+                    "deliverable, not numbers",
 }
 
 SEAL_LABEL: Mapping[Freshness, str] = {
@@ -186,6 +198,7 @@ def render_sheet(record: EngineeringRecord, register: EngineeringRegister, *,
         ("Basis", record.basis or "—"),
         ("Basis version", record.basis_version),
         ("Local status", STATUS_LABEL[record.status]),
+        ("Coverage", SCOPE_LABEL[record.scope]),
         ("Professional seal", seal),
         ("Fingerprint", f"`{print_fingerprint}`"),
         ("House", house),
@@ -231,9 +244,10 @@ def _exclusions(record: EngineeringRecord) -> str:
     are the ones the calc module enumerated, and the seal is a separate act.
     """
     return bullets([
-        f"Only the limit states listed in §4 are graded. A failure mode this engine does "
-        f"not enumerate for `{record.kind}` is not evaluated here and is not implied to "
-        f"pass.",
+        f"**This sheet is {SCOPE_LABEL[record.scope].split(' — ')[0]}.** Only the limit "
+        f"states listed in §4 are graded. A failure mode this engine does not enumerate "
+        f"for `{record.kind}` is not evaluated here and is not implied to pass — and the "
+        f"header's *Local status* is a statement about the graded ones only.",
         "Load cases are those the record's inputs state. No combination beyond them is "
         "searched.",
         "This engine computing a PASS is the **draft** gate. It is not a professional "

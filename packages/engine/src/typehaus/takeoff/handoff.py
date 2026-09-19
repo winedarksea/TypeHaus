@@ -122,6 +122,39 @@ def cited_notes(records: Iterable[object]) -> list[str]:
     return sorted(names)
 
 
+def _gate_block(checklist) -> list[str]:  # type: ignore[no-untyped-def]
+    """Where the permit gate stands, which is why anyone is reading this bundle.
+
+    ``pe_readme`` took ``checklist`` as a parameter from the day it was written and never
+    read it, so the page a reviewer opens first was silent on the one fact that says whether
+    this review unblocks anything. Blocking items only: the staging lane is a property of
+    the engine's own coverage and not of this house.
+    """
+    if checklist is None:
+        return ["The permit checklist was not evaluated for this bundle."]
+    from typehaus.findings import Result
+
+    resolved = {Result.PASS, Result.NOT_APPLICABLE}
+    blocking = [item for item in checklist.items if item.blocking]
+    open_items = [item for item in blocking if item.result not in resolved]
+    if not open_items:
+        return [
+            f"**The draft gate is OPEN.** All {len(blocking)} blocking checklist items",
+            "resolve on this engine's own calculations, against the "
+            f"`{checklist.profile_name}` profile. What is left is the seal itself — see",
+            "*How to hand the work back*.",
+        ]
+    out = [
+        f"**The draft gate is SHUT**, on {len(open_items)} of {len(blocking)} blocking",
+        f"items, against the `{checklist.profile_name}` profile. A permit set will not",
+        "print until they resolve, and a stamp on this bundle does not open them: the gate",
+        "is about this engine's own arithmetic, not about whether anybody signed it.",
+        "",
+    ]
+    out += [f"- **{item.label}** — {item.detail}" for item in open_items]
+    return out
+
+
 def manifest_table(digests: Mapping[str, str]) -> str:
     """The manifest as a Markdown table, for the README a reviewer actually opens."""
     lines = ["| File | sha256 |", "|---|---|"]
@@ -137,13 +170,31 @@ def pe_readme(*, house: str, generated: str, engine_version: str, content_hash: 
     calculation sheets and three models needs to know where to start, what a stamp would and
     would not cover, and how to hand the work back; everything else in the folder answers a
     question they have not asked yet.
+
+    ** THREE THINGS ON THIS PAGE WERE FALSE OR ABSENT UNTIL 2026-09-18, AND THE PAGE IS THE
+    FIRST THING A REVIEWER READS. **
+
+    * "Every limit state is graded and under 1, **with nothing missing**" — the last three
+      words are contradicted by every sheet's own section 9, on every page: "only the limit
+      states listed in section 4 are graded; a failure mode this engine does not enumerate
+      is not evaluated here and is not implied to pass." ``Status.OK`` means every state the
+      module ENUMERATED is under 1, which is a much smaller claim. ``Scope`` carries the
+      difference now and this page states it.
+    * "DEFERRED and **are not yours**" — on catlin, 12 of 14 deferred items name the
+      structural engineer of record, i.e. the person reading this. ``03-open-items.md``
+      already prints the right designer per item; this page was overruling it with a
+      generality.
+    * ``checklist`` was accepted as a parameter at this function's own signature and read
+      nowhere, so the bundle README said nothing at all about where the permit gate stands —
+      the single fact that decides whether this review unblocks anything.
     """
-    from typehaus.engineering.item import Status
+    from typehaus.engineering.item import Scope, Status
 
     ok = [r for r in records if r.status is Status.OK]
     incomplete = [r for r in records if r.status is Status.INCOMPLETE]
     over = [r for r in records if r.status is Status.OVER]
     deferred = [r for r in records if r.status is Status.NO_CALC]
+    screening = [r for r in ok if r.scope is Scope.SCREENING]
 
     out = [
         f"# {house} — engineering handoff",
@@ -181,10 +232,18 @@ def pe_readme(*, house: str, generated: str, engine_version: str, content_hash: 
                 "mark up and stamp, because no jurisdiction accepts Markdown.", ""]
 
     out += [
+        "## Where the permit gate stands",
+        "",
+        *_gate_block(checklist),
+        "",
         "## What a stamp here covers",
         "",
-        f"- **{len(ok)} item(s) are computed and check out.** Every limit state is graded",
-        "  and under 1, with nothing missing. These are what a seal can cover today.",
+        f"- **{len(ok)} item(s) are computed, and every limit state this engine enumerated",
+        "  for them is under 1.** That is a narrower claim than \"they check out\", and the",
+        f"  difference is the review: {len(screening)} of them are **screening** rather than",
+        "  complete. Section 9 of each sheet lists, in that item's own terms, the failure",
+        "  modes this engine does not enumerate — they are not evaluated and they are not",
+        "  implied to pass.",
     ]
     if incomplete:
         out.append(f"- **{len(incomplete)} item(s) are INCOMPLETE** — computed, but an input")
@@ -192,12 +251,18 @@ def pe_readme(*, house: str, generated: str, engine_version: str, content_hash: 
         out.append("  person who supplies it.")
     if over:
         out.append(f"- **{len(over)} item(s) are OVER capacity.** These are not review")
-        out.append("  items, they are design changes.")
+        out.append("  items, they are design changes. A stamp cannot cover one: the engine")
+        out.append("  makes an authored spec unreachable under OVER, and the draft register")
+        out.append("  writes that whole scope out commented.")
     if deferred:
-        out.append(f"- **{len(deferred)} item(s) are DEFERRED and are not yours** — a truss")
-        out.append("  fabricator's or a supplier's sealed design governs them, and this")
-        out.append("  engine computes nothing for them. They carry no fingerprint and a")
-        out.append("  stamp over them could not be pinned.")
+        out.append(f"- **{len(deferred)} item(s) are DEFERRED** — this engine computes")
+        out.append("  nothing for them, by decision. **Some of them are yours.**")
+        out.append("  `03-open-items.md` names the designer of record for each: a truss")
+        out.append("  fabricator's or a supplier's sealed design governs some, and the")
+        out.append("  structural engineer of record owns the rest. They carry no model")
+        out.append("  fingerprint — there is nothing to hash — so a seal over one is pinned")
+        out.append("  to the designer's own document instead: its revision, its sha256 and")
+        out.append("  the envelope it was issued for. `engineering.toml.draft` has the form.")
     out += [
         "",
         "**Not in this bundle, and not covered by any stamp on it:** anything answered by a",
