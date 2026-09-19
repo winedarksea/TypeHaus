@@ -89,12 +89,20 @@ def test_the_manifest_hashes_every_file_it_ships(bundle):
 
 
 def test_the_bundle_is_byte_deterministic(tmp_path):
-    """Two runs, one model, identical hashes. Without this the manifest proves nothing."""
+    """Two runs, one model, identical hashes. Without this the manifest proves nothing.
+
+    ** THE PDF IS IN IT SINCE 2026-09-18, AND IT WAS EXCLUDED BEFORE. ** This ran
+    ``--no-pdf``, so the one file in the bundle most likely to carry a wall-clock timestamp
+    was the one file the determinism test did not look at — and the manifest's whole claim
+    is that a changed hash is a changed model rather than a re-run. ``rl_config.invariant``
+    fixes reportlab's producer string, dates and document id; this is what says so.
+    """
     first, second = tmp_path / "a", tmp_path / "b"
     for out in (first, second):
-        assert _run(CATLIN, out, "--no-models", "--no-pdf").returncode == 0
+        assert _run(CATLIN, out, "--no-models").returncode == 0
     left = json.loads((first / "MANIFEST.json").read_text())["files"]
     right = json.loads((second / "MANIFEST.json").read_text())["files"]
+    assert "calcs.pdf" in left, "the artefact a seal binds to has to be in the manifest"
     assert left == right
 
 

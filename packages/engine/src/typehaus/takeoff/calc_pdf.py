@@ -13,7 +13,7 @@ folder of text a reviewer can edit without trace. That is the whole reason this 
 What real sealed residential packages do, and what is copied here (City of Pleasanton's ADU
 sample; Buker Engineering's Hinckley Residence, Mercer Island permit 2408-045):
 
-**Section-prefixed page numbers** — ``C-1``, ``L-3``, ``F-12``. A reviewer's comment is
+**Section-prefixed page numbers** — ``C-1``, ``D-3``, ``S-12``. A reviewer's comment is
 page-anchored, and a resubmittal that inserts one page into the loads section must not
 renumber the footings section under their comment. A flat 1..N cannot promise that; a
 per-section sequence can.
@@ -32,13 +32,39 @@ would be forging it.
 Content is not softened on the way through. The INCOMPLETE items keep saying INCOMPLETE and
 the deferred items keep naming who owns them; a PDF that reads better than the register it
 came from would be the wrong artefact.
+
+** THIS WAS A MATPLOTLIB RENDERER UNTIL 2026-09-18, AND IT COULD NOT BE FIXED IN PLACE. **
+It drew every glyph with ``ax.text`` into ``PdfPages``: no table engine, no text flow, and
+no outline or link API, so bookmarks were not a small change there. Three defects followed
+from the absence of a layout model rather than from any of its settings, and all three are
+gone with it:
+
+* a markdown table printed its pipes **literally**, as the source text;
+* every line was truncated at ``COLUMNS + 24`` characters, which runs to x ≈ 8.15" on an
+  8.5" page and **silently dropped the rest** — 305 lines of catlin's own package sat at
+  that cap, the longest source row 860 characters;
+* the index printed until it ran out of cover and then hit a hard ``break``: 25 rows of 40.
+
+Platypus gives real tables, flowing paragraphs, a document outline, internal links and a
+two-pass index over true page labels. ``reportlab`` is a declared runtime dependency, so
+``scripts/ci_local.sh`` (a throwaway venv from the declared extras alone) is the gate that
+sees it — ``scripts/verify.sh`` runs in ``.venv`` and is blind to a missing one.
 """
 
 from __future__ import annotations
 
-import re
-import textwrap
 from dataclasses import dataclass
+
+from typehaus.takeoff.calc_markdown import (
+    Bullets,
+    Code,
+    Heading,
+    Paragraph_,
+    Rule,
+    Table_,
+    inline,
+    parse,
+)
 
 #: Page-number prefix per front-matter file, and the section title the index prints. The
 #: order here is the order of the package.
@@ -73,21 +99,24 @@ MARGIN_B = 0.90
 
 BODY_PT = 8.5
 LINE_PT = BODY_PT * 1.55
-#: Columns of monospace that fit between the margins at ``BODY_PT``.
-COLUMNS = 78
 
-_HEADING = re.compile(r"^(#{1,6})\s+(.*)$")
-_RULE = re.compile(r"^\s*([-*_])\1{2,}\s*$")
-_BOLD = re.compile(r"\*\*(.+?)\*\*")
+#: How many passes the index is allowed to take to reach a fixed point. Growing the index
+#: shifts every page after it, which can change the index — two passes settle it in
+#: practice and the cap is what stops a pathological package spinning.
+_INDEX_PASSES = 4
 
 
 @dataclass(frozen=True)
 class Page:
-    """One laid-out page: the lines on it and the identity in its title block."""
+    """One page's identity, for the index. The CONTENT is Platypus' business now.
+
+    Kept as a type because ``index_rows`` is the code-required index (CBC/IBC 1603A.3) and
+    is derived from real page labels rather than authored — the same property it always had,
+    now sourced from a layout engine instead of from a line count.
+    """
 
     number: str            #: "C-1", "S-12"
     section: str           #: "COVER", "sunken garden retaining wall"
-    lines: tuple[str, ...]
 
 
 @dataclass(frozen=True)
@@ -103,87 +132,35 @@ class PdfInputs:
     scope: str = ""
 
 
-def paginate(files: dict[str, str]) -> list[Page]:
-    """Lay the package's markdown out into numbered pages, front matter first.
+#: On the cover of every package this emitter writes, and it stays true until a person
+#: applies a seal to the flattened file — which this engine has no way to do and must not.
+_NOT_SEALED = (
+    "NOT FOR CONSTRUCTION — this package carries no professional seal. Every result in it "
+    "is this engine's own draft calculation, oracled against a hand-worked note. Nothing "
+    "here may be built from until a licensed engineer has reviewed it and applied a seal "
+    "to this document."
+)
 
-    Section-prefixed and restarting at 1 per section, which is the property the numbering
-    exists for: inserting a page into the loads section renumbers the loads section and
-    nothing else, so a reviewer's page-anchored comment survives a resubmittal.
+
+def sheet_order(files: dict[str, str]) -> list[tuple[str, str, str]]:
+    """``(filename, page prefix, section title)`` in package order — front matter first.
+
+    The one definition of what goes into the PDF and under which series, so the index, the
+    outline and the page stamps cannot disagree about it.
     """
-    pages: list[Page] = []
-    ordered = [(name, prefix, title) for name, prefix, title in SECTIONS if name in files]
-    for name, prefix, title in ordered:
-        pages.extend(_lay_out(files[name], prefix, title, start=1))
-    item_files = sorted(n for n in files
-                        if n not in _SKIP and n not in {s[0] for s in SECTIONS})
-    counter = 1
-    for name in item_files:
-        laid = _lay_out(files[name], ITEM_PREFIX, _sheet_title(files[name], name),
-                        start=counter)
-        pages.extend(laid)
-        counter += len(laid)
-    return pages
+    out = [(name, prefix, title) for name, prefix, title in SECTIONS if name in files]
+    known = {name for name, _, _ in SECTIONS}
+    for name in sorted(n for n in files if n not in _SKIP and n not in known):
+        out.append((name, ITEM_PREFIX, _sheet_title(files[name], name)))
+    return out
 
 
 def _sheet_title(text: str, name: str) -> str:
     """A per-item sheet's own H1, else its filename. The title block prints it verbatim."""
-    for line in text.splitlines():
-        head = _HEADING.match(line)
-        if head and len(head.group(1)) == 1:
-            return _plain(head.group(2))
+    for block in parse(text, source=name):
+        if isinstance(block, Heading) and block.level == 1:
+            return block.text
     return name.rsplit("/", 1)[-1].removesuffix(".md")
-
-
-def _plain(text: str) -> str:
-    """Markdown emphasis out. Nothing else — a calc sheet's content is already plain, and
-    a table's pipes are load-bearing alignment that must survive."""
-    return _BOLD.sub(r"\1", text).replace("`", "")
-
-
-def _lay_out(markdown: str, prefix: str, title: str, *, start: int) -> list[Page]:
-    rows = _wrap(markdown)
-    per_page = int((PAGE[1] - MARGIN_T - MARGIN_B) * 72.0 / LINE_PT)
-    pages: list[Page] = []
-    for index in range(0, max(len(rows), 1), per_page):
-        pages.append(Page(number=f"{prefix}-{start + len(pages)}", section=title,
-                          lines=tuple(rows[index:index + per_page])))
-    return pages
-
-
-def _wrap(markdown: str) -> list[str]:
-    """Markdown to printable rows, at :data:`COLUMNS`.
-
-    Headings keep their text and lose their hashes; a horizontal rule becomes a rule of
-    dashes; a table row is passed through UNWRAPPED, because wrapping one destroys the
-    column alignment that is the only thing making it a table — a calc sheet's tables are
-    demand/capacity/ratio rows a reviewer reads down, and a ragged one is unreadable.
-    """
-    out: list[str] = []
-    fenced = False
-    for raw in markdown.splitlines():
-        if raw.lstrip().startswith("```"):
-            fenced = not fenced
-            continue
-        if fenced or raw.lstrip().startswith("|"):
-            out.append(_plain(raw.rstrip())[:COLUMNS + 24])
-            continue
-        if _RULE.match(raw):
-            out.append("-" * COLUMNS)
-            continue
-        line = _plain(raw.rstrip())
-        head = _HEADING.match(line)
-        if head:
-            text = head.group(2)
-            out.extend(["", text.upper() if len(head.group(1)) <= 2 else text])
-            if len(head.group(1)) <= 2:
-                out.append("-" * min(COLUMNS, len(text)))
-            continue
-        if not line.strip():
-            out.append("")
-            continue
-        indent = "  " if line.lstrip().startswith(("-", "*", "•")) else ""
-        out.extend(textwrap.wrap(line, width=COLUMNS, subsequent_indent=indent) or [""])
-    return out
 
 
 def index_rows(pages: list[Page]) -> list[tuple[str, str]]:
@@ -202,52 +179,177 @@ def index_rows(pages: list[Page]) -> list[tuple[str, str]]:
     return rows
 
 
-def write_calc_pdf(files: dict[str, str], out, inputs: PdfInputs) -> object:
-    """Render the package to a flattened, text-searchable PDF at ``out``.
+# --- the renderer ------------------------------------------------------------------------
 
-    Text-searchable because matplotlib's PDF backend embeds real text rather than curves —
-    which matters: a reviewer searches a 200-page package for a member tag, and a package of
-    outlines cannot be searched, quoted or accessibility-checked.
+def _styles():  # type: ignore[no-untyped-def]
+    from reportlab.lib.enums import TA_LEFT
+    from reportlab.lib.styles import ParagraphStyle
+
+    body = ParagraphStyle(
+        "body", fontName="Helvetica", fontSize=BODY_PT, leading=LINE_PT,
+        alignment=TA_LEFT, spaceAfter=4.5, allowWidows=0, allowOrphans=0)
+    return {
+        "body": body,
+        "h1": ParagraphStyle("h1", parent=body, fontName="Helvetica-Bold", fontSize=13.5,
+                             leading=17, spaceBefore=6, spaceAfter=8),
+        "h2": ParagraphStyle("h2", parent=body, fontName="Helvetica-Bold", fontSize=10.5,
+                             leading=14, spaceBefore=11, spaceAfter=5),
+        "h3": ParagraphStyle("h3", parent=body, fontName="Helvetica-Bold", fontSize=9,
+                             leading=12, spaceBefore=8, spaceAfter=4),
+        "bullet": ParagraphStyle("bullet", parent=body, leftIndent=12, bulletIndent=2,
+                                 spaceAfter=2.5),
+        "cell": ParagraphStyle("cell", parent=body, fontSize=7.4, leading=9.2,
+                               spaceAfter=0),
+        "cellhead": ParagraphStyle("cellhead", parent=body, fontName="Helvetica-Bold",
+                                   fontSize=7.4, leading=9.2, spaceAfter=0),
+        "code": ParagraphStyle("code", parent=body, fontName="Courier", fontSize=7.4,
+                               leading=9.4, leftIndent=8, spaceAfter=1),
+        "meta": ParagraphStyle("meta", parent=body, fontSize=7.5, leading=9.5,
+                               textColor="#555555"),
+        "warn": ParagraphStyle("warn", parent=body, fontSize=8, leading=10.5,
+                               textColor="#8a1c1c"),
+    }
+
+
+class _SectionMark:
+    """A zero-height flowable that tells the doc template a new series has started."""
+
+    def __init__(self, prefix: str, title: str, first: bool) -> None:
+        self.prefix, self.title, self.first = prefix, title, first
+        self.width = self.height = 0
+
+    def wrap(self, *_args):  # type: ignore[no-untyped-def]
+        return (0, 0)
+
+    def drawOn(self, canvas, x, y, _sW=0):  # type: ignore[no-untyped-def]
+        return None
+
+    # Platypus calls these on every flowable; the defaults are fine.
+    def split(self, *_args):  # type: ignore[no-untyped-def]
+        return []
+
+    def getKeepWithNext(self):  # type: ignore[no-untyped-def]
+        return False
+
+    def isIndexing(self):  # type: ignore[no-untyped-def]
+        return 0
+
+
+def _table(block: Table_, styles, width: float):  # type: ignore[no-untyped-def]
+    """A markdown pipe table as a real Platypus table.
+
+    ** THIS IS WHERE THE PIPES USED TO BE PRINTED LITERALLY. ** Every cell is a wrapping
+    ``Paragraph``, so a 400-character citation in a limit-state row flows down its column
+    instead of being cut off at a character count — which was the single largest source of
+    silently lost content in the old renderer, and it fell most often on exactly the
+    citations a reviewer needs.
+
+    ** COLUMN WIDTHS ARE A FLOOR PLUS A SHARE, NOT A BARE PROPORTION. ** A proportional
+    split by longest cell gives a 400-character prose column almost the whole frame and
+    squeezes "Items" into two characters, so the header itself wraps to "Item / s". Each
+    column first reserves the width its longest UNBREAKABLE word needs — a header word, an
+    element tag, a citation's section number — and only the slack left over is shared out,
+    weighted by content length with a cap so one long column cannot take all of it.
     """
-    from matplotlib.backends.backend_pdf import PdfPages
+    from reportlab.lib import colors
+    from reportlab.pdfbase.pdfmetrics import stringWidth
+    from reportlab.platypus import Paragraph, Table, TableStyle
 
-    pages = paginate(files)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    # CreationDate and ModDate are wall-clock by default, so two runs over an unchanged
-    # model would differ in bytes and a reviewer could not tell a regenerated package from
-    # an edited one. The package's own date is on the cover, where a person reads it.
-    with PdfPages(out, metadata={"CreationDate": None, "ModDate": None,
-                                 "Producer": "Type:Haus"}) as pdf:
-        _draw_cover(pdf, inputs, pages)
-        for page in pages:
-            _draw_page(pdf, inputs, page)
+    columns = len(block.header)
+    if not columns:
+        return None
+    padding = 6.0
+    cells = [[row[i] if i < len(row) else "" for row in (block.header, *block.rows)]
+             for i in range(columns)]
+
+    def word_floor(index: int) -> float:
+        font = "Helvetica-Bold" if index < 0 else "Helvetica"
+        widest = 0.0
+        for text in cells[index]:
+            for word in text.replace("`", "").split() or [""]:
+                widest = max(widest, stringWidth(word, font, 7.4))
+        return min(widest + padding, 0.42 * width)
+
+    floors = [max(word_floor(i), stringWidth(cells[i][0], "Helvetica-Bold", 7.4) / 2.0)
+              for i in range(columns)]
+    # A column's share of the SLACK is its content length, capped: past ~90 characters a
+    # column is prose and reads fine at any reasonable width, so letting it keep growing
+    # only starves the short columns beside it.
+    weights = [min(max((len(text) for text in cells[i]), default=1), 90)
+               for i in range(columns)]
+    slack = max(width - sum(floors), 0.0)
+    total = max(sum(weights), 1)
+    widths = [floors[i] + slack * weights[i] / total for i in range(columns)]
+    scale = width / sum(widths)
+    widths = [value * scale for value in widths]
+
+    data = [[Paragraph(inline(cell), styles["cellhead"]) for cell in block.header]]
+    for row in block.rows:
+        padded = list(row) + [""] * (columns - len(row))
+        data.append([Paragraph(inline(cell), styles["cell"]) for cell in padded[:columns]])
+    table = Table(data, colWidths=widths, repeatRows=1, hAlign="LEFT")
+    table.setStyle(TableStyle([
+        ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#bbbbbb")),
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#eeeeee")),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 3),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 3),
+        ("TOPPADDING", (0, 0), (-1, -1), 2),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+    ]))
+    return table
+
+
+def _flowables(markdown: str, name: str, styles, width: float) -> list:  # type: ignore[no-untyped-def]
+    from reportlab.platypus import HRFlowable, Paragraph, Spacer
+
+    out: list = []
+    for block in parse(markdown, source=name):
+        if isinstance(block, Heading):
+            style = styles["h1" if block.level == 1 else
+                           "h2" if block.level == 2 else "h3"]
+            # The anchor is what the outline entry and any internal link both point at.
+            out.append(Paragraph(f'<a name="{block.anchor}"/>{inline(block.text)}', style))
+        elif isinstance(block, Paragraph_):
+            out.append(Paragraph(inline(block.text), styles["body"]))
+        elif isinstance(block, Bullets):
+            out.extend(Paragraph(inline(item), styles["bullet"], bulletText="–")
+                       for item in block.items)
+            out.append(Spacer(1, 3))
+        elif isinstance(block, Table_):
+            table = _table(block, styles, width)
+            if table is not None:
+                out.extend([Spacer(1, 2), table, Spacer(1, 6)])
+        elif isinstance(block, Code):
+            out.extend(Paragraph(inline(line) or "&nbsp;", styles["code"])
+                       for line in block.lines)
+            out.append(Spacer(1, 4))
+        elif isinstance(block, Rule):
+            out.append(HRFlowable(width="100%", thickness=0.4, color="#cccccc",
+                                  spaceBefore=4, spaceAfter=6))
     return out
 
 
-def _figure():
-    import matplotlib.pyplot as plt
+def _cover(inputs: PdfInputs, rows: list[tuple[str, str]], styles,
+           width: float) -> list:  # type: ignore[no-untyped-def]
+    """Identity, the code editions named exactly, the FULL index, and an empty seal area.
 
-    fig = plt.figure(figsize=PAGE)
-    ax = fig.add_axes([0.0, 0.0, 1.0, 1.0])
-    ax.set_xlim(0.0, PAGE[0])
-    ax.set_ylim(0.0, PAGE[1])
-    ax.axis("off")
-    ax.patch.set_visible(False)
-    return fig, ax
+    ** THE INDEX IS A FLOWING TABLE AND SPILLS ONTO A SECOND PAGE WHERE IT NEEDS TO. ** It
+    used to be drawn line by line into the space left on the cover and cut off with a hard
+    ``break`` when it ran out — 25 of catlin's 40 rows. An index that stops is worse than no
+    index: a reviewer looking for the fifteenth section concludes it is not in the package.
+    """
+    from reportlab.lib import colors
+    from reportlab.platypus import Paragraph, Spacer, Table, TableStyle
 
+    from typehaus.takeoff.calc_pdf import _seal_box  # local: keeps the drawing beside it
 
-def _draw_cover(pdf, inputs: PdfInputs, pages: list[Page]) -> None:
-    """Identity, the code editions named exactly, the index, and an empty seal area."""
-    from matplotlib.patches import Rectangle
-
-    fig, ax = _figure()
-    y = PAGE[1] - 1.30
-    ax.text(MARGIN_L, y, "STRUCTURAL CALCULATIONS", fontsize=17, family="monospace",
-            weight="bold")
-    y -= 0.42
-    ax.text(MARGIN_L, y, inputs.house, fontsize=12.5, family="monospace")
-    y -= 0.55
-    rows = [
+    out: list = [
+        Paragraph("STRUCTURAL CALCULATIONS", styles["h1"]),
+        Paragraph(inline(inputs.house), styles["h2"]),
+        Spacer(1, 6),
+    ]
+    meta = [
         ("PREPARED BY", inputs.designer),
         ("CHECKED BY", inputs.checker or "______________________"),
         ("DATE", inputs.generated),
@@ -258,74 +360,257 @@ def _draw_cover(pdf, inputs: PdfInputs, pages: list[Page]) -> None:
         ("CODE", inputs.code_edition or "see the design criteria sheet"),
         ("LOADS", inputs.asce_edition or "see the design criteria sheet"),
     ]
-    for label, value in rows:
-        ax.text(MARGIN_L, y, f"{label:<14}{value}", fontsize=9, family="monospace")
-        y -= 0.24
+    meta_table = Table([[Paragraph(f"<b>{label}</b>", styles["cell"]),
+                         Paragraph(inline(value), styles["cell"])] for label, value in meta],
+                       colWidths=[1.25 * 72, width - 1.25 * 72 - 2.8 * 72], hAlign="LEFT")
+    meta_table.setStyle(TableStyle([
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 0),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+    ]))
+    out.append(meta_table)
     if inputs.scope:
-        y -= 0.12
-        for line in textwrap.wrap(inputs.scope, width=64):
-            ax.text(MARGIN_L, y, line, fontsize=9, family="monospace")
-            y -= 0.20
+        out += [Spacer(1, 6), Paragraph(inline(inputs.scope), styles["body"])]
+    out += [Spacer(1, 10), _seal_box(), Spacer(1, 12),
+            Paragraph("INDEX", styles["h2"])]
 
-    # The seal area. Outlined, captioned, and empty — the engine never draws a stamp.
-    box_w, box_h = 2.6, 2.6
-    box_x, box_y = PAGE[0] - MARGIN_L - box_w, PAGE[1] - 1.55 - box_h
-    ax.add_patch(Rectangle((box_x, box_y), box_w, box_h, fill=False,
-                           edgecolor="#999999", linewidth=0.6, linestyle=(0, (4, 3))))
-    ax.text(box_x + box_w / 2.0, box_y + box_h / 2.0,
-            "SEAL AND\nSIGNATURE", fontsize=8, family="monospace",
-            ha="center", va="center", color="#999999")
-
-    y -= 0.35
-    ax.text(MARGIN_L, y, "INDEX", fontsize=11, family="monospace", weight="bold")
-    y -= 0.30
-    for section, span in index_rows(pages):
-        ax.text(MARGIN_L, y, f"{section[:52]:<54}{span}", fontsize=8.5,
-                family="monospace")
-        y -= 0.19
-        if y < MARGIN_B + 0.4:
-            break
-
-    ax.text(MARGIN_L, MARGIN_B - 0.35, _NOT_SEALED, fontsize=7.5, family="monospace",
-            color="#8a1c1c", va="top", wrap=True)
-    pdf.savefig(fig)
-    _close(fig)
+    data = [[Paragraph("<b>Section</b>", styles["cellhead"]),
+             Paragraph("<b>Pages</b>", styles["cellhead"])]]
+    data += [[Paragraph(inline(section), styles["cell"]),
+              Paragraph(span, styles["cell"])] for section, span in rows]
+    index = Table(data, colWidths=[width - 1.4 * 72, 1.4 * 72], repeatRows=1,
+                  hAlign="LEFT")
+    index.setStyle(TableStyle([
+        ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#bbbbbb")),
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#eeeeee")),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("TOPPADDING", (0, 0), (-1, -1), 2),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+    ]))
+    out += [index, Spacer(1, 14), Paragraph(_NOT_SEALED, styles["warn"])]
+    return out
 
 
-#: On the cover of every package this emitter writes, and it stays true until a person
-#: applies a seal to the flattened file — which this engine has no way to do and must not.
-_NOT_SEALED = (
-    "NOT FOR CONSTRUCTION — this package carries no professional seal.\n"
-    "Every result in it is this engine's own draft calculation, oracled against a\n"
-    "hand-worked note. Nothing here may be built from until a licensed engineer has\n"
-    "reviewed it and applied a seal to this document."
-)
+def _seal_box():  # type: ignore[no-untyped-def]
+    """The seal area. Outlined, captioned, and empty — the engine never draws a stamp."""
+    from reportlab.graphics.shapes import Drawing, Rect, String
+
+    side = 2.3 * 72
+    drawing = Drawing(side, side)
+    drawing.add(Rect(0, 0, side, side, fillColor=None, strokeColor="#999999",
+                     strokeWidth=0.6, strokeDashArray=[4, 3]))
+    drawing.add(String(side / 2.0, side / 2.0 + 5, "SEAL AND", fontSize=8,
+                       fontName="Helvetica", fillColor="#999999", textAnchor="middle"))
+    drawing.add(String(side / 2.0, side / 2.0 - 6, "SIGNATURE", fontSize=8,
+                       fontName="Helvetica", fillColor="#999999", textAnchor="middle"))
+    drawing.hAlign = "RIGHT"
+    return drawing
 
 
-def _draw_page(pdf, inputs: PdfInputs, page: Page) -> None:
-    fig, ax = _figure()
-    ax.plot([MARGIN_L, PAGE[0] - MARGIN_L * 0.5],
-            [PAGE[1] - MARGIN_T + 0.30] * 2, color="#1a1a1a", linewidth=0.6)
-    ax.text(MARGIN_L, PAGE[1] - MARGIN_T + 0.44, inputs.house, fontsize=8,
-            family="monospace", weight="bold")
-    ax.text(PAGE[0] - MARGIN_L * 0.5, PAGE[1] - MARGIN_T + 0.44, page.number,
-            fontsize=10, family="monospace", weight="bold", ha="right")
-    ax.text(MARGIN_L, PAGE[1] - MARGIN_T + 0.14, page.section[:60], fontsize=7,
-            family="monospace", color="#555555")
-    ax.text(PAGE[0] - MARGIN_L * 0.5, PAGE[1] - MARGIN_T + 0.14,
-            f"{inputs.generated}  ·  BY {inputs.designer}  ·  CHK ____",
-            fontsize=7, family="monospace", color="#555555", ha="right")
+class _Doc:
+    """A ``BaseDocTemplate`` subclass, built lazily so importing this module is cheap."""
 
-    y = PAGE[1] - MARGIN_T
-    step = LINE_PT / 72.0
-    for line in page.lines:
-        ax.text(MARGIN_L, y, line, fontsize=BODY_PT, family="monospace", va="top")
-        y -= step
-    pdf.savefig(fig)
-    _close(fig)
+    _cls = None
+
+    @classmethod
+    def get(cls):  # type: ignore[no-untyped-def]
+        if cls._cls is not None:
+            return cls._cls
+        from reportlab.platypus import BaseDocTemplate, Frame, PageTemplate
+
+        class CalcDoc(BaseDocTemplate):
+            """Section-restarting page labels, a per-page title block, and an outline."""
+
+            def __init__(self, *args, inputs: PdfInputs, **kwargs):  # type: ignore[no-untyped-def]
+                super().__init__(*args, **kwargs)
+                self.inputs = inputs
+                self.prefix, self.section, self.counter = "C", "COVER", 0
+                #: The section the NEXT page begins, set by a ``_SectionMark`` that sits
+                #: just before the ``PageBreak`` into it. The stamp runs at page BEGIN,
+                #: before any flowable on that page has been handled, so a mark consumed
+                #: after the break would label its own first page with the section before
+                #: it — which is how two short item sheets on one page silently lost one of
+                #: them from the index.
+                self.pending: tuple[str, str, bool] | None = None
+                self.labels: list[Page] = []
+                frame = Frame(
+                    MARGIN_L * 72, MARGIN_B * 72,
+                    (PAGE[0] - MARGIN_L - MARGIN_R) * 72,
+                    (PAGE[1] - MARGIN_T - MARGIN_B) * 72,
+                    leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0,
+                    id="body")
+                self.addPageTemplates([PageTemplate(id="calc", frames=[frame],
+                                                    onPage=self._stamp)])
+
+            def handle_flowable(self, flowables):  # type: ignore[no-untyped-def]
+                if flowables and isinstance(flowables[0], _SectionMark):
+                    mark = flowables.pop(0)
+                    self.pending = (mark.prefix, mark.title, mark.first)
+                    return
+                super().handle_flowable(flowables)
+
+            def handle_pageBegin(self):  # type: ignore[no-untyped-def]
+                if self.pending is not None:
+                    self.prefix, self.section, first = self.pending
+                    if first:
+                        self.counter = 0
+                    self.pending = None
+                super().handle_pageBegin()
+
+            def afterFlowable(self, flowable):  # type: ignore[no-untyped-def]
+                """Bookmarks and the document outline, off the headings themselves."""
+                anchor = getattr(flowable, "_calc_anchor", None)
+                if anchor is None:
+                    return
+                level, text, name = anchor
+                self.canv.bookmarkPage(name)
+                self.canv.addOutlineEntry(text[:110], name, level=min(level - 1, 3),
+                                          closed=level > 1)
+
+            def _stamp(self, canvas, doc):  # type: ignore[no-untyped-def]
+                self.counter += 1
+                number = f"{self.prefix}-{self.counter}"
+                self.labels.append(Page(number=number, section=self.section))
+                _title_block(canvas, self.inputs, number, self.section)
+
+        cls._cls = CalcDoc
+        return cls._cls
 
 
-def _close(fig) -> None:
-    import matplotlib.pyplot as plt
+def _title_block(canvas, inputs: PdfInputs, number: str, section: str) -> None:  # type: ignore[no-untyped-def]
+    top = (PAGE[1] - MARGIN_T) * 72
+    right = (PAGE[0] - MARGIN_L * 0.5) * 72
+    canvas.saveState()
+    canvas.setLineWidth(0.6)
+    canvas.setStrokeColorRGB(0.1, 0.1, 0.1)
+    canvas.line(MARGIN_L * 72, top + 21, right, top + 21)
+    canvas.setFont("Helvetica-Bold", 8)
+    canvas.drawString(MARGIN_L * 72, top + 31, inputs.house)
+    canvas.setFont("Helvetica-Bold", 10)
+    canvas.drawRightString(right, top + 30, number)
+    canvas.setFont("Helvetica", 7)
+    canvas.setFillColorRGB(0.33, 0.33, 0.33)
+    canvas.drawString(MARGIN_L * 72, top + 9, section[:78])
+    canvas.drawRightString(right, top + 9,
+                           f"{inputs.generated}  ·  BY {inputs.designer}  ·  CHK ____")
+    canvas.restoreState()
 
-    plt.close(fig)
+
+def _story(files: dict[str, str], inputs: PdfInputs, rows: list[tuple[str, str]],
+           styles, width: float) -> list:  # type: ignore[no-untyped-def]
+    from reportlab.platypus import PageBreak, Paragraph
+
+    story: list = list(_cover(inputs, rows, styles, width))
+    # The title-and-index page is itself C-1, so the ``00-cover.md`` section that follows it
+    # must NOT restart the series — two pages labelled C-1 is the same failure the
+    # per-section numbering exists to prevent, one level up. A section restarts the counter
+    # exactly when its PREFIX changes, which is also what makes the item sheets one
+    # continuous S series rather than 160 sheets all called S-1.
+    previous = "C"
+    for name, prefix, title in sheet_order(files):
+        # The mark goes BEFORE the break: it sets what the NEXT page begins, and the stamp
+        # runs at page begin. See ``CalcDoc.pending``.
+        story.append(_SectionMark(prefix, title, first=prefix != previous))
+        story.append(PageBreak())
+        story.extend(_flowables(files[name], name, styles, width))
+        previous = prefix
+    # Tag the heading paragraphs so ``afterFlowable`` can build the outline from them.
+    for flowable in story:
+        if isinstance(flowable, Paragraph):
+            text = getattr(flowable, "text", "") or ""
+            if '<a name="' in text:
+                anchor = text.split('<a name="', 1)[1].split('"', 1)[0]
+                flowable._calc_anchor = (_level_of(flowable, styles),
+                                         _plain_text(flowable), anchor)
+    return story
+
+
+def _level_of(flowable, styles) -> int:  # type: ignore[no-untyped-def]
+    for level, key in ((1, "h1"), (2, "h2"), (3, "h3")):
+        if flowable.style is styles[key]:
+            return level
+    return 3
+
+
+def _plain_text(flowable) -> str:  # type: ignore[no-untyped-def]
+    import re as _re
+
+    return _re.sub(r"<[^>]+>", "", getattr(flowable, "text", "") or "").strip()
+
+
+def write_calc_pdf(files: dict[str, str], out, inputs: PdfInputs) -> object:
+    """Render the package to a flattened, text-searchable PDF at ``out``.
+
+    Text-searchable because the text is real text with embedded fonts, not curves — which
+    matters: a reviewer searches a 200-page package for a member tag, and a package of
+    outlines cannot be searched, quoted or accessibility-checked.
+
+    **Two passes, because the index quotes page labels that the index's own length moves.**
+    The first lays the package out with an empty index and records the true label of every
+    page; the second rebuilds with the real rows. It iterates to a fixed point (capped at
+    :data:`_INDEX_PASSES`) because a longer index pushes content down and can change the
+    very ranges it prints.
+
+    **Byte-deterministic.** ``rl_config.invariant`` fixes the producer string, the creation
+    and modification dates and the document id, so two runs over an unchanged model produce
+    identical bytes and a changed hash is a changed model rather than a re-run. That is the
+    property ``MANIFEST.json`` rests on.
+    """
+    import io
+
+    from reportlab import rl_config
+
+    out.parent.mkdir(parents=True, exist_ok=True)
+    previous_invariant = rl_config.invariant
+    rl_config.invariant = 1
+    try:
+        rows: list[tuple[str, str]] = []
+        labels: list[Page] = []
+        for _ in range(_INDEX_PASSES):
+            labels = _build(files, inputs, rows, io.BytesIO())
+            fresh = index_rows(labels)
+            if fresh == rows:
+                break
+            rows = fresh
+        buffer = io.BytesIO()
+        _build(files, inputs, rows, buffer)
+        out.write_bytes(buffer.getvalue())
+    finally:
+        rl_config.invariant = previous_invariant
+    return out
+
+
+def _build(files: dict[str, str], inputs: PdfInputs, rows: list[tuple[str, str]],
+           target) -> list[Page]:  # type: ignore[no-untyped-def]
+    styles = _styles()
+    width = (PAGE[0] - MARGIN_L - MARGIN_R) * 72
+    doc = _Doc.get()(
+        target, pagesize=(PAGE[0] * 72, PAGE[1] * 72),
+        leftMargin=MARGIN_L * 72, rightMargin=MARGIN_R * 72,
+        topMargin=MARGIN_T * 72, bottomMargin=MARGIN_B * 72,
+        title=f"{inputs.house} — structural calculations",
+        author=inputs.designer, subject="Structural calculations (DRAFT, unsealed)",
+        creator="Type:Haus", inputs=inputs)
+    doc.build(_story(files, inputs, rows, styles, width))
+    return doc.labels
+
+
+def paginate(files: dict[str, str]) -> list[Page]:
+    """Every page's identity, in order, by laying the package out.
+
+    Kept as a function because the index and the tests both ask this question, and it is
+    now answered by the layout engine rather than by a line count. It costs a full render,
+    which is why ``write_calc_pdf`` does not call it — it reads the labels off its own
+    first pass instead.
+    """
+    import io
+
+    from reportlab import rl_config
+
+    previous = rl_config.invariant
+    rl_config.invariant = 1
+    try:
+        return _build(files, PdfInputs(house="", generated="", engine_version="",
+                                       content_hash=""), [], io.BytesIO())
+    finally:
+        rl_config.invariant = previous

@@ -40,6 +40,15 @@ dependencies = [
     "psd-tools>=1.11",
     "pyproj>=3.6",
     "trimesh>=4.0",
+    # `haus calcs --pdf` and `haus handoff`: the flattened, page-anchored submittal
+    # artefact. The renderer was matplotlib's `PdfPages` until 2026-09-18 and could not be
+    # fixed in place — no table engine, no text flow, and no outline or link API, so a
+    # markdown table printed its pipes literally, every line was truncated at a character
+    # count with the overflow dropped silently, and the code-required index stopped at
+    # whatever fitted on the cover. Platypus gives all four. 4.0 is the floor for
+    # `Canvas.addOutlineEntry`'s current signature and for `rl_config.invariant`, which is
+    # what makes the bundle byte-deterministic.
+    "reportlab>=4.0",
 ]
 
 [project.optional-dependencies]
