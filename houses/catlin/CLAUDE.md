@@ -839,17 +839,36 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   column with `WIN-M-LIV-E1`/`-E2`. That is a preference call overruling a design argument,
   not a correction of one — the record and the cost are in `plan/electrical.py`'s
   `EQ-M-FIREPLACE` block and `plan/storeys/main.py`'s `W-M-FIRE-*` block; do not restore 32"
-  without asking. `notes/east_breast_bearing.md` carries the bearing/floor opening —
-  **`haus check` grades none of this** (`mn_residential/profile.py` disclaims R1001-R1004).
-  - The firebox is **five walls, not one**: `W-M-FIRE-STUB`/`-PLINTH`/`-JAMB-S`/`-JAMB-N`/
-    `-HEAD`, all `FIREPLACE_BRICK_WYTHE`, NONBEARING, stacked on x=35'-1 11/16" with **its
-    own `open_end` node pair each** (a shared node collapses every junction polygon it
+  without asking. `notes/east_breast_bearing.md` carries the bearing and the joist pockets —
+  **`haus check` grades ONE thing about this panel and only one**,
+  `structural.through_deck_clearance` (the pier/joist gaps and the bearing under the piers).
+  Nothing grades the ties, the lintel, the mantel hold-down or the heights
+  (`mn_residential/profile.py` disclaims R1001-R1004).
+  - The firebox is **seven walls, not one**: `W-M-FIRE-STUB-S`/`-M`/`-N`/`-PLINTH`/`-JAMB-S`/
+    `-JAMB-N`/`-HEAD`, all `FIREPLACE_BRICK_WYTHE`, NONBEARING, stacked on x=35'-1 11/16" with
+    **its own `open_end` node pair each** (a shared node collapses every junction polygon it
     touches). Masonry opening **29 1/2" x 20 5/8"** (sill 24" AFF, head 44 5/8" AFF) is the
     gap between elements, not a subtraction from one; elevations off the +15/16" finished
     floor: STUB -13 7/16"→+15/16", PLINTH →24 15/16", jamb piers →45 9/16", HEAD →64 15/16".
+    - **The buried stub is THREE PIERS since 2026-09-19 and the joist pockets are the gaps
+      between them** — the same idiom one level down. `FO-M-FIRE` is RETIRED: the premise it
+      was framed on ("the brick cuts the joists short of their bearing") was never true, the
+      brick is 3 5/8" thick and stands 2 1/2" clear of a 5 1/2" mudsill, and `FS-M-EAST`'s
+      joists run CONTINUOUS through the panel. Piers at y 81 7/8"–94" / 98"–110" /
+      114"–126 1/8", two 4" pockets on joists 006 (y=96") and 007 (y=112"). Clearances
+      5/8" / 3/4" / 3/4" / 5/8", graded by `structural.through_deck_clearance` against a 1/2"
+      threshold; the 5/8" pair is residue of a 44 1/4" panel on a 16" module, not a chosen
+      margin. Gone with the opening: a 2-ply LVL header, four full-span 17'-11" trimmer plies,
+      two LUS, two HHUS410 and the I-joist web stiffeners — and with them the joist maker's
+      header table, the one outstanding document in the detail. **The subfloor cut round the
+      piers is DERIVED** (`resolve/through_deck.py`, decision #78); nobody authors it. The
+      pockets stay **open and un-mortared** and the plinth wants a **bond break** over each.
+      **Do not widen them past ~4 1/2"**: TMS 402's pier/column line is 3t = 10 7/8" and the
+      12" middle pier has 1 1/8" of room.
     **The 8" the plinth lost went into the HEAD, not into the panel** — `W-M-FIRE-HEAD` is
     19 3/8" tall, not 11 3/8", so the panel top holds at 64 15/16" absolute, the mantel stays
-    on the brick, the hand-measured 0" BESTA gaps stay true and brick stays 20.4 SF. Sill is
+    on the brick, the hand-measured 0" BESTA gaps stay true and brick stays 20.4 SF (19.6 SF
+    since the pier split, which takes 8" of width out of the buried course). Sill is
     9 modular courses exactly; zero cut closers on the visible 45 1/2" opening; head is a
     deliberate CUT COURSE at 16.7 courses (a course line gives 18 2/3", ~1" of daylight) —
     steel angle lintel, not a rowlock. The $/SF rate deliberately does not drop — a mason
@@ -895,11 +914,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     at **$0**: a `Beam` reaches the estimate through its `assembly` as a `beam · <assembly>`
     cubic-yard row, this one has none, and a volume rate is the wrong shape for an angle
     anyway — the dollars want an `[allowances]` lump.
-  - `FO-M-FIRE` is **47 3/4", not 4'-1"** (44 1/4" stub + 1/2" mason's clearance + one
-    trimmer ply each side). Deliberately not 48.0" — `header_size` branches on `w_ft <= 4.0`
-    and a span arriving as `4.0000000000000009` after a metre round trip would take the
-    wrong branch silently. (`haus check` grades floor-opening headers at EIGHT feet, gated
-    on a sawn-joist profile, so this I-joist opening draws the same header at any span.)
+  - `FO-M-FIRE` is **RETIRED (2026-09-19)** — see the pier split above. Its two live engine
+    traps are salvaged onto `FO-M-ERV-OA`'s note, which already cross-referenced them: the
+    **first trimmer ply's AXIS sits on the opening edge** (draw an outline at the size of the
+    thing passing through and the ply stands inside the hole), and **`header_size` branches
+    on `w_ft <= 4.0`**, so 48.0" arriving as `4.0000000000000009` after a metre round trip
+    takes the wrong branch silently. (`haus check` grades floor-opening headers at EIGHT feet,
+    gated on a sawn-joist profile, so an I-joist opening draws the same header at any span.)
   - The mantel is `FURN-M-FIRE-MANTEL`/`FT-MANTEL-WALNUT-46`, a wall-mounted placeable
     (`FURN-B-PLAY-TV` idiom), 45 1/2"x11 1/2"x2 1/4", meant to sit 64"–66 1/4" AFF on
     `W-M-FIRE-HEAD`'s top (`depth` DELETED so `_carcass_depth_m` inherits from the type).

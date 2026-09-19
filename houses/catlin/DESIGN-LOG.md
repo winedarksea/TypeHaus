@@ -471,6 +471,61 @@ not publish.
 
 ## Bearing lines and floor decks
 
+### The fireplace stub became three piers, and `FO-M-FIRE` went with it (2026-09-19)
+
+`W-M-FIRE-STUB` rose from `W-B-E1`'s pour at −13 7/16" through `FS-M-EAST`'s joist zone to the
+finished floor. To let it through, `FO-M-FIRE` framed a 47 3/4" × 12 5/8" hole — a 2-ply LVL
+header, four full-span 17'-11" trimmer plies, two LUS, two HHUS410 and I-joist web stiffeners.
+
+**The premise all of that rested on was never true.** `notes/east_breast_bearing.md` §4 said
+the brick *"cuts them short of that bearing, so no joist can reach its east support"*. The
+brick is 3 5/8" thick and stands 2 1/2" clear of a 5 1/2" mudsill: a joist passes *through* it
+and reaches its seat intact. The panel never needed a joist-free strip; it needed two holes.
+
+So the stub is three piers — 12 1/8" / 12" / 12 1/8" — and the pockets are real gaps between
+them, on joists 006 (y = 96") and 007 (y = 112"), 3/4" clear of each 2 1/2" flange. That is
+the same idiom the firebox opening already used one level up: *the gap between elements, not a
+subtraction from one*. It is what makes the geometry true — the joists run through open air,
+not through a masonry layer no check can see.
+
+Four things were considered and rejected, and the reasons are worth keeping:
+
+- **A `DeckPenetration` element.** Owner: *"not as a DeckPenetration. The items should go
+  around joists when possible, and this just leaves a gap in the subfloor."* The engine change
+  is a derived cut plus a clearance check, not a new model element.
+- **A notch in one wall.** The engine has no `voids` path on a `Wall` short of a `Window` or a
+  `Door`, and an invisible notch is exactly the condition that earned a `masonry_slot`
+  engineering deferral. Three piers make the deferral unnecessary; the NOTE in
+  `engineering/deferred.py` says so, so nobody re-derives it.
+- **Steel or a cast ligature over the pockets.** The plinth's own first course spans each 4"
+  gap with a foot of bearing either side: 27.6 in-lb on S = 3.06 in³ = **9 psi** against
+  ~40 psi allowable flexural tension normal to bed joints, and it arches before it bends.
+- **Re-rating the brick $/SF down** to match 19.6 SF. Three piers laid to a framer's as-built
+  joist lines is fussier per SF than one 44 1/4" stub, so that would deduct twice.
+
+What it bought, measured off `haus takeoff`: 1.75x11.875 LVL **284 → 204 LF**,
+2-1.75x11.875 LVL **16 → 8 LF**, I-joist **2348 → 2388 LF** (the two cut joists run whole
+again), LUS **−2**, HHUS410 **−2**, brick **20.4 → 19.6 SF**, plywood-subfloor **3181.8 →
+3184.6 SF** — still 100 sheets. And it retired the last Source line in
+`notes/east_breast_bearing.md`: *"Joist manufacturer's I-joist framing guide — the document §4
+requires and this note does not have."* That deletion is the headline.
+
+The engine side is decision **#78**. `resolve/through_deck.py` derives the sheet cut from the
+wall's own footprint plus a 1/2" saw clearance, less every member footprint; nothing enters
+`opening_boxes`, so no joist is clipped and no chase is offered to a riser.
+`structural.through_deck_clearance` grades the pairs. Two traps cost real time: the predicate
+must read FRAMING extents (`base_ref_z_m` / `plate_top_z_m`) — on body extents `W-M-E1`
+qualifies and every platform-framed exterior wall subtracts a 6" strip of subfloor along its
+run — and the footprint must be *contained* in the deck outline, because a deck outline runs
+to the axis of the line it dies into and `W-G-S` overlaps the two breezeway landings by 59 and
+285 sq in that way.
+
+Four errata were fixed first, in their own commit, all verified against the model: two joists
+were cut and headed, not "three or four"; the opening cut the **subfloor**, not `RM-B-GYM`'s
+gypsum (`deck_void_face` reads a mostly-filled chase as no void); `structural.floor_opening_header`
+never emitted on it at all; and 15/16" of brick does stand below the gym's ceiling plane.
+
+
 - `INT_2X6_BRG_PLUMBING` was chosen over bare `INT_2X6_PLUMBING` specifically to keep the
   5 1/2" fiberglass batt the staggered wall's cavity had — the swap doesn't silently strip
   the insulation.

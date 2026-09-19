@@ -84,11 +84,15 @@ def test_opening_headers_are_multi_ply_and_deck_deep(catlin_model):
     short opening at all, so "always >= 2" and "doubled unless short" were the same
     assertion; the 9" pillar chases in ``FS-SG-PORCH`` separated them.
     """
-    from typehaus.resolve.floor_openings import _prescriptive_short_opening
+    from typehaus.resolve.floor_openings import (
+        _SINGLE_MEMBER_SPAN_M,
+        _prescriptive_short_opening,
+    )
 
     headers = _members(catlin_model, "header")
     assert headers
     short = 0
+    short_span_engineered = 0
     for floor in catlin_model.floors:
         joist = next((member for member in floor.members if member.category == "joist"), None)
         if joist is None:
@@ -97,11 +101,19 @@ def test_opening_headers_are_multi_ply_and_deck_deep(catlin_model):
         for header in (m for m in floor.members if m.category == "header"):
             section = cross_section(header.profile)
             # **The span is not the whole condition — the DECK MATERIAL is the other
-            # half.** R502.10 is a sawn-lumber table, so ``FO-M-FIRE``'s 3'-9" header is
-            # short and still doubled: ``FS-M-WEST`` is framed in I-joists, where "a single
-            # member the same size as the floor joist" means a hung I-joist with web
-            # stiffeners and backer blocks out of a manufacturer's table this engine cannot
-            # grade. Testing on span alone would have called that header wrong.
+            # half.** R502.10 is a sawn-lumber table, so ``FO-M-ERV-OA``'s and
+            # ``FO-M-ERV-EA``'s headers — 11" and 10 3/4", an order of magnitude inside the
+            # 4'-0" allowance — are short by span and still DOUBLED: ``FS-M-MECH`` is framed
+            # in I-joists, where "a single member the same size as the floor joist" means a
+            # hung I-joist with web stiffeners and backer blocks out of a manufacturer's
+            # table this engine cannot grade. Testing on span alone would call them wrong.
+            # (``FO-M-FIRE`` was the witness here until 2026-09-19, when it was retired: the
+            # fireplace piers stand in joist pockets now and the deck has no hole at all.
+            # These two are the better witness anyway — being ten times inside the allowance
+            # they flip LOUDLY if the sawn-lumber gate is ever removed.)
+            if (header.length_m <= _SINGLE_MEMBER_SPAN_M + 1e-9
+                    and not _prescriptive_short_opening(header.length_m, joist.profile)):
+                short_span_engineered += 1
             if _prescriptive_short_opening(header.length_m, joist.profile):
                 # R502.10.1: a single member the same size as the floor joist.
                 assert section.plies == 1, header.child_key
@@ -122,6 +134,12 @@ def test_opening_headers_are_multi_ply_and_deck_deep(catlin_model):
     # front rim band and ``PT-SG-BF2``'s south face, which is exactly the block that closes
     # that chase at the deck edge — a real member, not a drafting artifact.
     assert short == 4, "expected both headed edges of each 9\" pillar chase"
+    # The sawn-lumber gate, promoted from the comment above to an assertion. Both ERV riser
+    # chases sit far inside R502.10.1's span allowance and are doubled anyway because their
+    # deck is I-joist; drop the ``is_sawn_lumber`` half of ``_prescriptive_short_opening``
+    # and this count goes to zero.
+    assert short_span_engineered >= 2, (
+        "expected the ERV riser chases' headers to be short by span and doubled by member")
 
 
 def test_header_ply_count_tracks_the_span(catlin_model):

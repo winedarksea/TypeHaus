@@ -87,7 +87,9 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     # its own `open_end` node pair each — because a single Wall resolves to a 4-point
     # rectangle and there is no `voids` path on a Wall short of a Window or a Door, both of
     # which would be lies about a firebox. Split, the 29 1/2" x 20 5/8" masonry opening is a
-    # real gap between the jamb piers and the quantity falls **24.8 -> 20.4 SF**. The $/SF
+    # real gap between the jamb piers and the quantity falls **24.8 -> 20.4 SF**, and
+    # **20.4 -> 19.6 SF on 2026-09-19**, when the buried stub became three 12" piers with two
+    # 4" joist pockets between them (seven tags, not five). The $/SF
     # rate is deliberately unchanged: on a job this small a mason bills the panel, and
     # cutting to the opening is fussier per SF than the field, so prices.toml carries the
     # difference in the rate and says so rather than re-rating down and deducting twice.
@@ -114,7 +116,10 @@ def test_monolithic_walls_reach_the_bom(catlin_model) -> None:
     #
     # **43 AGAIN SINCE 2026-09-16:** W-SG-ARCH became a concrete `Beam` and bills as a
     # `beam` solid in [concrete], not here.
-    assert len({tag for row in rows for tag in row["tags"]}) == 43
+    #
+    # **45 SINCE 2026-09-19:** `W-M-FIRE-STUB` became `-STUB-S` / `-STUB-M` / `-STUB-N`,
+    # three piers standing in the two joist pockets. Two tags in, none out.
+    assert len({tag for row in rows for tag in row["tags"]}) == 45
     # **`aluminum-flat-pvdf` LEFT THIS TABLE ON 2026-09-03, and it did not leave the house.**
     # The garage's base skin is now the 24" `coil-ext` band on the ICF stem, which is a
     # banded LAYER inside GARAGE_ICF_6 and bills through `[envelope_layers]` — 156.2 SF,

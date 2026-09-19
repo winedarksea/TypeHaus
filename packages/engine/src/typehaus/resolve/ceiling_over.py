@@ -181,10 +181,17 @@ _MIN_REGION_M2 = 1e-3
 #: A wall counts as filling the ceiling plane if its z band reaches it within this.
 #: Elevations are derived through several sums, so an exact compare would miss.
 _FILL_TOL_M = 1e-6
-#: How much of a chase a wall must fill before the ceiling below runs through it. Catlin's
-#: two chases sit either side of this by a wide margin — FO-M-FIRE is ~67% brick, FO-M-TUBDK
-#: is 2% clipped by a partition that merely shares the elevation — so the exact figure is not
-#: load-bearing, but "most of it" is the claim, not "any of it".
+#: How much of a chase a wall must fill before the ceiling below runs through it. The exact
+#: figure is not load-bearing; "most of it" is the claim, not "any of it". FO-M-TUBDK is 2%
+#: clipped by a partition that merely shares the elevation and stays a void.
+#:
+#: **The positive case is authored geometry now, not a measured fraction.** ``FO-M-FIRE`` was
+#: the one chase on the filled side (~67% brick) until 2026-09-19, when it was retired: the
+#: fireplace piers stand in real joist pockets and cut the subfloor directly
+#: (``resolve/through_deck.py``), so no chase in catlin is full any more. The rule stays —
+#: the day somebody authors a chase round something solid it is the right answer, and
+#: subtracting the opening instead cut RM-B-GYM's one 234 SF plane into four fragments nobody
+#: builds. ``tests/test_ceilings.py`` covers the branch synthetically.
 _FILLED_FRACTION = 0.5
 
 

@@ -23,10 +23,8 @@ from types import SimpleNamespace
 import pytest
 
 from typehaus.checks.registry import Preferences, StructuralPreferences
-from typehaus.checks.structural.guards import (
-    _dead_load_plf,
-    masonry_guard_bearing,
-)
+from typehaus.checks.structural.guards import masonry_guard_bearing
+from typehaus.checks.structural.masonry_load import dead_load_plf as _dead_load_plf
 from typehaus.findings import Result
 from typehaus.quantities import inch
 

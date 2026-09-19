@@ -251,7 +251,7 @@
 # "1x1 panel" = { material = { low = 0.16, high = 0.27 }, labour = { low = 0.5, high = 1 } }  # was 158 LF — girt-wall eave return
 # "1.5x5.5 panel" =    # 112 LF — SPF fascia, billed in [edge_trim]
 "1.5x6 rim" = { material = { low = 0.95, high = 1.55 }, labour = { low = 0.9, high = 1.7 } }  # 80 LF
-"11.875 I-joist" = { material = { low = 3.5, high = 5.5 }, labour = { low = 0.9, high = 1.9 } }  # 2436 LF — floors only since 2026-08-31 (the roof's 1,115 LF of rafter moved to the TJI 230 row below); the comment read 4580 for weeks against an ordered 3,556
+"11.875 I-joist" = { material = { low = 3.5, high = 5.5 }, labour = { low = 0.9, high = 1.9 } }  # 2388 LF — floors only since 2026-08-31 (the roof's 1,115 LF of rafter moved to the TJI 230 row below); the comment read 4580 for weeks against an ordered 3,556
 # THE ROOF'S RAFTERS, AND A SEPARATE ROW ON PURPOSE (2026-08-31). Going to 24" o.c. traded
 # 358 LF of joist for a heavier series: at 16" the cheapest TJI in the line carried the
 # 17'-9 3/4" HORIZONTAL run at Ps = 35 psf, at 24" the first one that does is the 230.
@@ -367,8 +367,8 @@
 # "1x6.81165 panel" =    # 112 LF — cellular-PVC fascia, billed in [edge_trim]
 # One ply of the row below: floor-opening trimmer packs on the I-joist decks run bearing to
 # bearing in band-deep LVL since 2026-09-16. Half the 2-ply material; labour per ply a bit over half.
-"1.75x11.875 LVL" = { material = { low = 7, high = 13 }, labour = { low = 5, high = 10 } }  # 284 LF
-"2-1.75x11.875 LVL" = { material = { low = 14, high = 26 }, labour = { low = 8, high = 18 } }  # 16 LF
+"1.75x11.875 LVL" = { material = { low = 7, high = 13 }, labour = { low = 5, high = 10 } }  # 204 LF
+"2-1.75x11.875 LVL" = { material = { low = 14, high = 26 }, labour = { low = 8, high = 18 } }  # 8 LF
 # 56 LF over TWO pieces since 2026-08-28: one 16.7' opening header, plus RB-HOUSE, which
 # moved onto this row when the ridge went 3-ply 11 7/8" -> 2-ply 14" (see attic.py). The
 # ridge is 36 LF of it and is bought as THREE 12s rather than one over-length stick — it
@@ -995,7 +995,7 @@
 # Home Depot, 2026); the low end is the contractor carton this section discounts to
 # throughout, the high end carries the twelve 10d x 1-1/2" nails H5S specifies per strap.
 "LSTA24" = { low = 2.75, high = 5.5 }  # 26 ea — 19 derived over the house ridge, 7 authored as CN-BW-JOINT-1..7, the diaphragm continuity ties across the garage south wall line
-"LUS" = { low = 2, high = 6 }  # 15 ea
+"LUS" = { low = 2, high = 6 }  # 13 ea
 # Level I-joist hangers authored on the three flush LVLs (BM-M-HALL, BM-S-HALL, BM-S-BATH-E).
 # ESTIMATE, unconfirmed: single-piece retail band for an IUS2.56/11.88, carton at the low end.
 "IUS2.56/11.88" = { low = 4, high = 9 }  # 14 ea
@@ -1004,7 +1004,7 @@
 "THA422" = { low = 4, high = 9 }  # 3 ea
 # Floor-opening LVL header ends into their trimmer packs. ESTIMATE, unconfirmed: single-piece
 # retail band for a 12-ga HHUS face-mount.
-"HHUS410" = { low = 14, high = 24 }  # 12 ea
+"HHUS410" = { low = 14, high = 24 }  # 10 ea
 # ZMAX (G185) LUS where the carrier is preservative-treated (IRC R317.3.1): the breezeway's
 # treated beams, and the balcony centre glulam. Sized by the engine off the joist; ~25% over G90.
 "LUS28Z" = { low = 2.5, high = 7.5 }  # 32 ea — 18 at BM-SG-BLC, 14 in the breezeway beams
@@ -3666,7 +3666,7 @@
 # rejected on chemistry rather than price: its binder is a D-SILICATE modified with an organic
 # dispersion, and its own apply-guide REQUIRES MicroGrip primer on concrete and concrete block —
 # which fails the owner's binding constraint of a raw, untreated, unprimed substrate.
-"silicate-wash-white" = { material = { low = 0.89, high = 1.3 }, labour = { low = 2.45, high = 5.06 } }  # 691.9 SF — 671.5 on the five court walls' court face (full height) + 20.4 on the fireplace surround's room face; 2 coats, NO primer on raw mineral substrate
+"silicate-wash-white" = { material = { low = 0.89, high = 1.3 }, labour = { low = 2.45, high = 5.06 } }  # 691.1 SF — 671.5 on the five court walls' court face (full height) + 19.6 on the fireplace surround's room face; 2 coats, NO primer on raw mineral substrate
 # The SRW legs: worse coverage on a split-face-textured unit PLUS the whole-face Quartz Filler or
 # Bonding Coat pretreatment the TDS requires on block. Same pail, same crew, same arrival —
 # a different substrate, and the rate says so.
@@ -4417,9 +4417,15 @@
 # ** THE DEDUCTION IS NOW REAL: 20.4 SF NET, NOT 24.8 SF GROSS (2026-09-06). ** The panel used
 # to be ONE Wall, which the model could not cut a hole in short of authoring a Window or a Door
 # — both lies about what a firebox opening is — so the 29 1/2" x 20 5/8" masonry opening rode
-# in the quantity. It is now five walls (plan/storeys/main.py: stub, plinth, two jamb piers and
-# the spandrel) and the opening is a genuine gap between them, so the takeoff measures 4.4 SF
+# in the quantity. It became five walls (plan/storeys/main.py: stub, plinth, two jamb piers and
+# the spandrel) and the opening a genuine gap between them, so the takeoff measured 4.4 SF
 # less face.
+#
+# ** 19.6 SF SINCE 2026-09-19, AND SEVEN WALLS. ** The buried stub is three 12" piers with two
+# 4" joist pockets between them, so 8" of brick width comes out of the buried course: 8 x
+# 14 3/8 = 115 in2 = 0.8 SF. Same idiom again — the pocket is the gap between two piers, not a
+# subtraction from one wall — and the same reason: the model could not cut a slot in a wythe,
+# and a slot nobody can see is a slot nobody grades.
 #
 # ** THE $/SF IS DELIBERATELY UNCHANGED AND THE RATE CARRIES THE DIFFERENCE. ** The commercial
 # argument the old note made still holds: ON A JOB THIS SMALL A MASON BILLS THE PANEL, NOT THE
@@ -4429,12 +4435,22 @@
 # deduction. The 14 3/8" of buried stub below the finished floor (4.4 SF) IS still in the
 # quantity and should be — the mason lays it.
 #
-# ** WHAT THIS ROW DOES NOT COVER: ** the floor opening and its I-joist header, trimmers,
-# hangers and web stiffeners (that is [framing] and [hardware], and FO-M-FIRE already bills a
-# 2-ply LVL header and four trimmers); the walnut mantel and its hold-down ([placeables]
+# ** THE $/SF STILL DOES NOT MOVE FOR THE PIERS, AND THAT IS THE SAME ARGUMENT AGAIN. **
+# Three 12" piers laid to a framer's as-built joist lines, each reached from above through a
+# 13 1/2" clear bay while the deck is open, with two pockets that stay unmortared and a bond
+# break over each before the plinth goes up, is FUSSIER per SF than one 44 1/4" stub, not
+# cheaper. Re-rating this row down to match 19.6 SF would deduct twice.
+#
+# ** WHAT THIS ROW DOES NOT COVER: ** the walnut mantel and its hold-down ([placeables]
 # `FT-MANTEL-WALNUT-46` since 2026-09-06, an [allowances] lump before that); and the appliance
-# ([placeables] EQ-T-FIREPLACE-EL).
-"FIREPLACE_BRICK_WYTHE" = { material = { low = 8, high = 16 }, labour = { low = 15, high = 40 }, unit = "SF" }  # fallback; 20.4 SF of face, net of the firebox opening
+# ([placeables] EQ-T-FIREPLACE-EL). ** IT NO LONGER HAS A FLOOR OPENING TO NOT COVER: **
+# FO-M-FIRE is retired (2026-09-19) with its 2-ply LVL header, four full-span trimmer plies,
+# two LUS, two HHUS410 and the I-joist web stiffeners. Measured off `haus takeoff`, that is
+# 1.75x11.875 LVL 284 -> 204 LF, 2-1.75x11.875 LVL 16 -> 8 LF, I-joist 2348 -> 2388 LF (the
+# two cut joists run whole again), LUS 15 -> 13, HHUS410 12 -> 10, and plywood-subfloor
+# 3181.8 -> 3184.6 SF — still 100 sheets, because the three derived pier cuts take out less
+# plywood than the one 47 3/4" hole did.
+"FIREPLACE_BRICK_WYTHE" = { material = { low = 8, high = 16 }, labour = { low = 15, high = 40 }, unit = "SF" }  # fallback; 19.6 SF of face, net of the firebox opening
 # ** THE PANEL MOVED white-brick -> brown-brick ON 2026-09-13 AND EVERY DOLLAR IN THIS ROW IS
 # DELIBERATELY UNCHANGED. ** One brick blend house-wide: this surround now orders the court
 # veneer's brown blend and is WASHED WHITE by the coating trade afterwards (see
@@ -4450,7 +4466,7 @@
 # so deleting the per-material row entirely would keep the dollars exactly right while nothing
 # was reported. Check that the BOM row reads `FIREPLACE_BRICK_WYTHE:brown-brick` and that
 # `FIREPLACE_BRICK_WYTHE:white-brick` appears nowhere under out/.
-"FIREPLACE_BRICK_WYTHE:brown-brick" = { material = { low = 8, high = 16 }, labour = { low = 15, high = 40 }, unit = "SF" }  # 20.4 SF, five walls net of the 29 1/2" x 20 5/8" opening
+"FIREPLACE_BRICK_WYTHE:brown-brick" = { material = { low = 8, high = 16 }, labour = { low = 15, high = 40 }, unit = "SF" }  # 19.6 SF, seven walls net of the 29 1/2" x 20 5/8" opening and the two 4" joist pockets
 # TOMBSTONE 2026-09-13: was "FIREPLACE_BRICK_WYTHE:white-brick" at these same rates. Kept
 # commented for the revert, on the `glazed-green-brick` convention — going back to a white body
 # is one `material_ref` edit on FIREPLACE_BRICK_WYTHE plus un-commenting this line.

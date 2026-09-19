@@ -225,3 +225,35 @@ def test_a_sloped_follow_roof_ceiling_resolves_layers_but_no_flat_solid(catlin_m
     assert ceiling.layers  # RF-HOUSE's default_lining (paint + gwb)
     assert ceiling.z0_m is None and ceiling.z1_m is None
     assert _solid(catlin_model, ceiling.tag) is None
+
+
+def test_a_chase_a_wall_fills_is_not_a_void_in_the_ceiling() -> None:
+    """``ceiling_over._FILLED_FRACTION``'s positive branch, synthetically.
+
+    Catlin had exactly one chase on the filled side — ``FO-M-FIRE``, ~67% brick — and it was
+    retired on 2026-09-19 when the fireplace piers stopped needing a hole at all. The rule is
+    still right and now has no instance in the reference house, so the branch is covered here
+    instead: a 12" square chase with a 10" wall standing through its ceiling plane is not a
+    void, and the same chase with a 2" wall clipping its edge is.
+    """
+    from types import SimpleNamespace
+
+    from typehaus.model.enums import FloorOpeningPurpose
+    from typehaus.resolve.ceiling_over import deck_void_face
+
+    square = [(0.0, 0.0), (0.3, 0.0), (0.3, 0.3), (0.0, 0.3)]
+    opening = SimpleNamespace(
+        outline=[SimpleNamespace(xy_m=xy) for xy in square],
+        purpose=FloorOpeningPurpose.CHASE)
+    plan = SimpleNamespace(by_tag=lambda tag: opening)
+    deck = SimpleNamespace(openings=("FO-TEST",))
+
+    def wall(width: float):
+        return SimpleNamespace(z0_m=-1.0, z1_m=1.0, layers=[SimpleNamespace(
+            polygon=[(0.0, 0.0), (width, 0.0), (width, 0.3), (0.0, 0.3)])])
+
+    # 0.25 / 0.30 = 83% full: the board runs through and is cut to the wall.
+    assert deck_void_face(plan, "S", deck, [wall(0.25)], 0.0) is None
+    # 0.05 / 0.30 = 17%: a wall merely sharing the elevation, and the hole is still a hole.
+    face = deck_void_face(plan, "S", deck, [wall(0.05)], 0.0)
+    assert face is not None and face.area == pytest.approx(0.09)

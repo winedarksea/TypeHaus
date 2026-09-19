@@ -1,9 +1,10 @@
 # RM-M-LIVING fireplace surround — bearing, and the floor it passes through
 
 **House:** catlin
-**Structure:** `W-M-FIRE-STUB/-PLINTH/-JAMB-S/-JAMB-N/-HEAD` (the 3 5/8" brick wythe — `brown-brick` since 2026-09-13, washed white, `white-brick` before that; five walls on one axis since 2026-09-06 so the firebox opening is a real void), `FIREPLACE_BRICK_WYTHE` (its
-assembly), `W-B-E1` (the 12" pour it stands on), `FS-M-EAST` (the floor it passes through),
-`FO-M-FIRE` (the opening in that floor), `EQ-M-FIREPLACE` (the appliance in it),
+**Structure:** `W-M-FIRE-STUB-S/-M/-N`, `-PLINTH`, `-JAMB-S`, `-JAMB-N`, `-HEAD` (the 3 5/8" brick wythe — `brown-brick` since 2026-09-13, washed white, `white-brick` before that; five walls on one axis since 2026-09-06 so the firebox opening is a real void, SEVEN since 2026-09-19 so the joist pockets are too), `FIREPLACE_BRICK_WYTHE` (its
+assembly), `W-B-E1` (the 12" pour it stands on), `FS-M-EAST` (the floor it passes through —
+no opening in it any more; the subfloor cut round the piers is DERIVED,
+`resolve/through_deck.py`), `EQ-M-FIREPLACE` (the appliance in it),
 `SB-M-FIRE-MANTEL` (the shelf that caps it).
 **Written:** 2026-09-06, by hand.
 **Oracle for:** no engine calculation — **this note is the whole basis.** Nothing in
@@ -12,8 +13,9 @@ detail at all (§6). The geometry it rests on is pinned only by the model itself
 **Companions:** `notes/sunken_garden_veneer_beam.md` — the house's other freestanding brick
 wythe, and the pattern this note follows; `notes/mixed_deck_movement_joint.md` — the
 FS-M-EAST / SL-M-DECK boundary this opening sits south of.
-**What is asked of the reviewer:** §4. The load path in §2-§3 is trivial by design; the
-floor opening in §4 is the only place where somebody has to open a manufacturer's book.
+**What is asked of the reviewer:** §4. The load path in §2-§3 is trivial by design. **As of
+2026-09-19 this note asks nobody to open a manufacturer's book** — the floor opening that
+required one is gone, and with it the last Source line this note could not supply.
 
 > ⚠ **The brick does not bear on the floor, and the whole design depends on that.** It
 > starts on `W-B-E1`'s pour at −1'-1 7/16" and rises **through** `FS-M-EAST`. If anyone
@@ -21,12 +23,14 @@ floor opening in §4 is the only place where somebody has to open a manufacturer
 > roughly four-fold and the detail needs an engineer. That change would look like a
 > one-line edit to `Wall.base_elevation` and it is not.
 
-> ⚠ **These are 11 7/8" I-joists, and IRC R502.10 is a sawn-lumber rule.** Cutting and
-> heading I-joists follows the **manufacturer's** hole-and-header tables and needs their
-> specified hangers and web stiffeners. **This must be confirmed against the joist maker's
-> literature before framing**, and it must be on the drawing. The engine now implements
-> R502.10.1's short-opening allowance and restricts it to sawn-lumber decks for exactly this
-> reason, so no span of this opening can pull a lighter header out of it.
+> ⚠ **The pockets are CLEARANCE, not bearing, and two site habits would undo that.** The
+> 3/4" either side of each joist stays **open and un-mortared** — mortar in a pocket puts
+> brick on a joist and turns this detail back into an engineered one — and the plinth course
+> gets a **bond break** (sill seal or building paper) over each slot before it goes up.
+> Without one the plinth's bed joint bridges subfloor over ~29 in², worth ~43 plf against
+> §3's 50: inside the limit, but unverifiable once the plinth is up. Nothing is cut from any
+> joist, so IRC R502.10 does not engage at all — which is why the joist maker's header table,
+> the hangers and the web stiffeners are all gone from this detail.
 
 > ⚠ **Keep the appliance ELECTRIC.** `EQ-M-FIREPLACE` is `EQ-T-FIREPLACE-EL`, a 1.5 kW
 > electric unit. IRC **R1001.2** requires a *masonry fireplace* to have a 12" concrete
@@ -108,79 +112,118 @@ surround of this size would run:
 Either way it fails by a wide margin, which is exactly why the brick starts on the pour.
 **Result: zero brick dead load on wood, and no engineered item.**
 
-## 4. Going around the joists — the one thing a reviewer must check
+## 4. Going around the joists — and the premise that was never true
 
-The joists' **ends** bear on the mudsill at x 426"–431 1/2"; inboard of 426" they are in
-span. The brick face at x = 419.875" cuts them short of that bearing, so over the panel's
-45 1/2" of y **no joist can reach its east support** and the strip from the brick face to the
-rim is joist-free. **Two** joists are cut and headed — `joist-0-006` at y = 96" and
-`joist-0-007` at y = 112", both stopping at x = 418 1/8" (ERRATUM 2026-09-19: this said
-"three or four"). The lines at y = 80" and y = 128" are not cut at all: they fall on the
-opening's own edges and are *replaced by* the doubled trimmer plies, which run the full
-17'-11" from bearing to bearing. `FO-M-FIRE` is that hole:
+**REWRITTEN 2026-09-19.** Until this date this section read: *"The brick face at x = 419.875"
+cuts them short of that bearing, so over the panel's 45 1/2" of y no joist can reach its east
+support."* **That is false, and everything built on it was framing for a problem that did not
+exist.** The joists' ends bear on the mudsill at x 426"–431 1/2". The brick is **3 5/8"
+thick**, running x 419 7/8"–423 1/2", and the mudsill starts 2 1/2" east of its back face. A
+joist passes *through* the panel and reaches its seat intact. The panel never needed a
+joist-free strip; it needed **two holes**.
 
-| edge | x or y | what carries it |
+So the buried stub is **three piers** and the pockets are **real gaps between them** — the
+same idiom `plan/storeys/main.py` already uses for the firebox ("the gap between the four
+elements, not a subtraction from one"), and the thing that makes the geometry *true*: the
+joists run through open air, not through a masonry layer no check can see.
+
+### The stations
+
+Joist axes land on y = **96.000"** and **112.000"** exactly (16" o.c. off y = 0). The stub
+line runs y 81 7/8"–126 1/8" and the brick x 419 13/16"–423 7/16".
+
+| | y | length |
 |---|---|---|
-| west | x = 34'-10 1/8" | the header — a 2-ply 1 3/4" × 11 7/8" LVL, axis on the edge, so its **east face lands exactly on the brick face** |
-| east | x = 35'-10 3/4" | `FS-M-EAST`'s rim (1 1/4" × 11 7/8", axis 35'-11 3/8"): the trimmers die on its inboard face |
-| north / south | y = 127 7/8" / 80 1/8" | a **doubled** trimmer each side, first ply's axis **on** the edge |
-| bearing | — | `bearing_refs=("W-B-E1",)` — the east edge stands over the pour, so no second header is emitted there |
+| `W-M-FIRE-STUB-S` | 81 7/8" → 94" | **12 1/8"** |
+| pocket (joist 006) | 94" → 98" | 4" |
+| `W-M-FIRE-STUB-M` | 98" → 110" | **12"** |
+| pocket (joist 007) | 110" → 114" | 4" |
+| `W-M-FIRE-STUB-N` | 114" → 126 1/8" | **12 1/8"** |
 
-**The y edges are 1 3/4" wider each way than the brick, and the first authoring of this
-opening got that wrong.** The outline was drawn at the brick's own 45 1/2" — the natural
-thing to write, and not buildable. The resolver puts the **first trimmer ply's axis on the
-opening edge** (`resolve/floors.py`), so a 2 1/2" I-joist ply centred there reaches 1 1/4"
-*into* the hole at each end, and the brick's last 1 1/4" at each end was in the same air as
-a trimmer for the full 11 7/8" of joist depth. Nothing caught it:
-`structural.member_interference` walks framing against framing, and a wall's masonry layer
-is not a member, so the clash sat at 0 FAIL until the resolved member boxes were read by
-hand. The edges now stand 1 1/4" (the ply) plus 1/2" (mason's clearance) clear of the brick.
+Four clearances, and `structural.through_deck_clearance` measures every one of them off the
+resolved members: **5/8" / 3/4" / 3/4" / 5/8"**, against a 1/2" threshold. The 5/8" pair are
+joists **005** (y = 80") and **008** (y = 128"), which need no pocket at all — and that 5/8"
+is *residue*, a 44 1/4" panel laid out on a 16" module, not a margin anybody chose. Read a
+future FAIL there as information about whatever widened.
 
-**The opening is 47 3/4" (2026-09-06, was 4'-1").** The buried stub through the floor is
-authored 1 1/4" narrower than the visible panel — 44 1/4" against 45 1/2", the plinth
-corbelling 5/8" over it at each end under the lvp — so the hole is 44 1/4" + 2 × 1/2"
-mason's clearance + 2 × 1 1/4" of trimmer ply. Measured off the resolved members, the
-trimmer's inner face stands exactly 1/2" clear of the brick at each end. It is deliberately
-NOT 48.0": `header_size` branches on `w_ft <= 4.0`, and a span arriving as
-4.0000000000000009 after a metre round trip would take the wrong branch silently.
+The joist tail continues **2 1/2" past the back of the brick** to the mudsill and keeps its
+full 4 3/4" seat under R502.6. Nothing is cut from any joist — the hole is in the brick — so
+R502.10 never engages, and R317.1's triggers are ground, weather and below-grade contact,
+none of which reaches an interior pier over a conditioned basement.
 
-**ERRATUM (2026-09-06): the "4'-0" line" this section used to argue about was never
-binding.** Two independent reasons, and both were available at the time. `haus check` grades
-floor-opening headers at **eight** feet, not four
-(`checks/structural/checks.py::_PRESCRIPTIVE_HEADER_SPAN_FT`), so no check in this engine
-ever looked at 4'-0". And R502.10.1's single-header/single-trimmer allowance is a
-**sawn-lumber** rule that does not reach an I-joist deck at any span — which is the same
-sentence the ⚠ box at the top of this note has always carried. The engine implements
-R502.10.1 as of the same date and gates it on a sawn-lumber joist profile, so this opening
-draws the identical doubled trimmers and 2-ply LVL header at 47 3/4" that it drew at 4'-1",
-and would draw them at 3'-0". Nothing about the framing ever turned on the threshold. The cut ends need the joist
-maker's specified hangers and **web stiffeners**, and the header size must come off *their*
-table, not off R502.10. That is a published table rather than a PE stamp, so this stays a
-prescriptive detail — but it is the one place in this design where somebody has to open a
-manufacturer's book, and it should be named in the drawing note.
+### What holds the brick over a 4" pocket
 
-**Timing is the real cost.** The opening, the hangers, the stiffeners and the coordination
-between mason and framer are all cheap **only while the basement ceiling is open**, exactly
-as `params/main_deck.py` already says of other work in this bay.
+`W-M-FIRE-PLINTH`'s own first course, with a foot of bearing either side:
 
-**ERRATUM (2026-09-19).** This section said *"below, in `RM-B-GYM`, no brick shows"* and
-*"this opening cuts [the gym's gypsum]"*. Both are wrong, and in opposite directions.
+| term | working | value |
+|---|---|---|
+| course over the slot | 4" clear span, 2 2/3" course, 3 5/8" wythe | — |
+| moment | w·L²/8 on the course's own weight | **27.6 in-lb** |
+| section modulus | 3.625 × 2.667² / 6 | **3.06 in³** |
+| stress | 27.6 / 3.06 | **9 psi** |
 
-- **Brick does show below.** The stub runs to −13 7/16"; the joist soffit is at −11 7/8" and
-  `FS-M-EAST.ceiling_below` hangs 5/8" under it, so the ceiling plane is **−12 1/2"** and
-  **15/16" of brick stands below it**, in the gym's corner. A square of brick, not nothing.
-- **The opening does not cut the gypsum.** `resolve/ceiling_over.deck_void_face` reads a
-  chase that is mostly *filled* at the ceiling plane as no void at all — `FO-M-FIRE` is ~67%
-  brick — and measured against the current model it returns `None` for this deck. `RM-B-GYM`'s
-  two planes (234 SF at −11 7/8", 90 SF at −13 7/16") are identical with and without the
-  opening. What the opening cuts is the **subfloor**: `takeoff/framing.py` deducts an opening
-  from the sheet above, and the board below asks `deck_void_face` instead. The three section
-  goldens re-blessed on 2026-09-06 (`detail_stack_width_change`, `detail_storey_stack-rim`,
-  `detail_wall_foundation`, all `BASEMENT_12`/`EXT_2X6`) recorded the *subfloor* stopping at
-  the header, not the ceiling.
+Against ~40 psi allowable flexural tension normal to bed joints — and it arches before it
+bends. **No steel, no cast ligature.** Bearing on the piers is ~5.5 psi over 36 1/4" × 3 5/8"
+of pier; two orders of magnitude of margin, and not an argument in either direction.
 
-What is built is the board run through and cut to the 3 5/8" wythe with the residue packed —
-trim work in a finished room if it is left until after the mason.
+**Watch the TMS 402 pier/column line if the pockets ever widen.** A masonry member becomes a
+*column* at a horizontal dimension ≤ 3t = 10 7/8", where an 8" minimum least dimension and
+minimum vertical reinforcement both bite and a 3 5/8" wythe fails outright. The middle pier
+is 12" and has 1 1/8" of room. Do not widen the slots past ~4 1/2" without re-checking.
+
+### The bond break, and the two things that must not be done
+
+- **A bond break — sill seal or building paper — over each pocket before the plinth goes up.**
+  Without it the plinth's bed joint bridges subfloor over ~29 in², worth ~43 plf against
+  `preferences.toml`'s 50. Inside the limit, but spending most of the margin on a condition
+  nobody can inspect once the plinth is up.
+- **The pockets stay open and are NOT pointed up.** They are *clearance*, not bearing.
+- The sequence is the framer's, and he owes this detail nothing else: joist spacing is
+  unchanged and there is no header, trimmer, hanger, stiffener or special layout in it.
+  `framer sets joists → mason lays 3 piers to the as-built lines → framer sheets, cutting the
+  subfloor around the piers → (later) mason returns for plinth, jambs, head`. All three piers
+  land inside a joist bay, each reachable from above through a 13 1/2" clear bay while the
+  deck is open.
+
+### What went away with `FO-M-FIRE`
+
+The opening framed a 47 3/4" × 12 5/8" hole: a 2-ply LVL header (`HEADER-FO-M-FIRE-0`), four
+full-span 17'-11" trimmer plies, two LUS and two HHUS410 hangers, and I-joist web stiffeners.
+Measured off `haus takeoff`: **1.75x11.875 LVL 284 → 204 LF**, **2-1.75x11.875 LVL 16 → 8
+LF**, **I-joist 2348 → 2388 LF** (the two cut joists run whole again), **LUS −2**, **HHUS410
+−2**, and **plywood-subfloor 3181.8 → 3184.6 SF**, still 100 sheets — the three derived pier
+cuts take out less plywood than the one hole did. Brick falls 20.4 → **19.6 SF**.
+
+**Nobody authors the subfloor cut.** `resolve/through_deck.py` derives it from the wall's own
+footprint plus a 1/2" saw clearance, less every member footprint, and
+`ResolvedFloor.through_walls` carries the pairs so the check and the cut cannot disagree
+(decision #78).
+
+### The trimmer erratum this section used to carry, kept because it is a live trap
+
+The opening was first drawn at the brick's own 45 1/2" — the natural thing to write, "the
+hole is the size of the thing going through it", and not buildable. `resolve/floors.py` puts
+the **first trimmer ply's axis on the opening edge**, so a ply centred there reaches half its
+own width *into* the hole at each end, and the brick's last inch at each end stood in the
+same air as a trimmer for the full 11 7/8" of joist depth. Nothing caught it:
+`structural.member_interference` walks framing against framing, and a wall's masonry layer is
+not a member, so the clash sat at 0 FAIL until the resolved member boxes were read by hand.
+**`structural.through_deck_clearance` catches that class of clash now** — reconstructed
+synthetically it FAILs on a *trimmer*, at 29× the area tolerance, which is why the check is
+scoped to every resolved member and not to joists. The trap itself is recorded on
+`FO-M-ERV-OA` in `plan/storeys/main.py`, along with `header_size`'s `w_ft <= 4.0` float
+boundary, because those two outlive this opening.
+
+**ERRATUM (2026-09-19), kept for the record.** Before the rewrite this section also said
+*"below, in `RM-B-GYM`, no brick shows"* and *"this opening cuts [the gym's gypsum]"*. Both
+were wrong, in opposite directions. The stub runs to −13 7/16"; the joist soffit is at
+−11 7/8" and `FS-M-EAST.ceiling_below` hangs 5/8" under it, so the ceiling plane is −12 1/2"
+and **15/16" of brick stands below it** in the gym's corner. And the chase never cut the
+gypsum: `resolve/ceiling_over.deck_void_face` reads a mostly-*filled* chase as no void, so
+`RM-B-GYM`'s 234 SF and 90 SF planes were identical with and without it. What was cut — then
+and now — is the **subfloor**, which is what the three `BASEMENT_12`/`EXT_2X6` section
+goldens re-blessed on 2026-09-06 actually recorded. What is built below is board run through
+and cut to the wythe with the residue packed.
 
 ### 4.1 The mantel overturns under its own weight unless it is held down
 
@@ -238,9 +281,10 @@ record.
   a soft joint at the mantel are where that goes; no calculation is offered.
 - **Seismic / out-of-plane.** Not considered. SDC A, an interior panel 6'-5" tall.
 
-## 6. Nothing in `haus check` looks at any of this
+## 6. What `haus check` looks at, and what it still does not
 
-Stated positively, because a clean report here is silence and not a verdict:
+Stated positively, because a clean report here was silence and not a verdict until
+2026-09-19, and is now one verdict and a great deal of silence:
 
 - `structural.masonry_guard_bearing` (`checks/structural/guards.py`) walks **`Wall.guard`
   walls only**. No `W-M-FIRE-*` wall is a guard, so that check never sees it.
@@ -249,30 +293,38 @@ Stated positively, because a clean report here is silence and not a verdict:
 - `building_science.condensation` screens on `any(layer.function == "cladding")`;
   `FIREPLACE_BRICK_WYTHE`'s single layer is STRUCTURE, so it is out of the Glaser scope —
   correctly, since this is an interior panel and not an envelope assembly.
-- `structural.floor_opening_header` **emits nothing here** (ERRATUM 2026-09-19: this said it
-  *"does grade `FO-M-FIRE`, and passes"*, and called it *"the only automatic opinion anything
-  in the engine has about this detail"*). The check appends a finding only past its 8'-0"
-  prescriptive span; a 47 3/4" header never reaches that branch, so it produces no finding at
-  all — not a PASS, not anything. There is no finding carrying this check id anywhere in
-  catlin's `--no-suppress` report. There is therefore no such automatic opinion.
-- `structural.member_interference` also grades it, and **did FAIL four times** while the
-  opening ran to the 36'-0" wall line and drove all four trimmers through the rim. That is
-  what set the east edge at 35'-10 3/4". It is worth knowing the check caught a real
-  framing error here.
+- `structural.floor_opening_header` and `structural.member_interference` **no longer look
+  here at all.** There is no floor opening and there are no trimmers, headers or hangers for
+  either of them to grade. (For the record: `floor_opening_header` never did emit on
+  `FO-M-FIRE` — it appends a finding only past its 8'-0" prescriptive span — so the claim
+  this bullet carried until 2026-09-19, that it *"does grade `FO-M-FIRE`, and passes"* and was
+  *"the only automatic opinion anything in the engine has about this detail"*, was wrong twice
+  over. `member_interference` **did** FAIL four times while the opening ran to the 36'-0" wall
+  line and drove all four trimmers through the rim; that is what set the east edge at
+  35'-10 3/4", and it is worth knowing the check caught a real framing error here.)
+- **`structural.through_deck_clearance` is the one automatic opinion this detail now has, and
+  it is a real one.** Six findings, all PASS: a clearance verdict and a bearing verdict per
+  pier. The clearance half measures each pier against **every resolved member** of
+  `FS-M-EAST` — joists, sisters, blocking, trimmers, headers, rims — and governs at 5/8"
+  against a 1/2" threshold. The bearing half is what turns this note's lead ⚠ into a rule:
+  start the wythe on the subfloor and it FAILs at ~236 plf against
+  `max_masonry_dead_load_on_wood_plf`, instead of relying on somebody reading a box.
 
-**A 0-FAIL report on this house does not mean this detail was checked. It means nothing
-looked.**
+**A 0-FAIL report on this house used to mean nothing looked. Since 2026-09-19 something
+does** — `through_deck_clearance` — but only at the joist pockets and the bearing. The ties,
+the lintel, the mantel hold-down, differential movement and the out-of-plane case are all
+still ungraded, and §5 is the list.
 
 ## Sources
 
-- IRC 2018 §R502.10 / R502.10.1 — framed openings in floors: header and trimmer
-  requirements, and the 4'-0" threshold above which they double. **Sawn lumber only** — see
-  the erratum in §4 for why it never governed this opening.
+- IRC 2018 §R502.6 — joist bearing: 1 1/2" minimum on wood or metal. The joists keep their
+  full 4 3/4" mudsill seat, because nothing is cut.
+- IRC 2018 §R502.10 / R502.10.1 — framed openings in floors. Cited only to record that it no
+  longer applies: there is no framed opening in `FS-M-EAST` any more.
 - IRC 2018 §R1001.2 — masonry fireplace footings: 12" of concrete on undisturbed earth,
   below the frost line, with no wood-floor exception.
 - IRC 2018 §R703.8.4 — masonry veneer drainage cavity (cited for contrast: this is an
   *interior* panel and takes no cavity).
-- TMS 402 — anchored masonry veneer ties (§5, not designed here).
 - NFPA 211 — chimneys, fireplaces, vents and solid-fuel appliances. Cited to record that an
   electric firebox is **outside** its scope, which is why no hearth extension is drawn.
 - Amantii BI-30-XTRASLIM (BI-X190030-1) installation manual, 2022 CSA revision — rough
@@ -280,5 +332,9 @@ looked.**
   the trim, combustible facing allowed, no floor clearance and no air-intake slot. **The
   pre-2022 manual under the same model number states 1465 W / 5,000 Btu/h and contains no
   mantel and no hardwire section at all** — confirm which revision ships.
-- Joist manufacturer's I-joist framing guide — **the document §4 requires and this note does
-  not have.** Web stiffeners, hanger schedule and header table for a cut 11 7/8" I-joist.
+- **DELETED 2026-09-19: "Joist manufacturer's I-joist framing guide — the document §4
+  requires and this note does not have."** No joist is cut or headed any more, so no such
+  document is required. That deletion is the headline of this change: it retires the one
+  outstanding document in the whole detail.
+- TMS 402 §5.3 / §5.4 — masonry pier and column limits (cited in §4 for the 3t = 10 7/8" line
+  the 12" middle pier must stay above), and §5 for anchored veneer ties, not designed here.

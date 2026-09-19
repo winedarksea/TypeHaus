@@ -120,7 +120,8 @@ constraints = [
 # two halves of this visit disagreed about how many colours were arriving. The firebox is now the
 # court's own brown brick and is WASHED WHITE afterwards by the painter, so "one blend" is no
 # longer a preference about the field: it is the only blend on the job, and this visit orders all
-# of it — 112.5 SF of court field plus 20.4 SF of firebox, 132.9 SF off two cubes.
+# of it — 112.5 SF of court field plus 19.6 SF of firebox, 132.2 SF off two cubes (19.6 since
+# 2026-09-19, when the buried stub became three piers with two joist pockets between them).
 #
 # ** THE FIREBOX IS LAID BARE. ** The wash is a separate trade on a separate arrival
 # (task/paint/building/mineral-wash), so the mason must not substitute a white brick to "get the
@@ -140,11 +141,26 @@ element_tags = ["W-B-BRICK", "W-M-FIRE-*"]
 depends_on = ["task/concrete/basement/walls", "task/concrete/building/slabs"]
 blocks_successors = false
 constraints = [
-  { label = "brick and mortar delivered — ONE blend for the whole job, 132.9 SF (112.5 court + 20.4 firebox), no second colour on the order", owner = "owner" },
+  { label = "brick and mortar delivered — ONE blend for the whole job, 132.2 SF (112.5 court + 19.6 firebox), no second colour on the order", owner = "owner" },
   { label = "the firebox panel is laid BARE in the court blend and washed white later — do NOT substitute a white brick", owner = "owner", next_action = "the white reads from the mineral silicate wash, applied by the painter on a later arrival; a white body would order a third cube against ~21 SF of need" },
   { label = "weeps, soft joints at both ends and the anchor schedule agreed", owner = "owner", next_action = "unreinforced brick cannot span 18'-8\" horizontally — do not anchor the wythe to W-SG-W1/E1" },
   { label = "scaffold access for the full 8'-5\" field priced in", severity = "attention" },
   { label = "firebox head is a CUT COURSE on a steel angle lintel, not a rowlock", owner = "owner" },
+  { label = "pier layout struck off the FRAMER'S as-built joist lines, not off the drawing", owner = "owner", next_action = "the three piers sit in 4\" pockets between joists 006 and 007; a joist 1/2\" off the module moves the pocket, not the joist", severity = "blocking" },
+  { label = "the piers stand loose until the plinth ties them — protect them while the deck is framed and sheeted", severity = "attention" },
+  { label = "the two pockets stay OPEN and are NOT pointed up", owner = "owner", next_action = "they are clearance, not bearing; mortar in a pocket puts brick on a joist and is the one edit that turns this detail back into an engineered one" },
+  { label = "bond break (sill seal or building paper) laid over each pocket before the plinth course goes up", owner = "owner", next_action = "without it the plinth's bed joint bridges subfloor over ~29 in2, ~43 plf against the 50 plf allowance — inside the limit, but unverifiable once the plinth is up" },
+]
+# ** THREE CHECKPOINTS, NOT A SECOND VISIT (2026-09-19). ** The stub and the panel are ONE BOM
+# row and `schedule/rules.py::shared_rows` errors when two visits claim one, so the mason's
+# two trips to the fireplace are pauses inside one arrival. The order is the whole point: the
+# framer sets joists, the mason lays three piers to the as-built lines, THEN the framer sheets
+# and cuts the subfloor around them. All three piers land inside a joist bay and each is
+# reachable from above through a 13 1/2" clear bay while the deck is open.
+checkpoints = [
+  { id = "court", label = "Court veneer — W-B-BRICK on W-SG-BRKBM" },
+  { id = "piers", label = "Fireplace piers — three 12\" piers in FS-M-EAST's joist pockets, deck open", after = ["task/framing/building/frame#joists"] },
+  { id = "panel", label = "Fireplace panel — plinth, jambs, lintel and spandrel", after = ["task/framing/building/frame#sheathing"] },
 ]
 
 # --- PAINT: three arrivals, and they are genuinely three ------------------------------------
@@ -248,6 +264,14 @@ constraints = [
 # `site/long-lead-orders` is named LAST so the date line keeps naming
 # `task/concrete/basement/walls`: `visit_dates` skips inspection dependencies and reads the
 # order of this list back.
+#
+# ** SPLIT INTO CHECKPOINTS 2026-09-19, AND THE REASON IS THE FIREPLACE. ** The mason's three
+# piers go up between the framer setting FS-M-EAST's joists and the framer sheeting over them
+# (`task/masonry/building/masonry#piers`). One arrival with no pauses could only express that
+# at visit level, which would have said "frame the whole building, then lay brick, then sheet"
+# — and that is not an arrival anybody schedules. The framer owes the detail NOTHING else:
+# joist spacing is unchanged, and there is no header, trimmer, hanger, stiffener or special
+# layout in it. The subfloor is simply cut round three piers that are already standing.
 [visits."task/framing/building/frame"]
 label = "Frame the building — walls, decks, roof"
 depends_on = [
@@ -255,6 +279,11 @@ depends_on = [
   "task/concrete/basement",
   "insp/foundation_backfill",
   "site/long-lead-orders",
+]
+checkpoints = [
+  { id = "joists", label = "Mudsills, floor decks framed — joists and rims set, decks open" },
+  { id = "sheathing", label = "Subfloor down", after = ["task/masonry/building/masonry#piers"] },
+  { id = "shell", label = "Walls, roof and the rest of the shell" },
 ]
 
 # ---------------------------------------------------------------------------------------

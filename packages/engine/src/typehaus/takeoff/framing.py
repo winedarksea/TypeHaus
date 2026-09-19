@@ -409,9 +409,10 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             framed = (max(point[0] for point in points) - min(point[0] for point in points)) * (
                 max(point[1] for point in points) - min(point[1] for point in points)
             )
-            openings = sum(abs(polygon_area([point.xy_m for point in opening.outline]))
-                           for opening in model.plan.storey_elements(storey.tag)
-                           if isinstance(opening, FloorOpening) and opening.tag in system.openings)
+            # ``deck_voids``, not the authored ``FloorOpening`` outlines: a wall passing
+            # through the deck takes plywood out too and nobody authors that cut
+            # (``resolve/through_deck.py``).
+            openings = sum(abs(polygon_area(list(ring))) for ring in floor.deck_voids)
             # **The SHEET bills off the sheet, not off the framing.** This read the member
             # bounding box for both, which understates every deck by a rim thickness at each
             # end and — once ``FloorSystem.subfloor_outline`` existed — would have let a

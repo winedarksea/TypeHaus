@@ -66,6 +66,24 @@ max_window_ro_bearing_in = 27
 # it lands on the concrete sunken-garden walls, and it could not land on a wood deck.
 max_guard_dead_load_on_wood_plf = 50
 
+# The same allowance for a MASONRY WALL PASSING THROUGH A FLOOR DECK
+# (structural.through_deck_clearance). A sibling of the key above, not a stretch of it: the
+# number is the same and the rule is not, and raising one for a heavy parapet must not
+# license a brick pier bearing on plywood. The three W-M-FIRE-STUB-* piers stand on W-B-E1's
+# pour, so they report hard bearing and never reach this figure; what it is really here for
+# is the day somebody "simplifies" the detail by starting the wythe on the subfloor, which
+# arrives at ~236 plf against it (notes/east_breast_bearing.md §3). That used to be a ⚠ box
+# a reader had to obey; it is a check now.
+max_masonry_dead_load_on_wood_plf = 50
+
+# The air a subfloor sheet must leave round a wall passing through it, inches. Catlin governs
+# at 5/8" — joists 006 and 008 either side of the fireplace piers — which is residue of a
+# 44 1/4" panel laid out on a 16" joist module, not a margin anybody chose. 1/2" is a mason's
+# clearance and the saw cut itself is 1/2" (resolve/through_deck._SHEET_CLEARANCE_M, a
+# derivation constant, never this). If a future widening FAILs here, that is information
+# about the widening, not a number to raise.
+min_through_deck_clearance_in = 0.5
+
 # ** THE NORTH ENTRY CANOPY'S DESIGN SNOW, AND IT IS A DRIFT CASE, NOT THE GROUND LOAD. **
 # The house's north face is a gable end standing 6 1/2" south of the passage roof and rising
 # 12 to 21 feet above it. That is an ASCE 7 §7.7 roof-step drift and it governs. Worked by

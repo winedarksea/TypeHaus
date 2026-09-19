@@ -16,6 +16,7 @@ from typehaus.resolve.floor_ends import floor_ends
 from typehaus.resolve.floor_openings import _shift, opening_frames, opening_members
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedFloor, ResolvedModel, Ring
+from typehaus.resolve.through_deck import through_deck_cuts, through_deck_walls
 
 _DEFAULT_SPACING_M = inch(16).meters
 
@@ -204,6 +205,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     # rather than drawn over: the joists were already clipped to them.
     deck_outline: Ring = []
     deck_voids: tuple[Ring, ...] = ()
+    through_walls: tuple = ()
     deck_z0_m = deck_z1_m = z1
     if system.subfloor is not None:
         if system.subfloor_outline:
@@ -217,11 +219,21 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
             else:
                 corners = ((perp0, axis0), (perp0, axis1), (perp1, axis1), (perp1, axis0))
             deck_outline = list(corners)
+        deck_z1_m = z1 + system.subfloor.thickness.meters
+        # A wall that passes through this deck cuts the sheet and nothing else — no header,
+        # no trimmer, no hanger, and no authored FloorOpening (decision #78,
+        # ``resolve/through_deck.py``). It deliberately does NOT enter ``opening_boxes``
+        # above: ``frame.clip`` would then cut the joists at it, and a 4 5/8" pier mid-span
+        # would turn one 18'-0" joist into 14'-7" + 3'-0", both over the 11 7/8" floor, both
+        # emitted, both billed, the short one bearing on nothing — and
+        # ``integrity.floor_end_bearing`` grades a deck's two ends, not a segment's. Nor is
+        # it a chase: ``routing/corridors.chase_corridors`` would offer a riser lane through
+        # solid brick.
+        through_walls = through_deck_walls(model, system, z0, deck_z1_m, deck_outline)
         deck_voids = tuple(
             [(f.minx, f.miny), (f.maxx, f.miny), (f.maxx, f.maxy), (f.minx, f.maxy)]
             for f in opening_boxes
-        )
-        deck_z1_m = z1 + system.subfloor.thickness.meters
+        ) + through_deck_cuts(through_walls, members, deck_outline)
 
     chases = tuple(
         (f.opening.tag, [(f.minx, f.miny), (f.maxx, f.miny),
@@ -234,6 +246,7 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
         direction=spec.direction, members=tuple(members), chases=chases,
         deck_outline=deck_outline, deck_voids=deck_voids,
         deck_z0_m=deck_z0_m, deck_z1_m=deck_z1_m, ends=ends,
+        through_walls=tuple(w.tag for w in through_walls),
         deck_material_ref=(system.subfloor.material_ref if system.subfloor else None),
     ), []
 

@@ -118,6 +118,18 @@ _declare(Deferral(
 # the row gets UNKNOWN with the hint rather than a deferral naming a designer nobody needs.
 # The ``ridge_beam_detail.md`` oracle went with it: it was never about a header.
 
+# NOTE — there is NO ``masonry_slot`` deferral, and its absence is deliberate (2026-09-19).
+# A slot cut out of a masonry wythe to let a joist through earned one while it was an
+# INVISIBLE NOTCH: nothing in the model showed it, so an item naming a designer was the only
+# way the question reached anybody. Catlin's fireplace stub is three piers now with the joist
+# pockets authored as real gaps between them, so the geometry IS the statement — the spans,
+# the clearances and the bearing are all in the model and all graded
+# (``structural.through_deck_clearance``). The plinth course bridging each 4" pocket is
+# 9 psi on ~40 psi allowable flexural tension normal to bed joints and arches before it bends;
+# that is not a question for a seal. Widen a pocket past ~4 1/2", though, and TMS 402's
+# pier/column line (3t = 10 7/8" on a 3 5/8" wythe) starts to bite — which is a reason to
+# re-derive the deferral deliberately, not to re-derive it by accident.
+
 
 _declare(Deferral(
     kind="column_support",

@@ -15,6 +15,9 @@ material's density, times the guard's height — rather than from a magic number
 guard prices itself out of the finding automatically and a heavier one prices itself in.
 Air gaps carry nothing and are skipped; a solid layer whose material states no ``density``
 makes the whole answer UNKNOWN, because a load computed from a partial stack is not a load.
+
+The weighing and the "what is under it" sweep live in ``masonry_load.py`` now, shared with
+``structural.through_deck_clearance``: what "bears on wood" means must have one answer.
 """
 
 from __future__ import annotations
@@ -25,32 +28,15 @@ from typehaus.checks._authoring import not_applicable as _not_applicable
 from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks._authoring import unknown as _unknown
 from typehaus.checks.registry import CheckContext, Tier, check
+from typehaus.checks.structural.masonry_load import dead_load_plf, support_at
 from typehaus.findings import Finding, Result
 from typehaus.model.elements import Wall
-from typehaus.model.enums import LayerFunction
 
 _CHECK_ID = "structural.masonry_guard_bearing"
 
-#: kg/m -> lb/ft. 1 kg = 2.20462 lb over 1 m = 3.280840 ft.
-_KG_PER_M_TO_PLF = 2.2046226218 / 3.2808398950
-
-#: A support's top is "under" the guard when the two are this close in Z. Same slop the
-#: rest of the stacking logic uses — a storey's walls land exactly on the one below.
-_BEARING_Z_TOL_M = 0.05
-#: How far off a support's own axis the guard's line may sit and still bear on it. Half the
-#: support's thickness plus this: a guard is aligned to a face, not to a centreline.
-_BEARING_PLAN_TOL_M = 0.10
 #: Stations along the guard's run, so a guard that starts on a wall and ends over a deck is
 #: read as what it is rather than as whichever support happened to be found first.
 _STATION_STEP_M = 0.25
-#: Wood fraction of a framed layer that states no cavity fill to read one off. The field
-#: default elsewhere in the engine for 16" o.c. studs with plates, corners and jamb packs.
-_DEFAULT_FRAMING_FACTOR = 0.23
-
-#: Material hatch families that carry a masonry guard without further thought. ``concrete``
-#: is the catalog's family for both poured concrete and masonry units (cmu, brick all hatch
-#: concrete), which is the distinction that matters here — they are all hard bearing.
-_HARD_SUPPORT_HATCHES = frozenset({"concrete", "masonry", "metal"})
 
 
 @check(Tier.STRUCTURAL, _CHECK_ID)
@@ -87,7 +73,7 @@ def masonry_guard_bearing(ctx: CheckContext) -> list[Finding]:
 
 def _grade(ctx: CheckContext, tag: str, wall, allowance_plf: float) -> Finding:
     height_m = wall.z1_m - wall.z0_m
-    load_plf = _dead_load_plf(ctx, wall, height_m)
+    load_plf = dead_load_plf(ctx, wall, height_m)
     if load_plf is None:
         return _unknown(_CHECK_ID, f"guard wall {tag} has a solid layer whose material "
                         "states no density, so its dead load cannot be derived", (tag,))
@@ -123,119 +109,13 @@ def _grade(ctx: CheckContext, tag: str, wall, allowance_plf: float) -> Finding:
         (tag, *named), Result.PASS)
 
 
-def _dead_load_plf(ctx: CheckContext, wall, height_m: float) -> float | None:
-    """``Σ(layer thickness × material density) × height``, in pounds per lineal foot.
-
-    Air gaps are skipped rather than treated as missing data — a cavity is not a layer whose
-    density nobody stated, it is a layer with no material in it.
-    """
-    mass_per_area = 0.0
-    materials = {material.tag: material for material in ctx.plan.library.materials}
-    # ``ResolvedLayer`` carries no ``framing``: the stud layout is a property of the AUTHORED
-    # layer, and a cavity fill resolves as its own layer rather than as a field on its host.
-    # So the framing factor is read back off the assembly, by layer name.
-    assembly = next((a for a in getattr(ctx.plan.library, "assemblies", ())
-                     if a.tag == getattr(wall, "assembly", None)), None)
-    authored = {getattr(layer, "name", ""): layer
-                for layer in (getattr(assembly, "layers", ()) if assembly else ())}
-    for layer in wall.depth_layers():
-        if layer.function in (LayerFunction.AIRGAP.value, "air_gap"):
-            continue
-        # A FRAMED layer is mostly cavity. Weighing a 2x4 stud layer as 3 1/2" of solid wood
-        # over the whole wall face is the same overstatement a profiled sheet makes, and in
-        # the same direction: it read a 31 plf screen panel at 67 and sent it looking for a
-        # masonry bearing line. The framing factor is the cavity fill's own where one is
-        # stated (it is the number that layer already uses for its R-value), and the 16" o.c.
-        # field default otherwise. The fill itself is added at full area, because a batt or a
-        # foam does occupy the whole cavity.
-        source = authored.get(getattr(layer, "name", "") or "")
-        if source is not None and getattr(source, "framing", None) is not None:
-            fills = getattr(source, "cavity_fills", ()) or ()
-            factor = next((f.framing_factor for f in fills
-                           if getattr(f, "framing_factor", None) is not None),
-                          _DEFAULT_FRAMING_FACTOR)
-            material = materials.get(layer.material_ref or "")
-            density = getattr(material, "density", None)
-            if density is None:
-                return None
-            mass_per_area += layer.thickness_m * density * factor
-            for fill in fills:
-                fill_material = materials.get(getattr(fill, "material_ref", "") or "")
-                fill_density = getattr(fill_material, "density", None)
-                if fill_density is None:
-                    return None
-                thickness = getattr(fill, "thickness", None)
-                mass_per_area += ((thickness.meters if thickness is not None
-                                   else layer.thickness_m) * fill_density * (1.0 - factor))
-            continue
-        material = materials.get(layer.material_ref or "")
-        # A profiled sheet states its own kg/m2 and that wins: its `thickness` is the depth
-        # it occupies in the wall, not a depth of material (→ Material.areal_density_kg_m2).
-        areal = getattr(material, "areal_density_kg_m2", None)
-        if areal is not None:
-            mass_per_area += areal
-            continue
-        density = getattr(material, "density", None)
-        if density is None:
-            return None
-        mass_per_area += layer.thickness_m * density
-    return mass_per_area * height_m * _KG_PER_M_TO_PLF
-
-
 def _supports_along(ctx: CheckContext, wall) -> list[tuple[str | None, str | None]]:
-    """``(kind, name)`` under each station of the guard's run, walked base to tip.
-
-    ``kind`` is ``"hard"`` (concrete, masonry, steel, a footing), ``"wood"`` (a framed floor
-    deck), or ``None`` where nothing is modeled under that station.
-    """
+    """``(kind, name)`` under each station of the guard's run, walked base to tip."""
     (x0, y0), (x1, y1) = wall.axis
     run = math.hypot(x1 - x0, y1 - y0)
     steps = max(int(math.ceil(run / _STATION_STEP_M)), 1)
     out: list[tuple[str | None, str | None]] = []
     for index in range(steps + 1):
         t = index / steps
-        out.append(_support_at(ctx, wall, (x0 + (x1 - x0) * t, y0 + (y1 - y0) * t)))
+        out.append(support_at(ctx, wall, (x0 + (x1 - x0) * t, y0 + (y1 - y0) * t)))
     return out
-
-
-def _support_at(ctx: CheckContext, wall, point) -> tuple[str | None, str | None]:
-    from shapely.geometry import LineString, Point, Polygon
-
-    base = wall.z0_m
-    probe = Point(point)
-    for other in ctx.model.walls:
-        if other.tag == wall.tag or abs(other.z1_m - base) > _BEARING_Z_TOL_M:
-            continue
-        reach = other.thickness_m / 2.0 + _BEARING_PLAN_TOL_M
-        if LineString(other.axis).distance(probe) > reach:
-            continue
-        return (_wall_support_kind(ctx, other), other.tag)
-    for solid in ctx.model.solids:
-        if solid.category not in ("footing", "pad", "slab"):
-            continue
-        if abs(solid.z1_m - base) > _BEARING_Z_TOL_M or len(solid.outline) < 3:
-            continue
-        if Polygon(solid.outline).covers(probe):
-            return ("hard", solid.tag)
-    for floor in ctx.model.floors:
-        if not floor.deck_outline or abs(floor.deck_z1_m - base) > _BEARING_Z_TOL_M:
-            continue
-        if Polygon(floor.deck_outline).covers(probe):
-            return ("wood", floor.tag)
-    return (None, None)
-
-
-def _wall_support_kind(ctx: CheckContext, wall) -> str:
-    """A supporting wall's bearing class, read off its structure layer's material hatch.
-
-    The hatch family is the catalog's own answer to "what is this made of", and it is the
-    one that separates hard bearing from framing: every masonry unit and every pour hatches
-    ``concrete``, steel hatches ``metal``, and a stud wall's structure layer is lumber.
-    """
-    materials = {material.tag: material for material in ctx.plan.library.materials}
-    for layer in wall.depth_layers():
-        if layer.function != LayerFunction.STRUCTURE.value:
-            continue
-        hatch = getattr(materials.get(layer.material_ref or ""), "hatch", None)
-        return "hard" if hatch in _HARD_SUPPORT_HATCHES else "wood"
-    return "wood"

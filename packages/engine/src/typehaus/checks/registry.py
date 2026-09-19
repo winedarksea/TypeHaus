@@ -159,6 +159,18 @@ class StructuralPreferences:
     # foot of run, which is the load a deck rim designed to R507's 40 psf live + 10 psf dead
     # was drawn expecting. A grouted-CMU-and-brick parapet is eight times it.
     max_guard_dead_load_on_wood_plf: float = 50.0
+    #: The same allowance for a MASONRY WALL standing in a floor deck
+    #: (``structural.through_deck_clearance``) — a sibling of the key above, not a stretch of
+    #: it. The number happens to be the same and the rule is not: that one's docstring is
+    #: about guards and its figure is a guard's figure, and a house that raised it for a
+    #: heavy parapet would silently license a brick pier bearing on plywood.
+    max_masonry_dead_load_on_wood_plf: float = 50.0
+    #: How much air a floor sheet must leave round a wall passing through it, inches. A
+    #: *verdict* threshold, which is why it is here and ``through_deck._SHEET_CLEARANCE_M``
+    #: — the saw cut itself — is not. Catlin governs at 5/8" against this 1/2", and that 5/8"
+    #: is residue of a 44 1/4" panel on a 16" module rather than a chosen margin: read a
+    #: future FAIL here as information about a widening, not as a threshold to raise.
+    min_through_deck_clearance_in: float = 0.5
     #: Design snow, psf, for a beam carrying a ROOF (``engineering/roof_beam.py``). Authored
     #: because the engine derives NO part of it: drift, unbalanced and sliding magnitudes are
     #: computed nowhere in this codebase, and the north entry canopy's governing case is a

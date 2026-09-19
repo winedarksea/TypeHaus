@@ -155,8 +155,14 @@ def test_fireplace_wash_faces_the_room(catlin_model_ro) -> None:
     class of bug on the one wall that does have a cladding layer.
     """
     model = catlin_model_ro
-    tags = ["W-M-FIRE-STUB", "W-M-FIRE-PLINTH", "W-M-FIRE-JAMB-S", "W-M-FIRE-JAMB-N",
-            "W-M-FIRE-HEAD"]
+    # DERIVED, not hard-coded. The panel was one wall, then five, then seven (the buried stub
+    # became three piers with two joist pockets between them on 2026-09-19), and a list spelled
+    # out here would have to be edited every time — which is how a test about layer ORDER ends
+    # up silently grading fewer walls than the house has.
+    tags = sorted(w.tag for w in model.walls
+                  if getattr(model.plan.by_tag(w.tag), "assembly", None)
+                  == "FIREPLACE_BRICK_WYTHE")
+    assert len(tags) == 7, tags
     for tag in tags:
         wall = model.wall(tag)
         assert wall is not None, f"{tag} missing from the resolved model"

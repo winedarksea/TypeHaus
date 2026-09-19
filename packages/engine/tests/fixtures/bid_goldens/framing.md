@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** c752039b04554fd7  
-**Lines:** 137
+**Model hash:** 4743caa59fcee17d  
+**Lines:** 134
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -21,13 +21,13 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 1.25x7.25 rim White-painted PT lumber — rim board (1.25x7.25 rim:post-paint-white) | 60 | LF ordered | 4 pcs, 57.3 LF cut | building |
 | 1.5x11.25 SPF framing lumber — blocking (1.5x11.25:spf) | 8 | LF ordered | 1 pcs, 1.9 LF cut | building |
 | 1.75x11.875 LSL — rim board (1.75x11.875 LSL) | 72 | LF ordered | 2 pcs, 72.0 LF cut | building |
-| 1.75x11.875 LVL — trimmer (1.75x11.875 LVL) | 284 | LF ordered | 22 pcs, 261.7 LF cut | building |
-| 11.875 I-joist — blocking, joist, sister joist (11.875 I-joist) | 2,348 | LF ordered | 212 pcs, 2105.7 LF cut | building |
+| 1.75x11.875 LVL — trimmer (1.75x11.875 LVL) | 204 | LF ordered | 18 pcs, 190.1 LF cut | building |
+| 11.875 I-joist — blocking, joist, sister joist (11.875 I-joist) | 2,388 | LF ordered | 214 pcs, 2143.8 LF cut | building |
 | 11.875 TJI 230 — rafter (11.875 TJI 230) | 760 | LF ordered | 38 pcs, 756.8 LF cut | building |
 | 11.875 floor truss — blocking, joist, trimmer (11.875 floor truss) | 44 | ea | 44 pcs, 481.7 LF cut; 504.0 LF in the takeoff | building |
 | 1x4 SPF framing lumber — girt strapping (1x4:spf) | 414 | LF ordered | 56 pcs, 369.0 LF cut | building |
 | 1x4 Structural 1 plywood — girt strapping (1x4:struct-1-plywood) | 312 | LF ordered | 42 pcs, 246.4 LF cut | building |
-| 2-1.75x11.875 LVL — header (2-1.75x11.875 LVL) | 16 | LF ordered | 6 pcs, 11.1 LF cut | building |
+| 2-1.75x11.875 LVL — header (2-1.75x11.875 LVL) | 8 | LF ordered | 5 pcs, 7.1 LF cut | building |
 | 2-1.75x14 LVL — header (2-1.75x14 LVL) | 20 | LF ordered | 1 pcs, 16.7 LF cut | building |
 | 2-1.75x16 LVL — ridge beam (2-1.75x16 LVL) | 36 | LF ordered | 1 pcs, 36.0 LF cut | building |
 | 2-1x4 — stud (2-1x4) | 24 | LF ordered | 3 pcs, 19.6 LF cut | building |
@@ -58,7 +58,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 |---|---|---|---|---|
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 22 | sheets 4x8 | 22 sheets 4x8 over 690.2 SF net | building |
 | 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 5.0 SF net | building |
-| 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 100 | sheets 4x8 | 100 sheets 4x8 over 3181.8 SF net | building |
+| 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 100 | sheets 4x8 | 100 sheets 4x8 over 3184.6 SF net | building |
 | SPF framing lumber, 3/4" ceiling (spf:ceiling) | 5 | sheets 4x8 | 5 sheets 4x8 over 159.2 SF net | building |
 | SPF framing lumber, 11 1/4" ceiling (spf:ceiling) | 3 | sheets 4x8 | 3 sheets 4x8 over 91.7 SF net | building |
 | Structural 1 plywood, 5/7" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 2 | sheets 4x8 | 2 sheets 4x8 over 50.1 SF net | building |
@@ -87,8 +87,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HGAM10 masonry gusset angle | 16 | ea |  | building |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | 1 | ea |  | building |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | 1 | ea |  | building |
-| HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | 1 | ea |  | building |
-| HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | 1 | ea |  | building |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | 2 | ea |  | building |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | 2 | ea |  | building |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | 2 | ea |  | building |
@@ -108,7 +106,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 7 | ea |  | building |
 | LTP4 lateral tie plate, gable-end truss to top plate | 2 | ea |  | building |
 | LTP4 lateral tie plate | 122 | ea |  | building |
-| LUS face-mount joist hanger | 2 | ea |  | building |
 | LUS face-mount joist hanger | 2 | ea |  | building |
 | LUS face-mount joist hanger | 1 | ea |  | building |
 | LUS face-mount joist hanger | 1 | ea |  | building |
@@ -268,8 +265,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | — |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | — |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | — |
-| HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | — |
-| HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | — |
 | HU212-3 face-mount hanger, triple 2x12 | — |
 | HU28-2Z face-mount hanger, double 2x8 (ZMAX) | — |
 | HUC concealed-flange masonry/concrete hanger | — |
@@ -285,7 +280,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | — |
 | LTP4 lateral tie plate, gable-end truss to top plate | — |
 | LTP4 lateral tie plate | — |
-| LUS face-mount joist hanger | — |
 | LUS face-mount joist hanger | — |
 | LUS face-mount joist hanger | — |
 | LUS face-mount joist hanger | — |

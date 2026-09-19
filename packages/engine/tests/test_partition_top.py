@@ -40,10 +40,13 @@ _ATTIC = ("W-A-BA-E", "W-A-BATH-S", "W-A-GC-S", "W-A-HALL-S", "W-A-SN", "W-A-STU
           "W-A-STU-W")
 
 #: Walls that pass :func:`is_interior_partition` and must NOT move: a room inside a room
-#: (the sauna hot room), the tub-deck curbs, a fireplace wythe segment, a screen skirt.
+#: (the sauna hot room), the tub-deck curbs, the three fireplace wythe piers, a screen skirt.
 #: Three of them sit inside ``platform._MAX_BAND_M``, so that guard does not save them.
+#: (``W-M-FIRE-STUB`` became ``-STUB-S``/``-M``/``-N`` on 2026-09-19 — three 12" piers with
+#: the joist pockets as gaps between them. Same wythe, same z band, three tags.)
 _NOT_FULL_HEIGHT = ("W-B-SA-N", "W-B-SA-N2", "W-B-SA-W", "W-M-TUBDK-S", "W-M-TUBDK-W",
-                    "W-M-FIRE-STUB", "W-BW-SCREEN-SKIRT")
+                    "W-M-FIRE-STUB-S", "W-M-FIRE-STUB-M", "W-M-FIRE-STUB-N",
+                    "W-BW-SCREEN-SKIRT")
 
 
 def test_the_gap_is_three_quarters_of_an_inch() -> None:

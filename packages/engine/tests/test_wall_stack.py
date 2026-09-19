@@ -191,12 +191,16 @@ def test_nothing_stacked_is_not_applicable_not_silence() -> None:
 def test_catlin_fireplace_stack_closes(catlin_model_ro) -> None:
     """The reference house, which is the panel this check was written from.
 
-    W-M-FIRE is five walls and twelve hand-worked junctions; the firebox is the one earned
-    opening. A new FAIL here means someone's arithmetic went stale, which is the whole
-    point — but a new *stack* appearing is worth reading too, so the count is pinned.
+    ``W-M-FIRE-*`` is SEVEN walls since 2026-09-19 — the buried stub became three piers with
+    two 4" joist pockets between them — and the earned openings are FIVE: the firebox, and
+    each pocket counted twice, once at the pier/pier plane below and once at the plinth
+    course spanning it. That is the verdict this check exists for: three piers side by side
+    in one z band, with the plinth's base exactly on their top, is not a hole in a wall. A
+    new FAIL here means someone's arithmetic went stale, which is the whole point — but a
+    new *stack* appearing is worth reading too, so the count is pinned.
     """
     matched = [f for f in run_from_model(catlin_model_ro, []).findings
                if f.check_id == _CHECK_ID]
     assert len(matched) == 1
     assert matched[0].result is Result.PASS
-    assert "1 earned opening(s)" in matched[0].message
+    assert "5 earned opening(s)" in matched[0].message

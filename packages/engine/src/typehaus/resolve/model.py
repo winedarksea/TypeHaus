@@ -623,6 +623,12 @@ class ResolvedFloor:
     #: Runs crossing a bearing-line blocking bay that its 2x6 pass-through box cannot clear
     #: (``resolve/floor_blocking.py``); ``mep.run_through_blocking`` fails each.
     blocking_conflicts: tuple = ()
+    #: Tags of the walls that pass through this deck — framing base under its soffit,
+    #: framing top over its sheet, footprint inside its outline (``resolve/through_deck.py``,
+    #: decision #78). Their cuts are already in ``deck_voids``; the tags are carried because
+    #: ``structural.through_deck_clearance`` grades exactly the pairs the saw was run for,
+    #: and a check that re-derived the set could reach a different one.
+    through_walls: tuple = ()
     #: ``(tag, ring)`` for each ``FloorOpening(purpose=CHASE)`` this deck is cut by — the
     #: same shape ``ResolvedSoffit.openings`` carries, and here for the same reason. A chase
     #: and a stair well frame identically and are both in ``deck_voids``, so by the time a

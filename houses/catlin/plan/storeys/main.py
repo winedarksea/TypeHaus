@@ -477,19 +477,37 @@ NODES = [
     # footprint stands over W-B-E1's 12" pour (x 420"..432") bar 1/8" (3/16" since 2026-09-13:
     # the 1/8" mineral silicate wash on the room face drifts the centred panel 1/16" west).
     #
-    # ** FIVE WALLS ON ONE AXIS, TEN NODES (2026-09-06). ** The panel was one Wall and so it
-    # resolved to a plain 4-point rectangle: a solid brick slab with the appliance box stuck
-    # on its face, no firebox reveal anywhere in the model. There is no `voids` path on a
-    # Wall short of a Window or a Door and this is neither, so the reveal is framed the way a
-    # mason frames it — a plinth, two jamb piers, a spandrel over the lintel, and the buried
-    # stub through the floor. Every one of them takes its OWN `open_end` node pair even where
-    # the position is identical: a stacked run sharing a node collapses every junction
-    # polygon it touches. Nothing here moves the 45 1/2" face or its zero cut closers.
+    # ** SEVEN WALLS ON ONE AXIS, FOURTEEN NODES (2026-09-19; five and ten from 2026-09-06).
+    # ** The panel was one Wall and so it resolved to a plain 4-point rectangle: a solid brick
+    # slab with the appliance box stuck on its face, no firebox reveal anywhere in the model.
+    # There is no `voids` path on a Wall short of a Window or a Door and this is neither, so
+    # the reveal is framed the way a mason frames it — a plinth, two jamb piers, a spandrel
+    # over the lintel, and the buried stub through the floor. Every one of them takes its OWN
+    # `open_end` node pair even where the position is identical: a stacked run sharing a node
+    # collapses every junction polygon it touches. Nothing here moves the 45 1/2" face or its
+    # zero cut closers.
     #
-    # The six y stations, all on the panel's own centre y=104":
+    # ** THE STUB IS THREE PIERS SINCE 2026-09-19, AND THE JOIST POCKETS ARE THE GAPS BETWEEN
+    # THEM. ** Same idiom as the firebox above: the slot is the gap between two elements, not
+    # a subtraction from one. FS-M-EAST's joists now run CONTINUOUS through the panel to their
+    # mudsill seat — the brick is 3 5/8" thick and stands 2 1/2" clear of a 5 1/2" mudsill, so
+    # a joist passes through it and reaches its bearing intact, and the premise FO-M-FIRE was
+    # framed on ("the brick cuts them short of that bearing") was never true. The panel never
+    # needed a joist-free strip; it needed two holes.
+    #
+    # The ten y stations, all on the panel's own centre y=104":
     #   81 1/4" / 126 3/4"   the 45 1/2" panel face (plinth, spandrel)
-    #   81 7/8" / 126 1/8"   the 44 1/4" stub, 5/8" in at each end — see FO-M-FIRE
+    #   81 7/8" / 126 1/8"   the 44 1/4" stub line — now the OUTER piers' outer ends
+    #   94" / 98"            the south pocket: joist 006's axis is 96", 3/4" clear each side
+    #                        of its 2 1/2" flange
+    #   110" / 114"          the north pocket: joist 007's axis is 112", same clearance
     #   89 1/4" / 118 3/4"   the 29 1/2" masonry opening, i.e. the jamb piers' inner faces
+    #
+    # ** WATCH THE TMS 402 PIER/COLUMN LINE IF THESE SLOTS EVER WIDEN. ** A masonry member
+    # becomes a COLUMN at a horizontal dimension <= 3t = 10 7/8", where an 8" minimum least
+    # dimension and minimum vertical reinforcement both bite and a 3 5/8" wythe fails
+    # outright. The middle pier is 12" and has 1 1/8" of room. Do not widen the slots past
+    # ~4 1/2" without re-checking that.
     Node(uid="8B5HVCT933", tag="N-M-FIRE-S",
          position=pt(ft(35, 1.6875), ft(6, 9.25)), open_end=True),
     Node(uid="ZBDG33XN7Y", tag="N-M-FIRE-N",
@@ -498,6 +516,12 @@ NODES = [
          position=pt(ft(35, 1.6875), ft(6, 9.875)), open_end=True),
     Node(uid="97S4NK2GRX", tag="N-M-FIRE-STUB-N",
          position=pt(ft(35, 1.6875), ft(10, 6.125)), open_end=True),
+    # The four pocket jambs. `open_end=True` is NOT optional on any of them: a dry run
+    # without it produced six `integrity.wall_loop_open` FAILs.
+    Node(uid="54QF6MV7B9", tag="N-M-FIRE-PIER-S2", position=pt(ft(35, 1.6875), ft(7, 10)), open_end=True),
+    Node(uid="GPPZEETR30", tag="N-M-FIRE-PIER-M1", position=pt(ft(35, 1.6875), ft(8, 2)), open_end=True),
+    Node(uid="7BKATS9ZS7", tag="N-M-FIRE-PIER-M2", position=pt(ft(35, 1.6875), ft(9, 2)), open_end=True),
+    Node(uid="0HTZA1YNJW", tag="N-M-FIRE-PIER-N1", position=pt(ft(35, 1.6875), ft(9, 6)), open_end=True),
     Node(uid="D2CYZWEM2K", tag="N-M-FIRE-JS-S",
          position=pt(ft(35, 1.6875), ft(6, 9.25)), open_end=True),
     Node(uid="5FH2RV57A3", tag="N-M-FIRE-JS-N",
@@ -1019,8 +1043,9 @@ WALLS = [
     # is the right place for it: it is buried in the floor, the mason never sees it, and the
     # visible coursing gets to start clean off the floor line.
     #
-    # The brick rises 14 3/8" through FS-M-EAST's joist zone —
-    # FO-M-FIRE below is that hole. 15/16" of it stands BELOW RM-B-GYM's ceiling plane
+    # The brick rises 14 3/8" through FS-M-EAST's joist zone — as three piers standing in two
+    # 4" joist pockets since 2026-09-19, see the stub block below; FO-M-FIRE was the hole
+    # until then. 15/16" of it stands BELOW RM-B-GYM's ceiling plane
     # (-12 1/2" = the -11 7/8" joist soffit plus 5/8" of board), so a square of brick does
     # show in the gym — ERRATUM 2026-09-19, this line used to say nothing showed.
     # **Result: zero brick load on the floor**, which is why
@@ -1049,8 +1074,10 @@ WALLS = [
     # `base_elevation` is absolute and `top` is a HEIGHT off it, so both columns below are
     # worked from the ABSOLUTE elevations, which is where the +15/16" finished floor lives:
     #
-    #     wall             width    base (abs)   top (abs)   height
-    #     W-M-FIRE-STUB    44 1/4"  -13 7/16"      15/16"    14 3/8"
+    #     wall               width    base (abs)   top (abs)   height
+    #     W-M-FIRE-STUB-S    12 1/8"  -13 7/16"      15/16"    14 3/8"
+    #     W-M-FIRE-STUB-M    12"      -13 7/16"      15/16"    14 3/8"
+    #     W-M-FIRE-STUB-N    12 1/8"  -13 7/16"      15/16"    14 3/8"
     #     W-M-FIRE-PLINTH  45 1/2"      15/16"    24 15/16"  24"
     #     W-M-FIRE-JAMB-S   8"       24 15/16"    45  9/16"  20 5/8"
     #     W-M-FIRE-JAMB-N   8"       24 15/16"    45  9/16"  20 5/8"
@@ -1091,9 +1118,35 @@ WALLS = [
     # rowlock's job — and since 2026-09-11 it is a modelled element, BM-M-FIRE-LINTEL below,
     # rather than a drawing note.
     #
-    # ** THE STUB IS 1 1/4" NARROWER THAN THE PANEL. ** 44 1/4" against 45 1/2", so the plinth
-    # corbels 5/8" over it at each end AT THE FLOOR LINE, buried under the lvp and invisible.
-    # That 1 1/4" is what lets FO-M-FIRE come in at 47 3/4" instead of 49" — see the opening.
+    # ** THE STUB LINE IS 1 1/4" NARROWER THAN THE PANEL. ** 44 1/4" against 45 1/2", so the
+    # plinth corbels 5/8" over the outer piers at each end AT THE FLOOR LINE, buried under the
+    # lvp and invisible.
+    #
+    # ** THE STUB IS THREE PIERS AND TWO 4" POCKETS (2026-09-19). ** FO-M-FIRE is gone with
+    # its 2-ply LVL header, its four full-span trimmer plies, two LUS, two HHUS410 and the
+    # I-joist web stiffeners; the joists run continuous to their mudsill seat and the mason
+    # lays round them. Stations, off y=0 on the joists' own 16" module:
+    #
+    #     pier S   81 7/8" -> 94"        12 1/8"
+    #     pocket   94"     -> 98"        4"      joist 006 on 96", 3/4" clear each side
+    #     pier M   98"     -> 110"       12"
+    #     pocket   110"    -> 114"       4"      joist 007 on 112", same
+    #     pier N   114"    -> 126 1/8"   12 1/8"
+    #
+    # Joists 005 (y=80) and 008 (y=128) need no pocket: they clear the stub line by 5/8" each
+    # side already, which is the same 5/8" the 44 1/4" width was drawn for in the first place.
+    # `structural.through_deck_clearance` grades all four gaps and governs on that 5/8".
+    #
+    # NO STEEL AND NO CAST LIGATURE over the pockets. W-M-FIRE-PLINTH's own first course
+    # spans each 4" gap with a foot of bearing either side: M = 27.6 in-lb on S = 3.06 in^3 =
+    # 9 psi against ~40 psi allowable flexural tension normal to bed joints, and it arches
+    # before it bends. It does want a BOND BREAK — sill seal or building paper — over each
+    # slot before it goes up: without one the plinth's bed joint bridges subfloor over ~29
+    # in^2, worth ~43 plf against preferences.toml's 50. Inside the limit, but spending most
+    # of the margin on a condition nobody can inspect once the plinth is up.
+    #
+    # The slots stay OPEN and UNMORTARED — they are clearance, not bearing. Pointing them up
+    # is the one way to turn this detail back into brick standing on a joist.
     # ** THE BRICK DOES NOT MOVE WHEN THE WASH IS ADDED. ** Same rule as
     # `params/sunken_garden._COURT_AXIS_SHIFT`, opposite sign. FIREPLACE_BRICK_WYTHE is
     # `layers=(brick, wash)` — the wash is LAST because these walls are authored S->N on their own
@@ -1103,8 +1156,21 @@ WALLS = [
     # Without it the wythe slides 1/16" west into the room and its overhang past W-B-E1's pour
     # grows; with it the brick holds exactly where notes/east_breast_bearing.md worked it and the
     # film oversails into the room, which is what actually gets built.
-    Wall(uid="ZG0Q6KGNXB", tag="W-M-FIRE-STUB", start_node="N-M-FIRE-STUB-S",
-         end_node="N-M-FIRE-STUB-N", assembly="FIREPLACE_BRICK_WYTHE", alignment=face("center", offset=inch(-0.0625)),
+    # The middle pier keeps the retired stub's uid so one IFC GlobalId survives the split
+    # (decision #16's habit); the two outer piers are minted by `haus fmt`.
+    Wall(uid="Q9ZJ24BP84", tag="W-M-FIRE-STUB-S", start_node="N-M-FIRE-STUB-S",
+         end_node="N-M-FIRE-PIER-S2", assembly="FIREPLACE_BRICK_WYTHE",
+         alignment=face("center", offset=inch(-0.0625)),
+         base_elevation=inch(-13.4375), top=inch(14.375),
+         structural_role=StructuralRole.NONBEARING),
+    Wall(uid="ZG0Q6KGNXB", tag="W-M-FIRE-STUB-M", start_node="N-M-FIRE-PIER-M1",
+         end_node="N-M-FIRE-PIER-M2", assembly="FIREPLACE_BRICK_WYTHE",
+         alignment=face("center", offset=inch(-0.0625)),
+         base_elevation=inch(-13.4375), top=inch(14.375),
+         structural_role=StructuralRole.NONBEARING),
+    Wall(uid="XZPB2TEJ3P", tag="W-M-FIRE-STUB-N", start_node="N-M-FIRE-PIER-N1",
+         end_node="N-M-FIRE-STUB-N", assembly="FIREPLACE_BRICK_WYTHE",
+         alignment=face("center", offset=inch(-0.0625)),
          base_elevation=inch(-13.4375), top=inch(14.375),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="4MHYR1HBC8", tag="W-M-FIRE-PLINTH", start_node="N-M-FIRE-S", end_node="N-M-FIRE-N",
@@ -1886,113 +1952,16 @@ FLOOR_OPENINGS = [
     # tile it carries, and it must be re-struck off the template before anyone cuts. The
     # basin top (55 9/16" x 28 3/8") is NOT the cutout and must not be used as one — it is
     # the water, not the shell.
-    # --- the fireplace surround's slot through FS-M-EAST ---------------------------------
-    #
-    # W-M-FIRE-*'s brick starts on W-B-E1's pour at -1'-1 7/16" and has to pass THROUGH the
-    # floor structure to reach the room. `params/main_deck.py`'s FS-M-EAST frames
-    # 11 7/8" I-joists at 16" o.c. running EAST-WEST and bearing on W-B-E1 — which is the
-    # reason this wall was always the right wall (notes/east_breast_bearing.md) and also the
-    # reason the joists are in the way: their ENDS bear on the mudsill at x 426"..431 1/2",
-    # and inboard of 426" they are in span. The brick face at x=34'-11 7/8" cuts them short of
-    # that bearing, so over this 45 1/2" of y no joist can reach it and the whole strip from
-    # the brick face to the wall line is joist-free. ** TWO joists are cut and headed **
-    # (ERRATUM 2026-09-19, was "three or four"): joist-0-006 at y=96" and joist-0-007 at
-    # y=112", both stopping at x=418 1/8". The lines at y=80" and y=128" are not cut — they
-    # land on the opening's own edges and are REPLACED BY the doubled trimmer plies, which
-    # run the full 17'-11" bearing to bearing.
-    #
-    # ** THE OPENING IS 47 3/4" (2026-09-06, was 4'-1"). ** 44 1/4" of stub, plus 1/2" of
-    # mason's clearance and one trimmer ply at each end. Deliberately NOT 48.0": the engine
-    # branches on `w_ft <= 4.0` and a span arriving as 4.0000000000000009 after a metre
-    # round-trip takes the wrong branch silently, so 1/4" of daylight is kept under the line.
-    #
-    # ** ERRATUM (2026-09-06). ** The note here used to frame this opening as "crossing IRC
-    # R502.10's 4'-0" line". Two things were wrong with that. The engine grades floor-opening
-    # headers at EIGHT feet (`checks/structural/checks.py::_PRESCRIPTIVE_HEADER_SPAN_FT`),
-    # never at four, so nothing in `haus check` ever looked at that line. And R502.10.1's
-    # short-opening allowance — a single joist-sized header with single trimmers — is a
-    # sawn-lumber rule that does not reach an I-joist deck at any span. `resolve/floors.py`
-    # now implements R502.10.1 and restricts it to sawn lumber for exactly that reason, so
-    # this opening gets the same doubled trimmers and 2-ply LVL header at 47 3/4" that it got
-    # at 4'-1", and would still get them at 3'-0". The paragraph was moot either way.
-    # ** THESE ARE I-JOISTS AND R502.10 IS A SAWN-LUMBER RULE. ** Cutting and heading
-    # 11 7/8" I-joists follows the MANUFACTURER's header table and needs their specified
-    # hangers and web stiffeners. That is still a published table rather than a PE stamp, and
-    # it is the one thing in this detail that must be confirmed against the joist maker's
-    # literature before framing. It is named in the note and on the drawing.
-    #
-    # `purpose=CHASE`: a closed enum of STAIR|CHASE|HATCH, and "a hole for something to pass
-    # through" is what this is — the same reading FO-M-TUBDK below takes.
-    #
-    # ** BOTH x EDGES ARE SET BY MEMBERS, NOT BY THE BRICK, and both were measured off the
-    # resolved framing rather than guessed. ** The resolver puts a member's AXIS on the
-    # opening edge, so:
-    #   * west  x=34'-10 1/8" — the 2-ply 1 3/4" x 11 7/8" LVL header the resolver emits is
-    #     3 1/2" wide, so an axis here lands its EAST FACE exactly on the brick face at
-    #     x=34'-11 7/8". Author the edge on the brick face instead and the header sits inside
-    #     the wythe, which is not buildable.
-    #   * east  x=35'-10 3/4" — FS-M-EAST's rim (1 1/4" x 11 7/8", axis x=35'-11 3/8") occupies
-    #     x 430 3/4"..432", so running the opening to the 36'-0" wall line drove all four
-    #     trimmers through the rim and `structural.member_interference` FAILed four times.
-    #     35'-10 3/4" is the rim's inboard face: the trimmers die on it, which is how a
-    #     trimmer meets a rim.
-    #
-    # ** THE y EDGES ARE SET BY THE TRIMMERS THE SAME WAY, AND THIS IS WHERE THE FIRST
-    # AUTHORING OF THIS OPENING WAS WRONG. ** The outline first ran y=6'-9 1/4"..10'-6 3/4",
-    # i.e. exactly the brick's own 45 1/2" — which reads as "the hole is the size of the
-    # thing going through it" and is the natural thing to write. It is not buildable. The
-    # resolver puts the FIRST trimmer ply's axis ON the opening edge (resolve/floors.py:
-    # "the trimmer pair's first ply retains its ends there. Only the second trimmer ply
-    # moves, and it moves outboard"), so a 2 1/2" I-joist ply centred on the edge reaches
-    # 1 1/4" INTO the hole at each end. ** The brick's last 1 1/4" at each end was in the
-    # same air as a trimmer, top to bottom of the joist zone. **
-    #
-    # Nothing catches that. `structural.member_interference` walks FRAMING against FRAMING;
-    # a wall's masonry layer is not a member, so brick-through-joist is invisible to it, and
-    # the whole thing sat at 0 FAIL. It was found by reading the resolved member boxes.
-    #
-    # So the edges are pushed out 1 3/4" each way — 1 1/4" for the trimmer ply, plus 1/2" of
-    # mason's clearance to the ply's inboard face:
-    #   * south y=6'-7 1/2" -> ply face at 6'-8 3/4", brick starts 6'-9 1/4"
-    #   * north y=10'-8 1/2" -> ply face at 10'-7 1/4", brick ends 10'-6 3/4"
-    # ** COST: THE HEADER NOW SPANS 4'-1", NOT 3'-9 1/2". ** That crosses IRC R502.10's 4'-0"
-    # line, so the "under 4'-0", prescriptively framable" reading this opening was authored
-    # under NO LONGER HOLDS. In practice it changes nothing, because the header was never
-    # prescriptive: it is a 2-ply LVL that `structural.floor_opening_header` sizes, in an
-    # I-joist floor R502.10 does not govern at all, and the joist maker's own table was
-    # already the stated authority (above, and in the note). The claim in the note was
-    # corrected rather than the opening shrunk — 1/2" of clearance to lay brick against is
-    # already the minimum a mason would accept.
-    #
-    # `bearing_refs=("W-B-E1",)` is the EAST edge and it is true: it stands over W-B-E1's 12"
-    # pour (x 420"..432", y 0..18'-0"), so `_opening_edge_has_declared_bearing` finds the whole
-    # edge carried and no second header is emitted there. The other three edges are framing —
-    # one header on the west and a DOUBLED trimmer north and south.
-    # ** `structural.floor_opening_header` SAYS NOTHING ABOUT THEM ** (ERRATUM 2026-09-19,
-    # was "is content with them at this size"): that check appends a finding only PAST its
-    # 8'-0" prescriptive span, so at 47 3/4" it never emits — not a PASS, nothing. No finding
-    # with that check id appears anywhere in this house's --no-suppress report.
-    #
-    # ** ALL OF THIS IS CHEAP ONLY WHILE THE BASEMENT CEILING IS OPEN **, the same warning
-    # params/main_deck.py already carries about work in this bay.
-    #
-    # ** ERRATUM (2026-09-19): THE CEILING PARAGRAPH HERE WAS WRONG BOTH WAYS. ** It said the
-    # opening CUTS RM-B-GYM's 5/8" gypsum and that no brick shows in the gym. Neither holds:
-    #   * `resolve/ceiling_over.deck_void_face` reads a chase that is mostly FILLED at the
-    #     ceiling plane as no void at all — this one is ~67% brick — and measured against the
-    #     current model it returns None for FS-M-EAST. The gym's 234 SF and 90 SF planes are
-    #     identical with and without this opening. What the opening cuts is the SUBFLOOR;
-    #     that is the deduction takeoff/framing.py makes, and what the three
-    #     BASEMENT_12/EXT_2X6 section goldens re-blessed on 2026-09-06 actually recorded.
-    #   * Brick DOES show below. The stub runs to -13 7/16", the joist soffit is at -11 7/8"
-    #     and the board hangs 5/8" under it, so the ceiling plane is -12 1/2" and 15/16" of
-    #     brick stands below it in the gym's corner.
-    FloorOpening(uid="93FDVPTK2R", tag="FO-M-FIRE", purpose=FloorOpeningPurpose.CHASE,
-                 outline=(pt(ft(34, 10.125), ft(6, 8.125)),
-                          pt(ft(35, 10.75), ft(6, 8.125)),
-                          pt(ft(35, 10.75), ft(10, 7.875)),
-                          pt(ft(34, 10.125), ft(10, 7.875))),
-                 bearing_refs=("W-B-E1",)),
+    # FO-M-FIRE was here — the 47 3/4" x 12 5/8" hole W-M-FIRE-STUB's brick rose through,
+    # with a 2-ply LVL header, four full-span 17'-11" trimmer plies, two LUS, two HHUS410
+    # and I-joist web stiffeners. RETIRED 2026-09-19, because the premise it was framed on
+    # was never true: the brick is 3 5/8" thick and stands 2 1/2" clear of a 5 1/2" mudsill,
+    # so a joist passes THROUGH the panel and reaches its east bearing intact. The panel
+    # never needed a joist-free strip; it needed two holes. W-M-FIRE-STUB is three piers now
+    # (see WALLS above) with the pockets as real gaps between them, the joists run
+    # continuous, and the subfloor cut around the piers is DERIVED — nobody authors it
+    # (`resolve/through_deck.py`, decision #78). The two live engine traps this block
+    # carried are salvaged onto FO-M-ERV-OA below, which already cross-referenced them.
     # ** THE EAST EDGE FOLLOWS THE BATH, NOT THE WALL (fixed 2026-09-09). ** It was carried
     # 2" east with W-M-BA2E2's move, which made the hole the rim's full 35 3/4" width and
     # put it 1" off the bath's centre — an open 1" slot through the cap east of the rim,
@@ -2024,14 +1993,36 @@ FLOOR_OPENINGS = [
     # ** THE OUTLINE IS THE DUCT PLUS THE FRAMING, NOT THE DUCT. ** `resolve/floors.py` puts
     # the first trimmer ply's AXIS on the y edges and the header's axis on the x edges, so a
     # hole drawn at the duct's own 8" would have 1 1/4" of trimmer and 1 3/4" of header
-    # standing inside it — the mistake FO-M-FIRE's note records at length. x 2'-9"..3'-11"
-    # and y 33'-5 1/2"..34'-4 1/2" leave the 8" duct 1 1/4" of air on all four sides once
-    # both allowances are made.
+    # standing inside it. x 2'-9"..3'-11" and y 33'-5 1/2"..34'-4 1/2" leave the 8" duct
+    # 1 1/4" of air on all four sides once both allowances are made.
     #
-    # ** I-JOISTS, SO THE MANUFACTURER'S HEADER TABLE GOVERNS, NOT R502.10. ** Same caveat
-    # FO-M-FIRE carries: cutting and heading 11 7/8" I-joists follows the joist maker's
-    # literature and needs their hangers and web stiffeners. R502.10.1's short-opening
-    # allowance is a sawn-lumber rule and does not reach this deck at any span.
+    # ** SALVAGED FROM FO-M-FIRE'S NOTE (retired 2026-09-19). ** Two live engine traps that
+    # outlive that opening and belong on whichever opening is still authored:
+    #
+    #   1. THE FIRST TRIMMER PLY'S AXIS SITS ON THE OPENING EDGE. `resolve/floors.py`:
+    #      "the trimmer pair's first ply retains its ends there. Only the second trimmer ply
+    #      moves, and it moves outboard." So a ply centred on the edge reaches HALF ITS OWN
+    #      WIDTH into the hole at each end, top to bottom of the joist zone. FO-M-FIRE was
+    #      first drawn at the brick's own 45 1/2" — the natural thing to write, "the hole is
+    #      the size of the thing going through it" — and the brick's last inch at each end
+    #      stood in the same air as a trimmer for the full 11 7/8" of depth. Nothing caught
+    #      it: `structural.member_interference` walks FRAMING against FRAMING and a wall's
+    #      masonry layer is not a member, so it sat at 0 FAIL until the resolved member boxes
+    #      were read by hand. (`structural.through_deck_clearance` grades that class of clash
+    #      now, but only for a wall passing through a deck.) Draw the outline off the
+    #      MEMBERS, never off the thing passing through.
+    #
+    #   2. `header_size` BRANCHES ON `w_ft <= 4.0`, AND 48.0" IS ON THE BOUNDARY. A span
+    #      arriving as 4.0000000000000009 after a metre round trip takes the wrong branch
+    #      silently. FO-M-FIRE was deliberately 47 3/4" rather than 48" for that reason. Keep
+    #      a quarter inch of daylight under any dimension that lands on an engine threshold.
+    #
+    # ** I-JOISTS, SO THE MANUFACTURER'S HEADER TABLE GOVERNS, NOT R502.10. ** Cutting and
+    # heading 11 7/8" I-joists follows the joist maker's literature and needs their hangers
+    # and web stiffeners. R502.10.1's short-opening allowance is a sawn-lumber rule and does
+    # not reach this deck at any span. These two chases are the LAST cut I-joists in the
+    # house: FO-M-FIRE carried the same caveat until 2026-09-19, when its joists went back to
+    # running whole (the fireplace piers stand in pockets between them).
     #
     # No `bearing_refs`: both y edges land mid-bay in FS-M-MECH's own joist field, so the
     # trimmers carry the header and no wall is asked to receive a cut joist.
