@@ -15,11 +15,15 @@ from typehaus.analytical.graph import (
     MemberPointLoad,
     Node,
     NodeLoad,
+    Plate,
+    PlatePressure,
     Releases,
     Support,
+    SupportSpring,
 )
 
 __all__ = [
     "NODE_SNAP_M", "AnalyticalModel", "Combination", "Fixity", "LoadCase", "LoadCaseKind",
-    "Member", "MemberLoad", "MemberPointLoad", "Node", "NodeLoad", "Releases", "Support",
+    "Member", "MemberLoad", "MemberPointLoad", "Node", "NodeLoad", "Plate",
+    "PlatePressure", "Releases", "Support", "SupportSpring",
 ]

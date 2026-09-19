@@ -154,13 +154,30 @@ def test_no_two_nodes_are_the_same_point(analytical) -> None:
 
 
 def test_the_surface_items_are_named_as_gaps(analytical) -> None:
-    """A retaining wall this version cannot draw is listed in words, never left silent."""
+    """A surface this version cannot draw is listed in words, never left silent."""
     surface = {item for item in analytical.scope
-               if item.split("/", 1)[0] in ("retaining_wall", "retaining_system", "wall_panel")}
+               if item.split("/", 1)[0] in ("retaining_system", "wall_panel", "girt_screw")}
     assert surface, "catlin has no surface-member item — the fixture has drifted"
     for item in sorted(surface):
         assert any(line.startswith(f"{item}:") for line in analytical.gaps), (
             f"{item} has no member and no gap line")
+
+
+def test_a_retaining_wall_is_spoken_for_by_the_shell_stage_and_only_once(analytical) -> None:
+    """``shells.py`` meshes it or refuses, and either way it owns the line.
+
+    It used to be listed as "no analytical representation in v1: surface members are a
+    follow-on" — a sentence that stopped being true the day the shell stage landed. Two
+    lines about one wall, one of them false, is worse than either alone.
+    """
+    walls = {item for item in analytical.scope if item.startswith("retaining_wall/")}
+    assert walls, "catlin has no retaining wall — the fixture has drifted"
+    assert not [line for line in analytical.gaps
+                if any(line.startswith(f"{item}:") for item in walls)]
+    spoken = [line for line in analytical.gaps if "subgrade reaction" in line]
+    assert len(spoken) == 1, analytical.gaps
+    for item in sorted(walls):
+        assert item in spoken[0]
 
 
 def test_two_builds_are_identical(catlin_engineering) -> None:

@@ -167,6 +167,23 @@ class StructuralPreferences:
     roof_beam_snow_psf: float | None = None
     #: Dead load, psf, on the same beam: roofing, deck, framing and its own weight.
     roof_beam_dead_psf: float = 10.0
+    #: Modulus of subgrade reaction under a retaining wall's mat, pci, and the same number
+    #: lying on its side for the buried face. **Only the analytical SHELL export reads
+    #: these** (``analytical/shells.py``): a shell model of a retaining wall is a wall on
+    #: springs, and a spring needs a stiffness that a bearing capacity cannot supply.
+    #:
+    #: ``None`` is the shipped state and the correct one. A subgrade modulus is a
+    #: geotechnical measurement, not a table lookup — IBC Table 1806.2 publishes an
+    #: allowable bearing PRESSURE and says nothing about how far the soil moves under it —
+    #: so the engine refuses rather than defaulting, and the refusal is printed in the
+    #: export's own gap register. This is the same ``BasedValue`` refusal
+    #: ``engineering/sunken_garden/inputs`` applies to the courtyard's coupled model,
+    #: reaching the project graph.
+    soil_vertical_subgrade_pci: float | None = None
+    soil_horizontal_subgrade_pci: float | None = None
+    #: Where those two came from, named the way a seal names its source. Required with
+    #: them: a stiffness with no basis is a number somebody typed.
+    soil_subgrade_basis: str = ""
 
 
 @dataclass(frozen=True)

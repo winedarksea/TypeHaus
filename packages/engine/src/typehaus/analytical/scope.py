@@ -8,10 +8,14 @@ something that carries it to the ground, plus the path UP to what stands on it.
 
 The walk **terminates at a wall or a footing**, which become support nodes rather than
 members: a beam bearing in a foundation wall is a pinned support, a post on its bell is a
-support, and modelling the wall itself would mean surface members this version does not
-have. Where an item is a wall or a panel — ``retaining_wall``, ``retaining_system``,
-``wall_panel`` — the whole item is a gap, named in words in
-:attr:`AnalyticalModel.gaps` rather than silently absent.
+support, and a wall is not a curve member. Where an item is a wall or a panel —
+``retaining_system``, ``wall_panel``, ``girt_screw`` — the whole item is a gap, named in
+words in :attr:`AnalyticalModel.gaps` rather than silently absent.
+
+``retaining_wall`` is the exception and no longer reaches :func:`gap_line`:
+:mod:`~typehaus.analytical.shells` meshes it as plates on soil springs, or says in its own
+words why it cannot. It stays in :data:`SURFACE_KINDS` because that set is about the WALK —
+a wall is still a terminal and never a member — and the shell stage speaks for it after.
 """
 
 from __future__ import annotations
@@ -19,7 +23,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-#: Items whose element is a surface, not a curve member. Every one of these is a gap in v1.
+#: Items whose element is a surface, not a curve member — so the walk terminates there.
+#: ``retaining_wall`` is meshed by ``shells.py``; the rest are gaps in words.
 SURFACE_KINDS = frozenset({"girt_screw", "retaining_wall", "retaining_system",
                            "wall_panel"})
 

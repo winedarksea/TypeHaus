@@ -56,7 +56,41 @@ echo "== permit checklist renders (starter) =="
   sys.exit(0 if d['items'] else 'permit checklist produced no items')"
 
 echo "== catlin permit print =="
-"$VHAUS" print houses/catlin
+# ** THE DRAFT GATE IS SHUT ON PURPOSE, AND THIS IS THE ONLY SCRIPT THAT NOTICES. **
+# `scripts/verify.sh` never runs `haus print`, so when the 2026-09-18 engineering gap
+# review wired `engineering/column_base.py` to a check and the north entry canopy's two
+# cast columns went red on IBC 1807.3.2.1 embedment, this step — and only this step —
+# started refusing. The refusal is correct: a permit printoff is exactly what a shut gate
+# is for. What would be wrong is a script that cannot tell THAT refusal from any other.
+#
+# So the refusal is expected, and it is expected to name that one item. See verify.sh's
+# ACCEPTED block for the arithmetic and `notes/entry_column_base_fixity.md` §6 for the
+# three closures. DELETE THIS BLOCK, and restore the bare `"$VHAUS" print houses/catlin`,
+# the day one of them lands.
+PRINT_OUT="$ENVDIR/catlin-print.txt"
+if "$VHAUS" print houses/catlin > "$PRINT_OUT" 2>&1; then
+  cat "$PRINT_OUT"
+  echo "the catlin draft gate is OPEN again — the column_base embedment gap is closed."
+  echo "restore the plain 'haus print houses/catlin' here and delete verify.sh's ACCEPTED."
+  exit 1
+fi
+cat "$PRINT_OUT"
+grep -q "Fixed column base embedment" "$PRINT_OUT" \
+  || { echo "catlin's permit print is blocked by something OTHER than the accepted"; \
+       echo "column_base embedment gap — read the output above."; exit 1; }
+# One blocker, not a pile of them behind the one we accept: every line the gate lists has
+# to be that item.
+"$VPY" - "$PRINT_OUT" <<'PYEOF'
+import sys
+
+blocked = [line.strip() for line in open(sys.argv[1])
+           if line.startswith("  ") and line.strip()]
+other = [line for line in blocked if not line.startswith("Fixed column base embedment")]
+if other:
+    sys.exit("the permit gate lists blockers beyond the accepted one:\n  "
+             + "\n  ".join(other))
+print(f"permit print refused as expected: {len(blocked)} accepted blocker(s)")
+PYEOF
 
 echo "== wheel installs and scaffolds a buildable house =="
 "$VPY" -m build --wheel packages/engine --outdir "$ENVDIR/wheel"
