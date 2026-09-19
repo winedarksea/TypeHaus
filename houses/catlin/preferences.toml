@@ -294,12 +294,16 @@ suppress = [
   #     duct <-> duct            37          37     (untouched: see the ERV note below)
   #     drain <-> duct           33          33
   #     duct <-> vent            28          28
-  #     vent <-> vent-riser       2           0      -2  (the radon approach, above)
   #     drain <-> supply         32          13     -19
   #     supply <-> supply        18           9      -9
   #     supply <-> vent          12           2     -10
   #     duct <-> supply          12          10      -2
-  #     everything else          16          15      -1
+  #     everything else          16          14      -2   (the two radon pairs; the rest of
+  #                                                        this row is drain<->vent 6,
+  #                                                        drain<->drain 3 and five singles)
+  #                             ---         ---
+  #                             188         146
+  # The rows sum to the headline; if they stop summing, one of them went stale.
   #
   # Every pair that went is one a supply run was party to, which is what a band move can
   # do and the whole of what it can do. The three duct classes are 98 of the remaining 147
