@@ -3,12 +3,13 @@
 ```
 .venv/bin/haus calcs houses/catlin                    # -> houses/catlin/out/calcs/
 .venv/bin/haus calcs houses/catlin --out /tmp/review  # anywhere else
-.venv/bin/haus calcs houses/catlin --item retaining_wall/W-SG-E2   # one sheet + front matter
+.venv/bin/haus calcs houses/catlin --item retaining_wall/W-SG-E2   # one member + front matter
 ```
 
 The thing you hand a professional engineer. `haus engineering` answers *where does this
-house stand* at a glance and is meant to be read in a terminal; this is forty-odd sheets
-somebody opens in an editor, marks up, and sends back.
+house stand* at a glance and is meant to be read in a terminal; this is a set of
+calculations somebody opens in an editor, marks up, and sends back — one per design family,
+each with a member schedule, over an appendix of per-member data.
 
 ## What it emits
 
@@ -25,14 +26,49 @@ out/calcs/
                           the computed items by id, the deferred ones somebody else
                           seals, and what is answered prescriptively and is not here
   calcs/
-    retaining_wall__W-SG-E2.md      one sheet per item
+    retaining_wall.md       THE CALCULATIONS — one per design family, with a member
+    deck_post.md            schedule. This is what a reviewer reads.
     ...
+  appendix/
+    retaining_wall__W-SG-E2.md      the per-member data behind the schedules, one
+    ...                             sheet per item
 ```
 
-A sheet's filename is the item id with `/` written `__`, so the id is recoverable from the
-filename and a directory listing sorts by kind.
+A family calculation is named for its `kind`. An appendix sheet's filename is the item id
+with `/` written `__`, so the id is recoverable from the filename and a directory listing
+sorts by kind.
 
-## The nine sections
+## One calculation per design family, not one per item
+
+Until 2026-09-18 `calcs/` led with one nine-section sheet per item, and for twelve cast
+columns that was twelve copies of ACI 318-19 §22.4.2.1 with an element tag and four numbers
+changed. A reviewer checking a family of members wants the clause once, the arithmetic
+once, and a **schedule** saying which member is which and which one governs.
+
+So `calcs/<kind>.md` carries:
+
+1. **Scope** — what this family is
+2. **References** — every citation the whole family rests on, deduped, printed once
+3. **Member schedule** — one row per member: elements, governing limit state, demand,
+   capacity, d/c, status, coverage, seal, and a pointer to its appendix sheet
+4. **The calculation, worked at the governing member** — the inputs as
+   `symbol = value unit`, then each limit state as its own substitution beside its ratio
+   and citation. Substitutions with units, because a row reading `9,461 / 7,150 = 1.32` is
+   checkable only by somebody who already knows what went into the 9,461
+5. **Result** — the family's counts, and the member the verdict comes from
+6. **Assumptions and exclusions** — every distinct record note across the family
+7. **Open inputs** — per member, only the members that have any
+8. **Independent check** — the family's oracle notes and the tests that reproduce them
+9. **What this calculation does not cover** — said once, not once per member
+10. **Per-member fingerprints** — what a seal on any one member would be pinned against
+
+The governing member is picked by status first and ratio second: an INCOMPLETE member has
+no ratio to lose with and is a bigger fact about the family than an OK member at 0.98.
+
+`appendix/` keeps every field the per-item sheet ever carried, in the nine-section order
+below. Nothing was dropped in the restructure; the machine data stopped being the document.
+
+## The nine sections (the appendix sheets)
 
 Standard US structural-calc order. A header block (item, elements, basis, basis version,
 local status, seal, fingerprint, house, generation date) and then:

@@ -34,6 +34,10 @@ FILES = {
 }
 
 
+_INPUTS = PdfInputs(house="H", generated="2026-09-06", engine_version="0.1",
+                    content_hash="abc123")
+
+
 def test_page_numbers_are_section_prefixed_and_restart():
     """The property the numbering exists for.
 
@@ -264,3 +268,112 @@ def test_the_measure_is_wide_enough_to_read_and_narrow_enough_to_check_beside():
     """
     measure = PAGE[0] - 0.90 - MARGIN_R
     assert 4.7 <= measure <= 5.8, f"{measure:.2f}in of text measure"
+
+
+def _measured(files, inputs=None):
+    """Every flowable in the story, wrapped at the real frame width it will be laid in."""
+    from typehaus.takeoff.calc_pdf import (
+        MARGIN_L,
+        _story,
+        _styles,
+        index_rows,
+        paginate,
+    )
+
+    inputs = inputs or _INPUTS
+    width = (PAGE[0] - MARGIN_L - MARGIN_R) * 72
+    story = _story(files, inputs, index_rows(paginate(files)), _styles(), width)
+    return width, story
+
+
+def test_nothing_in_the_story_is_wider_than_the_measure():
+    """** THE THIRD THING F4 ASKED FOR, AND THE ONLY ONE WRAPPING DOES NOT GIVE FREE. **
+
+    A ``Paragraph`` flows to its frame by construction, so no assertion about it can fail.
+    A ``Table`` cannot: reportlab lays a table out at the column widths it was handed, and
+    if those sum past the frame it draws straight over the right margin and off the page
+    with no error and no marker. That is the same failure mode as the old renderer's
+    character clip, arrived at from the other side, and it is what ``_table``'s floor-plus-
+    share widths exist to prevent — so it is what this test asserts, on the real objects.
+    """
+    width, story = _measured(FILES)
+    for flowable in story:
+        if not hasattr(flowable, "wrap"):
+            continue
+        drawn = flowable.wrap(width, 10_000)[0]
+        assert drawn <= width + 0.5, (
+            f"{type(flowable).__name__} draws {drawn:.1f}pt into a {width:.1f}pt frame")
+
+
+def test_a_table_too_wide_for_the_frame_is_squeezed_rather_than_overhanging():
+    """Six columns of long unbreakable tokens: every floor wants more than a sixth."""
+    wide = "| " + " | ".join(f"col{i}" for i in range(6)) + " |\n"
+    wide += "|" + "---|" * 6 + "\n"
+    wide += "| " + " | ".join("W" * 40 for _ in range(6)) + " |\n"
+    width, story = _measured({**FILES, "04-assumptions.md": f"# Assumptions\n\n{wide}"})
+    tables = [f for f in story if type(f).__name__ == "Table"]
+    assert tables, "the fixture stopped producing a table"
+    for table in tables:
+        assert table.wrap(width, 10_000)[0] <= width + 0.5
+
+
+def test_the_real_catlin_package_never_overhangs_the_frame(catlin_ctx):
+    """The fixture tables are short; catlin's citations are 400 characters and real."""
+    from typehaus.checks import evaluate_permit_checklist, run_checks
+    from typehaus.takeoff.calc_package import PackageInputs, calc_package
+
+    report = run_checks(catlin_ctx)
+    named = {f.engineering_item for f in report.findings if f.engineering_item}
+    files = calc_package(PackageInputs(
+        house="catlin", model=catlin_ctx.model,
+        item_ids=tuple(sorted(named | set(catlin_ctx.engineering))),
+        results=catlin_ctx.engineering, register=catlin_ctx.engineering_register,
+        generated="2026-09-18", engine_version="test",
+        content_hash="deadbeefdeadbeef", profile_name=catlin_ctx.profile.name,
+        checklist=evaluate_permit_checklist(report, catlin_ctx.profile)))
+    width, story = _measured(files)
+    widest = max((f.wrap(width, 10_000)[0] for f in story if hasattr(f, "wrap")),
+                 default=0.0)
+    assert widest <= width + 0.5, f"{widest:.1f}pt into a {width:.1f}pt frame"
+
+
+def test_an_overflowing_table_takes_it_out_of_the_wide_columns_only():
+    """** "d/c" USED TO PRINT AS "d/ c". **
+
+    The item register is eight columns wide and its floors already overflow the frame. The
+    old fallback rescaled every column by the same fraction, so a three-character header
+    that needed 18 points lost the same share as a prose column with 200 to spare — and
+    only the narrow columns were narrow enough to break.
+    """
+    from typehaus.takeoff.calc_pdf import _water_fill
+
+    # One column wants far more than its share; the rest are small and must not move.
+    widths = [10.0, 12.0, 8.0, 400.0]
+    filled = _water_fill(widths, 200.0)
+    assert filled[:3] == [10.0, 12.0, 8.0], "a narrow column paid for a wide one"
+    assert sum(filled) == pytest.approx(200.0)
+
+    # Everything wants more than its share: the cap is the even split.
+    assert _water_fill([100.0, 100.0], 50.0) == [25.0, 25.0]
+    # Already fits: untouched.
+    assert _water_fill([10.0, 20.0], 100.0) == [10.0, 20.0]
+
+
+def test_a_narrow_header_keeps_its_own_word_in_a_crowded_table():
+    """Asserted through the real table builder, which is where the defect actually lived."""
+    from reportlab.pdfbase.pdfmetrics import stringWidth
+
+    from typehaus.takeoff.calc_markdown import parse
+    from typehaus.takeoff.calc_pdf import MARGIN_L, _styles, _table
+
+    header = "| Item | Elements | Local | Governing | d/c | Seal | Independently checked |"
+    rule = "|" + "---|" * 7
+    row = ("| `column_head_joint/PT-BW-E` | PT-BW-E | NO LOCAL CALC | — | — | unsealed "
+           "| north_entry_piers.md §8d |")
+    block = next(b for b in parse(f"{header}\n{rule}\n{row}\n") if isinstance(b, Table_))
+    width = (PAGE[0] - MARGIN_L - MARGIN_R) * 72
+    table = _table(block, _styles(), width)
+    widths = table._argW
+    assert sum(widths) <= width + 0.5
+    assert widths[4] >= stringWidth("d/c", "Helvetica-Bold", 7.4), "'d/c' will wrap"
+    assert widths[5] >= stringWidth("unsealed", "Helvetica", 7.4), "'unsealed' will wrap"

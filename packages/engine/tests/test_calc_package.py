@@ -30,6 +30,7 @@ from typehaus.engineering.fingerprint import fingerprint
 from typehaus.engineering.item import Status
 from typehaus.engineering.registry import oracles_for
 from typehaus.findings import Result
+from typehaus.takeoff.calc_family import family_filename
 from typehaus.takeoff.calc_package import PackageInputs, calc_package
 from typehaus.takeoff.calc_sheet import sheet_filename
 
@@ -45,6 +46,23 @@ SECTIONS = (
     "## 7. Open inputs",
     "## 8. Independent check",
     "## 9. What this sheet does not cover",
+)
+
+#: A FAMILY calculation's own order. The first two and the last three are deliberately the
+#: same words as a sheet's — a reviewer moving between the calculation and the appendix
+#: behind it should not be learning a second vocabulary — and the three in the middle are
+#: what makes it a calculation over a family rather than over one member.
+FAMILY_SECTIONS = (
+    "## 1. Scope",
+    "## 2. References",
+    "## 3. Member schedule",
+    "## 4. The calculation, worked at the governing member",
+    "## 5. Result",
+    "## 6. Assumptions and exclusions",
+    "## 7. Open inputs",
+    "## 8. Independent check",
+    "## 9. What this calculation does not cover",
+    "## 10. Per-member fingerprints",
 )
 
 
@@ -219,12 +237,23 @@ def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
 # --- the package (Phase 2) ---------------------------------------------------------------
 
 def test_every_item_gets_exactly_one_sheet_and_the_index_lists_it(package, catlin_engineering):
-    _ctx, item_ids, _ = catlin_engineering
-    sheets = {name for name in package if name.startswith("calcs/")}
-    assert sheets == {f"calcs/{sheet_filename(i)}" for i in item_ids}
+    """One appendix sheet per item, and one calculation per design FAMILY in front of it.
+
+    The package led with one nine-section sheet per item until 2026-09-18 — twelve copies
+    of ACI 318-19 §22.4.2.1 for twelve cast columns. The per-member data is all still here;
+    it is behind the calculation that reads it, and the calculations are what the README
+    indexes.
+    """
+    ctx, item_ids, _ = catlin_engineering
+    sheets = {name for name in package if name.startswith("appendix/")}
+    assert sheets == {f"appendix/{sheet_filename(i)}" for i in item_ids}
     assert len(sheets) == len(item_ids)
+
+    kinds = {ctx.engineering[i].kind for i in item_ids}
+    calculations = {name for name in package if name.startswith("calcs/")}
+    assert calculations == {f"calcs/{family_filename(kind)}" for kind in kinds}
     readme = package["README.md"]
-    for name in sorted(sheets):
+    for name in sorted(calculations):
         assert f"`{name}`" in readme, f"{name} is not listed in the index"
 
 
@@ -239,11 +268,27 @@ def test_the_front_matter_is_complete(package):
 
 def test_every_sheet_carries_all_nine_sections(package):
     for name, text in package.items():
-        if not name.startswith("calcs/"):
+        if not name.startswith("appendix/"):
             continue
         for section in SECTIONS:
             assert section in text, f"{name} is missing {section}"
         assert text.index(SECTIONS[0]) < text.index(SECTIONS[-1]), name
+
+
+def test_every_family_calculation_carries_its_own_sections_in_order(package):
+    """And a schedule with a row for every member, which is the point of the restructure."""
+    calculations = [n for n in package if n.startswith("calcs/")]
+    assert calculations, "the package has no family calculation"
+    for name in calculations:
+        text = package[name]
+        positions = []
+        for section in FAMILY_SECTIONS:
+            assert section in text, f"{name} is missing {section}"
+            positions.append(text.index(section))
+        assert positions == sorted(positions), f"{name}'s sections are out of order"
+        schedule = text.split("## 3. Member schedule")[1].split("## 4.")[0]
+        assert "| Member |" in schedule
+        assert "appendix/" in schedule, f"{name} does not point at its per-member data"
 
 
 def test_every_citation_on_a_record_reaches_its_references(package, catlin_engineering):
@@ -252,7 +297,7 @@ def test_every_citation_on_a_record_reaches_its_references(package, catlin_engin
     ctx, item_ids, _ = catlin_engineering
     for item in item_ids:
         record = ctx.engineering[item]
-        text = package[f"calcs/{sheet_filename(item)}"]
+        text = package[f"appendix/{sheet_filename(item)}"]
         references = text.split("## 3. Given")[0]
         for state in record.limit_states:
             assert state.citation in references, f"{item}: {state.citation!r} missing"
@@ -264,7 +309,7 @@ def test_the_fingerprint_on_a_sheet_is_the_one_the_cli_prints(package, catlin_en
     ctx, item_ids, _ = catlin_engineering
     for item in item_ids:
         record = ctx.engineering[item]
-        text = package[f"calcs/{sheet_filename(item)}"]
+        text = package[f"appendix/{sheet_filename(item)}"]
         if record.status is Status.NO_CALC:
             # Nothing to hash, and the sheet has to say so rather than print a digest of
             # an empty input set that a seal could then be pinned against.
@@ -327,7 +372,11 @@ def test_one_item_still_gets_the_front_matter(catlin_engineering):
         house="catlin", model=ctx.model, item_ids=item_ids, results=ctx.engineering,
         register=ctx.engineering_register, generated="2026-01-01",
         profile_name=ctx.profile.name, checklist=checklist), only=only)
-    assert [n for n in files if n.startswith("calcs/")] == [f"calcs/{sheet_filename(only)}"]
+    assert ([n for n in files if n.startswith("appendix/")]
+            == [f"appendix/{sheet_filename(only)}"])
+    assert ([n for n in files if n.startswith("calcs/")]
+            == [f"calcs/{family_filename('retaining_wall')}"]), \
+        "narrowing to one item narrows its family calculation to that one member too"
     assert "01-design-criteria.md" in files
 
 

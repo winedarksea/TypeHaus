@@ -26,7 +26,8 @@ from typehaus.emit.md_writer import bullets, callout, document, heading, kv_bloc
 from typehaus.engineering.deferred import DEFERRALS
 from typehaus.engineering.item import EngineeringRecord, Status
 from typehaus.engineering.register import EngineeringRegister
-from typehaus.takeoff.calc_criteria import _criteria
+from typehaus.takeoff.calc_criteria import DESIGN_METHOD, _criteria
+from typehaus.takeoff.calc_family import families, family_filename, render_family
 from typehaus.takeoff.calc_sheet import STATUS_LABEL, render_sheet, sheet_filename
 
 #: Printed on the cover, and meant to be read. A draft package is a working document; a set
@@ -87,10 +88,20 @@ def calc_package(inputs: PackageInputs, *, only: str | None = None) -> dict[str,
         "04-assumptions.md": _assumptions(inputs),
         "05-scope-of-review.md": _scope_of_review(inputs),
     }
-    for record in inputs.records:
-        if only is not None and record.item_id != only:
-            continue
-        files[f"calcs/{sheet_filename(record.item_id)}"] = render_sheet(
+    kept = [record for record in inputs.records
+            if only is None or record.item_id == only]
+    # ** THE CALCULATIONS ARE PER FAMILY; THE PER-ITEM DATA IS AN APPENDIX. **
+    # One sheet per item meant twelve copies of ACI 318-19 §22.4.2.1 for twelve cast
+    # columns, and eleven of them added an element tag and four numbers to the first. A
+    # reviewer wants the clause once, the arithmetic once, and a schedule saying which
+    # member governs. Nothing is dropped: every field the per-item sheet ever carried is
+    # still on it, in `appendix/`, behind the calculation that reads it.
+    for kind, records in families(kept).items():
+        files[f"calcs/{family_filename(kind)}"] = render_family(
+            kind, records, inputs.register, generated=inputs.generated,
+            house=inputs.house, design_method=DESIGN_METHOD.get(kind, ""))
+    for record in kept:
+        files[f"appendix/{sheet_filename(record.item_id)}"] = render_sheet(
             record, inputs.register, generated=inputs.generated, house=inputs.house)
     return dict(sorted(files.items()))
 
@@ -98,7 +109,8 @@ def calc_package(inputs: PackageInputs, *, only: str | None = None) -> dict[str,
 # --- front matter ----------------------------------------------------------------------
 
 def _readme(inputs: PackageInputs) -> str:
-    sheets = [f"`calcs/{sheet_filename(r.item_id)}`" for r in inputs.records]
+    sheets = [f"`calcs/{family_filename(kind)}` — {len(group)} member(s)"
+              for kind, group in families(list(inputs.records)).items()]
     return document(
         heading(f"Calculation package — {inputs.house}"),
         NOT_FOR_CONSTRUCTION,
@@ -113,8 +125,12 @@ def _readme(inputs: PackageInputs) -> str:
             "limit state, its seal status and the note that independently checks it.",
             "`03-open-items.md` — what is **not** finished, and who owns each one.",
             "`04-assumptions.md` — every assumption any calculation made, deduped.",
-            f"`calcs/` — one sheet per item, {len(inputs.records)} of them, in the standard "
+            f"`calcs/` — **the calculations**, one per design family with a member "
+            f"schedule: {len(families(list(inputs.records)))} of them, in the standard "
             f"nine-section order.",
+            f"`appendix/` — the per-member data behind those schedules, one sheet per "
+            f"item, {len(inputs.records)} of them. Nothing in it is a second calculation; "
+            f"it is what the schedule rows are read off.",
         ]),
         heading("Regenerating it", 2),
         "This package is generated, not maintained. Re-run `haus calcs "
@@ -123,7 +139,7 @@ def _readme(inputs: PackageInputs) -> str:
         "the calculations and nothing else. Do not edit these files — an edit is lost on "
         "the next run, and worse, it makes the package disagree with the model it claims to "
         "describe.",
-        heading("The sheets", 2),
+        heading("The calculations", 2),
         bullets(sheets) if sheets else "_No engineered item in this house._",
     )
 

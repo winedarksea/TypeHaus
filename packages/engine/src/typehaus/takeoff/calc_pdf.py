@@ -79,12 +79,23 @@ SECTIONS: tuple[tuple[str, str, str], ...] = (
     ("05-scope-of-review.md", "SR", "SCOPE OF REVIEW"),
 )
 
-#: Every per-item sheet takes this prefix. One section, because the sheets are one series a
-#: reviewer walks in order; the item id in the title block says which is which.
+#: Every FAMILY calculation takes this prefix. One section, because the calculations are
+#: one series a reviewer walks in order; the family name in the title block says which is
+#: which. ``S`` for "structural calculations", the series a reviewer cites.
 ITEM_PREFIX = "S"
+
+#: The per-member data behind the schedules. Its own series, after every calculation, so
+#: that citing "S-4" is never ambiguous and so that the machine data is visibly an
+#: appendix rather than the document — which is what it was when there was one sheet per
+#: item and no family calculation in front of it.
+APPENDIX_PREFIX = "X"
+APPENDIX_TITLE = "APPENDIX — PER-MEMBER DATA"
 
 #: Files that are repository navigation rather than package content.
 _SKIP = frozenset({"README.md"})
+
+#: Where the demoted per-member sheets live.
+_APPENDIX_DIR = "appendix/"
 
 #: Page geometry, inches. US Letter portrait — a calc package is read and marked up at a
 #: desk, not pinned to a wall, and every sealed residential package sampled is letter.
@@ -150,8 +161,16 @@ def sheet_order(files: dict[str, str]) -> list[tuple[str, str, str]]:
     """
     out = [(name, prefix, title) for name, prefix, title in SECTIONS if name in files]
     known = {name for name, _, _ in SECTIONS}
-    for name in sorted(n for n in files if n not in _SKIP and n not in known):
-        out.append((name, ITEM_PREFIX, _sheet_title(files[name], name)))
+    rest = sorted(n for n in files if n not in _SKIP and n not in known)
+    # Calculations first, then the appendix — and anything unfiled rides with the
+    # calculations rather than vanishing, because a file the PDF silently omitted is the
+    # defect this function exists to make impossible.
+    for name in rest:
+        if not name.startswith(_APPENDIX_DIR):
+            out.append((name, ITEM_PREFIX, _sheet_title(files[name], name)))
+    for name in rest:
+        if name.startswith(_APPENDIX_DIR):
+            out.append((name, APPENDIX_PREFIX, _sheet_title(files[name], name)))
     return out
 
 
@@ -262,16 +281,25 @@ def _table(block: Table_, styles, width: float):  # type: ignore[no-untyped-def]
     cells = [[row[i] if i < len(row) else "" for row in (block.header, *block.rows)]
              for i in range(columns)]
 
-    def word_floor(index: int) -> float:
-        font = "Helvetica-Bold" if index < 0 else "Helvetica"
-        widest = 0.0
-        for text in cells[index]:
-            for word in text.replace("`", "").split() or [""]:
-                widest = max(widest, stringWidth(word, font, 7.4))
-        return min(widest + padding, 0.42 * width)
+    def word_width(text: str, header: bool) -> float:
+        """The widest unbreakable token in one cell, in the font it will be DRAWN in.
 
-    floors = [max(word_floor(i), stringWidth(cells[i][0], "Helvetica-Bold", 7.4) / 2.0)
-              for i in range(columns)]
+        Backticks become Courier in :func:`inline`, and Courier is a third wider than
+        Helvetica at the same size — measuring a monospaced element tag in Helvetica
+        under-reserves its column by exactly the amount that makes it wrap.
+        """
+        mono = "`" in text
+        font = ("Courier-Bold" if header else "Courier") if mono else (
+            "Helvetica-Bold" if header else "Helvetica")
+        widest = 0.0
+        for word in text.replace("`", "").split() or [""]:
+            widest = max(widest, stringWidth(word, font, 7.4))
+        return widest
+
+    floors = [min(padding + max(
+        [word_width(cells[i][0], header=True)]
+        + [word_width(text, header=False) for text in cells[i][1:]] or [0.0]),
+        0.42 * width) for i in range(columns)]
     # A column's share of the SLACK is its content length, capped: past ~90 characters a
     # column is prose and reads fine at any reasonable width, so letting it keep growing
     # only starves the short columns beside it.
@@ -280,8 +308,8 @@ def _table(block: Table_, styles, width: float):  # type: ignore[no-untyped-def]
     slack = max(width - sum(floors), 0.0)
     total = max(sum(weights), 1)
     widths = [floors[i] + slack * weights[i] / total for i in range(columns)]
-    scale = width / sum(widths)
-    widths = [value * scale for value in widths]
+    if sum(widths) > width:
+        widths = _water_fill(widths, width)
 
     data = [[Paragraph(inline(cell), styles["cellhead"]) for cell in block.header]]
     for row in block.rows:
@@ -298,6 +326,31 @@ def _table(block: Table_, styles, width: float):  # type: ignore[no-untyped-def]
         ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
     ]))
     return table
+
+
+def _water_fill(widths: list[float], total: float) -> list[float]:
+    """Bring ``widths`` down to ``total`` by CAPPING the widest, never by scaling all.
+
+    ** THIS IS WHY "d/c" USED TO PRINT AS "d/ c". ** An eight-column register whose floors
+    already overflowed the frame was rescaled proportionally, so a 3-character header that
+    needed 18 points lost the same fraction as a prose column that had 200 to spare — and
+    the only columns narrow enough to break were the ones that could least afford it.
+
+    Water-filling finds the one cap ``c`` where ``sum(min(w, c)) == total``: every column
+    under it keeps its width exactly, and the overflow comes wholly out of the columns
+    wide enough to absorb it.
+    """
+    order = sorted(range(len(widths)), key=lambda i: widths[i])
+    remaining, left = total, len(widths)
+    cap = total
+    for index in order:
+        if widths[index] * left <= remaining:
+            remaining -= widths[index]
+            left -= 1
+            continue
+        cap = remaining / left
+        break
+    return [min(value, cap) for value in widths]
 
 
 def _flowables(markdown: str, name: str, styles, width: float) -> list:  # type: ignore[no-untyped-def]

@@ -145,25 +145,128 @@ not make it.
 - **Seismic.** `notes/balcony_moment_columns.md` §9 names the site-specific hazard lookup as
   an external deliverable and that is unchanged.
 
-## 6. What closes it
+## 6. What closes it, worked
 
-Three fixes, and the choice is the owner's — none is this note's to take:
+**Nothing here is decided.** Three closures were named on 2026-09-18 and all three have now
+been worked rather than listed, because two of them do not do what the list implied. The
+choice is still the owner's and the engineer of record's; what follows is the arithmetic
+they need to take it.
 
-1. **Deepen the two canopy shafts.** `PT-BW-RE` needs 8.08' against 6.12', `PT-BW-RNE` 8.08'
-   against 3.50'. On the house side that is 2' more of an augered shaft in an excavation
-   that is already open. On the garage side it means the pier line stops being level with
-   the garage strip footing, which `notes/north_entry_piers.md` §6 explains was the whole
-   reason it is at -7'-0".
-2. **Constrain the base at grade** — a grade beam between the two, or the slab apron carried
-   to the columns — which moves the design onto §1807.3.2.2's constrained formula and
-   roughly halves the required depth.
-3. **Brace the frame instead.** The owner has already accepted knee braces as a fallback at
-   the canopy (`plans/`), and a braced frame has no base moment to develop at all; the
-   columns revert to leaning columns and `deck_post` grades them axially.
+### 6a. Deepen the two canopy shafts — works, and undermines two footings
+
+`PT-BW-RE` needs 8.08' against 6.12', `PT-BW-RNE` 8.08' against 3.50'.
+
+**The required depth does not chase the embedment.** `h` is measured from grade to the
+point of application, and the base moment's arm is measured from the base; deepening moves
+both by the same Δ, so `h` stays 7.79' and `d = 8.08'` is a fixed target rather than an
+iteration. That part is clean.
+
+What it costs is not concrete — 0.057 and 0.133 cy — it is what the shafts end up beside:
+
+* `PD-BW-RE`'s pad top goes to **-10'-11"** and its bottom to -11'-11", which is **2.13'
+  below `FT-B-N1..N4`**, sitting 1 1/16" away in plan on the -9'-9 7/16" plane. That is
+  undermining a strip footing, and **no check in this repo sees it**:
+  `structural.concrete_interference` grades shared VOLUME, and these two solids share none.
+* `PD-BW-RNE` is worse: 4.58' deeper, and 4.9' below the garage strip footing it declares
+  `cast_with`. §6 of `north_entry_piers.md` explains that the garage-side line bottoms at
+  -7'-0" precisely because that is the garage footing's own underside.
+* **`PD-BW-RE` goes from 0.94 to 0.984 on bearing.** 1.96' more of 12" shaft is 231 lb;
+  (5,156 + 231 + 563 - 413) / 3.75 = 1,477 psf against 1,500. It is already the tightest pad
+  in the house and `houses/catlin/CLAUDE.md` says so — closing this properly means widening
+  all three house-side pads together, which is the S-100 FOUNDATION SCHEDULE constraint.
+* It **adds a row to S-100**: `emit/draw/foundation_schedule._pad_key` carries the bearing
+  elevation, so `PD-BW-E` and `PD-BW-RE` stop sharing a mark. That sheet is 0.18" from its
+  own schedule governing its height.
+
+### 6b. Constrain the base at grade — closes ONE of the two, and not the one that needs it
+
+IBC 2018 §1807.3.2.2 applies "where lateral constraint is provided at the ground surface,
+such as by a rigid floor or pavement", and reads
+
+```
+d = sqrt( 4.25 Mg / (S3 b) )              (Eq. 18-3)
+```
+
+**`S3` is the allowable lateral bearing at the FULL depth `d`**, not at `d/3` — a difference
+that halves the answer, and the easiest error to make here. At `Mg = 680 x 7.79 = 5,297
+lb-ft`, `b = 1.00'`, `S3 = 150 d`:
+
+```
+d^2 = 4.25 (5,297) / (150 d)  ->  d^3 = 150.09  ->  d = 5.31'
+  check: S3 = 150(5.314) = 797 psf; 4.25(5,297)/797 = 28.24; sqrt = 5.314  ok
+at 2 S3 (§1806.3.4):            d^3 =  75.04  ->  d = 4.22'
+```
+
+| column | have | needs (S3) | needs (2 S3) | verdict, constrained |
+|---|---:|---:|---:|---|
+| `PT-BW-RE` | 6.12' | 5.31' | 4.22' | **passes**, 0.87, both ends agree |
+| `PT-BW-RNE` | 3.50' | 5.31' | 4.22' | **still OVER**, 1.52, both ends agree |
+
+So this closes `PT-BW-RE` and leaves `PT-BW-RNE` 1'-10" short — it would want its pad top at
+-8'-2", which is the same abandonment of the -7'-0" garage plane that 6a runs into.
+
+**And the restraining element has to exist and has to be in the right direction.** A grade
+beam *between* the two columns restrains nothing that matters: N-S governs (1,360 lb against
+992), the two columns stand on a N-S line, and a beam joining them lies in the frame's own
+plane — both columns simply lean together. To be constrained the strut has to reach a mass:
+`PT-BW-RE` south to `W-B-N2/N3` (10 3/4" away) or `PT-BW-RNE` north into the garage stem.
+Both reverse the two premises this design is built on — the canopy is freestanding, and the
+landing touches nothing on the house — and put a rigid prop across the only movement joint.
+A slab apron is not on offer either: these columns stand in open ground with a gravel apron.
+
+### 6c. Brace the frame — closes both, and moves no geometry
+
+A knee-braced portal with pinned bases develops **no base moment at all**; the columns
+revert to leaning columns and `deck_post` grades them axially. Nothing is undermined, no pad
+changes size or elevation, no row is added to S-100, and the owner has already accepted knee
+braces here as a fallback.
+
+**What it still owes, and this note says it rather than letting the item's disappearance
+read as a pass:** a pinned base still delivers 680 lb horizontally at grade. Nothing in this
+engine grades that path. The real resistance is pad friction plus passive on the pad faces —
+IBC Table 1806.2 friction on 3.75-4.00 ft² at roughly 5,000 lb service is on the order of
+1,750 lb, comfortably enough — but "on the order of" is not a calculation, and it should be
+carried as a named deferral rather than as silence.
+
+**The connector is not solved.** `KBS1Z` is wood-to-wood and `APVKB45-6` is unrated in
+ER-102 and ER-280. A knee brace landing on a 12" cast round needs a real part — a
+through-bolted plate or a concrete-screw bracket at >= 3" edge distance, the family the
+`HGAM10` head already uses.
+
+### 6d. A fourth route, and it may cost nothing at all
+
+§1807.3.2.1 is **doubly** conditioned: it governs where there is no constraint at grade
+**and none above grade "such as by a structural diaphragm."** This house already models
+exactly that — seven `LSTA24` straps at 4'-0" o.c. (`CN-BW-JOINT-1..7`) tying the canopy and
+garage sheathing into one plane, and the record for that strap line says it "carries in-plane
+shear and tension." If the garage's shear walls take the canopy shear, then neither pole
+formula applies, both columns are leaning columns, and no element moves.
+
+That is a **relative-rigidity judgement**, which is why this engine refuses to make it — the
+same refusal §2 states when it takes the whole 1,360 lb on the two cast columns rather than
+sharing it with `W-BW-SCREEN`. It is the engineer of record's to make, and it is the first
+question to put to them, because it is the only closure with no construction cost.
+
+### 6e. What would make a closure dishonest
+
+* **Claiming "constrained" without modelling the restraint.** There is no constrained branch
+  in `column_base.py` and no field naming a restraining element. Hand-swapping the formula
+  halves a required depth on the strength of prose.
+* **Authoring a `KneeBrace` to silence the check.** `pier_basis.knee_braced()` short-circuits
+  `roof_base_moments` wholesale, so one element deletes every `column_base`, `base_rotation`
+  and `column_head_joint` item and `deck_post`'s moment records in a single edit, at 0 FAIL —
+  and a brace with an empty `connects` matches by plan centre, so a sloppy one can silence a
+  column it was never attached to. Author `connects`, and assert the surviving item set.
+* **Letting the item's disappearance read as a pass.** After 6c or 6d there is no fixed base
+  to grade, and the gate opens because the question left rather than because it was answered.
+* **`h` is measured from the single global `Site.grade`.** A local apron or regrade at the
+  canopy is invisible to the model and would change `h`, and so `d`, with no finding.
 
 ## Sources
 
-- IBC 2018 §1807.3.2.1, §1807.3.2.2, §1806.2 Table, §1806.3.4.
+- IBC 2018 §1807.3.2.1, §1807.3.2.2 (Eq. 18-3, S3 at the FULL depth), §1806.2 Table,
+  §1806.3.4. Text confirmed 2026-09-18 against ICC Digital Codes, UpCodes and the 2015
+  Seattle Building Code's verbatim reproduction of Chapter 18.
 - `notes/north_entry_piers.md` §8b (the frame shear and the base moments), §6 (why the two
   pier lines bottom at different elevations), §8d (the prose this note replaces).
 - `notes/balcony_moment_columns.md` §2c (the guard load taken wholly on one column).
