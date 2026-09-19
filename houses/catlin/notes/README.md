@@ -91,6 +91,7 @@ reproduces them; they are here because the reasoning is worth keeping.
 | `porch_enclosure.md` | the seasonal curtain track that replaced the glazed enclosure |
 | `porch_stair.md` | the porch stair geometry |
 | `ccspf_spec.md` | closed-cell spray foam as a performance spec: the requirements, the qualifying products and their report limits, and the two-pass application in a 60-80 F window |
+| `opening_flashing_spec.md` | the membrane at a window rough opening as a performance spec: AC148, the plywood buck vs the unevaluated lap onto ccSPF, why the RDH ponding finding does not reach a pan that drains, and cold as a CURE problem |
 | `roof_flash_and_batt.md` | the unvented flash-and-batt roof and its condensation gate |
 | `system1_return_path.md` | the one return grille, and the six door undercuts that are the whole return path |
 | `wall_backing.md` | the in-wall backing schedule: every height and the authority behind it, what the code actually requires and what it does not, and the 2026-09-12 pass that replaced the wet walls' 3/4" plywood band with three 2x courses |

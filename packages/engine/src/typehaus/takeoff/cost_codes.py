@@ -152,6 +152,10 @@ KEY_PATTERNS: tuple[tuple[str, str, CostCode], ...] = (
     ("allowances", "foundation-*", CostCode("1200", "07 10 00", "concrete")),
     ("allowances", "concrete-*", CostCode("1300", "03 30 00", "concrete")),
     ("allowances", "radon-*", CostCode("1100", "31 21 00", "concrete")),
+    # Rough carpentry consumables the cut list cannot hold — the subfloor adhesive is the
+    # first. Same code as the `sheet_goods` SECTION default: the glue and the panel are
+    # one carpenter, one visit, one work package.
+    ("allowances", "framing-*", CostCode("2000", "06 16 00", "framing")),
     ("allowances", "roof-*", CostCode("2500", "07 60 00", "roofing")),
     ("allowances", "envelope-air-sealing-*", CostCode("2100", "07 27 00", "insulation")),
     ("allowances", "envelope-*", CostCode("2100", "07 46 00", "siding")),

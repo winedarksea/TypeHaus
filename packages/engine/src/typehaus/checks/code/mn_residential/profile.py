@@ -54,6 +54,11 @@ MN_2020 = JurisdictionProfile(
         "Plumbing: rough-in geometry and MN ch. 4714 sizing tables (sleeving, drain slope, "
         "wall occupancy, under-slab and footing clearance, sewer invert, DFU/WSFU sizing, "
         "trap-arm length) — no gas, no fixture venting beyond trap arms, no testing. "
+        "Not covered within plumbing, because a PipeRun carries no support, hanger or "
+        "guide field to measure a spacing between: pipe support spacing, UPC Table "
+        "313.3 via Minn. R. 4714.0313 — which Minnesota reprints amended, stricter "
+        "than the IRC for hubless cast iron (every other joint, every joint over 4 "
+        "ft) and adding mid-story guides and 30 ft expansion to Schedule 40 PVC. "
         "Electrical: E3902 GFCI receptacle locations, E3902.16 AFCI branch-circuit "
         "coverage, and E3901.6 / NEC 210.52(D) the receptacle required at each lavatory "
         "basin — with the basin taken as the whole vanity carcass, since no basin extent "
@@ -350,9 +355,23 @@ MN_2020 = JurisdictionProfile(
         # which is why it is not a line of its own — an item with no findings at all grades
         # UNKNOWN, and "this house routes its basement main at the ceiling" is not an
         # unevaluated permit question.
+        #
+        # ** THE CITATION WAS IRC P2604 AND MINNESOTA DELETED IT TOO. ** The comment above
+        # called P3005.3 "the one place the profile disagreed with itself". It was not:
+        # 1309.0010 subp. 3.D strikes IRC ch. 25-33 and P2604 is in ch. 26. The governing
+        # text is UPC ch. 3, incorporated at Minn. R. 4714.0050 — 314.1 is the 45 degree
+        # influence line off "the bottom exterior edge of the footing" that
+        # `footing_clearance` measures, 314.4 the bedding `under_slab_burial` grades.
+        # Minn. R. 4714.0314 once deleted UPC 314.0-314.4 outright; 45 SR 1007 (2021-09-27)
+        # REPEALED that deletion, so ch. 3 applies unamended. The rule is here because a
+        # repeal put it back — the kind of thing a stale citation hides.
+        # Out of scope, still stale: finding prose in `checks/mep/plumbing_concrete.py`,
+        # `resolve/mep_sleeves.py` and two catlin plan files says "IRC P2604". Those are
+        # descriptions; this line is the citation a reviewer reads.
         PermitItemSpec("Pipe below and beside concrete",
                        ("mep.under_slab_burial", "mep.footing_clearance"),
-                       ("IRC P2604",)),
+                       ("MN Plumbing Code (ch. 4714) 314.1",
+                        "MN Plumbing Code (ch. 4714) 314.4")),
         PermitItemSpec("Building sewer invert at the exit sleeve",
                        ("mep.sewer_exit_invert",), ()),
         PermitItemSpec("Drain and supply pipe sizing", ("mep.pipe_sizing",),

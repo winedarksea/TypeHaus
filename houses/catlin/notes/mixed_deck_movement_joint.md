@@ -288,3 +288,26 @@ depth-matching that makes it work is general — the condition worth deriving is
 `deck_change:<assembly>|<assembly>`, on the shared edge of two floor elements at one storey,
 which a `Transition` could then bind exactly the way `assembly_change:*` binds a wall line's.
 Recorded in `plans/TODO.md`.
+
+## The ceiling control joint: what part, how much, and what it is NOT (2026-09-19)
+
+The detail above demands a ceiling control joint on the y = 13'-0" leg and nothing buys one.
+
+- **Quantity: ~17.9 LF**, x = 18' to 36'. The other leg of the L (13.6 LF along x = 18'-0")
+  is explicitly NOT a movement joint — both systems bear on that line — and takes no part.
+- **Money: ~$40 of zinc.** `prices.toml` buys none of it. It is a rounding error against the
+  detail it protects, which is the argument for putting it on the order rather than against.
+- **The part is a #093 control joint**, the ordinary flat-ceiling-field bead.
+- **It is NOT a Trim-Tex Magic Corner, and the reason is worth writing down** so nobody
+  re-proposes one. Magic Corner is an INSIDE-CORNER expansion bead: it cannot be installed
+  in a flat ceiling field, which is exactly where this joint runs. It also absorbs **3/8"**,
+  and the movement it is sold against (truss uplift) is published to 1". There is no "Magic
+  Corner II" — that name is Häfele kitchen hardware.
+- **Truss uplift is not the mechanism here anyway.** This roof is a hot-roofed cathedral on
+  TJI 230 rafters: no vented attic, no trusses over living space, nothing to lift. The
+  differential on this line is `SL-M-DECK`'s cap (L/480, then creeping) against
+  `FS-M-EAST`'s I-joists (0.45-0.60" live, under a footfall, today) over a 2-1/16" step.
+  And where truss uplift IS the mechanism, Trim-Tex's own guidance points elsewhere: *"the
+  best and most cost-effective option to stop the effects of truss uplift is to install
+  Trim-Tex's Truss Backing Angle"* — which is BSC RR-0107's free floating-corner detail (no
+  ceiling fasteners within 18" of partition top plates) sold as a part.

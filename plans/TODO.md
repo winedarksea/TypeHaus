@@ -471,6 +471,47 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   continuity check across the five hand-worked elevation pairs — get one `top` wrong and the
   panel gets a horizontal slot in it at 0 FAIL. A `Wall.voids` field (or a `RoughOpening` host
   with no door/window) would say it in one element.
+- **Second-floor drain noise is solved by LAYOUT, and the numbers are here so nobody
+  re-measures them** (2026-09-19). Horizontal pipe in the second-floor cavity, by the room
+  below (`out/model.json`): RM-M-MUDROOM 13.2 LF drain / 7.2 vent; **RM-M-STUDY 7.9 / 5.9**;
+  RM-M-LAUNDRY 7.1 / —; RM-M-MUD-CLOSET 3.0 / 3.0; RM-M-CLOSET 2.8 / —; **RM-M-LIVING 0 /
+  46.0**. **Not one water-closet drain crosses a quiet room** — the three WC legs land over
+  the mudroom, mud-closet, laundry and closet, and `RM-M-BED` is at y=6' while every drain
+  leg is at y >= 16'. The study's 7.9 LF is `PR-M-S-SUITE-TUB-DRAIN` (5.8) and `-LAV-DRAIN`
+  (2.1), the two quietest drains in the house; the 46 LF over the living room is all vent —
+  dry pipe — over a ceiling already on resilient channel (`CR-LIVING-CEIL-RC`). If it is
+  ever wanted, the cheapest fix is a second `ConstructionRule` scoped to `RM-M-STUDY`,
+  reusing the `floor:ceiling_channel` finder beside `CR-LIVING-CEIL-RC` at
+  `plan/assemblies.py:4674` — zero engine code, three lines, and `resilient-channel` is
+  already priced. It is **not** the HoldRite Silencer system, and the marketing is why: the
+  "87% quieter" claim is ~8.9 dB, measured in 2006 by an unnamed lab, against a *bare steel
+  J-hook*, on *copper water tube*; against the plastic stud inserts a competent plumber
+  already uses the delta is 5.7-7.4 dB; ISO 3822 is a standard for taps and valves in water
+  SUPPLY installations, not for pipe supports or DWV; and the clamps carry 25 lb, so they
+  are isolators, not supports. The one genuinely independent dataset (CMHC 02-117, MJM
+  Acoustical) says the **gypsum enclosure alone is worth 15-17 dBA** — more than any product
+  in the category and already in this build — and that cast iron beats PVC by 8 dBA on the
+  path that dominates.
+- **"IRC P2604" still appears in finding prose and comments, and Minnesota deleted it**
+  (2026-09-19). Minn. R. 1309.0010 subp. 3.D strikes IRC chapters 25-33 and P2604 is in
+  chapter 26. The PERMIT CITATION was fixed — `checks/code/mn_residential/profile.py`'s
+  "Pipe below and beside concrete" line now cites UPC 314.1 / 314.4 via Minn. R. 4714.0050,
+  with the 45 SR 1007 repeal history on it — but six other sites still say P2604 in prose:
+  `checks/mep/plumbing_concrete.py` (x5, including two finding STRINGS a reviewer can read),
+  `resolve/mep_sleeves.py` (x2), `houses/catlin/plan/mep_sleeves.py` (x2),
+  `houses/catlin/plan/mep_drainage.py`, `houses/catlin/notes/garage_hydrant.md` and
+  `packages/engine/tests/test_hydrant.py`. Descriptions rather than citations, which is why
+  they were left; a sweep is one commit and should say "UPC 314.1" where it says "P2604.3's
+  45 degree influence line".
+- **Nothing grades pipe SUPPORT spacing, and the profile now says so out loud.** `PipeRun`
+  carries no support, hanger or guide field, so there is no spacing to measure. The governing
+  rule in Minnesota is **UPC Table 313.3 via Minn. R. 4714.0313**, which Minnesota reprints
+  amended: hubless cast iron at every other joint and every joint on a run over 4 ft, and
+  Schedule 40 PVC with mid-story guides plus a 30 ft expansion interval against the new
+  Minnesota-only Table 313.3.1. Building the check is a feature — a `support_spacing_in` on
+  `PipeRun` plus a `mep.pipe_support` reading the material off the run — and is not needed to
+  make the permit story honest.
+
 ## Phase 2 — Complete Catlin junctions (deferred by decision 2026-08-02)
 
 - Resolve mixed-assembly L corners and collinear assembly changes through named

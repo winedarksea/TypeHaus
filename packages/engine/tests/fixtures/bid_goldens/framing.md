@@ -339,3 +339,9 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 - S-100
 - A-301
+
+## Appendix C — owner allowances in this trade
+
+| allowance | quantity | unit |
+|---|---|---|
+| Framing subfloor adhesive (framing-subfloor-adhesive) | 100 | ea |

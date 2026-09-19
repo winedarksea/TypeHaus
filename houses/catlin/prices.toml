@@ -6247,6 +6247,54 @@ concrete-cold-weather-protection = { low = 0, high = 0 }
 # Silt fence and a rock construction entrance are required by the metro watershed district.
 site-survey-staking-and-erosion-control = { low = 2000, high = 6000 }
 
+# --- framing -----------------------------------------------------------------------------
+# ** SUBFLOOR ADHESIVE, ADDED 2026-09-19. NOTHING IN THIS FILE BOUGHT GLUE. ** Glue-and-screw
+# is how a subfloor is laid — the adhesive is what keeps a screwed deck from squeaking once
+# the joists dry down — and the BOM had the sheets, the screws and no adhesive at all. This
+# is a hole in the bill, not an upgrade to the house.
+#
+# DRIVEN, and the whole chain is published. Huber's installer FAQ Q2 gives the ratio: at
+# 16" o.c. a 4x8 panel crosses 7 joist lines, 4 ft of bead each = 28 LF per panel, and a
+# 24 oz canister yields ~400 LF, so 400/28 = 14.3 panels per can, DERATE TO 13 for the
+# T&G groove, the waste at each change and the bead nobody lays straight. The model resolves
+# 100 plywood panels, so ~8 cans. $1.34-2.38/panel is the product spread over that ratio —
+# TYTAN 29 oz at the low end, AdvanTech's own canister at the high. It is CHEAPER than the
+# cartridge it replaces (~$290 of Titebond or ~$455 of PL Premium over the same footage) and
+# much faster: 2-3 container changes per 1,000 SF instead of 10-24.
+# NOT IN THE RATE: ~$85 one-time for the foam gun and its cleaner. That is a TOOL, and a tool
+# does not belong in a per-panel rate — it rides with the carpenter's tooling.
+#
+# ** THE FILTER IS AN EXACT MATCH AND THAT IS WHY IT WORKS. ** An allowance driver only
+# INCLUDES and only compares for equality (`cli/prices.py::_resolve_driver`), so there is no
+# way to write "not composite". There does not need to be: the 7 glued interior decks all
+# carry `material_ref="plywood-subfloor"` and the 4 exterior ones already carry something
+# else — `composite-deck` x3 and `aluminum-deck` x1 — which is precisely the butyl-taped set
+# that takes no adhesive. So `[scope=subfloor,material=plywood-subfloor]` resolves to the 100
+# plywood panels and skips the other 14 by naming what it wants, with NO tag list to
+# maintain: a future deck that goes composite drops out of this row by itself.
+# It measures off the same rows `[sheet_goods] "plywood-subfloor"` prices, so the takeoff
+# reports it in the driver-overlap list. That is a MEASUREMENT, not a second bill — the
+# sheets are the panels, this row buys the glue between them and the joist.
+#
+# ** WHEN THIS ROW EXPIRES. ** A panel is an exact proxy for 28 LF of bead only at a uniform
+# 16" o.c. A deck at 12" or 19.2" crosses a different number of joist lines, and a plywood
+# deck deliberately left unglued (a removable service panel, say) still bills here. Either
+# one is the moment to author a real `FloorSystem.subfloor_adhesive` field and drive off that
+# instead. `FloorSystem` is not in `_UI_EDITABLE_KINDS`, so that field is dialect-safe
+# whenever it is wanted.
+#
+# SPECIFY, on the order: **ASTM D3498 OR APA AFG-01**, not AFG-01 alone — AdvanTech's own
+# canister does not claim AFG-01, and boilerplate naming only AFG-01 writes out the one
+# product this rate was cheapest on. GLUE THE T&G GROOVE as well as the joist tops; the panel
+# is 23/32 T&G and the groove is half the squeak. Ignore the Squeak-Free Guarantee in any
+# comparison: it requires AdvanTech panels over engineered joists and caps at $1,000, which
+# does not re-open a finished floor.
+# OPEN, and it is a phone call rather than an estimate: Huber's website says 35 F while its
+# PDS, both install guides and the FAQ say 20 F. Confirm before scheduling a cold deck.
+# Below 20 F no canister works at all — PL 400 All-Weather (1.4 F) or Titebond solvent (0 F)
+# in cartridges on those days, at the cartridge prices above.
+framing-subfloor-adhesive = { low = 1.34, high = 2.38, unit = "ea", driver = "sheet_goods.sheets_4x8[scope=subfloor,material=plywood-subfloor]" }
+
 # --- envelope -------------------------------------------------------------------------------
 # 2026-08-20: `roof-underlayment-full-field` was REMOVED from this section, not
 # value-engineered out. The field underlayment is now a modelled layer
@@ -6477,13 +6525,42 @@ roof-flashings-boots-and-custom-sheet-metal = { low = 3000, high = 8000 }
 # SDWS22400DB. Leaving the lump here as well would bill the same scope twice, which is the
 # mirror this section's header warns about. Deliberately zero, not deleted.
 # envelope-rainscreen-furring =    # was $4,400-8,800; now modelled in [framing] + [hardware]
-# 45 openings. Tape, sill pans and the air-sealing detail at each one.
-# DRIVEN 2026-08-27 off the window count — 45. The row's own comment said "45 openings" and
-# that is what `openings.count[kind=door]` would NOT have given (36 doors, and an interior door
-# takes no sill pan); windows are the openings this scope wraps. $113-262 each is the retired
-# lump divided by the same 45, re-checked against flashing tape, a formed pan and the hour it
-# takes to detail one, and it holds.
-envelope-opening-flashing-and-sill-pans = { low = 113, high = 262, unit = "ea", driver = "openings.count[kind=window]" }
+# Sill pans, the jamb and head band, and the air-sealing detail at each window opening.
+# DRIVEN 2026-08-27 off the window count. `openings.count[kind=door]` would NOT have given
+# it (36 doors, and an interior door takes no sill pan); windows are the openings this scope
+# wraps.
+#
+# ** THE COUNT WAS 45 AND THE MODEL RESOLVES 40 (re-measured 2026-09-19 against
+# `haus takeoff`). ** The driver has always been right — it reads the model — but every
+# arithmetic sentence written beside it divided by 45, so the per-opening rate below was
+# derived against a denominator that no longer exists. 40 is what it is now.
+#
+# ** RE-BASED 2026-09-19 TO A FLUID-APPLIED SYSTEM, AND THE LOW END IS RE-STRUCK. **
+# This wall has NO SHEET WRB — 4" of exterior ccSPF is the water plane — so at an opening
+# there is nothing for a tape to lap ONTO: the tie is plywood buck to spray foam, and the
+# sill is a back dam, a 6" run out to the mount plane and a turn down into the vent gap with
+# no visible drip. That is two inside corners and a turn-down, 40 times, and it is the shape
+# tape does worst. See `notes/opening_flashing_spec.md` for the spec and the open items.
+# Material for the full fluid-applied system is ~$112/opening (joint filler, two FastFlash,
+# two AirDam — Fine Homebuilding #283), so the old $113 low bought the material and not one
+# minute of the hour it takes to detail an opening. $180 is that material plus the hour.
+# The high end is unchanged: $262 still covers the system detailed slowly in bad weather.
+# 40 x $180-262 = $7,200-10,480, against ~$4,480 of material at the low end.
+#
+# ** WHAT THIS ROW BUYS IS [K5] ONLY, NOT [K6] OR [K7]. ** On the opening detail
+# (`notes/outie_window_truss_detail.md`) K5 is the membrane at the rough opening — the pan
+# and the jamb/head band on the buck — and that is this row. K6 is the METAL head flashing
+# and K7 the sealant at the cladding-to-frame joint: the brake-formed pieces are inside the
+# panel's $/SF rate under TRIM IS PARITY (see `envelope_layers."board-batten-24"`), and the
+# sealant is `envelope-exterior-sealants-and-caulking`. Three scopes, three rows, no overlap
+# — and the reason a fourth row for liquid flashing would be a double bill.
+#
+# NOT COVERED BY THIS ROW, found 2026-09-19 and left as a gap rather than papered over: the
+# two `DT-EXT-SWING36` exterior doors take sill pans too, and this driver is
+# `[kind=window]`. Nothing bills them. Fixing it means a second driven row on
+# `openings.count[kind=door]` with a door-type filter, which is a change to make when
+# somebody is pricing doors and not in passing.
+envelope-opening-flashing-and-sill-pans = { low = 180, high = 262, unit = "ea", driver = "openings.count[kind=window]" }
 # MN limits to 3.0 ACH50, so the second blower-door test is not optional.
 # DRIVEN 2026-08-27 off gross floor area — 6,098 SF, one of the two addressable scalars.
 # ** RE-RATED 2026-08-30. The published $/SF air-sealing guides this rate came from assume a

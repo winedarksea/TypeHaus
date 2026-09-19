@@ -40,7 +40,7 @@ source:
 - [K2] Head and sill courses: KDAT 2x4 flat, post inner face to post inner face.
 - [K3] Block each course the post crosses, at 24" max, and across the RO.
 - [K4] Field courses stop 3-1/2" clear of each RO.
-- [K5] Sill pan on the buck: back dam up its leg, out to the mount plane, down the vent.
+- [K5] Fluid-applied sill pan: back dam up the buck leg, out to mount plane, down vent.
 - [K6 @ host#layer:spray-foam:out] Head flashing on the foam face, out over the head course, past the cladding, drip.
 - [K7 @ host#layer:cladding:out] Sealant at the cladding-to-frame joint, at the mount plane, under the drip.
 
@@ -150,7 +150,15 @@ applicator reaches the whole plane from outside through the 20-1/2" between cour
    shrinks, and a square cold joint at a block is where the crack goes. **Shave to a gauge
    1/2" behind the block's outer face**; the blocks stand proud at every crossing and are the
    gauge.
-9. Sill pan, jamb trim, window, head flashing, head trim, cladding.
+9. **Flash the opening — ONE CONTINUOUS PERIMETER APPLICATION, IN ONE VISIT.** Sill, both
+   jambs and head are one monolithic fluid-applied band over the buck, lapping onto the
+   shaved foam: joint filler into every inside corner first, then the sill **heavy**, then
+   jambs and head run into the sill's corners without stopping. That is the whole reason the
+   membrane is fluid-applied here — splitting it into a "sill pan" operation and a "jamb
+   flashing" operation re-introduces the lapped corner the liquid exists to remove, and
+   invites two trades onto one opening. One arrival, one opening finished. Spec, qualifying
+   products and the open substrate item: `notes/opening_flashing_spec.md`.
+   Then, in order: jamb trim, window, head flashing, head trim, cladding.
 
 **Inspect the screw pattern from the ground before the sprayer arrives.** It is a single load
 path and this is the last moment it can be seen.
@@ -274,6 +282,22 @@ from the sheathing face, and on this wall neither piece is anywhere near it.
   running out to the mount plane and turning **down into the vent gap**. It discharges
   *behind* the cladding. An outie pan carried out to a visible drip would put a metal lip
   under every window on the facade, which is not what this house looks like.
+
+  **Fluid-applied, and the ponding paper a reader will find does not govern it.** RDH's 2017
+  study (Wilkinson/Tatara/Finch) ponded seven liquid membranes on wood sills for 42 days and
+  measured 25-40% moisture content against a <20% threshold; Holladay's independent test
+  agreed. Two things keep that off this detail. The permeable self-adhered CONTROL failed
+  identically at ~35-40%, so the paper's own conclusion is that there is "no discernable
+  drying benefit to liquid applied membrane flashings over impermeable self-adhered
+  products" — not that liquids are worse than tapes. And every one of those failures was a
+  **ponding** failure. This pan does not pond: it runs out 6" and turns down into the vent
+  gap, so what reaches it leaves it. A pan that drains has no puddle to sit under for 42
+  days. Where the finding still bites is DURING CONSTRUCTION, before the cladding and its
+  vent gap exist — flash, then close in, and do not leave an opening standing full of
+  meltwater. Build the sill heavy regardless (Tremco publishes 60 mils at sills against 20
+  elsewhere). The full argument, the permitted impermeable-self-adhered hybrid and the one
+  open item — a written substrate approval for the lap onto shaved ccSPF, which ESR-4363's
+  whitelist does not cover — are in `notes/opening_flashing_spec.md`.
 - **Head flashing.** Starts on the **foam face** above the head course — the foam is the water
   plane, so lapping onto it is what makes the head continuous — turns out over the head
   course, laps past the cladding and drips. Sealant at the cladding-to-frame joint sits at the
@@ -291,8 +315,9 @@ depth — the recipe already read off the resolved stack and needed no telling.
   flashing's drip. Both are brake-formed flat stock from the same kit as the corners and the
   starter, which is why nothing new bills for them — `prices.toml` puts the whole trim kit
   inside the panel's $/SF rate (TRIM IS PARITY), and `[basis_notes] envelope_layers` forbids
-  counting a piece against a concealed row. The build order is in "Sequence" step 9: sill
-  pan, jamb trim, window, head flashing, head trim, cladding.
+  counting a piece against a concealed row. The build order is in "Sequence" step 9: the
+  opening is flashed in one continuous pass, then jamb trim, window, head flashing, head
+  trim, cladding.
 
   **Not yet a keyed callout.** A `[K8]` row would put the detail's notes onto a second sheet
   (`integrity.sheet_note_legibility`, 36 rows to a page, and this sheet sits on 36). Drawing
