@@ -5,7 +5,10 @@ No rate lives here. A layout with no lines is printed as unpriced, never as $0.
 
 from __future__ import annotations
 
+import math
+
 from typehaus.engineering.sunken_garden.comparison import CostRange, LayoutResult
+from typehaus.engineering.sunken_garden.inputs import SunkenGardenDesignInput
 
 ZERO = CostRange(0.0, 0.0)
 
@@ -32,16 +35,53 @@ def _sum(result: LayoutResult, part: str) -> CostRange:
     return total
 
 
-def _ratio(case) -> float:
-    return max(1.5 / case.sliding_fs, 1.5 / case.overturning_fs, case.bearing_max_psf / 3000.0)
+def _ratio(case, allowable_psf: float | None) -> float:
+    """**A max-of-three proxy for which case presses hardest — not a utilization.**
+
+    It ranks three unlike quantities on one scale so the table can name a governing case:
+    the shortfall against the 1.5 sliding and overturning factors, and bearing against the
+    site's own allowable. A value of 1.0 is the screening threshold on each of the three,
+    and a value above it says *which* of them is short, not by how much anything is
+    overstressed. Nothing downstream may read it as a demand/capacity.
+
+    Until 2026-09-18 the bearing term divided by a hard-coded **3,000 psf**, a number that
+    is in no input and which `analyse_stability` does not use — so the printed ratio and
+    `passes_screening` could disagree about the same case on the same soil. It now divides
+    by the allowable the screening itself applied.
+
+    ``contact_loss`` had no term at all, so a case whose heel had lifted off the soil
+    entirely printed a benign number and looked like the mildest thing on the page. Every
+    catlin case loses contact, and none of them said so. :func:`_rank` now sorts a case
+    that has lost contact above every case that has not, and :func:`_ratio_cell` says it in
+    words — because once the heel is off the soil, `bearing_max_psf` is a number about a
+    triangular distribution the screening no longer has, and dividing it by an allowable
+    would be arithmetic about a mechanism that is not there.
+    """
+
+    bearing = math.inf if allowable_psf is None else case.bearing_max_psf / allowable_psf
+    return max(1.5 / case.sliding_fs, 1.5 / case.overturning_fs, bearing)
 
 
-def layout_table(results: tuple[LayoutResult, ...], priced: bool) -> list[str]:
+def _rank(case, allowable_psf: float | None) -> tuple[bool, float]:
+    """Contact loss outranks every finite ratio; within either group the ratio orders."""
+
+    return (case.contact_loss, _ratio(case, allowable_psf))
+
+
+def _ratio_cell(case, allowable_psf: float | None) -> str:
+    ratio = ("no declared allowable bearing" if allowable_psf is None
+             else f"{_ratio(case, allowable_psf):.2f}")
+    return f"{ratio}, heel contact lost" if case.contact_loss else ratio
+
+
+def layout_table(results: tuple[LayoutResult, ...], priced: bool,
+                 design: SunkenGardenDesignInput | None = None) -> list[str]:
+    allowable_psf = None if design is None else design.soil.allowable_bearing_psf.value
     reference = results[0].installed_cost
     lines = ["| Alternative | Material | Labor | Merged installed | Installed | Direct result | "
              "Governing check | Status |", "|---|---:|---:|---:|---:|---:|---|---|"]
     for result in results:
-        governing = max(result.cases, key=_ratio)
+        governing = max(result.cases, key=lambda case: _rank(case, allowable_psf))
         status = ("screening pass" if all(case.passes_screening for case in result.cases)
                   else "revise")
         if priced and result.costs:
@@ -51,7 +91,14 @@ def layout_table(results: tuple[LayoutResult, ...], priced: bool) -> list[str]:
         else:
             money_cells = "unpriced | unpriced | unpriced | unpriced | —"
         lines.append(f"| {result.name} | {money_cells} | "
-                     f"{governing.case} ({_ratio(governing):.2f}) | {status} |")
+                     f"{governing.case} ({_ratio_cell(governing, allowable_psf)}) | "
+                     f"{status} |")
+    lines += ["", "The parenthesised number beside the governing case is a **ranking proxy**: "
+              "the worst of 1.5/FS-sliding, 1.5/FS-overturning and bearing over the site's "
+              "allowable. It says which of the three governs, not how far anything is "
+              "overstressed, and it is not a demand/capacity ratio."]
+    if allowable_psf is not None:
+        lines[-1] += f" Bearing is taken against {allowable_psf:,.0f} psf."
     return lines
 
 

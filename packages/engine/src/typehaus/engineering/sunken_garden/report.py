@@ -262,7 +262,7 @@ def write_study(output_dir: Path, design: SunkenGardenDesignInput | None = None,
         "none is selected for construction by this report.", "",
         *_basis_lines(design, fell_back),
         "## Common-structure comparison", "",
-        *layout_table(results, priced=cost_source is not None), "",
+        *layout_table(results, priced=cost_source is not None, design=design), "",
         *cost_basis(cost_source, allowances),
         "## Itemized variable work", "",
     ]

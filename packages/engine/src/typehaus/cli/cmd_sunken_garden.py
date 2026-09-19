@@ -17,9 +17,11 @@ def sunken_garden_study(
 ) -> None:
     """Write the layout, engineering, sizing and cost comparison."""
 
+    from typehaus.analytical.sunken_garden_coupled import analyse_coupled
     from typehaus.cli._shared import _resolve_house
     from typehaus.cli.sunken_garden_costs import price_variants
     from typehaus.engineering.registry import EngineeringContext
+    from typehaus.engineering.sunken_garden.comparison import REFERENCE_LAYOUT
     from typehaus.engineering.sunken_garden.model_inputs import design_input_from_model
     from typehaus.engineering.sunken_garden.report import write_study
     from typehaus.resolve import resolve
@@ -56,3 +58,20 @@ def sunken_garden_study(
             console.print(f"  {item}")
     else:
         console.print("every geometric input was read from the resolved model")
+
+    # ** THE COUPLED FIVE-WALL SHELL MODEL HAD NO CALLER UNTIL 2026-09-18. **
+    # ``analyse_coupled`` builds all five walls, their footings, the soil springs and the
+    # balcony column loads as one shell model and solves it — or refuses, naming what it
+    # wants. Both are reviewable; neither was reachable from any command, so the study
+    # said nothing at all about the walls acting together. It is printed, never written:
+    # a refusal is the honest answer here and it is not a deliverable.
+    coupled = analyse_coupled(design, REFERENCE_LAYOUT)
+    if coupled.successful:
+        console.print(
+            f"coupled five-wall solve: vertical equilibrium error "
+            f"{coupled.equilibrium_error:.2%}, maximum translation "
+            f"{coupled.maximum_translation_in:.3f} in")
+    else:
+        console.print("[yellow]the coupled five-wall solve is refused:[/]")
+        for item in coupled.unresolved:
+            console.print(f"  {item}")

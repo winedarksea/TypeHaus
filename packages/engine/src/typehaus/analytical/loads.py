@@ -34,6 +34,7 @@ class LoadSet:
     node_loads: list[NodeLoad] = field(default_factory=list)
     combinations: list[Combination] = field(default_factory=list)
     assumptions: list[str] = field(default_factory=list)
+    gaps: list[str] = field(default_factory=list)
 
     def case(self, kind: LoadCaseKind, description: str) -> None:
         if not any(existing.kind is kind for existing in self.cases):
@@ -183,20 +184,69 @@ def _horizontal(kind: LoadCaseKind, node: str, axis: str, force_n: float,
 
 
 def _combinations(ctx: Any, scope: Any, loads: LoadSet) -> None:
-    """Only combinations a record actually named, and only where the factors parse."""
+    """Combinations a record actually named — and a GAP LINE for every one it did not.
+
+    ** THE DROP USED TO BE SILENT, AND IT DROPPED EVERYTHING. ** A combination was minted
+    only where ``LimitState.combination``'s prose parsed back into letters; anything else
+    yielded ``{}`` and fell out of the loop with no trace. catlin declares exactly one
+    combination — ``girt_screw``'s ``"ASCE 7-16 §2.4.1(7) 0.6W"`` — and the clause number
+    in front of the factors made it unparseable, so the export carried five unit load cases,
+    no combination at all, and said nothing about either fact. A reviewer opening the RISA
+    or PyNite model saw a set of single-case runs and no way to know whether that was the
+    design or an accident.
+
+    ``LimitState.combination_factors`` is now the typed half and is preferred. The prose
+    parse stays as a fallback for a state that names a combination and has not been typed
+    yet, and **failing both is a declared gap**, not a silence.
+    """
+
     seen: set[str] = set()
+    untyped: list[str] = []
+    named: set[str] = set()
     for item in scope.item_ids:
         record = ctx.engineering[item]
         for state in record.limit_states:
             text = (state.combination or "").strip()
-            if not text or text in seen:
+            if not text:
+                continue
+            named.add(item)
+            if text in seen:
                 continue
             seen.add(text)
-            factors = _parse_factors(text)
+            factors = _typed_factors(state) or _parse_factors(text)
             if factors:
                 loads.combinations.append(Combination(
                     name=text, factors=factors, source=f"{item} {state.name}"))
+            else:
+                untyped.append(f'"{text}" ({item} {state.name})')
     loads.combinations.sort(key=lambda combination: combination.name)
+
+    for text in sorted(untyped):
+        loads.gaps.append(
+            f"load combination {text} is cited in prose and carries no typed factors, so "
+            "no combination is emitted for it")
+    silent = [item for item in scope.item_ids if item not in named]
+    if silent:
+        kinds = sorted({ctx.engineering[item].kind for item in silent})
+        loads.gaps.append(
+            f"{len(silent)} of {len(scope.item_ids)} items name no load combination on any "
+            f"limit state ({', '.join(kinds)}): each computed one demand from one case and "
+            "combined nothing, so this export carries unit load cases and forms no ASD or "
+            "LRFD envelope. An envelope here would be a claim about arithmetic no record ran")
+    elif len(loads.combinations) < 2:
+        loads.gaps.append(
+            "fewer than two combinations are declared, so there is no envelope to form")
+
+
+def _typed_factors(state: Any) -> dict[LoadCaseKind, float]:
+    """``LimitState.combination_factors``' code letters, mapped onto this graph's cases."""
+    factors: dict[LoadCaseKind, float] = {}
+    for letter, value in getattr(state, "combination_factors", ()) or ():
+        kind = _LETTERS.get(str(letter).upper())
+        if kind is None:
+            return {}
+        factors[kind] = factors.get(kind, 0.0) + float(value)
+    return factors
 
 
 #: The letter every standard uses for a case, so a combination string can be read back.

@@ -584,6 +584,10 @@ class _Combination:
     label: str
     axial_lb: float
     moment_lb_ft: float
+    #: The standard's own case letters against their factors, for ``LimitState``'s typed
+    #: half — so the analysis export carries the combination that actually governed rather
+    #: than re-reading it out of ``label``'s prose.
+    factors: tuple[tuple[str, float], ...] = ()
 
 
 def _combinations(pier: _Pier, wind_mu: float, guard_mu: float) -> tuple[_Combination, ...]:
@@ -612,17 +616,20 @@ def _combinations(pier: _Pier, wind_mu: float, guard_mu: float) -> tuple[_Combin
     live = pier.tributary_ft2 * DECK_LIVE_LOAD_PSF
     snow = pier.roof_tributary_ft2 * pier.roof_snow_psf
     return (
-        _Combination("1.4D", 1.4 * dead, 0.0),
+        _Combination("1.4D", 1.4 * dead, 0.0, (("D", 1.4),)),
         _Combination("1.2D + 1.6L + 0.5S",
-                     1.2 * dead + 1.6 * live + 0.5 * snow, guard_mu),
+                     1.2 * dead + 1.6 * live + 0.5 * snow, guard_mu,
+                     (("D", 1.2), ("L", 1.6), ("S", 0.5))),
         _Combination("1.2D + 1.6S + 0.5W",
-                     1.2 * dead + 1.6 * snow, 0.5 * wind_mu),
+                     1.2 * dead + 1.6 * snow, 0.5 * wind_mu,
+                     (("D", 1.2), ("S", 1.6), ("W", 0.5))),
         _Combination("1.2D + 1.0W + L + 0.5S",
                      1.2 * dead + live + 0.5 * snow,
-                     wind_mu + guard_mu / GUARD_LOAD_FACTOR),
+                     wind_mu + guard_mu / GUARD_LOAD_FACTOR,
+                     (("D", 1.2), ("W", 1.0), ("L", 1.0), ("S", 0.5))),
         # The one that governs a lightly loaded lateral column, and the one a single-axial
         # check could not see: full wind at the smallest axial the Code permits.
-        _Combination("0.9D + 1.0W", 0.9 * dead, wind_mu),
+        _Combination("0.9D + 1.0W", 0.9 * dead, wind_mu, (("D", 0.9), ("W", 1.0))),
     )
 
 
@@ -697,7 +704,9 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
                    f"— Pu {worst_case.axial_lb:,.0f} lb, phi {worst_phi:.2f}, phi*Mn "
                    f"{worst_phi_mn:,.0f} lb-ft. Every combination is run at ITS OWN axial: "
                    f"a larger Pu RAISES moment capacity below the balance point, so the "
-                   f"lowest-axial lateral case is the threat"),
+                   f"lowest-axial lateral case is the threat",
+                   combination=f"ASCE 7-16 §2.3.1 {worst_case.label}",
+                   combination_factors=worst_case.factors),
         LimitState("dowel lap, class B", lap, pier.height_in, "in",
                    "ACI 318-19 §25.4.2.4 development x §25.5.2.1's 1.3 for a class B "
                    "splice with every bar spliced at one section; graded against the "

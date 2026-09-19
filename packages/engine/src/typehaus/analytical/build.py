@@ -48,7 +48,7 @@ def build_analytical_model(ctx: Any) -> AnalyticalModel:
         combinations=tuple(load_set.combinations),
         scope=scope.item_ids,
         assumptions=tuple(assumptions),
-        gaps=_gaps(ctx, scope, graph),
+        gaps=_gaps(ctx, scope, graph) + tuple(load_set.gaps),
     )
 
 

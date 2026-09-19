@@ -363,14 +363,14 @@ def _states(crossing: _Crossing, demand_lb: float, states: list[LimitState],
             f"{crossing.withdrawal_lb_per_in:g} lb/in of embedded thread x "
             f"{thread_in_stud:g}\", C_D 1.0 unless the report's own clause permits more "
             f"({crossing.source or 'unsourced'})",
-            combination="ASCE 7-16 §2.4.1(7) 0.6W"))
+            combination="ASCE 7-16 §2.4.1(7) 0.6W", combination_factors=(("W", 0.6),)))
 
     # 3. Head pull-through of the girt — the side member the table assumes.
     states.append(LimitState(
         "head pull-through of the girt", demand_lb, crossing.pull_through_lb, "lb",
         f"published head pull-through at a {crossing.girt_in:g}\" side member "
         f"({crossing.source or 'unsourced'})",
-        combination="ASCE 7-16 §2.4.1(7) 0.6W"))
+        combination="ASCE 7-16 §2.4.1(7) 0.6W", combination_factors=(("W", 0.6),)))
 
     # 4. NDS 2018 §12.1.4.6 minimum penetration — an input check, not a force.
     required = minimum_penetration_in(crossing.diameter_in)

@@ -163,6 +163,21 @@ class LimitState:
     #: that the arithmetic does not support. Populating it is per-kind work, and a kind that
     #: sets it is asserting the demand really is that combination.
     combination: str = ""
+    #: The **machine-readable half** of ``combination``: the standard's own case letters
+    #: (D, L, S, W, H, E) against their factors, e.g. ``(("W", 0.6),)`` for
+    #: ``"ASCE 7-16 §2.4.1(7) 0.6W"``.
+    #:
+    #: ``combination`` is a citation written for a person and is not parseable in general:
+    #: ``analytical/loads`` read the letters back out of the prose, which meant a clause
+    #: number in front of the factors ("§2.4.1(7)") was indistinguishable from the factors,
+    #: and the one combination catlin actually declares typed as unparseable and was
+    #: **dropped in silence**. The analysis export then carried unit load cases and no
+    #: combination at all, and nothing said so.
+    #:
+    #: Letters, not this engine's own case enum, because ``engineering`` is a leaf that
+    #: ``analytical`` reads and not the other way round — and because the letter is what the
+    #: standard prints, so a reviewer checks it against the clause without a mapping.
+    combination_factors: tuple[tuple[str, float], ...] = ()
 
     @property
     def ratio(self) -> float:
