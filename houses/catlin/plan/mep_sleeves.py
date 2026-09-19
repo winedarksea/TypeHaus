@@ -103,14 +103,26 @@ WALL_SLEEVES = [
     # sleeve with no run through it is a void somebody forms and pays for and then patches.
     # `mep.sleeve_coverage` reported it UNKNOWN ("no routed run to check against yet") the
     # moment the reroute landed, which is the check doing its second job.
+    # ** BOTH CENTRES ROSE 6" ON 2026-09-19 WITH THE SUPPLY BAND, AND A SLEEVE THAT DOES
+    # NOT FOLLOW ITS RUN IS WORSE THAN NO SLEEVE. ** `plan/mep_supply.py` split the
+    # basement ceiling runs into two bands; both of these crossings ride the COLD one,
+    # which went from -1'-2.8" to -0'-8.8" project. Left where they were, the runs missed
+    # the holes: `mep.sleeve_coverage` went UNKNOWN on both ("no routed run to check
+    # against yet"), which took `Cast-in sleeve coverage` on the PERMIT CHECKLIST to
+    # UNKNOWN and shut `haus print`. A cast-in sleeve is formed before a pour and cannot be
+    # moved on the day — **if either band moves again, these two move with it.**
+    #
+    # Both are now centred on the pipe exactly: `pipe_elevations_at` reads PR-B-CW-TRUNK
+    # and PR-B-HW-KITCH at -8.8" at their own stations. The two bores are 5" apart in y
+    # with 2 1/2" and 2" sleeves, so 2 3/4" of concrete stands between them.
     SleevePenetration(uid="CBPW21AAAA", tag="SP-B-CS2-CW", host_ref="W-B-CS2",
                       position=pt(ft(18), ft(16)), pipe_diameter=inch(1.25),
                       sleeve_diameter=inch(2.5), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-1.1933)),
     # Moved to y=16'-5" on 2026-09-09 with PR-B-HW-KITCH's hall crossing: that run steps
-    # north and up to 7'-10 5/8" to clear RM-B-STAIR's ceiling by more than the 3"
+    # north and up to the COLD band to clear RM-B-STAIR's ceiling by more than the 3"
     # `mep.run_in_finished_volume` allows, and this is the hole it now goes through. 5"
-    # north of SP-B-CS2-CW and 0.4" above it — 2 1/2" of concrete between the two bores.
+    # north of SP-B-CS2-CW and at the same height, because the two crossings share a band.
     SleevePenetration(uid="CBPW22AAAA", tag="SP-B-CS2-HW", host_ref="W-B-CS2",
                       position=pt(ft(18), ft(16, 5)), pipe_diameter=inch(1),
                       sleeve_diameter=inch(2), axis="horizontal",

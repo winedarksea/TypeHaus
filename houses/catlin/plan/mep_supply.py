@@ -92,12 +92,40 @@ WATER_SUPPLY = [
 #     interrupted at every joist — so it stays hung, and the 4" it rose is the whole of
 #     what the floor cavity had to give it.
 #
+# ** THE CONVENTION STOPS AT x=18'-0", AND IT IS THE CEILING THAT STOPS IT. ** West of the
+# centre line, and east of it north of y=13'-0", the basement ceiling is FS-M-*'s 11 7/8"
+# I-joists and both bands are inside or just under them. East of x=18'-0" and north of
+# y=13'-0" it is **SL-M-DECK, a cast deck whose soffit is at -1'-1.4"** — 10" of BuildDeck
+# EPS SIP under 4 3/8" of cast cover. A pipe on the new cold band there is not hanging
+# under a ceiling, it is **4.6" INSIDE A CONCRETE SLAB**, and NOTHING IN THIS ENGINE GRADES
+# THAT: `mep.run_in_finished_volume` measures hang below a ceiling, `mep.run_member_crossing`
+# reads framed members, and a slab is neither. It went undetected for a whole round.
+#
+# What DID catch it, indirectly and only because two other things happened to depend on it:
+# `mep.sleeve_coverage` went UNKNOWN on SP-B-CS2-CW and SP-B-CS2-HW (the runs had risen
+# above W-B-CS2's -1'-1.4" top and missed their cast holes, which took `Cast-in sleeve
+# coverage` on the permit checklist with them), and `pipe_material_preference` stopped
+# grading anything at all, because no supply run was hung under the concrete band any more.
+# **Neither of those is the rule that should have caught it.** A `mep.run_in_slab` check is
+# the honest follow-on and is deliberately not written here, on a house trying to get a
+# different number down.
+#
+# So PR-B-CW-TRUNK and PR-B-HW-KITCH — the only two supply runs that reach under the deck —
+# step back DOWN to the old bands at x=17'-6", just west of the centre line, and cross
+# W-B-CS2 through their cast sleeves exactly where they always did. Everything east of that
+# step is as it was authored before 2026-09-19. **A cast-in sleeve is formed before a pour
+# and cannot be moved on the day: if either band moves again, check these two steps first.**
+#
 # ** THE WINDOW IS NARROW AT THE HOT END AND WIDE AT THE COLD END, MEASURED. ** Sweeping
 # both bands against the full registry with suppression lifted:
 #
-#   cold +0"  hot +0"   188 interference          (as authored before today)
-#   cold +6"  hot +4"   147, nothing else moved   <- this
-#   cold +6"  hot +4.25"  146, and +11 mep.run_member_crossing
+#   cold +0"  hot +0"     188 interference        (as authored before today)
+#   cold +6"  hot +4"      147, nothing else moved
+#   cold +6"  hot +4.25"   146, and +11 mep.run_member_crossing
+#
+# and then 147 -> 146 once the two runs under SL-M-DECK were stepped back down, which is
+# the honest figure: the 147 row was measured with a 1 1/4" copper trunk drawn inside a
+# cast slab.
 #
 # One eighth of an inch of hot is all that is left: at +4.25" the jacket clips the joists'
 # bottom flange and eleven crossings stop being clear. Cold is broad — +3" through +10" all
@@ -131,12 +159,14 @@ SUPPLY = [
             path=(pt(ft(11), ft(35, 6)), pt(ft(11), ft(35, 6)), pt(ft(11), ft(35)),
                   pt(ft(9, 6), ft(35)), pt(ft(9, 6), ft(35)),
                   pt(ft(5), ft(35)), pt(ft(5), ft(16)),
-                  pt(ft(8), ft(16)), pt(ft(29, 9.6), ft(16)),
+                  pt(ft(8), ft(16)), pt(ft(17, 6), ft(16)), pt(ft(17, 6), ft(16)),
+                  pt(ft(29, 9.6), ft(16)),
                   pt(ft(29, 9.6), ft(34, 1.2)), pt(ft(29, 9.6), ft(34, 1.2))),
             diameter=inch(1.25), material="copper", finish="lacquered",
             elevations=(inch(2), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375),
                         ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
-                        ft(8, 4.6375), ft(8, 4.6375), ft(12, 7.4375)),
+                        ft(8, 4.6375), ft(7, 10.6375), ft(7, 10.6375),
+                        ft(7, 10.6375), ft(12, 7.4375)),
             serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV", "FX-M-BATH2-WC",
                     "FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-SINK",
                     "FX-M-LAUNDRY", "FX-M-KITCH-SINK",
@@ -374,13 +404,15 @@ SUPPLY = [
     PipeRun(uid="CBPW39AAAA", tag="PR-B-HW-KITCH", system=PipeSystem.WATER_HOT,
             path=(pt(ft(6, 6), ft(15, 6)), pt(ft(13, 6), ft(15, 6)),
                   pt(ft(13, 6), ft(16, 3)), pt(ft(13, 6), ft(16, 5)),
+                  pt(ft(17, 6), ft(16, 5)), pt(ft(17, 6), ft(16, 5)),
                   pt(ft(18, 9), ft(16, 5)), pt(ft(18, 9), ft(16, 3)),
                   pt(ft(18, 9), ft(15, 6)), pt(ft(30, 3.6), ft(15, 6)),
                   pt(ft(30, 3.6), ft(33, 7.2)), pt(ft(30, 3.6), ft(33, 7.2))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), ft(8, 4.6375),
-                        ft(8, 4.6375), ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375),
-                        ft(8, 1.4375), ft(12, 7.4375)),
+                        ft(8, 4.6375), ft(7, 10.6375), ft(7, 10.6375),
+                        ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375),
+                        ft(7, 9.4375), ft(12, 7.4375)),
             serves=("FX-M-KITCH-SINK", "APPL-M-DW")),
     # Second-storey groups: risers climb two storeys to the hall bath, split at both deck
     # top (ft(9) basement-rel = 0'-0" project) and second floor (ft(19) = 10'-0" project),

@@ -253,7 +253,7 @@ permit_drop = ["A-502", "A-506"]
 # element itself.
 [checks]
 suppress = [
-  # ** mep.run_interference: 145 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-19. NOT A
+  # ** mep.run_interference: 146 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-19. NOT A
   # DECISION — AN OPEN CAMPAIGN. **
   #
   # ** 147 -> 145: PR-S-SUITEBATH-VENT APPROACHES THE CHASE FROM THE NORTH. ** It used to
@@ -273,7 +273,17 @@ suppress = [
   # hot needs 1.875", so EVERY cold-over-hot crossing in the house was reported as a
   # shared solid by construction — the 0.68" overlap the findings printed verbatim, over
   # and over. At 3.2" apart a crossing is a crossing again. One number in
-  # plan/mep_supply.py, argued there at length; -41 pairs; no other check moved.
+  # plan/mep_supply.py, argued there at length; -40 pairs; no other check moved.
+  #
+  # ** THE CONVENTION STOPS AT x=18'-0" AND THE ENGINE CANNOT SEE WHY. ** East of the centre
+  # line north of y=13'-0" the basement ceiling is SL-M-DECK, a cast deck with its soffit at
+  # -1'-1.4". A pipe on the new cold band there is 4.6" INSIDE A CONCRETE SLAB, and nothing
+  # in this engine grades that — `mep.run_in_finished_volume` measures hang below a ceiling
+  # and `mep.run_member_crossing` reads framed members. It was caught only because two
+  # unrelated things depended on it (`mep.sleeve_coverage` lost SP-B-CS2-CW/-HW, and
+  # `pipe_material_preference` stopped grading anything). PR-B-CW-TRUNK and PR-B-HW-KITCH
+  # step back to the old bands at x=17'-6". **A `mep.run_in_slab` check is the honest
+  # follow-on and is not written yet.**
   # (PR-B-CW-TRUNK is the one exception and carries its own step-up note: the cold band is
   # inside the joist depth, and a continuous bearing line at x=9'-10.7" has to be passed
   # UNDER, not through.)
@@ -286,10 +296,10 @@ suppress = [
   #     duct <-> vent            28          28
   #     vent <-> vent-riser       2           0      -2  (the radon approach, above)
   #     drain <-> supply         32          13     -19
-  #     supply <-> supply        18           8     -10
+  #     supply <-> supply        18           9      -9
   #     supply <-> vent          12           2     -10
   #     duct <-> supply          12          10      -2
-  #     everything else          16          16
+  #     everything else          16          15      -1
   #
   # Every pair that went is one a supply run was party to, which is what a band move can
   # do and the whole of what it can do. The three duct classes are 98 of the remaining 147

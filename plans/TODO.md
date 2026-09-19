@@ -265,7 +265,7 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   a new `routing` review layer. `emit` does not import `routing` and cannot — the regions are
   a parameter — which is also why `haus render --view plan` does not draw it on its own: a
   render has no target, and "the routing space" is only defined for one.
-- **145 MEP interpenetrations house-wide, and they are now GRADED.** `mep.run_interference`
+- **146 MEP interpenetrations house-wide, and they are now GRADED.** `mep.run_interference`
   (`checks/mep/run_interference.py`, added 2026-09-17) compares every pair of runs envelope
   against envelope — real outside diameter plus insulation, one prism per segment over that
   segment's own z range — and exempts a CONTACT only where it lies within a fitting's reach
@@ -319,7 +319,7 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   - **A route that is already AT its goal is a finding, not a paste.** It used to print a
     one-point polyline as dialect — a 1-tuple that will not parse.
   - **`haus check --no-suppress` reads the campaign's score** without editing
-    `preferences.toml` and putting it back. 160 FAIL unsuppressed against 2 suppressed
+    `preferences.toml` and putting it back. 161 FAIL unsuppressed against 2 suppressed
     (both deliberate), on 2026-09-19; it was 203 against 2 on 2026-09-18.
   - **`haus trial --no-suppress` is what scores a ROUND of that campaign**, and until
     2026-09-19 it could not: `trial_score.record` ran the registry with suppression on, so
@@ -355,7 +355,7 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
       their clashes are at the TERMINALS (`DU-M-ERV-R-BED2`, `-LAUNDRY`) where a re-route
       cannot reach, and the lanes that avoid those detour to x=0 — the exterior wall face.
   - **THE ATTIC ERV RADIALS CANNOT BE RE-LANED BY SEARCH, AND THIS WAS TRIED.** The largest
-    class in the 145 is `DU-A-ERV-R-*`: several 4" radials drawn on ONE line at ONE elevation
+    class in the 146 is `DU-A-ERV-R-*`: several 4" radials drawn on ONE line at ONE elevation
     out of the manifold at (5', 34'-6") — e.g. `DU-A-ERV-R-ATTIC` and `DU-A-ERV-R-BATH1` share
     (5',34'-6")->(1',34'-6") at z=20'-4" exactly. A1 is why they report at all: they share a
     joint at the manifold, so the old pair-wide bool exempted every one of them.
