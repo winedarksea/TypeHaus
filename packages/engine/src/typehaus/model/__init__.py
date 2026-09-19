@@ -102,6 +102,7 @@ from typehaus.model.placeables import (
     MountKind,
     PlacementStrategy,
     PlanRepresentation,
+    PortCertainty,
     ServicePort,
     WallAttachment,
 )
@@ -322,7 +323,8 @@ __all__ = [
     "BackupTier", "DeviceKind", "LuminaireForm", "RatingBasis", "UtilityKind",
     "ConnectorKind", "RailingKind", "TrimKind",
     "PlacementStrategy", "MountKind", "ClearancePolicy", "Footprint2D", "ClearanceZone",
-    "ServicePort", "PlanRepresentation", "ModelRepresentation", "Location", "WallAttachment",
+    "ServicePort", "PortCertainty",
+    "PlanRepresentation", "ModelRepresentation", "Location", "WallAttachment",
     "Mount",
     "Length", "Area", "Angle", "Pitch", "RValue", "UFactor", "Temperature", "Point2D",
     "ft", "inch", "mm", "m", "deg", "rad", "sqft", "sqm", "r_us", "rsi", "u_us",

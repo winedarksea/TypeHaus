@@ -12,6 +12,7 @@
 from typehaus import (
     DuctProductType,
     EquipmentType,
+    PortCertainty,
     RegisterType,
     Service,
     ServicePort,
@@ -136,12 +137,69 @@ EQUIPMENT_TYPES_ERV = (
                                      position=(ft(0), ft(0), inch(4))),
                          ServicePort(tag="return", service=Service.RETURN_AIR,
                                      position=(ft(0), ft(0), inch(4))))),
+
+    # ** THE TWO LEVEL-2 PLENUMS ARE HOUSE-LOCAL AND DIMENSIONED, AND THAT IS THE POINT. **
+    # `library/hvac.py` carries the shared plenums and states a COUNT and no layout, because
+    # a collar layout is a shop drawing for one fabricated box and a reusable catalog part
+    # has no shop drawing behind it. These two have one. Stating where the collars are is
+    # what lets `mep.erv_manifold_ports` grade each radial against the collar it lands on
+    # rather than against a tally, and what stops `route_support` re-aiming a radial at its
+    # neighbour's hole.
+    #
+    # Collar stations are in the product frame: origin at the footprint centre, +y toward
+    # the back. `EquipmentType._check_collars` refuses two collars closer than their own
+    # diameter — two 4" collars on 2" centres are one 6" hole — and refuses a layout that
+    # disagrees with `duct_ports`.
+    EquipmentType(tag="EQ-T-ERV-PLENUM-M-SUP",
+                  name="Fabricated supply plenum, 8in inlet, 3 x 4in dampered collars",
+                  footprint=(inch(24), inch(8)), height=inch(8), plan_symbol="erv",
+                  duct_ports=3, port_diameter=inch(4),
+                  static_loss_pa_at_cfm=((60.0, 0.5), (120.0, 1.8), (210.0, 5.5)),
+                  source="Fabricated galvanized plenum for THIS house, 24 x 8 x 8 in: an 8 in trunk inlet and three 4 in dampered start collars at the stations below. The collar layout is a shop drawing and is authored here rather than in library/hvac.py for that reason. No submittal has been read; the stations are the design's and the fabricator confirms them.",
+                  ports=(ServicePort(tag="trunk", service=Service.SUPPLY_AIR,
+                                     position=(ft(0), ft(0), inch(4))),
+                         ServicePort(tag="collar-study", service=Service.SUPPLY_AIR,
+                                     position=(inch(1), inch(0), inch(4)),
+                                     connection_size=inch(4),
+                                     certainty=PortCertainty.EXACT),
+                         ServicePort(tag="collar-living", service=Service.SUPPLY_AIR,
+                                     position=(inch(5), inch(-4), inch(4)),
+                                     connection_size=inch(4),
+                                     certainty=PortCertainty.EXACT),
+                         ServicePort(tag="collar-bed", service=Service.SUPPLY_AIR,
+                                     position=(inch(9), inch(4), inch(4)),
+                                     connection_size=inch(4),
+                                     certainty=PortCertainty.EXACT))),
+    # ** THE EXTRACT BOX IS NOT A MANIFOLD ANY MORE. ** Level 2 went trunk-and-branch on
+    # 2026-09-19 — thirteen home-run lanes will not leave this closet, and the arithmetic is
+    # in plan/mep_erv_l2.py's header — so what leaves this box is ONE 8" trunk, and the ten
+    # takeoffs are tee'd off it out in the floor field. Typed as a one-port box at 8" so the
+    # census reads what is built: one of one, full, with the 6" riser as the trunk collar.
+    # Ordering a ten-port plenum nobody lands ten pipes on is the BOM error this prevents.
+    EquipmentType(tag="EQ-T-ERV-PLENUM-M-EXH",
+                  name="Fabricated extract plenum, 6in riser inlet, 1 x 8in trunk collar",
+                  # The RISER is return air and the TRUNK is exhaust, which is not a
+                  # contradiction: this box is where the two halves of the extract side meet.
+                  # Eight of the ten takeoffs downstream are wet-room EXHAUST and two are
+                  # dry-room RETURN, and the riser carries the sum of both to the machine.
+                  footprint=(inch(34), inch(8)), height=inch(8), plan_symbol="erv",
+                  duct_ports=1, port_diameter=inch(8),
+                  static_loss_pa_at_cfm=((60.0, 0.5), (120.0, 1.8), (210.0, 5.5)),
+                  source="Fabricated galvanized plenum for THIS house, 34 x 8 x 8 in: a 6 in riser inlet and one 8 in trunk collar. It keeps the 34 in case the ten-collar version had, because the riser lands on it at the same station and the box is also the transition the 6 in riser needs.",
+                  ports=(ServicePort(tag="riser", service=Service.RETURN_AIR,
+                                     position=(ft(0), ft(0), inch(4))),
+                         ServicePort(tag="collar-trunk", service=Service.EXHAUST_AIR,
+                                     position=(inch(-5.5), inch(0), inch(4)),
+                                     connection_size=inch(8),
+                                     certainty=PortCertainty.EXACT))),
+
     # The two exterior hoods and the three plenum types are NOT here: they were promoted to
     # library/hvac.py in e5b64fff because nothing about them is this house's. The argument
     # their comment used to make is the library's now — an intake hood and a discharge hood
     # are one casting with the damper reversed, and they are two ROWS so that a check can
     # read which way the air goes.
 )
+
 
 REGISTER_TYPES_ERV = (
     # The workshop's terminal stops being a 7" ceiling diffuser at 8'-0" and becomes what it

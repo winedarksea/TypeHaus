@@ -175,14 +175,23 @@ def _elbow_counts(ctx: CheckContext) -> dict[str, int]:
 
 
 def _manifolds(ctx: CheckContext) -> dict[str, object]:
-    """Distribution plenums by tag: a ``DUCT_MANIFOLD`` whose type states TWO OR MORE ports.
+    """Distribution plenums by tag — a ``DUCT_MANIFOLD`` that actually distributes.
 
-    **Two, not one, and the exterior hoods are why.** A hood carries ``DUCT_MANIFOLD``
+    **Two ports or more, and the exterior hoods are why.** A hood carries ``DUCT_MANIFOLD``
     because the enum has no HOOD kind, and it states one 6" port so the port census can
     grade it. One port does not distribute anything: counted here, the exhaust hood would
     make ``DU-ERV-EA`` — a 6" trunk carrying the whole house's stale air — read as a radial
     off it, and the worst path would be a trunk landing on a hood rather than the branch it
     actually is. ``mep.erv_manifold_ports`` still grades every one of them.
+
+    **Or ONE port and a dimensioned collar** (2026-09-19). A trunk-and-branch plenum has a
+    single branch port — the trunk — and is a distribution box in every sense that matters
+    here: catlin's ``EQ-M-ERV-MAN-EXH`` feeds ten terminals through it. The port count
+    cannot tell it from a hood, and a dimensioned collar can: declaring WHERE a collar is
+    is a positive statement that this box hands air to a named branch, and no hood in the
+    catalog declares one (``library/hvac.py`` states counts and no layouts on purpose).
+    Without this the level-2 trunk-and-branch tree left the static budget silently, ten
+    runs at a time, which is the failure mode this whole module is written against.
     """
     out: dict[str, object] = {}
     kinds = _equipment_kinds(ctx)
@@ -190,7 +199,11 @@ def _manifolds(ctx: CheckContext) -> dict[str, object]:
         if kinds.get(obj.tag) != EquipmentKind.DUCT_MANIFOLD.value:
             continue
         product = _type_for(ctx, obj.type_ref, "equipment_types")
-        if product is not None and (getattr(product, "duct_ports", None) or 0) >= 2:
+        if product is None:
+            continue
+        reader = getattr(product, "collars", None)
+        dimensioned = bool(reader()) if callable(reader) else False
+        if (getattr(product, "duct_ports", None) or 0) >= 2 or dimensioned:
             out[obj.tag] = product
     return out
 
@@ -220,6 +233,38 @@ def radial_landings(ctx: CheckContext) -> dict[str, str]:
                 continue
             port = getattr(plenums[host], "port_diameter", None)
             if port is not None and abs(port.meters - duct.diameter_m) <= 1e-6:
+                out[duct.tag] = host
+                break
+    return _through_trunks(ctx, plenums, out)
+
+
+def _through_trunks(ctx: CheckContext, plenums: dict, landings: dict[str, str]
+                    ) -> dict[str, str]:
+    """Branches that reach a plenum THROUGH a trunk, not by landing in its case.
+
+    **A plenum does not have to be a manifold.** Catlin's level 2 went trunk-and-branch on
+    2026-09-19 — thirteen home-run lanes will not leave one closet through an open-web
+    truss field — so what leaves ``EQ-M-ERV-MAN-EXH`` is one 8" trunk and the ten branches
+    are tee'd off it out in the floor. Every one of them was silently outside this check:
+    ``radial_landings`` asked whether a run ends INSIDE a plenum's case, and they end on a
+    duct. Ten runs left the static budget and nothing said so, which is the failure mode
+    this whole module is written against.
+
+    One hop is deliberate and it is enough: a branch tee'd off a branch is a topology
+    nobody has drawn here, and inventing a general graph walk for it would be grading a
+    system this house does not have. A run reached this way is graded exactly as a radial
+    is — its own flow against its own product — because that is what it is.
+    """
+    from typehaus.resolve.mep_soffit import ducts_are_joined
+
+    del plenums  # every landing already matched its plenum's port diameter to get here
+    trunks = dict(landings)
+    out = dict(landings)
+    for duct in ctx.model.ducts:
+        if duct.tag in out or not duct.path or duct.diameter_m is None:
+            continue
+        for trunk_tag, host in sorted(trunks.items()):
+            if trunk_tag != duct.tag and ducts_are_joined(ctx.model, duct.tag, trunk_tag):
                 out[duct.tag] = host
                 break
     return out
