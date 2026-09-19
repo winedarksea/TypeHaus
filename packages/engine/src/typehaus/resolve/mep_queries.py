@@ -368,6 +368,53 @@ def on_pipe_segment(point: tuple[float, float], start: tuple[float, float],
     return -tol <= dot <= length_sq + tol
 
 
+def pipe_elevations_at(run, point: tuple[float, float], tol: float = 1e-6,
+                       *, risers: bool = True) -> list[float]:
+    """EVERY elevation at which ``run`` passes over ``point`` in plan, in path order.
+
+    The values are pipe **centrelines**, per ``model/mep.py``'s note on
+    ``PipeRun.elevations``.
+
+    A plan path can visit one point more than once at different heights —
+    PR-B-MAIN-DRAIN passes (3', 15'-6") at the ceiling where the collector turns and again
+    9'-8" lower where the drop through the slab lands. Which of those a caller wants is the
+    caller's question, and the two callers want opposite answers: a gravity branch ties into
+    the DEEPEST leg (:func:`pipe_invert_at`), while a pressurised branch tees into whichever
+    leg is at ITS elevation, which on a riser is usually not the lowest. Collapsing the list
+    here is what made ``supply_tie_ins`` impossible to write against this module.
+
+    ``risers=False`` drops the vertical legs — a zero-length plan segment, which is how
+    every riser in this repo is authored: one plan point, two elevations. **The drain
+    caller needs that and it is not a detail.** A drain ties into a SLOPING leg that passes
+    beneath it; a riser standing at the arrival point is some branch's own drop, and
+    counting its foot made the collector read yards deeper than it is — two false
+    ``mep.drain_tie_in`` FAILs and five ``mep.pipe_sizing`` ones, measured. A supply tee
+    lands on a riser all the time, so supply keeps them.
+    """
+    if run.z_m is None:
+        return []
+    out: list[float] = []
+    for index in range(len(run.path) - 1):
+        start, end = run.path[index], run.path[index + 1]
+        seg_len = length(sub(end, start))
+        if seg_len <= tol:
+            # ** on_pipe_segment IS TRUE FOR EVERY POINT AGAINST A ZERO-LENGTH SEGMENT **
+            # — its cross product and its dot product are both zero and its length_sq is
+            # zero, so the range test passes trivially. Asking it about a riser makes every
+            # run carrying one a candidate for every point in the house. Test coincidence
+            # directly instead, and never route a riser through that predicate.
+            if risers and length(sub(point, start)) <= tol:
+                out.extend((run.z_m[index], run.z_m[index + 1]))
+            continue
+        if not on_pipe_segment(point, start, end, tol):
+            continue
+        travelled = length(sub(point, start))
+        fraction = travelled / seg_len
+        out.append(run.z_m[index]
+                   + (run.z_m[index + 1] - run.z_m[index]) * fraction)
+    return out
+
+
 def pipe_invert_at(run, point: tuple[float, float], tol: float = 1e-6) -> float | None:
     """The run's elevation where ``point`` sits on its plan path, or None if it doesn't.
 
@@ -375,25 +422,15 @@ def pipe_invert_at(run, point: tuple[float, float], tol: float = 1e-6) -> float 
     ``PipeRun.elevations``; the name is older than the convention and is kept because
     ``drain_tie_ins`` compares one run's value against another's, where the offset cancels.
 
-    Takes the *deepest* match, not the first: a run's plan path can visit one point twice
-    at two elevations (PR-B-MAIN-DRAIN passes (3', 15'-6") at the ceiling where the
-    collector turns and again 9'-8" lower where the drop through the slab lands). The
-    deeper leg is the one a buried branch actually ties into.
+    Takes the *deepest* of :func:`pipe_elevations_at`, not the first: the deeper leg is the
+    one a buried branch actually ties into. **That is a drain rule and it breaks supply** —
+    a riser visiting one plan point at two heights comes back as the low one, which rejects
+    a legitimate tee by hundreds of inches — so a pressurised caller reads the list.
+
+    ``risers=False`` keeps this function byte-identical to what it was before the split:
+    a drain's receiver is a sloping leg, never the foot of somebody's riser.
     """
-    if run.z_m is None:
-        return None
-    candidates = []
-    for index in range(len(run.path) - 1):
-        start, end = run.path[index], run.path[index + 1]
-        if not on_pipe_segment(point, start, end, tol):
-            continue
-        seg_len = length(sub(end, start))
-        if seg_len <= tol:
-            continue
-        travelled = length(sub(point, start))
-        fraction = travelled / seg_len
-        candidates.append(run.z_m[index]
-                          + (run.z_m[index + 1] - run.z_m[index]) * fraction)
+    candidates = pipe_elevations_at(run, point, tol, risers=False)
     return min(candidates) if candidates else None
 
 

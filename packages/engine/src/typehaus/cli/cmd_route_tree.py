@@ -339,12 +339,25 @@ def _invert_of(lines: list[tuple[list[tuple[float, float]], list[float]]],
     return best[1] if best is not None else 0.0
 
 
-def _line_nodes(graph: Graph, path: Any, tolerance: float = 0.05) -> set[int]:
+def _line_nodes(graph: Graph, path: Any, tolerance: float = 0.05,
+                z_tolerance: float | None = None) -> set[int]:
     """Every lattice node lying on a run's plan polyline — the root of a tree.
 
     A main is a line and a branch ties in where it meets it. Modelling the root as one
     vertex is what makes a tree look like a manifold: every branch converges on the same
     point, and the wyes stack where no fitting could.
+
+    **``z_tolerance`` is not optional for a pressurised run, and this is the one place the
+    supply change can produce a confidently WRONG route.** Plan-only is right for the two
+    callers it was written for: a drain searches in one plane, and a vent chase is vertical
+    so every elevation on its plan line really is on the pipe. A supply trunk is neither —
+    it runs level and rises at both ends, and `falls=False` means the search is fully
+    three-dimensional. Without a z gate a branch could "arrive" on the trunk's plan line
+    five feet below the trunk and the route would be reported as found; ``_root_nodes(...,
+    with_z=True)`` would never catch it, because this returned a non-empty set first.
+
+    Pass a per-vertex z on the polyline (3-tuples) together with a tolerance, and a node
+    qualifies only where the line's own interpolated elevation is within it.
     """
     out: set[int] = set()
     # A stack's reachable part is ONE vertex — its head — so the degenerate polyline is the
@@ -353,13 +366,19 @@ def _line_nodes(graph: Graph, path: Any, tolerance: float = 0.05) -> set[int]:
     segments = (list(zip(path, path[1:], strict=False)) if len(path) > 1
                 else [(path[0], path[0])])
     for node in graph.nodes:
-        for (ax, ay), (bx, by) in segments:
+        for start, end in segments:
+            (ax, ay), (bx, by) = start[:2], end[:2]
             dx, dy = bx - ax, by - ay
             span = dx * dx + dy * dy
             t = 0.0 if span <= 0 else max(0.0, min(1.0, ((node.x - ax) * dx
                                                          + (node.y - ay) * dy) / span))
             if ((ax + t * dx - node.x) ** 2
-                    + (ay + t * dy - node.y) ** 2) <= tolerance ** 2:
-                out.add(node.index)
-                break
+                    + (ay + t * dy - node.y) ** 2) > tolerance ** 2:
+                continue
+            if (z_tolerance is not None and len(start) > 2 and len(end) > 2
+                    and abs(start[2] + t * (end[2] - start[2])
+                            - node.z) > z_tolerance):
+                continue
+            out.add(node.index)
+            break
     return out

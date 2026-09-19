@@ -398,3 +398,71 @@ def test_a_vent_is_still_refused_as_a_TREE_main_with_a_reason(runner) -> None:
     result = runner.invoke(app, ["route", str(_CATLIN), "--tree", "PR-S-SUITEBATH-VENT"])
     assert result.exit_code == 1, result.output
     assert "not a drain run in this model" in result.output
+
+
+def _endpoints(tag: str, mode: str):
+    """The endpoint record one target hands the search, with its refusals."""
+    from typehaus.cli.route_support import _endpoints as build
+    from typehaus.resolve import resolve
+    from typehaus.source import load_plan
+
+    model, _ = resolve(load_plan(_CATLIN).plan)
+    problems: list[str] = []
+    return build(model, tag, mode, problems), problems, model
+
+
+def test_a_supply_branch_ties_onto_its_trunk_rather_than_a_vent_chase() -> None:
+    """Until 2026-09-19 a supply run fell through to `_vent_siblings`, which takes
+    `path[-1]` as the root and matches on ENDPOINTS. Supply is the mirror: the tee is
+    `path[0]` and it sits on a SEGMENT, which no endpoint tolerance can find."""
+    ends, problems, model = _endpoints("PR-B-CW-BATH1", "run")
+    assert ends is not None, problems
+    assert ends.falls is False
+    assert ends.tie_is_the_goal is True
+    run = next(r for r in model.pipe_runs if r.tag == "PR-B-CW-BATH1")
+    # The ORIGIN is the fixture riser — the fixed end — and the tie is the goal.
+    assert ends.origin[:2] == (run.path[-1][0], run.path[-1][1])
+    assert ends.root_paths and all(len(v) == 3 for v in ends.root_paths[0])
+    assert {"PR-B-CW-BATH1", "PR-B-CW-TRUNK"} <= ends.touch
+    # A DFU drain table says nothing about a water branch; the run's own size stands.
+    assert ends.diameter_m == run.diameter_m
+
+
+def test_a_supply_proposal_lands_on_the_trunks_LINE_not_its_endpoint(runner) -> None:
+    before = _plan_digest()
+    result = runner.invoke(app, ["route", str(_CATLIN), "--run", "PR-B-HW-BATH2"])
+    assert result.exit_code == 0, result.output
+    assert "PR-B-HW-BATH2-PROPOSED" in result.output
+    assert "vent" not in result.output.lower()
+    assert _plan_digest() == before
+
+
+@pytest.mark.parametrize("tag,fragment", [
+    # Each of the three real causes, asserted AS TEXT: a refusal's wording is its contract,
+    # and one sentence about a vent chase was false about all three.
+    ("PR-B-HW-TRUNK", "which is a different system"),
+    ("PR-M-CW-PORCH-HYD", "no run of any system passes under its first vertex"),
+    ("PR-M-CW-COLDSTORE-STUB", "passes under its first vertex but 12.0\" above it"),
+])
+def test_a_parentless_supply_run_refuses_naming_which_cause(runner, tag, fragment) -> None:
+    result = runner.invoke(app, ["route", str(_CATLIN), "--run", tag])
+    printed = " ".join(result.output.split())
+    assert fragment in printed, result.output
+    assert "chase" not in printed
+    assert "PROPOSED" not in printed
+
+
+def test_the_root_line_z_gate_keeps_a_branch_off_the_trunks_plan_shadow() -> None:
+    """**The one place this change can produce a confidently wrong route.** `_line_nodes`
+    was plan-only with no z filter, and `falls=False` means the search is 3-D — so a branch
+    could "arrive" on the trunk's plan line five feet below the trunk and be reported found.
+    `_root_nodes(..., with_z=True)` would never catch it, because `_line_nodes` returned a
+    non-empty set first."""
+    from typehaus.cli.cmd_route_tree import _line_nodes
+    from typehaus.routing.graph import Graph, Node
+
+    line = ((0.0, 0.0, 2.0), (4.0, 0.0, 2.0))
+    graph = Graph(nodes=[Node(index=0, x=2.0, y=0.0, z=2.0),
+                         Node(index=1, x=2.0, y=0.0, z=0.5)])
+    assert _line_nodes(graph, line) == {0, 1}                     # plan-only, as before
+    assert _line_nodes(graph, line, z_tolerance=0.05) == {0}      # the gate

@@ -367,7 +367,12 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
         # Seed the lattice along the whole parent line where the tie may land anywhere on
         # it: a goal on a line the graph never built is worth nothing, which is the failure
         # mode `routing/corridors` exists to avoid and the same one applies here.
-        terminals.extend((x, y, ends.root[2]) for path in ends.root_paths for x, y in path)
+        # **Per-vertex z where the line carries one.** A vent chase is vertical so one
+        # elevation describes its whole goal line; a supply trunk rises at both ends, and
+        # seeding it at a single z builds the lattice at a height the trunk is nowhere near
+        # for most of its length.
+        terminals.extend((v[0], v[1], v[2] if len(v) > 2 else ends.root[2])
+                         for path in ends.root_paths for v in path)
         clock = Timer(target, enabled=timing is not None)
         try:
             try:
@@ -417,7 +422,11 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
             # drains (`cmd_route_tree._line_nodes`); vents never reached that code.
             goals = set()
             for path in ends.root_paths:
-                goals |= _line_nodes(graph, path)
+                # The z gate applies exactly where the search is 3-D and the goal line has
+                # an elevation of its own — the supply case. A vent's line carries plain
+                # 2-tuples and `_line_nodes` leaves it plan-only, as it always was.
+                goals |= _line_nodes(graph, path,
+                                     z_tolerance=None if ends.falls else 0.05)
             if not goals:
                 goals = _root_nodes(graph, ends.root, with_z=not ends.falls)
             if start is None or not goals:
@@ -543,6 +552,12 @@ def _one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str
     from typehaus.routing.trades import conduit as conduit_trade
 
     points = found.polyline()
+    if ends.tie_is_the_goal:
+        # The search ran riser -> trunk because the fixture end is the fixed one; the run is
+        # authored trunk -> riser, and every reader downstream (the dialect, `serves`, the
+        # tie-in derivation itself) reads path[0] as the tee. No gravity profile is
+        # involved, so this really is the one line it looks like.
+        points = list(reversed(points))
     # **A route of one point is not a run.** It means the origin was already standing on the
     # goal — which is a true and useful FINDING, and on catlin it is exactly the one the
     # vent merge is about: PR-S-BATH1-VENT's origin sits 0.9" from PR-S-SUITEBATH-VENT's

@@ -1,11 +1,20 @@
 """Where a proposed run TIES IN — the root end of every route the CLI asks for.
 
-Three questions, one module, because they are the same question asked of three topologies:
+Four questions, one module, because they are the same question asked of four topologies:
 a drain lands at an invert on the run it discharges to (:func:`_discharge`); a branch lands
-on the nearest main passing its own floor (:func:`_nearest_main`); and a branch vent lands
-on the chase it shares with its siblings, anywhere along any of them
-(:func:`_vent_siblings`). Split out of ``route_support`` when that file crossed the 500-line
-rule in ``AGENTS.md``; nothing about the readings changed.
+on the nearest main passing its own floor (:func:`_nearest_main`); a branch vent lands on
+the chase it shares with its siblings, anywhere along any of them (:func:`_vent_siblings`);
+and a supply branch tees onto the trunk that feeds it, anywhere along THAT
+(:func:`_supply_trunk`). Split out of ``route_support`` when that file crossed the 500-line
+rule in ``AGENTS.md``.
+
+**Supply is the mirror of a vent and it arrived last for a reason.** Until 2026-09-19 a
+supply run fell through to ``_vent_siblings``, which takes ``path[-1]`` as the root and
+demands another run of the same system whose FIRST OR LAST vertex lands within 3". Both
+halves are wrong in mirror image: a supply branch is authored tie-first, so its ``path[0]``
+is the tee and its ``path[-1]`` is the riser at the fixture; and a tee sits on a SEGMENT,
+which no endpoint-to-endpoint tolerance can find. Every supply target got a refusal about a
+vent chase that is not true of a trunk.
 """
 
 from __future__ import annotations
@@ -127,3 +136,74 @@ def _nearest_main(model: ResolvedModel, point: tuple[float, float], floor_m: flo
                         "there is nothing to route it to")
         return None
     return (best[1], best[2])
+
+
+def _supply_trunk(model: ResolvedModel, run: Any, problems: list[str]
+                  ) -> tuple[tuple[float, float, float], list[str],
+                             tuple[tuple[tuple[float, float, float], ...], ...]] | None:
+    """``(a point on the feeder, the whole chain to the source, its plan polyline with z)``.
+
+    The chain rather than the parent alone, for ``_discharge``'s reason: a branch's tee sits
+    ON its parent and its parent's tee sits on the GRANDparent, so leaving the rest of the
+    chain hard walls the route off from the tie it is being routed to.
+
+    **The polyline carries a z per vertex, and a vent's does not.** A vent chase is vertical,
+    so one elevation describes the whole goal line; a supply trunk rises at both ends and
+    runs level between, and seeding one z along it would put goals on the trunk's plan line
+    at a height the trunk is nowhere near.
+
+    A refusal here names WHICH of the three real causes applies, out of the record
+    ``supply_tie_in_records`` already carries. Each is that record read back, which is the
+    point of making it a record rather than a dict.
+    """
+    from typehaus.resolve.mep_tie_ins import supply_tie_in_records
+
+    records = {rec.child: rec for rec in supply_tie_in_records(model.pipe_runs)}
+    record = records.get(run.tag)
+    ties = {tag: rec.parent for tag, rec in records.items() if rec.parent}
+    if record is None or record.parent is None:
+        problems.append(_supply_refusal(run, record))
+        return None
+    chain: list[str] = []
+    cursor: str | None = record.parent
+    while cursor is not None and cursor not in chain:
+        chain.append(cursor)
+        cursor = ties.get(cursor)
+    parent = next(r for r in model.pipe_runs if r.tag == record.parent)
+    z = parent.z_m or ()
+    if len(z) != len(parent.path):
+        problems.append(f"{run.tag}: its feeder {record.parent} carries no resolved "
+                        "elevations, so there is no line to tee onto")
+        return None
+    line = tuple((p[0], p[1], zz) for p, zz in zip(parent.path, z, strict=False))
+    # The root POINT is the derived tee itself — the station the record names — so a
+    # refusal, a report and a `--json` payload all say the same place. The whole line goes
+    # beside it as the goal SET, and `falls=False` means the caller uses the line.
+    root = (record.station[0], record.station[1], run.z_m[0])
+    return root, chain, (line,)
+
+
+def _supply_refusal(run: Any, record: Any) -> str:
+    """The sentence a parentless supply run gets, naming which cause applies.
+
+    Three different facts about the model want three different sentences. One about a vent
+    chase — which is what every supply run got until 2026-09-19 — is false about all three.
+    """
+    head = f"{run.tag}: "
+    if record is None:
+        return (head + "it carries no resolved elevations, so there is no tee to derive")
+    inches = None if record.z_gap_m is None else record.z_gap_m * 39.3700787
+    if record.reason == "cross_system":
+        return (head + f"the run standing at its first vertex is {record.nearest}, which is "
+                f"a {'different' if record.nearest else 'cross-system'} system. Its source "
+                "is a machine rather than a pipe — a water heater, a softener, a mixing "
+                "valve — and this derivation names runs. Route it with --via, or route the "
+                "run it leaves")
+    if record.reason == "elevation":
+        return (head + f"{record.nearest} passes under its first vertex but {abs(inches):.1f}\" "
+                f"{'above' if inches > 0 else 'below'} it. The riser that would feed this "
+                "run is not modelled, which is a gap in the plan and not a lane the search "
+                "can find")
+    return (head + "no run of any system passes under its first vertex, so the thing that "
+            "feeds it is not a run in this model — a service lateral, or a riser nobody "
+            "drew. Author it, or name a --via")

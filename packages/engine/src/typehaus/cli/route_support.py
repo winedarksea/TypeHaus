@@ -60,7 +60,12 @@ class Endpoints:
     #: vents joining a common vent is ordinary IRC P3104 work — and with a single root
     #: vertex the router structurally could not propose the merge even where the two lines
     #: pass within an inch of each other.
-    root_paths: tuple[tuple[tuple[float, float], ...], ...] = ()
+    root_paths: tuple[tuple[tuple[float, ...], ...], ...] = ()
+    #: True when the tie is the run's ORIGIN rather than its far end — the supply case. The
+    #: search runs riser -> trunk because the fixture end is the fixed one; the run is
+    #: authored trunk -> riser. Reversing the found polyline is the whole of the difference,
+    #: and it is safe to do literally because no gravity profile is involved.
+    tie_is_the_goal: bool = False
     #: Extra constructor keywords to echo, e.g. a raceway's ``from_ref``/``to_ref``.
     echo: dict[str, str] = field(default_factory=dict)
     #: True when a gravity profile applies. Not ``system == "drain"`` at the call site,
@@ -72,7 +77,12 @@ class Endpoints:
     advice: tuple[str, ...] = ()
 
 
-from typehaus.cli.route_roots import _discharge, _nearest_main, _vent_siblings  # noqa: E402
+from typehaus.cli.route_roots import (  # noqa: E402
+    _discharge,
+    _nearest_main,
+    _supply_trunk,
+    _vent_siblings,
+)
 
 __all__ = ["_discharge", "_nearest_main", "_vent_siblings"]
 
@@ -207,18 +217,39 @@ def _endpoints(model: ResolvedModel, target: str, mode: str,
     return None
 
 
+#: The pressurised piping systems, which tee onto a trunk rather than discharging to one.
+_SUPPLY_SYSTEMS = ("water_cold", "water_hot")
+
+
 def _pipe_run_endpoints(model: ResolvedModel, run: Any,
                         problems: list[str]) -> Endpoints | None:
     if not run.z_m or len(run.z_m) != len(run.path):
         problems.append(f"{run.tag}: no resolved elevations, so it cannot be routed")
         return None
     falls = run.system == "drain"
+    if run.system in _SUPPLY_SYSTEMS:
+        # **Supply is the mirror of a vent: the GOAL is fixed and the ORIGIN is free.** The
+        # fixture riser is where the water has to come out; where it tees onto the trunk is
+        # the search's to choose, anywhere along the line. So the search runs from the
+        # riser, and `tie_is_the_goal` puts the printed run back the way it is authored.
+        supply = _supply_trunk(model, run, problems)
+        if supply is None:
+            return None
+        root, chain, paths = supply
+        return Endpoints(
+            origin=(run.path[-1][0], run.path[-1][1], run.z_m[-1]), root=root, kind="pipe",
+            radius_m=(run.diameter_m or 0.0) / 2.0,
+            # **Never branch_diameter_m here.** That is a DFU drain table and says nothing
+            # about a water branch, whose size comes off WSFU and pressure.
+            diameter_m=run.diameter_m,
+            serves=run.serves, storey=run.storey, system=run.system, falls=False,
+            touch=frozenset({run.tag, *chain}), root_paths=paths, tie_is_the_goal=True)
     found = _discharge(model, run, problems if falls else [])
     if found is None and falls:
         return None
     if found is not None:
         root, chain, parent_path = found
-        paths: tuple[tuple[tuple[float, float], ...], ...] = ((), ) if falls else (parent_path,)
+        paths: tuple[tuple[tuple[float, ...], ...], ...] = ((), ) if falls else (parent_path,)
     else:
         # **A vent's downstream is a CHASE, not another run**, so ``drain_tie_ins`` derives
         # nothing for it: on catlin all eight vents simply end at the VentRun station and
