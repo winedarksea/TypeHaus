@@ -48,51 +48,19 @@ MILLWORK = [
     ),
 ]
 
-# --- the attic study built-in, W-A-SN --------------------------------------------------
-#
-# INT_2X4_BOOKCASE_12: a 9 7/8" clear pocket (the `case-pocket` AIRGAP over the
-# `stud-case` bay), 12'-9 3/8" of run. The BOM legitimately sees only the case-back sheet
-# and the nailers — this is the shelf stock it never saw.
-#
-# The five bays and their tops were already worked out in the comment table at
-# plan/storeys/attic.py; this promotes that table from prose to data. Each bay is topped off
-# the usable height at its EAST end as the rake steps down. The tops come from
-# `1 1/2" + (36' - x)/2`, less ~3" of build-up and seat, rounded down to the nearest 6":
-#     1  22'-8"  -> 25'-4"      usable 5'-5 1/2"   case top 5'-0"
-#     2  25'-4"  -> 28'-0"      usable 4'-1 1/2"   case top 3'-6"
-#     3  28'-0"  -> 30'-8"      usable 2'-9 1/2"   case top 2'-6"
-#     4  30'-8"  -> 33'-4"      usable 1'-5 1/2"   case top 1'-0"
-#     5  33'-4"  -> 35'-5 3/8"  usable 4 1/8"      NO CASE — the rake closes this bay out
-# IT IS A LOW BOOKCASE, NOT A WALL OF SHELVES: the study's east end is under the rake
-# rather than under a 5'-0" wall, and four short bays plus a closed-out fifth is what the
-# geometry leaves. Widths are CLEAR between 3/4" partitions: 2'-8" pitch less 3/4" is
-# 2'-7 1/4"; bay 5's 2'-1 3/8" pitch less 3/4" is 2'-0 5/8".
-#
-# 8/4, and one board: a 9 7/8" pocket takes a single board with room to spare against the
-# 18" supply. 1 1/2" fixed shelves in dados need no stiffener and no edge banding at a
-# 2'-6" bay, which is the whole argument for owner stock here — a 3/4" shelf at this span
-# would want a face frame that nobody would then see the oak through.
-#
-# Counts are a ~12" pitch over each bay's own height, the case top included (a case top is
-# cut from the same stock at the same width). Per-bay rather than one spacing: a uniform
-# pitch does not divide into a raked bay, and bay 5 is 3'-0" shorter than bay 1.
+# --- the attic study built-in -----------------------------------------------------------
+# The furniture specification is the physical carcass and the single source for geometry.
+# This ShelfBank retains the owner-stock fabrication takeoff: twelve 1 1/2 in. oak boards
+# at the explicit 9 7/8 in. finished shelf depth. The purchased door shelves are outside
+# this bank and therefore cannot enter the hardwood quantity.
 ATTIC_SHELVES = [
     ShelfBank(
-        uid="ZSR38F5C8F", tag="SB-A-STUDY",
-        host="W-A-SN",
-        material_ref="oak-shelf-8q",
-        thickness=inch(1.5),
-        profile="S4S",
-        # THREE BAYS, not five: bay 5 (x 33'-4"..35'-5 3/8") has only 4 1/8" of usable
-        # height. Bay 4 (x 30'-8"..33'-4") is dropped on the owner's call: 1'-0" of clear
-        # height is two shelves you cannot see into, at the end of a run you have to stoop
-        # to reach, and it reads as a leftover rather than as storage. East of 30'-8" the
-        # wall is a raked closure carrying no casework — see W-A-SN in storeys/attic.py.
-        # Counts stay a ~12" pitch over each bay's own height, the case top included.
+        uid="ZSR38F5C8F", tag="SB-A-STUDY", host="FURN-A-STUDY-BUILTIN",
+        material_ref="oak-shelf-8q", thickness=inch(1.5), depth=inch(9.875), profile="S4S",
         bays=(
-            ShelfBay(width=ft(2, 7.25), clear_height=ft(5), shelf_count=5),
-            ShelfBay(width=ft(2, 7.25), clear_height=ft(3, 6), shelf_count=4),
-            ShelfBay(width=ft(2, 7.25), clear_height=ft(2, 6), shelf_count=3),
+            ShelfBay(width=inch(31.25), clear_height=inch(60), shelf_count=5),
+            ShelfBay(width=inch(31.25), clear_height=inch(42), shelf_count=4),
+            ShelfBay(width=inch(31.25), clear_height=inch(30), shelf_count=3),
         ),
     ),
 ]

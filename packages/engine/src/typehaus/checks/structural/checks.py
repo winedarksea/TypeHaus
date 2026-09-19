@@ -10,7 +10,7 @@ from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.engineering import item_id
 from typehaus.findings import Finding, Result, Severity
-from typehaus.model.enums import LayerFunction
+from typehaus.model.enums import LayerFunction, StructuralRole
 from typehaus.model.structure import Footing, FoundationWall
 
 # Simplified allowable joist spans (ft) at 16" o.c., residential floor (40 psf live).
@@ -44,6 +44,58 @@ _IJOIST_TABLE_SPACING_IN = 16.0
 # Widest span ``resolve.framing.tables.header_size`` still answers prescriptively (R602.7);
 # anything longer is an engineered beam in that table and here.
 _PRESCRIPTIVE_HEADER_SPAN_FT = 8.0
+
+
+@check(Tier.STRUCTURAL, "structural.flat_2x4_nonbearing_header")
+def flat_2x4_nonbearing_header(ctx: CheckContext) -> list[Finding]:
+    """Validate the deliberately narrow R602.7.4 flat-nailer exception.
+
+    A flat 2x4 is not a small bearing header.  It is permitted only for a nonbearing
+    partition, a modest opening, and where the plate is near enough to nail the wall
+    above the opening together.
+    """
+    if ctx.plan is None:
+        return []
+    from typehaus.resolve.framing.tables import FLAT_2X4_NONBEARING_HEADER
+
+    out: list[Finding] = []
+    authored_by_tag = {element.tag: element for element in ctx.plan.all_elements()}
+    types = {item.tag: item for item in ctx.plan.library.door_types}
+    for opening in ctx.model.openings:
+        if not opening.is_door:
+            continue
+        authored = authored_by_tag.get(opening.tag)
+        spec = getattr(authored, "header_spec", None)
+        if spec is None:
+            spec = getattr(types.get(opening.type_ref), "header_spec", None)
+        if (spec or "").strip().lower() != FLAT_2X4_NONBEARING_HEADER:
+            continue
+        host = authored_by_tag.get(opening.host_wall)
+        wall = ctx.model.wall(opening.host_wall)
+        violations: list[str] = []
+        if getattr(host, "structural_role", StructuralRole.UNKNOWN) is not StructuralRole.NONBEARING:
+            violations.append("host wall is not explicitly NONBEARING")
+        if opening.width_m > 8.0 * 0.3048 + 1e-9:
+            violations.append(f"RO is {opening.width_m / 0.0254:.1f}\" wide (> 96\")")
+        if wall is not None:
+            plate_top = wall.plate_top_z_m if wall.plate_top_z_m is not None else wall.z1_m
+            # A resolved partition's body ends at the top plate. Two 1-1/2 in courses
+            # are the standard stack, so this is the plate *underside* the header can
+            # nail against rather than a roof/load-path inference.
+            plate_underside = plate_top - 3.0 * 0.0254
+            header_top = wall.base_ref_z_m + opening.sill_m + opening.height_m + 3.5 * 0.0254
+            gap = plate_underside - header_top
+            if gap < -1e-9 or gap > 24.0 * 0.0254 + 1e-9:
+                violations.append(f"header-to-plate nailing surface is {gap / 0.0254:.1f}\" (must be 0–24\")")
+        if violations:
+            out.append(_advisory(
+                "structural.flat_2x4_nonbearing_header",
+                f"opening {opening.tag} cannot use a flat 2x4 nonbearing header: "
+                + "; ".join(violations), (opening.tag,), Result.FAIL,
+                code="IRC R602.7.4",
+                fix_hint="use a table-sized header or explicitly correct the nonbearing wall, RO, and plate clearance",
+            ))
+    return out
 
 
 

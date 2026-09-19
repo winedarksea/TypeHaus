@@ -27,6 +27,28 @@ from typehaus.model.registry import register_constructor
 from typehaus.quantities import Length, UFactor
 
 
+class BookcaseDoorSpec(HausModel):
+    """Published dimensions for a factory bookcase door.
+
+    ``DoorType.width`` and ``height`` remain the framed rough-opening dimensions.  This
+    record deliberately keeps the ordered product dimensions separate, so a 36 x 80
+    nominal door cannot silently become a 36 x 80 rough opening in framing or IFC.
+    """
+
+    nominal_width: Length
+    nominal_height: Length
+    body_width: Length
+    body_height: Length
+    body_depth: Length
+    casing_overall_width: Length
+    clear_passage_width: Length
+    hinge_side_clearance: Length
+    # Which face of the host wall receives the factory cabinet.  This is a placement
+    # datum, not a claim about its hinge/pivot axis or opening sweep.
+    mounting_face: Literal["negative_normal", "positive_normal"] = "negative_normal"
+    source: str
+
+
 class DoorType(HausModel):
     """A door product type. Drives schedules, energy checks, and opening appearance."""
 
@@ -51,6 +73,9 @@ class DoorType(HausModel):
     # that the solver's dimensional-lumber header tables don't apply; a Door instance's
     # own header_spec wins over this.
     header_spec: str | None = None
+    # A purchased bookshelf/Murphy door.  Its closed cabinet, face frame and casing are
+    # real product geometry; its clearance is published installation information only.
+    bookcase_door: BookcaseDoorSpec | None = None
     # --- R302.5.1: the door between a garage and the dwelling ---------------------------
     # The code offers three ways to comply and names two of them by construction: a 1-3/8"
     # solid-wood or solid/honeycomb-steel door, or a 20-minute fire-rated assembly. Both
@@ -111,6 +136,51 @@ class MeshRef(HausModel):
     path: str
 
 
+class BuiltInBookcaseBay(HausModel):
+    """One clear opening in a fitted, stepped bookcase run."""
+
+    clear_width: Length
+    height: Length
+    horizontal_board_count: int
+
+    @model_validator(mode="after")
+    def _has_usable_geometry(self) -> BuiltInBookcaseBay:
+        if self.clear_width.meters <= 0 or self.height.meters <= 0:
+            raise ValueError("built-in bookcase bay width and height must be positive")
+        if self.horizontal_board_count < 2:
+            raise ValueError("built-in bookcase bay needs a base and top board")
+        return self
+
+
+class BuiltInBookcaseSpec(HausModel):
+    """Explicit fabrication geometry for wall-attached, open fitted bookcases.
+
+    ``FurnitureType.footprint`` remains the placement and collision envelope.  This spec
+    describes the boards inside it so sheets, GLB, and IFC do not reduce fitted work to a
+    generic box.
+    """
+
+    bays: tuple[BuiltInBookcaseBay, ...]
+    shelf_depth: Length
+    horizontal_board_thickness: Length
+    divider_thickness: Length
+    back_thickness: Length
+
+    @model_validator(mode="after")
+    def _has_usable_geometry(self) -> BuiltInBookcaseSpec:
+        if not self.bays:
+            raise ValueError("built-in bookcase needs at least one bay")
+        if any(value.meters <= 0 for value in (
+            self.shelf_depth, self.horizontal_board_thickness,
+            self.divider_thickness, self.back_thickness,
+        )):
+            raise ValueError("built-in bookcase thicknesses and shelf depth must be positive")
+        if any(bay.height.meters < self.horizontal_board_thickness.meters
+               for bay in self.bays):
+            raise ValueError("built-in bookcase bay is shorter than its boards")
+        return self
+
+
 class FurnitureType(HausModel):
     """An IKEA-scale design-reference type (#49). Footprint/height derived from mesh."""
 
@@ -156,6 +226,9 @@ class FurnitureType(HausModel):
     # Names a generated glyph + massing from ``model/placeable_symbols`` (see SYMBOL_NAMES).
     # An imported ``plan_representation``/``model_representation`` still wins over it.
     plan_symbol: str | None = None
+    # ``None`` is ordinary catalog furniture.  A value makes this a fitted, generated
+    # assembly: exact board geometry is shared by drawings, browser, GLB, and IFC.
+    built_in_bookcase: BuiltInBookcaseSpec | None = None
 
 
 class RailingType(HausModel):

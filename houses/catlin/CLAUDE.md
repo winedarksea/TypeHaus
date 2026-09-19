@@ -612,23 +612,19 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   springing — and that corner is a rim end no host wall reaches. Over `FO-M-STAIR`'s hole, so
   full-height to `SL-B-FLOOR` like the two beside it, not a squash block like
   `P-M-STRLAND-SE`. See `notes/u_stair_split_landing.md`; move ST-M2S and all three move.
-- `W-A-SN` is a 12 3/4" bookcase wall (`INT_2X4_BOOKCASE_12`); its south face is the only
-  cover for `FO-A-STAIR`'s north edge — moving it north FAILs `code.R312_1_guard` (~14'-3"
-  unguarded well). It was thickened, not moved (face held at 8'-9 5/8"), why
-  `N-A-C2`/`N-A-E1` sit at y=9'-4". Do not split the wall to thin its west 1'-6" — a 4
-  3/4" wall there puts the south face 4" north of the well edge, re-opening the FAIL.
-  `interior_room="RM-A-STUDY"` is load-bearing on this `Wall` (asymmetric stack-up) —
-  without it `orientation.wall_outward_sign` may put the gwb face on the well edge.
-- `RM-A-STUDY` reads 165 sf (was 159) because `resolve/rooms.py` builds the room face from
-  wall centrelines and the axis moved 4" north though the south face didn't —
-  `code.R312_1_guard` (wall footprint union) still passes. `RM-A-EAST-UNFIN` loses the
-  same 6 sf (STORAGE, no glazing rule binds).
-- Study casework must NOT become a placeable — catalog bookcases are 1'-0" deep against a
-  9 7/8" pocket (2 1/8" proud into the well). Priced via `prices.toml [allowances]` lump
-  `cabinet-study-bookcase-wall`. `D-A-STUDY` is `DT-INT-BOOKCASE30` (retyped in place);
-  `trimless=True` means a millwork case here, NOT the drywall return jamb it means
-  elsewhere — never price off `DT-INT-SWING36-TRIMLESS` (which replaced
-  `DT-INT-SWING30-TRIMLESS` on 2026-09-15 when `D-M-BED2`, its only door, widened).
+- **The study edge is a stepped conventional partition plus separate casework.** `W-A-SN`
+  retains the purchased door on the front y=9'-0" segment; west/rear/east returns enclose
+  the explicit `PC-A-STAIR-BOOKCASE` pocket. Only its validated wall geometry can satisfy
+  the named north-edge interval of `FO-A-STAIR`; furniture never supplies guard coverage.
+- `FURN-A-STUDY-BUILTIN` is one wall-attached fixed run, x=22'-8"..30'-8 3/4", front at
+  y=8'-9 5/8", with its back on `W-A-SN-REAR`'s south finish. `SB-A-STUDY` is rehosted to
+  it and keeps the 9 7/8" owner-stock oak shelf depth. A 2 5/8" filler closes the west end.
+- `D-A-STUDY` keeps its uid and wall-hosted semantics but uses `DT-INT-BOOKCASE36`: 36x80
+  nominal, 34 3/4 x 78 1/2 x 8 1/4 factory body, 38x82 RO, 42 1/2 casing envelope, 30 1/4
+  published passage and 1 1/2 hinge-side wall clearance. It is west-hinged in-swing and
+  uses the explicit flat 2x4 nonbearing header. Published clearance envelopes are not a
+  calculated pivot sweep; verify threshold anchorage, jamb fastening and floor blocking
+  against the delivered unit before installation.
 
 - **Roof is flash-and-batt in the joist bay**: 11-7/8" TJI 230 @ 24" o.c., 5" ccSPF
   against the deck underside + R-30C batt in the remaining 6-7/8", 5/8" CDX plywood,

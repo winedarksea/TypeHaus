@@ -382,6 +382,7 @@ def _emitter_opening_points(model, wall, opening) -> list[tuple[float, float, fl
         door_type.operation if door_type is not None else None,
         is_glazed=door_type is not None and door_type.glazed,
         is_trimless=door_type is not None and door_type.trimless,
+        bookcase_door=door_type.bookcase_door if door_type is not None else None,
     )
     # glTF swizzles (x, y, z) → (x, z, -y); undo it so both sides speak the plan frame.
     return [(p[0], -p[2], p[1])
@@ -574,6 +575,7 @@ def test_the_glb_opening_product_is_the_ir_product(model, geometry) -> None:
             operation=door_type.operation if door_type is not None else None,
             is_glazed=door_type is not None and door_type.glazed,
             is_trimless=door_type is not None and door_type.trimless,
+            bookcase_door=door_type.bookcase_door if door_type is not None else None,
         )
         want = {
             tuple(sorted((round(x, 9), round(y, 9), round(z, 9))

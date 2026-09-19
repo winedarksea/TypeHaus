@@ -56,11 +56,26 @@ def placeables_json(
              "height_m": furniture_type.height.meters, "storage": furniture_type.storage,
              "clearance_m": ([dimension.meters for dimension in furniture_type.clearance]
                              if furniture_type.clearance is not None else None),
-             "mesh": furniture_type.mesh.path if furniture_type.mesh is not None else None}
+             "mesh": furniture_type.mesh.path if furniture_type.mesh is not None else None,
+             "built_in_bookcase": _bookcase_json(furniture_type.built_in_bookcase)}
             for storey in model.plan.storeys
             for furniture in model.plan.storey_elements(storey.tag)
             if furniture.element_kind == "Furniture"
             for furniture_type in model.plan.library.furniture_types
             if furniture_type.tag == furniture.type_ref
         ],
+    }
+
+
+def _bookcase_json(spec: Any) -> dict[str, Any] | None:
+    """Expose fabrication inputs to the inspector without serializing quantity objects."""
+    if spec is None:
+        return None
+    return {
+        "bays": [{"clear_width_m": bay.clear_width.meters, "height_m": bay.height.meters,
+                  "horizontal_board_count": bay.horizontal_board_count} for bay in spec.bays],
+        "shelf_depth_m": spec.shelf_depth.meters,
+        "horizontal_board_thickness_m": spec.horizontal_board_thickness.meters,
+        "divider_thickness_m": spec.divider_thickness.meters,
+        "back_thickness_m": spec.back_thickness.meters,
     }

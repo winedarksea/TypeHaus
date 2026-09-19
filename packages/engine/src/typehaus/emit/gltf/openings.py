@@ -33,14 +33,14 @@ from typehaus.resolve.model import ResolvedWall
 
 def _add_opening_filling(mb: _MeshBuilder, wall: ResolvedWall, opening,
                          operation: DoorOperation | None, is_glazed: bool = False,
-                         is_trimless: bool = False) -> None:
+                         is_trimless: bool = False, bookcase_door=None) -> None:
     """Draw the product standing in ``opening`` — frame + panel/leaf/glass — as boxes.
 
     Emitted regardless of LOD so the leaf geometry shows for both the core wall prism and the
     framed stud model. A rough opening is a bare void and yields no parts at all.
     """
     for part in opening_parts(wall, opening, operation, is_glazed=is_glazed,
-                              is_trimless=is_trimless):
+                              is_trimless=is_trimless, bookcase_door=bookcase_door):
         color = _color(part.material_key)
         for solid in part.solids:
             mb.add_prism(list(solid.ring), solid.z0_m, solid.z1_m, color)

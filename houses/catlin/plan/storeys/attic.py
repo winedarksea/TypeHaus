@@ -10,6 +10,8 @@ from typehaus import (
     Door,
     DeckLayer,
     FloorOpening,
+    FloorOpeningEdgeInterval,
+    FloorOpeningPocketClosure,
     FloorSystem,
     FollowRoof,
     JoistSpec,
@@ -59,31 +61,18 @@ NODES = [
     # the facade's own global line rather than from a start node, so removing the seam
     # re-phases nothing.
     Node(uid="CAN004AAAA", tag="N-A-SE", position=pt(ft(36), ft(0))),
-    # y 9'-4" (was 9'-0"), moved with N-A-C2 when W-A-SN became the study's
-    # 12 3/4" bookcase wall — see that node's comment for the whole derivation.
-    Node(uid="CAN005AAAA", tag="N-A-E1", position=pt(ft(36), ft(9, 4))),
+    # The front study partition meets the east rafter plate at the original y=9'-0" datum.
+    Node(uid="CAN005AAAA", tag="N-A-E1", position=pt(ft(36), ft(9))),
     Node(uid="CAN006AAAA", tag="N-A-NE", position=pt(ft(36), ft(36))),
     Node(uid="CAN007AAAA", tag="N-A-N1", position=pt(ft(18), ft(36))),
     Node(uid="CAN008AAAA", tag="N-A-NW", position=pt(ft(0), ft(36))),
-    # Den north wall y=5'-7" (source 5.611); band wall y=9'-4" (source 9.228).
-    #
-    # 9'-4" ARRIVES BY ARITHMETIC, NOT BY PREFERENCE. W-A-SN's SOUTH face is the
-    # only thing covering FO-A-STAIR's north edge, so it is pinned at the well edge,
-    # 8'-9 5/8" = 105.625". A Wall is centred on its axis, so the axis sits at
-    # 105.625 + thickness/2 — and INT_2X4_BOOKCASE_12's 12.750" puts that at
-    # 112.000", y = 9'-4" exactly. The wall was THICKENED, not moved: the face stayed put.
-    #
-    # This is why the 2026-08-15 attempt at 9'-4" FAILED and this one does not. That pass
-    # moved a 4 3/4" partition, which carried its south face 4" north of the well edge and
-    # opened 3'-0" of unguarded well (code.R312_1_guard). Same axis, opposite meaning.
-    #
-    # Two things fall out for free: the axis is now ON the 16" module (FS-ATTIC's joists sit
-    # at y = 16k, so there is a joist directly under the sole plate where the thin wall had
-    # none), and the source-survey error at both nodes drops 2.74" -> 1.26". W-A-SN must
-    # keep interior_room="RM-A-STUDY" — the stack-up is asymmetric now and the gwb face
-    # belongs on the loft side.
+    # Den north wall y=5'-7" (source 5.611); front study partition y=9'-0".
     Node(uid="CAN009AAAA", tag="N-A-C1", position=pt(ft(18), ft(5, 7))),
-    Node(uid="CAN012AAAA", tag="N-A-C2", position=pt(ft(18), ft(9, 4))),
+    Node(uid="CAN012AAAA", tag="N-A-C2", position=pt(ft(18), ft(9))),
+    Node(uid="P8A4WSTF01", tag="N-A-SN-WF", position=pt(ft(22, 3), ft(9))),
+    Node(uid="P8A4WSTB02", tag="N-A-SN-WB", position=pt(ft(22, 3), ft(9, 10.625))),
+    Node(uid="P8A4ESTB03", tag="N-A-SN-EB", position=pt(ft(30, 11.125), ft(9, 10.625))),
+    Node(uid="P8A4ESTF04", tag="N-A-SN-EF", position=pt(ft(30, 11.125), ft(9))),
     # N-A-V2 (CAN013AAAA) and N-A-V3 (CAN014AAAA) DELETED 2026-08-29 with W-A-VE/W-A-VN.
     # The stair well's south closure — see W-A-GC-S for why the guard stops and a wall
     # takes over at x=29'-4 1/2". Both axes are set by pinning a FACE to the well edge and
@@ -267,59 +256,25 @@ WALLS = [
     #
     # RM-A-WEST-UNFIN inherits the space at ITS finish, which is none — the 43 sf of
     # carpet the Den carried is not billed any more. See the ROOMS note below.
-    # THE STUDY'S BOOKCASE WALL. 12 3/4" of built-in shelving, not a partition:
-    # the owner wanted a bookcase wall at the stair head with D-A-STUDY hidden inside it.
-    # ** DO NOT MOVE THIS WALL AND DO NOT SPLIT IT. ** Its SOUTH face is the only thing
-    # covering FO-A-STAIR's north edge; push it north and code.R312_1_guard FAILs with
-    # ~14'-3" of unguarded well. The face is pinned at 8'-9 5/8" and the depth grew NORTH,
-    # which is what put N-A-C2/N-A-E1 on y=9'-4" (see N-A-C2's note for the arithmetic).
-    # Splitting off the west 1'-6" for a thinner assembly re-opens the same FAIL: a 4 3/4"
-    # wall centred on this axis has its south face 4" north of the well edge. One wall, one
-    # assembly, end to end.
-    #
-    # `interior_room` is the highest-consequence kwarg on this line. The stack-up is
-    # asymmetric — millwork south, gwb north — and without it `orientation.wall_outward_sign`
-    # may put the gwb face on the well edge and the case pocket in the storage loft.
-    #
-    # THE CASE RUN starts at x=22'-8", not the well's 21'-2": the WALL covers the well edge,
-    # the casework does not have to (code.R312_1_guard reads the wall footprint union, not
-    # the millwork). 22'-8" is a 16" station and N-A-V1's own line, which buys three things —
-    # RL-A-HANDRAIL's upper return at 22'-5 3/8" gets solid wall to die into, ED-A-STUDY-SW
-    # stays exactly where it is, and the run reads as beginning where the vestibule ends.
-    # The 1'-6" west of it is the run's flush end panel.
-    #
-    # ** THE RUN IS THREE BAYS, NOT FIVE, SINCE 2026-08-30. ** The five-bay table here was
-    # derived from `5'-0" + (36' - x)/3` — the 4:12 roof over a 5'-0" knee wall — and it was
-    # never re-derived when the storey went to a 6:12 rake on flat plates. Under the governing
-    # `1 1/2" + (36' - x)/2` every one of those five case tops was taller than the roof above
-    # it, the fifth by more than four feet. Bays 4 and 5 do not exist as shelving at all now;
-    # bay 3 is a two-shelf base unit. Re-derived, less ~3" of build-up and seat:
-    #     1  22'-8"  -> 25'-4"     usable 5'-5 1/2"    clear height 5'-0"   5 shelves
-    #     2  25'-4"  -> 28'-0"     usable 4'-1 1/2"    clear height 3'-6"   4 shelves
-    #     3  28'-0"  -> 30'-8"     usable 2'-9 1/2"    clear height 2'-6"   3 shelves
-    # (the heights and counts are authored on SB-A-STUDY in plan/millwork.py, which is what
-    # `haus millwork` cuts from; this table must follow that bank, not lead it)
-    # East of 30'-8" the wall runs on as a raked closure and carries no casework: the usable
-    # height at 33'-4" is 1'-5 1/2" and at the wall's east end 4 3/4". That is a plinth, not a
-    # bookcase, and billing case backs and nailers for it would be billing joinery nobody can
-    # reach past. THE WALL ITSELF DOES NOT SHORTEN — it still has to cover FO-A-STAIR's north
-    # edge to x=36'-0", which is the whole reason it is one wall end to end.
-    #
-    # D-A-STUDY sits in bay 1, the only bay still tall enough to take a leaf.
-    # Nothing is placed in plan/placeables.py for this: both catalog bookcases are 1'-0"
-    # deep against a 9 7/8" pocket, so every case would stand 2 1/8" PROUD — out over the
-    # well, the exact lie this wall exists to avoid — and neither fits bays 4 or 5. The run
-    # is carried by the assembly's source=, this comment, and a prices.toml [allowances]
-    # lump (the house's existing idiom, per the roof's vent mat). The BOM legitimately sees
-    # only the case-back sheet area and the nailers.
-    #
-    # D-A-STUDY's hinge-side jamb wants a full-depth 3-ply post through-bolted to the sole
-    # plate and the assembly's 4'-0" blocking row: a ~250 lb bookcase leaf on a 10" moment
-    # arm is TORSION, not bending, which is why no header_spec is authored (and why
-    # structural.header_prescriptive, which never fires under 8'-0", would not have caught
-    # it). There is no schema field for that jamb — it lives here and on the type.
-    Wall(uid="CAW113AAAA", tag="W-A-SN", start_node="N-A-C2", end_node="N-A-E1",
-         assembly="INT_2X4_BOOKCASE_12", interior_room="RM-A-STUDY",
+    # The study boundary is conventional nonbearing partition framing. The fixed oak casework
+    # is a separate wall-attached Furniture occurrence on the rear segment. The U-shaped return
+    # encloses the otherwise exposed north edge of FO-A-STAIR; the explicit pocket-closure
+    # relation validates that barrier before the guard check may credit it. W-A-SN retains its
+    # identity and the purchased Murphy door. All five segments follow the roof.
+    Wall(uid="CAW113AAAA", tag="W-A-SN", start_node="N-A-C2", end_node="N-A-SN-WF",
+         assembly="INT_2X4_PARTITION", interior_room="RM-A-STUDY",
+         structural_role=StructuralRole.NONBEARING, top=ToRoof(roof_ref="RF-HOUSE")),
+    Wall(uid="P8A4WWAL01", tag="W-A-SN-WR", start_node="N-A-SN-WF", end_node="N-A-SN-WB",
+         assembly="INT_2X4_PARTITION", structural_role=StructuralRole.NONBEARING,
+         top=ToRoof(roof_ref="RF-HOUSE")),
+    Wall(uid="P8A4BWAL02", tag="W-A-SN-REAR", start_node="N-A-SN-WB", end_node="N-A-SN-EB",
+         assembly="INT_2X4_PARTITION", structural_role=StructuralRole.NONBEARING,
+         top=ToRoof(roof_ref="RF-HOUSE")),
+    Wall(uid="P8A4EWAL03", tag="W-A-SN-ER", start_node="N-A-SN-EB", end_node="N-A-SN-EF",
+         assembly="INT_2X4_PARTITION", structural_role=StructuralRole.NONBEARING,
+         top=ToRoof(roof_ref="RF-HOUSE")),
+    Wall(uid="P8A4CWAL04", tag="W-A-SN-EAST", start_node="N-A-SN-EF", end_node="N-A-E1",
+         assembly="INT_2X4_PARTITION", structural_role=StructuralRole.NONBEARING,
          top=ToRoof(roof_ref="RF-HOUSE")),
     # ** THE STAIR WELL'S SOUTH-EAST CLOSURE. A GUARD CANNOT STAND HERE. **
     # RL-A-STAIR was drawn along the whole south edge, when the east end of
@@ -377,14 +332,11 @@ OPENINGS = [
          position=from_node("N-A-C1", ft(0, 5.0625))),
     # The band wall's opening onto the stair head — the source's 2'-7 1/2" gap at
     # x 18'-6"..21'-1 3/4", the only way between the east loft and the stair vestibule.
-    # THE MURPHY BOOKCASE DOOR. A RETYPE IN PLACE — everything that says
-    # "Murphy" lives on DT-INT-BOOKCASE30, so this Door keeps its uid and IFC GlobalId, and
-    # keeps its position: the offset runs along x, which N-A-C2's y move does not touch.
-    # Same RO as DT-INT-SWING30, so nothing re-phases and the jamb pack is unchanged.
-    # `flip_hinge` parks the leaf WEST against the centreline wall; hinged east it swings
-    # out toward the well. See W-A-SN above for the hinge-side jamb this leaf's weight needs.
-    Door(uid="CAD203AAAA", tag="D-A-STUDY", host="W-A-SN", type_ref="DT-INT-BOOKCASE30",
-         position=from_node("N-A-C2", ft(1, 5)), flip_hinge=True),  # x 19'-11 7/8"
+    # Purchased 36x80 Murphy bookcase door, west hinged and swinging into the study. Its
+    # authored 38x82 rough opening is centred at x=20'-2 1/2". The product record carries
+    # factory body, casing, passage, mounting and published clearance dimensions separately.
+    Door(uid="CAD203AAAA", tag="D-A-STUDY", host="W-A-SN", type_ref="DT-INT-BOOKCASE36",
+         position=from_node("N-A-C2", inch(7.5)), flip_hinge=True),
     # South gable, FOUR openings west→east: S2, JUL-W, JUL-E, S3 — mirror-symmetric about
     # the ridge (CLAUDE.md's "gables read symmetric" rule).
     #
@@ -771,6 +723,18 @@ FLOOR_OPENINGS = [
                           pt(ft(35, 5.375), ft(8, 9.625)),
                           pt(ft(22, 5.375), ft(8, 9.625))),
                  bearing_refs=("W-S-E1",)),
+    FloorOpeningPocketClosure(
+        uid="P8A4POCK01", tag="PC-A-STAIR-BOOKCASE", opening_ref="FO-A-STAIR",
+        edge_interval=FloorOpeningEdgeInterval(edge="north", start=inch(0), end=inch(99.375)),
+        wall_refs=("W-A-SN-WR", "W-A-SN-REAR", "W-A-SN-ER"),
+        pocket_outline=(
+            pt(ft(22, 5.375), ft(8, 9.625)),
+            pt(ft(30, 8.75), ft(8, 9.625)),
+            pt(ft(30, 8.75), ft(9, 8.25)),
+            pt(ft(22, 5.375), ft(9, 8.25)),
+        ),
+        source="The west return, rear partition, and east return form the connected non-walkable stair-edge pocket behind the fixed study bookcase. Only these walls, never the furniture, provide enclosure. Verify floor blocking beneath the rear and return plates; the former bookshelf-wall axis was not a supporting-joist datum.",
+    ),
 ]
 
 FLOOR = [

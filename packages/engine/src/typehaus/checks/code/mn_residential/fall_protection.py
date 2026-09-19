@@ -53,7 +53,8 @@ def stairwell_guard(ctx: CheckContext) -> list[Finding]:
     no stair wells reports UNKNOWN — never PASS by absence.
     """
     from typehaus.model.floors import FloorOpening, FloorOpeningPurpose, FloorSystem
-    from typehaus.resolve.floor_openings import _rectangular_opening_box
+    from typehaus.resolve.floor_opening_pockets import pocket_closure_intervals
+    from typehaus.resolve.floor_openings import _rectangular_opening_box, _subtract_interval
 
     cid, code = "code.R312_1_guard", "R312.1"
     openings_by_tag = {e.tag: e for e in ctx.plan.all_elements()
@@ -104,6 +105,14 @@ def stairwell_guard(ctx: CheckContext) -> list[Finding]:
             runs, short, used = _uncovered_runs(
                 p0, p1, closures, railings, stair_quads, gap_tol_m=_GUARD_GAP_TOL_M,
                 plane_tol_m=_GUARD_PLANE_TOL_M, wall_face_tol_m=_GUARD_WALL_FACE_TOL_M)
+            # A resolved pocket is proof that this stretch is behind an actual, connected
+            # wall enclosure.  It is deliberately applied after ordinary edge coverage:
+            # furniture never reaches this list, and an invalid authored closure never
+            # resolves into it.
+            for start, end, tag in pocket_closure_intervals(
+                    ctx.model, opening.tag, name, abs(along1 - along0)):
+                runs = _subtract_interval(runs, start, end)
+                used.add(tag)
             short_guards.extend(short)
             guarding_tags |= used
             # Stations are metres from ``p0``; the edges are authored low-to-high along

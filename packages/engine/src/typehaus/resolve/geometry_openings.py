@@ -93,7 +93,8 @@ def _exterior_face(wall: ResolvedWall) -> tuple[float, float] | None:
 
 
 def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
-                  is_glazed: bool = False, is_trimless: bool = False) -> tuple[GPart, ...]:
+                  is_glazed: bool = False, is_trimless: bool = False,
+                  bookcase_door=None) -> tuple[GPart, ...]:
     """Every solid the product inside ``opening`` contributes, grouped into named parts.
 
     A rough opening is a bare void with no product and yields nothing. A ``trimless`` door
@@ -166,6 +167,35 @@ def opening_parts(wall: ResolvedWall, opening, operation: DoorOperation | None,
             box(width, frame_width, frame_depth, 0.0,
                 z0 + sill + frame_width / 2.0, frame_offset),
         )))
+    # A factory bookcase door is a deep cabinet leaf plus casing, rather than a trimless
+    # drywall-return leaf. Its dimensions are published product dimensions, independently
+    # of the rough opening above.
+    if opening.kind == "door" and bookcase_door is not None:
+        mount_sign = -1.0 if bookcase_door.mounting_face == "negative_normal" else 1.0
+        cabinet_offset = mount_sign * (bookcase_door.body_depth.meters / 2.0)
+        casing_width = max(0.0, (bookcase_door.casing_overall_width.meters - width) / 2.0)
+        casing_height = casing_width
+        body_height = min(bookcase_door.body_height.meters, available_height)
+        body_width = min(bookcase_door.body_width.meters, width)
+        body_elev = z0 + sill + body_height / 2.0
+        casing_offset = mount_sign * (_OPENING_FRAME_DEPTH_M / 2.0)
+        casing_solids = (
+            box(casing_width, available_height + casing_height, _OPENING_FRAME_DEPTH_M,
+                -width / 2.0 - casing_width / 2.0, z0 + sill + available_height / 2.0,
+                casing_offset),
+            box(casing_width, available_height + casing_height, _OPENING_FRAME_DEPTH_M,
+                width / 2.0 + casing_width / 2.0, z0 + sill + available_height / 2.0,
+                casing_offset),
+            box(width + 2.0 * casing_width, casing_height, _OPENING_FRAME_DEPTH_M, 0.0,
+                z0 + sill + available_height + casing_height / 2.0, casing_offset),
+        )
+        parts.append(GPart(key="bookcase_casing", material_key=_FRAME_KEY,
+                           solids=casing_solids))
+        parts.append(GPart(key="bookcase_leaf", material_key=_FRAME_KEY, solids=(
+            box(body_width, body_height, bookcase_door.body_depth.meters, 0.0, body_elev,
+                cabinet_offset),
+        )))
+        return tuple(parts)
     panel_height = max(_OPENING_MIN_PANEL_DIMENSION_M, available_height - 2.0 * frame_width)
     panel_elev = z0 + sill + frame_width + panel_height / 2.0
     clear_width = width - 2.0 * frame_width  # between the two jamb faces

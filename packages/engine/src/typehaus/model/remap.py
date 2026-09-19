@@ -249,6 +249,9 @@ UNCOVERED: dict[str, tuple[str, ...]] = {
     "FoundationWall": ("start_node", "end_node", "stacks_on", "bearing_refs"),
     "FloorSystem": ("joists",),
     "FloorOpening": ("bearing_refs",),
+    # The interval and pocket polygon are tied to all three walls as one enclosure. A split
+    # needs geometric review; independently remapping tags could falsely preserve guard credit.
+    "FloorOpeningPocketClosure": ("wall_refs",),
     "Roof": ("bearing_refs",),
 }
 

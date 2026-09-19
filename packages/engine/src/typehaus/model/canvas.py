@@ -5,6 +5,7 @@ from __future__ import annotations
 from math import atan2, degrees
 from typing import Any
 
+from typehaus.model.built_in_bookcase import built_in_bookcase_parts
 from typehaus.model.placeable_symbols import lamp_role, model_parts, part_hex, plan_symbol_strokes
 from typehaus.model.placeables import PlacementStrategy
 from typehaus.model.plan import PlanModel
@@ -66,6 +67,25 @@ def _symbol_geometry(item: Any, footprint: Any) -> dict[str, Any]:
     in the symbol's local frame (origin at the footprint centre); every consumer already owns
     the rotate-and-translate, and ``placeable_symbols.place_local`` is that one transform.
     """
+    bookcase = getattr(item, "built_in_bookcase", None)
+    if bookcase is not None:
+        parts = built_in_bookcase_parts(bookcase)
+        return {
+            # Board outlines let plan outputs show the stepped run and bay divisions instead
+            # of a furniture bounding box.  Horizontal boards coincide in plan, so only backs
+            # and dividers carry the drafting signal.
+            "plan_strokes": [
+                {"points": [list(point) for point in part.outline], "closed": True,
+                 "weight": 0.18, "fill": None}
+                for part in parts if part.role in {"back", "divider"}
+            ],
+            "model_parts": [
+                {"center": list(part.center), "size": list(part.size),
+                 "color": part_hex("wood"),
+                 "role": part.role, "bay_index": part.bay_index}
+                for part in parts
+            ],
+        }
     symbol = getattr(item, "plan_symbol", None)
     height = getattr(item, "height", None)
     if symbol is None or footprint is None:

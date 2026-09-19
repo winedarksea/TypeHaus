@@ -13,6 +13,7 @@ from typehaus import (
     Alarm,
     AlarmKind,
     Beam,
+    BookcaseDoorSpec,
     Connector,
     ConnectorKind,
     Door,
@@ -80,12 +81,18 @@ DOOR_TYPES = [
     # TYPE, not the instance, so retyping that door to the plain DT-INT-SWING36 would have
     # silently dropped the drywall return jamb it was designed around — see this row's own
     # note in prices.toml for what that reveal actually costs.
-    # The study's bookcase door — a leaf that IS a bookcase, hung in W-A-SN's built-in.
-    # Everything that says "Murphy" lives here on the type, which is what let D-A-STUDY be a
-    # retype in place and keep its uid and IFC GlobalId. See source= for the trimless trap.
-    DoorType(tag="DT-INT-BOOKCASE30", width=ft(2, 6), height=ft(6, 8), core="solid",
-             trimless=True, product_ref="PROD-MURPHY-BOOKCASE-30",
-             source="plans/TODO.md — D-A-STUDY only: a flush-mount Murphy-style BOOKCASE DOOR in W-A-SN's built-in (INT_2X4_BOOKCASE_12). Same 2'-6\"x6'-8\" RO as DT-INT-SWING30, so nothing re-phases and the jamb pack is unchanged; operation stays SWING because a bookcase door IS a swinging door. core=\"solid\" is the only schema field that says a ~250 lb leaf. ** trimless=True HERE MEANS A MILLWORK CASE, NOT THE DRYWALL RETURN JAMB IT MEANS EVERYWHERE ELSE IN THIS HOUSE ** — a flush bookcase door has no casing, and a drawn frame box is the one thing that gives it away in 3D; do not price it off the DT-INT-SWING36-TRIMLESS row. No header_spec: the real requirement is the HINGE-SIDE JAMB (a 250 lb leaf on a 10\" moment arm is torsion, not bending) — a full-depth 3-ply post through-bolted to the sole plate and the assembly's 4'-0\" blocking row, for which there is no field. The case depth must match case-pocket + stud-case (9 7/8\" clear); see that assembly's note for what moves if the ordered unit needs a full 12\" case"),
+    # The type dimensions are the framed rough opening. Product/order dimensions stay in
+    # bookcase_door so framing, schedules and factory geometry cannot silently exchange them.
+    DoorType(tag="DT-INT-BOOKCASE36", width=inch(38), height=inch(82), core="solid",
+             header_spec="flat 2x4 nonbearing", product_ref="PROD-MURPHY-BOOKCASE-36",
+             bookcase_door=BookcaseDoorSpec(
+                 nominal_width=inch(36), nominal_height=inch(80),
+                 body_width=inch(34.75), body_height=inch(78.5), body_depth=inch(8.25),
+                 casing_overall_width=inch(42.5), clear_passage_width=inch(30.25),
+                 hinge_side_clearance=inch(1.5), mounting_face="negative_normal",
+                 source="Murphy Door measurement charts and instruction manuals, read 2026-09-19; published installation clearance, not a calculated pivot sweep",
+             ),
+             source="Murphy Door 36 x 80 nominal flush-mount bookcase door; 38 x 82 rough opening. West-hinged in-swing at D-A-STUDY. Threshold anchorage, jamb fastening and final connection design require verification against the delivered unit and supporting floor blocking; exact pivot-axis sweep remains deferred."),
     # 2'-0" x 3'-6" — the attic pocket's ACCESS door, and the house's only
     # door that is not 6'-8" tall. D-A-POCKET hosts on W-A-STU-N, which runs in x under the
     # west rake at y=22'-4"; with the attic at 6:12 the roof underside there is

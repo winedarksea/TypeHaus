@@ -69,12 +69,11 @@ NEC_FILL_ATTIC = [
                      position=pt(ft(34, 4.375), ft(10, 3.75)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.FLOOR), rotation=deg(270)),
-    # y=9'-11 3/8" is 3/8" off W-A-SN's north face — the wall thickened to 12 3/4" for the
-    # study's bookcase, so a stale y would sit INSIDE the wall. Nothing checks that, which
-    # is why it is written down: still a face-mounted receptacle in RM-A-EAST-UNFIN looking
-    # south.
+    # 3/8" north of W-A-SN-REAR's north finish (y=10'-1"). Face-mounted in the unfinished
+    # east loft and looking south; it moved with the rear partition rather than remaining
+    # inside the new wall footprint.
     ElectricalDevice(uid="NEC055AAAA", tag="ED-A-EAST-RC8", kind=DeviceKind.RECEPTACLE,
-                     position=pt(ft(26, 6.375), ft(9, 11.375)), type_ref="ED-T-RECEPTACLE",
+                     position=pt(ft(26, 6.375), ft(10, 2)), type_ref="ED-T-RECEPTACLE",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     # RC1 sits on the south wall between RC4/RC3; RC2 on the east wall south of the well,

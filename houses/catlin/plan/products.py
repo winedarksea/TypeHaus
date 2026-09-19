@@ -150,20 +150,16 @@ ERV_TERMINAL_4 = Product(
            "§5), not published; a submitted product with a real curve replaces them.",
 )
 
-# The study's bookcase door (DT-INT-BOOKCASE30, W-A-SN's built-in). A model rather than a
-# bare brand because the flush-mount case DEPTH is the number the assembly was drawn to:
-# INT_2X4_BOOKCASE_12's 6 3/8" case-pocket plus its 3 1/2" stud-case give 9 7/8" of
-# clear shelf, and the leaf has to equal the fixed cases or the run does not read continuous.
-# ** THAT DEPTH IS THE ONE NUMBER TO CONFIRM AGAINST THE ORDER. ** Murphy Door's published
-# flush-mount case depths were not verifiable when this was written; the assembly's note
-# records what moves for a full 12" case (drop the north nailer line, same 12 3/4" total,
-# same y=9'-4" — but the casework goes onto the critical path ahead of drywall).
-MURPHY_BOOKCASE_30 = Product(
-    tag="PROD-MURPHY-BOOKCASE-30", brand="Murphy Door", model="Flush Mount Bookcase Door",
-    name="Flush-mount bookcase door, 2'-6\" x 6'-8\", solid core",
-    source="Murphy Door product line — identity only; the case DEPTH has not been confirmed "
-           "against a datasheet, and INT_2X4_BOOKCASE_12's 6 3/8\" case-pocket is "
-           "what the order has to match (see that assembly's note for the fallback).",
+# Purchased study door. Geometry and clearances are structured on DT-INT-BOOKCASE36;
+# this record is the order identity only.
+MURPHY_BOOKCASE_36 = Product(
+    tag="PROD-MURPHY-BOOKCASE-36", brand="Murphy Door", model="Flush Mount Bookcase Door",
+    name="Flush-mount bookcase door, 36 x 80 nominal, west-hinged in-swing",
+    source="Murphy Door instruction manuals and measurement charts, read 2026-09-19: "
+           "factory body 34 3/4 x 78 1/2 x 8 1/4 in.; 38 x 82 in. rough opening; "
+           "42 1/2 in. casing envelope; 30 1/4 in. published passage; 1 1/2 in. "
+           "hinge-side wall clearance. Verify threshold anchorage, jamb fasteners and "
+           "delivered-unit connection details before installation.",
 )
 
 # --- RM-M-BATH2's drop-in bath (2026-08-29) ----------------------------------------------
@@ -216,7 +212,7 @@ PRODUCTS = (
     LG_WASHTOWER, LG_INDUCTION_RANGE, LG_DISHWASHER,
     FRIGIDAIRE_ALL_REFRIGERATOR, FRIGIDAIRE_ALL_FREEZER,
     RHEEM_PROTERRA_80, EG4_12KPV, EG4_POWERPRO_WALLMOUNT,
-    BROAN_B210E75RT, MURPHY_BOOKCASE_30,
+    BROAN_B210E75RT, MURPHY_BOOKCASE_36,
     ERV_PLENUM_FABRICATED, ERV_START_COLLAR_DAMPERED, ERV_VOLUME_DAMPER_4,
     ERV_TERMINAL_4,
     KOHLER_UNDERSCORE_5713_W1, KOHLER_CLEARFLO_7272,

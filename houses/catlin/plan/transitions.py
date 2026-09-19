@@ -158,16 +158,6 @@ TRANSITIONS = (
     Transition(uid="CATR011AAAA", tag="TR-CATLIN-CENTER-OPENING",
                condition_pattern="opening_perimeter:INT_2X6_BRG",
                overlay="bearing-partition-opening"),
-    # D-A-STUDY's opening in the study bookcase wall. It needs its OWN binding rather than
-    # falling under TR-CATLIN-INTERIOR-OPENING's `INT_*` glob, for the same reason
-    # INT_2X6_BRG does: the tag starts "CATLIN_", so the glob never sees it.
-    # The overlay is the interior-opening sheet, which is the right drawing — what is
-    # different here is not the perimeter detail but the LEAF (a ~250 lb bookcase door) and
-    # the hinge-side jamb behind it, and neither is a perimeter condition. Both are recorded
-    # on DT-INT-BOOKCASE30 and on W-A-SN.
-    Transition(uid="QZCDFYBATE", tag="TR-CATLIN-BOOKCASE-OPENING",
-               condition_pattern="opening_perimeter:INT_2X4_BOOKCASE_12",
-               overlay="interior-opening"),
     # D-S-BATH1's opening in the hall bath's east wet wall, which is BEARING and was
     # retyped with it. Its own binding, same reason as the others: the tag starts
     # "CATLIN_", so TR-CATLIN-INTERIOR-OPENING's `INT_*` glob never sees it. The overlay is

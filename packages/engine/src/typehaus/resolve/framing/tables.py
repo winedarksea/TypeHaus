@@ -58,6 +58,9 @@ def header_size(opening_width: Length, bearing: bool = True) -> str:
 
 
 ENGINEERED_LVL = "engineered-LVL"
+# R602.7.4 permits a flat 2x4 nailer at a nonbearing opening.  It is an explicit authored
+# option, not an inference from a short opening; the structural check validates the limits.
+FLAT_2X4_NONBEARING_HEADER = "flat 2x4 nonbearing"
 
 # Stocked LVL depths (inches). Beyond the prescriptive table ``header_size`` names an
 # engineered member with no nominal lumber depth to look up, but the solver still has to
@@ -88,6 +91,8 @@ def header_profile_from_spec(spec: str) -> str | None:
     A spec this function cannot parse yields ``None`` and the caller falls back to the
     prescriptive table: a typo must never silently size a header.
     """
+    if spec.strip().lower() == FLAT_2X4_NONBEARING_HEADER:
+        return "2x4"
     match = _RE_HEADER_SPEC.match(spec)
     if match is None:
         return None

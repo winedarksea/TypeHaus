@@ -358,7 +358,7 @@ def test_the_billed_finishes_move_with_the_split(catlin_model):
     # it again on the merits, and the second storey alone now carries ~341 sf of it.
     assert set(rows["oak"]["rooms"]) == {"RM-A-STUDY", "RM-S-STUDY2",
                                          "RM-S-SUITE", "RM-S-CLOSET"}
-    assert float(rows["oak"]["net_area_sqft"]) == pytest.approx(506.0, abs=0.5)
+    assert float(rows["oak"]["net_area_sqft"]) == pytest.approx(507.6, abs=0.5)
     # ** vinyl-sheet has left the main storey entirely. ** What is left is the rooms that are
     # genuinely wet or genuinely cheap-and-washable, on three different storeys: RM-S-PLANT
     # (the spec that started it), RM-A-STUBATH, RM-B-BATH — and, since 2026-09-09,

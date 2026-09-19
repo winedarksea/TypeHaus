@@ -26,7 +26,10 @@ from typehaus.resolve import resolve
 from typehaus.resolve.framing.openings import WallOpening
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.framing.solver import frame_wall
-from typehaus.resolve.framing.tables import header_profile_from_spec
+from typehaus.resolve.framing.tables import (
+    FLAT_2X4_NONBEARING_HEADER,
+    header_profile_from_spec,
+)
 from typehaus.resolve.model import ResolvedWall
 
 
@@ -45,6 +48,11 @@ def test_unrecognized_header_spec_parses_to_none():
     assert header_profile_from_spec("a big beam") is None
     assert header_profile_from_spec('2x 14" LVL') is None
     assert header_profile_from_spec('2-ply 14" glulam') is None
+
+
+def test_explicit_flat_2x4_nonbearing_header_has_a_real_profile():
+    """The exception is a framing member, while its applicability is check-validated."""
+    assert header_profile_from_spec(FLAT_2X4_NONBEARING_HEADER) == "2x4"
 
 
 # ------------------------------------------------------------------ solver unit level

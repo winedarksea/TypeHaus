@@ -175,6 +175,7 @@ def _opening_geometry(wall: ResolvedWall, opening, door_types) -> ElementGeometr
         operation=door_type.operation if door_type is not None else None,
         is_glazed=door_type is not None and door_type.glazed,
         is_trimless=door_type is not None and door_type.trimless,
+        bookcase_door=door_type.bookcase_door if door_type is not None else None,
     )
     return ElementGeometry(uid=opening.uid, kind="opening", trades=("openings",), parts=parts)
 

@@ -640,6 +640,26 @@ class ResolvedFloor:
 
 
 @dataclass(frozen=True)
+class ResolvedFloorOpeningPocketClosure:
+    """A validated, wall-only stair-opening pocket closure.
+
+    Kept separate from ``ResolvedFloor`` because one deck can hold several independent
+    stair wells.  The only consumer is R312 stair-well edge coverage.
+    """
+
+    uid: str
+    tag: str
+    storey: str
+    opening_ref: str
+    edge: str
+    start_m: float
+    end_m: float
+    wall_refs: tuple[str, ...]
+    pocket_outline: Ring
+    source: str
+
+
+@dataclass(frozen=True)
 class ResolvedBrace:
     """A resolved diagonal brace: its raked wood member(s), hosted for identity.
 
@@ -1188,6 +1208,9 @@ class ResolvedModel:
     roofs: list[ResolvedRoof] = field(default_factory=list)
     stairs: list[ResolvedStair] = field(default_factory=list)
     floors: list[ResolvedFloor] = field(default_factory=list)
+    floor_opening_pocket_closures: list[ResolvedFloorOpeningPocketClosure] = field(
+        default_factory=list
+    )
     soffits: list[ResolvedSoffit] = field(default_factory=list)
     braces: list[ResolvedBrace] = field(default_factory=list)
     floor_heat: list[ResolvedFloorHeat] = field(default_factory=list)

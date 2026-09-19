@@ -245,7 +245,7 @@ def test_the_unfinished_rooms_are_the_two_attic_lofts_and_bill_nothing(bom):
     any one of the three alone would read a real change as a saving."""
     row = next(row for row in bom["floor_finishes"] if row["finish"] is None)
     assert row["rooms"] == ["RM-A-EAST-UNFIN", "RM-A-POCKET"]
-    assert float(row["net_area_sqft"]) == pytest.approx(609.5, abs=1.5)
+    assert float(row["net_area_sqft"]) == pytest.approx(607.6, abs=0.5)
     assert float(row["order_area_sqft"]) == 0.0
 
 

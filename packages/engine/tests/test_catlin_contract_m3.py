@@ -2991,6 +2991,9 @@ def test_upper_storey_studs_stand_over_studs(catlin_model):
     #       - `W-S-SN3` 10 -> 12. W-M-HS3's studs moved 2" east with the line; SN3 lays out
     #         from N-S-D4 (x=9'-7 1/2") and stayed put, so two near-misses inside the 1/2"
     #         tolerance became misses.
-    assert orphan_count <= 127, (
-        f"{orphan_count}/{total} upper-storey studs stand over no stud below "
-        f"(was 127/254); first offenders {orphans[:12]}")
+        # The study rework adds four conventional partition segments. W-A-SN-EAST contributes
+        # five raked closure studs over the concrete/void edge; they cannot stack on lower
+        # studs and are supported by the explicitly required floor blocking at the pocket.
+        assert orphan_count <= 132, (
+            f"{orphan_count}/{total} upper-storey studs stand over no stud below "
+            f"(expected at most 132/260); first offenders {orphans[:12]}")

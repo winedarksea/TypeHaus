@@ -82,7 +82,24 @@ def _catalog(model: ResolvedModel, provenance: Provenance | None) -> dict[str, A
         "door_types": [
             {"tag": dt.tag, "width_m": dt.width.meters, "height_m": dt.height.meters,
              "operation": dt.operation, "exterior": dt.exterior, "glazed": dt.glazed,
-             "trimless": dt.trimless, "product_ref": dt.product_ref}
+             "trimless": dt.trimless, "product_ref": dt.product_ref,
+             "bookcase_door": (None if dt.bookcase_door is None else {
+                 "nominal_width_m": dt.bookcase_door.nominal_width.meters,
+                 "nominal_height_m": dt.bookcase_door.nominal_height.meters,
+                 "body_width_m": dt.bookcase_door.body_width.meters,
+                 "body_height_m": dt.bookcase_door.body_height.meters,
+                 "body_depth_m": dt.bookcase_door.body_depth.meters,
+                 "casing_overall_width_m": dt.bookcase_door.casing_overall_width.meters,
+                 "clear_passage_width_m": dt.bookcase_door.clear_passage_width.meters,
+                 "hinge_side_clearance_m": dt.bookcase_door.hinge_side_clearance.meters,
+                 "clearance_envelope": {
+                     "kind": "published_installation_clearance",
+                     "hinge_side_m": dt.bookcase_door.hinge_side_clearance.meters,
+                     "calculated_pivot_sweep": False,
+                 },
+                 "mounting_face": dt.bookcase_door.mounting_face,
+                 "source": dt.bookcase_door.source,
+             })}
             for dt in lib.door_types
         ],
         # The chosen-product catalog (model/product.py): identity only, and deliberately

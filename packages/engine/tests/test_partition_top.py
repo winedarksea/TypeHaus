@@ -150,7 +150,7 @@ def test_a_wall_something_bears_on_is_not_a_partition(catlin_model_ro, tag: str)
 
 
 def test_the_gate_answers_the_same_before_and_after_the_pass(catlin_model_ro) -> None:
-    """58 partitions, and the RESOLVED model still says so.
+    """62 partitions, including the four new study return/rear segments.
 
     Not a tautology: the pass MOVES the plate it selects on, so a full-height tolerance
     measured only upward would drop ``W-B-CE`` — whose plate lands 1-11/16" below its
@@ -160,7 +160,7 @@ def test_the_gate_answers_the_same_before_and_after_the_pass(catlin_model_ro) ->
     refs = bearing_ref_tags(catlin_model_ro.plan)
     tags = [w.tag for w in catlin_model_ro.walls
             if takes_a_deflection_gap(catlin_model_ro, w, refs)]
-    assert len(tags) == 58
+    assert len(tags) == 62
     assert "W-B-CE" in tags
 
 
@@ -196,8 +196,8 @@ def test_the_three_count_rules_are_three_rows(sdpw_rows) -> None:
     counts = {row["scope"]: row["count"] for row in sdpw_rows}
     assert counts == {
         "partition top plate, perpendicular framing above": 101,
-        "partition top plate, under a parallel member": 7,
-        "partition top plate, blocking between parallel members": 80,
+        "partition top plate, under a parallel member": 12,
+        "partition top plate, blocking between parallel members": 74,
     }
 
 

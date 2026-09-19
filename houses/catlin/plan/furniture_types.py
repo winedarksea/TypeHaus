@@ -12,12 +12,15 @@ from __future__ import annotations
 from library.placeables._zones import front_zone
 
 from typehaus.model import (
+    BuiltInBookcaseBay,
+    BuiltInBookcaseSpec,
     ClearancePolicy,
     ClearanceZone,
     Footprint2D,
     FurnitureType,
     Mount,
     MountKind,
+    PlacementStrategy,
     ft,
     inch,
     m,
@@ -25,6 +28,25 @@ from typehaus.model import (
 )
 
 _WALL_MOUNT = Mount(kind=MountKind.WALL)
+
+# One fabricated run, separate from the conventional partition behind it. Dimensions are
+# the joiner's clear openings and board stock; every output derives the same twelve boards,
+# four shared/end dividers, and three stepped backs from this record.
+STUDY_BUILT_IN_BOOKCASE = FurnitureType(
+    tag="FT-A-STUDY-BUILTIN", name="Attic study stepped built-in bookcase",
+    footprint=(inch(96.75), inch(10.625)), height=inch(60),
+    placement=PlacementStrategy.WALL_ATTACHED,
+    built_in_bookcase=BuiltInBookcaseSpec(
+        bays=(
+            BuiltInBookcaseBay(clear_width=inch(31.25), height=inch(60), horizontal_board_count=5),
+            BuiltInBookcaseBay(clear_width=inch(31.25), height=inch(42), horizontal_board_count=4),
+            BuiltInBookcaseBay(clear_width=inch(31.25), height=inch(30), horizontal_board_count=3),
+        ),
+        shelf_depth=inch(9.875), horizontal_board_thickness=inch(1.5),
+        divider_thickness=inch(0.75), back_thickness=inch(0.75),
+    ),
+    source="Catlin study fixed casework: front y=105 5/8 in.; x=272..368 3/4 in.; three 31 1/4 in. clear bays with 60/42/30 in. tops and 5/4/3 horizontal boards; 2 5/8 in. west filler closes to W-A-SN-WR.",
+)
 
 _ROD_SOURCE = ("plans/TODO.md — window treatments. Width is the rod, not the opening: a "
                "rod runs past the RO on both sides so the stack sits on wall, not glass.")
@@ -800,7 +822,8 @@ PORCH_LOUNGE_27 = FurnitureType(
 )
 
 
-FURNITURE_TYPES = (CURTAIN_ROD_48, CURTAIN_ROD_84, PORCH_TRACK_106,
+FURNITURE_TYPES = (STUDY_BUILT_IN_BOOKCASE,
+                   CURTAIN_ROD_48, CURTAIN_ROD_84, PORCH_TRACK_106,
                    PORCH_TRACK_104,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, ACCESS_PANEL_CLG_3029,
                    BATH1_SHELF_2030,

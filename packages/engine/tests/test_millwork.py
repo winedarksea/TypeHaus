@@ -139,17 +139,14 @@ def test_the_stool_cut_list_collapses_to_the_three_window_widths(stools):
 
 # --- shelf banks --------------------------------------------------------------------------
 
-def test_the_attic_built_in_derives_its_depth_from_the_wall_pocket(catlin_model_ro):
-    """9-7/8" clear: the ``case-pocket`` AIRGAP plus the ``stud-case`` bay, never the wall.
-
-    The wall is 12-3/4" overall; a shelf cut to that would foul the case back and the gwb
-    on the far side.
-    """
+def test_the_attic_built_in_keeps_its_explicit_shelf_depth(catlin_model_ro):
+    """The stock shelf stays 9-7/8" while its separate carcass includes a 3/4" back."""
     bank = next(b for b in catlin_model_ro.shelf_banks if b.tag == "SB-A-STUDY")
-    assert bank.host_kind == "wall" and bank.host == "W-A-SN"
+    assert bank.host_kind == "placeable" and bank.host == "FURN-A-STUDY-BUILTIN"
     assert bank.depth_m * M_TO_IN == pytest.approx(9.875, abs=0.01)
-    wall = next(w for w in catlin_model_ro.walls if w.tag == "W-A-SN")
-    assert bank.depth_m < wall.thickness_m
+    case = next(o for o in catlin_model_ro.canvas_objects if o.tag == bank.host)
+    assert bank.depth_m < max(y for _x, y in case.local_footprint) - min(
+        y for _x, y in case.local_footprint)
 
 
 def test_the_attic_bays_are_stepped_bays_with_their_own_counts(catlin_model_ro):

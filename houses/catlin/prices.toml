@@ -2829,6 +2829,9 @@
 "FURN-SAUNA-BENCH-48" = { material = { low = 180, high = 710 }, labour = { low = 80, high = 300 } }  # 1 ea
 "FURN-WALL-RACK-24" = { material = { low = 30, high = 150 }, labour = { low = 30, high = 90 } }  # 1 ea
 "FURN-WARDROBE-48" = { material = { low = 250, high = 1200 }, labour = { low = 100, high = 300 } }  # 3 ea
+# One fixed stepped study run. Oak horizontal boards remain in [hardwood]; this row carries
+# its plywood backs/dividers/filler, dados, fabrication, finish, delivery and installation.
+"FT-A-STUDY-BUILTIN" = { material = { low = 500, high = 1100 }, labour = { low = 800, high = 1700 } }  # 1 ea
 # --- FX-*, REPRICED 2026-08-21 -------------------------------------------------------
 # The whole family was re-researched after FX-TUBSHOWER-60 was found priced BELOW FX-TUB-60
 # on both halves — a tub plus a surround, a valve, a riser and a head cannot cost less to
@@ -5101,16 +5104,12 @@
 # applies — so only the wider slab and a little more return jamb move the numbers.
 "DT-INT-SWING36-TRIMLESS" = { material = { low = 640, high = 1480 }, labour = { low = 640, high = 1440 } }  # 1 ea
 
-# D-A-STUDY's Murphy-style bookcase door in W-A-SN's built-in. ** DO NOT PRICE THIS OFF THE
-# TRIMLESS ROW ABOVE. ** Both types carry `trimless=True` and they mean different things: that
-# one is a drywall return jamb, this one is a millwork case with no casing because it is a
-# piece of furniture. What is being bought here is a ~250 lb solid-core leaf, a concealed
-# pivot or heavy-duty hinge set, a latch and release, and factory shelving on the leaf.
-# Labour is high for a 2'-6" opening and is NOT drywall labour: it is a finish carpenter
-# hanging and shimming a door that must sit flush with fixed casework on both sides, plus
-# the hinge-side jamb (a full-depth 3-ply post through-bolted to the sole plate and the
-# 4'-0" blocking row) that no schema field carries — see the type's source=.
-"DT-INT-BOOKCASE30" = { material = { low = 1400, high = 3500 }, labour = { low = 500, high = 1150 } }  # 1 ea
+# D-A-STUDY's selected 36 x 80 nominal Murphy Door unit. One purchased assembly includes
+# its factory cabinet shelves, jamb/face-frame/casing hardware and concealed pivot system;
+# those shelves are deliberately outside the owner-stock hardwood takeoff. Installation
+# includes setting the supplied jamb/casing and threshold, subject to delivered-unit fastening
+# verification. It does not include unsupported three-ply-jamb or assumed leaf-weight scope.
+"DT-INT-BOOKCASE36" = { material = { low = 1400, high = 3500 }, labour = { low = 500, high = 1150 } }  # 1 ea
 
 # --- cased openings -----------------------------------------------------------------------------
 # Priced 2026-08-20 where they used to be blank. "no product to buy" was true and was the wrong
@@ -6368,43 +6367,6 @@ porch-enclosure-panels-mesh = { material = { low = 850, high = 1450 }, labour = 
 # already bought and located — this is a seasonal swap, not a second installation.
 porch-enclosure-panels-vinyl = { material = { low = 1700, high = 3300 }, labour = { low = 150, high = 400 } }
 # --- millwork -------------------------------------------------------------------------------
-# THE STUDY BOOKCASE WALL's casework (W-A-SN, INT_2X4_BOOKCASE_12). Same shape of
-# problem as the vent mat above: the wall IS modelled, but what the BOM legitimately sees is
-# only the `case-back` plywood sheet and the `nailer-n` sticks — the shelves, the face frames,
-# the end panel and the finish are not layers and cannot be, because the case is the AIRGAP.
-# Nothing is placed in plan/placeables.py for it either, and deliberately: both catalog
-# bookcases are 1'-0" deep against a 9 7/8" pocket, so every case would stand 2 1/8" proud of
-# the wall — out over the stair well, the exact lie the built-in exists to avoid.
-#
-# ~8'-0" of run in three bays, stepping 5'-0" down to 2'-6" under the 6:12 rake, so every bay
-# is a different height and none of it is a stock module. (It was ~12'-9" in five bays under
-# the old 4:12 roof over a 5'-0" knee wall; see the 2026-08-30 note at the foot of this block.) Paint-grade custom built-in runs
-# $175-350 per linear foot of face for shop work of this kind, and the stepped tops, the
-# scribe to the rake and the flush end panel sit at the top of that. The door leaf itself is
-# NOT here — it is `openings."DT-INT-BOOKCASE30"`, and billing it twice is the one failure
-# mode this section cannot catch.
-#
-# `cabinet-` prefix, not `study-`: an allowance key declares its own trade by being named
-# for it (takeoff/cost_codes.py::KEY_PATTERNS), and a key matching no prefix falls through
-# to the section default and gets SCHEDULED AS EARTHWORK. This is shop-built casework —
-# 12 30 00, the same trade as the `cabinet-plywood` envelope row that bills its case backs.
-# ** REDUCED TO ITS LABOUR/FABRICATION SHARE, 2026-08-28, for the vent mat's reason. ** The
-# five bays' SHELF STOCK is modelled now — `SB-A-STUDY` (plan/millwork.py) carries 32 boards
-# of 8/4 white oak, which `haus millwork` orders as rough board feet. What is left here is the
-# shop work the model still cannot see: the partitions, the dados, the face frames, the flush
-# end panel, the scribe to the 4:12 rake, the finish, and the delivery and set. That is the
-# bulk of a $175-350/LF custom built-in and it does not move. ~$300-800 of the old band was
-# shelf boards, so the row goes to $2,100-4,400. The door leaf is still NOT here — it is
-# `openings."DT-INT-BOOKCASE30"`, and billing it twice is still the one failure mode this
-# section cannot catch.
-#
-# ** RE-PRICED 2026-08-30 FOR AN 8'-0" RUN, DOWN FROM 12'-9". ** The five-bay run this row was
-# built for could not exist under the 6:12 rake: bays 4 and 5 sit under 1'-5 1/2" and 4 3/4" of
-# roof. SB-A-STUDY lost bay 5 on 2026-08-29 and bay 4 on 2026-08-30, so the casework is three
-# bays from x=22'-8" to 30'-8". At the same $165-345 per linear foot of face this row already
-# implies, 8'-0" is $1,320-2,760 — call it $1,300-2,800. The flush end panel and the scribe to
-# the rake are fixed and do NOT scale, which is why the band is not cut by the full 37%.
-cabinet-study-bookcase-wall = { low = 1300, high = 2800 }
 # RM-M-STUDY'S BOOTH CUSHION AND PILLOWS (2026-08-29). ** THERE IS NO ELEMENT BEHIND THIS
 # ROW. ** FT-STUDY-BENCH is the seat BOARD; a 44" x 18" foam cushion and three pillows are
 # soft goods the model has no vocabulary for, and inventing a placeable for a cushion would

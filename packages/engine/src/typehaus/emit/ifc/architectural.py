@@ -420,6 +420,29 @@ def _emit_opening(f: Any, body: Any, opening: Any, model: ResolvedModel,
     })
     ll.ensure_pset(f, filling, "Pset_DoorCommon" if opening.is_door else "Pset_WindowCommon",
                    {"IsExternal": is_external})
+    if opening.is_door:
+        door_type = next((item for item in model.plan.library.door_types
+                          if item.tag == opening.type_ref), None)
+        product = door_type.bookcase_door if door_type is not None else None
+        if product is not None:
+            # This carries the ordered product's dimensions without repurposing IFC's
+            # OverallWidth/Height, which remain the rough-opening dimensions throughout.
+            # The clearance is manufacturer installation guidance, explicitly not a
+            # calculated pivot/swing representation.
+            ll.ensure_pset(f, filling, "TypeHaus_BookcaseDoor", {
+                "NominalWidth": product.nominal_width.meters,
+                "NominalHeight": product.nominal_height.meters,
+                "CabinetBodyWidth": product.body_width.meters,
+                "CabinetBodyHeight": product.body_height.meters,
+                "CabinetBodyDepth": product.body_depth.meters,
+                "CasingOverallWidth": product.casing_overall_width.meters,
+                "ClearPassageWidth": product.clear_passage_width.meters,
+                "HingeSideClearance": product.hinge_side_clearance.meters,
+                "MountingFace": product.mounting_face,
+                "ClearanceEnvelope": (
+                    "published installation clearance; not a calculated pivot sweep"),
+                "Source": product.source,
+            })
     ll.assign_container(f, filling, storeys[rw.storey])
     if opening.type_ref in opening_types:
         ll.assign_type(f, filling, opening_types[opening.type_ref])
@@ -471,9 +494,25 @@ def _emit_furniture(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, 
                 continue
             element = ll.create_entity(f, "IfcFurniture", name=furniture.tag)
             element.GlobalId = derive_guid(project_uuid, furniture.uid)
-            ll.assign_representation(f, element, ll.add_prism_from_profile(
-                f, body, resolved.footprint, furniture_type.height.meters, resolved.z_m
-            ))
+            bookcase = getattr(furniture_type, "built_in_bookcase", None)
+            if bookcase is None:
+                representation = ll.add_prism_from_profile(
+                    f, body, resolved.footprint, furniture_type.height.meters, resolved.z_m
+                )
+            else:
+                from typehaus.model.built_in_bookcase import built_in_bookcase_parts
+                from typehaus.model.placeable_symbols import place_local
+
+                # IFC keeps one installed furniture occurrence while its body preserves every
+                # board.  Consumers can select and schedule the run as one built-in item.
+                parts = built_in_bookcase_parts(bookcase)
+                solids = []
+                for part in parts:
+                    outline = place_local(part.outline, resolved.position,
+                                          resolved.rotation_degrees)
+                    solids.append((outline, part.z1_m - part.z0_m, resolved.z_m + part.z0_m))
+                representation = _furniture_prism_representation(f, body, solids)
+            ll.assign_representation(f, element, representation)
             ll.ensure_pset(f, element, PSET_SOURCE, {
                 "uid": furniture.uid, "tag": furniture.tag, "type": furniture.type_ref,
                 "mesh": furniture_type.mesh.path if furniture_type.mesh is not None else "",
@@ -485,6 +524,22 @@ def _emit_furniture(f: Any, body: Any, model: ResolvedModel, storeys: dict[str, 
             _emit_service_ports(f, element, furniture_type.ports, project_uuid, furniture.uid)
             ll.assign_type(f, element, ifc_types[furniture.type_ref])
             ll.assign_container(f, element, storeys[storey.tag])
+
+
+def _furniture_prism_representation(
+    f: Any, body: Any, solids: list[tuple[list[tuple[float, float]], float, float]]
+) -> Any:
+    """Create one IFC body from individual bookcase-board prisms with distinct elevations."""
+    items = []
+    for outline, height, z0 in solids:
+        points = [f.createIfcCartesianPoint(point) for point in outline]
+        curve = f.createIfcPolyline(points + [points[0]])
+        profile = f.createIfcArbitraryClosedProfileDef("AREA", None, curve)
+        placement = f.createIfcAxis2Placement3D(f.createIfcCartesianPoint((0.0, 0.0, z0)),
+                                                None, None)
+        items.append(f.createIfcExtrudedAreaSolid(
+            profile, placement, f.createIfcDirection((0.0, 0.0, 1.0)), height))
+    return f.createIfcShapeRepresentation(body, "Body", "SweptSolid", items)
 
 
 def _emit_service_ports(f: Any, occurrence: Any, ports: tuple[Any, ...], project_uuid: Any,

@@ -10,6 +10,7 @@ from typehaus.emit.gltf.mesh import _MeshBuilder
 from typehaus.emit.gltf.palette import _color
 from typehaus.emit.gltf.scene import _SceneBuilder
 from typehaus.emit.trade_rules import CANVAS_DOMAIN_TRADE
+from typehaus.model.built_in_bookcase import built_in_bookcase_parts
 from typehaus.model.canvas import canvas_object_types
 from typehaus.model.placeable_symbols import PART_COLORS, lamp_role, model_parts, place_local
 from typehaus.resolve.model import ResolvedCanvasObject, ResolvedModel
@@ -90,6 +91,12 @@ def _add_canvas_parts(mb: _MeshBuilder, item: ResolvedCanvasObject,
     directly — the viewer reads the hex the serializer derives from those same numbers, so
     the two cannot disagree.
     """
+    bookcase = getattr(product_type, "built_in_bookcase", None)
+    if bookcase is not None:
+        for part in built_in_bookcase_parts(bookcase):
+            mb.add_prism(place_local(part.outline, item.position, item.rotation_degrees),
+                         item.z_m + part.z0_m, item.z_m + part.z1_m, _color("furniture"))
+        return True
     symbol = getattr(product_type, "plan_symbol", None)
     footprint = getattr(product_type, "footprint", None)
     height = getattr(product_type, "height", None)

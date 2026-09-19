@@ -72,12 +72,10 @@ SECOND_LINES = (
 ATTIC_LINES = (
     ("N-A-C1", "y", 5, 7, 5.611),      # the source's Den north wall line
     # N-A-C1 pins this survey line; there is no N-A-D1 (the Den's own NW corner is deleted).
-    # The band wall's SOUTH FACE is set on FO-A-STAIR's north edge — the relationship the
-    # source itself draws — so its centreline is wherever that face plus half the assembly
-    # lands, and the survey line is a check on the face, not on the axis. At the 12 3/4"
-    # bookcase assembly the axis is at 9'-4", 1 1/4" off the source — inside the default band.
-    ("N-A-C2", "y", 9, 4, 9.228),
-    ("N-A-E1", "y", 9, 4, 9.228),
+    # The conventional front partition returns to the y=9'-0" construction line. Its stepped
+    # rear wall, rather than this axis, creates the fixed-case depth and stair-edge pocket.
+    ("N-A-C2", "y", 9, 0, 9.228, 3.0),
+    ("N-A-E1", "y", 9, 0, 9.228, 3.0),
     # ** THE STAIR VESTIBULE HAS NO NODES. ** The source's Den east and north walls (W-A-VE,
     # W-A-VN, D-A-VEST) wrapping ST-S2A's head are retired by the 6:12 roof: at
     # x 21'-2"..22'-8" a full-height screen under a `1 1/2" + (36' - x)/2` rake is a soffit,

@@ -274,6 +274,8 @@ _BOM_WAIVED_COLLECTIONS: dict[str, str] = {
                     "origin for bands and stud layout, not an element and not material",
     "canvas_objects": "the normalized placeable view; billed as `placeables` off the same "
                       "records, and billing both would double every appliance",
+    "floor_opening_pocket_closures": "validated guard evidence over already-billed walls; "
+                                     "the relation adds no physical material",
     "timings": "resolve instrumentation",
     "_tag_index": "a derived lookup cache over the collections above, not a collection of "
                   "its own material — every element it points to is billed under its own "

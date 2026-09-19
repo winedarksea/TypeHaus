@@ -94,12 +94,9 @@ def test_catlin_door_catalog_tags_state_operation_and_width(catlin_model):
         # W-M-PAN-S offers 71 1/2".
         "DT-INT-BYPASS60": (60.0, DoorOperation.SLIDE, False, False),
         "DT-INT-DOUBLE60": (60.0, DoorOperation.DOUBLE_SWING, False, False),
-        # D-A-STUDY's Murphy-style bookcase door, hidden in W-A-SN's built-in. Its RO is
-        # DT-INT-SWING30's exactly, so nothing re-phases and the jamb pack is unchanged;
-        # `operation` stays SWING because a bookcase door IS a swinging door and inventing
-        # an enum member for the millwork it is faced with would put a finish choice in a
-        # framing field.
-        "DT-INT-BOOKCASE30": (30.0, DoorOperation.SWING, False, False),
+        # The purchased Murphy unit is ordered as 36x80; DoorType dimensions stay the
+        # manufacturer's distinct 38x82 framed rough opening.
+        "DT-INT-BOOKCASE36": (38.0, DoorOperation.SWING, False, False),
         "DT-EXT-OVERHEAD192": (192.0, DoorOperation.OVERHEAD, True, False),
         # The house's one sub-6'-8" leaf: RM-A-POCKET's service access under the attic's
         # 6:12 west rake, where no full-height door fits anywhere on its host wall. 24 x 36

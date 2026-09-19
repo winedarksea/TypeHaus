@@ -335,7 +335,7 @@ OPENINGS = [
 
 # ============================== ROOMS =================================================
 # ** RM-A-STUDIO KEEPS uid CAR401AAAA. ** This is RM-A-WEST-UNFIN retagged and re-occupied, not a
-# new room, so the IFC GlobalId follows it — the D-A-STUDY/DT-INT-BOOKCASE30 retype-in-place is the
+# new room, so the IFC GlobalId follows it — the D-A-STUDY/DT-INT-BOOKCASE36 retype-in-place is the
 # precedent. It moved out of attic.py and into this file with the rest of the suite, and that is
 # safe for the same reason: a uid follows the ELEMENT, not the file it is authored in.
 #

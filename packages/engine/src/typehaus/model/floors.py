@@ -99,6 +99,36 @@ class FloorOpening(Element):
     bearing_refs: tuple[str, ...] = ()
 
 
+class FloorOpeningEdgeInterval(HausModel):
+    """One low-to-high station interval on a rectangular floor-opening edge.
+
+    The edge names deliberately use the opening box's fixed compass vocabulary.  A pocket
+    closure is a narrow stair-well exception, so it must not grow a second arbitrary-line
+    geometry language beside ``FloorOpening.outline``.
+    """
+
+    edge: Literal["west", "east", "south", "north"]
+    start: Length
+    end: Length
+
+
+@register_element
+class FloorOpeningPocketClosure(Element):
+    """A walled, non-walkable pocket immediately beside a stair floor opening.
+
+    This is evidence for one and only one conclusion: the named interval is enclosed and
+    therefore is not an open stair-well side.  Furniture is intentionally absent from the
+    relation; a bookcase may occupy the pocket, but only its actual walls can close it.
+    ``source`` records the construction decision a reviewer must be able to find.
+    """
+
+    opening_ref: str
+    edge_interval: FloorOpeningEdgeInterval
+    wall_refs: tuple[str, ...]
+    pocket_outline: tuple[Point2D, ...]
+    source: str
+
+
 @register_element
 class FloorSystem(Element):
     """Per-storey structural deck: joists, subfloor, ceiling-below, and openings (#21).
@@ -340,6 +370,8 @@ for _name, _obj in (
     ("JoistReinforcement", JoistReinforcement),
     ("DeckLayer", DeckLayer),
     ("FloorOpening", FloorOpening),
+    ("FloorOpeningEdgeInterval", FloorOpeningEdgeInterval),
+    ("FloorOpeningPocketClosure", FloorOpeningPocketClosure),
     ("FloorSystem", FloorSystem),
     ("Slab", Slab),
     ("SlabThermalBreak", SlabThermalBreak),

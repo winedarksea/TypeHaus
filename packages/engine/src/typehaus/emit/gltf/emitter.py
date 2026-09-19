@@ -138,7 +138,9 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
         _add_opening_filling(mb, host, op, operation,
                              is_glazed=op.is_door and door_type is not None and door_type.glazed,
                              is_trimless=(op.is_door and door_type is not None
-                                           and door_type.trimless))
+                                           and door_type.trimless),
+                             bookcase_door=(door_type.bookcase_door
+                                            if door_type is not None else None))
         scene.add_object(mb, ("openings",), kind="opening", uid=op.uid)
 
     for room in sorted(model.rooms, key=lambda r: r.uid):
