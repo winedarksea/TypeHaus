@@ -16,11 +16,11 @@
         ],
         [
           6.625000000000001,
-          0.0
+          -13.437499999999996
         ],
         [
           6.000000000000001,
-          0.0
+          -13.437499999999996
         ]
       ],
       "layer": "A-WALL-FINI",
@@ -44,11 +44,11 @@
         ],
         [
           6.625000000000001,
-          0.0
+          -13.437499999999996
         ],
         [
           6.000000000000001,
-          0.0
+          -13.437499999999996
         ]
       ],
       "pattern": "gypsum",
@@ -555,90 +555,6 @@
       "node": "polyline",
       "points": [
         [
-          6.625000000000001,
-          -13.437499999999998
-        ],
-        [
-          6.635000000000001,
-          -13.437499999999998
-        ],
-        [
-          6.635000000000001,
-          0.0
-        ],
-        [
-          6.625000000000001,
-          0.0
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW102AAAA",
-      "tag": "W-M-S2/paint"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          6.000000000000001,
-          -13.437499999999998
-        ],
-        [
-          6.625000000000001,
-          -13.437499999999998
-        ],
-        [
-          6.625000000000001,
-          0.0
-        ],
-        [
-          6.000000000000001,
-          0.0
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW102AAAA",
-      "tag": "W-M-S2/gwb-int"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          6.000000000000001,
-          -13.437499999999998
-        ],
-        [
-          6.625000000000001,
-          -13.437499999999998
-        ],
-        [
-          6.625000000000001,
-          0.0
-        ],
-        [
-          6.000000000000001,
-          0.0
-        ]
-      ],
-      "pattern": "gypsum",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "gwb"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           0.5,
           -13.437499999999998
         ],
@@ -997,46 +913,6 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "fiberglass"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          6.63,
-          0.0
-        ],
-        [
-          6.63,
-          21.65354330708662
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW102AAAA",
-      "tag": "W-M-S2-void"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          6.312499999999999,
-          0.0
-        ],
-        [
-          6.312499999999999,
-          21.65354330708662
-        ]
-      ],
-      "layer": "A-GLAZ",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": false,
-      "uid": "CMW102AAAA",
-      "tag": "W-M-S2-void"
     },
     {
       "space": "model",
@@ -2398,56 +2274,6 @@
         6.925765529308838
       ],
       "text": "stud 5.5\"",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          6.312500000000001,
-          4.39798775153106
-        ],
-        "name": ""
-      },
-      "at": [
-        -16.902519685039373,
-        4.39798775153106
-      ],
-      "to": [
-        6.312500000000001,
-        4.39798775153106
-      ],
-      "text": "gwb-int 0.625\"",
-      "height": 1.6,
-      "height_pt": 7.0,
-      "layer": "A-ANNO-TEXT",
-      "uid": null
-    },
-    {
-      "space": "model",
-      "node": "leader",
-      "anchor": {
-        "kind": "point",
-        "xy": [
-          6.63,
-          1.8702099737532825
-        ],
-        "name": ""
-      },
-      "at": [
-        -16.902519685039373,
-        1.8702099737532825
-      ],
-      "to": [
-        6.63,
-        1.8702099737532825
-      ],
-      "text": "paint 0.01\"",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",

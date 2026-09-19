@@ -29,6 +29,7 @@ from typehaus.model.enums import DoorOperation
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.geometry import rect_between
 from typehaus.resolve.geometry_walls import layer_solids
+from typehaus.resolve.layer_bands import at_body_band, wall_body_band
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
 from typehaus.resolve.room_floor import room_finished_floor_elevation
 from typehaus.resolve.topology import _added_thicknesses
@@ -44,8 +45,17 @@ def _full_height_layers(wall: ResolvedWall) -> tuple[ResolvedLayer, ...]:
     stated because it is a real deviation: the layer set of a banded wall sums to less than
     the wall's full depth, by the thickness of whatever bands it. That is the same trade
     Revit makes when it exports a vertically compound wall as parts.
+
+    The predicate is ``band_spec is None`` — "the ASSEMBLY bands this layer" — and not
+    ``is_banded``, which also answers yes to a platform trim. That is the principled split:
+    an authored ``Layer.extent`` is a *type* fact (it lives on the ``Assembly``, and
+    ``_assembly_default_signature`` reads it off there), while
+    ``layer_bands.clamp_to_plates`` stopping a finish at the top plate is an *instance*
+    fact about one lifted wall. Reading the instance fact here would give every lifted
+    ``EXT_2X6`` a different key from the assembly's own signature and export all 28 of them
+    as ``EXT_2X6~lining0`` — a lining variant that is not a lining.
     """
-    return tuple(ly for ly in wall.depth_layers() if not getattr(ly, "is_banded", False))
+    return tuple(ly for ly in wall.depth_layers() if ly.band_spec is None)
 
 
 def _wall_type_key(wall: ResolvedWall) -> tuple:
@@ -115,10 +125,17 @@ def _emit_wall(f: Any, body: Any, rw: ResolvedWall, storeys: dict[str, Any],
     ifc_class = "IfcWall"
     wall = ll.create_entity(f, ifc_class, name=rw.tag)
     wall.GlobalId = guid
+    # The body is the wall's TALLEST layers over their own band, not every layer over the
+    # wall's full extent: a lifted partition's whole body stops at the top plate, and
+    # extruding it to ``z1_m`` would re-draw the joist bay the trim just emptied. A layer
+    # standing at a shorter band exports as a part instead (``_emit_banded_layer_parts``),
+    # so nothing is drawn twice and nothing is dropped.
+    band_z0, band_z1 = wall_body_band(rw)
     body_representation = ll.add_prisms_from_profiles(
         f, body,
-        [layer.polygon for layer in _full_height_layers(rw) if len(layer.polygon) >= 3],
-        rw.z1_m - rw.z0_m, rw.z0_m,
+        [layer.polygon for layer in rw.depth_layers()
+         if len(layer.polygon) >= 3 and at_body_band(layer, rw)],
+        band_z1 - band_z0, band_z0,
     )
     axis_representation = ll.add_axis_representation(f, body, rw.axis)
     ll.assign_representations(f, wall, [axis_representation, body_representation])
@@ -182,7 +199,11 @@ def _emit_banded_layer_parts(f: Any, body: Any, rw: ResolvedWall,
     """
     parts = []
     for layer in rw.body_layers():
-        if not getattr(layer, "is_banded", False) or len(layer.polygon) < 3:
+        # A layer standing at the wall's body band is already IN the body prism; a part for
+        # it would double-describe the same solid. That is every layer of a lifted
+        # partition, which is why trimming one adds no parts at all.
+        if (not getattr(layer, "is_banded", False) or len(layer.polygon) < 3
+                or at_body_band(layer, rw)):
             continue
         z0, z1 = layer.band(rw)
         if z1 - z0 <= 1e-9:

@@ -208,6 +208,10 @@ def _layout_vertical(rw: ResolvedWall, layer, spec, openings: list[ResolvedOpeni
     face = section.width_m if on_edge else section.depth_m
     spacing = (spec.spacing or DEFAULT_SPACING).meters
     top_start, top_end = _wall_top_elevations(rw)
+    # A banded layer's battens live inside its band. ``min``/``max``, never a replacement:
+    # a band can only shorten a member, and an unbanded layer is untouched.
+    band_z0, band_z1 = layer.band(rw) if layer.is_banded else (rw.z0_m, rw.z1_m)
+    bottom_z = max(rw.z0_m, band_z0)
 
     stations = _module_stations(first + face / 2.0, last - face / 2.0, spacing, face,
                                 module=True,
@@ -229,7 +233,7 @@ def _layout_vertical(rw: ResolvedWall, layer, spec, openings: list[ResolvedOpeni
     for station in stations:
         point = add(p0, scale(direction, station))
         fraction = station / axis_len if axis_len else 0.0
-        top = top_start + (top_end - top_start) * fraction
+        top = min(top_start + (top_end - top_start) * fraction, band_z1)
         # An opening's straight-run ``height_m`` already includes any arch rise (a semi-
         # circular head is a rectangle plus a curve above it), so cutting a plain rectangle
         # to ``sill_m + height_m`` never lets the batten intrude into the opening — it only
@@ -241,7 +245,7 @@ def _layout_vertical(rw: ResolvedWall, layer, spec, openings: list[ResolvedOpeni
                 if _overlaps(station - face / 2.0, station + face / 2.0,
                             op.center_along_m - op.width_m / 2.0,
                             op.center_along_m + op.width_m / 2.0)]
-        for bottom, z1 in _subtract_spans(rw.z0_m, top, cuts):
+        for bottom, z1 in _subtract_spans(bottom_z, top, cuts):
             if z1 - bottom <= face:
                 continue
             out.append(FramedMember(
@@ -280,8 +284,16 @@ from typehaus.resolve.framing.openings import BORE_MAX_IN, framed_around  # noqa
 __all__ = ["BORE_MAX_IN", "framed_around"]
 
 
-def band_tops(rw: ResolvedWall) -> tuple[float, float]:
+def band_tops(rw: ResolvedWall, band: tuple[float, float] | None = None
+              ) -> tuple[float, float]:
     """Where a horizontal band's COURSES top out at each end of the wall.
+
+    ``band`` is the LAYER's own ``(z0, z1)`` where it has one — a sauna liner stopping at a
+    7'-6" ceiling, or an interior finish stopped at the top plate by
+    ``layer_bands.clamp_to_plates``. Clamping to it is a ``min``, never a replacement, so a
+    band can only shorten the courses; ``None`` is the full-height reading every girt tier
+    and every unbanded strapping takes, and is why this keyword is defaulted rather than
+    required.
 
     Deliberately not ``solver._wall_top_elevations``, and the difference is one thing: on a
     level wall the framing tops out at the double top plate and the *band* does not. A
@@ -293,8 +305,11 @@ def band_tops(rw: ResolvedWall) -> tuple[float, float]:
     rake is the top of everything.
     """
     default = rw.z1_m
-    return (rw.top_z0_m if rw.top_z0_m is not None else default,
+    tops = (rw.top_z0_m if rw.top_z0_m is not None else default,
             rw.top_z1_m if rw.top_z1_m is not None else default)
+    if band is None:
+        return tops
+    return (min(tops[0], band[1]), min(tops[1], band[1]))
 
 
 def course_phase(rw: ResolvedWall, spec: Any) -> float:
@@ -309,6 +324,11 @@ def course_phase(rw: ResolvedWall, spec: Any) -> float:
     rungs exist. That is why ``course_offset`` may be negative: on catlin it is −2", which
     puts the module 2" below the floor line so that no field course lands in the shadow of
     an opening's own head or sill course (``notes/outie_window_truss_detail.md``).
+
+    **The phase does not move with a layer's band.** It is a datum, not a course: shifting
+    it to a banded liner's bottom would slide that liner's courses off the module every
+    other band on the wall is registered to. A band decides which rungs exist, never where
+    the ladder is pinned.
     """
     datum = getattr(spec, "course_datum", "wall-base")
     base = rw.base_ref_z_m if datum == "framing-base" else rw.z0_m
@@ -316,7 +336,8 @@ def course_phase(rw: ResolvedWall, spec: Any) -> float:
     return base + (offset.meters if offset is not None else 0.0)
 
 
-def course_elevations(rw: ResolvedWall, spec: Any, face: float) -> list[float]:
+def course_elevations(rw: ResolvedWall, spec: Any, face: float, *,
+                      band: tuple[float, float] | None = None) -> list[float]:
     """The BOTTOM elevation of every course of a horizontal band on one wall.
 
     One list, computed once, because two different passes need to agree about it exactly.
@@ -342,14 +363,17 @@ def course_elevations(rw: ResolvedWall, spec: Any, face: float) -> list[float]:
       (``_layout_horizontal``), and the field is held one board clear of it.
     """
     spacing = (spec.spacing or DEFAULT_SPACING).meters
-    top_start, top_end = band_tops(rw)
+    top_start, top_end = band_tops(rw, band)
     top_low, top_high = min(top_start, top_end), max(top_start, top_end)
     raked = abs(top_start - top_end) > 1e-9
     phase = course_phase(rw, spec)
+    # ``band`` shortens the run the courses exist over — bottom and top alike — but never
+    # moves ``phase``, so a banded liner's courses stay on the wall's own module.
+    base = rw.z0_m if band is None else max(rw.z0_m, band[0])
 
-    elevations = [rw.z0_m] if rw.z0_m + face <= top_high + 1e-9 else []
+    elevations = [base] if base + face <= top_high + 1e-9 else []
     if spacing > 0.0:
-        index = math.ceil((rw.z0_m - phase) / spacing)
+        index = math.ceil((base - phase) / spacing)
         station = phase + index * spacing
         while station + face <= top_high + 1e-9:
             if elevations and station - elevations[-1] < face - 1e-9:
@@ -363,12 +387,12 @@ def course_elevations(rw: ResolvedWall, spec: Any, face: float) -> list[float]:
     top = top_low - face
     while elevations and top - elevations[-1] < face - 1e-9:
         elevations.pop()
-    if top >= rw.z0_m - 1e-9 and (not elevations or top - elevations[-1] > 1e-9):
+    if top >= base - 1e-9 and (not elevations or top - elevations[-1] > 1e-9):
         elevations.append(top)
     return elevations
 
 
-def rake_nailer(rw: ResolvedWall) -> bool:
+def rake_nailer(rw: ResolvedWall, band: tuple[float, float] | None = None) -> bool:
     """Whether this band closes its raked top with a nailer along the rake.
 
     Every horizontal band on a raked wall: the courses stop where the wall runs out from
@@ -377,7 +401,7 @@ def rake_nailer(rw: ResolvedWall) -> bool:
     whole fix, and it is why :func:`course_elevations` frames no forced top course on a
     raked wall.
     """
-    top_start, top_end = band_tops(rw)
+    top_start, top_end = band_tops(rw, band)
     return abs(top_start - top_end) > 1e-9
 
 
@@ -421,7 +445,8 @@ def _layout_horizontal(rw: ResolvedWall, layer, spec, openings: list[ResolvedOpe
         first = first + plan_face / 2.0
     if not end_cont:
         last = last - plan_face / 2.0
-    top_start, top_end = band_tops(rw)
+    band = layer.band(rw) if layer.is_banded else None
+    top_start, top_end = band_tops(rw, band)
     margin = opening_margin(spec)
     # A field course under a rake nailer stands one full board clear of it, exactly as it
     # stands clear of an opening's head course (``OPENING_MARGIN_IN``): the nailer occupies
@@ -431,12 +456,12 @@ def _layout_horizontal(rw: ResolvedWall, layer, spec, openings: list[ResolvedOpe
     # raked stub at an attic gable — a 4" triangle of girt carrying a block that hung out
     # past its end (``truss_girts.GirtFrame.snap``'s ``bounds``). The largest gap it can
     # open is one ``spacing``, by construction: it removes at most the topmost course.
-    raked = rake_nailer(rw)
+    raked = rake_nailer(rw, band)
     clearance = 2.0 * face if raked else face
 
     out: list[FramedMember] = []
     index = 0
-    for z in course_elevations(rw, spec, face):
+    for z in course_elevations(rw, spec, face, band=band):
         lo, hi = _course_span(z + clearance, top_start, top_end, axis_len, first, last)
         if hi - lo <= face:
             continue

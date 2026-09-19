@@ -19,6 +19,7 @@ from typehaus.resolve.geometry import (
     opening_center,
     wall_frame,
 )
+from typehaus.resolve.layer_bands import at_body_band, wall_body_band
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
 
@@ -46,10 +47,16 @@ def _wall_geometry(
     # body (see ``emit/ifc/architectural.py::_full_height_layers``). Measuring the baseline
     # over a width the export does not carry reports every banded wall as RESIZED on a
     # self-diff — a reconciliation task that does not exist.
+    # ``at_body_band``, the very predicate ``_emit_wall`` extrudes the body from: an
+    # authored band and a platform trim (``layer_bands.clamp_to_plates``) alike leave the
+    # layer standing shorter than the wall, and both export as parts rather than as body.
+    # The z extent is the body band for the same reason — a lifted partition's solid stops
+    # at the top plate, and measuring it to ``z1_m`` reports it RESIZED on a self-diff.
+    band_z0, band_z1 = wall_body_band(w)
     points = [point for layer in w.layers
-              if not getattr(layer, "is_banded", False)
+              if at_body_band(layer, w)
               for point in layer.polygon]
-    centroid, bbox = _bounds(points, w.z0_m, w.z1_m)
+    centroid, bbox = _bounds(points, band_z0, band_z1)
     return centroid, bbox, dir_
 
 

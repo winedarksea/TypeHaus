@@ -220,8 +220,15 @@ def test_a_banded_layer_exports_as_an_aggregated_ifc_part(catlin_ifc_path):
     # Each of those three is FOUR parts, not one: W-B-S2-FR carries the sauna window, and a
     # banded layer is cut around the openings in its own wall exactly as the wall is. Until
     # 2026-09-15 the liner extruded straight across the glass.
+    #
+    # W-B-S3-FR's ``gwb-a`` is the third entry, and it is not an authored band at all: that
+    # wall is lifted to the platform above it, and ``layer_bands.clamp_to_plates`` stops its
+    # interior finish at the top plate while its sheathing and XPS keep lapping the rim. An
+    # instance trim exports exactly like a type band — as parts — and it is three of them
+    # because the wall carries the garden door.
     assert {n for n in parts if n.startswith("W-B-S")} == {
         f"W-B-S1:{_PANEL}", f"W-B-S4:{_PANEL}",
+        *(f"W-B-S3-FR:gwb-a ({index}/3)" for index in range(1, 4)),
         *(f"W-B-S2-FR:{layer} ({index}/4)"
           for layer in ("shiplap-liner", "liner-furring", "foil-polyiso")
           for index in range(1, 5))}
@@ -404,6 +411,9 @@ def _lift_plan():
     )
 
     assembly = Assembly(tag="EXT", layers=(
+        # Inboard of the studs: the platform trim stops it at the plate.
+        Layer(name="drywall", material_ref="wood", thickness=inch(0.5),
+              function=LayerFunction.FINISH),
         Layer(name="stud", material_ref="wood", thickness=inch(5.5),
               function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x6")),
         # "From grade, and run it out" — the open-topped band.
@@ -415,6 +425,15 @@ def _lift_plan():
               function=LayerFunction.FINISH,
               extent=LayerExtent(bottom=LayerBound(datum=LayerDatum.WALL_TOP,
                                                    offset=inch(-6)))),
+    ))
+    # A partition — nothing weatherproof outboard of the stud, no rim to close.
+    partition = Assembly(tag="INT", layers=(
+        Layer(name="gwb-a", material_ref="wood", thickness=inch(0.5),
+              function=LayerFunction.FINISH),
+        Layer(name="stud", material_ref="wood", thickness=inch(3.5),
+              function=LayerFunction.STRUCTURE, framing=FramingSpec(member="2x4")),
+        Layer(name="gwb-b", material_ref="wood", thickness=inch(0.5),
+              function=LayerFunction.FINISH),
     ))
     project = Project(
         name="Lift", project_uuid=uuid.UUID("00000000-0000-4000-8000-0000000000b1"),
@@ -428,12 +447,14 @@ def _lift_plan():
     corners = (pt(ft(0), ft(0)), pt(ft(20), ft(0)), pt(ft(20), ft(14)), pt(ft(0), ft(14)))
     plan = PlanModel(project=project, library=Library(
         materials=(Material(tag="wood", name="Wood", r_per_inch=1.25),),
-        assemblies=(assembly,)), storeys=(main, second))
+        assemblies=(assembly, partition)), storeys=(main, second))
+
+    interior = (pt(ft(0), ft(7)), pt(ft(20), ft(7)))
 
     def _storey(prefix: str, top, stacks_on: bool):
         nodes = tuple(
             Node(uid=f"N{prefix}{i:08d}", tag=f"N-{prefix}-{i}", position=position)
-            for i, position in enumerate(corners, 1)
+            for i, position in enumerate((*corners, *interior), 1)
         )
         walls = tuple(
             Wall(uid=f"W{prefix}{i:08d}", tag=f"W-{prefix}-{i}",
@@ -442,7 +463,11 @@ def _lift_plan():
                  **({"stacks_on": f"W-M-{i}"} if stacks_on else {}))
             for i, (start, end) in enumerate(((1, 2), (2, 3), (3, 4), (4, 1)), 1)
         )
-        return (*nodes, *walls)
+        wall_p = Wall(uid=f"W{prefix}0000009", tag=f"W-{prefix}-P",
+                      start_node=f"N-{prefix}-5", end_node=f"N-{prefix}-6",
+                      assembly="INT", top=top,
+                      **({"stacks_on": "W-M-P"} if stacks_on else {}))
+        return (*nodes, *walls, wall_p)
 
     return (plan.with_elements("main", _storey("M", ft(9), False))
                 .with_elements("second", _storey("S", ft(8), True)))

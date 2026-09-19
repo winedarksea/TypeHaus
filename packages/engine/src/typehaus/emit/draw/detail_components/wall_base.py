@@ -317,6 +317,10 @@ def _foam_is_already_covered(wall: ResolvedWall) -> bool:
                      if ly.function == "insulation"), default=None)
     if last_foam is None:
         return False
+    # ``is_banded``, NOT the ``band_spec`` predicate the IFC emitter uses: this asks a
+    # different question. What is outboard of the outermost foam is the weather side, which
+    # ``layer_bands.clamp_to_plates`` never trims — so the two readings cannot diverge here,
+    # and what matters is whether the covering really reaches this station's elevation.
     return any(not getattr(ly, "is_banded", False) for ly in layers[last_foam + 1:])
 
 

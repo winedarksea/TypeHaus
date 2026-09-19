@@ -7,6 +7,12 @@ Here the lower wall simply grows to meet the wall stacked on it. Its *framing* d
 ``plate_top_z_m`` keeps the double top plate at the original ceiling height, so the band
 above the plate is rim board and joists, which is what platform framing actually is.
 
+Nor does its *finish*. The wall spans floor-to-floor; its body does not. Everything inboard
+of the studs — and a partition's whole body, which has no rim to close — stops at the plate
+(``layer_bands.clamp_to_plates``), because drywall runs to the plate and the ceiling board
+hangs below it. Only the weather side keeps running through the band, which is the lap the
+lift exists for.
+
 The same band exists at the *bottom* of the lowest framed storey. A framed wall starts at
 its storey datum; the foundation it lands on tops out a mudsill, a gasket and a rim board
 below that, and both loops here skip foundation walls, which leaves the gap open — a real
@@ -25,7 +31,7 @@ from typing import Any
 
 from typehaus.model.refs import ToRoof
 from typehaus.quantities import inch
-from typehaus.resolve.layer_bands import reband
+from typehaus.resolve.layer_bands import reband_for_platform
 from typehaus.resolve.layout_lines import lines_by_wall
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.topology import site_grade_elevation_m_from_plan
@@ -107,11 +113,11 @@ def extend_walls_to_foundation(model: ResolvedModel) -> None:
     the upward lift, and taking it from both would clad the band twice.
 
     And only a wall with a cladding layer moves. This is the one place the mirror is not
-    symmetric, because the band is not: *above* a wall, an interior partition really does run
-    to the underside of the floor above. *Below* one, the band is the joist bay over the
-    basement, and an interior bearing wall has no skin that could lap anything. The reason
-    this pass exists is the lap onto the foundation's protection panel, and that is an
-    envelope detail.
+    symmetric, because the band is not: *above* a wall, an interior partition's solid still
+    reaches the underside of the floor above (its body stops at the plate — see
+    ``clamp_to_plates``). *Below* one, the band is the joist bay over the basement, and an
+    interior bearing wall has no skin that could lap anything. The reason this pass exists
+    is the lap onto the foundation's protection panel, and that is an envelope detail.
     """
     grade_m = site_grade_elevation_m_from_plan(model.plan)
     lines = lines_by_wall(model.layout_lines)
@@ -250,7 +256,8 @@ def _drop(model: ResolvedModel, upper: Any, z0: float, grade_m: float,
     index = next(i for i, w in enumerate(model.walls) if w is upper)
     model.walls[index] = replace(
         upper, z0_m=z0, plate_base_z_m=upper.z0_m,
-        layers=reband(upper, z0, upper.z1_m, grade_m, lines.get(upper.tag)),
+        layers=reband_for_platform(upper, z0, upper.z1_m, grade_m, lines.get(upper.tag),
+                                   plate_top=upper.plate_top_z_m, plate_base=upper.z0_m),
     )
 
 
@@ -270,7 +277,9 @@ def _lift(model: ResolvedModel, lower: Any, z1: float,
     grade_m = site_grade_elevation_m_from_plan(model.plan)
     model.walls[index] = replace(
         lower, z1_m=z1, plate_top_z_m=lower.z1_m,
-        layers=reband(lower, lower.z0_m, z1, grade_m, lines.get(lower.tag)),
+        layers=reband_for_platform(lower, lower.z0_m, z1, grade_m, lines.get(lower.tag),
+                                   plate_top=lower.z1_m,
+                                   plate_base=lower.plate_base_z_m),
     )
 
 

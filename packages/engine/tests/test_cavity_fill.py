@@ -107,6 +107,8 @@ def test_shallower_fill_only_counts_its_own_thickness():
 def test_ifc_material_layer_set_sums_to_the_wall_thickness(catlin_model_ro, catlin_ifc_path):
     ifcopenshell = pytest.importorskip("ifcopenshell")
 
+    from typehaus.resolve.layer_bands import wall_body_band
+
     f = ifcopenshell.open(str(catlin_ifc_path))
     walls = {w.Name: w for w in f.by_type("IfcWall")}
     assert "W-M-S1" in walls
@@ -133,13 +135,17 @@ def test_ifc_material_layer_set_sums_to_the_wall_thickness(catlin_model_ro, catl
                 if rep.RepresentationIdentifier == "Body")
     axis = next(rep for rep in walls["W-M-S1"].Representation.Representations
                 if rep.RepresentationIdentifier == "Axis")
-    # The *unbanded* body: ``_emit_wall`` extrudes the full-height layers and re-emits every
-    # banded one as an ``IfcBuildingElementPart`` instead, so this count is depth_layers()
-    # only while no layer of this wall is banded. Stated rather than assumed — the emitter
-    # now walks ``body_layers()`` for the parts, and the two lists differ on a wall with a
-    # ``Layer.slot`` (→ test_emitter_band_parity.py).
+    # The body is the layers standing at the wall's own body band; anything shorter is an
+    # ``IfcBuildingElementPart`` instead (→ test_emitter_band_parity.py). W-M-S1 is lifted
+    # to the platform above AND dropped over the basement rim, so its ``paint`` and
+    # ``gwb-int`` stop at the plates and the other six run the rim band — which is the whole
+    # point of the lift. The layer SET is unaffected: it keys off the assembly's own
+    # ``Layer.extent`` and still sums to the wall's full thickness, asserted above.
     wall_ir = catlin_model_ro.wall("W-M-S1")
-    assert not any(layer.is_banded for layer in wall_ir.layers), \
-        "W-M-S1 gained a banded layer; this assertion is about the unbanded body"
-    assert len(body.Items) == len(wall_ir.depth_layers())
+    assert not any(layer.band_spec for layer in wall_ir.layers), \
+        "W-M-S1 gained an AUTHORED band; this assertion is about the unbanded layer set"
+    body_band = wall_body_band(wall_ir)
+    trimmed = [ly.name for ly in wall_ir.depth_layers() if ly.band(wall_ir) != body_band]
+    assert trimmed == ["paint", "gwb-int"]
+    assert len(body.Items) == len(wall_ir.depth_layers()) - len(trimmed)
     assert len(axis.Items) == 1

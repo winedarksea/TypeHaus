@@ -146,12 +146,19 @@ def _banded_part_names(wall, openings=()) -> set[str]:
     restatement.
     """
     from typehaus.resolve.geometry_walls import layer_solids
+    from typehaus.resolve.layer_bands import wall_body_band
 
+    body = wall_body_band(wall)
     names = set()
     for layer in wall.body_layers():
         if not layer.is_banded or len(layer.polygon) < 3:
             continue
         z0, z1 = layer.band(wall)
+        # A layer standing at the wall's own body band is IN the body prism, not a part —
+        # the same predicate ``_emit_wall`` uses. Every layer of a platform-trimmed
+        # partition is one of those, which is why trimming adds no parts.
+        if abs(z0 - body[0]) <= 1e-9 and abs(z1 - body[1]) <= 1e-9:
+            continue
         if z1 - z0 <= 1e-9:
             continue
         pieces = [p for p in layer_solids(wall, layer.polygon, openings, band=(z0, z1))
@@ -219,9 +226,12 @@ def test_the_sauna_liner_no_longer_runs_across_its_own_door_and_window(catlin_mo
 
 
 def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc):
-    """41 of the 47 do not split, and their GUIDs must not move because the call changed.
+    """55 of the 61 do not split, and their GUIDs must not move because the call changed.
 
-    47 since 2026-09-16: W-SG-W1/E1's dimpleboard stops at grade.
+    47 since 2026-09-16: W-SG-W1/E1's dimpleboard stops at grade. 61 since the platform
+    trim (``layer_bands.clamp_to_plates``): a lifted or dropped ENVELOPE wall's interior
+    finish stops at the plate while its skin runs the rim band, so the finish is now a part
+    too. None of the 41 original keys moved — this count grew, it did not shift.
 
     A GlobalId is an identity a federated model and its issue log hold onto. Re-keying a
     part that still means exactly what it meant before would break those references for
@@ -233,7 +243,8 @@ def test_an_unsplit_banded_layer_keeps_its_globalid(catlin_model_ro, catlin_ifc)
     parts = {p.Name: p.GlobalId for p in catlin_ifc.by_type("IfcBuildingElementPart")}
     unsplit = [(w, ly) for w in catlin_model_ro.walls for ly in w.body_layers()
                if f"{w.tag}:{ly.name}" in parts]
-    assert len(unsplit) == 41, f"expected the 47 banded layers less the 6 that split, got {len(unsplit)}"
+    assert len(unsplit) == 55, \
+        f"expected the 61 banded layers less the 6 that split, got {len(unsplit)}"
     for wall, layer in unsplit:
         assert parts[f"{wall.tag}:{layer.name}"] == derive_child_guid(
             project_uuid, "wall-parts", f"{wall.uid}/{layer.name}")
@@ -342,3 +353,85 @@ def test_every_slot_region_of_a_banded_wythe_draws_in_section(banded_model):
              if isinstance(node, Polyline) and node.layer == "A-WALL" and node.tag
              and node.tag.startswith(f"{_SLOT_WALL}/")}
     assert set(_VENEER_REGIONS) <= drawn, drawn
+
+
+# --- the platform trim, through the emitter ----------------------------------------------
+#
+# ``layer_bands.clamp_to_plates`` stops a lifted wall's interior finish at the top plate and
+# a lifted PARTITION's whole body there. Both are instance facts about one wall, not recipes
+# the ``Assembly`` stated — which is the whole reason ``_full_height_layers`` keys off
+# ``band_spec`` rather than ``is_banded``. Get that wrong and a lifted partition exports an
+# ``IfcShapeRepresentation`` with no ``Items`` (invalid IFC4: ``Items`` is ``SET [1:?]``),
+# while every lifted ``EXT_2X6`` exports as a lining variant that is not a lining.
+
+_LIFTED_PARTITION = "W-B-CS3"   # INT_2X6_BRG, lifted, no authored band anywhere on it
+_LIFTED_ENVELOPE = "W-M-E1"     # EXT_2X6, lifted AND dropped, no lining override
+
+
+def _wall(ifc, tag):
+    return next(w for w in ifc.by_type("IfcWall") if w.Name == tag)
+
+
+def _parts_of(ifc, tag) -> set[str]:
+    return {child.Name for rel in ifc.by_type("IfcRelAggregates")
+            if rel.RelatingObject.Name == tag
+            for child in (rel.RelatedObjects or ())
+            if child.is_a("IfcBuildingElementPart")}
+
+
+def test_a_lifted_partition_exports_one_shortened_body_and_no_parts(catlin_model_ro,
+                                                                    catlin_ifc):
+    wall = catlin_model_ro.wall(_LIFTED_PARTITION)
+    assert wall.plate_top_z_m is not None, f"{_LIFTED_PARTITION} is no longer lifted"
+    assert all(ly.band(wall)[1] == pytest.approx(wall.plate_top_z_m)
+               for ly in wall.body_layers()), "the whole body should stop at the plate"
+
+    assert _parts_of(catlin_ifc, _LIFTED_PARTITION) == set()
+    body = next(rep for rep in _wall(catlin_ifc, _LIFTED_PARTITION)
+                .Representation.Representations
+                if rep.RepresentationIdentifier == "Body")
+    assert len(body.Items) == len(wall.depth_layers())
+    # The body really is shorter than the wall — the joist bay above it is open.
+    depth = body.Items[0].Depth
+    assert depth == pytest.approx(wall.plate_top_z_m - wall.z0_m, abs=1e-9)
+    assert depth < wall.z1_m - wall.z0_m - 1e-3
+
+    # And the layer set is still complete: an instance trim is not a ``Layer.extent``, so
+    # the wall type keeps every layer and still sums to the wall's depth.
+    layer_set = next(rel.RelatingMaterial.ForLayerSet
+                     for rel in catlin_ifc.by_type("IfcRelAssociatesMaterial")
+                     if _wall(catlin_ifc, _LIFTED_PARTITION) in rel.RelatedObjects
+                     and rel.RelatingMaterial.is_a("IfcMaterialLayerSetUsage"))
+    assert [ly.Name for ly in layer_set.MaterialLayers] == \
+        [ly.name for ly in wall.depth_layers()]
+    assert sum(ly.LayerThickness for ly in layer_set.MaterialLayers) == \
+        pytest.approx(wall.thickness_m, abs=1e-6)
+
+
+def test_a_lifted_envelope_wall_exports_its_interior_finishes_as_parts(catlin_model_ro,
+                                                                       catlin_ifc):
+    """The counterpart: the skin still laps the rim, so the body is full height and it is
+    the two interior finishes that drop out of it — as parts, cut around the openings the
+    way every part is. The TYPE is untouched, which is the assertion that matters: 28 lifted
+    EXT_2X6 walls on one ``IfcWallType``, not 28 ``~lining0`` variants."""
+    wall = catlin_model_ro.wall(_LIFTED_ENVELOPE)
+    trimmed = [ly.name for ly in wall.depth_layers()
+               if ly.band(wall) != (wall.z0_m, wall.z1_m)]
+    assert trimmed == ["paint", "gwb-int"]
+
+    parts = _parts_of(catlin_ifc, _LIFTED_ENVELOPE)
+    assert parts, "the trimmed finishes must still reach the IFC somewhere"
+    assert {name.split(":")[1].split(" (")[0] for name in parts} == set(trimmed)
+
+    wall_type = next(iter(_wall(catlin_ifc, _LIFTED_ENVELOPE).IsTypedBy)).RelatingType
+    assert wall_type.Name == "EXT_2X6"
+    # House-wide: a ``~lining`` suffix on a lifted EXT_2X6 wall means a real
+    # ``Room.wall_lining`` override, never the trim. 14 of the 28 have no override at all
+    # and every one of them is on the bare type.
+    lifted = [w for w in catlin_model_ro.walls
+              if w.assembly == "EXT_2X6" and w.plate_top_z_m is not None]
+    assert len(lifted) == 28
+    bare = [w for w in lifted
+            if next(iter(_wall(catlin_ifc, w.tag).IsTypedBy)).RelatingType.Name
+            == "EXT_2X6"]
+    assert len(bare) == 14

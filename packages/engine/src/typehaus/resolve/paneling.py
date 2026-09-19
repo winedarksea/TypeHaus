@@ -92,6 +92,12 @@ def resolve_paneling(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
                 # that frame, and mixing it with ``z0_m`` would offset one against the other.
                 mean_top = ((wall.top_z0_m or wall.z1_m)
                             + (wall.top_z1_m or wall.z1_m)) / 2.0
+                # ... and to the top PLATE where the wall was grown floor-to-floor
+                # (``resolve/platform.py``). Panelling stops at the ceiling; the band above
+                # the plate is the joist bay, which is exactly what the comment above
+                # assumes the wall top is.
+                if wall.plate_top_z_m is not None:
+                    mean_top = min(mean_top, wall.plate_top_z_m)
                 wall_height = mean_top - wall.base_ref_z_m
                 # A line-scoped band measures from the LINE's base, so the same authored
                 # offset means the same elevation on every storey it crosses; the record

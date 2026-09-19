@@ -260,34 +260,6 @@
       "points": [
         [
           425.365,
-          -13.437499999999998
-        ],
-        [
-          425.375,
-          -13.437499999999998
-        ],
-        [
-          425.375,
-          0.0
-        ],
-        [
-          425.365,
-          0.0
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW107AAAA",
-      "tag": "W-M-N3/paint"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          425.365,
           80.0
         ],
         [
@@ -309,62 +281,6 @@
       "closed": true,
       "uid": "CMW107AAAA",
       "tag": "W-M-N3/paint"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          425.375,
-          -13.437499999999998
-        ],
-        [
-          426.0,
-          -13.437499999999998
-        ],
-        [
-          426.0,
-          0.0
-        ],
-        [
-          425.375,
-          0.0
-        ]
-      ],
-      "layer": "A-WALL-FINI",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "CMW107AAAA",
-      "tag": "W-M-N3/gwb-int"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          425.375,
-          -13.437499999999998
-        ],
-        [
-          426.0,
-          -13.437499999999998
-        ],
-        [
-          426.0,
-          0.0
-        ],
-        [
-          425.375,
-          0.0
-        ]
-      ],
-      "pattern": "gypsum",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "gwb"
     },
     {
       "space": "model",

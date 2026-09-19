@@ -3,7 +3,7 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** 8ec8046535bb0143  
+**Model hash:** a6795734128d050e  
 **Lines:** 134
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
@@ -25,8 +25,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 11.875 I-joist — blocking, joist, sister joist (11.875 I-joist) | 2,348 | LF ordered | 212 pcs, 2105.7 LF cut | building |
 | 11.875 TJI 230 — rafter (11.875 TJI 230) | 760 | LF ordered | 38 pcs, 756.8 LF cut | building |
 | 11.875 floor truss — blocking, joist, trimmer (11.875 floor truss) | 44 | ea | 44 pcs, 481.7 LF cut; 504.0 LF in the takeoff | building |
-| 1x4 SPF framing lumber — girt strapping (1x4:spf) | 454 | LF ordered | 59 pcs, 403.2 LF cut | building |
-| 1x4 Structural 1 plywood — girt strapping (1x4:struct-1-plywood) | 332 | LF ordered | 44 pcs, 264.6 LF cut | building |
+| 1x4 SPF framing lumber — girt strapping (1x4:spf) | 414 | LF ordered | 56 pcs, 369.0 LF cut | building |
+| 1x4 Structural 1 plywood — girt strapping (1x4:struct-1-plywood) | 312 | LF ordered | 42 pcs, 246.4 LF cut | building |
 | 2-1.75x11.875 LVL — header (2-1.75x11.875 LVL) | 16 | LF ordered | 6 pcs, 11.1 LF cut | building |
 | 2-1.75x14 LVL — header (2-1.75x14 LVL) | 20 | LF ordered | 1 pcs, 16.7 LF cut | building |
 | 2-1.75x16 LVL — ridge beam (2-1.75x16 LVL) | 36 | LF ordered | 1 pcs, 36.0 LF cut | building |

@@ -9,7 +9,10 @@ authored house's geometry.
 
 from __future__ import annotations
 
+from dataclasses import replace
 from types import SimpleNamespace
+
+import pytest
 
 from typehaus.model.assembly import FramingSpec, Layer
 from typehaus.model.enums import LayerFunction
@@ -111,3 +114,75 @@ def test_horizontal_course_unaffected_with_no_openings():
     plan, rw = _horizontal_wall()
     members, _ = frame_wall_furring(plan, rw, [])
     assert len(members) == 2
+
+
+# --- a banded layer's members live inside its band ---------------------------------------
+#
+# ``band_tops``/``course_elevations``/``_layout_vertical`` marched members from ``rw.z0_m``
+# to ``rw.z1_m`` and never read ``layer.z0_m``/``z1_m``, so even the sauna's ALREADY-banded
+# liner framed its 1x4 strapping full height — ~36 lf of it standing in the joist bay above
+# a 7'-6" ceiling. Since ``layer_bands.clamp_to_plates`` trims a lifted wall's interior
+# layers too, this is the second half of that fix and not an independent nicety.
+
+
+def test_a_banded_layer_frames_no_member_outside_its_band():
+    plan, rw = _vertical_wall(spacing_in=150.0)
+    banded = replace(rw.layers[0], z0_m=0.5, z1_m=2.0)
+    rw = replace(rw, layers=(banded,))
+    members, findings = frame_wall_furring(plan, rw, [])
+    assert not findings
+    assert members
+    assert all(m.z0_m >= 0.5 - 1e-9 and m.z1_m <= 2.0 + 1e-9 for m in members), \
+        [(m.z0_m, m.z1_m) for m in members]
+
+
+def test_a_banded_horizontal_band_runs_its_courses_on_the_walls_own_module():
+    """The courses stop at the band; the PHASE does not move with it. ``course_phase`` is an
+    unbounded datum, and sliding it to the band's bottom would take a banded liner's courses
+    off the module every other band on the wall is registered to."""
+    from typehaus.resolve.framing.furring import course_phase
+
+    plan, rw = _horizontal_wall()
+    spec = plan.library.resolve_assembly("TEST_ASM").layers[0].framing
+    assert course_phase(rw, spec) == 0.0
+
+    banded = replace(rw, layers=(replace(rw.layers[0], z0_m=0.0, z1_m=0.6),))
+    members, findings = frame_wall_furring(plan, banded, [])
+    assert not findings
+    assert members
+    assert all(m.z1_m <= 0.6 + 1e-9 for m in members)
+    # The starter still sits on the module's own datum, and the band's top edge gets its
+    # own nailer — the same two edge rules an unbanded wall gets, one band lower.
+    face = 0.0889  # a 1x4 laid flat
+    assert min(m.z0_m for m in members) == pytest.approx(0.0)
+    assert max(m.z0_m for m in members) == pytest.approx(0.6 - face)
+
+
+def test_no_catlin_strapping_member_stands_outside_its_layers_band(catlin_model_ro):
+    """House-wide, on the real walls: every ``strapping-<layer>`` member is inside the band
+    of the layer it is named for."""
+    outside = []
+    for wall in catlin_model_ro.walls:
+        bands = {ly.name: ly.band(wall) for ly in wall.layers}
+        for member in wall.members:
+            if not member.child_key.startswith("strapping-"):
+                continue
+            name = member.child_key[len("strapping-"):].rsplit("-", 1)[0]
+            band = bands.get(name)
+            if band is None:
+                continue
+            if member.z0_m < band[0] - 1e-9 or member.z1_m > band[1] + 1e-9:
+                outside.append(f"{wall.tag}/{member.child_key}")
+    assert not outside, outside
+
+
+def test_the_outer_girt_tier_is_untouched_by_the_trim(catlin_model_ro):
+    """The counterweight. A girt tier is OUTBOARD of the studs on an envelope wall, so
+    nothing trims it and it still runs the rim band it is there to nail — which is the
+    reason ``band_tops`` runs courses to ``rw.z1_m`` rather than to the plate."""
+    girts = [(w, m) for w in catlin_model_ro.walls if w.assembly == "EXT_2X6"
+             for m in w.members if m.child_key.startswith("strapping-outer-girt-")]
+    assert len(girts) > 200, f"only {len(girts)} outer girts; the tier stopped resolving"
+    over_plate = [f"{w.tag}/{m.child_key}" for w, m in girts
+                  if w.plate_top_z_m is not None and m.z1_m > w.plate_top_z_m + 1e-9]
+    assert over_plate, "no girt laps the rim band any more — the trim reached the skin"

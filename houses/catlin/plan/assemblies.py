@@ -2798,12 +2798,14 @@ INT_ESS_CLOSET_STEEL = Assembly(
 # base is the ceiling on all of them. WALL_BASE could not do this: it needed 90" on one
 # wall and 82 3/4" on the wall standing on the curb, which is two constants for one plane.
 #
-# Not WALL_TOP either, and the old datum was silently wrong the moment these walls were
-# framed: ``resolve/platform.py`` grows a framed bearing wall's solid UP to meet the wall
-# stacking on it, so a band hung off the top would have run the liner 13 7/16" past the
-# ceiling. A band is clamped to its host wall (``layer_bands.py``), so the curb — whose top
-# is below the band's — simply stays fully lined, and SAUNA_2X4's partitions, which top out
-# at the ceiling, band to their own top and change not at all.
+# Not WALL_TOP either, and the reason is that the wall top is a STOREY datum, not this
+# room's. ``layer_bands.clamp_to_plates`` now stops an unbanded layer at the top plate, so
+# a band hung off the top would run the liner to the plate — which on W-B-CS is -13 7/16",
+# a full 6" above the sauna's own 7'-6" ceiling at -19 7/16". Six inches of basswood,
+# strapping and foil-faced polyiso bought for the space over a ceiling. A band is clamped
+# to its host wall (``layer_bands.py``), so the curb — whose top is below the band's —
+# simply stays fully lined, and SAUNA_2X4's partitions, which top out at the ceiling, band
+# to their own top and change not at all.
 #
 # PROVISIONAL: if the basement ever goes to a joist ceiling running the full width, the
 # liner would run the wall's whole height and this extent should come off.

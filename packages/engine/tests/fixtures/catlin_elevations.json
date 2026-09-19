@@ -1421,15 +1421,15 @@
 ],
 "geometry/1H4KR79N9M/layer:gwb-x": [
 -2.7797125,
-0.0,
+-0.3413125,
 6,
-"fcc8b56ae47c"
+"65953cae7065"
 ],
 "geometry/1H4KR79N9M/layer:stud": [
 -2.7797125,
-0.0,
+-0.3413125,
 6,
-"fcc8b56ae47c"
+"65953cae7065"
 ],
 "geometry/1H4KR79N9M::framing/member:cripple-head-0-01": [
 -0.7667625,
@@ -2146,16 +2146,10 @@
 "61b53bd7d201"
 ],
 "geometry/3BF9ZDQPT1::framing/member:strapping-liner-furring-006": [
--0.5635625,
--0.4746625,
+-0.5826125,
+-0.4937125,
 8,
-"3e4b14883d55"
-],
-"geometry/3BF9ZDQPT1::framing/member:strapping-liner-furring-007": [
--0.0889,
-0.0,
-8,
-"683653b83f44"
+"6ed35adecb66"
 ],
 "geometry/3BF9ZDQPT1::framing/member:stud-000": [
 -2.5574625,
@@ -2585,33 +2579,33 @@
 ],
 "geometry/8BRZAXSW73/layer:gwb-a": [
 -2.7797125,
-0.0,
+-0.3413125,
 6,
-"0184a1f451af"
+"9bbec3881b04"
 ],
 "geometry/8BRZAXSW73/layer:gwb-b": [
 -2.7797125,
-0.0,
+-0.3413125,
 6,
-"0184a1f451af"
+"9bbec3881b04"
 ],
 "geometry/8BRZAXSW73/layer:paint-a": [
 -2.7797125,
-0.0,
+-0.3413125,
 6,
-"0184a1f451af"
+"9bbec3881b04"
 ],
 "geometry/8BRZAXSW73/layer:paint-b": [
 -2.7797125,
-0.0,
+-0.3413125,
 6,
-"0184a1f451af"
+"9bbec3881b04"
 ],
 "geometry/8BRZAXSW73/layer:staggered-studs": [
 -2.7797125,
-0.0,
+-0.3413125,
 6,
-"0184a1f451af"
+"9bbec3881b04"
 ],
 "geometry/8BRZAXSW73::framing/member:backing-0-000": [
 -1.9669125,
@@ -3011,33 +3005,33 @@
 ],
 "geometry/A5K4RVWPWW/layer:gwb-a": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/A5K4RVWPWW/layer:gwb-b": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/A5K4RVWPWW/layer:paint-a": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/A5K4RVWPWW/layer:paint-b": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/A5K4RVWPWW/layer:stud": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/A5K4RVWPWW::framing/member:plate-bottom": [
 0.0,
@@ -10517,9 +10511,9 @@
 ],
 "geometry/CBW111AAAA/layer:gwb-b": [
 -2.7797125,
-0.0,
+-0.3413125,
 6,
-"0184a1f451af"
+"9bbec3881b04"
 ],
 "geometry/CBW111AAAA/layer:liner-furring": [
 -2.7797125,
@@ -10529,9 +10523,9 @@
 ],
 "geometry/CBW111AAAA/layer:paint-b": [
 -2.7797125,
-0.0,
+-0.3413125,
 6,
-"0184a1f451af"
+"9bbec3881b04"
 ],
 "geometry/CBW111AAAA/layer:shiplap-liner": [
 -2.7797125,
@@ -10541,9 +10535,9 @@
 ],
 "geometry/CBW111AAAA/layer:stud": [
 -2.7797125,
-0.0,
+-0.3413125,
 6,
-"0184a1f451af"
+"9bbec3881b04"
 ],
 "geometry/CBW111AAAA::framing/member:cripple-head-0-01": [
 -0.5635625,
@@ -10666,16 +10660,10 @@
 "fb2a968a4988"
 ],
 "geometry/CBW111AAAA::framing/member:strapping-liner-furring-011": [
--0.3413125,
--0.2524125,
+-0.5826125,
+-0.4937125,
 8,
-"73de7ea5e9cf"
-],
-"geometry/CBW111AAAA::framing/member:strapping-liner-furring-012": [
--0.0889,
-0.0,
-8,
-"683653b83f44"
+"6ed35adecb66"
 ],
 "geometry/CBW111AAAA::framing/member:stud-000": [
 -2.7416125,
@@ -11129,21 +11117,21 @@
 ],
 "geometry/CBW116AAAA/layer:gwb-x": [
 -2.7797125,
-0.0,
+-0.3413125,
 2,
-"267caf0e8cc8"
+"c0fa4924d6c7"
 ],
 "geometry/CBW116AAAA/layer:ply-stair": [
 -2.7797125,
-0.0,
+-0.3413125,
 2,
-"267caf0e8cc8"
+"c0fa4924d6c7"
 ],
 "geometry/CBW116AAAA/layer:stud": [
 -2.7797125,
-0.0,
+-0.3413125,
 2,
-"267caf0e8cc8"
+"c0fa4924d6c7"
 ],
 "geometry/CBW116AAAA::framing/member:plate-bottom": [
 -2.7797125,
@@ -11495,21 +11483,21 @@
 ],
 "geometry/CBW119AAAA/layer:gwb-a": [
 -2.7797125,
-0.0,
+-0.3413125,
 2,
-"267caf0e8cc8"
+"c0fa4924d6c7"
 ],
 "geometry/CBW119AAAA/layer:gwb-b": [
 -2.7797125,
-0.0,
+-0.3413125,
 2,
-"267caf0e8cc8"
+"c0fa4924d6c7"
 ],
 "geometry/CBW119AAAA/layer:stud": [
 -2.7797125,
-0.0,
+-0.3413125,
 2,
-"267caf0e8cc8"
+"c0fa4924d6c7"
 ],
 "geometry/CBW119AAAA::framing/member:plate-bottom": [
 -2.7797125,
@@ -11687,33 +11675,33 @@
 ],
 "geometry/CBW123AAAA/layer:gwb-a": [
 -2.7797125,
-0.0,
+-0.3413125,
 2,
-"267caf0e8cc8"
+"c0fa4924d6c7"
 ],
 "geometry/CBW123AAAA/layer:gwb-b": [
 -2.7797125,
-0.0,
+-0.3413125,
 2,
-"267caf0e8cc8"
+"c0fa4924d6c7"
 ],
 "geometry/CBW123AAAA/layer:paint-a": [
 -2.7797125,
-0.0,
+-0.3413125,
 2,
-"267caf0e8cc8"
+"c0fa4924d6c7"
 ],
 "geometry/CBW123AAAA/layer:paint-b": [
 -2.7797125,
-0.0,
+-0.3413125,
 2,
-"267caf0e8cc8"
+"c0fa4924d6c7"
 ],
 "geometry/CBW123AAAA/layer:stud": [
 -2.7797125,
-0.0,
+-0.3413125,
 2,
-"267caf0e8cc8"
+"c0fa4924d6c7"
 ],
 "geometry/CBW123AAAA::framing/member:backing-0-000": [
 -1.9669125,
@@ -11777,33 +11765,33 @@
 ],
 "geometry/CBW124AAAA/layer:gwb-x-a": [
 -2.7797125,
-0.0,
+-0.3413125,
 6,
-"0184a1f451af"
+"9bbec3881b04"
 ],
 "geometry/CBW124AAAA/layer:gwb-x-b": [
 -2.7797125,
-0.0,
+-0.3413125,
 6,
-"0184a1f451af"
+"9bbec3881b04"
 ],
 "geometry/CBW124AAAA/layer:paint-a": [
 -2.7797125,
-0.0,
+-0.3413125,
 6,
-"0184a1f451af"
+"9bbec3881b04"
 ],
 "geometry/CBW124AAAA/layer:paint-b": [
 -2.7797125,
-0.0,
+-0.3413125,
 6,
-"0184a1f451af"
+"9bbec3881b04"
 ],
 "geometry/CBW124AAAA/layer:steel-stud": [
 -2.7797125,
-0.0,
+-0.3413125,
 6,
-"0184a1f451af"
+"9bbec3881b04"
 ],
 "geometry/CBW124AAAA::framing/member:cripple-head-0-01": [
 -0.5635625,
@@ -18028,10 +18016,10 @@
 "16d797592a25"
 ],
 "geometry/CMW101AAAA/layer:gwb-int": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 20,
-"16d797592a25"
+"3407c8b4179e"
 ],
 "geometry/CMW101AAAA/layer:outer-girt": [
 -0.3413125,
@@ -18040,10 +18028,10 @@
 "16d797592a25"
 ],
 "geometry/CMW101AAAA/layer:paint": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 20,
-"16d797592a25"
+"3407c8b4179e"
 ],
 "geometry/CMW101AAAA/layer:sheathing": [
 -0.3413125,
@@ -18790,10 +18778,10 @@
 "48da53ca2e03"
 ],
 "geometry/CMW102AAAA/layer:gwb-int": [
--0.3413125,
-3.048,
-14,
-"48da53ca2e03"
+0.0,
+2.7432,
+12,
+"0bc63e6cdd93"
 ],
 "geometry/CMW102AAAA/layer:outer-girt": [
 -0.3413125,
@@ -18802,10 +18790,10 @@
 "48da53ca2e03"
 ],
 "geometry/CMW102AAAA/layer:paint": [
--0.3413125,
-3.048,
-14,
-"48da53ca2e03"
+0.0,
+2.7432,
+12,
+"0bc63e6cdd93"
 ],
 "geometry/CMW102AAAA/layer:sheathing": [
 -0.3413125,
@@ -19564,10 +19552,10 @@
 "180827953fae"
 ],
 "geometry/CMW103AAAA/layer:gwb-int": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 26,
-"180827953fae"
+"680f831ee3d0"
 ],
 "geometry/CMW103AAAA/layer:outer-girt": [
 -0.3413125,
@@ -19576,10 +19564,10 @@
 "180827953fae"
 ],
 "geometry/CMW103AAAA/layer:paint": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 26,
-"180827953fae"
+"680f831ee3d0"
 ],
 "geometry/CMW103AAAA/layer:sheathing": [
 -0.3413125,
@@ -21034,10 +21022,10 @@
 "2960059c0b5e"
 ],
 "geometry/CMW105AAAA/layer:gwb-int": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 14,
-"2960059c0b5e"
+"dbd7f1acb801"
 ],
 "geometry/CMW105AAAA/layer:outer-girt": [
 -0.3413125,
@@ -21046,10 +21034,10 @@
 "2960059c0b5e"
 ],
 "geometry/CMW105AAAA/layer:paint": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 14,
-"2960059c0b5e"
+"dbd7f1acb801"
 ],
 "geometry/CMW105AAAA/layer:sheathing": [
 -0.3413125,
@@ -21730,10 +21718,10 @@
 "b19a2b3e7cda"
 ],
 "geometry/CMW106AAAA/layer:gwb-int": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 2,
-"b19a2b3e7cda"
+"08fa410dc44f"
 ],
 "geometry/CMW106AAAA/layer:outer-girt": [
 -0.3413125,
@@ -21742,10 +21730,10 @@
 "b19a2b3e7cda"
 ],
 "geometry/CMW106AAAA/layer:paint": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 2,
-"b19a2b3e7cda"
+"08fa410dc44f"
 ],
 "geometry/CMW106AAAA/layer:sheathing": [
 -0.3413125,
@@ -22030,10 +22018,10 @@
 "95456b5310c0"
 ],
 "geometry/CMW107AAAA/layer:gwb-int": [
--0.3413125,
-3.048,
-8,
-"95456b5310c0"
+0.0,
+2.7432,
+6,
+"c3d978f4eede"
 ],
 "geometry/CMW107AAAA/layer:outer-girt": [
 -0.3413125,
@@ -22042,10 +22030,10 @@
 "95456b5310c0"
 ],
 "geometry/CMW107AAAA/layer:paint": [
--0.3413125,
-3.048,
-8,
-"95456b5310c0"
+0.0,
+2.7432,
+6,
+"c3d978f4eede"
 ],
 "geometry/CMW107AAAA/layer:sheathing": [
 -0.3413125,
@@ -22336,10 +22324,10 @@
 "ad81d99bf4a7"
 ],
 "geometry/CMW108AAAA/layer:gwb-int": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 8,
-"ad81d99bf4a7"
+"707917c09152"
 ],
 "geometry/CMW108AAAA/layer:outer-girt": [
 -0.3413125,
@@ -22348,10 +22336,10 @@
 "ad81d99bf4a7"
 ],
 "geometry/CMW108AAAA/layer:paint": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 8,
-"ad81d99bf4a7"
+"707917c09152"
 ],
 "geometry/CMW108AAAA/layer:sheathing": [
 -0.3413125,
@@ -22654,10 +22642,10 @@
 "ad81d99bf4a7"
 ],
 "geometry/CMW109AAAA/layer:gwb-int": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 8,
-"ad81d99bf4a7"
+"707917c09152"
 ],
 "geometry/CMW109AAAA/layer:outer-girt": [
 -0.3413125,
@@ -22666,10 +22654,10 @@
 "ad81d99bf4a7"
 ],
 "geometry/CMW109AAAA/layer:paint": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 8,
-"ad81d99bf4a7"
+"707917c09152"
 ],
 "geometry/CMW109AAAA/layer:sheathing": [
 -0.3413125,
@@ -22948,10 +22936,10 @@
 "fa50686acf57"
 ],
 "geometry/CMW110AAAA/layer:gwb-int": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 8,
-"fa50686acf57"
+"3e3f29d5e710"
 ],
 "geometry/CMW110AAAA/layer:outer-girt": [
 -0.3413125,
@@ -22960,10 +22948,10 @@
 "fa50686acf57"
 ],
 "geometry/CMW110AAAA/layer:paint": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 8,
-"fa50686acf57"
+"3e3f29d5e710"
 ],
 "geometry/CMW110AAAA/layer:sheathing": [
 -0.3413125,
@@ -23398,10 +23386,10 @@
 "1446d95df9d1"
 ],
 "geometry/CMW111AAAA/layer:gwb-int": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 14,
-"1446d95df9d1"
+"2a7f5522ffcc"
 ],
 "geometry/CMW111AAAA/layer:outer-girt": [
 -0.3413125,
@@ -23410,10 +23398,10 @@
 "1446d95df9d1"
 ],
 "geometry/CMW111AAAA/layer:paint": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 14,
-"1446d95df9d1"
+"2a7f5522ffcc"
 ],
 "geometry/CMW111AAAA/layer:sheathing": [
 -0.3413125,
@@ -24023,39 +24011,39 @@
 ],
 "geometry/CMW112AAAA/layer:gwb-a": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW112AAAA/layer:gwb-b": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW112AAAA/layer:paint-a": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW112AAAA/layer:paint-b": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW112AAAA/layer:resilient-channel": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW112AAAA/layer:stud": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW112AAAA::framing/member:cripple-head-0-01": [
 2.21615,
@@ -24172,10 +24160,10 @@
 "84c12a21c9ed"
 ],
 "geometry/CMW112AAAA::framing/member:strapping-resilient-channel-009": [
-2.9845,
-3.048,
+2.6797,
+2.7432,
 8,
-"8496b01a9905"
+"a7426edad95a"
 ],
 "geometry/CMW112AAAA::framing/member:stud-000": [
 0.0381,
@@ -24245,33 +24233,33 @@
 ],
 "geometry/CMW113AAAA/layer:gwb-a": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW113AAAA/layer:gwb-b": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW113AAAA/layer:paint-a": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW113AAAA/layer:paint-b": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW113AAAA/layer:stud": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW113AAAA::framing/member:plate-bottom": [
 0.0,
@@ -24341,33 +24329,33 @@
 ],
 "geometry/CMW114AAAA/layer:gwb-a": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW114AAAA/layer:gwb-b": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW114AAAA/layer:paint-a": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW114AAAA/layer:paint-b": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW114AAAA/layer:stud": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW114AAAA::framing/member:corner-end": [
 0.0381,
@@ -24437,33 +24425,33 @@
 ],
 "geometry/CMW116AAAA/layer:gwb-a": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW116AAAA/layer:gwb-b": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW116AAAA/layer:paint-a": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW116AAAA/layer:paint-b": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW116AAAA/layer:stud": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW116AAAA::framing/member:backing-0-000": [
 1.9304,
@@ -24557,15 +24545,15 @@
 ],
 "geometry/CMW117AAAA/layer:ply-stair": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW117AAAA/layer:stud": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW117AAAA::framing/member:plate-bottom": [
 0.0,
@@ -24653,21 +24641,21 @@
 ],
 "geometry/CMW119AAAA/layer:gwb-a": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW119AAAA/layer:gwb-b": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW119AAAA/layer:stud": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW119AAAA::framing/member:plate-bottom": [
 0.0,
@@ -24725,21 +24713,21 @@
 ],
 "geometry/CMW120AAAA/layer:gwb-a": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW120AAAA/layer:gwb-b": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW120AAAA/layer:stud": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW120AAAA::framing/member:cripple-head-0-01": [
 2.21615,
@@ -24803,33 +24791,33 @@
 ],
 "geometry/CMW121AAAA/layer:gwb-a": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW121AAAA/layer:gwb-b": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW121AAAA/layer:paint-a": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW121AAAA/layer:paint-b": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW121AAAA/layer:staggered-studs": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW121AAAA::framing/member:backing-0-000": [
 0.8128,
@@ -24935,33 +24923,33 @@
 ],
 "geometry/CMW122AAAA/layer:gwb-a": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW122AAAA/layer:gwb-b": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW122AAAA/layer:paint-a": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW122AAAA/layer:paint-b": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW122AAAA/layer:staggered-studs": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW122AAAA::framing/member:backing-0-000": [
 0.5588,
@@ -25103,33 +25091,33 @@
 ],
 "geometry/CMW123AAAA/layer:gwb-a": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW123AAAA/layer:gwb-b": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW123AAAA/layer:paint-a": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW123AAAA/layer:paint-b": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW123AAAA/layer:staggered-studs": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW123AAAA::framing/member:backing-0-000": [
 0.8128,
@@ -25223,21 +25211,21 @@
 ],
 "geometry/CMW124AAAA/layer:gwb-a": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW124AAAA/layer:gwb-b": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW124AAAA/layer:stud": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW124AAAA::framing/member:cripple-head-0-01": [
 2.2098,
@@ -25355,21 +25343,21 @@
 ],
 "geometry/CMW125AAAA/layer:gwb-a": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW125AAAA/layer:gwb-b": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW125AAAA/layer:stud": [
 0.0,
-3.048,
+2.7432,
 2,
-"9a0d3922458b"
+"08fa410dc44f"
 ],
 "geometry/CMW125AAAA::framing/member:plate-bottom": [
 0.0,
@@ -26296,10 +26284,10 @@
 "998358de4011"
 ],
 "geometry/CMW135AAAA/layer:gwb-int": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 8,
-"998358de4011"
+"d71f7dc829d2"
 ],
 "geometry/CMW135AAAA/layer:outer-girt": [
 -0.3413125,
@@ -26308,10 +26296,10 @@
 "998358de4011"
 ],
 "geometry/CMW135AAAA/layer:paint": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 8,
-"998358de4011"
+"d71f7dc829d2"
 ],
 "geometry/CMW135AAAA/layer:sheathing": [
 -0.3413125,
@@ -26650,10 +26638,10 @@
 "b19a2b3e7cda"
 ],
 "geometry/CMW136AAAA/layer:gwb-int": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 2,
-"b19a2b3e7cda"
+"08fa410dc44f"
 ],
 "geometry/CMW136AAAA/layer:outer-girt": [
 -0.3413125,
@@ -26662,10 +26650,10 @@
 "b19a2b3e7cda"
 ],
 "geometry/CMW136AAAA/layer:paint": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 2,
-"b19a2b3e7cda"
+"08fa410dc44f"
 ],
 "geometry/CMW136AAAA/layer:sheathing": [
 -0.3413125,
@@ -26861,21 +26849,21 @@
 ],
 "geometry/CMW137AAAA/layer:gwb-a": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW137AAAA/layer:gwb-b": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW137AAAA/layer:stud": [
 0.0,
-3.048,
+2.7432,
 6,
-"cc57b719b1e7"
+"c3d978f4eede"
 ],
 "geometry/CMW137AAAA::framing/member:cripple-head-0-01": [
 2.21615,
@@ -29249,15 +29237,15 @@
 ],
 "geometry/CSW101AAAA/layer:humid-membrane": [
 3.048,
-6.096,
+5.7912,
 26,
-"833b4153731e"
+"9ba258e6692c"
 ],
 "geometry/CSW101AAAA/layer:liner-furring": [
 3.048,
-6.096,
+5.7912,
 26,
-"833b4153731e"
+"9ba258e6692c"
 ],
 "geometry/CSW101AAAA/layer:outer-girt": [
 3.048,
@@ -29267,9 +29255,9 @@
 ],
 "geometry/CSW101AAAA/layer:pvc-panel": [
 3.048,
-6.096,
+5.7912,
 26,
-"833b4153731e"
+"9ba258e6692c"
 ],
 "geometry/CSW101AAAA/layer:sheathing": [
 3.048,
@@ -30040,16 +30028,10 @@
 "8673a785de16"
 ],
 "geometry/CSW101AAAA::framing/member:strapping-liner-furring-016": [
-5.8928,
-5.9817,
+5.7023,
+5.7912,
 8,
-"304350b4c864"
-],
-"geometry/CSW101AAAA::framing/member:strapping-liner-furring-017": [
-6.0071,
-6.096,
-8,
-"782709d022ec"
+"4cdc2cd28864"
 ],
 "geometry/CSW101AAAA::framing/member:strapping-outer-girt-000": [
 3.048,
@@ -30185,9 +30167,9 @@
 ],
 "geometry/CSW102AAAA/layer:gwb-int": [
 3.048,
-6.096,
+5.7912,
 18,
-"934461f1ba94"
+"b6fe75746868"
 ],
 "geometry/CSW102AAAA/layer:outer-girt": [
 3.048,
@@ -30197,9 +30179,9 @@
 ],
 "geometry/CSW102AAAA/layer:paint": [
 3.048,
-6.096,
+5.7912,
 18,
-"934461f1ba94"
+"b6fe75746868"
 ],
 "geometry/CSW102AAAA/layer:sheathing": [
 3.048,
@@ -31037,9 +31019,9 @@
 ],
 "geometry/CSW102BAAA/layer:gwb-int": [
 3.048,
-6.11505,
+5.7912,
 8,
-"45f53c9f49e5"
+"0568ed4a1003"
 ],
 "geometry/CSW102BAAA/layer:outer-girt": [
 3.048,
@@ -31049,9 +31031,9 @@
 ],
 "geometry/CSW102BAAA/layer:paint": [
 3.048,
-6.11505,
+5.7912,
 8,
-"45f53c9f49e5"
+"0568ed4a1003"
 ],
 "geometry/CSW102BAAA/layer:sheathing": [
 3.048,
@@ -31451,9 +31433,9 @@
 ],
 "geometry/CSW103AAAA/layer:gwb-int": [
 3.048,
-6.11505,
+5.7912,
 8,
-"45f53c9f49e5"
+"0568ed4a1003"
 ],
 "geometry/CSW103AAAA/layer:outer-girt": [
 3.048,
@@ -31463,9 +31445,9 @@
 ],
 "geometry/CSW103AAAA/layer:paint": [
 3.048,
-6.11505,
+5.7912,
 8,
-"45f53c9f49e5"
+"0568ed4a1003"
 ],
 "geometry/CSW103AAAA/layer:sheathing": [
 3.048,
@@ -31889,9 +31871,9 @@
 ],
 "geometry/CSW104AAAA/layer:gwb-int": [
 3.048,
-6.11505,
+5.7912,
 8,
-"45f53c9f49e5"
+"0568ed4a1003"
 ],
 "geometry/CSW104AAAA/layer:outer-girt": [
 3.048,
@@ -31901,9 +31883,9 @@
 ],
 "geometry/CSW104AAAA/layer:paint": [
 3.048,
-6.11505,
+5.7912,
 8,
-"45f53c9f49e5"
+"0568ed4a1003"
 ],
 "geometry/CSW104AAAA/layer:sheathing": [
 3.048,
@@ -32315,9 +32297,9 @@
 ],
 "geometry/CSW105AAAA/layer:gwb-int": [
 3.048,
-6.11505,
+5.7912,
 8,
-"b6f447ccd1ba"
+"52fdb65fa6a9"
 ],
 "geometry/CSW105AAAA/layer:outer-girt": [
 3.048,
@@ -32327,9 +32309,9 @@
 ],
 "geometry/CSW105AAAA/layer:paint": [
 3.048,
-6.11505,
+5.7912,
 8,
-"b6f447ccd1ba"
+"52fdb65fa6a9"
 ],
 "geometry/CSW105AAAA/layer:sheathing": [
 3.048,
@@ -32699,9 +32681,9 @@
 ],
 "geometry/CSW107AAAA/layer:gwb-int": [
 3.048,
-6.096,
+5.7912,
 14,
-"3017f0b9aece"
+"644aa8633c78"
 ],
 "geometry/CSW107AAAA/layer:outer-girt": [
 3.048,
@@ -32711,9 +32693,9 @@
 ],
 "geometry/CSW107AAAA/layer:paint": [
 3.048,
-6.096,
+5.7912,
 14,
-"3017f0b9aece"
+"644aa8633c78"
 ],
 "geometry/CSW107AAAA/layer:sheathing": [
 3.048,
@@ -33353,9 +33335,9 @@
 ],
 "geometry/CSW108AAAA/layer:gwb-int": [
 3.048,
-6.096,
+5.7912,
 8,
-"5bb6b7155ea5"
+"508292af39e5"
 ],
 "geometry/CSW108AAAA/layer:outer-girt": [
 3.048,
@@ -33365,9 +33347,9 @@
 ],
 "geometry/CSW108AAAA/layer:paint": [
 3.048,
-6.096,
+5.7912,
 8,
-"5bb6b7155ea5"
+"508292af39e5"
 ],
 "geometry/CSW108AAAA/layer:sheathing": [
 3.048,
@@ -33737,9 +33719,9 @@
 ],
 "geometry/CSW109AAAA/layer:gwb-int": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW109AAAA/layer:outer-girt": [
 3.048,
@@ -33749,9 +33731,9 @@
 ],
 "geometry/CSW109AAAA/layer:paint": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW109AAAA/layer:sheathing": [
 3.048,
@@ -33965,9 +33947,9 @@
 ],
 "geometry/CSW110AAAA/layer:gwb-int": [
 3.048,
-6.11505,
+5.7912,
 8,
-"2c8f28c5aaa5"
+"c557e63a062b"
 ],
 "geometry/CSW110AAAA/layer:outer-girt": [
 3.048,
@@ -33977,9 +33959,9 @@
 ],
 "geometry/CSW110AAAA/layer:paint": [
 3.048,
-6.11505,
+5.7912,
 8,
-"2c8f28c5aaa5"
+"c557e63a062b"
 ],
 "geometry/CSW110AAAA/layer:sheathing": [
 3.048,
@@ -34349,9 +34331,9 @@
 ],
 "geometry/CSW111AAAA/layer:gwb-int": [
 3.048,
-6.11505,
+5.7912,
 8,
-"2c8f28c5aaa5"
+"c557e63a062b"
 ],
 "geometry/CSW111AAAA/layer:outer-girt": [
 3.048,
@@ -34361,9 +34343,9 @@
 ],
 "geometry/CSW111AAAA/layer:paint": [
 3.048,
-6.11505,
+5.7912,
 8,
-"2c8f28c5aaa5"
+"c557e63a062b"
 ],
 "geometry/CSW111AAAA/layer:sheathing": [
 3.048,
@@ -34625,9 +34607,9 @@
 ],
 "geometry/CSW112AAAA/layer:gwb-int": [
 3.048,
-6.11505,
+5.7912,
 14,
-"9bd37817d6dd"
+"ef86403d62f7"
 ],
 "geometry/CSW112AAAA/layer:outer-girt": [
 3.048,
@@ -34637,9 +34619,9 @@
 ],
 "geometry/CSW112AAAA/layer:paint": [
 3.048,
-6.11505,
+5.7912,
 14,
-"9bd37817d6dd"
+"ef86403d62f7"
 ],
 "geometry/CSW112AAAA/layer:sheathing": [
 3.048,
@@ -35207,15 +35189,15 @@
 ],
 "geometry/CSW113AAAA/layer:humid-membrane": [
 3.048,
-6.11505,
+5.7912,
 8,
-"7c165fff451d"
+"72fe8d90329c"
 ],
 "geometry/CSW113AAAA/layer:liner-furring": [
 3.048,
-6.11505,
+5.7912,
 8,
-"7c165fff451d"
+"72fe8d90329c"
 ],
 "geometry/CSW113AAAA/layer:outer-girt": [
 3.048,
@@ -35225,9 +35207,9 @@
 ],
 "geometry/CSW113AAAA/layer:pvc-panel": [
 3.048,
-6.11505,
+5.7912,
 8,
-"7c165fff451d"
+"72fe8d90329c"
 ],
 "geometry/CSW113AAAA/layer:sheathing": [
 3.048,
@@ -35602,16 +35584,10 @@
 "8673a785de16"
 ],
 "geometry/CSW113AAAA::framing/member:strapping-liner-furring-009": [
-5.8928,
-5.9817,
+5.7023,
+5.7912,
 8,
-"304350b4c864"
-],
-"geometry/CSW113AAAA::framing/member:strapping-liner-furring-010": [
-6.02615,
-6.11505,
-8,
-"8669e34b3b2a"
+"4cdc2cd28864"
 ],
 "geometry/CSW113AAAA::framing/member:strapping-outer-girt-000": [
 3.048,
@@ -35687,39 +35663,39 @@
 ],
 "geometry/CSW114AAAA/layer:gwb-b": [
 3.048,
-6.096,
+5.7912,
 6,
-"3de6516c3dfc"
+"fa155017d4b3"
 ],
 "geometry/CSW114AAAA/layer:humid-membrane": [
 3.048,
-6.096,
+5.7912,
 6,
-"3de6516c3dfc"
+"fa155017d4b3"
 ],
 "geometry/CSW114AAAA/layer:liner-furring": [
 3.048,
-6.096,
+5.7912,
 6,
-"3de6516c3dfc"
+"fa155017d4b3"
 ],
 "geometry/CSW114AAAA/layer:paint-b": [
 3.048,
-6.096,
+5.7912,
 6,
-"3de6516c3dfc"
+"fa155017d4b3"
 ],
 "geometry/CSW114AAAA/layer:pvc-panel": [
 3.048,
-6.096,
+5.7912,
 6,
-"3de6516c3dfc"
+"fa155017d4b3"
 ],
 "geometry/CSW114AAAA/layer:stud": [
 3.048,
-6.096,
+5.7912,
 6,
-"3de6516c3dfc"
+"fa155017d4b3"
 ],
 "geometry/CSW114AAAA::framing/member:cripple-head-0-01": [
 5.26415,
@@ -35848,16 +35824,10 @@
 "8673a785de16"
 ],
 "geometry/CSW114AAAA::framing/member:strapping-liner-furring-012": [
-5.8928,
-5.9817,
+5.7023,
+5.7912,
 8,
-"304350b4c864"
-],
-"geometry/CSW114AAAA::framing/member:strapping-liner-furring-013": [
-6.0071,
-6.096,
-8,
-"782709d022ec"
+"4cdc2cd28864"
 ],
 "geometry/CSW114AAAA::framing/member:stud-000": [
 3.0861,
@@ -35885,33 +35855,33 @@
 ],
 "geometry/CSW115AAAA/layer:gwb-a": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW115AAAA/layer:gwb-b": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW115AAAA/layer:paint-a": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW115AAAA/layer:paint-b": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW115AAAA/layer:stud": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW115AAAA::framing/member:plate-bottom": [
 3.048,
@@ -36299,21 +36269,21 @@
 ],
 "geometry/CSW120AAAA/layer:gwb-a": [
 3.048,
-6.096,
+5.7912,
 6,
-"3de6516c3dfc"
+"fa155017d4b3"
 ],
 "geometry/CSW120AAAA/layer:gwb-b": [
 3.048,
-6.096,
+5.7912,
 6,
-"3de6516c3dfc"
+"fa155017d4b3"
 ],
 "geometry/CSW120AAAA/layer:stud": [
 3.048,
-6.096,
+5.7912,
 6,
-"3de6516c3dfc"
+"fa155017d4b3"
 ],
 "geometry/CSW120AAAA::framing/member:cripple-head-0-01": [
 5.26415,
@@ -36407,27 +36377,27 @@
 ],
 "geometry/CSW121AAAA/layer:gwb-direct": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW121AAAA/layer:gwb-resilient": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW121AAAA/layer:resilient-channel": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW121AAAA/layer:stud": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW121AAAA::framing/member:plate-bottom": [
 3.048,
@@ -36478,10 +36448,10 @@
 "1cf39f8f20c2"
 ],
 "geometry/CSW121AAAA::framing/member:strapping-resilient-channel-005": [
-6.0325,
-6.096,
+5.7277,
+5.7912,
 8,
-"dd4520f6714d"
+"d7abe06b4c2b"
 ],
 "geometry/CSW121AAAA::framing/member:stud-000": [
 3.0861,
@@ -37733,33 +37703,33 @@
 ],
 "geometry/CSW134AAAA/layer:gwb-a": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW134AAAA/layer:gwb-b": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW134AAAA/layer:paint-a": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW134AAAA/layer:paint-b": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW134AAAA/layer:stud": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW134AAAA::framing/member:backing-0-000": [
 3.8608,
@@ -37823,9 +37793,9 @@
 ],
 "geometry/CSW135AAAA/layer:gwb-int": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW135AAAA/layer:outer-girt": [
 3.048,
@@ -37835,9 +37805,9 @@
 ],
 "geometry/CSW135AAAA/layer:paint": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW135AAAA/layer:sheathing": [
 3.048,
@@ -38039,39 +38009,39 @@
 ],
 "geometry/CSW138AAAA/layer:gwb-a": [
 3.048,
-6.096,
+5.7912,
 6,
-"3de6516c3dfc"
+"fa155017d4b3"
 ],
 "geometry/CSW138AAAA/layer:gwb-b": [
 3.048,
-6.096,
+5.7912,
 6,
-"3de6516c3dfc"
+"fa155017d4b3"
 ],
 "geometry/CSW138AAAA/layer:paint-a": [
 3.048,
-6.096,
+5.7912,
 6,
-"3de6516c3dfc"
+"fa155017d4b3"
 ],
 "geometry/CSW138AAAA/layer:paint-b": [
 3.048,
-6.096,
+5.7912,
 6,
-"3de6516c3dfc"
+"fa155017d4b3"
 ],
 "geometry/CSW138AAAA/layer:resilient-channel": [
 3.048,
-6.096,
+5.7912,
 6,
-"3de6516c3dfc"
+"fa155017d4b3"
 ],
 "geometry/CSW138AAAA/layer:stud": [
 3.048,
-6.096,
+5.7912,
 6,
-"3de6516c3dfc"
+"fa155017d4b3"
 ],
 "geometry/CSW138AAAA::framing/member:cripple-head-0-01": [
 5.26415,
@@ -38182,10 +38152,10 @@
 "1cf39f8f20c2"
 ],
 "geometry/CSW138AAAA::framing/member:strapping-resilient-channel-009": [
-6.0325,
-6.096,
+5.7277,
+5.7912,
 8,
-"dd4520f6714d"
+"d7abe06b4c2b"
 ],
 "geometry/CSW138AAAA::framing/member:tee-N-S-C2B-block-00": [
 3.6957,
@@ -38213,33 +38183,33 @@
 ],
 "geometry/CSW139AAAA/layer:gwb-a": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW139AAAA/layer:gwb-b": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW139AAAA/layer:paint-a": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW139AAAA/layer:paint-b": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW139AAAA/layer:stud": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW139AAAA::framing/member:corner-end": [
 3.0861,
@@ -38303,33 +38273,33 @@
 ],
 "geometry/CSW140AAAA/layer:gwb-a": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW140AAAA/layer:gwb-b": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW140AAAA/layer:paint-a": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW140AAAA/layer:paint-b": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW140AAAA/layer:stud": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW140AAAA::framing/member:corner-start": [
 3.0861,
@@ -38471,33 +38441,33 @@
 ],
 "geometry/CSW142AAAA/layer:gwb-a": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW142AAAA/layer:gwb-b": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW142AAAA/layer:paint-a": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW142AAAA/layer:paint-b": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW142AAAA/layer:staggered-studs": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW142AAAA::framing/member:backing-0-000": [
 3.8608,
@@ -38879,21 +38849,21 @@
 ],
 "geometry/CSW145AAAA/layer:gwb-a": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW145AAAA/layer:gwb-b": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW145AAAA/layer:staggered-studs": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW145AAAA::framing/member:plate-bottom": [
 3.048,
@@ -38993,21 +38963,21 @@
 ],
 "geometry/CSW146AAAA/layer:gwb-a": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW146AAAA/layer:gwb-b": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW146AAAA/layer:staggered-studs": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW146AAAA::framing/member:plate-bottom": [
 3.048,
@@ -39095,33 +39065,33 @@
 ],
 "geometry/CSW147AAAA/layer:gwb-a": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW147AAAA/layer:gwb-b": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW147AAAA/layer:paint-a": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW147AAAA/layer:paint-b": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW147AAAA/layer:staggered-studs": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW147AAAA::framing/member:backing-0-000": [
 3.1496,
@@ -39449,33 +39419,33 @@
 ],
 "geometry/CSW150AAAA/layer:gwb-a": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW150AAAA/layer:gwb-b": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW150AAAA/layer:paint-a": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW150AAAA/layer:paint-b": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW150AAAA/layer:stud": [
 3.048,
-6.096,
+5.7912,
 2,
-"9eb90b542987"
+"7981cbeae3a4"
 ],
 "geometry/CSW150AAAA::framing/member:backing-0-000": [
 3.8608,
@@ -39689,9 +39659,9 @@
 ],
 "geometry/CSW153AAAA/layer:gwb-int": [
 3.048,
-6.096,
+5.7912,
 8,
-"bcba3115fbbe"
+"c7e964e126c3"
 ],
 "geometry/CSW153AAAA/layer:outer-girt": [
 3.048,
@@ -39701,9 +39671,9 @@
 ],
 "geometry/CSW153AAAA/layer:paint": [
 3.048,
-6.096,
+5.7912,
 8,
-"bcba3115fbbe"
+"c7e964e126c3"
 ],
 "geometry/CSW153AAAA/layer:sheathing": [
 3.048,
@@ -39965,9 +39935,9 @@
 ],
 "geometry/CSW154AAAA/layer:gwb-int": [
 3.048,
-6.11505,
+5.7912,
 2,
-"ddabe9bfd693"
+"7981cbeae3a4"
 ],
 "geometry/CSW154AAAA/layer:outer-girt": [
 3.048,
@@ -39977,9 +39947,9 @@
 ],
 "geometry/CSW154AAAA/layer:paint": [
 3.048,
-6.11505,
+5.7912,
 2,
-"ddabe9bfd693"
+"7981cbeae3a4"
 ],
 "geometry/CSW154AAAA/layer:sheathing": [
 3.048,
@@ -41123,33 +41093,33 @@
 ],
 "geometry/NJ21M7MF6R/layer:gwb-a": [
 -2.7797125,
-0.0,
+-0.3413125,
 6,
-"0184a1f451af"
+"9bbec3881b04"
 ],
 "geometry/NJ21M7MF6R/layer:gwb-b": [
 -2.7797125,
-0.0,
+-0.3413125,
 6,
-"0184a1f451af"
+"9bbec3881b04"
 ],
 "geometry/NJ21M7MF6R/layer:paint-a": [
 -2.7797125,
-0.0,
+-0.3413125,
 6,
-"0184a1f451af"
+"9bbec3881b04"
 ],
 "geometry/NJ21M7MF6R/layer:paint-b": [
 -2.7797125,
-0.0,
+-0.3413125,
 6,
-"0184a1f451af"
+"9bbec3881b04"
 ],
 "geometry/NJ21M7MF6R/layer:stud": [
 -2.7797125,
-0.0,
+-0.3413125,
 6,
-"0184a1f451af"
+"9bbec3881b04"
 ],
 "geometry/NJ21M7MF6R::framing/member:cripple-head-0-01": [
 -0.5635625,
@@ -41440,10 +41410,10 @@
 "b19a2b3e7cda"
 ],
 "geometry/R0STSQM95Y/layer:gwb-int": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 2,
-"b19a2b3e7cda"
+"08fa410dc44f"
 ],
 "geometry/R0STSQM95Y/layer:outer-girt": [
 -0.3413125,
@@ -41452,10 +41422,10 @@
 "b19a2b3e7cda"
 ],
 "geometry/R0STSQM95Y/layer:paint": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 2,
-"b19a2b3e7cda"
+"08fa410dc44f"
 ],
 "geometry/R0STSQM95Y/layer:sheathing": [
 -0.3413125,
@@ -46324,10 +46294,10 @@
 "b19a2b3e7cda"
 ],
 "geometry/WM8EB2TX38/layer:gwb-int": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 2,
-"b19a2b3e7cda"
+"08fa410dc44f"
 ],
 "geometry/WM8EB2TX38/layer:outer-girt": [
 -0.3413125,
@@ -46336,10 +46306,10 @@
 "b19a2b3e7cda"
 ],
 "geometry/WM8EB2TX38/layer:paint": [
--0.3413125,
-3.048,
+0.0,
+2.7432,
 2,
-"b19a2b3e7cda"
+"08fa410dc44f"
 ],
 "geometry/WM8EB2TX38/layer:sheathing": [
 -0.3413125,
@@ -46817,9 +46787,9 @@
 ],
 "geometry/Z4NRTGEDY5/layer:gwb-a": [
 -2.5955625,
-0.0,
+-0.3413125,
 6,
-"55bbdaf3aeb8"
+"9b3cb344f0f5"
 ],
 "geometry/Z4NRTGEDY5/layer:sheathing": [
 -2.5955625,
@@ -48170,16 +48140,10 @@
 "0b409e0503d6"
 ],
 "member/3BF9ZDQPT1/strapping-liner-furring-006": [
--0.5635625,
--0.4746625,
+-0.5826125,
+-0.4937125,
 2,
-"127a6891fe50"
-],
-"member/3BF9ZDQPT1/strapping-liner-furring-007": [
--0.0889,
-0.0,
-2,
-"f31f36c7a90b"
+"9b2174df1610"
 ],
 "member/3BF9ZDQPT1/stud-000": [
 -2.5574625,
@@ -53510,16 +53474,10 @@
 "f1802f93049b"
 ],
 "member/CBW111AAAA/strapping-liner-furring-011": [
--0.3413125,
--0.2524125,
+-0.5826125,
+-0.4937125,
 2,
-"2f380ec71a0b"
-],
-"member/CBW111AAAA/strapping-liner-furring-012": [
--0.0889,
-0.0,
-2,
-"f31f36c7a90b"
+"9b2174df1610"
 ],
 "member/CBW111AAAA/stud-000": [
 -2.7416125,
@@ -61910,10 +61868,10 @@
 "177e97f7729e"
 ],
 "member/CMW112AAAA/strapping-resilient-channel-009": [
-2.9845,
-3.048,
+2.6797,
+2.7432,
 2,
-"419123763cb8"
+"8ae5be150979"
 ],
 "member/CMW112AAAA/stud-000": [
 0.0381,
@@ -66572,16 +66530,10 @@
 "37ccea8542e9"
 ],
 "member/CSW101AAAA/strapping-liner-furring-016": [
-5.8928,
-5.9817,
+5.7023,
+5.7912,
 2,
-"ef3f89ecf35d"
-],
-"member/CSW101AAAA/strapping-liner-furring-017": [
-6.0071,
-6.096,
-2,
-"706fadad059f"
+"aa78bda7154d"
 ],
 "member/CSW101AAAA/strapping-outer-girt-000": [
 3.048,
@@ -71792,16 +71744,10 @@
 "37ccea8542e9"
 ],
 "member/CSW113AAAA/strapping-liner-furring-009": [
-5.8928,
-5.9817,
+5.7023,
+5.7912,
 2,
-"ef3f89ecf35d"
-],
-"member/CSW113AAAA/strapping-liner-furring-010": [
-6.02615,
-6.11505,
-2,
-"1e6871fbce74"
+"aa78bda7154d"
 ],
 "member/CSW113AAAA/strapping-outer-girt-000": [
 3.048,
@@ -72002,16 +71948,10 @@
 "37ccea8542e9"
 ],
 "member/CSW114AAAA/strapping-liner-furring-012": [
-5.8928,
-5.9817,
+5.7023,
+5.7912,
 2,
-"ef3f89ecf35d"
-],
-"member/CSW114AAAA/strapping-liner-furring-013": [
-6.0071,
-6.096,
-2,
-"706fadad059f"
+"aa78bda7154d"
 ],
 "member/CSW114AAAA/stud-000": [
 3.0861,
@@ -72488,10 +72428,10 @@
 "2c81a509fee2"
 ],
 "member/CSW121AAAA/strapping-resilient-channel-005": [
-6.0325,
-6.096,
+5.7277,
+5.7912,
 2,
-"2f1ce0ed6afe"
+"8778c0409a24"
 ],
 "member/CSW121AAAA/stud-000": [
 3.0861,
@@ -73916,10 +73856,10 @@
 "2c81a509fee2"
 ],
 "member/CSW138AAAA/strapping-resilient-channel-009": [
-6.0325,
-6.096,
+5.7277,
+5.7912,
 2,
-"2f1ce0ed6afe"
+"8778c0409a24"
 ],
 "member/CSW138AAAA/tee-N-S-C2B-block-00": [
 3.6957,

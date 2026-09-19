@@ -204,3 +204,39 @@ def test_the_bands_still_bill_what_they_billed(bands):
     tile = sum(b.area_m2 for b in bands if b.tag == "WP-B-SAUNA-SPLASH") * _M2_TO_FT2
     assert walnut == pytest.approx(46.0, abs=0.5)
     assert tile == pytest.approx(45.0, abs=0.5)
+
+
+# --- a band stops at the ceiling, not at the platform lift --------------------------------
+
+
+def test_a_full_height_band_on_a_lifted_wall_stops_at_the_top_plate(catlin_plan):
+    """``height=None`` means "run it to the wall's top", and since ``resolve/platform.py``
+    grows a stacked wall floor-to-floor that top is the underside of the floor ABOVE.
+
+    Panelling is a finish: it stops where the ceiling does. ``RM-M-BATH1`` is bounded by
+    four walls, every one of them lifted, so a band with no height authored has to come back
+    at the plate on all four or the order buys a joist depth of wainscot per wall.
+
+    Authored here rather than in the house because catlin's own five bands all name a
+    ``height`` — the case is real but unexercised, and inventing a sixth band in the house
+    to test the engine would be the wrong place to put it.
+    """
+    from typehaus.model.paneling import WallPaneling
+    from typehaus.resolve import resolve
+
+    room = "RM-M-BATH1"
+    band = WallPaneling(uid="PNTRIMTEST", tag="PN-TEST-FULLHEIGHT", room=room,
+                        material_ref="latex-paint")
+    model, _findings = resolve(catlin_plan.with_elements(
+        "main", (*catlin_plan.storey_elements("main"), band)))
+
+    records = [p for p in model.panelings if p.tag == "PN-TEST-FULLHEIGHT"]
+    assert len(records) == 4, [p.wall_tag for p in records]
+    for record in records:
+        wall = model.wall(record.wall_tag)
+        assert wall.plate_top_z_m is not None, f"{wall.tag} is no longer lifted"
+        assert record.band_z1_m == pytest.approx(
+            wall.plate_top_z_m - wall.base_ref_z_m, abs=1e-9), wall.tag
+        # And it really is shorter than the wall — otherwise the assertion above is
+        # satisfied by a plate that happens to be the wall top.
+        assert wall.plate_top_z_m < wall.z1_m - _IN
