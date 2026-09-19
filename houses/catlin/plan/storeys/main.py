@@ -1020,8 +1020,10 @@ WALLS = [
     # visible coursing gets to start clean off the floor line.
     #
     # The brick rises 14 3/8" through FS-M-EAST's joist zone —
-    # FO-M-FIRE below is that hole — and nothing shows in RM-B-GYM, whose ceiling is under
-    # the joists. **Result: zero brick load on the floor**, which is why
+    # FO-M-FIRE below is that hole. 15/16" of it stands BELOW RM-B-GYM's ceiling plane
+    # (-12 1/2" = the -11 7/8" joist soffit plus 5/8" of board), so a square of brick does
+    # show in the gym — ERRATUM 2026-09-19, this line used to say nothing showed.
+    # **Result: zero brick load on the floor**, which is why
     # preferences.toml's 50 plf wood-borne masonry limit does not arise here; a floor-borne
     # full-brick surround this size would have run 193-236 plf, 3.9-4.7x over it.
     # notes/east_breast_bearing.md works the a/L arithmetic and names the I-joist reference.
@@ -1893,7 +1895,11 @@ FLOOR_OPENINGS = [
     # reason the joists are in the way: their ENDS bear on the mudsill at x 426"..431 1/2",
     # and inboard of 426" they are in span. The brick face at x=34'-11 7/8" cuts them short of
     # that bearing, so over this 45 1/2" of y no joist can reach it and the whole strip from
-    # the brick face to the wall line is joist-free. Three or four joists are cut and headed.
+    # the brick face to the wall line is joist-free. ** TWO joists are cut and headed **
+    # (ERRATUM 2026-09-19, was "three or four"): joist-0-006 at y=96" and joist-0-007 at
+    # y=112", both stopping at x=418 1/8". The lines at y=80" and y=128" are not cut — they
+    # land on the opening's own edges and are REPLACED BY the doubled trimmer plies, which
+    # run the full 17'-11" bearing to bearing.
     #
     # ** THE OPENING IS 47 3/4" (2026-09-06, was 4'-1"). ** 44 1/4" of stub, plus 1/2" of
     # mason's clearance and one trimmer ply at each end. Deliberately NOT 48.0": the engine
@@ -1961,17 +1967,26 @@ FLOOR_OPENINGS = [
     # `bearing_refs=("W-B-E1",)` is the EAST edge and it is true: it stands over W-B-E1's 12"
     # pour (x 420"..432", y 0..18'-0"), so `_opening_edge_has_declared_bearing` finds the whole
     # edge carried and no second header is emitted there. The other three edges are framing —
-    # one header on the west and a DOUBLED trimmer north and south — and
-    # `structural.floor_opening_header` is content with them at this size.
+    # one header on the west and a DOUBLED trimmer north and south.
+    # ** `structural.floor_opening_header` SAYS NOTHING ABOUT THEM ** (ERRATUM 2026-09-19,
+    # was "is content with them at this size"): that check appends a finding only PAST its
+    # 8'-0" prescriptive span, so at 47 3/4" it never emits — not a PASS, nothing. No finding
+    # with that check id appears anywhere in this house's --no-suppress report.
     #
     # ** ALL OF THIS IS CHEAP ONLY WHILE THE BASEMENT CEILING IS OPEN **, the same warning
-    # params/main_deck.py already carries about work in this bay — and the ceiling is not a
-    # figure of speech here: `FS-M-EAST.ceiling_below` is RM-B-GYM's 5/8" gypsum, and this
-    # opening CUTS IT. No brick shows in the gym (the wythe is entirely inside the floor
-    # depth, and the ceiling plane is below the joists), but the board has to be closed back
-    # around the 3 5/8" wythe. The three BASEMENT_12/EXT_2X6 section goldens
-    # were re-blessed on 2026-09-06 for exactly that: the gym's ceiling boundary now stops at
-    # the header.
+    # params/main_deck.py already carries about work in this bay.
+    #
+    # ** ERRATUM (2026-09-19): THE CEILING PARAGRAPH HERE WAS WRONG BOTH WAYS. ** It said the
+    # opening CUTS RM-B-GYM's 5/8" gypsum and that no brick shows in the gym. Neither holds:
+    #   * `resolve/ceiling_over.deck_void_face` reads a chase that is mostly FILLED at the
+    #     ceiling plane as no void at all — this one is ~67% brick — and measured against the
+    #     current model it returns None for FS-M-EAST. The gym's 234 SF and 90 SF planes are
+    #     identical with and without this opening. What the opening cuts is the SUBFLOOR;
+    #     that is the deduction takeoff/framing.py makes, and what the three
+    #     BASEMENT_12/EXT_2X6 section goldens re-blessed on 2026-09-06 actually recorded.
+    #   * Brick DOES show below. The stub runs to -13 7/16", the joist soffit is at -11 7/8"
+    #     and the board hangs 5/8" under it, so the ceiling plane is -12 1/2" and 15/16" of
+    #     brick stands below it in the gym's corner.
     FloorOpening(uid="93FDVPTK2R", tag="FO-M-FIRE", purpose=FloorOpeningPurpose.CHASE,
                  outline=(pt(ft(34, 10.125), ft(6, 8.125)),
                           pt(ft(35, 10.75), ft(6, 8.125)),

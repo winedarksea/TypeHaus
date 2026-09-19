@@ -113,7 +113,11 @@ Either way it fails by a wide margin, which is exactly why the brick starts on t
 The joists' **ends** bear on the mudsill at x 426"–431 1/2"; inboard of 426" they are in
 span. The brick face at x = 419.875" cuts them short of that bearing, so over the panel's
 45 1/2" of y **no joist can reach its east support** and the strip from the brick face to the
-rim is joist-free. Three or four joists are cut and headed. `FO-M-FIRE` is that hole:
+rim is joist-free. **Two** joists are cut and headed — `joist-0-006` at y = 96" and
+`joist-0-007` at y = 112", both stopping at x = 418 1/8" (ERRATUM 2026-09-19: this said
+"three or four"). The lines at y = 80" and y = 128" are not cut at all: they fall on the
+opening's own edges and are *replaced by* the doubled trimmer plies, which run the full
+17'-11" from bearing to bearing. `FO-M-FIRE` is that hole:
 
 | edge | x or y | what carries it |
 |---|---|---|
@@ -159,14 +163,24 @@ manufacturer's book, and it should be named in the drawing note.
 between mason and framer are all cheap **only while the basement ceiling is open**, exactly
 as `params/main_deck.py` already says of other work in this bay.
 
-**Below, in `RM-B-GYM`, no brick shows** — the wythe is entirely inside the floor depth and
-the gym's ceiling plane is under the joists — **but the ceiling is not untouched.**
-`FS-M-EAST.ceiling_below` is 5/8" gypsum and this opening cuts it: the model draws the gym's
-ceiling boundary stopping at the header, and three section goldens
-(`detail_stack_width_change`, `detail_storey_stack-rim`, `detail_wall_foundation`, all
-`BASEMENT_12`/`EXT_2X6`) were re-blessed on 2026-09-06 to record it. What is
-built is the board closed back around the 3 5/8" wythe, which is trim work in a finished
-room if it is left until after the mason.
+**ERRATUM (2026-09-19).** This section said *"below, in `RM-B-GYM`, no brick shows"* and
+*"this opening cuts [the gym's gypsum]"*. Both are wrong, and in opposite directions.
+
+- **Brick does show below.** The stub runs to −13 7/16"; the joist soffit is at −11 7/8" and
+  `FS-M-EAST.ceiling_below` hangs 5/8" under it, so the ceiling plane is **−12 1/2"** and
+  **15/16" of brick stands below it**, in the gym's corner. A square of brick, not nothing.
+- **The opening does not cut the gypsum.** `resolve/ceiling_over.deck_void_face` reads a
+  chase that is mostly *filled* at the ceiling plane as no void at all — `FO-M-FIRE` is ~67%
+  brick — and measured against the current model it returns `None` for this deck. `RM-B-GYM`'s
+  two planes (234 SF at −11 7/8", 90 SF at −13 7/16") are identical with and without the
+  opening. What the opening cuts is the **subfloor**: `takeoff/framing.py` deducts an opening
+  from the sheet above, and the board below asks `deck_void_face` instead. The three section
+  goldens re-blessed on 2026-09-06 (`detail_stack_width_change`, `detail_storey_stack-rim`,
+  `detail_wall_foundation`, all `BASEMENT_12`/`EXT_2X6`) recorded the *subfloor* stopping at
+  the header, not the ceiling.
+
+What is built is the board run through and cut to the 3 5/8" wythe with the residue packed —
+trim work in a finished room if it is left until after the mason.
 
 ### 4.1 The mantel overturns under its own weight unless it is held down
 
@@ -235,9 +249,12 @@ Stated positively, because a clean report here is silence and not a verdict:
 - `building_science.condensation` screens on `any(layer.function == "cladding")`;
   `FIREPLACE_BRICK_WYTHE`'s single layer is STRUCTURE, so it is out of the Glaser scope —
   correctly, since this is an interior panel and not an envelope assembly.
-- `structural.floor_opening_header` **does** grade `FO-M-FIRE`, and passes. It is the only
-  automatic opinion anything in the engine has about this detail, and it is about the floor,
-  not about the brick.
+- `structural.floor_opening_header` **emits nothing here** (ERRATUM 2026-09-19: this said it
+  *"does grade `FO-M-FIRE`, and passes"*, and called it *"the only automatic opinion anything
+  in the engine has about this detail"*). The check appends a finding only past its 8'-0"
+  prescriptive span; a 47 3/4" header never reaches that branch, so it produces no finding at
+  all — not a PASS, not anything. There is no finding carrying this check id anywhere in
+  catlin's `--no-suppress` report. There is therefore no such automatic opinion.
 - `structural.member_interference` also grades it, and **did FAIL four times** while the
   opening ran to the 36'-0" wall line and drove all four trimmers through the rim. That is
   what set the east edge at 35'-10 3/4". It is worth knowing the check caught a real
