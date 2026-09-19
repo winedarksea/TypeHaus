@@ -349,7 +349,21 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
       PR-B-HW-SUITE) and the router proposes for both. Every alternative is still refused:
       their clashes are at the TERMINALS (`DU-M-ERV-R-BED2`, `-LAUNDRY`) where a re-route
       cannot reach, and the lanes that avoid those detour to x=0 — the exterior wall face.
-  - **THE ATTIC ERV RADIALS CANNOT BE RE-LANED BY SEARCH, AND THIS WAS TRIED.** The largest
+  - ~~**THE ATTIC ERV RADIALS CANNOT BE RE-LANED BY SEARCH, AND THIS WAS TRIED.**~~ **DONE
+    2026-09-19 (D2), by hand and as a design, which is what the entry below asked for.** The
+    west chase went from one line carrying five runs to four lanes at 2'-0"/2'-4 1/2"/3'-0"
+    (BATH1 needs none), each radial leaves its own collar on its own east-west line, and the
+    two that cross the wet wall were re-stationed: `DU-A-ERV-R-STUBATH` to y=21'-8 1/2" in
+    W-A-STU-W, between studs and boring nothing, and `DU-A-ERV-R-BED3` into the 18'-0" bay.
+    Fourteen duct-on-duct pairs and four duct-on-pipe pairs went; the house score fell
+    190 -> 175. **Two residues, both by trade order, not by oversight**: three new
+    `CD-A-DATA-NE` pairs where the raceway crosses the widened chase 2" over the lanes
+    (Phase 4's — conduit bends and is laid last), and `DU-A-ERV-R-STUBATH` x
+    `PR-A-STUBATH-VENT`, which has **no duct-side answer at all**: the two vents run
+    W-A-STU-W's axis end to end at 23'-5"..23'-6", the bath's other walls are 2x4s a 4" duct
+    cannot enter, and a 5 1/2" cavity will not pass a 4" duct beside a 2" vent. Phase 3 jogs
+    that vent's north leg off the axis for the 20" it is in this wall, or the grille drops
+    below 3'-6". The original entry, for the record: The largest
     class in the 146 is `DU-A-ERV-R-*`: several 4" radials drawn on ONE line at ONE elevation
     out of the manifold at (5', 34'-6") — e.g. `DU-A-ERV-R-ATTIC` and `DU-A-ERV-R-BATH1` share
     (5',34'-6")->(1',34'-6") at z=20'-4" exactly. A1 is why they report at all: they share a

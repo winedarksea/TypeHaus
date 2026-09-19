@@ -654,14 +654,16 @@ REGISTERS_ATTIC = [
     # x=9'-7 1/2" the 6:12 underside is 4'-11 1/4" above the deck. 4'-4" leaves 7 1/4" of
     # wall over the boot — the highest pickup this room can have.
     Register(uid="N989VQP3T8", tag="REG-A-STUBATH-EXH", kind=DuctSystem.EXHAUST, room="RM-A-STUBATH",
-            # y=19'-4" follows DU-A-ERV-R-STUBATH onto the 232" bay centre so its east leg
-            # could leave the studio floor for the joist bay. x=9'-11 7/8" is W-A-STU-W's
-            # bath-side paint face (9'-10 7/8") plus the ~1" inboard offset every wall device
-            # here carries, NOT the wall AXIS — on the axis the footprint centre sits inside
-            # the wall and outside the room, and `integrity.placeable_room_mismatch` says so.
-            # The riser stays on the axis in the staggered cavity; the offset is the boot
-            # crossing the finish.
-            position=pt(m(3.03309), m(6.58678)), duct_ref="DU-A-ERV-R-STUBATH",
+            # y=21'-8 1/2" is where DU-A-ERV-R-STUBATH can actually stand: the wet wall's
+            # axis carries the suite's two drains south of 21'-4 5/8", and this is the first
+            # stud bay north of them (see plan/mep_erv_l3.py). The grille follows the riser,
+            # not the other way round — on this wall there is one station and the plumbing
+            # picked it. x=9'-11 7/16" is W-A-STU-W's bath-side paint face plus the ~1"
+            # inboard offset every wall device here carries, NOT the wall AXIS — on the axis
+            # the footprint centre sits inside the wall and outside the room, and
+            # `integrity.placeable_room_mismatch` says so. The riser stays on the axis in the
+            # staggered cavity; the offset is the boot crossing the finish.
+            position=pt(m(3.03309), m(6.6167)), duct_ref="DU-A-ERV-R-STUBATH",
             # REG-T-ERV-EXH-WALL, not the ceiling REG-T-ERV-EXH: this is the house's only
             # WALL-mounted extract, and on the ceiling type the resolver read its 7" face as
             # 7" of projection into the room. See plan/mep_hvac.py.

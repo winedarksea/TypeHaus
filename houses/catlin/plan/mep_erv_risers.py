@@ -142,7 +142,18 @@ DUCTS_ERV_RISERS = [
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             insulation="R-8 wrap", design_cfm=210),
     DuctRun(uid="GFTW5CBARX", tag="DU-ERV-RISER-EXH", system=DuctSystem.EXHAUST,
-            path=(pt(ft(5), ft(34, 6)), pt(inch(18.625), ft(34, 6)),
+            # ** IT LEAVES THE PLENUM'S WEST END, NOT ITS CENTRE. ** The leg keeps the
+            # box's own y=34'-6" centre line, and the station it starts from is what moved:
+            # x=4'-2" instead of 5'-0". The four attic radials leave the SOUTH face at
+            # y=34'-2" (D2) on collars from 4'-6" east, and a trunk leg that started at the
+            # box's centre ran west THROUGH all four of their stations 4" away — 1" short of
+            # the 5" a 6" trunk and a 4" radial need between them, and all three radials
+            # that reach a lane reported against it. Starting west of every collar puts the
+            # nearest pair 5.66" apart on the diagonal and crosses none of them.
+            #
+            # The north face was the other candidate and is worse: CD-B-SPARE-CHASE stands
+            # up at (2'-6", 34'-10"), so a leg on y=34'-10" grazes it by a tenth of an inch.
+            path=(pt(ft(4, 2), ft(34, 6)), pt(inch(18.625), ft(34, 6)),
                   pt(inch(18.625), ft(33, 7.5)), pt(inch(18.625), ft(33, 7.5)),
                   pt(inch(18.625), ft(29, 3)), pt(ft(5, 0), ft(29, 3)),
                   pt(ft(5, 10), ft(29, 3)), pt(ft(5, 10), ft(28, 8))),

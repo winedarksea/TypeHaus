@@ -178,7 +178,7 @@ def test_the_governing_side_is_extract_again(catlin_model_ro) -> None:
       0.3061.
 
     The assertion is written this way round because what matters is the LEVER, not the
-    number. With extract in front by 0.0434 in., the two extract levers that were worth
+    number. With extract in front by 0.0409 in., the two extract levers that were worth
     nothing after the second swap — the elbow audit and riser segmentation — are worth
     something again, up to that gap. §6 says so.
     """
@@ -188,17 +188,25 @@ def test_the_governing_side_is_extract_again(catlin_model_ro) -> None:
 
 
 def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> None:
-    """Note §6: 0.3495 in. w.g. and 207.0 cfm, on the EXTRACT side.
+    """Note §6: 0.3470 in. w.g. and 207.1 cfm, on the EXTRACT side.
 
     Hand-worked in the note before this assertion was changed, which is the order that makes
     it an oracle. Extract column, term by term: ``DU-B-ERV-R-SAUNA-EXH`` 0.0135 + terminal
-    6.50/249.089 + plenum 0.50/249.089 + ``DU-ERV-RISER-EXH`` 0.2028 + ``DU-B-ERV-RET-TRUNK``
-    0.0614 + ``DU-ERV-EA`` 0.0437 = **0.3495**. Delivered off the curve between (0.3, 208)
-    and (0.4, 206): 208 - 0.495 x 2 = 207.0.
+    6.50/249.089 + plenum 0.50/249.089 + ``DU-ERV-RISER-EXH`` 0.2003 + ``DU-B-ERV-RET-TRUNK``
+    0.0614 + ``DU-ERV-EA`` 0.0437 = **0.3470**. Delivered off the curve between (0.3, 208)
+    and (0.4, 206): 208 - 0.470 x 2 = 207.1.
+
+    ** THE RISER TERM MOVED ON 2026-09-19 AND NOTHING ELSE DID. ** It was 0.2028 over 36.20
+    developed feet; D2 started ``DU-ERV-RISER-EXH``'s attic trunk leg 10" west of the
+    plenum's centre so it would stop crossing the four attic collars, and 35.37 ft is what
+    is left. The drop is linear in effective length at fixed flow and bore, so the term is
+    0.2028 x (748.44 / 758.44) = 0.2003 — six elbows either way. D2's four 4" radials do not
+    appear in this column at all: a radial reaches it only by being the WORST one, and none
+    of them is.
 
     Supply, for the comparison that decides which side governs: 0.0134 + 0.0361 + 0.0020 +
     ``DU-ERV-OA`` 0.0315 + ``DU-B-ERV-SUP-TRUNK`` 0.0234 + ``DU-ERV-RISER-SUP`` 0.1367 +
-    ``DU-S-ERV-HP-FEED`` 0.0630 = 0.3061. Extract leads by 0.0434.
+    ``DU-S-ERV-HP-FEED`` 0.0630 = 0.3061. Extract leads by 0.0409.
 
     ** THE CODE MARGIN IS 2.0 cfm. ** 207.0 against MN 1322 R403.5's 205. It was 203.0 —
     BELOW the rate — at the start of the day, then 205.7, and the hoods' move to the north
@@ -207,7 +215,7 @@ def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> Non
     to hood again.
     """
     message = _machine_finding(catlin_model_ro).message
-    assert "0.350 in. w.g." in message
+    assert "0.347 in. w.g." in message
     assert "delivering 207 cfm" in message
 
 
