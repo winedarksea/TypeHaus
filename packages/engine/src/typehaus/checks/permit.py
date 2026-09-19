@@ -12,7 +12,7 @@ from dataclasses import dataclass
 
 from typehaus.checks.jurisdiction import JurisdictionProfile
 from typehaus.checks.registry import CheckReport
-from typehaus.engineering.fingerprint import Freshness
+from typehaus.engineering.fingerprint import SETTLED, Freshness
 from typehaus.engineering.register import EngineeringRegister, Signoff
 from typehaus.findings import (
     GATE_OK,
@@ -76,7 +76,11 @@ class PermitChecklistItem:
             return False
         if self.authority is not Authority.ENGINEERED:
             return True
-        return self.seal is Freshness.FRESH
+        # ACCEPTED counts, and it is the only state besides FRESH that does: an outside
+        # designer's sealed document, pinned to its own revision and digest, is what a
+        # deferred item can ever have. Before it existed the documented deferral workflow
+        # could not finish — the seal read UNPINNED and UNPINNED opens nothing.
+        return self.seal in SETTLED
 
 
 @dataclass(frozen=True)
@@ -180,7 +184,10 @@ def _item_from_findings(label: str, check_ids: tuple[str, ...], findings: list[F
 
 #: Worst-first. One stale item on a line of four makes the whole line stale, and an
 #: unsealed one outranks an unpinned one because it is the further from done.
-_SEAL_ORDER = (Freshness.UNSEALED, Freshness.STALE, Freshness.UNPINNED, Freshness.FRESH)
+#: ``UNPINNABLE`` sits with ``STALE``: both are a seal in the file that the gate must not
+#: honour, and both are worse than a plain absence because they read as done.
+_SEAL_ORDER = (Freshness.UNSEALED, Freshness.UNPINNABLE, Freshness.STALE,
+               Freshness.UNPINNED, Freshness.ACCEPTED, Freshness.FRESH)
 
 
 def _seal_state(items: tuple[str, ...],

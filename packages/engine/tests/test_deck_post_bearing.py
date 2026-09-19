@@ -45,10 +45,15 @@ _EXPECTED = {
     # bells went: both are flat `Pad`s now, which is exactly the shape R507.3.1 publishes,
     # and they are graded PASS against it like any other pad.
     #
-    # They are not merely re-keyed, they are GONE from this dict, because the finding does
-    # not name a `PT-` tag any more — it names `PD-SG-COL` / `PD-SG-FCOL`, the pad itself.
-    # The `graded` assertion below is scoped to `PT-SG-*`, so a stale entry here would fail
-    # as a missing post rather than as a moved one. See `pads` at the foot of the module.
+    # ** AND THEY CAME BACK ON 2026-09-18, WITH A PASS INSTEAD OF AN UNKNOWN. ** They did
+    # not return to being engineered; what changed is that `structural.deck_footing_size`
+    # now grades one finding per POST rather than one per (deck, post), so the SUBJECT of
+    # every finding it emits is the post and `element_tags` reads `(pad, post)` throughout.
+    # It used to read `(deck, pad)` on a graded pad and `(deck, post, evidence)` on an N/A,
+    # which is why these two were invisible to a rule keyed on index 1. The pad is still
+    # named — as the evidence, where a footing verdict's evidence belongs.
+    "PT-SG-COL": (Result.PASS, "PD-SG-COL"),
+    "PT-SG-FCOL": (Result.PASS, "PD-SG-FCOL"),
 }
 
 
@@ -148,8 +153,10 @@ def test_no_post_is_reported_as_unsupported_when_the_model_says_otherwise(findin
     # so the area branch this rule exists for is exercised by the reference house rather than
     # only by a unit fixture. It was vacuous in between — the four passage pads it used to
     # grade went with the foundation bridge.
-    pads = {f.element_tags[1] for f in findings
-            if len(f.element_tags) > 1 and str(f.element_tags[1]).startswith("PD-")}
+    # Index 0 since 2026-09-18: `element_tags` is `(pad, post)` on a graded finding, the
+    # subject last, which is what the `graded` rule above keys on.
+    pads = {f.element_tags[0] for f in findings
+            if f.element_tags and str(f.element_tags[0]).startswith("PD-")}
     assert pads == {"PD-BW-W", "PD-BW-E", "PD-BW-RE",
                     # The three GARAGE-side pads, which declare `cast_with` against the
                     # garage strip footing rather than being pulled clear of it.
@@ -179,3 +186,35 @@ def test_a_post_that_declares_no_bearing_is_unknown_not_na(catlin_plan) -> None:
     finding = _not_a_pad(_Ctx(), "FS-SG-PORCH", post, None, ())
     assert finding.result is Result.UNKNOWN
     assert "declares no supported_by" in finding.message
+
+
+def test_a_site_with_no_snow_is_an_unknown_and_not_a_crash(catlin_plan) -> None:
+    """The roof share has no currency without a snow load, and that must be said out loud.
+
+    ** THIS WAS A LIVE CRASH, NOT A HYPOTHETICAL. ** ``_roof_borne_posts`` is annotated
+    ``-> tuple[dict, set]`` and its no-snow branch returned a bare ``{}``, so
+    ``structural.deck_footing_size`` unpacked a dict of one key into two names on any site
+    without an authored ground snow. catlin authors one, which is why nothing found it.
+
+    The verdict on that branch is UNKNOWN and not a silent zero: R507.3.1 sizes from
+    tributary area at one load, converting a roof share into it needs a snow psf, and a post
+    graded at "0 ft² of roof" would read as a post the roof does not reach.
+    """
+    from _helpers import check_context
+
+    from typehaus.checks.structural.deck import _roof_borne_posts, deck_footing_size
+
+    # A COPY: ``Site`` is frozen and the plan fixture is shared across the module.
+    site = catlin_plan.project.site.model_copy(update={"ground_snow_load_psf": None})
+    project = catlin_plan.project.model_copy(update={"site": site})
+    ctx = check_context(plan=catlin_plan.model_copy(update={"project": project}))
+
+    shares, subjects, snow = _roof_borne_posts(ctx)
+    assert (shares, snow) == ({}, 0.0)
+    assert subjects, "the posts the roof reaches are still named"
+    findings = deck_footing_size(ctx)
+
+    unknown = [f for f in findings if f.result is Result.UNKNOWN]
+    assert len(unknown) == 1, [f.message for f in findings]
+    assert "no design snow" in unknown[0].message
+    assert "PT-BW-RE" in unknown[0].element_tags

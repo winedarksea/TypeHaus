@@ -100,17 +100,46 @@ def test_the_bundle_is_byte_deterministic(tmp_path):
 
 # --- the seal form -----------------------------------------------------------------------
 
-def test_one_signoff_block_per_kind_and_deferred_ones_are_comments(bundle):
-    """A PE stamps a SCOPE. Forty separate stamps is both wrong and expensive."""
+def test_one_signoff_block_per_kind_and_a_deferred_one_asks_for_the_designers_document(
+        bundle):
+    """A PE stamps a SCOPE. Forty separate stamps is both wrong and expensive.
+
+    ** A DEFERRED BLOCK IS LIVE NOW, AND IT USED TO BE COMMENTED OUT. ** The old reasoning
+    was sound as far as it went — a `NO_CALC` item has nothing to fingerprint, so a live
+    block invited a stamp that could never satisfy `--require-seal`. The conclusion it
+    reached was that a correctly handled deferral is indistinguishable from an unsealed one
+    forever. A trussed roof IS designed, by its fabricator, and what gets pinned is that
+    designer's paper: `[signoff.external]` takes the document, its revision, its sha256 and
+    the envelope it was issued for, and the item reads ACCEPTED.
+
+    An OVER item — one this engine computed and failed — is still commented out, and that
+    is the line this test now guards instead.
+    """
     draft = (bundle / "engineering.toml.draft").read_text()
     live = re.findall(r"^\[\[signoff\]\]$", draft, re.MULTILINE)
-    commented = re.findall(r"^# \[\[signoff\]\]$", draft, re.MULTILINE)
     assert live, "no signoff blocks at all"
-    assert commented, "the deferred kinds must be written out but commented"
-    # `column_support` is deferred: nothing to fingerprint, so nothing to pin, so a live
-    # block would invite a stamp that can never satisfy --require-seal.
-    assert "# id = \"column_support\"" in draft
+    # `column_support` is deferred: a live block, with the external-acceptance form in it.
+    assert 'id = "column_support"' in draft
     assert "DEFERRED" in draft
+    assert '[signoff.external."column_support/W-SG-E1"]' in draft
+    for key in ("document", "revision", "sha256", "envelope"):
+        assert f"{key} = \"<<" in draft, key
+
+
+def _fill_external(text: str) -> str:
+    """Fill the ``[signoff.external]`` blanks a deferred block now carries.
+
+    Separate from the four fields every block has, because these are the ones a person can
+    only answer by holding the outside designer's document — which is the whole point of
+    them being required.
+    """
+    for placeholder, value in (
+            ("<<supplier's revision marking, e.g. Rev C 2026-08-14>>", "Rev C, 2026-08-14"),
+            ("<<sha256 of that document, lowercase hex>>", "0" * 64),
+            ("<<the spans, loads and conditions the document was issued for>>",
+             "as scheduled on the sealed drawing")):
+        text = text.replace(placeholder, value)
+    return text
 
 
 def test_the_scaffold_is_refused_until_a_person_fills_it_in(bundle, tmp_path):
@@ -140,7 +169,7 @@ def test_a_filled_scaffold_seals_every_computed_item(bundle, tmp_path, catlin_ct
     filled = filled.replace("<<ENGINEER NAME, PE>>", "A. Engineer, PE")
     filled = filled.replace("<<STATE 00000>>", "MN 12345")
     filled = filled.replace("<<YYYY-MM-DD>>", "2026-09-11")
-    filled = filled.replace("<<path/to/sealed.pdf>>", "sealed.pdf")
+    filled = _fill_external(filled.replace("<<path/to/sealed.pdf>>", "sealed.pdf"))
     house = tmp_path / "house"
     house.mkdir()
     (house / "engineering.toml").write_text(filled)
@@ -161,11 +190,17 @@ def test_a_filled_scaffold_seals_every_computed_item(bundle, tmp_path, catlin_ct
         assert signoff is not None
 
 
-def test_a_deferred_item_stays_unsealed_even_with_the_form_filled(bundle, tmp_path,
-                                                                  catlin_ctx,
-                                                                  catlin_check_report):
-    """Its block is commented out, so filling the form cannot accidentally stamp it."""
-    from typehaus.engineering import Freshness
+def test_a_deferred_item_reads_accepted_and_never_fresh_when_the_form_is_filled(
+        bundle, tmp_path, catlin_ctx, catlin_check_report):
+    """Filled in, a deferred item is ACCEPTED — never FRESH, because nothing was checked.
+
+    The distinction is the whole design. ``FRESH`` means a fingerprint over this engine's
+    own inputs still matches; there is no such fingerprint here and there never can be.
+    ``ACCEPTED`` means an outside designer's document covers it, pinned to that document's
+    own revision and digest, with the envelope it was issued for written out for a reviewer
+    to compare by hand. Both open the final gate; only one of them is about this model.
+    """
+    from typehaus.engineering import SETTLED, Freshness
     from typehaus.engineering.register import load_register
 
     filled = (bundle / "engineering.toml.draft").read_text()
@@ -174,6 +209,7 @@ def test_a_deferred_item_stays_unsealed_even_with_the_form_filled(bundle, tmp_pa
                                ("<<YYYY-MM-DD>>", "2026-09-11"),
                                ("<<path/to/sealed.pdf>>", "sealed.pdf")):
         filled = filled.replace(placeholder, value)
+    filled = _fill_external(filled)
     house = tmp_path / "house"
     house.mkdir()
     (house / "engineering.toml").write_text(filled)
@@ -182,8 +218,12 @@ def test_a_deferred_item_stays_unsealed_even_with_the_form_filled(bundle, tmp_pa
     ctx = catlin_ctx
     catlin_check_report()
     deferred = ctx.engineering["column_support/W-SG-W1"]
-    state, _ = register.freshness(deferred)
+    state, signoff = register.freshness(deferred)
+    assert state is Freshness.ACCEPTED
     assert state is not Freshness.FRESH
+    assert state in SETTLED, "a correctly handled deferral has to be able to finish"
+    accepted = signoff.external[deferred.item_id]
+    assert accepted.revision and accepted.sha256 and accepted.envelope
 
 
 def test_the_fingerprints_in_the_form_are_the_ones_the_cli_prints(bundle, catlin_ctx,

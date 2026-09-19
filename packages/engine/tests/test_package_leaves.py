@@ -60,10 +60,14 @@ _SRC = pathlib.Path(__file__).resolve().parents[1] / "src" / "typehaus"
 #: ``takeoff``: ``handoff.py`` was already reading them as ``takeoff.hardware_config``, so
 #: this is the same dependency spelled honestly — and a strictly weaker one.
 _ALLOWED: dict[str, set[str]] = {
+    # ``loads`` is a top-level leaf of published design loads, the same class of thing as
+    # ``wind``/``wind_tables``: pure data both ``checks`` and ``engineering`` must read, and
+    # neither may import the other to get it. Added 2026-09-18, when the deck design load
+    # stopped existing in three hand-synchronised copies.
     "analytical": {"model", "resolve", "quantities", "engineering", "wind", "wind_tables",
-                   "findings", "analytical"},
+                   "loads", "findings", "analytical"},
     "routing": {"model", "resolve", "quantities", "routing"},
-    "engineering": {"model", "resolve", "quantities", "wind", "wind_tables",
+    "engineering": {"model", "resolve", "quantities", "wind", "wind_tables", "loads",
                     "engineering", "findings"},
     "schedule": {"model", "resolve", "quantities", "findings", "takeoff", "emit",
                  "schedule", "hardware"},

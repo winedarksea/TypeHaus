@@ -212,13 +212,23 @@ here would be reading a 42" section's allowable off a bedding one sixth as deep.
 
 ### 3c. The numbers
 
-```
-q = (service + bell self weight) / bell area
+**Net bearing, since 2026-09-18.** A presumptive allowable in IBC Table 1806.2 is what the
+soil may carry *over and above* the overburden it already carried. The bell occupies a hole
+that was full of soil before it was augered, and charging the ground for both the soil that
+came out and the concrete that went in counts the same cubic feet twice. So the soil the
+bell displaced is credited: 7.069 ft² × 1.0 ft × **110 pcf** = 778 lb, the LOW end of the
+110–130 pcf band, because a credit is conservative at its smallest (the mirror of a demand,
+which is why this band is not run at both ends here). At a 12" bell it works out to a flat
+110 psf off the gross pressure.
 
-PT-SG-COL    bell 36" = 7.069 ft², 12" thick → 1,060 lb
-             (7,367 + 1,060) / 7.069 =  1,192 psf  vs 2,000   d/c 0.60   ✓
-PT-SG-FCOL   bell 36" = 7.069 ft², 12" thick → 1,060 lb
-             (7,366 + 1,060) / 7.069 =  1,192 psf  vs 2,000   d/c 0.60   ✓
+```
+q = (service + bell self weight − displaced soil) / bell area
+
+PT-SG-COL    bell 36" = 7.069 ft², 12" thick → 1,060 lb concrete, 778 lb soil
+             (7,295 + 1,060 − 778) / 7.069 =  1,072 psf  vs 2,000   d/c 0.54   ✓
+PT-SG-FCOL   bell 36" = 7.069 ft², 12" thick → 1,060 lb concrete, 778 lb soil
+             (7,294 + 1,060 − 778) / 7.069 =  1,072 psf  vs 2,000   d/c 0.54   ✓
+             (gross, the convention before 2026-09-18:   1,182 psf   d/c 0.59)
 ```
 
 ** ⚠ THE 30" BELL IS GONE. BOTH ARE 36" SINCE 2026-09-10, AND THE ROW ABOVE IS THE MOVE

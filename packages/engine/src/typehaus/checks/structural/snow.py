@@ -37,13 +37,12 @@ _MAX_REACH_FT = 15.0
 # manufacturer's software against the actual load case, so they resolve UNKNOWN below rather
 # than borrowing a sawn-lumber row.
 #: The load basis this check states when it compares its own demand against a published
-#: row's. ASCE 7-16 §7.3 flat-roof snow at this house's exposure, thermal and importance
-#: factors is Ps = 0.7 Ce Ct Is Pg = 0.7 x 50 = 35 psf, and the branch below already
-#: refuses to run at any Pg but 50 — so these are safe to state rather than derive, and
-#: a site that moves off 50 psf never reaches them.
-_ROOF_SNOW_PSF = 35.0
-#: Roof dead load, the figure every published residential roof table is indexed at.
-_ROOF_DEAD_PSF = 15.0
+#: row's — re-exported from ``typehaus/loads.py``, where the Pg = 50 caveat lives and where
+#: ``structural.header_prescriptive`` reads them too. The branch below already refuses to
+#: run at any Pg but 50, so these are safe to state rather than derive, and a site that
+#: moves off 50 psf never reaches them.
+from typehaus.loads import ROOF_DEAD_PSF as _ROOF_DEAD_PSF  # noqa: E402
+from typehaus.loads import ROOF_SNOW_PSF as _ROOF_SNOW_PSF  # noqa: E402
 
 _RAFTER_SPAN_FT: dict[tuple[str, float], float] = {
     ("2x6", 16.0): 9.1,

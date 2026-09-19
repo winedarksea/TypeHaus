@@ -201,7 +201,8 @@ Recorded plainly because the engine will neither stop you nor help you on any of
   **Two things make the printed table indicative rather than authoritative here**, and both
   belong in ForteWEB: its general note requires *a support beam or wall at the high end —
   ridge beam applications do not provide adequate support*, and catlin **hangs** its joists
-  off `RB-HOUSE` on 38 LSSR hangers rather than bearing on it; and its deflection basis is
+  off `RB-HOUSE` on 38 LSSR hangers rather than bearing on it (`notes/roof_rafter_span_read.md`
+  §3 settles what that general note means and why the design does not turn on it); and its deflection basis is
   L/180 total, L/240 live, where a gypsum cathedral ceiling may want L/240 total, which
   shortens the allowable span. The second is the stronger reason to take the 230 rather than
   the marginal 210. **The fallback is a TJI 210 at 19.2" o.c.** — 2'-6" of margin, ff ~0.058.

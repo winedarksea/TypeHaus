@@ -41,7 +41,11 @@ from typehaus.engineering.registry import (
     oracled_by,
 )
 from typehaus.engineering.retaining_basis import PRESUMPTIVE_FC_PSI
-from typehaus.engineering.soil import CONCRETE_UNIT_WEIGHT_PCF, presumptive
+from typehaus.engineering.soil import (
+    CONCRETE_UNIT_WEIGHT_PCF,
+    displaced_soil_credit_lb,
+    presumptive,
+)
 
 KIND = "spread_footing"
 
@@ -124,7 +128,11 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
     # 7" course spreads load into the native soil within inches of the bell, so crediting
     # the stone's 3,000 psf here would be reading a 42" section's allowable off a bedding
     # that is a sixth of it. The site's class governs, which is the conservative direction.
-    bearing = (pier.service_lb + pier.footing_weight_lb) / pier.bearing_area_ft2
+    # NET of the soil the bell displaced: a presumptive allowable is a net pressure, and
+    # charging the ground for the excavated soil AND the concrete poured into the hole
+    # counts the same cubic feet twice. See `engineering/soil.displaced_soil_credit_lb`.
+    displaced = displaced_soil_credit_lb(pier.bearing_area_ft2, pier.footing_depth_in / 12.0)
+    bearing = (pier.service_lb + pier.footing_weight_lb - displaced) / pier.bearing_area_ft2
     section, section_notes = _section_states(ctx, pier)
     states = (
         LimitState("bearing", bearing, soil.allowable_bearing_psf, "psf",
@@ -144,11 +152,13 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
         Quantity("live_load", pier.live_lb, "lb", 1.0),
         Quantity("allowable_bearing", soil.allowable_bearing_psf, "psf", 1.0),
         Quantity("concrete_unit_weight", CONCRETE_UNIT_WEIGHT_PCF, "pcf", 1.0),
+        Quantity("displaced_soil", displaced, "lb", 1.0),
     )
     notes = (
         f"SCREENING on presumptive code values, not a design: {soil.citation}. No "
         f"geotechnical report is on file for this site.",
         f"Service load {pier.service_lb:,.0f} lb + {pier.footing_weight_lb:,.0f} lb of bell "
+        f"less {displaced:,.0f} lb of soil the bell displaced, "
         f"over {pier.bearing_area_ft2:.2f} ft2. Tributary {pier.tributary_ft2:.1f} ft2 at "
         f"{DECK_DEAD_LOAD_PSF:.0f} psf dead + {DECK_LIVE_LOAD_PSF:.0f} psf live (IRC "
         f"Table R301.5), plus the column's own {pier.self_weight_lb:,.0f} lb.",
@@ -168,6 +178,13 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
         "substantiate the use of higher values' — which means a boring, not a table.",
     )
     notes = notes + section_notes
+    if pier.roof_tributary_ft2 > 0.0 and pier.roof_snow_basis:
+        notes = notes + (
+            f"Plus {pier.roof_tributary_ft2:.1f} ft2 of ROOF at {pier.roof_snow_psf:.1f} psf "
+            f"snow + {DECK_DEAD_LOAD_PSF:.0f} psf dead, the snow from "
+            f"{pier.roof_snow_basis}. A roof is not a deck and is not folded into the "
+            f"tributary above, which would grade it at 40 psf.",
+        )
     if pier.carried_dead_lb or pier.tributary_ft2 <= 0.0:
         notes = notes + (
             f"This pier carries a post standing ON it as well as its own deck share — the "

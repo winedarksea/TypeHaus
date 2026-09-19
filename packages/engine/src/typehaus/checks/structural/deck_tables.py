@@ -131,9 +131,15 @@ def deck_post_height_limit(size: str, tributary_ft2: float) -> float | None:
 # --- IRC R507.3 — deck footings --------------------------------------------------------
 # The deck design load the footing area is sized against: R507.1 is 40 psf live over a
 # 10 psf dead allowance. Required bearing area = tributary area x this / soil bearing value.
-DECK_LIVE_LOAD_PSF = 40.0
-DECK_DEAD_LOAD_PSF = 10.0
-DECK_TOTAL_LOAD_PSF = DECK_LIVE_LOAD_PSF + DECK_DEAD_LOAD_PSF
+#
+# Re-exported from ``typehaus/loads.py``, which is where the numbers live since 2026-09-18 —
+# they had three copies before, here and in ``engineering/pier_basis`` and
+# ``engineering/glulam_beam``, each carrying a comment about the other two.
+from typehaus.loads import (  # noqa: E402,F401  (a re-export, kept at its old name)
+    DECK_DEAD_LOAD_PSF,
+    DECK_LIVE_LOAD_PSF,
+    DECK_TOTAL_LOAD_PSF,
+)
 
 # R403.1 / R507.3: a footing is never smaller than this however light the load, and never
 # thinner than 6". The area rule alone would happily size a 6" pad under a light deck.

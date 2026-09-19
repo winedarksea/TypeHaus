@@ -162,7 +162,10 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
         # the free-cantilever branch never computed.
         for name in ("overturning", "bearing", "eccentricity", "stem flexure"):
             assert by_name[name].ok, (tag, name, by_name[name])
-        assert record.basis_version == "3"
+        # 3 -> 4 on 2026-09-18: the MATERIAL inputs joined the fingerprint. The arithmetic
+        # did not move — every number asserted above is unchanged — but what a seal is
+        # pinned against did, which is the same class of change and takes the same bump.
+        assert record.basis_version == "4"
 
     # Every wall the register computes is one a signoff can cover, one at a time.
     assert sorted(results[f"{KIND}/{t}"].item_id for t in ("W-SG-E2",)) == [

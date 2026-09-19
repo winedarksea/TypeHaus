@@ -257,19 +257,26 @@ Six piers on **two** bearing planes, and the split is the first thing to read.
 > system (`notes/north_entry_structure.md` §1a). Same section, same cage, same pad, same
 > footing: the shaft simply does not stop at −1'-3 1/2". **What is NOT re-worked here is the
 > consequence of the fixed base**, and it is the engineer of record's: the base moment is a
-> lateral demand this section was never asked to carry, `PT-BW-RNE` has 4'-2" of embedment
+> lateral demand this section was never asked to carry, `PT-BW-RNE` has 4'-6" of embedment
 > below grade against roughly 5'-6" that IBC 1807.3.2.1's non-constrained formula wants for
 > it in presumptive sand, and k·l_u/r on the exposed 9'-2 3/4" is about 74 as a SWAY column
 > where §6's slenderness reading below was taken non-sway.
 
 | pier | carries | pad | bottom | bearing d/c |
 |---|---|---|---|---|
-| `PT-BW-W` | `PT-BW-CW` + house-side west seat | 2'-0" | −9'-9 7/16" | 0.81 |
-| `PT-BW-E` | house-side east seat | 2'-0" | −9'-9 7/16" | 0.42 |
-| `PT-BW-RE` | the east header (full-height column) | 2'-0" | −9'-9 7/16" | 0.54 |
-| `PT-BW-GW` | `PT-BW-CNW` + garage-side west seat | 2'-0" | −7'-0" | 0.74 |
-| `PT-BW-GE` | garage-side east seat | 1'-6" | −7'-0" | 0.59 |
-| `PT-BW-RNE` | the east header (full-height column) | 2'-0" | −7'-0" | 0.60 |
+| `PT-BW-W` | `PT-BW-CW` + house-side west seat | 2'-0" | −9'-9 7/16" | 0.93 |
+| `PT-BW-E` | house-side east seat | 2'-0" | −9'-9 7/16" | 0.34 |
+| `PT-BW-RE` | the east header (full-height column) | 2'-0" | −9'-9 7/16" | **0.94** |
+| `PT-BW-GW` | `PT-BW-CNW` + garage-side west seat | 2'-0" | −7'-0" | 0.82 |
+| `PT-BW-GE` | garage-side east seat | 1'-6" | −7'-0" | 0.45 |
+| `PT-BW-RNE` | the east header (full-height column) | 2'-0" | −7'-0" | 0.83 |
+
+> **Every ratio in that column moved on 2026-09-18** and the derivation is §6's 2026-09-17
+> bearing table below, re-worked. Three things changed at once: the roof share is graded at
+> the §3 **design** snow (73.7 psf) rather than the ground snow, which raises it; the pad's
+> and the shaft's own weight are in the demand, which raises it further; and the soil the
+> pad displaced is credited, which lowers it. The net is up on every pier that carries
+> canopy and down on the two that carry only landing.
 
 > ⚠ **Re-read 2026-09-11, when the landing narrowed.** `LANDING_EAST_FT` came in from 11'-6"
 > to 9'-7" — `D-G-SERVICE`'s east jamb, once the door moved into the garage's SW corner — so
@@ -301,24 +308,26 @@ Worst case is `PT-BW-W`, which carries the west roof column **and** the landing'
 |---|---|---|
 | roof tributary | 160.0 / 2 headers / 2 supports per header | 40.0 ft² |
 | deck tributary | (23.5 + 13.2) ft² of landing / 2 seat lines | 18.4 ft² |
-| roof live | 40.0 × 50 psf (`pier_basis` screens at ground snow) | 2,000 lb |
+| roof live | 40.0 × **73.7** psf (§3's design snow) | 2,948 lb |
 | deck live | 18.4 × 40 psf | 736 lb |
 | dead | (40.0 + 18.4) × 10 psf + self weight + carried | 1,668 lb |
-| service | | **4,404 lb** |
-| factored | 1.2 D + 1.6 L | **6,380 lb** |
+| service | | **5,352 lb** |
+| factored | 1.2 D + 1.6 L | **7,896 lb** |
 
-**`pier_basis` walks the beam chain and reads the tributaries wider than this line**: 17.0 ft²
-of deck and 47.7 ft² of roof on `PT-BW-W` (it credits the seat, the screen sill and the
-carriers each a share, and the west roof column's header), for 6,835 lb factored against the
-6,380 here. Before the narrowing it read 23.3 / 51.8 and 7,687 lb against 7,765. Same
-order, same conclusion, and the difference is bookkeeping in a load case that is nowhere
-near governing.
+**`pier_basis` reads the tributaries close to this line now**: 17.0 ft² of deck and 40.0 ft²
+of roof on `PT-BW-W`, for D 1,529 + L 3,629 = 5,158 lb service and 7,641 lb factored against
+the 7,896 hand-worked here. The gap is the deck share — 17.0 against this line's 18.4 — and
+it is bookkeeping in a load case nowhere near governing. It used to read 47.7 ft² of roof,
+7.7 ft² of which was the garage landing counted a second time as a "rafter field"; that
+duplicate went on 2026-09-18 (`pier_basis._rafter_fields` now skips a beam pair some
+`FloorSystem` or `Roof` has already accounted for).
 
-**`pier_basis` screens the roof at ground snow (50 psf), not at the 73.7 psf of §3.** That is
-a deliberate under-read in a screening tool, and it is why the pier's ratio is not the number
-to argue about: at 73.7 psf the roof live becomes 2,948 lb, service 6,231 lb, and the axial
-d/c moves from 0.027 to about 0.032 against a §22.4.2 cap of 2.859e5 lb. **Nothing near
-governing either way** — the cage below is what sizes this shaft.
+**`pier_basis` grades the roof at §3's 73.7 psf since 2026-09-18, not at the ground snow.**
+It read 50 while `BM-BW-RE` eighteen inches overhead was designed at 73.7 — one roof, two
+answers, the lighter underneath the heavier. The axial d/c moves from 0.027 to about 0.032
+against a §22.4.2 cap of 2.859e5 lb, so **nothing near governing either way** on the shaft;
+the cage below is what sizes it. Where the change does bite is bearing, §6's pad table
+above, where `PD-BW-RE` goes from 0.85 to 0.94.
 
 ### Section and cage
 
@@ -483,27 +492,52 @@ monolithic lap; the hydrant passes 1'-6" under `PD-BW-GE` (was 1'-10") and still
 embedment below grade (§8d) is 4'-6", was 4'-2". Added concrete 0.123 cy
 (2 × 3.75 × 2/12 + 2.25 × 4/12 + 4.00 × 4/12 = 3.33 ft³).
 
-**Bearing, gross** (service D + L from the `deck_post` records, plus the pad at 150 pcf,
-against the mn-2020 profile's 1,500 psf; displaced soil not netted, so conservative):
+**Bearing** — re-worked 2026-09-18 on two changes that pull opposite ways, and the table
+below is the second version. The first is the DESIGN SNOW: the canopy's roof share was
+graded at `Site.ground_snow_load_psf` (50) while `BM-BW-RE` directly overhead was designed
+at `preferences.toml [structural] roof_beam_snow_psf` (73.7, the §7.7 roof-step drift), so
+40 ft² of canopy carried 2,000 lb of snow at the pier and 2,948 lb at the beam eighteen
+inches above it. The pier reads 73.7 now. The second is NET bearing: a presumptive allowable
+is a pressure over and above the overburden already there, so the soil the pad displaced is
+credited at 110 pcf, the low end of the 110–130 band (`engineering/soil.displaced_soil_
+credit_lb`). Against the mn-2020 profile's 1,500 psf:
 
-| pad | area | D + L column | pad wt 10"/8" → 12" | pressure before → after | ratio |
-|---|---|---|---|---|---|
-| `PD-BW-E` | 3.75 ft² | 1,166 + 1,148 = 2,315 lb | 469 → 563 lb | 742 → 767 psf | 0.49 → 0.51 |
-| `PD-BW-RE` | 3.75 ft² | 2,208 + 2,000 = 4,208 lb | 469 → 563 lb | 1,247 → 1,272 psf | 0.83 → 0.85 |
-| `PD-BW-GE` | 2.25 ft² | 858 + 1,148 = 2,006 lb | 225 → 338 lb | 992 → 1,042 psf | 0.66 → 0.69 |
-| `PD-BW-RNE` | 4.00 ft² | 1,900 + 2,000 = 3,900 lb | 400 → 600 lb | 1,075 → 1,125 psf | 0.72 → 0.75 |
+| pad | area | D + L column | pad wt (12") | less displaced soil | net pressure | ratio |
+|---|---|---|---|---|---|---|
+| `PD-BW-E` | 3.75 ft² | 1,073 + 681 = 1,754 lb | 563 lb | −413 lb | 508 psf | 0.34 |
+| `PD-BW-W` | 3.75 ft² | 1,529 + 3,629 = 5,158 lb | 563 lb | −413 lb | 1,394 psf | 0.93 |
+| `PD-BW-GE` | 2.25 ft² | 764 + 681 = 1,445 lb | 338 lb | −248 lb | 682 psf | 0.45 |
+| `PD-BW-GW` | 4.00 ft² | 1,221 + 3,629 = 4,850 lb | 600 lb | −440 lb | 1,225 psf | 0.82 |
+| `PD-BW-RE` | 3.75 ft² | 2,208 + 2,948 = 5,156 lb | 563 lb | −413 lb | 1,415 psf | **0.94** |
+| `PD-BW-RNE` | 4.00 ft² | 1,900 + 2,948 = 4,848 lb | 600 lb | −440 lb | 1,252 psf | 0.83 |
+
+`D` includes each shaft's own 150 pcf over its full height (903 lb on the house-side pair,
+594 garage-side, 1,808 on `PT-BW-RE`, 1,500 on `PT-BW-RNE`); `L` is 17.0 ft² of deck at 40
+psf plus 40.0 ft² of canopy at 73.7 wherever the canopy reaches. The west canopy half
+arrives at `PT-BW-W` / `PT-BW-GW` two posts down, through `PT-BW-CW` / `-CNW`.
+
+**`PD-BW-RE` is the tightest pad in the house at 0.94, and the margin is real but thin.**
+Gross and at the ground snow it read 0.85, which is what the 2026-09-17 version of this
+table said; gross and at the design snow it is **1.02**, i.e. over. The 6% it passes by is
+the displaced-soil credit and nothing else, so anything that adds load here — a heavier
+canopy covering, a drift case worse than 73.7, a pad poured shallower than 12" — takes it
+over. The S-100 FOUNDATION SCHEDULE holds all three house-side pads at one size
+(30" × 18" × 12"), so the closure if it ever goes over is to widen all three together.
 
 **Uplift and overturning improve** by the added pad weight: +94 lb under E/RE, +113 under GE,
 +200 under RNE — at 0.6D, +56 lb on `PT-BW-RE` and +120 lb on `PT-BW-RNE` against the ~230 lb
 net column uplift `params/north_entry_frame.py` states, and the same weight over half the pad
-width as extra resisting moment. None of this is claimed as fixity (§8d stands).
+width as extra resisting moment. None of this is claimed as fixity (§8d stands). The
+displaced-soil credit is deliberately NOT taken against uplift: it is a credit on a bearing
+demand, and the soil is not there to be lifted.
 
-**Engine agreement.** No engineering record moves, and that is correct rather than blind:
-`deck_post` reads column height and cage (both unchanged), and `pier_basis` carries no footing
-weight for a pad-hosted pier (`footing_depth_in` 0), so the pad weight above is this note's
-alone. `structural.deck_footing_size` grades area (unchanged) and a minimum thickness (now
-exceeded by more). `integrity.reinforcement_layout`'s four anchorage FAILs (7.00" / 5.00"
-against 7.11") are gone.
+**Engine agreement**, and it is checked rather than asserted. `structural.deck_footing_size`
+now carries the pad's and the shaft's weight into the demand as equivalent R507.3.1 tributary
+and nets the same displaced soil, so the ratios above are the check's own — `PD-BW-RE` reads
+3.54 ft² required against 3.75 provided, which is this table's 0.94. `deck_post`'s records
+move with the snow: `L` rose 2,000 → 2,948 lb on `PT-BW-RE` / `-RNE`, which stales any seal
+pinned to them and correctly so. `integrity.reinforcement_layout`'s four anchorage FAILs
+(7.00" / 5.00" against 7.11") are gone.
 
 ## 7. What is NOT graded here
 
@@ -669,7 +703,7 @@ minimum, and neither fires.
 
 ### 8d. Still the engineer of record's, and now named in the record
 
-- **The fixed-base assumption itself.** `PT-BW-RNE` has 4'-2" of embedment below grade
+- **The fixed-base assumption itself.** `PT-BW-RNE` has 4'-6" of embedment below grade
   against roughly 5'-6" that IBC 1807.3.2.1's non-constrained formula wants for this moment
   in presumptive sand, and the 2'-0" pad's contribution is not in that formula at all.
   Nothing in the engine grades embedment; the record's `SCREENING:` note says so in those

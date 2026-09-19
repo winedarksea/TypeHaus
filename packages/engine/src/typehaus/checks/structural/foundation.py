@@ -371,14 +371,12 @@ def column_on_wall_support(ctx: CheckContext) -> list[Finding]:
 def _engineering_context(ctx: CheckContext):
     """The ``EngineeringContext`` behind this check's own context.
 
-    ``CheckContext`` already carries the plan and the resolved model, which is everything
-    ``_column_support_keys`` reads; it is rebuilt rather than plumbed because ``checks``
-    may import ``engineering`` and not the reverse, so the adapter has to live on this side.
+    One adapter, shared with ``deck.py`` — see ``checks/structural/_engineering.py`` for why
+    it is one and not two.
     """
-    from typehaus.engineering.registry import EngineeringContext
+    from typehaus.checks.structural._engineering import engineering_context
 
-    return EngineeringContext(plan=ctx.plan, model=ctx.model,
-                              soil_class=getattr(ctx, "soil_class", None))
+    return engineering_context(ctx)
 
 
 def _columns_on(ctx: CheckContext, wall_tag: str) -> set[str]:

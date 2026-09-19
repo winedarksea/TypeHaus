@@ -547,6 +547,44 @@ def _footing_cover_in(geometry: _Geometry) -> float:
     return _FOOTING_COVER_IN
 
 
+def material_inputs(geometry: _Geometry) -> tuple[tuple[str, float, str, float | None], ...]:
+    """``(name, value, unit, tolerance)`` for every MATERIAL term the capacities consume.
+
+    ** THIS EXISTS BECAUSE THE FINGERPRINT DID NOT COVER THE DESIGN. ** ``retaining_wall``'s
+    ``inputs`` tuple was geometry and soil only, so editing ``W-SG-E2``'s mix from 5,000 psi
+    to 4,000 moved four capacities, left ``Status.OK`` standing and left the fingerprint
+    hash unchanged at ``22c251adaa8b0ba0`` — a pinned seal surviving a change to the very
+    concrete it was a statement about. The governing limit state there is *sliding*, which
+    no material term touches, so the two-decimal ratio tripwire could not move either.
+
+    A bar number, a spacing and a cover are the same class of input: each is a term in
+    :func:`reinforced_flexure`, and each can be edited in a plan file without any geometry
+    moving. ``deck_post._inputs`` is the shape copied here.
+
+    Missing is written as ``-1.0`` rather than omitted, so "no mat authored" and "a #5 mat"
+    are different fingerprints — an omitted Quantity would make them the same.
+    """
+    stem = bar_for_roles(geometry.stem_reinforcement, ("vertical",))
+    if stem is None:
+        stem = parse_reinforcement(geometry.vertical_reinforcement)
+    toe = bar_for_roles(geometry.footing_reinforcement, ("bottom-x", "bottom-y"))
+    heel = bar_for_roles(geometry.footing_reinforcement, ("top-x", "top-y"))
+
+    def pair(prefix: str, parsed: tuple[int, float] | None):
+        bar, spacing = (float(parsed[0]), parsed[1]) if parsed else (-1.0, -1.0)
+        return ((f"{prefix}_bar", bar, "bar no.", None),
+                (f"{prefix}_spacing", spacing, "in", 0.25))
+
+    return (
+        ("fc", float(geometry.specified_fc_psi or PRESUMPTIVE_FC_PSI), "psi", 1.0),
+        ("fy", REINFORCEMENT_FY_PSI, "psi", 1.0),
+        ("stem_cover", float(geometry.specified_cover_in if geometry.specified_cover_in
+                             is not None else -1.0), "in", 0.01),
+        ("footing_cover", _footing_cover_in(geometry), "in", 0.01),
+        *pair("stem", stem), *pair("toe", toe), *pair("heel", heel),
+    )
+
+
 def _footing_flexural_capacity(h_in: float, fc_psi: float, parsed: tuple[int, float] | None,
                                cover_in: float) -> tuple[float, str]:
     """``(phi*Mn ft-lb/ft, how)`` — reinforced where a mat is authored, PLAIN where none is.

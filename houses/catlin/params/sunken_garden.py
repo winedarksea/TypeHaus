@@ -3224,7 +3224,18 @@ _BALCONY_BEAM_PUBLISHED = PublishedSpan(
     span=ft(10),
     carried_span=ft(10),
     load_psf=50.0,
-    condition="the guide's values are DRY-USE and these beams stand in weather, so the NDS wet-service cross-check beside this row is the governing arithmetic, not a duplicate; cantilevers are within the table's 2' maximum (1'-8\" here, and graded separately by R507.5.1); 3\" bearing on the cast columns; the columns' own base moments are a separate engineered item")
+    # ** THE DRY-USE CAVEAT IS A TYPED GUARD NOW, NOT PROSE (2026-09-18). ** It said exactly
+    # this before, inside `condition`, where the check printed it inside a PASS and compared
+    # it against nothing. `structural.deck_beam_span` passes "wet" for a deck beam, so this
+    # row is REFUSED — UNKNOWN naming the mismatch — and `engineering/glulam_beam` carries
+    # the verdict instead, which is where the only arithmetic that models weather lives.
+    service_condition="dry",
+    species_grade="24F-V5M1/SP Power Preserved Glulam",
+    treatment="preservative-treated (Power Preserved)",
+    min_bearing_in=3.0,
+    deflection_limit="L/360",
+    edition="2020",
+    condition="cantilevers are within the table's 2' maximum (1'-8\" here, and graded separately by R507.5.1); the columns' own base moments are a separate engineered item")
 
 # ** THE THREE BEAMS ARE TILTED, AND THEY ARE AUTHORED SOUTH-END-FIRST ON PURPOSE. **
 #

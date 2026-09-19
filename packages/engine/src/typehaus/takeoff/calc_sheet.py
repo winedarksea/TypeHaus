@@ -38,6 +38,12 @@ SEAL_LABEL: Mapping[Freshness, str] = {
     Freshness.UNPINNED: "stamped, not pinned — no fingerprint was recorded, so it can never "
                         "go stale and satisfies no gate",
     Freshness.UNSEALED: "unsealed",
+    Freshness.ACCEPTED: "accepted against an outside designer's sealed document — pinned "
+                        "to that document's revision and sha256, not to this model, and "
+                        "the envelope it was issued for is a reviewer's check by hand",
+    Freshness.UNPINNABLE: "stamped over a NO_CALC item — this engine computes nothing here, "
+                          "so the pinned fingerprint is a statement about nothing and "
+                          "satisfies no gate",
 }
 
 

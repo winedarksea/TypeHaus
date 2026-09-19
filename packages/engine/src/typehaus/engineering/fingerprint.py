@@ -46,6 +46,51 @@ class Freshness(Enum):
     STALE = "stale"        # it does not — the model or the calculation moved after sealing
     UNPINNED = "unpinned"  # the signoff covers the item but pins no fingerprint for it
     UNSEALED = "unsealed"  # no signoff covers this item at all
+    #: The item has no calculation behind it, so there is nothing a fingerprint could be a
+    #: statement ABOUT — and a pin over it is meaningless however it was arrived at.
+    #:
+    #: ** THIS EXISTS BECAUSE A PIN OVER A ``NO_CALC`` ITEM READ ``FRESH``. ** The three
+    #: presentation layers each refused to *mint* such a digest (``cli/cmd_engineering``,
+    #: ``takeoff/calc_sheet``, the IFC Pset) but ``EngineeringRegister.freshness`` had no
+    #: ``Status`` test at all, so a digest arrived at any other way — pasted, carried over
+    #: from a version where the kind DID compute, or minted by a caller of ``fingerprint()``
+    #: directly — matched the same empty hash and came back fresh. A refusal that lives only
+    #: in the renderers is not a refusal.
+    UNPINNABLE = "unpinnable"
+    #: An outside designer's sealed document covers this item, and the seal is pinned to
+    #: THAT document — its revision and sha256 — plus the envelope of geometry and load it
+    #: was issued for, because there is no model fingerprint it could be pinned to.
+    #:
+    #: ** THE DOCUMENTED WORKFLOW COULD NOT FINISH WITHOUT THIS. ** A trussed roof, a
+    #: manufactured stair, a proprietary anchor: the engine computes nothing, so the item is
+    #: ``NO_CALC``, so any seal over it was ``UNPINNED`` and ``UNPINNED`` satisfies no gate.
+    #: The register said "record the seal", ``engineering/scaffold.py`` wrote the block out
+    #: COMMENTED, and there was no state in which a correctly-handled deferral ever read as
+    #: done. This is that state. It is not a weaker ``FRESH``: nothing about it is checked
+    #: against the model, which is why the envelope is recorded in words a reviewer reads.
+    ACCEPTED = "accepted"
+
+
+#: The seal states that are DONE — the two a gate may open on, and the only two.
+#:
+#: ``ACCEPTED`` belongs here and ``UNPINNED`` does not, which is the distinction the gates
+#: could not make before: an outside designer's sealed document, pinned to its own revision
+#: and digest, is the only pin a ``NO_CALC`` item can ever have, while an unpinned stamp is
+#: a stamp that says nothing about the model in front of you.
+SETTLED = frozenset({Freshness.FRESH, Freshness.ACCEPTED})
+
+
+def pinnable(record: EngineeringRecord) -> bool:
+    """Whether a fingerprint over this record means anything.
+
+    One predicate, three readers: ``cli/cmd_engineering``, ``takeoff/calc_sheet`` and the
+    IFC Pset each decided this for themselves, and one of them read ``record.inputs`` while
+    the others read ``record.status`` — which is the same answer today and need not stay so.
+    ``EngineeringRegister.freshness`` reads it too, which is the hole this closed.
+    """
+    from typehaus.engineering.item import Status
+
+    return record.status is not Status.NO_CALC and bool(record.inputs)
 
 
 def fingerprint(record: EngineeringRecord) -> str:

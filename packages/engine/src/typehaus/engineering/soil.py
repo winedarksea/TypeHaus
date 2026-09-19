@@ -54,6 +54,29 @@ SOIL_UNIT_WEIGHT_BAND_PCF: tuple[float, float] = (110.0, 130.0)
 CONCRETE_UNIT_WEIGHT_PCF = 150.0
 
 
+def displaced_soil_credit_lb(bearing_area_ft2: float, depth_ft: float) -> float:
+    """The weight of the soil a footing REPLACED, lb — a credit against its bearing demand.
+
+    **Net bearing pressure, which is the convention every geotechnical allowable is written
+    for.** A presumptive value in IBC Table 1806.2 is what the soil at that depth may carry
+    over and above the overburden it was already carrying; counting the full weight of the
+    concrete against it charges the ground twice for the same cubic feet, once as the soil
+    that was excavated and again as the concrete poured into the hole. Until 2026-09-18 this
+    engine took the gross weight, which is conservative but not free: it is what put catlin's
+    ``PD-BW-RE`` 1.5% over an allowable it is not in fact over.
+
+    Taken at the LOW end of :data:`SOIL_UNIT_WEIGHT_BAND_PCF`, and that is the whole of the
+    judgement here: a credit is conservative at its smallest, the mirror of a demand, so the
+    band is not run at both ends the way a demand term is. 110 pcf is a loose silty gravel,
+    and native ground at the north entry's depth will be denser than that.
+
+    ``depth_ft`` is the thickness of soil actually displaced — the footing's own depth, not
+    its depth below grade: the shaft above it stands in a hole that is backfilled, and this
+    engine does not model backfill density.
+    """
+    return bearing_area_ft2 * depth_ft * SOIL_UNIT_WEIGHT_BAND_PCF[0]
+
+
 @dataclass(frozen=True)
 class PresumptiveSoil:
     """What the code tables say about one declared soil group."""

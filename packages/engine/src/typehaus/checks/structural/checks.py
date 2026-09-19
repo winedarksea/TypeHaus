@@ -90,9 +90,33 @@ def header_within_prescriptive(ctx: CheckContext) -> list[Finding]:
                 f"opening {op.tag}, headed with {spec}",
                 (op.tag,), op.width_m / 0.3048,
                 getattr(source, "published_span", None), spec,
+                # ** THE LOAD BASIS THE ROW IS INDEXED AT HAS TO BE ANSWERED, AND THIS
+                # CHECK CANNOT TELL ROOF FROM FLOOR. ** So it answers with the LARGER of
+                # the two (`loads.WIDE_HEADER_LOAD_PSF`), which is the safe direction on an
+                # allowable, and answers with NOTHING where the site's ground snow is not
+                # the 50 psf those figures are derived at — an unverified guard is UNKNOWN
+                # now rather than a silent PASS, which is what this argument's absence was
+                # until 2026-09-18.
+                demand_psf=_wide_header_demand_psf(ctx),
                 fix="author Door.published_span with the manufacturer's header-table row "
                     "that sizes this beam, or leave the opening to an engineered design"))
     return out
+
+
+def _wide_header_demand_psf(ctx: CheckContext) -> float | None:
+    """The uniform load a wide header is compared against, or ``None`` off this site.
+
+    ``loads.ROOF_SNOW_PSF`` is ``0.7 Ce Ct Is Pg`` stated at Pg = 50 and derived nowhere in
+    this engine, so a site at any other ground snow gets no demand rather than a wrong one —
+    the same refusal ``checks/structural/snow.py`` makes for its own table.
+    """
+    from typehaus.loads import DERIVED_AT_GROUND_SNOW_PSF, WIDE_HEADER_LOAD_PSF
+
+    site = getattr(ctx.plan.project, "site", None) if ctx.plan is not None else None
+    ground = getattr(site, "ground_snow_load_psf", None)
+    if ground is None or abs(float(ground) - DERIVED_AT_GROUND_SNOW_PSF) > 1e-6:
+        return None
+    return WIDE_HEADER_LOAD_PSF
 
 
 @check(Tier.STRUCTURAL, "structural.floor_opening_header")

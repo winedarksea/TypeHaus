@@ -288,6 +288,12 @@ def _one(pier: _Pier) -> EngineeringRecord:
         "module stands free above grade for part of its own, so it is a column and is "
         "graded as one. Check that against the section before citing the exclusion.",
     )
+    if pier.roof_tributary_ft2 > 0.0 and pier.roof_snow_basis:
+        common = common + (
+            f"Roof snow {pier.roof_snow_psf:.1f} psf over {pier.roof_tributary_ft2:.1f} ft2 "
+            f"of roof tributary, from {pier.roof_snow_basis}. The beam this pier stands "
+            f"under is designed at the same number — see `engineering/roof_beam.py`.",
+        )
 
     if is_pedestal and cage is None:
         return _plain_pedestal(pier, area, ratio, shape, demand, common)
@@ -887,6 +893,10 @@ def _inputs(pier: _Pier, area: float, steel: float, cage: _Cage | None) -> tuple
         # reasonably conclude the demand was invented -- which is the failure this pair of
         # terms exists to make visible.
         Quantity("roof_tributary_area", pier.roof_tributary_ft2, "ft2", 0.01),
+        # The DESIGN snow, which on a house authoring `roof_beam_snow_psf` is the drifted
+        # case the beam overhead was designed for and not the ground snow. It is a
+        # fingerprint input, so raising the design snow stales a seal — correctly: the
+        # demand this record published moved with it.
         Quantity("roof_snow", pier.roof_snow_psf, "psf", 0.1),
         Quantity("carried_dead", pier.carried_dead_lb, "lb", 1.0),
         Quantity("dead_load", pier.dead_lb, "lb", 1.0),

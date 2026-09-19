@@ -1,16 +1,23 @@
 """The NDS pass on a structural glulam carrying a deck.
 
-**Not an engineering item, since 2026-09-11.** It was one: IRC Table R507.5(1) publishes
-spans for sawn lumber in nominal plies and has no row for a glulam, so the beam was
-delegated to an engineered design. What that reasoning missed is that the *supplier*
-publishes a table — Anthony/Canfor's Power Preserved Glulam Deck Guide tabulates exactly
-this beam against exactly this joist span — and reading a published table is a
-prescriptive act, not something a seal adds to. The beam is now graded against that row by
-``structural.deck_beam_span``, and this module supplies the NDS cross-check beside it.
+**An engineering item again, since 2026-09-18, and the round trip is the point.** It was
+one until 2026-09-11, when it was retired on the reasoning that the *supplier* publishes a
+table — Anthony/Canfor's Power Preserved Glulam Deck Guide tabulates exactly this beam
+against exactly this joist span — and reading a published table is a prescriptive act, not
+something a seal adds to. That reasoning is still right about the table. What it got wrong
+is which member the table describes.
 
-**The cross-check earns its place**: the deck guide's values are DRY-use, and every one of
-these beams stands in weather. The wet-service arithmetic here is what says by how much,
-and it runs as an advisory rather than a verdict.
+** THE PUBLISHED ROW IS DRY-USE AND THESE BEAMS STAND IN WEATHER. ** That was known on the
+day the kind was retired — it is written into the row's own ``condition`` string, and this
+module's wet-service arithmetic ran beside the PASS as an *advisory*. So the verdict came
+from a row that does not cover the member, and the only calculation modelling the real
+service condition was the one carrying no weight. Worse, in leaving the registered-kind
+tuple it left the seal machinery entirely: no record, no fingerprint, and — the part that
+would have caught it — **no oracle lint**, so nothing checked that its hand-worked note
+still existed or still agreed.
+
+``PublishedSpan.service_condition`` now makes the mismatch loud: the published read goes
+UNKNOWN naming it, and this record carries the verdict.
 
 **What governs, and what does not.** These are catlin's three balcony beams: 3-1/2" x
 11-7/8" preservative-treated southern yellow pine, 24F-V5M1/SP, spanning 8'-8" between the
@@ -25,24 +32,41 @@ on Fv, 0.53 on Fc-perp and 0.833 on E. A glulam design value quoted dry and used
 is the single most common way to overstate one of these by a quarter.
 
 **Hand-worked basis.** ``houses/catlin/notes/balcony_moment_columns.md`` §5;
-``tests/test_pier_calcs.py`` reproduces it. It is no longer a registered ``Oracle`` because
-there is no longer a registered kind for it to be the oracle of.
+``tests/test_pier_calcs.py`` reproduces it. It is a registered ``Oracle`` again, which is
+what ``tests/test_calc_package.py``'s lint checks.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-from typehaus.engineering.item import LimitState
+from typehaus.engineering.item import (
+    EngineeringRecord,
+    LimitState,
+    Oracle,
+    Quantity,
+    Status,
+    item_id,
+)
+from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
+
+KIND = "glulam_beam"
 
 BASIS = "AWC NDS 2018 Ch. 3 and 5, ANSI 117 combination values, wet service"
 
-#: IRC R507.1 / Table R301.5 — 40 psf live plus 10 psf dead. The same numbers
-#: ``checks/structural/deck_tables.py`` publishes, restated because ``engineering`` may not
-#: import ``checks``.
-DECK_LIVE_LOAD_PSF = 40.0
-DECK_DEAD_LOAD_PSF = 10.0
-DECK_TOTAL_LOAD_PSF = DECK_LIVE_LOAD_PSF + DECK_DEAD_LOAD_PSF
+#: Bumped whenever the arithmetic below changes.
+#:
+#: 1: the kind as it stood before 2026-09-11.
+#: 2: re-registered 2026-09-18, with ``C_D`` a parameter rather than a frozen 1.0.
+BASIS_VERSION = "2"
+
+#: IRC R507.1 / Table R301.5 — 40 psf live plus 10 psf dead, re-exported from
+#: ``typehaus/loads.py``. One definition since 2026-09-18; there were three.
+from typehaus.loads import (  # noqa: E402,F401  (DECK_TOTAL_LOAD_PSF is a re-export)
+    DECK_DEAD_LOAD_PSF,
+    DECK_LIVE_LOAD_PSF,
+    DECK_TOTAL_LOAD_PSF,
+)
 
 #: ANSI A190.1 / APA EWS combination 24F-V5M1/SP (southern pine, balanced layup), the
 #: combination Anthony Power Preserved and Boise Cascade both stock in a treated beam.
@@ -63,7 +87,15 @@ WET_E = 0.833
 
 #: AWC NDS Table 2.3.2 — the load duration factor for occupancy live load on a floor or
 #: deck. Not 1.15 (snow) and emphatically not 1.6 (wind): a deck's governing case is people.
+#:
+#: ** IT IS THE DEFAULT AND NO LONGER A CONSTANT IN THE ARITHMETIC. ** ``nds_states`` took
+#: this literal, which structurally forbade a snow case: a glulam carrying a roof rather
+#: than a deck is graded at 1.15 and there was no way to say so short of editing the module.
+#: A frozen factor is a frozen load case wearing a constant's clothing.
 LOAD_DURATION_FACTOR = 1.0
+#: AWC NDS Table 2.3.2 — snow. Named so a caller grading a roof-carrying glulam has the
+#: figure rather than a magic number.
+SNOW_LOAD_DURATION_FACTOR = 1.15
 
 #: IRC Table R301.7 — the deflection limit for a floor member under live load.
 LIVE_DEFLECTION_DENOMINATOR = 360.0
@@ -145,26 +177,30 @@ def _volume_factor(width_in: float, depth_in: float, span_ft: float) -> float:
 
 
 def nds_states(width_in: float, depth_in: float, span_ft: float,
-               joist_span_ft: float) -> tuple[LimitState, ...]:
+               joist_span_ft: float, *,
+               load_duration_factor: float = LOAD_DURATION_FACTOR,
+               live_psf: float = DECK_LIVE_LOAD_PSF,
+               dead_psf: float = DECK_DEAD_LOAD_PSF) -> tuple[LimitState, ...]:
     """The four NDS limit states for one glulam deck beam, wet service applied.
 
-    Pure arithmetic on four numbers: no model types, no findings, no records. The caller
-    decides what a ratio means — ``structural.deck_beam_span`` prints these beside a
-    published-table PASS as the cross-check that the table's dry-use values do not cover.
+    Pure arithmetic on four numbers: no model types, no findings, no records. ``C_D`` and
+    the two load intensities are PARAMETERS with a deck's values as their defaults — a
+    glulam carrying a roof is graded at snow and Table 2.3.2's 1.15, and while ``C_D`` was a
+    module constant read inside this function there was no way to express that at all.
     """
     # Half the joist span each side is this beam's strip of deck. Exact for an interior beam
     # of a regular grid and an over-count for an edge one, which is the safe direction.
     tributary_ft = joist_span_ft
-    load_plf = DECK_TOTAL_LOAD_PSF * tributary_ft
-    live_plf = DECK_LIVE_LOAD_PSF * tributary_ft
+    load_plf = (live_psf + dead_psf) * tributary_ft
+    live_plf = live_psf * tributary_ft
 
     moment_lb_in = load_plf * span_ft ** 2 / 8.0 * 12.0
     section_modulus = width_in * depth_in ** 2 / 6.0
     inertia = width_in * depth_in ** 3 / 12.0
 
     volume = _volume_factor(width_in, depth_in, span_ft)
-    fb = GLULAM_FB_PSI * WET_FB * LOAD_DURATION_FACTOR * volume
-    fv = GLULAM_FV_PSI * WET_FV * LOAD_DURATION_FACTOR
+    fb = GLULAM_FB_PSI * WET_FB * load_duration_factor * volume
+    fv = GLULAM_FV_PSI * WET_FV * load_duration_factor
     fc_perp = GLULAM_FC_PERP_PSI * WET_FC_PERP
     modulus = GLULAM_E_PSI * WET_E
 
@@ -183,7 +219,7 @@ def nds_states(width_in: float, depth_in: float, span_ft: float,
         LimitState("bending", bending_psi, fb, "psi",
                    f"AWC NDS 2018 §3.3 — Fb {GLULAM_FB_PSI:,.0f} psi (24F-V5M1/SP) x C_M "
                    f"{WET_FB:.2f} (Table 5.3.1, wet service) x C_D "
-                   f"{LOAD_DURATION_FACTOR:.2f} (Table 2.3.2, occupancy live) x C_V "
+                   f"{load_duration_factor:.2f} (Table 2.3.2) x C_V "
                    f"{volume:.3f} (§5.3.6 volume factor, x = 20)"),
         LimitState("shear parallel to grain", shear_psi, fv, "psi",
                    f"AWC NDS 2018 §3.4.3.1(a), V taken at d from the support — Fv "
@@ -194,7 +230,7 @@ def nds_states(width_in: float, depth_in: float, span_ft: float,
                    f"{WET_FC_PERP:.2f}"),
         LimitState("live-load deflection", deflection_in, deflection_limit_in, "in",
                    f"IRC Table R301.7 L/{LIVE_DEFLECTION_DENOMINATOR:.0f} on the "
-                   f"{DECK_LIVE_LOAD_PSF:.0f} psf live load alone — E "
+                   f"{live_psf:.0f} psf live load alone — E "
                    f"{GLULAM_E_PSI:,.0f} psi x C_M {WET_E:.3f}"),
     )
 
@@ -210,3 +246,139 @@ def describe_states(states: tuple[LimitState, ...]) -> str:
 def section_of(beam: Any) -> tuple[float, float] | None:
     """Public spelling of ``_section``, for the check that now owns this arithmetic."""
     return _section(beam)
+
+
+# ---------------------------------------------------------------------------------------
+# The registered kind.
+# ---------------------------------------------------------------------------------------
+
+oracled_by(
+    KIND,
+    Oracle(note="balcony_moment_columns.md", section="§5",
+           test="tests/test_pier_calcs.py"),
+)
+
+
+def _glulam_deck_beams(ctx: EngineeringContext) -> dict[str, tuple[Any, Any]]:
+    """``beam tag -> (beam, deck)`` for every glulam a ``service="deck"`` FloorSystem bears on.
+
+    **Keyed on the beam's own MATERIAL, not on the IRC table falling short.** "Off the end of
+    R507.5(1)" is the check's question and lives in ``checks/structural/deck_tables.py``,
+    which this package may not import. The material is the fact that makes the member this
+    module's business: a glulam has no nominal-ply row anywhere in the IRC, and its
+    supplier's table is dry-use.
+    """
+    from typehaus.model.floors import FloorSystem
+    from typehaus.model.structure import Beam
+    from typehaus.resolve.assembly_material import assembly_structure_material
+
+    out: dict[str, tuple[Any, Any]] = {}
+    for deck in ctx.plan.all_elements():
+        if not isinstance(deck, FloorSystem) or deck.service != "deck":
+            continue
+        for ref in deck.joists.bearing_refs or ():
+            beam = ctx.plan.by_tag(ref)
+            if not isinstance(beam, Beam):
+                continue
+            material = assembly_structure_material(ctx.plan, beam.assembly) or ""
+            if material.startswith("glulam"):
+                out.setdefault(beam.tag, (beam, deck))
+    return out
+
+
+@keys(KIND)
+def enumerate_glulam_beams(ctx: EngineeringContext) -> list[str]:
+    return sorted(_glulam_deck_beams(ctx))
+
+
+@calc(KIND)
+def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
+    beams = _glulam_deck_beams(ctx)
+    return [_one(ctx, tag, beam, deck) for tag, (beam, deck) in sorted(beams.items())]
+
+
+def _span_ft(ctx: EngineeringContext, beam: Any) -> float | None:
+    start = ctx.plan.by_tag(beam.start_node or "")
+    end = ctx.plan.by_tag(beam.end_node or "")
+    if start is None or end is None:
+        return None
+    (x0, y0), (x1, y1) = start.position.xy_m, end.position.xy_m
+    return ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5 / _M_PER_FT
+
+
+def _one(ctx: EngineeringContext, tag: str, beam: Any, deck: Any) -> EngineeringRecord:
+    ident = item_id(KIND, tag)
+    tags = (tag, deck.tag)
+    section = _section(beam)
+    span_ft = _span_ft(ctx, beam)
+    joist_span_ft = _joist_span_ft(ctx, deck)
+    missing = [name for name, value in (
+        (f"a resolvable cross-section for Beam.size {beam.size!r}", section),
+        ("two placed nodes to take the beam's span between", span_ft),
+        (f"resolved joists on {deck.tag} to take the carried span from", joist_span_ft),
+    ) if value is None]
+    if missing:
+        return EngineeringRecord(
+            item_id=ident, kind=KIND, key=tag,
+            basis_version=BASIS_VERSION, basis=BASIS, status=Status.INCOMPLETE,
+            summary=f"{tag}: the NDS pass on this glulam could not run",
+            missing=tuple(missing), element_tags=tags)
+
+    width_in, depth_in = section
+    states = nds_states(width_in, depth_in, span_ft, joist_span_ft)
+    volume = _volume_factor(width_in, depth_in, span_ft)
+    worst = max(states, key=lambda s: s.demand / s.capacity if s.capacity else 0.0)
+    over = any(not state.ok for state in states)
+
+    inputs = (
+        Quantity("width", width_in, "in", 0.001),
+        Quantity("depth", depth_in, "in", 0.001),
+        Quantity("span", span_ft, "ft", 0.01),
+        Quantity("carried_joist_span", joist_span_ft, "ft", 0.01),
+        Quantity("live_load", DECK_LIVE_LOAD_PSF, "psf", 0.1),
+        Quantity("dead_load", DECK_DEAD_LOAD_PSF, "psf", 0.1),
+        # ** THE REFERENCE VALUES AND EVERY ADJUSTMENT, IN THE FINGERPRINT. ** These are
+        # what a seal over this beam is a statement about: re-grade it at a different layup,
+        # in dry service, or at snow's C_D and the record is about a different member. The
+        # lesson `retaining_wall` learned on 2026-09-18, applied at registration rather than
+        # after the fact.
+        Quantity("Fb", GLULAM_FB_PSI, "psi", 1.0),
+        Quantity("Fv", GLULAM_FV_PSI, "psi", 1.0),
+        Quantity("Fc_perp", GLULAM_FC_PERP_PSI, "psi", 1.0),
+        Quantity("E", GLULAM_E_PSI, "psi", 1.0),
+        Quantity("C_M_bending", WET_FB, "", 0.001),
+        Quantity("C_M_shear", WET_FV, "", 0.001),
+        Quantity("C_M_bearing", WET_FC_PERP, "", 0.001),
+        Quantity("C_M_modulus", WET_E, "", 0.001),
+        Quantity("C_D", LOAD_DURATION_FACTOR, "", 0.001),
+        Quantity("C_V", volume, "", 0.001),
+        Quantity("bearing_length", BEARING_LENGTH_IN, "in", 0.01),
+    )
+    notes = (
+        f"WET SERVICE, and it is the whole reason this is an engineered item rather than a "
+        f"table read. The supplier's deck-guide row that covers this beam is published "
+        f"DRY-USE (AWC NDS 2018 Table 5.3.1 C_M: {WET_FB:.2f} on Fb, {WET_FV:.3f} on Fv, "
+        f"{WET_FC_PERP:.2f} on Fc-perp, {WET_E:.3f} on E), and this beam stands in weather "
+        f"with no enclosure above it. `structural.deck_beam_span` refuses the row on "
+        f"`PublishedSpan.service_condition` and this record carries the verdict.",
+        f"C_V {volume:.3f} (NDS §5.3.6, x = 20) and C_L are NOT cumulative — §5.3.6 takes "
+        f"the LESSER — and the joist field holds the compression edge every 16\", so C_L is "
+        f"1.0 and C_V governs. Leaving C_V out is the commonest error in a hand check here.",
+        f"Tributary is the FULL joist span ({joist_span_ft:.2f}'), not half of it: exact for "
+        f"an interior beam of a regular grid and an over-count for an edge one, which is the "
+        f"safe direction.",
+        "Not graded: lateral-torsional buckling at an unsheathed stage, connection design at "
+        "either end, the cantilever beyond the columns (IRC R507.5.1 grades that), and "
+        "long-term creep deflection.",
+        f"The member is this deep because the owner wanted planter margin, not because a "
+        f"span demanded it: {worst.name} governs at "
+        f"{worst.demand / worst.capacity:.2f} of capacity.",
+    )
+    return EngineeringRecord(
+        item_id=ident, kind=KIND, key=tag,
+        basis_version=BASIS_VERSION, basis=BASIS,
+        status=Status.OVER if over else Status.OK,
+        summary=(f"{tag}: a {width_in:g}\" x {depth_in:g}\" glulam spanning "
+                 f"{span_ft:.2f}' over a {joist_span_ft:.2f}' joist span, WET service — "
+                 f"{describe_states(states)}"),
+        inputs=inputs, limit_states=states, notes=notes, element_tags=tags)

@@ -443,9 +443,16 @@ MN_2020 = JurisdictionProfile(
         # BLOCKING since 2026-09-11, for the same reason and in the same commit as the
         # header line above: the supplier publishes a deck-guide row for the glulam IRC
         # Table R507.5(1) has none for, so this is a table read and not a deferral.
+        #
+        # ** IT IS BOTH A TABLE READ AND A DESIGN AGAIN, SINCE 2026-09-18. ** The supplier's
+        # row is published DRY-USE and these beams stand in weather, so the row is refused
+        # on `PublishedSpan.service_condition` and `engineering/glulam_beam` carries the
+        # verdict as a registered kind. A reviewer following this line reaches a record with
+        # a fingerprint and an oracle, which is what it should have reached all along.
         PermitItemSpec("Deck beams outside the beam span table",
                        ("structural.deck_beam_span",),
-                       ("IRC R507.5", "supplier's published deck beam span table")),
+                       ("IRC R507.5", "supplier's published deck beam span table",
+                        "AWC NDS 2018 Ch. 3 and 5 (wet service)")),
         # `structural.lateral_racking` reaches it when a freestanding deck's lateral system
         # is a cast column FIXED at its base rather than knee braces — R507 grades neither,
         # and a braceless deck at storey height is exactly the thing a reviewer should be

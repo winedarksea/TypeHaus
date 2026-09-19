@@ -15,6 +15,7 @@ from typehaus.engineering import (
     EngineeringResults,
     Freshness,
     LimitState,
+    SETTLED,
     Quantity,
     Status,
     fingerprint,
@@ -178,6 +179,104 @@ def test_an_item_with_no_calculation_can_be_stamped_but_never_pinned(tmp_path) -
     assert signoff is not None and signoff.id == "TRUSS-01"
     assert state is Freshness.UNPINNED
     assert state is not Freshness.FRESH
+
+
+def test_a_pin_over_a_no_calc_item_is_unpinnable_and_never_fresh(tmp_path) -> None:
+    """The other half of the case above, and the half that was a live hole.
+
+    ** THIS TEST PINNED ONLY THE UNPINNED CASE UNTIL 2026-09-18, WHICH IS WHY THE HOLE
+    SURVIVED. ** ``EngineeringRegister.freshness`` had no ``Status`` test: it compared the
+    pinned string against ``fingerprint(record)``, and a ``NO_CALC`` record has no inputs,
+    so that digest is the same empty hash every time. Any pinned value equal to it — pasted,
+    carried over from a version where the kind DID compute, or minted by calling
+    ``fingerprint()`` directly, which nothing stops — came back ``FRESH``. A seal reporting
+    itself current against a calculation that does not exist.
+
+    The three presentation layers (``cli/cmd_engineering``, ``takeoff/calc_sheet``, the IFC
+    Pset) each refused to MINT such a digest, and none of them could refuse one already in
+    the file. The refusal is ``Freshness.UNPINNABLE`` now and lives on the enum, where the
+    permit gate reads it too.
+    """
+    from typehaus.engineering import fingerprint
+
+    record = no_calc("rafter", "RF-GARAGE")
+    assert not record.inputs
+    body = ('[[signoff]]\nid="TRUSS-01"\nscope="garage roof trusses"\n'
+            'covers=["rafter/RF-GARAGE"]\nengineer="e"\nlicense="l"\n'
+            'sealed_on="2026-01-01"\n'
+            '  [signoff.fingerprint]\n'
+            f'  "rafter/RF-GARAGE" = "{fingerprint(record)}"\n')
+    register = _write(tmp_path, body)
+
+    state, signoff = register.freshness(record)
+    assert signoff is not None and signoff.id == "TRUSS-01"
+    assert state is Freshness.UNPINNABLE, "the digest MATCHES; that is exactly the problem"
+    assert state is not Freshness.FRESH
+
+    # And it does not open the gate, which is the whole point of naming the state.
+    from typehaus.checks.permit import _SEAL_ORDER
+
+    assert _SEAL_ORDER.index(Freshness.UNPINNABLE) < _SEAL_ORDER.index(Freshness.FRESH)
+
+
+_EXTERNAL = ('[[signoff]]\nid="TRUSS-01"\nscope="garage roof trusses"\n'
+             'covers=["rafter/RF-GARAGE"]\nengineer="Jane Doe, PE"\nlicense="MN 12345"\n'
+             'sealed_on="2026-01-01"\n'
+             '  [signoff.external."rafter/RF-GARAGE"]\n'
+             '  document = "docs/truss-package.pdf"\n'
+             '  revision = "Rev C, 2026-08-14"\n'
+             '  sha256 = "ABCD1234"\n'
+             '  envelope = "spans to 28-0, 73.7 psf snow, 115 mph V_ult, Exposure B"\n')
+
+
+def test_an_externally_designed_item_is_accepted_against_its_designers_document(
+        tmp_path) -> None:
+    """The ending the documented deferral workflow did not have.
+
+    A trussed roof is designed by its fabricator. There is nothing to fingerprint, so every
+    seal over it read ``UNPINNED``, and ``UNPINNED`` satisfies no gate — which meant a
+    correctly handled deferral was indistinguishable from an unsealed one forever, and
+    ``engineering/scaffold.py`` wrote the whole block out COMMENTED because there was
+    nothing useful to put in it. What is pinned instead is the designer's own paper.
+    """
+    from typehaus.checks.permit import _SEAL_ORDER
+
+    register = _write(tmp_path, _EXTERNAL)
+    record = no_calc("rafter", "RF-GARAGE")
+    state, signoff = register.freshness(record)
+    assert state is Freshness.ACCEPTED
+    assert signoff is not None
+
+    accepted = signoff.external["rafter/RF-GARAGE"]
+    assert accepted.revision == "Rev C, 2026-08-14"
+    assert accepted.sha256 == "abcd1234", "normalised, so a case difference is not a diff"
+    assert "73.7 psf snow" in accepted.envelope
+
+    # It opens the gate, which is the point, and it is not FRESH, which is also the point:
+    # nothing about it was checked against the model.
+    assert state in SETTLED and state is not Freshness.FRESH
+    assert _SEAL_ORDER.index(Freshness.ACCEPTED) < _SEAL_ORDER.index(Freshness.FRESH)
+
+
+@pytest.mark.parametrize("key", ["document", "revision", "sha256", "envelope"])
+def test_an_acceptance_missing_any_field_is_refused(tmp_path, key) -> None:
+    """All four are required. An acceptance with no envelope accepts nothing, and one with
+    no revision or digest cannot tell a reissued document from the one that was reviewed."""
+    body = "\n".join(line for line in _EXTERNAL.splitlines()
+                     if not line.strip().startswith(f"{key} ")) + "\n"
+    with pytest.raises(ValueError, match=f"missing required key `{key}`"):
+        _write(tmp_path, body)
+
+
+def test_an_item_may_not_be_both_pinned_and_externally_accepted(tmp_path) -> None:
+    """Two incompatible claims about one item: "the model has not moved" and "somebody else
+    designed this". A reader cannot act on both, so the loader refuses the file."""
+    body = _EXTERNAL.replace('sealed_on="2026-01-01"\n',
+                             'sealed_on="2026-01-01"\n'
+                             '  [signoff.fingerprint]\n'
+                             '  "rafter/RF-GARAGE" = "deadbeefdeadbeef"\n')
+    with pytest.raises(ValueError, match="BOTH a fingerprint and an"):
+        _write(tmp_path, body)
 
 
 # --- the gates --------------------------------------------------------------------------

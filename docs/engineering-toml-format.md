@@ -74,29 +74,77 @@ The fingerprint closes that. It is a 16-hex digest over:
   changes and not only when the model does,
 - the governing ratio, as a tripwire for a calc edit whose author forgot to bump the basis.
 
-Four states result:
+Six states result:
 
 | state | meaning | satisfies `--sealed`? |
 |---|---|---|
 | **fresh** | the pinned value matches what the suite computes now | yes |
-| **stale** | it does not — the model or the calculation moved after sealing | **no** |
+| **accepted** | an outside designer's sealed document covers it, pinned to that document | yes |
+| **stale** | it does not match — the model or the calculation moved after sealing | **no** |
 | **unpinned** | the signoff covers the item but pins no fingerprint | **no** — printed as "stamped, not pinned" |
+| **unpinnable** | a fingerprint is pinned over an item this engine computes nothing for | **no** |
 | **unsealed** | no signoff covers this item | no |
 
 `unpinned` deliberately does not count. A stamp that cannot go stale says nothing at all
 about the model in front of the reader, which would make the seal a decoration.
 
-An item this engine computes nothing for — a trussed roof, where the fabricator's design
-governs — has no inputs and so cannot be pinned. Its signoff is recorded and prints as
-"stamped, not pinned", and it never opens the final gate. That is correct: the engine has
-no way to notice if the roof changes under it.
+`unpinnable` is the same refusal from the other side, and it was a live hole until
+2026-09-18. A `NO_CALC` record has no inputs, so its digest is the same empty hash every
+time — and `freshness()` had no status test, so any pinned value equal to it came back
+**fresh**. The three renderers each refused to *mint* such a digest and none of them could
+refuse one already in the file. It is refused on the enum now, where the permit gate reads
+it too.
+
+### An item somebody else designed
+
+An item this engine computes nothing for — a trussed roof, a manufactured stair, a tiered
+retaining wall — has no inputs and so cannot be pinned to the model. What it **can** be
+pinned to is the outside designer's own paper:
+
+```toml
+[[signoff]]
+id = "TRUSS-01"
+scope = "garage roof trusses"
+covers = ["rafter/RF-GARAGE"]
+engineer = "Jane Doe, PE"
+license = "MN 12345"
+sealed_on = "2026-08-20"
+
+  [signoff.external."rafter/RF-GARAGE"]
+  document = "docs/truss-package.pdf"
+  revision = "Rev C, 2026-08-14"
+  sha256   = "…"
+  envelope = "spans to 28'-0\", 73.7 psf snow, 115 mph V_ult, Exposure B"
+```
+
+All four keys are required, and the item reads **accepted**, which opens the final gate.
+
+- `revision` is the supplier's own marking, not a date: a document reissued the same day is
+  a different document and has to read as one.
+- `sha256` is recorded and **never computed or verified** — the engine does not open the
+  document, the same rule `document` has always carried. It is there so a person can check
+  it, and so a revised file reads as revised.
+- `envelope` is the whole of what a reviewer checks by hand, which is why it is required
+  rather than optional: an acceptance with no envelope accepts nothing. Write it in the
+  supplier's terms and compare it to the model.
+
+An item may carry a fingerprint **or** an external acceptance, never both — one says "the
+model has not moved", the other says "somebody else designed this", and an item cannot be
+both at once. The loader refuses a file that claims both.
+
+Before this existed, such an item's seal read `unpinned` forever and `haus handoff` wrote
+its whole block out commented: a correctly handled deferral was indistinguishable from an
+unsealed one, and the workflow below had no ending. An item this engine computed and
+**failed** (`OVER`) is still written out commented, and that has not changed — a seal over a
+failure is the one thing the final gate exists to prevent.
 
 ## The two gates
 
 - **draft** — every blocking checklist item passes, and an engineered item satisfies it on
   this engine's own calculation alone. `haus print` gates here, because a draft approval is
   exactly what a permit-ready printoff is for.
-- **sealed** — draft, **and** every engineered item carries a FRESH signoff.
+- **sealed** — draft, **and** every engineered item carries a signoff that is FRESH or
+  ACCEPTED.
   `haus print --sealed`, `haus permit-check --sealed` and `haus engineering --require-seal`
   gate here.
 

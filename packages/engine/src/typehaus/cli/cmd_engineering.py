@@ -46,8 +46,14 @@ def _seal_label(state, signoff) -> tuple[str, str]:  # type: ignore[no-untyped-d
     if state is Freshness.STALE:
         # Loud on purpose. A stale seal is the only state that reads as done and is not.
         return "STALE", "red"
+    if state is Freshness.ACCEPTED:
+        return f"accepted ({signoff.id})" if signoff else "accepted", "green"
     if state is Freshness.UNPINNED:
         return f"{signoff.id} (not pinned)" if signoff else "not pinned", "yellow"
+    if state is Freshness.UNPINNABLE:
+        # Loud like STALE, and for the same reason: a pin over an item with no calculation
+        # behind it reads as done and is not.
+        return "PIN OVER NO_CALC", "red"
     return "unsealed", "yellow"
 
 
@@ -70,7 +76,7 @@ def engineering(
     """Engineered requirements: what was computed, what governs, and who sealed it."""
     from rich.table import Table
 
-    from typehaus.engineering import Freshness, Status
+    from typehaus.engineering import SETTLED, Status
     from typehaus.engineering import fingerprint as compute_fingerprint
 
     _directory, item_ids, results, register = _load(house)
@@ -93,8 +99,7 @@ def engineering(
 
     records = [results[key] for key in item_ids]
     if unsealed:
-        records = [r for r in records
-                   if register.freshness(r)[0] is not Freshness.FRESH]
+        records = [r for r in records if register.freshness(r)[0] not in SETTLED]
 
     if as_json:
         import json
@@ -133,7 +138,7 @@ def engineering(
                       f"{', '.join(r.item_id for r in over)}[/red]")
         raise typer.Exit(1)
     if require_seal:
-        missing = [r for r in records if register.freshness(r)[0] is not Freshness.FRESH]
+        missing = [r for r in records if register.freshness(r)[0] not in SETTLED]
         if missing:
             console.print(f"[red]{len(missing)} item(s) carry no fresh professional seal: "
                           f"{', '.join(r.item_id for r in missing)}[/red]")

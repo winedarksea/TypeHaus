@@ -49,6 +49,7 @@ from typehaus.engineering.retaining_basis import (
     _geometry,
     _limit_states,
     analyse,
+    material_inputs,
 )
 from typehaus.engineering.retaining_system import KIND as SYSTEM_KIND
 from typehaus.engineering.retaining_system import _loops, system_factors
@@ -73,7 +74,11 @@ KIND = "retaining_wall"
 #: stem was a footing depth short and ``H`` a footing depth short with it.
 #: 2 -> 3: a ``lateral_support="base"`` branch graded at at-rest against the
 #: court's own free body, and a ``stem flexure`` limit state on every branch.
-BASIS_VERSION = "3"
+#: 3 -> 4: the MATERIAL inputs (f'c, fy, the stem/toe/heel bars and spacings, both
+#: covers) joined the fingerprint. The arithmetic did not move; what the fingerprint
+#: COVERS did, which is the same class of change — a seal pinned under version 3 was
+#: pinned against a hash that four capacities could move underneath.
+BASIS_VERSION = "4"
 
 
 def _drainage_note(ctx: EngineeringContext, wall) -> str:  # type: ignore[no-untyped-def]
@@ -334,6 +339,14 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
         Quantity("friction_coefficient", base.friction_coefficient, "", 0.01),
         Quantity("allowable_bearing", base.allowable_bearing_psf, "psf", 1.0),
         Quantity("concrete_unit_weight", CONCRETE_UNIT_WEIGHT_PCF, "pcf", 1.0),
+        # ** WHAT MAKES CHANGING THE CONCRETE OR THE STEEL STALE THIS WALL'S SEAL. ** f'c,
+        # the bars and the covers drive four capacities through `retaining_basis` and none
+        # of them was in this tuple until 2026-09-18 — so editing W-SG-E2's mix from 5,000
+        # psi to 4,000 moved the capacities, left the status OK and left the hash unchanged.
+        # Sliding governs there, so the ratio tripwire could not catch it either. See
+        # `retaining_basis.material_inputs`.
+        *(Quantity(name, value, unit, tol)
+          for name, value, unit, tol in material_inputs(geometry)),
     ) + ((
         # What makes moving the cross-member, or moving the wall on the FAR side of the
         # court, stale THIS wall's seal. Without these two the fingerprint would cover only

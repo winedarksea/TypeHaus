@@ -132,12 +132,23 @@ class PublishedSpan(HausModel):
 
     ``engineered()`` remains for what no table publishes.
 
-    **Four of these fields are drift guards, and they are the point.** A quoted allowable
+    **Most of these fields are drift guards, and they are the point.** A quoted allowable
     is only true for the row it was read at. If the member is retyped, the spacing changes,
     the carried span grows or the check's own demand climbs past the row's load basis, the
     quotation stops describing this building — and the check must go UNKNOWN naming the
-    mismatch rather than keep printing a PASS off a stale row. That is why ``member``,
-    ``spacing``, ``carried_span`` and ``load_psf`` are here at all.
+    mismatch rather than keep printing a PASS off a stale row.
+
+    ** ``condition`` WAS CARRYING THE OTHER HALF OF THE ROW AS PROSE, AND PROSE IS NOT A
+    GUARD. ** Four guards were machine-checkable and everything else a table assumes — dry
+    service, a species and grade, a treatment, a bearing length, a deflection limit, whether
+    the row is for load from one side or two — went into one free-text sentence that the
+    check printed inside a PASS and compared against nothing. The balcony glulams are the
+    case: their deck-guide row is dry-use, they stand in weather, and the read passed. Each
+    of those is a field now, and ``published._drift`` compares every one it is given.
+
+    ** AND AN AUTHORED GUARD THE CALLER CANNOT ANSWER IS A MISMATCH, NOT AGREEMENT. ** See
+    ``published._drift``: a row that states a condition the check passed nothing for used to
+    be indistinguishable from a row that matched.
 
     Not to be confused with ``Material.panel_allowable_psf`` / ``panel_allowable_span_in``,
     which are a load-form input to a *computed* kind (`engineering/wall_panel.py` grades a
@@ -168,6 +179,31 @@ class PublishedSpan(HausModel):
     #: The carried span the row is indexed by, where it has one (a deck beam is tabulated
     #: against the joist span it picks up).
     carried_span: Length | None = None
+
+    # --- the conditions that used to live inside ``condition`` as prose ------------------
+    #: The edition of the document, where the source line does not already say it. A table
+    #: renumbers between editions and a row quoted from one is not a row in the other.
+    edition: str | None = None
+    #: The page the row is on, for the reviewer who has to open it.
+    page: str | None = None
+    #: ``"dry"`` or ``"wet"`` — the service condition the row's allowables assume. **The one
+    #: that makes the balcony glulams' read honest**: a dry-use deck-guide row says nothing
+    #: about a beam standing in weather, and until this was a field the check printed the
+    #: caveat and passed anyway.
+    service_condition: str | None = None
+    #: The species and grade the row is for — "24F-1.8E DF glulam", "No.2 SPF".
+    species_grade: str | None = None
+    #: The treatment the row assumes, where it assumes one — "none", "ACQ", "KDAT".
+    treatment: str | None = None
+    #: The minimum bearing length the row is published at.
+    min_bearing_in: float | None = None
+    #: The deflection limit the row was tabulated to — "L/360", "L/240". A span table is a
+    #: deflection table as often as a strength one, and reading an L/240 row where L/360
+    #: governs is the classic way a floor that "checks out" bounces.
+    deflection_limit: str | None = None
+    #: Whether the row is for a member loaded from BOTH sides. A beam tabulated with load on
+    #: one side, used where load arrives on two, is carrying twice what the row assumed.
+    loads_both_sides: bool | None = None
 
 
 class PublishedCapacity(HausModel):

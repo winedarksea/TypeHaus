@@ -5,12 +5,14 @@ Shared by ``engineering/deck_post.py`` (does the COLUMN carry it) and
 same load at two elevations and deriving it twice is how the two records start disagreeing
 about what the post is holding up.
 
-**This package may not import ``checks``** (see ``engineering/__init__``), so the tributary
-rule below is a deliberate re-statement of ``checks/structural/deck.py``'s and not a shared
-helper: deck area divided evenly among the posts its beams name. Both places document it as
-exact on a regular post grid and an approximation otherwise, and both print the number so a
-reviewer can disagree with it. If one moves, move the other — ``tests/test_pier_calcs.py``
-asserts they agree on the landed house, which is the only thing keeping them honest.
+**This package may not import ``checks``** (see ``engineering/__init__``), but ``checks``
+may import it — so the tributary rules here are the ONE copy and
+``checks/structural/deck.py`` reads them through ``checks/structural/_engineering.py``.
+They were two copies until 2026-09-18, and the copies had drifted: the check's half knew
+nothing of :func:`_rafter_fields` and graded the roof share at the ground snow while this
+side's beams were designed at the drift. Deck area is divided evenly among the posts its
+beams name — exact on a regular post grid, an approximation otherwise, and printed either
+way so a reviewer can disagree with it.
 
 **Oracle.** ``houses/catlin/notes/sunken_garden_piers.md``, hand-worked in a separate pass.
 """
@@ -24,10 +26,11 @@ from typing import Any
 from typehaus.engineering.registry import EngineeringContext
 from typehaus.engineering.soil import CONCRETE_UNIT_WEIGHT_PCF
 
-#: IRC R507.1 / Table R301.5 — the loads a deck is designed for. Same numbers
-#: ``checks/structural/deck_tables.py`` uses, restated here for the import rule above.
-DECK_LIVE_LOAD_PSF = 40.0
-DECK_DEAD_LOAD_PSF = 10.0
+#: IRC R507.1 / Table R301.5 — the loads a deck is designed for, re-exported from
+#: ``typehaus/loads.py``. They were restated here, and in ``engineering/glulam_beam``, and in
+#: ``checks/structural/deck_tables``: three copies of one number, each commented "if one
+#: moves, move the other".
+from typehaus.loads import DECK_DEAD_LOAD_PSF, DECK_LIVE_LOAD_PSF  # noqa: E402
 
 #: ASCE 7-16 §2.3.1 / IBC 2018 §1605.2 combination 2: ``1.2D + 1.6L``.
 DEAD_LOAD_FACTOR = 1.2
@@ -82,11 +85,18 @@ class _Pier:
     #: 50 psf and therefore the LARGER of the two. Summing the roof into the deck tributary
     #: would quietly grade it at 40 and understate the pier by a fifth of its live load.
     roof_tributary_ft2: float = 0.0
-    #: Ground snow, psf, from ``Site.ground_snow_load_psf``. Taken as the roof load flat,
-    #: with no C_e/C_t/C_s reduction: this is a pier screening load, and the reductions are
-    #: ``checks/structural/snow.py``'s business against a real roof slope this field has not
-    #: got. Conservative, and the direction a demand should err in.
+    #: The DESIGN roof snow, psf — see :func:`design_roof_snow_psf`. Where the house
+    #: authors ``preferences.toml [structural] roof_beam_snow_psf`` that number governs,
+    #: because it is the drifted case the beam overhead was designed for and a pier under
+    #: that beam carries the same load; only where it is absent does this fall back to
+    #: ``Site.ground_snow_load_psf``, flat, with no C_e/C_t/C_s reduction (a pier screening
+    #: load — the reductions are ``checks/structural/snow.py``'s business against a real
+    #: roof slope this field has not got). Reading the ground snow while the beam above
+    #: designed at the drift was a live disagreement between two successive members of one
+    #: load path, and it understated the pier.
     roof_snow_psf: float = 0.0
+    #: Where :attr:`roof_snow_psf` came from, in words, for the record to print.
+    roof_snow_basis: str = ""
     #: ``Post.vertical_reinforcement`` verbatim, or None for a plain section. Parsed by
     #: ``deck_post.parse_cage``; a string that will not parse is read as NO steel, which is
     #: the conservative direction and one the record names rather than swallows.
@@ -153,6 +163,12 @@ class _Pier:
 
     @property
     def live_lb(self) -> float:
+        """Deck occupancy at 40 psf plus roof snow at the DESIGN psf, not the ground snow.
+
+        The two are kept apart because they are different loads at different intensities;
+        summing the areas first would grade whichever is larger at the smaller number. See
+        :func:`design_roof_snow_psf` for which snow this is and why.
+        """
         return (self.tributary_ft2 * DECK_LIVE_LOAD_PSF
                 + self.roof_tributary_ft2 * self.roof_snow_psf)
 
@@ -193,6 +209,16 @@ def _round_size(size: str | None) -> tuple[float, bool] | None:
         # 6x6 -> 5.5, 4x4 -> 3.5; anything already dressed passes through.
         return (first - 0.5 if first < 8.0 else first, False)
     return None
+
+
+def post_section(size: str | None) -> tuple[float, bool] | None:
+    """``Post.size`` -> ``(least lateral dimension in, is round)``, the public name.
+
+    ``checks/structural/deck.py`` needs the same reading to weigh a shaft, and a second
+    parser for "6x6 means 5.5" is the ``post-size-nominal-silently-wrong`` trap waiting to
+    happen twice.
+    """
+    return _round_size(size)
 
 
 def _deck_tributaries(ctx: EngineeringContext) -> dict[str, float]:
@@ -389,6 +415,8 @@ def _rafter_fields(ctx: EngineeringContext) -> tuple[dict[str, float], set[str]]
     rectangle is 14.33 ft2 and ``GL-BW-ROOF`` is 16.0 ft2 — the 1.67 ft2 difference is the
     eave the rafters oversail, and it is real load on real posts.
     """
+    from typehaus.model.floors import FloorSystem
+    from typehaus.model.spatial import Roof
     from typehaus.model.structure import Beam, Post
 
     nodes = _node_positions(ctx)
@@ -397,11 +425,28 @@ def _rafter_fields(ctx: EngineeringContext) -> tuple[dict[str, float], set[str]]
         p0, p1 = nodes.get(beam.start_node), nodes.get(beam.end_node)
         return None if p0 is None or p1 is None else (p0, p1)
 
+    # ** A BEAM THAT ALREADY CARRIES A MODELLED AREA IS NOT A RAFTER FIELD, AND READING IT AS
+    # ONE COUNTED CATLIN'S GARAGE LANDING TWICE. ** The four north-entry piers carry
+    # ``FS-BW-GARAGE``, whose own polygon ``_deck_tributaries`` already divides among them;
+    # its joist carriers also happen to name two parent beams apiece, which is the shape this
+    # function keys on. So each pier collected 9.34 ft2 a SECOND time — and at the roof's snow
+    # rather than the deck's 40 psf, so the duplicate was the heavier of the two. The
+    # duplication was recorded in ``test_pier_calcs`` as a known oddity and left alone while
+    # only ``deck_post`` read it; single-sourcing the check's roof share onto this rule made
+    # it reach ``structural.deck_footing_size`` too, where it flipped a pad to FAIL. A field
+    # is only a field where nothing else has already accounted for its parents' area.
+    modelled: set[str] = set()
+    for element in ctx.plan.all_elements():
+        if isinstance(element, FloorSystem):
+            modelled.update(element.joists.bearing_refs or ())
+        elif isinstance(element, Roof):
+            modelled.update(getattr(element, "bearing_refs", ()) or ())
+
     beams = {b.tag: b for b in ctx.plan.all_elements() if isinstance(b, Beam)}
     fields: dict[frozenset[str], list[Any]] = {}
     for beam in beams.values():
         parents = frozenset(ref for ref in beam.bearing_refs or () if ref in beams)
-        if len(parents) == 2:
+        if len(parents) == 2 and not (parents & modelled):
             fields.setdefault(parents, []).append(beam)
 
     out: dict[str, float] = {}
@@ -489,6 +534,82 @@ def _roof_fields(ctx: EngineeringContext) -> tuple[dict[str, float], set[str]]:
                     out[support] = out.get(support, 0.0) + share
             accounted.add(beam.tag)
     return out, accounted
+
+
+def design_roof_snow_psf(ctx: EngineeringContext) -> tuple[float, str]:
+    """``(psf, basis)`` — the roof snow a member under a roof is designed for.
+
+    **One number for one load path.** ``engineering/roof_beam.py`` designs a roof-carrying
+    beam at ``preferences.toml [structural] roof_beam_snow_psf``, the ASCE 7 §7.7 roof-step
+    drift the house authored because this engine derives no part of drift. The pier under
+    that beam carries what the beam delivers, so it has to be graded at the same psf —
+    reading ``Site.ground_snow_load_psf`` instead had catlin's north entry designing headers
+    at 73.7 psf and their piers at 50, which is two answers about one roof.
+
+    The ground snow remains the fallback, named as such: a house with no authored design
+    snow still gets a screening load rather than a zero.
+    """
+    structural = getattr(getattr(ctx, "preferences", None), "structural", None)
+    authored = getattr(structural, "roof_beam_snow_psf", None)
+    if authored:
+        return float(authored), ("preferences.toml [structural] roof_beam_snow_psf — the "
+                                 "house's authored design snow, drift included")
+    site = getattr(ctx.plan.project, "site", None)
+    ground = getattr(site, "ground_snow_load_psf", None)
+    if ground:
+        return float(ground), ("Site.ground_snow_load_psf, flat — no design snow is "
+                               "authored, so the ground snow is taken as the roof load")
+    return 0.0, "no snow load is authored on this site"
+
+
+def roof_tributaries(ctx: EngineeringContext) -> tuple[dict[str, float], set[str]]:
+    """``post tag -> ROOF ft2``, over both roof rules, before any hand-down.
+
+    **THE roof tributary rule.** ``checks/structural/deck.py`` reads it through
+    ``checks/structural/_engineering.py`` rather than restating it: it used to carry a
+    hand-copied half of this — :func:`_roof_fields` only — which left every post under a
+    beams-on-beams field (catlin's four breezeway piers, 7.71 ft2 each) short by the whole
+    of :func:`_rafter_fields`, in the unconservative direction.
+    """
+    rafter, rafter_beams = _rafter_fields(ctx)
+    roof, roof_beams = _roof_fields(ctx)
+    out = dict(rafter)
+    for tag, share in roof.items():
+        out[tag] = out.get(tag, 0.0) + share
+    return out, rafter_beams | roof_beams
+
+
+def landed_roof_tributaries(ctx: EngineeringContext) -> tuple[dict[str, float], set[str]]:
+    """:func:`roof_tributaries`, MOVED down each post chain to what stands on the ground.
+
+    Two collections, because a post can be worth a VERDICT without being worth an AREA: the
+    first maps only the posts the load LANDS on, the second names every post the roof
+    reaches. A wood column standing on a pier keeps none of the roof it carries, but it
+    still has to be reported — as the N/A that says where its load went.
+
+    The walk is :func:`_piers_below`'s, so a post bearing through a floor system onto a beam
+    line is followed the same way :func:`cast_piers` follows it. ``cast_piers`` itself hands
+    the share down *without* taking it off the post above, because a column's own axial
+    demand includes what it carries; here it is a MOVE, because only one footing answers for
+    it.
+    """
+    raw, accounted = roof_tributaries(ctx)
+    landed: dict[str, float] = {}
+
+    def land(tag: str, share: float, seen: frozenset[str]) -> None:
+        post = ctx.plan.by_tag(tag)
+        below = ()
+        if getattr(post, "supported_by", None):
+            below = tuple(t for t in _piers_below(ctx, post) if t not in seen)
+        if not below:
+            landed[tag] = landed.get(tag, 0.0) + share
+            return
+        for below_tag in below:
+            land(below_tag, share / len(below), seen | {tag})
+
+    for tag, share in raw.items():
+        land(tag, share, frozenset())
+    return landed, set(raw)
 
 
 def _unmodelled_beams(ctx: EngineeringContext,
@@ -810,12 +931,10 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
                 if isinstance(f, Footing) and f.under}
     pads = {p.tag: p for p in ctx.plan.all_elements() if isinstance(p, Pad)}
     walls = {w.tag: w for w in ctx.plan.all_elements() if isinstance(w, FoundationWall)}
-    rafter_trib, rafter_accounted = _rafter_fields(ctx)
-    roof_trib, roof_accounted = _roof_fields(ctx)
-    unmodelled = _unmodelled_beams(ctx, rafter_accounted | roof_accounted)
+    roof_trib, roof_accounted = roof_tributaries(ctx)
+    unmodelled = _unmodelled_beams(ctx, roof_accounted)
     tributaries = _deck_tributaries(ctx)
-    site = getattr(ctx.plan.project, "site", None)
-    snow_psf = float(getattr(site, "ground_snow_load_psf", None) or 0.0)
+    snow_psf, snow_basis = design_roof_snow_psf(ctx)
     moments = _base_moments(ctx)
 
     # A post standing on another post hands its whole load down. Collect it before the
@@ -837,7 +956,7 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
             # A wood pillar, at a conventional 35 pcf rather than concrete's 150.
             dead = area / 144.0 * post.height.inches / 12.0 * 35.0
         trib = tributaries.get(post.tag, 0.0)
-        roof = rafter_trib.get(post.tag, 0.0) + roof_trib.get(post.tag, 0.0)
+        roof = roof_trib.get(post.tag, 0.0)
         for tag in below:
             handed_trib[tag] = handed_trib.get(tag, 0.0) + trib / len(below)
             handed_roof[tag] = handed_roof.get(tag, 0.0) + roof / len(below)
@@ -870,10 +989,10 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
             tag=post.tag, diameter_in=size[0], round_section=size[1],
             height_in=post.height.inches,
             tributary_ft2=tributaries.get(post.tag, 0.0) + handed_trib.get(post.tag, 0.0),
-            roof_tributary_ft2=(rafter_trib.get(post.tag, 0.0)
-                            + roof_trib.get(post.tag, 0.0)
+            roof_tributary_ft2=(roof_trib.get(post.tag, 0.0)
                             + handed_roof.get(post.tag, 0.0)),
             roof_snow_psf=snow_psf,
+            roof_snow_basis=snow_basis,
             carried_dead_lb=handed_dead.get(post.tag, 0.0),
             footing_tag=footing.tag if footing is not None else None,
             shared_wall_footing=on_wall,

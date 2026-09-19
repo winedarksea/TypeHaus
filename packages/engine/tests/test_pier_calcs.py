@@ -139,7 +139,10 @@ _ORACLE = {
         # 4.909 / 1651 while this bell was 30". Both bells are 36" since 2026-09-10 — the
         # 36" was a fossil from a 20" column and the 30" was set by nothing — which takes
         # the tightest pier in the house from d/c 0.83 to 0.60 for ~0.09 cy of concrete.
-        "bell_area_ft2": 7.069, "bearing_psf": 1182.0,
+        # NET of the 778 lb of soil the bell displaced (§3c, 110 pcf at the low end of
+        # the band) — a flat 110 psf off the 1,182 the gross convention read until
+        # 2026-09-18. See `engineering/soil.displaced_soil_credit_lb`.
+        "bell_area_ft2": 7.069, "bearing_psf": 1072.0,
         "gross_in2": 113.1, "h_over_d": 10.68, "min_steel_in2": 1.131,
         # §4c / §4d / §4e of the note.
         "cage": _FCOL_CAGE, "bars": 4, "steel_in2": 1.24,
@@ -155,7 +158,10 @@ _ORACLE = {
     "PT-SG-FCOL": {
         "tributary_ft2": 119.17, "dead_lb": 2527.0, "live_lb": 4767.0,
         "service_lb": 7294.0, "factored_lb": 10_660.0,
-        "bell_area_ft2": 7.069, "bearing_psf": 1182.0,
+        # NET of the 778 lb of soil the bell displaced (§3c, 110 pcf at the low end of
+        # the band) — a flat 110 psf off the 1,182 the gross convention read until
+        # 2026-09-18. See `engineering/soil.displaced_soil_credit_lb`.
+        "bell_area_ft2": 7.069, "bearing_psf": 1072.0,
         "gross_in2": 113.1, "h_over_d": 10.68, "min_steel_in2": 1.131,
         "cage": _FCOL_CAGE, "bars": 4, "steel_in2": 1.24,
         # ** 187,011 -> 285,893 ON 2026-09-10, AND THE SPLIT ABOVE IS CLOSED. **
@@ -608,12 +614,14 @@ def test_both_piers_are_columns_and_not_pedestals(piers) -> None:
         assert ratio > PEDESTAL_HEIGHT_RATIO
 
 
-def test_the_two_tributary_rules_agree(catlin_plan) -> None:
-    """`engineering/` may not import `checks/`, so the tributary rule is stated twice.
+def test_the_deck_tributary_rule_is_single_sourced(catlin_plan) -> None:
+    """``checks`` reads ``pier_basis``' rule; there is no second copy to hold together.
 
-    That duplication is deliberate and documented in `pier_basis`, and this is the only
-    thing that stops the two copies drifting into two different answers about what these
-    posts hold up.
+    This replaced ``test_the_two_tributary_rules_agree``, whose only job was pinning two
+    hand-copies of one rule to each other. ``checks`` may import ``engineering`` and not the
+    reverse, so the deck rule stayed one function with two readers and the ROOF rule — which
+    really was copied, and really had drifted — was deleted on the check side on 2026-09-18.
+    What is left to assert is the number itself.
     """
     from _helpers import check_context
 
@@ -650,102 +658,72 @@ def _deck_posts_everywhere(plan):
     return [post for deck in _decks(ctx) for post in _deck_posts(ctx, deck)]
 
 
-def test_the_two_ROOF_tributary_rules_agree_too(catlin_plan) -> None:
-    """The same duplication, for the rule that was only stated once until 2026-09-14.
+def test_the_roof_tributary_rule_is_single_sourced_and_reaches_both_halves(catlin_ctx) -> None:
+    """``_roof_borne_posts`` IS ``pier_basis.landed_roof_tributaries``, scaled.
 
-    ``checks/structural/deck.py::_roof_borne_posts`` is a restatement of
-    ``engineering/pier_basis._roof_fields``, added so ``structural.deck_footing_size`` could
-    reach a post that carries only a roof — ``PT-BW-RE`` and ``-RNE`` were in no deck's post
-    list at all, so converting their ``Footing`` to a ``Pad`` without it would have retired an
-    item and put nothing in its place. Both modules carry the "if one moves, move the other"
-    instruction; this is the thing that makes it more than an instruction.
+    ** WHAT THIS REPLACES, AND THE TWO DEFECTS THE REPLACEMENT CLOSED. **
+    ``test_the_two_ROOF_tributary_rules_agree_too`` pinned a hand copy of
+    ``pier_basis._roof_fields`` living in ``checks/structural/deck.py``, on the claim that
+    the package layering forbade the import. It does not — ``checks`` imports
+    ``engineering`` in some twenty places — so the copy was unnecessary, not forced, and it
+    had drifted in two directions at once. It restated only ``_roof_fields`` and not
+    ``_rafter_fields``, which the old test asserted as a documented UNDER-count rather than
+    fixing; and it scaled the share at ``Site.ground_snow_load_psf`` while the beams
+    overhead were designed at ``preferences.toml [structural] roof_beam_snow_psf``. Both are
+    gone with the copy.
 
-    **Two differences are deliberate and are asserted rather than tolerated:**
-
-    * the CHECK converts to R507.3.1's deck currency and the ENGINEERING module does not.
-      ``pier_basis`` keeps ``roof_tributary_ft2`` apart precisely so it can grade it at snow
-      rather than at 40 psf occupancy, while the table has one currency and the conversion is
-      how a roof reaches it honestly. So the two agree up to one scale factor, and the factor
-      is checked here rather than assumed;
-    * the CHECK hands a share down the post chain and ``pier_basis`` does that later, in its
-      own ``handed_*`` pass. So the comparison is made against the piers' FINAL roof
-      tributary, which is where both rules end up.
-
-    ** AND ONE DIFFERENCE THAT IS A GAP, ASSERTED HERE SO IT CANNOT BE FORGOTTEN. **
-    ``pier_basis`` also runs ``_rafter_fields``, for a roof framed as beams-on-beams with no
-    footprint polygon to read — catlin's breezeway shelter, which gives ``PT-BW-E`` and
-    ``PT-BW-GE`` 7.71 ft² of roof apiece. The check does NOT restate that: it is seventy
-    lines of geometry and a third copy would be the worse hazard. Both posts are deck posts
-    and are graded on their deck share, so what they lose is 0.31 ft² of required bearing
-    against the 3.75 and 2.25 they have — but it IS an under-count, and the assertion below
-    pins exactly which two posts carry it so the day a third appears, this fails.
+    ** AND ``_rafter_fields`` ITSELF WAS DOUBLE-COUNTING, WHICH THE OLD TEST RECORDED AND
+    LEFT. ** It keyed purely on "a beam naming two beams", which in catlin is the garage
+    landing's floor carriers — whose area ``_deck_tributaries`` already divides among the
+    same four piers. Each collected 9.34 ft2 a second time, at the roof's snow rather than
+    the deck's 40 psf. Single-sourcing made that duplicate reach
+    ``structural.deck_footing_size`` too, where it flipped ``PD-BW-W`` to FAIL — so the
+    field rule now skips a parent pair some ``FloorSystem`` or ``Roof`` has already
+    accounted for, and catlin has no rafter field left at all.
     """
-    from _helpers import check_context
-
+    from typehaus.checks.structural._engineering import engineering_context
     from typehaus.checks.structural.deck import _roof_borne_posts
     from typehaus.checks.structural.deck_tables import (
         DECK_DEAD_LOAD_PSF,
         DECK_TOTAL_LOAD_PSF,
     )
-    from typehaus.engineering.registry import EngineeringContext
-    from typehaus.resolve import resolve
+    from typehaus.engineering.pier_basis import (
+        _rafter_fields,
+        design_roof_snow_psf,
+        landed_roof_tributaries,
+    )
 
-    model, _ = resolve(catlin_plan)
-    ctx = EngineeringContext(plan=catlin_plan, model=model, soil_class="GM")
-    snow = float(getattr(catlin_plan.project.site, "ground_snow_load_psf", 0.0))
+    # The house's OWN context, not ``check_context``'s empty ``Preferences``: the authored
+    # design snow is the input under test, and a default-preferences context cannot see it.
+    ctx = catlin_ctx
+    ectx = engineering_context(ctx)
+
+    snow, basis = design_roof_snow_psf(ectx)
+    assert snow == pytest.approx(73.7), "the AUTHORED design snow, not the 50 psf ground snow"
+    assert "roof_beam_snow_psf" in basis
     scale = (DECK_DEAD_LOAD_PSF + snow) / DECK_TOTAL_LOAD_PSF
-    assert scale == pytest.approx(1.2), "catlin is 50 psf ground snow; the factor follows it"
+    assert scale == pytest.approx(1.674, abs=0.001)
 
-    from typehaus.engineering.pier_basis import _rafter_fields, _roof_fields
+    landed, subjects = landed_roof_tributaries(ectx)
+    theirs, their_subjects, their_snow = _roof_borne_posts(ctx)
+    assert their_snow == pytest.approx(snow)
+    assert their_subjects == subjects
+    for tag, area in landed.items():
+        assert theirs[tag] == pytest.approx(area * scale, rel=1e-9), tag
 
-    theirs, subjects = _roof_borne_posts(check_context(plan=catlin_plan))
-    # The canopy's four bearing posts are the subjects; the two WOOD ones hand their share
-    # down, so only the piers keep an area. A house with no roof on beams would make this
-    # vacuous, which is why the set is asserted and not merely walked.
-    assert subjects == {"PT-BW-CW", "PT-BW-CNW", "PT-BW-RE", "PT-BW-RNE"}
+    # The canopy is the whole of it, and it reaches four piers, not two. Its EAST header
+    # lands straight on PT-BW-RE/-RNE; its WEST one lands on PT-BW-CW/-CNW, two wood columns
+    # standing on PT-BW-W/-GW — so the west half arrives at the ground two posts down, which
+    # is what ``landed_roof_tributaries`` is for. The subjects set keeps naming the columns
+    # in between, because a post that hands its load on still has to be reported.
+    assert set(landed) == {"PT-BW-RE", "PT-BW-RNE", "PT-BW-W", "PT-BW-GW"}, sorted(landed)
+    assert {"PT-BW-CW", "PT-BW-CNW"} <= subjects, sorted(subjects)
+    assert all(theirs[tag] == pytest.approx(67.0, abs=0.5)
+               for tag in ("PT-BW-RE", "PT-BW-RNE"))
 
-    mine, _ = _roof_fields(ctx)
-    # Hand it down the same way the check does, so the two are compared where they land.
-    landed: dict[str, float] = {}
-    for tag, share in mine.items():
-        current = catlin_plan.by_tag(tag)
-        while getattr(current, "supported_by", None) is not None:
-            below = catlin_plan.by_tag(current.supported_by)
-            if getattr(below, "element_kind", None) != "Post":
-                break
-            current = below
-        landed[current.tag] = landed.get(current.tag, 0.0) + share
-
-    assert set(theirs) == set(landed), (sorted(theirs), sorted(landed))
-    for tag, value in sorted(theirs.items()):
-        assert value == pytest.approx(landed[tag] * scale, rel=1e-9), tag
-
-    # The gap, named. `_rafter_fields` is the rule the check does not restate.
-    rafter, _ = _rafter_fields(ctx)
-    # All four breezeway piers, 9.34 ft² each. **Every one of them is a DECK post**, which is
-    # the whole of what makes the gap tolerable: the under-count lands on posts this check
-    # already grades on their deck share, never on one that would otherwise be invisible —
-    # which is the failure `_roof_borne_posts` was written for in the first place.
-    #
-    # ** 7.71 UNTIL 2026-09-15, AND WHAT MOVED IT WAS A MEMBER LEAVING THE FIELD. ** There is
-    # exactly one beams-on-beams field in this house and its parents are the two seat beams.
-    # `BM-BW-SCSILL` used to name both of them and so counted as one of its "rafters" — a
-    # 4'-11 3/4" screen sill averaged in with `BM-BW-FC`/`-FE`, which span the whole landing.
-    # The sill now hangs off the two canopy COLUMNS instead (it never bore on the seat beams
-    # once it was shortened to the column faces), so the average span is the two carriers'
-    # own, and the field grows. Up is the safe direction here — this module's docstring is
-    # explicit that an understated tributary is an understated demand.
-    #
-    # ** AND THE FIELD IS NOT A ROOF, WHICH IS A SEPARATE AND OLDER PROBLEM. ** `_rafter_fields`
-    # keys purely on "a beam naming two beams", with no test that anything roof-like is over
-    # it, and its docstring still describes the RETIRED breezeway shelter and its `GL-BW-ROOF`
-    # glazing. What it actually reaches in catlin today is the garage landing's floor carriers.
-    # Grading an exterior landing at snow is defensible; counting it twice, once here and once
-    # as deck, is not obviously so. Not fixed here — it is recorded so it is not rediscovered.
-    assert set(rafter) == {"PT-BW-E", "PT-BW-GE", "PT-BW-W", "PT-BW-GW"}, sorted(rafter)
-    assert all(rafter[tag] == pytest.approx(9.341, abs=0.01) for tag in rafter)
-    deck_posts = {p.tag for p in _deck_posts_everywhere(catlin_plan)}
-    assert set(rafter) <= deck_posts, sorted(set(rafter) - deck_posts)
+    # And no rafter field survives the "already accounted for" gate.
+    rafter, _ = _rafter_fields(ectx)
+    assert rafter == {}, sorted(rafter)
 
 
 # ---------------------------------------------------------------------------------------
@@ -963,38 +941,59 @@ def test_no_deck_beam_is_an_engineering_item_any_more(results) -> None:
     assert "deck_beam" not in registered_kinds()
 
 
-def test_the_balcony_beams_pass_prescriptively_against_the_deck_guide(catlin_model) -> None:
-    """Six findings on three beams: the published row, and the wet-service cross-check.
+def test_the_balcony_beams_are_graded_by_the_record_the_dry_row_cannot_cover(
+        catlin_ctx) -> None:
+    """ONE finding per beam, and it is the ENGINEERED one.
 
-    Both are needed and neither is the other. The row is the verdict a reviewer can open a
-    document and confirm; the NDS line is what says how much of the row's margin weather
-    spends, which the guide's dry-use values do not.
+    ** THIS TEST ASSERTED SIX FINDINGS AND THE WRONG ONE AS THE VERDICT. ** It read: the
+    published row is the verdict a reviewer can confirm, and the NDS line beside it is an
+    advisory saying how much of the row's margin weather spends. But the guide's values are
+    DRY-USE — the row's own authored ``condition`` said so — and these beams stand in
+    weather, so the verdict was coming from a row that does not describe the member while
+    the only arithmetic modelling the real service condition carried no weight.
+
+    Since 2026-09-18 ``PublishedSpan.service_condition`` refuses the row and
+    ``engineering/glulam_beam`` is a registered kind again, carrying the verdict with a
+    record, a fingerprint and an oracle. The refusal is said out loud INSIDE that finding
+    rather than emitted as a second, UNKNOWN one: an UNKNOWN beside a PASS about one member
+    would claim nobody knows, which is false the moment the record exists, and it would
+    block the permit gate on a question the engine has answered.
     """
-    from typehaus.checks.registry import CheckContext, Preferences
     from typehaus.checks.structural.deck import deck_beam_span
     from typehaus.findings import Authority, Result
 
-    ctx = CheckContext(plan=catlin_model.plan, model=catlin_model,
-                       preferences=Preferences(), profile=None)
-    findings = [f for f in deck_beam_span(ctx)
+    findings = [f for f in deck_beam_span(catlin_ctx)
                 if any(tag in _BALCONY_SPANS for tag in f.element_tags)]
-    assert len(findings) == 6
+    assert len(findings) == 3, [f.message for f in findings]
     assert all(f.result is Result.PASS for f in findings), [f.message for f in findings]
-    assert not any(f.authority is Authority.ENGINEERED for f in findings)
-    assert not any(f.engineering_item for f in findings)
+    assert all(f.authority is Authority.ENGINEERED for f in findings)
+    assert {f.engineering_item for f in findings} == {
+        f"glulam_beam/{tag}" for tag in _BALCONY_SPANS}
 
-    published = [f for f in findings if "prescriptive read" in f.message]
-    assert len(published) == 3
-    assert all("Power Preserved Glulam Deck Guide" in f.message for f in published)
-    # The back span, not the drawn length: each beam also cantilevers 1'-8".
-    for finding in published:
-        tag = next(t for t in finding.element_tags if t in _BALCONY_SPANS)
-        assert f"{_BALCONY_SPANS[tag]:.2f}'" in finding.message, tag
+    for finding in findings:
+        # The engine DID read the supplier's table, and says why it is not using it. A
+        # record silent about an authored PublishedSpan looks like one that never looked.
+        assert "service condition of 'dry' and this member is 'wet'" in finding.message
+        assert "bearing, compression perpendicular" in finding.message
 
-    advisories = [f for f in findings if "WET SERVICE" in f.message]
-    assert len(advisories) == 3
-    assert all("bearing, compression perpendicular governs" in f.message
-               for f in advisories)
+
+def test_the_glulam_record_carries_its_wet_service_factors_in_the_fingerprint(
+        catlin_ctx) -> None:
+    """Every reference value and every adjustment is an input, so a seal covers the design.
+
+    The lesson ``retaining_wall`` learned the hard way on the same day — f'c and the bars
+    drove four capacities and were absent from its ``inputs`` — applied at registration
+    rather than after the fact. Re-grade this beam dry, at a different layup, or at snow's
+    C_D and the record is about a different member; the digest has to move with it.
+    """
+    from typehaus.engineering.glulam_beam import WET_FB, WET_FV
+
+    record = catlin_ctx.engineering["glulam_beam/BM-SG-BLC"]
+    names = {q.name: q.value for q in record.inputs}
+    assert names["C_M_bending"] == pytest.approx(WET_FB)
+    assert names["C_M_shear"] == pytest.approx(WET_FV)
+    assert {"Fb", "Fv", "Fc_perp", "E", "C_D", "C_V", "bearing_length"} <= set(names)
+    assert record.oracle and record.oracle[0].note == "balcony_moment_columns.md"
 
 
 # --- the north entry canopy: a ROOF-carrying moment column ------------------------------

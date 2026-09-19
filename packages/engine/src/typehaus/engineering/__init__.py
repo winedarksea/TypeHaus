@@ -27,6 +27,7 @@ from typehaus.engineering import (
     deck_post,  # noqa: F401  (registration)
     deferred,  # noqa: F401  (registration — the kinds this engine defers to a designer)
     girt_screw,  # noqa: F401  (registration)
+    glulam_beam,  # noqa: F401  (registration)
     post_bearing,  # noqa: F401  (registration)
     retaining_system,  # noqa: F401  (registration)
     retaining_wall,  # noqa: F401  (registration)
@@ -35,7 +36,12 @@ from typehaus.engineering import (
     wall_panel,  # noqa: F401  (registration)
 )
 from typehaus.engineering.deferred import DEFERRALS, Deferral
-from typehaus.engineering.fingerprint import Freshness, fingerprint
+from typehaus.engineering.fingerprint import (
+    SETTLED,
+    Freshness,
+    fingerprint,
+    pinnable,
+)
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
@@ -48,6 +54,7 @@ from typehaus.engineering.item import (
 from typehaus.engineering.register import (
     REGISTER_FILENAME,
     EngineeringRegister,
+    ExternalDesign,
     Signoff,
     load_register,
 )
@@ -64,10 +71,11 @@ from typehaus.engineering.registry import (
 __all__ = [
     "DEFERRALS", "Deferral",
     "EngineeringContext", "EngineeringRecord", "EngineeringRegister", "EngineeringResults",
-    "Freshness", "LimitState", "NO_ENGINEERING", "Oracle", "Quantity", "REGISTER_FILENAME",
-    "Signoff", "Status",
+    "ExternalDesign", "Freshness", "LimitState", "NO_ENGINEERING", "Oracle", "Quantity",
+    "REGISTER_FILENAME", "SETTLED", "Signoff", "Status", "pinnable",
     "calc", "fingerprint", "item_id", "keys", "load_register", "no_calc", "records_of",
-    "deck_post", "deferred", "girt_screw", "roof_beam", "registered_kinds",
+    "deck_post", "deferred", "girt_screw", "glulam_beam", "roof_beam",
+    "registered_kinds",
     "retaining_system",
     "retaining_wall", "spread_footing", "wall_panel",
 ]

@@ -224,13 +224,19 @@ def test_the_bell_carries_none_of_its_own_weight_into_these_states(tag, records)
     assert any("does not punch itself" in note for note in record.notes)
 
     # And the bearing state on the same record still DOES include it, which is the whole
-    # point. Back-solve it: bearing x area must return the service load PLUS the bell's own
-    # 150 pcf, and must exceed the service load alone by exactly that.
+    # point. Back-solve it: bearing x area must return the service load plus the bell's own
+    # 150 pcf, LESS the soil that bell displaced — a presumptive allowable is a NET pressure
+    # and charging the ground for the excavated soil as well as the concrete poured into the
+    # hole counts the same cubic feet twice (2026-09-18, `engineering/soil`). At a 12" bell
+    # the two are a flat 150 and 110 psf, so the net is exactly 40 psf over the service
+    # pressure where it used to be 150.
     inputs = {q.name: q.value for q in record.inputs}
     service_lb = inputs["dead_load"] + inputs["live_load"]
     area_ft2 = area_in2 / 144.0
     bell_weight_lb = area_ft2 * 1.0 * 150.0            # a 12"-thick bell at 150 pcf
+    displaced_lb = area_ft2 * 1.0 * 110.0              # and the soil it replaced, low end
+    assert inputs["displaced_soil"] == pytest.approx(displaced_lb, rel=0.001)
     bearing = _state(record, "bearing")
     assert bearing.demand == pytest.approx(
-        (service_lb + bell_weight_lb) / area_ft2, rel=0.001)
-    assert bearing.demand - service_lb / area_ft2 == pytest.approx(150.0, rel=0.001)
+        (service_lb + bell_weight_lb - displaced_lb) / area_ft2, rel=0.001)
+    assert bearing.demand - service_lb / area_ft2 == pytest.approx(40.0, rel=0.001)

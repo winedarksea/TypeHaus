@@ -323,7 +323,9 @@ def permit_check(
         colors = {Result.PASS: "green", Result.FAIL: "red", Result.UNKNOWN: "yellow",
                   Result.NOT_APPLICABLE: "dim"}
 
-        seal_colors = {Freshness.FRESH: "green", Freshness.STALE: "red",
+        seal_colors = {Freshness.FRESH: "green", Freshness.ACCEPTED: "green",
+                       Freshness.STALE: "red",
+                       Freshness.UNPINNABLE: "red",
                        Freshness.UNPINNED: "yellow", Freshness.UNSEALED: "yellow"}
 
         def _render(rows, title: str, *, seals: bool = False) -> None:

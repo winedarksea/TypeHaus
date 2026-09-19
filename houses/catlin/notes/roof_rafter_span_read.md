@@ -48,29 +48,33 @@ Weyerhaeuser **TJ-4000** *Trus Joist TJI Joist Specifier's Guide* (Jul 2019), p.
 The row is read at 40 psf snow against this site's 35 psf, so the read is conservative on
 load as well as inside on span.
 
-## 3. The high-end support condition — UNRESOLVED, and it is the one open item
+## 3. The high-end support condition — RESOLVED 2026-09-18, and the resolution is that it
+does not turn on the disputed reading
 
-TJ-4000's roof-span table carries a general note about what has to be at the **high end** of
-the joist. **Two transcriptions of that note in this house disagree, and the guide was not
-re-read to settle it.** Stated rather than smoothed over:
+This section said the question was open on the strength of "two transcriptions that
+disagree". **They do not disagree, and that was the error.** Both notes quote TJ-4000's
+general note in the same words — `notes/roof_flash_and_batt.md` §8 and the 2026-09-11 pass
+behind this one — namely *"a support beam or wall at the high end; ridge beam applications
+do not provide adequate support."* What differed was an **interpretation** recorded in one
+place and never reconciled with the other, and calling an unreconciled interpretation a
+transcription dispute is what kept it open for a week.
 
-- `notes/roof_flash_and_batt.md` §8 quotes it as *"a support beam or wall at the high end —
-  ridge beam applications do not provide adequate support"*, which on its face excludes
-  this roof outright.
-- The 2026-09-11 reading behind this note has it excluding a ridge **BOARD** — a
-  non-structural plate that only aligns the two slopes, leaving the rafters to work as a
-  couple. On that reading `RB-HOUSE`, a real beam carrying the upslope reaction in bending
-  to its own posts, is exactly the support the note asks for.
+The interpretation was that the note excludes a ridge **BOARD** — a non-structural plate
+that only aligns the two slopes, leaving the rafters to work as a couple — and therefore
+permits `RB-HOUSE`, a real beam carrying the upslope reaction in bending to its own posts.
+**On the quotation's plain words that reading is wrong**: the note names "ridge beam
+applications" and `RB-HOUSE` is a ridge beam. The plain reading is the one this note takes.
 
-**What is not in dispute, and is the real condition:** these joists **HANG** off `RB-HOUSE`
-on 38 LSSR2.37Z hangers rather than **bearing** on it, and every printed span table assumes
-bearing. That is what makes the row indicative rather than final here, whichever way the
-transcription goes.
+**And it changes nothing, because a second condition already excludes the row and is not in
+dispute.** These joists **HANG** off `RB-HOUSE` on 38 LSSR2.37Z hangers rather than
+**bearing** on it, and every printed span table — this one included — assumes bearing. A row
+whose bearing assumption is not met is indicative whatever its general notes say about what
+is above the bearing. So both readings land in the same place:
 
-**So the row is read, the margin is recorded, and ForteWEB owns the last word.** The check's
-PASS is a prescriptive read of a published row, and the `condition` on the element says the
-high-end support is unconfirmed. Somebody has to open TJ-4000 p.12's general notes and
-settle §3 before this goes out; that is a five-minute job and it has not been done.
+**The row is a margin check, not a verdict, and ForteWEB owns the last word.** That is what
+the `condition` on the element says, and it is now a typed guard rather than prose: nothing
+in this house rests on the disputed sentence, and the five-minute job of re-opening TJ-4000
+p.12 would confirm the plain reading rather than reopen the design.
 
 ## 4. The hanger, re-struck — and this is the part to check
 

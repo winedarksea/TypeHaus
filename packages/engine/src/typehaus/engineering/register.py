@@ -39,7 +39,7 @@ try:  # tomllib is stdlib on 3.11+; the engine still supports 3.9
 except ModuleNotFoundError:  # pragma: no cover - exercised on <3.11 only
     import tomli as tomllib  # type: ignore[no-redef,import-not-found]
 
-from typehaus.engineering.fingerprint import Freshness, fingerprint
+from typehaus.engineering.fingerprint import Freshness, fingerprint, pinnable
 from typehaus.engineering.item import EngineeringRecord
 
 REGISTER_FILENAME = "engineering.toml"
@@ -50,6 +50,37 @@ REGISTER_FILENAME = "engineering.toml"
 PLACEHOLDER = ("<<", ">>")
 
 _REQUIRED = ("id", "scope", "covers", "engineer", "license", "sealed_on")
+
+
+@dataclass(frozen=True)
+class ExternalDesign:
+    """An outside designer's sealed document, and what it was issued for.
+
+    **What a deferred item is pinned to instead of a fingerprint.** A trussed roof is
+    designed by its fabricator; this engine computes nothing for it, so there are no inputs
+    to hash and nothing that could go stale when the roof changes. Pinning the DOCUMENT is
+    the honest substitute: a revision and a sha256 say which paper was accepted, and the
+    envelope says what it was accepted FOR — the spans, loads and conditions the supplier
+    ran it at. A reviewer compares that envelope to the model; the engine cannot, and does
+    not pretend to.
+
+    The engine does not open the document and does not verify the digest. That is the same
+    rule ``document`` has carried since this file existed, and for the same reason: claiming
+    to have checked a PDF's contents would be a worse lie than not carrying one. The digest
+    is there so a person can check it, and so that a REVISED document read as revised.
+    """
+
+    #: Path or reference to the sealed document, as the person recorded it.
+    document: str
+    #: The supplier's own revision marking — "Rev C, 2026-08-14". Not a date: a document
+    #: reissued the same day is a different document and must read as one.
+    revision: str
+    #: sha256 of that document, lowercase hex. The engine records it and never computes it.
+    sha256: str
+    #: The geometry and load envelope the document was issued for, in the supplier's terms.
+    #: This is the whole of what a reviewer has to check by hand, so it is required rather
+    #: than optional — an acceptance with no envelope is an acceptance of nothing.
+    envelope: str
 
 
 @dataclass(frozen=True)
@@ -69,10 +100,18 @@ class Signoff:
     #: and never satisfies the final gate, because a stamp that cannot go stale is a stamp
     #: that says nothing about the model in front of you.
     fingerprints: Mapping[str, str] = None  # type: ignore[assignment]
+    #: item id -> the outside designer's document this item is accepted against, for an item
+    #: this engine computes nothing for. See :class:`ExternalDesign`. An item may carry this
+    #: OR a fingerprint and not both: one says "the model has not moved", the other says
+    #: "somebody else designed this and here is their paper", and an item cannot be
+    #: both at once.
+    external: Mapping[str, ExternalDesign] = None  # type: ignore[assignment]
 
     def __post_init__(self) -> None:
         if self.fingerprints is None:
             object.__setattr__(self, "fingerprints", {})
+        if self.external is None:
+            object.__setattr__(self, "external", {})
 
     def credit(self) -> str:
         """"Jane Doe, PE (MN 12345), 2026-09-14" — the line A-000 and S-105 letter."""
@@ -101,9 +140,20 @@ class EngineeringRegister:
         signoff = self.covering(record.item_id)
         if signoff is None:
             return Freshness.UNSEALED, None
+        # Before the fingerprint, because an externally designed item HAS no fingerprint to
+        # compare and the answer is not "unpinned".
+        if record.item_id in signoff.external:
+            return Freshness.ACCEPTED, signoff
         pinned = signoff.fingerprints.get(record.item_id)
         if not pinned:
             return Freshness.UNPINNED, signoff
+        # ** THE STATUS TEST, AND IT GOES BEFORE THE COMPARISON. ** A `NO_CALC` record has
+        # no inputs, so `fingerprint()` digests the same empty set every time and any pinned
+        # value that happens to equal it read FRESH here — a seal reporting itself current
+        # against a calculation that does not exist. The three renderers refused to MINT
+        # such a digest; none of them could refuse one already in the file.
+        if not pinnable(record):
+            return Freshness.UNPINNABLE, signoff
         if pinned == fingerprint(record):
             return Freshness.FRESH, signoff
         return Freshness.STALE, signoff
@@ -161,13 +211,55 @@ def _signoff(entry: Any, path: Path, index: int) -> Signoff:
         # and provides none — nothing consults it. Loudly wrong beats quietly inert.
         raise ValueError(f"{where} (`{entry['id']}`): [signoff.fingerprint] pins "
                          f"{', '.join(unknown_pins)}, which `covers` does not list")
+    external = _external(entry, where, covers, set(prints))
     return Signoff(
         id=str(entry["id"]), scope=str(entry["scope"]), covers=tuple(covers),
         engineer=str(entry["engineer"]), license=str(entry["license"]),
         sealed_on=sealed_on,
         document=entry.get("document"), note=entry.get("note"),
-        fingerprints=dict(prints),
+        fingerprints=dict(prints), external=external,
     )
+
+
+_EXTERNAL_REQUIRED = ("document", "revision", "sha256", "envelope")
+
+
+def _external(entry: dict[str, Any], where: str, covers: list[str],
+              pinned: set[str]) -> dict[str, ExternalDesign]:
+    """``[signoff.external."<item id>"]`` -> :class:`ExternalDesign`, strictly.
+
+    Every key is required. An acceptance missing its envelope accepts nothing, and one
+    missing its revision or digest cannot tell a reissued document from the one that was
+    actually reviewed — which is the failure mode this whole block exists to close.
+    """
+    tables = entry.get("external", {})
+    if not isinstance(tables, dict):
+        raise ValueError(f"{where} (`{entry['id']}`): [signoff.external] must be a table "
+                         f"of item id -> document")
+    unknown = sorted(set(tables) - set(covers))
+    if unknown:
+        raise ValueError(f"{where} (`{entry['id']}`): [signoff.external] accepts "
+                         f"{', '.join(unknown)}, which `covers` does not list")
+    both = sorted(set(tables) & pinned)
+    if both:
+        # One says "the model has not moved"; the other says "somebody else designed this".
+        # An item carrying both is a claim nobody can act on.
+        raise ValueError(f"{where} (`{entry['id']}`): {', '.join(both)} carries BOTH a "
+                         f"fingerprint and an [signoff.external] acceptance — an item is "
+                         f"pinned to this model or to somebody else's document, not both")
+    out: dict[str, ExternalDesign] = {}
+    for item_id, table in tables.items():
+        spot = f"{where} (`{entry['id']}`): [signoff.external.\"{item_id}\"]"
+        if not isinstance(table, dict):
+            raise ValueError(f"{spot} is not a table")
+        _refuse_placeholders(table, spot)
+        for key in _EXTERNAL_REQUIRED:
+            if not str(table.get(key, "")).strip():
+                raise ValueError(f"{spot} is missing required key `{key}`")
+        out[item_id] = ExternalDesign(
+            document=str(table["document"]), revision=str(table["revision"]),
+            sha256=str(table["sha256"]).lower(), envelope=str(table["envelope"]))
+    return out
 
 
 def _refuse_placeholders(entry: dict[str, Any], where: str) -> None:

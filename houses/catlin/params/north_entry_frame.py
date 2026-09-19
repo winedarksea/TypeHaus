@@ -387,11 +387,18 @@ beam(10, "BM-BW-SCSILL", LANDING_WEST_FT, PIER_LINE_Y_FT + COLUMN_HALF_FT,
 #
 # What changed is that the check learned the roof. `checks/structural/deck.py::_roof_borne_posts`
 # converts a post's roof-footprint share into the DECK currency R507.3.1 is written in —
-# `(DECK_DEAD_LOAD_PSF + Site.ground_snow_load_psf) / DECK_TOTAL_LOAD_PSF`, 1.2 here — so the
+# `(DECK_DEAD_LOAD_PSF + design snow) / DECK_TOTAL_LOAD_PSF`, **1.674** here — so the
 # snow arrives at the table as equivalent area rather than being dropped. **PT-BW-RE and
 # PT-BW-RNE are why that had to be built first**: they carry only `BM-BW-RE`, a roof header,
 # so they were not in any deck's post list at all — not graded at zero, not graded — and
 # deleting their Footing without it would have removed an item and put nothing in its place.
+#
+# ** THE SNOW IN THAT FACTOR IS THE DESIGN SNOW, NOT THE GROUND SNOW, SINCE 2026-09-18. **
+# It read `Site.ground_snow_load_psf` (50) while `BM-BW-RE` overhead was designed at
+# `preferences.toml [structural] roof_beam_snow_psf` (73.7, the ASCE 7 §7.7 roof-step drift
+# off the house gable) — two answers about one roof, one storey apart, with the lighter of
+# them under the heavier. The factor rose 1.2 -> 1.674 and the canopy share with it, 48 ->
+# 67 ft² of equivalent deck. See `engineering/pier_basis.design_roof_snow_psf`.
 #
 # **The pour does not change.** `resolve/envelope.py` already drew a post-hosted Footing as a
 # SQUARE of side `width`, so the same concrete is in the same place; see `_pad_outline`.

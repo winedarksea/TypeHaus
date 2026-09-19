@@ -23,10 +23,15 @@ Three shapes, and the difference is whether it is honest to pre-fill anything:
 * **INCOMPLETE** — computed, but an input is missing. The block is present and uncommented,
   headed by the union of what is missing, because a PE may well be the person who supplies
   it; the fingerprints are populated so the stamp pins the model it was made against.
-* **NO_CALC / OVER** — deferred to somebody else's design, or over capacity. The block is
-  written out entirely COMMENTED, with the deferral's designer and deliverable and no
-  fingerprint at all: there is nothing to pin, and an unpinned seal never satisfies
-  ``--require-seal``.
+* **NO_CALC** — deferred to somebody else's design. The block is UNCOMMENTED and carries an
+  ``[signoff.external]`` acceptance per item instead of a fingerprint: the supplier's
+  document, its revision, its sha256 and the envelope it was issued for. There is no model
+  fingerprint such an item could have, which is why this exists — until 2026-09-18 the block
+  was written out entirely commented and a correctly handled deferral could never satisfy
+  ``--require-seal`` at all, so the workflow this file documents had no ending.
+* **OVER** — this engine computed it and it does not pass. Still written out entirely
+  COMMENTED, and that has not changed: a seal over a failure is the one thing the final gate
+  exists to prevent, and no outside document makes it a different failure.
 """
 
 from __future__ import annotations
@@ -41,6 +46,9 @@ ENGINEER = "<<ENGINEER NAME, PE>>"
 LICENSE = "<<STATE 00000>>"
 SEALED_ON = "<<YYYY-MM-DD>>"
 DOCUMENT = "<<path/to/sealed.pdf>>"
+REVISION = "<<supplier's revision marking, e.g. Rev C 2026-08-14>>"
+SHA256 = "<<sha256 of that document, lowercase hex>>"
+ENVELOPE = "<<the spans, loads and conditions the document was issued for>>"
 
 _HEADER = """\
 # THIS FILE IS NOT A SEAL.
@@ -87,7 +95,9 @@ def scaffold_register(records: Iterable[EngineeringRecord], *, house: str, gener
 
 def _block(kind: str, records: Sequence[EngineeringRecord]) -> str:
     statuses = {record.status for record in records}
-    if statuses <= {Status.NO_CALC} or Status.OVER in statuses:
+    if Status.OVER in statuses:
+        return _over_block(kind, records)
+    if statuses <= {Status.NO_CALC}:
         return _deferred_block(kind, records)
     lines = [f"# --- {kind} ({len(records)} item(s)) " + "-" * max(1, 56 - len(kind))]
     missing = sorted({text for record in records for text in record.missing})
@@ -100,33 +110,51 @@ def _block(kind: str, records: Sequence[EngineeringRecord]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def _deferred_block(kind: str, records: Sequence[EngineeringRecord]) -> str:
-    """A kind this engine computes nothing for: commented out, and it says who owns it."""
-    from typehaus.engineering.deferred import DEFERRALS
-
-    deferral = DEFERRALS.get(kind)
+def _over_block(kind: str, records: Sequence[EngineeringRecord]) -> str:
+    """A kind this engine computed and FAILED: commented out, and it says which items."""
     over = [record for record in records if record.status is Status.OVER]
-    lines = [f"# --- {kind} ({len(records)} item(s)) " + "-" * max(1, 56 - len(kind)), "#"]
-    if over:
-        lines.append("# OVER CAPACITY — this engine computed these and they do not pass. A")
-        lines.append("# seal over them would be a seal over a failure; fix the design first.")
-        lines.extend(f"#   {record.item_id}: {record.describe()}" for record in over)
-    else:
-        lines.append("# DEFERRED — this engine computes nothing here, by decision, so there")
-        lines.append("# is nothing to fingerprint and a seal recorded below could not be")
-        lines.append("# pinned. Left entirely commented out on purpose.")
-        if deferral is not None:
-            lines.append(f"#   designer:    {deferral.designer}")
-            lines.append(f"#   deliverable: {deferral.deliverable}")
-            lines.append(f"#   unblocks:    {deferral.unblocks}")
+    lines = [f"# --- {kind} ({len(records)} item(s)) " + "-" * max(1, 56 - len(kind)), "#",
+             "# OVER CAPACITY — this engine computed these and they do not pass. A",
+             "# seal over them would be a seal over a failure; fix the design first."]
+    lines.extend(f"#   {record.item_id}: {record.describe()}" for record in over)
     lines.append("#")
     lines.extend("# " + line if line else "#"
                  for line in _signoff_lines(kind, records, pin=False))
     return "\n".join(lines) + "\n"
 
 
+def _deferred_block(kind: str, records: Sequence[EngineeringRecord]) -> str:
+    """A kind this engine computes nothing for: an EXTERNAL acceptance, and who owns it.
+
+    ** THIS BLOCK USED TO BE WRITTEN OUT COMMENTED, WHICH LEFT THE WORKFLOW WITH NO ENDING.
+    ** The reasoning was sound as far as it went — there is nothing to fingerprint, and an
+    unpinned seal never satisfies ``--require-seal`` — but the conclusion it reached was
+    that a correctly handled deferral is indistinguishable from an unsealed one forever.
+    A trussed roof IS designed, by its fabricator, and the thing to pin is that designer's
+    document: its revision, its digest and the envelope it was issued for. So the block is
+    live now and carries ``[signoff.external]`` in place of ``[signoff.fingerprint]``.
+    """
+    from typehaus.engineering.deferred import DEFERRALS
+
+    deferral = DEFERRALS.get(kind)
+    lines = [f"# --- {kind} ({len(records)} item(s)) " + "-" * max(1, 56 - len(kind)), "#",
+             "# DEFERRED — this engine computes nothing here, by decision, so there is",
+             "# nothing to fingerprint. Fill in [signoff.external] instead: the designer's",
+             "# own document, its revision, its sha256 and the envelope it was issued for.",
+             "# The engine records all four and verifies none of them — it does not open the",
+             "# document. The ENVELOPE is the reviewer's check by hand, so write it in the",
+             "# supplier's own terms and compare it to the model."]
+    if deferral is not None:
+        lines.append(f"#   designer:    {deferral.designer}")
+        lines.append(f"#   deliverable: {deferral.deliverable}")
+        lines.append(f"#   unblocks:    {deferral.unblocks}")
+    lines.append("#")
+    lines.extend(_signoff_lines(kind, records, pin=False, external=True))
+    return "\n".join(lines) + "\n"
+
+
 def _signoff_lines(kind: str, records: Sequence[EngineeringRecord],
-                   *, pin: bool = True) -> list[str]:
+                   *, pin: bool = True, external: bool = False) -> list[str]:
     scope = _scope(kind, records)
     lines = [
         "[[signoff]]",
@@ -145,6 +173,14 @@ def _signoff_lines(kind: str, records: Sequence[EngineeringRecord],
         lines.append("[signoff.fingerprint]  # computed — do not edit")
         for record in records:
             lines.append(f'"{record.item_id}" = "{fingerprint(record)}"')
+    if external:
+        for record in records:
+            lines.append("")
+            lines.append(f'[signoff.external."{record.item_id}"]')
+            lines.append(f'document = "{DOCUMENT}"')
+            lines.append(f'revision = "{REVISION}"')
+            lines.append(f'sha256 = "{SHA256}"')
+            lines.append(f'envelope = "{ENVELOPE}"')
     lines.append("")
     return lines
 
