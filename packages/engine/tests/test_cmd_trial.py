@@ -69,3 +69,38 @@ def test_json_is_the_same_scorecard_and_names_its_coverage_gaps(runner) -> None:
 def test_a_bad_check_set_is_refused_rather_than_guessed(runner) -> None:
     result = runner.invoke(app, ["trial", str(_CATLIN), "--checks", "nonsense"])
     assert result.exit_code == 2, result.output
+
+
+def test_no_suppress_round_trips_and_sees_the_open_campaign(runner) -> None:
+    """catlin blanket-suppresses `mep.run_interference`, so a suppressed baseline records
+    ZERO of them and a route that made things worse scores clean. The flag is the
+    instrument."""
+    assert runner.invoke(
+        app, ["trial", str(_CATLIN), "--record", "--no-suppress"]).exit_code == 0
+    payload = json.loads((_CATLIN / BASELINE_PATH).read_text())
+    assert payload["suppress"] is False
+    interference = [row for row in payload["findings"]
+                    if row["check_id"] == "mep.run_interference"]
+    assert interference, "the campaign is invisible without --no-suppress"
+
+    result = runner.invoke(app, ["trial", str(_CATLIN), "--no-suppress"])
+    assert result.exit_code == 0, result.output
+    assert "no finding changed" in result.output
+
+
+def test_a_baseline_and_a_score_that_disagree_about_suppression_are_refused(runner) -> None:
+    assert runner.invoke(
+        app, ["trial", str(_CATLIN), "--record", "--no-suppress"]).exit_code == 0
+    result = runner.invoke(app, ["trial", str(_CATLIN)])
+    assert result.exit_code == 2, result.output
+    assert "suppression" in result.output
+
+
+def test_the_suppressed_baseline_hides_the_campaign_which_is_the_bug(runner) -> None:
+    """Pinned as the reason the flag exists: with suppression on, the 188 are simply not
+    in the payload at all."""
+    assert runner.invoke(app, ["trial", str(_CATLIN), "--record"]).exit_code == 0
+    payload = json.loads((_CATLIN / BASELINE_PATH).read_text())
+    assert payload["suppress"] is True
+    assert not [row for row in payload["findings"]
+                if row["check_id"] == "mep.run_interference"]

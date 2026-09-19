@@ -41,10 +41,9 @@ MEP_PREFIXES = ("mep.", "integrity.", "structural.member_interference")
 #: a clean one — because an absent finding reads as a pass, and a loop that iterates on the
 #: report is the one reader who cannot recover from that.
 KNOWN_GAPS: tuple[str, ...] = (
-    "run-vs-run interference outside a shared soffit or duct bay is not graded — "
-    "mep.run_interference is Phase 2b",
-    "stud bores and notches are not graded — R502.8/R602.6 are still on the "
-    "jurisdiction profile's not-covered list until Phase 2b",
+    "mep.run_interference and mep.run_through_stud ARE graded, and this house "
+    "blanket-suppresses both — a trial with suppression on cannot see the open "
+    "campaign's score at all. Run --no-suppress to score against it",
     "a proposal's fittings are counted from turns, never modelled — Phase 5",
 )
 
@@ -123,8 +122,20 @@ def _digest(row: dict) -> str:
     return hashlib.sha256(payload.encode()).hexdigest()[:16]
 
 
-def record(directory: Path) -> dict:
-    """Build the baseline payload for the house as it now stands. Every tier, every run."""
+def record(directory: Path, *, suppress: bool = True) -> dict:
+    """Build the baseline payload for the house as it now stands. Every tier, every run.
+
+    ``suppress=False`` lifts ``[checks] suppress`` for this record alone, the way
+    ``checks/run.run`` does. Without it a house working an open campaign — catlin
+    blanket-suppresses ``mep.run_interference`` — records *zero* of the very findings the
+    loop is trying to move, and a route that made things worse scores clean.
+
+    The flag is written into the payload and :func:`score` refuses a mismatch: a baseline
+    taken suppressed and scored unsuppressed reports every suppressed finding as NEW, and
+    the reverse reports every one of them as fixed. Both are worse than no scorecard.
+    """
+    from dataclasses import replace
+
     from typehaus import engine_version
     from typehaus.checks import build_context, run_checks
     from typehaus.resolve import resolve
@@ -136,21 +147,43 @@ def record(directory: Path) -> dict:
         raise ValueError("the house does not load; there is nothing to record")
     model, _findings = resolve(loaded.plan)
     ctx, _ = build_context(model.plan, directory)
+    if not suppress:
+        # ctx is freshly built above and belongs to this call, so clearing the field on it
+        # cannot reach another reader; `replace` keeps every other preference intact.
+        ctx.preferences = replace(ctx.preferences, suppressed=frozenset())
     report = run_checks(ctx)
     return {
         "house": str(directory),
         "content_hash": loaded.content_hash,
         "engine": engine_version(),
         "profile": getattr(ctx.profile, "name", ""),
+        "suppress": suppress,
         "findings": [_row(f) for f in report.findings],
         "runs": {row["tag"]: {"digest": _digest(row), "row": row}
                  for row in run_schedule(model)},
     }
 
 
-def score(directory: Path, baseline: dict, *, checks: str = "mep") -> Scorecard:
-    """Diff the tree against ``baseline``, filtered to the chosen check set."""
-    current = record(directory)
+def score(directory: Path, baseline: dict, *, checks: str = "mep",
+          suppress: bool = True) -> Scorecard:
+    """Diff the tree against ``baseline``, filtered to the chosen check set.
+
+    Refuses outright when the baseline was recorded under the other suppression setting.
+    A scorecard is a difference of two measurements and two measurements of different
+    things do not have one.
+    """
+    # A baseline written before the flag existed carries no key; it was recorded
+    # suppressed, which is what the old `record` did unconditionally.
+    was = bool(baseline.get("suppress", True))
+    if was != suppress:
+        raise ValueError(
+            f"the baseline was recorded with suppression {'ON' if was else 'OFF'} and "
+            f"this trial is scoring with it {'ON' if suppress else 'OFF'}. Every "
+            "suppressed finding would read as new (or as fixed) and the scorecard would "
+            "be nonsense — re-record with "
+            f"`haus trial {directory} --record"
+            f"{'' if suppress else ' --no-suppress'}`")
+    current = record(directory, suppress=suppress)
     card = Scorecard(house=str(directory),
                      baseline_hash=baseline.get("content_hash", ""),
                      current_hash=current["content_hash"],
@@ -194,13 +227,18 @@ def score(directory: Path, baseline: dict, *, checks: str = "mep") -> Scorecard:
     for tag in sorted(set(old_runs) - set(current["runs"])):
         card.moved_runs.append({"tag": tag, "status": "deleted"})
 
-    card.coverage = _coverage(card)
+    card.coverage = _coverage(card, suppress=suppress)
     return card
 
 
-def _coverage(card: Scorecard) -> list[str]:
-    """What this scorecard cannot see. Stated, because a silent hole reads as a pass."""
-    out = list(KNOWN_GAPS)
+def _coverage(card: Scorecard, *, suppress: bool = True) -> list[str]:
+    """What this scorecard cannot see. Stated, because a silent hole reads as a pass.
+
+    The suppression gap is the first line and is dropped under ``--no-suppress`` — it is
+    the one entry that a flag actually closes, and leaving it printed there would teach a
+    reader to ignore the block.
+    """
+    out = [g for g in KNOWN_GAPS if suppress or "suppress" not in g]
     if card.moved_runs and not (card.new_fail or card.new_unknown):
         out.append("runs moved and no MEP finding changed, which may mean the move is "
                    "clean or may mean nothing grades it — check the two lines above")

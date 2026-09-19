@@ -70,3 +70,46 @@ def test_the_coverage_lines_are_printed_even_on_a_clean_card() -> None:
     lines = render(Scorecard(house="h"))
     assert any("not graded" in line for line in lines)
     assert any("no finding changed" in line for line in lines)
+
+
+def test_a_suppression_mismatch_raises_rather_than_scoring(tmp_path) -> None:
+    """A baseline taken suppressed and scored unsuppressed reports every suppressed
+    finding as NEW; the reverse reports every one of them as fixed. Both are worse than no
+    scorecard, so the flag is recorded into the payload and a mismatch refuses."""
+    import pytest
+
+    from typehaus.cli.trial_score import score
+
+    for recorded, scoring in ((True, False), (False, True)):
+        with pytest.raises(ValueError) as exc:
+            score(tmp_path, {"suppress": recorded, "findings": [], "runs": {}},
+                  suppress=scoring)
+        assert "suppression" in str(exc.value)
+        assert "--record" in str(exc.value)
+
+
+def test_a_baseline_from_before_the_flag_reads_as_suppressed(tmp_path) -> None:
+    """The old `record` ran with suppression on unconditionally, so an absent key is not
+    ambiguous — and defaulting the other way would refuse every pre-existing baseline."""
+    import pytest
+
+    from typehaus.cli.trial_score import score
+
+    with pytest.raises(ValueError):
+        score(tmp_path, {"findings": [], "runs": {}}, suppress=False)
+
+
+def test_no_coverage_line_claims_the_interference_checks_are_ungraded() -> None:
+    """They are graded, and were claimed not to be on every scorecard printed for months.
+    The loop was being handed a false reassurance in the place built to prevent one."""
+    from typehaus.cli.trial_score import KNOWN_GAPS, _coverage
+
+    joined = " ".join(KNOWN_GAPS)
+    assert "Phase 2b" not in joined
+    assert "not-covered list" not in joined
+    assert "mep.run_interference" in joined and "ARE graded" in joined
+    # ...and --no-suppress closes that gap, so it stops being printed.
+    assert not any("suppress" in line for line in
+                   _coverage(Scorecard(house="h"), suppress=False))
+    assert any("suppress" in line for line in
+               _coverage(Scorecard(house="h"), suppress=True))
