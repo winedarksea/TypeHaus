@@ -53,6 +53,14 @@ class Corridor:
     #: Sentences a consumer must print rather than swallow — what the clear width was
     #: derived from and what that derivation cannot see.
     gaps: tuple[str, ...] = ()
+    #: The elevation of the GOVERNING TIER, where the channel already has an occupant —
+    #: ``mep_packing.Packing.z_m``. ``None`` for an empty channel, and the distinction is
+    #: what ``graph.candidate_levels`` branches on: an empty channel's midpoint is the only
+    #: plane worth nominating, and an occupied one's is the plane already taken.
+    occupied_z: float | None = None
+    #: Tags already in this channel's governing tier, so a proposal can say what it rode
+    #: beside rather than only that it fitted.
+    occupants: tuple[str, ...] = ()
 
     def admits(self, radius_m: float) -> bool:
         return 2.0 * radius_m <= self.clear_width_m + 1e-9
@@ -108,12 +116,15 @@ def floor_corridors(model: ResolvedModel) -> list[Corridor]:
             if gap <= clear:
                 continue  # a doubled pair or an end strip, not a field bay
             centre = (lines[index] + lines[index + 1]) / 2.0
-            taken, gaps = _bay_taken(floor, occupants, lines_by_tag, along, centre, clear)
+            taken, gaps, packing = _bay_taken(floor, occupants, lines_by_tag, along,
+                                              centre, clear)
             out.append(Corridor(
                 tag=f"{floor.tag}:bay@{centre:.4f}", kind="bay", axis=along,
                 station=centre, z0_m=low, z1_m=high,
                 clear_width_m=max(clear - taken, 0.0),
-                lo_m=span[0], hi_m=span[1], gaps=gaps))
+                lo_m=span[0], hi_m=span[1], gaps=gaps,
+                occupied_z=packing.z_m if packing is not None and packing.tier else None,
+                occupants=packing.tier if packing is not None else ()))
     return out
 
 
@@ -138,20 +149,20 @@ def _bay_taken(floor: ResolvedFloor, occupants: list[Any],
     from typehaus.resolve.mep_packing import pack
 
     if not occupants:
-        return 0.0, ()
+        return 0.0, (), None
     cross = 1 if along == "x" else 0
     present = [o for o in occupants
                if any(abs(point[cross] - station) <= clear_m / 2.0
                       for point in lines_by_tag.get(o.tag, ()))]
     if not present:
-        return 0.0, ()
+        return 0.0, (), None
     packing = pack(clear_m, present)
     return packing.taken_m, (
         f"{floor.tag} bay @{station:.4f}: {len(present)} run(s) already in it take "
         f"{packing.taken_m / 0.0254:.2f}\" at the tightest tier. Each is banded at its MEAN "
         "elevation +/- half its depth, one band per run rather than one per segment, so a "
         "run that drops through the bay is priced where its average is; and a ConduitRun "
-        "names no floor_ref and is not an occupant here at all.",)
+        "names no floor_ref and is not an occupant here at all.",), packing
 
 
 def crossing_window(model: ResolvedModel,

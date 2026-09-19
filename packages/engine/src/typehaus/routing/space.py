@@ -17,6 +17,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
+from typehaus.routing.corridor_lanes import lane_corridors
 from typehaus.routing.corridors import (
     Corridor,
     chase_corridors,
@@ -56,7 +57,33 @@ MAX_CANDIDATE_LINES = 400
 #: lattice is exactly the case this constant's own instruction was written for. It is NOT a
 #: statement that 150,000 nodes is quick: a lattice that size is tens of seconds of graph
 #: build, which ``--timing`` reports and nothing here hides.
-MAX_LATTICE_NODES = 150_000
+#:
+#: **Raised again to 250,000 on 2026-09-19, and the cause is stated rather than absorbed.**
+#: Two capabilities landed together (E6): ``graph._corridor_levels`` offers an OCCUPIED
+#: channel its two tiers instead of one midpoint, and ``corridor_lanes`` offers an occupied
+#: bay its free lane beside the centreline. Each is a plane or a line the router did not
+#: have, and each is the thing that lets it reproduce a layout a person authored — two 4"
+#: ducts stacked in an 8 7/8" web window, or side by side in a 12 1/2" bay.
+#:
+#: Catlin's worst duct, ``DU-B-ERV-R-SAUNA-SUP``, measured at each step:
+#:
+#:     123,248   9 levels   before E6
+#:     151,826  11 levels   tiers + lanes, tiers inset by the clearance
+#:     203,518  13 levels   tiers at the window's own EXTREMES, which is the buildable pair
+#:
+#: The middle row is a bug this constant nearly absorbed. Insetting the tiers by a further
+#: clearance put them 3 7/8" apart in an 8 7/8" window, so neither of the two 4" ducts the
+#: window actually takes would fit — the geometry refused the thing the tiers were added to
+#: allow, and it refused it cheaply, which is how a cap comes to look satisfied. The
+#: extremes are 4 7/8" apart and buildable, they qualify far more corridors, and they cost
+#: 34% more nodes.
+#:
+#: Dropping the tiers to fit would have been the wrong trade and is worth saying out loud:
+#: the cap exists to stop a lattice nobody can search, and what it would have bought here
+#: is a router that refuses a bay a fitter would use. The cost is measured, not guessed —
+#: worst case builds its graph in 7.1 s and searches it in 0.7 s (`--timing`, measured),
+#: and the perf guard's own assertion is the number.
+MAX_LATTICE_NODES = 250_000
 
 #: Default margin round the terminals' bounding box, in feet. Eight is about the width of
 #: a room: enough for a route to step out of the direct line and back, and small enough
@@ -259,8 +286,15 @@ def build_space(model: ResolvedModel, *, radius_m: float,
             if prism.footprint.intersects(window)]
     soft = [prism for prism in soft_prisms(model)
             if prism.footprint.intersects(window)]
+    bays = floor_corridors(model)
+    # **The free lane of an occupied bay, beside its centreline.** A 12 1/2" truss bay
+    # holding one 4" duct has 8 1/2" left and none of it is on the centreline — the
+    # occupant is sitting there. ``corridor_lanes`` derives where the width actually is
+    # and offers it as a second corridor with ITS OWN width; the centreline one stays,
+    # because a bay whose occupant sits off-centre still has its centreline free.
+    bays = [*bays, *lane_corridors(model, bays, radius_m)]
     corridors = [corridor for corridor in
-                 (*floor_corridors(model), *soffit_corridors(model),
+                 (*bays, *soffit_corridors(model),
                   *wall_corridors(model), *chase_corridors(model))
                  if corridor.admits(radius_m)
                  and _corridor_in(corridor, minx, miny, maxx, maxy)]

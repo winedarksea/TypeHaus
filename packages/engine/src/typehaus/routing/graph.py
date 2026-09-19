@@ -115,7 +115,7 @@ def candidate_levels(space: RoutingSpace,
             window = corridor.z_window(space.radius_m)
             if window is None or corridor.kind == "wall":
                 continue
-            zs.append((window[0] + window[1]) / 2.0)
+            zs.extend(_corridor_levels(corridor, window, space))
     zs = _unique(zs)
     if space.z_band is not None:
         # ``--level``: the lattice keeps only the planes inside one storey's band. A
@@ -127,6 +127,43 @@ def candidate_levels(space: RoutingSpace,
         if inside:
             zs = inside
     return zs
+
+
+def _corridor_levels(corridor, window: tuple[float, float],
+                     space: RoutingSpace) -> list[float]:
+    """The plane(s) worth nominating inside one corridor's window.
+
+    **An empty channel offers one plane and an occupied one offers two.** The midpoint is
+    the right answer for a bay with nothing in it — there is no reason to prefer high or
+    low, and one plane is thirty times cheaper than several. It is the WRONG answer for a
+    bay that already holds a run, because the midpoint is very often the plane the occupant
+    is on, and a lattice whose only offer is the taken plane makes a clear bay come back
+    refused. Catlin's FS-S-WEST is the case: an 8 7/8" web window takes two 4" ducts
+    stacked with 7/8" to spare, and the router could nominate neither of the two tiers.
+
+    So: where the corridor has an occupant, nominate the two extremes of its own centreline
+    window — a run pressed to the bottom of the window and one pressed to the top — but
+    only when those two would actually clear each other, ``high - low >= 2r + clearance``.
+    Otherwise the midpoint, unchanged.
+
+    **The extremes, not an inset off them.** ``z_window`` has already taken the radius off
+    both ends, so its bounds ARE the run hard against each chord, which is what a fitter
+    does and what catlin's own note records: an 8 7/8" web window (109 5/8" .. 118 1/2")
+    gives tiers at **111 5/8" and 116 1/2"**, 4 7/8" apart, two 4" ducts with 7/8" to
+    spare. Insetting by a further clearance would put them 3 7/8" apart and neither tier
+    would be buildable — the geometry would have refused the thing it was added to allow.
+
+    The tiers are offered rather than the occupant's own band subtracted, because a
+    corridor's ``occupied_z`` is a MEAN (``mep_packing.run_occupants`` bands each run once,
+    not once per segment) and pricing a plane off a mean would be a precision the reading
+    does not have.
+    """
+    low, high = window
+    if corridor.occupied_z is None:
+        return [(low + high) / 2.0]
+    if high - low < 2.0 * space.radius_m + space.clearance_m - 1e-9:
+        return [(low + high) / 2.0]
+    return [low, high]
 
 
 def candidate_lines_at(space: RoutingSpace,

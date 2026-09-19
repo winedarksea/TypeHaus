@@ -39,6 +39,8 @@ ORACLES: dict[str, tuple[Oracle, ...]] = {
                               test="tests/test_gravity_search.py"),),
     "trades/duct": (Oracle(note="mep_duct_routing_basis.md", section="§1, §3",
                            test="tests/test_routing_oracle.py"),),
+    "corridor_lanes": (Oracle(note="mep_duct_routing_basis.md", section="§3",
+                              test="tests/test_corridor_lanes.py"),),
 }
 
 #: Modules that compute nothing and so oracle nothing, named so their absence is a

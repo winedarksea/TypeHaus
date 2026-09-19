@@ -67,14 +67,30 @@ def crossing_admissible(model: ResolvedModel, floor: ResolvedFloor, *,
 
 
 def bay_occupancy_note(corridor: Corridor, radius_m_value: float) -> str | None:
-    """A disclosure when a proposal shares a bay, or None when it has the bay to itself.
+    """What this proposal rode, and beside what — or None for an empty channel.
 
     ``corridors.soffit_corridors`` and ``floor_corridors`` report the width that is LEFT,
     so a route that still fits an occupied channel is legal and is not silent about it.
+
+    **An occupied channel always gets a sentence now** (2026-09-19), not only a tight one.
+    Since ``corridor_lanes`` can offer a second lane beside a bay's centreline and
+    ``graph._corridor_levels`` can offer an occupied channel its two tiers, "which lane, at
+    which tier" stopped being obvious from the run's own coordinates — and a proposal a
+    reader has to reverse-engineer a station from is one nobody will paste.
     """
-    if 2.0 * radius_m_value <= corridor.clear_width_m - 1e-9:
+    tight = 2.0 * radius_m_value > corridor.clear_width_m - 1e-9
+    if not corridor.occupants and not tight:
         return None
-    return (f"{corridor.tag} has {corridor.clear_width_m / 0.0254:.1f}\" of clear section "
-            f"left and this run wants {2 * radius_m_value / 0.0254:.1f}\" — the model "
-            "gives each run one centreline per channel, so it cannot place two lanes side "
-            "by side and neither can this proposal")
+    lane = (f"{corridor.tag} — station {corridor.station / 0.0254:.2f}\", "
+            f"{corridor.clear_width_m / 0.0254:.1f}\" of clear section, this run wants "
+            f"{2 * radius_m_value / 0.0254:.1f}\"")
+    if corridor.occupants:
+        lane += (f"; already held at the tightest tier "
+                 f"({corridor.occupied_z / 0.0254:.2f}\") by "
+                 f"{', '.join(corridor.occupants)}"
+                 if corridor.occupied_z is not None
+                 else f"; already held by {', '.join(corridor.occupants)}")
+    if tight:
+        lane += (". The model gives each run one centreline per channel, so it cannot "
+                 "place two lanes side by side and neither can this proposal")
+    return lane
