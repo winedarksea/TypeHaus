@@ -396,8 +396,22 @@ VENT_BRANCHES_BASEMENT = [
                   pt(ft(7), ft(19, 3)), pt(ft(7), ft(34, 6)),
                   pt(ft(1), ft(34, 6))),
             diameter=inch(1.5), material="pvc",
-            elevations=(ft(1, 3.4375), ft(7, 5.4375), ft(7, 7.4375), ft(7, 9.9375),
-                        ft(7, 10.4375)),
+            # ** IT RUNS TWO AND A HALF INCHES LOWER THAN THE SAUNA VENT SINCE 2026-09-19
+            # (P1), AND THAT IS THE WHOLE FIX. ** Both vents used to arrive at the chase on
+            # the y=34'-6" line at the same 7'-9 15/16", collinear for six feet, and both
+            # passed through PR-B-KITCH-DRAIN's x=4'-6" fall line on the way. This one drops
+            # under: 7'-5 7/16" through the laundry branch and 7'-7 7/16" at the chase,
+            # which puts it 2 1/2" under PR-B-SAUNA-VENT the whole way west and 4/5" under
+            # the kitchen drain where it crosses.
+            #
+            # The east leg goes flat-ish (7'-4 15/16" -> 7'-5 7/16", about 1/16"/ft) and the
+            # north leg carries the grade instead (2" over 15'-3", an eighth an inch a foot,
+            # which is what this file's header asks for). Staying deep through y=19'-5" and
+            # y=20'-0" is what clears PR-B-TUB2-DRAIN and PR-B-WASH-DRAIN, which fall west
+            # across this lane on their way to the stack — 1 1/3" and 1/3" of air now, where
+            # both were interpenetrating.
+            elevations=(ft(1, 3.4375), ft(7, 4.4375), ft(7, 4.9375), ft(7, 7.4375),
+                        ft(7, 7.9375)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
     # RM-B-SAUNA's shower group. 2" for 4 DFU, rising at (17'-4", 8'-2 3/16") — inside
     # W-B-CS's 3 1/2" liner build-up, in the pan's own east wall, on the pan-and-floor-drain
@@ -411,8 +425,18 @@ VENT_BRANCHES_BASEMENT = [
     PipeRun(uid="CBPV02AAAA", tag="PR-B-SAUNA-VENT", system=PipeSystem.VENT,
             path=(pt(ft(17, 4), inch(98.1875)), pt(ft(17, 4), inch(98.1875)),
                   pt(ft(17, 4), ft(10, 6)), pt(ft(9), ft(10, 6)),
-                  pt(ft(9), ft(34, 6)), pt(ft(1), ft(34, 6))),
+                  pt(ft(9), ft(19)), pt(ft(9), ft(34, 6)), pt(ft(1), ft(34, 6))),
             diameter=inch(2), material="pvc",
-            elevations=(ft(0, 3.4375), ft(7, 1.4375), ft(7, 3.4375), ft(7, 5.4375), ft(7, 9.9375), ft(7, 10.4375)),
+            # ** THE NORTH LEG BREAKS AT y=19'-0" NOW (P1, 2026-09-19). ** It used to climb
+            # 7'-1 7/16" to 7'-9 15/16" in one straight ramp over twenty-four feet, which
+            # put it at 7'-5 1/4" where PR-B-LSINK-DRAIN falls west across x=9'-0" — inside
+            # it by 1.85". A vent has to be graded to drain back to the drainage pipe
+            # (P3104.1) so it cannot dip under one thing and climb over the next; what it
+            # can do is take its rise EARLY. It now gains 3 3/4" in the first 8'-6" and
+            # coasts the remaining 15'-6", which clears the laundry drain by a third of an
+            # inch and — the part worth noting — buys back half an inch over
+            # DU-B-ERV-R-PLAY at y=30'-6", where D3 left it 2 1/2 thousandths of an inch.
+            elevations=(ft(0, 3.4375), ft(7, 1.4375), ft(7, 3.4375), ft(7, 5.4375),
+                        ft(7, 9.25), ft(7, 9.9375), ft(7, 10.4375)),
             serves=("FX-B-SAUNA-SH", "FX-B-SAUNA-FD")),
 ]

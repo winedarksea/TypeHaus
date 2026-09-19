@@ -158,7 +158,7 @@ SUPPLY = [
     PipeRun(uid="CBPW30AAAA", tag="PR-B-CW-TRUNK", system=PipeSystem.WATER_COLD,
             path=(pt(ft(11), ft(35, 6)), pt(ft(11), ft(35, 6)), pt(ft(11), ft(35)),
                   pt(ft(9, 6), ft(35)), pt(ft(9, 6), ft(35)),
-                  pt(ft(5), ft(35)), pt(ft(5), ft(16)),
+                  pt(ft(4, 9), ft(35)), pt(ft(4, 9), ft(16)),
                   pt(ft(8), ft(16)), pt(ft(17, 6), ft(16)), pt(ft(17, 6), ft(16)),
                   pt(ft(29, 9.6), ft(16)),
                   pt(ft(29, 9.6), ft(34, 1.2)), pt(ft(29, 9.6), ft(34, 1.2))),
@@ -198,10 +198,29 @@ SUPPLY = [
                     "APPL-M-DW")),
     # Cold feed to the water heater itself (equipment, not a fixture — no fixture units).
     PipeRun(uid="CBPW32AAAA", tag="PR-B-CW-WH", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(5), ft(16)), pt(ft(5, 6), ft(16, 9.6)), pt(ft(5, 6), ft(19, 2.4)),
+            path=(pt(ft(4, 9), ft(16)), pt(ft(5, 6), ft(16, 9.6)), pt(ft(5, 6), ft(19, 2.4)),
                   pt(ft(5, 6), ft(24)), pt(ft(5, 6), ft(24))),
             diameter=inch(1), material="copper", finish="lacquered",
-            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(3, 9.4375))),
+            # Two inches OVER the cold band from the water-heater end of the tee onward, and
+            # its drop stays ON the tank. Both are the same defect seen
+            # twice: this run and PR-B-CW-BATH1 shared -0'-8.8" where they cross at
+            # (5'-6", 20'-7 1/2"). A supply has no head to protect, so a branch steps and
+            # the trunk does not — but it steps UP.
+            #
+            # ** THE DROP DOES NOT MOVE, AND THAT IS NOT A MISS. ** It shares its last
+            # vertex with PR-B-HW-TRUNK's riser and PR-B-HW-BATH1's first leg because all
+            # three ARE the water heater's connections, and `EQ-B-WH` states a position and
+            # not a port layout — `tests/test_water_heater_connections.py` requires a vertex
+            # ON that position for exactly this reason. Nudging the cold 2 2/5" north made
+            # `mep.run_interference` quiet and the tank unconnected, which is the wrong
+            # trade. The two pairs are itemised in preferences.toml with this argument; the
+            # real fix is a dimensioned tank type, the same move D1 and D3 made for the ERV
+            # plenums. The cold band rides INSIDE FS-M-WEST's I-joist
+            # web, whose window is -10 1/2" to -1 3/8"; two inches down puts a 1" copper's
+            # invert 7/8" into the bottom flange and `mep.run_member_crossing` says so. Two
+            # inches up is the same 2" of separation in the half of the window that is
+            # empty.
+            elevations=(ft(8, 4.6375), ft(8, 6.6375), ft(8, 6.6375), ft(8, 6.6375), ft(3, 9.4375))),
     # Main-storey groups.
     #
     # THE BATH1 PAIR ROUTES AROUND D-M-BATH1'S DOORWAY, WHICH IS THE ONE DEFECT
@@ -266,7 +285,7 @@ SUPPLY = [
             # census below spends forty lines choosing. Where it does cross the 4" trunk's
             # lane, at (6'-0", 20'-3"), the trunk has fallen to -1'-8.6" and the clear
             # between the two pipes' surfaces is 9.1" — the old 3.1" plus the band's 6".
-            path=(pt(ft(5), ft(16)), pt(ft(7, 4.8), ft(16, 9.6)),
+            path=(pt(ft(4, 9), ft(16)), pt(ft(7, 4.8), ft(16, 9.6)),
                   pt(ft(7, 4.8), ft(19, 2.4)), pt(ft(5), ft(21)),
                   pt(ft(5), ft(22, 4)), pt(ft(5), ft(22, 4)), pt(ft(5), ft(22, 4))),
             diameter=inch(0.75), material="copper", finish="lacquered",
@@ -304,7 +323,7 @@ SUPPLY = [
     # drop occupies x=2'-2 3/8" in this same cavity (the bay the old x=2'-3" lane would have
     # risen into), and FX-M-BATH2-SINK is the fixture nearest this end of the wall.
     PipeRun(uid="CBPW35AAAA", tag="PR-B-CW-BATH2", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(5), ft(16)), pt(ft(1), ft(16)),
+            path=(pt(ft(4, 9), ft(16)), pt(ft(1), ft(16)),
                   pt(ft(1), ft(22, 4)), pt(ft(1), ft(22, 4)),
                   pt(ft(1), ft(22, 4))),
             diameter=inch(0.75), material="copper", finish="lacquered",
@@ -419,11 +438,14 @@ SUPPLY = [
     # naming the host wall on each leg. Main-storey leg is in a 2x4 partition (3.5" cavity,
     # ample for 3/4" PEX); only the second-storey leg is in a staggered wet wall.
     PipeRun(uid="CBPW40AAAA", tag="PR-B-CW-SBATH", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(5), ft(16)), pt(ft(4), ft(16, 9.6)), pt(ft(4), ft(26, 6)),
+            path=(pt(ft(4, 9), ft(16)), pt(ft(4), ft(16, 9.6)), pt(ft(4), ft(26, 6)),
                   pt(ft(5, 7.2), ft(26, 6)), pt(ft(5, 7.2), ft(26, 6)),
                   pt(ft(5, 7.2), ft(26, 6)), pt(ft(5, 7.2), ft(26, 6))),
             diameter=inch(0.75), material="copper", finish="lacquered",
-            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(9, 1.4375), ft(19, 1.4375), ft(21, 7.4375)),
+            # Two inches OVER the band for the length of the branch: its y=26'-6" leg has to
+            # cross the cold trunk's own north-south lane, and two 3/4" pipes on one
+            # elevation is a lap rather than a crossing.
+            elevations=(ft(8, 4.6375), ft(8, 6.6375), ft(8, 6.6375), ft(8, 6.6375), ft(9, 1.4375), ft(19, 1.4375), ft(21, 7.4375)),
             wall_refs=(None, None, None, None, "W-M-STOS", "W-S-BD-N"),
             serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
@@ -488,19 +510,26 @@ SUPPLY = [
     # of stops at (13'-10 11/16", 19'-3") beside the vent riser. That x is the wall's own,
     # and the wall slid 1 5/16" west onto the stair well's partition line on 2026-09-05. Cold carries the WC and lavatory
     # (3.25 WSFU), hot the lavatory alone.
+    # ** THE TWO DROPS STOP SHORT OF THE VENT RISER, 3" AND 1 1/2" (P1, 2026-09-19). **
+    # All three used to end on one point — (13'-10 11/16", 19'-3"), which is
+    # PR-B-BATH-VENT's riser station — so a 1 1/2" vent and two 1/2" copper drops were drawn
+    # through each other in one stud bay. They stay in the bay: the offset is along
+    # W-B-BA-E's own line and not across it, because 2" off the axis is outside a 2x4's
+    # stud and the pipes would be in the room. Cold takes the north end of the bay, hot the
+    # middle, the vent the south, and the fixtures they serve are two feet away either way.
     PipeRun(uid="CBPW44AAAA", tag="PR-B-CW-BATH", system=PipeSystem.WATER_COLD,
             path=(pt(ft(5, 6), ft(24)), pt(ft(7), ft(26)), pt(ft(7), ft(20, 3)),
-                  pt(inch(166.6875), ft(20, 3)), pt(inch(166.6875), ft(19, 3)),
-                  pt(inch(166.6875), ft(19, 3))),
+                  pt(inch(166.6875), ft(20, 3)), pt(inch(166.6875), ft(19, 10)),
+                  pt(inch(166.6875), ft(19, 10))),
             diameter=inch(0.5), material="copper", finish="lacquered",
-            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(2, 3.4375)),
+            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 6.6375), ft(8, 6.6375), ft(8, 6.6375), ft(2, 3.4375)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
     PipeRun(uid="CBPW45AAAA", tag="PR-B-HW-BATH", system=PipeSystem.WATER_HOT,
             path=(pt(ft(5, 6), ft(24)), pt(ft(7, 3.6), ft(26)),
                   pt(ft(7, 3.6), ft(19, 9)), pt(inch(166.6875), ft(19, 9)),
-                  pt(inch(166.6875), ft(19, 3)), pt(inch(166.6875), ft(19, 3))),
+                  pt(inch(166.6875), ft(19, 4.5)), pt(inch(166.6875), ft(19, 4.5))),
             diameter=inch(0.5), material="copper", finish="lacquered",
-            elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), ft(2, 3.4375)),
+            elevations=(ft(8, 1.4375), ft(7, 11.4375), ft(7, 11.4375), ft(7, 11.4375), ft(7, 11.4375), ft(2, 3.4375)),
             serves=("FX-B-BATH-LAV",)),
     # Sauna shower mixer, the first supply this room ever had. Both legs tee off the existing
     # trunks and run south — cold down x=17'-4" (2" clear of W-B-CS2's face at 17'-6"), hot

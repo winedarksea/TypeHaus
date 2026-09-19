@@ -444,6 +444,16 @@ suppress = [
   #     rest of the campaign rather than nudged quietly.
   #
   # Itemised, not blanket: a NEW run in a pour anywhere in the house still reports.
+  # ** mep.run_interference: ONE ITEMISED RUN, AND IT IS THE WATER HEATER (P3, 2026-09-19). **
+  # PR-B-CW-WH's last vertex, PR-B-HW-TRUNK's first and PR-B-HW-BATH1's first are one point:
+  # (5'-6", 24'-0"), which is EQ-B-WH. A tank that states a position and no port layout has
+  # nowhere else to put them, and `tests/test_water_heater_connections.py` requires a vertex
+  # ON that position — so the two pairs this makes are the tank, not a clash. Moving the cold
+  # 2 2/5" clear was tried on 2026-09-19 and silenced the check by disconnecting the heater.
+  # ** THE REAL FIX IS A DIMENSIONED TANK TYPE ** with a cold inlet and a hot outlet at their
+  # own stations, exactly the move D1 and D3 made for the five ERV plenums; until then this
+  # entry carries the argument. Itemised on the COLD because it is the run that would move.
+  "mep.run_interference:PR-B-CW-WH",
   "mep.run_in_slab:DU-B-ERV-R-PLAY",
   "mep.run_in_slab:PR-SG-ARCH-OVERFLOW",
 
