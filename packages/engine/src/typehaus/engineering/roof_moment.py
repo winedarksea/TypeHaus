@@ -30,6 +30,26 @@ from typehaus.engineering.registry import EngineeringContext
 
 _M_PER_FT = 0.3048
 
+#: ``column tag -> (ASD storey shear lb, its effective arm above the column base, ft)``,
+#: filled by :func:`roof_base_moments` as it goes.
+#:
+#: ** WHY A SIDE CHANNEL AND NOT A WIDER RETURN TUPLE. ** ``(moment, guard, basis)`` is read
+#: by ``pier_basis.cast_piers`` and by the deck path's own ``_base_moments``, which has no
+#: shear to offer; widening the shape would make the deck side carry a field it cannot fill.
+#: ``engineering/column_base.py`` is the one reader, and it asks for the pair by tag.
+_SHEARS: dict[str, tuple[float, float]] = {}
+
+
+def base_shear_of(tag: str) -> tuple[float, float] | None:
+    """``(ASD shear lb, arm above the column base ft)``, after :func:`roof_base_moments` ran.
+
+    A moment alone cannot answer IBC 1807.3.2.1: the non-constrained embedment formula takes
+    a FORCE and the height above grade it acts at, and ``P x h`` has infinitely many
+    factorisations. This is the one the demand was actually built from.
+    """
+    return _SHEARS.get(tag)
+
+
 def roof_base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, str]]:
     """The same answer for a column carrying a ROOF instead of a deck.
 
@@ -151,6 +171,11 @@ def roof_base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, 
             per_top = top_shear / len(columns)
             per_drag = drag_shear / len(columns)
             moment = per_top * column_ft + per_drag * drag_arm_ft
+            # The same demand as one force at one arm, for `column_base`: exact, because
+            # the arm is back-solved from the moment these two shears actually produce.
+            total_shear = per_top + per_drag
+            _SHEARS[tag] = (total_shear,
+                            moment / total_shear if total_shear > 0.0 else 0.0)
             out[tag] = (moment, 0.0, (
                 f"{'E-W' if worst_axis == 'x' else 'N-S'} wind on {roof.tag}: q_h "
                 f"{q_h:.1f} psf at {top_ft - ground_ft:.1f}' above the ground beneath "

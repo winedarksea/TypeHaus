@@ -330,6 +330,38 @@ state the same concrete.
 crown — see §2b — and reads 1,408 / 2,533 / 2,611 against 24,709, the same verdict one
 decimal along.)
 
+**The §2.3.1 envelope, added 2026-09-18.** Every row above is one combination's moment
+against one combination's P-M point — `1.2D + 1.6L`'s 4,947 lb. A larger axial is not
+automatically conservative on an interaction curve: below the balance point, which is where
+this column sits at 2% of `P_n,max`, compression *raises* moment capacity. So each of ASCE
+7-16 §2.3.1's five combinations is run at ITS OWN `P_u`, for `PT-SG-BR1`:
+
+| §2.3.1 | P_u | M_u (magnified) | φM_n | d/c |
+|---|---|---|---|---|
+| 1.4D | 2,188 lb | 0 | 23,980 lb-ft | 0.00 |
+| 1.2D + 1.6L + 0.5S | 4,969 lb | 4,178 lb-ft | 24,708 lb-ft | 0.17 |
+| 1.2D + 1.6S + 0.5W | 1,875 lb | 1,187 lb-ft | 23,898 lb-ft | 0.05 |
+| **1.2D + 1.0W + L + 0.5S** | **3,809 lb** | **4,995 lb-ft** | **24,404 lb-ft** | **0.20** |
+| 0.9D + 1.0W | 1,407 lb | 2,367 lb-ft | 23,775 lb-ft | 0.10 |
+
+The guard's 200 lb is an occupancy live load and rides the `L` term — full where `L` is,
+absent where it is not — and combination 4 takes it CONCURRENTLY with wind, which is
+conservative (nobody leans on a rail in a design windstorm) and cheap, because at 0.20 it is
+nowhere near governing. Note that φM_n falls with `P_u` down every row: 23,775 at
+combination 5 against 24,708 at combination 2, a 4% spread. That spread is the whole reason
+the envelope exists, and it is small here only because this column is so lightly loaded.
+
+**The anchorage of the dowels is graded now too** (2026-09-18). The lap between the dowel
+and the column bar was checked against the column's own height; the other end — whether the
+dowel DEVELOPS in the concrete below — was not, and it is the end the fixed base depends on.
+These four columns stand on `W-SG-W1`/`-E1`, foundation walls whose stem length nothing in
+the model bounds, so their records say the anchorage is not graded rather than passing it
+silently. The pad-borne columns in the north entry ARE graded: ACI 318-19 §25.4.3.1 hooked
+development, about 7.1" for a #5 at 5,000 psi against a 12" pad less 2" cover and a bar
+diameter, d/c 0.76. Straight development would be 21" and would condemn a correctly built
+pad; the hook is what makes it work, and the ψ factors it is taken at (ties continuing
+through the joint, confined side cover) are conditions a reviewer confirms on the drawing.
+
 **Bending governs and the guard governs the bending, at an eighth of capacity.** The column
 is not sized by any of these — it is sized by the 2" of cover the durability case asked for
 (§1) and by the 1% steel floor, which is a creep, shrinkage and accidental-moment rule and

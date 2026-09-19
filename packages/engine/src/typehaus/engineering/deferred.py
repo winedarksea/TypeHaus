@@ -374,3 +374,79 @@ def _extents_overlap(first, second) -> bool:
     tol = _BEARING_PLAN_TOLERANCE_M
     return (first[0] - tol <= second[2] and second[0] - tol <= first[2]
             and first[1] - tol <= second[3] and second[1] - tol <= first[3])
+
+
+# --- What `column_base` leaves open (2026-09-18) ------------------------------------------
+#
+# `engineering/column_base.py` grades the EMBEDMENT a fixed base needs, which was the
+# assumption every `deck_post` record named and none graded. Grading it turned three other
+# assumptions from "unmentioned" into "mentioned and still ungraded", and an assumption that
+# has become visible is exactly the thing that should be on a register rather than in a
+# module docstring. None of these is a check FAIL: they are scope, not arithmetic that came
+# out wrong, and the plan behind this pass is explicit that a scope gap becomes a named
+# deferral and not a red.
+
+_declare(Deferral(
+    kind="base_rotation",
+    reason="the fixed base of a cast column is graded for STRENGTH — can the ground turn "
+           "its shear around (IBC 1807.3.2.1, `engineering/column_base.py`) — and not for "
+           "STIFFNESS. `deck_post`'s sway magnifier assumes a base that does not rotate at "
+           "all, and a real one does; the magnifier it computes is therefore a lower bound "
+           "on a column whose slenderness is already past ACI 318-19 §6.2.5's sway limit. "
+           "How the moment SPLITS between the buried shaft and the pad under it is the "
+           "same question from the other side, and this engine computes neither: they are "
+           "alternative load paths, not additive ones, and dividing them is a "
+           "soil-structure interaction problem",
+    designer="structural engineer of record, on a geotechnical report",
+    deliverable="a rotational spring for each fixed column base — the moment-rotation "
+                "relationship the shaft and its pad deliver together — and the sway "
+                "amplification that follows from it, or a statement that the base may be "
+                "taken as rigid and on what basis",
+    unblocks="S-100's column base detail and the canopy frame's drift check",
+    oracle=(Oracle(note="entry_column_base_fixity.md", section="§5",
+                   test="tests/test_column_base_calcs.py"),),
+))
+
+
+@keys("base_rotation")
+def _base_rotation_keys(ctx: EngineeringContext) -> list[str]:
+    """Every column `column_base` grades the strength of — the same set, the other question.
+
+    Keyed off that module's own scope rather than re-walked: one set, one definition, and a
+    column that leaves the strength check would otherwise keep a stiffness deferral nobody
+    would notice was orphaned.
+    """
+    from typehaus.engineering.column_base import enumerate_column_bases
+
+    return enumerate_column_bases(ctx)
+
+
+_declare(Deferral(
+    kind="column_head_joint",
+    reason="what a fixed-base column is fixed AGAINST at its head is a joint this engine "
+           "does not grade. catlin's canopy columns carry `BM-BW-RE` on an `SS316-SHIM-35` "
+           "stainless standoff pack under an `HGAM10` gusset angle, isolated with EPDM — a "
+           "detail chosen for durability and drainage, and one whose MOMENT transfer "
+           "nobody has computed. `column_base` and `deck_post` between them assume the "
+           "header reaction arrives and the moment stays in the column; whether a shim "
+           "stack and a gusset angle deliver that, or whether the joint is closer to a pin "
+           "than the analysis assumes, is a connection design. Column SHEAR and TORSION go "
+           "with it: the section is large relative to a few hundred pounds, but 'large' is "
+           "a judgement and not a calculation",
+    designer="structural engineer of record",
+    deliverable="a sealed connection detail at each cast column head — the fastener "
+                "schedule through the standoff pack, the moment and shear it transfers, "
+                "and the torsion the eccentric seat delivers to the column",
+    unblocks="S-400's column head detail and the canopy frame's lateral analysis",
+    oracle=(Oracle(note="north_entry_piers.md", section="§8d",
+                   test="tests/test_pier_calcs.py"),),
+))
+
+
+@keys("column_head_joint")
+def _column_head_keys(ctx: EngineeringContext) -> list[str]:
+    """Every cast column that IS a lateral system — the head of each one `deck_post` grades
+    in bending, whether it stands on a pad, a footing or a wall."""
+    from typehaus.engineering.pier_basis import cast_piers
+
+    return sorted(pier.tag for pier in cast_piers(ctx) if pier.lateral_system)

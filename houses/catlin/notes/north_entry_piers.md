@@ -678,6 +678,39 @@ footing top to header soffit — "fixed at the base" taken literally — not the
 rather than that note's 24,703. **No size change and no richer cage**: the ACI Sec 10.6.1.1
 minimum these carry is still what sizes them.
 
+### 8b-i. The §2.3.1 envelope — added 2026-09-18, and it moved the governing case
+
+The table above takes ONE axial load, `1.2D + 1.6L` = 7,367 lb, finds the P-M point there,
+and compares the wind moment against it. **A larger axial is not automatically conservative
+on an interaction curve.** Below the balance point — where every column in this house sits,
+at 2-3% of `P_n,max` — compression *raises* moment capacity, so grading the full wind moment
+at the heaviest gravity case credits the column with compression the windstorm does not
+bring. ASCE 7-16 §2.3.1's five combinations, each at its own `P_u` and its own P-M point,
+for `PT-BW-RE`:
+
+| §2.3.1 | P_u | M_u (magnified) | phi*M_n | d/c |
+|---|---|---|---|---|
+| 1.4D | 3,092 lb | 0 | 24,217 lb-ft | 0.00 |
+| 1.2D + 1.6L + 0.5S | 4,124 lb | 0 | 24,487 lb-ft | 0.00 |
+| 1.2D + 1.6S + 0.5W | 7,367 lb | 8,995 lb-ft | 25,335 lb-ft | 0.36 |
+| **1.2D + 1.0W + L + 0.5S** | **4,124 lb** | **16,940 lb-ft** | **24,487 lb-ft** | **0.69** |
+| 0.9D + 1.0W | 1,987 lb | 16,313 lb-ft | 23,927 lb-ft | **0.68** |
+
+`D` is 2,208 lb (roof dead + the shaft's own 1,808 lb at 150 pcf), `L` is 0 — this column
+carries no deck — and `S` is 40.0 ft² × 73.7 psf = 2,948 lb.
+
+**The last two rows are the point.** Combination 4 governs at 0.69 and combination 5 is one
+point behind it at 0.68, with barely half the axial load; the old single-axial reading gave
+0.71 at 7,367 lb by crediting `1.2D + 1.6L`'s compression against the wind case's moment.
+The numbers are close here because this column is so lightly loaded that the interaction
+curve is nearly flat — which is the reason the correction costs nothing on catlin and the
+reason it must be in the arithmetic anyway. On a column carrying real gravity load the two
+readings diverge, and they diverge in the unconservative direction.
+
+Wind and the guard load are taken CONCURRENTLY in combination 4, which is conservative and
+free here (this column has no guard on it at all). The guard's 200 lb is an occupancy live
+load and rides the `L` term.
+
 ### 8c. How much conservatism is in that 0.71
 
 §1a's §27.3.2 hand pass, restated: `Gq_h` 13.94 psf, clear wind flow Case A at theta 18.44

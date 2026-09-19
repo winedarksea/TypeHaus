@@ -46,12 +46,49 @@ def test_the_file_is_byte_deterministic(tmp_path: Path):
 
 
 @pytest.mark.slow
-def test_haus_print_writes_the_manifest_beside_the_pdf(tmp_path: Path):
-    """End to end on the real house — the sandbox print, then the JSON next to it."""
+def test_haus_print_refuses_while_the_canopy_base_is_open(tmp_path: Path):
+    """The draft gate, end to end, and on 2026-09-18 it started closing on catlin.
+
+    ``engineering/column_base.py`` grades the IBC 1807.3.2.1 embedment a fixed column base
+    needs — the assumption every ``deck_post`` record had been naming and none grading — and
+    the north entry canopy's two cast columns do not have it. The gate blocking is the gate
+    working; it is asserted here rather than merely worked around in the test below, so that
+    the day the design closes (``notes/entry_column_base_fixity.md`` §6) this test fails and
+    tells somebody to delete it.
+    """
     pytest.importorskip("matplotlib")
     from typer.testing import CliRunner
 
     from typehaus.cli.app import app
+
+    house = tmp_path / "catlin"
+    copy_house(CATLIN, house)
+    result = CliRunner().invoke(app, ["print", str(house), "--fmt", "pdf"])
+    assert result.exit_code == 1
+    assert "permit print blocked" in result.output
+    assert "Fixed column base embedment" in result.output
+
+
+@pytest.mark.slow
+def test_haus_print_writes_the_manifest_beside_the_pdf(tmp_path: Path, monkeypatch):
+    """End to end on the real house — the sandbox print, then the JSON next to it.
+
+    ** THE DRAFT GATE IS STUBBED OPEN, AND ONLY THE GATE. ** This test's subject is that
+    ``haus print`` lands ``permit_set.json`` beside ``permit_set.pdf`` with the right
+    contents; the gate is the test above's subject and has its own coverage in
+    ``test_calc_package`` and ``test_permit_coverage``. Since 2026-09-18 catlin does not
+    pass that gate — its canopy columns' base embedment is an open design gap — and no
+    shipped house does, so there is no house to run this on unstubbed. Patching the one
+    property keeps the composition, the writer and the file format under test rather than
+    deleting the only end-to-end assertion about them.
+    """
+    pytest.importorskip("matplotlib")
+    from typer.testing import CliRunner
+
+    from typehaus.checks.permit import PermitChecklist
+    from typehaus.cli.app import app
+
+    monkeypatch.setattr(PermitChecklist, "ok", property(lambda self: True))
 
     house = tmp_path / "catlin"
     copy_house(CATLIN, house)

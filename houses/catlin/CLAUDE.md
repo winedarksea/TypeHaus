@@ -2294,6 +2294,31 @@ haus analysis . --solve                     # the engineered frame, solved in Py
   UNKNOWN, which would claim nobody knows about a question the engine has answered. **The 19'-3" rafter
   allowable this house quoted in five places was WRONG** — an interpolation to 35 psf that
   `snow.py`'s own rule forbids. The published row is **18'-4"**.
+- **⚠ THE NORTH ENTRY CANOPY'S TWO CAST COLUMNS DO NOT HAVE THE BASE THEY ARE DESIGNED ON**
+  (2026-09-18, and this is catlin's only open FAIL). `engineering/column_base.py` grades the
+  IBC 1807.3.2.1 embedment a column free to translate at grade needs to turn its own shear
+  around — the assumption every `deck_post` record had been NAMING and none grading since
+  2026-09-11. `PT-BW-RE` wants 8.08' and has 6.12'; `PT-BW-RNE` wants the same and has
+  3.50'. Both fail at BOTH ends of §1806.3.4's isolated-pole doubling, so it is not a
+  judgement call. `notes/entry_column_base_fixity.md` works it by hand; §6 lists the three
+  closures — deepen the shafts, constrain the base at grade with a grade beam or apron, or
+  brace the frame and let the columns revert to leaning columns (the owner has already
+  accepted knee braces as a fallback here). The two garage-side LANDING columns straddle
+  §1806.3.4 and report INCOMPLETE naming the judgement, which is the band convention
+  working. **`haus check` exits 1 and `haus print` refuses until this closes**; both the
+  test allow-list and `scripts/verify.sh`'s carry the citation and go with the fix.
+  - Two deferrals came with it and are scope rather than arithmetic: `base_rotation/*` (the
+    base is graded for STRENGTH, not STIFFNESS — `deck_post`'s sway magnifier assumes a base
+    that does not rotate) and `column_head_joint/*` (the `HGAM10` + `SS316-SHIM-35` head,
+    whose moment transfer nobody has computed; column shear and torsion ride with it).
+- **A fixed-base column's P-M check is a §2.3.1 ENVELOPE** (2026-09-18), each combination at
+  its own axial load. A larger axial is not automatically conservative on an interaction
+  curve — below the balance point compression RAISES moment capacity — so grading the wind
+  moment at `1.2D + 1.6L`'s axial credited compression the governing case does not have. On
+  `PT-BW-RE` combination 4 governs at 0.69 with combination 5 (`0.9D + 1.0W`) one point
+  behind at 0.68 on barely half the axial. And the dowels' ANCHORAGE into the pad is graded
+  beside the lap that already was: the lap alone was half the joint, and the half it left
+  out is the one the fixed base depends on.
 - **Seven items are deferred to a designer of record** — the TWO trussed roofs' rafters, all
   three roofs' uplift path, and the two wall tops under the balcony's fixed-base columns.
   `out/calcs/03-open-items.md` names who owns each.

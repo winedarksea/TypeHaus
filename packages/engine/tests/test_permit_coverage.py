@@ -169,7 +169,18 @@ MAX_NON_BLOCKING_ITEMS = {"mn-2020": 25}
 # now authored on the elements as `PublishedSpan` and graded by
 # `checks/structural/published.py`, with drift guards so a retype or a spacing change
 # turns the PASS back into an UNKNOWN. Both items flipped to BLOCKING in the same commit.
-MAX_UNSEALED_ITEMS = {"mn-2020": 7}
+#
+# RAISED 7 -> 8 on 2026-09-18: "Fixed column base embedment". The reason is the ordinary
+# one — a rule that was not encoded now is — but the item is unusual in this lane, because
+# the engine DOES compute it. `engineering/column_base.py` grades IBC 1807.3.2.1 and the
+# north entry's two canopy columns come out OVER, so the item sits here awaiting a SEAL in
+# the sense that it awaits a redesign: `notes/entry_column_base_fixity.md` §6 lists the
+# three closures. It leaves this lane when the shafts go deeper, the base is constrained at
+# grade, or the frame is braced — not when anybody stamps the current drawing, because
+# `_authoring.engineered()` makes an authored spec unreachable under `Status.OVER` on
+# purpose. Note that "Deck beams outside the beam span table" STAYED at 7's roster and did
+# not leave it when `glulam_beam` was re-registered the same day: it was already counted.
+MAX_UNSEALED_ITEMS = {"mn-2020": 8}
 
 
 def _engineered_labels(profile) -> set[str]:

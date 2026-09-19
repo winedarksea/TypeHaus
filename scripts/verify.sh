@@ -103,7 +103,24 @@ import json, sys
 # Empty, and meant to stay that way: catlin is held to 0 FAIL. `code.site_parcel_is_surveyed`
 # sat here while the parcel was a drawn placeholder; the owner's stated 50' x 133' lot made
 # the basis "plat", which grades UNKNOWN rather than FAIL.
-ACCEPTED = set()
+# ** THESE TWO ARE NOT AN ACCEPTED ADVISORY. THEY ARE AN OPEN DESIGN GAP, PARKED HERE
+# DELIBERATELY SO THE REST OF THE GATE STILL RUNS. ** (2026-09-18, the engineering gap
+# review.) `engineering/column_base.py` grades what every `deck_post` record has been
+# NAMING and not grading since 2026-09-11 — the embedment IBC 1807.3.2.1 needs for a
+# column free to translate at grade — and the north entry canopy's two cast columns do
+# not have it: PT-BW-RE wants 8.08' and has 6.12'; PT-BW-RNE wants the same and has
+# 3.50'. Both fail at BOTH ends of §1806.3.4's isolated-pole doubling, so the verdict is
+# not a judgement call. `notes/entry_column_base_fixity.md` works it by hand; §6 there
+# lists the three closures (deepen the shafts, constrain the base at grade with a grade
+# beam or apron, or brace the frame and let the columns revert to leaning columns).
+    #
+# DELETE BOTH ENTRIES when one of those lands. An entry that outlives its fix is how a
+# 0-FAIL gate stops meaning anything, which is the exact failure this whole review was
+# about.
+ACCEPTED = {
+    ("structural.lateral_racking", ("PT-BW-RE", "RF-BW-CANOPY")),
+    ("structural.lateral_racking", ("PT-BW-RNE", "RF-BW-CANOPY")),
+}
 
 payload = json.load(open(sys.argv[1]))
 failures = {

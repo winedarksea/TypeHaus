@@ -189,6 +189,14 @@ def test_catlin_has_no_knee_brace_left_and_the_check_does_not_go_silent(catlin_f
     It now names each corner column and delegates to ``deck_post/<tag>``: one design, one
     stamp, two checks, the same pattern ``structural.frost_depth`` shares with
     ``structural.foundation_unbalanced_fill`` on a retaining wall.
+
+    ** AND SINCE 2026-09-18 A COLUMN ON ITS OWN SPREAD BASE GETS A SECOND ITEM. **
+    ``deck_post/<tag>`` asks whether the SECTION carries the base moment;
+    ``column_base/<tag>`` asks whether the GROUND does — IBC 1807.3.2.1 embedment. Two
+    designs, two failure modes, and very possibly two fixes: a richer cage answers the first
+    and nothing at all about the second. The four balcony pillars get only the first,
+    because they are doweled into ``W-SG-W1``/``-E1`` and ``column_support/<wall>`` already
+    owns that joint.
     """
     from typehaus.model.structure import KneeBrace
 
@@ -197,11 +205,15 @@ def test_catlin_has_no_knee_brace_left_and_the_check_does_not_go_silent(catlin_f
     assert catlin_findings, "the check went silent on a braceless freestanding deck"
     columns = {t for f in catlin_findings for t in f.element_tags if t.startswith("PT-SG-B")}
     assert columns == {"PT-SG-BR1", "PT-SG-BR3", "PT-SG-BF1", "PT-SG-BF3"}
-    assert all("deck_post/" in (f.engineering_item or "") for f in catlin_findings)
+    assert all((f.engineering_item or "").startswith(("deck_post/", "column_base/"))
+               for f in catlin_findings)
+    # The balcony pillars stand on walls, so they raise no `column_base` item at all.
+    assert not [f for f in catlin_findings
+                if (f.engineering_item or "").startswith("column_base/PT-SG-")]
     del KneeBrace
 
 
-def test_catlin_has_no_fail_here(catlin_findings):
+def test_catlin_fails_only_where_the_ground_cannot_fix_the_base(catlin_findings):
     """PASS, not UNKNOWN, and that is a change worth reading twice.
 
     While the lateral system was eight knee braces every finding here was UNKNOWN: the
@@ -220,13 +232,34 @@ def test_catlin_has_no_fail_here(catlin_findings):
     reports what the record could not produce rather than inventing one. That load was never
     in any tributary; what changed is that the model now says so out loud. Asserted by TAG,
     so a third one is a failure rather than a tolerance.
+
+    ** AND TWO ARE A REAL FAIL SINCE 2026-09-18, WHICH IS WHY THIS TEST IS NO LONGER
+    NAMED "no fail here". ** ``engineering/column_base.py`` grades the IBC 1807.3.2.1
+    embedment a fixed base needs, which every ``deck_post`` record had been naming as an
+    ungraded assumption since 2026-09-11 — and the north entry canopy's two cast columns do
+    not have it. ``notes/entry_column_base_fixity.md`` works it by hand and §6 lists the
+    three closures. This is an OPEN design gap held in
+    ``test_cli_check_output.test_catlin_carries_no_failures``' allow-list, not an accepted
+    advisory; both entries go when the fix lands.
     """
-    assert all(f.result is not Result.FAIL for f in catlin_findings)
+    fails = [f for f in catlin_findings if f.result is Result.FAIL]
+    assert {f.engineering_item for f in fails} == {"column_base/PT-BW-RE",
+                                                   "column_base/PT-BW-RNE"}
+    assert all("embedment" in f.message for f in fails)
+
     unknown = [f for f in catlin_findings if f.result is Result.UNKNOWN]
-    assert {f.engineering_item for f in unknown} == {"deck_post/PT-BW-W",
-                                                     "deck_post/PT-BW-GW"}
-    assert all("no tributary AREA for that load" in f.message for f in unknown)
-    assert all(f.result is Result.PASS for f in catlin_findings if f not in unknown)
+    assert {f.engineering_item for f in unknown} == {
+        "deck_post/PT-BW-W", "deck_post/PT-BW-GW",
+        # The band convention: 3.50' of embedment sits between what §1806.3.4's two ends
+        # ask for, so the verdict turns on a judgement about the STRUCTURE — whether 1/2"
+        # of motion at grade matters to a landing guard — and the record names it.
+        "column_base/PT-BW-GW", "column_base/PT-BW-GE"}
+    assert all("no tributary AREA for that load" in f.message
+               for f in unknown if (f.engineering_item or "").startswith("deck_post/"))
+    assert all("1806.3.4" in f.message
+               for f in unknown if (f.engineering_item or "").startswith("column_base/"))
+    rest = [f for f in catlin_findings if f not in unknown and f not in fails]
+    assert rest and all(f.result is Result.PASS for f in rest)
 
 
 def test_a_deck_hung_in_a_shear_wall_is_not_reported_as_column_braced(catlin_model):
@@ -274,9 +307,18 @@ def test_the_corner_columns_are_delegated_not_graded_here(catlin_findings):
     than the tag — a finding that stopped naming a `deck_post/` item would mean this check
     had started grading the moment itself.
     """
-    for finding in catlin_findings:
+    section = [f for f in catlin_findings
+               if f.engineering_item.startswith("deck_post/")]
+    for finding in section:
         assert "fixed at its base" in finding.message
         assert "no knee brace and no shear wall" in finding.message
-        assert finding.engineering_item.startswith("deck_post/")
+    # The ground's half of the same column, delegated the same way and to its own item.
+    ground = [f for f in catlin_findings
+              if f.engineering_item.startswith("column_base/")]
+    assert ground
+    for finding in ground:
+        assert "what makes a base fixed is the ground, not the section" in finding.message
+        assert "1807.3.2.1" in finding.message
+    assert len(section) + len(ground) == len(catlin_findings)
     decks = {t for f in catlin_findings for t in f.element_tags if t.startswith("FS-")}
     assert decks == {"FS-SG-DECK", "FS-BW-FLOOR"}

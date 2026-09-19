@@ -161,7 +161,17 @@ def test_the_scaffold_is_refused_until_a_person_fills_it_in(bundle, tmp_path):
 
 def test_a_filled_scaffold_seals_every_computed_item(bundle, tmp_path, catlin_ctx,
                                                      catlin_check_report):
-    """The other half: filled in, the form works, and its fingerprints are the live ones."""
+    """The other half: filled in, the form works, and its fingerprints are the live ones.
+
+    ** EVERY COMPUTED ITEM EXCEPT THE ONES IN AN "OVER" SCOPE, AND THAT EXCLUSION IS THE
+    POINT RATHER THAN A CONCESSION. ** `engineering/scaffold.py` writes one block per KIND,
+    because a professional stamps a scope and not a line item — and it writes the whole
+    block out COMMENTED where any item in that scope is over capacity. So since 2026-09-18
+    `column_base/PT-BW-E` and `-W`, which check out perfectly well, are unsealable: they
+    share a scope with `PT-BW-RE` and `-RNE`, whose embedment does not. That is correct. A
+    PE does not stamp "the fixed column bases" while two of the six fail, and offering a
+    block that invited them to would be the scaffold's worst possible behaviour.
+    """
     from typehaus.engineering import Freshness
     from typehaus.engineering.register import load_register
 
@@ -180,9 +190,16 @@ def test_a_filled_scaffold_seals_every_computed_item(bundle, tmp_path, catlin_ct
     # `ctx.engineering` — the map this test reads.
     ctx = catlin_ctx
     report = catlin_check_report()
+    from typehaus.engineering.item import Status
+
     named = {f.engineering_item for f in report.findings if f.engineering_item}
-    computed = [ctx.engineering[i] for i in sorted(named | set(ctx.engineering))
-                if ctx.engineering[i].inputs]
+    every = sorted(named | set(ctx.engineering))
+    # A kind with any OVER item has its whole block commented out — see the docstring.
+    refused = {ctx.engineering[i].kind for i in every
+               if ctx.engineering[i].status is Status.OVER}
+    assert refused == {"column_base"}, refused
+    computed = [ctx.engineering[i] for i in every
+                if ctx.engineering[i].inputs and ctx.engineering[i].kind not in refused]
     assert computed
     for record in computed:
         state, signoff = register.freshness(record)

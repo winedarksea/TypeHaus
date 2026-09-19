@@ -29,6 +29,7 @@ from typehaus.engineering import registered_kinds
 from typehaus.engineering.fingerprint import fingerprint
 from typehaus.engineering.item import Status
 from typehaus.engineering.registry import oracles_for
+from typehaus.findings import Result
 from typehaus.takeoff.calc_package import PackageInputs, calc_package
 from typehaus.takeoff.calc_sheet import sheet_filename
 
@@ -178,8 +179,28 @@ def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
     # `_retaining_walls` is deliberately NOT widened to reach the apron: an
     # isolated-cantilever record for a wall whose whole problem is that it is not isolated
     # would make the register less true.
+    # ** TWENTY-SIX SINCE 2026-09-18, UP FROM FOURTEEN: what `column_base` left open. **
+    # `engineering/column_base.py` grades the EMBEDMENT a fixed column base needs, which
+    # was the assumption every `deck_post` record named and none graded. Grading it turned
+    # three other assumptions from unmentioned into mentioned-and-still-ungraded, and an
+    # assumption that has become visible belongs on a register rather than in a docstring.
+    #  - `base_rotation/PT-BW-*`: the base is graded for STRENGTH (can the ground turn the
+    #    shear around) and not for STIFFNESS. `deck_post`'s sway magnifier assumes a base
+    #    that does not rotate; a real one does, and the split of moment between the buried
+    #    shaft and the pad under it is the same question from the other side. Six items,
+    #    one per column `column_base` grades — one set, one definition.
+    #  - `column_head_joint/PT-*`: what a fixed-base column is fixed AGAINST at its head.
+    #    catlin's canopy columns carry `BM-BW-RE` on a stainless standoff pack under an
+    #    `HGAM10` gusset, a detail chosen for durability whose MOMENT transfer nobody has
+    #    computed. Column shear and torsion ride with it. Ten items — every cast column
+    #    that is a lateral system, the balcony's four included.
     assert {r.item_id for r in deferred} == {
         "column_support/W-SG-E1", "column_support/W-SG-W1",
+        *(f"base_rotation/{t}" for t in
+          ("PT-BW-E", "PT-BW-GE", "PT-BW-GW", "PT-BW-RE", "PT-BW-RNE", "PT-BW-W")),
+        *(f"column_head_joint/{t}" for t in
+          ("PT-BW-E", "PT-BW-GE", "PT-BW-GW", "PT-BW-RE", "PT-BW-RNE", "PT-BW-W",
+           "PT-SG-BF1", "PT-SG-BF3", "PT-SG-BR1", "PT-SG-BR3")),
         "rafter/RF-BW-CANOPY", "rafter/RF-GARAGE",
         "veneer_beam/W-SG-BRKBM",
         "thermal_break_transfer/DW-SG-W1", "thermal_break_transfer/DW-SG-E1",
@@ -312,7 +333,7 @@ def test_one_item_still_gets_the_front_matter(catlin_engineering):
 
 # --- the seal gate (Phase 5a) -------------------------------------------------------------
 
-def test_print_sealed_exits_one_while_nothing_is_sealed():
+def test_print_sealed_exits_one_while_nothing_is_sealed(catlin_engineering):
     """``--sealed`` was declared and never read.
 
     Until this was wired the flag silently printed an *unsealed* set — the drawings looked
@@ -320,6 +341,14 @@ def test_print_sealed_exits_one_while_nothing_is_sealed():
     no ``engineering.toml``, so every engineered line is unsealed and the command must
     refuse; the draft print below is what still has to work, because holding the printer
     hostage until a PE signs would make the engine useless for the months before one does.
+
+    ** THE DRAFT GATE CLOSES FIRST SINCE 2026-09-18, SO THE SEALED GATE IS ASSERTED
+    DIRECTLY. ** `engineering/column_base.py` grades the embedment catlin's canopy columns
+    need and they do not have it, so `haus print` refuses before `--sealed` is ever
+    consulted — which is correct ordering (there is no point asking for a stamp on a set
+    that does not reach draft) and would silently make this test vacuous. The CLI refusal
+    is asserted on the draft message, and the sealed gate on the checklist it reads, so
+    this keeps testing its own subject either way.
     """
     from typer.testing import CliRunner
 
@@ -328,14 +357,34 @@ def test_print_sealed_exits_one_while_nothing_is_sealed():
     runner = CliRunner()
     sealed = runner.invoke(app, ["print", str(CATLIN), "--sealed", "--fmt", "dxf"])
     assert sealed.exit_code == 1, sealed.output
-    assert "sealed print blocked" in sealed.output
-    assert "engineering --fingerprint" in sealed.output, (
-        "the refusal has to say how to pin a seal, or it is a dead end")
+    assert "permit print blocked" in sealed.output
 
-
-def test_the_draft_gate_is_unmoved_by_the_seal_gate(catlin_engineering):
-    """catlin reaches draft and does not reach sealed. Both halves are the point."""
+    # The shared fixture's checklist, not a second full run of the house — see
+    # `test_catlin_fixture_discipline`, which lints exactly that.
     _ctx, _items, checklist = catlin_engineering
-    assert checklist.ok, "the draft gate must stay open — catlin is held to a clean report"
+    assert not checklist.sealed, "no engineering.toml exists, so nothing is sealed"
+    assert checklist.unsealed
+
+
+def test_the_two_gates_are_separate_and_catlin_now_reaches_neither(catlin_engineering):
+    """The gates are independent, and 2026-09-18 is the first day catlin missed BOTH.
+
+    It used to reach draft and not sealed, which was the pair this test existed to pin. The
+    draft gate now closes too, on `column_base/PT-BW-RE` and `-RNE`: the engine computed the
+    IBC 1807.3.2.1 embedment those columns' assumed fixity needs and they do not have it.
+    That is the draft gate working — draft means "this engine's own calculation checks out"
+    — and the separation is still what is asserted: the sealed gate is shut for a different
+    reason entirely (no `engineering.toml` exists), so closing the draft one cannot be what
+    is making `sealed` false.
+    """
+    _ctx, _items, checklist = catlin_engineering
+    blocked = [item.label for item in checklist.items
+               if item.blocking and item.result not in (Result.PASS,
+                                                        Result.NOT_APPLICABLE)]
+    assert blocked == ["Fixed column base embedment"], blocked
+    assert not checklist.ok
     assert not checklist.sealed
     assert checklist.unsealed
+    # Shut for its own reason: every engineered item is unsealed because the house carries
+    # no register at all, which is true of the passing items as much as the failing one.
+    assert len(checklist.unsealed) > 1

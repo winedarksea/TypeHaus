@@ -79,6 +79,16 @@ class _Pier:
     moment_basis: str
     footing_width_in: float
     footing_depth_in: float
+    #: The thickness of the concrete DIRECTLY under this column, inches, whatever kind of
+    #: element it is — its own belled footing's depth, the ``Pad`` it stands on, or the
+    #: ``FoundationWall`` it is doweled into. ``footing_depth_in`` cannot answer this: it is
+    #: 0.0 for a pad-borne pier, because ``footing_tag`` is deliberately ``None`` there.
+    #: ``deck_post`` grades the dowels' anchorage against it.
+    base_thickness_in: float = 0.0
+    #: What that concrete IS — ``"footing"``, ``"pad"``, ``"wall"``, or ``""``. A dowel into
+    #: a WALL runs down its stem and is bounded by nothing this model holds, which is a
+    #: different verdict from a dowel into a 12" pad.
+    base_kind: str = ""
     #: ROOF area this post carries — a framed field over it (see :func:`_rafter_fields`),
     #: kept apart from ``tributary_ft2`` because a roof is not a deck. A deck carries IRC
     #: Table R301.5's 40 psf occupancy live load; a roof carries SNOW, which on this site is
@@ -684,6 +694,19 @@ def knee_braced(plan: Any, tags: set[str]) -> bool:
     return False
 
 
+def record_base_shear(tag: str, shear_lb: float, arm_ft: float) -> None:
+    """Record the (force, arm) one base moment was built from, for ``column_base``.
+
+    Both moment paths call it — this module's deck case and ``roof_moment``'s roof case —
+    so ``engineering/column_base.py`` has one place to ask and cannot see a column that has
+    a moment but no force behind it. See ``roof_moment._SHEARS`` for why this is a side
+    channel rather than a wider return tuple.
+    """
+    from typehaus.engineering.roof_moment import _SHEARS
+
+    _SHEARS[tag] = (shear_lb, arm_ft)
+
+
 def _base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, str]]:
     """Post tag -> ``(wind ASD base moment, guard ASD base moment, how)``, in lb-ft.
 
@@ -790,6 +813,15 @@ def _base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, str]
             per_column = worst_shear / len(columns)
             wind_moment = per_column * column_ft
             guard_moment = 200.0 * (column_ft + _bw_ft(guard.height))
+            # The force and the arm behind that moment, for `engineering/column_base.py`.
+            # IBC 1807.3.2.1 takes a FORCE and the height it acts at, and `P x h` has
+            # infinitely many factorisations — this is the one the demand was built from.
+            # The GUARD's 200 lb rides its own arm and is carried as the worse of the two
+            # equivalent forces, because the embedment has to turn whichever arrives.
+            if guard_moment > wind_moment:
+                record_base_shear(tag, 200.0, column_ft + _bw_ft(guard.height))
+            else:
+                record_base_shear(tag, per_column, column_ft)
             out[tag] = (wind_moment, guard_moment, (
                 f"{'E-W' if worst_axis == 'x' else 'N-S'} wind on {deck.tag}: q_h "
                 f"{q_h:.1f} psf at {top_ft - ground_ft:.1f}' above the ground beneath "
@@ -985,6 +1017,18 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
         size = _round_size(post.size)
         if size is None:
             continue
+        # What is directly under this column, and how thick. Its own footing where it has
+        # one; otherwise the pad or the wall it stands on. The wall's own thickness is not
+        # the bound on a dowel run down its stem, but it is what the model holds.
+        base_kind, base_thickness = "", 0.0
+        if footing is not None and not on_wall:
+            base_kind, base_thickness = "footing", footing.depth.inches
+        elif on_pad:
+            base_kind, base_thickness = "pad", pads[post.supported_by].thickness.inches
+        elif on_wall:
+            base_kind = "wall"
+            base_thickness = getattr(walls[post.supported_by], "height", None)
+            base_thickness = base_thickness.inches if base_thickness is not None else 0.0
         out.append(_Pier(
             tag=post.tag, diameter_in=size[0], round_section=size[1],
             height_in=post.height.inches,
@@ -1002,6 +1046,8 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
             moment_basis=moments.get(post.tag, (0.0, 0.0, ""))[2],
             footing_width_in=footing.width.inches if footing is not None else 0.0,
             footing_depth_in=footing.depth.inches if footing is not None else 0.0,
+            base_thickness_in=base_thickness,
+            base_kind=base_kind,
             vertical_reinforcement=getattr(post, "vertical_reinforcement", None),
             unmodelled_load=unmodelled.get(post.tag, ()),
             reinforcement=getattr(post, "reinforcement", None),

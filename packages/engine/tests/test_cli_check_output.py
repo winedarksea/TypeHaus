@@ -111,13 +111,22 @@ def test_check_exits_1_on_a_fail() -> None:
 def test_exit_on_error_is_the_looser_gate() -> None:
     """`scripts/verify.sh` uses this one. It is looser than the default by construction: an
     advisory FAIL is ``severity=WARN``, so ERROR-only lets it through where the default
-    stops. starter shows the gap — it carries advisory FAILs and no ERROR-severity finding
-    at all, so the default gate closes on it and ERROR-only opens. catlin shows both open."""
+    stops. starter is what shows the gap — it carries advisory FAILs and no ERROR-severity
+    finding at all, so the default gate closes on it and ERROR-only opens.
+
+    ** CATLIN STOPPED SHOWING BOTH GATES OPEN ON 2026-09-18, AND IT IS NOT A TEST BUG. **
+    It used to carry no FAIL at all, so both gates opened on it. It now carries two, and
+    they are ENGINEERED FAILs — ``engineered()`` gives a computed-and-over item
+    ``severity=ERROR``, because "this engine did the calculation and it does not pass" is
+    not an advisory. So ERROR-only closes too, which is the looser gate doing exactly what
+    it is for. See `test_catlin_carries_no_failures` for what the two are and what closes
+    them; when that fix lands this line goes back to 0.
+    """
     assert runner.invoke(app, ["check", str(STARTER), "--plain"]).exit_code == 1
     assert runner.invoke(
         app, ["check", str(STARTER), "--exit-on", ExitOn.error.value]).exit_code == 0
     assert runner.invoke(
-        app, ["check", str(CATLIN), "--exit-on", ExitOn.error.value]).exit_code == 0
+        app, ["check", str(CATLIN), "--exit-on", ExitOn.error.value]).exit_code == 1
 
 
 def test_catlin_carries_no_failures(catlin_json) -> None:
@@ -147,7 +156,24 @@ def test_catlin_carries_no_failures(catlin_json) -> None:
     # while the parcel was a drawn placeholder; the owner has since stated the real
     # 50' x 133' lot, so the basis is "plat" and the check reports UNKNOWN rather than
     # FAIL (houses/catlin/plan/site.py's `parcel_basis` block).
-    accepted: set[tuple[str, tuple[str, ...]]] = set()
+    # ** THESE TWO ARE NOT AN ACCEPTED ADVISORY. THEY ARE AN OPEN DESIGN GAP, PARKED HERE
+    # DELIBERATELY SO THE REST OF THE GATE STILL RUNS. ** (2026-09-18, the engineering gap
+    # review.) `engineering/column_base.py` grades what every `deck_post` record has been
+    # NAMING and not grading since 2026-09-11 — the embedment IBC 1807.3.2.1 needs for a
+    # column free to translate at grade — and the north entry canopy's two cast columns do
+    # not have it: PT-BW-RE wants 8.08' and has 6.12'; PT-BW-RNE wants the same and has
+    # 3.50'. Both fail at BOTH ends of §1806.3.4's isolated-pole doubling, so the verdict is
+    # not a judgement call. `notes/entry_column_base_fixity.md` works it by hand; §6 there
+    # lists the three closures (deepen the shafts, constrain the base at grade with a grade
+    # beam or apron, or brace the frame and let the columns revert to leaning columns).
+    #
+    # DELETE BOTH ENTRIES when one of those lands. An entry that outlives its fix is how a
+    # 0-FAIL gate stops meaning anything, which is the exact failure this whole review was
+    # about.
+    accepted: set[tuple[str, tuple[str, ...]]] = {
+        ("structural.lateral_racking", ("PT-BW-RE", "RF-BW-CANOPY")),
+        ("structural.lateral_racking", ("PT-BW-RNE", "RF-BW-CANOPY")),
+    }
     assert accepted <= set(failures), (
         "an accepted advisory stopped firing — delete it from `accepted` rather than "
         "leaving a stale entry", sorted(accepted - set(failures)))
@@ -243,7 +269,10 @@ def test_no_suppress_lifts_the_house_suppressions_and_writes_nothing() -> None:
     loud = json.loads(runner.invoke(
         app, ["check", str(CATLIN), "--json-summary", "--no-suppress"]).output)
 
-    assert quiet["fail"] == 0, "the reference house is held to a clean report"
+    # 2, not 0, since 2026-09-18: the north entry's two fixed-base columns do not have the
+    # IBC 1807.3.2.1 embedment their assumed fixity needs. An open design gap, not a
+    # suppression — `test_catlin_carries_no_failures` carries the citation and the closures.
+    assert quiet["fail"] == 2, "the reference house's only FAILs are the two open ones"
     assert loud["fail"] > quiet["fail"], "the suppressed debt is real and is now visible"
     assert "mep.run_interference" in loud["failing_check_ids"]
     assert "mep.run_interference" not in quiet["failing_check_ids"]

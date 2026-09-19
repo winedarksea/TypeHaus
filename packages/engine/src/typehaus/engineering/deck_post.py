@@ -35,7 +35,12 @@ from typehaus.engineering.item import (
     Status,
     item_id,
 )
-from typehaus.engineering.pier_basis import LIVE_LOAD_FACTOR, _Pier, cast_piers
+from typehaus.engineering.pier_basis import (
+    DECK_LIVE_LOAD_PSF,
+    LIVE_LOAD_FACTOR,
+    _Pier,
+    cast_piers,
+)
 from typehaus.engineering.registry import (
     EngineeringContext,
     calc,
@@ -60,8 +65,12 @@ KIND = "deck_post"
 #: with the axial one named as missing; to "4" when ``_moment_column`` arrived and a column
 #: that IS a deck's lateral system started being graded in BENDING at its base; to "5" when
 #: the two base moments stopped being compared at working stress against a strength
-#: capacity and were put on ASCE 7-16 §2.3.1's factored basis.
-BASIS_VERSION = "5"
+#: capacity and were put on ASCE 7-16 §2.3.1's factored basis; to "6" for two changes made
+#: together on 2026-09-18 — the dowels' ANCHORAGE into the concrete below joined the lap
+#: that was already graded (the lap alone was half the joint, and the half it left out is
+#: the one the fixed base depends on), and the P-M check became an ENVELOPE over §2.3.1's
+#: five combinations at their own axial loads rather than one moment at 1.2D + 1.6L's.
+BASIS_VERSION = "6"
 BASIS = "IRC R507.4 (no row); ACI 318-19 Ch. 10, 22.4, 25.7 (reinforced) / 14.5 (plain)"
 
 #: ACI 318-19 §2.3 defines a PEDESTAL as a member with a ratio of height to least lateral
@@ -288,6 +297,14 @@ def _one(pier: _Pier) -> EngineeringRecord:
         "module stands free above grade for part of its own, so it is a column and is "
         "graded as one. Check that against the section before citing the exclusion.",
     )
+    if pier.base_kind == "wall":
+        common = common + (
+            "NOT GRADED: the dowels' anchorage into the concrete below. This column is "
+            "doweled into a foundation WALL, whose stem length nothing in this model "
+            "bounds, so there is no capacity to compare a development length against. A "
+            "column on a pad or its own footing IS graded — see `dowel anchorage into the "
+            "base` on those records.",
+        )
     if pier.roof_tributary_ft2 > 0.0 and pier.roof_snow_basis:
         common = common + (
             f"Roof snow {pier.roof_snow_psf:.1f} psf over {pier.roof_tributary_ft2:.1f} ft2 "
@@ -517,6 +534,98 @@ def _class_b_lap_in(cage: _Cage, fc_psi: float = PRESUMPTIVE_FC_PSI) -> float:
     return 1.3 * development_length_raw_in(cage.bar_diameter_in, fc_psi)
 
 
+def _dowel_anchorage(pier: _Pier, cage: _Cage, fc_psi: float) -> LimitState | None:
+    """The other half of the dowel joint: does the bar DEVELOP in the concrete below it?
+
+    ** THE LAP STATE ALONE WAS HALF A CHECK. ** ``dowel lap, class B`` grades the splice
+    between the dowel and the column bar and bounds it by the column's own height, which is
+    right as far as it goes — that is the only bound the model holds on how much lap can
+    physically exist above the joint. It says nothing whatever about the end that matters
+    more: a dowel hooked into a 12" pad has about 8" of concrete to develop in, and if it
+    does not develop there the fixed base the whole ``_moment_column`` branch assumes is not
+    fixed.
+
+    **Hooked, not straight, and the difference decides the verdict.** ACI 318-19 §25.4.3.1
+    develops a #5 in about 8" hooked at 5,000 psi against 21" straight. Grading a pad dowel
+    against the straight figure would condemn every correctly built pad-borne column in the
+    house. ψr is taken at 1.0 — the column's ties continue through the joint per §25.4.3.3 —
+    and ψo at 1.0, both of which are conditions a reviewer has to confirm on the drawing;
+    the state's citation says so rather than burying it.
+
+    **A column on a WALL is not graded here and is not silently passed.** Its dowels run
+    down a stem whose length nothing in this model bounds, so there is no capacity to
+    compare against; ``None`` comes back and the record's notes say why.
+    """
+    from typehaus.resolve.rebar.detailing import hooked_development_length_in
+
+    if pier.base_kind == "wall" or pier.base_thickness_in <= 0.0:
+        return None
+    ldh = hooked_development_length_in(cage.bar, fc_psi, enclosed_by_ties=True,
+                                       confined=True)
+    cover_in = _cover_in(pier)
+    # The hook turns at the bottom mat's level, so what is available is the pour's depth
+    # less the cover it is cast on and the bar's own bend. Taking the full thickness would
+    # credit concrete outside the bar.
+    available = pier.base_thickness_in - cover_in - cage.bar_diameter_in
+    return LimitState(
+        "dowel anchorage into the base", ldh, max(available, 0.0), "in",
+        f"ACI 318-19 §25.4.3.1 standard-hook development in the {pier.base_kind} below, "
+        f"psi_e 1.0 (zinc, §25.4.2.5), psi_r 1.0 (hook enclosed by the column's ties "
+        f"through the joint, §25.4.3.3), psi_o 1.0 (confined) — against the "
+        f"{pier.base_thickness_in:g}\" pour less {cover_in:g}\" cover and one bar "
+        f"diameter. CONFIRM the tie continuation and the side cover on the drawing: both "
+        f"psi factors are 1.6 and 1.25 without them")
+
+
+@dataclass(frozen=True)
+class _Combination:
+    """One ASCE 7-16 §2.3.1 combination, as the (Pu, Mu) pair it puts on this column."""
+
+    label: str
+    axial_lb: float
+    moment_lb_ft: float
+
+
+def _combinations(pier: _Pier, wind_mu: float, guard_mu: float) -> tuple[_Combination, ...]:
+    """ASCE 7-16 §2.3.1, each at ITS OWN axial load.
+
+    ** A LARGER AXIAL IS NOT AUTOMATICALLY CONSERVATIVE ON AN INTERACTION CURVE, AND THAT IS
+    THE WHOLE REASON THIS EXISTS. ** Until 2026-09-18 this module took one axial — ``1.2D +
+    1.6L``, ``_Pier.factored_lb`` — found the P-M point there, and compared the LARGER of the
+    two moments against it. Below the balance point, which is where every column in this
+    house sits, moment capacity *rises* with axial compression. So the combination that
+    actually threatens a wind-loaded column is **§2.3.1 combination 5, ``0.9D + 1.0W``**: the
+    full lateral moment at the smallest axial load the Code will let you count on. Grading
+    the full wind moment at ``1.2D + 1.6L``'s axial credited compression that the governing
+    case does not have.
+
+    The five are enumerated at their own axial loads and the record reports the governing
+    PAIR. L and S are separated here for the first time — ``_Pier.live_lb`` sums them,
+    because until this the axial was only ever needed as one number.
+
+    The guard's 200 lb (IRC R301.5) is an occupancy live load, so it rides the L term: full
+    in combinations 2 and 4, absent where L is. Wind and guard are taken CONCURRENTLY in
+    combination 4, which is conservative — nobody leans on a rail in a design windstorm —
+    and cheap, because it is not the case that governs.
+    """
+    dead = pier.dead_lb
+    live = pier.tributary_ft2 * DECK_LIVE_LOAD_PSF
+    snow = pier.roof_tributary_ft2 * pier.roof_snow_psf
+    return (
+        _Combination("1.4D", 1.4 * dead, 0.0),
+        _Combination("1.2D + 1.6L + 0.5S",
+                     1.2 * dead + 1.6 * live + 0.5 * snow, guard_mu),
+        _Combination("1.2D + 1.6S + 0.5W",
+                     1.2 * dead + 1.6 * snow, 0.5 * wind_mu),
+        _Combination("1.2D + 1.0W + L + 0.5S",
+                     1.2 * dead + live + 0.5 * snow,
+                     wind_mu + guard_mu / GUARD_LOAD_FACTOR),
+        # The one that governs a lightly loaded lateral column, and the one a single-axial
+        # check could not see: full wind at the smallest axial the Code permits.
+        _Combination("0.9D + 1.0W", 0.9 * dead, wind_mu),
+    )
+
+
 def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: float,
                    minimum_steel: float, cage: _Cage,
                    common: tuple[str, ...]) -> EngineeringRecord:
@@ -551,6 +660,17 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
     governing = max(wind_mu, guard_mu)
     lap = _class_b_lap_in(cage, fc_psi)
 
+    # The §2.3.1 envelope, each combination at its own axial load and its own P-M point,
+    # and the one with the worst ratio reported. See `_combinations`.
+    envelope = []
+    for case in _combinations(pier, wind_mu, guard_mu):
+        case_phi_mn, case_phi, _c = _pm_point(pier, cage, cover_in, case.axial_lb)
+        _slender, case_magnifier = _sway_magnifier(pier, case.axial_lb)
+        envelope.append((case, case.moment_lb_ft * case_magnifier, case_phi_mn, case_phi,
+                         case_magnifier))
+    worst = max(envelope, key=lambda row: row[1] / row[2] if row[2] else 0.0)
+    worst_case, worst_mu, worst_phi_mn, worst_phi, worst_magnifier = worst
+
     states = (
         LimitState("axial, tied column", demand, capacity, "lb",
                    f"ACI 318-19 §22.4.2.1 Pn,max = {TIED_AXIAL_CAP:.2f} Po, phi "
@@ -568,12 +688,23 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
                    f"ACI 318-19 §6.6.4.5.2 delta {magnifier:.3f} at k "
                    f"{CANTILEVER_EFFECTIVE_LENGTH_FACTOR:.1f}, k*lu/r {slenderness:.0f} "
                    f"against §6.2.5's SWAY limit of {SWAY_SLENDERNESS_LIMIT:.0f}"),
+        # ** THE STATE THAT ACTUALLY GRADES THIS COLUMN. ** The three above are one
+        # combination's moments against one combination's P-M point; this is the §2.3.1
+        # envelope, each case at its own axial load, and on a column below the balance
+        # point it is `0.9D + 1.0W` that governs rather than `1.2D + 1.6L`.
+        LimitState(f"P-M envelope, {worst_case.label}", worst_mu, worst_phi_mn, "lb-ft",
+                   f"ASCE 7-16 §2.3.1 governing combination, magnified {worst_magnifier:.3f} "
+                   f"— Pu {worst_case.axial_lb:,.0f} lb, phi {worst_phi:.2f}, phi*Mn "
+                   f"{worst_phi_mn:,.0f} lb-ft. Every combination is run at ITS OWN axial: "
+                   f"a larger Pu RAISES moment capacity below the balance point, so the "
+                   f"lowest-axial lateral case is the threat"),
         LimitState("dowel lap, class B", lap, pier.height_in, "in",
                    "ACI 318-19 §25.4.2.4 development x §25.5.2.1's 1.3 for a class B "
                    "splice with every bar spliced at one section; graded against the "
                    "column's own height, which is the only bound this model holds on how "
-                   "much lap can physically exist. The AUTHORED lap is in the assembly's "
-                   "source and on the drawing"),
+                   "much lap can physically exist ABOVE the joint. The AUTHORED lap is in "
+                   "the assembly's source and on the drawing"),
+        *((anchorage,) if (anchorage := _dowel_anchorage(pier, cage, fc_psi)) else ()),
         *_detailing_states(pier, area, minimum_steel, cage),
     )
     over = any(not state.ok for state in states)
@@ -597,6 +728,12 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
         f"{pier.guard_base_moment_lb_ft:,.0f} -> {guard_mu:,.0f} lb-ft. Until 2026-09-11 "
         f"both were compared at working stress against phi*Mn, which mixed two bases inside "
         f"one P-M point; no column was re-sized by the correction.",
+        "LOAD COMBINATIONS: " + "; ".join(
+            f"{case.label} -> Pu {case.axial_lb:,.0f} lb, Mu {mu:,.0f} lb-ft, phi*Mn "
+            f"{case_phi_mn:,.0f} lb-ft, d/c {mu / case_phi_mn:.2f}"
+            for case, mu, case_phi_mn, _phi, _delta in envelope) + ". "
+        f"{worst_case.label} governs. Until 2026-09-18 only 1.2D + 1.6L's axial was used, "
+        f"which credited this column with compression the governing case does not have.",
         f"BENDING GOVERNS, and {which} governs the bending: {governing:,.0f} lb-ft against "
         f"phi*Mn {phi_mn:,.0f} lb-ft at this column's own axial load, d/c "
         f"{governing / phi_mn:.2f} before magnification and "

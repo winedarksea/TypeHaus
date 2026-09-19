@@ -52,6 +52,34 @@ def tension_lap_in(bar: int, fc_psi: float, lap_class: str | None = None, *,
                factor * development_length_in(bar, fc_psi, top_cast=top_cast, epoxy=epoxy))
 
 
+def hooked_development_length_in(bar: int, fc_psi: float, *, epoxy: bool = False,
+                                 confined: bool = False,
+                                 enclosed_by_ties: bool = False) -> float:
+    """ldh, ACI 318-19 §25.4.3.1: ``fy ψe ψr ψo ψc / (55 λ √f'c) · db^1.5``, ≥ max(8 db, 6").
+
+    A HOOKED bar develops in a fraction of a straight bar's length, which is the whole
+    reason a dowel can anchor into a 12" pad at all: a #5 needs about 21" straight at 5,000
+    psi and about 9" hooked. Grading a dowel against the straight figure would condemn every
+    pad-borne column in a house that is built correctly.
+
+    The ψ factors, per Table 25.4.3.2:
+
+    * ψe 1.2 for epoxy; 1.0 for uncoated AND for zinc (§25.4.2.5 — zinc does not debond).
+    * ψr 1.0 where the hook is enclosed by ties or stirrups per §25.4.3.3, else 1.6. A
+      column cage's own ties do exactly that where they continue through the joint.
+    * ψo 1.0 for a hook confined by ≥ 2-1/2" side cover and a ≥ 2 db tail cover, else 1.25.
+    * ψc = f'c/15,000 + 0.6, capped at 1.0 — so it only ever helps below 6,000 psi.
+    """
+    db = BARS[bar].diameter_in
+    psi_e = 1.2 if epoxy else 1.0
+    psi_r = 1.0 if enclosed_by_ties else 1.6
+    psi_o = 1.0 if confined else 1.25
+    psi_c = min(1.0, fc_psi / 15000.0 + 0.6)
+    root = min(SQRT_FC_CAP, math.sqrt(fc_psi))
+    length = FY_PSI * psi_e * psi_r * psi_o * psi_c / (55.0 * root) * db ** 1.5
+    return max(length, 8.0 * db, 6.0)
+
+
 def compression_lap_in(bar: int) -> float:
     """§25.5.5.1 for fy ≤ 60,000 psi: ``0.0005 fy db`` (30 db), ≥ 12"."""
     return max(MIN_LENGTH_IN, 0.0005 * FY_PSI * BARS[bar].diameter_in)

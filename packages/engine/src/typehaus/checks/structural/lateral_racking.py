@@ -371,6 +371,7 @@ def _grade_moment_columns(ctx: CheckContext) -> list[Finding]:
                 f"IRC R507 grades",
                 (deck.tag, tag),
                 fix=f"seal `deck_post/{tag}` in engineering.toml"))
+            out.extend(_base_fixity(ctx, tag, deck.tag))
 
     for roof in sorted((e for e in ctx.plan.all_elements() if isinstance(e, Roof)),
                        key=lambda r: r.tag):
@@ -393,7 +394,40 @@ def _grade_moment_columns(ctx: CheckContext) -> list[Finding]:
                 f"prescriptive table in the IRC grades",
                 (roof.tag, tag),
                 fix=f"seal `deck_post/{tag}` in engineering.toml"))
+            out.extend(_base_fixity(ctx, tag, roof.tag))
     return out
+
+
+def _base_fixity(ctx: CheckContext, tag: str, carried: str) -> list[Finding]:
+    """The second half of a fixed-base column, and it is a different question.
+
+    ``deck_post/<tag>`` asks whether the SECTION can carry the base moment. This asks
+    whether the GROUND can — IBC 1807.3.2.1 embedment for a column free to translate at
+    grade. Two items because they are two designs with two failure modes and, quite
+    possibly, two fixes: a richer cage answers the first and nothing about the second.
+
+    ** THE ASSUMPTION THIS CLOSES WAS NAMED IN EVERY ``deck_post`` RECORD AND GRADED IN
+    NONE. ** Their ``SCREENING:`` note says in as many words that "nothing here grades the
+    EMBEDMENT that fixity needs against IBC 1807.3.2.1, and on a shallow-founded column that
+    is the assumption most likely to be the weak one." ``engineering/column_base.py`` grades
+    it as of 2026-09-18, and on catlin's north entry it is indeed the weak one.
+
+    Only where the item exists: a column doweled into a foundation wall raises
+    ``column_support/<wall>`` instead, and one question with two items is how a register
+    starts contradicting itself.
+    """
+    item = item_id("column_base", tag)
+    if item not in ctx.engineering:
+        return []
+    return [engineered(
+        ctx, _CID, item,
+        f"{carried}'s lateral system is {tag}, a cast column FIXED at its base — and what "
+        f"makes a base fixed is the ground, not the section. IBC 1807.3.2.1 grades the "
+        f"embedment a column free to translate at grade needs to turn its own shear around",
+        (carried, tag),
+        code="IBC 2018 §1807.3.2.1",
+        fix=f"deepen the shaft, brace the column at grade, or seal `{item}` in "
+            f"engineering.toml")]
 
 
 def _roof_bears_on_a_wall(ctx: CheckContext, roof) -> bool:

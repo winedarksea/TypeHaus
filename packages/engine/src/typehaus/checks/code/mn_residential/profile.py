@@ -460,6 +460,17 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Freestanding deck lateral resistance",
                        ("structural.lateral_racking",),
                        ("IRC R301.1.3", "IRC R507.9"), blocking=False),
+        # ** AND WHAT MAKES A FIXED BASE FIXED IS THE GROUND, WHICH IS A SECOND QUESTION AND
+        # A BLOCKING ONE. ** The line above is about the column's SECTION carrying the base
+        # moment — `deck_post`'s arithmetic, advisory because a leaning column in a braced
+        # structure is an ordinary thing a reviewer can wave through. This one is about the
+        # EMBEDMENT that lets the base deliver a moment at all (IBC 1807.3.2.1,
+        # `engineering/column_base.py`, added 2026-09-18). It blocks because a column whose
+        # base cannot turn its own shear around is not a detailing question: the frame has
+        # no lateral system, and the drawing says it does.
+        PermitItemSpec("Fixed column base embedment",
+                       ("structural.lateral_racking",),
+                       ("IBC 2018 §1807.3.2.1", "IBC 2018 §1806.2")),
         # Added 2026-09-11 with the column reactions. A cast column fixed at its base
         # delivers an axial load AND a base moment into whatever it stands on, and where
         # that is a foundation WALL TOP the receiving concrete is graded by nobody here:
