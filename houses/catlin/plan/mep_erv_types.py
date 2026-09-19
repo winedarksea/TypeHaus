@@ -1,12 +1,13 @@
 # haus: editable
 # Catlin MEP — the ERV's catalog: the machine, its manifolds, its mixing box, its hoods.
 #
-# Split off plan/mep_erv.py (AGENTS.md's 500-line rule) at the seam the rest of this house
+# Split off plan/mep_erv.py (AGENTS.md's 500-line rule; that file is itself now five,
+# one per cavity) at the seam the rest of this house
 # already uses: type DEFINITIONS here, placed INSTANCES there. Nothing in this file is
 # draggable, and the `# haus: editable` marker rides along only because the dialect linter
 # reads the whole plan package as one dialect — there is no element here to write back.
 #
-# Read plan/mep_erv.py first; it is where the system is explained.
+# Read plan/mep_erv_l1.py first; it is where the system is explained.
 
 from typehaus import (
     DuctProductType,
@@ -19,9 +20,10 @@ from typehaus import (
 )
 
 EQUIPMENT_TYPES_ERV = (
-    # The machine. Ports are all on top and all 6" round, which is what makes the
-    # 6" -> 160 mm manifold adapter (one per manifold) a real line in the BOM rather than a
-    # shrug: the collared radial manifolds this system uses are 160 mm stock.
+    # The machine. Ports are all on top and all 6" round. There is no adapter line in the
+    # BOM any more: BLD-08 took the 160 mm collared radial manifold out with the 75 mm tube,
+    # and what replaces it is an 8" fabricated plenum with 4" dampered ports, so the trunk
+    # off the machine steps 6" -> 8" on a commodity reducer (library/hvac.py).
     #
     # ** 210 IS THE MODEL-NAME NUMBER; 206 AT 0.4" W.G. IS THE CERTIFIED ONE. **
     # HVI certifies this machine at 206 cfm net supply at 0.4" w.g. (HVI ID 2004940). The
@@ -134,15 +136,11 @@ EQUIPMENT_TYPES_ERV = (
                                      position=(ft(0), ft(0), inch(4))),
                          ServicePort(tag="return", service=Service.RETURN_AIR,
                                      position=(ft(0), ft(0), inch(4))))),
-    # The two exterior hoods, ONE CASTING ON TWO ROWS. An intake hood and a discharge hood
-    # are the same part with the damper reversed; they were one type here for exactly that
-    # reason, and the BOM argument was the wrong way round. A row's honesty is its rate, not
-    # its count: these two rows carry the same $/ea, so one hood on each still orders the
-    # same two castings and the same two flashed 6" penetrations. What the single row cost
-    # was the only fact a check can read — which way the air goes. Stated once as
-    # OUTDOOR_AIR, the discharge hood reached by an EXHAUST run could only be UNKNOWN, and
-    # the UNKNOWN was about this catalog, not about the building. Split the row, keep the
-    # rate, and the model says what the damper says.
+    # The two exterior hoods and the three plenum types are NOT here: they were promoted to
+    # library/hvac.py in e5b64fff because nothing about them is this house's. The argument
+    # their comment used to make is the library's now — an intake hood and a discharge hood
+    # are one casting with the damper reversed, and they are two ROWS so that a check can
+    # read which way the air goes.
 )
 
 REGISTER_TYPES_ERV = (

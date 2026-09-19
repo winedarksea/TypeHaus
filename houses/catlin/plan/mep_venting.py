@@ -370,10 +370,12 @@ VENT_CLAMPS = [
 # path — nothing here is inferred, so an unvented fixture would still fail loudly.
 #
 # Both share the same vertical band: the tee sits low, the riser goes up inside the room's own
-# stud cavity, and the horizontal leg tops out at 8'-1" basement-relative rather than 8'-3",
-# because the "basement ceiling" here is 9" of cast concrete and a run at the deck's underside
-# would be cast into it (which `mep.sleeve_coverage` caught the first time it was tried). Each
-# rises a few inches over its length to the chase so condensate drains back to the fixtures.
+# stud cavity, and the horizontal leg tops out at **7'-10 7/16" basement-relative**. The
+# ceiling over both of them is FS-M-WEST's 11 7/8" I-joists, not a pour — SL-M-DECK's cast
+# deck starts at x=18'-0" and these run at x=7' and x=9' — so the constraint is the joist
+# soffit at 8'-1 9/16", which the band clears by 3 1/8". (The older note here said 9" of cast
+# concrete; that was true of an x=18'-plus station this pair has never had.) Each rises a few
+# inches over its length to the chase so condensate drains back to the fixtures.
 #
 # Neither shares a leg with the other — the bathroom's runs north at x=7', the sauna's at
 # x=9' — the same rule PR-S-SUITEBATH-VENT follows against the hall bath's branch.

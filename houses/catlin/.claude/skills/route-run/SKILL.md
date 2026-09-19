@@ -36,7 +36,7 @@ Read three things before choosing, in this order:
    `[mep.routing]`).
 
 Then paste **exactly one** alternative into the house's own `# haus: editable` file — for
-drainage that is `plan/mep_drainage.py`, for air `plan/mep_erv.py`, for raceway
+drainage that is `plan/mep_drainage.py`, for air `plan/mep_erv_l1.py` .. `_l3.py`, for raceway
 `plan/electrical.py`. Three rules and each is silent when broken:
 
 * **the list you paste into decides the storey**, and the printed elevations are relative

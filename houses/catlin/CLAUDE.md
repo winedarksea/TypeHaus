@@ -36,7 +36,7 @@ not instruction: when it disagrees with this file or the model, it is the one th
   `RM-A-STUDIO`, which is `RM-A-WEST-UNFIN` moved here whole — **a uid follows the element,
   not the file**), `AL-A-STUDIO`, and the second-storey beam `BM-S-BATH-E` with its tee node.
   It feeds **two** storeys from one file, exporting `ATTIC_ELEMENTS` and `SECOND_ELEMENTS` —
-  the `plan/mep_erv.py` precedent — because `attic.py` was already 565 lines against
+  the `plan/mep_erv_*.py` precedent — because `attic.py` was already 565 lines against
   `AGENTS.md`'s 500. **What deliberately stayed in `attic.py`:** every WALL SPLIT the change
   forced — `W-A-C2`/`W-A-C2M`/`W-A-C2B`, `W-A-N2`/`W-A-N2B`, `W-A-W1`/`W-A-W1B` — so nobody
   reading a line has to look in two files for a segment of it, and `RB-HOUSE.bearing_refs`
@@ -58,12 +58,22 @@ not instruction: when it disagrees with this file or the model, it is the one th
 - `plan/mep*.py` — MEP *instances*, split by system so no file runs past ~400 lines:
   `mep_sleeves` (cast penetrations), `mep_drainage`, `mep_venting`, `mep_supply` +
   `mep_supply_devices`, `mep_hvac` (System 1's conditioned-air chase, equipment, terminal
-  types), `mep_erv` + `mep_erv_types` (the ventilator, its manifolds, its outdoor side, its
-  risers and radials), `mep_registers`, `mep_electrical` (symbols). All ten are
-  `# haus: editable`. `plan/mep.py` itself is now only the four storey element lists the
-  manifest consumes — NOT editable, because an aggregator needs `from plan import ...` and
-  the dialect forbids it. **`mep_erv.py` cannot import `mep_erv_types.py`** for that same
-  reason; the aggregator imports both and hands both to `Library(...)`.
+  types), `mep_registers`, `mep_electrical` (symbols), and the ERV in six files (below).
+  All fourteen are `# haus: editable`. `plan/mep.py` itself is now only the four storey
+  element lists the manifest consumes — NOT editable, because an aggregator needs
+  `from plan import ...` and the dialect forbids it. **No `mep_erv_*.py` file can import
+  `mep_erv_types.py`** for that same reason; the aggregator imports both and hands both to
+  `Library(...)`.
+- **The ERV is split by CAVITY, not by system** (2026-09-19), so the three level campaigns
+  edit disjoint files: `mep_erv_l1` (the system header — the machine, the home-run
+  argument, the routing declarations — plus the basement plenums and their six radials),
+  `mep_erv_l2` (the two RM-M-MECH plenums, the thirteen FS-S-WEST radials), `mep_erv_l3`
+  (the attic plenum, `EQ-S-ERV-MIX` and the FS-ATTIC radials), `mep_erv_outdoor` (the two
+  north-facade hoods and their wall penetrations) and `mep_erv_risers` (`DUCTS_ERV_RISERS`:
+  three chase risers plus `DU-ERV-OA`/`-EA`, one list because `mep.py` spreads it whole).
+  `mep_erv_types` is the catalog. The split was byte-neutral: every element in
+  `out/model.json` is unchanged, and only `contentHash` — which hashes the plan SOURCE —
+  moved.
 - `plan/fixtures.py` — `# haus: editable` plumbing-fixture *instances* (so UI drags
   round-trip). Only explicit constructors in any of these — no functions/generators.
 - `plan/electrical.py` — `# haus: editable` electrical service upgrade: meter, backup
@@ -578,7 +588,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     names all five segments; `test_ridge_beam_depth.py` pins the tuple.
   - ERV hoods: NORTH face, intake +5'-0" at x=3'-4" (main), discharge +17'-0" at x=2'-0"
     (second) — off the attic GABLE (where the leg crossed both gable windows' ROs) and, since
-    2026-09-15, off the WEST facade too (`plan/mep_erv.py`). The gable objection is about
+    2026-09-15, off the WEST facade too (`plan/mep_erv_outdoor.py`). The gable objection is about
     W-A-N* at +23'-0" and never applied to W-M-N3B/W-S-N3B. (→ log4.md, why the gable failed)
   - `DU-A-ERV-R-BED3` and `CD-A-DATA-NE` both route SOUTH — the only option, since
     `FO-A-HALL`'s maxy is `W-A-N2`'s gwb face, severing every west→east route north of the
@@ -1018,7 +1028,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
 ### Ventilation, ducts and soffits
 
-- **ERV: Broan B210E75RT, home-run distribution in STANDARD PARTS** (`plan/mep_erv.py`).
+- **ERV: Broan B210E75RT, home-run distribution in STANDARD PARTS** (`plan/mep_erv_l1.py`).
   Redesigned 2026-09-12 (BLD-08): the topology did not change, what it is built from did.
   - **No proprietary tube anywhere.** The 160 mm/75 mm radial manifold and its semi-rigid
     tube had three US sellers and no Minnesota dealer, and the owner's decision is not to

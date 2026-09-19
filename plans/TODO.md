@@ -144,17 +144,12 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
 
 ### MEP / lighting residuals
 
-- **`_ATTIC_BAY_Z` may repeat the 1 1/2" error level 2 already fixed.** `plan/mep_erv.py:949`
+- **`_ATTIC_BAY_Z` may repeat the 1 1/2" error level 2 already fixed.** `plan/mep_erv_l3.py`
   sets the level-3 bay datum to `inch(-9.875)`, which puts the duct **invert** at the bottom
   of FS-ATTIC's bottom chord (228 1/8") rather than its centreline — the same mistake the
   level-2 note records having corrected on 2026-09-12, when `_BAY_Z` moved to `inch(-8.375)`.
   Found during the 2026-09-13 prose pass and deliberately not touched: it is a model change,
   not a comment. Check it against the level-2 derivation before moving it.
-- **Two dead prose paragraphs in `plan/mep_erv.py`.** `DU-M-ERV-R-LAUNDRY` carries an older
-  route paragraph ("on east to x=15'-0"") superseded by "ONE CORNER, NOT THREE" — the
-  authored path turns at 14'-6". And `DU-M-ERV-R-STUDY`'s comment gives FS-S-WEST's joist
-  lines as "8" + n*16"", which is the bay-CENTRE formula; the joists are at 16n.
-
 - **The AH/ERV blower interlock is a controls fact with no model field.** With the ERV running
   and the air handler off, 100 cfm enters a still return chamber and exits through
   `REG-S-HP-RET` into `RM-S-STUDY2` — the only low-resistance path. Distribution to the rest of

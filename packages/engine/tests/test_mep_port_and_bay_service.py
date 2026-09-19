@@ -184,7 +184,7 @@ def test_no_pair_of_bay_runs_in_catlin_exceeds_its_bay(catlin_model):
 
 
 def test_two_lanes_on_one_bay_centre_are_reported_as_unknown(catlin_model):
-    """FS-S-WEST is the floor the TODO named. ``plan/mep_erv.py`` records in prose that
+    """FS-S-WEST is the floor the TODO named. ``plan/mep_erv_l2.py`` records in prose that
     STUDY and LAUNDRY both ride the 20'-8" bay and that "nothing in the engine grades
     duct-against-duct outside a modeled Soffit"; this is the check that does. It is UNKNOWN
     rather than FAIL because the model gives a run one centreline per bay — two lanes in one

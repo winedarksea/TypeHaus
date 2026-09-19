@@ -1,6 +1,6 @@
 """Are there more branches on a distribution plenum than it was fabricated with ports?
 
-This grades a sentence. ``houses/catlin/plan/mep_erv.py`` has said in prose since the
+This grades a sentence. ``houses/catlin/plan/mep_erv_l2.py`` has said in prose since the
 level-2 layout was drawn that ``EQ-M-ERV-MAN-EXH`` is "full at 10 of 10", and every argument
 about where a new terminal could go leans on it — the plant room's extract is where it is
 because that manifold has no eleventh port. A comment is not a guard. Add a twelfth radial

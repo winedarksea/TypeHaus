@@ -161,7 +161,7 @@ def duct_joist_bay_occupancy(ctx: CheckContext) -> list[Finding]:
     An overlapping pair the bay can still hold is UNKNOWN, not FAIL, and the distinction is
     the model's rather than the building's: this model gives a run one centreline per bay, so
     two lanes sharing a bay are necessarily drawn on top of each other. The FS-S-WEST note in
-    ``plan/mep_erv.py`` says exactly that about STUDY and LAUNDRY. What the check *can* say —
+    ``plan/mep_erv_l2.py`` says exactly that about STUDY and LAUNDRY. What the check *can* say —
     and what nothing said before — is that they are in the same bay at all, and that the bay
     is or is not wide enough for both.
     """

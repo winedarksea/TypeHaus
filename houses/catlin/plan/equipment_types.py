@@ -56,7 +56,7 @@ EQUIPMENT_TYPES = (
                   source="Harvia Cilindro PC110E, 10.5 kW at 240 V 1-phase, 43.75 A nominal, rated 141-636 cf, ETL listed, 16 x 15 x 45 in., 264 lb of stone. The Xenio CX170 control (PROD-HARVIA-CX170) is MANDATORY and mounts outside the hot room - there is no built-in-control variant of this heater.",
                   ports=(ServicePort(tag="power", service=Service.POWER_240,
                                      position=(ft(0), ft(0), ft(0))),)),
-    # The ERV is EQ-T-BROAN-B210E75RT in plan/mep_erv.py — an ERV with a modeled intake and
+    # The ERV is EQ-T-BROAN-B210E75RT in plan/mep_erv_types.py — an ERV with a modeled intake and
     # discharge, on `Service.OUTDOOR_AIR`/`EXHAUST_AIR`.
     # --- The three Gree heat-pump systems (plans/TODO.md §HVAC) ----------------------
     # Every unit below carries a real Gree model number and real submittal geometry; no

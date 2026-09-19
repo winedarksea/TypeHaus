@@ -102,7 +102,7 @@ BROAN_B210E75RT = Product(
     tag="PROD-BROAN-B210E75RT", brand="Broan", model="B210E75RT",
     name="B210E75RT energy recovery ventilator, 206 CFM at 0.4\" w.g. (HVI 2004940)",
     source="Broan published specifications, read 2026-08-25 — see EQ-T-BROAN-B210E75RT "
-           "(plan/mep_erv.py) for the airflow, the port size and the two SRE figures, and "
+           "(plan/mep_erv_types.py) for the airflow, the port size and the two SRE figures, and "
            "for why the -13 F one is the one authored.",
 )
 
@@ -145,7 +145,7 @@ ERV_TERMINAL_4 = Product(
     name="4\" round-collar ceiling diffuser / bath grille",
     source="Commodity bath-fan terminal: a 4 in. round collar behind a stamped face. Every "
            "REG-T-ERV-* row is one of these. 4 in. and not 3 in. is the whole catalogue "
-           "argument in plan/mep_erv.py's header — 3 in. pipe is stocked, 3 in. dampers and "
+           "argument in plan/mep_erv_l1.py's header — 3 in. pipe is stocked, 3 in. dampers and "
            "grilles are not. Loss curves on the types are DERIVED (notes/erv_static_budget.md "
            "§5), not published; a submitted product with a real curve replaces them.",
 )

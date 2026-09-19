@@ -284,7 +284,7 @@ BASEMENT_EQUIPMENT = [
     # two appliances.
     # The ventilator is a Broan B210E75RT, four 6" round top ports. Everything downstream of
     # it — the manifolds, the four chase risers, the outdoor side, the radials — is in
-    # plan/mep_erv.py, and `pan_drain_ref` names the condensate line a cold-climate core
+    # plan/mep_erv_l1.py and its siblings, and `pan_drain_ref` names the condensate line a cold-climate core
     # makes water into (plan/mep_drainage.py). The footprint on the element is
     # documentation; the TYPE's 24.8" x 21" is what resolves.
     #
@@ -292,7 +292,7 @@ BASEMENT_EQUIPMENT = [
     # EQ-B-ESS-BATT's 36" REQUIRED separation zone (x 49 1/4"..145 1/4", y 378"..460"), which
     # `advisory.ess_clearance` grades as a rectangle, not a radius, and clear of
     # ED-B-BACKUP-ENCL's 36" NEC 110.26 working space. Every ERV branch is authored off the
-    # two manifolds (plan/mep_erv.py), not off the machine, and PR-B-ERV-COND's drop at
+    # two manifolds (plan/mep_erv_l1.py), not off the machine, and PR-B-ERV-COND's drop at
     # (3'-11", 30'-9") is still under the case.
     Equipment(uid="CEE016AAAA", tag="EQ-B-ERV", kind=EquipmentKind.ERV,
               position=pt(ft(3, 11.5), ft(30, 6)), footprint=(inch(24.8), inch(21)),
@@ -306,7 +306,8 @@ BASEMENT_EQUIPMENT = [
               # ELEVATION 4'-6", BECAUSE THE PORTS ARE ON TOP. All four air ports on this
               # machine are 6" round on its TOP face (EQ-T-BROAN-B210E75RT,
               # plan/mep_erv_types.py). At 4'-6" the case top is at 6'-3 5/8", giving the two
-              # outdoor legs and the two manifold trunks (plan/mep_erv.py) a 6'-10 7/16"
+              # outdoor legs (plan/mep_erv_risers.py) and the two manifold trunks
+              # (plan/mep_erv_l1.py) a 6'-10 7/16"
               # crossing band: 1 5/8" under the 7'-6" radial layer, 6 13/16" over this case,
               # and 6'-7 3/8" of headroom beneath — over R305.1.1's 6'-4" basement
               # projection floor. PR-B-ERV-COND (plan/mep_drainage.py) falls 0.3"/ft from the

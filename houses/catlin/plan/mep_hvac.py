@@ -226,9 +226,9 @@ EQUIPMENT_TYPES = (
 
 # --- Ventilation: ERV fresh-air / stale-air trunks ------------------------------------
 #
-# The ERV install is semi-rigid radial — one 75 mm run per terminal off three
-# sub-manifolds, plus a real outdoor side, plus four drawn risers — and all of it lives in
-# **plan/mep_erv.py**. The four lists below stay empty rather than being deleted, so
+# The ERV install is home-run radial — one 4" galvanized run per terminal off five
+# plenums, plus a real outdoor side, plus four drawn vertical runs — and all of it lives in
+# **plan/mep_erv_l1.py** and its per-cavity siblings (l2, l3, outdoor, risers). The four lists below stay empty rather than being deleted, so
 # plan/mep.py's per-storey assembly (and therefore element order in model.json) is
 # untouched.
 DUCTS = []
@@ -436,7 +436,7 @@ DUCTS_HVAC_SECOND = [
             elevations=(inch(99.125), inch(99.125), inch(111.125)),
             width=inch(10), depth=inch(6), routing=DuctRouting.SOFFIT,
             soffit_ref="SF-S-DUCT", design_cfm=250),
-    # DU-S-ERV-HP-FEED is in plan/mep_erv.py: it comes off the attic sub-manifold, drops
+    # DU-S-ERV-HP-FEED is in plan/mep_erv_l3.py: it comes off the attic sub-manifold, drops
     # into SF-S-DUCT, and lands on EQ-S-ERV-MIX. DU-S-PLANT-EXH is DU-M-ERV-R-PLANT there,
     # on the LEVEL-2 manifold, running in FS-S-WEST's open-web trusses and rising inside
     # W-S-C1 to a high sidewall grille — it is not System 1's, it is the ERV's stale pull

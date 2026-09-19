@@ -417,7 +417,7 @@ def test_no_run_in_the_house_is_semi_rigid_any_more(catlin_model) -> None:
 
 
 def test_every_plenum_states_its_port_count_and_its_port_size(catlin_plan) -> None:
-    """``duct_ports`` is what turns ``plan/mep_erv.py``'s "full at 10 of 10" from prose into
+    """``duct_ports`` is what turns ``plan/mep_erv_l2.py``'s "full at 10 of 10" from prose into
     a verdict. ``port_diameter`` is what keeps the 6" trunk collar out of the census."""
     types = {t.tag: t for t in catlin_plan.library.equipment_types}
     for tag, ports in (("EQ-T-ERV-MANIFOLD-6", 6), ("EQ-T-ERV-MANIFOLD-6-EXH", 6),
@@ -434,7 +434,7 @@ def test_every_plenum_states_its_port_count_and_its_port_size(catlin_plan) -> No
 
 def test_the_port_census_is_clean_and_the_level_two_extract_is_full(catlin_model) -> None:
     """``EQ-M-ERV-MAN-EXH`` at 10 of 10 is the claim every "where could a new terminal go"
-    argument in ``plan/mep_erv.py`` leans on. It is graded now, and it BLOCKS."""
+    argument in ``plan/mep_erv_l2.py`` leans on. It is graded now, and it BLOCKS."""
     from typehaus.checks.mep.erv_manifold_ports import erv_manifold_ports
 
     findings = erv_manifold_ports(check_context(model=catlin_model))

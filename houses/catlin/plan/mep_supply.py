@@ -718,7 +718,7 @@ HYDRANT_BRANCH_SECOND = [
 # Each wall hydrant drives a 10" barrel through a 2x6 wall with 4" of continuous exterior
 # insulation, and until 2026-09-15 the hole it needs was in no file. `PA-*-HYD-SEAL` bills
 # the escutcheon and the foam; what it could not do is cut the wall, because a
-# `PipeAccessory` resolves no void. The same argument `mep_erv.py` makes for AO-M-ERV-OA
+# `PipeAccessory` resolves no void. The same argument `mep_erv_outdoor.py` makes for AO-M-ERV-OA
 # applies here and the same element answers it.
 #
 # ** BOTH LAND IN A CLEAR BAY, AND ONE OF THEM ONLY JUST STARTED TO. ** An RO on a stud

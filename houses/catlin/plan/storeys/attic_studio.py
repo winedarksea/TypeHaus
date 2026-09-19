@@ -21,7 +21,7 @@
 #
 # WHY ONE FILE FOR TWO STOREYS. The change straddles them — the opening and its partitions are
 # attic elements, the beam that lets the opening exist is a second-storey one — and both host files
-# are already past AGENTS.md's 500-line rule (attic.py 565, second.py 894). plan/mep_erv.py is the
+# are already past AGENTS.md's 500-line rule (attic.py 565, second.py 894). plan/mep_erv_l1.py is the
 # precedent for one file feeding two storeys, so this exports two lists and plan/manifest.py splices
 # each into the right one. THE SPLIT HALVES (W-A-C2B, W-A-N2B, W-A-W1B) DELIBERATELY STAY IN
 # attic.py beside their siblings — nobody reading a line should have to look in two files for a

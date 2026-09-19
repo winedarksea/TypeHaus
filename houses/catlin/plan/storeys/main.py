@@ -1995,7 +1995,7 @@ FLOOR_OPENINGS = [
     # 35'-1 3/8". The duct straddles the 33'-9 3/8" line, 2 3/8" of it south and 5 5/8" north. That joist is cut and headed; there is no
     # station in this closet that avoids it (the two bays either side are 13 1/2" clear, and
     # the south one is under W-M-MECH-S while the north one is crossed by the y=34'-6" vent
-    # bundle — see the run's own note in plan/mep_erv.py).
+    # bundle — see the run's own note in plan/mep_erv_l2.py).
     #
     # ** THE OUTLINE IS THE DUCT PLUS THE FRAMING, NOT THE DUCT. ** `resolve/floors.py` puts
     # the first trimmer ply's AXIS on the y edges and the header's axis on the x edges, so a

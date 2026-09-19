@@ -466,7 +466,7 @@ this whole note exists to prevent.
 ceiling. Separation from `REG-S-HP-PLANT` is 6'-9".
 
 **Length is 55'-8"**, of which 9'-4" is the rise. **The machine's rating point is 0.4" w.g., not the 0.2" that
-several comments in `plan/mep_erv.py` still quote.** HVI certifies the Broan B210E75RT at 206
+several comments in `plan/mep_erv_l1.py` still quote.** HVI certifies the Broan B210E75RT at 206
 cfm net supply at 0.4" (HVI ID 2004940); 210 cfm at 0.2" is the model-name point off the
 manufacturer's fan curve.
 

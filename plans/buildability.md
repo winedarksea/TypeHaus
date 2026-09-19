@@ -1232,7 +1232,7 @@ Recorded on the type; still an owner call.
 **Three checks came out of this**, all registered in `checks/mep/`:
 `mep.erv_static_budget` (ADVISORY — the whole system's Darcy–Weisbach/Colebrook budget
 against the published curve), `mep.erv_manifold_ports` (INTEGRITY, **blocks** — it grades
-`plan/mep_erv.py`'s "full at 10 of 10" prose), and `mep.room_heat_source` (ADVISORY — item 5).
+`plan/mep_erv_l2.py`'s "full at 10 of 10" prose), and `mep.room_heat_source` (ADVISORY — item 5).
 New schema: `EquipmentType.fan_curve` / `fan_curve_max_static_in_wg` / `duct_ports` /
 `port_diameter` (with a load-time validator that refuses a mistranscribed curve),
 `AirHandlingProductFacts.static_loss_pa_at_cfm`, `FloorHeat.delivered_btuh_per_ft2`, and a new

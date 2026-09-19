@@ -209,7 +209,7 @@ REGISTERS_HVAC_SECOND = [
     Register(uid="C7LM4KAP2X", tag="REG-S-ERV-PLANT-EXH", kind=DuctSystem.EXHAUST,
              # y=7'-4" is a truss bay centre and a stud bay centre at once; y=4'-8" would
              # put the riser inside D-S-PLANT's rough opening — 78 1/2" of bare duct standing
-             # in the doorway and a bore through the 2-ply 2x8 header (see mep_erv.py) — with
+             # in the doorway and a bore through the 2-ply 2x8 header (see mep_erv_l2.py) — with
              # no legal riser station in that opening.
              room="RM-S-PLANT", position=pt(ft(17, 7), ft(7, 4)),
              duct_ref="DU-M-ERV-R-PLANT",

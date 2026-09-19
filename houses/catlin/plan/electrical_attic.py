@@ -112,7 +112,7 @@ NEC_FILL_ATTIC = [
     #
     # ** THE WEST EAVE LINE CARRIES A RECEPTACLE AGAIN (ED-A-STUDIO-RC8, below). ** The
     # 210.52 wall line the check unrolls is the same whether the host is a knee wall or a
-    # rafter plate. What crosses this wall today is ONE 75 mm duct (plan/mep_erv.py) whose
+    # rafter plate. What crosses this wall today is ONE 4" duct (plan/mep_erv_l3.py) whose
     # west face stands 3 7/8" clear of the gwb at ankle height. A box at 16" passes a foot
     # over it. No cabinet, no break — so the wall is back in the 210.52 test on its own
     # merits, which is the honest place for it.

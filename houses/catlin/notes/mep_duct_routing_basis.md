@@ -1,6 +1,6 @@
 # One ERV branch in a bay — the duct routing basis
 
-**House:** catlin. **Run:** `DU-M-ERV-R-KITCH`, a 3" round ERV supply riding `FS-S-WEST`.
+**House:** catlin. **Run:** `DU-M-ERV-R-KITCH`, a 4" round ERV extract riding `FS-S-WEST`.
 **Oracle for:** `typehaus/routing/trades/duct.py` and the corridor half of
 `routing/corridors.py`. Reproduced by `tests/test_routing_oracle.py`.
 **Companion:** `mep_drain_routing_basis.md`, which does the same job for gravity drainage.
@@ -37,8 +37,8 @@ the terms a duct is graded in.
     bay centres                                       y = 8 + 16n
     truss depth 11 7/8", chord-to-chord 8 7/8"        ⇒  crossing window 109.625 .. 118.5
 
-A 3" duct on a bay centre leaves (12.5 − 3)/2 = **4.75" either side.** Two 3" ducts in one
-bay leave 12.5 − 6 = 6.5" between them if they are both centred on their own lanes, which is
+A 4" duct on a bay centre leaves (12.5 − 4)/2 = **4.25" either side.** Two 4" ducts in one
+bay leave 12.5 − 8 = 4.5" between them if they are both centred on their own lanes, which is
 buildable — and is exactly what `mep.duct_joist_bay_occupancy` reports UNKNOWN about on this
 floor today, because the model gives each run **one centreline per bay** and so cannot place
 two lanes side by side. **The router inherits that limit and must not paper over it:** a

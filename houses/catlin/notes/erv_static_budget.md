@@ -37,7 +37,7 @@ is offered for checking, not for deciding.
 > north wall each run leaves at its own station: `DU-ERV-OA` is 13'-9" and four elbows where
 > it was 14'-0" and six, and its term fell **0.1318 -> 0.0315**. The governing side went back
 > to extract and the delivered figure to 207.0 cfm. Twelve measured duct-on-duct and
-> duct-on-pipe interpenetrations went with it — see `plan/mep_erv.py`.
+> duct-on-pipe interpenetrations went with it — see `plan/mep_erv_l1.py`.
 >
 > ⚠ **THE EXTRACT SIDE WAS REBALANCED ON 2026-09-15 AND THE GOVERNING PATH MOVED.** It was
 > authored at 265 cfm against a 210 cfm machine — 65 basement + 146 main + 54 attic, summed
@@ -128,7 +128,7 @@ thousandth of an inch. Length was never the criterion.
 **PLANT was in the first row of this table until 2026-09-15, and the rebalance is what moved
 it to the last.** At 25 cfm its 60'-6" effective length cost 0.0301 in. and its RH-dampered
 terminal another 0.0424 — together 16% of the whole extract path, and the reason the prose in
-`plan/mep_erv.py` called it "the radial whose drop the installer must check". At 5 cfm the Q²
+`plan/mep_erv_l2.py` called it "the radial whose drop the installer must check". At 5 cfm the Q²
 term takes both to about a thousandth. **A 5x cut in flow is a 25x cut in friction**, which is
 why re-balancing bought more than any of the three duct changes the owner considered.
 

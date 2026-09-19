@@ -6716,7 +6716,7 @@ hvac-controls-and-zoning = { low = 1200, high = 3000 }
 # cover wrap.
 hvac-duct-insulation-mastic-and-test = { low = 1.28, high = 3.19, unit = "LF", driver = "ducts.length_ft" }
 # ** RENAMED AND RE-SCOPED 2026-08-30, from `hvac-bath-exhaust-fans`. THIS HOUSE HAS NO BATH
-# FANS. ** Every wet room is served by ERV radial extract (plan/mep_erv.py) — there is no
+# FANS. ** Every wet room is served by ERV radial extract (plan/mep_erv_l1.py) — there is no
 # fan to buy in any of them, and the row was pricing $825-2,640 of hardware that the design
 # deliberately does not contain. The extract GRILLES are modelled and priced 13 ea in
 # [placeables]; the duct is in [ducts]; the ERV itself is a placeable.
