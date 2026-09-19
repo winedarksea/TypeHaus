@@ -61,19 +61,82 @@ WATER_SUPPLY = [
 # Cold trunk went 1" -> 1 1/4" on 2026-07-30: the stair-foot bath and sauna shower added 4
 # WSFU, taking it from 30 to 34 against the 32 a 1" branch carries (Table 610.4, 46-60 psi /
 # <100'). Hot trunk stays 1" at 21.5 WSFU; SP-B-CS2-CW (the trunk's cast crossing) grew with it.
+#
+# ** THE TWO-BAND CONVENTION, AND IT IS LOAD-BEARING FOR EVERY ELEVATION BELOW
+# (2026-09-19). ** The basement ceiling runs ride TWO bands, not one, and which band a leg
+# is on is a fact about the pipe rather than about the room it crosses:
+#
+#   COLD   ft(8, 4.6375) basement-relative  =  -0'-8.8" project
+#   HOT    ft(8, 1.4375) basement-relative  =  -1'-0.0" project
+#
+# ** WHY TWO. ** They used to be 1.2" apart — cold at 7'-10 5/8", hot at 7'-9 7/16" — and a
+# bare 3/4" copper cold is 0.4375" from centre to surface while a hot inside a 1" fiberglass
+# sleeve with an ASJ jacket is 1.4375". The pair therefore needs 1.875" between centres to
+# be two pipes at all, and it had 1.2". ** EVERY cold-over-hot crossing in this house
+# overlapped by 0.675" by construction ** — which is the 0.68" `mep.run_interference`
+# reported verbatim, on crossing after crossing, as a defect in a lane. It was never a lane
+# problem. It was one number, written once, and wrong. At 3.2" apart there is 1.325" in hand.
+#
+# ** WHAT THE BANDS PHYSICALLY ARE, WHICH IS NOT WHAT THEY WERE. ** FS-M-*'s joists are
+# 11 7/8" I-joists whose bottom flange sits at -1'-0.1" project, so the old pair hung in the
+# room BELOW the floor and the new pair does not:
+#
+#   * the COLD band is INSIDE the joists. `mep.run_member_crossing` reads every crossing at
+#     crown +6.737", invert +1.013" in the 9.12" web window, clear of both 1.38" flanges.
+#     Each of those is a DRILLED WEB HOLE, and the check says out loud what it cannot
+#     settle: the hole's diameter and its allowable zone along the span come off the
+#     fabricator's chart, which this engine does not hold. 1 1/4" copper through an 11 7/8"
+#     I-joist web is inside every published chart; it is still the builder's to confirm.
+#   * the HOT band is BELOW the joists, its 2 7/8" jacket tucked 0.1" under the bottom
+#     flange. An insulated line is not drilled through a web — the sleeve would have to be
+#     interrupted at every joist — so it stays hung, and the 4" it rose is the whole of
+#     what the floor cavity had to give it.
+#
+# ** THE WINDOW IS NARROW AT THE HOT END AND WIDE AT THE COLD END, MEASURED. ** Sweeping
+# both bands against the full registry with suppression lifted:
+#
+#   cold +0"  hot +0"   188 interference          (as authored before today)
+#   cold +6"  hot +4"   147, nothing else moved   <- this
+#   cold +6"  hot +4.25"  146, and +11 mep.run_member_crossing
+#
+# One eighth of an inch of hot is all that is left: at +4.25" the jacket clips the joists'
+# bottom flange and eleven crossings stop being clear. Cold is broad — +3" through +10" all
+# measure the same — with ONE exception, PR-B-CW-TRUNK's bearing-line crossing, which is
+# the next note down. ** If either band ever moves again, re-derive it; do not interpolate
+# these three rows. **
 SUPPLY = [
     # The service enters at (11', 35'-6") — SP-B-N3-HYD, under ST-B2M's upper landing — at
     # +0'-2" (-8'-10" absolute) and rises tight to the wall, where PA-B-MAIN-SHUTOFF sits.
-    # At the ceiling it steps 6" off the concrete and runs west to x=5'-0" over RM-B-ESS
-    # (bored through W-B-STR and the closet partition; firestop the ESS penetrations), then
-    # south down the RM-B-FURNACE ceiling band to y=16', crossing W-B-CW with a bored hole.
+    # At the ceiling it runs west to x=5'-0" over RM-B-ESS (bored through W-B-STR and the
+    # closet partition; firestop the ESS penetrations), then south down the RM-B-FURNACE
+    # ceiling band to y=16', crossing W-B-CW with a bored hole.
+    #
+    # ** IT DUCKS UNDER THE x=9'-10.7" BEARING LINE AND STEPS UP AT x=9'-6" (2026-09-19). **
+    # This is the one exception to the cold band above, and it is not a lane that could be
+    # searched around. FS-M-MECH and FS-M-STAIR both close their bays on the SAME bearing
+    # line at x=9'-10.7", because a wall stands on it the whole way: the blocking there runs
+    # the full -11.87"..0 joist depth, and the cold band is inside that depth by 3.07". The
+    # westward leg crosses that line at y=35'-0", and `mep.run_through_blocking` is an ERROR
+    # about exactly it.
+    #
+    # Three things were measured before the step was authored. Moving the leg in y to y=35'-3"
+    # — the 7.8" gap between bearing-block-1-013 and -016 — only moves the crossing into
+    # FS-M-STAIR's bearing-block-0-006, because the line is continuous. Dropping the whole
+    # cold band to +2" clears it and gives back 14 of the 41 pairs. So the run does what a
+    # plumber does: it stays in the OLD band, 7'-10 5/8", from the riser west past the
+    # bearing line, and steps up to 8'-4 5/8" at x=9'-6" — the closest clear station, since
+    # x=9'-9" is still inside the blocking. Two elbows, four inches west of the wall, and
+    # the other 36 feet of the trunk is on the convention.
     PipeRun(uid="CBPW30AAAA", tag="PR-B-CW-TRUNK", system=PipeSystem.WATER_COLD,
             path=(pt(ft(11), ft(35, 6)), pt(ft(11), ft(35, 6)), pt(ft(11), ft(35)),
+                  pt(ft(9, 6), ft(35)), pt(ft(9, 6), ft(35)),
                   pt(ft(5), ft(35)), pt(ft(5), ft(16)),
                   pt(ft(8), ft(16)), pt(ft(29, 9.6), ft(16)),
                   pt(ft(29, 9.6), ft(34, 1.2)), pt(ft(29, 9.6), ft(34, 1.2))),
             diameter=inch(1.25), material="copper", finish="lacquered",
-            elevations=(inch(2), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(12, 7.4375)),
+            elevations=(inch(2), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375),
+                        ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
+                        ft(8, 4.6375), ft(8, 4.6375), ft(12, 7.4375)),
             serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV", "FX-M-BATH2-WC",
                     "FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-SINK",
                     "FX-M-LAUNDRY", "FX-M-KITCH-SINK",
@@ -90,7 +153,7 @@ SUPPLY = [
             path=(pt(ft(5, 6), ft(24)), pt(ft(5, 6), ft(24)),
                   pt(ft(6, 6), ft(19, 2.4)), pt(ft(6, 6), ft(15, 6))),
             diameter=inch(1), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(3, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375)),
+            elevations=(ft(3, 9.4375), ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375)),
             serves=("FX-M-BATH1-LAV", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
                     "FX-M-BATH2-SINK", "FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK",
                     "FX-M-KITCH-SINK",
@@ -108,7 +171,7 @@ SUPPLY = [
             path=(pt(ft(5), ft(16)), pt(ft(5, 6), ft(16, 9.6)), pt(ft(5, 6), ft(19, 2.4)),
                   pt(ft(5, 6), ft(24)), pt(ft(5, 6), ft(24))),
             diameter=inch(1), material="copper", finish="lacquered",
-            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(3, 9.4375))),
+            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(3, 9.4375))),
     # Main-storey groups.
     #
     # THE BATH1 PAIR ROUTES AROUND D-M-BATH1'S DOORWAY, WHICH IS THE ONE DEFECT
@@ -158,32 +221,44 @@ SUPPLY = [
             # west, so putting them this way round is what keeps the two feeds out of each
             # other's lane below the deck.
             #
-            # The old route ran the diagonal all the way to x=6'-0" and turned up there. It
-            # cannot now: PR-B-MAIN-DRAIN's 4" trunk occupies x=6'-0" from y=16'-6" to
-            # y=22'-7", and at y=22'-4" its crown is at -1'-2 1/4" against this run's
-            # -1'-2.8" — they would share the same 2". So the diagonal stops SHORT, at
-            # (5'-0", 21'-0"), and the last 1'-4" runs north to the wall. Where it does
-            # cross the 4" trunk's lane, at (6'-0", 20'-3"), the trunk has fallen to
-            # -1'-8.6" and there is 3.1" of clear between the two pipes' surfaces.
+            # The old route ran the diagonal all the way to x=6'-0" and turned up there.
+            # PR-B-MAIN-DRAIN's 4" trunk occupies x=6'-0" from y=16'-6" to y=22'-7", and at
+            # y=22'-4" its crown is at -1'-2 1/4". Against the cold's OLD -1'-2.8" the two
+            # shared the same 2", which is why the diagonal was cut SHORT at (5'-0", 21'-0")
+            # with the last 1'-4" running north to the wall.
+            #
+            # ** THE CLEARANCE ARGUMENT NO LONGER HOLDS THIS SHAPE UP, AND THE SHAPE STAYS
+            # ANYWAY (2026-09-19). ** On the two-band convention this run rides -0'-8.8",
+            # 5.45" OVER that crown, so the full-length diagonal would now clear it. The
+            # short diagonal is kept because the rest of its argument never was about the
+            # drain: the turn at (5'-0", 21'-0") is what puts the riser on W-M-HS1's own bay
+            # module, and re-lengthening it would move the riser off the two bays the bay
+            # census below spends forty lines choosing. Where it does cross the 4" trunk's
+            # lane, at (6'-0", 20'-3"), the trunk has fallen to -1'-8.6" and the clear
+            # between the two pipes' surfaces is 9.1" — the old 3.1" plus the band's 6".
             path=(pt(ft(5), ft(16)), pt(ft(7, 4.8), ft(16, 9.6)),
                   pt(ft(7, 4.8), ft(19, 2.4)), pt(ft(5), ft(21)),
                   pt(ft(5), ft(22, 4)), pt(ft(5), ft(22, 4)), pt(ft(5), ft(22, 4))),
             diameter=inch(0.75), material="copper", finish="lacquered",
-            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375),
-                        ft(7, 10.6375), ft(9, 1.4375), ft(12, 7.4375)),
+            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
+                        ft(8, 4.6375), ft(9, 1.4375), ft(12, 7.4375)),
             wall_refs=(None, None, None, None, None, "W-M-HS1"),
             serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV")),
     PipeRun(uid="CBPW34AAAA", tag="PR-B-HW-BATH1", system=PipeSystem.WATER_HOT,
             # Riser at (4'-4", 22'-4") — the west bay, 1.81" of clear each side of the
             # 2 7/8" jacket. Off the trunk's end at the water heater, west along y=24'-0"
             # and then straight south to the wall: the leg passes over PR-B-WH-TPR's drop at
-            # (4'-4", 24'-0"), which starts 4'-3" lower, and clears PR-M-S-BATH1-DRAIN's
-            # diagonal by 4.1" where it crosses at y=24'-0" (x=4'-10.5", crown -1'-9.6"). Nothing here shares a lane with
-            # PR-B-CW-BATH1, which is why the two risers land in this order.
+            # (4'-4", 24'-0"), which starts 4'-7" lower, and clears PR-M-S-BATH1-DRAIN's
+            # diagonal by 8.1" where it crosses at y=24'-0" (x=4'-10.5", crown -1'-9.6").
+            # Both numbers are the pre-2026-09-19 ones plus the hot band's 4": neither the
+            # T&P drop nor the drain moved, so the whole of the change is this run's rise.
+            # Nothing here shares a lane with PR-B-CW-BATH1, which is why the two risers
+            # land in this order — and since 2026-09-19 they are also 3.2" apart in z
+            # wherever their ceiling legs cross, which is what the convention is for.
             path=(pt(ft(5, 6), ft(24)), pt(ft(4, 4), ft(24)), pt(ft(4, 4), ft(22, 4)),
                   pt(ft(4, 4), ft(22, 4)), pt(ft(4, 4), ft(22, 4))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(9, 1.4375), ft(12, 7.4375)),
+            elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), ft(9, 1.4375), ft(12, 7.4375)),
             wall_refs=(None, None, None, "W-M-HS1"),
             serves=("FX-M-BATH1-LAV",)),
     # ** THE COLD RISER IS IN W-M-HS1 SINCE 2026-09-09, NOT STANDING IN THE ROOM. ** It came
@@ -203,7 +278,7 @@ SUPPLY = [
                   pt(ft(1), ft(22, 4)), pt(ft(1), ft(22, 4)),
                   pt(ft(1), ft(22, 4))),
             diameter=inch(0.75), material="copper", finish="lacquered",
-            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375),
+            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
                         ft(9, 1.4375), ft(12, 1.4375)),
             wall_refs=(None, None, None, "W-M-HS1"),
             serves=("FX-M-BATH2-WC", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
@@ -212,7 +287,7 @@ SUPPLY = [
             path=(pt(ft(6, 6), ft(15, 6)), pt(ft(2, 3), ft(15, 6)),
                   pt(ft(2, 3), ft(16, 9.6)), pt(ft(2, 3), ft(16, 9.6))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(12, 1.4375)),
+            elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), ft(12, 1.4375)),
             serves=("FX-M-BATH2-SH", "FX-M-BATH2-TUB", "FX-M-BATH2-SINK")),
     # The laundry pair riser splits at the deck top (ft(9) basement-relative = 0'-0"
     # project), like the BATH1 pair above: sleeved concrete crossing below, stud cavity
@@ -255,7 +330,7 @@ SUPPLY = [
     PipeRun(uid="CBPW37AAAA", tag="PR-B-CW-WASH", system=PipeSystem.WATER_COLD,
             path=(pt(ft(8, 2), ft(16)), pt(ft(8, 2), m(6.22941)), pt(ft(8, 2), m(6.22941)), pt(ft(8, 2), m(6.22941)), pt(ft(8, 2), m(6.22941)), pt(ft(8, 2), ft(18, 1)), pt(ft(8, 6.5), ft(18, 1)), pt(ft(11, 6.5), ft(18, 1)), pt(ft(11, 6.5), ft(18, 1)),),
             diameter=inch(0.75), material="copper", finish="lacquered",
-            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(9, 1.4375), ft(12, 1.4375),
+            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(9, 1.4375), ft(12, 1.4375),
                         ft(11, 9.4375), ft(11, 9.4375), ft(11, 9.4375), ft(11, 9.4375),
                         ft(10, 9.4375)),
             wall_refs=(None, None, "W-M-BA2E", "W-M-BA2E", "W-M-BA2E", None,
@@ -268,26 +343,32 @@ SUPPLY = [
                   pt(ft(8, 6.5), ft(18, 1)), pt(ft(12, 2.5), ft(18, 1)),
                   pt(ft(12, 2.5), ft(18, 1))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(9, 1.4375), ft(12, 1.4375),
+            elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(9, 1.4375), ft(12, 1.4375),
                         ft(12, 1.4375), ft(12, 1.4375), ft(12, 1.4375), ft(12, 1.4375),
                         ft(10, 9.4375)),
             wall_refs=(None, None, "W-M-BA2E", "W-M-BA2E", "W-M-BA2E", None,
                        "W-M-CLN", "W-M-CLN"),
             serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
-    # ** IT STEPS NORTH AND UP TO CROSS RM-B-STAIR (2026-09-09). ** The y=15'-6" hot lane
-    # rides at 7'-9 7/16", which is 3.9" under a 7'-11 3/16" finished ceiling — fine in the
-    # workshop and fine in the gym's east half (that ceiling is 1 9/16" lower), but
-    # `mep.run_in_finished_volume` allows 3" and the hall is neither. 7'-10 5/8" is the
-    # height that clears it, at 2.7" — the number PR-B-CW-TRUNK and the sauna pair already
-    # ride at — and the y=15'-6" lane cannot have it: PR-B-HW-SAUNA occupies it out to
-    # x=17'-3" and PR-B-CW-SAUNA drops across it at x=17'-4".
+    # ** IT STEPS NORTH AND UP TO CROSS RM-B-STAIR (2026-09-09; the heights re-derived
+    # 2026-09-19). ** The original argument was a finished-volume one and it is worth
+    # keeping as the record of why this jog EXISTS: the y=15'-6" hot lane rode at
+    # 7'-9 7/16", 3.9" under a 7'-11 3/16" finished ceiling, `mep.run_in_finished_volume`
+    # allows 3", and the hall is neither the workshop nor the gym's east half. The lane
+    # could not simply be raised in place, because PR-B-HW-SAUNA occupies it out to
+    # x=17'-3" and PR-B-CW-SAUNA drops across it at x=17'-4". So the crossing took its own
+    # lane: north to y=16'-5", 5" clear of PR-B-CW-TRUNK's y=16'-0" and north of
+    # PR-B-CW-SAUNA's head at y=16'-0", across the hall, and back down in RM-B-GYM.
     #
-    # So the crossing takes its own lane: north to y=16'-5", 5" clear of PR-B-CW-TRUNK's
-    # y=16'-0" and north of PR-B-CW-SAUNA's head at y=16'-0", across the hall at 7'-10 5/8",
-    # and back down in RM-B-GYM, whose ceiling here is 1 9/16" lower and takes 7'-9 7/16"
-    # at 2.3". Both jogs hold 7'-9 7/16" where they cross y=16'-0", so the 1 3/16" they
-    # already keep under PR-B-CW-TRUNK is unchanged; the east one turns at x=18'-9", 3"
-    # clear of W-B-CS2's east face so the leg is in the room and not along the pour.
+    # ** THE TWO-BAND CONVENTION SETTLED THE HEIGHT PART OF THAT ARGUMENT OUTRIGHT. ** The
+    # hot band is now 8'-1 7/16" and the cold 8'-4 5/8" — both ABOVE the 7'-11 3/16"
+    # finished ceiling, tucked in the floor cavity rather than hanging under it — so
+    # `mep.run_in_finished_volume` has nothing to measure on either of them anywhere in the
+    # hall. The jog keeps its PLAN shape, which is still doing work (the sauna pair really
+    # does own the y=15'-6" lane out to x=17'-4"), and its two raised vertices ride the COLD
+    # band the way they always did: 8'-4 5/8" against the run's own 8'-1 7/16", 3 3/16"
+    # apart, the same relationship the old 7'-10 5/8"/7'-9 7/16" pair had at 1 3/16" and
+    # could not afford. The east jog turns at x=18'-9", 3" clear of W-B-CS2's east face so
+    # the leg is in the room and not along the pour.
     # SP-B-CS2-HW moves with it (plan/mep_sleeves.py) — the y=15'-6" hole it was cast for
     # no longer has a pipe in it.
     PipeRun(uid="CBPW39AAAA", tag="PR-B-HW-KITCH", system=PipeSystem.WATER_HOT,
@@ -297,9 +378,9 @@ SUPPLY = [
                   pt(ft(18, 9), ft(15, 6)), pt(ft(30, 3.6), ft(15, 6)),
                   pt(ft(30, 3.6), ft(33, 7.2)), pt(ft(30, 3.6), ft(33, 7.2))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(7, 10.6375),
-                        ft(7, 10.6375), ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375),
-                        ft(7, 9.4375), ft(12, 7.4375)),
+            elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), ft(8, 4.6375),
+                        ft(8, 4.6375), ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375),
+                        ft(8, 1.4375), ft(12, 7.4375)),
             serves=("FX-M-KITCH-SINK", "APPL-M-DW")),
     # Second-storey groups: risers climb two storeys to the hall bath, split at both deck
     # top (ft(9) basement-rel = 0'-0" project) and second floor (ft(19) = 10'-0" project),
@@ -310,7 +391,7 @@ SUPPLY = [
                   pt(ft(5, 7.2), ft(26, 6)), pt(ft(5, 7.2), ft(26, 6)),
                   pt(ft(5, 7.2), ft(26, 6)), pt(ft(5, 7.2), ft(26, 6))),
             diameter=inch(0.75), material="copper", finish="lacquered",
-            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(9, 1.4375), ft(19, 1.4375), ft(21, 7.4375)),
+            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(9, 1.4375), ft(19, 1.4375), ft(21, 7.4375)),
             wall_refs=(None, None, None, None, "W-M-STOS", "W-S-BD-N"),
             serves=("FX-S-BATH1-WC", "FX-S-BATH1-LAV", "FX-S-BATH1-SH",
                     "FX-S-VANITY-LAV1", "FX-S-VANITY-LAV2")),
@@ -322,7 +403,7 @@ SUPPLY = [
                   pt(ft(6, 4), ft(26, 6)), pt(ft(6, 4), ft(26, 6)),
                   pt(ft(6, 4), ft(26, 6))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(9, 1.4375), ft(19, 1.4375), ft(21, 7.4375)),
+            elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(9, 1.4375), ft(19, 1.4375), ft(21, 7.4375)),
             wall_refs=(None, None, "W-M-STOS2", "W-S-BD-N1B"),
             serves=("FX-S-BATH1-LAV", "FX-S-BATH1-SH", "FX-S-VANITY-LAV1",
                     "FX-S-VANITY-LAV2")),
@@ -355,7 +436,7 @@ SUPPLY = [
             diameter=inch(0.75), material="copper", finish="lacquered",
             # +5/16" on 2026-09-16 (7.1875 -> 7.5): the 4" ERV ducts' crowns are at 9'-5 5/8",
             # and KITCH/BED2 now cross this jog at y=21'-10"/22'-2". 5/16" left under the tub drain.
-            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(18, 7.5),
+            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(18, 7.5),
                         ft(18, 7.5), ft(19, 1.4375), ft(21, 7.4375)),
             wall_refs=(None, None, None, None, "W-S-SN3"),
             serves=("FX-S-SUITEBATH-WC", "FX-S-SUITEBATH-LAV",
@@ -365,7 +446,7 @@ SUPPLY = [
                   pt(ft(14, 2.4), ft(16, 10.8)), pt(ft(14, 2.4), ft(22, 4)),
                   pt(ft(14, 2.4), ft(22, 4)), pt(ft(14, 2.4), ft(22, 4))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(18, 11.4375),
+            elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(18, 11.4375),
                         ft(18, 11.4375), ft(19, 1.4375), ft(21, 7.4375)),
             wall_refs=(None, None, None, None, "W-S-SN3"),
             serves=("FX-S-SUITEBATH-LAV", "FX-S-SUITEBATH-TUBSH")),
@@ -380,31 +461,41 @@ SUPPLY = [
                   pt(inch(166.6875), ft(20, 3)), pt(inch(166.6875), ft(19, 3)),
                   pt(inch(166.6875), ft(19, 3))),
             diameter=inch(0.5), material="copper", finish="lacquered",
-            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(2, 3.4375)),
+            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(2, 3.4375)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
     PipeRun(uid="CBPW45AAAA", tag="PR-B-HW-BATH", system=PipeSystem.WATER_HOT,
             path=(pt(ft(5, 6), ft(24)), pt(ft(7, 3.6), ft(26)),
                   pt(ft(7, 3.6), ft(19, 9)), pt(inch(166.6875), ft(19, 9)),
                   pt(inch(166.6875), ft(19, 3)), pt(inch(166.6875), ft(19, 3))),
             diameter=inch(0.5), material="copper", finish="lacquered",
-            elevations=(ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375), ft(2, 3.4375)),
+            elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), ft(2, 3.4375)),
             serves=("FX-B-BATH-LAV",)),
     # Sauna shower mixer, the first supply this room ever had. Both legs tee off the existing
     # trunks and run south — cold down x=17'-4" (2" clear of W-B-CS2's face at 17'-6"), hot
     # down x=17'-3" beside it — through W-B-SA-N2's framed stud bay (no cast sleeve needed)
     # to the valve inside W-B-CS's liner.
     #
-    # ** THEY ARE A SIDE-BY-SIDE PAIR SINCE 2026-09-07, NOT A STACKED ONE, AND THE HALL IS
-    # WHY. ** Both were on x=17'-4" with the hot 1 3/16" UNDER the cold, which is not how a
-    # pair gets hung and did not matter while this run crossed the workshop — UTILITY is in
+    # ** THEY ARE A SIDE-BY-SIDE PAIR SINCE 2026-09-07, NOT A STACKED ONE. ** Both were on
+    # x=17'-4" with the hot 1 3/16" UNDER the cold, which is not how a pair gets hung and
+    # did not matter while this run crossed the workshop — UTILITY is in
     # `EXPOSED_SERVICE_OCCUPANCIES` and nothing grades a pipe in its air. The hall reaching
     # the sauna wall put six feet of both runs in RM-B-STAIR, where
     # `mep.run_in_finished_volume` allows 3": the cold cleared at 2.55" and the hot, one
-    # inch lower, FAILed at 3.75". Stacking them is what made that gap, and there is no
-    # elevation pair that fixes it — two 1/2" lines need 5/8" of separation and the band
-    # between the ceiling and the 3" limit is only 3" deep. So they come off the stack and
-    # go up beside each other: both at 7'-10 5/8", 1" apart on centre, 3/8" of air between
-    # the tubes, and both 2.55" below the finished ceiling.
+    # inch lower, FAILed at 3.75". Stacking them is what made that gap, and at the old
+    # elevations there was no pair that fixed it — two 1/2" lines need 5/8" of separation
+    # and the band between the ceiling and the 3" limit was only 3" deep. So they came off
+    # the stack and went up beside each other, 1" apart on centre with 3/8" of air between
+    # the tubes.
+    #
+    # ** BOTH NOW RIDE THE COLD BAND AT 8'-4 5/8" (2026-09-19), AND THE PAIR STAYS SIDE BY
+    # SIDE. ** These are two BARE 1/2" lines — the hot sheds its jacket at the tee, which is
+    # why it is the one hot run in this file on the cold band and why side-by-side was ever
+    # possible. The 1.875" the jacketed pair needs does not apply to them, and 1" on centre
+    # with 3/8" of air is how the mixer's two legs are actually strapped. What changed is
+    # that the finished-volume argument is spent: at 8'-4 5/8" both are ABOVE RM-B-STAIR's
+    # 7'-11 3/16" ceiling, inside the floor cavity, with `mep.run_member_crossing` reading
+    # each web bore at crown +7.112", invert +1.388" in the 9.12" window. The arrangement is
+    # kept on its own merits, not on a clearance that no longer binds.
     # The rotation moved the pan to the room's NORTH-EAST corner, so the drops land at
     # y 6'-6"/6'-2" — inside the pan and 1'-1" clear of PR-B-SAUNA-VENT's riser at
     # 8'-2 3/16", which shares this build-up.
@@ -418,19 +509,20 @@ SUPPLY = [
     # drops inside W-B-CS's stud cavity (x 213 1/4"..218 3/4"), on x=18'-0" — dead centre of
     # the bay, 6 1/4" behind the liner, which is where a mixer body belongs and where the
     # trim escutcheon reaches it from. The two are 4" apart in y, so one x serves both.
-    # The east jog itself rides at 7'-10 5/8", above the sauna's new 6'-10 13/16" ceiling
-    # and inside its service cavity.
+    # The east jog itself rides at 8'-4 5/8" — 6" higher than the 7'-10 5/8" it was
+    # authored at, and still above the sauna's 6'-10 13/16" ceiling and inside its service
+    # cavity, which is the only thing that paragraph ever asked of it.
     PipeRun(uid="CBPW46AAAA", tag="PR-B-CW-SAUNA", system=PipeSystem.WATER_COLD,
             path=(pt(ft(17, 4), ft(16)), pt(ft(17, 4), ft(6, 6)),
                   pt(ft(18), ft(6, 6)), pt(ft(18), ft(6, 6))),
             diameter=inch(0.5), material="copper", finish="lacquered",
-            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(4, 3.4375)),
+            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(4, 3.4375)),
             serves=("FX-B-SAUNA-SH",)),
     PipeRun(uid="CBPW47AAAA", tag="PR-B-HW-SAUNA", system=PipeSystem.WATER_HOT,
             path=(pt(ft(6, 6), ft(15, 6)), pt(ft(17, 3), ft(15, 6)),
                   pt(ft(17, 3), ft(6, 2)), pt(ft(18), ft(6, 2)), pt(ft(18), ft(6, 2))),
             diameter=inch(0.5), material="copper", finish="lacquered",
-            elevations=(ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375),
+            elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
                         ft(4, 3.4375)),
             serves=("FX-B-SAUNA-SH",)),
 ]
@@ -454,18 +546,19 @@ HYDRANT_BRANCH_BASEMENT = [
     PipeRun(uid="X4M2QP7B0K", tag="PR-B-CW-HYD", system=PipeSystem.WATER_COLD,
             path=(pt(ft(6), ft(16)), pt(ft(6), ft(13))),
             diameter=inch(0.75), material="copper", finish="lacquered",
-            elevations=(ft(7, 10.6375), ft(7, 10.6375)),
+            elevations=(ft(8, 4.6375), ft(8, 4.6375)),
             serves=("FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
     PipeRun(uid="Z5NB8QMK2H", tag="PR-B-CW-HYD-RISER", system=PipeSystem.WATER_COLD,
             path=(pt(ft(6), ft(13)), pt(ft(6), ft(13)), pt(ft(6), ft(13)),
                   pt(ft(6), ft(13))),
             diameter=inch(0.75), material="pex",
-            # Basement-relative -> project: 8'-1.2" ceiling trunk, 9'-0" deck top (0'-0"),
+            # Basement-relative -> project: 8'-4 5/8" cold band (-0'-8.8", six inches up on
+            # 2026-09-19), 9'-0" deck top (0'-0"),
             # 18'-0" W-M-BDN1's top plate (9'-0", the partition's ceiling height), 18'-3"
             # (9'-3") inside the joist space (11 7/8" joists hang 9'-0 1/8" to 10'-0"). Split
             # at the plate because `mep.wet_wall_occupancy` grades an in-wall segment against
             # the wall's own z-extent; a straight riser would escape it by 3".
-            elevations=(ft(7, 10.6375), ft(9, 1.4375), ft(18, 1.4375), ft(18, 4.4375)),
+            elevations=(ft(8, 4.6375), ft(9, 1.4375), ft(18, 1.4375), ft(18, 4.4375)),
             wall_refs=(None, "W-M-BDN1", None),
             serves=("FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
 ]

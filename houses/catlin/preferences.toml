@@ -253,8 +253,36 @@ permit_drop = ["A-502", "A-506"]
 # element itself.
 [checks]
 suppress = [
-  # ** mep.run_interference: 188 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-18. NOT A
+  # ** mep.run_interference: 147 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-19. NOT A
   # DECISION — AN OPEN CAMPAIGN. **
+  #
+  # ** 188 -> 147 ON 2026-09-19, AND NOTHING WAS RE-ROUTED. ** The basement supply band
+  # split in two: cold to 8'-4 5/8" basement-relative (-0'-8.8" project, inside the
+  # 11 7/8" I-joist web window), hot to 8'-1 7/16" (-1'-0.0", its 2 7/8" jacket tucked
+  # under the bottom flange). They were 1.2" apart and a bare 3/4" cold plus a jacketed
+  # hot needs 1.875", so EVERY cold-over-hot crossing in the house was reported as a
+  # shared solid by construction — the 0.68" overlap the findings printed verbatim, over
+  # and over. At 3.2" apart a crossing is a crossing again. One number in
+  # plan/mep_supply.py, argued there at length; -41 pairs; no other check moved.
+  # (PR-B-CW-TRUNK is the one exception and carries its own step-up note: the cold band is
+  # inside the joist depth, and a continuous bearing line at x=9'-10.7" has to be passed
+  # UNDER, not through.)
+  #
+  # The class breakdown, and it is the line that goes stale first:
+  #
+  #                        2026-09-18   2026-09-19
+  #     duct <-> duct            37          37     (untouched: see the ERV note below)
+  #     drain <-> duct           33          33
+  #     duct <-> vent            28          28
+  #     drain <-> supply         32          13     -19
+  #     supply <-> supply        18           8     -10
+  #     supply <-> vent          12           2     -10
+  #     duct <-> supply          12          10      -2
+  #     everything else          16          16
+  #
+  # Every pair that went is one a supply run was party to, which is what a band move can
+  # do and the whole of what it can do. The three duct classes are 98 of the remaining 147
+  # and none of them moves without a design decision.
   #
   # This is the one blanket entry in this file and it is the only one that is not about a
   # single element. The check is new and it is right: it compares every pair of runs
