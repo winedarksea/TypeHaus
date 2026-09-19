@@ -460,6 +460,15 @@ class EquipmentType(FurnitureType, AirHandlingProductFacts):
     #: part is fabricated with, and their diameter. ``mep.erv_manifold_ports`` counts the
     #: runs landing in the part against this, which is what turns "10 of 10" from a comment
     #: into a verdict. Never inferred from the type name.
+    #:
+    #: **A COUNT is a weaker statement than a layout, and both are expressible.** A type may
+    #: also state where each collar is, and it does so with no new field: a **collar** is a
+    #: ``ServicePort`` that is ``EXACT`` and whose ``section_m()`` is ``port_diameter`` in
+    #: both directions. The trunk port is not one — ``library/hvac.py`` gives it no section
+    #: at all — so the two are told apart by what the product says rather than by a tag
+    #: convention. Where collars are stated ``mep.erv_manifold_ports`` grades each radial
+    #: against the collar it lands on, and :meth:`_check_collars` below holds the two
+    #: statements to each other.
     duct_ports: int | None = None
     port_diameter: Length | None = None
     # Lowest outdoor temperature the unit is rated to operate at (cold-climate heat pumps).
@@ -582,6 +591,67 @@ class EquipmentType(FurnitureType, AirHandlingProductFacts):
             if c1 > c0:
                 raise ValueError(f"{self.tag}: fan_curve cfm must not rise with static; "
                                  f"{c1} cfm at {s1} in. w.g. follows {c0} at {s0}")
+        return self
+
+    def collars(self) -> tuple[ServicePort, ...]:
+        """The branch collars this type dimensions, in declaration order.
+
+        A collar is an EXACT port whose section is ``port_diameter`` both ways. The trunk
+        port on a plenum carries no section, so it is never one; nor is the 6" spigot on a
+        machine whose ``port_diameter`` is 4". Empty where the type states a count and no
+        layout, which is the undimensioned case and is not a defect — a shared catalog part
+        has no shop drawing behind it (see ``library/hvac.py``).
+        """
+        diameter = self.port_diameter
+        if diameter is None:
+            return ()
+        out = []
+        for port in self.ports:
+            if not port.is_exact():
+                continue
+            section = port.section_m()
+            if section is None:
+                continue
+            if all(abs(value - diameter.meters) <= 1e-9 for value in section):
+                out.append(port)
+        return tuple(out)
+
+    @model_validator(mode="after")
+    def _check_collars(self) -> EquipmentType:
+        """A dimensioned plenum has to agree with its own port count, and with geometry.
+
+        Refused at load time rather than graded, for ``_check_fan_curve``'s reason: a box
+        that says ten ports and draws eight is a fact about the TYPING. A check reporting it
+        would be reporting a shop drawing against itself, and every census taken from it in
+        the meantime would be a number that means nothing.
+
+        Two rules, and both are about what a fabricator can actually cut:
+
+        * the collars and ``duct_ports`` must be the same number where both are stated;
+        * **no two collars of one type closer than ``port_diameter``** centre to centre. Two
+          4" collars on 2" centres are one 6" hole, and a spacing rule off the diameter is
+          the weakest statement that refuses it. It is deliberately not a *clearance* rule
+          (a diameter of metal between them): plenums really are built with collars close
+          together, and a rule this file cannot source is a rule that belongs in a check.
+        """
+        collars = self.collars()
+        if not collars:
+            return self
+        if self.duct_ports is not None and len(collars) != self.duct_ports:
+            raise ValueError(
+                f"{self.tag}: duct_ports says {self.duct_ports} but {len(collars)} collar(s) "
+                "are dimensioned on it — a count and a layout of the same part must agree")
+        pitch = self.port_diameter.meters if self.port_diameter is not None else 0.0
+        for index, first in enumerate(collars):
+            for second in collars[index + 1:]:
+                gap = max(abs(a.meters - b.meters)
+                          for a, b in zip(first.position, second.position, strict=True))
+                if gap < pitch - 1e-9:
+                    raise ValueError(
+                        f"{self.tag}: collars {first.tag} and {second.tag} are "
+                        f"{gap / 0.0254:.2f}\" apart and the ports are "
+                        f"{pitch / 0.0254:.2f}\" across — two collars closer than their own "
+                        "diameter are one hole")
         return self
 
 

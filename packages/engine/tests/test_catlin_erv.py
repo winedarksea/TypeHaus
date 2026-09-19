@@ -13,8 +13,8 @@ from _helpers import check_context
 
 from typehaus.checks.mep.erv_terminals import erv_outdoor_terminals
 from typehaus.findings import Result
-from typehaus.model.enums import DuctSystem
-from typehaus.quantities import M_PER_IN
+from typehaus.model.enums import DuctSystem, Service
+from typehaus.quantities import M_PER_IN, ft, inch
 
 _FT = 0.3048
 
@@ -457,3 +457,135 @@ def test_the_duct_product_catalog_is_keyed_like_the_price_rows(catlin_plan) -> N
     # Flex is three times the roughness and is named by no run — kept so the note's
     # rigid-versus-flex comparison reads off typed data.
     assert rows[("flex", 6.0)].roughness_m > 10 * rows[("galvanized", 6.0)].roughness_m
+
+
+# --------------------------------------------------------------------------------------
+# E3 — a plenum may state WHERE its collars are, not only how many (2026-09-19)
+# --------------------------------------------------------------------------------------
+
+
+def _plenum(tag="EQ-T-TEST-PLENUM", collars=((0.0, 0.0), (6.0, 0.0)), ports=None):
+    from typehaus.model.placeables import PortCertainty, ServicePort
+    from typehaus.model.types import EquipmentType
+
+    return EquipmentType(
+        tag=tag, name="test plenum", footprint=(inch(24), inch(8)), height=inch(8),
+        plan_symbol="erv", source="test",
+        duct_ports=len(collars) if ports is None else ports,
+        port_diameter=inch(4),
+        ports=(ServicePort(tag="trunk", service=Service.SUPPLY_AIR,
+                           position=(ft(0), ft(0), inch(4))),
+               *(ServicePort(tag=f"c{i}", service=Service.SUPPLY_AIR,
+                             position=(inch(x), inch(y), inch(4)),
+                             connection_size=inch(4),
+                             certainty=PortCertainty.EXACT)
+                 for i, (x, y) in enumerate(collars))))
+
+
+def test_a_collar_is_an_exact_port_at_the_types_own_port_diameter() -> None:
+    """No new field. The trunk spigot carries no section at all (``library/hvac.py``), so
+    the two are told apart by what the product says rather than by a tag convention."""
+    product = _plenum()
+    assert [p.tag for p in product.collars()] == ["c0", "c1"]
+
+
+def test_a_count_and_a_layout_of_one_part_must_agree() -> None:
+    """Refused at load time, not graded: a box that says ten ports and draws eight is a
+    fact about the typing, and every census taken from it would mean nothing."""
+    with pytest.raises(ValueError, match="a count and a layout"):
+        _plenum(collars=((0.0, 0.0), (6.0, 0.0)), ports=10)
+
+
+def test_two_collars_closer_than_their_own_diameter_are_one_hole() -> None:
+    """Thirteen 4" radials leaving two plenums on 2" centres is what this refuses."""
+    with pytest.raises(ValueError, match="closer than their own diameter"):
+        _plenum(collars=((0.0, 0.0), (2.0, 0.0)))
+
+
+def test_an_undimensioned_plenum_still_counts(catlin_model) -> None:
+    """The shared catalog part states how many collars it has and nothing about where —
+    there is no shop drawing behind a commodity box. The count verdict is unchanged."""
+    from typehaus.checks.mep.erv_manifold_ports import erv_manifold_ports
+
+    findings = erv_manifold_ports(check_context(model=catlin_model))
+    full = next(f for f in findings if "EQ-M-ERV-MAN-EXH" in f.message)
+    assert "10 of 10 x 4\" ports used, full" in full.message
+    assert "by POSITION" not in full.message
+
+
+def test_port_at_declines_a_half_inch_tie() -> None:
+    """Two collars equally near a run's end is a coin toss the model has no business
+    making: a radial re-aimed at its neighbour's collar looks precise and is wrong."""
+    from typehaus.resolve.mep_ports import PORT_AMBIGUITY_M, PlacedPort, port_at
+
+    assert PORT_AMBIGUITY_M == pytest.approx(0.5 * M_PER_IN)
+
+    def _port(tag, x):
+        return PlacedPort(equipment_tag="EQ-X", port_tag=tag, service="supply_air",
+                          duct_system="supply", x_m=x, y_m=0.0, z_m=0.0, exact=True,
+                          section_m=(0.1016, 0.1016), collar=True)
+
+    ports = [_port("c0", -0.05), _port("c1", 0.05)]
+
+    class _Model:
+        plan = None
+
+    import typehaus.resolve.mep_ports as module
+    original = module.placed_ports
+    module.placed_ports = lambda _model: ports
+    try:
+        # Dead centre between two collars 4" apart: a tie, and a tie is not an answer.
+        assert port_at(_Model(), (0.0, 0.0), 0.0, duct_system="supply",
+                       tolerance_m=0.2) is None
+        # Moved onto one of them, it is no longer a tie.
+        landed = port_at(_Model(), (-0.05, 0.0), 0.0, duct_system="supply",
+                         tolerance_m=0.2)
+        assert landed is not None and landed.port_tag == "c0"
+    finally:
+        module.placed_ports = original
+
+
+def test_a_collar_claimed_twice_FAILs() -> None:
+    """A collar is one hole and takes one pipe. Thirteen radials off two plenums on 2"
+    centres is the layout this refuses, and it refuses it by name."""
+    from types import SimpleNamespace
+
+    from typehaus.checks.mep.erv_manifold_ports import _graded_by_collar
+    from typehaus.findings import Result
+    from typehaus.resolve.mep_ports import PlacedPort
+
+    def _collar(tag, x):
+        return PlacedPort(equipment_tag="EQ-X", port_tag=tag, service="supply_air",
+                          duct_system="supply", x_m=x, y_m=0.0, z_m=0.0, exact=True,
+                          section_m=(0.1016, 0.1016), collar=True)
+
+    def _duct(tag, x):
+        return SimpleNamespace(tag=tag, path=((x, 0.0), (x, 3.0)), z_m=(0.0, 0.0))
+
+    obj = SimpleNamespace(tag="EQ-X", type_ref="EQ-T-X")
+    collars = [_collar("c0", 0.0), _collar("c1", 0.2)]
+
+    # Both radials drawn at the same collar: the far one has nowhere left to land.
+    ctx = SimpleNamespace(model=SimpleNamespace(ducts=[_duct("DU-A", 0.0),
+                                                       _duct("DU-B", 0.0)]))
+    (finding,) = _graded_by_collar("mep.erv_manifold_ports", obj, collars,
+                                   ["DU-A", "DU-B"], ctx, '4"')
+    assert finding.result is Result.FAIL
+    assert "claimed by 2 runs" in finding.message
+    assert "DU-A, DU-B" in finding.message
+
+    # One on each: graded by POSITION and passing.
+    ctx = SimpleNamespace(model=SimpleNamespace(ducts=[_duct("DU-A", 0.0),
+                                                       _duct("DU-B", 0.2)]))
+    (finding,) = _graded_by_collar("mep.erv_manifold_ports", obj, collars,
+                                   ["DU-A", "DU-B"], ctx, '4"')
+    assert finding.result is Result.PASS
+    assert "graded by POSITION" in finding.message
+
+    # One of them drawn at the plenum's centre instead of on a collar: stranded by name.
+    ctx = SimpleNamespace(model=SimpleNamespace(ducts=[_duct("DU-A", 0.0),
+                                                       _duct("DU-B", 0.1)]))
+    (finding,) = _graded_by_collar("mep.erv_manifold_ports", obj, collars,
+                                   ["DU-A", "DU-B"], ctx, '4"')
+    assert finding.result is Result.FAIL
+    assert "DU-B" in finding.message and "free: c1" in finding.message

@@ -50,6 +50,10 @@ class PlacedPort:
     direction: tuple[float, float, float] | None = None
     #: ``(width, depth)`` in metres; equal for a round spigot. None when unstated.
     section_m: tuple[float, float] | None = None
+    #: True for a BRANCH COLLAR on a distribution plenum — an exact port whose section is
+    #: the type's own ``port_diameter``. The trunk spigot is not one. See
+    #: ``EquipmentType.collars``.
+    collar: bool = False
 
     @property
     def point(self) -> tuple[float, float, float]:
@@ -77,7 +81,6 @@ def placed_ports(model: ResolvedModel) -> list[PlacedPort]:
     somebody else already gives.
     """
     from typehaus.model.enums import AIR_SERVICE_DUCT_SYSTEM
-    from typehaus.resolve.mep_sleeves import rotate_into_plan
 
     plan = getattr(model, "plan", None)
     if plan is None:
@@ -93,30 +96,78 @@ def placed_ports(model: ResolvedModel) -> list[PlacedPort]:
         obj = objects.get(element.tag)
         if machine is None or obj is None:
             continue
+        collars = {port.tag for port in _collars(machine)}
         for port in machine.ports:
-            x, y = rotate_into_plan(element, (port.position[0].meters,
-                                              port.position[1].meters))
+            # About the RESOLVED object, not the authored element. A wall-mounted plenum is
+            # pushed off the wall face by ``resolve/placeables``, and placing its collars
+            # from the authored centre put them inside the wall — half a stud bay from
+            # where a router would have to terminate. ``z_m`` already came off ``obj``;
+            # x and y now come from the same place, which is the point.
+            x, y = _place(obj, (port.position[0].meters, port.position[1].meters))
             system = AIR_SERVICE_DUCT_SYSTEM.get(port.service)
             out.append(PlacedPort(
                 equipment_tag=element.tag, port_tag=port.tag,
                 service=port.service.value, duct_system=system.value if system else None,
                 x_m=x, y_m=y, z_m=obj.z_m + port.position[2].meters,
                 exact=_is_exact(port),
-                direction=_direction_in_plan(element, port),
-                section_m=_section_m(port)))
+                direction=_direction_in_plan(obj, port),
+                section_m=_section_m(port),
+                collar=port.tag in collars))
     return out
+
+
+def _place(obj: Any, local: tuple[float, float]) -> tuple[float, float]:
+    """A point in the product frame, placed on the RESOLVED object.
+
+    The same two lines of trigonometry ``resolve/mep_sleeves.rotate_into_plan`` does for an
+    authored placeable, against ``ResolvedCanvasObject``'s own ``position`` and
+    ``rotation_degrees`` instead. They are not the same numbers: ``resolve/placeables``
+    pushes a wall-mounted object off the wall face by half its depth, so a collar placed
+    from the authored centre lands inside the wall.
+    """
+    import math
+
+    radians = math.radians(float(getattr(obj, "rotation_degrees", 0.0) or 0.0))
+    cos, sin = math.cos(radians), math.sin(radians)
+    x, y = local
+    px, py = obj.position
+    return px + x * cos - y * sin, py + x * sin + y * cos
+
+
+def _collars(machine: Any) -> tuple:
+    reader = getattr(machine, "collars", None)
+    return tuple(reader()) if callable(reader) else ()
+
+
+def placed_collars(model: ResolvedModel, equipment_tag: str) -> list[PlacedPort]:
+    """The dimensioned branch collars of one plenum, placed. Empty where it states none."""
+    return [port for port in placed_ports(model)
+            if port.collar and port.equipment_tag == equipment_tag]
+
+
+#: Two ports this close to equally near a run's end are a TIE, and a tie is not an answer.
+#: Half an inch, which is an eighth of a 4" collar: below it, which of two neighbouring
+#: collars the author meant is a question the model cannot settle, and re-aiming a radial at
+#: its neighbour's collar is a worse answer than leaving it where its author put it.
+PORT_AMBIGUITY_M = 0.0127
 
 
 def port_at(model: ResolvedModel, point: tuple[float, float],
             z_m: float | None, *, duct_system: str | None,
-            tolerance_m: float) -> PlacedPort | None:
+            tolerance_m: float,
+            ambiguity_m: float = PORT_AMBIGUITY_M) -> PlacedPort | None:
     """The EXACT port a run end is landing on, or None.
 
     Only exact ports are offered: snapping a terminal to an approximate one would move the
     run to a coordinate the datasheet never gave, which is worse than leaving it where its
     author put it. Nearest wins, and the system must match where the port states one.
+
+    **A tie is None.** A dimensioned plenum has collars a few inches apart, and "nearest
+    wins" among them is a coin toss the model has no business making: a radial re-aimed at
+    its neighbour's collar is a proposal that looks precise and is wrong. Two candidates
+    within :data:`PORT_AMBIGUITY_M` of each other decline together.
     """
-    best: tuple[float, PlacedPort] | None = None
+    scored: list[tuple[float, PlacedPort]] = []
     for port in placed_ports(model):
         if not port.exact:
             continue
@@ -126,10 +177,13 @@ def port_at(model: ResolvedModel, point: tuple[float, float],
         z_off = 0.0 if z_m is None else abs(port.z_m - z_m)
         if plan_off > tolerance_m or z_off > tolerance_m:
             continue
-        score = plan_off + z_off
-        if best is None or score < best[0]:
-            best = (score, port)
-    return None if best is None else best[1]
+        scored.append((plan_off + z_off, port))
+    if not scored:
+        return None
+    scored.sort(key=lambda row: row[0])
+    if len(scored) > 1 and scored[1][0] - scored[0][0] < ambiguity_m:
+        return None
+    return scored[0][1]
 
 
 def _is_exact(port: ServicePort) -> bool:
@@ -142,21 +196,19 @@ def _section_m(port: ServicePort) -> tuple[float, float] | None:
     return reader() if callable(reader) else None
 
 
-def _direction_in_plan(element: Any, port: ServicePort
+def _direction_in_plan(obj: Any, port: ServicePort
                        ) -> tuple[float, float, float] | None:
     """The port's outlet vector, rotated into the project frame.
 
-    Rotated as a direction, not as a point: ``rotate_into_plan`` places a *station* and so
-    carries the placement's translation with it, and adding a translation to a unit vector
-    is how a router ends up aiming a spigot at the origin. The vector is recovered as the
-    difference of two placed points, which is the translation-free part of exactly that
-    transform, and z is untouched because a placement's rotation is about the vertical.
+    Rotated as a direction, not as a point: :func:`_place` places a *station* and so carries
+    the placement's translation with it, and adding a translation to a unit vector is how a
+    router ends up aiming a spigot at the origin. The vector is recovered as the difference
+    of two placed points, which is the translation-free part of exactly that transform, and
+    z is untouched because a placement's rotation is about the vertical.
     """
-    from typehaus.resolve.mep_sleeves import rotate_into_plan
-
     if port.direction is None:
         return None
     dx, dy, dz = (float(v) for v in port.direction)
-    ox, oy = rotate_into_plan(element, (0.0, 0.0))
-    px, py = rotate_into_plan(element, (dx, dy))
+    ox, oy = _place(obj, (0.0, 0.0))
+    px, py = _place(obj, (dx, dy))
     return px - ox, py - oy, dz

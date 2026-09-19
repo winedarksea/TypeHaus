@@ -156,6 +156,13 @@ ALL_DUCT_PRODUCT_TYPES = (
 )
 
 
+#: **The shared plenums state a COUNT and no layout, and that is deliberate.**
+#: ``EquipmentType.collars()`` reads an EXACT port at ``port_diameter`` as a dimensioned
+#: branch collar, and ``mep.erv_manifold_ports`` then grades each radial against the collar
+#: it lands on rather than against a tally. Nothing in this file may claim that: a collar
+#: layout is a SHOP DRAWING for one fabricated box, and a reusable catalog part has no shop
+#: drawing behind it. A house that has one authors the dimensioned type locally — catlin
+#: does, in ``plan/mep_erv_types.py`` — and inherits the positional verdict by doing so.
 def _equipment(
     tag: str, name: str, footprint, height, port: ServicePort, duct_ports: int
 ) -> EquipmentType:
