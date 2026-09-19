@@ -89,12 +89,22 @@ def test_an_unauthored_pitch_is_UNKNOWN_naming_the_floor(catlin_ctx) -> None:
     assert web_panels(floor) is None
 
 
-def test_catlin_reports_the_level_two_neck(catlin_ctx) -> None:
-    """§3a's arithmetic, as a verdict: nine 4" radials crossing square on one elevation want
-    36.00" of a 15.00" opening. This is the finding D1 exists to answer."""
+def test_the_level_two_NECK_IS_GONE(catlin_ctx) -> None:
+    """§3a's arithmetic was a verdict on 2026-09-19 — nine 4" radials crossing square on one
+    elevation wanting 36.00" of a 15.00" opening, on twelve of the deck's members — and D1
+    answered it the same day by taking the extract side to a trunk. **No ERV duct is in an
+    over-subscribed opening on this deck any more**, which is the thing the check was
+    written to be able to say either way."""
     fails = [f for f in open_web_panel(catlin_ctx) if f.result is Result.FAIL]
-    neck = next(f for f in fails if "DU-M-ERV-R-KITCH" in f.element_tags)
-    assert "FS-S-WEST" in neck.element_tags
-    assert '9 runs share one elevation there and want 36.00" of its 15.00" clear width' \
-        in neck.message
-    assert "on 12 of its members" in neck.message
+    assert not [f for f in fails
+                if any(tag.startswith("DU-M-ERV") for tag in f.element_tags)]
+
+
+def test_catlin_still_reports_the_one_opening_that_is_over_subscribed(catlin_ctx) -> None:
+    """A conduit and a vent, 20.97" of a 15.00" opening. Neither is D1's to move — the
+    raceways are Phase 4's and the vent is Phase 3's — and the finding names both."""
+    fails = [f for f in open_web_panel(catlin_ctx) if f.result is Result.FAIL]
+    (only,) = fails
+    assert set(only.element_tags) == {"FS-S-WEST", "CD-M-DATA-PORCH", "PR-M-WC-VENT"}
+    assert '2 runs share one elevation there and want 20.97" of its 15.00" clear width' \
+        in only.message

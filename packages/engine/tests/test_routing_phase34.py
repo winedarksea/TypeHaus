@@ -151,14 +151,27 @@ def test_an_exact_port_states_a_rectangular_section_and_a_direction():
     assert port.section_m() == pytest.approx((inch(10).meters, inch(8).meters))
 
 
-def test_catlin_ports_place_and_are_all_reported_approximate(catlin_model):
-    """The ERV's datasheet gives a face, not coordinates, and the model now says so."""
+def test_catlin_ports_are_approximate_EXCEPT_the_shop_drawn_collars(catlin_model):
+    """The ERV's datasheet gives a FACE, not coordinates, and the model says so: every port
+    on a catalog machine is approximate and reports itself that way.
+
+    **The exception is a box THIS house has a shop drawing for** (2026-09-19). The two
+    level-2 plenums are fabricated for catlin and dimension their collars, so those four are
+    EXACT — which is what lets `mep.erv_manifold_ports` grade each radial against the collar
+    it lands on instead of against a tally. Nothing in `library/hvac.py` dimensions one, and
+    that is deliberate: a collar layout is a shop drawing and a reusable part has none."""
     from typehaus.resolve.mep_ports import placed_ports
 
     ports = placed_ports(catlin_model)
     assert ports, "catlin places equipment declaring ServicePorts"
-    assert all(not p.exact for p in ports)
-    assert all("approximate" in p.describe() for p in ports)
+    exact = sorted(f"{p.equipment_tag}.{p.port_tag}" for p in ports if p.exact)
+    assert exact == ["EQ-M-ERV-MAN-EXH.collar-trunk",
+                     "EQ-M-ERV-MAN-SUP.collar-bed",
+                     "EQ-M-ERV-MAN-SUP.collar-living",
+                     "EQ-M-ERV-MAN-SUP.collar-study"]
+    assert all(p.collar for p in ports if p.exact), "an exact port here IS a branch collar"
+    assert all("approximate" in p.describe() for p in ports if not p.exact)
+    assert all("exact" in p.describe() for p in ports if p.exact)
 
 
 def test_port_at_never_offers_an_approximate_port_to_the_router(catlin_model):
@@ -166,7 +179,7 @@ def test_port_at_never_offers_an_approximate_port_to_the_router(catlin_model):
     a coordinate nobody authored — worse than leaving it where its author put it."""
     from typehaus.resolve.mep_ports import placed_ports, port_at
 
-    port = placed_ports(catlin_model)[0]
+    port = next(p for p in placed_ports(catlin_model) if not p.exact)
     assert port_at(catlin_model, (port.x_m, port.y_m), port.z_m,
                    duct_system=None, tolerance_m=1.0) is None
 
@@ -182,19 +195,23 @@ def test_the_port_verdict_says_it_is_service_level(catlin_model):
     assert any("service-level verdict" in f.message for f in mine)
 
 
-def test_connectivity_says_nothing_about_ports_it_cannot_read(catlin_model):
+def test_connectivity_reports_a_dimensioned_landing_and_never_re_fails_it(catlin_model):
     """``duct_connectivity`` REPORTS how exact a landing is; it never re-FAILs what
-    ``mep.equipment_port_service`` already grades, and it is silent where the machine
-    states no dimensioned port — which today is every machine in catlin."""
+    ``mep.equipment_port_service`` already grades.
+
+    It was silent on every machine in catlin until the level-2 plenums were given their
+    collars, because there was nothing dimensioned to be near or far from. Now four runs
+    land on a stated station and the note appears for them — and for nobody else."""
     from typehaus.checks import run_from_model
     from typehaus.checks.registry import Preferences
 
     report = run_from_model(catlin_model, [], preferences=Preferences())
     mine = [f for f in report.findings if f.check_id == "mep.duct_connectivity"]
     assert mine
-    assert not any("dimensioned port" in f.message for f in mine), (
-        "no catlin EquipmentType declares an exact port yet, so there is nothing to be "
-        "near or far from and the note must not appear")
+    noted = [f for f in mine if "dimensioned port" in f.message]
+    assert noted, "the four shop-drawn collars are landed on and the note says so"
+    assert all(f.result.value != "fail" for f in noted), (
+        "mep.equipment_port_service owns the verdict; this one only reports")
 
 
 def test_the_port_note_distinguishes_the_spigot_from_the_case():

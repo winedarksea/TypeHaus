@@ -226,13 +226,22 @@ def test_catlin_reports_no_fail_from_this_check(catlin_model_ro) -> None:
     assert [f.message for f in _findings(catlin_model_ro) if f.result is Result.FAIL] == []
 
 
-def test_every_radial_clears_the_products_own_flow_limit(catlin_model_ro) -> None:
-    """23 radials, all 4" galvanized, all inside ``DUCT-T-GALV-4``'s 50 cfm — which is a
-    600 fpm QUIET limit for a branch running continuously beside a bed, not the pipe's
-    capacity. The highest in the house is ``DU-B-ERV-R-PLAY`` at 30 cfm."""
+def test_every_branch_clears_the_products_own_flow_limit(catlin_model_ro) -> None:
+    """23 radials all inside ``DUCT-T-GALV-4``'s 50 cfm — a 600 fpm QUIET limit for a branch
+    running continuously beside a bed, not the pipe's capacity. The highest is
+    ``DU-B-ERV-R-PLAY`` at 30 cfm.
+
+    **24 since D1**, and the extra is ``DU-M-ERV-EXH-TRUNK``: level 2 went trunk-and-branch
+    on 2026-09-19 and the trunk is a run like any other, 114 cfm in 8". The ten takeoffs off
+    it are still here — ``radial_landings`` follows one hop through a trunk, which it did
+    not do the day the trunk was drawn, and ten runs left this budget silently until it
+    did."""
     rows = [f for f in _findings(catlin_model_ro) if " carries " in f.message]
-    assert len(rows) == 23
+    assert len(rows) == 24
     assert all(f.result is Result.PASS for f in rows)
+    assert any("DU-M-ERV-EXH-TRUNK carries 114 cfm" in f.message for f in rows)
+    for tag in ("DU-M-ERV-R-PLANT", "DU-M-ERV-R-BATH1", "DU-M-ERV-R-KITCH"):
+        assert any(f.message.startswith(f"{tag} carries ") for f in rows), tag
 
 
 def test_the_system_1_trunks_are_not_pulled_into_the_ventilators_budget(

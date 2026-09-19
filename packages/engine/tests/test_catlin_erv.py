@@ -432,15 +432,25 @@ def test_every_plenum_states_its_port_count_and_its_port_size(catlin_plan) -> No
         assert types[tag].port_diameter.meters == pytest.approx(6 * M_PER_IN), tag
 
 
-def test_the_port_census_is_clean_and_the_level_two_extract_is_full(catlin_model) -> None:
-    """``EQ-M-ERV-MAN-EXH`` at 10 of 10 is the claim every "where could a new terminal go"
-    argument in ``plan/mep_erv_l2.py`` leans on. It is graded now, and it BLOCKS."""
+def test_the_port_census_is_clean_and_is_graded_by_POSITION_on_level_two(
+        catlin_model) -> None:
+    """``EQ-M-ERV-MAN-EXH`` was "full at 10 of 10", and every "where could a new terminal
+    go" argument in ``plan/mep_erv_l2.py`` leaned on it. Level 2 went trunk-and-branch on
+    2026-09-19 — thirteen home-run lanes will not leave that closet — so what leaves the box
+    is ONE 8" trunk and the count is 1 of 1.
+
+    Both level-2 plenums dimension their collars now, so the census is POSITIONAL: each run
+    is graded against the collar it lands on, within an inch. Ordering a ten-port plenum
+    nobody lands ten pipes on is the BOM error the retype prevents."""
     from typehaus.checks.mep.erv_manifold_ports import erv_manifold_ports
 
     findings = erv_manifold_ports(check_context(model=catlin_model))
     assert [f.message for f in findings if f.result is Result.FAIL] == []
-    full = next(f for f in findings if "EQ-M-ERV-MAN-EXH" in f.message)
-    assert "10 of 10 x 4\" ports used, full" in full.message
+    exhaust = next(f for f in findings if "EQ-M-ERV-MAN-EXH" in f.message)
+    assert '1 of 1 x 8" collars used, each by one run, full' in exhaust.message
+    assert "graded by POSITION, not by count" in exhaust.message
+    supply = next(f for f in findings if "EQ-M-ERV-MAN-SUP" in f.message)
+    assert '3 of 3 x 4" collars used, each by one run, full' in supply.message
 
 
 def test_the_duct_product_catalog_is_keyed_like_the_price_rows(catlin_plan) -> None:
@@ -504,13 +514,15 @@ def test_two_collars_closer_than_their_own_diameter_are_one_hole() -> None:
 
 def test_an_undimensioned_plenum_still_counts(catlin_model) -> None:
     """The shared catalog part states how many collars it has and nothing about where —
-    there is no shop drawing behind a commodity box. The count verdict is unchanged."""
+    there is no shop drawing behind a commodity box. The count verdict is unchanged, and
+    the basement and attic plenums are where it is still exercised: those three name
+    ``library/hvac.py`` types and are counted, not placed."""
     from typehaus.checks.mep.erv_manifold_ports import erv_manifold_ports
 
     findings = erv_manifold_ports(check_context(model=catlin_model))
-    full = next(f for f in findings if "EQ-M-ERV-MAN-EXH" in f.message)
-    assert "10 of 10 x 4\" ports used, full" in full.message
-    assert "by POSITION" not in full.message
+    counted = next(f for f in findings if "EQ-A-ERV-MAN-EXH" in f.message)
+    assert '4 of 6 x 4" ports used, 2 spare' in counted.message
+    assert "by POSITION" not in counted.message
 
 
 def test_port_at_declines_a_half_inch_tie() -> None:

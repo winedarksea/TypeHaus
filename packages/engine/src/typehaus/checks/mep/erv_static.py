@@ -258,12 +258,22 @@ def _through_trunks(ctx: CheckContext, plenums: dict, landings: dict[str, str]
     from typehaus.resolve.mep_soffit import ducts_are_joined
 
     del plenums  # every landing already matched its plenum's port diameter to get here
-    trunks = dict(landings)
+    sizes = {duct.tag: duct.diameter_m for duct in ctx.model.ducts
+             if duct.diameter_m is not None}
     out = dict(landings)
     for duct in ctx.model.ducts:
         if duct.tag in out or not duct.path or duct.diameter_m is None:
             continue
-        for trunk_tag, host in sorted(trunks.items()):
+        for trunk_tag, host in sorted(landings.items()):
+            # **A branch is SMALLER than the trunk it comes off, and the test is that way
+            # round on purpose.** Without it the hop runs backwards: catlin's basement
+            # radials land in their plenum and the 6" trunk is joined to them, so the trunk
+            # would inherit the plenum and its 210 cfm would be added to the plenum's own
+            # 60 — the box would be worked at 270 cfm it never sees, and the supply column
+            # of notes/erv_static_budget.md §6 would move for a reason that is not in the
+            # building.
+            if duct.diameter_m >= sizes.get(trunk_tag, 0.0) - 1e-9:
+                continue
             if trunk_tag != duct.tag and ducts_are_joined(ctx.model, duct.tag, trunk_tag):
                 out[duct.tag] = host
                 break

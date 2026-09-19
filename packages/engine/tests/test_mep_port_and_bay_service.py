@@ -183,17 +183,24 @@ def test_no_pair_of_bay_runs_in_catlin_exceeds_its_bay(catlin_model):
     assert not over, over
 
 
-def test_two_lanes_on_one_bay_centre_are_reported_as_unknown(catlin_model):
-    """FS-S-WEST is the floor the TODO named. ``plan/mep_erv_l2.py`` records in prose that
-    STUDY and LAUNDRY both ride the 20'-8" bay and that "nothing in the engine grades
-    duct-against-duct outside a modeled Soffit"; this is the check that does. It is UNKNOWN
-    rather than FAIL because the model gives a run one centreline per bay — two lanes in one
-    bay are necessarily drawn on top of each other — and the bay is wide enough for both."""
+def test_two_lanes_in_one_bay_are_SIDE_BY_SIDE_and_pass(catlin_model):
+    """FS-S-WEST is the floor the TODO named, and this check is the one that grades
+    duct-against-duct outside a modeled Soffit.
+
+    **It read UNKNOWN until 2026-09-19 and it reads PASS now**, and the change is in the
+    house rather than in the check. Two runs sharing a bay used to share its CENTRELINE —
+    the model gives a run one lane per bay, so they were necessarily drawn on top of each
+    other and UNKNOWN was the honest verdict. D1 authors each pair's own y instead:
+    LAUNDRY and STUDY sit 4" apart in the 20'-8" bay, BED2 and KITCH in the 22'-0", and the
+    check can now say what is left beside them rather than that it cannot tell."""
     west = [f for f in _findings(catlin_model, "mep.duct_joist_bay_occupancy",
                                  Tier.STRUCTURAL)
             if f.element_tags == ("FS-S-WEST",)]
     assert len(west) == 1
-    assert west[0].result.value == "unknown"
+    assert west[0].result.value == "pass", west[0].message
+    assert "no two parallel legs occupy one bay at one station" in west[0].message
+    assert '4.50" of 12.50" left beside DU-M-ERV-R-LAUNDRY, DU-M-ERV-R-STUDY' \
+        in west[0].message
     assert "DU-M-ERV-R-STUDY" in west[0].message
     assert "DU-M-ERV-R-LAUNDRY" in west[0].message
 
@@ -201,11 +208,17 @@ def test_two_lanes_on_one_bay_centre_are_reported_as_unknown(catlin_model):
 def test_crossing_runs_are_not_paired(catlin_model):
     """Between two runs that cross, a hanger-gap subtraction returns a number with no
     meaning — the first draft reported "-112 inches of gap" for the FS-S-WEST radials.
-    Whether a run may cross a joist line at all is ``mep.duct_joist_bay``'s question."""
+    Whether a run may cross a joist line at all is ``mep.duct_joist_bay``'s question.
+
+    Asserted on the ROOM the check reports rather than on an overlap it no longer prints:
+    every width left is positive, and a crossing pair contributes none of them."""
     west = next(f for f in _findings(catlin_model, "mep.duct_joist_bay_occupancy",
                                      Tier.STRUCTURAL)
                 if f.element_tags == ("FS-S-WEST",))
-    assert "-" not in west.message.split("overlapping by")[1].split('"')[0]
+    rooms = [chunk.split('" of ')[0].split()[-1]
+             for chunk in west.message.split(" has ")[1:]]
+    assert rooms, west.message
+    assert all(not value.startswith("-") for value in rooms), west.message
 
 
 def test_a_bay_the_pair_cannot_fit_fails(catlin_model):

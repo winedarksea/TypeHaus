@@ -89,12 +89,16 @@ def test_a_stub_into_the_sheet_is_not_a_riser_through_the_deck() -> None:
 
 
 def test_catlin_is_pinned_so_a_campaign_can_see_itself(catlin_ctx) -> None:
-    """47 today: 29 risers landing on a member, 18 clear of every member but over the 2"
-    this house says a trade may drill. Pinned as two counts rather than a list so a
-    campaign that fixes ten is visible without re-blessing a page of tags."""
+    """48: 29 risers landing on a member, 19 clear of every member but over the 2" this
+    house says a trade may drill. Pinned as two counts rather than a list so a campaign that
+    fixes ten is visible without re-blessing a page of tags.
+
+    It was 29/18 when the check landed. D1 took level 2 trunk-and-branch on the same day and
+    DU-M-ERV-R-LAUNDRY's turn south to the standpipe boot is the extra one — a 4" hole in a
+    clear bay, which is the DOCUMENTATION half of this check and not the structural one."""
     fails = _by_result(catlin_ctx, Result.FAIL)
     on_member = [f for f in fails if "lands on the member" in f.message]
     undrawn = [f for f in fails if "FRAMED, NOT DRILLED" in f.message]
     assert len(on_member) == 29
-    assert len(undrawn) == 18
+    assert len(undrawn) == 19
     assert len(fails) == len(on_member) + len(undrawn)

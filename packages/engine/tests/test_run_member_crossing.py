@@ -54,7 +54,11 @@ def test_the_web_verdict_is_a_SECOND_finding_and_not_a_changed_one(
     answers one well and the other badly has to be told both."""
     findings = _findings(catlin_plan, catlin_model_ro)
     web = [f for f in findings if "ON A WEB" in f.message]
-    assert len(web) == 17, [f.message for f in web]
+    # Seventeen when the panel datum landed; nine since D1 took level 2's ducts off the
+    # webs. Every one that is left is a PIPE — the plumbing campaign's, not the air's.
+    assert len(web) == 9, [f.message for f in web]
+    assert all(tag.startswith("PR-") for f in web for tag in f.element_tags
+               if not tag.startswith("FS-"))
     for finding in web:
         assert finding.result is Result.FAIL
         tag = finding.element_tags[0]
@@ -128,23 +132,38 @@ def test_the_two_raceway_defects_are_fixed_and_stay_fixed(
         assert invert == pytest.approx(0.164, abs=0.001), tag
 
 
-def test_the_erv_radials_sit_on_the_chord_not_in_it(
+def test_every_level_two_duct_rests_on_a_chord_and_none_is_inside_one(
         catlin_plan, catlin_model_ro) -> None:
     """``_BAY_Z`` meant "a 4" duct sitting on FS-S-WEST's bottom chord" and was derived
     against 108 1/8", the bottom of that chord rather than its top — 1 1/2" low, on every
-    radial's south leg across the trusses. Resting ON the chord is an invert exactly at the
-    web window's floor, which is 0.000" of clearance and a PASS: the duct is supported by
-    the thing it is touching."""
+    radial's south leg. Resting ON a chord is 0.000" of clearance and a PASS: the duct is
+    supported by the thing it is touching.
+
+    **Since D1 there are TWO tiers and a duct rests on whichever chord its tier names**, so
+    the assertion is that one of the two gaps is zero rather than that the invert is. A
+    south leg rides the upper tier (crown +0.000") and a bay leg the lower (invert +0.000");
+    the 8" trunk is centred and clears both by 0.437"."""
     findings = _findings(catlin_plan, catlin_model_ro)
-    radials = [f for f in findings
-               if any(t.startswith("DU-M-ERV-R-") for t in f.element_tags)
-               and "FS-S-WEST" in f.element_tags
-               and "ON A WEB" not in f.message]
-    assert len(radials) >= 13, [f.message for f in radials]
-    for finding in radials:
+    ducts = [f for f in findings
+             if any(t.startswith("DU-M-ERV") for t in f.element_tags)
+             and "FS-S-WEST" in f.element_tags]
+    # **FIVE of the fourteen, and the other nine are the design.** Because the trunk runs
+    # south, every extract takeoff is a pure BAY leg and crosses no truss at all; what is
+    # left to grade is the trunk itself, the three supply radials, and LAUNDRY's turn south
+    # to the standpipe boot.
+    assert sorted(tag for f in ducts for tag in f.element_tags
+                  if tag.startswith("DU-M-ERV")) == [
+        "DU-M-ERV-EXH-TRUNK", "DU-M-ERV-R-BED", "DU-M-ERV-R-LAUNDRY",
+        "DU-M-ERV-R-LIVING", "DU-M-ERV-R-STUDY"]
+    for finding in ducts:
         assert finding.result is Result.PASS, finding.message
+        crown = float(finding.message.split("crown ")[1].split('"')[0])
         invert = float(finding.message.split("invert ")[1].split('"')[0])
-        assert invert == pytest.approx(0.0, abs=1e-6), finding.message
+        assert crown >= -1e-9 and invert >= -1e-9, finding.message
+        if "DU-M-ERV-EXH-TRUNK" in finding.element_tags:
+            assert crown == pytest.approx(0.437, abs=0.001)
+        else:
+            assert min(crown, invert) == pytest.approx(0.0, abs=1e-6), finding.message
 
 
 def test_an_i_joist_pass_is_qualified(catlin_plan, catlin_model_ro) -> None:
