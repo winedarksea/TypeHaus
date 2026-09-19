@@ -454,6 +454,16 @@ suppress = [
   # own stations, exactly the move D1 and D3 made for the five ERV plenums; until then this
   # entry carries the argument. Itemised on the COLD because it is the run that would move.
   "mep.run_interference:PR-B-CW-WH",
+  # ** AND ONE THAT IS 0.0038" OF WALL (P3, 2026-09-19). ** PR-A-HW-STUBATH carries a 1"
+  # fiberglass sleeve, so what stands in W-A-STU-W is 2.88" across; PR-A-STUBATH-LAV-DRAIN
+  # beside it is 2.375". Side by side they want 2.627" between centres, which puts the hot's
+  # jacket 2.7538" off the bay's centre line against the 2.75" a 2x6 bay gives. **They miss
+  # sharing that bay by four thousandths of an inch.** Its feed leg is the same story one
+  # storey down: 2.88" will not pass PR-M-S-SUITE-WC-DRAIN inside FS-S-WEST's 8 7/8" web
+  # window either, over or under, and the cold at 7/8" does both easily. Three fixes, all of
+  # them somebody else's decision: a 2x8 wet wall, a furred chase, or a 1/2" sleeve — and the
+  # sleeve is R403.5.3's question, not this check's.
+  "mep.run_interference:PR-A-HW-STUBATH",
   "mep.run_in_slab:DU-B-ERV-R-PLAY",
   "mep.run_in_slab:PR-SG-ARCH-OVERFLOW",
 

@@ -377,7 +377,14 @@ SUPPLY = [
     # and `mep.wet_wall_occupancy` grades it `long_horizontal`; through the staggered pair it
     # threads between two offset stud rows and bores nothing but that one corner post.
     PipeRun(uid="CBPW37AAAA", tag="PR-B-CW-WASH", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(8, 2), ft(16)), pt(ft(8, 2), m(6.22941)), pt(ft(8, 2), m(6.22941)), pt(ft(8, 2), m(6.22941)), pt(ft(8, 2), m(6.22941)), pt(ft(8, 2), ft(18, 1)), pt(ft(8, 6.5), ft(18, 1)), pt(ft(11, 6.5), ft(18, 1)), pt(ft(11, 6.5), ft(18, 1)),),
+            # ** 2" EAST OF THE WALL'S AXIS, NOT ON IT (P3, 2026-09-19). ** The laundry
+            # standpipe stands at (8'-2", 20'-0") and PR-B-WASH-DRAIN's riser under it, and
+            # this run went straight through both — below the deck on its way north, and
+            # again at +2'-8" on its way back south inside W-M-BA2E. The wall is 6 3/4"
+            # (2x6), so a 3/4" copper 2" off the axis is still 3/10" clear of the stud face
+            # with 1 5/8" to the standpipe, which is what the two need between them. The
+            # riser stays in the same bay; only the station inside it moved.
+            path=(pt(ft(8, 4), ft(16)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), m(6.22941)), pt(ft(8, 4), ft(18, 1)), pt(ft(8, 6.5), ft(18, 1)), pt(ft(11, 6.5), ft(18, 1)), pt(ft(11, 6.5), ft(18, 1)),),
             diameter=inch(0.75), material="copper", finish="lacquered",
             elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(9, 1.4375), ft(12, 1.4375),
                         ft(11, 9.4375), ft(11, 9.4375), ft(11, 9.4375), ft(11, 9.4375),
@@ -428,9 +435,17 @@ SUPPLY = [
                   pt(ft(18, 9), ft(15, 6)), pt(ft(30, 3.6), ft(15, 6)),
                   pt(ft(30, 3.6), ft(33, 7.2)), pt(ft(30, 3.6), ft(33, 7.2))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
+            # ** THE x=18'-9" STEP GOES 1 1/4" DEEPER THAN THE BAND (P3, 2026-09-19). **
+            # This run crosses PR-B-CW-TRUNK's own y=16'-0" lane there, and at the hot band's
+            # -1'-4" the two were 1.2" apart against the 2 1/8" a 1 1/4" cold and this run's
+            # insulated jacket want. Neither band could move: the cold is 2/3" under
+            # SL-M-DECK's soffit already, and dropping the whole hot band puts 15 ft of it
+            # into RM-B-PLAY-N's finished air. So the step alone goes to -1'-5 1/4" and the
+            # long east leg ramps back over its 11 1/2 ft. It is under RM-B-GYM, whose
+            # ceiling the owner leaves open, and it clears the 6'-8" headroom line by 11".
             elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), ft(8, 4.6375),
                         ft(8, 4.6375), ft(7, 10.6375), ft(7, 10.6375),
-                        ft(7, 9.4375), ft(7, 9.4375), ft(7, 9.4375),
+                        ft(7, 8.1875), ft(7, 8.1875), ft(7, 9.4375),
                         ft(7, 9.4375), ft(12, 7.4375)),
             serves=("FX-M-KITCH-SINK", "APPL-M-DW")),
     # Second-storey groups: risers climb two storeys to the hall bath, split at both deck
@@ -833,17 +848,38 @@ PENETRATIONS_HYDRANT_SECOND = [
 # truss-floor jogs apart. North of the WC they are also nearer the lavatory they feed.
 STUDIO_SUPPLY = [
     PipeRun(uid="WJZGK0YFHY", tag="PR-A-CW-STUBATH", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(13, 7.2), ft(16, 10.8)), pt(ft(9, 7.5), ft(20, 6)),
-                  pt(ft(9, 7.5), ft(20, 6))),
+            # ** THE RISER IS 2" WEST OF THE WALL'S AXIS AND THE FEED IS 5 3/5" HIGHER
+            # (P3, 2026-09-19). ** It used to stand ON x=9'-7 1/2", which is
+            # PR-A-STUBATH-LAV-DRAIN's own lane down the same wet wall — two pipes on one
+            # line for two feet. W-A-STU-W is 2x6, so 2" off the axis keeps a 7/8" copper
+            # 3/10" inside the stud face and puts 1 5/8" between it and the drain, which is
+            # what the two want. The feed leg went +9'-4" -> +9'-9 3/5" for a different
+            # reason: at the old height it ran through PR-M-S-SUITE-WC-DRAIN's fall inside
+            # FS-S-WEST's web window AND through two of D1's radials at the low tier. The
+            # window is 109 5/8"..118 1/2" and the clear band over the drain is
+            # 117.19"..118.06"; this sits in it.
+            path=(pt(ft(13, 7.2), ft(16, 10.8)), pt(ft(9, 5.5), ft(20, 6)),
+                  pt(ft(9, 5.5), ft(20, 6))),
             diameter=inch(0.75), material="copper", finish="lacquered",
-            elevations=(ft(9, 4), ft(9, 4), ft(22, 6)),
+            elevations=(ft(9, 9.6), ft(9, 9.6), ft(22, 6)),
             serves=("FX-A-STUBATH-WC", "FX-A-STUBATH-LAV", "FX-A-STUBATH-SH",
                     "FX-A-STUDIO-BAR-SINK")),
     PipeRun(uid="TCWF4YDZTW", tag="PR-A-HW-STUBATH", system=PipeSystem.WATER_HOT,
+            # ** THE HOT STAYS ON THE AXIS, AND IT IS NOT FOR WANT OF TRYING. ** The same
+            # 2" offset the cold took does not work here and the arithmetic is worth having:
+            # this run carries a 1" fiberglass sleeve, so its riser is **2.88" across**, and
+            # PR-A-STUBATH-LAV-DRAIN is 2.375". Side by side they need 2.627" between
+            # centres, which puts the hot's jacket **2.7538" from the bay's centre line
+            # against the 2.75" a 2x6 gives** — over by FOUR THOUSANDTHS OF AN INCH. Offset
+            # 2" and the jacket stands 7/10" proud of the stud; left on the axis it is
+            # inside its own bay and coaxial with the drain. Neither is buildable, so it
+            # stays where the wall wants it and the pair is itemised in preferences.toml
+            # with this number. The fix is a 2x8 bay, a furred chase, or a thinner sleeve —
+            # and the sleeve is an energy-code question (R403.5.3), not a clearance one.
             path=(pt(ft(14, 2.4), ft(16, 10.8)), pt(ft(9, 7.5), ft(21)),
                   pt(ft(9, 7.5), ft(21))),
             diameter=inch(0.75), material="copper",
             insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(9, 7), ft(9, 7), ft(22, 6)),
+            elevations=(ft(9, 9.8), ft(9, 9.8), ft(22, 6)),
             serves=("FX-A-STUBATH-LAV", "FX-A-STUBATH-SH", "FX-A-STUDIO-BAR-SINK")),
 ]
