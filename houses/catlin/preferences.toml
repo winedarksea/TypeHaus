@@ -435,6 +435,41 @@ suppress = [
   "mep.run_in_slab:DU-B-ERV-R-PLAY",
   "mep.run_in_slab:PR-SG-ARCH-OVERFLOW",
 
+  # ** mep.riser_through_deck: 47 RISERS THROUGH A DECK WITH NO HOLE DRAWN. NEW CHECK,
+  # 2026-09-19. AN OPEN CAMPAIGN, AND THE ONE plans/TODO.md HAS NAMED SINCE 2026-09-15. **
+  #
+  # TODO's words: "`FS-M-MECH` still carries the vents, the radon riser and nine conduits
+  # through its joist field undrawn ... nothing grades a duct or a pipe against a floor
+  # member." It does now, and the answer is 47 — which is not a house that got worse, it is
+  # a question nobody could ask before. A horizontal run has had `mep.run_member_crossing`
+  # to answer to all along; a riser had nothing at all.
+  #
+  # BLANKET, deliberately, and this is the second and last blanket entry in this file. 47
+  # itemised lines would be a page of tags nobody reads, and the two classes want two
+  # different campaigns rather than 47 decisions:
+  #
+  #   * 29 land ON a member — a joist, a trimmer or a truss chord. These are unambiguous:
+  #     the member is cut and nothing headed it, and each wants either a `FloorOpening`
+  #     (whose trimmers and header then resolve with it) or the riser moved into a clear
+  #     bay. VR-M-RADON-VENT's two risers stand on the trimmers of FO-M-ERV-OA itself, an
+  #     inch outside the hole that was cut for the ERV; DU-ERV-EA's 8" leg lands on an
+  #     FS-S-WEST chord. The chase cluster is drawn through FS-M-MECH and UNDRAWN above it.
+  #   * 18 are clear of every member but wider than `max_undrawn_deck_hole_in` (2"), the
+  #     new [mep] key. These are the DOCUMENTATION half and the weaker of the two: a 2 7/8"
+  #     insulated hot riser standing in a clear I-joist bay is drilled through the subfloor
+  #     sheet every day of the week, and nothing structural is cut. What the check is
+  #     saying is that a hole that size belongs on a drawing rather than in an installer's
+  #     head. ** IF THE OWNER DISAGREES, THE HONEST FIX IS TO RAISE max_undrawn_deck_hole_in
+  #     WITH THE TRADE ARGUMENT BESIDE IT — not to suppress the class. ** At 3" this row is
+  #     6 instead of 18; at 4" it is 2.
+  #
+  # Severity is WARN on every one of them, so `haus print` is NOT shut by this: the permit
+  # gate keys off ERROR alone. They are still FAILs, still red, and still in the score.
+  #
+  # ** A DEBT WITH A NUMBER ON IT. ** Delete this entry, run `haus check houses/catlin
+  # --only fail`, and the count is the score. Do not let a cleanup silently keep it.
+  "mep.riser_through_deck",
+
   # D-G-OVERHEAD's centre is at 12'-0", 12" off the 24" module, and it cuts 9 stud lines
   # where 8 would do. The decision is unchanged from the 16"-module reading it was first
   # taken against (2026-08-26) and the arithmetic under it got WORSE, which is the reason to

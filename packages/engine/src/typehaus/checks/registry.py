@@ -138,6 +138,18 @@ class MepPreferences:
     #: and every PASS still prints its margin, which is most of the check's value.
     min_drain_slope_margin_in_per_ft: float = 0.0625
 
+    # --- mep.riser_through_deck (checks/mep/riser_through_deck.py) ---
+    #: The largest hole a trade DRILLS through a deck rather than frames. Past it the deck
+    #: has to be cut and headed, which is a drawing — a ``FloorOpening`` — and not something
+    #: an installer decides on the day.
+    #:
+    #: 2" is the trade line and not a code one: a 2" hole saw goes through a joist or a rim
+    #: on site, and a 3" one is a cut member. The check reports a riser bigger than this and
+    #: clear of every member as a FAIL ("framed, not drilled") and a smaller one as UNKNOWN,
+    #: because whether a 1 1/4" raceway may share a bay with an I-joist's web is a question
+    #: ``member_window.basis`` answers and this number does not.
+    max_undrawn_deck_hole_in: float = 2.0
+
     # --- [mep.routing] (typehaus/routing/cost.py) ---
     #: The raw ``[mep.routing]`` table, carried as a **dict** and not as a ``RouteCost``.
     #: These are the router's weights, and ``checks`` may not import ``routing`` — the leaf

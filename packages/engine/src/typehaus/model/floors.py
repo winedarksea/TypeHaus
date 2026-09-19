@@ -97,6 +97,13 @@ class FloorOpening(Element):
     # Authored support intent for opening edges.  The framing resolver never assumes
     # that a nearby partition can receive cut joists.
     bearing_refs: tuple[str, ...] = ()
+    #: The runs this hole was framed FOR, by tag — the same field and the same statement as
+    #: ``RoughOpening.penetration_for``. ``mep.riser_through_deck`` reads it: a riser
+    #: standing in a deck is a defect unless a void contains it, and a void somebody framed
+    #: on purpose for that run is the strongest form of saying so. A STAIR or a CHASE
+    #: contains a riser geometrically and needs no names; this is for the hole that exists
+    #: only because a pipe goes through it.
+    penetration_for: tuple[str, ...] = ()
 
 
 class FloorOpeningEdgeInterval(HausModel):

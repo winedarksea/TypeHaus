@@ -637,6 +637,12 @@ class ResolvedFloor:
     #: distinction to offer a riser lane, and re-reading the plan for it would put an
     #: authored-model read inside the router.
     chases: tuple[tuple[str, Ring], ...] = ()
+    #: ``(tag, ring, run tags)`` for each ``FloorOpening`` that names the runs it was framed
+    #: for. Carried beside ``chases`` for the same reason and with the opposite emphasis: a
+    #: chase is a shaft any trade may use and is recognised by its geometry, while this hole
+    #: exists only because THESE runs pass through it and a different run standing in it is
+    #: still a defect. ``mep.riser_through_deck`` is the reader.
+    penetrations: tuple[tuple[str, Ring, tuple[str, ...]], ...] = ()
 
 
 @dataclass(frozen=True)

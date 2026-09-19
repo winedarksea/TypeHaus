@@ -28,6 +28,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     pockets,
     port_service,
     power_sources,
+    riser_through_deck,
     room_heat,
     routing,
     routing_beams,
