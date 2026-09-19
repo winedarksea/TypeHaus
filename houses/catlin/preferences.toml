@@ -253,8 +253,18 @@ permit_drop = ["A-502", "A-506"]
 # element itself.
 [checks]
 suppress = [
-  # ** mep.run_interference: 147 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-19. NOT A
+  # ** mep.run_interference: 145 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-19. NOT A
   # DECISION — AN OPEN CAMPAIGN. **
+  #
+  # ** 147 -> 145: PR-S-SUITEBATH-VENT APPROACHES THE CHASE FROM THE NORTH. ** It used to
+  # run the last 8'-7 1/2" to (1'-0", 34'-6") on y=34'-6" at 19'-5", and VR-M-RADON-VENT's
+  # own chase_offset jog runs that same line at 19'-6" — two pipes, one inch apart,
+  # collinear the whole way, reported twice because the chase carries RADON and VENT on one
+  # 3" pipe. Raising the arrival cannot fix it and that is the instructive part: a RISING
+  # run collinear with a LEVEL one always crosses it, wherever you put the end. The
+  # approach moves in plan instead, round the EAST side (the jog owns y=34'-6" from x=1'-0"
+  # to x=9'-7 1/2", so only x > 9'-7 1/2" is a clear crossing), north on y=35'-0", and 6"
+  # south into the chase. The header at y=21'-11" and its three trap arms did not move.
   #
   # ** 188 -> 147 ON 2026-09-19, AND NOTHING WAS RE-ROUTED. ** The basement supply band
   # split in two: cold to 8'-4 5/8" basement-relative (-0'-8.8" project, inside the
@@ -274,6 +284,7 @@ suppress = [
   #     duct <-> duct            37          37     (untouched: see the ERV note below)
   #     drain <-> duct           33          33
   #     duct <-> vent            28          28
+  #     vent <-> vent-riser       2           0      -2  (the radon approach, above)
   #     drain <-> supply         32          13     -19
   #     supply <-> supply        18           8     -10
   #     supply <-> vent          12           2     -10

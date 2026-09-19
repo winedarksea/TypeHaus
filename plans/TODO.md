@@ -265,7 +265,7 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   a new `routing` review layer. `emit` does not import `routing` and cannot — the regions are
   a parameter — which is also why `haus render --view plan` does not draw it on its own: a
   render has no target, and "the routing space" is only defined for one.
-- **147 MEP interpenetrations house-wide, and they are now GRADED.** `mep.run_interference`
+- **145 MEP interpenetrations house-wide, and they are now GRADED.** `mep.run_interference`
   (`checks/mep/run_interference.py`, added 2026-09-17) compares every pair of runs envelope
   against envelope — real outside diameter plus insulation, one prism per segment over that
   segment's own z range — and exempts a CONTACT only where it lies within a fitting's reach
@@ -279,7 +279,13 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     jacketed hot needs 1.875", so every cold-over-hot crossing in the house had been
     reporting a 0.68" shared solid by construction. -19 drain/supply, -10 supply/supply,
     -10 supply/vent, -2 duct/supply; no other check moved. See `plan/mep_supply.py`'s
-    header and `preferences.toml`. The hand count of "37 in the NW column"
+    header and `preferences.toml`.
+  - **147 -> 145 on 2026-09-19: the radon collinear pair.** PR-S-SUITEBATH-VENT ran the
+    last 8'-7 1/2" to the chase on VR-M-RADON-VENT's own `chase_offset` line, one inch
+    under it, and was reported twice because that chase carries RADON and VENT on one pipe.
+    **Raising the arrival elevation cannot fix a collinear pair when one run rises and the
+    other is level** — it only moves the crossing. The approach goes round the east side and
+    comes in from the north instead. The hand count of "37 in the NW column"
   (x 0..7', y 32'..36'-6", 2026-09-15) was the same defect seen through a keyhole.
   - **A `VentRun` is now a run everywhere, not only in the viewer.** Its riser route is
     derived once in `resolve/vent_termination.riser_polylines`; `resolve/accessories` reads
@@ -313,7 +319,7 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   - **A route that is already AT its goal is a finding, not a paste.** It used to print a
     one-point polyline as dialect — a 1-tuple that will not parse.
   - **`haus check --no-suppress` reads the campaign's score** without editing
-    `preferences.toml` and putting it back. 162 FAIL unsuppressed against 2 suppressed
+    `preferences.toml` and putting it back. 160 FAIL unsuppressed against 2 suppressed
     (both deliberate), on 2026-09-19; it was 203 against 2 on 2026-09-18.
   - **`haus trial --no-suppress` is what scores a ROUND of that campaign**, and until
     2026-09-19 it could not: `trial_score.record` ran the registry with suppression on, so
@@ -321,7 +327,7 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     scored clean. The flag is now recorded into the baseline and a suppression mismatch
     between baseline and score raises rather than producing a scorecard.
   - **THE ATTIC ERV RADIALS CANNOT BE RE-LANED BY SEARCH, AND THIS WAS TRIED.** The largest
-    class in the 147 is `DU-A-ERV-R-*`: several 4" radials drawn on ONE line at ONE elevation
+    class in the 145 is `DU-A-ERV-R-*`: several 4" radials drawn on ONE line at ONE elevation
     out of the manifold at (5', 34'-6") — e.g. `DU-A-ERV-R-ATTIC` and `DU-A-ERV-R-BATH1` share
     (5',34'-6")->(1',34'-6") at z=20'-4" exactly. A1 is why they report at all: they share a
     joint at the manifold, so the old pair-wide bool exempted every one of them.
