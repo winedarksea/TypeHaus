@@ -378,6 +378,34 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     group needs a DESIGN answer (soffits, or distinct elevations in the attic floor band),
     not another search, and pasting the campaign's output would trade interference FAILs for
     stud-bore FAILs.
+  - **THE BASEMENT (D3) IS NOT THE ATTIC, AND THE OBVIOUS FIX DOES NOT APPLY.** Twenty-three
+    pairs remain down here: three duct-on-duct and twenty against the drains and vents. The
+    brief's answer was "lift the radials into FS-M-WEST's bays and drop below only to cross a
+    drain" — and that cannot be done, because **FS-M-WEST's I-joists span x**, so its bays run
+    EAST-WEST and all six radials travel mostly NORTH-SOUTH. They cross joists for their whole
+    length. The band between the joists' underside (-11 7/8") and the top of the drain zone is
+    2 3/4"; a 4" duct does not go in it. Measured, not assumed:
+      * the hot/cold trunks hold -13 1/2"..-8 1/2" (project) under the joists;
+      * the drains and vents hold -29"..-15", densest at x=6'-6" where the laundry, the bath
+        and `PR-M-S-SUITE-DRAIN` all come down, and `PR-B-SAUNA-VENT` runs the x=9'-2" lane
+        ITSELF for eighteen feet at -21"..-15 1/2";
+      * a full-depth 4" N-S lane is clear at x=2'-0"/-27 1/2" and below, at x=3'-0"..4'-0"/
+        -21 1/2", and anywhere east of x=19'-0" from -23 1/2" down.
+    **A re-lane onto those corridors was tried and reverted on 2026-09-19.** It takes the
+    interference score 175 -> 153 and leaves ZERO duct-on-duct and zero duct-on-drain pairs
+    among the six radials — but it takes `haus check --only fail` from 2 to 19, because the
+    corridors are clear of PIPE and not of anything else: the east legs cross `W-B-CN`'s 12"
+    pour (`mep.run_in_slab`, wants a cast sleeve), `DU-B-ERV-R-BATH` bores `W-B-STR3`'s
+    BEARING studs at 4.00", and the low tiers sit inside finished rooms —
+    `RM-B-PLAY-N` clears 94.88" under `SL-M-DECK`'s solid concrete and `RM-B-SAUNA` 96.94",
+    so **there is no plenum above either of them at all** and the present 7'-6" layer is
+    tuned to sit just inside `mep.run_in_finished_volume`'s tolerance rather than above a
+    ceiling. Only `RM-B-GYM` and `RM-B-STAIR` declare `exposed_services`.
+    **So D3 is a SOFFIT problem, not a lane problem** — `SF-B-BATH` already exists and
+    nothing uses it — and it needs the room ceilings, the concrete sleeves and the bearing
+    wall costed together. The three duct-on-duct pairs are separable and cheap: they are six
+    runs leaving two plenums from ONE plan point, and dimensioned collars on house-local
+    plenum types (the D1/D2 pattern) give each its own hole without moving a lane.
   - **It rose from 155 to 188 on 2026-09-18 and nothing about the building got worse** — the
     engine can see more. The joint exemption was a single bool for the PAIR, so two runs
     sharing a fitting at one end interpenetrated anywhere else unreported (+31, among them a
