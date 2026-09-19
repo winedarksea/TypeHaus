@@ -253,104 +253,81 @@ permit_drop = ["A-502", "A-506"]
 # element itself.
 [checks]
 suppress = [
-  # ** mep.run_interference: 146 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-19. NOT A
-  # DECISION — AN OPEN CAMPAIGN. **
+  # ** mep.run_interference: 150 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-19 AFTER THE
+  # PHASE 1 EYESIGHT PASS. NOT A DECISION — AN OPEN CAMPAIGN. **
   #
-  # ** 147 -> 145: PR-S-SUITEBATH-VENT APPROACHES THE CHASE FROM THE NORTH. ** It used to
-  # run the last 8'-7 1/2" to (1'-0", 34'-6") on y=34'-6" at 19'-5", and VR-M-RADON-VENT's
-  # own chase_offset jog runs that same line at 19'-6" — two pipes, one inch apart,
-  # collinear the whole way, reported twice because the chase carries RADON and VENT on one
-  # 3" pipe. Raising the arrival cannot fix it and that is the instructive part: a RISING
-  # run collinear with a LEVEL one always crosses it, wherever you put the end. The
-  # approach moves in plan instead, round the EAST side (the jog owns y=34'-6" from x=1'-0"
-  # to x=9'-7 1/2", so only x > 9'-7 1/2" is a clear crossing), north on y=35'-0", and 6"
-  # south into the chase. The header at y=21'-11" and its three trap arms did not move.
+  # ** 146 -> 150, AND THE BUILDING DID NOT MOVE. ** Three mechanisms, each named, and two
+  # of them are the engine seeing BETTER rather than worse:
   #
-  # ** 188 -> 147 ON 2026-09-19, AND NOTHING WAS RE-ROUTED. ** The basement supply band
-  # split in two: cold to 8'-4 5/8" basement-relative (-0'-8.8" project, inside the
-  # 11 7/8" I-joist web window), hot to 8'-1 7/16" (-1'-0.0", its 2 7/8" jacket tucked
-  # under the bottom flange). They were 1.2" apart and a bare 3/4" cold plus a jacketed
-  # hot needs 1.875", so EVERY cold-over-hot crossing in the house was reported as a
-  # shared solid by construction — the 0.68" overlap the findings printed verbatim, over
-  # and over. At 3.2" apart a crossing is a crossing again. One number in
-  # plan/mep_supply.py, argued there at length; -40 pairs; no other check moved.
-  #
-  # ** THE CONVENTION STOPS AT x=18'-0" AND THE ENGINE CANNOT SEE WHY. ** East of the centre
-  # line north of y=13'-0" the basement ceiling is SL-M-DECK, a cast deck with its soffit at
-  # -1'-1.4". A pipe on the new cold band there is 4.6" INSIDE A CONCRETE SLAB, and nothing
-  # in this engine grades that — `mep.run_in_finished_volume` measures hang below a ceiling
-  # and `mep.run_member_crossing` reads framed members. It was caught only because two
-  # unrelated things depended on it (`mep.sleeve_coverage` lost SP-B-CS2-CW/-HW, and
-  # `pipe_material_preference` stopped grading anything). PR-B-CW-TRUNK and PR-B-HW-KITCH
-  # step back to the old bands at x=17'-6". **A `mep.run_in_slab` check is the honest
-  # follow-on and is not written yet.**
-  # (PR-B-CW-TRUNK is the one exception and carries its own step-up note: the cold band is
-  # inside the joist depth, and a continuous bearing line at x=9'-10.7" has to be passed
-  # UNDER, not through.)
+  #   -26  THE PRISM STOPPED BEING THE VERDICT (E1). `resolve/mep_envelopes` bands a
+  #        sloping leg over its whole fall — the right solid for a router choosing a lane,
+  #        the wrong one for a reading — so a drain passing four inches under a duct read
+  #        as interpenetrating it. The STRtree over those prisms is still the coarse
+  #        filter; the fine answer is now `resolve/mep_clearance.segment_clearance`,
+  #        measured at the station where the two legs are actually closest. PR-B-KITCH-DRAIN
+  #        leg 6 clears DU-B-ERV-RET-TRUNK by 4.26" and nine main-ceiling radials clear
+  #        PR-M-S-BATH1-WC-DRAIN leg 2 by 0.0"-0.95". Twenty-five of those, plus four
+  #        risers whose JOINT was recorded at the bottom of a drop instead of at the tee
+  #        (E2: `run_joints` returns a z BAND now, the intersection of both runs' adjacent
+  #        segment ranges, never the union).
+  #     +1 AND THE SAME PASS FOUND ONE. PR-B-SH2-DRAIN x PR-B-WC2-DRAIN overlap 0.31" six
+  #        inches upstream of the fitting they share — outside a 3" drain's stated reach.
+  #        The old pardon covered any overlap region that merely TOUCHED a joint anywhere.
+  #   +29  THE RACEWAYS ARE PLACED IN z (E7). All seventeen ConduitRuns now author
+  #        `elevations`, one per vertex, so `mep.run_interference` grades them instead of
+  #        naming them as a coverage gap. This is the rise, it is deliberate, and it is the
+  #        whole point: "a duct cannot be proven clear of something the model does not
+  #        place in z" (plans/TODO.md). The check's own docstring expected ~100 against the
+  #        old "rises at its last point" reconstruction; 29 is what survives an honest
+  #        measure, which is E1 paying for E7.
   #
   # The class breakdown, and it is the line that goes stale first:
   #
   #                        2026-09-18   2026-09-19
   #     duct <-> duct            37          37     (untouched: see the ERV note below)
-  #     drain <-> duct           33          33
-  #     duct <-> vent            28          28
-  #     drain <-> supply         32          13     -19
+  #     duct <-> vent            28          22      -6
+  #     drain <-> duct           33          22     -11
+  #     conduit <-> vent          0          18     +18   (E7)
+  #     drain <-> supply         32          11     -21
   #     supply <-> supply        18           9      -9
+  #     duct <-> supply          12           7      -5
+  #     drain <-> vent            -           5
+  #     conduit <-> conduit       0           4      +4   (E7)
+  #     conduit <-> supply        0           4      +4   (E7)
+  #     drain <-> drain           -           4
+  #     conduit <-> duct          0           3      +3   (E7)
   #     supply <-> vent          12           2     -10
-  #     duct <-> supply          12          10      -2
-  #     everything else          16          14      -2   (the two radon pairs; the rest of
-  #                                                        this row is drain<->vent 6,
-  #                                                        drain<->drain 3 and five singles)
+  #     vent <-> vent             -           1
+  #     everything else          16           1
   #                             ---         ---
-  #                             188         146
-  # The rows sum to the headline; if they stop summing, one of them went stale.
+  #                             188         150
+  # The rows sum to the headline; if they stop summing, one of them went stale. The four
+  # rows that start blank were inside the older column's "everything else" (which held the
+  # two radon pairs, drain<->vent 6, drain<->drain 3 and five singles) and are broken out
+  # now because E7 made the tail big enough to read.
   #
-  # Every pair that went is one a supply run was party to, which is what a band move can
-  # do and the whole of what it can do. The three duct classes are 98 of the remaining 147
-  # and none of them moves without a design decision.
+  # This is the one blanket entry in this file about run-against-run geometry, and it is
+  # the only one that is not about a single element. The check is right: it compares every
+  # pair of runs envelope against envelope at the real outside diameter plus insulation,
+  # measures the deepest contact at the station where it happens, and exempts a CONTACT
+  # only where its LOBE's peak lies within a fitting's reach of a joint between the two, or
+  # a rough opening names them both (a shared sleeve), or the two are bundled risers of one
+  # VentRun (one authored element, not a pair). The median overlap is around two inches and
+  # the worst are 4.00", which is one 4" duct entirely inside another.
   #
-  # This is the one blanket entry in this file and it is the only one that is not about a
-  # single element. The check is new and it is right: it compares every pair of runs
-  # envelope against envelope, at the real outside diameter plus insulation, one prism per
-  # segment over that segment's own z range, and it exempts a CONTACT only where it lies
-  # within a fitting's reach of a joint between the two (a wye, a tee, an elbow, a riser
-  # into a trunk), or a rough opening names them both (a shared sleeve), or the two are
-  # bundled risers of one VentRun (one authored element, not a pair). What it reports is
-  # not marginal: the median overlap is 2.06" and the worst are 4.00", which is one 4" duct
-  # entirely inside another.
-  #
-  # ** THE NUMBER ROSE FROM 155 TO 188 AND NOTHING ABOUT THE BUILDING GOT WORSE. ** The
-  # engine can see more. Two blind spots closed on 2026-09-18:
-  #
-  #   * the joint exemption was a single bool for the PAIR, so two runs sharing a fitting
-  #     at one end were free to interpenetrate anywhere else, unreported. It is now local
-  #     to the joint — three times the larger half-section, a stated convention because the
-  #     catalog records no laying length. +31, among them a 3" drain 2.21" inside another
-  #     3" drain two feet from the suite stack head they share;
-  #   * a `VentRun` resolved to solids alone and so was in NO collision system whatsoever —
-  #     no envelope, nothing to grade, and not a router obstacle either. Its riser route is
-  #     now derived once in `resolve/vent_termination.riser_polylines` and read by both the
-  #     solids and the envelope. +2, both against the radon chase.
-  #
-  # The breakdown, house-wide: 75 pipe-against-pipe, 74 duct-against-pipe, 37
-  # duct-against-duct, 2 pipe-against-vent-riser. `plans/TODO.md` has carried "37 MEP
-  # interpenetrations remain in the NW column" since 2026-09-15, hand-measured over
-  # x 0..7', y 32'..36'-6"; this is that same defect counted house-wide by a machine.
-  #
-  # ** WHAT IS LEFT IS NOT A SEARCH PROBLEM, AND THAT WAS MEASURED ON 2026-09-19 RATHER
-  # THAN ASSUMED. ** Every routable class was run with `--alternatives 3 --evaluate`:
-  # the three worst vents (31 pairs between them) all break `mep.vent_reachability` or
+  # ** WHAT IS LEFT IS NOT A SEARCH PROBLEM, AND THAT WAS MEASURED RATHER THAN ASSUMED. **
+  # Every routable class was run with `--alternatives 3 --evaluate` on 2026-09-19: the
+  # three worst vents (31 pairs between them) all break `mep.vent_reachability` or
   # `mep.trap_arm_length` on every alternative, because a vent is pinned at BOTH ends by
   # the fixtures it serves; the basement drains are out of head, which
   # `min_drain_slope_margin_in_per_ft = 0.0` above already says; and the ERV ducts want a
-  # design answer (soffits, or authored lanes) because a 4" round duct is not bored
-  # through a stud. `plans/TODO.md` carries each refusal with its number.
+  # design answer — soffits, or authored lanes, or a different topology — because a 4"
+  # round duct is not bored through a stud. The three cavity design campaigns are that
+  # answer, and `mep.open_web_panel` (below) is now able to price the level-2 one.
   #
-  # ** WHY IT IS SUPPRESSED RATHER THAN FIXED TODAY. ** Fixing it is a routing campaign, not
-  # an edit: every one of the 188 is a pair of authored lanes, and moving either end of
+  # ** WHY IT IS SUPPRESSED RATHER THAN FIXED TODAY. ** Fixing it is a design campaign, not
+  # an edit: every one of the 150 is a pair of authored lanes, and moving either end of
   # either run re-opens its own head budget, its bay occupancy and its member crossings.
-  # That campaign is what `haus route --alternatives --evaluate` and `haus trial` were built
-  # for, and it is meant to run on a branch, pair by pair, with the count coming down.
   # Landing the check red instead would take `haus print`, the handoff bundle and the CI
   # gate down with it and teach everyone to ignore a red report, which is worse than either
   # honest alternative.
@@ -358,8 +335,8 @@ suppress = [
   # ** THIS SUPPRESSION IS A DEBT WITH A NUMBER ON IT. ** Re-open it deliberately: delete
   # this entry, run `haus check houses/catlin --only fail`, and the count is the score.
   # Do not let a cleanup silently keep it, and do not let the number rise — unless the
-  # engine's eyesight improved, which is what happened on 2026-09-18 and which the entry
-  # has to say out loud when it does.
+  # engine's eyesight improved, which is what happened on 2026-09-18 and again on
+  # 2026-09-19, and which the entry has to say out loud when it does.
   "mep.run_interference",
 
   # ** mep.run_through_plate: 15 TOP PLATES CUT PAST 50%, AND THE MODEL HAS NO WAY TO SAY

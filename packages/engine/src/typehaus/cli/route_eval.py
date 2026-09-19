@@ -146,19 +146,22 @@ def candidate_element(model: ResolvedModel, proposal: RouteProposal) -> tuple[st
             floor_ref=proposal.floor_ref, soffit_ref=proposal.soffit_ref,
             elevations=tuple(_len(z - datum) for _x, _y, z in proposal.points))
     else:
-        # A raceway's elevations are project-frame absolute and it rises only at its last
-        # vertex, so only the legalised first leg is representable as one element. The
-        # evaluation grades that leg and the coverage note below says the rest is not here.
-        from typehaus.routing.trades.conduit import legalize
-
-        leg = legalize(proposal.points)[0]
+        # **The WHOLE raceway, with a z at every vertex** (2026-09-19). This used to grade
+        # the legalised FIRST LEG only — a raceway was a plan polyline plus two end
+        # elevations, so a route with two changes of height was not one element and the
+        # evaluation could only speak for part of it. ``ConduitRun.elevations`` retired
+        # that: the candidate is the route as found, and an evaluation that grades a
+        # fraction of a proposal is worse than no evaluation, because it reads as one.
+        #
+        # **No datum subtraction.** A raceway's elevations are project-frame ABSOLUTE,
+        # because a trunk crosses storeys and a panel-to-attic riser has no one storey to
+        # be relative to. The duct branch above subtracts because a DuctRun's are
+        # storey-relative; doing it here would grade a run a storey out of place.
         element = ConduitRun(
             tag=proposal.tag,
-            path=tuple(Point2D(_len(x), _len(y)) for x, y in leg.points),
+            path=tuple(Point2D(_len(x), _len(y)) for x, y, _z in proposal.points),
             trade_size=_len(proposal.diameter_m),
-            start_elevation=_len(leg.z_m),
-            end_elevation=_len(leg.rise_to_m if leg.rise_to_m is not None
-                               else leg.z_m),
+            elevations=tuple(_len(z) for _x, _y, z in proposal.points),
             service=Service(proposal.system) if proposal.system else None)
 
     return storey, element

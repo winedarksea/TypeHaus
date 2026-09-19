@@ -62,17 +62,36 @@ def test_an_insulation_spec_with_no_thickness_is_a_gap_and_not_a_guess() -> None
 def test_a_schematic_raceway_is_disclosed_and_never_graded(catlin_ctx) -> None:
     """Two end elevations say nothing about the six feet between. Grading that against the
     "rises at its last point" convention reports clashes with a drawing rather than with a
-    building — 100-odd of them on catlin."""
+    building.
+
+    **Catlin has none left.** All seventeen raceways authored ``ConduitRun.elevations`` on
+    2026-09-19 (E7), so the disclosure has nothing to disclose here and the runs are graded
+    where they are. The mechanism is pinned on a model built for it instead, so the day a
+    house authors a schematic raceway again the guarantee still holds."""
     from typehaus.resolve.mep_queries import schematic_conduits
 
-    gaps = schematic_conduits(catlin_ctx.model)
-    assert gaps, "catlin authors no ConduitRun.elevations yet"
-    findings = run_interference(catlin_ctx)
-    unknowns = [f for f in findings if f.result.value == "unknown"]
-    assert unknowns, "the gap is reported, not swallowed"
-    assert all(tag not in f.element_tags
-               for f in findings if f.result.value == "fail"
-               for tag in gaps)
+    assert schematic_conduits(catlin_ctx.model) == (), \
+        "every catlin raceway states a per-vertex profile"
+    assert not [f for f in run_interference(catlin_ctx)
+                if f.result.value == "unknown"], "nothing left to disclose"
+
+
+def test_a_schematic_raceway_IS_still_recognised_where_one_exists() -> None:
+    """The mechanism, not the house: a raceway whose z count does not match its vertex
+    count is a reconstruction, and ``run_interference`` drops it from the pair loop and
+    names it as a coverage gap instead. Catlin has none left; the guarantee has not moved."""
+    from types import SimpleNamespace
+
+    from typehaus.resolve.mep_queries import schematic_conduits
+
+    placed = SimpleNamespace(tag="CD-PLACED", path=((0.0, 0.0), (1.0, 0.0)),
+                             z_m=(1.0, 1.0))
+    schematic = SimpleNamespace(tag="CD-SCHEMATIC", path=((0.0, 0.0), (1.0, 0.0)),
+                                z_m=None)
+    short = SimpleNamespace(tag="CD-SHORT", path=((0.0, 0.0), (1.0, 0.0), (2.0, 0.0)),
+                            z_m=(1.0, 1.0))
+    model = SimpleNamespace(conduits=[placed, schematic, short])
+    assert schematic_conduits(model) == ("CD-SCHEMATIC", "CD-SHORT")
 
 
 def test_the_touch_tolerance_is_the_grid_this_repo_authors_on() -> None:

@@ -176,33 +176,38 @@ class RouteProposal:
         return "\n".join(lines)
 
     def _conduit_source(self) -> str:
-        """One ``ConduitRun`` per flat plane, and a note when there is more than one.
+        """ONE ``ConduitRun``, with a z at every vertex.
 
-        A raceway travels flat and rises only at its last vertex, so a route with two
-        changes of elevation is not one element. ``trades/conduit.legalize`` splits it and
-        ``disclosure`` says so; emitting the 3-D polyline anyway and letting the resolver
-        flatten it produces geometry nobody authored and no check catches.
+        **This used to split the route into one element per flat plane**, because a raceway
+        was a plan polyline plus two end elevations and "it rises at its last vertex" was
+        the only profile the model could express. A route with two changes of height was
+        therefore not one element, and ``trades/conduit.legalize`` cut it into several.
+
+        ``ConduitRun.elevations`` retired that. A raceway now states a height at every
+        vertex, exactly as ``PipeRun`` and ``DuctRun`` do, so a route with five changes of
+        elevation is one run with five elevations — which is what it is on site, and what
+        makes ``mep.run_interference`` able to grade it at all rather than reporting it as
+        a schematic coverage gap.
+
+        **Project-frame absolute, and no datum subtraction.** The duct and pipe emitter
+        above subtracts the storey datum because those two author storey-relative
+        elevations; a ``ConduitRun``'s are absolute, because a trunk crosses storeys and a
+        panel-to-attic riser has no one storey to be relative to. Subtracting here was the
+        one thing that would have made a pasted proposal silently wrong.
         """
-        from typehaus.routing.trades.conduit import legalize
         from typehaus.source.serialize import value_source
 
-        blocks = []
-        legs = legalize(self.points)
-        for index, leg in enumerate(legs):
-            suffix = f"-{index + 1}" if len(legs) > 1 else ""
-            end = leg.rise_to_m if leg.rise_to_m is not None else leg.z_m
-            path = tuple(Point2D(length_source(x), length_source(y))
-                         for x, y in leg.points)
-            lines = [f'ConduitRun(tag="{self.tag}{suffix}",', *_wrapped("path", path),
-                     f"        trade_size={value_source(length_source(self.diameter_m))},",
-                     f"        start_elevation={value_source(length_source(leg.z_m))},",
-                     f"        end_elevation={value_source(length_source(end))},",
-                     f"        service={_system_source('conduit', self.system)},"]
-            for name, value in sorted(self.echo.items()):
-                lines.append(f'        {name}="{value}",')
-            lines[-1] = lines[-1].rstrip(",") + "),"
-            blocks.append("\n".join(lines))
-        return "\n".join(blocks)
+        path = tuple(Point2D(length_source(x), length_source(y))
+                     for x, y, _z in self.points)
+        elevations = tuple(length_source(z) for _x, _y, z in self.points)
+        lines = [f'ConduitRun(tag="{self.tag}",', *_wrapped("path", path),
+                 f"        trade_size={value_source(length_source(self.diameter_m))},",
+                 *_wrapped("elevations", elevations),
+                 f"        service={_system_source('conduit', self.system)},"]
+        for name, value in sorted(self.echo.items()):
+            lines.append(f'        {name}="{value}",')
+        lines[-1] = lines[-1].rstrip(",") + "),"
+        return "\n".join(lines)
 
     def as_dict(self, *, storey_datum_m: float = 0.0) -> dict:
         """Contract 2 of the roadmap: the network proposal, as JSON-able data.
