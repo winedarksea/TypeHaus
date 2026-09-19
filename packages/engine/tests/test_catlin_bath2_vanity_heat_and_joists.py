@@ -370,12 +370,24 @@ def test_the_blocks_tile_the_bays_and_do_not_overlap_the_sister():
     """`_reinforcement_members` blocks to the joist line on BOTH sides of each entry, so two
     entries 16" apart would double-block the bay between them and a free-standing sister
     would land in a bay something else already blocks. `structural.member_interference`
-    FAILs on either. Two entries 32" apart, sister riding one of them, is what avoids it."""
+    FAILs on either. Two entries 32" apart, sister riding one of them, is what avoids it.
+
+    **A BORE BOX IS NOT A BLOCK AND IS SKIPPED.** Since 2026-09-19 the sauna supply pair
+    rides the raised cold band, inside the joists, and bores the x=18' bearing-line block at
+    y~6'-6"; the resolver replaces that block with a headered box whose `-rail-top` and
+    `-rail-bottom` legitimately share one y span because they are stacked in Z. This test is
+    about two `JoistReinforcement` entries double-blocking one bay, which is a plan
+    question, and reading a bore box's two rails as overlapping blocks answers a different
+    one. The invariant it exists for is unchanged.
+    """
     model = _model()
     floor = next(f for f in model.floors if f.tag == "FS-M-WEST")
     sister_y = next(m for m in floor.members if m.category == "sister_joist").p0[1] / M_PER_IN
     by_station = _blocks_by_station(floor)
     for station, members in by_station.items():
+        members = [m for m in members
+                   if not any(part in m.child_key
+                              for part in ("-rail-", "-cheek-", "-header-"))]
         spans = sorted((min(m.p0[1], m.p1[1]) / M_PER_IN, max(m.p0[1], m.p1[1]) / M_PER_IN)
                        for m in members)
         for (_, prev_hi), (next_lo, _) in pairwise(spans):
