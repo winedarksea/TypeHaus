@@ -1333,9 +1333,14 @@ def test_catlin_is_all_electric_with_no_gas_appliance(catlin_model):
     # EQ-T-ERV-PLENUM-M-EXH, declares RETURN_AIR on its 8" trunk collar and does not — the
     # same split as the two 6-port manifolds above. This test only arrived at the new type
     # today because the module carried a syntax error and pytest could not collect it.
+    #
+    # EQ-T-ERV-PLENUM-B-SUP joined the same day with D3, for the same reason one storey
+    # down: the basement supply plenum went 24" -> 36" and house-local so its three 4"
+    # collars could state their stations, and it declares SUPPLY_AIR on them. Its extract
+    # twin declares RETURN_AIR and EXHAUST_AIR and is not in this set.
     assert air == {"EQ-T-BROAN-B210E75RT", "EQ-T-GREE-FLEXX-ULTRA-24-AH",
                    "EQ-T-ERV-MANIFOLD-6", "EQ-T-ERV-MIXING-BOX",
-                   "EQ-T-ERV-PLENUM-M-SUP"}
+                   "EQ-T-ERV-PLENUM-M-SUP", "EQ-T-ERV-PLENUM-B-SUP"}
 
 
 # The invariant is one number per group, not a single value: every perimeter assembly

@@ -129,21 +129,65 @@ from typehaus import (
 # also east of x=5'-0" to clear the ERV's own 24.8" x 21" case, and west of x=7'-6" to stay
 # out of the room's north-east notch, which is the ESS closet.
 
+#
+# ** BOTH BOXES WENT 24" -> 36" ON 2026-09-19 (D3), AND THE COLLARS ARE DRAWN. ** They were
+# library `EQ-T-ERV-MANIFOLD-6` plenums, which state a port COUNT and no layout, so every
+# radial left from the box's own centre point and three of them shared each lane. The
+# house-local types in plan/mep_erv_types.py put each radial on its own hole; the extra
+# foot of length is what makes room for the 6" trunk and the 6" riser to turn up into the
+# underside without landing within 5" of a collar's drop. The argument is in that file.
+#
+# The east end moves from x=7'-6" to x=8'-0" and nothing is in the way: RM-B-FURNACE runs
+# to x=10'-0" at these y's, and EQ-B-ESS-BATT's separation zone starts at y=31'-6", eight
+# inches north of the supply box's north face.
 EQUIPMENT_ERV_BASEMENT = [
     Equipment(uid="QGMYDXSMKH", tag="EQ-B-ERV-MAN-SUP", kind=EquipmentKind.DUCT_MANIFOLD,
-              position=pt(ft(6, 6), ft(30, 6)), footprint=(inch(24), inch(8)),
-              room="RM-B-FURNACE", type_ref="EQ-T-ERV-MANIFOLD-6",
+              position=pt(ft(6, 6), ft(30, 6)), footprint=(inch(36), inch(8)),
+              room="RM-B-FURNACE", type_ref="EQ-T-ERV-PLENUM-B-SUP",
               mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 2))),
     Equipment(uid="CRN5GT0ECP", tag="EQ-B-ERV-MAN-EXH", kind=EquipmentKind.DUCT_MANIFOLD,
-              position=pt(ft(6, 6), ft(28, 6)), footprint=(inch(24), inch(8)),
-              room="RM-B-FURNACE", type_ref="EQ-T-ERV-MANIFOLD-6-EXH",
+              position=pt(ft(6, 6), ft(28, 6)), footprint=(inch(36), inch(8)),
+              room="RM-B-FURNACE", type_ref="EQ-T-ERV-PLENUM-B-EXH",
               mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 2))),
 ]
 # ============================== LEVEL 1 — BASEMENT RADIALS ============================
 #
-# Six 4" radials off the two plenums beside the machine, boxed under the basement
-# ceiling. Centreline at 7'-6" above the basement floor, inside the manifolds' own 7'-2"
-# to 7'-10" band and clear of the 8'-0 15/16" underside.
+# Six 4" radials off the two plenums beside the machine, boxed under the basement ceiling.
+#
+# ** REDRAWN 2026-09-19 (D3). ** What was here before ran every radial from its plenum's
+# centre point at one flat 7'-6", which put GYM and SAUNA-SUP on the same line for twenty
+# feet, BATH and SAUNA-EXH on the same line for three, and all six through the middle of
+# the drain field between y=18'-9" and y=20'-0". Twenty-three pairs. The fix is two moves
+# and neither is a search result:
+#
+#   1. **Each radial leaves its own collar** (plan/mep_erv_types.py), so no two start at
+#      one hole and no two are born collinear.
+#   2. **The lanes move to the four corridors that are actually clear**, measured rather
+#      than assumed — and they are not in FS-M-WEST's joist bays, which run east-west while
+#      every one of these radials travels north-south. The band between the joists'
+#      underside (-11 7/8") and the top of the drain zone is 2 3/4"; a 4" duct does not go
+#      in it. The corridors that do work:
+#
+#        * **x=3'-3" and x=3'-9", -21 15/16" and -23 7/16"** — between PR-B-KITCH-DRAIN's
+#          x=4'-6" fall line and the SH2/SINK2 pair that converge on (3'-0", 16'-6"). Each
+#          holds one 4" duct and only one: the window is PR-B-WC1-DRAIN's tail at y=22'-0"
+#          on top and PR-M-S-BATH1-DRAIN's rake at y=17'-0" underneath, about three inches
+#          of air.
+#        * **x=2'-0", -27 15/16"** — under everything, over PR-B-SINK2-DRAIN's -25.4"
+#          at y=15'-9". 79 1/2" of headroom under it, in the workshop, where the ceiling is
+#          open by design and the bench hood it feeds hangs at 5'-6" anyway.
+#        * **y=29'-6" then x=17'-9", -20 7/16"** — the east chase: the belt between the two
+#          plenums, then RM-B-STAIR's x 17'-6"..18'-0" strip, which is continuous from
+#          y=36'-0" to y=10'-0" and is one of the two basement rooms whose ceiling the
+#          owner leaves open.
+#
+# PR-B-SAUNA-VENT is the wall that shapes all of this. It runs the x=9'-0" line from
+# y=10'-6" to y=34'-6", rising -20" to -15 1/2" as it goes, so every east-west lane in the
+# west half crosses it and the crossing elevation depends on where. At y=29'-6" it is at
+# -16 7/16" and a duct passes under it at -20 7/16" with 1 3/16" to spare; at y=10'-6" it
+# is at -20" and nothing passes under it at all inside the ceiling. That is why the two
+# sauna radials go down the WEST corridors and come east along y=1'-8 1/2" and y=3'-2",
+# south of the vent's corner, where the floor is clear the full width of the house.
 #
 # REG-B-SUP2's radial is the short one on purpose. The play room's whole ceiling is
 # SL-M-DECK's 14 3/8" solid concrete with NO cavity at all, so every foot of that run is
@@ -154,66 +198,131 @@ DUCTS_ERV_BASEMENT = [
     # ** THE MACHINE'S OWN TWO TRUNKS. ** Both are 6", the machine's full 210 cfm, and both
     # leave its top.
     #
-    # THE SUPPLY TRUNK IS THE SIMPLE ONE: straight up 14 3/8" off the port to the radial
-    # layer at 7'-6", then 19" east into EQ-B-ERV-MAN-SUP's west half at y=30'-4". It stays
-    # 2" south of the manifold's own y=30'-6" centre so DU-B-ERV-R-PLAY's lane east of
-    # x=6'-6" is untouched.
-    #
-    # THE RETURN TRUNK CANNOT GO STRAIGHT, and the reason is DU-B-ERV-R-BENCH: that radial
-    # runs the whole width of the room at y=28'-6", which fences EQ-B-ERV-MAN-EXH off from
-    # the machine at the 7'-6" layer. It leaves the manifold's east end at x=7'-0", drops to
-    # 6'-10 7/16", crosses UNDER the x=6'-6" radial lane — the one DU-B-ERV-R-GYM and
-    # -SAUNA-SUP share for the depth of the basement — and comes back west at y=29'-9",
-    # 1 5/8" clear of the layer above it and 6 13/16" over the machine's case.
+    # THE SUPPLY TRUNK RUNS EAST FIRST AND RISES SECOND, which is the reverse of how it was
+    # drawn and is the whole of its fix. It used to stand straight up off the port at
+    # x=4'-9" — 3" from PR-B-KITCH-DRAIN's x=4'-6" fall line, where a 6" trunk and a 3"
+    # drain need 4 3/16" — and reported against it for 2 7/8" of elevation. Held at the
+    # machine's own port level for the first 2'-0", it passes ten inches under the drain
+    # instead and turns up into EQ-B-ERV-MAN-SUP's underside at x=6'-9", east of it.
     DuctRun(uid="225MZ1YDWB", tag="DU-B-ERV-SUP-TRUNK", system=DuctSystem.SUPPLY,
-            path=(pt(ft(4, 9), ft(30, 4)), pt(ft(4, 9), ft(30, 4)),
-                  pt(ft(6, 4), ft(30, 4))),
-            elevations=(inch(75.6), inch(90), inch(90)),
+            path=(pt(ft(4, 9), ft(30, 4)), pt(ft(6, 9), ft(30, 4)),
+                  pt(ft(6, 9), ft(30, 6)), pt(ft(6, 9), ft(30, 6))),
+            elevations=(inch(75.6), inch(75.6), inch(75.6), ft(7, 2)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=210),
+    # THE RETURN TRUNK NO LONGER HAS TO DODGE A RADIAL LANE. It used to leave the plenum's
+    # east end, drop, cross UNDER the x=6'-6" lane that DU-B-ERV-R-GYM and -SAUNA-SUP
+    # shared, and come back west at y=29'-9" — a detour around two ducts that are not there
+    # any more. It now drops out of the plenum's underside at x=7'-4 1/2" and runs the
+    # y=28'-6" line straight west at the machine's own port level, 7" under
+    # DU-ERV-RISER-EXH's approach on the same line and three inches under the deepest
+    # collar drop above it.
     DuctRun(uid="6BTCWW2S1V", tag="DU-B-ERV-RET-TRUNK", system=DuctSystem.RETURN,
-            path=(pt(ft(7), ft(28, 8)), pt(ft(7), ft(28, 8)),
-                  pt(ft(7), ft(29, 9)), pt(ft(3, 8), ft(29, 9)),
-                  pt(ft(3, 8), ft(29, 9))),
-            elevations=(inch(90), inch(82.4375), inch(82.4375), inch(82.4375),
-                        inch(75.6)),
+            path=(pt(ft(7, 4.5), ft(28, 6)), pt(ft(7, 4.5), ft(28, 6)),
+                  pt(ft(3, 8), ft(28, 6)), pt(ft(3, 8), ft(29, 9))),
+            elevations=(ft(7, 2), inch(75.6), inch(75.6), inch(75.6)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=210),
+    # THE GYM RADIAL TAKES THE EAST CHASE. Its register is at (19'-0", 13'-0") and the
+    # straight line to it crosses the drain field; the belt at y=29'-6" and the x=17'-0"
+    # lane miss it entirely and add four feet to a 4" duct carrying 18 cfm.
+    # It drops 6" off its collar and stays there. Two things want that depth: PR-B-SAUNA-VENT
+    # is at -16 7/16" where the belt crosses it at x=9'-0", and DU-B-ERV-R-PLAY shares the
+    # x=17'-0" lane on the tier above for the four feet the two overlap. -25 7/16" leaves
+    # 6'-10" of headroom under it in RM-B-STAIR, over the 6'-8" this house holds an exposed
+    # service to.
+    #
+    # ** x=17'-0" AND NOT 17'-9", BECAUSE THE STRIP BESIDE THE STAIR IS THE POUR. **
+    # W-B-CN / -CN2 / W-B-CS2 are one 12" cast wall on the x=18'-0" axis from the slab to
+    # -13 7/16", so x 17'-6"..18'-6" is concrete for the whole depth of the house, and
+    # RM-B-STAIR's ceiling polygon reaches over its west half. A lane at 17'-9" is inside
+    # the pour with 5" of cover and `mep.run_in_slab` says so. 17'-0" leaves 4" between the
+    # duct's east face and the concrete.
     DuctRun(uid="CND5TE40W0", tag="DU-B-ERV-R-GYM", system=DuctSystem.SUPPLY,
-            path=(pt(ft(6, 6), ft(30, 6)), pt(ft(6, 6), ft(10, 6.6)), pt(ft(19), ft(10, 6.6)),
-                  pt(ft(19), ft(13))),
-            start_elevation=ft(7, 6), end_elevation=ft(7, 6),
+            path=(pt(ft(7, 3), ft(30, 2)), pt(ft(7, 3), ft(29, 6)),
+                  pt(ft(7, 3), ft(29, 6)), pt(ft(17), ft(29, 6)),
+                  pt(ft(17), ft(13)), pt(ft(19), ft(13))),
+            elevations=(ft(7, 6), ft(7, 6), inch(84), inch(84), inch(84), inch(84)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=18),
+    # The play room's radial leaves the plenum's EAST END, 18" nearer its own register than
+    # the centre it used to start from and out of the other two supply radials' way at
+    # birth. It now turns south at x=17'-0" — the same lane DU-B-ERV-R-GYM rides, 4 1/2"
+    # above it — and enters RM-B-PLAY-N only on its last leg.
+    #
+    # ** ENTERING ONLY ON THE LAST LEG IS THE POINT, AND IT IS WORTH TWO FITTINGS. ** The
+    # straight east run crossed the room boundary at x=18'-6" (W-B-CN's east face) and then
+    # ran half a foot inside RM-B-PLAY-N before turning — and half a foot is exactly
+    # `min_ceiling_exposure_ft`, so whether `mep.run_in_finished_volume` reported it came
+    # down to the last bit of a float. The room has no ceiling cavity to hide it in either:
+    # SL-M-DECK's soffit is 14 3/8" of solid concrete at -13 7/16" and the finished plane is
+    # 5/8" under that, so there is nothing to lift into. A run that reaches its register on
+    # its terminal leg is the connection rather than a transit, which is a fact about the
+    # layout and not a threshold.
     DuctRun(uid="DMEQ946YAX", tag="DU-B-ERV-R-PLAY", system=DuctSystem.SUPPLY,
-            path=(pt(ft(6, 6), ft(30, 6)), pt(ft(19), ft(30, 6)), pt(ft(19), ft(26))),
+            path=(pt(ft(8), ft(30, 6)), pt(ft(17), ft(30, 6)), pt(ft(17), ft(26)),
+                  pt(ft(19), ft(26))),
             start_elevation=ft(7, 6), end_elevation=ft(7, 6),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=30),
+    # The sauna's supply goes west, down the x=3'-3" corridor, and comes east along
+    # y=1'-8 1/2" — the southernmost foot of the house, where nothing else is drawn at all.
+    # Sixteen inches of detour past the straight line and the only pair it makes is none.
     DuctRun(uid="VXGA0P0V72", tag="DU-B-ERV-R-SAUNA-SUP", system=DuctSystem.SUPPLY,
-            path=(pt(ft(6, 6), ft(30, 6)), pt(ft(6, 6), inch(20.5)),
-                  pt(inch(199.75), inch(20.5)), pt(inch(199.75), inch(20.5))),
-            elevations=(ft(7, 6), ft(7, 6), ft(7, 6), ft(7)),
+            path=(pt(ft(5, 3), ft(30, 2)), pt(ft(5, 3), ft(30, 2)),
+                  pt(ft(3, 3), ft(30, 2)), pt(ft(3, 3), ft(1, 8.5)),
+                  pt(inch(199.75), ft(1, 8.5)), pt(inch(199.75), ft(1, 8.5))),
+            elevations=(ft(7, 6), inch(87.5), inch(87.5), inch(87.5), inch(87.5), ft(7)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=12),
     # The bench hood's pull. It drops out of the ceiling chase to the hood face at 5'-6",
     # which is the vertical leg that makes it a capture hood rather than a ceiling diffuser.
+    # It steps south to y=27'-0" before turning west so that its own drop and the plenum's
+    # two 6" underside ports are not in each other's way, then runs the deepest of the four
+    # corridors: under PR-B-KITCH-DRAIN, under PR-B-WC1-DRAIN's tail, and under the SH2 and
+    # SINK2 drops that used to be three of its four reported pairs.
     DuctRun(uid="MTVYDDP43W", tag="DU-B-ERV-R-BENCH", system=DuctSystem.RETURN,
-            path=(pt(ft(6, 6), ft(28, 6)), pt(ft(2), ft(28, 6)), pt(ft(2), ft(8, 6)),
-                  pt(ft(2), ft(8, 6))),
-            elevations=(ft(7, 6), ft(7, 6), ft(7, 6), ft(6, 2)),
+            path=(pt(ft(6, 6), ft(28, 2)), pt(ft(6, 6), ft(27)), pt(ft(6, 6), ft(27)),
+                  pt(ft(2), ft(27)), pt(ft(2), ft(8, 6)), pt(ft(2), ft(8, 6))),
+            elevations=(ft(7, 6), ft(7, 6), inch(81.5), inch(81.5), inch(81.5), ft(6, 2)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=6),
+    # The basement bath's extract leaves the plenum's EAST end, which is the one exit from
+    # this box that no 6" port and no vent stands in, and drops 2" off the collar so it
+    # passes under PR-B-SAUNA-VENT at x=9'-0" where the vent is still at -16 5/8" on its way
+    # north.
+    #
+    # ** IT STEPS SOUTH TO y=27'-9" BEFORE IT GOES EAST, AND THAT STEP IS THE WHOLE BEARING
+    # WALL. ** W-B-STR3 is the basement's centre BEARING partition and R602.6 allows a bore
+    # of 40% of 5 1/2" in one of its studs — 2.20" against this duct's 4.00". On the plenum's
+    # own y=28'-6" line the duct landed on king-0-l0 at y=28'-6 1/4" and stud-001 at
+    # y=28'-8", which is two bearing studs cut for one branch. y=27'-9" is the middle of the
+    # cripple space over the door head: 9 1/4" clear to the king on one side and 9" to
+    # cripple-head-0-01 at y=27'-0" on the other, and the header itself is 8 3/4" below the
+    # duct's underside. **Nothing is bored, nothing is headed, and the wall is untouched** —
+    # which is the answer this campaign wanted and a `RoughOpening` would only have been the
+    # second-best version of.
     DuctRun(uid="03883CKF0H", tag="DU-B-ERV-R-BATH", system=DuctSystem.EXHAUST,
-            path=(pt(ft(6, 6), ft(28, 6)), pt(ft(12), ft(28, 6)),
+            path=(pt(ft(8), ft(28, 6)), pt(ft(8), ft(28, 6)),
+                  pt(ft(8), ft(27, 9)), pt(ft(12), ft(27, 9)),
                   pt(ft(12), inch(289.625))),
-            start_elevation=ft(7, 6), end_elevation=ft(7, 6),
+            elevations=(ft(7, 6), inch(88), inch(88), inch(88), inch(88)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=20),
     # The sauna's low pickup is 4" off the floor on the WEST liner (the south face went to
     # EQ-B-SAUNA-HTR when the room rotated), so this radial runs the length of the house in
-    # the ceiling chase and then drops seven feet down the wall. The
-    # drop is drawn — a repeated plan point at two elevations — which it could not be before
-    # `DuctRun` carried elevations. The drop moved 3'-10" east with the west liner on
-    # 2026-09-05: x=64" is workshop floor now, not sauna wall.
+    # the ceiling chase and then drops seven feet down the wall. The drop is drawn — a
+    # repeated plan point at two elevations — which it could not be before `DuctRun` carried
+    # elevations. The drop moved 3'-10" east with the west liner on 2026-09-05: x=64" is
+    # workshop floor now, not sauna wall.
+    #
+    # ** IT STEPS 2" SOUTH OF ITS COLLAR BEFORE IT DROPS, AND THAT 2" IS LOAD-BEARING. **
+    # DU-ERV-RISER-EXH turns up into the plenum's underside on the y=28'-6" line; a drop on
+    # the collar's own y=28'-2" is 4" from it and a 6" riser and a 4" radial need 5". The
+    # step also puts the crossing of PR-B-KITCH-DRAIN at y=28'-0" rather than y=28'-2",
+    # which is worth half an inch of clearance because the drain falls 8.8" per foot here.
+    # The corridor tier is the plenum's own 7'-2": half an inch below is
+    # PR-M-S-BATH1-DRAIN's rake at y=17'-0" and half an inch above is the drain.
     DuctRun(uid="1Y457X9DMH", tag="DU-B-ERV-R-SAUNA-EXH", system=DuctSystem.EXHAUST,
-            path=(pt(ft(6, 6), ft(28, 6)), pt(inch(110), ft(28, 6)), pt(inch(110), ft(3, 2)),
-                  pt(inch(110), ft(3, 2))),
-            elevations=(ft(7, 6), ft(7, 6), ft(7, 6), inch(4)),
+            path=(pt(ft(5, 3), ft(28, 2)), pt(ft(5, 3), ft(28)), pt(ft(5, 3), ft(28)),
+                  pt(ft(3, 9), ft(28)), pt(ft(3, 9), ft(3, 2)),
+                  pt(ft(9, 2), ft(3, 2)), pt(ft(9, 2), ft(3, 2))),
+            elevations=(ft(7, 6), ft(7, 6), ft(7, 2), ft(7, 2), ft(7, 2), ft(7, 2),
+                        inch(4)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=20),
 ]

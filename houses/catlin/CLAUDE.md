@@ -1067,8 +1067,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     keep — no real duct system lands under 0.2" w.g. The number that governs is MN 1322
     R403.5's **205**.
   - **Three new checks.** `mep.erv_static_budget` (ADVISORY) computes Darcy-Weisbach/Colebrook
-    over the whole system and reads the curve at it: **0.350" w.g. worst path, 207 cfm
-    delivered**, on the EXTRACT side. It reports the 3 cfm against the 210 design rate as
+    over the whole system and reads the curve at it: **0.325" w.g. worst path, 207.5 cfm
+    delivered**, on the EXTRACT side (D3 took an elbow off the extract riser and another off
+    the return trunk; extract now leads supply's 0.320 by five thousandths, where it led by
+    0.041, so there is no cheap one-sided lever left). It reports the 3 cfm against the 210 design rate as
     UNKNOWN, never a FAIL — whether 207 is ENOUGH is
     `code.N1103_6_whole_house_ventilation`'s question, asked against MN's 205 and not against
     a designer's hope. **The extract side was authored at 265 cfm against a 210 cfm machine
@@ -1092,11 +1094,37 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     blocked on GEOMETRY rather than money — at its old chase station an 8" envelope overran
     the shaft's east face by an inch — until its hood moved to the north wall and its riser
     left the chase. **`notes/erv_static_budget.md` §7 is now spent.** The only large term
-    left anywhere is `DU-ERV-RISER-EXH` at 0.203, 58% of the governing column on its own;
-    with extract in front by 0.043 the extract elbow audit and riser segmentation are worth
-    something again, up to that gap.
+    left anywhere is `DU-ERV-RISER-EXH` at 0.189, 58% of the governing column on its own.
+    The extract elbow audit that gap used to fund is SPENT (D3); at 0.005 in. between the
+    two columns, the next real move has to take both down together.
     §8 is the commissioning spec, and its real point is that an ordinary flow hood reads
     25-30% low below 150 cfm: a **TSI Alnor LoFlo-class** instrument is required equipment.
+  - **THE BASEMENT IS FOUR CORRIDORS AND TWO 36" PLENUMS (D3, 2026-09-19).** The six
+    basement radials used to leave their plenums' centre points at one flat 7'-6" and run
+    straight through the drain field: 23 reported interpenetrations and three stud bores,
+    two of them in a BEARING wall. What replaces it:
+    - **The plenums are 36" and house-local** (`EQ-T-ERV-PLENUM-B-SUP/-EXH`), because each
+      takes five connections — a 6" trunk, a 6" riser and three 4" collars — and 24" cannot
+      hold them at the clearances `run_interference` wants. The two 6" ports turn up into
+      the box's UNDERSIDE; the 4" collars are on its 36" faces at the box's mid-height,
+      which is the radial layer itself.
+    - **FS-M-WEST's bays are not available and never were.** Its I-joists span x, so its
+      bays run east-west while every basement radial travels north-south. The band between
+      the joists' underside and the top of the drain zone is 2 3/4".
+    - **The four corridors that ARE clear**, measured: x=3'-3" and x=3'-9" at -21 15/16" and
+      -23 7/16" (between PR-B-KITCH-DRAIN's x=4'-6" fall line and the SH2/SINK2 pair);
+      x=2'-0" at -27 15/16" (under everything, over PR-B-SINK2-DRAIN); and the east chase —
+      the belt at y=29'-6" then RM-B-STAIR's x=17'-0" lane, which carries DU-B-ERV-R-GYM and
+      DU-B-ERV-R-PLAY stacked 6" apart.
+    - **x=17'-0" and NOT 17'-9":** W-B-CN/-CN2/W-B-CS2 are one 12" pour on the x=18'-0" axis
+      and RM-B-STAIR's ceiling polygon reaches over its west half. A lane in that strip is
+      inside the concrete and `mep.run_in_slab` says so.
+    - **PR-B-SAUNA-VENT shapes all of it.** It runs x=9'-0" from y=10'-6" to 34'-6", rising
+      -20" to -15 1/2", so every east-west lane in the west half crosses it and the crossing
+      elevation depends on where. That is why both sauna radials come east along y=1'-8 1/2"
+      and y=3'-2", south of the vent's corner.
+    - **The gym radial no longer crosses the gym** and `RM-B-GYM.exposed_services` says so;
+      RM-B-STAIR carries three ERV branches now instead of one.
   - **Three manifolds map to CAVITIES, not storeys.** Level 1 = basement ceiling, machine in
     RM-B-FURNACE. Level 2 = RM-M-MECH, feeding both main-storey CEILING grilles and
     second-storey FLOOR boots because both open into the one FS-S-WEST/EAST cavity. Level 3 =

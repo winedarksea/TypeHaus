@@ -2569,6 +2569,17 @@
 "EQ-T-ERV-MANIFOLD-6" = { material = { low = 120, high = 300 }, labour = { low = 180, high = 420 } }  # 2 ea — the supply side
 "EQ-T-ERV-MANIFOLD-6-EXH" = { material = { low = 120, high = 300 }, labour = { low = 180, high = 420 } }  # 2 ea — the same part on the extract side; separate row only because its trunk declares RETURN_AIR
 "EQ-T-ERV-MANIFOLD-10" = { material = { low = 175, high = 430 }, labour = { low = 230, high = 530 } }  # 1 ea — ten ports in a longer box
+# ** THE FOUR DIMENSIONED PLENUMS ARE A SHOP DRAWING AND ARE PRICED AS ONE. ** The level-2
+# pair landed with D1 and the basement pair with D3, and none of them had a row until
+# 2026-09-19 — an unpriced type drops out of the costed take-off in silence, so the boxes
+# were being built for free. Same metal and the same fabrication as the library manifolds
+# above; the length is what differs, and what a shop charges for a plenum is mostly the ends
+# and the collars rather than the run of it. The basement pair is 36" and carries five
+# connections — two 6" and three 4" — against the level-2 supply box's 24" and four.
+"EQ-T-ERV-PLENUM-M-SUP" = { material = { low = 120, high = 300 }, labour = { low = 180, high = 420 } }  # 1 ea — 24 x 8, an 8" inlet and three 4" collars
+"EQ-T-ERV-PLENUM-M-EXH" = { material = { low = 140, high = 350 }, labour = { low = 180, high = 420 } }  # 1 ea — 34 x 8, a 6" riser inlet and one 8" trunk collar
+"EQ-T-ERV-PLENUM-B-SUP" = { material = { low = 150, high = 370 }, labour = { low = 210, high = 480 } }  # 1 ea — 36 x 8, two 6" ports in the underside and three 4" collars
+"EQ-T-ERV-PLENUM-B-EXH" = { material = { low = 150, high = 370 }, labour = { low = 210, high = 480 } }  # 1 ea — the same shell, services reversed
 # Fabricated plenum box with a 6" collar and a gravity backdraft damper. Sheet-metal shop
 # work, not a catalogue item: the material range is the metal and the damper, the labour is
 # the fabrication plus fitting it into a 30 3/4" soffit with an air handler already in it.

@@ -156,16 +156,30 @@ def test_catlin_ports_are_approximate_EXCEPT_the_shop_drawn_collars(catlin_model
     on a catalog machine is approximate and reports itself that way.
 
     **The exception is a box THIS house has a shop drawing for** (2026-09-19). The two
-    level-2 plenums are fabricated for catlin and dimension their collars, so those four are
-    EXACT — which is what lets `mep.erv_manifold_ports` grade each radial against the collar
-    it lands on instead of against a tally. Nothing in `library/hvac.py` dimensions one, and
-    that is deliberate: a collar layout is a shop drawing and a reusable part has none."""
+    level-2 plenums and the two basement ones are fabricated for catlin and dimension their
+    collars, so those ten are EXACT — which is what lets `mep.erv_manifold_ports` grade each
+    radial against the collar it lands on instead of against a tally. Nothing in
+    `library/hvac.py` dimensions one, and that is deliberate: a collar layout is a shop
+    drawing and a reusable part has none.
+
+    The basement pair (D3) states three 4" collars each and two SIX-inch ports — the trunk
+    from the machine and the riser from upstairs — and the 6" pair is deliberately NOT in
+    this list. A collar is an exact port whose section equals the type's `port_diameter`;
+    those two carry no `connection_size` at all, so `mep.equipment_port_service` grades them
+    at service level the way it grades the machine's own. The assertion below says the same
+    thing a second way: every exact port here is a branch collar."""
     from typehaus.resolve.mep_ports import placed_ports
 
     ports = placed_ports(catlin_model)
     assert ports, "catlin places equipment declaring ServicePorts"
     exact = sorted(f"{p.equipment_tag}.{p.port_tag}" for p in ports if p.exact)
-    assert exact == ["EQ-M-ERV-MAN-EXH.collar-trunk",
+    assert exact == ["EQ-B-ERV-MAN-EXH.collar-bath",
+                     "EQ-B-ERV-MAN-EXH.collar-bench",
+                     "EQ-B-ERV-MAN-EXH.collar-sauna",
+                     "EQ-B-ERV-MAN-SUP.collar-gym",
+                     "EQ-B-ERV-MAN-SUP.collar-play",
+                     "EQ-B-ERV-MAN-SUP.collar-sauna",
+                     "EQ-M-ERV-MAN-EXH.collar-trunk",
                      "EQ-M-ERV-MAN-SUP.collar-bed",
                      "EQ-M-ERV-MAN-SUP.collar-living",
                      "EQ-M-ERV-MAN-SUP.collar-study"]

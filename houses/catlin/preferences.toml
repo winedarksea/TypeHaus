@@ -253,8 +253,14 @@ permit_drop = ["A-502", "A-506"]
 # element itself.
 [checks]
 suppress = [
-  # ** mep.run_interference: 150 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-19 AFTER THE
-  # PHASE 1 EYESIGHT PASS. NOT A DECISION — AN OPEN CAMPAIGN. **
+  # ** mep.run_interference: 93 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-19 AFTER THE
+  # THREE CAVITY CAMPAIGNS. NOT A DECISION — AN OPEN CAMPAIGN. **
+  #
+  # ** 150 -> 114 -> 93, AND EVERY STEP IS A REDESIGN RATHER THAN A RE-READING. ** D1 took
+  # level 2 trunk-and-branch, D2 split the attic chase into four lanes, D3 re-laid the
+  # basement on the four corridors that are actually clear and put each radial on its own
+  # dimensioned collar. **duct <-> duct is now ZERO in this house** — it was 37 at the
+  # Phase 1 exit, and every one of them was two branches leaving one plenum on one line.
   #
   # ** 146 -> 150, AND THE BUILDING DID NOT MOVE. ** Three mechanisms, each named, and two
   # of them are the engine seeing BETTER rather than worse:
@@ -283,28 +289,36 @@ suppress = [
   #
   # The class breakdown, and it is the line that goes stale first:
   #
-  #                        2026-09-18   2026-09-19
-  #     duct <-> duct            37          37     (untouched: see the ERV note below)
-  #     duct <-> vent            28          22      -6
-  #     drain <-> duct           33          22     -11
-  #     conduit <-> vent          0          18     +18   (E7)
-  #     drain <-> supply         32          11     -21
-  #     supply <-> supply        18           9      -9
-  #     duct <-> supply          12           7      -5
-  #     drain <-> vent            -           5
-  #     conduit <-> conduit       0           4      +4   (E7)
-  #     conduit <-> supply        0           4      +4   (E7)
-  #     drain <-> drain           -           4
-  #     conduit <-> duct          0           3      +3   (E7)
-  #     supply <-> vent          12           2     -10
-  #     vent <-> vent             -           1
-  #     everything else          16           1
-  #                             ---         ---
-  #                             188         150
+  #                        2026-09-18   Phase 1 exit   after D1-D3
+  #     duct <-> duct            37          37             0      -37
+  #     duct <-> vent            28          22            14       -8
+  #     drain <-> duct           33          22             7      -15
+  #     conduit <-> vent          0          18            18        —    (E7)
+  #     drain <-> supply         32          11            11        —
+  #     supply <-> supply        18          10            10        —
+  #     duct <-> supply          12           7             7        —
+  #     drain <-> vent            -           5             5        —
+  #     conduit <-> duct          0           3             6       +3    (D2)
+  #     conduit <-> conduit       0           4             4        —    (E7)
+  #     conduit <-> supply        0           4             4        —    (E7)
+  #     drain <-> drain           -           4             4        —
+  #     supply <-> vent          12           2             2        —
+  #     vent <-> vent             -           1             1        —
+  #                             ---         ---           ---
+  #                             188         150            93
   # The rows sum to the headline; if they stop summing, one of them went stale. The four
   # rows that start blank were inside the older column's "everything else" (which held the
   # two radon pairs, drain<->vent 6, drain<->drain 3 and five singles) and are broken out
-  # now because E7 made the tail big enough to read.
+  # now because E7 made the tail big enough to read. The Phase 1 column's own
+  # supply<->supply 9 and "everything else" 1 are one row here: PR-B-ERV-COND reads as a
+  # drain under the classifier the third column was taken with.
+  #
+  # ** ONLY THREE ROWS MOVED AND ALL THREE ARE THE CAMPAIGNS. ** duct<->duct to zero,
+  # drain<->duct and duct<->vent down by half between them. conduit<->duct rose by the
+  # three CD-A-DATA-NE pairs D2 made and deferred, because conduit is laid LAST in
+  # `routing/campaign.TRADE_ORDER` and a raceway bends around a duct rather than the other
+  # way about. Everything left is pipe against pipe, or conduit, and belongs to Phase 3
+  # and Phase 4.
   #
   # This is the one blanket entry in this file about run-against-run geometry, and it is
   # the only one that is not about a single element. The check is right: it compares every
@@ -358,8 +372,15 @@ suppress = [
   # unknowns — the one habit a report cannot survive.
   "mep.run_through_plate",
 
-  # ** mep.run_through_stud: 11 BORES OVER THE R602.6 LIMIT, ON 7 RUNS. MEASURED 2026-09-17.
-  # ITEMISED, BECAUSE EACH IS A DIFFERENT DECISION. **
+  # ** mep.run_through_stud: 7 BORES OVER THE R602.6 LIMIT, ON 5 RUNS. RE-MEASURED
+  # 2026-09-19 (D3). ITEMISED, BECAUSE EACH IS A DIFFERENT DECISION. **
+  #
+  # It was 11 on 7 runs. D3 closed four of them by MOVING THE DUCT, which is what this list
+  # said the three ERV radials wanted: `DU-B-ERV-R-GYM` no longer crosses W-B-CS3, W-B-CW or
+  # W-B-HALL-W at all (it takes the stair hall's x=17'-0" lane to reach the gym), and
+  # `DU-B-ERV-R-BATH` steps to y=27'-9" so it passes through the cripple space over
+  # W-B-STR3's door head instead of through two of its BEARING studs — the only two bearing
+  # bores in the house, and the worst entries that were on this list.
   #
   # These are real and they are the classic ones. Listed per RUN rather than as a blanket
   # entry so a NEW over-bore anywhere in the house still reports, which is the whole reason
@@ -371,10 +392,21 @@ suppress = [
   #   * PR-B-WC2-DRAIN's 3" (3.500" outside) through a non-bearing 2x6 — 3.30" allowed, so
   #     it is over by two-tenths of an inch. A 3" drain in a 2x6 is right at the line in
   #     every house; the honest fixes are a 2x8 wet wall or a furred chase.
-  #   * the three 4" ERV radials through 2x6 studs, two of them BEARING (40% = 2.20").
-  #     A 4" round duct is not bored through a stud at all in practice — it goes over the
-  #     plate, through a soffit, or in a floor bay. These three want re-routing, and that
-  #     is a `haus route --run DU-B-ERV-R-GYM --evaluate` campaign rather than an edit.
+  #   * ONE 4" ERV radial left, and it is a framing question rather than a routing one.
+  #     `DU-B-ERV-R-SAUNA-SUP` crosses W-B-CW at x=3'-3" and lands on king-0-l0.
+  #     **It cannot be moved into a stud bay, and D3 measured why.** W-B-CW's door opening
+  #     runs x 3'-0 3/4"..6'-5 1/4", so the whole corridor band between
+  #     PR-B-KITCH-DRAIN's x=4'-6" fall line and the SH2/SINK2 pair is inside the door; the
+  #     clear stud bays are 16"..32" and 8 3/4"..16", both west of x=3'-0", and
+  #     `DU-B-ERV-R-BENCH` already runs the wide one. A third 4" duct in that bay was
+  #     tried on 2026-09-19 and pushes into PR-B-SINK2-DRAIN's drop — one finding traded
+  #     for another. **And the crossing this check CANNOT see is the one that decides it:**
+  #     both sauna radials pass through the door's header band (-22 3/16" to -29 7/16") at
+  #     the duct layer, and no check in this engine grades a duct through a header — the
+  #     header-over-opening check is deferred by name in the campaign plan. The honest fix
+  #     is the WALL: a header set tight to the top plate, or the duct layer raised above
+  #     -22 3/16" on this side of the basement. Both are Phase 3 framing decisions, filed
+  #     with the three 2" vents above for the same reason.
   #
   # ** EACH OF THESE IS AN OPEN QUESTION, NOT A SETTLED DECISION. ** None is suppressed
   # because it is acceptable; they are suppressed because fixing them is a wall-assembly
@@ -384,9 +416,7 @@ suppress = [
   "mep.run_through_stud:PR-B-SAUNA-VENT",
   "mep.run_through_stud:PR-A-STUBATH-VENT",
   "mep.run_through_stud:PR-A-BAR-VENT",
-  "mep.run_through_stud:DU-B-ERV-R-GYM",
   "mep.run_through_stud:DU-B-ERV-R-SAUNA-SUP",
-  "mep.run_through_stud:DU-B-ERV-R-BATH",
 
   # ** mep.run_in_slab: 2 RUNS INSIDE A POUR. NEW CHECK, 2026-09-19. AN OPEN CAMPAIGN. **
   #
@@ -400,8 +430,13 @@ suppress = [
   #     it and NO void of any kind — no sleeve, no rough opening. `mep.sleeve_coverage`
   #     never saw it because `concrete_crossings` walks pipe and raceway and not duct, so a
   #     4" branch through a foundation wall has been ungraded for as long as it has been
-  #     drawn. This is D3's: the basement radials are re-laid there and a duct through a
-  #     cast wall is a cast sleeve or a different lane, never a core after the fact.
+  #     drawn. **D3 ran and this one is not a lane problem after all** (2026-09-19): the
+  #     wall is x 17'-6"..18'-6" for the whole depth of the house and REG-B-SUP2 is on the
+  #     far side of it, so every route to that register crosses the pour once. What D3 did
+  #     change is WHERE — it crosses on the run's last leg into the register now, square to
+  #     the wall, one foot of it, instead of on a transit leg — and what it owes is a cast
+  #     sleeve at (18'-0", 26'-0"), which is a concrete decision taken before the pour and
+  #     not a duct decision taken after it.
   #   * PR-SG-ARCH-OVERFLOW's first leg straddles SL-SG-FIELD's underside — its envelope
   #     breaks the slab's bottom face for six inches at the field's north edge. Either the
   #     pipe drops 2" and runs clear beneath, or the slab edge owes it a cast void. It is
