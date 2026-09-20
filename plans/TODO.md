@@ -378,6 +378,38 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     group needs a DESIGN answer (soffits, or distinct elevations in the attic floor band),
     not another search, and pasting the campaign's output would trade interference FAILs for
     stud-bore FAILs.
+  - **PHASE 4'S CAMPAIGN DOES NOT PRODUCE A LANDABLE SET, AND NEITHER DOES ITS OWN
+    REGRESSION CHECK (measured 2026-09-19).** Both halves were run as the plan specifies and
+    both are measurements rather than pastes. Nothing was written; `haus route` has no
+    `--write` and this is why.
+      * `--house --trades conduit --orders 3 --evaluate` lays **16 of 17** (all three
+        conflict orders agree: 16 laid, 1 refused, 6465" equivalent) and refuses
+        `CD-B-PV-INV`, whose origin in the NW chase has 7 of 24,697 lattice nodes reachable
+        — blocked by three MOVABLE runs it has already lifted twice. But the accepted SET is
+        worse than what is drawn: its own `--evaluate` reports **eight new FAILs**, and two
+        of them are `integrity.element_above_roof` — `CD-A-PV-EAST` proposed 48.6" and
+        `CD-A-DATA-NE` 21.2" ABOVE RF-HOUSE's underside. Two more hang 107.5" inside
+        RM-S-BATH1. The router is routing raceway through the roof and through a bathroom,
+        which is a statement about the conduit trade's obstacle set and not about the house.
+      * `--house --trades duct --storey second --evaluate`, the E6 regression check, lays
+        **16 of 19** and refuses three — `DU-S-HP-RET` (2 of 338 nodes reachable),
+        `DU-M-ERV-R-BATH2` (a terminal inside something) and `DU-M-ERV-R-MUD` ("its origin
+        already stands on what it is being routed to"). The set it does lay carries 12
+        `run_in_finished_volume`, 8 `run_through_stud`, 7 `run_member_crossing`, 5
+        `duct_joist_bay`, 4 `run_through_blocking` and 3 `run_route_efficiency` FAILs.
+        **So E6's tiers and lanes do not let `--house` reproduce D1's authored level 2.**
+        The plan said a refusal here is "an E6 bug or a design that the tool cannot
+        reproduce — either is worth knowing". It is the second, and the twenty-two
+        `integrity.register_duct_ref` FAILs in the same report are an artefact of the
+        evaluation harness rather than the routes: it swaps `-PROPOSED` tags in and the
+        registers' `duct_ref` stops resolving.
+    **What this does NOT say** is that the router is broken. It says the conduit obstacle
+    set is missing the roof and the finished-room planes that the CHECKS have, and that a
+    hand design which spends a page arguing one lane is not a thing a cost-ranked search
+    reproduces. Phase 4 is therefore closed as measured, not as pasted, and the 29 surviving
+    conduit pairs stay where the trade order put them — conduit is laid last because it
+    bends.
+
   - **P1's FIRST BULLET CANNOT BE DONE AS WRITTEN, AND D1 IS THE REASON (measured
     2026-09-19).** The campaign plan says to re-profile `PR-M-WC-VENT` "through the web
     window so it takes the tier the radials do not at each crossing (2.375" OD + 4" duct =
