@@ -50,10 +50,29 @@ required one is gone, and with it the last Source line this note could not suppl
 | room finish face (x) | `W-M-E1` interior gwb | 35'-5 3/8" = 425.375" |
 | gap behind the wythe | 425.375 − 423.5 | 1 7/8" (ties, and the firebox's framing) |
 | panel width (y) | 29 1/2" masonry opening + 8" each side | **45 1/2"**, y 81.25"–126.75" |
+| masonry opening | 29 1/2" wide × **24" high**, sill 24" AFF, head **48" AFF** | 9 courses to the sill, **18 to the head** |
+| firebox pocket | `AO-M-FIRE-NICHE`, blind in `W-M-E1`, 34" × 25" × 6" | **11 1/2" deep off the brick face** |
 | base | `W-B-E1` bearing seat | **−1'-1 7/16" = −13.4375"** |
 | top | mantel underside, 5'-4" **AFF** (finished floor is +15/16") | **64.9375"** |
 | height | 64.9375 − (−13.4375) | **78 3/8"** |
 | `W-B-E1` pour (x) | `BASEMENT_12`, outer face on the 36'-0" line | **420"–432"** |
+
+**The opening grew on 2026-09-20 and the panel did not.** The masonry opening went 20 5/8" →
+24" high (head 44 5/8" → 48" AFF), taken out of `W-M-FIRE-HEAD`'s spandrel, which went 19 3/8" →
+16". Panel width, panel top, base, height, the three stub piers, the joist pockets and the
+plinth are all untouched — so **every number in §2 and §3 below stands as written**, and the
+897 lb / 236 plf line load stands as an UPPER BOUND besides: it is computed on a SOLID panel,
+and the panel now has 0.7 SF more hole in it. The head is on a course line for the first time
+(18 courses exactly), which retires the deliberate cut course §4's predecessor recorded.
+
+**Why it grew: DEPTH, not height.** The pocket behind the panel went from a 4 1/2" recess in
+the brick to a blind 6" recess in `W-M-E1` — 11 1/2" measured off the brick face, which is the
+building's hard ceiling (3 5/8" brick + 1 7/8" tie gap + 1/2" gwb + 5 1/2" stud cavity, the
+sheathing's inner face). Going deeper means moving the panel west, off `W-B-E1`'s pour and onto
+the joists — which is this note's lead ⚠ and is refused. The 4 1/2" recess was the SOLE-SOURCE
+constraint on the appliance; 11 1/2" opens the field from two brands to roughly ten. Height
+came along so the hole in the brick and the appliance agree, and 24" was chosen over its
+neighbours because it is the value that puts the head on a course line.
 
 **The whole footprint stands over the pour, bar 1/8".** The wythe runs 419.875"–423.5" and
 the pour 420"–432"; the 0.125" of brick west of the pour's inner face is a mortar line, not
@@ -74,7 +93,7 @@ an aesthetic, it is what puts the brick on the foundation.**
 rounding.** The surround gained a 1/8" white wash on its room face 2026-09-13. Its `Material`
 authors no `density` and no `areal_density_kg_m2` — correct for a `coating=True` film, which has
 no plane of its own — so it contributes **0 plf** to the line load above and this note's numbers
-stand unchanged. By hand it would be on the order of 10-15 lb over 20.4 SF, or ~4 plf, against
+stand unchanged. By hand it would be on the order of 10-15 lb over the ~19 SF of face, or ~4 plf, against
 236. The panel volume row is still the brick's 3 5/8" and not the stack's 3 3/4", deliberately:
 the wash is not masonry and must not be weighed as if it were.
 
@@ -192,7 +211,8 @@ full-span 17'-11" trimmer plies, two LUS and two HHUS410 hangers, and I-joist we
 Measured off `haus takeoff`: **1.75x11.875 LVL 284 → 204 LF**, **2-1.75x11.875 LVL 16 → 8
 LF**, **I-joist 2348 → 2388 LF** (the two cut joists run whole again), **LUS −2**, **HHUS410
 −2**, and **plywood-subfloor 3181.8 → 3184.6 SF**, still 100 sheets — the three derived pier
-cuts take out less plywood than the one hole did. Brick falls 20.4 → **19.6 SF**.
+cuts take out less plywood than the one hole did. Brick falls 20.4 → **19.6 SF**, and
+→ **18.9 SF** on 2026-09-20 when the opening grew 3 3/8" taller.
 
 **Nobody authors the subfloor cut.** `resolve/through_deck.py` derives it from the wall's own
 footprint plus a 1/2" saw clearance, less every member footprint, and
@@ -272,8 +292,22 @@ record.
   studs. Nothing here designs that tie. At 45 1/2" × 6'-5" of panel it is a light and
   ordinary condition, unlike `W-B-BRICK`'s ~10" reach through foam
   (`notes/sunken_garden_veneer_beam.md` §5.1), but it is not designed.
-- **The lintel** over the 29 1/2" × 20 3/8" firebox opening — a rowlock course or a steel
-  angle. It carries 11 5/8" of brick to the mantel and nothing else. Not sized here.
+- **The lintel** over the 29 1/2" × 24" firebox opening. It is a real element —
+  `BM-M-FIRE-LINTEL`, an L3-1/2 × 3-1/2 × 1/4 A36 HDG angle, 8" of bearing on each jamb pier —
+  and since 2026-09-20 it is a real line in the estimate as well (`[steel_members]`, by the
+  foot of its AISC section). It is still **not sized here**: it carries 16" of brick to the
+  mantel and nothing else, ~46 lb, and is the minimum stock piece rather than a designed one.
+- **The firebox pocket's framing.** `AO-M-FIRE-NICHE` is a blind `RoughOpening` 6" into
+  `W-M-E1`, so `needs_jamb_pack` gives it a header and jamb packs on the studs at 96" and
+  112" — ordinary work, graded by nothing that knows what is in front of it. And the pocket's
+  thermal patch is ungraded too: the 4" exterior ccSPF runs continuous past the recess, which
+  is why the loss is ~4 Btu/h at design and why it is worth stating rather than computing.
+- **The girt-block stations over the removed studs.** A blind recess stops short of the
+  sheathing, so the girt band outboard of it is framed exactly as it was — but the blocks at
+  those two stations now fasten through the sheathing into the king/jack packs at the recess
+  jambs rather than into the field studs the recess removed. The take-off does not move for
+  it (`test_hardware_takeoff`'s pinned counts are unchanged), which is the point: the band
+  never saw the recess. Mark the packs on the girt face before the foam goes on.
 - **The mantel's hold-down** — but the *need* for it is worked below in §4.1, because it is
   not a refinement. The fastener count and the blocking are not designed here.
 - **Differential movement** between a brick panel bearing on concrete and the wood floor it
@@ -310,10 +344,19 @@ Stated positively, because a clean report here was silence and not a verdict unt
   start the wythe on the subfloor and it FAILs at ~236 plf against
   `max_masonry_dead_load_on_wood_plf`, instead of relying on somebody reading a box.
 
+- **The firebox POCKET is graded by nothing, and it is graded by nothing on purpose.** Four
+  checks were taught to skip a blind `RoughOpening` on 2026-09-20 —
+  `building_science.wwr` (it is not fenestration), `building_science.energy_load` (it has no
+  area in the envelope and no U-factor), `integrity.reveal_alignment` (it has no reveal) and
+  `structural.truss_wall_opening_support` (there is no cladding jamb out there to bear on) —
+  because each of them was about to say something false about it. What DOES grade it is
+  `integrity.blind_opening_depth`, a load-time ERROR if a depth reaches through its wall: a
+  recess with no back is an authoring mistake, not a deep hole.
+
 **A 0-FAIL report on this house used to mean nothing looked. Since 2026-09-19 something
 does** — `through_deck_clearance` — but only at the joist pockets and the bearing. The ties,
-the lintel, the mantel hold-down, differential movement and the out-of-plane case are all
-still ungraded, and §5 is the list.
+the lintel, the mantel hold-down, differential movement, the out-of-plane case and now the
+pocket's thermal patch are all still ungraded, and §5 is the list.
 
 ## Sources
 

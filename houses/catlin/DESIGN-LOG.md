@@ -471,6 +471,68 @@ not publish.
 
 ## Bearing lines and floor decks
 
+### The firebox got a pocket, and the pocket got the engine a blind `RoughOpening` (2026-09-20)
+
+Three things were wrong with `EQ-M-FIREPLACE` and one of them caused the other two. It was
+**fan-forced**, not infrared — the Amantii BI-30-XTRASLIM's manual names a `MOTOR HEATER 19W`
+and warns against covering the *fan outlet*, and the words "infrared" and "quartz" appear
+nowhere in it — and the owner wanted radiant warmth. It was **sole-source**, which this
+house's own sweep said in as many words: *"EVERY UNIT ON THE MARKET THAT IS 26-32" WIDE AND
+≤ 6" DEEP AND HARDWIREABLE IS AN AMANTII."* And its head was a deliberate cut course.
+
+**The 4 1/2" recess was the sole-source constraint and nothing else was.** Depth is what buys
+brands in this class — 6"→8" adds one, 8"→10" adds four brands and twelve units, 10"→11 1/2"
+adds one more — while brand coverage is FLAT from 29 1/2" to 36" of width. So the change is
+almost entirely *behind* the brick, where the material is wood framing: the pocket went to
+**11 1/2" off the brick face**, which is the building's hard ceiling (brick + tie gap + gwb +
+stud cavity, stopping at the sheathing's inner face). Deeper means moving the panel west off
+`W-B-E1`'s pour and onto the joists at 236 plf against a 50 plf limit — refused, and it is
+`notes/east_breast_bearing.md`'s lead ⚠. Roughly ten brands accept the pocket now against two
+before it, and the infrared tier is among them.
+
+**The premise check, made once and then dropped.** Both fan-forced and infrared units in this
+class are capped at 1500 W / ~5,118 Btu/h; every "infrared" unit here still has a blower; and
+ordinary glass is opaque above ~3 µm, so the radiant fraction leaves through a louver *below*
+the glass at shin height. A quartz tube is 60-75% radiant against 40-60% for a sheathed
+element — real, and smaller than the marketing. **The deeper pocket is worth building on
+supplier redundancy alone. Infrared is a bonus it happens to unlock.**
+
+Height was then the only free variable, and one value was much better than its neighbours:
+**24"**, which puts the head at 48" AFF = **18 courses exactly**, the sill already at 9, the
+panel top already at 24, and the spandrel to the mantel at 6. The deliberate cut course
+disappears. It was only reachable because of the depth: at 4 1/2" the appliance sat FLUSH and
+the brick opening WAS its frame, so ~1" of daylight over a trimless unit had nothing to hide
+behind; at 11 1/2" the unit sits BEHIND the aperture and the same difference reads as a shadow
+in a four-sided reveal. **An aperture that reveals is more forgiving than one that frames.**
+
+**What it cost the engine: `RoughOpening.depth`.** A blind recess was not authorable — and
+`plan/mep_supply.py` records the schema change being considered and declined once already,
+for the wall hydrants' 12.5 sq in of over-cut gypsum. A fireplace pocket is a much better
+reason: authored as a through hole it would have deleted 4.9 SF of sheathing, ccSPF, girt and
+cladding to the east yard, counted as east glazing in `wwr`, billed as a window at
+`preferences.window_u` in the block load, and raised an `integrity.reveal_concentric` UNKNOWN.
+`depth_from` came with it, because the two real cases open on opposite faces: a firebox pocket
+opens into the room, a hydrant bore opens on the yard and stops at its seat inside the cavity.
+**The change paid for itself twice** — both hydrants are blind now and the over-cut is closed.
+
+**The one consequence nobody predicted:** a blind bore no longer punches a hole in a wall's
+ELEVATION silhouette, because that silhouette is the union of every layer's projection and the
+layer behind the recess is whole. That is geometrically right — from the yard the wall really
+is solid behind the bore, and what a viewer sees is a recess — but it means the two hydrant
+holes reach the south elevation through their own symbols rather than through a void. The
+outermost layer is still cut; `test_e11_wall_penetrations` pins both halves.
+
+**The appliance, twice.** The first selection was an Innoflame 28" on one argument — the only
+unit in the field with a manual-grade hardwire procedure. The owner looked at it and it is an
+ugly appliance. **That argument had already died**: the cavity carries a recessed receptacle
+AND a hardwire J-box on the one dedicated circuit (owner's call), so "can it be hardwired"
+stops being a selection criterion and looks become one. The unit is a **ClassicFlame
+28II042FGL** — infrared quartz, better made, and carrying a GENUINE CSA certification rather
+than the word "CSA" in a listing, which closes the biggest plan-review risk in the change. It
+is **cord-only and must stay cord-only**: its safety story is the Safer Plug thermal-sensing
+plug. Material $1,450-1,650 → $360-460, and the saving is a side effect of no longer being
+sole-sourced, not the reason for any of it.
+
 ### The fireplace stub became three piers, and `FO-M-FIRE` went with it (2026-09-19)
 
 `W-M-FIRE-STUB` rose from `W-B-E1`'s pour at −13 7/16" through `FS-M-EAST`'s joist zone to the

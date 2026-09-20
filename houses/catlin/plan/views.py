@@ -144,15 +144,30 @@ DETAIL_SLICES = [
     # CEIL-RM-M-LIVING closing the volume at 9'-0 1/8". The crop's -10'-6" reaches under the
     # footing and its 10'-0" clears that ceiling, so the whole load path reads at once.
     #
-    # ** TWO THINGS THIS SHEET WILL NOT SHOW, AND NEITHER IS A BUG. ** `build_section` never
-    # draws placeables, so EQ-M-FIREPLACE and FURN-M-FIRE-MANTEL are absent — the masonry
-    # is the subject and the appliance is not. And an AUTHORED section is not annotated:
-    # only `build_center_section` adds datum lines and room names, so this one carries its
-    # geometry unlabelled. Do not "fix" either by reaching for the centre-section path.
+    # ** ONE THING THIS SHEET WILL NOT SHOW, AND IT IS NOT A BUG. ** `build_section` never
+    # draws placeables, so EQ-M-FIREPLACE and FURN-M-FIRE-MANTEL are absent — the masonry is
+    # the subject and the appliance is not.
+    #
+    # ** IT IS ANNOTATED SINCE 2026-09-20, AND THIS BLOCK SAID THE OPPOSITE. ** It read: "an
+    # AUTHORED section is not annotated: only `build_center_section` adds datum lines and
+    # room names, so this one carries its geometry unlabelled. Do not 'fix' either by
+    # reaching for the centre-section path." That was true and it was a gap, not a decision —
+    # a drawing a reader cannot take a dimension off is not a construction document.
+    # `build_annotated_section` is one path now, serving both this sheet (A-301.1) and
+    # `haus render --view section --slice SL-S-FIRE`, and nothing in the annotation was ever
+    # specific to the house centre: it takes a cut plane, and an authored cut has one. What
+    # it did not have is this slice's CROP, which the room names and the detail callouts need
+    # — they walk the MODEL rather than the drawing, and lettered eight rooms and hung four
+    # bubbles out in open sheet before they were clipped to it.
     Slice(uid="CVD908AAAA", tag="SL-S-FIRE", kind=SliceKind.SECTION,
          title="Fireplace breast section",
          cut_origin=pt(ft(0), ft(8, 8)), cut_direction="x",
          # ft(-10, 6) would be -10*12+6 = -9'-6", not -10'-6" — ft(f, i) is f*12+i and the
          # sign does not distribute. Written as a single negative foot value on purpose.
          crop=(pt(ft(30), ft(-10.5)), pt(ft(38), ft(10)))),
+    # ** THE CROP IS LOAD-BEARING TWICE OVER NOW. ** It has always bounded the geometry; since
+    # the annotation arrived it also bounds the room names and the detail callouts. Widen it
+    # and this sheet starts lettering RM-M-LIVING and bubbling details from the far side of
+    # the house; narrow it and the load path stops reading. -10'-6" reaches under the footing
+    # and 10'-0" clears CEIL-RM-M-LIVING at 9'-0 1/8", which is the whole span worth showing.
 ]

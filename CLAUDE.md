@@ -53,6 +53,7 @@ is already parallel.
 .venv/bin/haus serve houses/catlin        # editor; does NOT reload engine code — restart it
 .venv/bin/haus takeoff houses/catlin      # BOM (+ costs when prices.toml exists)
 .venv/bin/haus render houses/catlin --view plan --fmt png|svg|psd   # docs/review-exports.md
+.venv/bin/haus render houses/catlin --view section --slice SL-S-FIRE  # a house-AUTHORED cut
 .venv/bin/haus takeoff houses/catlin --csv out/estimate.csv   # estimating-software intake
 .venv/bin/haus tasks houses/catlin --csv out/tasks.csv        # work packages for a PM tool
 .venv/bin/haus millwork houses/catlin                         # hardwood cut list for the mill
@@ -62,6 +63,12 @@ is already parallel.
 scripts/verify.sh --fast                  # tests + ruff, skipping builds/bench/npm
 scripts/ci_local.sh                       # the CI engine job in a THROWAWAY venv, declared deps only
 ```
+
+`--view section` draws the derived house-centre cut; **`--slice <TAG>` (or `--slice all`)
+reaches a section the HOUSE authored**, and both come out annotated through the one
+`build_annotated_section` that `haus print`'s A-301 series uses — datums, ground line, room
+names, with the room names and detail callouts clipped to the slice's own crop. A DETAIL is
+not reachable that way: it is its own view, cut with a joint plan and its own paper.
 
 All three `haus render` formats share one **review-layer stack** (`emit/draw/review_layers.py`,
 `docs/review-exports.md`): the SVG groups by it, the PSD is one raster layer per entry (for

@@ -269,9 +269,34 @@ constraints = [
 # piers go up between the framer setting FS-M-EAST's joists and the framer sheeting over them
 # (`task/masonry/building/masonry#piers`). One arrival with no pauses could only express that
 # at visit level, which would have said "frame the whole building, then lay brick, then sheet"
-# — and that is not an arrival anybody schedules. The framer owes the detail NOTHING else:
-# joist spacing is unchanged, and there is no header, trimmer, hanger, stiffener or special
-# layout in it. The subfloor is simply cut round three piers that are already standing.
+# — and that is not an arrival anybody schedules. At the DECK the framer still owes the detail
+# nothing else: joist spacing is unchanged, and there is no header, trimmer, hanger, stiffener
+# or special layout in it. The subfloor is simply cut round three piers that are already
+# standing.
+#
+# ** THE WALL IS A DIFFERENT MATTER SINCE 2026-09-20, AND THIS COMMENT SAID OTHERWISE. ** The
+# firebox is a POCKET now, not a recess in the brick: `AO-M-FIRE-NICHE` is a blind rough
+# opening 34" x 25" x 6" deep in `W-M-E1`, centred on y=8'-8", and it takes the studs at 96"
+# and 112" out. So the framer owes a header and jamb packs there — ordinary work, but work,
+# and it must be framed BEFORE the mason arrives because the mason lays the jamb piers to the
+# masonry opening in front of it. Two site notes that do not fall out of the drawings:
+#   * The pocket is BLIND. Frame to the SHEATHING and do not cut it — the sheathing, the 4" of
+#     ccSPF, the girt and the panel all run past this recess unbroken, and the 11 1/2" the
+#     appliance is chosen against is measured to the FINISHED back face. If a manual requires a
+#     non-combustible back liner, 1/2" of cement board drops it to 11".
+#   * The girt blocks at 24" and 48" AFF land on the recess band's edges. Those two stations
+#     fasten into the king/jack packs at the recess jambs, not into the field studs the recess
+#     removed. Mark the packs across the girt face as it is laid: the screw is blind through
+#     6" of wood and invisible once the foam is on.
+#
+# ** THE FIREPLACE CIRCUIT IS #12 Cu (12/2 NM-B) ON A DEDICATED 20 A BREAKER, AND THE CAVITY
+# TAKES TWO BOXES. ** `Circuit` has no conductor field, so the gauge reaches the electrician
+# here and in the circuit's own description and nowhere else. NEC 422.10(A) puts the
+# continuous load at 15.6 A, so 15 A is non-compliant rather than tight, and 210.23(B)(2)
+# forbids the circuit sharing with anything. In the pocket: a hardwire junction box AND
+# `ED-M-FIRE-RC`, a recessed receptacle in the clear strip beside the appliance. ONE of the
+# two is used — the unit selected plugs in — and the other is there so the next unit does not
+# need a rewire. Neither is GFCI: 210.8(A) does not list living rooms.
 [visits."task/framing/building/frame"]
 label = "Frame the building — walls, decks, roof"
 depends_on = [

@@ -23,6 +23,9 @@ LUS210 = 1.85
 [concrete]       # $ per cubic yard placed, keyed by solid category (slab, footing, ...)
 slab = { low = 180, high = 240 }
 
+[steel_members]  # $ per LINEAL FOOT of a rolled steel member, keyed by its AISC section
+"L3.5x3.5x0.25" = { material = { low = 14, high = 24 }, labour = { low = 20, high = 45 } }
+
 [floor_heat]     # $ per lineal foot of element/wire, keyed by system name
 electric = 12.0
 
@@ -41,6 +44,19 @@ ikea-sofa-84 = { low = 700, high = 2400 }   # reads, but reported beside the tot
 [data_raceways]  # $ per lineal foot of low-voltage raceway, keyed by service (data / spare)
 data = { low = 2.80, high = 6.40 }
 ```
+
+`[steel_members]` is the one family `[concrete]` and `[timber]` cannot buy, and it is worth
+saying why it is not a row of either. Both of those price a `structural_solids` row by the
+CUBIC YARD, keyed on the solid's category. A steel angle fits neither: `[timber]` refuses it
+on material, `[concrete]` would sell it at a ready-mix rate, and in practice a lintel simply
+billed **$0** — a silent under-estimate rather than a visible gap. Steel is bought by the foot
+of a NAMED SECTION, and the name is load-bearing: an `L3.5x3.5x0.25` and an `L3.5x3.5x0.375`
+share a bounding box and are different purchases, which no volume can distinguish. So the key
+is the member's own `size` string, in the decimal AISC spelling the plan authors (the fraction
+spelling is deliberately not parsed — `integrity.member_profile_parses` reports it rather than
+guessing), and `takeoff/steel.py` takes those members OUT of `structural_solids` so a house
+that prices them here cannot also price them there. `ea` is available as an alternate unit for
+a shop-fabricated piece bought as one part.
 
 ## Driven allowances
 

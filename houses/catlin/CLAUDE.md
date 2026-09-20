@@ -208,7 +208,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 ### Site and the four structures
 
 - Four structures: house, garage (4' north gap), sunken-garden/porch/balcony concrete structure (5" south gap), and the north-entry bridge (4' gap).
-- **The north entry is engineered, not schematic** (2026-09-10). `RF-BW-CANOPY` spans 24' between `BM-BW-RW`/`-RE`, which top out at +7'-4" — the garage plate — so the two roof planes are ONE plane; change either and they step apart. **The canopy is freestanding and braces itself.** The WEST header lands on two 6x6 KDAT columns (`PT-BW-CW`/`-CNW`) on `ABU66SS` stainless bases; the EAST header lands on `PT-BW-RE`/`-RNE`, which are **12" cast concrete columns running unbroken from footing to header soffit, fixed at the base** — the east lateral system, and the reason that joint is a shim pack plus an `HGAM10` gusset and never a post cap. The west side is braced by `W-BW-SCREEN`, a sheathed KDAT 2x4 panel deck-to-+4'-0" that is ALSO the guard and the closure over the deck framing. **Its two faces are not the same** (2026-09-11): WEST is 5/8" CDX under 7/8" `corrugated-panel-24` and carries the shear ALONE; EAST is one 5/8" APA Rated Siding 303 MDO panel doing shear and finish together, uncounted, because that face stands under the canopy roof and is a finish problem rather than a weather one. It carries `alignment=face("stud-ext", offset=inch(-1.75))` so the 2x4s stay centred on the `PT-BW-CW`/`-CNW` line at x=6'-0" — without it the stack re-centres and the west corrugated face leaves the plane it shares with the garage panel, **which since 2026-09-12 is the whole of the reason**. The six `structural.member_interference` FAILs recorded here were the offset's stated purpose and were a misreading: 7/16" was just the first value clearing `interference_tolerance_in`, and the real clash was all three plate courses running THROUGH both 6x6s, hidden by `_butt_joint`'s centroid-point reading of a column. Both columns now carry `within_wall="W-BW-SCREEN"` and the solver cuts the plates flush at their faces (3 plates become 9; 7 1/2" / 54 1/4" / 6 1/8"), so no plate/column pair is left to report. **`W-BW-SCREEN-SKIRT`** carries that west sheet 13 1/2" further down over the sill, the seat beams and the two `ABU66SS` bases, stopping 1" ABOVE the pier tops — the bottom edge is OPEN and must stay open, it is how the flutes drain and the column bases dry. It is a second element with its own node pair, not a lower base on the panel, because a wall's layers cannot run below its base and its sole plate would land on the piers in the seat beams. `SC-BW-WEST` is a 2'-4 3/4" slat clerestory above it and `RL-BW-SCREEN` is retired. **The garage joint is a TIE, not the lateral system** — seven `LSTA24` straps at 4'-0" o.c. (`CN-BW-JOINT-*`) make the shared sheathing a drawn connection, and the two roofs move together; the only movement joint is at the HOUSE end. The record said the opposite until this revision, in the same file that required that plane to move. Every truss ties to its header with a stainless `H2.5ASS` at both ends (`CN-BW-TRTIE-*`), authored rather than derived. Both canopy eaves carry the garage's fascia and a CONTINUOUS trough falling north to `TR-G-LEADER-E`/`-W` — no leader at the south end (it would discharge onto the tiers) and no soffit (no wall to die into, and no vented attic to feed). **SIX cast piers on TWO bearing planes and the split matters**: `PT-BW-W`/`-E`/`-RE` bottom at −9'-9 7/16" with the house footing ten inches away, so **cast them in the open basement excavation or they undermine it**; `PT-BW-GW`/`-GE`/`-RNE` bottom at −7'-0", coplanar with the garage strip footings, and are cast with the garage foundation. Nothing here names a `W-B-*` or a `W-G-*` tag. **The landing has ONE tier of beams**: two east-west seat beams on the piers with 2x8 joists running north-south straight on them; `BM-BW-FW` is deleted and `BM-BW-FC`/`-FE` sit in the joist plane, reaching the interior landing under `D-G-SERVICE`'s sill, 3 3/4" over the continuous ICF stem (the west one sistered to the deck's second joist, the east one's face on the RO jamb). `W-BW-SCREEN` is filed on the **garage** storey, with the canopy roof it braces — on `main` it joined the house's braced wall lines and its dimension chain. See notes/north_entry_structure.md and notes/north_entry_piers.md. (→ DESIGN-LOG.md, "Site and the four structures")
+- **The north entry is engineered, not schematic** (2026-09-10). `RF-BW-CANOPY` spans 24' between `BM-BW-RW`/`-RE`, which top out at +7'-4" — the garage plate — so the two roof planes are ONE plane; change either and they step apart. **The canopy is freestanding and braces itself.** The WEST header lands on two 6x6 KDAT columns (`PT-BW-CW`/`-CNW`) on `ABU66SS` stainless bases; the EAST header lands on `PT-BW-RE`/`-RNE`, which are **12" cast concrete columns running unbroken from footing to header soffit, fixed at the base** — the east lateral system, and the reason that joint is a shim pack plus an `HGAM10` gusset and never a post cap. The west side is braced by `W-BW-SCREEN`, a sheathed KDAT 2x4 panel deck-to-+4'-0" that is ALSO the guard and the closure over the deck framing. **Its two faces are not the same** (2026-09-11): WEST is 5/8" CDX under 7/8" `corrugated-panel-24` and carries the shear ALONE; EAST is one 5/8" APA Rated Siding 303 MDO panel doing shear and finish together, uncounted, because that face stands under the canopy roof and is a finish problem rather than a weather one. It carries `alignment=face("stud-ext", offset=inch(-1.75))` so the 2x4s stay centred on the `PT-BW-CW`/`-CNW` line at x=6'-0" — without it the stack re-centres and the west corrugated face leaves the plane it shares with the garage panel, **which since 2026-09-12 is the whole of the reason**. The six `structural.member_interference` FAILs recorded here were the offset's stated purpose and were a misreading: 7/16" was just the first value clearing `interference_tolerance_in`, and the real clash was all three plate courses running THROUGH both 6x6s, hidden by `_butt_joint`'s centroid-point reading of a column. Both columns now carry `within_wall="W-BW-SCREEN"` and the solver cuts the plates flush at their faces (3 plates become 9; 7 1/2" / 54 1/4" / 6 1/8"), so no plate/column pair is left to report. **`W-BW-SCREEN-SKIRT`** carries that west sheet 13 1/2" further down over the sill, the seat beams and the two `ABU66SS` bases, stopping 1" ABOVE the pier tops — the bottom edge is OPEN and must stay open, it is how the flutes drain and the column bases dry. It is a second element with its own node pair, not a lower base on the panel, because a wall's layers cannot run below its base and its sole plate would land on the piers in the seat beams. `SC-BW-WEST` is a 2'-4 3/4" slat clerestory above it and `RL-BW-SCREEN` is retired. **The garage joint is a TIE, not the lateral system** — seven `LSTA24` straps at 4'-0" o.c. (`CN-BW-JOINT-*`) make the shared sheathing a drawn connection, and the two roofs move together; the only movement joint is at the HOUSE end. The record said the opposite until this revision, in the same file that required that plane to move. Every truss ties to its header with a stainless `H2.5ASS` at both ends (`CN-BW-TRTIE-*`), authored rather than derived. Both canopy eaves carry the garage's fascia and a CONTINUOUS trough falling north to `TR-G-LEADER-E`/`-W` — no leader at the south end (it would discharge onto the tiers) and no soffit (no wall to die into, and no vented attic to feed). **SIX cast piers on THREE bearing planes and the split matters** (it was two until 2026-09-20): `PT-BW-W`/`-E` bottom at −9'-9 7/16" with the house footing ten inches away, so **cast them in the open basement excavation or they undermine it**; `PT-BW-GW`/`-GE` bottom at −7'-0", coplanar with the garage strip footings, and are cast with the garage foundation; and the two ROOF columns `PT-BW-RE`/`-RNE` left both planes for a common one of their own — pad tops at **−10'-2"**, bottoms at −11'-2" — because that is what IBC 1807.3.2.1 needs and it only works if they move together (`north_entry_frame.ROOF_COLUMN_BASE_FT`, `notes/entry_column_base_fixity.md` §6a). Each of those two carries its own sequencing note: house side the pad goes 1'-4 9/16" below `FT-B-N1`..`-N4` about 7/8" away in plan, garage side 3'-2" below the stone strip it laps. Nothing here names a `W-B-*` or a `W-G-*` tag. **The landing has ONE tier of beams**: two east-west seat beams on the piers with 2x8 joists running north-south straight on them; `BM-BW-FW` is deleted and `BM-BW-FC`/`-FE` sit in the joist plane, reaching the interior landing under `D-G-SERVICE`'s sill, 3 3/4" over the continuous ICF stem (the west one sistered to the deck's second joist, the east one's face on the RO jamb). `W-BW-SCREEN` is filed on the **garage** storey, with the canopy roof it braces — on `main` it joined the house's braced wall lines and its dimension chain. See notes/north_entry_structure.md and notes/north_entry_piers.md. (→ DESIGN-LOG.md, "Site and the four structures")
 - **The north entry's three HOUSE-side piers are `Pad`s, the three GARAGE-side ones are not** (2026-09-14). `PD-BW-W`/`-E`/`-RE` are 2'-6" x 1'-6" x 1'-0" rectangles at -9'-9 7/16", graded prescriptively against IRC Table R507.3.1 — their `spread_footing/` items have left the register. **The rectangle is not a preference**: `FT-B-N1`..`-N4` sit on the same plane and a 24" square reached 2 1/8" into them, a lap that was invisible while these were Footings because `structural.concrete_interference` scopes every `Pad` and only a wall-less `Footing`. **One size for all three** — three pad sizes are three rows in S-100's FOUNDATION SCHEDULE, and that sheet is one row from its schedule governing its height. `PT-BW-GW`/`-GE`/`-RNE` stay `Footing`: they lap `FT-GF-S1`/`-S3` by ~7 1/2" on one plane and the pier line is only 4 1/2" from that face, so the 12" shaft overhangs any pad that clears it — one pour, which only `Footing.under` can say, and three `spread_footing/` items are the price. (→ notes/north_entry_piers.md §6)
 - **A post that carries only a ROOF is now reached by `structural.deck_footing_size`** (2026-09-14). `_roof_borne_posts` converts a post's roof-footprint share into R507.3.1's deck currency — `(10 + design snow) / 50`, **1.674** here — and hands it down the post chain, so `PT-BW-CW`/`-CNW`'s canopy share lands on the piers under them. **`PT-BW-RE`/`-RNE` were invisible before this, not light**: they carry `BM-BW-RE` and no deck, so no deck's post list held them. It is **not** a restatement any more (2026-09-18): the rule is `engineering/pier_basis.landed_roof_tributaries`'s and the check reads it through `checks/structural/_engineering.py`. Checks may import engineering; the copy was unnecessary, not forced, and it had drifted twice over — it knew nothing of `_rafter_fields`, and it scaled at the 50 psf **ground** snow while `BM-BW-RE` overhead was designed at the authored 73.7 psf drift.
 - **A pad carries its own weight and the shaft on it, net of displaced soil** (2026-09-18). `deck_footing_size` adds both as equivalent R507.3.1 tributary; `engineering/soil.displaced_soil_credit_lb` credits back the soil the pad replaced at the low end of the 110–130 pcf band, because a presumptive allowable is a **net** pressure. Gross was what put `PD-BW-RE` 1.5% over an allowable it is not over. Every house-side pad passes at one size, so S-100's FOUNDATION SCHEDULE stays one row.
@@ -871,9 +871,39 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - The firebox is **seven walls, not one**: `W-M-FIRE-STUB-S`/`-M`/`-N`/`-PLINTH`/`-JAMB-S`/
     `-JAMB-N`/`-HEAD`, all `FIREPLACE_BRICK_WYTHE`, NONBEARING, stacked on x=35'-1 11/16" with
     **its own `open_end` node pair each** (a shared node collapses every junction polygon it
-    touches). Masonry opening **29 1/2" x 20 5/8"** (sill 24" AFF, head 44 5/8" AFF) is the
+    touches). Masonry opening **29 1/2" x 24"** (sill 24" AFF, head 48" AFF) is the
     gap between elements, not a subtraction from one; elevations off the +15/16" finished
-    floor: STUB -13 7/16"→+15/16", PLINTH →24 15/16", jamb piers →45 9/16", HEAD →64 15/16".
+    floor: STUB -13 7/16"→+15/16", PLINTH →24 15/16", jamb piers →48 15/16", HEAD →64 15/16".
+    - **THE OPENING IS 24" HIGH AND THE POCKET BEHIND IT IS 11 1/2" DEEP, BOTH SINCE
+      2026-09-20, AND THE DEPTH IS THE REASON FOR THE HEIGHT.** `AO-M-FIRE-NICHE` is a BLIND
+      `RoughOpening` (the schema's first — `RoughOpening.depth` + `depth_from`) 34" x 25"
+      x 6" into `W-M-E1`, centred on y=8'-8"; 6" past the gwb face is 11 1/2" off the brick
+      face, which is the building's hard ceiling (3 5/8" brick + 1 7/8" tie gap + 1/2" gwb +
+      5 1/2" cavity, stopping at the sheathing's inner face). **Deeper means moving the panel
+      west off `W-B-E1`'s pour and onto the joists at 236 plf against a 50 plf limit —
+      REFUSED.** What the depth buys is SUPPLIERS: at 4 1/2" of recess every unit on the
+      market that fits was an Amantii, at 11 1/2" it is roughly ten brands and the infrared
+      tier is among them. **Depth buys brands; width buys nothing** (brand coverage is flat
+      from 29 1/2" to 36"), which is why the width did not move and the 8" whole-brick piers
+      survive. Height followed so the hole and the appliance agree, and 24" is the value that
+      lands the head on a course line — **18 courses exactly**, retiring the deliberate cut
+      course, with the spandrel to the 64" mantel exactly 6 more.
+    - The pocket is 34" wide against the appliance's 29 1/4" RO **on purpose**: the 2 3/8"
+      strip each side is where `ED-M-FIRE-RC` goes, and the 29 1/2" masonry aperture laps the
+      framed edge 2 1/4" a side so none of it shows. It costs no extra stud — 30" and 34"
+      both break the studs at 96" and 112" and leave the kings at 80"/128" —
+      and `structural.door_framing_module` is suppressed for it in `preferences.toml`
+      because the station is the PANEL's, which sits on a bay centre by design.
+    - **A blind RO is invisible to four checks by design** (`wwr`, `energy_load`,
+      `reveal_alignment`, `truss_wall_opening_support`) and takes no sheathing or cladding
+      deduction. It still REMOVES STUDS, so the stud solver frames it normally.
+      `integrity.blind_opening_depth` is a load-time ERROR on a depth that reaches through.
+    - **The ELEVATION no longer punches a hole for a blind bore, and that is correct but not
+      obvious.** A wall's elevation silhouette is the union of every layer's projection, so a
+      recess whose back layer is whole closes up: what a viewer sees is a recess, not
+      daylight. The two hydrant bores reach the south elevation through their own symbols
+      now rather than through a void. The outermost layer IS still cut — `test_e11_wall_
+      penetrations` pins both halves.
     - **The buried stub is THREE PIERS since 2026-09-19 and the joist pockets are the gaps
       between them** — the same idiom one level down. `FO-M-FIRE` is RETIRED: the premise it
       was framed on ("the brick cuts the joists short of their bearing") was never true, the
@@ -889,14 +919,25 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       pockets stay **open and un-mortared** and the plinth wants a **bond break** over each.
       **Do not widen them past ~4 1/2"**: TMS 402's pier/column line is 3t = 10 7/8" and the
       12" middle pier has 1 1/8" of room.
-    **The 8" the plinth lost went into the HEAD, not into the panel** — `W-M-FIRE-HEAD` is
-    19 3/8" tall, not 11 3/8", so the panel top holds at 64 15/16" absolute, the mantel stays
-    on the brick, the hand-measured 0" BESTA gaps stay true and brick stays 20.4 SF (19.6 SF
-    since the pier split, which takes 8" of width out of the buried course). Sill is
-    9 modular courses exactly; zero cut closers on the visible 45 1/2" opening; head is a
-    deliberate CUT COURSE at 16.7 courses (a course line gives 18 2/3", ~1" of daylight) —
-    steel angle lintel, not a rowlock. The $/SF rate deliberately does not drop — a mason
-    bills the panel on a job this small; re-rating down would deduct twice.
+    **The 8" the plinth lost went into the HEAD, not into the panel** — `W-M-FIRE-HEAD` went
+    11 3/8" -> 19 3/8", and **back to 16" on 2026-09-20** when the opening took 3 3/8" of it.
+    The rule is the same both times and it is the one to hold: the panel TOP never moves. It
+    is 64 15/16" absolute, so the mantel stays on the brick and the hand-measured 0" BESTA
+    gaps stay true. Brick 20.4 -> 19.6 SF (the pier split, 8" of width out of the buried
+    course) -> **18.9 SF** (the taller opening). Sill is 9 modular courses exactly; zero cut
+    closers on the visible 45 1/2" opening; the head is **18 courses exactly** at 48" AFF.
+    Steel angle lintel, not a rowlock, and since 2026-09-20 it bills by the foot of its
+    section out of `prices.toml`'s `[steel_members]` instead of $0. **The $/SF brick rate
+    deliberately does not drop** — a mason bills the panel on a job this small; re-rating down
+    would deduct twice. It no longer claims to contain the lintel, which with a real steel row
+    would have been a double-count.
+    - It was a deliberate CUT COURSE at 16.7 courses until then, and the reason is worth
+      keeping: the opening was 20 5/8" and sized to a TRIMLESS appliance set FLUSH in a 4 1/2"
+      recess, so the brick opening WAS the appliance's frame and a course line would have left
+      ~1" of daylight over it with nothing to hide it. In an 11 1/2" pocket the unit sits
+      BEHIND the aperture, so the same difference reads as a shadow inside a four-sided brick
+      reveal. **An aperture that reveals is more forgiving than an aperture that frames** —
+      that is what the depth bought, and it is why the coursing became reachable.
   - **The surround is laid in the court's BROWN blend and WASHED WHITE, since 2026-09-13.** It
     ordered `white-brick` until then, which was never a designed choice — the Material was
     sourced to the retired porch parapet and `brief.md` says only "white metal skin". One blend
@@ -916,14 +957,30 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       (the wash is not in the masonry family). Coursing still shows on the 3 5/8" reveal returns.
       Do **not** reach for `Wall.layer_materials` to fix it — `resolve/topology.py` substitutes on
       the *resolved* layer, so the BOM row would follow it back to `white-brick`.
-    - Sequencing, and it is real: the Amantii BI-30-XTRASLIM is **trimless** (the brick runs to
-      the glass edge), so the wash stops at the reveal returns and goes on **before the appliance
-      is set**, or is masked. The walnut mantel goes on **after the wash cures**; its hold-down
+    - Sequencing, and it is real — and it got EASIER on 2026-09-20 rather than harder. The
+      wash stops at the reveal returns and goes on **before the appliance is set**, or is
+      masked. That used to be tight because the Amantii BI-30-XTRASLIM was **trimless** and the
+      brick ran to its glass edge; the appliance now sits 1 7/8" BEHIND the aperture in an
+      11 1/2" pocket, so the wash line and the appliance no longer meet at all. The walnut mantel goes on **after the wash cures**; its hold-down
       blocking is still pre-brick. Mineral silicate on brick is non-combustible, so no clearance
       number moves.
     - Geometry: the stack totals 3 3/4" rather than 3 5/8", so the centred panel drifts 1/16"
       west and the overhang past `W-B-E1`'s pour goes 1/8" -> 3/16". Below every tolerance in
       `notes/east_breast_bearing.md`, whose numbers all stand (both bricks are 1,920 kg/m3).
+  - **The appliance is a ClassicFlame 28II042FGL infrared insert since 2026-09-20, and it is
+    CORD-ONLY on purpose.** It replaced the Amantii BI-30-XTRASLIM, which was fan-forced and
+    sole-source at the old 4 1/2" recess. The pocket carries **both** a hardwire J-box and
+    `ED-M-FIRE-RC`, a recessed receptacle, on the one dedicated 20 A `CKT-FIREPLACE` — owner's
+    call, and the thing that makes "can it be hardwired" stop being a selection criterion.
+    **Never convert this unit**: its safety story IS the Safer Plug thermal-sensing plug, so
+    hardwiring it removes the listed device. Its genuine CSA certification is the other half
+    of why it was picked over the cheaper Innoflame 28" (kept as the named alternate, and the
+    route back if a hardwire connection is ever required) — that one says "CSA" with no file
+    number, which is the one thing in this selection that could fail at plan review.
+    **Confirm the published cutout against the delivered body before the mason lays the jamb
+    piers.** `ED-M-FIRE-RC` is **not** a 210.52 wall-space outlet and must never be credited as
+    one — `electrical.receptacle_spacing` cannot tell, because it accepts a device within 0.5 m
+    of a room's clear face regardless of side, and this one is inside a firebox.
   - **The lintel is `BM-M-FIRE-LINTEL`, a `Beam`, since 2026-09-11** — it was prose in three
     files and an element in none. There is no lintel type in the engine and
     `FIREPLACE_BRICK_WYTHE` carries no `MasonrySpec`, so a `Beam` (free-string `size`, two
@@ -934,10 +991,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     **L3-1/2 x 3-1/2 x 1/4 A36 HDG angle**, named in `engineering_note` (a `Beam` has no
     `source` field). **`size="3.5x3.5"` is the angle's BOUNDING BOX and it is the trap here**:
     `cross_section` parses that and only that — `"L3-1/2x3-1/2x1/4"` or a trailing `" STEEL"`
-    both fall silently to the 1.5x5.5 rectangle. The drawn solid is ~2.7x the steel. It bills
-    at **$0**: a `Beam` reaches the estimate through its `assembly` as a `beam · <assembly>`
-    cubic-yard row, this one has none, and a volume rate is the wrong shape for an angle
-    anyway — the dollars want an `[allowances]` lump.
+    both fall silently to the 1.5x5.5 rectangle. The drawn solid is ~2.7x the steel. It billed
+    at **$0** until 2026-09-20 — a `Beam` reaches the estimate through its `assembly` as a
+    `beam · <assembly>` cubic-yard row, this one has none, and a volume rate is the wrong
+    shape for an angle anyway. It has a row of its own now: `prices.toml`'s `[steel_members]`,
+    keyed on the AISC section string and priced by the LINEAL FOOT, with `takeoff/steel.py`
+    taking these members OUT of `structural_solids` so nothing bills twice.
   - `FO-M-FIRE` is **RETIRED (2026-09-19)** — see the pier split above. Its two live engine
     traps are salvaged onto `FO-M-ERV-OA`'s note, which already cross-referenced them: the
     **first trimmer ply's AXIS sits on the opening edge** (draw an outline at the size of the
@@ -2398,42 +2457,55 @@ haus analysis . --solve                     # the engineered frame, solved in Py
   UNKNOWN, which would claim nobody knows about a question the engine has answered. **The 19'-3" rafter
   allowable this house quoted in five places was WRONG** — an interpolation to 35 psf that
   `snow.py`'s own rule forbids. The published row is **18'-4"**.
-- **⚠ `PT-BW-RNE` DOES NOT HAVE THE BASE IT IS DESIGNED ON** (2026-09-18; **two columns
-  until 2026-09-19**, and this is catlin's only open FAIL). `engineering/column_base.py`
+- **✅ THE TWO CANOPY COLUMNS BEAR ON ONE PLANE AT -10'-2", AND THAT IS WHY THEY CLOSE**
+  (2026-09-20; it was catlin's only open FAIL from 2026-09-18). `engineering/column_base.py`
   grades the IBC 1807.3.2.1 embedment a column free to translate at grade needs to turn its
   own shear around — the assumption every `deck_post` record had been NAMING and none
-  grading since 2026-09-11. `PT-BW-RNE` wants **7.74'** and has **3.50'**, d/c 2.21, over at
-  both ends of §1806.3.4's isolated-pole doubling, so it is not a judgement call.
-  `notes/entry_column_base_fixity.md` works it by hand and §6 works the closures. **3'-6" is
-  not a fixed base at any load worth the name**: even a column carrying only its own wind
-  drag needs 4.1' there, and it is the SHORT column, so a rigidity split hands it the larger
-  share of the one case nothing else resists. **`haus check` exits 1 and `haus print` refuses
-  until this closes**; the test allow-list and `scripts/verify.sh`'s carry the citation and
-  go with the fix.
-  - **`PT-BW-RE` closed to a §1806.3.4 judgement on 2026-09-19, and what moved was the
-    DEMAND.** The canopy deck is a declared diaphragm (`Roof.diaphragm`) and `W-BW-SCREEN` a
-    declared shear panel (`Wall.shear_panel`), so the frame shear is shared in proportion to
-    rigidity — IBC 2018 §1604.4, hand-worked in §7 of that note — instead of being loaded
-    wholly onto the two cast columns, and each column's own drag is a PROPPED-cantilever load
-    now that the deck holds its head. Required embedment 8.08' → **6.25'** against 6.12'.
-    **That is not a pass**: 1.02 is exactly at the line, on presumptive soil with no boring.
-  - **E-W now governs both columns, and it is the case nothing shares.** The panel runs
-    north-south. Its 62% of the N-S case is the whole of the reduction; the E-W case is still
-    the two columns' alone, and the split between them is 36/64 rather than 50/50 because a
-    cantilever's stiffness goes as `1/h³`.
+  grading since 2026-09-11 — and neither canopy column had it: `PT-BW-RNE` wanted **7.74'**
+  against **3.50'** (d/c 2.21, over at both ends of §1806.3.4) and `PT-BW-RE` **6.25'**
+  against **6.12'** (1.02, straddling the band and publishing nothing).
+  `notes/entry_column_base_fixity.md` works it by hand; §6a is the closure.
+  Both now stand 16'-6 3/4" from a common base to the header soffit: **7.07' needed against
+  7.33', d/c 0.96, and §1806.3.4's doubling is not claimed for either**, so both publish a
+  graded verdict rather than a judgement. `haus check` is back to **0 FAIL**, both allow-lists
+  (`test_cli_check_output`, `scripts/verify.sh`) are EMPTY again, and `haus print` is still
+  refused — but now on the two landing columns' UNKNOWN, not on this.
+  - **⚠ THEY HAD TO MOVE TOGETHER, AND THE NOTE'S §6a SAID OTHERWISE UNTIL 2026-09-20.** It
+    argued that `h` is measured grade-to-load and so invariant under deepening, therefore
+    `d` is "a fixed target rather than an iteration", therefore each column is a separate
+    one-line fix. The half about `h` is right. **The half about `d` is wrong**, because the
+    DEMAND is not fixed: IBC §1604.4 splits the frame shear by `3EI/h³` and that `h` is the
+    FULL shaft, buried length included. Deepening `PT-BW-RNE` alone by 4'-3" softens it by a
+    factor of 2.2 and sheds its share onto `PT-BW-RE`, which goes from 1.02 to **1.19 —
+    OVER**. There is no pair of elevations that closes one and leaves the other near -9'.
+    Equal shafts are the answer, and they are also 50/50 under a tributary split, so the
+    governing case stopped depending on §7d's rigid/flexible call (which was at 0.99x).
+  - **E-W governs both columns, and it is the case nothing shares.** The panel runs
+    north-south. Its 76% of the N-S case is the whole of the reduction; the E-W case is still
+    the two columns' alone, and the split between them is now **50/50** because they are the
+    same column.
+  - **What it costs is excavation and prose, not concrete** — 5'-5 9/16" of extra 12" round
+    between the two is 0.15 cy and 27 lb of rebar. Both pads bottom at -11'-2", which is
+    1'-4 9/16" below `FT-B-N1`..`-N4` about 7/8" away in plan on the house side, and 3'-2"
+    below the stone strip `PD-BW-RNE` laps on the garage side. Both are **sequencing notes
+    for the drawings** — dig the pocket and cast the pad first — of the class
+    `north_entry_frame.PIER_BOTTOM_FT` already carries. Neither is a modelling gap.
   - **What the reduction COSTS is parts, and they are graded.** `lateral_system/RF-BW-CANOPY`
     grades the deck's span-to-depth (**4.00 against SDPWS Table 4.2.4's 4.00 blocked — no
     margin at all, and unblocked the limit is 3.0 and it is a FAIL**), its unit shear, the
     panel's unit shear, aspect ratio and hold-down. Blocking at every panel edge, a
     continuous chord at each end and a collector at each header are now load-bearing
-    requirements on `AN-BW-ROOF`, not detailing preferences.
-  - **The garage-side pads' `cast_with` is STALE and says something untrue.** `FT-GF-S1` …
-    `FT-GF-W` became IRC R403.5 **crushed-stone** footings on 2026-09-15, five days after
-    `PD-BW-GW`/`-GE`/`-RNE` declared they were cast monolithically with them. Nothing is cast
-    with consolidated stone. `engineering/spread_base.pours_for` refuses a named pour that is
-    not concrete, so no combined-footing credit reaches `PD-BW-RNE` — which is why the
-    2026-09-19 plan's step 3 does not exist. The declaration itself still wants deleting or
-    restating (→ notes §6f).
+    requirements on `AN-BW-ROOF`, not detailing preferences. **§6a made every row but the
+    first work harder** — softer columns shed onto the panel, so the deck went 0.64 → 0.79
+    and the panel 0.69 → 0.82. Span-to-depth is geometry and did not move; it is now the
+    governing row on the whole canopy.
+  - **The garage-side pads' `cast_with` was STALE and is DELETED** (2026-09-20, commit
+    `3b17a2c6`). `FT-GF-S1` … `FT-GF-W` became IRC R403.5 **crushed-stone** footings on
+    2026-09-15, five days after `PD-BW-GW`/`-GE`/`-RNE` declared they were cast monolithically
+    with them, and nothing is cast with consolidated stone.
+    `engineering/spread_base.pours_for` refuses a named pour that is not concrete, so the
+    credit was never actually taken — which is why the 2026-09-19 plan's step 3 does not
+    exist. What the stale declaration cost was a reader's time (→ notes §6f, §6g).
   - The two garage-side LANDING columns straddle §1806.3.4 and report INCOMPLETE naming the
     judgement, which is the band convention working. Nothing in the 2026-09-19 revision
     reaches them: a guard load is delivered at a rail, not at a diaphragm.

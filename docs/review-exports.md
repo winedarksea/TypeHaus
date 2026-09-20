@@ -9,7 +9,19 @@ haus render houses/catlin --view plan --fmt svg        # named layers, for a vec
 haus render houses/catlin --view plan --fmt psd        # raster layers, for Procreate
 haus render houses/catlin --view plan --long-edge 1200 # smaller, for a quick look
 haus render houses/catlin --view plan --dpi 300        # size by resolution instead
+haus render houses/catlin --view section --slice SL-S-FIRE   # a house-AUTHORED section cut
+haus render houses/catlin --view section --slice all         # every authored section
 ```
+
+`--slice` is section-only, and it is what reaches a cut the house authored rather than the
+derived house-centre one. Without a tag `--view section` draws the centre cut, exactly as it
+always did. An authored slice comes out ANNOTATED — the same datums, ground line and room
+names `haus print`'s A-301 carries, through the one `build_annotated_section` both use — with
+one difference the crop is responsible for: the room names and the detail callouts are clipped
+to the slice's own window, because they walk the model rather than the drawing and would
+otherwise letter rooms and hang bubbles outside the frame. A DETAIL is deliberately not
+reachable this way: details are their own view (`--view details`), cut with a joint plan and
+their own paper, and routing one through the section path would draw it without either.
 
 ## The stack
 
