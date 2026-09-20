@@ -105,6 +105,42 @@ jobs:
         run: npm run build
         working-directory: ui
 
+  # The published web app runs the engine IN THE BROWSER under Pyodide, whose Shapely/GEOS
+  # is a version behind `.venv` (2.0.2 / GEOS 3.12.1 against 2.1.2 / GEOS 3.13.1). GEOS 3.13
+  # hardened OverlayNG's noding, so 3.12 throws `TopologyException` on inputs 3.13 absorbs —
+  # and in the worker that throw is a JS-level CppException that kills the worker, so the app
+  # never renders and no Python traceback ever reaches the UI. `pytest` on 3.13.1 proves
+  # nothing about that class of bug; only running the real compute path under Pyodide's own
+  # wheel does. A pip venv does NOT reproduce it (pip's shapely 2.0.2 vendors GEOS 3.11.2).
+  #
+  # Deliberately its own job, not a step in `engine`: it needs node, not uv, and a wasm boot
+  # plus the CDN wheel fetch is ~30 s that nothing else should wait behind.
+  pyodide-geos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: scripts/pyodide/package-lock.json
+      # Pyodide is pinned to 0.26.2 in scripts/pyodide/package.json — the version the app
+      # ships. Bumping it changes the GEOS under test, which is the whole point of the job.
+      - name: Install pinned Pyodide
+        run: npm ci
+        working-directory: scripts/pyodide
+      # The starter house is the small fixture: it resolves, bills, summarises and emits a
+      # glTF through the same overlay/union code the browser runs.
+      - name: GEOS smoke (starter)
+        run: node smoke.mjs houses/starter
+        working-directory: scripts/pyodide
+      # The reference house is the run that exercises the bug class: `envelope_geometry.py`
+      # once unioned room faces with a bare `unary_union`, and GEOS 3.12 raised
+      # `TopologyException` on catlin's storey geometry where 3.13 absorbed it.
+      - name: GEOS smoke (catlin)
+        run: node smoke.mjs houses/catlin
+        working-directory: scripts/pyodide
+
   # PyPI Trusted Publishing: no API token lives in this repo. Runs only after `engine` and
   # `ui` are green, and only on a published release — 0.1.0a0 was uploaded without either
   # gate and shipped a wheel that could not load a house.

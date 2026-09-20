@@ -132,6 +132,11 @@ ESTIMATE_PLANS = (
     # not carry a foam-sealer component.
     ("sill_gaskets", "sill_gaskets", "product", "length_ft", "LF"),
     ("drainage", "drainage", "category", "length_ft", "LF"),
+    # Cove/LED run stock, keyed on the item and qualified by the luminaire type. ONE section
+    # over two units: ``quantity`` is the field in both, and a piece row says ``unit = "EA"``
+    # to print as pieces (``ALTERNATE_UNITS``). Mind the mirror — [placeables] bills the
+    # PSUs, drivers and switches; a run's channel, tape, caps and connectors bill only here.
+    ("light_run_materials", "light_run_materials", "item", "quantity", "LF"),
     # Reads the *same* BOM rows as ``placeables`` — see ``EXCLUDED_FROM_TOTAL``.
     ("furnishings", "placeables", "type", "count", "ea"),
     # Lump sums. The BOM table this names does not come from the model — see ``ALLOWANCES``
@@ -269,6 +274,10 @@ QUALIFIED_KEY_FIELD: dict[str, str | tuple[str, ...]] = {
     # saw and a pile of ribbons nobody re-uses. A house that keeps its bare material key
     # keeps one rate over hung and ripped alike.
     "sheet_goods": "scope",
+    # A damp-location exterior extrusion, a sauna-rated silicone tape and a 24V cove tape
+    # are all ``item = "tape"``/``"channel"``, and they are not one rate. A house that
+    # prices the bare item keeps one blended rate over every run.
+    "light_run_materials": "type",
 }
 
 
@@ -389,7 +398,7 @@ UNPRICED_VIEWS: dict[str, str] = {
     "service_load": "engineering summary, not a purchase",
     "lighting_load": "engineering summary, not a purchase",
     "poe_budget": "engineering summary, not a purchase",
-    "light_runs": "run geometry; its materials are light_run_materials",
+    "light_runs": "run geometry; its materials price in [light_run_materials]",
     # ``solar`` is a dict of summaries (panel/watt totals, the per-string voltage check);
     # the priced view of it is the ``solar_modules`` list beside it — see ``takeoff/bom.py``.
     # ``conductors`` and ``data_raceways`` are priced in their own sections: the model

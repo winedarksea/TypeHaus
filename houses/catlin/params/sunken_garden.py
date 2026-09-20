@@ -93,6 +93,7 @@ from typehaus import (
 )
 
 from typehaus.resolve.framing.profiles import cross_section
+from params.roof_trim import _WALL_OUTBOARD_IN
 from params.sunken_garden_options import OPTION
 
 # ** THE POUR DOES NOT MOVE WHEN THE WASH IS ADDED, AND THIS IS WHAT HOLDS THAT. **
@@ -146,12 +147,20 @@ class SunkenGardenSpec:
     clear_width_ft: float = 19.0  # E-W between wall inner faces (widened for the 6x6 grid)
     clear_length_ft: float = 26.0  # N-S between wall inner faces
     porch_clear_depth_ft: float = 8.0  # N-S inside the porch box
-    gap_to_house_in: float = 5.0  # house cladding face -> north edge (insulation gap)
+    # House cladding face -> the court's north edge: the insulation gap, open to grade.
+    # 2.75", not the 5" this field carried until 2026-09-20. The 5" was never the built
+    # gap: it was paired with `house_ext_layers_in = 5.0`, a cladding stand-off two
+    # generations stale (the CI-board 5.02" stack), while the real face went to 7.25". The
+    # sum `_y_out_n` is what the whole porch is laid out from and it does NOT move, so the
+    # honest split of the same -0'-10" is 7.25" of wall + 2.75" of air. Widening the gap
+    # back to 5" is a DESIGN MOVE, not a cleanup: it pushes the court 2.25" south, off
+    # D-B-PATIO's landing patch (coverage drops under R311.3's 85% and the check FAILs).
+    gap_to_house_in: float = 10.0 - _WALL_OUTBOARD_IN  # 2.75"
     # The house's real BELOW-GRADE outboard face, on the south run: 0.06" waterproofing +
     # 2" + 2" XPS + 0.125" acrylic foundation coating over BASEMENT_8's pour
     # (FOUNDATION_WALL_XPS4_OUTBOARD, plan/assemblies.py). Transcribed, not imported, the
-    # same way `basement_depth_ft` is. `house_ext_layers_in = 5.0` above is the
-    # ABOVE-GRADE stack (polyiso + EPS + furring + cladding) and is why `_y_ax_n` landed
+    # same way `basement_depth_ft` is. `house_ext_layers_in` above is the
+    # ABOVE-GRADE stack (ccSPF + vent + girt + PBR) and is why `_y_ax_n` landed
     # on -10" rather than on this plane: the porch deck clears the cladding, but the court
     # wall meets the foundation.
     house_below_grade_face_in: float = 4.185
@@ -210,7 +219,10 @@ class SunkenGardenSpec:
     # bottom out on undisturbed soil at frost depth rather than on a replacement section.
     pier_levelling_bedding_in: float = 7.0
     house_size_ft: float = 36.0
-    house_ext_layers_in: float = 5.0  # polyiso+EPS+furring+cladding beyond sheathing
+    # The live above-grade cladding stand-off, DERIVED rather than transcribed:
+    # ccSPF 4" + vent 0.5" + girt 1.5" + PBR 1.25" = 7.25". It was a frozen 5.0"
+    # (the retired CI-board stack) long after the face moved.
+    house_ext_layers_in: float = _WALL_OUTBOARD_IN
     # 109.4375" is ``params/main_deck.BASEMENT_DATUM``; this module may import, but it is one
     # house-wide number transcribed rather than a second derivation, and
     # ``integrity.basement_bearing_seat`` checks the two agree. This is the BASEMENT floor

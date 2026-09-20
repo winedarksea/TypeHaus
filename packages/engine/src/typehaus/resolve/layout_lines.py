@@ -185,29 +185,48 @@ def _unit(a: _Point, b: _Point) -> tuple[float, float] | None:
     return dx / span, dy / span
 
 
-def _collinear(a: _Segment, b: _Segment, tol: float) -> float:
-    """Overlap length of ``b`` projected on ``a``'s line, or 0 if they are not collinear.
+def collinear_overlap(a: _Segment, b: _Segment, axis_tol: float, *,
+                      both_ends: bool = False) -> tuple[float, float] | None:
+    """The shared run of ``b`` on ``a``'s line, as an interval in ``a``'s own parameter.
 
-    ``stacking._axis_match``'s rule, kept deliberately identical: parallel (reversal
-    allowed), within ``tol`` of the same line, and overlapping in projection. Identical in
-    the arithmetic, that is — the *segments* handed in here are datum-face axes, where
-    ``_axis_match`` is handed raw node axes. See the note at ``_TOL``.
+    The one piece of arithmetic behind every "is this wall line that wall line" matcher in
+    ``resolve`` (``_collinear`` here, ``stacking._axis_match``,
+    ``construction_geometry._stack_overlap``, ``platform._collinear_overlap``). Returns
+    ``(lo, hi)`` measured along ``a`` from ``a[0]``, clipped to ``a``'s own span, or None
+    when the two are not the same line. It does NOT judge how much overlap is enough: each
+    caller keeps its own minimum, and its own ``axis_tol`` — those numbers are measured off
+    different geometry (datum face vs raw node axis) and are not interchangeable. See the
+    note at ``_TOL``.
+
+    ``both_ends`` gates *both* of ``b``'s endpoints on ``axis_tol`` and skips the direction
+    test, which is ``platform``'s formulation; the default gates ``b[0]`` and tests
+    direction by cross product.
     """
-    da, db = _unit(*a), _unit(*b)
-    if da is None or db is None:
-        return 0.0
-    if abs(da[0] * db[1] - da[1] * db[0]) > 1e-3:
-        return 0.0
+    da = _unit(*a)
+    if da is None:
+        return None
+    if not both_ends:
+        db = _unit(*b)
+        if db is None or abs(da[0] * db[1] - da[1] * db[0]) > 1e-3:
+            return None
     n = (-da[1], da[0])
-    if abs((b[0][0] - a[0][0]) * n[0] + (b[0][1] - a[0][1]) * n[1]) > tol:
-        return 0.0
+    ends = b if both_ends else (b[0],)
+    for p in ends:
+        if abs((p[0] - a[0][0]) * n[0] + (p[1] - a[0][1]) * n[1]) > axis_tol:
+            return None
 
     def proj(p: _Point) -> float:
         return float((p[0] - a[0][0]) * da[0] + (p[1] - a[0][1]) * da[1])
 
-    la1 = math.dist(a[0], a[1])
+    span = math.dist(a[0], a[1])
     lb0, lb1 = sorted((proj(b[0]), proj(b[1])))
-    return max(0.0, min(la1, lb1) - max(0.0, lb0))
+    return max(0.0, lb0), min(span, lb1)
+
+
+def _collinear(a: _Segment, b: _Segment, tol: float) -> float:
+    """Overlap length of ``b`` projected on ``a``'s line, or 0 if they are not collinear."""
+    run = collinear_overlap(a, b, tol)
+    return 0.0 if run is None else max(0.0, run[1] - run[0])
 
 
 def _shares_a_node(a: Any, b: Any) -> bool:

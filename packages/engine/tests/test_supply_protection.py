@@ -91,7 +91,7 @@ def test_a_missing_main_shutoff_fails(catlin_plan):
     plan = _without(catlin_plan, "PA-B-MAIN-SHUTOFF")
     findings = main_shutoff(_context(plan, _resolved(plan)))
     assert len(_fails(findings)) == 1
-    assert "P2903.9.1" in _fails(findings)[0].message
+    assert "UPC 606.1" in _fails(findings)[0].message
 
 
 def test_an_inaccessible_main_shutoff_fails_separately(catlin_plan, catlin_model):

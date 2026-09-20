@@ -32,10 +32,17 @@ _BASIN_REACH_M = 36 * 0.0254
 # E3901.1 item (4): a receptacle more than 5 1/2 ft above the floor is not counted as a
 # required outlet. A mirror-height outlet over a vanity is the pattern this guards.
 _MAX_COUNTING_HEIGHT_M = 5.5 * 0.3048
-# The plan symbols a lavatory basin is drawn with. A kitchen sink or a bar sink is not a
-# lavatory and 210.52(D) does not reach it; the bathroom-occupancy gate below is what
-# actually excludes them, and this is the second half of the same discrimination.
+# ``FixtureType.basin`` is the authority. These two are the FALLBACK for a type that does
+# not state it — the plan symbols a lavatory basin is drawn with, and the ones that say
+# plainly that there is no basin here. A kitchen sink or a bar sink is not a lavatory and
+# 210.52(D) does not reach it; the bathroom-occupancy gate below is what actually excludes
+# them, and this is the second half of the same discrimination. A symbol in neither set, on
+# a type that states nothing, is an UNKNOWN — a drawing vocabulary cannot be extended
+# without silently moving a code rule's scope.
 _BASIN_SYMBOLS = {"lavatory", "vanity"}
+_NOT_BASIN_SYMBOLS = {"toilet", "toilet-wall-hung", "bidet", "urinal", "tub", "tub-shower",
+                      "shower", "floor-drain", "kitchen-sink", "laundry-sink", "hydrant",
+                      "sauna-heater", "water-heater"}
 
 
 @check(Tier.CODE, "code.E3901_6_bathroom_receptacle")
@@ -46,9 +53,14 @@ def bathroom_basin_receptacle(ctx: CheckContext) -> list[Finding]:
     basin extent, so ``ResolvedCanvasObject.footprint`` — the case — is what the distance
     is measured to. The carcass is larger than the basin it holds, so a carcass-edge
     distance is a *lower* bound on the real 210.52(D) distance and this rule is permissive
-    in exactly the direction E3902's centroid bug used to be. Tightening it means giving
-    ``FixtureType`` a ``basin`` extent; until then, a PASS here means "passes at least as
-    easily as the code asks", never the reverse.
+    in exactly the direction E3902's centroid bug used to be. ``FixtureType.basin`` says
+    only THAT there is a basin, not where its edge is; tightening this means an extent.
+    Until then, a PASS here means "passes at least as easily as the code asks", never the
+    reverse.
+
+    **Which fixtures are basins is declared, not drawn.** ``FixtureType.basin`` decides it;
+    the plan symbol is only the fallback for a type that states nothing, and a symbol in
+    neither vocabulary reports UNKNOWN against that type.
 
     Four things disqualify a receptacle that is otherwise close enough, each citable:
 
@@ -70,8 +82,20 @@ def bathroom_basin_receptacle(ctx: CheckContext) -> list[Finding]:
     cid, code = "code.E3901_6_bathroom_receptacle", "E3901.6"
     bathrooms = {room.tag: room for room in ctx.model.rooms
                  if room.occupancy == Occupancy.BATHROOM.value}
-    basins = _basins(ctx, bathrooms)
+    basins, unclassified = _basins(ctx, bathrooms)
+    unstated = [_finding(
+        cid, Result.UNKNOWN,
+        f"{obj.tag} stands in a bathroom and nothing says whether it is a lavatory basin — "
+        f"{type_ref} states no `basin` and its plan symbol ({symbol or 'none'}) is in "
+        "neither vocabulary",
+        (obj.tag, type_ref), code,
+        f"set `basin=True/False` on {type_ref}")
+        for obj, type_ref, symbol in unclassified]
     if not basins:
+        if unstated:
+            return unstated
+        # N/A is EARNED here: every fixture in every bathroom was classified, and none of
+        # them is a basin.
         return [_finding(cid, Result.NOT_APPLICABLE,
                          "no lavatory basin is modeled in any bathroom", (), code)]
 
@@ -86,7 +110,7 @@ def bathroom_basin_receptacle(ctx: CheckContext) -> list[Finding]:
     wall_bands = _wall_bands(ctx)
     floors = _floor_datums(ctx)
 
-    out: list[Finding] = []
+    out: list[Finding] = list(unstated)
     for basin, basin_room in basins:
         carcass = Polygon(basin.footprint)
         best: tuple[float, Any, str] | None = None
@@ -142,24 +166,54 @@ def _fail_message(basin: Any, rejected: list[tuple[float, str, str]]) -> str:
     return f"{head} — {detail}"
 
 
-def _basins(ctx: CheckContext, bathrooms: dict[str, Any]) -> list[tuple[Any, Any]]:
-    """Every resolved lavatory/vanity fixture that stands in a bathroom, with its room.
+def _is_basin(fixture_type: Any) -> bool | None:
+    """Does this type present a lavatory basin? None = neither the field nor the symbol says.
+
+    ``FixtureType.basin`` outranks the symbol in both directions — a type that states False
+    is out of 210.52(D)'s scope however it is drawn, and one that states True is in it.
+    """
+    stated = getattr(fixture_type, "basin", None)
+    if stated is not None:
+        return bool(stated)
+    symbol = getattr(fixture_type, "plan_symbol", None)
+    if symbol in _BASIN_SYMBOLS:
+        return True
+    if symbol in _NOT_BASIN_SYMBOLS:
+        return False
+    return None
+
+
+def _basins(ctx: CheckContext,
+            bathrooms: dict[str, Any],
+            ) -> tuple[list[tuple[Any, Any]], list[tuple[Any, str, str]]]:
+    """Every resolved basin fixture standing in a bathroom, and the ones nothing classifies.
 
     The occupancy gate is what keeps a wet bar's ``vanity``-symbol cabinet out: 210.52(D)
     is a bathroom rule, and a bar sink is served by 210.52(C) instead.
+
+    The second list is the honest gap: a fixture in a bathroom whose type states no
+    ``basin`` and whose plan symbol is in neither vocabulary. It is reported as UNKNOWN
+    rather than assumed basinless, because assuming it away is how a real lavatory leaves
+    the rule's scope without anyone seeing it.
     """
-    types = {t.tag for t in ctx.plan.library.fixture_types
-             if getattr(t, "plan_symbol", None) in _BASIN_SYMBOLS}
-    out = []
+    verdicts = {t.tag: _is_basin(t) for t in ctx.plan.library.fixture_types}
+    symbols = {t.tag: getattr(t, "plan_symbol", None) or ""
+               for t in ctx.plan.library.fixture_types}
+    out: list[tuple[Any, Any]] = []
+    unclassified: list[tuple[Any, str, str]] = []
     for obj in ctx.model.canvas_objects:
-        if obj.kind != "Fixture" or obj.type_ref not in types:
-            continue
-        if len(obj.footprint) < 3:
+        if obj.kind != "Fixture" or len(obj.footprint) < 3:
             continue
         room = bathrooms.get(obj.room or "")
-        if room is not None:
+        if room is None:
+            continue
+        type_ref = obj.type_ref or ""
+        verdict = verdicts.get(type_ref)
+        if verdict is True:
             out.append((obj, room))
-    return out
+        elif verdict is None:
+            unclassified.append((obj, type_ref or "(no type)", symbols.get(type_ref, "")))
+    return out, unclassified
 
 
 def _receptacles(ctx: CheckContext, rooms: dict[str, list],

@@ -163,9 +163,9 @@ def split_wall_ops(view: PlanModel, storey: str, wall, t: float, mid_tag: str,
         PatchOp("add", "Node", mid_tag,
                 {"position": _point_expr_m(ax + t * (bx - ax), ay + t * (by - ay))},
                 hint_file=hint_file, hint_list="NODES", storey=storey),
-        PatchOp("update", "Wall", wall.tag, {"end_node": mid_tag}),
-        PatchOp("add", "Wall", new_wall_tag, fields, hint_file=hint_file, hint_list="WALLS",
-                storey=storey),
+        PatchOp("update", wall.element_kind, wall.tag, {"end_node": mid_tag}),
+        PatchOp("add", wall.element_kind, new_wall_tag, fields, hint_file=hint_file,
+                hint_list="WALLS", storey=storey),
     ]
     refit, remap, impacts = rehost_along_wall(view, storey, wall, new_wall_tag, mid_tag, axis,
                                               t * axis_length(axis))
@@ -242,8 +242,8 @@ def heal_ops(view: PlanModel, storey: str, node_tag: str) -> MutationResult:
                 continue
             impacts.append(Impact(el.tag, "needs_review",
                                   f"{el.tag}.{name} names {tag}, removed by the heal"))
-    ops += [PatchOp("update", "Wall", survivor.tag, update),
-            PatchOp("delete", "Wall", absorbed.tag, {}),
+    ops += [PatchOp("update", survivor.element_kind, survivor.tag, update),
+            PatchOp("delete", absorbed.element_kind, absorbed.tag, {}),
             PatchOp("delete", "Node", node_tag, {})]
     return MutationResult(ops=ops, remap=remap, deleted_tags=(absorbed.tag, node_tag),
                           impacts=tuple(impacts), warnings=tuple(i.reason for i in impacts))

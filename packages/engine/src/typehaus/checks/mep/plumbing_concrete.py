@@ -8,6 +8,14 @@ band exists to prevent.
 
 The geometry derivations live in ``resolve/mep_queries.py`` (``concrete_crossings``); this
 module only turns them into findings.
+
+**The citations here are UPC, not IRC P2604.** Minn. R. 1309.0010 subp. 3.D strikes IRC
+chapters 25-33 and P2604 is in chapter 26; what governs is the UPC as incorporated at Minn.
+R. 4714.0050 — **314.1** is the 45 degree influence line off "the bottom exterior edge of
+the footing" that ``footing_clearance`` measures, and **314.4** the bedding and backfill
+``under_slab_burial`` grades. Minn. R. 4714.0314 once deleted UPC 314.0-314.4 outright; 45
+SR 1007 (2021-09-27) repealed that deletion, so chapter 3 applies unamended. Numbers are
+unchanged by the re-citation — only the section a reviewer opens is.
 """
 
 from __future__ import annotations
@@ -165,7 +173,7 @@ def sleeve_coverage(ctx: CheckContext) -> list[Finding]:
             continue
         if (sleeve.host_category == "footing" and sleeve.center_z_m is not None
                 and sleeve.center_z_m < sleeve.z0_m - 1e-6):
-            # An under-footing protection sleeve (IRC P2604): the pipe passes *below* the
+            # An under-footing protection sleeve (UPC 314.1): the pipe passes *below* the
             # bearing plane, so `concrete_crossings` — which walks through-crossings of a
             # solid's own z-band — structurally cannot ever claim it, and reporting UNKNOWN
             # here would be permanent noise. `mep.footing_clearance` is the check that
@@ -189,8 +197,8 @@ def sleeve_coverage(ctx: CheckContext) -> list[Finding]:
 
 @check(Tier.CODE, "mep.under_slab_burial")
 def under_slab_burial(ctx: CheckContext) -> list[Finding]:
-    """A drain running under a slab must actually clear its underside — a crown poured
-    into the bottom inch of the slab is a void former, not a pipe with bedding."""
+    """UPC 314.4 — a drain running under a slab must actually clear its underside; a crown
+    poured into the bottom inch of the slab is a void former, not a pipe with bedding."""
     from shapely.geometry import LineString, Polygon
 
     cid = "mep.under_slab_burial"
@@ -388,19 +396,19 @@ def footing_clearance(ctx: CheckContext) -> list[Finding]:
                 if depth_below <= 1e-9:
                     continue  # pipe is above the bearing plane — no influence
                 if seg.intersects(footprint):
-                    # Passing under (or through) the footing: legal per IRC P2604 only
+                    # Passing under (or through) the footing: legal per UPC 314.1 only
                     # inside a protection sleeve / relieving arch authored on the footing.
                     sleeve = _threading_sleeve(ctx, footing, run, i, seg)
                     if sleeve is not None:
                         out.append(_pass(
                             cid, f"run {run.tag} passes under footing {footing.tag} "
-                                 f"through protection sleeve {sleeve.tag} (IRC P2604)",
+                                 f"through protection sleeve {sleeve.tag} (UPC 314.1)",
                             (run.tag, footing.tag, sleeve.tag)))
                     else:
                         out.append(_fail(
                             cid, f"run {run.tag} segment {i} passes under footing "
                                  f"{footing.tag} {depth_below / M_PER_IN:.0f}\" below its "
-                                 "bearing plane with no protection sleeve (IRC P2604)"
+                                 "bearing plane with no protection sleeve (UPC 314.1)"
                                  + _near_miss(ctx, footing, run, i, seg),
                             (run.tag, footing.tag)))
                     continue
@@ -415,7 +423,7 @@ def footing_clearance(ctx: CheckContext) -> list[Finding]:
                         out.append(_pass(
                             cid, f"run {run.tag} encroaches on footing {footing.tag}'s "
                                  f"influence line inside protection sleeve {sleeve.tag} "
-                                 "(IRC P2604)", (run.tag, footing.tag, sleeve.tag)))
+                                 "(UPC 314.1)", (run.tag, footing.tag, sleeve.tag)))
                         continue
                     out.append(_fail(
                         cid, f"run {run.tag} segment {i} sits "
@@ -442,7 +450,7 @@ def sewer_exit_invert(ctx: CheckContext) -> list[Finding]:
     house gets. Where the drain leaves *through* concrete, `concrete_crossings` finds it. But
     where the sewer connection sits below the slab — deep, as cold climates bury them — the
     walls have already stopped at the slab and the drain leaves *under* a footing inside a
-    protection sleeve (IRC P2604). That is not a through-crossing, so it has to be matched by
+    protection sleeve (UPC 314.1). That is not a through-crossing, so it has to be matched by
     proximity instead, with the invert interpolated along the run at the sleeve's plan point.
     """
     from typehaus.resolve.mep import concrete_crossings

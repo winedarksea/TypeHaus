@@ -1,0 +1,13 @@
+{
+  "name": "typehaus-pyodide-smoke",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Pinned Pyodide runtime for the GEOS smoke test (scripts/pyodide/smoke.mjs).",
+  "type": "module",
+  "scripts": {
+    "smoke": "node smoke.mjs"
+  },
+  "dependencies": {
+    "pyodide": "0.26.2"
+  }
+}

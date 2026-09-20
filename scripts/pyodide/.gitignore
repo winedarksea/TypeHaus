@@ -1,0 +1,2 @@
+# No trailing slash: matches a symlinked node_modules too (see ui/.gitignore).
+node_modules

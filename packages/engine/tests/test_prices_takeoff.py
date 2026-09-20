@@ -149,23 +149,23 @@ def test_cli_variants_compare_still_works_without_prices(starter_dir: Path) -> N
 # --- every BOM table is priced, declared a view, or listed unpriced -------------------------
 # The estimate refuses to price a rate with nothing to multiply; the mirror of that rule is
 # what `unpriced` reports — a table no plan named at all must still surface, or it resolves,
-# exports and stays invisible to every cost surface (as catlin's LED run materials once did).
-# These three pin the sweep that closed it.
+# exports and stays invisible to every cost surface (as catlin's LED run materials once did,
+# until [light_run_materials] was given a plan of its own). These three pin the sweep.
 
 def test_a_bom_table_no_plan_reads_surfaces_as_unpriced(tmp_path) -> None:
     """The hole itself: an undeclared table is listed, summed by (key, unit)."""
     (tmp_path / "prices.toml").write_text(_SAMPLE)
     estimate = estimate_costs({
         "framing_by_size": [{"profile": "2x4", "order_length_ft": 100}],
-        "light_run_materials": [
+        "gadget_stock": [
             {"item": "tape", "unit": "LF", "quantity": 3.3},
             {"item": "tape", "unit": "LF", "quantity": 6.7},
             {"item": "end_cap", "unit": "EA", "quantity": 4},
         ],
     }, load_prices(tmp_path))
-    assert [row for row in estimate["unpriced"] if row["section"] == "light_run_materials"] == [
-        {"section": "light_run_materials", "key": "end_cap", "quantity": 4.0, "unit": "EA"},
-        {"section": "light_run_materials", "key": "tape", "quantity": 10.0, "unit": "LF"},
+    assert [row for row in estimate["unpriced"] if row["section"] == "gadget_stock"] == [
+        {"section": "gadget_stock", "key": "end_cap", "quantity": 4.0, "unit": "EA"},
+        {"section": "gadget_stock", "key": "tape", "quantity": 10.0, "unit": "LF"},
     ]
     # Listed, never priced at zero: the total is the framing and nothing else.
     assert estimate["total"] == {"low": pytest.approx(72.0), "high": pytest.approx(72.0)}
@@ -206,8 +206,10 @@ def test_every_catlin_bom_table_is_priced_declared_or_unpriced(
         and isinstance(table, list) and table and name not in listed
     }
     assert not orphans, f"BOM tables reaching no cost surface at all: {sorted(orphans)}"
-    # And the table that motivated the sweep is really there, not merely not-an-orphan.
-    assert "light_run_materials" in listed
+    # And the table that motivated the sweep has left the report the only honest way: it is
+    # PRICED now ([light_run_materials], 2026-09-19), not merely not-an-orphan.
+    assert "light_run_materials" in read
+    assert "light_run_materials" not in listed
 
 
 def test_every_catlin_hardware_part_reaches_a_price(catlin_model) -> None:

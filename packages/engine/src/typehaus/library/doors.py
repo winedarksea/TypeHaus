@@ -84,6 +84,12 @@ POCKET_DOOR_TYPES = (
     DT_POCKET_INT_48,
 )
 
+# ``function`` is stated only where the PRODUCT decides it: an exterior swing is keyed, a
+# sectional's only hardware is its operator, a bifold or bypass runs on its own track and
+# takes no lockset. The interior swings and the pocket frames below leave it None on purpose
+# — the same DT-INT-SWING32 is a passage set at a study and a privacy set at a bath, and a
+# planning catalog cannot know which. A house that prices hardware per function states it on
+# its own type (or splits the type), which is exactly what the field is for.
 _STANDARD_SOURCE = (
     "Commodity door product class; select a listed product meeting the declared dimensions "
     "and performance."
@@ -95,6 +101,7 @@ STANDARD_DOOR_TYPES = (
         width=ft(3),
         height=ft(6, 8),
         exterior=True,
+        function="entry",
         u_factor=u_us(0.20),
         source=_STANDARD_SOURCE,
     ),
@@ -103,6 +110,7 @@ STANDARD_DOOR_TYPES = (
         width=ft(5),
         height=ft(6, 8),
         exterior=True,
+        function="entry",
         operation="double_swing",
         glazed=True,
         tempered=True,
@@ -135,6 +143,7 @@ STANDARD_DOOR_TYPES = (
         width=ft(4, 8),
         height=ft(6, 8),
         operation="bifold",
+        function="closet",
         source=_STANDARD_SOURCE,
     ),
     DoorType(
@@ -142,6 +151,7 @@ STANDARD_DOOR_TYPES = (
         width=ft(4),
         height=ft(6, 8),
         operation="slide",
+        function="closet",
         source=_STANDARD_SOURCE,
     ),
     DoorType(
@@ -149,6 +159,7 @@ STANDARD_DOOR_TYPES = (
         width=ft(5),
         height=ft(6, 8),
         operation="slide",
+        function="closet",
         source=_STANDARD_SOURCE,
     ),
     DoorType(
@@ -165,6 +176,7 @@ STANDARD_DOOR_TYPES = (
         height=ft(7),
         exterior=True,
         operation="overhead",
+        function="overhead",
         source=_STANDARD_SOURCE,
     ),
 )

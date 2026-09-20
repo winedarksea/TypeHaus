@@ -6,7 +6,7 @@
 // afterwards — and having it in one small module is what keeps the four builder families from
 // each inventing their own.
 import * as THREE from "three";
-import { anyTradeVisible, type VisibleTrades } from "../../model/tradeVisibility";
+import { primaryTradeVisible, type VisibleTrades } from "../../model/tradeVisibility";
 import { carriesMemberIdentity } from "../memberPicking";
 import type { SelectionKind } from "../../state/vocabulary";
 
@@ -48,7 +48,7 @@ export function objectVisible(
   const storey = userData.storey as string | undefined;
   if (storey && hiddenStoreys.has(storey)) return false;
   const trades = userData.trades as string[] | undefined;
-  return trades ? anyTradeVisible(trades, visible) : true;
+  return trades ? primaryTradeVisible(trades, visible) : true;
 }
 
 /** Apply the trade and level filters to everything under `root`. Objects with neither tag are

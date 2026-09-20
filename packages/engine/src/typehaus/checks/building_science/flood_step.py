@@ -81,6 +81,9 @@ def flood_step_threshold(ctx: CheckContext) -> list[Finding]:
                                "surface at its foot ponds, so there is no flood step to "
                                "hold", ())]
     rooms_by_storey = _rooms_by_storey(ctx)
+    # Un-unioned on purpose: water stands to the level of the HIGHEST surface it reaches,
+    # and a merged entry is published at its LOWEST top. Merging here would invent a
+    # smaller step than the court has.
     surfaces = _landing_surfaces(ctx)
     out: list[Finding] = []
     for tag in sorted(required):

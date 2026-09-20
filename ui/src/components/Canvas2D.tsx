@@ -3,6 +3,7 @@ import { useStore } from "../state/store";
 import type { PreviewGeometry } from "../engine/EngineClient";
 import type { Opening, Room, Vec2, Wall } from "../model/types";
 import { anyTradeVisible, canvasObjectTrades } from "../model/visibility";
+import { primaryTradeVisible } from "../model/tradeVisibility";
 import { storeysAtDatum } from "../model/levels";
 import { wallTrades } from "../model/tradeVisibility";
 import type { PlanWarningMarker } from "../model/planWarnings";
@@ -335,7 +336,7 @@ export function Canvas2D() {
           {/* walls — likewise shown at their previewed axis (tag-matched) while a node drag is
               in flight, so connected walls visibly stretch/shrink before the commit lands */}
           {wallsOnStorey.map((w) => {
-            const layersVisible = anyTradeVisible(wallTrades(w), visibleTrades);
+            const layersVisible = primaryTradeVisible(wallTrades(w), visibleTrades);
             if (!layersVisible && !visibleTrades.framing) return null;
             const previewAxis = previewGeom?.walls.find((x) => x.tag === w.tag)?.axis;
             const displayWall = previewAxis ? { ...w, axis: previewAxis as [Vec2, Vec2] } : w;

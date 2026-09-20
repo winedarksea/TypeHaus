@@ -1,4 +1,4 @@
-"""``mep.run_through_stud`` and ``mep.run_through_plate`` — what the trades cut out of a wall.
+"""``mep.run_through_stud``/``_plate``/``_header`` — what the trades cut out of a wall.
 
 IRC R602.6 and R602.6.1 have been on ``mn_residential``'s **not-covered** list since the
 profile was written, which was honest and is no longer necessary. A run drawn through a wall
@@ -19,6 +19,12 @@ That is the case the reviewer's framing policy calls out by name.
 down a wet wall bores nine studs; nine findings would bury the one that matters, and the
 count is in the message.
 
+**A header is collected and honestly ungraded.** ``mep.run_through_header`` exists because
+the member list left headers out, so a run over a door met nothing at all and the report was
+silent about the one member carrying an opening's whole load. No IRC table publishes a bore
+limit for a header, so the verdict is UNKNOWN with the numbers — except a penetration as deep
+as the member, which is the header's removal and needs no table to fail.
+
 ``Tier.STRUCTURAL`` and no ``PermitItemSpec``: the same footing as
 ``mep.run_member_crossing``. ``CheckReport.counts()`` counts any ``Result.FAIL`` regardless
 of severity.
@@ -37,6 +43,7 @@ from typehaus.findings import Finding
 
 _STUD = "mep.run_through_stud"
 _PLATE = "mep.run_through_plate"
+_HEADER = "mep.run_through_header"
 
 #: Categories that are a stud for R602.6's purposes. A king, a jack and a cripple are all
 #: studs; the section does not distinguish them and neither does the drill.
@@ -151,17 +158,40 @@ def run_through_stud(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+def plate_ties(ctx: CheckContext) -> dict[str, frozenset[str]]:
+    """``{wall tag: run tags the ties on it cover}``, ``"*"`` meaning every cut in it.
+
+    A ``PlateTie`` is a spec and resolves to nothing, so it is read off the authored plan
+    rather than off the resolved model — the same way ``bearing_wall_tags`` reads
+    ``JoistSpec.bearing_refs``.
+    """
+    from typehaus.model.structure import PlateTie
+
+    out: dict[str, set[str]] = {}
+    for element in ctx.model.plan.all_elements():
+        if isinstance(element, PlateTie):
+            out.setdefault(element.wall, set()).update(element.covers or ("*",))
+    return {wall: frozenset(covers) for wall, covers in out.items()}
+
+
 @check(Tier.STRUCTURAL, _PLATE)
 def run_through_plate(ctx: CheckContext) -> list[Finding]:
     """A top plate cut for a run, against IRC R602.6.1.
 
     **Over 50% is conditional, not illegal**, and saying so is the whole value of this
-    check: a cut plate with a 16 ga tie across it is built every day. The condition comes
-    back as a ``fix`` a person applies — this engine never adds a strap to a model to make
-    a route legal, because that is a structural redesign.
+    check: a cut plate with a 16 ga tie across it is built every day. Since 2026-09-19 the
+    model can say the tie is there — ``PlateTie`` — so the absence of one IS evidence of
+    absence and the verdict is an honest FAIL naming what to author, rather than the
+    permanent UNKNOWN that stood while the model had no vocabulary for a strap. The engine
+    still never adds the strap itself: that is a structural detail a person draws.
+
+    A penetration **as wide as the plate** is not a plate cut at all — it interrupts the
+    plate, which is a framed opening with a header over it. Those are UNKNOWN here and are
+    graded, as far as anything grades them, by ``mep.run_through_header``.
     """
     from typehaus.resolve.mep_bores import top_plate_cut
 
+    ties = plate_ties(ctx)
     out: list[Finding] = []
     seen = 0
     for tag, wall, cuts in _crossings(ctx):
@@ -173,30 +203,70 @@ def run_through_plate(ctx: CheckContext) -> list[Finding]:
         if not plates:
             continue
         seen += 1
-        verdicts = [(cut, top_plate_cut(cut.profile, cut.diameter_in)) for cut in plates]
-        needs_tie = [(cut, v) for cut, v in verdicts if v.remedy]
+        covered = ties.get(wall.tag, frozenset())
+        tied = "*" in covered or tag in covered
+        verdicts = [(cut, top_plate_cut(cut.profile, cut.diameter_in, tie=tied))
+                    for cut in plates]
+        bad = [(cut, v) for cut, v in verdicts if v.ok is False]
         unsure = [(cut, v) for cut, v in verdicts if v.ok is None]
         where = f"{tag} passes through {len(plates)} top plate(s) of {wall.tag}"
-        if unsure:
+        if bad:
+            cut, verdict = bad[0]
+            out.append(_fail(
+                _PLATE, f"{where}: {cut.member_key} — {verdict.basis}", (tag, wall.tag),
+                fix=(f"{verdict.remedy}: PlateTie(uid=\"\", tag=\"PTIE-{wall.tag}\", "
+                     f"wall=\"{wall.tag}\", product=\"Simpson PSPN58\") — or take the run "
+                     "to a bay where the plate is not cut past half its width")))
+        elif unsure:
             cut, verdict = unsure[0]
             out.append(_unknown(_PLATE, f"{where}: {cut.member_key} is not graded — "
                                         f"{verdict.basis}", (tag, wall.tag)))
-        elif needs_tie:
-            # **UNKNOWN, not FAIL, and the distinction is the section's own.** R602.6.1
-            # PERMITS a plate cut past 50% when a tie is fastened across it; a cut plate
-            # with a strap on it is built every day. This model has no vocabulary for a
-            # plate tie at all, so its absence is not evidence of absence — which is what
-            # UNKNOWN means here rather than "could not be evaluated". The remedy is the
-            # detail somebody draws, and the day a `FramedMember.connection` can say
-            # "plate-tie" this becomes a PASS or a FAIL honestly.
-            cut, verdict = needs_tie[0]
-            out.append(_unknown(
-                _PLATE, f"{where}: {cut.member_key} — {verdict.basis}, and this model "
-                        f"carries no plate tie to point at. {verdict.remedy}",
-                (tag, wall.tag)))
         else:
             cut, verdict = verdicts[0]
             out.append(_pass(_PLATE, f"{where}: {verdict.basis}", (tag, wall.tag)))
     if not seen:
         return [_na(_PLATE, "no run passes through a top plate of any resolved wall", ())]
+    return out
+
+
+@check(Tier.STRUCTURAL, _HEADER)
+def run_through_header(ctx: CheckContext) -> list[Finding]:
+    """Every header a run would have to bore — and the admission that nothing grades it.
+
+    Until 2026-09-19 ``leg_crossings`` did not collect headers at all, so a run over a door
+    met nothing and the report was silent about the one member in a wall that carries an
+    opening's whole tributary load. Silence is not a verdict.
+
+    **No prescriptive table reaches a header** (see ``mep_bores.header_bore``): R502.8.1 is
+    floor joists and R602.6 is studs, so an ordinary hole is UNKNOWN with its numbers and
+    the remedy is the header designer's allowable, not a fraction this engine picked. The
+    determinate case is a penetration as deep as the member — a severed header — and that
+    is a FAIL that needs no table.
+    """
+    from typehaus.resolve.mep_bores import header_bore
+
+    out: list[Finding] = []
+    seen = 0
+    for tag, wall, cuts in _crossings(ctx):
+        headers = [cut for cut in cuts if cut.category == "header"]
+        if not headers:
+            continue
+        seen += 1
+        verdicts = [(cut, header_bore(cut.profile, cut.diameter_in)) for cut in headers]
+        bad = [(cut, v) for cut, v in verdicts if v.ok is False]
+        unsure = [(cut, v) for cut, v in verdicts if v.ok is None]
+        where = f"{tag} would bore {len(headers)} header(s) of {wall.tag}"
+        if bad:
+            cut, verdict = bad[0]
+            out.append(_fail(_HEADER, f"{where}: {cut.member_key} — {verdict.basis}",
+                             (tag, wall.tag), fix=verdict.remedy or ""))
+        elif unsure:
+            cut, verdict = unsure[0]
+            out.append(_unknown(_HEADER, f"{where}: {cut.member_key} is not graded — "
+                                         f"{verdict.basis}", (tag, wall.tag)))
+        else:  # pragma: no cover - header_bore publishes no PASS today
+            cut, verdict = verdicts[0]
+            out.append(_pass(_HEADER, f"{where}: {verdict.basis}", (tag, wall.tag)))
+    if not seen:
+        return [_na(_HEADER, "no run's leg meets a header of any resolved wall", ())]
     return out

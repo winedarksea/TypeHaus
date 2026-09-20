@@ -28,7 +28,7 @@ from typehaus.model import m
 # The sewer exits UNDER the slab (owner's call: the municipal connection sits below the
 # slab, under MN's 42" frost line). The foundation walls stop at -9'-0" (the slab's top), so
 # there's no wall left below grade to exit through, and the footings sit -9'-8" to -9'-0",
-# so the drain leaves *beneath* FT-B-S1 in a protection sleeve (IRC P2604, same treatment as
+# so the drain leaves *beneath* FT-B-S1 in a protection sleeve (UPC 314.1, same treatment as
 # PR-G-HYDRANT-CW under the garage footing). The collector stays hung at the ceiling (where
 # the upper-floor stacks arrive) and drops through the slab at (3', 15'-6") —
 # SP-B-SLAB-MAIN — to run under-slab to the exit. That drop is also what makes every
@@ -640,18 +640,18 @@ CONDENSATE = [
             slope_in_per_ft=0.3),
 ]
 
-# --- TPR relief discharge (P2804.6.1) ------------------------------------------------
+# --- TPR relief discharge (UPC 608.5) ------------------------------------------------
 #
 # The pipe that stops the tank exploding — `code.P2804_water_heater_relief` grades
 # EQ-B-WH's `relief_discharge_ref`.
 #
-# 3/4" full-size copper (the valve's own outlet — P2804.6.1 forbids reducing it, or any
+# 3/4" full-size copper (the valve's own outlet — UPC 608.5 forbids reducing it, or any
 # valve/trap/rise along the run). Drops from the valve at 3'-6" to 8" above the slab, then
-# 1'-0" horizontal at 2"/ft to an air gap 6" over the floor — the low end of P2804.6.1's
+# 1'-0" horizontal at 2"/ft to an air gap 6" over the floor — the low end of UPC 608.5's
 # 6"-24" band. Discharges onto the mechanical-room slab by design, with no fixture below to
-# damage — the same reason P2801.6 needs no pan under the tank. Hangs 2" off the tank's west
+# damage — the same reason UPC 507.5 needs no pan under the tank. Hangs 2" off the tank's west
 # face and drops a foot toward the door, 11'-11" from SM-B-RADON — too far for "the floor
-# falls to SM-B-RADON" to be an argument on its own. The air gap is what P2804.6.1 actually
+# falls to SM-B-RADON" to be an argument on its own. The air gap is what UPC 608.5 actually
 # requires; the slope is a slab-pour question the pour has to be told to fall this way
 # rather than assumed to. Flagged in plans/TODO.md.
 TPR_DISCHARGE = [

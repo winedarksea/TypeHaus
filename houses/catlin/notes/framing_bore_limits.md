@@ -1,8 +1,9 @@
 # What the trades may cut out of this house's framing — worked by hand
 
-Oracle for `typehaus/resolve/mep_bores.py`, `mep.run_through_stud`, `mep.run_through_plate`
-and the R502.8.1 half of `mep.run_member_crossing`. Reproduced by
-`packages/engine/tests/test_mep_bores.py`.
+Oracle for `typehaus/resolve/mep_bores.py`, `mep.run_through_stud`, `mep.run_through_plate`,
+`mep.run_through_header` and the R502.8.1 half of `mep.run_member_crossing`. Reproduced by
+`packages/engine/tests/test_mep_bores.py` (§1-§5) and
+`packages/engine/tests/test_e2_header_and_plate_tie.py` (§6-§7).
 
 IRC R502.8.1 (joists) and R602.6 / R602.6.1 (studs and plates) were on `mn_residential`'s
 **not-covered** list from the day the profile was written until 2026-09-17. Everything below
@@ -55,7 +56,8 @@ depth** it has stopped being a hole drilled in a member that stays whole: a 6" d
 not go through a 2x6, it goes through a framed opening with a header over it, and R602.6
 governs neither. The verdict there is **UNKNOWN with that sentence**, not "exceeds 60%" —
 reporting an 18" duct as an over-size bore is arithmetic about a hole nobody would drill.
-Nothing in this engine grades the header either, and that is said out loud. Catlin's 6",
+No table in this engine grades the header either, and §6 says so by name rather than by
+silence. Catlin's 6",
 10" and 18" duct-through-wall penetrations are all in this class, and they were eight of
 the nineteen findings before the rule was stated.
 
@@ -110,11 +112,10 @@ nails each side**.
   A 3" drain (3.500") through a **2x6** plate is over it too. Both are the ordinary detail.
 * A 1 1/4" supply (1.375" outside) through either is under it and needs nothing.
 
-**The verdict for the over-50% case is UNKNOWN, not FAIL**, and the distinction is the
-section's own: it *permits* the cut with a tie, and this model has no vocabulary for a plate
-tie at all — `FramedMember.connection` is a free-form string nothing reads for this. Absence
-of a tie in the model is not evidence of absence on the job. The day a plate can carry a
-connector this becomes an honest PASS or FAIL.
+**The over-50% case was UNKNOWN until 2026-09-19, and the reason was a missing word.** The
+section *permits* the cut with a tie, and the model had no vocabulary for a plate tie at all —
+`FramedMember.connection` is a free-form string nothing reads for this — so the absence of a
+tie in the model was not evidence of absence on the job. §7 closes that.
 
 ---
 
@@ -154,3 +155,94 @@ alike — which is why §4 has no catlin FAIL to point at and §1 and §2 have e
   belongs to a person.
 * **No notch is ever proposed.** A run wants a bore; where the model authors a notch it is
   graded, and the router will not invent one at any price.
+
+---
+
+## 6. A header is collected, and honestly ungraded
+
+**The bug was one literal.** `leg_crossings` listed the categories it would measure —
+`stud`, `king`, `jack`, `cripple`, `plate`, `sill` — and `header` was not among them. So a
+run passing over a door met *nothing*, and the report was silent about the one member in a
+wall carrying an opening's whole tributary load into two jacks. Silence is not a verdict, and
+it is the failure mode this whole module exists to end.
+
+**`header` is NOT added to `STUD_CATEGORIES`, and that is deliberate.** R602.6 describes
+studs. A stud is a column: the question a hole asks it is how much section is left to carry
+axial load, which is why the rule is a plain fraction of the depth. A header is a beam with a
+point load's worth of roof or floor on it, and what a hole costs it depends on where along
+the span it sits and what the span carries. The two questions are not the same question and
+one table cannot answer both. So a header gets its own predicate, `header_bore`, and its own
+check id, `mep.run_through_header`.
+
+**And the honest answer is UNKNOWN.** No IRC section publishes a bore or notch table for a
+header: R502.8.1 is floor joists, R802.7 is rafters and ceiling joists, R602.6 is studs, and
+R602.7 sizes headers without saying anything about drilling one. Grading a 2-2x8 header
+against R502.8.1 because its section is also a rectangle is exactly the mistake `_engineered`
+refuses one product family further along. So the verdict prints the numbers — the diameter,
+the depth — and names the gap, with the remedy being the header designer's own allowable.
+R502.8.1's D/3 is quoted **for scale only**, and the basis text says so in those words.
+
+**One case is determinate and needs no table**: a penetration as deep as the member. That is
+not a hole drilled in a member that stays whole, it is the header's removal, and a severed
+header does not carry the opening under it. FAIL.
+
+**Worked on this house.** Six runs meet a header, all of them `2-2x8` (3.000" x 7.250"):
+
+| run | wall | penetration | verdict |
+|---|---|---|---|
+| `PR-B-KITCH-DRAIN` | `W-B-CW` | 2.38" | UNKNOWN — inside a joist's D/3 = 2.42", which decides nothing here |
+| `PR-M-S-BATH1-DRAIN` | `W-B-CW` | 3.50" | UNKNOWN |
+| `PR-B-MAIN-DRAIN` | `W-B-CW` | 4.50" | UNKNOWN |
+| `DU-B-ERV-R-SAUNA-SUP` / `-EXH` | `W-B-CW` | 4.00" | UNKNOWN |
+| `DU-B-ERV-R-GYM` | `W-B-CS3` | 4.00" | UNKNOWN |
+
+Six UNKNOWNs where there were none is not a regression — it is six holes through a header
+that nobody had looked at. Four of the six are over half the header's depth, which is the
+kind of number a person wants in front of them whether or not a table grades it.
+
+---
+
+## 7. `PlateTie` — the word the model was missing
+
+R602.6.1 permits a top plate cut past 50% of its width **with** a galvanized 16 ga x 1 1/2"
+tie lapping 6" past the opening each way on eight 10d nails a side (§3). The check could only
+say UNKNOWN because nothing in the model could say the strap was there. `PlateTie` is that
+word: `wall`, an optional `covers` list of run tags (empty = every cut in that wall's top
+plate), a `product`, and R602.6.1's own four numbers as defaults.
+
+It is a **spec and not a solid** — it resolves to no geometry and bills no unit — for the
+same reason the check reads it off the authored plan rather than the resolved model: the fact
+being recorded is "this detail is drawn", not "this part is here at this point". The engine
+reads it and never writes it, exactly as `mep_bores` states the tie as a *remedy* and never
+applies one: introducing a strap to make a route legal is a structural redesign.
+
+**With the word, absence becomes evidence of absence, and the verdict becomes a FAIL** naming
+the element to author. That is the trade the suppression in `preferences.toml` was waiting
+for.
+
+**And the same "this is not a cut at all" guard that §1 gives a stud now applies to a plate.**
+Once the penetration is as wide as the plate, the plate is *interrupted* rather than notched:
+that is a framed opening with a header over it, and R602.6.1 is about a plate that stays
+continuous either side of a cut. Reporting `18.00" out of a 3.50" plate` was arithmetic about
+a notch nobody would cut.
+
+**Catlin's thirteen, split by that guard** (it was fifteen when §3 was written; D3 moved two
+ducts):
+
+| class | count | runs |
+|---|---|---|
+| real R602.6.1 cut, over 50%, no tie authored → **FAIL** | 4 | `PR-B-KITCH-DRAIN` @ `W-B-ESS-W`; `PR-B-SAUNA-VENT` @ `W-B-SA-N2`, `W-B-ESS-W`, `W-B-ESS-S` — all 2.38" through a 2x4 plate against the 1.75" line |
+| penetration as wide as the plate → framed opening, **UNKNOWN** | 9 | the 4", 6", 10" and 18" ducts (`DU-B-ERV-R-SAUNA-*`, `DU-ERV-RISER-*`, `DU-S-HP-*`) |
+
+Four is the number this house has to answer, and it answers it by authoring four ties:
+
+```python
+PlateTie(uid="", tag="PTIE-W-B-ESS-W", wall="W-B-ESS-W", product="Simpson PSPN58")
+PlateTie(uid="", tag="PTIE-W-B-ESS-S", wall="W-B-ESS-S", product="Simpson PSPN58")
+PlateTie(uid="", tag="PTIE-W-B-SA-N2", wall="W-B-SA-N2", product="Simpson PSPN58")
+```
+
+(Three, not four: `W-B-ESS-W` carries two of the four cuts and one tie with an empty `covers`
+ties every cut in that wall. Where a wall's plate is cut in two places far apart, author two
+ties with explicit `covers` instead — the strap is a real 12"-long part at a real station, and
+a single blanket entry would be claiming one part does two jobs.)

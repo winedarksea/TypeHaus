@@ -226,7 +226,7 @@ def delete_wall(plan: PlanModel, storey: str, wall: str, *,
     _rehost_off(view, target)
     view.absorb(MutationResult(
         ops=[*(PatchOp("delete", o.element_kind, o.tag, {}) for o in hosted),
-             PatchOp("delete", "Wall", wall, {})],
+             PatchOp("delete", target.element_kind, wall, {})],
         remap=ReferenceRemap(deleted=frozenset({wall, *(o.tag for o in hosted)})),
         deleted_tags=(*(o.tag for o in hosted), wall),
         impacts=tuple(Impact(o.tag, "left_behind", f"opening {o.tag} deleted with {wall}")

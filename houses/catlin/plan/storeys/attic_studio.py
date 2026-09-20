@@ -38,12 +38,14 @@ from typehaus import (
     FollowRoof,
     Node,
     Occupancy,
+    PublishedSpan,
     Room,
     StructuralRole,
     ToRoof,
     Wall,
     from_node,
     ft,
+    inch,
     pt,
 )
 
@@ -208,9 +210,42 @@ WALLS = [
     # MOVES that were considered instead were all rejected on evidence (see
     # `haus explain module`): N-S-B1..B5 governs three walls that appear in no stack edge at
     # all, and N-S-D1..D4 is W-S-DC2's drain wall one storey down.
+    # ** THIS WALL CARRIES THE WHOLE HOUSE'S SDPW SPACING ROW, and it carries it because it
+    # is the LOWEST-TAGGED interior partition, not because anything about it is special. **
+    # Every partition top in this house stands 3/4" clear of the structure over it on a
+    # Simpson SDPW19600 DEFLECTOR (notes/partition_top_deflection.md), and Simpson publish
+    # ONE maximum-spacing table for that screw. One table row, read once, quoted once:
+    # `structural.partition_deflection_spacing` is a GROUP item on the `wall_panel/W-A-N1`
+    # precedent, and it grades the WORST pitch in the house — 24" o.c., W-M-STOS2's run
+    # under a parallel joist — against the row authored here. Fifty-seven separate findings
+    # would be fifty-seven readings of one document.
+    #
+    # The 10'-0" wall row, not the 8'-0" one: the tallest partition top in the house is
+    # W-A-STU-N's raked plate at 9'-2 3/8", and `carried_span` is an increase-only guard, so
+    # reading the taller (36" o.c.) row covers every wall here with nothing extrapolated.
+    # 5 psf is the row's load basis AND ASCE 7 §4.3.2 / IBC 1607.16's minimum interior
+    # partition lateral load, which is the only reason the check can answer that guard at
+    # all — a house that ever designs a partition for more drifts this row, by design.
+    #
+    # ** NO WEYERHAEUSER ROW MAY BE QUOTED HERE. ** TB-206 Table 1's spacings extend to wood
+    # screws only at a root diameter of 0.162" or less (fn [1], 16d common) and this shank is
+    # 0.195", so the joist maker publishes NO row for this fastener and fn [12] hands the
+    # question back to Simpson. The check refuses a source naming them. What the joist maker
+    # DOES say — flange >= 1-1/8", edge distance >= 5/8", penetration into the web permitted
+    # — is answered off the resolved section, not from this string.
     Wall(uid="9WC345CCP1", tag="W-A-BA-E", start_node="N-A-N3", end_node="N-A-H1",
          assembly="INT_2X4_PARTITION", top=ToRoof(roof_ref="RF-HOUSE"),
-         structural_role=StructuralRole.NONBEARING),
+         structural_role=StructuralRole.NONBEARING,
+         published_span=PublishedSpan(
+             source="Simpson Strong-Tie, IAPMO UES ER-192 Table 37, also printed in Fastening Systems Technical Guide C-F-2025TECHSUP",
+             table="SDPW19600 maximum fastener spacing, double 2x top plate, 10'-0\" wall at 5 psf: 36\" o.c.",
+             member="1.25x11.875 rim; 1.75x11.875 LSL; 11.875 I-joist; 11.875 TJI 230; 11.875 floor truss; 2x6",
+             span=inch(36),
+             carried_span=ft(10),
+             load_psf=5.0,
+             edition="C-F-2025TECHSUP",
+             page="100-101",
+             condition="a 3/4\" gap inside the part's published 0-1-1/2\" range; 3/8\" predrill through the top plate only and the polymer sleeve never entering the supporting member; the screw driven into the WIDE face of an I-joist flange or a floor-truss chord, centred on the member; lateral only, ASD with C_D 1.6 and a safety factor of 5.0 at SPF G=0.42, and NO uplift or withdrawal claimed - this joint releases vertically on purpose; and the open-web truss deck FS-S-WEST's own fabricator must have been given the partition's out-of-plane reaction on the truss design drawing")),
     # VOID | STUDIO (and, east of x=9'-7 1/2", void | bath).
     #
     # ** THIS IS NOT A LINE LOAD ON W-S-SN3, and it is what a reader will worry about. ** It stands

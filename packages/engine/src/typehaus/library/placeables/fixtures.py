@@ -75,24 +75,24 @@ def _water_closet_required_clearance(depth) -> ClearanceZone:
 
 TOILET = FixtureType(
     tag="FX-TOILET-STD", name="Water closet", footprint=(ft(1, 8), ft(2, 4)), height=ft(2, 6),
-    plan_symbol="toilet", source=REFERENCE,
+    plan_symbol="toilet", source=REFERENCE, basin=False,
     needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(_water_closet_required_clearance(ft(2, 4)),),
 )
 LAVATORY = FixtureType(
     tag="FX-LAV-24", name="Lavatory", footprint=(ft(2), ft(1, 8)), height=ft(3, 4),
-    plan_symbol="lavatory", source=REFERENCE,
+    plan_symbol="lavatory", source=REFERENCE, basin=True,
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
 )
 VANITY = FixtureType(
     tag="FX-VANITY-36", name="Vanity with sink", footprint=(ft(3), ft(1, 9)), height=ft(3, 6),
-    plan_symbol="vanity", source=REFERENCE,
+    plan_symbol="vanity", source=REFERENCE, basin=True,
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(front_zone(ft(3), ft(1, 9), ft(1, 9), "lavatory front clearance"),),
 )
 TUB = FixtureType(
     tag="FX-TUB-60", name="Alcove bathtub", footprint=(ft(5), ft(2, 6)), height=ft(1, 8),
-    plan_symbol="tub", source=REFERENCE,
+    plan_symbol="tub", source=REFERENCE, basin=False,
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
 )
 # A tub-shower is one fixture, not a tub with a shower placed on top of it: the same 60x30
@@ -101,12 +101,12 @@ TUB = FixtureType(
 # carries its head and valve on.
 TUB_SHOWER = FixtureType(
     tag="FX-TUBSHOWER-60", name="Alcove tub-shower", footprint=(ft(5), ft(2, 6)), height=ft(7),
-    plan_symbol="tub-shower", source=REFERENCE,
+    plan_symbol="tub-shower", source=REFERENCE, basin=False,
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
 )
 SHOWER = FixtureType(
     tag="FX-SHOWER-36", name="Shower", footprint=(ft(3), ft(3)), height=ft(7),
-    plan_symbol="shower", source=REFERENCE,
+    plan_symbol="shower", source=REFERENCE, basin=False,
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
 )
 # A drop-in sink's bowls hang below its deck, so the mount elevation puts that deck at the
@@ -115,7 +115,7 @@ SHOWER = FixtureType(
 # gooseneck above — so 36" - 9" = 27" is the mount that lands the rim on the countertop.
 KITCHEN_SINK = FixtureType(
     tag="FX-KITCHEN-SINK-33", name="Double-bowl kitchen sink", footprint=(ft(2, 9), ft(1, 10)),
-    height=ft(1, 6), plan_symbol="kitchen-sink", source=REFERENCE,
+    height=ft(1, 6), plan_symbol="kitchen-sink", source=REFERENCE, basin=False,
     mount=Mount(kind=MountKind.WALL, elevation=inch(27)),
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
 )
@@ -132,7 +132,7 @@ KITCHEN_SINK = FixtureType(
 # months (a mechanical room) wants a primer line, which would be a different type.
 FLOOR_DRAIN = FixtureType(
     tag="FX-FLOOR-DRAIN", name="Floor drain", footprint=(inch(6), inch(6)), height=inch(0.5),
-    plan_symbol="floor-drain",
+    plan_symbol="floor-drain", basin=False,
     needs=frozenset({Service.DRAIN, Service.VENT}),
     source='6" square adjustable strainer over a 2" cast body with an integral trap; final '
            "selection by owner. Set the strainer flush with the finish floor at the low "
@@ -189,7 +189,7 @@ FLOOR_DRAIN = FixtureType(
 TOILET_WALL_HUNG = FixtureType(
     tag="FX-TOILET-WH", name="Wall-hung water closet (compact)",
     footprint=(inch(15), inch(19.3)), height=inch(13.625),
-    plan_symbol="toilet-wall-hung",
+    plan_symbol="toilet-wall-hung", basin=False,
     needs=frozenset({Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     clearances=(_water_closet_required_clearance(inch(19.3)),),
     mount=Mount(kind=MountKind.WALL, elevation=inch(1.375)),
@@ -232,7 +232,7 @@ TOILET_WALL_HUNG = FixtureType(
 )
 LAVATORY_COMPACT = FixtureType(
     tag="FX-LAV-COMPACT", name="Compact lavatory", footprint=(ft(1, 6), inch(14)),
-    height=ft(2, 10), plan_symbol="lavatory",
+    height=ft(2, 10), plan_symbol="lavatory", basin=True,
     # VENT belongs here: a fixture that drains is vented, and leaving VENT off does not make
     # the vent unnecessary, only unchecked. `mep.trap_arm_length` walks DRAIN fixtures, so it
     # would ask for this lavatory's vent, while `mep.vent_reachability`, which walks VENT
@@ -247,6 +247,7 @@ LAVATORY_COMPACT = FixtureType(
 WALL_HYDRANT = FixtureType(
     tag="FX-HYDRANT-Y34SS", name='Frost-free wall hydrant, 3/4" stainless',
     footprint=(inch(6), inch(6)), height=ft(2, 6), plan_symbol="hydrant",
+    basin=False,
     needs=frozenset({Service.WATER_COLD}),
     source='Y34SS-class frost-free wall hydrant, 3/4" stainless, 6\' bury. Specify the '
            "manufacturer's supplemental epoxy coating over the buried barrel where the "
@@ -275,6 +276,7 @@ WALL_HYDRANT = FixtureType(
 WALL_HYDRANT_SELF_DRAINING = FixtureType(
     tag="FX-HYDRANT-SD34", name='Self-draining frost-free wall hydrant, 3/4", anti-siphon',
     footprint=(inch(6), inch(6)), height=inch(8), plan_symbol="hydrant",
+    basin=False,
     needs=frozenset({Service.WATER_COLD}),
     mount=Mount(kind=MountKind.WALL, elevation=inch(24)),
     integral_vacuum_breaker=True,
@@ -305,6 +307,8 @@ WALL_HYDRANT_SELF_DRAINING = FixtureType(
 LAUNDRY_SINK = FixtureType(
     tag="FX-LAUNDRY-SINK-24", name="Laundry utility sink with cabinet",
     footprint=(inch(24), inch(21)), height=inch(43), plan_symbol="laundry-sink",
+    # Not a lavatory: 210.52(D) is a basin rule and a laundry tub is served by 210.52(F).
+    basin=False,
     needs=frozenset({Service.WATER_HOT, Service.WATER_COLD, Service.DRAIN, Service.VENT}),
     source='Glacier Bay QL033Y class: 24" x 21" x 34" stainless laundry tub in a white '
            'cabinet, with faucet. The 43" declared height is the box including the '

@@ -91,6 +91,21 @@ class DoorType(HausModel):
     # Safety glazing in the leaf — R308.4.1 requires it of every glazed door, with no
     # location test to derive. Meaningful only where ``glazed`` is true.
     tempered: bool = False
+    # What this leaf is BOUGHT as, which is what its hardware costs: a lockset's price is a
+    # function of its function, not of its size. "passage" is a latch with no lock, "privacy"
+    # a push-button bath/bedroom set, "entry" a keyed exterior set (plus a deadbolt),
+    # "pocket_privacy" the mechanism-plus-two-pulls a pocket door needs and no plate ever
+    # covers, "closet" a dummy knob or a bifold/bypass's own track hardware, and "overhead" a
+    # sectional door, whose only hardware is its operator. Declared rather than inferred: the
+    # operation says a leaf CAN be locked, never whether it is.
+    #
+    # It sits on the TYPE because that is what a hardware allowance is bought by — one order
+    # of one set per type. The same commodity leaf hung at a bath and at a study is two
+    # functions and one type: a house that prices them apart splits the type, and a catalog
+    # type that cannot know leaves this None. None means not stated, and an allowance driven
+    # off this field simply does not select the row.
+    function: Literal["entry", "passage", "privacy", "pocket_privacy", "closet",
+                      "garage_man_door", "overhead"] | None = None
     # The chosen product, by ``Product.tag`` — see ``FurnitureType.product_ref``.
     product_ref: str | None = None
     source: str | None = None
@@ -306,6 +321,14 @@ class FixtureType(HausModel):
     # it. Declared rather than inferred, same reason as ``integral_vacuum_breaker``:
     # nothing in a bowl's footprint says whether there is a frame behind it.
     carrier_bay_width: Length | None = None
+    # Does this fixture present a LAVATORY BASIN — the thing NEC 210.52(D) / IRC E3901.6
+    # measures its 36" from, and the thing 210.52(C) deliberately does not reach. True on a
+    # lavatory or a vanity that holds one, False on a water closet, a tub or a shower.
+    # Declared rather than inferred, same reason as ``integral_vacuum_breaker``: the check
+    # used to read ``plan_symbol``, a DRAWING vocabulary, so a product drawn with a symbol
+    # nobody had listed silently left the rule's scope. None means not stated: the check
+    # falls back to the symbol and reports UNKNOWN where the symbol answers neither way.
+    basin: bool | None = None
 
 
 class ApplianceType(FurnitureType):

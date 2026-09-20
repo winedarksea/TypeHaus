@@ -164,3 +164,117 @@ The gap is **measured, not assumed** — a rafter's underside is interpolated al
 and the raked plate along the wall's — and a measured gap outside the sleeve's range bills
 nothing. That refusal is also what would have stopped this billing a screw across the
 -11-7/8" gap the attic had before §1 was fixed, which is why the geometry had to land first.
+
+## 7. The other side of the document: what the JOIST MAKER permits
+
+§3 left this open — "every member these screws land in is an engineered product … nobody has
+read the other side." This is that read (2026-09-19). It is research, not a calculation; no
+number here is oracled.
+
+### 7.1 Sources
+
+| | |
+|---|---|
+| Weyerhaeuser **TB-808**, *Bottom Flange Trus Joist® TJI® Joist Attachment Connections*, July 2025 (expires 7/2027) — Table 1 (flange sizes), Table 2 (withdrawal), the four design-consideration bullets | [PDF](https://www.weyerhaeuser.com/application/files/1517/5399/9413/TB-808.pdf) |
+| Weyerhaeuser **TB-206**, *Fastener Spacing in Weyerhaeuser Engineered Wood Products*, July 2026 (expires 3/2027) — Table 1 (TJI joists) with footnotes [1], [3], [6], [12] | [PDF](https://www.weyerhaeuser.com/application/files/7217/8552/3166/TB-206.pdf) |
+| Weyerhaeuser **TJ-4000** *Trus Joist® TJI® Joist Specifier's Guide*, July 2025 — flange widths (p. 2), "Nail interior partitions to the joists when possible" | [PDF](https://www.weyerhaeuser.com/application/files/5617/5451/8519/TJ-4000.pdf) |
+| Simpson **C-F-2023** Fastening Systems catalog p. 105 — the SDPW dimension table | [PDF](https://supplyhog.nyc3.cdn.digitaloceanspaces.com/orgill/docs/Simpson_Strong_Tie_103403162_Catalog.pdf) |
+| Simpson Strong-Tie (UK/EU) **SDPW technical data sheet** — the installation sequence and "The polymer sleeve shall not penetrate into the supporting member" | [PDF](https://pim.strongtie.eu/api/v1/public/download/gb/en/product/2163/SDPW.pdf) |
+
+**Not found, and stated rather than invented:** the text of **IAPMO UES ER-192 Table 37** and of
+**C-F-2025TECHSUP pp. 100–101** could not be retrieved (no public copy; `uniform-es.org` served
+an empty file, strongtie.com is JS-rendered). The "flange ≥ 1-1/8"" gate is corroborated only
+indirectly, by the Simpson AU data sheet's "I-Joist shall have minimum flange thickness of
+28.5 mm" (= 1.122"). **ICC-ES ESR-2236 is the wrong report** — it covers SDS/SDW screws; the
+SDPW is listed under ER-192. And **no floor-truss fabricator (MiTek, Alpine) publishes a
+fastener schedule for screws into chords at all**: the truss side's published guidance is
+SBCA's, and it is about the joint, not the screw.
+
+### 7.2 The facts read, against what this house has
+
+| | TJI 230, 11-7/8" | open-web floor truss, 11-7/8" |
+|---|---|---|
+| where | `RF-HOUSE` rafters, `FS-M-WEST/MECH/STAIR/EAST`, `FS-S-EAST`, `FS-ATTIC` | `FS-S-WEST` only |
+| target | bottom flange, **1.25" thick × 2.30" wide** (TB-808 Table 1; TJ-4000 spells the width 2-5/16") | 2x4 SPF **flat** bottom chord, 1.5" × 3.5" |
+| species | flange graded at **G = 0.50** (TB-808) | SPF, **G = 0.42** |
+
+⚠ **`profiles._TJI_SERIES_IN` carries `"230": (2.3125, 1.5, 0.375)` — the 1.5" flange thickness
+is wrong.** TB-808 Table 1 publishes **1.25"** for TJI 110/210/230 (1.375" is 360/560). Nothing
+downstream breaks today (1.25" still clears both the 1-1/8" gate and the 3/4" penetration), but
+a guard answered off the resolved section would be answering off 1.5".
+
+**And the part is fatter than §3's table says.** C-F-2023 p. 105: SDPW19600 is **0.275" O.D.
+(thread outer) on a 0.195" shank**, thread length **3"**, sleeve 3.10", T-40. §3's "6" × 0.195"" is
+the shank. The 5" SDPW14500 is 0.205"/0.205", thread 2".
+
+### 7.3 Verdict per floor system
+
+**TJI 230 — PERMITTED, CONDITIONED, and the conditions are Weyerhaeuser's, not Simpson's.**
+
+* The flange passes Simpson's own gate: 1.25" ≥ 1-1/8".
+* Penetration: 6" − (3/4" gap + 3" double plate) = **2.25"** below the plate. The flange is only
+  1.25" thick, so ~1" of tip sits in the 3/8" OSB **web**. TB-808: *"Penetration into the web is
+  permitted."* Simpson's 3/4" minimum is met inside the flange alone. The 3" thread covers the
+  whole 2.25", so no shank stands in the flange.
+* Edge distance: TB-206 fn [3] recommends **5/8"** on a TJI 230. A screw on the joist centreline
+  has ~1.15". The 3/8" predrill must therefore be centred on the joist — which is already the
+  installation instruction ("ensuring the hole … aligns with the centre of the joist/truss").
+* **The screw is outside TB-206 Table 1.** Footnote [1] extends the nail spacings to wood screws
+  only *"provided the lengths and root diameters are less than or equal to the nail sizes listed"*
+  — the fattest listed is 16d common at **0.162"**, and this shank is 0.195". So Weyerhaeuser
+  publishes **no row** for it in a TJI flange, and footnote [12] is what governs instead: *"See
+  screw manufacturer's recommendations … End distances, edge distances, and capacity … must be
+  sufficient to minimize splitting."* The question is handed back to Simpson, which is a
+  permission, not a refusal — but it means **no Weyerhaeuser spacing row may ever be quoted for
+  this screw**. The nearest published row (16d common, wide face of flange, TJI 110/210/230) is
+  **6" o.c. / 6" minimum end distance**, and it is a conservative stand-in, not a citation.
+* The load path is lateral. TB-808's **500 lb per 5 ft** bottom-flange concentrated-load cap
+  (250 lb each side, no duration increase) is a *gravity* limit and this joint carries nothing
+  downward by design — but if the release ever failed, 165 lbf × two screws in 5 ft is inside it.
+* TJ-4000 contemplates the joint in its own words — *"Nail interior partitions to the joists when
+  possible"* — though in its squeak-prevention context, for a wall standing **on** the deck.
+
+**Open-web floor truss (`FS-S-WEST`) — PERMITTED, and the condition is not the fastener.**
+The chord is 1.5" × 3.5" SPF: 3/4" penetration is trivial, a centred screw has 1.75" of edge
+distance, and ER-192's allowable is itself derived at SPF G = 0.42, so the published number
+describes this member exactly rather than conservatively. Nothing in the fastener is at issue.
+What *is* at issue is the truss: a chord is a designed member and a partition hung off it is a
+load the fabricator must have been given. `FS-S-WEST` is already blocked on a fabricator
+submittal (`plans/TODO.md`, and catlin's own `CLAUDE.md`), and **this joint goes on that
+submittal**: the screw must land in a **chord**, never a web or a plate connector, and the
+partition's out-of-plane reaction must be named on the truss design drawing.
+
+**`SL-M-DECK` (SIP) — unchanged.** §6 already refuses `W-B-CE` and `W-B-BA-E`; nothing here
+opens them.
+
+### 7.4 What the E6 `PublishedSpan` row must carry as guards
+
+Already implied by §3, and each must be *answered* or `_unanswered` makes the row a drift
+UNKNOWN:
+
+1. `double 2x top plate` — 3.0". The row is published for that plate and no other.
+2. gap 3/4", within the part's published 0 – 1-1/2".
+3. penetration into the supporting member ≥ 3/4", **all of it in the flange or chord**.
+4. spacing ≤ the table's worst case for this part, **42" (8' wall) / 36" (10' wall) at 5 psf**.
+5. SPF at G = 0.42, ASD, C_D = 1.6, safety factor 5.0 — lateral only; **no uplift or withdrawal
+   is claimed** (`uplift_lb` stays `None`).
+
+New, from this read, and the reason E6 was blocked on it:
+
+6. **supporting flange thickness ≥ 1-1/8"** (ER-192's gate). Answer it at **1.25"** for a
+   TJI 230 — *not* at the resolved section's 1.5", which is wrong (§7.2).
+7. **edge distance ≥ 5/8"** from the flange edge on a TJI (TB-206 fn [3]); the screw is on the
+   member centreline.
+8. **end distance ≥ 6"** from a flange end, and **on-centre spacing ≥ 6"** (TB-206 Table 1, 16d
+   common, wide face — the nearest published row). Never binding at one screw per crossing, but
+   it is the guard that would catch a screw driven at a joist end or a trimmed truss end.
+9. **the screw enters the WIDE face of the flange** (the soffit), never the narrow edge — TB-206
+   lists 16d common into a narrow edge as *"Not Recommended"*.
+10. **supporting member is a TJI flange or a floor-truss chord**, never a SIP, a web, or a plate
+    connector.
+11. **a Weyerhaeuser spacing row may not be cited for this fastener** — 0.195" root exceeds every
+    nail in TB-206 Table 1 (max 0.162"). If the check ever tries to grade spacing against a
+    Weyerhaeuser table, that is a drift UNKNOWN, not a PASS.
+
+Guard 11 is the one that makes the row honest: this joint is permitted by the joist maker's
+*general* rule and by the fastener maker's own report, and by no published row that names both.

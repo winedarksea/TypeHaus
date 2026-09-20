@@ -9,7 +9,8 @@ owns only which elements to run them over.
 
 from __future__ import annotations
 
-from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
+from typehaus.resolve.geometry import add, normal, scale, sub, unit
+from typehaus.resolve.layout_lines import collinear_overlap
 from typehaus.resolve.model import ResolvedModel, ResolvedWall
 
 # A framed wall must overlap a concrete wall below by at least this much before a sill plate
@@ -46,28 +47,15 @@ def _stack_overlap(lower: ResolvedWall, upper: ResolvedWall) -> \
     wall sits outboard of the concrete centreline): the perpendicular gate is the two walls'
     combined depth, i.e. "the framed wall sits within the concrete wall's footprint band".
     """
-    a0, a1 = lower.axis
-    da = _axis_dir(lower)
-    db = _axis_dir(upper)
-    if length(da) < _EPS or length(db) < _EPS:
+    run = collinear_overlap(lower.axis, upper.axis,
+                            lower.thickness_m + upper.thickness_m)
+    if run is None:
         return None
-    if abs(da[0] * db[1] - da[1] * db[0]) > 1e-3:  # not parallel
-        return None
-    n = normal(da)
-    perp = abs(sub(upper.axis[0], a0)[0] * n[0] + sub(upper.axis[0], a0)[1] * n[1])
-    if perp > (lower.thickness_m + upper.thickness_m):
-        return None
-
-    def proj(point: tuple[float, float]) -> float:
-        v = sub(point, a0)
-        return v[0] * da[0] + v[1] * da[1]
-
-    lo_a, hi_a = 0.0, length(sub(a1, a0))
-    lo_b, hi_b = sorted((proj(upper.axis[0]), proj(upper.axis[1])))
-    lo, hi = max(lo_a, lo_b), min(hi_a, hi_b)
+    lo, hi = run
     if hi - lo < _MIN_STACK_OVERLAP_M:
         return None
-    return add(a0, scale(da, lo)), add(a0, scale(da, hi))
+    da = _axis_dir(lower)
+    return add(lower.axis[0], scale(da, lo)), add(lower.axis[0], scale(da, hi))
 
 
 def _walls_by_storey(model: ResolvedModel) -> dict[str, list[ResolvedWall]]:

@@ -86,7 +86,7 @@ def _resolve_sleeve(model: ResolvedModel, sleeve: SleevePenetration,
                 message=f"horizontal sleeve {sleeve.tag} authors no center_elevation",
                 element_tags=(sleeve.tag,), result=Result.FAIL))
         elif category == "footing" and cz < z0 - 1e-6:
-            # An under-footing protection sleeve (IRC P2604): the pipe passes below the
+            # An under-footing protection sleeve (UPC 314.1): the pipe passes below the
             # bearing plane inside a sleeve/relieving arch, so the centerline is legal
             # below the footing's own extent. mep.footing_clearance requires it.
             pass
@@ -148,7 +148,7 @@ def _emit_sleeve_solid(model: ResolvedModel, sleeve: ResolvedSleeve,
     you can click, at the diameter that gets set, in the concrete it gets set in.
 
     Vertical (the slab drop) spans the host's full depth as a faceted cylinder. Horizontal
-    (a foundation-wall crossing, or the under-footing protection sleeves of IRC P2604) is
+    (a foundation-wall crossing, or the under-footing protection sleeves of UPC 314.1) is
     swept in chord bands along the host's normal, exactly as a horizontal pipe segment is
     (``_emit_run_solids``), so a run and the sleeve it threads read as the same round section.
     """

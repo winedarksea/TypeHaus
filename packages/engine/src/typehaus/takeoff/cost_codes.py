@@ -225,6 +225,9 @@ SECTION_CODES: dict[str, CostCode] = {
     "timber": CostCode("2000", "06 11 00", "framing"),
     "railings": CostCode("2700", "05 52 00", "stairs"),
     "drainage": CostCode("2600", "07 71 00", "drainage"),
+    # Cove/LED channel, tape, caps and connectors. 26 51 00 Interior Lighting, and an
+    # electrician's buy even where a joiner routs the fascia it sits in.
+    "light_run_materials": CostCode("3300", "26 51 00", "electrical"),
     "furnishings": CostCode("4200", "12 50 00", "furniture"),
     # Pre-framing returns default to rough carpentry (the sill plate); the fact rules
     # re-file the foam, masonry and channel rows.

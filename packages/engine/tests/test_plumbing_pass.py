@@ -110,7 +110,7 @@ def test_building_drain_leaves_under_the_footing_not_through_the_wall(catlin_mod
 
     The walls stop at -9'-0", which is the slab *top*, so there is no wall to pass through at
     an under-slab invert; the footings run -9'-8" to -9'-0", so the drain leaves beneath one
-    inside a protection sleeve (IRC P2604). This pins that arrangement — a future edit that
+    inside a protection sleeve (UPC 314.1). This pins that arrangement — a future edit that
     quietly re-hosts the exit onto a wall would be authoring a hole through concrete that
     does not extend that far down.
     """
@@ -203,7 +203,7 @@ def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
     assert load == 48.0
     # Every drain run discharges somewhere except the building drain itself and the runs
     # that terminate at an air gap — the two condensate lines, and the water heater's TPR
-    # relief discharge, which P2804.6.1 requires to end 6"-24" over the floor and forbids
+    # relief discharge, which UPC 608.5 requires to end 6"-24" over the floor and forbids
     # to be piped into a drain at all. A new run silently missing its tie-in would show up
     # here as an extra terminal, understating every load downstream of it.
     #

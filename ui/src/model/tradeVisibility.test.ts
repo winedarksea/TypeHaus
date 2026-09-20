@@ -3,9 +3,9 @@
 // views address it, and a view saved before it existed comes back with it off.
 import * as THREE from "three";
 import {
-  ALL_VISIBILITY_KEYS, anyTradeVisible, baseTrade, DEFAULT_OFF_KEYS, defaultVisibleTrades,
+  ALL_VISIBILITY_KEYS, allVisibleTrades, anyTradeVisible, baseTrade, DEFAULT_OFF_KEYS, defaultVisibleTrades,
   expandRolePreset, groupState, memberTrades, migrateSavedVisibility, onlyTrades, primaryTrade,
-  ROLE_PRESETS, visibilityKeyLabel, visibilityKeysOf,
+  primaryTradeVisible, ROLE_PRESETS, visibilityKeyLabel, visibilityKeysOf,
 } from "./tradeVisibility";
 import { FACETS } from "./visibilityFacets";
 import type { Model, RebarSet } from "./types";
@@ -117,7 +117,38 @@ function checkMigration() {
   assert(!framing["framing:connector"] && !framing[REBAR], "the framing cascade is unchanged");
 }
 
+// The primary-trade axis: an element answers to the FIRST trade in its set, so a body with
+// several trades can be isolated away by the one it files under. Order is load-bearing here
+// and the engine stamps it (emit/trade_rules.py:166).
+function checkPrimaryTradeVisible() {
+  const all = allVisibleTrades();
+  const foundation = ["concrete", "insulation"];
+  assert(primaryTradeVisible(foundation, all), "everything on draws it");
+  assert(!primaryTradeVisible(foundation, { ...all, concrete: false }),
+    "concrete off hides a foundation wall — the whole point");
+  assert(primaryTradeVisible(foundation, { ...all, insulation: false }),
+    "…while a secondary trade off leaves it standing");
+  assert(anyTradeVisible(foundation, { ...all, concrete: false }),
+    "anyTradeVisible is unchanged and still draws it");
+
+  // Order is what makes "primary" mean anything.
+  assert(primaryTradeVisible(["insulation", "concrete"], { ...all, concrete: false }),
+    "the same pair the other way round answers to insulation");
+
+  // The unclassified and the unknown behave as they do for anyTradeVisible.
+  assert(primaryTradeVisible([], { ...all, concrete: false }), "no trade is never hidden");
+  assert(primaryTradeVisible(["no-such-trade"], all), "an unknown token is not a toggle");
+  assert(!primaryTradeVisible(["no-such-trade", "concrete"], { ...all, concrete: false }),
+    "…and is skipped, not taken as the primary");
+  assert(primaryTradeVisible(undefined, all), "a missing set draws");
+
+  // A facet key is read literally, the way anyTradeVisible reads it.
+  assert(primaryTradeVisible([REBAR], { ...all, concrete: false }), "the x-ray cage stays");
+  assert(!primaryTradeVisible([REBAR], { ...all, [REBAR]: false }), "its own chip hides it");
+}
+
 export function runTradeVisibilityFacetTests() {
+  checkPrimaryTradeVisible();
   checkTable();
   checkDefaultsAndCascade();
   checkPresetsAndLinks();

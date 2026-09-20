@@ -267,7 +267,7 @@ def test_the_hydrant_assembly_clears_the_footings(catlin_model):
     position it happens to have.
 
     Everything at the shutoff is 22" below the garage footings' -4'-2" bearing plane, and
-    the weep stone reaches 34" below it. IRC P2604.3's 45° influence line asks for that much
+    the weep stone reaches 34" below it. UPC 314.1's 45° influence line asks for that much
     lateral clearance from the footing edge before an excavation stops loading the footing.
     At the old (1'-6", 62') the riser had 8" and the stone pocket overlapped FT-GF-W's
     footprint outright; `mep.footing_clearance` walks pipe runs only, so nothing graded the

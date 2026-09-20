@@ -123,6 +123,21 @@ def _arch_spandrel_mesh(edges, opening_start: float, opening_end: float, z1: flo
                  normals=tuple(normals), curved_vertices=frozenset(curved))
 
 
+def _edge_extent(edges, wall: ResolvedWall) -> tuple[float, float]:
+    """One layer's (start, end) distance along the wall axis, from its own long edge.
+
+    ``_thin_rect_edges`` builds each edge from the layer's wall-local bounding rectangle, so
+    projecting that edge's two endpoints back onto the axis recovers the extent it was cut at.
+    """
+    _origin, tangent, _normal, axis_length = wall_frame(wall)
+    (ax, ay), _end = wall.axis
+    tx, ty = tangent
+    (sx, sy), (ex, ey) = edges[0]
+    start = (sx - ax) * tx + (sy - ay) * ty
+    end = (ex - ax) * tx + (ey - ay) * ty
+    return (start, end) if end > start else (0.0, axis_length or 1.0)
+
+
 def layer_solids(wall: ResolvedWall, polygon, openings,
                  band: tuple[float, float] | None = None) -> tuple[GSolid, ...]:
     """Every solid one depth-bearing layer of ``wall`` contributes.
@@ -151,9 +166,17 @@ def layer_solids(wall: ResolvedWall, polygon, openings,
     if not ops:
         return (_prism(polygon, z0, z1, top_at),)
 
-    _origin, _tangent, _normal, axis_length = wall_frame(wall)
-    length = axis_length or 1.0
     edges = _thin_rect_edges(polygon, wall.axis)
+    # An opening's station is an ABSOLUTE distance along the wall axis, but ``_slice``
+    # interpolates this LAYER's own edge. A layer mitred at a corner starts and ends off the
+    # axis ends — catlin's cladding runs 9 13/16" past the paint on one facade — so dividing
+    # by the wall's axis length put every cut at the wrong station, by a different amount in
+    # every layer. Small cuts then vanished outright: the wall reads as one candidate in the
+    # elevation projector, and holes that did not overlap between layers filled each other in
+    # (the two 2 1/2" hydrant penetrations drew nothing at all). Map into the layer's own
+    # frame instead: its edge endpoints, projected back onto the axis, are its extent.
+    start_along, end_along = _edge_extent(edges, wall)
+    length = (end_along - start_along) or 1.0
 
     # The piers are the [0, 1]-fraction band not claimed by any opening's cutout — a gap
     # computation, the same one ``framing/furring.py`` runs per station (→
@@ -164,8 +187,8 @@ def layer_solids(wall: ResolvedWall, polygon, openings,
     valid_ops: list[tuple[object, float, float]] = []
     cuts: list[tuple[float, float]] = []
     for op in ops:
-        o0 = max(0.0, (op.center_along_m - op.width_m / 2) / length)
-        o1 = min(1.0, (op.center_along_m + op.width_m / 2) / length)
+        o0 = max(0.0, (op.center_along_m - op.width_m / 2 - start_along) / length)
+        o1 = min(1.0, (op.center_along_m + op.width_m / 2 - start_along) / length)
         if o1 <= o0:
             continue
         valid_ops.append((op, o0, o1))

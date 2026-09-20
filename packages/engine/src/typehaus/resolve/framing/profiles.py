@@ -81,7 +81,11 @@ _RE_TJI = re.compile(r"^(?P<depth>\d+(?:\.\d+)?)\s+TJI\s+(?P<series>\d+)$")
 _TJI_SERIES_IN: dict[str, tuple[float, float, float]] = {
     "110": (1.75, 1.375, 0.375),
     "210": (2.3125, 1.375, 0.375),
-    "230": (2.3125, 1.5, 0.375),
+    # 1.25" flange, not 1.5": Weyerhaeuser TB-808 (July 2025) Table 1 publishes 1-1/4" for
+    # the TJI 110/210/230 and 1-3/8" only for the 360/560. The 1.5" carried here was not a
+    # published figure, and a guard answered off the resolved section — the SDPW's
+    # 1-1/8" minimum supporting-flange thickness — would have been answered off it.
+    "230": (2.3125, 1.25, 0.375),
     "360": (2.3125, 2.3125, 0.4375),
     "560": (3.5, 2.3125, 0.4375),
 }

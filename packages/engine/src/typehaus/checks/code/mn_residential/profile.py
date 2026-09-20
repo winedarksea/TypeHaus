@@ -81,8 +81,8 @@ MN_2020 = JurisdictionProfile(
         "An ENGINEERED member is UNKNOWN and not graded: an LVL, an I-joist and an "
         "open-web truss are cut to the fabricator's chart and no IRC table describes them, "
         "and this engine does not hold that chart. "
-        "Also covered: R310.2.3 window wells, M1502 dryer exhaust, and P2801.6/P2804.6.1 "
-        "water-heater relief discharge and pan. "
+        "Also covered: R310.2.3 window wells, M1502 dryer exhaust, and ch. 4714 (UPC) "
+        "608.5/507.5 water-heater relief discharge and pan. "
         "Added 2026-08-15: R302.7 under-stair protection, R303.7/R303.8 interior and "
         "exterior stairway illumination (presence and switching only — illuminance is a "
         "photometric result this model cannot compute), R403.1.6 sill-plate anchorage "
@@ -269,8 +269,15 @@ MN_2020 = JurisdictionProfile(
                        ("NEC 705.12(B)(3)(2)", "NEC 690.12(B)(2)")),
         PermitItemSpec("Dryer exhaust", ("code.M1502_dryer_exhaust",), ("IRC M1502",),
                        blocking=False),
+        # ** THE CITATION WAS IRC P2801.6 / P2804.6.1 AND MINNESOTA DELETED BOTH. ** Same
+        # reason as the two below: 1309.0010 subp. 3.D strikes IRC ch. 25-33. UPC 608.5 is
+        # the relief discharge and 507.5 the pan (Minn. R. 4714.0507 deletes 507.6-507.11
+        # and 507.14-507.23, leaving 507.5 standing). The check *id* keeps its IRC spelling
+        # because `preferences.toml`, `inspections.py` and two catlin plan files name it;
+        # renaming it is a separate commit.
         PermitItemSpec("Water-heater relief and pan", ("code.P2804_water_heater_relief",),
-                       ("IRC P2801.6", "IRC P2804.6.1"), blocking=False),
+                       ("MN Plumbing Code (ch. 4714) 608.5",
+                        "MN Plumbing Code (ch. 4714) 507.5"), blocking=False),
         PermitItemSpec("Smoke / CO alarm placement",
                        ("code.R314_R315_alarms", "code.R315_garage_alarms"),
                        ("IRC R314", "IRC R315")),
@@ -339,9 +346,10 @@ MN_2020 = JurisdictionProfile(
         # blocking=True, so neither ratchet moves.
         PermitItemSpec("Plumbing drain slope and offsets",
                        ("mep.drain_slope", "mep.drain_offset_geometry",
-                        "mep.drain_tie_in"),
+                        "mep.drain_tie_in", "mep.vent_grade"),
                        ("MN Plumbing Code (ch. 4714) 708.0",
-                        "MN Plumbing Code (ch. 4714) 706.3")),
+                        "MN Plumbing Code (ch. 4714) 706.3",
+                        "MN Plumbing Code (ch. 4714) 905.1")),
         # Every one of these plumbing checks answers a line a plan reviewer actually asks
         # about, so they go on the checklist rather than into the exclusion list — the
         # pour-day sleeve schedule most of all, since it is the one item that cannot be
@@ -365,9 +373,9 @@ MN_2020 = JurisdictionProfile(
         # Minn. R. 4714.0314 once deleted UPC 314.0-314.4 outright; 45 SR 1007 (2021-09-27)
         # REPEALED that deletion, so ch. 3 applies unamended. The rule is here because a
         # repeal put it back — the kind of thing a stale citation hides.
-        # Out of scope, still stale: finding prose in `checks/mep/plumbing_concrete.py`,
-        # `resolve/mep_sleeves.py` and two catlin plan files says "IRC P2604". Those are
-        # descriptions; this line is the citation a reviewer reads.
+        # The finding prose in `checks/mep/plumbing_concrete.py`, `resolve/mep_sleeves.py`
+        # and the catlin plan files was swept to match on 2026-09-19; nothing in the
+        # plumbing band says "IRC P2604" any more.
         PermitItemSpec("Pipe below and beside concrete",
                        ("mep.under_slab_burial", "mep.footing_clearance"),
                        ("MN Plumbing Code (ch. 4714) 314.1",
@@ -384,10 +392,19 @@ MN_2020 = JurisdictionProfile(
         # backflow findings and one with no washer no arrestor findings, and either alone
         # would grade an item UNKNOWN for the honest reason that the house has nothing to
         # evaluate.
+        #
+        # ** THE CITATIONS WERE IRC P2902 / P2903.5 / P2903.9.1 AND MINNESOTA DELETED
+        # THEM. ** Same strike, 1309.0010 subp. 3.D. What a Minnesota reviewer opens is
+        # UPC 606.1 (the full-open valve on the building supply) with 606.3 (access to it),
+        # 603.5.7 (a backflow preventer or vacuum breaker at every hose thread), and
+        # 609.10 (a water-hammer arrester where a quick-acting valve is installed).
         PermitItemSpec("Water supply protection and shutoff",
                        ("mep.main_shutoff", "mep.backflow_prevention",
                         "mep.water_hammer_arrestor"),
-                       ("IRC P2902", "IRC P2903.5", "IRC P2903.9.1")),
+                       ("MN Plumbing Code (ch. 4714) 606.1",
+                        "MN Plumbing Code (ch. 4714) 606.3",
+                        "MN Plumbing Code (ch. 4714) 603.5.7",
+                        "MN Plumbing Code (ch. 4714) 609.10")),
         PermitItemSpec("Hot-water pipe insulation", ("mep.hot_water_insulation",),
                        ("IRC N1103.4.2",)),
         # A balanced ventilator's outdoor-side terminations. A plan reviewer

@@ -2457,8 +2457,8 @@
 # convention: a deleted row silently drops the type from any future takeoff, so the revert
 # could not be costed. ** This was the sauna's fibre-optic kit and it was $1,500-2,250
 # installed, the most expensive luminaire in the house for a 92 SF room. RM-B-SAUNA is lit
-# by two 24V under-bench runs now (mark X, ED-T-LT-STRIP24-SAUNA), allowance-priced under
-# `electrical-sauna-under-bench-strip` in [allowances].
+# by two 24V under-bench runs now (mark X, ED-T-LT-STRIP24-SAUNA), priced per foot and per
+# piece under the qualified `*:ED-T-LT-STRIP24-SAUNA` keys in [light_run_materials].
 # Why the number was ever this big: nothing sold in the US is both IP65 and 125 C -- LED
 # sconces top out at 60-93 C -- so the only construction that clears a loyly peak at the
 # CEILING is FIBRE OPTIC, which puts no electronics in the hot zone at all. Cariitti Premium
@@ -2481,8 +2481,8 @@
 "ED-T-LT-WALL-LINEAR" = { material = { low = 100, high = 350 }, labour = { low = 45, high = 100 } }  # 1 ea
 # RM-M-PANTRY's vertical slot (2026-08-24). Same article as WALL-LINEAR — an integral-driver
 # 120V linear LED — twice as long, hung vertically. Note the tape rows are NOT here:
-# ED-T-LT-STRIP24 and its new task sibling ED-T-LT-STRIP24-TASK bill per lineal foot through
-# `light_run_materials`, which is a declared-unpriced view, and this is a point fixture.
+# ED-T-LT-STRIP24 and its task sibling ED-T-LT-STRIP24-TASK bill per lineal foot in
+# [light_run_materials], and this is a point fixture.
 "ED-T-LT-SLOT72" = { material = { low = 140, high = 420 }, labour = { low = 45, high = 100 } }  # 1 ea
 # ** REPRICED 2026-09-12 WITH THE CLASS 320 RETYPE. ** This is no longer a plain $70-200
 # meter socket: it is a Class 320 heavy-duty lever-bypass COMBINATION meter-main carrying the
@@ -5921,6 +5921,47 @@
 # air barrier and the foam is the right product there.
 "sill-seal-peel-stick" = { low = 1.2, high = 2.1 }  # material; the section basis says so
 
+[light_run_materials]
+# NEW SECTION 2026-09-19 — cove/LED run stock, keyed on the takeoff's `item` and qualified
+# by the luminaire TYPE (`channel:ED-T-LT-LINEAR-EXT`). Basis is installed and every row
+# spells its own split.
+# ** REPLACES the two driven allowances `electrical-garage-exterior-linear` ($32-85/LF over
+# 73.5 LF) and `electrical-sauna-under-bench-strip` ($26-62/LF over 12 LF). ** Those were a
+# stopgap: `light_run_materials` was a table `cli/prices.py` did not read, so a per-type row
+# under [placeables] matched nothing and billed $0 in silence, and the driven allowance was
+# the only vehicle that reached a run at all. The table is read now, so the allowance would
+# be a straight double count and is gone.
+# ** UNITS ARE MIXED IN THIS SECTION AND THAT IS DELIBERATE. ** Channel and tape are stock
+# bought by the LINEAL FOOT; an end cap and a corner connector are PIECES. Both read the
+# same `quantity` column (the takeoff writes each row in its own unit), so a piece row must
+# say `unit = "EA"` — without it the line prints as feet. See `ALTERNATE_UNITS`.
+# The three 24V families (E `ED-T-LT-STRIP24`, E1 `ED-T-LT-NICHE-SNLT`, U
+# `ED-T-LT-STRIP24-TASK`) price on the BARE keys below: interior dry-location cove, an
+# anodized extrusion with a frosted lens, tape cut to length off a 16.4' reel.
+# 104.6 LF of channel and tape, 22 end caps, 2 corner connectors.
+channel = { material = { low = 5, high = 12 }, labour = { low = 4, high = 10 } }
+tape = { material = { low = 5, high = 13 }, labour = { low = 3, high = 7 } }
+end_cap = { unit = "EA", material = { low = 2, high = 4 }, labour = { low = 4, high = 8 } }
+corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { low = 5, high = 11 } }
+# Mark W, the garage's three exterior linear runs (two eave soffits + the north gable's
+# rakes), 73.5 LF over 3 runs. Dearer than the bare rows on both halves: a damp-location
+# extrusion and gasketed lens, and hanging it at the eaves and up a rake off a ladder with
+# three damp-location terminations. The retired allowance's $32-85/LF is these four rows
+# summed over the same footage.
+"channel:ED-T-LT-LINEAR-EXT" = { material = { low = 8, high = 20 }, labour = { low = 10, high = 28 } }
+"tape:ED-T-LT-LINEAR-EXT" = { material = { low = 7, high = 18 }, labour = { low = 5, high = 15 } }
+"end_cap:ED-T-LT-LINEAR-EXT" = { unit = "EA", material = { low = 4, high = 9 }, labour = { low = 10, high = 21 } }
+"corner_connector:ED-T-LT-LINEAR-EXT" = { unit = "EA", material = { low = 6, high = 14 }, labour = { low = 12, high = 26 } }
+# Mark X, the sauna's two under-bench runs, 12 LF. A sauna-rated silicone IP68 tape is a
+# real purchase and is why this type prices apart from the three 24V families above — the
+# point the retired `electrical-sauna-under-bench-strip` allowance existed to make, kept
+# here where it multiplies a quantity the model resolved. Labour is a joiner routing the
+# bench fascias, two Class 2 terminations and one gasketed grommet through W-B-SA-N.
+"channel:ED-T-LT-STRIP24-SAUNA" = { material = { low = 5, high = 12 }, labour = { low = 6, high = 14 } }
+"tape:ED-T-LT-STRIP24-SAUNA" = { material = { low = 7, high = 17 }, labour = { low = 5, high = 13 } }
+"end_cap:ED-T-LT-STRIP24-SAUNA" = { unit = "EA", material = { low = 3, high = 6 }, labour = { low = 4, high = 8 } }
+"corner_connector:ED-T-LT-STRIP24-SAUNA" = { unit = "EA", material = { low = 4, high = 7 }, labour = { low = 5, high = 9 } }
+
 [furnishings]
 # RESEARCHED 2026-08-08a, split out of [placeables] 2026-08-08b — [low, high] $ each, same
 # catalog type tags and the same BOM rows. THIS SECTION IS NOT IN THE CONSTRUCTION TOTAL:
@@ -6685,35 +6726,14 @@ hvac-range-hood-recirculation-filters = { low = 150, high = 450 }
 # is the can and the main only; every branch breaker in a 2026 MN dwelling is AFCI, GFCI or
 # both, at $39-81 apiece. The retired $1,400-2,900 was this arithmetic on the same 36.
 electrical-afci-gfci-breakers = { low = 39, high = 81, unit = "ea", driver = "panel_schedule.rows" }
-# The garage's three exterior linear runs (two eave soffits + the north gable's rake
-# soffits), mark W / `ED-T-LT-LINEAR-EXT`, 2026-09-11. **An ALLOWANCE and not a
-# `[placeables]` row, and that is not a style choice**: `light_run_materials` is an UNREAD
-# table in `cli/prices.py` — it is keyed on `item` ("channel", "tape"), not on a luminaire
-# type — so a per-each row under `[placeables]` would match nothing at all and bill $0 with
-# no warning. A driven allowance is the one vehicle that reaches these three runs without
-# disturbing the 24V tape that shares the table.
-# Rate is the extrusion, the lens, the LED board and the end caps, plus hanging ~73 LF of
-# channel at the eaves and up a rake off a ladder and making three damp-location terminations.
-# The table itself stays unpriced house-wide, so `channel` and `tape` keep appearing in the
-# takeoff's `unpriced` list exactly as they do today — including this run's own footage.
-# That is the fallback being honest, not this row failing.
-electrical-garage-exterior-linear = { low = 32, high = 85, unit = "LF", driver = "light_run_materials.quantity[type=ED-T-LT-LINEAR-EXT,item=channel]" }
-# The sauna's two under-bench runs, mark X / `ED-T-LT-STRIP24-SAUNA`, 2026-09-13. Same
-# vehicle and the same reason as the row above: `light_run_materials` is an UNREAD table in
-# `cli/prices.py`, keyed on `item` and not on a luminaire type, so a `[placeables]` row for
-# this type would match nothing and bill $0 with no warning.
-# ** AND BILLING $0 IS EXACTLY THE TRAP THIS ROW EXISTS TO CLOSE. ** Deleting
-# `ED-T-LT-SAUNA-VT`'s 1 ea took $1,500-2,250 out of the estimate. The three other 24V strip
-# types (E / E1 / U) are a declared-unpriced view, so without this row the replacement would
-# have landed at zero and the takeoff would have reported the full fibre kit as saved, which
-# is not true: a sauna-rated silicone tape is a real purchase. This is a DELIBERATE departure
-# from the convention those three follow, and the DESIGN-LOG says so.
-# Rate is the silicone IP68 tape, the aluminium channel and lens it sits in, the end caps and
-# the one corner fitting, plus a joiner routing the bench fascias and an electrician making
-# two Class 2 terminations and one gasketed grommet through W-B-SA-N. 12 LF over two runs.
-# The table stays unpriced house-wide, so `channel` and `tape` keep appearing in the
-# takeoff's `unpriced` list including this run's footage — the fallback being honest.
-electrical-sauna-under-bench-strip = { low = 26, high = 62, unit = "LF", driver = "light_run_materials.quantity[type=ED-T-LT-STRIP24-SAUNA,item=channel]" }
+# RETIRED 2026-09-19 — `electrical-garage-exterior-linear` ($32-85/LF x 73.5 LF) and
+# `electrical-sauna-under-bench-strip` ($26-62/LF x 12 LF) are GONE, replaced by the real
+# [light_run_materials] section above. Both were driven off
+# `light_run_materials.quantity[...]`, which `cli/prices.py` now PRICES: keeping them would
+# double-bill the same channel, tape, caps and connectors. The per-type distinction each
+# was written to make — a damp-location exterior extrusion and a sauna-rated silicone tape
+# are not the 24V cove rate — survives as the qualified keys `channel:ED-T-LT-LINEAR-EXT`
+# and `tape:ED-T-LT-STRIP24-SAUNA`, multiplying the same quantity the driver measured.
 # CKT-SPD rides this row as one more $39-81 branch breaker. That is LOW for a plug-on
 # Type 2 SPD (roughly $100-250 delivered), but the device is NOT unpriced: the "surge" in
 # `electrical-radon-fan-smoke-co-surge-and-commissioning` below is a $2,450-8,000 lump that
@@ -6997,6 +7017,18 @@ finish-wall-tile-material = { low = 900, high = 1800 }
 #
 # The Murphy Door bookcase leaf ships as a complete unit and draws from this row not at all;
 # confirm a TOUCH-LATCH release at order, since any visible pull defeats a flush bookcase.
+#
+# ** THE SPLIT THIS ROW WANTS IS NOW ONE FIELD AWAY (2026-09-19). ** `DoorType.function`
+# exists — entry / passage / privacy / pocket_privacy / closet / garage_man_door / overhead —
+# so the distribution written above can become rows rather than prose:
+#   finish-door-hardware-passage = { ..., driver = "openings.count[function=passage]" }
+#   finish-door-hardware-privacy = { ..., driver = "openings.count[function=privacy]" }
+#   finish-door-hardware-pocket  = { ..., driver = "openings.count[function=pocket_privacy]" }
+# Two things stand in the way, and neither is a price question. `opening_takeoff` does not
+# yet REPORT `function` on its rows, so no filter can select on it; and catlin hangs one
+# commodity type (DT-INT-SWING32) at both a bath and a study, so the house has to split that
+# type before a per-function count means anything. Until both are done this stays one lump
+# at the researched rate — the same money, and the same 34 openings.
 finish-door-hardware = { low = 84, high = 306, unit = "ea", driver = "openings.count[takes_hardware=True]" }
 # DRIVEN 2026-08-27 off the window count — 45 (the "41 windows" this comment used to claim was
 # already four out of date, which is the point). It was $73-164 per window covering stool
@@ -7346,6 +7378,7 @@ railings             = "material"
 drainage             = "material"
 construction_returns = "material"
 sill_gaskets         = "material"
+light_run_materials  = "installed"
 furnishings          = "material"
 allowances           = "installed"
 

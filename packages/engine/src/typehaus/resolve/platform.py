@@ -32,7 +32,7 @@ from typing import Any
 from typehaus.model.refs import ToRoof
 from typehaus.quantities import inch
 from typehaus.resolve.layer_bands import reband_for_platform
-from typehaus.resolve.layout_lines import lines_by_wall
+from typehaus.resolve.layout_lines import collinear_overlap, lines_by_wall
 from typehaus.resolve.model import ResolvedModel
 
 # One definition of "partition", shared with ``partition_top``/``roof_geometry``:
@@ -303,19 +303,8 @@ def _collinear_overlap(a: tuple[tuple[float, float], tuple[float, float]],
 
     ``axis_tol`` is how far off ``a``'s line ``b`` may sit and still be the same wall line;
     ``min_overlap`` is how much shared run it takes to count. They are separate numbers on
-    purpose — see ``_MIN_OVERLAP_M``.
+    purpose — see ``_MIN_OVERLAP_M``. Direction is tested by holding *both* of ``b``'s
+    endpoints to ``axis_tol``, which is why ``both_ends`` is set.
     """
-    (ax0, ay0), (ax1, ay1) = a
-    dx, dy = ax1 - ax0, ay1 - ay0
-    span = math.hypot(dx, dy)
-    if span < 1e-9:
-        return False
-    ux, uy = dx / span, dy / span
-    ts = []
-    for (px, py) in b:
-        ex, ey = px - ax0, py - ay0
-        if abs(-uy * ex + ux * ey) > axis_tol:  # perpendicular distance off a's line
-            return False
-        ts.append(ux * ex + uy * ey)
-    lo, hi = min(ts), max(ts)
-    return bool(min(hi, span) - max(lo, 0.0) > min_overlap)
+    run = collinear_overlap(a, b, axis_tol, both_ends=True)
+    return run is not None and run[1] - run[0] > min_overlap

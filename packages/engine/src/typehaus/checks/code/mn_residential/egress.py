@@ -173,7 +173,7 @@ def exterior_door_landing(ctx: CheckContext) -> list[Finding]:
     cid, code = "code.R311_3_exterior_landing", "R311.3"
     door_types = {t.tag: t for t in ctx.plan.library.door_types}
     rooms_by_storey = _rooms_by_storey(ctx)
-    surfaces = _landing_surfaces(ctx)
+    surfaces = _landing_surfaces(ctx, union=True)
     storeys = {s.tag: s for s in ctx.plan.storeys}
     out: list[Finding] = []
     for opening in ctx.model.openings:
@@ -287,8 +287,24 @@ def _swings_over(opening: Any, patch: Any) -> bool:
     return bool(leaf.intersection(patch).area > leaf.area * 0.10)
 
 
-def _landing_surfaces(ctx: CheckContext):
-    """(label, polygon, top_elevation_m) for every surface that can serve as a landing."""
+# Two surfaces are one walking plane if their tops agree within this. One riser would be a
+# step, not a landing, so the band is a construction tolerance: a deck board over a stoop, a
+# threshold plate against a slab.
+_LANDING_PLANE_TOL_M = inch(0.5).meters
+
+
+def _landing_surfaces(ctx: CheckContext, *, union: bool = False):
+    """(label, polygon, top_elevation_m) for every surface that can serve as a landing.
+
+    With ``union=True`` the surfaces sharing one plane are merged too, because R311.3 asks
+    for a *landing*, not for one authored element: a door onto a stoop that abuts a deck
+    lands on the pair, and testing each alone fails a landing the house really has.
+    Bucketed by top elevation, then ``resolve.overlay.union_all`` — fixed precision, never a
+    bare ``unary_union`` (the published app's GEOS 3.12 throws where 3.13 does not). A
+    multipart union stays split, so two islands with a gap are never one surface, and **the
+    LOWEST top governs** a merged entry: the step down a person takes is the honest one.
+    Individuals are kept alongside, so a merge can only add a candidate.
+    """
     from shapely.geometry import Polygon
 
     out = []
@@ -310,8 +326,47 @@ def _landing_surfaces(ctx: CheckContext):
                 ring = list(member.plan_outline)
                 if len(ring) >= 3:
                     out.append((f"{stair.tag}/{member.child_key}", Polygon(ring), member.z1_m))
-    return [(name, poly, top) for name, poly, top in out
-            if poly.is_valid and poly.area > 1e-9]
+    out = [(name, poly, top) for name, poly, top in out
+           if poly.is_valid and poly.area > 1e-9]
+    return (out + _merged_landing_surfaces(out)) if union else out
+
+
+def _merged_landing_surfaces(surfaces):
+    """Merge coplanar landing surfaces into one entry per contiguous piece."""
+    from typehaus.resolve.overlay import union_all
+
+    merged = []
+    for bucket in _plane_buckets(surfaces):
+        if len(bucket) < 2:
+            continue
+        shape = union_all([poly for _n, poly, _t in bucket])
+        parts = list(getattr(shape, "geoms", [shape]))
+        for part in parts:
+            if not part.is_valid or part.area <= 1e-9:
+                continue
+            members = sorted({name for name, poly, _t in bucket
+                              if poly.intersection(part).area > 1e-9})
+            if len(members) < 2:
+                continue  # a lone surface's own piece; it is already in the list
+            tops = [top for name, poly, top in bucket
+                    if poly.intersection(part).area > 1e-9]
+            merged.append((" + ".join(members), part, min(tops)))
+    return merged
+
+
+def _plane_buckets(surfaces):
+    """Group surfaces whose tops agree within ``_LANDING_PLANE_TOL_M``.
+
+    Greedy from the lowest, comparing against the bucket's own seed rather than its last
+    member, so a long ramp of near-coplanar surfaces cannot chain its way into one plane.
+    """
+    buckets: list[list] = []
+    for surface in sorted(surfaces, key=lambda item: item[2]):
+        if buckets and surface[2] - buckets[-1][0][2] <= _LANDING_PLANE_TOL_M + 1e-9:
+            buckets[-1].append(surface)
+        else:
+            buckets.append([surface])
+    return buckets
 
 
 def _landing_patch(ctx: CheckContext, wall, opening, rooms_by_storey):

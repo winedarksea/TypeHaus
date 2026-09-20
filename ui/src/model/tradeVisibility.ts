@@ -1,5 +1,7 @@
 // Trade visibility: the groups the Views panel toggles, the chips inside them, and the one
-// rule both viewers apply — an element is drawn iff ANY trade in its set is visible.
+// two rules the viewers apply — `anyTradeVisible` (drawn iff ANY trade in the set is on) and
+// `primaryTradeVisible` (drawn iff the FIRST is), which is what lets a multi-trade body be
+// isolated away.
 //
 // Isolation is the dominant gesture ("only concrete"), and a wall body is several trades at
 // once (its studs are framing, its foam insulation, its cladding siding, its board drywall),
@@ -265,4 +267,22 @@ export function canvasObjectTrades(item: Pick<CanvasObject, "domain" | "trades">
 export function primaryTrade(trades: readonly string[]): Trade {
   const first = trades.find((trade) => KNOWN.has(trade));
   return first ? baseTrade(first as VisibilityKey) : (SOLID_FALLBACK as Trade);
+}
+
+/** Draw iff the element's PRIMARY trade — the first known token in its set — is visible.
+ *
+ *  The isolation gesture ("only concrete") needs this: a foundation wall's set is
+ *  `("concrete","insulation")`, and `anyTradeVisible` leaves it on screen under Insulation
+ *  with Concrete off, so the wall can never be isolated away. The engine stamps the set
+ *  primary-first (`emit/trade_rules.py:166` — sequence order, framing last), which is what
+ *  makes "first" mean something.
+ *
+ *  A facet key is read literally, the way `anyTradeVisible` reads it: a band stamped
+ *  `framing:sheathing` answers to its own chip. An element that names no known trade is
+ *  always drawn — hiding what nobody classified would make a missing tag look like a toggle. */
+export function primaryTradeVisible(
+  trades: readonly string[] | null | undefined, visible: VisibleTrades,
+): boolean {
+  const first = (trades ?? []).find((trade) => KNOWN.has(trade)) as VisibilityKey | undefined;
+  return first === undefined || visible[first] !== false;
 }

@@ -91,7 +91,7 @@ It was at (1'-6", 62'), tucked into the NW corner against the west wall, and tha
 was not buildable.
 
 The garage footings bear at −4'-2". The shutoff is 6'-0" down. So everything at the valve
-sits **22" below the bearing plane**, and IRC P2604.3's 45° influence line then asks for 22"
+sits **22" below the bearing plane**, and UPC 314.1's 45° influence line then asks for 22"
 of lateral clearance from the footing edge before the excavation stops loading the footing.
 The weep stone goes deeper still and needs 34". At x = 1'-6" the riser had 8", and the stone
 pocket — 2' across and 4' deep, as it then was — **overlapped `FT-GF-W`'s footprint by 4" in
@@ -157,7 +157,7 @@ instances, and `mep.hydrant_freeze_depth` grades them as a PASS.
 The short version: **the standard draining yard hydrant stays**, and a
 dual check on its branch closes the one gap it has.
 
-`PA-G-HYD-VB` protects the hose thread, which is the opening the code names — P2902.3.1
+`PA-G-HYD-VB` protects the hose thread, which is the opening the code names — UPC 603.5.7
 wants a vacuum breaker at every hose connection on a potable line and there is one. A
 self-draining yard hydrant has a second opening: the weep at the buried shutoff, which
 empties the barrel into `DRW-G-HYDRANT`'s stone every time the handle closes and then sits

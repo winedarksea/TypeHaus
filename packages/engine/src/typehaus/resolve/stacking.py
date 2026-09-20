@@ -5,7 +5,7 @@ from __future__ import annotations
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import ConditionKind
 from typehaus.quantities import ft, inch
-from typehaus.resolve.geometry import length, sub, unit
+from typehaus.resolve.layout_lines import collinear_overlap
 from typehaus.resolve.model import BoundaryCondition, ResolvedModel, ResolvedWall, StackEdge
 
 _TOL = inch(0.5).meters  # datum-face alignment tolerance
@@ -17,26 +17,14 @@ def _total_thickness(rw: ResolvedWall) -> float:
 
 
 def _axis_match(lower: ResolvedWall, upper: ResolvedWall) -> float:
-    """Return overlap length in meters if the two wall axes are collinear, else 0."""
-    (a0, a1), (b0, b1) = lower.axis, upper.axis
-    da, db = unit(sub(a1, a0)), unit(sub(b1, b0))
-    # parallel (allowing reversal)?
-    cross = da[0] * db[1] - da[1] * db[0]
-    if abs(cross) > 1e-3:
-        return 0.0
-    # perpendicular distance of b0 from line a
-    n = (-da[1], da[0])
-    dist = abs(sub(b0, a0)[0] * n[0] + sub(b0, a0)[1] * n[1])
-    if dist > _TOL:
-        return 0.0
-    # project both walls onto axis a and measure overlap
-    def proj(p: tuple[float, float]) -> float:
-        v = sub(p, a0)
-        return v[0] * da[0] + v[1] * da[1]
+    """Return overlap length in meters if the two wall axes are collinear, else 0.
 
-    la0, la1 = 0.0, length(sub(a1, a0))
-    lb0, lb1 = sorted((proj(b0), proj(b1)))
-    return max(0.0, min(la1, lb1) - max(la0, lb0))
+    Measured on the **raw node axes** at ``_TOL``. ``layout_lines`` asks the same question
+    of the same arithmetic but on the datum face, and the two answers differ by more than
+    ``_TOL`` on real walls — the tolerance is not shared, only the arithmetic is.
+    """
+    run = collinear_overlap(lower.axis, upper.axis, _TOL)
+    return 0.0 if run is None else max(0.0, run[1] - run[0])
 
 
 def resolve_stacking(model: ResolvedModel) -> list[Finding]:

@@ -84,6 +84,7 @@ DOOR_TYPES = [
     # The type dimensions are the framed rough opening. Product/order dimensions stay in
     # bookcase_door so framing, schedules and factory geometry cannot silently exchange them.
     DoorType(tag="DT-INT-BOOKCASE36", width=inch(38), height=inch(82), core="solid",
+             function="passage",
              header_spec="flat 2x4 nonbearing", product_ref="PROD-MURPHY-BOOKCASE-36",
              bookcase_door=BookcaseDoorSpec(
                  nominal_width=inch(36), nominal_height=inch(80),
@@ -105,7 +106,7 @@ DOOR_TYPES = [
     # (EQ-A-ERV-MAN-EXH, the outdoor-air hood, VR-M-RADON-VENT's head), and IRC M1305.1.3
     # asks a passageway of not less than 30" high and 22" wide — 24 x 42 clears both. No
     # habitable room is reached through it, so R311's door rules have nothing to say.
-    DoorType(tag="DT-INT-ACCESS24", width=ft(2), height=ft(3),
+    DoorType(tag="DT-INT-ACCESS24", width=ft(2), height=ft(3), function="passage",
              source="2026-08-29 attic 6:12 redesign — M1305.1.3 service access to RM-A-POCKET under the west rake"),
     # 2'-0" x 6'-0" — the house's second sub-6'-8" leaf, and the under-stair storage's only option.
     # The closet is under ST-B2M's arriving flight and its head rakes: 96.7" at the south
@@ -114,7 +115,7 @@ DOOR_TYPES = [
     # where 76.5" is all there is. A 6'-8" leaf wants 82" and would be six inches into the
     # stringer; 6'-0" wants 74" and clears by 2 1/2". Same derivation as DT-INT-ACCESS24
     # above, one storey down.
-    DoorType(tag="DT-INT-CLOSET24", width=ft(2), height=ft(6),
+    DoorType(tag="DT-INT-CLOSET24", width=ft(2), height=ft(6), function="closet",
              source="2026-09-05 under-stair closet — the tallest leaf ST-B2M's raking soffit admits at D-B-CLOSET's far jamb"),
     # DT-INT-BIFOLD60 retired 2026-09-12: never hung. O-S-CLOSET is the house's only bifold
     # and W-S-CLN takes the 56" below; D-M-LAUN was the other candidate and became a pocket

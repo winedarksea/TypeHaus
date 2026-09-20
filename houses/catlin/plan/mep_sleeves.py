@@ -132,7 +132,7 @@ WALL_SLEEVES = [
     # Perimeter exits.
     # Building drain leaves *under* FT-B-S1, not through W-B-S1 (2026-07-30): the walls stop
     # at -9'-4" (the slab top), below the sewer connection, so this is an under-footing
-    # protection sleeve (IRC P2604, `mep.footing_clearance`) at the footing centerline.
+    # protection sleeve (UPC 314.1, `mep.footing_clearance`) at the footing centerline.
     # center_elevation = invert (-10'-3 11/16") + half the 4" pipe = -125.7055", matched to
     # within 1/2" by `mep.sewer_exit_invert`.
     SleevePenetration(uid="CBPW18AAAA", tag="SP-B-SEWER-EXIT", host_ref="FT-B-S1",
@@ -154,8 +154,9 @@ WALL_SLEEVES = [
                       purpose=Service.WATER_COLD, center_elevation=ft(-8, -10)),
 ]
 
-# The hydrant line's garage-foundation protection (IRC P2604): the buried run passes 22"
-# below FT-GF-S-DR's 6'-8" bearing plane, on its centerline, inside a protection sleeve —
+# The hydrant line's garage-foundation protection (UPC 314.1 — Minn. R. 1309.0010 subp. 3.D
+# strikes the IRC chapter P2604 lived in): the buried run passes 22" below FT-GF-S-DR's
+# 6'-8" bearing plane, on its centerline, inside a protection sleeve —
 # being *under* a footing is the worst case in its 45° influence cone, not clearance from it.
 #
 # `mep.footing_clearance` requires the run to actually thread the sleeve, not merely pass

@@ -166,8 +166,7 @@ class EnvelopeGeometry:
         for line in lines:
             if line.length <= 0:
                 return None
-            share = 0.0 if interior.is_empty else (
-                line.intersection(interior).length / line.length)
+            share = 0.0 if interior.is_empty else (line.intersection(interior).length / line.length)
             outward.append(share < _INTERIOR_MIN_FRACTION)
         if outward == [True, False]:
             return lines[0]
@@ -226,7 +225,10 @@ class EnvelopeGeometry:
 
     # --- horizontal planes -------------------------------------------------------------
     def space_at(
-        self, outline, z_m: float, direction: int,
+        self,
+        outline,
+        z_m: float,
+        direction: int,
     ) -> tuple[str, str | None]:
         """What is immediately above (``direction=+1``) or below (``-1``) a plan outline.
 
@@ -311,20 +313,19 @@ def carries_a_weather_skin(wall: ResolvedWall) -> bool:
     """
     if skin_layers(wall):
         return True
-    return any(layer.function == LayerFunction.CLADDING.value
-               for layer in wall.depth_layers())
+    return any(layer.function == LayerFunction.CLADDING.value for layer in wall.depth_layers())
 
 
 def _wall_body(wall: ResolvedWall):
     """The wall's occupied plan footprint, as a union of its depth layers' polygons."""
     from shapely.geometry import Polygon
-    from shapely.ops import unary_union
 
-    bodies = [Polygon(layer.polygon) for layer in wall.depth_layers()
-              if len(layer.polygon) >= 3]
+    from typehaus.resolve.overlay import union_all
+
+    bodies = [Polygon(layer.polygon) for layer in wall.depth_layers() if len(layer.polygon) >= 3]
     if not bodies:
         return None
-    return unary_union(bodies)
+    return union_all(bodies)
 
 
 def _face_probe_lines(wall: ResolvedWall) -> list[object | None]:
@@ -346,14 +347,15 @@ def _face_probe_lines(wall: ResolvedWall) -> list[object | None]:
     if body is None or body.is_empty:
         return [None, None]
     # Signed perpendicular reach of the body on each side of the axis.
-    reaches = [(px - x0) * normal[0] + (py - y0) * normal[1]
-               for px, py in _outline_points(body)]
+    reaches = [(px - x0) * normal[0] + (py - y0) * normal[1] for px, py in _outline_points(body)]
     if not reaches:
         return [None, None]
     trim = min(_INTERIOR_PROBE_END_TRIM_M, run / 4)
     lines: list[object | None] = []
-    for offset in (max(reaches) + _INTERIOR_PROBE_OFFSET_M,
-                   min(reaches) - _INTERIOR_PROBE_OFFSET_M):
+    for offset in (
+        max(reaches) + _INTERIOR_PROBE_OFFSET_M,
+        min(reaches) - _INTERIOR_PROBE_OFFSET_M,
+    ):
         ax = x0 + tangent[0] * trim + normal[0] * offset
         ay = y0 + tangent[1] * trim + normal[1] * offset
         bx = x1 - tangent[0] * trim + normal[0] * offset
@@ -375,12 +377,13 @@ def _outline_points(geom) -> list[tuple[float, float]]:
 def _fill_holes(geom):
     """Every part of ``geom`` rebuilt from its exterior ring alone."""
     from shapely.geometry import Polygon
-    from shapely.ops import unary_union
+
+    from typehaus.resolve.overlay import union_all
 
     parts = getattr(geom, "geoms", None)
     if parts is not None:
         filled = [_fill_holes(part) for part in parts]
-        return unary_union([p for p in filled if p is not None and not p.is_empty])
+        return union_all([p for p in filled if p is not None and not p.is_empty])
     exterior = getattr(geom, "exterior", None)
     if exterior is None:
         return geom
@@ -389,7 +392,8 @@ def _fill_holes(geom):
 
 def _build(model: ResolvedModel) -> EnvelopeGeometry:
     from shapely.geometry import Polygon
-    from shapely.ops import unary_union
+
+    from typehaus.resolve.overlay import difference, union_all
 
     # --- bounds_conditioned_space ------------------------------------------------------
     conditioned_faces: dict[str, list[object]] = {}
@@ -425,10 +429,10 @@ def _build(model: ResolvedModel) -> EnvelopeGeometry:
             # standing alone must not read as a partition because its neighbours touch it.
             interior[storey] = Polygon()
             continue
-        occupied = unary_union(rooms + walls)
-        wall_union = unary_union(walls) if walls else None
+        occupied = union_all(rooms + walls)
+        wall_union = union_all(walls) if walls else None
         filled = _fill_holes(occupied)
-        interior[storey] = filled if wall_union is None else filled.difference(wall_union)
+        interior[storey] = filled if wall_union is None else difference(filled, wall_union)
 
     # --- the prism table ---------------------------------------------------------------
     # The height source is the storey's ``default_ceiling_height``, the same one
@@ -436,20 +440,24 @@ def _build(model: ResolvedModel) -> EnvelopeGeometry:
     # lowest obstruction and would put the top of RM-M-LIVING under SL-M-DECK's underside
     # instead of at the deck.
     elevations = {storey.tag: storey.elevation.meters for storey in model.plan.storeys}
-    heights = {storey.tag: storey.default_ceiling_height.meters
-               for storey in model.plan.storeys}
+    heights = {storey.tag: storey.default_ceiling_height.meters for storey in model.plan.storeys}
     prisms = tuple(
-        _Prism(room.tag, room.storey, Polygon(room.clear_face),
-               elevations.get(room.storey, 0.0),
-               elevations.get(room.storey, 0.0) + heights.get(room.storey, 0.0),
-               room.conditioned)
-        for room in model.rooms if len(room.clear_face) >= 3
+        _Prism(
+            room.tag,
+            room.storey,
+            Polygon(room.clear_face),
+            elevations.get(room.storey, 0.0),
+            elevations.get(room.storey, 0.0) + heights.get(room.storey, 0.0),
+            room.conditioned,
+        )
+        for room in model.rooms
+        if len(room.clear_face) >= 3
     )
     buffers: dict[str, object] = {}
     for room in model.rooms:
         if not room.conditioned and len(room.clear_face) >= 3:
             buffers.setdefault(room.storey, []).append(Polygon(room.clear_face))
-    buffer_union = {storey: unary_union(faces) for storey, faces in buffers.items()}
+    buffer_union = {storey: union_all(faces) for storey, faces in buffers.items()}
     return EnvelopeGeometry(frozenset(bounding), interior, prisms, buffer_union)
 
 

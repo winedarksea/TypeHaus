@@ -95,6 +95,19 @@ class Wall(Element):
     # a whole Assembly to restate one `material_ref` (see LayerMaterial in model/refs.py).
     # A tuple rather than a mapping because the editable dialect has no mapping literal.
     layer_materials: tuple[LayerMaterial, ...] = ()
+    # The published table row that answers a question about this wall, where one does.
+    # Mirrors ``Door.published_span``: a manufacturer's table is a PRESCRIPTIVE read — a
+    # reviewer opens the document and the question is closed — so authoring the row here
+    # takes the requirement out of the engineering register rather than into it.
+    #
+    # On a wall the row is the partition top plate's SDPW DEFLECTOR schedule: Simpson's
+    # maximum-spacing table for the screw that spans the 3/4" deflection gap
+    # (``resolve/partition.DEFLECTION_GAP_M``). ``span`` carries the maximum on-centre
+    # SPACING that row publishes and ``carried_span`` the wall height it is indexed by —
+    # the two dimensions a spacing table is a function of. See
+    # ``checks/structural/partition_fasteners.py`` and
+    # ``houses/catlin/notes/partition_top_deflection.md`` §7.4.
+    published_span: PublishedSpan | None = None
     # Fork/variant provenance (#38).
     forked_from: str | None = None
 

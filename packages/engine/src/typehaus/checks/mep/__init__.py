@@ -41,6 +41,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     run_in_slab,
     run_interference,
     supply_protection,
+    vent_geometry,
     water_heater,
 )
 

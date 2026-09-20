@@ -619,6 +619,35 @@ class Connector(Element):
 
 
 @register_element
+class PlateTie(Element):
+    """The metal tie across a cut top plate that IRC R602.6.1 asks for.
+
+    **A spec, not a solid.** It resolves to no geometry and bills no unit of its own — it is
+    the model's way of saying "this cut plate has its strap", which is the one fact
+    ``mep.run_through_plate`` needs and had no vocabulary for. R602.6.1 does not forbid a
+    top plate cut past 50% of its width; it *permits* it WITH a galvanized 16 ga x 1 1/2"
+    tie lapping 6" past the opening each way on eight 10d nails a side. Without somewhere to
+    record the tie, the check could only ever say UNKNOWN, and 13 permanent UNKNOWNs in
+    front of every reader teaches people to skip the unknowns.
+
+    The engine reads this and never writes it: introducing a strap to make a route legal is
+    a structural redesign and belongs to a person (``resolve/mep_bores`` states the tie as a
+    *remedy*, never applies it).
+
+    ``covers`` names the runs whose penetrations this tie spans. Empty means "every cut in
+    this wall's top plate", which is what a single detail note on a wall means in practice.
+    """
+
+    wall: str  # the wall whose top plate is tied
+    covers: tuple[str, ...] = ()  # run tags this tie spans; () = every cut in that wall
+    product: str = ""  # e.g. "Simpson PSPN58" / "Simpson PS720"
+    gauge: float = 0.054  # sheet thickness, inches — 16 ga is R602.6.1's floor
+    width: Length = inch(1.5)
+    lap: Length = inch(6)  # past the opening, each way
+    nails_each_side: int = 8  # 10d
+
+
+@register_element
 class KneeBrace(Element):
     """A 45-degree diagonal brace stiffening a post/beam joint (→ IfcMember/BRACE).
 
@@ -867,6 +896,7 @@ for _name, _obj in (
     ("Beam", Beam),
     ("Dowel", Dowel),
     ("Connector", Connector),
+    ("PlateTie", PlateTie),
     ("KneeBrace", KneeBrace),
     ("Wedge", Wedge),
     ("Railing", Railing),

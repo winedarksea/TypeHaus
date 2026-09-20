@@ -128,6 +128,7 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
         authority="plumbing", after=("braced_wall",),
         check_ids=("mep.drain_slope", "mep.drain_offset_geometry", "mep.trap_arm_length",
                    "mep.vent_reachability", "mep.vent_termination_height",
+                   "mep.vent_grade",
                    "mep.wet_wall_occupancy", "structural.wet_wall_bearing",
                    "mep.pipe_sizing", "mep.fixture_drain_reach",
                    # Not a plumbing rule as such — it grades pipe, duct and raceway alike

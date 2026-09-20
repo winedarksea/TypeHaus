@@ -731,11 +731,11 @@ def test_water_heater_relief_fails_a_discharge_that_rises():
 
     # Drains downhill and terminates 12" above the floor.
     good = [f for f in water_heater_relief(_ctx([1.0, 0.6, 0.305]))
-            if f.code_ref == "P2804.6.1"]
+            if f.code_ref == "MN Plumbing Code (ch. 4714) 608.5"]
     assert _results(good) == [Result.PASS]
     # One profile point moved: the run now climbs on its way out, so it holds water.
     bad = [f for f in water_heater_relief(_ctx([1.0, 0.3, 0.9]))
-           if f.code_ref == "P2804.6.1"]
+           if f.code_ref == "MN Plumbing Code (ch. 4714) 608.5"]
     assert _results(bad) == [Result.FAIL]
     assert "rises" in bad[0].message
 

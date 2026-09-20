@@ -222,12 +222,17 @@ def test_a_partition_under_a_sip_soffit_is_refused_and_says_so(sdpw_rows) -> Non
             assert tag in row["basis"], f"{row['scope']} does not name {tag}"
 
 
-def test_the_blocking_row_says_the_blocking_is_billed_nowhere(sdpw_rows) -> None:
-    """Two things that are true and invisible, and the basis has to carry both."""
+def test_the_blocking_row_says_where_the_blocking_IS_framed(sdpw_rows) -> None:
+    """It said "billed nowhere" until 2026-09-19, and that stopped being true.
+
+    ``resolve/floor_blocking.py`` now lays a block between the joists over a partition
+    standing in a bay, at the same framing module this count uses. Over a ROOF it still
+    does not, and the basis has to keep saying so — this row covers both.
+    """
     row = next(r for r in sdpw_rows
                if r["scope"] == "partition top plate, blocking between parallel members")
-    assert "billed nowhere" in row["basis"]
     assert "floor_blocking" in row["basis"]
+    assert "over a ROOF it is not carried" in row["basis"]
 
 
 def test_the_screw_releases_vertically_and_the_catalog_says_so() -> None:

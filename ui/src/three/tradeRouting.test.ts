@@ -89,14 +89,18 @@ export function runTradeRoutingTests() {
   assert(meshes("siding").every((m) => !m.visible), "Not one wall band draws");
   applyTradeVisibility(root, allVisibleTrades());
 
-  // Multi-trade sets draw while any member is on.
+  // A multi-trade set answers to its PRIMARY trade — the first token, stamped by the engine.
+  // It used to draw while ANY member was on, which meant a body on two trades could never be
+  // isolated away: Concrete off still left a foundation wall on screen under Insulation.
   const shared = new THREE.Mesh();
   shared.userData.trades = ["drainage", "earth"];
   root.add(shared);
+  applyTradeVisibility(root, onlyTrades(["drainage"]));
+  assert(shared.visible, "A bedding tagged drainage+earth draws under its primary, Drainage");
   applyTradeVisibility(root, onlyTrades(["earth"]));
-  assert(shared.visible, "A bedding tagged drainage+earth draws under Earth alone");
+  assert(!shared.visible, "…and NOT under the secondary trade alone");
   applyTradeVisibility(root, onlyTrades(["concrete"]));
-  assert(!shared.visible, "…and hides when neither is on");
+  assert(!shared.visible, "…nor when neither is on");
 }
 
 // The gap the Connectors toggle falls through without the `tagNew` narrowing in `scene.ts`.

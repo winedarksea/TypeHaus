@@ -214,7 +214,8 @@ def stud_bore(profile: str, diameter_in: float, *, bearing: bool = True,
             f'a {diameter_in:.2f}" penetration is wider than the {depth_in:.2f}" depth of '
             f"a {profile}, so it is a framed opening with a header over it and not a bore. "
             "IRC R602.6 governs holes drilled in members that stay whole and does not "
-            "reach this; nothing in this engine grades the header either",
+            "reach this; where a header resolves, `mep.run_through_header` names what the "
+            "run passes and why no table grades it",
             remedy="draw the opening and its header, or take the run through a floor bay "
                    "instead of across the wall")
     fraction = (STUD_BORE_DOUBLED if doubled
@@ -266,12 +267,23 @@ def stud_notch(profile: str, depth_of_notch_in: float, *,
         remedy=None if ok else "bore rather than notch, or take the run to a clear bay")
 
 
-def top_plate_cut(profile: str, cut_in: float) -> BoreVerdict:
+def top_plate_cut(profile: str, cut_in: float, *,
+                  tie: bool | None = None) -> BoreVerdict:
     """IRC R602.6.1 on a cut or notched top plate.
 
     **Over 50% is not illegal, it is conditional**, and that distinction is the whole value
-    of this function: a cut plate with the tie on it is built every day. The condition is
-    reported as a ``remedy`` the person applies; nothing here adds a strap to a model.
+    of this function: a cut plate with the tie on it is built every day. ``tie`` is the
+    caller's reading of whether the model says the strap is there — ``True`` a
+    ``PlateTie`` covers this cut, ``False`` none does, ``None`` the caller did not look
+    (and the verdict stays the pre-2026-09-19 UNKNOWN-shaped "conditional"). Nothing here
+    adds a strap to a model: the condition is reported as a ``remedy`` a person applies.
+
+    **A penetration as wide as the plate is not a plate cut**, exactly as it is not a stud
+    bore: an 18" duct does not notch a 2x4 top plate, it goes through a framed opening with
+    a header over it, and R602.6.1 — which is about a plate that stays continuous either
+    side of a notch — has nothing to say about it. Nine of catlin's thirteen were that
+    case, reported as "18.00\" out of a 3.50\" plate", which is arithmetic about a notch
+    nobody would cut. ``header_bore`` is the question those actually ask.
     """
     from typehaus.resolve.framing.profiles import cross_section
 
@@ -281,18 +293,88 @@ def top_plate_cut(profile: str, cut_in: float) -> BoreVerdict:
         return engineered
     width_in = max(section.depth_m, section.width_m) / M_PER_IN
     limit = width_in * PLATE_CUT_FRACTION
+    if cut_in >= width_in - 1e-9:
+        return BoreVerdict(
+            None, "plate_cut", cut_in, None,
+            f'a {cut_in:.2f}" penetration is as wide as the {width_in:.2f}" width of a '
+            f"{profile} top plate, so the plate is interrupted rather than notched: this is "
+            "a framed opening with a header over it, and IRC R602.6.1 governs a plate that "
+            "stays continuous either side of a cut",
+            remedy="draw the opening and its header — `mep.run_through_header` grades what "
+                   "the run then passes")
     if cut_in <= limit + 1e-9:
         return BoreVerdict(True, "plate_cut", cut_in, limit,
                            f'IRC R602.6.1: {cut_in:.2f}" out of a {profile} top plate, '
                            f'under the {limit:.2f}" (50%) line that triggers a tie')
+    detail = (f"a galvanized metal tie {PLATE_TIE_GAUGE_IN:.3f}\" (16 ga) x "
+              f"{PLATE_TIE_WIDTH_IN:g}\" across the cut, lapping {PLATE_TIE_LAP_IN:g}\" "
+              f"past the opening each way, with {PLATE_TIE_NAILS_EACH_SIDE} 10d nails "
+              "each side")
+    over = (f'IRC R602.6.1: {cut_in:.2f}" out of a {profile} top plate is more than 50% of '
+            f'its {width_in:.2f}" width, which is permitted WITH a tie and not without one')
+    if tie is True:
+        return BoreVerdict(True, "plate_cut", cut_in, limit,
+                           f"{over} — and this model authors the tie")
+    if tie is False:
+        return BoreVerdict(False, "plate_cut", cut_in, limit,
+                           f"{over}, and no PlateTie in this model covers it",
+                           remedy=f"fasten {detail}, and author it")
+    return BoreVerdict(True, "plate_cut", cut_in, limit, over,
+                       remedy=f"fasten {detail}")
+
+
+#: The member categories a run's leg can be measured against. A ``header`` is here and was
+#: not until 2026-09-19: the list was the reason a run over a door met nothing at all, and
+#: silence is the one verdict a member carrying an opening's whole tributary load may not
+#: get. It is graded by :func:`header_bore`, which is NOT R602.6 — see that function.
+_CUTTABLE_CATEGORIES = ("stud", "king", "jack", "cripple", "plate", "sill", "header")
+
+
+def header_bore(profile: str, diameter_in: float) -> BoreVerdict:
+    """A hole a run would take through a header over an opening.
+
+    **There is no prescriptive table for this and none is invented here.** R502.8.1 governs
+    floor JOISTS, R602.6 governs STUDS, and neither reaches a header: a header is a bending
+    member collecting the whole tributary load over an opening into two jack studs, and what
+    a hole does to it depends on where along the span it is and what it carries — which is
+    an engineering question, not a table lookup. Grading a header against the joist row
+    because the section is also a rectangle is exactly the mistake ``_engineered`` exists to
+    refuse, one product family further along.
+
+    So the verdict is **UNKNOWN with the numbers printed**, which is the actionable half: a
+    person reading "4.00" through a 7.25" 2-2x8 header" can act, and "not covered" alone
+    cannot. The one determinate case is a penetration **as deep as the member**: that is not
+    a hole, it is the header's removal, and no table is needed to say a severed header does
+    not carry the opening. That is a FAIL.
+
+    R502.8.1's D/3 is quoted for SCALE only and is stated as non-binding in the basis text.
+    """
+    from typehaus.resolve.framing.profiles import cross_section
+
+    section = cross_section(profile)
+    engineered = _engineered(section, profile, "bore")
+    if engineered is not None:
+        return engineered
+    depth_in = section.depth_m / M_PER_IN
+    if diameter_in >= depth_in - 1e-9:
+        return BoreVerdict(
+            False, "bore", diameter_in, depth_in,
+            f'a {diameter_in:.2f}" penetration through a {profile} header is as deep as the '
+            f'{depth_in:.2f}" member itself: that is not a hole drilled in a member that '
+            "stays whole, it is the header's removal, and a severed header does not carry "
+            "the opening under it",
+            remedy="take the run under the header through the rough opening, over the wall, "
+                   "or through a floor bay — or frame a second opening and header it")
+    joist_scale = depth_in * JOIST_HOLE_FRACTION
     return BoreVerdict(
-        True, "plate_cut", cut_in, limit,
-        f'IRC R602.6.1: {cut_in:.2f}" out of a {profile} top plate is more than 50% of its '
-        f'{width_in:.2f}" width, which is permitted WITH a tie and not without one',
-        remedy=(f"fasten a galvanized metal tie {PLATE_TIE_GAUGE_IN:.3f}\" (16 ga) x "
-                f"{PLATE_TIE_WIDTH_IN:g}\" across the cut, lapping {PLATE_TIE_LAP_IN:g}\" "
-                f"past the opening each way, with {PLATE_TIE_NAILS_EACH_SIDE} 10d nails "
-                "each side"))
+        None, "bore", diameter_in, None,
+        f'{diameter_in:.2f}" through a {profile} header ({depth_in:.2f}" deep): NO IRC '
+        "table publishes a bore or notch limit for a header. R502.8.1 governs floor joists "
+        "and R602.6 studs; a header collects an opening's whole tributary load over a span "
+        "and what a hole costs it depends on where along that span it sits. For scale only, "
+        f'and binding on nothing here, the joist rule\'s D/3 would be {joist_scale:.2f}"',
+        remedy="have the header's designer state the allowable hole and its zone along the "
+               "span and author it, or route the run clear of the header")
 
 
 @dataclass(frozen=True)
@@ -335,7 +417,7 @@ def leg_crossings(wall: ResolvedWall, a: tuple[float, float], b: tuple[float, fl
     swept = (Point(a) if a == b else LineString([a, b])).buffer(radius_m)
     out: list[MemberCut] = []
     for member in wall.members:
-        if member.category not in ("stud", "king", "jack", "cripple", "plate", "sill"):
+        if member.category not in _CUTTABLE_CATEGORIES:
             continue
         shape = _member_plan_shape(member, cross_section(member.profile))
         if shape is None or not swept.intersects(shape):

@@ -78,6 +78,9 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "pl
              # The sill seal under those plates, by the lineal foot, keyed on the product the
              # resolver picked. See ``Prices.sill_gaskets``.
              "sill_gaskets",
+             # Cove/LED run stock: channel and tape by the foot, end caps and corner
+             # connectors by the piece. See ``Prices.light_run_materials``.
+             "light_run_materials",
              # Loose furnishings — priced, reported, and deliberately *not* summed into the
              # construction total. See ``EXCLUDED_FROM_TOTAL``.
              "furnishings",
@@ -157,6 +160,12 @@ ALTERNATE_UNITS: dict[str, dict[str, str]] = {
     "wall_structure": {"SF": "net_area_sqft", "ea": "count"},
     # A downspout is quoted per DROP, not per foot of leader — ``count`` is the drop count.
     "drainage": {"ea": "count", "cy": "aggregate_cubic_yards"},
+    # The one table whose rows are honestly in TWO units: channel and tape are stock bought
+    # by the foot, an end cap and a corner connector are pieces. Both read the SAME
+    # ``quantity`` field — the takeoff already wrote each row in its own unit — so this maps
+    # a printed LABEL, not a conversion. A piece row must say ``unit = "EA"`` or it prints
+    # (and reads) as feet.
+    "light_run_materials": {"EA": "quantity"},
 }
 
 
@@ -338,6 +347,16 @@ class Prices:
     # and too volatile to track. Split rather than dropped: the estimate still prices and
     # reports it, beside the total instead of inside it. ``load_prices`` rejects a type
     # priced in both tables.
+    # Cove/LED run order stock, keyed on the ``item`` the takeoff writes — "channel",
+    # "tape", "end_cap", "corner_connector" — and qualified by the luminaire TYPE
+    # (``channel:ED-T-LT-LINEAR-EXT``), because a damp-location exterior extrusion and a
+    # sauna-rated silicone tape are not the 24V cove rate. Channel and tape price per LF,
+    # caps and connectors per EA with ``unit = "EA"`` (see ``ALTERNATE_UNITS``).
+    #
+    # Its own table and NOT a [placeables] row: a LightRun is not a placeable, and the BOM
+    # keys these on the item rather than the type, so a per-type row under [placeables]
+    # would match nothing and bill $0 in silence.
+    light_run_materials: Mapping[str, PriceRange] = field(default_factory=dict)
     furnishings: Mapping[str, PriceRange] = field(default_factory=dict)
     # Lump sums, keyed on a slug the house invents. THE ONE SECTION WITH NO QUANTITY BEHIND
     # IT — every other table is a $/unit rate joined to a BOM row the model resolved, and

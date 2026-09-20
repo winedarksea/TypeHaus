@@ -4,9 +4,15 @@
 on the basement fixtures, arrestors at the washer, a main shutoff that is accessible — and
 these are the three checks that ask them.
 
-CODE tier, all three. None of them is a preference: P2903.9.1 requires the main shutoff and
-requires it accessible, P2902 requires backflow protection at every hose connection, and
-P2903.5 requires arrestors where quick-closing valves are installed.
+CODE tier, all three. None of them is a preference: UPC 606.1 requires the full-open valve
+controlling the building supply and 606.3 requires access to it, UPC 603.5.7 requires
+backflow protection at every hose connection, and UPC 609.10 requires arrestors where
+quick-closing valves are installed.
+
+**Not IRC P2902 / P2903.** Minn. R. 1309.0010 subp. 3.D strikes IRC chapters 25-33, so what
+governs the water supply here is the UPC as incorporated at Minn. R. 4714.0050. The section
+numbers above are the ones a Minnesota reviewer opens; the IRC spellings this module used to
+carry named a chapter that does not apply in this state.
 
 Each check no-ops on a plan with no supply runs. A house with no water is not a house
 missing a shutoff — it is a house whose plumbing has not been drawn yet, and reporting three
@@ -32,7 +38,7 @@ def _of_kind(ctx: CheckContext, kind: PipeAccessoryKind) -> list:
     return [a for a in ctx.model.pipe_accessories if a.kind == kind.value]
 
 
-# The two device families P2902 counts as protection. A shutoff is not one of them: closing
+# The two device families UPC 603.0 counts as protection. A shutoff is not one: closing
 # a valve is an operation, and a cross-connection is judged on what holds with nobody there.
 _GUARD_KINDS = frozenset({PipeAccessoryKind.VACUUM_BREAKER.value,
                           PipeAccessoryKind.BACKFLOW_PREVENTER.value})
@@ -45,7 +51,7 @@ def _named(device) -> str:
 
 @check(Tier.CODE, "mep.main_shutoff")
 def main_shutoff(ctx: CheckContext) -> list[Finding]:
-    """IRC P2903.9.1 — one main shutoff valve, and it has to be reachable.
+    """UPC 606.1 / 606.3 — one full-open valve on the supply, and it has to be reachable.
 
     Two failures, not one, because they fail differently on site. A missing valve is caught
     at rough-in; a valve behind the water heater passes rough-in and is discovered the night
@@ -62,17 +68,17 @@ def main_shutoff(ctx: CheckContext) -> list[Finding]:
         return []
     mains = _of_kind(ctx, PipeAccessoryKind.MAIN_SHUTOFF)
     if not mains:
-        return [_fail(cid, "the water service has no main shutoff — P2903.9.1 requires one "
-                           "valve controlling the whole supply")]
+        return [_fail(cid, "the water service has no main shutoff — UPC 606.1 requires a "
+                           "full-open valve controlling the whole supply")]
     if len(mains) > 1:
         return [_fail(cid, "the supply declares "
                            f"{len(mains)} main shutoffs ({', '.join(a.tag for a in mains)}); "
-                           "P2903.9.1's main shutoff is singular",
+                           "UPC 606.1's supply valve is singular",
                       tuple(a.tag for a in mains))]
     main = mains[0]
     if not main.accessible:
         return [_fail(cid, f"main shutoff {main.tag} does not declare `accessible=True` — "
-                           "P2903.9.1 requires the valve be reachable without removing a "
+                           "UPC 606.3 requires the valve be reachable without removing a "
                            "panel or standing on something",
                       (main.tag,))]
     where = f" in {main.room}" if main.room else ""
@@ -82,7 +88,7 @@ def main_shutoff(ctx: CheckContext) -> list[Finding]:
 
 @check(Tier.CODE, "mep.backflow_prevention")
 def backflow_prevention(ctx: CheckContext) -> list[Finding]:
-    """IRC P2902 — cross-connection control, graded per connection rather than per device.
+    """UPC 603.0 — cross-connection control, graded per connection rather than per device.
 
     The unit is the *branch*, not the fitting. What a cross-connection asks is what stands
     between the potable trunk and the opening, and every guard on the feed is part of that
@@ -140,7 +146,7 @@ def backflow_prevention(ctx: CheckContext) -> list[Finding]:
         integral = bool(hydrant_type and hydrant_type.integral_vacuum_breaker)
         if not threads and not integral:
             out.append(_fail(
-                cid, f"hose connection {hydrant.tag} has no vacuum breaker — P2902.3.1 "
+                cid, f"hose connection {hydrant.tag} has no vacuum breaker — UPC 603.5.7 "
                      "requires backflow protection at every hose thread on a potable line",
                 (hydrant.tag,)))
             continue
@@ -176,7 +182,7 @@ def backflow_prevention(ctx: CheckContext) -> list[Finding]:
 
 @check(Tier.CODE, "mep.water_hammer_arrestor")
 def water_hammer_arrestor(ctx: CheckContext) -> list[Finding]:
-    """IRC P2903.5 — an arrestor on each supply feeding a quick-closing valve.
+    """UPC 609.10 — an arrestor on each supply feeding a quick-closing valve.
 
     *Each* supply: a washer slams both its hot and its cold solenoid shut, and an arrestor
     on the cold alone leaves the hot line to hammer. So the check pairs every quick-closing
@@ -210,7 +216,7 @@ def water_hammer_arrestor(ctx: CheckContext) -> list[Finding]:
                     out.append(_fail(
                         cid, f"{element.tag} has a quick-closing valve on its {label} "
                              f"supply ({', '.join(sorted(feeds))}) and no water-hammer "
-                             "arrestor on it — P2903.5",
+                             "arrestor on it — UPC 609.10",
                         (element.tag,)))
                 else:
                     out.append(_pass(
