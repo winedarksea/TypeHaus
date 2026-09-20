@@ -585,15 +585,23 @@ ERV_CONDENSATE = [
     # air gap over FX-B-SAUNA-FD — the run's own final leg to its receptor, which is what an
     # indirect waste to a floor drain looks like. 0.3"/ft on both horizontals.
     PipeRun(uid="3XVTM6HD5T", tag="PR-B-ERV-COND", system=PipeSystem.DRAIN,
-            path=(pt(ft(3, 11), ft(30, 9)), pt(ft(2, 11), ft(30, 9)),
-                  pt(ft(2, 11), ft(13, 3)),
+            # ** THE NORTH-SOUTH LANE IS x=2'-7", NOT 2'-11" (P2, 2026-09-19). ** At
+            # 2'-11" it ran one inch from PR-B-MAIN-DRAIN's 4" vertical at (3'-0", 15'-6"),
+            # which drops from -2'-5" to the footing — and a 4" main and a 3/4" condensate
+            # want 2 3/4" between centres. Four inches west is five, and there is nothing
+            # else in that lane at this depth: PR-B-WC2-DRAIN's riser at x=2'-6" is thirty
+            # inches higher and the basement raceway bundle is at -4'-0".
+            path=(pt(ft(3, 11), ft(30, 9)), pt(ft(2, 7), ft(30, 9)),
+                  pt(ft(2, 7), ft(13, 3)),
                   pt(ft(13), ft(13, 3)), pt(ft(13), ft(10)),
                   pt(ft(13), ft(10)), pt(ft(13), inch(98.1875))),
             diameter=inch(0.75), material="pvc",
             # Starts at 4'-6": EQ-B-ERV's four ports are on top, with 3 5/16" of ceiling
             # above them (see plan/electrical.py). The pan is the run's high point; the fall
             # is 0.3"/ft the whole way, and the tie-in at FX-B-SAUNA-FD is 9".
-            elevations=(inch(54), inch(53.7), inch(48.45), inch(45.425),
+            # The first leg is 1'-4" now rather than 1'-0", so its fall goes 0.3" -> 0.4"
+            # to hold the same 0.3"/ft; everything downstream keeps its authored invert.
+            elevations=(inch(54), inch(53.6), inch(48.45), inch(45.425),
                         inch(44.45), inch(9.545), inch(9))),
 ]
 

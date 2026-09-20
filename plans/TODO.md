@@ -378,6 +378,32 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
     group needs a DESIGN answer (soffits, or distinct elevations in the attic floor band),
     not another search, and pasting the campaign's output would trade interference FAILs for
     stud-bore FAILs.
+  - **THE SUITE STACK HEAD IS SHORT BY 0.48", AND BOTH ENDS OF THE ARITHMETIC ARE PINNED
+    (P2, measured 2026-09-19).** `PR-A-STUBATH-DRAIN` crosses `PR-M-S-SUITE-WC-DRAIN` at
+    (11'-2.8", 18'-3") 0.9" apart, and two 3" drains want 3.5" between centres. The campaign
+    plan called these "coupled through the web window — move together or neither moves". They
+    are, and neither moves. Worked:
+      * FS-S-WEST's web window is 109 5/8"..118 1/2", so two 3" centres may sit anywhere in
+        111 3/8"..116 3/4" — a 5 3/8" band, which **would** hold them at 3 1/2".
+      * `PR-M-S-SUITE-WC-DRAIN`'s head is pinned at +116 1/2" by the water closet's own
+        flange drop and its foot at +112'-0" by the stack inlet. Its last leg is 1'-9 1/4"
+        long, so at 1/4"/ft its north-south leg may not end below +112.44" — and the
+        crossing is 68% down that fall, which puts the deepest it can reach there at
+        **+113.73"**.
+      * `PR-A-STUBATH-DRAIN` would then have to sit at +117.23", whose 3" band tops out at
+        **118.98" against the top chord's 118.5"**.
+    **So they miss by 0.48".** The plan's own answer applies — "it is a head decision, and
+    `preferences.toml` says the basement head budget is spent, so the honest options are the
+    fixture position (`--sweep`) or an owner call". Add one to that list now that the number
+    is known: the crossing is 68% down the WC drain's fall because that drain runs
+    NORTH-SOUTH past the attic branch. Moving `FX-S-SUITEBATH-WC` 18" north, or taking the
+    attic branch to the stack on the other side of it, changes the 68% and nothing else.
+  - **`PR-B-KITCH-DRAIN` x `PR-M-S-BATH1-DRAIN` (2.20") is the same kind of decision** at
+    (4'-6", 17'-11"), two more gravity runs with authored inverts, and is left with it.
+  - **`PR-B-SH2-DRAIN` x `PR-B-WC2-DRAIN` (0.31") is the fitting**, six inches upstream of
+    the tee at (3'-0", 16'-6") they both land on — the suppression entry's own class table
+    already carries it, and E2 tightened the pardon that used to cover it.
+
   - **PHASE 4'S CAMPAIGN DOES NOT PRODUCE A LANDABLE SET, AND NEITHER DOES ITS OWN
     REGRESSION CHECK (measured 2026-09-19).** Both halves were run as the plan specifies and
     both are measurements rather than pastes. Nothing was written; `haus route` has no
