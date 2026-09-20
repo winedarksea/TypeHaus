@@ -1125,6 +1125,19 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       and y=3'-2", south of the vent's corner.
     - **The gym radial no longer crosses the gym** and `RM-B-GYM.exposed_services` says so;
       RM-B-STAIR carries three ERV branches now instead of one.
+  - **THE PLUMBING MOVED TOO (P1-P3, 2026-09-19), AND THREE NUMBERS ARE WORTH KEEPING.**
+    The two basement vents stopped sharing the y=34'-6" line into the chase —
+    `PR-B-BATH-VENT` drops 2 1/2" under and `PR-B-SAUNA-VENT` takes its rise EARLY, because
+    **a vent must be graded to drain back (P3104.1) and no check in this engine reads that**,
+    so a vent is one decision end to end and never a tier per crossing. The cold trunk's
+    north-south lane moved x=5'-0" -> 4'-9", off `PR-M-S-BATH1-DRAIN`'s riser. And the
+    same-band supply crossings step **UP, not down**: the cold band rides inside FS-M-WEST's
+    I-joist web, whose window is -10 1/2"..-1 3/8", so two inches down puts a 1" copper's
+    invert 7/8" into the bottom flange — the hot band hangs below the joists and has no such
+    limit. Two residues are itemised with their arithmetic in `preferences.toml`:
+    `PR-A-HW-STUBATH`'s 1" sleeve makes it 2.88", which misses sharing a 2x6 bay with the
+    2 3/8" lav drain **by four thousandths of an inch**; and the suite stack head is short by
+    0.48" with both ends pinned.
   - **Three manifolds map to CAVITIES, not storeys.** Level 1 = basement ceiling, machine in
     RM-B-FURNACE. Level 2 = RM-M-MECH, feeding both main-storey CEILING grilles and
     second-storey FLOOR boots because both open into the one FS-S-WEST/EAST cavity. Level 3 =

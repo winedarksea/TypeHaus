@@ -253,14 +253,25 @@ permit_drop = ["A-502", "A-506"]
 # element itself.
 [checks]
 suppress = [
-  # ** mep.run_interference: 93 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-19 AFTER THE
-  # THREE CAVITY CAMPAIGNS. NOT A DECISION — AN OPEN CAMPAIGN. **
+  # ** mep.run_interference: 67 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-19 AFTER THE
+  # THREE CAVITY CAMPAIGNS AND THE PLUMBING PASS. NOT A DECISION — AN OPEN CAMPAIGN. **
   #
-  # ** 150 -> 114 -> 93, AND EVERY STEP IS A REDESIGN RATHER THAN A RE-READING. ** D1 took
-  # level 2 trunk-and-branch, D2 split the attic chase into four lanes, D3 re-laid the
+  # ** 150 -> 114 -> 93 -> 67, AND EVERY STEP IS A REDESIGN RATHER THAN A RE-READING. ** D1
+  # took level 2 trunk-and-branch, D2 split the attic chase into four lanes, D3 re-laid the
   # basement on the four corridors that are actually clear and put each radial on its own
-  # dimensioned collar. **duct <-> duct is now ZERO in this house** — it was 37 at the
-  # Phase 1 exit, and every one of them was two branches leaving one plenum on one line.
+  # dimensioned collar; then P1/P2/P3 moved the vents, the cold lane and three supply
+  # branches. **duct <-> duct is now ZERO in this house** — it was 37 at the Phase 1 exit,
+  # and every one of them was two branches leaving one plenum on one line. So is
+  # supply <-> vent, and supply <-> supply is down to one.
+  #
+  # ** WHAT IS LEFT IS NOT ONE KIND OF THING, AND THAT IS THE USEFUL PART. ** 29 of the 67
+  # are conduit, which is laid LAST in `routing/campaign.TRADE_ORDER` because a raceway
+  # bends round a duct rather than the other way about — Phase 4 ran the campaign and its
+  # own `--evaluate` refused the result (plans/TODO.md). 14 more are one vent against the
+  # level-2 duct bank, pinned by a rule no check in this engine reads: a vent must be graded
+  # to drain back (P3104.1), so it cannot dip under one duct and climb over the next. The
+  # rest are individually argued in plans/TODO.md, several of them to a hundredth of an
+  # inch.
   #
   # ** 146 -> 150, AND THE BUILDING DID NOT MOVE. ** Three mechanisms, each named, and two
   # of them are the engine seeing BETTER rather than worse:
@@ -289,23 +300,23 @@ suppress = [
   #
   # The class breakdown, and it is the line that goes stale first:
   #
-  #                        2026-09-18   Phase 1 exit   after D1-D3
-  #     duct <-> duct            37          37             0      -37
-  #     duct <-> vent            28          22            14       -8
-  #     drain <-> duct           33          22             7      -15
-  #     conduit <-> vent          0          18            18        —    (E7)
-  #     drain <-> supply         32          11            11        —
-  #     supply <-> supply        18          10            10        —
-  #     duct <-> supply          12           7             7        —
-  #     drain <-> vent            -           5             5        —
-  #     conduit <-> duct          0           3             6       +3    (D2)
-  #     conduit <-> conduit       0           4             4        —    (E7)
-  #     conduit <-> supply        0           4             4        —    (E7)
-  #     drain <-> drain           -           4             4        —
-  #     supply <-> vent          12           2             2        —
-  #     vent <-> vent             -           1             1        —
-  #                             ---         ---           ---
-  #                             188         150            93
+  #                        2026-09-18   Phase 1 exit   after D1-D3   after P1-P3
+  #     duct <-> duct            37          37             0             0
+  #     duct <-> vent            28          22            14            14
+  #     conduit <-> vent          0          18            18            15      -3
+  #     drain <-> duct           33          22             7             7
+  #     drain <-> supply         32          11            11             7      -4
+  #     conduit <-> duct          0           3             6             6
+  #     duct <-> supply          12           7             7             5      -2
+  #     conduit <-> conduit       0           4             4             4
+  #     conduit <-> supply        0           4             4             4
+  #     drain <-> drain           -           4             4             3      -1
+  #     supply <-> supply        18          10            10             1      -9
+  #     drain <-> vent            -           5             5             1      -4
+  #     supply <-> vent          12           2             2             0      -2
+  #     vent <-> vent             -           1             1             0      -1
+  #                             ---         ---           ---           ---
+  #                             188         150            93            67
   # The rows sum to the headline; if they stop summing, one of them went stale. The four
   # rows that start blank were inside the older column's "everything else" (which held the
   # two radon pairs, drain<->vent 6, drain<->drain 3 and five singles) and are broken out
@@ -313,12 +324,12 @@ suppress = [
   # supply<->supply 9 and "everything else" 1 are one row here: PR-B-ERV-COND reads as a
   # drain under the classifier the third column was taken with.
   #
-  # ** ONLY THREE ROWS MOVED AND ALL THREE ARE THE CAMPAIGNS. ** duct<->duct to zero,
-  # drain<->duct and duct<->vent down by half between them. conduit<->duct rose by the
-  # three CD-A-DATA-NE pairs D2 made and deferred, because conduit is laid LAST in
-  # `routing/campaign.TRADE_ORDER` and a raceway bends around a duct rather than the other
-  # way about. Everything left is pipe against pipe, or conduit, and belongs to Phase 3
-  # and Phase 4.
+  # ** THE AIR IS DONE AND THE WATER IS MOSTLY DONE. ** duct<->duct, supply<->vent and
+  # vent<->vent are all zero; supply<->supply went 18 -> 1 when the cold lane moved off
+  # PR-M-S-BATH1-DRAIN's riser and the same-band crossings stepped into the empty half of
+  # the I-joist web. conduit<->duct holds the three CD-A-DATA-NE pairs D2 made and deferred
+  # on purpose. The two rows that have not moved since the Phase 1 exit are duct<->vent
+  # (one vent, one rule) and drain<->duct, and both are argued by name in plans/TODO.md.
   #
   # This is the one blanket entry in this file about run-against-run geometry, and it is
   # the only one that is not about a single element. The check is right: it compares every

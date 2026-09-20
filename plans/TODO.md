@@ -560,6 +560,26 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   member is UNKNOWN and never graded; a penetration as wide as the member is a framed
   opening and not a bore, and **nothing in this engine grades the header over one** — that
   is the next hole in this area.
+- **THREE THINGS THIS ENGINE CANNOT SEE, ALL FOUND BY WALKING INTO THEM (2026-09-19).**
+  Each one let a wrong answer look green, which is the only reason they are worth a bullet:
+  * **A vent has to be graded to drain back to the drainage pipe (IRC P3104.1) and nothing
+    in `checks/mep/` reads that.** `plan/mep_venting.py`'s own header states the rule — "fall
+    ~1/8"/ft back toward the fixtures so condensate returns rather than pooling" — and a
+    profile that zig-zagged through a duct bank would pass every check in the house. It is
+    what makes `PR-M-WC-VENT` one decision rather than five: the run cannot take the tier the
+    radials are not in at each crossing, because once it is high it must stay high. A
+    `mep.vent_grade` beside `mep.drain_slope` is the shape of the fix, and the same walk
+    already measures what it needs.
+  * **Nothing grades a run through a HEADER over a framed opening.** `mep.run_through_stud`
+    reads studs and kings; both sauna radials cross W-B-CW's door head inside its 2x8, and
+    the check reports only the king one of them clips. Named above as the next hole in the
+    bore area; D3 is where it bit.
+  * **Equipment that states a position and no ports has nowhere to put two connections.**
+    `EQ-B-WH` takes a cold in and a hot out at one plan point and
+    `tests/test_water_heater_connections.py` requires a vertex ON that point, so
+    `mep.run_interference` reads the tank as a clash. The five ERV plenums have dimensioned
+    ports now (D1, D3) and the tank wants the same treatment — it is the same fix, one
+    `EquipmentType` further down the list.
 - **`EQ-M-ERV-MAN-SUP` and `EQ-M-ERV-MAN-EXH` still have no drawn feed.** Thirteen radials
   leave them and no trunk arrives; `mep.erv_manifold_ports` passes both because it counts
   ports, and only the two plenums with a drawn trunk report a "trunk collar". Until they are
