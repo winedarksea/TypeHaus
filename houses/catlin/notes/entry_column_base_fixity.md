@@ -97,14 +97,15 @@ Three things moved at once and all three are §7's:
    worse in relative terms even as the total came down.
 3. **The column drag stops being a cantilever load.** Wind on the shaft between grade and
    the roof reaches the base alone only while the head is free. With a diaphragm holding the
-   head the shaft is a PROPPED cantilever, and 182 lb applied at 9.96' on a 15.35' shaft
-   makes 523 lb-ft at the base instead of 1,807. The balance goes UP into the deck, where it
+   head the shaft is a PROPPED cantilever, and 182 lb applied at 11.17' on a 16.56' shaft
+   makes 553 lb-ft at the base instead of 2,027. The balance goes UP into the deck, where it
    is distributed with everything else. That is not a discount applied to the old free body;
    it is the free body the declaration creates.
 
-`Site.grade` is **-2'-10"** and the top of `PD-BW-RE` is at **-8'-11 3/8"**, so that column
-is embedded **6.12'**. `PT-BW-RNE` is on the garage side, its pad top is at **-6'-4"**, and
-it has **3.50'**.
+`Site.grade` is **-2'-10"**, and since 2026-09-20 **both** roof columns bear on one common
+plane at **-10'-2"** (`north_entry_frame.ROOF_COLUMN_BASE_FT`), so each is embedded
+**7.33'**. They were at -8'-11 7/16" and -6'-4" — 6.12' and 3.50' — and §6a is where that
+moved and why it had to move for both at once.
 
 The four landing columns (`PT-BW-W`/`-E`/`-GW`/`-GE`) are a different structure —
 `FS-BW-FLOOR`, whose governing lateral case is not wind but the **IRC R301.5 guard load**,
@@ -117,21 +118,19 @@ nothing in this revision touches it: a guard load is delivered at a rail, not at
 four figures:
 
 ```
-PT-BW-RE       P = 379.4 lb,  h = 6.898',  b = 1.00'
-  A = 17.758 / d                  4.36 h = 30.076
-  d = 0.5 A [1 + sqrt(1 + 30.076/A)]
-       d = 6.200 -> A = 2.8642 -> d = 6.289
-       d = 6.289 -> A = 2.8236 -> d = 6.231
-       d = 6.231 -> A = 2.8499 -> d = 6.268
-       ...converges                d = 6.25'
-  at 2 S1 (§1806.3.4):  A = 8.879 / d       converges   d = 4.78'
+both roof columns   P = 496.1 lb,  h = 7.489',  b = 1.00'
+  A = 23.218 / d                  4.36 h = 32.651
+  d = 0.5 A [1 + sqrt(1 + 32.651/A)]
+       d = 7.000 -> A = 3.3168 -> d = 7.095
+       d = 7.095 -> A = 3.2724 -> d = 7.057
+       d = 7.057 -> A = 3.2900 -> d = 7.072
+       ...converges                d = 7.07'
+  at 2 S1 (§1806.3.4):  A = 11.609 / d      converges   d = 5.40'   -- NOT claimed
 
-PT-BW-RNE      P = 612.9 lb,  h = 7.702',  b = 1.00'
-  A = 28.683 / d                  4.36 h = 33.581
-       d = 7.700 -> A = 3.7251 -> d = 7.757
-       d = 7.757 -> A = 3.6977 -> d = 7.719
-       ...converges                d = 7.74'
-  at 2 S1                                              d = 5.90'
+  The two are ONE line of arithmetic now because the two columns are one column: equal
+  shaft, equal stiffness, equal share. Before 2026-09-20 they read
+  PT-BW-RE  P = 379.4 lb, h = 6.898' -> d = 6.25' against 6.12' (1.02, INCOMPLETE) and
+  PT-BW-RNE P = 612.9 lb, h = 7.702' -> d = 7.73' against 3.50' (2.21, OVER).
 
 the four landing columns  P = 200 lb,  h = 4.54',  b = 1.00'
   A = 9.36 / d
@@ -143,30 +142,30 @@ the four landing columns  P = 200 lb,  h = 4.54',  b = 1.00'
 
 | column | carries | embedment | needs (S1) | needs (2 S1) | verdict |
 |---|---|---:|---:|---:|---:|
-| `PT-BW-RE` | canopy, east | 6.12' | 6.25' | 4.78' | **INCOMPLETE** (1.02 / 0.78) |
-| `PT-BW-RNE` | canopy, east | 3.50' | 7.74' | 5.90' | **OVER, d/c 2.21** |
+| `PT-BW-RE` | canopy, east | 7.33' | 7.07' | 5.40' | **ok, 0.96** |
+| `PT-BW-RNE` | canopy, east | 7.33' | 7.07' | 5.40' | **ok, 0.96** |
 | `PT-BW-W` | landing, guard | 6.12' | 4.45' | 3.39' | ok, 0.73 |
 | `PT-BW-E` | landing, guard | 6.12' | 4.45' | 3.39' | ok, 0.73 |
 | `PT-BW-GW` | landing, guard | 3.50' | 4.45' | 3.39' | **INCOMPLETE** |
 | `PT-BW-GE` | landing, guard | 3.50' | 4.45' | 3.39' | **INCOMPLETE** |
 
-**`PT-BW-RE` moved from a published FAIL to the band convention's own INCOMPLETE**, and the
-distance it moved is the whole of §7: 8.08' of required embedment became 6.25' against the
-6.12' it has. It is 1 1/2 inches short at the table's lateral bearing and 1'-4" clear at
-§1806.3.4's isolated-pole double, so the two ends straddle and the verdict turns on the one
-question this engine will not answer for anybody — whether half an inch of motion at the
-ground surface harms a canopy header and the standoff shims under it. It very likely does
-not, and it is still a judgement. **A reader should not read that INCOMPLETE as "nearly
-passes"**: at 1.02 the honest description is "exactly at the line, and the line is drawn on
-presumptive soil with no boring behind it."
+**Both canopy columns publish a graded verdict at the table's own lateral bearing**, and
+§1806.3.4's isolated-pole doubling is not claimed for either — which is the part worth more
+than the margin. A record that needs the doubling straddles the band and publishes nothing;
+these two are decided on the S1 the table gives, so there is no judgement deferred to a
+reader about half an inch of motion at grade.
 
-**`PT-BW-RNE` is still OVER and the margin is not a detail.** It needs 7.74' and has 3.50' —
-2.2 times. Nothing in §7 can close that, and the reason is arithmetic rather than bad luck:
-it is the SHORT column, a cantilever's stiffness goes as `1/h³`, so relative-rigidity
-distribution hands it the larger share of exactly the case nobody else resists. Even a
-column carrying *only its own wind drag* and no share at all of the roof's needs 4.1' at this
-embedment. **3'-6" is not a fixed base at any load worth the name**, and §6 is where that
-has to be settled.
+**They are equal because they were MADE equal**, and that is §6a. `PT-BW-RE` was 1 1/2"
+short at 6.12' against 6.25' and `PT-BW-RNE` was 2.2 times over at 3.50' against 7.73'; both
+now stand 16'-6 3/4" from a common bearing plane at -10'-2" to the header soffit, so they
+have the same stiffness, take 50% each of the governing E-W case, and need the same 7.07'.
+
+**The two landing columns on the garage side are unchanged and still INCOMPLETE.** `PT-BW-GW`
+and `-GE` need 4.45' at the table and 3.39' doubled against the 3.50' they have, so they
+straddle exactly as `PT-BW-RE` used to. Nothing in this revision touches them: their case is
+the R301.5 guard load, not the canopy's wind, and they carry no roof. They are the house's
+two remaining `structural.lateral_racking` UNKNOWNs and they are an open question, not a
+closed one.
 
 ## 5. What this does NOT settle
 
@@ -177,8 +176,12 @@ has to be settled.
   stiffness problem and nothing here computes it.
 - **That the pad is not the mechanism is itself worth stating**, and since 2026-09-19 the
   record states it in graded arithmetic rather than prose — see §8. `PT-BW-RE`'s resultant
-  sits **0.79'** off the footprint centroid against a kern of **0.42'**, so the base would
-  lift at one edge before it did anything about the moment.
+  sits **1.25'** off the footprint centroid against a kern of **0.42'**, so the base would
+  lift at one edge before it did anything about the moment. **The deepening made that worse,
+  not better** — the base moment rose from 4,940 to 7,354 lb-ft while the axial barely moved
+  — and it is the clearest possible statement that the pad is not the mechanism: the thing
+  that closed these columns was the shaft in the soil, and the pad's own arithmetic ran the
+  other way while it happened.
 - **Rotational stiffness.** This grades whether the base can turn the shear around, not how
   far it rotates first. `deck_post`'s sway magnifier assumes a base that does not rotate,
   and a real one does.
@@ -195,29 +198,77 @@ scoreboard has changed twice: 6d was written off on 2026-09-18 as "a relative-ri
 judgement this engine refuses to make" and is now §7, implemented; and 6f, the one the
 2026-09-19 plan expected to carry `PT-BW-RNE`, turns out not to exist at all.
 
-### 6a. Deepen the two canopy shafts — works, and the cost moved
+### 6a. Deepen both canopy shafts to ONE plane — **DONE 2026-09-20, and §6a was wrong**
 
-`PT-BW-RE` needs 6.25' against 6.12'; `PT-BW-RNE` needs 7.74' against 3.50'.
+**The 2026-09-19 version of this section is the thing §6g warns about**, so it is corrected
+here rather than edited away. It said:
 
-**The required depth does not chase the embedment.** `h` is measured from grade to the point
-of application, and both the header and the drag resultant stand at fixed elevations, so `h`
-is invariant under deepening and `d` is a fixed target rather than an iteration.
+> **The required depth does not chase the embedment.** `h` is measured from grade to the
+> point of application, and both the header and the drag resultant stand at fixed
+> elevations, so `h` is invariant under deepening and `d` is a fixed target rather than an
+> iteration.
 
-* **`PD-BW-RE` is 1 1/2 inches short.** Its pad top would go from -8'-11 3/8" to -9'-1", its
-  bottom to -10'-1". That is 3 3/4" below `FT-B-N1..N4`'s -9'-9 7/16" plane, 1 1/16" away in
-  plan — a benching question in an excavation that is already open, not undermining, and by
-  far the cheapest closure on this page. It costs 0.005 cy of concrete and one dimension.
-  **What it also does is stop the record straddling §1806.3.4**, which is worth more than
-  the inch and a half: the verdict becomes published rather than deferred to a judgement.
-* **`PD-BW-RNE` needs 4'-3" more**, its pad top at -10'-7" and its bottom at -11'-7". The
-  2026-09-18 reading of that was "4.9' below the garage strip footing it declares
-  `cast_with`", which is undermining. **That reading is out of date and the reason is 6f.**
-* **`PD-BW-RE` goes from 0.94 to about 0.95 on bearing**, not the 0.984 the deeper version in
-  the 2026-09-18 note reached — 3 3/4" of extra shaft is 37 lb, not 231. It is still the
-  tightest pad in the house.
-* It still **adds a row to S-100** if the two house-side pads stop sharing a bearing
-  elevation: `emit/draw/foundation_schedule._pad_key` carries it, and that sheet is 0.18"
-  from its own schedule governing its height.
+— and on that basis it proposed `PD-BW-RE` down 1 1/2" to -9'-1" and `PD-BW-RNE` down 4'-3"
+to -10'-7", the two taken as independent one-line fixes.
+
+**The half about `h` is true. The half about `d` is false, and the reason is §7's own
+distribution.** IBC §1604.4 shares the wind by relative rigidity, a cantilever's stiffness
+is `3EI/h³`, and that `h` is the FULL shaft — base to header soffit, buried length included.
+Deepening a column makes it SOFTER and sheds its share onto the other one. The two columns
+are not two problems; they are one problem with two knobs, and turning either moves both.
+
+Worked at the §6a elevations, the proposal makes `PT-BW-RE` worse than leaving it alone:
+
+| | `PD-BW-RE` top | `PD-BW-RNE` top | `PT-BW-RE` d/c | `PT-BW-RNE` d/c |
+|---|---|---|---:|---:|
+| as built, 2026-09-19 | -8'-11 7/16" | -6'-4" | 1.02 INCOMPLETE | 2.21 OVER |
+| §6a as written | -9'-1" | -10'-7" | **1.19 OVER** | 0.86 |
+| §6a, both deeper | -9'-2" | -10'-8" | **1.17 OVER** | 0.85 |
+
+`PT-BW-RNE` deepens by 4'-3", its stiffness falls by a factor of 2.2, and the E-W share it
+sheds lands on `PT-BW-RE` — which gains an inch and a half of embedment against a demand
+that rose by a third. There is no pair of elevations that closes `PT-BW-RNE` by deepening it
+and leaves `PT-BW-RE` near -9'. Solved as the simultaneous fixed point it actually is, the
+shallowest closure is `PD-BW-RE` at **-10'-3 1/8"** and `PD-BW-RNE` at **-10'-6 13/16"**.
+
+**Which is the answer telling you to make them equal.** Put both on ONE plane and the two
+columns become the same column — equal `h`, equal `3EI/h³`, 50% each — and the arithmetic
+collapses to the single line in §3. What that buys, in the order it is worth having:
+
+* **Both records publish.** 7.07' needed against 7.33' at the table's own S1, d/c 0.96, and
+  §1806.3.4's doubling is not claimed for either. No straddle, no INCOMPLETE, no judgement
+  handed to a reader.
+* **The governing case stops depending on §7d.** With equal stiffnesses the E-W split is
+  50/50 under a RIGID diaphragm and 50/50 under a tributary one. §7d's N-S ratio was 0.99x —
+  "a factor of two from flipping", and flipping used to put `PT-BW-RE` back over. It cannot
+  any more: the case that governs is indifferent to the answer. (For the record the ratio
+  also *improved*, to 0.68x, because softer columns drift more — see §7d.)
+* **ONE new bearing elevation, so one new S-100 row, not two.** `_pad_key` keys on `z0_m`
+  and that sheet is 0.18" from its own schedule governing its height.
+* **One dimension on the drawings instead of two, and two identical piers.**
+
+**-10'-2" is the shallowest clean elevation clearing 0.96**, and shallowest is the one to
+want: 4'-3" of extra 12" round is about 0.10 cy of concrete and costs nothing, while the
+excavation it stands in costs a great deal. Both pads bottom at **-11'-2"**.
+
+**What it owes, and neither is a modelling gap.** Both are sequencing notes for the
+drawings, of exactly the class `PIER_BOTTOM_FT` already carries:
+
+* **House side.** `FT-B-N1`..`-N4` bottom at -9'-9 7/16" and reach to within 7/8" of
+  `PD-BW-RE` in plan, so the pad now bears 1'-4 9/16" below a footing an inch away. In the
+  open basement excavation — the owner's premise, and why this depth is cheap — the pocket
+  is dug and the pad cast BEFORE the strip bears beside it. Cast after, it is undermining,
+  and the answer becomes benching or a local step in the strip.
+* **Garage side.** `PD-BW-RNE` laps about 7 1/2" UNDER `FT-GF-S1`/`-S3` in plan and now sits
+  3'-2" below them. Those are consolidated crushed stone under R403.5 (§6f), so there is no
+  pour to undermine and no cold joint to key — but a stone strip placed over a backfilled
+  pocket is a settlement question and not a non-issue. The pad goes in first and the stone is
+  compacted around and over it in the 8" lifts R403.4.1 already requires.
+
+**`PD-BW-RE` on bearing.** The 2026-09-19 note expected 0.94 -> about 0.95. The deeper shaft
+adds 143 lb of axial, but the base moment rose to 7,354 lb-ft and the eccentricity with it,
+to 1.25' against a 0.42' kern — see §5 and §8. That arithmetic is REPORTED and not graded,
+for the reason §5 gives, and it moved the wrong way while the graded mechanism closed.
 
 ### 6b. Constrain the base at grade — still not available
 
@@ -227,7 +278,7 @@ or pavement", and these columns stand in open ground with a gravel apron. A stru
 two columns restrains nothing: they stand on one N-S line and would lean together. To be
 constrained the strut has to reach a mass — `PT-BW-RE` south to `W-B-N2/N3`, 10 3/4" away, or
 `PT-BW-RNE` north into the garage stem — and both reverse the premises this design is built
-on and put a rigid prop across the only movement joint. §6e's first bullet is about this.
+on and put a rigid prop across the only movement joint. §6g's first bullet is about this.
 
 At the reduced demand the constrained formula (Eq. 18-3, `S3` at the FULL depth) gives
 `PT-BW-RE` `d = (4.25 M_g / (150))^(1/3)` with `M_g = 379.4 x 6.898 = 2,617 lb-ft`, i.e.
@@ -248,7 +299,7 @@ here, comfortable and not a calculation. The new one is worse. `pier_basis.knee_
 short-circuits `roof_base_moments` **wholesale for the structure**, so one brace on this
 canopy deletes both columns' records — `PT-BW-RE`'s included, the one that is now within an
 inch and a half. After 6c the register would show no base-fixity question on a canopy that
-demonstrably has one, which is §6e's third bullet exactly.
+demonstrably has one, which is §6g's third bullet exactly.
 
 **The connector is still not solved.** `KBS1Z` is wood-to-wood and `APVKB45-6` is unrated in
 ER-102 and ER-280. A knee brace landing on a 12" cast round needs a real part — a
@@ -284,13 +335,17 @@ footing: it is cast monolithic with `FT-GF-S3` + `FT-GF-E` at the corner where t
 E-W south run meets its N-S east return, so the union has the lever arm the overturning
 wants. The mechanism is real and it is implemented (`engineering/spread_base.py`, §8).
 
-**The premise is false, and it has been false since 2026-09-15.** `FT-GF-S1` … `FT-GF-W` are
+**The premise is false, and it has been false since 2026-09-15.** (Past tense throughout
+below: the `cast_with` declaration itself was DELETED from all three garage-side pads on
+2026-09-20. What survives is the correction, which is why this section does.) `FT-GF-S1` … `FT-GF-W` are
 **crushed-stone footings** under IRC R403.5 — `params/foundations.py` retyped all nine on
 2026-09-15, five days after `PD-BW-RNE` declared it was cast with two of them. Nothing is
 cast monolithically with consolidated stone. The `cast_with` declaration on the three
-garage-side pads survived that retype and now says something untrue about how the concrete is
-placed; `engineering/spread_base.pours_for` refuses any named pour whose `Footing.material`
-is not concrete, by name, rather than quietly crediting a smaller footprint.
+garage-side pads survived that retype for five days, saying something untrue about how the
+concrete is placed, and was removed on 2026-09-20. `engineering/spread_base.pours_for`
+refuses any named pour whose `Footing.material` is not concrete, by name, rather than quietly
+crediting a smaller footprint, so the credit was never actually taken — what the stale
+declaration cost was a reader's time, which is exactly §6g's fifth bullet.
 
 So the combined-footing route reaches `PD-BW-RE` and not `PD-BW-RNE`, and §8 shows it does
 not reach far enough there either.
@@ -311,8 +366,13 @@ not reach far enough there either.
   bought entirely from blocking, chords and collectors. A `DiaphragmSpec` on a deck nobody
   blocks is the same act as claiming "constrained" — and it is graded, which is the point of
   `lateral_system/<roof>` existing at all.
-* **Leaving a stale `cast_with` in place.** 6f is the live example. A declaration that was
-  true when it was written and is not true now reads exactly like one that is.
+* **Leaving a stale declaration in place.** 6f was the live example and is now the worked
+  one: `cast_with` was true when written, false from 2026-09-15, and deleted 2026-09-20. A
+  declaration that was true when it was written and is not true now reads exactly like one
+  that is. **§6a is the second example and a worse one**, because it was prose about a
+  calculation rather than about a pour: "`d` is a fixed target rather than an iteration" was
+  half right, nobody re-derived it, and acting on it would have pushed `PT-BW-RE` from
+  INCOMPLETE to OVER while appearing to fix it.
 * **`h` is measured from the single global `Site.grade`.** A local apron or regrade at the
   canopy is invisible to the model and would change `h`, and so `d`, with no finding.
 
@@ -349,17 +409,16 @@ base, total height `H`:
 R_head = P a^2 (3H - a) / (2 H^3)        M_base = P a (H^2 - a^2) / (2 H^2)
 ```
 
-`a = H - 10.785/2 = H - 5.392`.
+`a = H - 10.785/2 = H - 5.392`. Both columns now stand on one plane, so there is one line:
 
 ```
-PT-BW-RE    H = 15.349', a = 9.957'   ->  M_base = 523.4 lb-ft   R_head =  89.8 lb
-PT-BW-RNE   H = 12.729', a =  7.337'  ->  M_base = 444.6 lb-ft   R_head =  73.1 lb
+both        H = 16.563', a = 11.170'  ->  M_base = 552.6 lb-ft   R_head =  96.0 lb
 ```
 
 Those two head reactions join the deck, so the shear the diaphragm distributes is
 
 ```
-E-W   629.3 + 162.9 =   792.2 lb           N-S   997.4 + 162.9 = 1,160.3 lb
+E-W   629.3 + 192.0 =   821.3 lb           N-S   997.4 + 192.0 = 1,189.4 lb
 ```
 
 ### 7c. The stiffnesses
@@ -370,33 +429,41 @@ permits 0.70 I_g, and taking the gross section makes the column stiffer and so h
 shear, which is the end that does not flatter the member being graded).
 
 ```
-PT-BW-RE    h = 184.19"   k = 3(4.031e6)(1017.9) / 184.19^3 = 1,970 lb/in
-PT-BW-RNE   h = 152.75"   k =                                 3,453 lb/in
+both        h = 198.75"   k = 3(4.031e6)(1017.9) / 198.75^3 = 1,568 lb/in
 ```
+
+**Equal, and that is the design rather than a coincidence** — §6a put both bases on one
+plane precisely so this line would have one entry. Before 2026-09-20 they read 1,970 and
+3,453 lb/in on 184.19" and 152.75" shafts, and the 2.2x spread between them is what made the
+short column govern its own worst case.
 
 `W-BW-SCREEN` by SDPWS 4.3.2, `delta = 8vh³/(EAb) + vh/(1000 G_a) + h d_a / b`, on
 6.573' x 4.083' with `G_a = 11 kips/in`, chords 2-2x4 (`A = 10.5 in²`, `E = 1.4e6 psi`) and
 `d_a = 1/16"`.
 
-**Its stiffness and its share are each other's input**, because SDPWS states the anchorage
+**The panel’s stiffness and its share are each other’s input**, because SDPWS states the anchorage
 term as a displacement AT the design shear rather than as a rate: push the panel harder and
 the fixed 1/16" of take-up is a smaller fraction of a larger deflection, so it reads
 stiffer. The pair is iterated from an equal share until it stops moving — three passes here.
-At the share it settles on, 62.4% of the N-S case (724 lb, `v = 110.2 plf`):
+At the share it settles on, 76.1% of the N-S case (905 lb, `v = 137.7 plf`):
 
 ```
-bending   8(110.2)(4.083^3) / (1.4e6 x 10.5 x 6.573)  = 0.0006"
-shear     110.2 x 4.083 / (1000 x 11)                 = 0.0409"
+bending   8(137.7)(4.083^3) / (1.4e6 x 10.5 x 6.573)  = 0.0008"
+shear     137.7 x 4.083 / (1000 x 11)                 = 0.0511"
 rotation  4.083 x 0.0625 / 6.573                      = 0.0388"
-                                               delta  = 0.0803"  ->  k = 9,017 lb/in
+                                               delta  = 0.0907"  ->  k = 9,977 lb/in
 ```
+
+**The panel now carries three quarters of the N-S case rather than five eighths**, because
+the columns it shares that case with got softer. That is the same mechanism §6a is about,
+seen from the other end, and §7f is where the panel is graded for it.
 
 **The panel is evaluated a second time, at a different share, and that is deliberate.** ACI
 318-19 §6.6.3.1.1 permits 0.70 I_g for a column in a lateral analysis, and which end of that
 band is conservative depends on which member is being graded: gross columns are stiff and
 take more (the column's own worse end, used above), cracked columns are soft and shed onto
-the panel (the PANEL's worse end). At 0.70 I_g the columns fall to 1,379 and 2,417 lb/in,
-the panel's share rises to **71.7%** — 832 lb, `v = 126.6 plf` — and §7f grades the panel
+the panel (the PANEL's worse end). At 0.70 I_g the columns fall to 1,097 lb/in each,
+the panel's share rises to **82.5%** — 981 lb, `v = 149.2 plf` — and §7f grades the panel
 there.
 
 ### 7d. Rigid or flexible, and it is decided rather than assumed
@@ -408,51 +475,63 @@ being tested. SDPWS 4.2.2 for the deck, with a 2x4 chord (`A = 5.25 in²`) and 0
 slip at the peak:
 
 ```
-N-S   L = 24.0', W = 6.0', v = 0.5(1160.3)/6.0 = 96.7 plf
-      bending  5(96.7)(24^3) / (8 x 1.4e6 x 5.25 x 6.0)  = 0.0189"
-      shear    0.25(96.7)(24) / (1000 x 12)              = 0.0483"
+N-S   L = 24.0', W = 6.0', v = 0.5(1189.4)/6.0 = 99.1 plf
+      bending  5(99.1)(24^3) / (8 x 1.4e6 x 5.25 x 6.0)  = 0.0194"
+      shear    0.25(99.1)(24) / (1000 x 12)              = 0.0496"
       splice                                             = 0.0300"
-                                          delta_diaphragm = 0.0973"
-      average line drift (tributary)                      = 0.0986"
-                                        ratio 0.99x  ->  RIGID
+                                          delta_diaphragm = 0.0990"
+      average line drift (tributary)                      = 0.1456"
+                                        ratio 0.68x  ->  RIGID
 
-E-W   L = 4.979', W = 26.667'   delta_diaphragm = 0.0315"   drift = 0.1579"
-                                        ratio 0.20x  ->  RIGID
+E-W   L = 4.979', W = 26.667'   delta_diaphragm = 0.0316"   drift = 0.2619"
+                                        ratio 0.12x  ->  RIGID
 ```
 
-Both cases are rigid, and only one of them with room. **The N-S margin is the one to watch:
-at 0.99x it is a factor of two from flipping to tributary**, which would take the two
-columns from 14%/24% to 25% each and put `PT-BW-RE` back over. A softer deck, a thinner
-chord or a sloppier splice all push that way.
+Both cases are rigid, and **the N-S margin that used to be the thing to watch is no longer
+one**. It read 0.99x before 2026-09-20 — a factor of two from flipping to tributary, which
+would have taken the two columns from 14%/24% to 25% each and put `PT-BW-RE` back over. Two
+things changed it. The ratio itself improved to 0.68x, because §6a's deeper bases made the
+columns softer and a softer vertical element DRIFTS more, which is the denominator. And more
+to the point, **the flip no longer matters to the governing case**: E-W governs both columns,
+the two columns are now identical, and an even split is an even split whether it is derived
+from equal rigidities or from equal tributary widths. Worked at the tributary idealization
+the N-S case reads d/c 0.86 and E-W is unchanged at 0.96 — so both verdicts survive the
+assumption being wrong, which is the only kind of margin worth quoting on this page.
 
 ### 7e. The shares, and what they leave at each base
 
 ```
-N-S   sum k = 1,970 + 3,453 + 9,017 = 14,440
-      PT-BW-RE  13.6%   PT-BW-RNE  23.9%   W-BW-SCREEN  62.4%
-E-W   sum k = 1,970 + 3,453 =  5,423     (the panel runs N-S and resists nothing here)
-      PT-BW-RE  36.3%   PT-BW-RNE  63.7%
+N-S   sum k = 1,568 + 1,568 + 9,977 = 13,113
+      PT-BW-RE  12.0%   PT-BW-RNE  12.0%   W-BW-SCREEN  76.1%
+E-W   sum k = 1,568 + 1,568 =  3,135      (the panel runs N-S and resists nothing here)
+      PT-BW-RE  50.0%   PT-BW-RNE  50.0%
 ```
 
-E-W governs both columns, and the base demands follow:
+E-W governs both columns, and with the two identical there is one base demand:
 
 ```
-PT-BW-RE    top 0.3632 x 792.2 = 287.7 lb   M = 287.7(15.349) + 523.4 = 4,940 lb-ft
-            base shear 287.7 + (181.5 - 89.8) = 379.4 lb      arm 13.02'
-PT-BW-RNE   top 0.6368 x 792.2 = 504.4 lb   M = 504.4(12.729) + 444.6 = 6,866 lb-ft
-            base shear 504.4 + (181.5 - 73.1) = 612.9 lb      arm 11.20'
+both        top 0.500 x 821.3 = 410.6 lb   M = 410.6(16.563) + 552.6 = 7,354 lb-ft
+            base shear 410.6 + (181.5 - 96.0) = 496.1 lb      arm 14.82'
 ```
+
+The N-S case, for completeness: top 142.2 lb, `M` = 2,908 lb-ft, base shear 227.7 lb at an
+arm of 12.77' — 0.66 on the same embedment, and it does not govern on either column.
 
 ### 7f. What the deck and the panel owe for it
 
 ```
 deck span-to-depth   24.0 / 6.0                              = 4.00  vs 4.00 blocked  (1.00)
-deck unit shear      0.6243 x 1,160.3 / 6.0                  = 120.7 plf vs 190       (0.64)
-deck chord force     1,160.3 x 24.0 / (8 x 6.0)              = 580 lb  -- NOT graded
-panel unit shear     832 / 6.573                             = 126.6 plf vs 182.5     (0.69)
+deck unit shear      0.7607 x 1,189.4 / 6.0                  = 150.8 plf vs 190       (0.79)
+deck chord force     1,189.4 x 24.0 / (8 x 6.0)              = 595 lb  -- NOT graded
+panel unit shear     981 / 6.573                             = 149.2 plf vs 182.5     (0.82)
 panel aspect ratio   4.083 / 6.573                           = 0.62  vs 3.5           (0.18)
-panel hold-down      832 x 4.083 / 6.573                     = 517 lb vs 2,190 ABU66SS (0.24)
+panel hold-down      981 x 4.083 / 6.573                     = 609 lb vs 2,190 ABU66SS (0.28)
 ```
+
+**§6a moved every row here except the first.** Softer columns shed onto the panel, so the
+panel and the deck line that delivers to it both work harder: 0.64 -> 0.79 on the deck and
+0.69 -> 0.82 on the panel. That is the price of closing the two columns and it is worth
+naming as a price — it is paid in the panel's remaining margin, not in concrete.
 
 The hold-down is the `ABU66SS` standoff base already under each 6x6 — 2,190 lb of published
 uplift, Simpson letter L-F-SSNAILS23 against the ABU66 row of ESR-1622 — and **no dead load
@@ -460,9 +539,11 @@ is credited against the overturning couple**, which is a bound rather than an ap
 and clears by a factor of four anyway. What ESR-1622 §5.6 does not cover is the anchor bolt
 and the concrete under it; that link is an ACI 318 Ch. 17 design and the record says so.
 
-**The span-to-depth row is the one to read twice.** 4.00 against a limit of 4.00 is a pass
-with no margin at all, on a deck whose depth is fixed by the passage and whose span is fixed
-by the columns. Unblocked the limit is 3.0 and this is a FAIL. There is nothing to trade.
+**The span-to-depth row is the one to read twice**, and it is the one row §6a could not
+touch. 4.00 against a limit of 4.00 is a pass with no margin at all, on a deck whose depth is
+fixed by the passage and whose span is fixed by the columns — geometry, which deepening a
+base does not reach. Unblocked the limit is 3.0 and this is a FAIL. There is nothing to
+trade, and it is now the governing row on the whole canopy at d/c 1.00.
 
 ## 8. The spread base, worked — and why neither column uses it
 

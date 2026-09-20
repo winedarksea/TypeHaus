@@ -171,14 +171,18 @@ def test_a_filled_scaffold_seals_every_computed_item(bundle, tmp_path, catlin_ct
                                                      catlin_check_report):
     """The other half: filled in, the form works, and its fingerprints are the live ones.
 
-    ** EVERY COMPUTED ITEM EXCEPT THE ONES IN AN "OVER" SCOPE, AND THAT EXCLUSION IS THE
-    POINT RATHER THAN A CONCESSION. ** `engineering/scaffold.py` writes one block per KIND,
-    because a professional stamps a scope and not a line item — and it writes the whole
-    block out COMMENTED where any item in that scope is over capacity. So since 2026-09-18
-    `column_base/PT-BW-E` and `-W`, which check out perfectly well, are unsealable: they
-    share a scope with `PT-BW-RE` and `-RNE`, whose embedment does not. That is correct. A
-    PE does not stamp "the fixed column bases" while two of the six fail, and offering a
-    block that invited them to would be the scaffold's worst possible behaviour.
+    ** EVERY COMPUTED ITEM, AND THE "OVER" EXCLUSION IS STILL THE POINT EVEN WITH NOTHING
+    IN IT. ** `engineering/scaffold.py` writes one block per KIND, because a professional
+    stamps a scope and not a line item — and it writes the whole block out COMMENTED where
+    any item in that scope is over capacity. From 2026-09-18 to 2026-09-20 that meant
+    `column_base/PT-BW-E` and `-W`, which check out perfectly well, were unsealable: they
+    share a scope with `PT-BW-RE` and `-RNE`, whose embedment did not. That was correct — a
+    PE does not stamp "the fixed column bases" while two of the six fail.
+
+    `notes/entry_column_base_fixity.md` §6a closed both canopy columns on 2026-09-20, so the
+    set is empty again and the whole register is sealable. **`refused` is asserted EMPTY
+    rather than deleted**: the commenting-out behaviour is what this test is about, and an
+    assertion that only ever ran while the house happened to be red would stop guarding it.
     """
     from typehaus.engineering import Freshness
     from typehaus.engineering.register import load_register
@@ -205,7 +209,9 @@ def test_a_filled_scaffold_seals_every_computed_item(bundle, tmp_path, catlin_ct
     # A kind with any OVER item has its whole block commented out — see the docstring.
     refused = {ctx.engineering[i].kind for i in every
                if ctx.engineering[i].status is Status.OVER}
-    assert refused == {"column_base"}, refused
+    assert refused == set(), (
+        "a kind went over capacity — the scaffold will comment its whole block out, which is "
+        "correct, but this test then stops exercising the sealing path for it", refused)
     computed = [ctx.engineering[i] for i in every
                 if ctx.engineering[i].inputs and ctx.engineering[i].kind not in refused]
     assert computed

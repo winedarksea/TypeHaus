@@ -1014,14 +1014,17 @@ _CANOPY_COLUMNS = ("PT-BW-RE", "PT-BW-RNE")
 #: Three consequences, and the first is the one a reader will not expect: **E-W governs
 #: both columns now**. The panel runs north-south, so it takes 62% of the N-S case and none
 #: of the E-W one, and the case with the smaller total is the case the columns keep.
+# ** ONE ROW, TWICE, AND THAT IS §6a's WHOLE RESULT. ** Both canopy bases went onto one plane
+# at -10'-2" on 2026-09-20, so the two columns have the same shaft, the same 3EI/h³ and the
+# same 50% of the E-W case. Until then they read 15.349'/0.3632/523.4/4,940 and
+# 12.729'/0.6368/444.6/6,866 — the SHORT column stiff and taking the larger share of exactly
+# the case the panel does not resist, which is why deepening it alone could not close it.
 _CANOPY_ORACLE = {
-    # §7b/§7e: 0.3632 x 792.2 x 15.349' + 523.4 lb-ft of propped drag.
-    "PT-BW-RE": {"height_ft": 15.349, "drag_arm_ft": 9.957, "share": 0.3632,
-                 "drag_moment_lb_ft": 523.4, "wind_asd_lb_ft": 4_940.0},
-    # §7b/§7e: 0.6368 x 792.2 x 12.729' + 444.6 lb-ft. The SHORT column is the stiff one and
-    # a cantilever's stiffness goes as 1/h³, so it takes the larger share.
-    "PT-BW-RNE": {"height_ft": 12.729, "drag_arm_ft": 7.337, "share": 0.6368,
-                  "drag_moment_lb_ft": 444.6, "wind_asd_lb_ft": 6_866.0},
+    # §7b/§7e: 0.500 x 821.3 x 16.563' + 552.6 lb-ft of propped drag.
+    "PT-BW-RE": {"height_ft": 16.563, "drag_arm_ft": 11.170, "share": 0.500,
+                 "drag_moment_lb_ft": 552.6, "wind_asd_lb_ft": 7_354.0},
+    "PT-BW-RNE": {"height_ft": 16.563, "drag_arm_ft": 11.170, "share": 0.500,
+                  "drag_moment_lb_ft": 552.6, "wind_asd_lb_ft": 7_354.0},
 }
 #: §7a: 0.6 x 18.335 psf x 0.85 x 1.80, the ASD pressure every band below is multiplied by.
 _CANOPY_ASD_PRESSURE_PSF = 16.831
@@ -1033,8 +1036,8 @@ _CANOPY_TOP_SHEAR_NS_LB = 997.4
 #: Two 12" shafts, each 10.78' of exposed length (eave +7.951' down to Site.grade -2.833').
 _CANOPY_DRAG_SHEAR_LB = 363.0
 #: §7b: the two propped-cantilever head reactions, which join the deck and are distributed
-#: with everything else. 792.2 = 629.3 + 162.9 on the E-W case.
-_CANOPY_DIAPHRAGM_SHEAR_LB = 792.2
+#: with everything else. 821.3 = 629.3 + 192.0 on the E-W case.
+_CANOPY_DIAPHRAGM_SHEAR_LB = 821.3
 
 
 @pytest.mark.parametrize("tag", _CANOPY_COLUMNS)

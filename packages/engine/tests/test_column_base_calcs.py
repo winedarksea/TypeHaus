@@ -18,25 +18,28 @@ from typehaus.engineering.item import Status
 
 #: §4's table. ``(embedment ft, needs at S1, needs at 2 S1, status)``.
 #:
-#: ** THE TWO CANOPY ROWS MOVED ON 2026-09-19 AND THE REST DID NOT. ** §7's shear split took
-#: `PT-BW-RE` from 8.08' of required embedment to 6.25' and `PT-BW-RNE` from 8.08' to 7.74' —
-#: they no longer share a demand, because a relative-rigidity split gives the SHORT column the
-#: larger share. The four landing columns carry a guard load delivered at a rail rather than
-#: at a diaphragm, so nothing in that revision reaches them.
+#: ** THE TWO CANOPY ROWS MOVED TWICE, AND THE SECOND TIME THEY MOVED BACK TOGETHER. **
+#: §7's shear split (2026-09-19) took `PT-BW-RE` from 8.08' of required embedment to 6.25' and
+#: `PT-BW-RNE` from 8.08' to 7.74' — they stopped sharing a demand, because a relative-rigidity
+#: split gives the SHORT column the larger share. §6a (2026-09-20) put both bases on one plane
+#: at -10'-2", which makes them the same column again: equal shaft, equal `3EI/h³`, 50% each of
+#: the governing E-W case, 7.07' needed against 7.33'. Both publish at the table's own S1 with
+#: §1806.3.4's doubling unclaimed. The four landing columns carry a guard load delivered at a
+#: rail rather than at a diaphragm, so neither revision reaches them.
 _ORACLE = {
-    "PT-BW-RE": (6.12, 6.25, 4.78, Status.INCOMPLETE),
-    "PT-BW-RNE": (3.50, 7.74, 5.90, Status.OVER),
+    "PT-BW-RE": (7.33, 7.07, 5.40, Status.OK),
+    "PT-BW-RNE": (7.33, 7.07, 5.40, Status.OK),
     "PT-BW-W": (6.12, 4.45, 3.39, Status.OK),
     "PT-BW-E": (6.12, 4.45, 3.39, Status.OK),
     "PT-BW-GW": (3.50, 4.45, 3.39, Status.INCOMPLETE),
     "PT-BW-GE": (3.50, 4.45, 3.39, Status.INCOMPLETE),
 }
 
-#: §2's demand table and §3's iteration: ``(P lb, h ft)``. The two canopy columns each have
-#: their own now — see the note above.
+#: §2's demand table and §3's iteration: ``(P lb, h ft)``. One entry for the two canopy
+#: columns, because §6a made them identical — see the note above.
 _DEMAND = {
-    "PT-BW-RE": (379.4, 6.898),
-    "PT-BW-RNE": (612.9, 7.702),
+    "PT-BW-RE": (496.1, 7.489),
+    "PT-BW-RNE": (496.1, 7.489),
     "landing": (200.0, 4.54),
 }
 
@@ -44,7 +47,7 @@ _DEMAND = {
 _S1_PSF_PER_FT = 150.0
 
 
-@pytest.mark.parametrize("case,expected", [("PT-BW-RE", 6.25), ("PT-BW-RNE", 7.74),
+@pytest.mark.parametrize("case,expected", [("PT-BW-RE", 7.07), ("PT-BW-RNE", 7.07),
                                            ("landing", 4.45)])
 def test_the_iteration_reproduces_the_note(case, expected) -> None:
     """§3, at the table's own lateral bearing.
@@ -57,7 +60,7 @@ def test_the_iteration_reproduces_the_note(case, expected) -> None:
         expected, abs=0.01)
 
 
-@pytest.mark.parametrize("case,expected", [("PT-BW-RE", 4.78), ("PT-BW-RNE", 5.90),
+@pytest.mark.parametrize("case,expected", [("PT-BW-RE", 5.40), ("PT-BW-RNE", 5.40),
                                            ("landing", 3.39)])
 def test_the_isolated_pole_double_reproduces_the_note(case, expected) -> None:
     """§3's second block — IBC §1806.3.4, the upper end of the judgement band."""
@@ -111,13 +114,13 @@ def test_the_pad_is_reported_as_not_being_the_mechanism(catlin_ctx) -> None:
 
     An embedded shaft and a spread base are alternative paths for one moment. `PD-BW-RE`
     does not claim `resists_base_moment`, so the spread arithmetic is worked and PRINTED —
-    the resultant 0.86' off the footprint centroid against a 0.42' kern, i.e. the base would
+    the resultant 1.25' off the footprint centroid against a 0.42' kern, i.e. the base would
     lift at one edge before it did anything about the moment — and the embedment is what is
     graded. Grading both would count one moment twice.
     """
     record = catlin_ctx.engineering[f"{KIND}/PT-BW-RE"]
     inputs = {q.name: q.value for q in record.inputs}
-    assert inputs["eccentricity"] == pytest.approx(0.86, abs=0.02)
+    assert inputs["eccentricity"] == pytest.approx(1.25, abs=0.02)
     assert any("NOT WHAT MAKES THIS COLUMN FIXED" in note for note in record.notes)
     assert not [s for s in record.limit_states
                 if s.name in ("eccentricity", "bearing", "overturning")]

@@ -182,8 +182,8 @@ def test_suppression_by_tag_drops_one_element_and_no_other():
     assert _suppressed(finding("a.rule", "X-2"), frozenset({"a.rule"}))
 
 
-#: The only THREE whole-check silences catlin carries, and they are listed HERE as well as
-#: in `preferences.toml` so that adding a fourth is a test failure rather than a diff nobody
+#: The only TWO whole-check silences catlin carries, and they are listed HERE as well as
+#: in `preferences.toml` so that adding a third is a test failure rather than a diff nobody
 #: reads. Each carries its count and its date in the file beside it:
 #:
 #: * `mep.run_interference` — 150 real interpenetrations, house-wide, an open design
@@ -191,9 +191,14 @@ def test_suppression_by_tag_drops_one_element_and_no_other():
 #:   spots in the checker closed, then 146, then 150 on 2026-09-19 when the prism stopped
 #:   being the verdict (-26) and seventeen raceways were placed in z (+29). The engine can
 #:   see more; the building did not get worse;
-#: * `mep.run_through_plate` — 15 top plates cut past 50%, every one of them the ordinary
-#:   R602.6.1 detail, and the model has no vocabulary for the tie that makes it legal. A
-#:   schema gap, not a defect;
+#: * `mep.run_through_plate` — **NARROWED TO NINE NAMED ENTRIES ON 2026-09-20, AND THE
+#:   REASON IS WHY THIS LIST EXISTS.** It was blanket, on the written argument that "the
+#:   check reports them UNKNOWN rather than FAIL". It had stopped: one of the ten is
+#:   `PR-B-SAUNA-VENT` taking 2.38" out of a 3.50" 2x4 top plate — graded, over, and
+#:   `severity=ERROR`. A blanket entry whose stated reason is "nothing here is a FAIL" while
+#:   it hides a FAIL is not a judgement a reader can check. Nine of the ten are also a
+#:   different condition from the one that entry described: ducts 4"-18" wide INTERRUPTING
+#:   plates 3.50"-5.50" wide, which R602.6.1's strap does not cover at all;
 #: * `mep.riser_through_deck` — 47 risers through a deck with no hole drawn, added
 #:   2026-09-19 with the check itself. **The argument for a blanket rather than 47 itemised
 #:   lines**: the finding is whole-house and splits into exactly two campaigns, not 47
@@ -207,8 +212,7 @@ def test_suppression_by_tag_drops_one_element_and_no_other():
 #: how the debt is measured. **`mep.open_web_panel` is deliberately NOT here**: it is two
 #: findings, both on FS-S-WEST, and it is itemised on that deck so a second open-web floor
 #: anywhere in the house still reports.
-BLANKET_SUPPRESSIONS = frozenset({"mep.run_interference", "mep.run_through_plate",
-                                  "mep.riser_through_deck"})
+BLANKET_SUPPRESSIONS = frozenset({"mep.run_interference", "mep.riser_through_deck"})
 
 
 def test_the_house_file_parses_the_tag_form():
@@ -218,7 +222,7 @@ def test_the_house_file_parses_the_tag_form():
 
     prefs = load_preferences(Path("houses/catlin"))
     assert any(":" in entry for entry in prefs.suppressed)
-    # This house silences exactly three whole checks and no others — see the note above.
+    # This house silences exactly two whole checks and no others — see the note above.
     # The per-element form stays the rule, and a new blanket entry is argued for there.
     blanket = {entry for entry in prefs.suppressed if ":" not in entry}
     assert blanket == BLANKET_SUPPRESSIONS, sorted(blanket)

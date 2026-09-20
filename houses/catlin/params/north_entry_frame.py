@@ -453,6 +453,45 @@ _MOMENT_PIERS = frozenset({"PT-BW-E", "PT-BW-RE", "PT-BW-GE", "PT-BW-RNE"})
 #: notes/north_entry_piers.md, 2026-09-17 addendum.
 MOMENT_PAD_DEPTH_FT = 1.0
 
+#: ** THE TWO ROOF COLUMNS BEAR ON ONE COMMON PLANE, AND THE SYMMETRY IS THE CALCULATION. **
+#: `PT-BW-RE` and `PT-BW-RNE` are the only two lines resisting E-W wind on `RF-BW-CANOPY`,
+#: and IBC 2018 §1604.4 shares that wind between them in proportion to `3EI/h³` — where `h`
+#: is the FULL shaft, base to header soffit, buried length included. That is the coupling
+#: `notes/entry_column_base_fixity.md` §6a missed until 2026-09-20: deepening the short
+#: garage-side column makes it SOFTER, which hands the house-side one a larger share, and
+#: `PT-BW-RE` went from d/c 1.02 to 1.19 under the §6a proposal rather than closing.
+#:
+#: Put both bases on ONE elevation and the two columns are the same column: equal `h`, equal
+#: stiffness, 50/50 on E-W whatever the diaphragm does, 496 lb of base shear each needing
+#: 7.07' of embedment against the 7.33' this plane gives (d/c 0.96). Three things come with
+#: that and each is worth more than the depth: the E-W verdict no longer depends on §7d's
+#: rigid/flexible call, which sits at 0.99x and was a factor of two from flipping; §1806.3.4's
+#: isolated-pole doubling is not claimed anywhere, so neither record straddles the band and
+#: both publish; and the two pads share a bearing elevation, so `_pad_key` mints ONE new
+#: S-100 row rather than two on a sheet that is 0.18" from its schedule governing its height.
+#:
+#: -10'-2" is the SHALLOWEST clean elevation clearing 0.96, and shallowest is the one to want:
+#: the concrete is pennies and the excavation is not. See the sequencing note below.
+ROOF_COLUMN_BASE_FT = -(10 + 2 / 12)
+#: ** AND IT IS A SEQUENCING NOTE BEFORE IT IS A DETAIL NOTE, TWICE OVER. ** Both pads bottom
+#: at -11'-2" now, and on each side that is below something standing beside it:
+#:
+#: * House side: `FT-B-N1`..`-N4` bottom at -9'-9 7/16" and reach to within 7/8" of `PD-BW-RE`
+#:   in plan, so the pad bears 1'-4 9/16" below a footing an inch away. Cast in the open
+#:   basement excavation — the owner's premise, and the same argument `PIER_BOTTOM_FT` above
+#:   already carries — the deep pocket is dug and the pad cast BEFORE the strip bears beside
+#:   it. Cast after, it is undermining and the answer is benching or a local step in the
+#:   strip. It belongs on the drawings.
+#: * Garage side: `PD-BW-RNE` laps about 7 1/2" UNDER `FT-GF-S1`/`-S3` in plan and now sits
+#:   3'-2" below them. Those are consolidated crushed stone under R403.5, not a pour, so
+#:   there is no cold joint and nothing monolithic to break — but a stone strip placed over a
+#:   backfilled pocket is a settlement question, not a non-issue. The pad goes in first and
+#:   the stone is compacted around and over it in the 8" lifts R403.4.1 already requires.
+#:
+#: Neither is a modelling gap the engine can grade; both are drawing notes, named here so the
+#: next reader does not rediscover them from the elevations.
+_DEEP_BASE_COLUMNS = frozenset({"PT-BW-RE", "PT-BW-RNE"})
+
 PIERS = []
 def _pad_outline(x_ft, y_ft, side_in, along_in=None):
     """A square (or rectangle) pad footprint centred on the pier, in plan.
@@ -504,8 +543,8 @@ for _uid, _tag, _x, _height, _top in (
     # The east one is a COLUMN, not a pier: it does not stop at the bearing plane, it runs
     # on to the header soffit. Everything else about it -- section, cage, mix, footing -- is
     # unchanged, which is the point.
-    ("BWPT03AAAA", "PT-BW-RE", ROOF_COLUMN_EAST_X_FT, HEADER_SOFFIT_FT - FOOTING_TOP_FT,
-     HEADER_SOFFIT_FT),
+    ("BWPT03AAAA", "PT-BW-RE", ROOF_COLUMN_EAST_X_FT,
+     HEADER_SOFFIT_FT - ROOF_COLUMN_BASE_FT, HEADER_SOFFIT_FT),
 ):
     PIERS.append(Post(
         uid=_uid, tag=_tag, position=pt(ft(_x), ft(PIER_LINE_Y_FT)),
@@ -526,7 +565,11 @@ for _uid, _tag, _x, _height, _top in (
         outline=_pad_outline(_x, PIER_LINE_Y_FT, _PAD_WIDE_IN, _PAD_DEPTH_IN),
         thickness=ft(MOMENT_PAD_DEPTH_FT if _tag in _MOMENT_PIERS else FOOTING_DEPTH_FT),
         assembly="PIER_BASE_12",
-        bottom_elevation=ft(FOOTING_TOP_FT - MOMENT_PAD_DEPTH_FT if _tag in _MOMENT_PIERS
+        # PT-BW-W/-E keep FOOTING_TOP_FT: their 0.73 d/c is fine and the hydrant clearance
+        # argument at PIER_BOTTOM_FT is written against that plane. Only the roof column moves.
+        bottom_elevation=ft(ROOF_COLUMN_BASE_FT - MOMENT_PAD_DEPTH_FT
+                            if _tag in _DEEP_BASE_COLUMNS
+                            else FOOTING_TOP_FT - MOMENT_PAD_DEPTH_FT if _tag in _MOMENT_PIERS
                             else PIER_BOTTOM_FT)))
 
 # ** THE GARAGE SIDE IS THE MIRROR: TWO PIERS OF ITS OWN, NOT A PLATE ON THE STEM. **
@@ -592,7 +635,8 @@ for _uid, _tag, _x, _pad_in, _top in (
 ):
     PEDESTALS.append(Post(
         uid=_uid, tag=_tag, position=pt(ft(_x), ft(GARAGE_SEAT_Y_FT)), size="12 round",
-        height=ft(_top - GARAGE_FOOTING_TOP_FT), assembly="PIER_CONCRETE_12",
+        height=ft(_top - (ROOF_COLUMN_BASE_FT if _tag in _DEEP_BASE_COLUMNS
+                          else GARAGE_FOOTING_TOP_FT)), assembly="PIER_CONCRETE_12",
         vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
         reinforcement=ENTRY_MOMENT_CAGE if _tag in _MOMENT_PIERS else ENTRY_PIER_CAGE,
         supported_by=f"PD-BW-{_tag.split('-')[-1]}"))
@@ -631,8 +675,11 @@ for _uid, _tag, _x, _pad_in, _top in (
         thickness=ft(MOMENT_PAD_DEPTH_FT if _tag in _MOMENT_PIERS
                      else GARAGE_FOOTING_THICKNESS_FT),
         assembly="PIER_BASE_12",
-        # A moment pad keeps the strip's top and drops its bottom 4" below the strip's plane.
-        bottom_elevation=ft(GARAGE_FOOTING_TOP_FT - MOMENT_PAD_DEPTH_FT
+        # PT-BW-GE's moment pad keeps the strip's top and drops its bottom 4" below the
+        # strip's plane. PT-BW-RNE leaves that plane entirely -- see ROOF_COLUMN_BASE_FT.
+        bottom_elevation=ft(ROOF_COLUMN_BASE_FT - MOMENT_PAD_DEPTH_FT
+                            if _tag in _DEEP_BASE_COLUMNS
+                            else GARAGE_FOOTING_TOP_FT - MOMENT_PAD_DEPTH_FT
                             if _tag in _MOMENT_PIERS else GARAGE_PIER_BOTTOM_FT)))
 
 # The two roof columns. Pier/pedestal top -0'-8 1/4" to header soffit +6'-4 3/4" = 7'-1".

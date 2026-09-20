@@ -230,22 +230,25 @@ def test_a_line_with_no_stiffness_refuses_the_whole_distribution() -> None:
 def test_the_shares_reproduce_the_note() -> None:
     """§7e's two blocks. The E-W case has no panel in it at all, and that is the point."""
     ns = rigidity_shares([
-        Line(tag="panel", kind="shear panel", station_ft=6.0, stiffness_lb_per_in=9_017.0),
-        Line(tag="RE", kind="cast column", station_ft=30.0, stiffness_lb_per_in=1_970.0),
-        Line(tag="RNE", kind="cast column", station_ft=30.0, stiffness_lb_per_in=3_453.0),
+        Line(tag="panel", kind="shear panel", station_ft=6.0, stiffness_lb_per_in=9_977.0),
+        Line(tag="RE", kind="cast column", station_ft=30.0, stiffness_lb_per_in=1_568.0),
+        Line(tag="RNE", kind="cast column", station_ft=30.0, stiffness_lb_per_in=1_568.0),
     ])
     assert ns is not None
-    assert ns["RE"] == pytest.approx(0.136, abs=0.003)
-    assert ns["RNE"] == pytest.approx(0.239, abs=0.003)
-    assert ns["panel"] == pytest.approx(0.624, abs=0.003)
+    assert ns["RE"] == pytest.approx(0.120, abs=0.003)
+    assert ns["RNE"] == pytest.approx(0.120, abs=0.003)
+    assert ns["panel"] == pytest.approx(0.761, abs=0.003)
 
+    # ** THE E-W CASE IS 50/50 NOW, AND IT IS 50/50 UNDER TRIBUTARY TOO. ** §6a put both
+    # bases on one plane, so the two columns have the same shaft and the same 3EI/h³. That
+    # is what makes the governing case indifferent to §7d's rigid/flexible call.
     ew = rigidity_shares([
-        Line(tag="RE", kind="cast column", station_ft=37.5, stiffness_lb_per_in=1_970.0),
-        Line(tag="RNE", kind="cast column", station_ft=42.48, stiffness_lb_per_in=3_453.0),
+        Line(tag="RE", kind="cast column", station_ft=37.5, stiffness_lb_per_in=1_568.0),
+        Line(tag="RNE", kind="cast column", station_ft=42.48, stiffness_lb_per_in=1_568.0),
     ])
     assert ew is not None
-    assert ew["RE"] == pytest.approx(0.363, abs=0.003)
-    assert ew["RNE"] == pytest.approx(0.637, abs=0.003)
+    assert ew["RE"] == pytest.approx(0.500, abs=0.003)
+    assert ew["RNE"] == pytest.approx(0.500, abs=0.003)
 
 
 def test_tributary_splits_a_shared_station_between_its_peers() -> None:
@@ -268,7 +271,7 @@ def test_tributary_splits_a_shared_station_between_its_peers() -> None:
 
 def test_the_chord_force_reproduces_the_note() -> None:
     """§7f: ``V L / (8 W)`` — a deep beam's flange force at midspan."""
-    assert chord_force_lb(1_160.3, 24.0, 6.0) == pytest.approx(580.1, rel=0.005)
+    assert chord_force_lb(1_189.4, 24.0, 6.0) == pytest.approx(594.7, rel=0.005)
     assert chord_force_lb(1_000.0, 10.0, 0.0) is None
 
 
@@ -290,11 +293,11 @@ def test_the_canopy_record_reproduces_section_7f(catlin_ctx) -> None:
     # the span is the columns.
     assert aspect.demand > DIAPHRAGM_ASPECT_UNBLOCKED
 
-    assert states["diaphragm unit shear"].demand == pytest.approx(120.7, rel=0.01)
-    assert states["W-BW-SCREEN unit shear"].demand == pytest.approx(126.6, rel=0.01)
+    assert states["diaphragm unit shear"].demand == pytest.approx(150.8, rel=0.01)
+    assert states["W-BW-SCREEN unit shear"].demand == pytest.approx(149.2, rel=0.01)
     assert states["W-BW-SCREEN aspect ratio"].demand == pytest.approx(0.621, abs=0.005)
     holdown = states["W-BW-SCREEN hold-down tension"]
-    assert holdown.demand == pytest.approx(516.8, rel=0.01)
+    assert holdown.demand == pytest.approx(609.3, rel=0.01)
     assert holdown.capacity == pytest.approx(2_190.0, abs=1.0), "the ABU66SS already there"
 
 
@@ -304,7 +307,7 @@ def test_the_chord_force_is_printed_and_not_graded(catlin_ctx) -> None:
     ``missing``, because the calculation ran; this is a state it does not reach."""
     record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
     inputs = {q.name: q.value for q in record.inputs}
-    assert inputs["chord_force_y"] == pytest.approx(580.1, rel=0.01)
+    assert inputs["chord_force_y"] == pytest.approx(594.7, rel=0.01)
     assert not record.missing
     assert any("PRINTED AND NOT GRADED" in note for note in record.notes)
     assert not [s for s in record.limit_states if "chord" in s.name]

@@ -114,19 +114,19 @@ def test_exit_on_error_is_the_looser_gate() -> None:
     stops. starter is what shows the gap — it carries advisory FAILs and no ERROR-severity
     finding at all, so the default gate closes on it and ERROR-only opens.
 
-    ** CATLIN STOPPED SHOWING BOTH GATES OPEN ON 2026-09-18, AND IT IS NOT A TEST BUG. **
-    It used to carry no FAIL at all, so both gates opened on it. It now carries one (two
-    until 2026-09-19), and it is an ENGINEERED FAIL — ``engineered()`` gives a
-    computed-and-over item ``severity=ERROR``, because "this engine did the calculation and
-    it does not pass" is not an advisory. So ERROR-only closes too, which is the looser gate
-    doing exactly what it is for. See `test_catlin_carries_no_failures` for what it is and
-    what closes it; when that fix lands this line goes back to 0.
+    ** CATLIN SHOWED BOTH GATES CLOSED FROM 2026-09-18 TO 2026-09-20, AND IT WAS NOT A TEST
+    BUG EITHER WAY. ** It carried an ENGINEERED FAIL in that window — ``engineered()`` gives a
+    computed-and-over item ``severity=ERROR``, because "this engine did the calculation and it
+    does not pass" is not an advisory — so ERROR-only closed on it too. `PT-BW-RNE`'s base
+    embedment closed on 2026-09-20 (`notes/entry_column_base_fixity.md` §6a) and this line
+    went back to 0, exactly as the previous version of this docstring said it would. Catlin is
+    the house held to a clean report; starter is the one that carries deliberate reds.
     """
     assert runner.invoke(app, ["check", str(STARTER), "--plain"]).exit_code == 1
     assert runner.invoke(
         app, ["check", str(STARTER), "--exit-on", ExitOn.error.value]).exit_code == 0
     assert runner.invoke(
-        app, ["check", str(CATLIN), "--exit-on", ExitOn.error.value]).exit_code == 1
+        app, ["check", str(CATLIN), "--exit-on", ExitOn.error.value]).exit_code == 0
 
 
 def test_catlin_carries_no_failures(catlin_json) -> None:
@@ -156,25 +156,21 @@ def test_catlin_carries_no_failures(catlin_json) -> None:
     # while the parcel was a drawn placeholder; the owner has since stated the real
     # 50' x 133' lot, so the basis is "plat" and the check reports UNKNOWN rather than
     # FAIL (houses/catlin/plan/site.py's `parcel_basis` block).
-    # ** THIS ONE IS NOT AN ACCEPTED ADVISORY. IT IS AN OPEN DESIGN GAP, PARKED HERE
-    # DELIBERATELY SO THE REST OF THE GATE STILL RUNS. ** (2026-09-18, the engineering gap
-    # review.) `engineering/column_base.py` grades what every `deck_post` record has been
-    # NAMING and not grading since 2026-09-11 — the embedment IBC 1807.3.2.1 needs for a
-    # column free to translate at grade — and the north entry canopy's cast columns did not
-    # have it. `notes/entry_column_base_fixity.md` works it by hand; §6 works the closures.
+    # ** AND IT IS EMPTY AGAIN AS OF 2026-09-20. ** From 2026-09-18 this list carried
+    # `structural.lateral_racking` on PT-BW-RNE — an open design GAP parked here deliberately
+    # so the rest of the gate still ran, not an accepted advisory. `engineering/column_base.py`
+    # graded the IBC 1807.3.2.1 embedment every `deck_post` record had been NAMING and not
+    # grading since 2026-09-11, and the north entry canopy's two cast columns did not have it:
+    # PT-BW-RNE wanted 7.74' against 3.50' (FAIL, 2.21) and PT-BW-RE 6.25' against 6.12'
+    # (INCOMPLETE, inside §1806.3.4's judgement band and never in this list, because an
+    # INCOMPLETE is an UNKNOWN rather than a FAIL).
     #
-    # ** IT WAS TWO UNTIL 2026-09-19, AND WHAT MOVED PT-BW-RE WAS THE DEMAND, NOT THE
-    # GROUND. ** The canopy's deck is a declared diaphragm now and `W-BW-SCREEN` a declared
-    # shear panel, so the frame shear is shared in proportion to rigidity (IBC 2018 §1604.4,
-    # §7 of that note). PT-BW-RE went from 8.08' of required embedment to 6.25' against the
-    # 6.12' it has — INSIDE §1806.3.4's judgement band, so UNKNOWN rather than FAIL, and
-    # NOT a pass: 1.02 is exactly at the line. PT-BW-RNE wants 7.74' and has 3.50'.
-    #
-    # DELETE THE ENTRY when a closure lands. An entry that outlives its fix is how a 0-FAIL
-    # gate stops meaning anything, which is the exact failure this whole review was about.
-    accepted: set[tuple[str, tuple[str, ...]]] = {
-        ("structural.lateral_racking", ("PT-BW-RNE", "RF-BW-CANOPY")),
-    }
+    # `notes/entry_column_base_fixity.md` §6a closed both, and it closed them TOGETHER: both
+    # bases went onto one plane at -10'-2", which makes the two columns identical, splits the
+    # governing E-W case 50/50 and needs 7.07' against the 7.33' they now have. Deepening them
+    # independently does not work and the note shows why — stiffness is 3EI/h³ on the FULL
+    # shaft, so the deeper column sheds share onto the other one.
+    accepted: set[tuple[str, tuple[str, ...]]] = set()
     assert accepted <= set(failures), (
         "an accepted advisory stopped firing — delete it from `accepted` rather than "
         "leaving a stale entry", sorted(accepted - set(failures)))
@@ -270,10 +266,10 @@ def test_no_suppress_lifts_the_house_suppressions_and_writes_nothing() -> None:
     loud = json.loads(runner.invoke(
         app, ["check", str(CATLIN), "--json-summary", "--no-suppress"]).output)
 
-    # 1, not 0, since 2026-09-18 (2 until 2026-09-19): `PT-BW-RNE` does not have the IBC
-    # 1807.3.2.1 embedment its assumed fixity needs. An open design gap, not a
-    # suppression — `test_catlin_carries_no_failures` carries the citation and the closures.
-    assert quiet["fail"] == 1, "the reference house's only FAIL is the open one"
+    # Back to 0 on 2026-09-20. It was 1 from 2026-09-18 (2 until 2026-09-19): `PT-BW-RNE` did
+    # not have the IBC 1807.3.2.1 embedment its assumed fixity needs, an open design gap rather
+    # than a suppression. `test_catlin_carries_no_failures` carries the citation and the fix.
+    assert quiet["fail"] == 0, "the reference house is held to a clean report"
     assert loud["fail"] > quiet["fail"], "the suppressed debt is real and is now visible"
     assert "mep.run_interference" in loud["failing_check_ids"]
     assert "mep.run_interference" not in quiet["failing_check_ids"]

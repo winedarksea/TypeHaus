@@ -63,21 +63,28 @@ echo "== catlin permit print =="
 # started refusing. The refusal is correct: a permit printoff is exactly what a shut gate
 # is for. What would be wrong is a script that cannot tell THAT refusal from any other.
 #
-# ** ONE COLUMN SINCE 2026-09-19, AND THE ITEM IS STILL THE SAME ITEM. ** Sharing the
-# canopy's frame shear with `W-BW-SCREEN` by relative rigidity closed `PT-BW-RE` to a
-# §1806.3.4 judgement (`notes/entry_column_base_fixity.md` §7); `PT-BW-RNE` still wants
-# 7.74' of embedment and has 3.50'. The grep below is unchanged because the permit LINE is
-# unchanged — which is the point of asserting an item rather than a column count.
+# ** THE COLUMNS THAT SHUT IT ARE NOT THE COLUMNS THAT SHUT IT IN SEPTEMBER, AND THE GREP
+# IS UNCHANGED BECAUSE THE PERMIT LINE IS. ** That is the point of asserting an ITEM rather
+# than a column count. The history: two canopy columns red on 2026-09-18; sharing the frame
+# shear with `W-BW-SCREEN` by relative rigidity closed `PT-BW-RE` to a §1806.3.4 judgement on
+# 2026-09-19 (`notes/entry_column_base_fixity.md` §7); §6a put both canopy bases on one plane
+# at -10'-2" on 2026-09-20 and closed them outright, so `haus check` is back to 0 FAIL and
+# verify.sh's ACCEPTED list is EMPTY.
 #
-# So the refusal is expected, and it is expected to name that one item. See verify.sh's
-# ACCEPTED block for the arithmetic and `notes/entry_column_base_fixity.md` §6 for the
-# closures. DELETE THIS BLOCK, and restore the bare `"$VHAUS" print houses/catlin`, the day
-# one of them lands.
+# ** WHAT STILL SHUTS THE GATE IS AN UNKNOWN, NOT A FAIL. ** `haus print` gates on UNKNOWN
+# too. `PT-BW-GW` and `-GE` — the two GARAGE-SIDE LANDING columns, whose case is the R301.5
+# guard load and not the canopy's wind — need 4.45' at the table's lateral bearing and 3.39'
+# at §1806.3.4's isolated-pole double against the 3.50' they have. They straddle, so no
+# verdict publishes, exactly as `PT-BW-RE` used to. §4 of that note has the table.
+#
+# So the refusal is expected, and it is expected to name that one item. See
+# `notes/entry_column_base_fixity.md` §4 and §6 for the arithmetic and the closures. DELETE
+# THIS BLOCK, and restore the bare `"$VHAUS" print houses/catlin`, the day those two land.
 PRINT_OUT="$ENVDIR/catlin-print.txt"
 if "$VHAUS" print houses/catlin > "$PRINT_OUT" 2>&1; then
   cat "$PRINT_OUT"
   echo "the catlin draft gate is OPEN again — the column_base embedment gap is closed."
-  echo "restore the plain 'haus print houses/catlin' here and delete verify.sh's ACCEPTED."
+  echo "restore the plain 'haus print houses/catlin' here and delete this whole block."
   exit 1
 fi
 cat "$PRINT_OUT"

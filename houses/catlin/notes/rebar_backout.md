@@ -47,8 +47,8 @@ Pieces are what gets cut; bars are runs (a lapped run is one bar in two pieces).
 
 | scope | bar | coating | pieces | bars | placed | lap | hook | cut | weight |
 |---|---|---|---:|---:|---:|---:|---:|---:|---:|
-| column | #3 | hdg-a767 | 139 | 139 | 277.5 | 0.0 | 175.9 | 453.4 LF | 170.5 lb |
-| column | #5 | hdg-a767 | 80 | 80 | 459.1 | 73.5 | 22.5 | 555.1 LF | 579.0 lb |
+| column | #3 | hdg-a767 | 144 | 144 | 287.5 | 0.0 | 182.2 | 469.7 LF | 176.6 lb |
+| column | #5 | hdg-a767 | 80 | 80 | 479.3 | 73.5 | 22.5 | 575.3 LF | 600.0 lb |
 | footing | #4 | hdg-a767 | 30 | 30 | 407.3 | 0.0 | 0.0 | 407.3 LF | 272.1 lb |
 | footing | #5 | hdg-a767 | 154 | 154 | 949.0 | 0.0 | 0.0 | 949.0 LF | 989.8 lb |
 | foundation wall | #3 | hdg-a767 | 49 | 49 | 171.5 | 0.0 | 37.5 | 209.0 LF | 78.6 lb |
@@ -58,7 +58,7 @@ Pieces are what gets cut; bars are runs (a lapped run is one bar in two pieces).
 | slab | #3 | black | 220 | 220 | 481.3 | 0.0 | 149.7 | 631.0 LF | 237.3 lb |
 | slab | #4 | black | 43 | 43 | 863.6 | 0.0 | 0.0 | 863.6 LF | 576.9 lb |
 | slab | #5 | black | 22 | 22 | 393.2 | 0.0 | 0.0 | 393.2 LF | 410.1 lb |
-| | | | **1,193** | | | | | | **6,608.0 lb** |
+| | | | **1,198** | | | | | | **6,635.1 lb** |
 
 **Checked by hand, not only by the machine.** Three elements in these rows are laid out bar
 for bar in `notes/rebar_layout_basis.md` and reproduced by `tests/test_rebar_layout_oracle.py`:
@@ -66,7 +66,13 @@ for bar in `notes/rebar_layout_basis.md` and reproduced by `tests/test_rebar_lay
 `W-SG-S`'s stem (383.10 lb of #5 verticals continuous from the footing, 266.64 lb of #4
 horizontals and SW corner bars in 32 pieces) and `PT-SG-COL`'s cage (40.66 lb #5, 15.94 lb #3).
 
-**Revised the same day after a detailing review: 6,730.3 → 6,608.0 lb, −122.3 lb**, row by row:
+**2026-09-20, +27.1 lb: 6,608.0 → 6,635.1 lb.** Both canopy columns' bases went onto one
+plane at -10'-2" (`entry_column_base_fixity.md` §6a), which is 5'-5 9/16" more 12" round shaft
+between the two — five more #3 ties (139 → 144 pieces) and 21 lb on the #5 verticals, which
+stay 80 pieces and simply get longer. 0.15 cy of concrete came with it, so the ratio is
+unmoved at 46.1 lb/cy.
+
+**Revised on 2026-09-17 after a detailing review: 6,730.3 → 6,608.0 lb, −122.3 lb**, row by row:
 
 * **Court stems (−296.7 lb across #5/#6):** #6 @ 10" with lapped #6 dowels became #5 @ 7"
   continuous from the footing on a foot (`sunken_garden_court_free_body.md` §6b — a #6
@@ -305,7 +311,8 @@ A specification change should cost nothing, and this one did.)
 ## 3. The test, and the gate is CLOSED BY DECISION
 
 ```
-billed          6,608 lb / 143.71 cy   =  46.0 lb/cy   (2026-09-17, detailing review)
+billed          6,635 lb / 143.86 cy   =  46.1 lb/cy   (2026-09-20, canopy bases deepened)
+  was           6,608 lb / 143.71 cy   =  46.0 lb/cy   (2026-09-17, detailing review)
   was           6,730 lb / 143.58 cy   =  46.9 lb/cy   (2026-09-17, laid out, §4 authored)
   was           3,515 lb / 143.58 cy   =  24.5 lb/cy   (2026-09-15, garage to stone)
   was           3,515 lb / 147.64 cy   =  23.8 lb/cy   (2026-09-10, second pass)
@@ -319,8 +326,8 @@ where the 3,215.6 lb came from — mostly steel that existed in the building and
 nowhere, plus laps and hooks leaving `[waste]`. 46.9 now sits inside the 40–80 lb/cy a lightly
 reinforced residential foundation runs, which is the sanity check this section asked for.
 
-At $1.05–1.35/lb, **6,608 lb is $6,938–8,921** (6,730 lb was $7,067–9,086 before the same
-day's detailing review): still under the register's $10,000–18,000,
+At $1.05–1.35/lb, **6,635 lb is $6,967–8,957** (6,730 lb was $7,067–9,086 before the
+2026-09-17 detailing review): still under the register's $10,000–18,000,
 though no longer by half. **The gate stays closed, and from today that is a DECISION rather
 than an arithmetic result** (decision #75 D14). The price back-out is out of the layout's
 scope: `[reinforcement]` stays empty, `[rebar_inclusive]` stays `true`, and

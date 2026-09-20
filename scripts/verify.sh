@@ -111,25 +111,18 @@ import json, sys
 # have it. `notes/entry_column_base_fixity.md` works it by hand; §6 there works the
 # closures.
 #
-# ** IT WAS TWO UNTIL 2026-09-19 AND `PT-BW-RE` LEFT THIS LIST. ** The canopy's deck is a
-# declared diaphragm now and `W-BW-SCREEN` a declared shear panel, so the frame shear is
-# shared in proportion to rigidity (IBC 2018 §1604.4) instead of being loaded wholly onto
-# the two cast columns; §7 of that note is the hand-working. PT-BW-RE's required embedment
-# went 8.08' -> 6.25' against the 6.12' it has, which is INSIDE §1806.3.4's judgement band,
-# so it is an UNKNOWN naming the judgement rather than a FAIL naming a shortfall. **That is
-# not a pass** — 1.02 is exactly at the line — and it still shuts `haus print`, which is
-# what ci_local.sh asserts.
+# ** IT WAS TWO UNTIL 2026-09-19, ONE UNTIL 2026-09-20, AND IT IS EMPTY NOW. ** The canopy's
+# deck became a declared diaphragm and `W-BW-SCREEN` a declared shear panel, so the frame
+# shear is shared in proportion to rigidity (IBC 2018 §1604.4) instead of being loaded wholly
+# onto the two cast columns; §7 of that note is the hand-working. That took PT-BW-RE's required
+# embedment 8.08' -> 6.25' against the 6.12' it had, inside §1806.3.4's judgement band, and
+# left PT-BW-RNE at 2.21 — it wants 7.74' and had 3.50'.
 #
-# PT-BW-RNE is the one left, at 2.21: it wants 7.74' and has 3.50'. It barely moved, and the
-# reason is arithmetic rather than bad luck — it is the SHORT column, a cantilever's
-# stiffness goes as 1/h³, and a rigidity split hands it the larger share of exactly the case
-# the panel does not resist.
-#
-# DELETE THE ENTRY when a closure lands. An entry that outlives its fix is how a 0-FAIL gate
-# stops meaning anything, which is the exact failure this whole review was about.
-ACCEPTED = {
-    ("structural.lateral_racking", ("PT-BW-RNE", "RF-BW-CANOPY")),
-}
+# §6a then closed both at once by putting BOTH bases on one plane at -10'-2". That is the whole
+# point of the closure and not a detail: the split is by 3EI/h³ on the FULL shaft, so deepening
+# one column softens it and sheds its share onto the other. Equal shafts, 50/50, 7.07' needed
+# against 7.33' — both publish a graded verdict with §1806.3.4's doubling unclaimed.
+ACCEPTED = set()
 
 payload = json.load(open(sys.argv[1]))
 failures = {

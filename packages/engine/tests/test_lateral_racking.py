@@ -233,31 +233,22 @@ def test_catlin_fails_only_where_the_ground_cannot_fix_the_base(catlin_findings)
     in any tributary; what changed is that the model now says so out loud. Asserted by TAG,
     so a third one is a failure rather than a tolerance.
 
-    ** AND ONE IS A REAL FAIL SINCE 2026-09-18, WHICH IS WHY THIS TEST IS NO LONGER
-    NAMED "no fail here". ** ``engineering/column_base.py`` grades the IBC 1807.3.2.1
-    embedment a fixed base needs, which every ``deck_post`` record had been naming as an
-    ungraded assumption since 2026-09-11 — and the north entry canopy's two cast columns did
-    not have it. ``notes/entry_column_base_fixity.md`` works it by hand and §6 works the
-    closures. This is an OPEN design gap held in
-    ``test_cli_check_output.test_catlin_carries_no_failures``' allow-list, not an accepted
-    advisory; the entry goes when the fix lands.
+    ** THERE WAS A REAL FAIL HERE FROM 2026-09-18 TO 2026-09-20, AND THE NAME OF THIS TEST
+    IS THE SCAR. ** ``engineering/column_base.py`` grades the IBC 1807.3.2.1 embedment a fixed
+    base needs, which every ``deck_post`` record had been naming as an ungraded assumption
+    since 2026-09-11 — and the north entry canopy's two cast columns did not have it.
+    ``PT-BW-RNE`` wanted 7.74' against 3.50' (FAIL, 2.21) and ``PT-BW-RE`` 6.25' against 6.12'
+    (UNKNOWN, inside §1806.3.4's band).
 
-    ** IT WAS TWO UNTIL 2026-09-19, AND WHAT MOVED PT-BW-RE WAS THE DEMAND, NOT THE
-    GROUND. ** The canopy's deck is a declared diaphragm now and ``W-BW-SCREEN`` a declared
-    shear panel, so the frame shear is shared in proportion to rigidity (IBC 2018 §1604.4,
-    ``notes/entry_column_base_fixity.md`` §7) instead of being loaded wholly onto the two
-    cast columns. ``PT-BW-RE``'s required embedment went 8.08' -> 6.25' against the 6.12' it
-    has, which is INSIDE §1806.3.4's judgement band, so it joins the two landing columns as
-    an UNKNOWN naming the judgement rather than a FAIL naming a shortfall. **That is not a
-    pass**: 1.02 at the table's own lateral bearing is exactly at the line.
-
-    ``PT-BW-RNE`` is unmoved in kind and barely moved in degree — 2.31 -> 2.21 — because it
-    is the SHORT column, a cantilever's stiffness goes as ``1/h³``, and a rigidity split
-    hands it the larger share of the one case the panel does not resist.
+    ``notes/entry_column_base_fixity.md`` §6a closed both on 2026-09-20 by putting both bases
+    on ONE plane at -10'-2". They had to move together: IBC §1604.4 splits the frame shear by
+    ``3EI/h³`` on the FULL shaft, so deepening the short column softens it and sheds its share
+    onto the other — deepening them independently pushed ``PT-BW-RE`` from 1.02 to 1.19.
+    Equal shafts, 50/50, 7.07' needed against 7.33'. **The FAIL set is asserted EMPTY rather
+    than deleted**: this check reporting a FAIL is the thing the test is here to notice.
     """
     fails = [f for f in catlin_findings if f.result is Result.FAIL]
-    assert {f.engineering_item for f in fails} == {"column_base/PT-BW-RNE"}
-    assert all("embedment" in f.message for f in fails)
+    assert {f.engineering_item for f in fails} == set()
 
     unknown = [f for f in catlin_findings if f.result is Result.UNKNOWN]
     assert {f.engineering_item for f in unknown} == {
@@ -265,8 +256,10 @@ def test_catlin_fails_only_where_the_ground_cannot_fix_the_base(catlin_findings)
         # The band convention: an embedment that sits between what §1806.3.4's two ends ask
         # for leaves the verdict turning on a judgement about the STRUCTURE — whether 1/2"
         # of motion at grade matters — and the record names it instead of picking a side.
-        # 3.50' does it for the two landing columns; 6.12' now does it for PT-BW-RE.
-        "column_base/PT-BW-RE", "column_base/PT-BW-GW", "column_base/PT-BW-GE"}
+        # 3.50' does it for the two landing columns. PT-BW-RE was here too from 2026-09-19
+        # at 6.12'; §6a took it to 7.33' against 7.07' needed, so it publishes a graded pass
+        # now and the doubling is not claimed anywhere on the canopy.
+        "column_base/PT-BW-GW", "column_base/PT-BW-GE"}
     assert all("no tributary AREA for that load" in f.message
                for f in unknown if (f.engineering_item or "").startswith("deck_post/"))
     assert all("1806.3.4" in f.message

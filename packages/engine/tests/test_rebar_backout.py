@@ -35,8 +35,8 @@ _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 #: W-SG-BRKBM's cage, SL-M-DECK's BuildDeck schedule, dowels), and the deck cap is the one
 #: BLACK pour because DECK_CAP_MIX says so — a new scope, not a second coating in an old one.
 _SCHEDULE = {
-    ("column", "#3", "hdg-a767"): (139, 170.5),
-    ("column", "#5", "hdg-a767"): (80, 579.0),
+    ("column", "#3", "hdg-a767"): (144, 176.6),
+    ("column", "#5", "hdg-a767"): (80, 600.0),
     ("footing", "#4", "hdg-a767"): (30, 272.1),
     ("footing", "#5", "hdg-a767"): (154, 989.8),
     ("foundation wall", "#3", "hdg-a767"): (49, 78.6),
@@ -50,9 +50,11 @@ _SCHEDULE = {
 # +3,215.6 lb on 2026-09-17 over the area/spacing era's 3,514.7 (newly authored steel, laps and
 # hooks out of [waste], the fencepost), then −122.3 the same day after the detailing review:
 # the court stems continuous at #5 @ 7", corner/splice bars, one mat per overlap, A767 bends.
-# Note §1 works both out row by row.
-_TOTAL_LB = 6608.0
-_TOTAL_PIECES = 1193
+# Note §1 works both out row by row. +27.1 lb on 2026-09-20: the two canopy columns' bases
+# went to a common -10'-2" plane (notes/entry_column_base_fixity.md §6a), which is 5'-5 9/16"
+# more 12" round shaft between them — five more #3 ties and 21 lb on the #5 verticals.
+_TOTAL_LB = 6635.1
+_TOTAL_PIECES = 1198
 
 #: §3, decision #75 D14. The back-out gate is CLOSED BY DECISION, not by a dollar comparison:
 #: authoring steel may lift the tonnage into the register's band without opening it. Opening

@@ -253,10 +253,16 @@ permit_drop = ["A-502", "A-506"]
 # element itself.
 [checks]
 suppress = [
-  # ** mep.run_interference: 67 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-19 AFTER THE
-  # THREE CAVITY CAMPAIGNS AND THE PLUMBING PASS. NOT A DECISION — AN OPEN CAMPAIGN. **
+  # ** mep.run_interference: 69 REAL INTERPENETRATIONS, RE-MEASURED 2026-09-20. NOT A
+  # DECISION — AN OPEN CAMPAIGN. **
   #
-  # ** 150 -> 114 -> 93 -> 67, AND EVERY STEP IS A REDESIGN RATHER THAN A RE-READING. ** D1
+  # ** IT ROSE, AND THE RULE OF THIS ENTRY IS THAT IT MAY NOT: 67 -> 69 SINCE 2026-09-19. **
+  # Two more interpenetrations arrived between the 2026-09-19 re-measure and this one and
+  # nobody recorded them, which is exactly the drift this entry exists to make visible. The
+  # number below is the new one; the campaign owes an accounting of the two.
+  #
+  # ** 150 -> 114 -> 93 -> 67 -> 69, AND EVERY STEP DOWN IS A REDESIGN RATHER THAN A
+  # RE-READING. ** D1
   # took level 2 trunk-and-branch, D2 split the attic chase into four lanes, D3 re-laid the
   # basement on the four corridors that are actually clear and put each radial on its own
   # dimensioned collar; then P1/P2/P3 moved the vents, the cold lane and three supply
@@ -264,7 +270,7 @@ suppress = [
   # and every one of them was two branches leaving one plenum on one line. So is
   # supply <-> vent, and supply <-> supply is down to one.
   #
-  # ** WHAT IS LEFT IS NOT ONE KIND OF THING, AND THAT IS THE USEFUL PART. ** 29 of the 67
+  # ** WHAT IS LEFT IS NOT ONE KIND OF THING, AND THAT IS THE USEFUL PART. ** 29 of the 69
   # are conduit, which is laid LAST in `routing/campaign.TRADE_ORDER` because a raceway
   # bends round a duct rather than the other way about — Phase 4 ran the campaign and its
   # own `--evaluate` refused the result (plans/TODO.md). 14 more are one vent against the
@@ -364,24 +370,49 @@ suppress = [
   # 2026-09-19, and which the entry has to say out loud when it does.
   "mep.run_interference",
 
-  # ** mep.run_through_plate: 15 TOP PLATES CUT PAST 50%, AND THE MODEL HAS NO WAY TO SAY
-  # A TIE IS THERE. MEASURED 2026-09-17. **
+  # ** mep.run_through_plate: 9 UNKNOWNs AND ONE ERROR-SEVERITY **FAIL**, BY NAME.
+  # RE-MEASURED 2026-09-20; IT WAS A BLANKET ENTRY CLAIMING "15 UNKNOWNs" BEFORE. **
   #
-  # IRC R602.6.1 PERMITS a top plate cut or notched more than 50% of its width when a
-  # galvanized 16 ga x 1 1/2" tie is fastened across it, lapping 6" past the opening each
-  # way with eight 10d nails a side. A cut plate with that strap on it is built every day,
-  # and every one of these 15 is that ordinary detail: 2" and 3" drains and vents through
-  # 2x4 and 2x6 plates. The check reports them UNKNOWN rather than FAIL for exactly this
-  # reason — the finding is "the section says a tie, and this model carries no plate tie to
-  # point at", which is a gap in the MODEL's vocabulary and not a defect in the building.
+  # ** THE OLD ENTRY'S OWN ARGUMENT HAD STOPPED BEING TRUE, WHICH IS THE WHOLE REASON THIS
+  # IS NOW NINE LINES INSTEAD OF ONE. ** It read "the check reports them UNKNOWN rather than
+  # FAIL", and on that basis suppressed the check id outright. It no longer does: one of
+  # these is graded, over, and `severity=ERROR`. A blanket suppression whose stated reason is
+  # "nothing here is a FAIL" while it hides a FAIL is the worst kind of entry in this file —
+  # it is not a judgement a reader can check, it is a claim that is simply wrong. Every
+  # finding is now named, so the list cannot drift away from its argument again.
   #
-  # ** WHAT CLOSES IT IS A SCHEMA, NOT AN EDIT. ** `FramedMember.connection` is a free-form
-  # string and nothing reads it for this; the day it can say "plate-tie" (or a `Connector`
-  # in the catalog can be placed on a plate) the check becomes an honest PASS or FAIL and
-  # this entry goes. Until then it would sit as 15 permanent UNKNOWNs in front of every
+  # ** THE FAIL — AND IT IS THE ORDINARY R602.6.1 DETAIL, WHICH IS WHY IT IS ACCEPTED. **
+  # `PR-B-SAUNA-VENT` takes 2.38" out of a 3.50" 2x4 top plate in `W-B-ESS-S` — 68%. IRC
+  # R602.6.1 PERMITS a top plate cut past 50% when a galvanized 16 ga x 1 1/2" tie is
+  # fastened across it, lapping 6" past the opening each way with eight 10d nails a side.
+  # A 2" vent through a 2x4 plate is over 50% at ANY station, so there is no move that fixes
+  # it: the alternatives are that strap or a 2x6 wall. The strap is the ordinary answer and
+  # it is the one taken. **Accepted on the drawings, not routed away.**
+  "mep.run_through_plate:PR-B-SAUNA-VENT",
+  #
+  # ** THE NINE UNKNOWNs ARE A DIFFERENT CONDITION FROM THE ONE ABOVE, AND THE OLD ENTRY
+  # DESCRIBED NEITHER. ** It said "2" and 3" drains and vents through 2x4 and 2x6 plates".
+  # These are all DUCTS, and every one is as wide as or wider than the plate it crosses —
+  # 4", 6", 10" and 18" through 3.50" and 5.50" plates. The plate is INTERRUPTED, not
+  # notched, and R602.6.1's strap does not describe that at all: a fully broken top plate
+  # wants a header or a strap sized for the tension it was carrying, which is a design and
+  # not a detail. The check says "not graded" for exactly that reason, and it is right to.
+  #
+  # ** WHAT CLOSES BOTH IS A SCHEMA, NOT AN EDIT. ** `FramedMember.connection` is a free-form
+  # string and nothing reads it for this; the day it can say "plate-tie" (or a `Connector` in
+  # the catalog can be placed on a plate) the notch case becomes an honest PASS. The
+  # interrupted-plate case needs more than that — it needs the header over the break to be
+  # modelled — and until then it would sit as nine permanent UNKNOWNs in front of every
   # reader of the report and in the way of `haus print`, which teaches people to skip the
-  # unknowns — the one habit a report cannot survive.
-  "mep.run_through_plate",
+  # unknowns: the one habit a report cannot survive.
+  "mep.run_through_plate:DU-B-ERV-R-SAUNA-SUP",
+  "mep.run_through_plate:DU-B-ERV-R-SAUNA-EXH",
+  "mep.run_through_plate:DU-ERV-RISER-SUP",
+  "mep.run_through_plate:DU-ERV-RISER-EXH",
+  "mep.run_through_plate:DU-S-HP-SUP",
+  "mep.run_through_plate:DU-S-HP-RET",
+  "mep.run_through_plate:DU-S-HP-SUITE",
+  "mep.run_through_plate:DU-S-HP-SOUTH",
 
   # ** mep.run_through_stud: CLOSED 2026-09-20 BY RETYPING THE WALLS. NOTHING SUPPRESSED. **
   #
@@ -569,13 +600,6 @@ suppress = [
   # deliberately, do not let a cleanup silently keep it.
   "structural.door_framing_module:D-G-OVERHEAD",
 
-  # D-M-BATH2's RO was moved flush against FX-M-BATH2-SINK's east edge (24-15/16") on
-  # 2026-09-09, off W-M-BDN1's 16" module by ~8" with no legal station nearby (32"/48"
-  # both put the leaf back into the vanity or the shower). W-M-BDN1 is INT_2X4_PARTITION,
-  # NONBEARING — one extra cut stud, not a header redesign. Left suppressed because
-  # missing the module IS the trade this move makes, not an oversight.
-  "structural.door_framing_module:D-M-BATH2",
-
   # D-M-BATH1 went 2'-0" -> 2'-6" on 2026-09-15 (the aging-in-place pass): a 24" leaf was
   # the narrowest thing in the house and this is the powder room every guest uses. A 30"
   # RO on W-M-BAE cuts a fourth stud where three would do at EVERY position, so this is not
@@ -584,23 +608,14 @@ suppress = [
   # 30" leaves 5" of wall at the south end — so the opening keeps the station it has had,
   # 2 3/8" under that switch with 8" to spare at the far end. W-M-BAE is
   # INT_2X6_STAGGERED_PLUMBING and NONBEARING: one extra cut stud, not a header redesign.
-  # Same shape of trade, and the same reasoning, as D-M-BATH2 above.
+  # Same shape of trade as D-M-BATH2 used to be — that entry was retired on 2026-09-20
+  # after the door stopped tripping the check at all.
   "structural.door_framing_module:D-M-BATH1",
 
-  # AO-M-FIRE-NICHE is the firebox pocket in W-M-E1, and its station is not its own to
-  # choose: it is centred on y=8'-8" because the W-M-FIRE-* breast in front of it is, and
-  # that centre is a BAY centre on this facade's 16" grid — which is the whole reason the
-  # brick pier could be struck there without moving WIN-M-LIV-E1/E2. A 30" opening on a bay
-  # centre takes the studs at 96" and 112" and there is no width that takes only one: any
-  # opening wider than one 14 1/2" bay reaches both. The check's own fix — move the centre
-  # 8" onto the stud line — moves the FIREPLACE, and with it two windows, the mantel and
-  # the panel's whole composition.
-  #
-  # ** WHAT THE SECOND STUD ACTUALLY COSTS IS NOTHING A HEADER CANNOT DO. ** The kings
-  # survive at 80" and 128", so the pack spans 30" of RO plus two jacks inside 46 1/2" of
-  # clear framing — this is the ordinary bearing pattern with one more cripple bay, not the
-  # 27" bearing CAP being broken (that cap is arithmetic about staying inside one 32"
-  # module, and this opening deliberately does not). W-M-E1 is the east bearing line, so the
-  # header is a real header and is framed as one.
-  "structural.door_framing_module:AO-M-FIRE-NICHE",
+  # ** TWO ENTRIES WERE DELETED HERE ON 2026-09-20 BECAUSE THEY MATCHED NOTHING. **
+  # `structural.door_framing_module:D-M-BATH2` and `:AO-M-FIRE-NICHE` both produced no
+  # finding even under `--no-suppress`. A suppression that matches nothing is not free: a
+  # suppressed check id takes its PASSES out of the denominator too, and a reader who finds
+  # one assumes there is still something behind it. `D-M-BATH1` and `D-G-OVERHEAD` above
+  # both still fire and both stay.
 ]
