@@ -218,13 +218,23 @@ def test_catlin_panel_schedule_is_derived(catlin_model):
         assert rows[circuit]["gfci"] and rows[circuit]["volts"] == 120
         assert rows[circuit]["breaker_amps"] == 15
         assert rows[circuit]["devices"] == [stat]
-    # The two 1.5 kW resistance heaters: 20A because 12.5A x 1.25 continuous needs 16A, and
-    # no GFCI because both are hard-wired equipment rather than receptacles (210.8(A)).
-    for circuit, equipment in (("CKT-FIREPLACE", "EQ-M-FIREPLACE"),
-                               ("CKT-GAR-HEAT", "EQ-G-HEATER")):
+    # The two 1.5 kW resistance heaters: 20A because NEC 422.10(A) puts 12.5A x 1.25 at
+    # 15.6A, so 15A is non-compliant rather than merely tight; and 210.23(B)(2)'s 50% cap
+    # (12.5/20 = 62.5%) is why each may share with nothing.
+    #
+    # ** CKT-FIREPLACE CARRIES TWO DEVICES AND EXACTLY ONE OF THEM IS EVER USED. ** The
+    # firebox pocket got a recessed receptacle beside its hardwire J-box on 2026-09-20
+    # (owner's call), so a hardwire appliance and a cord-and-plug one are both installable in
+    # that hole for the life of the house. It does not double the load: `connected_va` stays
+    # 1500 because ED-M-FIRE-RC is a bare outlet with no load of its own. Neither is GFCI —
+    # 210.8(A) does not list living rooms and 210.8(D)'s appliance list does not name room
+    # heaters. (The garage heater's cord-and-plug twin WOULD need GFCI, under 210.8(A)(2);
+    # plan/circuits.py claimed that for both until this pass.)
+    for circuit, devices in (("CKT-FIREPLACE", ["ED-M-FIRE-RC", "EQ-M-FIREPLACE"]),
+                             ("CKT-GAR-HEAT", ["EQ-G-HEATER"])):
         assert rows[circuit]["connected_va"] == 1500
         assert rows[circuit]["breaker_amps"] == 20 and not rows[circuit]["gfci"]
-        assert rows[circuit]["devices"] == [equipment]
+        assert rows[circuit]["devices"] == devices
     # The EV circuits author load_va so LM-EV can read the managed group off the circuits;
     # the figure is the same 240x40 the receptacle type carries, so the row is unchanged.
     assert rows["CKT-EV-1450"]["connected_va"] == 9600

@@ -172,11 +172,19 @@ def _openings(model, wall):
     no void, because it is drilled through the rainscreen after it stands. See
     ``resolve/framing/furring.framed_around`` for the whole argument, and
     ``test_a_bored_penetration_is_invisible_to_the_cladding_framing`` below for the pin.
+
+    A BLIND recess is excluded the same way and for the same shape of reason, one layer
+    further in: its back stops short of the girt band, so nothing out here is framed around
+    it. That is why the question is asked OF THE BAND — ``framed_around`` needs the wall and
+    the girt layer to answer it, and asked with neither it answers for the wall as a whole,
+    which would put a jamb post round a firebox pocket.
     """
     from typehaus.resolve.framing.openings import framed_around
+    from typehaus.resolve.framing.truss_wall import truss_layer_name
 
+    layer = truss_layer_name(model.plan, wall.assembly)
     return [op for op in model.openings
-            if op.host_wall == wall.tag and framed_around(op)]
+            if op.host_wall == wall.tag and framed_around(op, wall, layer)]
 
 
 def _modal_phase(stations_in: list[float]) -> float:

@@ -34,6 +34,7 @@ from typehaus.resolve.accessories import (
 )
 from typehaus.resolve.ceiling_over import ceiling_decks_over, room_roof_over
 from typehaus.resolve.geometry import length, polygon_area, sub
+from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
 from typehaus.resolve.roof_geometry import roof_ceiling_area_m2
 
@@ -76,9 +77,16 @@ def wall_net_areas_m2(model: ResolvedModel) -> dict[str, float]:
     :func:`typehaus.takeoff.wall_structure.wall_structure_takeoff` so the covering and the
     thing it covers are measured off exactly the same face — a wall cannot bill 200 sf of
     drywall over 190 sf of concrete.
+
+    Only THROUGH openings are deducted here, because only they are a hole in every layer.
+    A blind recess (``RoughOpening.depth``) is deducted per layer instead, by
+    :func:`wall_layer_net_area_m2` — the sheathing, foam, girt and cladding behind a firebox
+    pocket are whole, and deducting its 5 sf from all of them ordered 4.9 sf less of each.
     """
     openings_by_wall: dict[str, float] = defaultdict(float)
     for opening in model.openings:
+        if opening.is_blind:
+            continue
         openings_by_wall[opening.host_wall] += opening.width_m * opening.height_m
 
     areas: dict[str, float] = {}
@@ -104,9 +112,14 @@ def wall_layer_net_area_m2(model: ResolvedModel, wall: ResolvedWall,
     The opening clip is the same one ``resolve/paneling.py`` runs for a wainscot band —
     intersect the opening's rectangle with the band and subtract — because it is the same
     question asked of a different band.
+
+    A BLIND opening is deducted here and nowhere else, from the layers its depth actually
+    reaches (``geometry_walls.cuts_layer``) — the same layers the wall's own solids are cut
+    out of, so the drawing and the bill agree about where the pocket stops.
     """
+    blind = _blind_deduction_m2(model, wall, layer)
     if not getattr(layer, "is_banded", False):
-        return wall_net_m2
+        return max(0.0, wall_net_m2 - blind)
     band_z0, band_z1 = layer.band(wall)
     mean_top = ((wall.top_z0_m or wall.z1_m) + (wall.top_z1_m or wall.z1_m)) / 2.0
     band_z1 = min(band_z1, mean_top)
@@ -117,11 +130,21 @@ def wall_layer_net_area_m2(model: ResolvedModel, wall: ResolvedWall,
     for opening in model.openings:
         if opening.host_wall != wall.tag:
             continue
+        if not cuts_layer(wall, layer.name, opening):
+            continue
         overlap = (min(band_z1, wall.base_ref_z_m + opening.sill_m + opening.height_m)
                    - max(band_z0, wall.base_ref_z_m + opening.sill_m))
         if overlap > 0.0:
             area -= opening.width_m * overlap
     return max(0.0, area)
+
+
+def _blind_deduction_m2(model: ResolvedModel, wall: ResolvedWall,
+                        layer: ResolvedLayer) -> float:
+    """Face area the blind openings that reach ``layer`` take out of it."""
+    return sum(opening.width_m * opening.height_m for opening in model.openings
+               if opening.is_blind and opening.host_wall == wall.tag
+               and cuts_layer(wall, layer.name, opening))
 
 
 def envelope_layer_takeoff(model: ResolvedModel) -> list[dict[str, object]]:

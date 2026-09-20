@@ -14,11 +14,16 @@ What each rule actually asks, and what is graded here:
   already records.
 * **R303.8** — an exterior stairway has a light at the *top* landing, and one at the bottom
   as well where it descends to a basement from outdoor grade. This house has both shapes.
+  The landing is a SURFACE and the rule is graded against it: the whole of R303.8 is "an
+  artificial light source located at the top landing of the stairway", with no illuminance,
+  no switching and no distance from the treads in it. See ``_landing_region`` — this is the
+  one place the two stair rules part company, and R303.7 stays tread-centric because its
+  own text is.
 * **R302.7** — an enclosed space under a stair, reached by a door, is lined with 1/2"
   gypsum on the enclosed side. Applicability is a geometry question (is there a room under
   the flight?) followed by an access question (does a door open into it?).
 
-*Where* the fixture is, however, is graded in three dimensions. The plan buffer that finds
+*Where* the fixture is, however, is graded in three dimensions. The plan region that finds
 a luminaire over a stair says nothing about height, and the elevation half of the question is
 not a refinement: a sconce authored below the treads it is drawn to light lights nothing, and
 counting it is how a stair reads as lit when it is dark. Every candidate is measured against
@@ -45,6 +50,7 @@ _SWITCHED_RISER_THRESHOLD = 6
 # How far from the stair outline a luminaire still counts as lighting it. A ceiling fixture
 # over a stair well is rarely inside the run's own plan ring — it hangs over the landing or
 # just off the top nosing — so the ring is buffered rather than tested for containment.
+# R303.8 unions this with the arrival deck (``_landing_region``); R303.7 uses it alone.
 _STAIR_LIGHT_REACH = ft(4)
 # How far off a flight centreline the nosing line is still the surface a fixture is being
 # measured against. The plan region above is the stair outline buffered by 4 ft, and the
@@ -59,6 +65,24 @@ _NOSING_LATERAL_REACH_M = _STAIR_LIGHT_REACH.meters + 2.0
 # the stringer, and lights the framing. The stair's own riser height is the measure; the
 # fallback is R311.7.5.1's maximum, for a synthetic stair that resolves none.
 _STEP_LIGHT_BAND_FALLBACK_M = ft(0, 7.75).meters
+# R303.8's subject is the LANDING, not the treads, and a landing is a surface. These three
+# find the one a flight arrives on. A deck is that surface when its top is the stair's own
+# arrival elevation (2" of tolerance, for a deck built up in layers) and it lies within a
+# threshold of the flight: ST-SG-PORCH steps off its top nosing across the 12" top of
+# W-SG-E1 before it reaches FS-SG-PORCH, and a threshold that size is a detail of the pour,
+# not a second room. Matched on elevation and adjacency rather than on a storey name,
+# because the porch deck's storey is `court-main` while the stair's is `main` — the same
+# reason `_stair_is_indoors` derives its answer instead of reading a flag.
+_LANDING_ELEVATION_TOLERANCE_M = ft(0, 2).meters
+_LANDING_THRESHOLD = ft(1, 6)
+# A deck's RIM is not the edge of its landing — the walls that bound it are, and the light
+# "located at" a landing is very often mounted on one of those. A wall fixture's position is
+# already outboard of the deck by half its own body (the footprint is centred), and the deck
+# stops short of the cladding besides: ED-M-STAIR-LT's centre lands 1/4" north of
+# FS-SG-PORCH's north edge while its back is on the wall over that deck. Six inches is the
+# deepest fixture body this catalog carries, doubled, and it buys nothing a landing does not
+# already touch.
+_LANDING_RIM = ft(1)
 # Rooms that are enclosed usable space rather than circulation. R302.7's subject is the
 # closet or store under the flight, not the stair hall the flight stands in.
 _UNDER_STAIR_OCCUPANCIES = frozenset({
@@ -192,6 +216,42 @@ def _switch_storeys(ctx: CheckContext, lights) -> set[str]:
     return found
 
 
+def _landing_region(ctx: CheckContext, stair, polygon, elevation_m: float | None):
+    """``polygon`` widened to the walking surface this flight arrives on at ``elevation_m``.
+
+    R303.8 asks for "an artificial light source located at the top landing of the stairway",
+    and that is the whole of the sentence: no illuminance, no switch, and no distance from
+    the treads. The 4 ft ring this rule shared with R303.7 was standing in for the landing,
+    and it is the wrong shape for the question — R303.7 lights *treads and landings* and is
+    properly tread-centric, while R303.8 names one surface and asks whether a fixture is on
+    it. On this house the difference is the whole verdict: ST-SG-PORCH arrives on the 171 sf
+    porch deck, its flood and its fan hang over that deck ten feet from the top nosing, and
+    a ring drawn round the treads reported a stair with no light at a landing with two.
+
+    The landing is the DECK, so the region is the union and never a replacement: a fitting
+    at the head of a flight that overhangs no modelled deck is still at the top of the
+    stair, and this rule has counted it since it was written. Where no deck matches, the
+    ring is all there is and the answer is unchanged — widening is the only direction this
+    can move a verdict, which is what makes it a correction to a rule and not a new one.
+    """
+    from shapely.geometry import Polygon
+
+    if elevation_m is None:
+        return polygon
+    region = polygon
+    for floor in ctx.model.floors:
+        if floor.deck_z1_m is None or len(floor.deck_outline) < 3:
+            continue
+        if abs(floor.deck_z1_m - elevation_m) > _LANDING_ELEVATION_TOLERANCE_M:
+            continue
+        deck = Polygon([p.xy_m if hasattr(p, "xy_m") else p for p in floor.deck_outline])
+        if not deck.is_valid or deck.area <= 1e-9:
+            continue
+        if deck.distance(polygon) <= _LANDING_THRESHOLD.meters:
+            region = region.union(deck.buffer(_LANDING_RIM.meters))
+    return region
+
+
 def _stair_is_indoors(ctx: CheckContext, stair, region) -> bool:
     """Does a conditioned room stand over this stair's footprint?
 
@@ -277,9 +337,15 @@ def exterior_stairway_illumination(ctx: CheckContext) -> list[Finding]:
     storeys = {s.tag: s for s in ctx.plan.storeys}
     out: list[Finding] = []
     for stair, polygon in stairs:
-        region = polygon.buffer(_STAIR_LIGHT_REACH.meters)
-        top_lights, top_buried = _lights_near(ctx, region, {stair.to_storey}, stair=stair)
-        bottom_lights, bottom_buried = _lights_near(ctx, region, {stair.storey}, stair=stair)
+        ring = polygon.buffer(_STAIR_LIGHT_REACH.meters)
+        # Two landings, two surfaces: the flight arrives on one and springs from the other,
+        # and each is found at its own elevation. A stair whose deck the model does not
+        # carry falls back to the ring for that end alone.
+        top_region = _landing_region(ctx, stair, ring, stair.arrival_elevation_m)
+        bottom_region = _landing_region(ctx, stair, ring, stair.base_elevation_m)
+        top_lights, top_buried = _lights_near(ctx, top_region, {stair.to_storey}, stair=stair)
+        bottom_lights, bottom_buried = _lights_near(ctx, bottom_region, {stair.storey},
+                                                    stair=stair)
         # One census, two storey filters: a device on the storey that is both ``storey`` and
         # ``to_storey`` (a stair inside one level, like this porch flight) is found twice.
         buried = list({item[0].tag: item for item in top_buried + bottom_buried}.values())

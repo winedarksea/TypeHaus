@@ -50,6 +50,7 @@ from typehaus.resolve.roof_geometry import roof_plane_z
 # ``section.py`` is the name every caller — the CLI, the server, the detail package and the
 # tests — imports a cut from, so the pieces split out of it stay reachable here.
 __all__ = [
+    "build_annotated_section",
     "build_center_section",
     "build_section",
 ]
@@ -163,16 +164,42 @@ def build_center_section(model: ResolvedModel) -> Scene:
     station = (min(stations) + max(stations)) / 2.0 if stations else 0.0
     view = Slice(uid="RNDSEC00001", tag="SECTION-HOUSE-CENTER", kind=SliceKind.SECTION,
                  cut_origin=pt(m(0), m(station)), cut_direction="x")
-    scene = build_section(model, view)
-    scene = annotate_building_section(scene, model,
-                                      CutPlane(axis="x", station_m=station))
-    callouts = _detail_callouts(model, scene, CutPlane(axis="x", station_m=station))
+    return build_annotated_section(model, view)
+
+
+def build_annotated_section(model: ResolvedModel, view: Slice,
+                            frame: Frame | None = None) -> Scene:
+    """One authored SECTION cut, as a *sheet*: the cut plus datums, grade and room names.
+
+    The annotation was the centre section's alone until 2026-09-20, which made an authored
+    section a picture with no dimensions on it — the reader could see the fireplace breast
+    and could not say how high anything on it was. Nothing in the annotation was ever
+    specific to the house centre: it takes a :class:`CutPlane`, and an authored cut has
+    one. What it did not have is a CROP, and the room names are the reason it needs one —
+    every other annotator is already bounded by the drawn geometry, but ``_emit_room_names``
+    walks the model and would letter rooms forty feet outside the frame.
+
+    A DETAIL stays out of this by construction: callers pass sections. A detail is a
+    fragment with no storey ladder to hang off and no ground within a hundred feet of its
+    crop, which is what the docstring on :func:`build_center_section` has always said.
+    """
+    plane = CutPlane(axis=view.cut_direction or "x",
+                     station_m=(view.cut_origin.xy_m[1] if (view.cut_direction or "x") == "x"
+                                else view.cut_origin.xy_m[0]))
+    crop = None
+    if view.crop is not None:
+        crop = (view.crop[0].xy_m, view.crop[1].xy_m)
+    scene = build_section(model, view, frame=frame)
+    scene = annotate_building_section(scene, model, plane, crop=crop)
+    callouts = _detail_callouts(model, scene, plane, crop=crop)
     if callouts:
         scene = scene.model_copy(update={"nodes": scene.nodes + tuple(callouts)})
     return scene
 
 
-def _detail_callouts(model: ResolvedModel, scene: Scene, plane: CutPlane) -> list:
+def _detail_callouts(model: ResolvedModel, scene: Scene, plane: CutPlane,
+                     crop: tuple[tuple[float, float], tuple[float, float]] | None = None,
+                     ) -> list:
     """A split-circle callout on the section for every detail this cut passes through.
 
     A set with details in it and no way to reach them is a set of unrelated drawings, and
@@ -203,6 +230,14 @@ def _detail_callouts(model: ResolvedModel, scene: Scene, plane: CutPlane) -> lis
         anchor = _condition_point(model, derived, plane)
         if anchor is None or _too_close(anchor, placed):
             continue
+        # A bubble points AT a condition, so one outside the crop points at nothing: on
+        # catlin's fireplace cut four of them stood in open sheet twenty feet west of the
+        # only thing the drawing shows.
+        if crop is not None:
+            (cu0, cz0), (cu1, cz1) = crop
+            if not (cu0 / M_PER_IN <= anchor[0] <= cu1 / M_PER_IN
+                    and cz0 / M_PER_IN <= anchor[1] <= cz1 / M_PER_IN):
+                continue
         placed.append(anchor)
         number = sheet.split("-")[-1][-1]
         out.extend(callout_nodes(anchor, number, sheet, scene.frame.scale

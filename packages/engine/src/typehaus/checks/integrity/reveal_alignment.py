@@ -81,7 +81,11 @@ def reveal_concentric(ctx: CheckContext) -> list[Finding]:
             continue
         placed.append((opening, center, wall))
 
-    reveals = [row for row in placed if row[0].kind == "rough_opening"]
+    # A BLIND recess is not a reveal: it has a back, so there is nothing behind it to be
+    # concentric with. The firebox pocket in W-M-E1 has W-M-FIRE-* in front of it and would
+    # otherwise be graded against the masonry opening it stands behind.
+    reveals = [row for row in placed
+               if row[0].kind == "rough_opening" and not row[0].is_blind]
     if not reveals:
         return [not_applicable(_CHECK_ID,
                                "no wall in this building carries a rough opening, so there "

@@ -60,6 +60,10 @@ def wood_surfaces_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     # ``replaces_wall_finish`` paneling band on the wall (the tile splash).
     openings_by_wall: dict[str, float] = defaultdict(float)
     for opening in model.openings:
+        # Blind recesses are deducted per LAYER by ``wall_layer_net_area_m2`` below, from
+        # the layers their depth reaches — the same split ``envelope_layer_takeoff`` makes.
+        if opening.is_blind:
+            continue
         openings_by_wall[opening.host_wall] += opening.width_m * opening.height_m
     override_by_wall: dict[str, float] = defaultdict(float)
     for paneling in model.panelings:

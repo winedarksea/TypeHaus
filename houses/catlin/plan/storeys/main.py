@@ -29,6 +29,7 @@ from typehaus import (
     RadiantSystem,
     Railing,
     RailingKind,
+    RoughOpening,
     Room,
     Slab,
     Stair,
@@ -1076,7 +1077,7 @@ WALLS = [
     # ** THE PANEL IS FIVE WALLS AND THE FIREBOX IS A REAL HOLE (2026-09-06). ** W-M-FIRE was
     # ONE Wall, so it resolved to a 4-point rectangle and the 3D showed a solid brick slab
     # with EQ-M-FIREPLACE stuck on its face. Split into the courses a mason actually lays, the
-    # masonry opening — 29 1/2" wide x 20 5/8" high, sill 24" AFF, head 44 5/8" AFF — is the
+    # masonry opening — 29 1/2" wide x 24" high, sill 24" AFF, head 48" AFF — is the
     # gap between the four elements, not a subtraction from one.
     #
     # `base_elevation` is absolute and `top` is a HEIGHT off it, so both columns below are
@@ -1087,12 +1088,12 @@ WALLS = [
     #     W-M-FIRE-STUB-M    12"      -13 7/16"      15/16"    14 3/8"
     #     W-M-FIRE-STUB-N    12 1/8"  -13 7/16"      15/16"    14 3/8"
     #     W-M-FIRE-PLINTH  45 1/2"      15/16"    24 15/16"  24"
-    #     W-M-FIRE-JAMB-S   8"       24 15/16"    45  9/16"  20 5/8"
-    #     W-M-FIRE-JAMB-N   8"       24 15/16"    45  9/16"  20 5/8"
-    #     W-M-FIRE-HEAD    45 1/2"   45  9/16"    64 15/16"  19 3/8"
+    #     W-M-FIRE-JAMB-S   8"       24 15/16"    48 15/16"  24"
+    #     W-M-FIRE-JAMB-N   8"       24 15/16"    48 15/16"  24"
+    #     W-M-FIRE-HEAD    45 1/2"   48 15/16"    64 15/16"  16"
     #
-    # The three AFF datums the design is built on: sill 24" (course 9), head 44 5/8", mantel
-    # underside 64" (course 24).
+    # The three AFF datums the design is built on: sill 24" (course 9), head 48" (course 18),
+    # mantel underside 64" (course 24).
     #
     # ** THE SILL CAME BACK DOWN TO 24" AFF (2026-09-11, OWNER'S REVERSAL OF THE SAME DAY'S
     # DECISION). ** This block argued FOR 32" until this revision, and the argument is kept
@@ -1110,21 +1111,33 @@ WALLS = [
     # record of the trade and a future pass must not "restore" 32" on the strength of the
     # paragraph above without asking.
     #
-    # ** THE 8" THE PLINTH LOST WENT INTO THE HEAD, NOT INTO THE PANEL. ** W-M-FIRE-HEAD grows
-    # 11 3/8" -> 19 3/8" so the panel's top stays at 64 15/16" absolute. That is what keeps
+    # ** THE 8" THE PLINTH LOST WENT INTO THE HEAD, NOT INTO THE PANEL. ** W-M-FIRE-HEAD grew
+    # 11 3/8" -> 19 3/8" so the panel's top stays at 64 15/16" absolute — and the same rule
+    # ran in reverse on 2026-09-20, when the opening took 3 3/8" back off it (19 3/8" -> 16").
+    # The panel top has not moved either time, which is what keeps
     # FURN-M-FIRE-MANTEL on the brick, keeps the hand-measured 0" gaps against the two BESTA
     # banks true (plan/placeables.py), and keeps the brick quantity flat — the opening moved,
     # the panel did not.
     #
-    # ** THE OPENING HEAD IS A CUT COURSE AND THAT IS DELIBERATE. ** 44 5/8" AFF is 16.7
-    # modular courses. Putting it on a course line instead means 18 2/3", which leaves ~1" of
-    # daylight over a TRIMLESS unit that has no flange to hide it. The 1/4" of tolerance all
-    # round the appliance's 20 3/8" rough opening is worth more than the whole course. (It was
-    # 19.7 courses at the 32" sill and it is 16.7 at the 24" one: the opening HEIGHT never
-    # moved, so the cut course survives the drop unchanged.) The head is closed by a STEEL
-    # ANGLE LINTEL, not a rowlock — 29 1/2" of brick over an opening this wide is not a
-    # rowlock's job — and since 2026-09-11 it is a modelled element, BM-M-FIRE-LINTEL below,
-    # rather than a drawing note.
+    # ** THE HEAD IS ON A COURSE LINE SINCE 2026-09-20, AND THE CUT COURSE IS GONE. ** It was
+    # 44 5/8" AFF — 16.7 modular courses, a deliberate cut, taken because the 20 5/8" opening
+    # it capped was sized to a TRIMLESS appliance's 20 3/8" rough opening and a course line
+    # would have left ~1" of daylight over it with no flange to hide it. The pocket behind
+    # the panel is 24" high now (see AO-M-FIRE-NICHE in ROUGH_OPENINGS), so the masonry
+    # opening is 24" too and the head lands at **48" AFF = exactly 18 courses**. Everything
+    # above the plinth is whole courses top to bottom: sill 9, head 18, panel top 24, and the
+    # spandrel to the mantel is 16" = 6 courses. Height was the only free variable here —
+    # width is pinned at 29 1/2" by the 8" whole-brick piers (notes/east_breast_bearing.md:
+    # "zero cut closers on the visible 45 1/2" opening") and depth by the building, so this is
+    # the one dimension that could buy anything and it bought the coursing.
+    #
+    # ** WHY THE OPENING GREW AT ALL. ** Not for the coursing — for SUPPLIERS. The 4 1/2"
+    # recess behind the brick was the sole-source constraint on this appliance (see
+    # plan/equipment_types.py's EQ-T-FIREPLACE-EL); deepening the pocket to 11 1/2" opens the
+    # field from two brands to roughly ten, and the height came along so the appliance and the
+    # hole in the brick agree. The head is still closed by a STEEL ANGLE LINTEL, not a rowlock
+    # — 29 1/2" of brick over an opening this wide is not a rowlock's job — and since
+    # 2026-09-11 it is a modelled element, BM-M-FIRE-LINTEL below, rather than a drawing note.
     #
     # ** THE STUB LINE IS 1 1/4" NARROWER THAN THE PANEL. ** 44 1/4" against 45 1/2", so the
     # plinth corbels 5/8" over the outer piers at each end AT THE FLOOR LINE, buried under the
@@ -1186,15 +1199,15 @@ WALLS = [
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="BVEVY6KVW8", tag="W-M-FIRE-JAMB-S", start_node="N-M-FIRE-JS-S",
          end_node="N-M-FIRE-JS-N",
-         assembly="FIREPLACE_BRICK_WYTHE", alignment=face("center", offset=inch(-0.0625)), base_elevation=inch(24.9375), top=inch(20.625),
+         assembly="FIREPLACE_BRICK_WYTHE", alignment=face("center", offset=inch(-0.0625)), base_elevation=inch(24.9375), top=inch(24),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="R8VJRRE4M6", tag="W-M-FIRE-JAMB-N", start_node="N-M-FIRE-JN-S",
          end_node="N-M-FIRE-JN-N",
-         assembly="FIREPLACE_BRICK_WYTHE", alignment=face("center", offset=inch(-0.0625)), base_elevation=inch(24.9375), top=inch(20.625),
+         assembly="FIREPLACE_BRICK_WYTHE", alignment=face("center", offset=inch(-0.0625)), base_elevation=inch(24.9375), top=inch(24),
          structural_role=StructuralRole.NONBEARING),
     Wall(uid="Z5314GVSNX", tag="W-M-FIRE-HEAD", start_node="N-M-FIRE-HD-S",
          end_node="N-M-FIRE-HD-N",
-         assembly="FIREPLACE_BRICK_WYTHE", alignment=face("center", offset=inch(-0.0625)), base_elevation=inch(45.5625), top=inch(19.375),
+         assembly="FIREPLACE_BRICK_WYTHE", alignment=face("center", offset=inch(-0.0625)), base_elevation=inch(48.9375), top=inch(16),
          structural_role=StructuralRole.NONBEARING),
 ]
 
@@ -1576,6 +1589,48 @@ OPENINGS = [
     # N-M-SE — 33'-4" is a STUD LINE. The bay centres moved 8", not the window.
     Window(uid="G0Y75W9ZS1", tag="WIN-M-KIT-E", host="W-M-E1", type_ref="WT-1424",
            position=from_node("N-M-SE", ft(33, 5)), sill_height=ft(3, 6)),
+    # --- the firebox pocket, behind the W-M-FIRE-* breast ---------------------------------
+    # ** A BLIND RECESS, NOT A HOLE (2026-09-20). ** `depth=inch(6)` is the whole point: the
+    # appliance sits in a pocket cut back into W-M-E1 behind the brick, and the sheathing,
+    # the 4" of ccSPF, the girt and the cladding run past it unbroken. Authored as a through
+    # opening — the only kind that existed before this pass — it would have deleted 4.9 SF of
+    # each of those to the east yard, counted as east glazing in `building_science.wwr`,
+    # billed as a window at `preferences.window_u` in the block load, and raised an
+    # `integrity.reveal_concentric` UNKNOWN against the masonry opening in front of it.
+    #
+    # ** WHY 6" AND NOT 6 1/8". ** The stack is paint 0.01" + gwb 5/8" + stud 5 1/2", so the
+    # sheathing's inner face is at 6.135". Any depth over 0.635" and at or under 6.135" cuts
+    # exactly paint, board and stud bay; 6" is that number written the way the design states
+    # it, with 0.135" of framing tolerance to the sheathing rather than a literal tuned to
+    # the layer table. The pocket is 11 1/2" deep measured from the BRICK face, which is the
+    # dimension the appliance is chosen against: 3 5/8" brick + 1 7/8" tie gap + 6". That is
+    # the building's hard ceiling — going deeper means moving the panel west, off W-B-E1's
+    # pour and onto the joists at 236 plf against a 50 plf limit (notes/east_breast_bearing.md).
+    #
+    # ** WHAT THE DEPTH BUYS IS SUPPLIERS. ** At 4 1/2" of recess every unit on the market
+    # that fits is an Amantii (plan/equipment_types.py); at 11 1/2" it is about ten brands,
+    # and infrared-quartz units are among them. Depth is what buys brands and width barely
+    # matters, which is why the width did not move.
+    #
+    # ** GEOMETRY, AND THE WIDTH IS WIDER THAN THE APPLIANCE ON PURPOSE. ** 34" x 25", centred
+    # on y=8'-8" like the panel, so `from_node` (the NEAR jamb) is 104" - 17" = 87" and the RO
+    # spans y 87"..121". The appliance's own rough opening is 29 1/4" wide, so the pocket
+    # leaves a 2 3/8" strip of clear cavity down each side of it — which is where ED-M-FIRE-RC
+    # goes (plan/electrical.py). At 30" there was 3/8" a side and nowhere to put a box; the
+    # masonry aperture in front is 29 1/2" either way, so the brick reveal laps the framed
+    # edge 2 1/4" a side and the extra width is invisible. ** IT COSTS NO EXTRA STUD: ** it
+    # breaks the studs at 96" and 112" at 30" and at 34" alike, and leaves the kings at 80" and
+    # 128" standing. `needs_jamb_pack` gives it a header and jamb packs automatically, spanning
+    # ~37" — still well under the `w_ft <= 4.0` float boundary FO-M-ERV-OA's note records, but
+    # the resolved value is worth a look after any width change. `sill_height` is off the WALL BASE (W-M-E1's `base_ref_z` is 0"), NOT the
+    # finished floor — the same two-datum trap the wall hydrants carry — so 24 7/16" puts the
+    # recess bottom 1/2" under the masonry sill at 24 15/16" absolute, and its top 1/2" over
+    # the 48 15/16" head. The brick reveal laps the framed edge all round, which is what a
+    # 1/2" of margin per side is for.
+    RoughOpening(uid="MGNV9YBS74", tag="AO-M-FIRE-NICHE", host="W-M-E1",
+                 position=from_node("N-M-SE", inch(87)),
+                 width=inch(34), height=inch(25), sill_height=inch(24.4375),
+                 depth=inch(6)),
 ]
 
 ROOMS = [
@@ -2254,12 +2309,15 @@ BEAMS = [
     # ** SPAN AND BEARING. ** N-M-FIRE-JS-S to N-M-FIRE-JN-N is the whole 45 1/2" panel, so
     # the angle runs end to end with 8" of bearing on each jamb pier — the piers ARE the
     # bearing and a shorter stick would have to invent nodes inside them. Clear span is the
-    # 29 1/2" masonry opening. A 1/4" angle over 29 1/2" carrying 19 3/8" of spandrel brick
-    # (~35 psf x 1.6 sf = ~56 lb) is not a calculation anybody needs; it is the minimum stock
+    # 29 1/2" masonry opening. A 1/4" angle over 29 1/2" carrying 16" of spandrel brick
+    # (~35 psf x 1.3 sf = ~46 lb) is not a calculation anybody needs; it is the minimum stock
     # piece, chosen for stiffness and for the 4" nominal leg the trade lays brick on.
+    # ** THE OPENING GREW 3 3/8" TALLER ON 2026-09-20 AND NOTHING ABOUT THE STEEL MOVED **:
+    # same part, same 29 1/2" clear span, same 8" of bearing each end, less spandrel over it.
+    # Only `top_elevation` followed the head up.
     #
-    # ** ELEVATION. ** `top_elevation` 49 1/16" absolute puts the horizontal leg's underside
-    # on the jamb tops at 45 9/16" — the opening head — with the 3 1/2" vertical leg rising
+    # ** ELEVATION. ** `top_elevation` 52 7/16" absolute puts the horizontal leg's underside
+    # on the jamb tops at 48 15/16" — the opening head — with the 3 1/2" vertical leg rising
     # inside W-M-FIRE-HEAD's bed joints, which is where a veneer lintel's leg lives. The
     # angle and the spandrel brick therefore share air in the model. That is correct about
     # the building and unavoidable in the schema: a lintel is by definition inside masonry,
@@ -2270,7 +2328,7 @@ BEAMS = [
     # exposure.
     Beam(uid="YCCXRC0ZP3", tag="BM-M-FIRE-LINTEL", start_node="N-M-FIRE-JS-S", end_node="N-M-FIRE-JN-N",
          size="L3.5x3.5x0.25", bearing_refs=("W-M-FIRE-JAMB-S", "W-M-FIRE-JAMB-N"),
-         top_elevation=inch(49.0625),
+         top_elevation=inch(52.4375),
          engineering_note="L3-1/2x3-1/2x1/4 A36 hot-dip galvanised steel angle lintel over the 29 1/2 in firebox opening, 8 in bearing each end on the brick jamb piers. Minimum stock section, not a designed one: the spandrel it carries is ~56 lb. SIZE IS THE REAL SECTION SINCE 2026-09-15: it read 3.5x3.5 until then, which parses as a milled 3 1/2 in square and drew, clashed and billed 7.26x the steel (12.25 in2 of box against 1.69 in2 of angle). The AISC fraction spelling is deliberately not accepted by the parser, so this is the decimal form of the same part."),
 ]
 

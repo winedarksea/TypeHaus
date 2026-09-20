@@ -13,6 +13,7 @@ from typehaus.takeoff import (
     structural_solids_takeoff,
 )
 from typehaus.takeoff.framing import _bucket_cut_lengths
+from typehaus.takeoff.steel import steel_members_takeoff
 from typehaus.takeoff.sheet_rips import rip_stock
 
 from _helpers import frames_structure
@@ -151,13 +152,26 @@ def test_structural_solids_account_for_every_resolved_solid(catlin_model) -> Non
     its box — so counting it here would bill five hundred connectors twice, once as a part
     and once as a phantom volume. ``ResolvedSolid.derived`` is that distinction and this is
     the invariant that would otherwise quietly absorb it.
+
+    A ROLLED STEEL MEMBER is the second such distinction (2026-09-20) and it works the same
+    way: it is measured, but by the FOOT of its AISC section in ``steel_members``, because a
+    $/cy rate cannot tell an L3-1/2x3-1/2x1/4 from an L3-1/2x3-1/2x3/8 and in practice billed
+    a lintel at $0. Counting it here as well would bill it twice, so the reconciliation is
+    against the two tables TOGETHER — which is the honest statement: every measured solid is
+    billed exactly once, somewhere.
     """
     rows = structural_solids_takeoff(catlin_model)
-    measured = [solid for solid in catlin_model.solids if not solid.derived]
+    steel = steel_members_takeoff(catlin_model)
+    steel_tags = {tag for row in steel for tag in row["tags"]}
+    assert steel_tags, "no steel member in the fixture — the rule cannot prove anything"
+    assert steel_tags.isdisjoint({tag for row in rows for tag in row["tags"]})
+    measured = [solid for solid in catlin_model.solids
+                if not solid.derived and solid.tag not in steel_tags]
     assert measured, "every solid is derived — the fixture is wrong, not the rule"
     assert sum(int(row["count"]) for row in rows) == len(measured)
     assert {tag for row in rows for tag in row["tags"]} == {
         solid.tag for solid in measured}
+    assert sum(int(row["count"]) for row in steel) == len(steel_tags)
     # Concrete is ordered by the yard, so the volume rollup has to be real.
     footings = next(row for row in rows if row["category"] == "footing")
     assert footings["volume_cubic_yards"] > 0
@@ -167,6 +181,10 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
     bom = bill_of_materials(catlin_model)
     assert set(bom) == {"framing", "framing_by_size", "fabricated_members",
                         "structural_solids",
+                        # Rolled steel members by the FOOT of a named AISC section — taken
+                        # OUT of ``structural_solids`` above, because a member bought by the
+                        # foot must not also bill by the yard (``takeoff/steel.py``).
+                        "steel_members",
                         # Reinforcing steel by the pound. Its own section since 2026-09-03;
                         # before that it rode invisibly inside the
                         # ``[concrete]``/``[wall_structure]`` $/cy rates.

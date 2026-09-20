@@ -196,21 +196,26 @@ def test_the_pocket_condenser_disconnect_clears_the_stair_and_reaches_from_grade
 
 
 def test_the_porch_stair_has_its_R303_8_top_landing_light(catlin_model):
-    """ED-M-STAIR-LT, on W-SG-E1's east face beside the head of ST-SG-PORCH.
+    """ED-M-STAIR-LT, a 7'-0" sconce on W-M-S2 over the porch ST-SG-PORCH arrives on.
 
-    ``code.R303_8_exterior_stairway_illumination`` looks for a luminaire within 4'-0" of the
-    flight's plan outline on its ``to_storey``, and nothing already authored reached:
-    ED-M-PORCH-FAN and ED-M-PORCH-FLOOD are both at x 18'-0", ten feet west. It hung on
-    W-M-S2 for a day; when the flight moved to the pocket's south half on 2026-09-04 the
-    house wall fell 5'-2" away from it, so the light followed the stair onto the porch wall.
-    It sits SOUTH of the flight, not north: north is the two disconnects and their NEC
-    110.26(A) working space, and a 5" body projecting into that is the same objection.
+    It has been in three places. It hung on W-M-S2 until 2026-09-04; it moved to W-SG-E1's
+    east face as an 8" step light when the flight took the pocket's south half and
+    ``code.R303_8_exterior_stairway_illumination`` — then grading a 4'-0" buffer of the
+    FLIGHT OUTLINE — reported the stair unlit at 5'-2"; and it came back on 2026-09-20 when
+    that rule was corrected to grade the top LANDING its text actually names. R303.8 is one
+    sentence with no illuminance, no switching and no distance from the treads in it.
+
+    So the pin is the landing, not a radius: the fitting stands over FS-SG-PORCH, and the
+    lane between D-M-BALC's RO (..23'-10") and WIN-M-LIV-S1's (32'-8"..) straddles that
+    deck's east edge at x=27'-6" — 30'-0" is in the lane and over the heat-pump pocket.
 
     ED-T-LT-SCONCE-EXT rather than a new type, deliberately — a LuminaireType with no
     prices.toml row is silently DROPPED from the takeoff, so minting one would have bought a
     fixture the bill never showed. No ``room=``: that absence is how electrical.wet_location
     and advisory.dark_sky_lighting read a device as exterior.
     """
+    from shapely.geometry import Point, Polygon
+
     devices = {element.tag: element for storey in catlin_model.plan.storeys
                for element in catlin_model.plan.storey_elements(storey.tag)
                if element.element_kind == "ElectricalDevice"}
@@ -220,13 +225,16 @@ def test_the_porch_stair_has_its_R303_8_top_landing_light(catlin_model):
     assert light.room is None
     assert "ED-M-PORCH-FLOOD-SW" in light.controlled_by
     x_ft, y_ft = (c / 0.3048 for c in light.position.xy_m)
-    assert x_ft == pytest.approx(28.5 + 2.5 / 12.0)   # 5" body, back on the x 28'-6" face
-    # Inside R303.8's 4'-0" reach of the flight (x 28'-6"..32'-2", y -9'-0"..-6'-0") on both
-    # axes, and clear of the walking surface rather than standing in it.
-    assert 28.5 - 4.0 <= x_ft <= (32.0 + 2.0 / 12.0) + 4.0
-    assert -9.0 - 4.0 <= y_ft <= -6.0 + 4.0
-    assert y_ft < -9.0, "the body must stand clear of the treads, not in them"
-    assert light.mount.elevation.inches == pytest.approx(-8.0)
+    # 5" body, footprint CENTRED, back on W-M-S2's -0'-7 1/4" cladding face at this station.
+    assert y_ft == pytest.approx(-9.75 / 12.0)
+    assert light.mount.elevation.inches == pytest.approx(84.0)
+    # Clear of both openings' ROs, and on the half of the lane that is over the porch.
+    assert 23.0 + 10.0 / 12.0 < x_ft < 27.5
+
+    deck = next(f for f in catlin_model.floors if f.tag == "FS-SG-PORCH")
+    outline = Polygon([p.xy_m if hasattr(p, "xy_m") else p for p in deck.deck_outline])
+    assert outline.distance(Point(*light.position.xy_m)) < 0.0254, \
+        "the fitting must stand at the landing R303.8 names, not merely near the flight"
 
 
 def test_garage_now_has_an_electrical_sheet(catlin_model):

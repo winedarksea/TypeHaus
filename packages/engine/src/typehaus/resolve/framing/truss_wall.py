@@ -506,7 +506,13 @@ def frame_wall_girts(plan: PlanModel, wall: ResolvedWall, openings: list[Resolve
     # 3-ply blocks around a 2 1/2" hole, reverted this wall's block module from every-other
     # stud to every stud, and stretched a girt bay to 37". The girt field a wall resolves is
     # therefore exactly what it was before the hole was modelled, which is the point.
-    clad = [op for op in openings if framed_around(op)]
+    # A BLIND recess (``RoughOpening.depth``) is the same case one layer further in: its
+    # back is inboard of this band, so a firebox pocket takes studs out and nothing else.
+    # ``openings`` itself is NOT filtered — the enumerate below keys every member's
+    # child_key on the index, and dropping an element would renumber every buck and jamb
+    # after it.
+    band_name = (inner or outer).name
+    clad = [op for op in openings if framed_around(op, wall, band_name)]
     voids = [(op.center_along_m - op.width_m / 2.0,
               op.center_along_m + op.width_m / 2.0,
               wall.base_ref_z_m + op.sill_m,
@@ -532,7 +538,7 @@ def frame_wall_girts(plan: PlanModel, wall: ResolvedWall, openings: list[Resolve
     # keeps naming the same opening it always did — renumbering here would move every buck
     # and jamb tag on any wall that gains a penetration.
     for index, opening in enumerate(openings):
-        if not framed_around(opening):
+        if not framed_around(opening, wall, band_name):
             continue
         members.extend(frame.opening_frame(opening, index, elevations))
         members.extend(frame.buck(opening, index))

@@ -70,6 +70,9 @@ _SECTIONS = ("framing", "sheet_goods", "hardware", "concrete", "floor_heat", "pl
              # Structural WOOD solids by the yard — the other half of [concrete]. See
              # ``Prices.timber``.
              "timber",
+             # Rolled STEEL members by the lineal foot of a named AISC section — the third
+             # half, and the one a volume rate cannot buy. See ``Prices.steel_members``.
+             "steel_members",
              # Sheet-metal families the yard is the wrong unit for: guards and gutter/leader
              # runs by the foot.
              "railings", "drainage",
@@ -155,6 +158,9 @@ ALTERNATE_UNITS: dict[str, dict[str, str]] = {
     "concrete": {"ea": "count", "SF": "plan_area_sqft", "cuft": "volume_cuft"},
     # Same table, same rows — see ``Prices.timber``.
     "timber": {"ea": "count", "SF": "plan_area_sqft", "cuft": "volume_cuft"},
+    # A fabricated piece — a welded saddle, a drilled angle — is bought as one part, not by
+    # the foot of stock. The default stays LF, which is how mill lengths are quoted.
+    "steel_members": {"ea": "count"},
     # A retaining wall and a brick veneer are sold by the square foot of FACE, and neither is
     # ready-mix; ``net_area_sqft`` is the face the takeoff already measured.
     "wall_structure": {"SF": "net_area_sqft", "ea": "count"},
@@ -318,6 +324,18 @@ class Prices:
     # ``count`` and ``plan_area_sqft``; converting a yard to a foot is the house's business,
     # not the engine's.
     timber: Mapping[str, PriceRange] = field(default_factory=dict)
+    #: ``[steel_members]`` — rolled steel by the LINEAL FOOT, keyed on the member's own
+    #: ``size`` string (the AISC section, e.g. ``"L3.5x3.5x0.25"``). ``ea`` is available for
+    #: a shop-fabricated piece bought as one part.
+    #:
+    #: Its own table because neither $/cy rate fits: [concrete] would bill a steel angle at
+    #: a ready-mix rate, [timber] refuses it on material, and in practice a lintel simply
+    #: billed $0 — which is a silent under-estimate, not a visible gap. Steel is bought by
+    #: the foot of a NAMED SECTION: an L3-1/2x3-1/2x1/4 and an L3-1/2x3-1/2x3/8 share a
+    #: bounding box and are different purchases, so the section string is the only honest
+    #: key. ``takeoff/steel.py`` excludes these members from ``structural_solids``, so a
+    #: house that prices them here cannot also price them there.
+    steel_members: Mapping[str, PriceRange] = field(default_factory=dict)
     # Guards by the lineal foot of guard line, keyed on the railing product type. A count
     # cannot price a railing: a 6-ft balcony guard and a 20-ft stair guard are both "1".
     railings: Mapping[str, PriceRange] = field(default_factory=dict)

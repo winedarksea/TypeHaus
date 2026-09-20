@@ -31,10 +31,24 @@ SECTION_LABELS: dict[str, str] = {
     "pipe_insulation": "Pipe insulation", "freeze_protection": "Freeze protection",
     "edge_trim": "Edge trim and flashing", "member_protection": "Member protection tape",
     "wall_structure": "Wall structure by the yard", "reinforcement": "Reinforcing steel",
-    "timber": "Timber", "railings": "Guards and handrails",
+    "timber": "Timber", "steel_members": "Rolled steel members",
+    "railings": "Guards and handrails",
     "construction_returns": "Construction returns", "sill_gaskets": "Sill gaskets",
     "drainage": "Stormwater", "furnishings": "Furnishings", "allowances": "Allowances",
 }
+
+def _angle_words(size: str) -> str:
+    """``"L3.5x3.5x0.25"`` -> ``"L3-1/2 x 3-1/2 x 1/4"``, the spelling a mill quotes.
+
+    The decimal form is what ``cross_section`` parses and is deliberately the only one the
+    plan may author (``integrity.member_profile_parses`` refuses the fraction rather than
+    guessing at it); this is the other direction, for a human reading an estimate.
+    """
+    if not size.startswith("L"):
+        return size
+    parts = size[1:].split("x")
+    return "L" + " x ".join(_fraction_in(part) for part in parts)
+
 
 #: Framing member categories that are not self-explanatory on a cut list.
 ROLE_GLOSSARY: dict[str, str] = {
@@ -259,6 +273,12 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
         return f"{labels.assembly(g('assembly'))}, {labels.material(g('material'))}"
     if section == "reinforcement":
         return f"{g('bar')} rebar, {g('coating') or 'black'}, {g('scope') or ''}".strip(", ")
+    if section == "steel_members":
+        # The key IS the AISC section, so left alone the row describes itself with its own
+        # id — "L3.5x3.5x0.25" — which is exactly what `looks_like_an_id` is for. Spell the
+        # shape out and say the fraction the trade quotes: an estimator reads
+        # "L3-1/2 x 3-1/2 x 1/4 steel angle", never a decimal one.
+        return f"{_angle_words(bare)} steel {g('shape') or 'member'}"
     if section == "railings":
         head = labels.types.get(bare, bare)
         return f"{head} — {g('style')}" if g("style") else head

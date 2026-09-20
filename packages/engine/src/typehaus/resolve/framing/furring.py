@@ -172,14 +172,18 @@ def frame_wall_furring(
         if direction not in (VERTICAL, HORIZONTAL):
             findings.append(_direction_finding(rw, resolved.name, spec.direction))
             direction = VERTICAL
+        # A blind recess behind the cladding is not this band's business: its back is
+        # inboard of the strip, so nothing here is framed around it (``framed_around``).
+        band_openings = [op for op in openings
+                         if framed_around(op, rw, resolved.name)]
         roles = roles_for(resolved.name) if roles_for is not None else {}
         continuations = (roles.get((rw.tag, "start")), roles.get((rw.tag, "end")))
         if direction == VERTICAL:
             members.extend(_layout_vertical(
-                rw, resolved, spec, openings, line, continuations))
+                rw, resolved, spec, band_openings, line, continuations))
         else:
             members.extend(_layout_horizontal(
-                rw, resolved, spec, openings, line, continuations))
+                rw, resolved, spec, band_openings, line, continuations))
     return tuple(members), findings
 
 

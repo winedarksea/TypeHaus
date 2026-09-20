@@ -81,6 +81,10 @@ def render(
                    "graphic scale bar, north arrow) at TRUE architectural scale"),
     scale: str | None = typer.Option(
         None, help="force a scale, e.g. '1/4\" = 1\'-0\"' or 'fit'; implies --paper ledger"),
+    slice_: str | None = typer.Option(
+        None, "--slice",
+        help="with --view section: cut a house-AUTHORED section slice by tag (or 'all') "
+             "instead of the derived house-centre cut, annotated the same way"),
     underlay: bool = typer.Option(
         True, "--underlay/--no-underlay",
         help="draw the preferences.toml reference underlays behind the linework. On for "
@@ -119,7 +123,7 @@ def render(
             size = resolve_paper(paper)
         paths = render_views(model, d / "out" / "render", view=view, fmt=fmt,
                              underlays=underlays, dpi=dpi, paper=size, scale=scale,
-                             long_edge=long_edge)
+                             long_edge=long_edge, slice_tag=slice_)
     except ValueError as exc:
         console.print(f"[red]{exc}[/red]")
         raise typer.Exit(1) from None

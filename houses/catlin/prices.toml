@@ -2593,21 +2593,32 @@
 "EQ-T-ERV-HOOD-6" = { material = { low = 35, high = 95 }, labour = { low = 140, high = 320 } }  # 1 ea — the intake
 "EQ-T-ERV-HOOD-6-EXH" = { material = { low = 35, high = 95 }, labour = { low = 140, high = 320 } }  # 1 ea — the discharge, same casting, damper reversed
 "EQ-T-ESS-BATT" = { material = { low = 3000, high = 4400 }, labour = { low = 800, high = 1800 } }  # 1 ea
-# ** RE-RATED 2026-09-06, AND RAISING IT IS THE POINT, NOT A SIDE EFFECT. ** This row was
-# $300-900 material because the type was a generic 48" x 7" big-box insert. It is now a named
-# product — the Amantii BI-30-XTRASLIM (BI-X190030-1) — with a published street price of
-# $1,499-1,539, and that price is what buys the two things the design actually needs: a
-# TRIMLESS face, so the brick runs to the glass edge, and a published mantel clearance. The
-# whole hardwireable field at 26-32" wide and <= 6" deep is Amantii (plan/electrical.py has the
-# sweep), so there is no cheaper compliant unit to fall back on: the Amazon-tier 30" units have
-# no hardwire procedure and no UL 2021 "fixed and location dedicated" listing, and field-
-# converting a cord-connected appliance voids its listing.
-# Material $1,450-1,650 is the street range plus freight on a 51 lb crated glass appliance.
-# Labour $250-600 is more than the $100-300 it replaces because the install changed: this unit
-# is set into a masonry opening in W-M-FIRE-* with the mason's work already done, levelled to the
-# brick reveal, and HARDWIRED to a left-side L/N/G block that has to stay serviceable through
-# the glass opening afterwards. The circuit itself is priced in [conductors]/[conduit].
-"EQ-T-FIREPLACE-EL" = { material = { low = 1450, high = 1650 }, labour = { low = 250, high = 600 } }  # 1 ea — Amantii BI-30-XTRASLIM
+# ** RE-RATED DOWN 2026-09-20, AND THE SAVING IS A SIDE EFFECT RATHER THAN THE POINT. ** This
+# row was $1,450-1,650 material for an Amantii BI-30-XTRASLIM, and the paragraph it replaces
+# argued that the price bought the two things the design needed: a TRIMLESS face, so the brick
+# ran to the glass edge, and a published mantel clearance. That argument rested entirely on the
+# 4 1/2" recess — at that depth the appliance's own face WAS the opening's frame and the whole
+# hardwireable field at 26-32" wide and <= 6" deep was Amantii, so there was no cheaper
+# compliant unit to fall back on.
+#
+# The recess is 11 1/2" now (AO-M-FIRE-NICHE), the appliance sits BEHIND a four-sided brick
+# reveal rather than flush in it, and roughly ten brands fit. The unit is a ClassicFlame
+# 28II042FGL infrared — see plan/equipment_types.py for the sweep, the shortlist and what must
+# be confirmed in writing before anybody orders it. ** THE DEPTH WAS BOUGHT FOR
+# SUPPLIER REDUNDANCY, NOT FOR THIS ~$1,200; ** the saving is what falls out of no longer being
+# sole-sourced, and it should not be read as the reason to have done it.
+# Material $360-460 is the ~$390 street price plus freight on a crated glass appliance. It is
+# NOT the cheapest unit that fits — the Innoflame alternate is ~$286 — and the ~$100 buys the
+# two things the cheap one could not give: a better-made appliance, and a GENUINE CSA
+# certification rather than the word CSA in a listing, which is the one thing in this selection
+# that could have failed at plan review. Labour $250-600 is UNCHANGED and the reason is unchanged: the unit is set into a
+# masonry opening in W-M-FIRE-* with the mason's work already done, levelled to the brick
+# reveal, and connected in a pocket the installer has to reach into. This unit PLUGS INTO
+# ED-M-FIRE-RC and must never be hardwired — its safety story is the Safer Plug thermal-sensing
+# plug. The cavity carries a J-box as well, which is the owner's call and the thing that keeps
+# this row from being sole-sourced again. The circuit itself is
+# priced in [conductors]/[conduit].
+"EQ-T-FIREPLACE-EL" = { material = { low = 360, high = 460 }, labour = { low = 250, high = 600 } }  # 1 ea — ClassicFlame 28II042FGL infrared
 "EQ-T-GARAGE-HEATER" = { material = { low = 80, high = 250 }, labour = { low = 120, high = 300 } }  # 1 ea
 # The seven Gree rows: dealer-direct, no published component prices. Scaled off the one
 # figure that is public (Vireo+ 2-head system, $2,499+) with outdoor units carrying ~70% of
@@ -4421,9 +4432,12 @@
 # row is light by roughly $1,300-2,000 — the mobilisation, straight back. Sequence them
 # together or re-rate this row; it cannot be both.
 #
-# Material $8-16/SF is unchanged and is ordinary ASTM C216 Grade SW face brick, grey mortar,
-# ties into W-M-E1's studs, and the lintel over the firebox opening — a rowlock course or a
-# steel angle. ** IT IS NO LONGER A SMALL-QUANTITY SPECIAL ORDER. ** Until 2026-09-13 this was a
+# Material $8-16/SF is unchanged and is ordinary ASTM C216 Grade SW face brick, grey mortar
+# and ties into W-M-E1's studs. ** THE LINTEL LEFT THIS RATE ON 2026-09-20 ** — the clause
+# "and the lintel over the firebox opening — a rowlock course or a steel angle" stood here
+# while BM-M-FIRE-LINTEL billed $0, and the two together were a double-count waiting for the
+# steel to get a row. It has one now ([steel_members]), so the angle is bought there and not
+# inside this $/SF. ** IT IS NO LONGER A SMALL-QUANTITY SPECIAL ORDER. ** Until 2026-09-13 this was a
 # white face brick carrying "one pallet minimum against ~4 SF of actual need"; since the blend
 # consolidated it comes off BASEMENT_BRICK_VENEER's own order and the pallet minimum is gone.
 # The $/SF does not move, because it never priced the pallet.
@@ -4435,9 +4449,12 @@
 # the spandrel) and the opening a genuine gap between them, so the takeoff measured 4.4 SF
 # less face.
 #
-# ** 19.6 SF SINCE 2026-09-19, AND SEVEN WALLS. ** The buried stub is three 12" piers with two
-# 4" joist pockets between them, so 8" of brick width comes out of the buried course: 8 x
-# 14 3/8 = 115 in2 = 0.8 SF. Same idiom again — the pocket is the gap between two piers, not a
+# ** 18.9 SF SINCE 2026-09-20. ** The masonry opening went 20 5/8" -> 24" high when the pocket
+# behind it was deepened (plan/storeys/main.py), so the gap between the jamb piers takes another
+# 0.7 SF of face out. The head is on a course line at 48" AFF now and the deliberate cut course
+# is gone with it. ** 19.6 SF SINCE 2026-09-19, AND SEVEN WALLS. ** The buried stub is three 12"
+# piers with two 4" joist pockets between them, so 8" of brick width comes out of the buried
+# course: 8 x 14 3/8 = 115 in2 = 0.8 SF. Same idiom again — the pocket is the gap between two piers, not a
 # subtraction from one wall — and the same reason: the model could not cut a slot in a wythe,
 # and a slot nobody can see is a slot nobody grades.
 #
@@ -4453,7 +4470,7 @@
 # Three 12" piers laid to a framer's as-built joist lines, each reached from above through a
 # 13 1/2" clear bay while the deck is open, with two pockets that stay unmortared and a bond
 # break over each before the plinth goes up, is FUSSIER per SF than one 44 1/4" stub, not
-# cheaper. Re-rating this row down to match 19.6 SF would deduct twice.
+# cheaper. Re-rating this row down to match 18.9 SF would deduct twice.
 #
 # ** WHAT THIS ROW DOES NOT COVER: ** the walnut mantel and its hold-down ([placeables]
 # `FT-MANTEL-WALNUT-46` since 2026-09-06, an [allowances] lump before that); and the appliance
@@ -4464,7 +4481,7 @@
 # two cut joists run whole again), LUS 15 -> 13, HHUS410 12 -> 10, and plywood-subfloor
 # 3181.8 -> 3184.6 SF — still 100 sheets, because the three derived pier cuts take out less
 # plywood than the one 47 3/4" hole did.
-"FIREPLACE_BRICK_WYTHE" = { material = { low = 8, high = 16 }, labour = { low = 15, high = 40 }, unit = "SF" }  # fallback; 19.6 SF of face, net of the firebox opening
+"FIREPLACE_BRICK_WYTHE" = { material = { low = 8, high = 16 }, labour = { low = 15, high = 40 }, unit = "SF" }  # fallback; 18.9 SF of face, net of the firebox opening
 # ** THE PANEL MOVED white-brick -> brown-brick ON 2026-09-13 AND EVERY DOLLAR IN THIS ROW IS
 # DELIBERATELY UNCHANGED. ** One brick blend house-wide: this surround now orders the court
 # veneer's brown blend and is WASHED WHITE by the coating trade afterwards (see
@@ -4480,7 +4497,7 @@
 # so deleting the per-material row entirely would keep the dollars exactly right while nothing
 # was reported. Check that the BOM row reads `FIREPLACE_BRICK_WYTHE:brown-brick` and that
 # `FIREPLACE_BRICK_WYTHE:white-brick` appears nowhere under out/.
-"FIREPLACE_BRICK_WYTHE:brown-brick" = { material = { low = 8, high = 16 }, labour = { low = 15, high = 40 }, unit = "SF" }  # 19.6 SF, seven walls net of the 29 1/2" x 20 5/8" opening and the two 4" joist pockets
+"FIREPLACE_BRICK_WYTHE:brown-brick" = { material = { low = 8, high = 16 }, labour = { low = 15, high = 40 }, unit = "SF" }  # 18.9 SF, seven walls net of the 29 1/2" x 24" opening and the two 4" joist pockets
 # TOMBSTONE 2026-09-13: was "FIREPLACE_BRICK_WYTHE:white-brick" at these same rates. Kept
 # commented for the revert, on the `glazed-green-brick` convention — going back to a white body
 # is one `material_ref` edit on FIREPLACE_BRICK_WYTHE plus un-commenting this line.
@@ -7297,6 +7314,30 @@ solar_modules = true
 # the reason for specifying it.
 [reinforcement]
 
+# ** ROLLED STEEL MEMBERS, BY THE FOOT OF A NAMED SECTION (new 2026-09-20). ** One row and
+# one member: the fireplace lintel, which billed exactly $0 until this section existed. A
+# `Beam` reaches the estimate through its `assembly` as a `beam · <assembly>` cubic-yard row;
+# BM-M-FIRE-LINTEL has no assembly deliberately, because a $/cy rate is the wrong SHAPE for a
+# steel angle — and the consequence of "deliberately unpriced" was a silent zero rather than a
+# visible gap. `plans/TODO.md` had it right that the trap was live for every steel member in
+# the house, not just this one.
+#
+# ** THE KEY IS THE AISC SECTION, AND THAT IS THE POINT. ** An L3-1/2x3-1/2x1/4 and an
+# L3-1/2x3-1/2x3/8 have the same bounding box and are different purchases; a volume rate
+# cannot tell them apart and a section string cannot help it. `takeoff/steel.py` takes these
+# members OUT of `structural_solids`, so nothing here is billed twice.
+#
+# 3.79 LF — one L3-1/2 x 3-1/2 x 1/4 A36 angle, 45 1/2" long, hot-dip galvanised to the house
+# convention. Material $14-24/LF: mill stock runs roughly $9-16/LF for this section at small
+# quantity and HDG on a single 4-foot piece is a minimum-charge job, not a $/lb one — the top
+# of the range is the galvaniser's minimum spread over one stick. Labour $20-45/LF is the
+# mason setting and levelling it on the two jamb piers mid-course, not a steel erector's rate.
+# ** THE $8-16/SF BRICK RATE NO LONGER CLAIMS TO CONTAIN THIS. ** It said "and the lintel over
+# the firebox opening" until 2026-09-20; that clause and this row are a double-count, and the
+# clause is the half that went.
+[steel_members]
+"L3.5x3.5x0.25" = { material = { low = 14, high = 24 }, labour = { low = 20, high = 45 } }  # 3.79 LF — BM-M-FIRE-LINTEL, A36 HDG angle
+
 # --- rebar_inclusive -------------------------------------------------------------------
 #
 # Whether a $/cy rate still CONTAINS its own reinforcing steel. Absent means true, because
@@ -7374,6 +7415,7 @@ member_protection    = "material"
 wall_structure       = "installed"
 reinforcement        = "material"
 timber               = "material"
+steel_members        = "material"
 railings             = "material"
 drainage             = "material"
 construction_returns = "material"
@@ -7391,6 +7433,7 @@ duct_fittings   = "material only, and derived rather than quoted, exactly as [pi
 pipe_fittings   = "material only, and derived rather than quoted — see the table's own note. Its arrival RE-BASED [pipe_runs] drain/vent to bare pipe; restoring the old fitting adder there would double-bill every elbow in the house"
 reinforcement   = "$/lb of BAR, MATERIAL ONLY — and the labour is deliberately not here. [basis_notes] concrete is explicit that its $/cy is a sourced material price plus a RESIDUAL labour figure; subtracting a rebar placer's wage out of a residual is judgement dressed as arithmetic, where subtracting a sourced rebar material price out of a sourced material price is arithmetic. So the placing labour stays inside the [concrete] and [wall_structure] residuals, on the same doctrine [hardware] already uses — the labour to drive a screw is inside the [framing] labour rate. Lengths are CUT lengths off the laid-out bars (decision #75): placed + laps + hooks, by counted piece, so [waste] must not add laps again (cli/price_file.py refuses a reinforcement waste factor); chairs, bolsters and tie wire ride inside the $/lb rate. THIS TABLE IS DELIBERATELY EMPTY. Every row lands in the estimate's `unpriced` list, the total does not move by one cent, and the tonnage can be read against the register's ~5 tons / $10,000-18,000 BEFORE any rate is touched — the quantity ships before the dollar does. Pricing it while [rebar_inclusive] still says concrete/wall_structure contain their own rebar is a HARD ERROR in cli/price_file.py, which is what makes the standing 'cut the rates the same day' condition enforced rather than merely written down twice"
 concrete        = "$/cy PLACED. Merged everywhere until 2026-08-27, when the three largest rows (footing, slab, drain_tile's siblings aside) gained a REAL split — and the rule that produced them is the one that kept the rest merged: the MATERIAL half is an independently sourced pre-tax number (Twin Cities ready-mix $180-200/cy, wire mesh $0.20-0.50/SF, rebar) and the labour half is the residual. That is a back-out, and it is honest only in that direction. A percentage guess at the split would read exactly like a real one, which is why the smaller rows still carry none. Raised across the board 2026-08-20; slab-on-grade was ~2.5x low and drain_tile ~5x"
+steel_members   = "$/LF of a named AISC section, split material/labour. The section string is the key because an L3-1/2x3-1/2x1/4 and an L3-1/2x3-1/2x3/8 share a bounding box and are different purchases; a $/cy rate cannot tell them apart, which is why this is its own table and not a row of [concrete]. Material is small-quantity mill stock plus a galvaniser's minimum, not a $/lb commodity read"
 timber          = "$/cy, but built from $/LF and shown divided in every row's comment — the join measures volume and lumber is bought by the foot. Material and labour are split because a stick of LVL is a purchase and hanging it is a wage, unlike the merged pours in [concrete]"
 wall_structure  = "$/cy PLACED. The five largest rows are SPLIT since 2026-08-27 on the same rule as [concrete] — material sourced pre-tax (ready-mix, rebar, and for GARAGE_ICF_6 the ICF blocks at $5-7/SF of face, which is why that row is over half material where a site-formed wall is under a third), labour the residual. RETAINING_BLOCK_12 is split off a delivered block-and-geogrid price and contains no ready-mix at all. The remaining rows stay merged. Derived from $/LF-of-wall and $/SF-of-face installed prices. RETAINING_BLOCK_12 and RETAINING_BLOCK_12_WASHED (one wall split across two tags 2026-09-13 when the three perimeter legs took a mineral silicate wash on their yard face and the two balcony returns did not; identical rates, and the wash itself bills in [envelope_layers], never here), ENTRY_SCREEN_SKIRT (a 24ga steel skirt over the north entry deck framing, priced $/SF of face off the [envelope_layers] corrugated-panel-24 rate by name, so the two must be moved together by hand), BASEMENT_BRICK_VENEER and FIREPLACE_BRICK_WYTHE contain no ready-mix at all and must not be escalated with a concrete index. FIREPLACE_BRICK_WYTHE was missing from this list until 2026-09-13 even though its own row comment said \"SAME CATEGORY ERROR AS BASEMENT_BRICK_VENEER\" — a brick panel priced $/SF of face laid has no ready-mix in it either. `brown-brick` now carries a live per-material row under BOTH assembly keys (BASEMENT_BRICK_VENEER:brown-brick and FIREPLACE_BRICK_WYTHE:brown-brick) since the house went back to one brick blend, so the old \"one live per-material row\" phrasing no longer holds; the :glazed-lapis-brick and :glazed-gold-brick rows were commented out 2026-09-04 when the Ishtar scheme was retired, and :white-brick 2026-09-13, all kept there for the revert. GARAGE_BRICK_WAINSCOT and GARAGE_ICF_6_BRICKLEDGE were the garage's brick-wainscot pair and were deleted 2026-09-03 with the wainscot itself; the brick row carried the same zero-ready-mix warning, the ledged-stem row did not (it was mostly ICF wall)"
 footing_bedding = "$/cy delivered — material only. Spreading and compacting is in the excavator's number, which is not in this file. Confirmed 2026-08-20 against MnDOT 2025 average bid prices"

@@ -377,6 +377,13 @@ def _glazing(model: ResolvedModel, walls: dict[str, ResolvedWall],
     for opening in openings:
         if opening.penetration_for:
             continue  # a duct/pipe hole is not fenestration; there is no glass
+        if opening.is_blind:
+            # A BLIND recess (``RoughOpening.depth``) does not reach the outside at all —
+            # the sheathing, the foam and the cladding run past it unbroken — so it admits
+            # no gain and owes no SHGC. Reported as an UNKNOWN it read as "catlin has a
+            # window nobody has specified the glass of", which is the opposite of true: it
+            # is a firebox pocket behind a brick breast.
+            continue
         wall = walls.get(opening.host_wall)
         if wall is None:
             continue

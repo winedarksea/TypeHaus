@@ -143,7 +143,9 @@ def _banded_part_names(wall, openings=()) -> set[str]:
     or window owes one part per surviving region rather than one part. ``layer_solids`` is
     the same call the emitter makes — the point of this test is that the IFC agrees with
     the geometry, so restating the split here instead of asking for it would only pin the
-    restatement.
+    restatement. That is why ``layer_name`` is passed: a BLIND opening cuts only the layers
+    its depth reaches, and asking without the name would expect a hydrant bore to split the
+    gypsum it deliberately stops short of.
     """
     from typehaus.resolve.geometry_walls import layer_solids
     from typehaus.resolve.layer_bands import wall_body_band
@@ -161,7 +163,8 @@ def _banded_part_names(wall, openings=()) -> set[str]:
             continue
         if z1 - z0 <= 1e-9:
             continue
-        pieces = [p for p in layer_solids(wall, layer.polygon, openings, band=(z0, z1))
+        pieces = [p for p in layer_solids(wall, layer.polygon, openings, band=(z0, z1),
+                                          layer_name=layer.name)
                   if getattr(p, "ring", None) is not None and len(p.ring) >= 3]
         if len(pieces) == 1:
             names.add(f"{wall.tag}:{layer.name}")

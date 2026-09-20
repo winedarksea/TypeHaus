@@ -20,9 +20,11 @@ from typehaus.resolve.ceiling_over import (
 )
 from typehaus.resolve.framing.profiles import _RE_PANEL, cross_section
 from typehaus.resolve.geometry import length, polygon_area, sub
+from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedModel
 from typehaus.takeoff.fabrication import FABRICATED_SHAPES
 from typehaus.takeoff.sheet_rips import rip_sheet_rows, rip_stock
+from typehaus.takeoff.steel import steel_member_tags
 
 _M2_TO_FT2 = 10.7639104167
 _SHEET_AREA_FT2 = 32.0
@@ -290,8 +292,15 @@ def structural_solids_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     can be ordered in cubic yards.
     """
     Row = dict[str, object]
+    # A rolled steel member bills by the FOOT of its section out of ``[steel_members]``
+    # (``takeoff/steel.py``), so it must not also appear here as a fraction of a cubic yard:
+    # a bare "beam" row in [concrete] accepts a solid whose structure material is None, and
+    # a $/cy ready-mix rate on a steel angle is both a wrong price and a second one.
+    billed_as_steel = steel_member_tags(model)
     groups: dict[tuple[str, str], Row] = {}
     for solid in model.solids:
+        if solid.tag in billed_as_steel:
+            continue
         # A derived connector marker is a MARKER: the part it stands for is billed by
         # part number in ``takeoff/hardware.py``, off the joint, never off this box. Without
         # this skip the 500-odd markers become a phantom "connector" volume row standing
@@ -373,21 +382,27 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         section = cross_section(member.profile)
         areas[("stair wear surface", member.material, section.depth_m)] += (
             member.length_m * section.width_m)
-    openings_by_wall: dict[str, float] = defaultdict(float)
+    openings_by_wall: dict[str, list] = defaultdict(list)
     for opening in model.openings:
-        openings_by_wall[opening.host_wall] += opening.width_m * opening.height_m
+        openings_by_wall[opening.host_wall].append(opening)
 
     for wall in model.walls:
         exterior = any(layer.function == "cladding" for layer in wall.layers)
         if not exterior:
             continue
-        wall_area = length(sub(wall.axis[1], wall.axis[0])) * (
+        gross = length(sub(wall.axis[1], wall.axis[0])) * (
             ((wall.top_z0_m or wall.z1_m) + (wall.top_z1_m or wall.z1_m)) / 2 - wall.z0_m
-        ) - openings_by_wall[wall.tag]
+        )
         for layer in wall.layers:
-            if layer.function == "sheathing":
-                areas[("exterior wall", layer.material_ref, layer.thickness_m)] += max(
-                    0.0, wall_area)
+            if layer.function != "sheathing":
+                continue
+            # A BLIND recess deducts a sheet only where it reaches the sheathing: a hydrant
+            # bore from the yard does, a firebox pocket from the living room does not.
+            wall_area = gross - sum(
+                op.width_m * op.height_m for op in openings_by_wall[wall.tag]
+                if cuts_layer(wall, layer.name, op))
+            areas[("exterior wall", layer.material_ref, layer.thickness_m)] += max(
+                0.0, wall_area)
 
     for roof in model.roofs:
         assembly = model.plan.library.resolve_assembly(roof.assembly)

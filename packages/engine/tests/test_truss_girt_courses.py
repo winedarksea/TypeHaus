@@ -26,6 +26,7 @@ from typehaus.resolve.framing.furring import (
     course_phase,
 )
 from typehaus.resolve.framing.openings import framed_around
+from typehaus.resolve.framing.truss_wall import truss_layer_name
 from typehaus.resolve.framing.truss_wall import truss_girt_bands, truss_kind
 from typehaus.resolve.geometry import length, sub, unit
 
@@ -292,10 +293,14 @@ def test_no_field_course_lands_in_the_shadow_of_a_head_or_sill_course(catlin_mod
         if not elevations:
             continue
         # Cladding openings only. A bored penetration grows no head or sill course, so it
-        # casts no shadow for a field course to land in — see
-        # `resolve/framing/furring.framed_around`.
+        # casts no shadow for a field course to land in — nor does a BLIND recess, whose
+        # back stops short of this band. Both are `framed_around` asked OF THE BAND; asked
+        # with no band it answers for the wall as a whole and counts a firebox pocket's
+        # shadow, which is a shadow nothing casts. See `resolve/framing/furring`.
+        layer_name = truss_layer_name(catlin_model.plan, wall.assembly)
         for opening in (o for o in catlin_model.openings
-                        if o.host_wall == wall.tag and framed_around(o)):
+                        if o.host_wall == wall.tag
+                        and framed_around(o, wall, layer_name)):
             sill = wall.base_ref_z_m + opening.sill_m
             for name, course_z in (("sill", sill - _STOCK_FACE),
                                    ("head", sill + opening.height_m)):

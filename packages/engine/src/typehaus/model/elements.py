@@ -168,6 +168,31 @@ class RoughOpening(Element):
     #: the barrel reported the feed as "a riser in a window". A 1-tuple needs its trailing
     #: comma in the editable dialect; ``haus build --inspect`` is what says so.
     penetration_for: tuple[str, ...] = ()
+    #: How far this hole runs INTO the wall from the face it opens on (``depth_from``).
+    #: ``None`` — every opening authored before 2026-09-20 — is a THROUGH hole and behaves
+    #: exactly as it always did.
+    #:
+    #: A value makes the hole BLIND: a recess with a back. Only the layers the depth reaches
+    #: are cut, the layers outboard of it stay whole, and everything that treats a hole in an
+    #: exterior wall as a hole in the ENVELOPE stops applying — it is not fenestration
+    #: (``wwr``), it has no U-factor (``energy_load``), it has no reveal to be concentric
+    #: with (``reveal_alignment``), and it has no cladding jamb to bear on
+    #: (``truss_wall_opening_support``). The cladding and sheathing take no deduction for it.
+    #:
+    #: The worked case is a firebox pocket: 30" x 25" x 6" into ``W-M-E1``, behind a brick
+    #: breast. Authored as a through hole it would delete 4.9 SF of sheathing, foam, girt and
+    #: cladding to the east yard and bill as an east-facing window.
+    #:
+    #: What a blind hole still does is REMOVE STUDS — the framing does not care which side
+    #: the back is on — so the stud solver frames it exactly as before.
+    depth: Length | None = None
+    #: Which face ``depth`` is measured from, and therefore which side the recess OPENS on:
+    #: ``"interior"`` (the default) from the room-side finish face, ``"exterior"`` from the
+    #: outermost face. Both cases are real and neither is derivable — a firebox pocket opens
+    #: into the living room, and a wall hydrant's barrel is admitted from the yard and stops
+    #: at its seat inside the cavity without ever piercing the board. Ignored while
+    #: ``depth`` is ``None``.
+    depth_from: Literal["interior", "exterior"] = "interior"
 
 
 for _name, _obj in (

@@ -235,9 +235,27 @@ CIRCUITS = (
     # 1,500W at 120V=12.5A, continuous: 12.5x1.25=15.6A fits a 20A breaker's 16A but not
     # a 15A one's 12A — why these two are 20A where the mats are 15A.
     #
-    # Neither is GFCI: both are hard-wired equipment, and NEC 210.8(A) (garage rule
-    # (A)(2) included) protects *receptacles*, not fixed wiring. Cord-and-plug versions
-    # would need it — the reason both are modeled as Equipment on their own circuit.
+    # ** 20 A IS COMPELLED, NOT CHOSEN, AND TWO SECTIONS SAY SO. ** NEC 422.10(A) sizes the
+    # branch circuit for a continuous-duty appliance at 125% of its rating: 12.5 x 1.25 =
+    # 15.6 A, so a 15 A circuit is NON-COMPLIANT here rather than merely tight. And
+    # 210.23(B)(2) caps a fastened-in-place appliance at 50% of a shared circuit's rating —
+    # 12.5 / 20 = 62.5% — so this circuit may share with nothing, which is what "dedicated"
+    # means on the panel schedule. The half of this the file used to carry was the first
+    # sentence only.
+    #
+    # ** THE WIRE IS #12, AND IT IS SAID HERE BECAUSE THE SCHEMA CANNOT SAY IT. ** `Circuit`
+    # has no conductor field and the model's docstring declares wire routing a non-goal, so
+    # the only places a builder meets the gauge are this comment, the circuit description
+    # and tasks.toml. `prices.toml`'s `[conductors]` rate "1" already buys 12/2 NM-B for a
+    # 20 A circuit, so the bill and the note agree; nothing derives one from the other.
+    #
+    # ** NEITHER IS GFCI, AND THE CORD-AND-PLUG CLAUSE IS ONLY TRUE OF THE GARAGE. ** Both
+    # are hard-wired equipment, and NEC 210.8(A) protects *receptacles*, not fixed wiring.
+    # A cord-and-plug version in the GARAGE would need GFCI under 210.8(A)(2). A cord-and-plug
+    # version in the LIVING ROOM would not: 210.8(A) does not list living rooms, and
+    # 210.8(D)'s appliance list does not name room heaters. This file claimed the requirement
+    # for both until 2026-09-20, which mattered the moment the fireplace cavity gained a
+    # receptacle beside its J-box — that outlet is not a GFCI outlet.
     Circuit(uid="CKT034AAAA", tag="CKT-FIREPLACE", slot=35, panel_ref=_PANEL, breaker_amps=20, poles=1,
             afci=True, load_va=1500,
             # ** IT LEFT THE SE CORNER 2026-09-06. ** EQ-M-FIREPLACE is now in the brick
@@ -247,8 +265,18 @@ CIRCUITS = (
             # holds unchanged: same breaker, same slot, same pole count, same load. A 240 V
             # unit would have moved all four (and the ServicePort, and the panel balance);
             # plan/electrical.py's EQ-T-FIREPLACE-EL note says why none exists at this size.
+            # ** THE POCKET IS 11 1/2" DEEP SINCE 2026-09-20 AND CARRIES TWO OUTLETS. ** The
+            # recess behind the brick (AO-M-FIRE-NICHE, plan/storeys/main.py) was deepened to
+            # open the appliance field past the one sole-source brand, and the cavity now
+            # holds a recessed receptacle as well as the hardwire J-box — both on this one
+            # circuit, so neither the load nor the breaker moves and a future replacement of
+            # either kind lands in a box that already exists.
             description="Electric fireplace, living room east wall, in the brick "
-                        "surround between WIN-M-LIV-E1 and WIN-M-LIV-E2 (EQ-M-FIREPLACE)"),
+                        "surround between WIN-M-LIV-E1 and WIN-M-LIV-E2 (EQ-M-FIREPLACE). "
+                        "DEDICATED, #12 Cu (12/2 NM-B): NEC 422.10(A) puts the continuous "
+                        "load at 15.6 A and 210.23(B)(2) forbids sharing. Feeds BOTH the "
+                        "cavity J-box and ED-M-FIRE-RC, so a hardwire or a cord-and-plug "
+                        "appliance can be set in the pocket without a rewire"),
     Circuit(uid="CKT035AAAA", tag="CKT-GAR-HEAT", slot=37, panel_ref=_PANEL, breaker_amps=20, poles=1,
             load_va=1500,
             description="Garage infrared heater lamp, 1.5 kW (EQ-G-HEATER)"),

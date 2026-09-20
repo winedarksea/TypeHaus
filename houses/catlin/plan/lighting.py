@@ -1146,43 +1146,48 @@ MAIN_LIGHTING = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
     # ST-SG-PORCH's top-landing light (2026-09-03). R303.8 wants a luminaire at the top
-    # landing of an exterior stair, and `code.R303_8_exterior_stairway_illumination` looks
-    # for one within 4'-0" of the flight's plan outline on its `to_storey`. Nothing already
-    # authored reaches: ED-M-PORCH-FAN and ED-M-PORCH-FLOOD are both at x=18'-0", ten feet
-    # west of the flight's x 28'-6"..32'-2" and further still from its y -9'-0"..-6'-0".
+    # landing of an exterior stair. The top landing here is FS-SG-PORCH — the 171 sf porch
+    # deck the flight arrives on at 0'-0", across the 12" top of W-SG-E1 — and not a ring
+    # drawn round the treads.
     #
-    # ** IT LEFT THE HOUSE WALL ON 2026-09-04. ** It hung on W-M-S2 at (30'-0", -0'-9 3/4")
-    # while the flight ran along the house. The flight is now in the pocket's south half, so
-    # the nearest point of W-M-S2 is 5'-2" from it and the 4'-0" reach above is not a figure
-    # to argue with — R303.8 would report a stair with no light, correctly.
+    # ** IT IS BACK ON W-M-S2 (2026-09-20), AND THE CHECK WAS THE THING THAT WAS WRONG. **
+    # It hung here until 2026-09-04, moved to W-SG-E1's east face when the flight took the
+    # pocket's south half and `code.R303_8_exterior_stairway_illumination` reported the
+    # stair unlit, and has now moved back. Nothing about the building changed: the rule was
+    # grading a 4'-0" buffer of the FLIGHT OUTLINE, which is R303.7's shape (that rule
+    # lights "treads and landings" and is properly tread-centric), against R303.8, whose
+    # entire text is "an exterior stairway shall be provided with an artificial light source
+    # located at the top landing of the stairway" — no illuminance, no switching, and no
+    # distance from the treads in it. The 5'-2" from this wall to the flight was never a
+    # code number. `checks/.../illumination.py::_landing_region` now unions that ring with
+    # the resolved arrival deck, so the rule is graded against the landing R303.8 names.
+    # ED-M-PORCH-FAN and ED-M-PORCH-FLOOD already stand over that deck and already satisfy
+    # it; this fitting is the one at the head of the flight, and it is no longer load-bearing
+    # for the verdict.
     #
-    # So it moved onto **W-SG-E1's east face at the head of the flight**, which is the top
-    # landing itself rather than a wall six feet away from it. x 28'-8 1/2" puts the 5" body's
-    # BACK on that face at x 28'-6" (a device footprint is CENTRED on its position, so the
-    # position owes the face half the depth — the ED-G-EXT-LT-E convention, and NOT the 1 5/8"
-    # the two disconnects use: those are 3 1/4" cans and their offset buries this one an inch
-    # into the concrete). `rotation=deg(90)` turns the body's depth onto x so it stands off an
-    # east face, the ED-M-LIVING-KFZ1 convention.
+    # ** 25'-8", NOT THE 30'-0" IT HELD BEFORE 2026-09-04. ** The lane between D-M-BALC's
+    # RO (18'-10"..23'-10") and WIN-M-LIV-S1's (32'-8"..) STRADDLES the porch's east edge:
+    # FS-SG-PORCH stops at x=27'-6", and everything east of that on this wall is over the
+    # equipment pocket — W-SG-E1's top, SL-SG-HPPAD and EQ-M-HP2-OD. The old 30'-0" is in
+    # the lane and over the pocket, which is the one part of this elevation that wants no
+    # light on it, and it is off the landing, so R303.8 would not count the fitting either.
+    # 25'-8" is the middle of the half of the lane that is over the porch: 1'-10" clear of
+    # D-M-BALC's RO and 1'-10" clear of the deck edge, on the deck the flight arrives on.
     #
-    # y is -9'-3", three inches SOUTH of the flight rather than beside it: the body stands 5"
-    # proud of a face the treads run right up to, and at shin height in the middle of a stair
-    # that is a hazard, not a light. It sits south rather than north because the north end of
-    # this wall face is the two condenser disconnects and their NEC 110.26(A) working space
-    # (plan/electrical.py) — a luminaire projecting 5" into that space is the same objection
-    # from the other side.
+    # 6" east of ED-M-PORCH-FLOOD-SW (x=25'-2", interior face) rather than back-to-back with
+    # it: same stud bay for the feed, different bay for the box.
     #
-    # PT-SG-BF3 at the far end: the round came 5 1/4" north on 2026-09-03 and now reaches
-    # y -9'-4", one inch south of this fitting. It is not a clash from either direction.
-    # In PLAN the 12" round is tangent to this wall face at y -9'-10", not here, so the
-    # nearest concrete is 5" away; in ELEVATION the column starts at the wall top and this
-    # fitting hangs 8" below it. Both numbers move if `_y_front_pillar` moves again.
+    # y is -0'-9 3/4": W-M-S2's cladding face is at -0'-7 1/4" at this station (board-batten
+    # over 1 1/2" furring over the air barrier — read the STRUCTURE layer's polygon, not
+    # `axis ± thickness/2`), and a device footprint is CENTRED on its position, so the
+    # position owes the face half the 5" body. The same convention as ED-G-EXT-LT-E, and NOT
+    # the 1 5/8" the two condenser disconnects use: those are 3 1/4" cans.
     #
-    # ** -0'-8" IS A STEP LIGHT, AND THAT IS THE POINT. ** W-SG-E1's top is 0'-0", so this
-    # face has no 7'-0" to mount at; 8" below the top puts the fitting 2'-2" over the pad,
-    # washing the treads from beside them instead of throwing a shadow of the user down the
-    # flight. It clears the 18"-24" cold-climate snow band the stands are sized against. The
-    # fitting is unchanged and so is the circuit — this is the same wet-rated full-cutoff
-    # luminaire on the same switch leg, on a different wall.
+    # `rotation=deg(0)` throws SOUTH off a south face — the ED-M-PORCH-FLOOD convention
+    # (deg(180) is ED-G-EXT-LT-E's north face). 7'-0" is a sconce height again rather than
+    # the step-light 8" below a wall top: this face has the height the court wall did not,
+    # the fitting clears D-M-BALC's head, and it is under the 9'-2" porch ceiling with the
+    # fan (8'-6") and the flood (8'-0").
     #
     # NO `room=`, the ED-M-PORCH-FAN / ED-G-EXT-LT-E precedent — that absence is how
     # `electrical.wet_location` and `advisory.dark_sky_lighting` know a device is outside.
@@ -1197,10 +1202,10 @@ MAIN_LIGHTING = [
     # wants the exterior light switched from inside, that switch already is, and the flood
     # and the stair light are wanted on the same errand.
     ElectricalDevice(uid="QTM001GAAA", tag="ED-M-STAIR-LT", kind=DeviceKind.LIGHT,
-                     position=pt(ft(28, 8.5), ft(-9, -3)), type_ref="ED-T-LT-SCONCE-EXT",
-                     circuit="CKT-LT-MAIN", rotation=deg(90),
+                     position=pt(ft(25, 8), ft(0, -9.75)), type_ref="ED-T-LT-SCONCE-EXT",
+                     circuit="CKT-LT-MAIN", rotation=deg(0),
                      controlled_by=("ED-M-PORCH-FLOOD-SW",),
-                     mount=Mount(kind=MountKind.WALL, elevation=ft(0, -8))),
+                     mount=Mount(kind=MountKind.WALL, elevation=ft(7))),
 ]
 
 # --- Second storey --------------------------------------------------------------------

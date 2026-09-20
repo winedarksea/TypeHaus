@@ -355,8 +355,12 @@ def estimate_block_load(
     wall_by_tag = {wall.tag: wall for wall in envelope_walls}
     # An opening is discrete: it belongs wholly to the zone its own plan point stands in,
     # never split by a fraction, so a window is never counted twice across zones.
+    # ``not is_blind``: a blind recess has no area in the envelope and no U-factor to give
+    # it. Counted here it would be deducted from its wall's opaque area and billed back at
+    # ``preferences.window_u``, which is the opposite of what a pocket behind brick does —
+    # the exterior foam runs continuous past it.
     envelope_openings = [opening for opening in model.openings
-                         if opening.host_wall in wall_by_tag
+                         if opening.host_wall in wall_by_tag and not opening.is_blind
                          and _opening_in_scope(wall_by_tag[opening.host_wall], opening, scope)]
     opening_area_ft2: dict[str, float] = {wall.tag: 0.0 for wall in envelope_walls}
     for opening in envelope_openings:

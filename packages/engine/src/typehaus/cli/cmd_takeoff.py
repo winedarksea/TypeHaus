@@ -70,6 +70,7 @@ def takeoff(
                "framing_bom": framing_bom, "framing_by_size": framing_by_size,
                "fabricated_members": bom["fabricated_members"],
                "structural_solids": bom["structural_solids"],
+               "steel_members": bom["steel_members"],
                "reinforcement": bom["reinforcement"],
                "floor_heat": radiant, "sheet_goods": bom["sheet_goods"],
                "construction_returns": bom["construction_returns"],
@@ -211,6 +212,11 @@ def takeoff(
             assembly = f" · {item['assembly']}" if item["assembly"] else ""
             console.print(f"  {item['category']}{assembly}: {item['count']} × / "
                           f"{item['volume_cubic_yards']} cy")
+    if payload["steel_members"]:
+        console.print("[bold]Rolled steel members (by the foot of the section)[/bold]")
+        for item in payload["steel_members"]:
+            console.print(f"  {item['size']}: {item['count']} × / "
+                          f"{item['length_ft']} LF")
     if payload["reinforcement"]:
         console.print("[bold]Reinforcing steel (cut length = placed + laps + hooks)[/bold]")
         total_lb = 0.0

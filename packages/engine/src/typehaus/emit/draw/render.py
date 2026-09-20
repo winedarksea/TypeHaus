@@ -189,10 +189,30 @@ def _finish_psd(fig, tagger, path: Path, box, long_in: float,
         _close(fig)
 
 
+def _authored_sections(model: ResolvedModel, slice_tag: str | None) -> list:
+    """The authored SECTION slices ``--slice`` asked for; ``[]`` for the default cut.
+
+    A DETAIL is deliberately not reachable here even by name: details are their own view
+    (``--view details``), cut with a joint plan and their own paper, and routing one
+    through the section path would draw it without either.
+    """
+    if slice_tag is None:
+        return []
+    sections = [item for item in model.plan.elements_of_kind("Slice")
+                if item.kind.value == "section"]
+    if slice_tag == "all":
+        return sections
+    found = [item for item in sections if item.tag == slice_tag]
+    if not found:
+        known = ", ".join(sorted(item.tag for item in sections)) or "none authored"
+        raise ValueError(f"no authored section slice {slice_tag!r} (have: {known})")
+    return found
+
+
 def render_views(
     model: ResolvedModel, out_dir: Path, view: str = "plan", fmt: str = "png",
     underlays=(), dpi: int | None = None, paper=None, scale: str | None = None,
-    long_edge: int | None = None,
+    long_edge: int | None = None, slice_tag: str | None = None,
 ) -> list[Path]:
     """Render one view (or ``"all"``) for every storey; returns the written snapshot paths.
 
@@ -208,6 +228,12 @@ def render_views(
     only honour one. Given neither, the longest edge is ``DEFAULT_LONG_EDGE``: sizing by dpi
     alone leaves the pixel count to whatever the drawing's fitted inch size happened to be.
     ``paper`` and ``scale`` put the drawing on a real sheet (→ module docstring).
+
+    ``slice_tag`` names a house-authored SECTION ``Slice`` to cut instead of the derived
+    house-centre one. Without it ``--view section`` could only ever draw the centre cut, so
+    a house that authored a section — catlin's fireplace breast — could reach it through
+    ``haus print`` and not through the look-at-it loop, which is the loop it was authored
+    for. ``"all"`` draws every authored section.
     """
     if fmt not in FORMATS:
         raise ValueError(f"unknown format {fmt!r} ({'|'.join(FORMATS)})")
@@ -220,7 +246,7 @@ def render_views(
     if view == "all":
         return [path for one in VIEWS
                 for path in render_views(model, out_dir, one, fmt, underlays, call_dpi,
-                                         paper, scale, long_edge)]
+                                         paper, scale, long_edge, slice_tag)]
     written: list[Path] = []
     levels = [(primary.tag, {s.tag for s in here}) for primary, here in model.plan.levels()]
     # A composed sheet gets its paper in the filename, exactly as ``haus print`` does. The
@@ -252,12 +278,20 @@ def render_views(
             _SheetId("SITE", "Site plan", "site · C-101", north_arrow=True),
             dpi=page_dpi, paper=paper, scale=scale, long_edge=long_edge))
     elif view == "section":
-        from typehaus.emit.draw.section import build_center_section
+        from typehaus.emit.draw.section import build_annotated_section, build_center_section
 
-        written.append(_write_view(
-            model, build_center_section(model), out_dir / f"section_house{sfx}.{fmt}",
-            _SheetId("SECT", "Building section", "section · house center"),
-            dpi=page_dpi, paper=paper, scale=scale, long_edge=long_edge))
+        for cut in _authored_sections(model, slice_tag):
+            slug = cut.tag.replace("/", "_")
+            written.append(_write_view(
+                model, build_annotated_section(model, cut),
+                out_dir / f"section_{slug}{sfx}.{fmt}",
+                _SheetId("SECT", cut.title or cut.tag, f"section · {cut.tag}"),
+                dpi=page_dpi, paper=paper, scale=scale, long_edge=long_edge))
+        if slice_tag is None:
+            written.append(_write_view(
+                model, build_center_section(model), out_dir / f"section_house{sfx}.{fmt}",
+                _SheetId("SECT", "Building section", "section · house center"),
+                dpi=page_dpi, paper=paper, scale=scale, long_edge=long_edge))
     elif view == "elevation":
         from typehaus.emit.draw.elevation import build_elevation
 

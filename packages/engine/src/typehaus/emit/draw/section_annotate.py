@@ -108,14 +108,21 @@ _ROOM_LABEL_RISE_IN = 24.0
 _ENVELOPE_FAMILIES = ("roof", "wall", "foundation")
 
 
-def annotate_building_section(scene: Scene, model: ResolvedModel,
-                              plane: CutPlane) -> Scene:
+def annotate_building_section(scene: Scene, model: ResolvedModel, plane: CutPlane,
+                              crop: tuple[tuple[float, float],
+                                          tuple[float, float]] | None = None) -> Scene:
     """Return ``scene`` with the sheet annotation added — datums, grade, room names.
 
     Takes a built :class:`Scene` rather than the builder because the annotation has to be
     placed against the *finished* cut: the datum column stands off the drawing's right
     edge and the ground line spans its width, and neither is known until every wall,
     footing and rafter has been cut.
+
+    ``crop`` is the authored slice's own window, METRES in the cut's own (u, z), or ``None``
+    for an uncropped cut. Everything else here is already bounded by the drawn geometry,
+    which a cropped cut has already clipped; the room names are the exception — they walk
+    the model, so on catlin's fireplace cut they lettered eight rooms across forty feet of
+    empty sheet. Nothing is clipped by it that the cut itself would have drawn.
     """
     bounds = _geometry_bounds(scene)
     if bounds is None:
@@ -127,7 +134,7 @@ def annotate_building_section(scene: Scene, model: ResolvedModel,
     # The ground line is part of the *drawing*; the datum column starts clear of it, not of
     # the building. Without this the column stood in the middle of the hatched earth.
     _emit_level_column(b, model, max(bounds[2], ground_u1))
-    _emit_room_names(b, model, plane)
+    _emit_room_names(b, model, plane, crop)
     # The callout column keeps to the building's own edge — the ground line runs on past it
     # — but the "GRADE" caption sits in that band, so it is an obstacle to dodge, not a
     # thing to clear by moving the whole column a foot further out.
@@ -332,7 +339,9 @@ def _emit_level_column(b: SceneBuilder, model: ResolvedModel, edge_u: float) -> 
     emit_level_dimensions(b, levels, dim_u)
 
 
-def _emit_room_names(b: SceneBuilder, model: ResolvedModel, plane: CutPlane) -> None:
+def _emit_room_names(b: SceneBuilder, model: ResolvedModel, plane: CutPlane,
+                     crop: tuple[tuple[float, float], tuple[float, float]] | None = None,
+                     ) -> None:
     """Name each volume the cut actually passes through, inside that volume.
 
     "Actually" is the load-bearing word and it is decided geometrically, not by storey or
@@ -361,6 +370,11 @@ def _emit_room_names(b: SceneBuilder, model: ResolvedModel, plane: CutPlane) -> 
         # measured from the same plane.
         z_in = room_finished_floor_elevation(model, room) / M_PER_IN + _ROOM_LABEL_RISE_IN
         centre_u = (u0 + u1) / 2.0 / M_PER_IN
+        if crop is not None:
+            (cu0, cz0), (cu1, cz1) = crop
+            if not (cu0 / M_PER_IN <= centre_u <= cu1 / M_PER_IN
+                    and cz0 / M_PER_IN <= z_in <= cz1 / M_PER_IN):
+                continue
         b.add(Text(anchor=(centre_u, z_in), content=name,
                    height=ANNO_IN, height_pt=ANNO_PT, layer="A-AREA-IDEN",
                    align="center"))

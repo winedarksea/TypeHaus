@@ -138,8 +138,32 @@ def _edge_extent(edges, wall: ResolvedWall) -> tuple[float, float]:
     return (start, end) if end > start else (0.0, axis_length or 1.0)
 
 
+def cuts_layer(wall: ResolvedWall, layer_name: str | None, opening) -> bool:
+    """Whether ``opening`` cuts the named layer of ``wall``.
+
+    Every through opening cuts every layer, which is what an opening meant until blind ones
+    existed. A BLIND one (``RoughOpening.depth``) is a recess with a back: it cuts only the
+    layers its depth reaches, measured inward from the room-side finish face, and the layers
+    outboard of it stay whole — they ARE the back of the recess.
+
+    Which face the depth is measured from — and so which end of the stack stays whole — is
+    the opening's own ``depth_from``: a firebox pocket opens into the room and leaves the
+    sheathing and the cladding; a wall hydrant's bore opens on the yard and leaves the board.
+
+    ``layer_name`` is ``None`` where a caller has no layer to ask about (a whole-wall
+    reading), and then a blind opening counts as cutting: it really is a hole in the wall,
+    just not all the way through.
+    """
+    depth = getattr(opening, "depth_m", None)
+    if depth is None or layer_name is None:
+        return True
+    face = getattr(opening, "depth_from", "interior")
+    return wall.layer_depth_m(layer_name, face) < depth - 1e-6
+
+
 def layer_solids(wall: ResolvedWall, polygon, openings,
-                 band: tuple[float, float] | None = None) -> tuple[GSolid, ...]:
+                 band: tuple[float, float] | None = None,
+                 layer_name: str | None = None) -> tuple[GSolid, ...]:
     """Every solid one depth-bearing layer of ``wall`` contributes.
 
     ``band`` is the layer's own absolute (z0, z1) when its assembly gives it one
@@ -151,6 +175,10 @@ def layer_solids(wall: ResolvedWall, polygon, openings,
 
     A raked top still wins over the band's top: the band says how far up the layer *wants*
     to run, and a gable rake is where the wall itself stops.
+
+    ``layer_name`` identifies the layer so a BLIND opening can be cut out of the layers its
+    depth reaches and no others (:func:`cuts_layer`). Omitting it keeps every opening
+    cutting every layer, which is the through-hole behaviour and the only one there was.
     """
     top_at = (lambda x, y: wall_top_at(wall, x, y)) if is_raked(wall) else None
     z0, z1 = band if band is not None else (wall.z0_m, wall.z1_m)
@@ -162,7 +190,8 @@ def layer_solids(wall: ResolvedWall, polygon, openings,
         # end of a gable wall, under a band that starts partway up — from inverting the
         # prism instead of producing nothing.
         top_at = lambda x, y, _rake=top_at, _floor=z0: max(min(_rake(x, y), z1), _floor)  # noqa: E731
-    ops = sorted(openings, key=lambda o: o.center_along_m)
+    ops = sorted((op for op in openings if cuts_layer(wall, layer_name, op)),
+                 key=lambda o: o.center_along_m)
     if not ops:
         return (_prism(polygon, z0, z1, top_at),)
 

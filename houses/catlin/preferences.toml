@@ -586,4 +586,21 @@ suppress = [
   # INT_2X6_STAGGERED_PLUMBING and NONBEARING: one extra cut stud, not a header redesign.
   # Same shape of trade, and the same reasoning, as D-M-BATH2 above.
   "structural.door_framing_module:D-M-BATH1",
+
+  # AO-M-FIRE-NICHE is the firebox pocket in W-M-E1, and its station is not its own to
+  # choose: it is centred on y=8'-8" because the W-M-FIRE-* breast in front of it is, and
+  # that centre is a BAY centre on this facade's 16" grid — which is the whole reason the
+  # brick pier could be struck there without moving WIN-M-LIV-E1/E2. A 30" opening on a bay
+  # centre takes the studs at 96" and 112" and there is no width that takes only one: any
+  # opening wider than one 14 1/2" bay reaches both. The check's own fix — move the centre
+  # 8" onto the stud line — moves the FIREPLACE, and with it two windows, the mantel and
+  # the panel's whole composition.
+  #
+  # ** WHAT THE SECOND STUD ACTUALLY COSTS IS NOTHING A HEADER CANNOT DO. ** The kings
+  # survive at 80" and 128", so the pack spans 30" of RO plus two jacks inside 46 1/2" of
+  # clear framing — this is the ordinary bearing pattern with one more cripple bay, not the
+  # 27" bearing CAP being broken (that cap is arithmetic about staying inside one 32"
+  # module, and this opening deliberately does not). W-M-E1 is the east bearing line, so the
+  # header is a real header and is framed as one.
+  "structural.door_framing_module:AO-M-FIRE-NICHE",
 ]

@@ -385,61 +385,108 @@ EQUIPMENT_TYPES = (
     # `supplemental_heat` so it never opens its own HVAC zone — counts toward RM-M-LIVING's
     # zone (takeoff/hvac.py supplemental_heat_by_room).
     #
-    # ** A REAL PRODUCT SINCE 2026-09-06: the Amantii BI-30-XTRASLIM (BI-X190030-1). ** It was
-    # a generic 48" x 7" big-box cabinet; it is now the ~30" unit the owner asked for, and the
-    # footprint authored here is the ROUGH OPENING (29" x 4 1/2" x 20 3/8" high), because the
-    # rough opening is the hole cut in the W-M-FIRE-* brick and is therefore the thing that can
-    # interfere with something. The body is 29 1/8 x 19 7/8 x 4" and the face only 3/8" wider
-    # than the body.
+    # ** THE UNIT IS AN INNOFLAME 28" SINCE 2026-09-20, AND THE POCKET IS WHY. ** It was the
+    # Amantii BI-30-XTRASLIM (BI-X190030-1) from 2026-09-06, chosen under a paragraph that
+    # began: "EVERY UNIT ON THE MARKET THAT IS 26-32" WIDE AND <= 6" DEEP AND HARDWIREABLE IS
+    # AN AMANTII." That sweep was correct and it is RETIRED, because its premise was the 4 1/2"
+    # recess and the recess is 11 1/2" now (AO-M-FIRE-NICHE, plan/storeys/main.py). ** DEPTH
+    # WAS THE SOLE-SOURCE CONSTRAINT — nothing else. ** Depth is what buys brands: 6" -> 8"
+    # adds one, 8" -> 10" adds four brands and twelve units, 10" -> 11 1/2" adds one more,
+    # while brand coverage is FLAT from 29 1/2" to 36" of width. Which is why the panel did not
+    # get wider and the hole behind it got deeper: roughly ten brands accept the pocket now
+    # against two before it — Napoleon (NEFB26H/30H, UL 2021, hardwire kit in the box), Modern
+    # Flames (RS-2621/3021), ClassicFlame (23II/26II/28II), Dimplex (DFI2310), Real Flame
+    # (4199), PuraFlame (Western 23/26), SimpliFire (SF-INS25), Innoflame 28", the Clihome-OEM
+    # 28", and the incumbent Amantii.
     #
-    # ** EVERY UNIT ON THE MARKET THAT IS 26-32" WIDE AND <= 6" DEEP AND HARDWIREABLE IS AN
-    # AMANTII. ** That is the whole population, not a preference. Swept and ruled out: all
-    # Modern Flames (nearest shallow unit 44"), Dimplex (the Multi-Fire SL Slim 36" is the
-    # closest miss; the 30" Ignite Aspire is 18" DEEP), SimpliFire, Napoleon (Cineview 30 is
-    # 7 3/4"), Flamerite, the 230 V British makers, and the Amazon-tier 30" units — which have
-    # no hardwire procedure and no UL 2021 "fixed and location dedicated" listing.
-    # ** FIELD-CONVERTING A CORD-CONNECTED APPLIANCE VOIDS ITS LISTING **, so that tier is out
-    # on principle and not on price. Touchstone's Sideline 28 (80028, ~$359) is disqualified in
-    # writing: manual rev 251114 p.17 says "the 80028 Sideline 28\" Electric Fireplace cannot be
-    # hardwired"; the p.12 "Plug-in or Hardwire" drawing is boilerplate shared across models and
-    # the model-named sentence governs.
+    # ** WHAT IS STILL EXCLUDED, DELIBERATELY. ** Amantii TRD, Dimplex Revillusion and
+    # MagikFlame all want 12-12 1/8" and the building cannot offer it (going deeper means
+    # moving the panel west off W-B-E1's pour). SimpliFire INS30/35 and the 33"/36" tier want
+    # 30-35" of width, which costs the 8" whole-brick piers.
     #
-    # ** WHY THIS ONE AND NOT THE TRD-30-XTRASLIM. ** It is TRIMLESS, so the brick runs to the
-    # glass edge — the entire point of a masonry surround — and it is the only unit in the
-    # field with a published mantel rule. The TRD has 57% more glass but lands a 31 1/4" steel
-    # flange on the brick face and demands a 10" floor clearance plus a PERMANENT AIR-INTAKE
-    # SLOT CUT INTO THE MASONRY.
+    # ** THE 1/8" AT THE BACK IS REAL. ** 11 1/2" is measured to the FINISHED back face. If the
+    # chosen unit's manual requires a non-combustible back liner, 1/2" of cement board takes
+    # the pocket to 11" and loses SimpliFire INS25 and nothing else. Frame to the sheathing and
+    # line only if a manual demands it.
     #
-    # ** 240 V WAS CONSIDERED AND BUYS NOTHING. ** No 26-32" unit at <= 6" depth exists in
-    # 208/240 V at all: the 30"-class 240 V units are 11 5/8"-18" deep and the shallow 240 V
-    # units start at 42". And 240 V is WATTAGE ONLY — Dimplex's XLF50 is the same SKU at
-    # 1500 W/5118 Btu (120 V) and 2500 W/8530 Btu (240 V), SimpliFire ships one firebox with an
+    # ** WHY THE ClassicFlame AND NOT THE CHEAP OEM ONE (owner, 2026-09-20). ** The first
+    # pass through this field landed on an Innoflame 28" on one argument — it is the only unit
+    # in the class with a manual-grade hardwire procedure. The owner looked at it and it is an
+    # ugly appliance: a bare log tray behind flat glass, which is what ~$286 buys from a
+    # contract factory. ** THE HARDWIRE ARGUMENT DIED THE MOMENT THE CAVITY GAINED A
+    # RECEPTACLE, ** which is the whole reason ED-M-FIRE-RC is in there: with both connections
+    # present, "can it be hardwired" stops being a selection criterion and looks become one.
+    #
+    # The ClassicFlame 28II042FGL is the better-made unit in this field and it is the one with
+    # a GENUINE CSA CERTIFICATION rather than the word "CSA" in a listing — which also closes
+    # the single biggest plan-review risk in the whole change. It is infrared quartz, its
+    # flame effect and ember bed are Twin-Star's own rather than a generic OEM tray, and it is
+    # ~$390 against ~$286. ** IT IS CORD-ONLY AND MUST STAY CORD-ONLY: ** its safety story IS
+    # the Safer Plug thermal-sensing plug, so converting it to a hardwire connection removes
+    # the listed device that makes it safe. It plugs into ED-M-FIRE-RC and is never touched.
+    # The Innoflame is kept here as the named alternate — it is the route back if a hardwire
+    # connection is ever required — on the same convention as every other retained revert in
+    # this house.
+    #
+    # ** WHY INFRARED, AND WHAT IT IS AND IS NOT WORTH. ** The owner wants radiant warmth; the
+    # Amantii is fan-forced (its manual names a "MOTOR HEATER 19W" and warns against covering
+    # the FAN OUTLET, and the words "infrared" and "quartz" appear nowhere in it). A quartz
+    # tube is 60-75% radiant against 40-60% for a sheathed element, so the difference is real —
+    # but it is smaller than the marketing, and the premise is stated once here and then
+    # dropped: BOTH kinds are capped at 1,500 W / ~5,118 Btu/h, every "infrared" unit in this
+    # class still has a blower, and ordinary glass is opaque above ~3 um so the radiant
+    # fraction leaves through a louver BELOW the glass at shin height. ** The deeper pocket is
+    # worth building on supplier redundancy alone; infrared is a bonus it happens to unlock. **
+    #
+    # ** BOTH A RECEPTACLE AND A J-BOX ARE IN THE CAVITY (owner's call), ** on the one
+    # dedicated 20 A circuit — ED-M-FIRE-RC beside the hardwire box, so hardwire and
+    # cord-and-plug units are both live options for the life of the house and the
+    # hardwire-versus-infrared tension goes away entirely. ** FIELD-CONVERTING A CORD-CONNECTED
+    # APPLIANCE STILL VOIDS ITS LISTING ** — that rule has not changed, the house just stopped
+    # depending on it. The unit chosen IS the worked case: the ClassicFlame's safety story is
+    # its Safer Plug thermal-sensing plug, so it uses the receptacle and is never converted.
+    #
+    # ** TWO NAMED CANDIDATES DID NOT SURVIVE THE READ. ** MagikFlame HoloFlame 28" is
+    # fan-forced by its own spec table, 12" deep and $3,995, and its install guide transposes
+    # width and height against its own body dimensions. "Dimakai" has no 30" in-wall unit at
+    # all — it is one of ~14 rebadges (Latitude Run, Wade Logan, LUXEYARD, Boyel Living,
+    # EdenDirect, Flynama, Mondawe, ToolCat, Tatayosi, LOVMOR...) of ONE Clihome-OEM firebox,
+    # so that tier is one supplier wearing many names, not a second source.
+    #
+    # ** THREE NUMBERS TO GET IN WRITING BEFORE ORDERING, AND THE FIRST IS THE ONE THAT COULD
+    # FAIL AT PLAN REVIEW: ** (1) the listing standard AND ITS FILE NUMBER — UL 2021 "fixed and
+    # location-dedicated" versus UL 1278 "movable" materially changes what an inspector will
+    # accept, and Innoflame and the Clihome OEM both say "CSA"/"CSA-UL certified" with no file
+    # number, which is copy rather than a listing until someone produces the number. (2)
+    # Clearance to combustibles on all six faces. (3) The cutout-versus-body asymmetry:
+    # Innoflame publishes a 27 1/2" cutout that is 2" NARROWER than its own 29 1/2" body, which
+    # cannot both be true of one installation and decides whether the pocket frames to 27 1/2"
+    # or to 30".
+    #
+    # ** THE MASONRY APERTURE NO LONGER HAS TO MATCH THE APPLIANCE FACE, AND THAT IS WHAT THE
+    # CUT COURSE BOUGHT. ** The old head at 44 5/8" AFF was a deliberate cut course sized to a
+    # TRIMLESS unit set FLUSH in a 4 1/2" recess: at that depth the brick opening WAS the
+    # appliance's frame, so ~1" of daylight over it had nothing to hide behind. In an 11 1/2"
+    # pocket the unit is set BACK behind the aperture, and every candidate here is ~23 1/8"-
+    # 23 3/8" tall against the 24" opening, so the difference reads as a shadow inside a
+    # four-sided brick reveal rather than as a gap over a flange. That is the trade the
+    # coursing was bought with, and it is a real one: an aperture that reveals is more
+    # forgiving than an aperture that frames.
+    #
+    # ** 240 V WAS CONSIDERED AND BUYS NOTHING ** (kept from the Amantii read, and it survives
+    # the wider field): 240 V is WATTAGE ONLY. Dimplex's XLF50 is the same SKU at 1500 W /
+    # 5,118 Btu (120 V) and 2500 W / 8,530 Btu (240 V), SimpliFire ships one firebox with an
     # internal voltage selector, and Modern Flames' USA and 230 V manuals list identical
     # `LED 12V` and `12 VDC stepper motor` rows. The extra ~1,000-1,300 W would be resistance
     # heat at roughly 3x the heat pump's cost per Btu in a room the heat pump already serves.
-    # Staying at 120 V also leaves the ServicePort POWER_120, CKT-FIREPLACE at poles=1 and
+    # Staying at 120 V leaves the ServicePort POWER_120, CKT-FIREPLACE at poles=1 and
     # plan/circuits.py's whole 1,500 W / 12.5 A / 20 A justification untouched.
     #
-    # ** NO ClearanceZone, AND THAT IS EARNED, NOT SKIPPED. ** A ClearanceZone is a PLAN
-    # rectangle. Every clearance this unit publishes is VERTICAL — "mantel 4 inches from the
-    # trim", combustible facing allowed, no floor clearance and no air slot — so any plan zone
-    # authored here would be inventing a requirement the manufacturer does not state. The
-    # mantel clearance is held instead by the elevation: SB-M-FIRE-MANTEL's underside at 64"
-    # against the opening top at 44 3/8" is 19 5/8", about 5x the published 4". (It was
-    # 11 5/8" and about 3x until 2026-09-11, when the owner reversed the sill back to 24" AFF
-    # — see EQ-M-FIREPLACE below. The margin grew; nothing about this paragraph turns on it.)
-    #
-    # ** FOUR THINGS TO CONFIRM IN WRITING FROM AMANTII BEFORE FRAMING: ** (1) the mantel
-    # PROJECTION the 4" is quoted at — unpublished industry-wide; ask specifically whether 4"
-    # holds for a solid walnut shelf projecting 7-8". (2) Bottom, side and back combustible
-    # clearances, which the manual simply omits. (3) That the left-side L/N/G junction block
-    # stays serviceable through the glass opening once the unit is bricked in. (4) ** That the
-    # unit ships with the 2022 CSA manual revision ** — the older manual under the same model
-    # number says 1465 W / 5000 Btu and has NO mantel and NO hardwire section at all, i.e. an
-    # inspector would find no permission to hardwire it. Note the Panorama warranty excludes
-    # tray, front and back glass; and beware HVACDirect, which labels the APPLIANCE dimensions
-    # "Framing Dimensions" (framing to those is too small) and sells a "BI-30-XTRASLIM-LUMINA"
-    # at 110 lb that Amantii does not list — the manual weight is 50.7 lb.
+    # ** NO ClearanceZone, AND THAT IS STILL EARNED, NOT SKIPPED. ** A ClearanceZone is a PLAN
+    # rectangle, and the clearances in this class are VERTICAL. The mantel clearance is held by
+    # the elevation instead: SB-M-FIRE-MANTEL's underside at 64" against the opening top at
+    # 48" is 16", about 4x the 4" the class publishes. (It was 19 5/8" against a 44 3/8"
+    # opening top until the head rose on 2026-09-20; the margin shrank and still clears wide.)
     #
     # ** ON LOOKS, HONESTLY: no reliable evidence distinguishes any of these at 9-10 ft. **
     # Every "most realistic flame" page in this category is a retailer or an affiliate and none
@@ -449,15 +496,15 @@ EQUIPMENT_TYPES = (
     # not by model choice. (The one glossy-LCD shallow unit with a verified owner glare
     # complaint, Modern Flames' HelioVision, starts at 52" and never reaches this decision.)
     EquipmentType(tag="EQ-T-FIREPLACE-EL",
-                  name="Amantii BI-30-XTRASLIM electric fireplace, 1.5 kW built-in",
-                  footprint=(inch(29), inch(4.5)), height=inch(20.375),
+                  name="ClassicFlame 28II042FGL infrared electric fireplace, 1.5 kW built-in",
+                  footprint=(inch(29.25), inch(9.75)), height=inch(23.25),
                   # Resistance heat, so a SCALAR and not a table: an element's output is
                   # flat with outdoor temperature, and no lockout is wired on this circuit
                   # (it is a fireplace somebody switches on), so its at-design contribution
                   # is its nameplate. 1,500 W x 3.412.
                   resistance_heating_btuh=5118,
                   supplemental_heat=True,
-                  source="Amantii BI-30-XTRASLIM (BI-X190030-1), Panorama built-in series, from the 2022 CSA-revision installation manual: rough opening 29 x 20 3/8 x 4 1/2 in, appliance 29 1/8 x 19 7/8 x 4 in, trimless face 3/8 in wider than the body, viewing glass 25 1/4 x 11 7/8 in (300 sq in), 50.7 lb. Electrical 120 V, 1500 W, 5118 Btu/h, 12.5 A, dedicated 15 A circuit preferred (this house gives it a 20 A — see plan/circuits.py); HARDWIREABLE via an L/N/G block on the left side. Clearances: mantel 4 in from the trim, combustible facing allowed, no floor clearance and no air-intake slot. $1,499-1,539. Chosen because it is the only trimless unit in the 26-32 in x <= 6 in deep hardwireable field, which is entirely Amantii; the alternative TRD-30-XTRASLIM lands a 31 1/4 in steel flange on the brick and wants a permanent air slot cut into it. Replaced a generic 48 x 7 in 1.5 kW big-box insert on 2026-09-06",
+                  source="ClassicFlame 28II042FGL 28 in infrared-quartz built-in electric fireplace (Twin-Star International), basis of design 2026-09-20: body 29.1 x 23.1 x 9.5 in (W x H x D), 120 V / 1500 W / 12.5 A, infrared quartz element, ~$390. footprint/height authored here are the ROUGH OPENING (29 1/4 x 23 1/4 x 9 3/4 in) per this file's convention — the hole in the framing is the thing that can interfere with something — struck at the published body plus a nominal tolerance; ** CONFIRM THE PUBLISHED CUTOUT AGAINST THE DELIVERED UNIT BEFORE THE MASON LAYS THE JAMB PIERS. ** Chosen over the Innoflame on LOOKS and on PROVENANCE, in that order: it is the better-made appliance (Twin-Star's own flame effect and ember bed, not a contract-factory log tray) and it carries a GENUINE CSA certification rather than the word CSA in a listing, which is the one thing in this selection that could have failed at plan review. ** CORD-ONLY, AND DELIBERATELY SO: ** its safety story is the Safer Plug thermal-sensing plug, so it plugs into ED-M-FIRE-RC and must NEVER be hardwired — converting it removes the listed device. That is affordable only because the cavity carries both a receptacle and a J-box (owner, 2026-09-20). Named alternate, and the route back if a hardwire connection is ever required: Innoflame 28 in (Dongguan Cambridge Electrical Mfg.), 29 1/2 x 23 3/8 x 8 3/16 in, ~$286, THE ONLY unit in this field with a manual-grade hardwire procedure (an L/N/earth junction block citing ANSI/NFPA 70) — but its listing says \"CSA\" with no file number, and it publishes a cutout 2 in NARROWER than its own body, which cannot both be true. Others that fit the same 29 1/2 x 24 x 11 1/2 in pocket: Napoleon NEFB26H/30H (UL 2021, hardwire kit in the box), Modern Flames RS-2621/3021, Dimplex DFI2310, Real Flame 4199, PuraFlame Western 23/26, SimpliFire SF-INS25 (lost if a 1/2 in back liner is required), and the Amantii BI-30-XTRASLIM it replaced. NOT a second supplier: the Clihome/Latitude Run/Dimakai 28 in tier is ~14 rebadges of one OEM firebox. Replaced the Amantii BI-30-XTRASLIM (fan-forced, sole-source at the old 4 1/2 in recess) on 2026-09-20; replaced a generic 48 x 7 in 1.5 kW big-box insert on 2026-09-06",
                   ports=(ServicePort(tag="power", service=Service.POWER_120,
                                      position=(ft(0), ft(0), ft(0))),)),
     # System 1's electric heat kit (retyped from EQ-T-DUCT-HEATER-2KW, and it is a different

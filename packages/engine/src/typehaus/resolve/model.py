@@ -306,6 +306,52 @@ class ResolvedWall:
             out.append(layer)
         return tuple(out)
 
+    def layer_depth_m(self, name: str, face: str = "interior") -> float:
+        """How far one layer's NEAR face stands in from ``face``.
+
+        ``"interior"`` measures from the room-side finish face and ``"exterior"`` from the
+        outermost one; in both readings the answer is the wall a recess opening on that face
+        has to get through before it reaches this layer, which is what
+        :func:`~typehaus.resolve.geometry_walls.cuts_layer` compares a blind depth against.
+        """
+        if face == "exterior":
+            total = sum(layer.thickness_m for layer in self.depth_layers())
+            inner = self.layer_inner_depth_m(name)
+            named = next((layer for layer in self.layers if layer.name == name), None)
+            thickness = 0.0 if named is None or named.is_cavity else named.thickness_m
+            return max(0.0, total - inner - thickness)
+        return self.layer_inner_depth_m(name)
+
+    def layer_inner_depth_m(self, name: str) -> float:
+        """How far one layer's INNER face stands in from the room-side finish face.
+
+        The depth a blind :class:`ResolvedOpening` is measured against, in the same frame:
+        ``depth_layers()`` runs interior→exterior, so the running sum before a layer is the
+        wall it has in front of it. A name that is not a depth-bearing layer's — the second
+        region of a ``Layer.slot``, which shares the first's slice — answers with the slot's
+        own depth rather than the whole wall.
+        """
+        slots = {layer.slot: layer.name for layer in self.depth_layers()
+                 if layer.slot is not None}
+        for layer in self.layers:
+            if layer.name != name:
+                continue
+            # A cavity occupies no depth of its own — it is insulation in its host's bays —
+            # so it stands exactly where its host does. Asking for it by name otherwise
+            # falls through to "the whole wall", which would leave the batt drawn across a
+            # blind recess that has taken its studs out.
+            if layer.is_cavity and layer.cavity_host:
+                name = layer.cavity_host
+            elif layer.slot is not None:
+                name = slots.get(layer.slot, name)
+            break
+        depth = 0.0
+        for layer in self.depth_layers():
+            if layer.name == name:
+                return depth
+            depth += layer.thickness_m
+        return depth
+
     def body_layers(self) -> tuple[ResolvedLayer, ...]:
         """Every layer with a solid of its own, interior→exterior.
 
@@ -355,6 +401,18 @@ class ResolvedOpening:
     # measures what a person walks through must not.
     pocket_run_m: float = 0.0
     pocket_sign: int = 0
+    # ``RoughOpening.depth``: how far a BLIND hole runs in from the room-side finish face.
+    # ``None`` is a through hole, which is every door, every window and every rough opening
+    # authored before blind ones existed.
+    depth_m: float | None = None
+    # ``RoughOpening.depth_from``: which face ``depth_m`` is measured from, and so which
+    # side the recess opens on. Meaningless while ``depth_m`` is ``None``.
+    depth_from: str = "interior"
+
+    @property
+    def is_blind(self) -> bool:
+        """A recess with a back, rather than a hole through the wall."""
+        return self.depth_m is not None
 
 
 @dataclass(frozen=True)

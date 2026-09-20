@@ -49,5 +49,6 @@ def _add_wall_body(mb: _MeshBuilder, wall: ResolvedWall, lod: str, openings=(),
             continue
         color = _layer_color(layer, authored)
         band = layer.band(wall) if layer.is_banded else None
-        for solid in layer_solids(wall, layer.polygon, openings, band=band):
+        for solid in layer_solids(wall, layer.polygon, openings, band=band,
+                                  layer_name=layer.name):
             _add_solid(mb, solid, color)

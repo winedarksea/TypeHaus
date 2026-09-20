@@ -802,29 +802,48 @@ HYDRANT_BRANCH_SECOND = [
 # copper came through the gypsum rather than the hole. The sills carry the build-up now:
 # 2'-0" here and 1'-11.579" on the balcony, each = build-up + 24" - 1 1/4".
 #
-# ** THESE CUT THE FULL WALL, INTERIOR FINISH INCLUDED, AND THAT IS ONE INCH TOO FAR. ** A
-# `RoughOpening` is a hole through the whole assembly -- it has no depth field -- so each of
-# these takes 2 1/2" out of the gypsum and its paint as well. A wall hydrant is operated from
-# OUTSIDE: the barrel stops at its seat inside the cavity (PA-*-HYD-SEAT) and nothing pierces
-# the room side. The over-cut is 6.25 sq in of board per hydrant, it is deliberate rather
-# than missed, and closing it means giving RoughOpening a depth, which is a schema change
-# earning 12.5 sq in across the house. The ERV's two sleeves are not affected: a duct really
-# does go all the way through.
+# ** BOTH ARE BLIND FROM THE YARD, AND THAT CLOSED A DELIBERATE OVER-CUT (2026-09-20). **
+# A `RoughOpening` was a hole through the whole assembly -- it had no depth field -- so each
+# of these took 2 1/2" out of the gypsum and its paint as well. A wall hydrant is operated
+# from OUTSIDE: the barrel stops at its seat inside the cavity (PA-*-HYD-SEAT) and nothing
+# pierces the room side. That over-cut was 6.25 sq in of board per hydrant, deliberate rather
+# than missed, and the note here said closing it wanted a schema change worth 12.5 sq in
+# across the house. The fireplace pocket bought that change, and these two ride it in.
 #
-# What these DO cost correctly is the sheathing: 3,263.2 -> 3,263.1 SF net in the framing bid
-# golden, which is the two holes and nothing else. They cost no LUMBER at all -- a bore is
-# drilled through whatever it meets rather than framed around, which is
-# `resolve/framing/openings.framed_around` and the reason BK-M-S1-HYD survives it.
+# `depth=inch(12)` with `depth_from="exterior"` is a BAND, not a fit, and the band is what
+# makes the number safe. The bore has to reach past the sheathing into the stud cavity (the
+# stud's outer face is 7 3/4" in from the cladding on BOTH walls) and has to stop short of the
+# room-side finish (13 1/4" in on both, again). Anything in 7 3/4"..13 1/4" cuts exactly the
+# same set of layers, so 12" sits mid-band with better than an inch of slack each way and is
+# what the barrel actually does -- it lands on its seat INSIDE the cavity, not against the
+# back of the board. On W-S-S1 the same 12" also leaves the vapour membrane whole, which
+# matters more than the board does.
+#
+# ** BOTH LIMITS ARE THE SAME ON THE TWO WALLS BY ARITHMETIC, NOT BY LUCK: ** EXT_2X6 is
+# 13.885" with 0.635" of paint + board; PLANT_EXT_2X6_HUMID is 14.54" with 1.29" of PVC panel
+# + liner furring + humid membrane; 13.885 - 0.635 = 14.54 - 1.29 = 13.25, and both carry the
+# same 5 1/2" stud behind the same 1/2" sheathing. Nothing links the literal to the stack --
+# `resolve/pipeline._blind_depth` only refuses a depth that reaches THROUGH the wall -- so
+# a stack change of more than an inch wants this re-derived.
+#
+# The ERV's two sleeves take no depth: a duct really does go all the way through.
+#
+# What these still cost correctly is the sheathing -- the bore reaches it, and
+# `takeoff/framing.py` deducts a blind opening only from the layers it reaches. They cost no
+# LUMBER at all -- a bore is drilled through whatever it meets rather than framed around,
+# which is `resolve/framing/openings.framed_around` and the reason BK-M-S1-HYD survives it.
 PENETRATIONS_HYDRANT_MAIN = [
     RoughOpening(uid="H72PNVX9AV", tag="AO-M-PORCH-HYD", host="W-M-S1",
                  position=from_node("N-M-SW", inch(150.75)),
                  width=inch(2.5), height=inch(2.5), sill_height=inch(24),
+                 depth=inch(12), depth_from="exterior",
                  penetration_for=("PR-M-CW-PORCH-HYD-CU", "PR-M-CW-PORCH-HYD")),
 ]
 PENETRATIONS_HYDRANT_SECOND = [
     RoughOpening(uid="AZMYHB7P8J", tag="AO-S-BALC-HYD", host="W-S-S1",
                  position=from_node("N-S-SW", inch(86.75)),
                  width=inch(2.5), height=inch(2.5), sill_height=inch(23.579),
+                 depth=inch(12), depth_from="exterior",
                  penetration_for=("PR-S-CW-BALC-HYD-CU", "PR-M-CW-BALC-HYD")),
 ]
 

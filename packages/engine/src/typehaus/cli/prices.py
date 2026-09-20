@@ -124,6 +124,10 @@ ESTIMATE_PLANS = (
     # identical BOM table; ``MATERIAL_ONLY`` is what keeps the two from both billing the same
     # row. See the field comment on ``Prices.timber``.
     ("timber", "structural_solids", "category", "volume_cubic_yards", "cy"),
+    # Rolled steel by the foot of its own AISC section. NOT a third read of
+    # ``structural_solids``: ``takeoff/steel.py`` is its own table and takes these members
+    # OUT of that one, because a member billed by the foot must not also bill by the yard.
+    ("steel_members", "steel_members", "size", "length_ft", "LF"),
     ("railings", "railings", "type", "length_ft", "LF"),
     # Pre-framing returns by the foot, keyed on ``takeoff_category``.
     ("construction_returns", "construction_returns", "category", "length_ft", "LF"),

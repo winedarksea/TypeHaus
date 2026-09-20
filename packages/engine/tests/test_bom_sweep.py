@@ -701,6 +701,10 @@ def test_the_bom_is_json_and_its_section_keys_are_the_uis_contract(bom):
         # order rows of `framing` with the overall length, clear span and end bearing a
         # fabricator's order needs (→ takeoff/fabrication.py).
         "framing", "framing_by_size", "fabricated_members", "structural_solids",
+        # Rolled steel members by the FOOT of a named AISC section — its own section since
+        # 2026-09-20, and its members are taken OUT of `structural_solids`: a $/cy rate
+        # cannot tell two angles of the same bounding box apart, and billed a lintel at $0.
+        "steel_members",
         # Reinforcing steel by the pound — its own section since 2026-09-03, when it stopped
         # riding invisibly inside the [concrete]/[wall_structure] $/cy rates.
         "reinforcement",

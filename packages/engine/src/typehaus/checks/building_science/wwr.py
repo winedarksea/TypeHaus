@@ -84,6 +84,11 @@ def analyze_wwr(model: ResolvedModel) -> tuple[FacadeWWR, ...]:
     for opening in model.openings:
         if opening.is_door and opening.type_ref not in glazed_doors:
             continue
+        # A BLIND recess is not fenestration and not even a hole: a firebox pocket 6" into
+        # the east wall has brick in front of it and sheathing behind it, and counting it
+        # here would put 5 sf of "east glazing" on a facade that gained no glass.
+        if opening.is_blind:
+            continue
         wall = wall_by_tag.get(opening.host_wall)
         if wall is not None:
             buckets[_facade_for_wall(wall, model)][1] += opening.width_m * opening.height_m

@@ -39,7 +39,8 @@ def truss_wall_opening_support(ctx: CheckContext) -> list[Finding]:
     Advisory, like everything else in this module: a flange bearing is a fastening detail,
     not an engineered connection.
 
-    **A bored PENETRATION is out of scope, and is skipped rather than passed.** A hydrant
+    **A bored PENETRATION, and a BLIND recess, are out of scope and are skipped rather than
+    passed.** A hydrant
     barrel or a duct sleeve has no nailing flange to bear anything, so "an RO jamb is far
     from an outrigger" is not a defect about it — it is a question that does not apply. The
     cladding framing takes the same view and builds it no jamb post, no head or sill course
@@ -63,8 +64,11 @@ def truss_wall_opening_support(ctx: CheckContext) -> list[Finding]:
         layer_name = truss_layer_name(ctx.plan, wall.assembly)
         if layer_name is None:
             continue
+        # A BLIND recess is out of scope for the same reason a bore is, one layer further
+        # in: its back stops short of the girt band, so there is no cladding jamb out here
+        # to bear on and nothing is built for it (``framed_around``).
         openings = [op for op in ctx.model.openings
-                    if op.host_wall == wall.tag and framed_around(op)]
+                    if op.host_wall == wall.tag and framed_around(op, wall, layer_name)]
         if not openings:
             continue
         spans = _truss_stations(wall, layer_name,

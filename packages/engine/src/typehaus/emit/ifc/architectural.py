@@ -209,7 +209,8 @@ def _emit_banded_layer_parts(f: Any, body: Any, rw: ResolvedWall,
         if z1 - z0 <= 1e-9:
             continue
         key = f"{rw.uid}/{layer.name}"
-        pieces = layer_solids(rw, layer.polygon, openings, band=(z0, z1))
+        pieces = layer_solids(rw, layer.polygon, openings, band=(z0, z1),
+                              layer_name=layer.name)
         for index, piece in enumerate(pieces):
             ring = getattr(piece, "ring", None)
             if ring is None or len(ring) < 3:

@@ -25,6 +25,7 @@ from typehaus.emit.draw.section_labels import DrawnBand
 from typehaus.model.enums import LayerFunction
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.geometry_slice import CutPlane, ring_intervals
+from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.roof_geometry import roof_plane_z, roof_ridge_coordinate
 from typehaus.resolve.roof_layer_setbacks import assembly_layer_spans, structure_datum_m
 
@@ -66,7 +67,8 @@ def emit_wall_cavity(b, model, wall, plane: CutPlane, crop, is_detail, min_draw,
                 continue
             # The IR jamb-splits every depth layer; a cavity has no IR solid, so the split
             # around an opening has to happen here or the batt draws across the window.
-            for (z0, z1, void) in opening_splits(wall, openings, plane.axis,
+            cutting = [op for op in openings if cuts_layer(wall, layer.name, op)]
+            for (z0, z1, void) in opening_splits(wall, cutting, plane.axis,
                                                   plane.station_m, rz0, rz1):
                 if void:
                     continue

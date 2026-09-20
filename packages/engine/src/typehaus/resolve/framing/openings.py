@@ -29,6 +29,7 @@ from typehaus.resolve.framing.tables import (
     opening_framing_pattern,
 )
 from typehaus.resolve.geometry import add, scale
+from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import FramedMember
 
 #: A penetration at or under this, in inches, is a BORE: too small for any framing to be
@@ -50,7 +51,7 @@ from typehaus.resolve.model import FramedMember
 BORE_MAX_IN = 4.0
 
 
-def framed_around(opening: Any) -> bool:
+def framed_around(opening: Any, wall: Any = None, layer_name: str | None = None) -> bool:
     """Whether framing is organised AROUND this opening, or drilled THROUGH what is there.
 
     A window or a door is always framed around: its jambs, head and sill are what the studs
@@ -61,11 +62,20 @@ def framed_around(opening: Any) -> bool:
     whatever it meets; the blocking it mounts to is AUTHORED (`WallBacking`), and the bore
     goes through that board rather than replacing it with a rough sill.
 
+    A BLIND opening (``RoughOpening.depth``) is framed around by whatever it reaches and is
+    invisible to everything beyond its back. ``wall``/``layer_name`` name the band asking —
+    the stud band is inside a firebox pocket's 6" and frames it; the girt and the cladding
+    are outboard of it and never see it. Omitting them asks the question with no band in
+    mind and answers for the wall as a whole, which is what every caller did before blind
+    openings existed.
+
     Read by the stud framing (`solver.frame_model`), the cladding framing
-    (`furring`/`truss_wall`) and `structural.truss_wall_opening_support`. The hole is still a
-    VOID in the wall's layers either way — it is cut through sheathing and cladding, and it
-    draws and emits — so what this governs is lumber, not geometry.
+    (`furring`/`truss_wall`) and `structural.truss_wall_opening_support`. What it governs is
+    LUMBER, not geometry: which layers the hole is cut out of is ``geometry_walls.cuts_layer``.
     """
+    if wall is not None and layer_name is not None and not cuts_layer(wall, layer_name,
+                                                                       opening):
+        return False
     if not getattr(opening, "penetration_for", ()):
         return True
     bore = BORE_MAX_IN * M_PER_IN

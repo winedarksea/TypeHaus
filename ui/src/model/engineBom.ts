@@ -45,8 +45,12 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
     // `reinforcement` follows the pours it sits inside — it is bought by the pound and
     // placed by the same crew, and until 2026-09-03 it had no line at all because the steel
     // rode invisibly inside the $/cy rate of the two sections above it.
+    // `steel_members` sits directly after `structural_solids` because it is the third way
+    // that table's contents get bought: a rolled steel member bills by the FOOT of its AISC
+    // section, not by the yard, and `takeoff/steel.py` takes those members OUT of
+    // `structural_solids` so nothing is counted twice.
     sections: ["framing", "framing_by_size", "fabricated_members", "structural_solids",
-      "wall_structure", "reinforcement",
+      "steel_members", "wall_structure", "reinforcement",
       "sheet_goods", "member_protection", "construction_returns", "sill_gaskets", "hardware",
       "footing_bedding"],
   },

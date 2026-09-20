@@ -186,28 +186,37 @@ pairs while the house said 67. Re-open the campaign with
 
 ### Schema gaps found during selections/fireplace passes
 
-- **There is no lintel element type, and a `Beam` standing in for one still bills $0.**
-  `BM-M-FIRE-LINTEL` is the fireplace's steel angle authored as a `Beam`. The SECTION half is
-  closed: `cross_section` reads the AISC decimal spelling (`_RE_ANGLE`,
-  `resolve/framing/profiles.py:134`) and the element authors `size="L3.5x3.5x0.25"`, so the
-  drawn solid is the angle and not a 3 1/2" square of steel. The fraction spelling
-  (`"L3-1/2x3-1/2x1/4"`) is deliberately NOT accepted and is reported by
-  `integrity.member_profile_parses` rather than guessed at. **What is left is the money.** A
-  `Beam` reaches the estimate only through its `assembly`, as a `beam · <assembly>` cubic-yard
-  row. Leaving `assembly` unset is deliberate — a $/cy rate is the wrong shape for a steel
-  angle — so the dollars are an `[allowances]` lump instead. Wants a per-LF/per-EA beam price
-  path, or a real `Lintel`/`MasonrySpec` opening. **The same trap is live for any steel member
-  anywhere in the house.**
+- ~~**There is no lintel element type, and a `Beam` standing in for one still bills $0.**~~
+  **THE MONEY HALF IS CLOSED, 2026-09-20; the schema half stays open.** `[steel_members]`
+  (`takeoff/steel.py`, `cli/price_file.py`, `cli/prices.py`) bills a rolled steel member by the
+  LINEAL FOOT of its own AISC section, keyed on the `size` string — because an
+  L3-1/2x3-1/2x1/4 and an L3-1/2x3-1/2x3/8 share a bounding box and are different purchases,
+  which is exactly what a $/cy rate cannot say. Those members are taken OUT of
+  `structural_solids`, so a house that prices them here cannot also price them there.
+  `BM-M-FIRE-LINTEL` bills $128.86–$261.51 over 3.79 LF where it billed $0, and the trap this
+  entry correctly said was live for every steel member in the house is shut for all of them.
+  **Two corrections made in passing:** this entry claimed the dollars were "an `[allowances]`
+  lump instead" — there was NO such row, so they were nowhere; and `prices.toml`'s $8–16/SF
+  brick rate declared that it contained *"the lintel over the firebox opening"*, which beside a
+  real steel row would have been a double-count, so that clause is struck.
+  **Still open:** a `Lintel` element type, or a `MasonrySpec` opening carrying its own head. A
+  `Beam` remains the closest honest schema, and `size` is still a free string.
 - **R502.10.1's single-member header allowance is sawn-lumber only, deliberately** — an
   I-joist/floor-truss deck would need a manufacturer's hung-header table this engine doesn't
   have, so catlin (all I-joist/floor-truss decks) sees no saving from it. **Still open:**
   nothing grades a single-member header against a span table at all —
   `structural.floor_opening_header` only reports past the prescriptive 8' ceiling.
-- **`W-M-FIRE` is five stacked thin walls, and only the schema half is still open.**
-  `checks/integrity/wall_stack.py` grades the continuity (20 junctions, 5 earned openings), so
-  a wrong `top` no longer opens a silent slot. What a `Wall.voids` field — or a `RoughOpening`
-  host with no door or window — would buy is saying the opening in ONE element instead of
-  five hand-worked elevation pairs.
+- ~~**`W-M-FIRE` is five stacked thin walls**~~ — **WON'T DO, and the count is SEVEN**
+  (recorded 2026-09-20). It became seven on 2026-09-19, when the buried stub split into three
+  piers, and that split is why collapsing the stack is now actively HARMFUL rather than merely
+  unnecessary: **the three stub piers must stay separate walls, because the joist pockets are
+  the gaps BETWEEN them**, and those gaps are what `structural.through_deck_clearance` grades
+  — six PASSes, clearance and bearing per pier. A `Wall.voids` field would say the firebox
+  opening in one element and would have nothing to say the pockets with. It would also churn
+  three pinned tests (`test_wall_stack.py`, `test_masonry_finish.py`,
+  `test_wall_structure_takeoff.py`) for no verdict gained. The continuity — the one thing the
+  stack was ever at risk of getting silently wrong — is already graded by
+  `checks/integrity/wall_stack.py`.
 - **Nothing grades pipe SUPPORT spacing, and the profile now says so out loud.** `PipeRun`
   carries no support, hanger or guide field, so there is no spacing to measure. The governing
   rule in Minnesota is **UPC Table 313.3 via Minn. R. 4714.0313**, which Minnesota reprints
@@ -302,10 +311,15 @@ the future.
   One line in that row dict, plus a house decision: catlin hangs one commodity type
   (`DT-INT-SWING32`) at both a bath and a study, so the type has to split before a per-function
   count means anything.
-- **`haus render` cannot reach a house-authored SECTION slice.** `SL-S-FIRE` (the fireplace
-  breast at y=8'-8") prints as A-301.1 through `haus print`, but `emit/draw/render.py` hardcodes
-  `--view section` to `build_center_section`, and an authored section carries no dimensions
-  because only the centre-section path adds annotation requests.
+- ~~**`haus render` cannot reach a house-authored SECTION slice.**~~ **CLOSED 2026-09-20.**
+  `haus render --view section --slice SL-S-FIRE` (or `--slice all`) cuts an authored slice, and
+  `build_annotated_section` is ONE path serving both it and `haus print`'s A-301.x — so an
+  authored section now carries its datums, its ground line and the names of the volumes the cut
+  passes through, exactly as A-301 does. The annotation needed one thing it had never been
+  given: the slice's CROP. Everything else in it is bounded by the drawn geometry, but the room
+  names walk the model and the detail callouts walk every condition, so on the fireplace cut
+  they lettered eight rooms and hung four bubbles across forty feet of empty sheet. Both are
+  crop-bounded now.
 - **The TPR discharge ceiling is wrong for Minnesota.** `checks/mep/water_heater.py` enforces
   6"-24"; Minn. R. 4714.0608 amends UPC 608.5 to "within 18 inches of the floor". Catlin
   terminates at 6" and passes either way, so this is a correctness fix, not a finding.

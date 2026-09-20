@@ -223,6 +223,11 @@ SECTION_CODES: dict[str, CostCode] = {
     "wall_structure": CostCode("1200", "03 30 00", "concrete"),
     # Structural wood solids, reached only when ``_solid_code`` declines.
     "timber": CostCode("2000", "06 11 00", "framing"),
+    # Rolled steel members by the foot of their section (``takeoff/steel.py``). MasterFormat
+    # 05 12 00 is structural steel framing; the trade is ``framing`` rather than a steel
+    # erector's, because on this scale the piece is set by whoever is already there — the
+    # mason laying the course it lands in.
+    "steel_members": CostCode("2000", "05 12 00", "framing"),
     "railings": CostCode("2700", "05 52 00", "stairs"),
     "drainage": CostCode("2600", "07 71 00", "drainage"),
     # Cove/LED channel, tape, caps and connectors. 26 51 00 Interior Lighting, and an

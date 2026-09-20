@@ -58,7 +58,7 @@ from typehaus.emit.draw.schedules import (
 )
 from typehaus.emit.draw.schedules.architectural import specification_sections
 from typehaus.emit.draw.schedules.structural_notes import _write_structural_notes
-from typehaus.emit.draw.section import build_center_section, build_section
+from typehaus.emit.draw.section import build_annotated_section, build_center_section
 from typehaus.emit.draw.sheet_sets import (
     BOTH_SETS,
     FULL_ONLY,
@@ -331,8 +331,12 @@ def build_sheet_index(model: ResolvedModel,
     sections = [item for item in model.plan.elements_of_kind("Slice")
                 if item.kind.value == "section"]
     for index, view in enumerate(sections, start=1):
+        # ``build_annotated_section``, not the bare cut: an authored section is a SHEET in
+        # this set and a sheet carries its datums, its ground line and the names of the
+        # volumes the cut passes through. Drawing it unannotated made A-301.1 the one
+        # drawing in the permit set a reader could not take a dimension off.
         sheets.append(SheetSpec(f"A-301.{index}", view.title or view.tag,
-                                scene=partial(build_section, view=view)))
+                                scene=partial(build_annotated_section, view=view)))
 
     # The 5 series, not the 4. NCS 4 is LARGE-SCALE VIEWS — an enlarged plan of a kitchen or
     # a stair at 1/2" = 1'-0", the same drawing type as the plan it comes from. A junction

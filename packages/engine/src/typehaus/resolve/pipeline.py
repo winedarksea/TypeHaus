@@ -14,6 +14,7 @@ from contextlib import contextmanager
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import ConditionKind
 from typehaus.model.plan import PlanModel
+from typehaus.quantities import M_PER_IN
 from typehaus.resolve.accessories import resolve_accessories
 from typehaus.resolve.ceilings import resolve_ceilings
 from typehaus.resolve.construction import apply_construction_rules
@@ -263,6 +264,8 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
                     arch_rise_m=arch_rise,
                     penetration_for=tuple(getattr(el, "penetration_for", ()) or ()),
                     pocket_run_m=pocket_run, pocket_sign=pocket_sign,
+                    depth_m=_blind_depth(el, rw, findings),
+                    depth_from=str(getattr(el, "depth_from", "interior") or "interior"),
                 )
             )
             model.conditions.append(
@@ -272,6 +275,32 @@ def _resolve_openings(plan: PlanModel, model: ResolvedModel, findings: list[Find
                     key=f"opening_perimeter:{rw.assembly}",
                 )
             )
+
+
+def _blind_depth(el, rw, findings: list[Finding]) -> float | None:
+    """``RoughOpening.depth`` in metres, or ``None`` for a through hole.
+
+    A depth at or past the wall's own thickness is not a blind hole — it is a through hole
+    written the long way, and taking it at its word would leave the outermost layer uncut
+    at the back of a recess nobody can build. Reported rather than clamped: the author
+    meant one of the two, and the engine cannot tell which.
+    """
+    depth = getattr(el, "depth", None)
+    if depth is None:
+        return None
+    thickness = sum(layer.thickness_m for layer in rw.depth_layers())
+    if depth.meters <= 0.0 or (thickness > 0.0 and depth.meters >= thickness - 1e-6):
+        findings.append(
+            Finding(
+                severity=Severity.ERROR, check_id="integrity.blind_opening_depth",
+                message=(f"blind opening {el.tag} is {depth.meters / M_PER_IN:.2f}\" deep in "
+                         f"a {thickness / M_PER_IN:.2f}\" wall — a blind recess must stop "
+                         f"inside it; drop `depth=` for a through hole"),
+                element_tags=(el.tag, rw.tag), result=Result.FAIL,
+            )
+        )
+        return None
+    return depth.meters
 
 
 def _opening_size(plan: PlanModel, el) -> tuple[float, float, bool, str | None]:

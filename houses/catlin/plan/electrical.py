@@ -814,12 +814,32 @@ MAIN_EQUIPMENT = [
     #
     # rotation -90 backs it to the wall and opens it west into the room.
     #
+    # ** THE BODY IS 9 1/2" DEEP SINCE 2026-09-20 AND SITS IN A FRAMED POCKET, NOT IN THE
+    # BRICK. ** The unit is a ClassicFlame 28II042FGL infrared now (see EQ-T-FIREPLACE-EL); the
+    # recess behind the panel is AO-M-FIRE-NICHE, a BLIND RoughOpening 6" into W-M-E1, which
+    # with the 3 5/8" brick and the 1 7/8" tie gap gives 11 1/2" from the brick face — so a
+    # 9 3/4" rough opening leaves 1 3/4" of pocket behind the appliance. `position` follows the
+    # depth rather than the face: the face stays at x=419 5/8" where it has always been, so the
+    # centre moves east from 35'-1 7/8" to 35'-4 1/2" — half the depth growth and nothing else.
+    # The 24" mount and the y=8'-8" centre are untouched.
+    #
     # ** `recessed_into_host_surface=True` IS THE HONEST FLAG AND IT MATTERS. ** The body is
-    # let INTO the W-M-FIRE-* brick, not stood in front of it, so its 4 1/2" of depth is a cavity
+    # let INTO the panel and the wall behind it, not stood in front, so its depth is a cavity
     # behind the face rather than a protrusion into the room — which is what
     # `resolve/placeable_clear_floor_obstruction` needs to know. Without it the model reads a
     # 29" x 4 1/2" box lapping 105 sq in of the wythe, i.e. two solids in the same air, and
     # nothing in `haus check` catches that on its own.
+    #
+    # ** ED-M-FIRE-RC IS IN THE POCKET BESIDE THE HARDWIRE BOX. ** Owner's call, 2026-09-20:
+    # the cavity gets a recessed receptacle AND a junction box on the one dedicated 20 A
+    # circuit, so a hardwire unit and a cord-and-plug unit are both installable in this hole
+    # for the life of the house without a rewire. It is NOT GFCI — 210.8(A) does not list
+    # living rooms and 210.8(D)'s appliance list does not name room heaters (plan/circuits.py
+    # carried the opposite claim until this pass). It is also NOT a 210.52 wall-space outlet
+    # and must never be credited as one: it is inside a firebox pocket behind a brick panel
+    # and is not readily accessible. `electrical.receptacle_spacing` accepts a device within
+    # 0.5 m of a room's clear face REGARDLESS OF SIDE, so this is checked by hand — the
+    # nearest ring outlets are ED-M-LIV-RC* and none of them depends on this one.
     #
     # ** ERRATUM, AND IT PREDATES THIS CHANGE: the east wall's interior face is 35'-5 3/8",
     # NOT 35'-11 3/8". ** The comment this replaces claimed the latter — the gwb had been
@@ -828,11 +848,41 @@ MAIN_EQUIPMENT = [
     # old unit at x=35'-8" with a 7" body had its BACK at 35'-11 1/2", so ** the fireplace has
     # been buried 6 1/8" inside the studs for as long as that comment has existed. **
     Equipment(uid="CEE022AAAA", tag="EQ-M-FIREPLACE", kind=EquipmentKind.SPACE_HEATER,
-              position=pt(ft(35, 1.875), ft(8, 8)), footprint=(inch(29), inch(4.5)),
+              position=pt(ft(35, 4.5), ft(8, 8)), footprint=(inch(29.25), inch(9.75)),
               room="RM-M-LIVING", type_ref="EQ-T-FIREPLACE-EL", rotation=deg(-90),
               circuit="CKT-FIREPLACE",
               mount=Mount(kind=MountKind.WALL, elevation=inch(24),
                           recessed_into_host_surface=True)),
+    # The pocket's receptacle. ** THE HARDWIRE SIDE IS NOT A SECOND ELEMENT: ** the J-box is
+    # EQ-M-FIREPLACE's own `circuit=` and its type's POWER_120 ServicePort, which is how every
+    # hard-wired appliance in this house is said. This is the OTHER half the owner asked for —
+    # a real outlet in the same cavity, so a cord-and-plug appliance (ClassicFlame's Safer Plug
+    # unit, most of the infrared tier) can be set in the hole without a rewire, and a hardwire
+    # unit can be set in it without an unused outlet being a problem. Both on CKT-FIREPLACE,
+    # which may legally serve nothing else (NEC 210.23(B)(2), plan/circuits.py) and is
+    # therefore not at risk of carrying two appliances: ONE of the two connections is used.
+    #
+    # ** IT IS BESIDE THE APPLIANCE, NOT BEHIND IT, AND THAT IS WHAT THE POCKET'S EXTRA WIDTH
+    # IS FOR. ** Behind leaves 1 3/4" once the unit's 9 3/4" rough opening is in a 11 1/2"
+    # pocket, which is not a box. AO-M-FIRE-NICHE is 34" wide against the appliance's 29 1/4",
+    # so there is a 2 3/8" strip of clear cavity down each side; this box is in the SOUTH one,
+    # on the pocket's back face, at y=7'-4 1/4" and x=35'-11" (the recess's back, not the
+    # wall's room face — the pocket runs from the finish face at ~35'-5 3/8" east to
+    # ~35'-11 3/8"). At 26" AFF, low in a pocket whose floor is 23 1/2" AFF, so the cord drops
+    # to it rather than looping. ** The masonry aperture in front is 29 1/2", so the brick laps
+    # 2 1/4" past this box on each side and it is not visible from the room. **
+    #
+    # RECEPTACLE, not RECEPTACLE_GFCI, and not on a GFCI breaker either: NEC 210.8(A) does not
+    # list living rooms and 210.8(D)'s appliance list does not name room heaters. ** It is also
+    # NOT a 210.52 wall-space outlet ** — a box inside a firebox pocket behind a brick panel is
+    # not readily accessible — and `electrical.receptacle_spacing` cannot tell, because it
+    # accepts any device within 0.5 m of a room's clear face regardless of side. RM-M-LIVING's
+    # ring does not depend on it; check by hand if the ring ever changes.
+    ElectricalDevice(uid="XT154MCCPT", tag="ED-M-FIRE-RC", kind=DeviceKind.RECEPTACLE,
+                     position=pt(ft(35, 11), inch(88.25)), type_ref="ED-T-RECEPTACLE",
+                     circuit="CKT-FIREPLACE", room="RM-M-LIVING", rotation=deg(270),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(26),
+                                 recessed_into_host_surface=True)),
 ]
 
 # --- Second storey: the NW bathroom's floor-heat control -------------------------------

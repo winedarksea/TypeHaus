@@ -68,6 +68,7 @@ from typehaus.takeoff.railings import railing_takeoff
 from typehaus.takeoff.reinforcement import reinforcement_takeoff
 from typehaus.takeoff.sitework import footing_bedding_takeoff
 from typehaus.takeoff.stairs import stair_finish_takeoff
+from typehaus.takeoff.steel import steel_members_takeoff
 from typehaus.takeoff.wall_structure import wall_structure_takeoff
 from typehaus.takeoff.wood_surfaces import wood_surfaces_takeoff
 
@@ -104,6 +105,10 @@ def bill_of_materials(
         # quantity — every piece it lists is already billed in ``framing`` above.
         "fabricated_members": fabricated_member_schedule(model),
         "structural_solids": structural_solids_takeoff(model),
+        # Rolled steel members by the FOOT of a named AISC section — the one structural
+        # family a $/cy rate cannot buy, and the reason BM-M-FIRE-LINTEL billed $0. These
+        # rows are EXCLUDED from ``structural_solids`` above; see ``takeoff/steel.py``.
+        "steel_members": steel_members_takeoff(model),
         # Reinforcing steel by the pound. Rebar used to reach the estimate only as an
         # invisible component of the ``[concrete]`` and ``[wall_structure]`` $/cy rates —
         # roughly five tons of it, ordered by nobody. See ``takeoff/reinforcement.py``, and
