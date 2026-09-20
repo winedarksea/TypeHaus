@@ -837,16 +837,16 @@
 "9d02246c0f9d"
 ],
 "ducts/DU-A-ERV-R-BATH1/z_m": [
-5.845175,
+5.8801,
 6.1976,
 4,
-"977d4d9241b5"
+"0e477228f7d1"
 ],
 "ducts/DU-A-ERV-R-BED3/z_m": [
-5.845175,
+5.8801,
 6.1976,
 8,
-"9930bc554d9e"
+"63f6fd019b06"
 ],
 "ducts/DU-A-ERV-R-STUBATH/z_m": [
 6.0198,
@@ -925,6 +925,12 @@
 5.889625,
 5,
 "9971b03557f9"
+],
+"ducts/DU-M-ERV-EXH-FEED/z_m": [
+2.3749,
+2.57175,
+4,
+"4ee13b7f3350"
 ],
 "ducts/DU-M-ERV-EXH-TRUNK/z_m": [
 2.57175,
@@ -1990,6 +1996,204 @@
 8,
 "3c4d41a19688"
 ],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-CLN-001": [
+2.746375,
+3.048,
+8,
+"3c4d41a19688"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS2-001-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS2-001-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS2-001-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS2-001-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS3-001-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS3-001-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS3-001-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS3-001-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS3-002-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS3-002-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS3-002-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS3-002-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS3-003-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS3-003-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS3-003-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS3-003-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS4-000-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS4-000-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS4-000-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS4-000-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS4-001-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS4-001-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS4-001-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS4-001-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS4-002-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS4-002-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS4-002-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS4-002-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS4-003-cheek-hi": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS4-003-cheek-lo": [
+2.784475,
+3.0099,
+8,
+"8445039a1102"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS4-003-rail-bottom": [
+2.746375,
+2.784475,
+8,
+"c4d4967e8585"
+],
+"geometry/1JXQ975X9E::framing/member:partition-block-W-M-HS4-003-rail-top": [
+3.0099,
+3.048,
+8,
+"a10a5d0008e8"
+],
 "geometry/1JXQ975X9E::framing/member:rim-0": [
 2.746375,
 3.048,
@@ -2306,19 +2510,19 @@
 6.096,
 7.680325,
 18,
-"c5fcd313de74"
+"f34c41fa58d0"
 ],
 "geometry/3TKS0Y8EH7/layer:gwb-b": [
 6.096,
 7.680325,
 18,
-"c5fcd313de74"
+"f34c41fa58d0"
 ],
 "geometry/3TKS0Y8EH7/layer:stud": [
 6.096,
 7.680325,
 18,
-"c5fcd313de74"
+"f34c41fa58d0"
 ],
 "geometry/3TKS0Y8EH7::framing/member:cripple-head-0-01": [
 7.19455,
@@ -2453,10 +2657,10 @@
 "aa213eb4a0bd"
 ],
 "geometry/4YT114ADP3-run/body": [
-5.794375,
+5.8293,
 6.2484,
 72,
-"67bfb16c5b7b"
+"a12e25eb4e8e"
 ],
 "geometry/4Z104BJ7TV-00-drip/body": [
 -0.3429,
@@ -2561,10 +2765,10 @@
 "c0fa4924d6c7"
 ],
 "geometry/73FJZH564X-run/body": [
-5.794375,
+5.8293,
 6.2484,
 168,
-"f5d09ecb2d54"
+"1e807e183aee"
 ],
 "geometry/78VGE6A81J/layer:gwb-a": [
 6.096,
@@ -2673,6 +2877,12 @@
 3.06705,
 72,
 "fe35b7f09e8d"
+],
+"geometry/8BN9DXZBZS-run/body": [
+2.2987,
+2.57175,
+72,
+"3c2c7d7d61ab"
 ],
 "geometry/8BRZAXSW73/layer:gwb-a": [
 -2.7797125,
@@ -4895,6 +5105,18 @@
 "be15a1710151"
 ],
 "geometry/CAF602AAAA::framing/member:joist-1-027-0": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-CLN-S-001": [
+5.794375,
+6.096,
+8,
+"be15a1710151"
+],
+"geometry/CAF602AAAA::framing/member:partition-block-W-S-CLN-S-002": [
 5.794375,
 6.096,
 8,
@@ -7628,25 +7850,25 @@
 6.096,
 9.2202,
 34,
-"059c1a794157"
+"64fa17960ee5"
 ],
 "geometry/CAW103AAAA/layer:gwb-int": [
 6.096,
 9.2202,
 34,
-"37e0e638e316"
+"31fdd561f8af"
 ],
 "geometry/CAW103AAAA/layer:outer-girt": [
 6.096,
 9.2202,
 34,
-"cf6ba68e28e9"
+"64fa17960ee5"
 ],
 "geometry/CAW103AAAA/layer:paint": [
 6.096,
 9.2202,
 34,
-"52ab0fd3edfe"
+"bdf029eee9e5"
 ],
 "geometry/CAW103AAAA/layer:sheathing": [
 6.096,
@@ -7658,19 +7880,19 @@
 6.096,
 9.2202,
 34,
-"e394b781058b"
+"64fa17960ee5"
 ],
 "geometry/CAW103AAAA/layer:stud": [
 6.096,
 9.2202,
 34,
-"a693215aa6b3"
+"9485bc275379"
 ],
 "geometry/CAW103AAAA/layer:vent-gap": [
 6.096,
 9.2202,
 34,
-"fddebca889b8"
+"64fa17960ee5"
 ],
 "geometry/CAW103AAAA::framing/member:block-2-000-00": [
 6.096,
@@ -8228,25 +8450,25 @@
 6.096,
 9.2202,
 20,
-"4f80c1941216"
+"aa607dc30aee"
 ],
 "geometry/CAW104AAAA/layer:gwb-int": [
 6.096,
 9.2202,
 20,
-"199719104e7e"
+"e27c4a60c668"
 ],
 "geometry/CAW104AAAA/layer:outer-girt": [
 6.096,
 9.2202,
 20,
-"8dd1469d6455"
+"aa607dc30aee"
 ],
 "geometry/CAW104AAAA/layer:paint": [
 6.096,
 9.2202,
 20,
-"1120634d6a62"
+"93d014c35895"
 ],
 "geometry/CAW104AAAA/layer:sheathing": [
 6.096,
@@ -8258,19 +8480,19 @@
 6.096,
 9.2202,
 20,
-"926f4894e8de"
+"aa607dc30aee"
 ],
 "geometry/CAW104AAAA/layer:stud": [
 6.096,
 9.2202,
 20,
-"c94d092fe382"
+"92b3ae9e44e5"
 ],
 "geometry/CAW104AAAA/layer:vent-gap": [
 6.096,
 9.2202,
 20,
-"c943ad271c63"
+"aa607dc30aee"
 ],
 "geometry/CAW104AAAA::framing/member:block-2-000-00": [
 6.096,
@@ -9248,19 +9470,19 @@
 6.096,
 8.8565355,
 18,
-"ce43331d1fd5"
+"ed0aacae7fa1"
 ],
 "geometry/CAW113AAAA/layer:gwb-b": [
 6.096,
 8.8565355,
 18,
-"79dcb16bc26b"
+"11df57a78cfc"
 ],
 "geometry/CAW113AAAA/layer:stud": [
 6.096,
 8.8565355,
 18,
-"f1f2c515bf6e"
+"ed0aacae7fa1"
 ],
 "geometry/CAW113AAAA::framing/member:cripple-head-0-01": [
 8.2677,
@@ -9887,16 +10109,16 @@
 "ba66b1ddebf8"
 ],
 "geometry/CBPW31AAAA-run/body": [
--1.6256,
+-1.0525125,
 -0.2921,
 72,
-"b1153950d24a"
+"cd4adf3272ed"
 ],
 "geometry/CBPW32AAAA-run/body": [
--1.6256,
+-1.0525125,
 -0.16002,
 96,
-"dc247e1afa19"
+"2fbf671b5cb1"
 ],
 "geometry/CBPW33AAAA-run/body": [
 -0.233045,
@@ -9972,9 +10194,9 @@
 ],
 "geometry/CBPW45AAAA-run/body": [
 -2.0828,
--0.2984621,
+-0.2984643,
 120,
-"f0350130b7a7"
+"73cb15c144f7"
 ],
 "geometry/CBPW46AAAA-run/body": [
 -1.4732,
@@ -17008,6 +17230,42 @@
 8,
 "80db91a70531"
 ],
+"geometry/CMFS01AAAA::framing/member:partition-block-W-B-CW2-000": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:partition-block-W-B-CW2-001": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:partition-block-W-B-CW2-002": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:partition-block-W-B-CW3-000": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:partition-block-W-B-CW3-001": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
+"geometry/CMFS01AAAA::framing/member:partition-block-W-B-CW3-002": [
+-0.301625,
+0.0,
+8,
+"80db91a70531"
+],
 "geometry/CMFS01AAAA::framing/member:rim-0": [
 -0.301625,
 0.0,
@@ -17936,49 +18194,49 @@
 -0.3413125,
 3.048,
 20,
-"16d797592a25"
+"9d49476d8741"
 ],
 "geometry/CMW101AAAA/layer:gwb-int": [
 0.0,
 2.7432,
 20,
-"3407c8b4179e"
+"4ff30d83fd85"
 ],
 "geometry/CMW101AAAA/layer:outer-girt": [
 -0.3413125,
 3.048,
 20,
-"16d797592a25"
+"9d49476d8741"
 ],
 "geometry/CMW101AAAA/layer:paint": [
 0.0,
 2.7432,
 20,
-"3407c8b4179e"
+"4ff30d83fd85"
 ],
 "geometry/CMW101AAAA/layer:sheathing": [
 -0.3413125,
 3.048,
 20,
-"16d797592a25"
+"9d49476d8741"
 ],
 "geometry/CMW101AAAA/layer:spray-foam": [
 -0.3413125,
 3.048,
 20,
-"16d797592a25"
+"9d49476d8741"
 ],
 "geometry/CMW101AAAA/layer:stud": [
 -0.3413125,
 3.048,
 20,
-"16d797592a25"
+"9d49476d8741"
 ],
 "geometry/CMW101AAAA/layer:vent-gap": [
 -0.3413125,
 3.048,
 20,
-"16d797592a25"
+"9d49476d8741"
 ],
 "geometry/CMW101AAAA::framing/member:backing-0-000": [
 0.5334,
@@ -27478,12 +27736,6 @@
 8,
 "0710bbf2ecf0"
 ],
-"geometry/CQRJZCM0R1::framing/member:stud-003": [
--2.7416125,
--0.396875,
-8,
-"0710bbf2ecf0"
-],
 "geometry/CSBM01AAAA/body": [
 5.794375,
 6.096,
@@ -29156,55 +29408,55 @@
 3.048,
 6.096,
 26,
-"833b4153731e"
+"d08131b7c758"
 ],
 "geometry/CSW101AAAA/layer:humid-membrane": [
 3.048,
 5.7912,
 26,
-"9ba258e6692c"
+"361cf3e7817e"
 ],
 "geometry/CSW101AAAA/layer:liner-furring": [
 3.048,
 5.7912,
 26,
-"9ba258e6692c"
+"361cf3e7817e"
 ],
 "geometry/CSW101AAAA/layer:outer-girt": [
 3.048,
 6.096,
 26,
-"833b4153731e"
+"d08131b7c758"
 ],
 "geometry/CSW101AAAA/layer:pvc-panel": [
 3.048,
 5.7912,
 26,
-"9ba258e6692c"
+"361cf3e7817e"
 ],
 "geometry/CSW101AAAA/layer:sheathing": [
 3.048,
 6.096,
 26,
-"833b4153731e"
+"d08131b7c758"
 ],
 "geometry/CSW101AAAA/layer:spray-foam": [
 3.048,
 6.096,
 26,
-"833b4153731e"
+"d08131b7c758"
 ],
 "geometry/CSW101AAAA/layer:stud": [
 3.048,
 6.096,
 26,
-"833b4153731e"
+"d08131b7c758"
 ],
 "geometry/CSW101AAAA/layer:vent-gap": [
 3.048,
 6.096,
 26,
-"833b4153731e"
+"d08131b7c758"
 ],
 "geometry/CSW101AAAA::framing/member:backing-0-000": [
 3.5814,
@@ -41936,19 +42188,31 @@
 6.096,
 8.8565355,
 18,
-"c03696943a62"
+"3e0ead78dfb5"
 ],
 "geometry/REREWJKFAZ/layer:gwb-b": [
 6.096,
 8.8565355,
 18,
-"d128f3a99152"
+"9d1977dbac79"
+],
+"geometry/REREWJKFAZ/layer:paint-a": [
+6.096,
+8.8565355,
+18,
+"dc0b5881ab98"
+],
+"geometry/REREWJKFAZ/layer:paint-b": [
+6.096,
+8.8565355,
+18,
+"9d1977dbac79"
 ],
 "geometry/REREWJKFAZ/layer:stud": [
 6.096,
 8.8565355,
 18,
-"29efd7fd28f9"
+"9d1977dbac79"
 ],
 "geometry/REREWJKFAZ::framing/member:backing-0-000": [
 7.2644,
@@ -47170,7 +47434,7 @@
 6,
 "817c77ab6878"
 ],
-"geometry/ZEF56D047J/layer:staggered-studs": [
+"geometry/ZEF56D047J/layer:stud": [
 6.096,
 7.623175,
 6,
@@ -47231,30 +47495,6 @@
 "11c682cbbdfd"
 ],
 "geometry/ZEF56D047J::framing/member:stud-004": [
-6.1341,
-7.546975,
-8,
-"11c682cbbdfd"
-],
-"geometry/ZEF56D047J::framing/member:stud-005": [
-6.1341,
-7.546975,
-8,
-"11c682cbbdfd"
-],
-"geometry/ZEF56D047J::framing/member:stud-006": [
-6.1341,
-7.546975,
-8,
-"11c682cbbdfd"
-],
-"geometry/ZEF56D047J::framing/member:stud-007": [
-6.1341,
-7.546975,
-8,
-"11c682cbbdfd"
-],
-"geometry/ZEF56D047J::framing/member:stud-008": [
 6.1341,
 7.546975,
 8,
@@ -48237,6 +48477,204 @@
 3.048,
 2,
 "e76b7cb538bf"
+],
+"member/1JXQ975X9E/partition-block-W-M-CLN-001": [
+2.746375,
+3.048,
+2,
+"e76b7cb538bf"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS2-001-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS2-001-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS2-001-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS2-001-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS3-001-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS3-001-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS3-001-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS3-001-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS3-002-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS3-002-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS3-002-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS3-002-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS3-003-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS3-003-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS3-003-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS3-003-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS4-000-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS4-000-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS4-000-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS4-000-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS4-001-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS4-001-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS4-001-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS4-001-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS4-002-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS4-002-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS4-002-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS4-002-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS4-003-cheek-hi": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS4-003-cheek-lo": [
+2.784475,
+3.0099,
+2,
+"7033f5ae779f"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS4-003-rail-bottom": [
+2.746375,
+2.784475,
+2,
+"a34fd765ec76"
+],
+"member/1JXQ975X9E/partition-block-W-M-HS4-003-rail-top": [
+3.0099,
+3.048,
+2,
+"4f5bebcd882e"
 ],
 "member/1JXQ975X9E/rim-0": [
 2.746375,
@@ -49793,6 +50231,18 @@
 "ee0eeebd4433"
 ],
 "member/CAF602AAAA/joist-1-027-0": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-CLN-S-001": [
+5.794375,
+6.096,
+2,
+"ee0eeebd4433"
+],
+"member/CAF602AAAA/partition-block-W-S-CLN-S-002": [
 5.794375,
 6.096,
 2,
@@ -55889,6 +56339,42 @@
 "07a4d7ea6917"
 ],
 "member/CMFS01AAAA/joist-0-017-0": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/partition-block-W-B-CW2-000": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/partition-block-W-B-CW2-001": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/partition-block-W-B-CW2-002": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/partition-block-W-B-CW3-000": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/partition-block-W-B-CW3-001": [
+-0.301625,
+0.0,
+2,
+"07a4d7ea6917"
+],
+"member/CMFS01AAAA/partition-block-W-B-CW3-002": [
 -0.301625,
 0.0,
 2,
@@ -64331,12 +64817,6 @@
 "acb389d9be3e"
 ],
 "member/CQRJZCM0R1/stud-002": [
--2.7416125,
--0.396875,
-2,
-"acb389d9be3e"
-],
-"member/CQRJZCM0R1/stud-003": [
 -2.7416125,
 -0.396875,
 2,
@@ -77608,30 +78088,6 @@
 2,
 "e4c78bfb57d1"
 ],
-"member/ZEF56D047J/stud-005": [
-6.1341,
-7.546975,
-2,
-"e4c78bfb57d1"
-],
-"member/ZEF56D047J/stud-006": [
-6.1341,
-7.546975,
-2,
-"e4c78bfb57d1"
-],
-"member/ZEF56D047J/stud-007": [
-6.1341,
-7.546975,
-2,
-"e4c78bfb57d1"
-],
-"member/ZEF56D047J/stud-008": [
-6.1341,
-7.546975,
-2,
-"e4c78bfb57d1"
-],
 "panelings/WP-B-SAUNA-SPLASH/band_z0_m": 0.0,
 "panelings/WP-B-SAUNA-SPLASH/band_z1_m": 2.286,
 "panelings/WP-B-SAUNA-SPLASH/z0_m": -2.7797125,
@@ -77861,12 +78317,12 @@
 "09d06323afb3"
 ],
 "pipe_runs/PR-B-CW-WASH/z_start_m": -0.22352,
-"pipe_runs/PR-B-CW-WH/z_end_m": -1.6256,
+"pipe_runs/PR-B-CW-WH/z_end_m": -1.0525125,
 "pipe_runs/PR-B-CW-WH/z_m": [
--1.6256,
+-1.0525125,
 -0.17272,
 5,
-"739c1d6c2e25"
+"33953c9168d2"
 ],
 "pipe_runs/PR-B-CW-WH/z_start_m": -0.22352,
 "pipe_runs/PR-B-ERV-COND/z_end_m": -2.5511125,
@@ -77935,12 +78391,12 @@
 "pipe_runs/PR-B-HW-SUITE/z_start_m": -0.3048,
 "pipe_runs/PR-B-HW-TRUNK/z_end_m": -0.3048,
 "pipe_runs/PR-B-HW-TRUNK/z_m": [
--1.6256,
+-1.0525125,
 -0.3048,
 4,
-"64cdb77bf2e5"
+"347f54733eda"
 ],
-"pipe_runs/PR-B-HW-TRUNK/z_start_m": -1.6256,
+"pipe_runs/PR-B-HW-TRUNK/z_start_m": -1.0525125,
 "pipe_runs/PR-B-HW-WASH/z_end_m": 0.508,
 "pipe_runs/PR-B-HW-WASH/z_m": [
 -0.3048,
@@ -79613,9 +80069,9 @@
 "solids/DRW-SG-MAIN/z1_m": -4.1513125,
 "solids/DU-A-ERV-R-ATTIC-RUN/z0_m": 5.9944,
 "solids/DU-A-ERV-R-ATTIC-RUN/z1_m": 6.2484,
-"solids/DU-A-ERV-R-BATH1-RUN/z0_m": 5.794375,
+"solids/DU-A-ERV-R-BATH1-RUN/z0_m": 5.8293,
 "solids/DU-A-ERV-R-BATH1-RUN/z1_m": 6.2484,
-"solids/DU-A-ERV-R-BED3-RUN/z0_m": 5.794375,
+"solids/DU-A-ERV-R-BED3-RUN/z0_m": 5.8293,
 "solids/DU-A-ERV-R-BED3-RUN/z1_m": 6.2484,
 "solids/DU-A-ERV-R-STUBATH-RUN/z0_m": 5.969,
 "solids/DU-A-ERV-R-STUBATH-RUN/z1_m": 7.4168,
@@ -79643,6 +80099,8 @@
 "solids/DU-ERV-RISER-EXH-RUN/z1_m": 6.2738,
 "solids/DU-ERV-RISER-SUP-RUN/z0_m": -0.5699125,
 "solids/DU-ERV-RISER-SUP-RUN/z1_m": 5.889625,
+"solids/DU-M-ERV-EXH-FEED-RUN/z0_m": 2.2987,
+"solids/DU-M-ERV-EXH-FEED-RUN/z1_m": 2.57175,
 "solids/DU-M-ERV-EXH-TRUNK-RUN/z0_m": 2.57175,
 "solids/DU-M-ERV-EXH-TRUNK-RUN/z1_m": 2.9987875,
 "solids/DU-M-ERV-R-BATH1-RUN/z0_m": 2.784475,
@@ -80307,12 +80765,12 @@
 "solids/PR-B-CW-TRUNK-RUN/z1_m": 1.0668,
 "solids/PR-B-CW-WASH-RUN/z0_m": -0.233045,
 "solids/PR-B-CW-WASH-RUN/z1_m": 0.9144,
-"solids/PR-B-CW-WH-RUN/z0_m": -1.6256,
+"solids/PR-B-CW-WH-RUN/z0_m": -1.0525125,
 "solids/PR-B-CW-WH-RUN/z1_m": -0.16002,
 "solids/PR-B-ERV-COND-RUN/z0_m": -2.5606345,
 "solids/PR-B-ERV-COND-RUN/z1_m": -1.3985905,
 "solids/PR-B-HW-BATH-RUN/z0_m": -2.0828,
-"solids/PR-B-HW-BATH-RUN/z1_m": -0.2984621,
+"solids/PR-B-HW-BATH-RUN/z1_m": -0.2984643,
 "solids/PR-B-HW-BATH1-RUN/z0_m": -0.314325,
 "solids/PR-B-HW-BATH1-RUN/z1_m": 1.0668,
 "solids/PR-B-HW-BATH2-RUN/z0_m": -0.314325,
@@ -80325,7 +80783,7 @@
 "solids/PR-B-HW-SBATH-RUN/z1_m": 3.81,
 "solids/PR-B-HW-SUITE-RUN/z0_m": -0.314325,
 "solids/PR-B-HW-SUITE-RUN/z1_m": 3.81,
-"solids/PR-B-HW-TRUNK-RUN/z0_m": -1.6256,
+"solids/PR-B-HW-TRUNK-RUN/z0_m": -1.0525125,
 "solids/PR-B-HW-TRUNK-RUN/z1_m": -0.2921,
 "solids/PR-B-HW-WASH-RUN/z0_m": -0.314325,
 "solids/PR-B-HW-WASH-RUN/z1_m": 0.923925,

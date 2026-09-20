@@ -131,11 +131,18 @@ def test_an_empty_covers_ties_every_cut_in_that_wall() -> None:
     assert ties == {"W-A": frozenset({"*"}), "W-B": frozenset({"PR-B-KITCH-DRAIN"})}
 
 
-def test_catlin_s_four_real_plate_cuts_fail_for_want_of_a_tie(catlin_model_ro) -> None:
-    """The other nine are framed openings, which is a different question (§6)."""
+def test_catlin_s_one_real_plate_cut_fails_for_want_of_a_tie(catlin_model_ro) -> None:
+    """The other nine are framed openings, which is a different question (§6).
+
+    It was four until the wet-wall retype on 2026-09-20. Three of those cuts were legal
+    the moment their plates became 2x6: the R602.6.1 tie line is half the plate depth, so
+    it went 1.75" -> 2.75" and the sauna vent's two cuts and the kitchen drain's one fell
+    under it. What is left is `PR-B-SAUNA-VENT` through `W-B-ESS-S`, the one wall in that
+    group nothing bores hard enough to have been retyped.
+    """
     from typehaus.checks.mep.routing_bores import run_through_plate
 
     findings = run_through_plate(_ctx(catlin_model_ro))
     results = [f.result.value for f in findings]
-    assert results.count("fail") == 4
+    assert results.count("fail") == 1
     assert results.count("unknown") == 9

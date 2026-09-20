@@ -383,51 +383,26 @@ suppress = [
   # unknowns — the one habit a report cannot survive.
   "mep.run_through_plate",
 
-  # ** mep.run_through_stud: 7 BORES OVER THE R602.6 LIMIT, ON 5 RUNS. RE-MEASURED
-  # 2026-09-19 (D3). ITEMISED, BECAUSE EACH IS A DIFFERENT DECISION. **
+  # ** mep.run_through_stud: CLOSED 2026-09-20 BY RETYPING THE WALLS. NOTHING SUPPRESSED. **
   #
-  # It was 11 on 7 runs. D3 closed four of them by MOVING THE DUCT, which is what this list
-  # said the three ERV radials wanted: `DU-B-ERV-R-GYM` no longer crosses W-B-CS3, W-B-CW or
-  # W-B-HALL-W at all (it takes the stair hall's x=17'-0" lane to reach the gym), and
-  # `DU-B-ERV-R-BATH` steps to y=27'-9" so it passes through the cripple space over
-  # W-B-STR3's door head instead of through two of its BEARING studs — the only two bearing
-  # bores in the house, and the worst entries that were on this list.
+  # This list held 7 over-bores on 5 runs, itemised, each entry saying its honest fix was a
+  # wall-assembly change rather than a route. That change was made, so the entries are gone
+  # rather than re-argued — five walls, and the fifth was a surprise:
   #
-  # These are real and they are the classic ones. Listed per RUN rather than as a blanket
-  # entry so a NEW over-bore anywhere in the house still reports, which is the whole reason
-  # this file prefers the `check.id:ELEMENT-TAG` form.
+  #   * the three 2" vents through 2x4 studs (60% of 3 1/2" is 2.10", a 2" vent is 2.375"
+  #     outside). `W-A-BATH-S` 2x4 -> 2x6 and `W-B-SA-N2` / `W-B-ESS-W` to their 6" variants.
+  #   * `PR-B-WC2-DRAIN`'s 3" through a non-bearing 2x6, over by two-tenths. `W-B-CW` 2x6 ->
+  #     2x8, the authorized wet-wall change.
+  #   * `DU-B-ERV-R-SAUNA-SUP`, which this file argued at length could NOT be fixed by
+  #     routing and would need a framing decision. It was right, and the 2x8 above closes it
+  #     for free: 4.00" against 4.35" allowed. No duct moved.
+  #   * `W-A-STU-W` was never a 2x6 wall. `INT_2X6_STAGGERED_PLUMBING` is 2x4 studs on 2x6
+  #     plates, so every bore graded at 2.10" while the prose everywhere called it a 2x6.
+  #     De-staggered to `INT_2X6_PLUMBING_BATT`, which keeps the 3 1/2" batt the staggered
+  #     assembly carried. Total thickness is identical, so no face moved.
   #
-  #   * the three 2" vents (2.375" outside) through 2x4 studs — 60% of 3 1/2" is 2.10".
-  #     This is the arithmetic that makes a vent wall a 2x6 wall, and the fix is the wall
-  #     assembly rather than the pipe. W-A-STU-W carries two of them.
-  #   * PR-B-WC2-DRAIN's 3" (3.500" outside) through a non-bearing 2x6 — 3.30" allowed, so
-  #     it is over by two-tenths of an inch. A 3" drain in a 2x6 is right at the line in
-  #     every house; the honest fixes are a 2x8 wet wall or a furred chase.
-  #   * ONE 4" ERV radial left, and it is a framing question rather than a routing one.
-  #     `DU-B-ERV-R-SAUNA-SUP` crosses W-B-CW at x=3'-3" and lands on king-0-l0.
-  #     **It cannot be moved into a stud bay, and D3 measured why.** W-B-CW's door opening
-  #     runs x 3'-0 3/4"..6'-5 1/4", so the whole corridor band between
-  #     PR-B-KITCH-DRAIN's x=4'-6" fall line and the SH2/SINK2 pair is inside the door; the
-  #     clear stud bays are 16"..32" and 8 3/4"..16", both west of x=3'-0", and
-  #     `DU-B-ERV-R-BENCH` already runs the wide one. A third 4" duct in that bay was
-  #     tried on 2026-09-19 and pushes into PR-B-SINK2-DRAIN's drop — one finding traded
-  #     for another. **And the crossing this check CANNOT see is the one that decides it:**
-  #     both sauna radials pass through the door's header band (-22 3/16" to -29 7/16") at
-  #     the duct layer, and no check in this engine grades a duct through a header — the
-  #     header-over-opening check is deferred by name in the campaign plan. The honest fix
-  #     is the WALL: a header set tight to the top plate, or the duct layer raised above
-  #     -22 3/16" on this side of the basement. Both are Phase 3 framing decisions, filed
-  #     with the three 2" vents above for the same reason.
-  #
-  # ** EACH OF THESE IS AN OPEN QUESTION, NOT A SETTLED DECISION. ** None is suppressed
-  # because it is acceptable; they are suppressed because fixing them is a wall-assembly
-  # change or a routing campaign, and landing eleven reds takes `haus print`, the handoff
-  # bundle and the CI gate down in the meantime. Delete an entry when its run is re-routed.
-  "mep.run_through_stud:PR-B-WC2-DRAIN",
-  "mep.run_through_stud:PR-B-SAUNA-VENT",
-  "mep.run_through_stud:PR-A-STUBATH-VENT",
-  "mep.run_through_stud:PR-A-BAR-VENT",
-  "mep.run_through_stud:DU-B-ERV-R-SAUNA-SUP",
+  # `mep.run_through_stud` is 0 FAIL. A new over-bore anywhere in the house now reports,
+  # which is what the per-run form was protecting.
 
   # ** mep.run_in_slab: 2 RUNS INSIDE A POUR. NEW CHECK, 2026-09-19. AN OPEN CAMPAIGN. **
   #

@@ -7,9 +7,6 @@ mint their own ops, so they have to read `element_kind` off the element they are
 
 from __future__ import annotations
 
-from _helpers import CATLIN
-
-from typehaus.source.loader import load_plan
 from typehaus.source.macros_rooms import delete_wall
 from typehaus.source.macros_split import split_wall_ops
 
@@ -21,16 +18,16 @@ def _foundation_wall(plan):
                 if w.element_kind == "FoundationWall")
 
 
-def test_split_ops_carry_the_foundation_wall_class() -> None:
-    plan = load_plan(CATLIN).plan
+def test_split_ops_carry_the_foundation_wall_class(catlin_plan) -> None:
+    plan = catlin_plan
     wall = _foundation_wall(plan)
     result = split_wall_ops(plan, STOREY, wall, 0.5, "N-E10-MID", "W-E10-NEW")
     kinds = {op.type for op in result.ops if op.tag in (wall.tag, "W-E10-NEW")}
     assert kinds == {"FoundationWall"}
 
 
-def test_delete_wall_ops_carry_the_foundation_wall_class() -> None:
-    plan = load_plan(CATLIN).plan
+def test_delete_wall_ops_carry_the_foundation_wall_class(catlin_plan) -> None:
+    plan = catlin_plan
     wall = _foundation_wall(plan)
     result = delete_wall(plan, STOREY, wall.tag)
     deletes = [op for op in result.ops if op.tag == wall.tag and op.op == "delete"]

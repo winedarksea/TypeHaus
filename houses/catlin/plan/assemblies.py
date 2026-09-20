@@ -2691,6 +2691,63 @@ INT_2X6_BRG_PLUMBING = Assembly(
     source="catlin-house bearing wet wall (2x6, continuous studs): the x=10 ft line on the second storey, which carries the cut ends of FO-A-HALL's attic joists. INT_2X6_PLUMBING plus a 5.5 in. fiberglass batt, to keep the batt the staggered assembly it replaces already had",
 )
 
+# --- wet walls that had to grow, 2026-09-20 --------------------------------------
+# Three walls in this house carried a 2" vent (2 3/8" outside) or a 3" drain (3 1/2")
+# through studs that R602.6 will not let anyone drill that far, and `mep.run_through_stud`
+# was suppressed BY RUN in `preferences.toml` for every one of them. The file said what the
+# fix was: "the fix is the wall assembly rather than the pipe" and "the honest fixes are a
+# 2x8 wet wall or a furred chase". These are those assemblies.
+
+# W-A-STU-W's replacement. INT_2X6_STAGGERED_PLUMBING's 2x4 studs allow a 2.10" bore and the
+# studio's two 2" vents wanted 2.38" through eleven of them; continuous 2x6 studs allow
+# 3.30". The thickness is identical — 0.01 + 0.625 + 5.5 + 0.625 + 0.01 = 6.77" — so no face
+# moves, no fixture moves and no `clear_face` moves. This is the same trade
+# INT_2X6_BRG_PLUMBING above made on the second storey, and it keeps the batt for the same
+# reason that one did: plain INT_2X6_PLUMBING carries no `CavityFill`, so retyping to it
+# would silently strip a bath/studio party wall's 3 1/2" sound batt on top of its
+# decoupling. Same 3 1/2" fiberglass the staggered assembly had — like for like, not an
+# upgrade, so the `fiberglass` price row's 3 1/2" band still governs.
+INT_2X6_PLUMBING_BATT = Assembly(
+    tag="INT_2X6_PLUMBING_BATT",
+    variant_of="INT_2X6_PLUMBING",
+    substitute=(
+        Substitution(
+            span=layers("stud", "stud"),
+            replacement=(
+                Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+                      function=LayerFunction.STRUCTURE,
+                      framing=FramingSpec(member="2x6"),
+                      cavity=CavityFill(material_ref="fiberglass", thickness=inch(3.5))),
+            ),
+        ),
+    ),
+    source="catlin-house non-bearing wet wall (2x6, continuous studs, 3.5 in. fiberglass): W-A-STU-W, the studio suite's stack wall. INT_2X6_PLUMBING plus the sound batt INT_2X6_STAGGERED_PLUMBING already carried",
+)
+
+# W-B-CW's replacement, and the one assembly here that is a real thickening. A 3" drain is
+# 3.500" outside and 60% of a 2x6's 5.50" is 3.300" — over by two tenths of an inch, which
+# is where a 3" drain sits in a 2x6 in every house. 60% of a 2x8's 7.25" is 4.350", so the
+# drain clears with an inch to spare and so does the one 4" ERV radial that crosses this
+# wall (DU-B-ERV-R-SAUNA-SUP, 4.00"), which `preferences.toml` had filed as unfixable by
+# routing. The furnace room's south face moves ~7/8" north and the corridor's ~7/8" south.
+# A VARIANT of INT_2X6_PLUMBING (#70): only the stud depth differs, so the paint/gypsum
+# leaves and the bearing interface track the base forever.
+INT_2X8_PLUMBING = Assembly(
+    tag="INT_2X8_PLUMBING",
+    variant_of="INT_2X6_PLUMBING",
+    substitute=(
+        Substitution(
+            span=layers("stud", "stud"),
+            replacement=(
+                Layer(name="stud", material_ref="spf", thickness=inch(7.25),
+                      function=LayerFunction.STRUCTURE,
+                      framing=FramingSpec(member="2x8")),
+            ),
+        ),
+    ),
+    source="catlin-house wet wall — 2x8 depth so a 3 in. drain (3.500 in. OD) clears IRC R602.6's 60% of 7.25 in. = 4.35 in., which a 2x6's 3.30 in. does not",
+)
+
 # --- energy storage closet -------------------------------------------------------
 # The ESS closet's partitions (notes/backup_power.md), an owner decision not a
 # code requirement (IRC R327 permits an ESS in an ordinary utility closet; that's why
@@ -2714,6 +2771,38 @@ INT_ESS_CLOSET_STEEL = Assembly(
         _PAINT_FINISH_B,
     ),
     source="owner ESS-closet standard, 2026-08-02: 25 ga. steel C-stud at 16 in. o.c. with 5/8 in. Type X both faces (notes/backup_power.md). Not a code-required rated assembly and not claimed as one — no tested assembly number is cited.",
+)
+
+# The same closet standard on a 6 in. C-stud, for W-B-ESS-W — the one ESS partition a pipe
+# crosses. PR-B-SAUNA-VENT's 2" vent (2 3/8" outside) passes king-0-l0 beside D-B-ESS, and
+# a 3 1/2" web has nowhere to put that hole under EITHER rule: IRC R602.6 allows 2.10" and
+# cold-formed steel's own R603.2.5 allows half the web depth, 1.75". A 6" web allows 3.00"
+# under R603.2.5, and R602.6's 2x6 row (which is what `mep.run_through_stud` actually reads,
+# since it grades by member size and not by material) allows 3.30".
+#
+# ** STEEL, STILL. ** The point of this closet is no combustible framing around a 14 kWh
+# lithium pack and 5/8" Type X both faces; a variant keeps both and changes only the web.
+# Retyping to wood would have thrown the standard away to clear a bore, and would also have
+# made this a mixed-material junction against W-B-ESS-S — the `integrity.junction_fallback`
+# trap W-B-CW3 was widened to avoid (see plan/storeys/basement.py).
+#
+# W-B-ESS-S stays 3 1/2": nothing bores it. Only the plates are crossed, and
+# `mep.run_through_plate` is suppressed house-wide for a reason `preferences.toml` states
+# (no PlateTie vocabulary), not for anything this retype could fix.
+INT_ESS_CLOSET_STEEL_6 = Assembly(
+    tag="INT_ESS_CLOSET_STEEL_6",
+    variant_of="INT_ESS_CLOSET_STEEL",
+    substitute=(
+        Substitution(
+            span=layers("steel-stud", "steel-stud"),
+            replacement=(
+                Layer(name="steel-stud", material_ref="steel-stud", thickness=inch(5.5),
+                      function=LayerFunction.STRUCTURE,
+                      framing=FramingSpec(member="2x6", spacing=inch(16))),
+            ),
+        ),
+    ),
+    source="owner ESS-closet standard on a 6 in. 25 ga. steel C-stud at 16 in. o.c., 5/8 in. Type X both faces (notes/backup_power.md): the deeper web is what lets PR-B-SAUNA-VENT cross the jamb stud at D-B-ESS.",
 )
 
 # --- sauna ---------------------------------------------------------------------
@@ -2773,6 +2862,31 @@ SAUNA_2X4 = Assembly(
     ),
     interfaces=(_STUD_BEARING,),
     source="catlin-house sauna_basement_wall_detail.py + notes/sauna_basement_wall_detail.md",
+)
+
+# The same sauna partition on 2x6 studs, for W-B-SA-N2 — the sauna's face onto the hall's
+# dead end, which PR-B-SAUNA-VENT crosses at 2 3/8". 60% of a 2x4's 3 1/2" is 2.10" and the
+# vent was over it; 2x6 allows 3.30". The liner stack is untouched, so the HOT face does not
+# move at all — the whole 2" goes to the cold (hall) side, which is where there is room for
+# it. The cavity keeps its mineral wool (unspecified thickness, as SAUNA_2X4 has it) because
+# this is the wall between a 190 F room and a corridor.
+# A VARIANT of SAUNA_2X4 (#70): only the stud differs, so the liner, its ceiling band and the
+# bearing interface track the base.
+SAUNA_2X6 = Assembly(
+    tag="SAUNA_2X6",
+    variant_of="SAUNA_2X4",
+    substitute=(
+        Substitution(
+            span=layers("stud", "stud"),
+            replacement=(
+                Layer(name="stud", material_ref="spf", thickness=inch(5.5),
+                      function=LayerFunction.STRUCTURE,
+                      framing=FramingSpec(member="2x6"),
+                      cavity=CavityFill(material_ref="mineral-wool")),
+            ),
+        ),
+    ),
+    source="catlin-house sauna partition on 2x6 studs: SAUNA_2X4 with a 5.5 in. stud so PR-B-SAUNA-VENT's 2.375 in. bore clears IRC R602.6's 60% of 5.50 in. = 3.30 in.",
 )
 
 # W-B-CS, the sauna's east face on the x=18' bearing line — **framed**, where it was 12"
@@ -4676,6 +4790,8 @@ ASSEMBLIES = [
     INT_2X6_BRG_RC,
     INT_2X6_BRG_PLUMBING,
     INT_2X6_PLUMBING,
+    INT_2X6_PLUMBING_BATT,
+    INT_2X8_PLUMBING,
     INT_2X6_STAGGERED_PLUMBING,
     INT_2X4_PARTITION,
     INT_2X4_RC,
@@ -4685,7 +4801,9 @@ ASSEMBLIES = [
     INT_2X4_STAGGERED_DOUBLE_GWB,
     INT_2X4_STAGGERED_GWB,
     INT_ESS_CLOSET_STEEL,
+    INT_ESS_CLOSET_STEEL_6,
     SAUNA_2X4,
+    SAUNA_2X6,
     SAUNA_LINER_INT_2X6_BRG,
     GARDEN_CURB_6,
     SAUNA_LINER_ON_GARDEN_CURB,

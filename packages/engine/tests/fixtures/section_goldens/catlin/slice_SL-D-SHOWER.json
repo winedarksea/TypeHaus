@@ -1959,54 +1959,6 @@
       "node": "polyline",
       "points": [
         [
-          391.17351237037116,
-          228.3464566929134
-        ],
-        [
-          392.00000000000006,
-          228.12500000000003
-        ],
-        [
-          392.82648762962896,
-          228.3464566929134
-        ]
-      ],
-      "layer": "S-FNDN",
-      "lineweight": 0.18,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": "4YT114ADP3-run",
-      "tag": "DU-A-ERV-R-BATH1-RUN"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
-          391.17351237037116,
-          228.3464566929134
-        ],
-        [
-          392.00000000000006,
-          228.12500000000003
-        ],
-        [
-          392.82648762962896,
-          228.3464566929134
-        ]
-      ],
-      "pattern": "concrete",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-WALL-PATT",
-      "uid": null,
-      "material": "concrete"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
           356.135,
           107.50000000000001
         ],

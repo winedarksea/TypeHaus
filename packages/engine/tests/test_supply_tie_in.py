@@ -11,6 +11,8 @@ gets a record and a reason, never a silent ``continue``.
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.mep_queries import pipe_elevations_at, pipe_invert_at
 from typehaus.resolve.mep_tie_ins import supply_tie_in_records, supply_tie_ins
@@ -39,11 +41,40 @@ def test_every_supply_run_gets_a_record_and_most_get_a_parent(catlin_model_ro) -
         [rec.child for rec in basement if not rec.accepted]
 
 
-def test_a_cross_system_source_is_named_as_one(catlin_model_ro) -> None:
-    """PR-B-HW-TRUNK leaves EQ-B-WH. PR-B-CW-WH ends at the same point and the same height,
-    and a cold run is not a hot run's parent — so the honest answer is "not a run", not a
-    silently wrong tie and not the nearest hot pipe 52" up."""
+def test_the_hot_trunk_leaves_the_TANK_and_so_has_no_run_for_a_parent(catlin_model_ro):
+    """PR-B-HW-TRUNK leaves EQ-B-WH, and what feeds it is the tank, not a pipe.
+
+    ** THIS USED TO READ `cross_system`, AND THAT WAS THE BUG TALKING. ** Until 2026-09-20
+    the water heater stated a position and no port layout, so cold and hot were coincident
+    and PR-B-CW-WH ended at the exact point PR-B-HW-TRUNK started — which is what put a
+    cold run under a hot run's first vertex. The tank now carries two dimensioned taps 8"
+    apart, nothing passes under the hot one, and `no_candidate` is the honest answer.
+
+    The right answer is neither: an equipment port is a legitimate source and the tie-in
+    reader cannot yet see one. Until it can, "not a run" beats a silently wrong parent.
+    """
     rec = _records(catlin_model_ro)["PR-B-HW-TRUNK"]
+    assert rec.parent is None and not rec.accepted
+    assert rec.reason == "no_candidate"
+
+
+def test_a_cross_system_source_is_still_named_as_one(catlin_model_ro) -> None:
+    """The `cross_system` branch outlived its only real subject, so it gets a made one.
+
+    Catlin stopped producing it when the tank's taps were separated (above). The branch is
+    still the right answer whenever a run of another system really does pass under a
+    branch's tee, so it is exercised here on a hot trunk pushed back onto the cold run's
+    end — the exact geometry catlin used to have.
+    """
+    runs = list(catlin_model_ro.pipe_runs)
+    cold = next(r for r in runs if r.tag == "PR-B-CW-WH")
+    hot = next(r for r in runs if r.tag == "PR-B-HW-TRUNK")
+    moved = replace(hot, path=(cold.path[-1], *hot.path[1:]),
+                    z_start_m=cold.z_end_m,
+                    z_m=(cold.z_m[-1], *hot.z_m[1:]) if hot.z_m else hot.z_m)
+    records = {rec.child: rec for rec in supply_tie_in_records(
+        [r for r in runs if r.tag != "PR-B-HW-TRUNK"] + [moved])}
+    rec = records["PR-B-HW-TRUNK"]
     assert rec.parent is None and not rec.accepted
     assert rec.reason == "cross_system"
     assert rec.nearest == "PR-B-CW-WH"

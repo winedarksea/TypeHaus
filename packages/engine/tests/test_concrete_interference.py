@@ -144,7 +144,8 @@ def test_a_pad_moved_back_onto_the_frame_line_is_caught():
     assert all("PD-TEST" in f.element_tags for f in fails)
 
 
-def test_a_declared_pour_against_a_CONCRETE_footing_still_reports_by_name():
+def test_a_declared_pour_against_a_CONCRETE_footing_still_reports_by_name(
+        catlin_plan, catlin_ctx):
     """The ``cast_with`` branch, exercised on a fixture now that catlin declares nothing.
 
     Catlin's three garage piers carried the only declarations in the house until
@@ -154,13 +155,11 @@ def test_a_declared_pour_against_a_CONCRETE_footing_still_reports_by_name():
     subject, and an untested branch is a branch that rots. So: a pad laid over a CONCRETE
     strip footing, declaring it, and the PASS that names both sides.
     """
-    result = load_plan(CATLIN_DIR)
-    plan = result.plan
-    base_ctx, _ = build_context(plan, CATLIN_DIR)
+    plan = catlin_plan
     concrete = {el.tag for el in plan.all_elements()
                 if type(el).__name__ == "Footing"
                 and getattr(el, "material", "concrete") == "concrete"}
-    solid = next(s for s in base_ctx.model.solids
+    solid = next(s for s in catlin_ctx.model.solids
                  if s.category == "footing" and s.tag in concrete)
     cx = sum(p[0] for p in solid.outline) / len(solid.outline)
     cy = sum(p[1] for p in solid.outline) / len(solid.outline)

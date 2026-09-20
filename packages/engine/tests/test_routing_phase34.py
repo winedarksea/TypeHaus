@@ -167,7 +167,15 @@ def test_catlin_ports_are_approximate_EXCEPT_the_shop_drawn_collars(catlin_model
     this list. A collar is an exact port whose section equals the type's `port_diameter`;
     those two carry no `connection_size` at all, so `mep.equipment_port_service` grades them
     at service level the way it grades the machine's own. The assertion below says the same
-    thing a second way: every exact port here is a branch collar."""
+    thing a second way: every exact port here is a branch collar.
+
+    ** AND THEN THE WATER HEATER STOPPED BEING ONE (2026-09-20). ** `EQ-B-WH`'s cold and hot
+    taps are EXACT and are not collars, which widens the rule rather than breaking it: what
+    makes a port exact is that somebody has dimensioned it for THIS house, and a tap this
+    house cuts in the field qualifies the same way a fabricated plenum's collar does. The
+    PROPH80's sheet publishes the face ("top connections", 3/4" NPT) and no station, so the
+    8" spread is the house's own and the ports say so in their notes. The collar assertion
+    is therefore now scoped to the ERV boxes, where it is still the thing worth pinning."""
     from typehaus.resolve.mep_ports import placed_ports
 
     ports = placed_ports(catlin_model)
@@ -179,11 +187,14 @@ def test_catlin_ports_are_approximate_EXCEPT_the_shop_drawn_collars(catlin_model
                      "EQ-B-ERV-MAN-SUP.collar-gym",
                      "EQ-B-ERV-MAN-SUP.collar-play",
                      "EQ-B-ERV-MAN-SUP.collar-sauna",
+                     "EQ-B-WH.cold",
+                     "EQ-B-WH.hot",
                      "EQ-M-ERV-MAN-EXH.collar-trunk",
                      "EQ-M-ERV-MAN-SUP.collar-bed",
                      "EQ-M-ERV-MAN-SUP.collar-living",
                      "EQ-M-ERV-MAN-SUP.collar-study"]
-    assert all(p.collar for p in ports if p.exact), "an exact port here IS a branch collar"
+    assert all(p.collar for p in ports if p.exact and p.equipment_tag.startswith("EQ-")
+               and "ERV" in p.equipment_tag), "an exact ERV port IS a branch collar"
     assert all("approximate" in p.describe() for p in ports if not p.exact)
     assert all("exact" in p.describe() for p in ports if p.exact)
 

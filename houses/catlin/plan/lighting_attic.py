@@ -268,7 +268,12 @@ ATTIC_LIGHTING = [
     # Tag and uid are kept so the element's GlobalId follows it across the retype, the way
     # FURN-A-STUDIO-BAR-BASE kept 4GVQGBXMS3 through the SUNNERSTA swap.
     ElectricalDevice(uid="7QXE07XJ69", tag="ED-A-STUDIO-BAR-PEND", kind=DeviceKind.LIGHT,
-                     position=pt(inch(152.5), inch(204.625)), type_ref="ED-T-LT-MIRROR",
+                     # ** MOVED 1" OUT WITH W-A-BATH-S'S RETYPE, 2026-09-20 (H8). ** The wall went
+                     # INT_2X4_PARTITION -> INT_2X6_PLUMBING so PR-A-BAR-VENT's 2" vent could bore
+                     # its studs legally, and both faces moved 1" off the axis with it. This box is
+                     # authored 1.000" off the GYPSUM face (the 0.01" paint film is not in the
+                     # offset), so it moves the same 1".
+                     position=pt(inch(152.5), inch(203.625)), type_ref="ED-T-LT-MIRROR",
                      circuit="CKT-LT-UPPER", room="RM-A-STUDIO", rotation=deg(180),
                      controlled_by=("ED-A-STUDIO-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(58))),
@@ -324,7 +329,12 @@ ATTIC_LIGHTING = [
     # EITHER OF THOSE ** — no rule tests a wall device against a rough opening or against a
     # pipe in its own bay — so both clearances are held here and by eye in the viewer.
     ElectricalDevice(uid="DD20R7F44T", tag="ED-A-STUBATH-SW", kind=DeviceKind.SWITCH,
-                     position=pt(ft(13, 3), ft(17, 7.375)), type_ref="ED-T-SWITCH",
+                     # ** MOVED 1" OUT WITH W-A-BATH-S'S RETYPE, 2026-09-20 (H8). ** The wall went
+                     # INT_2X4_PARTITION -> INT_2X6_PLUMBING so PR-A-BAR-VENT's 2" vent could bore
+                     # its studs legally, and both faces moved 1" off the axis with it. This box is
+                     # authored 1.000" off the GYPSUM face (the 0.01" paint film is not in the
+                     # offset), so it moves the same 1".
+                     position=pt(ft(13, 3), ft(17, 8.375)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-UPPER", room="RM-A-STUBATH",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
     # The pocket's light: its old station (14'-0", 30'-0") fell inside FO-A-HALL, open to

@@ -28,23 +28,51 @@ def test_bearing_walls_are_READ_from_the_model_not_guessed_from_exterior(catlin_
     assert {w.tag for w in catlin_ctx.model.walls if w.is_foundation} <= tags
 
 
-def test_a_plate_cut_past_half_is_UNKNOWN_and_carries_the_tie_as_its_remedy(
-        catlin_ctx) -> None:
-    """R602.6.1 PERMITS the cut with a tie, and this model has no vocabulary for a plate
-    tie at all — so its absence is not evidence of absence. That is what UNKNOWN means
-    here, and the message says what the detail is."""
+def test_a_plate_cut_past_half_names_the_tie_that_would_permit_it(catlin_ctx) -> None:
+    """R602.6.1 PERMITS the cut with a tie, and the finding has to say so.
+
+    ** THIS USED TO ASSERT UNKNOWN AND NO FAIL, AND BOTH HAVE MOVED. ** The reasoning then
+    was that the model had no vocabulary for a plate tie, so an absent tie was not evidence
+    of absence. `PlateTie` exists now, so an untied cut past half is a FAIL naming the
+    element to author — and the UNKNOWNs that remain are the framed openings, which are a
+    different question and say a different thing. The 16 ga detail moved with it: it is the
+    REMEDY, so it is in the fix hint, along with the `PlateTie(...)` line to paste.
+    """
     findings = run_through_plate(catlin_ctx)
-    unknowns = [f for f in findings if f.result.value == "unknown"]
-    assert unknowns
-    assert all("16 ga" in f.message for f in unknowns)
-    assert not [f for f in findings if f.result.value == "fail"]
+    cuts = [f for f in findings if f.result.value == "fail"]
+    assert cuts, "catlin still has one untied plate cut; see preferences.toml"
+    assert all("R602.6.1" in f.message for f in cuts)
+    assert all("16 ga" in f.fix_hint and "PlateTie(" in f.fix_hint for f in cuts)
+    openings = [f for f in findings if f.result.value == "unknown"]
+    assert openings
+    assert all("framed opening" in f.message for f in openings)
+
+
+def test_catlin_bores_no_stud_past_its_limit_any_more(catlin_ctx) -> None:
+    """The wet-wall retype closed every one of them on 2026-09-20.
+
+    Five walls moved: three 2" vent walls and `PR-B-WC2-DRAIN`'s, plus the staggered attic
+    wall whose studs were 2x4 on 2x6 plates all along. This is the assertion that keeps them
+    closed — an over-bore reappearing here is a regression, not a new finding.
+    """
+    assert not [f for f in run_through_stud(catlin_ctx) if f.result.value == "fail"]
 
 
 def test_an_over_size_bore_names_the_member_the_limit_and_the_actual(catlin_ctx) -> None:
     """A builder with a finding needs to know WHICH stud. "The run is tight somewhere" is
-    not an instruction."""
-    findings = [f for f in run_through_stud(catlin_ctx) if f.result.value == "fail"]
-    assert findings, "catlin has real over-bores; see preferences.toml"
+    not an instruction.
+
+    Catlin bores nothing past its limit since the retype, so the over-bore is made here:
+    `PR-B-WC2-DRAIN` blown up to 4" in the 2x8 that was widened to take it at 3".
+    """
+    from dataclasses import replace
+
+    model = catlin_ctx.model
+    runs = [replace(r, diameter_m=0.1016) if r.tag == "PR-B-WC2-DRAIN" else r
+            for r in model.pipe_runs]
+    ctx = replace(catlin_ctx, model=replace(model, pipe_runs=tuple(runs)))
+    findings = [f for f in run_through_stud(ctx) if f.result.value == "fail"]
+    assert findings, "a 4\" drain through a 2x8 is over R602.6"
     for finding in findings:
         assert "the worst is" in finding.message
         assert "may not exceed" in finding.message

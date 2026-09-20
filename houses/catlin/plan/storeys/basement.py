@@ -730,9 +730,19 @@ WALLS = [
     # unchanged); W-B-CW3 is the 3'-3" stub forming the closet's south wall.
     #
     # W-B-CW is the furnace room's south wall and carries the 4" building drain, so it takes
-    # the wet-wall 2x6 rather than a 2x4.
+    # a wet-wall assembly rather than a 2x4.
+    #
+    # ** INT_2X6_PLUMBING -> INT_2X8_PLUMBING, 2026-09-20. ** Two runs cross this wall that a
+    # 2x6 cannot legally take. PR-B-WC2-DRAIN is 3" (3.500" outside) against R602.6's 60% of
+    # 5.50" = 3.30" — over by two tenths, which is where a 3" drain sits in a 2x6 in every
+    # house — and DU-B-ERV-R-SAUNA-SUP is a 4" radial `preferences.toml` had already argued
+    # could not be moved into a clear stud bay on this line. 60% of a 2x8's 7.25" is 4.35" and
+    # both clear it. The wall grows 1 3/4": the furnace room's south face moves ~7/8" north and
+    # the corridor face ~7/8" south, on a wall whose two neighbours down this line
+    # (W-B-CW2/W-B-CW3) stay 2x6 — a 7/8" jog at N-B-CW-E, which is a wall end, not a face a
+    # room polygonizes along.
     Wall(uid="CBW114AAAA", tag="W-B-CW", start_node="N-B-W1",
-         end_node="N-B-CW-E", assembly="INT_2X6_PLUMBING", top=ft(8)),
+         end_node="N-B-CW-E", assembly="INT_2X8_PLUMBING", top=ft(8)),
     # This was the ESS closet's south wall until the closet moved to the NE corner; it is
     # now simply W-B-CW continued: same INT_2X6_PLUMBING, one wall type down the whole
     # furnace-room south line.
@@ -878,8 +888,12 @@ WALLS = [
     Wall(uid="CBW118AAAA", tag="W-B-SA-N", start_node="N-B-SA-NW",
          end_node="N-B-HALL-S", assembly="SAUNA_2X4", top=ft(7, 6),
          interior_room="RM-B-SAUNA"),
+    # ** W-B-SA-N2 RETYPED SAUNA_2X4 -> SAUNA_2X6, 2026-09-20 ** and W-B-SA-N did NOT: only
+    # the east segment is crossed. PR-B-SAUNA-VENT's 2" (2 3/8" outside) bored stud-003 here
+    # against R602.6's 60% of 3 1/2" = 2.10"; 2x6 allows 3.30". The liner stack is unchanged,
+    # so the sauna's own hot face does not move — the whole 2" goes onto the hall side.
     Wall(uid="CM3FCDT2ST", tag="W-B-SA-N2", start_node="N-B-HALL-S",
-         end_node="N-B-SA-NE", assembly="SAUNA_2X4", top=ft(7, 6),
+         end_node="N-B-SA-NE", assembly="SAUNA_2X6", top=ft(7, 6),
          interior_room="RM-B-SAUNA"),
     # ** THE HALL'S WEST SIDE, NEW 2026-09-07. ** x=13'-10 11/16" from the y=18' line south
     # to the sauna's north wall, walling the workshop off the hall and hosting D-B-SHOP.
@@ -925,8 +939,15 @@ WALLS = [
     # is the change of habit from the old corner: there the door was in the long north wall,
     # here the west wall is the one facing the room's open floor. The south partition cannot
     # take it — EQ-B-ERV stands 10 1/4" south of it and a 2'-0" leaf needs 2'-0".
+    #
+    # ** W-B-ESS-W ONLY, RETYPED TO INT_ESS_CLOSET_STEEL_6 ON 2026-09-20. ** PR-B-SAUNA-VENT
+    # crosses the jamb stud beside D-B-ESS at 2 3/8", which no 3 1/2" web can take under
+    # either R602.6 or steel's own R603.2.5. Still steel, still Type X both faces — only the
+    # web deepens, so the closet's owner standard and its material continuity with W-B-ESS-S
+    # are both intact. The closet's west face moves ~1" east; D-B-ESS's jamb depth grows with
+    # the wall, which is what a deeper stud is.
     Wall(uid="CBW124AAAA", tag="W-B-ESS-W", start_node="N-B-ESS-N",
-         end_node="N-B-ESS-SW", assembly="INT_ESS_CLOSET_STEEL", top=ft(8),
+         end_node="N-B-ESS-SW", assembly="INT_ESS_CLOSET_STEEL_6", top=ft(8),
          interior_room="RM-B-ESS"),
     Wall(uid="CBW125AAAA", tag="W-B-ESS-S", start_node="N-B-ESS-SW",
          end_node="N-B-ESS-SE", assembly="INT_ESS_CLOSET_STEEL", top=ft(8),

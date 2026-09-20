@@ -205,7 +205,12 @@ NEC_FILL_ATTIC = [
     # door it is: 17'-2" leaves 1'-2 1/2" to the jamb and 10" to the W-A-C2 corner. It stays a
     # GFCI device — the bowl is 4'-2" away through the same wall face, inside E3902.10.
     ElectricalDevice(uid="TBSBS6V58H", tag="ED-A-STUDIO-RC6", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(17, 2), ft(17, 0.625)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     # ** MOVED 1" OUT WITH W-A-BATH-S'S RETYPE, 2026-09-20 (H8). ** The wall went
+                     # INT_2X4_PARTITION -> INT_2X6_PLUMBING so PR-A-BAR-VENT's 2" vent could bore
+                     # its studs legally, and both faces moved 1" off the axis with it. This box is
+                     # authored 1.000" off the GYPSUM face (the 0.01" paint film is not in the
+                     # offset), so it moves the same 1".
+                     position=pt(ft(17, 2), ft(16, 11.625)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(16)), rotation=deg(180)),
     ElectricalDevice(uid="NZQNA1VMKW", tag="ED-A-STUDIO-RC7", kind=DeviceKind.RECEPTACLE_GFCI,
@@ -233,7 +238,12 @@ NEC_FILL_ATTIC = [
     # the wall's south face at y 17'-0 5/8" — the same line RC6 stands on, and the number
     # `test_wall_mounted_devices_resolve_against_a_wall_face` settles.
     ElectricalDevice(uid="K9XVXZ9XZ3", tag="ED-A-STUDIO-BAR-GFCI", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(13, 4), ft(17, 0.625)), type_ref="ED-T-RECEPTACLE-GFCI",
+                     # ** MOVED 1" OUT WITH W-A-BATH-S'S RETYPE, 2026-09-20 (H8). ** The wall went
+                     # INT_2X4_PARTITION -> INT_2X6_PLUMBING so PR-A-BAR-VENT's 2" vent could bore
+                     # its studs legally, and both faces moved 1" off the axis with it. This box is
+                     # authored 1.000" off the GYPSUM face (the 0.01" paint film is not in the
+                     # offset), so it moves the same 1".
+                     position=pt(ft(13, 4), ft(16, 11.625)), type_ref="ED-T-RECEPTACLE-GFCI",
                      circuit="CKT-RC-ATTIC",
                      mount=Mount(kind=MountKind.WALL, elevation=inch(58)), rotation=deg(180)),
     # The bath's own, GFCI under E3902.1 — every 125V receptacle in a bathroom, sink or no

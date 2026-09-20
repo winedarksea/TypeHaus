@@ -57,6 +57,10 @@ KEY_GLOSSARY: dict[tuple[str, str], str] = {
     ("ducts", "supply"): "Supply", ("ducts", "return"): "Return", ("ducts", "exhaust"): "Exhaust",
     ("ducts", "outdoor_air"): "Outdoor air", ("ducts", "dryer"): "Dryer exhaust",
     ("ducts", "transfer"): "Transfer",
+    ("light_run_materials", "channel"): "Aluminium channel with diffuser",
+    ("light_run_materials", "tape"): "LED tape",
+    ("light_run_materials", "end_cap"): "Channel end cap",
+    ("light_run_materials", "corner_connector"): "Channel corner connector",
     ("plumbing_specialties", "backflow_preventer"): "Backflow preventer",
     ("plumbing_specialties", "main_shutoff"): "Main shutoff",
     ("plumbing_specialties", "shutoff"): "Shutoff valve",
@@ -232,6 +236,14 @@ def _label(section: str, bare: str, row: Mapping[str, Any], labels: LabelIndex) 
         return f"Conduit, {_fraction_in(g('trade_size_in'))} trade size"
     if section == "conductors":
         return f"Branch-circuit conductors, {g('poles')}-pole circuits"
+    if section == "light_run_materials":
+        # The key is ``<part>:<luminaire type>``; the part is the word a supplier quotes and
+        # the type is the mark it belongs to, which is how the schedule names it.
+        part = KEY_GLOSSARY.get((section, bare), bare.replace("_", " ").capitalize())
+        mark = g("mark")
+        type_ref = str(g("type") or "")
+        named = labels.types.get(type_ref) or type_ref
+        return f"{part}, type {mark} — {named}" if mark else f"{part} — {named}"
     if section == "plumbing_specialties":
         kind = KEY_GLOSSARY.get((section, str(g("kind") or bare)), str(g("kind") or bare))
         return f"{kind} — {g('model')}" if g("model") else kind

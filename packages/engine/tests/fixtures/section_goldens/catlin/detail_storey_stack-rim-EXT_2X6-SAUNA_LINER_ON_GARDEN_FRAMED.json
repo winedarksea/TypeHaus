@@ -791,6 +791,62 @@
       "node": "polyline",
       "points": [
         [
+          0.5,
+          -13.437499999999998
+        ],
+        [
+          6.000000000000001,
+          -13.437499999999998
+        ],
+        [
+          6.000000000000001,
+          21.65354330708662
+        ],
+        [
+          0.5,
+          21.65354330708662
+        ]
+      ],
+      "layer": "A-WALL",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW101AAAA",
+      "tag": "W-M-S1/stud"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          0.5,
+          -13.437499999999998
+        ],
+        [
+          6.000000000000001,
+          -13.437499999999998
+        ],
+        [
+          6.000000000000001,
+          21.65354330708662
+        ],
+        [
+          0.5,
+          21.65354330708662
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "spf"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           0.0,
           -13.437499999999998
         ],
@@ -959,6 +1015,118 @@
       "node": "polyline",
       "points": [
         [
+          -4.0,
+          -13.437499999999998
+        ],
+        [
+          0.0,
+          -13.437499999999998
+        ],
+        [
+          0.0,
+          21.65354330708662
+        ],
+        [
+          -4.0,
+          21.65354330708662
+        ]
+      ],
+      "layer": "A-WALL-INSU",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW101AAAA",
+      "tag": "W-M-S1/spray-foam"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -4.0,
+          -13.437499999999998
+        ],
+        [
+          0.0,
+          -13.437499999999998
+        ],
+        [
+          0.0,
+          21.65354330708662
+        ],
+        [
+          -4.0,
+          21.65354330708662
+        ]
+      ],
+      "pattern": "batt",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "closed-cell-spray-foam"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -4.5,
+          -13.437499999999998
+        ],
+        [
+          -4.0,
+          -13.437499999999998
+        ],
+        [
+          -4.0,
+          21.65354330708662
+        ],
+        [
+          -4.5,
+          21.65354330708662
+        ]
+      ],
+      "layer": "A-WALL-PATT",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW101AAAA",
+      "tag": "W-M-S1/vent-gap"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -4.5,
+          -13.437499999999998
+        ],
+        [
+          -4.0,
+          -13.437499999999998
+        ],
+        [
+          -4.0,
+          21.65354330708662
+        ],
+        [
+          -4.5,
+          21.65354330708662
+        ]
+      ],
+      "pattern": "membrane",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "air-barrier"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           -4.5,
           -13.437499999999998
         ],
@@ -1065,6 +1233,118 @@
       "layer": "A-WALL-PATT",
       "uid": null,
       "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -6.000000000000001,
+          -13.437499999999998
+        ],
+        [
+          -4.5,
+          -13.437499999999998
+        ],
+        [
+          -4.5,
+          21.65354330708662
+        ],
+        [
+          -6.000000000000001,
+          21.65354330708662
+        ]
+      ],
+      "layer": "A-WALL",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW101AAAA",
+      "tag": "W-M-S1/outer-girt"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -6.000000000000001,
+          -13.437499999999998
+        ],
+        [
+          -4.5,
+          -13.437499999999998
+        ],
+        [
+          -4.5,
+          21.65354330708662
+        ],
+        [
+          -6.000000000000001,
+          21.65354330708662
+        ]
+      ],
+      "pattern": "lumber",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "kdat"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          -7.250000000000001,
+          -13.437499999999998
+        ],
+        [
+          -6.000000000000001,
+          -13.437499999999998
+        ],
+        [
+          -6.000000000000001,
+          21.65354330708662
+        ],
+        [
+          -7.250000000000001,
+          21.65354330708662
+        ]
+      ],
+      "layer": "A-WALL",
+      "lineweight": 0.35,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "CMW101AAAA",
+      "tag": "W-M-S1/cladding"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          -7.250000000000001,
+          -13.437499999999998
+        ],
+        [
+          -6.000000000000001,
+          -13.437499999999998
+        ],
+        [
+          -6.000000000000001,
+          21.65354330708662
+        ],
+        [
+          -7.250000000000001,
+          21.65354330708662
+        ]
+      ],
+      "pattern": "metal",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "board-batten-24"
     },
     {
       "space": "model",
@@ -3139,7 +3419,7 @@
         0.5,
         7.444444444444445
       ],
-      "content": "SHEET A-555",
+      "content": "SHEET A-557",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
