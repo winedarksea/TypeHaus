@@ -15,7 +15,7 @@ the house-wide KDAT longevity spec every treated member here also carries.
 
 from typehaus import (
     Annotation, Connector, ConnectorKind, DeckLayer, FloorSystem, Footing, JoistSpec,
-    Node, Post, Railing, RailingKind, Slab, SlatScreen, Stair, Wall,
+    Node, Post, Railing, RailingKind, ShearPanelSpec, Slab, SlatScreen, Stair, Wall,
     face, ft, inch, pt,
 )
 
@@ -309,12 +309,61 @@ GARAGE_STOREY_ELEMENTS = []
 # idiom (and the same trap) as `W-B-CS`/`W-B-CS3` in params/main_deck.py: an offset that
 # stopped matching the stud would slide the axis off x=6'-0" silently. The west cladding face
 # resolves to `SCREEN_CLADDING_WEST_X_FT`, which the skirt below reads rather than re-derives.
+#
+# ** AND SINCE 2026-09-19 IT IS A DECLARED SHEAR PANEL, WHICH IS WHAT LETS IT CARRY ANY OF
+# THE CANOPY'S SHEAR AT ALL. ** `plan/assemblies.py::ENTRY_SCREEN_WALL` has called this "the
+# canopy's north-south lateral system" since 2026-09-10 and nothing in the engine believed
+# it: `engineering/roof_moment` put the whole 1,360 lb frame shear on the two cast columns
+# and said in as many words that sharing it was "a judgement this engine does not make".
+# Refusing to GUESS a panel's stiffness was right; a wall's racking stiffness is a property
+# of its FASTENER SCHEDULE, which no geometry records. `ShearPanelSpec` is that schedule
+# written down, with the SDPWS row it is read at, so the split becomes IBC 2018 §1604.4's
+# own arithmetic instead of a claim in a comment.
+#
+# ** THE VALUES ARE READ CONSERVATIVELY AND THE READ SAYS SO. ** The 15/32" row is quoted
+# for a 5/8" panel (thicker sheathing at the same nailing is at least as strong and stiff),
+# and the PLYWOOD `G_a` is taken rather than the OSB one, which makes this panel SOFTER and
+# hands the cast columns a LARGER share — the direction that does not flatter the member the
+# whole calculation exists to grade.
+#
+# ** `anchorage_slip` IS AN ASSUMPTION AND IT IS THE ONE TO ARGUE WITH. ** SDPWS's third
+# term is the anchorage's own stretch at the design shear, and this panel has no hold-down
+# device: it is held down by its own dead weight, which `engineering/lateral_system` grades
+# rather than assumes. 1/16" is bearing take-up and sill crushing at the two 6x6s, and it is
+# the single number here that a real design would replace with a tested device's slip.
 SCREEN_PANEL = Wall(
     uid="BWWS01AAAA", tag="W-BW-SCREEN",
     start_node="N-BW-SCREEN-S", end_node="N-BW-SCREEN-N",
     assembly="ENTRY_SCREEN_WALL", base_elevation=ft(DECK_JOIST_TOP_FT),
     top=ft(SCREEN_PANEL_TOP_FT - DECK_JOIST_TOP_FT), guard=True,
     alignment=face("stud-ext", offset=inch(-1.75)),
+    shear_panel=ShearPanelSpec(
+        sheathing_layer="cdx-out",
+        fastening=('8d common (0.131" x 2 1/2") at 6" o.c. at every panel edge and 12" '
+                   'o.c. in the field, panel edges BLOCKED; 2x4 KDAT framing at 16" o.c. '
+                   '— the WEST face alone, the east 303 ply is finish and is not counted'),
+        source=("AWC SDPWS-2015 Table 4.3A, wood structural panel shear wall, 15/32\" "
+                "sheathing with 8d at 6\" edge spacing — quoted for this 5/8\" panel "
+                "because thicker sheathing at the same schedule is not weaker, and the "
+                "PLYWOOD G_a rather than the OSB one for the same reason"),
+        unit_shear_asd_plf=182.5,
+        apparent_stiffness_kips_per_in=11.0,
+        chords=("PT-BW-CW and PT-BW-CNW, the two 6x6 KDAT columns this wall is framed "
+                "around (`within_wall`), down through BM-BW-SCSILL and the two seat beams "
+                "to the cast piers directly under them. NO hold-down device: the panel's "
+                "own dead load is claimed to hold it, and `lateral_system` grades that "
+                "claim rather than taking it"),
+        chord_member="2x4", chord_plies=2,
+        anchorage_slip=inch(0.0625),
+        # The hold-down is the standoff base already under each 6x6, and it is already in
+        # this model and already in the BOM: an ABU66SS on a cast-in AB-058-10-SS, 2,190 lb
+        # of published uplift per Simpson letter L-F-SSNAILS23 against the ABU66 row of
+        # ESR-1622. What that report does NOT cover is the anchor bolt and the concrete
+        # under it (§5.6 puts both outside its scope), and `lateral_system` says so on the
+        # record rather than letting the 2,190 stand for the whole link.
+        holdown="ABU66SS",
+        aspect_ratio_limit=3.5,
+    ),
 )
 GARAGE_STOREY_ELEMENTS.extend([*SCREEN_PANEL_NODES, SCREEN_PANEL])
 

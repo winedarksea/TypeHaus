@@ -223,20 +223,50 @@ class Pad(Element):
     #: 0.6λ for an unroughened cold joint), and that reinforcement runs continuous through
     #: the intersection where there is any (§14.1.4(a)).
     #:
-    #: ** IT BUYS NO BEARING AREA, AND THAT IS THE LINE BETWEEN A LOOKUP AND A DESIGN. **
-    #: ``structural.deck_footing_size`` reads this pad's OWN outline and nothing else. IRC
-    #: R403.1.1 sizes a pier footing on "the tributary load and allowable soil pressure" — an
-    #: independent area calculation granting no credit from a neighbour, and the IRC is silent
-    #: on overlapping footings entirely. A pour that needed the union to pass would be a
-    #: footing carrying a wall load AND a column load, which is a COMBINED footing (ACI
-    #: 336.2R's own definition) under ACI 318-19 §13.3.4 — and §13.3.4.3 forbids assuming a
-    #: uniform pressure under one. That is a seal's work. A pad that passes on its own
-    #: footprint is merely poured conveniently, and needs no seal at all.
+    #: ** IT BUYS NO BEARING AREA BY ITSELF, AND SINCE 2026-09-19 THAT IS A DIFFERENT
+    #: SENTENCE FROM "IT NEVER CAN". ** This paragraph used to end "that is a seal's work"
+    #: and stop, which read as a refusal in principle. What it was actually refusing is the
+    #: SIDE EFFECT: declaring a lap must not quietly make every other pad in the house
+    #: eligible for weaker checks. ``structural.deck_footing_size`` still reads this pad's
+    #: OWN outline and nothing else, because IRC R403.1.1 sizes a pier footing on "the
+    #: tributary load and allowable soil pressure" — an independent area calculation granting
+    #: no credit from a neighbour, and the IRC is silent on overlapping footings entirely.
+    #:
+    #: The union becomes creditable in exactly one place and only under an explicit second
+    #: claim, ``resists_base_moment`` below: ``engineering/column_base.py`` will then grade
+    #: the pour as the COMBINED footing it is (ACI 336.2R's own definition, ACI 318-19
+    #: §13.3.4), with eccentricity, bearing and overturning computed on the union's real
+    #: area, centroid and section modulus. §13.3.4.3's actual bite is the UNIFORM-pressure
+    #: assumption, and nothing here makes one: the distribution is the rigid-body linear one,
+    #: and where the resultant leaves the union's kern the record refuses to publish a
+    #: pressure at all rather than extrapolating a trapezoid past where it describes
+    #: anything.
+    #:
+    #: ** A POUR NAMED HERE HAS TO BE CONCRETE, AND ON THIS HOUSE ONE OF THEM STOPPED BEING
+    #: SO. ** ``Footing.material`` is a discriminator, and catlin's nine garage strip footings
+    #: were retyped to consolidated crushed stone (IRC R403.5) on 2026-09-15 — four days
+    #: after three pier pads declared they were cast monolithically with them. Stone cannot be
+    #: cast with anything. The combined-footing path refuses any named pour that is not
+    #: concrete, by name, rather than quietly adding its area.
     #:
     #: It is deliberately not on `Footing`: a Footing that carries a wall is already out of
     #: this check's scope through `under`, and a wall-less one that is cast with something
     #: else is a Pad by any other name.
     cast_with: tuple[str, ...] = ()
+    #: ** THE CLAIM THAT THIS PAD, AND NOT THE BURIED SHAFT, IS WHAT TURNS THE COLUMN'S BASE
+    #: MOMENT AROUND. ** An embedded shaft and a spread base are ALTERNATIVE load paths for
+    #: one moment, never additive ones: a shaft that turns in soil sheds its moment into
+    #: lateral bearing along its buried length, and a pad resists by bearing precisely because
+    #: the shaft above it does not. Adding them counts the same moment twice, and the split
+    #: between them is a soil-structure stiffness problem this engine does not solve.
+    #:
+    #: So ``engineering/column_base.py`` grades ONE of them and reports the other as evidence,
+    #: and this field is what chooses — never the engine, and above all never whichever of the
+    #: two happens to pass. Unset (the default) grades the embedment, which is what a column
+    #: standing in open ground on a small pad actually has. Set, it grades the spread
+    #: mechanism on this pad's footprint, or on the union with everything ``cast_with`` names
+    #: where those pours resolve and are concrete.
+    resists_base_moment: bool = False
 
 
 

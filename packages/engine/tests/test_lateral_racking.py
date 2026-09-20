@@ -233,27 +233,40 @@ def test_catlin_fails_only_where_the_ground_cannot_fix_the_base(catlin_findings)
     in any tributary; what changed is that the model now says so out loud. Asserted by TAG,
     so a third one is a failure rather than a tolerance.
 
-    ** AND TWO ARE A REAL FAIL SINCE 2026-09-18, WHICH IS WHY THIS TEST IS NO LONGER
+    ** AND ONE IS A REAL FAIL SINCE 2026-09-18, WHICH IS WHY THIS TEST IS NO LONGER
     NAMED "no fail here". ** ``engineering/column_base.py`` grades the IBC 1807.3.2.1
     embedment a fixed base needs, which every ``deck_post`` record had been naming as an
-    ungraded assumption since 2026-09-11 — and the north entry canopy's two cast columns do
-    not have it. ``notes/entry_column_base_fixity.md`` works it by hand and §6 lists the
-    three closures. This is an OPEN design gap held in
+    ungraded assumption since 2026-09-11 — and the north entry canopy's two cast columns did
+    not have it. ``notes/entry_column_base_fixity.md`` works it by hand and §6 works the
+    closures. This is an OPEN design gap held in
     ``test_cli_check_output.test_catlin_carries_no_failures``' allow-list, not an accepted
-    advisory; both entries go when the fix lands.
+    advisory; the entry goes when the fix lands.
+
+    ** IT WAS TWO UNTIL 2026-09-19, AND WHAT MOVED PT-BW-RE WAS THE DEMAND, NOT THE
+    GROUND. ** The canopy's deck is a declared diaphragm now and ``W-BW-SCREEN`` a declared
+    shear panel, so the frame shear is shared in proportion to rigidity (IBC 2018 §1604.4,
+    ``notes/entry_column_base_fixity.md`` §7) instead of being loaded wholly onto the two
+    cast columns. ``PT-BW-RE``'s required embedment went 8.08' -> 6.25' against the 6.12' it
+    has, which is INSIDE §1806.3.4's judgement band, so it joins the two landing columns as
+    an UNKNOWN naming the judgement rather than a FAIL naming a shortfall. **That is not a
+    pass**: 1.02 at the table's own lateral bearing is exactly at the line.
+
+    ``PT-BW-RNE`` is unmoved in kind and barely moved in degree — 2.31 -> 2.21 — because it
+    is the SHORT column, a cantilever's stiffness goes as ``1/h³``, and a rigidity split
+    hands it the larger share of the one case the panel does not resist.
     """
     fails = [f for f in catlin_findings if f.result is Result.FAIL]
-    assert {f.engineering_item for f in fails} == {"column_base/PT-BW-RE",
-                                                   "column_base/PT-BW-RNE"}
+    assert {f.engineering_item for f in fails} == {"column_base/PT-BW-RNE"}
     assert all("embedment" in f.message for f in fails)
 
     unknown = [f for f in catlin_findings if f.result is Result.UNKNOWN]
     assert {f.engineering_item for f in unknown} == {
         "deck_post/PT-BW-W", "deck_post/PT-BW-GW",
-        # The band convention: 3.50' of embedment sits between what §1806.3.4's two ends
-        # ask for, so the verdict turns on a judgement about the STRUCTURE — whether 1/2"
-        # of motion at grade matters to a landing guard — and the record names it.
-        "column_base/PT-BW-GW", "column_base/PT-BW-GE"}
+        # The band convention: an embedment that sits between what §1806.3.4's two ends ask
+        # for leaves the verdict turning on a judgement about the STRUCTURE — whether 1/2"
+        # of motion at grade matters — and the record names it instead of picking a side.
+        # 3.50' does it for the two landing columns; 6.12' now does it for PT-BW-RE.
+        "column_base/PT-BW-RE", "column_base/PT-BW-GW", "column_base/PT-BW-GE"}
     assert all("no tributary AREA for that load" in f.message
                for f in unknown if (f.engineering_item or "").startswith("deck_post/"))
     assert all("1806.3.4" in f.message

@@ -24,7 +24,7 @@ from typehaus.model.placeables import (
     ServicePort,
 )
 from typehaus.model.registry import register_constructor
-from typehaus.quantities import Length, UFactor
+from typehaus.quantities import Length, UFactor, m
 
 
 class BookcaseDoorSpec(HausModel):
@@ -165,6 +165,9 @@ class BuiltInBookcaseSpec(HausModel):
     horizontal_board_thickness: Length
     divider_thickness: Length
     back_thickness: Length
+    # Fixed closure between the first end divider and an adjacent return wall. It belongs
+    # to the one fabricated Furniture occurrence but is not a shelf bay or shared divider.
+    west_filler_width: Length = m(0)
 
     @model_validator(mode="after")
     def _has_usable_geometry(self) -> BuiltInBookcaseSpec:
@@ -175,6 +178,8 @@ class BuiltInBookcaseSpec(HausModel):
             self.divider_thickness, self.back_thickness,
         )):
             raise ValueError("built-in bookcase thicknesses and shelf depth must be positive")
+        if self.west_filler_width.meters < 0:
+            raise ValueError("built-in bookcase west filler width cannot be negative")
         if any(bay.height.meters < self.horizontal_board_thickness.meters
                for bay in self.bays):
             raise ValueError("built-in bookcase bay is shorter than its boards")

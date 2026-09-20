@@ -180,7 +180,17 @@ MAX_NON_BLOCKING_ITEMS = {"mn-2020": 25}
 # `_authoring.engineered()` makes an authored spec unreachable under `Status.OVER` on
 # purpose. Note that "Deck beams outside the beam span table" STAYED at 7's roster and did
 # not leave it when `glulam_beam` was re-registered the same day: it was already counted.
-MAX_UNSEALED_ITEMS = {"mn-2020": 8}
+#
+# RAISED 8 -> 9 on 2026-09-19: "Roof diaphragm and shear panel load path". The north entry
+# canopy's frame shear stopped being loaded wholly onto its two cast columns and is shared
+# with `W-BW-SCREEN` by relative rigidity (IBC 2018 §1604.4), which is what took
+# `column_base/PT-BW-RE` from a FAIL at d/c 1.32 to a §1806.3.4 judgement at 1.02. That
+# reduction is bought entirely from a deck that now has to BE a diaphragm — blocked, inside
+# SDPWS Table 4.2.4's 4:1 (it is at exactly 4.00), with a chord at each end and a collector
+# at each header — and `engineering/lateral_system.py` grades all of it. It leaves this lane
+# when a licensed engineer stamps the load path, which is the ordinary exit and not a code
+# change: there is no prescriptive table anywhere in the IRC for a diaphragm.
+MAX_UNSEALED_ITEMS = {"mn-2020": 9}
 
 
 def _engineered_labels(profile) -> set[str]:

@@ -17,12 +17,24 @@ between them — that is a soil-structure stiffness problem, and it is named as 
 1. **Embedment** — IBC 1807.3.2.1's non-constrained formula, and this is the mechanism these
    columns actually have. A pole free to translate at grade needs a depth that mobilises
    enough lateral soil bearing to turn the applied shear around.
-2. **The pad alone**, reported as evidence rather than graded. ``e = M / P`` on catlin's
-   north entry is about 1.7' against a 0.25' kern and a 0.75' half-width: the pad would not
-   merely lift at one edge, it would have no contact at all. That is not a failure — it is
-   the arithmetic showing that the pad is not what makes this column fixed, which is exactly
-   why the embedment above is the state that matters. Grading it as a limit state would
-   report a FAIL about a mechanism the structure does not use.
+2. **The spread or COMBINED base** — eccentricity against the kern, bearing against the
+   presumptive allowable, and a factor of safety against overturning, all on the footprint's
+   real area, centroid and section modulus (``engineering/spread_base.py``). Where the pad
+   names ``cast_with`` pours, that footprint is their union: ACI 318-19 §13.3.4's combined
+   footing, which §13.3.4.3 forbids assuming a UNIFORM pressure under and which this
+   therefore does not — the distribution is the rigid-body linear one, and where the
+   resultant leaves the kern no pressure is published at all.
+
+**Which of the two is GRADED is authored, and it is never "whichever passes".**
+``Pad.resists_base_moment`` chooses. Unset — the ordinary case, and catlin's — grades the
+embedment and reports the spread arithmetic as evidence; set, it grades the spread mechanism
+and reports the embedment. Both numbers are computed either way and both are printed, because
+a reader deciding which mechanism a base really has needs to see both.
+
+On catlin's north entry that evidence is emphatic: ``e = M / P`` is about 0.9' against a
+0.42' kern, so the pad would lift at one edge before it did anything about the moment. That
+is not a failure — it is the arithmetic showing that the pad is not what makes this column
+fixed, which is exactly why the embedment is the state that matters here.
 
 Concentric bearing on the same pad is ``structural.deck_footing_size``'s and is not restated
 here: one question, one authority.
@@ -54,14 +66,25 @@ from typehaus.engineering.item import (
 from typehaus.engineering.pier_basis import _Pier, cast_piers
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
 from typehaus.engineering.soil import presumptive
+from typehaus.engineering.spread_base import (
+    REQUIRED_FS_OVERTURNING,
+    SpreadResult,
+    analyse,
+    pours_for,
+    union_footprint,
+)
 
 KIND = "column_base"
 
 BASIS = ("IBC 2018 §1807.3.2.1 (non-constrained embedment) and §1806.2/§1806.3 "
-         "(presumptive lateral bearing); ACI 318-19 for the pad in partial contact")
+         "(presumptive lateral bearing); ACI 318-19 §13.3.4 and IRC R404.4 for the spread "
+         "or combined base")
 
 #: 1: the kind as introduced, 2026-09-18.
-BASIS_VERSION = "1"
+#: 2: the spread/combined mechanism became a graded alternative under
+#: ``Pad.resists_base_moment``, and the demand started being shared with a declared
+#: diaphragm — 2026-09-19.
+BASIS_VERSION = "2"
 
 #: IBC §1806.3.4 — the lateral bearing value may be doubled for an isolated pole where a
 #: 1/2" motion at the ground surface does not harm the structure. A judgement about what
@@ -209,8 +232,16 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
 
     states: list[LimitState] = []
     notes: list[str] = []
+    embed_note = "no embedment this model can measure"
+    # ** THE CLAIM IS READ BEFORE EITHER MECHANISM IS WORKED, AND IT DECIDES ONE THING ONLY:
+    # WHICH SET OF NUMBERS BECOMES LIMIT STATES. ** Both are computed either way — a reader
+    # deciding which mechanism a base really has needs to see both — but only one of them
+    # gets graded, and only that one may put anything in `missing`. An embedment that
+    # straddles §1806.3.4 is not a gap in a record whose mechanism is the spread base.
+    claimed = bool(getattr(pad, "resists_base_moment", False))
     if embedment_ft is None:
-        missing.append("a bottom elevation on the base, to measure embedment from")
+        if not claimed:
+            missing.append("a bottom elevation on the base, to measure embedment from")
     else:
         plain = required_embedment_ft(shear_lb, height_ft, diameter_ft,
                                       soil.lateral_bearing_psf_per_ft)
@@ -218,22 +249,27 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
             shear_lb, height_ft, diameter_ft,
             soil.lateral_bearing_psf_per_ft * ISOLATED_POLE_FACTOR)
         # Both ends of §1806.3.4, and the verdict is only published where they agree.
-        if (plain <= embedment_ft + _TOLERANCE_FT) == (doubled <= embedment_ft
-                                                       + _TOLERANCE_FT):
-            states.append(LimitState(
-                "embedment, non-constrained", plain, embedment_ft, "ft",
-                f"IBC 2018 §1807.3.2.1 at S1 = {soil.lateral_bearing_psf_per_ft:.0f} psf/ft "
-                f"(Table 1806.2 class {soil.ibc_class}) taken at d/3, P {shear_lb:,.0f} lb "
-                f"ASD at h {height_ft:.2f}' above grade on a {diameter_ft:.2f}' round. "
-                f"§1806.3.4's isolated-pole doubling would need {doubled:.2f}' and does not "
-                f"change the verdict, so it is not claimed"))
-        else:
-            missing.append(
-                f"a judgement on IBC §1806.3.4: the embedment needs {plain:.2f}' at the "
-                f"table's lateral bearing and {doubled:.2f}' at the isolated-pole double, "
-                f"and this column has {embedment_ft:.2f}' — so the verdict turns on whether "
-                f"a 1/2\" lateral motion at grade harms what stands on it, which is a "
-                f"judgement about the structure and not about the soil")
+        embed_note = (f"{plain:.2f}' of embedment ({doubled:.2f}' at §1806.3.4's "
+                      f"isolated-pole double) against the {embedment_ft:.2f}' it has")
+        if not claimed:
+            if (plain <= embedment_ft + _TOLERANCE_FT) == (doubled <= embedment_ft
+                                                           + _TOLERANCE_FT):
+                states.append(LimitState(
+                    "embedment, non-constrained", plain, embedment_ft, "ft",
+                    f"IBC 2018 §1807.3.2.1 at S1 = "
+                    f"{soil.lateral_bearing_psf_per_ft:.0f} psf/ft (Table 1806.2 class "
+                    f"{soil.ibc_class}) taken at d/3, P {shear_lb:,.0f} lb ASD at h "
+                    f"{height_ft:.2f}' above grade on a {diameter_ft:.2f}' round. "
+                    f"§1806.3.4's isolated-pole doubling would need {doubled:.2f}' and "
+                    f"does not change the verdict, so it is not claimed"))
+            else:
+                missing.append(
+                    f"a judgement on IBC §1806.3.4: the embedment needs {plain:.2f}' at "
+                    f"the table's lateral bearing and {doubled:.2f}' at the isolated-pole "
+                    f"double, and this column has {embedment_ft:.2f}' — so the verdict "
+                    f"turns on whether a 1/2\" lateral motion at grade harms what stands "
+                    f"on it, which is a judgement about the structure and not about the "
+                    f"soil")
         notes.append(
             f"EMBEDMENT is measured from Site.grade ({grade_ft:+.2f}') to the top of "
             f"{getattr(pad, 'tag', 'the base')} ({base_top_ft:+.2f}'), i.e. "
@@ -241,23 +277,49 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
             f"embedment: §1807.3.2.1 is about a shaft turning in soil, and a footing under "
             f"it resists by a different mechanism the formula does not describe.")
 
-    # --- the pad alone, as EVIDENCE that the pad is not the mechanism -------------------
+    # --- the SPREAD or COMBINED base ----------------------------------------------------
     # Gravity at SERVICE, lateral at ASD: IBC §1605.3's basis, not the strength basis
     # `deck_post` grades the section on.
     moment_lb_ft = pier.wind_base_moment_lb_ft
     axial_lb = pier.service_lb + area_ft2 * _pad_thickness_ft(pad) * 150.0
-    eccentricity_ft = moment_lb_ft / axial_lb if axial_lb > 0.0 else float("inf")
-    kern_ft = least_ft / 6.0
-    notes.append(
-        f"THE PAD IS NOT WHAT MAKES THIS COLUMN FIXED, and the arithmetic says so rather "
-        f"than the prose. Taken as a rigid spread base with no help from the buried shaft, "
-        f"the resultant of {axial_lb:,.0f} lb service axial and {moment_lb_ft:,.0f} lb-ft "
-        f"ASD base moment sits {eccentricity_ft:.2f}' off centre, against a kern of "
-        f"{kern_ft:.2f}' and a half-width of {least_ft / 2.0:.2f}' — so the pad alone would "
-        f"have {'partial' if eccentricity_ft <= least_ft / 2.0 else 'NO'} contact. That is "
-        f"reported and NOT graded, because an embedded shaft and a spread pad are "
-        f"ALTERNATIVE paths for one moment and not additive ones: adding them counts the "
-        f"same moment twice. The embedment above is the mechanism this column has.")
+    # ** THE COLUMN'S LOAD, NOT ``axial_lb``, AND THE DIFFERENCE IS THE PAD ITSELF. **
+    # ``axial_lb`` already carries the base's own weight for the evidence line below;
+    # ``spread_base.analyse`` weighs every pour in the footprint and adds it at its OWN
+    # centroid, which on a combined footing is nowhere near the column. Handing it the
+    # padded figure counted the concrete twice — 6,281 lb under a base that weighs 5,719 —
+    # and the second copy landed on the column's lever rather than on its own.
+    spread, spread_how = _spread(ctx, pier, pad, moment_lb_ft, pier.service_lb)
+    eccentricity_ft = (spread.eccentricity_ft if spread is not None
+                       else (moment_lb_ft / axial_lb if axial_lb > 0.0 else float("inf")))
+    if claimed and spread is not None:
+        states.extend(_spread_states(spread, soil, spread_how))
+        notes.append(
+            f"THE SPREAD BASE IS THE MECHANISM THIS COLUMN CLAIMS, and the embedment is "
+            f"reported instead of graded. {spread_how} The buried shaft would want "
+            f"{embed_note} — an ALTERNATIVE path for the same moment, never an additive "
+            f"one: a shaft that turns in soil sheds its moment into lateral bearing, and a "
+            f"base that resists by bearing does so because the shaft above it does not. "
+            f"Adding them counts one moment twice, and `Pad.resists_base_moment` is what "
+            f"chooses between them rather than this module.")
+    elif claimed:
+        missing.append(
+            f"a workable spread base for {getattr(pad, 'tag', 'this base')}: it claims "
+            f"`resists_base_moment`, and {spread_how}")
+    else:
+        if spread is None:
+            notes.append(
+                f"THE PAD IS NOT GRADED AS THE MECHANISM and its arithmetic could not be "
+                f"worked either: {spread_how} `Pad.resists_base_moment` is unset, so "
+                f"nothing turns on it.")
+        else:
+            notes.append(
+                f"THE PAD IS NOT WHAT MAKES THIS COLUMN FIXED, and the arithmetic says so "
+                f"rather than the prose. {spread_how} That is reported and NOT graded, "
+                f"because an embedded shaft and a spread base are ALTERNATIVE paths for one "
+                f"moment and not additive ones: adding them counts the same moment twice. "
+                f"The embedment above is the mechanism this column has, and "
+                f"`Pad.resists_base_moment` is what a base that really is the other one "
+                f"says so with.")
 
     notes.extend((
         f"SCREENING on presumptive code values, not a design: {soil.citation}. No "
@@ -337,3 +399,79 @@ def _inputs(pier: _Pier, shear_lb: float, height_ft: float, embedment_ft: float 
         Quantity("lateral_bearing", soil.lateral_bearing_psf_per_ft, "psf/ft", 1.0),
         Quantity("allowable_bearing", soil.allowable_bearing_psf, "psf", 1.0),
     ) if q is not None)
+
+
+def _spread(ctx: EngineeringContext, pier: _Pier, pad, moment_lb_ft: float,
+            axial_lb: float) -> tuple[SpreadResult | None, str]:  # type: ignore[no-untyped-def]
+    """The spread/combined analysis and one sentence of prose, or ``(None, why not)``.
+
+    Worked whether or not it is the graded mechanism. A reader deciding which mechanism a
+    base actually has needs both numbers in front of them, and a record that computed only
+    the one it grades could never show its own choice was right.
+    """
+    from typehaus.engineering.roof_moment import base_axis_of
+
+    axis = base_axis_of(pier.tag)
+    if axis is None:
+        return None, "no governing moment axis resolves for this column."
+    pours = pours_for(ctx, pad)
+    if pours is None:
+        return None, (f"the base's plan geometry does not resolve, or a pour "
+                      f"{getattr(pad, 'tag', 'it')} names in `cast_with` is not concrete "
+                      f"and cannot be cast with anything.")
+    footprint = union_footprint(pours, axis)
+    if footprint is None:
+        return None, ("the pours named do not merge into one body, so there is no single "
+                      "section modulus to work with.")
+    station = (pier_station(ctx, pier)[0] if axis == "x" else pier_station(ctx, pier)[1])
+    result = analyse(footprint, axial_lb, station, moment_lb_ft, axis)
+    if result is None:
+        return None, "the rigid-body analysis of the base could not be formed."
+    direction = "E-W" if axis == "x" else "N-S"
+    shape = (f"{', '.join(footprint.tags)} as ONE pour" if len(footprint.tags) > 1
+             else footprint.tags[0])
+    contact = ("the whole base stays in contact" if result.bearing_psf is not None
+               else "the base LIFTS at one edge and no linear pressure describes it")
+    return result, (
+        f"Taken as a rigid body on soil about the {direction} axis, {shape} is "
+        f"{footprint.area_ft2:.2f} ft2 with its centroid at {footprint.centroid_ft:+.2f}' "
+        f"and I {footprint.inertia_ft4:.3f} ft4; {result.total_vertical_lb:,.0f} lb of "
+        f"vertical load against {moment_lb_ft:,.0f} lb-ft ASD puts the resultant "
+        f"{result.eccentricity_ft:.2f}' off that centroid, against a kern of "
+        f"{result.kern_ft:.2f}' — {contact}, and the factor of safety against overturning "
+        f"about {result.tipping_edge} is {result.fs_overturning:.2f}.")
+
+
+def _spread_states(result: SpreadResult, soil, how: str) -> list[LimitState]:  # type: ignore[no-untyped-def]
+    """Three rows: is it in the kern, does it bear, and does it stay standing."""
+    states = [
+        # Outside the kern the base lifts at one edge and the linear distribution stops
+        # describing the contact, so this is a validity check on the row below it as much
+        # as a limit state of its own — the identical reading `retaining_basis` gives the
+        # same pair.
+        LimitState("eccentricity", result.eccentricity_ft, result.kern_ft, "ft",
+                   "the kern of the base's own section (S/A), computed on the polygon"),
+        LimitState("overturning", REQUIRED_FS_OVERTURNING, result.fs_overturning, "",
+                   "IRC R404.4", is_safety_factor=True),
+    ]
+    if result.bearing_psf is not None:
+        states.append(LimitState(
+            "bearing", result.bearing_psf, soil.allowable_bearing_psf, "psf",
+            f"peak pressure under the rigid-body LINEAR distribution — ACI 318-19 "
+            f"§13.3.4.3 forbids assuming a uniform one under a combined footing and none "
+            f"is assumed; IBC Table 1806.2 class {soil.ibc_class}. {how}"))
+    return states
+
+
+def pier_station(ctx: EngineeringContext, pier: _Pier) -> tuple[float, float]:
+    """The column's own plan position in feet — where its axial load actually stands.
+
+    On a COMBINED footing this is nowhere near the union's centroid, and that offset is
+    most of what a combined footing is for. Taking the load at the centroid instead would
+    quietly delete the mechanism being graded.
+    """
+    post = ctx.plan.by_tag(pier.tag)
+    position = getattr(post, "position", None)
+    if position is None:
+        return 0.0, 0.0
+    return position.xy_m[0] / 0.3048, position.xy_m[1] / 0.3048

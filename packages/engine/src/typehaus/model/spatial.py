@@ -16,7 +16,12 @@ from typehaus.model.enums import (
 )
 from typehaus.model.floors import FinishZone
 from typehaus.model.placeables import Location, Mount
-from typehaus.model.refs import FollowRoof, PublishedCapacity, PublishedSpan
+from typehaus.model.refs import (
+    DiaphragmSpec,
+    FollowRoof,
+    PublishedCapacity,
+    PublishedSpan,
+)
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.model.trim import EaveTrim
 from typehaus.quantities import Length, Pitch, Point2D
@@ -274,6 +279,12 @@ class Roof(Element):
     # member profile ("2x6"). It stands on the plate against the sheathing and restrains each
     # rafter at its bearing. ``None`` = no blocking.
     eave_blocking: str | None = None
+    # This deck is CLAIMED to act as a diaphragm — the horizontal member that carries a
+    # frame's lateral load to the lines that resist it — and the SDPWS row plus the chords
+    # and collector that claim rests on. Unset means the deck is sheathing and nothing more,
+    # so no load may be shared through it and whatever line is directly loaded takes the
+    # whole. See ``model/refs.DiaphragmSpec``.
+    diaphragm: DiaphragmSpec | None = None
 
 
 @register_element

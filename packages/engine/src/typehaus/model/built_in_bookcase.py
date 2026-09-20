@@ -41,6 +41,7 @@ def built_in_bookcase_dimensions(spec: BuiltInBookcaseSpec) -> tuple[float, floa
     """Return overall width, depth, and highest point implied by ``spec``."""
     width = sum(bay.clear_width.meters for bay in spec.bays)
     width += (len(spec.bays) + 1) * spec.divider_thickness.meters
+    width += spec.west_filler_width.meters
     depth = spec.shelf_depth.meters + spec.back_thickness.meters
     height = max(bay.height.meters for bay in spec.bays)
     return width, depth, height
@@ -62,7 +63,14 @@ def built_in_bookcase_parts(spec: BuiltInBookcaseSpec) -> tuple[BuiltInBookcaseP
     back_center_y = depth / 2 - back / 2
     parts: list[BuiltInBookcasePart] = []
     bay_lefts: list[float] = []
-    cursor = left + divider
+    filler = spec.west_filler_width.meters
+    if filler > 0:
+        parts.append(BuiltInBookcasePart(
+            "filler", None, (left + filler / 2, shelf_center_y,
+                              spec.bays[0].height.meters / 2),
+            (filler, shelf_depth, spec.bays[0].height.meters),
+        ))
+    cursor = left + filler + divider
     for index, bay in enumerate(spec.bays):
         bay_lefts.append(cursor)
         clear_width = bay.clear_width.meters
@@ -88,7 +96,7 @@ def built_in_bookcase_parts(spec: BuiltInBookcaseSpec) -> tuple[BuiltInBookcaseP
         else:
             height = max(spec.bays[divider_index - 1].height.meters,
                          spec.bays[divider_index].height.meters)
-        x = left + divider / 2 if divider_index == 0 else bay_lefts[divider_index - 1] + \
+        x = left + filler + divider / 2 if divider_index == 0 else bay_lefts[divider_index - 1] + \
             spec.bays[divider_index - 1].clear_width.meters + divider / 2
         parts.append(BuiltInBookcasePart(
             "divider", None, (x, shelf_center_y, height / 2), (divider, shelf_depth, height),

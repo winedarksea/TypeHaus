@@ -12,6 +12,7 @@ from typehaus.model.refs import (
     LayerMaterial,
     OpeningPosition,
     PublishedSpan,
+    ShearPanelSpec,
     ToRoof,
 )
 from typehaus.model.registry import register_constructor, register_element
@@ -85,6 +86,11 @@ class Wall(Element):
     # carry it (structural.masonry_guard_bearing). Marked rather than inferred: "short wall
     # at a floor edge" describes a knee wall, a planter and a stair curb just as well.
     guard: bool = False
+    # This wall is claimed as a SHEAR PANEL — one of the lines a frame's lateral load is
+    # shared out to — and the SDPWS row that claim rests on. Unset means "not a lateral
+    # line", which is the conservative default: a frame whose other lines take the whole
+    # shear is never made weaker by a wall nobody declared. See ShearPanelSpec.
+    shear_panel: ShearPanelSpec | None = None
     # Per-layer material substitution: appearance only, and the alternative to duplicating
     # a whole Assembly to restate one `material_ref` (see LayerMaterial in model/refs.py).
     # A tuple rather than a mapping because the editable dialect has no mapping literal.

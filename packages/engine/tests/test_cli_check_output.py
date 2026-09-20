@@ -115,12 +115,12 @@ def test_exit_on_error_is_the_looser_gate() -> None:
     finding at all, so the default gate closes on it and ERROR-only opens.
 
     ** CATLIN STOPPED SHOWING BOTH GATES OPEN ON 2026-09-18, AND IT IS NOT A TEST BUG. **
-    It used to carry no FAIL at all, so both gates opened on it. It now carries two, and
-    they are ENGINEERED FAILs — ``engineered()`` gives a computed-and-over item
-    ``severity=ERROR``, because "this engine did the calculation and it does not pass" is
-    not an advisory. So ERROR-only closes too, which is the looser gate doing exactly what
-    it is for. See `test_catlin_carries_no_failures` for what the two are and what closes
-    them; when that fix lands this line goes back to 0.
+    It used to carry no FAIL at all, so both gates opened on it. It now carries one (two
+    until 2026-09-19), and it is an ENGINEERED FAIL — ``engineered()`` gives a
+    computed-and-over item ``severity=ERROR``, because "this engine did the calculation and
+    it does not pass" is not an advisory. So ERROR-only closes too, which is the looser gate
+    doing exactly what it is for. See `test_catlin_carries_no_failures` for what it is and
+    what closes it; when that fix lands this line goes back to 0.
     """
     assert runner.invoke(app, ["check", str(STARTER), "--plain"]).exit_code == 1
     assert runner.invoke(
@@ -156,22 +156,23 @@ def test_catlin_carries_no_failures(catlin_json) -> None:
     # while the parcel was a drawn placeholder; the owner has since stated the real
     # 50' x 133' lot, so the basis is "plat" and the check reports UNKNOWN rather than
     # FAIL (houses/catlin/plan/site.py's `parcel_basis` block).
-    # ** THESE TWO ARE NOT AN ACCEPTED ADVISORY. THEY ARE AN OPEN DESIGN GAP, PARKED HERE
+    # ** THIS ONE IS NOT AN ACCEPTED ADVISORY. IT IS AN OPEN DESIGN GAP, PARKED HERE
     # DELIBERATELY SO THE REST OF THE GATE STILL RUNS. ** (2026-09-18, the engineering gap
     # review.) `engineering/column_base.py` grades what every `deck_post` record has been
     # NAMING and not grading since 2026-09-11 — the embedment IBC 1807.3.2.1 needs for a
-    # column free to translate at grade — and the north entry canopy's two cast columns do
-    # not have it: PT-BW-RE wants 8.08' and has 6.12'; PT-BW-RNE wants the same and has
-    # 3.50'. Both fail at BOTH ends of §1806.3.4's isolated-pole doubling, so the verdict is
-    # not a judgement call. `notes/entry_column_base_fixity.md` works it by hand; §6 there
-    # lists the three closures (deepen the shafts, constrain the base at grade with a grade
-    # beam or apron, or brace the frame and let the columns revert to leaning columns).
+    # column free to translate at grade — and the north entry canopy's cast columns did not
+    # have it. `notes/entry_column_base_fixity.md` works it by hand; §6 works the closures.
     #
-    # DELETE BOTH ENTRIES when one of those lands. An entry that outlives its fix is how a
-    # 0-FAIL gate stops meaning anything, which is the exact failure this whole review was
-    # about.
+    # ** IT WAS TWO UNTIL 2026-09-19, AND WHAT MOVED PT-BW-RE WAS THE DEMAND, NOT THE
+    # GROUND. ** The canopy's deck is a declared diaphragm now and `W-BW-SCREEN` a declared
+    # shear panel, so the frame shear is shared in proportion to rigidity (IBC 2018 §1604.4,
+    # §7 of that note). PT-BW-RE went from 8.08' of required embedment to 6.25' against the
+    # 6.12' it has — INSIDE §1806.3.4's judgement band, so UNKNOWN rather than FAIL, and
+    # NOT a pass: 1.02 is exactly at the line. PT-BW-RNE wants 7.74' and has 3.50'.
+    #
+    # DELETE THE ENTRY when a closure lands. An entry that outlives its fix is how a 0-FAIL
+    # gate stops meaning anything, which is the exact failure this whole review was about.
     accepted: set[tuple[str, tuple[str, ...]]] = {
-        ("structural.lateral_racking", ("PT-BW-RE", "RF-BW-CANOPY")),
         ("structural.lateral_racking", ("PT-BW-RNE", "RF-BW-CANOPY")),
     }
     assert accepted <= set(failures), (
@@ -269,10 +270,10 @@ def test_no_suppress_lifts_the_house_suppressions_and_writes_nothing() -> None:
     loud = json.loads(runner.invoke(
         app, ["check", str(CATLIN), "--json-summary", "--no-suppress"]).output)
 
-    # 2, not 0, since 2026-09-18: the north entry's two fixed-base columns do not have the
-    # IBC 1807.3.2.1 embedment their assumed fixity needs. An open design gap, not a
+    # 1, not 0, since 2026-09-18 (2 until 2026-09-19): `PT-BW-RNE` does not have the IBC
+    # 1807.3.2.1 embedment its assumed fixity needs. An open design gap, not a
     # suppression — `test_catlin_carries_no_failures` carries the citation and the closures.
-    assert quiet["fail"] == 2, "the reference house's only FAILs are the two open ones"
+    assert quiet["fail"] == 1, "the reference house's only FAIL is the open one"
     assert loud["fail"] > quiet["fail"], "the suppressed debt is real and is now visible"
     assert "mep.run_interference" in loud["failing_check_ids"]
     assert "mep.run_interference" not in quiet["failing_check_ids"]

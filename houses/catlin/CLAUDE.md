@@ -2397,19 +2397,45 @@ haus analysis . --solve                     # the engineered frame, solved in Py
   UNKNOWN, which would claim nobody knows about a question the engine has answered. **The 19'-3" rafter
   allowable this house quoted in five places was WRONG** — an interpolation to 35 psf that
   `snow.py`'s own rule forbids. The published row is **18'-4"**.
-- **⚠ THE NORTH ENTRY CANOPY'S TWO CAST COLUMNS DO NOT HAVE THE BASE THEY ARE DESIGNED ON**
-  (2026-09-18, and this is catlin's only open FAIL). `engineering/column_base.py` grades the
-  IBC 1807.3.2.1 embedment a column free to translate at grade needs to turn its own shear
-  around — the assumption every `deck_post` record had been NAMING and none grading since
-  2026-09-11. `PT-BW-RE` wants 8.08' and has 6.12'; `PT-BW-RNE` wants the same and has
-  3.50'. Both fail at BOTH ends of §1806.3.4's isolated-pole doubling, so it is not a
-  judgement call. `notes/entry_column_base_fixity.md` works it by hand; §6 lists the three
-  closures — deepen the shafts, constrain the base at grade with a grade beam or apron, or
-  brace the frame and let the columns revert to leaning columns (the owner has already
-  accepted knee braces as a fallback here). The two garage-side LANDING columns straddle
-  §1806.3.4 and report INCOMPLETE naming the judgement, which is the band convention
-  working. **`haus check` exits 1 and `haus print` refuses until this closes**; both the
-  test allow-list and `scripts/verify.sh`'s carry the citation and go with the fix.
+- **⚠ `PT-BW-RNE` DOES NOT HAVE THE BASE IT IS DESIGNED ON** (2026-09-18; **two columns
+  until 2026-09-19**, and this is catlin's only open FAIL). `engineering/column_base.py`
+  grades the IBC 1807.3.2.1 embedment a column free to translate at grade needs to turn its
+  own shear around — the assumption every `deck_post` record had been NAMING and none
+  grading since 2026-09-11. `PT-BW-RNE` wants **7.74'** and has **3.50'**, d/c 2.21, over at
+  both ends of §1806.3.4's isolated-pole doubling, so it is not a judgement call.
+  `notes/entry_column_base_fixity.md` works it by hand and §6 works the closures. **3'-6" is
+  not a fixed base at any load worth the name**: even a column carrying only its own wind
+  drag needs 4.1' there, and it is the SHORT column, so a rigidity split hands it the larger
+  share of the one case nothing else resists. **`haus check` exits 1 and `haus print` refuses
+  until this closes**; the test allow-list and `scripts/verify.sh`'s carry the citation and
+  go with the fix.
+  - **`PT-BW-RE` closed to a §1806.3.4 judgement on 2026-09-19, and what moved was the
+    DEMAND.** The canopy deck is a declared diaphragm (`Roof.diaphragm`) and `W-BW-SCREEN` a
+    declared shear panel (`Wall.shear_panel`), so the frame shear is shared in proportion to
+    rigidity — IBC 2018 §1604.4, hand-worked in §7 of that note — instead of being loaded
+    wholly onto the two cast columns, and each column's own drag is a PROPPED-cantilever load
+    now that the deck holds its head. Required embedment 8.08' → **6.25'** against 6.12'.
+    **That is not a pass**: 1.02 is exactly at the line, on presumptive soil with no boring.
+  - **E-W now governs both columns, and it is the case nothing shares.** The panel runs
+    north-south. Its 62% of the N-S case is the whole of the reduction; the E-W case is still
+    the two columns' alone, and the split between them is 36/64 rather than 50/50 because a
+    cantilever's stiffness goes as `1/h³`.
+  - **What the reduction COSTS is parts, and they are graded.** `lateral_system/RF-BW-CANOPY`
+    grades the deck's span-to-depth (**4.00 against SDPWS Table 4.2.4's 4.00 blocked — no
+    margin at all, and unblocked the limit is 3.0 and it is a FAIL**), its unit shear, the
+    panel's unit shear, aspect ratio and hold-down. Blocking at every panel edge, a
+    continuous chord at each end and a collector at each header are now load-bearing
+    requirements on `AN-BW-ROOF`, not detailing preferences.
+  - **The garage-side pads' `cast_with` is STALE and says something untrue.** `FT-GF-S1` …
+    `FT-GF-W` became IRC R403.5 **crushed-stone** footings on 2026-09-15, five days after
+    `PD-BW-GW`/`-GE`/`-RNE` declared they were cast monolithically with them. Nothing is cast
+    with consolidated stone. `engineering/spread_base.pours_for` refuses a named pour that is
+    not concrete, so no combined-footing credit reaches `PD-BW-RNE` — which is why the
+    2026-09-19 plan's step 3 does not exist. The declaration itself still wants deleting or
+    restating (→ notes §6f).
+  - The two garage-side LANDING columns straddle §1806.3.4 and report INCOMPLETE naming the
+    judgement, which is the band convention working. Nothing in the 2026-09-19 revision
+    reaches them: a guard load is delivered at a rail, not at a diaphragm.
   - Two deferrals came with it and are scope rather than arithmetic: `base_rotation/*` (the
     base is graded for STRENGTH, not STIFFNESS — `deck_post`'s sway magnifier assumes a base
     that does not rotate) and `column_head_joint/*` (the `HGAM10` + `SS316-SHIM-35` head,

@@ -103,22 +103,31 @@ import json, sys
 # Empty, and meant to stay that way: catlin is held to 0 FAIL. `code.site_parcel_is_surveyed`
 # sat here while the parcel was a drawn placeholder; the owner's stated 50' x 133' lot made
 # the basis "plat", which grades UNKNOWN rather than FAIL.
-# ** THESE TWO ARE NOT AN ACCEPTED ADVISORY. THEY ARE AN OPEN DESIGN GAP, PARKED HERE
+# ** THIS ONE IS NOT AN ACCEPTED ADVISORY. IT IS AN OPEN DESIGN GAP, PARKED HERE
 # DELIBERATELY SO THE REST OF THE GATE STILL RUNS. ** (2026-09-18, the engineering gap
 # review.) `engineering/column_base.py` grades what every `deck_post` record has been
 # NAMING and not grading since 2026-09-11 — the embedment IBC 1807.3.2.1 needs for a
-# column free to translate at grade — and the north entry canopy's two cast columns do
-# not have it: PT-BW-RE wants 8.08' and has 6.12'; PT-BW-RNE wants the same and has
-# 3.50'. Both fail at BOTH ends of §1806.3.4's isolated-pole doubling, so the verdict is
-# not a judgement call. `notes/entry_column_base_fixity.md` works it by hand; §6 there
-# lists the three closures (deepen the shafts, constrain the base at grade with a grade
-# beam or apron, or brace the frame and let the columns revert to leaning columns).
-    #
-# DELETE BOTH ENTRIES when one of those lands. An entry that outlives its fix is how a
-# 0-FAIL gate stops meaning anything, which is the exact failure this whole review was
-# about.
+# column free to translate at grade — and the north entry canopy's cast columns did not
+# have it. `notes/entry_column_base_fixity.md` works it by hand; §6 there works the
+# closures.
+#
+# ** IT WAS TWO UNTIL 2026-09-19 AND `PT-BW-RE` LEFT THIS LIST. ** The canopy's deck is a
+# declared diaphragm now and `W-BW-SCREEN` a declared shear panel, so the frame shear is
+# shared in proportion to rigidity (IBC 2018 §1604.4) instead of being loaded wholly onto
+# the two cast columns; §7 of that note is the hand-working. PT-BW-RE's required embedment
+# went 8.08' -> 6.25' against the 6.12' it has, which is INSIDE §1806.3.4's judgement band,
+# so it is an UNKNOWN naming the judgement rather than a FAIL naming a shortfall. **That is
+# not a pass** — 1.02 is exactly at the line — and it still shuts `haus print`, which is
+# what ci_local.sh asserts.
+#
+# PT-BW-RNE is the one left, at 2.21: it wants 7.74' and has 3.50'. It barely moved, and the
+# reason is arithmetic rather than bad luck — it is the SHORT column, a cantilever's
+# stiffness goes as 1/h³, and a rigidity split hands it the larger share of exactly the case
+# the panel does not resist.
+#
+# DELETE THE ENTRY when a closure lands. An entry that outlives its fix is how a 0-FAIL gate
+# stops meaning anything, which is the exact failure this whole review was about.
 ACCEPTED = {
-    ("structural.lateral_racking", ("PT-BW-RE", "RF-BW-CANOPY")),
     ("structural.lateral_racking", ("PT-BW-RNE", "RF-BW-CANOPY")),
 }
 

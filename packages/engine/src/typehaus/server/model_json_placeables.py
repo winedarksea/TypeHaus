@@ -78,4 +78,5 @@ def _bookcase_json(spec: Any) -> dict[str, Any] | None:
         "horizontal_board_thickness_m": spec.horizontal_board_thickness.meters,
         "divider_thickness_m": spec.divider_thickness.meters,
         "back_thickness_m": spec.back_thickness.meters,
+        "west_filler_width_m": spec.west_filler_width.meters,
     }

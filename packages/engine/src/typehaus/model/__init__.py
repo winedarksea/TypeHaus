@@ -112,6 +112,7 @@ from typehaus.model.project import Building, Project, Site, Storey
 from typehaus.model.rebar import BarSpec, ReinforcementSpec, RibLayout
 from typehaus.model.refs import (
     Arch,
+    DiaphragmSpec,
     Embed,
     FaceRef,
     FollowRoof,
@@ -120,6 +121,7 @@ from typehaus.model.refs import (
     OpeningPosition,
     PublishedCapacity,
     PublishedSpan,
+    ShearPanelSpec,
     ToRoof,
     centered,
     face,
@@ -195,9 +197,9 @@ from typehaus.model.trim import (
 )
 from typehaus.model.types import (
     ApplianceType,
+    BookcaseDoorSpec,
     BuiltInBookcaseBay,
     BuiltInBookcaseSpec,
-    BookcaseDoorSpec,
     DoorType,
     DuctProductType,
     ElectricalDeviceType,
@@ -257,6 +259,7 @@ for _name, _obj in (
     ("in_slab", in_slab), ("under_subfloor", under_subfloor),
     ("ToRoof", ToRoof), ("FollowRoof", FollowRoof), ("Arch", Arch),
     ("PublishedSpan", PublishedSpan), ("PublishedCapacity", PublishedCapacity),
+    ("ShearPanelSpec", ShearPanelSpec), ("DiaphragmSpec", DiaphragmSpec),
     ("Library", Library), ("PlanModel", PlanModel),
     ("BookcaseDoorSpec", BookcaseDoorSpec),
     ("Footprint2D", Footprint2D), ("ClearanceZone", ClearanceZone), ("ServicePort", ServicePort),
@@ -284,7 +287,8 @@ __all__ = [
     "Assembly", "Layer", "LayerBound", "LayerExtent", "CavityFill", "FramingSpec",
     "MasonrySpec", "AssemblyInterface",
     "ConstructionRule", "Substitution", "Material", "Product",
-    "DoorType", "BookcaseDoorSpec", "WindowType", "FurnitureType", "FixtureType", "ApplianceType", "EquipmentType",
+    "DoorType", "BookcaseDoorSpec", "WindowType", "FurnitureType", "FixtureType",
+    "ApplianceType", "EquipmentType",
     "BuiltInBookcaseBay", "BuiltInBookcaseSpec",
     "HeatPumpRating",
     "RegisterType", "RailingType", "DuctProductType", "ElectricalDeviceType",
@@ -303,6 +307,7 @@ __all__ = [
     "DetailAnnotation", "LayerJoin",
     "FaceRef", "face", "LayerMaterial", "ToRoof", "FollowRoof", "Arch", "LayerSpan",
     "OpeningPosition", "PublishedSpan", "PublishedCapacity",
+    "ShearPanelSpec", "DiaphragmSpec",
     "Embed", "outside_of", "inside_of", "layers", "from_node", "centered",
     "in_slab", "under_subfloor",
     "PipeRun", "PipeAccessory", "SleevePenetration", "DuctRun", "Register", "Equipment",

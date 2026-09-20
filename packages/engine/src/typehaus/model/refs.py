@@ -262,3 +262,112 @@ class PublishedCapacity(HausModel):
     wind_speed_mph: float | None = None
     #: The ASCE 7 exposure category the required force was read at.
     exposure: str | None = None
+
+
+class ShearPanelSpec(HausModel):
+    """The SDPWS row a sheathed wall is CLAIMED to be built to, so it may be counted as a
+    shear panel rather than as a wall that happens to have plywood on it.
+
+    ** WHY THIS IS A CLAIM AND NOT A DERIVATION. ** An ``Assembly`` names a sheathing
+    material and a thickness, and that is most of a shear wall and none of what governs one.
+    The unit shear and the stiffness of a wood structural panel wall come out of AWC
+    SDPWS Table 4.3A indexed on the FASTENER SCHEDULE — nail size, edge spacing, whether the
+    panel edges are blocked — none of which this model records anywhere else. A wall with
+    5/8" CDX on it and 16d nails at 12" is not the same element as the same wall with 8d at
+    4", and nothing in the geometry tells them apart.
+
+    So this is authored, with its source, the same way ``PublishedSpan`` is: a reviewer
+    opens the table, finds the row, and the question is closed. What the engine adds is that
+    the read is in the model, so a calculation can use it and a drift guard can refuse it.
+
+    ** AUTHORING IT IS WHAT MAKES A WALL A LATERAL LINE. ** ``engineering/roof_moment.py``
+    distributes a frame's shear between the lines that resist it, and a wall with no spec is
+    NOT one — it takes no share, and whatever else resists takes the whole. That is the
+    conservative default on purpose and it is the same contract ``Pad.cast_with`` keeps: the
+    field cannot be used by accident, and leaving it off never makes a demand smaller.
+    """
+
+    #: Which ``Layer`` of the wall's assembly carries the shear, by name. The drift guard
+    #: for a re-layered assembly: a row read for ``cdx-out`` says nothing about a wall whose
+    #: sheathing layer was renamed or deleted.
+    sheathing_layer: str
+    #: The nail schedule, in the table's own words — size, edge spacing, field spacing and
+    #: whether panel edges are blocked. Not parsed; printed, so the row can be checked.
+    fastening: str
+    #: The document, edition and table the two numbers below were read from.
+    source: str
+    #: The row's ASD unit shear capacity, plf — the tabulated nominal divided by the 2.0
+    #: reduction SDPWS 4.3.3 applies for ASD, quoted at the value actually used.
+    unit_shear_asd_plf: float
+    #: ``G_a``, the apparent shear stiffness of the same row, kips/inch. This is the term
+    #: that dominates a squat panel's deflection and the whole reason a distribution can be
+    #: computed at all.
+    apparent_stiffness_kips_per_in: float
+    #: What acts as the panel's end post (chord) and how it is held down, in words. Prose
+    #: because the boundary member of a panel is often a column the wall is built around
+    #: rather than a stud the framing solver derives, and a reference that cannot resolve is
+    #: worse than a sentence that can be read.
+    chords: str = ""
+    #: The end-post (chord) member and how many plies, for SDPWS 4.3.2's bending term.
+    chord_member: str = "2x4"
+    chord_plies: int = 2
+    #: ``d_a`` — the total vertical elongation of the wall's anchorage at the design unit
+    #: shear, inches. SDPWS's third term. It is authored rather than derived because it is a
+    #: property of the hold-down, its anchor bolt and the crushing under the sill, and this
+    #: model holds none of those.
+    anchorage_slip: Length | None = None
+    #: The hold-down at each end, as the MODEL STRING the hardware catalog knows it by —
+    #: ``engineering/lateral_system`` looks its published uplift up, so a sentence here
+    #: grades as no hold-down at all. Where it stands and what it ties to goes in ``chords``.
+    #: ``None`` is not "no hold-down needed": it is a claim the overturning state must earn,
+    #: and it cannot be earned without a number.
+    holdown: str | None = None
+    #: SDPWS Table 4.3.4's maximum height-to-width ratio for this construction.
+    aspect_ratio_limit: float = 3.5
+
+
+class DiaphragmSpec(HausModel):
+    """The same read for a ROOF or FLOOR deck asked to act as a diaphragm.
+
+    ** A DIAPHRAGM IS NOT SHEATHING; IT IS SHEATHING PLUS TWO CHORDS AND A COLLECTOR. **
+    Declaring one is a design decision with parts in it, which is exactly why the north
+    entry canopy's 2026-09-10 revision demoted its strap line to "a tie, not the lateral
+    system": no chord and no collector had ever been drawn, so there was nothing to call a
+    diaphragm. This type is what it takes to say so, and every field on it is a part
+    somebody has to build.
+
+    ** WHAT IT UNLOCKS, AND WHAT THAT COSTS. ** With a diaphragm the shear at the roof plane
+    reaches every resisting line, and ``engineering/roof_moment.py`` may share it out. Two
+    obligations come with that and both are graded: the diaphragm's own unit shear and
+    aspect ratio (SDPWS 4.2.4 — 4:1 blocked, 3:1 unblocked, and the ratio is derived from
+    the model's own footprint), and the chord force at midspan.
+    """
+
+    #: The deck layer carrying the shear, by name — the same drift guard as above.
+    sheathing_layer: str
+    #: Nail size, boundary/edge spacing, field spacing, and blocking.
+    fastening: str
+    source: str
+    #: ASD unit shear, plf, from SDPWS Table 4.2A at the row named in ``fastening``.
+    unit_shear_asd_plf: float
+    #: ``G_a`` for the same row, kips/inch.
+    apparent_stiffness_kips_per_in: float
+    #: Whether the panel edges are blocked. It sets the aspect-ratio limit and it is the
+    #: difference between a 4:1 deck and a 3:1 one.
+    blocked: bool = True
+    #: The member acting as the diaphragm CHORD, in words — what it is, where it runs, and
+    #: how it is made continuous across its splices. Prose because on a trussed deck the
+    #: chord is a derived member with no authored tag, and a reference that cannot resolve
+    #: is worse than a sentence that can be read.
+    chords: str = ""
+    #: The chord's nominal section and ply count, for the bending term of SDPWS 4.2.2 and
+    #: for the chord-force limit state.
+    chord_member: str = "2x6"
+    chord_plies: int = 1
+    #: The members that drag the deck's shear into each resisting line, by TAG. These must
+    #: resolve: a collector is a real member with a real connection at each end, and naming
+    #: one that is not in the model is the failure this whole type exists to prevent.
+    collector_refs: tuple[str, ...] = ()
+    #: Σ(Δ_c x) / (2W) — the chord-splice slip term of SDPWS 4.2.2, inches. Zero where the
+    #: chord is continuous over the span and has no splice to slip.
+    chord_splice_slip: Length | None = None

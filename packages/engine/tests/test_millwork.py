@@ -145,8 +145,8 @@ def test_the_attic_built_in_keeps_its_explicit_shelf_depth(catlin_model_ro):
     assert bank.host_kind == "placeable" and bank.host == "FURN-A-STUDY-BUILTIN"
     assert bank.depth_m * M_TO_IN == pytest.approx(9.875, abs=0.01)
     case = next(o for o in catlin_model_ro.canvas_objects if o.tag == bank.host)
-    assert bank.depth_m < max(y for _x, y in case.local_footprint) - min(
-        y for _x, y in case.local_footprint)
+    assert bank.depth_m < max(y for _x, y in case.footprint) - min(
+        y for _x, y in case.footprint)
 
 
 def test_the_attic_bays_are_stepped_bays_with_their_own_counts(catlin_model_ro):

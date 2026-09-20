@@ -63,10 +63,16 @@ echo "== catlin permit print =="
 # started refusing. The refusal is correct: a permit printoff is exactly what a shut gate
 # is for. What would be wrong is a script that cannot tell THAT refusal from any other.
 #
+# ** ONE COLUMN SINCE 2026-09-19, AND THE ITEM IS STILL THE SAME ITEM. ** Sharing the
+# canopy's frame shear with `W-BW-SCREEN` by relative rigidity closed `PT-BW-RE` to a
+# §1806.3.4 judgement (`notes/entry_column_base_fixity.md` §7); `PT-BW-RNE` still wants
+# 7.74' of embedment and has 3.50'. The grep below is unchanged because the permit LINE is
+# unchanged — which is the point of asserting an item rather than a column count.
+#
 # So the refusal is expected, and it is expected to name that one item. See verify.sh's
 # ACCEPTED block for the arithmetic and `notes/entry_column_base_fixity.md` §6 for the
-# three closures. DELETE THIS BLOCK, and restore the bare `"$VHAUS" print houses/catlin`,
-# the day one of them lands.
+# closures. DELETE THIS BLOCK, and restore the bare `"$VHAUS" print houses/catlin`, the day
+# one of them lands.
 PRINT_OUT="$ENVDIR/catlin-print.txt"
 if "$VHAUS" print houses/catlin > "$PRINT_OUT" 2>&1; then
   cat "$PRINT_OUT"

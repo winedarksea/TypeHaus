@@ -15,7 +15,6 @@ from types import SimpleNamespace
 
 import pytest
 
-from typehaus.library import POCKET_DOOR_TYPES
 from typehaus.emit.draw import build_floorplan, write_dxf, write_raster
 from typehaus.emit.draw.door_symbols import (
     BYPASS_OVERLAP_IN,
@@ -33,6 +32,7 @@ from typehaus.emit.draw.door_symbols import (
     symbol_name_for_operation,
 )
 from typehaus.emit.draw.scene import Symbol
+from typehaus.library import POCKET_DOOR_TYPES
 from typehaus.model.assembly import FramingSpec, Layer
 from typehaus.model.enums import DoorOperation, LayerFunction
 from typehaus.model.types import DoorType
@@ -690,3 +690,22 @@ def test_a_pocket_stops_at_a_corner_and_at_an_assembly_change():
         segments, shortfall = pocket_segments(plan, model, _pocket_opening())
         assert shortfall > 0.0, f"the run must stop: {kwargs}"
         assert [segment.wall_tag for segment in segments] == ["W-A"]
+
+
+def test_catlin_murphy_door_keeps_published_dimensions_and_hinge_clearance(catlin_model_ro):
+    door_type = next(t for t in catlin_model_ro.plan.library.door_types
+                     if t.tag == "DT-INT-BOOKCASE36")
+    spec = door_type.bookcase_door
+    assert spec is not None
+    assert door_type.width.meters / inch(1).meters == pytest.approx(38)
+    assert door_type.height.meters / inch(1).meters == pytest.approx(82)
+    assert spec.clear_passage_width.meters / inch(1).meters == pytest.approx(30.25)
+    assert spec.casing_overall_width.meters / inch(1).meters == pytest.approx(42.5)
+
+    opening = next(o for o in catlin_model_ro.openings if o.tag == "D-A-STUDY")
+    host = catlin_model_ro.wall("W-A-SN")
+    center_x = host.axis[0][0] + opening.center_along_m
+    casing_west_x = center_x - spec.casing_overall_width.meters / 2
+    center_wall = catlin_model_ro.wall("W-A-C1B")
+    center_wall_east_face = max(x for layer in center_wall.layers for x, _y in layer.polygon)
+    assert casing_west_x - center_wall_east_face >= spec.hinge_side_clearance.meters

@@ -66,3 +66,12 @@ def test_bookcase_dimensions_and_browser_parts_share_one_geometry_source(stepped
     assert len(record["plan_strokes"]) == 7
     assert {part["role"] for part in record["model_parts"]} == {
         "back", "divider", "horizontal_board"}
+
+
+def test_optional_west_filler_closes_return_without_becoming_a_bay(stepped_spec) -> None:
+    filled = stepped_spec.model_copy(update={"west_filler_width": inch(2.625)})
+    width, _depth, _height = built_in_bookcase_dimensions(filled)
+    fillers = [part for part in built_in_bookcase_parts(filled) if part.role == "filler"]
+    assert width * 12 / .3048 == pytest.approx(99.375)
+    assert len(fillers) == 1
+    assert fillers[0].size[0] * 12 / .3048 == pytest.approx(2.625)

@@ -398,6 +398,59 @@ def _grade_moment_columns(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+_DIAPHRAGM_CID = "structural.roof_diaphragm"
+
+
+@check(Tier.STRUCTURAL, _DIAPHRAGM_CID)
+def roof_diaphragm(ctx: CheckContext) -> list[Finding]:
+    """The HORIZONTAL half of the same lateral system, where a house has claimed one.
+
+    ** A CLAIM THAT MAKES A DEMAND SMALLER HAS TO BE GRADED OR IT IS NOT A CLAIM. ** Authoring
+    ``Roof.diaphragm`` and ``Wall.shear_panel`` lets ``engineering/roof_moment`` share a
+    frame's shear out instead of loading the cast columns with all of it, which takes a base
+    moment down by half. Everything that buys is bought from a deck that now has to be a
+    diaphragm — blocked to its own aspect ratio, with a chord at each end and a collector at
+    each line — and from a panel that now has to be a shear wall. ``lateral_system/<roof>``
+    is where all of that is graded, and this is the finding that puts it in front of a
+    reviewer instead of leaving it in the register for somebody to go looking for.
+
+    Silent where no diaphragm is declared: a roof whose sheathing is only sheathing carries
+    no such obligation and inventing one for it would report a defect in an ordinary deck.
+
+    ** ITS OWN CHECK ID, AND NOT A THIRD FINDING ON ``lateral_racking``. ** A permit item
+    collects every finding its checks produce, so three items sharing one check id all go
+    red together on any one of them — a canopy column short of embedment would have turned
+    this line red as well, about a diaphragm that is fine. One question, one id.
+    """
+    from typehaus.model.spatial import Roof
+
+    out: list[Finding] = []
+    for roof in sorted((e for e in ctx.plan.all_elements() if isinstance(e, Roof)),
+                       key=lambda r: r.tag):
+        if roof.diaphragm is None:
+            continue
+        out.extend(_one_diaphragm(ctx, roof.tag))
+    return out
+
+
+def _one_diaphragm(ctx: CheckContext, tag: str) -> list[Finding]:
+    item = item_id("lateral_system", tag)
+    if item not in ctx.engineering:
+        return []
+    return [engineered(
+        ctx, _DIAPHRAGM_CID, item,
+        f"{tag} is declared a DIAPHRAGM, which is what lets its frame shear be shared "
+        f"between the lines that resist it (IBC 2018 §1604.4) rather than loaded wholly "
+        f"onto the stiffest of them. A deck that carries shear across a building is a "
+        f"designed member — aspect ratio, unit shear, chords and collectors — and no "
+        f"prescriptive table in the IRC grades one",
+        (tag,),
+        code="AWC SDPWS-2015 §4.2",
+        fix=f"seal `{item}` in engineering.toml")]
+
+
+
+
 def _base_fixity(ctx: CheckContext, tag: str, carried: str) -> list[Finding]:
     """The second half of a fixed-base column, and it is a different question.
 

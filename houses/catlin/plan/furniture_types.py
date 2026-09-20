@@ -34,7 +34,7 @@ _WALL_MOUNT = Mount(kind=MountKind.WALL)
 # four shared/end dividers, and three stepped backs from this record.
 STUDY_BUILT_IN_BOOKCASE = FurnitureType(
     tag="FT-A-STUDY-BUILTIN", name="Attic study stepped built-in bookcase",
-    footprint=(inch(96.75), inch(10.625)), height=inch(60),
+    footprint=(inch(99.375), inch(10.625)), height=inch(60),
     placement=PlacementStrategy.WALL_ATTACHED,
     built_in_bookcase=BuiltInBookcaseSpec(
         bays=(
@@ -44,6 +44,7 @@ STUDY_BUILT_IN_BOOKCASE = FurnitureType(
         ),
         shelf_depth=inch(9.875), horizontal_board_thickness=inch(1.5),
         divider_thickness=inch(0.75), back_thickness=inch(0.75),
+        west_filler_width=inch(2.625),
     ),
     source="Catlin study fixed casework: front y=105 5/8 in.; x=272..368 3/4 in.; three 31 1/4 in. clear bays with 60/42/30 in. tops and 5/4/3 horizontal boards; 2 5/8 in. west filler closes to W-A-SN-WR.",
 )

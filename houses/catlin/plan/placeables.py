@@ -1456,9 +1456,9 @@ SECOND_PLACEABLES = [
 #     clearance_conflict` is what settled that number.
 ATTIC_PLACEABLES = [
     Furniture(uid="P8A4CASE01", tag="FURN-A-STUDY-BUILTIN", type_ref="FT-A-STUDY-BUILTIN",
-              room="RM-A-STUDY", position=pt(ft(26, 8.375), ft(9, 2.9375)),
+              room="RM-A-STUDY", position=pt(ft(26, 7.0625), ft(9, 2.9375)),
               location=Location(attachment=WallAttachment(
-                  wall_ref="W-A-SN-REAR", face="right", distance_from_start=inch(53.375)))),
+                  wall_ref="W-A-SN-REAR", face="right", distance_from_start=inch(52.0625)))),
     # y=4'-6" and not 5'-0": D-A-STUDY's leaf sweeps x 18'-8 7/8"..21'-2 7/8", y 6'-10" to
     # the wall, and a desk at 5'-0" put 2" of itself under it (`integrity.door_swing_conflict`).
     Furniture(uid="DAK701AAAA", tag="FURN-A-STUDY-DESK", type_ref="FURN-DESK-48",

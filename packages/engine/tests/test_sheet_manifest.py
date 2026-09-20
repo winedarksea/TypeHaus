@@ -51,10 +51,17 @@ def test_haus_print_refuses_while_the_canopy_base_is_open(tmp_path: Path):
 
     ``engineering/column_base.py`` grades the IBC 1807.3.2.1 embedment a fixed column base
     needs — the assumption every ``deck_post`` record had been naming and none grading — and
-    the north entry canopy's two cast columns do not have it. The gate blocking is the gate
+    the north entry canopy's cast columns did not have it. The gate blocking is the gate
     working; it is asserted here rather than merely worked around in the test below, so that
     the day the design closes (``notes/entry_column_base_fixity.md`` §6) this test fails and
     tells somebody to delete it.
+
+    ** HALF THE GAP CLOSED ON 2026-09-19 AND THIS TEST DID NOT MOVE, WHICH IS THE POINT OF
+    ASSERTING AN ITEM RATHER THAN A COLUMN. ** Sharing the canopy's frame shear with
+    ``W-BW-SCREEN`` by relative rigidity took ``PT-BW-RE`` from a FAIL to a §1806.3.4
+    judgement (§7 of that note); ``PT-BW-RNE`` still wants 7.74' of embedment against the
+    3.50' it has. One permit line, still shut, for one column instead of two — and a test
+    that had pinned "two cast columns" would have gone red on an improvement.
     """
     pytest.importorskip("matplotlib")
     from typer.testing import CliRunner
@@ -77,7 +84,7 @@ def test_haus_print_writes_the_manifest_beside_the_pdf(tmp_path: Path, monkeypat
     ``haus print`` lands ``permit_set.json`` beside ``permit_set.pdf`` with the right
     contents; the gate is the test above's subject and has its own coverage in
     ``test_calc_package`` and ``test_permit_coverage``. Since 2026-09-18 catlin does not
-    pass that gate — its canopy columns' base embedment is an open design gap — and no
+    pass that gate — ``PT-BW-RNE``'s base embedment is an open design gap — and no
     shipped house does, so there is no house to run this on unstubbed. Patching the one
     property keeps the composition, the writer and the file format under test rather than
     deleting the only end-to-end assertion about them.

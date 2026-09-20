@@ -490,6 +490,18 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Fixed column base embedment",
                        ("structural.lateral_racking",),
                        ("IBC 2018 §1807.3.2.1", "IBC 2018 §1806.2")),
+        # ** AND THE HORIZONTAL HALF OF THE SAME SYSTEM, ADDED 2026-09-19. ** The two lines
+        # above are both about a COLUMN. This one is about the member that decides how much
+        # of the frame's shear reaches it: a deck declared as a diaphragm (`Roof.diaphragm`)
+        # sharing the load out to the lines that resist it, per IBC 2018 §1604.4. Declaring
+        # one halves a cast column's base moment, so it has to be graded or the reduction is
+        # a claim — aspect ratio against SDPWS Table 4.2.4, unit shear against the row it was
+        # read at, and each panel's own shear, aspect ratio and hold-down. Blocking, because
+        # a deck that cannot carry the shear it was credited with leaves the frame with no
+        # lateral system at all while every drawing says it has one.
+        PermitItemSpec("Roof diaphragm and shear panel load path",
+                       ("structural.roof_diaphragm",),
+                       ("IBC 2018 §1604.4", "AWC SDPWS-2015 §4.2", "AWC SDPWS-2015 §4.3")),
         # Added 2026-09-11 with the column reactions. A cast column fixed at its base
         # delivers an axial load AND a base moment into whatever it stands on, and where
         # that is a foundation WALL TOP the receiving concrete is graded by nobody here:

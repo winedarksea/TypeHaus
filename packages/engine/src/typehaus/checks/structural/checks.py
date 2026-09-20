@@ -73,7 +73,8 @@ def flat_2x4_nonbearing_header(ctx: CheckContext) -> list[Finding]:
         host = authored_by_tag.get(opening.host_wall)
         wall = ctx.model.wall(opening.host_wall)
         violations: list[str] = []
-        if getattr(host, "structural_role", StructuralRole.UNKNOWN) is not StructuralRole.NONBEARING:
+        if (getattr(host, "structural_role", StructuralRole.UNKNOWN)
+                is not StructuralRole.NONBEARING):
             violations.append("host wall is not explicitly NONBEARING")
         if opening.width_m > 8.0 * 0.3048 + 1e-9:
             violations.append(f"RO is {opening.width_m / 0.0254:.1f}\" wide (> 96\")")
@@ -86,14 +87,18 @@ def flat_2x4_nonbearing_header(ctx: CheckContext) -> list[Finding]:
             header_top = wall.base_ref_z_m + opening.sill_m + opening.height_m + 3.5 * 0.0254
             gap = plate_underside - header_top
             if gap < -1e-9 or gap > 24.0 * 0.0254 + 1e-9:
-                violations.append(f"header-to-plate nailing surface is {gap / 0.0254:.1f}\" (must be 0–24\")")
+                violations.append(
+                    f"header-to-plate nailing surface is {gap / 0.0254:.1f}\" "
+                    "(must be 0–24\")"
+                )
         if violations:
             out.append(_advisory(
                 "structural.flat_2x4_nonbearing_header",
                 f"opening {opening.tag} cannot use a flat 2x4 nonbearing header: "
                 + "; ".join(violations), (opening.tag,), Result.FAIL,
                 code="IRC R602.7.4",
-                fix_hint="use a table-sized header or explicitly correct the nonbearing wall, RO, and plate clearance",
+                fix_hint="use a table-sized header or explicitly correct the nonbearing "
+                         "wall, RO, and plate clearance",
             ))
     return out
 

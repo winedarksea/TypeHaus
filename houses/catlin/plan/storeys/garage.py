@@ -9,6 +9,7 @@
 from typehaus import (
     Alarm,
     AlarmKind,
+    DiaphragmSpec,
     Door,
     Downspout,
     EaveGutter,
@@ -516,6 +517,42 @@ ROOFS = [
     Roof(uid="YX2GDZJMBV", tag="RF-BW-CANOPY", form=RoofForm.GABLE,
          pitch=Pitch(4, 12), bearing_refs=("BM-BW-RW", "BM-BW-RE"),
          assembly="CANOPY_ROOF", overhang=ft(1, 4), ridge_direction="y",
+         # ** THE DECK IS A DECLARED DIAPHRAGM SINCE 2026-09-19, AND THAT IS A DESIGN
+         # DECISION WITH PARTS IN IT. ** Until it was, the paragraph above was true twice
+         # over: this roof's sheathing tied two structures together and carried none of the
+         # canopy's own shear anywhere, because no chord and no collector had been drawn.
+         # `engineering/roof_moment` therefore put the whole frame shear on the two cast
+         # columns and credited W-BW-SCREEN with nothing.
+         #
+         # What this declaration buys is the load path IBC 2018 §1604.4 asks for: the deck
+         # carries shear to BOTH lines and the split is computed from their rigidities.
+         # What it COSTS is three parts that have to be built and are now graded rather
+         # than assumed — blocking at every panel edge (an unblocked deck is held to 3:1
+         # and this one is 4:1 across its 24' span), a continuous chord at each end, and a
+         # collector at each header. `lateral_system/RF-BW-CANOPY` grades all three, and
+         # AN-BW-ROOF has to carry the blocking and the chord splice onto the drawings.
+         diaphragm=DiaphragmSpec(
+             sheathing_layer="deck",
+             fastening='8d common (0.131" x 2 1/2") at 6" o.c. at the boundary and at every panel edge, 12" o.c. in the field; panel edges BLOCKED with 2x4 flat blocking between the trusses',
+             # The row is quoted for 15/32" and this deck is 3/4": thicker sheathing at the
+             # same schedule is not weaker. G_a is taken at the SOFT end of the band on
+             # purpose — a softer deck is the one more likely to read FLEXIBLE, which hands
+             # the cast columns the larger share and is the direction that does not flatter
+             # the member this whole calculation exists to grade.
+             source='AWC SDPWS-2015 Table 4.2A, blocked wood structural panel diaphragm, 15/32in sheathing with 8d at 6in boundary and edge spacing on 2in nominal framing, Case 1 — quoted conservatively for this 3/4in deck and at the soft end of the G_a band',
+             unit_shear_asd_plf=190.0,
+             apparent_stiffness_kips_per_in=12.0,
+             blocked=True,
+             # N-S wind: the first and last TRUSS, whose 2x4 top chord runs the full 24'
+             # between the headers and splices once at the peak — that splice is
+             # `chord_splice_slip`, a plated joint and not a continuous member. E-W wind:
+             # BM-BW-RW and BM-BW-RE themselves, 3-2x12 each, six times this section;
+             # quoting the 2x4 for both axes is the conservative half of that pair.
+             chords="N-S: the end trusses' 2x4 top chords, continuous 24ft with one plated splice at the peak. E-W: the 3-2x12 headers BM-BW-RW/-RE. The 2x4 is quoted for both.",
+             chord_member="2x4", chord_plies=1,
+             chord_splice_slip=inch(0.03),
+             collector_refs=("BM-BW-RW", "BM-BW-RE"),
+         ),
          # ** NEITHER END OF THIS ROOF IS A GABLE END, AND ONE OF THEM LOOKS LIKE ONE. **
          # A gable-end frame is plated with verticals at stud spacing and no engineered web
          # joints, and it is supported continuously by the wall under its bottom chord; it

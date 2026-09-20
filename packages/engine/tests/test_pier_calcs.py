@@ -1003,20 +1003,38 @@ def test_the_glulam_record_carries_its_wet_service_factors_in_the_fingerprint(
 # `notes/north_entry_structure.md` §1a called them the canopy's east lateral system in
 # print — a false claim the tests did not catch because nothing asked.
 _CANOPY_COLUMNS = ("PT-BW-RE", "PT-BW-RNE")
-#: §8's table, term by term. The ASD base moment is the roof-plane shear on the full shaft
-#: plus the shaft drag at its own mid-height lever; `deck_post` then divides by 0.6 for
-#: §2.3.1's 1.0W.
+#: ** THE SECOND ORACLE FOR THESE TWO IS NOW `entry_column_base_fixity.md` §7, AND IT MOVED
+#: EVERY NUMBER ON THIS PAGE. ** `north_entry_piers.md` §8 still derives the wind and the
+#: bands; what changed on 2026-09-19 is who carries the result. The canopy's deck is a
+#: declared diaphragm and `W-BW-SCREEN` a declared shear panel, so the shear is distributed
+#: in proportion to rigidity (IBC 2018 §1604.4) instead of being loaded wholly onto the two
+#: cast columns, and each column's own drag is a PROPPED-cantilever load rather than a
+#: free-cantilever one now that the deck holds its head.
+#:
+#: Three consequences, and the first is the one a reader will not expect: **E-W governs
+#: both columns now**. The panel runs north-south, so it takes 62% of the N-S case and none
+#: of the E-W one, and the case with the smaller total is the case the columns keep.
 _CANOPY_ORACLE = {
-    "PT-BW-RE": {"height_ft": 15.349, "drag_arm_ft": 9.957, "wind_asd_lb_ft": 9_461.0},
-    "PT-BW-RNE": {"height_ft": 12.729, "drag_arm_ft": 7.337, "wind_asd_lb_ft": 7_680.0},
+    # §7b/§7e: 0.3632 x 792.2 x 15.349' + 523.4 lb-ft of propped drag.
+    "PT-BW-RE": {"height_ft": 15.349, "drag_arm_ft": 9.957, "share": 0.3632,
+                 "drag_moment_lb_ft": 523.4, "wind_asd_lb_ft": 4_940.0},
+    # §7b/§7e: 0.6368 x 792.2 x 12.729' + 444.6 lb-ft. The SHORT column is the stiff one and
+    # a cantilever's stiffness goes as 1/h³, so it takes the larger share.
+    "PT-BW-RNE": {"height_ft": 12.729, "drag_arm_ft": 7.337, "share": 0.6368,
+                  "drag_moment_lb_ft": 444.6, "wind_asd_lb_ft": 6_866.0},
 }
-#: §8: 0.6 x 18.335 psf x 0.85 x 1.80, the ASD pressure every band below is multiplied by.
+#: §7a: 0.6 x 18.335 psf x 0.85 x 1.80, the ASD pressure every band below is multiplied by.
 _CANOPY_ASD_PRESSURE_PSF = 16.831
-#: §8: the N-S case governs — the gable-end triangle (26.667' x 4.444'/2 = 59.26 ft2) with
-#: no header band, because both headers run north-south and present their ends to N-S wind.
-_CANOPY_TOP_SHEAR_LB = 997.4
+#: §7a: the E-W case, which is the one the columns keep — the slope rise (6.000' x 4.444' =
+#: 26.67 ft2) plus both headers' section depths seen end-on (5.36 ft2 each).
+_CANOPY_TOP_SHEAR_LB = 629.3
+#: §7a: the N-S case, the gable-end triangle 26.667' x 4.444'/2 = 59.26 ft2. Shared.
+_CANOPY_TOP_SHEAR_NS_LB = 997.4
 #: Two 12" shafts, each 10.78' of exposed length (eave +7.951' down to Site.grade -2.833').
 _CANOPY_DRAG_SHEAR_LB = 363.0
+#: §7b: the two propped-cantilever head reactions, which join the deck and are distributed
+#: with everything else. 792.2 = 629.3 + 162.9 on the E-W case.
+_CANOPY_DIAPHRAGM_SHEAR_LB = 792.2
 
 
 @pytest.mark.parametrize("tag", _CANOPY_COLUMNS)
@@ -1034,26 +1052,52 @@ def test_a_roof_carrying_column_is_a_lateral_system_too(tag, piers) -> None:
 
 @pytest.mark.parametrize("tag", _CANOPY_COLUMNS)
 def test_the_canopy_base_moment_reproduces_the_note(tag, piers) -> None:
-    """§8 term by term: two shears at two lever arms, all of it on the two cast columns."""
+    """`entry_column_base_fixity.md` §7e term by term: this column's SHARE of the deck's
+    shear on the full shaft, plus the propped-cantilever moment from its own drag."""
     want = _CANOPY_ORACLE[tag]
     pier = piers[tag]
     assert pier.height_in / 12.0 == pytest.approx(want["height_ft"], abs=0.01)
-    hand = (_CANOPY_TOP_SHEAR_LB / 2.0) * want["height_ft"] \
-        + (_CANOPY_DRAG_SHEAR_LB / 2.0) * want["drag_arm_ft"]
+    hand = (want["share"] * _CANOPY_DIAPHRAGM_SHEAR_LB * want["height_ft"]
+            + want["drag_moment_lb_ft"])
     assert hand == pytest.approx(want["wind_asd_lb_ft"], rel=0.005)
     assert pier.wind_base_moment_lb_ft == pytest.approx(want["wind_asd_lb_ft"], rel=0.005)
 
 
-def test_nothing_is_claimed_for_the_west_shear_panel(piers) -> None:
-    """The frame's whole shear goes on the two cast columns.
+@pytest.mark.parametrize("tag", _CANOPY_COLUMNS)
+def test_the_propped_shaft_is_not_a_cantilever(tag, piers) -> None:
+    """§7b, and it is the half of the revision a reader is most likely to miss.
 
-    W-BW-SCREEN is a sheathed 2x4 panel on the west line and is the canopy's west lateral
-    system in fact. Splitting between it and a 12" cast column is a relative-rigidity
-    judgement this engine has no standing to make, so it makes none and takes the whole
-    frame shear east — the same reasoning ``_base_moments`` applies to the guard load.
+    Wind on the shaft reaches the base alone only while the head is free. With the deck
+    declared a diaphragm the shaft is a propped cantilever, and the same load makes three to
+    four times less moment at the base — the balance goes UP into the deck, where it is
+    distributed with everything else rather than vanishing.
+    """
+    want = _CANOPY_ORACLE[tag]
+    free_cantilever = (_CANOPY_DRAG_SHEAR_LB / 2.0) * want["drag_arm_ft"]
+    # P a (H^2 - a^2) / (2 H^2) against P a. Both columns land near a third, and the exact
+    # value is a pure function of a/H, so a band this tight is a real assertion about the
+    # influence coefficient rather than a tolerance.
+    assert 0.25 < want["drag_moment_lb_ft"] / free_cantilever < 0.40
+    assert "PROPPED cantilever" in piers[tag].moment_basis
+
+
+def test_the_shear_is_shared_with_the_west_panel_and_the_split_is_stated(piers) -> None:
+    """The frame's shear is distributed by rigidity, IBC 2018 §1604.4.
+
+    ** THIS TEST ASSERTED THE OPPOSITE UNTIL 2026-09-19, AND BOTH VERSIONS ARE RIGHT ABOUT
+    THEIR OWN MODEL. ** While no `Roof.diaphragm` and no `Wall.shear_panel` were authored,
+    the whole shear DID go east: there was no horizontal member to share it through and no
+    declared line to share it with, and taking it all on the columns was the honest answer
+    rather than a conservatism. Authoring both is what changed the structure.
+
+    What the basis has to keep saying is which case is which — the panel runs north-south,
+    so the E-W case is still the columns' alone, and it is now the one that governs them.
     """
     for tag in _CANOPY_COLUMNS:
-        assert "NOTHING is claimed for a sheathed panel" in piers[tag].moment_basis
+        basis = piers[tag].moment_basis
+        assert "shared by relative rigidity (IBC 2018 §1604.4)" in basis
+        assert "E-W wind on RF-BW-CANOPY" in basis, "the unshared case governs"
+        assert "W-BW-SCREEN" not in basis, "the panel resists N-S and takes no E-W share"
     # And the west line's own columns are wood, so they never reach this module at all.
     assert "PT-BW-CW" not in piers and "PT-BW-CNW" not in piers
 
@@ -1074,9 +1118,13 @@ def test_the_canopy_column_is_graded_in_bending_and_it_checks_out(tag, results) 
     # a guard and almost no wind area.
     assert wind.demand > states["bending at base, guard"].demand
     magnified = states["magnified moment (sway)"]
-    assert 0.4 < magnified.demand / magnified.capacity < 0.85, (
-        "the demand is a deliberate over-read (see §8's 2.1x against the §27.3.2 hand "
-        "pass); if this ever reaches 1.0 the note's wood alternate is back on the table")
+    # ** THE FLOOR CAME DOWN 0.40 -> 0.30 ON 2026-09-19 AND THE CEILING DID NOT MOVE. **
+    # The shear split (entry_column_base_fixity.md §7) roughly halved PT-BW-RE's base moment
+    # and its sway ratio fell to 0.37, while PT-BW-RNE — which takes the larger share of the
+    # one case the panel does not resist — stayed high. The demand is still a deliberate
+    # over-read (§8's 2.1x against the §27.3.2 hand pass); if this ever reaches 1.0 the
+    # note's wood alternate is back on the table.
+    assert 0.3 < magnified.demand / magnified.capacity < 0.85
     assert "no moment and no lateral case" not in " ".join(record.notes)
 
 

@@ -29,6 +29,7 @@ from typehaus.engineering import (
     deferred,  # noqa: F401  (registration — the kinds this engine defers to a designer)
     girt_screw,  # noqa: F401  (registration)
     glulam_beam,  # noqa: F401  (registration)
+    lateral_system,  # noqa: F401  (registration)
     post_bearing,  # noqa: F401  (registration)
     retaining_system,  # noqa: F401  (registration)
     retaining_wall,  # noqa: F401  (registration)
@@ -76,7 +77,8 @@ __all__ = [
     "ExternalDesign", "Freshness", "LimitState", "NO_ENGINEERING", "Oracle", "Quantity",
     "REGISTER_FILENAME", "SETTLED", "Scope", "Signoff", "Status", "pinnable",
     "calc", "fingerprint", "item_id", "keys", "load_register", "no_calc", "records_of",
-    "column_base", "deck_post", "deferred", "girt_screw", "glulam_beam", "roof_beam",
+    "column_base", "deck_post", "deferred", "girt_screw", "glulam_beam",
+    "lateral_system", "roof_beam",
     "registered_kinds",
     "retaining_system",
     "retaining_wall", "spread_footing", "wall_panel",
