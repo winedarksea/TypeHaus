@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** e49dcd4d31392fae  
-**Lines:** 133
+**Model hash:** 711bf4a669c72e45  
+**Lines:** 134
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -33,7 +33,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2-1x4 — stud (2-1x4) | 24 | LF ordered | 3 pcs, 19.6 LF cut | building |
 | 2-2x10 — header (2-2x10) | 40 | LF ordered | 5 pcs, 26.2 LF cut | building |
 | 2-2x6 — header (2-2x6) | 18 | LF ordered | 2 pcs, 13.2 LF cut | building |
-| 2-2x8 — header (2-2x8) | 184 | LF ordered | 56 pcs, 151.9 LF cut | building |
+| 2-2x8 — header (2-2x8) | 192 | LF ordered | 57 pcs, 155.0 LF cut | building |
 | 24 gable roof truss — roof truss (24 gable roof truss) | 2 | ea | 2 pcs, 48.0 LF cut; 48.0 LF in the takeoff | building |
 | 24 roof truss — roof truss (24 roof truss) | 14 | ea | 14 pcs, 336.0 LF cut; 336.0 LF in the takeoff | building |
 | 25 ga. resilient channel 1/2" resilient channel — girt strapping (25 ga. resilient channel:resilient-channel) | 632 | LF ordered | 94 pcs, 511.5 LF cut | building |
@@ -42,7 +42,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x2 — blocking, plate, stud (2x2) | 288 | LF ordered | 100 pcs, 264.6 LF cut | building |
 | 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,672 | LF ordered | 638 pcs, 3945.3 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,830 | LF ordered | 462 pcs, 2441.4 LF cut | building |
-| 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | 8,844 | LF ordered | 1362 pcs, 7683.5 LF cut | building |
+| 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | 8,876 | LF ordered | 1369 pcs, 7705.8 LF cut | building |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — girt strapping (2x6:kdat) | 88 | LF ordered | 9 pcs, 72.0 LF cut | building |
 | 2x8 — blocking, cripple stud, header, jack stud, joist, king stud, landing framing, plate, stud, trimmer (2x8) | 674 | LF ordered | 111 pcs, 584.4 LF cut | building |
 | 2x8 SPF framing lumber — blocking (2x8:spf) | 430 | LF ordered | 76 pcs, 357.3 LF cut | building |
@@ -130,7 +130,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| Beam (beam) | 3.6 | bf | 1 placed, 1.1 SF plan; 0.01 cy in the takeoff | main |
 | Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | 121.2 | bf | 3 placed, 8.5 SF plan; 0.37 cy in the takeoff | second |
 | Beam — BEAM_KDAT (beam:BEAM_KDAT) | 186 | bf | 9 placed, 19.2 SF plan; 0.57 cy in the takeoff | main |
 | Beam — BEAM_LVL (beam:BEAM_LVL) | 84 | bf | 3 placed, 7.1 SF plan; 0.26 cy in the takeoff | main, second |
@@ -192,8 +191,15 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | rough opening, 14" x 20" arched (no type) (None) | 1 | ea | 14" x 20" | basement |
 | rough opening, 30" x 80" (no type) (None) | 1 | ea | 30" x 80" | second |
 | rough opening, 32" x 80" (no type) (None) | 1 | ea | 32" x 80" | second |
+| rough opening, 34" x 25" (no type) (None) | 1 | ea | 34" x 25" | main |
 | rough opening, 36" x 80" (no type) (None) | 1 | ea | 36" x 80" | basement |
 | rough opening, 60" x 78" arched (no type) (None) | 1 | ea | 60" x 78" | basement |
+
+## Steel members
+
+| item | quantity | unit | detail | storeys |
+|---|---|---|---|---|
+| L3 1/2" x 3 1/2" x 1/4" steel angle (L3.5x3.5x0.25) | 3.79 | LF |  | main |
 
 ## Appendix A — elements, per line
 
@@ -298,7 +304,6 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | THA422 top-flange floor truss hanger | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | — |
-| Beam (beam) | BM-M-FIRE-LINTEL |
 | Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | BM-SG-BLC, BM-SG-BLE, BM-SG-BLW |
 | Beam — BEAM_KDAT (beam:BEAM_KDAT) | BM-BW-FC, BM-BW-FE, BM-BW-GARAGE-SEAT, BM-BW-HOUSE-SEAT, BM-BW-RE, BM-BW-RW, BM-BW-SCSILL, BM-SG-BKE, BM-SG-BKW |
 | Beam — BEAM_LVL (beam:BEAM_LVL) | BM-M-HALL, BM-S-BATH-E, BM-S-HALL |
@@ -330,8 +335,10 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | rough opening, 14" x 20" arched (no type) (None) | AO-B-BRICK-WIN |
 | rough opening, 30" x 80" (no type) (None) | D-S-STUDY2 |
 | rough opening, 32" x 80" (no type) (None) | O-S-VANITY |
+| rough opening, 34" x 25" (no type) (None) | AO-M-FIRE-NICHE |
 | rough opening, 36" x 80" (no type) (None) | D-B-GYM |
 | rough opening, 60" x 78" arched (no type) (None) | AO-B-BRICK-DOOR |
+| L3 1/2" x 3 1/2" x 1/4" steel angle (L3.5x3.5x0.25) | BM-M-FIRE-LINTEL |
 
 ## Appendix B — drawings
 
