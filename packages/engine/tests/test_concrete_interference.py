@@ -21,7 +21,7 @@ from typehaus.checks import build_context
 from typehaus.checks.structural.concrete_interference import concrete_interference
 from typehaus.findings import Result
 from typehaus.model.structure import Pad
-from typehaus.quantities import ft, pt
+from typehaus.quantities import ft, m, pt
 from typehaus.source import load_plan
 
 
@@ -60,6 +60,13 @@ def test_it_reports_the_pours_it_cleared_by_name(catlin_ctx):
     single aggregate for the clear-standing pours, and one per declared pour. ``PD-SG-COL``
     and ``PD-SG-FCOL`` joined the aggregate the same day, when the two centre-garden bells
     became pads.
+
+    ** AND THE THREE GARAGE PIERS JOINED IT ON 2026-09-20, LEAVING NO DECLARED POUR AT ALL. **
+    Their `cast_with` named nine strip footings that had gone to R403.5 consolidated crushed
+    stone five days earlier, and stone is cast with nothing. The check now drops a footing
+    whose ``Footing.material`` is not concrete before it picks bodies, so those laps are not
+    findings to declare away: a pad set in a stone bed has no formwork to share. The declared
+    branch is still live code and still tested below, on a fixture rather than on catlin.
     """
     ctx = catlin_ctx
     passes = [f for f in _findings(ctx) if f.result is Result.PASS]
@@ -68,21 +75,12 @@ def test_it_reports_the_pours_it_cleared_by_name(catlin_ctx):
 
     assert len(clear) == 1, [f.message for f in clear]
     assert set(clear[0].element_tags) == {
-        "PD-BW-W", "PD-BW-E", "PD-BW-RE", "PD-SG-COL", "PD-SG-FCOL"}
+        "PD-BW-W", "PD-BW-E", "PD-BW-RE", "PD-SG-COL", "PD-SG-FCOL",
+        "PD-BW-GW", "PD-BW-GE", "PD-BW-RNE"}
 
-    # One per (pad, footing) lap, not one per pad: PD-BW-GW and PD-BW-RNE each cross two
-    # legs of the garage strip, and a reader owed "which footing" is owed it for each.
-    assert {tuple(sorted(f.element_tags)) for f in declared} == {
-        ("FT-GF-S-DR", "PD-BW-GE"),
-        ("FT-GF-S1", "PD-BW-GW"),
-        ("FT-GF-W", "PD-BW-GW"),
-        ("FT-GF-E", "PD-BW-RNE"),
-        ("FT-GF-S3", "PD-BW-RNE"),
-    }
-    for finding in declared:
-        # The grant is narrow and the message must keep saying so — a declared pour buys a
-        # joint, never bearing area (ACI 318-19 §13.3.4's combined-footing line).
-        assert "takes no credit" in finding.message
+    # No declared pour survives on catlin: the garage strips are stone, so the three pier
+    # pads that used to declare against them stand clear instead.
+    assert declared == [], [f.message for f in declared]
 
 
 def test_continuous_foundation_work_is_never_the_SUBJECT_of_a_finding(catlin_plan,
@@ -144,3 +142,51 @@ def test_a_pad_moved_back_onto_the_frame_line_is_caught():
     fails = [f for f in _findings(ctx) if f.result is Result.FAIL]
     assert fails, "a pad buried in the house foundation wall must not pass"
     assert all("PD-TEST" in f.element_tags for f in fails)
+
+
+def test_a_declared_pour_against_a_CONCRETE_footing_still_reports_by_name():
+    """The ``cast_with`` branch, exercised on a fixture now that catlin declares nothing.
+
+    Catlin's three garage piers carried the only declarations in the house until
+    2026-09-20, when the strips they named turned out to be R403.5 crushed stone and the
+    check began dropping non-concrete footings before it picked bodies. That is the right
+    answer for stone — there is no formwork to share — but it left this branch with no
+    subject, and an untested branch is a branch that rots. So: a pad laid over a CONCRETE
+    strip footing, declaring it, and the PASS that names both sides.
+    """
+    result = load_plan(CATLIN_DIR)
+    plan = result.plan
+    base_ctx, _ = build_context(plan, CATLIN_DIR)
+    concrete = {el.tag for el in plan.all_elements()
+                if type(el).__name__ == "Footing"
+                and getattr(el, "material", "concrete") == "concrete"}
+    solid = next(s for s in base_ctx.model.solids
+                 if s.category == "footing" and s.tag in concrete)
+    cx = sum(p[0] for p in solid.outline) / len(solid.outline)
+    cy = sum(p[1] for p in solid.outline) / len(solid.outline)
+    half = ft(0.5).meters
+    lapping = Pad(uid="TESTPAD002", tag="PD-TEST-LAP", assembly="PIER_BASE_12",
+                  thickness=ft(1), bottom_elevation=m(solid.z0_m),
+                  outline=(pt(m(cx - half), m(cy - half)), pt(m(cx + half), m(cy - half)),
+                           pt(m(cx + half), m(cy + half)), pt(m(cx - half), m(cy + half))),
+                  cast_with=(solid.tag,))
+    plan = plan.model_copy(update={"elements": {
+        **plan.elements, "main": (*plan.elements["main"], lapping),
+    }})
+
+    ctx, _ = build_context(plan, CATLIN_DIR)
+    findings = _findings(ctx)
+    # Only the declared lap is at issue. The stand-in pad sits in the middle of a basement
+    # strip, so it also clashes with that wall's own band and the slab — real for a pad
+    # dropped there, and nothing to do with the declaration under test.
+    assert not [f for f in findings if f.result is Result.FAIL
+                and "PD-TEST-LAP" in f.element_tags
+                and solid.tag in f.element_tags], "a declared pour is not a defect"
+    declared = [f for f in findings
+                if f.result is Result.PASS and "CAST WITH" in f.message
+                and "PD-TEST-LAP" in f.element_tags]
+    assert declared, [f.message for f in findings if "PD-TEST-LAP" in f.element_tags]
+    # The grant is narrow and the message must keep saying so — a declared pour buys a
+    # joint, never bearing area (ACI 318-19 §13.3.4's combined-footing line).
+    assert all("takes no credit" in f.message for f in declared)
+    assert all(solid.tag in f.element_tags for f in declared)

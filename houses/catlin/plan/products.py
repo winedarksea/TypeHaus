@@ -205,6 +205,42 @@ KOHLER_CLEARFLO_7272 = Product(
 )
 
 
+# --- the garage EV outlet ----------------------------------------------------------------
+#
+# ** THE RECEPTACLE, NOT THE CHARGER (owner: "make sure the EV charger is a Leviton 1450R").
+# ** `ED-G-EV-1450` is a NEMA 14-50R outlet on `CKT-EV-1450`; the EVSE that plugs into it is
+# the Emporia unit `plan/electrical.py` already names in prose, and it is not modeled because
+# it is cord-and-plug equipment the house does not build in. What the owner picked is the
+# OUTLET, and the pick is a real distinction rather than a brand preference: an ordinary
+# 14-50R is a range receptacle, rated for a handful of insertions and an intermittent load,
+# and EV charging is the opposite of both — one plug left in under a 40 A continuous draw for
+# hours at a time. Leviton sells the 1450R for exactly that duty, with heavy-gauge copper
+# contacts and a 75 in-lb pressure terminal. It also constrains the feeder, which nothing in
+# the model states today: the device accepts #4/#6/#8 AWG **copper only** — no aluminium and
+# no copper-clad — so `CD-B-GARAGE`/`CD-B-GAP-EV` pull copper or the outlet cannot be landed.
+#
+# ** IT HANGS OFF NOTHING YET, AND THAT IS A SEAM AND NOT AN OVERSIGHT. ** The type this
+# would attach to, `ED-T-EV-1450`, lives in `library/electrical.py` — the shared catalog —
+# and a library entry may not name a house-owned `Product`: `Library.products` is populated
+# from this file, so `houses/starter` would resolve the ref to nothing and take an
+# `integrity.unknown_product_ref` ERROR. It is the same seam `plans/TODO.md` records against
+# the Bituthene selection, and it has no house-side lever: a catlin entry re-using the tag is
+# an `integrity.duplicate_catalog_tag` ERROR, and a catlin entry under a NEW tag changes the
+# `[placeables]` price key and three engine tests. The identity lives here and in the
+# `prices.toml` note in the meantime, which is exactly what the Bituthene case settled for.
+LEVITON_EV_RECEPTACLE_1450R = Product(
+    tag="PROD-LEVITON-1450R", brand="Leviton", model="1450R",
+    name="50 A heavy-duty EV charging receptacle, NEMA 14-50R",
+    url="https://leviton.com/products/1450r",
+    source="Leviton product page and specification sheet for catalog 1450R, read 2026-09-20 "
+           "- 50 A, 125/250 VAC, 3-pole 4-wire, flush mount, black, high-impact nylon face on "
+           "a galvanized steel strap, cULus listed (UL 498). Terminals torque to 75 in-lb and "
+           "accept #4, #6 or #8 AWG COPPER only (#10 solid permitted for the ground); no "
+           "aluminium or copper-clad. 1450W is the same device weather-resistant, which this "
+           "one need not be - it is on W-G-S's interior face inside the garage.",
+)
+
+
 # The machines above, then the 2026-09-06 interior-selection pass (plan/products_interior.py).
 # One catalog to every ``product_ref`` and to the manifest; two files only because of the
 # 500-line rule.
@@ -216,5 +252,6 @@ PRODUCTS = (
     ERV_PLENUM_FABRICATED, ERV_START_COLLAR_DAMPERED, ERV_VOLUME_DAMPER_4,
     ERV_TERMINAL_4,
     KOHLER_UNDERSCORE_5713_W1, KOHLER_CLEARFLO_7272,
+    LEVITON_EV_RECEPTACLE_1450R,
     *INTERIOR_PRODUCTS,
 )

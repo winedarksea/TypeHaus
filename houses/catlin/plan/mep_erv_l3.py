@@ -115,11 +115,27 @@ EQUIPMENT_ERV_SECOND = [
 # within a foot of the joists' west bearing, which is the one place the chart does not — and
 # that is before ~16 bored webs and a manufacturer sign-off.
 #
-# +4" is a 4" duct lying on the attic deck at 240"; -9 7/8" is its centreline sitting on
-# FS-ATTIC's bottom chord at 228 1/8". Both are attic-relative, and negative because the
-# attic datum is the deck top.
+# +4" is a 4" duct lying on the attic deck at 240". Both are attic-relative, and negative
+# because the attic datum is the top of FS-ATTIC's joists.
 _ATTIC_DECK_Z = inch(4)
-_ATTIC_BAY_Z = inch(-9.875)
+#: ** -8 1/2", RE-DERIVED 2026-09-20; IT WAS -9 7/8", WHICH IS LEVEL 2'S OLD ERROR COPIED. **
+#: A 4" duct's centreline resting on FS-ATTIC's bottom FLANGE. The band, attic-relative:
+#: 240" top of joists (datum, 3/4" ply deck over it) / -1 3/8" top flange / -10 1/2" top of
+#: the bottom flange = 229 1/2" absolute / -11 7/8" underside of the joists = 228 1/8" /
+#: 5/8" gwb ceiling under that. So invert 229 1/2", crown 233 1/2", centreline 231 1/2" =
+#: attic-relative -8 1/2".
+#:
+#: -9 7/8" put the INVERT at 228 1/8" — the joists' underside, i.e. lying on the ceiling
+#: board, with the bottom flange beside it rather than under it. That is the same mistake
+#: `_BAY_Z` in plan/mep_erv_l2.py records having corrected on 2026-09-12; only the
+#: correction differs, because FS-S-WEST's floor truss has a 1 1/2" chord and FS-ATTIC's
+#: 11 7/8" I-joist a 1 3/8" flange (`resolve/framing/profiles.py`). +1 3/8", not +1 1/2",
+#: so this datum is level 2's neighbour and not its twin.
+#:
+#: It is also exactly the floor of `resolve/mep_crossings.member_window`'s i_joist window
+#: (bottom + one flange), which is what a bore is graded against — so a bay leg on this
+#: line and a leg that crosses a joist read the same number.
+_ATTIC_BAY_Z = inch(-8.5)
 # -3" is a 4" duct in the TOP of a bay, stacked over a run already lying on the bottom
 # chord: 235"..239" against DU-S-ERV-HP-FEED's 228 1/8"..234 1/8", 7/8" between them and 1"
 # under the deck. `mep_packing` grades a bay's width as a TIER, so two runs at different
@@ -225,12 +241,12 @@ DUCTS_ERV_ATTIC = [
     #
     # ** IT COMES OUT OF THE BAY AT x=21'-0" AND RUNS THE LAST LEG ON THE DIAGONAL. ** The
     # trip south to 18'-0" is a detour of 15 ft that `mep.run_route_efficiency` charges for:
-    # squared off to x=29'-0" and then north, this run develops 60.1 ft against 23.9 ft of
-    # straight line — 2.51 against the house's 2.50, a FAIL by a hundredth. x=21'-0" is where
+    # squared off to x=29'-0" and then north, this run develops 59.9 ft against 23.9 ft of
+    # straight line — 2.50 against the house's 2.50, a FAIL by a hair. x=21'-0" is where
     # DU-S-ERV-HP-FEED already leaves the bays for RM-A-EAST-UNFIN's deck, and east of it
     # nothing is finished and nothing is in the way for more than 2" in any direction, so the
-    # last leg goes straight at the grille instead of round two sides of a rectangle: 54.3 ft
-    # and a ratio of 2.27. REG-S-RET-BED3 is a CEILING grille in the storey below, so this
+    # last leg goes straight at the grille instead of round two sides of a rectangle: 54.0 ft
+    # and a ratio of 2.26. REG-S-RET-BED3 is a CEILING grille in the storey below, so this
     # deck leg is over an unfinished floor from end to end.
     DuctRun(uid="73FJZH564X", tag="DU-A-ERV-R-BED3", system=DuctSystem.RETURN,
             path=(pt(ft(5, 3), ft(34, 2)), pt(ft(5, 3), ft(33, 1)),

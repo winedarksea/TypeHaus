@@ -555,7 +555,9 @@ for _uid, _tag, _x, _height, _top in (
 # nothing else. There is no such excavation out here. The garage's own strip footings bottom
 # at -7'-0" and top at -6'-4", which is 50" of cover against Minn. R. 1303.1600 Zone II's
 # 42", so these are cast with the garage foundation on the same bearing plane, in the same
-# formwork sequence, out of the same pour (owner, 2026-09-10).
+# excavation and the same visit (owner, 2026-09-10). NOT out of the same pour any more: the
+# strip is consolidated crushed stone as of 2026-09-15 (R403.5), so the shared thing is the
+# hole and the bearing plane, and these three pads are the only concrete in it.
 #
 # ** COPLANAR IS ALSO WHAT SETTLES THE LAP. ** PT-BW-GW's and PT-BW-RNE's 2'-0" pads reach
 # about 8" under `FT-GF-S1`/`-S3` in plan. At the house-side depth that was undermining and
@@ -565,16 +567,19 @@ for _uid, _tag, _x, _height, _top in (
 # ** AND THE HYDRANT PASSES UNDER, NOT THROUGH. ** `PR-G-HYDRANT-CW` runs north at x=11'-0"
 # with its invert at -8'-10", so at this depth it clears the underside of FT-BW-GE by 1'-10"
 # rather than threading between a shaft and a pad. `mep.footing_clearance` grades it.
-#: What each garage-side pier base is cast monolithically with — the strip footings it laps
-#: on its own -7'-0" plane. Read off the model rather than guessed: `FT-GF-S1`/`-S-DR`/`-S3`
-#: are the garage's south strip run, and `FT-GF-W`/`-E` its returns, and each pier sits where
-#: a return meets the south run. **A pad that laps something it does NOT name here is still a
-#: FAIL**, which is what keeps the declaration from being a blanket exemption.
-_GARAGE_PIER_CAST_WITH = {
-    "PT-BW-GW": ("FT-GF-S1", "FT-GF-W"),
-    "PT-BW-GE": ("FT-GF-S-DR",),
-    "PT-BW-RNE": ("FT-GF-S3", "FT-GF-E"),
-}
+#: ** THE GARAGE PIERS DECLARE NO POUR, AND THAT IS THE POINT. ** Each garage-side pier base
+#: laps a strip footing on its own -7'-0" plane, and until 2026-09-20 it said so with
+#: `Pad.cast_with`. Every `FT-GF-*` it named went to consolidated crushed stone on 2026-09-15
+#: (2024 IRC R403.5, `params/foundations.py`), and nothing is cast monolithically with stone.
+#: A concrete pad standing in a stone bed is not a pour in someone else's formwork: the stone
+#: is placed around it in the 8" lifts R403.4.1 already requires, so there is no cold joint to
+#: key and no interface steel to detail. `structural.concrete_interference` now drops a
+#: footing whose `Footing.material` is not concrete before it picks its bodies, so the lap is
+#: no longer a finding to declare away, and the three pads report as isolated pours instead.
+#: The dangerous reading — crediting the strip's area to the pad as a combined footing — was
+#: always closed elsewhere: `engineering/spread_base.pours_for` and `engineering/column_base`
+#: both refuse a named pour that is not concrete, by name
+#: (`notes/entry_column_base_fixity.md` 6f).
 GARAGE_FOOTING_THICKNESS_FT = 8 / 12   # the garage strip's own 8", so the two tops align
 GARAGE_PIER_BOTTOM_FT = -7.0
 GARAGE_FOOTING_TOP_FT = GARAGE_PIER_BOTTOM_FT + GARAGE_FOOTING_THICKNESS_FT
@@ -591,23 +596,31 @@ for _uid, _tag, _x, _pad_in, _top in (
         vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
         reinforcement=ENTRY_MOMENT_CAGE if _tag in _MOMENT_PIERS else ENTRY_PIER_CAGE,
         supported_by=f"PD-BW-{_tag.split('-')[-1]}"))
-    # ** THESE THREE LAP THE GARAGE STRIP FOOTING, AND THE LAP IS THE JOINT. ** They are cast
-    # at -7'-0" on `FT-GF-S1`/`-S3`'s own plane, in the same excavation and at the same time,
-    # and reach about 7 1/2" into it — which the comment above has always described as
-    # meeting "edge to edge on one plane". **They cannot be pulled clear**: the pier line
+    # ** THESE THREE LAP THE GARAGE STRIP FOOTING, AND THE LAP IS A DISPLACEMENT. ** They are
+    # cast at -7'-0" on `FT-GF-S1`/`-S3`'s own plane, in the same excavation and at the same
+    # time, and reach about 7 1/2" into it — which the comment above has always described as
+    # meeting "edge to edge on one plane". Since 2026-09-15 the thing they reach into is
+    # CONSOLIDATED STONE, not a pour: the pads go in first and the stone is compacted around
+    # them, so the sequencing obligation this comment used to carry (continuous bottom steel
+    # or dowels through a cold joint) is retired with the concrete that needed it.
+    #
+    # **They cannot be pulled clear**, and that has not changed: the pier line
     # stands 4 1/2" south of that footing's south face and the shaft is a 12" round, so the
     # COLUMN itself overhangs any pad stopping at the face. Clearing it in plan would need a
     # pad about 9" deep — 1 1/2" either side of the shaft — and making the area back up in
     # width turns it into a 40" grade beam. There is no rectangle here, and there does not
     # need to be one: monolithic is how it is built.
     #
-    # `Pad.cast_with` is what says so. Until it existed the only way to model this was a
+    # The lap needs no declaration now that the strips are stone. Before `Pad.cast_with`
+    # existed the only way to model it was a
     # `Footing` with an `under`, which took the base out of
     # `structural.concrete_interference`'s scope by pretending it carried a wall — and out of
     # `structural.deck_footing_size`'s prescriptive reach with it, which is what put three
     # `spread_footing/` items in the seal register for three flat square bases on presumptive
-    # soil. Declared, the lap is reported as the joint it is, with the detailing obligation
-    # named: continuous bottom steel or dowels through the interface, no unkeyed cold joint.
+    # soil. Declared, the lap is reported by name with its numbers rather than passed over in
+    # silence — and what the report now names is a pad bearing in stone, which needs no
+    # interface steel because there is no cold joint to key. `concrete_interference` reaches
+    # the same answer by material, so the pads are reported as isolated pours.
     #
     # **No widening was needed.** The areas were already there — 4.00 ft² under GW and RNE
     # and 2.25 under GE, against 2.48 / 1.60 / 1.00 required on the mn-2020 profile's
@@ -620,8 +633,7 @@ for _uid, _tag, _x, _pad_in, _top in (
         assembly="PIER_BASE_12",
         # A moment pad keeps the strip's top and drops its bottom 4" below the strip's plane.
         bottom_elevation=ft(GARAGE_FOOTING_TOP_FT - MOMENT_PAD_DEPTH_FT
-                            if _tag in _MOMENT_PIERS else GARAGE_PIER_BOTTOM_FT),
-        cast_with=_GARAGE_PIER_CAST_WITH[_tag]))
+                            if _tag in _MOMENT_PIERS else GARAGE_PIER_BOTTOM_FT)))
 
 # The two roof columns. Pier/pedestal top -0'-8 1/4" to header soffit +6'-4 3/4" = 7'-1".
 # k*lu/d = 15.5, nowhere near NDS Sec 3.7.1.4's limit of 50. Standoff base ABU66SS on a

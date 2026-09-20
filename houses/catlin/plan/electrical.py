@@ -961,6 +961,16 @@ SECOND_EQUIPMENT = [
 # garage's 6'-0" east move on 2026-09-07 — they sit ON that wall. `ED-G-EV-1450` did not:
 # it is a station on the SOUTH wall's interior face, still well inside its new x 6'..30'
 # run, and holding it still keeps `CD-B-GARAGE` and its three sleeves untouched.
+#
+# ** THE 14-50R IS A LEVITON 1450R, AND IT IS THE DEVICE THAT WAS CHOSEN, NOT THE CHARGER
+# (owner). ** A range receptacle is rated for a handful of insertions and an intermittent
+# load; this one sits under 40 A continuous for hours with the plug left in. The 1450R is
+# Leviton's heavy-duty EV-duty version of the same NEMA 14-50R, and its terminals take #4/#6/
+# #8 AWG COPPER ONLY - which is a live constraint on the feeder, not a footnote. The full
+# record is `PROD-LEVITON-1450R` in `plan/products.py`, which also explains why `type_ref`
+# cannot carry a `product_ref` to it: `ED-T-EV-1450` is a LIBRARY type and a library entry
+# may not name a house-owned Product. The EVSE that plugs in is still the Emporia unit; it
+# is cord-and-plug equipment and stays unmodeled.
 GARAGE_DEVICES = [
     ElectricalDevice(uid="CEE008AAAA", tag="ED-G-EV-620", kind=DeviceKind.RECEPTACLE_240,
                      position=pt(ft(6, 8.75), ft(58, 6.75)), type_ref="ED-T-EV-620", circuit="CKT-EV-620",

@@ -49,6 +49,19 @@ CONCRETE_CATEGORIES = ("pad", "footing", "slab")
 _TOL_AREA = 1e-4
 
 
+def _non_concrete_footings(plan: PlanModel) -> set[str]:
+    """Tags of footings that are not a pour at all — IRC R403.5 consolidated crushed stone.
+
+    A stone footing still draws a ``footing`` solid, so category alone would read it as
+    concrete. Nothing is formed and nothing is cast: a pad that laps one displaces stone
+    instead of sharing a form, which is not the defect this check is looking for.
+    """
+    from typehaus.model.structure import Footing
+
+    return {el.tag for el in plan.all_elements()
+            if isinstance(el, Footing) and el.material != "concrete"}
+
+
 def _declared_pours(plan: PlanModel) -> set[frozenset[str]]:
     """The pairs a house has DECLARED are one pour — ``Pad.cast_with``, both ways round.
 
@@ -112,8 +125,9 @@ def concrete_interference(ctx: CheckContext) -> list[Finding]:
     _Body = tuple[str, str, Any, float, float]
     subjects: list[_Body] = []
     others: list[_Body] = []
+    non_concrete = _non_concrete_footings(model.plan)
     for solid in model.solids:
-        if solid.category not in CONCRETE_CATEGORIES:
+        if solid.category not in CONCRETE_CATEGORIES or solid.tag in non_concrete:
             continue
         poly = Polygon(solid.outline)
         if not poly.is_valid or poly.area <= _TOL_AREA:
