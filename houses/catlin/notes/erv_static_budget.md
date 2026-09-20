@@ -59,7 +59,7 @@ plenum — did not change; what it is built from did.
 | the machine | Broan B210E75RT, 6" top ports, `fan_curve` authored | 1 |
 | plenums | fabricated galvanized box, 8" inlet collar, N x 4" dampered start collars | 5 (28 ports, 23 live) |
 | radials | 4" galvanized snap-lock, one per terminal | 23 |
-| trunks and risers | 6" galvanized | 4 |
+| trunks and risers | 6" galvanized | 5 (the level-2 extract feed joined them 2026-09-20) |
 | outdoor legs | `DU-ERV-OA` and `DU-ERV-EA`, both **8"**, both inside an R-8 vapour-sealed wrap, both out the NORTH face | 2 |
 | terminals | 4"-collar commodity diffusers and grilles | 26 |
 
@@ -116,14 +116,24 @@ Every radial is 4" galvanized. `Δp_duct` is §2's formula; `Δp_terminal` is §
 |---|---|---|---|---|---|---|---|---|---|
 | `DU-B-ERV-R-SAUNA-EXH` | 20 | 39.08 | 5 | 51.58 | 229 | 0.00327 | 7,811 | 0.0342 | **0.0173** |
 | `DU-B-ERV-R-PLAY` | 30 | 15.50 | 2 | 20.50 | 344 | 0.00737 | 11,717 | 0.0311 | **0.0141** |
-| `DU-M-ERV-R-LIVING` | 20 | 46.01 | 2 | 51.01 | 229 | 0.00327 | 7,811 | 0.0342 | 0.0171 |
-| `DU-M-ERV-R-PLANT` | 5 | 53.00 | 3 | 60.50 | 57 | 0.00020 | 1,953 | — | ~0.001 |
-| `DU-A-ERV-R-BED3` | 5 | 56.15 | 5 | 68.65 | 57 | 0.00020 | 1,953 | — | ~0.001 |
+| `DU-M-ERV-R-LIVING` | 20 | 44.93 | 5 | 57.43 | 229 | 0.00327 | 7,812 | 0.0342 | 0.0193 |
+| `DU-M-ERV-R-PLANT` | 5 | 23.32 | 1 | 25.82 | 57 | 0.00020 | 1,953 | — | ~0.0005 |
+| `DU-A-ERV-R-BED3` | 5 | 54.05 | 6 | 69.05 | 57 | 0.00020 | 1,953 | — | ~0.001 |
 
 The last two rows are the point worth writing down: **`DU-A-ERV-R-BED3` is the LONGEST
-radial in the house at 56'-2", and `DU-M-ERV-R-PLANT` is the second-longest at 53'-0", and
-neither is remotely the worst.** Static goes as Q², and at 5 cfm each costs about a
-thousandth of an inch. Length was never the criterion.
+radial in the house at 54'-1", and it is nowhere near the worst.** Static goes as Q², and at
+5 cfm it costs about a thousandth of an inch. Length was never the criterion.
+
+**THREE OF THESE FIVE ROWS WERE STALE AND ALL THREE ARE RE-READ OFF THE MODEL HERE
+(2026-09-20).** `DU-A-ERV-R-BED3` read 56.15 ft on 5 elbows and develops 54.05 on 6 — the
+`_ATTIC_BAY_Z` re-derivation to -8 1/2" lifted two bay-leg verticals 1 3/8" each, which
+shortens the run and adds a turn. `DU-M-ERV-R-LIVING` read 46.01 on 2 and is 44.93 on 5, and
+`DU-M-ERV-R-PLANT` read 53.00 on 3 and is **23.32 on 1** — the level-2 trunk-and-branch
+redesign stopped it being a home run from the plenum and made it a takeoff off the trunk at
+the trunk's own south end. So PLANT is no longer the second-longest radial in the house;
+`DU-M-ERV-R-LIVING` is, at 44.93 ft. **None of it moves the budget**: every one of these runs
+is on the 5-to-20 cfm shelf where the Q² term is a thousandth of an inch, and none of the
+three appears in either §6 column.
 
 **PLANT was in the first row of this table until 2026-09-15, and the rebalance is what moved
 it to the last.** At 25 cfm its 60'-6" effective length cost 0.0301 in. and its RH-dampered
@@ -139,7 +149,7 @@ on any radial).
 **`DU-A-ERV-R-BED3` at 5 cfm is LAMINAR (Re ≈ 1,950), and Colebrook is a turbulent
 correlation.** Six of the 23 radials run below Re 4,000. Where Re < 2,300 the flow is laminar
 and Hagen–Poiseuille is exact, so f = 64/Re = 64/1,953 = 0.0328 and the drop is
-0.0328 × (68.65/0.3333) × 0.00020 = **0.0014 in.** Between 2,300 and 4,000 there is no
+0.0328 × (69.05/0.3333) × 0.00020 = **0.0014 in.** Between 2,300 and 4,000 there is no
 correlation at all and the conservative read is the turbulent value at the top of the band,
 which is what the check uses. Nothing in this band can govern — a 5 cfm branch's velocity
 pressure is two orders below a 210 cfm trunk's — but the regime has to be named rather than
@@ -208,8 +218,16 @@ that radial lands in (at the sum of that plenum's radial flows) + every trunk on
 | plenum `EQ-B-ERV-MAN-EXH` at 46 cfm | below the curve's first point (60, 0.5), so clamped to it | 0.0020 |
 | `DU-ERV-RISER-EXH` | 210 cfm, 36.15 ft + **5** x 4.5, f 0.0225, P_v 0.07131 | 0.1886 |
 | `DU-B-ERV-RET-TRUNK` | 210 cfm, 5.83 ft + **2** x 4.5 | 0.0477 |
+| `DU-M-ERV-EXH-FEED` | 114 cfm, 3.18 ft + **2** x 4.5, f 0.0251, P_v 0.02102 | 0.0128 |
 | `DU-ERV-EA` | 210 cfm in **8"**, 29.15 ft + 4 x **6.5**, f 0.0234, P_v 0.02256 | 0.0433 |
-| | | **0.3251** |
+| | | **0.3379** |
+
+**`DU-M-ERV-EXH-FEED` is new on 2026-09-20 and it is the level-2 plenum's drawn outlet into
+the riser** — 6" galvanized out of `EQ-M-ERV-MAN-EXH`'s west end, down to +93 1/2", south and
+west into `DU-ERV-RISER-EXH`. It is in this column for §6's stated reason (every trunk on
+that side) and it costs 0.0128. **The column rises 0.3251 -> 0.3379 and the delivered figure
+falls 207.5 -> 207.2 cfm** — the price of drawing a leg that was always going to be built and
+was never in the arithmetic. It is also what makes §9's first bullet quantifiable; see there.
 
 **The riser is in this column although the sauna's own air never enters it**, and that is
 §6's stated method rather than an oversight: the path is "worst radial + its terminal + its
@@ -284,13 +302,13 @@ it, its basement leg shrank by it, and its developed length is identical to the 
 `DU-ERV-RISER-SUP`'s basement leg shrank 4 5/8" (-0.0015) and `DU-S-ERV-HP-FEED`'s attic jog
 shrank from 7" to 2 3/8" (-0.0003) because the riser head came out to meet it.
 
-**EXTRACT GOVERNS, at 0.3251 in. w.g. against supply's 0.3200 — by five thousandths.** Off
-the authored fan curve, between (0.3, 208) and (0.4, 206):
+**EXTRACT GOVERNS, at 0.3379 in. w.g. against supply's 0.3200 — by eighteen
+thousandths.** Off the authored fan curve, between (0.3, 208) and (0.4, 206):
 
-> 208 − (0.0251 / 0.1) x 2 = **207.5 cfm delivered**
+> 208 − (0.0379 / 0.1) x 2 = **207.2 cfm delivered**
 
 against 205 cfm required by MN 1322 R403.5 and 210 cfm of design intent. **The system clears
-the code rate by 1.0 % and falls 1.4 % short of the intent.**
+the code rate by 1.1 % and falls 1.3 % short of the intent.**
 
 > ⚠ **THE GOVERNING SIDE HAS NOW SWAPPED TWICE IN ONE DAY, AND THE SECOND SWAP IS THE ONE
 > THAT MATTERS.** The order was: extract governed at 0.4169; `DU-ERV-EA` 6" -> 8" took
@@ -301,20 +319,21 @@ the code rate by 1.0 % and falls 1.4 % short of the intent.**
 >
 > The lesson the first swap taught is worth keeping even though its arithmetic is spent: a
 > lever on the non-governing side buys only the gap between the two columns, and that gap was
-> 0.0086 in. It is **0.0051 in.** after D3 — the two columns are all but level again,
-> because D3 spent the extract side's elbow audit (the lever this paragraph named) and the
-> supply trunk grew a turn at the same time. **So there is no cheap extract lever left:
-> anything taken off extract below five thousandths buys nothing at all, and the next real
-> move has to take BOTH columns down or it is decoration.**
+> 0.0086 in. It was **0.0051 in.** after D3 and is **0.0179 in.** now that the level-2
+> extract feed is drawn — still small. **So there is no cheap extract lever left: anything
+> taken off extract below eighteen thousandths buys nothing at all, and the next real move
+> has to take BOTH columns down or it is decoration.**
 >
-> **The one term that dominates everything is `DU-ERV-RISER-EXH` at 0.1886**, 58 % of the
+> **The one term that dominates everything is `DU-ERV-RISER-EXH` at 0.1886**, 56 % of the
 > governing column and more than twice the next term. Both 8" upsizes are bought; there is no
 > other large, cheap move left in this note. Anything that materially improves this system
-> from here is a change to that riser — shorter, straighter, or bigger — and §9's first
-> conservatism is that it is worked at 210 cfm over its whole length when the real flow above
-> the level-2 tap is 54.
+> from here is a change to that riser — shorter, straighter, or bigger — **or it is simply
+> the recognition that 0.1886 is not what that riser costs.** §9 can now say what it does
+> cost, because its level-2 tap is drawn: **0.0747 in.**, 50 cfm above the tap and 164 below,
+> and the 0.1139 in. between the two figures is the single largest piece of conservatism in
+> this note — larger than every remaining physical lever put together.
 >
-> **The code margin is 1.0 %**, which is 2.0 cfm. It was 0.2 cfm before the rebalance and
+> **The code margin is 1.1 %**, which is 2.2 cfm. It was 0.2 cfm before the rebalance and
 > 0.7 cfm before the hoods moved. That is a real improvement and it is still a commissioning
 > measurement rather than a calculation: §8's instruction to measure with a low-flow hood
 > stands, and it is now the EXTRACT side to hood.
@@ -404,22 +423,61 @@ measured one.
 
 ## 9. What is NOT graded here
 
-- **The risers are worked at 210 cfm over their whole length.** `DU-ERV-RISER-EXH` really
-  carries 200 cfm below the level-2 tap and 54 above it; `DU-ERV-RISER-SUP` likewise. The
-  authored `design_cfm` is what is graded, because the tap elevation is not a typed fact and
-  inferring one would be the check inventing a number.
+- **THE EXTRACT RISER'S SEGMENTED FIGURE IS RESTORED (2026-09-20), AND THE SUPPLY RISER'S
+  IS STILL WITHDRAWN.** This bullet has been an IOU since the level-2 manifolds were drawn
+  with no feed. Half of it is now payable.
 
-  **THE SEGMENTED FIGURE THIS BULLET USED TO CARRY IS WITHDRAWN, NOT UPDATED.** It read
-  "the extract riser costs 0.0700 in. instead of 0.1472 and the path total falls to 0.382 in.
-  / 206.4 cfm", and every number in it is now wrong in a way that cannot be patched: the
-  riser is 0.1886 rather than 0.1472 since its attic feed was drawn honestly on 2026-09-15,
-  and the 17.4 effective feet that added sit ABOVE the tap, where the flow is 54 cfm and the
-  saving is largest. So the conservatism is materially BIGGER than 0.077 in. now — but
-  quantifying it needs a tap elevation, and there is not one, because the two main-storey
-  manifolds still have no drawn feed (`EQ-M-ERV-MAN-SUP`, `EQ-M-ERV-MAN-EXH`). Restating a
-  segmented total off a back-derived split would be exactly the invented number this bullet
-  exists to refuse. **Draw those two feeds and this becomes arithmetic; until then it is an
-  unquantified conservatism and is named as one.**
+  The check grades `design_cfm`, which is ONE number per run, so `DU-ERV-RISER-EXH` is
+  worked at 210 cfm over its whole 36.15 ft in §6 and in `mep.erv_static_budget` alike.
+  **It does not carry 210 cfm over its whole length and it never did.** With
+  `DU-M-ERV-EXH-FEED` drawn — 6" out of `EQ-M-ERV-MAN-EXH` into the riser at **+93 1/2"** —
+  the tap is a typed fact and the split is arithmetic rather than a guess:
+
+  | segment | Q (cfm) | developed | elbows | L_eff | V (fpm) | P_v | Re | f | Δp |
+  |---|---|---|---|---|---|---|---|---|---|
+  | above the tap | 50 | 16.03 ft | 2 | 25.03 ft | 255 | 0.00404 | 13,019 | 0.0299 | **0.0060** |
+  | below the tap | 164 | 20.12 ft | 3 | 33.62 ft | 835 | 0.04349 | 42,702 | 0.0235 | **0.0687** |
+  | | | 36.15 ft | 5 | | | | | | **0.0747** |
+
+  **0.0747 in. against the 0.1886 in. §6 carries — a conservatism of 0.1139 in.** Above the
+  tap the riser carries only what `EQ-A-ERV-MAN-EXH` gathers (`DU-A-ERV-R-STUBATH` 20 +
+  `-BATH1` 20 + `-ATTIC` 5 + `-BED3` 5 = **50 cfm**, not the 54 this bullet used to claim),
+  and below it that 50 plus the level-2 trunk's 114 = **164 cfm**, not 200. The split is
+  16.03 ft and two elbows above, 20.12 ft and three below, measured along the authored
+  polyline from the tap station.
+
+  Run that through §6's extract column in place of the 0.1886 and it falls
+  **0.3379 -> 0.2240 in.**, at which point EXTRACT NO LONGER GOVERNS: supply's 0.3200 does,
+  and the delivered figure off the fan curve is **207.6 cfm** rather than 207.2. That is a
+  reading and not a revision — §6 stays as it is, because §6 grades what the model types and
+  the model types one flow per run. What this bullet now says is how much the honest number
+  differs, and the answer is **about a tenth of an inch, all of it on the side that appeared
+  to govern.**
+
+- **The supply riser still cannot be segmented, and the reason is geometric.**
+  `DU-ERV-RISER-SUP` carries 150 cfm below its level-2 tap and 100 above (`DU-S-ERV-HP-FEED`
+  takes the 100; `EQ-M-ERV-MAN-SUP`'s three radials take 15 + 20 + 15 = 50) — but **there is
+  no level-2 tap to measure from, because no 6" duct can reach that box.** Measured off the
+  resolved envelopes in RM-M-MECH, whose true inside faces are x 6 5/8"..69 5/8" by
+  y 402 3/8"..425 3/8":
+
+  * the supply riser stands WEST of the exhaust riser on the same y, so the south band is
+    closed to it by 6" of galvanized standing floor-to-deck;
+  * north of that, the two gates are **3 7/8"** (west wall face to the radon stack) and
+    **3 5/8"** (exhaust riser crown to the radon stack's south face);
+  * past the first gate the north band dead-ends on `DU-ERV-EA`, 8" wide and full height,
+    with 1 3/8" to the wall beside it.
+
+  Every obstacle is full height, so no change of elevation opens anything, and
+  `haus route houses/catlin --run DU-M-ERV-SUP-FEED` refuses in its own words. A 6" round
+  through the 3 5/8" gate is a 2 1/2" interpenetration with the radon stack — a real
+  `mep.run_interference` FAIL — and a 3" x 8" flat section threads it with 5/16" a side but
+  takes `mep.erv_static_budget` from a reported figure to "no DuctProductType", because the
+  check sizes round pipe only. **So this half stays an unquantified conservatism and is
+  named as one.** The move that would close it is ~2 1/2" of northward travel on
+  `VR-M-RADON-VENT`, which opens the gate to 6 1/8" and still clears W-M-N3B; that is a
+  drainage-set decision and it is the owner's.
+
 - **The trunk chain is summed whole.** `DU-S-ERV-HP-FEED` is a parallel branch off the
   supply riser, not a segment of the path to `DU-B-ERV-R-PLAY`; summing it over-counts the
   supply path by 0.0630 in. The supply path does not govern either way — though after D3 it

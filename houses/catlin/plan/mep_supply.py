@@ -179,11 +179,18 @@ SUPPLY = [
                     # 1 1/4" trunk that carries 64 in Table 610.4's 46-60 psi column, so the
                     # tee costs nothing in size.
                     "FX-M-PORCH-HYD", "FX-S-BALC-HYD")),
+    # ** x=5'-10" IS EQ-B-WH's HOT TAP, NOT THE TANK'S CENTRE. ** The type carries a
+    # dimensioned top pair since 2026-09-20 — cold 4" west of the axis, hot 4" east — so the
+    # hot riser and the four branches that tee off its head all stand on x=5'-10" and the two
+    # cold runs on x=5'-2". The riser starts at 5'-8", the tank TOP, not the old 3'-9 7/16"
+    # inside the tank body. `tests/test_water_heater_connections.py` grades every one of the
+    # seven against `resolve/mep_ports.placed_ports` BY SERVICE: a hot run that lands on the
+    # cold tap now fails, which the centroid test it replaced could not see.
     PipeRun(uid="CBPW31AAAA", tag="PR-B-HW-TRUNK", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(5, 6), ft(24)), pt(ft(5, 6), ft(24)),
+            path=(pt(ft(5, 10), ft(24)), pt(ft(5, 10), ft(24)),
                   pt(ft(6, 6), ft(19, 2.4)), pt(ft(6, 6), ft(15, 6))),
             diameter=inch(1), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
-            elevations=(ft(3, 9.4375), ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375)),
+            elevations=(ft(5, 8), ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375)),
             serves=("FX-M-BATH1-LAV", "FX-M-BATH2-SH", "FX-M-BATH2-TUB",
                     "FX-M-BATH2-SINK", "FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK",
                     "FX-M-KITCH-SINK",
@@ -199,7 +206,7 @@ SUPPLY = [
     # Cold feed to the water heater itself (equipment, not a fixture — no fixture units).
     PipeRun(uid="CBPW32AAAA", tag="PR-B-CW-WH", system=PipeSystem.WATER_COLD,
             path=(pt(ft(4, 9), ft(16)), pt(ft(5, 6), ft(16, 9.6)), pt(ft(5, 6), ft(19, 2.4)),
-                  pt(ft(5, 6), ft(24)), pt(ft(5, 6), ft(24))),
+                  pt(ft(5, 2), ft(24)), pt(ft(5, 2), ft(24))),
             diameter=inch(1), material="copper", finish="lacquered",
             # Two inches OVER the cold band from the water-heater end of the tee onward, and
             # its drop stays ON the tank. Both are the same defect seen
@@ -207,20 +214,26 @@ SUPPLY = [
             # (5'-6", 20'-7 1/2"). A supply has no head to protect, so a branch steps and
             # the trunk does not — but it steps UP.
             #
-            # ** THE DROP DOES NOT MOVE, AND THAT IS NOT A MISS. ** It shares its last
-            # vertex with PR-B-HW-TRUNK's riser and PR-B-HW-BATH1's first leg because all
-            # three ARE the water heater's connections, and `EQ-B-WH` states a position and
-            # not a port layout — `tests/test_water_heater_connections.py` requires a vertex
-            # ON that position for exactly this reason. Nudging the cold 2 2/5" north made
-            # `mep.run_interference` quiet and the tank unconnected, which is the wrong
-            # trade. The two pairs are itemised in preferences.toml with this argument; the
-            # real fix is a dimensioned tank type, the same move D1 and D3 made for the ERV
-            # plenums. The cold band rides INSIDE FS-M-WEST's I-joist
+            # ** THE TANK TYPE IS DIMENSIONED NOW, AND THE DROP MOVED ONTO ITS OWN TAP
+            # (2026-09-20). ** It used to share its last vertex with PR-B-HW-TRUNK's riser
+            # and PR-B-HW-BATH1's first leg, because `EQ-T-WATER-HEATER` stated one position
+            # and not a port layout and the test required a vertex ON it — three pipes of two
+            # services drawn through one point, which is the coincidence that made
+            # `mep.run_interference` shout and made any nudge look like a disconnection.
+            # That was named here as the wrong trade and as wanting "a dimensioned tank type,
+            # the same move D1 and D3 made for the ERV plenums", and that is the move this
+            # is: cold lands on EQ-B-WH.cold at x=5'-2", the hot side on .hot at x=5'-10",
+            # 8" apart on the tank's own top. The last 4'-9.6" of the north leg therefore
+            # drifts 4" west — the crossing with PR-B-CW-BATH1 at (5'-6", 20'-7 1/2") is
+            # unaffected, it is south of the drift. The drop itself now stops at 5'-8", the
+            # TOP of the tank, instead of running 22 1/2" down INSIDE it to the old 3'-9.4"
+            # mid-body elevation: these are top connections (HP-400-SO REV. 1).
+            # The cold band rides INSIDE FS-M-WEST's I-joist
             # web, whose window is -10 1/2" to -1 3/8"; two inches down puts a 1" copper's
             # invert 7/8" into the bottom flange and `mep.run_member_crossing` says so. Two
             # inches up is the same 2" of separation in the half of the window that is
             # empty.
-            elevations=(ft(8, 4.6375), ft(8, 6.6375), ft(8, 6.6375), ft(8, 6.6375), ft(3, 9.4375))),
+            elevations=(ft(8, 4.6375), ft(8, 6.6375), ft(8, 6.6375), ft(8, 6.6375), ft(5, 8))),
     # Main-storey groups.
     #
     # THE BATH1 PAIR ROUTES AROUND D-M-BATH1'S DOORWAY, WHICH IS THE ONE DEFECT
@@ -304,7 +317,7 @@ SUPPLY = [
             # Nothing here shares a lane with PR-B-CW-BATH1, which is why the two risers
             # land in this order — and since 2026-09-19 they are also 3.2" apart in z
             # wherever their ceiling legs cross, which is what the convention is for.
-            path=(pt(ft(5, 6), ft(24)), pt(ft(4, 4), ft(24)), pt(ft(4, 4), ft(22, 4)),
+            path=(pt(ft(5, 10), ft(24)), pt(ft(4, 4), ft(24)), pt(ft(4, 4), ft(22, 4)),
                   pt(ft(4, 4), ft(22, 4)), pt(ft(4, 4), ft(22, 4))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
             elevations=(ft(8, 1.4375), ft(8, 1.4375), ft(8, 1.4375), ft(9, 1.4375), ft(12, 7.4375)),
@@ -393,7 +406,7 @@ SUPPLY = [
                        "W-M-CLN", "W-M-CLN"),
             serves=("FX-M-LAUNDRY", "FX-M-LAUNDRY-SINK")),
     PipeRun(uid="CBPW38AAAA", tag="PR-B-HW-WASH", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(5, 6), ft(24)), pt(ft(8, 2), ft(21, 2.4)),
+            path=(pt(ft(5, 10), ft(24)), pt(ft(8, 2), ft(21, 2.4)),
                   pt(ft(8, 2), ft(21, 2.4)), pt(ft(8, 2), ft(21, 2.4)),
                   pt(ft(8), ft(21, 2.4)), pt(ft(8), ft(18, 1)),
                   pt(ft(8, 6.5), ft(18, 1)), pt(ft(12, 2.5), ft(18, 1)),
@@ -468,7 +481,7 @@ SUPPLY = [
     # 8" west of D-S-BATH1's above); x=6'-2.4" would leave half the pipe in W-M-STOS2's
     # corner pack after W-M-MUDC-E tees in. SP-M-HW-SBATH follows the same station.
     PipeRun(uid="CBPW41AAAA", tag="PR-B-HW-SBATH", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(5, 6), ft(24)), pt(ft(6, 4), ft(26, 6)),
+            path=(pt(ft(5, 10), ft(24)), pt(ft(6, 4), ft(26, 6)),
                   pt(ft(6, 4), ft(26, 6)), pt(ft(6, 4), ft(26, 6)),
                   pt(ft(6, 4), ft(26, 6))),
             diameter=inch(0.75), material="copper", insulation='1" fiberglass sleeve, ASJ jacket (R-3.5)',
@@ -533,14 +546,14 @@ SUPPLY = [
     # stud and the pipes would be in the room. Cold takes the north end of the bay, hot the
     # middle, the vent the south, and the fixtures they serve are two feet away either way.
     PipeRun(uid="CBPW44AAAA", tag="PR-B-CW-BATH", system=PipeSystem.WATER_COLD,
-            path=(pt(ft(5, 6), ft(24)), pt(ft(7), ft(26)), pt(ft(7), ft(20, 3)),
+            path=(pt(ft(5, 2), ft(24)), pt(ft(7), ft(26)), pt(ft(7), ft(20, 3)),
                   pt(inch(166.6875), ft(20, 3)), pt(inch(166.6875), ft(19, 10)),
                   pt(inch(166.6875), ft(19, 10))),
             diameter=inch(0.5), material="copper", finish="lacquered",
             elevations=(ft(8, 4.6375), ft(8, 4.6375), ft(8, 6.6375), ft(8, 6.6375), ft(8, 6.6375), ft(2, 3.4375)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
     PipeRun(uid="CBPW45AAAA", tag="PR-B-HW-BATH", system=PipeSystem.WATER_HOT,
-            path=(pt(ft(5, 6), ft(24)), pt(ft(7, 3.6), ft(26)),
+            path=(pt(ft(5, 10), ft(24)), pt(ft(7, 3.6), ft(26)),
                   pt(ft(7, 3.6), ft(19, 9)), pt(inch(166.6875), ft(19, 9)),
                   pt(inch(166.6875), ft(19, 4.5)), pt(inch(166.6875), ft(19, 4.5))),
             diameter=inch(0.5), material="copper", finish="lacquered",
@@ -779,9 +792,15 @@ HYDRANT_BRANCH_SECOND = [
 # 2 3/8" is the computed minimum and 2 1/2" is the size that exists. The extra 1/16" of
 # annulus per side is foam, which is what the seal's install_parts already buy.
 #
-# `sill_height` is STOREY-RELATIVE, the trap AO-S-ERV-EA documents. Both barrels run at
-# 2'-0" on their own storey, so both sills are 1'-10 3/4" and the balcony's resolves to
-# +11'-10 3/4" absolute on the +10'-0" datum.
+# ** TWO DATUMS, AND THEY ARE NOT THE SAME ONE (E11, 2026-09-20). ** `RoughOpening.
+# sill_height` is measured off the WALL BASE — W-M-S1's `base_ref_z` is 0", W-S-S1's is
+# +10'-0" — while the barrel it has to admit is a `Fixture` whose `Mount.elevation` is
+# measured off the ROOM'S FINISHED FLOOR. Both hydrants sit at 2'-0" on their room's
+# finished floor, and both rooms build up over the structure: RM-M-BED by 1 1/4" and
+# RM-S-PLANT by 0.8287". So a sill of 1'-10 3/4" on both (barrel centre 2'-0" minus half a
+# 2 1/2" hole) put each hole BELOW its own barrel by exactly its room's build-up, and the
+# copper came through the gypsum rather than the hole. The sills carry the build-up now:
+# 2'-0" here and 1'-11.579" on the balcony, each = build-up + 24" - 1 1/4".
 #
 # ** THESE CUT THE FULL WALL, INTERIOR FINISH INCLUDED, AND THAT IS ONE INCH TOO FAR. ** A
 # `RoughOpening` is a hole through the whole assembly -- it has no depth field -- so each of
@@ -799,13 +818,13 @@ HYDRANT_BRANCH_SECOND = [
 PENETRATIONS_HYDRANT_MAIN = [
     RoughOpening(uid="H72PNVX9AV", tag="AO-M-PORCH-HYD", host="W-M-S1",
                  position=from_node("N-M-SW", inch(150.75)),
-                 width=inch(2.5), height=inch(2.5), sill_height=inch(22.75),
+                 width=inch(2.5), height=inch(2.5), sill_height=inch(24),
                  penetration_for=("PR-M-CW-PORCH-HYD-CU", "PR-M-CW-PORCH-HYD")),
 ]
 PENETRATIONS_HYDRANT_SECOND = [
     RoughOpening(uid="AZMYHB7P8J", tag="AO-S-BALC-HYD", host="W-S-S1",
                  position=from_node("N-S-SW", inch(86.75)),
-                 width=inch(2.5), height=inch(2.5), sill_height=inch(22.75),
+                 width=inch(2.5), height=inch(2.5), sill_height=inch(23.579),
                  penetration_for=("PR-S-CW-BALC-HYD-CU", "PR-M-CW-BALC-HYD")),
 ]
 

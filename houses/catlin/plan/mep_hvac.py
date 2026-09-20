@@ -23,6 +23,7 @@ from typehaus import (
     EquipmentKind,
     EquipmentType,
     Footprint2D,
+    PortCertainty,
     RegisterType,
     Service,
     ServicePort,
@@ -182,8 +183,43 @@ EQUIPMENT_TYPES = (
                   footprint=(inch(24), inch(24)), height=ft(5, 8),
                   plan_symbol="water-heater",
                   source="Rheem PROPH80 T2 RH400-30 / ProTerra XE80T10HS45U0 class: 80 gal, 4.5 kW resistance element, 30A/240V dedicated circuit, ~360-500W compressor draw in Heat Pump Only mode, EcoNet wifi module.",
-                  ports=(ServicePort(tag="cold", service=Service.WATER_COLD, position=(ft(0), ft(0), ft(4))),
-                         ServicePort(tag="hot", service=Service.WATER_HOT, position=(ft(0), ft(0), ft(4))),
+                  # ** THE WATER PORTS ARE ON TOP, AND THEY ARE NO LONGER COINCIDENT. **
+                  # HP-400-SO REV. 1 is explicit about the FACE and the SIZE — "New! Top
+                  # Connections", "Universal top and side water connections", 3/4" NPT
+                  # inlet and outlet — and silent about where on the 24 1/4" top each one
+                  # lands. So the FACE is published and the STATIONS BELOW ARE DERIVED: a
+                  # symmetric pair 8" on centre about the tank axis, cold WEST and hot
+                  # EAST, chosen for the side each service approaches on (PR-B-CW-WH
+                  # arrives up x=5'-6" from the south; every hot branch but PR-B-HW-BATH1
+                  # leaves east). Re-derive them, do not trust them, if a submittal ever
+                  # gives the real layout.
+                  #
+                  # `certainty=EXACT` is right ANYWAY, and the reason is what the field is
+                  # for: this is not a datasheet being transcribed loosely, it is the
+                  # house declaring where its own two taps will be cut and stubbed. A
+                  # router may terminate on them and `mep.equipment_port_service` may grade
+                  # a run end positionally against them, which it could not do while both
+                  # sat at local (0, 0) — four inches of slop at a 3/4" stub is the whole
+                  # difference between a connection and a coincidence.
+                  #
+                  # z is the tank top: `height` is 5'-8", the port plane is 5'-8", and the
+                  # supply runs that land here carry 5'-8" as their tank-end elevation.
+                  # The old ft(4) was mid-tank on a top-connect unit — the riser was drawn
+                  # THROUGH the tank body for 22 1/2".
+                  #
+                  # `power` stays at local (0, 0, 0) and stays APPROXIMATE: the sheet says
+                  # only "quick access to electrical junction box", which is a face and not
+                  # a station, and nothing routes to it.
+                  ports=(ServicePort(tag="cold", service=Service.WATER_COLD,
+                                     position=(inch(-4), ft(0), ft(5, 8)),
+                                     connection_size=inch(0.75), direction=(0.0, 0.0, 1.0),
+                                     certainty=PortCertainty.EXACT,
+                                     notes="3/4in NPT cold inlet, top connection. Size and face published (HP-400-SO REV. 1); the 4in west offset is DERIVED, not read."),
+                         ServicePort(tag="hot", service=Service.WATER_HOT,
+                                     position=(inch(4), ft(0), ft(5, 8)),
+                                     connection_size=inch(0.75), direction=(0.0, 0.0, 1.0),
+                                     certainty=PortCertainty.EXACT,
+                                     notes="3/4in NPT hot outlet, top connection. Size and face published (HP-400-SO REV. 1); the 4in east offset is DERIVED, not read."),
                          ServicePort(tag="power", service=Service.POWER_240, position=(ft(0), ft(0), ft(0))))),
     # --- the backup microgrid (notes/backup_power.md) ----------------------------------
     #
@@ -463,13 +499,16 @@ DUCTS_HVAC_ATTIC = []
 # clear. It also SHORTENS the plumbing: all three runs below leave the tank heading south,
 # and PR-B-CW-WH arrives straight up its own x=5'-6" line instead of doglegging.
 #
-# **Four literals, one position.** This coordinate is repeated verbatim as a path endpoint in
-# PR-B-HW-TRUNK, PR-B-CW-WH and PR-B-HW-BATH1 (plan/mep_supply.py) and is the datum for
-# PR-B-WH-TPR (plan/mep_drainage.py). Move the tank without moving all four and the hot
-# trunk, the cold feed and the bath-1 branch silently disconnect — nothing in the resolver
-# pulls a pipe onto its equipment. `test_water_heater_connections.py` asserts the three
-# endpoints coincide with EQ-B-WH.position in the RESOLVED model, so the trap is now caught
-# in CI rather than by eye.
+# **Eight literals, two ports.** This coordinate is no longer what the pipes land on: since
+# the type gained a dimensioned cold/hot pair (above), seven path endpoints in
+# plan/mep_supply.py carry the PORT'S station — x=5'-2" for the two cold runs, x=5'-10" for
+# the five hot — and PR-B-WH-TPR (plan/mep_drainage.py) is dimensioned off the tank's WEST
+# FACE, which is the eighth. Move the tank without moving all eight and the hot trunk, the
+# cold feed and five branches silently disconnect — nothing in the resolver pulls a pipe
+# onto its equipment. `test_water_heater_connections.py` now asserts each run's tank end
+# lands on the RESOLVED port matching its SERVICE (resolve/mep_ports.placed_ports), so a
+# hot run that drifts onto the cold tap is caught too, which the old centroid test could
+# not see.
 EQUIPMENT = [
     Equipment(uid="CME902AAAA", tag="EQ-B-WH", kind=EquipmentKind.WATER_HEATER,
              position=pt(ft(5, 6), ft(24)), footprint=(inch(24), inch(24)), room="RM-B-FURNACE", type_ref="EQ-T-WATER-HEATER", circuit="CKT-WH-240",

@@ -212,19 +212,26 @@ def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> Non
       35.17 ft on two elbows becoming 39.08 on five. D3 paid 0.0038 in. w.g. for five
       reported interpenetrations and that was the trade.
 
+    ** 2026-09-20: the level-2 extract manifold got its feed, and the column moved again. **
+    ``DU-M-ERV-EXH-FEED`` (114 cfm, 3.18 ft on 2 elbows) adds **0.0128**, so extract goes
+    0.3251 -> 0.3379. The supply manifold's feed could NOT be drawn: RM-M-MECH's true inside
+    faces are 63"x23", not the 39"x31" the prose used to claim, and every gate to the supply
+    riser measures 3 7/8" or less against a 6" duct. That refusal is the finding; see
+    `notes/erv_static_budget.md` §9.
+
     Supply, for the comparison that decides which side governs: 0.0141 + 0.0361 + 0.0020 +
     ``DU-ERV-OA`` 0.0312 + ``DU-B-ERV-SUP-TRUNK`` 0.0387 + ``DU-ERV-RISER-SUP`` 0.1348 +
-    ``DU-S-ERV-HP-FEED`` 0.0630 = 0.3200. Extract leads by 0.0051, where it led by 0.0409:
-    the supply trunk now leaves the machine level and turns up east of the kitchen drain
-    rather than standing straight off the port into it, which is one more elbow.
+    ``DU-S-ERV-HP-FEED`` 0.0630 = 0.3200. Extract now leads by 0.0179, where it led by 0.0051
+    and before that by 0.0409: the supply trunk leaves the machine level and turns up east of
+    the kitchen drain rather than standing straight off the port into it, one more elbow.
 
-    ** THE CODE MARGIN IS 2.5 cfm. ** 207.5 against MN 1322 R403.5's 205. It was 203.0 —
-    BELOW the rate — at the start of the day, then 205.7, 207.0, 207.1. It is still thin
-    enough that §8's "measure it at commissioning with a low-flow hood" is the operative
+    ** THE CODE MARGIN IS 2.2 cfm. ** 207.2 against MN 1322 R403.5's 205. It was 203.0 —
+    BELOW the rate — at the start of that day, then 205.7, 207.0, 207.1, 207.5. It is still
+    thin enough that §8's "measure it at commissioning with a low-flow hood" is the operative
     sentence, and it is the EXTRACT side to hood.
     """
     message = _machine_finding(catlin_model_ro).message
-    assert "0.325 in. w.g." in message
+    assert "0.338 in. w.g." in message
     assert "delivering 207 cfm" in message
 
 

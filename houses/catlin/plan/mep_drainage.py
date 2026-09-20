@@ -654,6 +654,16 @@ CONDENSATE = [
 # falls to SM-B-RADON" to be an argument on its own. The air gap is what UPC 608.5 actually
 # requires; the slope is a slab-pour question the pour has to be told to fall this way
 # rather than assumed to. Flagged in plans/TODO.md.
+# ** ITS DATUM IS THE TANK'S WEST FACE, AND IT DID NOT MOVE WITH THE PORTS (2026-09-20). **
+# EQ-T-WATER-HEATER gained a dimensioned cold/hot pair on the tank TOP that day, and seven
+# path literals in plan/mep_supply.py moved onto them. This run is the eighth literal and
+# the only one that is NOT port-referenced: the relief valve is factory-installed and
+# HP-400-SO REV. 1 gives no station for it, so the type declares no relief `ServicePort`
+# there is nothing to land on. x=4'-4" is 2" west of the tank's west FACE (x=4'-6"), which
+# did not move — the new pair is offset 4" either side of the tank AXIS, in x, on the top —
+# so the plan datum is unchanged and so is the 3'-6" start. `test_water_heater_connections`
+# grades this one by PROXIMITY to the tank centre for exactly that reason, while the other
+# seven are graded against a port by service.
 TPR_DISCHARGE = [
     PipeRun(uid="CBPT01AAAA", tag="PR-B-WH-TPR", system=PipeSystem.DRAIN,
             path=(pt(ft(4, 4), ft(24)), pt(ft(4, 4), ft(24)),

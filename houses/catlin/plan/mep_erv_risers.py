@@ -299,4 +299,141 @@ DUCTS_ERV_RISERS = [
             # `AO-S-ERV-EA` grows 7" -> 9" to match.
             diameter=inch(8), routing=DuctRouting.CHASE, material="galvanized",
             insulation="R-8 wrap, vapour-sealed", design_cfm=210),
+    # ================== THE TWO LEVEL-2 MANIFOLD FEEDS (2026-09-20) ==================
+    #
+    # ** THE TWO MAIN-STOREY PLENUMS HAD NO DRAWN FEED AT ALL, AND THAT WAS A HOLE IN THE
+    # MODEL AND NOT A SIMPLIFICATION. ** `mep.duct_connectivity` never said so, because it
+    # grades a run's two ENDS and every run at level 2 has both of its ends right: the three
+    # supply radials start on EQ-M-ERV-MAN-SUP's collars, the extract trunk starts on
+    # EQ-M-ERV-MAN-EXH's. Nothing asks what FILLS the supply box or EMPTIES the extract one.
+    # notes/erv_static_budget.md §9 is where it surfaced: both riser terms are worked at
+    # 210 cfm over their whole length because there was no tap elevation to split them at,
+    # and the note WITHDREW its segmented figure rather than back-derive one. These two runs
+    # are that tap, drawn.
+    #
+    # Filed here on MAIN and not in plan/mep_erv_l2.py with the rest of level 2: they run in
+    # RM-M-MECH's own volume, not in FS-S-WEST's cavity, so they carry no `floor_ref` and
+    # their elevations are project-frame like everything else in this file. +101 1/4" is the
+    # plenums' own port plane, derived exactly as plan/mep_erv_l2.py's `_PORT_Z` is — both
+    # boxes are wall-hung at 8'-0" off a finished floor 1 1/4" over the storey datum, so each
+    # case is 97 1/4"..105 1/4" and a port on its mid-height is +101 1/4". (`_PORT_Z` is that
+    # same plane read from the SECOND storey, -18 3/4".)
+    #
+    # ** NEITHER FEED IS 4" OR 8", AND THE CENSUS IS PART OF WHY. ** `mep.erv_manifold_ports`
+    # counts a BRANCH as a run landing in the case whose section equals the type's own
+    # `port_diameter`. EQ-T-ERV-PLENUM-M-SUP is FULL at 3 of 3 4" collars and
+    # EQ-T-ERV-PLENUM-M-EXH at 1 of 1 8" collar, so a feed drawn at either of those sizes
+    # would read as a fourth radial or a second trunk and FAIL. An inlet is not a branch.
+    #
+    # ===================== THE CLOSET, MEASURED OFF THE RESOLVED MODEL =====================
+    #
+    # ** THE ROOM IS 63" x 23" OF CLEAR, NOT THE 70 3/4" x 30 3/4" A ROOM POLYGON REPORTS. **
+    # `resolve/rooms.py` polygonizes from wall AXES, and three of the four walls here are
+    # `face("sheathing-ext")` — their axis IS the sheathing exterior, so the polygon counts
+    # the whole stud bay as shaft. Off the resolved LAYERS the inside faces are
+    # **x 6 5/8"..69 5/8" by y 402 3/8"..425 3/8"**, and that reading is what these two runs
+    # are laid against; the 39" x 31" "free bay" in the prose above is the loose number.
+    #
+    # What stands in it, floor to deck, at the port plane:
+    #
+    #     DU-ERV-RISER-SUP        x  6 5/8".. 12 5/8"   y 402 3/8"..406 1/2"
+    #     DU-ERV-RISER-EXH        x 15 5/8".. 21 5/8"   y 402 3/8"..406 1/2"
+    #     VR-M-RADON-VENT radon   x 10 1/2".. 13 1/2"   y 410 1/8"..413 1/8"
+    #     VR-M-RADON-VENT vent    x 10 1/2".. 13 1/2"   y 414 7/8"..417 7/8"
+    #     CD-B-ATTIC-RISER        x 17 1/8".. 18 7/8"   y 413 1/8"..414 7/8"
+    #     CD-B-DATA-CHASE         x 23 1/4".. 24 3/4"   y 413 1/4"..414 3/4"
+    #     CD-B-SPARE-CHASE        x 28 7/8".. 31 1/8"   y 412 7/8"..415 1/8"
+    #     DU-ERV-EA               x 20"    .. 28"       y 416"    ..424"
+    #
+    # and the two boxes themselves, which are what the east end of the room is FOR:
+    # SUP x 40"..64" by y 404"..412", EXH x 35"..69" by y 416"..424", both z 97 1/4"..105 1/4".
+    #
+    # ** THE NORTH HALF OF THE ROOM IS NOT A ROUTE. ** DU-ERV-EA is full height and 8" wide
+    # at x 20"..28", the extract plenum runs x 35"..69" on the same latitudes, and north of
+    # both there is 1 3/8" to the wall. Every lane across this closet is in the SOUTH band.
+    #
+    # ** AND THE SUPPLY RISER IS SEALED INTO ITS CORNER, WHICH IS THE ONE FACT THAT DECIDED
+    # BOTH RUNS. ** It sits WEST of the exhaust riser on the same y, so anything leaving it
+    # eastward on that line runs straight through DU-ERV-RISER-EXH. Round it to the north and
+    # there are exactly two gaps, and both are narrower than a 6" pipe:
+    #
+    #     west wall face 6 5/8"  ->  radon west face 10 1/2"    =  3 7/8"
+    #     exhaust riser top 406 1/2"  ->  radon south face 410 1/8"  =  3 5/8"
+    #
+    # So the EXTRACT feed below is drawn and the SUPPLY feed is not; the block at the foot
+    # of this list is why, measured rather than asserted.
+    DuctRun(uid="8BN9DXZBZS", tag="DU-M-ERV-EXH-FEED", system=DuctSystem.RETURN,
+            # ** THE SHORT ONE, AND IT IS CLEAR OF EVERYTHING BY 7/8" OR BETTER. ** Off the
+            # extract plenum's WEST END at x=2'-11", straight down 7 3/4", south down the
+            # x=2'-11" lane (7/8" clear of CD-B-SPARE-CHASE's east face, 2" clear of the
+            # supply plenum's west end), and west into DU-ERV-RISER-EXH.
+            #
+            # ** IT DROPS TO +93 1/2" FIRST, AND THAT IS TO LEAVE THE PORT PLANE FREE. **
+            # The south band carries the closet's one through-lane, and the supply side has
+            # no other candidate for it (see the foot of this list). At +93 1/2" a 6" pipe's
+            # crown is 96 1/2" — 3/4" under the plenums' own underside and clear of anything
+            # a future supply feed could want at the port plane — and 7'-6 1/2" of headroom
+            # is left below it in a closet nobody stands in.
+            #
+            # ** IT LEAVES THE END FACE, NOT THE PORT. ** EQ-T-ERV-PLENUM-M-EXH states its
+            # `riser` inlet at the case's own centre (4'-4", 35'-0") and `approximate`, which
+            # is the type saying "somewhere on this box" rather than naming a station — and
+            # the centre is the one place it cannot be, because the 8" trunk collar drops
+            # through x 42 1/2"..50 1/2" and a feed drawn from the centre would run the length
+            # of the box straight through it. `mep.duct_connectivity` reports the west end as
+            # so many inches off the nominal port, exactly as it does for both basement
+            # plenums, and that sentence is the truth about an undimensioned inlet.
+            #
+            # RETURN and not EXHAUST, because that is what the port declares and what the
+            # type's own comment argues: this box is where the two halves of the extract side
+            # meet — ten wet-and-dry takeoffs in on one 8" exhaust trunk, the sum of them out
+            # on a 6" return riser. It closes `mep.equipment_port_service`'s standing UNKNOWN
+            # on this box.
+            #
+            # The last vertex stops 2 1/2" short of the riser's axis, at its north face: that
+            # is where a branch tee's spigot ends, and `mep.duct_connectivity` reads it as
+            # landing on the riser. Drawn to the axis instead, the 6" envelope would reach
+            # 1 7/8" into W-M-MECH-S and report a second framed opening in a partition that
+            # already has the riser's.
+            path=(pt(ft(2, 11), ft(35)), pt(ft(2, 11), ft(35)),
+                  pt(ft(2, 11), ft(33, 10)), pt(inch(18.625), ft(33, 10))),
+            elevations=(inch(101.25), inch(93.5), inch(93.5), inch(93.5)),
+            diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
+            design_cfm=114),
+    # ===================== AND THE SUPPLY FEED IS NOT DRAWN, ON PURPOSE =====================
+    #
+    # ** THERE IS NO 6" LANE OUT OF DU-ERV-RISER-SUP, AT ANY ELEVATION, AND THAT IS A FACT
+    # ABOUT THE BUILDING RATHER THAN A SEARCH THAT GAVE UP. ** The supply riser sits WEST of
+    # the exhaust riser on the same y, so the south band is closed to it by 6" of galvanized
+    # standing floor-to-deck. Round it to the north and there are exactly two gates, both
+    # measured off the resolved envelopes:
+    #
+    #     west wall inside face 6 5/8"   ->  radon stack west face 10 1/2"   =  3 7/8"
+    #     exhaust riser crown 406 1/2"   ->  radon stack south face 410 1/8" =  3 5/8"
+    #
+    # Nothing at 4" or over passes either, and past the first gate the north band dead-ends
+    # on DU-ERV-EA (x 20"..28", full height) with 1 3/8" to the wall beside it. Every
+    # obstacle in both gates is full height — two risers, a sealed sub-slab radon stack and
+    # its companion vent — so no change of elevation opens anything: eroding the closet's
+    # free plan by a 3" radius leaves the supply riser in a pocket of its own at +101 1/4",
+    # +88", +60" and +30" alike. `haus route houses/catlin --run DU-M-ERV-SUP-FEED` says the
+    # same thing in its own words.
+    #
+    # ** SO THE THREE THINGS THAT COULD BE DRAWN WERE ALL WORSE THAN NOT DRAWING IT. **
+    #   * a 6" round through the window costs a 2 1/2" interpenetration with the radon
+    #     stack — a `mep.run_interference` FAIL, and a real one: that is shared solid, not a
+    #     clearance opinion;
+    #   * 3" x 8" rectangular DOES thread the window with 5/16" a side and no interference
+    #     at all — but `mep.erv_static_budget` sizes only round pipe (`_product_for` matches
+    #     on `nominal_diameter`), so a flat section anywhere in the system takes the whole
+    #     check from a reported 0.325 in. w.g. / 207 cfm to "no DuctProductType". Drawing a
+    #     feed that blinds the budget the feed exists to sharpen is not a trade;
+    #   * moving the radon stack ~2 1/2" north opens the window to 6 1/8" and its companion
+    #     vent still clears W-M-N3B. That is the real fix and it is not this file's: the
+    #     stack is authored in the drainage set and it is the owner's call.
+    #
+    # The consequence is recorded where it is owed — notes/erv_static_budget.md §9 now
+    # carries the EXTRACT riser's segmented figure, which is the governing column, and says
+    # in as many words that the SUPPLY riser's split is still unquantified because its tap
+    # cannot be drawn.
 ]

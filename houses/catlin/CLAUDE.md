@@ -1067,10 +1067,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     keep — no real duct system lands under 0.2" w.g. The number that governs is MN 1322
     R403.5's **205**.
   - **Three new checks.** `mep.erv_static_budget` (ADVISORY) computes Darcy-Weisbach/Colebrook
-    over the whole system and reads the curve at it: **0.325" w.g. worst path, 207.5 cfm
+    over the whole system and reads the curve at it: **0.338" w.g. worst path, 207.2 cfm
     delivered**, on the EXTRACT side (D3 took an elbow off the extract riser and another off
-    the return trunk; extract now leads supply's 0.320 by five thousandths, where it led by
-    0.041, so there is no cheap one-sided lever left). It reports the 3 cfm against the 210 design rate as
+    the return trunk; the level-2 extract manifold's feed put 0.0128 back on 2026-09-20, so
+    extract leads supply's 0.320 by eighteen thousandths, where it led by five and before
+    that by forty-one — there is no cheap one-sided lever left). It reports the 3 cfm against the 210 design rate as
     UNKNOWN, never a FAIL — whether 207 is ENOUGH is
     `code.N1103_6_whole_house_ventilation`'s question, asked against MN's 205 and not against
     a designer's hope. **The extract side was authored at 265 cfm against a 210 cfm machine
