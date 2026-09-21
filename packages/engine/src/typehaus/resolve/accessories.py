@@ -452,6 +452,8 @@ _CONNECTOR_MARKER_IN = {
     # reason this kind exists is to tell a reader the joint is not the standoff post base
     # it replaced.
     ConnectorKind.TENSION_TIE: (2.50, 2.50, 6.00),
+    # A 3-1/2" KDAT cube, drawn at its size (catlin's landing tie blocks).
+    ConnectorKind.TIE_BLOCK: (1.75, 1.75, 1.75),
 }
 _CONNECTOR_MARKER_DEFAULT = (2.5, 2.5, 3.0)
 
