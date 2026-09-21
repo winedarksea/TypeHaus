@@ -11,9 +11,11 @@ embedment `D` is the nearest grade station down to the base, and **no passive is
 credited to sliding and the restoring moment; the base slides at ``tan φ`` of the weaker of the
 levelling pad (``FootingBedding.friction_angle_deg``) and the ground, else IBC 1806.2's
 coefficient. φ of the ground is read back off IBC 1610.1's EFP at each end of the soil unit
-weight band, and both ends are run. Graded: sliding, overturning, bearing (or, off the base,
+weight band, and both ends are run. A drainage zone behind the unit (``srw_backfill``) makes
+the thrust a two-zone trial wedge. Graded: sliding, overturning, bearing (or, off the base,
 how far off), course interface shear, base-course embedment, and tier independence against a
-taller parallel wall within 2H.
+taller parallel wall within 2H that faces the SAME way (``srw_tiers``); a back-to-back pair
+is named, not graded on that row.
 
 **What this is not.** Not ``retaining_wall``: its ``_retaining_walls`` is deliberately not
 widened here. Not a published chart read either: ``SegmentalWallSpec.published`` corroborates
@@ -43,6 +45,7 @@ from typehaus.engineering.item import (
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
 from typehaus.engineering.retaining_basis import REQUIRED_FS, _base_interface
 from typehaus.engineering.soil import SOIL_UNIT_WEIGHT_BAND_PCF, presumptive
+from typehaus.engineering.srw_backfill import confined_note, drainage_zone, zone_note
 from typehaus.engineering.srw_gravity import (
     WALL_FRICTION_RATIO,
     FreeBody,
@@ -60,7 +63,8 @@ BASIS = ("IRC R404.4; NCMA/Allan Block gravity method (Coulomb, δ = 2/3 φ, bat
          "IBC 1610.1 / 1806.2 presumptive values")
 #: 1 -> 2: GM active EFP 45 -> 40 (IBC Table 1610.1, ``soil.py``).
 #: 2 -> 3: Rankine EFP on a vertical face -> the NCMA gravity method (``srw_gravity``).
-BASIS_VERSION = "3"
+#: 3 -> 4: the drainage zone as a two-zone trial wedge; the 2H row for same-facing tiers only.
+BASIS_VERSION = "4"
 
 #: Base-course embedment floor, and the H/10 rule beside it.
 MIN_EMBEDMENT_IN = 6.0
@@ -145,8 +149,9 @@ def published_refusal(ctx: EngineeringContext, wall, tiers: list[Tier]) -> str |
     row = getattr(spec, "published", None)
     if row is None:
         return None
-    if not _drainage_layers(ctx, wall):
-        return f"assembly {wall.assembly} declares no DRAINAGE layer behind the unit"
+    if not _drainage_layers(ctx, wall) and spec.drainage_zone is None:
+        return (f"assembly {wall.assembly} declares no DRAINAGE layer and the spec no "
+                "drainage_zone behind the unit")
     if spec.batter_deg is None:
         return "no batter is stated on the SegmentalWallSpec"
     if not spec.cap:
@@ -275,7 +280,7 @@ def _end(read: Reading, soil_pcf: float, spec) -> _End:  # type: ignore[no-untyp
         base_phi, mu = None, base.friction_coefficient
         slide_cite = (f"IRC R404.4; friction {mu:.2f}, IBC Table 1806.2 class {base.ibc_class} "
                       "— no pad φ is authored, so the table stands in for tan φ")
-    body = analyse(section, soil_pcf, phi, mu)
+    body = analyse(section, soil_pcf, phi, mu, drainage_zone(spec))
     states = [
         LimitState("sliding", REQUIRED_FS, body.fs_sliding, "", slide_cite,
                    is_safety_factor=True),
@@ -310,7 +315,8 @@ def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no
     required_in = max(MIN_EMBEDMENT_IN, section.height_ft * 12.0 / 10.0)
     common.append(LimitState("base-course embedment", required_in, embedment * 12.0, "in",
                              f"max(6\", H/10), to {read.grade_from}", is_detailing=True))
-    parallel = [t for t in tiers if t.parallel and t.clear_ft > 0.0]
+    # The 2H row is a terrace rule: back-to-back pairs are named in the notes instead.
+    parallel = [t for t in tiers if t.parallel and t.clear_ft > 0.0 and not t.back_to_back]
     if parallel:
         worst = max(parallel, key=lambda t: t.lower_height_ft / t.clear_ft)
         common.append(LimitState(
@@ -347,9 +353,15 @@ def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no
         Quantity("friction_coefficient", base.friction_coefficient, "", 0.01),
         Quantity("allowable_bearing", base.allowable_bearing_psf, "psf", 1.0),
         Quantity("interface_shear", shear if shear is not None else -1.0, "plf", 1.0),
+        Quantity("drainage_zone_width", spec.drainage_zone.width.feet
+                 if spec is not None and spec.drainage_zone is not None else 0.0, "ft", 0.01),
+        Quantity("drainage_zone_phi", spec.drainage_zone.friction_angle_deg
+                 if spec is not None and spec.drainage_zone is not None else -1.0, "deg", 0.1),
         *(q for t in tiers for q in (
             Quantity(f"tier_{t.tag}_height", t.lower_height_ft, "ft", 0.01),
-            Quantity(f"tier_{t.tag}_clear", t.clear_ft, "ft", 0.01))),
+            Quantity(f"tier_{t.tag}_clear", t.clear_ft, "ft", 0.01),
+            Quantity(f"tier_{t.tag}_facing", {True: -1.0, False: 1.0, None: 0.0}[
+                t.back_to_back], "", 1.0))),
     )
     summary = (f"{tag}: {depth_ft * 12:.1f}\" SRW unit, {section.height_ft:.2f}' free body "
                f"({retained:.2f}' retained + {section.embedment_ft * 12:.0f}\" embedded, "
@@ -387,6 +399,7 @@ def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no
 def _notes(ctx, wall, read, ends, tiers, refusal) -> tuple[str, ...]:  # type: ignore[no-untyped-def]
     section, soil, base = read.section, read.soil, read.base
     drained = _drainage_layers(ctx, wall)
+    spec = getattr(wall, "srw", None)
     band = "; ".join(
         f"{e.soil_pcf:.0f} pcf: φ {e.body.soil_phi_deg:.1f}°, K_a {e.body.ka:.3f}, sliding "
         f"{e.body.fs_sliding:.2f}, overturning {e.body.fs_overturning:.2f}" for e in ends)
@@ -396,7 +409,8 @@ def _notes(ctx, wall, read, ends, tiers, refusal) -> tuple[str, ...]:  # type: i
         f"Free body {section.height_ft:.2f}' = {section.retained_ft:.2f}' retained "
         f"(authored unbalanced_fill) + {section.embedment_ft * 12:.1f}\" embedded (to "
         f"{read.grade_from}). NO passive is credited on the embedment: it is trench backfill.",
-        f"Coulomb thrust, δ = ⅔φ, on the back face battered {section.batter_deg:g}°, resolved "
+        f"{'Two-zone trial-wedge' if drainage_zone(spec) else 'Coulomb'} thrust (K_a below is "
+        f"P/½γH²), δ = ⅔φ, on the back face battered {section.batter_deg:g}°, resolved "
         "at δ − ω: its vertical part presses the unit down and is credited to sliding and "
         "the restoring moment. The ground's φ is read back off IBC 1610.1's "
         f"{soil.active_efp_psf_per_ft:g} psf/ft at each end of the unit-weight band — "
@@ -409,18 +423,40 @@ def _notes(ctx, wall, read, ends, tiers, refusal) -> tuple[str, ...]:  # type: i
          else f"Unit weight {section.unit_weight_pcf:.1f} pcf is the material's SOLID density "
               "— an upper bound for a hollow or infilled unit, so a lighter real unit only "
               "fails harder."),
-        ("Drained face: " + ", ".join(drained) + "." if drained else
-         f"No hydrostatic case, and assembly {wall.assembly} declares no DRAINAGE layer, so "
-         "the drained-backfill presumption rests on nothing this model carries."),
     ]
     body = max(ends, key=lambda e: e.worst).body
+    if spec is not None and spec.drainage_zone is not None:
+        out.append(zone_note(spec, body))
+    elif drained:
+        out.append("Drained face: " + ", ".join(drained) + ".")
+    else:
+        out.append(f"No hydrostatic case, and assembly {wall.assembly} declares no DRAINAGE "
+                   "layer, so the drained-backfill presumption rests on nothing this model "
+                   "carries.")
     if body.bearing_psf is None:
         out.append(f"The resultant falls {-body.resultant_ft:.2f}' in front of the toe: there "
                    "is no bearing pressure to grade, and the row reports how far off the base "
                    "it is instead.")
+    zone = drainage_zone(spec)
     for tier in tiers:
+        if tier.parallel:
+            out.extend(confined_note(section, e.soil_pcf, e.body, zone, tier) for e in ends)
+        if tier.back_to_back:
+            out.append(
+                f"BACK TO BACK: {tier.tag} retains {tier.lower_height_ft:.2f}' and stands "
+                f"{tier.clear_ft:.2f}' clear, facing away from this unit ({tier.facing_basis}). "
+                "The two retain one terrace from opposite sides, so the 2H independence row — "
+                "a TERRACE rule, an upper wall set back from a lower one facing the same way "
+                "(AB Commercial Installation Manual p.60; CMHA SRW-TEC-003) — is not applied. "
+                "This is NOT a pass: that rule's two consequences are carried where they are "
+                "real — this unit's bearing on its pad as a strip surcharge on "
+                f"retaining_wall/{tier.tag} (tier_surcharge), and deep-seated slip under both, "
+                "the geotechnical engineer's.")
+            continue
         how = ("a parallel tier: this unit's bearing on its pad is carried onto it as a "
-               f"lateral strip surcharge, graded on retaining_wall/{tier.tag}"
+               f"lateral strip surcharge, graded on retaining_wall/{tier.tag}; facing "
+               f"{'the same way' if tier.back_to_back is False else 'not established'}: "
+               f"{tier.facing_basis}"
                if tier.parallel else
                "not a parallel tier: it meets this unit end-on, so no surcharge is carried "
                "onto it")
