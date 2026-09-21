@@ -58,6 +58,7 @@ from typehaus.engineering.retaining_basis import (
     analyse,
 )
 from typehaus.engineering.soil import SOIL_UNIT_WEIGHT_BAND_PCF, presumptive
+from typehaus.engineering.tier_surcharge import court_surcharges
 
 KIND = "retaining_system"
 
@@ -65,7 +66,9 @@ KIND = "retaining_system"
 #: ``"2"``: the strut force stopped being ``0.5 * max(member thrust)`` and became a derived
 #: reaction projected onto the cross-member's own axis (2026-09-14). Every seal on this kind
 #: stales, which is correct — the graded demand moved.
-BASIS_VERSION = "2"
+#: ``"3"``: the raised-garden apron's bearing enters each member's thrust as a lateral
+#: strip surcharge (``tier_surcharge``, 2026-09-20). The resultant and the strut force moved.
+BASIS_VERSION = "3"
 
 #: **The graded case is at-rest, not active, and that is a consequence of the restraint and
 #: not a preference.** You cannot cite a permanent base restraint in the resistance term and
@@ -337,14 +340,20 @@ def _members(ctx: EngineeringContext, walls: list, *, soil, soil_pcf: float
 
     out: list[_Member] = []
     missing: list[str] = []
+    # The apron founded in the retained soil pushes too (``tier_surcharge``), and the loop
+    # carries that thrust as it carries the earth's.
+    tiers, tier_missing = court_surcharges(ctx, soil_pcf)
     for wall in walls:
         geometry, geometry_missing = _geometry(ctx, wall)
         if geometry is None:
             missing.extend(geometry_missing)
             continue
+        missing.extend(tier_missing.get(wall.tag, ()))
         base = _base_interface(ctx, wall) or soil
+        tier = tiers.get(wall.tag)
         case = analyse(geometry, soil, at_rest=AT_REST_IS_THE_GRADED_CASE,
-                       soil_pcf=soil_pcf, base=base)
+                       soil_pcf=soil_pcf, base=base,
+                       surcharge=tier.surcharge if tier is not None else None)
         resolved = next((w for w in ctx.model.walls if w.tag == wall.tag), None)
         if resolved is None:
             missing.append(f"a resolved {wall.tag} to take its length and direction from")
@@ -622,6 +631,22 @@ def footing_shortfalls(ctx: EngineeringContext
     return out
 
 
+def _surcharge_notes(ctx: EngineeringContext, built: list[_Member], pcf: float
+                     ) -> tuple[str, ...]:
+    """Name each apron surcharge the members' thrusts now carry, by its source item."""
+    tiers, _ = court_surcharges(ctx, pcf)
+    parts = [f"{m.tag} +{tiers[m.tag].surcharge.lateral_plf:,.0f} plf via "
+             f"{tiers[m.tag].surcharge.source}" for m in built if m.tag in tiers]
+    if not parts:
+        return ()
+    return (f"APRON SURCHARGE, in every thrust above at {pcf:.0f} pcf: " + "; ".join(parts)
+            + ". The raised-garden SRW apron stands on its pad inside the retained soil; its "
+            "net bearing is a rigid-wall Boussinesq strip load (IBC 2018 §1610.1), worked on "
+            "each wall's retaining_wall record. Equal aprons on the two side walls still "
+            "cancel; the south wall's does not, so it reaches the resultant whole. Deep-seated "
+            "slip under the court and the apron together stays the geotechnical engineer's.",)
+
+
 def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
     tags = tuple(sorted({ref, *(w.tag for w in members)}))
     soil = presumptive(getattr(ctx, "soil_class", None))
@@ -701,7 +726,7 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
         "graded.",
         "Sequence is the objection this answers: the cross-member is cast WITH the walls, "
         "so the loop is closed before any backfill goes in. A floor slab strut would not be.",
-    )
+    ) + _surcharge_notes(ctx, built_by_pcf[low], low)
 
     if over_low != over_high:
         return EngineeringRecord(

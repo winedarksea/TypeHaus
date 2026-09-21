@@ -187,7 +187,8 @@ class _Case:
 
 @dataclass(frozen=True)
 class Surcharge:
-    """A column standing on this wall's top, smeared over the wall's run.
+    """A column standing on this wall's top, smeared over the wall's run — and/or a lateral
+    surcharge from something founded in its retained soil (the ``lateral_*`` fields).
 
     ** THERE WAS NO SURCHARGE TERM ANYWHERE IN THIS PACKAGE UNTIL 2026-09-11. **
     :func:`analyse` took dead load only — stem, footing and the soil column on the heel —
@@ -214,6 +215,16 @@ class Surcharge:
     arm_ft: float
     #: The engineering item this came from, for the record's citation.
     source: str = ""
+    #: A LATERAL surcharge resultant on the retained side, plf (IBC 2018 §1610.1: surcharge
+    #: pressure is added to the earth pressure). It enters the thrust — so the sliding
+    #: demand and a loop's resultant — and the overturning moment at ``lateral_arm_ft``,
+    #: its height above the footing underside. Zero for a column (added 2026-09-20 for the
+    #: raised-garden apron, ``engineering/tier_surcharge.py``).
+    lateral_plf: float = 0.0
+    lateral_arm_ft: float = 0.0
+    #: The same surcharge's service moment at the stem base, ft-lb/ft — read on the stem's
+    #: own face, which is further from the load than the heel's virtual back.
+    stem_moment_plf: float = 0.0
 
 
 def analyse(geometry: _Geometry, soil: PresumptiveSoil, *, at_rest: bool = False,
@@ -236,13 +247,18 @@ def analyse(geometry: _Geometry, soil: PresumptiveSoil, *, at_rest: bool = False
     efp = soil.at_rest_efp_psf_per_ft if at_rest else soil.active_efp_psf_per_ft
     height = geometry.retained_height_ft
 
-    # Triangular active (or at-rest) thrust, resultant at H/3 above the base.
-    thrust = 0.5 * efp * height * height
+    # Triangular active (or at-rest) thrust, resultant at H/3 above the base, plus any
+    # lateral surcharge at its own arm.
+    earth = 0.5 * efp * height * height
+    lateral = surcharge.lateral_plf if surcharge else 0.0
+    thrust = earth + lateral
     # A fixed-base column's own base moment is delivered INTO the wall top and is taken as
     # overturning whichever way it points: wind reverses, so the sign that would help in
     # one direction hurts in the other, and a screening calculation takes the one that
     # hurts. It is not a thrust, so it does not enter the SLIDING demand.
-    overturning = thrust * height / 3.0 + abs(surcharge.moment_plf if surcharge else 0.0)
+    overturning = (earth * height / 3.0
+                   + lateral * (surcharge.lateral_arm_ft if surcharge else 0.0)
+                   + abs(surcharge.moment_plf if surcharge else 0.0))
 
     # Dead load only. IBC Table 1806.2 footnote a applies the friction coefficient to the
     # dead load, and nothing here is anything else.
@@ -346,7 +362,8 @@ def stem_flexure(geometry: _Geometry, case: _Case,
     getting it on the wrong face is the classic way a correctly-sized wall falls over.
     """
     stem_ft = geometry.retained_height_ft - geometry.footing_depth_ft
-    service = 0.5 * case.efp_psf_per_ft * stem_ft ** 2 * stem_ft / 3.0
+    service = (0.5 * case.efp_psf_per_ft * stem_ft ** 2 * stem_ft / 3.0
+               + (case.surcharge.stem_moment_plf if case.surcharge else 0.0))
     demand = EARTH_PRESSURE_LOAD_FACTOR * service
 
     b_in = 12.0

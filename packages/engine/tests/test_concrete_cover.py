@@ -238,4 +238,5 @@ def test_the_third_inch_on_the_garden_stems_is_pinned(catlin_plan, catlin_model)
                     if s.name == "stem flexure")
         assert 'cover 3.00"' in stem.citation, stem.citation
         assert stem.capacity == pytest.approx(20_028, rel=0.002)
-        assert stem.ratio == pytest.approx(0.606, abs=0.005)
+        # 0.606 until 2026-09-20; the apron surcharge adds 120 ft-lb/ft at the stem base (§4c).
+        assert stem.ratio == pytest.approx(0.616, abs=0.005)
