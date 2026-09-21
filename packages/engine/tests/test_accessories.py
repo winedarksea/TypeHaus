@@ -83,7 +83,8 @@ def _balcony_deck_top(model) -> float:
 
 
 def test_catlin_resolves_all_accessory_categories(catlin_model) -> None:
-    for category in ("railing", "dowel", "thermal_break", "connector",
+    # No "dowel": catlin has none since 2026-09-21 (a pure isolation joint, free body §11).
+    for category in ("railing", "thermal_break", "connector",
                      "fascia", "gutter", "downspout", "flashing", "sump", "vent"):
         assert _solids(catlin_model, category), f"no {category} solids resolved"
 
