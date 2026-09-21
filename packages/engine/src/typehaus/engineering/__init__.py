@@ -24,6 +24,7 @@ from __future__ import annotations
 # imports ``engineering.item``/``engineering.registry`` directly rather than this package,
 # so the order here is free — but the presence of the line is not.
 from typehaus.engineering import (
+    base_rotation,  # noqa: F401  (registration)
     column_base,  # noqa: F401  (registration)
     column_head_joint,  # noqa: F401  (registration)
     column_support,  # noqa: F401  (registration)
@@ -82,8 +83,8 @@ __all__ = [
     "ExternalDesign", "Freshness", "LimitState", "NO_ENGINEERING", "Oracle", "Quantity",
     "REGISTER_FILENAME", "SETTLED", "Scope", "Signoff", "Status", "pinnable",
     "calc", "fingerprint", "item_id", "keys", "keys_of", "load_register", "no_calc", "records_of",
-    "column_base", "column_head_joint", "column_support", "deck_post", "deferred",
-    "girt_screw", "glulam_beam",
+    "base_rotation", "column_base", "column_head_joint", "column_support", "deck_post",
+    "deferred", "girt_screw", "glulam_beam",
     "lateral_system", "roof_beam",
     "registered_kinds",
     "retaining_system",

@@ -208,6 +208,8 @@ def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
     #    that does not rotate; a real one does, and the split of moment between the buried
     #    shaft and the pad under it is the same question from the other side. Six items,
     #    one per column `column_base` grades — one set, one definition.
+    #    ** LEFT 2026-09-20: `engineering/base_rotation.py` computes it, on a presumptive
+    #    soil band, for these six and the balcony's four wall-borne columns. **
     #  - `column_head_joint/PT-*`: what a fixed-base column is fixed AGAINST at its head.
     #    catlin's canopy columns carry `BM-BW-RE` on a stainless standoff pack under an
     #    `HGAM10` gusset, a detail chosen for durability whose MOMENT transfer nobody has
@@ -216,9 +218,8 @@ def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
     # `column_support/W-SG-W1`/`-E1` LEFT on 2026-09-20: computed by
     # `engineering/column_support.py`, oracled by balcony_moment_columns.md §11.
     assert {r.item_id for r in deferred} == {
-        *(f"base_rotation/{t}" for t in
-          ("PT-BW-E", "PT-BW-GE", "PT-BW-GW", "PT-BW-RE", "PT-BW-RNE", "PT-BW-W")),
-        # `column_head_joint/*` left on 2026-09-20: computed (`column_head_joint.py`).
+        # `base_rotation/*`, `column_head_joint/*` and `column_support/*` left on 2026-09-20:
+        # each is a registered calculation now.
         "rafter/RF-BW-CANOPY", "rafter/RF-GARAGE",
         "veneer_anchor/W-B-BRICK",
         "tiered_retaining/W-RG-BLOCK",

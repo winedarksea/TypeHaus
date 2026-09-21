@@ -50,6 +50,16 @@ _IBC_1610_1: dict[str, tuple[float, float]] = {
 #: code value — see this module's docstring.
 SOIL_UNIT_WEIGHT_BAND_PCF: tuple[float, float] = (110.0, 130.0)
 
+#: The ground motion, inches, at which a presumptive allowable is taken as MOBILISED — the
+#: secant that turns a code table into a stiffness. IBC §1806.3.4 pairs 2x the tabular
+#: lateral bearing with 1/2" of motion at grade; Terzaghi & Peck's 1" settlement criterion
+#: is the soft end for vertical bearing. No code publishes the band, so it is run at both
+#: ends like the unit weight (``engineering/base_rotation.py``).
+MOTION_AT_ALLOWABLE_BAND_IN: tuple[float, float] = (0.25, 1.0)
+
+#: Recorded beside the band, never an end of it: where a verdict turns.
+MOTION_AT_ALLOWABLE_SENSITIVITY_IN = 2.0
+
 #: Conventional, and not in dispute.
 CONCRETE_UNIT_WEIGHT_PCF = 150.0
 
