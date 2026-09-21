@@ -810,13 +810,11 @@ def _moment_column(pier: _Pier, area: float, ratio: float, shape: str, demand: f
          f"named here so nobody reconciles this record against the drawing and concludes "
          f"one of them is wrong. Authoring the mix is what closes it."),
         (f"SCREENING: the base is taken as FIXED, which the doweled lap into the "
-         f"{'wall top' if pier.shared_wall_footing else 'footing'} is detailed to deliver "
-         f"and which no calculation here proves — nothing here grades the EMBEDMENT that "
-         f"fixity needs against IBC 1807.3.2.1, and on a shallow-founded column that is the "
-         f"assumption most likely to be the weak one. Shear in the column is not graded "
-         f"(the section is enormous relative to a few hundred pounds, but 'enormous' is a "
-         f"judgement); and torsion, the joint's own capacity and the foundation's rotational "
-         f"stiffness are all outside it. A stamped design is what closes those."),
+         f"{'wall top' if pier.shared_wall_footing else 'footing'} is detailed to deliver. "
+         f"This record does not prove it; its siblings do: the embedment is "
+         f"`column_base/{pier.tag}` (IBC 1807.3.2.1), the base's stiffness and the sway it "
+         f"adds `base_rotation/{pier.tag}`, the head joint with the column's shear and "
+         f"torsion `column_head_joint/{pier.tag}`, and a wall top `column_support/<wall>`."),
         (f"SCREENING: the whole frame shear is taken on the {shear_takers} cast column(s) "
          f"that reach this calculation, and NOTHING is claimed for any other lateral "
          f"element on the same structure. Where the other line is a sheathed shear panel "

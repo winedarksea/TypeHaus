@@ -2509,10 +2509,12 @@ haus analysis . --solve                     # the engineered frame, solved in Py
   - **Basis 4 counts the pad as part of the pole** (notes §9): embedment to the pad bottom,
     the pad's width through an effective `b` worth only 0.6-7%. Canopy 0.96 -> 0.85; the two
     garage-side LANDING columns stop straddling §1806.3.4 and publish at 0.96/0.98 unclaimed.
-  - Two deferrals came with it and are scope rather than arithmetic: `base_rotation/*` (the
-    base is graded for STRENGTH, not STIFFNESS — `deck_post`'s sway magnifier assumes a base
-    that does not rotate) and `column_head_joint/*` (the `HGAM10` + `SS316-SHIM-35` head,
-    whose moment transfer nobody has computed; column shear and torsion ride with it).
+  - Its two scope deferrals are COMPUTED since 2026-09-20. `base_rotation/*` grades base
+    STIFFNESS on a presumptive Winkler band (notes/column_base_rotation.md): `PT-BW-GW` is
+    OVER §6.2.5.3 (δ 1.456, suppressed as a numbered debt) and RE/RNE/W/GE straddle the
+    band — a geotech report's n_h closes or condemns them. `column_head_joint/*` grades the
+    head (notes/north_entry_piers.md §9); torsion is ~0.03 of φT_th, and `PT-BW-W`/`-GW`
+    are INCOMPLETE because the ABU66SS publishes no lateral value.
 - **A fixed-base column's P-M check is a §2.3.1 ENVELOPE** (2026-09-18), each combination at
   its own axial load. A larger axial is not automatically conservative on an interaction
   curve — below the balance point compression RAISES moment capacity — so grading the wind
@@ -2521,9 +2523,12 @@ haus analysis . --solve                     # the engineered frame, solved in Py
   behind at 0.68 on barely half the axial. And the dowels' ANCHORAGE into the pad is graded
   beside the lap that already was: the lap alone was half the joint, and the half it left
   out is the one the fixed base depends on.
-- **Seven items are deferred to a designer of record** — the TWO trussed roofs' rafters, all
-  three roofs' uplift path, and the two wall tops under the balcony's fixed-base columns.
-  `out/calcs/03-open-items.md` names who owns each.
+- **Three items are deferred to a designer of record** (2026-09-20): the TWO trussed roofs'
+  component designs (`rafter/*`) and the brick veneer's anchors (`veneer_anchor/W-B-BRICK`).
+  The wall tops, veneer beam, thermal breaks and SRW apron are computed now; the uplift
+  chain below a truss heel is graded on `Roof.published_reactions` once the fabricator's
+  sealed schedule is quoted in (`structural.truss_reactions`). `out/calcs/03-open-items.md`
+  names who owns each.
   `RF-BW-CANOPY` joined on 2026-09-10 and its deferral carries a condition the others do not:
   **quote its trusses against the DRIFT case, not the ground snow.** A fabricator reading
   "50 psf ground snow" prices ordinary trusses, and the surcharge off the house gable also
