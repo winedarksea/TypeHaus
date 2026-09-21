@@ -556,6 +556,9 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Structural ties across a thermal break",
                        ("structural.thermal_break",),
                        ("ACI 318-19 §22.9", "ACI 347R-14 §2.2"), blocking=False),
+        # COMPUTED since 2026-09-20 (`engineering/segmental_wall.py`) and OVER on catlin's
+        # apron — sliding FS 0.38. Deliberately still non-blocking: the design change is
+        # the owner's call (notes/raised_garden_srw.md §8). Flip to True with that change.
         PermitItemSpec("Segmental gravity retaining walls (tiered)",
                        ("structural.tiered_retaining",),
                        ("IRC R404.4", "IBC 2018 §1807.2"), blocking=False),

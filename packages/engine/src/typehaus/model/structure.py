@@ -13,6 +13,32 @@ from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Point2D, inch
 
 
+class SegmentalWallSpec(HausModel):
+    """A dry-stacked segmental retaining-wall unit, as its maker publishes it.
+
+    Every field is a number off a product sheet, and ``source`` names the sheet. Absent
+    fields are not defaulted: the calculation says what it used instead and why.
+    ``published`` is a chart row the maker publishes for this unit; it is REFUSED in code
+    unless its guards are answered (drainage layer, batter, cap, no taller wall within 2H),
+    and even then it corroborates the free body, never replaces it.
+    """
+
+    #: The product literature — document, edition, page.
+    source: str
+    #: Face batter from vertical, degrees (the unit's setback per course). None = unstated.
+    batter_deg: float | None = None
+    #: Unit depth, face to tail. None = the assembly's STRUCTURE layer thickness.
+    unit_depth: Length | None = None
+    #: In-place unit weight including any core infill, pcf.
+    unit_weight_pcf: float | None = None
+    #: The maker's course-to-course interface shear capacity, lb/ft of wall.
+    interface_shear_lb_per_ft: float | None = None
+    #: The cap unit, as the maker names it. A published chart assumes one.
+    cap: str | None = None
+    #: A published gravity-wall chart row for this unit — see the class docstring.
+    published: PublishedSpan | None = None
+
+
 @register_element
 class FoundationWall(Wall):
     """A Wall in every structural sense, distinguished by kind (→ 11 §Foundations).
@@ -68,6 +94,9 @@ class FoundationWall(Wall):
     # and verifies that the named element is a real member of the same closed structural loop
     # and reports INCOMPLETE when it is not.
     base_restraint_ref: str | None = None
+    #: What a segmental (SRW) unit wall is built of — the inputs `engineering/segmental_wall`
+    #: reads off the product literature. None on every cast wall.
+    srw: SegmentalWallSpec | None = None
 
 
 class CrushedStoneSpec(HausModel):

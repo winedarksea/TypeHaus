@@ -414,6 +414,26 @@ suppress = [
   "mep.run_through_plate:DU-S-HP-SUITE",
   "mep.run_through_plate:DU-S-HP-SOUTH",
 
+  # ** structural.tiered_retaining: 5 REAL FAILS, THE RAISED-GARDEN SRW APRON. MEASURED
+  # 2026-09-20, THE DAY IT WAS FIRST CALCULATED. NOT A DECISION — A DESIGN CHANGE OWED. **
+  #
+  # A vertical 12" dry-stacked unit retaining 3'-4" over 8" of embedment: sliding FS 0.38,
+  # overturning FS 0.57, resultant 0.37' in front of the toe (IRC R404.4 wants 1.5). Worked
+  # by hand in notes/raised_garden_srw.md. It does not turn on the soil band, the unit
+  # weight (137 pcf is the SOLID upper bound) or a batter (9.5° only reaches OT 0.96).
+  # What would close it is the owner's call and the note's §8 prices each: a 2.8'-3.9'
+  # deep gravity section, a terrace lowered to ~1'-1.4', or supplier-sealed geogrid.
+  #
+  # Suppressed only so the reference house's CI gate stays usable while that call is made.
+  # `haus check --no-suppress` shows all five; the permit line stays non-blocking while the
+  # kind is OVER (profile.py). ** A DEBT WITH A NUMBER ON IT: sliding FS 0.38. ** Delete
+  # these five lines in the commit that changes the apron, and do not add a sixth.
+  "structural.tiered_retaining:W-RG-BLOCK",
+  "structural.tiered_retaining:W-RG-WEST",
+  "structural.tiered_retaining:W-RG-EAST",
+  "structural.tiered_retaining:W-RG-WEST-BALCONY",
+  "structural.tiered_retaining:W-RG-EAST-BALCONY",
+
   # ** mep.run_through_stud: CLOSED 2026-09-20 BY RETYPING THE WALLS. NOTHING SUPPRESSED. **
   #
   # This list held 7 over-bores on 5 runs, itemised, each entry saying its honest fix was a

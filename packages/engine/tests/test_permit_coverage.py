@@ -422,6 +422,13 @@ def test_every_engineering_kind_reaches_a_permit_item() -> None:
     result = load_plan(CATLIN)
     assert result.plan is not None
     ctx, _ = build_context(result.plan, CATLIN)
+    # Asked with `[checks] suppress` LIFTED: this is a question about the profile's wiring,
+    # and catlin suppresses the five OVER `tiered_retaining` findings (preferences.toml).
+    # A suppressed item does drop off its line — that is the suppression's cost, not a
+    # wiring gap.
+    from dataclasses import replace
+
+    ctx.preferences = replace(ctx.preferences, suppressed=frozenset())
     report = run_checks(ctx, None)
     covered = profile.permit_check_ids()
     on_a_line = {f.engineering_item for f in report.findings

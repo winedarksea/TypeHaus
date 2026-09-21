@@ -183,6 +183,7 @@ from typehaus.model.structure import (
     PlateTie,
     Post,
     Railing,
+    SegmentalWallSpec,
     SolarPanel,
     Wedge,
 )
@@ -262,6 +263,7 @@ for _name, _obj in (
     ("ToRoof", ToRoof), ("FollowRoof", FollowRoof), ("Arch", Arch),
     ("PublishedSpan", PublishedSpan), ("PublishedCapacity", PublishedCapacity),
     ("PublishedReaction", PublishedReaction),
+    ("SegmentalWallSpec", SegmentalWallSpec),
     ("ShearPanelSpec", ShearPanelSpec), ("DiaphragmSpec", DiaphragmSpec),
     ("Library", Library), ("PlanModel", PlanModel),
     ("BookcaseDoorSpec", BookcaseDoorSpec),
@@ -281,6 +283,7 @@ __all__ = [
     "Element", "HausModel",
     "Node", "Wall", "Door", "Window", "RoughOpening",
     "FoundationWall", "Footing", "CrushedStoneSpec", "Pad", "FootingBedding", "DrainTile",
+    "SegmentalWallSpec",
     "Post", "Beam", "SlatScreen",
     "FrenchDrain", "Drywell",
     "Dowel", "Connector", "PlateTie", "KneeBrace", "Wedge", "Railing", "Fascia", "Gutter",

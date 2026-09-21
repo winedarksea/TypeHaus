@@ -258,32 +258,10 @@ _declare(Deferral(
                    test="tests/test_retaining_court.py"),),
 ))
 
-_declare(Deferral(
-    kind="tiered_retaining",
-    reason="this wall retains fill, names no lateral support and stands on no footing of its "
-           "own — a segmental gravity wall, and one that is TIERED above a taller cut rather "
-           "than standing alone. Three things follow. The prescriptive path does not reach "
-           "it: `structural.foundation_unbalanced_fill` correctly reports that IRC R404.1.1 "
-           "does not engage below 48in of fill, and that verdict is right and is not the "
-           "gap — the gap is that nothing else then looks. The engineered path does not "
-           "reach it either: `retaining_wall` scopes to walls that declare a lateral "
-           "support, and widening it to here would mint an ISOLATED-CANTILEVER record for a "
-           "wall whose whole problem is that it is not isolated, which is worse than "
-           "silence. And the real question is neither: an upper tier surcharges the lower "
-           "wall, the two share a failure surface, and global stability of the pair is a "
-           "slope-stability problem this engine has no method for",
-    designer="geotechnical engineer for global stability and the surcharge on the lower "
-             "wall, with the segmental wall supplier's engineer for the unit, the "
-             "reinforcement and the levelling pad",
-    deliverable="a sealed tiered-wall design — internal and external stability of the upper "
-                "wall, the surcharge it delivers to the lower one, and a global stability "
-                "analysis of the pair on a common failure surface — against a measured soil "
-                "profile rather than presumptive table values",
-    unblocks="Site and Foundations — the landscape wall sections and the court wall's own "
-             "design surcharge",
-    oracle=(Oracle(note="sunken_garden_court_free_body.md", section="§9",
-                   test="tests/test_retaining_court.py"),),
-))
+# NOTE — ``tiered_retaining`` is COMPUTED since 2026-09-20: ``engineering/segmental_wall.py``
+# grades the unit's own free body, and its NOT-GRADED note carries this deferral's deliverable
+# (global stability of the pair with the geotechnical engineer; the unit, reinforcement and
+# levelling pad with the SRW supplier's engineer).
 
 
 def _footingless_walls(ctx: EngineeringContext) -> list:
@@ -342,27 +320,6 @@ def _thermal_break_keys(ctx: EngineeringContext) -> list[str]:
 
     return sorted(d.tag for d in ctx.plan.all_elements()
                   if isinstance(d, Dowel) and d.foam_thickness is not None)
-
-
-@keys("tiered_retaining")
-def _tiered_retaining_keys(ctx: EngineeringContext) -> list[str]:
-    """Walls that retain fill, declare no restraint, and have no footing.
-
-    Deliberately NOT ``_retaining_walls``' predicate, and deliberately not an extension of
-    it. That function scopes to ``lateral_support in ("unsupported", "base")`` — a wall that
-    has said something about how it stands. This one scopes to the walls that have said
-    nothing and have no strip footing either, which in practice is a segmental gravity unit
-    on a levelling pad. The two sets are disjoint by construction, so no wall gets both an
-    isolated-cantilever record and this assignment.
-    """
-    out = []
-    for wall in _footingless_walls(ctx):
-        if getattr(wall, "lateral_support", None) is not None:
-            continue
-        fill = getattr(wall, "unbalanced_fill", None)
-        if fill is not None and fill.meters > 0.0:
-            out.append(wall.tag)
-    return sorted(out)
 
 
 def _plan_extent(ctx: EngineeringContext, tag: str):
