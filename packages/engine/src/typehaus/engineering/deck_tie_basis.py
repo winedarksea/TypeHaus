@@ -60,6 +60,10 @@ class TieJoint:
     heel_axis: str | None = None
     #: The tied-to wall is concrete (an anchor side to grade) rather than framing.
     on_concrete: bool = True
+    #: The parts' authored ``Connector.service`` condition ("dry"/"wet"), ``None`` where none
+    #: is authored (read wet), "mixed" where they disagree; and its stated basis.
+    service_condition: str | None = None
+    service_basis: str = ""
 
 
 @dataclass(frozen=True)
@@ -130,13 +134,17 @@ def wall_ties(ctx: EngineeringContext, deck: Any) -> list[TieJoint]:
         (x0, y0), (x1, y1) = (_xy_ft(ctx.plan.by_tag(wall.start_node).position),
                               _xy_ft(ctx.plan.by_tag(wall.end_node).position))
         heels = {p.axis for p in parts}
+        services = {(p.service.condition, p.service.basis) if p.service else (None, "")
+                    for p in parts}
+        service = next(iter(services)) if len(services) == 1 else ("mixed", "")
         out.append(TieJoint(
             member=member, wall=wall_tag, parts=tuple(sorted(p.tag for p in parts)),
             model=parts[0].size, x_ft=sum(p[0] for p in points) / len(points),
             y_ft=sum(p[1] for p in points) / len(points),
             wall_axis="x" if abs(x1 - x0) >= abs(y1 - y0) else "y",
             heel_axis=next(iter(heels)) if len(heels) == 1 else "mixed",
-            on_concrete=wall_tag in concrete))
+            on_concrete=wall_tag in concrete, service_condition=service[0],
+            service_basis=service[1]))
     return out
 
 

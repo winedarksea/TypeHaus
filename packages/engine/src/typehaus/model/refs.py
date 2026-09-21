@@ -8,6 +8,8 @@ These are the union arms and selector helpers the dialect exposes as constructor
 
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import model_validator
 
 from typehaus.model.base import HausModel
@@ -466,4 +468,23 @@ class HeadConnector(HausModel):
         if (self.bearing_width_in is None) != (self.bearing_length_in is None):
             raise ValueError("HeadConnector bearing_width_in and bearing_length_in are "
                              "authored together")
+        return self
+
+
+class InServiceMoisture(HausModel):
+    """A connection's authored in-service moisture — what NDS 2018 Table 11.3.3's C_M reads.
+
+    A reader grades an exterior connection WET (C_M 0.70) unless the part says otherwise;
+    ``dry`` is a service-condition JUDGEMENT (in-service MC <= 19 %), so it says why.
+    """
+
+    #: ``"dry"`` or ``"wet"``.
+    condition: Literal["dry", "wet"]
+    #: Why: the exposure and the document relied on. Printed on the record.
+    basis: str
+
+    @model_validator(mode="after")
+    def _basis_is_stated(self) -> InServiceMoisture:
+        if not self.basis.strip():
+            raise ValueError("InServiceMoisture.basis must say why the condition holds")
         return self

@@ -196,7 +196,8 @@ def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
     #    and that verdict is CORRECT — IRC R404.1.1 does not engage at 3'-4" — so the PASS is
     #    deliberately left alone. The defect was that nothing else then looked at a tiered
     #    segmental wall standing beside a ten-foot cut. COMPUTED since 2026-09-20
-    #    (`engineering/segmental_wall.py`, OVER) and so off this list: five fewer.
+    #    (`engineering/segmental_wall.py`; OK on AB Stones since 2026-09-21) and so off
+    #    this list: five fewer.
     # `_retaining_walls` is deliberately NOT widened to reach the apron: an
     # isolated-cantilever record for a wall whose whole problem is that it is not isolated
     # would make the register less true.
@@ -443,13 +444,12 @@ def test_the_two_gates_are_separate_and_catlin_reaches_neither(catlin_engineerin
     blocked = [item.label for item in checklist.items
                if item.blocking and item.result not in (Result.PASS,
                                                         Result.NOT_APPLICABLE)]
-    # 2026-09-21: the landing's tie to the garage stem closed the head-joint line and opened
-    # its own (deck_tie/FS-BW-FLOOR, OVER 1.18 on two tie lines, north_entry_piers.md §10);
-    # base rotation CLOSED as draft on the presumed n_h (column_base_rotation.md §10).
+    # 2026-09-21: the landing's tie to the garage stem closed the head-joint line, then its
+    # own (deck_tie/FS-BW-FLOOR at 0.966, north_entry_piers.md §10); base rotation CLOSED as
+    # draft on the presumed n_h (column_base_rotation.md §10), and the SRW apron CLOSED on AB
+    # Stones (raised_garden_srw.md §3b).
     assert sorted(blocked) == sorted([
-        "Deck lateral tie to a concrete wall",
         "Structural ties across a thermal break",
-        "Segmental gravity retaining walls (tiered)",
     ]), blocked
     assert not checklist.ok
     assert not checklist.sealed

@@ -210,18 +210,17 @@ def test_a_filled_scaffold_seals_every_computed_item(bundle, tmp_path, catlin_ct
     # A kind with any OVER item has its whole block commented out — see the docstring.
     refused = {ctx.engineering[i].kind for i in every
                if ctx.engineering[i].status is Status.OVER}
-    # ** NOT EMPTY SINCE 2026-09-20, AND ON PURPOSE: the SRW apron is computed and OVER
-    # (`tiered_retaining`, notes/raised_garden_srw.md). Its block MUST be commented out —
-    # no PE stamps a wall at sliding FS 1.38 against 1.5 — and so must `deck_tie`'s, the
-    # landing's two tie lines at d/c 1.18 (notes/north_entry_piers.md §10), and
-    # `thermal_break_transfer`'s, movement 1.07 and settlement 1.05 on the owner's Aslan 100 +
+    # ** NOT EMPTY, AND ON PURPOSE: an OVER kind's block MUST be commented out — no PE stamps
+    # `thermal_break_transfer`'s movement 1.07 and settlement 1.05 on the owner's Aslan 100 +
     # Toprock DD fix (notes/sunken_garden_court_free_body.md §11f). `base_rotation` left this
-    # set on 2026-09-21. Every other kind stays sealable. **
-    assert refused == {"tiered_retaining", "deck_tie", "thermal_break_transfer"}, (
+    # set on 2026-09-21, and so did `tiered_retaining` (the SRW apron on AB Stones,
+    # notes/raised_garden_srw.md) and `deck_tie` (the landing's two tie lines at 0.966,
+    # notes/north_entry_piers.md §10). Every other kind stays sealable. **
+    assert refused == {"thermal_break_transfer"}, (
         "a kind went over capacity — the scaffold will comment its whole block out, which is "
         "correct, but this test then stops exercising the sealing path for it", refused)
-    assert register.covering("tiered_retaining/W-RG-BLOCK") is None
-    assert register.covering("deck_tie/FS-BW-FLOOR") is None
+    assert register.covering("tiered_retaining/W-RG-BLOCK") is not None
+    assert register.covering("deck_tie/FS-BW-FLOOR") is not None
     computed = [ctx.engineering[i] for i in every
                 if ctx.engineering[i].inputs and ctx.engineering[i].kind not in refused]
     assert computed

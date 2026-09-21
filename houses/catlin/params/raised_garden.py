@@ -26,7 +26,7 @@ Two things changed on 2026-09-10 and the defect is arithmetic now rather than in
 * The yard is **modelled**. `plan/site.py` authors three south-yard stations at -3'-4" and
   `resolve/site_earth.local_grade_elevation_m` reads them, so this apron springs from a
   ground elevation somebody wrote down instead of from an assumed global plane.
-* The **drop is 4'-0"**, six whole 8" AB Classic courses. Off a top that is now the porch datum at
+* The **drop is 4'-0"**, six whole 8" AB courses. Off a top that is now the porch datum at
   0'-0", that lands the base at **-4'-0"** against a yard at **-3'-4"**: the base course is
   buried **8"**, against the ~6" the guidance wants on a 3-foot wall.
 
@@ -37,17 +37,16 @@ The extra 8" buys embedment, not retained height. Stating it as the drop would p
 on IRC R404.1.1's 48" threshold exactly and send five landscape walls into an R404.4
 cantilever analysis they have no footing for; see the note beside `_APRON`.
 
-**CHECKED, AND IT STILL DOES NOT STAND.** The unit is **Allan Block AB Classic** since
-2026-09-21 (`AB_CLASSIC` below), with AB's 12" of wall rock behind it (`WALL_ROCK`).
+**CHECKED, AND IT STANDS.** The unit is **Allan Block AB Stones, 12° setback** (owner,
+2026-09-21; `AB_STONE` below), with AB's 12" of wall rock behind it (`WALL_ROCK`).
 `engineering/segmental_wall.py` (`tiered_retaining/W-RG-*`) grades it by the NCMA/AB gravity
-method on a two-zone trial wedge: overturning FS **1.44 / 1.43** across the soil band against
-IRC R404.4's 1.5, sliding 1.38 / 1.61 (`notes/raised_garden_srw.md`; 1.27 / 1.34 without the
-rock). The tier row is gone — the apron and the court stand back to back (§6). The
-2026-09-20 figures (sliding 0.38, overturning 0.57) were a solid, vertical stand-in unit.
-The 8" of embedment passes its own row. The fix is a design change and the owner's call
-(§8 of the note prices it); the five FAILs are suppressed in `preferences.toml` until it is
-made. Global stability of the pair stays open, as `notes/sunken_garden_court_free_body.md`
-§9 says.
+method on a two-zone trial wedge: sliding **1.54 / 1.81**, overturning **2.02 / 2.02**,
+bearing 604 / 606 psf across the soil band, against IRC R404.4's 1.5
+(`notes/raised_garden_srw.md` §3b). Loose-end sliding holds only on AB's clean wall rock at
+36° (1.47 at 34°, 1.30 with none). AB Classic (6°) read 1.38 / 1.44 and was OVER; that
+history is in the note. The tier row does not apply — the apron and the court stand back
+to back (§6). Global stability of the pair stays open, as
+`notes/sunken_garden_court_free_body.md` §9 says.
 
 Section, at a side leg, west (yard) to east (sunken garden):
 
@@ -185,7 +184,7 @@ class RaisedGardenSpec:
     # courses, so 8" is the least embedment that is at least the ~6" the guidance wants.
     drop_ft: float = 4.0
     block_thickness_in: float = 12.0  # one SRW unit deep
-    block_course_height_in: float = 8.0  # AB Classic coursing
+    block_course_height_in: float = 8.0  # AB Stones coursing
     # The compacted levelling pad the base course beds into: 6" of stone, running 6" past
     # each block face. Both are the ordinary SRW numbers for a wall this short — the pad is
     # wider than the block so the base course can be shifted into line without ending up
@@ -302,12 +301,14 @@ NODES = [
 # buys EMBEDMENT. It does not retain anything.
 #
 # So it tracks the exposure, which is where that 3'-4" is computed and pinned.
-# ** THE UNIT IS ALLAN BLOCK AB CLASSIC (owner, 2026-09-21). ** Every number is AB's own:
-# the unit off the AB Collection sheet, the design depth and in-place weight off the gravity
-# sample in AB's Commercial Installation Manual (d 0.97 ft, 130 pcf with the cores filled —
-# the hollow unit alone is 125), and the interface shear off its Table 1.2 minimum. No cap is
-# stated: none is modelled, and a published chart row is not authored because it is refused
-# at every leg anyway (the court walls stand inside 2H). notes/raised_garden_srw.md §1.
+# ** THE UNIT IS ALLAN BLOCK AB STONES, 12° SETBACK (owner, 2026-09-21; AB Classic, 6°, was
+# OVER). ** Every number is AB's own: the unit off the AB Collection sheet (the same
+# 8x12x18, 75 lb as AB Classic — only the setback differs), the design depth and in-place
+# weight off the manual's gravity sample (p.11, which IS a 12° wall: d 0.97 ft, 130 pcf with
+# the cores filled — the hollow unit alone is 125), and the interface shear off Table 1.2's
+# collection-wide minimum. No cap is stated: none is modelled, and a published chart row is
+# not authored because it is refused at every leg anyway (the court walls stand inside 2H).
+# notes/raised_garden_srw.md §1.
 #
 # ** THE WALL ROCK IS AUTHORED (2026-09-21). ** AB's gravity construction puts 12" of wall
 # rock behind every course (manual p.22, Step 4). It is graded as the near-heel zone of a
@@ -319,9 +320,9 @@ WALL_ROCK = SrwDrainageZone(
     friction_angle_deg=36.0,
     source="AB Commercial Installation Manual (allanblock.com/PDF/ABCommManual.pdf): p.22 gravity wall Step 4 'a minimum of 12 in (300 mm) behind the wall with wall rock'; p.20 wall rock 0.25-1.5 in compactible aggregate, <=10% passing #200, >=120 pcf; p.16 Table 2.1 Sand/Gravel 36 deg",
 )
-AB_CLASSIC = SegmentalWallSpec(
-    source="Allan Block AB Classic: AB Collection sheet (allanblock.com/products/retaining-walls/ab-collection) 8in H x 12in D x 18in L, 75 lb, 6 deg setback; AB Commercial Installation Manual (allanblock.com/PDF/ABCommManual.pdf) p.11 gravity sample d 0.97 ft, wall density 130 pcf, Table 1.2 unit shear strength 645 lb/ft",
-    batter_deg=6.0,
+AB_STONE = SegmentalWallSpec(
+    source="Allan Block AB Stones: AB Collection specifications (allanblock.com/installation/commercial-installation/ab-collection; Commercial Installation Manual p.7 Table 1.1) 8in H x 12in D x 18in L, 75 lb, 12 deg setback; AB Commercial Installation Manual (allanblock.com/PDF/ABCommManual.pdf) p.11 gravity sample (batter 12 deg) d 0.97 ft, wall density 130 pcf, Table 1.2 unit shear strength 645 lb/ft",
+    batter_deg=12.0,
     unit_depth=ft(0.97),
     unit_weight_pcf=130.0,
     interface_shear_lb_per_ft=645.0,
@@ -329,7 +330,7 @@ AB_CLASSIC = SegmentalWallSpec(
 )
 
 _APRON = dict(
-    assembly="RETAINING_BLOCK_12", top_elevation=TOP, bottom_elevation=BASE, srw=AB_CLASSIC,
+    assembly="RETAINING_BLOCK_12", top_elevation=TOP, bottom_elevation=BASE, srw=AB_STONE,
     unbalanced_fill=inch(SUNKEN_GARDEN_OPTION.raised_soil_height_in
                          if SUNKEN_GARDEN_OPTION.planting_layout == "against-wall"
                          else RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN),

@@ -972,53 +972,68 @@ rest 0.237 on the guard at C_D 1.0).
 
 ## 10. The landing's two tie lines (oracles `engineering/deck_tie.py`, `deck_tie_anchor.py`)
 
-**Written 2026-09-21, by hand, before the module; reworked the same day for the owner's fix.**
-The landing is tied so its four piers stop being the lateral system. First pass: an HGAM10
-pair on each carrier over the garage stem, OVER at 1.82 (history below, §10g). Owner's
-decision: **a second tie line on the screen's own line into `W-G-W`, wood to wood through the
-corner cladding; HDG framing angles wood to wood, Simpson HL heavy angles (HDG) where a tie
-lands on concrete, 1/2" bolts or screws.**
+**Written 2026-09-21, by hand, before the module; reworked three times the same day.** The
+landing is tied so its four piers stop being the lateral system. Two tie lines: over the
+garage stem under each carrier, and on the screen's own line into `W-G-W`, wood to wood.
+**This pass, the owner's decisions of 2026-09-21: HL35HDG at the stem, wet, each angle and
+block set 1-1/4" north so the anchored hole is on the core centreline; HL33HDG at `W-G-W`
+graded DRY, with a 4x filler.** Every row passes: E-W wind governs at **0.966**. Superseded
+passes are in §10g.
 
 ### 10a. The parts
 
-**HL33HDG**, Simpson C-C-2024 p. 303 (the HL table; C-C-2019 p. 287 printed 910 / 1,580 for
-the same row and is superseded): 7 ga, legs 3-1/4" x 3-1/4", 2-1/2" long, one 1/2" bolt per
-leg 2" off the heel (D3), HDG to order. DF/SP **uplift 740, F1 1,040 lb** at C_D 1.6 per
-connector. Fn 4: members >= 3-1/2" thick. Fn 6: allowable loads are for a single connector;
-uplift may be doubled for two; connectors both sides for lateral both ways; **lateral may
-not be doubled**. Fn 7: a lag of equal diameter >= 5" may replace the bolt in the carried
-member. The table is wood-to-wood; Simpson publishes no HL value on concrete. One part serves
-both lines — it IS Simpson's HDG framing angle at this size.
+Simpson C-C-2024 p. 303, the HL table (read from the dealer excerpt, 2026-09-21):
 
-**Reading the two directions.** F1 is along the heel (every bolt in shear); uplift is
-perpendicular to the heel in one leg's plane (that leg's bolt in shear, the other leg pried).
-The legs are equal and identically bolted, so the force perpendicular to the heel in the
-OTHER leg's plane is the uplift case mirrored — read at 740, and flagged as a reading.
+| row | ga | W1/W2 | L | D1 | D2 | D3 | bolts | DF/SP uplift | F1 |
+|---|---|---|---|---|---|---|---|---:|---:|
+| HL33 | 7 | 3-1/4 | 2-1/2 | 1-1/4 | — | 2 | 2 x 1/2" | 740 | 1,040 |
+| HL35 | 7 | 3-1/4 | 5 | 1-1/4 | 2-1/2 | 2 | 4 x 1/2" | 740 | 1,310 |
 
-**Wet service.** The tie is exterior KDAT; this house grades every exterior wood connection
-wet (roof_beam C_M 0.85, the L50Z at C_M 0.70). NDS 2018 Table 11.3.3, dowel-type,
-in-service MC > 19%: **C_M 0.70** → F1 728, uplift 518 lb.
+At C_D 1.6, HDG to order. Fn 3: centred on a member face at least as wide as the angle.
+Fn 4: members >= 3-1/2" thick. Fn 6: loads are for one connector; uplift may be doubled for
+two; **lateral may not be doubled**. Fn 7: a lag of equal diameter >= 5" may replace the bolt
+in the carried member. Wood-to-wood only; nothing published on concrete.
 
-**Line 1, the stem (x = 7.125 / 9.4583', y = 43.6771').** Each carrier keeps its KDAT 4x tie
-block (3-1/2" cube, 1/4" off the concrete). A pair of HL33HDG, one each block face, heel
-N-S: wood leg bolted through the block, concrete leg on the stem top, one 1/2" x 4" Titen HD
-(mechanically galvanized, ESR-2713 §5.20: exterior exposure permitted) on the 6" core's
-centreline. Per joint, along the wall (E-W) = across the heel = mirrored uplift, one part,
-**518**; across the wall (N-S) = along the heel = F1, one part (fn 6), **728**.
+**Reading the two directions** (unchanged). F1 is along the heel; uplift is perpendicular
+to it in one leg's plane. The legs are equal and identically bolted, so perpendicular to the
+heel in the OTHER leg's plane is the uplift case mirrored — read at 740, flagged a reading.
+
+**Service, per joint** (NDS 2018 §11.3.3, Table 11.3.3: C_M 0.70 for dowel-type fasteners
+only where in-service MC > 19%). Authored on the parts (`Connector.service`), not by tag.
+- **Stem: WET, C_M 0.70.** Over a pour, under an open-jointed deck.
+  HL35: F1 917, uplift 518 lb.
+- **`W-G-W`: DRY, C_M 1.0 — a service-condition judgement the engineer of record
+  confirms.** Vertical faces under `RF-BW-CANOPY`, behind the screen, reached only by
+  windblown moisture. The NDS Commentary (C4.1.4) is quoted as calling members "protected
+  from the weather by roofs … but occasionally subjected to windblown moisture, such as for
+  covered porches … generally considered dry" — **secondhand**; the primary was not read.
+  HL33: F1 1,040, uplift 740 lb.
+
+**Line 1, the stem (x = 7.125 / 9.4583', y = 43.7813').** Each carrier's KDAT 4x tie block
+grows to 3-1/2" x 3-1/2" x **5" N-S** (the HL35's length; fn 3), still 1/4" off the concrete.
+A pair of HL35HDG, one each block face, heel N-S; two 1/2" bolts through the block. The
+concrete leg's holes are D2 = 2-1/2" apart, **under ESR-2713's s_min of 3"**, so **one** 1/2"
+x 4" Titen HD per leg and the other hole EMPTY — a detail **for the engineer of record**.
+**Angle and block sit 1-1/4" NORTH of the core centreline** (y 43.6771 → 43.7813), so the
+anchored hole (D1 = 1-1/4" off the leg's end) lands ON the centreline, 3" from each face. The
+leg's north 3/4" oversails the core over the interior 2-1/2" EPS: **non-bearing — trim the
+foam flush, don't crush it.** North, not south: the exterior stem-top Z and coil band run
+across this RO.
+Per joint, E-W (across the heel) = mirrored uplift, one part, **518**; N-S (along the heel)
+= F1, one part, **917**.
 
 **Line 2, `W-G-W` (x = 6.1979', y = 43.1458').** Two HL33HDG stacked on the screen's north
-end post, east face (x = 6'-0" + 1-3/4" stud + 5/8" 303 ply), heel vertical, the other leg on
-the garage's south face at its SW corner, lags >= 5" through a KDAT filler flush with the
-corrugated into the corner pack. N-S (along `W-G-W`) is in both member legs' plane: uplift,
-doubled for the pair (fn 6), **1,036**. E-W: mirrored uplift, one part, **518**. The pair
-cannot go on the post's WEST face — that leg would run past the garage corner.
+end post, east face, heel vertical, into the garage corner pack through the existing KDAT
+filler. The end stud pack is two 2x4 plies, a **3" face** against the 3-1/4" leg (fn 3): a
+**4x KDAT filler** (3-1/2" face, 26-1/2" long, both angles) joins the pack. The east face
+does not move, so neither does the joint. N-S: uplift doubled for the pair, **1,480**; E-W:
+uplift, one part, **740**.
 
 ### 10b. What the ties carry
 
-ASD pressure on a solid face, the deck's C_f ceiling: `0.6 × 16.539 × 0.85 × 1.80 = 15.183
-psf`. **The deck's own wind now reads the landing's own edge band** (§10f): 7-1/4" joist +
-1" board = 0.6875', over 3.5833' (N-S wind) and 6.5729' (E-W wind); plus the two seat beams'
-7-1/4" faces to N-S wind, 2 × 0.6042 × 3.5833.
+Unchanged by this pass. ASD pressure on a solid face, the deck's C_f ceiling:
+`0.6 × 16.539 × 0.85 × 1.80 = 15.183 psf`. The deck's own wind reads the landing's edge band
+(§10f): 0.6875' over 3.5833' (N-S wind) and 6.5729' (E-W wind), plus the seat beams' faces.
 
 | load | axis | lb | acts at (x, y) ft |
 |---|---|---:|---|
@@ -1027,97 +1042,92 @@ psf`. **The deck's own wind now reads the landing's own edge band** (§10f): 7-1
 | `W-BW-SCREEN-SKIRT` face, 6.5729' × 1.125' | x | 112.27 | (5.7656, 39.9323) |
 | **E-W total** | | **588.38** | |
 | deck wind, N-S: (2.4635 + 4.3299) × 15.183 | y | **103.14** | (7.7917, 39.9323) |
-| `W-BW-SCREEN` share of `RF-BW-CANOPY` N-S (unchanged) | y | 980.74 | (6.0, 39.9323) |
+| `W-BW-SCREEN` share of `RF-BW-CANOPY` N-S | y | 980.74 | (6.0, 39.9323) |
 | **N-S total** | | **1,083.88** | |
 | guard, IRC R301.5, either end of the screen | any | 200 | (6.0, 36.6458) / (6.0, 43.2188) |
 
 ### 10c. Distribution — three joints
 
-Joints: W (6.1979, 43.1458), FC (7.125, 43.6771), FE (9.4583, 43.6771). Centroid (7.5938,
-43.5000); `J = Σ(dx² + dy²) = 5.8329 ft²`.
+W (6.1979, 43.1458), FC (7.125, 43.7813), FE (9.4583, 43.7813) — the stem joints moved north
+with their angles. Centroid (7.5938, 43.5694); `J = Σ(dx² + dy²) = 5.9139 ft²`.
+`X_i = Fx/3 − M dy_i/J`, `Y_i = Fy/3 + M dx_i/J` (X E-W, Y N-S).
 
-**N-S wind.** `M = 980.74 (6.0 − 7.5938) + 103.14 (7.7917 − 7.5938) = −1,563.1 + 20.4 =
-−1,542.6 lb-ft`; `X_i = Fx/3 − M dy_i/J`, `Y_i = Fy/3 + M dx_i/J` (X E-W, Y N-S):
+**N-S wind**, `M = 980.74 (6.0 − 7.5938) + 103.14 (7.7917 − 7.5938) = −1,542.6 lb-ft`:
 
 | joint | X | Y | along / cap + across / cap |
 |---|---:|---:|---|
-| W (wall runs y) | −93.67 | 730.45 | 730.45/1,036 + 93.67/518 = 0.705 + 0.181 = **0.886** |
-| FC (wall runs x) | 46.83 | 485.27 | 46.83/518 + 485.27/728 = 0.090 + 0.667 = 0.757 |
-| FE | 46.83 | −131.84 | 0.272 |
+| W (wall runs y) | −110.50 | 725.40 | 725.40/1,480 + 110.50/740 = 0.490 + 0.149 = **0.640** |
+| FC (wall runs x) | 55.25 | 483.57 | 55.25/518 + 483.57/917 = 0.107 + 0.527 = 0.634 |
+| FE | 55.25 | −125.08 | 0.107 + 0.136 = 0.243 |
 
-The eccentricity is gone in the sense that matters: the screen's 981 lb now has a joint on
-its own line, and the governing N-S joint is that one at 0.89.
-
-**E-W wind.** `M = −(39.9323 − 43.5)(588.38) = +2,099.2 lb-ft`:
+**E-W wind**, `M = −(39.9323 − 43.5694)(588.38) = +2,140.0 lb-ft`:
 
 | joint | X | Y | ratio |
 |---|---:|---:|---|
-| W | 323.58 | −502.34 | 502.34/1,036 + 323.58/518 = 0.485 + 0.625 = **1.110** |
-| FC | 132.40 | −168.70 | 0.487 |
-| FE | 132.40 | 671.03 | 132.40/518 + 671.03/728 = 0.256 + 0.922 = **1.177** |
+| W | 349.41 | −505.10 | 505.10/1,480 + 349.41/740 = 0.341 + 0.472 = 0.814 |
+| FC | 119.48 | −169.62 | 0.231 + 0.185 = 0.416 |
+| FE | 119.48 | 674.72 | 119.48/518 + 674.72/917 = 0.231 + 0.736 = **0.966** |
 
-The E-W lever between the lines is 9.4583 − 6.1979 = **3.26'**, not the 3.5' the plan quoted:
-the pair sits on the end post's east face.
+**Guard at C_D 1.0** (caps over 1.6), 200 lb E-W at the screen's south end,
+`M = 200 × (43.5694 − 36.6458) = 1,384.7 lb-ft`: FE `X 17.07, Y 436.59` → 17.07/323.75 +
+436.59/573.13 = 0.053 + 0.762 = **0.815**; W `165.85, −326.83` → 326.83/925 + 165.85/462.5 =
+0.353 + 0.359 = 0.712.
 
-**Guard at C_D 1.0** (caps over 1.6). 200 lb E-W at the south end of the screen,
-`M = 200 × 6.8542 = 1,370.8 lb-ft`: FE `X 25.05, Y 438.21` → 25.05/323.75 + 438.21/455 =
-0.077 + 0.963 = **1.040**; W `149.90, −328.05` → 0.970.
+### 10d. Verdict — every row passes; E-W wind at FE governs at 0.966
 
-### 10d. Verdict — OVER at 1.18, down from 1.82, and C_M decides it
+| reading | N-S | E-W | guard | stem anchors |
+|---|---:|---:|---:|---:|
+| HL35 stem wet, hole on centreline + HL33 `W-G-W` dry (graded) | 0.640 | **0.966** (FE) | 0.815 | 0.750 |
+| superseded: the same, angle centred (anchor 1.75" off a face) | 0.620 | 0.987 | 0.842 | 1.132 |
+| superseded: HL33 everywhere, wet | 0.886 | 1.177 | 1.040 | 0.761 |
 
-| reading | N-S | E-W | guard |
-|---|---:|---:|---:|
-| HL33HDG x C_M 0.70 (graded) | 0.886 | **1.177** (FE) | **1.040** (FE) |
-| the same, dry (C_M 1.0) | 0.620 | 0.824 | 0.728 |
-
-Governing: E-W wind at `BM-BW-FE`, 1.18. `W-G-W`'s joint is 1.11 in the same case. **The
-design as chosen does not close; nothing is picked here.** What would, for the owner:
-
-1. **Dry service.** The tie sits under the canopy roof and the landing boards, 22" over grade.
-   If the engineer of record accepts in-service MC <= 19% at the stem (it is covered, but
-   under an open-jointed deck), C_M = 1.0 and every row passes (0.82 / 0.73).
-2. **HL43HDG / HL46HDG** (3 ga, 3/4" bolts): uplift 1,275, F1 1,445 / 1,680 (C-C-2024 p. 303)
-   — ~1.7x the HL33 — but fn 5 wants a 5-1/8" member (a 6x block at the stem; the screen's
-   end post would have to be a 6x). Outside the owner's 1/2"-bolt call.
-3. **A third joint on line 2** (a second pair at the W-G-W corner does not help — it is
-   the same plan point); or a joint on the carriers' other face of the stem (none: the
-   core is 6" deep).
+HL35's F1 closes the wood side at FE; the dry call at W takes W off 1.11; the north shift
+puts the anchor back 3" from each face. Moving the joints 1-1/4" north moves the distribution
+a little (FE 0.987 → 0.966). Two things stay the engineer of record's to confirm: **W's dry
+service** and **the stem anchor detail** (one anchor per leg, the other hole empty, the
+3/4" overhang on the interior EPS).
 
 ### 10e. The stem anchors — ACI 318-19 Ch. 17 (`deck_tie_anchor.py`)
 
-ESR-2713 Tables 1A/2A/3, Titen HD 1/2" at h_nom 4": h_ef = l_e = 2.99", k_cr 17, N_sa 20,130,
-V_sa 7,455, k_cp 2.0, pullout N/A, c_min 1-3/4", s_min 3"; cracked, condition B. Per joint,
-two anchors on the core centreline: **c = 3.0"** to each face, **s = 3.5 + 2 × 2 = 7.5"**
-along the stem. f'c 5,000 (`GARAGE_ICF_6`).
+ESR-2713 Tables 1A/2A/3, Titen HD 1/2" at h_nom 4" (the deepest the 1/2" is listed at): h_ef =
+l_e = 2.99", k_cr 17, N_sa 20,130, V_sa 7,455, k_cp 2.0, c_min 1-3/4", s_min 3"; cracked,
+condition B. f'c 5,000 (`GARAGE_ICF_6`). **The layout, from where the angle is put:** the
+anchored hole is the one nearest the core centreline — with the 1-1/4" shift, ON it, **c =
+3.0" to each face**. Between the pair's anchors along the stem `s = 3.5 + 2 × 2 = 7.5"` (D3
+each side). Arms: bolts at D3 = 2" over the concrete; the shorter arm from the anchor to a leg
+end 1-1/4"; the toe arm 3-1/4 − 2 = 1-1/4".
 
 ```
-N_b = 17 √5,000 × 2.99^1.5 = 17 × 70.711 × 5.1702          = 6,215.2 lb
-A_Nc = (3 + 3) × (4.485 + 7.5 + 4.485) = 6 × 16.47          = 98.82 in²   (A_Nco 80.46)
-ψ_ed,N = 0.7 + 0.3 × 3 / 4.485                              = 0.9007
-V_b = min(7 (5.98)^0.2 √0.5 √5,000 3^1.5, 9 √5,000 3^1.5)    = min(2,600.7, 3,306.8) = 2,600.7 lb
-φV_cbg, toward a face = 0.70 × (16.5 × 4.5 / 40.5) × 2,600.7 = 0.70 × 1.8333 × 2,600.7 = 3,337.5 lb
-along the stem (§17.7.2.1(c)): 2 × 3,337.5                   = 6,675.1 lb
+N_b = 17 √5,000 × 2.99^1.5                                   = 6,215.0 lb
+A_Nc = (3 + 3) × (4.485 + 7.5 + 4.485) = 6 × 16.47            = 98.82 in²   (A_Nco 80.46)
+ψ_ed,N = 0.7 + 0.3 × 3 / 4.485                                = 0.9007
+V_b = min(7 (5.98)^0.2 √0.5 √5,000 3^1.5, 9 √5,000 3^1.5)      = min(2,600.7, 3,306.8)
+φV_cbg, toward a face = 0.70 × (16.5 × 4.5 / 40.5) × 2,600.7  = 3,337.6 lb
+along the stem (§17.7.2.1(c)): 2 × 3,337.6                    = 6,675.1 lb
 ```
 
 Worst case, FE under E-W wind, strength = ASD / 0.6: along the heel (N-S, toward a face)
-`671.03 / 0.6 = 1,118.4 lb`, across it (E-W) `132.40 / 0.6 = 220.7 lb`.
+`674.72 / 0.6 = 1,124.5 lb`, across it `119.48 / 0.6 = 199.1 lb`.
 
 ```
-per anchor from the heel force: 1,118.4 / 2 × 2 / 1.25       = 894.7 lb
-one anchor from the pry:         220.7 × 2 / 1.25            = 353.1 lb
-group tension N = 2 × 894.7 + 353.1                          = 2,142.5 lb
-e'_N = 353.1 / 2,142.5 × 3.75 = 0.618"  ψ_ec,N = 1/(1 + 0.618/4.485) = 0.8789
-φN_cbg = 0.65 × 1.2282 × 0.8789 × 0.9007 × 6,215.2          = 3,927.7 lb   → 0.5455
-shear: 1,118.4 / 3,337.5 + 220.7 / 6,675.1 = 0.3351 + 0.0331 = 0.3682
-§17.8.3: (0.5455 + 0.3682) / 1.2                             = 0.7614
+per anchor from the heel force: 1,124.5 / 2 × 2 / 1.25       = 899.6 lb
+one anchor from the pry:         199.1 × 2 / 1.25            = 318.6 lb
+group tension N = 2 × 899.6 + 318.6                          = 2,117.9 lb
+e'_N = 318.6 / 2,117.9 × 3.75 = 0.564"  ψ_ec,N = 1/(1 + 0.564/4.485) = 0.8883
+φN_cbg = 0.65 × 1.2282 × 0.8883 × 0.9007 × 6,215.0          = 3,969.4 lb   → 0.5336
+shear: 1,124.5 / 3,337.6 + 199.1 / 6,675.1 = 0.3369 + 0.0298 = 0.3668
+§17.8.3: (0.5336 + 0.3668) / 1.2                             = 0.7503
 ```
 
-Steel (1,248 / 13,085 in tension, 571 / 4,473 in shear) and pryout (1,140 / 9,625) are far
-below. **The concrete side passes at 0.76**; the edge (1.75/3.0) and spacing (3/7.5)
-detailing rows are met. Stem out-of-plane (§10e of the first pass): the governing N-S force
-fell from 1,675 to 671 lb, so its 0.66 bound falls to ~0.26. Not graded: the tie block's
-screws into the carrier and the filler's lags into the corner pack (seal items), and
-`W-G-W` receiving 730 lb more in its own plane — the garage's bracing, not this item.
+Steel (1,218 / 13,085 tension, 571 / 4,473 shear) and pryout (1,142 / 9,625) are far below.
+Edge 3.0 >= 1.75 and spacing 7.5 >= 3 pass as detailing. **The concrete side passes at
+0.750.** Centred, the anchor stood 1.75" off a face and read 1.132 (near-face breakout
+φV_cbg 1,622 lb); options weighed for that case — a deeper 1/2" Titen HD (not listed),
+crediting the stem's single centreline mat (it lies behind the anchor, not between it and
+the face: no ψ_c,V or Condition A), an adhesive anchor (breakout-bound ~1.03-1.06) — did not
+close it. Not graded: the block's screws into the carrier, the fillers' fastening, and
+`W-G-W` receiving 725 lb in its own plane. Stem out-of-plane: the governing N-S force is 675
+lb, so the first pass's 0.66 bound (at 1,675 lb) scales to ~0.27.
 
 ### 10f. What this pass closed that was outside the tie
 
@@ -1131,9 +1141,17 @@ screws into the carrier and the filler's lags into the corner pack (seal items),
 - Still open, not this pass's: the deck's q_h is taken at the lowest spot elevation on the
   site (the sunken garden), 40' away — conservative, and `balcony_wind`'s rule for every deck.
 
-### 10g. History — the first pass (HGAM10 on the stem alone)
+### 10g. History — the superseded passes
 
-Two HGAM10 pairs (FL11473-R4 Table 1, SPF/HF: F1 630, F2 460 away, 920 for the pair) on the
+**HL35 at the stem with the angle CENTRED on the core (superseded the same day):** N-S
+0.620, E-W 0.987, guard 0.842 — but the anchored hole 1-1/4" off the centreline stood 1.75"
+from a face and the anchors read **1.132**. The owner moved the angle 1-1/4" north.
+
+**HL33HDG everywhere, wet (superseded the same day):** N-S 0.886, E-W 1.177 at FE, guard
+1.040, stem anchors 0.761 (one Titen HD on the core centreline, c = 3.0"). The 2.5"-long
+HL33's single hole sat on the centreline; the HL35's two do not.
+
+**The first pass (HGAM10 on the stem alone).** Two HGAM10 pairs (FL11473-R4 Table 1, SPF/HF: F1 630, F2 460 away, 920 for the pair) on the
 carriers only, 2'-4" apart: the screen's 981 lb landed 1'-1 1/2" west of the line and the
 couple put 1,675 lb on `BM-BW-FC` — **1.82** N-S, 1.60 E-W, 1.30 guard. Simpson also bars the
 HGAM's Titen Turbo screws from exterior exposure (C-C-2021 p. 252). Retired 2026-09-21.
@@ -1160,4 +1178,6 @@ HGAM's Titen Turbo screws from exterior exposure (C-C-2021 p. 252). Retired 2026
   https://icc-es.org/wp-content/uploads/report-directory/ESR-2713.pdf
 - Simpson FL11473-R4 §9 Limitations item 4:
   https://www.floridabuilding.org/upload/PR_Tech_Docs/FL11473_R4_AE_SIM201701%20Sealed%202017-10-19.pdf
-- ACI 318-19 §17.6.2, §17.7.2, §17.7.3, §17.8; AWC NDS 2018 Table 11.3.3 (C_M), §11.3.6 (γ).
+- ACI 318-19 §17.6.2, §17.7.2, §17.7.3, §17.8; AWC NDS 2018 §11.3.3 and Table 11.3.3 (C_M),
+  §11.3.6 (γ); NDS Commentary C4.1.4 (covered porches "generally considered dry" —
+  secondhand, via a search excerpt of the commentary; not read from the primary).
