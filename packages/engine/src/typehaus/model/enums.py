@@ -521,6 +521,9 @@ class ConnectorKind(Enum):
     # directly on a wood beam is a third joint, and the tie that makes it is a different
     # part with a different rating.
     TENSION_TIE = "tension_tie"            # post-to-framing tie: a face strap or an L-angle
+    # A treated block a tie part fastens to where the tied member cannot meet it. Lumber,
+    # not a tie: it joins nothing to the other structure, so ``deck_tie_basis`` skips it.
+    TIE_BLOCK = "tie_block"
     STANDING_SEAM_CLAMP = "standing_seam_clamp"  # S-5!-style seam clamp on the siding
     # A pipe/conduit/leader strap that reaches the building THROUGH an exposed-fastener
     # panel, on a standoff block, rather than by gripping a seam. Its own kind because the

@@ -20,8 +20,10 @@ Then ACI 318-19 §6.6.4.5.2's ``δ`` and §6.2.5.3's ceiling of 1.4 on second-or
   stiffness over a strip no wider than the column (no spread credited).
 
 **The soil is a band unless a report says otherwise.** ``Site.lateral_subgrade_modulus``
-present → graded at it. Absent → ``n_h = 2 S1 / δ_ref`` (IBC §1806.3.4 pairs twice the
-tabular lateral bearing with the motion at grade) and ``k_v = q_a / δ_ref``, run at both ends
+with an ``n_h`` → graded at it, at unit width (Terzaghi); a ``presumed`` one (a published
+table row) grades as draft and says so, and the gap register keeps it open for a report.
+Absent → ``n_h = 2 S1 / δ_ref`` (IBC §1806.3.4 pairs twice the tabular lateral bearing with
+the motion at grade) and ``k_v = q_a / δ_ref``, run at both ends
 of ``soil.MOTION_AT_ALLOWABLE_BAND_IN``; the verdict publishes only where both agree.
 
 **Oracle.** ``houses/catlin/notes/column_base_rotation.md``, hand-worked in a separate pass;
@@ -53,8 +55,9 @@ from typehaus.engineering.soil import (
 KIND = "base_rotation"
 BASIS = ("ACI 318-19 §6.6.4.5.2 and §6.2.5.3 on a base spring; a rigid pole on a Winkler "
          "profile anchored on IBC 2018 §1806.3.4; ACI 318-19 Table 6.6.3.1.1(a) for a wall")
-#: 1: the kind as introduced, 2026-09-20.
-BASIS_VERSION = "1"
+#: 1: the kind as introduced, 2026-09-20. 2: a stated n_h (report or presumed table row)
+#: is Terzaghi's, width-independent — the pole is integrated at 1 ft (2026-09-21).
+BASIS_VERSION = "2"
 
 #: ACI 318-19 §6.2.5.3 — Mu including second-order effects may not exceed 1.4 Mu first-order.
 MOMENT_RATIO_LIMIT = 1.4
@@ -177,8 +180,9 @@ class _Point:
 
 def _moduli(ctx: EngineeringContext) -> list[tuple[str, float | None]]:
     """``(label, δ_ref in or None for measured)`` — stiff end first."""
-    if measured(ctx) is not None:
-        return [("the measured modulus", None)]
+    report = measured(ctx)
+    if report is not None:
+        return [("the presumed n_h" if _presumed(report) else "the measured modulus", None)]
     return [(f"δ_ref {d:g}\"", d) for d in MOTION_AT_ALLOWABLE_BAND_IN]
 
 
@@ -209,10 +213,7 @@ def _record(ctx: EngineeringContext, pier: _Pier, base) -> EngineeringRecord:  #
         graded_d, graded = points[-1]
     turn = _turning_point(ctx, base, column) if report is None else None
     notes = list(base.notes) + [
-        (f"THE SOIL IS MEASURED: {report.n_h_pci:g} pci n_h"
-         f"{'' if report.k_v_pci is None else f', {report.k_v_pci:g} pci k_v'} from "
-         f"{report.source} ({report.basis}). A measured modulus governs, and no band "
-         f"is run." if report is not None else
+        (_stated_soil(report) if report is not None else
          "THE SOIL IS PRESUMPTIVE: no geotechnical report is on file, so the modulus is "
          "anchored on the code — n_h = 2 S1 / δ_ref (IBC §1806.3.4 pairs twice Table "
          "1806.2's lateral bearing with the motion at grade) and k_v = q_a / δ_ref — and "
@@ -241,7 +242,10 @@ def _record(ctx: EngineeringContext, pier: _Pier, base) -> EngineeringRecord:  #
         Quantity("phi_Mn", column.phi_mn_lb_ft, "lb-ft", 1.0),
         Quantity("Pc_rigid", column.pc_rigid_lb, "lb", 1.0),
         Quantity("subgrade_modulus_pci", base.modulus_pci(ctx, graded_d), "pci", 0.001),
-        Quantity("subgrade_modulus_measured", 1.0 if report is not None else 0.0, "-", 0.5),
+        Quantity("subgrade_modulus_measured",
+                 1.0 if report is not None and not _presumed(report) else 0.0, "-", 0.5),
+        Quantity("n_h_presumed", 1.0 if report is not None and _presumed(report) else 0.0,
+                 "-", 0.5),
         Quantity("base_spring", graded.k_theta_lb_in, "lb-in/rad", 1e3),
         Quantity("spring_ratio_R", graded.r, "-", 0.001),
         Quantity("Pc_flexible", graded.pc_flex_lb, "lb", 1.0),
@@ -267,6 +271,24 @@ def _record(ctx: EngineeringContext, pier: _Pier, base) -> EngineeringRecord:  #
         limit_states=states, notes=tuple(notes),
         summary=(f"{pier.tag}: the fixed base as a SPRING — R {graded.r:.2f} at "
                  f"{graded.label}; {worst.name} governs at {worst.ratio:.2f}"))
+
+
+def _presumed(report) -> bool:  # type: ignore[no-untyped-def]
+    return getattr(report, "provenance", "measured") == "presumed"
+
+
+def _stated_soil(report) -> str:  # type: ignore[no-untyped-def]
+    k_v = "" if report.k_v_pci is None else f", {report.k_v_pci:g} pci k_v"
+    head = (f"THE SOIL IS PRESUMED, NOT MEASURED: n_h {report.n_h_pci:g} pci{k_v} is a "
+            f"published table row for the presumed soil — {report.source} ({report.basis}). "
+            f"It grades this record as draft; a geotechnical report on this parcel confirms "
+            f"or replaces it, and the gap register keeps that open."
+            if _presumed(report) else
+            f"THE SOIL IS MEASURED: {report.n_h_pci:g} pci n_h{k_v} from {report.source} "
+            f"({report.basis}). A measured modulus governs, and no band is run.")
+    return (head + " A stated n_h is Terzaghi's (k_h = n_h z / B): the reaction per unit "
+            "length does not grow with width, so the pole is integrated at 1 ft and the pad "
+            "earns no width credit.")
 
 
 def _turning_point(ctx: EngineeringContext, base, column: _Column) -> float | None:  # type: ignore[no-untyped-def]

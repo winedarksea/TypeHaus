@@ -140,12 +140,17 @@ SITE = Site(
     # ** A PRESUMED k_v, NOT A REPORT (2026-09-21). ** Bowles (1997) Table 9-1, "silty medium
     # dense sand", 24,000-48,000 kN/m3; GM shares IBC Table 1806.2's class with SM, and the LOW
     # end is taken (softer = more settlement). 24,000 / 271.447 = 88.4 pci. Not width-corrected.
-    # Read by thermal_break's settlement row (free body §11e); n_h is not stated here.
+    # Read by thermal_break's settlement row (free body §11e).
+    # ** AND A PRESUMED n_h (2026-09-21). ** Terzaghi (1955), n_h for piles in sand, row "dry
+    # or moist, LOOSE": 7 tons/ft3 = 14,000 / 1,728 = 8.10 pci. GM read as the loosest
+    # cohesionless row, and ABOVE groundwater (none established; submerged loose is 4 tons/ft3
+    # = 4.63 pci, under RE/RNE's 5.2 turn). Read by base_rotation (column_base_rotation.md §10).
     lateral_subgrade_modulus=SubgradeModulus(
+        n_h_pci=8.10,
         k_v_pci=88.4,
         provenance="presumed",
-        source="Bowles, Foundation Analysis and Design 5th ed. (1997) Table 9-1, silty medium dense sand, low end 24,000 kN/m3 (as reproduced at strand7.com/strand7r3help/Content/Topics/SpecialTopics/SpecialModulusSubgradeReaction.htm)",
-        basis="published table row for the presumed soil class (GM, IBC Table 1806.2 class 4 with SM); no geotechnical report",
+        source="k_v: Bowles, Foundation Analysis and Design 5th ed. (1997) Table 9-1, silty medium dense sand, low end 24,000 kN/m3 (as reproduced at strand7.com/strand7r3help/Content/Topics/SpecialTopics/SpecialModulusSubgradeReaction.htm); n_h: Terzaghi (1955) Geotechnique 5(4):297-326, n_h for piles in sand, dry or moist, loose, 7 tons/ft3 (as reproduced in Table 2 of gnpgroup.com.my/wp-content/uploads/Publication/2009_11.pdf)",
+        basis="published table rows for the presumed soil class (GM, IBC Table 1806.2 class 4 with SM; n_h at the loosest cohesionless row, above groundwater); no geotechnical report",
     ),
     # Ground snow load, **MN Rules 1303.1700**. The IRC Table R301.2(1) citation once used
     # here named "Hennepin County / Minneapolis" — the right number from the wrong document

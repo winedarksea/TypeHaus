@@ -114,9 +114,19 @@ class PoleBase:
             return float(measured(ctx).n_h_pci) / PCI_PER_LB_FT3  # type: ignore[union-attr]
         return POLE_MOBILISED_FACTOR * self.s1 / (delta_in / 12.0)
 
+    def soil_profile(self, delta_in: float | None, motion: bool = False) -> spring.Profile:
+        """The profile the soil acts on. A STATED n_h (report or presumed table row) is
+        Terzaghi's: ``k_h = n_h z / B``, so the reaction per unit length ``n_h z y`` does not
+        grow with width — every segment is integrated at 1 ft (the 12" shaft exactly; the
+        pad gets no width credit). The presumptive band is IBC pressure, which does."""
+        profile = self.motion_profile if motion else self.profile
+        if delta_in is not None:
+            return profile
+        return tuple((z0, z1, 1.0) for z0, z1, _b in profile)
+
     def k_theta(self, ctx: EngineeringContext, delta_in: float | None, column: _Column
                 ) -> float:
-        pole = spring.winkler_pole(self.n_h(ctx, delta_in), self.profile, 1.0,
+        pole = spring.winkler_pole(self.n_h(ctx, delta_in), self.soil_profile(delta_in), 1.0,
                                    self.head_above_grade_ft)
         tip_in = 12.0 * pole.at_height_ft(self.head_above_grade_ft)
         return column.length_in ** 2 / tip_in
@@ -153,7 +163,8 @@ class PoleBase:
         if self.shear is None:
             return "No derived base shear resolves for this column, so no motion is printed."
         load, h = self.shear
-        pole = spring.winkler_pole(self.n_h(ctx, delta_in), self.motion_profile, load, h)
+        pole = spring.winkler_pole(self.n_h(ctx, delta_in),
+                                   self.soil_profile(delta_in, motion=True), load, h)
         above = self.head_above_grade_ft * 12.0
         arm = h * 12.0 - above   # the load's height above the column head
         flex = (load * column.length_in ** 3 / (3.0 * column.ei_lb_in2)

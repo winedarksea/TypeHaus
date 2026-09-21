@@ -52,8 +52,9 @@ from typehaus.engineering.registry import EngineeringContext, calc, keys, oracle
 KIND = "column_head_joint"
 BASIS = ("ACI 318-19 §22.5, §22.7.4, §22.8.3, Table R6.2.5; the head connector's published "
          "allowables (Post.head_connector)")
-#: 1: the kind as introduced, 2026-09-20.
-BASIS_VERSION = "1"
+#: 1: the kind as introduced, 2026-09-20. 2: the connector's own combined-load rule is a
+#: graded row where its document states one (FL11473 §9 item 4), 2026-09-21.
+BASIS_VERSION = "2"
 
 oracled_by(KIND, Oracle(note="north_entry_piers.md", section="§9",
                         test="tests/test_column_head_joint.py"))
@@ -225,13 +226,24 @@ def _connector_states(ctx: EngineeringContext, pier: Any, connector: Any, wind: 
         f"§2.4.1(7) 0.6D + 0.6W on {pier.roof_tributary_ft2:.1f} ft2 of roof"))
     if lateral is not None and wind > 0.0:
         share = 1 if connector.set_rated else connector.tie_count
-        unity = (max(uplift, 0.0) / share) / connector.uplift_lb + wind / lateral
+        up_ratio = (max(uplift, 0.0) / share) / connector.uplift_lb
+        unity = up_ratio + wind / lateral
+        rule = getattr(connector, "interaction_rule", None)
+        if rule:
+            # Uplift and the wind lateral are one 0.6D + 0.6W case; the lateral is taken at
+            # the LOWER directional value, so parallel + perpendicular is bounded by it.
+            states.append(LimitState(
+                "connector combined, uplift + lateral", unity, 1.0, "",
+                f"{rule}; ({uplift:,.1f} / {share}) / {connector.uplift_lb:,.0f} = "
+                f"{up_ratio:.3f} + {wind:,.1f} / {lateral:,.0f} = {wind / lateral:.3f}, "
+                f"the lateral at the lower of F1/F2 so no direction needs knowing"))
+            return
         inputs.append(Quantity("combined_unity_unverified", unity, "", 0.001))
         notes.append(
-            f"COMBINED LOADING IS NOT GRADED: the document's recorded footnotes state no "
-            f"interaction rule. A linear one would read (uplift / {share}) / "
-            f"{connector.uplift_lb:,.0f} + lateral / {lateral:,.0f} = {unity:.3f}, on two "
-            f"stacked surrogate bounds — a reviewer should settle whether the rule applies.")
+            f"COMBINED LOADING IS NOT GRADED: the document states no interaction rule "
+            f"(HeadConnector.interaction_rule is unset). A linear one would read "
+            f"(uplift / {share}) / {connector.uplift_lb:,.0f} + lateral / {lateral:,.0f} = "
+            f"{unity:.3f} — a reviewer should settle whether it applies.")
 
 
 def _credit(connector: Any) -> str:

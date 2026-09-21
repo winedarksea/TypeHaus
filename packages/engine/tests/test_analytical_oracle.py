@@ -9,6 +9,7 @@ verified), applied to a model instead of a number.
 
 from __future__ import annotations
 
+import math
 from pathlib import Path
 
 import pytest
@@ -144,3 +145,40 @@ def test_the_gaps_name_what_the_note_says_is_not_modelled(solved):
                  "rafter/RF-GARAGE"):
         assert item in joined
     assert "lateral_uplift/" not in joined
+
+
+def test_the_landing_ties_are_springs_on_their_members(solved):
+    """§1 / §3e: each deck_tie joint is a DX+DY spring on the member it ties, at NDS
+    §11.3.6's slip modulus x 2 bolts, equal — the stiffness the record distributes by."""
+    load, model, _, _ = solved
+    from typehaus.engineering.deck_tie_basis import wall_ties
+
+    ectx = load.ctx.engineering.context
+    joints = wall_ties(ectx, ectx.plan.by_tag("FS-BW-FLOOR"))
+    springs = [s for s in model.support_springs if "deck_tie/FS-BW-FLOOR" in s.basis]
+    assert len(springs) == 2 * len(joints) == 6
+    assert {s.dof for s in springs} == {"DX", "DY"}
+    lb_per_in = {round(s.stiffness_n_m * N_TO_LB * 0.0254) for s in springs}
+    assert lb_per_in == {190_919}  # 2 x 270,000 x 0.5^1.5
+    nodes = {s.node for s in springs}
+    assert any("BM-BW-FC:tie" in n for n in nodes) and any("BM-BW-FE:tie" in n for n in nodes)
+    # The screen's tie lands on the sill it stands on, at the sill's north end.
+    assert any("BM-BW-SCSILL" in n and "tie:W-G-W" in n for n in nodes)
+    assert not [g for g in model.gaps if "lands on no member" in g]
+
+
+def test_the_ties_carry_no_gravity_but_the_graph_hands_them_a_thrust(solved):
+    """§3e: the block stands 1/4" off the stem, so no VERTICAL reaction reaches a tie. The
+    graph does hand them a horizontal one under gravity — the seat beams' end pieces rise
+    0.6' to the carriers over 1.125' (the work-point convention), a thrust the building
+    does not have. A finding, pinned so it cannot grow unseen: ~110 lb live at BM-BW-FC."""
+    _, model, result, _ = solved
+    nodes = {s.node for s in model.support_springs if "deck_tie/" in s.basis}
+    assert nodes
+    worst = 0.0
+    for node in nodes:
+        for case in (LoadCaseKind.DEAD.value, LoadCaseKind.LIVE.value):
+            reaction = result.reactions[(node, case)]
+            assert abs(reaction.fz_n) * N_TO_LB < 1e-6
+            worst = max(worst, math.hypot(reaction.fx_n, reaction.fy_n) * N_TO_LB)
+    assert worst == pytest.approx(110.3, abs=5.0)

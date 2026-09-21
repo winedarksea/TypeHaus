@@ -881,10 +881,14 @@ and download only. **No lateral capacity is published for that joint, so those t
 are INCOMPLETE naming it** — an ACI 318 Ch. 17 anchor-shear design of the base's bolt, or a
 different tie.
 
-**Not graded, and the number is printed:** FL11473 Table 3's notes state no combined-load
-rule. If Simpson's general linear interaction applied, the canopy columns would read
-`433.3 / 2,560 + 410.66 / 1,350 = 0.169 + 0.304 = 0.473` — the pair's uplift is the set's,
-so it is not halved. (The HGAM10 pair read 1.263 here.)
+**Combined loading — graded since 2026-09-21.** FL11473-R4 §9 (Limitations) item 4 is the
+report's own rule for every product in it, the embedded truss anchors of Tables 2 and 3
+included: `(Design Uplift / Allowable Uplift) + (Lateral Parallel / Allowable) + (Lateral
+Perpendicular / Allowable) < 1.0`. It was missed in the footnotes because it sits in the
+Limitations. The canopy columns: `433.3 / 2,560 + 410.66 / 1,350 = 0.169 + 0.304 = 0.473`
+— the pair's uplift is the set's, so it is not halved, and the lateral is taken at the lower
+of F1/F2 so its direction need not be known. (The retired HGAM10 pair read 1.263 here.)
+The report's alternate (each direction <= 0.75 x its allowable) also holds: 0.169, 0.304.
 
 ### 9c. Uplift — 0.6D + 0.6W, canopy columns only
 
@@ -966,130 +970,173 @@ rest 0.237 on the guard at C_D 1.0).
 > columns, so they have no head joint to grade. The rows above for them are history. The
 > canopy columns and the balcony corners are unchanged — but read §10f first.
 
-## 10. The landing's tie to the garage stem (oracles `engineering/deck_tie.py`)
+## 10. The landing's two tie lines (oracles `engineering/deck_tie.py`, `deck_tie_anchor.py`)
 
-**Written 2026-09-21, by hand, before the module.** Owner decision: tie the landing to the
-garage's ICF stem so the four landing piers stop being the lateral system. The carriers
-`BM-BW-FC`/`-FE` (x = 7'-1 1/2" / 9'-5 1/2") cross the stem with 3 3/4" between their soffit
-(−8 1/4") and its top (−1'-0"): `BM-BW-FC` over `W-GF-S1`, `BM-BW-FE` over `W-GF-S-DR`.
+**Written 2026-09-21, by hand, before the module; reworked the same day for the owner's fix.**
+The landing is tied so its four piers stop being the lateral system. First pass: an HGAM10
+pair on each carrier over the garage stem, OVER at 1.82 (history below, §10g). Owner's
+decision: **a second tie line on the screen's own line into `W-G-W`, wood to wood through the
+corner cladding; HDG framing angles wood to wood, Simpson HL heavy angles (HDG) where a tie
+lands on concrete, 1/2" bolts or screws.**
 
-### 10a. The part, and why it needs a block
+### 10a. The parts
 
-`HGAM10`, FL11473-R4 Table 1 (sealed 2017-10-19; the R5 table of 2020-10-13 prints the same
-row). SPF/HF column: uplift 585, **F1 630**, F2 795 into / **460 away** (fn 5); fn 1 already
-+60% for wind; fn 4 a member ≥ 2 1/2" where installed each side; fn 6 Titen 2 edge ≥ 1 1/2";
-fn 8 f'c ≥ 2,500. Figure 2: masonry leg on the wall TOP, wood leg on the member's side; F1
-along the wall, F2 along the member. Figure 1: 3" x 3" legs, 3 1/2" long.
+**HL33HDG**, Simpson C-C-2024 p. 303 (the HL table; C-C-2019 p. 287 printed 910 / 1,580 for
+the same row and is superseded): 7 ga, legs 3-1/4" x 3-1/4", 2-1/2" long, one 1/2" bolt per
+leg 2" off the heel (D3), HDG to order. DF/SP **uplift 740, F1 1,040 lb** at C_D 1.6 per
+connector. Fn 4: members >= 3-1/2" thick. Fn 6: allowable loads are for a single connector;
+uplift may be doubled for two; connectors both sides for lateral both ways; **lateral may
+not be doubled**. Fn 7: a lag of equal diameter >= 5" may replace the bolt in the carried
+member. The table is wood-to-wood; Simpson publishes no HL value on concrete. One part serves
+both lines — it IS Simpson's HDG framing angle at this size.
 
-A 3" wood leg cannot reach a soffit 3 3/4" up. Each carrier gets a KDAT 4x **tie block**,
-3 1/2" deep, screwed up into its soffit, stopping 1/4" off the concrete (nothing bears on the
-garage). The pair screws to the block's faces (3 1/2" ≥ fn 4's 2 1/2"); the masonry legs sit
-on the 6" core, 5 1/2" inboard of the node line (2 1/2" foam + 3"), y = 43.2188 + 0.4583 =
-**43.6771'**. Four parts, `CN-BW-STEMTIE-F{C,E}-{A,B}` (`params/landing_tie.py`).
+**Reading the two directions.** F1 is along the heel (every bolt in shear); uplift is
+perpendicular to the heel in one leg's plane (that leg's bolt in shear, the other leg pried).
+The legs are equal and identically bolted, so the force perpendicular to the heel in the
+OTHER leg's plane is the uplift case mirrored — read at 740, and flagged as a reading.
 
-**Per joint.** F2 (along the carrier): the two gussets mirror each other across the plane F2
-lies in, so they share it as they share uplift — **2 × 460 = 920 lb**. F1 (across the
-carrier): one face pushes, one pulls, and the model cannot say which takes it — **630 lb**,
-not doubled. FL11473-R4 §9 item 4: `F1/630 + F2/920 ≤ 1` where both act.
+**Wet service.** The tie is exterior KDAT; this house grades every exterior wood connection
+wet (roof_beam C_M 0.85, the L50Z at C_M 0.70). NDS 2018 Table 11.3.3, dowel-type,
+in-service MC > 19%: **C_M 0.70** → F1 728, uplift 518 lb.
 
-### 10b. What the tie line carries
+**Line 1, the stem (x = 7.125 / 9.4583', y = 43.6771').** Each carrier keeps its KDAT 4x tie
+block (3-1/2" cube, 1/4" off the concrete). A pair of HL33HDG, one each block face, heel
+N-S: wood leg bolted through the block, concrete leg on the stem top, one 1/2" x 4" Titen HD
+(mechanically galvanized, ESR-2713 §5.20: exterior exposure permitted) on the 6" core's
+centreline. Per joint, along the wall (E-W) = across the heel = mirrored uplift, one part,
+**518**; across the wall (N-S) = along the heel = F1, one part (fn 6), **728**.
 
-ASD wind pressure on a solid face, the deck's own C_f ceiling: `0.6 × 16.539 × 0.85 × 1.80 =
-15.183 psf` (q at 13.12' above the −9.120' ground — Exposure B, K_z 0.57 below 15').
+**Line 2, `W-G-W` (x = 6.1979', y = 43.1458').** Two HL33HDG stacked on the screen's north
+end post, east face (x = 6'-0" + 1-3/4" stud + 5/8" 303 ply), heel vertical, the other leg on
+the garage's south face at its SW corner, lags >= 5" through a KDAT filler flush with the
+corrugated into the corner pack. N-S (along `W-G-W`) is in both member legs' plane: uplift,
+doubled for the pair (fn 6), **1,036**. E-W: mirrored uplift, one part, **518**. The pair
+cannot go on the post's WEST face — that leg would run past the garage corner.
+
+### 10b. What the ties carry
+
+ASD pressure on a solid face, the deck's C_f ceiling: `0.6 × 16.539 × 0.85 × 1.80 = 15.183
+psf`. **The deck's own wind now reads the landing's own edge band** (§10f): 7-1/4" joist +
+1" board = 0.6875', over 3.5833' (N-S wind) and 6.5729' (E-W wind); plus the two seat beams'
+7-1/4" faces to N-S wind, 2 × 0.6042 × 3.5833.
 
 | load | axis | lb | acts at (x, y) ft |
 |---|---|---:|---|
-| deck wind, E-W (`pier_basis`'s own bands, §9b) | x | 110.08 | sheet centroid (7.7917, 39.9323) |
+| deck wind, E-W: 0.6875 × 6.5729 × 15.183 | x | **68.61** | (7.7917, 39.9323) |
 | `W-BW-SCREEN` face, 6.5729' × 4.0833' | x | 407.50 | (6.0, 39.9323) |
 | `W-BW-SCREEN-SKIRT` face, 6.5729' × 1.125' | x | 112.27 | (5.7656, 39.9323) |
-| **E-W total** | | **629.84** | |
-| deck wind, N-S | y | 310.56 | (7.7917, 39.9323) |
-| `W-BW-SCREEN` share of `RF-BW-CANOPY` N-S, 0.82456 × 1,189.41 (`entry_column_base_fixity.md` §7c, the panel's 0.70 I_g end) | y | 980.74 | (6.0, 39.9323) |
-| **N-S total** | | **1,291.31** | |
-| guard, IRC R301.5, at either end of `W-BW-SCREEN` | any | 200 | (6.0, 36.6458) / (6.0, 43.2188) |
+| **E-W total** | | **588.38** | |
+| deck wind, N-S: (2.4635 + 4.3299) × 15.183 | y | **103.14** | (7.7917, 39.9323) |
+| `W-BW-SCREEN` share of `RF-BW-CANOPY` N-S (unchanged) | y | 980.74 | (6.0, 39.9323) |
+| **N-S total** | | **1,083.88** | |
+| guard, IRC R301.5, either end of the screen | any | 200 | (6.0, 36.6458) / (6.0, 43.2188) |
 
-The deck wind is `pier_basis`'s number and inherits its band reading — see §10f.
+### 10c. Distribution — three joints
 
-### 10c. Distribution — a bolt group, and the couple is the demand
+Joints: W (6.1979, 43.1458), FC (7.125, 43.6771), FE (9.4583, 43.6771). Centroid (7.5938,
+43.5000); `J = Σ(dx² + dy²) = 5.8329 ft²`.
 
-Joints at x = 7.125 and 9.4583, both at y = 43.6771; centroid x̄ = 8.2917, spacing 2.3333',
-`J = 2 × 1.16667² = 2.7222 ft²`. Elastic method, equal stiffness:
-`X_i = Fx/2 − M·dy_i/J = Fx/2` (dy = 0), `Y_i = Fy/2 + M·dx_i/J`, with `M` about the centroid.
+**N-S wind.** `M = 980.74 (6.0 − 7.5938) + 103.14 (7.7917 − 7.5938) = −1,563.1 + 20.4 =
+−1,542.6 lb-ft`; `X_i = Fx/3 − M dy_i/J`, `Y_i = Fy/3 + M dx_i/J` (X E-W, Y N-S):
 
-**N-S wind.**
+| joint | X | Y | along / cap + across / cap |
+|---|---:|---:|---|
+| W (wall runs y) | −93.67 | 730.45 | 730.45/1,036 + 93.67/518 = 0.705 + 0.181 = **0.886** |
+| FC (wall runs x) | 46.83 | 485.27 | 46.83/518 + 485.27/728 = 0.090 + 0.667 = 0.757 |
+| FE | 46.83 | −131.84 | 0.272 |
+
+The eccentricity is gone in the sense that matters: the screen's 981 lb now has a joint on
+its own line, and the governing N-S joint is that one at 0.89.
+
+**E-W wind.** `M = −(39.9323 − 43.5)(588.38) = +2,099.2 lb-ft`:
+
+| joint | X | Y | ratio |
+|---|---:|---:|---|
+| W | 323.58 | −502.34 | 502.34/1,036 + 323.58/518 = 0.485 + 0.625 = **1.110** |
+| FC | 132.40 | −168.70 | 0.487 |
+| FE | 132.40 | 671.03 | 132.40/518 + 671.03/728 = 0.256 + 0.922 = **1.177** |
+
+The E-W lever between the lines is 9.4583 − 6.1979 = **3.26'**, not the 3.5' the plan quoted:
+the pair sits on the end post's east face.
+
+**Guard at C_D 1.0** (caps over 1.6). 200 lb E-W at the south end of the screen,
+`M = 200 × 6.8542 = 1,370.8 lb-ft`: FE `X 25.05, Y 438.21` → 25.05/323.75 + 438.21/455 =
+0.077 + 0.963 = **1.040**; W `149.90, −328.05` → 0.970.
+
+### 10d. Verdict — OVER at 1.18, down from 1.82, and C_M decides it
+
+| reading | N-S | E-W | guard |
+|---|---:|---:|---:|
+| HL33HDG x C_M 0.70 (graded) | 0.886 | **1.177** (FE) | **1.040** (FE) |
+| the same, dry (C_M 1.0) | 0.620 | 0.824 | 0.728 |
+
+Governing: E-W wind at `BM-BW-FE`, 1.18. `W-G-W`'s joint is 1.11 in the same case. **The
+design as chosen does not close; nothing is picked here.** What would, for the owner:
+
+1. **Dry service.** The tie sits under the canopy roof and the landing boards, 22" over grade.
+   If the engineer of record accepts in-service MC <= 19% at the stem (it is covered, but
+   under an open-jointed deck), C_M = 1.0 and every row passes (0.82 / 0.73).
+2. **HL43HDG / HL46HDG** (3 ga, 3/4" bolts): uplift 1,275, F1 1,445 / 1,680 (C-C-2024 p. 303)
+   — ~1.7x the HL33 — but fn 5 wants a 5-1/8" member (a 6x block at the stem; the screen's
+   end post would have to be a 6x). Outside the owner's 1/2"-bolt call.
+3. **A third joint on line 2** (a second pair at the W-G-W corner does not help — it is
+   the same plan point); or a joint on the carriers' other face of the stem (none: the
+   core is 6" deep).
+
+### 10e. The stem anchors — ACI 318-19 Ch. 17 (`deck_tie_anchor.py`)
+
+ESR-2713 Tables 1A/2A/3, Titen HD 1/2" at h_nom 4": h_ef = l_e = 2.99", k_cr 17, N_sa 20,130,
+V_sa 7,455, k_cp 2.0, pullout N/A, c_min 1-3/4", s_min 3"; cracked, condition B. Per joint,
+two anchors on the core centreline: **c = 3.0"** to each face, **s = 3.5 + 2 × 2 = 7.5"**
+along the stem. f'c 5,000 (`GARAGE_ICF_6`).
+
 ```
-M = 980.74 (6.0 − 8.2917) + 310.56 (7.7917 − 8.2917) = −2,247.53 − 155.28 = −2,402.82 lb-ft
-Y_FC = 645.65 + (−2,402.82)(−1.16667)/2.7222 = 645.65 + 1,029.78 = 1,675.43 lb
-Y_FE = 645.65 − 1,029.78 = −384.13 lb
-FC:  1,675.43 / 920 = 1.821   OVER
+N_b = 17 √5,000 × 2.99^1.5 = 17 × 70.711 × 5.1702          = 6,215.2 lb
+A_Nc = (3 + 3) × (4.485 + 7.5 + 4.485) = 6 × 16.47          = 98.82 in²   (A_Nco 80.46)
+ψ_ed,N = 0.7 + 0.3 × 3 / 4.485                              = 0.9007
+V_b = min(7 (5.98)^0.2 √0.5 √5,000 3^1.5, 9 √5,000 3^1.5)    = min(2,600.7, 3,306.8) = 2,600.7 lb
+φV_cbg, toward a face = 0.70 × (16.5 × 4.5 / 40.5) × 2,600.7 = 0.70 × 1.8333 × 2,600.7 = 3,337.5 lb
+along the stem (§17.7.2.1(c)): 2 × 3,337.5                   = 6,675.1 lb
 ```
-**E-W wind.** `M = −(39.9323 − 43.6771) × 629.84 = +2,358.63 lb-ft`; `X = 314.92` each;
-`Y = ±2,358.63 × 1.16667 / 2.7222 = ±1,010.84`:
+
+Worst case, FE under E-W wind, strength = ASD / 0.6: along the heel (N-S, toward a face)
+`671.03 / 0.6 = 1,118.4 lb`, across it (E-W) `132.40 / 0.6 = 220.7 lb`.
+
 ```
-FC:  314.92/630 + 1,010.84/920 = 0.4999 + 1.0987 = 1.599   OVER
+per anchor from the heel force: 1,118.4 / 2 × 2 / 1.25       = 894.7 lb
+one anchor from the pry:         220.7 × 2 / 1.25            = 353.1 lb
+group tension N = 2 × 894.7 + 353.1                          = 2,142.5 lb
+e'_N = 353.1 / 2,142.5 × 3.75 = 0.618"  ψ_ec,N = 1/(1 + 0.618/4.485) = 0.8789
+φN_cbg = 0.65 × 1.2282 × 0.8789 × 0.9007 × 6,215.2          = 3,927.7 lb   → 0.5455
+shear: 1,118.4 / 3,337.5 + 220.7 / 6,675.1 = 0.3351 + 0.0331 = 0.3682
+§17.8.3: (0.5455 + 0.3682) / 1.2                             = 0.7614
 ```
-**Guard at C_D 1.0** (the row over its 1.6: F1 393.75, F2 575). 200 lb E-W at the south end,
-arm 43.6771 − 36.6458 = 7.0313': `Y = 200 × 7.0313 × 1.16667 / 2.7222 = 602.68`, `X = 100`:
-`100/393.75 + 602.68/575 = 0.254 + 1.048 = **1.302**`. N-S at x = 6.0: `Y_FC = 100 + 196.43 =
-296.43`, 0.516.
 
-**Stem f'c** 5,000 psi on both (`GARAGE_ICF_6`) against fn 8's 2,500: 0.50, detailing.
+Steel (1,248 / 13,085 in tension, 571 / 4,473 in shear) and pryout (1,140 / 9,625) are far
+below. **The concrete side passes at 0.76**; the edge (1.75/3.0) and spacing (3/7.5)
+detailing rows are met. Stem out-of-plane (§10e of the first pass): the governing N-S force
+fell from 1,675 to 671 lb, so its 0.66 bound falls to ~0.26. Not graded: the tie block's
+screws into the carrier and the filler's lags into the corner pack (seal items), and
+`W-G-W` receiving 730 lb more in its own plane — the garage's bracing, not this item.
 
-### 10d. Verdict — the tie as the plan drew it is OVER at 1.82
+### 10f. What this pass closed that was outside the tie
 
-It is not the landing's own wind (310 lb). It is the **screen**: 981 lb arriving at x = 6.0,
-1'-1 1/2" west of the west joint, on a tie line only 2'-4" long, so the couple puts
-**1.48 × 981** on `BM-BW-FC`. And E-W is the same story sideways: 630 lb arriving 3'-9" south
-of the tie line makes a 2,359 lb-ft couple the same 2'-4" has to resist. Neither is a
-property of the part. No choice of HGAM10 reading closes it:
+- **FL11473 §9 item 4 is graded now on the canopy heads** (`column_head_joint`, §9b): the
+  HETA20Z pair reads `433.3 / 2,560 + 410.66 / 1,350 = 0.169 + 0.304 = 0.473`. The 1.263
+  was the retired HGAM10 pair's. The HETA20Z passes; no new head part is needed.
+- **The landing's deck wind reads its own edge band** (`deck_tie_basis.deck_wind`): a fascia
+  counts only where its path lies on the deck's sheet; otherwise the deck's joist + board edge
+  (`balcony_wind.deck_edge_band`). E-W 110.08 → 68.61, N-S 310.56 → 103.14. The balcony
+  still reads `TR-SG-FASCIA` (its own) and its base moments do not move.
+- Still open, not this pass's: the deck's q_h is taken at the lowest spot elevation on the
+  site (the sunken garden), 40' away — conservative, and `balcony_wind`'s rule for every deck.
 
-| reading | N-S (FC) | E-W (FC) |
-|---|---:|---:|
-| SPF/HF, F2 away, pair shares F2 (graded) | **1.82** | **1.60** |
-| DF/SP column (the carriers ARE KDAT southern pine): F1 875, F2 away 640 × 2 | 1.31 | 1.15 |
-| DF/SP, the pair oriented opposite (795/1,105 into + 460/640 away) — orientation the model cannot hold | 0.96 | 0.94 |
+### 10g. History — the first pass (HGAM10 on the stem alone)
 
-**What would close it, for the owner — not decided here:**
-1. **A second tie line on the screen's own line**, x = 6'-0", into the garage's west wall
-   (`W-G-W`, which is collinear with the screen and is a shear wall in exactly this
-   direction). Through the corner cladding, so wood-to-wood with its own detail. It removes
-   the N-S eccentricity outright and gives the E-W couple a 3.5' lever instead of 2.3'.
-2. **Route the canopy's N-S shear into the garage roof** through the existing LSTA24 joint
-   line (`CN-BW-JOINT-*`), so the screen stops being the canopy's west lateral line. That
-   reverses the 2026-09-10 "the garage joint is a TIE, not the lateral system" call.
-3. **A designed steel tie** (anchored angle, ACI 318 Ch. 17 plus NDS bolts) sized for
-   ~1.7 k across the stem at the west carrier — engineered, not a catalog read.
-
-The carriers alone cannot do it with any HGAM10 count: the stem core is 6" deep, one gusset
-per face is all a crossing holds, and the carriers cannot move apart (the RO jambs and the
-west stem's board fix both).
-
-### 10e. Not graded, with hand bounds
-
-- **The stem, out of plane.** 1,675 lb across a 6" core at its top, 22" above the slab/grade
-  that props it. Strength: `M_u = 1,675 × 1.833 / 0.6 = 5,118 lb-ft` over a 45° spread,
-  `b = 2 × 22 + 3.5 = 47.5"`; #4 @ 16" centred (`d = 3.0"`), `A_s = 0.594 in²`,
-  `a = 0.594 × 60,000 / (0.85 × 5,000 × 47.5) = 0.177"`,
-  `φM_n = 0.9 × 0.594 × 60,000 × (3.0 − 0.088) / 12 = 7,784 lb-ft` — 0.66. Shear
-  `2,792 / (0.75 × 2 √5,000 × 47.5 × 3.0 = 15,115)` = 0.18. Not the governing link.
-- **The tie block's screws** into the carrier carry the joint force in shear across the
-  3" × 3 1/2" contact; their schedule is a seal item.
-- **The wood path** — sill hangers, seat beams in weak-axis bending, the carriers' bearing on
-  the seats — is assumed to deliver each load to the carriers.
-- **ABU66SS lateral / ACI 17 breakout** at `PT-BW-W`/`-GW`'s heads: no longer asked (§9 is
-  withdrawn for those two), so the ~3.7 k breakout bound is not worked here.
-
-### 10f. Two things this pass found that are outside the tie
-
-- **FL11473-R4 §9 item 4 IS the combined-load rule §9b said no footnote states.** It sits in
-  the report's Limitations, not the table footnotes: "(Design Uplift / Allowable Uplift) +
-  (Lateral Parallel / Allowable) + (Lateral Perpendicular / Allowable) < 1.0". §9b's own
-  printed number for the canopy heads, `0.370 + 0.893 = 1.263`, is therefore the governing
-  reading of `column_head_joint/PT-BW-RE`/`-RNE`, and it is OVER. Not changed in this pass.
-- **`pier_basis`'s deck wind reads `TR-SG-FASCIA`** — the sunken garden's fascia — as this
-  landing's edge band (0.75' deep over 21.5' N-S / 9.67' E-W runs), via `balcony_wind.nearest`.
-  The landing is 3.58' × 6.57'; its real band is roughly a third of that. Conservative, and
-  small beside the screen, but it is the wrong element.
+Two HGAM10 pairs (FL11473-R4 Table 1, SPF/HF: F1 630, F2 460 away, 920 for the pair) on the
+carriers only, 2'-4" apart: the screen's 981 lb landed 1'-1 1/2" west of the line and the
+couple put 1,675 lb on `BM-BW-FC` — **1.82** N-S, 1.60 E-W, 1.30 guard. Simpson also bars the
+HGAM's Titen Turbo screws from exterior exposure (C-C-2021 p. 252). Retired 2026-09-21.
 
 ## Sources
 
@@ -1107,3 +1154,10 @@ west stem's board fix both).
 - Minn. R. 1303.1600 — frost depth by zone; Zone II is named to include Ramsey County, this
   parcel's own (it names Hennepin too — the depth is the same 42" for both).
 - `plans/north-gable-extension.md` — the 90–101 psf drift screen this note agrees with.
+- Simpson Strong-Tie C-C-2024 p. 303, HL heavy angle table and fns 2-8 (excerpt:
+  https://cdn.shopify.com/s/files/1/0398/5188/4705/files/HL_Heavy_Angle_and_Gusset.pdf); C-C-2019 p. 287 for the superseded row.
+- ICC-ES ESR-2713 (Titen HD), rev. 2026-03, Tables 1A, 2A, 3 and §5.20:
+  https://icc-es.org/wp-content/uploads/report-directory/ESR-2713.pdf
+- Simpson FL11473-R4 §9 Limitations item 4:
+  https://www.floridabuilding.org/upload/PR_Tech_Docs/FL11473_R4_AE_SIM201701%20Sealed%202017-10-19.pdf
+- ACI 318-19 §17.6.2, §17.7.2, §17.7.3, §17.8; AWC NDS 2018 Table 11.3.3 (C_M), §11.3.6 (γ).

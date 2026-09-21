@@ -80,6 +80,7 @@ from typehaus.hardware.catalog import (
     AllowableLoads,
     StructuralHardware,
 )
+from typehaus.library.hardware_ties import TIE_HARDWARE
 
 _SIMPSON = "Simpson Strong-Tie"
 
@@ -1518,7 +1519,8 @@ HGAM10_MASONRY_GUSSET = StructuralHardware(
     # interior. No ZMAX/HDG/SS HGAM exists, and G90 against treated wood misses IRC R317.3.1.
     # catlin used sixteen at exterior column heads until 2026-09-21 and retyped them to the
     # cast-in HETA20Z below; the record stays for a protected joint and as a documented
-    # backup (`houses/catlin/notes/column_head_connector_options.md`).
+    # backup (`houses/catlin/notes/column_head_connector_options.md`). Its last four (the
+    # landing's stem ties) went to HL33HDG angles the same day (`hardware_ties.py`).
     allowable=AllowableLoads(
         uplift_lb=585.0,
         lateral_f1_lb=630.0,
@@ -2039,6 +2041,7 @@ STRUCTURAL_HARDWARE: tuple = (
     THROUGH_PANEL_PIPE_STRAP,
     POCKET_FRAME_KIT_1500PF,
     POCKET_FRAME_KIT_HEAVY,
+    *TIE_HARDWARE,
 )
 
 

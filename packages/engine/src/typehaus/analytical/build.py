@@ -23,6 +23,7 @@ from typehaus.analytical import members as _members
 from typehaus.analytical import scope as _scope
 from typehaus.analytical import shells as _shells
 from typehaus.analytical import supports as _supports
+from typehaus.analytical import ties as _ties
 from typehaus.analytical.graph import AnalyticalModel
 
 
@@ -51,12 +52,12 @@ def build_analytical_model(ctx: Any) -> AnalyticalModel:
         node_loads=tuple(load_set.node_loads),
         combinations=tuple(load_set.combinations),
         plates=tuple(shell_set.plates),
-        support_springs=tuple(shell_set.springs),
+        support_springs=tuple(shell_set.springs) + _ties.springs(ctx, scope, graph.tie_node),
         plate_pressures=tuple(shell_set.pressures),
         scope=scope.item_ids,
         assumptions=tuple(assumptions),
         gaps=(_gaps(ctx, scope, graph, shell_set) + tuple(load_set.gaps)
-              + tuple(shell_set.gaps)),
+              + tuple(shell_set.gaps) + _ties.unplaced(ctx, scope, graph.tie_node)),
     )
 
 
