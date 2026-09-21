@@ -18,6 +18,7 @@ from typehaus.model.site import (
     SetbackSpec,
     SpotElevation,
     StreetFrontage,
+    SubgradeModulus,
     UtilityLine,
 )
 from typehaus.quantities import Angle, Length, Point2D, Temperature, deg
@@ -87,6 +88,9 @@ class Site(HausModel):
     # allowable. Stated apart from ``soil_class`` because a report routinely gives one
     # without the other.
     soil_bearing_psf: float | None = None
+    # A geotechnical report's subgrade stiffness. Absent, ``engineering/base_rotation`` runs a
+    # presumptive band anchored on IBC §1806.3.4; present, the measured value governs.
+    lateral_subgrade_modulus: SubgradeModulus | None = None
     # --- Parcel identity (title block, cover PROJECT DATA, C-101) -----------------------
     # Facts about the lot, not preferences about how to grade it, so they live on the model.
     # A permit reviewer reads all four off the title block before anything else.

@@ -398,39 +398,9 @@ def _extents_overlap(first, second) -> bool:
 # out wrong, and the plan behind this pass is explicit that a scope gap becomes a named
 # deferral and not a red.
 
-_declare(Deferral(
-    kind="base_rotation",
-    reason="the fixed base of a cast column is graded for STRENGTH — can the ground turn "
-           "its shear around (IBC 1807.3.2.1, `engineering/column_base.py`) — and not for "
-           "STIFFNESS. `deck_post`'s sway magnifier assumes a base that does not rotate at "
-           "all, and a real one does; the magnifier it computes is therefore a lower bound "
-           "on a column whose slenderness is already past ACI 318-19 §6.2.5's sway limit. "
-           "How the moment SPLITS between the buried shaft and the pad under it is the "
-           "same question from the other side, and this engine computes neither: they are "
-           "alternative load paths, not additive ones, and dividing them is a "
-           "soil-structure interaction problem",
-    designer="structural engineer of record, on a geotechnical report",
-    deliverable="a rotational spring for each fixed column base — the moment-rotation "
-                "relationship the shaft and its pad deliver together — and the sway "
-                "amplification that follows from it, or a statement that the base may be "
-                "taken as rigid and on what basis",
-    unblocks="S-100's column base detail and the canopy frame's drift check",
-    oracle=(Oracle(note="entry_column_base_fixity.md", section="§5",
-                   test="tests/test_column_base_calcs.py"),),
-))
-
-
-@keys("base_rotation")
-def _base_rotation_keys(ctx: EngineeringContext) -> list[str]:
-    """Every column `column_base` grades the strength of — the same set, the other question.
-
-    Keyed off that module's own scope rather than re-walked: one set, one definition, and a
-    column that leaves the strength check would otherwise keep a stiffness deferral nobody
-    would notice was orphaned.
-    """
-    from typehaus.engineering.column_base import enumerate_column_bases
-
-    return enumerate_column_bases(ctx)
+# NOTE — there is NO ``base_rotation`` deferral any more (2026-09-20): the base's STIFFNESS
+# is computed in ``engineering/base_rotation.py``, which carries this deferral's residue —
+# how the moment splits between the buried shaft and the pad — in its NOT-GRADED note.
 
 
 _declare(Deferral(

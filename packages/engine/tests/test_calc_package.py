@@ -207,6 +207,8 @@ def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
     #    that does not rotate; a real one does, and the split of moment between the buried
     #    shaft and the pad under it is the same question from the other side. Six items,
     #    one per column `column_base` grades — one set, one definition.
+    #    ** LEFT 2026-09-20: `engineering/base_rotation.py` computes it, on a presumptive
+    #    soil band, for these six and the balcony's four wall-borne columns. **
     #  - `column_head_joint/PT-*`: what a fixed-base column is fixed AGAINST at its head.
     #    catlin's canopy columns carry `BM-BW-RE` on a stainless standoff pack under an
     #    `HGAM10` gusset, a detail chosen for durability whose MOMENT transfer nobody has
@@ -214,8 +216,6 @@ def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
     #    that is a lateral system, the balcony's four included.
     assert {r.item_id for r in deferred} == {
         "column_support/W-SG-E1", "column_support/W-SG-W1",
-        *(f"base_rotation/{t}" for t in
-          ("PT-BW-E", "PT-BW-GE", "PT-BW-GW", "PT-BW-RE", "PT-BW-RNE", "PT-BW-W")),
         *(f"column_head_joint/{t}" for t in
           ("PT-BW-E", "PT-BW-GE", "PT-BW-GW", "PT-BW-RE", "PT-BW-RNE", "PT-BW-W",
            "PT-SG-BF1", "PT-SG-BF3", "PT-SG-BR1", "PT-SG-BR3")),

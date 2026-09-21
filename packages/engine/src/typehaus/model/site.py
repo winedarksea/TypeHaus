@@ -31,6 +31,24 @@ class MonthlyNormal(HausModel):
     rh: float  # monthly mean outdoor relative humidity, percent (0-100)
 
 
+class SubgradeModulus(HausModel):
+    """A geotechnical report's soil stiffness — the input ``engineering/base_rotation`` runs
+    a presumptive band for when it is absent.
+
+    ``n_h_pci`` is the constant of horizontal subgrade reaction, Terzaghi's ``n_h``: lateral
+    reaction per unit length ``p = n_h·z·y`` for a 12" pile, lb/in³. ``k_v_pci`` is the
+    vertical modulus FOR A STRIP FOOTING at its real width (not a 1-ft plate value). Both
+    are secants at service load; ``source`` names the report and ``basis`` how the value
+    was obtained (plate test, pressuremeter, correlation), because a correlated number
+    and a measured one are not the same fact.
+    """
+
+    n_h_pci: float
+    source: str
+    basis: str
+    k_v_pci: float | None = None
+
+
 class SetbackSpec(HausModel):
     """A required setback from one parcel edge (``parcel[edge] -> parcel[(edge+1) % n]``)."""
 
@@ -240,6 +258,7 @@ def _ring_to_points(ring: list, to_length) -> tuple[Point2D, ...]:
 
 for _name, _obj in (
     ("MonthlyNormal", MonthlyNormal),
+    ("SubgradeModulus", SubgradeModulus),
     ("SetbackSpec", SetbackSpec),
     ("SpotElevation", SpotElevation),
     ("ImperviousSurface", ImperviousSurface),

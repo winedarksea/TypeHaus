@@ -540,12 +540,13 @@ MN_2020 = JurisdictionProfile(
                        ("IRC R404.1.2", "ACI 318-19 §25.4.2"), blocking=False),
         # Added 2026-09-20: five kinds `haus engineering` listed and no check named, so
         # their deferrals were invisible here. Non-blocking while a kind is deferred; each
-        # flips to blocking in the commit that registers its calculation. Base STIFFNESS is
+        # flips to blocking in the commit that registers its calculation (base_rotation:
+        # `engineering/base_rotation.py`, 2026-09-20). Base STIFFNESS is
         # its own line beside base STRENGTH above: different questions, and a reviewer
         # wants both answered.
         PermitItemSpec("Fixed column base rotation (stiffness and sway)",
                        ("structural.base_rotation",),
-                       ("ACI 318-19 §6.6.4", "IBC 2018 §1806.3.4"), blocking=False),
+                       ("ACI 318-19 §6.6.4", "ACI 318-19 §6.2.5.3", "IBC 2018 §1806.3.4")),
         PermitItemSpec("Cast column head joint (connector, shear, torsion)",
                        ("structural.column_head_joint",),
                        ("ACI 318-19 §22.5", "ACI 318-19 §22.7", "ACI 318-19 §22.8"),
