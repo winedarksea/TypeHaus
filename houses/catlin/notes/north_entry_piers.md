@@ -792,11 +792,138 @@ minimum, and neither fires.
   `PT-BW-RNE`), against Sec 6.2.5's sway limit of 22. It is computed rather than neglected
   and the magnifier is small because `P_u` is 2% of capacity — but §6's non-sway reading of
   30.7 was taken for a different question and does not cover this one.
-- **The joint at the top.** An `SS316-SHIM-35` pack under an `HGAM10` gusset transfers the
-  header reaction; whether it transfers the moment this calculation assumes stays in the
-  column is not graded anywhere.
-- **Torsion and column shear.** Neither is graded. The section is large relative to a few
-  hundred pounds, but "large" is a judgement.
+- ~~**The joint at the top.**~~ ~~**Torsion and column shear.**~~ **Computed since
+  2026-09-20 — §9** (`column_head_joint/*`, all ten lateral-system columns).
+
+## 9. The column head joint (oracles `engineering/column_head_joint.py`)
+
+**Written 2026-09-20, by hand, before the module.** Ten columns: the six `PT-BW-*` here and
+the four balcony corners `PT-SG-B{R,F}{1,3}` (`notes/balcony_moment_columns.md`). Upstream
+numbers are quoted from the notes that oracle them and are not re-derived: the canopy's
+diaphragm split (`entry_column_base_fixity.md` §7), the deck storey shears (`pier_basis`,
+this note §6 and the balcony note §2), q_h (§8b). Section: 12" round, 5,000 psi, (4) #5,
+#3 ties @ 10", normalweight (λ = 1).
+
+### 9a. Head moment — the adopted model asks for none
+
+`deck_post` sways every one of these at `k = 2.1`: ACI 318-19 Table R6.2.5's fixed-base,
+free-top cantilever (theory 2.0, 2.1 for real fixity). A free top is a head with no
+rotational restraint, so the analysis the columns are graded on asks the joint for **no
+moment**. Graded as a detailing row, `2.0 / 2.1 = 0.952`: it goes over the day somebody
+adopts `k < 2.0`, which would be a claim that the head restrains rotation, and that claim
+would have to be paid for here.
+
+**One residue, named.** `deck_post` charges a guard column's base with 200 lb × (H + guard
+height). The guard's own lever above the deck is a couple a pinned head cannot pass; it
+comes back down through the deck's bearings as an axial pair. The base envelope stays the
+conservative bound; that axial pair is not graded (a few hundred pounds against columns at
+2-3% of axial capacity).
+
+### 9b. Lateral through the connector
+
+The joint's demand is the force the beam hands the head. Deck columns: the per-column storey
+shear, or IRC R301.5's 200 lb guard. Canopy columns: each column's share of the diaphragm's
+shear (`lateral_system.column_head_reactions`), **not netted** against the column's own drag
+reaction pushing the other way.
+
+Capacity: HGAM10, FL11473 Table 1 SPF/HF, **460 lb** — the AWAY-FROM F2. Not the 795 INTO
+figure and not doubled for a pair (`library/hardware.py` HGAM10: which gusset takes the load
+in which sense is not something the model can say). Footnote 1: the published value already
+carries C_D = 1.6 for wind. So a WIND demand is graded against 460, and a GUARD demand
+(occupancy live, NDS Table 2.3.2 C_D = 1.0) against **460 / 1.6 = 287.5 lb**.
+
+| column | wind, ASD | vs 460 | guard | vs 287.5 |
+|---|---|---|---|---|
+| `PT-BW-RE` / `-RNE` | 0.5 × 821.31 = **410.66** (E-W) | **0.893** | — | — |
+| `PT-BW-E` / `-GE` | 311 / 4 = 77.75 | 0.169 | 200 | **0.696** |
+| `PT-SG-B*` | 615 / 4 = 153.75 | 0.334 | 200 | **0.696** |
+| `PT-BW-W` / `-GW` | 77.75 | — | 200 | — |
+
+`PT-BW-W`/`-GW` have no HGAM10: their head is the `ABU66SS` under the 6x6 canopy column, and
+the seat beam hangs off that 6x6 (`params/breezeway.py`). ESR-1622 Table 2 publishes uplift
+and download only. **No lateral capacity is published for that joint, so those two records
+are INCOMPLETE naming it** — an ACI 318 Ch. 17 anchor-shear design of the base's bolt, or a
+different tie.
+
+**Not graded, and the number is printed:** FL11473's footnotes as the catalog records them
+(1, 4, 5, 8) state no combined-load rule. If Simpson's general linear interaction applied,
+the canopy columns would read `(433.3 / 2) / 585 + 410.66 / 460 = 0.370 + 0.893 = 1.263` —
+on two stacked surrogate bounds (§8c puts the lateral 2.1x over §27.3.2). A reviewer should
+settle whether the rule applies to this row.
+
+### 9c. Uplift — 0.6D + 0.6W, canopy columns only
+
+The engine's §8 surrogate, spent on the plan area: `0.6 × 18.335 × 0.85 × 1.80 = 16.832 psf`.
+Per column, 40.0 ft² of roof (half of 80.0): `16.832 × 40 = 673.3 lb` up, `0.6 × 10 × 40 =
+240 lb` down, **net 433.3 lb**. Against ONE HGAM10's 585 (the pair's second is unclaimed):
+**0.741**. `PT-BW-W`/`-GW` carry the same roof through their 6x6 and ABU66SS: 433.3 / 2,190
+= **0.198**. (§4's 272 lb used C_N ≈ 1.3; the bound here is 1.80.)
+
+The deck-only columns carry no roof (tributary 0, computed), and ASCE 7-16 assigns an
+open-jointed walking surface no uplift coefficient: no uplift row, a note instead.
+
+### 9d. Column shear — ACI 318-19 §22.5.5.1 with §22.5.2.2
+
+Circular: `b_w = D = 12"`, `d = 0.8D = 9.6"`. Table 22.5.5.1(a), N_u taken as zero
+(compression would only add): `V_c = 2 × 70.711 × 12 × 9.6 = 16,292 lb`, **φV_c = 12,219 lb**.
+(a) needs `A_v ≥ A_v,min`: a circular tie counts twice (§22.5.10.5.3), `A_v = 0.22 in²`;
+`A_v,min = max(0.75 × 70.711 × 12 × 10 / 60,000, 50 × 12 × 10 / 60,000) = 0.1061 in²` —
+detailing row **0.482**.
+
+Demand, strength level: canopy `496.17 / 0.6 = 827.0 lb` (**0.068**); guard columns
+`max(wind/0.6, 1.6 × 200) = 320 lb` (**0.026**).
+
+### 9e. Torsion — §22.7.4.1, and the headline that was wrong
+
+`T_th = λ√f'c (A_cp² / p_cp)`: `A_cp = 113.097 in²`, `p_cp = 37.699 in`, `A²/p = 339.29 in³`,
+`T_th = 23,992 lb-in = 1,999.3 lb-ft`, **φT_th = 0.75 × 1,999.3 = 1,499.5 lb-ft**.
+
+> ⚠ **The 2026-09-20 plan put φT_th at 124 lb-ft.** That is 1,499.5 / 12 — lb-in read as
+> lb-ft, a factor of twelve. It also took a VERTICAL reaction at a seat eccentricity as the
+> torque, and that makes BENDING about a horizontal axis, not torsion about the column's.
+> Torque needs a HORIZONTAL force off the axis in plan.
+
+The lever: the force enters where the tie's parts are, never inside the beam — each face of
+the beam (± half its width) and each authored tie position is an entry point, and the bound
+is `|r × F| ≤ F × lever`. For a force of known direction, `lever = |r ⊥ F|`; a guard or deck
+force is taken in any direction, `lever = |r|`.
+
+| column | F_u | lever | T_u | / φT_th |
+|---|---|---|---|---|
+| `PT-BW-RE` / `-RNE` | N-S along the header, 142.27 / 0.6 = 237.1 lb (E-W has lever 0: every entry point is on y = 0) | 2.25" | **44.5 lb-ft** | **0.030** |
+| `PT-SG-B*` | 320 lb | 1.75" | 46.7 lb-ft | 0.031 |
+| `PT-BW-E` / `-GE` / `-W` / `-GW` | 320 lb | 1.50" | 40.0 lb-ft | 0.027 |
+
+(`PT-BW-RE`'s y force: 0.11962 × 1,189.41 = 142.27 lb ASD.) Every column is **under 1/30 of
+threshold**; §9.6.4's closed hoops are not owed and the #3 ties' geometry is not tested.
+
+Seat eccentricity is still printed, as the bending it is: the pack (3.5" square, centred on
+the column) ∩ the beam's footprint. Where the beam ENDS at the column centre (`PT-BW-E/-GE/
+-W/-GW`, `PT-BW-RE`) the intersection's centroid sits **0.875"** off; where it runs through
+(`PT-BW-RNE`, `PT-SG-B*`) it is 0. `PT-BW-RE`: `5,196.8 × 0.875 / 12 = 378.9 lb-ft`.
+
+### 9f. Bearing at the seat — §22.8.3.2
+
+`A_1` = the pack, 3.5 × 3.5 = 12.25 in². `A_2` must be concentric and similar: the largest
+square about the pack's centre inside the 6" circle, half-side `6/√2 = 4.243"`, `A_2 = 72.0
+in²` (not the circle's 113.1). `√(72.0 / 12.25) = 2.42`, capped at **2**.
+`φB_n = 0.65 × 0.85 × 5,000 × 12.25 × 2 = 67,681 lb`.
+
+`P_u = 1.2 (D − shaft self-weight) + 1.6 (L or S)`:
+
+| column | D − self | L/S | P_u | / 67,681 |
+|---|---|---|---|---|
+| `PT-BW-RE` / `-RNE` | 2,351 − 1,951 = 400 | 2,948 | 5,196.8 | **0.077** |
+| `PT-BW-W` / `-GW` | 725 | 3,629 | 6,676.4 | **0.099** |
+| `PT-BW-E` / `-GE` | 170 | 681 | 1,293.6 | 0.019 |
+| `PT-SG-B*` | 483 | 1,933 | 3,672.4 | 0.054 |
+
+Wood crushing on the pack (NDS F_c⊥) is a different member's question and is not graded.
+
+### 9g. Verdicts
+
+Eight columns OK; governing lateral (canopy 0.893, the rest 0.696 on the guard at C_D 1.0).
+`PT-BW-W`/`-GW` INCOMPLETE on the unpublished lateral. Scope: SCREENING.
 
 ## Sources
 

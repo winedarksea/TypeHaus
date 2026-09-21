@@ -93,6 +93,7 @@ from typehaus import (
 )
 
 from typehaus.resolve.framing.profiles import cross_section
+from params.column_heads import HGAM10_PAIR_HEAD
 from params.roof_trim import _WALL_OUTBOARD_IN
 from params.sunken_garden_options import OPTION
 
@@ -3150,6 +3151,7 @@ for _i, _x in enumerate(_PILLAR_X, start=1):
                             vertical_reinforcement=(SPEC.corner_column_cage
                                                     if _is_corner else None),
                             reinforcement=(_MOMENT_COLUMN_CAGE if _is_corner else None),
+                            head_connector=(HGAM10_PAIR_HEAD if _is_corner else None),
                             assembly=("SUNKEN_GARDEN_COLUMN_12" if _is_corner
                                       else "POST_WHITE_PAINT_DF")))
 

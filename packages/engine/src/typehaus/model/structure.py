@@ -8,7 +8,7 @@ from typehaus.model.base import Element, HausModel
 from typehaus.model.elements import Wall
 from typehaus.model.enums import ConnectorKind, RailingKind
 from typehaus.model.rebar import ReinforcementSpec
-from typehaus.model.refs import FaceRef, PublishedSpan
+from typehaus.model.refs import FaceRef, HeadConnector, PublishedSpan
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Point2D, inch
 
@@ -481,6 +481,10 @@ class Post(Element):
     #: short-term and qualify. A sustained lateral case (an earth surcharge, say) does not,
     #: and the claim is REFUSED there, naming why, rather than silently honoured.
     isolated_pole_basis: str | None = None
+    #: The published allowables of the part tying this column's HEAD to the beam it carries,
+    #: quoted from the maker's document. Read by ``engineering/column_head_joint.py``; ``None``
+    #: on a column that is no lateral system, and INCOMPLETE on one that is.
+    head_connector: HeadConnector | None = None
 
 
 @register_element

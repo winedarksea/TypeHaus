@@ -216,9 +216,7 @@ def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
         "column_support/W-SG-E1", "column_support/W-SG-W1",
         *(f"base_rotation/{t}" for t in
           ("PT-BW-E", "PT-BW-GE", "PT-BW-GW", "PT-BW-RE", "PT-BW-RNE", "PT-BW-W")),
-        *(f"column_head_joint/{t}" for t in
-          ("PT-BW-E", "PT-BW-GE", "PT-BW-GW", "PT-BW-RE", "PT-BW-RNE", "PT-BW-W",
-           "PT-SG-BF1", "PT-SG-BF3", "PT-SG-BR1", "PT-SG-BR3")),
+        # `column_head_joint/*` left on 2026-09-20: computed (`column_head_joint.py`).
         "rafter/RF-BW-CANOPY", "rafter/RF-GARAGE",
         "veneer_beam/W-SG-BRKBM",
         "thermal_break_transfer/DW-SG-W1", "thermal_break_transfer/DW-SG-E1",

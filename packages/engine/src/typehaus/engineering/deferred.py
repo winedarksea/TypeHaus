@@ -433,32 +433,7 @@ def _base_rotation_keys(ctx: EngineeringContext) -> list[str]:
     return enumerate_column_bases(ctx)
 
 
-_declare(Deferral(
-    kind="column_head_joint",
-    reason="what a fixed-base column is fixed AGAINST at its head is a joint this engine "
-           "does not grade. catlin's canopy columns carry `BM-BW-RE` on an `SS316-SHIM-35` "
-           "stainless standoff pack under an `HGAM10` gusset angle, isolated with EPDM — a "
-           "detail chosen for durability and drainage, and one whose MOMENT transfer "
-           "nobody has computed. `column_base` and `deck_post` between them assume the "
-           "header reaction arrives and the moment stays in the column; whether a shim "
-           "stack and a gusset angle deliver that, or whether the joint is closer to a pin "
-           "than the analysis assumes, is a connection design. Column SHEAR and TORSION go "
-           "with it: the section is large relative to a few hundred pounds, but 'large' is "
-           "a judgement and not a calculation",
-    designer="structural engineer of record",
-    deliverable="a sealed connection detail at each cast column head — the fastener "
-                "schedule through the standoff pack, the moment and shear it transfers, "
-                "and the torsion the eccentric seat delivers to the column",
-    unblocks="S-400's column head detail and the canopy frame's lateral analysis",
-    oracle=(Oracle(note="north_entry_piers.md", section="§8d",
-                   test="tests/test_pier_calcs.py"),),
-))
-
-
-@keys("column_head_joint")
-def _column_head_keys(ctx: EngineeringContext) -> list[str]:
-    """Every cast column that IS a lateral system — the head of each one `deck_post` grades
-    in bending, whether it stands on a pad, a footing or a wall."""
-    from typehaus.engineering.pier_basis import cast_piers
-
-    return sorted(pier.tag for pier in cast_piers(ctx) if pier.lateral_system)
+# NOTE — there is NO ``column_head_joint`` deferral any more (2026-09-20). The head is
+# computed by ``engineering/column_head_joint.py``, and what its deliverable still asked of a
+# seal — the fastener schedule through the pack, and whether the joint really is the free
+# head the analysis assumes — is that module's NOT-GRADED note.
