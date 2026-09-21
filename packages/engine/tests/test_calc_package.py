@@ -186,7 +186,9 @@ def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
     # every one was invisible, which reads exactly like a thing with no problem.
     #  - `veneer_beam/W-SG-BRKBM`: a cast beam carrying a masonry wythe. It had a screening
     #    calculation and no record, because that calculation is a free function writing a
-    #    report — it reads no plan and nothing can be sealed against it.
+    #    report — it reads no plan and nothing can be sealed against it. REGISTERED on
+    #    2026-09-20 (`engineering/veneer_beam.py`); the masonry anchors it carried unnamed
+    #    left with it as `veneer_anchor/W-B-BRICK`, their own deferral.
     #  - `thermal_break_transfer/DW-*`: left 2026-09-20 — computed as a reserve in
     #    `engineering/thermal_break.py`, INCOMPLETE until a measured soil modulus exists.
     #  - `tiered_retaining/W-RG-*`: the apron. `foundation_unbalanced_fill` reads PASS on it
@@ -218,7 +220,7 @@ def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
           ("PT-BW-E", "PT-BW-GE", "PT-BW-GW", "PT-BW-RE", "PT-BW-RNE", "PT-BW-W")),
         # `column_head_joint/*` left on 2026-09-20: computed (`column_head_joint.py`).
         "rafter/RF-BW-CANOPY", "rafter/RF-GARAGE",
-        "veneer_beam/W-SG-BRKBM",
+        "veneer_anchor/W-B-BRICK",
         "tiered_retaining/W-RG-BLOCK",
         "tiered_retaining/W-RG-WEST", "tiered_retaining/W-RG-EAST",
         "tiered_retaining/W-RG-WEST-BALCONY", "tiered_retaining/W-RG-EAST-BALCONY"}

@@ -172,3 +172,105 @@ def check_veneer_beam(*, clear_span_ft: float = 19.0, bearing_in: float = 6.0,
             "design masonry anchors for the full insulated standoff",
         ),
     )
+
+
+# --- The registered record's arithmetic (2026-09-20, note §6) -----------------------------
+# Pure functions, inches/pounds in and out; ``engineering/veneer_beam.py`` reads the plan and
+# feeds them. ``check_veneer_beam`` above stays the report's screening at its literals.
+
+#: ACI 318-19 Table 24.2.4.1.3: ξ for sustained load of five years or more.
+SUSTAINED_XI = 2.0
+#: Es, psi (ACI 318-19 §20.2.2.2).
+STEEL_MODULUS_PSI = 29_000_000.0
+
+
+@dataclass(frozen=True)
+class TorsionDesign:
+    """ACI 318-19 §22.7.6/§22.7.7 at the full factored twist — no §22.7.3.2 redistribution."""
+
+    ph_in: float
+    aoh_in2: float
+    at_s_required: float        # in²/in, one leg
+    at_s_provided: float        # in²/in, one leg
+    combined_stress_psi: float  # §22.7.7.1(a) left side
+    stress_limit_psi: float     # §22.7.7.1(a) right side
+    hoop_spacing_max_in: float  # §9.7.6.3.3
+    transverse_min: float       # §9.6.4.2, (Av + 2At)/s
+    transverse_provided: float
+    al_required_in2: float      # max(§22.7.6.1b, §9.6.4.3)
+
+
+def torsion_design(*, tu_ftlb: float, vu_lb: float, width_in: float, depth_in: float,
+                   d_in: float, cover_in: float, hoop_diameter_in: float,
+                   hoop_leg_area_in2: float, hoop_spacing_in: float, fc_psi: float,
+                   fy_psi: float = 60000.0) -> TorsionDesign:
+    """Closed-hoop torsion design at θ 45° and the §9.6.4/§9.7.6 detailing rows (note §6c)."""
+    root = math.sqrt(fc_psi)
+    x1 = width_in - 2.0 * cover_in - hoop_diameter_in
+    y1 = depth_in - 2.0 * cover_in - hoop_diameter_in
+    ph, aoh = 2.0 * (x1 + y1), x1 * y1
+    tu_inlb = tu_ftlb * 12.0
+    at_s = tu_inlb / (2.0 * PHI_SHEAR_TORSION * 0.85 * aoh * fy_psi)
+    shear = vu_lb / (width_in * d_in)
+    twist = tu_inlb * ph / (1.7 * aoh ** 2)
+    base = 5.0 * root * width_in * depth_in / fy_psi
+    al_min = min(base - at_s * ph, base - 25.0 * width_in / fy_psi * ph)
+    return TorsionDesign(
+        ph_in=ph, aoh_in2=aoh, at_s_required=at_s,
+        at_s_provided=hoop_leg_area_in2 / hoop_spacing_in,
+        combined_stress_psi=math.hypot(shear, twist),
+        stress_limit_psi=PHI_SHEAR_TORSION * (2.0 * root + 8.0 * root),
+        hoop_spacing_max_in=min(ph / 8.0, 12.0),
+        transverse_min=max(0.75 * root * width_in / fy_psi, 50.0 * width_in / fy_psi),
+        transverse_provided=2.0 * hoop_leg_area_in2 / hoop_spacing_in,
+        al_required_in2=max(at_s * ph, al_min),
+    )
+
+
+@dataclass(frozen=True)
+class Deflection:
+    """ACI 318-19 §24.2 on a simple span: Ie by Table 24.2.3.5, λΔ by §24.2.4.1."""
+
+    cracking_moment_ftlb: float
+    cracked_inertia_in4: float
+    effective_inertia_in4: float
+    immediate_total_in: float
+    immediate_self_in: float
+    long_term_factor: float
+    after_attachment_in: float
+    span_in: float
+
+
+def deflection_after_attachment(*, span_ft: float, service_plf: float, self_plf: float,
+                                width_in: float, depth_in: float, d_in: float,
+                                tension_in2: float, compression_in2: float,
+                                fc_psi: float) -> Deflection:
+    """Long-term deflection under all sustained load plus the attached load's immediate share.
+
+    Table 24.2.2's "after attachment" quantity for a member supporting an element likely to
+    be damaged. Everything here is dead load, so all of it is sustained (note §6d).
+    """
+    ec = 57000.0 * math.sqrt(fc_psi)
+    n = STEEL_MODULUS_PSI / ec
+    ig = width_in * depth_in ** 3 / 12.0
+    mcr = 7.5 * math.sqrt(fc_psi) * ig / (depth_in / 2.0)          # in-lb, §19.2.3.1
+    half_b, na = width_in / 2.0, n * tension_in2
+    kd = (-na + math.sqrt(na * na + 4.0 * half_b * na * d_in)) / (2.0 * half_b)
+    icr = width_in * kd ** 3 / 3.0 + na * (d_in - kd) ** 2
+    span_in = span_ft * 12.0
+
+    def effective(plf: float) -> tuple[float, float]:
+        ma = plf * span_ft ** 2 / 8.0 * 12.0
+        ie = ig if ma <= 2.0 / 3.0 * mcr else (
+            icr / (1.0 - (2.0 / 3.0 * mcr / ma) ** 2 * (1.0 - icr / ig)))
+        return ie, 5.0 * (plf / 12.0) * span_in ** 4 / (384.0 * ec * ie)
+
+    ie_total, total = effective(service_plf)
+    _ie_self, own = effective(self_plf)
+    factor = SUSTAINED_XI / (1.0 + 50.0 * compression_in2 / (width_in * d_in))
+    return Deflection(
+        cracking_moment_ftlb=mcr / 12.0, cracked_inertia_in4=icr,
+        effective_inertia_in4=ie_total, immediate_total_in=total, immediate_self_in=own,
+        long_term_factor=factor, after_attachment_in=factor * total + (total - own),
+        span_in=span_in,
+    )

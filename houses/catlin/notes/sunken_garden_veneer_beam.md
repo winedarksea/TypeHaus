@@ -4,10 +4,11 @@
 **Structure:** `W-SG-BRKBM` (the beam), `W-B-BRICK` (the wythe it carries), `FT-B-S2` /
 `FT-B-S3` (the footings it is isolated from), `SG_VENEER_BEAM_14` (the assembly).
 **Written:** 2026-09-05, by hand.
-**Oracle for:** no engine calculation — **this note is the whole basis**. Nothing in
-`typehaus/engineering/` grades a spanning grade beam, a masonry-veneer tie, or a thermal
-break, so every number below is hand-worked and none of it is reproduced by the engine.
-The geometry it rests on IS pinned, by
+**Oracle for:** `engineering/veneer_beam.py` (`veneer_beam/W-SG-BRKBM`) since 2026-09-20 —
+§6 is worked at the model's own geometry and `tests/test_veneer_beam_calc.py` reproduces it;
+§3/§4 still oracle the report-side `engineering/sunken_garden/veneer_beam.py` at their literals.
+The masonry anchors (§5.1) are NOT computed: they are `veneer_anchor/W-B-BRICK`, a deferral.
+The geometry is pinned by
 `tests/test_catlin_contract_m3.py::test_the_veneer_beam_isolates_the_house_footing`.
 **Companions:** `notes/sunken_garden_court_free_body.md` — the court's retaining system,
 which this beam deliberately does **not** change.
@@ -307,6 +308,189 @@ corner continuity into the side walls (§5.2) is still the engineer's.
    is unambiguously better and it is not a number.
 4. **Whether the beam helps the retaining walls.** It does not. See the banner.
 
+## 6. The registered record, at the model's own geometry (addendum 2026-09-20)
+
+§3–§4 were worked at literals (a 308 plf envelope, 4.14" of eccentricity). `veneer_beam/
+W-SG-BRKBM` reads the plan instead, so this section re-works every number at what the model
+resolves. Worked by hand (a calculator, not the engine), then reproduced by
+`tests/test_veneer_beam_calc.py`. Nothing in §3–§5 is withdrawn; §6 is the record's basis.
+
+### 6a. Inputs, read off the model
+
+| term | source | value |
+|---|---|---|
+| section width | `SG_VENEER_BEAM_14`'s `concrete` layer ONLY — the 2" `xps-break` is not section | **12.0"** |
+| section depth | beam z −120.1875" … −102.4375" | 17.75" |
+| concrete faces | resolved `concrete` polygon, y −22" … −10" | centre −16.0" |
+| supports | `W-SG-W1` concrete x 90"…102", `W-SG-E1` x 330"…342"; beam concrete x 96"…336" | |
+| clear span | 330 − 102 | **228" = 19.0 ft** |
+| bearing | 102 − 96 = 336 − 330 | 6" each end |
+| wythe | `W-B-BRICK` `brick` layer, y −13.685" … −10.06", z −102.4375" … −8" | 3.625" × 94.4375" |
+| brick density | `brown-brick` 1,920 kg/m³ × 0.062428 | 119.86 pcf |
+| mix, cover | `EXPOSED_MIX` f'c 5,000; `_VENEER_BEAM_STEEL` cover 2" | |
+| steel | 3 #5 `bottom-y`, 3 #5 `top-y`, #3 `ties` @ 5", 1 #4 `horizontal` × 2 faces | |
+
+The steel is authored as COUNTS. `retaining_basis.bar_for_roles` refuses a count on purpose (a
+strip footing is graded per foot), so the record reads it through a sibling accessor,
+`bar_count_for_roles`, and that refusal is untouched.
+
+### 6b. Load, flexure and shear at U = 1.4D (ACI 318-19 Eq. 5.3.1a)
+
+```
+wythe  119.86 × (3.625/12) × (94.4375/12)               =   284.95 plf
+beam   150 × (12/12) × (17.75/12)                       =   221.875 plf
+w                                                        =   506.83 plf
+wu     1.4 × 506.83                                      =   709.56 plf
+L      min(19.0 + 15.0625/12, 19.0 + 6/12)               =    19.5 ft
+Mu     709.56 × 19.5² / 8                                = 33,726 ft-lb
+Vu     709.56 × 19.5 / 2                                 =  6,918 lb
+φMn    (§3, unchanged: 3 #5, d 15.0625, a 1.094)         = 60,747 ft-lb   d/c 0.555
+As,min (§3, unchanged)                                   =  0.639 in² of 0.93   0.687
+φVc    0.75 × 2 √5,000 × 12 × 15.0625                    = 19,171 lb      d/c 0.361
+```
+
+`2λ√f'c` is Table 22.5.5.1(a), and it is earned: the hoops give Av/s = 2 × 0.11/5 = 0.044
+in²/in against Av,min = 0.0106 (§9.6.3.4). The 308 plf envelope in §3 stays the report's
+number; the record grades the wythe that is drawn.
+
+### 6c. Torsion — designed in EQUILIBRIUM, not redistributed
+
+§4 relied on §22.7.3.2 redistribution, which needs the garden slab to bear on the beam's
+south face — an assumption no record can check. The record does not use it: it designs the
+full factored twist as equilibrium torsion, which is conservative and still passes by a wide
+margin.
+
+```
+e      −11.8725 − (−16.0)   (brick centre vs concrete centre)   = 4.1275 in
+t      284.95 × 4.1275 / 12                                      =  98.01 ft-lb/ft
+Tu     1.4 × 98.01 × 19.5 / 2                                    =  1,337.9 ft-lb
+φTth   §4, unchanged                                             =    842.5 ft-lb  (Tu is 1.59×)
+x1 = 12 − 4 − 0.375 = 7.625    y1 = 17.75 − 4 − 0.375 = 13.375
+ph = 42.0    Aoh = 101.98 in²    Ao = 0.85 Aoh = 86.69 in²
+§22.7.6.1  At/s = 1,337.9 × 12 / (2 × 0.75 × 86.69 × 60,000)     = 0.002058 in²/in
+           provided, one leg  0.11 / 5                           = 0.0220     d/c 0.094
+§22.7.7.1  √[(6,918/(12×15.0625))² + (16,054 × 42/(1.7 × 101.98²))²]
+           = √(38.27² + 38.13²)                                  =  54.03 psi
+           φ(2√f'c + 8√f'c) = 0.75 × 10 × 70.711                 = 530.3 psi   d/c 0.102
+```
+
+The four detailing rows, the §4a steel, now graded:
+
+```
+§9.7.6.3.3  s ≤ min(ph/8, 12) = 5.25"; provided 5"                        d/c 0.952
+§9.6.4.2    (Av+2At)/s ≥ max(0.0106, 0.0100); provided 0.044            d/c 0.241
+§9.6.4.3    Al,min = lesser of  1.2552 − 0.002058 × 42 = 1.1687
+                              and 1.2552 − 0.0050 × 42   = 1.0451      = 1.0451 in²
+            Al (§22.7.6.1b) = 0.002058 × 42 = 0.0864 — the minimum governs
+§9.5.4.3    required  0.639 (flexural minimum) + 1.0451                  = 1.684 in²
+            provided  0.93 + 0.93 + 2 × 0.20                             = 2.26 in²  d/c 0.745
+§9.7.5.1    perimeter spacing: top-to-bottom 17.75 − 2 × 2.6875 = 12.375,
+            one side bar each face → 6.19"; across a row 3.31"; ≤ 12"    d/c 0.516
+```
+
+**Torsion detailing closes.** The hoops at 5" sit 5% inside §9.7.6.3.3's 5.25".
+
+### 6d. Deflection — the right limit, and it is close
+
+`check_veneer_beam` compared a gross-section, ×3 deflection against **ℓ/240**. That is ACI's
+limit for a floor NOT supporting anything a deflection damages, and a brick wythe is the
+textbook thing it damages. The record grades ACI 318-19 Table 24.2.2's row for exactly this —
+the part of the deflection occurring after the nonstructural element is attached, ≤ ℓ/480 —
+on the simple span, because §6e does not establish the end restraint a fixed-end stiffness
+would need.
+
+```
+Ec   57,000 √5,000                 = 4,030,509 psi     n = 29e6 / Ec = 7.195
+Ig   12 × 17.75³ / 12              = 5,592.36 in⁴
+Mcr  7.5√5,000 × 5,592.36 / 8.875  = 27,848 ft-lb       ⅔Mcr = 18,565 ft-lb
+kd   6 kd² + 6.6915 kd − 100.79 = 0 → kd = 3.5787 in
+Icr  12 × 3.5787³/3 + 6.6915 × (15.0625 − 3.5787)²      = 1,065.8 in⁴
+all dead   Ma = 506.83 × 19.5²/8 = 24,090 ft-lb > ⅔Mcr
+           Ie = 1,065.8 / [1 − (18,565/24,090)² (1 − 1,065.8/5,592.36)] = 2,052.5 in⁴
+           Δi = 5 (506.83/12) 234⁴ / (384 Ec Ie)                     = 0.1993 in
+beam only  Ma = 10,546 < ⅔Mcr → Ie = Ig;  Δi = 0.0320 in
+λΔ   ξ 2.0 / (1 + 50 × 0.93/(12 × 15.0625)) = 2.0 / 1.2573          = 1.5908
+after attachment  1.5908 × 0.1993 + (0.1993 − 0.0320)                = 0.4844 in
+limit  234 / 480                                                     = 0.4875 in   d/c 0.994
+```
+
+**0.994 is a pass on the code's own row, and it is not comfortable.** Every simplification is
+the conservative one (the wythe's two arched openings are not deducted; the whole of the beam's
+own creep is counted after the brick goes on; no end fixity is credited), so the true number
+is lower — but a reviewer will see a 0.99. And the masonry industry's number is stricter:
+TMS 402-16 §5.2.1.4.2 holds a beam supporting unreinforced masonry to **ℓ/600 = 0.39 in**,
+which this simple span misses at 1.24. The record grades the ACI row and prints the TMS
+comparison as NOT GRADED rather than choose between them silently: TMS §5.2 is written for
+masonry beams, and whether a reviewer applies it to a concrete one is a judgement. What would
+close both is the end restraint §6e is about — even partial fixity at the side walls roughly
+halves this — which is the strongest reason yet to design that joint.
+
+### 6e. End restraint — INCOMPLETE, and a hook would not fit as laid out
+
+The beam is cast monolithic with `W-SG-W1`/`W-SG-E1` (`AN-SG-PLACEMENTS` placement 2), and the
+torsion of §6c and any fixity in §6d are delivered through that joint. It is anchorage: each
+corner bar is longitudinal torsion steel and must develop fy at the support face, so the
+§25.4.10.1 excess-steel reduction is not taken.
+
+**Neither row authors a hook** (`BarSpec.hooks` is unset on `top-y` and `bottom-y`), and the
+placement annotation says the bars "lap into the walls' vertical steel", which a horizontal
+bar cannot do. A straight #5 needs ℓd = 60,000 × 0.625 / (25 × 70.711) = **21.2"**, against a
+12" wall. So the record reports INCOMPLETE naming the hooks and assumes none.
+
+What a standard hook would need, worked so the gap is a number and not a shrug (§25.4.3.1,
+the equation `sunken_garden_court_free_body.md` §6b uses; ψe 1.0 galvanized, ψc 0.933):
+
+```
+available   W-SG-W1 12.0" − 3.0" far-face cover (its own schedule)    = 9.0 in
+ψo          side cover to W-SG-W1's north end: 12.375 − 6.185 = 6.19" ≥ 6db 3.75"  → 1.0
+ψr          3 bars across 12": centres 3.3125" apart < 6db 3.75"; no ties enclosing the
+            hooks, so Ath 0 < 0.4 Ahs = 0.372 in²                     → 1.6
+ℓdh         14.40 × 1.6 × 0.625^1.5                                    = 11.38 in   d/c 1.26 ✗
+with ψr 1.0 (≥ 0.372 in² of ties through the joint)  14.40 × 0.4941   =  7.11 in   d/c 0.79 ✓
+```
+
+**So hooking the bars as they are laid out does not close it; ties enclosing the hooks do.**
+Two #5 per row cannot (2 × 0.31 < 0.639, §3), and two #6 at 6.5" spacing make ψr 1.0 but need
+9.35" against 9.0". This is a design decision for the engineer of record, not a model edit.
+
+**And the bottom row cannot reach the wall at all as modelled.** `W-SG-W1`/`-E1` start at
+−109.4375" (their footing top); the beam bottom is −120.1875", so its lower 10.75" at each end
+sits inside `FT-SG-W1`/`-E1`'s solid (x 54"…138" and 294"…378", z −121.4375"…−109.4375") —
+concrete cast in placement 1. The bottom bars (centre −117.50") run into a footing poured a
+placement earlier. The record names this as a missing input rather than grading it; it is a
+geometric conflict between the beam's held bottom (§2) and the footings, and one only the
+design can resolve (raise the beam bottom over the toes, or detail the end on the footing).
+
+### 6f. What left this record, and where it went
+
+* **The masonry anchors** are `veneer_anchor/W-B-BRICK`, their own deferral with their own
+  permit line (`structural.veneer_anchor`) — folding them in would be a record whose §9 denies
+  its own scope. §5.1 is the reasoning; the deliverable is a TMS 402 anchor design for the
+  ~10" reach and the supplier's confirmation of the insulation thickness.
+* **The soft joints are a MODEL GAP, not engineering.** The resolved wythe runs x 106"…330":
+  4" clear of `W-SG-W1`'s face at the west end, and **hard against `W-SG-E1`'s face (330")
+  at the east end**. §5.1's sealant joint over compressible filler is carried by nothing, and
+  no rule grades a masonry wythe's end restraint. Named in the record's NOT-GRADED note.
+
+### 6g. The record, row by row
+
+| limit state | demand | capacity | d/c |
+|---|---:|---:|---:|
+| flexure, simple span | 33,726 ft-lb | 60,747 | 0.555 |
+| minimum flexural steel (detailing) | 0.639 in² | 0.93 | 0.687 |
+| one-way shear | 6,918 lb | 19,171 | 0.361 |
+| torsion transverse steel, equilibrium | 0.002058 in²/in | 0.0220 | 0.094 |
+| torsion section limit | 54.03 psi | 530.3 | 0.102 |
+| hoop spacing (detailing) | 5.00 in | 5.25 | 0.952 |
+| minimum transverse steel (detailing) | 0.0106 in²/in | 0.044 | 0.241 |
+| longitudinal steel, flexure + torsion (detailing) | 1.684 in² | 2.26 | 0.745 |
+| longitudinal perimeter spacing (detailing) | 6.19 in | 12.0 | 0.516 |
+| deflection after attachment | 0.4844 in | 0.4875 | 0.994 |
+| end restraint, top and bottom rows | — | — | INCOMPLETE |
+
+Status on catlin: **INCOMPLETE** — every computed row passes, and the end restraint is
+missing its hooks (and, for the bottom row, a wall to hook into).
+
 ## Sources
 
 - IRC 2018 R703.8.4 — anchored masonry veneer, airspace and tie spacing.
@@ -323,4 +507,7 @@ corner continuity into the side walls (§5.2) is still the engineer's.
   paywalled. The 1" minimum is confirmed; the 4-1/2" ceiling rests on TMS 402, not on a
   quoted IRC row.
 - BIA Technical Note 18 — clay masonry movement; the basis for the end soft joints in §5.1.
+- ACI 318-19 §22.7.6.1, §22.7.7.1, §9.6.4, §9.7.5, §9.7.6.3.3 (torsion, §6c); §24.2.3.5,
+  §24.2.4.1 and Table 24.2.2 (deflection, §6d); §25.4.2.3 and §25.4.3.1 (anchorage, §6e).
+- TMS 402-16 §5.2.1.4.2 — ℓ/600 for a beam supporting unreinforced masonry (§6d, not graded).
 - `notes/sunken_garden_court_free_body.md` — the court's own free body, unchanged by this.

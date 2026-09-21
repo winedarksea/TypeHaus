@@ -429,6 +429,22 @@ def bar_for_roles(spec: object, roles: tuple[str, ...]) -> tuple[int, float] | N
     return None
 
 
+def bar_count_for_roles(spec: object, roles: tuple[str, ...]) -> tuple[int, int, int] | None:
+    """``(bar, count, layers)`` for the first COUNT-shaped bar in ``spec`` in one of ``roles``.
+
+    The sibling of :func:`bar_for_roles` for a member graded by its whole section — a beam's
+    "3 #5 bottom" — rather than per foot. Kept separate so that function's refusal of a count
+    (load-bearing for strip footings) is untouched. A spacing-shaped bar is skipped here.
+    """
+    if spec is None:
+        return None
+    for entry in getattr(spec, "bars", ()) or ():
+        if entry.role not in roles or not entry.count or entry.bar not in _BAR:
+            continue
+        return entry.bar, int(entry.count), max(1, int(entry.layers or 1))
+    return None
+
+
 def footing_states(geometry: _Geometry, case: _Case) -> tuple[LimitState, ...]:
     """Toe flexure, heel flexure and one-way shear on the footing STRIP.
 

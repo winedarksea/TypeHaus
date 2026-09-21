@@ -77,6 +77,8 @@ DESIGN_METHOD: dict[str, str] = {
     "spread_footing": "MIXED — ASD against presumptive bearing, LRFD for the bell's own "
                       "flexure and shear (ACI 318-19 plain-concrete phi 0.60)",
     "roof_beam": "ASD (published beam allowables against a service demand)",
+    "veneer_beam": "LRFD (ACI 318-19 strength design at 1.4D); deflection at service loads "
+                   "(Table 24.2.2)",
 }
 
 LOAD_COMBINATIONS: dict[str, tuple[str, str]] = {

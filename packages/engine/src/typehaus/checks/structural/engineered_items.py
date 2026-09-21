@@ -56,10 +56,20 @@ def column_head_joint(ctx: CheckContext) -> list[Finding]:
 def veneer_beam(ctx: CheckContext) -> list[Finding]:
     """A cast beam carrying a masonry wythe between two walls."""
     return _items(ctx, "structural.veneer_beam", "veneer_beam",
-                  "a cast beam carrying a masonry wythe — flexure, shear, torsion and "
-                  "end restraint",
-                  "ACI 318-19 §9, §22.7",
+                  "a cast beam carrying a masonry wythe — flexure, shear, torsion, "
+                  "deflection and end anchorage",
+                  "ACI 318-19 §9, §22.7, §24.2, §25.4.3",
                   "no footingless wall in this plan carries another wall on its top")
+
+
+@check(Tier.STRUCTURAL, "structural.veneer_anchor")
+def veneer_anchor(ctx: CheckContext) -> list[Finding]:
+    """The anchors tying a beam-borne masonry wythe back across its insulated standoff."""
+    return _items(ctx, "structural.veneer_anchor", "veneer_anchor",
+                  "masonry veneer anchors across the insulated standoff — anchor capacity, "
+                  "buckling and the wythe's bending between rows",
+                  "TMS 402-16 §12.2; IRC R703.8.4",
+                  "no masonry wythe in this plan stands on a veneer beam")
 
 
 @check(Tier.STRUCTURAL, "structural.thermal_break")

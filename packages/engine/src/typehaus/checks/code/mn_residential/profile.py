@@ -553,9 +553,17 @@ MN_2020 = JurisdictionProfile(
                        ("structural.column_head_joint",),
                        ("ACI 318-19 §22.5", "ACI 318-19 §22.7", "ACI 318-19 §22.8"),
                        blocking=False),
+        # Computed since 2026-09-20 (`engineering/veneer_beam.py`) but still non-blocking:
+        # catlin's record is INCOMPLETE — no hook is authored on the beam's longitudinal rows
+        # and the bottom row meets the side walls' footings, not the walls. Flip it the day
+        # the record reads OK. The anchors are their own deferred line below.
         PermitItemSpec("Cast beam carrying a masonry veneer",
                        ("structural.veneer_beam",),
-                       ("ACI 318-19 §9.5", "ACI 318-19 §22.7"), blocking=False),
+                       ("ACI 318-19 §9.5", "ACI 318-19 §22.7", "ACI 318-19 §24.2.2",
+                        "ACI 318-19 §25.4.3"), blocking=False),
+        PermitItemSpec("Masonry veneer anchorage over an insulated standoff",
+                       ("structural.veneer_anchor",),
+                       ("TMS 402-16 §12.2", "IRC R703.8.4"), blocking=False),
         PermitItemSpec("Structural ties across a thermal break",
                        ("structural.thermal_break",),
                        ("ACI 318-19 §22.9", "ACI 347R-14 §2.2"), blocking=False),

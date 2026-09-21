@@ -149,7 +149,7 @@ def _rafter_keys(ctx: EngineeringContext) -> list[str]:
                   if not any(member.category == "rafter" for member in roof.members))
 
 
-# --- The sunken garden's three silent gaps (2026-09-14) -----------------------------------
+# --- The sunken garden's silent gaps (2026-09-14) -----------------------------------
 #
 # All three were found by an outside review of the court. What they had in common is the
 # thing a deferral fixes: each is a real piece of engineering that this engine computes
@@ -164,34 +164,39 @@ def _rafter_keys(ctx: EngineeringContext) -> list[str]:
 # says honestly that IRC R404.1.1 does not engage at 3'-4", which is correct. The defect was
 # never that check's verdict — it was that nothing else then looked.
 
+# ``veneer_beam`` LEFT this list on 2026-09-20: it is a registered calculation now
+# (``engineering/veneer_beam.py``), and its deliverable's prose moved into that record's
+# NOT-GRADED note. The masonry anchors it used to carry unnamed are their own item below.
+
 _declare(Deferral(
-    kind="veneer_beam",
-    reason="a cast concrete beam spans between two walls and carries a masonry wythe, and "
-           "no registered calculation grades it. `engineering/sunken_garden/veneer_beam.py` "
-           "screens flexure, shear, deflection and torsion — at 1.4D on the real mix since "
-           "2026-09-14 — but it is a free function that writes a REPORT: it reads no plan, "
-           "mints no record, and nothing can be sealed against it. Four things follow and "
-           "this engine computes none of them. (1) The END RESTRAINT: the beam is cast "
-           "monolithic with the side walls (AN-SG-PLACEMENTS, placement 2), and the "
-           "reinforcement continuity through that corner — the top and bottom bars' lap "
-           "into the walls' vertical steel — is nobody's number here. (2) TORSION "
-           "DETAILING: the wythe is deliberately off-centre, and the factored twist is "
-           "below cracking but 1.7x ACI 318-19 §22.7.4.1's threshold, so §9.6.4's closed "
-           "hoops and longitudinal steel are owed — the screening says so, no record "
-           "carries it. (3) The MASONRY ANCHORS over a ~10in insulated standoff, which no "
-           "prescriptive table contemplates and this engine has no calculation for at all. "
-           "(4) The SOFT JOINT at each end of the wythe, which the model does not carry",
-    designer="structural engineer of record, with the mason's anchor supplier for the "
-             "standoff — two roles because the anchor is a product selection against a "
-             "published thickness and the beam is not",
-    deliverable="a sealed beam design at the as-built section carrying the wythe at 1.4D — "
-                "flexural and torsional reinforcement, the lap into each side wall, and the "
-                "stirrup form — plus a TMS 402 anchor design for the full insulated "
-                "standoff and a movement-joint detail at each end of the wythe",
-    unblocks="Foundations — the S-100 beam schedule and the veneer anchorage detail",
-    oracle=(Oracle(note="sunken_garden_veneer_beam.md",
-                   test="tests/test_sunken_garden_study.py"),),
+    kind="veneer_anchor",
+    reason="a masonry wythe stands on a beam that fixes its foot well off the backing wall's "
+           "structural face — catlin's W-B-BRICK reaches ~10in brick-to-stud through 6in of "
+           "foam and 4in of cavity — and no prescriptive anchor table contemplates that "
+           "standoff. TMS 402's engineered path governs: eccentric compression and buckling "
+           "of the anchor over its unbraced length, and the wythe's out-of-plane bending "
+           "between anchor rows. This engine has no masonry-anchor calculation, and the "
+           "anchor is a product selection against a published insulation thickness",
+    designer="the masonry anchor supplier's engineer for the product and its published "
+             "standoff rating, with the structural engineer of record for the wind demand "
+             "and the anchor layout",
+    deliverable="a TMS 402 anchor design for the full insulated standoff — anchor type, "
+                "spacing both ways, embedment into the backing, and the wythe's out-of-plane "
+                "check between rows — plus the supplier's written confirmation that the "
+                "product is rated for the insulation thickness it passes through",
+    unblocks="the veneer anchorage detail and the wall section through the wythe",
+    oracle=(Oracle(note="sunken_garden_veneer_beam.md", section="§5",
+                   test="tests/test_veneer_beam_calc.py"),),
 ))
+
+
+@keys("veneer_anchor")
+def _veneer_anchor_keys(ctx: EngineeringContext) -> list[str]:
+    """Every wythe a veneer beam carries — the same relation ``veneer_beam`` keys off."""
+    from typehaus.engineering.veneer_beam import carried_wythes
+
+    return carried_wythes(ctx)
+
 
 # NOTE — ``thermal_break_transfer`` is COMPUTED since 2026-09-20, in
 # ``engineering/thermal_break.py``, as a reserve. Its deliverable prose is that module's
@@ -235,37 +240,6 @@ def _footingless_walls(ctx: EngineeringContext) -> list:
             if isinstance(w, FoundationWall) and w.tag not in hosted]
 
 
-@keys("veneer_beam")
-def _veneer_beam_keys(ctx: EngineeringContext) -> list[str]:
-    """Footingless walls that something else bears its whole weight on.
-
-    The relation, not a tag or an assembly name: a wall with no footing whose TOP is another
-    footingless wall's BOTTOM, where that other wall declares no lateral support of its own.
-    That is a veneer wythe standing on a beam — the wythe has nowhere else to go, and the
-    beam is the only thing under it.
-
-    Plan overlap is required as well as the elevation match, so two unrelated members that
-    happen to share a level are not read as bearing on each other. It is a screening
-    predicate and it is stated as one: a beam carrying something other than a wall — a slab
-    edge, a stair — is not found here, and a house that builds one should widen this rather
-    than assume the silence means no.
-    """
-    supports: set[str] = set()
-    walls = _footingless_walls(ctx)
-    axes = {w.tag: _plan_extent(ctx, w.tag) for w in walls}
-    for beam in walls:
-        if beam.top_elevation is None:
-            continue
-        for carried in walls:
-            if carried.tag == beam.tag or carried.bottom_elevation is None:
-                continue
-            if getattr(carried, "lateral_support", None) is not None:
-                continue
-            if abs(carried.bottom_elevation.meters - beam.top_elevation.meters) > 1e-6:
-                continue
-            if _extents_overlap(axes.get(beam.tag), axes.get(carried.tag)):
-                supports.add(beam.tag)
-    return sorted(supports)
 
 
 @keys("tiered_retaining")
@@ -287,29 +261,6 @@ def _tiered_retaining_keys(ctx: EngineeringContext) -> list[str]:
         if fill is not None and fill.meters > 0.0:
             out.append(wall.tag)
     return sorted(out)
-
-
-def _plan_extent(ctx: EngineeringContext, tag: str):
-    """``(x0, y0, x1, y1)`` bounding box of a resolved wall's axis, metres, or ``None``."""
-    wall = next((w for w in ctx.model.walls if w.tag == tag), None)
-    if wall is None:
-        return None
-    (ax, ay), (bx, by) = wall.axis
-    return min(ax, bx), min(ay, by), max(ax, bx), max(ay, by)
-
-
-#: How far apart two axis boxes may sit and still be read as one bearing on the other,
-#: metres. 1 ft — a wall bearing on a beam is within its own thickness of it, and anything
-#: further apart is two members that share an elevation and nothing else.
-_BEARING_PLAN_TOLERANCE_M = 0.3048
-
-
-def _extents_overlap(first, second) -> bool:
-    if first is None or second is None:
-        return False
-    tol = _BEARING_PLAN_TOLERANCE_M
-    return (first[0] - tol <= second[2] and second[0] - tol <= first[2]
-            and first[1] - tol <= second[3] and second[1] - tol <= first[3])
 
 
 # --- What `column_base` leaves open (2026-09-18) ------------------------------------------
