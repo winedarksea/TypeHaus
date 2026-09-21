@@ -214,7 +214,12 @@ MAX_NON_BLOCKING_ITEMS = {"mn-2020": 24}
 # deferred line (the anchors were hiding inside `veneer_beam`'s deliverable, unnamed). -1:
 # the SRW apron's five OVER findings are suppressed in catlin's preferences, so its line
 # carries no engineered finding and reads UNKNOWN — and it BLOCKS, so both gates stay shut.
-MAX_UNSEALED_ITEMS = {"mn-2020": 14}
+#
+# RAISED 14 -> 15 on 2026-09-21, the reverse of the move above. The SRW apron (AB Stones)
+# and the landing tie (HL35HDG, shifted) now PASS at draft, so their suppressions came off
+# and both lines carry engineered findings again: nothing became less designed, two items
+# now await only a seal. The thermal break's line stays suppressed, UNKNOWN and blocking.
+MAX_UNSEALED_ITEMS = {"mn-2020": 15}
 
 
 def _engineered_labels(profile) -> set[str]:
