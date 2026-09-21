@@ -11,9 +11,10 @@ member collinear with that wall — the sill it stands on — at the station nea
 clamped to the member: the N-S spring is exact, the E-W one moves a few inches of lever.
 
 **Stiffness is claimed, and equal.** NDS 2018 §11.3.6's load/slip modulus for a dowel in
-wood-to-metal, ``γ = 270,000 D^1.5`` lb/in at D = 1/2", times the parts at the joint. That
-equality is the same assumption ``deck_tie`` distributes by, so the graph and the record
-share it. Oracle: ``houses/catlin/notes/analytical_model_basis.md`` §1 and §3e.
+wood-to-metal, ``γ = 270,000 D^1.5`` lb/in at D = 1/2", times the parts at the joint — one
+bolt per part, even where an HL35 carries two per leg. That equality is the same assumption
+``deck_tie`` distributes by, so the graph and the record share it. Oracle:
+``houses/catlin/notes/analytical_model_basis.md`` §1 and §3e.
 """
 
 from __future__ import annotations

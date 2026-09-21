@@ -900,16 +900,22 @@
 # notes/column_head_connector_options.md.
 "HETA20Z" = { low = 3.0, high = 6.0 }  # 16 ea, all authored — eight joints, a pair each (FL11473 Table 3 rates the pair)
 # The landing's two tie lines (params/landing_tie.py), 2026-09-21: the four stem-tie HGAM10s
-# are RETIRED (Titen Turbo exterior bar, G90 only) and their row with them. HL33HDG heavy
-# angles, 7 ga HDG, a pair per joint: CN-BW-STEMTIE-F{C,E}-{A,B} on the stem core and
-# CN-BW-GWTIE-LO/-HI into W-G-W. Retail $13.99 ea (fastenersplus, HL33HDG, 2026-09-21),
-# banded; the 1/2" bolts, lags and Titen HD (THD50400HMG) ride in the framing rate.
-# ** STILL AN OPEN JOINT: deck_tie/FS-BW-FLOOR is OVER 1.18 (notes/north_entry_piers.md §10d).
-"HL33HDG" = { low = 12.0, high = 20.0 }  # 6 ea — four on the stem, two into W-G-W
-# The KDAT 4x4 tie blocks the angles bolt through (CN-BW-STEMTIE-F{C,E}-BLK under each
-# carrier, CN-BW-GWTIE-BLK the filler through the garage corner cladding). One 3-1/2" cube of
-# 4x4 KDAT offcut each, plus cutting and M4 end treatment: a LIST BAND, not a quote.
-"TIE-BLOCK-4X4-KDAT" = { low = 3.0, high = 8.0 }  # 3 ea — CN-BW-*-BLK
+# are RETIRED (Titen Turbo exterior bar, G90 only) and their row with them. Owner's second
+# call the same day: HL35HDG at the stem (CN-BW-STEMTIE-F{C,E}-{A,B}), HL33HDG kept for
+# CN-BW-GWTIE-LO/-HI into W-G-W. Retail HL33HDG $13.99 (fastenersplus), HL35HDG $26.18-26.47
+# (fastoolnow / dhcsupplies, 2026-09-21), banded; the 1/2" bolts, lags and Titen HD
+# (THD50400HMG, one per HL35 concrete leg) ride in the framing rate.
+# deck_tie/FS-BW-FLOOR closes at 0.966 (notes/north_entry_piers.md §10d).
+"HL33HDG" = { low = 12.0, high = 20.0 }  # 2 ea — into W-G-W
+"HL35HDG" = { low = 24.0, high = 36.0 }  # 4 ea — two per stem joint
+# KDAT 4x4 tie blocks and fillers, each an offcut plus cutting and M4 end treatment: LIST
+# BANDS, not quotes. The 3-1/2" cube is CN-BW-GWTIE-BLK (through the garage corner
+# cladding); the stem blocks under the carriers are 5" long for the HL35 (CN-BW-STEMTIE-
+# F{C,E}-BLK); the 26-1/2" filler gives the HL33's leg a 3-1/2" face in the screen's end
+# stud pack (CN-BW-GWTIE-FILLER).
+"TIE-BLOCK-4X4-KDAT" = { low = 3.0, high = 8.0 }  # 1 ea — CN-BW-GWTIE-BLK
+"TIE-BLOCK-4X4X5-KDAT" = { low = 3.0, high = 8.0 }  # 2 ea — CN-BW-STEMTIE-F{C,E}-BLK
+"FILLER-4X4-KDAT" = { low = 6.0, high = 14.0 }  # 1 ea — CN-BW-GWTIE-FILLER
 # The two CENTRE balcony pillars' post caps, and since 2026-09-10 the canopy's two WEST
 # columns as well. A 3-1/2" glulam landing on a 6x6 is a CCQ, not the PC6Z: that cap is
 # published for EQUAL post and beam widths. The four balcony CORNER columns are cast

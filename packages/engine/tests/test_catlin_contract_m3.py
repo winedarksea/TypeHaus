@@ -245,11 +245,11 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset(catlin_check_r
     #
     # ** 2026-09-21 (phase 2): base rotation CLOSED on a presumed n_h ** (Terzaghi's loose
     # row, RE/RNE 0.81 draft). Two tie lines took the landing to 1.18; the thermal break and
-    # the SRW apron are still OVER after the owner's fixes.
+    # the SRW apron are still OVER after the owner's fixes. The tie then CLOSED at 0.966
+    # (HL35HDG at the stem, the anchored hole on the core centreline, W dry; §10d), and the
+    # SRW apron closed on AB Stones (notes/raised_garden_srw.md §3b).
     OPEN: set[str] = {
-        "Deck lateral tie to a concrete wall",
         "Structural ties across a thermal break",
-        "Segmental gravity retaining walls (tiered)",
     }
     gating = [item for item in checklist.items if item.blocking]
     resolved = {Result.PASS, Result.NOT_APPLICABLE}

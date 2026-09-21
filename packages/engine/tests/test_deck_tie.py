@@ -1,8 +1,8 @@
 """``engineering/deck_tie.py`` against ``houses/catlin/notes/north_entry_piers.md`` §10.
 
 The note was worked by hand before the module: the tie joints as a bolt group, the landing's
-loads placed where they act, the HL33HDG's interaction per joint and ACI 318 Ch. 17 on the
-stem anchors (§10a-§10e).
+loads placed where they act, each angle's interaction per joint at its own C_M (HL35HDG wet
+at the stem, HL33HDG dry into W-G-W) and ACI 318 Ch. 17 on the stem anchors (§10a-§10e).
 """
 
 from __future__ import annotations
@@ -28,16 +28,18 @@ def _input(record, prefix):
 
 
 def test_the_tie_is_derived_from_the_authored_hardware(catlin_ctx):
-    """§10a: three joints, a pair each — two over the stem core, one into W-G-W."""
+    """§10a: three joints, a pair each — two over the stem core, one into W-G-W (dry)."""
     ectx = catlin_ctx.engineering.context
     joints = wall_ties(ectx, ectx.plan.by_tag("FS-BW-FLOOR"))
     assert [(j.member, j.wall, len(j.parts), j.model, j.wall_axis, j.heel_axis,
-             j.on_concrete) for j in joints] == [
-        ("BM-BW-FC", "W-GF-S1", 2, "HL33HDG", "x", "y", True),
-        ("BM-BW-FE", "W-GF-S-DR", 2, "HL33HDG", "x", "y", True),
-        ("W-BW-SCREEN", "W-G-W", 2, "HL33HDG", "y", None, False)]
+             j.on_concrete, j.service_condition) for j in joints] == [
+        ("BM-BW-FC", "W-GF-S1", 2, "HL35HDG", "x", "y", True, None),
+        ("BM-BW-FE", "W-GF-S-DR", 2, "HL35HDG", "x", "y", True, None),
+        ("W-BW-SCREEN", "W-G-W", 2, "HL33HDG", "y", None, False, "dry")]
+    assert "windblown" in joints[2].service_basis
     assert [round(j.x_ft, 4) for j in joints] == [7.125, 9.4583, 6.1979]
-    assert [round(j.y_ft, 4) for j in joints] == [43.6771, 43.6771, 43.1458]
+    # The stem pairs stand 1 1/4" north of the core centreline (43.6771), §10a.
+    assert [round(j.y_ft, 4) for j in joints] == [43.7812, 43.7812, 43.1458]
 
 
 def test_the_loads_reproduce_section_10b(catlin_ctx):
@@ -51,36 +53,60 @@ def test_the_loads_reproduce_section_10b(catlin_ctx):
 
 
 def test_the_verdicts_reproduce_section_10c(catlin_ctx):
-    """§10c/§10d: still OVER, at 1.18 on E-W wind at BM-BW-FE; N-S 0.89; guard 1.04."""
+    """§10c/§10d: every row passes; E-W wind at BM-BW-FE governs at 0.966."""
     record = catlin_ctx.engineering[_ITEM]
-    assert record.status is Status.OVER
-    assert _state(record, "tie interaction, N-S wind").ratio == pytest.approx(0.886, abs=1e-3)
-    assert _state(record, "tie interaction, E-W wind").ratio == pytest.approx(1.177, abs=1e-3)
-    assert _state(record, "tie interaction, guard").ratio == pytest.approx(1.040, abs=1e-3)
-    assert record.governing.name == "tie interaction, E-W wind"
-    assert "132.4 lb along the wall / 518.0 + 671.0 lb across it / 728.0" in (
-        record.governing.citation)
+    assert record.status is Status.OK
+    assert _state(record, "tie interaction, N-S wind").ratio == pytest.approx(0.6395, abs=5e-4)
+    ew = _state(record, "tie interaction, E-W wind")
+    assert ew.ratio == pytest.approx(0.9665, abs=5e-4)
+    assert record.governing.name == ew.name
+    assert _state(record, "tie interaction, guard").ratio == pytest.approx(0.8145, abs=5e-4)
+    assert "119.5 lb along the wall / 518.0 + 674.7 lb across it / 917.0" in ew.citation
+    # W's dry service is a judgement named for the engineer of record, on the record.
+    assert any("DRY SERVICE at W-BW-SCREEN/W-G-W" in n and "engineer of record" in n
+               for n in record.notes)
 
 
 def test_the_stem_anchors_reproduce_section_10e(catlin_ctx):
-    """§10e: ACI 318-19 Ch. 17 on the Titen HDs, worst at BM-BW-FE under E-W wind."""
+    """§10e: one Titen HD per HL35 leg, on the core centreline (the angle set 1 1/4" north):
+    3" to each face, 0.750 at FE under E-W wind."""
     record = catlin_ctx.engineering[_ITEM]
-    assert _state(record, "wall anchors, tension").ratio == pytest.approx(0.5455, abs=5e-4)
-    assert _state(record, "wall anchors, shear").ratio == pytest.approx(0.3682, abs=5e-4)
-    assert _state(record, "wall anchors, tension-shear").ratio == pytest.approx(0.7614,
+    assert _state(record, "wall anchors, tension").ratio == pytest.approx(0.5336, abs=5e-4)
+    assert _state(record, "wall anchors, shear").ratio == pytest.approx(0.3668, abs=5e-4)
+    assert _state(record, "wall anchors, tension-shear").ratio == pytest.approx(0.7503,
                                                                                 abs=5e-4)
     assert _state(record, "wall anchor edge").capacity == pytest.approx(3.0)
     assert _state(record, "wall anchor spacing").capacity == pytest.approx(7.5)
+    assert sum("FOR THE ENGINEER OF RECORD" in n and "EMPTY" in n for n in record.notes) == 2
 
 
 def test_the_hl_reading_by_heel():
-    """§10a: heel across the wall reads F1 across; a vertical heel doubles uplift along."""
+    """§10a: heel across the wall reads F1 across; a vertical heel doubles uplift along;
+    C_M 0.70 unless the parts author dry service."""
     from typehaus.engineering.deck_tie import capacity
 
-    stem = capacity(TieJoint("FE", "S-DR", ("a", "b"), "HL33HDG", 0, 0, "x", "y"))
-    screen = capacity(TieJoint("SC", "G-W", ("a", "b"), "HL33HDG", 0, 0, "y", None, False))
-    assert (stem.along_lb, stem.across_lb) == pytest.approx((518.0, 728.0))
-    assert (screen.along_lb, screen.across_lb) == pytest.approx((1036.0, 518.0))
+    stem = capacity(TieJoint("FE", "S-DR", ("a", "b"), "HL35HDG", 0, 0, "x", "y"))
+    wet = capacity(TieJoint("SC", "G-W", ("a", "b"), "HL33HDG", 0, 0, "y", None, False))
+    dry = capacity(TieJoint("SC", "G-W", ("a", "b"), "HL33HDG", 0, 0, "y", None, False,
+                            "dry", "covered"))
+    mixed = capacity(TieJoint("SC", "G-W", ("a", "b"), "HL33HDG", 0, 0, "y", None, False,
+                              "mixed"))
+    assert (stem.along_lb, stem.across_lb) == pytest.approx((518.0, 917.0))
+    assert (wet.along_lb, wet.across_lb) == pytest.approx((1036.0, 518.0))
+    assert (dry.along_lb, dry.across_lb) == pytest.approx((1480.0, 740.0))
+    assert isinstance(mixed, str)
+
+
+def test_the_anchored_hole_follows_where_the_angle_is_put():
+    """§10e: the hole nearest the core centreline is anchored. An HL35 centred on the core
+    leaves it 1 1/4" off (the 1.132 case); set 1 1/4" over, it lands on the centreline."""
+    from typehaus.engineering.deck_tie_anchor import ANGLES, anchor_station
+
+    hl35 = ANGLES["HL35HDG"]
+    assert abs(anchor_station(hl35, 0.0, 0.0)) == pytest.approx(1.25)
+    assert anchor_station(hl35, 1.25, 0.0) == pytest.approx(0.0)
+    assert anchor_station(ANGLES["HL33HDG"], 0.0, 0.0) == pytest.approx(0.0)
+    assert hl35.heel_arm_in == pytest.approx(1.25)
 
 
 def test_the_bolt_group_arithmetic_by_hand():

@@ -4,7 +4,7 @@
 **Trade:** Framing  
 **Engine:** 0.1.1  
 **Model hash:** dfbd4acf2830ae5d  
-**Lines:** 136
+**Lines:** 139
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -77,6 +77,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | ABU66SS standoff post base (6x6), 316L stainless | 4 | ea |  | building |
 | CCQ46SDS2.5 column cap (4x beam on 6x6 post) | 4 | ea |  | building |
 | CS16 coiled strap, 16 ga | 2 | ea |  | building |
+| KDAT 4x4 filler, 26-1/2" long, nailed into a stud pack (FILLER-4X4-KDAT) | 1 | ea |  | building |
 | H2.5A hurricane/seismic tie | 38 | ea |  | building |
 | H2.5A hurricane/seismic tie | 4 | ea |  | building |
 | H2.5A hurricane/seismic tie | 22 | ea |  | building |
@@ -90,7 +91,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | 2 | ea |  | building |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | 2 | ea |  | building |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | 2 | ea |  | building |
-| HL33HDG heavy angle, 7 ga, hot-dip galvanized | 6 | ea |  | building |
+| HL33HDG heavy angle, 7 ga, hot-dip galvanized | 2 | ea |  | building |
+| HL35HDG heavy angle, 7 ga, hot-dip galvanized | 4 | ea |  | building |
 | HU212-3 face-mount hanger, triple 2x12 | 4 | ea |  | building |
 | HU28-2Z face-mount hanger, double 2x8 (ZMAX) | 4 | ea |  | building |
 | HUC concealed-flange masonry/concrete hanger | 2 | ea |  | building |
@@ -124,7 +126,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | SP6 stud plate tie (2x6) | 318 | ea |  | building |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | 12 | ea |  | building |
 | THA422 top-flange floor truss hanger | 3 | ea |  | building |
-| KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT) | 3 | ea |  | building |
+| KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT) | 1 | ea |  | building |
+| KDAT 4x4 tie block, 5" long, screwed to the tied member (TIE-BLOCK-4X4X5-KDAT) | 2 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 1,130 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 72 | ea |  | building |
 
@@ -258,6 +261,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | ABU66SS standoff post base (6x6), 316L stainless | — |
 | CCQ46SDS2.5 column cap (4x beam on 6x6 post) | — |
 | CS16 coiled strap, 16 ga | — |
+| KDAT 4x4 filler, 26-1/2" long, nailed into a stud pack (FILLER-4X4-KDAT) | — |
 | H2.5A hurricane/seismic tie | — |
 | H2.5A hurricane/seismic tie | — |
 | H2.5A hurricane/seismic tie | — |
@@ -272,6 +276,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | — |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | — |
 | HL33HDG heavy angle, 7 ga, hot-dip galvanized | — |
+| HL35HDG heavy angle, 7 ga, hot-dip galvanized | — |
 | HU212-3 face-mount hanger, triple 2x12 | — |
 | HU28-2Z face-mount hanger, double 2x8 (ZMAX) | — |
 | HUC concealed-flange masonry/concrete hanger | — |
@@ -306,6 +311,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | — |
 | THA422 top-flange floor truss hanger | — |
 | KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT) | — |
+| KDAT 4x4 tie block, 5" long, screwed to the tied member (TIE-BLOCK-4X4X5-KDAT) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | — |
 | Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | BM-SG-BLC, BM-SG-BLE, BM-SG-BLW |
