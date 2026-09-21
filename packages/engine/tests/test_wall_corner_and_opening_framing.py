@@ -754,15 +754,21 @@ def test_the_plate_course_fills_the_wall_rather_than_assuming_a_2x_thickness():
     assert plate.z1_m == pytest.approx(inch(3).meters)
 
 
-def test_a_stud_wall_shorter_than_its_plate_stack_would_frame_negative_studs():
+def test_a_stud_wall_shorter_than_its_plate_stack_frames_no_studs_at_all():
     """The bug the field exists to make unnecessary: without wall_frame="plate", a 1 1/2"
-    wall's studs come out with a negative length and its top courses stack down through the
-    sole plate. Pinned so nobody 'fixes' the plate arm by clamping this instead."""
+    wall's studs come out with a NEGATIVE length and its top courses stack down through
+    the sole plate.
+
+    Since 2026-09-20 the stud-line minimum at ``frame_wall``'s return refuses them — a
+    negative length is shorter than 3" like any other offcut — so the wall frames plates
+    and nothing else. That is not the plate arm being 'fixed' by clamping: the arithmetic
+    below is untouched and the condition is still REPORTED, by the wall-level UNKNOWN the
+    next test pins. What this pins is that the silence is not silent.
+    """
     members = frame_wall(_plan_plate(wall_frame="studs"),
                          _flat_plate_wall(inch(1.5).meters), openings=[])
-    studs = [m for m in members if m.category == "stud"]
-    assert studs, "expected the ordinary solver to still emit module studs"
-    assert all(m.z1_m < m.z0_m for m in studs)
+    assert not [m for m in members if m.category == "stud"]
+    assert [m for m in members if m.category == "plate"], "the plates are still framed"
 
 
 def test_a_too_short_stud_wall_reports_unknown_rather_than_framing_in_silence():

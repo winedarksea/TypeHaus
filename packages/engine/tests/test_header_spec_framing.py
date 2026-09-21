@@ -25,6 +25,7 @@ from typehaus.model.types import DoorType
 from typehaus.resolve import resolve
 from typehaus.resolve.framing.openings import WallOpening
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.short_members import is_stud_line_offcut
 from typehaus.resolve.framing.solver import frame_wall
 from typehaus.resolve.framing.tables import (
     FLAT_2X4_NONBEARING_HEADER,
@@ -197,14 +198,37 @@ def test_a_header_running_to_the_plate_line_gets_none():
     assert _head_cripples(frame_wall(plan, rw, openings=[tall])) == []
 
 
-def test_a_sliver_gap_above_the_header_is_not_framed():
-    plan, rw = _wall_and_plan()
+def _head_gap_opening(rw, gap_in: float) -> WallOpening:
+    """A door leaving exactly ``gap_in`` of wall between its header top and the plates."""
     depth = cross_section("2-2x8").depth_m
-    # 1" of wall above the header is an offcut, not a stud.
-    sliver = WallOpening(center_m=3.0, width_m=inch(36).meters,
-                         height_m=_plate_underside(rw) - depth - inch(1).meters,
-                         sill_m=0.0, is_door=True)
-    assert _head_cripples(frame_wall(plan, rw, openings=[sliver])) == []
+    return WallOpening(center_m=3.0, width_m=inch(36).meters,
+                       height_m=_plate_underside(rw) - depth - inch(gap_in).meters,
+                       sill_m=0.0, is_door=True)
+
+
+@pytest.mark.parametrize("gap_in", [1.0, 2.0, 2.875])
+def test_a_sliver_gap_above_the_header_is_not_framed(gap_in):
+    """The minimum is the TWO plate thicknesses a cripple is nailed between, not one.
+
+    2" used to be framed: ``openings._MIN_CRIPPLE_M`` was 1.5" while
+    ``short_members.MIN_STUD_LINE_IN`` was 3", and that disagreement is what generated
+    catlin's 2 1/8" ``W-A-SN`` cripple and then flagged it. One minimum now.
+    """
+    plan, rw = _wall_and_plan()
+    members = frame_wall(plan, rw, openings=[_head_gap_opening(rw, gap_in)])
+    assert _head_cripples(members) == []
+    assert not [m for m in members if is_stud_line_offcut(m)]
+
+
+def test_a_three_inch_gap_above_the_header_is_still_framed():
+    """Catlin's ``W-B-CE`` head cripples resolve at EXACTLY 3.0" and are the blessed
+    passing case. They clear the bound by ~1e-16 m, so the gate compares ``<`` against a
+    1e-9 tolerance; a naive ``<=`` would delete them and a golden would bless it."""
+    plan, rw = _wall_and_plan()
+    cripples = _head_cripples(frame_wall(plan, rw, openings=[_head_gap_opening(rw, 3.0)]))
+    assert cripples, "a 3\" gap is a real cripple space"
+    for cripple in cripples:
+        assert cripple.z1_m - cripple.z0_m == pytest.approx(inch(3).meters)
 
 
 def test_overhead_door_head_cripples_bear_on_the_track_backing():

@@ -2579,12 +2579,6 @@
 8,
 "3ea16330e294"
 ],
-"geometry/3TKS0Y8EH7::framing/member:stud-000": [
-6.1341,
-6.16585,
-8,
-"27462ca7cff9"
-],
 "geometry/3TKS0Y8EH7::framing/member:stud-001": [
 6.1341,
 6.283325,
@@ -9490,12 +9484,6 @@
 8.524875,
 8,
 "8032ba574233"
-],
-"geometry/CAW113AAAA::framing/member:cripple-head-0-02": [
-8.2677,
-8.321675,
-8,
-"dd679ced1d17"
 ],
 "geometry/CAW113AAAA::framing/member:header-0": [
 8.1788,
@@ -40973,12 +40961,6 @@
 8,
 "721cafec4501"
 ],
-"geometry/HKFW104YS3::framing/member:stud-005": [
-6.1341,
-6.1642625,
-8,
-"efa0580a27f6"
-],
 "geometry/HNBWJNTS71-run/body": [
 2.9337057,
 3.06705,
@@ -41584,12 +41566,6 @@
 6.2436375,
 8,
 "3bc90d686fa0"
-],
-"geometry/P8A4CWAL04::framing/member:stud-004": [
-6.1341,
-6.16585,
-8,
-"27462ca7cff9"
 ],
 "geometry/P8A4EWAL03/layer:gwb-a": [
 6.096,
@@ -48977,12 +48953,6 @@
 4,
 "a4671b405432"
 ],
-"member/3TKS0Y8EH7/stud-000": [
-6.1341,
-6.16585,
-2,
-"91c89a3292f9"
-],
 "member/3TKS0Y8EH7/stud-001": [
 6.1341,
 6.283325,
@@ -53794,12 +53764,6 @@
 8.524875,
 2,
 "4947e51666d7"
-],
-"member/CAW113AAAA/cripple-head-0-02": [
-8.2677,
-8.321675,
-2,
-"2246ad75f715"
 ],
 "member/CAW113AAAA/header-0": [
 8.1788,
@@ -76229,12 +76193,6 @@
 2,
 "c41a1e63dd47"
 ],
-"member/HKFW104YS3/stud-005": [
-6.1341,
-6.1642625,
-2,
-"8c650e6bdb1e"
-],
 "member/KKVYSAJKZF/cripple-head-0-01": [
 2.21615,
 2.651125,
@@ -76486,12 +76444,6 @@
 6.2436375,
 2,
 "f48c71012f74"
-],
-"member/P8A4CWAL04/stud-004": [
-6.1341,
-6.16585,
-2,
-"91c89a3292f9"
 ],
 "member/P8A4EWAL03/corner-start": [
 6.1341,

@@ -16,6 +16,7 @@ from typehaus.model.enums import DoorOperation
 from typehaus.quantities import M_PER_IN
 from typehaus.quantities import m as _m
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.resolve.framing.short_members import MIN_STUD_LINE_M
 from typehaus.resolve.framing.stud_module import OpeningStudModule, opening_stud_module
 from typehaus.resolve.framing.tables import (
     OVERHEAD_TRACK_MEMBER,
@@ -82,9 +83,15 @@ def framed_around(opening: Any, wall: Any = None, layer_name: str | None = None)
     return opening.width_m > bore or opening.height_m > bore
 
 _PLATE_THICKNESS_M = 1.5 * M_PER_IN
-# Shorter than a plate is not a buildable stud, it is a sliver: a header landing
-# just shy of the plate line gets no cripples rather than a row of offcuts.
-_MIN_CRIPPLE_M = _PLATE_THICKNESS_M
+# Shorter than the plate stack it is nailed between is not a buildable stud, it is a
+# sliver: a header landing just shy of the plate line gets no cripples rather than a row
+# of offcuts. ONE minimum for the whole package — this was 1.5" (one plate, not two) while
+# the finding read 3", and that disagreement is what generated a 2 1/8" cripple and then
+# flagged it. These two gates are now an optimisation (don't build what ``frame_wall``'s
+# return would discard) plus what keeps ``_cripple_stations`` from leaving a hole in its
+# numbering; the guarantee lives at that return.
+_MIN_CRIPPLE_M = MIN_STUD_LINE_M
+_MIN_CRIPPLE_TOL_M = 1e-9
 
 
 @dataclass(frozen=True)
@@ -577,7 +584,9 @@ def _append_sill_cripples(out: list[FramedMember], parent_uid: str, opening_inde
                           member: str, spacing: float) -> None:
     """Cripples under a rough sill, at the host wall's own maximum spacing. Windows
     only — a door has no rough sill to carry."""
-    if sill - bottom <= _MIN_CRIPPLE_M:
+    # ``<`` with a tolerance, never ``<=``: W-B-CE's head cripples resolve at exactly
+    # 3.0" and clear the bound by ~1e-16 m of float luck.
+    if sill - bottom < _MIN_CRIPPLE_M - _MIN_CRIPPLE_TOL_M:
         return
     for index, station in _cripple_stations(center, half, spacing):
         position = add(wall_start, scale(direction, station))
@@ -600,7 +609,7 @@ def _append_head_cripples(out: list[FramedMember], parent_uid: str, opening_inde
     for index, station in _cripple_stations(center, half, spacing):
         position = add(wall_start, scale(direction, station))
         wall_top = top_at(station)
-        if wall_top - header_top <= _MIN_CRIPPLE_M:
+        if wall_top - header_top < _MIN_CRIPPLE_M - _MIN_CRIPPLE_TOL_M:
             continue
         out.append(FramedMember(parent_uid, f"cripple-head-{opening_index}-{index:02d}",
                                 "cripple", member, position, position, header_top,

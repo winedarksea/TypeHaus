@@ -1,8 +1,12 @@
 """The member-level short-framing finding, and the garage track-jamb legs it sits beside.
 
 ``integrity.wall_shorter_than_plates`` grades a WALL; these tests pin the piece. Catlin's
-raked attic walls frame legal plates at their tall end and 1 1/4" studs at their short
+raked attic walls framed legal plates at their tall end and 1 1/4" studs at their short
 one — a defect no wall-level finding can reach, because the wall is 62" tall.
+
+Since 2026-09-20 ``solver.frame_wall`` REFUSES to emit them (same predicate,
+``is_stud_line_offcut``), so the house-level test below asserts the house reports none.
+The unit tests still grade the predicate directly, which is where the threshold lives.
 """
 
 from __future__ import annotations
@@ -12,6 +16,7 @@ import pytest
 from typehaus.quantities import inch
 from typehaus.resolve.framing.short_members import (
     MIN_STUD_LINE_IN,
+    is_stud_line_offcut,
     short_member_findings,
 )
 from typehaus.resolve.model import FramedMember
@@ -37,6 +42,10 @@ def test_a_stud_shorter_than_its_plates_is_reported_by_name():
     # The point of a MEMBER-level finding is that it names the member.
     assert "stud-000" in findings[0].message
     assert "W-A-STU-N" in findings[0].message
+    # The finding says the piece was REFUSED, not that it was built: an author whose
+    # legitimate sub-3" vertical is declined has to learn it was wanted and dropped.
+    assert "refused" in findings[0].message
+    assert "nothing was emitted" in findings[0].fix_hint
     assert "blocking" in findings[0].fix_hint
 
 
@@ -71,19 +80,19 @@ def test_a_board_laid_along_the_wall_is_not_graded():
     assert short_member_findings("W-X", (_horizontal("cripple", 2.0),)) == []
 
 
-def test_catlin_reports_its_four_offcuts_and_no_more(catlin_model):
-    """The live house: three 1 1/4"-class studs in the raked attic walls plus one 2 1/8"
-    head cripple. Every one of them is a real offcut nobody can nail."""
-    reported = {}
-    for wall in catlin_model.walls:
-        for finding in short_member_findings(wall.tag, wall.members):
-            reported[finding.message.split()[1]] = wall.tag
-    assert sorted(reported.items()) == [
-        ("cripple-head-0-02", "W-A-SN"),
-        ("stud-000", "W-A-STU-N"),
-        ("stud-004", "W-A-SN-EAST"),
-        ("stud-005", "W-A-GC-S"),
-    ]
+def test_catlin_frames_no_offcut_at_all(catlin_model):
+    """The live house. It used to carry four — three 1 1/4"-class studs in the raked attic
+    walls (``W-A-STU-N`` ``stud-000``, ``W-A-SN-EAST`` ``stud-004``, ``W-A-GC-S``
+    ``stud-005``) plus ``W-A-SN``'s 2 1/8" ``cripple-head-0-02``. ``frame_wall``'s return
+    now filters them out, so the finding has nothing left to report and this test is the
+    assertion that the gate holds house-wide."""
+    reported = {f"{wall.tag} {finding.message.split()[1]}"
+                for wall in catlin_model.walls
+                for finding in short_member_findings(wall.tag, wall.members)}
+    assert reported == set()
+    # And not by the finding going blind: the predicate is still the live one.
+    assert not [m for wall in catlin_model.walls for m in wall.members
+                if is_stud_line_offcut(m)]
 
 
 def test_the_garage_track_jamb_legs_bear_on_the_slab_not_on_a_removed_plate(catlin_model):

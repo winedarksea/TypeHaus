@@ -122,7 +122,42 @@ finding hiding a real one.
 
 **The real one, recorded here rather than fixed:** the shortest stud on `W-A-STU-N` really is
 **1-1/4"**. That is a MEMBER-level finding, not a wall-level one (`short_post_findings` is the
-precedent for the shape), and it will light up on walls this change never touched. Not done.
+precedent for the shape), and it will light up on walls this change never touched. ~~Not
+done.~~ Closed 2026-09-20 — see below.
+
+### The generator stops making the offcut (2026-09-20)
+
+The four members the entry above deferred (`W-A-SN` `cripple-head-0-02` 2-1/8", `W-A-SN-EAST`
+`stud-004` 1-1/4", `W-A-GC-S` `stud-005` 1-3/16", `W-A-STU-N` `stud-000` 1-1/4") are gone
+because `resolve/framing/solver.frame_wall` no longer emits them. **No catlin geometry moved.**
+
+* **The disagreement was the bug.** `openings._MIN_CRIPPLE_M` was **1.5"** — one plate — while
+  `short_members.MIN_STUD_LINE_IN` was **3"**, the two plate thicknesses a cripple is actually
+  nailed between. That is exactly how a 2-1/8" cripple got generated and then flagged. One
+  minimum now; `openings` imports it.
+* **One choke point, not four.** The gate is `frame_wall`'s `return`, where every vertical that
+  frames into a wall already is. A guard per emitter is four rules wearing a disguise, and the
+  return also makes index stability free: `child_key` is assigned before the filter, so the
+  golden shows **8 key deletions and not one modified key**.
+* **The wedge gets nothing, not a tapered block.** `FramedMember` can taper, so a filler was
+  available. `W-A-GC-S`'s panel "tapers from 3'-6" at its west end to nothing at the eave"
+  (`plan/storeys/attic.py`) — the wedge is intended, and `stud-005`'s top is *exactly*
+  `plate-raked-1`'s low end. The sliver is the last 1-3/16" of a triangle already bounded by
+  the sole plate below and the raked top plate above; gypsum lands on those two faces. A
+  sub-3" tapered block is not a piece a framer cuts, and billing one would repeat the defect
+  in a different category. The takeoff is ~5.8" of 2x4 lighter (638 → 634 pcs of 2x4; the
+  ordered 4,672 LF does not move) and that is the right answer.
+* **Refused, not vanished.** The finding stays as the assertion that the gate holds, and its
+  message now says the piece *was refused* — an author whose legitimate sub-3" vertical is
+  declined has to learn it was wanted and dropped.
+* **The ulp trap.** `W-B-CE`'s three head cripples resolve at **exactly 3.0"** and cleared the
+  old `<=` bound by 1.1e-16 m of float luck. Raising the minimum without also making the
+  comparison `< min - 1e-9` would have deleted the very cripples this codebase cites as the
+  legitimate passing case, and the golden would have blessed it silently.
+* **Not covered, deliberately:** corner studs (category `corner`, outside
+  `STUD_LINE_CATEGORIES` — catlin's shortest is 11-7/8", so a guard would be dead code) and
+  cladding verticals from `furring`/`truss_wall`, which are appended *after* that return.
+  Both are the coverage the finding already had; gate-set ≡ finding-set is the rule.
 
 ### The girt screw went engineered, and the screw itself was replaced (2026-09-12)
 

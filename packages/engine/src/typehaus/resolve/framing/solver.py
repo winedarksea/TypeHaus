@@ -53,7 +53,10 @@ from typehaus.resolve.framing.posts import (
     posts_by_wall,
     short_post_findings,
 )
-from typehaus.resolve.framing.short_members import short_member_findings
+from typehaus.resolve.framing.short_members import (
+    is_stud_line_offcut,
+    short_member_findings,
+)
 from typehaus.resolve.framing.tables import DEFAULT_SPACING, member_actual
 from typehaus.resolve.geometry import add, length, normal, scale, sub, unit
 from typehaus.resolve.layout_lines import layout_phase, lines_by_wall
@@ -362,7 +365,17 @@ def frame_wall(plan: PlanModel, rw: ResolvedWall, openings: list[WallOpening],
     # keepout removed; before nothing, because nothing else reads them.
     append_carrier_framing(members, rw, frame_member, d, p0, stud_z0, axis_len, top_at,
                            carrier_bays, dropped_stations)
-    return tuple(members)
+    # The ONE choke point for the stud-line minimum. Every vertical that frames into this
+    # wall is already in ``members`` — module studs, corner studs, the opening king/jack/
+    # cripple pack, tee packs, carrier studs, pocket-split and flank studs — so one filter
+    # here beats a guard per emitter, which would be four rules wearing a disguise. A
+    # sliver is *refused*, not re-categorised as blocking: see ``short_members``.
+    #
+    # ``child_key`` is assigned by ``enumerate`` before this, so the survivors keep their
+    # original indices for free. Cladding verticals (``furring``/``truss_wall``) are
+    # appended after this return and are NOT gated — the same coverage the finding has
+    # always had.
+    return tuple(m for m in members if not is_stud_line_offcut(m))
 
 
 def _plate_segments(start: float, end: float, breaks: list[tuple[float, float]],
