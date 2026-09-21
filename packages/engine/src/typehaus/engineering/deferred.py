@@ -234,29 +234,9 @@ _declare(Deferral(
                    test="tests/test_sunken_garden_study.py"),),
 ))
 
-_declare(Deferral(
-    kind="thermal_break_transfer",
-    reason="a row of bars ties two separate pours across a deliberate insulating break, and "
-           "the force in them is authored rather than computed. This engine derives NO "
-           "demand for the joint: not the differential settlement between a heated house "
-           "footing and a freestanding court wall standing in an open excavation, not the "
-           "thermal movement the break exists to permit, not the shear the two pours "
-           "exchange. The bar count is set by the board's width and a spacing rule, which "
-           "is a detailing rule and not a limit state, and the GFRP bars' own stiffness and "
-           "development are manufacturer data the model does not hold. NOTHING GRADES A "
-           "THERMAL BREAK FOR CONTINUITY EITHER, so the board's own integrity — it is a "
-           "Layer against the fresh head of a pour, held against floating and racking by "
-           "nothing — is equally uncomputed",
-    designer="structural engineer of record, with the GFRP manufacturer's published bond "
-             "and modulus data",
-    deliverable="a stated design shear and differential movement across each break, the bar "
-                "size, count and embedment that carry them, and the bracing that holds the "
-                "board in position during the pour",
-    unblocks="Foundations — the thermal-break detail on S-100 and the pour-sequence hold "
-             "point it depends on",
-    oracle=(Oracle(note="sunken_garden_court_free_body.md", section="§9",
-                   test="tests/test_retaining_court.py"),),
-))
+# NOTE — ``thermal_break_transfer`` is COMPUTED since 2026-09-20, in
+# ``engineering/thermal_break.py``, as a reserve. Its deliverable prose is that module's
+# NOT-GRADED note; settlement keeps every item INCOMPLETE until a measured modulus exists.
 
 _declare(Deferral(
     kind="tiered_retaining",
@@ -327,21 +307,6 @@ def _veneer_beam_keys(ctx: EngineeringContext) -> list[str]:
             if _extents_overlap(axes.get(beam.tag), axes.get(carried.tag)):
                 supports.add(beam.tag)
     return sorted(supports)
-
-
-@keys("thermal_break_transfer")
-def _thermal_break_keys(ctx: EngineeringContext) -> list[str]:
-    """Every ``Dowel`` carrying a foam block — a structural tie across a deliberate break.
-
-    ``foam_thickness`` is the whole test and it is the right one: a dowel with no block is an
-    ordinary pour-joint tie between two pieces of the same structure, which needs no
-    assignment. A dowel with one is holding two structures together *through* an insulator
-    that was put there to keep them apart, and the force in it is a design question.
-    """
-    from typehaus.model.structure import Dowel
-
-    return sorted(d.tag for d in ctx.plan.all_elements()
-                  if isinstance(d, Dowel) and d.foam_thickness is not None)
 
 
 @keys("tiered_retaining")

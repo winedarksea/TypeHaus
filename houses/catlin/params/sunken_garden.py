@@ -3725,7 +3725,7 @@ _dowel_z = _wall_bottom - inch(_HOUSE_FOOTING_DEPTH_IN / 2.0)
 # beam's through its `source` text, and `test_catlin_contract_m3` asserts the sites agree —
 # a comment alone is what let the retaining top's spot elevations rot for two revisions.
 #
-# ** 40 psi (ASTM C578 Type VII), not the slab's 25. ** The board is a FORM FACE here: it
+# ** 40 psi (ASTM C578 Type VI — Type VII is 60 psi), not the slab's 25. ** The board is a FORM FACE here: it
 # takes the fresh concrete head of a 12" pour against it with nothing behind it but a
 # cured house footing, and a board that dishes under the head is a board the two pours
 # have found each other around.
@@ -3806,6 +3806,11 @@ def _break_bar_count(board_width_in: float) -> int:
 # footing into nothing outboard, and **6" of bare footing-to-footing concrete at the court
 # end**. The third sign (+1 into the court, -1 on the east leg) is what keeps the board on
 # the pour it separates whenever the offset is not zero.
+# ** THE PRODUCT VALUES ARE UNSET ON PURPOSE (2026-09-20). ** `thermal_break_transfer`
+# grades these four as a reserve (notes/sunken_garden_court_free_body.md §11) and needs
+# `bar_shear_lb`/`bar_tensile_lb`/`bar_modulus_psi`/`bar_source` off a named ASTM D7957
+# GFRP datasheet and `foam_modulus_psi` off the board's. This house names no GFRP product,
+# so none is authored — quote the chosen product's published values, never a typical one.
 _DOWEL_AT = (("W1", _x_ax_w, "FT-B-S1", +1.0), ("E1", _x_ax_e, "FT-B-S4", -1.0))
 DOWELS = [
     Dowel(uid=f"SGDW0{i}AAAA", tag=f"DW-SG-{name}",

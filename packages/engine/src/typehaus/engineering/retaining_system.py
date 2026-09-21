@@ -599,6 +599,29 @@ def system_factors(ctx: EngineeringContext, ref: str, members: list
     return out
 
 
+def footing_shortfalls(ctx: EngineeringContext
+                       ) -> dict[str, dict[float, dict[str, float]]]:
+    """``{loop ref: {soil_pcf: {member tag: shortfall lb}}}`` — each member's own thrust
+    less its own base friction, the PER FOOTING figures ``_one`` prints. A loop that does
+    not verify is omitted; ``thermal_break`` reads its reserve demand here."""
+    soil = presumptive(getattr(ctx, "soil_class", None))
+    if soil is None:
+        return {}
+    out: dict[str, dict[float, dict[str, float]]] = {}
+    for ref, members in _loops(ctx).items():
+        if _verify(ctx, ref, members):
+            continue
+        by_pcf: dict[float, dict[str, float]] = {}
+        for pcf in SOIL_UNIT_WEIGHT_BAND_PCF:
+            built, missing = _members(ctx, members, soil=soil, soil_pcf=pcf)
+            if missing:
+                break
+            by_pcf[pcf] = {m.tag: m.unassisted_shortfall_lb for m in built}
+        else:
+            out[ref] = by_pcf
+    return out
+
+
 def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
     tags = tuple(sorted({ref, *(w.tag for w in members)}))
     soil = presumptive(getattr(ctx, "soil_class", None))
