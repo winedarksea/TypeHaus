@@ -234,12 +234,12 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset(catlin_check_r
     # deferred engineering kinds were registered and their lines flipped to blocking; on
     # catlin they hold the gate shut for named reasons (haus engineering): the landing
     # column's base turns in the ground (base_rotation/PT-BW-GW, δ 1.456), two column heads
-    # have no published lateral value, the veneer beam's end anchorage is unauthored, the
-    # thermal breaks await GFRP data and a measured modulus, and the SRW apron is OVER.
+    # have no published lateral value, the thermal breaks await GFRP data and a measured
+    # modulus, and the SRW apron is OVER. The veneer beam's end anchorage closed 2026-09-21
+    # (notes/sunken_garden_veneer_beam.md §6e).
     OPEN: set[str] = {
         "Fixed column base rotation (stiffness and sway)",
         "Cast column head joint (connector, shear, torsion)",
-        "Cast beam carrying a masonry veneer",
         "Structural ties across a thermal break",
         "Segmental gravity retaining walls (tiered)",
     }

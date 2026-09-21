@@ -109,7 +109,7 @@ from typehaus.model.placeables import (
 from typehaus.model.plan import Library, PlanModel
 from typehaus.model.product import Product
 from typehaus.model.project import Building, Project, Site, Storey
-from typehaus.model.rebar import BarSpec, ReinforcementSpec, RibLayout
+from typehaus.model.rebar import BarSpec, HookConfinement, ReinforcementSpec, RibLayout
 from typehaus.model.refs import (
     Arch,
     DiaphragmSpec,
@@ -279,6 +279,7 @@ for _name, _obj in (
 __all__ = [
     "ReinforcementSpec",
     "BarSpec",
+    "HookConfinement",
     "RibLayout",
     "FiberSpec",
     "ConcreteSpec",

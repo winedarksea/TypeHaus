@@ -432,10 +432,11 @@ def test_the_two_gates_are_separate_and_catlin_reaches_neither(catlin_engineerin
     nothing to do with any calculation — catlin carries no `engineering.toml` at all — so it
     stays false with every draft line green, and it would have stayed false with them red.
 
-    ** AND MISSES DRAFT AGAIN SINCE 2026-09-20, ON FIVE NAMED LINES. ** Every deferred kind
-    became a registered calculation and its line blocks; the five below are what those
+    ** AND MISSES DRAFT AGAIN SINCE 2026-09-20, ON NAMED LINES. ** Every deferred kind
+    became a registered calculation and its line blocks; the lines below are what those
     calculations found open on catlin (`haus engineering`). The set is pinned exactly, so a
-    sixth line going red, or one of these closing unnoticed, fails here.
+    new line going red, or one of these closing unnoticed, fails here. The veneer beam closed
+    2026-09-21 (hook ties and footing dowels, `notes/sunken_garden_veneer_beam.md` §6e).
     """
     _ctx, _items, checklist = catlin_engineering
     blocked = [item.label for item in checklist.items
@@ -444,7 +445,6 @@ def test_the_two_gates_are_separate_and_catlin_reaches_neither(catlin_engineerin
     assert sorted(blocked) == sorted([
         "Fixed column base rotation (stiffness and sway)",
         "Cast column head joint (connector, shear, torsion)",
-        "Cast beam carrying a masonry veneer",
         "Structural ties across a thermal break",
         "Segmental gravity retaining walls (tiered)",
     ]), blocked
