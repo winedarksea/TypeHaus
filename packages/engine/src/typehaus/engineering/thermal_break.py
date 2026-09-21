@@ -10,17 +10,25 @@ board would have to survive:
 * board flotation — Archimedes on the board, against the bars' bearing on the foam;
 * thermal movement the board takes — ``α_c`` × (site hot − the concrete's set temperature,
   bounded below by ACI 306R's 50 °F) over the court's full run, against the closure at the
-  long-term allowable stress, ``t · (foam_psi / 3) / foam_modulus_psi``;
+  long-term allowable stress, ``t · (foam_psi / 3) / foam_modulus_psi`` (any board: XPS or
+  mineral wool, on the rated stress and modulus its sheet publishes);
 * dowel shear reserve — ``retaining_system``'s governing per-footing shortfall at 1.6H, shared
   by bar count across every break reaching that court, against
   ``min(0.75 V_bar, 0.55 T_u d / 4t)`` per bar (shear, or rupture in double curvature over
   the gap);
-* differential settlement — INCOMPLETE until ``SubgradeModulus.k_v_pci`` is measured.
+* differential settlement — the court stem's own bearing over ``SubgradeModulus.k_v_pci``
+  (measured or a presumed published row), against the bars' rupture drift over the gap,
+  ``φ (T_u d / 8) t² / 6EI``.
+
+A row over its capacity makes the item OVER even while an input is still missing, as on
+the other kinds: an INCOMPLETE would hide a graded shortfall behind an open question.
 
 Oracle: ``houses/catlin/notes/sunken_garden_court_free_body.md`` §11, worked by hand first.
 """
 
 from __future__ import annotations
+
+import math
 
 from typehaus.engineering.item import (
     EngineeringRecord,
@@ -37,7 +45,7 @@ from typehaus.engineering.retaining_system import footing_shortfalls
 KIND = "thermal_break_transfer"
 BASIS = "ACI 347R-14 (fresh-concrete pressure); ACI 440.11-22 (GFRP bar); IRC R404.4 loop"
 #: Bumped whenever the arithmetic below changes — it rides in the fingerprint.
-BASIS_VERSION = "2"
+BASIS_VERSION = "3"
 
 #: ACI 347R-14 unit weight of fresh concrete, pcf — the ``w`` in ``p = w·h``.
 CONCRETE_PCF = 150.0
@@ -49,17 +57,15 @@ PHI_RUPTURE = 0.55
 #: ACI 306R-16 Table 3.1: minimum as-placed concrete temperature, 12"-36" section, °F — the
 #: lowest set temperature, so the largest closing range.
 MIN_SET_TEMP_F = 50.0
-#: Sustained-stress factor against XPS creep: a board held closed for a season may take a
-#: third of its short-term rating (the maker's "3:1 for static loads").
+#: Sustained-stress factor against creep: a board held closed for a season may take a third
+#: of its short-term rating (the XPS maker's "3:1 for static loads"). Kept for mineral wool,
+#: whose sheets publish no creep figure at all (free body §11c).
 FOAM_CREEP_FACTOR = 3.0
 
 SETTLEMENT_MISSING = (
-    "`Site.lateral_subgrade_modulus.k_v_pci` — the measured vertical subgrade modulus "
-    "(SubgradeModulus.k_v_pci, a strip footing at its real width) from a geotechnical "
-    "report; differential settlement across the break has no demand without it")
-SETTLEMENT_OWED = (
-    "the differential-settlement shear across the break, from the measured "
-    "`SubgradeModulus.k_v_pci` — the engineer's to state; this engine computes none")
+    "`Site.lateral_subgrade_modulus.k_v_pci` — a vertical subgrade modulus "
+    "(SubgradeModulus.k_v_pci, a strip footing at its real width), measured or a presumed "
+    "published row; differential settlement across the break has no demand without it")
 
 _IN_PER_M = 1.0 / 0.0254
 
@@ -241,13 +247,7 @@ def _one(ctx, dowel, loops, side, bars_on) -> EngineeringRecord:  # noqa: C901
         ref, structure = side
         _movement(ctx, dowel, structure, t_in, states, missing, inputs)
         _reserve(dowel, ref, loops[ref], bars_on[ref], t_in, states, missing, inputs, notes)
-
-    _settlement(ctx, missing, inputs)
-    over = [s for s in states if not s.ok]
-    if over:
-        # Settlement holds the item INCOMPLETE; an over row must still reach the permit line.
-        missing.append("a design answer to the rows graded OVER — " + ", ".join(
-            f"{s.name} {s.ratio:.2f}" for s in over) + " (free body §11f lists the options)")
+        _settlement(ctx, dowel, structure, t_in, states, missing, inputs, notes)
     notes.append(
         "NOT GRADED: joint OPENING under contraction (bonded bars cannot stretch the "
         "movement over the gap — they debond, rupture or drag the court); placement impact "
@@ -256,7 +256,8 @@ def _one(ctx, dowel, loops, side, bars_on) -> EngineeringRecord:  # noqa: C901
         "either pour; the board's continuity along the joint; and the bracing that holds "
         "the board in position during the pour. What the structural engineer of record "
         "still owes, on the GFRP maker's published bond and modulus data (the deferral's "
-        "deliverable): a stated design shear and differential movement across each break, "
+        "deliverable): a stated design shear across each break, the differential "
+        "settlement on a report's k_v in place of a presumed one, "
         "the bar size, count and embedment that carry them, and that bracing — for S-100's "
         "thermal-break detail and the pour-sequence hold point it depends on.")
     return _record(dowel, tags, states, missing, notes, inputs)
@@ -295,14 +296,73 @@ def _movement(ctx, dowel, structure, t_in, states, missing, inputs) -> None:
         f"E {dowel.foam_modulus_psi:,.0f} psi — {dowel.foam_source}"))
 
 
-def _settlement(ctx, missing, inputs) -> None:
+def _court_stem(ctx, dowel, structure: set[str]):
+    """``(wall tag, stem plf, footing width in)`` — the court wall at this joint and the
+    strip under it, or None. A connect is a wall, or a footing read through ``under``."""
+    from typehaus.model.enums import LayerFunction
+    from typehaus.model.structure import Footing
+
+    for tag in dowel.connects:
+        el = ctx.plan.by_tag(tag)
+        wall = ctx.plan.by_tag(el.under) if isinstance(el, Footing) else el
+        if wall is None or wall.tag not in structure:
+            continue
+        footing = el if isinstance(el, Footing) else next(
+            (f for f in ctx.plan.all_elements()
+             if isinstance(f, Footing) and f.under == wall.tag), None)
+        assembly = ctx.plan.library.resolve_assembly(getattr(wall, "assembly", "") or "")
+        thick = sum(ly.thickness.inches for ly in getattr(assembly, "layers", ())
+                    if ly.function is LayerFunction.STRUCTURE)
+        top, bot = getattr(wall, "top_elevation", None), getattr(wall, "bottom_elevation", None)
+        if footing is None or not thick or top is None or bot is None:
+            return None
+        plf = CONCRETE_PCF * (thick / 12.0) * (top.inches - bot.inches) / 12.0
+        return wall.tag, plf, footing.width.inches
+    return None
+
+
+def _settlement(ctx, dowel, structure, t_in, states, missing, inputs, notes) -> None:
+    """The court stem's bearing over k_v, against the bars' rupture drift over the gap.
+
+    The stem is placement 2, cast after the footing that holds these bars has set, so its
+    whole weight settles the court side against a house cured and surveyed first (free body
+    §11e). It is a LOWER bound on the court's added bearing (porch, soil and snow add to it),
+    and the house is credited no settlement of its own — the bound's two halves are stated.
+    """
     report = getattr(ctx.plan.project.site, "lateral_subgrade_modulus", None)
     k_v = getattr(report, "k_v_pci", None)
     if k_v is None:
         missing.append(SETTLEMENT_MISSING)
         return
-    inputs.append(Quantity("k_v", k_v, "pci", 0.1))
-    missing.append(SETTLEMENT_OWED)
+    presumed = getattr(report, "provenance", "measured") == "presumed"
+    inputs += [Quantity("k_v", k_v, "pci", 0.1),
+               Quantity("k_v_presumed", 1.0 if presumed else 0.0, "-", 0.5)]
+    stem = _court_stem(ctx, dowel, structure)
+    if stem is None:
+        missing.append(f"the court wall {dowel.tag} ties, with a STRUCTURE layer, top and "
+                       f"bottom elevations and a Footing under it — the settlement demand")
+        return
+    if dowel.bar_tensile_lb is None or dowel.bar_modulus_psi is None:
+        return  # the reserve row already names the missing bar values
+    wall_tag, plf, width_in = stem
+    q_psi = plf / (width_in / 12.0) / 144.0
+    d_in = dowel.diameter.inches
+    ei = dowel.bar_modulus_psi * math.pi * d_in ** 4 / 64.0
+    m_cap = PHI_RUPTURE * dowel.bar_tensile_lb * d_in / 8.0
+    drift_cap = m_cap * t_in ** 2 / (6.0 * ei)
+    inputs.append(Quantity("stem_bearing", q_psi * 144.0, "psf", 0.1))
+    label = "PRESUMED" if presumed else "measured"
+    states.append(LimitState(
+        "differential settlement", q_psi / k_v, drift_cap, "in",
+        f"{wall_tag}'s stem {plf:,.0f} plf over {width_in / 12:.2f}' of footing = "
+        f"{q_psi * 144:.1f} psf / k_v {k_v:g} pci ({label}: {report.source}); vs the bar's "
+        f"rupture drift fixed-fixed over {t_in:.2f}\", 0.55 x T_u d/8 x t^2 / 6EI"))
+    notes.append(
+        f"SETTLEMENT, BOUNDED: the stem alone is a LOWER bound on the court's added bearing and "
+        f"the house is credited none of its own; the bars tolerate "
+        f"{k_v * drift_cap * 144.0:.0f} psf of bearing mismatch at this k_v."
+        + (" k_v IS PRESUMED, a published table row and not a report on this parcel — a "
+           "geotechnical report confirms or replaces it." if presumed else ""))
 
 
 def _reserve(dowel, ref, by_pcf, total_bars, t_in, states, missing, inputs, notes) -> None:
@@ -340,20 +400,17 @@ def _reserve(dowel, ref, by_pcf, total_bars, t_in, states, missing, inputs, note
 
 
 def _record(dowel, tags, states, missing, notes, inputs) -> EngineeringRecord:
-    ident = item_id(KIND, dowel.tag)
+    # OVER outranks INCOMPLETE, as on the other kinds: a graded shortfall is the finding.
+    over = [s for s in states if not s.ok]
+    status = Status.OVER if over else (Status.INCOMPLETE if missing else Status.OK)
+    graded = ", ".join(f"{s.name} {s.ratio:.2f}" for s in states) or "nothing"
+    summary = f"{dowel.tag}: graded as a reserve — {graded}"
+    if over:
+        summary += " — OVER on " + ", ".join(s.name for s in over)
     if missing:
-        graded = ", ".join(f"{s.name} {s.ratio:.2f}" for s in states) or "nothing"
-        return EngineeringRecord(
-            item_id=ident, kind=KIND, key=dowel.tag, basis_version=BASIS_VERSION,
-            basis=BASIS, status=Status.INCOMPLETE,
-            summary=(f"{dowel.tag}: graded as a reserve — {graded}; open: "
-                     f"{len(missing)} item(s), a measured k_v among them"),
-            inputs=tuple(inputs), limit_states=tuple(states),
-            missing=tuple(dict.fromkeys(missing)), notes=tuple(notes), element_tags=tags)
-    over = any(not s.ok for s in states)
+        summary += f"; open: {len(missing)} item(s)"
     return EngineeringRecord(
-        item_id=ident, kind=KIND, key=dowel.tag, basis_version=BASIS_VERSION, basis=BASIS,
-        status=Status.OVER if over else Status.OK,
-        summary=f"{dowel.tag}: the break graded as a reserve",
-        inputs=tuple(inputs), limit_states=tuple(states), notes=tuple(notes),
-        element_tags=tags)
+        item_id=item_id(KIND, dowel.tag), kind=KIND, key=dowel.tag,
+        basis_version=BASIS_VERSION, basis=BASIS, status=status, summary=summary,
+        inputs=tuple(inputs), limit_states=tuple(states),
+        missing=tuple(dict.fromkeys(missing)), notes=tuple(notes), element_tags=tags)

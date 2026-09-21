@@ -65,6 +65,7 @@ from typehaus import (
     SetbackSpec,
     SpotElevation,
     StreetFrontage,
+    SubgradeModulus,
     UtilityKind,
     UtilityLine,
     deg,
@@ -136,6 +137,16 @@ SITE = Site(
     # and they are the walls a real report would be commissioned for
     # (structural.foundation_unbalanced_fill).
     soil_class="GM",
+    # ** A PRESUMED k_v, NOT A REPORT (2026-09-21). ** Bowles (1997) Table 9-1, "silty medium
+    # dense sand", 24,000-48,000 kN/m3; GM shares IBC Table 1806.2's class with SM, and the LOW
+    # end is taken (softer = more settlement). 24,000 / 271.447 = 88.4 pci. Not width-corrected.
+    # Read by thermal_break's settlement row (free body §11e); n_h is not stated here.
+    lateral_subgrade_modulus=SubgradeModulus(
+        k_v_pci=88.4,
+        provenance="presumed",
+        source="Bowles, Foundation Analysis and Design 5th ed. (1997) Table 9-1, silty medium dense sand, low end 24,000 kN/m3 (as reproduced at strand7.com/strand7r3help/Content/Topics/SpecialTopics/SpecialModulusSubgradeReaction.htm)",
+        basis="published table row for the presumed soil class (GM, IBC Table 1806.2 class 4 with SM); no geotechnical report",
+    ),
     # Ground snow load, **MN Rules 1303.1700**. The IRC Table R301.2(1) citation once used
     # here named "Hennepin County / Minneapolis" — the right number from the wrong document
     # and the wrong county; the IRC table is the blank the state fills in, not the source,
