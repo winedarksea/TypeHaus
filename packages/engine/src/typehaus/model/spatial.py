@@ -20,6 +20,7 @@ from typehaus.model.refs import (
     DiaphragmSpec,
     FollowRoof,
     PublishedCapacity,
+    PublishedReaction,
     PublishedSpan,
 )
 from typehaus.model.registry import register_constructor, register_element
@@ -251,6 +252,9 @@ class Roof(Element):
     # ``checks/structural/published.graded_against_published_capacity`` for the grading. A
     # roof that authors these takes its uplift capacity OUT of the engineering register.
     published_uplift: tuple[PublishedCapacity, ...] = ()
+    # A trussed roof's bearing reactions off the fabricator's sealed design, one row per
+    # bearing — the demand ``structural.truss_reactions`` grades the chain below the heel at.
+    published_reactions: tuple[PublishedReaction, ...] = ()
     # Which of the two ridge-axis ends may be a GABLE END, by compass name. A gable end
     # takes a drop/gable-end frame instead of a field truss, and SBCA's own definition is
     # that such a frame has continuous vertical support from the end wall or beam under its

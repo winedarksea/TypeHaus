@@ -533,8 +533,10 @@ def uplift_capacity_items(ctx: CheckContext) -> list[Finding]:
                 f"indexed by a truss span and spacing — does not describe it, and the "
                 f"uplift REACTIONS are part of the component design its fabricator seals",
                 (roof.tag,), code="IRC R802.11 / R802.10.2",
-                fix=f"seal `rafter/{roof.tag}` in engineering.toml — its deliverable "
-                    f"covers the uplift reactions and the connector schedule under them"))
+                fix=f"quote the fabricator's sealed reaction schedule into "
+                    f"Roof.published_reactions on {roof.tag} (graded by "
+                    f"structural.truss_reactions), and record the component design against "
+                    f"`rafter/{roof.tag}` in engineering.toml"))
             continue
 
         out.extend(_published_uplift_findings(ctx, roof, _authored_uplift(ctx, roof.tag)))

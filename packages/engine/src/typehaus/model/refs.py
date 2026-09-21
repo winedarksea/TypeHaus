@@ -264,6 +264,46 @@ class PublishedCapacity(HausModel):
     exposure: str | None = None
 
 
+class PublishedReaction(HausModel):
+    """One bearing reaction off a truss fabricator's SEALED design, quoted onto the roof.
+
+    The fabricator's seal covers the component and stops at its heel; the reaction it
+    publishes is the demand for everything below. Quoting it here lets
+    ``structural.truss_reactions`` grade that chain against published connector allowables
+    instead of the whole roof waiting on one deferral. It is an INTAKE, not a seal: the
+    component design itself stays ``rafter/<roof>`` until ``engineering.toml`` records it.
+
+    The load-basis fields are drift guards, the ``PublishedCapacity`` discipline: a reaction
+    is true for the loads the design was run at. ``ground_snow_psf`` and ``drift_psf`` are
+    the ones that matter here — a quote priced on the bare ground snow buys ordinary trusses
+    under a roof-step drift.
+    """
+
+    #: The sealed design document — fabricator, job, revision — enough to open it.
+    source: str
+    #: The reaction-schedule row, in the document's own words.
+    table: str
+    #: The truss mark or profile the row is for.
+    member: str
+    #: Net uplift at this bearing, lb (ASD, as the fabricator publishes it).
+    uplift_lb: float
+    #: What the design assumes that this engine does not check.
+    condition: str
+    #: Gravity reaction at this bearing, lb, where published.
+    gravity_lb: float | None = None
+    #: Truss spacing the design was laid out at.
+    spacing: Length | None = None
+    #: Ground snow the design was run at, psf.
+    ground_snow_psf: float | None = None
+    #: Peak drift surcharge the design carries, psf; ``None`` means the row states none.
+    drift_psf: float | None = None
+    #: The ultimate wind speed and exposure the uplift was computed at.
+    wind_speed_mph: float | None = None
+    exposure: str | None = None
+    #: The heel connector's published allowable — the first link below the reaction.
+    connector: PublishedCapacity | None = None
+
+
 class ShearPanelSpec(HausModel):
     """The SDPWS row a sheathed wall is CLAIMED to be built to, so it may be counted as a
     shear panel rather than as a wall that happens to have plywood on it.

@@ -567,8 +567,10 @@ MN_2020 = JurisdictionProfile(
         # `mep.deck_equipment_support_coverage` — now PASS honestly under names that say what
         # they grade, and what an engineer still owes is these two lines instead of a
         # disclaimer at the end of every passing row.
+        # `truss_reactions` rides this line under its own id: the chain below a trussed
+        # roof's heel, graded against the fabricator's published reactions.
         PermitItemSpec("Uplift connection capacity",
-                       ("structural.uplift_capacity",),
+                       ("structural.uplift_capacity", "structural.truss_reactions"),
                        ("IRC R802.11", "ASCE 7-16 §26-30"), blocking=False),
         PermitItemSpec("Deck equipment anchorage capacity",
                        ("mep.deck_equipment_anchorage_capacity",),

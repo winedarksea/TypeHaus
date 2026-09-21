@@ -74,19 +74,19 @@ _declare(Deferral(
            "case the fabricator has to be quoted against — a quote priced on \"50 psf "
            "ground snow\" buys ordinary trusses (notes/north_entry_piers.md §3, and "
            "preferences.toml [structural] roof_beam_snow_psf)",
-    designer="truss or I-joist manufacturer's engineer of record, with the structural "
-             "engineer of record for the continuous uplift load path BELOW the heel — two "
-             "roles because the fabricator's seal stops at the component: they publish the "
-             "uplift reaction, and somebody else owns the chain that carries it to the "
-             "footing",
+    designer="truss or I-joist manufacturer's engineer of record — the component design "
+             "only. The chain below the heel is no longer a second role here: the fabricator "
+             "PUBLISHES its reactions, and `structural.truss_reactions` grades that chain "
+             "against published connector allowables once they are quoted into the model "
+             "(`Roof.published_reactions`, 2026-09-20)",
     deliverable="a sealed component design and placement plan for the roof, covering the "
-                "profile, the bearing reactions, the web stiffener and hanger schedule, "
-                "the ground-snow case this site carries, and — since 2026-09-14, when the "
-                "`lateral_uplift` deferral folded into this one — the UPLIFT reactions at "
-                "every bearing with a connector schedule sized against them from the heel "
-                "down to the foundation",
-    unblocks="Roof framing — the S-105 rafter/truss line, the roof-load permit item, and "
-             "the wind uplift load path (structural.uplift_capacity)",
+                "profile, the web stiffener and hanger schedule, and the ground-snow AND "
+                "drift case this site carries. Its bearing and uplift reaction schedule is "
+                "the intake half: quote each row into `Roof.published_reactions` and the "
+                "chain below the heel is graded as a published read, not sealed here",
+    unblocks="Roof framing — the S-105 rafter/truss line and the roof-load permit item; "
+             "the uplift line (structural.uplift_capacity, structural.truss_reactions) "
+             "closes on the quoted reactions",
     oracle=(Oracle(note="catlin_truss_engineering.md",
                    test="tests/test_wind_loads.py"),
             Oracle(note="uplift_load_path.md",
