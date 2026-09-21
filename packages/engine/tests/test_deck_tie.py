@@ -38,7 +38,8 @@ def test_the_tie_is_derived_from_the_authored_hardware(catlin_ctx):
         ("W-BW-SCREEN", "W-G-W", 2, "HL33HDG", "y", None, False, "dry")]
     assert "windblown" in joints[2].service_basis
     assert [round(j.x_ft, 4) for j in joints] == [7.125, 9.4583, 6.1979]
-    assert [round(j.y_ft, 4) for j in joints] == [43.6771, 43.6771, 43.1458]
+    # The stem pairs stand 1 1/4" north of the core centreline (43.6771), §10a.
+    assert [round(j.y_ft, 4) for j in joints] == [43.7812, 43.7812, 43.1458]
 
 
 def test_the_loads_reproduce_section_10b(catlin_ctx):
@@ -52,29 +53,29 @@ def test_the_loads_reproduce_section_10b(catlin_ctx):
 
 
 def test_the_verdicts_reproduce_section_10c(catlin_ctx):
-    """§10c/§10d: the angles close (E-W 0.987 at BM-BW-FE; N-S 0.620; guard 0.842)."""
+    """§10c/§10d: every row passes; E-W wind at BM-BW-FE governs at 0.966."""
     record = catlin_ctx.engineering[_ITEM]
-    assert _state(record, "tie interaction, N-S wind").ratio == pytest.approx(0.620, abs=1e-3)
+    assert record.status is Status.OK
+    assert _state(record, "tie interaction, N-S wind").ratio == pytest.approx(0.6395, abs=5e-4)
     ew = _state(record, "tie interaction, E-W wind")
-    assert ew.ratio == pytest.approx(0.987, abs=1e-3)
-    assert _state(record, "tie interaction, guard").ratio == pytest.approx(0.842, abs=1e-3)
-    assert "132.4 lb along the wall / 518.0 + 671.0 lb across it / 917.0" in ew.citation
+    assert ew.ratio == pytest.approx(0.9665, abs=5e-4)
+    assert record.governing.name == ew.name
+    assert _state(record, "tie interaction, guard").ratio == pytest.approx(0.8145, abs=5e-4)
+    assert "119.5 lb along the wall / 518.0 + 674.7 lb across it / 917.0" in ew.citation
     # W's dry service is a judgement named for the engineer of record, on the record.
     assert any("DRY SERVICE at W-BW-SCREEN/W-G-W" in n and "engineer of record" in n
                for n in record.notes)
 
 
 def test_the_stem_anchors_reproduce_section_10e(catlin_ctx):
-    """§10e: one Titen HD per HL35 leg, 1.75" off the near face: OVER at 1.13 (FE, E-W)."""
+    """§10e: one Titen HD per HL35 leg, on the core centreline (the angle set 1 1/4" north):
+    3" to each face, 0.750 at FE under E-W wind."""
     record = catlin_ctx.engineering[_ITEM]
-    assert record.status is Status.OVER
-    assert _state(record, "wall anchors, tension").ratio == pytest.approx(0.6013, abs=5e-4)
-    assert _state(record, "wall anchors, shear").ratio == pytest.approx(0.7575, abs=5e-4)
-    both = _state(record, "wall anchors, tension-shear")
-    assert both.ratio == pytest.approx(1.1323, abs=5e-4)
-    assert record.governing.name == both.name
-    edge = _state(record, "wall anchor edge")
-    assert edge.capacity == pytest.approx(1.75) and edge.ok
+    assert _state(record, "wall anchors, tension").ratio == pytest.approx(0.5336, abs=5e-4)
+    assert _state(record, "wall anchors, shear").ratio == pytest.approx(0.3668, abs=5e-4)
+    assert _state(record, "wall anchors, tension-shear").ratio == pytest.approx(0.7503,
+                                                                                abs=5e-4)
+    assert _state(record, "wall anchor edge").capacity == pytest.approx(3.0)
     assert _state(record, "wall anchor spacing").capacity == pytest.approx(7.5)
     assert sum("FOR THE ENGINEER OF RECORD" in n and "EMPTY" in n for n in record.notes) == 2
 
@@ -96,15 +97,16 @@ def test_the_hl_reading_by_heel():
     assert isinstance(mixed, str)
 
 
-def test_the_anchor_layout_reads_the_hole_pattern():
-    """§10e: HL33's one hole is on the core centreline; HL35's first is 1-1/4" off it."""
-    from typehaus.engineering.deck_tie_anchor import ANGLES
+def test_the_anchored_hole_follows_where_the_angle_is_put():
+    """§10e: the hole nearest the core centreline is anchored. An HL35 centred on the core
+    leaves it 1 1/4" off (the 1.132 case); set 1 1/4" over, it lands on the centreline."""
+    from typehaus.engineering.deck_tie_anchor import ANGLES, anchor_station
 
-    for model, off in (("HL33HDG", 0.0), ("HL35HDG", 1.25)):
-        angle = ANGLES[model]
-        assert abs(angle.anchor_hole_in - angle.length_in / 2) == pytest.approx(off)
-        hole = angle.anchor_hole_in
-        assert min(hole, angle.length_in - hole) == pytest.approx(1.25)
+    hl35 = ANGLES["HL35HDG"]
+    assert abs(anchor_station(hl35, 0.0, 0.0)) == pytest.approx(1.25)
+    assert anchor_station(hl35, 1.25, 0.0) == pytest.approx(0.0)
+    assert anchor_station(ANGLES["HL33HDG"], 0.0, 0.0) == pytest.approx(0.0)
+    assert hl35.heel_arm_in == pytest.approx(1.25)
 
 
 def test_the_bolt_group_arithmetic_by_hand():

@@ -110,16 +110,17 @@ the graph's dead + snow line loads on each beam sum to `uniform_load` exactly.
 ### 3e. The landing's ties (2026-09-21)
 
 `γ = 270,000 × 0.5^1.5 = 95,459 lb/in` per bolt; two parts per joint → **190,919 lb/in**
-(3.3435e7 N/m) on DX and DY at three nodes: `N-BM-BW-FC:tie:W-GF-S1` (7.125, 43.677),
-`N-BM-BW-FE:tie:W-GF-S-DR` (9.458, 43.677) and the sill's north end (6.0, 42.479), which
+(3.3435e7 N/m) on DX and DY at three nodes: `N-BM-BW-FC:tie:W-GF-S1` (7.125, 43.781),
+`N-BM-BW-FE:tie:W-GF-S-DR` (9.458, 43.781) and the sill's north end (6.0, 42.479), which
 carries the screen's joint 0.67' south of where it is built — exact for the N-S spring, a
 few inches of lever on the E-W one. The test asserts six springs, equal, and no vertical
-reaction at any of them. Unchanged by the stem's move to HL35HDG (two bolts per wood leg,
-same stations): the spring stays one bolt per part, equal at every joint, because equal
-stiffness is what `deck_tie` distributes by.
+reaction at any of them. The stem's HL35HDG (two bolts per wood leg) keeps the spring at one
+bolt per part, equal at every joint, because equal stiffness is what `deck_tie` distributes
+by; its nodes moved 1-1/4" north with the angles (43.677 → 43.781).
 
 **Finding:** under gravity the graph hands the stem ties a horizontal thrust the building
-does not have — **~110 lb live, ~28 lb dead at `BM-BW-FC`** — because the seat beams' end
+does not have — **~95 lb live, ~24 lb dead at `BM-BW-FC`** (~110 / 28 before that move) —
+because the seat beams' end
 pieces run from the carriers (−0.385') DOWN to the column-top work points (−0.99') over
 1.125', an incline the rigid-link convention invents. It is small beside the 588-1,084 lb
 wind the record grades and is not in the record; it is pinned in the test so it cannot grow

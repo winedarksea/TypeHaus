@@ -171,7 +171,8 @@ def test_the_ties_carry_no_gravity_but_the_graph_hands_them_a_thrust(solved):
     """§3e: the block stands 1/4" off the stem, so no VERTICAL reaction reaches a tie. The
     graph does hand them a horizontal one under gravity — the seat beams' end pieces rise
     0.6' to the carriers over 1.125' (the work-point convention), a thrust the building
-    does not have. A finding, pinned so it cannot grow unseen: ~110 lb live at BM-BW-FC."""
+    does not have. A finding, pinned so it cannot grow unseen: ~95 lb live at a stem tie (~110
+    before the stem ties moved 1 1/4" north with their angles, §3e)."""
     _, model, result, _ = solved
     nodes = {s.node for s in model.support_springs if "deck_tie/" in s.basis}
     assert nodes
@@ -181,4 +182,4 @@ def test_the_ties_carry_no_gravity_but_the_graph_hands_them_a_thrust(solved):
             reaction = result.reactions[(node, case)]
             assert abs(reaction.fz_n) * N_TO_LB < 1e-6
             worst = max(worst, math.hypot(reaction.fx_n, reaction.fy_n) * N_TO_LB)
-    assert worst == pytest.approx(110.3, abs=5.0)
+    assert worst == pytest.approx(95.2, abs=5.0)

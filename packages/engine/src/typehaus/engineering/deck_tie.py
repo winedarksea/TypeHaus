@@ -64,7 +64,9 @@ BASIS = ("the tie part's published allowables with the linear interaction its do
 #: dry-published bolted part, ACI 318 Ch. 17 on concrete anchors, ties to framed walls.
 #: 3: C_M per joint off the parts' authored service condition; the anchor layout (near and
 #: far edge, one anchor per concrete leg) read off the angle's own hole pattern.
-BASIS_VERSION = "3"
+#: 4: the anchor's edges read off each angle's authored position against the resolved core
+#: (the hole nearest the centreline is the one anchored), not an angle assumed centred.
+BASIS_VERSION = "4"
 #: ESR-2713 §1.0 / FL11473 fn 8: the least f'c the concrete anchors are published for.
 MIN_FC_PSI = 2_500.0
 #: NDS 2018 Table 11.3.3, dowel-type fasteners, in-service moisture > 19 %: an exterior tie.
@@ -260,7 +262,8 @@ def _one(ctx: EngineeringContext, deck: Any) -> EngineeringRecord:
                 "tie interaction, guard", worst[0], 1.0, "",
                 f"IRC R301.5's 200 lb at C_D 1.0 against the row over its C_D "
                 f"{good[0].duration:g}; {worst[1]}"))
-    states += _concrete_states(ctx, joints, good, demands, missing)
+    groups: list[anchor.Group] = []
+    states += _concrete_states(ctx, joints, good, demands, missing, groups)
 
     notes = [
         "NOT GRADED — the concrete member under the anchors (out-of-plane bending of the "
@@ -270,11 +273,11 @@ def _one(ctx: EngineeringContext, deck: Any) -> EngineeringRecord:
         "The wood path from each load to the tied member is assumed to deliver it; the "
         "distribution treats the deck as rigid in plan and every joint as equally stiff.",
     ]
+    notes += anchor.layout_notes(groups)
     notes += [f"DRY SERVICE at {j.member}/{j.wall} (C_M {DRY_SERVICE_CM:g}, NDS 2018 "
               f"§11.3.3 / Table 11.3.3): a service-condition judgement the engineer of "
               f"record confirms. Basis: {j.service_basis}"
               for j in joints if j.service_condition == "dry"]
-    notes += anchor.layout_notes(joints)
     status = (Status.INCOMPLETE if missing
               else Status.OVER if any(not s.ok for s in states) else Status.OK)
     graded = [s for s in states if not s.is_detailing]
@@ -287,8 +290,8 @@ def _one(ctx: EngineeringContext, deck: Any) -> EngineeringRecord:
 
 
 def _concrete_states(ctx: EngineeringContext, joints: list[TieJoint], caps: list[Capacity],
-                     demands: dict[str, list[anchor.Demand]], missing: list[str]
-                     ) -> list[LimitState]:
+                     demands: dict[str, list[anchor.Demand]], missing: list[str],
+                     groups: list[anchor.Group]) -> list[LimitState]:
     """f'c detailing on every concrete wall, and ACI 318 Ch. 17 on angle anchors."""
     from typehaus.resolve.concrete import concrete_spec_for, fc_psi
 
@@ -304,14 +307,13 @@ def _concrete_states(ctx: EngineeringContext, joints: list[TieJoint], caps: list
         out.append(LimitState(f"{wall_tag} f'c for the tie's concrete anchors", MIN_FC_PSI,
                               fc, "psi", "ESR-2713 §1.0 / FL11473 fn 8: min f'c 2,500 psi",
                               is_detailing=True))
-    groups = []
     for joint, cap in zip(joints, caps, strict=True):
         if not (joint.on_concrete and cap.angle and joint.wall in fcs):
             continue
         group = anchor.group_for(ctx, joint, fcs[joint.wall])
         if group is None:
             missing.append(f"the anchor layout of {joint.model} on {joint.wall} (its hole "
-                           "pattern, or the wall's core)")
+                           "pattern, the wall's core, or an anchor landing off it)")
         else:
             groups.append(group)
     worst: dict[str, tuple[float, str]] = {}

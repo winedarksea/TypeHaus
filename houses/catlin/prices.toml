@@ -905,8 +905,7 @@
 # CN-BW-GWTIE-LO/-HI into W-G-W. Retail HL33HDG $13.99 (fastenersplus), HL35HDG $26.18-26.47
 # (fastoolnow / dhcsupplies, 2026-09-21), banded; the 1/2" bolts, lags and Titen HD
 # (THD50400HMG, one per HL35 concrete leg) ride in the framing rate.
-# ** STILL AN OPEN JOINT: deck_tie/FS-BW-FLOOR is OVER 1.13 on the stem anchors
-# (notes/north_entry_piers.md §10d-§10e).
+# deck_tie/FS-BW-FLOOR closes at 0.966 (notes/north_entry_piers.md §10d).
 "HL33HDG" = { low = 12.0, high = 20.0 }  # 2 ea — into W-G-W
 "HL35HDG" = { low = 24.0, high = 36.0 }  # 4 ea — two per stem joint
 # KDAT 4x4 tie blocks and fillers, each an offcut plus cutting and M4 end treatment: LIST

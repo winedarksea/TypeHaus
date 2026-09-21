@@ -972,13 +972,13 @@ rest 0.237 on the guard at C_D 1.0).
 
 ## 10. The landing's two tie lines (oracles `engineering/deck_tie.py`, `deck_tie_anchor.py`)
 
-**Written 2026-09-21, by hand, before the module; reworked twice the same day.** The landing
-is tied so its four piers stop being the lateral system. Two tie lines: over the garage stem
-under each carrier, and on the screen's own line into `W-G-W`, wood to wood. Passes:
-HGAM10 on the stem alone, OVER 1.82 (§10g); HL33HDG on both lines, all wet, OVER 1.177 (§10g);
-**this one, the owner's decision of 2026-09-21: HL35HDG at the stem, still wet; HL33HDG at
-`W-G-W` graded DRY, with a 4x filler.** The wood side closes (0.99). **The stem anchors do
-not (1.13, §10e).**
+**Written 2026-09-21, by hand, before the module; reworked three times the same day.** The
+landing is tied so its four piers stop being the lateral system. Two tie lines: over the
+garage stem under each carrier, and on the screen's own line into `W-G-W`, wood to wood.
+**This pass, the owner's decisions of 2026-09-21: HL35HDG at the stem, wet, each angle and
+block set 1-1/4" north so the anchored hole is on the core centreline; HL33HDG at `W-G-W`
+graded DRY, with a 4x filler.** Every row passes: E-W wind governs at **0.966**. Superseded
+passes are in §10g.
 
 ### 10a. The parts
 
@@ -1009,11 +1009,16 @@ only where in-service MC > 19%). Authored on the parts (`Connector.service`), no
   covered porches … generally considered dry" — **secondhand**; the primary was not read.
   HL33: F1 1,040, uplift 740 lb.
 
-**Line 1, the stem (x = 7.125 / 9.4583', y = 43.6771').** Each carrier's KDAT 4x tie block
+**Line 1, the stem (x = 7.125 / 9.4583', y = 43.7813').** Each carrier's KDAT 4x tie block
 grows to 3-1/2" x 3-1/2" x **5" N-S** (the HL35's length; fn 3), still 1/4" off the concrete.
 A pair of HL35HDG, one each block face, heel N-S; two 1/2" bolts through the block. The
 concrete leg's holes are D2 = 2-1/2" apart, **under ESR-2713's s_min of 3"**, so **one** 1/2"
 x 4" Titen HD per leg and the other hole EMPTY — a detail **for the engineer of record**.
+**Angle and block sit 1-1/4" NORTH of the core centreline** (y 43.6771 → 43.7813), so the
+anchored hole (D1 = 1-1/4" off the leg's end) lands ON the centreline, 3" from each face. The
+leg's north 3/4" oversails the core over the interior 2-1/2" EPS: **non-bearing — trim the
+foam flush, don't crush it.** North, not south: the exterior stem-top Z and coil band run
+across this RO.
 Per joint, E-W (across the heel) = mirrored uplift, one part, **518**; N-S (along the heel)
 = F1, one part, **917**.
 
@@ -1043,85 +1048,86 @@ Unchanged by this pass. ASD pressure on a solid face, the deck's C_f ceiling:
 
 ### 10c. Distribution — three joints
 
-Joints and forces do not move (equal stiffness; the parts changed, the stations did not).
-W (6.1979, 43.1458), FC (7.125, 43.6771), FE (9.4583, 43.6771); centroid (7.5938, 43.5000);
-`J = 5.8329 ft²`. `X_i = Fx/3 − M dy_i/J`, `Y_i = Fy/3 + M dx_i/J`.
+W (6.1979, 43.1458), FC (7.125, 43.7813), FE (9.4583, 43.7813) — the stem joints moved north
+with their angles. Centroid (7.5938, 43.5694); `J = Σ(dx² + dy²) = 5.9139 ft²`.
+`X_i = Fx/3 − M dy_i/J`, `Y_i = Fy/3 + M dx_i/J` (X E-W, Y N-S).
 
-**N-S wind**, `M = −1,542.6 lb-ft`:
+**N-S wind**, `M = 980.74 (6.0 − 7.5938) + 103.14 (7.7917 − 7.5938) = −1,542.6 lb-ft`:
 
 | joint | X | Y | along / cap + across / cap |
 |---|---:|---:|---|
-| W (wall runs y) | −93.67 | 730.45 | 730.45/1,480 + 93.67/740 = 0.494 + 0.127 = **0.620** |
-| FC (wall runs x) | 46.83 | 485.27 | 46.83/518 + 485.27/917 = 0.090 + 0.529 = **0.620** |
-| FE | 46.83 | −131.84 | 0.090 + 0.144 = 0.234 |
+| W (wall runs y) | −110.50 | 725.40 | 725.40/1,480 + 110.50/740 = 0.490 + 0.149 = **0.640** |
+| FC (wall runs x) | 55.25 | 483.57 | 55.25/518 + 483.57/917 = 0.107 + 0.527 = 0.634 |
+| FE | 55.25 | −125.08 | 0.107 + 0.136 = 0.243 |
 
-**E-W wind**, `M = +2,099.2 lb-ft`:
+**E-W wind**, `M = −(39.9323 − 43.5694)(588.38) = +2,140.0 lb-ft`:
 
 | joint | X | Y | ratio |
 |---|---:|---:|---|
-| W | 323.58 | −502.34 | 502.34/1,480 + 323.58/740 = 0.339 + 0.437 = 0.777 |
-| FC | 132.40 | −168.70 | 0.256 + 0.184 = 0.440 |
-| FE | 132.40 | 671.03 | 132.40/518 + 671.03/917 = 0.256 + 0.732 = **0.987** |
+| W | 349.41 | −505.10 | 505.10/1,480 + 349.41/740 = 0.341 + 0.472 = 0.814 |
+| FC | 119.48 | −169.62 | 0.231 + 0.185 = 0.416 |
+| FE | 119.48 | 674.72 | 119.48/518 + 674.72/917 = 0.231 + 0.736 = **0.966** |
 
 **Guard at C_D 1.0** (caps over 1.6), 200 lb E-W at the screen's south end,
-`M = 1,370.8 lb-ft`: FE `X 25.05, Y 438.21` → 25.05/323.75 + 438.21/573.13 = 0.077 + 0.765 =
-**0.842**; W `149.90, −328.05` → 328.05/925 + 149.90/462.5 = 0.355 + 0.324 = **0.679**.
+`M = 200 × (43.5694 − 36.6458) = 1,384.7 lb-ft`: FE `X 17.07, Y 436.59` → 17.07/323.75 +
+436.59/573.13 = 0.053 + 0.762 = **0.815**; W `165.85, −326.83` → 326.83/925 + 165.85/462.5 =
+0.353 + 0.359 = 0.712.
 
-### 10d. Verdict — the angles close at 0.99; the stem anchors are OVER at 1.13
+### 10d. Verdict — every row passes; E-W wind at FE governs at 0.966
 
 | reading | N-S | E-W | guard | stem anchors |
 |---|---:|---:|---:|---:|
-| HL35 stem wet + HL33 `W-G-W` dry (graded) | 0.620 | **0.987** (FE) | 0.842 (FE) | **1.132** (FE) |
+| HL35 stem wet, hole on centreline + HL33 `W-G-W` dry (graded) | 0.640 | **0.966** (FE) | 0.815 | 0.750 |
+| superseded: the same, angle centred (anchor 1.75" off a face) | 0.620 | 0.987 | 0.842 | 1.132 |
 | superseded: HL33 everywhere, wet | 0.886 | 1.177 | 1.040 | 0.761 |
 
-The wood side closes, with 1.3% at FE — HL35's F1 is the whole of the gain there, and the
-dry call at W is what takes W off 1.11. **The concrete side opens**: one anchor per leg in a
-hole 1-1/4" off the core centreline is 1.75" from a face, not 3.0" (§10e). **Nothing is
-picked here**; `deck_tie/FS-BW-FLOOR` is OVER and stays suppressed as a numbered debt.
+HL35's F1 closes the wood side at FE; the dry call at W takes W off 1.11; the north shift
+puts the anchor back 3" from each face. Moving the joints 1-1/4" north moves the distribution
+a little (FE 0.987 → 0.966). Two things stay the engineer of record's to confirm: **W's dry
+service** and **the stem anchor detail** (one anchor per leg, the other hole empty, the
+3/4" overhang on the interior EPS).
 
 ### 10e. The stem anchors — ACI 318-19 Ch. 17 (`deck_tie_anchor.py`)
 
-ESR-2713 Tables 1A/2A/3, Titen HD 1/2" at h_nom 4": h_ef = l_e = 2.99", k_cr 17, N_sa 20,130,
-V_sa 7,455, k_cp 2.0, c_min 1-3/4", s_min 3"; cracked, condition B. f'c 5,000
-(`GARAGE_ICF_6`). **The layout.** The HL35 is centred on the 6" core, its 5" length across
-it; the anchored hole is D1 = 1-1/4" from an end, so **1-1/4" off the centreline: c = 1.75"
-to the near face (exactly c_min), 4.25" to the far.** Both anchors of a pair on the same side
-(the conservative reading; staggering leaves one anchor at 1.75" whichever way the shear
-goes). Between the pair's anchors along the stem, `s = 3.5 + 2 × 2 = 7.5"` (D3 each side).
-The arms: bolts at D3 = 2" over the concrete; the SHORTER arm from the anchor to a leg end is
-1-1/4" (the same as HL33's L/2); the toe arm 3-1/4 − 2 = 1-1/4".
+ESR-2713 Tables 1A/2A/3, Titen HD 1/2" at h_nom 4" (the deepest the 1/2" is listed at): h_ef =
+l_e = 2.99", k_cr 17, N_sa 20,130, V_sa 7,455, k_cp 2.0, c_min 1-3/4", s_min 3"; cracked,
+condition B. f'c 5,000 (`GARAGE_ICF_6`). **The layout, from where the angle is put:** the
+anchored hole is the one nearest the core centreline — with the 1-1/4" shift, ON it, **c =
+3.0" to each face**. Between the pair's anchors along the stem `s = 3.5 + 2 × 2 = 7.5"` (D3
+each side). Arms: bolts at D3 = 2" over the concrete; the shorter arm from the anchor to a leg
+end 1-1/4"; the toe arm 3-1/4 − 2 = 1-1/4".
 
 ```
 N_b = 17 √5,000 × 2.99^1.5                                   = 6,215.0 lb
-A_Nc = (1.75 + 4.25) × (4.485 + 7.5 + 4.485) = 6 × 16.47      = 98.82 in²   (A_Nco 80.46)
-ψ_ed,N = 0.7 + 0.3 × 1.75 / 4.485                             = 0.8171      (was 0.9007)
-V_b = min(7 (5.98)^0.2 √0.5 √5,000 1.75^1.5, 9 √5,000 1.75^1.5) = min(1,158.7, 1,473.3)
-φV_cbg, toward the near face = 0.70 × (10.5 × 2.625 / 13.781) × 1,158.7 = 0.70 × 2.0 × 1,158.7
-                                                              = 1,622.2 lb  (was 3,337.5)
-along the stem (§17.7.2.1(c)): 2 × 1,622.2                    = 3,244.3 lb
+A_Nc = (3 + 3) × (4.485 + 7.5 + 4.485) = 6 × 16.47            = 98.82 in²   (A_Nco 80.46)
+ψ_ed,N = 0.7 + 0.3 × 3 / 4.485                                = 0.9007
+V_b = min(7 (5.98)^0.2 √0.5 √5,000 3^1.5, 9 √5,000 3^1.5)      = min(2,600.7, 3,306.8)
+φV_cbg, toward a face = 0.70 × (16.5 × 4.5 / 40.5) × 2,600.7  = 3,337.6 lb
+along the stem (§17.7.2.1(c)): 2 × 3,337.6                    = 6,675.1 lb
 ```
 
 Worst case, FE under E-W wind, strength = ASD / 0.6: along the heel (N-S, toward a face)
-`671.03 / 0.6 = 1,118.4 lb`, across it `132.40 / 0.6 = 220.7 lb`.
+`674.72 / 0.6 = 1,124.5 lb`, across it `119.48 / 0.6 = 199.1 lb`.
 
 ```
-per anchor from the heel force: 1,118.4 / 2 × 2 / 1.25       = 894.7 lb
-one anchor from the pry:         220.7 × 2 / 1.25            = 353.1 lb
-group tension N = 2 × 894.7 + 353.1                          = 2,142.5 lb
-e'_N = 353.1 / 2,142.5 × 3.75 = 0.618"  ψ_ec,N = 0.8789
-φN_cbg = 0.65 × 1.2282 × 0.8789 × 0.8171 × 6,215.0          = 3,562.9 lb   → 0.6013
-shear: 1,118.4 / 1,622.2 + 220.7 / 3,244.3 = 0.6894 + 0.0680 = 0.7575
-§17.8.3: (0.6013 + 0.7575) / 1.2                             = 1.132   OVER
+per anchor from the heel force: 1,124.5 / 2 × 2 / 1.25       = 899.6 lb
+one anchor from the pry:         199.1 × 2 / 1.25            = 318.6 lb
+group tension N = 2 × 899.6 + 318.6                          = 2,117.9 lb
+e'_N = 318.6 / 2,117.9 × 3.75 = 0.564"  ψ_ec,N = 1/(1 + 0.564/4.485) = 0.8883
+φN_cbg = 0.65 × 1.2282 × 0.8883 × 0.9007 × 6,215.0          = 3,969.4 lb   → 0.5336
+shear: 1,124.5 / 3,337.6 + 199.1 / 6,675.1 = 0.3369 + 0.0298 = 0.3668
+§17.8.3: (0.5336 + 0.3668) / 1.2                             = 0.7503
 ```
 
-Steel (1,248 / 13,085 tension, 570 / 4,473 shear) and pryout (1,140 / 8,731) are far below;
-the guard case at FE reads 0.31 / 0.44 / 0.63. Edge 1.75 = c_min and spacing 7.5 >= 3 pass
-as detailing. **It is the near-face breakout in shear that opens the joint**: halving c
-takes φV_cbg from 3,338 to 1,622. The anchor layout is the engineer of record's detail, and
-the numbers above are the case against leaving it as drawn. Not graded: the block's screws
-into the carrier, the fillers' fastening, and `W-G-W` receiving 730 lb in its own plane.
-Stem out-of-plane: the governing N-S force is still 671 lb, so the first pass's 0.66 bound
-(at 1,675 lb) scales to ~0.26.
+Steel (1,218 / 13,085 tension, 571 / 4,473 shear) and pryout (1,142 / 9,625) are far below.
+Edge 3.0 >= 1.75 and spacing 7.5 >= 3 pass as detailing. **The concrete side passes at
+0.750.** Centred, the anchor stood 1.75" off a face and read 1.132 (near-face breakout
+φV_cbg 1,622 lb); options weighed for that case — a deeper 1/2" Titen HD (not listed),
+crediting the stem's single centreline mat (it lies behind the anchor, not between it and
+the face: no ψ_c,V or Condition A), an adhesive anchor (breakout-bound ~1.03-1.06) — did not
+close it. Not graded: the block's screws into the carrier, the fillers' fastening, and
+`W-G-W` receiving 725 lb in its own plane. Stem out-of-plane: the governing N-S force is 675
+lb, so the first pass's 0.66 bound (at 1,675 lb) scales to ~0.27.
 
 ### 10f. What this pass closed that was outside the tie
 
@@ -1136,6 +1142,10 @@ Stem out-of-plane: the governing N-S force is still 671 lb, so the first pass's 
   site (the sunken garden), 40' away — conservative, and `balcony_wind`'s rule for every deck.
 
 ### 10g. History — the superseded passes
+
+**HL35 at the stem with the angle CENTRED on the core (superseded the same day):** N-S
+0.620, E-W 0.987, guard 0.842 — but the anchored hole 1-1/4" off the centreline stood 1.75"
+from a face and the anchors read **1.132**. The owner moved the angle 1-1/4" north.
 
 **HL33HDG everywhere, wet (superseded the same day):** N-S 0.886, E-W 1.177 at FE, guard
 1.040, stem anchors 0.761 (one Titen HD on the core centreline, c = 3.0"). The 2.5"-long

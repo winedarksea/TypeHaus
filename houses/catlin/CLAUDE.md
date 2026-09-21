@@ -2527,14 +2527,16 @@ haus analysis . --solve                     # the engineered frame, solved in Py
     submerged loose row (4.63 pci) would condemn both — a soils report still closes it.
     `column_head_joint/*` grades the head on the HETA20Z pair with FL11473 §9 item 4's
     combined rule as a row (RE/RNE 0.473).
-  - **⚠ 2026-09-21: THE LANDING IS TIED ON TWO LINES; THE ANGLES CLOSE, THE STEM ANCHORS DO
-    NOT (1.13).** `params/landing_tie.py`, owner's decision: an `HL35HDG` pair per 5"-long
-    KDAT tie block on the garage stem, wet (C_M 0.70); an `HL33HDG` pair into `W-G-W` graded
-    DRY — `Connector.service`, a judgement the EOR confirms — with a 4x KDAT filler for fn 3.
-    Angles: E-W 0.99 at `BM-BW-FE`. But the HL35's concrete-leg holes are 2-1/2" apart (<
-    ESR-2713's 3" s_min): one Titen HD per leg, 1.75" off a face, and ACI 318 Ch. 17 reads
-    1.13 (`deck_tie_anchor.py`). Suppressed as a numbered debt; `notes/north_entry_piers.md`
-    §10d-§10e — nothing picked.
+  - **✅ 2026-09-21: THE LANDING IS TIED ON TWO LINES AND CLOSES AT 0.966** (E-W wind at
+    `BM-BW-FE`; `deck_tie/FS-BW-FLOOR` draft, unsuppressed, permit line PASS).
+    `params/landing_tie.py`: an `HL35HDG` pair per 5"-long KDAT tie block on the garage stem,
+    wet (C_M 0.70); an `HL33HDG` pair into `W-G-W` graded DRY — `Connector.service`, a
+    judgement the EOR confirms — with a 4x KDAT filler for fn 3. The HL35's two concrete-leg
+    holes are 2-1/2" apart (< ESR-2713's 3" s_min), so ONE Titen HD per leg, and **angle and
+    block sit 1-1/4" north** so that hole is on the core centreline (anchors 0.750;
+    centred it was 1.13). `deck_tie_anchor` reads the edges off the authored position — move
+    the angle and the grade moves. The leg's 3/4" north overhang is on the interior EPS:
+    non-bearing, trim flush, don't crush. `notes/north_entry_piers.md` §10.
 - **A fixed-base column's P-M check is a §2.3.1 ENVELOPE** (2026-09-18), each combination at
   its own axial load. A larger axial is not automatically conservative on an interaction
   curve — below the balance point compression RAISES moment capacity — so grading the wind

@@ -444,12 +444,11 @@ def test_the_two_gates_are_separate_and_catlin_reaches_neither(catlin_engineerin
     blocked = [item.label for item in checklist.items
                if item.blocking and item.result not in (Result.PASS,
                                                         Result.NOT_APPLICABLE)]
-    # 2026-09-21: the landing's tie to the garage stem closed the head-joint line and opened
-    # its own (deck_tie/FS-BW-FLOOR, OVER 1.18 on two tie lines, north_entry_piers.md §10);
-    # base rotation CLOSED as draft on the presumed n_h (column_base_rotation.md §10), and
-    # the SRW apron CLOSED on AB Stones (raised_garden_srw.md §3b).
+    # 2026-09-21: the landing's tie to the garage stem closed the head-joint line, then its
+    # own (deck_tie/FS-BW-FLOOR at 0.966, north_entry_piers.md §10); base rotation CLOSED as
+    # draft on the presumed n_h (column_base_rotation.md §10), and the SRW apron CLOSED on AB
+    # Stones (raised_garden_srw.md §3b).
     assert sorted(blocked) == sorted([
-        "Deck lateral tie to a concrete wall",
         "Structural ties across a thermal break",
     ]), blocked
     assert not checklist.ok

@@ -418,18 +418,6 @@ suppress = [
   "mep.run_through_plate:DU-S-HP-SUITE",
   "mep.run_through_plate:DU-S-HP-SOUTH",
 
-  # ** structural.deck_tie:FS-BW-FLOOR: 1 REAL FAIL, RE-MEASURED 2026-09-21 ON TWO TIE LINES.
-  # A DEBT WITH A NUMBER ON IT: d/c 1.18 (it was 1.82 on the stem alone). **
-  #
-  # HL35HDG pairs at the stem (wet), HL33HDG into W-G-W graded dry (an EOR judgement) with a
-  # 4x filler: the angles close — N-S 0.62, E-W 0.99 at BM-BW-FE, guard 0.84. But the HL35's
-  # two concrete-leg holes are 2-1/2" apart (under ESR-2713's 3" s_min), so one Titen HD per
-  # leg stands 1.75" off a face, and ACI 318 Ch. 17 near-face shear breakout takes the
-  # tension-shear interaction to 1.13 (was 0.76 on the HL33's centreline hole).
-  # notes/north_entry_piers.md §10d-§10e print it and pick nothing. The permit line BLOCKS,
-  # so this hides nothing from either gate. Delete the line when the anchor detail closes.
-  "structural.deck_tie:FS-BW-FLOOR",
-
   # ** mep.run_through_stud: CLOSED 2026-09-20 BY RETYPING THE WALLS. NOTHING SUPPRESSED. **
   #
   # This list held 7 over-bores on 5 runs, itemised, each entry saying its honest fix was a

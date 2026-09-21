@@ -5,10 +5,11 @@ lands on a concrete wall the anchor into it is a design, not a table read. This 
 one 1/2" x 4" Titen HD per angle, from ESR-2713's strength design data (cracked concrete,
 condition B — no supplementary reinforcement credited).
 
-**The angle's hole pattern sets the layout** (C-C-2024 p. 303, ``ANGLES``). The angle is
-centred on the core, its length across the wall. One anchor per concrete leg: where the
-leg's holes are closer than ESR-2713's s_min (HL35: 2-1/2" < 3") the other stays EMPTY, and
-the anchor stands off the centreline — so the near and far face distances differ.
+**The layout is read, not assumed** (C-C-2024 p. 303, ``ANGLES``): each angle's AUTHORED
+position (its centre, its length across the wall), its hole pattern, and the resolved wall's
+STRUCTURE layer. One anchor per concrete leg, in the hole nearest the core centreline: where
+a leg's holes are closer than ESR-2713's s_min (HL35: 2-1/2" < 3") the other stays EMPTY.
+The anchor's near and far face distances follow from where the angle was put.
 
 **And the anchor forces.** A force ALONG the heel enters the wood leg at the bolts, D3 = 2"
 above the concrete, and the concrete leg resists that overturning between the anchor and an
@@ -59,9 +60,9 @@ class Angle:
     d3_in: float
 
     @property
-    def anchor_hole_in(self) -> float:
-        """The one hole anchored: the first (any other is under s_min, or absent)."""
-        return self.holes_in[0]
+    def heel_arm_in(self) -> float:
+        """The shorter arm from a hole to an end of the leg (the holes are symmetric)."""
+        return min(min(h, self.length_in - h) for h in self.holes_in)
 
 
 ANGLES = {
@@ -182,46 +183,48 @@ def states(worst: dict[str, tuple[float, str]], groups: list[Group]) -> list[Lim
     return out
 
 
-def group_for(ctx: Any, joint: Any, fc_psi: float) -> Group | None:
-    """The joint's anchors, read off its parts, the angle's holes and the wall's core."""
-    from typehaus.model.enums import LayerFunction
+def anchor_station(angle: Angle, centre_in: float, core_mid_in: float) -> float:
+    """The anchored hole's station across the wall: of the angle's holes (symmetric about
+    its centre, ``centre_in``), the one nearest the core centreline — the rest stay empty."""
+    stations = [centre_in + h - angle.length_in / 2.0 for h in angle.holes_in]
+    return min(stations, key=lambda s: (abs(s - core_mid_in), s))
 
+
+def group_for(ctx: Any, joint: Any, fc_psi: float) -> Group | None:
+    """The joint's anchors, read off its parts' AUTHORED positions, the angle's holes and
+    the resolved wall's STRUCTURE layer — so moving the angle moves the anchor's edges."""
     angle = ANGLES.get(joint.model)
-    wall = ctx.plan.by_tag(joint.wall)
-    assembly = ctx.plan.library.resolve_assembly(getattr(wall, "assembly", "") or "")
-    core = next((float(ly.thickness.inches) for ly in getattr(assembly, "layers", ())
-                 if ly.function is LayerFunction.STRUCTURE), None)
+    resolved = ctx.model.wall(joint.wall)
+    core = next((ly.polygon for ly in getattr(resolved, "layers", ())
+                 if ly.function == "structure" and not ly.is_cavity), None)
     parts = [ctx.plan.by_tag(t) for t in joint.parts]
-    if angle is None or core is None or not parts:
+    if angle is None or not core or not parts:
         return None
     along = 0 if joint.wall_axis == "x" else 1
+    across = 1 - along
+    lo = min(p[across] for p in core) / 0.0254
+    hi = max(p[across] for p in core) / 0.0254
     stations = sorted(p.position.xy_m[along] / 0.0254 for p in parts)
     spread = stations[-1] - stations[0]
     spacing = spread + 2.0 * angle.d3_in if len(parts) > 1 else 0.0
-    hole = angle.anchor_hole_in
-    off = abs(hole - angle.length_in / 2.0)  # the anchor off the core centreline
+    anchors = [anchor_station(angle, p.position.xy_m[across] / 0.0254, (lo + hi) / 2.0)
+               for p in parts]
+    if any(not lo < a < hi for a in anchors):
+        return None  # an anchor off the pour: no layout to grade
+    near = min(min(a - lo, hi - a) for a in anchors)
+    far = min(max(a - lo, hi - a) for a in anchors)
     # Rounded to a thou: an edge AT c_min must not fail its detailing row on float noise.
-    return Group(joint.member, len(parts), round(spacing, 3), round(core / 2.0 - off, 3),
-                 round(core / 2.0 + off, 3),
+    return Group(joint.member, len(parts), round(spacing, 3), round(near, 3), round(far, 3),
                  fc_psi, bolt_height_in=angle.d3_in,
-                 heel_arm_in=min(hole, angle.length_in - hole),
+                 heel_arm_in=angle.heel_arm_in,
                  toe_arm_in=angle.leg_in - angle.d3_in,
                  empty_holes=len(angle.holes_in) - 1)
 
 
-def layout_notes(joints: list[Any]) -> list[str]:
-    """A note per concrete joint whose angle leaves a hole EMPTY — a detail for the EOR."""
-    out = []
-    for joint in joints:
-        angle = ANGLES.get(joint.model)
-        if not joint.on_concrete or angle is None or len(angle.holes_in) < 2:
-            continue
-        gap = angle.holes_in[1] - angle.holes_in[0]
-        out.append(
-            f"FOR THE ENGINEER OF RECORD — {joint.member}/{joint.wall}: {joint.model}'s "
-            f"concrete-leg holes are {gap:g}\" apart, under ESR-2713's s_min "
-            f"{S_MIN_IN:g}\", so ONE 1/2\" Titen HD per leg in the hole "
-            f"{angle.anchor_hole_in:g}\" off the leg's end and the other hole EMPTY; the "
-            f"anchor stands {abs(angle.anchor_hole_in - angle.length_in / 2):g}\" off the "
-            f"core centreline, so breakout is graded at the near face.")
-    return out
+def layout_notes(groups: list[Group]) -> list[str]:
+    """A note per joint whose angle leaves a hole EMPTY — a detail for the EOR."""
+    return [f"FOR THE ENGINEER OF RECORD — {g.joint}: ONE 1/2\" Titen HD per concrete leg, "
+            f"{g.empty_holes} hole(s) left EMPTY (the leg's holes are under ESR-2713's s_min "
+            f"{S_MIN_IN:g}\"); the anchor is {g.edge_near_in:g}\" / {g.edge_far_in:g}\" "
+            f"from the core's faces, as the angle is positioned."
+            for g in groups if g.empty_holes]
