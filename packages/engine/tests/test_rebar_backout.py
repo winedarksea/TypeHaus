@@ -41,7 +41,7 @@ _SCHEDULE = {
     ("footing", "#5", "hdg-a767"): (154, 989.8),
     ("foundation wall", "#3", "hdg-a767"): (49, 78.6),
     ("foundation wall", "#4", "hdg-a767"): (311, 1735.4),
-    ("foundation wall", "#5", "hdg-a767"): (145, 1493.6),
+    ("foundation wall", "#5", "hdg-a767"): (145, 1475.3),
     ("foundation wall", "#6", "hdg-a767"): (10, 129.5),
     ("slab", "#3", "black"): (220, 237.3),
     ("slab", "#4", "black"): (43, 576.9),
@@ -62,7 +62,9 @@ _SCHEDULE = {
 # +3.8 lb the same day: the balcony corner dowels author a 24" embedment into their wall
 # tops (balcony_moment_columns.md §11c), laid in place of ld's 21.2".
 # +64.8 lb, 10 pieces on 2026-09-21: W-SG-BRKBM's hook ties and footing dowels (note §1).
-_TOTAL_LB = 6736.2
+# −18.3 lb the same day: its bottom row stops at the dowelled footing faces (−20.9) and its
+# hooked top row reaches the support walls' far-face cover (+2.6).
+_TOTAL_LB = 6717.9
 _TOTAL_PIECES = 1216
 
 #: §3, decision #75 D14. The back-out gate is CLOSED BY DECISION, not by a dollar comparison:

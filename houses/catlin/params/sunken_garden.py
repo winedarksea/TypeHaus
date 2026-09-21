@@ -795,11 +795,12 @@ _BRACED_STEM_STEEL = ReinforcementSpec(
 # footing, 66" back from its court face, lapping the row class B (30.00" past the wall face).
 _VENEER_BEAM_STEEL = ReinforcementSpec(
     bars=(
-        BarSpec(role="top-y", bar=5, count=3, hooks=("start", "end"),
+        BarSpec(role="top-y", bar=5, count=3, hooks=("start", "end"), hook_turn="up",
                 hook_ties=HookConfinement(bar=4, count=2, spacing=inch(5.0), legs=2,
                                           orientation="perpendicular"),
                 note="90° hooks turned UP into W-SG-W1/E1 (down would reach the footing); two closed #4 ties per end enclose them"),
-        BarSpec(role="bottom-y", bar=5, count=3, note="laps the footing dowels at each end"),
+        BarSpec(role="bottom-y", bar=5, count=3,
+                note="stops at the FT-SG-W1/E1 court face; laps the footing dowels there"),
         BarSpec(role="dowels", bar=5, count=3, embedment=inch(66.0),
                 note="per end, cast horizontal in FT-SG-W1/E1 (placement 1) through the footing's court face; class B lap to bottom-y"),
         BarSpec(role="ties", bar=3, spacing=inch(5.0),

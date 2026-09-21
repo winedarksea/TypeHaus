@@ -95,7 +95,8 @@ def _s_range_at(layer_ring, frame: LinearFrame, t: float) -> tuple[float, float]
 
 
 def lay_wall(sink: Sink, spec, wall, cover: float, openings,
-             base: WallBase | None = None) -> WallSteel | None:
+             base: WallBase | None = None,
+             beam_ends: dict | None = None) -> WallSteel | None:
     layer = structure_layer(wall)
     if layer is None:
         return None
@@ -105,7 +106,7 @@ def lay_wall(sink: Sink, spec, wall, cover: float, openings,
     beam_entries = [e for e in spec.bars if e.role in BEAM_ROLES]
     if beam_entries:
         side = [e for e in spec.bars if e.role == "horizontal"]
-        lay_beam(sink, beam_entries + side, frame, cover)
+        lay_beam(sink, beam_entries + side, frame, cover, beam_ends)
         return steel
     vert = next((e for e in spec.bars if e.role == "vertical"), None)
     horiz = next((e for e in spec.bars if e.role == "horizontal"), None)

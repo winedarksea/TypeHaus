@@ -95,6 +95,8 @@ def _schema_errors(ctx: CheckContext, element, spec):
             yield f"role {e.role} cannot take a zone"
         if e.hook_ties is not None and (e.role not in ("top-y", "bottom-y") or not e.hooks):
             yield f"role {e.role} takes hook_ties only as a hooked top-y/bottom-y row"
+        if e.hook_turn is not None and (e.role not in ("top-y", "bottom-y") or not e.hooks):
+            yield f"role {e.role} takes hook_turn only as a hooked top-y/bottom-y row"
 
 
 def _too_thin(ctx: CheckContext, element, spec) -> str | None:

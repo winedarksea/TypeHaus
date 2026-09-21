@@ -464,8 +464,12 @@ available   W-SG-W1 12.0" − 3.0" far-face cover                       = 9.00 i
 
 The hooks turn **up** into the wall: the top row is at −105.125" and a #5 90° hook needs
 3.75/2 + 0.625 + 7.5 = 10.0" of leg, so turned down it would end at −115.1", 5.7" into the
-footing below the wall's −109.4375" start. Not graded — the layout's beam convention turns
-top hooks down, and the drawing must say up.
+footing below the wall's −109.4375" start — concrete of placement 1, which a placement-2 tail
+cannot enter. ACI 318-19 §25.3.1 and R25.4.3 put a hook's tail in the concrete that develops
+it, and here that is the wall rising above the joint. Authored `hook_turn="up"` (2026-09-21),
+the layout turns both ends up to −95.125", inside `W-SG-W1`/`-E1`; the row reaches the walls'
+far face less 3" cover (x 93"/339", u −3"/243"), the station the 9.00" above is measured to,
+and the two ties per end sit along ℓdh at u −3"/2" (and 238"/243").
 
 **Bottom row — the footing is the anchorage solid, through dowels cast in it.** The beam's
 own bottom bars cannot enter a footing poured a placement earlier, so 3 #5 dowels per end are
@@ -487,6 +491,11 @@ dowel steel 3 #5 = 0.93 in² against the row's 3 #5 = 0.93 in²                 
 lap         class B, §25.5.2.1: 1.3 × 21.21 = 27.58" past the joint into the beam — laid
             and billed by the rebar layout; not a graded row (no authored projection)
 ```
+
+The bottom row itself **stops at the two joints**, u 42"…198" (156"), where the dowels take
+over; until 2026-09-21 the layout ran it on to the beam's own cover at u 2"/238", 40" into each
+footing, which placement 2 cannot reach — 20.0 LF of #5 billed and unbuildable
+(`rebar_backout.md` §1).
 
 A hook buys nothing here: straight at 45" of room it develops with 50% to spare, and a hook
 turned in a 12" footing with the bar 3.94" off its underside has nowhere to go.
