@@ -194,7 +194,8 @@ def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
     #  - `tiered_retaining/W-RG-*`: the apron. `foundation_unbalanced_fill` reads PASS on it
     #    and that verdict is CORRECT — IRC R404.1.1 does not engage at 3'-4" — so the PASS is
     #    deliberately left alone. The defect was that nothing else then looked at a tiered
-    #    segmental wall standing beside a ten-foot cut.
+    #    segmental wall standing beside a ten-foot cut. COMPUTED since 2026-09-20
+    #    (`engineering/segmental_wall.py`, OVER) and so off this list: five fewer.
     # `_retaining_walls` is deliberately NOT widened to reach the apron: an
     # isolated-cantilever record for a wall whose whole problem is that it is not isolated
     # would make the register less true.
@@ -221,10 +222,7 @@ def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
         # `base_rotation/*`, `column_head_joint/*` and `column_support/*` left on 2026-09-20:
         # each is a registered calculation now.
         "rafter/RF-BW-CANOPY", "rafter/RF-GARAGE",
-        "veneer_anchor/W-B-BRICK",
-        "tiered_retaining/W-RG-BLOCK",
-        "tiered_retaining/W-RG-WEST", "tiered_retaining/W-RG-EAST",
-        "tiered_retaining/W-RG-WEST-BALCONY", "tiered_retaining/W-RG-EAST-BALCONY"}
+        "veneer_anchor/W-B-BRICK"}
     for record in deferred:
         assert record.kind in DEFERRALS, record.item_id
         assert "no calculation is registered for this kind" not in record.summary

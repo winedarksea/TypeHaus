@@ -37,12 +37,14 @@ The extra 8" buys embedment, not retained height. Stating it as the drop would p
 on IRC R404.1.1's 48" threshold exactly and send five landscape walls into an R404.4
 cantilever analysis they have no footing for; see the note beside `_APRON`.
 
-**What is still open.** 8" of embedment is the number the arithmetic gives, not a number
-anyone has designed to. Sliding, overturning and the global stability of a tiered apron
-beside a 10-foot cut are still ungraded here, exactly as
-`notes/sunken_garden_court_free_body.md` §9 says. **This is a defect reduced from "the toe
-is in the air" to "the toe is buried 8" and nobody has checked the wall".** Do not read the
-fix as a design.
+**CHECKED 2026-09-20, AND IT DOES NOT STAND.** `engineering/segmental_wall.py`
+(`tiered_retaining/W-RG-*`) grades the unit's own free body: sliding FS 0.38, overturning FS
+0.57 against IRC R404.4's 1.5, on every leg (`notes/raised_garden_srw.md`). The 8" of
+embedment passes its own row and nothing else. No real SRW product is named anywhere in this
+house, so no batter, cap or unit weight is authored — and none of them would close it (§8 of
+the note: batter alone reaches OT 0.96). The fix is a design change and the owner's call; the
+five FAILs are suppressed in `preferences.toml` until it is made. Global stability of the
+tiered pair stays open, as `notes/sunken_garden_court_free_body.md` §9 says.
 
 Section, at a side leg, west (yard) to east (sunken garden):
 
