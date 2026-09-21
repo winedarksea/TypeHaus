@@ -250,7 +250,9 @@ def _post_dowels(model, sink: Sink, spec, element, feet) -> None:
         # along the wall, the only way a 90° leg stays inside its thickness.
         cover = cover_m(model.plan, model.plan.by_tag(base_tag),
                         getattr(model.plan.by_tag(base_tag), "reinforcement", None))
-        ld = max(det.development_length_in(e.bar, sink.fc_psi) for e in entries) * _IN
+        # An authored `BarSpec.embedment` is the drawing's length; ld is the fallback.
+        ld = max(e.embedment.inches if e.embedment is not None
+                 else det.development_length_in(e.bar, sink.fc_psi) for e in entries) * _IN
         wb = WallBase(wall.z1_m, max(wall.z0_m + cover, wall.z1_m - ld))
         (ax, ay), (bx, by) = wall.axis
         d = math.hypot(bx - ax, by - ay) or 1.0

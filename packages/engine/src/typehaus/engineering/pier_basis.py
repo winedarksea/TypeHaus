@@ -79,15 +79,15 @@ class _Pier:
     moment_basis: str
     footing_width_in: float
     footing_depth_in: float
-    #: The thickness of the concrete DIRECTLY under this column, inches, whatever kind of
-    #: element it is — its own belled footing's depth, the ``Pad`` it stands on, or the
-    #: ``FoundationWall`` it is doweled into. ``footing_depth_in`` cannot answer this: it is
-    #: 0.0 for a pad-borne pier, because ``footing_tag`` is deliberately ``None`` there.
+    #: How deep a dowel can run into the concrete DIRECTLY under this column, inches: its
+    #: own belled footing's depth, the ``Pad``'s thickness, or the resolved STEM HEIGHT of
+    #: the ``FoundationWall`` it is doweled into. ``footing_depth_in`` cannot answer this: it
+    #: is 0.0 for a pad-borne pier, because ``footing_tag`` is deliberately ``None`` there.
     #: ``deck_post`` grades the dowels' anchorage against it.
     base_thickness_in: float = 0.0
-    #: What that concrete IS — ``"footing"``, ``"pad"``, ``"wall"``, or ``""``. A dowel into
-    #: a WALL runs down its stem and is bounded by nothing this model holds, which is a
-    #: different verdict from a dowel into a 12" pad.
+    #: What that concrete IS — ``"footing"``, ``"pad"``, ``"wall"``, or ``""``. A dowel into a
+    #: pad is hooked and bounded by the pad; one into a WALL is straight and bounded by the
+    #: authored ``BarSpec.embedment``, which the stem height bounds in turn.
     base_kind: str = ""
     #: ROOF area this post carries — a framed field over it (see :func:`_rafter_fields`),
     #: kept apart from ``tributary_ft2`` because a roof is not a deck. A deck carries IRC
@@ -144,6 +144,10 @@ class _Pier:
     #: on a moment column has to be re-run rather than asserted. A structured spec is read
     #: first; ``_authored_cover_in``'s regex over the free-text cage string is the fallback.
     specified_cover_in: float | None = None
+    #: The f'c and cover of the pad or wall UNDER this column, or None where it states none
+    #: (or the base is the column's own footing). A dowel develops in THAT concrete.
+    base_fc_psi: float | None = None
+    base_cover_in: float | None = None
 
     @property
     def gross_area_in2(self) -> float:
@@ -1210,18 +1214,22 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
         size = _round_size(post.size)
         if size is None:
             continue
-        # What is directly under this column, and how thick. Its own footing where it has
-        # one; otherwise the pad or the wall it stands on. The wall's own thickness is not
-        # the bound on a dowel run down its stem, but it is what the model holds.
+        # What is directly under this column, and how deep a dowel can run into it: its own
+        # footing's depth, the pad's thickness, or a wall's resolved STEM HEIGHT. (Until
+        # 2026-09-20 the wall case read `FoundationWall.height`, a field that does not
+        # exist, and got a silent 0.0.)
         base_kind, base_thickness = "", 0.0
+        base_el = None
         if footing is not None and not on_wall:
             base_kind, base_thickness = "footing", footing.depth.inches
         elif on_pad:
-            base_kind, base_thickness = "pad", pads[post.supported_by].thickness.inches
+            base_el = pads[post.supported_by]
+            base_kind, base_thickness = "pad", base_el.thickness.inches
         elif on_wall:
+            base_el = walls[post.supported_by]
             base_kind = "wall"
-            base_thickness = getattr(walls[post.supported_by], "height", None)
-            base_thickness = base_thickness.inches if base_thickness is not None else 0.0
+            stem = ctx.model.wall(post.supported_by)
+            base_thickness = ((stem.z1_m - stem.z0_m) / 0.0254) if stem is not None else 0.0
         out.append(_Pier(
             tag=post.tag, diameter_in=size[0], round_section=size[1],
             height_in=post.height.inches,
@@ -1250,5 +1258,8 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
             reinforcement=getattr(post, "reinforcement", None),
             specified_fc_psi=fc_psi(concrete_spec_for(ctx.plan, post)),
             specified_cover_in=cover_for(ctx.plan, post)[0],
+            base_fc_psi=(fc_psi(concrete_spec_for(ctx.plan, base_el))
+                         if base_el is not None else None),
+            base_cover_in=(cover_for(ctx.plan, base_el)[0] if base_el is not None else None),
         ))
     return sorted(out, key=lambda pier: pier.tag)

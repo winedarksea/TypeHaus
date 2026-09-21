@@ -36,7 +36,7 @@ _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 #: BLACK pour because DECK_CAP_MIX says so — a new scope, not a second coating in an old one.
 _SCHEDULE = {
     ("column", "#3", "hdg-a767"): (144, 176.6),
-    ("column", "#5", "hdg-a767"): (88, 632.5),
+    ("column", "#5", "hdg-a767"): (88, 636.3),
     ("footing", "#4", "hdg-a767"): (30, 272.1),
     ("footing", "#5", "hdg-a767"): (154, 989.8),
     ("foundation wall", "#3", "hdg-a767"): (49, 78.6),
@@ -59,7 +59,9 @@ _SCHEDULE = {
 # same base moment as their east twins since `_base_moments` started splitting it over four
 # fixed columns; nothing had made them dowel it. (The 12" pads that develop those dowels are
 # concrete, not steel, and are 0.073 cy — they move no row here.)
-_TOTAL_LB = 6667.6
+# +3.8 lb the same day: the balcony corner dowels author a 24" embedment into their wall
+# tops (balcony_moment_columns.md §11c), laid in place of ld's 21.2".
+_TOTAL_LB = 6671.4
 _TOTAL_PIECES = 1206
 
 #: §3, decision #75 D14. The back-out gate is CLOSED BY DECISION, not by a dollar comparison:

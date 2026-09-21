@@ -212,8 +212,9 @@ def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
     #    `HGAM10` gusset, a detail chosen for durability whose MOMENT transfer nobody has
     #    computed. Column shear and torsion ride with it. Ten items — every cast column
     #    that is a lateral system, the balcony's four included.
+    # `column_support/W-SG-W1`/`-E1` LEFT on 2026-09-20: computed by
+    # `engineering/column_support.py`, oracled by balcony_moment_columns.md §11.
     assert {r.item_id for r in deferred} == {
-        "column_support/W-SG-E1", "column_support/W-SG-W1",
         *(f"base_rotation/{t}" for t in
           ("PT-BW-E", "PT-BW-GE", "PT-BW-GW", "PT-BW-RE", "PT-BW-RNE", "PT-BW-W")),
         *(f"column_head_joint/{t}" for t in

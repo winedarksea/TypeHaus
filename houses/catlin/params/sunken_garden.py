@@ -761,11 +761,14 @@ _CAST_COLUMN_CAGE = ReinforcementSpec(
 # The four CORNER columns are fixed at the base, so the same cage plus the dowels that fix it:
 # a #5 L at each vertical, hooked into the W-SG-W1/E1 wall top and lapped class B above it
 # (balcony_moment_columns.md §7; laid out by resolve/rebar, decision #75 D6).
+# `embedment` 24" clears straight ld 21.2" at 5,000 psi and `joint_surface` is §7's 1/4"
+# roughening — both graded in §11 (`column_support/W-SG-W1`/`-E1`).
 _MOMENT_COLUMN_CAGE = ReinforcementSpec(
     bars=(
         BarSpec(role="vertical", bar=5, count=4),
         BarSpec(role="ties", bar=3, spacing=inch(10.0)),
-        BarSpec(role="dowels", bar=5, note="one per vertical, class B lap into the column"),
+        BarSpec(role="dowels", bar=5, embedment=inch(24.0), joint_surface="roughened",
+                note="one per vertical, class B lap into the column"),
     ),
     cover=inch(2.0),
     lap_class="B",

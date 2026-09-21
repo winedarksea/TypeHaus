@@ -126,10 +126,11 @@ def test_one_signoff_block_per_kind_and_a_deferred_one_asks_for_the_designers_do
     draft = (bundle / "engineering.toml.draft").read_text()
     live = re.findall(r"^\[\[signoff\]\]$", draft, re.MULTILINE)
     assert live, "no signoff blocks at all"
-    # `column_support` is deferred: a live block, with the external-acceptance form in it.
-    assert 'id = "column_support"' in draft
+    # `rafter` is deferred for good (the fabricator seals it): a live block, with the
+    # external-acceptance form in it. It was `column_support` until that kind was computed.
+    assert 'id = "rafter"' in draft
     assert "DEFERRED" in draft
-    assert '[signoff.external."column_support/W-SG-E1"]' in draft
+    assert '[signoff.external."rafter/RF-GARAGE"]' in draft
     for key in ("document", "revision", "sha256", "envelope"):
         assert f"{key} = \"<<" in draft, key
 
@@ -248,7 +249,7 @@ def test_a_deferred_item_reads_accepted_and_never_fresh_when_the_form_is_filled(
 
     ctx = catlin_ctx
     catlin_check_report()
-    deferred = ctx.engineering["column_support/W-SG-W1"]
+    deferred = ctx.engineering["rafter/RF-GARAGE"]
     state, signoff = register.freshness(deferred)
     assert state is Freshness.ACCEPTED
     assert state is not Freshness.FRESH

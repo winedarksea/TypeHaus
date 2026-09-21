@@ -71,8 +71,10 @@ KIND = "deck_post"
 #: the one the fixed base depends on), and the P-M check became an ENVELOPE over §2.3.1's
 #: five combinations at their own axial loads rather than one moment at 1.2D + 1.6L's; and
 #: to "7" on 2026-09-20, when a WALL bearing along a beam stopped being an unmodelled load
-#: and started being a derived LINE load in the dead term (``pier_basis.wall_line_loads``).
-BASIS_VERSION = "7"
+#: and started being a derived LINE load in the dead term (``pier_basis.wall_line_loads``);
+#: to "8" when a WALL-borne column's dowels started being graded for straight development
+#: against the authored ``BarSpec.embedment``.
+BASIS_VERSION = "8"
 BASIS = "IRC R507.4 (no row); ACI 318-19 Ch. 10, 22.4, 25.7 (reinforced) / 14.5 (plain)"
 
 #: ACI 318-19 §2.3 defines a PEDESTAL as a member with a ratio of height to least lateral
@@ -299,13 +301,11 @@ def _one(pier: _Pier) -> EngineeringRecord:
         "module stands free above grade for part of its own, so it is a column and is "
         "graded as one. Check that against the section before citing the exclusion.",
     )
-    if pier.base_kind == "wall":
+    if pier.base_kind == "wall" and not getattr(dowel_entry(pier), "embedment", None):
         common = common + (
-            "NOT GRADED: the dowels' anchorage into the concrete below. This column is "
-            "doweled into a foundation WALL, whose stem length nothing in this model "
-            "bounds, so there is no capacity to compare a development length against. A "
-            "column on a pad or its own footing IS graded — see `dowel anchorage into the "
-            "base` on those records.",
+            "NOT GRADED: the dowels' development into the wall below. This column is "
+            "doweled into a foundation WALL and its dowel row authors no "
+            "`BarSpec.embedment`, so there is no length to compare ld against.",
         )
     if pier.roof_tributary_ft2 > 0.0 and pier.roof_snow_basis:
         common = common + (
@@ -550,32 +550,57 @@ def _class_b_lap_in(cage: _Cage, fc_psi: float = PRESUMPTIVE_FC_PSI) -> float:
     return 1.3 * development_length_raw_in(cage.bar_diameter_in, fc_psi)
 
 
+def dowel_entry(pier: _Pier):  # noqa: ANN201 — a BarSpec, typed loosely like `reinforcement`
+    """The authored ``dowels`` row of this column's structured cage, or ``None``."""
+    spec = getattr(pier, "reinforcement", None)
+    return next((e for e in getattr(spec, "bars", ()) or () if e.role == "dowels"), None)
+
+
 def _dowel_anchorage(pier: _Pier, cage: _Cage, fc_psi: float) -> LimitState | None:
     """The other half of the dowel joint: does the bar DEVELOP in the concrete below it?
 
     ** THE LAP STATE ALONE WAS HALF A CHECK. ** ``dowel lap, class B`` grades the splice
-    between the dowel and the column bar and bounds it by the column's own height, which is
-    right as far as it goes — that is the only bound the model holds on how much lap can
-    physically exist above the joint. It says nothing whatever about the end that matters
-    more: a dowel hooked into a 12" pad has about 8" of concrete to develop in, and if it
-    does not develop there the fixed base the whole ``_moment_column`` branch assumes is not
-    fixed.
+    between the dowel and the column bar and bounds it by the column's own height. It says
+    nothing about the end the fixed base depends on: whether the dowel develops below.
 
-    **Hooked, not straight, and the difference decides the verdict.** ACI 318-19 §25.4.3.1
-    develops a #5 in about 8" hooked at 5,000 psi against 21" straight. Grading a pad dowel
-    against the straight figure would condemn every correctly built pad-borne column in the
-    house. ψr is taken at 1.0 — the column's ties continue through the joint per §25.4.3.3 —
-    and ψo at 1.0, both of which are conditions a reviewer has to confirm on the drawing;
-    the state's citation says so rather than burying it.
+    **Into a pad or footing: HOOKED.** ACI 318-19 §25.4.3.1 develops a #5 in about 8" hooked
+    at 5,000 psi against 21" straight, and a 12" pad has about 8" to give. ψr 1.0 (ties
+    continue through the joint, §25.4.3.3) and ψo 1.0 (confined) are conditions a reviewer
+    confirms on the drawing; the citation says so.
 
-    **A column on a WALL is not graded here and is not silently passed.** Its dowels run
-    down a stem whose length nothing in this model bounds, so there is no capacity to
-    compare against; ``None`` comes back and the record's notes say why.
+    **Into a wall: STRAIGHT, against the authored ``BarSpec.embedment``** (since 2026-09-20;
+    until then it returned ``None`` because nothing bounded the stem). §25.4.2.4 ld at the
+    WALL's f'c, ψt 1.0 — ψt's 1.3 is for HORIZONTAL bars with >12" of concrete cast below,
+    and a dowel is vertical. The embedment is itself bounded by the stem height less the
+    wall's cover; an authored figure past that is refused and the stem governs. Any hook at
+    the dowel's foot is not credited. ``None`` comes back where no embedment is authored.
     """
-    from typehaus.resolve.rebar.detailing import hooked_development_length_in
+    from typehaus.resolve.rebar.detailing import (
+        development_length_in,
+        hooked_development_length_in,
+    )
 
-    if pier.base_kind == "wall" or pier.base_thickness_in <= 0.0:
+    if pier.base_thickness_in <= 0.0:
         return None
+    if pier.base_kind == "wall":
+        entry = dowel_entry(pier)
+        if entry is None or entry.embedment is None:
+            return None
+        base_fc = pier.base_fc_psi or PRESUMPTIVE_FC_PSI
+        ld = development_length_in(entry.bar, base_fc)
+        cover_in = pier.base_cover_in if pier.base_cover_in is not None else _cover_in(pier)
+        stem = pier.base_thickness_in - cover_in
+        authored = float(entry.embedment.inches)
+        refused = authored > stem
+        return LimitState(
+            "dowel anchorage into the base", ld, min(authored, stem), "in",
+            f"ACI 318-19 §25.4.2.4 straight development of a #{entry.bar} dowel in the wall "
+            f"below at f'c {base_fc:,.0f} psi, psi_t 1.0 (vertical bar), psi_e 1.0 (zinc, "
+            f"§25.4.2.5); against the authored {authored:g}\" embedment"
+            + (f" — REFUSED: the stem holds only {stem:.1f}\" ({pier.base_thickness_in:.2f}\" "
+               f"less {cover_in:g}\" cover), which is graded instead" if refused else
+               f", inside the {pier.base_thickness_in:.2f}\" stem less {cover_in:g}\" cover")
+            + ". No hook at the foot is credited")
     ldh = hooked_development_length_in(cage.bar, fc_psi, enclosed_by_ties=True,
                                        confined=True)
     cover_in = _cover_in(pier)

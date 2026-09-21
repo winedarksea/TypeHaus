@@ -48,7 +48,7 @@ Pieces are what gets cut; bars are runs (a lapped run is one bar in two pieces).
 | scope | bar | coating | pieces | bars | placed | lap | hook | cut | weight |
 |---|---|---|---:|---:|---:|---:|---:|---:|---:|
 | column | #3 | hdg-a767 | 144 | 144 | 287.5 | 0.0 | 182.2 | 469.7 LF | 176.6 lb |
-| column | #5 | hdg-a767 | 88 | 88 | 486.4 | 91.9 | 28.1 | 606.4 LF | 632.5 lb |
+| column | #5 | hdg-a767 | 88 | 88 | 490.1 | 91.9 | 28.1 | 610.1 LF | 636.3 lb |
 | footing | #4 | hdg-a767 | 30 | 30 | 407.3 | 0.0 | 0.0 | 407.3 LF | 272.1 lb |
 | footing | #5 | hdg-a767 | 154 | 154 | 949.0 | 0.0 | 0.0 | 949.0 LF | 989.8 lb |
 | foundation wall | #3 | hdg-a767 | 49 | 49 | 171.5 | 0.0 | 37.5 | 209.0 LF | 78.6 lb |
@@ -58,7 +58,7 @@ Pieces are what gets cut; bars are runs (a lapped run is one bar in two pieces).
 | slab | #3 | black | 220 | 220 | 481.3 | 0.0 | 149.7 | 631.0 LF | 237.3 lb |
 | slab | #4 | black | 43 | 43 | 863.6 | 0.0 | 0.0 | 863.6 LF | 576.9 lb |
 | slab | #5 | black | 22 | 22 | 393.2 | 0.0 | 0.0 | 393.2 LF | 410.1 lb |
-| | | | **1,206** | | | | | | **6,667.6 lb** |
+| | | | **1,206** | | | | | | **6,671.4 lb** |
 
 **Checked by hand, not only by the machine.** Three elements in these rows are laid out bar
 for bar in `notes/rebar_layout_basis.md` and reproduced by `tests/test_rebar_layout_oracle.py`:
@@ -81,6 +81,10 @@ nothing had made them dowel it, and nothing said so because `BM-BW-SCSILL`'s unp
 kept both records in `deck_post._detailing_only`, which never reaches dowel anchorage (see
 `entry_column_base_fixity.md` and `north_entry_piers.md`). The 12" pads that develop the dowels
 are **0.073 cy** of concrete and move no row here. Ratio 46.1 → 46.3 lb/cy.
+
+**2026-09-20, +3.8 lb: 6,667.6 → 6,671.4 lb.** The four balcony corner columns' dowels now
+author `embedment=24"` into `W-SG-W1`/`-E1`, and the layout lays that rather than ld: 16
+dowels × (24 − 21.21)" = 44.6" = 3.7 LF of #5 at 1.043 plf (`balcony_moment_columns.md` §11c).
 
 **Revised on 2026-09-17 after a detailing review: 6,730.3 → 6,608.0 lb, −122.3 lb**, row by row:
 
