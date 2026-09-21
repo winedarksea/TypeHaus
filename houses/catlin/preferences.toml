@@ -107,6 +107,10 @@ min_through_deck_clearance_in = 0.5
 # drawing emitter -- which is why it is authored here rather than derived.
 roof_beam_snow_psf = 73.7
 roof_beam_dead_psf = 10.0
+# w = 4 h_d above. Laid from the canopy's SOUTH edge it runs 3.80 ft past its north edge
+# into RF-GARAGE, over truss-000 and truss-001: structural.truss_reactions holds rows for
+# those two to the drift and no others (notes/north_entry_piers.md §3a).
+roof_beam_drift_width_ft = 9.8
 
 [plumbing]
 drain_stack_required_structure_in = 5.5
@@ -414,20 +418,22 @@ suppress = [
   "mep.run_through_plate:DU-S-HP-SUITE",
   "mep.run_through_plate:DU-S-HP-SOUTH",
 
-  # ** structural.tiered_retaining: 5 REAL FAILS, THE RAISED-GARDEN SRW APRON. MEASURED
-  # 2026-09-20, THE DAY IT WAS FIRST CALCULATED. NOT A DECISION — A DESIGN CHANGE OWED. **
+  # ** structural.tiered_retaining: 5 REAL FAILS, THE RAISED-GARDEN SRW APRON. FIRST
+  # CALCULATED 2026-09-20; RE-GRADED 2026-09-21 ON THE REAL UNIT. A DESIGN CHANGE OWED. **
   #
-  # A vertical 12" dry-stacked unit retaining 3'-4" over 8" of embedment: sliding FS 0.38,
-  # overturning FS 0.57, resultant 0.37' in front of the toe (IRC R404.4 wants 1.5). Worked
-  # by hand in notes/raised_garden_srw.md. It does not turn on the soil band, the unit
-  # weight (137 pcf is the SOLID upper bound) or a batter (9.5° only reaches OT 0.96).
-  # What would close it is the owner's call and the note's §8 prices each: a 2.8'-3.9'
-  # deep gravity section, a terrace lowered to ~1'-1.4', or supplier-sealed geogrid.
+  # Allan Block AB Classic (6° setback, 130 pcf in place) retaining 3'-4" over one 8" course,
+  # by the NCMA/AB gravity method: overturning FS 1.27 (110 pcf) / 1.34 (130 pcf), failing
+  # at BOTH ends of the soil band; sliding 1.21 / 1.51 and bearing 2,397 / 1,998 psf
+  # straddle it (IRC R404.4 wants 1.5). The three perimeter legs also fail tier independence
+  # (d/c 6.13 against the court walls), which no unit choice closes. Worked by hand in
+  # notes/raised_garden_srw.md; §8 prices the options (AB Stone 12° still slides at 1.30 at
+  # the loose end; a ~2'-6" terrace; supplier-sealed geogrid).
   #
   # Suppressed only so the reference house's CI gate stays usable while that call is made.
   # `haus check --no-suppress` shows all five; the permit line BLOCKS (profile.py), so the
-  # suppression hides nothing from either gate. ** A DEBT WITH A NUMBER ON IT: sliding FS 0.38. ** Delete
-  # these five lines in the commit that changes the apron, and do not add a sixth.
+  # suppression hides nothing from either gate. ** A DEBT WITH A NUMBER ON IT: overturning FS
+  # 1.27. ** Delete these five lines in the commit that changes the apron, and do not add a
+  # sixth.
   "structural.tiered_retaining:W-RG-BLOCK",
   "structural.tiered_retaining:W-RG-WEST",
   "structural.tiered_retaining:W-RG-EAST",

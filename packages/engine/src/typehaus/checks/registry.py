@@ -191,6 +191,11 @@ class StructuralPreferences:
     roof_beam_snow_psf: float | None = None
     #: Dead load, psf, on the same beam: roofing, deck, framing and its own weight.
     roof_beam_dead_psf: float = 10.0
+    #: Width of that roof-step drift, ft (ASCE 7 §7.7.1, w = 4 h_d), measured from the far
+    #: edge of the roof the beams carry. Where it outruns that roof, the trusses of the roof
+    #: beyond it inside the width are drift trusses too (``structural.truss_reactions``).
+    #: ``None``: the reach is unknown and a neighbouring trussed roof is held to it whole.
+    roof_beam_drift_width_ft: float | None = None
     #: Modulus of subgrade reaction under a retaining wall's mat, pci, and the same number
     #: lying on its side for the buried face. **Only the analytical SHELL export reads
     #: these** (``analytical/shells.py``): a shell model of a retaining wall is a wall on

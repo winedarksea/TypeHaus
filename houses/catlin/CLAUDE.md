@@ -2145,8 +2145,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `plan/site.py` authors, pinned by `test_retaining_court`. Keep the terrace name separate
   from the porch-floor name so a future divergence is a one-line change.
   - It doubles as `params/raised_garden.py`'s `RETAINING_WALL_TOP_FT` apron TOP, with
-    BASE = TOP - drop_ft — moving one moves both. **`drop_ft` is 4'-0" now, eight whole 6"
-    courses**, which buries the apron's base course 8" in the authored yard; at 3'-0" off
+    BASE = TOP - drop_ft — moving one moves both. **`drop_ft` is 4'-0" now, six whole 8"
+    Allan Block AB Classic courses**, which buries the apron's base course 8" in the authored yard; at 3'-0" off
     the new top it would have stood 4" in the air, the same negative embedment as before
     arrived at the other way. Nothing grades a freestanding wall's base against the ground
     plane, so a wrong constant here goes to 0 FAIL (→ DESIGN-LOG.md, "Sunken garden court").
@@ -2547,6 +2547,9 @@ haus analysis . --solve                     # the engineered frame, solved in Py
   "50 psf ground snow" prices ordinary trusses, and the surcharge off the house gable also
   reaches 3'-10" into the garage roof, so ITS two southernmost trusses are drift trusses too.
   S-001 prints the number; `preferences.toml [structural] roof_beam_snow_psf` is where it lives.
+  Since 2026-09-21 `roof_beam_drift_width_ft = 9.8` lets `structural.truss_reactions` DERIVE
+  those two (`truss-000`/`-001`) and refuse a ground-snow-only reaction row for them
+  (`notes/north_entry_piers.md` §3a).
 - **The wall-panel question is closed too, as of 2026-09-11.** It was the one open
   engineering question: the concealed-fastener panel's withdrawal allowable over 24" open
   girts, which no manufacturer publishes. Naming the product settled the substrate on the

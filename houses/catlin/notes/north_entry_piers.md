@@ -21,7 +21,8 @@ EAST pair went on 2026-09-10 when the east header moved onto concrete);
 `engineering/deck_post.py` / `engineering/spread_footing.py` (§6, axial and bearing); and
 **`roof_moment.roof_base_moments` (§8, the canopy's east columns in BENDING)**, added
 2026-09-11. Reproduced by `tests/test_north_entry_piers.py` and, for §8,
-`tests/test_pier_calcs.py`.
+`tests/test_pier_calcs.py`. §3a (the drift trusses) oracles `structural.truss_reactions`'s
+`drift_trusses`, reproduced by `tests/test_truss_reactions.py`.
 
 > ⚠ **`deck_post`'s own `oracled_by` named the SUPERSEDED `breezeway_piers.md` until
 > 2026-09-11 and did not name this note at all.** The lint only asserts that a named note
@@ -134,6 +135,31 @@ at the peak, so the number is not new to the house.
 **Taking the full §7.7 surcharge on a GABLE lower roof is conservative and is not a
 checked geometry.** §7.7 assumes a flat-ish lower roof; this one sheds east and west, so
 some of the drift would in practice spill off the eaves. Nothing here credits that.
+
+### 3a. How far into the garage — the drift trusses (oracles `structural.truss_reactions`, 2026-09-21)
+
+The triangle is 9.8 ft wide and the canopy is 6.0 ft deep, so it spills onto `RF-GARAGE`.
+Until 2026-09-21 the truss-reaction guard knew only roofs whose BEAMS the house grades at
+the drift (`roof_beam` records) — the canopy — and the garage, whose trusses bear on walls,
+was never held to it. The width is now authored (`roof_beam_drift_width_ft = 9.8`) and laid
+from the canopy's **south** footprint edge rather than the house cladding face, which is
+conservative by the 0.62 ft between them:
+
+| term | working | value |
+|---|---|---|
+| canopy footprint, y | resolved `RF-BW-CANOPY` | 37.219 … 43.219 ft |
+| drift limit | 37.219 + 9.8 | y = 47.019 ft |
+| reach past the canopy | 47.019 − 43.219 | **3.80 ft** into the garage |
+| (from the cladding face instead) | 36.604 + 9.8 | y = 46.404 ft — the same two trusses |
+| `truss-000` (gable) | y = 43.281 | inside |
+| `truss-001` | y = 45.219 | inside |
+| `truss-002` | y = 47.219 | outside, by 0.20 ft |
+
+So **two** drift trusses, `truss-000` and `truss-001` — the "two southernmost" of the banner.
+The guard now refuses a reaction row with no drift surcharge when the row names one of those
+two, or names no model truss at all (a fabricator's mark the model cannot place); a row for
+`truss-002` … `truss-012` on ground snow alone is correct and passes. The canopy, drifted
+whole, refuses any such row as before.
 
 ## 4. Uplift — stated, not left open
 

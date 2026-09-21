@@ -3,7 +3,7 @@
 **House:** catlin
 **Structure:** `W-SG-BRKBM` (the beam), `W-B-BRICK` (the wythe it carries), `FT-B-S2` /
 `FT-B-S3` (the footings it is isolated from), `SG_VENEER_BEAM_14` (the assembly).
-**Written:** 2026-09-05, by hand.
+**Written:** 2026-09-05, by hand. §6e re-worked 2026-09-21 (hooks, enclosing ties, footing dowels).
 **Oracle for:** `engineering/veneer_beam.py` (`veneer_beam/W-SG-BRKBM`) since 2026-09-20 —
 §6 is worked at the model's own geometry and `tests/test_veneer_beam_calc.py` reproduces it;
 §3/§4 still oracle the report-side `engineering/sunken_garden/veneer_beam.py` at their literals.
@@ -425,41 +425,71 @@ masonry beams, and whether a reviewer applies it to a concrete one is a judgemen
 close both is the end restraint §6e is about — even partial fixity at the side walls roughly
 halves this — which is the strongest reason yet to design that joint.
 
-### 6e. End restraint — INCOMPLETE, and a hook would not fit as laid out
+### 6e. End restraint — closed 2026-09-21 (was INCOMPLETE)
 
 The beam is cast monolithic with `W-SG-W1`/`W-SG-E1` (`AN-SG-PLACEMENTS` placement 2), and the
 torsion of §6c and any fixity in §6d are delivered through that joint. It is anchorage: each
 corner bar is longitudinal torsion steel and must develop fy at the support face, so the
-§25.4.10.1 excess-steel reduction is not taken.
-
-**Neither row authors a hook** (`BarSpec.hooks` is unset on `top-y` and `bottom-y`), and the
-placement annotation says the bars "lap into the walls' vertical steel", which a horizontal
-bar cannot do. A straight #5 needs ℓd = 60,000 × 0.625 / (25 × 70.711) = **21.2"**, against a
-12" wall. So the record reports INCOMPLETE naming the hooks and assumes none.
-
-What a standard hook would need, worked so the gap is a number and not a shrug (§25.4.3.1,
-the equation `sunken_garden_court_free_body.md` §6b uses; ψe 1.0 galvanized, ψc 0.933):
+§25.4.10.1 excess-steel reduction is not taken. Common terms (§25.4.3.1(a), ψe 1.0 galvanized
+per §25.4.2.5, λ 1.0, ψc = 5,000/15,000 + 0.6 = 0.9333):
 
 ```
-available   W-SG-W1 12.0" − 3.0" far-face cover (its own schedule)    = 9.0 in
-ψo          side cover to W-SG-W1's north end: 12.375 − 6.185 = 6.19" ≥ 6db 3.75"  → 1.0
-ψr          3 bars across 12": centres 3.3125" apart < 6db 3.75"; no ties enclosing the
-            hooks, so Ath 0 < 0.4 Ahs = 0.372 in²                     → 1.6
-ℓdh         14.40 × 1.6 × 0.625^1.5                                    = 11.38 in   d/c 1.26 ✗
-with ψr 1.0 (≥ 0.372 in² of ties through the joint)  14.40 × 0.4941   =  7.11 in   d/c 0.79 ✓
+fy ψc / (55 √f'c) = 60,000 × 0.9333 / (55 × 70.711)       = 14.399
+db^1.5            = 0.625^1.5                              = 0.49411
 ```
 
-**So hooking the bars as they are laid out does not close it; ties enclosing the hooks do.**
-Two #5 per row cannot (2 × 0.31 < 0.639, §3), and two #6 at 6.5" spacing make ψr 1.0 but need
-9.35" against 9.0". This is a design decision for the engineer of record, not a model edit.
+**Until 2026-09-21 neither row authored a hook, and the bottom row met a footing.** A straight
+#5 needs ℓd = 60,000 × 0.625 / (25 × 70.711) = 21.21" against a 12" wall, and hooking the
+3 #5 as laid out gave ψr 1.6 (centres 3.3125" < 6db 3.75", no ties) → ℓdh 11.38" against 9.00",
+d/c 1.26. The bottom row (centre −117.50") sits inside `FT-SG-W1`/`-E1` (z −121.4375…−109.4375,
+cast in placement 1), below the walls' −109.4375" start. Both are now detailed:
 
-**And the bottom row cannot reach the wall at all as modelled.** `W-SG-W1`/`-E1` start at
-−109.4375" (their footing top); the beam bottom is −120.1875", so its lower 10.75" at each end
-sits inside `FT-SG-W1`/`-E1`'s solid (x 54"…138" and 294"…378", z −121.4375"…−109.4375") —
-concrete cast in placement 1. The bottom bars (centre −117.50") run into a footing poured a
-placement earlier. The record names this as a missing input rather than grading it; it is a
-geometric conflict between the beam's held bottom (§2) and the footings, and one only the
-design can resolve (raise the beam bottom over the toes, or detail the end on the footing).
+**Top row — hooked into the wall, with ties enclosing the hooks (ACI 318-19 Table 25.4.3.2).**
+ψr is 1.0 for a #11-or-smaller hooked bar with **Ath ≥ 0.4 Ahs** *or* s ≥ 6db. The spacing
+leg fails (3.3125 < 3.75), so the credit has to come from Ath: two closed #4 ties per end,
+perpendicular to ℓdh, enclosing the three hooked bars. §25.4.3.3(b) counts them only if there
+are two or more, evenly distributed along ℓdh at ≤ 8db centres.
+
+```
+Ahs         3 #5 hooked at the critical section   3 × 0.31            = 0.93 in²
+0.4 Ahs                                                               = 0.372 in²
+Ath         2 ties × 2 legs × 0.20                                    = 0.80 in²  ≥ 0.372 ✓
+            (one leg per tie, the stingiest reading: 2 × 0.20 = 0.40 ≥ 0.372 ✓ — why #4, not #3)
+§25.4.3.3   count 2 ≥ 2 ✓;  spacing 5.00" ≤ 8db 5.00" ✓;  spread (2−1) × 5.00 = 5.00" ≤ ℓdh 7.11" ✓
+ψr 1.0,  ψo 1.0 (side cover 12.375 − 6.185 = 6.19" ≥ 6db 3.75")
+ℓdh         14.399 × 1.0 × 1.0 × 0.49411                              = 7.11 in
+available   W-SG-W1 12.0" − 3.0" far-face cover                       = 9.00 in   d/c 0.790 ✓
+            (W-SG-E1 is the mirror: same 7.11 / 9.00)
+```
+
+The hooks turn **up** into the wall: the top row is at −105.125" and a #5 90° hook needs
+3.75/2 + 0.625 + 7.5 = 10.0" of leg, so turned down it would end at −115.1", 5.7" into the
+footing below the wall's −109.4375" start. Not graded — the layout's beam convention turns
+top hooks down, and the drawing must say up.
+
+**Bottom row — the footing is the anchorage solid, through dowels cast in it.** The beam's
+own bottom bars cannot enter a footing poured a placement earlier, so 3 #5 dowels per end are
+cast horizontally in `FT-SG-W1`/`-E1` in placement 1, projecting through the footing's
+court-side face (the cold joint) and lapping the bottom row there. In the beam's frame
+(origin its west end): support faces u 6" / 234"; `FT-SG-W1` u −42…42, `FT-SG-E1` u 198…282;
+3" cover and f'c 5,000 on both (`COURT_FOOTING_12`, their own schedule).
+
+```
+ℓd          STRAIGHT, §25.4.2.4: 60,000 × 0.625 / (25 × 70.711)      = 21.21 in
+            ψt 1.0: 3.94" of concrete below the bar (−117.50 − −121.4375) < 12"
+            ψe 1.0 galvanized (§25.4.2.5)
+embedment   authored 66", measured from the joint (u 42 / u 198) back into the footing
+past face   66 − (42 − 6)                                             = 30.00 in
+geometric   6 − (−42) − 3 cover                                       = 45.00 in
+available   min(30.00, 45.00)                                         = 30.00 in  d/c 0.707 ✓
+            (east: 66 − (234 − 198) = 30.00; 282 − 3 − 234 = 45.00 — the mirror)
+dowel steel 3 #5 = 0.93 in² against the row's 3 #5 = 0.93 in²                   d/c 1.000 ✓
+lap         class B, §25.5.2.1: 1.3 × 21.21 = 27.58" past the joint into the beam — laid
+            and billed by the rebar layout; not a graded row (no authored projection)
+```
+
+A hook buys nothing here: straight at 45" of room it develops with 50% to spare, and a hook
+turned in a 12" footing with the bar 3.94" off its underside has nowhere to go.
 
 ### 6f. What left this record, and where it went
 
@@ -486,10 +516,12 @@ design can resolve (raise the beam bottom over the toes, or detail the end on th
 | longitudinal steel, flexure + torsion (detailing) | 1.684 in² | 2.26 | 0.745 |
 | longitudinal perimeter spacing (detailing) | 6.19 in | 12.0 | 0.516 |
 | deflection after attachment | 0.4844 in | 0.4875 | 0.994 |
-| end restraint, top and bottom rows | — | — | INCOMPLETE |
+| hooked development of top-y into W-SG-W1 / W-SG-E1 (ψr 1.0 on Ath) | 7.11 in | 9.00 | 0.790 |
+| dowel development of bottom-y into FT-SG-W1 / FT-SG-E1 | 21.21 in | 30.00 | 0.707 |
+| dowel steel against the bottom row, each end (detailing) | 0.93 in² | 0.93 | 1.000 |
 
-Status on catlin: **INCOMPLETE** — every computed row passes, and the end restraint is
-missing its hooks (and, for the bottom row, a wall to hook into).
+Status on catlin: **OK** since 2026-09-21 — every row passes; deflection (0.994) governs.
+Until then INCOMPLETE on the end restraint (hooks, and a wall for the bottom row).
 
 ## Sources
 
@@ -509,5 +541,13 @@ missing its hooks (and, for the bottom row, a wall to hook into).
 - BIA Technical Note 18 — clay masonry movement; the basis for the end soft joints in §5.1.
 - ACI 318-19 §22.7.6.1, §22.7.7.1, §9.6.4, §9.7.5, §9.7.6.3.3 (torsion, §6c); §24.2.3.5,
   §24.2.4.1 and Table 24.2.2 (deflection, §6d); §25.4.2.3 and §25.4.3.1 (anchorage, §6e).
+- ACI 318-19 Table 25.4.3.2 (ψr 1.0 for #11 and smaller with Ath ≥ 0.4 Ahs or s ≥ 6db,
+  else 1.6) and §25.4.3.3 (Ath counts ≥ 2 ties, ≤ 8db apart; perpendicular ties evenly
+  distributed along ℓdh), §25.4.2.4 (straight ℓd), §25.5.2.1 (class B lap) — §6e. Table
+  reproduced in S. K. Ghosh, "The most notable changes from ACI 318-14 to ACI 318-19",
+  PCI Journal Mar–Apr 2024, Table 2
+  (https://www.pci.org/PCI_Docs/Publications/PCI%20Journal/2024/March-April/23-0001_Feature_Ghosh_MA24.pdf);
+  §25.4.3.3's wording via ideCAD's ACI 318-19 development notes
+  (https://help.idecad.com/ideCAD/development-of-reinforcement).
 - TMS 402-16 §5.2.1.4.2 — ℓ/600 for a beam supporting unreinforced masonry (§6d, not graded).
 - `notes/sunken_garden_court_free_body.md` — the court's own free body, unchanged by this.

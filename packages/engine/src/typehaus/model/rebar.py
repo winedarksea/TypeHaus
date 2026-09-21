@@ -55,6 +55,23 @@ def bar(number: int) -> Bar | None:
 KNOWN_BARS: tuple[int, ...] = tuple(sorted(BARS))
 
 
+class HookConfinement(HausModel):
+    """Ties or stirrups enclosing one row's hooks inside the member it anchors in.
+
+    ACI 318-19 Table 25.4.3.2 takes ψr 1.0 where ``Ath >= 0.4 Ahs``, and §25.4.3.3 counts a
+    tie in Ath only when there are two or more, at ≤ 8 db (of the hooked bar) centres —
+    parallel ties within 15 db of the hooked bars' centreline, perpendicular ones evenly
+    distributed along ℓdh. ``count`` is per hooked end; ``legs`` is how many legs of EACH tie
+    are credited, stated by the author because the code leaves the reading to the drawing.
+    """
+
+    bar: int
+    count: int
+    spacing: Length
+    legs: int
+    orientation: Literal["perpendicular", "parallel"]
+
+
 class BarSpec(HausModel):
     """One role of bar in a cage or a mat: what size, how it is laid out, how it is coated.
 
@@ -103,6 +120,9 @@ class BarSpec(HausModel):
     #: straight; ties, stirrups and dowels carry their own hooks regardless. On a wall
     #: ``vertical``, ``"start"`` runs the bar continuous from the footing below on a foot.
     hooks: tuple[Literal["start", "end"], ...] | None = None
+    #: Hooked rows only: the ties enclosing those hooks (ACI 318-19 §25.4.3.3) — the ψr 1.0
+    #: credit when the hooked bars sit closer than 6 db. ``None``: none are credited.
+    hook_ties: HookConfinement | None = None
     #: Stirrups/ties only: the distance from EACH end of the member they are confined to.
     zone: Length | None = None
     #: Dowels only: the straight length cast into the pour BELOW the joint. ``None`` means
@@ -171,5 +191,5 @@ class ReinforcementSpec(HausModel):
 
 
 for _name, _obj in (("BarSpec", BarSpec), ("ReinforcementSpec", ReinforcementSpec),
-                    ("RibLayout", RibLayout)):
+                    ("RibLayout", RibLayout), ("HookConfinement", HookConfinement)):
     register_constructor(_name, _obj)

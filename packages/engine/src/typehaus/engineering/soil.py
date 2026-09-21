@@ -18,12 +18,13 @@ from dataclasses import dataclass
 
 #: IBC Table 1806.2 soil classes, by the IRC Table R405.1 group symbols the model declares.
 #: Class 4 — "sand, silty sand, clayey sand, silty gravel and clayey gravel (SW, SP, SM, SC,
-#: GM and GC)" — is the row every group Minnesota's profile can declare falls in except the
-#: clean gravels and the clays.
+#: GM and GC)"; class 5 — "clay, sandy clay, silty clay, clayey silt, silt and sandy silt (CL,
+#: ML, MH and CH)", so ML is class 5 (it read class 4 until 2026-09-21). SM-SC is a dual
+#: symbol the table does not list; both halves are class 4.
 _IBC_1806_2_CLASS: dict[str, int] = {
     "GW": 3, "GP": 3,
-    "SW": 4, "SP": 4, "SM": 4, "SM-SC": 4, "SC": 4, "GM": 4, "GC": 4, "ML": 4,
-    "ML-CL": 5, "CL": 5,
+    "SW": 4, "SP": 4, "SM": 4, "SM-SC": 4, "SC": 4, "GM": 4, "GC": 4,
+    "ML": 5, "ML-CL": 5, "CL": 5,
 }
 
 #: IBC Table 1806.2, by class: allowable vertical bearing (psf), lateral bearing below
@@ -36,14 +37,16 @@ _IBC_1806_2: dict[int, tuple[float, float, float]] = {
 }
 
 #: IBC Table 1610.1 equivalent-fluid lateral pressures, psf per foot of depth: (active,
-#: at-rest). Keyed by the same group symbols. Active presumes the wall can rotate enough to
+#: at-rest), row for row off the code text (up.codes/s/soil-lateral-loads, read 2026-09-21).
+#: GM is 40 active, not the 45 the IRC R404.1.2 wall tables group it at; SM-SC, SC and the
+#: silts and clays are 100 at rest, not 60. Active presumes the wall can rotate enough to
 #: mobilise the active wedge; a free cantilever normally is designed active, and it is the
 #: more favourable of the two.
 _IBC_1610_1: dict[str, tuple[float, float]] = {
     "GW": (30.0, 60.0), "GP": (30.0, 60.0), "SW": (30.0, 60.0), "SP": (30.0, 60.0),
-    "GM": (45.0, 60.0), "GC": (45.0, 60.0), "SM": (45.0, 60.0), "SM-SC": (45.0, 60.0),
-    "ML": (45.0, 60.0),
-    "SC": (60.0, 60.0), "ML-CL": (60.0, 60.0), "CL": (60.0, 60.0),
+    "GM": (40.0, 60.0), "GC": (45.0, 60.0), "SM": (45.0, 60.0),
+    "SM-SC": (45.0, 100.0), "ML": (45.0, 100.0),
+    "SC": (60.0, 100.0), "ML-CL": (60.0, 100.0), "CL": (60.0, 100.0),
 }
 
 #: The band, in pcf. 110 is a loose-to-medium silty gravel; 130 is well compacted. Not a

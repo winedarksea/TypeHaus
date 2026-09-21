@@ -17,11 +17,10 @@ from typehaus.engineering.sunken_garden.veneer_beam import (
     deflection_after_attachment,
     torsion_design,
 )
-from typehaus.engineering.veneer_beam import (
-    carried_wythes,
-    enumerate_veneer_beams,
-    hooked_anchorage,
-)
+from typehaus.engineering.veneer_beam import carried_wythes, enumerate_veneer_beams
+from typehaus.engineering.veneer_beam_anchorage import confining_tie_area, hooked_anchorage
+from typehaus.model import HookConfinement
+from typehaus.quantities import inch
 
 
 @pytest.fixture(scope="module")
@@ -98,14 +97,43 @@ def test_deflection_is_graded_at_l_over_480_not_240(record) -> None:
     assert any("ℓ/600" in note and "1.24" in note for note in rec.notes)
 
 
-def test_end_restraint_is_incomplete_never_an_assumed_hook(record) -> None:
-    """§6e: no hook is authored, so INCOMPLETE naming it; the bottom row meets the footing."""
+def test_end_restraint_closes_on_ties_and_footing_dowels(record) -> None:
+    """§6e (2026-09-21): top-y hooked with Ath 0.80 → ψr 1.0, 7.11" in 9.00"; bottom-y on
+    3 #5 dowels cast straight in FT-SG-W1/E1, 21.21" in 30.00"."""
     _, rec = record
-    assert rec.status is Status.INCOMPLETE
-    assert not any(s.name.startswith("hooked development") for s in rec.limit_states)
-    assert sum("`BarSpec.hooks`" in m and "top-y" in m for m in rec.missing) == 2
-    assert sum("bottom-y" in m and "FT-SG-" in m for m in rec.missing) == 2
-    assert any("ℓdh 11.38\" against 9.00\" (d/c 1.26)" in note for note in rec.notes)
+    assert rec.status is Status.OK, rec.missing
+    assert not rec.missing
+    for wall in ("W-SG-W1", "W-SG-E1"):
+        hook = _state(rec, f"hooked development of top-y into {wall}")
+        assert (hook.demand, hook.capacity) == (pytest.approx(7.11, abs=0.01), pytest.approx(9.0))
+        assert hook.ratio == pytest.approx(0.790, abs=1e-3)
+        assert "Ath 0.800 in² vs 0.4 Ahs 0.372" in hook.citation
+    for footing in ("FT-SG-W1", "FT-SG-E1"):
+        dowel = _state(rec, f"dowel development of bottom-y into {footing}")
+        assert dowel.demand == pytest.approx(21.21, abs=0.01)
+        assert dowel.capacity == pytest.approx(30.0)
+        assert dowel.ratio == pytest.approx(0.707, abs=1e-3)
+        steel = _state(rec, f"dowel steel against bottom-y at {footing}")
+        assert (steel.demand, steel.capacity) == (pytest.approx(0.93), pytest.approx(0.93))
+        assert steel.is_detailing
+    assert sum("27.58\"" in note for note in rec.notes) == 2
+    assert _state(rec, "deflection").ratio == max(
+        s.ratio for s in rec.limit_states if not s.is_detailing)
+
+
+def test_tie_credit_follows_section_25_4_3_3() -> None:
+    """Two #4 perpendicular ties @ 5" count (Ath 0.80); one tie, or 5.25" apart, count nothing."""
+    ties = HookConfinement(bar=4, count=2, spacing=inch(5.0), legs=2, orientation="perpendicular")
+    assert confining_tie_area(ties, hooked_bar=5, ldh_in=7.11) == (pytest.approx(0.80), [])
+    one = ties.model_copy(update={"count": 1})
+    wide = ties.model_copy(update={"spacing": inch(5.25)})
+    assert confining_tie_area(one, hooked_bar=5, ldh_in=7.11)[0] == 0.0
+    assert confining_tie_area(wide, hooked_bar=5, ldh_in=7.11)[0] == 0.0
+    assert confining_tie_area(None, hooked_bar=5, ldh_in=7.11)[0] == 0.0
+    ldh, _s, psi_r_one, _c = hooked_anchorage(
+        bar=5, count=3, width_in=12.0, cover_in=2.0, hoop_diameter_in=0.375,
+        side_cover_in=6.19, fc_psi=5000.0, tie_area_in2=0.371)
+    assert not psi_r_one and ldh == pytest.approx(11.38, abs=0.01)
 
 
 def test_hooked_anchorage_reproduces_section_6e() -> None:

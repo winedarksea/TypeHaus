@@ -1,4 +1,4 @@
-"""``engineering/tier_surcharge.py`` against ``sunken_garden_court_free_body.md`` §4c.
+"""``engineering/tier_surcharge.py`` against ``sunken_garden_court_free_body.md`` §4c/§4d.
 
 The raised-garden apron stands on its pad inside the soil the court walls retain; §4c works
 its bearing, by hand, as a rigid-wall Boussinesq strip (closed form, Jarquio). The engine
@@ -38,7 +38,7 @@ def test_the_strip_integral_reproduces_the_closed_form() -> None:
     stem, stem_arm = strip_load(109.37, 3.0, 1.0, 5.1198)
     assert stem == pytest.approx(0.43411 * 109.37, rel=1e-4)
     assert stem_arm == pytest.approx(2.5346, abs=1e-3)
-    assert strip_load(549.37, 0.0, 1.0, 6.1198)[0] == pytest.approx(
+    assert strip_load(520.0, 0.0, 1.0, 6.1198)[0] == pytest.approx(
         _NOTE_APRON_GROSS_LATERAL_PLF, abs=0.1)
     # An infinite strip against the wall is q over the depth: the rigid-wall doubling.
     assert strip_load(100.0, 0.0, 1e6, 5.0)[0] == pytest.approx(500.0, rel=1e-3)
@@ -78,15 +78,18 @@ def test_each_court_wall_carries_its_own_apron(catlin_plan, pcf) -> None:
         assert load.surcharge.source == f"tiered_retaining/{apron}"
         assert "BALCONY" not in load.surcharge.source
         assert load.surcharge.lateral_plf == pytest.approx(_NOTE_APRON_LATERAL_PLF[pcf], abs=0.02)
-        assert load.surcharge.lateral_arm_ft == pytest.approx(_NOTE_APRON_ARM_FT, abs=1e-3)
+        if _NOTE_APRON_NET_PSF[pcf] > 0.0:
+            assert load.surcharge.lateral_arm_ft == pytest.approx(_NOTE_APRON_ARM_FT, abs=1e-3)
+        else:   # §4d: no net load at 130 pcf, and the relief is not credited
+            assert any("relief and is not credited" in n for n in load.notes)
         assert load.surcharge.stem_moment_plf == pytest.approx(
             _NOTE_APRON_STEM_MOMENT[pcf], abs=0.1)
         q_net = {q.name: q.value for q in load.inputs}[f"surcharge_{apron}_q_net"]
         assert q_net == pytest.approx(_NOTE_APRON_NET_PSF[pcf], abs=0.01)
 
 
-def test_the_wall_records_restate_section_4c(catlin_plan) -> None:
-    """Overturning 2.33, e 0.870', q 1,353 psf, stem Mu 12,329 — and the citation."""
+def test_the_wall_records_restate_section_4d(catlin_plan) -> None:
+    """Overturning 2.35, e 0.851', q 1,341 psf, stem Mu 12,277 — and the citation."""
     from typehaus.engineering import EngineeringResults
 
     results = EngineeringResults(_ctx(catlin_plan))
@@ -94,12 +97,12 @@ def test_the_wall_records_restate_section_4c(catlin_plan) -> None:
         record = results[f"retaining_wall/{wall}"]
         assert record.status is Status.OK, record.summary
         states = {s.name: s for s in record.limit_states}
-        assert states["overturning"].capacity == pytest.approx(2.33, abs=0.005)
-        assert states["eccentricity"].demand == pytest.approx(0.8696, abs=1e-3)
-        assert states["bearing"].demand == pytest.approx(1_353.3, abs=0.5)
-        assert states["stem flexure"].demand == pytest.approx(12_329.0, abs=2.0)
-        assert states["toe flexure"].demand == pytest.approx(8_555.0, abs=2.0)
+        assert states["overturning"].capacity == pytest.approx(2.35, abs=0.005)
+        assert states["eccentricity"].demand == pytest.approx(0.8511, abs=1e-3)
+        assert states["bearing"].demand == pytest.approx(1_341.0, abs=0.5)
+        assert states["stem flexure"].demand == pytest.approx(12_277.0, abs=2.0)
+        assert states["toe flexure"].demand == pytest.approx(8_491.0, abs=2.0)
         note = next(n for n in record.notes if n.startswith("APRON SURCHARGE"))
         assert f"via tiered_retaining/{apron}" in note
-        assert "347 plf" in note          # the gross sensitivity is printed, not hidden
+        assert "328 plf" in note          # the gross sensitivity is printed, not hidden
         assert any(q.name == f"surcharge_{apron}_lateral" for q in record.inputs)

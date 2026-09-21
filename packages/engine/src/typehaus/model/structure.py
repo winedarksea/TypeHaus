@@ -356,6 +356,10 @@ class FootingBedding(Element):
     # down instead. ``structural.frost_depth`` counts a section only where this is True
     # *and* ``drain_tile`` runs one: an undrained NFS layer is not what ASCE 32 describes.
     non_frost_susceptible: bool | None = None
+    #: Internal friction angle of the compacted section, degrees, from a named source. A
+    #: segmental wall slides at tan φ of the weaker of this and the ground under it
+    #: (``engineering/segmental_wall``); ``None`` falls back to IBC Table 1806.2's coefficient.
+    friction_angle_deg: float | None = None
     geotextile: bool = True
     drain_tile: bool = True
     # Optional product spec for the tile above; None keeps the bool's bare annotation.
@@ -617,6 +621,8 @@ class Dowel(Element):
     #: XPS compressive modulus, psi, off the board's datasheet. None -> the thermal-movement
     #: row of ``thermal_break_transfer`` is INCOMPLETE naming it.
     foam_modulus_psi: float | None = None
+    #: The board's datasheet, named — the modulus and its creep factor come off it.
+    foam_source: str | None = None
     #: The GFRP bar's published values, per bar at ``diameter`` (ASTM D7957 datasheet):
     #: transverse shear (ASTM D7617) and guaranteed tensile load, lb, and tensile modulus,
     #: psi. ``bar_source`` names the document. None -> the dowel reserve is INCOMPLETE.

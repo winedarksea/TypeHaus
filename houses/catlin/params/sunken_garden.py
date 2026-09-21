@@ -72,6 +72,7 @@ from typehaus import (
     from_node,
     ft,
     Gutter,
+    HookConfinement,
     inch,
     JoistReinforcement,
     JoistSpec,
@@ -318,7 +319,7 @@ class SunkenGardenSpec:
     # ``TOP - drop_ft``. Under the old flat-plane model a 3'-0" drop landed the base on
     # -34", site grade exactly. Now that the yard is authored at -3'-4" rather than assumed
     # at the global datum, a 3'-0" drop off a top at 0'-0" would put the base 4" ABOVE the
-    # ground it springs from. The drop grew to 4'-0" — eight whole 6" courses — which
+    # ground it springs from. The drop grew to 4'-0" — six whole 8" AB Classic courses — which
     # buries the base course 8". Nothing grades a freestanding wall's base against the
     # ground plane, so this arithmetic is the only thing watching it.
     retaining_top_ft: float = porch_top_ft
@@ -788,17 +789,26 @@ _BRACED_STEM_STEEL = ReinforcementSpec(
 
 # W-SG-BRKBM's steel: flexure (3 #5 each face) from notes/sunken_garden_veneer_beam.md §3,
 # closed #3 hoops @ 5" and one #4 side bar per face from the §4a torsion addendum.
+# End anchorage (§6e, 2026-09-21): the TOP row hooks into W-SG-W1/E1 with two closed #4 ties
+# per end enclosing the hooks (Ath 0.80 >= 0.4 Ahs 0.372, psi_r 1.0: ldh 7.11" in 9.00"). The
+# BOTTOM row sits inside FT-SG-W1/E1, poured first, so 3 #5 dowels are cast STRAIGHT in each
+# footing, 66" back from its court face, lapping the row class B (30.00" past the wall face).
 _VENEER_BEAM_STEEL = ReinforcementSpec(
     bars=(
-        BarSpec(role="top-y", bar=5, count=3, note="mirrors the bottom for the pocket restraint"),
-        BarSpec(role="bottom-y", bar=5, count=3),
+        BarSpec(role="top-y", bar=5, count=3, hooks=("start", "end"),
+                hook_ties=HookConfinement(bar=4, count=2, spacing=inch(5.0), legs=2,
+                                          orientation="perpendicular"),
+                note="90° hooks turned UP into W-SG-W1/E1 (down would reach the footing); two closed #4 ties per end enclose them"),
+        BarSpec(role="bottom-y", bar=5, count=3, note="laps the footing dowels at each end"),
+        BarSpec(role="dowels", bar=5, count=3, embedment=inch(66.0),
+                note="per end, cast horizontal in FT-SG-W1/E1 (placement 1) through the footing's court face; class B lap to bottom-y"),
         BarSpec(role="ties", bar=3, spacing=inch(5.0),
                 note="closed hoops, 135° hooks — ACI 318-19 §9.7.6.3.3, ph/8 = 5.25\""),
         BarSpec(role="horizontal", bar=4, count=1, layers=2,
                 note="torsion longitudinal bar at mid-depth, each face — §9.7.5.1"),
     ),
     cover=inch(2.0),
-    source="notes/sunken_garden_veneer_beam.md §3 and §4a",
+    source="notes/sunken_garden_veneer_beam.md §3, §4a and §6e",
 )
 
 _RET_REBAR = '#5 @ 7" o.c.'
@@ -3811,11 +3821,22 @@ def _break_bar_count(board_width_in: float) -> int:
 # footing into nothing outboard, and **6" of bare footing-to-footing concrete at the court
 # end**. The third sign (+1 into the court, -1 on the east leg) is what keeps the board on
 # the pour it separates whenever the offset is not zero.
-# ** THE PRODUCT VALUES ARE UNSET ON PURPOSE (2026-09-20). ** `thermal_break_transfer`
-# grades these four as a reserve (notes/sunken_garden_court_free_body.md §11) and needs
-# `bar_shear_lb`/`bar_tensile_lb`/`bar_modulus_psi`/`bar_source` off a named ASTM D7957
-# GFRP datasheet and `foam_modulus_psi` off the board's. This house names no GFRP product,
-# so none is authored — quote the chosen product's published values, never a typical one.
+# ** THE PRODUCTS ARE NAMED (2026-09-21), AND TWO ROWS GRADE OVER ON THEM. **
+# `thermal_break_transfer` (free body §11) reads these off the published sheets, quoted as
+# printed. Bar: Owens Corning Aslan 100 #5 — 0.307 in², guaranteed 105 ksi = 32,240 lb,
+# E 6.7e6 psi, transverse shear > 22,000 psi (ASTM D7617) x 0.307 = 6,754 lb. Board: DuPont
+# Styrofoam Highload 40 — Type VI, E 1,400 psi, 3:1 on static load; named over FOAMULAR NGX
+# 400 because that sheet publishes no modulus. Bending over the gap (1.195) and the board's
+# movement (3.73) are OVER; §11f lists the options in numbers and none is taken here.
+_GFRP_BAR = dict(
+    bar_tensile_lb=32_240.0, bar_modulus_psi=6.7e6, bar_shear_lb=22_000.0 * 0.307,
+    bar_source="Owens Corning Aslan 100 GFRP rebar data sheet, #5 row (OC Pub. 10022295, "
+               "2017; table as of 2011): f*fu 105 ksi, 32.24 kips, E 6.7e6 psi; transverse "
+               "shear > 22,000 psi per ASTM D7617")
+_BREAK_FOAM = dict(
+    foam_modulus_psi=1_400.0,
+    foam_source="DuPont Styrofoam Highload 40 PIS 43-D100079-enNA-0322: compressive "
+                "modulus 1,400 psi typical (ASTM D1621); 3:1 suggested for static loads")
 _DOWEL_AT = (("W1", _x_ax_w, "FT-B-S1", +1.0), ("E1", _x_ax_e, "FT-B-S4", -1.0))
 DOWELS = [
     Dowel(uid=f"SGDW0{i}AAAA", tag=f"DW-SG-{name}",
@@ -3837,7 +3858,8 @@ DOWELS = [
           # paragraph used to narrate was reverted; the strips are 84" and
           # `SPEC.footing_width_in` is the one place that says so.)
           # Nothing grades a thermal break for continuity.
-          foam_length=inch(_RETAINING_FOOTING_WIDTH_IN), foam_psi=THERMAL_BREAK_PSI)
+          foam_length=inch(_RETAINING_FOOTING_WIDTH_IN), foam_psi=THERMAL_BREAK_PSI,
+          **_GFRP_BAR, **_BREAK_FOAM)
     for i, (name, x, house_footing, court) in enumerate(_DOWEL_AT, start=1)
 ]
 
@@ -3888,7 +3910,8 @@ STEM_DOWELS = [
           # their lengths the same way and differ only in the number, which is the whole
           # point — they are sized against different pours and must not be merged.
           foam_length=inch(SPEC.wall_thickness_in),
-          foam_height=_stem_height, foam_psi=THERMAL_BREAK_PSI)
+          foam_height=_stem_height, foam_psi=THERMAL_BREAK_PSI,
+          **_GFRP_BAR, **_BREAK_FOAM)
     for uid, (name, x, house_wall) in zip(("SGDW03AAAA", "SGDW04AAAA"),
                                           _STEM_DOWEL_AT, strict=True)
 ]

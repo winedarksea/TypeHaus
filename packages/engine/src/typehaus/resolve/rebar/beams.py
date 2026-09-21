@@ -12,7 +12,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-from typehaus.model.rebar import BARS
+from typehaus.model.rebar import BARS, BarSpec
 from typehaus.resolve.rebar.records import Vec3
 from typehaus.resolve.rebar.stock import Sink
 
@@ -109,6 +109,27 @@ def lay_beam(sink: Sink, entries, frame: LinearFrame, cover: float) -> None:
                                   frame.world(frame.s1 - cover, t, z),
                                   lap_offset=(0.0, 0.0, 1.0),
                                   top_cast=z - frame.z0 > 12 * _IN)
+    for entry in entries:
+        if entry.role in ("top-y", "bottom-y") and entry.hooks and entry.hook_ties:
+            _lay_hook_ties(sink, entry, frame, cover)
+
+
+def _lay_hook_ties(sink: Sink, entry, frame: LinearFrame, cover: float) -> None:
+    """``BarSpec.hook_ties``: closed ties at each hooked end, stepping OUT from the bar's end
+    into the support the hook anchors in (ACI 318-19 §25.4.3.3)."""
+    conf = entry.hook_ties
+    tie = BarSpec(role="ties", bar=conf.bar, spacing=conf.spacing,
+                  note=f"encloses the {entry.role} hooks, ACI 318-19 §25.4.3.3")
+    db = BARS[conf.bar].diameter_in * _IN
+    tl, tr = frame.t0 + cover + db / 2, frame.t1 - cover - db / 2
+    zb, zt = frame.z0 + cover + db / 2, frame.z1 - cover - db / 2
+    ends = [(frame.s0 + cover, -1.0) if "start" in entry.hooks else None,
+            (frame.s1 - cover, 1.0) if "end" in entry.hooks else None]
+    for s_end, step in (e for e in ends if e is not None):
+        for i in range(conf.count):
+            s = s_end + step * i * conf.spacing.meters
+            sink.loop(tie, [frame.world(s, tl, zb), frame.world(s, tr, zb),
+                            frame.world(s, tr, zt), frame.world(s, tl, zt)])
 
 
 def _hooks(entry, frame: LinearFrame, *, down: bool) -> tuple:
