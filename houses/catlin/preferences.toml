@@ -650,6 +650,17 @@ suppress = [
   # after the door stopped tripping the check at all.
   "structural.door_framing_module:D-M-BATH1",
 
+  # ** structural.thermal_break: 4 REAL FAILS, MEASURED 2026-09-21 (basis 3). A DEBT WITH TWO
+  # NUMBERS ON IT: movement d/c 1.065, settlement d/c 1.051. **
+  # #6 Aslan 100 and a 2" ROCKWOOL Toprock DD board closed bending (0.72) and cut movement from
+  # 3.73; the presumed k_v (Bowles T9-1) put settlement over. Free body §11f prices the options
+  # (2.5" board clears every row) and picks none. The permit line BLOCKS, so this hides nothing
+  # from either gate. Delete all four in the commit that answers §11f.
+  "structural.thermal_break:DW-SG-E1",
+  "structural.thermal_break:DW-SG-E1-STEM",
+  "structural.thermal_break:DW-SG-W1",
+  "structural.thermal_break:DW-SG-W1-STEM",
+
   # ** TWO ENTRIES WERE DELETED HERE ON 2026-09-20 BECAUSE THEY MATCHED NOTHING. **
   # `structural.door_framing_module:D-M-BATH2` and `:AO-M-FIRE-NICHE` both produced no
   # finding even under `--no-suppress`. A suppression that matches nothing is not free: a
