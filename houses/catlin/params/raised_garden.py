@@ -38,16 +38,16 @@ on IRC R404.1.1's 48" threshold exactly and send five landscape walls into an R4
 cantilever analysis they have no footing for; see the note beside `_APRON`.
 
 **CHECKED, AND IT STILL DOES NOT STAND.** The unit is **Allan Block AB Classic** since
-2026-09-21 (`AB_CLASSIC` below). `engineering/segmental_wall.py` (`tiered_retaining/W-RG-*`)
-grades it by the NCMA/AB gravity method: overturning FS **1.27 / 1.34** across the soil
-band against IRC R404.4's 1.5, sliding 1.21 / 1.51 (`notes/raised_garden_srw.md`). The
+2026-09-21 (`AB_CLASSIC` below), with AB's 12" of wall rock behind it (`WALL_ROCK`).
+`engineering/segmental_wall.py` (`tiered_retaining/W-RG-*`) grades it by the NCMA/AB gravity
+method on a two-zone trial wedge: overturning FS **1.44 / 1.43** across the soil band against
+IRC R404.4's 1.5, sliding 1.38 / 1.61 (`notes/raised_garden_srw.md`; 1.27 / 1.34 without the
+rock). The tier row is gone — the apron and the court stand back to back (§6). The
 2026-09-20 figures (sliding 0.38, overturning 0.57) were a solid, vertical stand-in unit.
-What follows in this paragraph is the history of that stand-in. The 8" of
-embedment passes its own row and nothing else. No real SRW product is named anywhere in this
-house, so no batter, cap or unit weight is authored — and none of them would close it (§8 of
-the note: batter alone reaches OT 0.96). The fix is a design change and the owner's call; the
-five FAILs are suppressed in `preferences.toml` until it is made. Global stability of the
-tiered pair stays open, as `notes/sunken_garden_court_free_body.md` §9 says.
+The 8" of embedment passes its own row. The fix is a design change and the owner's call
+(§8 of the note prices it); the five FAILs are suppressed in `preferences.toml` until it is
+made. Global stability of the pair stays open, as `notes/sunken_garden_court_free_body.md`
+§9 says.
 
 Section, at a side leg, west (yard) to east (sunken garden):
 
@@ -124,8 +124,10 @@ the same whether concrete or a base course sits on it. A ``Pad`` still does not 
 is pinned to the basement's -9' datum) and a ``Footing`` would put fictional concrete under
 a dry-stacked landscape wall.
 
-Not modelled: the SRW cap unit, and the drainage aggregate + filter fabric behind the
-block. The growing medium is not on this list because there is no longer a bed to fill.
+Not modelled: the SRW cap unit, the filter fabric behind the wall rock, and AB's drain pipe
+("required for walls ... constructed in silty or clay soils", manual p.22). The wall rock is
+authored on the spec (graded) but not billed. The growing medium is not on this list
+because there is no longer a bed to fill.
 
 Known and accepted: the west leg (x ∈ [3.5, 4.5]) runs over the x = 3 sewer and beside the
 x = 5 water line for its whole length. Both are 5-6' below grade against a wall bottom that
@@ -142,6 +144,7 @@ from typehaus import (
     FoundationWall,
     Node,
     SegmentalWallSpec,
+    SrwDrainageZone,
     face,
     ft,
     inch,
@@ -305,12 +308,24 @@ NODES = [
 # the hollow unit alone is 125), and the interface shear off its Table 1.2 minimum. No cap is
 # stated: none is modelled, and a published chart row is not authored because it is refused
 # at every leg anyway (the court walls stand inside 2H). notes/raised_garden_srw.md §1.
+#
+# ** THE WALL ROCK IS AUTHORED (2026-09-21). ** AB's gravity construction puts 12" of wall
+# rock behind every course (manual p.22, Step 4). It is graded as the near-heel zone of a
+# two-zone trial wedge at AB's 36° for sand/gravel (Table 2.1); AB's Table 3.1 gives crushed
+# stone "34° +", and the note prints that end too. It is NOT billed (not in any assembly):
+# a quantity the takeoff owes. notes/raised_garden_srw.md §2b.
+WALL_ROCK = SrwDrainageZone(
+    width=inch(12),
+    friction_angle_deg=36.0,
+    source="AB Commercial Installation Manual (allanblock.com/PDF/ABCommManual.pdf): p.22 gravity wall Step 4 'a minimum of 12 in (300 mm) behind the wall with wall rock'; p.20 wall rock 0.25-1.5 in compactible aggregate, <=10% passing #200, >=120 pcf; p.16 Table 2.1 Sand/Gravel 36 deg",
+)
 AB_CLASSIC = SegmentalWallSpec(
     source="Allan Block AB Classic: AB Collection sheet (allanblock.com/products/retaining-walls/ab-collection) 8in H x 12in D x 18in L, 75 lb, 6 deg setback; AB Commercial Installation Manual (allanblock.com/PDF/ABCommManual.pdf) p.11 gravity sample d 0.97 ft, wall density 130 pcf, Table 1.2 unit shear strength 645 lb/ft",
     batter_deg=6.0,
     unit_depth=ft(0.97),
     unit_weight_pcf=130.0,
     interface_shear_lb_per_ft=645.0,
+    drainage_zone=WALL_ROCK,
 )
 
 _APRON = dict(
