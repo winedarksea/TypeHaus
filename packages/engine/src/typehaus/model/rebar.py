@@ -120,6 +120,11 @@ class BarSpec(HausModel):
     #: straight; ties, stirrups and dowels carry their own hooks regardless. On a wall
     #: ``vertical``, ``"start"`` runs the bar continuous from the footing below on a foot.
     hooks: tuple[Literal["start", "end"], ...] | None = None
+    #: Beam ``top-y``/``bottom-y`` hooks only: which way the tail turns. ``None`` is the
+    #: layout's convention, into the member's own depth (top row down, bottom row up). A
+    #: row anchored in a support that stands ABOVE the joint turns ``"up"`` into it (ACI
+    #: 318-19 §25.3.1: the tail must sit in concrete of the same placement).
+    hook_turn: Literal["up", "down"] | None = None
     #: Hooked rows only: the ties enclosing those hooks (ACI 318-19 §25.4.3.3) — the ψr 1.0
     #: credit when the hooked bars sit closer than 6 db. ``None``: none are credited.
     hook_ties: HookConfinement | None = None

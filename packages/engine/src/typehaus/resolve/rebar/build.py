@@ -69,11 +69,14 @@ def resolve_rebar(model) -> list[ResolvedRebarSet]:
         sink, cover = _sink(plan, element, spec, wall=True)
         footing = _footing_under(model, wall)
         base = _base_of(model, footing) if footing is not None else None
-        ws = lay_wall(sink, spec, wall, cover, openings.get(wall.tag, ()), base)
+        beam = base is None and any(e.role in BEAM_ROLES for e in spec.bars)
+        joints = _beam_joints(model, spec, wall, cover) if beam else None
+        ends = _beam_row_ends(model, wall, joints) if beam else None
+        ws = lay_wall(sink, spec, wall, cover, openings.get(wall.tag, ()), base, ends)
         if base is not None:
             _wall_dowels(sink, spec, wall, base)
-        elif any(e.role in BEAM_ROLES for e in spec.bars):
-            _beam_end_dowels(model, sink, spec, wall, cover)
+        elif joints:
+            _beam_end_dowels(sink, spec, wall, cover, joints)
         sinks[wall.tag] = sink
         if ws is not None:
             steel[wall.tag] = ws
@@ -230,38 +233,84 @@ def _wall_dowels(sink: Sink, spec, wall, base: WallBase) -> None:
                    anchorage=anchor)
 
 
-def _beam_end_dowels(model, sink: Sink, spec, wall, cover: float) -> None:
-    """A wall acting as a beam whose bottom row sits in a footing poured a placement first:
-    each ``dowels`` bar is cast STRAIGHT in that footing, ``embedment`` back from its span
+def _beam_z(spec, frame, cover: float) -> tuple[float, float]:
+    """``(inner, z)``: the bottom row's inset from the face and its centreline elevation."""
+    bottom = next((e for e in spec.bars if e.role == "bottom-y" and e.count), None)
+    hoop = next((e for e in spec.bars if e.role in ("ties", "stirrups")), None)
+    inner = cover + (BARS[hoop.bar].diameter_in * _IN if hoop else 0.0)
+    return inner, frame.z0 + inner + (BARS[bottom.bar].diameter_in * _IN / 2 if bottom else 0.0)
+
+
+def _beam_joints(model, spec, wall, cover: float):
+    """Per end of a wall acting as a beam, ``(joint_s, far_limit_s, inward)`` where its bottom
+    row meets a footing poured a placement first, else ``None``. The row stops at that face
+    and the footing's ``dowels`` take over (``notes/sunken_garden_veneer_beam.md`` §6e)."""
+    if not any(e.role == "dowels" and e.count and e.embedment for e in spec.bars) or not any(
+            e.role == "bottom-y" and e.count for e in spec.bars):
+        return None
+    frame, _ext = wall_frame(wall, structure_layer(wall))
+    _inner, z = _beam_z(spec, frame, cover)
+    out = []
+    for s_end, inward in ((frame.s0 + cover, 1.0), (frame.s1 - cover, -1.0)):
+        x, y, _ = frame.world(s_end, (frame.t0 + frame.t1) / 2, z)
+        footing = next((s for s in model.solids if s.category == "footing"
+                        and not s.derived and s.z0_m <= z <= s.z1_m
+                        and _contains(s.outline, x, y)), None)
+        if footing is None:
+            out.append(None)
+            continue
+        ss = [(p[0] - frame.origin[0]) * frame.u[0] + (p[1] - frame.origin[1]) * frame.u[1]
+              for p in footing.outline]
+        joint, far = (max(ss), min(ss)) if inward > 0 else (min(ss), max(ss))
+        element = model.plan.by_tag(footing.tag)
+        limit = far + inward * cover_m(model.plan, element, getattr(element, "reinforcement", None))
+        out.append((joint, limit, inward))
+    return tuple(out) if any(out) else None
+
+
+def _beam_row_ends(model, wall, joints) -> dict:
+    """Where a wall-beam's rows stop: ``bottom-y`` at each dowelled cold joint; ``top-y`` in
+    the support wall its end frames into, at that wall's far face less its cover — the ℓdh
+    ``notes/sunken_garden_veneer_beam.md`` §6e credits (12" − 3" = 9.00")."""
+    frame, _ext = wall_frame(wall, structure_layer(wall))
+    top: list[float | None] = []
+    for s_end, sign in ((frame.s0, -1.0), (frame.s1, 1.0)):
+        x, y, _ = frame.world(s_end, (frame.t0 + frame.t1) / 2, frame.z1)
+        reach = None
+        for other in model.walls:
+            layer = structure_layer(other) if other.tag != wall.tag else None
+            if layer is None or not (other.z0_m < frame.z1 and frame.z0 < other.z1_m):
+                continue
+            ring = list(layer.polygon)
+            if not _contains(ring, x, y):
+                continue
+            ss = [(p[0] - frame.origin[0]) * frame.u[0] + (p[1] - frame.origin[1]) * frame.u[1]
+                  for p in ring]
+            element = model.plan.by_tag(other.tag)
+            c = cover_m(model.plan, element, getattr(element, "reinforcement", None))
+            reach = (max(ss) - c) if sign > 0 else (min(ss) + c)
+            break
+        top.append(reach)
+    ends = {"top-y": (top[0], top[1])}
+    if joints:
+        ends["bottom-y"] = tuple(j[0] if j else None for j in joints)
+    return ends
+
+
+def _beam_end_dowels(sink: Sink, spec, wall, cover: float, joints) -> None:
+    """Each ``dowels`` bar is cast STRAIGHT in the footing, ``embedment`` back from its span
     face (the cold joint), and projects a class-B lap into the beam. Oracle:
     ``notes/sunken_garden_veneer_beam.md`` §6e."""
     entries = [e for e in spec.bars if e.role == "dowels" and e.count and e.embedment]
-    bottom = next((e for e in spec.bars if e.role == "bottom-y" and e.count), None)
-    if not entries or bottom is None:
-        return
     frame, _ext = wall_frame(wall, structure_layer(wall))
-    hoop = next((e for e in spec.bars if e.role in ("ties", "stirrups")), None)
-    inner = cover + (BARS[hoop.bar].diameter_in * _IN if hoop else 0.0)
-    z = frame.z0 + inner + BARS[bottom.bar].diameter_in * _IN / 2
+    inner, z = _beam_z(spec, frame, cover)
     for entry in entries:
         db = BARS[entry.bar].diameter_in * _IN
         t0, t1 = frame.t0 + inner + db / 2, frame.t1 - inner - db / 2
         ts = ([t0 + (t1 - t0) * i / (entry.count - 1) for i in range(entry.count)]
               if entry.count > 1 else [(t0 + t1) / 2])
         lap = det.tension_lap_in(entry.bar, sink.fc_psi, sink.lap_class) * _IN
-        for s_end, inward in ((frame.s0 + cover, 1.0), (frame.s1 - cover, -1.0)):
-            x, y, _ = frame.world(s_end, (t0 + t1) / 2, z)
-            footing = next((s for s in model.solids if s.category == "footing"
-                            and not s.derived and s.z0_m <= z <= s.z1_m
-                            and _contains(s.outline, x, y)), None)
-            if footing is None:
-                continue
-            ss = [(p[0] - frame.origin[0]) * frame.u[0] + (p[1] - frame.origin[1]) * frame.u[1]
-                  for p in footing.outline]
-            joint, far = (max(ss), min(ss)) if inward > 0 else (min(ss), max(ss))
-            element = model.plan.by_tag(footing.tag)
-            limit = far + inward * cover_m(model.plan, element,
-                                           getattr(element, "reinforcement", None))
+        for joint, limit, inward in (j for j in joints if j is not None):
             start = joint - inward * entry.embedment.meters
             start = max(start, limit) if inward > 0 else min(start, limit)
             for t in ts:

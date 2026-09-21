@@ -206,3 +206,27 @@ def test_a_hooked_vertical_runs_from_the_pour_below_and_records_its_anchorage() 
         assert bar.development_m / _IN == pytest.approx(
             det.hooked_development_in(5, 4000, confined_spacing=True, side_cover_ok=True))
         assert abs(bar.path[0][2] - bar.path[1][2]) < 1e-9  # the foot is level
+
+
+@pytest.mark.parametrize("turn, sign", [(None, -1.0), ("up", 1.0), ("down", -1.0)])
+def test_a_beam_top_row_hook_turns_as_authored(turn, sign) -> None:
+    """``BarSpec.hook_turn``: ``None`` keeps the top row's hooks turned down into the section;
+    ``"up"`` turns them into a support standing above the joint (W-SG-BRKBM)."""
+    sink = _sink()
+    top = BarSpec(role="top-y", bar=5, count=2, hooks=("start", "end"), hook_turn=turn)
+    lay_wall(sink, _spec(top), _wall(), 2 * _IN, ())
+    for bar in sink.bars:
+        assert len(bar.path) == 4
+        assert math.copysign(1.0, bar.path[0][2] - bar.path[1][2]) == sign
+        assert math.copysign(1.0, bar.path[3][2] - bar.path[2][2]) == sign
+
+
+def test_beam_row_ends_override_cover() -> None:
+    """A bottom row stops at a dowelled cold joint; a top row reaches into its support."""
+    sink = _sink()
+    spec = _spec(BarSpec(role="top-y", bar=5, count=1), BarSpec(role="bottom-y", bar=5, count=1))
+    ends = {"top-y": (-3 * _IN, 123 * _IN), "bottom-y": (40 * _IN, 80 * _IN)}
+    lay_wall(sink, spec, _wall(), 2 * _IN, (), beam_ends=ends)
+    got = {b.role: sorted(p[0] / _IN for p in b.path) for b in sink.bars}
+    assert got["top-y"] == pytest.approx([-3.0, 123.0])
+    assert got["bottom-y"] == pytest.approx([40.0, 80.0])
