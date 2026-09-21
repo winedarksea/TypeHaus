@@ -383,8 +383,14 @@ REGISTERS_MAIN = [
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # No second living-room outlet: one ERV outlet is right for an open-plan room at the
     # whole-house rate; a pair would be sized as if this were a heating trunk.
+    # ** MOVED 2'-0" WEST, 2026-09-20, TO CLEAR ED-M-BED-FAN. ** This sat at (9'-0", 6'-0"),
+    # which is RM-M-BED's `Room.seed` and not a chosen station — and the room centre is now
+    # the fan's. 6" apart, a 52" fan canopy and a 6" register physically overlap, and the
+    # engine grades no device-vs-device collision. 7'-0" keeps it on DU-M-ERV-R-BED's own
+    # east leg along y=6'-0" (that run's last point shortens; no new turn, no re-route) and
+    # leaves 2'-2" to the fan hub, so the 15 cfm supply is not blowing into the motor.
     Register(uid="CMRV03AAAA", tag="REG-M-SUP3", kind=DuctSystem.SUPPLY, room="RM-M-BED",
-            position=pt(ft(9), ft(6)), duct_ref="DU-M-ERV-R-BED",
+            position=pt(ft(7), ft(6)), duct_ref="DU-M-ERV-R-BED",
             type_ref="REG-T-ERV-SUP", design_cfm=15,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(9))),
     # ================== RM-M-STUDY: THE CALL BOOTH'S TWO TERMINALS ==================

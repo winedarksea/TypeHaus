@@ -817,6 +817,45 @@ MAIN_LIGHTING = [
                      circuit="CKT-LT-MAIN", room="RM-M-BED", rotation=deg(0),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
+    # ** THE BEDROOM FAN (2026-09-20), AND IT REVIVES MARK N RATHER THAN ADDING A TYPE. **
+    # ED-T-LT-FAN52 has been catalog-only since ED-B-GYM-LT retyped to the N3 hugger for
+    # blade headroom, and its own comment names a downrod placement as what it is kept for.
+    # This is that placement: RM-M-BED's resolved clear_height_m is 2.69875 = 8'-10 1/4",
+    # so N's 18" assembly leaves the blades at 7'-4 1/4" — 4 1/4" over the 7'-0"
+    # blade-to-floor minimum every fan IFU states. ** NOTHING GRADES THAT: ** there is no
+    # blade-to-floor check in the engine, so this comment and the type's `height` are the
+    # only guard, exactly as on ED-B-GYM-LT.
+    #
+    # TRUE ROOM CENTRE. The clear face runs x 0.635"..215.365", y 0.635"..155.365", so
+    # (9'-0", 6'-6") is the centre of it to the sixteenth. The four-can grid centres 6"
+    # north of that at y=7'-0" and is deliberately NOT matched: the cans are a floor-wash
+    # grid, the fan is the thing a person looks up at. The 26" sweep clears the nearest can
+    # (ED-M-BED-LT at (5'-0", 4'-0")) by 30" and every wall by 6'-0"+. REG-M-SUP3 moved 2'-0"
+    # west for this (plan/mep_registers.py) — it sat on the room seed, 6" away, which is a
+    # canopy-on-register overlap nothing in the engine would have reported.
+    #
+    # ** CONSTANT HOT, AND THE SWITCH IS ED-T-SWITCH, NOT -DIM. ** Mark N's `source` says in
+    # capitals that a DC fan cannot be speed-controlled by a conventional wall dimmer and
+    # that a Caseta dimmer will corrupt its receiver. Both of this room's existing switches
+    # are ED-T-SWITCH-DIM on the cans' 3-way, so the fan gets its own leg and its own plain
+    # switch; speed and light are the hardwired Bluetooth wall control plus the remote.
+    # CKT-LT-MAIN, the same circuit as the load it switches — a switch on another circuit
+    # than its load FAILs electrical.lighting_controls (NEC 210.7).
+    ElectricalDevice(uid="SFVAJZ0YEM", tag="ED-M-BED-FAN", kind=DeviceKind.LIGHT,
+                     position=pt(ft(9), ft(6, 6)), type_ref="ED-T-LT-FAN52",
+                     circuit="CKT-LT-MAIN", room="RM-M-BED",
+                     controlled_by=("ED-M-BED-FAN-SW",),
+                     mount=Mount(kind=MountKind.CEILING, drop=inch(18))),
+    # Second gang beside ED-M-BED-SW2 at D-M-BED2, the room's entry from the living room,
+    # on the house's 4" gang spacing (ED-M-LIVING-SW's second gang, ED-M-PORCH-FLOOD-SW).
+    # SOUTH of it: north is the 4" of clear wall SW2 already holds to D-M-BED2's strike
+    # jamb at y=5'-5". x=211.115" is W-M-C1's bedroom-face convention, as SW2 and
+    # ED-M-BED-RC3/RC4 are. RC4 is on this wall at y=1'-1.5" and 16" AFF — no conflict.
+    ElectricalDevice(uid="KCDD6WVW46", tag="ED-M-BED-FAN-SW", kind=DeviceKind.SWITCH,
+                     position=pt(inch(211.115), ft(4, 7)), type_ref="ED-T-SWITCH",
+                     circuit="CKT-LT-MAIN", room="RM-M-BED", rotation=deg(270),
+                     mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
+
     # RM-M-STUDY has no exterior wall, so the notes' "sconce to the side of the window"
     # applies to the two studies that do (RM-S-STUDY2, RM-A-STUDY). This one gets a down
     # spot for the desk, over a general can.
@@ -1116,12 +1155,40 @@ MAIN_LIGHTING = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
     # The porch fan (notes: "Large ceiling fan (60\") on porch ceiling"). Damp rated: it
-    # hangs under SL-SG-DECK, the balcony slab, open on three sides. Mounted at 8'-6" so
-    # the 1'-6" assembly tops out flush against that 10' deck underside.
+    # hangs under FS-SG-DECK, the balcony deck, open on three sides.
+    #
+    # ** MOVED TO THE WEST HALF, 2026-09-20 (owner). ** It stood at x=18'-0", dead centre of
+    # the porch and dead on the centre-pillar line — which is the CIRCULATION line, not the
+    # sitting one: D-B-PATIO and ST-SG-PORCH (head at x=28'-6") both land on the east half,
+    # so the west half is the part anybody sits still in and the part a fan is for.
+    #
+    # x=13'-3" is the centre of the west half (the walking surface runs x 8'-6"..27'-6", so
+    # the half is 8'-6"..18'-0"). y=-5'-2" is `joist-0-004-0` of FS-SG-DECK's west bay — the
+    # ceiling joist nearest the porch's own depth centre, which is -5'-4 1/8", so the box
+    # lands 2 1/8" off centre AND on real wood. The neighbouring lines are -3'-10" and
+    # -6'-6", both further out; `joist-0-005-0` at -3'-10" would stand 18 1/8" toward the
+    # house. The 60" sweep (x 10'-9"..15'-9", y -7'-8"..-2'-8") clears the west deck edge by
+    # 27", the pillar chases at x=18'-0" by 27", and every sister block (x=9'-0"/27'-0").
+    #
+    # ** THE ELEVATION CAME DOWN 6" AND THAT IS A CORRECTION, NOT A PREFERENCE. ** It read
+    # 8'-6" under a comment claiming the 1'-6" assembly topped out on a "10' deck underside".
+    # There is no 10' plane here: FS-SG-DECK falls 1/4" per foot to the south and its joist
+    # SOFFIT at this station is 114 1/12" — so a base at 8'-6" put the canopy 6" up inside
+    # the joists. `Mount.elevation` is the BASE of the body (resolve/placeables.py), so 8'-0"
+    # tops the assembly out 1/16" under that soffit. The fan resolves NO solid and there is
+    # no porch ceiling element, so nothing in the engine would ever have reported the old
+    # number; this comment and the arithmetic above are the whole guard.
+    #
+    # `elevation` and not `drop`: a ceiling `drop` hangs off `storey.default_ceiling_height`
+    # when the device names no room or soffit, and this device deliberately carries no
+    # `room=` (it must read as exterior to the wet-location and dark-sky checks).
+    #
+    # x=13'-3" is mid-span of a west-bay joist that runs x 7'-3"..18'-0", so the box wants a
+    # LISTED fan brace between that joist and its neighbour — a fan is not a luminaire load.
     ElectricalDevice(uid="QTM0017AAA", tag="ED-M-PORCH-FAN", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18), ft(-4.833)), type_ref="ED-T-LT-FAN60",
+                     position=pt(ft(13, 3), inch(-62)), type_ref="ED-T-LT-FAN60",
                      circuit="CKT-LT-MAIN", controlled_by=("ED-M-PORCH-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8, 6))),
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     ElectricalDevice(uid="QTM0018AAA", tag="ED-M-PORCH-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(24, 10), ft(0, 7.625)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", rotation=deg(180),

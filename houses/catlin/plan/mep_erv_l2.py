@@ -211,7 +211,7 @@ DUCTS_ERV_LEVEL2 = [
             path=(pt(ft(5, 1), ft(34, 4)), pt(ft(5, 1), ft(34, 4)),
                   pt(ft(5, 11), ft(34, 4)), pt(ft(5, 11), ft(34, 4)),
                   pt(ft(5, 11), ft(6)), pt(ft(5, 11), ft(6)),
-                  pt(ft(9), ft(6))),
+                  pt(ft(7), ft(6))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, _BAY_Z, _BAY_Z),
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=15),
