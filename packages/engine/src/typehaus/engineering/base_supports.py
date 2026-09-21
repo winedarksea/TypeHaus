@@ -31,7 +31,9 @@ PCI_PER_LB_FT3 = 1.0 / 1728.0
 
 def measured(ctx: EngineeringContext):  # type: ignore[no-untyped-def]
     site = getattr(ctx.plan.project, "site", None)
-    return getattr(site, "lateral_subgrade_modulus", None)
+    report = getattr(site, "lateral_subgrade_modulus", None)
+    # A report stating only k_v (the thermal break's) leaves n_h on the presumptive band.
+    return report if getattr(report, "n_h_pci", None) is not None else None
 
 
 @dataclass(frozen=True)

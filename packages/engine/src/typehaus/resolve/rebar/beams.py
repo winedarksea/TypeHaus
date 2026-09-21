@@ -71,7 +71,12 @@ def _spread(a: float, b: float, count: int) -> list[float]:
     return [a + (b - a) * i / (count - 1) for i in range(count)]
 
 
-def lay_beam(sink: Sink, entries, frame: LinearFrame, cover: float) -> None:
+def lay_beam(sink: Sink, entries, frame: LinearFrame, cover: float,
+             ends: dict[str, tuple[float | None, float | None]] | None = None) -> None:
+    """``ends``: per ``top-y``/``bottom-y``, the ``s`` a row stops at instead of cover — a top
+    row reaching into the support it hooks in, a bottom row stopping at a cold joint whose
+    dowels take over (``build._beam_row_ends``)."""
+    ends = ends or {}
     hoop = next((e for e in entries if e.role in ("ties", "stirrups")), None)
     dt = BARS[hoop.bar].diameter_in * _IN if hoop else 0.0
     inner = cover + dt
@@ -92,10 +97,10 @@ def lay_beam(sink: Sink, entries, frame: LinearFrame, cover: float) -> None:
             top = entry.role == "top-y"
             z = frame.z1 - inner - db / 2 if top else frame.z0 + inner + db / 2
             ts = _spread(frame.t0 + inner + db / 2, frame.t1 - inner - db / 2, entry.count)
+            sa, sb = _row_ends(entry, frame, cover, ends)
             for _layer in range(max(1, entry.layers)):
                 for t in ts:
-                    sink.straight(entry, frame.world(frame.s0 + cover, t, z),
-                                  frame.world(frame.s1 - cover, t, z),
+                    sink.straight(entry, frame.world(sa, t, z), frame.world(sb, t, z),
                                   hook_dirs=_hooks(entry, frame, down=top),
                                   lap_offset=(frame.n[0], frame.n[1], 0.0),
                                   top_cast=top and z - frame.z0 > 12 * _IN)
@@ -111,20 +116,27 @@ def lay_beam(sink: Sink, entries, frame: LinearFrame, cover: float) -> None:
                                   top_cast=z - frame.z0 > 12 * _IN)
     for entry in entries:
         if entry.role in ("top-y", "bottom-y") and entry.hooks and entry.hook_ties:
-            _lay_hook_ties(sink, entry, frame, cover)
+            _lay_hook_ties(sink, entry, frame, cover, ends.get(entry.role, (None, None)))
 
 
-def _lay_hook_ties(sink: Sink, entry, frame: LinearFrame, cover: float) -> None:
-    """``BarSpec.hook_ties``: closed ties at each hooked end, stepping OUT from the bar's end
-    into the support the hook anchors in (ACI 318-19 §25.4.3.3)."""
+def _row_ends(entry, frame: LinearFrame, cover: float, ends) -> tuple[float, float]:
+    a, b = ends.get(entry.role, (None, None))
+    return (frame.s0 + cover if a is None else a, frame.s1 - cover if b is None else b)
+
+
+def _lay_hook_ties(sink: Sink, entry, frame: LinearFrame, cover: float, reach) -> None:
+    """``BarSpec.hook_ties``: closed ties at each hooked end, along ℓdh in the support the hook
+    anchors in (ACI 318-19 §25.4.3.3) — stepping OUT from a bar ending at the beam's cover, or
+    back toward the span from one already ``reach``ing into the support."""
     conf = entry.hook_ties
     tie = BarSpec(role="ties", bar=conf.bar, spacing=conf.spacing,
                   note=f"encloses the {entry.role} hooks, ACI 318-19 §25.4.3.3")
     db = BARS[conf.bar].diameter_in * _IN
     tl, tr = frame.t0 + cover + db / 2, frame.t1 - cover - db / 2
     zb, zt = frame.z0 + cover + db / 2, frame.z1 - cover - db / 2
-    ends = [(frame.s0 + cover, -1.0) if "start" in entry.hooks else None,
-            (frame.s1 - cover, 1.0) if "end" in entry.hooks else None]
+    sa, sb = _row_ends(entry, frame, cover, {entry.role: reach})
+    ends = [(sa, 1.0 if reach[0] is not None else -1.0) if "start" in entry.hooks else None,
+            (sb, -1.0 if reach[1] is not None else 1.0) if "end" in entry.hooks else None]
     for s_end, step in (e for e in ends if e is not None):
         for i in range(conf.count):
             s = s_end + step * i * conf.spacing.meters
@@ -135,5 +147,7 @@ def _lay_hook_ties(sink: Sink, entry, frame: LinearFrame, cover: float) -> None:
 def _hooks(entry, frame: LinearFrame, *, down: bool) -> tuple:
     if not entry.hooks:
         return (None, None)
+    if entry.hook_turn is not None:
+        down = entry.hook_turn == "down"
     turn = (0.0, 0.0, -1.0 if down else 1.0)
     return (turn if "start" in entry.hooks else None, turn if "end" in entry.hooks else None)

@@ -41,12 +41,18 @@ class SubgradeModulus(HausModel):
     are secants at service load; ``source`` names the report and ``basis`` how the value
     was obtained (plate test, pressuremeter, correlation), because a correlated number
     and a measured one are not the same fact.
+
+    ``provenance`` says which kind of fact: ``"measured"`` (a report on this parcel) or
+    ``"presumed"`` (a published table row for the presumed soil, cited in ``source``).
+    A presumed value grades a record as draft and never stands in for the report. Either
+    modulus may be absent; a reader that needs one treats ``None`` as not stated.
     """
 
-    n_h_pci: float
     source: str
     basis: str
+    n_h_pci: float | None = None
     k_v_pci: float | None = None
+    provenance: Literal["measured", "presumed"] = "measured"
 
 
 class SetbackSpec(HausModel):
