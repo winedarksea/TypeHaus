@@ -44,13 +44,16 @@ _M_PER_FT = 0.3048
 # off W as the strip narrows.
 #
 # ** THE FIFTH PASS (2026-09-20) ADDS A LOAD: the raised-garden apron's surcharge, §4c. **
-# Every thrust gains 69.0 plf (a rigid-wall Boussinesq strip at the apron's NET bearing), so
+# Every thrust gains 69.0 plf (50.5 at §4d; a rigid-wall Boussinesq strip at NET bearing), so
 # the resultant, the cancelled share, the shortfalls and the strut force all move; the
 # capacity does not. Superseded values are kept beside each constant.
-_NOTE_RESULTANT_LB = 62_826.0          # was 61,446
+#
+# ** THE SIXTH PASS (2026-09-21), §4d: the apron is Allan Block AB Classic at 130 pcf in
+# place, so its net bearing is 80.0 psf (0 at 130 pcf) and every §4c term falls a little. **
+_NOTE_RESULTANT_LB = 62_456.0          # §4c 62,826; §4 61,446
 _NOTE_CAPACITY_LB = 100_047.0
-_NOTE_CANCELLED_LB = 102_617.0         # was 100,362
-_NOTE_SYSTEM_FS = 1.59                 # was 1.63
+_NOTE_CANCELLED_LB = 102_011.0         # §4c 102,617; §4 100,362
+_NOTE_SYSTEM_FS = 1.60                 # §4c 1.59; §4 1.63
 # §8: the **derived reaction** at the strut, factored, against phi-Pn on a 12" x 17.5"
 # section over a 20'-0" clear span. phi-Pn does not move with the wall height; Pu does.
 #
@@ -69,33 +72,34 @@ _NOTE_SYSTEM_FS = 1.59                 # was 1.63
 # sections §8 once rejected (10 1/4" and 8 1/2") pass at this Pu by an even wider margin
 # than they did at the old one. What holds 17.5" is the sequencing argument and the absence
 # of redundancy, not the ratio; §8's three-reason block is where that lives.
-_NOTE_STRUT_PU_LB = 41_047.0           # was 40,145 (§4c: w 3,141.3 plf)
+_NOTE_STRUT_PU_LB = 40_804.0           # §4d, w 3,122.8 plf (§4c 41,047; §4 40,145)
 _NOTE_STRUT_PHI_PN_LB = 103_655.0
 #: The other end of the corner-fixity family, hand-worked in §8 beside the graded one.
 #: Asserted so the record cannot quietly stop publishing the range.
-_NOTE_STRUT_FIXED_CORNER_P_LB = 19_241.0      # was 18,818
-_NOTE_STRUT_PINNED_CORNER_P_LB = 25_654.0     # was 25,090
+_NOTE_STRUT_FIXED_CORNER_P_LB = 19_127.0      # §4c 19,241; §4 18,818
+_NOTE_STRUT_PINNED_CORNER_P_LB = 25_503.0     # §4c 25,654; §4 25,090
 
 # §5a: the delivery the cancellation is bought with. NO FOOTING IN THIS COURT HOLDS ITS OWN
 # WALL — every one is short against its own thrust, and the shortfall travels through the
 # corners as in-plane shear. The south wall governs at 23,454 lb service; graded as one-way
 # shear on its own 12" x 0.8-lw section, concrete alone, it clears by better than two to one.
-_NOTE_CORNER_SHORTFALL_LB = 24_834.0   # was 23,454
-_NOTE_CORNER_VU_LB = 39_734.0          # was 37,526
+_NOTE_CORNER_SHORTFALL_LB = 24_464.0   # §4c 24,834; §4 23,454
+_NOTE_CORNER_VU_LB = 39_142.0          # §4c 39,734; §4 37,526
 _NOTE_CORNER_PHI_VN_LB = 86_322.0
 #: Every member's own-thrust-less-own-friction, §5a's table. Asserted in full because the
 #: headline of that subsection is that the list has NO zero in it.
 _NOTE_SHORTFALL_BY_TAG = {
-    "W-SG-W2": 20_281.0, "W-SG-E2": 20_281.0, "W-SG-S": 24_834.0,   # were 19,154 / 23,454
+    "W-SG-W2": 19_979.0, "W-SG-E2": 19_979.0, "W-SG-S": 24_464.0,   # §4d
 }
-#: §5, with §4c's surcharge in the demand: 71,462 / 62,826.
-_NOTE_NO_STONE_FS = 1.14               # was 1.16
-# §4c, by hand: the apron as a doubled Boussinesq strip, a = 0, b = 1.0', 4.0' down.
-_NOTE_APRON_NET_PSF = {110.0: 109.37, 130.0: 29.37}
-_NOTE_APRON_LATERAL_PLF = {110.0: 69.02, 130.0: 18.53}
+#: §5, with §4d's surcharge in the demand: 71,462 / 62,456.
+_NOTE_NO_STONE_FS = 1.14               # §4 1.16
+# §4c/§4d, by hand: the apron as a doubled Boussinesq strip, a = 0, b = 1.0', 4.0' down, at
+# AB Classic's 520 psf gross. At 130 pcf the unit weighs no more than the soil it displaces.
+_NOTE_APRON_NET_PSF = {110.0: 80.0, 130.0: 0.0}
+_NOTE_APRON_LATERAL_PLF = {110.0: 50.48, 130.0: 0.0}
 _NOTE_APRON_ARM_FT = 5.4362            # above the footing underside
-_NOTE_APRON_STEM_MOMENT = {110.0: 120.3, 130.0: 32.3}
-_NOTE_APRON_GROSS_LATERAL_PLF = 346.7
+_NOTE_APRON_STEM_MOMENT = {110.0: 88.0, 130.0: 0.0}
+_NOTE_APRON_GROSS_LATERAL_PLF = 328.1
 _NOTE_APRON_SOURCE = {"W-SG-W2": "W-RG-WEST", "W-SG-E2": "W-RG-EAST", "W-SG-S": "W-RG-BLOCK"}
 # The exposure of the run above the authored yard, which is a RESULT of the flush tops and
 # not the driver it used to be. `params/sunken_garden.RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN`.
@@ -118,7 +122,7 @@ def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
     assert record.status is Status.OK, record.summary
 
     states = {state.name: state for state in record.limit_states}
-    # 1.59 against the 1.50 IRC R404.4 requires. Carried as required/achieved, so < 1 is fine.
+    # 1.60 against the 1.50 IRC R404.4 requires. Carried as required/achieved, so < 1 is fine.
     assert states["sliding"].capacity == pytest.approx(_NOTE_SYSTEM_FS, abs=0.01)
     assert states["sliding"].demand == pytest.approx(1.5)
     assert states["sliding"].ok
@@ -141,14 +145,19 @@ def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
     assert corner.demand == pytest.approx(_NOTE_CORNER_VU_LB, rel=0.001)
     assert corner.capacity == pytest.approx(_NOTE_CORNER_PHI_VN_LB, rel=0.001)
     assert corner.ok
-    assert f"{_NOTE_CORNER_SHORTFALL_LB:,.0f} lb from W-SG-S" in corner.citation, \
-        corner.citation
+    # The hand shortfall is rounded to the pound; the citation prints the engine's own.
+    printed = float(corner.citation.split(" lb from W-SG-S")[0].rsplit(" ", 1)[-1]
+                    .replace(",", ""))
+    assert printed == pytest.approx(_NOTE_CORNER_SHORTFALL_LB, abs=1.0), corner.citation
     # The whole point of §5a: not one footing holds its own wall. A future pass that made
     # one of them self-sufficient would be welcome — and would have to come here and say so.
     per_footing = next(note for note in record.notes if note.startswith("PER FOOTING"))
     for tag, shortfall in _NOTE_SHORTFALL_BY_TAG.items():
         assert f"{tag} " in per_footing, per_footing
-        assert f"(short {shortfall:,.0f})" in per_footing, (tag, per_footing)
+        # Hand figures are rounded to the pound; the note prints the engine's own.
+        printed = per_footing.split(f"{tag} ", 1)[1].split("(short ", 1)[1].split(")")[0]
+        assert float(printed.replace(",", "")) == pytest.approx(shortfall, abs=1.0), (
+            tag, per_footing)
     assert "holds its own" not in per_footing, per_footing
     assert states["strut compression"].ok
 
@@ -163,7 +172,7 @@ def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
     # The loop says which apron each thrust carries, by its source item.
     surcharge = next(note for note in record.notes if note.startswith("APRON SURCHARGE"))
     for wall, apron in _NOTE_APRON_SOURCE.items():
-        assert f"{wall} +69 plf via tiered_retaining/{apron}" in surcharge, surcharge
+        assert f"{wall} +50 plf via tiered_retaining/{apron}" in surcharge, surcharge  # §4d
 
 
 def test_the_run_tops_out_on_the_porch_datum_and_its_exposure_is_a_result(

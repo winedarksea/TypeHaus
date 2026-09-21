@@ -356,6 +356,10 @@ class FootingBedding(Element):
     # down instead. ``structural.frost_depth`` counts a section only where this is True
     # *and* ``drain_tile`` runs one: an undrained NFS layer is not what ASCE 32 describes.
     non_frost_susceptible: bool | None = None
+    #: Internal friction angle of the compacted section, degrees, from a named source. A
+    #: segmental wall slides at tan φ of the weaker of this and the ground under it
+    #: (``engineering/segmental_wall``); ``None`` falls back to IBC Table 1806.2's coefficient.
+    friction_angle_deg: float | None = None
     geotextile: bool = True
     drain_tile: bool = True
     # Optional product spec for the tile above; None keeps the bool's bare annotation.

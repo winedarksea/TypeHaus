@@ -1,25 +1,26 @@
 """Segmental (SRW) gravity retaining wall — the unit's own free body.
 
 ``tiered_retaining/<FoundationWall tag>``: a wall that retains fill, declares no lateral support
-and stands on no footing — in practice a dry-stacked unit on a levelling pad. Until 2026-09-20
-this kind was a deferral; nothing computed whether the wall stands up.
+and stands on no footing — in practice a dry-stacked unit on a levelling pad.
 
-**The free body.** A rigid block `B` deep and `H = H_r + D` high: the retained height is the
-authored ``unbalanced_fill`` (never ``drop_ft`` — the R404.1.1 trap in
-``params/raised_garden.py``), the embedment `D` is the nearest grade station down to the base.
-The active EFP triangle runs the full `H`; **no passive is credited on `D`** — it is trench
-backfill. Graded: sliding on the levelling pad, overturning about the toe, bearing (or, when
-the resultant is off the base, how far off), course interface shear, base-course embedment,
-and tier independence against a taller parallel wall within 2H.
+**The free body** (NCMA/Allan Block gravity method, ``srw_gravity``). A rigid unit `B` deep,
+battered at its setback, `H = H_r + D` high: the retained height is the authored
+``unbalanced_fill`` (never ``drop_ft`` — the R404.1.1 trap in ``params/raised_garden.py``), the
+embedment `D` is the nearest grade station down to the base, and **no passive is credited on
+`D`** — it is trench backfill. Coulomb thrust with ``δ = ⅔φ``; its vertical component is
+credited to sliding and the restoring moment; the base slides at ``tan φ`` of the weaker of the
+levelling pad (``FootingBedding.friction_angle_deg``) and the ground, else IBC 1806.2's
+coefficient. φ of the ground is read back off IBC 1610.1's EFP at each end of the soil unit
+weight band, and both ends are run. Graded: sliding, overturning, bearing (or, off the base,
+how far off), course interface shear, base-course embedment, and tier independence against a
+taller parallel wall within 2H.
 
 **What this is not.** Not ``retaining_wall``: its ``_retaining_walls`` is deliberately not
-widened here — an isolated-cantilever record for a footingless unit is the wrong free body.
-Not a published chart read either: ``SegmentalWallSpec.published`` corroborates at most, and is
-refused unless its guards are answered (:func:`published_refusal`).
+widened here. Not a published chart read either: ``SegmentalWallSpec.published`` corroborates
+at most, and is refused unless its guards are answered (:func:`published_refusal`).
 
-**NOT GRADED** (the deferral's deliverable): global stability of both tiers on a common
-failure surface against a measured soil profile — the geotechnical engineer's; the unit, any
-reinforcement and the pad — the SRW supplier's engineer's. The surcharge on a parallel lower
+**NOT GRADED**: global stability of both tiers on a common failure surface — the geotechnical
+engineer's; any reinforcement — the SRW supplier's engineer's. The surcharge on a parallel lower
 wall is graded on ITS record (``tier_surcharge``, via :func:`reading`).
 
 Oracle: ``notes/raised_garden_srw.md``, reproduced by ``tests/test_segmental_wall.py``.
@@ -42,82 +43,32 @@ from typehaus.engineering.item import (
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
 from typehaus.engineering.retaining_basis import REQUIRED_FS, _base_interface
 from typehaus.engineering.soil import SOIL_UNIT_WEIGHT_BAND_PCF, presumptive
+from typehaus.engineering.srw_gravity import (
+    WALL_FRICTION_RATIO,
+    FreeBody,
+    Section,
+    analyse,
+    phi_from_efp,
+)
+from typehaus.engineering.srw_tiers import TIER_FACTOR, Tier, lower_tiers
+
+__all__ = ["KIND", "TIER_FACTOR", "FreeBody", "Section", "Tier", "analyse", "lower_tiers",
+           "published_refusal", "reading", "segmental_walls"]
 
 KIND = "tiered_retaining"
-BASIS = ("IRC R404.4; IBC 1610.1 / 1806.2 presumptive values; rigid gravity free body of a "
-         "segmental unit wall")
-BASIS_VERSION = "1"
+BASIS = ("IRC R404.4; NCMA/Allan Block gravity method (Coulomb, δ = 2/3 φ, battered face); "
+         "IBC 1610.1 / 1806.2 presumptive values")
+#: 1 -> 2: GM active EFP 45 -> 40 (IBC Table 1610.1, ``soil.py``).
+#: 2 -> 3: Rankine EFP on a vertical face -> the NCMA gravity method (``srw_gravity``).
+BASIS_VERSION = "3"
 
 #: Base-course embedment floor, and the H/10 rule beside it.
 MIN_EMBEDMENT_IN = 6.0
-#: Two walls are designed independently only if the clear offset is >= 2 x the lower height.
-TIER_FACTOR = 2.0
-#: Axes within 10 degrees are parallel tiers; a perpendicular abutment is a corner.
-_PARALLEL_SIN = math.sin(math.radians(10.0))
 _M_PER_FT = 0.3048
 _KG_M3_PER_PCF = 16.018463
 
-oracled_by(KIND, Oracle(note="raised_garden_srw.md", section="§3-§6",
+oracled_by(KIND, Oracle(note="raised_garden_srw.md", section="§2-§6",
                         test="tests/test_segmental_wall.py"))
-
-
-@dataclass(frozen=True)
-class Section:
-    """The wall as the free body sees it, feet and pcf."""
-
-    retained_ft: float
-    embedment_ft: float
-    unit_depth_ft: float
-    unit_weight_pcf: float
-    batter_deg: float = 0.0
-    course_ft: float = 0.5
-
-    @property
-    def height_ft(self) -> float:
-        return self.retained_ft + self.embedment_ft
-
-
-@dataclass(frozen=True)
-class FreeBody:
-    thrust_plf: float
-    weight_plf: float
-    resisting_moment: float
-    overturning_moment: float
-    fs_sliding: float
-    fs_overturning: float
-    #: Resultant's distance from the toe; <= 0 means off the base.
-    resultant_ft: float
-    eccentricity_ft: float
-    #: Peak toe pressure, psf; ``None`` where the resultant is off the base.
-    bearing_psf: float | None
-    course_shear_plf: float
-
-
-def analyse(section: Section, efp_psf_per_ft: float, friction: float) -> FreeBody:
-    """Plain numbers in, so the oracle test can drive it from the note's own table."""
-    h, b = section.height_ft, section.unit_depth_ft
-    thrust = 0.5 * efp_psf_per_ft * h * h
-    overturning = thrust * h / 3.0
-    weight = section.unit_weight_pcf * b * h
-    # A battered prism's centroid sits back of the toe by B/2 plus half its lean.
-    lean = h * math.tan(math.radians(section.batter_deg)) / 2.0
-    resisting = weight * (b / 2.0 + lean)
-    x = (resisting - overturning) / weight
-    e = b / 2.0 - x
-    if x <= 0.0:
-        bearing = None
-    elif e <= b / 6.0:
-        bearing = weight / b * (1.0 + 6.0 * e / b)
-    else:
-        bearing = 2.0 * weight / (3.0 * x)
-    above_base_course = max(h - section.course_ft, 0.0)
-    return FreeBody(
-        thrust_plf=thrust, weight_plf=weight, resisting_moment=resisting,
-        overturning_moment=overturning,
-        fs_sliding=friction * weight / thrust, fs_overturning=resisting / overturning,
-        resultant_ft=x, eccentricity_ft=e, bearing_psf=bearing,
-        course_shear_plf=0.5 * efp_psf_per_ft * above_base_course ** 2,
-    )
 
 
 # --- scope ----------------------------------------------------------------------------------
@@ -149,74 +100,6 @@ def _keys(ctx: EngineeringContext) -> list[str]:
 
 
 # --- geometry off the model ----------------------------------------------------------------
-
-@dataclass(frozen=True)
-class Tier:
-    tag: str
-    lower_height_ft: float
-    clear_ft: float
-    parallel: bool
-
-
-def _footprint(resolved):  # type: ignore[no-untyped-def]
-    from shapely.geometry import Polygon
-    from shapely.ops import unary_union
-
-    rings = [Polygon(layer.polygon) for layer in resolved.layers
-             if not layer.is_cavity and len(layer.polygon) >= 3]
-    return unary_union([r for r in rings if r.is_valid and r.area > 0]) if rings else None
-
-
-def _direction(axis) -> tuple[float, float]:  # type: ignore[no-untyped-def]
-    (ax, ay), (bx, by) = axis
-    length = math.hypot(bx - ax, by - ay) or 1.0
-    return (bx - ax) / length, (by - ay) / length
-
-
-def _overlaps_along(axis, other) -> bool:  # type: ignore[no-untyped-def]
-    """Whether ``other``'s axis projects onto a positive length of ``axis``."""
-    (ax, ay), _ = axis
-    ux, uy = _direction(axis)
-    span = math.hypot(axis[1][0] - ax, axis[1][1] - ay)
-    ts = sorted((px - ax) * ux + (py - ay) * uy for px, py in other)
-    return min(ts[1], span) - max(ts[0], 0.0) > 1e-6
-
-
-def lower_tiers(ctx: EngineeringContext, wall) -> list[Tier]:  # type: ignore[no-untyped-def]
-    """Every taller RETAINING wall (authored ``unbalanced_fill`` above this wall's) whose clear
-    offset is inside ``TIER_FACTOR`` x its height, parallel or not."""
-    from typehaus.model.structure import FoundationWall
-
-    resolved = {w.tag: w for w in ctx.model.walls}
-    here = resolved.get(wall.tag)
-    mine = _footprint(here) if here is not None else None
-    if mine is None or wall.unbalanced_fill is None:
-        return []
-    ux, uy = _direction(here.axis)
-    out = []
-    for other in ctx.plan.all_elements():
-        if not isinstance(other, FoundationWall) or other.tag == wall.tag:
-            continue
-        fill = other.unbalanced_fill
-        if fill is None or fill.meters <= wall.unbalanced_fill.meters:
-            continue
-        # A basement wall braced by its floors does not rotate as a tier.
-        if getattr(other, "lateral_support", None) == "top_and_bottom":
-            continue
-        theirs = resolved.get(other.tag)
-        shape = _footprint(theirs) if theirs is not None else None
-        if shape is None:
-            continue
-        lower = fill.meters / _M_PER_FT
-        clear = mine.distance(shape) / _M_PER_FT
-        if clear >= TIER_FACTOR * lower:
-            continue
-        vx, vy = _direction(theirs.axis)
-        parallel = (abs(ux * vy - uy * vx) < _PARALLEL_SIN
-                    and _overlaps_along(here.axis, theirs.axis))
-        out.append(Tier(other.tag, lower, clear, parallel))
-    return sorted(out, key=lambda t: (t.clear_ft, t.tag))
-
 
 def _embedment_ft(ctx: EngineeringContext, wall) -> tuple[float, str]:  # type: ignore[no-untyped-def]
     """Yard above the base, from the nearest grade station (else ``Site.grade``)."""
@@ -303,11 +186,24 @@ class Reading:
     grade_from: str
     wall_ft: float
     weight_authored: bool
+    pad_phi_deg: float | None = None
+    pad_tag: str | None = None
 
     @property
     def weight_plf(self) -> float:
         """The whole unit on its pad: its own height, not the free body's."""
         return self.section.unit_weight_pcf * self.section.unit_depth_ft * self.wall_ft
+
+
+def _pad(ctx: EngineeringContext, wall) -> tuple[float | None, str | None]:  # type: ignore[no-untyped-def]
+    """The levelling pad's authored φ, and the bedding that states it."""
+    from typehaus.model.structure import FootingBedding
+
+    for bed in ctx.plan.all_elements():
+        if (isinstance(bed, FootingBedding) and bed.host_ref == wall.tag
+                and bed.friction_angle_deg is not None):
+            return bed.friction_angle_deg, bed.tag
+    return None, None
 
 
 def reading(ctx: EngineeringContext, wall) -> tuple[Reading | None, list[str]]:  # type: ignore[no-untyped-def]
@@ -344,8 +240,60 @@ def reading(ctx: EngineeringContext, wall) -> tuple[Reading | None, list[str]]: 
     section = Section(retained_ft=retained, unit_depth_ft=depth_ft, unit_weight_pcf=unit_pcf,
                       embedment_ft=min(embedment, max(wall_ft - retained, 0.0)),
                       batter_deg=batter, course_ft=coursing.feet if coursing is not None else 0.5)
+    pad_phi, pad_tag = _pad(ctx, wall)
     return Reading(section, soil, _base_interface(ctx, wall) or soil, embedment, grade_from,
-                   wall_ft, weight_authored), []
+                   wall_ft, weight_authored, pad_phi, pad_tag), []
+
+
+@dataclass(frozen=True)
+class _End:
+    """One end of the soil unit-weight band, graded."""
+
+    soil_pcf: float
+    body: FreeBody
+    base_phi_deg: float | None      # None: IBC 1806.2's coefficient stood in
+    states: tuple[LimitState, ...]
+
+    @property
+    def over(self) -> bool:
+        return any(not state.ok for state in self.states)
+
+    @property
+    def worst(self) -> float:
+        return max(state.ratio for state in self.states if not state.is_detailing)
+
+
+def _end(read: Reading, soil_pcf: float, spec) -> _End:  # type: ignore[no-untyped-def]
+    base, section = read.base, read.section
+    phi = phi_from_efp(read.soil.active_efp_psf_per_ft, soil_pcf)
+    if read.pad_phi_deg is not None:
+        base_phi = min(read.pad_phi_deg, phi)
+        mu = math.tan(math.radians(base_phi))
+        slide_cite = (f"IRC R404.4; μ = tan {base_phi:.1f}°, the weaker of {read.pad_tag}'s "
+                      f"{read.pad_phi_deg:g}° and the ground's {phi:.1f}° (NCMA)")
+    else:
+        base_phi, mu = None, base.friction_coefficient
+        slide_cite = (f"IRC R404.4; friction {mu:.2f}, IBC Table 1806.2 class {base.ibc_class} "
+                      "— no pad φ is authored, so the table stands in for tan φ")
+    body = analyse(section, soil_pcf, phi, mu)
+    states = [
+        LimitState("sliding", REQUIRED_FS, body.fs_sliding, "", slide_cite,
+                   is_safety_factor=True),
+        LimitState("overturning", REQUIRED_FS, body.fs_overturning, "",
+                   "IRC R404.4, about the toe", is_safety_factor=True),
+        LimitState("bearing", body.bearing_psf, base.allowable_bearing_psf, "psf",
+                   f"IBC Table 1806.2 class {base.ibc_class} (an allowable)")
+        if body.bearing_psf is not None else
+        LimitState("bearing — resultant on the base", body.eccentricity_ft,
+                   section.unit_depth_ft / 2.0, "ft",
+                   "no bearing pressure exists unless the resultant falls on the base"),
+    ]
+    shear = spec.interface_shear_lb_per_ft if spec is not None else None
+    if shear is not None and body.course_shear_plf > 0.0:
+        states.append(LimitState("course interface shear", REQUIRED_FS,
+                                 shear / body.course_shear_plf, "",
+                                 f"IRC R404.4 on {spec.source}", is_safety_factor=True))
+    return _End(soil_pcf, body, base_phi, tuple(states))
 
 
 def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no-untyped-def]
@@ -355,54 +303,35 @@ def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no
     if read is None:
         return _incomplete(tag, missing)
     section, soil, base, embedment = read.section, read.soil, read.base, read.yard_ft
-    grade_from, wall_ft, weight_authored = read.grade_from, read.wall_ft, read.weight_authored
     retained, depth_ft, batter = section.retained_ft, section.unit_depth_ft, section.batter_deg
-    # The fill cannot stand above the wall: where the yard and the authored retained height
-    # overshoot the top, the free body is the wall's own height (and the note says so).
-    overtopped = retained + embedment - wall_ft
-    body = analyse(section, soil.active_efp_psf_per_ft, base.friction_coefficient)
     tiers = lower_tiers(ctx, wall)
 
-    states = [
-        LimitState("sliding", REQUIRED_FS, body.fs_sliding, "",
-                   f"IRC R404.4; friction {base.friction_coefficient:.2f} on the levelling "
-                   f"pad, IBC Table 1806.2 class {base.ibc_class}", is_safety_factor=True),
-        LimitState("overturning", REQUIRED_FS, body.fs_overturning, "",
-                   "IRC R404.4, about the toe", is_safety_factor=True),
-        LimitState("bearing", body.bearing_psf, base.allowable_bearing_psf, "psf",
-                   f"IBC Table 1806.2 class {base.ibc_class} (an allowable)")
-        if body.bearing_psf is not None else
-        LimitState("bearing — resultant on the base", body.eccentricity_ft,
-                   depth_ft / 2.0, "ft",
-                   "no bearing pressure exists unless the resultant falls on the base"),
-    ]
-    shear = spec.interface_shear_lb_per_ft if spec is not None else None
-    if shear is not None and body.course_shear_plf > 0.0:
-        states.append(LimitState("course interface shear", REQUIRED_FS,
-                                 shear / body.course_shear_plf, "",
-                                 f"IRC R404.4 on {spec.source}", is_safety_factor=True))
+    common: list[LimitState] = []
     required_in = max(MIN_EMBEDMENT_IN, section.height_ft * 12.0 / 10.0)
-    states.append(LimitState("base-course embedment", required_in, embedment * 12.0, "in",
-                             f"max(6\", H/10), to {grade_from}", is_detailing=True))
+    common.append(LimitState("base-course embedment", required_in, embedment * 12.0, "in",
+                             f"max(6\", H/10), to {read.grade_from}", is_detailing=True))
     parallel = [t for t in tiers if t.parallel and t.clear_ft > 0.0]
     if parallel:
         worst = max(parallel, key=lambda t: t.lower_height_ft / t.clear_ft)
-        states.append(LimitState(
+        common.append(LimitState(
             f"tier independence vs {worst.tag}", TIER_FACTOR * worst.lower_height_ft,
             worst.clear_ft, "ft",
             f"clear offset >= 2 x the lower wall's {worst.lower_height_ft:.2f}' retained",
             is_detailing=True))
+    ends = [_end(read, pcf, spec) for pcf in SOIL_UNIT_WEIGHT_BAND_PCF]
+    ends = [_End(e.soil_pcf, e.body, e.base_phi_deg, e.states + tuple(common)) for e in ends]
+    shown = max(ends, key=lambda e: e.worst)
+    body = shown.body
 
-    over = any(not state.ok for state in states)
+    shear = spec.interface_shear_lb_per_ft if spec is not None else None
     open_inputs = [] if shear is not None else [
         f"the maker's course interface shear (srw.interface_shear_lb_per_ft) — the demand "
         f"is {body.course_shear_plf:,.0f} plf above the base course"]
-    if not weight_authored:
+    if not read.weight_authored:
         open_inputs.append("the product's in-place unit weight (srw.unit_weight_pcf)")
 
     refusal = published_refusal(ctx, wall, tiers)
-    notes = _notes(ctx, wall, section, soil, base, body, tiers, refusal, weight_authored,
-                   grade_from)
+    notes = _notes(ctx, wall, read, ends, tiers, refusal)
     inputs = (
         Quantity("retained_height", section.retained_ft, "ft", 0.01),
         Quantity("embedment", section.embedment_ft, "ft", 0.01),
@@ -412,6 +341,9 @@ def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no
         Quantity("batter", section.batter_deg, "deg", 0.1),
         Quantity("course_height", section.course_ft, "ft", 0.01),
         Quantity("active_efp", soil.active_efp_psf_per_ft, "psf/ft", 1.0),
+        Quantity("wall_friction_ratio", WALL_FRICTION_RATIO, "", 0.01),
+        Quantity("pad_friction_angle", read.pad_phi_deg if read.pad_phi_deg is not None
+                 else -1.0, "deg", 0.1),
         Quantity("friction_coefficient", base.friction_coefficient, "", 0.01),
         Quantity("allowable_bearing", base.allowable_bearing_psf, "psf", 1.0),
         Quantity("interface_shear", shear if shear is not None else -1.0, "plf", 1.0),
@@ -419,55 +351,69 @@ def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no
             Quantity(f"tier_{t.tag}_height", t.lower_height_ft, "ft", 0.01),
             Quantity(f"tier_{t.tag}_clear", t.clear_ft, "ft", 0.01))),
     )
-    summary = (f"{tag}: {depth_ft * 12:.0f}\" SRW unit, {section.height_ft:.2f}' free body "
-               f"({section.retained_ft:.2f}' retained + {section.embedment_ft * 12:.0f}\" "
-               f"embedded, batter {batter:g}°) — sliding FS {body.fs_sliding:.2f}, "
-               f"overturning FS {body.fs_overturning:.2f} (IRC R404.4 wants "
-               f"{REQUIRED_FS:g})")
-    # A FAIL stands whatever the open inputs say (each could only worsen it or leave it);
-    # a pass on a fallback unit weight or an ungraded interface does not.
-    status = Status.OVER if over else (Status.INCOMPLETE if open_inputs else Status.OK)
-    if overtopped > 0.01:
-        notes += (f"MISMATCH: {grade_from} puts the ground {embedment * 12:.0f}\" above the "
-                  f"base, and the authored {retained:.2f}' retained on top of that is "
-                  f"{overtopped * 12:.0f}\" above the wall top. The free body is capped at "
-                  f"the wall's own {wall_ft:.2f}'; the two authored inputs disagree here.",)
-    if status is Status.OVER:
+    summary = (f"{tag}: {depth_ft * 12:.1f}\" SRW unit, {section.height_ft:.2f}' free body "
+               f"({retained:.2f}' retained + {section.embedment_ft * 12:.0f}\" embedded, "
+               f"batter {batter:g}°) — at {shown.soil_pcf:.0f} pcf sliding FS "
+               f"{body.fs_sliding:.2f}, overturning FS {body.fs_overturning:.2f} (IRC R404.4 "
+               f"wants {REQUIRED_FS:g})")
+    over = [e.over for e in ends]
+    missing_out: tuple[str, ...] = ()
+    if all(over):
+        # A FAIL at both ends stands whatever the open inputs say.
+        status = Status.OVER
         notes += tuple(f"Open input: {text}." for text in open_inputs)
+    elif any(over):
+        status = Status.INCOMPLETE
+        low, high = SOIL_UNIT_WEIGHT_BAND_PCF
+        missing_out = (f"a measured soil friction angle and unit weight: the free body checks "
+                       f"at one end of {low:.0f}-{high:.0f} pcf and not the other",
+                       *open_inputs)
+    else:
+        status = Status.INCOMPLETE if open_inputs else Status.OK
+        missing_out = tuple(open_inputs)
+    overtopped = retained + embedment - read.wall_ft
+    if overtopped > 0.01:
+        notes += (f"MISMATCH: {read.grade_from} puts the ground {embedment * 12:.0f}\" above "
+                  f"the base, and the authored {retained:.2f}' retained on top of that is "
+                  f"{overtopped * 12:.0f}\" above the wall top. The free body is capped at the "
+                  f"wall's own {read.wall_ft:.2f}'; the two authored inputs disagree here.",)
     return EngineeringRecord(
         item_id=item_id(KIND, tag), kind=KIND, key=tag, basis_version=BASIS_VERSION,
         basis=BASIS, status=status, summary=summary, inputs=inputs,
-        limit_states=tuple(states),
-        missing=tuple(open_inputs) if status is Status.INCOMPLETE else (),
+        limit_states=shown.states, missing=missing_out,
         notes=notes, element_tags=(tag,), scope=Scope.SCREENING)
 
 
-def _notes(ctx, wall, section, soil, base, body, tiers, refusal,  # type: ignore[no-untyped-def]
-           weight_authored, grade_from) -> tuple[str, ...]:
-    low, high = SOIL_UNIT_WEIGHT_BAND_PCF
+def _notes(ctx, wall, read, ends, tiers, refusal) -> tuple[str, ...]:  # type: ignore[no-untyped-def]
+    section, soil, base = read.section, read.soil, read.base
     drained = _drainage_layers(ctx, wall)
+    band = "; ".join(
+        f"{e.soil_pcf:.0f} pcf: φ {e.body.soil_phi_deg:.1f}°, K_a {e.body.ka:.3f}, sliding "
+        f"{e.body.fs_sliding:.2f}, overturning {e.body.fs_overturning:.2f}" for e in ends)
     out = [
         f"SCREENING on presumptive code values, not a design: {soil.citation}. No "
         "geotechnical report is on file for this site.",
         f"Free body {section.height_ft:.2f}' = {section.retained_ft:.2f}' retained "
         f"(authored unbalanced_fill) + {section.embedment_ft * 12:.1f}\" embedded (to "
-        f"{grade_from}). The active triangle runs the full height and NO passive is credited "
-        "on the embedment: it is trench backfill.",
-        f"Base: {base.soil_class}, friction {base.friction_coefficient:.2f}. A levelling pad "
-        "earns the clean-stone row only if its FootingBedding declares "
-        "non_frost_susceptible.",
-        ("Unit weight from the product data." if weight_authored else
-         f"Unit weight {section.unit_weight_pcf:.1f} pcf is the material's SOLID density — an "
-         "upper bound for a hollow or infilled unit, so a lighter real unit only fails harder."),
-        (f"Batter {section.batter_deg:g}° from the SegmentalWallSpec; EFP publishes no batter "
-         "reduction, so batter moves only the restoring arm." if section.batter_deg else
-         "No batter is authored; graded vertical, as drawn."),
-        f"Soil unit weight ({low:.0f}-{high:.0f} pcf) does not enter: the EFP carries it and "
-        "a vertical unit with no heel carries no soil. Both ends of the band are identical.",
+        f"{read.grade_from}). NO passive is credited on the embedment: it is trench backfill.",
+        f"Coulomb thrust, δ = ⅔φ, on the back face battered {section.batter_deg:g}°, resolved "
+        "at δ − ω: its vertical part presses the unit down and is credited to sliding and "
+        "the restoring moment. The ground's φ is read back off IBC 1610.1's "
+        f"{soil.active_efp_psf_per_ft:g} psf/ft at each end of the unit-weight band — "
+        f"{band}.",
+        (f"Base: μ = tan φ of the weaker of the levelling pad ({read.pad_tag}, "
+         f"{read.pad_phi_deg:g}° authored) and the ground." if read.pad_phi_deg is not None
+         else f"Base: no pad φ is authored, so IBC Table 1806.2's {base.soil_class} "
+              f"coefficient {base.friction_coefficient:.2f} stands in for tan φ."),
+        ("Unit weight from the product data (unit plus core infill)." if read.weight_authored
+         else f"Unit weight {section.unit_weight_pcf:.1f} pcf is the material's SOLID density "
+              "— an upper bound for a hollow or infilled unit, so a lighter real unit only "
+              "fails harder."),
         ("Drained face: " + ", ".join(drained) + "." if drained else
          f"No hydrostatic case, and assembly {wall.assembly} declares no DRAINAGE layer, so "
          "the drained-backfill presumption rests on nothing this model carries."),
     ]
+    body = max(ends, key=lambda e: e.worst).body
     if body.bearing_psf is None:
         out.append(f"The resultant falls {-body.resultant_ft:.2f}' in front of the toe: there "
                    "is no bearing pressure to grade, and the row reports how far off the base "
@@ -492,8 +438,8 @@ def _notes(ctx, wall, section, soil, base, body, tiers, refusal,  # type: ignore
         out.append("Published chart row: every guard answered. Corroboration only; the free "
                    "body governs.")
     out.append("NOT GRADED: global stability of this wall and any lower one on a common "
-               "failure surface against a measured soil profile (geotechnical engineer); the "
-               "unit, any geogrid and the pad (the SRW supplier's engineer). No seismic or "
-               "frost-heave case. The surcharge on a parallel lower wall IS graded, on that "
-               "wall's own record (engineering/tier_surcharge.py).")
+               "failure surface against a measured soil profile (geotechnical engineer); any "
+               "geogrid (the SRW supplier's engineer). No seismic or frost-heave case. The "
+               "surcharge on a parallel lower wall IS graded, on that wall's own record "
+               "(engineering/tier_surcharge.py).")
     return tuple(out)

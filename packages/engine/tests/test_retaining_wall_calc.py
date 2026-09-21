@@ -17,6 +17,8 @@ thing that notices.
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 import pytest
 
 from typehaus.engineering.item import Status
@@ -60,6 +62,11 @@ CATLIN_SG = _Geometry(
     toe_embedment_ft=7.0 / 12.0,
 )
 
+#: The note's own soil: GM at the 45 psf/ft active it was worked at. IBC Table 1610.1 says 40
+#: (``sunken_garden_court_free_body.md`` §2's correction); the oracle is frozen on its input,
+#: like the geometry above.
+NOTE_GM = replace(presumptive("GM"), active_efp_psf_per_ft=45.0)
+
 # §4's table, verbatim: (at_rest, soil pcf) -> (FS sliding, FS overturning, q_max, e).
 #
 # The note takes base friction from the SITE's class (GM, mu 0.25). The engine takes it from
@@ -79,7 +86,7 @@ ORACLE = {
 def test_the_screening_reproduces_the_hand_calc(at_rest, soil_pcf) -> None:
     want_sliding, want_overturning, want_bearing, want_eccentricity = ORACLE[
         (at_rest, soil_pcf)]
-    case = analyse(CATLIN_SG, presumptive("GM"), at_rest=at_rest, soil_pcf=soil_pcf)
+    case = analyse(CATLIN_SG, NOTE_GM, at_rest=at_rest, soil_pcf=soil_pcf)
 
     assert case.fs_sliding == pytest.approx(want_sliding, abs=0.005)
     assert case.fs_overturning == pytest.approx(want_overturning, abs=0.005)
@@ -94,7 +101,7 @@ def test_the_thrust_matches_the_notes_own_figure() -> None:
 
     Two different errors can cancel inside a safety factor. This pins the numerator.
     """
-    case = analyse(CATLIN_SG, presumptive("GM"), soil_pcf=110.0)
+    case = analyse(CATLIN_SG, NOTE_GM, soil_pcf=110.0)
     assert case.thrust_plf == pytest.approx(2420.0, abs=5.0)
 
 
@@ -132,7 +139,7 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
       the court's own number and cites the item it came from; and
     * the demand went UP, not down. Crediting a permanent restraint concedes that the wall
       cannot move enough to shed to the active wedge, so these are graded at at-rest
-      (60 psf/ft) where the free-cantilever branch grades at active (45).
+      (60 psf/ft) where the free-cantilever branch grades at active (40).
 
     ``tests/test_retaining_court.py`` holds the oracle and the free-pass battery.
     """
@@ -152,8 +159,9 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
         # It was 1.77, then 1.80 with the flush tops, and 1.63 since the court shortened
         # 28'-0" -> 26'-0" and the strips narrowed 8'-0" -> 7'-0" (2026-09-10). That is a
         # deliberate purchase, not a regression: notes/sunken_garden_court_free_body.md §4.
-        # 1.59 since 2026-09-20: the raised-garden apron's surcharge joined the thrust (§4c).
-        assert record.ratio == pytest.approx(1.5 / 1.59, abs=0.005)
+        # 1.59 since 2026-09-20: the raised-garden apron's surcharge joined the thrust (§4c);
+        # 1.60 since 2026-09-21, the apron on AB Classic's 130 pcf (§4d).
+        assert record.ratio == pytest.approx(1.5 / 1.60, abs=0.005)
         by_name = {state.name: state for state in record.limit_states}
         # Per-wall sliding is not a meaningful number once the free body is wrong, so it is
         # gone rather than reported alongside a contradicting one.
@@ -167,7 +175,8 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
         # did not move — every number asserted above is unchanged — but what a seal is
         # pinned against did, which is the same class of change and takes the same bump.
         # 4 -> 5 on 2026-09-20: the apron's lateral surcharge (engineering/tier_surcharge.py).
-        assert record.basis_version == "5"
+        # 5 -> 6 on 2026-09-21: GM active EFP 45 -> 40 (IBC Table 1610.1).
+        assert record.basis_version == "6"
 
     # Every wall the register computes is one a signoff can cover, one at a time.
     assert sorted(results[f"{KIND}/{t}"].item_id for t in ("W-SG-E2",)) == [
@@ -235,9 +244,7 @@ def test_the_braced_basement_walls_are_not_in_this_suite(catlin_plan) -> None:
 
 
 def _hand(surcharge=None):
-    from typehaus.engineering.soil import presumptive as _presumptive
-
-    return analyse(CATLIN_SG, _presumptive("GM"), soil_pcf=110.0, surcharge=surcharge)
+    return analyse(CATLIN_SG, NOTE_GM, soil_pcf=110.0, surcharge=surcharge)
 
 
 def test_no_surcharge_is_the_wall_as_it_was() -> None:
@@ -317,3 +324,15 @@ def test_catlins_own_columns_stand_on_walls_this_module_does_not_enumerate(
 
     from typehaus.engineering.column_support import column_support_keys
     assert column_support_keys(ctx) == ["W-SG-E1", "W-SG-W1"]
+
+
+@pytest.mark.parametrize(("group", "active", "at_rest", "ibc_class"), [
+    ("GW", 30, 60, 3), ("GP", 30, 60, 3), ("GM", 40, 60, 4), ("GC", 45, 60, 4),
+    ("SW", 30, 60, 4), ("SP", 30, 60, 4), ("SM", 45, 60, 4), ("SM-SC", 45, 100, 4),
+    ("SC", 60, 100, 4), ("ML", 45, 100, 5), ("ML-CL", 60, 100, 5), ("CL", 60, 100, 5),
+])
+def test_the_presumptive_tables_are_the_code_text(group, active, at_rest, ibc_class) -> None:
+    """IBC 2018 Tables 1610.1 and 1806.2, row by row (``soil.py``, re-read 2026-09-21)."""
+    soil = presumptive(group)
+    assert (soil.active_efp_psf_per_ft, soil.at_rest_efp_psf_per_ft, soil.ibc_class) == (
+        active, at_rest, ibc_class)

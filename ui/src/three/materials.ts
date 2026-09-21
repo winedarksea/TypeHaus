@@ -325,9 +325,9 @@ const WASH_POLYGON_OFFSET = { polygonOffset: true, polygonOffsetFactor: -2, poly
 export const BRICK_UNIT_M: readonly [number, number] = [0.2032, 0.0679]; // [length, course]
 /** Nominal CMU face module including joints: a standard block is 16" × 8" with ⅜" joints. */
 export const CMU_UNIT_M: readonly [number, number] = [0.4064, 0.2032]; // [length, course]
-/** Segmental retaining-wall unit face module: the raised garden's 12×6×18 SRW block, DRY
- * STACKED — 18" long × 6" high with no mortar joint, so the module is the unit itself. */
-export const SRW_UNIT_M: readonly [number, number] = [0.4572, 0.1524]; // [length, course]
+/** Segmental retaining-wall unit face module: the raised garden's Allan Block AB Classic,
+ * DRY STACKED — 18" long × 8" high with no mortar joint, so the module is the unit itself. */
+export const SRW_UNIT_M: readonly [number, number] = [0.4572, 0.2032]; // [length, course]
 /** Glen-Gery Roman Maximus laid flat, including joints: 23⅝" × 1⅝" unit + ⅜" joints both
  * ways — a 24" × 2" module, long and low next to modular's 8" × 2⅔". */
 export const ROMAN_MAXIMUS_UNIT_M: readonly [number, number] = [0.6096, 0.0508]; // [length, course]
@@ -464,7 +464,7 @@ const CMU_STYLE: MasonryStyle = {
 // straight through it. A flat white plane here would be a less accurate render, not a simpler
 // one.
 //
-// `unitM` is SRW_UNIT_M and not CMU_UNIT_M: the block is 18" × 6", not 16" × 8". `jointFraction`
+// `unitM` is SRW_UNIT_M and not CMU_UNIT_M: the block is 18" × 8", not 16" × 8". `jointFraction`
 // is tighter than CMU's because the stack is DRY — there is no mortar joint, only the shadow
 // line between two units — and `mortar` is accordingly not a mortar colour but that shadow,
 // which reads as a grey the wash thins into rather than as a joint.

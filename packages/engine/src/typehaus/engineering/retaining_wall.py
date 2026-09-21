@@ -81,7 +81,9 @@ KIND = "retaining_wall"
 #: pinned against a hash that four capacities could move underneath.
 #: 4 -> 5: the raised-garden apron's bearing enters as a lateral strip surcharge
 #: (``tier_surcharge``) — thrust, overturning, bearing and stem flexure all moved.
-BASIS_VERSION = "5"
+#: 5 -> 6: IBC Table 1610.1 re-read row by row (``soil.py``) — GM active 45 -> 40. The
+#: at-rest case catlin grades did not move; the fingerprinted active EFP did.
+BASIS_VERSION = "6"
 
 
 def _drainage_note(ctx: EngineeringContext, wall) -> str:  # type: ignore[no-untyped-def]

@@ -123,8 +123,9 @@ SITE = Site(
     # wrong-county citation as the snow load below, in the shared engine where no house
     # could correct it; it now names the metro glacial till regionally instead.)
     #
-    # GM (silty gravel to inorganic silt), IRC Table R405.1's 45 psf/ft equivalent-fluid
-    # group, is right for this site for the same reason it is right regionally: the whole
+    # GM (silty gravel to inorganic silt) — IRC R404.1.2's 45 psf/ft wall-table group, and
+    # IBC Table 1610.1's 40 active / 60 at-rest (the engineered records read the latter) — is
+    # right for this site for the same reason it is right regionally: the whole
     # Ramsey/Hennepin uplands are Des Moines-lobe glacial till, and the **Ramsey County**
     # soil survey reads the same GM/ML as its neighbour's. The number does not move; what
     # moves is that it is now this parcel's statement about itself rather than a borrowed

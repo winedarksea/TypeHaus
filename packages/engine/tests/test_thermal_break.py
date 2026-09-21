@@ -23,9 +23,9 @@ _NOTE_RUN_IN = 322.815
 _NOTE_MOVEMENT_IN = 0.07102      # 5.5e-6 x (90 - 50) x 322.815; was 0.1864 at basis 1
 _NOTE_MOVEMENT_CAP_IN = 0.019048   # 2 x (40/3) / 1,400
 _NOTE_BAR_LB = 1_385.31            # 0.55 x 32,240 x 0.625 / (4 x 2)
-_NOTE_SHORTFALL_LB = 24_834.0   # was 23,454 before the apron surcharge (§4c)
-_NOTE_RESERVE_LB = {"DW-SG-W1": 16_556.0, "DW-SG-E1": 16_556.0,
-                    "DW-SG-W1-STEM": 3_311.0, "DW-SG-E1-STEM": 3_311.0}
+_NOTE_SHORTFALL_LB = 24_464.0   # §4d (AB Classic apron); §4c 24,834; §4 23,454
+_NOTE_RESERVE_LB = {"DW-SG-W1": 16_309.0, "DW-SG-E1": 16_309.0,
+                    "DW-SG-W1-STEM": 3_262.0, "DW-SG-E1-STEM": 3_262.0}
 
 
 @pytest.fixture(scope="module")
@@ -100,7 +100,7 @@ def test_catlin_grades_every_row_on_the_named_products(records, tag) -> None:
     reserve = _state(record, "dowel shear reserve")
     bars = 10 if "STEM" not in tag else 2
     assert reserve.capacity == pytest.approx(bars * _NOTE_BAR_LB, abs=0.1)
-    assert reserve.ratio == pytest.approx(1.195, abs=0.001)
+    assert reserve.ratio == pytest.approx(1.177, abs=0.001)
     assert reserve.combination == "1.6H"
 
 
@@ -111,7 +111,7 @@ def test_catlin_stays_incomplete_naming_what_is_owed(records, tag) -> None:
     assert SETTLEMENT_MISSING in record.missing
     assert "Dowel." not in " ".join(record.missing)
     over = next(m for m in record.missing if m.startswith("a design answer"))
-    assert "thermal movement 3.73" in over and "dowel shear reserve 1.20" in over
+    assert "thermal movement 3.73" in over and "dowel shear reserve 1.18" in over
 
 
 def _authored(ctx, tag, **values):

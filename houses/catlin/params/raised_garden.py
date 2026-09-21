@@ -26,7 +26,7 @@ Two things changed on 2026-09-10 and the defect is arithmetic now rather than in
 * The yard is **modelled**. `plan/site.py` authors three south-yard stations at -3'-4" and
   `resolve/site_earth.local_grade_elevation_m` reads them, so this apron springs from a
   ground elevation somebody wrote down instead of from an assumed global plane.
-* The **drop is 4'-0"**, eight whole 6" courses. Off a top that is now the porch datum at
+* The **drop is 4'-0"**, six whole 8" AB Classic courses. Off a top that is now the porch datum at
   0'-0", that lands the base at **-4'-0"** against a yard at **-3'-4"**: the base course is
   buried **8"**, against the ~6" the guidance wants on a 3-foot wall.
 
@@ -37,9 +37,12 @@ The extra 8" buys embedment, not retained height. Stating it as the drop would p
 on IRC R404.1.1's 48" threshold exactly and send five landscape walls into an R404.4
 cantilever analysis they have no footing for; see the note beside `_APRON`.
 
-**CHECKED 2026-09-20, AND IT DOES NOT STAND.** `engineering/segmental_wall.py`
-(`tiered_retaining/W-RG-*`) grades the unit's own free body: sliding FS 0.38, overturning FS
-0.57 against IRC R404.4's 1.5, on every leg (`notes/raised_garden_srw.md`). The 8" of
+**CHECKED, AND IT STILL DOES NOT STAND.** The unit is **Allan Block AB Classic** since
+2026-09-21 (`AB_CLASSIC` below). `engineering/segmental_wall.py` (`tiered_retaining/W-RG-*`)
+grades it by the NCMA/AB gravity method: overturning FS **1.27 / 1.34** across the soil
+band against IRC R404.4's 1.5, sliding 1.21 / 1.51 (`notes/raised_garden_srw.md`). The
+2026-09-20 figures (sliding 0.38, overturning 0.57) were a solid, vertical stand-in unit.
+What follows in this paragraph is the history of that stand-in. The 8" of
 embedment passes its own row and nothing else. No real SRW product is named anywhere in this
 house, so no batter, cap or unit weight is authored — and none of them would close it (§8 of
 the note: batter alone reaches OT 0.96). The fix is a design change and the owner's call; the
@@ -134,7 +137,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from typehaus import FootingBedding, FoundationWall, Node, face, ft, inch, pt
+from typehaus import (
+    FootingBedding,
+    FoundationWall,
+    Node,
+    SegmentalWallSpec,
+    face,
+    ft,
+    inch,
+    pt,
+)
 
 from params.sunken_garden import (
     BALCONY_FRONT_AXIS_Y_FT,
@@ -159,19 +171,18 @@ class RaisedGardenSpec:
     clear_offset_ft: float = 3.0
     # How far the apron runs down from the sunken-garden wall top it starts level with.
     #
-    # ** 4'-0", EIGHT WHOLE 6" COURSES, AND IT IS SET BY THE YARD. ** It was 3'-0" while
+    # ** 4'-0", SIX WHOLE 8" COURSES (EIGHT 6" UNTIL 2026-09-21), SET BY THE YARD. **
     # the yard was an assumed flat plane at the -2'-10" global datum and the apron top was
     # +0'-6". Both ends moved: the top is the porch datum at 0'-0" now (one form height
     # across all five court walls), and the yard is authored at -3'-4" by three stations in
     # `plan/site.py`. A 3'-0" drop off the new top lands the base at -3'-0", which is 4"
     # ABOVE the ground — the same negative embedment as before, arrived at the other way.
     #
-    # 4'-0" buries the base course 8". 3'-10" would bury it 6", the figure the guidance
-    # actually wants, and it is not taken: an SRW is laid in whole courses and 3'-10" is
-    # 7.67 of them. The extra 2" is the cheapest inch of embedment on this job.
+    # 4'-0" buries the base course 8" — exactly one AB course. An SRW is laid in whole
+    # courses, so 8" is the least embedment that is at least the ~6" the guidance wants.
     drop_ft: float = 4.0
     block_thickness_in: float = 12.0  # one SRW unit deep
-    block_course_height_in: float = 6.0  # SRW coursing
+    block_course_height_in: float = 8.0  # AB Classic coursing
     # The compacted levelling pad the base course beds into: 6" of stone, running 6" past
     # each block face. Both are the ordinary SRW numbers for a wall this short — the pad is
     # wider than the block so the base course can be shifted into line without ending up
@@ -214,8 +225,8 @@ Y_NORTH = BALCONY_FRONT_AXIS_Y_FT                        # -10.5
 X_WEST_BALCONY = _sg_x_west - _sg_half_thickness_ft      # 7.5
 X_EAST_BALCONY = _sg_x_east + _sg_half_thickness_ft      # 28.5
 
-# Level with the sunken-garden wall top, 3' down. The drop is a whole number of 6" courses
-# by construction, which is what lets the run be dry-stacked without a cut course.
+# Level with the sunken-garden wall top. The drop is a whole number of 8" courses by
+# construction (reference layout), which is what lets the run be dry-stacked uncut.
 TOP = (inch(SUNKEN_GARDEN_OPTION.raised_soil_height_in - 40.0)
        if SUNKEN_GARDEN_OPTION.planting_layout == "against-wall"
        else ft(RETAINING_WALL_TOP_FT))
@@ -288,8 +299,22 @@ NODES = [
 # buys EMBEDMENT. It does not retain anything.
 #
 # So it tracks the exposure, which is where that 3'-4" is computed and pinned.
+# ** THE UNIT IS ALLAN BLOCK AB CLASSIC (owner, 2026-09-21). ** Every number is AB's own:
+# the unit off the AB Collection sheet, the design depth and in-place weight off the gravity
+# sample in AB's Commercial Installation Manual (d 0.97 ft, 130 pcf with the cores filled —
+# the hollow unit alone is 125), and the interface shear off its Table 1.2 minimum. No cap is
+# stated: none is modelled, and a published chart row is not authored because it is refused
+# at every leg anyway (the court walls stand inside 2H). notes/raised_garden_srw.md §1.
+AB_CLASSIC = SegmentalWallSpec(
+    source="Allan Block AB Classic: AB Collection sheet (allanblock.com/products/retaining-walls/ab-collection) 8in H x 12in D x 18in L, 75 lb, 6 deg setback; AB Commercial Installation Manual (allanblock.com/PDF/ABCommManual.pdf) p.11 gravity sample d 0.97 ft, wall density 130 pcf, Table 1.2 unit shear strength 645 lb/ft",
+    batter_deg=6.0,
+    unit_depth=ft(0.97),
+    unit_weight_pcf=130.0,
+    interface_shear_lb_per_ft=645.0,
+)
+
 _APRON = dict(
-    assembly="RETAINING_BLOCK_12", top_elevation=TOP, bottom_elevation=BASE,
+    assembly="RETAINING_BLOCK_12", top_elevation=TOP, bottom_elevation=BASE, srw=AB_CLASSIC,
     unbalanced_fill=inch(SUNKEN_GARDEN_OPTION.raised_soil_height_in
                          if SUNKEN_GARDEN_OPTION.planting_layout == "against-wall"
                          else RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN),
@@ -354,6 +379,9 @@ BEDDINGS = [
         undercut=inch(SPEC.base_pad_depth_in),
         width=inch(SPEC.block_thickness_in + 2 * SPEC.base_pad_overhang_in),
         aggregate="MnDOT Class 5 aggregate base",
+        # AB's own "Sand/Gravel 36°" (Commercial Installation Manual) for a compacted
+        # crushed base. The ground under it (27.8°-32.0°, read off IBC 1610.1) governs.
+        friction_angle_deg=36.0,
         geotextile=True,
         drain_tile=False,
     )
