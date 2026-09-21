@@ -143,6 +143,7 @@ from typehaus.model.screens import SlatScreen
 from typehaus.model.site import (
     Basemap,
     Benchmark,
+    ConcreteServiceTemperature,
     Contour,
     Easement,
     ErosionControl,
@@ -326,7 +327,8 @@ __all__ = [
     "ElectricalDevice",
     "Circuit", "LoadManagement", "ConduitRun", "LightRun",
     "Sump", "SumpPump", "VentRun",
-    "MonthlyNormal", "SubgradeModulus", "SetbackSpec", "SpotElevation", "ImperviousSurface",
+    "MonthlyNormal", "SubgradeModulus", "ConcreteServiceTemperature", "SetbackSpec",
+    "SpotElevation", "ImperviousSurface",
     "WindowWell",
     "UtilityLine",
     "Easement", "ErosionControl", "StreetFrontage", "Benchmark",

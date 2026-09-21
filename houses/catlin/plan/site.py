@@ -58,6 +58,7 @@
 # -2'-10" at the street/north side and around the house, the sunken-garden floor still at
 # -9'-4", and the raised-garden apron now standing 3'-4" proud of the soil.
 from typehaus import (
+    ConcreteServiceTemperature,
     ErosionControl,
     ImperviousSurface,
     MonthlyNormal,
@@ -151,6 +152,19 @@ SITE = Site(
         provenance="presumed",
         source="k_v: Bowles, Foundation Analysis and Design 5th ed. (1997) Table 9-1, silty medium dense sand, low end 24,000 kN/m3 (as reproduced at strand7.com/strand7r3help/Content/Topics/SpecialTopics/SpecialModulusSubgradeReaction.htm); n_h: Terzaghi (1955) Geotechnique 5(4):297-326, n_h for piles in sand, dry or moist, loose, 7 tons/ft3 (as reproduced in Table 2 of gnpgroup.com.my/wp-content/uploads/Publication/2009_11.pdf)",
         basis="published table rows for the presumed soil class (GM, IBC Table 1806.2 class 4 with SM; n_h at the loosest cohesionless row, above groundwater); no geotechnical report",
+    ),
+    # ** THE CONCRETE'S SERVICE RANGE, NOT DESIGN AIR (2026-09-21). ** The court's thermal
+    # break (free body §11) moves with its CONCRETE temperature. AASHTO LRFD Table
+    # 3.12.2.1.1-1, Procedure A, cold climate, concrete: 0-80 F (MnDOT LRFD Bridge Design
+    # Manual §3.10.1 reads the same 80 F range). The set floor is SPECIFIED: ACI 306R-16
+    # Table 3.1's 50 F minimum as-placed for a 12"-36" section.
+    concrete_service_temperature=ConcreteServiceTemperature(
+        max_f=80.0,
+        min_f=0.0,
+        source="AASHTO LRFD Bridge Design Specifications Table 3.12.2.1.1-1, Procedure A, cold climate, concrete 0-80 F; the same 80 F range in MnDOT LRFD Bridge Design Manual §3.10.1 (dot.state.mn.us/bridge/pdf/lrfdmanual/section03.pdf)",
+        basis="published effective-temperature row for exposed concrete; the court walls stand one face in soil, so their real range is narrower (free body §11c)",
+        placement_min_f=50.0,
+        placement_source="SPECIFIED: ACI 306R-16 Table 3.1, minimum as-placed concrete temperature, 12-36 in. section",
     ),
     # Ground snow load, **MN Rules 1303.1700**. The IRC Table R301.2(1) citation once used
     # here named "Hennepin County / Minneapolis" — the right number from the wrong document

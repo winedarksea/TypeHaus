@@ -55,6 +55,25 @@ class SubgradeModulus(HausModel):
     provenance: Literal["measured", "presumed"] = "measured"
 
 
+class ConcreteServiceTemperature(HausModel):
+    """The temperature range a site's exposed concrete moves through, and its set floor.
+
+    ``max_f``/``min_f`` are the concrete's effective service extremes (not design air:
+    concrete lags and averages it), a published row named in ``source``. ``placement_min_f``
+    is the lowest as-placed temperature the job SPECIFIES, which bounds the set temperature
+    from below; the warmest set is bounded by ``max_f`` itself. Movement across a joint
+    closes by ``max_f - placement_min_f`` and opens by ``max_f - min_f``.
+    """
+
+    max_f: float
+    min_f: float
+    source: str
+    basis: str
+    placement_min_f: float | None = None
+    placement_source: str | None = None
+    provenance: Literal["measured", "published"] = "published"
+
+
 class SetbackSpec(HausModel):
     """A required setback from one parcel edge (``parcel[edge] -> parcel[(edge+1) % n]``)."""
 
@@ -265,6 +284,7 @@ def _ring_to_points(ring: list, to_length) -> tuple[Point2D, ...]:
 for _name, _obj in (
     ("MonthlyNormal", MonthlyNormal),
     ("SubgradeModulus", SubgradeModulus),
+    ("ConcreteServiceTemperature", ConcreteServiceTemperature),
     ("SetbackSpec", SetbackSpec),
     ("SpotElevation", SpotElevation),
     ("ImperviousSurface", ImperviousSurface),

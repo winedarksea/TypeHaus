@@ -10,6 +10,7 @@ from typehaus.model.refs import FaceRef, face
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.model.site import (
     Benchmark,
+    ConcreteServiceTemperature,
     Contour,
     Easement,
     ErosionControl,
@@ -91,6 +92,10 @@ class Site(HausModel):
     # A geotechnical report's subgrade stiffness. Absent, ``engineering/base_rotation`` runs a
     # presumptive band anchored on IBC §1806.3.4; present, the measured value governs.
     lateral_subgrade_modulus: SubgradeModulus | None = None
+    # The concrete's effective service temperature range and the specified set floor,
+    # cited (AASHTO LRFD Table 3.12.2.1.1-1 row). Read by ``thermal_break`` in place of
+    # design AIR temperatures, which a buried, lagging mass never reaches.
+    concrete_service_temperature: ConcreteServiceTemperature | None = None
     # --- Parcel identity (title block, cover PROJECT DATA, C-101) -----------------------
     # Facts about the lot, not preferences about how to grade it, so they live on the model.
     # A permit reviewer reads all four off the title block before anything else.

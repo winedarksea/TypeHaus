@@ -635,8 +635,12 @@ class Dowel(Element):
     #: XPS compressive modulus, psi, off the board's datasheet. None -> the thermal-movement
     #: row of ``thermal_break_transfer`` is INCOMPLETE naming it.
     foam_modulus_psi: float | None = None
-    #: The board's datasheet, named — the modulus and its creep factor come off it.
+    #: The board's datasheet, named — the rating and modulus come off it.
     foam_source: str | None = None
+    #: The ``Annotation`` that sequences the pours either side of the break. Set, the
+    #: fresh-concrete row reads the head off the court-side element's OWN top (its own
+    #: placement); ``None`` grades the conservative monolithic pour to the highest top.
+    placement_sequence_ref: str | None = None
     #: The GFRP bar's published values, per bar at ``diameter`` (ASTM D7957 datasheet):
     #: transverse shear (ASTM D7617) and guaranteed tensile load, lb, and tensile modulus,
     #: psi. ``bar_source`` names the document. None -> the dowel reserve is INCOMPLETE.

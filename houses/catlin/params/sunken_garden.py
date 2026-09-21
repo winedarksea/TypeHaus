@@ -176,7 +176,9 @@ class SunkenGardenSpec:
     # field stays as the name the geometry above reads, and simply takes its value from the
     # published constant — a comment is what let the retaining top's spot elevations rot
     # for two revisions.
-    closure_break_in: float = 2.0
+    # 2.5" since 2026-09-21 (owner, free body §11 basis 4): the four closure boards only.
+    # The veneer beam's board stays 2" (`VENEER_BEAM_BREAK_IN`), on its own toe trim.
+    closure_break_in: float = 2.5
     wall_thickness_in: float = OPTION.stem_thickness_in  # side + retaining walls
     # The cast column near the porch's front edge: a SHARED bearing, seating both front
     # beams (on `_y_ax_front`) and PT-SG-BF2 (12" further south, on `_y_balcony_front`) on
@@ -536,10 +538,10 @@ _y_in_n = _y_out_n  # porch deck north edge (back beams + column sit a SPEC offs
 # face on -4" and leaves the board its full 2" at footing level as well as at stem level.
 # Re-derive both before trusting it: without that trim the house strips reach -10" and the
 # extended garden footings would lap them by nearly 4".
-_y_wall_end = -(SPEC.house_below_grade_face_in + SPEC.closure_break_in) / 12.0  # -6.175"
+_y_wall_end = -(SPEC.house_below_grade_face_in + SPEC.closure_break_in) / 12.0  # -6.685"
 # The isolation board's own mid-thickness, which is where a `Dowel` wants its position:
 # the foam block resolves CENTRED on it, so this is 1" north of the concrete end face.
-_y_closure_break = _y_wall_end + SPEC.closure_break_in / 24.0  # -5.175"
+_y_closure_break = _y_wall_end + SPEC.closure_break_in / 24.0  # -5.435"
 # The veneer grade beam's isolation board, and the axis that places it.
 #
 # The beam's CONCRETE north face has to land exactly on `_y_ax_n` (-10"), the line
@@ -3748,13 +3750,14 @@ _dowel_z = _wall_bottom - inch(_HOUSE_FOOTING_DEPTH_IN / 2.0)
 # have found each other around.
 THERMAL_BREAK_IN = SPEC.closure_break_in
 THERMAL_BREAK_PSI = 40.0
-# ** 2026-09-21: THE FOUR CLOSURE BOARDS ARE MINERAL WOOL; THE BEAM'S BOARD STAYS XPS. **
-# Owner's call, the compressible layer at the stem joint (free body §11f). The stem and
-# footing boards are one plane that closes by one δ, so both change or the footing rows keep
-# XPS's 3.73. ROCKWOOL Toprock DD: 75 kPa at 10% (ASTM C165) is `CLOSURE_BOARD_PSI`, and
-# its only published stiffness is that point, so E is the 10% secant. `THERMAL_BREAK_PSI`
-# now names `SG_VENEER_BEAM_14`'s XPS alone; the thickness is still one number.
-CLOSURE_BOARD_PSI = 75.0 / 6.894757
+# ** 2026-09-21, BASIS 4: ALL FIVE BOARDS ARE XPS AGAIN — Styrofoam Highload 40. ** Owner's
+# call (free body §11): the four closure boards at 2.5" (`closure_break_in`), the veneer
+# beam's at 2" (`VENEER_BEAM_BREAK_IN`, on FT-B-S2/S3's toe trim). One product, one rating,
+# two thicknesses. ROCKWOOL Toprock DD is the documented alternative in §11g, not the design.
+VENEER_BEAM_BREAK_IN = 2.0
+#: DuPont Styrofoam Highload 40 PIS 43-D100079-enNA: "Compressive Modulus (typical), ASTM
+#: D 1621, psi — 1,400". Its strength is read "at 5 percent deformation or at yield".
+THERMAL_BREAK_MODULUS_PSI = 1_400.0
 
 # ** ONE BAR ARRANGEMENT ON THE WHOLE PLANE. ** The two blocks carried `count=3 @ 8"` and
 # `count=2 @ 6"`, on one continuous board, and **neither was required by any computed limit
@@ -3830,22 +3833,22 @@ def _break_bar_count(board_width_in: float) -> int:
 # footing into nothing outboard, and **6" of bare footing-to-footing concrete at the court
 # end**. The third sign (+1 into the court, -1 on the east leg) is what keeps the board on
 # the pour it separates whenever the offset is not zero.
-# ** THE PRODUCTS ARE NAMED, AND RE-NAMED THE SAME DAY (2026-09-21). **
-# `thermal_break_transfer` (free body §11) reads these off the published sheets, quoted as
-# printed. Bar: Owens Corning Aslan 100 #6 (owner's call, same count and spacing as the #5
-# it replaced) — 0.442 in², guaranteed 100 ksi = 44,200 lb, E 6.7e6 psi, transverse shear
-# > 22,000 psi (ASTM D7617) x 0.442 = 9,724 lb. Board: ROCKWOOL Toprock DD stone wool, the
-# one candidate whose rating clears the pour head (Comfortboard 80's 416 psf does not).
-# Movement (1.07) and settlement (1.05) still grade OVER; §11f lists the options.
+# ** THE PRODUCTS ARE NAMED (basis 4, 2026-09-21). ** `thermal_break_transfer` (free body
+# §11) reads these off the published sheets, quoted as printed. Bar: Owens Corning Aslan
+# 100 #6 — 0.442 in², guaranteed 100 ksi = 44,200 lb, E 6.7e6 psi, transverse shear
+# > 22,000 psi (ASTM D7617) x 0.442 = 9,724 lb. Board: Styrofoam Highload 40 XPS.
+# §11 lists every row and what is still over.
 _GFRP_BAR = dict(
     bar_tensile_lb=44_200.0, bar_modulus_psi=6.7e6, bar_shear_lb=22_000.0 * 0.442,
     bar_source="Owens Corning Aslan 100 GFRP rebar data sheet, #6 row (OC Pub. 10022295, "
                "2017; table as of 2011): 0.442 in2, f*fu 100 ksi, 44.20 kips, E 6.7e6 psi; "
                "transverse shear > 22,000 psi per ASTM D7617")
 _BREAK_FOAM = dict(
-    foam_modulus_psi=CLOSURE_BOARD_PSI / 0.10,
-    foam_source="ROCKWOOL Toprock DD technical data sheet (issued 09-2026): 75 kPa at 10% "
-                "(ASTM C165), E the 10% secant; no creep figure published")
+    foam_psi=THERMAL_BREAK_PSI, foam_modulus_psi=THERMAL_BREAK_MODULUS_PSI,
+    foam_source="DuPont Styrofoam Brand Highload 40 product information sheet "
+                "43-D100079-enNA: compressive strength 40 psi min (ASTM D1621, at 5% or "
+                "yield), compressive modulus 1,400 psi typical",
+    placement_sequence_ref="AN-SG-PLACEMENTS")
 _DOWEL_AT = (("W1", _x_ax_w, "FT-B-S1", +1.0), ("E1", _x_ax_e, "FT-B-S4", -1.0))
 DOWELS = [
     Dowel(uid=f"SGDW0{i}AAAA", tag=f"DW-SG-{name}",
@@ -3867,7 +3870,7 @@ DOWELS = [
           # paragraph used to narrate was reverted; the strips are 84" and
           # `SPEC.footing_width_in` is the one place that says so.)
           # Nothing grades a thermal break for continuity.
-          foam_length=inch(_RETAINING_FOOTING_WIDTH_IN), foam_psi=CLOSURE_BOARD_PSI,
+          foam_length=inch(_RETAINING_FOOTING_WIDTH_IN),
           **_GFRP_BAR, **_BREAK_FOAM)
     for i, (name, x, house_footing, court) in enumerate(_DOWEL_AT, start=1)
 ]
@@ -3919,7 +3922,7 @@ STEM_DOWELS = [
           # their lengths the same way and differ only in the number, which is the whole
           # point — they are sized against different pours and must not be merged.
           foam_length=inch(SPEC.wall_thickness_in),
-          foam_height=_stem_height, foam_psi=CLOSURE_BOARD_PSI,
+          foam_height=_stem_height,
           **_GFRP_BAR, **_BREAK_FOAM)
     for uid, (name, x, house_wall) in zip(("SGDW03AAAA", "SGDW04AAAA"),
                                           _STEM_DOWEL_AT, strict=True)
