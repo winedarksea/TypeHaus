@@ -8,6 +8,13 @@ is done on the authored geometry below with nothing imported from the engine;
 overturning FS 0.57 against IRC R404.4's 1.5. This is not a borderline, and it does not turn
 on the soil band, the unit weight or the batter. Nobody had calculated it before (§8).
 
+**ERRATUM 2026-09-21: GM is 40 psf/ft active (IBC Table 1610.1), not 45.** §3–§8 below were
+worked at 45 and stay as worked, as the mechanics oracle for `analyse` at that input. At 40,
+by hand on the same section: `Pa = ½·40·4.0² = 320.0 plf`, `M_ot = 320.0·4/3 = 426.67`,
+sliding `0.25·549.37/320.0 = 0.429` (d/c **3.49**), overturning `274.68/426.67 = 0.644`,
+`x = (274.68 − 426.67)/549.37 = −0.277'`, `e = 0.777'` (d/c 1.55), course shear
+`½·40·3.5² = 245.0 plf`. Still OVER on every leg; that is what the catlin records print.
+
 ## 1. What is authored
 
 All five legs (`W-RG-BLOCK`, `-WEST`, `-EAST`, `-WEST-BALCONY`, `-EAST-BALCONY`) are the same

@@ -46,7 +46,8 @@ from typehaus.engineering.soil import SOIL_UNIT_WEIGHT_BAND_PCF, presumptive
 KIND = "tiered_retaining"
 BASIS = ("IRC R404.4; IBC 1610.1 / 1806.2 presumptive values; rigid gravity free body of a "
          "segmental unit wall")
-BASIS_VERSION = "1"
+#: 1 -> 2: GM active EFP 45 -> 40 (IBC Table 1610.1, ``soil.py``).
+BASIS_VERSION = "2"
 
 #: Base-course embedment floor, and the H/10 rule beside it.
 MIN_EMBEDMENT_IN = 6.0

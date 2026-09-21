@@ -250,6 +250,12 @@ sensitivity table keeps bracketing the GC/SM classes a boring might return inste
 The screening note is a **frozen oracle** and is deliberately not edited. This paragraph is
 the correction of record; anyone reading that note's §3 should read this one alongside it.
 
+**The engine now reads 40 (2026-09-21, `engineering/soil.py`).** Its Table 1610.1 carried
+the same 45 for GM; the whole table was re-read against the code text and GM active is 40
+(at-rest also moved to 100 for SM-SC/SC/ML/ML-CL/CL, and ML to Table 1806.2 class 5 —
+neither reaches catlin). No number in this note moves: the court is graded at-rest.
+`tests/test_retaining_wall_calc.py` drives the screening's frozen table at its own 45.
+
 ---
 
 ## 3. The geometry, as it now stands

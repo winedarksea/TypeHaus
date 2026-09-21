@@ -97,10 +97,11 @@ def test_every_leg_is_over_at_the_notes_numbers(records) -> None:
         assert record.status is Status.OVER, tag
         assert record.scope is Scope.SCREENING
         states = {s.name: s for s in record.limit_states}
-        assert states["sliding"].capacity == pytest.approx(0.381, abs=0.001), tag
-        assert states["overturning"].capacity == pytest.approx(0.572, abs=0.001), tag
+        # The note's erratum: GM at IBC 1610.1's 40 psf/ft, not §3's 45.
+        assert states["sliding"].capacity == pytest.approx(0.429, abs=0.001), tag
+        assert states["overturning"].capacity == pytest.approx(0.644, abs=0.001), tag
         off_base = states["bearing — resultant on the base"]
-        assert off_base.ratio == pytest.approx(1.75, abs=0.01), tag
+        assert off_base.ratio == pytest.approx(1.55, abs=0.01), tag
         assert record.governing.name == "sliding"
         # Retained height is the authored fill, never drop_ft.
         inputs = {q.name: q.value for q in record.inputs}
