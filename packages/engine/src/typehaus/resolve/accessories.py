@@ -15,7 +15,14 @@ from collections.abc import Sequence
 from typehaus.findings import Finding, Result, Severity, element_error
 from typehaus.model.enums import ConnectorKind, LayerFunction, TrimKind
 from typehaus.model.mep import Sump, VentRun
-from typehaus.model.structure import Connector, Dowel, KneeBrace, Railing, Wedge
+from typehaus.model.structure import (
+    Connector,
+    Dowel,
+    IsolationBoard,
+    KneeBrace,
+    Railing,
+    Wedge,
+)
 from typehaus.model.trim import Downspout, EaveSoffit, Fascia, Flashing, GlazingTrim, Gutter
 from typehaus.quantities import inch
 from typehaus.resolve.assembly_material import assembly_structure_material
@@ -96,6 +103,8 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
         for el in model.plan.storey_elements(storey.tag):
             if isinstance(el, Dowel):
                 _resolve_dowel(model, el, storey.tag)
+            elif isinstance(el, IsolationBoard):
+                _resolve_isolation_board(model, el, storey.tag)
             elif isinstance(el, Connector):
                 _resolve_connector(model, el, storey.tag)
             elif isinstance(el, KneeBrace):
@@ -354,6 +363,18 @@ def screens_rainscreen_base(model: ResolvedModel, wall) -> bool:
 
 
 # --- per-kind ---------------------------------------------------------------
+def _resolve_isolation_board(model: ResolvedModel, el: IsolationBoard, storey: str) -> None:
+    """One board, thin along ``axis`` — the same solid a Dowel's foam block resolves."""
+    cx, cy = el.position.xy_m
+    z, h = el.elevation.meters, el.height.meters
+    half_t, half_l = el.thickness.meters / 2.0, el.length.meters / 2.0
+    half_x, half_y = (half_l, half_t) if el.axis == "y" else (half_t, half_l)
+    model.solids.append(ResolvedSolid(
+        uid=f"{el.uid}-board", tag=el.tag, storey=storey, category="thermal_break",
+        outline=square(cx, cy, half_x, half_y), z0_m=z - h / 2.0, z1_m=z + h / 2.0,
+        material=el.material))
+
+
 def _resolve_dowel(model: ResolvedModel, el: Dowel, storey: str) -> None:
     cx, cy = el.position.xy_m
     z = el.elevation.meters

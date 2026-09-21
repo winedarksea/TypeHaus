@@ -1,8 +1,8 @@
-"""The board's own rows for ``thermal_break`` — free body §11a-§11d's first half.
+"""The board's own rows for ``thermal_break`` — free body §11a-§11c.
 
-Fresh-concrete pressure on the AUTHORED placement, flotation, the closing movement against
-the board's recoverable strain, and the thrust the board then passes on — the number every
-house row in :mod:`thermal_break_house` is graded against.
+Fresh-concrete pressure on the AUTHORED placement and the closing movement against the
+board's recoverable strain; the stress that movement causes is the thrust every house row
+in :mod:`thermal_break_house` is graded against.
 """
 
 from __future__ import annotations
@@ -61,10 +61,10 @@ def temps(ctx) -> Temps | None:
     return Temps(spec.max_f, spec.min_f, spec.placement_min_f, spec.source)
 
 
-def product_of(dowel) -> Product | None:
-    if dowel is None or dowel.foam_modulus_psi is None or dowel.foam_source is None:
+def product_of(element) -> Product | None:
+    if element is None or element.modulus_psi is None or element.source is None:
         return None
-    return Product(dowel.foam_psi, dowel.foam_modulus_psi, dowel.foam_source)
+    return Product(element.psi, element.modulus_psi, element.source)
 
 
 def pour_head_in(ctx, board: Board) -> tuple[float | None, str]:
@@ -74,7 +74,7 @@ def pour_head_in(ctx, board: Board) -> tuple[float | None, str]:
     its own placement (catlin: footings (1), walls (2)); otherwise the whole court structure
     is taken monolithic to its highest top — the conservative sequence.
     """
-    ref = getattr(board.dowel, "placement_sequence_ref", None)
+    ref = getattr(board.element, "placement_sequence_ref", None)
     if ref and ctx.plan.by_tag(ref) is not None and board.court_tag:
         from typehaus.engineering.thermal_break_geometry import z_extent
 
@@ -100,17 +100,6 @@ def pressure(ctx, board: Board, product: Product, states, missing, inputs) -> fl
         f"ACI 347R-14 capped at wh — {CONCRETE_PCF:.0f} pcf x {head_in / 12:.3f}' of head, "
         f"{how}; vs the board's {product.psi:.0f} psi"))
     return psi
-
-
-def flotation(board: Board, product: Product, states) -> None:
-    dowel = board.dowel
-    buoyancy = CONCRETE_PCF * board.t_in * board.h_in * board.length_in / 1728.0
-    bearing = product.psi * dowel.diameter.inches * board.t_in
-    states.append(LimitState(
-        "board flotation", buoyancy, dowel.count * bearing, "lb",
-        f"Archimedes at {CONCRETE_PCF:.0f} pcf, foam weight neglected; restraint "
-        f"{dowel.count} bars x {bearing:.0f} lb foam bearing ({product.psi:.0f} psi x "
-        f"{dowel.diameter.inches:.3f}\" x {board.t_in:.2f}\")"))
 
 
 def movement(ctx, board: Board, product: Product, t: Temps, states, inputs) -> float:

@@ -2021,14 +2021,13 @@ def test_the_thermal_break_is_one_product_everywhere_it_is_stated(catlin_model):
         sunken_garden.THERMAL_BREAK_IN)
 
     # Both closure blocks, as resolved solids: same thickness across the joint, same rating.
-    for block in ("DW-SG-W1-FOAM", "DW-SG-E1-FOAM",
-                  "DW-SG-W1-STEM-FOAM", "DW-SG-E1-STEM-FOAM"):
+    for block in ("TB-SG-W1", "TB-SG-E1", "TB-SG-W1-STEM", "TB-SG-E1-STEM"):
         solid = next(s for s in catlin_model.solids if s.tag == block)
         ys = [y for _x, y in solid.outline]
         assert (max(ys) - min(ys)) / 0.0254 == pytest.approx(
             sunken_garden.THERMAL_BREAK_IN, abs=1e-6), block
-        dowel = catlin_model.plan.by_tag(block.removesuffix("-FOAM"))
-        assert dowel.foam_psi == pytest.approx(sunken_garden.THERMAL_BREAK_PSI), block
+        board = catlin_model.plan.by_tag(block)
+        assert board.psi == pytest.approx(sunken_garden.THERMAL_BREAK_PSI), block
 
     # And the veneer beam's board, which is the one that bills through a different trade.
     beam = next(w for w in catlin_model.walls if w.tag == "W-SG-BRKBM")
@@ -2042,37 +2041,18 @@ def test_the_thermal_break_is_one_product_everywhere_it_is_stated(catlin_model):
     assert f"{sunken_garden.THERMAL_BREAK_PSI:.0f} psi" in assembly.source
 
 
-def test_one_bar_arrangement_holds_the_whole_closure_board(catlin_model):
-    """One size, one spacing, count derived from the board — on both blocks.
+def test_nothing_crosses_the_closure(catlin_model):
+    """A pure isolation joint since 2026-09-21 (free body §11 basis 5): no dowel, no bar.
 
-    They carried ``3 @ 8"`` and ``2 @ 6"`` on one continuous plane, and **neither count nor
-    spacing is required by any computed limit state**: no check and no engineered item
-    grades these bars. Two arrangements on one board is two field instructions and two
-    things to miscount.
-
-    ** ⚠ THE BARS ARE WHY THE BOARD EXISTS. ** A ``Dowel``'s foam block is the only way
-    this engine resolves a real XPS solid at a joint, so dropping the bars does not thin
-    the detail — it deletes the board from the model, the bill and every drawing.
-    ``_resolve_dowel`` lays ``range(max(count, 1))``, so a zero silently becomes a one.
+    The 24 GFRP dowels failed five rows no board reaches (basis 4) and the owner deleted
+    them; the court stands on its own loop. The boards are `IsolationBoard` elements now,
+    so deleting the bars no longer deletes the board — which is what a `Dowel`'s foam block
+    used to do.
     """
-    from params import sunken_garden
-
-    bars = {}
-    for solid in catlin_model.solids:
-        for stem in ("DW-SG-W1-", "DW-SG-E1-", "DW-SG-W1-STEM-", "DW-SG-E1-STEM-"):
-            if solid.tag.startswith(stem) and not solid.tag.endswith("FOAM"):
-                bars.setdefault(stem, []).append(solid)
-    # 10 across the 84" footing joint, 2 across the 12" wall end. It was 12 across a 96"
-    # joint until the strips narrowed on 2026-09-10 — and 84 / 8 is an exact 10.5, which
-    # `round` takes DOWN under banker's rounding. See `_break_bar_count`: the tie is left
-    # where the rule puts it, because no limit state sizes these bars.
-    assert len(bars["DW-SG-W1-STEM-"]) == 2
-    assert len(bars["DW-SG-E1-STEM-"]) == 2
-    assert len(bars["DW-SG-W1-"]) == 10 + 2  # the stem bars share the prefix
-    assert sunken_garden._break_bar_count(84.0) == 10
-    assert sunken_garden._break_bar_count(96.0) == 12
-    assert sunken_garden._break_bar_count(12.0) == 2
-    assert sunken_garden._break_bar_count(1.0) == 2, "never fewer than two"
+    assert not [s for s in catlin_model.solids if s.category == "dowel"
+                and s.tag.startswith(("DW-SG", "TB-SG"))]
+    boards = [e for e in catlin_model.plan.all_elements() if e.element_kind == "IsolationBoard"]
+    assert len(boards) == 4
 
 
 def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
@@ -2142,7 +2122,7 @@ def test_the_veneer_beam_isolates_the_house_footing(catlin_model):
     # broken: the block was 21" (derived off a 3-bar row, `Dowel.foam_length` unset) in a
     # joint 84" wide, and where it was missing there was concrete on both sides of the line.
     from shapely.geometry import Polygon
-    for garden, block in (("FT-SG-W1", "DW-SG-W1-FOAM"), ("FT-SG-E1", "DW-SG-E1-FOAM")):
+    for garden, block in (("FT-SG-W1", "TB-SG-W1"), ("FT-SG-E1", "TB-SG-E1")):
         strip = next(s for s in catlin_model.solids if s.tag == garden)
         foam = next(s for s in catlin_model.solids if s.tag == block)
         xs = [x for x, _y in strip.outline]

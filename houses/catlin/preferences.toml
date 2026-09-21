@@ -616,17 +616,16 @@ suppress = [
   # after the door stopped tripping the check at all.
   "structural.door_framing_module:D-M-BATH1",
 
-  # ** structural.thermal_break: 5 REAL FAILS, MEASURED 2026-09-21 (basis 4: 2.5" Highload 40
-  # XPS, #6 Aslan 100 @ 8", every row graded). ** The board rows pass; its thrust into the house
-  # (wall flexure 1.49, floor line 6.69, house XPS 1.99, strip sliding 21.3 / beam 44.9, court
-  # sliding 3.19) and five bar rows (reserve 1.13/2.81, racking 2.46, opening 10.4/4.59,
-  # development 1.42/2.29) do not. Free body §11i prices the options and picks none. The permit
-  # line BLOCKS, so this hides nothing from either gate. Delete all five in the commit that
-  # answers §11i. W-SG-BRKBM joined at basis 4: the veneer beam's board is graded now.
-  "structural.thermal_break:DW-SG-E1",
-  "structural.thermal_break:DW-SG-E1-STEM",
-  "structural.thermal_break:DW-SG-W1",
-  "structural.thermal_break:DW-SG-W1-STEM",
+  # ** structural.thermal_break: 5 REAL FAILS, MEASURED 2026-09-21 (basis 5: a pure isolation
+  # joint, the dowels deleted; 2.5"/2" Highload 40 XPS). ** The board rows pass; the thrust it
+  # passes into the house does not (wall flexure 1.49, floor line 6.69, house XPS 1.99, strip
+  # sliding 21.3 / beam 44.9, court sliding 3.19). The board is OPEN — free body §11h weighs
+  # the alternatives and picks none. The permit line BLOCKS, so this hides nothing from either
+  # gate. Delete all five in the commit that closes §11h.
+  "structural.thermal_break:TB-SG-E1",
+  "structural.thermal_break:TB-SG-E1-STEM",
+  "structural.thermal_break:TB-SG-W1",
+  "structural.thermal_break:TB-SG-W1-STEM",
   "structural.thermal_break:W-SG-BRKBM",
 
   # ** TWO ENTRIES WERE DELETED HERE ON 2026-09-20 BECAUSE THEY MATCHED NOTHING. **

@@ -2226,20 +2226,17 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **One thermal-break product (Highload 40 XPS, `THERMAL_BREAK_PSI`), two thicknesses:**
   `THERMAL_BREAK_IN` 2.5" on the four closure boards, `VENEER_BEAM_BREAK_IN` 2" on the
   beam's (basis 4, 2026-09-21). `thermal_break_transfer` grades all five boards, their
-  thrust into the house and the bars (free body §11) — OVER, suppressed as one debt; §11i
-  prices the options. The Toprock DD alternative is §11j. The thickness
+  thrust into the house (free body §11) — OVER, suppressed as one debt. The board
+  product is OPEN: §11h weighs the alternatives (Toprock DD rejected). The thickness
   was stated three times in two files and the rating twice, once in prose because `Layer`
   has no compressive field. **The break cannot go on one purchase order today** — the two
   closure blocks bill by VOLUME into concrete, the beam's board by AREA into insulation,
   and nothing reconciles them — so `test_catlin_contract_m3` pins every site against the
   constants. A comment is not a guard; the retaining top's spot elevations proved that.
-- **One bar arrangement on the whole plane**: #6 GFRP (Aslan 100) at 8" o.c., count derived from board
-  width (10 across the 84" footing joint, 2 across the 12" wall end — 84/8 is an exact 10.5
-  and `round` takes it DOWN). Neither count was
-  required by any computed limit state. **The bars are why the board exists** — a `Dowel`'s
-  foam block is the only way the engine resolves an XPS solid at a joint, so `count=0`
-  deletes the board from the model, the bill and the drawings (and `_resolve_dowel` lays
-  `range(max(count, 1))`, so a zero is silently a one).
+- **Nothing crosses the break (2026-09-21, basis 5).** The 24 GFRP dowels are deleted; the
+  closure boards are four `IsolationBoard`s (`TB-SG-*`), so a board no longer needs bars to
+  exist. With no bars nothing holds a board during its pour — adhere/pin and brace it
+  (sequencing trap 2 in `params/sunken_garden.py`).
 - **Do not merge the two closure blocks.** Per end it is already one continuous board on
   one plane; two objects only because the joint is T-shaped in elevation. Widening the
   upper one buys foam standing in backfill, and destroys the property that makes it work —
@@ -2250,12 +2247,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   cancel into a drawing that looks right.
 - **Every wall-to-house joint here needs one continuous 2.5" XPS board, house-footing-underside
   to porch-wall-top, and nothing checks that continuity** — verify by hand after any footing
-  or wall-top move. Four sequencing traps are written into `params/sunken_garden.py` above
-  the dowels: the butt joint lands on the court floor plane (lap the upper board); the
-  garden pour cannot lead the house (the stem dowels are epoxied into cured wall with ~1"
-  of tolerance); the beam's board depends on the FT-B-S2/S3 toe trim, which is a HOLD POINT
-  before the house footing pour; and the beam's 20'-0" board is the one with no positive
-  tie at all.
+  or wall-top move. Three sequencing traps are written into `params/sunken_garden.py` above
+  the boards: the butt joint lands on the court floor plane (lap the upper board); no board
+  has a positive tie any more (adhere/pin and brace every one); and the beam's board depends
+  on the FT-B-S2/S3 toe trim, which is a HOLD POINT before the house footing pour.
 - **The brick stays, and it is load-bearing for five other things.** If `W-B-BRICK` ever
   goes it takes `W-SG-BRKBM`, that beam's isolation board, an engineered masonry-anchor
   item no prescriptive table reaches, the weeps, two soft joints and a slab void with it.

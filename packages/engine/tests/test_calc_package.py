@@ -190,8 +190,8 @@ def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
     #    2026-09-20 (`engineering/veneer_beam.py`); the masonry anchors it carried unnamed
     #    left with it as `veneer_anchor/W-B-BRICK`, their own deferral.
     #  - `thermal_break_transfer/*`: left 2026-09-20 — computed in
-    #    `engineering/thermal_break.py`; OVER at basis 4 (free body §11i: the thrust into the
-    #    house and five bar rows), since OVER outranks INCOMPLETE there as on the other kinds.
+    #    `engineering/thermal_break.py`; OVER at basis 5 (free body §11f: the thrust into the
+    #    house; the dowels are deleted), since OVER outranks INCOMPLETE there as on the other kinds.
     #  - `tiered_retaining/W-RG-*`: the apron. `foundation_unbalanced_fill` reads PASS on it
     #    and that verdict is CORRECT — IRC R404.1.1 does not engage at 3'-4" — so the PASS is
     #    deliberately left alone. The defect was that nothing else then looked at a tiered

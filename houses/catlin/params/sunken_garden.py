@@ -55,7 +55,7 @@ from typehaus import (
     Connector,
     ConnectorKind,
     DeckLayer,
-    Dowel,
+    IsolationBoard,
     Downspout,
     DrainTile,
     Drywell,
@@ -539,7 +539,7 @@ _y_in_n = _y_out_n  # porch deck north edge (back beams + column sit a SPEC offs
 # Re-derive both before trusting it: without that trim the house strips reach -10" and the
 # extended garden footings would lap them by nearly 4".
 _y_wall_end = -(SPEC.house_below_grade_face_in + SPEC.closure_break_in) / 12.0  # -6.685"
-# The isolation board's own mid-thickness, which is where a `Dowel` wants its position:
+# The isolation board's own mid-thickness, which is where each `IsolationBoard` is positioned:
 # the foam block resolves CENTRED on it, so this is 1" north of the concrete end face.
 _y_closure_break = _y_wall_end + SPEC.closure_break_in / 24.0  # -5.435"
 # The veneer grade beam's isolation board, and the axis that places it.
@@ -1628,7 +1628,7 @@ FOOTINGS.append(
 # there is no joint to dowel and no bridge to break, because the separation itself is the
 # break. Leaving the flag on would cast a foam block into aggregate with nothing on the far
 # side of it. The two side walls are unchanged and keep theirs; their footings never moved.
-# See DOWELS below, where DW-SG-COL is retired for the same reason.
+# See ISOLATION_BOARDS below, where DW-SG-COL is recorded as retired for the same reason.
 _HOUSE_ADJACENT = {"FT-SG-W1", "FT-SG-E1"}
 # The two bells reach frost depth on their own, so their beds are levelling courses. A
 # footing bearing where it is meant to bear still wants a few inches of clean stone under
@@ -3673,259 +3673,78 @@ BALCONY_JOISTS = FloorSystem(
 )
 
 # ============================================================================
-# Fiberglass (GFRP) rebar dowels + 40 psi XPS foam thermal break between the shared
-# house/garden footings. The two house-adjacent footings (the porch side walls, along the
-# north edge) pin to the house footing across a 2" XPS block so the joint transfers shear
-# without a thermal bridge. Bars at mid-JOINT (-9'-5 7/16"), on the north-edge line.
+# THE CLOSURE BOARDS — A PURE ISOLATION JOINT (2026-09-21, owner; free body §11 basis 5).
+# Nothing crosses the break. The 24 GFRP dowels are deleted: the court stands on its own
+# closed loop (§4, system FS 1.60), and basis 4 showed the bars failing five rows no board
+# reaches — reserve, racking, opening, development, and a post-installed stem anchorage no
+# code covers. What stays is the board, one `IsolationBoard` per face, the house seeing a
+# closure wherever the court meets it: each footing joint (84" x 8") and each wall end
+# (12" x the stem height), one plane, one product. The veneer beam's board is a Layer.
 #
-# **DW-SG-COL, the third, is retired, with its bell.** It would have crossed the joint
-# between PD-SG-COL and FT-B-S2 if the two sat at the same elevation 2" apart, but the bell
-# bears 2'-6" lower — its top is 1'-10" under FT-B-S2's underside — so the bars would span
-# open ground at -9'-4 7/16" with no garden concrete at that height to develop into, and the
-# foam block would have one face and no joint. A separated pier does not need a thermal
-# break; it IS one. Nothing renumbered: COL was the LAST entry, so W1 keeps SGDW01AAAA and
-# E1 keeps SGDW02AAAA and no IFC GlobalId moves — which is the only reason removing an
-# ``enumerate``-minted uid was safe to do in place (compare _WALL_FOOTING_UID above, where
-# it was not).
+# DW-SG-COL was retired earlier with its bell (a separated pier IS a break). The board
+# uids are hand-minted (`haus fmt` does not visit params/) and must stay unique by hand.
 # ============================================================================
-# ** THE BARS WERE ABOVE THE FOOTING THEY DOWEL INTO. FIXED 2026-09-05. **
-# This read `ft(-(basement_depth_ft + 0.75) + footing_thickness/24)` — mid-height of a
-# garden footing whose underside was -118 7/16", which is where FT-SG-W1/E1 sat before the
-# court was ever re-levelled. Two elevation changes later the bars resolved at -112 7/16"
-# and the garden footing's TOP was -117 7/16": three #5 GFRP bars 5" of open air above the
-# concrete they claim to develop into, and a 12" foam block straddling a joint that was not
-# there. Nothing grades a dowel against the two footings it names, so it read fine.
-#
-# Derived now, off the joint itself. The two footings share a face from FT-B-S2's underside
-# up to the plane they both top out on — 8", the house footing's own depth — and the bars
-# sit at the middle of it with 4" to each face. `_HOUSE_FOOTING_DEPTH_IN` is transcribed
-# from `params/foundations.HOUSE_FOOTINGS` (`depth=inch(8)`) rather than imported, the same
-# way `basement_depth_ft` is, and the foam block is that same 8" so it fills the joint
-# exactly instead of standing proud of it into the slab bed.
+# The two footings share a face from the house strip's underside up to the plane both top
+# out on — 8", the house footing's depth, transcribed from params/foundations.HOUSE_FOOTINGS
+# rather than imported, the same way `basement_depth_ft` is.
 _HOUSE_FOOTING_DEPTH_IN = 8.0
-_dowel_z = _wall_bottom - inch(_HOUSE_FOOTING_DEPTH_IN / 2.0)
-# ** THE BLOCK IS ON THE JOINT PLANE, AND THE OPPOSING FOOTING IS NAMED CORRECTLY. **
-# Both fixed 2026-09-05, on the same pass that extended the walls.
-#
-# The y was `_y_in_n` (-10"), the porch's deck line, with NO house concrete opposite it:
-# FT-B-S1/FT-B-S4's south face stood there too, so the block straddled a butt joint rather
-# than filling one. It is now `_y_closure_break` — the isolation board's own mid-thickness —
-# so this block and the stem block above it are coplanar and read as one continuous 2" board
-# from the house footing's underside to the wall top.
-#
-# And `connects` said "FT-B-S2" on BOTH. FT-B-S2 runs x 8'-10"..18'-0" and faces neither of
-# these: at x 8'-0" the opposing strip is FT-B-S1, at x 28'-0" it is FT-B-S4 (which reaches
-# west to 27'-2" since the framed run was pulled clear of the court — storeys/basement.py).
-# The tag is carried in the tuple now, so a third literal cannot drift from the geometry.
-# ** AND THE BLOCK WAS 21" LONG IN AN 84" JOINT. FIXED 2026-09-05 (second pass). **
-# `foam_length` is authored, and it is the FOOTING's width. Without it
-# `resolve/accessories._resolve_dowel` derives the block's length along the joint from the
-# BAR ROW — `max(row_span + 8*dia, 12")` = max(16 + 5, 12) = 21" — which is the right rule
-# for the stem block below (a 12" wall's end face, where the bars really are the joint) and
-# the wrong one here. The stem block was sized against the WALL and this one inherited its
-# reasoning, but the pour it separates is not the wall: it is the 84"-wide strip footing
-# under it. 21" of board in an 84" joint left **63" of footing-to-footing concrete** with no
-# break in it at all, running straight from a heated basement footing into a wall that
-# stands in an open court — and NOTHING in this engine grades a thermal break for
-# continuity, so it read as a designed detail.
-#
-# `SPEC.footing_width_in`, not a literal: the block is the joint, and the joint is as wide
-# as the footing. Widen the footing and the board follows it.
-# ** THE BREAK IS ONE PRODUCT AND THESE TWO CONSTANTS ARE THE ONLY PLACE IT IS STATED. **
-# `THERMAL_BREAK_IN` is the board thickness and `THERMAL_BREAK_PSI` its compressive rating,
-# and they are published here because **the break cannot go on one purchase order today**.
-# That is a takeoff fact rather than an opinion: the two closure blocks resolve as foam
-# solids and bill by VOLUME into the concrete trade, while the veneer beam's board is a
-# `Layer` on `SG_VENEER_BEAM_14` and bills by AREA into insulation. Nothing reconciles the
-# two, so the only thing holding them to one product is that every site reads one number.
-#
-# `Layer` has no compressive field at all, which is why the beam's board carried the 40 psi
-# in prose and the blocks carried it in a keyword. Both read `THERMAL_BREAK_PSI` now, the
-# beam's through its `source` text, and `test_catlin_contract_m3` asserts the sites agree —
-# a comment alone is what let the retaining top's spot elevations rot for two revisions.
-#
-# ** 40 psi (ASTM C578 Type VI — Type VII is 60 psi), not the slab's 25. ** The board is a FORM FACE here: it
-# takes the fresh concrete head of a 12" pour against it with nothing behind it but a
-# cured house footing, and a board that dishes under the head is a board the two pours
-# have found each other around.
+_board_z = _wall_bottom - inch(_HOUSE_FOOTING_DEPTH_IN / 2.0)
+# ** THE BREAK IS ONE PRODUCT, AND THESE CONSTANTS ARE THE ONLY PLACE IT IS STATED. ** The
+# closure boards bill by VOLUME (thermal_break solids) and the beam's by AREA (a Layer), and
+# nothing reconciles them, so `test_catlin_contract_m3` pins every site to these numbers.
+# `Layer` has no compressive field: the beam's 40 psi lives in SG_VENEER_BEAM_14's prose.
+# 40 psi (ASTM C578 Type VI): the board is a FORM FACE against a fresh 9' head.
 THERMAL_BREAK_IN = SPEC.closure_break_in
 THERMAL_BREAK_PSI = 40.0
-# ** 2026-09-21, BASIS 4: ALL FIVE BOARDS ARE XPS AGAIN — Styrofoam Highload 40. ** Owner's
-# call (free body §11): the four closure boards at 2.5" (`closure_break_in`), the veneer
-# beam's at 2" (`VENEER_BEAM_BREAK_IN`, on FT-B-S2/S3's toe trim). One product, one rating,
-# two thicknesses. ROCKWOOL Toprock DD is the documented alternative in §11g, not the design.
+# Basis 4 (2026-09-21): Highload 40 on all five boards — the closure boards at 2.5", the
+# veneer beam's at 2" (on FT-B-S2/S3's toe trim). The product is OPEN (free body §11h).
 VENEER_BEAM_BREAK_IN = 2.0
 #: DuPont Styrofoam Highload 40 PIS 43-D100079-enNA: "Compressive Modulus (typical), ASTM
 #: D 1621, psi — 1,400". Its strength is read "at 5 percent deformation or at yield".
 THERMAL_BREAK_MODULUS_PSI = 1_400.0
-
-# ** ONE BAR ARRANGEMENT ON THE WHOLE PLANE. ** The two blocks carried `count=3 @ 8"` and
-# `count=2 @ 6"`, on one continuous board, and **neither was required by any computed limit
-# state** — no check and no engineered item grades these bars at all. Two counts and two
-# spacings on one plane is two field instructions for one board and two things to miscount.
-#
-# One size (#6 GFRP, 0.75"; #5 until 2026-09-21), one spacing (8" o.c., the coarser of the
-# two that existed — no new number is invented here), and the COUNT derived from the board
-# it holds. The footing block is 84" wide and takes 10 bars on a 76" row, 4" clear of each
-# end — see `_break_bar_count`, whose docstring works the 84" tie out bar by bar; the stem
-# block is 12" and takes the minimum 2 on an 8" row. **Three bars over eight feet was the
-# old footing figure**, which held the middle of the board and left 44" of it either side
-# free to float and rack against the head of a 12" pour — with no check anywhere that would
-# notice.
-#
-# ** ⚠ THE BARS ARE WHY THE BOARD EXISTS AT ALL. ** A `Dowel`'s foam block is the only way
-# this engine resolves a real XPS solid at a joint (`resolve/accessories._resolve_dowel`),
-# so `count=0` does not thin the detail — it DELETES the board from the model, from the
-# bill and from every drawing. `_resolve_dowel` lays `range(max(count, 1))`, so a zero is
-# silently a one. Never reduce these to nothing; if the tie is ever not wanted, the board
-# needs a different element first.
-THERMAL_BREAK_BAR_IN = 0.75  # #6 Aslan 100 since 2026-09-21 (#5 until then)
-THERMAL_BREAK_BAR_SPACING_IN = 8.0
-
-# ** FOUR SEQUENCING TRAPS ON THIS BOARD. EVERY IMPROVEMENT TO THIS DETAIL RESTS ON
-# COMMENTS AND ONE TAKEOFF ROW, SO THEY ARE WRITTEN HERE RATHER THAN ASSUMED. **
-#
-# 1. **The butt joint between the two blocks lands on the court floor plane.** The footing
-#    block runs -117 7/16"..-109 7/16" and the stem block -109 7/16"..0, and -109 7/16" is
-#    exactly `SL-SG-FLOOR` — the wettest, saltiest, most trafficked surface in a court that
-#    drains only to a soakaway and cannot shed chloride at all (§6a of
-#    notes/sunken_garden_court_free_body.md). A butt joint there is a wick straight into
-#    the one plane the whole C2 case is about. **Lap the upper board past the joint**; the
-#    model cannot express a lap, so the drawing and this note are the instruction.
-#
-# 2. **The garden pour cannot lead the house.** The STEM dowels are drilled and epoxied
-#    into cured house wall with roughly an inch of tolerance before they blow through 8" of
-#    concrete and 4 3/16" of foam and coating. The basement wall must be poured, cured and
-#    SURVEYED first — surveyed, because an epoxied dowel has no adjustment. `AN-SG-PLACEMENTS`
-#    carries this as placement (2)'s precondition.
-#
-# 3. **The beam's board depends on a footing trim that is a HOLD POINT.** `FT-B-S2`/`S3`
-#    give up 2" of south toe (via `offset`, keeping all 20" of bearing) so
-#    `SG_VENEER_BEAM_14`'s board has somewhere to bear. Poured full width, the beam has
-#    nowhere to go and the board nothing to bear against, and nobody finds out until the
-#    garden pour. **Sign the trim off before the HOUSE footing pour, not after.**
-#
-# 4. **The longest board is the only one with no positive tie.** `SG_VENEER_BEAM_14`'s is
-#    20'-0" of 2" XPS against the fresh head of a 12" pour, held by nothing — it is a
-#    `Layer`, not a `Dowel`, so it has no bars at all. Fine for crushing at 40 psi; it must
-#    still be held against FLOATING and RACKING, and **no check will notice** either. The
-#    two closure blocks are tied (§ the bars above); this one is on the formwork.
-
-
-def _break_bar_count(board_width_in: float) -> int:
-    """Bars across a closure board — one rule, both blocks. Minimum two.
-
-    ** 84" LANDS ON AN EXACT HALF AND ROUNDS DOWN. ** `84 / 8 = 10.5`, and Python's `round`
-    is banker's rounding, so this returns 10 (8.4" o.c.) rather than 11 (7.6"). Either is a
-    fine field spacing; `thermal_break_transfer` grades the count (free body §11e: 12 would
-    clear the reserve), and the rule is left alone rather than nudged to win a tie.
-    Worth knowing before reading a bar count that looks one short.
-    """
-    return max(2, round(board_width_in / THERMAL_BREAK_BAR_SPACING_IN))
-
-
-# ** THE BOARD IS CENTRED ON THE FOOTING, NOT ON THE WALL AXIS. ** `Dowel.foam_length`
-# centres the block on `position`, and the two coincide again now that the strips are 84"
-# centred with a zero offset — but the expression stays, because it is what makes them
-# coincide rather than an assumption that they do. They did NOT for one revision: the strips
-# carried a 6" inboard offset, the joint ran x 4.500..12.500 against a wall axis of 8.000,
-# and a board written on the axis would have covered 4.000..12.000 — 6" hanging past the
-# footing into nothing outboard, and **6" of bare footing-to-footing concrete at the court
-# end**. The third sign (+1 into the court, -1 on the east leg) is what keeps the board on
-# the pour it separates whenever the offset is not zero.
-# ** THE PRODUCTS ARE NAMED (basis 4, 2026-09-21). ** `thermal_break_transfer` (free body
-# §11) reads these off the published sheets, quoted as printed. Bar: Owens Corning Aslan
-# 100 #6 — 0.442 in², guaranteed 100 ksi = 44,200 lb, E 6.7e6 psi, transverse shear
-# > 22,000 psi (ASTM D7617) x 0.442 = 9,724 lb. Board: Styrofoam Highload 40 XPS.
-# §11 lists every row and what is still over.
-_GFRP_BAR = dict(
-    bar_tensile_lb=44_200.0, bar_modulus_psi=6.7e6, bar_shear_lb=22_000.0 * 0.442,
-    bar_source="Owens Corning Aslan 100 GFRP rebar data sheet, #6 row (OC Pub. 10022295, "
-               "2017; table as of 2011): 0.442 in2, f*fu 100 ksi, 44.20 kips, E 6.7e6 psi; "
-               "transverse shear > 22,000 psi per ASTM D7617")
-_BREAK_FOAM = dict(
-    foam_psi=THERMAL_BREAK_PSI, foam_modulus_psi=THERMAL_BREAK_MODULUS_PSI,
-    foam_source="DuPont Styrofoam Brand Highload 40 product information sheet "
-                "43-D100079-enNA: compressive strength 40 psi min (ASTM D1621, at 5% or "
-                "yield), compressive modulus 1,400 psi typical",
+_BOARD_PRODUCT = dict(
+    material="xps", psi=THERMAL_BREAK_PSI, modulus_psi=THERMAL_BREAK_MODULUS_PSI,
+    source="DuPont Styrofoam Brand Highload 40 product information sheet 43-D100079-enNA: "
+           "compressive strength 40 psi min (ASTM D1621, at 5% or yield), compressive "
+           "modulus 1,400 psi typical",
     placement_sequence_ref="AN-SG-PLACEMENTS")
-_DOWEL_AT = (("W1", _x_ax_w, "FT-B-S1", +1.0), ("E1", _x_ax_e, "FT-B-S4", -1.0))
-DOWELS = [
-    Dowel(uid=f"SGDW0{i}AAAA", tag=f"DW-SG-{name}",
-          position=pt(ft(x + court * _RETAINING_FOOTING_OFFSET_IN / 12.0),
-                      ft(_y_closure_break)),
-          axis="y", length=inch(24), diameter=inch(THERMAL_BREAK_BAR_IN),
-          elevation=_dowel_z,
-          count=_break_bar_count(_RETAINING_FOOTING_WIDTH_IN),
-          spacing=inch(THERMAL_BREAK_BAR_SPACING_IN),
-          connects=(f"FT-SG-{name}", house_footing),
-          foam_thickness=inch(THERMAL_BREAK_IN),
-          foam_height=inch(_HOUSE_FOOTING_DEPTH_IN),
-          # ** THE JOINT IS AS WIDE AS THE FOOTING, WHATEVER THE FOOTING IS. ** This read a
-          # separate literal once, and a board narrower than the joint leaves bare
-          # footing-to-footing concrete running straight from a heated basement strip into a
-          # wall standing in an open court — the defect this authored length exists to fix,
-          # and one that reopens silently every time the footing width moves. Written as
-          # `_RETAINING_FOOTING_WIDTH_IN` so it cannot. (The 84" -> 96" widening this
-          # paragraph used to narrate was reverted; the strips are 84" and
-          # `SPEC.footing_width_in` is the one place that says so.)
-          # Nothing grades a thermal break for continuity.
-          foam_length=inch(_RETAINING_FOOTING_WIDTH_IN),
-          **_GFRP_BAR, **_BREAK_FOAM)
-    for i, (name, x, house_footing, court) in enumerate(_DOWEL_AT, start=1)
-]
 
-# --- the stem-level board, and the two bars that hold it captive (2026-09-05) ----------
-# The closure's isolation board above the footings. It is a VERTICAL plane on the wall's
-# END face, which `Layer` cannot express — layers run parallel to the axis — so it is
-# modelled the one way this engine resolves a real XPS solid at a joint: as a `Dowel`'s
-# foam block (resolve/accessories._resolve_dowel), 2" thick along the bar axis and
-# `foam_height` tall, centred on `position`.
+# ** THREE SEQUENCING TRAPS ON THIS BOARD — FIELD INSTRUCTIONS THE MODEL CANNOT EXPRESS. **
+# 1. The footing board and the stem board meet at the court floor plane (`SL-SG-FLOOR`,
+#    -109 7/16"), the wettest, saltiest surface in the court (§6a). LAP the upper board past
+#    that joint; the model cannot draw a lap.
+# 2. With no bars, NOTHING HOLDS A BOARD DURING ITS POUR: the footing board has 4" of
+#    excavation under it and floats (146 lb at 150 pcf); every board must be adhered or
+#    pinned to the cured house face per the filler maker's instructions, and braced.
+# 3. The beam's board depends on FT-B-S2/S3's 2" toe trim — a HOLD POINT before the house
+#    footing pour, not after.
 #
-# It stacks directly on the footing block declared just above (DW-SG-W1/E1-FOAM), which
-# sits BELOW it in the building: footing block -117 7/16"..-109 7/16",
-# stem block -109 7/16"..0. Together they are ONE continuous board from the house footing's
-# underside to the top of the porch wall, on one plane (-6 3/16"..-4 3/16").
-#
-# ** count=2 @ 6" IS NOT ARBITRARY, AND THIS BLOCK IS THE ONE THAT KEEPS THE DERIVED
-# LENGTH. ** `max(row_span + 8*dia, 12")` = max(6 + 5, 12) = 12", i.e. exactly the wall's
-# own thickness, so the foam lands flush with both faces of the 12" pour. The footing rows'
-# `count=3 @ 8"` would resolve to 21" and throw 4 1/2" past each face — which is why they
-# now author `foam_length` outright and stop reading the bar row at all. Here the bars
-# really ARE the joint, so the derivation is the right one and is left alone. Do not
-# "tidy" the two blocks into one rule: they are sized against different pours.
-#
-# ** Two GFRP bars is a detail decision, not a rounding. ** They hold the board captive
-# during the pour and give the closure a positive tie into the house wall — without a
-# thermal bridge (fiberglass, not steel) and without a vertical bond, which is the same
-# argument the footing blocks already make. `count=0` is not available: `_resolve_dowel`
-# lays `range(max(count, 1))`. The bars run 24" centred on the board, so ~11" is embedded in
-# the garden stem and ~6 3/4" reaches into the 8" house pour past 4 3/16" of foam and
-# coating — a drilled-and-epoxied dowel across a break, cover 1 1/4" on the far face.
-_STEM_DOWEL_AT = (("W1", _x_ax_w, "W-B-S1"), ("E1", _x_ax_e, "W-B-S4"))
+# ** THE BOARD IS CENTRED ON THE FOOTING, NOT ON THE WALL AXIS, and is as long as the
+# footing is wide. ** They coincide at a zero offset; the expression keeps them coinciding
+# (an 84" footing with a 21" board once left 63" of bare footing-to-footing concrete).
+# Nothing grades a thermal break for continuity.
+_BOARD_AT = (("W1", _x_ax_w, "FT-B-S1", "W-B-S1", +1.0),
+             ("E1", _x_ax_e, "FT-B-S4", "W-B-S4", -1.0))
 _stem_height = _porch_top - _wall_bottom
-STEM_DOWELS = [
-    Dowel(uid=uid, tag=f"DW-SG-{name}-STEM",
-          position=pt(ft(x), ft(_y_closure_break)),
-          axis="y", length=inch(24), diameter=inch(THERMAL_BREAK_BAR_IN),
-          elevation=_wall_bottom + _stem_height / 2.0,
-          count=_break_bar_count(SPEC.wall_thickness_in),
-          spacing=inch(THERMAL_BREAK_BAR_SPACING_IN),
-          connects=(f"W-SG-{name}", house_wall),
-          foam_thickness=inch(THERMAL_BREAK_IN),
-          # ** AUTHORED, NOT DERIVED, SINCE 2026-09-10 — AND THE VALUE DOES NOT CHANGE. **
-          # `max(row_span + 8*dia, 12")` = max(6 + 5, 12) = 12" is the right answer here
-          # and the paragraph above explains why. It is written down anyway, because a
-          # length that happens to come out right is not the same as a length somebody
-          # chose: move these two bars 4" apart and the derivation silently returns 16",
-          # throwing 2" of foam past each face of the 12" pour. The two blocks now state
-          # their lengths the same way and differ only in the number, which is the whole
-          # point — they are sized against different pours and must not be merged.
-          foam_length=inch(SPEC.wall_thickness_in),
-          foam_height=_stem_height,
-          **_GFRP_BAR, **_BREAK_FOAM)
-    for uid, (name, x, house_wall) in zip(("SGDW03AAAA", "SGDW04AAAA"),
-                                          _STEM_DOWEL_AT, strict=True)
+ISOLATION_BOARDS = [
+    board
+    for i, (name, x, house_footing, house_wall, court) in enumerate(_BOARD_AT)
+    for board in (
+        IsolationBoard(
+            uid=f"SGTB0{2 * i + 1}AAAA", tag=f"TB-SG-{name}",
+            position=pt(ft(x + court * _RETAINING_FOOTING_OFFSET_IN / 12.0),
+                        ft(_y_closure_break)),
+            axis="y", thickness=inch(THERMAL_BREAK_IN), height=inch(_HOUSE_FOOTING_DEPTH_IN),
+            length=inch(_RETAINING_FOOTING_WIDTH_IN), elevation=_board_z,
+            connects=(f"FT-SG-{name}", house_footing), **_BOARD_PRODUCT),
+        # The wall end: flush with both faces of the 12" pour, so the board is a form face.
+        IsolationBoard(
+            uid=f"SGTB0{2 * i + 2}AAAA", tag=f"TB-SG-{name}-STEM",
+            position=pt(ft(x), ft(_y_closure_break)),
+            axis="y", thickness=inch(THERMAL_BREAK_IN), height=_stem_height,
+            length=inch(SPEC.wall_thickness_in), elevation=_wall_bottom + _stem_height / 2.0,
+            connects=(f"W-SG-{name}", house_wall), **_BOARD_PRODUCT),
+    )
 ]
 
 # ============================================================================
@@ -4429,7 +4248,7 @@ BASEMENT_ELEMENTS = [*NODES, *WALLS, *GRADE_BEAMS, COLUMN, FRONT_COLUMN, *FOOTIN
                      GARDEN_OVERFLOW_SLEEVE, GARDEN_OVERFLOW_BEAM_PIPE,
                      GARDEN_LEAD_W, GARDEN_LEAD_E, GARDEN_LEAD_COL, *SEQUENCE_NOTES,
                      *GARDEN_FLOOR_OPENINGS, GARDEN_SLAB,
-                     GARDEN_FIELD, *FROST_WINGS, *DOWELS, *STEM_DOWELS]
+                     GARDEN_FIELD, *FROST_WINGS, *ISOLATION_BOARDS]
 # --- the porch enclosure's north deck-slot closure (2026-09-03) -----------------------
 # ** THE VERTICAL BUG PATH, AND THE ONE THE CURTAIN CANNOT CLOSE. ** `_y_out_n` (-0'-10")
 # is the porch deck edge; the house cladding face is at -0'-5". The 5" between them

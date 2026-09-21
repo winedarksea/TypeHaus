@@ -1,10 +1,10 @@
 """What one insulating break IS, read off the resolved model — for ``thermal_break``.
 
-A ``Board`` is a break's facts in inches along the BAR axis (``ax``): its thickness, faces
+A ``Board`` is a break's facts in inches along its thickness axis (``ax``): its thickness, faces
 and extent, the court pour on one side, the house element on the other, and the clear gap
-between the two concretes that a bar actually spans. Two kinds carry one: a ``Dowel`` with a
-foam block, and a cast beam in a retaining loop whose assembly carries an INSULATION layer
-(catlin's veneer beam, whose board has no bars). Free body §11, "The five boards".
+between the two concretes. Two kinds carry one: an ``IsolationBoard``, and a cast wall or
+beam in a retaining loop whose assembly carries an INSULATION layer (catlin's veneer beam).
+Free body §11, "The five boards".
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ FACING_REACH_IN = 12.0
 @dataclass
 class Board:
     tag: str
-    dowel: object | None
+    element: object | None      # the IsolationBoard, or None for a layer board
     ax: int                       # 0 = x, 1 = y: the axis the board's thickness runs along
     t_in: float
     h_in: float
@@ -32,7 +32,7 @@ class Board:
     loop_ref: str | None = None
     structure: set[str] = field(default_factory=set)
     court_tag: str | None = None  # the court element the board is cast against
-    house_tag: str | None = None  # the house element named in ``connects`` (dowels)
+    house_tag: str | None = None  # the house element named in ``connects``
 
     @property
     def mid_in(self) -> float:
@@ -47,12 +47,11 @@ class Board:
         return self.h_in * self.length_in
 
 
-def dowels(ctx) -> list:
-    from typehaus.model.structure import Dowel
+def isolation_boards(ctx) -> list:
+    from typehaus.model.structure import IsolationBoard
 
-    return sorted((d for d in ctx.plan.all_elements()
-                   if isinstance(d, Dowel) and d.foam_thickness is not None),
-                  key=lambda d: d.tag)
+    return sorted((b for b in ctx.plan.all_elements() if isinstance(b, IsolationBoard)),
+                  key=lambda b: b.tag)
 
 
 def structure_of(ctx, tag: str) -> set[str]:
@@ -119,25 +118,25 @@ def z_extent(ctx, tag: str) -> tuple[float, float] | None:
     return None if wall is None else (wall.z0_m * _IN, wall.z1_m * _IN)
 
 
-def dowel_board(ctx, dowel, loops: dict) -> Board | None:
-    """The resolved foam block of ``dowel`` as a :class:`Board`, or ``None``."""
-    solid = _solid(ctx, f"{dowel.tag}-FOAM", "thermal_break")
+def authored_board(ctx, element, loops: dict) -> Board | None:
+    """The resolved solid of an ``IsolationBoard`` as a :class:`Board`, or ``None``."""
+    solid = _solid(ctx, element.tag, "thermal_break")
     if solid is None:
         return None
-    ax = 1 if dowel.axis == "y" else 0
+    ax = 1 if element.axis == "y" else 0
     lo, hi = _extent(solid.outline, ax)
     along = _extent(solid.outline, 1 - ax)
     court_tag = house_tag = None
     structure: set[str] = set()
     ref = None
-    for tag in dowel.connects:
+    for tag in element.connects:
         s = structure_of(ctx, tag)
         r = loop_of(s, loops)
         if r is not None and court_tag is None:
             court_tag, structure, ref = tag, s, r
         else:
             house_tag = tag
-    board = Board(dowel.tag, dowel, ax, hi - lo, (solid.z1_m - solid.z0_m) * _IN,
+    board = Board(element.tag, element, ax, hi - lo, (solid.z1_m - solid.z0_m) * _IN,
                   along[1] - along[0], solid.z0_m * _IN, solid.z1_m * _IN, along,
                   court_face_in=lo, house_face_in=hi, loop_ref=ref, structure=structure,
                   court_tag=court_tag, house_tag=house_tag)
@@ -279,11 +278,6 @@ def court_run_in(ctx, board: Board) -> float:
     origin = board.mid_in
     return max((abs(p[board.ax] * _IN - origin) for w in ctx.model.walls
                 if w.tag in board.structure for p in w.axis), default=0.0)
-
-
-def bar_centre_z(ctx, dowel) -> float | None:
-    solid = _solid(ctx, f"{dowel.tag}-1", "dowel")
-    return None if solid is None else (solid.z0_m + solid.z1_m) / 2.0 * _IN
 
 
 def stacked_on(ctx, board: Board, others: list[Board]) -> str | None:

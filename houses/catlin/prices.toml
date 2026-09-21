@@ -1795,8 +1795,8 @@
 # — plain 2" XPS at 40 psi, not a proprietary structural break — and they are much bigger
 # than the pads the old rate was written for:
 #
-#     DW-SG-W1/E1-FOAM        84" x  8"   =  4.67 SF each   (the footing joint)
-#     DW-SG-W1/E1-STEM-FOAM   12" x 109"  =  9.12 SF each   (the wall's end face)
+#     TB-SG-W1/E1             84" x  8"   =  4.67 SF each   (the footing joint)
+#     TB-SG-W1/E1-STEM        12" x 109"  =  9.12 SF each   (the wall's end face)
 #                                            27.6 SF total, 0.17 cy
 #
 # 2" 40 psi XPS is $3.00-5.50/SF, so $83-152 of board; the rest is cutting, fitting and

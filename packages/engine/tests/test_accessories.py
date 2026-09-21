@@ -260,54 +260,31 @@ def test_knee_brace_member_carries_its_assembly_material(braced_model) -> None:
             == _hex_rgba("#f4f2ee"))
 
 
-def test_catlin_dowels_and_foam_bridge_the_footing_joint(catlin_model) -> None:
-    dowels = _solids(catlin_model, "dowel")
+def test_catlin_closure_boards_are_a_pure_isolation_joint(catlin_model) -> None:
+    """Four boards and nothing crossing them (2026-09-21, free body §11 basis 5).
+
+    The 24 GFRP dowels are deleted; each location keeps TWO boards — the footing joint and
+    the wall end — that stack into one continuous plane from the house footing's underside
+    to the wall top. FT-SG-COL has no board: its pad bears 22" under FT-B-S2, so the
+    separation itself is the break.
+    """
+    assert _solids(catlin_model, "dowel") == []
     foam = _solids(catlin_model, "thermal_break")
-    # Two locations x (10 footing bars + 2 stem bars). FT-SG-COL is NOT doweled: belling
-    # that pier to frost depth put its top well BELOW FT-B-S2's underside, so there is no
-    # joint between the two pours for a bar to cross or foam to break — the separation
-    # itself is the thermal break.
-    #
-    # The stem pair (DW-SG-*-STEM, 2026-09-05) carries the board that closes the slot
-    # between each garden side wall and the house above the footings, so each location
-    # resolves TWO foam blocks that stack into one continuous plane.
-    #
-    # ** 10 FOOTING BARS, NOT 3, SINCE 2026-09-10. ** The two blocks carried `3 @ 8"` and
-    # `2 @ 6"` on one plane and neither count was required by any computed limit state —
-    # nothing here is graded. One size, one 8" spacing, and the count derived from the
-    # board (`sunken_garden._break_bar_count`): 10 across the 84" footing joint, the
-    # minimum 2 across the 12" wall end. Three bars over eight feet held the middle of the
-    # board and left 44" of it either side free to float against a 12" pour's head.
-    #
-    # It read 12 across a 96" joint for part of the same day, while the strips were widened.
-    # They narrowed back to 84" and the count follows the BOARD, which follows the strip —
-    # which is the property worth having. Note 84/8 is an exact 10.5 and `round` takes it
-    # DOWN under banker's rounding; see `_break_bar_count`.
-    assert len(dowels) == 24
-    assert len(foam) == 4
-    assert {b.tag.rsplit("-", 1)[0] for b in dowels} == {
-        "DW-SG-W1", "DW-SG-E1", "DW-SG-W1-STEM", "DW-SG-E1-STEM"}
-    # Footing bars sit at mid-footing (~ -9.25'); the stem pair at mid-stem (~ -4.56').
-    for bar in dowels:
-        mid = (bar.z1_m + bar.z0_m) / 2
-        assert (bar.z0_m < -2.5 < bar.z1_m
-                or abs(mid + 9.25 * FT) < 0.2 or abs(mid + 4.56 * FT) < 0.2)
-    # The two blocks at one location are coplanar in Y and meet at the footing top, so the
-    # board is continuous from the house footing's underside to the wall top.
-    for name in ("DW-SG-W1", "DW-SG-E1"):
-        base = next(b for b in foam if b.tag == f"{name}-FOAM")
-        stem = next(b for b in foam if b.tag == f"{name}-STEM-FOAM")
+    assert {b.tag for b in foam} == {"TB-SG-W1", "TB-SG-E1", "TB-SG-W1-STEM", "TB-SG-E1-STEM"}
+    for name in ("TB-SG-W1", "TB-SG-E1"):
+        base = next(b for b in foam if b.tag == name)
+        stem = next(b for b in foam if b.tag == f"{name}-STEM")
         assert [round(y, 9) for y in sorted({y for _, y in base.outline})] == \
                [round(y, 9) for y in sorted({y for _, y in stem.outline})]
         assert base.z1_m == pytest.approx(stem.z0_m)
 
 
 def test_foam_thermal_break_lies_in_the_joint_it_breaks(catlin_model) -> None:
-    """The block's thin dimension is the dowel axis; its long one runs along the joint.
+    """The board's thin dimension crosses the joint; its long one runs along it.
 
-    Catlin's dowels run N-S (``axis="y"``) between the house and the sunken-garden footings,
-    so each block must be ``THERMAL_BREAK_IN`` (2.5" since basis 4) deep in Y and span the bar
-    row in X. Rotated 90° it stops separating the two structures at all.
+    Catlin's boards are thin in Y between the house and the sunken-garden footings, so each
+    must be ``THERMAL_BREAK_IN`` (2.5" since basis 4) deep in Y and long in X. Rotated 90° it
+    stops separating the two structures at all.
     """
     from params import sunken_garden
 

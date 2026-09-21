@@ -637,10 +637,6 @@ class Dowel(Element):
     foam_modulus_psi: float | None = None
     #: The board's datasheet, named — the rating and modulus come off it.
     foam_source: str | None = None
-    #: The ``Annotation`` that sequences the pours either side of the break. Set, the
-    #: fresh-concrete row reads the head off the court-side element's OWN top (its own
-    #: placement); ``None`` grades the conservative monolithic pour to the highest top.
-    placement_sequence_ref: str | None = None
     #: The GFRP bar's published values, per bar at ``diameter`` (ASTM D7957 datasheet):
     #: transverse shear (ASTM D7617) and guaranteed tensile load, lb, and tensile modulus,
     #: psi. ``bar_source`` names the document. None -> the dowel reserve is INCOMPLETE.
@@ -648,6 +644,33 @@ class Dowel(Element):
     bar_tensile_lb: float | None = None
     bar_modulus_psi: float | None = None
     bar_source: str | None = None
+
+
+@register_element
+class IsolationBoard(Element):
+    """A compressible board cast between two separately founded pours — a pure isolation
+    joint with nothing crossing it. Resolves as one ``thermal_break`` solid tagged as itself.
+
+    ``axis`` is the direction the THICKNESS runs (across the joint); ``length`` runs along
+    it. ``connects`` names the pour cast against it first and the element it bears on.
+    ``psi`` / ``modulus_psi`` / ``source`` are the product's published rating, modulus and
+    sheet — ``thermal_break_transfer`` grades the board and its thrust off them.
+    """
+
+    position: Point2D  # plan centre of the board, mid-thickness
+    axis: str = "y"
+    thickness: Length
+    height: Length
+    length: Length
+    elevation: Length  # board centre, project-frame absolute (as ``Dowel.elevation``)
+    connects: tuple[str, ...] = ()
+    material: str = "xps"
+    psi: float = 40.0
+    modulus_psi: float | None = None
+    source: str | None = None
+    #: The ``Annotation`` that sequences the pours either side. Set, the fresh-concrete row
+    #: reads the head off the court element's OWN top; ``None`` grades a monolithic pour.
+    placement_sequence_ref: str | None = None
 
 
 @register_element
@@ -987,6 +1010,7 @@ for _name, _obj in (
     ("Post", Post),
     ("Beam", Beam),
     ("Dowel", Dowel),
+    ("IsolationBoard", IsolationBoard),
     ("Connector", Connector),
     ("PlateTie", PlateTie),
     ("KneeBrace", KneeBrace),
