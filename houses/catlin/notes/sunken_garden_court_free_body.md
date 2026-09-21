@@ -625,6 +625,9 @@ Its bearing on the pad is `γ_w × H = 130 × 4.0 = 520.0 psf` gross — indepen
 depth, because the weight and the footprint both scale with it. The strip is still the
 resolved 1'-0" structure layer, `a = 0`, `b = 1.0`.
 
+> **Later the same day the unit became AB Stones (12° setback; `raised_garden_srw.md` §1).**
+> Same 130 pcf, same 4.0' height, same pad under the base course: nothing below moves.
+
 ```
 q_net = 520.0 − 110 × 4.0 = 80.0 psf       (110 pcf — the graded end)
 q_net = 520.0 − 130 × 4.0 =  0.0 psf       (130 pcf — no surcharge; nothing is credited)

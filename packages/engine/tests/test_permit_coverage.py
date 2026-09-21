@@ -429,7 +429,7 @@ def test_every_engineering_kind_reaches_a_permit_item(catlin_plan) -> None:
     # Its own context, not `catlin_ctx`: the suppression is lifted on it below.
     ctx, _ = build_context(catlin_plan, CATLIN)
     # Asked with `[checks] suppress` LIFTED: this is a question about the profile's wiring,
-    # and catlin suppresses the five OVER `tiered_retaining` findings (preferences.toml).
+    # and catlin suppresses real findings (preferences.toml `[checks] suppress`).
     # A suppressed item does drop off its line — that is the suppression's cost, not a
     # wiring gap.
     from dataclasses import replace

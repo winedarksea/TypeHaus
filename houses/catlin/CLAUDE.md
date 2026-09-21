@@ -2146,7 +2146,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   from the porch-floor name so a future divergence is a one-line change.
   - It doubles as `params/raised_garden.py`'s `RETAINING_WALL_TOP_FT` apron TOP, with
     BASE = TOP - drop_ft — moving one moves both. **`drop_ft` is 4'-0" now, six whole 8"
-    Allan Block AB Classic courses**, which buries the apron's base course 8" in the authored yard; at 3'-0" off
+    Allan Block AB courses**, which buries the apron's base course 8" in the authored yard; at 3'-0" off
     the new top it would have stood 4" in the air, the same negative embedment as before
     arrived at the other way. Nothing grades a freestanding wall's base against the ground
     plane, so a wrong constant here goes to 0 FAIL (→ DESIGN-LOG.md, "Sunken garden court").
@@ -2156,6 +2156,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     hits IRC R404.1.1's 48" threshold exactly and sends five segmental landscape walls into
     an R404.4 cantilever analysis they have no footing for — five UNKNOWNs, and the wrong
     model of the wall.
+  - **The unit is Allan Block AB Stones, 12° setback, on 12" of AB wall rock (owner,
+    2026-09-21), and all five `tiered_retaining/W-RG-*` pass**: sliding 1.54 / 1.81,
+    overturning 2.02 at both ends of the soil band (`notes/raised_garden_srw.md` §3b). AB
+    Classic (6°) was OVER at 1.38 / 1.44. Same 8×12×18, 75 lb unit — only the setback moved.
+    **Loose-end sliding is 2.5% clear and rests on the rock at AB's 36°** (1.47 at 34°, 1.30
+    with none): specify AB's clean wall rock, not generic crushed stone. The 12° lean puts
+    the top course 10" back toward the court; the model draws it plumb.
 - `W-SG-W1`/`E1` bottom on `_wall_bottom` like every other wall; `_PORCH_FOOTING_THICKNESS_IN`
   no longer exists. IRC Table R404.1.2(8)'s 10'-0" row still passes at 9'-1 7/16".
 - `FO-SG-TOE-N-W`/`-N-E` void the rim over them, as `W`/`E`/`S` do over the other three toes.
