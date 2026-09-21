@@ -525,42 +525,13 @@ ROOF_COLUMN_BASE_FT = -(10 + 2 / 12)
 #: next reader does not rediscover them from the elevations.
 _DEEP_BASE_COLUMNS = frozenset({"PT-BW-RE", "PT-BW-RNE"})
 
-#: ** THE OWNER'S IBC §1806.3.4 CALL ON THE LANDING PAIR, AND IT IS A CLAIM THE ENGINE
-#: GRADES. ** `PT-BW-GW` and `PT-BW-GE` are the garage-side pair under the north-entry
-#: landing. Grade is -2'-10" and their pad tops are at -6'-4", so both have 3.50' of
-#: embedment — and `engineering/column_base.py` runs §1807.3.2.1 at both ends of §1806.3.4's
-#: band and finds 3.50' STRADDLES it: 4.45' needed on Table 1806.2's own S1, 3.39' at the
-#: isolated-pole double. So the verdict turns on a judgement about the structure, which the
-#: engine refuses to make and the owner has now made.
-#:
-#: ** WHAT TOLERATES THE HALF INCH. ** The governing lateral case here is not wind: it is the
-#: IRC R301.5 200 lb guard push at the top of `RL-BW-ENTRY`, taken WHOLLY on one column
-#: (`pier_basis._base_moments`) over a 4.54' arm. What stands on these two is a 4'-11 3/4"
-#: square open landing and its guard — no glazing, no cladding, no finish plane, and nothing
-#: bearing on the house or the garage (grep this file for `W-B-` / `W-G-`). Half an inch of
-#: sway at grade under a person leaning on a rail moves a free-standing landing half an inch
-#: and it comes back; there is nothing here for it to crack, bind or rack out of plumb.
-#:
-#: ** WHY NOT JUST DIG DEEPER. ** Reaching 4.45' puts `PD-BW-GE`'s bottom at -8'-4", which
-#: drags `PR-G-HYDRANT-CW` (invert -8'-10", 8" away in plan) INSIDE the pad's 45 degree
-#: influence cone — the exact thing `plan/mep_supply.py` says to preserve. Clearing it
-#: properly means dropping about 2' to bear below the invert, away from the garage strip
-#: footing plane these are deliberately held near. Pouring concrete to dodge a question the
-#: owner has already answered is the wrong lever.
-#:
-#: ** NOT ON THE CANOPY PAIR, DELIBERATELY. ** `PT-BW-RE`/`-RNE` are decided on Table
-#: 1806.2's own S1 at `ROOF_COLUMN_BASE_FT` (7.07' needed, 7.33' given) and neither record
-#: straddles the band. `notes/entry_column_base_fixity.md` 6a counts "the doubling is not
-#: claimed anywhere on the canopy" among the reasons that plane is the right one; claiming
-#: it there would spend the judgement on a question already closed. See that note's 6e.
-_ISOLATED_POLE_BASIS = (
-    "Owner, 2026-09-20: this pair carries a free-standing open landing and its guard, "
-    "nothing bearing on the house or the garage and no finish plane to crack. The "
-    "governing lateral case is the IRC R301.5 200 lb guard push - short-term by "
-    "definition - and 1/2\" of recoverable motion at grade under it harms nothing that "
-    "stands here. See notes/entry_column_base_fixity.md 6e."
-)
-_ISOLATED_POLE_COLUMNS = frozenset({"PT-BW-GW", "PT-BW-GE"})
+#: ** NO COLUMN HERE CLAIMS IBC §1806.3.4, AND THE LANDING PAIR USED TO. ** `PT-BW-GW`/`-GE`
+#: carried the owner's isolated-pole judgement (2026-09-20) while their embedment was measured
+#: to the pad TOP, 3.50', straddling 4.45'/3.39'. `column_base` basis 4 counts the doweled,
+#: monolithic pad as part of the pole — 4.50' to the pad bottom — and both now pass at both
+#: ends of Eq. 18-1's pivot band on Table 1806.2's own S1 (4.33'/4.39' needed). A claim that
+#: buys nothing is a stale declaration, so it was withdrawn in the same commit
+#: (`notes/entry_column_base_fixity.md` 6e).
 
 PIERS = []
 def _pad_outline(x_ft, y_ft, side_in, along_in=None):
@@ -629,8 +600,6 @@ for _uid, _tag, _x, _height, _top in (
         # moment rule, indifferent to load. Galvanized, house-wide (EXPOSED_MIX, A767).
         vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
         reinforcement=ENTRY_MOMENT_CAGE if _tag in _MOMENT_PIERS else ENTRY_PIER_CAGE,
-        isolated_pole_basis=(_ISOLATED_POLE_BASIS
-                             if _tag in _ISOLATED_POLE_COLUMNS else None),
         supported_by=f"PD-BW-{_tag.split('-')[-1]}"))
     FOOTINGS.append(Pad(
         uid=f"BWF{_uid[4:8]}AA", tag=f"PD-BW-{_tag.split('-')[-1]}",
@@ -711,8 +680,6 @@ for _uid, _tag, _x, _pad_in, _top in (
                           else GARAGE_FOOTING_TOP_FT)), assembly="PIER_CONCRETE_12",
         vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
         reinforcement=ENTRY_MOMENT_CAGE if _tag in _MOMENT_PIERS else ENTRY_PIER_CAGE,
-        isolated_pole_basis=(_ISOLATED_POLE_BASIS
-                             if _tag in _ISOLATED_POLE_COLUMNS else None),
         supported_by=f"PD-BW-{_tag.split('-')[-1]}"))
     # ** THESE THREE LAP THE GARAGE STRIP FOOTING, AND THE LAP IS A DISPLACEMENT. ** They are
     # cast at -7'-0" on `FT-GF-S1`/`-S3`'s own plane, in the same excavation and at the same

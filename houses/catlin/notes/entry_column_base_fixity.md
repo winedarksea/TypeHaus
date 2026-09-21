@@ -1,10 +1,19 @@
 # Base fixity of the cast columns — IBC 1807.3.2.1, hand-worked
 
 **Oracle for** `engineering/column_base.py` and `engineering/spread_base.py` (§§1-6, §8),
-and for `engineering/diaphragm_basis.py`, `engineering/lateral_lines.py` and
-`engineering/lateral_system.py` (§7). Reproduced by `tests/test_column_base_calcs.py` and
-`tests/test_lateral_system_calcs.py`. Worked 2026-09-18 and revised 2026-09-19, each time in
-a separate pass from the code.
+`engineering/pole_embedment.py` (§9), and for `engineering/diaphragm_basis.py`,
+`engineering/lateral_lines.py` and `engineering/lateral_system.py` (§7). Reproduced by
+`tests/test_column_base_calcs.py` and `tests/test_lateral_system_calcs.py`. Worked
+2026-09-18 and revised 2026-09-19 and 2026-09-20, each time in a separate pass from the code.
+
+**2026-09-20 (basis 4), in one paragraph.** The pad is now part of the pole. Every column
+here stands on a 12" pad cast in one placement with its shaft, the shaft's hooked dowels
+developed into it; the two turn as one rigid body, so embedment is measured to the pad
+**bottom** rather than its top, and the pad's extra width enters §1807.3.2.1 through an
+effective width (§9). Every verdict improves — canopy 0.96 → **0.85**, landing W/E 0.73 →
+**0.62** — and `PT-BW-GW`/`-GE` stop straddling §1806.3.4: they pass on Table 1806.2's own S1
+at **0.96 / 0.98**, so the owner's isolated-pole claim buys nothing and is **withdrawn**
+(§6e). Almost none of the gain is the pad's width: `b_eff` is 1.006–1.070. It is the datum.
 
 **2026-09-19 revision, in one paragraph.** The canopy's frame shear stopped being loaded
 wholly onto its two cast columns and is now shared with `W-BW-SCREEN` and the deck by
@@ -72,7 +81,9 @@ invoked. Two ways the claim is refused, both INCOMPLETE naming why: an empty bas
 stale-declaration bullet, made checkable), and a governing lateral case §1806.3.4's own words
 do not reach — the section permits the doubling for motion "due to **short-term** lateral
 loads", and wind and an R301.5 guard push qualify where a sustained case does not. The
-landing pair claims it; **nothing on the canopy does**, and §6a counts that among its reasons.
+landing pair claimed it from 2026-09-20 until basis 4 made it unnecessary the same day;
+**nothing in this house claims it now** (§6e). The mechanism stays, and its two refusals are
+still tested.
 
 ## 2. The demand, and who carries it
 
@@ -113,9 +124,11 @@ Three things moved at once and all three are §7's:
    it is the free body the declaration creates.
 
 `Site.grade` is **-2'-10"**, and since 2026-09-20 **both** roof columns bear on one common
-plane at **-10'-2"** (`north_entry_frame.ROOF_COLUMN_BASE_FT`), so each is embedded
-**7.33'**. They were at -8'-11 7/16" and -6'-4" — 6.12' and 3.50' — and §6a is where that
-moved and why it had to move for both at once.
+plane at **-10'-2"** (`north_entry_frame.ROOF_COLUMN_BASE_FT`), so each shaft is buried
+**7.33'** and, with its 1'-0" pad, the pole is **8.33'** (§9). They were at -8'-11 7/16" and
+-6'-4" — 6.12' and 3.50' of shaft — and §6a is where that moved and why it had to move for
+both at once. **`h` below is measured from grade and does not move with §9**: the arm runs
+from the pad TOP, so the shaft's 7.33' comes off it, never the pole's 8.33'.
 
 The four landing columns (`PT-BW-W`/`-E`/`-GW`/`-GE`) are a different structure —
 `FS-BW-FLOOR`, whose governing lateral case is not wind but the **IRC R301.5 guard load**,
@@ -148,16 +161,29 @@ the four landing columns  P = 200 lb,  h = 4.54',  b = 1.00'
   at 2 S1                                               d = 3.39'
 ```
 
+These are the **constant-width** numbers, `b = 1.00'` — a bare shaft. They are still exact for
+one: §9 shows a stepped pole of one width IS the code formula. §9 adds the pad.
+
 ## 4. The verdicts
 
-| column | carries | embedment | needs (S1) | needs (2 S1) | verdict |
-|---|---|---:|---:|---:|---:|
-| `PT-BW-RE` | canopy, east | 7.33' | 7.07' | 5.40' | **ok, 0.96** |
-| `PT-BW-RNE` | canopy, east | 7.33' | 7.07' | 5.40' | **ok, 0.96** |
-| `PT-BW-W` | landing, guard | 6.12' | 4.45' | 3.39' | ok, 0.73 |
-| `PT-BW-E` | landing, guard | 6.12' | 4.45' | 3.39' | ok, 0.73 |
-| `PT-BW-GW` | landing, guard | 3.50' | 4.45' | 3.39' | **ok, 0.97 — §1806.3.4 claimed (§6e)** |
-| `PT-BW-GE` | landing, guard | 3.50' | 4.45' | 3.39' | **ok, 0.97 — §1806.3.4 claimed (§6e)** |
+Since 2026-09-20 (basis 4) the capacity is the POLE — shaft plus pad, grade to pad bottom —
+and the demand is §9's stepped solve at the worse end of the pivot band. The shaft-only
+columns are kept beside them so the reader can see what the datum did.
+
+| column | carries | shaft | pole | `B` | needs (S1) | needs (2 S1) | verdict | shaft-only, before |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| `PT-BW-RE` | canopy, east | 7.33' | 8.33' | 1.5' | 7.06' | 5.36' | **ok, 0.85** | 7.07' / 0.96 |
+| `PT-BW-RNE` | canopy, east | 7.33' | 8.33' | 2.0' | 7.04' | 5.33' | **ok, 0.85** | 7.07' / 0.96 |
+| `PT-BW-W` | landing, guard | 6.12' | 7.12' | 1.5' | 4.39' | 3.30' | ok, 0.62 | 4.45' / 0.73 |
+| `PT-BW-E` | landing, guard | 6.12' | 7.12' | 1.5' | 4.39' | 3.30' | ok, 0.62 | 4.45' / 0.73 |
+| `PT-BW-GW` | landing, guard | 3.50' | 4.50' | 2.0' | 4.33' | 3.21' | **ok, 0.96** | 4.45' / straddle |
+| `PT-BW-GE` | landing, guard | 3.50' | 4.50' | 1.5' | 4.39' | 3.30' | **ok, 0.98** | 4.45' / straddle |
+
+**No column claims §1806.3.4 any more.** All six publish on Table 1806.2's own S1 with both
+ends of §1806.3.4 and both ends of the pivot band agreeing — four agreements per record.
+
+*The paragraphs below were written against the shaft-only column and are kept as the record
+of how the design got here; the verdict column above supersedes their numbers.*
 
 **Both canopy columns publish a graded verdict at the table's own lateral bearing**, and
 §1806.3.4's isolated-pole doubling is not claimed for either — which is the part worth more
@@ -191,7 +217,11 @@ concrete route is closed to them: §6e works why.
   load paths for one moment and not additive ones: a shaft that turns in soil sheds its
   moment into lateral bearing, and a pad that resists by bearing does so because the shaft
   above it does not. Adding them counts the same moment twice. The split is a soil-structure
-  stiffness problem and nothing here computes it.
+  stiffness problem and nothing here computes it. **§9 does not answer it and must not be
+  read as answering it**: §9 makes the pad part of the POLE — one rigid body turning in soil
+  under the pole mechanism — and does not divide the moment between that and the pad's
+  bearing mechanism. `base_rotation`'s deferral, "how the moment splits between the buried
+  shaft and the pad", is as open as it was.
 - **That the pad is not the mechanism is itself worth stating**, and since 2026-09-19 the
   record states it in graded arithmetic rather than prose — see §8. `PT-BW-RE`'s resultant
   sits **1.25'** off the footprint centroid against a kern of **0.42'**, so the base would
@@ -203,9 +233,20 @@ concrete route is closed to them: §6e works why.
 - **Rotational stiffness.** This grades whether the base can turn the shear around, not how
   far it rotates first. `deck_post`'s sway magnifier assumes a base that does not rotate,
   and a real one does.
-- **Group effect** with the pier line beside it, **passive resistance on the pad's own
-  faces** (neglected, the conservative direction), and the **long-term modulus** the
-  magnifier implicitly assumes.
+- **Group effect** with the pier line beside it, and the **long-term modulus** the magnifier
+  implicitly assumes.
+- **Passive on the pad's faces is no longer neglected — it is counted, once, as part of the
+  pole** (§9): the pad's depth is embedment and its width beyond the shaft is `b_eff`, both in
+  §1807.3.2.1's own pressure field. It is NOT a second resisting term added to the answer, and
+  that is the whole design of §9. It is also worth very little: `b_eff` is 1.006–1.070.
+  **Passive is NOT restored anywhere else.** `spread_base.py` stays passive-free — it is the
+  ALTERNATIVE mechanism, and crediting passive there too resurrects the double count it exists
+  to prevent. `retaining_basis.py`'s L23-30 convention (passive on the toe neglected) stands,
+  and on the court walls it is not even a conservatism: the toe is buried 0" — the footing top
+  IS the court floor and an `FO-SG-TOE-*` void clears the rim slab over each strip — so there
+  is no soil to push against. The pier pads earn their credit by standing in the ground as
+  part of a doweled rigid body; the court toes have no ground in front of them. A reader who
+  sees the pier pads credited should not reach for the walls next.
 - **Seismic.** `notes/balcony_moment_columns.md` §9 names the site-specific hazard lookup as
   an external deliverable and that is unchanged.
 
@@ -346,7 +387,32 @@ load-bearing in the literal sense.
 It closes `PT-BW-RE` to within an inch and a half. **It does not close `PT-BW-RNE`** and
 cannot: see §4.
 
-### 6e. Claim §1806.3.4's isolated-pole doubling for the landing pair — **DONE 2026-09-20**
+### 6e. Claim §1806.3.4's isolated-pole doubling for the landing pair — **WITHDRAWN 2026-09-20**
+
+**Withdrawn the same day it was made, and the withdrawal is the closure.** Measured to the pad
+BOTTOM (§9), `PT-BW-GW` and `-GE` have 4.50' against 4.33' and 4.39' needed on Table 1806.2's
+own S1 — at both ends of the pivot band, and at 0.85 and 1.00 either side of it. The two ends
+of §1806.3.4 now agree, so the verdict no longer turns on a judgement about the structure and
+the claim buys nothing. `_ISOLATED_POLE_BASIS` was deleted from `params/north_entry_frame.py`
+**in the same commit** as the code that made it unnecessary: a claim left standing where it
+does no work is exactly §6g's stale declaration, and one the engine would have gone on
+printing into a citation.
+
+**Why dropping a claim counts as closing it.** A claim is a statement a reviewer has to
+evaluate and a future reader has to keep true: §6g's last bullet names what could make this
+one false (glaze the landing, clad it, hang a door off it) and admits the engine cannot catch
+it. Withdrawn, none of that is owed. The verdict rests on the table's number and on concrete,
+which is what §6a bought for the canopy, and nothing about what stands on the landing can
+quietly make it untrue. What remains of the argument below is the record of why it was
+reasonable at the time; `column_base.py` still grades the claim mechanism (`_pole_claim`, both
+refusals tested) for the next house that needs it.
+
+**And be honest about where the margin came from.** Not from the pad's width — `b_eff` is
+1.070 on `PT-BW-GW`'s 24" pad and 1.034 on `-GE`'s 18", worth 0.12' and 0.06' of required
+depth. It came from the datum: a foot of pad that was always there and was not being counted.
+Without any width credit at all (b = 1.00) they need 4.45' against 4.50' and still pass.
+
+*The 2026-09-20 claim, as it was made:*
 
 `PT-BW-GW` and `-GE` straddle: 4.45' needed at Table 1806.2's own `S1`, 3.39' at the
 isolated-pole double, **3.50'** in the ground. §1 says the module refuses to pick a side. The
@@ -451,7 +517,14 @@ not reach far enough there either.
   base-moment term that is not one of the short-term cases. **What it cannot:** whether the
   prose is still true of the building. That one is a reader's, and it is why the basis is
   prose, dated and attributed, and printed into the citation on the calc sheet rather than
-  hidden in a field. Re-read it whenever anything lands on that landing.
+  hidden in a field. Re-read it whenever anything lands on that landing. **Retired with the
+  claim (§6e, WITHDRAWN):** nothing on that landing now depends on the half inch. The bullet
+  is kept because it is the reason a withdrawn claim beats a harmless one.
+* **Crediting the pad without the joint that makes it part of the pole.** §9 rests on the
+  pad and shaft being one body — one placement, the dowels developed into the pad
+  (`deck_post`'s dowel anchorage, d/c 0.76). `column_base.py` refuses the pad credit where
+  that state is over or ungraded and grades the shaft alone; a cold joint with no dowels is a
+  post standing on a footing, and a footing resists by the OTHER mechanism.
 
 ## 7. The shear split, hand-worked
 
@@ -681,6 +754,144 @@ What extending north *would* do is add weight, which lowers `e` — and that is 
 it helps. It is not enough to cross the kern, and it would end "the canopy is freestanding /
 the landing touches nothing on the house" to do it. That premise reversal is the owner's to
 make and there is no reason on this page to ask for it.
+
+## 9. The pad as part of the pole — hand-worked (2026-09-20, basis 4)
+
+**Oracle for** `engineering/pole_embedment.py` and `column_base.py`'s basis 4. Worked with a
+calculator, not the engine.
+
+### 9a. Why the pad is part of the pole, and on what claim
+
+Every pad here is 12" thick, cast in ONE placement with its shaft, and the shaft's four #5
+dowels are hooked into it — `deck_post`'s "dowel anchorage into the base", d/c **0.76** on all
+six. A pad that is monolithic with the shaft turns WITH it: it is the bottom foot of a rigid
+pole, not a footing under a post. Measuring embedment to the pad TOP, as basis 3 did, threw
+that foot away. **The claim is the anchorage**, and `column_base.py` refuses the credit where
+that state is over or ungraded.
+
+This is the POLE mechanism, extended one foot down. It is not the pad's own bearing
+mechanism (§8), which stays reported and ungraded, and it does not add a second resisting
+term to the first: see 9g.
+
+### 9b. What Eq. 18-1 is, rearranged
+
+`d = 0.5 A [1 + sqrt(1 + 4.36 h / A)]` squares to `(2d/A - 1)² = 1 + 4.36 h / A`, i.e.
+
+```
+d² - A d = 1.09 A h     ->     d² = A (d + 1.09 h)
+A = 2.34 P / (S1 b),  S1 = s d / 3     ->     A = 7.02 P / (s d b)
+                                            s b d³ = 7.02 P (d + 1.09 h)
+                                                   = 7.02 P d + 7.6518 P h
+```
+
+A rigid pole pivoting at depth `γd`, soil pressure `s z b` per foot of depth, moments about
+the pivot, the reaction below the pivot taken at the pivot (zero arm):
+
+```
+P (h + γd) = ∫₀^{γd} s z b (γd - z) dz = s b [γd z²/2 - z³/3]₀^{γd} = s b γ³d³ / 6
+     ->   s b d³ = (6/γ³) P h + (6/γ²) P d
+```
+
+One γ cannot match both coefficients, and that is the code's own inconsistency:
+
+```
+match the d term:     6/γ² = 7.02            γ = sqrt(0.854701) = 0.92450   (the 2.34)
+match the ratio:      γ = 1/1.09 = 4/4.36                      = 0.91743   (the 4.36)
+  check the h term:   6/0.92450³ = 6/0.790171 = 7.593   6/0.91743³ = 6/0.772180 = 7.770
+                      Eq. 18-1's own: 7.02 x 1.09 = 7.652 — between the two
+```
+
+Both are run; a verdict publishes only where they agree (the `retaining_wall` band
+convention). γ enters ONLY through the pad's credit (9c), never the baseline.
+
+### 9c. The effective width
+
+With `b(z)` = the shaft's `b` from grade to the pad top (`d - t`) and the pad's `B` below:
+
+```
+b_eff = ∫₀^{γd} z b(z) (γd - z) dz  /  (γ³d³/6)
+      = b + (B - b) F,        F = [L³/6 - (L a²/2 - a³/3)] / (L³/6),  L = γd,  a = d - t
+```
+
+(F = 0 when the pivot is above the pad top, `L <= a`.) **If `B = b`, `b_eff = b` for every γ
+and every d** — the second term is zero, not small — so a stepped pole of one width IS Eq.
+18-1, bit for bit. That is the oracle property and the test asserts equality, not
+approximation. `B` is the pad's dimension NORMAL to the motion: 1.5' for `PD-BW-RE`'s 30"x18"
+under E-W motion; 2.0' for the 24" squares; for the landing (a guard push acts "in any
+direction", no axis resolves) the LEAST plan dimension, 1.5' on the 30"x18" and 18" pads.
+
+**By hand, `PT-BW-GW` at d = 4.33', γ = 0.91743, t = 1.00', B = 2.00':**
+
+```
+L = 0.91743 x 4.33 = 3.9725      a = 4.33 - 1.00 = 3.3300
+L³/6            = 62.688 / 6                          = 10.4480
+L a²/2 - a³/3   = 3.9725 x 11.0889 / 2 - 36.926 / 3   = 22.0252 - 12.3087 = 9.7165
+pad share       = 10.4480 - 9.7165                    = 0.7315
+F               = 0.7315 / 10.4480                    = 0.0700
+b_eff           = 1.00 + (2.00 - 1.00) x 0.0700       = 1.070'
+```
+
+### 9d. One column iterated by hand — `PT-BW-GW`, S1, γ = 0.91743
+
+`P = 200 lb`, `h = 4.54'` **from grade** — the arm runs from the pad TOP, so the SHAFT's
+3.50' comes off it, never the pole's 4.50'. Collapse the two and `h` drops a foot, unsafely.
+`S1 = 50 d`, `A = 2.34 P / (50 d b_eff)`, `d' = 0.5 A [1 + sqrt(1 + 19.795/A)]`:
+
+```
+d = 4.4500  F 0.0646  b_eff 1.0646  A 1.9758  -> 4.2671
+d = 4.2671  F 0.0731  b_eff 1.0731  A 2.0442  -> 4.3628
+d = 4.3628  F 0.0685  b_eff 1.0685  A 2.0079  -> 4.3122
+d = 4.3122  F 0.0709  b_eff 1.0709  A 2.0270  -> 4.3388
+d = 4.3388  F 0.0696  b_eff 1.0696  A 2.0169  -> 4.3247
+d = 4.3247  F 0.0703  b_eff 1.0703  A 2.0222  -> 4.3322
+  ...oscillates in, converges                      d = 4.33'   against 4.50'   d/c 0.96
+```
+
+### 9e. All six, both ends of the pivot band
+
+Required TOTAL embedment (grade to pad bottom), ft, with `b_eff` at the solution:
+
+| column | `B` | S1, γ 0.91743 | S1, γ 0.92450 | 2 S1, γ 0.91743 | 2 S1, γ 0.92450 | has | d/c |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `PT-BW-RE` | 1.5 | 7.056 (1.006) | 7.052 (1.007) | 5.363 | 5.359 | 8.33 | **0.85** |
+| `PT-BW-RNE` | 2.0 | 7.039 (1.012) | 7.031 (1.015) | 5.326 | 5.317 | 8.33 | **0.85** |
+| `PT-BW-W`/`-E` | 1.5 | 4.389 (1.034) | 4.385 (1.036) | 3.302 | 3.298 | 7.12 | **0.62** |
+| `PT-BW-GW` | 2.0 | 4.330 (1.070) | 4.320 (1.076) | 3.208 | 3.200 | 4.50 | **0.96** |
+| `PT-BW-GE` | 1.5 | 4.389 (1.034) | 4.385 (1.036) | 3.302 | 3.298 | 4.50 | **0.98** |
+
+The 0.91743 end governs every column (the shallower pivot credits less of the pad). All four
+readings agree on every column, so all six publish on Table 1806.2's own S1.
+
+**The verdicts do not flip anywhere in γ ∈ [0.85, 1.00]** — S1, total embedment needed:
+
+| γ | RE | RNE | W/E | GW | GE |
+|---|---:|---:|---:|---:|---:|
+| 0.85 | 7.072 | 7.072 | 4.427 | 4.407 | 4.427 |
+| 1.00 | 6.996 | 6.920 | 4.334 | 4.220 | 4.334 |
+
+At γ = 0.85 the canopy's pivot (6.01') sits ABOVE its pad top (6.07'), so the pad's width
+earns nothing and the answer is the bare-shaft 7.07' of §3 — still under 8.33'. The pad's
+width is never what decides a verdict here.
+
+### 9f. Where the gain came from — read this before quoting it
+
+`b_eff` is **1.006 to 1.070**: the pad's width is worth 0.6% to 7%, i.e. 0.01'–0.12' of
+required depth. Everything else in the move from §3's column to 9e's is the **datum** — a foot
+of concrete that was always in the ground and was not being counted. A reader who skims will
+credit "passive on the pad"; a reviewer who checks will find it worth almost nothing, and they
+will be right. With b = 1.00 throughout the canopy needs 7.07' against 8.33' (0.85) and the
+landing pair 4.45' against 4.50' (0.99) — every column passes on the datum alone.
+
+### 9g. What this does NOT do
+
+- **It does not add a resisting moment to §1807.3.2.1's answer.** `d` is a depth, not a
+  moment; a term computed in a different free body cannot be added to it. The pad enters the
+  code's own pressure field as a width, and the code's unmodified formula is solved.
+- **It does not divide the base moment between the shaft and the pad.** See §5's first
+  bullet: that is `base_rotation`'s open question and it stays open.
+- **It does not restore passive on `spread_base.py` or `retaining_basis.py`.** See §5.
+- **It does not reach a wall-borne column.** `column_base`'s scope is unchanged: a column on
+  a foundation wall is `column_support/<wall>`, one question one item.
 
 ## Sources
 
