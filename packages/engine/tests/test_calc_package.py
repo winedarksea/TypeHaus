@@ -187,9 +187,8 @@ def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
     #  - `veneer_beam/W-SG-BRKBM`: a cast beam carrying a masonry wythe. It had a screening
     #    calculation and no record, because that calculation is a free function writing a
     #    report — it reads no plan and nothing can be sealed against it.
-    #  - `thermal_break_transfer/DW-*`: 24 GFRP bars tie a heated house footing to a
-    #    freestanding court wall across an insulating board, with ZERO computed demand. The
-    #    bar count comes from the board's width and a spacing rule, which is detailing.
+    #  - `thermal_break_transfer/DW-*`: left 2026-09-20 — computed as a reserve in
+    #    `engineering/thermal_break.py`, INCOMPLETE until a measured soil modulus exists.
     #  - `tiered_retaining/W-RG-*`: the apron. `foundation_unbalanced_fill` reads PASS on it
     #    and that verdict is CORRECT — IRC R404.1.1 does not engage at 3'-4" — so the PASS is
     #    deliberately left alone. The defect was that nothing else then looked at a tiered
@@ -221,8 +220,6 @@ def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
            "PT-SG-BF1", "PT-SG-BF3", "PT-SG-BR1", "PT-SG-BR3")),
         "rafter/RF-BW-CANOPY", "rafter/RF-GARAGE",
         "veneer_beam/W-SG-BRKBM",
-        "thermal_break_transfer/DW-SG-W1", "thermal_break_transfer/DW-SG-E1",
-        "thermal_break_transfer/DW-SG-W1-STEM", "thermal_break_transfer/DW-SG-E1-STEM",
         "tiered_retaining/W-RG-BLOCK",
         "tiered_retaining/W-RG-WEST", "tiered_retaining/W-RG-EAST",
         "tiered_retaining/W-RG-WEST-BALCONY", "tiered_retaining/W-RG-EAST-BALCONY"}

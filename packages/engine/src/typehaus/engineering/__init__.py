@@ -35,6 +35,7 @@ from typehaus.engineering import (
     retaining_wall,  # noqa: F401  (registration)
     roof_beam,  # noqa: F401  (registration)
     spread_footing,  # noqa: F401  (registration)
+    thermal_break,  # noqa: F401  (registration)
     wall_panel,  # noqa: F401  (registration)
 )
 from typehaus.engineering.deferred import DEFERRALS, Deferral
@@ -82,5 +83,5 @@ __all__ = [
     "lateral_system", "roof_beam",
     "registered_kinds",
     "retaining_system",
-    "retaining_wall", "spread_footing", "wall_panel",
+    "retaining_wall", "spread_footing", "thermal_break", "wall_panel",
 ]

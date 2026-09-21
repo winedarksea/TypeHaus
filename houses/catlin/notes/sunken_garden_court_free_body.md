@@ -1255,6 +1255,121 @@ re-derived, not quoted, if either dimension moves again.
 
 ---
 
+## 11. The thermal break — a reserve, not a design shear (2026-09-20)
+
+Worked by hand before `engineering/thermal_break.py` was written; `tests/test_thermal_break.py`
+reproduces it. Oracle for `thermal_break_transfer/DW-SG-*`.
+
+**The design shear across the break is zero by construction.** The court is a closed loop
+that holds its own thrust (§4, FS 1.63 on its own base friction); the house footing is not
+in that free body and the board is there to keep it out. A limit state with `demand = 0`
+prints d/c 0.00 and reads as a design, so the independence argument is prose, and what is
+graded is a **reserve**: what the tie and the board could take if the assumption were wrong,
+and what the board itself has to survive.
+
+### The four boards, as authored
+
+```
+                      bars        board t x h x L          board bottom     garden top
+DW-SG-W1 / -E1        10 #5 GFRP  2" x 8" x 84"           -117 7/16"        0'-0"
+DW-SG-W1/E1-STEM       2 #5 GFRP  2" x 109 7/16" x 12"    -109 7/16"        0'-0"
+```
+
+Bottom = `elevation − foam_height/2`. The stem boards stand directly on the footing boards
+(-109 7/16" is both). Break mid-plane at y = −5.185"; the court's far wall (`W-SG-S`) axis at
+y = −27'-4" = −328.0".
+
+### 11a. Fresh-concrete pressure on the board — ACI 347R-14, capped at wh
+
+ACI 347R's rate-and-temperature formula needs a placement rate and a concrete temperature the
+model does not hold; it can only lower the pressure, and it is capped at full liquid head
+`p = w·h`. So the cap is graded. `w` = 150 pcf, `h` from the top of the court (0'-0", both
+halves placed monolithically — the conservative sequence) to the board's bottom:
+
+```
+footing board   h = 117.4375" = 9.7865'   p = 150 × 9.7865 = 1,468.0 psf = 10.19 psi
+                vs 40 psi (Dowel.foam_psi)                          d/c 0.255   ✓
+stem board      h = 109.4375" = 9.1198'   p = 150 × 9.1198 = 1,368.0 psf =  9.50 psi
+                vs 40 psi                                           d/c 0.237   ✓
+```
+
+### 11b. Board flotation — buoyancy against the bars' bearing on the foam
+
+The footing board's bottom edge sits in the garden footing's excavation, which runs 4" below
+the house strip, so the pour can reach under it. Archimedes on the board's own volume, foam
+self-weight neglected:
+
+```
+V   = 2 × 8 × 84 = 1,344 in³ = 0.7778 ft³      F_b = 150 × 0.7778 = 116.7 lb
+restraint per bar = foam bearing on the bar = 40 psi × 0.625" × 2" = 50 lb
+10 bars                                          = 500 lb           d/c 0.233   ✓
+```
+
+The bar's own shear is not the limit here: it is graded in 11d at a demand thirty times
+larger. **The stem boards have no flotation row** — each stands on the footing board, so no
+face of it is under the pour; the row is omitted rather than graded at zero.
+
+### 11c. Thermal movement the board must take
+
+`ΔT` is the site's design range, 90 − (−15) = 105 °F (`Site.design_temp_cooling/heating`),
+`α_c` = 5.5 × 10⁻⁶ /°F (PCA, normal-weight average), and the run is the court's full length
+along the bar axis from the break to the far wall's axis — the whole court moving toward one
+fixed end, which is the conservative end:
+
+```
+run = 328.0 − 5.185 = 322.815" (26.901')
+δ   = 5.5e-6 × 105 × 322.815 = 0.1864"
+```
+
+**Capacity: open.** It is `t × foam_psi / E_foam` — the closure at the board's rated stress —
+and no XPS compressive modulus is in the house. `Dowel.foam_modulus_psi` must come off the
+board's datasheet. Note the ratio is sensitive to it: a modulus near the ASTM C578 "10%
+deformation" secant (400 psi for a 40 psi board) gives 0.20" and d/c 0.93; a stiffer linear
+modulus would put this row over.
+
+### 11d. Dowel shear reserve — the loop's per-footing shortfall
+
+The demand is §5a's governing shortfall, the force the south wall's own base cannot hold and
+that has to reach the loop. At 130 pcf the heel is heavier and every shortfall smaller
+(W 5,974.7 plf, F 2,091.2 plf, W-SG-S short 19,623 lb), so 110 pcf governs:
+
+```
+S     = 61,446 − 37,992 = 23,454 lb  (service, W-SG-S)
+Vu    = 1.6 × 23,454    = 37,526 lb
+bars reaching the court = 10 + 10 + 2 + 2 = 24, identical #5 across one 2" gap,
+so the reserve shares by count:
+  footing row   37,526 × 10/24 = 15,636 lb
+  stem row      37,526 ×  2/24 =  3,127 lb      (1,563.6 lb per bar)
+```
+
+**Capacity: open.** Per bar it is `min(0.75 V_bar, 0.55 T_u·d/(4t))` — transverse shear, or
+the bar rupturing in double-curvature bending over the 2" gap (`M = V·t/2`,
+`M_u = T_u·d/8`). The house names no GFRP product, so `Dowel.bar_shear_lb`,
+`bar_tensile_lb`, `bar_modulus_psi` and `bar_source` are the owner's to supply from an
+ASTM D7957 datasheet. The bending branch is why this is not a formality: on a #5 bar it
+is `T_u × 0.078` against `V_bar`, and it usually governs.
+
+### 11e. Differential settlement — INCOMPLETE by design
+
+A heated house footing and a court standing in an open excavation settle differently, and
+the bars see that as shear. There is no demand to compute without a measured vertical soil
+modulus (or predicted settlements) from a geotechnical report, and the model has no field
+for one — `Site.lateral_subgrade_modulus` is the lateral modulus and does not answer it.
+**So all four items stay INCOMPLETE, and their permit line stays non-blocking**, until that
+report exists.
+
+| item | 11a pressure | 11b flotation | 11c movement | 11d reserve | 11e settlement |
+|---|---|---|---|---|---|
+| DW-SG-W1 / -E1 | 0.255 | 0.233 | δ 0.186", open | 15,636 lb, open | open |
+| DW-SG-W1/E1-STEM | 0.237 | — | δ 0.186", open | 3,127 lb, open | open |
+
+**Not graded:** joint opening under contraction (the bonded bars cannot stretch 0.19" over
+2" — they debond, rupture, or drag the court); placement impact and racking of the board;
+friction on the cured face, which would help; ACI 440.11's environmental reduction on the
+bar values; development of the bars into either pour.
+
+---
+
 ## Sources
 
 Every standard and document this note rests on, collected from the citations above.
@@ -1265,6 +1380,8 @@ out of it.
 - **ACI 318-19** — Table 20.5.1.3.1, Table 22.2.2.4.3, §11.6.1, §13.2.7.1, §14.5.2.1, §14.5.4
 - **ASCE 7-16** — §2.3.1
 - ASTM A767, ASTM A780, ASTM C33, ASTM D422
+- ACI 347R-14 (lateral pressure of fresh concrete, capped at wh), ACI 440.11-22 (φ 0.75 shear, 0.55 FRP rupture), ASTM C578, ASTM D7957 — §11
+- PCA, *Design and Control of Concrete Mixtures* — α_c 5.5 × 10⁻⁶ /°F, §11c
 - IBC Table 1610.1, IBC Table 1806.2
 - IRC R404.4, IRC Table R301.2(1, IRC Table R402.2, IRC Table R404.1.2(8
 - MN Rules 1309.0301, MN Rules 1309.0402
