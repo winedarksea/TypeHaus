@@ -318,7 +318,7 @@ class SunkenGardenSpec:
     # ``TOP - drop_ft``. Under the old flat-plane model a 3'-0" drop landed the base on
     # -34", site grade exactly. Now that the yard is authored at -3'-4" rather than assumed
     # at the global datum, a 3'-0" drop off a top at 0'-0" would put the base 4" ABOVE the
-    # ground it springs from. The drop grew to 4'-0" — eight whole 6" courses — which
+    # ground it springs from. The drop grew to 4'-0" — six whole 8" AB Classic courses — which
     # buries the base course 8". Nothing grades a freestanding wall's base against the
     # ground plane, so this arithmetic is the only thing watching it.
     retaining_top_ft: float = porch_top_ft

@@ -72,6 +72,10 @@
 > 0.61 → 0.62; the no-stone sensitivity 1.16 → 1.14. **Every number in §4, §5, §5a, §6, §7
 > and §8 that this moves is kept where it was, marked superseded in place, with the new one
 > beside it** — the graded figures are §4c's. Still clears; the margin is now 6.2%.
+>
+> **A SIXTH PASS (2026-09-21) CHANGES THE APRON'S UNIT (§4d):** Allan Block AB Classic at
+> 130 pcf in place. The net surcharge falls 109.4 → 80.0 psf (0 at 130 pcf); system FS
+> **1.59 → 1.60**, overturning 2.33 → 2.35. §4d lists every number it moves.
 
 **House:** catlin, Ramsey County, Minnesota (MN Residential Code 2020, adopting the 2018 IRC).
 **Written:** 2026-08-30, by hand, before the calculation it oracles was encoded.
@@ -462,7 +466,11 @@ even the friendliest published threshold for mobilising it. At-rest is *defensib
 costs 1.63 instead of 2.17 — margin this design can afford. **Active is the sensitivity,
 not the design.**
 
-### 4c. The apron's surcharge (2026-09-20) — the graded case now
+### 4c. The apron's surcharge (2026-09-20)
+
+> **Superseded in place by §4d (2026-09-21):** the apron is Allan Block AB Classic at 130 pcf
+> in place, not a 137.34 pcf solid stand-in, so `q_net` is 80.0 psf, not 109.37. The method
+> below is unchanged and §4d re-runs it; every graded number is §4d's.
 
 Worked by hand, before `engineering/tier_surcharge.py` was run against it. The raised-garden
 SRW apron (`notes/raised_garden_srw.md`) stands on its levelling pad inside the soil these
@@ -608,6 +616,68 @@ length of any wall graded here. Their bearing lands behind `W-SG-W1`/`E1`, which
 top and bottom and graded prescriptively on Table R404.1.2(8) — a table with no surcharge
 column — so that load is **not graded anywhere**, and it is small (a 1'-0" strip against a
 braced wall). Deep-seated slip under the court and the apron together stays open (§9).
+
+### 4d. The apron on the real unit (2026-09-21) — the graded case now
+
+Worked by hand, same method and geometry as §4c; only the load moved. The apron is **Allan
+Block AB Classic** (`notes/raised_garden_srw.md` §1): `γ_w = 130 pcf` in place, cores filled.
+Its bearing on the pad is `γ_w × H = 130 × 4.0 = 520.0 psf` gross — independent of the unit
+depth, because the weight and the footprint both scale with it. The strip is still the
+resolved 1'-0" structure layer, `a = 0`, `b = 1.0`.
+
+```
+q_net = 520.0 − 110 × 4.0 = 80.0 psf       (110 pcf — the graded end)
+q_net = 520.0 − 130 × 4.0 =  0.0 psf       (130 pcf — no surcharge; nothing is credited)
+
+virtual back   P = 0.63105 × 80.0 = 50.48 plf   at 5.4362'   M = 274.4 ft-lb/ft
+stem face      P = 0.43411 × 80.0 = 34.73 plf   at 2.5346'   M_stem = 88.0 ft-lb/ft
+gross 520 psf  P = 0.63105 × 520  = 328.1 plf   (the sensitivity)
+```
+
+The court, at-rest 60 / 110 pcf:
+
+```
+P        = 3,072.31 + 50.48                     = 3,122.8 plf       (§4c 3,141.3)
+M_ot     = 10,363.7 + 274.4                     = 10,638.1 ft-lb/ft
+x̄        = (25,015.3 − 10,638.1)/5,427.5        = 2.6489 ft
+e        = 3.500 − 2.6489                       = 0.8511 ft  (kern 1.1667) ✓
+q_max    = 775.36 × (1 + 6 × 0.8511/7)          = 1,341 psf  (allow 3,000) ✓
+FS_ot    = 25,015.3 / 10,638.1                  = 2.35             (§4c 2.33)
+
+SYSTEM
+  resultant    = 3,122.8 × 20.0                 = 62,456 lb        (§4c 62,826)
+  cancelled    = 3,122.8 × 32.667               = 102,011 lb
+  capacity     = 1,899.6 × 52.667               = 100,047 lb       unchanged
+  FS_sliding   = 100,047 / 62,456               = 1.60  (d/c 0.936) ✓  (§4c 1.59)
+  no stone     = 71,462 / 62,456                = 1.14             unchanged at 2 dp
+  gross 520    = 100,047 / ((3,072.3 + 328.1) × 20 = 68,009) = 1.47 ✗  (§4c 1.46)
+```
+
+At 130 pcf the apron adds nothing and the §4 values stand: FS_ot 2.70, `e` 0.544, `q` 1,252,
+system 1.79.
+
+What it moves elsewhere (each worked at `w = 3,122.8 plf`):
+
+```
+§5a  W2/E2 own thrust 3,122.8 × 16.333 = 51,006 lb, short 51,006 − 31,027 = 19,979 lb
+     S own thrust 62,456, short 62,456 − 37,992 = 24,464 lb  (governs)
+     Vu = 1.6 × 24,464 = 39,142 lb  vs 86,322    d/c 0.45
+§6   M = 7,585.0 + 88.0 = 7,673.0;  Mu = 1.6 × 7,673.0 = 12,277 ft-lb/ft
+     #5 @ 7" (20,028): d/c 0.613;  #6 @ 16" (12,520): 0.98
+§7a  6e/B = 0.72947  q_toe 1,341.0  q_heel 209.8  slope 161.60 psf/ft  q at face 856.2
+     toe M = 856.2 × 9/2 + ½ (1,341.0 − 856.2) × 3 × 2 = 3,852.7 + 1,454.4 = 5,307.1
+     Mu = 1.6 × 5,307.1 = 8,491 ft-lb/ft  vs 11,865   d/c 0.72
+     shear at d (cut 2.276'): q 973.2, Vu = 1.6 × ½(1,341.0 + 973.2) × 2.276 = 4,213
+§8   wL = 3,122.8 × 16.333 = 51,006 lb; pinned P 25,503, Pu = 40,804 lb (d/c 0.39);
+     fixed P 19,127
+§10  length floor: run = 62,456 × 1.50 / 1,899.6 = 49.32', L = 29.32/2 + 9.667 = 24.33'
+     — 24'-4", about 1'-8" of length left
+§11d Vu 39,142 lb: footing row 39,142 × 10/24 = 16,309 lb, stem row 3,262 lb
+     (1,630.9 lb per bar)
+```
+
+The apron's own thrust also presses its pad down (`P_v`, 54–65 plf); that is not carried onto
+the court and is named as an ungraded remainder in `raised_garden_srw.md` §6.
 
 ---
 
@@ -1458,8 +1528,8 @@ The length floor moved with it: `run = 62,826 × 1.50 / 1,899.6 = 49.61'`, so
 `L = (49.61 − 20)/2 + 9.667 = 24.47'` — **24'-6"**, leaving about **1'-6"** of length, not
 2'-1".
 
-**1.59 against 1.50 is a screening that clears. It is not a stamp.** (It read 1.63 until
-2026-09-20.)
+**1.60 against 1.50 is a screening that clears. It is not a stamp.** (It read 1.63 until
+2026-09-20 and 1.59 until the apron became AB Classic on 2026-09-21, §4d.)
 
 ---
 

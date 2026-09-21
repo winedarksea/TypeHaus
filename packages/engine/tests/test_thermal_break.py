@@ -21,9 +21,9 @@ _NOTE_FLOTATION_RESTRAINT_LB = 500.0
 # §11c/§11d.
 _NOTE_RUN_IN = 322.815
 _NOTE_MOVEMENT_IN = 0.1864
-_NOTE_SHORTFALL_LB = 24_834.0   # was 23,454 before the apron surcharge (§4c)
-_NOTE_RESERVE_LB = {"DW-SG-W1": 16_556.0, "DW-SG-E1": 16_556.0,
-                    "DW-SG-W1-STEM": 3_311.0, "DW-SG-E1-STEM": 3_311.0}
+_NOTE_SHORTFALL_LB = 24_464.0   # §4d (AB Classic apron); §4c 24,834; §4 23,454
+_NOTE_RESERVE_LB = {"DW-SG-W1": 16_309.0, "DW-SG-E1": 16_309.0,
+                    "DW-SG-W1-STEM": 3_262.0, "DW-SG-E1-STEM": 3_262.0}
 
 
 @pytest.fixture(scope="module")

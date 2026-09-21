@@ -159,8 +159,9 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
         # It was 1.77, then 1.80 with the flush tops, and 1.63 since the court shortened
         # 28'-0" -> 26'-0" and the strips narrowed 8'-0" -> 7'-0" (2026-09-10). That is a
         # deliberate purchase, not a regression: notes/sunken_garden_court_free_body.md §4.
-        # 1.59 since 2026-09-20: the raised-garden apron's surcharge joined the thrust (§4c).
-        assert record.ratio == pytest.approx(1.5 / 1.59, abs=0.005)
+        # 1.59 since 2026-09-20: the raised-garden apron's surcharge joined the thrust (§4c);
+        # 1.60 since 2026-09-21, the apron on AB Classic's 130 pcf (§4d).
+        assert record.ratio == pytest.approx(1.5 / 1.60, abs=0.005)
         by_name = {state.name: state for state in record.limit_states}
         # Per-wall sliding is not a meaningful number once the free body is wrong, so it is
         # gone rather than reported alongside a contradicting one.
