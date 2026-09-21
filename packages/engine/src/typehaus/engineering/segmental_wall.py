@@ -17,14 +17,12 @@ widened here — an isolated-cantilever record for a footingless unit is the wro
 Not a published chart read either: ``SegmentalWallSpec.published`` corroborates at most, and is
 refused unless its guards are answered (:func:`published_refusal`).
 
-**NOT GRADED** (the deferral's deliverable, carried here so it does not vanish): global
-stability of the upper wall and the lower one on a common failure surface, against a measured
-soil profile rather than presumptive values — the geotechnical engineer's; the surcharge the
-upper wall delivers to the lower one; and the unit, any reinforcement and the levelling pad —
-the segmental wall supplier's engineer's.
+**NOT GRADED** (the deferral's deliverable): global stability of both tiers on a common
+failure surface against a measured soil profile — the geotechnical engineer's; the unit, any
+reinforcement and the pad — the SRW supplier's engineer's. The surcharge on a parallel lower
+wall is graded on ITS record (``tier_surcharge``, via :func:`reading`).
 
-Oracle: ``houses/catlin/notes/raised_garden_srw.md``, reproduced by
-``tests/test_segmental_wall.py``.
+Oracle: ``notes/raised_garden_srw.md``, reproduced by ``tests/test_segmental_wall.py``.
 """
 
 from __future__ import annotations
@@ -294,7 +292,25 @@ def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
     return [_one(ctx, wall) for wall in segmental_walls(ctx)]
 
 
-def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no-untyped-def]
+@dataclass(frozen=True)
+class Reading:
+    """The wall as read off the model; ``tier_surcharge`` shares it rather than re-reading."""
+
+    section: Section
+    soil: object
+    base: object
+    yard_ft: float            # yard above the base, uncapped (>= 0)
+    grade_from: str
+    wall_ft: float
+    weight_authored: bool
+
+    @property
+    def weight_plf(self) -> float:
+        """The whole unit on its pad: its own height, not the free body's."""
+        return self.section.unit_weight_pcf * self.section.unit_depth_ft * self.wall_ft
+
+
+def reading(ctx: EngineeringContext, wall) -> tuple[Reading | None, list[str]]:  # type: ignore[no-untyped-def]
     tag = wall.tag
     spec = getattr(wall, "srw", None)
     missing: list[str] = []
@@ -311,7 +327,7 @@ def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no
     if (spec is None or spec.unit_weight_pcf is None) and not density:
         missing.append(f"srw.unit_weight_pcf on {tag} (its material carries no density)")
     if missing:
-        return _incomplete(tag, missing)
+        return None, missing
 
     # Unit weight: the product's, else the material's density — a solid-unit UPPER bound on
     # resistance, so a FAIL on it is robust and a PASS on it is not (see the status below).
@@ -325,15 +341,25 @@ def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no
     embedment = max(embedment, 0.0)
     retained = wall.unbalanced_fill.meters / _M_PER_FT
     wall_ft = (wall.top_elevation.meters - wall.bottom_elevation.meters) / _M_PER_FT
+    section = Section(retained_ft=retained, unit_depth_ft=depth_ft, unit_weight_pcf=unit_pcf,
+                      embedment_ft=min(embedment, max(wall_ft - retained, 0.0)),
+                      batter_deg=batter, course_ft=coursing.feet if coursing is not None else 0.5)
+    return Reading(section, soil, _base_interface(ctx, wall) or soil, embedment, grade_from,
+                   wall_ft, weight_authored), []
+
+
+def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no-untyped-def]
+    tag = wall.tag
+    spec = getattr(wall, "srw", None)
+    read, missing = reading(ctx, wall)
+    if read is None:
+        return _incomplete(tag, missing)
+    section, soil, base, embedment = read.section, read.soil, read.base, read.yard_ft
+    grade_from, wall_ft, weight_authored = read.grade_from, read.wall_ft, read.weight_authored
+    retained, depth_ft, batter = section.retained_ft, section.unit_depth_ft, section.batter_deg
     # The fill cannot stand above the wall: where the yard and the authored retained height
     # overshoot the top, the free body is the wall's own height (and the note says so).
     overtopped = retained + embedment - wall_ft
-    section = Section(retained_ft=retained,
-                      embedment_ft=min(embedment, max(wall_ft - retained, 0.0)),
-                      unit_depth_ft=depth_ft,
-                      unit_weight_pcf=unit_pcf, batter_deg=batter,
-                      course_ft=coursing.feet if coursing is not None else 0.5)
-    base = _base_interface(ctx, wall) or soil
     body = analyse(section, soil.active_efp_psf_per_ft, base.friction_coefficient)
     tiers = lower_tiers(ctx, wall)
 
@@ -447,7 +473,11 @@ def _notes(ctx, wall, section, soil, base, body, tiers, refusal,  # type: ignore
                    "is no bearing pressure to grade, and the row reports how far off the base "
                    "it is instead.")
     for tier in tiers:
-        how = "a parallel tier" if tier.parallel else "not a parallel tier"
+        how = ("a parallel tier: this unit's bearing on its pad is carried onto it as a "
+               f"lateral strip surcharge, graded on retaining_wall/{tier.tag}"
+               if tier.parallel else
+               "not a parallel tier: it meets this unit end-on, so no surcharge is carried "
+               "onto it")
         out.append(
             f"TIER: {tier.tag} retains {tier.lower_height_ft:.2f}' and stands "
             f"{tier.clear_ft:.2f}' clear ({how}), inside 2H = "
@@ -463,6 +493,7 @@ def _notes(ctx, wall, section, soil, base, body, tiers, refusal,  # type: ignore
                    "body governs.")
     out.append("NOT GRADED: global stability of this wall and any lower one on a common "
                "failure surface against a measured soil profile (geotechnical engineer); the "
-               "surcharge this wall puts on a lower one; the unit, any geogrid and the pad "
-               "(the SRW supplier's engineer). No seismic or frost-heave case.")
+               "unit, any geogrid and the pad (the SRW supplier's engineer). No seismic or "
+               "frost-heave case. The surcharge on a parallel lower wall IS graded, on that "
+               "wall's own record (engineering/tier_surcharge.py).")
     return tuple(out)

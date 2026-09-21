@@ -142,6 +142,22 @@ the whole box, which `sunken_garden_court_free_body.md` §9 already lists as ope
 the apron*. The honest grading is: the tier row prints 6.13 as a number, the local rows (§3) fail
 on their own, and global stability stays a geotechnical deliverable.
 
+**The interaction the court DOES see is now carried (2026-09-20).** The apron's weight on its
+pad is delivered to each parallel court wall as a lateral surcharge
+(`engineering/tier_surcharge.py`, IBC 2018 §1610.1): a rigid-wall Boussinesq strip, 1'-0" wide,
+starting at the court heel's virtual back (a = 0), 4'-0" below the retained surface, at the
+block's 549.37 psf **net** of the 4'-0" of soil it displaces (109.4 psf at 110 pcf). Worked by
+hand in `sunken_garden_court_free_body.md` §4c: +69.0 plf per wall, and the court loop
+1.63 → **1.59**. Gross (not netted) it would be 1.46 — the note argues why net is the right
+free body and prints the gross beside it. It is cited on each court record as
+`via tiered_retaining/W-RG-BLOCK` (→ `W-SG-S`), `-WEST` (→ `W-SG-W2`), `-EAST` (→ `W-SG-E2`).
+
+**The two balcony returns load nothing graded.** They run east-west at y −11..−10, beyond the
+north ends of `W-SG-W2`/`-E2`, and butt `W-SG-W1`/`-E1` end-on; `lower_tiers` reads them as
+not parallel to any court wall and no surcharge is carried. Their bearing lands behind
+`W-SG-W1`/`E1`, braced walls on Table R404.1.2(8), which has no surcharge column — a small,
+named, ungraded load.
+
 ## 7. Against the plan's headline numbers
 
 The plan's headline (§1) worked `½·45·3.333² = 250 plf`, `120 pcf · 1.0 · 4.0 = 480 plf`,
@@ -188,8 +204,9 @@ Everything required is FS 1.5 on sliding and overturning, and the resultant on t
 
 * Global stability of the apron and court on a common failure surface, against a measured soil
   profile — the geotechnical engineer's (§6; `sunken_garden_court_free_body.md` §9).
-* The surcharge the apron's bearing delivers to the court wall. Not fed into
-  `retaining_system` yet; that is its own change (plan workstream 5, second half).
+* ~~The surcharge the apron's bearing delivers to the court wall.~~ Carried since 2026-09-20
+  on the court's own records (§6, `sunken_garden_court_free_body.md` §4c) — except the two
+  balcony returns' load on `W-SG-W1`/`E1`, which stays ungraded (§6).
 * The unit, the geogrid and the levelling pad — the SRW supplier's engineer, from product data:
   the interface shear (§5), the in-place unit weight, the batter, the cap.
 * Hydrostatic, seismic and frost-heave cases. Every number presumes a drained backfill, and the

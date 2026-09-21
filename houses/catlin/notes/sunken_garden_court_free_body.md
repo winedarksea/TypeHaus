@@ -63,6 +63,15 @@
 > an oracle means anything. The fourth pass moves the PER-LINEAL-FOOT terms as well as the
 > lengths, so §4 and §7 were re-run end to end rather than patched. The engine then
 > reproduced §4's `system_demand` 61,446.1 lb and `system_capacity` 100,047 lb to the digit.
+>
+> **A FIFTH PASS (2026-09-20) ADDS A LOAD, NOT A DIMENSION: the raised-garden apron's
+> surcharge (§4c).** The apron stands on its pad 4'-0" down, inside the soil these walls
+> retain, and nothing had carried its weight onto them. Worked by hand in §4c as a rigid-wall
+> Boussinesq strip on the heel's virtual back: +69.0 plf of thrust per wall at 110 pcf.
+> System FS **1.63 → 1.59**; overturning 2.41 → 2.33; e 0.800' → 0.870'; stem flexure
+> 0.61 → 0.62; the no-stone sensitivity 1.16 → 1.14. **Every number in §4, §5, §5a, §6, §7
+> and §8 that this moves is kept where it was, marked superseded in place, with the new one
+> beside it** — the graded figures are §4c's. Still clears; the margin is now 6.2%.
 
 **House:** catlin, Ramsey County, Minnesota (MN Residential Code 2020, adopting the 2018 IRC).
 **Written:** 2026-08-30, by hand, before the calculation it oracles was encoded.
@@ -322,6 +331,11 @@ SYSTEM:  demand   = | Σ P(m)·L(m)·n̂(m) |     a 2-D resultant
 
 ### The terms, at at-rest 60 / 110 pcf — the graded case
 
+> **SUPERSEDED IN PLACE 2026-09-20 by §4c.** This block and the four-corner table below are
+> the court WITHOUT the apron's surcharge, kept exactly as worked. §4c adds one term to `P`
+> and one to `M_ot` and re-states every row; the resisting side (`W`, `F`, `M_r`, capacity)
+> is untouched and is read from here.
+
 ```
 P        = ½ × 60 × 10.1198²                      = 3,072.3 plf   UNCHANGED
 W_stem   = 1.0  ×  9.1198 × 150                   = 1,368.0 plf   UNCHANGED
@@ -442,9 +456,159 @@ even the friendliest published threshold for mobilising it. At-rest is *defensib
 costs 1.63 instead of 2.17 — margin this design can afford. **Active is the sensitivity,
 not the design.**
 
+### 4c. The apron's surcharge (2026-09-20) — the graded case now
+
+Worked by hand, before `engineering/tier_surcharge.py` was run against it. The raised-garden
+SRW apron (`notes/raised_garden_srw.md`) stands on its levelling pad inside the soil these
+walls retain; its §6 finds the court's wedge crossing the pad. IBC 2018 §1610.1: "lateral
+pressure from surcharge loads shall be added to the lateral earth pressure". Nothing added it.
+
+**What is where** (resolved model, measured from each court wall's axis, outward):
+
+| | |
+|---|---|
+| court stem, retained face | 0.500' (12" structure layer centred on the axis) |
+| heel end — the **virtual back** | 0.500 + 3.000 = **3.500'** |
+| apron structure layer | **3.500' → 4.500'** (`W-RG-WEST` x 3.5..4.5 against `W-SG-W2` at 8.0; `-EAST` and `-BLOCK` mirror it) |
+| apron base (its pad) | −4'-0" |
+| court retained surface | −9'-1 7/16" + 9.1198' = **0'-0"** |
+| depth of the pad below that surface, `d` | **4.000'** |
+
+So the strip starts **a = 0** behind the virtual back and is **b = 1.000'** wide. It loads
+the virtual back over `h = H − d = 10.1198 − 4.000 = 6.1198'` (to the footing underside) and
+the stem face over `h_s = 9.1198 − 4.000 = 5.1198'` (to the footing top), where it starts
+`a_s = 3.500 − 0.500 = 3.000'` back.
+
+**The load.** The apron's weight on its pad, from `raised_garden_srw.md` §1/§3:
+`W = 137.34 × 1.0 × 4.0 = 549.37 plf` on a 1.0' footprint, **549.37 psf gross**.
+
+**q is taken NET of the soil the block displaces, and this is the one choice that moves the
+verdict, so it is argued in full.** §4's Rankine free body assumes level backfill to the
+retained surface everywhere behind the wall — including the 4.0' column the block now
+occupies. The vertical stress that free body already carries at pad level, in the block's
+footprint, is `γ × 4.0`. What the block adds is the difference:
+
+```
+q_net = 549.37 − 110 × 4.0 = 109.37 psf     (110 pcf — the graded end)
+q_net = 549.37 − 130 × 4.0 =  29.37 psf     (130 pcf)
+```
+
+Adding the gross 549 psf would count that 4'-0" of ground twice. What is NOT credited, and
+is the larger effect: beyond the apron the yard is at −3'-4", so the level-backfill model
+carries ~3.33' × γ ≈ 370 psf of ground that is not there across most of the wedge. Netting
+the block is consistent; crediting the missing yard would be the unconservative half, and it
+is left alone. The strip's own vertical stress landing on the heel (which would help) is
+also not credited.
+
+**The method: a strip load, Boussinesq, rigid-wall form.** Terzaghi (1954), from Spangler's
+tests: on an unyielding wall the horizontal stress from a strip load `q` is **twice** the
+elastic half-space value,
+
+```
+σ_h(z) = (2q/π) (β − sin β cos 2α)
+```
+
+`β` the angle the strip subtends at depth `z`, `α` the angle to its bisector (NAVFAC DM 7.02
+Fig. 7-11; AASHTO LRFD Eq. 3.11.6.2-5). The doubled form is chosen because it is the one that
+agrees with the rest of this note: §4 grades the court at-rest *because* it does not yield,
+and the image method's doubling is exactly the unyielding-wall correction. An "equivalent
+uniform surcharge height" `h_eq = q/γ` with `K q` over the full height is the other method
+IBC 1610.1 admits; it models an INFINITE surcharge, and on a 1'-0" strip it overstates the
+thrust roughly five-fold (`K₀ q h = 0.545 × 109.4 × 6.12 = 365 plf` against 69 below), so it
+is rejected as the wrong model rather than a conservative one.
+
+**The resultant, integrated by hand.** Writing `β − sin β cos 2α = (α₂ − ½ sin 2α₂) −
+(α₁ − ½ sin 2α₁)` with `αᵢ = atan(cᵢ/z)`, and `d/dz[z atan(c/z)] = atan(c/z) − cz/(z²+c²)`,
+the integral over `0..h` is `h atan(c/h)` for each edge, so
+
+```
+P = (2q/π) h [θ₂ − θ₁]             θ₁ = atan(a/h), θ₂ = atan((a+b)/h)   (radians)
+  = q h (θ₂° − θ₁°) / 90            — Jarquio (1981), as quoted in Das
+z̄ above the base = [h²(θ₂−θ₁) − ((a+b)²(90−θ₂) − a²(90−θ₁)) + 57.296 b h] / [2h(θ₂−θ₁)]   (degrees)
+```
+
+(The moment form was integrated the same way, `∫z f dz = (z²/2)atan(c/z) − (c/2)(z − c atan(z/c))`,
+and reduces to Jarquio's printed line. His `z̄` is from the BOTTOM of the plane.)
+
+Virtual back, `a = 0, b = 1.0, h = 6.1198`:
+
+```
+θ₁ = 0                θ₂ = atan(1/6.1198) = 9.2804°
+P  = q × 6.1198 × 9.2804/90                               = 0.63105 q
+z̄  = [6.1198² × 9.2804 − (1² × 80.7196 − 0) + 57.296 × 6.1198] / [2 × 6.1198 × 9.2804]
+   = [347.566 − 80.720 + 350.638] / 113.587               = 5.4362 ft above the footing underside
+      110 pcf:  P = 0.63105 × 109.37 = 69.02 plf     M = 69.02 × 5.4362 = 375.2 ft-lb/ft
+      130 pcf:  P = 0.63105 ×  29.37 = 18.53 plf     M = 18.53 × 5.4362 = 100.7 ft-lb/ft
+      gross  :  P = 0.63105 × 549.37 = 346.7 plf     (the sensitivity below)
+```
+
+Stem face, `a = 3.0, b = 1.0, h = 5.1198`:
+
+```
+θ₁ = atan(3/5.1198) = 30.3687°     θ₂ = atan(4/5.1198) = 37.9999°
+P  = q × 5.1198 × 7.6312/90                               = 0.43411 q
+z̄  = [5.1198² × 7.6312 − (16 × 52.0001 − 9 × 59.6313) + 57.296 × 5.1198] / [2 × 5.1198 × 7.6312]
+   = [200.03 − 295.32 + 293.35] / 78.140                  = 2.5346 ft above the footing top
+      110 pcf:  P = 47.48 plf   M_stem = 47.48 × 2.5346 = 120.3 ft-lb/ft
+      130 pcf:  P = 12.75 plf   M_stem = 32.3 ft-lb/ft
+```
+
+(Both were also checked by a 20,000-strip midpoint sum of `σ_h(z)`: 69.015 plf at 5.4362',
+47.477 plf at 2.5346'.)
+
+**The court, restated — at-rest 60 / 110 pcf, the graded case.** Resisting terms from §4,
+unchanged:
+
+```
+P        = 3,072.3 + 69.0                        = 3,141.3 plf
+M_ot     = 10,363.7 + 375.2                      = 10,738.9 ft-lb/ft
+M_r      = 25,015.3                              (unchanged)     W = 5,427.5 plf (unchanged)
+x̄        = (25,015.3 − 10,738.9)/5,427.5         = 2.6304 ft
+e        = 3.500 − 2.6304                        = 0.8696 ft  (kern 1.1667) ✓   was 0.8005
+q_max    = 775.36 × (1 + 6 × 0.8696/7)           = 1,353 psf  (allow 3,000) ✓   was 1,307
+FS_ot    = 25,015.3 / 10,738.9                   = 2.33       (need 1.50)  ✓   was 2.41
+
+SYSTEM
+  every member carries its own apron: W2 ← W-RG-WEST, E2 ← W-RG-EAST, S ← W-RG-BLOCK
+  side walls   3,141.3 × 16.333 each — equal and opposite, cancel exactly as before
+  resultant    = 3,141.3 × 20.0                  = 62,826 lb      was 61,446
+  cancelled    = 3,141.3 × 32.667                = 102,617 lb     was 100,362
+  capacity     = 1,899.6 × 52.667                = 100,047 lb     unchanged
+  FS_sliding   = 100,047 / 62,826                = 1.59  (d/c 0.942)  ✓   was 1.63 (0.921)
+```
+
+At 130 pcf: `P` 3,090.8, `M_ot` 10,464.4, FS_ot 2.68 (was 2.70), `e` 0.561 (was 0.544),
+`q` 1,264 psf (was 1,252), system 110,133 / 61,817 = **1.78** (was 1.79).
+
+| case | system FS | FS overturning | e / kern | q_max |
+|---|---|---|---|---|
+| **at-rest 60, 110 pcf — GRADED** | **1.59** ✓ | **2.33** ✓ | **0.870 / 1.167** ✓ | **1,353** ✓ |
+| at-rest 60, 130 pcf | 1.78 ✓ | 2.68 ✓ | 0.561 / 1.167 ✓ | 1,264 ✓ |
+| active 45, 110 pcf | 2.11 ✓ | 3.07 ✓ | 0.392 / 1.167 ✓ | 1,036 ✓ |
+| active 45, 130 pcf | 2.37 ✓ | 3.56 ✓ | 0.127 / 1.167 ✓ | 947 ✓ |
+
+(The surcharge rides unchanged into the active rows: it is an elastic term, not an EFP one.)
+
+**⚠ The gross sensitivity does NOT clear, and it is printed on every record.** At the gross
+549 psf the strip is 346.7 plf; the resultant is `(3,072.3 + 346.7) × 20 = 68,380 lb` and the
+system reads **100,047 / 68,380 = 1.46 < 1.50**. The graded answer rests on netting out the
+block's 4'-0" of displaced ground, which is argued above and is — this note maintains — the
+right free body; but it is the second thing, after the stone bed (§5), that the 1.50 line
+depends on. A reviewer who takes the surcharge gross takes the court under the line.
+
+**What it does not settle.** The two balcony returns (`W-RG-*-BALCONY`) run east-west at
+y −11..−10, north of `W-SG-W2`/`-E2`'s ends, and butt `W-SG-W1`/`-E1` end-on; they load no
+length of any wall graded here. Their bearing lands behind `W-SG-W1`/`E1`, which are braced
+top and bottom and graded prescriptively on Table R404.1.2(8) — a table with no surcharge
+column — so that load is **not graded anywhere**, and it is small (a 1'-0" strip against a
+braced wall). Deep-seated slip under the court and the apron together stays open (§9).
+
 ---
 
 ## 5. ⚠ The corner that does not clear, and what the design therefore depends on
+
+> **Superseded in place by §4c (2026-09-20):** with the apron's surcharge the no-stone case
+> is `71,462 / 62,826 = 1.14` (was 1.16). The argument below is unchanged.
 
 **Without the washed-stone bed, at μ = 0.25 throughout, the system reaches FS 1.16 against
 the 1.50 required.**
@@ -532,6 +696,11 @@ d     = 0.8 × 109.44                            = 87.55 in   (ACI 318-19 §11.5
 φVn   = 0.75 × 2 × √3,000 × 12 × 87.55                   = 86,322 lb   d/c 0.43  ✓
 ```
 
+> **Superseded in place by §4c (2026-09-20).** Each thrust carries its apron (3,141.3 plf):
+> W2/E2 own thrust 51,308 lb against 31,027 lb, **short 20,281**; S 62,826 against 37,992,
+> **short 24,834** (governs); `Vu = 1.6 × 24,834 = 39,734 lb` against the same 86,322,
+> **d/c 0.46**. Still no footing holds its own wall; still better than two to one.
+
 ACI 318-19 §22.5.5.1 for `Vc = 2 λ √f'c b d`, Table 21.2.1 for φ = 0.75, §11.5.4.3 for the
 0.8 `lw` effective depth. λ = 1.0, normalweight.
 
@@ -561,6 +730,12 @@ Mu  = 1.6 × 7,585                         = 12,136 ft-lb/ft   (IBC §1605.2 on 
 S   = 12 × 12²/6                          = 288 in³/ft
 f   = 7,585 × 12 / 288                    = 316 psi           (service flexural tension)
 ```
+
+> **Superseded in place by §4c (2026-09-20):** the apron's strip adds 120.3 ft-lb/ft at the
+> stem base (read on the stem face, 3.0' from the strip), so `M = 7,705.7` and
+> `Mu = 1.6 × 7,705.7 = 12,329 ft-lb/ft`; against the selected `#5 @ 7"`'s 20,028, **d/c
+> 0.616** (was 0.606). The schedule below was sized at the old moment and every row it
+> accepts still clears except `#6 @ 16"`, which was already at 0.97 and now reads 0.98 (12,329 / 12,520).
 
 **Plain**, ACI 318 §14.5.2, φ = 0.60 (Table 21.2.1):
 
@@ -786,6 +961,18 @@ a free arithmetic check. At 7'-0" with a 3'-0" toe the face is 0.500' short of m
 `q` there is 851.4 against a mean of 775.4 — **76.0 psf higher, which is exactly 0.500' of
 the 152.00 psf/ft slope**. That difference is the check now, and it is the one to re-run if
 the trapezoid is ever suspected of being mis-assembled.
+
+> **Superseded in place by §4c (2026-09-20)**, same steps at `e = 0.8696'`:
+>
+> ```
+> 6e/B = 0.74537     q_toe = 775.36 x 1.74537 = 1,353.3     q_heel = 775.36 x 0.25463 = 197.4
+> slope = (1,353.3 - 197.4)/7 = 165.12 psf/ft    q at the stem face = 1,353.3 - 495.4 = 857.9
+> toe  M = 857.9 x 3²/2 + ½(1,353.3 - 857.9) x 3 x 2 = 3,860.6 + 1,486.1 = 5,346.7
+>      Mu = 1.6 x 5,346.7 = 8,555 ft-lb/ft against 11,865 -> d/c 0.72 (was 0.70)
+> shear at d 8.69" (cut 2.276'): q 977.5, Vu = 1.6 x ½(1,353.3 + 977.5) x 2.276 = 4,244 (was 4,131)
+> ```
+>
+> The heel is designed for its soil column alone (§7c) and does not move: 0.70.
 
 ### 7b. Toe flexure — the governing number, and a deliberate conservatism
 
@@ -1070,6 +1257,10 @@ Ag    = 12 × 17.5                                        =    210 in²
 φPn   = 0.60 × 0.45 × 3,000 × 210 × 0.609                = 103,655 lb   d/c 0.39  ✓
 ```
 
+> **Superseded in place by §4c (2026-09-20):** `w = 3,141.3 plf` with the apron, so
+> `wL = 3,141.3 × 16.333 = 51,308 lb`; pinned `P = 25,654`, **`Pu = 41,047 lb`**; fixed
+> `P = 19,241`. Against the same 103,655, **d/c 0.40** (was 0.39).
+
 The strut is a **compression member between two opposing legs**, so the governing value is
 the larger single reaction and **not** the sum: the two legs push toward each other and the
 force passes through the member once. Where the two differ, the difference is net base shear
@@ -1219,7 +1410,10 @@ added:
   reduced from "the toe is in the air" to "the toe is buried 8" and nobody has checked the
   wall", which is the version of it that is true. It now has an owner:
   `tiered_retaining/W-RG-*` in `engineering/deferred.py`, and it reaches
-  `out/calcs/03-open-items.md`.
+  `out/calcs/03-open-items.md`. **2026-09-20:** that item is computed now
+  (`engineering/segmental_wall.py`, OVER on its own sliding), and the apron's bearing on
+  these walls is carried as a surcharge (§4c). The coupled deep-seated slip is what stays
+  open.
 - **MN Rules 1309.0402 amends IRC Table R402.2 and adds a FOOTINGS row at 5,000 psi**
   (footnote g allows 2,500 with an approved water/vapour-resistance admixture; footnote h
   exempts deck/porch post footings, wood foundations and floating slabs — none of which is a
@@ -1251,7 +1445,15 @@ wall's unopposed thrust — so this court has about **2'-1"** of length left in 
 That floor is itself a function of the strip width (it was 23'-3" at 8'-0"), so it must be
 re-derived, not quoted, if either dimension moves again.
 
-**1.63 against 1.50 is a screening that clears. It is not a stamp.**
+**And tell the reviewer about the apron (2026-09-20, §4c).** Its surcharge took sliding
+1.63 → **1.59** (6.2% over the minimum) and the no-stone case 1.16 → 1.14. It is graded NET
+of the ground the block displaces; **taken gross, the court reads 1.46 and does not clear.**
+The length floor moved with it: `run = 62,826 × 1.50 / 1,899.6 = 49.61'`, so
+`L = (49.61 − 20)/2 + 9.667 = 24.47'` — **24'-6"**, leaving about **1'-6"** of length, not
+2'-1".
+
+**1.59 against 1.50 is a screening that clears. It is not a stamp.** (It read 1.63 until
+2026-09-20.)
 
 ---
 
@@ -1342,6 +1544,10 @@ so the reserve shares by count:
   stem row      37,526 ×  2/24 =  3,127 lb      (1,563.6 lb per bar)
 ```
 
+> **Superseded in place by §4c (2026-09-20):** with the apron `S = 62,826 − 37,992 = 24,834
+> lb`, `Vu = 39,734 lb`; footing row `39,734 × 10/24 = 16,556 lb`, stem row `3,311 lb`
+> (1,655.6 lb per bar). At 130 pcf W-SG-S is short 19,994 lb; 110 still governs.
+
 **Capacity: open.** Per bar it is `min(0.75 V_bar, 0.55 T_u·d/(4t))` — transverse shear, or
 the bar rupturing in double-curvature bending over the 2" gap (`M = V·t/2`,
 `M_u = T_u·d/8`). The house names no GFRP product, so `Dowel.bar_shear_lb`,
@@ -1382,6 +1588,9 @@ out of it.
 - ASTM A767, ASTM A780, ASTM C33, ASTM D422
 - ACI 347R-14 (lateral pressure of fresh concrete, capped at wh), ACI 440.11-22 (φ 0.75 shear, 0.55 FRP rupture), ASTM C578, ASTM D7957 — §11
 - PCA, *Design and Control of Concrete Mixtures* — α_c 5.5 × 10⁻⁶ /°F, §11c
-- IBC Table 1610.1, IBC Table 1806.2
+- IBC Table 1610.1, IBC §1610.1 (surcharge added to earth pressure), IBC Table 1806.2
+- Terzaghi (1954), "Anchored bulkheads" — the doubled (rigid-wall) Boussinesq strip; NAVFAC
+  DM 7.02 Fig. 7-11; AASHTO LRFD Eq. 3.11.6.2-5; Jarquio (1981), as quoted in Das,
+  *Principles of Foundation Engineering* — the closed-form resultant, §4c
 - IRC R404.4, IRC Table R301.2(1, IRC Table R402.2, IRC Table R404.1.2(8
 - MN Rules 1309.0301, MN Rules 1309.0402

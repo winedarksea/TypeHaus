@@ -152,7 +152,8 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
         # It was 1.77, then 1.80 with the flush tops, and 1.63 since the court shortened
         # 28'-0" -> 26'-0" and the strips narrowed 8'-0" -> 7'-0" (2026-09-10). That is a
         # deliberate purchase, not a regression: notes/sunken_garden_court_free_body.md §4.
-        assert record.ratio == pytest.approx(1.5 / 1.63, abs=0.02)
+        # 1.59 since 2026-09-20: the raised-garden apron's surcharge joined the thrust (§4c).
+        assert record.ratio == pytest.approx(1.5 / 1.59, abs=0.005)
         by_name = {state.name: state for state in record.limit_states}
         # Per-wall sliding is not a meaningful number once the free body is wrong, so it is
         # gone rather than reported alongside a contradicting one.
@@ -165,7 +166,8 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
         # 3 -> 4 on 2026-09-18: the MATERIAL inputs joined the fingerprint. The arithmetic
         # did not move — every number asserted above is unchanged — but what a seal is
         # pinned against did, which is the same class of change and takes the same bump.
-        assert record.basis_version == "4"
+        # 4 -> 5 on 2026-09-20: the apron's lateral surcharge (engineering/tier_surcharge.py).
+        assert record.basis_version == "5"
 
     # Every wall the register computes is one a signoff can cover, one at a time.
     assert sorted(results[f"{KIND}/{t}"].item_id for t in ("W-SG-E2",)) == [

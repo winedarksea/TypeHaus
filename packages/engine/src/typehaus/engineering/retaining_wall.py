@@ -58,6 +58,7 @@ from typehaus.engineering.soil import (
     SOIL_UNIT_WEIGHT_BAND_PCF,
     presumptive,
 )
+from typehaus.engineering.tier_surcharge import TierLoad, court_surcharges
 
 #: Re-exported at their old names on purpose. ``tests/test_retaining_wall_calc.py`` imports
 #: ``_Geometry`` and ``analyse`` from here and its ORACLE is the frozen hand pass; the split
@@ -78,7 +79,9 @@ KIND = "retaining_wall"
 #: covers) joined the fingerprint. The arithmetic did not move; what the fingerprint
 #: COVERS did, which is the same class of change — a seal pinned under version 3 was
 #: pinned against a hash that four capacities could move underneath.
-BASIS_VERSION = "4"
+#: 4 -> 5: the raised-garden apron's bearing enters as a lateral strip surcharge
+#: (``tier_surcharge``) — thrust, overturning, bearing and stem flexure all moved.
+BASIS_VERSION = "5"
 
 
 def _drainage_note(ctx: EngineeringContext, wall) -> str:  # type: ignore[no-untyped-def]
@@ -177,8 +180,25 @@ def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
             systems[member.tag] = (capacity / demand if demand else float("inf"),
                                    demand, capacity, item_id(SYSTEM_KIND, ref))
     columns = _column_surcharges(ctx)
-    return [_one(ctx, wall, systems.get(wall.tag), columns.get(wall.tag))
+    # The apron's surcharge is NET of the soil it displaces, so it differs across the band.
+    tiers = {pcf: court_surcharges(ctx, pcf) for pcf in SOIL_UNIT_WEIGHT_BAND_PCF}
+    return [_one(ctx, wall, systems.get(wall.tag), columns.get(wall.tag),
+                 {pcf: (loads.get(wall.tag), gaps.get(wall.tag, []))
+                  for pcf, (loads, gaps) in tiers.items()})
             for wall in _retaining_walls(ctx)]
+
+
+def _with_tier(column: Surcharge | None, tier: TierLoad | None) -> Surcharge | None:
+    """The column's surcharge with the apron's lateral terms laid on it, or either alone."""
+    if tier is None:
+        return column
+    if column is None:
+        return tier.surcharge
+    lateral = tier.surcharge
+    return Surcharge(axial_plf=column.axial_plf, moment_plf=column.moment_plf,
+                     arm_ft=column.arm_ft, source=f"{column.source}, {lateral.source}",
+                     lateral_plf=lateral.lateral_plf, lateral_arm_ft=lateral.lateral_arm_ft,
+                     stem_moment_plf=lateral.stem_moment_plf)
 
 
 def _column_surcharges(ctx: EngineeringContext) -> dict[str, Surcharge]:
@@ -279,9 +299,14 @@ def _restate(states: tuple, system: tuple[float, float, float, str] | None) -> t
 
 def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
          system: tuple[float, float, float, str] | None = None,
-         surcharge: Surcharge | None = None) -> EngineeringRecord:
+         surcharge: Surcharge | None = None,
+         tiers: dict[float, tuple[TierLoad | None, list[str]]] | None = None,
+         ) -> EngineeringRecord:
     tag = wall.tag
     missing: list[str] = []
+    tiers = tiers or {}
+    for _load, gaps in tiers.values():
+        missing.extend(gap for gap in gaps if gap not in missing)
     # **The restrained branch is graded at AT-REST and the free one at active, and the
     # difference is not a preference.** A free cantilever is normally designed active and
     # may be; a wall whose base is held by a permanent strut is not free to move enough to
@@ -317,10 +342,11 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
     # record says so instead of choosing.
     base = _base_interface(ctx, wall) or soil
     low, high = SOIL_UNIT_WEIGHT_BAND_PCF
+    tier_low = tiers.get(low, (None, []))[0]
     lower = analyse(geometry, soil, at_rest=restrained, soil_pcf=low, base=base,
-                    surcharge=surcharge)
+                    surcharge=_with_tier(surcharge, tier_low))
     upper = analyse(geometry, soil, at_rest=restrained, soil_pcf=high, base=base,
-                    surcharge=surcharge)
+                    surcharge=_with_tier(surcharge, tiers.get(high, (None, []))[0]))
     states_low = _restate(_limit_states(lower, geometry, soil, base), system)
     states_high = _restate(_limit_states(upper, geometry, soil, base), system)
     over_low = any(not state.ok for state in states_low)
@@ -358,7 +384,7 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
         # above: a number this record depends on that does not live on this element.
         Quantity("column_axial", surcharge.axial_plf, "plf", 1.0),
         Quantity("column_base_moment", surcharge.moment_plf, "lb-ft/ft", 1.0),
-    ) if surcharge is not None else ())
+    ) if surcharge is not None else ()) + (tier_low.inputs if tier_low is not None else ())
     notes = (
         "SCREENING on presumptive code values, not a design: "
         f"{soil.citation}. No geotechnical report is on file for this site.",
@@ -388,7 +414,7 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
         "Graded at AT-REST (60 psf/ft), not active, because the restraint is credited. The "
         "free-cantilever branch of this same module grades at active; the two are not "
         "comparable row for row.",
-    ) if system is not None else ())
+    ) if system is not None else ()) + (tier_low.notes if tier_low is not None else ())
 
     if over_low != over_high:
         return EngineeringRecord(

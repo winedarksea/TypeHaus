@@ -1450,7 +1450,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     subp. 2 reaches only walls that also enclose below-grade interior space, and none of
     them does. They get drained backfill instead, which relieves the thrust that a coat
     would not. It does not change their R404.4 case either way — sliding is graded on the
-    closed court loop at FS 1.63 (`retaining_system/W-SG-ARCH`), not on these walls
+    closed court loop at FS 1.59 (`retaining_system/W-SG-ARCH`), not on these walls
     individually (→ "Sunken garden court").
   - Skin: `BASEMENT_12`/`_8` cover the XPS with a 1/8" `foundation-coating-acrylic` (troweled
     over mesh) banded from 6" below grade to the wall top, `Layer.extent` off the `GRADE`
@@ -2176,17 +2176,21 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - `Dowel` z is derived off the shared 8" footing-to-footing joint face (mid-way through it);
   the foam block matches that 8". **Nothing in the engine grades a `Dowel` against the two
   footings it names** — check both footing tops/bottoms by hand after any elevation change.
-- **The court is 26'-0" x 19'-0" clear and there is a structural floor at 23'-11".**
+- **The court is 26'-0" x 19'-0" clear and there is a structural floor at 24'-6".**
   Shortening it removes base friction from the capacity and **nothing** from the demand: the
   E-W thrusts cancel identically, so the resultant is the south wall's alone and the south
   wall is the court's WIDTH. Court length is not the cheap lever it looks like — about $700
-  to $1,300 a foot, against 0.09 of system FS per foot, and only **2'-1"** of it is left.
-  **Re-derive that floor, never quote it**: it is `run = 61,446 x 1.50 / F` with
-  `run = 2(L - 9.6667) + 20`, so it moves with the strip width. It was 23'-3" at 8'-0".
-- Current stem/toe state: system FS **1.63** (d/c 0.921), stem flexure **0.61**, toe
-  flexure **0.70**, heel flexure **0.70**, stem length **9.1198'**. Every schedule in the
-  stem bar table clears, `#6 @ 16"` included at 0.97; the 0.53 in²/ft is held on that 3%
-  margin and on §5's stone-bed dependence. **It is `#5 @ 7"`, not `#6 @ 10"` (2026-09-17)**:
+  to $1,300 a foot, against 0.09 of system FS per foot, and only **1'-6"** of it is left.
+  **Re-derive that floor, never quote it**: it is `run = 62,826 x 1.50 / F` with
+  `run = 2(L - 9.6667) + 20`, so it moves with the strip width and the apron's surcharge.
+  It was 23'-3" at 8'-0", and 23'-11" before the surcharge (2026-09-20).
+- Current stem/toe state: system FS **1.59** (d/c 0.942), stem flexure **0.62**, toe
+  flexure **0.72**, heel flexure **0.70**, stem length **9.1198'**. **The raised-garden
+  apron's bearing is in every one of those** (2026-09-20, `engineering/tier_surcharge.py`,
+  free body §4c): +69 plf of thrust per wall, NET of the soil the block displaces — taken
+  gross the loop reads **1.46 and does not clear**, so netting is a load-bearing argument.
+  Every schedule in the stem bar table clears, `#6 @ 16"` included at 0.98; the 0.53 in²/ft
+  is held on that 2% margin and on §5's stone-bed dependence. **It is `#5 @ 7"`, not `#6 @ 10"` (2026-09-17)**:
   the vertical runs continuous on a 90° foot on the footing mat, 7.875" is available, and
   ACI 318-19 §25.4.3.1(a) ldh is 9.35" for a #6, 7.11" for a #5 (free body §6b).
 - **ALL FIVE court strips are 7'-0" x 1'-0" CENTRED on the wall axis, zero offset, with a

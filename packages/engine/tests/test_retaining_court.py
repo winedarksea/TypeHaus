@@ -42,10 +42,15 @@ _M_PER_FT = 0.3048
 # this block that does not move, and that is a structural fact rather than a coincidence.
 # Every capacity-side figure falls: 4'-0" of base friction gone from the run, and 150 plf
 # off W as the strip narrows.
-_NOTE_RESULTANT_LB = 61_446.0
+#
+# ** THE FIFTH PASS (2026-09-20) ADDS A LOAD: the raised-garden apron's surcharge, §4c. **
+# Every thrust gains 69.0 plf (a rigid-wall Boussinesq strip at the apron's NET bearing), so
+# the resultant, the cancelled share, the shortfalls and the strut force all move; the
+# capacity does not. Superseded values are kept beside each constant.
+_NOTE_RESULTANT_LB = 62_826.0          # was 61,446
 _NOTE_CAPACITY_LB = 100_047.0
-_NOTE_CANCELLED_LB = 100_362.0
-_NOTE_SYSTEM_FS = 1.63
+_NOTE_CANCELLED_LB = 102_617.0         # was 100,362
+_NOTE_SYSTEM_FS = 1.59                 # was 1.63
 # §8: the **derived reaction** at the strut, factored, against phi-Pn on a 12" x 17.5"
 # section over a 20'-0" clear span. phi-Pn does not move with the wall height; Pu does.
 #
@@ -64,25 +69,34 @@ _NOTE_SYSTEM_FS = 1.63
 # sections §8 once rejected (10 1/4" and 8 1/2") pass at this Pu by an even wider margin
 # than they did at the old one. What holds 17.5" is the sequencing argument and the absence
 # of redundancy, not the ratio; §8's three-reason block is where that lives.
-_NOTE_STRUT_PU_LB = 40_145.0
+_NOTE_STRUT_PU_LB = 41_047.0           # was 40,145 (§4c: w 3,141.3 plf)
 _NOTE_STRUT_PHI_PN_LB = 103_655.0
 #: The other end of the corner-fixity family, hand-worked in §8 beside the graded one.
 #: Asserted so the record cannot quietly stop publishing the range.
-_NOTE_STRUT_FIXED_CORNER_P_LB = 18_818.0
-_NOTE_STRUT_PINNED_CORNER_P_LB = 25_090.0
+_NOTE_STRUT_FIXED_CORNER_P_LB = 19_241.0      # was 18,818
+_NOTE_STRUT_PINNED_CORNER_P_LB = 25_654.0     # was 25,090
 
 # §5a: the delivery the cancellation is bought with. NO FOOTING IN THIS COURT HOLDS ITS OWN
 # WALL — every one is short against its own thrust, and the shortfall travels through the
 # corners as in-plane shear. The south wall governs at 23,454 lb service; graded as one-way
 # shear on its own 12" x 0.8-lw section, concrete alone, it clears by better than two to one.
-_NOTE_CORNER_SHORTFALL_LB = 23_454.0
-_NOTE_CORNER_VU_LB = 37_526.0
+_NOTE_CORNER_SHORTFALL_LB = 24_834.0   # was 23,454
+_NOTE_CORNER_VU_LB = 39_734.0          # was 37,526
 _NOTE_CORNER_PHI_VN_LB = 86_322.0
 #: Every member's own-thrust-less-own-friction, §5a's table. Asserted in full because the
 #: headline of that subsection is that the list has NO zero in it.
 _NOTE_SHORTFALL_BY_TAG = {
-    "W-SG-W2": 19_154.0, "W-SG-E2": 19_154.0, "W-SG-S": 23_454.0,
+    "W-SG-W2": 20_281.0, "W-SG-E2": 20_281.0, "W-SG-S": 24_834.0,   # were 19,154 / 23,454
 }
+#: §5, with §4c's surcharge in the demand: 71,462 / 62,826.
+_NOTE_NO_STONE_FS = 1.14               # was 1.16
+# §4c, by hand: the apron as a doubled Boussinesq strip, a = 0, b = 1.0', 4.0' down.
+_NOTE_APRON_NET_PSF = {110.0: 109.37, 130.0: 29.37}
+_NOTE_APRON_LATERAL_PLF = {110.0: 69.02, 130.0: 18.53}
+_NOTE_APRON_ARM_FT = 5.4362            # above the footing underside
+_NOTE_APRON_STEM_MOMENT = {110.0: 120.3, 130.0: 32.3}
+_NOTE_APRON_GROSS_LATERAL_PLF = 346.7
+_NOTE_APRON_SOURCE = {"W-SG-W2": "W-RG-WEST", "W-SG-E2": "W-RG-EAST", "W-SG-S": "W-RG-BLOCK"}
 # The exposure of the run above the authored yard, which is a RESULT of the flush tops and
 # not the driver it used to be. `params/sunken_garden.RETAINING_EXPOSURE_ABOVE_LOCAL_GRADE_IN`.
 _NOTE_EXPOSURE_IN = 40.0
@@ -104,7 +118,7 @@ def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
     assert record.status is Status.OK, record.summary
 
     states = {state.name: state for state in record.limit_states}
-    # 1.80 against the 1.50 IRC R404.4 requires. Carried as required/achieved, so < 1 is fine.
+    # 1.59 against the 1.50 IRC R404.4 requires. Carried as required/achieved, so < 1 is fine.
     assert states["sliding"].capacity == pytest.approx(_NOTE_SYSTEM_FS, abs=0.01)
     assert states["sliding"].demand == pytest.approx(1.5)
     assert states["sliding"].ok
@@ -142,7 +156,14 @@ def test_the_court_reproduces_the_hand_worked_free_body(catlin_plan) -> None:
     # inside a safety factor, and the note publishes both terms.
     assert f"{_NOTE_RESULTANT_LB:,.0f}" in record.summary
     assert f"{_NOTE_CAPACITY_LB:,.0f}" in record.summary
-    assert any(f"{_NOTE_CANCELLED_LB:,.0f}" in note for note in record.notes)
+    inputs = {q.name: q.value for q in record.inputs}
+    total = sum(inputs[f"thrust_{t}"] * inputs[f"length_{t}"]
+                for t in ("W-SG-W2", "W-SG-E2", "W-SG-S"))
+    assert total - _NOTE_RESULTANT_LB == pytest.approx(_NOTE_CANCELLED_LB, abs=1.0)
+    # The loop says which apron each thrust carries, by its source item.
+    surcharge = next(note for note in record.notes if note.startswith("APRON SURCHARGE"))
+    for wall, apron in _NOTE_APRON_SOURCE.items():
+        assert f"{wall} +69 plf via tiered_retaining/{apron}" in surcharge, surcharge
 
 
 def test_the_run_tops_out_on_the_porch_datum_and_its_exposure_is_a_result(
@@ -199,24 +220,22 @@ def test_the_east_west_thrusts_cancel_identically(catlin_plan) -> None:
     assert south == pytest.approx(_NOTE_RESULTANT_LB, rel=0.001)
     total = sum(inputs[f"thrust_{tag}"] * inputs[f"length_{tag}"]
                 for tag in ("W-SG-W2", "W-SG-E2", "W-SG-S"))
-    assert total - south == pytest.approx(_NOTE_CANCELLED_LB, rel=0.001)
+    assert total - south == pytest.approx(_NOTE_CANCELLED_LB, abs=1.0)
 
 
 def test_the_no_stone_sensitivity_is_the_designs_real_dependency(catlin_plan) -> None:
-    """§5: at the site's own silty gravel (mu 0.25) the court reaches 1.16 and does NOT check.
+    """§5: at the site's own silty gravel (mu 0.25) the court reaches 1.14 and does NOT check.
 
-    **This assertion pins a failure and that is the point.** The whole margin between 1.16
-    and 1.63 is the washed-stone bed, and the bed is an authored claim
+    **This assertion pins a failure and that is the point.** The whole margin between 1.14
+    and 1.59 is the washed-stone bed, and the bed is an authored claim
     (``FootingBedding.non_frost_susceptible``) about how something gets built. The note says
-    so out loud; this says so in the suite, so that nobody later reads 1.63 as robust.
+    so out loud; this says so in the suite, so that nobody later reads 1.59 as robust.
 
-    Four passes have moved this row — 1.13 to 1.22 when the footings rose, to 1.26 at the
+    Five passes have moved this row — 1.13 to 1.22 when the footings rose, to 1.26 at the
     36" cap, to 1.29 with the flush tops, to 1.16 when the court shortened and the strip
-    narrowed — and none changed anything about the argument: it is still short of 1.50, and
-    0.35 versus 0.25 is still the difference between a court that stands and one that does
-    not. mu multiplies the same W on both sides, so no amount of geometry can close this
-    gap. Only the bed can. The fourth pass moved it the WRONG way, knowingly: 1.29 -> 1.16
-    is the accepted price of the 2'-0" and the 12", stated in §4 and carried in §5.
+    narrowed, to 1.14 when the apron's surcharge joined the demand (§4c) — and none changed
+    the argument: it is still short of 1.50, and 0.35 versus 0.25 is still the difference
+    between a court that stands and one that does not. Only the bed can close it.
     """
     from typehaus.engineering.registry import EngineeringContext
     from typehaus.engineering.retaining_system import _free_body, _loops, _members
@@ -236,7 +255,7 @@ def test_the_no_stone_sensitivity_is_the_designs_real_dependency(catlin_plan) ->
     site = presumptive("GM").friction_coefficient
     assert site == pytest.approx(0.25)
     on_site = sum(site * m.weight_plf * m.length_ft for m in built)
-    assert on_site / on_stone_demand == pytest.approx(1.16, abs=0.01)
+    assert on_site / on_stone_demand == pytest.approx(_NOTE_NO_STONE_FS, abs=0.01)
     assert on_site / on_stone_demand < 1.5
 
 
