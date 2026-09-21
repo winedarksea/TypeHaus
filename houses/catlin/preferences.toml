@@ -418,29 +418,6 @@ suppress = [
   "mep.run_through_plate:DU-S-HP-SUITE",
   "mep.run_through_plate:DU-S-HP-SOUTH",
 
-  # ** structural.tiered_retaining: 5 REAL FAILS, THE RAISED-GARDEN SRW APRON. FIRST
-  # CALCULATED 2026-09-20; RE-GRADED 2026-09-21 ON THE REAL UNIT, THEN AUDITED. A DESIGN
-  # CHANGE OWED. **
-  #
-  # Allan Block AB Classic (6° setback, 130 pcf in place) with AB's 12" of wall rock behind it,
-  # retaining 3'-4" over one 8" course, by the NCMA/AB gravity method on a two-zone trial
-  # wedge: overturning FS 1.44 (110 pcf) / 1.43 (130 pcf), failing at BOTH ends of the soil
-  # band; sliding 1.38 / 1.61 (IRC R404.4 wants 1.5); governing d/c 1.08. The audit removed
-  # the tier row (the apron and the court stand back to back — a terrace rule, not theirs)
-  # and found the confined strip credits nothing. notes/raised_garden_srw.md; §8 prices the
-  # options (24" of wall rock passes on the same method; supplier-sealed geogrid).
-  #
-  # Suppressed only so the reference house's CI gate stays usable while that call is made.
-  # `haus check --no-suppress` shows all five; the permit line BLOCKS (profile.py), so the
-  # suppression hides nothing from either gate. ** A DEBT WITH A NUMBER ON IT: overturning FS
-  # 1.43. ** Delete these five lines in the commit that changes the apron, and do not add a
-  # sixth.
-  "structural.tiered_retaining:W-RG-BLOCK",
-  "structural.tiered_retaining:W-RG-WEST",
-  "structural.tiered_retaining:W-RG-EAST",
-  "structural.tiered_retaining:W-RG-WEST-BALCONY",
-  "structural.tiered_retaining:W-RG-EAST-BALCONY",
-
   # ** structural.deck_tie:FS-BW-FLOOR: 1 REAL FAIL, RE-MEASURED 2026-09-21 ON TWO TIE LINES.
   # A DEBT WITH A NUMBER ON IT: d/c 1.18 (it was 1.82 on the stem alone). **
   #

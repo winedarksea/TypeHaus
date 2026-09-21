@@ -325,7 +325,7 @@ const WASH_POLYGON_OFFSET = { polygonOffset: true, polygonOffsetFactor: -2, poly
 export const BRICK_UNIT_M: readonly [number, number] = [0.2032, 0.0679]; // [length, course]
 /** Nominal CMU face module including joints: a standard block is 16" × 8" with ⅜" joints. */
 export const CMU_UNIT_M: readonly [number, number] = [0.4064, 0.2032]; // [length, course]
-/** Segmental retaining-wall unit face module: the raised garden's Allan Block AB Classic,
+/** Segmental retaining-wall unit face module: the raised garden's Allan Block AB Stones,
  * DRY STACKED — 18" long × 8" high with no mortar joint, so the module is the unit itself. */
 export const SRW_UNIT_M: readonly [number, number] = [0.4572, 0.2032]; // [length, course]
 /** Glen-Gery Roman Maximus laid flat, including joints: 23⅝" × 1⅝" unit + ⅜" joints both

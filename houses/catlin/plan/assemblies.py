@@ -1338,7 +1338,7 @@ FIREPLACE_BRICK_WYTHE = Assembly(
     source="RM-M-LIVING fireplace surround (2026-09-06) — one 3 5/8\" wythe of face brick with grey mortar, ASTM C216, running modular coursing (2 2/3\" per course) off W-B-E1's pour at -1'-1 7/16\" and stopping at 5'-4\" under the walnut mantel. Full brick, not slips (owner's call). Ties back to W-M-E1's studs through the 1 7/8\" behind the wythe; the load path is brick to concrete and is worked in notes/east_breast_bearing.md. Laid BARE in the court's own brown blend 2026-09-13 (one blend house-wide) and washed white by the coating trade on a later arrival — the brick is not a white brick and must not be substituted with one",
 )
 
-# Raised-garden outer face: Allan Block AB Classic (8"H x 12"D x 18"L, 6° setback), one unit
+# Raised-garden outer face: Allan Block AB Stones (8"H x 12"D x 18"L, 12° setback), one unit
 # deep, dry-stacked on 8" courses with the hollow cores filled with wall rock. No rebar — a
 # gravity SRW is held by unit weight, setback and the drained backfill. The 12" layer is the
 # unit's nominal depth; the free body reads AB's design depth off `srw=` in
@@ -1348,10 +1348,10 @@ RETAINING_BLOCK_12 = Assembly(
     layers=(
         Layer(name="srw-block", material_ref="retaining-block", thickness=inch(12.0),
               function=LayerFunction.STRUCTURE,
-              masonry=MasonrySpec(unit_size="AB Classic 8x12x18 SRW unit", coursing=inch(8.0),
+              masonry=MasonrySpec(unit_size="AB Stones 8x12x18 SRW unit", coursing=inch(8.0),
                                   core_fill=True)),
     ),
-    source="raised garden (brief.md follow-up) — outer face, Allan Block AB Classic units dry-stacked on a 6 degree setback, cores filled with wall rock",
+    source="raised garden (brief.md follow-up) — outer face, Allan Block AB Stones units dry-stacked on a 12 degree setback, cores filled with wall rock",
 )
 
 # The SAME wall, washed white on its OUTBOARD (yard) face — the three perimeter legs only.
@@ -1403,10 +1403,10 @@ RETAINING_BLOCK_12_WASHED = Assembly(
                   bottom=LayerBound(datum=LayerDatum.WALL_BASE, offset=inch(8)))),
         Layer(name="srw-block", material_ref="retaining-block", thickness=inch(12.0),
               function=LayerFunction.STRUCTURE,
-              masonry=MasonrySpec(unit_size="AB Classic 8x12x18 SRW unit", coursing=inch(8.0),
+              masonry=MasonrySpec(unit_size="AB Stones 8x12x18 SRW unit", coursing=inch(8.0),
                                   core_fill=True)),
     ),
-    source="raised garden — the three PERIMETER legs (W-RG-BLOCK/WEST/EAST), dry-stacked Allan Block AB Classic units washed white with an untinted mineral silicate (2 coats) over the exposed 3'-4\" only, to bounce light down onto a partially-sunny lawn; the two balcony returns keep plain RETAINING_BLOCK_12 because they face no lawn",
+    source="raised garden — the three PERIMETER legs (W-RG-BLOCK/WEST/EAST), dry-stacked Allan Block AB Stones units washed white with an untinted mineral silicate (2 coats) over the exposed 3'-4\" only, to bounce light down onto a partially-sunny lawn; the two balcony returns keep plain RETAINING_BLOCK_12 because they face no lawn",
 )
 
 # Deck walking surfaces (single-layer). The joists/beams under them are separate framing
