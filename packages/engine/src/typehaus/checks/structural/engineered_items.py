@@ -52,6 +52,16 @@ def column_head_joint(ctx: CheckContext) -> list[Finding]:
                   "no cast column in this plan is a lateral system")
 
 
+@check(Tier.STRUCTURAL, "structural.deck_tie")
+def deck_tie(ctx: CheckContext) -> list[Finding]:
+    """A deck braced by a tie to a concrete wall, and whether the tie carries it."""
+    return _items(ctx, "structural.deck_tie", "deck_tie",
+                  "the tie bracing this deck to a concrete wall — every load on the deck, "
+                  "torsion included, against the tie part's published allowables",
+                  "the tie part's evaluation report; ASCE 7-16 §29.3; IRC R301.5",
+                  "no deck in this plan is tied to a concrete wall")
+
+
 @check(Tier.STRUCTURAL, "structural.veneer_beam")
 def veneer_beam(ctx: CheckContext) -> list[Finding]:
     """A cast beam carrying a masonry wythe between two walls."""

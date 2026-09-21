@@ -164,6 +164,11 @@ the four landing columns  P = 200 lb,  h = 4.54',  b = 1.00'
 These are the **constant-width** numbers, `b = 1.00'` — a bare shaft. They are still exact for
 one: §9 shows a stepped pole of one width IS the code formula. §9 adds the pad.
 
+> ⚠ **WITHDRAWN 2026-09-21 for the four LANDING columns** (`PT-BW-W`/`-E`/`-GW`/`-GE`): the landing
+> is tied to the garage stem (`north_entry_piers.md` §10), so they lean and are no longer
+> lateral columns; `column_base` stops enumerating them. Their rows below are history. `PT-BW-RE`/`-RNE`
+> are untouched — the tie does not reach them (they stand 20' east, on the canopy's own line).
+
 ## 4. The verdicts
 
 Since 2026-09-20 (basis 4) the capacity is the POLE — shaft plus pad, grade to pad bottom —
@@ -830,6 +835,11 @@ pad share       = 10.4480 - 9.7165                    = 0.7315
 F               = 0.7315 / 10.4480                    = 0.0700
 b_eff           = 1.00 + (2.00 - 1.00) x 0.0700       = 1.070'
 ```
+
+> ⚠ **WITHDRAWN 2026-09-21 for the four LANDING columns** (`PT-BW-W`/`-E`/`-GW`/`-GE`): the landing
+> is tied to the garage stem (`north_entry_piers.md` §10), so they lean and are no longer
+> lateral columns; `column_base` stops enumerating them. Their rows below are history. `PT-BW-RE`/`-RNE`
+> are untouched — the tie does not reach them (they stand 20' east, on the canopy's own line).
 
 ### 9d. One column iterated by hand — `PT-BW-GW`, S1, γ = 0.91743
 

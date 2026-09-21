@@ -441,9 +441,11 @@ def test_the_two_gates_are_separate_and_catlin_reaches_neither(catlin_engineerin
     blocked = [item.label for item in checklist.items
                if item.blocking and item.result not in (Result.PASS,
                                                         Result.NOT_APPLICABLE)]
+    # 2026-09-21: the landing's tie to the garage stem closed the head-joint line and opened
+    # its own (deck_tie/FS-BW-FLOOR OVER 1.82, notes/north_entry_piers.md §10).
     assert sorted(blocked) == sorted([
         "Fixed column base rotation (stiffness and sway)",
-        "Cast column head joint (connector, shear, torsion)",
+        "Deck lateral tie to a concrete wall",
         "Cast beam carrying a masonry veneer",
         "Structural ties across a thermal break",
         "Segmental gravity retaining walls (tiered)",

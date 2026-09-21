@@ -20,6 +20,7 @@ from typehaus import (
 )
 
 from params.foundations import SITE_GRADE
+from params.landing_tie import LANDING_TIES
 from params.north_entry_frame import (
     BEAM_X_FT,
     BEARING_TOP_FT,
@@ -716,5 +717,5 @@ SNOW_RETENTION = [
 MAIN_ELEMENTS = [*FRAME_ELEMENTS, FLOOR, GARAGE_FLOOR, TIERS, *TIER_SLABS,
                  SCREEN, *RAILINGS, *SEAT_BEARINGS, *COLUMN_BASES, *INTERIOR_POST_BASES,
                  *COLUMN_CAPS, *SEAT_BEAM_HANGERS, *EAST_HEADER_BEARINGS,
-                 *TRUSS_TIES, *JOINT_TIES,
+                 *TRUSS_TIES, *JOINT_TIES, *LANDING_TIES,
                  *SNOW_RETENTION, *NOTES]

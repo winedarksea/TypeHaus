@@ -236,9 +236,14 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset(catlin_check_r
     # column's base turns in the ground (base_rotation/PT-BW-GW, δ 1.456), two column heads
     # have no published lateral value, the veneer beam's end anchorage is unauthored, the
     # thermal breaks await GFRP data and a measured modulus, and the SRW apron is OVER.
+    #
+    # ** 2026-09-21: THE LANDING WAS TIED TO THE GARAGE STEM. ** Its piers lean, so the head
+    # joint line closed (the two INCOMPLETE heads left) and base rotation is held open by the
+    # canopy pair's presumptive band alone. The tie itself is OVER at 1.82 (suppressed as a
+    # numbered debt, notes/north_entry_piers.md §10), so its new line is open in their place.
     OPEN: set[str] = {
         "Fixed column base rotation (stiffness and sway)",
-        "Cast column head joint (connector, shear, torsion)",
+        "Deck lateral tie to a concrete wall",
         "Cast beam carrying a masonry veneer",
         "Structural ties across a thermal break",
         "Segmental gravity retaining walls (tiered)",

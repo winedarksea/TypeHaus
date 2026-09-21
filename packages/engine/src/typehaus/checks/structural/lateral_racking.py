@@ -565,7 +565,12 @@ def _bears_on_a_wall(ctx: CheckContext, deck) -> bool:
     A shear wall under a deck edge answers the lateral question outright, and this check
     has nothing to add to it. Cheap and structural: a beam whose ``bearing_refs`` names a
     ``Wall`` is hung into masonry or concrete, which is a fixed support in both directions.
+
+    A deck TIED to a concrete wall is braced by it the same way; ``deck_tie_basis.wall_ties``
+    is the one derivation ``pier_basis`` also reads, and ``structural.deck_tie`` grades it.
     """
+    from typehaus.checks.structural._engineering import engineering_context
+    from typehaus.engineering.deck_tie_basis import wall_ties
     from typehaus.model.elements import Wall
     from typehaus.model.structure import Beam
 
@@ -575,7 +580,7 @@ def _bears_on_a_wall(ctx: CheckContext, deck) -> bool:
             continue
         if any(isinstance(ctx.plan.by_tag(b), Wall) for b in beam.bearing_refs or ()):
             return True
-    return False
+    return bool(wall_ties(engineering_context(ctx), deck))
 
 
 def _deck_bearing_posts(ctx: CheckContext, deck) -> set[str]:

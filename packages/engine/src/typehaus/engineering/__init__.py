@@ -29,6 +29,7 @@ from typehaus.engineering import (
     column_head_joint,  # noqa: F401  (registration)
     column_support,  # noqa: F401  (registration)
     deck_post,  # noqa: F401  (registration)
+    deck_tie,  # noqa: F401  (registration)
     deferred,  # noqa: F401  (registration — the kinds this engine defers to a designer)
     girt_screw,  # noqa: F401  (registration)
     glulam_beam,  # noqa: F401  (registration)
@@ -85,6 +86,7 @@ __all__ = [
     "REGISTER_FILENAME", "SETTLED", "Scope", "Signoff", "Status", "pinnable",
     "calc", "fingerprint", "item_id", "keys", "keys_of", "load_register", "no_calc", "records_of",
     "base_rotation", "column_base", "column_head_joint", "column_support", "deck_post",
+    "deck_tie",
     "deferred", "girt_screw", "glulam_beam",
     "lateral_system", "roof_beam",
     "registered_kinds",

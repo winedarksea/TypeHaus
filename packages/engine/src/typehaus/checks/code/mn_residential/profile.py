@@ -554,6 +554,12 @@ MN_2020 = JurisdictionProfile(
         # unauthored, the thermal breaks await GFRP data and a measured modulus, and the
         # SRW apron is OVER (sliding FS 0.38). A suppressed finding leaves its line UNKNOWN,
         # so blocking is also what keeps a suppressed OVER from opening either gate.
+        # Added 2026-09-21. A tie to a concrete wall takes a deck's columns OUT of its lateral
+        # system (`deck_tie_basis.wall_ties`), so the tie is that system and has to be graded
+        # or the relief is a claim. Blocking: a registered calculation.
+        PermitItemSpec("Deck lateral tie to a concrete wall",
+                       ("structural.deck_tie",),
+                       ("IRC R301.5", "ASCE 7-16 §29.3", "the tie part's evaluation report")),
         PermitItemSpec("Cast column head joint (connector, shear, torsion)",
                        ("structural.column_head_joint",),
                        ("ACI 318-19 §22.5", "ACI 318-19 §22.7", "ACI 318-19 §22.8")),

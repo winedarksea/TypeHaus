@@ -358,8 +358,10 @@ def test_the_corner_columns_are_delegated_not_graded_here(catlin_findings,
         assert "fixed at its base" in finding.message
         assert "no knee brace and no shear wall" in finding.message
     assert len(section) == len(catlin_findings)
+    # FS-BW-FLOOR left on 2026-09-21: tied to the garage stem, its piers lean and the tie is
+    # graded instead (`structural.deck_tie`, notes/north_entry_piers.md §10).
     decks = {t for f in catlin_findings for t in f.element_tags if t.startswith("FS-")}
-    assert decks == {"FS-SG-DECK", "FS-BW-FLOOR"}
+    assert decks == {"FS-SG-DECK"}
 
     # The ground's half of the same column is `structural.column_base`'s since 2026-09-20,
     # and it walks the SAME members — a shared `_moment_column_carriers`, because two copies

@@ -96,6 +96,9 @@ _EXCUSED: dict[str, set[str]] = {
     # leaf reaching a leaf — the same shape ``joints`` and ``schedule`` already have, and it
     # cannot become a cycle.
     "engineering/lateral_system.py": {"hardware"},
+    # The same excuse for the same reason: a deck tie grades against the tie part's own
+    # published F1/F2, which live in the catalog and nowhere else.
+    "engineering/deck_tie.py": {"hardware"},
     # ``value_source`` is the dialect printer. A proposal has to be dialect-legal BY
     # CONSTRUCTION — 1-tuple commas, no operators, no frozenset — and a second printer in
     # this package would be a second definition of what the dialect accepts, drifting from

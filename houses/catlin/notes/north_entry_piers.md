@@ -17,7 +17,7 @@ EAST pair went on 2026-09-10 when the east header moved onto concrete);
 > stood east of a flight that runs west); the tiers are cast pours and are §7's business,
 > not this note's.
 **Written:** 2026-09-10, by hand, before the calculation it oracles was encoded.
-**Oracle for:** `engineering/roof_beam.py` (§5); `engineering/pier_basis.py` /
+**Oracle for:** `engineering/deck_tie.py` (§10, added 2026-09-21); `engineering/roof_beam.py` (§5); `engineering/pier_basis.py` /
 `engineering/deck_post.py` / `engineering/spread_footing.py` (§6, axial and bearing); and
 **`roof_moment.roof_base_moments` (§8, the canopy's east columns in BENDING)**, added
 2026-09-11. Reproduced by `tests/test_north_entry_piers.py` and, for §8,
@@ -346,6 +346,11 @@ down. The plf is the one `checks/structural/guards.py` already printed ("guard w
 `resolve/assembly_weight.py` so a calc could read it, because `engineering` may not import
 `checks`. `checks/structural/deck.py` divides the same pounds into R507.3.1's currency —
 98.3 / 50 psf = 1.97 ft² — rather than holding a second answer about one load.
+
+> ⚠ **WITHDRAWN 2026-09-21 as a DEMAND, kept as built.** With the landing tied to the garage (§10)
+> the four landing piers lean: `deck_post` grades them "axial, tied column" (d/c 0.007-0.027)
+> and the dowel-anchorage row below no longer exists for them. The 12" pads stay in
+> `_MOMENT_PIERS` — they cost nothing now and are what a reversal would need.
 
 **Closing it uncovered a real FAIL, and that was the point.** Both piers left
 `deck_post._detailing_only`'s six load-independent states for `_moment_column`'s twelve, and
@@ -924,6 +929,136 @@ Wood crushing on the pack (NDS F_c⊥) is a different member's question and is n
 
 Eight columns OK; governing lateral (canopy 0.893, the rest 0.696 on the guard at C_D 1.0).
 `PT-BW-W`/`-GW` INCOMPLETE on the unpublished lateral. Scope: SCREENING.
+
+> ⚠ **WITHDRAWN 2026-09-21 for the four landing piers** (`PT-BW-W`/`-E`/`-GW`/`-GE`): the
+> landing is tied to the garage stem (§10), its piers lean, and they are no longer lateral
+> columns, so they have no head joint to grade. The rows above for them are history. The
+> canopy columns and the balcony corners are unchanged — but read §10f first.
+
+## 10. The landing's tie to the garage stem (oracles `engineering/deck_tie.py`)
+
+**Written 2026-09-21, by hand, before the module.** Owner decision: tie the landing to the
+garage's ICF stem so the four landing piers stop being the lateral system. The carriers
+`BM-BW-FC`/`-FE` (x = 7'-1 1/2" / 9'-5 1/2") cross the stem with 3 3/4" between their soffit
+(−8 1/4") and its top (−1'-0"): `BM-BW-FC` over `W-GF-S1`, `BM-BW-FE` over `W-GF-S-DR`.
+
+### 10a. The part, and why it needs a block
+
+`HGAM10`, FL11473-R4 Table 1 (sealed 2017-10-19; the R5 table of 2020-10-13 prints the same
+row). SPF/HF column: uplift 585, **F1 630**, F2 795 into / **460 away** (fn 5); fn 1 already
++60% for wind; fn 4 a member ≥ 2 1/2" where installed each side; fn 6 Titen 2 edge ≥ 1 1/2";
+fn 8 f'c ≥ 2,500. Figure 2: masonry leg on the wall TOP, wood leg on the member's side; F1
+along the wall, F2 along the member. Figure 1: 3" x 3" legs, 3 1/2" long.
+
+A 3" wood leg cannot reach a soffit 3 3/4" up. Each carrier gets a KDAT 4x **tie block**,
+3 1/2" deep, screwed up into its soffit, stopping 1/4" off the concrete (nothing bears on the
+garage). The pair screws to the block's faces (3 1/2" ≥ fn 4's 2 1/2"); the masonry legs sit
+on the 6" core, 5 1/2" inboard of the node line (2 1/2" foam + 3"), y = 43.2188 + 0.4583 =
+**43.6771'**. Four parts, `CN-BW-STEMTIE-F{C,E}-{A,B}` (`params/landing_tie.py`).
+
+**Per joint.** F2 (along the carrier): the two gussets mirror each other across the plane F2
+lies in, so they share it as they share uplift — **2 × 460 = 920 lb**. F1 (across the
+carrier): one face pushes, one pulls, and the model cannot say which takes it — **630 lb**,
+not doubled. FL11473-R4 §9 item 4: `F1/630 + F2/920 ≤ 1` where both act.
+
+### 10b. What the tie line carries
+
+ASD wind pressure on a solid face, the deck's own C_f ceiling: `0.6 × 16.539 × 0.85 × 1.80 =
+15.183 psf` (q at 13.12' above the −9.120' ground — Exposure B, K_z 0.57 below 15').
+
+| load | axis | lb | acts at (x, y) ft |
+|---|---|---:|---|
+| deck wind, E-W (`pier_basis`'s own bands, §9b) | x | 110.08 | sheet centroid (7.7917, 39.9323) |
+| `W-BW-SCREEN` face, 6.5729' × 4.0833' | x | 407.50 | (6.0, 39.9323) |
+| `W-BW-SCREEN-SKIRT` face, 6.5729' × 1.125' | x | 112.27 | (5.7656, 39.9323) |
+| **E-W total** | | **629.84** | |
+| deck wind, N-S | y | 310.56 | (7.7917, 39.9323) |
+| `W-BW-SCREEN` share of `RF-BW-CANOPY` N-S, 0.82456 × 1,189.41 (`entry_column_base_fixity.md` §7c, the panel's 0.70 I_g end) | y | 980.74 | (6.0, 39.9323) |
+| **N-S total** | | **1,291.31** | |
+| guard, IRC R301.5, at either end of `W-BW-SCREEN` | any | 200 | (6.0, 36.6458) / (6.0, 43.2188) |
+
+The deck wind is `pier_basis`'s number and inherits its band reading — see §10f.
+
+### 10c. Distribution — a bolt group, and the couple is the demand
+
+Joints at x = 7.125 and 9.4583, both at y = 43.6771; centroid x̄ = 8.2917, spacing 2.3333',
+`J = 2 × 1.16667² = 2.7222 ft²`. Elastic method, equal stiffness:
+`X_i = Fx/2 − M·dy_i/J = Fx/2` (dy = 0), `Y_i = Fy/2 + M·dx_i/J`, with `M` about the centroid.
+
+**N-S wind.**
+```
+M = 980.74 (6.0 − 8.2917) + 310.56 (7.7917 − 8.2917) = −2,247.53 − 155.28 = −2,402.82 lb-ft
+Y_FC = 645.65 + (−2,402.82)(−1.16667)/2.7222 = 645.65 + 1,029.78 = 1,675.43 lb
+Y_FE = 645.65 − 1,029.78 = −384.13 lb
+FC:  1,675.43 / 920 = 1.821   OVER
+```
+**E-W wind.** `M = −(39.9323 − 43.6771) × 629.84 = +2,358.63 lb-ft`; `X = 314.92` each;
+`Y = ±2,358.63 × 1.16667 / 2.7222 = ±1,010.84`:
+```
+FC:  314.92/630 + 1,010.84/920 = 0.4999 + 1.0987 = 1.599   OVER
+```
+**Guard at C_D 1.0** (the row over its 1.6: F1 393.75, F2 575). 200 lb E-W at the south end,
+arm 43.6771 − 36.6458 = 7.0313': `Y = 200 × 7.0313 × 1.16667 / 2.7222 = 602.68`, `X = 100`:
+`100/393.75 + 602.68/575 = 0.254 + 1.048 = **1.302**`. N-S at x = 6.0: `Y_FC = 100 + 196.43 =
+296.43`, 0.516.
+
+**Stem f'c** 5,000 psi on both (`GARAGE_ICF_6`) against fn 8's 2,500: 0.50, detailing.
+
+### 10d. Verdict — the tie as the plan drew it is OVER at 1.82
+
+It is not the landing's own wind (310 lb). It is the **screen**: 981 lb arriving at x = 6.0,
+1'-1 1/2" west of the west joint, on a tie line only 2'-4" long, so the couple puts
+**1.48 × 981** on `BM-BW-FC`. And E-W is the same story sideways: 630 lb arriving 3'-9" south
+of the tie line makes a 2,359 lb-ft couple the same 2'-4" has to resist. Neither is a
+property of the part. No choice of HGAM10 reading closes it:
+
+| reading | N-S (FC) | E-W (FC) |
+|---|---:|---:|
+| SPF/HF, F2 away, pair shares F2 (graded) | **1.82** | **1.60** |
+| DF/SP column (the carriers ARE KDAT southern pine): F1 875, F2 away 640 × 2 | 1.31 | 1.15 |
+| DF/SP, the pair oriented opposite (795/1,105 into + 460/640 away) — orientation the model cannot hold | 0.96 | 0.94 |
+
+**What would close it, for the owner — not decided here:**
+1. **A second tie line on the screen's own line**, x = 6'-0", into the garage's west wall
+   (`W-G-W`, which is collinear with the screen and is a shear wall in exactly this
+   direction). Through the corner cladding, so wood-to-wood with its own detail. It removes
+   the N-S eccentricity outright and gives the E-W couple a 3.5' lever instead of 2.3'.
+2. **Route the canopy's N-S shear into the garage roof** through the existing LSTA24 joint
+   line (`CN-BW-JOINT-*`), so the screen stops being the canopy's west lateral line. That
+   reverses the 2026-09-10 "the garage joint is a TIE, not the lateral system" call.
+3. **A designed steel tie** (anchored angle, ACI 318 Ch. 17 plus NDS bolts) sized for
+   ~1.7 k across the stem at the west carrier — engineered, not a catalog read.
+
+The carriers alone cannot do it with any HGAM10 count: the stem core is 6" deep, one gusset
+per face is all a crossing holds, and the carriers cannot move apart (the RO jambs and the
+west stem's board fix both).
+
+### 10e. Not graded, with hand bounds
+
+- **The stem, out of plane.** 1,675 lb across a 6" core at its top, 22" above the slab/grade
+  that props it. Strength: `M_u = 1,675 × 1.833 / 0.6 = 5,118 lb-ft` over a 45° spread,
+  `b = 2 × 22 + 3.5 = 47.5"`; #4 @ 16" centred (`d = 3.0"`), `A_s = 0.594 in²`,
+  `a = 0.594 × 60,000 / (0.85 × 5,000 × 47.5) = 0.177"`,
+  `φM_n = 0.9 × 0.594 × 60,000 × (3.0 − 0.088) / 12 = 7,784 lb-ft` — 0.66. Shear
+  `2,792 / (0.75 × 2 √5,000 × 47.5 × 3.0 = 15,115)` = 0.18. Not the governing link.
+- **The tie block's screws** into the carrier carry the joint force in shear across the
+  3" × 3 1/2" contact; their schedule is a seal item.
+- **The wood path** — sill hangers, seat beams in weak-axis bending, the carriers' bearing on
+  the seats — is assumed to deliver each load to the carriers.
+- **ABU66SS lateral / ACI 17 breakout** at `PT-BW-W`/`-GW`'s heads: no longer asked (§9 is
+  withdrawn for those two), so the ~3.7 k breakout bound is not worked here.
+
+### 10f. Two things this pass found that are outside the tie
+
+- **FL11473-R4 §9 item 4 IS the combined-load rule §9b said no footnote states.** It sits in
+  the report's Limitations, not the table footnotes: "(Design Uplift / Allowable Uplift) +
+  (Lateral Parallel / Allowable) + (Lateral Perpendicular / Allowable) < 1.0". §9b's own
+  printed number for the canopy heads, `0.370 + 0.893 = 1.263`, is therefore the governing
+  reading of `column_head_joint/PT-BW-RE`/`-RNE`, and it is OVER. Not changed in this pass.
+- **`pier_basis`'s deck wind reads `TR-SG-FASCIA`** — the sunken garden's fascia — as this
+  landing's edge band (0.75' deep over 21.5' N-S / 9.67' E-W runs), via `balcony_wind.nearest`.
+  The landing is 3.58' × 6.57'; its real band is roughly a third of that. Conservative, and
+  small beside the screen, but it is the wrong element.
 
 ## Sources
 
