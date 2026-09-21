@@ -186,8 +186,9 @@ MAX_NON_BLOCKING_ITEMS = {"mn-2020": 25}
 # because `_authoring.engineered()` makes an authored spec unreachable under `Status.OVER` on
 # purpose. The item's CHECK ID changed the same day — `structural.lateral_racking` ->
 # `structural.column_base` — because a permit item matches by check id alone and this
-# BLOCKING line was going red on the advisory `deck_post` findings that shared the old id. Note that "Deck beams outside the beam span table" STAYED at 7's roster and did
-# not leave it when `glulam_beam` was re-registered the same day: it was already counted.
+# BLOCKING line was going red on the advisory `deck_post` findings that shared the old id.
+# Note that "Deck beams outside the beam span table" STAYED at 7's roster and did not
+# leave it when `glulam_beam` was re-registered the same day: it was already counted.
 #
 # RAISED 8 -> 9 on 2026-09-19: "Roof diaphragm and shear panel load path". The north entry
 # canopy's frame shear stopped being loaded wholly onto its two cast columns and is shared
@@ -198,7 +199,14 @@ MAX_NON_BLOCKING_ITEMS = {"mn-2020": 25}
 # at each header — and `engineering/lateral_system.py` grades all of it. It leaves this lane
 # when a licensed engineer stamps the load path, which is the ordinary exit and not a code
 # change: there is no prescriptive table anywhere in the IRC for a diaphragm.
-MAX_UNSEALED_ITEMS = {"mn-2020": 9}
+#
+# RAISED 9 -> 14 on 2026-09-20, and nothing became less designed. Five kinds — base
+# rotation, column heads, the veneer beam, the thermal breaks and the tiered apron — were
+# already deferred on the register with no check naming them, so 26 items were invisible to
+# the checklist. Each now has its own line. Holding this at 9 by keeping them off the
+# checklist would be gaming the ratchet. `MAX_NON_BLOCKING_ITEMS` holds at 25: the new
+# lines are engineered, so they land in this lane and not in staging.
+MAX_UNSEALED_ITEMS = {"mn-2020": 14}
 
 
 def _engineered_labels(profile) -> set[str]:
@@ -389,3 +397,39 @@ def test_a_prescriptive_failure_is_not_sealed_either() -> None:
         label="Header spans", result=Result.FAIL, detail="", check_ids=("x",),
         authority=Authority.PRESCRIPTIVE)
     assert not item.sealed
+
+
+# --- every kind on a line ---------------------------------------------------------------
+#
+# Register-only kinds, each with the reason it has no permit line of its own. Anything else
+# `haus engineering` lists must reach the checklist through some check's findings, or its
+# item is invisible to the permit gate — which is how 26 deferred items sat outside it.
+_REGISTER_ONLY = {
+    "girt_screw": "a component of the truss wall; no prescriptive check for it to answer",
+    "wall_panel": "the same assembly as girt_screw — the `wall_panel` precedent itself",
+    "roof_beam": "graded against the authored snow; its roof's lines carry the frame",
+    "retaining_system": "the court's closed loop; its walls' own line carries each member",
+}
+
+
+def test_every_engineering_kind_reaches_a_permit_item() -> None:
+    from typehaus.checks.registry import run_checks
+    from typehaus.checks.run import build_context
+    from typehaus.engineering import registered_kinds
+    from typehaus.source import load_plan
+
+    profile = get_profile(DEFAULT_PROFILE_NAME)
+    result = load_plan(CATLIN)
+    assert result.plan is not None
+    ctx, _ = build_context(result.plan, CATLIN)
+    report = run_checks(ctx, None)
+    covered = profile.permit_check_ids()
+    on_a_line = {f.engineering_item for f in report.findings
+                 if f.engineering_item and f.check_id in covered}
+    invisible = sorted(item for item in ctx.engineering
+                       if item.split("/", 1)[0] in registered_kinds()
+                       and item.split("/", 1)[0] not in _REGISTER_ONLY
+                       and item not in on_a_line)
+    assert not invisible, (
+        f"these engineering items reach no permit line — a deferral nobody can see on the "
+        f"checklist reads as a design with nothing outstanding: {invisible}")

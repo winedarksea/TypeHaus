@@ -10,6 +10,7 @@ from typehaus.checks.structural import (
     concrete_interference,  # noqa: F401 - registers checks
     deck,  # noqa: F401 - registers checks
     door_module,  # noqa: F401 - registers checks
+    engineered_items,  # noqa: F401 - registers checks
     fortified_roof,  # noqa: F401 - registers checks
     foundation,  # noqa: F401 - registers checks
     guards,  # noqa: F401 - registers checks

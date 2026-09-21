@@ -67,6 +67,7 @@ from typehaus.engineering.registry import (
     EngineeringResults,
     calc,
     keys,
+    keys_of,
     records_of,
     registered_kinds,
 )
@@ -76,7 +77,7 @@ __all__ = [
     "EngineeringContext", "EngineeringRecord", "EngineeringRegister", "EngineeringResults",
     "ExternalDesign", "Freshness", "LimitState", "NO_ENGINEERING", "Oracle", "Quantity",
     "REGISTER_FILENAME", "SETTLED", "Scope", "Signoff", "Status", "pinnable",
-    "calc", "fingerprint", "item_id", "keys", "load_register", "no_calc", "records_of",
+    "calc", "fingerprint", "item_id", "keys", "keys_of", "load_register", "no_calc", "records_of",
     "column_base", "deck_post", "deferred", "girt_screw", "glulam_beam",
     "lateral_system", "roof_beam",
     "registered_kinds",

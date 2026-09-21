@@ -538,6 +538,27 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Column reactions on a foundation wall top",
                        ("structural.column_on_wall_support",),
                        ("IRC R404.1.2", "ACI 318-19 §25.4.2"), blocking=False),
+        # Added 2026-09-20: five kinds `haus engineering` listed and no check named, so
+        # their deferrals were invisible here. Non-blocking while a kind is deferred; each
+        # flips to blocking in the commit that registers its calculation. Base STIFFNESS is
+        # its own line beside base STRENGTH above: different questions, and a reviewer
+        # wants both answered.
+        PermitItemSpec("Fixed column base rotation (stiffness and sway)",
+                       ("structural.base_rotation",),
+                       ("ACI 318-19 §6.6.4", "IBC 2018 §1806.3.4"), blocking=False),
+        PermitItemSpec("Cast column head joint (connector, shear, torsion)",
+                       ("structural.column_head_joint",),
+                       ("ACI 318-19 §22.5", "ACI 318-19 §22.7", "ACI 318-19 §22.8"),
+                       blocking=False),
+        PermitItemSpec("Cast beam carrying a masonry veneer",
+                       ("structural.veneer_beam",),
+                       ("ACI 318-19 §9.5", "ACI 318-19 §22.7"), blocking=False),
+        PermitItemSpec("Structural ties across a thermal break",
+                       ("structural.thermal_break",),
+                       ("ACI 318-19 §22.9", "ACI 347R-14 §2.2"), blocking=False),
+        PermitItemSpec("Segmental gravity retaining walls (tiered)",
+                       ("structural.tiered_retaining",),
+                       ("IRC R404.4", "IBC 2018 §1807.2"), blocking=False),
         PermitItemSpec("Roof framing outside the rafter span table",
                        ("structural.rafter_span",),
                        ("IRC R802.4",), blocking=False),

@@ -124,6 +124,20 @@ def registered_kinds() -> tuple[str, ...]:
     return tuple(sorted(set(_CALCS) | set(_KEYS)))
 
 
+def keys_of(kind: str, ctx: EngineeringContext) -> list[str]:
+    """The element keys one kind enumerates — the register's own list, never re-walked.
+
+    A check that names a kind's items walks this, so the checklist line and the register
+    cannot disagree about which elements exist. A computed kind with no key function is
+    enumerated off its records.
+    """
+    if kind in _KEYS:
+        return list(_KEYS[kind](ctx))
+    if kind in _CALCS:
+        return sorted({record.key for record in _CALCS[kind](ctx)})
+    return []
+
+
 @dataclass
 class EngineeringResults(Mapping[str, EngineeringRecord]):
     """Every engineering item this house has, computed on first ask and then remembered.
