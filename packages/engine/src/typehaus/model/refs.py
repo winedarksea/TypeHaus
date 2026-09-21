@@ -425,11 +425,15 @@ class HeadConnector(HausModel):
     item by design, and this one is read by one.
     """
 
-    #: The tie's model string as the hardware catalog knows it (``"HGAM10"``).
+    #: The tie's model string as the hardware catalog knows it (``"HETA20Z"``).
     tie: str
     #: Parts at the joint. A pair shares UPLIFT by symmetry; it never raises ``lateral_lb``.
     tie_count: int = 1
-    #: Published allowable uplift per part, lb, at ``load_duration_factor``.
+    #: The document rates the ``tie_count`` parts TOGETHER (Simpson's double-anchor tables):
+    #: ``uplift_lb`` and ``lateral_lb`` are then the set's, credited once, never per part.
+    set_rated: bool = False
+    #: Published allowable uplift per part (per set when ``set_rated``), lb, at
+    #: ``load_duration_factor``.
     uplift_lb: float | None = None
     #: Published allowable lateral per part, lb — the LOWER directional figure where two are
     #: published. ``None`` where the document publishes no lateral value at all.
@@ -449,6 +453,8 @@ class HeadConnector(HausModel):
             raise ValueError("HeadConnector.source must name the document it was read from")
         if self.tie_count < 1 or self.load_duration_factor <= 0.0:
             raise ValueError("HeadConnector.tie_count and load_duration_factor must be positive")
+        if self.set_rated and self.tie_count < 2:
+            raise ValueError("HeadConnector.set_rated names a rated SET: tie_count must be >= 2")
         for name in ("uplift_lb", "lateral_lb", "bearing_width_in", "bearing_length_in"):
             value = getattr(self, name)
             if value is not None and value <= 0.0:

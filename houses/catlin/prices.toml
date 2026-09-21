@@ -824,7 +824,7 @@
 # inside the framing rate, and billing it again here would double-count it.
 # 2026-08-28: 351 -> 348. All three authored ties left in one change. CN-SG-TIE-BR2 was
 # retired with the porch joist reinforcement when the rear balcony pillar row moved onto the
-# back-beam line, and CN-SG-TIE-COL/-FCOL were retyped to the HGAM10 below — an H-tie is a
+# back-beam line, and CN-SG-TIE-COL/-FCOL were retyped to a masonry gusset (today the HETA20Z below) — an H-tie is a
 # wood-to-wood part and both of those joints land on a cast column top. What is left is the
 # 348 the bearing rule derives, and no authored one at all.
 # 2026-09-10: 348 -> 340. The canopy's eight truss bearings left this row for the stainless
@@ -888,26 +888,27 @@
 # the H2.5ASS sit around $3.50-$5.50 each in small quantities; this band is that, widened,
 # and it is a LIST BAND rather than a quote.
 "H2.5ASS" = { low = 3.0, high = 6.5 }  # 6 ea — all authored (CN-BW-TRTIE-W1..3 / -E1..3), two per truss and there are three
-# The masonry gusset angle at the cast-column beam seats. It began at the two porch
-# beam-on-column joints (CN-SG-TIE-COL/-FCOL, retired 2026-09-16 — those beams hang off the
-# centre pillars now), closing the OPEN item that stood in params/sunken_garden.py: those two ties reach a cast
-# column top, and an H2.5A has nothing to nail to there. #14 screws into the 3-ply KDAT beam
-# leg, Titen Turbo into the pour. RANGE, NOT A VERIFIED SKU PRICE — this is the $10-40 the
-# porch durability review budgeted for the pair, per-each, and it should be replaced with a
-# quoted number the next time this table is refreshed against a supplier list. Material only,
-# like every row here; the driving is inside the framing rate. The Titen Turbo screws are a
-# concrete anchor bought with the angle and are inside this range.
-"HGAM10" = { low = 5.0, high = 20.0 }  # 16 ea, all authored — EIGHT JOINTS, TWO GUSSETS EACH since 2026-09-14: one gusset is an eccentric rotation restraint and NDS 3.3.3 wants beam ends restrained against rotation (FL11473 fn.4 permits the two-sided install at a minimum 2-1/2" member; every beam here is 3" or wider). The eight joints are the four balcony beam seats on the corner columns (CN-SG-SEAT-R1/R3/F1/F3) since 2026-09-03, and four at the north entry since 2026-09-10 (the E/GE seats and the canopy's EAST header on PT-BW-RE/-RNE). This row read "6 ea" until 2026-09-11, "12 ea" until the pairing, and "24 ea" until 2026-09-16, when the porch pair's four left (the porch beams hang off PT-SG-B*2 on HU212-3s); "20 ea" until later that day, when the west seat pair on PT-BW-W/-GW left (those seat beams hang off PT-BW-CW/-CNW on HU28-2Zs); the count has now been wrong twice, both times by lagging a real change, which is why each revision says what moved
+# The beam tie at the eight cast-column seats: a PAIR of cast-in HETA20Z embedded anchors per
+# joint (ZMAX, G185), 16 ea — the four balcony corners (CN-SG-SEAT-R1/R3/F1/F3, A and B), the
+# north entry's E/GE seat beams and the canopy's east header on PT-BW-RE/-RNE (CN-BW-TIE-*).
+# ** THIS WAS "HGAM10", 16 ea, UNTIL 2026-09-21, AND THE PART WAS WRONG FOR THE JOINT. **
+# Simpson (C-C-2021 p.252): "Products shall be installed such that the Titen Turbo screws ...
+# are not exposed to the exterior environment", and all eight joints are exterior; the HGAM
+# is also G90-only against treated wood (R317.3.1). The HETA is cast with the column, so no
+# concrete screw exists to expose. Retail ~$3.79 ea (fastenersplus, HETA20Z, 2026-09-21),
+# banded; HDG 16d nails are inside the framing rate. Backups and their prices:
+# notes/column_head_connector_options.md.
+"HETA20Z" = { low = 3.0, high = 6.0 }  # 16 ea, all authored — eight joints, a pair each (FL11473 Table 3 rates the pair)
 # The two CENTRE balcony pillars' post caps, and since 2026-09-10 the canopy's two WEST
 # columns as well. A 3-1/2" glulam landing on a 6x6 is a CCQ, not the PC6Z: that cap is
 # published for EQUAL post and beam widths. The four balcony CORNER columns are cast
-# concrete and take the HGAM10 above, which is why this said "2 ea and will stay 2 ea" —
+# concrete and take the HETA20Z pair above, which is why this said "2 ea and will stay 2 ea" —
 # a sentence that was true about the balcony and was still standing on 2026-09-11, two
 # columns after the canopy made it four. HDG rather
 # than ZMAX because it stands in the weather over a sunken garden with no enclosure above
 # it. ~$168 ea is the Simpson list band for the SDS-screw CCQ at this size, screws included
 # (they ship with the connector, which is why there is no separate fastener row).
-"CCQ46SDS2.5" = { low = 140, high = 200 }  # 4 ea — CN-SG-CAP-R2/-F2 and CN-BW-CAP-W/-NW. The canopy's EAST header takes no cap: it lands on cast concrete, where the joint is an SS316-SHIM-35 pack under an HGAM10 gusset
+"CCQ46SDS2.5" = { low = 140, high = 200 }  # 4 ea — CN-SG-CAP-R2/-F2 and CN-BW-CAP-W/-NW. The canopy's EAST header takes no cap: it lands on cast concrete, where the joint is an SS316-SHIM-35 pack and a cast-in HETA20Z pair
 # ** THE HUCQ ROWS ARE RETIRED, 2026-09-12, AND THE COMMENT BELOW IS WHY IT TOOK SO LONG. **
 # Both rows priced a part that could not be installed at the joint it was billed into, and
 # this file's own note argued the wrong way round: "HUCQ410 takes a 4x seat, and 3 x 1 1/2"

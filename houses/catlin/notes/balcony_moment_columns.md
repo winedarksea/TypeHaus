@@ -609,9 +609,10 @@ element — not air-entrained, sitting at the wettest point. Cast the top **to l
 beam footprint, screed the ≥15° wash and drip lip around it (BIA Tech Note 36A), and take up
 tolerance in the 1/2"-1" **stainless** standoff's shim pack. If a levelling bed proves
 unavoidable it is an **epoxy** grout confined under the standoff plate, never a cementitious
-island with exposed shoulders. The HGAM10 stays — value-engineered in already, and on a 12"
-round its Titen Turbos sit at ~3-3/4" edge against Simpson's 1-1/2" minimum, where a 10"
-round would have left no margin. Isolate the gusset from the stainless standoff with EPDM or
+island with exposed shoulders. **The tie is a cast-in HETA20Z pair since 2026-09-21** (the HGAM10
+that stood here needs its Titen Turbos kept out of the exterior environment —
+`column_head_connector_options.md`); on a 12" round its spoons sit 4-1/4" from the edge
+against FL11473's 1-1/2" minimum. Isolate the gusset from the stainless standoff with EPDM or
 HDPE. (PT-SG-COL keeps its grout island for now; aligning that one is a follow-up.)
 
 **Sequence.** Dowels cast with the wall pour (4 #5 galvanized projecting ~30" per column).
@@ -708,7 +709,8 @@ above comes from the manufacturer's instructions rather than from the report.
   already at d/c 0.07.
 - **The Simpson round-footing letters** — an unverified lead: Simpson publish engineering
   letters for some connectors on round concrete, which might supersede the edge-distance
-  arithmetic in §7 if one covers the HGAM10. Not located.
+  arithmetic in §7 if one covers the HGAM10. Not located. Moot since 2026-09-21: the tie is a
+  cast-in HETA20Z pair.
 
 ---
 

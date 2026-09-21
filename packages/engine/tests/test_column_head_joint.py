@@ -70,14 +70,15 @@ def test_canopy_columns_reproduce_9b_9c_9e(catlin_ctx):
         assert record.status == Status.OK
         lateral = _state(record, "connector lateral, wind")
         assert lateral.demand == pytest.approx(410.66, abs=0.05)
-        assert lateral.capacity == 460.0 and lateral.ratio == pytest.approx(0.893, abs=1e-3)
+        assert lateral.capacity == 1350.0 and lateral.ratio == pytest.approx(0.304, abs=1e-3)
         assert _state(record, "connector uplift").demand == pytest.approx(433.25, abs=0.1)
-        assert _state(record, "connector uplift").capacity == 585.0
+        assert _state(record, "connector uplift").capacity == 2560.0
+        assert "the rated set" in _state(record, "connector uplift").citation
         assert _state(record, "column shear").demand == pytest.approx(826.95, abs=0.1)
         torsion = _state(record, "column torsion")
         assert torsion.demand == pytest.approx(44.46, abs=0.01)
         assert _input(record, "torsion_lever") == pytest.approx(2.25)
-        assert _input(record, "combined_unity_unverified") == pytest.approx(1.263, abs=1e-3)
+        assert _input(record, "combined_unity_unverified") == pytest.approx(0.473, abs=1e-3)
     assert _input(_record(catlin_ctx, "PT-BW-RE"), "seat_eccentricity") == pytest.approx(0.875)
     assert _input(_record(catlin_ctx, "PT-BW-RNE"), "seat_eccentricity") == pytest.approx(0.0)
 
@@ -87,8 +88,8 @@ def test_guard_columns_grade_the_guard_at_cd_one(catlin_ctx):
         record = _record(catlin_ctx, tag)
         assert record.status == Status.OK
         guard = _state(record, "connector lateral, guard")
-        assert guard.capacity == pytest.approx(287.5)
-        assert guard.ratio == pytest.approx(0.6957, abs=1e-4)
+        assert guard.capacity == pytest.approx(843.75)
+        assert guard.ratio == pytest.approx(0.2370, abs=1e-4)
         assert not any(s.name == "connector uplift" for s in record.limit_states)
     sg = _record(catlin_ctx, "PT-SG-BR1")
     assert _state(sg, "column torsion").demand == pytest.approx(46.67, abs=0.01)
@@ -180,6 +181,20 @@ def _integrity(head):
 
 def test_quoted_values_agree_with_the_catalog():
     assert _integrity(HeadConnector(**_HGAM)) == []
+
+
+_HETA = dict(tie="HETA20Z", tie_count=2, set_rated=True, uplift_lb=2560.0,
+             lateral_lb=1350.0, load_duration_factor=1.6, bearing="SS316-SHIM-35",
+             bearing_width_in=3.5, bearing_length_in=3.5, source="FL11473 Table 3")
+
+
+def test_a_set_rated_pair_quotes_the_catalog_row_as_is():
+    assert _integrity(HeadConnector(**_HETA)) == []
+
+
+def test_a_set_of_one_is_refused():
+    with pytest.raises(ValueError, match="set_rated"):
+        HeadConnector(**{**_HETA, "tie_count": 1})
 
 
 def test_a_quoted_795_is_an_error():

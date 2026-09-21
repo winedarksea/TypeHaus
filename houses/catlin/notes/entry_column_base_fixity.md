@@ -67,7 +67,7 @@ depth and would be reading a provision about a structure this is not.
 **§1806.3.4's doubling is a judgement about the building, not about the soil.** The section
 permits the lateral bearing value to be doubled for an isolated pole "not adversely affected
 by a 1/2 inch motion at the ground surface". Whether half an inch of sway at the base of a
-canopy column — with an `HGAM10` gusset and a stainless standoff shim pack at its head —
+canopy column — with a beam tie (an `HGAM10` gusset then, a cast-in `HETA20Z` pair since 2026-09-21) and a stainless standoff shim pack at its head —
 harms what stands on it is a question about the structure. So both ends are worked below and
 the module makes no such judgement of its own: where they straddle, the record reports
 INCOMPLETE naming it. That is the same convention `retaining_wall` applies to the soil unit
@@ -363,7 +363,7 @@ demonstrably has one, which is §6g's third bullet exactly.
 **The connector is still not solved.** `KBS1Z` is wood-to-wood and `APVKB45-6` is unrated in
 ER-102 and ER-280. A knee brace landing on a 12" cast round needs a real part — a
 through-bolted plate or a concrete-screw bracket at >= 3" edge distance, the family the
-`HGAM10` head already uses — and `structural.lateral_racking` reports UNKNOWN for a brace
+`HGAM10` head used until 2026-09-21 — and `structural.lateral_racking` reports UNKNOWN for a brace
 with no published lateral capacity, so this closure does not open the permit gate either.
 
 ### 6d. Share the shear with the panel and the deck — **DONE, and it is §7**
@@ -437,7 +437,7 @@ grade. What stands on them is a 4'-11 3/4" square open landing and its guard —
 cladding, no finish plane, nothing bearing on the house or the garage. Half an inch of sway at
 grade under a person leaning on a rail moves a free-standing landing half an inch and it comes
 back. There is nothing there to crack, bind or rack out of plumb. Contrast the canopy pair,
-whose heads carry an `HGAM10` gusset and a stainless standoff shim pack under a 24' header —
+whose heads carry a cast-in `HETA20Z` tie pair and a stainless standoff shim pack under a 24' header —
 which is exactly the structure §1 was written cautious about, and exactly why §6a bought its
 depth rather than claiming this.
 

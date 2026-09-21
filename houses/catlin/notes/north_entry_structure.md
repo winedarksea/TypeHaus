@@ -57,7 +57,7 @@ it would order 144 sf of R-38 blown fiberglass and 5/8" gypsum nobody installs.
 | truss-to-header | `CN-BW-TRTIE-W1..3`, `-E1..3` | One **stainless `H2.5ASS`** each end of every truss. Six, not eight, since the fourth truss went. Not the galvanized H2.5A the rest of the house buys: these land on treated southern pine at an entry that is salted every winter. |
 | `BM-BW-RW` / `-RE` | `PT-BW-CW`/`-CNW` and `PT-BW-RE`/`-RNE` | 3-ply 2x12 KDAT, top at +7'-4" = the garage plate. 4'-11 3/4" between columns, running 8 7/8" past the north column so the roof plane reaches the garage wall. That tail carries **no truss** — it backs the deck edge and the fascia return and nothing else. **The two headers do not land on the same thing.** |
 | `PT-BW-CW` / `-CNW` | `PT-BW-W` / `PT-BW-GW` | 6x6 KDAT, 7'-8 1/4", the WEST pair. `ABU66SS` standoff base on a cast-in `AB-058-10-SS`; `CCQ46SDS2.5` cap at the header. `PT-BW-CNW` shares its pier with the garage-side seat beam exactly as `PT-BW-CW` shares one with the house-side seat. |
-| `PT-BW-RE` / `-RNE` | `FT-BW-RE` / `FT-BW-RNE` | The EAST pair, and they are **not** columns on piers — they are one 12" cast concrete pour each, footing to header soffit, **fixed at the base**. No wood on this side at all, so the top joint is an `SS316-SHIM-35` pack under an `HGAM10` gusset, never a post cap. |
+| `PT-BW-RE` / `-RNE` | `FT-BW-RE` / `FT-BW-RNE` | The EAST pair, and they are **not** columns on piers — they are one 12" cast concrete pour each, footing to header soffit, **fixed at the base**. No wood on this side at all, so the top joint is an `SS316-SHIM-35` pack and a cast-in `HETA20Z` tie pair, never a post cap. |
 
 > ⚠ **NEITHER END OF THE CANOPY IS A GABLE END, and the engine used to think both were.**
 > A gable-end frame is plated with verticals at stud spacing, has no engineered web joints,
@@ -151,7 +151,7 @@ y=37'-6", not brackets standing off the basement concrete.
 
 | Member | Support | What the drawings must say |
 |---|---|---|
-| `BM-BW-HOUSE-SEAT` | `PT-BW-W`, `PT-BW-E` | 3'-7" between two 12" round piers (5'-6" until 2026-09-11, when the deck's east edge came in to `D-G-SERVICE`'s jamb at x=9'-7"), soffit −1'-3 1/2". `SS316-SHIM-35` pack under it (bearing, and the dielectric off the pour), `HGAM10` gusset (the tie). |
+| `BM-BW-HOUSE-SEAT` | `PT-BW-W`, `PT-BW-E` | 3'-7" between two 12" round piers (5'-6" until 2026-09-11, when the deck's east edge came in to `D-G-SERVICE`'s jamb at x=9'-7"), soffit −1'-3 1/2". `SS316-SHIM-35` pack under it (bearing, and the dielectric off the pour), a cast-in `HETA20Z` pair (the tie). |
 | `BM-BW-GARAGE-SEAT` | `PT-BW-GW`, `PT-BW-GE` | Identical span, elevation and detail. |
 | `BM-BW-SCSILL` | Both seat beams | The screen panel's sill and the deck's west rim in one member, on the column line at x=6'-0" where the joist field cannot reach. |
 | `BM-BW-FC` / `-FE` | Both seat beams **and** `PT-BW-IC` / `-IE` | Continue into the garage to the interior landing, under `D-G-SERVICE`'s sill and 3 3/4" over the continuous ICF stem (`W-GF-S-DR` is full stem since 2026-09-11; its door gap dated from when the door opened at the slab). The west one is sistered to the deck's second joist at 7'-3 3/4"; the east one's face is on the RO's east jamb at 9'-7". The tips are POSTED. |

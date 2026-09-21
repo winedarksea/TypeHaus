@@ -94,7 +94,7 @@ from typehaus import (
 )
 
 from typehaus.resolve.framing.profiles import cross_section
-from params.column_heads import HGAM10_PAIR_HEAD
+from params.column_heads import HETA20Z_PAIR_HEAD
 from params.roof_trim import _WALL_OUTBOARD_IN
 from params.sunken_garden_options import OPTION
 
@@ -2625,8 +2625,9 @@ _PORCH_STAIR_Y1 = -9.0   # its SOUTH side — a 36" flight
 # modelled 1 1/2" post still clears the round by 3/4", so nothing here fails — but a real
 # 5x5 surface baseplate at those two stations lands inside the concrete. **Set no baseplate
 # at the two front corners; land the rail ends on the columns**, Titen Turbo at >=3" edge
-# distance, the same fastener and edge rule the HGAM10 beam seat above uses. The engine
-# models no baseplate and will never ask about this.
+# distance. The engine models no baseplate and will never ask about this. (Simpson wants
+# Titen screws kept out of the exterior environment — the reason the beam seats went to a
+# cast-in HETA20Z; the rail maker's own anchor schedule governs here.)
 _PORCH_GUARD_PATH = (pt(ft(_x_in_w), ft(_y_porch_deck_n)), pt(ft(_x_in_w), ft(_y_ax_front)),
                      pt(ft(_x_in_e), ft(_y_ax_front)), pt(ft(_x_in_e), ft(_PORCH_STAIR_Y1)))
 PORCH_GUARD = Railing(
@@ -2950,7 +2951,7 @@ _FRONT_COLUMN_CANTILEVER_IN = 2.0
 # while the front corners were wood posts and went stale the day they became 12" cast
 # rounds. A 6" radius on a 2 3/4" offset puts the column's south face at -10'-9 1/4", 3 1/4"
 # SOUTH of the beam end: the beam no longer roofed the top at all, it sat on the north half
-# of a shelf that collected water against its own end grain and against the HGAM10.
+# of a shelf that collected water against its own end grain and against the beam tie.
 #
 # The offset is therefore derived from the member that stands here — half the round, plus a
 # deliberate 2" of beam past the face:
@@ -2970,7 +2971,7 @@ _FRONT_COLUMN_CANTILEVER_IN = 2.0
 # modelled 1 1/2" post clears the column by 3/4" but a real 5x5 surface baseplate lands
 # INSIDE the 12" round. **The guard's two front corners die into the columns**: the south
 # leg's rail ends and the east/west legs' land on the concrete with the same Titen Turbo at
-# >=3" edge distance the HGAM10 uses, and no baseplate is set at those two stations. The
+# >=3" edge distance, and no baseplate is set at those two stations. The
 # engine cannot see a baseplate, so nothing will fail if this is forgotten — it is written
 # here and in PORCH_GUARD's own comment, and on RAILING_DARK_METAL in prices.toml.
 #
@@ -3164,7 +3165,7 @@ for _i, _x in enumerate(_PILLAR_X, start=1):
                             vertical_reinforcement=(SPEC.corner_column_cage
                                                     if _is_corner else None),
                             reinforcement=(_MOMENT_COLUMN_CAGE if _is_corner else None),
-                            head_connector=(HGAM10_PAIR_HEAD if _is_corner else None),
+                            head_connector=(HETA20Z_PAIR_HEAD if _is_corner else None),
                             assembly=("SUNKEN_GARDEN_COLUMN_12" if _is_corner
                                       else "POST_WHITE_PAINT_DF")))
 
@@ -4030,32 +4031,27 @@ for _row, _y, _rise in _PILLAR_ROWS:
 # keeps both IFC GlobalIds continuous across the whole history of this joint.
 
 # THE FOUR CORNER BEAM SEATS. Each 12" column top carries ONE balcony beam end (the west
-# and east beams' two ends each), held down by an HGAM10 masonry gusset angle. #14 screws to the wood, Titen Turbo to the concrete at >=3" edge distance
-# on the 12" round (Simpson's minimum is 1-1/2"), and an EPDM or HDPE isolator between the
-# gusset and the stainless standoff under the beam soffit.
+# and east beams' two ends each), held down by a pair of HETA20Z embedded anchors cast into
+# the column top — spoons 4" in, straps nailed to the glulam faces with HDG 16d — and an EPDM
+# or HDPE isolator where a strap passes the stainless standoff under the beam soffit. Until
+# 2026-09-21 this was an HGAM10 gusset pair, whose Titen Turbo screws Simpson forbids exposed
+# to the exterior environment (`notes/column_head_connector_options.md`).
 #
-# ``elevation`` is the beam SOFFIT — the bearing plane the gusset holds down — for the same
-# reason the porch ties are authored there: a Connector resolves to a marker box centred on
-# its elevation, so authoring the storey datum would draw the gusset floating in the joist
-# band above the joint it makes.
+# ``elevation`` is the beam SOFFIT — the bearing plane the tie holds down: a Connector
+# resolves to a marker box centred on its elevation, so authoring the storey datum would draw
+# the tie floating in the joist band above the joint it makes.
 _CORNER_SEAT_BEAM = {("R", 1): "BM-SG-BLW", ("F", 1): "BM-SG-BLW",
                      ("R", 3): "BM-SG-BLE", ("F", 3): "BM-SG-BLE"}
 #
-# ** TWO GUSSETS PER COLUMN, ONE EACH SIDE OF THE BEAM, SINCE 2026-09-14. ** A single angle
-# restrains the beam end against rotation from one face only, and that is an ECCENTRIC
-# restraint: NDS 3.3.3 requires beam ends to be restrained against rotation, and a one-sided
-# gusset leaves the joint free to roll away from it. FL11473 footnote 4 contemplates the
-# two-sided install directly and states its condition — a minimum 2-1/2" member "where
-# anchors are installed on each side" — and the balcony beams are 3-1/2" glulam.
+# ** TWO ANCHORS PER COLUMN, ONE EACH FACE OF THE BEAM, SINCE 2026-09-14. ** A one-sided tie
+# is an ECCENTRIC rotation restraint and NDS 3.3.3 wants beam ends restrained. FL11473 Table
+# 3 rates the HETA pair as ONE installation on a "2- or 3-ply" member; a 3-1/2" glulam is
+# that by width, not ply count — a reading the options note flags. Read as 1-ply, the
+# lateral drops to Table 2's 340 lb and the guard still clears (200 / 212.5).
 #
-# The edge distance still works on both sides, and it is the gate that could have cut this
-# back to the two porch joints. Anchors must sit outside the beam (>=1-3/4" off the axis for
-# a 3-1/2" beam) and keep >=3" to the edge of the 12" round (so <=3" off the axis). Both
-# sides get the same 1-1/4" band, because a circle is symmetric about its own diameter.
-#
-# Authored at the beam FACES rather than both on the centreline: the gusset's wood leg screws
-# to the beam side, so the face is where the part is, and two markers at one point would draw
-# as a single box.
+# Each spoon sits 1-3/4" off the axis, 4-1/4" from the edge of the 12" round (min 1-1/2").
+# Authored at the beam FACES, where each strap nails on; two markers at one point would
+# draw as a single box.
 _CORNER_SEAT_UID = {("R", 1): "SGCG1RAAAA", ("R", 3): "SGCG3RAAAA",
                     ("F", 1): "SGCG1FAAAA", ("F", 3): "SGCG3FAAAA"}
 #: The second of each pair. New uids, minted here as every other uid in this file is — `haus
@@ -4072,13 +4068,13 @@ for _row, _y, _rise in _PILLAR_ROWS:
                 uid=_uids[(_row, _i)], tag=f"CN-SG-SEAT-{_row}{_i}{_side}",
                 kind=ConnectorKind.HURRICANE_TIE,
                 position=pt(ft(_PILLAR_X[_i - 1]) + inch(_dx), ft(_y)),
-                elevation=_balcony_beam_soffit + _rise, size="HGAM10",
+                elevation=_balcony_beam_soffit + _rise, size="HETA20Z",
                 connects=(_CORNER_SEAT_BEAM[(_row, _i)], f"PT-SG-B{_row}{_i}")))
 
 # THE TWO CENTRE POST CAPS. A 3-1/2" glulam landing on a 6x6 is a CCQ46SDS2.5 (ESR-2604) —
 # the column cap sized for a 4x beam on a 6x post, with SDS screws both ways. The corners
-# take the HGAM10 above instead because their post is concrete and a wood-to-wood cap has
-# nothing to screw into.
+# take the HETA20Z pair above instead because their post is concrete and a wood-to-wood cap
+# has nothing to screw into.
 #
 # These close ``checks/structural/uplift_path``'s post-to-beam leg at the two joints where
 # the base is still pinned: the four cast columns get their hold-down from the doweled lap
@@ -4169,10 +4165,10 @@ CONNECTORS += [
 # .source ("tolerance taken in a 1/2\"-1\" stainless standoff shim pack") and nowhere else:
 # a real purchased part at a real joint with nothing in the BOM, nothing in 3D and nothing a
 # reviewer could click. SS316-SHIM-35 carries the detailing now — no grout island, 316
-# stainless or HDG with an isolator, EPDM/HDPE where the pack meets an HGAM10 — and these
+# stainless or HDG with an isolator, EPDM/HDPE where the pack meets a zinc-coated tie — and these
 # four make it countable.
 #
-# One per column top, beside the gusset that holds the beam down to it. The four balcony
+# One per column top, beside the tie pair that holds the beam down to it. The four balcony
 # corners land on `_balcony_beam_soffit` PLUS THEIR ROW'S RISE — the rear row's two seats are
 # 2" above the front row's, because the beams tilt (see `_balcony_rise_at`). PT-SG-COL and
 # PT-SG-FCOL take none: no beam bears on them, their pillars stand on ABU66SS.
@@ -4464,7 +4460,7 @@ PORCH_SLOT_CLOSURE = Flashing(
     back_side="left")
 
 # Every remaining connector is porch hardware at the deck (post bases, hangers, the column
-# ties and the four corner beam-seat gussets), so main takes them whole. With the knee
+# ties and the four corner beam-seat ties), so main takes them whole. With the knee
 # braces retired there is no second-storey hardware at all.
 MAIN_ELEMENTS = [*MAIN_NODES, *BACK_BEAMS, *FRONT_BEAMS, PORCH_JOISTS, *PILLAR_CHASES,
                  PORCH_SLOT_CLOSURE,

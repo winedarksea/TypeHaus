@@ -35,7 +35,7 @@ from typehaus import (
     ft, inch, pt,
 )
 
-from params.column_heads import ABU66SS_HEAD, HGAM10_PAIR_HEAD
+from params.column_heads import ABU66SS_HEAD, HETA20Z_PAIR_HEAD
 from params.foundations import SITE_GRADE
 from plan.storeys.garage import (
     GARAGE_X_WEST, GARAGE_Y_SOUTH, SERVICE_DOOR_OFFSET, SERVICE_DOOR_WIDTH,
@@ -558,10 +558,10 @@ def _pad_outline(x_ft, y_ft, side_in, along_in=None):
 
 
 #: What ties each head to its beam (`params/column_heads.py`). The west pair carry a 6x6
-#: canopy column on an ABU66SS and hang the seat beam off it; the rest take the HGAM10 pair.
+#: canopy column on an ABU66SS and hang the seat beam off it; the rest take the HETA20Z pair.
 _HEAD_CONNECTORS = {"PT-BW-W": ABU66SS_HEAD, "PT-BW-GW": ABU66SS_HEAD,
-                    "PT-BW-E": HGAM10_PAIR_HEAD, "PT-BW-GE": HGAM10_PAIR_HEAD,
-                    "PT-BW-RE": HGAM10_PAIR_HEAD, "PT-BW-RNE": HGAM10_PAIR_HEAD}
+                    "PT-BW-E": HETA20Z_PAIR_HEAD, "PT-BW-GE": HETA20Z_PAIR_HEAD,
+                    "PT-BW-RE": HETA20Z_PAIR_HEAD, "PT-BW-RNE": HETA20Z_PAIR_HEAD}
 
 FOOTINGS = []
 #: The house-side pads run 18" north-south rather than the 24" their square drew, because

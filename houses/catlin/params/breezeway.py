@@ -230,7 +230,7 @@ RAILINGS = [
 
 NOTES = [
     Annotation(uid="BWAN03AAAA", tag="AN-BW-ROOF", position=pt(ft(22), ft(40)),
-               text="CANOPY RF-BW-CANOPY IS FREESTANDING AND BRACES ITSELF: 3 trusses @24in span 24ft on BM-BW-RW/RE. EAST header lands on PT-BW-RE and PT-BW-RNE, 12in CAST CONCRETE COLUMNS running unbroken from footing to header soffit, FIXED at the base — these are the east lateral system, and they take a shim pack + HGAM10 gusset at the top, NOT a post cap (no wood under that header). WEST header on two 6x6 KDAT columns PT-BW-CW/CNW over 12in piers; the west lateral system is W-BW-SCREEN, the sheathed panel under the slats. NO gravity bearing on W-G-W/W-G-E or on any garage framing. Each truss ties to its header with a stainless H2.5ASS both ends (CN-BW-TRTIE-*). Headers run 8in past the north columns so the roof plane reaches the garage wall, and carry NO truss on that tail -- the deck bridges the last 1ft 9-3/8in to RF-GARAGE's own gable truss, leaving the garage south wall plane clear for its cladding and the fire/draft closure; sheathing CONTINUOUS across the garage south wall line and TIED with 7 LSTA24 straps @4ft o.c. (CN-BW-JOINT-1..7) — the two roofs are ONE plane and move together; the strap line carries in-plane shear and tension only, never gravity. Both eaves get the garage's own fascia and a CONTINUOUS 5in trough falling north to TR-G-LEADER-E/-W; NO leader at the canopy south end. No soffit — open tails. South gable of RF-GARAGE and both ends of RF-BW-CANOPY are CLOSE RAKES (sheathing cantilever + fascia), no ladder framing, no barge rafter. NEITHER END OF THE CANOPY IS A GABLE END: all three canopy trusses are ordinary FIELD trusses spanning 24ft, NOT gable-end frames -- a gable-end frame is supported continuously by the wall under its bottom chord and does not span, and there is no wall under either canopy end. Design snow 42psf balanced + 50psf drift surcharge over 9.8ft from the house gable (ASCE 7 §7.7, p_g=50); truss fabricator to price the two southernmost garage trusses as drift trusses"),
+               text="CANOPY RF-BW-CANOPY IS FREESTANDING AND BRACES ITSELF: 3 trusses @24in span 24ft on BM-BW-RW/RE. EAST header lands on PT-BW-RE and PT-BW-RNE, 12in CAST CONCRETE COLUMNS running unbroken from footing to header soffit, FIXED at the base — these are the east lateral system, and they take a shim pack + a cast-in HETA20Z strap pair at the top, NOT a post cap (no wood under that header). WEST header on two 6x6 KDAT columns PT-BW-CW/CNW over 12in piers; the west lateral system is W-BW-SCREEN, the sheathed panel under the slats. NO gravity bearing on W-G-W/W-G-E or on any garage framing. Each truss ties to its header with a stainless H2.5ASS both ends (CN-BW-TRTIE-*). Headers run 8in past the north columns so the roof plane reaches the garage wall, and carry NO truss on that tail -- the deck bridges the last 1ft 9-3/8in to RF-GARAGE's own gable truss, leaving the garage south wall plane clear for its cladding and the fire/draft closure; sheathing CONTINUOUS across the garage south wall line and TIED with 7 LSTA24 straps @4ft o.c. (CN-BW-JOINT-1..7) — the two roofs are ONE plane and move together; the strap line carries in-plane shear and tension only, never gravity. Both eaves get the garage's own fascia and a CONTINUOUS 5in trough falling north to TR-G-LEADER-E/-W; NO leader at the canopy south end. No soffit — open tails. South gable of RF-GARAGE and both ends of RF-BW-CANOPY are CLOSE RAKES (sheathing cantilever + fascia), no ladder framing, no barge rafter. NEITHER END OF THE CANOPY IS A GABLE END: all three canopy trusses are ordinary FIELD trusses spanning 24ft, NOT gable-end frames -- a gable-end frame is supported continuously by the wall under its bottom chord and does not span, and there is no wall under either canopy end. Design snow 42psf balanced + 50psf drift surcharge over 9.8ft from the house gable (ASCE 7 §7.7, p_g=50); truss fabricator to price the two southernmost garage trusses as drift trusses"),
 
     Annotation(uid="BWAN01AAAA", tag="AN-BW-STRUCTURE", position=pt(ft(7), ft(39)),
                text="LANDING: ONE tier of beams. Two seat beams east-west on the piers at -0ft 8-1/4in; 2x8 joists @12in o.c. run NORTH-SOUTH straight on them, cantilevering 9-1/2in south and 7-1/4in north. BM-BW-FC/FE run north-south in the SAME plane (not a second tier) and exist only to reach the interior landing under D-G-SERVICE's sill, 3-3/4in over the continuous ICF stem; they are posted at their tips on PT-BW-IC and PT-BW-IE, 4x4 KDAT 25-3/4in tall on ABU44 standoff bases with cast-in AB-058-10-SS bolts. Thicken SL-G-FLOOR to 10in over a 2ft square under each post, cast monolithic with the slab (not modelled — no element says 'monolithic'). The interior landing's west edge is closed by W-G-W; ST-G-SERVICE's handrail is wall-mounted on 2x blocking (BK-G-W-RAIL-*). No bearing on the house and none on the garage. TWO PIER DEPTHS ON PURPOSE: the three HOUSE-side piers (PT-BW-W/E/RE) bottom at -9ft 9-7/16in and must be cast WITH the basement excavation while it is open — casting them after backfill undermines the house footing, and the depth costs shaft only because the hole is already there. The three GARAGE-side piers (PT-BW-GW/GE/RNE) bottom at -7ft 0in, coplanar with the garage strip footings, and are cast with the garage foundation in the same pour. PT-BW-RE and PT-BW-RNE carry on ABOVE the bearing plane as full-height columns — one continuous pour each, footing to header soffit, no cold joint at the deck. Hold deck boards 1/2in off the house cladding and let the gap drain"),
@@ -423,10 +423,11 @@ SCREEN = SlatScreen(
 # Two parts per bearing, and they do different jobs. The SS316-SHIM-35 pack is the BEARING:
 # it holds the treated soffit off the pour so water cannot sit in the joint and the copper
 # treatment never touches the concrete, and it is where the levelling tolerance is taken. The
-# HGAM10 gusset is the TIE: #14 screws into the wood leg, Titen Turbo into the concrete leg,
-# >=3" edge distance -- the figure PIER_CONCRETE_12 and SUNKEN_GARDEN_COLUMN_12 both carry on
-# the 12" round, not Simpson's bare 1 1/2" floor, which is what this said until 2026-09-12. A
-# 3" seat beam centred on a 12" circle leaves 4 1/2" per side, so the tighter rule is free.
+# HETA20Z pair is the TIE: spoons cast 4" into the pier top, straps nailed to the beam faces
+# with HDG 16d, each spoon 4 1/2" from the edge of the 12" round (FL11473 minimum 1 1/2").
+# Cast in, so there is no concrete screw to keep out of the weather -- the HGAM10 gusset that
+# stood here until 2026-09-21 could not meet Simpson's "Titen Turbo screws ... not exposed to
+# the exterior environment" (`notes/column_head_connector_options.md`).
 # `structural.uplift_path_coverage` grades the second one -- a shim pack is not a hold-down,
 # and a beam simply resting on a pier is a break in the chain.
 SEAT_BEARINGS = []
@@ -443,25 +444,22 @@ for _i, (_t, _x, _y, _beam) in enumerate((
         connects=(_beam, f"PT-BW-{_t}")))
     # ** NONE ON THE WEST PIERS (owner, 2026-09-16). ** At W and GW the seat beam hangs off
     # PT-BW-CW/-CNW on an HU28-2Z, and that column's anchored ABU66SS already ties it to the
-    # pier, so a gusset there restrains nothing the hanger does not.
+    # pier, so a tie there restrains nothing the hanger does not.
     if _t in ("W", "GW"):
         continue
-    # ** A PAIR, ONE EACH SIDE OF THE BEAM. ** A single gusset restrains the beam end
-    # against rotation from one face only, which is an ECCENTRIC restraint: NDS 3.3.3
-    # requires beam ends to be restrained against rotation, and a one-sided angle leaves the
-    # joint free to roll away from it. FL11473 footnote 4 contemplates the two-sided install
-    # directly and sets its condition — a minimum 2-1/2" member "where anchors are installed
-    # on each side". A 3" seat beam clears it.
+    # ** A PAIR, ONE EACH FACE OF THE BEAM. ** A one-sided tie is an ECCENTRIC rotation
+    # restraint (NDS 3.3.3). FL11473 Table 3 rates the HETA pair as ONE installation on a 2-
+    # or 3-ply member with anchors >= 3" apart (note 6): the 2-2x8 seat beam is 3", exactly
+    # the minimum, and the straps sit tight to its faces (note 3: <= 1/8" wider).
     #
-    # Authored at the beam FACES rather than both on its centreline: the gusset's wood leg
-    # screws to the beam side, so the face is where the part is, and two markers at one point
+    # Authored at the beam FACES, where each strap nails on, and two markers at one point
     # would draw as one box. 1-1/2" is half the 3" seat beam.
     for _side, _dy in (("A", -1.5), ("B", 1.5)):
         SEAT_BEARINGS.append(Connector(
             uid=f"BWS{_side}{_i}AAAAAA"[:10], tag=f"CN-BW-TIE-{_t}{_side}",
             kind=ConnectorKind.HURRICANE_TIE,
             position=pt(ft(_x), ft(_y) + inch(_dy)),
-            elevation=ft(BEARING_TOP_FT), size="HGAM10",
+            elevation=ft(BEARING_TOP_FT), size="HETA20Z",
             connects=(_beam, f"PT-BW-{_t}")))
 
 # The two header caps. A 3-ply 2x12 is 4 1/2" wide, which is the "4x beam" the CCQ46 is
@@ -525,8 +523,8 @@ SEAT_BEAM_HANGERS = [
 # wood on both legs. There is no wood under BM-BW-RE any more. The joint here is the one the
 # porch columns and the two seat beams already use, and for the same two reasons: a stainless
 # shim pack holds the treated soffit clear of the pour so water cannot stand in the joint and
-# the copper treatment never touches concrete, and an HGAM10 gusset -- #14 screws into the
-# wood leg, Titen Turbo into the concrete -- is the TIE, because a beam merely resting on a
+# the copper treatment never touches concrete, and a cast-in HETA20Z pair -- spoons in the
+# pour, straps nailed to the header faces -- is the TIE, because a beam merely resting on a
 # column is a break in the uplift chain that `structural.uplift_path_coverage` will find.
 EAST_HEADER_BEARINGS = []
 for _i, (_t, _y) in enumerate((("E", PIER_LINE_Y_FT), ("NE", GARAGE_SEAT_Y_FT))):
@@ -537,8 +535,8 @@ for _i, (_t, _y) in enumerate((("E", PIER_LINE_Y_FT), ("NE", GARAGE_SEAT_Y_FT)))
         connects=("BM-BW-RE", f"PT-BW-R{'E' if _t == 'E' else 'NE'}")))
     # Paired, for the reason at SEAT_BEARINGS above. 2-1/4" is half the 4-1/2" header, and
     # the header runs NORTH-SOUTH, so its faces are east and west — the offset is in x where
-    # the seat beams' is in y. On a 12" round that puts each anchor group 2-1/4" to 3" off
-    # the axis, which is the band where >=3" edge distance to the circle still holds.
+    # the seat beams' is in y. On a 12" round each spoon sits 2-1/4" off the axis, 3-3/4"
+    # from the edge against FL11473's 1-1/2" minimum.
     # Prefix BWQ, not BWE: "BWEB0AAAAA" is CN-BW-STDF-RE's uid, so the obvious spelling
     # collided — a hard load-time ERROR, which is how it was caught rather than shipped.
     for _side, _dx in (("A", -2.25), ("B", 2.25)):
@@ -546,7 +544,7 @@ for _i, (_t, _y) in enumerate((("E", PIER_LINE_Y_FT), ("NE", GARAGE_SEAT_Y_FT)))
             uid=f"BWQ{_side}{_i}AAAAAA"[:10], tag=f"CN-BW-TIE-R{_t}{_side}",
             kind=ConnectorKind.HURRICANE_TIE,
             position=pt(ft(ROOF_COLUMN_EAST_X_FT) + inch(_dx), ft(_y)),
-            elevation=ft(HEADER_SOFFIT_FT), size="HGAM10",
+            elevation=ft(HEADER_SOFFIT_FT), size="HETA20Z",
             connects=("BM-BW-RE", f"PT-BW-R{'E' if _t == 'E' else 'NE'}")))
 
 # ** THE FOUR COLUMN BASES, AUTHORED FOR THE SAME REASON THE TRUSS TIES ARE. **

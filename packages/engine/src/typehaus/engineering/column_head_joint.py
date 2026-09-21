@@ -8,9 +8,10 @@ limit states per column:
   ``k = 2.1`` (ACI 318-19 Table R6.2.5, fixed base / free top), so the adopted model asks the
   joint for no moment. Graded as ``2.0 / k_adopted``, which goes over the day somebody adopts
   a ``k`` that assumes the head restrains rotation.
-* **Connector lateral** against ``Post.head_connector.lateral_lb`` — the away-from F2 for an
-  HGAM10, never doubled for a pair. The published value already carries C_D = 1.6, so wind
-  grades against it as printed and a guard load (C_D 1.0) against it divided by 1.6.
+* **Connector lateral** against ``Post.head_connector.lateral_lb`` — the lower directional
+  figure, never doubled for a pair (a ``set_rated`` pair's value is already the set's). The
+  published value carries C_D = 1.6, so wind grades against it as printed and a guard load
+  (C_D 1.0) against it divided by 1.6.
 * **Connector uplift** at 0.6D + 0.6W, where the column carries roof.
 * **Column shear**, ACI 318-19 §22.5.5.1 with §22.5.2.2's circular ``b_w``/``d``.
 * **Column torsion** against ``φT_th`` (§22.7.4.1). The torque is a HORIZONTAL force at a
@@ -203,7 +204,7 @@ def _connector_states(ctx: EngineeringContext, pier: Any, connector: Any, wind: 
             states.append(LimitState(
                 "connector lateral, wind", wind, lateral, "lb",
                 f"{connector.tie} {lateral:,.0f} lb as published (C_D {cd:g} already in it; "
-                f"not raised for {connector.tie_count} parts); {wind_how}; 0.6W"))
+                f"{_credit(connector)}); {wind_how}; 0.6W"))
         if guard > 0.0:
             states.append(LimitState(
                 "connector lateral, guard", guard, lateral / cd, "lb",
@@ -219,16 +220,24 @@ def _connector_states(ctx: EngineeringContext, pier: Any, connector: Any, wind: 
         return
     states.append(LimitState(
         "connector uplift", uplift, connector.uplift_lb, "lb",
-        f"{connector.tie} {connector.uplift_lb:,.0f} lb, ONE part credited; ASCE 7-16 "
+        f"{connector.tie} {connector.uplift_lb:,.0f} lb, "
+        f"{'the rated set' if connector.set_rated else 'ONE part'} credited; ASCE 7-16 "
         f"§2.4.1(7) 0.6D + 0.6W on {pier.roof_tributary_ft2:.1f} ft2 of roof"))
     if lateral is not None and wind > 0.0:
-        unity = (max(uplift, 0.0) / connector.tie_count) / connector.uplift_lb + wind / lateral
+        share = 1 if connector.set_rated else connector.tie_count
+        unity = (max(uplift, 0.0) / share) / connector.uplift_lb + wind / lateral
         inputs.append(Quantity("combined_unity_unverified", unity, "", 0.001))
         notes.append(
             f"COMBINED LOADING IS NOT GRADED: the document's recorded footnotes state no "
-            f"interaction rule. A linear one would read (uplift / {connector.tie_count}) / "
+            f"interaction rule. A linear one would read (uplift / {share}) / "
             f"{connector.uplift_lb:,.0f} + lateral / {lateral:,.0f} = {unity:.3f}, on two "
             f"stacked surrogate bounds — a reviewer should settle whether the rule applies.")
+
+
+def _credit(connector: Any) -> str:
+    if connector.set_rated:
+        return f"the published value of the {connector.tie_count}-part set"
+    return f"not raised for {connector.tie_count} parts"
 
 
 def _net_uplift(ctx: EngineeringContext, pier: Any, notes: list[str]) -> float | None:

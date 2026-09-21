@@ -206,6 +206,8 @@ keeps the sunken garden's and the breezeway's twenty connectors from being bough
   hand-worked demand it is sized against.
 - 4 × KBS1Z at the breezeway **roof** beams (its floor beams are derived)
 - 4 × HUCQ410-SDS into the sunken garden's concrete beam pockets
+- *2026-09-21: the column-head ties are now 16 cast-in HETA20Z (eight joints, a pair each), for
+  Simpson's Titen Turbo exposure rule — `column_head_connector_options.md`. The history follows.*
 - 12 × HGAM10 masonry gusset angles at the cast-column beam seats, and **every one of them is
   the TIE beside a bearing, never the bearing itself** — the wood sits on an `SS316-SHIM-35`
   pack, twelve of those too. Six in the garden: the two porch columns (`H2.5A` until
@@ -304,7 +306,7 @@ usually cheaper:
 | Simpson | MiTek | Joint |
 |---|---|---|
 | H2.5A | H2.5 | rafter / joist to plate |
-| HGAM10 | — (masonry angle family) | wood beam down to a cast column top |
+| HETA20Z | HETA family, cast in, in pairs | wood beam down to a cast column top (HGAM10 until 2026-09-21) |
 | LTP4 | TP37 class | plate to band |
 | KBS1Z | — (use the strap tie family) | beam to post |
 | CCQ46SDS2.5 | — (column cap family) | 4x beam seated on a 6x6 post |

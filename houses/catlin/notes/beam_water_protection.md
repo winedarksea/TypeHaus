@@ -113,7 +113,7 @@ seat. **Twelve standoffs house-wide now, and not one grout island**: six in the 
 **It is a MODELLED PART as of 2026-09-03, and it stopped being prose.** `SS316-SHIM-35`
 (`library/hardware.py`, `ROLE_BEARING_STANDOFF`) carries the specification now — 316
 stainless, 3-1/2" square, stacked to the gap, no grout island under it, EPDM or HDPE where it
-meets an `HGAM10` — and six `CN-SG-STDF-*` connectors put one at every wood-on-concrete beam
+meets a zinc-coated tie (the `HETA20Z` pair since 2026-09-21) — and six `CN-SG-STDF-*` connectors put one at every wood-on-concrete beam
 seat in the garden: the four balcony corner column tops and `PT-SG-COL`/`PT-SG-FCOL`. Until
 then it was a purchased part at a real joint with nothing in the BOM, nothing in 3D and
 nothing a reviewer could click; it is priced in `prices.toml` and drawn on S-101 now. The

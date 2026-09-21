@@ -852,37 +852,41 @@ shear, or IRC R301.5's 200 lb guard. Canopy columns: each column's share of the 
 shear (`lateral_system.column_head_reactions`), **not netted** against the column's own drag
 reaction pushing the other way.
 
-Capacity: HGAM10, FL11473 Table 1 SPF/HF, **460 lb** — the AWAY-FROM F2. Not the 795 INTO
-figure and not doubled for a pair (`library/hardware.py` HGAM10: which gusset takes the load
-in which sense is not something the model can say). Footnote 1: the published value already
-carries C_D = 1.6 for wind. So a WIND demand is graded against 460, and a GUARD demand
-(occupancy live, NDS Table 2.3.2 C_D = 1.0) against **460 / 1.6 = 287.5 lb**.
+Capacity (2026-09-21): a cast-in **HETA20Z pair**, FL11473 Table 3, double HETA in
+concrete on a 2- or 3-ply member, SP: F1 1,350 / F2 1,430 lb for the PAIR — the lower,
+**1,350 lb**, so no sign of the load needs knowing. It is the set's value, credited once
+(`HeadConnector.set_rated`). Note 1: already +60% for wind. So a WIND demand is graded
+against 1,350, and a GUARD demand (occupancy live, NDS Table 2.3.2 C_D = 1.0) against
+**1,350 / 1.6 = 843.75 lb**. (The HGAM10 pair this replaced graded at 460 / 287.5, ratios
+0.893 and 0.696 — `notes/column_head_connector_options.md` says why it left.)
 
-| column | wind, ASD | vs 460 | guard | vs 287.5 |
+| column | wind, ASD | vs 1,350 | guard | vs 843.75 |
 |---|---|---|---|---|
-| `PT-BW-RE` / `-RNE` | 0.5 × 821.31 = **410.66** (E-W) | **0.893** | — | — |
-| `PT-BW-E` / `-GE` | 311 / 4 = 77.75 | 0.169 | 200 | **0.696** |
-| `PT-SG-B*` | 615 / 4 = 153.75 | 0.334 | 200 | **0.696** |
+| `PT-BW-RE` / `-RNE` | 0.5 × 821.31 = **410.66** (E-W) | **0.304** | — | — |
+| `PT-BW-E` / `-GE` | 311 / 4 = 77.75 | 0.058 | 200 | **0.237** |
+| `PT-SG-B*` | 615 / 4 = 153.75 | 0.114 | 200 | **0.237** |
 | `PT-BW-W` / `-GW` | 77.75 | — | 200 | — |
 
-`PT-BW-W`/`-GW` have no HGAM10: their head is the `ABU66SS` under the 6x6 canopy column, and
+The balcony glulam is Table 3's "2- or 3-ply" row by WIDTH (3-1/2"), not ply count. Read as
+1-ply, Table 2's single 340 lb governs: guard 200 / (340 / 1.6) = **0.941**, still inside.
+
+`PT-BW-W`/`-GW` have no HETA pair: their head is the `ABU66SS` under the 6x6 canopy column, and
 the seat beam hangs off that 6x6 (`params/breezeway.py`). ESR-1622 Table 2 publishes uplift
 and download only. **No lateral capacity is published for that joint, so those two records
 are INCOMPLETE naming it** — an ACI 318 Ch. 17 anchor-shear design of the base's bolt, or a
 different tie.
 
-**Not graded, and the number is printed:** FL11473's footnotes as the catalog records them
-(1, 4, 5, 8) state no combined-load rule. If Simpson's general linear interaction applied,
-the canopy columns would read `(433.3 / 2) / 585 + 410.66 / 460 = 0.370 + 0.893 = 1.263` —
-on two stacked surrogate bounds (§8c puts the lateral 2.1x over §27.3.2). A reviewer should
-settle whether the rule applies to this row.
+**Not graded, and the number is printed:** FL11473 Table 3's notes state no combined-load
+rule. If Simpson's general linear interaction applied, the canopy columns would read
+`433.3 / 2,560 + 410.66 / 1,350 = 0.169 + 0.304 = 0.473` — the pair's uplift is the set's,
+so it is not halved. (The HGAM10 pair read 1.263 here.)
 
 ### 9c. Uplift — 0.6D + 0.6W, canopy columns only
 
 The engine's §8 surrogate, spent on the plan area: `0.6 × 18.335 × 0.85 × 1.80 = 16.832 psf`.
 Per column, 40.0 ft² of roof (half of 80.0): `16.832 × 40 = 673.3 lb` up, `0.6 × 10 × 40 =
-240 lb` down, **net 433.3 lb**. Against ONE HGAM10's 585 (the pair's second is unclaimed):
-**0.741**. `PT-BW-W`/`-GW` carry the same roof through their 6x6 and ABU66SS: 433.3 / 2,190
+240 lb` down, **net 433.3 lb**. Against the HETA20Z pair's 2,560 (the set's value, once):
+**0.169**. `PT-BW-W`/`-GW` carry the same roof through their 6x6 and ABU66SS: 433.3 / 2,190
 = **0.198**. (§4's 272 lb used C_N ≈ 1.3; the bound here is 1.80.)
 
 The deck-only columns carry no roof (tributary 0, computed), and ASCE 7-16 assigns an
@@ -948,7 +952,8 @@ Wood crushing on the pack (NDS F_c⊥) is a different member's question and is n
 
 ### 9g. Verdicts
 
-Eight columns OK; governing lateral (canopy 0.893, the rest 0.696 on the guard at C_D 1.0).
+Eight columns OK; the connector is no longer near governing (canopy lateral 0.304, the
+rest 0.237 on the guard at C_D 1.0).
 `PT-BW-W`/`-GW` INCOMPLETE on the unpublished lateral. Scope: SCREENING.
 
 ## Sources

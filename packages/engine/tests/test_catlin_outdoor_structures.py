@@ -526,7 +526,7 @@ def test_the_porch_column_tops_carry_no_gusset(catlin_model) -> None:
     for column in ("PT-SG-COL", "PT-SG-FCOL"):
         on_top = [el for el in catlin_model.plan.all_elements()
                   if el.element_kind == "Connector" and column in el.connects]
-        assert not [el for el in on_top if el.size == "HGAM10"], column
+        assert not [el for el in on_top if el.size in ("HGAM10", "HETA20Z")], column
         assert [el.size for el in on_top if el.kind.value == "post_base"] == ["ABU66SS"]
 
     authored = [el for el in catlin_model.plan.all_elements()

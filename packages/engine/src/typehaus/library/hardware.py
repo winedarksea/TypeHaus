@@ -41,6 +41,7 @@ from typehaus.hardware.catalog import (
     ROLE_COIL_STRAP,
     ROLE_CONCRETE_FACE_MOUNT_HANGER,
     ROLE_DECK_EQUIPMENT_ANCHOR,
+    ROLE_EMBEDDED_BEAM_ANCHOR,
     ROLE_EMBEDDED_STRAP_HOLDOWN,
     ROLE_EQUIPMENT_PAD_ANCHOR,
     ROLE_EXPOSED_FASTENER_PANEL_SCREW,
@@ -1507,10 +1508,13 @@ HGAM10_MASONRY_GUSSET = StructuralHardware(
     # only held while a register entry happened to be open would be the wrong kind of
     # number to carry here.)
     #
-    # This part is used here as a masonry gusset angle at a beam-on-cast-column joint — its
-    # actual published application ("anchor wood trusses, rafters, joists, or beams to
-    # masonry or concrete") — and NOT as a hurricane tie. See the rationale in
-    # `houses/catlin/params/sunken_garden.py`; it is deliberate and should not be "fixed".
+    # ** INTERIOR / PROTECTED USE ONLY, AND G90 ONLY. ** Simpson C-C-2021 p.252: "Products
+    # shall be installed such that the Titen Turbo screws and Titen HD screw anchors are not
+    # exposed to the exterior environment" — a roof or deck overhead does not make a joint
+    # interior. No ZMAX/HDG/SS HGAM exists, and G90 against treated wood misses IRC R317.3.1.
+    # catlin used sixteen at exterior column heads until 2026-09-21 and retyped them to the
+    # cast-in HETA20Z below; the record stays for a protected joint and as a documented
+    # backup (`houses/catlin/notes/column_head_connector_options.md`).
     allowable=AllowableLoads(
         uplift_lb=585.0,
         lateral_f1_lb=630.0,
@@ -1526,6 +1530,48 @@ HGAM10_MASONRY_GUSSET = StructuralHardware(
                   "(footnote 5) — the 460 is recorded. Footnote 1: already increased 60 % "
                   "for wind. Footnote 4: a min. 2-1/2 in member thickness is required where "
                   "anchors are installed on each side. Footnote 8: min f'c 2,500 psi"),
+    ),
+)
+
+HETA20Z_EMBEDDED_BEAM_ANCHOR = StructuralHardware(
+    tag="simpson-heta20z-embedded-truss-anchor",
+    name="HETA20Z embedded truss anchor (ZMAX), installed in pairs",
+    role=ROLE_EMBEDDED_BEAM_ANCHOR,
+    manufacturer=_SIMPSON,
+    model="HETA20Z",
+    source="Simpson Strong-Tie HETA heavy embedded truss anchor, 16 ga, ZMAX (G185) — the "
+           "spoon cast 4\" into the pour, the 1-1/8\" strap nailed to the member's face. "
+           "Cast in, so there is no post-installed concrete anchor and no anchor-exposure "
+           "condition (contrast HGAM10); G185 meets IRC R317.3.1 against treated wood with "
+           "HDG 16d nails",
+    # ** THE ROW IS THE PAIR'S. ** FL11473 Table 3 rates two HETAs, one each face, as ONE
+    # installation; a single HETA20 is Table 2's 1,810 / 340 / 770. `HeadConnector.set_rated`
+    # carries that, so the grade credits the pair's value once and never per part.
+    #
+    # Table 3's "2- or 3-ply" row: 16d nails, 12 total (6 per strap), anchors >= 3" apart
+    # (fn 6), spaced <= 1/8" wider than the member (fn 3). A 2-2x8 and a 3-2x12 are that row
+    # as printed; a 3-1/2" glulam is it by WIDTH, not by ply count — a reading, flagged. Read
+    # as 1-ply instead, the lateral is Table 2's single 340 lb (fn 6).
+    #
+    # F1 1,350 < F2 1,430: the lower is recorded, as for every tie here. ZMAX carries the
+    # G90 part's published values (Simpson corrosion guide); the table prints SP only, which
+    # is what every beam at catlin's column heads is.
+    allowable=AllowableLoads(
+        uplift_lb=2560.0,
+        lateral_f1_lb=1350.0,
+        lateral_f2_lb=1430.0,
+        load_duration_factor=1.6,
+        species="SP — Table 3 prints no other column; the PAIR's values (2- or 3-ply, "
+                "concrete, 16d). A single HETA20 is 1,810 uplift / 340 F1 / 770 F2 "
+                "(Table 2)",
+        fasteners="(12) 16d HDG, 6 per strap, into a 2- or 3-ply member; spoons 4\" into "
+                  "f'c >= 2,500 psi concrete, >= 6\" wide, 1-1/2\" min. edge distance; the "
+                  "lowest four holes of each strap filled (Table 2 fn 2)",
+        citation=("Simpson Strong-Tie Florida product approval FL11473 (masonry products), "
+                  "Table 3, double HETA, concrete, 2- or 3-ply, sealed 2017-10-19, read "
+                  "2026-09-21: uplift 2,560, F1 1,350, F2 1,430 lb. Note 1: already +60 % "
+                  "for wind. Note 6: lateral applies only to 2- or 3-ply with anchors >= 3\" "
+                  "apart. Note 7: F1 may add 1/16\" deflection when not wrapped over"),
     ),
 )
 
@@ -1819,8 +1865,8 @@ DECK_EQUIPMENT_ANCHOR = StructuralHardware(
 #   a levelling bed is unavoidable it is EPOXY grout confined under the plate — that sentence
 #   used to live in an assembly ``source`` and belongs on the part.
 # * **316 stainless, or HDG with an isolator.** These sit under copper-treated KDAT and under
-#   treated glulam, both of which eat plain steel. Where the pack meets an HGAM10 gusset an
-#   EPDM or HDPE isolator goes between them.
+#   treated glulam, both of which eat plain steel. Where the pack meets a zinc-coated tie
+#   (HETA20Z strap, HGAM10 gusset) an EPDM or HDPE isolator goes between them.
 #
 # Deliberately NOT a post base and not a bearing plate: it is selected by the gap and the
 # alloy, not by a post section, and ``hardware_for_role`` holds one part per role.
@@ -1836,8 +1882,8 @@ BEARING_STANDOFF_SHIM = StructuralHardware(
            "are. INSTALLATION is most of what it is: set on the cast wash under the beam "
            "footprint with NO grout island (epoxy grout confined under the plate if a "
            "levelling bed proves unavoidable, never a cementitious one), an EPDM or HDPE "
-           "isolator where the pack meets an HGAM10 gusset, and the stack shimmed so the "
-           "soffit stands clear of the pour rather than bedded on it. **Where the beam is "
+           "isolator where the pack meets a zinc-coated tie (HETA20Z strap), and the stack "
+           "shimmed so the soffit stands clear of the pour rather than bedded on it. **Where the beam is "
            "TILTED, the leaves are LAPPED TO THE DRAINAGE SLOPE** — full leaves at the low "
            "edge, progressively short ones toward the high edge — rather than a custom "
            "tapered shim being fabricated: a tapered stainless shim is a laser-cut/CNC "
@@ -1966,6 +2012,7 @@ STRUCTURAL_HARDWARE: tuple = (
     LS30_GABLE_END_TIE,
     LTP4_GABLE_TRUSS_ANCHOR,
     HGAM10_MASONRY_GUSSET,
+    HETA20Z_EMBEDDED_BEAM_ANCHOR,
     S5_SEAM_CLAMP,
     S5_S_SNAP_LOCK_CLAMP,
     S5_N_NAIL_STRIP_CLAMP,

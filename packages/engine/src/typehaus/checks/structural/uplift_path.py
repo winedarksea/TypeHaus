@@ -88,7 +88,7 @@ _RULES = _CONFIG.uplift
 #: down — the same hand-off ``takeoff/uplift.py`` makes, read from the same field.
 _SEATED_UPLIFT_KINDS = frozenset({ConnectorKind.HURRICANE_TIE, ConnectorKind.HOLD_DOWN})
 #: What can make a beam-to-post connection. HURRICANE_TIE belongs here with the strap and
-#: the cap: an HGAM10 gusset on a bearing plane is an uplift connection (catlin's balcony
+#: the cap: a HETA20Z strap on a bearing plane is an uplift connection (catlin's balcony
 #: corner seats, CN-SG-SEAT-*).
 _POST_TOP_KINDS = frozenset({ConnectorKind.HOLD_DOWN, ConnectorKind.POST_CAP,
                              ConnectorKind.HURRICANE_TIE})

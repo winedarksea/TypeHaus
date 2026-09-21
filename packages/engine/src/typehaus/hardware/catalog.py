@@ -103,6 +103,9 @@ ROLE_HURRICANE_TIE = "hurricane_tie"
 # question is the same one that splits the seam clamps above — HOW THE PART REACHES THE
 # BUILDING — and a screw into concrete is not a nail into a plate.
 ROLE_MASONRY_GUSSET_ANGLE = "masonry_gusset_angle"
+# A wood member held down to concrete by a strap CAST INTO the pour (HETA). Not the gusset
+# role: no post-installed anchor, so no anchor-exposure condition, and a different table.
+ROLE_EMBEDDED_BEAM_ANCHOR = "embedded_beam_anchor"
 # The cap over a post that a beam lands ON (rather than continues past). Its own role, not
 # ROLE_BEAM_HOLD_DOWN: the KBS strap ties a beam DOWN to a post whose sides it can reach,
 # while a cap seats the beam and takes uplift in one part. Both serve a post/beam joint and
