@@ -203,9 +203,9 @@ def _column_surcharges(ctx: EngineeringContext) -> dict[str, Surcharge]:
     engineered bearing record either, because ``spread_footing`` scopes off
     ``shared_wall_footing`` on the argument that a wall footing "already has an authority
     — ``structural.foundation_unbalanced_fill`` against ``retaining_wall/<tag>``", and for
-    these two walls that record does not exist. So the reactions are named rather than
-    graded: ``deferred.py``'s ``column_support`` kind assigns them, and
-    ``structural.column_on_wall_support`` reports them. This function is what makes the
+    these two walls that record does not exist. The wall-top JOINT is graded by
+    ``column_support/<wall>`` (``engineering/column_support.py``); the wall's own
+    surcharge and footing bearing are not. This function is what makes the
     machinery correct the day one of those walls comes into scope.
     """
     from typehaus.engineering.pier_basis import cast_piers

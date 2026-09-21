@@ -532,12 +532,12 @@ MN_2020 = JurisdictionProfile(
         # delivers an axial load AND a base moment into whatever it stands on, and where
         # that is a foundation WALL TOP the receiving concrete is graded by nobody here:
         # Table R404.1.2(8) publishes no surcharge column and `spread_footing` scopes off
-        # a shared wall footing. Non-blocking, because `column_support` is a deferred kind
-        # with no calculation registered — the same contract every other kind on this page
-        # keeps, and the day one is registered this item starts gating.
+        # a shared wall footing. Blocking since 2026-09-20, when `column_support` became a
+        # computed kind (engineering/column_support.py), as this comment always promised.
         PermitItemSpec("Column reactions on a foundation wall top",
                        ("structural.column_on_wall_support",),
-                       ("IRC R404.1.2", "ACI 318-19 §25.4.2"), blocking=False),
+                       ("IRC R404.1.2", "ACI 318-19 §22.8.3", "ACI 318-19 §22.9",
+                        "ACI 318-19 §25.4.2")),
         # Added 2026-09-20: five kinds `haus engineering` listed and no check named, so
         # their deferrals were invisible here. Non-blocking while a kind is deferred; each
         # flips to blocking in the commit that registers its calculation. Base STIFFNESS is

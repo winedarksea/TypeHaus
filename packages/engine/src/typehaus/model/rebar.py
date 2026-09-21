@@ -105,6 +105,15 @@ class BarSpec(HausModel):
     hooks: tuple[Literal["start", "end"], ...] | None = None
     #: Stirrups/ties only: the distance from EACH end of the member they are confined to.
     zone: Length | None = None
+    #: Dowels only: the straight length cast into the pour BELOW the joint. ``None`` means
+    #: the drawing does not say, and a column on a wall then cannot grade its development
+    #: (``deck_post._dowel_anchorage``) — a pad or footing is bounded by its own depth.
+    embedment: Length | None = None
+    #: Dowels only: the cold joint they cross. ``"roughened"`` is ACI 318-19 Table
+    #: 22.9.4.2's "intentionally roughened to a full amplitude of about 1/4 in." with the
+    #: laitance removed, and is what earns μ = 1.0λ in shear friction; ``None`` or
+    #: ``"not_roughened"`` is graded at 0.6λ.
+    joint_surface: Literal["roughened", "not_roughened"] | None = None
     #: Prose the struct cannot hold — a hook, a stagger, a "top of footing to 6\" below
     #: grade". For the drawing; nothing grades it.
     note: str | None = None

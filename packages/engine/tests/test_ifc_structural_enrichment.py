@@ -107,10 +107,18 @@ def test_a_graded_column_carries_its_record_and_the_live_fingerprint(enriched):
 
 
 def test_a_deferred_item_says_it_has_nothing_to_fingerprint(enriched):
-    f, _model, _ctx = enriched
-    walls = [e for e in f.by_type("IfcWall") if e.Name == "W-SG-W1"]
-    assert walls
-    pset = ue.get_psets(walls[0]).get("Pset_TH_Engineering_column_support")
+    """Any deferred item that lands on an emitted element — not a named one, because kinds
+    leave the deferred lane as they are computed (`column_support` did on 2026-09-20)."""
+    from typehaus.engineering.item import Status
+
+    f, _model, ctx = enriched
+    by_name = {e.Name: e for e in f.by_type("IfcProduct") if e.Name}
+    hits = [(ctx.engineering[i], tag) for i in sorted(ctx.engineering)
+            if ctx.engineering[i].status is Status.NO_CALC
+            for tag in ctx.engineering[i].element_tags if tag in by_name]
+    assert hits, "no deferred item lands on an emitted element"
+    record, tag = hits[0]
+    pset = ue.get_psets(by_name[tag]).get(f"Pset_TH_Engineering_{record.kind}")
     assert pset is not None
     assert pset["Fingerprint"].startswith("none")
 

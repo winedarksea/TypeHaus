@@ -324,24 +324,15 @@ def column_on_wall_support(ctx: CheckContext) -> list[Finding]:
     not have. So four base moments are computed on four columns and land on concrete that
     **no authority in this engine grades at all**.
 
-    ** WHY THIS IS NOT ``defer=True``. ** That flag exists for a check whose item HAS a
-    calculation grading something other than this check's subject — ``structural.frost_depth``
-    on ``retaining_wall/<tag>``, the one call site, which would otherwise report a sliding
-    deficiency as a frost failure. ``column_support/<tag>`` has no calculation at all: it
-    is a ``deferred.py`` kind, so the plain ``engineered()`` path already reports UNKNOWN
-    naming the item and the designer of record, which is exactly the sentence this needs.
-    Passing ``defer`` as well would say nothing more.
-
-    ** IT DOES NOT FAIL, AND THAT IS NOT TIMIDITY. ** Nothing here says the wall is
-    inadequate — a 12" stem carrying 3.5 kip of service axial almost certainly is. What is
-    missing is the joint, the dowel development and the rotational restraint the fixed-base
-    assumption spends, and an UNKNOWN naming the assignment is the honest state of all
-    three. The deferral's ``deliverable`` says what closes it.
+    Since 2026-09-20 ``column_support/<wall>`` is a computed kind
+    (``engineering/column_support.py``): bearing on the wall top, dowel tension, shear
+    friction across the cold joint and dowel development into the stem. This check only
+    delegates. Rotational restraint is ``base_rotation/<column>``'s, not this item's.
     """
     cid = "structural.column_on_wall_support"
-    from typehaus.engineering.deferred import _column_support_keys
+    from typehaus.engineering.column_support import column_support_keys
 
-    walls = _column_support_keys(_engineering_context(ctx))
+    walls = column_support_keys(_engineering_context(ctx))
     if not walls:
         # Earned, not assumed: the enumeration ran and found no cast column standing on a
         # wall top anywhere in the plan. A house of framed posts on their own footings has
@@ -356,14 +347,12 @@ def column_on_wall_support(ctx: CheckContext) -> list[Finding]:
         out.append(_engineered(
             ctx, cid, item_id("column_support", tag),
             f"{tag} carries {len(columns)} fixed-base cast column(s) on its top "
-            f"({', '.join(columns)}), each delivering a base moment `deck_post` computes "
-            f"ON THE COLUMN. This wall is graded prescriptively (IRC Table R404.1.2(8), "
-            f"which publishes no surcharge column) and its strip footing collects no "
-            f"engineered bearing record, so the wall-top joint's capacity, the dowels' "
-            f"development into the stem and the foundation's rotational restraint are all "
-            f"ungraded",
+            f"({', '.join(columns)}), each delivering an axial load and a base moment. The "
+            f"wall itself is prescriptive (IRC Table R404.1.2(8), no surcharge column); "
+            f"the wall-top JOINT — bearing, dowel tension, shear friction and dowel "
+            f"development — is graded by `column_support/{tag}`",
             (tag, *columns),
-            code="IRC R404.1.2; ACI 318-19 §25.4.2",
+            code="IRC R404.1.2; ACI 318-19 §22.8.3, §22.9, §25.4.2",
             fix=f"seal `column_support/{tag}` in engineering.toml"))
     return out
 

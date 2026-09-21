@@ -299,10 +299,11 @@ def test_catlins_own_columns_stand_on_walls_this_module_does_not_enumerate(
     The four balcony corner columns stand on ``W-SG-W1`` and ``W-SG-E1``, both
     ``lateral_support="top_and_bottom"``. They are basement walls: ``retaining_wall`` does
     not enumerate them, IRC Table R404.1.2(8) answers them and publishes no surcharge
-    column, and ``spread_footing`` skips their strip footings. So the reactions are named
-    rather than graded — ``column_support/<tag>`` in ``deferred.py``, reported by
-    ``structural.column_on_wall_support``. If this assertion ever flips, the surcharge
-    becomes live on a real wall and ``_column_surcharges`` is what runs.
+    column, and ``spread_footing`` skips their strip footings. The wall-top JOINT is graded
+    by ``column_support/<tag>`` (``engineering/column_support.py``), reported by
+    ``structural.column_on_wall_support``; the wall's own surcharge is not. If this
+    assertion ever flips, the surcharge becomes live on a real wall and
+    ``_column_surcharges`` is what runs.
     """
     from typehaus.engineering import EngineeringContext
     from typehaus.engineering.retaining_wall import _column_surcharges
@@ -312,5 +313,5 @@ def test_catlins_own_columns_stand_on_walls_this_module_does_not_enumerate(
     ctx = EngineeringContext(plan=catlin_plan, model=model, soil_class="GM")
     assert _column_surcharges(ctx) == {}
 
-    from typehaus.engineering.deferred import _column_support_keys
-    assert _column_support_keys(ctx) == ["W-SG-E1", "W-SG-W1"]
+    from typehaus.engineering.column_support import column_support_keys
+    assert column_support_keys(ctx) == ["W-SG-E1", "W-SG-W1"]

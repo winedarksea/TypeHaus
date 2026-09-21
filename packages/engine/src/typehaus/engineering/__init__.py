@@ -25,6 +25,7 @@ from __future__ import annotations
 # so the order here is free — but the presence of the line is not.
 from typehaus.engineering import (
     column_base,  # noqa: F401  (registration)
+    column_support,  # noqa: F401  (registration)
     deck_post,  # noqa: F401  (registration)
     deferred,  # noqa: F401  (registration — the kinds this engine defers to a designer)
     girt_screw,  # noqa: F401  (registration)
@@ -79,7 +80,7 @@ __all__ = [
     "ExternalDesign", "Freshness", "LimitState", "NO_ENGINEERING", "Oracle", "Quantity",
     "REGISTER_FILENAME", "SETTLED", "Scope", "Signoff", "Status", "pinnable",
     "calc", "fingerprint", "item_id", "keys", "keys_of", "load_register", "no_calc", "records_of",
-    "column_base", "deck_post", "deferred", "girt_screw", "glulam_beam",
+    "column_base", "column_support", "deck_post", "deferred", "girt_screw", "glulam_beam",
     "lateral_system", "roof_beam",
     "registered_kinds",
     "retaining_system",

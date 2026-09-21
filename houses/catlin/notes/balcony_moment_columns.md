@@ -9,7 +9,8 @@ pinned strap-and-angle base ties, under three treated structural-glulam beams.
 **Written:** 2026-09-03. It **supersedes `superseded/balcony_lateral_bracing_design.md`**, which
 designed the eight knee braces and two brace rails this replaced.
 **Oracle for:** `engineering/deck_post.py`'s moment-column branch and, at §5,
-`engineering/glulam_beam.py`; reproduced by `tests/test_pier_section_calcs.py`.
+`engineering/glulam_beam.py`; reproduced by `tests/test_pier_section_calcs.py`. At §11,
+`engineering/column_support.py`, reproduced by `tests/test_column_support_calc.py`.
 **Companions:** `notes/centre_pillar_bearing.md` (the two wood pillars among these six),
 `notes/sunken_garden_piers.md` (where this load goes next).
 **What is asked of the reviewer:** this is a screening design under IRC R301.1.3 engineered
@@ -354,9 +355,10 @@ the envelope exists, and it is small here only because this column is so lightly
 **The anchorage of the dowels is graded now too** (2026-09-18). The lap between the dowel
 and the column bar was checked against the column's own height; the other end — whether the
 dowel DEVELOPS in the concrete below — was not, and it is the end the fixed base depends on.
-These four columns stand on `W-SG-W1`/`-E1`, foundation walls whose stem length nothing in
-the model bounds, so their records say the anchorage is not graded rather than passing it
-silently. The pad-borne columns in the north entry ARE graded: ACI 318-19 §25.4.3.1 hooked
+These four columns stand on `W-SG-W1`/`-E1`, and until 2026-09-20 nothing in the model
+bounded how far a dowel ran down the stem, so their records said the anchorage was not
+graded. The dowel row now authors `embedment=24"` and the records grade STRAIGHT development
+against it: ld 21.2" for a #5 at 5,000 psi, d/c 0.88 — worked in §11c. The pad-borne columns in the north entry ARE graded: ACI 318-19 §25.4.3.1 hooked
 development, about 7.1" for a #5 at 5,000 psi against a 12" pad less 2" cover and a bar
 diameter, d/c 0.76. Straight development would be 21" and would condemn a correctly built
 pad; the hook is what makes it work, and the ψ factors it is taken at (ties continuing
@@ -672,29 +674,21 @@ above comes from the manufacturer's instructions rather than from the report.
 
 ## 9. What this note does NOT cover
 
-- **Base fixity itself.** The doweled lap is detailed to deliver it; no calculation here
-  proves the wall top's own capacity to receive the moment, nor the foundation's rotational
-  stiffness. That is the first thing a stamp should look at.
+- **Base fixity itself — the wall-top JOINT is computed, here (§11); the foundation's
+  rotational restraint is not.** `column_support/W-SG-W1` and `column_support/W-SG-E1`
+  were deferred to the structural engineer of record from 2026-09-11 to 2026-09-20. They
+  are a computed kind now (`engineering/column_support.py`): bearing on the wall top, dowel
+  tension, shear friction across the cold joint and dowel development into the stem, each
+  hand-worked in §11. Rotational restraint — the foundation stiffness the fixed base
+  assumes — is graded as `base_rotation/PT-SG-BF1`, `-BF3`, `-BR1`, `-BR3`, one question and
+  one item.
 
-  **This is a named item on the register since 2026-09-11, and it was not before.** It is
-  three separate assumptions, not one, and the engine now assigns all three by name:
-  `column_support/W-SG-W1` and `column_support/W-SG-E1`, deferred to the structural
-  engineer of record, reported by `structural.column_on_wall_support` and listed in
-  section A of `out/calcs/03-open-items.md`. The three are the **wall-top joint's own
-  capacity**, **development of the column dowels into the stem**, and the **foundation's
-  rotational restraint**.
-
-  The reason they needed naming is worth recording. `deck_post` computes each column's
-  base moment ON THE COLUMN and nothing underneath it received the number: `W-SG-W1` and
-  `W-SG-E1` declare `lateral_support="top_and_bottom"`, so they are basement walls
-  answered by IRC Table R404.1.2(8) — which publishes no surcharge column at all — and
-  `engineering/spread_footing.py` skips their strip footings on the argument that a
-  `retaining_wall/<tag>` record already answers for them, a record these two walls do not
-  have. Four moment-fixed columns therefore stood on concrete that no authority in this
-  engine graded, at zero FAIL. `retaining_basis.Surcharge` gives the free body a column
-  term now, and it fires on any wall `retaining_wall` does enumerate; these two it does
-  not, so they are assigned rather than computed. **A pilaster or a local thickening under
-  each column is the likely answer** and is exactly what the deliverable asks for.
+  Still open, and still the first thing a stamp should look at: **the stem's own flexure
+  under the base moment it receives** — whether a pilaster or a local thickening is needed
+  under each column — and the strip footing's bearing under the column points, which
+  `engineering/spread_footing.py` scopes off a shared wall footing. Both walls declare
+  `lateral_support="top_and_bottom"` and are answered by IRC Table R404.1.2(8), which
+  publishes no surcharge column.
 - **Seismic, beyond the screening below.** The lot sits in **SDC A**: Minnesota's mapped
   values (S_S ≈ 0.04 g, S_1 ≈ 0.02 g) satisfy ASCE 7 §11.4.2 on both counts (S_1 < 0.04 and
   S_S ≤ 0.15), and §11.7 then sends an SDC A structure to **§1.4 alone** — F_x = 0.01 W,
@@ -735,6 +729,133 @@ stamp, two checks.
 
 ---
 
+## 11. The wall-top joint — hand-worked (`column_support/W-SG-W1`, `-E1`)
+
+Worked 2026-09-20 in a separate pass from `engineering/column_support.py`, from this note's
+own §2-§4 quantities. `tests/test_column_support_calc.py` checks the engine against it.
+
+**What each column hands the wall.** The §4 envelope's (Pu, magnified Mu) pairs — the same
+ones the column is graded on. Rear row `PT-SG-BR1` (D 1,563, L 1,933 lb; M_w 1,408 and M_g
+2,533 lb-ft ASD; h 109.96"), front row `PT-SG-BF1` (D 1,545; 1,385 / 2,502; h 108.13"):
+
+| §2.3.1 | BR1 P_u | BR1 M_u | BF1 P_u | BF1 M_u |
+|---|---:|---:|---:|---:|
+| 1.4D | 2,188 | 0 | 2,163 | 0 |
+| 1.2D + 1.6L + 0.5S | 4,969 | 4,178 | 4,947 | 4,122 |
+| 1.2D + 1.6S + 0.5W | 1,875 | 1,187 | 1,854 | 1,167 |
+| **1.2D + 1.0W + L + 0.5S** | **3,809** | **4,995** | **3,787** | **4,919** |
+| 0.9D + 1.0W | 1,407 | 2,367 | 1,390 | 2,327 |
+
+(lb and lb-ft; M_u carries δ = 1/(1 − P_u/0.75P_c), P_c 220,520 lb rear, 228,511 front.)
+
+**The base is far outside the kern.** e = M_u/P_u = 59,940/3,809 = **15.7"** at the
+governing combination (10.1" at 1.2D + 1.6L; 8.7" at SERVICE, 2,533 × 12 / 3,496, which is
+the figure a first sketch quotes). The kern of a circle is **D/8 = 1.5"**, not the
+rectangle's D/6 = 2". So the base is partly in tension and the load reaches the wall on a
+compression block, not on the 113.1 in² gross section.
+
+### 11a. Bearing, ACI 318-19 §22.8.3
+
+**√(A₂/A₁) = 1.0, and that is a finding, not a default.** A₂ is the largest concentric
+area similar to the loaded one that fits on the wall top. The round is 12" and the stem is
+12", centred (§1: "flush with both wall faces"), so the largest concentric circle on the
+wall top IS the column: A₂ = A₁ and ACI's confinement credit (up to 2) is worth nothing.
+
+**The block.** §4's strain compatibility at each P_u gives the neutral axis; at the
+governing 3,809 lb (BR1), c = 2.730", a = β₁c = 0.80 × 2.730 = **2.184"**:
+
+```
+chord offset above centre  = 6 − 2.184                          = 3.816"
+A₁ = 36·acos(3.816/6) − 3.816·√(36 − 3.816²) = 36 × 0.8815 − 3.816 × 4.630
+   = 31.73 − 17.67                                              = 14.06 in²
+ȳ  = (2/3)(36 − 3.816²)^1.5 / 14.06 = (2/3)(99.26)/14.06        = 4.705" above centre
+```
+
+**The couple.** The dowels sit one bar inside the verticals (the contact lap
+`resolve/rebar` lays): ring radius 3.3125 − 0.625 = **2.6875"**. Compression dowels are not
+credited — every pound of compression goes on the concrete. Two orientations of the ring:
+
+```
+straddling (±45°): 2 bars in tension at 2.6875 × cos45 = 1.900" below centre
+on-axis (0°):      1 bar in tension at 2.6875" below centre
+
+moments about the centre:  C·ȳ + T·y_s = M_u,   C − T = P_u
+  →  C = (M_u + P_u·y_s)/(ȳ + y_s)
+
+±45°: C = (59,940 + 3,809 × 1.900)/(4.705 + 1.900) = 67,177/6.605 = 10,170 lb, T = 6,361
+0°:   C = (59,940 + 3,809 × 2.6875)/(4.705 + 2.6875) = 70,177/7.3925 = 9,493 lb, T = 5,684
+```
+
+Bearing takes the larger C, **10,170 lb** (±45°).
+
+```
+φB_n = 0.65 × 0.85 × 5,000 × 14.06 × 1.0 = 38,850 lb       (wall f'c: EXPOSED_MIX, 5,000)
+d/c  = 10,170 / 38,850                                     = 0.262   BR1
+BF1: C 10,025 on a 14.06 in² block (c 2.729")               = 0.258
+```
+
+Every other combination is lower (1.2D + 1.6L: 9,033 / 39,307 = 0.23). Where no dowel
+tension is needed (1.4D), C = P_u on the same block — 2,188 / 38,218 = 0.06.
+
+### 11b. Dowel tension across the joint
+
+Per bar, the worse orientation — on-axis, where ONE bar closes the couple:
+
+```
+T per bar = 5,684 lb (BR1), 5,574 lb (BF1)
+φA_s f_y  = 0.90 × 0.31 × 60,000 = 16,740 lb
+d/c       = 0.340 (BR1), 0.333 (BF1)
+```
+
+### 11c. Development into the stem, ACI 318-19 §25.4.2.4
+
+```
+ld = (60,000 / (25 √5,000)) × 0.625 = 21.2"   ψt 1.0 (a VERTICAL bar — 1.3 is for a
+                                              horizontal bar with >12" of concrete below),
+                                              ψe 1.0 (zinc, §25.4.2.5)
+authored embedment                  = 24"     (params/sunken_garden.py, the dowel row)
+stem                                = 109.44" − 3" cover = 106.4" ≥ 24"  (bound holds)
+d/c = 21.2 / 24                     = 0.884
+```
+
+Straight, and the hook the layout turns at the dowel's foot is not credited. 24" is a
+chosen detail, not a derived one: it is the smallest round number past ld. The stem bound is
+the WALL's resolved height (`pier_basis` read a `FoundationWall.height` field that does not
+exist until 2026-09-20, which silently gave 0.0).
+
+### 11d. Shear friction across the cold joint, §22.9
+
+**μ = 1.0λ is earned, not assumed**: §7 specifies the wall top roughened to 1/4" amplitude
+with the laitance removed, which is Table 22.9.4.2's "intentionally roughened" row, and the
+dowel row authors `joint_surface="roughened"` so the model carries it. Unroughened it
+would be 0.6λ — and the verdict would not move.
+
+Shear at the base, strength level: wind V_w = 1,408 / 9.163' = 153.7 lb ASD → /0.6 =
+**256.1 lb**; the guard's 200 lb at 1.6L = 320 lb; combination 4 takes both at 1.0 →
+**456.1 lb**. The dowel tension the couple spends is not available for clamping
+(§22.9.4.2 + the tension-is-additive rule), and the axial compression is not credited:
+
+```
+φV_n = μ(φ A_s f_y − T) = 1.0 × (0.75 × 1.24 × 60,000 − 6,361)   = 49,439 lb
+cap  = φ × min(0.2f'c, 480 + 0.08f'c, 1600)A_c = 0.75 × 880 × 113.1 = 74,644 lb
+d/c  = 456.1 / 49,439                                            = 0.009
+```
+
+### 11e. Verdict
+
+| state | BR1 | BF1 |
+|---|---:|---:|
+| bearing on the compression block | 0.262 | 0.258 |
+| dowel tension per bar | 0.340 | 0.333 |
+| shear friction | 0.009 | 0.009 |
+| development into the stem | **0.884** | **0.884** |
+
+**Development governs**, and only because 24" is a tight detail — the joint is not
+stressed. The E1 wall is the mirror of W1 and reads the same. What is NOT here: rotational
+restraint (`base_rotation/PT-SG-*`) and the stem's own flexure under the moment (§9).
+
+---
+
 ## Sources
 
 Every standard and document this note rests on, collected from the citations above.
@@ -742,7 +863,7 @@ Citation style is the house style: issue year on first use (`ASCE 7-16 §29.3`),
 section form after. A document is listed here only if a number in this note came
 out of it.
 
-- **ACI 318-19** — §19.3.3.4, §20.5.1.3
+- **ACI 318-19** — §19.3.3.4, §20.5.1.3, §22.8.3, §22.9.4.2, §22.9.4.4, §25.4.2.4
 - **ASCE 7-16** — Fig. 29.3-1, §2.3.1, §2.4.1, §29.3
 - ASTM A767
 - **AWC NDS 2018** — Table 5.3.1
