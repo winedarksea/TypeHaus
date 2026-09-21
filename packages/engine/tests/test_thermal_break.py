@@ -1,9 +1,9 @@
 """``engineering/thermal_break.py`` against ``sunken_garden_court_free_body.md`` §11.
 
 The note was worked by hand before the module existed; this file reproduces it. Values are
-read off the resolved catlin model rather than pinned where another pass could move them,
-and the bar values used to exercise the reserve formula are SYNTHETIC — catlin names no GFRP
-product, so no real published value exists in the repo to test against.
+read off the resolved catlin model rather than pinned where another pass could move them.
+Since basis 2 catlin names its products (Aslan 100 #5, Styrofoam Highload 40, §11f), so the
+catlin rows are graded on published values and two of them are OVER.
 """
 
 from __future__ import annotations
@@ -11,7 +11,7 @@ from __future__ import annotations
 import pytest
 
 from typehaus.engineering.item import Status
-from typehaus.engineering.thermal_break import KIND, SETTLEMENT_MISSING
+from typehaus.engineering.thermal_break import KIND, SETTLEMENT_MISSING, SETTLEMENT_OWED
 
 # §11a/§11b — hand-worked.
 _NOTE_PRESSURE_PSI = {"DW-SG-W1": 10.194, "DW-SG-E1": 10.194,
@@ -20,7 +20,9 @@ _NOTE_BUOYANCY_LB = 116.67
 _NOTE_FLOTATION_RESTRAINT_LB = 500.0
 # §11c/§11d.
 _NOTE_RUN_IN = 322.815
-_NOTE_MOVEMENT_IN = 0.1864
+_NOTE_MOVEMENT_IN = 0.07102      # 5.5e-6 x (90 - 50) x 322.815; was 0.1864 at basis 1
+_NOTE_MOVEMENT_CAP_IN = 0.019048   # 2 x (40/3) / 1,400
+_NOTE_BAR_LB = 1_385.31            # 0.55 x 32,240 x 0.625 / (4 x 2)
 _NOTE_SHORTFALL_LB = 24_834.0   # was 23,454 before the apron surcharge (§4c)
 _NOTE_RESERVE_LB = {"DW-SG-W1": 16_556.0, "DW-SG-E1": 16_556.0,
                     "DW-SG-W1-STEM": 3_311.0, "DW-SG-E1-STEM": 3_311.0}
@@ -89,19 +91,31 @@ def test_movement_and_reserve_demands_reproduce_section_11c_d(records, tag) -> N
 
 
 @pytest.mark.parametrize("tag", sorted(_NOTE_PRESSURE_PSI))
+def test_catlin_grades_every_row_on_the_named_products(records, tag) -> None:
+    record = records[tag]
+    movement = _state(record, "thermal movement")
+    assert movement.demand == pytest.approx(_NOTE_MOVEMENT_IN, abs=1e-5)
+    assert movement.capacity == pytest.approx(_NOTE_MOVEMENT_CAP_IN, abs=1e-6)
+    assert movement.ratio == pytest.approx(3.73, abs=0.005)
+    reserve = _state(record, "dowel shear reserve")
+    bars = 10 if "STEM" not in tag else 2
+    assert reserve.capacity == pytest.approx(bars * _NOTE_BAR_LB, abs=0.1)
+    assert reserve.ratio == pytest.approx(1.195, abs=0.001)
+    assert reserve.combination == "1.6H"
+
+
+@pytest.mark.parametrize("tag", sorted(_NOTE_PRESSURE_PSI))
 def test_catlin_stays_incomplete_naming_what_is_owed(records, tag) -> None:
     record = records[tag]
     assert record.status is Status.INCOMPLETE
-    missing = " ".join(record.missing)
-    for field in ("foam_modulus_psi", "bar_shear_lb", "bar_tensile_lb", "bar_modulus_psi",
-                  "bar_source"):
-        assert f"Dowel.{field}" in missing
     assert SETTLEMENT_MISSING in record.missing
-    assert all(state.demand > 0.0 for state in record.limit_states)
+    assert "Dowel." not in " ".join(record.missing)
+    over = next(m for m in record.missing if m.startswith("a design answer"))
+    assert "thermal movement 3.73" in over and "dowel shear reserve 1.20" in over
 
 
 def _authored(ctx, tag, **values):
-    """``_one`` on a copy of the dowel carrying authored (synthetic) product values."""
+    """``_one`` on a copy of the dowel with some fields replaced."""
     from typehaus.engineering import thermal_break as tb
 
     loops = tb.footing_shortfalls(ctx)
@@ -114,28 +128,35 @@ def _authored(ctx, tag, **values):
     return tb._one(ctx, dowel, loops, tb._court_side(ctx, dowel, loops), bars)
 
 
-def test_authored_values_grade_every_row_and_settlement_still_holds_it_open(ctx) -> None:
-    record = _authored(ctx, "DW-SG-W1", foam_modulus_psi=400.0, bar_shear_lb=6_000.0,
-                       bar_tensile_lb=27_000.0, bar_modulus_psi=6.5e6,
-                       bar_source="synthetic test values")
-    assert record.missing == (SETTLEMENT_MISSING,)
-    assert record.status is Status.INCOMPLETE
-
-    movement = _state(record, "thermal movement")
-    assert movement.demand == pytest.approx(_NOTE_MOVEMENT_IN, abs=1e-4)
-    assert movement.capacity == pytest.approx(2.0 * 40.0 / 400.0)
-
-    reserve = _state(record, "dowel shear reserve")
-    bend = 0.55 * 27_000.0 * 0.625 / (4.0 * 2.0)   # governs over 0.75 x 6,000
-    assert reserve.capacity == pytest.approx(10 * bend)
-    assert reserve.demand == pytest.approx(_NOTE_RESERVE_LB["DW-SG-W1"], abs=1.0)
-    assert reserve.combination == "1.6H"
+def test_unnamed_products_hold_the_rows_open(ctx) -> None:
+    record = _authored(ctx, "DW-SG-W1", foam_source=None, bar_source=None)
+    missing = " ".join(record.missing)
+    assert "Dowel.foam_source" in missing and "Dowel.bar_source" in missing
+    assert _state(record, "thermal movement") is None
+    assert _state(record, "dowel shear reserve") is None
 
 
 def test_the_shear_branch_governs_when_the_bar_is_weak_in_shear(ctx) -> None:
-    record = _authored(ctx, "DW-SG-W1-STEM", foam_modulus_psi=400.0, bar_shear_lb=1_000.0,
-                       bar_tensile_lb=27_000.0, bar_modulus_psi=6.5e6, bar_source="synthetic")
+    record = _authored(ctx, "DW-SG-W1-STEM", bar_shear_lb=1_000.0)
     assert _state(record, "dowel shear reserve").capacity == pytest.approx(2 * 0.75 * 1_000.0)
+
+
+def test_a_measured_k_v_is_read_and_still_owes_the_demand() -> None:
+    from types import SimpleNamespace
+
+    from typehaus.engineering.thermal_break import _settlement
+
+    def run(k_v):
+        site = SimpleNamespace(lateral_subgrade_modulus=SimpleNamespace(k_v_pci=k_v))
+        ctx = SimpleNamespace(plan=SimpleNamespace(project=SimpleNamespace(site=site)))
+        missing, inputs = [], []
+        _settlement(ctx, missing, inputs)
+        return missing, inputs
+
+    assert run(None) == ([SETTLEMENT_MISSING], [])
+    missing, inputs = run(120.0)
+    assert missing == [SETTLEMENT_OWED]
+    assert [(q.name, q.value) for q in inputs] == [("k_v", 120.0)]
 
 
 def test_dowel_product_fields_round_trip() -> None:

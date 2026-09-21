@@ -8,13 +8,14 @@ board would have to survive:
 
 * fresh-concrete pressure on the board — ACI 347R-14, capped at full liquid head ``w·h``;
 * board flotation — Archimedes on the board, against the bars' bearing on the foam;
-* thermal movement the board takes — ``α_c ΔT`` over the court's run, against
-  ``t · foam_psi / foam_modulus_psi``;
+* thermal movement the board takes — ``α_c`` × (site hot − the concrete's set temperature,
+  bounded below by ACI 306R's 50 °F) over the court's full run, against the closure at the
+  long-term allowable stress, ``t · (foam_psi / 3) / foam_modulus_psi``;
 * dowel shear reserve — ``retaining_system``'s governing per-footing shortfall at 1.6H, shared
   by bar count across every break reaching that court, against
   ``min(0.75 V_bar, 0.55 T_u d / 4t)`` per bar (shear, or rupture in double curvature over
   the gap);
-* differential settlement — **always INCOMPLETE**: no measured vertical soil modulus exists.
+* differential settlement — INCOMPLETE until ``SubgradeModulus.k_v_pci`` is measured.
 
 Oracle: ``houses/catlin/notes/sunken_garden_court_free_body.md`` §11, worked by hand first.
 """
@@ -36,7 +37,7 @@ from typehaus.engineering.retaining_system import footing_shortfalls
 KIND = "thermal_break_transfer"
 BASIS = "ACI 347R-14 (fresh-concrete pressure); ACI 440.11-22 (GFRP bar); IRC R404.4 loop"
 #: Bumped whenever the arithmetic below changes — it rides in the fingerprint.
-BASIS_VERSION = "1"
+BASIS_VERSION = "2"
 
 #: ACI 347R-14 unit weight of fresh concrete, pcf — the ``w`` in ``p = w·h``.
 CONCRETE_PCF = 150.0
@@ -45,12 +46,20 @@ ALPHA_C_PER_F = 5.5e-6
 #: ACI 440.11-22 strength reduction: shear, and FRP rupture (tension-controlled).
 PHI_SHEAR = 0.75
 PHI_RUPTURE = 0.55
+#: ACI 306R-16 Table 3.1: minimum as-placed concrete temperature, 12"-36" section, °F — the
+#: lowest set temperature, so the largest closing range.
+MIN_SET_TEMP_F = 50.0
+#: Sustained-stress factor against XPS creep: a board held closed for a season may take a
+#: third of its short-term rating (the maker's "3:1 for static loads").
+FOAM_CREEP_FACTOR = 3.0
 
 SETTLEMENT_MISSING = (
-    "a measured soil modulus for differential settlement across the break — a vertical "
-    "subgrade modulus or predicted settlements from a geotechnical report. No Site field "
-    "carries one; `Site.lateral_subgrade_modulus` is the LATERAL modulus and does not "
-    "answer it")
+    "`Site.lateral_subgrade_modulus.k_v_pci` — the measured vertical subgrade modulus "
+    "(SubgradeModulus.k_v_pci, a strip footing at its real width) from a geotechnical "
+    "report; differential settlement across the break has no demand without it")
+SETTLEMENT_OWED = (
+    "the differential-settlement shear across the break, from the measured "
+    "`SubgradeModulus.k_v_pci` — the engineer's to state; this engine computes none")
 
 _IN_PER_M = 1.0 / 0.0254
 
@@ -233,7 +242,12 @@ def _one(ctx, dowel, loops, side, bars_on) -> EngineeringRecord:  # noqa: C901
         _movement(ctx, dowel, structure, t_in, states, missing, inputs)
         _reserve(dowel, ref, loops[ref], bars_on[ref], t_in, states, missing, inputs, notes)
 
-    missing.append(SETTLEMENT_MISSING)
+    _settlement(ctx, missing, inputs)
+    over = [s for s in states if not s.ok]
+    if over:
+        # Settlement holds the item INCOMPLETE; an over row must still reach the permit line.
+        missing.append("a design answer to the rows graded OVER — " + ", ".join(
+            f"{s.name} {s.ratio:.2f}" for s in over) + " (free body §11f lists the options)")
     notes.append(
         "NOT GRADED: joint OPENING under contraction (bonded bars cannot stretch the "
         "movement over the gap — they debond, rupture or drag the court); placement impact "
@@ -255,21 +269,40 @@ def _movement(ctx, dowel, structure, t_in, states, missing, inputs) -> None:
         missing.append("Site.design_temp_cooling and Site.design_temp_heating — the "
                        "movement row's temperature range")
         return
-    delta_t = hot.fahrenheit - cold.fahrenheit
+    # The board closes only as the court warms past its SET temperature; contraction opens it.
+    set_f = max(cold.fahrenheit, MIN_SET_TEMP_F)
+    delta_t = hot.fahrenheit - set_f
+    # Full run: the retained soil behind the far wall is far stiffer than the board, so the
+    # court grows toward the break (free body §11c).
     run_in = _run_in(ctx, dowel, structure)
     movement_in = ALPHA_C_PER_F * delta_t * run_in
     inputs += [Quantity("delta_T", delta_t, "F", 0.1),
                Quantity("court_run", run_in, "in", 0.1)]
-    if dowel.foam_modulus_psi is None:
-        missing.append(f"Dowel.foam_modulus_psi on {dowel.tag} — the board's compressive "
-                       f"modulus off its datasheet; {movement_in:.3f}\" of movement "
+    names = [f"Dowel.{f}" for f in ("foam_modulus_psi", "foam_source")
+             if getattr(dowel, f) is None]
+    if names:
+        missing.append(f"{', '.join(names)} on {dowel.tag} — the board's compressive "
+                       f"modulus off a named datasheet; {movement_in:.3f}\" of movement "
                        f"({delta_t:.0f} F over {run_in / 12:.2f}') waits on it")
         return
+    long_term_psi = dowel.foam_psi / FOAM_CREEP_FACTOR
     inputs.append(Quantity("foam_modulus", dowel.foam_modulus_psi, "psi", 1.0))
     states.append(LimitState(
-        "thermal movement", movement_in, t_in * dowel.foam_psi / dowel.foam_modulus_psi,
-        "in", f"{ALPHA_C_PER_F:g}/F x {delta_t:.0f} F x {run_in:.1f}\" of court run, whole "
-              f"run toward one end; vs the closure at the board's rated stress"))
+        "thermal movement", movement_in, t_in * long_term_psi / dowel.foam_modulus_psi, "in",
+        f"{ALPHA_C_PER_F:g}/F x ({hot.fahrenheit:.0f} - {set_f:.0f} F set, ACI 306R-16 "
+        f"Table 3.1) x {run_in:.1f}\" of court run toward the break; vs {t_in:.2f}\" x "
+        f"{long_term_psi:.2f} psi (1/{FOAM_CREEP_FACTOR:g} of {dowel.foam_psi:.0f}, creep) / "
+        f"E {dowel.foam_modulus_psi:,.0f} psi — {dowel.foam_source}"))
+
+
+def _settlement(ctx, missing, inputs) -> None:
+    report = getattr(ctx.plan.project.site, "lateral_subgrade_modulus", None)
+    k_v = getattr(report, "k_v_pci", None)
+    if k_v is None:
+        missing.append(SETTLEMENT_MISSING)
+        return
+    inputs.append(Quantity("k_v", k_v, "pci", 0.1))
+    missing.append(SETTLEMENT_OWED)
 
 
 def _reserve(dowel, ref, by_pcf, total_bars, t_in, states, missing, inputs, notes) -> None:
@@ -313,8 +346,8 @@ def _record(dowel, tags, states, missing, notes, inputs) -> EngineeringRecord:
         return EngineeringRecord(
             item_id=ident, kind=KIND, key=dowel.tag, basis_version=BASIS_VERSION,
             basis=BASIS, status=Status.INCOMPLETE,
-            summary=(f"{dowel.tag}: graded as a reserve — {graded}; the rest waits on "
-                     f"product data and a measured soil modulus"),
+            summary=(f"{dowel.tag}: graded as a reserve — {graded}; open: "
+                     f"{len(missing)} item(s), a measured k_v among them"),
             inputs=tuple(inputs), limit_states=tuple(states),
             missing=tuple(dict.fromkeys(missing)), notes=tuple(notes), element_tags=tags)
     over = any(not s.ok for s in states)
