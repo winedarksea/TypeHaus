@@ -217,16 +217,19 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset(catlin_check_r
     # guard in this house is filled with a glass panel — a resolved requirement, not an
     # unresolved one, and lettering it as a gate failure would be a false statement.
     #
-    # ** ONE GATING ITEM IS OPEN, AND IT IS OPEN ON PURPOSE (2026-09-18). ** "Fixed column
-    # base embedment" arrived with `engineering/column_base.py`, which grades the IBC
-    # 1807.3.2.1 embedment every `deck_post` record had been naming as an ungraded
-    # assumption since 2026-09-11 — and the north entry canopy's two cast columns do not
-    # have it. That is a real design gap in the reference house, not a checklist defect:
-    # `notes/entry_column_base_fixity.md` works it by hand and §6 lists the three closures.
-    # It is held in ONE place (the set below) so that every other gating item is still
-    # asserted as tightly as before, and it goes the day the fix lands. See
-    # `test_cli_check_output.test_catlin_carries_no_failures` for the matching entry.
-    OPEN = {"Fixed column base embedment"}
+    # ** THE SET IS EMPTY AGAIN SINCE 2026-09-20, AND IT STAYS HERE EMPTY. ** It held "Fixed
+    # column base embedment" from 2026-09-18, when `engineering/column_base.py` began grading
+    # the IBC 1807.3.2.1 embedment every `deck_post` record had been naming as an ungraded
+    # assumption — a real design gap in the reference house, not a checklist defect. It
+    # closed in two halves, both in `notes/entry_column_base_fixity.md`: §6a put the canopy
+    # pair on one bearing plane at -10'-2", and §6e claimed IBC §1806.3.4's isolated-pole
+    # doubling for the landing pair as a GRADED authored claim rather than pouring 2' of
+    # concrete to dodge a question the owner had already answered.
+    #
+    # The mechanism stays because the mechanism is the point: a gating item may be open here
+    # deliberately, named once, while every OTHER gating item is still asserted as tightly as
+    # before. An empty set is the strongest form of that — nothing is excused.
+    OPEN: set[str] = set()
     gating = [item for item in checklist.items if item.blocking]
     resolved = {Result.PASS, Result.NOT_APPLICABLE}
     unresolved = [item for item in gating

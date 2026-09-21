@@ -176,9 +176,17 @@ MAX_NON_BLOCKING_ITEMS = {"mn-2020": 25}
 # north entry's two canopy columns come out OVER, so the item sits here awaiting a SEAL in
 # the sense that it awaits a redesign: `notes/entry_column_base_fixity.md` §6 lists the
 # three closures. It leaves this lane when the shafts go deeper, the base is constrained at
-# grade, or the frame is braced — not when anybody stamps the current drawing, because
-# `_authoring.engineered()` makes an authored spec unreachable under `Status.OVER` on
-# purpose. Note that "Deck beams outside the beam span table" STAYED at 7's roster and did
+# grade, the frame is braced, or — the fourth route, added 2026-09-20 — the house AUTHORS
+# the §1806.3.4 judgement the verdict turns on where the two ends of the band straddle
+# (`Post.isolated_pole_basis`, §6e). That fourth one is not a loophole and the difference is
+# worth stating: it does not stamp anything, it supplies an INPUT the engine refuses to
+# invent, it is graded (an empty basis and a non-short-term governing case are both refused),
+# and it is printed into the limit state's own citation so no reader sees a passing embedment
+# without learning it was claimed. Not when anybody stamps the current drawing, though,
+# because `_authoring.engineered()` makes an authored spec unreachable under `Status.OVER` on
+# purpose. The item's CHECK ID changed the same day — `structural.lateral_racking` ->
+# `structural.column_base` — because a permit item matches by check id alone and this
+# BLOCKING line was going red on the advisory `deck_post` findings that shared the old id. Note that "Deck beams outside the beam span table" STAYED at 7's roster and did
 # not leave it when `glulam_beam` was re-registered the same day: it was already counted.
 #
 # RAISED 8 -> 9 on 2026-09-19: "Roof diaphragm and shear panel load path". The north entry

@@ -877,6 +877,28 @@ def _roof_borne_posts(ctx: CheckContext) -> tuple[dict[str, float], set[str], fl
     return {tag: area * scale for tag, area in landed.items()}, subjects, snow_psf
 
 
+def _wall_borne_posts(ctx: CheckContext) -> dict[str, float]:
+    """``post tag -> EQUIVALENT deck tributary ft2`` for a WALL bearing along a beam.
+
+    ** THE SAME POUNDS THE PIER CALC USES, IN THE TABLE'S OWN CURRENCY. ** A wall standing on
+    a beam delivers a line load to the posts under it, which ``pier_basis.wall_line_loads``
+    derives off the wall's own resolved layer stack (plus whatever stands on its plate) and
+    ``deck_post`` grades as part of the dead term. R507.3.1 sizes a bearing area from
+    ``tributary x DECK_TOTAL_LOAD_PSF`` and has no other currency, so the pounds are divided
+    back into it — exactly as :func:`_roof_borne_posts` scales a snow load rather than
+    reporting it separately. Reading the one function is what keeps the engine from holding
+    two answers about one load.
+
+    The chain is the LANDED one: a wood column standing on a pier keeps none of what it
+    carries, so ``wall_line_loads``' own ``supported_by`` hand-down is what reaches here.
+    """
+    from typehaus.checks.structural._engineering import engineering_context
+    from typehaus.engineering.pier_basis import landed_wall_line_loads
+
+    landed = landed_wall_line_loads(engineering_context(ctx))
+    return {tag: lb / DECK_TOTAL_LOAD_PSF for tag, lb in landed.items()}
+
+
 _WOOD_UNIT_WEIGHT_PCF = 35.0
 _CONCRETE_UNIT_WEIGHT_PCF = 150.0
 
@@ -962,15 +984,20 @@ def deck_footing_size(ctx: CheckContext) -> list[Finding]:
             f"{', '.join(sorted(roof_subjects))} cannot be put into R507.3.1's currency",
             tuple(sorted(roof_subjects))))
 
+    wall_borne = _wall_borne_posts(ctx)
+
     minimum = (MIN_DECK_FOOTING_SIDE_IN / 12.0) ** 2
-    for tag in sorted(set(deck_share) | set(roof_borne) | roof_subjects):
+    for tag in sorted(set(deck_share) | set(roof_borne) | set(wall_borne) | roof_subjects):
         post = ctx.plan.by_tag(tag)
         if not isinstance(post, Post):
             continue
         # A post under a deck may ALSO be under a roof — the north entry's west pair is
         # both. Its footing answers for the two together, so the roof's equivalent share
         # is added here rather than reported separately.
-        tributary = deck_share.get(tag, 0.0) + roof_borne.get(tag, 0.0)
+        # A WALL bearing along a beam this post carries is a third share, and the same
+        # doctrine: one pad answers for everything standing on it.
+        tributary = (deck_share.get(tag, 0.0) + roof_borne.get(tag, 0.0)
+                     + wall_borne.get(tag, 0.0))
         named = ", ".join(sorted(carried.get(tag, ()))) or _roof_over(ctx, tag)
         what = "deck" if tag in carried else "roof"
         bearing, chain = _bearing_of(ctx, post)

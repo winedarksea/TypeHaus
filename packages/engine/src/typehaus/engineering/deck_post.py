@@ -69,8 +69,10 @@ KIND = "deck_post"
 #: together on 2026-09-18 — the dowels' ANCHORAGE into the concrete below joined the lap
 #: that was already graded (the lap alone was half the joint, and the half it left out is
 #: the one the fixed base depends on), and the P-M check became an ENVELOPE over §2.3.1's
-#: five combinations at their own axial loads rather than one moment at 1.2D + 1.6L's.
-BASIS_VERSION = "6"
+#: five combinations at their own axial loads rather than one moment at 1.2D + 1.6L's; and
+#: to "7" on 2026-09-20, when a WALL bearing along a beam stopped being an unmodelled load
+#: and started being a derived LINE load in the dead term (``pier_basis.wall_line_loads``).
+BASIS_VERSION = "7"
 BASIS = "IRC R507.4 (no row); ACI 318-19 Ch. 10, 22.4, 25.7 (reinforced) / 14.5 (plain)"
 
 #: ACI 318-19 §2.3 defines a PEDESTAL as a member with a ratio of height to least lateral
@@ -310,6 +312,20 @@ def _one(pier: _Pier) -> EngineeringRecord:
             f"Roof snow {pier.roof_snow_psf:.1f} psf over {pier.roof_tributary_ft2:.1f} ft2 "
             f"of roof tributary, from {pier.roof_snow_basis}. The beam this pier stands "
             f"under is designed at the same number — see `engineering/roof_beam.py`.",
+        )
+    # ** A LOAD THAT IS IN NO TRIBUTARY HAS TO BE NAMED, OR THE AREAS DO NOT ADD UP. ** A
+    # wall bearing along a beam this pier carries arrives as POUNDS, not as an area, so a
+    # reader reconciling the dead load against the tributaries above would come up short and
+    # reasonably conclude the demand was invented. It is also the term that was MISSING until
+    # 2026-09-20, which is why the basis names the wall and the beam rather than the number.
+    if pier.wall_dead_lb > 0.0 and pier.wall_load_basis:
+        common = common + (
+            f"WALL LINE LOAD {pier.wall_dead_lb:,.0f} lb, in the dead term and in NO "
+            f"tributary area above: {pier.wall_load_basis}. A wall is neither a FloorSystem "
+            f"nor a Roof, so it has no plan area to shoelace — and it never needed one, "
+            f"because its dead load is a plf times a run (`pier_basis.wall_line_loads`, off "
+            f"the wall's own resolved layer stack). Its LIVE load is zero and there is no "
+            f"term for one: a wall carries no occupancy.",
         )
 
     if is_pedestal and cage is None:
@@ -879,7 +895,7 @@ def _detailing_only(pier: _Pier, area: float, ratio: float, shape: str, minimum_
     steel = cage.area_in2
     states = _detailing_states(pier, area, minimum_steel, cage)
     over = any(not state.ok for state in states)
-    beams = ", ".join(pier.unmodelled_load)
+    beams = ", ".join(pier.unmodelled_load) or "a member"
     reason = (f"the axial DEMAND on {pier.tag}. It carries {beams}, which no "
               f"FloorSystem and no Roof names — so there is no tributary AREA for that load "
               f"and the {pier.tributary_ft2:.1f} ft2 this pier does account for is an "
@@ -908,11 +924,16 @@ def _detailing_only(pier: _Pier, area: float, ratio: float, shape: str, minimum_
             f"{100.0 * steel / area:.3f}%, against the {minimum_steel:.3f} in2 that "
             f"{COLUMN_MIN_REINFORCEMENT_RATIO:.2f} Ag requires. This is the MINIMUM cage the "
             f"Code permits, not a chosen margin.",
-            f"UNMODELLED: {beams}. This is a shelter roof carried on beams and rafters with "
-            f"no Roof or FloorSystem over it, so it has no plan area to shoelace. It is a "
-            f"small load — the enclosure is 4'-0\" x 4'-0\" of 16mm multiwall on three 2x6 "
-            f"rafters — and 'small' is a judgement, not a calculation, which is exactly why "
-            f"this record declines to turn it into one.",
+            # ** THIS NOTE USED TO DESCRIBE ONE PARTICULAR SHELTER ROOF, AND THE HOUSE IT
+            # DESCRIBED WAS RETIRED. ** It read "the enclosure is 4'-0\" x 4'-0\" of 16mm
+            # multiwall on three 2x6 rafters" — the breezeway, deleted — on every record this
+            # branch produced, about whatever beams it was actually handed. A record that
+            # states a specific fact about a structure that is not there is worse than one
+            # that states a general one, so it names the members it has.
+            f"UNMODELLED: {beams}. Carried on beams with no Roof and no FloorSystem over "
+            f"them, so there is no plan area to shoelace and the load has no currency this "
+            f"module trades in. Whether it is SMALL is a judgement, not a calculation, which "
+            f"is exactly why this record declines to turn it into one.",
             "SCREENING: the detailing limits above are complete and the section is not "
             "graded at all. A stamped design states the demand and closes it.",
         ), element_tags=(pier.tag,))
@@ -1045,6 +1066,13 @@ def _inputs(pier: _Pier, area: float, steel: float, cage: _Cage | None) -> tuple
         # demand this record published moved with it.
         Quantity("roof_snow", pier.roof_snow_psf, "psf", 0.1),
         Quantity("carried_dead", pier.carried_dead_lb, "lb", 1.0),
+        # ** PUBLISHED SEPARATELY FOR THE REASON THE ROOF TRIBUTARY IS. ** A wall bearing
+        # along a beam this pier carries is POUNDS, not an area, so it appears in no
+        # tributary above and a reader summing the areas against the dead load would come up
+        # short and reasonably conclude the demand was invented. It is also inside the
+        # fingerprint, which is the point: retype that wall's cladding and the seal stales,
+        # because the demand this record published moved with it.
+        Quantity("wall_dead", pier.wall_dead_lb, "lb", 1.0),
         Quantity("dead_load", pier.dead_lb, "lb", 1.0),
         Quantity("live_load", pier.live_lb, "lb", 1.0),
         Quantity("fc", _fc_psi(pier), "psi", 1.0),

@@ -391,13 +391,14 @@ def test_print_sealed_exits_one_while_nothing_is_sealed(catlin_engineering):
     refuse; the draft print below is what still has to work, because holding the printer
     hostage until a PE signs would make the engine useless for the months before one does.
 
-    ** THE DRAFT GATE CLOSES FIRST SINCE 2026-09-18, SO THE SEALED GATE IS ASSERTED
-    DIRECTLY. ** `engineering/column_base.py` grades the embedment catlin's canopy columns
-    need and they do not have it, so `haus print` refuses before `--sealed` is ever
-    consulted — which is correct ordering (there is no point asking for a stamp on a set
-    that does not reach draft) and would silently make this test vacuous. The CLI refusal
-    is asserted on the draft message, and the sealed gate on the checklist it reads, so
-    this keeps testing its own subject either way.
+    ** THE DRAFT GATE CLOSED IN FRONT OF IT FROM 2026-09-18 TO 2026-09-20, AND THIS TEST
+    NEARLY WENT VACUOUS BECAUSE OF IT. ** While catlin's column bases were open `haus print`
+    refused before `--sealed` was ever consulted — correct ordering (there is no point asking
+    for a stamp on a set that does not reach draft), and a refusal this test could have
+    mistaken for its own subject. `notes/entry_column_base_fixity.md` §6a and §6e closed
+    both bases, so the draft gate opens and the message asserted below is the SEALED one, on
+    its own wording. That it says "sealed print blocked" and not "permit print blocked" is
+    the assertion: it proves the second gate is what refused.
     """
     from typer.testing import CliRunner
 
@@ -406,7 +407,9 @@ def test_print_sealed_exits_one_while_nothing_is_sealed(catlin_engineering):
     runner = CliRunner()
     sealed = runner.invoke(app, ["print", str(CATLIN), "--sealed", "--fmt", "dxf"])
     assert sealed.exit_code == 1, sealed.output
-    assert "permit print blocked" in sealed.output
+    assert "sealed print blocked" in sealed.output
+    assert "permit print blocked" not in sealed.output, \
+        "the DRAFT gate refused, so this test is not exercising its own subject"
 
     # The shared fixture's checklist, not a second full run of the house — see
     # `test_catlin_fixture_discipline`, which lints exactly that.
@@ -415,23 +418,27 @@ def test_print_sealed_exits_one_while_nothing_is_sealed(catlin_engineering):
     assert checklist.unsealed
 
 
-def test_the_two_gates_are_separate_and_catlin_now_reaches_neither(catlin_engineering):
-    """The gates are independent, and 2026-09-18 is the first day catlin missed BOTH.
+def test_the_two_gates_are_separate_and_catlin_reaches_draft_and_not_sealed(catlin_engineering):
+    """The gates are independent, and catlin is the house that proves it by reaching one.
 
-    It used to reach draft and not sealed, which was the pair this test existed to pin. The
-    draft gate now closes too, on `column_base/PT-BW-RE` and `-RNE`: the engine computed the
-    IBC 1807.3.2.1 embedment those columns' assumed fixity needs and they do not have it.
-    That is the draft gate working — draft means "this engine's own calculation checks out"
-    — and the separation is still what is asserted: the sealed gate is shut for a different
-    reason entirely (no `engineering.toml` exists), so closing the draft one cannot be what
-    is making `sealed` false.
+    It reached draft and not sealed until 2026-09-18, missed BOTH for two days while
+    `engineering/column_base.py` graded an embedment its north entry did not have, and
+    reaches draft again since 2026-09-20 — `notes/entry_column_base_fixity.md` §6a put the
+    canopy pair on one plane at -10'-2" and §6e claimed §1806.3.4's doubling for the landing
+    pair. **The blocked list is asserted EMPTY rather than deleted**, the way the FAIL sets in
+    `test_lateral_racking.py` are: a blocking line silently going red is exactly what this
+    assertion is here to notice.
+
+    The separation is what the pair below pins: `sealed` is false for a reason that has
+    nothing to do with any calculation — catlin carries no `engineering.toml` at all — so it
+    stays false with every draft line green, and it would have stayed false with them red.
     """
     _ctx, _items, checklist = catlin_engineering
     blocked = [item.label for item in checklist.items
                if item.blocking and item.result not in (Result.PASS,
                                                         Result.NOT_APPLICABLE)]
-    assert blocked == ["Fixed column base embedment"], blocked
-    assert not checklist.ok
+    assert blocked == [], blocked
+    assert checklist.ok
     assert not checklist.sealed
     assert checklist.unsealed
     # Shut for its own reason: every engineered item is unsealed because the house carries

@@ -264,13 +264,21 @@ Six piers on **two** bearing planes, and the split is the first thing to read.
 
 | pier | carries | pad | bottom | bearing d/c |
 |---|---|---|---|---|
-| `PT-BW-W` | `PT-BW-CW` + house-side west seat | 2'-0" | −9'-9 7/16" | 0.93 |
+| `PT-BW-W` | `PT-BW-CW` + house-side west seat | 2'-0" | −9'-11 7/16" | 0.95 |
 | `PT-BW-E` | house-side east seat | 2'-0" | −9'-9 7/16" | 0.34 |
 | `PT-BW-RE` | the east header (full-height column) | 2'-0" | −9'-9 7/16" | **0.94** |
-| `PT-BW-GW` | `PT-BW-CNW` + garage-side west seat | 2'-0" | −7'-0" | 0.82 |
+| `PT-BW-GW` | `PT-BW-CNW` + garage-side west seat | 2'-0" | −7'-4" | 0.84 |
 | `PT-BW-GE` | garage-side east seat | 1'-6" | −7'-0" | 0.45 |
 | `PT-BW-RNE` | the east header (full-height column) | 2'-0" | −7'-0" | 0.83 |
 
+> **The west pair's rows moved again on 2026-09-20, and only their BOTTOMS moved.** Both
+> joined `north_entry_frame._MOMENT_PIERS` — 12" pads where they had 10" and 8", tops held
+> at `FOOTING_TOP_FT` and the garage strip's plane — so the shafts, the stations and
+> `column_base`'s embedment are all untouched. The d/c rises because `W-BW-SCREEN`'s line
+> load is in the demand now (§2's wall table above, 1.97 ft² of equivalent R507.3.1
+> tributary), not because the pads changed: `PD-BW-W` is at **0.95** and is the tightest
+> landing pad in the house, on presumptive soil with **no boring log**. Worth flagging.
+>
 > **Every ratio in that column moved on 2026-09-18** and the derivation is §6's 2026-09-17
 > bearing table below, re-worked. Three things changed at once: the roof share is graded at
 > the §3 **design** snow (73.7 psf) rather than the ground snow, which raises it; the pad's
@@ -308,15 +316,54 @@ Worst case is `PT-BW-W`, which carries the west roof column **and** the landing'
 |---|---|---|
 | roof tributary | 160.0 / 2 headers / 2 supports per header | 40.0 ft² |
 | deck tributary | (23.5 + 13.2) ft² of landing / 2 seat lines | 18.4 ft² |
+| wall line load | `W-BW-SCREEN` + `SC-BW-WEST` on `BM-BW-SCSILL`, half | 98 lb |
 | roof live | 40.0 × **73.7** psf (§3's design snow) | 2,948 lb |
 | deck live | 18.4 × 40 psf | 736 lb |
-| dead | (40.0 + 18.4) × 10 psf + self weight + carried | 1,668 lb |
-| service | | **5,352 lb** |
-| factored | 1.2 D + 1.6 L | **7,896 lb** |
+| dead | (40.0 + 18.4) × 10 psf + self weight + carried + wall | 1,766 lb |
+| service | | **5,450 lb** |
+| factored | 1.2 D + 1.6 L | **8,014 lb** |
+
+**The wall line load, worked (2026-09-20).** `BM-BW-SCSILL` is the sill under `W-BW-SCREEN`,
+hung on `HU28-2Z` off the two 6x6 KDAT canopy columns `PT-BW-CW`/`-CNW`, which stand on
+`PT-BW-W` / `PT-BW-GW` through `supported_by`. A **wall is neither a `FloorSystem` nor a
+`Roof`**, so until 2026-09-20 `pier_basis._unmodelled_beams` reported that beam as unpriced
+and `deck_post` declined to publish an axial ratio for either pier at all. A wall's dead load
+never needed a tributary area: it is a plf times a run.
+
+| term | working | value |
+|---|---|---|
+| `W-BW-SCREEN` | its own resolved layer stack over its 4.08' height | 30.54 plf |
+| `SC-BW-WEST` | 26 slats, 1 1/2" × 3 1/2" × 2.40', kdat at 600 kg/m³, over 6.57' | 12.94 plf |
+| line | | **43.48 plf** |
+| run | the wall's axis inside `BM-BW-SCSILL`'s own footprint | 4.52' |
+| total | | **196.6 lb** |
+| each column | two bearings | **98.3 lb** |
+
+The slat clerestory is a third of it, and leaving it out would understate the sill by 30% —
+the same partial-stack failure `resolve/assembly_weight.dead_load_plf` refuses one layer
+down. The plf is the one `checks/structural/guards.py` already printed ("guard wall
+`W-BW-SCREEN` weighs 31 plf") in the same run that called this load unknown; it moved to
+`resolve/assembly_weight.py` so a calc could read it, because `engineering` may not import
+`checks`. `checks/structural/deck.py` divides the same pounds into R507.3.1's currency —
+98.3 / 50 psf = 1.97 ft² — rather than holding a second answer about one load.
+
+**Closing it uncovered a real FAIL, and that was the point.** Both piers left
+`deck_post._detailing_only`'s six load-independent states for `_moment_column`'s twelve, and
+the twelfth is dowel ANCHORAGE into the base — ACI 318-19 §25.4.3.1's ℓ_dh, 7.115" for a #5.
+`PT-BW-GW` had an 8" pad giving 5.375" and **no base dowels at all**: d/c 1.32. It was never
+the wall load (98 lb is 1.5% of factored axial). `_MOMENT_PIERS` had covered the landing's
+EAST column and not its west, while `pier_basis._base_moments` split the lateral case "over
+4 fixed column(s)" and `structural.lateral_racking` named all four — so the west pair carried
+its twins' base moment with nothing detailed to deliver it, and nobody saw it because their
+records were detailing-only. The west pair joined `_MOMENT_PIERS` in the same commit: 12"
+pads, **tops unchanged**, bottoms down 2" (`PT-BW-W`) and 4" (`PT-BW-GW`) — 0.073 cy and 8
+more #5 dowels — and both land at **0.759**, `PT-BW-GE`'s own number. Because the pad TOPS
+hold, `column_base`'s embedment (grade to pad top) does not move and
+`entry_column_base_fixity.md` §6e's claim is undisturbed.
 
 **`pier_basis` reads the tributaries close to this line now**: 17.0 ft² of deck and 40.0 ft²
-of roof on `PT-BW-W`, for D 1,529 + L 3,629 = 5,158 lb service and 7,641 lb factored against
-the 7,896 hand-worked here. The gap is the deck share — 17.0 against this line's 18.4 — and
+of roof on `PT-BW-W` plus the 98 lb of wall above, for D 1,628 + L 3,629 = 5,257 lb service
+and 7,760 lb factored against the 8,014 hand-worked here. The gap is the deck share — 17.0 against this line's 18.4 — and
 it is bookkeeping in a load case nowhere near governing. It used to read 47.7 ft² of roof,
 7.7 ft² of which was the garage landing counted a second time as a "rafter field"; that
 duplicate went on 2026-09-18 (`pier_basis._rafter_fields` now skips a beam pair some

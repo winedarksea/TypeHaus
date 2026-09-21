@@ -47,12 +47,24 @@ half-inch of sway at grade is acceptable is a judgement about the structure abov
 soil property, so this module refuses to make it: it runs the formula at ``S1`` and at
 ``2 S1`` and reports INCOMPLETE naming the missing judgement where the two ends disagree.
 
+**A HOUSE MAY MAKE THAT JUDGEMENT, AND IT IS THEN A GRADED CLAIM.**
+``Post.isolated_pole_basis`` states, in prose, what tolerates half an inch of motion at
+grade and on whose word; where the two ends straddle, the limit state is published at
+``2 S1`` and the citation says the doubling was claimed and quotes the basis — a reader may
+never see a passing embedment without learning §1806.3.4 was invoked. Two ways to be
+refused, both INCOMPLETE naming why: an EMPTY basis (the stale-declaration failure a bare
+bool has), and a governing lateral case §1806.3.4's own words do not reach. The section
+permits the doubling for motion "due to **short-term** lateral loads"; wind and an R301.5
+guard push both qualify, and :func:`_sustained_lateral_cases` refuses anything else rather
+than honouring a doubling against a load that never goes away.
+
 **Oracle.** ``houses/catlin/notes/entry_column_base_fixity.md``, hand-worked in a separate
 pass.
 """
 
 from __future__ import annotations
 
+import dataclasses
 import math
 
 from typehaus.engineering.item import (
@@ -84,7 +96,9 @@ BASIS = ("IBC 2018 §1807.3.2.1 (non-constrained embedment) and §1806.2/§1806.
 #: 2: the spread/combined mechanism became a graded alternative under
 #: ``Pad.resists_base_moment``, and the demand started being shared with a declared
 #: diaphragm — 2026-09-19.
-BASIS_VERSION = "2"
+#: 3: §1806.3.4's isolated-pole doubling became claimable, as a graded authored claim on
+#: ``Post.isolated_pole_basis`` — 2026-09-20.
+BASIS_VERSION = "3"
 
 #: IBC §1806.3.4 — the lateral bearing value may be doubled for an isolated pole where a
 #: 1/2" motion at the ground surface does not harm the structure. A judgement about what
@@ -128,6 +142,56 @@ def required_embedment_ft(shear_lb: float, height_ft: float, diameter_ft: float,
             return nxt
         depth = nxt
     return depth
+
+
+#: The ``_Pier`` base-moment fields §1806.3.4's "short-term lateral loads" reaches.
+#: WIND is short-term by definition — ASCE 7-16's demand is a 3-second gust — and the IRC
+#: R301.5 guard push is a 200 lb concentrated load applied "at any point", a person leaning
+#: on a rail and not a standing condition. Half an inch of sway under either recovers.
+#:
+#: ** ANY OTHER LATERAL CASE A PIER EVER CARRIES HAS TO BE ADDED HERE DELIBERATELY **, by
+#: somebody who has decided it is short-term. :func:`_sustained_lateral_cases` scans for
+#: base-moment fields that are NOT named here and refuses the claim on them, rather than
+#: honouring a doubling against an earth surcharge that never goes away.
+_SHORT_TERM_MOMENTS = ("wind_base_moment_lb_ft", "guard_base_moment_lb_ft")
+
+
+def _sustained_lateral_cases(pier: _Pier) -> tuple[str, ...]:
+    """Base moments on this pier that §1806.3.4's doubling may NOT be claimed against."""
+    return tuple(sorted(
+        f.name for f in dataclasses.fields(pier)
+        if f.name.endswith("_base_moment_lb_ft") and f.name not in _SHORT_TERM_MOMENTS
+        and abs(float(getattr(pier, f.name, 0.0) or 0.0)) > 0.0))
+
+
+def _pole_claim(ctx: EngineeringContext, pier: _Pier) -> tuple[str | None, str | None]:
+    """``(basis prose, refusal)`` for this column's §1806.3.4 claim. Both ``None`` = unclaimed.
+
+    A claim that makes a demand smaller has to be graded or it is not a claim, and this is
+    the grading. Two ways to be refused, and each is reported as a *missing judgement* on
+    the record rather than silently ignored: an EMPTY basis (the stale-declaration failure a
+    bare bool has, with nothing a reader could use to notice it went stale), and a governing
+    lateral case §1806.3.4's own words do not reach.
+    """
+    post = ctx.plan.by_tag(pier.tag)
+    raw = getattr(post, "isolated_pole_basis", None)
+    if raw is None:
+        return None, None
+    if not str(raw).strip():
+        return None, (
+            "a BASIS for the IBC §1806.3.4 claim on this column: `isolated_pole_basis` is "
+            "authored empty, and a doubling with no statement behind it is the stale "
+            "declaration this field exists to prevent. State what tolerates 1/2\" of "
+            "motion at grade and on whose word")
+    sustained = _sustained_lateral_cases(pier)
+    if sustained:
+        return None, (
+            f"a governing lateral case §1806.3.4's doubling may be claimed against. This "
+            f"column claims it, and it carries {', '.join(sustained)} — while §1806.3.4 "
+            f"permits the doubling only for motion \"due to SHORT-TERM lateral loads\". A "
+            f"sustained case does not recover from 1/2\" of movement at grade. Withdraw "
+            f"the claim, or grade this column on the table's own S1")
+    return str(raw).strip(), None
 
 
 def _grade_ft(ctx: EngineeringContext) -> float | None:
@@ -239,6 +303,12 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
     # gets graded, and only that one may put anything in `missing`. An embedment that
     # straddles §1806.3.4 is not a gap in a record whose mechanism is the spread base.
     claimed = bool(getattr(pad, "resists_base_moment", False))
+    # A SECOND authored claim, and a different question: `claimed` above chooses WHICH
+    # mechanism is graded, this one chooses which END of §1806.3.4's band the embedment is
+    # graded at. It is subject to the same doctrine as everything else here — only the
+    # graded mechanism may put anything in `missing` — so a refusal is raised under the
+    # embedment branch and nowhere else.
+    pole_basis, pole_refusal = _pole_claim(ctx, pier)
     if embedment_ft is None:
         if not claimed:
             missing.append("a bottom elevation on the base, to measure embedment from")
@@ -252,6 +322,10 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
         embed_note = (f"{plain:.2f}' of embedment ({doubled:.2f}' at §1806.3.4's "
                       f"isolated-pole double) against the {embedment_ft:.2f}' it has")
         if not claimed:
+            # An authored claim this module cannot honour is a defect in the house whether
+            # or not the band happens to turn on it today, so it is raised before the test.
+            if pole_refusal is not None:
+                missing.append(pole_refusal)
             if (plain <= embedment_ft + _TOLERANCE_FT) == (doubled <= embedment_ft
                                                            + _TOLERANCE_FT):
                 states.append(LimitState(
@@ -262,7 +336,25 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
                     f"{height_ft:.2f}' above grade on a {diameter_ft:.2f}' round. "
                     f"§1806.3.4's isolated-pole doubling would need {doubled:.2f}' and "
                     f"does not change the verdict, so it is not claimed"))
-            else:
+            # ** THE TWO ENDS DISAGREE, SO THE VERDICT TURNS ON A JUDGEMENT ABOUT THE
+            # STRUCTURE. ** The house may make it, on `Post.isolated_pole_basis`, and then
+            # this module grades the doubled formula and says in the citation that it did.
+            # A reader may never see a passing embedment here without learning §1806.3.4
+            # was invoked and on whose statement.
+            elif pole_basis is not None:
+                states.append(LimitState(
+                    "embedment, non-constrained", doubled, embedment_ft, "ft",
+                    f"IBC 2018 §1807.3.2.1 at 2 S1 — §1806.3.4's ISOLATED-POLE DOUBLING, "
+                    f"CLAIMED BY THIS HOUSE and not derived here: "
+                    f"{2 * soil.lateral_bearing_psf_per_ft:.0f} psf/ft against Table "
+                    f"1806.2 class {soil.ibc_class}'s "
+                    f"{soil.lateral_bearing_psf_per_ft:.0f}, taken at d/3, P "
+                    f"{shear_lb:,.0f} lb ASD at h {height_ft:.2f}' above grade on a "
+                    f"{diameter_ft:.2f}' round. The price of the doubling is 1/2\" of "
+                    f"lateral motion at the ground surface under short-term load; on the "
+                    f"table's own S1 this column would need {plain:.2f}' and has "
+                    f"{embedment_ft:.2f}'. The claim's basis: {pole_basis}"))
+            elif pole_refusal is None:
                 missing.append(
                     f"a judgement on IBC §1806.3.4: the embedment needs {plain:.2f}' at "
                     f"the table's lateral bearing and {doubled:.2f}' at the isolated-pole "
@@ -337,10 +429,15 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
         "what the sway magnifier in `deck_post` implicitly assumes is infinite; group "
         "effect with the pier line beside it; and passive resistance on the pad's own "
         "faces, which is neglected and is the conservative direction.",
-        "IBC §1806.3.4's doubling is NOT claimed wherever it would change the verdict. A "
-        "1/2\" lateral motion at the ground surface is the price of it, and whether that "
-        "harms a canopy header and the standoff shims under it is a judgement about the "
-        "structure rather than a soil property.",
+        (f"IBC §1806.3.4's doubling IS CLAIMED on this column, and the limit state above "
+         f"is graded at 2 S1 because of it. A 1/2\" lateral motion at the ground surface "
+         f"under short-term load is the price, and the house's statement that this "
+         f"structure tolerates it is: {pole_basis}"
+         if pole_basis is not None else
+         "IBC §1806.3.4's doubling is NOT claimed wherever it would change the verdict. A "
+         "1/2\" lateral motion at the ground surface is the price of it, and whether that "
+         "harms a canopy header and the standoff shims under it is a judgement about the "
+         "structure rather than a soil property."),
     ))
 
     if missing:
@@ -350,7 +447,7 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
             summary=f"{pier.tag}: the base is assumed FIXED and this check could not "
                     f"finish confirming it",
             inputs=_inputs(pier, shear_lb, height_ft, embedment_ft, least_ft, area_ft2,
-                           soil, eccentricity_ft),
+                           soil, eccentricity_ft, pole_basis is not None),
             limit_states=tuple(states), missing=tuple(missing),
             notes=tuple(notes), element_tags=tags)
 
@@ -365,7 +462,7 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
                  f"{shear_lb:,.0f} lb of ASD shear; {worst.name} governs at "
                  f"{worst.demand / worst.capacity:.2f}"),
         inputs=_inputs(pier, shear_lb, height_ft, embedment_ft, least_ft, area_ft2, soil,
-                       eccentricity_ft),
+                       eccentricity_ft, pole_basis is not None),
         limit_states=tuple(states), notes=tuple(notes), element_tags=tags)
 
 
@@ -384,6 +481,7 @@ def _pad_thickness_ft(pad) -> float:  # type: ignore[no-untyped-def]
 
 def _inputs(pier: _Pier, shear_lb: float, height_ft: float, embedment_ft: float | None,
             least_ft: float, area_ft2: float, soil, eccentricity_ft: float,
+            pole_claimed: bool = False,
             ) -> tuple[Quantity, ...]:  # type: ignore[no-untyped-def]
     return tuple(q for q in (
         Quantity("column_diameter", pier.diameter_in, "in", 0.5),
@@ -396,6 +494,10 @@ def _inputs(pier: _Pier, shear_lb: float, height_ft: float, embedment_ft: float 
         Quantity("base_moment_asd", pier.wind_base_moment_lb_ft, "lb-ft", 1.0),
         Quantity("service_axial", pier.service_lb, "lb", 1.0),
         Quantity("eccentricity", eccentricity_ft, "ft", 0.001),
+        # The claim is an INPUT, not a presentation choice: it halves the required depth,
+        # so a fingerprint that did not move when it was withdrawn would pin a seal to a
+        # design that no longer exists.
+        Quantity("isolated_pole_doubling", 1.0 if pole_claimed else 0.0, "-", 0.5),
         Quantity("lateral_bearing", soil.lateral_bearing_psf_per_ft, "psf/ft", 1.0),
         Quantity("allowable_bearing", soil.allowable_bearing_psf, "psf", 1.0),
     ) if q is not None)

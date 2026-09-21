@@ -14,9 +14,14 @@ Two of these assertions are doing unusual work and are worth reading before chan
   never become OK by the section getting bigger. The section is already twenty times what it
   needs; what is missing is reinforcement the model has nowhere to state.
 * :func:`test_a_pier_whose_demand_is_short_publishes_no_ratio` pins the OTHER INCOMPLETE, and
-  the more easily lost one: the breezeway piers carry a roof with no plan area anywhere in
-  the model, so their tributary is an under-count. The record grades the cage in full and
-  omits the axial state. A d/c appearing there is the regression this guards.
+  the more easily lost one: a pier carrying a member with no plan area anywhere in the model
+  has a tributary that is an under-count of unknown size, so the record grades the cage in
+  full and omits the axial state. A d/c appearing there is the regression this guards. It is
+  SYNTHETIC since 2026-09-20 — the breezeway piers that used to exercise it are retired, and
+  `pier_basis.wall_line_loads` took the last two catlin piers out of that branch by pricing
+  the wall they carry. A branch nothing walks through is a branch that rots.
+* :func:`test_a_wall_on_a_beam_is_a_line_load_and_reaches_the_piers_under_it` is the other
+  half of that change and its oracle is `north_entry_piers.md` §2.
 """
 
 from __future__ import annotations
@@ -1215,3 +1220,109 @@ class _PlanWith:
 
     def by_tag(self, tag: str):
         return self._extra if tag == self._extra.tag else self._plan.by_tag(tag)
+
+
+# --- the wall line load, and the branch it emptied -----------------------------------------
+
+
+def test_a_wall_on_a_beam_is_a_line_load_and_reaches_the_piers_under_it(catlin_plan) -> None:
+    """``BM-BW-SCSILL``, which carried a wall and no plan area — `north_entry_piers.md` §2.
+
+    ** THE NUMBER IS PINNED IN THREE PIECES, NOT ONE. ** The plf, the run and the split each
+    fail differently: a plf that lost `SC-BW-WEST` understates by 30% and still looks
+    plausible; a run measured off the WALL rather than off the beam's own footprint would be
+    6.57' instead of 4.52'; and a split that stopped at the 6x6 KDAT columns would leave the
+    piers that actually carry the load with nothing, which is the failure this whole
+    mechanism exists to correct.
+    """
+    from typehaus.engineering.pier_basis import cast_piers, wall_line_loads
+    from typehaus.engineering.registry import EngineeringContext
+    from typehaus.resolve import resolve
+    from typehaus.resolve.assembly_weight import wall_line_plf
+
+    model, _ = resolve(catlin_plan)
+    ctx = EngineeringContext(plan=catlin_plan, model=model, soil_class="GM")
+
+    screen = next(w for w in model.walls if w.tag == "W-BW-SCREEN")
+    plf, basis = wall_line_plf(ctx, screen)
+    assert plf == pytest.approx(43.48, abs=0.05), basis
+    assert "SC-BW-WEST" in basis, "the slat clerestory is a third of this line"
+
+    # The DIRECT delivery is to the two 6x6 KDAT canopy columns the sill hangs off, and the
+    # only beam this accounts for is the sill. A second beam appearing here means some other
+    # wall started being read as a line load, which is a real change and not a tolerance.
+    raw, accounted = wall_line_loads(ctx)
+    assert accounted == {"BM-BW-SCSILL"}
+    assert set(raw) == {"PT-BW-CW", "PT-BW-CNW"}
+    assert all(v == pytest.approx(98.3, abs=0.1) for v in raw.values())
+
+    # And it lands on the CAST piers, through `supported_by`. Those two are the pair that
+    # reported UNKNOWN until 2026-09-20; no other pier in the house moves.
+    piers = {p.tag: p for p in cast_piers(ctx)}
+    carrying = {tag: p.wall_dead_lb for tag, p in piers.items() if p.wall_dead_lb}
+    assert set(carrying) == {"PT-BW-W", "PT-BW-GW"}
+    assert all(v == pytest.approx(98.3, abs=0.1) for v in carrying.values())
+    assert not piers["PT-BW-W"].unmodelled_load, "the gap this closes"
+    assert not piers["PT-BW-GW"].unmodelled_load
+    # The basis travels with the pounds, through the wood column that keeps none of them.
+    assert "delivered through PT-BW-CW" in piers["PT-BW-W"].wall_load_basis
+
+
+def test_a_wall_that_states_no_weight_accounts_nothing(catlin_plan, monkeypatch) -> None:
+    """Publishing an understated demand is worse than publishing none — ``_unmodelled_beams``'
+    whole doctrine, and the line load is held to it.
+
+    A layer whose material names neither a density nor an areal density makes the plf
+    ``None``, and the beam must then stay UNACCOUNTED: the pier goes back to INCOMPLETE
+    naming it, rather than quietly carrying a wall short one layer.
+    """
+    from typehaus.engineering import pier_basis
+    from typehaus.engineering.registry import EngineeringContext
+    from typehaus.resolve import resolve
+
+    model, _ = resolve(catlin_plan)
+    ctx = EngineeringContext(plan=catlin_plan, model=model, soil_class="GM")
+    monkeypatch.setattr(pier_basis, "wall_line_loads", lambda _c: ({}, set()))
+    piers = {p.tag: p for p in pier_basis.cast_piers(ctx)}
+    assert piers["PT-BW-W"].wall_dead_lb == 0.0
+    assert piers["PT-BW-W"].unmodelled_load == ("BM-BW-SCSILL",)
+
+
+def test_a_pier_whose_demand_is_short_publishes_no_ratio() -> None:
+    """``deck_post._detailing_only``, which NO catlin pier reaches any more.
+
+    It is the branch that grades a cage in full against a demand known to be short: six
+    load-independent detailing states published, the §22.4.2 axial comparison **omitted
+    rather than estimated**, and the beam it could not price named in `missing`. A d/c
+    appearing there is the regression this guards, and it is worth as much now as it was
+    when the breezeway piers exercised it — more, because nothing in the reference house
+    walks through it any longer and an untested branch is one that rots.
+
+    Synthetic for exactly that reason. It also pins the note that USED to be a hard-coded
+    sentence about a retired 4'-0" x 4'-0" multiwall shelter, printed on every record this
+    branch produced whatever beams it was actually handed.
+    """
+    from typehaus.engineering.deck_post import _one
+    from typehaus.engineering.item import Status
+    from typehaus.engineering.pier_basis import _Pier
+
+    pier = _Pier(
+        tag="PT-X", diameter_in=12.0, round_section=True, height_in=60.0,
+        tributary_ft2=8.0, carried_dead_lb=0.0, footing_tag=None,
+        shared_wall_footing=False, lateral_system=False,
+        wind_base_moment_lb_ft=0.0, guard_base_moment_lb_ft=0.0, moment_basis="",
+        footing_width_in=24.0, footing_depth_in=12.0,
+        base_thickness_in=12.0, base_kind="pad",
+        vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
+        unmodelled_load=("BM-X", "BM-Y"),
+    )
+    record = _one(pier)
+    assert record.status is Status.INCOMPLETE
+    assert len(record.limit_states) == 6
+    assert not [s for s in record.limit_states if s.name.startswith("axial")]
+    assert record.missing and "BM-X, BM-Y" in record.missing[0]
+    assert "no tributary AREA for that load" in record.missing[0]
+    # The generalised note names the members it was handed, and says nothing about a shelter.
+    unmodelled = next(n for n in record.notes if n.startswith("UNMODELLED:"))
+    assert "BM-X, BM-Y" in unmodelled
+    assert "multiwall" not in unmodelled and "shelter" not in unmodelled

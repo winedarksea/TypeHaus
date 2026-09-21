@@ -165,6 +165,17 @@ def catlin_findings(catlin_model):
     return _findings_for(catlin_model)
 
 
+@pytest.fixture(scope="module")
+def catlin_base_findings(catlin_model):
+    """``structural.column_base`` on the same house — the GROUND's half of the same columns.
+
+    A second fixture and not a filter on the first, because the two are two checks since
+    2026-09-20 and a test that could not tell them apart is the test that let the blocking
+    permit line go red on the advisory question for two days.
+    """
+    return _base_findings_for(catlin_model)
+
+
 def _catlin_preferences():
     from typehaus.checks.registry import Preferences
 
@@ -205,15 +216,20 @@ def test_catlin_has_no_knee_brace_left_and_the_check_does_not_go_silent(catlin_f
     assert catlin_findings, "the check went silent on a braceless freestanding deck"
     columns = {t for f in catlin_findings for t in f.element_tags if t.startswith("PT-SG-B")}
     assert columns == {"PT-SG-BR1", "PT-SG-BR3", "PT-SG-BF1", "PT-SG-BF3"}
-    assert all((f.engineering_item or "").startswith(("deck_post/", "column_base/"))
+    # ** AND SINCE 2026-09-20 THE SECOND ITEM LEFT THIS CHECK ID. ** A permit item matches
+    # its findings by `check_id` alone, so while both rode on `structural.lateral_racking`
+    # the blocking "Fixed column base embedment" line went red on the ADVISORY half of the
+    # pair as well — which is what `blocking=False` on "Freestanding deck lateral
+    # resistance" was supposed to prevent and could not. The embedment findings are
+    # `column_base_fixity`'s now, on `structural.column_base`, walking the same
+    # `_moment_column_carriers` so the two cannot name different members.
+    assert all((f.engineering_item or "").startswith("deck_post/")
                for f in catlin_findings)
-    # The balcony pillars stand on walls, so they raise no `column_base` item at all.
-    assert not [f for f in catlin_findings
-                if (f.engineering_item or "").startswith("column_base/PT-SG-")]
     del KneeBrace
 
 
-def test_catlin_fails_only_where_the_ground_cannot_fix_the_base(catlin_findings):
+def test_catlin_fails_only_where_the_ground_cannot_fix_the_base(catlin_findings,
+                                                               catlin_base_findings):
     """PASS, not UNKNOWN, and that is a change worth reading twice.
 
     While the lateral system was eight knee braces every finding here was UNKNOWN: the
@@ -224,14 +240,26 @@ def test_catlin_fails_only_where_the_ground_cannot_fix_the_base(catlin_findings)
     result. It is still a DRAFT and still unsealed; ``haus print --sealed`` is the gate that
     says so.
 
-    ** AND TWO ARE UNKNOWN AGAIN SINCE 2026-09-15, FOR A REASON THAT IS NOT THIS CHECK'S. **
-    ``BM-BW-SCSILL`` was shortened to the canopy columns' faces and hung there, so it now
-    names PT-BW-CW/-CNW as its bearing and its load reaches the piers under them. Nothing
-    gives that load a plan AREA — no FloorSystem and no Roof stands over a screen sill — so
-    ``deck_post`` cannot finish the axial demand on PT-BW-W and PT-BW-GW, and this check
-    reports what the record could not produce rather than inventing one. That load was never
-    in any tributary; what changed is that the model now says so out loud. Asserted by TAG,
-    so a third one is a failure rather than a tolerance.
+    ** TWO WERE UNKNOWN FROM 2026-09-15 TO 2026-09-20, AND CLOSING THEM UNCOVERED A FAIL. **
+    ``BM-BW-SCSILL`` was shortened to the canopy columns' faces and hung there, so its load
+    reached the piers under them with no plan AREA to divide — no ``FloorSystem`` and no
+    ``Roof`` stands over a screen sill — and ``deck_post`` declined to publish an axial ratio
+    for PT-BW-W and PT-BW-GW. ``pier_basis.wall_line_loads`` closed it: a wall's dead load
+    never needed an area, it is a plf times a run, and ``resolve/assembly_weight`` already
+    derived the plf off the wall's own layer stack for a check that printed it in the same
+    run this one called the load unknown.
+
+    **What the UNKNOWN had been concealing is why it mattered.** Both piers then left
+    ``deck_post._detailing_only``'s six load-independent states for ``_moment_column``'s
+    twelve, and the twelfth is dowel ANCHORAGE into the base — which ``PT-BW-GW``, on an 8"
+    pad with no base dowels at all, failed at 1.32. It was never the wall load (1.5% of
+    factored axial): ``_MOMENT_PIERS`` covered the landing's EAST column and not its west,
+    while ``_base_moments`` split the lateral case "over 4 fixed column(s)" and this very
+    check named all four. The west pair joined that set in the same commit — 12" pads, tops
+    unchanged, 0.073 cy and 8 dowels — and both land at 0.759, ``PT-BW-GE``'s own number.
+
+    ** SO THE UNKNOWN SET IS EMPTY, AND IS ASSERTED EMPTY RATHER THAN DELETED ** — for the
+    same reason the FAIL set below is. A check that went quiet would look exactly like this.
 
     ** THERE WAS A REAL FAIL HERE FROM 2026-09-18 TO 2026-09-20, AND THE NAME OF THIS TEST
     IS THE SCAR. ** ``engineering/column_base.py`` grades the IBC 1807.3.2.1 embedment a fixed
@@ -251,21 +279,17 @@ def test_catlin_fails_only_where_the_ground_cannot_fix_the_base(catlin_findings)
     assert {f.engineering_item for f in fails} == set()
 
     unknown = [f for f in catlin_findings if f.result is Result.UNKNOWN]
-    assert {f.engineering_item for f in unknown} == {
-        "deck_post/PT-BW-W", "deck_post/PT-BW-GW",
-        # The band convention: an embedment that sits between what §1806.3.4's two ends ask
-        # for leaves the verdict turning on a judgement about the STRUCTURE — whether 1/2"
-        # of motion at grade matters — and the record names it instead of picking a side.
-        # 3.50' does it for the two landing columns. PT-BW-RE was here too from 2026-09-19
-        # at 6.12'; §6a took it to 7.33' against 7.07' needed, so it publishes a graded pass
-        # now and the doubling is not claimed anywhere on the canopy.
-        "column_base/PT-BW-GW", "column_base/PT-BW-GE"}
-    assert all("no tributary AREA for that load" in f.message
-               for f in unknown if (f.engineering_item or "").startswith("deck_post/"))
-    assert all("1806.3.4" in f.message
-               for f in unknown if (f.engineering_item or "").startswith("column_base/"))
+    assert {f.engineering_item for f in unknown} == set()
     rest = [f for f in catlin_findings if f not in unknown and f not in fails]
     assert rest and all(f.result is Result.PASS for f in rest)
+
+    # The embedment half, on its own id since 2026-09-20 and equally clean. The two landing
+    # columns straddled §1806.3.4's band from 2026-09-18 — 3.39' needed at the isolated-pole
+    # double, 4.45' at the table's own S1, and 3.50' in the ground — so the verdict turned on
+    # a judgement about the STRUCTURE that this engine refuses to make. The owner made it:
+    # `Post.isolated_pole_basis`, graded, with the citation naming the claim.
+    base = catlin_base_findings
+    assert base and not [f for f in base if f.result is not Result.PASS]
 
 
 def test_a_deck_hung_in_a_shear_wall_is_not_reported_as_column_braced(catlin_model):
@@ -301,7 +325,22 @@ def _findings_for(catlin_model):
         engineering=engineering))
 
 
-def test_the_corner_columns_are_delegated_not_graded_here(catlin_findings):
+def _base_findings_for(catlin_model):
+    """``column_base_fixity`` with the same engineering suite wired in as ``_findings_for``."""
+    from typehaus.checks.registry import CheckContext
+    from typehaus.checks.structural.lateral_racking import column_base_fixity
+    from typehaus.engineering import EngineeringContext, EngineeringResults
+
+    engineering = EngineeringResults(EngineeringContext(
+        plan=catlin_model.plan, model=catlin_model, soil_class="GM"))
+    return column_base_fixity(CheckContext(
+        plan=catlin_model.plan, model=catlin_model,
+        preferences=_catlin_preferences(), profile=_catlin_profile(),
+        engineering=engineering))
+
+
+def test_the_corner_columns_are_delegated_not_graded_here(catlin_findings,
+                                                          catlin_base_findings):
     """The finding says what is engineered and names the item a seal can cover — it does not
     try to be the calculation. A base moment against a section's phi*Mn is
     ``engineering/deck_post.py``'s arithmetic, and duplicating it here would be two
@@ -318,13 +357,24 @@ def test_the_corner_columns_are_delegated_not_graded_here(catlin_findings):
     for finding in section:
         assert "fixed at its base" in finding.message
         assert "no knee brace and no shear wall" in finding.message
-    # The ground's half of the same column, delegated the same way and to its own item.
-    ground = [f for f in catlin_findings
-              if f.engineering_item.startswith("column_base/")]
-    assert ground
-    for finding in ground:
-        assert "what makes a base fixed is the ground, not the section" in finding.message
-        assert "1807.3.2.1" in finding.message
-    assert len(section) + len(ground) == len(catlin_findings)
+    assert len(section) == len(catlin_findings)
     decks = {t for f in catlin_findings for t in f.element_tags if t.startswith("FS-")}
     assert decks == {"FS-SG-DECK", "FS-BW-FLOOR"}
+
+    # The ground's half of the same column is `structural.column_base`'s since 2026-09-20,
+    # and it walks the SAME members — a shared `_moment_column_carriers`, because two copies
+    # of the traversal is how the section's question and the ground's would start being
+    # asked about different columns.
+    ground = catlin_base_findings
+    assert ground
+    for finding in ground:
+        assert finding.engineering_item.startswith("column_base/")
+        assert "what makes a base fixed is the ground, not the section" in finding.message
+        assert "1807.3.2.1" in finding.message
+    # The balcony pillars stand on walls, so they raise no `column_base` item at all:
+    # `column_support/<wall>` owns that joint.
+    assert not [f for f in ground
+                if f.engineering_item.startswith("column_base/PT-SG-")]
+    assert ({t for f in ground for t in f.element_tags if t.startswith("PT-")}
+            == {t for f in section for t in f.element_tags if t.startswith("PT-")}
+               - {"PT-SG-BR1", "PT-SG-BR3", "PT-SG-BF1", "PT-SG-BF3"})

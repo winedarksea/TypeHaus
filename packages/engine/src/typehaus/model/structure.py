@@ -458,6 +458,29 @@ class Post(Element):
     #: beside it stays for the drawing, and ``integrity.reinforcement_spec_agrees`` raises an
     #: ERROR where the two disagree.
     reinforcement: ReinforcementSpec | None = None
+    #: ** THE OWNER'S §1806.3.4 CALL, IN THEIR OWN WORDS. ** IBC 2018 §1806.3.4 permits an
+    #: isolated pole's lateral bearing to be DOUBLED where the structure "is not adversely
+    #: affected by a 1/2-inch motion at the ground surface due to short-term lateral loads".
+    #: Whether half an inch of sway at grade harms what stands on THIS column is a judgement
+    #: about the structure above and never a soil property, so ``engineering/column_base.py``
+    #: refuses to make it: it runs §1807.3.2.1 at ``S1`` and at ``2 S1`` and reports
+    #: INCOMPLETE wherever the two ends disagree. This field is how a house answers, and it
+    #: is shaped on ``Pad.resists_base_moment`` above — it CHOOSES, and it is never the
+    #: engine choosing, and above all never whichever of the two happens to pass.
+    #:
+    #: ** PROSE, NOT A BOOL, AND AN EMPTY ONE IS REFUSED. ** A claim that makes a demand
+    #: smaller has to be graded or it is not a claim, and the failure mode a bare flag has is
+    #: the stale declaration: set once against a structure that has since changed, carrying
+    #: nothing a reader could use to notice. The basis states what tolerates the motion and
+    #: on whose statement, and ``column_base`` prints it into the citation — a reader may
+    #: never see a passing embedment without learning §1806.3.4 was invoked and why.
+    #:
+    #: ** WHAT THE ENGINE STILL GRADES. ** §1806.3.4 has a clause the engine CAN check:
+    #: "due to SHORT-TERM lateral loads". ``_Pier`` separates its wind base moment from its
+    #: R301.5 guard-push moment, so the governing case is known — both of those are
+    #: short-term and qualify. A sustained lateral case (an earth surcharge, say) does not,
+    #: and the claim is REFUSED there, naming why, rather than silently honoured.
+    isolated_pole_basis: str | None = None
 
 
 @register_element

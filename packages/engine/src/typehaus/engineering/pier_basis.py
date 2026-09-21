@@ -107,6 +107,15 @@ class _Pier:
     roof_snow_psf: float = 0.0
     #: Where :attr:`roof_snow_psf` came from, in words, for the record to print.
     roof_snow_basis: str = ""
+    #: Dead load, lb, from a WALL bearing along a beam this post carries — see
+    #: :func:`wall_line_loads`. Deliberately NOT folded into :attr:`carried_dead_lb`, which
+    #: means "a post standing on this post": these two are different facts about the load
+    #: path and ``deck_post`` names this one on the record. There is no ``wall_live_lb``
+    #: beside it, and there should not be: a wall has no live load.
+    wall_dead_lb: float = 0.0
+    #: How that number was arrived at, in words — the wall, the beam, the plf and the run
+    #: they share. Empty where no wall bears on anything this post carries.
+    wall_load_basis: str = ""
     #: ``Post.vertical_reinforcement`` verbatim, or None for a plain section. Parsed by
     #: ``deck_post.parse_cage``; a string that will not parse is read as NO steel, which is
     #: the conservative direction and one the record names rather than swallows.
@@ -168,8 +177,12 @@ class _Pier:
 
     @property
     def dead_lb(self) -> float:
+        # ``wall_dead_lb`` is already POUNDS — a plf times a run — so it is added here rather
+        # than converted into an area and multiplied by a psf. A wall's weight is a fact
+        # about its own layer stack, and turning it into equivalent deck area to run it back
+        # through DECK_DEAD_LOAD_PSF would replace the number with a guess.
         return ((self.tributary_ft2 + self.roof_tributary_ft2) * DECK_DEAD_LOAD_PSF
-                + self.self_weight_lb + self.carried_dead_lb)
+                + self.self_weight_lb + self.carried_dead_lb + self.wall_dead_lb)
 
     @property
     def live_lb(self) -> float:
@@ -622,6 +635,162 @@ def landed_roof_tributaries(ctx: EngineeringContext) -> tuple[dict[str, float], 
     return landed, set(raw)
 
 
+#: How close a wall's base has to be to a beam's top for the wall to bear on it, metres.
+#: The same slop the rest of the stacking logic uses — a wall lands exactly on what carries
+#: it, and 2" of tolerance separates "bears on" from "happens to pass over".
+_WALL_BEARING_Z_TOL_M = 0.05
+#: How parallel the two axes have to be, as |sin| of the angle between them. 0.02 is about
+#: 1.1 degrees: a wall CROSSING a beam shares a few inches of footprint with it and delivers
+#: no line load to it at all, and the cross product is what tells the two apart.
+_WALL_PARALLEL_TOL = 0.02
+
+
+def _wall_beam_pairs(ctx: EngineeringContext):
+    """``(wall, beam_tag, overlap_m, delivered)`` for every wall bearing along a beam.
+
+    ONE walk, read by :func:`wall_line_loads` and :func:`wall_line_basis` — the pounds and
+    the prose about them must describe the same pairs, and a second copy of the pairing rule
+    is how they would start disagreeing.
+
+    A pair needs three things to be true, and each rules out a different false positive:
+    the wall's base sits on the beam's top (not merely above it), the two axes are PARALLEL
+    (a wall crossing a beam shares 3 1/2" of its footprint on the way past and delivers no
+    line load), and their overlap is measured against the beam's own resolved FOOTPRINT — so
+    a wall whose line leaves the beam width is not bearing on it, and the run that is inside
+    is the run that counts. ``delivered`` is :func:`_delivered_to_posts`'s, the same walk a
+    deck's area takes down to the piers.
+    """
+    from shapely.geometry import LineString, Polygon
+
+    from typehaus.model.structure import Beam
+
+    beams = {solid.tag: solid for solid in ctx.model.solids
+             if solid.category == "beam" and len(solid.outline) >= 3}
+    nodes = _node_positions(ctx)
+    for wall in sorted(ctx.model.walls, key=lambda w: w.tag):
+        axis = LineString(wall.axis)
+        if axis.length <= 0.0:
+            continue
+        (ax0, ay0), (ax1, ay1) = wall.axis[0], wall.axis[-1]
+        wx, wy = (ax1 - ax0) / axis.length, (ay1 - ay0) / axis.length
+        for tag, solid in sorted(beams.items()):
+            if abs(solid.z1_m - wall.z0_m) > _WALL_BEARING_Z_TOL_M:
+                continue
+            beam = ctx.plan.by_tag(tag)
+            if not isinstance(beam, Beam):
+                continue
+            p0, p1 = nodes.get(beam.start_node), nodes.get(beam.end_node)
+            if p0 is None or p1 is None:
+                continue
+            span = math.dist(p0, p1)
+            if span <= 0.0:
+                continue
+            bx, by = (p1[0] - p0[0]) / span, (p1[1] - p0[1]) / span
+            if abs(wx * by - wy * bx) > _WALL_PARALLEL_TOL:
+                continue
+            overlap_m = axis.intersection(Polygon(solid.outline)).length
+            if overlap_m <= 0.0:
+                continue
+            delivered = _delivered_to_posts(ctx, beam.bearing_refs or ())
+            if delivered:
+                yield wall, tag, overlap_m, delivered
+
+
+def wall_line_loads(ctx: EngineeringContext) -> tuple[dict[str, float], set[str]]:
+    """``(post tag -> lb of wall dead load, beam tags now accounted for)``.
+
+    ** THE GAP THIS CLOSES IS A MEMBER WITH A LINE LOAD AND NO PLAN AREA. ** A tributary
+    AREA is the currency :func:`_deck_tributaries` and :func:`roof_tributaries` trade in, and
+    a WALL is neither a ``FloorSystem`` nor a ``Roof``, so a beam carrying nothing but a wall
+    was a beam :func:`_unmodelled_beams` reported and ``deck_post`` declined to publish an
+    axial ratio for. catlin's ``BM-BW-SCSILL`` is exactly that: the sill under
+    ``W-BW-SCREEN``, hung off the two canopy columns, and it took ``deck_post/PT-BW-W`` and
+    ``/PT-BW-GW`` UNKNOWN with it.
+
+    ** A WALL'S DEAD LOAD NEVER NEEDED AN AREA. ** It is a plf times a length, and
+    ``resolve/assembly_weight.wall_line_plf`` derives the plf off the wall's own resolved
+    layer stack plus whatever stands on its plate. So this is the mirror of
+    :func:`roof_tributaries`' second return value — "beams carrying a rafter field have a
+    real plan area after all" — for beams carrying a wall: it hands ``cast_piers`` an escape
+    set for :func:`_unmodelled_beams`, and the record stops saying it could not be graded.
+
+    ** A WALL THAT STATES NO WEIGHT ACCOUNTS NOTHING. ** Where ``wall_line_plf`` returns
+    ``None`` — a material with no density, something standing on the plate this engine cannot
+    weigh as a line — the beam stays UNACCOUNTED and the pier stays INCOMPLETE. Publishing an
+    understated demand is worse than publishing none, which is the whole doctrine of
+    :func:`_unmodelled_beams`; the difference is that the record now says the assembly states
+    no density rather than merely naming the beam.
+
+    Public beside :func:`roof_tributaries` because ``checks/structural/deck.py`` folds the
+    same pounds into R507.3.1's own currency, and two answers about one load is what a shared
+    reading exists to prevent.
+    """
+    from typehaus.resolve.assembly_weight import wall_line_plf
+
+    weights: dict[str, float | None] = {}
+    out: dict[str, float] = {}
+    accounted: set[str] = set()
+    for wall, tag, overlap_m, delivered in _wall_beam_pairs(ctx):
+        if wall.tag not in weights:
+            weights[wall.tag] = wall_line_plf(ctx, wall)[0]
+        plf = weights[wall.tag]
+        if plf is None:
+            continue
+        load_lb = plf * overlap_m / _M_PER_FT
+        for post_tag, fraction in delivered.items():
+            out[post_tag] = out.get(post_tag, 0.0) + load_lb * fraction
+        accounted.add(tag)
+    return out, accounted
+
+
+def landed_wall_line_loads(ctx: EngineeringContext) -> dict[str, float]:
+    """:func:`wall_line_loads`, MOVED down each post chain to what stands on the ground.
+
+    :func:`landed_roof_tributaries`' walk, for the same reason and with the same shape: a
+    wood column standing on a pier keeps none of what it carries, and only one footing
+    answers for the load. ``checks/structural/deck.py`` reads this so R507.3.1's currency and
+    ``deck_post``'s pounds describe the same chain — ``cast_piers`` hands the load down
+    through ``handed_wall``, and a check that stopped at ``PT-BW-CW`` would size the pad
+    under a column that carries none of it.
+    """
+    raw, _accounted = wall_line_loads(ctx)
+    landed: dict[str, float] = {}
+
+    def land(tag: str, share: float, seen: frozenset[str]) -> None:
+        post = ctx.plan.by_tag(tag)
+        below = ()
+        if getattr(post, "supported_by", None):
+            below = tuple(t for t in _piers_below(ctx, post) if t not in seen)
+        if not below:
+            landed[tag] = landed.get(tag, 0.0) + share
+            return
+        for below_tag in below:
+            land(below_tag, share / len(below), seen | {tag})
+
+    for tag, share in raw.items():
+        land(tag, share, frozenset())
+    return landed
+
+
+def wall_line_basis(ctx: EngineeringContext, post_tag: str) -> str:
+    """The prose behind :func:`wall_line_loads` for one post, for its record to print."""
+    from typehaus.resolve.assembly_weight import wall_line_plf
+
+    parts: list[str] = []
+    for wall, tag, overlap_m, delivered in _wall_beam_pairs(ctx):
+        if post_tag not in delivered:
+            continue
+        plf, basis = wall_line_plf(ctx, wall)
+        if plf is None:
+            parts.append(f"{wall.tag} on {tag}: NOT WEIGHED — {basis}")
+            continue
+        parts.append(
+            f"{wall.tag} on {tag}: {basis}; {plf:.2f} plf over the "
+            f"{overlap_m / _M_PER_FT:.2f}' the two share in plan = "
+            f"{plf * overlap_m / _M_PER_FT:,.0f} lb, {delivered[post_tag]:.0%} of it here")
+    return " | ".join(parts)
+
+
 def _unmodelled_beams(ctx: EngineeringContext,
                       accounted_extra: set[str] | None = None) -> dict[str, tuple[str, ...]]:
     """Post tag -> beams bearing on it that belong to no deck and no roof.
@@ -964,7 +1133,11 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
     pads = {p.tag: p for p in ctx.plan.all_elements() if isinstance(p, Pad)}
     walls = {w.tag: w for w in ctx.plan.all_elements() if isinstance(w, FoundationWall)}
     roof_trib, roof_accounted = roof_tributaries(ctx)
-    unmodelled = _unmodelled_beams(ctx, roof_accounted)
+    # A beam carrying a WALL has a real LINE load after all — the mirror of the roof escape
+    # set above, and for the same reason: `_unmodelled_beams` refuses a beam it cannot price,
+    # and this is what prices one.
+    wall_lb, wall_accounted = wall_line_loads(ctx)
+    unmodelled = _unmodelled_beams(ctx, roof_accounted | wall_accounted)
     tributaries = _deck_tributaries(ctx)
     snow_psf, snow_basis = design_roof_snow_psf(ctx)
     moments = _base_moments(ctx)
@@ -975,6 +1148,18 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
     handed_trib: dict[str, float] = {}
     handed_roof: dict[str, float] = {}
     handed_dead: dict[str, float] = {}
+    # ** THE CHAIN HERE IS TWO STEPS AND BOTH ARE REAL. ** catlin's screen wall lands on
+    # `BM-BW-SCSILL`, which hangs off the 6x6 KDAT columns `PT-BW-CW`/`-CNW`, which stand on
+    # `PT-BW-W`/`PT-BW-GW` through `supported_by`. The wood columns are not cast, so they
+    # raise no pier of their own; without this the load stopped at them and the two piers
+    # that actually carry it never saw it.
+    handed_wall: dict[str, float] = {}
+    # And the PROSE travels with the pounds. `wall_line_basis` can only speak about the post
+    # a beam delivers to DIRECTLY; on catlin that is the 6x6 KDAT column, which is not a cast
+    # pier and gets no record. Without this the pier that does get one carried the load with
+    # an empty basis — a term in the dead load with nothing on the record to explain it,
+    # which is the failure the basis exists to prevent.
+    handed_wall_basis: dict[str, str] = {}
     for post in ctx.plan.all_elements():
         if not isinstance(post, Post) or not post.supported_by:
             continue
@@ -989,10 +1174,18 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
             dead = area / 144.0 * post.height.inches / 12.0 * 35.0
         trib = tributaries.get(post.tag, 0.0)
         roof = roof_trib.get(post.tag, 0.0)
+        wall = wall_lb.get(post.tag, 0.0)
+        wall_basis = wall_line_basis(ctx, post.tag) if wall else ""
         for tag in below:
             handed_trib[tag] = handed_trib.get(tag, 0.0) + trib / len(below)
             handed_roof[tag] = handed_roof.get(tag, 0.0) + roof / len(below)
             handed_dead[tag] = handed_dead.get(tag, 0.0) + dead / len(below)
+            handed_wall[tag] = handed_wall.get(tag, 0.0) + wall / len(below)
+            if wall_basis:
+                arrived = (f"{wall_basis}, delivered through {post.tag}"
+                           + (f" and split {len(below)} ways" if len(below) > 1 else ""))
+                handed_wall_basis[tag] = "; ".join(
+                    filter(None, (handed_wall_basis.get(tag), arrived)))
 
     out: list[_Pier] = []
     for post in ctx.plan.all_elements():
@@ -1038,6 +1231,10 @@ def cast_piers(ctx: EngineeringContext) -> list[_Pier]:
             roof_snow_psf=snow_psf,
             roof_snow_basis=snow_basis,
             carried_dead_lb=handed_dead.get(post.tag, 0.0),
+            wall_dead_lb=wall_lb.get(post.tag, 0.0) + handed_wall.get(post.tag, 0.0),
+            wall_load_basis="; ".join(filter(None, (
+                wall_line_basis(ctx, post.tag) if wall_lb.get(post.tag) else "",
+                handed_wall_basis.get(post.tag, "")))),
             footing_tag=footing.tag if footing is not None else None,
             shared_wall_footing=on_wall,
             lateral_system=post.tag in moments,

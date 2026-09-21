@@ -7,6 +7,23 @@ from typehaus.model.screens import SlatScreen
 from typehaus.resolve.model import ResolvedSolid
 
 
+def slat_count(screen: SlatScreen) -> int:
+    """How many slats this screen resolves to. ** ONE rule, because it is not obvious. **
+
+    The run is packed face-to-gap-to-face and centred, so the count is the number of
+    ``face + gap`` pitches that fit once the trailing gap is added back. Anything that needs
+    a slat's weight, its part count or its spacing reads this rather than restating it —
+    ``resolve/assembly_weight._slat_screen_plf`` is the second caller.
+    """
+    x0, y0 = screen.start.xy_m
+    x1, y1 = screen.end.xy_m
+    length = math.hypot(x1 - x0, y1 - y0)
+    face, gap = screen.slat_face.meters, screen.clear_gap.meters
+    if length <= 0.0 or face <= 0.0 or gap < 0.0 or length < face:
+        return 0
+    return math.floor((length + gap) / (face + gap) + 1e-9)
+
+
 def resolve_screens(model):
     findings = []
     for storey in model.plan.storeys:
@@ -32,7 +49,7 @@ def resolve_screens(model):
                 )
                 continue
             dx, dy = (x1 - x0) / length, (y1 - y0) / length
-            count = math.floor((length + gap) / (face + gap) + 1e-9)
+            count = slat_count(screen)
             margin = (length - (count * face + (count - 1) * gap)) / 2
             for index in range(count):
                 station = margin + face / 2 + index * (face + gap)

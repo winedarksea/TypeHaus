@@ -341,6 +341,39 @@ def _grade_moment_columns(ctx: CheckContext) -> list[Finding]:
     ``engineering/roof_moment.roof_base_moments`` computes their base moment now, and this
     arm is what keeps the check naming the same members the calculation grades — the two
     drifting apart is the failure this function's own docstring warns about.
+
+    **The embedment half left on 2026-09-20** for ``structural.column_base`` — see
+    ``column_base_fixity``. The traversal is shared through ``_moment_column_carriers``
+    so the two checks cannot drift onto different members.
+    """
+    out: list[Finding] = []
+    for kind, carrier, tag in _moment_column_carriers(ctx):
+        if kind == "deck":
+            why = (f"deck {carrier} carries no knee brace and no shear wall: its lateral "
+                   f"system is the cast concrete column {tag}, fixed at its base. A "
+                   f"fixed-base column resists storey shear by BENDING, which no "
+                   f"prescriptive table in IRC R507 grades")
+        else:
+            why = (f"roof {carrier} carries no knee brace and no shear wall on this line: "
+                   f"its lateral system is the cast concrete column {tag}, fixed at its "
+                   f"base. A fixed-base column resists frame shear by BENDING, which no "
+                   f"prescriptive table in the IRC grades")
+        out.append(engineered(
+            ctx, _CID, item_id("deck_post", tag), why, (carrier, tag),
+            fix=f"seal `deck_post/{tag}` in engineering.toml"))
+    return out
+
+
+def _moment_column_carriers(ctx: CheckContext):
+    """Every ``(kind, carrier_tag, post_tag)`` a fixed-base cast column laterally serves.
+
+    ONE walk, read by two checks. ``_grade_moment_columns`` asks whether the column's
+    SECTION can turn the frame shear around (``structural.lateral_racking``);
+    ``column_base_fixity`` asks whether the GROUND can (``structural.column_base``). Two
+    questions, two ids — and a copied traversal is exactly how the two would start naming
+    different members, the drift ``_grade_moment_columns`` warns about above.
+
+    Stable order: decks by tag, then roofs by tag, posts by tag within each.
     """
     from typehaus.engineering.pier_basis import knee_braced
     from typehaus.model.floors import FloorSystem
@@ -348,7 +381,16 @@ def _grade_moment_columns(ctx: CheckContext) -> list[Finding]:
     from typehaus.resolve.assembly_material import assembly_structure_material
 
     posts = {e.tag: e for e in ctx.plan.all_elements() if isinstance(e, Post)}
-    out: list[Finding] = []
+
+    def _cast(here: set[str]):
+        for tag in sorted(here):
+            post = posts.get(tag)
+            if post is None:
+                continue
+            if assembly_structure_material(ctx.plan, post.assembly) != "concrete":
+                continue
+            yield tag
+
     for deck in sorted((e for e in ctx.plan.all_elements()
                         if isinstance(e, FloorSystem) and e.service == "deck"),
                        key=lambda d: d.tag):
@@ -357,21 +399,8 @@ def _grade_moment_columns(ctx: CheckContext) -> list[Finding]:
         here = _deck_bearing_posts(ctx, deck)
         if knee_braced(ctx.plan, {*here, *(deck.joists.bearing_refs or ()), deck.tag}):
             continue
-        for tag in sorted(here):
-            post = posts.get(tag)
-            if post is None:
-                continue
-            if assembly_structure_material(ctx.plan, post.assembly) != "concrete":
-                continue
-            out.append(engineered(
-                ctx, _CID, item_id("deck_post", tag),
-                f"deck {deck.tag} carries no knee brace and no shear wall: its lateral "
-                f"system is the cast concrete column {tag}, fixed at its base. A fixed-base "
-                f"column resists storey shear by BENDING, which no prescriptive table in "
-                f"IRC R507 grades",
-                (deck.tag, tag),
-                fix=f"seal `deck_post/{tag}` in engineering.toml"))
-            out.extend(_base_fixity(ctx, tag, deck.tag))
+        for tag in _cast(here):
+            yield ("deck", deck.tag, tag)
 
     for roof in sorted((e for e in ctx.plan.all_elements() if isinstance(e, Roof)),
                        key=lambda r: r.tag):
@@ -380,21 +409,26 @@ def _grade_moment_columns(ctx: CheckContext) -> list[Finding]:
         here = _roof_bearing_posts(ctx, roof)
         if knee_braced(ctx.plan, {*here, *(roof.bearing_refs or ()), roof.tag}):
             continue
-        for tag in sorted(here):
-            post = posts.get(tag)
-            if post is None:
-                continue
-            if assembly_structure_material(ctx.plan, post.assembly) != "concrete":
-                continue
-            out.append(engineered(
-                ctx, _CID, item_id("deck_post", tag),
-                f"roof {roof.tag} carries no knee brace and no shear wall on this line: "
-                f"its lateral system is the cast concrete column {tag}, fixed at its base. "
-                f"A fixed-base column resists frame shear by BENDING, which no "
-                f"prescriptive table in the IRC grades",
-                (roof.tag, tag),
-                fix=f"seal `deck_post/{tag}` in engineering.toml"))
-            out.extend(_base_fixity(ctx, tag, roof.tag))
+        for tag in _cast(here):
+            yield ("roof", roof.tag, tag)
+
+
+_BASE_CID = "structural.column_base"
+
+
+@check(Tier.STRUCTURAL, _BASE_CID)
+def column_base_fixity(ctx: CheckContext) -> list[Finding]:
+    """The GROUND half of a fixed-base column, on its own check id.
+
+    ** ITS OWN ID, FOR THE REASON ``roof_diaphragm`` HAS ONE. ** A permit item collects
+    every finding its checks produce and matches by ``check_id`` alone, so while this rode
+    on ``structural.lateral_racking`` the blocking "Fixed column base embedment" line went
+    red on ``deck_post`` findings too — the advisory half of the pair, declared
+    ``blocking=False`` in the profile precisely so it would not. One question, one id.
+    """
+    out: list[Finding] = []
+    for _kind, carrier, tag in _moment_column_carriers(ctx):
+        out.extend(_base_fixity(ctx, tag, carrier))
     return out
 
 
@@ -468,12 +502,14 @@ def _base_fixity(ctx: CheckContext, tag: str, carried: str) -> list[Finding]:
     Only where the item exists: a column doweled into a foundation wall raises
     ``column_support/<wall>`` instead, and one question with two items is how a register
     starts contradicting itself.
+
+    Emitted under ``_BASE_CID`` since 2026-09-20 — see ``column_base_fixity``.
     """
     item = item_id("column_base", tag)
     if item not in ctx.engineering:
         return []
     return [engineered(
-        ctx, _CID, item,
+        ctx, _BASE_CID, item,
         f"{carried}'s lateral system is {tag}, a cast column FIXED at its base — and what "
         f"makes a base fixed is the ground, not the section. IBC 1807.3.2.1 grades the "
         f"embedment a column free to translate at grade needs to turn its own shear around",

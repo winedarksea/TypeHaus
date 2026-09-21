@@ -504,8 +504,17 @@ MN_2020 = JurisdictionProfile(
         # `engineering/column_base.py`, added 2026-09-18). It blocks because a column whose
         # base cannot turn its own shear around is not a detailing question: the frame has
         # no lateral system, and the drawing says it does.
+        #
+        # ** IT TOOK ITS OWN CHECK ID ON 2026-09-20, AND THAT IS WHAT MADE THE ADVISORY
+        # LINE ABOVE TRUE. ** `_item_from_findings` matches by `check_id` alone, so while
+        # both lines declared `structural.lateral_racking` every UNKNOWN on the advisory
+        # question — `deck_post`'s axial arithmetic — went red on the BLOCKING line here
+        # too, and `blocking=False` above bought nothing. `structural.column_base` now
+        # carries only the embedment findings (`lateral_racking.column_base_fixity`,
+        # walking the same `_moment_column_carriers` so the two cannot name different
+        # members). The diaphragm question hit this first and solved it the same way.
         PermitItemSpec("Fixed column base embedment",
-                       ("structural.lateral_racking",),
+                       ("structural.column_base",),
                        ("IBC 2018 §1807.3.2.1", "IBC 2018 §1806.2")),
         # ** AND THE HORIZONTAL HALF OF THE SAME SYSTEM, ADDED 2026-09-19. ** The two lines
         # above are both about a COLUMN. This one is about the member that decides how much

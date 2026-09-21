@@ -48,7 +48,7 @@ Pieces are what gets cut; bars are runs (a lapped run is one bar in two pieces).
 | scope | bar | coating | pieces | bars | placed | lap | hook | cut | weight |
 |---|---|---|---:|---:|---:|---:|---:|---:|---:|
 | column | #3 | hdg-a767 | 144 | 144 | 287.5 | 0.0 | 182.2 | 469.7 LF | 176.6 lb |
-| column | #5 | hdg-a767 | 80 | 80 | 479.3 | 73.5 | 22.5 | 575.3 LF | 600.0 lb |
+| column | #5 | hdg-a767 | 88 | 88 | 486.4 | 91.9 | 28.1 | 606.4 LF | 632.5 lb |
 | footing | #4 | hdg-a767 | 30 | 30 | 407.3 | 0.0 | 0.0 | 407.3 LF | 272.1 lb |
 | footing | #5 | hdg-a767 | 154 | 154 | 949.0 | 0.0 | 0.0 | 949.0 LF | 989.8 lb |
 | foundation wall | #3 | hdg-a767 | 49 | 49 | 171.5 | 0.0 | 37.5 | 209.0 LF | 78.6 lb |
@@ -58,7 +58,7 @@ Pieces are what gets cut; bars are runs (a lapped run is one bar in two pieces).
 | slab | #3 | black | 220 | 220 | 481.3 | 0.0 | 149.7 | 631.0 LF | 237.3 lb |
 | slab | #4 | black | 43 | 43 | 863.6 | 0.0 | 0.0 | 863.6 LF | 576.9 lb |
 | slab | #5 | black | 22 | 22 | 393.2 | 0.0 | 0.0 | 393.2 LF | 410.1 lb |
-| | | | **1,198** | | | | | | **6,635.1 lb** |
+| | | | **1,206** | | | | | | **6,667.6 lb** |
 
 **Checked by hand, not only by the machine.** Three elements in these rows are laid out bar
 for bar in `notes/rebar_layout_basis.md` and reproduced by `tests/test_rebar_layout_oracle.py`:
@@ -71,6 +71,16 @@ plane at -10'-2" (`entry_column_base_fixity.md` §6a), which is 5'-5 9/16" more 
 between the two — five more #3 ties (139 → 144 pieces) and 21 lb on the #5 verticals, which
 stay 80 pieces and simply get longer. 0.15 cy of concrete came with it, so the ratio is
 unmoved at 46.1 lb/cy.
+
+**2026-09-20, +32.5 lb: 6,635.1 → 6,667.6 lb — and it is 8 PIECES, not a length.** `PT-BW-W`
+and `PT-BW-GW` joined `north_entry_frame._MOMENT_PIERS`, so each takes `ENTRY_MOMENT_CAGE`'s
+base dowel at every vertical — four #5 apiece, 80 → 88 pieces — where it had `ENTRY_PIER_CAGE`
+and no dowels at all. They had carried the same base moment as their east twins since
+`pier_basis._base_moments` began splitting the landing's lateral case over four fixed columns;
+nothing had made them dowel it, and nothing said so because `BM-BW-SCSILL`'s unpriced line load
+kept both records in `deck_post._detailing_only`, which never reaches dowel anchorage (see
+`entry_column_base_fixity.md` and `north_entry_piers.md`). The 12" pads that develop the dowels
+are **0.073 cy** of concrete and move no row here. Ratio 46.1 → 46.3 lb/cy.
 
 **Revised on 2026-09-17 after a detailing review: 6,730.3 → 6,608.0 lb, −122.3 lb**, row by row:
 
@@ -311,7 +321,8 @@ A specification change should cost nothing, and this one did.)
 ## 3. The test, and the gate is CLOSED BY DECISION
 
 ```
-billed          6,635 lb / 143.86 cy   =  46.1 lb/cy   (2026-09-20, canopy bases deepened)
+billed          6,668 lb / 143.93 cy   =  46.3 lb/cy   (2026-09-20, west landing pair doweled)
+  was           6,635 lb / 143.86 cy   =  46.1 lb/cy   (2026-09-20, canopy bases deepened)
   was           6,608 lb / 143.71 cy   =  46.0 lb/cy   (2026-09-17, detailing review)
   was           6,730 lb / 143.58 cy   =  46.9 lb/cy   (2026-09-17, laid out, §4 authored)
   was           3,515 lb / 143.58 cy   =  24.5 lb/cy   (2026-09-15, garage to stone)
@@ -326,7 +337,7 @@ where the 3,215.6 lb came from — mostly steel that existed in the building and
 nowhere, plus laps and hooks leaving `[waste]`. 46.9 now sits inside the 40–80 lb/cy a lightly
 reinforced residential foundation runs, which is the sanity check this section asked for.
 
-At $1.05–1.35/lb, **6,635 lb is $6,967–8,957** (6,730 lb was $7,067–9,086 before the
+At $1.05–1.35/lb, **6,668 lb is $7,001–9,001** (6,730 lb was $7,067–9,086 before the
 2026-09-17 detailing review): still under the register's $10,000–18,000,
 though no longer by half. **The gate stays closed, and from today that is a DECISION rather
 than an arithmetic result** (decision #75 D14). The price back-out is out of the layout's

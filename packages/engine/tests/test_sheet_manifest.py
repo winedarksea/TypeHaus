@@ -46,22 +46,22 @@ def test_the_file_is_byte_deterministic(tmp_path: Path):
 
 
 @pytest.mark.slow
-def test_haus_print_refuses_while_the_canopy_base_is_open(tmp_path: Path):
-    """The draft gate, end to end, and on 2026-09-18 it started closing on catlin.
+def test_haus_print_passes_the_draft_gate_on_catlin(tmp_path: Path):
+    """The draft gate, end to end — and on 2026-09-20 it started OPENING on catlin.
 
-    ``engineering/column_base.py`` grades the IBC 1807.3.2.1 embedment a fixed column base
-    needs — the assumption every ``deck_post`` record had been naming and none grading — and
-    the north entry canopy's cast columns did not have it. The gate blocking is the gate
-    working; it is asserted here rather than merely worked around in the test below, so that
-    the day the design closes (``notes/entry_column_base_fixity.md`` §6) this test fails and
-    tells somebody to delete it.
+    ** THIS TEST IS THE INVERSE OF THE ONE IT REPLACES, AND DELETING THAT ONE WAS ITS OWN
+    INSTRUCTION. ** From 2026-09-18 `haus print houses/catlin` was refused: the north entry's
+    cast column bases did not have the IBC 1807.3.2.1 embedment every `deck_post` record had
+    been naming as an assumption and none grading. That test asserted the refusal and said in
+    as many words that "the day the design closes … this test fails and tells somebody to
+    delete it". `notes/entry_column_base_fixity.md` §6a closed the canopy pair with concrete
+    and §6e closed the landing pair with a graded §1806.3.4 claim, so it did and this is what
+    stands in its place.
 
-    ** HALF THE GAP CLOSED ON 2026-09-19 AND THIS TEST DID NOT MOVE, WHICH IS THE POINT OF
-    ASSERTING AN ITEM RATHER THAN A COLUMN. ** Sharing the canopy's frame shear with
-    ``W-BW-SCREEN`` by relative rigidity took ``PT-BW-RE`` from a FAIL to a §1806.3.4
-    judgement (§7 of that note); ``PT-BW-RNE`` still wants 7.74' of embedment against the
-    3.50' it has. One permit line, still shut, for one column instead of two — and a test
-    that had pinned "two cast columns" would have gone red on an improvement.
+    Asserting the gate OPEN is worth as much as asserting it shut, and for the same reason: a
+    permit set that silently stopped being printable is exactly as bad as one that silently
+    started. The half of the pair that is about the gate REFUSING where it should is
+    `test_calc_package.py` and `test_permit_coverage.py`, which do not need catlin red.
     """
     pytest.importorskip("matplotlib")
     from typer.testing import CliRunner
@@ -71,31 +71,27 @@ def test_haus_print_refuses_while_the_canopy_base_is_open(tmp_path: Path):
     house = tmp_path / "catlin"
     copy_house(CATLIN, house)
     result = CliRunner().invoke(app, ["print", str(house), "--fmt", "pdf"])
-    assert result.exit_code == 1
-    assert "permit print blocked" in result.output
-    assert "Fixed column base embedment" in result.output
+    assert result.exit_code == 0, result.output
+    assert "permit print blocked" not in result.output
+    assert (house / "out" / "permit_set.pdf").is_file()
 
 
 @pytest.mark.slow
-def test_haus_print_writes_the_manifest_beside_the_pdf(tmp_path: Path, monkeypatch):
+def test_haus_print_writes_the_manifest_beside_the_pdf(tmp_path: Path):
     """End to end on the real house — the sandbox print, then the JSON next to it.
 
-    ** THE DRAFT GATE IS STUBBED OPEN, AND ONLY THE GATE. ** This test's subject is that
-    ``haus print`` lands ``permit_set.json`` beside ``permit_set.pdf`` with the right
-    contents; the gate is the test above's subject and has its own coverage in
-    ``test_calc_package`` and ``test_permit_coverage``. Since 2026-09-18 catlin does not
-    pass that gate — ``PT-BW-RNE``'s base embedment is an open design gap — and no
-    shipped house does, so there is no house to run this on unstubbed. Patching the one
-    property keeps the composition, the writer and the file format under test rather than
-    deleting the only end-to-end assertion about them.
+    ** THE GATE IS NO LONGER STUBBED, SINCE 2026-09-20. ** It was, for two years' worth of
+    commits in two days: catlin could not pass the draft gate while its column bases were
+    open, no shipped house could, and patching ``PermitChecklist.ok`` was what kept the
+    composition, the writer and the file format under test at all. It passes now
+    (``test_haus_print_passes_the_draft_gate_on_catlin`` above), so the stub is gone and this
+    test exercises the real path end to end. The gate is the test above's subject and has its
+    own coverage in ``test_calc_package`` and ``test_permit_coverage``.
     """
     pytest.importorskip("matplotlib")
     from typer.testing import CliRunner
 
-    from typehaus.checks.permit import PermitChecklist
     from typehaus.cli.app import app
-
-    monkeypatch.setattr(PermitChecklist, "ok", property(lambda self: True))
 
     house = tmp_path / "catlin"
     copy_house(CATLIN, house)

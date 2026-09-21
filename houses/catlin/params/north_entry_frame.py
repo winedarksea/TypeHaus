@@ -130,8 +130,17 @@ ROOF_COLUMN_EAST_X_FT = 30.0
 # They also cost something while they existed, which is worth recording: bearing on the two
 # columns, they gave `engineering/pier_basis.py` two beams carrying no modelled plan area, so
 # PT-BW-W and PT-BW-GW could not publish an axial demand and `structural.lateral_racking`
-# went UNKNOWN on both. A member with a LINE load and no area is a real gap in that module;
-# this design no longer walks into it.
+# went UNKNOWN on both.
+#
+# ** AND THE LAST SENTENCE HERE USED TO READ "this design no longer walks into it", WHICH WAS
+# FALSE FOR FIVE DAYS. ** It was written about the two deleted rails. `BM-BW-SCSILL` is still
+# there, still carrying this wall, and it walked straight into the same gap on 2026-09-15
+# when it was shortened and hung off the columns. A member with a LINE load and no area was a
+# real gap in that module, and what closed it on 2026-09-20 is that a wall's dead load never
+# needed an area: `pier_basis.wall_line_loads` derives it as a plf (this wall's own layer
+# stack, 30.54, plus `SC-BW-WEST` standing on its plate, 12.94) times the run it shares with
+# the beam in plan. See notes/north_entry_piers.md §2 — and what the UNKNOWN had been
+# concealing is why `PT-BW-W`/`-GW` are in `_MOMENT_PIERS` below.
 SCREEN_PANEL_TOP_FT = 4.0
 
 
@@ -433,7 +442,7 @@ ENTRY_PIER_CAGE = ReinforcementSpec(
     source='8" cage, (4) #5 + #3 rings @ 10", one of twelve house-wide; notes/north_entry_piers.md §6 — the ACI 318-19 §10.6.1.1 1% floor, four bars per §10.7.3.1(b)',
 )
 
-#: The four piers that are a lateral system (fixed-base moment columns, `deck_post`'s bending
+#: The piers that are a lateral system (fixed-base moment columns, `deck_post`'s bending
 #: records) take the cage plus a #5 dowel at each vertical into their pad (decision #75 D6).
 ENTRY_MOMENT_CAGE = ReinforcementSpec(
     bars=(
@@ -445,7 +454,31 @@ ENTRY_MOMENT_CAGE = ReinforcementSpec(
     lap_class="B",
     source="ENTRY_PIER_CAGE plus its base dowels; notes/north_entry_piers.md §6",
 )
-_MOMENT_PIERS = frozenset({"PT-BW-E", "PT-BW-RE", "PT-BW-GE", "PT-BW-RNE"})
+#: ** THE WEST PAIR JOINED ON 2026-09-20, AND THEY HAD BEEN MISSING ALL ALONG. ** This set
+#: covered `FS-BW-FLOOR`'s EAST fixed column and the two canopy columns, and `PT-BW-W` /
+#: `PT-BW-GW` — the deck's west line — were left on the plain cage with 8"/10" pads. That was
+#: never a decision. `pier_basis._base_moments` splits the landing's lateral case "over 4
+#: fixed column(s)" and `structural.lateral_racking` names all four as that deck's lateral
+#: system, so the west pair carries the same base moment as its east twins, and it carried it
+#: with NO base dowels and pads too shallow to develop any.
+#:
+#: Nobody saw it because their records never got that far: `BM-BW-SCSILL`, the screen wall's
+#: sill, hangs off `PT-BW-CW`/`-CNW` and thence onto these two, and a WALL is neither a
+#: `FloorSystem` nor a `Roof` — so `pier_basis._unmodelled_beams` reported an unpriced beam,
+#: `deck_post` declined to publish an axial ratio, and both piers fell to `_detailing_only`,
+#: which prints six load-independent states and never reaches dowel anchorage at all. Closing
+#: that gap (`pier_basis.wall_line_loads`, the same commit) routes them into `_moment_column`
+#: and the missing question lands: `PT-BW-GW` wanted ACI 318-19 §25.4.3.1's 7.115" of ldh
+#: against the 5.375" an 8" pad gives, d/c 1.32.
+#:
+#: The fix is the one its east twin already has. Tops are UNCHANGED — `PT-BW-W` keeps
+#: `FOOTING_TOP_FT`, `PT-BW-GW` the garage strip's plane — and only the bottoms drop, 2" and
+#: 4" respectively, for **0.073 cy of concrete and 8 more #5 dowels**. Both then land at
+#: 0.759 governed by dowel anchorage: `PT-BW-GE`'s own number, the twin they should always
+#: have matched. Because the tops hold, `column_base`'s embedment (measured from grade to the
+#: PAD TOP) does not move and the §1806.3.4 claim above is undisturbed.
+_MOMENT_PIERS = frozenset({"PT-BW-W", "PT-BW-E", "PT-BW-GW", "PT-BW-GE",
+                           "PT-BW-RE", "PT-BW-RNE"})
 #: ** 12" UNDER EVERY MOMENT PIER, AND THE BOTTOM GOES DOWN (owner, 2026-09-17). ** The #5 dowel
 #: foot rests at 3" bottom cover, so embedment is thickness - 3": 10" gave 7.00", 8" gave 5.00",
 #: against ACI 318-19 §25.4.3.1 ldh 7.11". 12" gives 9.00". Tops stay put -- pier heights, the
@@ -491,6 +524,43 @@ ROOF_COLUMN_BASE_FT = -(10 + 2 / 12)
 #: Neither is a modelling gap the engine can grade; both are drawing notes, named here so the
 #: next reader does not rediscover them from the elevations.
 _DEEP_BASE_COLUMNS = frozenset({"PT-BW-RE", "PT-BW-RNE"})
+
+#: ** THE OWNER'S IBC §1806.3.4 CALL ON THE LANDING PAIR, AND IT IS A CLAIM THE ENGINE
+#: GRADES. ** `PT-BW-GW` and `PT-BW-GE` are the garage-side pair under the north-entry
+#: landing. Grade is -2'-10" and their pad tops are at -6'-4", so both have 3.50' of
+#: embedment — and `engineering/column_base.py` runs §1807.3.2.1 at both ends of §1806.3.4's
+#: band and finds 3.50' STRADDLES it: 4.45' needed on Table 1806.2's own S1, 3.39' at the
+#: isolated-pole double. So the verdict turns on a judgement about the structure, which the
+#: engine refuses to make and the owner has now made.
+#:
+#: ** WHAT TOLERATES THE HALF INCH. ** The governing lateral case here is not wind: it is the
+#: IRC R301.5 200 lb guard push at the top of `RL-BW-ENTRY`, taken WHOLLY on one column
+#: (`pier_basis._base_moments`) over a 4.54' arm. What stands on these two is a 4'-11 3/4"
+#: square open landing and its guard — no glazing, no cladding, no finish plane, and nothing
+#: bearing on the house or the garage (grep this file for `W-B-` / `W-G-`). Half an inch of
+#: sway at grade under a person leaning on a rail moves a free-standing landing half an inch
+#: and it comes back; there is nothing here for it to crack, bind or rack out of plumb.
+#:
+#: ** WHY NOT JUST DIG DEEPER. ** Reaching 4.45' puts `PD-BW-GE`'s bottom at -8'-4", which
+#: drags `PR-G-HYDRANT-CW` (invert -8'-10", 8" away in plan) INSIDE the pad's 45 degree
+#: influence cone — the exact thing `plan/mep_supply.py` says to preserve. Clearing it
+#: properly means dropping about 2' to bear below the invert, away from the garage strip
+#: footing plane these are deliberately held near. Pouring concrete to dodge a question the
+#: owner has already answered is the wrong lever.
+#:
+#: ** NOT ON THE CANOPY PAIR, DELIBERATELY. ** `PT-BW-RE`/`-RNE` are decided on Table
+#: 1806.2's own S1 at `ROOF_COLUMN_BASE_FT` (7.07' needed, 7.33' given) and neither record
+#: straddles the band. `notes/entry_column_base_fixity.md` 6a counts "the doubling is not
+#: claimed anywhere on the canopy" among the reasons that plane is the right one; claiming
+#: it there would spend the judgement on a question already closed. See that note's 6e.
+_ISOLATED_POLE_BASIS = (
+    "Owner, 2026-09-20: this pair carries a free-standing open landing and its guard, "
+    "nothing bearing on the house or the garage and no finish plane to crack. The "
+    "governing lateral case is the IRC R301.5 200 lb guard push - short-term by "
+    "definition - and 1/2\" of recoverable motion at grade under it harms nothing that "
+    "stands here. See notes/entry_column_base_fixity.md 6e."
+)
+_ISOLATED_POLE_COLUMNS = frozenset({"PT-BW-GW", "PT-BW-GE"})
 
 PIERS = []
 def _pad_outline(x_ft, y_ft, side_in, along_in=None):
@@ -559,6 +629,8 @@ for _uid, _tag, _x, _height, _top in (
         # moment rule, indifferent to load. Galvanized, house-wide (EXPOSED_MIX, A767).
         vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
         reinforcement=ENTRY_MOMENT_CAGE if _tag in _MOMENT_PIERS else ENTRY_PIER_CAGE,
+        isolated_pole_basis=(_ISOLATED_POLE_BASIS
+                             if _tag in _ISOLATED_POLE_COLUMNS else None),
         supported_by=f"PD-BW-{_tag.split('-')[-1]}"))
     FOOTINGS.append(Pad(
         uid=f"BWF{_uid[4:8]}AA", tag=f"PD-BW-{_tag.split('-')[-1]}",
@@ -639,6 +711,8 @@ for _uid, _tag, _x, _pad_in, _top in (
                           else GARAGE_FOOTING_TOP_FT)), assembly="PIER_CONCRETE_12",
         vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',
         reinforcement=ENTRY_MOMENT_CAGE if _tag in _MOMENT_PIERS else ENTRY_PIER_CAGE,
+        isolated_pole_basis=(_ISOLATED_POLE_BASIS
+                             if _tag in _ISOLATED_POLE_COLUMNS else None),
         supported_by=f"PD-BW-{_tag.split('-')[-1]}"))
     # ** THESE THREE LAP THE GARAGE STRIP FOOTING, AND THE LAP IS A DISPLACEMENT. ** They are
     # cast at -7'-0" on `FT-GF-S1`/`-S3`'s own plane, in the same excavation and at the same

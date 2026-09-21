@@ -36,7 +36,7 @@ _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 #: BLACK pour because DECK_CAP_MIX says so — a new scope, not a second coating in an old one.
 _SCHEDULE = {
     ("column", "#3", "hdg-a767"): (144, 176.6),
-    ("column", "#5", "hdg-a767"): (80, 600.0),
+    ("column", "#5", "hdg-a767"): (88, 632.5),
     ("footing", "#4", "hdg-a767"): (30, 272.1),
     ("footing", "#5", "hdg-a767"): (154, 989.8),
     ("foundation wall", "#3", "hdg-a767"): (49, 78.6),
@@ -53,8 +53,14 @@ _SCHEDULE = {
 # Note §1 works both out row by row. +27.1 lb on 2026-09-20: the two canopy columns' bases
 # went to a common -10'-2" plane (notes/entry_column_base_fixity.md §6a), which is 5'-5 9/16"
 # more 12" round shaft between them — five more #3 ties and 21 lb on the #5 verticals.
-_TOTAL_LB = 6635.1
-_TOTAL_PIECES = 1198
+# +32.5 lb the same day, and it is 8 PIECES not a length: `PT-BW-W` and `PT-BW-GW` joined
+# `north_entry_frame._MOMENT_PIERS`, so each takes ENTRY_MOMENT_CAGE's base dowel at every
+# vertical — four #5 apiece — where it had the plain cage and none. They had carried the
+# same base moment as their east twins since `_base_moments` started splitting it over four
+# fixed columns; nothing had made them dowel it. (The 12" pads that develop those dowels are
+# concrete, not steel, and are 0.073 cy — they move no row here.)
+_TOTAL_LB = 6667.6
+_TOTAL_PIECES = 1206
 
 #: §3, decision #75 D14. The back-out gate is CLOSED BY DECISION, not by a dollar comparison:
 #: authoring steel may lift the tonnage into the register's band without opening it. Opening

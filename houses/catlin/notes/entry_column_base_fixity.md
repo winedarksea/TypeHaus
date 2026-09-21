@@ -60,9 +60,19 @@ permits the lateral bearing value to be doubled for an isolated pole "not advers
 by a 1/2 inch motion at the ground surface". Whether half an inch of sway at the base of a
 canopy column — with an `HGAM10` gusset and a stainless standoff shim pack at its head —
 harms what stands on it is a question about the structure. So both ends are worked below and
-the verdict is only published where they agree; where they straddle, the record reports
-INCOMPLETE naming the judgement. That is the same convention `retaining_wall` applies to the
-soil unit weight band, for the same reason.
+the module makes no such judgement of its own: where they straddle, the record reports
+INCOMPLETE naming it. That is the same convention `retaining_wall` applies to the soil unit
+weight band, for the same reason.
+
+**A HOUSE may make that judgement, and then it is a graded claim — §6e, 2026-09-20.**
+`Post.isolated_pole_basis` states in prose what tolerates the half inch and on whose word,
+and `column_base.py` grades the doubled formula and says so in the citation, quoting the
+basis. A reader may never see a passing embedment here without learning §1806.3.4 was
+invoked. Two ways the claim is refused, both INCOMPLETE naming why: an empty basis (§6g's
+stale-declaration bullet, made checkable), and a governing lateral case §1806.3.4's own words
+do not reach — the section permits the doubling for motion "due to **short-term** lateral
+loads", and wind and an R301.5 guard push qualify where a sustained case does not. The
+landing pair claims it; **nothing on the canopy does**, and §6a counts that among its reasons.
 
 ## 2. The demand, and who carries it
 
@@ -146,8 +156,8 @@ the four landing columns  P = 200 lb,  h = 4.54',  b = 1.00'
 | `PT-BW-RNE` | canopy, east | 7.33' | 7.07' | 5.40' | **ok, 0.96** |
 | `PT-BW-W` | landing, guard | 6.12' | 4.45' | 3.39' | ok, 0.73 |
 | `PT-BW-E` | landing, guard | 6.12' | 4.45' | 3.39' | ok, 0.73 |
-| `PT-BW-GW` | landing, guard | 3.50' | 4.45' | 3.39' | **INCOMPLETE** |
-| `PT-BW-GE` | landing, guard | 3.50' | 4.45' | 3.39' | **INCOMPLETE** |
+| `PT-BW-GW` | landing, guard | 3.50' | 4.45' | 3.39' | **ok, 0.97 — §1806.3.4 claimed (§6e)** |
+| `PT-BW-GE` | landing, guard | 3.50' | 4.45' | 3.39' | **ok, 0.97 — §1806.3.4 claimed (§6e)** |
 
 **Both canopy columns publish a graded verdict at the table's own lateral bearing**, and
 §1806.3.4's isolated-pole doubling is not claimed for either — which is the part worth more
@@ -160,12 +170,20 @@ short at 6.12' against 6.25' and `PT-BW-RNE` was 2.2 times over at 3.50' against
 now stand 16'-6 3/4" from a common bearing plane at -10'-2" to the header soffit, so they
 have the same stiffness, take 50% each of the governing E-W case, and need the same 7.07'.
 
-**The two landing columns on the garage side are unchanged and still INCOMPLETE.** `PT-BW-GW`
-and `-GE` need 4.45' at the table and 3.39' doubled against the 3.50' they have, so they
-straddle exactly as `PT-BW-RE` used to. Nothing in this revision touches them: their case is
-the R301.5 guard load, not the canopy's wind, and they carry no roof. They are the house's
-two remaining `structural.lateral_racking` UNKNOWNs and they are an open question, not a
-closed one.
+**The two landing columns on the garage side still STRADDLE, and publish anyway since
+2026-09-20 — on a claim, not on concrete.** `PT-BW-GW` and `-GE` need 4.45' at the table and
+3.39' doubled against the 3.50' they have, exactly as `PT-BW-RE` used to; **the required
+depths did not move and that is the point**. What moved is that the judgement the straddle
+turns on has been made, authored and graded: §6e. Their case is the R301.5 guard load, not
+the canopy's wind, and they carry no roof, which is why nothing in §6a or §7 ever reached
+them. d/c **0.97** — a real pass, but thin, and worth revisiting on depth separately now that
+the gate is open (a 4" drop gives 0.885 and still clears the hydrant cone).
+
+**Read the two halves of this table together and the shape of the house is in it.** The four
+columns decided on Table 1806.2's own S1 are decided by CONCRETE — `PT-BW-W`/`-E` were always
+deep enough because the basement excavation was open to them, and the canopy pair was made
+deep enough in §6a. The two decided on §1806.3.4 are decided by a JUDGEMENT, because the
+concrete route is closed to them: §6e works why.
 
 ## 5. What this does NOT settle
 
@@ -328,6 +346,54 @@ load-bearing in the literal sense.
 It closes `PT-BW-RE` to within an inch and a half. **It does not close `PT-BW-RNE`** and
 cannot: see §4.
 
+### 6e. Claim §1806.3.4's isolated-pole doubling for the landing pair — **DONE 2026-09-20**
+
+`PT-BW-GW` and `-GE` straddle: 4.45' needed at Table 1806.2's own `S1`, 3.39' at the
+isolated-pole double, **3.50'** in the ground. §1 says the module refuses to pick a side. The
+owner has picked one.
+
+**The lever the other closures used is not available here, and that is worked rather than
+asserted.** Deepening to 4.45' puts `PD-BW-GE`'s bottom at **-8'-4"**, which drags
+`PR-G-HYDRANT-CW` — invert **-8'-10"**, about **8"** away in plan — inside the pad's 45°
+influence cone. `plan/mep_supply.py` states the constraint in its own words: *"all five
+north-entry footings now bear BELOW this invert … Keep it that way if a pier ever moves."*
+Clearing it properly means dropping roughly **2'** to bear below the invert — off the garage
+strip footing plane these two are deliberately held near (`GARAGE_FOOTING_TOP_FT`), and into
+the excavation-sequencing argument §6a's note carries for the canopy. Pouring 2' of concrete
+to dodge a question the owner has already answered is the wrong lever. §6b (constrain at
+grade) is not available for the reason it is not available anywhere here; §6c and §6d are
+about a canopy FRAME and there is no frame under a landing guard.
+
+**What tolerates the half inch.** The governing lateral case on these two is not wind at all:
+it is IRC Table R301.5's **200 lb** guard push at the top of `RL-BW-ENTRY`, taken **wholly on
+one column** (`pier_basis._base_moments`, the conservative bound) over a **4.54'** arm above
+grade. What stands on them is a 4'-11 3/4" square open landing and its guard — no glazing, no
+cladding, no finish plane, nothing bearing on the house or the garage. Half an inch of sway at
+grade under a person leaning on a rail moves a free-standing landing half an inch and it comes
+back. There is nothing there to crack, bind or rack out of plumb. Contrast the canopy pair,
+whose heads carry an `HGAM10` gusset and a stainless standoff shim pack under a 24' header —
+which is exactly the structure §1 was written cautious about, and exactly why §6a bought its
+depth rather than claiming this.
+
+**It is a CLAIM, so it is graded.** `Post.isolated_pole_basis` carries the statement in prose
+— never a bare bool, because the failure mode of a flag is §6g's fifth bullet and a flag
+carries nothing a reader could use to notice it went stale. `column_base.py` refuses it two
+ways, each INCOMPLETE naming the reason: an empty basis, and a governing case §1806.3.4's own
+words do not reach ("due to **short-term** lateral loads"). Wind and the R301.5 push are both
+short-term; `_sustained_lateral_cases` scans the pier's base-moment terms and refuses anything
+not deliberately listed as such, so the day a sustained lateral case appears on one of these
+the claim stops being honoured rather than quietly surviving.
+
+**What it costs and what it buys.** Cost: nothing built, and a judgement a reviewer must now
+evaluate — which is the honest price and is why the citation quotes the basis rather than
+merely citing the section. Buys: d/c **3.393 / 3.500 = 0.97**, a graded verdict where there
+was an INCOMPLETE, and the last blocking checklist line on `haus print houses/catlin`.
+
+**Not claimed on `PT-BW-RE`/`-RNE`, deliberately.** §6a chose -10'-2" partly *so that* the
+canopy would be decided on the table's own number; claiming the doubling there would spend a
+judgement on a question already closed and move the canopy's verdict from Table 1806.2 onto an
+owner's statement. `tests/test_column_base_calcs.py` asserts the canopy pair does not claim it.
+
 ### 6f. Credit the pour that is already one — **NOT AVAILABLE, and this is a correction**
 
 The 2026-09-19 plan proposed crediting `PD-BW-RNE`'s declared `cast_with` as a combined
@@ -375,6 +441,17 @@ not reach far enough there either.
   INCOMPLETE to OVER while appearing to fix it.
 * **`h` is measured from the single global `Site.grade`.** A local apron or regrade at the
   canopy is invisible to the model and would change `h`, and so `d`, with no finding.
+* **Letting §6e's claim outlive the structure it was written about.** This is the fifth
+  bullet again, aimed at the closure that is most exposed to it — the whole of `PT-BW-GW`'s
+  and `-GE`'s verdict rests on a sentence about what stands on them. The basis names an OPEN
+  landing with no finish plane and a short-term guard push. Glaze that landing, wrap it,
+  hang a door off it, put anything on it that half an inch of grade movement would rack or
+  crack, or give either column a lateral case that does not go away — and the claim is false
+  while the record still reads 0.97. **What the engine can catch:** an empty basis, and a
+  base-moment term that is not one of the short-term cases. **What it cannot:** whether the
+  prose is still true of the building. That one is a reader's, and it is why the basis is
+  prose, dated and attributed, and printed into the citation on the calc sheet rather than
+  hidden in a field. Re-read it whenever anything lands on that landing.
 
 ## 7. The shear split, hand-worked
 

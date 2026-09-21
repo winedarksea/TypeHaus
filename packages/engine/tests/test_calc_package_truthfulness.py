@@ -85,16 +85,50 @@ def test_the_scope_axis_is_not_in_the_fingerprint(catlin_ctx) -> None:
 def test_the_readme_states_where_the_permit_gate_stands(catlin_engineering) -> None:
     """``checklist`` was a parameter of ``pe_readme`` from the day it was written and was
     read nowhere, so the page a reviewer opens first was silent on the one fact that says
-    whether this review unblocks anything."""
+    whether this review unblocks anything.
+
+    catlin's gate is OPEN since 2026-09-20 (`notes/entry_column_base_fixity.md` §6a and §6e),
+    so the house exercises that branch and the SHUT one is exercised below on a stub. Both
+    are asserted, because a bundle whose README said the wrong one would mislead the reviewer
+    about the only fact they opened it for.
+    """
     from typehaus.takeoff.handoff import pe_readme
 
     ctx, item_ids, checklist = catlin_engineering
-    readme = pe_readme(house="catlin", generated="2026-09-18", engine_version="0",
+    readme = pe_readme(house="catlin", generated="2026-09-20", engine_version="0",
                        content_hash="abc", records=[ctx.engineering[i] for i in item_ids],
                        notes=[], checklist=checklist, has_pdf=False)
     assert "## Where the permit gate stands" in readme
-    assert "The draft gate is SHUT" in readme
-    assert "Fixed column base embedment" in readme
+    assert "The draft gate is OPEN." in readme
+    assert "The draft gate is SHUT" not in readme
+    assert "What is left is the seal itself" in readme
+
+
+def test_the_readme_names_every_open_blocking_item_when_the_gate_is_shut() -> None:
+    """The branch catlin no longer reaches, and the one the bundle exists for.
+
+    A reviewer opening a SHUT bundle has to be told which lines are shut and that a stamp
+    will not open them — the gate is about this engine's own arithmetic. Held on a stub
+    rather than deleted with the house that used to exercise it: the wording is the whole
+    point of the block, and a branch nobody runs is a branch that rots.
+    """
+    from types import SimpleNamespace
+
+    from typehaus.findings import Result
+    from typehaus.takeoff.handoff import _gate_block
+
+    items = [
+        SimpleNamespace(blocking=True, result=Result.PASS, label="Fine", detail="—"),
+        SimpleNamespace(blocking=True, result=Result.UNKNOWN,
+                        label="Fixed column base embedment", detail="a judgement is missing"),
+        SimpleNamespace(blocking=False, result=Result.FAIL, label="Advisory", detail="—"),
+    ]
+    block = "\n".join(_gate_block(
+        SimpleNamespace(items=items, profile_name="mn-2020")))
+    assert "**The draft gate is SHUT**, on 1 of 2 blocking" in block
+    assert "Fixed column base embedment" in block and "a judgement is missing" in block
+    assert "Advisory" not in block, "the staging lane is the engine's coverage, not the house's"
+    assert "a stamp on this bundle does not open them" in block
 
 
 def test_the_readme_claims_no_completeness_and_hands_back_the_deferrals(

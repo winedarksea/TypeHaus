@@ -3528,10 +3528,10 @@
 "55ae7f2f6d2a"
 ],
 "geometry/BWF01AAAA/body": [
--2.9829125,
+-3.0337125,
 -2.7289125,
 2,
-"4f08ae001b70"
+"24989bb3affd"
 ],
 "geometry/BWF02AAAA/body": [
 -3.0337125,
@@ -3552,10 +3552,10 @@
 "6301e2f5e797"
 ],
 "geometry/BWFG05AAAA/body": [
--2.1336,
+-2.2352,
 -1.9304,
 2,
-"30ca514a7e14"
+"ca4b79aa4365"
 ],
 "geometry/BWFG06AAAA/body": [
 -2.2352,
@@ -80806,13 +80806,13 @@
 "solids/PD-BW-E/z1_m": -2.7289125,
 "solids/PD-BW-GE/z0_m": -2.2352,
 "solids/PD-BW-GE/z1_m": -1.9304,
-"solids/PD-BW-GW/z0_m": -2.1336,
+"solids/PD-BW-GW/z0_m": -2.2352,
 "solids/PD-BW-GW/z1_m": -1.9304,
 "solids/PD-BW-RE/z0_m": -3.4036,
 "solids/PD-BW-RE/z1_m": -3.0988,
 "solids/PD-BW-RNE/z0_m": -3.4036,
 "solids/PD-BW-RNE/z1_m": -3.0988,
-"solids/PD-BW-W/z0_m": -2.9829125,
+"solids/PD-BW-W/z0_m": -3.0337125,
 "solids/PD-BW-W/z1_m": -2.7289125,
 "solids/PD-SG-COL/z0_m": -3.8465125,
 "solids/PD-SG-COL/z1_m": -3.5417125,
