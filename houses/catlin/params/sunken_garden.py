@@ -72,6 +72,7 @@ from typehaus import (
     from_node,
     ft,
     Gutter,
+    HookConfinement,
     inch,
     JoistReinforcement,
     JoistSpec,
@@ -788,17 +789,26 @@ _BRACED_STEM_STEEL = ReinforcementSpec(
 
 # W-SG-BRKBM's steel: flexure (3 #5 each face) from notes/sunken_garden_veneer_beam.md §3,
 # closed #3 hoops @ 5" and one #4 side bar per face from the §4a torsion addendum.
+# End anchorage (§6e, 2026-09-21): the TOP row hooks into W-SG-W1/E1 with two closed #4 ties
+# per end enclosing the hooks (Ath 0.80 >= 0.4 Ahs 0.372, psi_r 1.0: ldh 7.11" in 9.00"). The
+# BOTTOM row sits inside FT-SG-W1/E1, poured first, so 3 #5 dowels are cast STRAIGHT in each
+# footing, 66" back from its court face, lapping the row class B (30.00" past the wall face).
 _VENEER_BEAM_STEEL = ReinforcementSpec(
     bars=(
-        BarSpec(role="top-y", bar=5, count=3, note="mirrors the bottom for the pocket restraint"),
-        BarSpec(role="bottom-y", bar=5, count=3),
+        BarSpec(role="top-y", bar=5, count=3, hooks=("start", "end"),
+                hook_ties=HookConfinement(bar=4, count=2, spacing=inch(5.0), legs=2,
+                                          orientation="perpendicular"),
+                note="90° hooks turned UP into W-SG-W1/E1 (down would reach the footing); two closed #4 ties per end enclose them"),
+        BarSpec(role="bottom-y", bar=5, count=3, note="laps the footing dowels at each end"),
+        BarSpec(role="dowels", bar=5, count=3, embedment=inch(66.0),
+                note="per end, cast horizontal in FT-SG-W1/E1 (placement 1) through the footing's court face; class B lap to bottom-y"),
         BarSpec(role="ties", bar=3, spacing=inch(5.0),
                 note="closed hoops, 135° hooks — ACI 318-19 §9.7.6.3.3, ph/8 = 5.25\""),
         BarSpec(role="horizontal", bar=4, count=1, layers=2,
                 note="torsion longitudinal bar at mid-depth, each face — §9.7.5.1"),
     ),
     cover=inch(2.0),
-    source="notes/sunken_garden_veneer_beam.md §3 and §4a",
+    source="notes/sunken_garden_veneer_beam.md §3, §4a and §6e",
 )
 
 _RET_REBAR = '#5 @ 7" o.c.'

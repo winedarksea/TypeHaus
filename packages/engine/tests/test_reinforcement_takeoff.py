@@ -136,7 +136,9 @@ def test_dowels_bill_only_where_authored_as_l_bars(catlin_model) -> None:
     """A dowel bills when a house authors role ``dowels``, and then as an L (decision #75 D6).
 
     Its length is a hooked foot in the pour below plus a lap above, so every piece carries a
-    lap and a hook. A pour that authors none bills none: nothing here invents one.
+    lap and a hook — except a beam-end dowel (W-SG-BRKBM), cast STRAIGHT in the footing its
+    bottom row sits in and lapped into the beam (notes/sunken_garden_veneer_beam.md §6e). A
+    pour that authors none bills none: nothing here invents one.
     """
     dowels = [(s.host_tag, b) for s in catlin_model.rebar for b in s.bars
               if b.role == "dowels"]
@@ -145,8 +147,9 @@ def test_dowels_bill_only_where_authored_as_l_bars(catlin_model) -> None:
                 if getattr(el, "reinforcement", None) is not None
                 and any(b.role == "dowels" for b in el.reinforcement.bars)}
     assert {tag for tag, _ in dowels} == authored
-    for _tag, bar in dowels:
-        assert bar.lap_length_m > 0 and bar.hook_kinds == ("std90",) and len(bar.path) == 3
+    for tag, bar in dowels:
+        shape = ((), 2) if tag == "W-SG-BRKBM" else (("std90",), 3)
+        assert bar.lap_length_m > 0 and (bar.hook_kinds, len(bar.path)) == shape
 
 
 def test_an_empty_reinforcement_table_moves_no_money() -> None:

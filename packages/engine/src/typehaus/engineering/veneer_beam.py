@@ -8,9 +8,10 @@ the walls whose pour it overlaps, the load off the wythe it carries, and the ste
 
 Graded at U = 1.4D: flexure, minimum steel, shear, torsion in EQUILIBRIUM (no §22.7.3.2
 redistribution is relied on), the §9.6.4/§9.7 torsion detailing, deflection after the wythe
-is attached (Table 24.2.2, ℓ/480), and hooked development of each longitudinal row into each
-supporting wall (§25.4.3.1). A row with no authored hook is INCOMPLETE naming it — never a
-hook assumed. ``Scope.SCREENING``.
+is attached (Table 24.2.2, ℓ/480), and end anchorage of each longitudinal row
+(``veneer_beam_anchorage``): hooked into the supporting wall, or through dowels cast in the
+footing where the row sits below the wall. A row with no authored hook, tie credit or dowel is
+INCOMPLETE naming it — never assumed. ``Scope.SCREENING``.
 
 Oracle: ``houses/catlin/notes/sunken_garden_veneer_beam.md`` §6, reproduced by
 ``tests/test_veneer_beam_calc.py``.
@@ -44,10 +45,11 @@ from typehaus.engineering.sunken_garden.veneer_beam import (
     deflection_after_attachment,
     torsion_design,
 )
+from typehaus.engineering.veneer_beam_anchorage import anchor_rows
 from typehaus.model.rebar import BARS
 
 KIND = "veneer_beam"
-BASIS_VERSION = "1"
+BASIS_VERSION = "2"
 BASIS = "ACI 318-19 (strength design at U = 1.4D, Eq. 5.3.1a); §22.7 torsion; §24.2 deflection"
 _COMBO = "ACI 318-19 Eq. (5.3.1a) U = 1.4D"
 _M_PER_IN = 0.0254
@@ -179,47 +181,12 @@ def _end_gaps(wythes: list[_Band], west: _Band, east: _Band) -> str:
             f"{(east.u0 - hi) / _M_PER_IN:.2f}\" clear of {east.tag}")
 
 
-def _solids_at(ctx: EngineeringContext, origin: _Vec, u: _Vec, n: _Vec, sup: _Band,
-               own: _Band, z_m: float) -> list[str]:
-    """Resolved footings/pads containing the beam's end, at ``z_m``, under support ``sup``."""
-    su, sn = (sup.u0 + sup.u1) / 2.0, (own.n0 + own.n1) / 2.0
-    x, y = origin[0] + u[0] * su + n[0] * sn, origin[1] + u[1] * su + n[1] * sn
-    out = []
-    for solid in getattr(ctx.model, "solids", ()):
-        if solid.category not in ("footing", "pad") or not solid.z0_m <= z_m <= solid.z1_m:
-            continue
-        xs, ys = [p[0] for p in solid.outline], [p[1] for p in solid.outline]
-        if xs and min(xs) <= x <= max(xs) and min(ys) <= y <= max(ys):
-            out.append(f"{solid.tag} (z {solid.z0_m / _M_PER_IN:.2f}\".."
-                       f"{solid.z1_m / _M_PER_IN:.2f}\")")
-    return sorted(out)
-
-
 # --- the record ---------------------------------------------------------------------------
 
 def _state(name: str, demand: float, capacity: float, unit: str, citation: str, *,
            detailing: bool = False) -> LimitState:
     return LimitState(name, demand, capacity, unit, citation, is_detailing=detailing,
                       combination=_COMBO, combination_factors=(("D", DEAD_LOAD_FACTOR),))
-
-
-def hooked_anchorage(*, bar: int, count: int, width_in: float, cover_in: float,
-                     hoop_diameter_in: float, side_cover_in: float, fc_psi: float,
-                     epoxy: bool = False) -> tuple[float, float, bool, bool]:
-    """``(ldh, row spacing, ψr 1.0?, ψo 1.0?)`` for one hooked row, ACI 318-19 §25.4.3.1.
-
-    ψr is 1.0 only when the hooked bars sit ≥ 6 db apart — no enclosing ties are modelled,
-    so Ath is never credited. ψo is 1.0 when side cover normal to the hook's plane is ≥ 6 db.
-    """
-    from typehaus.resolve.rebar.detailing import hooked_development_in
-
-    db = BARS[bar].diameter_in
-    inset = cover_in + hoop_diameter_in + db / 2.0
-    spacing = (width_in - 2.0 * inset) / (count - 1) if count > 1 else float("inf")
-    spaced, covered = spacing >= 6.0 * db, side_cover_in >= 6.0 * db
-    ldh = hooked_development_in(bar, fc_psi, confined_spacing=spaced,
-                                side_cover_ok=covered, epoxy=epoxy)
-    return ldh, spacing, spaced, covered
 
 
 def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> EngineeringRecord:
@@ -340,49 +307,14 @@ def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> Engine
                    combination="service D, sustained", combination_factors=(("D", 1.0),)),
     ]
 
-    # Hooked development of each longitudinal row into each supporting wall (§25.4.3.1).
-    notes_ldh: list[str] = []
-    for role, (bar, count, _layers) in (("top-y", top), ("bottom-y", bottom)):
-        entry = next(b for b in getattr(spec, "bars", ()) if b.role == role)
-        db = BARS[bar].diameter_in
-        z = (own.z1 / _M_PER_IN - inset) if role == "top-y" else (own.z0 / _M_PER_IN + inset)
-        for sup in (w_sup, e_sup):
-            element = ctx.plan.by_tag(sup.tag)
-            sup_fc = fc_psi(concrete_spec_for(ctx.plan, element))
-            sup_cover, _ = cover_for(ctx.plan, element)
-            if not (sup.z0 / _M_PER_IN + db / 2.0 <= z <= sup.z1 / _M_PER_IN - db / 2.0):
-                inside = _solids_at(ctx, origin, u, n, sup, own, z * _M_PER_IN)
-                missing.append(
-                    f"a wall for {beam.tag}'s {role} row to anchor in at {sup.tag}: the row is "
-                    f"at z {z:.2f}\" and {sup.tag} spans {sup.z0 / _M_PER_IN:.2f}\".."
-                    f"{sup.z1 / _M_PER_IN:.2f}\""
-                    + (f"; there the beam's pour overlaps {', '.join(inside)}" if inside else "")
-                    + " — raise the beam bottom or detail the end")
-                continue
-            if sup_fc is None or sup_cover is None:
-                missing.append(f"f'c and cover on {sup.tag} to develop {role} into it")
-                continue
-            available = (sup.u1 - sup.u0) / _M_PER_IN - sup_cover
-            side_cover = min(own.n0 - sup.n0, sup.n1 - own.n1) / _M_PER_IN + cover + hoop_d
-            mix_coating = getattr(concrete_spec_for(ctx.plan, beam), "bar_coating", "") or ""
-            epoxy = "epoxy" in f"{entry.coating or ''} {mix_coating}".lower()
-            ldh, spacing, spaced, covered = hooked_anchorage(
-                bar=bar, count=count, width_in=width, cover_in=cover, hoop_diameter_in=hoop_d,
-                side_cover_in=side_cover, fc_psi=sup_fc, epoxy=epoxy)
-            how = (f"ψr {'1.0' if spaced else '1.6'} (bars {spacing:.2f}\" apart vs 6db "
-                   f"{6 * db:.2f}\", no enclosing ties modelled), ψo {'1.0' if covered else '1.25'}"
-                   f", {available:.2f}\" = {sup.tag} {(sup.u1 - sup.u0) / _M_PER_IN:.2f}\" less "
-                   f"{sup_cover:.2f}\" far-face cover")
-            if not entry.hooks:
-                missing.append(f"`BarSpec.hooks` on {beam.tag}'s {role} row (anchorage into "
-                               f"{sup.tag}); a straight #{bar} needs far more than the wall")
-                notes_ldh.append(f"IF {role} WERE HOOKED into {sup.tag}: ℓdh {ldh:.2f}\" against "
-                                 f"{available:.2f}\" (d/c {ldh / available:.2f}); {how}")
-                continue
-            states.append(LimitState(
-                f"hooked development of {role} into {sup.tag}", ldh, available, "in",
-                f"ACI 318-19 §25.4.3.1 at fy (torsion corner bar, no §25.4.10.1 reduction); "
-                f"{how}"))
+    # End anchorage of each row: hooked into the wall, or dowelled into the footing below it.
+    mix_coating = getattr(concrete_spec_for(ctx.plan, beam), "bar_coating", "") or ""
+    epoxy = "epoxy" in f"{' '.join(b.coating or '' for b in spec.bars)} {mix_coating}".lower()
+    ends = anchor_rows(ctx, beam, spec, {"top-y": top, "bottom-y": bottom}, (w_sup, e_sup), own,
+                       (origin, u, n), (width, cover, hoop_d), epoxy)
+    states.extend(ends.states)
+    missing.extend(ends.missing)
+    notes_ldh = ends.notes
 
     over = any(not s.ok for s in states)
     status = Status.OVER if over else (Status.INCOMPLETE if missing else Status.OK)
@@ -425,9 +357,9 @@ def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> Engine
             f"span would be {defl.after_attachment_in / (defl.span_in / 600):.2f} against it. "
             f"End fixity, which the monolithic side-wall joint may supply, is what closes it "
             f"and is not credited.",
-            "NOT GRADED (moved from the deferral): the stirrup form and the lap of the beam's "
-            "top and bottom bars into each side wall's vertical steel beyond the hook "
-            "development above; shrinkage restraint between the two side walls; the masonry "
+            "NOT GRADED (moved from the deferral): the stirrup form; which way each hook turns "
+            "(it must stay inside the wall it anchors in); shrinkage restraint between the two "
+            "side walls; the masonry "
             "anchors over the insulated standoff, which are `veneer_anchor/<wythe>`, their own "
             "deferral.",
             f"MODEL GAP — THE SOFT JOINTS: a movement joint at each end of the wythe is carried "

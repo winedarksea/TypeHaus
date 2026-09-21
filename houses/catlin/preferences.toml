@@ -107,6 +107,10 @@ min_through_deck_clearance_in = 0.5
 # drawing emitter -- which is why it is authored here rather than derived.
 roof_beam_snow_psf = 73.7
 roof_beam_dead_psf = 10.0
+# w = 4 h_d above. Laid from the canopy's SOUTH edge it runs 3.80 ft past its north edge
+# into RF-GARAGE, over truss-000 and truss-001: structural.truss_reactions holds rows for
+# those two to the drift and no others (notes/north_entry_piers.md §3a).
+roof_beam_drift_width_ft = 9.8
 
 [plumbing]
 drain_stack_required_structure_in = 5.5

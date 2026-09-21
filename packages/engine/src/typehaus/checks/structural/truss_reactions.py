@@ -6,9 +6,11 @@ model, and this check does two things with them:
 
 1. **Refuses a row that does not describe this roof** — the ``published._capacity_drift``
    guards (member, spacing, wind basis) plus a SNOW guard: the row's ground snow must reach
-   the site's, and a roof the house designs for a drift must carry a row that states one. A
-   quote priced on the bare ground snow buys ordinary trusses under a roof-step drift, and
-   this guard is what stops that reading as a PASS.
+   the site's, and a DRIFT TRUSS must carry a row that states one. A quote priced on the
+   bare ground snow buys ordinary trusses under a roof-step drift, and this guard is what
+   stops that reading as a PASS. Every truss of a roof whose beams are graded at the drift
+   is one; so is every truss of an abutting roof that the drift width reaches
+   (:func:`drift_trusses`) — which is how RF-GARAGE's two southern trusses are held to it.
 2. **Grades the first link below** — the heel connector's published allowable against the
    row's uplift, through ``published.graded_against_published_capacity``.
 
@@ -98,20 +100,98 @@ def _reaction_drift(ctx: CheckContext, roof, row) -> str | None:
         if row.ground_snow_psf + 0.01 < ground:
             return (f"the row was run at {row.ground_snow_psf:g} psf ground snow and the site "
                     f"declares {ground:g} psf")
-    design = getattr(getattr(ctx.preferences, "structural", None), "roof_beam_snow_psf", None)
-    if design is not None and _designed_for_drift(ctx, roof) and not row.drift_psf:
-        return (f"the house designs {roof.tag} for a drifted {design:g} psf "
-                f"(preferences.toml [structural] roof_beam_snow_psf) and the row states no "
-                f"drift surcharge — a quote on ground snow alone prices ordinary trusses")
+    structural = getattr(ctx.preferences, "structural", None)
+    design = getattr(structural, "roof_beam_snow_psf", None)
+    if design is None or row.drift_psf:
+        return None
+    reach = drift_trusses(ctx, roof)
+    if reach is None:
+        return None
+    inside, why = reach
+    trusses = {_key(m.child_key) for m in roof.members if m.category == "roof_truss"}
+    member = _key(row.member)
+    if inside == trusses:
+        return (f"every truss of {roof.tag} carries the {design:g} psf drift case "
+                f"(preferences.toml [structural] roof_beam_snow_psf) — {why} — and the row "
+                f"states no drift surcharge: a quote on ground snow alone prices ordinary "
+                f"trusses")
+    if member in trusses and member not in inside:
+        return None
+    named = ("it is for " + row.member if member in inside
+             else f"it names no model truss ('{row.member}')")
+    return (f"{', '.join(sorted(inside))} of {roof.tag} are drift trusses — {why} — and the "
+            f"row states no drift surcharge while {named}; name the truss it covers, or have "
+            f"the fabricator quote the drift")
+
+
+#: Two roof footprints this close (ft) across an edge are one drift surface.
+_ADJACENT_FT = 0.5
+
+
+def drift_trusses(ctx: CheckContext, roof) -> tuple[set[str], str] | None:
+    """``(truss keys inside the roof-step drift, why)`` for ``roof``, or ``None``.
+
+    A roof whose beams are graded at the authored design snow is drifted WHOLE. A trussed
+    roof abutting one is drifted where the drift outruns it: the width
+    (``roof_beam_drift_width_ft``) is laid from the drifted roof's FAR edge — conservative,
+    the step face is at or beyond it — so the truss lines inside that width carry it too.
+    With no width authored the neighbour is held to it whole. Oracle:
+    ``notes/north_entry_piers.md`` §3a.
+    """
+    from typehaus.engineering.registry import records_of
+
+    trusses = [m for m in roof.members if m.category == "roof_truss"]
+    records = [r for r in records_of(ctx).values() if r.kind == "roof_beam"]
+    if any(roof.tag in r.element_tags for r in records):
+        return ({_key(m.child_key) for m in trusses},
+                f"the house grades {roof.tag}'s beams at it")
+    drifted = {tag for r in records for tag in r.element_tags}
+    width = getattr(getattr(ctx.preferences, "structural", None),
+                    "roof_beam_drift_width_ft", None)
+    for other in sorted(ctx.model.roofs, key=lambda r: r.tag):
+        if other.tag not in drifted or other.tag == roof.tag:
+            continue
+        axis = _abutting(other.footprint, roof.footprint)
+        if axis is None:
+            continue
+        if width is None:
+            return ({_key(m.child_key) for m in trusses},
+                    f"it abuts the drifted {other.tag} and no roof_beam_drift_width_ft says "
+                    f"how far the drift runs")
+        (i, sign), ft = axis, 0.3048
+        far = min(sign * p[i] for p in other.footprint) / ft
+        near = max(sign * p[i] for p in other.footprint) / ft
+        limit = far + width
+        inside = {_key(m.child_key) for m in trusses
+                  if min(sign * m.p0[i], sign * m.p1[i]) / ft <= limit + 1e-6}
+        if inside:
+            return inside, (f"the {other.tag} drift, {width:g} ft from its far edge "
+                            f"(preferences.toml [structural] roof_beam_drift_width_ft), runs "
+                            f"{limit - near:.2f} ft past it into {roof.tag}")
     return None
 
 
-def _designed_for_drift(ctx: CheckContext, roof) -> bool:
-    """A roof whose beams this house grades at its authored (drifted) design snow."""
-    from typehaus.engineering.registry import records_of
+def _abutting(first, second) -> tuple[int, float] | None:
+    """``(axis, sign)`` pointing from ``first`` to ``second`` where their plan boxes share an
+    edge (within ``_ADJACENT_FT``) and overlap along it, else ``None``."""
+    tol = _ADJACENT_FT * 0.3048
+    lo1 = [min(p[i] for p in first) for i in (0, 1)]
+    hi1 = [max(p[i] for p in first) for i in (0, 1)]
+    lo2 = [min(p[i] for p in second) for i in (0, 1)]
+    hi2 = [max(p[i] for p in second) for i in (0, 1)]
+    for i in (0, 1):
+        j = 1 - i
+        if min(hi1[j], hi2[j]) - max(lo1[j], lo2[j]) <= tol:
+            continue
+        if abs(lo2[i] - hi1[i]) <= tol:
+            return i, 1.0
+        if abs(lo1[i] - hi2[i]) <= tol:
+            return i, -1.0
+    return None
 
-    return any(record.kind == "roof_beam" and roof.tag in record.element_tags
-               for record in records_of(ctx).values())
+
+def _key(name: str | None) -> str:
+    return (name or "").strip().lower()
 
 
 class _RowView:

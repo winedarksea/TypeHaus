@@ -20,7 +20,7 @@ from typehaus.model.rebar import BARS
 from typehaus.resolve.assembly_material import is_cast_beam
 from typehaus.resolve.concrete import concrete_spec_for
 from typehaus.resolve.rebar import detailing as det
-from typehaus.resolve.rebar.beams import frame_of_ring, lay_beam
+from typehaus.resolve.rebar.beams import BEAM_ROLES, frame_of_ring, lay_beam
 from typehaus.resolve.rebar.cages import lay_column, lay_dowels
 from typehaus.resolve.rebar.junctions import lay_junction_bars
 from typehaus.resolve.rebar.mats import lay_mat
@@ -72,6 +72,8 @@ def resolve_rebar(model) -> list[ResolvedRebarSet]:
         ws = lay_wall(sink, spec, wall, cover, openings.get(wall.tag, ()), base)
         if base is not None:
             _wall_dowels(sink, spec, wall, base)
+        elif any(e.role in BEAM_ROLES for e in spec.bars):
+            _beam_end_dowels(model, sink, spec, wall, cover)
         sinks[wall.tag] = sink
         if ws is not None:
             steel[wall.tag] = ws
@@ -226,6 +228,52 @@ def _wall_dowels(sink: Sink, spec, wall, base: WallBase) -> None:
         anchor = _anchor(sink, base.top, pts, None, [foot] * len(pts))
         lay_dowels(sink, entry, pts, base.top, base.rest, lap_top, [foot] * len(pts),
                    anchorage=anchor)
+
+
+def _beam_end_dowels(model, sink: Sink, spec, wall, cover: float) -> None:
+    """A wall acting as a beam whose bottom row sits in a footing poured a placement first:
+    each ``dowels`` bar is cast STRAIGHT in that footing, ``embedment`` back from its span
+    face (the cold joint), and projects a class-B lap into the beam. Oracle:
+    ``notes/sunken_garden_veneer_beam.md`` §6e."""
+    entries = [e for e in spec.bars if e.role == "dowels" and e.count and e.embedment]
+    bottom = next((e for e in spec.bars if e.role == "bottom-y" and e.count), None)
+    if not entries or bottom is None:
+        return
+    frame, _ext = wall_frame(wall, structure_layer(wall))
+    hoop = next((e for e in spec.bars if e.role in ("ties", "stirrups")), None)
+    inner = cover + (BARS[hoop.bar].diameter_in * _IN if hoop else 0.0)
+    z = frame.z0 + inner + BARS[bottom.bar].diameter_in * _IN / 2
+    for entry in entries:
+        db = BARS[entry.bar].diameter_in * _IN
+        t0, t1 = frame.t0 + inner + db / 2, frame.t1 - inner - db / 2
+        ts = ([t0 + (t1 - t0) * i / (entry.count - 1) for i in range(entry.count)]
+              if entry.count > 1 else [(t0 + t1) / 2])
+        lap = det.tension_lap_in(entry.bar, sink.fc_psi, sink.lap_class) * _IN
+        for s_end, inward in ((frame.s0 + cover, 1.0), (frame.s1 - cover, -1.0)):
+            x, y, _ = frame.world(s_end, (t0 + t1) / 2, z)
+            footing = next((s for s in model.solids if s.category == "footing"
+                            and not s.derived and s.z0_m <= z <= s.z1_m
+                            and _contains(s.outline, x, y)), None)
+            if footing is None:
+                continue
+            ss = [(p[0] - frame.origin[0]) * frame.u[0] + (p[1] - frame.origin[1]) * frame.u[1]
+                  for p in footing.outline]
+            joint, far = (max(ss), min(ss)) if inward > 0 else (min(ss), max(ss))
+            element = model.plan.by_tag(footing.tag)
+            limit = far + inward * cover_m(model.plan, element,
+                                           getattr(element, "reinforcement", None))
+            start = joint - inward * entry.embedment.meters
+            start = max(start, limit) if inward > 0 else min(start, limit)
+            for t in ts:
+                sink.polyline(entry, [frame.world(start, t, z),
+                                      frame.world(joint + inward * lap, t, z)],
+                              placed_m=abs(joint - start), lap_m=lap, hook_m=0.0,
+                              hook_kinds=())
+
+
+def _contains(outline, x: float, y: float) -> bool:
+    xs, ys = [p[0] for p in outline], [p[1] for p in outline]
+    return bool(xs) and min(xs) <= x <= max(xs) and min(ys) <= y <= max(ys)
 
 
 def _post_dowels(model, sink: Sink, spec, element, feet) -> None:
