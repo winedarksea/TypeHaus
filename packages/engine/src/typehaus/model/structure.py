@@ -13,6 +13,18 @@ from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Point2D, inch
 
 
+class SrwDrainageZone(HausModel):
+    """Free-draining aggregate the maker specifies behind the unit (AB's "wall rock").
+
+    Graded as the near-heel part of a two-zone trial wedge (``engineering/srw_gravity``);
+    ``width`` is measured square to the face, ``source`` names the page for both numbers.
+    """
+
+    width: Length
+    friction_angle_deg: float
+    source: str
+
+
 class SegmentalWallSpec(HausModel):
     """A dry-stacked segmental retaining-wall unit, as its maker publishes it.
 
@@ -37,6 +49,8 @@ class SegmentalWallSpec(HausModel):
     cap: str | None = None
     #: A published gravity-wall chart row for this unit — see the class docstring.
     published: PublishedSpan | None = None
+    #: The drainage aggregate behind the unit. None = the native soil is at the face.
+    drainage_zone: SrwDrainageZone | None = None
 
 
 @register_element
