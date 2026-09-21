@@ -52,13 +52,13 @@ Pieces are what gets cut; bars are runs (a lapped run is one bar in two pieces).
 | footing | #4 | hdg-a767 | 30 | 30 | 407.3 | 0.0 | 0.0 | 407.3 LF | 272.1 lb |
 | footing | #5 | hdg-a767 | 154 | 154 | 949.0 | 0.0 | 0.0 | 949.0 LF | 989.8 lb |
 | foundation wall | #3 | hdg-a767 | 49 | 49 | 171.5 | 0.0 | 37.5 | 209.0 LF | 78.6 lb |
-| foundation wall | #4 | hdg-a767 | 307 | 307 | 2,075.6 | 505.0 | 0.0 | 2,580.6 LF | 1,723.8 lb |
-| foundation wall | #5 | hdg-a767 | 139 | 139 | 1,314.9 | 0.0 | 66.1 | 1,381.0 LF | 1,440.4 lb |
+| foundation wall | #4 | hdg-a767 | 311 | 311 | 2,089.4 | 505.0 | 3.4 | 2,597.9 LF | 1,735.4 lb |
+| foundation wall | #5 | hdg-a767 | 145 | 145 | 1,347.9 | 13.8 | 70.3 | 1,432.0 LF | 1,493.6 lb |
 | foundation wall | #6 | hdg-a767 | 10 | 10 | 86.2 | 0.0 | 0.0 | 86.2 LF | 129.5 lb |
 | slab | #3 | black | 220 | 220 | 481.3 | 0.0 | 149.7 | 631.0 LF | 237.3 lb |
 | slab | #4 | black | 43 | 43 | 863.6 | 0.0 | 0.0 | 863.6 LF | 576.9 lb |
 | slab | #5 | black | 22 | 22 | 393.2 | 0.0 | 0.0 | 393.2 LF | 410.1 lb |
-| | | | **1,206** | | | | | | **6,671.4 lb** |
+| | | | **1,216** | | | | | | **6,736.2 lb** |
 
 **Checked by hand, not only by the machine.** Three elements in these rows are laid out bar
 for bar in `notes/rebar_layout_basis.md` and reproduced by `tests/test_rebar_layout_oracle.py`:
@@ -81,6 +81,11 @@ nothing had made them dowel it, and nothing said so because `BM-BW-SCSILL`'s unp
 kept both records in `deck_post._detailing_only`, which never reaches dowel anchorage (see
 `entry_column_base_fixity.md` and `north_entry_piers.md`). The 12" pads that develop the dowels
 are **0.073 cy** of concrete and move no row here. Ratio 46.1 → 46.3 lb/cy.
+
+**2026-09-21, +64.8 lb and 10 pieces: 6,671.4 → 6,736.2 lb.** `W-SG-BRKBM` closed its end
+anchorage (`sunken_garden_veneer_beam.md` §6e/§6g): two closed #4 hook ties at each hooked
+top-y end (4 pieces, +11.6 lb) and three straight #5 dowels per end cast into
+`FT-SG-W1`/`-E1` with a class B lap (6 pieces, +53.2 lb, the 13.8 LF of #5 lap).
 
 **2026-09-20, +3.8 lb: 6,667.6 → 6,671.4 lb.** The four balcony corner columns' dowels now
 author `embedment=24"` into `W-SG-W1`/`-E1`, and the layout lays that rather than ld: 16
@@ -325,7 +330,8 @@ A specification change should cost nothing, and this one did.)
 ## 3. The test, and the gate is CLOSED BY DECISION
 
 ```
-billed          6,668 lb / 143.93 cy   =  46.3 lb/cy   (2026-09-20, west landing pair doweled)
+billed          6,736 lb / 143.93 cy   =  46.8 lb/cy   (2026-09-21, veneer beam hook ties + dowels)
+  was           6,668 lb / 143.93 cy   =  46.3 lb/cy   (2026-09-20, west landing pair doweled)
   was           6,635 lb / 143.86 cy   =  46.1 lb/cy   (2026-09-20, canopy bases deepened)
   was           6,608 lb / 143.71 cy   =  46.0 lb/cy   (2026-09-17, detailing review)
   was           6,730 lb / 143.58 cy   =  46.9 lb/cy   (2026-09-17, laid out, §4 authored)

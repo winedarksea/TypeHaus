@@ -1523,6 +1523,12 @@
 2,
 "fb73e146c3a0"
 ],
+"geometry/0TW5SE2NX5/body": [
+-0.3429,
+-0.1905,
+2,
+"f7b6c99f4c06"
+],
 "geometry/0W45BR6619-run/body": [
 2.9257753,
 3.06705,
@@ -3383,11 +3389,23 @@
 2,
 "267caf0e8cc8"
 ],
+"geometry/AJ70HT0M2D/body": [
+-0.3429,
+-0.1905,
+2,
+"f7b6c99f4c06"
+],
 "geometry/ANSKB7EGDH-run/body": [
 0.3048,
 3.0099,
 120,
 "28a9c74c57b6"
+],
+"geometry/ARD33PDHYR/body": [
+-0.3429,
+-0.1905,
+2,
+"f7b6c99f4c06"
 ],
 "geometry/B20MFS2ZH2/body": [
 -0.24892,
@@ -46691,6 +46709,12 @@
 72,
 "279f468f8c91"
 ],
+"geometry/VNT251FTF3/body": [
+-0.3429,
+-0.1905,
+2,
+"f7b6c99f4c06"
+],
 "geometry/VXGA0P0V72-run/body": [
 -0.6461125,
 -0.4937125,
@@ -79168,6 +79192,14 @@
 "solids/CN-BW-STDF-RNE/z1_m": 1.96215,
 "solids/CN-BW-STDF-W/z0_m": -0.4064,
 "solids/CN-BW-STDF-W/z1_m": -0.381,
+"solids/CN-BW-STEMTIE-FC-A/z0_m": -0.3429,
+"solids/CN-BW-STEMTIE-FC-A/z1_m": -0.1905,
+"solids/CN-BW-STEMTIE-FC-B/z0_m": -0.3429,
+"solids/CN-BW-STEMTIE-FC-B/z1_m": -0.1905,
+"solids/CN-BW-STEMTIE-FE-A/z0_m": -0.3429,
+"solids/CN-BW-STEMTIE-FE-A/z1_m": -0.1905,
+"solids/CN-BW-STEMTIE-FE-B/z0_m": -0.3429,
+"solids/CN-BW-STEMTIE-FE-B/z1_m": -0.1905,
 "solids/CN-BW-TIE-EA/z0_m": -0.4699,
 "solids/CN-BW-TIE-EA/z1_m": -0.3175,
 "solids/CN-BW-TIE-EB/z0_m": -0.4699,

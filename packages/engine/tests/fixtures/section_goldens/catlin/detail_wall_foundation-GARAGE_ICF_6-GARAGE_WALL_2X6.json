@@ -1135,6 +1135,118 @@
       "node": "polyline",
       "points": [
         [
+          521.625,
+          -13.5
+        ],
+        [
+          526.625,
+          -13.5
+        ],
+        [
+          526.625,
+          -7.5
+        ],
+        [
+          521.625,
+          -7.5
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "ARD33PDHYR",
+      "tag": "CN-BW-STEMTIE-FC-A"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          521.625,
+          -13.5
+        ],
+        [
+          526.625,
+          -13.5
+        ],
+        [
+          526.625,
+          -7.5
+        ],
+        [
+          521.625,
+          -7.5
+        ]
+      ],
+      "pattern": "concrete",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "concrete"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
+          521.625,
+          -13.5
+        ],
+        [
+          526.625,
+          -13.5
+        ],
+        [
+          526.625,
+          -7.5
+        ],
+        [
+          521.625,
+          -7.5
+        ]
+      ],
+      "layer": "S-FNDN",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "AJ70HT0M2D",
+      "tag": "CN-BW-STEMTIE-FC-B"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          521.625,
+          -13.5
+        ],
+        [
+          526.625,
+          -13.5
+        ],
+        [
+          526.625,
+          -7.5
+        ],
+        [
+          521.625,
+          -7.5
+        ]
+      ],
+      "pattern": "concrete",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "concrete"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           516.375,
           -8.25
         ],

@@ -899,6 +899,12 @@
 # banded; HDG 16d nails are inside the framing rate. Backups and their prices:
 # notes/column_head_connector_options.md.
 "HETA20Z" = { low = 3.0, high = 6.0 }  # 16 ea, all authored — eight joints, a pair each (FL11473 Table 3 rates the pair)
+# The landing's tie to the garage stem (params/landing_tie.py, CN-BW-STEMTIE-*), 2026-09-21.
+# ** AN OPEN JOINT, NOT A SETTLED PART. ** It grades OVER 1.82 (deck_tie/FS-BW-FLOOR,
+# notes/north_entry_piers.md §10), and the Titen Turbo exterior-exposure bar that retired the
+# column-head HGAM10s applies here too; the HETA20Z does not fit a stem face. Priced at the old
+# HGAM10 list band so the takeoff stays whole until the tie is redesigned.
+"HGAM10" = { low = 5.0, high = 20.0 }  # 4 ea — CN-BW-STEMTIE-F{C,E}-{A,B}
 # The two CENTRE balcony pillars' post caps, and since 2026-09-10 the canopy's two WEST
 # columns as well. A 3-1/2" glulam landing on a 6x6 is a CCQ, not the PC6Z: that cap is
 # published for EQUAL post and beam widths. The four balcony CORNER columns are cast
