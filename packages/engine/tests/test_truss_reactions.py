@@ -11,7 +11,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from typehaus.checks.structural.truss_reactions import truss_reactions
+from typehaus.checks.structural.truss_reactions import drift_trusses, truss_reactions
 from typehaus.findings import Result
 from typehaus.model import PublishedCapacity, PublishedReaction
 
@@ -80,9 +80,42 @@ def test_a_quote_on_ground_snow_alone_is_refused_under_the_drift(ctx) -> None:
     assert "ordinary trusses" in finding.message
 
 
-def test_the_garage_is_not_held_to_the_canopy_drift_guard(ctx) -> None:
-    # No roof_beam record covers RF-GARAGE, so the model states no drift for it to demand.
-    finding = _finding(_with_rows(ctx, "RF-GARAGE", _row(drift_psf=None)), "RF-GARAGE")
+def test_the_canopy_drift_reaches_the_garages_two_southern_trusses(ctx) -> None:
+    """notes/north_entry_piers.md §3a: 9.8 ft from the canopy's south edge is 3.80 ft into
+    RF-GARAGE, over truss-000 (y 43.281) and truss-001 (45.219); truss-002 (47.219) is out."""
+    garage = next(r for r in ctx.model.roofs if r.tag == "RF-GARAGE")
+    inside, why = drift_trusses(ctx, garage)
+    assert inside == {"truss-000", "truss-001"}
+    assert "RF-BW-CANOPY" in why and "3.80 ft" in why
+
+
+@pytest.mark.parametrize("member, result", [
+    ("truss-001", Result.UNKNOWN),   # a drift truss, quoted on ground snow alone
+    ("T1", Result.UNKNOWN),          # a mark the model cannot place: held to the drift
+    ("truss-005", Result.PASS),      # an ordinary truss needs no drift
+])
+def test_the_garage_drift_guard_is_per_truss(ctx, member, result) -> None:
+    finding = _finding(_with_rows(ctx, "RF-GARAGE", _row(member=member, drift_psf=None)),
+                       "RF-GARAGE")
+    assert finding.result is result, finding.message
+    if result is Result.UNKNOWN:
+        assert "truss-000, truss-001 of RF-GARAGE are drift trusses" in finding.message
+
+
+def test_with_no_drift_width_the_neighbour_is_held_whole(ctx) -> None:
+    from dataclasses import replace
+
+    prefs = replace(ctx.preferences, structural=replace(ctx.preferences.structural,
+                                                         roof_beam_drift_width_ft=None))
+    bare = SimpleNamespace(plan=ctx.plan, model=ctx.model, preferences=prefs,
+                           engineering=ctx.engineering)
+    garage = next(r for r in ctx.model.roofs if r.tag == "RF-GARAGE")
+    inside, why = drift_trusses(bare, garage)
+    assert len(inside) == 13 and "roof_beam_drift_width_ft" in why
+
+
+def test_a_garage_drift_truss_quoted_with_the_drift_passes(ctx) -> None:
+    finding = _finding(_with_rows(ctx, "RF-GARAGE", _row(member="truss-000")), "RF-GARAGE")
     assert finding.result is Result.PASS, finding.message
 
 

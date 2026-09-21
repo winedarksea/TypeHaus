@@ -2538,6 +2538,9 @@ haus analysis . --solve                     # the engineered frame, solved in Py
   "50 psf ground snow" prices ordinary trusses, and the surcharge off the house gable also
   reaches 3'-10" into the garage roof, so ITS two southernmost trusses are drift trusses too.
   S-001 prints the number; `preferences.toml [structural] roof_beam_snow_psf` is where it lives.
+  Since 2026-09-21 `roof_beam_drift_width_ft = 9.8` lets `structural.truss_reactions` DERIVE
+  those two (`truss-000`/`-001`) and refuse a ground-snow-only reaction row for them
+  (`notes/north_entry_piers.md` §3a).
 - **The wall-panel question is closed too, as of 2026-09-11.** It was the one open
   engineering question: the concealed-fastener panel's withdrawal allowable over 24" open
   girts, which no manufacturer publishes. Naming the product settled the substrate on the
