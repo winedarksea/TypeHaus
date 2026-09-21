@@ -134,8 +134,10 @@ def engineering(
 
     over = [r for r in records if r.status is Status.OVER]
     if over:
-        console.print(f"[red]{len(over)} item(s) do not check locally: "
-                      f"{', '.join(r.item_id for r in over)}[/red]")
+        # Not under --json: stdout must stay one parseable document. The exit code says it.
+        if not as_json:
+            console.print(f"[red]{len(over)} item(s) do not check locally: "
+                          f"{', '.join(r.item_id for r in over)}[/red]")
         raise typer.Exit(1)
     if require_seal:
         missing = [r for r in records if register.freshness(r)[0] not in SETTLED]
