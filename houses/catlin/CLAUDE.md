@@ -2520,13 +2520,14 @@ haus analysis . --solve                     # the engineered frame, solved in Py
     submerged loose row (4.63 pci) would condemn both — a soils report still closes it.
     `column_head_joint/*` grades the head on the HETA20Z pair with FL11473 §9 item 4's
     combined rule as a row (RE/RNE 0.473).
-  - **⚠ 2026-09-21: THE LANDING IS TIED ON TWO LINES, AND THE TIE IS STILL OVER AT 1.18.**
-    `params/landing_tie.py`: an `HL33HDG` pair per KDAT tie block on the garage stem (one 1/2"
-    Titen HD each, ACI 318 Ch. 17 in `engineering/deck_tie_anchor.py`, 0.76), plus a pair on
-    `W-BW-SCREEN`'s north end post into `W-G-W` through a KDAT filler. E-W wind governs at
-    1.177 on `BM-BW-FE` under wet-service C_M 0.70; dry it is 0.82. Suppressed as a numbered
-    debt; `notes/north_entry_piers.md` §10d lists the options (EOR accepts dry service,
-    HL43/46HDG with 3/4" bolts and 6x members, another joint) — none chosen.
+  - **⚠ 2026-09-21: THE LANDING IS TIED ON TWO LINES; THE ANGLES CLOSE, THE STEM ANCHORS DO
+    NOT (1.13).** `params/landing_tie.py`, owner's decision: an `HL35HDG` pair per 5"-long
+    KDAT tie block on the garage stem, wet (C_M 0.70); an `HL33HDG` pair into `W-G-W` graded
+    DRY — `Connector.service`, a judgement the EOR confirms — with a 4x KDAT filler for fn 3.
+    Angles: E-W 0.99 at `BM-BW-FE`. But the HL35's concrete-leg holes are 2-1/2" apart (<
+    ESR-2713's 3" s_min): one Titen HD per leg, 1.75" off a face, and ACI 318 Ch. 17 reads
+    1.13 (`deck_tie_anchor.py`). Suppressed as a numbered debt; `notes/north_entry_piers.md`
+    §10d-§10e — nothing picked.
 - **A fixed-base column's P-M check is a §2.3.1 ENVELOPE** (2026-09-18), each combination at
   its own axial load. A larger axial is not automatically conservative on an interaction
   curve — below the balance point compression RAISES moment capacity — so grading the wind

@@ -444,7 +444,7 @@ def test_the_two_gates_are_separate_and_catlin_reaches_neither(catlin_engineerin
                if item.blocking and item.result not in (Result.PASS,
                                                         Result.NOT_APPLICABLE)]
     # 2026-09-21: the landing's tie to the garage stem closed the head-joint line and opened
-    # its own (deck_tie/FS-BW-FLOOR, OVER 1.18 on two tie lines, north_entry_piers.md §10);
+    # its own (deck_tie/FS-BW-FLOOR, OVER 1.13 on the stem anchors, north_entry_piers.md §10);
     # base rotation CLOSED as draft on the presumed n_h (column_base_rotation.md §10).
     assert sorted(blocked) == sorted([
         "Deck lateral tie to a concrete wall",

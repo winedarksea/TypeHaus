@@ -8,7 +8,7 @@ from typehaus.model.base import Element, HausModel
 from typehaus.model.elements import Wall
 from typehaus.model.enums import ConnectorKind, RailingKind
 from typehaus.model.rebar import ReinforcementSpec
-from typehaus.model.refs import FaceRef, HeadConnector, PublishedSpan
+from typehaus.model.refs import FaceRef, HeadConnector, InServiceMoisture, PublishedSpan
 from typehaus.model.registry import register_constructor, register_element
 from typehaus.quantities import Length, Point2D, inch
 
@@ -686,6 +686,8 @@ class Connector(Element):
     #: house the bolt or gives up the ratings the bolt buys. Only set it where the demand is
     #: gravity — catlin's PT-BW-IC/-IE carry a landing inside a garage, where uplift is nil.
     anchored: bool = True
+    #: Authored in-service moisture; ``None`` reads as wet on an exterior tie (``deck_tie``).
+    service: InServiceMoisture | None = None
 
     def hanger_spec_pair(self, plan) -> tuple[str, str] | None:
         """``(carrier, floor)`` when this JOIST_HANGER names a ``FloorSystem`` and one carrier.

@@ -41011,6 +41011,12 @@
 2,
 "d31b2c8a222f"
 ],
+"geometry/HSFTHD5JAJ/body": [
+0.56515,
+0.65405,
+2,
+"f444de7cc5d0"
+],
 "geometry/HTZ1RGAGXP-run/body": [
 2.8702172,
 5.9308842,
@@ -79180,6 +79186,8 @@
 "solids/CN-BW-CAP-W/z1_m": 2.02565,
 "solids/CN-BW-GWTIE-BLK/z0_m": 0.56515,
 "solids/CN-BW-GWTIE-BLK/z1_m": 0.65405,
+"solids/CN-BW-GWTIE-FILLER/z0_m": 0.56515,
+"solids/CN-BW-GWTIE-FILLER/z1_m": 0.65405,
 "solids/CN-BW-GWTIE-HI/z0_m": 0.8382,
 "solids/CN-BW-GWTIE-HI/z1_m": 0.9906,
 "solids/CN-BW-GWTIE-LO/z0_m": 0.2286,

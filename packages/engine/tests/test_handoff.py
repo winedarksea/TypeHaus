@@ -213,7 +213,7 @@ def test_a_filled_scaffold_seals_every_computed_item(bundle, tmp_path, catlin_ct
     # ** NOT EMPTY SINCE 2026-09-20, AND ON PURPOSE: the SRW apron is computed and OVER
     # (`tiered_retaining`, notes/raised_garden_srw.md). Its block MUST be commented out —
     # no PE stamps a wall at sliding FS 1.38 against 1.5 — and so must `deck_tie`'s, the
-    # landing's two tie lines at d/c 1.18 (notes/north_entry_piers.md §10), and
+    # landing's two tie lines at d/c 1.13 on the stem anchors (notes/north_entry_piers.md §10), and
     # `thermal_break_transfer`'s, movement 1.07 and settlement 1.05 on the owner's Aslan 100 +
     # Toprock DD fix (notes/sunken_garden_court_free_body.md §11f). `base_rotation` left this
     # set on 2026-09-21. Every other kind stays sealable. **

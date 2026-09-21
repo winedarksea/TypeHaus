@@ -17,7 +17,9 @@ and any moment is a mechanism; the record says so rather than grading it.
   (C-C-2024 fn 6: lateral may not be doubled). Perpendicular to the heel is the published
   UPLIFT case — for a horizontal heel, mirrored into the other leg (equal legs, equal
   bolting); for a vertical heel, the force in the tied member's leg plane, which fn 6 lets a
-  pair double, and the force across it, one part. Published dry at C_D 1.6: x NDS C_M 0.70.
+  pair double, and the force across it, one part. Published dry at C_D 1.6: x NDS C_M 0.70,
+  or 1.0 where the parts author dry service (``Connector.service``) — a judgement the
+  record names for the engineer of record.
 
 Where two directions act at once the linear interaction governs: FL11473 §9 item 4 for the
 gusset, Simpson's General Notes for the angle — ``F_along/allow + F_across/allow <= 1``.
@@ -55,16 +57,20 @@ from typehaus.engineering.registry import EngineeringContext, calc, keys, oracle
 
 KIND = "deck_tie"
 BASIS = ("the tie part's published allowables with the linear interaction its document "
-         "states (FL11473 §9 item 4; Simpson C-C-2024 General Notes); NDS 2018 Table 11.3.3 "
-         "C_M; ACI 318-19 Ch. 17 on concrete anchors; elastic distribution over the tie "
-         "joints; ASCE 7-16 §29.3 and §2.4.1; IRC R301.5")
+         "states (FL11473 §9 item 4; Simpson C-C-2024 General Notes); NDS 2018 §11.3.3 / "
+         "Table 11.3.3 C_M per joint; ACI 318-19 Ch. 17 on concrete anchors; elastic "
+         "distribution over the tie joints; ASCE 7-16 §29.3 and §2.4.1; IRC R301.5")
 #: 1: the kind as introduced, 2026-09-21. 2: capacity per joint by role and heel, C_M on a
 #: dry-published bolted part, ACI 318 Ch. 17 on concrete anchors, ties to framed walls.
-BASIS_VERSION = "2"
+#: 3: C_M per joint off the parts' authored service condition; the anchor layout (near and
+#: far edge, one anchor per concrete leg) read off the angle's own hole pattern.
+BASIS_VERSION = "3"
 #: ESR-2713 §1.0 / FL11473 fn 8: the least f'c the concrete anchors are published for.
 MIN_FC_PSI = 2_500.0
 #: NDS 2018 Table 11.3.3, dowel-type fasteners, in-service moisture > 19 %: an exterior tie.
 WET_SERVICE_CM = 0.70
+#: The same table at <= 19 %: only where the joint's parts AUTHOR dry service, with a basis.
+DRY_SERVICE_CM = 1.0
 #: ASCE 7-16 §2.3 / §2.4: strength wind is ASD wind / 0.6; a guard (live) takes 1.6.
 STRENGTH_FROM_ASD_WIND = 1.0 / 0.6
 STRENGTH_FROM_GUARD = 1.6
@@ -156,16 +162,25 @@ def capacity(joint: TieJoint) -> Capacity | str:
                         f"F1 one part / F2 x {n}", cite, False)
     if item.role != ROLE_HEAVY_ANGLE or not allow.lateral_f1_lb or not allow.uplift_lb:
         return f"a reading of `{joint.model}` ({item.role}) as a tie joint"
-    f1, up = allow.lateral_f1_lb * WET_SERVICE_CM, allow.uplift_lb * WET_SERVICE_CM
     if joint.heel_axis == "mixed":
         return f"one heel direction for the parts at {joint.member}/{joint.wall}"
+    if joint.service_condition == "mixed":
+        return f"one service condition for the parts at {joint.member}/{joint.wall}"
+    c_m = service_cm(joint)
+    f1, up = allow.lateral_f1_lb * c_m, allow.uplift_lb * c_m
+    wet = "dry, authored" if joint.service_condition == "dry" else "wet"
     if joint.heel_axis is None:
         return Capacity(up * n, up, cd, f"heel vertical: uplift x {n} in the member's leg "
-                        f"plane (fn 6), uplift x 1 across, C_M {WET_SERVICE_CM:g}", cite, True)
+                        f"plane (fn 6), uplift x 1 across, C_M {c_m:g} ({wet})", cite, True)
     along_heel = joint.heel_axis == joint.wall_axis
     return Capacity(f1 if along_heel else up, up if along_heel else f1, cd,
                     f"heel {joint.heel_axis}: F1 along it, uplift (mirrored) across, one "
-                    f"part each (fn 6), C_M {WET_SERVICE_CM:g}", cite, True)
+                    f"part each (fn 6), C_M {c_m:g} ({wet})", cite, True)
+
+
+def service_cm(joint: TieJoint) -> float:
+    """NDS 2018 Table 11.3.3: 1.0 where the parts author dry service, else 0.70."""
+    return DRY_SERVICE_CM if joint.service_condition == "dry" else WET_SERVICE_CM
 
 
 def _split(joint: TieJoint, force: tuple[float, float]) -> tuple[float, float]:
@@ -255,6 +270,11 @@ def _one(ctx: EngineeringContext, deck: Any) -> EngineeringRecord:
         "The wood path from each load to the tied member is assumed to deliver it; the "
         "distribution treats the deck as rigid in plan and every joint as equally stiff.",
     ]
+    notes += [f"DRY SERVICE at {j.member}/{j.wall} (C_M {DRY_SERVICE_CM:g}, NDS 2018 "
+              f"§11.3.3 / Table 11.3.3): a service-condition judgement the engineer of "
+              f"record confirms. Basis: {j.service_basis}"
+              for j in joints if j.service_condition == "dry"]
+    notes += anchor.layout_notes(joints)
     status = (Status.INCOMPLETE if missing
               else Status.OVER if any(not s.ok for s in states) else Status.OK)
     graded = [s for s in states if not s.is_detailing]
@@ -284,9 +304,16 @@ def _concrete_states(ctx: EngineeringContext, joints: list[TieJoint], caps: list
         out.append(LimitState(f"{wall_tag} f'c for the tie's concrete anchors", MIN_FC_PSI,
                               fc, "psi", "ESR-2713 §1.0 / FL11473 fn 8: min f'c 2,500 psi",
                               is_detailing=True))
-    groups = [g for j, c in zip(joints, caps, strict=True)
-              if j.on_concrete and c.angle and j.wall in fcs
-              and (g := anchor.group_for(ctx, j, fcs[j.wall])) is not None]
+    groups = []
+    for joint, cap in zip(joints, caps, strict=True):
+        if not (joint.on_concrete and cap.angle and joint.wall in fcs):
+            continue
+        group = anchor.group_for(ctx, joint, fcs[joint.wall])
+        if group is None:
+            missing.append(f"the anchor layout of {joint.model} on {joint.wall} (its hole "
+                           "pattern, or the wall's core)")
+        else:
+            groups.append(group)
     worst: dict[str, tuple[float, str]] = {}
     for group in groups:
         for demand in demands.get(group.joint, []):

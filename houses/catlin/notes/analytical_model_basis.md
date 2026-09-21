@@ -114,7 +114,9 @@ the graph's dead + snow line loads on each beam sum to `uniform_load` exactly.
 `N-BM-BW-FE:tie:W-GF-S-DR` (9.458, 43.677) and the sill's north end (6.0, 42.479), which
 carries the screen's joint 0.67' south of where it is built — exact for the N-S spring, a
 few inches of lever on the E-W one. The test asserts six springs, equal, and no vertical
-reaction at any of them.
+reaction at any of them. Unchanged by the stem's move to HL35HDG (two bolts per wood leg,
+same stations): the spring stays one bolt per part, equal at every joint, because equal
+stiffness is what `deck_tie` distributes by.
 
 **Finding:** under gravity the graph hands the stem ties a horizontal thrust the building
 does not have — **~110 lb live, ~28 lb dead at `BM-BW-FC`** — because the seat beams' end
