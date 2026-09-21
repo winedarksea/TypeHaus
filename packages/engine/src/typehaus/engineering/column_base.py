@@ -39,6 +39,14 @@ fixed, which is exactly why the embedment is the state that matters here.
 Concentric bearing on the same pad is ``structural.deck_footing_size``'s and is not restated
 here: one question, one authority.
 
+**The pad is part of the pole** (basis 4). A pad cast in one placement with the shaft, its
+dowels developed into it (``deck_post``'s dowel anchorage), turns with the shaft as one rigid
+body — so embedment runs from grade to the pad BOTTOM, and the pad's extra width enters the
+UNMODIFIED §1807.3.2.1 as an effective width (``pole_embedment.py``), run at both ends of the
+pivot band Eq. 18-1 implies. ``h`` is still measured from grade: the SHAFT embedment (grade to
+pad top) comes off the arm, the TOTAL (grade to pad bottom) is the capacity. Where the dowel
+anchorage is over or ungraded the credit is refused and the shaft alone is graded.
+
 **The band convention, applied to the input that actually has two ends.** ``soil.py``'s
 comment about running a band at both ends is usually about unit weight; here the two-ended
 input is IBC **1806.3.4**, which permits the lateral bearing value to be DOUBLED for an
@@ -65,7 +73,6 @@ pass.
 from __future__ import annotations
 
 import dataclasses
-import math
 
 from typehaus.engineering.item import (
     EngineeringRecord,
@@ -76,6 +83,12 @@ from typehaus.engineering.item import (
     item_id,
 )
 from typehaus.engineering.pier_basis import _Pier, cast_piers
+from typehaus.engineering.pole_embedment import (
+    PIVOT_RATIO_BAND,
+    Pole,
+    band_straddle,
+    verdict,
+)
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
 from typehaus.engineering.soil import presumptive
 from typehaus.engineering.spread_base import (
@@ -98,50 +111,20 @@ BASIS = ("IBC 2018 §1807.3.2.1 (non-constrained embedment) and §1806.2/§1806.
 #: diaphragm — 2026-09-19.
 #: 3: §1806.3.4's isolated-pole doubling became claimable, as a graded authored claim on
 #: ``Post.isolated_pole_basis`` — 2026-09-20.
-BASIS_VERSION = "3"
+#: 4: the pad counts as part of the pole — embedment to the pad bottom, its width through an
+#: effective ``b`` over the Eq. 18-1 pivot band — 2026-09-20.
+BASIS_VERSION = "4"
 
 #: IBC §1806.3.4 — the lateral bearing value may be doubled for an isolated pole where a
 #: 1/2" motion at the ground surface does not harm the structure. A judgement about what
 #: stands on the column, not about the soil, so both ends are run and neither is chosen.
 ISOLATED_POLE_FACTOR = 2.0
 
-#: How far past the reported embedment a shortfall has to be before it is a FAIL, in feet.
-#: Zero: a required depth is a required depth.
-_TOLERANCE_FT = 0.0
-
 oracled_by(
     KIND,
     Oracle(note="entry_column_base_fixity.md",
            test="tests/test_column_base_calcs.py"),
 )
-
-
-def required_embedment_ft(shear_lb: float, height_ft: float, diameter_ft: float,
-                          lateral_psf_per_ft: float) -> float:
-    """IBC 2018 §1807.3.2.1, the non-constrained case, solved for ``d``.
-
-    ``A = 2.34 P / (S1 b)`` and ``d = 0.5 A [1 + sqrt(1 + 4.36 h / A)]``, where ``S1`` is
-    the allowable lateral soil bearing **at one third the embedment depth** — so ``S1``
-    depends on ``d`` and the pair is solved by fixed point rather than in closed form. It
-    converges in a handful of passes because ``d`` enters ``S1`` linearly and ``A`` as a
-    square root.
-
-    ``P`` is the applied lateral force, ``h`` its height above grade, ``b`` the round
-    column's diameter. All three at ALLOWABLE stress: §1806.2's lateral bearing is an
-    allowable value and mixing a strength-level shear into it would overstate the demand by
-    a third.
-    """
-    if shear_lb <= 0.0 or diameter_ft <= 0.0 or lateral_psf_per_ft <= 0.0:
-        return 0.0
-    depth = 1.0
-    for _ in range(60):
-        s1 = lateral_psf_per_ft * depth / 3.0
-        a = 2.34 * shear_lb / (s1 * diameter_ft)
-        nxt = 0.5 * a * (1.0 + math.sqrt(1.0 + 4.36 * max(height_ft, 0.0) / a))
-        if abs(nxt - depth) < 1e-9:
-            return nxt
-        depth = nxt
-    return depth
 
 
 #: The ``_Pier`` base-moment fields §1806.3.4's "short-term lateral loads" reaches.
@@ -287,87 +270,88 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
     shear_lb, arm_ft = shear
     least_ft, area_ft2 = plan
     base_top_ft = _base_top_ft(pad)
-    embedment_ft = (grade_ft - base_top_ft) if base_top_ft is not None else None
-    # The shear's arm is measured from the COLUMN's base — `roof_moment` takes the lever as
-    # the full shaft, footing top to soffit. IBC 1807.3.2.1's `h` is measured from GRADE, so
-    # the buried length comes back off it.
-    height_ft = max(arm_ft - (embedment_ft or 0.0), 0.0)
+    # ** TWO EMBEDMENTS, AND COLLAPSING THEM IS UNSAFE. ** `roof_moment`'s arm runs from the
+    # column base, the pad TOP, so §1807.3.2.1's `h` (from grade) takes the SHAFT's buried
+    # length off it. The capacity is the TOTAL, to the pad bottom, where the pad is credited.
+    shaft_embedment_ft = (grade_ft - base_top_ft) if base_top_ft is not None else None
+    height_ft = max(arm_ft - (shaft_embedment_ft or 0.0), 0.0)
     diameter_ft = pier.diameter_in / 12.0
+    pole = _pole(ctx, pier, pad, diameter_ft) if shaft_embedment_ft is not None else None
+    total_embedment_ft = (shaft_embedment_ft + pole.thickness_ft
+                          if pole is not None and pole.credited else shaft_embedment_ft)
 
     states: list[LimitState] = []
     notes: list[str] = []
     embed_note = "no embedment this model can measure"
     # ** THE CLAIM IS READ BEFORE EITHER MECHANISM IS WORKED, AND IT DECIDES ONE THING ONLY:
-    # WHICH SET OF NUMBERS BECOMES LIMIT STATES. ** Both are computed either way — a reader
-    # deciding which mechanism a base really has needs to see both — but only one of them
-    # gets graded, and only that one may put anything in `missing`. An embedment that
-    # straddles §1806.3.4 is not a gap in a record whose mechanism is the spread base.
+    # WHICH SET OF NUMBERS BECOMES LIMIT STATES. ** Both are computed either way, but only
+    # the graded one may put anything in `missing`.
     claimed = bool(getattr(pad, "resists_base_moment", False))
-    # A SECOND authored claim, and a different question: `claimed` above chooses WHICH
-    # mechanism is graded, this one chooses which END of §1806.3.4's band the embedment is
-    # graded at. It is subject to the same doctrine as everything else here — only the
-    # graded mechanism may put anything in `missing` — so a refusal is raised under the
-    # embedment branch and nowhere else.
+    # A SECOND claim, a different question: which END of §1806.3.4's band is graded.
     pole_basis, pole_refusal = _pole_claim(ctx, pier)
-    if embedment_ft is None:
+    governing_pivot: float | None = None
+    claim_used = False
+    if total_embedment_ft is None or pole is None:
         if not claimed:
             missing.append("a bottom elevation on the base, to measure embedment from")
     else:
-        plain = required_embedment_ft(shear_lb, height_ft, diameter_ft,
-                                      soil.lateral_bearing_psf_per_ft)
-        doubled = required_embedment_ft(
-            shear_lb, height_ft, diameter_ft,
-            soil.lateral_bearing_psf_per_ft * ISOLATED_POLE_FACTOR)
-        # Both ends of §1806.3.4, and the verdict is only published where they agree.
+        lateral = soil.lateral_bearing_psf_per_ft
+        plain_ends = pole.needs(shear_lb, height_ft, lateral)
+        doubled_ends = pole.needs(shear_lb, height_ft, lateral * ISOLATED_POLE_FACTOR)
+        plain, doubled = max(plain_ends), max(doubled_ends)
+        pivot = PIVOT_RATIO_BAND[plain_ends.index(plain)]
+        governing_pivot = pivot
+        verdict_plain = verdict(plain_ends, total_embedment_ft)
+        verdict_doubled = verdict(doubled_ends, total_embedment_ft)
         embed_note = (f"{plain:.2f}' of embedment ({doubled:.2f}' at §1806.3.4's "
-                      f"isolated-pole double) against the {embedment_ft:.2f}' it has")
+                      f"isolated-pole double) against the {total_embedment_ft:.2f}' it has")
+
+        def common(depth: float) -> str:
+            return (f"P {shear_lb:,.0f} lb ASD at h {height_ft:.2f}' above grade on a "
+                    f"{diameter_ft:.2f}' round{pole.citation(depth, pivot)}")
+
         if not claimed:
             # An authored claim this module cannot honour is a defect in the house whether
             # or not the band happens to turn on it today, so it is raised before the test.
             if pole_refusal is not None:
                 missing.append(pole_refusal)
-            if (plain <= embedment_ft + _TOLERANCE_FT) == (doubled <= embedment_ft
-                                                           + _TOLERANCE_FT):
+            # Published on the table's own S1 only where every end agrees: both pivot ends,
+            # and — the verdict being monotone in S1 — §1806.3.4's double with them.
+            if verdict_plain is True or (verdict_plain is False and verdict_doubled is False):
                 states.append(LimitState(
-                    "embedment, non-constrained", plain, embedment_ft, "ft",
-                    f"IBC 2018 §1807.3.2.1 at S1 = "
-                    f"{soil.lateral_bearing_psf_per_ft:.0f} psf/ft (Table 1806.2 class "
-                    f"{soil.ibc_class}) taken at d/3, P {shear_lb:,.0f} lb ASD at h "
-                    f"{height_ft:.2f}' above grade on a {diameter_ft:.2f}' round. "
-                    f"§1806.3.4's isolated-pole doubling would need {doubled:.2f}' and "
-                    f"does not change the verdict, so it is not claimed"))
-            # ** THE TWO ENDS DISAGREE, SO THE VERDICT TURNS ON A JUDGEMENT ABOUT THE
-            # STRUCTURE. ** The house may make it, on `Post.isolated_pole_basis`, and then
-            # this module grades the doubled formula and says in the citation that it did.
-            # A reader may never see a passing embedment here without learning §1806.3.4
-            # was invoked and on whose statement.
-            elif pole_basis is not None:
+                    "embedment, non-constrained", plain, total_embedment_ft, "ft",
+                    f"IBC 2018 §1807.3.2.1 at S1 = {lateral:.0f} psf/ft (Table 1806.2 "
+                    f"class {soil.ibc_class}) taken at d/3, {common(plain)}. §1806.3.4's "
+                    f"isolated-pole doubling would need {doubled:.2f}' and does not change "
+                    f"the verdict, so it is not claimed"))
+            elif verdict_plain is None:
+                missing.append(band_straddle(plain_ends, total_embedment_ft, "S1"))
+            # ** THE TWO ENDS OF §1806.3.4 DISAGREE, SO THE VERDICT TURNS ON A JUDGEMENT
+            # ABOUT THE STRUCTURE. ** A house may make it on `Post.isolated_pole_basis`; the
+            # citation then says so and quotes it.
+            elif pole_basis is not None and verdict_doubled is not None:
+                claim_used = True
                 states.append(LimitState(
-                    "embedment, non-constrained", doubled, embedment_ft, "ft",
+                    "embedment, non-constrained", doubled, total_embedment_ft, "ft",
                     f"IBC 2018 §1807.3.2.1 at 2 S1 — §1806.3.4's ISOLATED-POLE DOUBLING, "
-                    f"CLAIMED BY THIS HOUSE and not derived here: "
-                    f"{2 * soil.lateral_bearing_psf_per_ft:.0f} psf/ft against Table "
-                    f"1806.2 class {soil.ibc_class}'s "
-                    f"{soil.lateral_bearing_psf_per_ft:.0f}, taken at d/3, P "
-                    f"{shear_lb:,.0f} lb ASD at h {height_ft:.2f}' above grade on a "
-                    f"{diameter_ft:.2f}' round. The price of the doubling is 1/2\" of "
-                    f"lateral motion at the ground surface under short-term load; on the "
-                    f"table's own S1 this column would need {plain:.2f}' and has "
-                    f"{embedment_ft:.2f}'. The claim's basis: {pole_basis}"))
+                    f"CLAIMED BY THIS HOUSE and not derived here: {2 * lateral:.0f} psf/ft "
+                    f"against Table 1806.2 class {soil.ibc_class}'s {lateral:.0f}, taken at "
+                    f"d/3, {common(doubled)}. The price of the doubling is 1/2\" of lateral "
+                    f"motion at the ground surface under short-term load; on the table's own S1 "
+                    f"this column would need {plain:.2f}' and has "
+                    f"{total_embedment_ft:.2f}'. The claim's basis: {pole_basis}"))
+            elif pole_basis is not None:
+                missing.append(band_straddle(doubled_ends, total_embedment_ft, "2 S1"))
             elif pole_refusal is None:
                 missing.append(
                     f"a judgement on IBC §1806.3.4: the embedment needs {plain:.2f}' at "
                     f"the table's lateral bearing and {doubled:.2f}' at the isolated-pole "
-                    f"double, and this column has {embedment_ft:.2f}' — so the verdict "
-                    f"turns on whether a 1/2\" lateral motion at grade harms what stands "
-                    f"on it, which is a judgement about the structure and not about the "
-                    f"soil")
-        notes.append(
-            f"EMBEDMENT is measured from Site.grade ({grade_ft:+.2f}') to the top of "
-            f"{getattr(pad, 'tag', 'the base')} ({base_top_ft:+.2f}'), i.e. "
-            f"{embedment_ft:.2f}'. The pad's own thickness below that is NOT counted as "
-            f"embedment: §1807.3.2.1 is about a shaft turning in soil, and a footing under "
-            f"it resists by a different mechanism the formula does not describe.")
+                    f"double, and this column has {total_embedment_ft:.2f}' — so the "
+                    f"verdict turns on whether a 1/2\" lateral motion at grade harms what "
+                    f"stands on it, which is a judgement about the structure and not about "
+                    f"the soil")
+        notes.append(pole.note(grade_ft, base_top_ft, shaft_embedment_ft,
+                               total_embedment_ft, plain, pivot))
 
     # --- the SPREAD or COMBINED base ----------------------------------------------------
     # Gravity at SERVICE, lateral at ASD: IBC §1605.3's basis, not the strength basis
@@ -424,15 +408,19 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
         f"factorisation the demand was actually built from, which is why the shear is "
         f"carried out of that module rather than back-solved here.",
         "NOT GRADED, and each is a real question: how the base moment SPLITS between the "
-        "buried shaft and the pad (a soil-structure stiffness problem, and the reason only "
-        "one mechanism is graded above); the foundation's rotational STIFFNESS, which is "
-        "what the sway magnifier in `deck_post` implicitly assumes is infinite; group "
-        "effect with the pier line beside it; and passive resistance on the pad's own "
-        "faces, which is neglected and is the conservative direction.",
+        "buried shaft and the pad as ALTERNATIVE mechanisms (a soil-structure stiffness "
+        "problem — counting the pad as part of the rigid pole above does not answer it); "
+        "the foundation's rotational STIFFNESS, which is what the sway magnifier in "
+        "`deck_post` implicitly assumes is infinite; and group effect with the pier line "
+        "beside it.",
         (f"IBC §1806.3.4's doubling IS CLAIMED on this column, and the limit state above "
          f"is graded at 2 S1 because of it. A 1/2\" lateral motion at the ground surface "
          f"under short-term load is the price, and the house's statement that this "
          f"structure tolerates it is: {pole_basis}"
+         if claim_used else
+         f"IBC §1806.3.4's doubling is AUTHORED on this column and NOT USED: the verdict "
+         f"holds on Table 1806.2's own S1, so the claim buys nothing and is a stale "
+         f"declaration to withdraw. It reads: {pole_basis}"
          if pole_basis is not None else
          "IBC §1806.3.4's doubling is NOT claimed wherever it would change the verdict. A "
          "1/2\" lateral motion at the ground surface is the price of it, and whether that "
@@ -446,8 +434,9 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
             basis_version=BASIS_VERSION, basis=BASIS, status=Status.INCOMPLETE,
             summary=f"{pier.tag}: the base is assumed FIXED and this check could not "
                     f"finish confirming it",
-            inputs=_inputs(pier, shear_lb, height_ft, embedment_ft, least_ft, area_ft2,
-                           soil, eccentricity_ft, pole_basis is not None),
+            inputs=_inputs(pier, shear_lb, height_ft, shaft_embedment_ft,
+                           total_embedment_ft, pole, governing_pivot, least_ft, area_ft2,
+                           soil, eccentricity_ft, claim_used),
             limit_states=tuple(states), missing=tuple(missing),
             notes=tuple(notes), element_tags=tags)
 
@@ -458,12 +447,70 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
         basis_version=BASIS_VERSION, basis=BASIS,
         status=Status.OVER if over else Status.OK,
         summary=(f"{pier.tag}: the FIXED base `deck_post` assumes, graded — "
-                 f"{embedment_ft:.2f}' of embedment and a {least_ft:.2f}' base under "
+                 f"{total_embedment_ft:.2f}' of embedment and a {least_ft:.2f}' base under "
                  f"{shear_lb:,.0f} lb of ASD shear; {worst.name} governs at "
                  f"{worst.demand / worst.capacity:.2f}"),
-        inputs=_inputs(pier, shear_lb, height_ft, embedment_ft, least_ft, area_ft2, soil,
-                       eccentricity_ft, pole_basis is not None),
+        inputs=_inputs(pier, shear_lb, height_ft, shaft_embedment_ft, total_embedment_ft,
+                       pole, governing_pivot, least_ft, area_ft2, soil, eccentricity_ft,
+                       claim_used),
         limit_states=tuple(states), notes=tuple(notes), element_tags=tags)
+
+
+def _pole(ctx: EngineeringContext, pier: _Pier, pad,  # type: ignore[no-untyped-def]
+          diameter_ft: float) -> Pole:
+    """The buried pole, with the pad CREDITED only where it is earned as part of it.
+
+    The claim is that shaft and pad are one rigid body — one placement, and the column's
+    dowels developed into the pad. ``deck_post``'s dowel anchorage state is what grades the
+    second half; over or ungraded, the pad is refused and the shaft stands alone.
+    """
+    from typehaus.engineering.deck_post import _dowel_anchorage, _fc_psi, cage_for
+
+    tag = getattr(pad, "tag", None) or "the base"
+    thickness = _pad_thickness_ft(pad)
+    width, how = _pad_projected_width_ft(pier, pad)
+    cage = cage_for(pier)
+    anchorage = _dowel_anchorage(pier, cage, _fc_psi(pier)) if cage is not None else None
+    refusal = None
+    if anchorage is None:
+        refusal = (f"no dowel anchorage into {tag} is graded (`deck_post`), so nothing earns "
+                   f"the claim that the pad and the shaft are one body")
+    elif not anchorage.ok:
+        refusal = (f"the column's dowels do not develop in {tag} (`deck_post` dowel "
+                   f"anchorage, d/c {anchorage.ratio:.2f}), so the pad does not turn with "
+                   f"the shaft")
+    elif thickness <= 0.0 or width is None:
+        refusal = f"{tag}'s thickness or plan width does not resolve"
+    return Pole(pad_tag=tag, shaft_ft=diameter_ft, thickness_ft=thickness, width_ft=width,
+                width_how=how, refusal=refusal,
+                anchorage_ratio=anchorage.ratio if anchorage is not None else None)
+
+
+def _pad_projected_width_ft(pier: _Pier, pad) -> tuple[float | None, str]:  # type: ignore[no-untyped-def]
+    """The pad's width NORMAL to the motion — ``B`` in the effective width.
+
+    The motion is along ``base_axis_of`` (the direction the base moment varies the bearing
+    in). Where no axis resolves — a guard push acts "in any direction" — the LEAST plan
+    dimension, the convention :func:`_pad_plan_ft` documents.
+    """
+    from typehaus.engineering.roof_moment import base_axis_of
+
+    outline = getattr(pad, "outline", None)
+    if outline:
+        xs = [p.xy_m[0] / 0.3048 for p in outline]
+        ys = [p.xy_m[1] / 0.3048 for p in outline]
+        east_west, north_south = max(xs) - min(xs), max(ys) - min(ys)
+        axis = base_axis_of(pier.tag)
+        if axis == "x":
+            return north_south, "its N-S dimension, normal to the governing E-W motion"
+        if axis == "y":
+            return east_west, "its E-W dimension, normal to the governing N-S motion"
+        return (min(east_west, north_south),
+                "its LEAST plan dimension, no governing axis resolving")
+    width_in = getattr(getattr(pad, "width", None), "inches", None)
+    if width_in:
+        return float(width_in) / 12.0, "its width"
+    return None, "no plan width resolves"
 
 
 def _base_top_ft(pad) -> float | None:  # type: ignore[no-untyped-def]
@@ -479,16 +526,23 @@ def _pad_thickness_ft(pad) -> float:  # type: ignore[no-untyped-def]
     return float(thickness.inches) / 12.0 if thickness is not None else 0.0
 
 
-def _inputs(pier: _Pier, shear_lb: float, height_ft: float, embedment_ft: float | None,
+def _inputs(pier: _Pier, shear_lb: float, height_ft: float, shaft_ft: float | None,
+            total_ft: float | None, pole: Pole | None, pivot: float | None,
             least_ft: float, area_ft2: float, soil, eccentricity_ft: float,
             pole_claimed: bool = False,
             ) -> tuple[Quantity, ...]:  # type: ignore[no-untyped-def]
+    credited = pole is not None and pole.credited
     return tuple(q for q in (
         Quantity("column_diameter", pier.diameter_in, "in", 0.5),
         Quantity("lateral_shear_asd", shear_lb, "lb", 1.0),
         Quantity("shear_height_above_grade", height_ft, "ft", 0.01),
-        Quantity("embedment", embedment_ft, "ft", 0.01)
-        if embedment_ft is not None else None,
+        # `h` comes off the SHAFT; the capacity is the TOTAL. Both move a seal.
+        Quantity("shaft_embedment", shaft_ft, "ft", 0.01) if shaft_ft is not None else None,
+        Quantity("embedment", total_ft, "ft", 0.01) if total_ft is not None else None,
+        Quantity("pad_projected_width", pole.width_ft, "ft", 0.01)
+        if credited and pole is not None and pole.width_ft is not None else None,
+        Quantity("pivot_ratio", pivot, "-", 0.0001)
+        if credited and pivot is not None else None,
         Quantity("base_least_dimension", least_ft, "ft", 0.01),
         Quantity("base_area", area_ft2, "ft2", 0.01),
         Quantity("base_moment_asd", pier.wind_base_moment_lb_ft, "lb-ft", 1.0),

@@ -9,44 +9,35 @@ from __future__ import annotations
 
 import pytest
 
-from typehaus.engineering.column_base import (
-    ISOLATED_POLE_FACTOR,
-    KIND,
-    required_embedment_ft,
-)
+from typehaus.engineering.column_base import ISOLATED_POLE_FACTOR, KIND
 from typehaus.engineering.item import Status
+from typehaus.engineering.pole_embedment import (
+    PIVOT_RATIO_BAND,
+    effective_width_ft,
+    required_embedment_ft,
+    required_embedment_stepped_ft,
+)
 
-#: §4's table. ``(embedment ft, needs at S1, needs at 2 S1, status)``.
+#: §4's table, basis 4: ``(shaft ft, pole ft, B ft, needs at S1, needs at 2 S1, status)``.
 #:
-#: ** THE TWO CANOPY ROWS MOVED TWICE, AND THE SECOND TIME THEY MOVED BACK TOGETHER. **
-#: §7's shear split (2026-09-19) took `PT-BW-RE` from 8.08' of required embedment to 6.25' and
-#: `PT-BW-RNE` from 8.08' to 7.74' — they stopped sharing a demand, because a relative-rigidity
-#: split gives the SHORT column the larger share. §6a (2026-09-20) put both bases on one plane
-#: at -10'-2", which makes them the same column again: equal shaft, equal `3EI/h³`, 50% each of
-#: the governing E-W case, 7.07' needed against 7.33'. Both publish at the table's own S1 with
-#: §1806.3.4's doubling unclaimed. The four landing columns carry a guard load delivered at a
-#: rail rather than at a diaphragm, so neither revision reaches them.
+#: ** THE CAPACITY IS THE POLE SINCE 2026-09-20 — SHAFT PLUS PAD, GRADE TO PAD BOTTOM. ** The
+#: pad is cast with the shaft and its dowels develop in it, so it turns with the shaft (§9).
+#: Every verdict moved and almost none of it through the pad's WIDTH (b_eff 1.006-1.070);
+#: it is the datum. Canopy 0.96 -> 0.85, landing W/E 0.73 -> 0.62, and the garage-side
+#: landing pair stopped straddling §1806.3.4 — 0.96/0.98 on Table 1806.2's own S1 — so the
+#: owner's isolated-pole claim was withdrawn (§6e).
 _ORACLE = {
-    "PT-BW-RE": (7.33, 7.07, 5.40, Status.OK),
-    "PT-BW-RNE": (7.33, 7.07, 5.40, Status.OK),
-    "PT-BW-W": (6.12, 4.45, 3.39, Status.OK),
-    "PT-BW-E": (6.12, 4.45, 3.39, Status.OK),
-    # ** AND THE LANDING PAIR PUBLISHES SINCE 2026-09-20, ON A CLAIM AND NOT ON CONCRETE. **
-    # 3.50' still STRADDLES the band — the required depths below do not move, and that is
-    # the point — but `Post.isolated_pole_basis` now carries the owner's §1806.3.4 judgement
-    # on these two, so the record grades the DOUBLED formula and says so in its citation.
-    # `north_entry_frame._ISOLATED_POLE_BASIS` holds the statement and §6e of the note holds
-    # the argument. Deepening was the wrong lever: 4.45' drags `PD-BW-GE` into
-    # `PR-G-HYDRANT-CW`'s influence cone.
-    "PT-BW-GW": (3.50, 4.45, 3.39, Status.OK),
-    "PT-BW-GE": (3.50, 4.45, 3.39, Status.OK),
+    "PT-BW-RE": (7.33, 8.33, 1.5, 7.06, 5.36, Status.OK),
+    "PT-BW-RNE": (7.33, 8.33, 2.0, 7.04, 5.33, Status.OK),
+    "PT-BW-W": (6.12, 7.12, 1.5, 4.39, 3.30, Status.OK),
+    "PT-BW-E": (6.12, 7.12, 1.5, 4.39, 3.30, Status.OK),
+    "PT-BW-GW": (3.50, 4.50, 2.0, 4.33, 3.21, Status.OK),
+    "PT-BW-GE": (3.50, 4.50, 1.5, 4.39, 3.30, Status.OK),
 }
 
-#: The two columns that claim IBC §1806.3.4's isolated-pole doubling, and the ONLY two. The
-#: canopy pair is decided on Table 1806.2's own S1 at `ROOF_COLUMN_BASE_FT`; claiming it
-#: there would spend a judgement on a question already closed, and the note's §6a counts
-#: "the doubling is not claimed anywhere on the canopy" among the reasons for that plane.
-_CLAIMS_THE_DOUBLING = frozenset({"PT-BW-GW", "PT-BW-GE"})
+#: The columns that claim IBC §1806.3.4's doubling: NONE since basis 4. The mechanism and its
+#: two refusals are still tested below; the house simply no longer needs it.
+_CLAIMS_THE_DOUBLING: frozenset[str] = frozenset()
 
 #: §2's demand table and §3's iteration: ``(P lb, h ft)``. One entry for the two canopy
 #: columns, because §6a made them identical — see the note above.
@@ -100,38 +91,41 @@ def test_a_deeper_pole_needs_more_not_less() -> None:
 @pytest.mark.parametrize("tag", sorted(_ORACLE))
 def test_the_record_reproduces_the_notes_verdict(tag, catlin_ctx) -> None:
     """§4's table, on the landed house."""
-    embedment, needs, needs_doubled, status = _ORACLE[tag]
+    shaft, pole, width, needs, needs_doubled, status = _ORACLE[tag]
     record = catlin_ctx.engineering[f"{KIND}/{tag}"]
     assert record.status is status, record.summary
+    assert not record.missing, record.missing
     inputs = {q.name: q.value for q in record.inputs}
-    assert inputs["embedment"] == pytest.approx(embedment, abs=0.01)
-
-    if status is Status.INCOMPLETE:
-        # The band convention: the two ends straddle the embedment this column has, so the
-        # verdict turns on a judgement about the STRUCTURE — whether 1/2" of motion at grade
-        # matters — and the record names it instead of picking a side.
-        assert needs_doubled < embedment < needs
-        assert any("1806.3.4" in text for text in record.missing), record.missing
-        assert not [s for s in record.limit_states if s.name.startswith("embedment")]
-        return
+    assert inputs["shaft_embedment"] == pytest.approx(shaft, abs=0.01)
+    assert inputs["embedment"] == pytest.approx(pole, abs=0.01)
+    assert inputs["pad_projected_width"] == pytest.approx(width, abs=0.01)
+    assert inputs["pivot_ratio"] == pytest.approx(PIVOT_RATIO_BAND[0], abs=1e-4)
 
     state = next(s for s in record.limit_states if s.name.startswith("embedment"))
-    assert state.capacity == pytest.approx(embedment, abs=0.01)
-    if tag in _CLAIMS_THE_DOUBLING:
-        # ** THE VERDICT IS PUBLISHED BECAUSE THE HOUSE MADE THE JUDGEMENT, NOT BECAUSE THE
-        # TWO ENDS AGREED. ** They still straddle, which is exactly why the claim is load
-        # bearing — and the citation has to say so, or a reader sees a passing embedment
-        # and never learns §1806.3.4 was invoked or on whose word.
-        assert needs_doubled < embedment < needs
-        assert state.demand == pytest.approx(needs_doubled, abs=0.01)
-        assert "§1806.3.4" in state.citation and "CLAIMED BY THIS HOUSE" in state.citation
-        assert "Owner, 2026-09-20" in state.citation
-        assert not record.missing, record.missing
-        return
+    assert state.capacity == pytest.approx(pole, abs=0.01)
     assert state.demand == pytest.approx(needs, abs=0.01)
+    if tag in _CLAIMS_THE_DOUBLING:
+        assert "CLAIMED BY THIS HOUSE" in state.citation
+        return
     # Where nothing is claimed, the verdict is published only because both ends agreed.
-    assert (needs <= embedment) == (needs_doubled <= embedment)
+    assert (needs <= pole) == (needs_doubled <= pole)
     assert "is not claimed" in state.citation
+    assert "credited as part of the pole" in state.citation
+
+
+def test_h_is_measured_off_the_shaft_and_the_capacity_is_the_pole(catlin_ctx) -> None:
+    """§9d's trap. The arm runs from the pad TOP, so `h` takes the SHAFT's buried length off
+    it; the capacity is the TOTAL. Collapse the two and `h` drops a foot on every column."""
+    from typehaus.engineering.roof_moment import base_shear_of
+
+    for tag in _ORACLE:
+        inputs = {q.name: q.value for q in catlin_ctx.engineering[f"{KIND}/{tag}"].inputs}
+        _shear, arm = base_shear_of(tag)
+        assert inputs["shear_height_above_grade"] == pytest.approx(
+            arm - inputs["shaft_embedment"], abs=1e-9), tag
+        assert inputs["embedment"] - inputs["shaft_embedment"] == pytest.approx(1.0), tag
+    landing = {q.name: q.value for q in catlin_ctx.engineering[f"{KIND}/PT-BW-GW"].inputs}
+    assert landing["shear_height_above_grade"] == pytest.approx(4.54, abs=0.01)
 
 
 def test_the_pad_is_reported_as_not_being_the_mechanism(catlin_ctx) -> None:
@@ -311,31 +305,90 @@ def test_a_sustained_lateral_case_refuses_the_claim() -> None:
     assert _pole_claim(_StubCtx(post), quiet) == ("the owner says so", None)
 
 
-def test_the_canopy_pair_does_not_claim_the_doubling(catlin_ctx) -> None:
-    """§6a's plane was chosen partly so it would not have to, and the record must show it.
-
-    A judgement spent on a question already closed is a judgement a reviewer has to evaluate
-    for nothing — and it would leave the canopy's verdict resting on an owner's statement
-    where it rests on Table 1806.2 instead.
-    """
-    for tag in ("PT-BW-RE", "PT-BW-RNE"):
+def test_no_column_claims_the_doubling(catlin_ctx) -> None:
+    """§6a's plane was chosen so the canopy would not need §1806.3.4, and §6e WITHDREW the
+    landing pair's claim once basis 4 made it buy nothing. A claim left where it does no work
+    is a stale declaration, so no column may carry one."""
+    for tag in _ORACLE:
         record = catlin_ctx.engineering[f"{KIND}/{tag}"]
         assert any("is NOT claimed" in note for note in record.notes), tag
         state = next(s for s in record.limit_states if s.name.startswith("embedment"))
         assert "CLAIMED BY THIS HOUSE" not in state.citation, tag
+        inputs = {q.name: q.value for q in record.inputs}
+        assert inputs["isolated_pole_doubling"] == 0.0, tag
+        assert getattr(catlin_ctx.plan.by_tag(tag), "isolated_pole_basis", None) is None, tag
 
 
-def test_the_claimed_record_says_so_in_its_notes_and_its_fingerprint(catlin_ctx) -> None:
-    """A reader may never see a passing embedment without learning §1806.3.4 was invoked.
+# --- §9: the pad as part of the pole --------------------------------------------------------
 
-    Three places, and each reaches a different reader: the limit state's CITATION (the calc
-    sheet), a NOTE quoting the basis (the reviewer's narrative), and an INPUT (the
-    fingerprint, so withdrawing the claim stales any seal pinned to it).
-    """
-    record = catlin_ctx.engineering[f"{KIND}/PT-BW-GW"]
-    assert any("IS CLAIMED on this column" in note for note in record.notes)
-    assert any("Owner, 2026-09-20" in note for note in record.notes)
-    inputs = {q.name: q.value for q in record.inputs}
-    assert inputs["isolated_pole_doubling"] == 1.0
-    assert {q.name: q.value for q in
-            catlin_ctx.engineering[f"{KIND}/PT-BW-RE"].inputs}["isolated_pole_doubling"] == 0.0
+
+def test_a_constant_width_profile_reproduces_the_code_formula_exactly() -> None:
+    """§9c's oracle property. With ``B = b`` the pad's term is ZERO, not small, so the stepped
+    solve IS Eq. 18-1 for any pivot ratio. Equality, not approx: the reduction is algebraic."""
+    for shear, height, width, lateral in ((496.1, 7.489, 1.0, 150.0), (200.0, 4.54, 1.0, 300.0),
+                                         (613.0, 7.70, 1.5, 150.0)):
+        code = required_embedment_ft(shear, height, width, lateral)
+        for pivot in (*PIVOT_RATIO_BAND, 0.5, 0.85, 1.0):
+            assert effective_width_ft(code, width, width, 1.0, pivot) == width
+            assert required_embedment_stepped_ft(
+                shear, height, width, width, 1.0, lateral, pivot) == code
+
+
+def test_the_pivot_band_is_what_eq_18_1_implies() -> None:
+    """§9b: the 4.36 term implies 0.91743, the 2.34 term 0.92450."""
+    assert PIVOT_RATIO_BAND[0] == pytest.approx(0.91743, abs=1e-5)
+    assert PIVOT_RATIO_BAND[1] == pytest.approx(0.92450, abs=1e-5)
+
+
+def test_one_effective_width_by_hand() -> None:
+    """§9c: `PT-BW-GW` at d 4.33', γ 0.91743 — F 0.0700, b_eff 1.070'."""
+    assert effective_width_ft(4.33, 1.0, 2.0, 1.0, PIVOT_RATIO_BAND[0]) == pytest.approx(
+        1.0700, abs=0.0005)
+    # A pivot above the pad top credits nothing: §9e's canopy at γ 0.85.
+    assert effective_width_ft(7.072, 1.0, 1.5, 1.0, 0.85) == 1.0
+
+
+@pytest.mark.parametrize("case,width,pivot,expected", [
+    ("landing", 2.0, 0, 4.330), ("landing", 2.0, 1, 4.320), ("landing", 1.5, 0, 4.389),
+    ("PT-BW-RE", 1.5, 0, 7.056), ("PT-BW-RNE", 2.0, 0, 7.039),
+])
+def test_the_stepped_iteration_reproduces_the_note(case, width, pivot, expected) -> None:
+    """§9d-e, at S1: `PT-BW-GW` (2.0') at both ends, `-GE` (1.5'), and the canopy pair."""
+    shear, height = _DEMAND[case]
+    assert required_embedment_stepped_ft(
+        shear, height, 1.0, width, 1.0, _S1_PSF_PER_FT, PIVOT_RATIO_BAND[pivot]
+    ) == pytest.approx(expected, abs=0.002)
+
+
+@pytest.mark.parametrize("tag", sorted(_ORACLE))
+def test_no_verdict_flips_across_the_wider_pivot_band(tag) -> None:
+    """§9e: γ in [0.85, 1.00] moves no verdict — the pad's width never decides one here."""
+    _shaft, pole, width, *_ = _ORACLE[tag]
+    shear, height = _DEMAND.get(tag, _DEMAND["landing"])
+    for pivot in (0.85, *PIVOT_RATIO_BAND, 1.0):
+        needs = required_embedment_stepped_ft(shear, height, 1.0, width, 1.0, _S1_PSF_PER_FT,
+                                              pivot)
+        assert needs <= pole, (tag, pivot, needs)
+
+
+def test_the_pad_credit_is_refused_without_the_dowel_anchorage(catlin_ctx, monkeypatch) -> None:
+    """§6g: the pad is part of the pole only because the dowels develop in it. Over or
+    ungraded, the credit is refused and the shaft is graded alone — never silently kept."""
+    from typehaus.engineering import deck_post
+    from typehaus.engineering.column_base import _pad_of, _pole
+    from typehaus.engineering.item import LimitState
+    from typehaus.engineering.pier_basis import cast_piers
+
+    pier = next(p for p in cast_piers(catlin_ctx) if p.tag == "PT-BW-GW")
+    pad = _pad_of(catlin_ctx, pier)
+    assert _pole(catlin_ctx, pier, pad, 1.0).credited
+
+    monkeypatch.setattr(deck_post, "_dowel_anchorage", lambda *_a: LimitState(
+        "dowel anchorage into the base", 10.0, 8.0, "in", "stub"))
+    refused = _pole(catlin_ctx, pier, pad, 1.0)
+    assert not refused.credited and "do not develop" in (refused.refusal or "")
+    assert refused.needs(200.0, 4.54, _S1_PSF_PER_FT) == (
+        required_embedment_ft(200.0, 4.54, 1.0, _S1_PSF_PER_FT),) * 2
+
+    monkeypatch.setattr(deck_post, "_dowel_anchorage", lambda *_a: None)
+    assert "no dowel anchorage" in (_pole(catlin_ctx, pier, pad, 1.0).refusal or "")
