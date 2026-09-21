@@ -35,6 +35,7 @@ from typehaus import (
     ft, inch, pt,
 )
 
+from params.column_heads import ABU66SS_HEAD, HGAM10_PAIR_HEAD
 from params.foundations import SITE_GRADE
 from plan.storeys.garage import (
     GARAGE_X_WEST, GARAGE_Y_SOUTH, SERVICE_DOOR_OFFSET, SERVICE_DOOR_WIDTH,
@@ -556,6 +557,12 @@ def _pad_outline(x_ft, y_ft, side_in, along_in=None):
             pt(ft(x_ft) - half_x, ft(y_ft) + half_y))
 
 
+#: What ties each head to its beam (`params/column_heads.py`). The west pair carry a 6x6
+#: canopy column on an ABU66SS and hang the seat beam off it; the rest take the HGAM10 pair.
+_HEAD_CONNECTORS = {"PT-BW-W": ABU66SS_HEAD, "PT-BW-GW": ABU66SS_HEAD,
+                    "PT-BW-E": HGAM10_PAIR_HEAD, "PT-BW-GE": HGAM10_PAIR_HEAD,
+                    "PT-BW-RE": HGAM10_PAIR_HEAD, "PT-BW-RNE": HGAM10_PAIR_HEAD}
+
 FOOTINGS = []
 #: The house-side pads run 18" north-south rather than the 24" their square drew, because
 #: `FT-B-N1`..`-N4` — the basement's own north strip footing, on this same -9'-9 7/16" plane —
@@ -589,6 +596,7 @@ for _uid, _tag, _x, _height, _top in (
 ):
     PIERS.append(Post(
         uid=_uid, tag=_tag, position=pt(ft(_x), ft(PIER_LINE_Y_FT)),
+        head_connector=_HEAD_CONNECTORS[_tag],
         # `"12 round"`. Never a nominal form like "12x12": that matches `_RE_NOMINAL` in
         # resolve/framing/profiles.py, misses LUMBER_ACTUAL and silently resolves to 1.5x5.5.
         size="12 round", height=ft(_height), assembly="PIER_CONCRETE_12",
@@ -676,6 +684,7 @@ for _uid, _tag, _x, _pad_in, _top in (
 ):
     PEDESTALS.append(Post(
         uid=_uid, tag=_tag, position=pt(ft(_x), ft(GARAGE_SEAT_Y_FT)), size="12 round",
+        head_connector=_HEAD_CONNECTORS[_tag],
         height=ft(_top - (ROOF_COLUMN_BASE_FT if _tag in _DEEP_BASE_COLUMNS
                           else GARAGE_FOOTING_TOP_FT)), assembly="PIER_CONCRETE_12",
         vertical_reinforcement='(4) #5 vertical, #3 ties @ 10" o.c.',

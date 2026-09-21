@@ -255,6 +255,28 @@ def _panel(ctx: EngineeringContext, wall_tag: str, cases: list[FrameCase],
         f"design and not a product rating. {allowable.citation.split(':')[0]}.")
 
 
+def column_head_reactions(ctx: EngineeringContext) -> dict[str, dict[str, float]]:
+    """``column tag -> {axis: ASD lb}`` — the diaphragm's share delivered to each column head.
+
+    The prop reaction ``column_head_joint`` grades the head connector against, exported
+    rather than back-solved (the ``roof_moment.base_shear_of`` doctrine). It is the column's
+    ``columns_governing`` share of the deck's shear, the same number ``roof_moment`` puts at
+    the roof plane; netting off the column's own drag reaction would reduce it, and is not
+    done. Runs the moment pass once, as :func:`compute` does.
+    """
+    roof_base_moments(ctx)
+    out: dict[str, dict[str, float]] = {}
+    for roof_tag in _declared(ctx):
+        for case in frame_cases_of(roof_tag):
+            for column, share in case.columns_governing.shares.items():
+                if column not in case.column_tags:
+                    continue
+                here = out.setdefault(column, {})
+                here[case.axis] = max(here.get(case.axis, 0.0),
+                                      share * case.diaphragm_shear_lb)
+    return out
+
+
 def _panels(cases: list[FrameCase]) -> set[str]:
     return {t for case in cases for t in case.panel_tags}
 

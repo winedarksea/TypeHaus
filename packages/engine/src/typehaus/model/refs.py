@@ -8,6 +8,8 @@ These are the union arms and selector helpers the dialect exposes as constructor
 
 from __future__ import annotations
 
+from pydantic import model_validator
+
 from typehaus.model.base import HausModel
 from typehaus.quantities import Length
 
@@ -411,3 +413,47 @@ class DiaphragmSpec(HausModel):
     #: Σ(Δ_c x) / (2W) — the chord-splice slip term of SDPWS 4.2.2, inches. Zero where the
     #: chord is continuous over the span and has no splice to slip.
     chord_splice_slip: Length | None = None
+
+
+class HeadConnector(HausModel):
+    """The published allowables of the part tying a column head to what it carries.
+
+    ``engineering/column_head_joint.py`` grades against these and may not read the hardware
+    catalog, so the house quotes them here (the ``FramingSpec.standoff_fastener_*``
+    precedent) and ``integrity.head_connector_agrees`` checks every number against the
+    catalog row for ``tie``. Not a ``PublishedCapacity``: that type mints no engineering
+    item by design, and this one is read by one.
+    """
+
+    #: The tie's model string as the hardware catalog knows it (``"HGAM10"``).
+    tie: str
+    #: Parts at the joint. A pair shares UPLIFT by symmetry; it never raises ``lateral_lb``.
+    tie_count: int = 1
+    #: Published allowable uplift per part, lb, at ``load_duration_factor``.
+    uplift_lb: float | None = None
+    #: Published allowable lateral per part, lb — the LOWER directional figure where two are
+    #: published. ``None`` where the document publishes no lateral value at all.
+    lateral_lb: float | None = None
+    #: The C_D already inside the published values (1.6 = the wind increase).
+    load_duration_factor: float = 1.0
+    #: The bearing part under the beam soffit, and its plan size, inches.
+    bearing: str | None = None
+    bearing_width_in: float | None = None
+    bearing_length_in: float | None = None
+    #: The document, table and row the numbers were read from.
+    source: str
+
+    @model_validator(mode="after")
+    def _numbers_are_sane(self) -> HeadConnector:
+        if not self.source.strip():
+            raise ValueError("HeadConnector.source must name the document it was read from")
+        if self.tie_count < 1 or self.load_duration_factor <= 0.0:
+            raise ValueError("HeadConnector.tie_count and load_duration_factor must be positive")
+        for name in ("uplift_lb", "lateral_lb", "bearing_width_in", "bearing_length_in"):
+            value = getattr(self, name)
+            if value is not None and value <= 0.0:
+                raise ValueError(f"HeadConnector.{name} must be positive or None")
+        if (self.bearing_width_in is None) != (self.bearing_length_in is None):
+            raise ValueError("HeadConnector bearing_width_in and bearing_length_in are "
+                             "authored together")
+        return self
