@@ -205,12 +205,15 @@ def test_a_line_voltage_run_reaches_the_panel_schedule(catlin_model):
     # no light at all and got two ED-T-LT-CAN3 on the walk plus one ED-T-LT-SCONCE-UD over
     # the bench (30 VA), and RM-M-BED gained ED-M-BED-LAMP, a mark G reading bar (18 VA).
     # 1,052.6 since 2026-09-16: LR-G-GABLE-N went from 16' level to 25.45' up the rake.
-    assert row["runs"] == 3 and row["fixtures"] == 42
-    assert row["connected_va"] == pytest.approx(1052.6, abs=0.05)
+    # 43 fixtures / 1,112.6 VA since 2026-09-20: RM-M-BED gained ED-M-BED-FAN, a mark N
+    # ceiling fan at 60 VA (motor AND light kit — that is what `load_va` carries on a fan).
+    # Its switch is ED-T-SWITCH, which like the dimmers below carries no `load_va`.
+    assert row["runs"] == 3 and row["fixtures"] == 43
+    assert row["connected_va"] == pytest.approx(1112.6, abs=0.05)
 
     panel = {r["circuit"]: r for r in panel_schedule(catlin_model)}["CKT-LT-MAIN"]
-    assert panel["connected_va"] == pytest.approx(1052.6, abs=0.5)
-    # 1,053 VA of a 15A branch: under the 1,440 VA an NEC 210.19(A)(1) continuous load may
+    assert panel["connected_va"] == pytest.approx(1112.6, abs=0.5)
+    # 1,113 VA of a 15A branch: under the 1,440 VA an NEC 210.19(A)(1) continuous load may
     # take. The three switches added with those fixtures are all ED-T-SWITCH-DIM, which
     # carries no load_va — a dimmer is free on the circuit and costs only on the estimate.
     assert panel["connected_va"] <= panel["breaker_amps"] * 120 * 0.8
