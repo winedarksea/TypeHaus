@@ -1481,6 +1481,10 @@ HGAM10_MASONRY_GUSSET = StructuralHardware(
     # this house frames in and which is published here (unlike the hurricane ties above,
     # Simpson do print both species for the masonry connectors).
     #
+    # ** F1 630, NOT 870 — RE-VERIFIED 2026-09-21. ** The 870 (and F2 950) that search results
+    # quote is FL11473-R0's (report SIM200802, 2008) note 3, superseded. R4 (sealed
+    # 2017-10-19) and R5 (sealed 2020-10-13) both print 585 / 630 / 795 into, 460 away.
+    #
     # F2 is directional and the table says so in footnote 5: 795 lbf for force INTO the
     # connector, 460 lbf away from it. **The lower, away-from figure is recorded**, because
     # nothing in this model orients a gusset against a load direction, and a value that only
@@ -1529,7 +1533,11 @@ HGAM10_MASONRY_GUSSET = StructuralHardware(
                   "uplift 585, F1 630, F2 795 lbf INTO the connector / 460 lbf away "
                   "(footnote 5) — the 460 is recorded. Footnote 1: already increased 60 % "
                   "for wind. Footnote 4: a min. 2-1/2 in member thickness is required where "
-                  "anchors are installed on each side. Footnote 8: min f'c 2,500 psi"),
+                  "anchors are installed on each side. Footnote 8: min f'c 2,500 psi. "
+                  "Same row in FL11473-R5 (sealed 2020-10-13); R0's 870/950 is superseded. "
+                  "§9 item 4: combined directions by linear interaction <= 1.0. "
+                  "https://www.floridabuilding.org/upload/PR_Tech_Docs/"
+                  "FL11473_R4_AE_SIM201701%20Sealed%202017-10-19.pdf"),
     ),
 )
 

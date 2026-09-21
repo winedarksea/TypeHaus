@@ -440,17 +440,17 @@ suppress = [
   "structural.tiered_retaining:W-RG-WEST-BALCONY",
   "structural.tiered_retaining:W-RG-EAST-BALCONY",
 
-  # ** structural.base_rotation:PT-BW-GW: 1 REAL FAIL, MEASURED 2026-09-20, THE DAY BASE
-  # STIFFNESS WAS FIRST CALCULATED. A GEOTECH REPORT OR A STIFFER BASE IS OWED. **
+  # ** structural.deck_tie:FS-BW-FLOOR: 1 REAL FAIL, MEASURED 2026-09-21, THE DAY THE LANDING
+  # WAS TIED TO THE GARAGE STEM. A SECOND TIE LINE (OR A DESIGNED TIE) IS OWED. **
   #
-  # The landing column's 4.5' pole turns in the ground: sway magnifier δ 1.456 at the STIFF
-  # end of the presumptive band (n_h 8.3 pci), past ACI 318-19 §6.2.5.3's 1.4, and a
-  # mechanism at the soft end. notes/column_base_rotation.md §3b. A measured n_h of about
-  # 9.2 pci closes it; deepening the pole alone does not (§7).
+  # It replaces `base_rotation:PT-BW-GW` (δ 1.456), which LEFT with the tie: the landing piers
+  # lean now. The HGAM10 pairs on the two carriers are OVER at 1.82 — not on the landing's own
+  # wind but on W-BW-SCREEN's 981 lb arriving 1'-1 1/2" west of a tie line only 2'-4" long,
+  # and E-W wind 3'-9" south of it (1.60). notes/north_entry_piers.md §10d prices the options.
   #
-  # ** A DEBT WITH A NUMBER ON IT: δ 1.456. ** The permit line BLOCKS, so this hides nothing
-  # from either gate. Delete the line in the commit that changes the base or adds the report.
-  "structural.base_rotation:PT-BW-GW",
+  # ** A DEBT WITH A NUMBER ON IT: d/c 1.82. ** The permit line BLOCKS, so this hides nothing
+  # from either gate. Delete the line in the commit that adds the second tie line.
+  "structural.deck_tie:FS-BW-FLOOR",
 
   # ** mep.run_through_stud: CLOSED 2026-09-20 BY RETYPING THE WALLS. NOTHING SUPPRESSED. **
   #

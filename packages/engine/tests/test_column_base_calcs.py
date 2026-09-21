@@ -26,7 +26,12 @@ from typehaus.engineering.pole_embedment import (
 #: it is the datum. Canopy 0.96 -> 0.85, landing W/E 0.73 -> 0.62, and the garage-side
 #: landing pair stopped straddling §1806.3.4 — 0.96/0.98 on Table 1806.2's own S1 — so the
 #: owner's isolated-pole claim was withdrawn (§6e).
-_ORACLE = {
+#:
+#: ** THE FOUR LANDING ROWS ARE WORKED ARITHMETIC ONLY SINCE 2026-09-21. ** The landing is
+#: tied to the garage stem (`north_entry_piers.md` §10), its piers lean, and `column_base`
+#: no longer enumerates them. `_WORKED` keeps §9e's rows for the pure-function tests;
+#: `_ORACLE` is what the landed house must still publish.
+_WORKED = {
     "PT-BW-RE": (7.33, 8.33, 1.5, 7.06, 5.36, Status.OK),
     "PT-BW-RNE": (7.33, 8.33, 2.0, 7.04, 5.33, Status.OK),
     "PT-BW-W": (6.12, 7.12, 1.5, 4.39, 3.30, Status.OK),
@@ -34,6 +39,7 @@ _ORACLE = {
     "PT-BW-GW": (3.50, 4.50, 2.0, 4.33, 3.21, Status.OK),
     "PT-BW-GE": (3.50, 4.50, 1.5, 4.39, 3.30, Status.OK),
 }
+_ORACLE = {tag: _WORKED[tag] for tag in ("PT-BW-RE", "PT-BW-RNE")}
 
 #: The columns that claim IBC §1806.3.4's doubling: NONE since basis 4. The mechanism and its
 #: two refusals are still tested below; the house simply no longer needs it.
@@ -124,8 +130,6 @@ def test_h_is_measured_off_the_shaft_and_the_capacity_is_the_pole(catlin_ctx) ->
         assert inputs["shear_height_above_grade"] == pytest.approx(
             arm - inputs["shaft_embedment"], abs=1e-9), tag
         assert inputs["embedment"] - inputs["shaft_embedment"] == pytest.approx(1.0), tag
-    landing = {q.name: q.value for q in catlin_ctx.engineering[f"{KIND}/PT-BW-GW"].inputs}
-    assert landing["shear_height_above_grade"] == pytest.approx(4.54, abs=0.01)
 
 
 def test_the_pad_is_reported_as_not_being_the_mechanism(catlin_ctx) -> None:
@@ -360,10 +364,10 @@ def test_the_stepped_iteration_reproduces_the_note(case, width, pivot, expected)
     ) == pytest.approx(expected, abs=0.002)
 
 
-@pytest.mark.parametrize("tag", sorted(_ORACLE))
+@pytest.mark.parametrize("tag", sorted(_WORKED))
 def test_no_verdict_flips_across_the_wider_pivot_band(tag) -> None:
     """§9e: γ in [0.85, 1.00] moves no verdict — the pad's width never decides one here."""
-    _shaft, pole, width, *_ = _ORACLE[tag]
+    _shaft, pole, width, *_ = _WORKED[tag]
     shear, height = _DEMAND.get(tag, _DEMAND["landing"])
     for pivot in (0.85, *PIVOT_RATIO_BAND, 1.0):
         needs = required_embedment_stepped_ft(shear, height, 1.0, width, 1.0, _S1_PSF_PER_FT,

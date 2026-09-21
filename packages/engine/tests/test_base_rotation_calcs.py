@@ -21,7 +21,11 @@ from typehaus.model import Site, SubgradeModulus
 from typehaus.model.registry import constructor_names
 
 #: §0: ``(δ at δ_ref 0.25", δ at 1.0" or None for a mechanism, status)``.
-_ORACLE = {
+#:
+#: ** `_WORKED` KEEPS THE FOUR LANDING ROWS AS ARITHMETIC ONLY SINCE 2026-09-21. ** The
+#: landing is tied to the garage stem (`north_entry_piers.md` §10) and its piers left the
+#: register; the band-end reproductions still run on them, the record tests do not.
+_WORKED = {
     "PT-BW-RE": (1.305, 1.953, Status.INCOMPLETE),
     "PT-BW-RNE": (1.295, 1.868, Status.INCOMPLETE),
     "PT-BW-W": (1.110, 1.442, Status.INCOMPLETE),
@@ -33,6 +37,8 @@ _ORACLE = {
     "PT-SG-BR1": (1.0454, 1.0463, Status.OK),
     "PT-SG-BR3": (1.0454, 1.0463, Status.OK),
 }
+_LANDING = ("PT-BW-W", "PT-BW-E", "PT-BW-GW", "PT-BW-GE")
+_ORACLE = {tag: row for tag, row in _WORKED.items() if tag not in _LANDING}
 
 
 @pytest.fixture(scope="module")
@@ -94,16 +100,16 @@ def test_the_rigid_bound_is_deck_posts_own_magnifier(ectx) -> None:
     """R → ∞ must return deck_post's δ, or this record is not citing deck_post's bound."""
     from typehaus.engineering.deck_post import _sway_magnifier
 
-    for tag in _ORACLE:
+    for tag in _WORKED:
         pier, column, _points_ = _points(ectx, tag)
         rigid = spring.magnifier(column.pu_lb, column.pc_rigid_lb)
         assert rigid == pytest.approx(_sway_magnifier(pier, pier.factored_lb)[1], rel=1e-9)
         assert _Point.at("", column, 1e15).delta == pytest.approx(rigid, rel=1e-6)
 
 
-@pytest.mark.parametrize("tag", sorted(_ORACLE))
+@pytest.mark.parametrize("tag", sorted(_WORKED))
 def test_both_band_ends_reproduce_the_note(tag, ectx) -> None:
-    stiff, soft, _status = _ORACLE[tag]
+    stiff, soft, _status = _WORKED[tag]
     _pier, _column, (at_stiff, at_soft) = _points(ectx, tag)
     assert at_stiff.delta == pytest.approx(stiff, abs=0.002)
     if soft is None:
@@ -154,7 +160,7 @@ def test_a_measured_modulus_governs_and_moves_the_fingerprint(ectx) -> None:
     assert inputs["subgrade_modulus_measured"] == 1.0
     assert inputs["subgrade_modulus_pci"] == pytest.approx(20.0)
     assert any("A measured modulus governs" in n for n in re.notes)
-    assert fingerprint(after["PT-BW-E"]) != fingerprint(before["PT-BW-E"])
+    assert fingerprint(after["PT-BW-RNE"]) != fingerprint(before["PT-BW-RNE"])
 
 
 def test_the_subgrade_modulus_round_trips_on_the_site() -> None:

@@ -920,14 +920,12 @@ def _base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, str]
     and a guard load is not a storey live load in the first place. ``deck_post`` grades the
     larger.
     """
-    from typehaus.engineering.balcony_wind import Demand, ground_below_ft, nearest, solid_bands
     from typehaus.engineering.balcony_wind import ft as _bw_ft
+    from typehaus.engineering.deck_tie_basis import deck_wind, wall_ties
     from typehaus.model.elements import Wall
     from typehaus.model.floors import FloorSystem
-    from typehaus.model.structure import Beam, Post, Railing
-    from typehaus.model.trim import Fascia
+    from typehaus.model.structure import Beam, Post
     from typehaus.resolve.assembly_material import assembly_structure_material
-    from typehaus.wind import velocity_pressure_psf, wind_basis
     from typehaus.wind_tables import MAX_VERIFIED_CASE_AB
 
     posts = {e.tag: e for e in ctx.plan.all_elements() if isinstance(e, Post)}
@@ -943,6 +941,10 @@ def _base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, str]
         if any(isinstance(ctx.plan.by_tag(t), Wall)
                for beam in beams for t in beam.bearing_refs or ()):
             continue
+        # Nor does a deck TIED to a concrete wall: the wall braces it and its columns lean.
+        # What the tie then carries is `deck_tie`'s record (notes/north_entry_piers.md §10).
+        if wall_ties(ctx, deck):
+            continue
         columns = sorted({t for beam in beams for t in beam.bearing_refs or ()
                           if t in posts
                           and assembly_structure_material(
@@ -952,31 +954,17 @@ def _base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, str]
         if knee_braced(ctx.plan, {*columns, *(b.tag for b in beams), deck.tag}):
             continue
 
-        # The storey this deck is FILED on is the discriminator plan-centroid distance cannot
-        # supply — see `nearest`'s own note on the day RL-SG-PORCH out-competed
-        # RL-SG-BALCONY. A plan element carries no `storey` attribute, so it is read back off
-        # the storey lists, which is where the filing actually lives.
-        deck_storey = next((st.tag for st in ctx.plan.storeys
-                            if any(e is deck for e in ctx.plan.storey_elements(st.tag))),
-                           None)
-        fascia = nearest(ctx.plan, [posts[t] for t in columns], Fascia, deck_storey)
-        guard = nearest(ctx.plan, [posts[t] for t in columns], Railing, deck_storey)
-        basis = wind_basis(ctx.plan.project.site)
-        ground_ft = ground_below_ft(ctx.plan)
-        if guard is None or basis is None:
+        # Fascia, guard and q_h come from the storey the deck is FILED on — see
+        # `deck_tie_basis.deck_wind`, which this and the tie record both read.
+        wind = deck_wind(ctx, deck, [posts[t] for t in columns])
+        if wind is None:
             continue
-        top_ft = _bw_ft(guard.base_elevation) + _bw_ft(guard.height)
-        q_h = velocity_pressure_psf(basis, top_ft - ground_ft)
-        member_tags = {b.tag for b in beams}
-
-        worst_shear = 0.0
-        worst_axis = "y"
-        for axis in ("x", "y"):
-            demand = Demand(axis=axis, q_h_psf=q_h, height_ft=top_ft - ground_ft,
-                            bands=solid_bands(ctx.plan, axis, member_tags, fascia))
-            shear = demand.storey_shear_lb(MAX_VERIFIED_CASE_AB)
-            if shear > worst_shear:
-                worst_shear, worst_axis = shear, axis
+        guard = wind.guard
+        q_h, top_ft, ground_ft = wind.q_h_psf, wind.top_ft, wind.ground_ft
+        # The worse axis, and x on a tie: the first strict maximum, as it always was.
+        x_shear, y_shear = wind.shear_lb["x"], wind.shear_lb["y"]
+        worst_axis = "x" if x_shear > 0.0 and x_shear >= y_shear else "y"
+        worst_shear = wind.shear_lb[worst_axis]
 
         for tag in columns:
             column = posts[tag]
@@ -998,7 +986,7 @@ def _base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, str]
             out[tag] = (wind_moment, guard_moment, (
                 f"{'E-W' if worst_axis == 'x' else 'N-S'} wind on {deck.tag}: q_h "
                 f"{q_h:.1f} psf at {top_ft - ground_ft:.1f}' above the ground beneath "
-                f"({basis.describe()}), ASD storey shear {worst_shear:,.0f} lb at C_f "
+                f"({wind.basis_text}), ASD storey shear {worst_shear:,.0f} lb at C_f "
                 f"{MAX_VERIFIED_CASE_AB:.2f} (the Fig. 29.3-1 Case A/B ceiling, taken "
                 f"because the figure's own cell is not a value this repository holds), "
                 f"split over {len(columns)} fixed column(s) = {per_column:,.0f} lb each at "

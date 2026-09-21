@@ -11,6 +11,11 @@ on a shallow pole in presumptive soil that turns out to be the question that dec
 
 ---
 
+> ⚠ **WITHDRAWN 2026-09-21 for the four LANDING columns** (`PT-BW-W`/`-E`/`-GW`/`-GE`): the landing
+> is tied to the garage stem (`north_entry_piers.md` §10), so they lean and are no longer
+> lateral columns; `base_rotation` stops enumerating them. Their rows below are history. `PT-BW-RE`/`-RNE`
+> are untouched — the tie does not reach them (they stand 20' east, on the canopy's own line).
+
 ## 0. The answer
 
 | column | base | δ_ref 0.25" | δ_ref 1.0" | verdict | turns at |
@@ -119,6 +124,11 @@ At δ_ref 0.25" everything above scales by 4 in `n_h`: `k_θ = 3.155e7`, `R = 5.
 `Pc = 43,056`, `δ = 1.305`, magnified `12,257 × 1.305 / 25,380 = 0.630`. **One end passes,
 one does not.** The exact spring root at 1.0" is `k = 3.32` — the base more than halves the
 column's buckling load against the rigid 2.1.
+
+> ⚠ **WITHDRAWN 2026-09-21 for the four LANDING columns** (`PT-BW-W`/`-E`/`-GW`/`-GE`): the landing
+> is tied to the garage stem (`north_entry_piers.md` §10), so they lean and are no longer
+> lateral columns; `base_rotation` stops enumerating them. Their rows below are history. `PT-BW-RE`/`-RNE`
+> are untouched — the tie does not reach them (they stand 20' east, on the canopy's own line).
 
 ### 3b. `PT-BW-GW`, δ_ref 0.25" — over at the STIFF end
 

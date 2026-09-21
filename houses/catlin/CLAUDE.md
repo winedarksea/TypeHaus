@@ -2519,6 +2519,15 @@ haus analysis . --solve                     # the engineered frame, solved in Py
     band — a geotech report's n_h closes or condemns them. `column_head_joint/*` grades the
     head (notes/north_entry_piers.md §9); torsion is ~0.03 of φT_th, and `PT-BW-W`/`-GW`
     are INCOMPLETE because the ABU66SS publishes no lateral value.
+  - **⚠ 2026-09-21: THE LANDING IS TIED TO THE GARAGE STEM, AND THE TIE IS OVER AT 1.82.**
+    An `HGAM10` pair per carrier (`params/landing_tie.py`, on a KDAT tie block — the 3" leg
+    cannot reach a soffit 3 3/4" up) is what `deck_tie_basis.wall_ties` reads to DERIVE the
+    landing braced, so W/E/GW/GE lean and left `base_rotation`, `column_base` and
+    `column_head_joint` (the head line opened). `deck_tie/FS-BW-FLOOR` grades the tie line as
+    a bolt group: `W-BW-SCREEN`'s 981 lb lands 1'-1 1/2" west of a line only 2'-4" long, so
+    `BM-BW-FC` takes 1,675 lb against 920. Suppressed as the numbered debt that replaced
+    PT-BW-GW's; §10d prices the fixes (a tie on the screen's own line into `W-G-W` is the
+    one that removes the eccentricity). RE/RNE are untouched and still need the soils n_h.
 - **A fixed-base column's P-M check is a §2.3.1 ENVELOPE** (2026-09-18), each combination at
   its own axial load. A larger axial is not automatically conservative on an interaction
   curve — below the balance point compression RAISES moment capacity — so grading the wind

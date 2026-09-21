@@ -237,9 +237,14 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset(catlin_check_r
     # have no published lateral value, the thermal breaks await GFRP data and a measured
     # modulus, and the SRW apron is OVER. The veneer beam's end anchorage closed 2026-09-21
     # (notes/sunken_garden_veneer_beam.md §6e).
+    #
+    # ** 2026-09-21: THE LANDING WAS TIED TO THE GARAGE STEM. ** Its piers lean, so the head
+    # joint line closed (the two INCOMPLETE heads left) and base rotation is held open by the
+    # canopy pair's presumptive band alone. The tie itself is OVER at 1.82 (suppressed as a
+    # numbered debt, notes/north_entry_piers.md §10), so its new line is open in their place.
     OPEN: set[str] = {
         "Fixed column base rotation (stiffness and sway)",
-        "Cast column head joint (connector, shear, torsion)",
+        "Deck lateral tie to a concrete wall",
         "Structural ties across a thermal break",
         "Segmental gravity retaining walls (tiered)",
     }

@@ -22,8 +22,9 @@ from typehaus.model import HeadConnector
 from typehaus.model.structure import Post
 from typehaus.quantities import pt
 
-_HEADS = ("PT-BW-E", "PT-BW-GE", "PT-BW-GW", "PT-BW-RE", "PT-BW-RNE", "PT-BW-W",
-          "PT-SG-BF1", "PT-SG-BF3", "PT-SG-BR1", "PT-SG-BR3")
+#: The four landing piers left on 2026-09-21: the landing is tied to the garage stem
+#: (§10) and they lean, so they have no head joint to grade (`test_deck_tie.py`).
+_HEADS = ("PT-BW-RE", "PT-BW-RNE", "PT-SG-BF1", "PT-SG-BF3", "PT-SG-BR1", "PT-SG-BR3")
 
 
 def _record(ctx, tag):
@@ -84,7 +85,7 @@ def test_canopy_columns_reproduce_9b_9c_9e(catlin_ctx):
 
 
 def test_guard_columns_grade_the_guard_at_cd_one(catlin_ctx):
-    for tag in ("PT-SG-BF1", "PT-SG-BR3", "PT-BW-E", "PT-BW-GE"):
+    for tag in ("PT-SG-BF1", "PT-SG-BR3"):
         record = _record(catlin_ctx, tag)
         assert record.status == Status.OK
         guard = _state(record, "connector lateral, guard")
@@ -93,16 +94,6 @@ def test_guard_columns_grade_the_guard_at_cd_one(catlin_ctx):
         assert not any(s.name == "connector uplift" for s in record.limit_states)
     sg = _record(catlin_ctx, "PT-SG-BR1")
     assert _state(sg, "column torsion").demand == pytest.approx(46.67, abs=0.01)
-    assert _state(_record(catlin_ctx, "PT-BW-E"), "column torsion").demand == \
-        pytest.approx(40.0)
-
-
-def test_the_west_pair_is_incomplete_on_an_unpublished_lateral(catlin_ctx):
-    for tag in ("PT-BW-W", "PT-BW-GW"):
-        record = _record(catlin_ctx, tag)
-        assert record.status == Status.INCOMPLETE
-        assert any("ABU66SS publishes none" in m for m in record.missing)
-        assert _state(record, "connector uplift").ratio == pytest.approx(0.198, abs=1e-3)
 
 
 def test_bearing_demand_is_the_head_reaction(catlin_ctx):
