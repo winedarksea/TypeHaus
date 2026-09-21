@@ -1,7 +1,8 @@
 """``tiered_retaining`` — the SRW apron's own gravity free body.
 
 Oracle: ``houses/catlin/notes/raised_garden_srw.md``, hand-worked separately. §3–§8 are
-reproduced here against ``engineering/segmental_wall.analyse``; the catlin tests read the
+reproduced here (AB Stones, 12°; §3c's superseded AB Classic is still pinned) against
+``engineering/segmental_wall.analyse``; the catlin tests read the
 section off the resolved model and check the record lands where the note says.
 """
 
@@ -32,10 +33,13 @@ from typehaus.engineering.srw_gravity import (
 )
 
 _APRON = ("W-RG-BLOCK", "W-RG-WEST", "W-RG-EAST", "W-RG-WEST-BALCONY", "W-RG-EAST-BALCONY")
-#: The note's §1 section: AB Classic, 3'-4" retained over one 8" course, 0.97' deep, 130 pcf,
-#: 6° setback.
-_NOTE = Section(retained_ft=10.0 / 3.0, embedment_ft=8.0 / 12.0, unit_depth_ft=0.97,
-                unit_weight_pcf=130.0, batter_deg=6.0, course_ft=8.0 / 12.0)
+#: The note's §1 section: AB Stones, 3'-4" retained over one 8" course, 0.97' deep, 130 pcf,
+#: 12° setback. ``_CLASSIC`` is §3c's superseded 6° unit, otherwise identical.
+_STONE = Section(retained_ft=10.0 / 3.0, embedment_ft=8.0 / 12.0, unit_depth_ft=0.97,
+                 unit_weight_pcf=130.0, batter_deg=12.0, course_ft=8.0 / 12.0)
+_CLASSIC = Section(retained_ft=10.0 / 3.0, embedment_ft=8.0 / 12.0, unit_depth_ft=0.97,
+                   unit_weight_pcf=130.0, batter_deg=6.0, course_ft=8.0 / 12.0)
+_SECTIONS = {"stone": _STONE, "classic": _CLASSIC}
 
 
 # --- the note, §1-§8 ----------------------------------------------------------------------
@@ -50,18 +54,21 @@ def test_the_coulomb_form_reproduces_abs_printed_sample() -> None:
     assert coulomb_ka(30.0, 0.66 * 30.0, 12.0) == pytest.approx(0.2197, abs=3e-4)
 
 
-# §3's table: soil pcf -> (K_a, P_h, P_v, M_r, FS sliding, FS overturning, x̄, q, shear).
+# Native at the face: (unit, pcf) -> (K_a, P_h, P_v, M_r, FS sliding, FS OT, x̄, q, shear).
 _SECTION_3 = {
-    110.0: (0.28285, 242.97, 54.07, 410.68, 1.213, 1.268, 0.1553, 2397.0, 168.7),
-    130.0: (0.23499, 235.72, 64.53, 422.30, 1.506, 1.344, 0.1898, 1998.0, 163.7),
+    ("stone", 110.0): (0.24564, 214.76, 24.64, 489.95, 1.300, 1.711, 0.3849, 883.0, 149.14),
+    ("stone", 130.0): (0.19839, 203.61, 33.38, 500.90, 1.648, 1.845, 0.4266, 755.0, 141.39),
+    # §3c, superseded
+    ("classic", 110.0): (0.28285, 242.97, 54.07, 410.68, 1.213, 1.268, 0.1553, 2397.0, 168.7),
+    ("classic", 130.0): (0.23499, 235.72, 64.53, 422.30, 1.506, 1.344, 0.1898, 1998.0, 163.7),
 }
 
 
-@pytest.mark.parametrize("soil_pcf", sorted(_SECTION_3))
-def test_the_free_body_reproduces_section_3(soil_pcf) -> None:
-    ka, p_h, p_v, m_r, sliding, overturning, x, q, shear = _SECTION_3[soil_pcf]
+@pytest.mark.parametrize(("unit", "soil_pcf"), sorted(_SECTION_3))
+def test_the_free_body_reproduces_section_3(unit, soil_pcf) -> None:
+    ka, p_h, p_v, m_r, sliding, overturning, x, q, shear = _SECTION_3[(unit, soil_pcf)]
     phi = phi_from_efp(40.0, soil_pcf)
-    body = analyse(_NOTE, soil_pcf, phi, math.tan(math.radians(phi)))
+    body = analyse(_SECTIONS[unit], soil_pcf, phi, math.tan(math.radians(phi)))
     assert body.weight_plf == pytest.approx(504.40, abs=0.01)
     assert body.ka == pytest.approx(ka, abs=5e-5)
     assert body.thrust_h_plf == pytest.approx(p_h, abs=0.02)
@@ -74,32 +81,40 @@ def test_the_free_body_reproduces_section_3(soil_pcf) -> None:
     assert body.course_shear_plf == pytest.approx(shear, abs=0.1)
 
 
-@pytest.mark.parametrize(("soil_pcf", "plane", "exit_ft"), [
-    (110.0, 52.431, 3.077), (130.0, 54.885, 2.813)])
-def test_the_trial_wedge_is_coulomb_on_one_material(soil_pcf, plane, exit_ft) -> None:
+@pytest.mark.parametrize(("batter", "soil_pcf", "plane", "exit_ft"), [
+    (12.0, 110.0, 50.083, 3.347), (12.0, 130.0, 52.523, 3.067),
+    (6.0, 110.0, 52.431, 3.077), (6.0, 130.0, 54.885, 2.813)])
+def test_the_trial_wedge_is_coulomb_on_one_material(batter, soil_pcf, plane, exit_ft) -> None:
     """§2b: with no zone the wedge search returns §3's closed form."""
     phi = phi_from_efp(40.0, soil_pcf)
-    wedge = trial_wedge(4.0, soil_pcf, phi, 6.0)
-    closed = 0.5 * soil_pcf * coulomb_ka(phi, 2 / 3 * phi, 6.0) * 16.0
+    wedge = trial_wedge(4.0, soil_pcf, phi, batter)
+    closed = 0.5 * soil_pcf * coulomb_ka(phi, 2 / 3 * phi, batter) * 16.0
     assert wedge.thrust_plf == pytest.approx(closed, abs=0.01)
     assert wedge.plane_deg == pytest.approx(plane, abs=0.002)
     assert wedge.reach_ft == pytest.approx(exit_ft, abs=0.001)
 
 
-# §3b's table: soil pcf -> (ρ, share, φ_eq, P_a, sliding, overturning, x̄, q, shear, exit).
+# With 12" of rock: (unit, pcf) -> (ρ, share, φ_eq, P_a, sliding, OT, x̄, q, shear, exit).
 _SECTION_3B = {
-    110.0: (52.135, 0.3718, 31.031, 215.45, 1.383, 1.436, 0.2217, 1657.0, 141.73, 3.110),
-    130.0: (54.793, 0.4163, 33.692, 225.99, 1.615, 1.435, 0.2239, 1680.0, 148.97, 2.822),
+    ("stone", 110.0): (49.706, 0.3935, 31.212, 181.27, 1.538, 2.020, 0.4663, 604.0, 120.52,
+                       3.392),
+    ("stone", 130.0): (52.384, 0.4480, 33.821, 187.18, 1.806, 2.018, 0.4689, 606.0, 125.73,
+                       3.082),
+    # §3c, superseded
+    ("classic", 110.0): (52.135, 0.3718, 31.031, 215.45, 1.383, 1.436, 0.2217, 1657.0,
+                         141.73, 3.110),
+    ("classic", 130.0): (54.793, 0.4163, 33.692, 225.99, 1.615, 1.435, 0.2239, 1680.0,
+                         148.97, 2.822),
 }
 _ROCK = DrainageZone(width_ft=1.0, phi_deg=36.0)
 
 
-@pytest.mark.parametrize("soil_pcf", sorted(_SECTION_3B))
-def test_the_wall_rock_reproduces_section_3b(soil_pcf) -> None:
+@pytest.mark.parametrize(("unit", "soil_pcf"), sorted(_SECTION_3B))
+def test_the_wall_rock_reproduces_section_3b(unit, soil_pcf) -> None:
     plane, share, phi_eq, p_a, sliding, overturning, x, q, shear, exit_ft = (
-        _SECTION_3B[soil_pcf])
+        _SECTION_3B[(unit, soil_pcf)])
     phi = phi_from_efp(40.0, soil_pcf)
-    body = analyse(_NOTE, soil_pcf, phi, math.tan(math.radians(phi)), _ROCK)
+    body = analyse(_SECTIONS[unit], soil_pcf, phi, math.tan(math.radians(phi)), _ROCK)
     assert body.wedge.plane_deg == pytest.approx(plane, abs=0.002)
     assert body.wedge.zone_share == pytest.approx(share, abs=1e-4)
     assert body.wedge.phi_equiv_deg == pytest.approx(phi_eq, abs=1e-3)
@@ -112,44 +127,40 @@ def test_the_wall_rock_reproduces_section_3b(soil_pcf) -> None:
     assert body.wedge.reach_ft == pytest.approx(exit_ft, abs=0.001)
 
 
-@pytest.mark.parametrize(("zone", "soil_pcf", "sliding", "overturning"), [
-    (DrainageZone(1.0, 34.0), 110.0, 1.335, 1.389),
-    (DrainageZone(1.0, 34.0), 130.0, 1.558, 1.387),
-    (DrainageZone(2.0, 36.0), 110.0, 1.594, 1.645),
-    (DrainageZone(2.0, 36.0), 130.0, 1.737, 1.536)])
-def test_the_sensitivities_of_sections_3b_and_8(zone, soil_pcf, sliding, overturning) -> None:
+@pytest.mark.parametrize(("unit", "zone", "soil_pcf", "sliding", "overturning"), [
+    ("stone", DrainageZone(1.0, 34.0), 110.0, 1.470, 1.931),   # §3b: fails sliding
+    ("stone", DrainageZone(1.0, 34.0), 130.0, 1.723, 1.927),
+    ("classic", DrainageZone(1.0, 34.0), 110.0, 1.335, 1.389),
+    ("classic", DrainageZone(1.0, 34.0), 130.0, 1.558, 1.387),
+    ("classic", DrainageZone(2.0, 36.0), 110.0, 1.594, 1.645),
+    ("classic", DrainageZone(2.0, 36.0), 130.0, 1.737, 1.536)])
+def test_the_sensitivities_of_sections_3b_and_3c(unit, zone, soil_pcf, sliding,
+                                                 overturning) -> None:
     phi = phi_from_efp(40.0, soil_pcf)
-    body = analyse(_NOTE, soil_pcf, phi, math.tan(math.radians(phi)), zone)
+    body = analyse(_SECTIONS[unit], soil_pcf, phi, math.tan(math.radians(phi)), zone)
     assert body.fs_sliding == pytest.approx(sliding, abs=0.001)
     assert body.fs_overturning == pytest.approx(overturning, abs=0.001)
 
 
-@pytest.mark.parametrize(("zone", "restricted"), [(None, 248.69), (_ROCK, 215.05)])
-def test_the_confined_strip_takes_off_almost_nothing(zone, restricted) -> None:
-    """§6b: the steepest plane that exits inside the 2.974' strip, at the loose end."""
-    phi = phi_from_efp(40.0, 110.0)
+@pytest.mark.parametrize(("batter", "soil_pcf", "zone", "restricted"), [
+    (12.0, 110.0, _ROCK, 177.39), (12.0, 130.0, _ROCK, 186.85),
+    (6.0, 110.0, None, 248.69), (6.0, 110.0, _ROCK, 215.05)])
+def test_the_confined_strip_takes_off_almost_nothing(batter, soil_pcf, zone,
+                                                     restricted) -> None:
+    """§6b: the steepest plane that exits inside the 2.974' strip."""
+    phi = phi_from_efp(40.0, soil_pcf)
     steep = math.degrees(math.atan(4.0 / 2.974))
-    wedge = trial_wedge(4.0, 110.0, phi, 6.0, zone, min_plane_deg=steep)
+    wedge = trial_wedge(4.0, soil_pcf, phi, batter, zone, min_plane_deg=steep)
     assert wedge.thrust_plf == pytest.approx(restricted, abs=0.02)
 
 
-def test_the_ibc_fallback_of_section_3() -> None:
+def test_the_ibc_fallback_of_section_3c() -> None:
     phi = phi_from_efp(40.0, 110.0)
-    assert analyse(_NOTE, 110.0, phi, 0.25).fs_sliding == pytest.approx(0.575, abs=0.001)
-
-
-@pytest.mark.parametrize(("soil_pcf", "sliding", "overturning"), [
-    (110.0, 1.30, 1.71), (130.0, 1.65, 1.85)])
-def test_ab_stone_of_section_8(soil_pcf, sliding, overturning) -> None:
-    stone = Section(10 / 3, 8 / 12, 0.97, 130.0, batter_deg=12.0, course_ft=8 / 12)
-    phi = phi_from_efp(40.0, soil_pcf)
-    body = analyse(stone, soil_pcf, phi, math.tan(math.radians(phi)))
-    assert body.fs_sliding == pytest.approx(sliding, abs=0.005)
-    assert body.fs_overturning == pytest.approx(overturning, abs=0.005)
+    assert analyse(_CLASSIC, 110.0, phi, 0.25).fs_sliding == pytest.approx(0.575, abs=0.001)
 
 
 @pytest.mark.parametrize(("height", "sliding"), [(3.0, 1.578), (3.2, 1.487)])
-def test_the_lowered_terrace_of_section_8(height, sliding) -> None:
+def test_the_lowered_terrace_of_section_3c(height, sliding) -> None:
     phi = phi_from_efp(40.0, 110.0)
     body = analyse(Section(height, 0.0, 0.97, 130.0, batter_deg=6.0), 110.0, phi,
                    math.tan(math.radians(phi)))
@@ -176,27 +187,28 @@ def test_the_kind_is_computed_not_deferred(ctx) -> None:
     assert not set(_APRON) & set(enumerate_walls(ctx))
 
 
-def test_every_leg_is_over_at_the_notes_numbers(records) -> None:
-    """§3b at the loose end: overturning fails at BOTH ends, so the verdict is OVER."""
+def test_every_leg_passes_at_the_notes_numbers(records) -> None:
+    """§3b at the loose end: AB Stones on 12" of rock passes at both ends of the band."""
     for tag, record in records.items():
-        assert record.status is Status.OVER, tag
+        assert record.status is Status.OK, tag
         assert record.scope is Scope.SCREENING
         states = {s.name: s for s in record.limit_states}
-        assert states["sliding"].capacity == pytest.approx(1.383, abs=0.001), tag
-        assert states["overturning"].capacity == pytest.approx(1.436, abs=0.001), tag
-        assert states["bearing"].demand == pytest.approx(1657.0, abs=1.0), tag
-        assert states["course interface shear"].capacity == pytest.approx(4.55, abs=0.01)
+        assert states["sliding"].capacity == pytest.approx(1.538, abs=0.001), tag
+        assert states["overturning"].capacity == pytest.approx(2.020, abs=0.001), tag
+        assert states["bearing"].demand == pytest.approx(604.0, abs=1.0), tag
+        assert states["course interface shear"].capacity == pytest.approx(5.35, abs=0.01)
         assert record.governing.name == "sliding"
-        assert record.governing.ratio == pytest.approx(1.085, abs=0.001)
+        assert record.governing.ratio == pytest.approx(0.975, abs=0.001)
         inputs = {q.name: q.value for q in record.inputs}
         # Retained height is the authored fill, never drop_ft.
         assert inputs["retained_height"] == pytest.approx(10 / 3, abs=1e-3)
+        assert inputs["batter"] == pytest.approx(12.0)
         assert inputs["course_height"] == pytest.approx(8 / 12, abs=1e-6)
         assert inputs["pad_friction_angle"] == pytest.approx(36.0)
         assert inputs["drainage_zone_width"] == pytest.approx(1.0)
         assert inputs["drainage_zone_phi"] == pytest.approx(36.0)
-        # The dense end fails overturning too (1.435) — named in the note, not a straddle.
-        assert "overturning 1.43" in " ".join(record.notes)
+        # The dense end passes too; both ends are printed.
+        assert "sliding 1.81, overturning 2.02" in " ".join(record.notes)
 
 
 def test_embedment_reads_the_nearest_station(records) -> None:
@@ -246,7 +258,10 @@ def test_the_returns_have_no_parallel_tier(records) -> None:
         assert not [s for s in records[tag].limit_states if s.name.startswith("tier")]
 
 
-def test_the_ab_classic_is_authored_on_every_leg(records) -> None:
+def test_ab_stones_is_authored_on_every_leg(records) -> None:
+    for record in records.values():
+        shear = next(s for s in record.limit_states if s.name == "course interface shear")
+        assert "AB Stones" in shear.citation and "12 deg setback" in shear.citation
     notes = " ".join(records["W-RG-BLOCK"].notes)
     assert "Unit weight from the product data" in notes
     assert "NOT GRADED: global stability" in notes
@@ -271,14 +286,14 @@ def test_a_passing_wall_on_a_fallback_is_incomplete_then_ok(ctx, monkeypatch) ->
 
 
 def test_a_verdict_inside_the_soil_band_is_incomplete(ctx, monkeypatch) -> None:
-    """§8's 3.4' free body: sliding 1.41 at 110 pcf, 1.74 at 130 — the soil decides it."""
+    """§3: AB Stones native at the face slides at 1.30 at 110 pcf, 1.65 at 130 — the soil
+    decides it."""
     import typehaus.engineering.segmental_wall as module
 
     monkeypatch.setattr(module, "lower_tiers", lambda _ctx, _wall: [])
     wall = ctx.plan.by_tag("W-RG-BLOCK")
-    native = wall.srw.model_copy(update={"drainage_zone": None})  # §8 is native at the face
-    record = _one(ctx, wall.model_copy(update={"unbalanced_fill": ft(3.4 - 8 / 12),
-                                               "srw": native}))
+    native = wall.srw.model_copy(update={"drainage_zone": None})
+    record = _one(ctx, wall.model_copy(update={"srw": native}))
     assert record.status is Status.INCOMPLETE
     assert any("measured soil friction angle" in m for m in record.missing)
 

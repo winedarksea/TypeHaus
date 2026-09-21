@@ -552,7 +552,7 @@ MN_2020 = JurisdictionProfile(
         # hold the draft gate shut, and that is the answer the work was for: PT-BW-W/-GW's
         # heads have no published lateral value, the veneer beam's end anchorage is
         # unauthored, the thermal breaks await GFRP data and a measured modulus, and the
-        # SRW apron is OVER (AB Classic, overturning FS 1.27). A suppressed finding leaves its
+        # SRW apron passed on 2026-09-21 (AB Stones). A suppressed finding leaves its
         # line UNKNOWN, so blocking is also what keeps a suppressed OVER from opening either
         # gate.
         # Added 2026-09-21. A tie to a concrete wall takes a deck's columns OUT of its lateral

@@ -1,27 +1,31 @@
 # Raised-garden SRW apron — the gravity free body, by hand
 
-Worked 2026-09-20, re-worked 2026-09-21 by the NCMA gravity method on the real unit (Allan
-Block AB Classic), and **audited the same day** (phase 2, workstream A): geometry traced, the
-tier row re-read, the confined backfill checked, AB's 12" of wall rock authored and graded.
-By hand and separately from `engineering/segmental_wall.py` / `srw_gravity.py` /
-`srw_tiers.py` / `srw_backfill.py`. Nothing here is imported from the engine;
-`tests/test_segmental_wall.py` reproduces §2–§8 against it.
+Worked 2026-09-20; re-worked 2026-09-21 by the NCMA gravity method on the real unit, audited
+the same day (geometry traced, tier row re-read, confined backfill checked, AB's 12" of wall
+rock authored and graded) — and then **the unit changed** (owner, 2026-09-21): **Allan Block
+AB Stones, 12° setback**, replacing AB Classic (6°), keeping the 12" wall-rock zone. By hand
+and separately from `engineering/segmental_wall.py` / `srw_gravity.py` / `srw_tiers.py` /
+`srw_backfill.py`. Nothing here is imported from the engine; `tests/test_segmental_wall.py`
+reproduces §2–§8 against it.
 
-**Result: still OVER on every leg, by 4–8%.** The audit took three things off the item and
-added nothing to it:
+**Result: PASSES on all five legs, at both ends of the soil band.**
 
-* **The tier row (d/c 6.13) is gone** — the apron and the court walls stand BACK TO BACK
-  (§1, §6). The 2H rule is a terrace rule. Its two real consequences are the strip surcharge
-  (graded, on the court) and deep-seated slip (the geotechnical engineer's).
-* **The confined backfill buys nothing** — the critical wedge fits inside the 2.97' strip
-  at the dense end and overshoots it by 0.10–0.14' at the loose end, where no published
-  reduction applies anyway (§6b; worth −0.1 to −0.2% even if it did).
-* **The wall rock buys 13% of the thrust at the loose end** (§2b, §3b): overturning FS
-  1.27 → **1.44** (110 pcf) and 1.34 → **1.43** (130 pcf), sliding 1.21 → **1.38** /
-  1.51 → 1.61. Still under IRC R404.4's 1.5 at BOTH ends, so the verdict is robust and OVER.
-  The record prints the loose end: **sliding d/c 1.08** governs (was 1.24).
+| | 110 pcf (loose, governs) | 130 pcf |
+|---|---|---|
+| sliding FS | **1.538** (d/c 0.975) | 1.806 |
+| overturning FS | **2.020** | 2.018 |
+| toe bearing | 604 psf of 2,000 | 606 psf |
+| course interface shear FS | 5.35 | 5.13 |
 
-AB's own chart agrees at the clay end and disagrees at the silty-sand end; §7 says exactly why.
+Only the setback moved. AB publishes AB Stones at the same 8" × 12" × 18", 75 lb as AB
+Classic (§1), and AB's own gravity sample is a 12° wall at d 0.97 ft, 130 pcf. Doubling the
+lean does two things: it shrinks the wedge (Coulomb on a face at β = 78°) and moves the
+unit's weight back over its heel (arm 0.695' → 0.910'). Sliding is the tight row at the
+loose end, 2.5% clear; overturning is not close.
+
+**Superseded — AB Classic (6°), same day:** sliding 1.38 / overturning 1.44 at 110 pcf,
+1.61 / 1.43 at 130, OVER at both ends (§3c). The tier row (d/c 6.13) was dropped by the
+audit, not by this change (§6).
 
 ## 1. Geometry — the premise everything else rests on
 
@@ -61,9 +65,17 @@ Two findings the trace turned up:
   is the authored direction, trusted only because the grade station its embedment is read to
   lies on that side (`srw_tiers._face`).
 
+**The batter is on the spec, not in the geometry.** The model draws every leg plumb. At 12°
+the top course sits `4.0 × tan 12° = 0.850'` (10.2") back from the base course toward the
+terrace — AB's own setback chart says 10.0" at 4 ft (manual p.18, Table 2.2, "AB Stones
+only") — against 0.42' on AB Classic. So the level bed at 0'-0" is ~2.1' wide between the
+apron's top course and the court face, not the drawn 2.97'. Nothing grades that width; the
+pad, and so everything the court sees (§6), is under the base course and does not move.
+
 ### Authored section
 
-All five legs are one section. `params/raised_garden.py`, `plan/assemblies.py`, `plan/site.py`:
+All five legs are one section. `params/raised_garden.py` (`AB_STONE`), `plan/assemblies.py`,
+`plan/site.py`:
 
 | term | value | from |
 |---|---|---|
@@ -72,16 +84,24 @@ All five legs are one section. `params/raised_garden.py`, `plan/assemblies.py`, 
 | yard | −3'-4" | the three south-yard grade stations |
 | embedment `D` | 8" = 0.667' = one whole course | yard − base |
 | free body `H` | 4.000' | `H_r + D` (§2) |
-| unit | **Allan Block AB Classic**, 8"H × 12"D × 18"L, 75 lb, **6° setback** | [AB Collection](https://allanblock.com/products/retaining-walls/ab-collection) |
-| unit depth `B` | **0.97'** | [AB Commercial Installation Manual](https://allanblock.com/PDF/ABCommManual.pdf) p.11 gravity sample: "Depth of Wall (d) = 0.97 ft" |
-| in-place unit weight `γ_w` | **130 pcf**, cores filled with wall rock | same sample: "Wall Density (γw) = 130 lb/ft³"; hollow unit 125 pcf (Table 1.2) |
-| batter `ω` | **6°** | AB's lip-and-notch setback for the AB Collection |
-| interface shear | **645 lb/ft** | AB Table 1.2 "Unit Shear Strength", a published minimum |
+| unit | **Allan Block AB Stones**, 8"H × 12"D × 18"L, 75 lb, **12° setback** | [AB Collection specifications](https://allanblock.com/installation/commercial-installation/ab-collection); [AB Commercial Installation Manual](https://allanblock.com/PDF/ABCommManual.pdf) p.7 Table 1.1 ("AB Stones 12° … 75 lbs 8 in H x 12 in D x 18 in L") |
+| unit depth `B` | **0.97'** | manual p.11 gravity sample — **"Batter = 12°"**, "Depth of Wall (d) = 0.97 ft" |
+| in-place unit weight `γ_w` | **130 pcf**, cores filled with wall rock | same sample: "Wall Density (γw) = 130 lb/ft³"; hollow unit 125 pcf (p.9 Table 1.2) |
+| batter `ω` | **12°** | Table 1.1; Table 1.3's "12° (Ref) AB Stones only" column |
+| interface shear | **645 lb/ft** | p.9 Table 1.2 "Unit Shear Strength", a collection-wide published minimum (one table, no per-unit rows) |
 | **wall rock** | **12" behind the unit, φ_r = 36°** | manual p.22 (gravity Step 4): "Fill the hollow cores and a minimum of 12 in (300 mm) behind the wall with wall rock"; p.20: compactible aggregate 0.25–1.5 in, ≤10% passing #200, ≥120 pcf; p.16 Table 2.1: "Sand/Gravel 36°". Table 3.1 (p.29) gives crushed stone "34° +" — §3b runs it. |
 | soil | GM, **k = 40 psf/ft** active | IBC Table 1610.1 (the GM row) |
 | soil unit weight `γ_s` | 110–130 pcf, a band | `SOIL_UNIT_WEIGHT_BAND_PCF` |
 | levelling pad | 6" MnDOT Class 5 on geotextile, **φ_pad = 36°** | AB's "Sand/Gravel 36°" row |
 | allowable bearing | 2,000 psf | IBC Table 1806.2 class 4 |
+
+**Is AB Stones the same unit bar the setback?** Checked, not assumed. AB's specification
+page and the manual's Table 1.1 give AB Stones and AB Classic the **identical** size, weight
+and coverage (8×12×18 in, 75 lb, 1 sq ft); only the setback differs (12° vs 6°). The 0.97 ft
+design depth and 130 pcf in-place density come from the one gravity sample AB prints, and
+that sample is a **12° wall** — it describes AB Stones more directly than it ever described
+AB Classic. Table 1.2 is one table of collection minimums with no per-unit rows, so the
+645 lb/ft interface shear is AB's for both. **No difference found.**
 
 **No site φ exists, so it is read back off the code's own EFP.** A Rankine EFP is
 `k = K_a γ_s`, so at each end of the band `K_a = k/γ_s` and `sin φ = (1 − K_a)/(1 + K_a)`:
@@ -101,14 +121,14 @@ The retained soil stands on the whole back face to the base: `H = 3.333 + 0.667 
 credits no cap weight.
 
 **Coulomb, with wall friction, on a face leaning back into the fill.** `δ = ⅔φ`, level
-backfill, AB's form with `β = 90° − ω = 84°`:
+backfill, AB's form with `β = 90° − ω` (78° here):
 
 ```
 K_a = [ csc β · sin(β − φ) / ( √sin(β + δ) + √( sin(φ + δ) sin φ / sin β ) ) ]²
 ```
 
-Checked against AB's printed sample (φ 30°, δ 0.66φ, 12° setback): **0.2199** against AB's
-0.2197, sliding FS 1.91 (AB 1.91).
+Checked against AB's printed sample (φ 30°, δ 0.66φ, **12° setback**, 120 pcf, 3.44'):
+**0.2199** against AB's 0.2197, sliding FS 1.91 (AB 1.91), overturning 2.60 (AB 2.6).
 
 **The thrust's direction is derived, not copied.** The face leans back by `ω`; the soil's
 normal pressure points into the wall and *up* by `ω`, wall friction points *down* the face:
@@ -118,7 +138,8 @@ P_h = P_a cos(δ − ω)          P_v = P_a sin(δ − ω)   (downward, onto the
 ```
 
 AB's sample resolves at `cos δ`/`sin δ`, which ignores the lean; this note takes the geometric
-resolution, the conservative one (§7 prints AB's beside it).
+resolution, the conservative one (§7 prints AB's beside it). At 12° it matters more: `δ − ω`
+is 6.5° at the loose end, so `P_v` is small.
 
 **Sliding** `FS = μ (W + P_v) / P_h`, `μ = tan min(φ_pad, φ_soil)`. **Overturning** about the
 toe:
@@ -140,10 +161,10 @@ With wall rock at the face and native beyond, no closed form applies. The **tria
 `φ` to its normal,
 
 ```
-P(ρ) = W_ρ sin(ρ − φ) / cos(ρ − φ − (δ − ω))          P_a = max over ρ
+P(ρ) = W_ρ sin(ρ − φ) / cos(ρ − φ − (δ − ω))          P_a = max over ρ < 90° − ω
 ```
 
-With one material this is Coulomb exactly (§3's 248.91 / 244.39 plf come back to 0.01 plf).
+With one material this is Coulomb exactly (§3's 216.17 / 206.33 plf come back to 0.01 plf).
 **Two zones along the plane**: the rock's back boundary is parallel to the face, `t = 12"`
 behind it, so the plane leaves the rock at
 
@@ -159,69 +180,98 @@ the under-credit. `δ` stays **⅔φ of the native** (AB's "0.66φ" of the soil)
 bear on rock, and δ = ⅔·36° = 24° is printed as a sensitivity, not graded. `γ` of the whole
 wedge is `γ_s` (AB's rock is ≥ 120 pcf, inside the band).
 
-## 3. The arithmetic — native soil at the face (the pre-audit record)
+## 3. The arithmetic — AB Stones, native soil at the face
 
-Common: `W = 130 × 0.97 × 4.0 = 504.40 plf`, `tan 6° = 0.105104`, arms `0.695208'` and
-`1.110139'`. φ_pad 36° exceeds φ_soil at both ends, so `μ = tan φ_soil`.
+What the engine grades when `drainage_zone` is not authored. Common: `W = 130 × 0.97 × 4.0 =
+504.40 plf`, `tan 12° = 0.212557`, arms `0.485 + 2·0.212557 = 0.910113'` and
+`0.97 + 1.3333·0.212557 = 1.253409'`, so `W · 0.910113 = 459.06`. φ_pad 36° exceeds φ_soil
+at both ends, so `μ = tan φ_soil`.
 
 ```
-                          γ_s 110 pcf (graded)            γ_s 130 pcf
-φ, δ = ⅔φ                 27.818°, 18.545°                31.966°, 21.310°
-K_a                       0.28285                          0.23499
-P_a = ½ γ_s K_a H²        248.91                           244.39
-P_h / P_v                 242.97 / 54.07                   235.72 / 64.53
-sliding   FS              1.213  ✗                         1.506  ✓
-overturn  M_o / M_r       323.96 / 410.68 → FS 1.268 ✗     314.29 / 422.30 → FS 1.344 ✗
-bearing   x̄, q           0.1553', 2,397 psf ✗             0.1898', 1,998 psf ✓
-critical plane ρ          52.43°, exits 3.077' behind heel 54.88°, exits 2.813'
+                          γ_s 110 pcf                      γ_s 130 pcf
+K_a  num / den            0.785240 / 1.584347              0.735835 / 1.652040
+K_a                       0.24564                          0.19839
+P_a = ½ γ_s K_a H²        216.17                           206.33
+P_h / P_v                 214.76 / 24.64                   203.61 / 33.38
+sliding   FS              1.300  ✗                         1.648  ✓
+overturn  M_o / M_r       286.34 / 489.95 → FS 1.711 ✓     271.48 / 500.90 → FS 1.845 ✓
+bearing   x̄, q (kern)     0.3849', 883 psf ✓               0.4266', 755 psf ✓
+course shear (3.333')     149.14 plf, FS 4.32              141.39 plf, FS 4.56
+critical plane ρ          50.08°, exits 3.347'             52.52°, exits 3.067'
 ```
 
-(Full line-by-line of `K_a` as in the 2026-09-21 revision: numerator 0.835385 / 0.792722,
-denominator 1.570744 / 1.635298.) This is what the engine grades when `drainage_zone` is
-not authored; `tests/test_segmental_wall.py` still pins it.
+Without the rock AB Stones straddles the band — sliding fails at the loose end only. The rock
+is what closes it.
 
-### 3b. The arithmetic — with the 12" of wall rock (the graded case)
+### 3b. The arithmetic — AB Stones with the 12" of wall rock (the graded case)
 
 The critical plane, found by scanning `ρ` at 0.001°:
 
 ```
-                          γ_s 110 pcf (graded)            γ_s 130 pcf
-ρ                         52.135°                          54.793°
-tan ρ, sin ρ              1.28618, 0.78946                 1.41722, 0.81707
-cot ρ − tan ω             0.67239                          0.60050
-W_ρ = γ·8·(…)             110 × 5.3792 = 591.71            130 × 4.8040 = 624.52
-z₁ = tan ρ/(1−tan ρ tan ω)  1.4872'                        1.6653'
-share s = z₁/4            0.3718                           0.4163
-tan φ_eq                  .3718×.72654+.6282×.52764        .4163×.72654+.5837×.62404
-                          = 0.60160, φ_eq 31.031°          = 0.66671, φ_eq 33.692°
-ρ − φ_eq, − (δ − ω)       21.104°, 8.559°                  21.101°, 5.791°
-P_a = W sin/cos           591.71 × .36006/.98886 = 215.45  624.52 × .36002/.99490 = 225.99
-  (vs native)             −13.4%                           −7.5%
-P_h / P_v                 210.31 / 46.80                   217.97 / 59.67
-N = W + P_v               551.20                           564.07
-sliding   FS = μN/P_h     .527645×551.20/210.31 = 1.383 ✗ .624038×564.07/217.97 = 1.615 ✓
-          d/c             1.085                            0.929
-overturn  M_o = P_h·4/3   280.41                           290.63
-          M_r             350.66 + 46.80×1.110139 = 402.62 350.66 + 59.67×1.110139 = 416.91
-          FS              1.436 ✗ (d/c 1.045)              1.435 ✗ (d/c 1.046)
-bearing   x̄ = (M_r−M_o)/N 0.2217'                          0.2239'
-          q = 2N/(3x̄)     1,657 psf ✓ (d/c 0.83)           1,680 psf ✓ (d/c 0.84)
-exits behind the heel     3.110'                           2.822'
+                          γ_s 110 pcf (graded)             γ_s 130 pcf
+ρ                         49.706°                          52.384°
+tan ρ, sin ρ              1.17941, 0.76274                 1.29778, 0.79212
+cot ρ − tan ω             0.63533                          0.55799
+W_ρ = γ·8·(…)             110 × 5.08264 = 559.09           130 × 4.46394 = 580.31
+z₁ = tan ρ/(1−tan ρ tan ω)  1.5740'                        1.7921'
+share s = z₁/4            0.3935                           0.4480
+tan φ_eq                  .3935×.72654+.6065×.52764        .4480×.72654+.5520×.62404
+                          = 0.60591, φ_eq 31.212°          = 0.66996, φ_eq 33.821°
+ρ − φ_eq, − (δ − ω)       18.494°, 11.948°                 18.563°, 9.253°
+P_a = W sin/cos           559.09 × .31720/.97833 = 181.27  580.31 × .31835/.98699 = 187.18
+  (vs native, §3)         −16.1%                           −9.3%
+P_h / P_v                 180.09 / 20.66                   184.71 / 30.28
+N = W + P_v               525.06                           534.68
+sliding   FS = μN/P_h     .527645×525.06/180.09 = 1.538 ✓ .624038×534.68/184.71 = 1.806 ✓
+          d/c             0.975                            0.830
+overturn  M_o = P_h·4/3   240.12                           246.28
+          M_r             459.06 + 20.66×1.253409 = 484.96 459.06 + 30.28×1.253409 = 497.02
+          FS              2.020 ✓ (d/c 0.743)              2.018 ✓ (d/c 0.743)
+bearing   x̄ = (M_r−M_o)/N 0.4663', e 0.0187' (in kern)     0.4689', e 0.0161'
+          q = N/B(1+6e/B) 541.30 × 1.1156 = 604 psf ✓      551.22 × 1.0994 = 606 psf ✓
+exits behind the heel     3.392'                           3.082'
 ```
 
-**Overturning still fails at both ends — OVER, robust across the band.** The record prints
-the loose end, whose largest ratio is **sliding, d/c 1.08**.
+**Passes at both ends.** The record prints the loose end, whose largest ratio is **sliding,
+d/c 0.975**. The resultant sits almost at mid-base (e/B 0.02): the 12° lean has put the
+unit's weight back over its heel.
 
-Sensitivities, all still OVER at both ends:
+Sensitivities (the graded verdict does not rest on the rock's 36° or on δ):
 
 | variant | 110 pcf sliding / OT | 130 pcf sliding / OT |
 |---|---|---|
-| φ_r 34° (AB Table 3.1 "crushed stone 34°+") | 1.335 / 1.389 | 1.558 / 1.387 |
-| δ on the rock, ⅔·36° = 24° | 1.482 / 1.566 | 1.672 / **1.499** |
-| no rock (§3) | 1.213 / 1.268 | 1.506 / 1.344 |
+| φ_r 34° (AB Table 3.1 "crushed stone 34°+") | **1.470** ✗ / 1.931 | 1.723 / 1.927 |
+| δ on the rock, ⅔·36° = 24° | 1.636 / 2.171 | 1.863 / 2.092 |
+| no rock (§3) | **1.300** ✗ / 1.711 | 1.648 / 1.845 |
 
-Even crediting δ on the rock the dense end misses overturning by a thousandth and the loose
-end misses sliding by 1%. The method does not close the item.
+**One sensitivity fails, and it is named, not hidden: at φ_r 34° the loose end slides at
+1.47.** The graded case uses AB's own 36° for its specified wall rock (p.16, p.20); a
+crushed-stone rock read at the bottom of Table 3.1's "34° +" band would not clear sliding at
+110 pcf. Either the rock is the clean 0.25–1.5 in aggregate AB specifies, or a measured soil
+closes it (at 130 pcf it passes at 34°).
+
+### 3c. Superseded — AB Classic (6°), kept as history
+
+Arms `0.695208'` / `1.110139'`, `M_rW` 350.66. `tests/test_segmental_wall.py` still pins it.
+
+```
+                    native (110 / 130)                         with 12" rock (110 / 130)
+K_a                 0.28285 / 0.23499                          (P/½γH²) —
+P_a                 248.91 / 244.39                            215.45 / 225.99   (ρ 52.135 / 54.793)
+P_h / P_v           242.97/54.07  /  235.72/64.53              210.31/46.80  /  217.97/59.67
+M_r                 410.68 / 422.30                            402.62 / 416.91
+sliding FS          1.213 / 1.506                              1.383 / 1.615
+overturning FS      1.268 / 1.344                              1.436 / 1.435
+x̄, q               0.1553' 2,397 / 0.1898' 1,998              0.2217' 1,657 / 0.2239' 1,680
+course shear        168.7 / 163.7                              141.73 / 148.97
+exit                3.077' / 2.813'  (ρ 52.43 / 54.88)         3.110' / 2.822'
+share, φ_eq (rock)                                             0.3718 31.031° / 0.4163 33.692°
+```
+
+Sensitivities with rock: φ_r 34° → 1.335/1.389, 1.558/1.387; 24" of rock → 1.594/1.645,
+1.737/1.536. Overturning failed at both ends: OVER, d/c 1.085 (sliding, loose end). Also
+pinned: the IBC-coefficient fallback `μ 0.25` → sliding 0.575; a 3.0'/3.2' native terrace →
+1.578 / 1.487.
 
 ## 4. Base-course embedment
 
@@ -237,20 +287,20 @@ station (`resolve/site_earth.nearest_grade_station`):
 | `-EAST-BALCONY` | (30.25, -10.5) | (26, -3), 8.6' | -3'-1" | 11" → d/c 0.545 |
 
 On the returns the free body is capped at the wall's own 4'-0" and the record prints the
-disagreement. §3/§3b hold on all five legs.
+disagreement. §3/§3b hold on all five legs. Unchanged by the unit.
 
 ## 5. Course interface shear
 
 Demand: the horizontal thrust on the 3.333' above the base course — with the rock, the
-critical wedge at that height (ρ 52.12° / 54.79°):
+critical wedge at that height (ρ 49.68° / 52.37°):
 
 ```
-110:  P 145.20 × cos 12.545° = 141.73 plf     FS 645/141.73 = 4.55   ✓
-130:  P 154.45 × cos 15.310° = 148.97 plf     FS 4.33               ✓
-(native at the face: 168.7 / 163.7 plf, FS 3.82 / 3.94)
+110:  P 121.31 × cos 6.545° = 120.52 plf      FS 645/120.52 = 5.35   ✓
+130:  P 127.41 × cos 9.310° = 125.73 plf      FS 5.13                ✓
+(native at the face: 149.14 / 141.39 plf, FS 4.32 / 4.56; AB Classic with rock 4.55 / 4.33)
 ```
 
-645 lb/ft is AB's minimum at zero normal load; conservative. Does not move the verdict.
+645 lb/ft is AB's collection minimum at zero normal load; conservative.
 
 ## 6. The tier row — back to back, not a terrace
 
@@ -272,9 +322,14 @@ protects against is two things, and both are already where they belong:
 1. **The upper wall's load on the lower.** The apron's weight on its pad is carried onto the
    court as a Boussinesq strip surcharge, NET of displaced soil (`engineering/tier_surcharge.py`;
    `sunken_garden_court_free_body.md` §4c/§4d): **80.0 psf net at 110 pcf, 0 at 130**, in the
-   court's system FS 1.60. The wall rock does not move it: it replaces soil of the same
-   weight band in the court's retained zone. `P_v` (47–60 plf) is still not carried onto the
-   court — named, ungraded, ~10% of the unit's weight.
+   court's system FS 1.60. **AB Stones does not move it**: the strip is `γ_w H = 130 × 4.0 =
+   520 psf` gross on the same 1'-0" pad under the same base course, and neither term reads the
+   setback — so §4d, and the thermal break's §11d demand built on it, stand as they are. (The
+   lean does move the resultant on that pad toward the heel, x̄ 0.22' → 0.47' from the toe:
+   the real pressure is now nearly uniform where AB Classic's was toe-heavy, so the uniform
+   strip §4d assumes describes AB Stones better, not worse.) The wall rock does not move it
+   either: it replaces soil of the same weight band. `P_v` (21–30 plf) is still not carried
+   onto the court — named, ungraded, ~5% of the unit's weight.
 2. **Global stability**, a slip surface under both walls — deep-seated, into the court. Not
    computable on a presumed soil; the geotechnical engineer's (`…court_free_body.md` §9).
 
@@ -292,22 +347,24 @@ pad at the loose end. That is why the surcharge is graded at all.
 The apron retains a **2.974'**-wide strip against the rigid court stem on a **4.000'** free
 body: `b/H = 0.74`.
 
-**Does the wedge even reach the court wall?** The critical plane exits `H cot ρ` behind the heel:
+**Does the wedge even reach the court wall?** The critical plane exits `H cot ρ` behind the
+heel. The 12° lean flattens the plane (ρ ~50° against ~52–55° at 6°), so now it does, at
+both ends:
 
 ```
             native (§3)                     with rock (§3b)
-110 pcf     4 cot 52.43° = 3.077'  > 2.974  4 cot 52.14° = 3.110'  > 2.974   reaches, by 0.10' / 0.14'
-130 pcf     4 cot 54.88° = 2.813'  < 2.974  4 cot 54.79° = 2.822'  < 2.974   does not
+110 pcf     4 cot 50.08° = 3.347'  > 2.974  4 cot 49.71° = 3.392'  > 2.974   by 0.37' / 0.42'
+130 pcf     4 cot 52.52° = 3.067'  > 2.974  4 cot 52.38° = 3.082'  > 2.974   by 0.09' / 0.11'
 ```
 
-(Measured from the base course's heel. A 6° batter leans the top 0.42' toward the court; the
-exit point is set by the heel, so it does not change this.)
+(Measured from the base course's heel; the batter leans the top 0.85' toward the court, and
+the exit point is set by the heel.)
 
-**At 130 pcf nothing can be credited** — the court wall does not touch the wedge. **At 110
-pcf** the most a PLANAR surface restricted to the strip can remove is the difference between
-the free maximum and `P` at the steepest-reaching plane, `ρ_hit = atan(4/2.974) = 53.37°`:
-native 248.91 → 248.69 (−0.09%), with rock 215.45 → 215.05 (−0.19%). The Coulomb function is
-flat at its peak.
+The most a PLANAR surface restricted to the strip can remove is the difference between the
+free maximum and `P` at the steepest-reaching plane, `ρ_hit = atan(4/2.974) = 53.37°`, with
+rock: **110 pcf 181.27 → 177.39 (−2.14%)**, 130 pcf 187.18 → 186.85 (−0.18%). Crediting it
+would lift loose-end sliding ~2%; it is not credited, so the verdict is conservative on this
+count.
 
 **And no published method credits it here.** Frydman & Keissar (1987, *J. Geotech. Eng.*
 113(6), centrifuge, L/H 0.1–1.1), Leshchinsky & Hu (2003) and Lawson & Yee (2005, limit
@@ -320,69 +377,59 @@ loose end. **Nothing is credited**; the record prints the check.
 
 ## 7. Against AB's own numbers, and AB's Table 1.3
 
-| term | 2026-09-20 | 2026-09-21 | here | why |
+| term | 2026-09-20 | 2026-09-21 a.m. | audit | **now** |
 |---|---|---|---|---|
-| unit | generic, solid | AB Classic | AB Classic | the owner's unit |
-| thrust | Rankine EFP | Coulomb, inclined | two-zone trial wedge | wall rock |
-| sliding / OT FS (110) | 0.38 / 0.57 | 1.21 / 1.27 | **1.38 / 1.44** | |
-| tier row | 6.13 | 6.13 | not applied | back to back (§6) |
+| unit | generic, solid | AB Classic 6° | AB Classic 6° | **AB Stones 12°** |
+| thrust | Rankine EFP | Coulomb, inclined | two-zone trial wedge | two-zone trial wedge |
+| sliding / OT FS (110) | 0.38 / 0.57 | 1.21 / 1.27 | 1.38 / 1.44 | **1.54 / 2.02** |
+| tier row | 6.13 | 6.13 | not applied | not applied |
 
-**Reproducing AB's method.** AB's own resolution (`cos δ`), δ 0.66φ, `γ_s` 120 (its sample),
-d 0.97, 130 pcf, 6°, μ tan φ — the height at which the first FS hits 1.5, by the same
-arithmetic as §3:
+**Reproducing AB's method** (AB's `cos δ` resolution, δ 0.66φ, γ_s 120, d 0.97, 130 pcf,
+μ tan φ, `0.33 H` lever arms as printed) — the total height at which the first FS reaches 1.5,
+against Table 1.3 (manual p.10), whose heights are **exposed, including a cap**:
 
-| soil | this method, total H | AB Table 1.3, exposed incl. cap | ratio |
-|---|---|---|---|
-| clay 27° | 2.86' (sliding) | **3'-2"** = 3.17' | 1.11 |
-| silty sand 32° | 4.12' (overturning) | **4'-7"** = 4.58' | 1.11 |
-| sand/gravel 36° | 4.67' (overturning) | 5'-2" = 5.17' | 1.11 |
+| soil | 12° this method | **Table 1.3 "12° AB Stones only"** | ratio | 6° this method | 6° chart | ratio |
+|---|---|---|---|---|---|---|
+| clay 27° | 3.28' (sliding) | **3'-6"** = 3.50' | 1.07 | 2.87' | 3'-2" | 1.10 |
+| silty sand 32° | 5.52' (OT) | **5'-4"** = 5.33' | 0.97 | 4.15' | 4'-7" | 1.10 |
+| sand/gravel 36° | 6.51' (OT) | **5'-10"** = 5.83' | 0.90 | 4.70' | 5'-2" | 1.10 |
 
-The chart publishes a uniform ~11% more height than the printed sample method gives, at every
-soil. The manual does not itemise its chart basis (it refers to the AB Engineering Manual).
-The table is what AB publishes, and the free body is compared against it, not fitted to it.
+(The 6° column re-run here reads 2.87 / 4.15 / 4.70 against the audit's 2.86 / 4.12 / 4.67 —
+the audit used ⅓H, this uses AB's printed 0.33H. Neither changes a ratio past 0.01.) **At 12°
+AB's chart is not uniformly generous**: it is ~7% over the sample method in clay and 3–10%
+UNDER it in the sands — the page states the 12° system reaches "up to 5.5 ft … in good soils"
+(p.10), which reads as a cap, not a calculation. The table is what AB publishes; the free body
+is compared against it, not fitted to it.
 
-**Where the free body and AB agree, and where they differ, at each soil end:**
+**At each soil end:**
 
-* **Clay end (27°, the loose end here).** AB's chart allows **3'-2"** exposed with a cap.
-  The perimeter legs expose **3'-4"** and carry no cap: **the chart refuses this wall too.**
-  The free body agrees: it fails sliding and overturning at 110 pcf, with or without the rock.
-  At this end the owner's instinct is contradicted by AB itself.
-* **Silty-sand end (32°, the dense end here).** AB's chart allows **4'-7"**, so 3'-4" exposed
-  is routine *by the chart*, and the owner's instinct matches AB. The free body fails
-  overturning at 1.43–1.44 for three stated reasons, largest first:
-  1. **Resolution.** `cos(δ − ω)` instead of AB's `cos δ`: at 32°/120 pcf, 4.0' total, AB's
-     resolution reads OT **1.58**, this one **1.44** (no rock).
-  2. **Unit weight.** The band pairs φ 32° with γ 130 (both read off one EFP); AB's chart
-     pairs 32° with 120 or lighter. 130 vs 120 is ~8% more thrust.
-  3. **The buried course.** The free body is 4.0' (8" buried + 3'-4"); the chart's height is
-     exposed, with the cap's weight on top.
-  With AB's resolution at φ 32°/130 pcf the free body reads OT **1.48** — the chart's
-  generosity is almost exactly those three choices.
+* **Clay end (27°, the loose end here).** Table 1.3 allows **3'-6"** exposed including a cap.
+  The perimeter legs expose **3'-4"** with no cap modelled: 2" inside the row as built,
+  2" over it if a 4" AB Capstone is added on top. The free body passes at 110 pcf (sliding
+  1.54) — on the rock, which the chart also assumes. AB and the free body now agree at this
+  end, narrowly, as they should: both put the wall at the edge of gravity-wall range in clay.
+* **Silty-sand end (32°).** Table 1.3 allows **5'-4"**; 3'-4" is routine. The free body
+  passes wide (OT 2.02).
+* **AB's own resolution** at the free body's 4.0', same inputs as §3b: sliding **1.73 / 2.05**,
+  OT **2.32 / 2.34** with rock; native, sliding 1.48 / 1.88 and OT 2.02 / 2.16. The geometric resolution
+  graded here is the lower one at every term.
 
-**Which to believe?** The geometric resolution is the statics of a leaning face (§2), and φ is
-not measured. A soils report giving φ ≥ 32° at γ ≤ 120 pcf, graded with AB's resolution,
-would put this wall on AB's own chart; the engine does not take AB's resolution to get there.
-
-## 8. What would close it (the owner's decision)
+## 8. What closed it (the owner's decision, 2026-09-21)
 
 Required: FS 1.5 on sliding and overturning, bearing within 2,000 psf, at both soil ends.
-Every line below keeps the 12" wall rock of §3b unless it says otherwise.
 
-* **24" of wall rock instead of 12".** Same method, `t = 2.0'`: 110 pcf `P_a` 184.64 (ρ
-  52.17°), **sliding 1.594, OT 1.645, bearing 1,276 psf**; 130 pcf `P_a` 208.41 (ρ 54.79°),
-  **sliding 1.737, OT 1.536, bearing 1,452 psf. Passes at both ends** — on the same
-  length-weighted credit, which AB does not publish as a design basis for a gravity wall.
-  Worth putting to AB's engineering department before adopting. (Not authored.)
-* **AB Stone, 12° setback, native at the face:** sliding 1.30 ✗ / OT 1.71 at 110 pcf; 1.65 /
-  1.85 at 130. With the rock it would improve further; not re-run here.
-* **A measured soil.** At φ 32°/130 pcf the AB Classic with 12" rock reads OT 1.43 — a soils
-  report closes it only if it also reports a lighter soil or a higher φ.
-* **A lower terrace.** Native at the face, sliding reaches 1.5 near `H ≈ 3.17'` total (1.578
-  at 3.0', 1.487 at 3.2').
-* **Geogrid-reinforced SRW**, designed and sealed by the supplier's engineer.
-* **The tier row no longer stands in the way of any of these** (§6).
-
-(AB Stone arms: `0.485 + 2·0.212557 = 0.910113'`, `0.97 + 1.3333·0.212557 = 1.253409'`.)
+* **Taken: AB Stones (12° setback), keeping the 12" wall rock.** Sliding 1.54 / 1.81,
+  overturning 2.02 / 2.02, bearing 604 / 606 psf (§3b). Same unit size, weight, depth, core
+  fill and course height, so no other dimension of the apron moved. What it costs is ground:
+  AB, p.18: 12° walls "require more space … You may give up ground, but the final factors of
+  safety are higher" — 10" of lean at 4 ft, into the planting bed (§1).
+* **Not taken, and superseded with AB Classic** (all figures on the 6° unit): 24" of wall rock
+  (1.594/1.645, 1.737/1.536 — passed, on a length-weighted credit AB does not publish); a
+  lower terrace (sliding 1.5 near `H ≈ 3.17'` native); a measured soil; geogrid SRW sealed by
+  the supplier's engineer.
+* **What still rests on inputs:** the loose-end sliding margin is 2.5% and holds only with
+  the rock at AB's 36° (§3b sensitivities: 1.47 at 34°, 1.30 with no rock). Placing AB's
+  specified clean wall rock — not a dirtier "crushed stone" — is part of the design.
 
 ## 9. Not graded here
 
@@ -395,6 +442,7 @@ Every line below keeps the 12" wall rock of §3b unless it says otherwise.
   constructed in silty or clay soils" — the clay end of this band. Nor is the wall rock
   billed: it is on the spec, not in an assembly.
 * The cap unit — not modelled, its weight not credited.
+* The batter's geometry — the model draws the wall plumb; the 12° lean lives on the spec (§1).
 * A published chart row cannot close any of this; one authored on `srw.published` is refused
   unless drainage (a DRAINAGE layer or the spec's `drainage_zone`), a batter and a cap are
   stated and no taller wall stands within 2H — and the court walls still stand within 2H.
