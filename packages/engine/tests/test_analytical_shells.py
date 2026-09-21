@@ -138,7 +138,8 @@ def test_the_moment_columns_export_the_combination_that_actually_governed(load):
     for combination in envelope:
         assert combination.factors, combination.name
         assert LoadCaseKind.DEAD in combination.factors
-        assert combination.source.startswith("deck_post/")
+        # `column_support` grades the wall top on deck_post's own envelope (2026-09-20).
+        assert combination.source.startswith(("deck_post/", "column_support/"))
         # The label and the factors are two statements of one thing and must agree.
         for letter, kind in (("W", LoadCaseKind.WIND), ("S", LoadCaseKind.SNOW)):
             head = combination.name.split("§2.3.1 ")[1]

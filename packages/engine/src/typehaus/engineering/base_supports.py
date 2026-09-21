@@ -73,6 +73,12 @@ class PoleBase:
         bottom_ft = float(bottom.inches) / 12.0
         shaft = grade_ft - (bottom_ft + float(thick.inches) / 12.0)
         total = grade_ft - bottom_ft
+        if shaft <= 0.0:
+            # Grade at or below the pad top: no buried shaft for the soil to hold, and the
+            # 2x2 pole solve has no profile to integrate. Name it; never grade a guess.
+            return cls(tags, (), (), 0.0, 0.0, None,
+                       (f"a buried shaft — Site.grade stands {-shaft:.2f}' below the pad top",),
+                       ())
         b = pier.diameter_in / 12.0
         axis = base_axis_of(pier.tag)
         normal = {"x": extents[1], "y": extents[0]}.get(axis or "", min(extents))

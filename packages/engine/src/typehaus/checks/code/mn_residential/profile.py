@@ -547,33 +547,30 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Fixed column base rotation (stiffness and sway)",
                        ("structural.base_rotation",),
                        ("ACI 318-19 §6.6.4", "ACI 318-19 §6.2.5.3", "IBC 2018 §1806.3.4")),
-        # Computed since 2026-09-20 (`engineering/column_head_joint.py`) and STILL
-        # non-blocking: on catlin `PT-BW-W`/`-GW` are INCOMPLETE, because their head tie is
-        # an ABU66SS and ESR-1622 publishes no lateral value. Flip when that closes.
+        # The four lines below BLOCK since 2026-09-20: each kind is a registered calculation
+        # now, and `engineered()`'s contract is that a registered kind gates. On catlin they
+        # hold the draft gate shut, and that is the answer the work was for: PT-BW-W/-GW's
+        # heads have no published lateral value, the veneer beam's end anchorage is
+        # unauthored, the thermal breaks await GFRP data and a measured modulus, and the
+        # SRW apron is OVER (sliding FS 0.38). A suppressed finding leaves its line UNKNOWN,
+        # so blocking is also what keeps a suppressed OVER from opening either gate.
         PermitItemSpec("Cast column head joint (connector, shear, torsion)",
                        ("structural.column_head_joint",),
-                       ("ACI 318-19 §22.5", "ACI 318-19 §22.7", "ACI 318-19 §22.8"),
-                       blocking=False),
-        # Computed since 2026-09-20 (`engineering/veneer_beam.py`) but still non-blocking:
-        # catlin's record is INCOMPLETE — no hook is authored on the beam's longitudinal rows
-        # and the bottom row meets the side walls' footings, not the walls. Flip it the day
-        # the record reads OK. The anchors are their own deferred line below.
+                       ("ACI 318-19 §22.5", "ACI 318-19 §22.7", "ACI 318-19 §22.8")),
         PermitItemSpec("Cast beam carrying a masonry veneer",
                        ("structural.veneer_beam",),
                        ("ACI 318-19 §9.5", "ACI 318-19 §22.7", "ACI 318-19 §24.2.2",
-                        "ACI 318-19 §25.4.3"), blocking=False),
+                        "ACI 318-19 §25.4.3")),
+        # Still deferred: the anchor supplier's design. Non-blocking until it is computed.
         PermitItemSpec("Masonry veneer anchorage over an insulated standoff",
                        ("structural.veneer_anchor",),
                        ("TMS 402-16 §12.2", "IRC R703.8.4"), blocking=False),
         PermitItemSpec("Structural ties across a thermal break",
                        ("structural.thermal_break",),
-                       ("ACI 318-19 §22.9", "ACI 347R-14 §2.2"), blocking=False),
-        # COMPUTED since 2026-09-20 (`engineering/segmental_wall.py`) and OVER on catlin's
-        # apron — sliding FS 0.38. Deliberately still non-blocking: the design change is
-        # the owner's call (notes/raised_garden_srw.md §8). Flip to True with that change.
+                       ("ACI 318-19 §22.9", "ACI 347R-14")),
         PermitItemSpec("Segmental gravity retaining walls (tiered)",
                        ("structural.tiered_retaining",),
-                       ("IRC R404.4", "IBC 2018 §1807.2"), blocking=False),
+                       ("IRC R404.4", "IBC 2018 §1807.2")),
         PermitItemSpec("Roof framing outside the rafter span table",
                        ("structural.rafter_span",),
                        ("IRC R802.4",), blocking=False),

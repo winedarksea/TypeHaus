@@ -401,12 +401,14 @@ def test_print_sealed_exits_one_while_nothing_is_sealed(catlin_engineering):
 
     from typehaus.cli.app import app
 
+    # ** AND IT CLOSED AGAIN ON 2026-09-20, for five named engineering lines (see the test
+    # below), so the refusal here is the DRAFT gate's — correct ordering. The second gate's
+    # own refusal is pinned at the checklist level below until catlin reaches draft again;
+    # re-tighten this to "sealed print blocked" the day it does.
     runner = CliRunner()
     sealed = runner.invoke(app, ["print", str(CATLIN), "--sealed", "--fmt", "dxf"])
     assert sealed.exit_code == 1, sealed.output
-    assert "sealed print blocked" in sealed.output
-    assert "permit print blocked" not in sealed.output, \
-        "the DRAFT gate refused, so this test is not exercising its own subject"
+    assert "print blocked" in sealed.output
 
     # The shared fixture's checklist, not a second full run of the house — see
     # `test_catlin_fixture_discipline`, which lints exactly that.
@@ -415,7 +417,7 @@ def test_print_sealed_exits_one_while_nothing_is_sealed(catlin_engineering):
     assert checklist.unsealed
 
 
-def test_the_two_gates_are_separate_and_catlin_reaches_draft_and_not_sealed(catlin_engineering):
+def test_the_two_gates_are_separate_and_catlin_reaches_neither(catlin_engineering):
     """The gates are independent, and catlin is the house that proves it by reaching one.
 
     It reached draft and not sealed until 2026-09-18, missed BOTH for two days while
@@ -429,13 +431,24 @@ def test_the_two_gates_are_separate_and_catlin_reaches_draft_and_not_sealed(catl
     The separation is what the pair below pins: `sealed` is false for a reason that has
     nothing to do with any calculation — catlin carries no `engineering.toml` at all — so it
     stays false with every draft line green, and it would have stayed false with them red.
+
+    ** AND MISSES DRAFT AGAIN SINCE 2026-09-20, ON FIVE NAMED LINES. ** Every deferred kind
+    became a registered calculation and its line blocks; the five below are what those
+    calculations found open on catlin (`haus engineering`). The set is pinned exactly, so a
+    sixth line going red, or one of these closing unnoticed, fails here.
     """
     _ctx, _items, checklist = catlin_engineering
     blocked = [item.label for item in checklist.items
                if item.blocking and item.result not in (Result.PASS,
                                                         Result.NOT_APPLICABLE)]
-    assert blocked == [], blocked
-    assert checklist.ok
+    assert sorted(blocked) == sorted([
+        "Fixed column base rotation (stiffness and sway)",
+        "Cast column head joint (connector, shear, torsion)",
+        "Cast beam carrying a masonry veneer",
+        "Structural ties across a thermal break",
+        "Segmental gravity retaining walls (tiered)",
+    ]), blocked
+    assert not checklist.ok
     assert not checklist.sealed
     assert checklist.unsealed
     # Shut for its own reason: every engineered item is unsealed because the house carries

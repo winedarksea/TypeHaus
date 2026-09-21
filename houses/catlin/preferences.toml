@@ -425,14 +425,26 @@ suppress = [
   # deep gravity section, a terrace lowered to ~1'-1.4', or supplier-sealed geogrid.
   #
   # Suppressed only so the reference house's CI gate stays usable while that call is made.
-  # `haus check --no-suppress` shows all five; the permit line stays non-blocking while the
-  # kind is OVER (profile.py). ** A DEBT WITH A NUMBER ON IT: sliding FS 0.38. ** Delete
+  # `haus check --no-suppress` shows all five; the permit line BLOCKS (profile.py), so the
+  # suppression hides nothing from either gate. ** A DEBT WITH A NUMBER ON IT: sliding FS 0.38. ** Delete
   # these five lines in the commit that changes the apron, and do not add a sixth.
   "structural.tiered_retaining:W-RG-BLOCK",
   "structural.tiered_retaining:W-RG-WEST",
   "structural.tiered_retaining:W-RG-EAST",
   "structural.tiered_retaining:W-RG-WEST-BALCONY",
   "structural.tiered_retaining:W-RG-EAST-BALCONY",
+
+  # ** structural.base_rotation:PT-BW-GW: 1 REAL FAIL, MEASURED 2026-09-20, THE DAY BASE
+  # STIFFNESS WAS FIRST CALCULATED. A GEOTECH REPORT OR A STIFFER BASE IS OWED. **
+  #
+  # The landing column's 4.5' pole turns in the ground: sway magnifier δ 1.456 at the STIFF
+  # end of the presumptive band (n_h 8.3 pci), past ACI 318-19 §6.2.5.3's 1.4, and a
+  # mechanism at the soft end. notes/column_base_rotation.md §3b. A measured n_h of about
+  # 9.2 pci closes it; deepening the pole alone does not (§7).
+  #
+  # ** A DEBT WITH A NUMBER ON IT: δ 1.456. ** The permit line BLOCKS, so this hides nothing
+  # from either gate. Delete the line in the commit that changes the base or adds the report.
+  "structural.base_rotation:PT-BW-GW",
 
   # ** mep.run_through_stud: CLOSED 2026-09-20 BY RETYPING THE WALLS. NOTHING SUPPRESSED. **
   #

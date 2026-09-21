@@ -7,26 +7,18 @@ under a roof-step drift), and the connector read is ``published``'s own.
 
 from __future__ import annotations
 
-from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
-from typehaus.checks.run import build_context
 from typehaus.checks.structural.truss_reactions import truss_reactions
 from typehaus.findings import Result
 from typehaus.model import PublishedCapacity, PublishedReaction
-from typehaus.source import load_plan
-
-CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
 
 @pytest.fixture(scope="module")
-def ctx():
-    plan = load_plan(CATLIN).plan
-    assert plan is not None
-    context, _ = build_context(plan, CATLIN)
-    return context
+def ctx(catlin_ctx):
+    return catlin_ctx
 
 
 def _heel(capacity: float = 900.0) -> PublishedCapacity:

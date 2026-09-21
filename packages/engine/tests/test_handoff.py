@@ -212,11 +212,14 @@ def test_a_filled_scaffold_seals_every_computed_item(bundle, tmp_path, catlin_ct
                if ctx.engineering[i].status is Status.OVER}
     # ** NOT EMPTY SINCE 2026-09-20, AND ON PURPOSE: the SRW apron is computed and OVER
     # (`tiered_retaining`, notes/raised_garden_srw.md). Its block MUST be commented out —
-    # no PE stamps a wall at sliding FS 0.38 — and every other kind stays sealable. **
-    assert refused == {"tiered_retaining"}, (
+    # no PE stamps a wall at sliding FS 0.38 — and so must `base_rotation`'s, over on the
+    # landing column PT-BW-GW (notes/column_base_rotation.md §3b). Every other kind stays
+    # sealable. **
+    assert refused == {"tiered_retaining", "base_rotation"}, (
         "a kind went over capacity — the scaffold will comment its whole block out, which is "
         "correct, but this test then stops exercising the sealing path for it", refused)
     assert register.covering("tiered_retaining/W-RG-BLOCK") is None
+    assert register.covering("base_rotation/PT-BW-GW") is None
     computed = [ctx.engineering[i] for i in every
                 if ctx.engineering[i].inputs and ctx.engineering[i].kind not in refused]
     assert computed

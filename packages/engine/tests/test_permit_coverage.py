@@ -130,7 +130,10 @@ def test_every_code_finding_carries_a_citation(profile, starter_dir) -> None:
 # BLOCKING in the same commit that took them out of the engineered lane, so they left the
 # staged count and the engineered count at once and this number did not move. A reader
 # diffing only `MAX_UNSEALED_ITEMS` would think two items had been quietly downgraded.
-MAX_NON_BLOCKING_ITEMS = {"mn-2020": 25}
+#
+# LOWERED 25 -> 24 on 2026-09-20: it measured 24 once the engineered lines were counted in
+# their own lane, and a ratchet with slack in it is a ratchet that can slide.
+MAX_NON_BLOCKING_ITEMS = {"mn-2020": 24}
 
 # The engineered lines are counted separately, and the split is not bookkeeping — the two
 # lanes have different exit conditions. A staging item leaves its lane when *this engine*
@@ -206,6 +209,11 @@ MAX_NON_BLOCKING_ITEMS = {"mn-2020": 25}
 # the checklist. Each now has its own line. Holding this at 9 by keeping them off the
 # checklist would be gaming the ratchet. `MAX_NON_BLOCKING_ITEMS` holds at 25: the new
 # lines are engineered, so they land in this lane and not in staging.
+#
+# HELD at 14 on 2026-09-20 by two moves that cancel. +1: `veneer_anchor` became its own
+# deferred line (the anchors were hiding inside `veneer_beam`'s deliverable, unnamed). -1:
+# the SRW apron's five OVER findings are suppressed in catlin's preferences, so its line
+# carries no engineered finding and reads UNKNOWN — and it BLOCKS, so both gates stay shut.
 MAX_UNSEALED_ITEMS = {"mn-2020": 14}
 
 
@@ -412,16 +420,14 @@ _REGISTER_ONLY = {
 }
 
 
-def test_every_engineering_kind_reaches_a_permit_item() -> None:
+def test_every_engineering_kind_reaches_a_permit_item(catlin_plan) -> None:
     from typehaus.checks.registry import run_checks
     from typehaus.checks.run import build_context
     from typehaus.engineering import registered_kinds
-    from typehaus.source import load_plan
 
     profile = get_profile(DEFAULT_PROFILE_NAME)
-    result = load_plan(CATLIN)
-    assert result.plan is not None
-    ctx, _ = build_context(result.plan, CATLIN)
+    # Its own context, not `catlin_ctx`: the suppression is lifted on it below.
+    ctx, _ = build_context(catlin_plan, CATLIN)
     # Asked with `[checks] suppress` LIFTED: this is a question about the profile's wiring,
     # and catlin suppresses the five OVER `tiered_retaining` findings (preferences.toml).
     # A suppressed item does drop off its line — that is the suppression's cost, not a

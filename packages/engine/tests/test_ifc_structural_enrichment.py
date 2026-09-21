@@ -116,11 +116,12 @@ def test_a_deferred_item_says_it_has_nothing_to_fingerprint(enriched):
     hits = [(ctx.engineering[i], tag) for i in sorted(ctx.engineering)
             if ctx.engineering[i].status is Status.NO_CALC
             for tag in ctx.engineering[i].element_tags if tag in by_name]
-    assert hits, "no deferred item lands on an emitted element"
-    record, tag = hits[0]
-    pset = ue.get_psets(by_name[tag]).get(f"Pset_TH_Engineering_{record.kind}")
-    assert pset is not None
-    assert pset["Fingerprint"].startswith("none")
+    # A roof's Name reaches an IfcRoof the annotation pass does not map, so read the psets
+    # that WERE written rather than the first hit.
+    psets = [pset for record, tag in hits
+             if (pset := ue.get_psets(by_name[tag]).get(f"Pset_TH_Engineering_{record.kind}"))]
+    assert psets, "no deferred item lands on an emitted element"
+    assert all(pset["Fingerprint"].startswith("none") for pset in psets)
 
 
 def test_the_ordinary_build_carries_none_of_this(tmp_path):

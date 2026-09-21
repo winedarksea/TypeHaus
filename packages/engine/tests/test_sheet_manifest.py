@@ -46,24 +46,16 @@ def test_the_file_is_byte_deterministic(tmp_path: Path):
 
 
 @pytest.mark.slow
-def test_haus_print_passes_the_draft_gate_on_catlin(tmp_path: Path):
-    """The draft gate, end to end — and on 2026-09-20 it started OPENING on catlin.
+def test_haus_print_refuses_catlin_on_the_open_engineering_lines(tmp_path: Path):
+    """The draft gate, end to end — and since 2026-09-20 it REFUSES catlin again.
 
-    ** THIS TEST IS THE INVERSE OF THE ONE IT REPLACES, AND DELETING THAT ONE WAS ITS OWN
-    INSTRUCTION. ** From 2026-09-18 `haus print houses/catlin` was refused: the north entry's
-    cast column bases did not have the IBC 1807.3.2.1 embedment every `deck_post` record had
-    been naming as an assumption and none grading. That test asserted the refusal and said in
-    as many words that "the day the design closes … this test fails and tells somebody to
-    delete it". `notes/entry_column_base_fixity.md` §6a closed the canopy pair with concrete
-    and §6e closed the landing pair with a graded §1806.3.4 claim, so it did and this is what
-    stands in its place.
-
-    Asserting the gate OPEN is worth as much as asserting it shut, and for the same reason: a
-    permit set that silently stopped being printable is exactly as bad as one that silently
-    started. The half of the pair that is about the gate REFUSING where it should is
-    `test_calc_package.py` and `test_permit_coverage.py`, which do not need catlin red.
+    It opened on 2026-09-20 when the column bases closed, and shut the same day when every
+    deferred engineering kind became a registered calculation whose line blocks: base
+    rotation on PT-BW-GW, two column heads, the veneer beam, the thermal breaks and the SRW
+    apron are open (`haus engineering`). The day they close this test fails and tells
+    somebody to invert it back; a permit set that silently became printable is exactly as
+    bad as one that silently stopped.
     """
-    pytest.importorskip("matplotlib")
     from typer.testing import CliRunner
 
     from typehaus.cli.app import app
@@ -71,27 +63,26 @@ def test_haus_print_passes_the_draft_gate_on_catlin(tmp_path: Path):
     house = tmp_path / "catlin"
     copy_house(CATLIN, house)
     result = CliRunner().invoke(app, ["print", str(house), "--fmt", "pdf"])
-    assert result.exit_code == 0, result.output
-    assert "permit print blocked" not in result.output
-    assert (house / "out" / "permit_set.pdf").is_file()
+    assert result.exit_code == 1, result.output
+    assert "permit print blocked" in result.output
+    assert not (house / "out" / "permit_set.pdf").is_file()
 
 
 @pytest.mark.slow
-def test_haus_print_writes_the_manifest_beside_the_pdf(tmp_path: Path):
+def test_haus_print_writes_the_manifest_beside_the_pdf(tmp_path: Path, monkeypatch):
     """End to end on the real house — the sandbox print, then the JSON next to it.
 
-    ** THE GATE IS NO LONGER STUBBED, SINCE 2026-09-20. ** It was, for two years' worth of
-    commits in two days: catlin could not pass the draft gate while its column bases were
-    open, no shipped house could, and patching ``PermitChecklist.ok`` was what kept the
-    composition, the writer and the file format under test at all. It passes now
-    (``test_haus_print_passes_the_draft_gate_on_catlin`` above), so the stub is gone and this
-    test exercises the real path end to end. The gate is the test above's subject and has its
-    own coverage in ``test_calc_package`` and ``test_permit_coverage``.
+    ** THE GATE IS STUBBED AGAIN, SINCE 2026-09-20. ** catlin does not reach draft (the test
+    above), and patching ``PermitChecklist.ok`` is what keeps the composition, the writer
+    and the file format under test while it does not. Remove the stub the day catlin passes.
     """
     pytest.importorskip("matplotlib")
     from typer.testing import CliRunner
 
+    from typehaus.checks.permit import PermitChecklist
     from typehaus.cli.app import app
+
+    monkeypatch.setattr(PermitChecklist, "ok", property(lambda self: True))
 
     house = tmp_path / "catlin"
     copy_house(CATLIN, house)

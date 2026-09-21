@@ -229,7 +229,20 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset(catlin_check_r
     # The mechanism stays because the mechanism is the point: a gating item may be open here
     # deliberately, named once, while every OTHER gating item is still asserted as tightly as
     # before. An empty set is the strongest form of that — nothing is excused.
-    OPEN: set[str] = set()
+    #
+    # ** FIVE OPEN SINCE 2026-09-20, AND EACH IS THE ANSWER A CALCULATION GAVE. ** The
+    # deferred engineering kinds were registered and their lines flipped to blocking; on
+    # catlin they hold the gate shut for named reasons (haus engineering): the landing
+    # column's base turns in the ground (base_rotation/PT-BW-GW, δ 1.456), two column heads
+    # have no published lateral value, the veneer beam's end anchorage is unauthored, the
+    # thermal breaks await GFRP data and a measured modulus, and the SRW apron is OVER.
+    OPEN: set[str] = {
+        "Fixed column base rotation (stiffness and sway)",
+        "Cast column head joint (connector, shear, torsion)",
+        "Cast beam carrying a masonry veneer",
+        "Structural ties across a thermal break",
+        "Segmental gravity retaining walls (tiered)",
+    }
     gating = [item for item in checklist.items if item.blocking]
     resolved = {Result.PASS, Result.NOT_APPLICABLE}
     unresolved = [item for item in gating
