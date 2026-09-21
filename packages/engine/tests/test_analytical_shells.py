@@ -46,10 +46,15 @@ def _with_subgrade(ctx):
     return dataclasses.replace(ctx, preferences=preferences)
 
 
+def _soil_springs(model):
+    """The shells' ground springs — the landing's deck-tie springs are not soil."""
+    return [s for s in model.support_springs if ":tie:" not in s.node]
+
+
 def test_catlin_refuses_to_mesh_a_wall_it_has_no_stiffness_for(load):
     model = build_analytical_model(load.ctx)
     assert model.plates == ()
-    assert model.support_springs == ()
+    assert _soil_springs(model) == []
     assert model.plate_pressures == ()
     refusals = [gap for gap in model.gaps if "subgrade" in gap]
     assert len(refusals) == 1, model.gaps
@@ -79,11 +84,12 @@ def test_given_a_modulus_the_walls_really_mesh(load):
     assert {p.case for p in model.plate_pressures} == {LoadCaseKind.EARTH}
     assert {p.plate for p in model.plate_pressures} == {p.id for p in model.plates}
     # Both spring directions at every base node, and no spring anywhere else.
-    base = {spring.node for spring in model.support_springs}
-    assert {spring.dof for spring in model.support_springs} == {"DZ", "DX"}
-    assert len(model.support_springs) == 2 * len(base)
-    assert all(spring.stiffness_n_m > 0.0 for spring in model.support_springs)
-    assert all(TEST_BASIS in spring.basis for spring in model.support_springs)
+    soil = _soil_springs(model)
+    base = {spring.node for spring in soil}
+    assert {spring.dof for spring in soil} == {"DZ", "DX"}
+    assert len(soil) == 2 * len(base)
+    assert all(spring.stiffness_n_m > 0.0 for spring in soil)
+    assert all(TEST_BASIS in spring.basis for spring in soil)
 
 
 def test_the_meshed_walls_are_the_ones_that_stop_being_gaps(load):

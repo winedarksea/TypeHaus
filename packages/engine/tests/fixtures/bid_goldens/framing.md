@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** 49dfcee88a1e0d30  
-**Lines:** 135
+**Model hash:** dfbd4acf2830ae5d  
+**Lines:** 136
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -84,13 +84,13 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | H2.5ASS stainless hurricane/seismic tie | 6 | ea |  | building |
 | H2.5AZ ZMAX hurricane/seismic tie | 57 | ea |  | building |
 | HETA20Z embedded truss anchor (ZMAX), installed in pairs | 16 | ea |  | building |
-| HGAM10 masonry gusset angle | 4 | ea |  | building |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | 1 | ea |  | building |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | 1 | ea |  | building |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | 2 | ea |  | building |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | 2 | ea |  | building |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | 2 | ea |  | building |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | 2 | ea |  | building |
+| HL33HDG heavy angle, 7 ga, hot-dip galvanized | 6 | ea |  | building |
 | HU212-3 face-mount hanger, triple 2x12 | 4 | ea |  | building |
 | HU28-2Z face-mount hanger, double 2x8 (ZMAX) | 4 | ea |  | building |
 | HUC concealed-flange masonry/concrete hanger | 2 | ea |  | building |
@@ -124,6 +124,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | SP6 stud plate tie (2x6) | 318 | ea |  | building |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | 12 | ea |  | building |
 | THA422 top-flange floor truss hanger | 3 | ea |  | building |
+| KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT) | 3 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 1,130 | ea |  | building |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | 72 | ea |  | building |
 
@@ -264,13 +265,13 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | H2.5ASS stainless hurricane/seismic tie | — |
 | H2.5AZ ZMAX hurricane/seismic tie | — |
 | HETA20Z embedded truss anchor (ZMAX), installed in pairs | — |
-| HGAM10 masonry gusset angle | — |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | — |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | — |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | — |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | — |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | — |
 | HHUS410 face-mount hanger, 2-ply 1-3/4" LVL | — |
+| HL33HDG heavy angle, 7 ga, hot-dip galvanized | — |
 | HU212-3 face-mount hanger, triple 2x12 | — |
 | HU28-2Z face-mount hanger, double 2x8 (ZMAX) | — |
 | HUC concealed-flange masonry/concrete hanger | — |
@@ -304,6 +305,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | SP6 stud plate tie (2x6) | — |
 | 3-1/2 in square 316 stainless beam standoff shim pack, 1/2 in to 1 in (SS316-SHIM-35) | — |
 | THA422 top-flange floor truss hanger | — |
+| KDAT 4x4 tie block, 3-1/2" long, screwed to the tied member (TIE-BLOCK-4X4-KDAT) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | — |
 | TimberLOK heavy-duty wood screw (0.189 in shank) (TLOK08) | — |
 | Beam — BEAM_GLULAM_TREATED (beam:BEAM_GLULAM_TREATED) | BM-SG-BLC, BM-SG-BLE, BM-SG-BLW |

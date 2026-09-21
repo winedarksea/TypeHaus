@@ -8,6 +8,8 @@ every catlin row is graded; movement and settlement are OVER, and OVER outranks 
 
 from __future__ import annotations
 
+import dataclasses
+
 import pytest
 
 from typehaus.engineering.item import Status
@@ -179,8 +181,12 @@ def test_no_k_v_holds_the_settlement_row_open_but_not_an_over_row(ctx) -> None:
 def test_a_k_v_only_report_leaves_base_rotation_on_its_band(ctx) -> None:
     from typehaus.engineering.base_supports import measured
 
-    assert ctx.plan.project.site.lateral_subgrade_modulus.n_h_pci is None
-    assert measured(ctx) is None
+    project = ctx.plan.project
+    report = project.site.lateral_subgrade_modulus.model_copy(update={"n_h_pci": None})
+    site = project.site.model_copy(update={"lateral_subgrade_modulus": report})
+    plan = ctx.plan.model_copy(update={"project": project.model_copy(update={"site": site})})
+    assert measured(dataclasses.replace(ctx, plan=plan)) is None
+    assert measured(ctx) is not None, "catlin authors a presumed n_h since 2026-09-21"
 
 
 def test_dowel_product_fields_round_trip() -> None:

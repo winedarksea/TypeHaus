@@ -242,8 +242,11 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset(catlin_check_r
     # joint line closed (the two INCOMPLETE heads left) and base rotation is held open by the
     # canopy pair's presumptive band alone. The tie itself is OVER at 1.82 (suppressed as a
     # numbered debt, notes/north_entry_piers.md §10), so its new line is open in their place.
+    #
+    # ** 2026-09-21 (phase 2): base rotation CLOSED on a presumed n_h ** (Terzaghi's loose
+    # row, RE/RNE 0.81 draft). Two tie lines took the landing to 1.18; the thermal break and
+    # the SRW apron are still OVER after the owner's fixes.
     OPEN: set[str] = {
-        "Fixed column base rotation (stiffness and sway)",
         "Deck lateral tie to a concrete wall",
         "Structural ties across a thermal break",
         "Segmental gravity retaining walls (tiered)",

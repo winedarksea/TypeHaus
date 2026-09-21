@@ -2263,8 +2263,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     north is exactly how a frost check buys a false pass.
   - `test_the_veneer_beam_isolates_the_house_footing` pins the 84" board, full 8" depth, and
     zero plan lap against every house strip.
-  - `prices.toml`'s `thermal_break` row bills the four closure boards by SF of 2" 40 psi
-    XPS — the four boards are not the same size, so check totals against SF, never against
+  - `prices.toml`'s `thermal_break` row bills the four closure boards (2" ROCKWOOL Toprock
+    DD since 2026-09-21; only the veneer beam's board stays XPS) — the four boards are not the same size, so check totals against SF, never against
     count. (The two footing boards went 84" → 96" → 84" on 2026-09-10, with the strips.)
   - **FLAGGED FOR THE ENGINEER, NOT TAKEN: trimming the wall beddings' surplus stone.**
     Worth $835-1,250 and the only four-figure item in the simplification pass, and the one
@@ -2514,20 +2514,19 @@ haus analysis . --solve                     # the engineered frame, solved in Py
     the pad's width through an effective `b` worth only 0.6-7%. Canopy 0.96 -> 0.85; the two
     garage-side LANDING columns stop straddling §1806.3.4 and publish at 0.96/0.98 unclaimed.
   - Its two scope deferrals are COMPUTED since 2026-09-20. `base_rotation/*` grades base
-    STIFFNESS on a presumptive Winkler band (notes/column_base_rotation.md): `PT-BW-GW` is
-    OVER §6.2.5.3 (δ 1.456, suppressed as a numbered debt) and RE/RNE/W/GE straddle the
-    band — a geotech report's n_h closes or condemns them. `column_head_joint/*` grades the
-    head (notes/north_entry_piers.md §9); torsion is ~0.03 of φT_th, and `PT-BW-W`/`-GW`
-    are INCOMPLETE because the ABU66SS publishes no lateral value.
-  - **⚠ 2026-09-21: THE LANDING IS TIED TO THE GARAGE STEM, AND THE TIE IS OVER AT 1.82.**
-    An `HGAM10` pair per carrier (`params/landing_tie.py`, on a KDAT tie block — the 3" leg
-    cannot reach a soffit 3 3/4" up) is what `deck_tie_basis.wall_ties` reads to DERIVE the
-    landing braced, so W/E/GW/GE lean and left `base_rotation`, `column_base` and
-    `column_head_joint` (the head line opened). `deck_tie/FS-BW-FLOOR` grades the tie line as
-    a bolt group: `W-BW-SCREEN`'s 981 lb lands 1'-1 1/2" west of a line only 2'-4" long, so
-    `BM-BW-FC` takes 1,675 lb against 920. Suppressed as the numbered debt that replaced
-    PT-BW-GW's; §10d prices the fixes (a tie on the screen's own line into `W-G-W` is the
-    one that removes the eccentricity). RE/RNE are untouched and still need the soils n_h.
+    STIFFNESS: since 2026-09-21 on a PRESUMED n_h (Terzaghi's loose-sand row, 8.10 pci,
+    `SubgradeModulus(provenance="presumed")` in `plan/site.py`), so RE/RNE publish OK at 0.81
+    draft with "THE SOIL IS PRESUMED" on the record and in the gap register's section D. The
+    submerged loose row (4.63 pci) would condemn both — a soils report still closes it.
+    `column_head_joint/*` grades the head on the HETA20Z pair with FL11473 §9 item 4's
+    combined rule as a row (RE/RNE 0.473).
+  - **⚠ 2026-09-21: THE LANDING IS TIED ON TWO LINES, AND THE TIE IS STILL OVER AT 1.18.**
+    `params/landing_tie.py`: an `HL33HDG` pair per KDAT tie block on the garage stem (one 1/2"
+    Titen HD each, ACI 318 Ch. 17 in `engineering/deck_tie_anchor.py`, 0.76), plus a pair on
+    `W-BW-SCREEN`'s north end post into `W-G-W` through a KDAT filler. E-W wind governs at
+    1.177 on `BM-BW-FE` under wet-service C_M 0.70; dry it is 0.82. Suppressed as a numbered
+    debt; `notes/north_entry_piers.md` §10d lists the options (EOR accepts dry service,
+    HL43/46HDG with 3/4" bolts and 6x members, another joint) — none chosen.
 - **A fixed-base column's P-M check is a §2.3.1 ENVELOPE** (2026-09-18), each combination at
   its own axial load. A larger axial is not automatically conservative on an interaction
   curve — below the balance point compression RAISES moment capacity — so grading the wind
