@@ -18,6 +18,9 @@ on a shallow pole in presumptive soil that turns out to be the question that dec
 
 ## 0. The answer
 
+> **2026-09-21: `PT-BW-RE`/`-RNE` are graded OK (0.81) on a PRESUMED n_h, 8.10 pci —
+> Terzaghi's loose dry sand (§10).** The band table below is still the no-report answer.
+
 | column | base | δ_ref 0.25" | δ_ref 1.0" | verdict | turns at |
 |---|---|---:|---:|---|---:|
 | `PT-BW-RE` | 8.33' pole, 1.5' pad | δ 1.305 | δ 1.953 | **straddles** | 0.40" |
@@ -243,7 +246,8 @@ line, and the plan's figures are not reachable from its own stated inputs. The p
 
 ## 8. What closes it
 
-- **A geotechnical report.** `Site.lateral_subgrade_modulus = SubgradeModulus(n_h_pci=…,
+- **A geotechnical report** — and until one, a presumed table row (§10, done 2026-09-21).
+  `Site.lateral_subgrade_modulus = SubgradeModulus(n_h_pci=…,
   source=…, basis=…)` re-grades every record with no code change. At the turning points of
   §6 (`n_h = 2 S1 / δ_ref`): RE needs about 5.2 pci, RNE 4.8, W 2.3, GE 2.6, E 0.6 — and GW
   about 9.2, denser than Terzaghi's loose sand.
@@ -272,6 +276,51 @@ line, and the plan's figures are not reachable from its own stated inputs. The p
 - For the balcony: the wall top's capacity and the dowels' development
   (`column_support/W-SG-*`), and the diaphragm at the wall head, taken as declared.
 
+## 10. The presumed n_h — RE and RNE close as draft (2026-09-21)
+
+**No report still.** The owner's call: grade on a presumptive PUBLISHED value, marked
+presumed, so the rows close as draft and the gap register keeps the report owed.
+
+**The value.** Terzaghi (1955), Géotechnique 5(4), n_h for piles in cohesionless soil, row
+**"dry or moist sand, loose": 7 tons/ft³** (as reproduced in Table 2 of
+https://gnpgroup.com.my/wp-content/uploads/Publication/2009_11.pdf). `7 × 2,000 / 1,728 =
+8.10 pci`. Two presumptions, both stated on the record: GM (silty gravel, glacial till) is
+read at the LOOSEST cohesionless row, and it is **above groundwater** — none is established;
+the submerged loose row, 4 tons/ft³ = 4.63 pci, would be under RE's 5.2 turn (§8) and would
+condemn both columns. Authored on `Site.lateral_subgrade_modulus` beside workstream C's
+presumed k_v, `provenance="presumed"`.
+
+**Width.** Terzaghi's is `k_h = n_h z / B`: the reaction per unit length `n_h z y` does not
+grow with width. So a STATED n_h is integrated at 1 ft on every segment — exact for the 12"
+shaft, and the pad earns no width credit (basis 2). The IBC band keeps its width scaling,
+because §1807.3.2.1 is a pressure.
+
+`PT-BW-RE`, n_h = 14,000 lb/ft⁴ at b = 1 ft; shaft 7.3333', pole 8.3333', head 9.2292':
+
+```
+I1 = 8.3333²/2 = 34.722   I2 = 8.3333³/3 = 192.90   I3 = 8.3333⁴/4 = 1,205.6
+det = 34.722 × 1,205.6 − 192.90²                          = 4,651
+u0 = (1,205.6 + 192.90 × 9.2292) / (14,000 × 4,651)       = 4.586e-5 ft = 5.503e-4 in/lb
+θ  = (34.722 × 9.2292 + 192.90) / (14,000 × 4,651)        = 7.884e-6 rad/lb
+Δ_base = 5.503e-4 + 7.884e-6 × 9.2292 × 12                = 1.4234e-3 in/lb
+k_θ = 198.75² / 1.4234e-3                                 = 2.775e7 lb-in/rad
+R = 2.775e7 × 198.75 / 1.1941e9                           = 4.618
+Pc,flex = 67,653 / (1 + 3/4.618)                          = 41,015 lb
+δ = 1 / (1 − 7,538.3 / (0.75 × 41,015))                   = 1.3246
+```
+
+Second-order increment `0.3246 / 0.40 = 0.81` (governs); sway stability `7,538 / 30,761 =
+0.245`; magnified moment `12,257 × 1.3246 / 25,380 = 0.640`. **OK.** `PT-BW-RNE` is the same
+column on the same pole — the 2.0' pad earns no width — so the same numbers, **OK at 0.81**.
+The balcony's wall-borne columns take the presumed k_v (88.4 pci) and stay OK at 0.17.
+
+**What stays open, and says so.** Each record carries `n_h_presumed = 1` and a PRESUMED note,
+and `out/calcs/03-open-items.md` lists both under "D. Graded on a presumed input" until a
+report replaces the value. Two cautions: (1) Matlock & Reese's rigid-pole check at 8.10 pci
+on the column's reduced EI gives `T = (8.29e6 / 14,000)^0.2 = 3.59'`, `D/T = 2.32` — just
+past "rigid below about 2", so the pole's own flexure is not zero; (2) a report that finds
+groundwater within the pole's depth moves the row to the submerged column.
+
 ## Sources
 
 - ACI 318-19 §6.2.5.3 (second-order moment ≤ 1.4 first-order), §6.6.4.4.4, §6.6.4.5.2,
@@ -280,4 +329,5 @@ line, and the plan's figures are not reachable from its own stated inputs. The p
 - Terzaghi, K. (1955), "Evaluation of coefficients of subgrade reaction", Géotechnique 5(4).
 - Terzaghi & Peck, *Soil Mechanics in Engineering Practice* — the 1" settlement criterion.
 - Matlock & Reese (1960), rigid/flexible pile classification by `T = (EI/n_h)^(1/5)`.
+- Tan et al. (2009), Table 2 (Terzaghi 1955 n_h, dry/submerged sand): https://gnpgroup.com.my/wp-content/uploads/Publication/2009_11.pdf
 - Timoshenko & Gere, *Theory of Elastic Stability* — the cantilever on an elastic base.

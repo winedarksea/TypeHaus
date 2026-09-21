@@ -337,9 +337,29 @@ def _open_items(inputs: PackageInputs) -> str:
                   [[f"`{r.item_id}`", r.governing.name, f"{r.governing.ratio:.2f}",
                     r.governing.citation] for r in over if r.governing]),
         ]
-    if not open_records:
+    presumed = [r for r in inputs.records if r.status not in (Status.INCOMPLETE,
+                Status.NO_CALC, Status.OVER) and _presumed_inputs(r)]
+    if presumed:
+        blocks += [
+            heading("D. Graded on a presumed input — draft, not closed", 2),
+            "Each of these checks out on a PUBLISHED table value for the presumed soil, "
+            "not a measurement on this parcel. A geotechnical report confirms or replaces "
+            "the value; until then the row stays here.",
+            table(["Item", "Presumed input", "Governing", "d/c"],
+                  [[f"`{r.item_id}`", ", ".join(_presumed_inputs(r)),
+                    r.governing.name if r.governing else "—",
+                    f"{r.governing.ratio:.2f}" if r.governing else "—"] for r in presumed]),
+        ]
+    if not open_records and not presumed:
         blocks.append("**Nothing is outstanding.** Every item reached draft.")
     return document(*blocks)
+
+
+def _presumed_inputs(record) -> list[str]:  # type: ignore[no-untyped-def]
+    """Names of the ``<x>_presumed`` flags a record raised (``base_rotation``'s n_h,
+    ``thermal_break``'s k_v): a published table row standing in for a measurement."""
+    return [q.name.removesuffix("_presumed") for q in record.inputs
+            if q.name.endswith("_presumed") and q.value >= 0.5]
 
 
 def _assumptions(inputs: PackageInputs) -> str:

@@ -446,6 +446,10 @@ class HeadConnector(HausModel):
     bearing_length_in: float | None = None
     #: The document, table and row the numbers were read from.
     source: str
+    #: Where the document states its combined-load rule (a linear interaction of uplift and
+    #: lateral), quoted. Set, the head grades that sum; ``None``, it prints it and says the
+    #: document states no rule.
+    interaction_rule: str | None = None
 
     @model_validator(mode="after")
     def _numbers_are_sane(self) -> HeadConnector:

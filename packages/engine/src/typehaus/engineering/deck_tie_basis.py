@@ -6,11 +6,12 @@ that bracing costs the tie. Deriving "braced" twice is how the two would come to
 about the same landing, so both read :func:`wall_ties`.
 
 **Braced is derived from hardware, never declared.** A deck is tied when an authored
-``Connector`` joins a member of its framing — a beam it bears on, or a beam bearing on one
-of those — to a CONCRETE wall. A bearing standoff is not a tie (it holds a soffit off a
-pour and transfers nothing sideways). Whether the tie is ENOUGH is ``deck_tie``'s question,
-answered against the part's published allowables; a tie that is not enough is an OVER
-record, never an unbraced deck.
+``Connector`` joins a member of its framing — a beam it bears on, a beam bearing on one of
+those, or a wall standing on it — to a CONCRETE wall or a framed wall OFF the deck (another
+structure's). A bearing standoff is not a tie (it holds a soffit off a pour and transfers
+nothing sideways), nor is a tie block (it joins nothing to the other structure). Whether the
+tie is ENOUGH is ``deck_tie``'s question, answered against the part's published allowables;
+a tie that is not enough is an OVER record, never an unbraced deck.
 
 **Loads, each placed where it acts in plan** (the tie's torsion depends on it):
 
@@ -52,9 +53,13 @@ class TieJoint:
     model: str
     x_ft: float
     y_ft: float
-    #: The wall's run direction, "x" or "y". A force ALONG it is the part's F1, a force
-    #: across it (along the member) its F2.
+    #: The wall's run direction, "x" or "y".
     wall_axis: str
+    #: The parts' heel in plan (``Connector.axis``): "x"/"y", ``None`` for a vertical heel,
+    #: "mixed" where the parts disagree. Only an angle's capacity reads it.
+    heel_axis: str | None = None
+    #: The tied-to wall is concrete (an anchor side to grade) rather than framing.
+    on_concrete: bool = True
 
 
 @dataclass(frozen=True)
@@ -92,19 +97,30 @@ def framing_of(ctx: EngineeringContext, deck: Any) -> set[str]:
     return beams | carried
 
 
+def _tie_targets(ctx: EngineeringContext, on_deck: set[str]) -> dict[str, Any]:
+    """Walls a deck may be tied TO: concrete, or framing that does not stand on the deck."""
+    from typehaus.model.elements import Wall
+
+    return {e.tag: e for e in ctx.plan.all_elements()
+            if isinstance(e, Wall) and e.tag not in on_deck}
+
+
 def wall_ties(ctx: EngineeringContext, deck: Any) -> list[TieJoint]:
-    """Every joint tying this deck's framing to a concrete wall, one per (member, wall)."""
+    """Every joint tying this deck to another structure's wall, one per (member, wall)."""
     from typehaus.model.enums import ConnectorKind
     from typehaus.model.structure import Connector
 
-    framing = framing_of(ctx, deck)
-    walls = _concrete_walls(ctx)
+    on_deck = {w.tag for w, _a, _b in walls_on_deck(ctx, deck)}
+    framing = framing_of(ctx, deck) | on_deck
+    walls = _tie_targets(ctx, on_deck)
+    concrete = _concrete_walls(ctx)
     groups: dict[tuple[str, str], list[Any]] = {}
     for part in ctx.plan.all_elements():
-        if not isinstance(part, Connector) or part.kind is ConnectorKind.BEARING_STANDOFF:
+        if not isinstance(part, Connector) or part.kind in (
+                ConnectorKind.BEARING_STANDOFF, ConnectorKind.TIE_BLOCK):
             continue
         members = [t for t in part.connects if t in framing]
-        targets = [t for t in part.connects if t in walls]
+        targets = [t for t in part.connects if t in walls and t not in framing]
         if members and targets:
             groups.setdefault((members[0], targets[0]), []).append(part)
     out = []
@@ -113,11 +129,14 @@ def wall_ties(ctx: EngineeringContext, deck: Any) -> list[TieJoint]:
         wall = walls[wall_tag]
         (x0, y0), (x1, y1) = (_xy_ft(ctx.plan.by_tag(wall.start_node).position),
                               _xy_ft(ctx.plan.by_tag(wall.end_node).position))
+        heels = {p.axis for p in parts}
         out.append(TieJoint(
             member=member, wall=wall_tag, parts=tuple(sorted(p.tag for p in parts)),
             model=parts[0].size, x_ft=sum(p[0] for p in points) / len(points),
             y_ft=sum(p[1] for p in points) / len(points),
-            wall_axis="x" if abs(x1 - x0) >= abs(y1 - y0) else "y"))
+            wall_axis="x" if abs(x1 - x0) >= abs(y1 - y0) else "y",
+            heel_axis=next(iter(heels)) if len(heels) == 1 else "mixed",
+            on_concrete=wall_tag in concrete))
     return out
 
 
@@ -146,7 +165,7 @@ def deck_wind(ctx: EngineeringContext, deck: Any, anchors: list[Any]) -> DeckWin
     ``anchors`` are the posts the fascia and guard are found near. ``None`` where the deck
     has no guard or the site no wind basis — the same two gaps ``_base_moments`` stops on.
     """
-    from typehaus.engineering.balcony_wind import Demand, ground_below_ft, nearest, solid_bands
+    from typehaus.engineering.balcony_wind import Demand, ground_below_ft, nearest
     from typehaus.engineering.balcony_wind import ft as _bw_ft
     from typehaus.model.structure import Beam, Railing
     from typehaus.model.trim import Fascia
@@ -155,6 +174,8 @@ def deck_wind(ctx: EngineeringContext, deck: Any, anchors: list[Any]) -> DeckWin
 
     storey = deck_storey(ctx, deck)
     fascia = nearest(ctx.plan, anchors, Fascia, storey)
+    if fascia is not None and not _on_sheet(deck, fascia.path):
+        fascia = None  # the nearest fascia is another deck's: this one shows its own edge
     guard = nearest(ctx.plan, anchors, Railing, storey)
     basis = wind_basis(ctx.plan.project.site)
     if guard is None or basis is None:
@@ -165,11 +186,28 @@ def deck_wind(ctx: EngineeringContext, deck: Any, anchors: list[Any]) -> DeckWin
     members = {t for t in deck.joists.bearing_refs or ()
                if isinstance(ctx.plan.by_tag(t), Beam)}
     shear = {axis: Demand(axis=axis, q_h_psf=q_h, height_ft=top - ground,
-                          bands=solid_bands(ctx.plan, axis, members, fascia)
+                          bands=_bands(ctx, deck, axis, members, fascia)
                           ).storey_shear_lb(MAX_VERIFIED_CASE_AB)
              for axis in ("x", "y")}
     return DeckWind(q_h_psf=q_h, height_ft=top - ground, top_ft=top, ground_ft=ground,
                     shear_lb=shear, basis_text=basis.describe(), guard=guard)
+
+
+def _on_sheet(deck: Any, path: Any) -> bool:
+    from shapely.geometry import Point, Polygon
+
+    grown = Polygon([_xy_ft(p) for p in (deck.subfloor_outline or deck.outline)]).buffer(
+        ON_DECK_PLAN_TOLERANCE_FT)
+    return all(grown.covers(Point(_xy_ft(p))) for p in path)
+
+
+def _bands(ctx: EngineeringContext, deck: Any, axis: str, members: set[str],
+           fascia: Any) -> tuple[Any, ...]:
+    from typehaus.engineering.balcony_wind import deck_edge_band, solid_bands
+
+    bands = solid_bands(ctx.plan, axis, members, fascia)
+    edge = None if fascia is not None else deck_edge_band(deck, axis)
+    return bands + ((edge,) if edge is not None else ())
 
 
 def sheet_centroid_ft(deck: Any) -> tuple[float, float]:
@@ -196,7 +234,9 @@ def walls_on_deck(ctx: EngineeringContext, deck: Any) -> list[tuple[Any, tuple, 
     soffits = [_bw_ft(b.top_elevation) - (member_depth_ft(ctx.plan, t) or 0.0)
                for t in framing_of(ctx, deck)
                if (b := ctx.plan.by_tag(t)) is not None and b.top_elevation is not None]
-    soffit = min(soffits, default=_bw_ft(deck.top_elevation))
+    if not soffits and deck.top_elevation is None:
+        return []  # a deck with no datum stands nothing on it this can place
+    soffit = min(soffits, default=_bw_ft(deck.top_elevation) if not soffits else 0.0)
     concrete = _concrete_walls(ctx)
     out = []
     for wall in ctx.plan.all_elements():

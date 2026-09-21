@@ -20,7 +20,10 @@ HETA20Z_PAIR_HEAD = HeadConnector(
     load_duration_factor=1.6,
     bearing="SS316-SHIM-35", bearing_width_in=3.5, bearing_length_in=3.5,
     source="Simpson Strong-Tie FL11473 Table 3, double HETA, concrete, 2- or 3-ply, SP: "
-           "uplift 2,560, F1 1,350, F2 1,430 lb for the pair; note 1 already +60% for wind")
+           "uplift 2,560, F1 1,350, F2 1,430 lb for the pair; note 1 already +60% for wind",
+    interaction_rule="FL11473-R4 §9 Limitations item 4: (Design Uplift / Allowable Uplift) + "
+                     "(Lateral Parallel / Allowable) + (Lateral Perpendicular / Allowable) "
+                     "< 1.0, for more than one direction on a single connection")
 
 #: PT-BW-W / -GW: the head is the ABU66SS under PT-BW-CW / -CNW, and the seat beam hangs off
 #: that 6x6 on an HU28-2Z (`params/breezeway.py`). ESR-1622 Table 2 publishes uplift and

@@ -440,16 +440,16 @@ suppress = [
   "structural.tiered_retaining:W-RG-WEST-BALCONY",
   "structural.tiered_retaining:W-RG-EAST-BALCONY",
 
-  # ** structural.deck_tie:FS-BW-FLOOR: 1 REAL FAIL, MEASURED 2026-09-21, THE DAY THE LANDING
-  # WAS TIED TO THE GARAGE STEM. A SECOND TIE LINE (OR A DESIGNED TIE) IS OWED. **
+  # ** structural.deck_tie:FS-BW-FLOOR: 1 REAL FAIL, RE-MEASURED 2026-09-21 ON TWO TIE LINES.
+  # A DEBT WITH A NUMBER ON IT: d/c 1.18 (it was 1.82 on the stem alone). **
   #
-  # It replaces `base_rotation:PT-BW-GW` (δ 1.456), which LEFT with the tie: the landing piers
-  # lean now. The HGAM10 pairs on the two carriers are OVER at 1.82 — not on the landing's own
-  # wind but on W-BW-SCREEN's 981 lb arriving 1'-1 1/2" west of a tie line only 2'-4" long,
-  # and E-W wind 3'-9" south of it (1.60). notes/north_entry_piers.md §10d prices the options.
-  #
-  # ** A DEBT WITH A NUMBER ON IT: d/c 1.82. ** The permit line BLOCKS, so this hides nothing
-  # from either gate. Delete the line in the commit that adds the second tie line.
+  # The owner's fix is in: a second tie line on the screen's own line into W-G-W, and HL33HDG
+  # heavy angles for both (the four HGAM10s are retired). N-S wind closed (0.89); E-W wind at
+  # BM-BW-FE is 1.18 and the guard 1.04, on the angle's published values x NDS C_M 0.70 — dry,
+  # they would be 0.82 / 0.73. The stem anchors (ACI 318 Ch. 17) pass at 0.76.
+  # notes/north_entry_piers.md §10d prints the numbers and the options and picks none. The
+  # permit line BLOCKS, so this hides nothing from either gate. Delete the line when §10d is
+  # answered.
   "structural.deck_tie:FS-BW-FLOOR",
 
   # ** mep.run_through_stud: CLOSED 2026-09-20 BY RETYPING THE WALLS. NOTHING SUPPRESSED. **

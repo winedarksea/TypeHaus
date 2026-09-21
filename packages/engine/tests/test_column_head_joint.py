@@ -79,7 +79,10 @@ def test_canopy_columns_reproduce_9b_9c_9e(catlin_ctx):
         torsion = _state(record, "column torsion")
         assert torsion.demand == pytest.approx(44.46, abs=0.01)
         assert _input(record, "torsion_lever") == pytest.approx(2.25)
-        assert _input(record, "combined_unity_unverified") == pytest.approx(0.473, abs=1e-3)
+        combined = _state(record, "connector combined")
+        assert combined.ratio == pytest.approx(0.473, abs=1e-3)
+        assert "§9 Limitations item 4" in combined.citation
+        assert "combined_unity_unverified" not in {q.name for q in record.inputs}
     assert _input(_record(catlin_ctx, "PT-BW-RE"), "seat_eccentricity") == pytest.approx(0.875)
     assert _input(_record(catlin_ctx, "PT-BW-RNE"), "seat_eccentricity") == pytest.approx(0.0)
 

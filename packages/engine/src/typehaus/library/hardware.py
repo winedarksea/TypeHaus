@@ -80,7 +80,6 @@ from typehaus.hardware.catalog import (
     AllowableLoads,
     StructuralHardware,
 )
-
 from typehaus.library.hardware_ties import TIE_HARDWARE
 
 _SIMPSON = "Simpson Strong-Tie"

@@ -134,6 +134,24 @@ def solid_bands(plan: PlanModel, axis: str, member_tags: Any,
     return tuple(bands)
 
 
+def deck_edge_band(deck: Any, axis: str) -> Band | None:
+    """A deck's OWN edge, where no fascia wraps it: joist depth plus the decking, over the
+    sheet's run across the wind. A fascia belonging to some other deck is not this edge —
+    catlin's landing read ``TR-SG-FASCIA`` (21.5' x 0.75') until 2026-09-21."""
+    from typehaus.resolve.framing.profiles import cross_section
+
+    outline = deck.subfloor_outline or deck.outline
+    try:
+        joist = float(cross_section(deck.joists.member).depth_m) / _FT
+    except (KeyError, ValueError):
+        return None
+    board = ft(deck.subfloor.thickness) if getattr(deck, "subfloor", None) else 0.0
+    xs = [p.xy_m[0] / _FT for p in outline]
+    ys = [p.xy_m[1] / _FT for p in outline]
+    run = (max(xs) - min(xs)) if axis == "y" else (max(ys) - min(ys))
+    return Band("deck edge (joist + decking)", joist + board, run, deck.tag)
+
+
 def _node_xy(plan: PlanModel, tag: str) -> tuple[float, float] | None:
     element = plan.by_tag(tag) if tag else None
     position = getattr(element, "position", None)

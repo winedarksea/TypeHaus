@@ -36,6 +36,9 @@ tied down by a pair of parts, one each beam face. All eight are **exterior**.
   to 4-1/2"); anchors >= 3" apart (note 6); straps <= 1/8" wider than the member (note 3);
   f'c >= 2,500 psi (the columns are 5,000); lowest four holes of each strap filled.
 - Ratios at the governing joints: canopy lateral 0.304, uplift 0.169; guard columns 0.237.
+- **Combined (FL11473-R4 §9 Limitations item 4, graded since 2026-09-21):** canopy
+  `0.169 + 0.304 = 0.473`. The HGAM10 pair it replaced read 1.263 on the same rule — the HETA
+  pair is the head fix, and no further part is needed (`north_entry_piers.md` §9b).
 - ZMAX (G185) with HDG nails meets R317.3.1. Stainless was not needed: every one of these
   heads stands well clear of grade, and the owner's pattern is stainless near the ground,
   ZMAX above (`PT-BW-W`/`-GW` bases stay `ABU66SS`).

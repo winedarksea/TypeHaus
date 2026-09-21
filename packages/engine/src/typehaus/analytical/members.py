@@ -30,6 +30,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from typehaus.analytical import materials
+from typehaus.analytical import ties as _ties
 from typehaus.analytical.graph import NODE_SNAP_M, Member, Node, Releases
 from typehaus.resolve.framing.profiles import CrossSection, cross_section
 
@@ -132,6 +133,8 @@ class MemberGraph:
     wall_bearing: dict[tuple[str, str], str] = field(default_factory=dict)
     #: post tag -> the beam tags it carries, for the roll axis its base is braced about.
     post_carries: dict[str, tuple[str, ...]] = field(default_factory=dict)
+    #: (deck, member, wall) -> the node a deck tie's springs sit on (``ties.py``).
+    tie_node: dict[tuple, str] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -248,6 +251,7 @@ def build_members(ctx: Any, scope: Any) -> MemberGraph:
             if all(abs(param - tip) > _END_FRACTION for param, _ in bearings[tag]):
                 nodes.add(axis.at(tip), f"{tag}:{label}")
 
+    tie_index = _ties.register(ctx, scope, axes, nodes)
     posts: dict[str, _Axis] = {}
     for tag in scope.posts:
         solid, post = model.by_tag(tag), plan.by_tag(tag)
@@ -325,6 +329,7 @@ def build_members(ctx: Any, scope: Any) -> MemberGraph:
                           for key, index in sorted(bearing_index.items())}
     graph.wall_bearing = {key: node_ids[index] for key, index in sorted(bearing_index.items())
                           if _is_support(plan, key[1])}
+    graph.tie_node = {key: node_ids[index] for key, index in sorted(tie_index.items())}
     _remember(assumptions, _SPLIT_RULE)
     _remember(assumptions, _SUPPORT_ROTATIONS)
     graph.assumptions = tuple(assumptions)

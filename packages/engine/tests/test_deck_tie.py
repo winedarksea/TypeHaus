@@ -1,7 +1,8 @@
 """``engineering/deck_tie.py`` against ``houses/catlin/notes/north_entry_piers.md`` §10.
 
-The note was worked by hand before the module: the tie line as a bolt group, the landing's
-loads placed where they act, and FL11473's interaction per joint.
+The note was worked by hand before the module: the tie joints as a bolt group, the landing's
+loads placed where they act, the HL33HDG's interaction per joint and ACI 318 Ch. 17 on the
+stem anchors (§10a-§10e).
 """
 
 from __future__ import annotations
@@ -19,7 +20,7 @@ _LANDING = ("PT-BW-E", "PT-BW-GE", "PT-BW-GW", "PT-BW-W")
 
 
 def _state(record, name):
-    return next(s for s in record.limit_states if s.name == name)
+    return next(s for s in record.limit_states if s.name.startswith(name))
 
 
 def _input(record, prefix):
@@ -27,34 +28,59 @@ def _input(record, prefix):
 
 
 def test_the_tie_is_derived_from_the_authored_hardware(catlin_ctx):
-    """§10a: two joints, a pair each, over the stem core at y = 43.6771'."""
+    """§10a: three joints, a pair each — two over the stem core, one into W-G-W."""
     ectx = catlin_ctx.engineering.context
     joints = wall_ties(ectx, ectx.plan.by_tag("FS-BW-FLOOR"))
-    assert [(j.member, j.wall, len(j.parts), j.model, j.wall_axis) for j in joints] == [
-        ("BM-BW-FC", "W-GF-S1", 2, "HGAM10", "x"),
-        ("BM-BW-FE", "W-GF-S-DR", 2, "HGAM10", "x")]
-    assert [round(j.x_ft, 4) for j in joints] == [7.125, 9.4583]
-    assert all(j.y_ft == pytest.approx(43.6771, abs=1e-4) for j in joints)
+    assert [(j.member, j.wall, len(j.parts), j.model, j.wall_axis, j.heel_axis,
+             j.on_concrete) for j in joints] == [
+        ("BM-BW-FC", "W-GF-S1", 2, "HL33HDG", "x", "y", True),
+        ("BM-BW-FE", "W-GF-S-DR", 2, "HL33HDG", "x", "y", True),
+        ("W-BW-SCREEN", "W-G-W", 2, "HL33HDG", "y", None, False)]
+    assert [round(j.x_ft, 4) for j in joints] == [7.125, 9.4583, 6.1979]
+    assert [round(j.y_ft, 4) for j in joints] == [43.6771, 43.6771, 43.1458]
 
 
 def test_the_loads_reproduce_section_10b(catlin_ctx):
     record = catlin_ctx.engineering[_ITEM]
-    assert _input(record, "x:FS-BW-FLOOR deck wind") == pytest.approx(110.08, abs=0.01)
+    # The landing's OWN edge band (§10b): 8 1/4" of joist and board, not TR-SG-FASCIA.
+    assert _input(record, "x:FS-BW-FLOOR deck wind") == pytest.approx(68.61, abs=0.01)
     assert _input(record, "x:W-BW-SCREEN face") == pytest.approx(407.50, abs=0.01)
     assert _input(record, "x:W-BW-SCREEN-SKIRT face") == pytest.approx(112.27, abs=0.01)
-    assert _input(record, "y:FS-BW-FLOOR deck wind") == pytest.approx(310.56, abs=0.01)
+    assert _input(record, "y:FS-BW-FLOOR deck wind") == pytest.approx(103.14, abs=0.01)
     assert _input(record, "y:W-BW-SCREEN panel share") == pytest.approx(980.74, abs=0.01)
 
 
 def test_the_verdicts_reproduce_section_10c(catlin_ctx):
-    """§10c/§10d: OVER at 1.82 on N-S wind at BM-BW-FC; E-W 1.60; guard 1.30."""
+    """§10c/§10d: still OVER, at 1.18 on E-W wind at BM-BW-FE; N-S 0.89; guard 1.04."""
     record = catlin_ctx.engineering[_ITEM]
     assert record.status is Status.OVER
-    assert _state(record, "tie interaction, N-S wind").ratio == pytest.approx(1.821, abs=1e-3)
-    assert _state(record, "tie interaction, E-W wind").ratio == pytest.approx(1.599, abs=1e-3)
-    assert _state(record, "tie interaction, guard").ratio == pytest.approx(1.302, abs=1e-3)
-    assert record.governing.name == "tie interaction, N-S wind"
-    assert "1,675.4 lb across it / 920.0" in record.governing.citation
+    assert _state(record, "tie interaction, N-S wind").ratio == pytest.approx(0.886, abs=1e-3)
+    assert _state(record, "tie interaction, E-W wind").ratio == pytest.approx(1.177, abs=1e-3)
+    assert _state(record, "tie interaction, guard").ratio == pytest.approx(1.040, abs=1e-3)
+    assert record.governing.name == "tie interaction, E-W wind"
+    assert "132.4 lb along the wall / 518.0 + 671.0 lb across it / 728.0" in (
+        record.governing.citation)
+
+
+def test_the_stem_anchors_reproduce_section_10e(catlin_ctx):
+    """§10e: ACI 318-19 Ch. 17 on the Titen HDs, worst at BM-BW-FE under E-W wind."""
+    record = catlin_ctx.engineering[_ITEM]
+    assert _state(record, "wall anchors, tension").ratio == pytest.approx(0.5455, abs=5e-4)
+    assert _state(record, "wall anchors, shear").ratio == pytest.approx(0.3682, abs=5e-4)
+    assert _state(record, "wall anchors, tension-shear").ratio == pytest.approx(0.7614,
+                                                                                abs=5e-4)
+    assert _state(record, "wall anchor edge").capacity == pytest.approx(3.0)
+    assert _state(record, "wall anchor spacing").capacity == pytest.approx(7.5)
+
+
+def test_the_hl_reading_by_heel():
+    """§10a: heel across the wall reads F1 across; a vertical heel doubles uplift along."""
+    from typehaus.engineering.deck_tie import capacity
+
+    stem = capacity(TieJoint("FE", "S-DR", ("a", "b"), "HL33HDG", 0, 0, "x", "y"))
+    screen = capacity(TieJoint("SC", "G-W", ("a", "b"), "HL33HDG", 0, 0, "y", None, False))
+    assert (stem.along_lb, stem.across_lb) == pytest.approx((518.0, 728.0))
+    assert (screen.along_lb, screen.across_lb) == pytest.approx((1036.0, 518.0))
 
 
 def test_the_bolt_group_arithmetic_by_hand():

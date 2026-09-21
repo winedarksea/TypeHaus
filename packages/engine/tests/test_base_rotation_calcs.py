@@ -25,9 +25,10 @@ from typehaus.model.registry import constructor_names
 #: ** `_WORKED` KEEPS THE FOUR LANDING ROWS AS ARITHMETIC ONLY SINCE 2026-09-21. ** The
 #: landing is tied to the garage stem (`north_entry_piers.md` §10) and its piers left the
 #: register; the band-end reproductions still run on them, the record tests do not.
+#: RE/RNE straddle the band and CLOSE on catlin's presumed n_h (§10), hence OK.
 _WORKED = {
-    "PT-BW-RE": (1.305, 1.953, Status.INCOMPLETE),
-    "PT-BW-RNE": (1.295, 1.868, Status.INCOMPLETE),
+    "PT-BW-RE": (1.305, 1.953, Status.OK),
+    "PT-BW-RNE": (1.295, 1.868, Status.OK),
     "PT-BW-W": (1.110, 1.442, Status.INCOMPLETE),
     "PT-BW-E": (1.034, 1.106, Status.OK),
     "PT-BW-GW": (1.456, None, Status.OVER),
@@ -124,9 +125,31 @@ def test_the_record_reproduces_the_notes_verdict(tag, catlin_ctx) -> None:
     assert record.status is _ORACLE[tag][2], (record.summary, record.missing)
     inputs = {q.name: q.value for q in record.inputs}
     assert inputs["subgrade_modulus_measured"] == 0.0
+    assert inputs["n_h_presumed"] == 1.0
     assert any("NOT GRADED" in n for n in record.notes)
     if record.status is Status.INCOMPLETE:
         assert "Site.lateral_subgrade_modulus" in record.missing[0]
+
+
+#: §10: Terzaghi's loose dry sand, 7 tons/ft³ = 8.10 pci, the pole at unit width.
+_PRESUMED = {"PT-BW-RE": (2.7747e7, 4.618, 41_012.0, 1.3246),
+             "PT-BW-RNE": (2.7747e7, 4.618, 41_012.0, 1.3246)}
+
+
+@pytest.mark.parametrize("tag", sorted(_PRESUMED))
+def test_the_presumed_n_h_reproduces_section_10(tag, catlin_ctx) -> None:
+    """§10: both canopy columns close on the presumed n_h — the pad earns no width."""
+    k_theta, r, pc, delta = _PRESUMED[tag]
+    record = catlin_ctx.engineering[f"{KIND}/{tag}"]
+    inputs = {q.name: q.value for q in record.inputs}
+    assert inputs["subgrade_modulus_pci"] == pytest.approx(8.10)
+    assert inputs["base_spring"] == pytest.approx(k_theta, rel=2e-3)
+    assert inputs["spring_ratio_R"] == pytest.approx(r, abs=2e-3)
+    assert inputs["Pc_flexible"] == pytest.approx(pc, rel=1e-3)
+    increment = next(s for s in record.limit_states if s.name == "second-order increment")
+    assert increment.demand == pytest.approx(delta - 1.0, abs=5e-4)
+    assert record.governing.name == "second-order increment"
+    assert any("THE SOIL IS PRESUMED" in n for n in record.notes)
 
 
 def test_the_keys_are_column_bases_plus_the_wall_borne_columns(catlin_ctx, ectx) -> None:

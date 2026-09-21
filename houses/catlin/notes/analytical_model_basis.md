@@ -6,7 +6,7 @@ columns (PT-SG-BF1/BF3, PT-SG-BR1/BR3), the two pinned pillars between them (PT-
 PT-SG-BR2), the sunken-garden columns PT-SG-COL/FCOL, the breezeway posts PT-BW-*, and
 the beams they carry.
 **Written:** 2026-09-12, by hand, before `typehaus/analytical/` was oracled against it.
-**Oracle for:** `analytical/supports.py`, `analytical/loads.py`, `analytical/solve.py`;
+**Oracle for:** `analytical/supports.py`, `analytical/loads.py`, `analytical/solve.py`, `analytical/ties.py`;
 reproduced by `tests/test_analytical_oracle.py`.
 **Companions:** `balcony_moment_columns.md` — the column *capacity* and the wind arithmetic
 this note re-uses; `north_entry_piers.md` — the breezeway piers' tributaries.
@@ -25,10 +25,11 @@ solves to the numbers the calc sheets already carry.
 | Support | Claim | Basis |
 |---|---|---|
 | PT-SG-BF1, BF3, BR1, BR3 (12" round cast) | **FIXED** — six DOF | They are the balcony's lateral system: no knee brace, no beam landing in a wall since 2026-09-03 (`balcony_moment_columns.md` §0). `deck_post` grades their base moment on exactly this fact (`_Pier.lateral_system`); a model that pinned them would have no lateral system at all. |
-| PT-BW-E/W/GE/GW/RE/RNE (breezeway cast columns) | **FIXED** | Same rule, same derivation: `_base_moments` finds a storey shear for them and no brace or wall to take it. |
+| PT-BW-RE/RNE (canopy cast columns) | **FIXED** | Same rule, same derivation: `_base_moments` finds a storey shear for them and no brace or wall to take it. PT-BW-E/W/GE/GW were FIXED until 2026-09-21; the landing is tied now, so they are PINNED and the ties below hold the landing. |
 | PT-SG-BF2, BR2, COL, FCOL and every wood post on a base | **PINNED** — translations, plus twist about the post's own axis and roll about the plan axis of the beam it carries | A post base connector transfers shear and uplift and no moment; in-plane bending stays free, which is what makes it a pin. The twist and roll restraints stand in for the deck plane, which braces these columns and is carried in the graph as a line load rather than as members. Stated in the model's `assumptions`; the reaction moment about the braced axis comes back ~0 under gravity, which is the check on the claim. |
 | A beam end on a wall (BM-SG-BK*, FR* on W-SG-E1/W1) or on a beam seat | **PINNED** for bending, **held against roll** about the beam's axis | The beam sits on a plate; it can rotate in bending and cannot roll. Without the roll restraint a moment-released beam between two pins is a mechanism. |
 | A beam bearing on a post top | end released for bending | The beam bears on the post; the post top node sits ON the beam centreline (rigid-link convention, half a depth of eccentricity not modelled). |
+| The landing's deck ties (`deck_tie/FS-BW-FLOOR`), added 2026-09-21 | **DX + DY springs**, 190,919 lb/in each, nothing vertical, on a node split into the tied member: `BM-BW-FC`/`-FE` at their stem joints; the screen's `W-G-W` joint on `BM-BW-SCSILL`'s north end, the sill the screen stands on | Read off `deck_tie_basis.wall_ties` — the one derivation that also makes the four landing piers lean. Stiffness: NDS 2018 §11.3.6 load/slip `γ = 270,000 D^1.5` for a 1/2" dowel wood-to-metal, x 2 bolts. EQUAL at every joint, which is the claim `deck_tie` distributes by. Vertical free: the tie block stands 1/4" off the stem. |
 
 ## 2. Load cases — what each carries, and where the number comes from
 
@@ -105,6 +106,24 @@ running beside the sheet. The test asserts each pair sum within 1 % and each col
 `roof_beam/BM-BW-RE` and `BM-BW-RW`: `uniform_load` 1,170.9 plf, split by the record's own
 `design_dead` 10 psf / `design_snow` 73.7 psf into 0.119 dead / 0.881 snow. The test asserts
 the graph's dead + snow line loads on each beam sum to `uniform_load` exactly.
+
+### 3e. The landing's ties (2026-09-21)
+
+`γ = 270,000 × 0.5^1.5 = 95,459 lb/in` per bolt; two parts per joint → **190,919 lb/in**
+(3.3435e7 N/m) on DX and DY at three nodes: `N-BM-BW-FC:tie:W-GF-S1` (7.125, 43.677),
+`N-BM-BW-FE:tie:W-GF-S-DR` (9.458, 43.677) and the sill's north end (6.0, 42.479), which
+carries the screen's joint 0.67' south of where it is built — exact for the N-S spring, a
+few inches of lever on the E-W one. The test asserts six springs, equal, and no vertical
+reaction at any of them.
+
+**Finding:** under gravity the graph hands the stem ties a horizontal thrust the building
+does not have — **~110 lb live, ~28 lb dead at `BM-BW-FC`** — because the seat beams' end
+pieces run from the carriers (−0.385') DOWN to the column-top work points (−0.99') over
+1.125', an incline the rigid-link convention invents. It is small beside the 588-1,084 lb
+wind the record grades and is not in the record; it is pinned in the test so it cannot grow
+unseen. The ties carry no wind in the graph either: the landing's piers lean, so no wind
+case is applied to them here — `deck_tie`'s rigid-deck bolt group is the oracle for that
+distribution, not this graph (the deck plane is a line load here, not a diaphragm).
 
 ## 4. What is NOT modelled, positively
 
