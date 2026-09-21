@@ -186,7 +186,9 @@ def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
     # every one was invisible, which reads exactly like a thing with no problem.
     #  - `veneer_beam/W-SG-BRKBM`: a cast beam carrying a masonry wythe. It had a screening
     #    calculation and no record, because that calculation is a free function writing a
-    #    report — it reads no plan and nothing can be sealed against it.
+    #    report — it reads no plan and nothing can be sealed against it. REGISTERED on
+    #    2026-09-20 (`engineering/veneer_beam.py`); the masonry anchors it carried unnamed
+    #    left with it as `veneer_anchor/W-B-BRICK`, their own deferral.
     #  - `thermal_break_transfer/DW-*`: 24 GFRP bars tie a heated house footing to a
     #    freestanding court wall across an insulating board, with ZERO computed demand. The
     #    bar count comes from the board's width and a spacing rule, which is detailing.
@@ -220,7 +222,7 @@ def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
           ("PT-BW-E", "PT-BW-GE", "PT-BW-GW", "PT-BW-RE", "PT-BW-RNE", "PT-BW-W",
            "PT-SG-BF1", "PT-SG-BF3", "PT-SG-BR1", "PT-SG-BR3")),
         "rafter/RF-BW-CANOPY", "rafter/RF-GARAGE",
-        "veneer_beam/W-SG-BRKBM",
+        "veneer_anchor/W-B-BRICK",
         "thermal_break_transfer/DW-SG-W1", "thermal_break_transfer/DW-SG-E1",
         "thermal_break_transfer/DW-SG-W1-STEM", "thermal_break_transfer/DW-SG-E1-STEM",
         "tiered_retaining/W-RG-BLOCK",
