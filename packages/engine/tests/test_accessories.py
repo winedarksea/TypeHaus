@@ -306,15 +306,17 @@ def test_foam_thermal_break_lies_in_the_joint_it_breaks(catlin_model) -> None:
     """The block's thin dimension is the dowel axis; its long one runs along the joint.
 
     Catlin's dowels run N-S (``axis="y"``) between the house and the sunken-garden footings,
-    so each 2" block must be 2" deep in Y and span the bar row in X. Rotated 90° it stops
-    separating the two structures at all.
+    so each block must be ``THERMAL_BREAK_IN`` (2.5" since basis 4) deep in Y and span the bar
+    row in X. Rotated 90° it stops separating the two structures at all.
     """
+    from params import sunken_garden
+
     for block in _solids(catlin_model, "thermal_break"):
         xs = [x for x, _ in block.outline]
         ys = [y for _, y in block.outline]
         depth_across_joint = max(ys) - min(ys)
         run_along_joint = max(xs) - min(xs)
-        assert abs(depth_across_joint - inch(2).meters) < 1e-9
+        assert abs(depth_across_joint - inch(sunken_garden.THERMAL_BREAK_IN).meters) < 1e-9
         assert run_along_joint > depth_across_joint
 
 

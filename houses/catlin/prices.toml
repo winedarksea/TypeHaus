@@ -1821,10 +1821,10 @@
 # rate has whenever the things it counts are not interchangeable. It also could not survive a
 # change of size: the stem board is as tall as the wall it closes, so re-levelling the court
 # re-prices it, and under `ea` it would not have moved by a cent.
-# ** 2026-09-21: THE FOUR CLOSURE BOARDS ARE NOW 2" ROCKWOOL TOPROCK DD, NOT XPS ** (only the
-# veneer beam's board stays XPS). The rate below is still the XPS basis; labour dominates it,
-# so it stands until a stone-wool quote replaces it.
-"thermal_break" = { low = 78, high = 183, unit = "cuft" }  # 4.59 cf — the garden closure boards
+# ** 2026-09-21 (free body §11 basis 4): the four closure boards are 2.5" Highload 40 XPS. **
+# Volume billing carries the extra half inch (5.74 cf); the $/cf rate is the 2" face rate
+# above, so at 2.5" it slightly under-reads labour per SF and over-reads nothing.
+"thermal_break" = { low = 78, high = 183, unit = "cuft" }  # 5.74 cf — the garden closure boards
 # --- 2026-08-20: SOLIDS THAT NO OTHER TABLE BILLS ---------------------------------------
 # structural_solids is the only table that reaches these rows, and until today [concrete]
 # refused them because their structure_material is not "concrete" (cli/prices.MATERIAL_ONLY —

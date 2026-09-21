@@ -2011,7 +2011,10 @@ def test_the_thermal_break_is_one_product_everywhere_it_is_stated(catlin_model):
     """
     from params import sunken_garden
 
-    assert sunken_garden.THERMAL_BREAK_IN == pytest.approx(2.0)
+    # Basis 4 (2026-09-21): the four closure boards 2.5", the beam's 2" — one product
+    # (Highload 40), two thicknesses (free body §11).
+    assert sunken_garden.THERMAL_BREAK_IN == pytest.approx(2.5)
+    assert sunken_garden.VENEER_BEAM_BREAK_IN == pytest.approx(2.0)
     assert sunken_garden.THERMAL_BREAK_PSI == pytest.approx(40.0)
     # The constant the court's geometry actually reads.
     assert sunken_garden.SPEC.closure_break_in == pytest.approx(
@@ -2024,13 +2027,15 @@ def test_the_thermal_break_is_one_product_everywhere_it_is_stated(catlin_model):
         ys = [y for _x, y in solid.outline]
         assert (max(ys) - min(ys)) / 0.0254 == pytest.approx(
             sunken_garden.THERMAL_BREAK_IN, abs=1e-6), block
+        dowel = catlin_model.plan.by_tag(block.removesuffix("-FOAM"))
+        assert dowel.foam_psi == pytest.approx(sunken_garden.THERMAL_BREAK_PSI), block
 
     # And the veneer beam's board, which is the one that bills through a different trade.
     beam = next(w for w in catlin_model.walls if w.tag == "W-SG-BRKBM")
     board = next(ly for ly in beam.layers if ly.name == "xps-break")
     ys = [y for _x, y in board.polygon]
     assert (max(ys) - min(ys)) / 0.0254 == pytest.approx(
-        sunken_garden.THERMAL_BREAK_IN, abs=1e-6)
+        sunken_garden.VENEER_BEAM_BREAK_IN, abs=1e-6)
     # The rating has nowhere to live on a Layer, so it lives in the assembly's prose and
     # this is what keeps that prose honest.
     assembly = catlin_model.plan.library.resolve_assembly("SG_VENEER_BEAM_14")

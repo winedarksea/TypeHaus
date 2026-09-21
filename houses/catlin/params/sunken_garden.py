@@ -166,8 +166,8 @@ class SunkenGardenSpec:
     # on -10" rather than on this plane: the porch deck clears the cladding, but the court
     # wall meets the foundation.
     house_below_grade_face_in: float = 4.185
-    # The XPS isolation board between the court's side walls and the house — same 2" and
-    # same 40 psi as SG_VENEER_BEAM_14's `xps-break` and the DW-SG-* footing blocks.
+    # The XPS isolation board between the court's side walls and the house — the same
+    # 40 psi product as SG_VENEER_BEAM_14's `xps-break` (2"), at 2.5" since basis 4.
     #
     # ** IT IS `THERMAL_BREAK_IN` NOW. ** The 2" was stated three independent times in two
     # files and the 40 psi twice, once outright and once only in prose, because `Layer` has
@@ -3817,8 +3817,8 @@ def _break_bar_count(board_width_in: float) -> int:
 
     ** 84" LANDS ON AN EXACT HALF AND ROUNDS DOWN. ** `84 / 8 = 10.5`, and Python's `round`
     is banker's rounding, so this returns 10 (8.4" o.c.) rather than 11 (7.6"). Either is a
-    fine field spacing and neither is required by any graded limit state — nothing in this
-    engine sizes these bars — so the rule is left alone rather than nudged to win a tie.
+    fine field spacing; `thermal_break_transfer` grades the count (free body §11e: 12 would
+    clear the reserve), and the rule is left alone rather than nudged to win a tie.
     Worth knowing before reading a bar count that looks one short.
     """
     return max(2, round(board_width_in / THERMAL_BREAK_BAR_SPACING_IN))

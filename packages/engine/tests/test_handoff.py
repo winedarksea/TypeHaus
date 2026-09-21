@@ -211,8 +211,9 @@ def test_a_filled_scaffold_seals_every_computed_item(bundle, tmp_path, catlin_ct
     refused = {ctx.engineering[i].kind for i in every
                if ctx.engineering[i].status is Status.OVER}
     # ** NOT EMPTY, AND ON PURPOSE: an OVER kind's block MUST be commented out — no PE stamps
-    # `thermal_break_transfer`'s movement 1.07 and settlement 1.05 on the owner's Aslan 100 +
-    # Toprock DD fix (notes/sunken_garden_court_free_body.md §11f). `base_rotation` left this
+    # `thermal_break_transfer`'s basis 4 (2.5" Highload 40 XPS, #6 Aslan 100): the house rows
+    # its thrust reaches and five bar rows are over (notes/sunken_garden_court_free_body.md
+    # §11i). `base_rotation` left this
     # set on 2026-09-21, and so did `tiered_retaining` (the SRW apron on AB Stones,
     # notes/raised_garden_srw.md) and `deck_tie` (the landing's two tie lines at 0.966,
     # notes/north_entry_piers.md §10). Every other kind stays sealable. **

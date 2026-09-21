@@ -1,0 +1,147 @@
+"""The board's own rows for ``thermal_break`` — free body §11a-§11d's first half.
+
+Fresh-concrete pressure on the AUTHORED placement, flotation, the closing movement against
+the board's recoverable strain, and the thrust the board then passes on — the number every
+house row in :mod:`thermal_break_house` is graded against.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+from typehaus.engineering.item import LimitState, Quantity
+from typehaus.engineering.thermal_break_geometry import Board, court_run_in
+
+#: ACI 347R-14 unit weight of fresh concrete, pcf — the ``w`` in ``p = w·h``.
+CONCRETE_PCF = 150.0
+#: Coefficient of thermal expansion, normal-weight concrete, per °F (PCA average).
+ALPHA_C_PER_F = 5.5e-6
+#: ASTM C578's lowest-rated type of each foam, psi — the floor for a house board whose grade
+#: the model never states (Atlas, "ASTM C578 Comparison (EPS vs. XPS)", Table 1).
+C578_FLOOR_PSI = {"xps": (15.0, "ASTM C578 Type X"), "eps": (10.0, "ASTM C578 Type I")}
+
+TEMPERATURE_MISSING = (
+    "`Site.concrete_service_temperature` with `placement_min_f` — the concrete's service "
+    "range and the specified set floor the movement, thrust, opening and racking rows read")
+
+
+@dataclass(frozen=True)
+class Product:
+    psi: float
+    modulus_psi: float
+    source: str
+
+    @property
+    def strain_limit(self) -> float:
+        """σ_y / E: where the sheet's linear modulus reaches its own rating — the board's
+        recoverable range under an imposed, cyclic displacement (free body §11 inputs)."""
+        return self.psi / self.modulus_psi
+
+
+@dataclass(frozen=True)
+class Temps:
+    max_f: float
+    min_f: float
+    set_f: float
+    source: str
+
+    @property
+    def closing(self) -> float:
+        return self.max_f - self.set_f
+
+    @property
+    def opening(self) -> float:
+        return self.max_f - self.min_f
+
+
+def temps(ctx) -> Temps | None:
+    spec = getattr(ctx.plan.project.site, "concrete_service_temperature", None)
+    if spec is None or spec.placement_min_f is None:
+        return None
+    return Temps(spec.max_f, spec.min_f, spec.placement_min_f, spec.source)
+
+
+def product_of(dowel) -> Product | None:
+    if dowel is None or dowel.foam_modulus_psi is None or dowel.foam_source is None:
+        return None
+    return Product(dowel.foam_psi, dowel.foam_modulus_psi, dowel.foam_source)
+
+
+def pour_head_in(ctx, board: Board) -> tuple[float | None, str]:
+    """Head from the top of the placement the board is cast against, and which rule read it.
+
+    A named, existing ``placement_sequence_ref`` means the court element the board faces is
+    its own placement (catlin: footings (1), walls (2)); otherwise the whole court structure
+    is taken monolithic to its highest top — the conservative sequence.
+    """
+    ref = getattr(board.dowel, "placement_sequence_ref", None)
+    if ref and ctx.plan.by_tag(ref) is not None and board.court_tag:
+        from typehaus.engineering.thermal_break_geometry import z_extent
+
+        ext = z_extent(ctx, board.court_tag)
+        if ext is not None:
+            return ext[1] - board.bottom_in, f"placement of {board.court_tag} ({ref})"
+    tops = [e.top_elevation.inches for e in map(ctx.plan.by_tag, board.structure)
+            if getattr(e, "top_elevation", None) is not None]
+    if not tops:
+        return None, ""
+    return max(tops) - board.bottom_in, "monolithic to the court's highest top"
+
+
+def pressure(ctx, board: Board, product: Product, states, missing, inputs) -> float | None:
+    head_in, how = pour_head_in(ctx, board)
+    if head_in is None:
+        missing.append(f"a top elevation on the structure {board.tag} faces")
+        return None
+    psi = CONCRETE_PCF * head_in / 12.0 / 144.0
+    inputs.append(Quantity("pour_head", head_in / 12.0, "ft", 0.01))
+    states.append(LimitState(
+        "fresh-concrete pressure", psi, product.psi, "psi",
+        f"ACI 347R-14 capped at wh — {CONCRETE_PCF:.0f} pcf x {head_in / 12:.3f}' of head, "
+        f"{how}; vs the board's {product.psi:.0f} psi"))
+    return psi
+
+
+def flotation(board: Board, product: Product, states) -> None:
+    dowel = board.dowel
+    buoyancy = CONCRETE_PCF * board.t_in * board.h_in * board.length_in / 1728.0
+    bearing = product.psi * dowel.diameter.inches * board.t_in
+    states.append(LimitState(
+        "board flotation", buoyancy, dowel.count * bearing, "lb",
+        f"Archimedes at {CONCRETE_PCF:.0f} pcf, foam weight neglected; restraint "
+        f"{dowel.count} bars x {bearing:.0f} lb foam bearing ({product.psi:.0f} psi x "
+        f"{dowel.diameter.inches:.3f}\" x {board.t_in:.2f}\")"))
+
+
+def movement(ctx, board: Board, product: Product, t: Temps, states, inputs) -> float:
+    """Closing movement against t·ε_lim; returns the board stress it causes (psi)."""
+    run = court_run_in(ctx, board)
+    delta = ALPHA_C_PER_F * t.closing * run
+    inputs += [Quantity("delta_T", t.closing, "F", 0.1), Quantity("court_run", run, "in", 0.1),
+               Quantity("foam_modulus", product.modulus_psi, "psi", 1.0)]
+    states.append(LimitState(
+        "thermal movement", delta, board.t_in * product.strain_limit, "in",
+        f"{ALPHA_C_PER_F:g}/F x ({t.max_f:.0f} - {t.set_f:.0f} F specified set) x {run:.1f}\" "
+        f"of court run; vs {board.t_in:.2f}\" x eps_lim {product.strain_limit:.5f} "
+        f"(sigma_y/E = {product.psi:.0f}/{product.modulus_psi:,.0f}, the recoverable range) "
+        f"— {product.source}; service range: {t.source}"))
+    return min(product.modulus_psi * delta / board.t_in, product.psi)
+
+
+def house_insulation_row(board: Board, layers, sigma: float, pour_psi: float | None,
+                         states, missing) -> None:
+    """The house foam the board bears on, at the weakest ASTM C578 type of its material."""
+    for name, material, _thick in layers:
+        floor = C578_FLOOR_PSI.get(material)
+        if floor is None:
+            missing.append(f"a compressive rating for {board.house_tag}'s `{name}` "
+                           f"({material}), which the board bears on")
+            continue
+        psi, label = floor
+        demand = max(sigma, pour_psi or 0.0)
+        states.append(LimitState(
+            "house insulation bearing", demand, psi, "psi",
+            f"max(thermal {sigma:.2f}, pour {pour_psi or 0:.2f}) psi through {board.house_tag}'s "
+            f"`{name}`, whose grade the model does not state: graded at {label}, "
+            f"{psi:.0f} psi, the lowest the standard admits"))
+        return

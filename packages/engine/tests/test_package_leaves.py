@@ -99,6 +99,9 @@ _EXCUSED: dict[str, set[str]] = {
     # The same excuse for the same reason: a deck tie grades against the tie part's own
     # published F1/F2, which live in the catalog and nowhere else.
     "engineering/deck_tie.py": {"hardware"},
+    # And again: the break's thrust reaches the house wall's sill anchors, graded on their
+    # published F2 (free body §11d).
+    "engineering/thermal_break_house.py": {"hardware"},
     # ``value_source`` is the dialect printer. A proposal has to be dialect-legal BY
     # CONSTRUCTION — 1-tuple commas, no operators, no frozenset — and a second printer in
     # this package would be a second definition of what the dialect accepts, drifting from

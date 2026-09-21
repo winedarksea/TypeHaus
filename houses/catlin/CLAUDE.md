@@ -2223,13 +2223,17 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   The two coincide at a zero offset; they did not while the strips carried a 6" inboard
   offset, when a board on the axis hung 6" past one end and left 6" of bare
   footing-to-footing concrete at the other. Keep the expression, not the coincidence.
-- **One thermal-break product: `THERMAL_BREAK_IN` / `THERMAL_BREAK_PSI`.** The thickness
+- **One thermal-break product (Highload 40 XPS, `THERMAL_BREAK_PSI`), two thicknesses:**
+  `THERMAL_BREAK_IN` 2.5" on the four closure boards, `VENEER_BEAM_BREAK_IN` 2" on the
+  beam's (basis 4, 2026-09-21). `thermal_break_transfer` grades all five boards, their
+  thrust into the house and the bars (free body §11) — OVER, suppressed as one debt; §11i
+  prices the options. The Toprock DD alternative is §11j. The thickness
   was stated three times in two files and the rating twice, once in prose because `Layer`
   has no compressive field. **The break cannot go on one purchase order today** — the two
   closure blocks bill by VOLUME into concrete, the beam's board by AREA into insulation,
   and nothing reconciles them — so `test_catlin_contract_m3` pins every site against the
   constants. A comment is not a guard; the retaining top's spot elevations proved that.
-- **One bar arrangement on the whole plane**: #5 GFRP at 8" o.c., count derived from board
+- **One bar arrangement on the whole plane**: #6 GFRP (Aslan 100) at 8" o.c., count derived from board
   width (10 across the 84" footing joint, 2 across the 12" wall end — 84/8 is an exact 10.5
   and `round` takes it DOWN). Neither count was
   required by any computed limit state. **The bars are why the board exists** — a `Dowel`'s
@@ -2244,7 +2248,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   reads the innermost layer as facing a room; reversed, a bare 2" of XPS fails it. The
   tuple order is now pinned as well as the faces, so a sign flip and a tuple flip cannot
   cancel into a drawing that looks right.
-- **Every wall-to-house joint here needs one continuous 2" XPS board, house-footing-underside
+- **Every wall-to-house joint here needs one continuous 2.5" XPS board, house-footing-underside
   to porch-wall-top, and nothing checks that continuity** — verify by hand after any footing
   or wall-top move. Four sequencing traps are written into `params/sunken_garden.py` above
   the dowels: the butt joint lands on the court floor plane (lap the upper board); the
@@ -2270,8 +2274,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     north is exactly how a frost check buys a false pass.
   - `test_the_veneer_beam_isolates_the_house_footing` pins the 84" board, full 8" depth, and
     zero plan lap against every house strip.
-  - `prices.toml`'s `thermal_break` row bills the four closure boards (2" ROCKWOOL Toprock
-    DD since 2026-09-21; only the veneer beam's board stays XPS) — the four boards are not the same size, so check totals against SF, never against
+  - `prices.toml`'s `thermal_break` row bills the four closure boards (2.5" XPS) — the
+    four boards are not the same size, so check totals against SF, never against
     count. (The two footing boards went 84" → 96" → 84" on 2026-09-10, with the strips.)
   - **FLAGGED FOR THE ENGINEER, NOT TAKEN: trimming the wall beddings' surplus stone.**
     Worth $835-1,250 and the only four-figure item in the simplification pass, and the one
