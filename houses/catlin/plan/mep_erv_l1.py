@@ -274,16 +274,22 @@ DUCTS_ERV_BASEMENT = [
     # reaches it: Weyerhaeuser TJ-9000's ALLOWABLE HOLES page is ROUND HOLES ONLY, and a
     # notch is not a round hole at any depth (notes/framing_bore_limits.md §8).
     #
-    # x=1'-8" crosses the same wall in its widest CLEAR bay, x 16 3/4"..31 1/4" between
-    # `stud-001` and `stud-002` — the bay `DU-B-ERV-R-BENCH` already uses at x=2'-0". The
-    # duct spans 18"..22" there, 1 1/4" clear of one stud and 9 1/4" of the other, and
-    # NOTHING IS BORED, NOTCHED OR HEADED. It stands 4" west of BENCH's lane and 6" above
-    # it, which is the same separation `DU-B-ERV-R-GYM` and `-PLAY` hold in the east chase.
-    # The detour costs about 40" of 4" duct, worth 0.0005 in. w.g. on a side that is not the
-    # governing one.
+    # x=1'-0 1/2" crosses the same wall in its WEST clear bay, x 9 1/2"..15 1/4" between
+    # `stud-000` and `stud-001`. The duct spans 10 1/2"..14 1/2" there, 1" clear of one stud
+    # and 3/4" of the other, and NOTHING IS BORED, NOTCHED OR HEADED.
+    #
+    # ** WEST OF x=1'-5 1/2" IS NOT A PREFERENCE EITHER: IT IS `PR-B-SINK2-DRAIN`. ** That
+    # drain rakes east-to-west across every north-south lane in this half of the basement,
+    # so how much air a lane has is a function of x. Measured clearance at this tier
+    # (-21.94"), lane by lane: 2.44" at x=1'-0 1/2", 1.32" at x=1'-3", 0.20" at x=1'-5 1/2",
+    # and NEGATIVE from x=1'-6" east — which is what a first attempt at x=1'-8" found the
+    # hard way, 0.5" inside SINK2. The wide bay to the east is the exhaust radial's, one
+    # tier down, where the same drain has risen out of the way.
+    # The detour costs about 3 1/2 ft of 4" duct, worth well under 0.001 in. w.g. on the
+    # supply side, which is not the governing one.
     DuctRun(uid="VXGA0P0V72", tag="DU-B-ERV-R-SAUNA-SUP", system=DuctSystem.SUPPLY,
             path=(pt(ft(5, 3), ft(30, 2)), pt(ft(5, 3), ft(30, 2)),
-                  pt(ft(1, 8), ft(30, 2)), pt(ft(1, 8), ft(1, 8.5)),
+                  pt(ft(1, 0.5), ft(30, 2)), pt(ft(1, 0.5), ft(1, 8.5)),
                   pt(inch(199.75), ft(1, 8.5)), pt(inch(199.75), ft(1, 8.5))),
             elevations=(ft(7, 6), inch(87.5), inch(87.5), inch(87.5), inch(87.5), ft(7)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=12),
@@ -333,6 +339,41 @@ DUCTS_ERV_BASEMENT = [
     # which is worth half an inch of clearance because the drain falls 8.8" per foot here.
     # The corridor tier is the plenum's own 7'-2": half an inch below is
     # PR-M-S-BATH1-DRAIN's rake at y=17'-0" and half an inch above is the drain.
+    #
+    # ** IT IS AT x=2'-4" AND NOT x=3'-9", FOR THE SAME MEMBER THAT MOVED THE SUPPLY. **
+    # The x=3'-9" corridor crossed `W-B-CW` at x=45", inside `D-B-FURN`'s rough opening and
+    # 1.25" under the header's top, taking a 3 1/4" NOTCH out of a 7 1/4" member — nearly
+    # half its depth, off the compression face, over a door. TJ-9000's ALLOWABLE HOLES page
+    # publishes round holes only and no chart on the market notches a header
+    # (notes/framing_bore_limits.md §8), so the lane moves rather than the chart being
+    # stretched to cover it.
+    # ** IT STILL NOTCHES `W-B-CW`'s HEADER 3 1/4" AND THAT IS A RECORDED REFUSAL, NOT AN
+    # OVERSIGHT (2026-09-22). ** At x=3'-9" this duct crosses the wall inside `D-B-FURN`'s
+    # rough opening and 1 1/4" under the header's top face, taking 3 1/4" out of a 7 1/4"
+    # member — 45% of its depth, off the compression face, over a door. TJ-9000's ALLOWABLE
+    # HOLES page is round holes only, so no published chart reaches it
+    # (notes/framing_bore_limits.md §8), and the supply radial solved the same problem by
+    # moving. THIS ONE HAS NOWHERE TO MOVE TO, measured rather than assumed:
+    #
+    #   * `W-B-CW` has exactly two bays a 4" duct fits: x 9 1/2"..15 1/4" and
+    #     x 16 3/4"..31 1/4". The supply took the west one; only one 4" duct fits it.
+    #   * In the wide bay this duct's own tier (-23.44") is inside `PR-B-SINK2-DRAIN`'s
+    #     rake. Measured clearance: 3.78" at x=1'-0 1/2", 0.43" at x=1'-8", 0.00" at
+    #     x=1'-9", negative east of that; x=2'-4" (tried) lands 1.6"-3.2" inside SINK2, SH2
+    #     and WC2 at once, and x=1'-8" straight lands inside SINK2 at y=15'-4".
+    #   * Jogging east at any station between y=16'-2" and the wall crosses
+    #     `PR-B-WC2-DRAIN`'s x=2'-6" lane at the same elevation — every half-inch of it.
+    #   * Dropping under the drains in the wide bay runs into `DU-B-ERV-R-BENCH` at
+    #     x=2'-0"/-27.94"; rising over them puts the duct in the deck.
+    #   * The cripple zone over the header would pass this engine and must not be used:
+    #     `stud_bore` grades a hole against a stud's DEPTH and says nothing about its
+    #     LENGTH, so a 4" hole through a 6 9/16" cripple reads legal and is two slivers
+    #     (notes/framing_bore_limits.md §6a).
+    #
+    # So the choice is a run-to-run interpenetration or a notched header, and neither is the
+    # engine's to make. `haus route --counterfactual` lifts no movable blocker that opens a
+    # lane: the blockers are a gravity drain network and a header. **The open question is
+    # the owner's: a designed header over D-B-FURN, or the sauna's extract moving.**
     DuctRun(uid="1Y457X9DMH", tag="DU-B-ERV-R-SAUNA-EXH", system=DuctSystem.EXHAUST,
             path=(pt(ft(5, 3), ft(28, 2)), pt(ft(5, 3), ft(28)), pt(ft(5, 3), ft(28)),
                   pt(ft(3, 9), ft(28)), pt(ft(3, 9), ft(3, 2)),
