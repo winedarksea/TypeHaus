@@ -238,6 +238,7 @@ def _relocated(loc, att, wall: str, shift: float, flip: bool):
 # every ref field to either a handler or this list.
 UNCOVERED: dict[str, tuple[str, ...]] = {
     "WallBacking": ("wall_ref",),
+    "BracedWallPanel": ("wall_ref",),
     "WallPaneling": ("walls",),
     "PipeRun": ("wall_ref", "wall_refs", "serves"),
     "PipeAccessory": ("wall_ref", "serves"),
