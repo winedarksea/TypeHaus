@@ -319,7 +319,16 @@ NODES = [
     # The reveals do NOT move: they are positioned `from_node("N-B-BRICK-W", ...)`, measured
     # from the WEST node, so shortening the east end leaves every station where it was.
     # `integrity.reveal_concentric` is what proves that, and it still passes.
-    Node(uid="CBN020AAAA", tag="N-B-BRICK-E", position=pt(ft(27, 6), inch(-6.06)),
+    #
+    # ** 3/8" WEST OF THE CLEAR FACE SINCE 2026-09-22, AND THE 3/8" IS THE SOFT JOINT. **
+    # At 27'-6" the wythe ended HARD against W-SG-E1's face: BIA Technical Note 18A's
+    # sealant joint over compressible filler — which §5.1 of notes/sunken_garden_veneer_
+    # beam.md has required since the wythe was drawn — had nowhere to go, while the west end
+    # had 4". 27'-5 5/8" leaves 3/8" clear at this end, TN 18A's minimum for a vertical
+    # expansion joint and comfortably over the ~0.15" of moisture-plus-thermal movement the
+    # 18'-8" run wants. The FILLER is still carried by no element and graded by no rule; the
+    # record's MODEL GAP note says so. Costs 0.3 SF of brick (112.5 -> 112.2).
+    Node(uid="CBN020AAAA", tag="N-B-BRICK-E", position=pt(ft(27, 5.625), inch(-6.06)),
          open_end=True),
 ]
 

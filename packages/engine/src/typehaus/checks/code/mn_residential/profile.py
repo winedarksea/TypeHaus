@@ -591,7 +591,7 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Cast beam carrying a masonry veneer",
                        ("structural.veneer_beam",),
                        ("ACI 318-19 §9.5", "ACI 318-19 §22.7", "ACI 318-19 §24.2.2",
-                        "ACI 318-19 §25.4.3")),
+                        "ACI 318-19 §25.4.3", "TMS 402-22 §13.1.2.3")),
         # Still deferred: the anchor supplier's design. Non-blocking until it is computed.
         PermitItemSpec("Masonry veneer anchorage over an insulated standoff",
                        ("structural.veneer_anchor",),

@@ -59,6 +59,7 @@ from typehaus import (
     Downspout,
     DrainTile,
     Drywell,
+    EndRestraint,
     face,
     Fascia,
     Flashing,
@@ -795,6 +796,17 @@ _BRACED_STEM_STEEL = ReinforcementSpec(
 # per end enclosing the hooks (Ath 0.80 >= 0.4 Ahs 0.372, psi_r 1.0: ldh 7.11" in 9.00"). The
 # BOTTOM row sits inside FT-SG-W1/E1, poured first, so 3 #5 dowels are cast STRAIGHT in each
 # footing, 66" back from its court face, lapping the row class B (30.00" past the wall face).
+#
+# ** THE TOP ROW'S HOOK IS ALSO THE NEGATIVE-MOMENT ANCHORAGE SINCE 2026-09-22 (§6f). ** It
+# was authored for torsion — a corner bar developing fy at the support face, no §25.4.10.1
+# reduction — and crediting the end fixity gives the same row 5,621 ft-lb of end moment to
+# deliver. Nothing about the detail changes (fy at the face already covers a flexural
+# anchorage asking less); what changes is that there are now two reasons it may not relax.
+#
+# Two details left prose until 2026-09-22 and are graded now: the dowels' `projection` past
+# the joint (30", making the bar a clean 8'-0" stock length with the 66" embedment, against
+# a 27.58" class B lap) and the hoops' `tie_hook_degrees` (135 — these hoops ARE the torsion
+# steel, so ACI 318-19 §25.7.1.3/.6 require it and an unstated angle is a missing input).
 _VENEER_BEAM_STEEL = ReinforcementSpec(
     bars=(
         BarSpec(role="top-y", bar=5, count=3, hooks=("start", "end"), hook_turn="up",
@@ -803,9 +815,9 @@ _VENEER_BEAM_STEEL = ReinforcementSpec(
                 note="90° hooks turned UP into W-SG-W1/E1 (down would reach the footing); two closed #4 ties per end enclose them"),
         BarSpec(role="bottom-y", bar=5, count=3,
                 note="stops at the FT-SG-W1/E1 court face; laps the footing dowels there"),
-        BarSpec(role="dowels", bar=5, count=3, embedment=inch(66.0),
-                note="per end, cast horizontal in FT-SG-W1/E1 (placement 1) through the footing's court face; class B lap to bottom-y"),
-        BarSpec(role="ties", bar=3, spacing=inch(5.0),
+        BarSpec(role="dowels", bar=5, count=3, embedment=inch(66.0), projection=inch(30.0),
+                note="per end, cast horizontal in FT-SG-W1/E1 (placement 1) through the footing's court face; 66 + 30 = one 8'-0\" stock bar, and the 30\" clears the 27.58\" class B lap to bottom-y"),
+        BarSpec(role="ties", bar=3, spacing=inch(5.0), tie_hook_degrees=135,
                 note="closed hoops, 135° hooks — ACI 318-19 §9.7.6.3.3, ph/8 = 5.25\""),
         BarSpec(role="horizontal", bar=4, count=1, layers=2,
                 note="torsion longitudinal bar at mid-depth, each face — §9.7.5.1"),
@@ -1029,11 +1041,32 @@ WALLS = [
     # FT-B-S2/S3 — the exact contact this beam exists to remove — at 0 FAIL, because nothing
     # grades a thermal break for continuity. The face is pinned by
     # `test_the_veneer_beam_isolates_the_house_footing`; do not trust the sign.
+    # ** THE END FIXITY IS A SERVICEABILITY CREDIT AND NOTHING ELSE (§6f, 2026-09-22). **
+    # TMS 402-22 §13.1.2.3 holds any horizontally spanning member supporting veneer to
+    # l/600 = 0.390", which this beam misses at 1.242 as a simple span. It is cast
+    # monolithic with W-SG-W1/E1 in placement 2, and the elastic estimate of that joint —
+    # the wall ABOVE it alone, far end pinned, b_eff the beam's own 12", gross section — is
+    # alpha 0.514. 0.25 is CLAIMED, a 2:1 derate, and it reads 0.464.
+    #
+    # Midspan flexure stays graded at alpha = 0 (0.555), so a joint softer than claimed
+    # costs deflection and can NEVER buy strength. What the fixity adds is graded:
+    # negative flexure 0.093, the end moment into the wall as plain concrete over
+    # b_eff = b + 2t = 36" (0.368, and 0.757 at the full elastic alpha, so #6 @ 38" does
+    # not change), and the end-moment shear 0.136.
+    #
+    # ** IF THIS BEAM EVER STOPS BEING CAST MONOLITHIC WITH W-SG-W1/E1, end_restraint
+    # COMES OFF WITH IT ** and the record goes straight back to 1.242 OVER. Placement 2 in
+    # AN-SG-PLACEMENTS is the statement this field depends on.
     FoundationWall(uid="SGW108AAAA", tag="W-SG-BRKBM", start_node="N-SG-BMW",
                    end_node="N-SG-BME", assembly="SG_VENEER_BEAM_14",
                    top_elevation=_veneer_beam_top, bottom_elevation=_veneer_beam_bottom,
                    unbalanced_fill=inch(0),
                    lateral_support="top_and_bottom",
+                   end_restraint=EndRestraint(
+                       fixity=0.25, elastic_fixity=0.514, effective_width=inch(36.0),
+                       source="notes/sunken_garden_veneer_beam.md §6f — equal rotational "
+                              "springs at the placement-2 joints; k_theta = 3EI_w/h = "
+                              "2.040e8 lb-in/rad gives alpha 0.514, claimed at 0.25"),
                    reinforcement=_VENEER_BEAM_STEEL),
     # Garden retaining run (to just above grade), the U south of the porch.
     #

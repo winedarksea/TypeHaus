@@ -53,6 +53,29 @@ class SegmentalWallSpec(HausModel):
     drainage_zone: SrwDrainageZone | None = None
 
 
+class EndRestraint(HausModel):
+    """Partial rotational fixity a spanning member's monolithic end joints deliver.
+
+    One scalar: ``fixity`` is α in ``M_end = α wL²/12`` — 0 is a simple span, 1 fully fixed.
+    It is a CLAIM the author derates from ``elastic_fixity``, an estimate of what the joint
+    would give elastically; the engine grades the claim and prints both.
+
+    **A calculation may credit this for SERVICEABILITY only.** Strength stays graded at
+    α = 0, so a joint softer than claimed costs deflection and never capacity — which is what
+    makes an authored stiffness safe to read at all. What the fixity ADDS (the negative
+    moment, and what the support receives) is graded at the claim and again at
+    ``elastic_fixity``, so the support is never asked to be stiffer than it is graded for.
+
+    ``effective_width`` is how wide a band of the support the end moment spreads over
+    (``b + 2t`` for a beam framing into a wall). ``source`` names the hand-worked section.
+    """
+
+    fixity: float
+    elastic_fixity: float | None = None
+    effective_width: Length | None = None
+    source: str | None = None
+
+
 @register_element
 class FoundationWall(Wall):
     """A Wall in every structural sense, distinguished by kind (→ 11 §Foundations).
@@ -111,6 +134,9 @@ class FoundationWall(Wall):
     #: What a segmental (SRW) unit wall is built of — the inputs `engineering/segmental_wall`
     #: reads off the product literature. None on every cast wall.
     srw: SegmentalWallSpec | None = None
+    #: Partial end fixity a SPANNING wall (a grade beam) gets from monolithic end joints.
+    #: None is the honest default and means a simple span. Credited for serviceability only.
+    end_restraint: EndRestraint | None = None
 
 
 class CrushedStoneSpec(HausModel):
@@ -1008,6 +1034,7 @@ class SolarPanel(Element):
 for _name, _obj in (
     ("DrainTile", DrainTile),
     ("FoundationWall", FoundationWall),
+    ("EndRestraint", EndRestraint),
     ("Footing", Footing),
     ("GlazingPanel", GlazingPanel),
     ("SolarPanel", SolarPanel),

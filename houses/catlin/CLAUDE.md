@@ -212,6 +212,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **All six north-entry pier bases are `Pad`s** (2026-09-14, and the second half of this line was stale until 2026-09-20). `PD-BW-W`/`-E`/`-RE` are 2'-6" x 1'-6" rectangles, graded prescriptively against IRC Table R507.3.1 — their `spread_footing/` items have left the register. **The rectangle is not a preference**: `FT-B-N1`..`-N4` sit on the same plane and a 24" square reached 2 1/8" into them, a lap that was invisible while these were Footings because `structural.concrete_interference` scopes every `Pad` and only a wall-less `Footing`. **One size for all three** — three pad sizes are three rows in S-100's FOUNDATION SCHEDULE, and that sheet is one row from its schedule governing its height. `PD-BW-GW`/`-GE`/`-RNE` are `Pad`s too and have been since the garage strip footings were retyped to consolidated crushed stone (IRC R403.5): nothing is cast monolithically with stone, so the `Footing.under` argument that kept them Footings is gone along with their `cast_with`, and `concrete_interference` drops a non-concrete footing before it picks its bodies. **`_MOMENT_PIERS` is what sets a pad's THICKNESS and bottom**, not the plane: a moment pier takes `ENTRY_MOMENT_CAGE`'s base dowels and a 12" pad to develop them (ACI 318-19 §25.4.3.1, ℓ_dh 7.115" for a #5 against thickness less 3" of cover), and only the bottom drops — every pad TOP is held, which is what keeps `column_base`'s embedment and the hydrant clearances where they were. All six are moment piers as of 2026-09-20; `PT-BW-W`/`-GW` were the last two in, and the reason nobody noticed they were missing is `BM-BW-SCSILL`. (→ notes/north_entry_piers.md §6)
 - **A post that carries only a ROOF is now reached by `structural.deck_footing_size`** (2026-09-14). `_roof_borne_posts` converts a post's roof-footprint share into R507.3.1's deck currency — `(10 + design snow) / 50`, **1.674** here — and hands it down the post chain, so `PT-BW-CW`/`-CNW`'s canopy share lands on the piers under them. **`PT-BW-RE`/`-RNE` were invisible before this, not light**: they carry `BM-BW-RE` and no deck, so no deck's post list held them. It is **not** a restatement any more (2026-09-18): the rule is `engineering/pier_basis.landed_roof_tributaries`'s and the check reads it through `checks/structural/_engineering.py`. Checks may import engineering; the copy was unnecessary, not forced, and it had drifted twice over — it knew nothing of `_rafter_fields`, and it scaled at the 50 psf **ground** snow while `BM-BW-RE` overhead was designed at the authored 73.7 psf drift.
 - **A pad carries its own weight and the shaft on it, net of displaced soil** (2026-09-18). `deck_footing_size` adds both as equivalent R507.3.1 tributary; `engineering/soil.displaced_soil_credit_lb` credits back the soil the pad replaced at the low end of the 110–130 pcf band, because a presumptive allowable is a **net** pressure. Gross was what put `PD-BW-RE` 1.5% over an allowable it is not over. Every house-side pad passes at one size, so S-100's FOUNDATION SCHEDULE stays one row.
+- **The soil class is PRESUMED and every record now says so** (2026-09-22). `Site.soil_basis=SoilBasis(provenance="presumed", …)` in `plan/site.py` is the provenance of `soil_class="GM"` as a field, the mirror of `SubgradeModulus.provenance`; `checks/soil.site_soil_basis` reads it (**no profile fallback** — a profile's class is regional by construction) and `checks/run` threads it to `EngineeringContext.soil_basis`. Every calc that reads an IBC 1610.1/1806.2 row off the class carries `Quantity("soil_presumed", 1.0)` and prints "THE SOIL IS PRESUMED, NOT MEASURED", so the calc package's gap register section D lists all 22 (was 6, the `n_h` rows alone). **Provenance is never arithmetic**: no `BASIS_VERSION` moved and no graded ratio moves when the flag flips (pinned in `test_segmental_wall.py`). A geotechnical investigation on this parcel is the only thing that clears it. (→ DESIGN-LOG.md, "Site and the four structures")
 - **`BM-BW-RW`/`-RE` stay 3-ply 2x12 KDAT; the exterior glulam is REFUSED** (owner, 2026-09-12), and the engine is the reason rather than capacity. These are the only two `roof_beam` items in the house, and `engineering/roof_beam.py`'s `_SECTION` matches a sawn `N-2xM` and nothing else — a `"3.5x11.875"` makes both records INCOMPLETE, and nothing picks them up (`engineering/glulam_beam.py` left the registered-kind tuple on 2026-09-11 and is deck-only besides, 40 psf live at `C_D` 1.0, which cannot carry this 73.7 psf drift case). Retyping trades a d/c of **0.71** for a gap in the register. **The ply seam does not reach these two**: both headers ARE the eave bearing lines, the trusses land on their TOPS, so both seams sit inside the roof assembly under the deck, 1'-4" inboard of the drip line — which is the FPInnovations carve-out for appressed treated plies, and **not** the porch's 2026-09-06 refusal, which rested on tape plus a formed cap. No cap here, and its absence is not a gap. Cost confirms rather than drives: ~$325-450 over 11.4 LF. (→ DESIGN-LOG.md, "Site and the four structures")
 - **Every wood-on-concrete beam seat is a drained STANDOFF, never a sill gasket** (owner, 2026-09-12) — twelve of them, six at the north entry (`CN-BW-STDF-*`) and six in the garden (`CN-SG-STDF-*`), all `SS316-SHIM-35` packs holding a 1/2"-1" gap, and **not one grout island** (`PIER_CONCRETE_12` carried one until 2026-09-12; retyping `PT-SG-COL` on 2026-09-10 rode it over to `PT-BW-RE`/`-RNE` rather than closing it). The cast-in `HETA20Z` pair beside the pack is the **TIE**, never the bearing — two parts, two jobs. **Every column-head tie is a cast-in `HETA20Z` pair since 2026-09-21, never an `HGAM10`**: Simpson requires the HGAM's Titen Turbo screws kept out of the exterior environment, and all eight joints are exterior. Backups, ranked, with the open pour-day items: `notes/column_head_connector_options.md`. `BM-BW-RW` never touches concrete at all: 6x6 KDAT posts through `CCQ46SDS2.5` caps on `ABU66SS` bases. **No IRC provision requires a barrier or a standoff at this joint** — R317.1 item (2) needs a foundation wall AND under 8" to grade, R317.1.2 is embedment, and R317.1.4 governs wood COLUMNS with 1"/6"/8" projections that *relieve* the treatment requirement rather than impose a clearance; a treated beam on a concrete column top satisfies R317 with nothing added. A closed-cell gasket would be the wrong part: it is a capillary break for a plate bolted tight to a slab, and at an exposed joint it becomes the water-holding layer. Wicking is not the mechanism that governs either — capillary rise is bounded by evaporation at 100-480 mm, and nothing here is within reach of it: the north entry's pier tops stand 18 1/2" above grade, its canopy columns 9'-2 3/4", and the garden's porch columns rise 10'-0 15/16" out of the court floor. What wets a seat is rain standing on the pour and end-grain uptake where a beam END lands there, which is `BM-BW-RE`'s south end; the wash, the drip lip and the gap are aimed at that. (→ DESIGN-LOG.md, "Site and the four structures")
 - **Grade is 2'-10" below the main floor.** **Datum is the TOP OF JOISTS, not the finished floor** — main-floor FFE is +3/4", so a slab landing there needs an explicit `top_elevation` (`params/main_deck.py`).
@@ -1970,11 +1971,31 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   because `FS-SG-DECK`'s aluminium plank is the porch roof and carries no other
   penetrations — do not switch to surface mounting. Needs rim blocking in
   `FS-SG-DECK.reinforcements`.
-- Veneer `W-B-BRICK` (112.5 SF, both faces exposed; top at -8" so `FS-SG-PORCH`'s joists
+- Veneer `W-B-BRICK` (112.2 SF, both faces exposed; top at -8" so `FS-SG-PORCH`'s joists
   pass over it with 3/4" of air — nothing grades that gap) stands on `W-SG-BRKBM`, a 12"
   x 17-3/4" grade beam spanning 19'-0" between `W-SG-W1`/`W-SG-E1` — not on the
   house footing (`FT-B-BRICK`, retired). Basis:
   `notes/sunken_garden_veneer_beam.md` (2026-09-05).
+- **THE BEAM'S DEFLECTION IS GRADED AT TMS 402-22 §13.1.2.3's ℓ/600 = 0.390", AND THE ONLY
+  THING THAT CLOSES IT IS THE MONOLITHIC END JOINT** (2026-09-22, note §6f). As a simple
+  span it reads **1.242 OVER**. `W-SG-BRKBM.end_restraint` CLAIMS α = 0.25 — the fraction of
+  `wL²/12` the joint delivers — against an elastic estimate of 0.514 on the stingiest
+  reading available (the wall above the joint only, far end pinned, b_eff the beam's own
+  12", gross section), a 2:1 derate, and it reads **0.464**.
+  - **The credit is SERVICEABILITY ONLY and must stay that way.** Midspan flexure is still
+    graded at α = 0 (0.555, which now governs the beam's own section), so a joint softer
+    than claimed costs deflection and can never buy strength. What the fixity ADDS is graded:
+    negative flexure 0.093, the end moment into `W-SG-W1`/`E1` as **plain concrete** over
+    b_eff = b + 2t = 36" (0.368 — and **0.757 at the full elastic α**, which is why `#6 @ 38"`
+    does not change), and end-moment shear 0.136. ACI 318-19 Table 14.5.2.1's US coefficient
+    is `Mn = 5λ√f'c·Sm` (the 0.42λ√f'c form is SI), confirmed before that row was printed.
+  - **If this beam ever stops being cast monolithic with `W-SG-W1`/`W-SG-E1`, `end_restraint`
+    comes off with it** — `AN-SG-PLACEMENTS` placement 2 is the statement the field rests on,
+    and `test_the_fixity_credit_is_never_assumed` takes the record back to 1.242.
+  - **What governs the record is now an ANCHORAGE length, 0.790** — §6e's 7.11" of top-row
+    hook in 9.00" of wall, held there by the two #4 confining ties per end (without them
+    ψr goes 1.6 and ℓdh 11.38" against 9.00", an immediate FAIL). Thinning either side wall
+    or raising its cover moves that row before it moves anything else here.
 - Nothing in the engine grades a thermal break for continuity — a `Footing`
   resolves to one blob with no polygon, so verify an adjacent gap directly (→
   DESIGN-LOG.md, "Exterior colour, balcony and veneer").
@@ -1986,8 +2007,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   keeping all 20" of bearing) — anything re-centring these footings must keep
   that face.
 - Brick's y is fixed at -10.05"..-13.675" by the beam; `N-B-BRICK-W`/`-E` sit
-  at -8.05". `N-B-BRICK-E` is at 27'-6", not 28'-0" (`W-SG-E1`'s axis), so the
-  east wythe does not walk inside the retaining wall.
+  at -8.05". `N-B-BRICK-E` is at **27'-5 5/8"** — 28'-0" is `W-SG-E1`'s axis and would walk
+  the east wythe inside the retaining wall, 27'-6" is that wall's clear face and left the
+  brick HARD against it. The 3/8" back off the face (2026-09-22) is the east **soft joint**:
+  BIA Technical Note 18A's minimum vertical expansion joint, against the ~0.15" of moisture
+  plus thermal movement an 18'-8" clay run wants. The west end has 4". The joint FILLER is
+  still carried by no element and graded by no rule — the record's MODEL GAP note says so.
 - 2" EPS (ASTM C578 **Type II**, 15 psi — not Type I) is in the BACKUP wall's
   `_GARDEN_CURB_CORE`/`_GARDEN_FRAMED_OUTBOARD` layers, not in
   `BASEMENT_BRICK_VENEER` — blast radius is `W-B-S2`/`S3`/`S2-FR`/`S3-FR` only.
@@ -1998,7 +2023,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   elsewhere would silently inherit this rate. None exists today.
 - Do not anchor the wythe to `W-SG-W1`/`W-SG-E1` to cut anchor count:
   unreinforced brick can't span 18'-8" horizontally, and both ends want a soft
-  joint the model does not carry and the engine does not grade (→
+  joint the model does not carry and the engine does not grade — both ends have
+  ROOM for one since 2026-09-22 (4" west, 3/8" east), which is not the same thing (→
   DESIGN-LOG.md, "Exterior colour, balcony and veneer").
 - Do not describe this beam as reinforcing `W-SG-W1`/`E1` — those walls already
   PASS `structural.foundation_unbalanced_fill` independently; the beam's only
@@ -2171,9 +2197,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   dowels); then the rim slab with all six columns. `AN-SG-MIX` permits EXPOSED_MIX for the
   whole court so it comes off one ticket — **do not retype PIER_BASE_12**, it is shared with
   the north entry. `AN-SG-COLDWEATHER` puts a hard 1 November milestone on placement 3.
-- **`_veneer_beam_bottom` stays held** at -120 3/16", not flush with the slab underside — a
-  flush beam is only 10 1/2" deep against ACI 318-19 Table 9.3.1.1's L/16 = 14 1/4" minimum
-  for a 19'-0" span. Held, the beam is buried but its 17 3/4" section survives.
+- **`_veneer_beam_bottom` stays held** at -120 3/16", not flush with the slab underside.
+  **The binding number is the computed ℓ/600 row, not Table 9.3.1.1's L/16** (2026-09-22): a
+  member whose deflection is computed is outside that table's scope anyway, and the 17 3/4"
+  section reads 0.464 against TMS ℓ/600 WITH the 0.25 end-fixity credit. A flush 10 1/2"
+  beam is 3.4x less stiff (Ig ∝ h³) and no plausible α saves it, so the answer is unchanged
+  and the reason is now a calculation instead of a table row. Held, the beam is buried but
+  its 17 3/4" section survives.
 - `FT-B-S2`/`S3` cover below `SL-SG-FLOOR` is 8".
 - `plan/site.py`'s two garden spot elevations are -9'-1 7/16"; they are a structural input,
   not drafting annotation — `engineering/balcony_wind.ground_below_ft` takes the site's

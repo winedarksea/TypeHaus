@@ -8,10 +8,16 @@ the walls whose pour it overlaps, the load off the wythe it carries, and the ste
 
 Graded at U = 1.4D: flexure, minimum steel, shear, torsion in EQUILIBRIUM (no §22.7.3.2
 redistribution is relied on), the §9.6.4/§9.7 torsion detailing, deflection after the wythe
-is attached (Table 24.2.2, ℓ/480), and end anchorage of each longitudinal row
+is attached (TMS 402-22 §13.1.2.3's ℓ/600 and ACI Table 24.2.2's ℓ/480), and end anchorage of
+each longitudinal row
 (``veneer_beam_anchorage``): hooked into the supporting wall, or through dowels cast in the
 footing where the row sits below the wall. A row with no authored hook, tie credit or dowel is
 INCOMPLETE naming it — never assumed. ``Scope.SCREENING``.
+
+An authored ``FoundationWall.end_restraint`` credits partial fixity at the monolithic end
+joints — for SERVICEABILITY only, so midspan flexure stays graded at α = 0 and a softer joint
+can never buy strength. What the fixity adds is ``veneer_beam_joint``. Unauthored, the beam
+is a simple span and the ℓ/600 row says so.
 
 Oracle: ``houses/catlin/notes/sunken_garden_veneer_beam.md`` §6, reproduced by
 ``tests/test_veneer_beam_calc.py``.
@@ -46,10 +52,11 @@ from typehaus.engineering.sunken_garden.veneer_beam import (
     torsion_design,
 )
 from typehaus.engineering.veneer_beam_anchorage import anchor_rows
+from typehaus.engineering.veneer_beam_joint import joint_states
 from typehaus.model.rebar import BARS
 
 KIND = "veneer_beam"
-BASIS_VERSION = "2"
+BASIS_VERSION = "3"
 BASIS = "ACI 318-19 (strength design at U = 1.4D, Eq. 5.3.1a); §22.7 torsion; §24.2 deflection"
 _COMBO = "ACI 318-19 Eq. (5.3.1a) U = 1.4D"
 _M_PER_IN = 0.0254
@@ -269,10 +276,12 @@ def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> Engine
         hoop_leg_area_in2=BARS[hoop_bar].area_in2, hoop_spacing_in=hoop_s, fc_psi=fc)
     top_area = top[1] * BARS[top[0]].area_in2
     side_area = (side[1] * side[2] * BARS[side[0]].area_in2) if side else 0.0
+    restraint = getattr(beam, "end_restraint", None)
     defl = deflection_after_attachment(
         span_ft=span, service_plf=screen.service_load_plf, self_plf=self_plf, width_in=width,
         depth_in=depth, d_in=d, tension_in2=screen.provided_steel_in2,
-        compression_in2=top_area, fc_psi=fc)
+        compression_in2=top_area, fc_psi=fc,
+        end_fixity=float(restraint.fixity) if restraint is not None else 0.0)
     inset = cover + hoop_d + bot_bar.diameter_in / 2.0
     vgap = (depth - 2.0 * inset) / ((side[1] if side else 0) + 1)
     hgap = (width - 2.0 * inset) / max(bottom[1] - 1, 1)
@@ -301,11 +310,28 @@ def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> Engine
                "ACI 318-19 §9.5.4.3 with Al,min per §9.6.4.3", detailing=True),
         _state("longitudinal bar spacing around the perimeter", max(vgap, hgap), 12.0, "in",
                "ACI 318-19 §9.7.5.1", detailing=True),
-        LimitState("deflection after the wythe is attached", defl.after_attachment_in,
-                   defl.span_in / 480.0, "in",
-                   "ACI 318-19 Table 24.2.2 (ℓ/480), Ie per Table 24.2.3.5, λΔ per §24.2.4.1",
+        LimitState(
+            "deflection after the wythe is attached, TMS ℓ/600", defl.after_attachment_in,
+            defl.limit_600_in, "in",
+            "TMS 402-22 §13.1.2.3 (ℓ/600), the governing limit for a horizontally spanning "
+            "member supporting veneer; Ie per Table 24.2.3.5"
+            + (f" averaged 0.70/0.30 per §24.2.3.6 (avg {defl.effective_inertia_in4:,.1f}, "
+               f"end {defl.effective_inertia_end_in4:,.1f} in⁴) at α {defl.end_fixity:g}"
+               if defl.end_fixity else " at midspan, simple span (α 0)")
+            + ", λΔ per §24.2.4.1",
+            combination="service D, sustained", combination_factors=(("D", 1.0),)),
+        LimitState("deflection after the wythe is attached, ACI ℓ/480",
+                   defl.after_attachment_in, defl.limit_480_in, "in",
+                   "ACI 318-19 Table 24.2.2 (ℓ/480) — the looser of the pair, graded beside "
+                   "the TMS row rather than instead of it",
                    combination="service D, sustained", combination_factors=(("D", 1.0),)),
     ]
+    joint_notes: list[str] = []
+    if restraint is not None:
+        joint, joint_notes = joint_states(
+            ctx, restraint, (w_sup, e_sup), factored_moment_ftlb=screen.factored_moment_ftlb,
+            beam_phi_mn_ftlb=phi_mn, beam_width_in=width, beam_d_in=d)
+        states.extend(joint)
 
     # End anchorage of each row: hooked into the wall, or dowelled into the footing below it.
     mix_coating = getattr(concrete_spec_for(ctx.plan, beam), "bar_coating", "") or ""
@@ -341,6 +367,7 @@ def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> Engine
             Quantity("bottom_bars", float(bottom[1]), "count", None),
             Quantity("top_bars", float(top[1]), "count", None),
             Quantity("hoop_spacing", hoop_s, "in", 0.0625),
+            Quantity("end_fixity", defl.end_fixity, "-", 0.01),
         ),
         limit_states=tuple(states), missing=tuple(missing),
         notes=(
@@ -352,11 +379,7 @@ def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> Engine
             f"§9.6.4 detailing is owed and graded; it is designed in equilibrium, so the "
             f"garden slab bearing §22.7.3.2 would need is not relied on.",
             *notes_ldh,
-            f"NOT GRADED: TMS 402-16 §5.2.1.4.2's ℓ/600 ({defl.span_in / 600:.3f}\") for a "
-            f"beam supporting unreinforced masonry — written for masonry beams; this simple "
-            f"span would be {defl.after_attachment_in / (defl.span_in / 600):.2f} against it. "
-            f"End fixity, which the monolithic side-wall joint may supply, is what closes it "
-            f"and is not credited.",
+            *joint_notes,
             "NOT GRADED (moved from the deferral): the stirrup form; which way each hook turns "
             "(it must stay inside the wall it anchors in); shrinkage restraint between the two "
             "side walls; the masonry "

@@ -134,6 +134,15 @@ class BarSpec(HausModel):
     #: the drawing does not say, and a column on a wall then cannot grade its development
     #: (``deck_post._dowel_anchorage``) — a pad or footing is bounded by its own depth.
     embedment: Length | None = None
+    #: Dowels only: how far the bar projects PAST the joint into the pour above, where it
+    #: laps the row it carries. ``None`` means the drawing does not say, and the class B lap
+    #: (ACI 318-19 §25.5.2.1) is then printed against nothing rather than graded.
+    projection: Length | None = None
+    #: Ties/stirrups only: the bend angle of the hook that closes the loop, degrees. ACI
+    #: 318-19 §25.7.1.3/§25.7.1.6 want 135° on a closed hoop resisting torsion (90° is
+    #: permitted only where the member is not subject to torsion and the end is restrained
+    #: by a slab). ``None`` is an unstated detail, not a 90° claim.
+    tie_hook_degrees: int | None = None
     #: Dowels only: the cold joint they cross. ``"roughened"`` is ACI 318-19 Table
     #: 22.9.4.2's "intentionally roughened to a full amplitude of about 1/4 in." with the
     #: laitance removed, and is what earns μ = 1.0λ in shear friction; ``None`` or

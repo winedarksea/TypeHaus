@@ -16,6 +16,41 @@ bottom has no constraint-index section of its own — the constraints live in
 
 ## Site and the four structures
 
+### The soil is presumed, and now it is a field rather than a paragraph (2026-09-22)
+
+`plan/site.py` has said "IT IS STILL PRESUMPTIVE, NOT A SOILS REPORT" in a comment since the
+class was authored, and a comment is not something an engineering record can read. Twenty-two
+records were reading IBC Table 1610.1 and Table 1806.2 rows off `soil_class="GM"` — every
+retaining wall, the court loop, the five SRW legs, both canopy column bases, the six
+base-rotation columns and the thermal-break lateral path — and each printed "SCREENING on
+presumptive code values" without saying what, exactly, was presumed, or letting a reviewer
+sort on it.
+
+**`Site.soil_basis` is that sentence as data**, the mirror of `SubgradeModulus.provenance`
+(2026-09-21) and of the same shape: `provenance="presumed" | "geotechnical"`, with `source`,
+`basis`, and `report_date` / `investigated_by` for the day an investigation lands. catlin
+authors `presumed`, "Ramsey County / Des Moines-lobe till, read regionally", "no geotechnical
+investigation on this parcel". `checks/soil.site_soil_basis` picks it up beside
+`site_soil_class` — deliberately with **no profile fallback**, because a jurisdiction
+profile's class is regional by construction, so a house leaning on one is graded on a
+presumption whatever it says about itself — and `checks/run` threads it onto
+`EngineeringContext.soil_basis` for the engineering suite.
+
+**What every consumer gained is one input and one sentence.** `Quantity("soil_presumed", …)`
+joins the inputs (`takeoff/calc_package` already reads the `_presumed` suffix into gap
+register section D, which went from 6 rows to **22**), and `soil_provenance_note` prints in
+`base_rotation._stated_soil`'s voice. The hard-coded "No geotechnical report is on file for
+this site." clause came off the four records that carried it, because a sentence that cannot
+become false is not a disclosure.
+
+**No arithmetic moved, and that was the requirement.** Provenance is not a term: nothing
+branches on it, no `BASIS_VERSION` was bumped, and `test_segmental_wall.py::
+test_a_geotechnical_basis_clears_the_flag_and_moves_nothing` pins the point by flipping the
+flag and asserting sliding is still 0.975. Fingerprints move (a new input is in them) and no
+seal exists to stale. What a report would actually replace — φ and γ behind the SRW's
+`notes/raised_garden_srw.md` §3b, where the μ 0.25 fallback would read sliding 0.575 — is
+named in that note's new "THE SOIL IS PRESUMED" paragraph.
+
 ### Three of the north entry's six piers became pads, and the check had to learn the roof first (2026-09-14)
 
 Six `spread_footing/` items sat in the register for six flat square bases on presumptive
@@ -2498,6 +2533,71 @@ which is already two named **deferred** items (`column_support/W-SG-W1`/`E1`).
     invisible only while the court was a *disjoint* polygon; the beam connects
     it to the house, and 610 sf of open sky became basement floor area until
     holes over an open excavation floor were kept.
+
+### The veneer beam's deflection: ℓ/600, and paying for it with fixity (2026-09-22)
+
+The record reached OK on 2026-09-21 governed by deflection at **0.994** — ACI 318-19 Table
+24.2.2's ℓ/480 on a simple span. A structural reviewer's second pass made two points about
+that number and both were right.
+
+**The limit was the wrong one.** TMS 402-22 **§13.1.2.3** puts ℓ/600 on *any* horizontally
+spanning member supporting veneer, not only on a masonry beam. The note had cited the 2016
+edition's §5.2.1.4.2, which sits inside a masonry-beam clause, and printed the comparison as
+NOT GRADED rather than choose — an honest dodge while the scope was arguable, and the 2022
+renumbering ends the argument. At ℓ/600 = 0.390" the simple span reads **1.242, OVER**.
+
+**And a 0.99 is not a design, it is a coincidence.** Even at ℓ/480 the margin was 0.3% of a
+number built out of Ec, Icr and a creep multiplier, none of which is known to three figures.
+
+What closes it was already designed and was being thrown away: the beam is cast monolithic
+with `W-SG-W1`/`W-SG-E1` in `AN-SG-PLACEMENTS` placement 2 (settled 2026-09-14), and §6c's
+torsion argument has always leaned on those fixed ends. §6d credited none of it, because "no
+end fixity is credited" is the conservative sentence for a *strength* row and nobody had
+asked whether it was the right sentence for a *serviceability* one.
+
+**The model is one scalar.** Equal rotational springs, symmetric UDL, α in `M_end = α wL²/12`;
+`Δ = wL⁴(5 − 4α)/(384 E Ie)` and `Ie,avg = 0.70 Ie,mid + 0.30 Ie,end` (ACI §24.2.3.6). The
+elastic estimate on the stingiest reading available — wall above the joint only, far end
+pinned, b_eff the beam's own 12" rather than the 36" the moment really spreads over, gross
+section — is `k_θ = 3EI_w/h = 2.04e8 lb-in/rad`, **α = 0.514**. **0.25 is claimed**, a 2:1
+derate, reading **0.464**: 2.7× the fixity the limit needs, and below the α = 0.344 where the
+beam would read uncracked at service, so none of the credit rests on staying uncracked.
+
+**The rule that makes an authored stiffness safe to read at all: SERVICEABILITY ONLY.**
+Midspan flexure stays graded at α = 0 (0.555), so a joint softer than claimed costs
+deflection and nothing else. An `end_restraint` can never make a beam pass in strength, which
+is the failure mode of every "assume partial fixity" argument. It is a field on the model
+(`EndRestraint`) rather than a constant in the calc for the same reason the seal register is
+a file: the claim is a judgement and it has to be visible, derated and revocable. Strip it and
+`test_the_fixity_credit_is_never_assumed` shows 1.242 again.
+
+**What the fixity adds is graded, including against the claim's own optimism.** The end moment
+has to go somewhere, and where it goes is a wall with no bar crossing that joint in flexure —
+so it is graded as structural **plain** concrete over `b_eff = b + 2t` = 36" (ACI Table
+14.5.2.1, `Mn = 5λ√f'c·Sm` in inch-pound units, φ 0.60; the 0.42λ√f'c seen in summaries is the
+SI form, and the US coefficient was confirmed before the row was printed, because if the text
+had read otherwise the wall would have needed reinforcing over that band). 5,621 ft-lb against
+15,273: **0.368**. The row also prints the demand at the **full elastic** α — 11,557 ft-lb,
+0.757 — which is the point of the derate being conservative in one direction only: the beam is
+credited with the soft joint and the wall is checked against the stiff one, so `#6 @ 38"` is
+not asked to change and the derate spends nobody else's capacity.
+
+**The governing row moved, and to somewhere more interesting.** With deflection at 0.464 the
+record is governed by §6e's hooked development of the top row, **0.790** — 7.11" of hook in
+9.00" of wall, and that only because two #4 confining ties per end buy ψr 1.0. The beam's own
+section is comfortable everywhere. That is a better thing to be held by than a creep
+multiplier, and it is a thing a drawing can protect.
+
+**Three details left prose and became rows** in the same pass: the dowels' `projection` past
+the footing joint (30", making the bar a clean 8'-0" stock length with its 66" embedment,
+against a 27.58" class B lap — 0.919, and it had been printed against nothing), the hoops'
+`tie_hook_degrees` (135 — these hoops ARE the torsion steel, so ACI §25.7.1.3/.6 require it,
+and an unstated angle is now a missing input rather than a silent assumption), and the east
+**soft joint**: `N-B-BRICK-E` moved 3/8" west off `W-SG-E1`'s clear face. §5.1 has required a
+sealant joint over compressible filler at both ends since the wythe was drawn, and the east
+end had 0.00" to put one in — the west end had 4". Nothing grades a wythe's end restraint, so
+the model is still silent about the filler; what changed is that the geometry no longer
+contradicts the note. It costs 0.3 SF of brick.
 
 
 ## Sunken garden court

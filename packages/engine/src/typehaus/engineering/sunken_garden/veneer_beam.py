@@ -229,26 +229,50 @@ def torsion_design(*, tu_ftlb: float, vu_lb: float, width_in: float, depth_in: f
 
 @dataclass(frozen=True)
 class Deflection:
-    """ACI 318-19 §24.2 on a simple span: Ie by Table 24.2.3.5, λΔ by §24.2.4.1."""
+    """ACI 318-19 §24.2: Ie by Table 24.2.3.5, λΔ by §24.2.4.1, on a span with equal partial
+    end fixity α (``end_fixity``). α = 0 is the simple span and is the default."""
 
     cracking_moment_ftlb: float
     cracked_inertia_in4: float
+    #: Ie at MIDSPAN when α = 0; the §24.2.3.6 average ``0.70 Ie,mid + 0.30 Ie,end`` when not.
     effective_inertia_in4: float
     immediate_total_in: float
     immediate_self_in: float
     long_term_factor: float
     after_attachment_in: float
     span_in: float
+    #: α — the end moment as a fraction of ``wL²/12``. Serviceability only; see note §6f.
+    end_fixity: float = 0.0
+    #: Ie at the SUPPORTS under the service load. Equal to Ig while the end stays uncracked.
+    effective_inertia_end_in4: float = 0.0
+    #: The SERVICE end moment ``α wL²/12``, ft-lb. The factored one is the record's to form.
+    negative_moment_ftlb: float = 0.0
+
+    @property
+    def limit_480_in(self) -> float:
+        """ACI 318-19 Table 24.2.2 — the looser of the pair."""
+        return self.span_in / 480.0
+
+    @property
+    def limit_600_in(self) -> float:
+        """TMS 402-22 §13.1.2.3 — the governing limit for a member supporting veneer."""
+        return self.span_in / 600.0
 
 
 def deflection_after_attachment(*, span_ft: float, service_plf: float, self_plf: float,
                                 width_in: float, depth_in: float, d_in: float,
                                 tension_in2: float, compression_in2: float,
-                                fc_psi: float) -> Deflection:
+                                fc_psi: float, end_fixity: float = 0.0) -> Deflection:
     """Long-term deflection under all sustained load plus the attached load's immediate share.
 
     Table 24.2.2's "after attachment" quantity for a member supporting an element likely to
     be damaged. Everything here is dead load, so all of it is sustained (note §6d).
+
+    ``end_fixity`` is α in ``M_end = α wL²/12``, the equal-rotational-spring model of note
+    §6f: ``M_mid = wL²/8 − M_end`` and ``Δ = wL⁴(5 − 4α)/(384 E Ie)``. **α = 0 reproduces the
+    simple span bit for bit** — including reading Ie at midspan ALONE, because §24.2.3.6's
+    ``0.70 Ie,mid + 0.30 Ie,end`` average is written for a member continuous at both ends and
+    a simple span is neither. Serviceability only: nothing about strength reads this.
     """
     ec = 57000.0 * math.sqrt(fc_psi)
     n = STEEL_MODULUS_PSI / ec
@@ -258,19 +282,27 @@ def deflection_after_attachment(*, span_ft: float, service_plf: float, self_plf:
     kd = (-na + math.sqrt(na * na + 4.0 * half_b * na * d_in)) / (2.0 * half_b)
     icr = width_in * kd ** 3 / 3.0 + na * (d_in - kd) ** 2
     span_in = span_ft * 12.0
+    #: ``5 − 4α``: exactly 5.0 at α = 0, so the default expression is unchanged.
+    shape = 5.0 - 4.0 * end_fixity
 
-    def effective(plf: float) -> tuple[float, float]:
-        ma = plf * span_ft ** 2 / 8.0 * 12.0
-        ie = ig if ma <= 2.0 / 3.0 * mcr else (
+    def _ie(ma_ftlb: float) -> float:
+        ma = ma_ftlb * 12.0
+        return ig if ma <= 2.0 / 3.0 * mcr else (
             icr / (1.0 - (2.0 / 3.0 * mcr / ma) ** 2 * (1.0 - icr / ig)))
-        return ie, 5.0 * (plf / 12.0) * span_in ** 4 / (384.0 * ec * ie)
 
-    ie_total, total = effective(service_plf)
-    _ie_self, own = effective(self_plf)
+    def effective(plf: float) -> tuple[float, float, float, float]:
+        m_end = end_fixity * plf * span_ft ** 2 / 12.0
+        ie_mid, ie_end = _ie(plf * span_ft ** 2 / 8.0 - m_end), _ie(m_end)
+        ie = ie_mid if end_fixity == 0.0 else 0.70 * ie_mid + 0.30 * ie_end
+        return ie, ie_end, m_end, shape * (plf / 12.0) * span_in ** 4 / (384.0 * ec * ie)
+
+    ie_total, ie_end, m_end, total = effective(service_plf)
+    _ie_self, _ie_self_end, _m, own = effective(self_plf)
     factor = SUSTAINED_XI / (1.0 + 50.0 * compression_in2 / (width_in * d_in))
     return Deflection(
         cracking_moment_ftlb=mcr / 12.0, cracked_inertia_in4=icr,
         effective_inertia_in4=ie_total, immediate_total_in=total, immediate_self_in=own,
         long_term_factor=factor, after_attachment_in=factor * total + (total - own),
-        span_in=span_in,
+        span_in=span_in, end_fixity=end_fixity, effective_inertia_end_in4=ie_end,
+        negative_moment_ftlb=m_end,
     )

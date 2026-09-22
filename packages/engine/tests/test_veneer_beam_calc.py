@@ -17,9 +17,14 @@ from typehaus.engineering.sunken_garden.veneer_beam import (
     deflection_after_attachment,
     torsion_design,
 )
-from typehaus.engineering.veneer_beam import carried_wythes, enumerate_veneer_beams
+from typehaus.engineering.veneer_beam import (
+    _one,
+    carried_wythes,
+    enumerate_veneer_beams,
+    veneer_beams,
+)
 from typehaus.engineering.veneer_beam_anchorage import confining_tie_area, hooked_anchorage
-from typehaus.model import HookConfinement
+from typehaus.model import EndRestraint, HookConfinement
 from typehaus.quantities import inch
 
 
@@ -87,14 +92,85 @@ def test_torsion_detailing_closes(record) -> None:
     assert _state(rec, "longitudinal bar spacing").demand == pytest.approx(6.1875)
 
 
-def test_deflection_is_graded_at_l_over_480_not_240(record) -> None:
-    """§6d: after-attachment 0.4844" against ℓ/480 = 0.4875"."""
+def test_deflection_is_two_rows_and_tms_l_over_600_is_the_strict_one(record) -> None:
+    """§6f: after-attachment 0.1811" at the claimed α 0.25 — ℓ/600 0.464, ℓ/480 0.371."""
     _, rec = record
-    defl = _state(rec, "deflection")
-    assert defl.demand == pytest.approx(0.4844, abs=1e-4)
-    assert defl.capacity == pytest.approx(0.4875)
-    assert defl.ratio == pytest.approx(0.994, abs=1e-3)
-    assert any("ℓ/600" in note and "1.24" in note for note in rec.notes)
+    tms = _state(rec, "deflection after the wythe is attached, TMS")
+    assert tms.demand == pytest.approx(0.18109, abs=1e-5)
+    assert tms.capacity == pytest.approx(0.390)
+    assert tms.ratio == pytest.approx(0.464, abs=1e-3)
+    assert "TMS 402-22 §13.1.2.3" in tms.citation
+    aci = _state(rec, "deflection after the wythe is attached, ACI")
+    assert aci.demand == pytest.approx(0.18109, abs=1e-5)
+    assert (aci.capacity, aci.ratio) == (pytest.approx(0.4875), pytest.approx(0.371, abs=1e-3))
+    # The old NOT-GRADED note is gone; the credit says what it is instead.
+    assert not any("NOT GRADED: TMS" in note for note in rec.notes)
+    assert any("SERVICEABILITY ONLY" in note and "α 0.25 is CLAIMED" in note
+               for note in rec.notes)
+
+
+def _stripped(record):
+    """The same record with ``end_restraint`` taken off the beam — a simple span again."""
+    ctx, _ = record
+    beam, carried = veneer_beams(ctx)[0]
+    return _one(ctx, beam.model_copy(update={"end_restraint": None}), carried)
+
+
+def test_the_fixity_credit_is_never_assumed(record) -> None:
+    """Strip `end_restraint` and the beam is a simple span: ℓ/600 back to 1.242, OVER."""
+    stripped = _stripped(record)
+    tms = _state(stripped, "deflection after the wythe is attached, TMS")
+    assert tms.demand == pytest.approx(0.4844, abs=1e-4)
+    assert tms.ratio == pytest.approx(1.242, abs=1e-3)
+    assert not tms.ok and stripped.status is Status.OVER
+    assert _state(stripped, "deflection after the wythe is attached, ACI").ratio == (
+        pytest.approx(0.994, abs=1e-3))
+    # No joint rows and no credit note without the authored claim.
+    assert not [s for s in stripped.limit_states if "end moment into" in s.name]
+    assert not any("SERVICEABILITY ONLY" in note for note in stripped.notes)
+
+
+def test_the_fixity_credit_buys_no_strength(record) -> None:
+    """Every STRENGTH row is identical with and without the credit — §6f's whole safety."""
+    _, rec = record
+    stripped = _stripped(record)
+    for name in ("flexure, simple span", "minimum flexural steel", "one-way shear",
+                 "torsion transverse", "torsion section limit",
+                 "longitudinal steel, flexure + torsion"):
+        credited, bare = _state(rec, name), _state(stripped, name)
+        assert (credited.demand, credited.capacity) == (bare.demand, bare.capacity), name
+    assert _state(rec, "flexure, simple span").ratio == pytest.approx(0.555, abs=1e-3)
+    assert "no end fixity credited" in _state(rec, "flexure, simple span").citation
+
+
+def test_the_joint_receives_the_end_moment(record) -> None:
+    """§6f: M_end 5,621 ft-lb — 0.093 in the beam, 0.368 into each wall as PLAIN concrete
+    over b_eff 36", and 0.136 of end-moment shear. The elastic bound is printed too."""
+    _, rec = record
+    negative = _state(rec, "negative flexure at the supports")
+    assert negative.demand == pytest.approx(5621, abs=1)
+    assert (negative.capacity, negative.ratio) == (pytest.approx(60747, abs=1),
+                                                   pytest.approx(0.093, abs=1e-3))
+    for wall in ("W-SG-W1", "W-SG-E1"):
+        moment = _state(rec, f"end moment into {wall}")
+        assert moment.demand == pytest.approx(5621, abs=1)
+        assert moment.capacity == pytest.approx(15273.5, abs=1)
+        assert moment.ratio == pytest.approx(0.368, abs=1e-3)
+        assert "Table 14.5.2.1" in moment.citation and "b_eff 36\"" in moment.citation
+        # Graded at the elastic bound as well, so the derate spends nobody else's capacity.
+        assert "11,557 ft-lb, d/c 0.757" in moment.citation
+        shear = _state(rec, f"end-moment shear into {wall}")
+        assert shear.demand == pytest.approx(4478, abs=1)
+        assert shear.capacity == pytest.approx(32933.5, abs=1)
+        assert shear.ratio == pytest.approx(0.136, abs=1e-3)
+
+
+def test_end_restraint_round_trips() -> None:
+    restraint = EndRestraint(fixity=0.25, elastic_fixity=0.514,
+                             effective_width=inch(36.0), source="§6f")
+    again = EndRestraint.model_validate(restraint.model_dump())
+    assert again == restraint
+    assert EndRestraint(fixity=0.0).elastic_fixity is None
 
 
 def test_end_restraint_closes_on_ties_and_footing_dowels(record) -> None:
@@ -116,8 +192,19 @@ def test_end_restraint_closes_on_ties_and_footing_dowels(record) -> None:
         steel = _state(rec, f"dowel steel against bottom-y at {footing}")
         assert (steel.demand, steel.capacity) == (pytest.approx(0.93), pytest.approx(0.93))
         assert steel.is_detailing
-    assert sum("27.58\"" in note for note in rec.notes) == 2
-    assert _state(rec, "deflection").ratio == max(
+    # The class B lap is a graded row since 2026-09-22, not a note: 27.58" in the authored
+    # 30" projection (66 + 30 = one 8'-0" stock bar), and the hoops' 135° hook with it.
+    assert not any("27.58\"" in note for note in rec.notes)
+    for footing in ("FT-SG-W1", "FT-SG-E1"):
+        lap = _state(rec, f"dowel lap of bottom-y past the {footing} joint")
+        assert (lap.demand, lap.capacity) == (pytest.approx(27.58, abs=0.01),
+                                              pytest.approx(30.0))
+        assert lap.is_detailing and lap.ok
+    hook = _state(rec, "closed hoop hook angle")
+    assert (hook.demand, hook.capacity) == (135.0, 135.0)
+    assert hook.is_detailing and hook.ok
+    # Deflection has stopped governing; the hooked development does (0.790 > 0.555).
+    assert _state(rec, "hooked development of top-y into W-SG-W1").ratio == max(
         s.ratio for s in rec.limit_states if not s.is_detailing)
 
 
@@ -153,7 +240,9 @@ def test_hooked_anchorage_reproduces_section_6e() -> None:
 def test_the_soft_joint_gap_is_named_with_its_geometry(record) -> None:
     _, rec = record
     note = next(n for n in rec.notes if n.startswith("MODEL GAP"))
-    assert "4.00\" clear of W-SG-W1" in note and "0.00\" clear of W-SG-E1" in note
+    # 3/8" at the east end since 2026-09-22 — N-B-BRICK-E moved west so BIA TN 18A's
+    # sealant joint over compressible filler has somewhere to go at BOTH ends.
+    assert "4.00\" clear of W-SG-W1" in note and "0.38\" clear of W-SG-E1" in note
 
 
 def test_pure_arithmetic_matches_the_note_without_the_model() -> None:
@@ -162,12 +251,40 @@ def test_pure_arithmetic_matches_the_note_without_the_model() -> None:
                           hoop_leg_area_in2=0.11, hoop_spacing_in=5.0, fc_psi=5000.0)
     assert tors.ph_in == pytest.approx(42.0)
     assert tors.al_required_in2 == pytest.approx(1.0451, abs=1e-4)
-    defl = deflection_after_attachment(
-        span_ft=19.5, service_plf=506.826, self_plf=221.875, width_in=12.0, depth_in=17.75,
-        d_in=15.0625, tension_in2=0.93, compression_in2=0.93, fc_psi=5000.0)
+    kwargs = dict(span_ft=19.5, service_plf=506.826, self_plf=221.875, width_in=12.0,
+                  depth_in=17.75, d_in=15.0625, tension_in2=0.93, compression_in2=0.93,
+                  fc_psi=5000.0)
+    defl = deflection_after_attachment(**kwargs)
     assert defl.cracked_inertia_in4 == pytest.approx(1065.8, abs=0.1)
     assert defl.effective_inertia_in4 == pytest.approx(2052.5, abs=0.1)
     assert defl.long_term_factor == pytest.approx(1.5908, abs=1e-4)
+    assert defl.after_attachment_in == pytest.approx(0.4844, abs=1e-4)
+
+    # ** α = 0 IS BIT-IDENTICAL TO THE SIMPLE SPAN, and this is an EXACT comparison. **
+    # The hex float is the value the engine produced before `end_fixity` existed; the
+    # `5 − 4α` shape factor is exactly 5.0 there, and §24.2.3.6's 0.70/0.30 average is NOT
+    # taken at α = 0 (it is written for a member continuous at both ends). A credit that
+    # restates the uncredited row is a credit nobody can check.
+    assert defl.after_attachment_in == float.fromhex("0x1.effbefd575c56p-2")
+    assert deflection_after_attachment(**kwargs, end_fixity=0.0).after_attachment_in == (
+        defl.after_attachment_in)
+
+    # §6f's claimed row, worked by hand: Ie,mid 3,463.1, Ie,end 5,592.4 (uncracked),
+    # Ie,avg 4,101.9, Δ after attachment 0.18109".
+    fixed = deflection_after_attachment(**kwargs, end_fixity=0.25)
+    assert fixed.effective_inertia_end_in4 == pytest.approx(5592.4, abs=0.1)
+    assert fixed.effective_inertia_in4 == pytest.approx(4101.9, abs=0.1)
+    mid = (fixed.effective_inertia_in4 - 0.30 * fixed.effective_inertia_end_in4) / 0.70
+    assert mid == pytest.approx(3463.1, abs=0.1)
+    assert fixed.after_attachment_in == pytest.approx(0.18109, abs=1e-5)
+    assert fixed.negative_moment_ftlb == pytest.approx(4015.0, abs=0.1)
+    assert (fixed.limit_600_in, fixed.limit_480_in) == (pytest.approx(0.390),
+                                                        pytest.approx(0.4875))
+    # 0.514 elastic, and the α where the beam would read uncracked at service — the claim
+    # sits below it, so no part of the credit rests on staying uncracked.
+    elastic = deflection_after_attachment(**kwargs, end_fixity=0.514)
+    assert elastic.after_attachment_in == pytest.approx(0.0927, abs=1e-4)
+    assert elastic.effective_inertia_in4 == pytest.approx(5592.4, abs=0.1)
 
 
 def test_the_count_accessor_leaves_the_spacing_accessor_refusing_counts(catlin_plan) -> None:

@@ -143,9 +143,16 @@ def _dowel_state(ctx: Any, beam: Any, spec: Any, role: str, row: tuple[int, int,
         dowel.count * BARS[dowel.bar].area_in2, "in2",
         f"{dowel.count} #{dowel.bar} dowels carry the {count} #{bar} row across the joint",
         is_detailing=True))
-    out.notes.append(f"DOWEL LAP at {solid.tag}: class {spec.lap_class or 'B'} "
-                     f"{lap:.2f}\" past the joint (§25.5.2.1), laid and billed by the rebar "
-                     f"layout; not graded (no authored projection).")
+    if dowel.projection is None:
+        out.notes.append(f"DOWEL LAP at {solid.tag}: class {spec.lap_class or 'B'} "
+                         f"{lap:.2f}\" past the joint (§25.5.2.1), laid and billed by the "
+                         f"rebar layout; not graded (no authored `BarSpec.projection`).")
+        return
+    out.states.append(LimitState(
+        f"dowel lap of {role} past the {solid.tag} joint", lap,
+        float(dowel.projection.inches), "in",
+        f"ACI 318-19 §25.5.2.1 class {spec.lap_class or 'B'} lap on ℓd {ld:.2f}\"; authored "
+        f"`projection` past the joint into {beam.tag}", is_detailing=True))
 
 
 def _hook_state(ctx: Any, beam: Any, entry: Any, role: str, row: tuple[int, int, int],
@@ -189,6 +196,31 @@ def _hook_state(ctx: Any, beam: Any, entry: Any, role: str, row: tuple[int, int,
         f"ψr per Table 25.4.3.2 and §25.4.3.3"))
 
 
+#: ACI 318-19 §25.7.1.3/§25.7.1.6 — a closed hoop resisting torsion is closed with 135°
+#: seismic-style hooks; 90° is permitted only where torsion is not resisted and the bar end
+#: is restrained by a slab. This beam's hoops are its torsion steel (note §4a), so 135° is
+#: the requirement and an unstated angle is a missing input, never a 90° assumption.
+TORSION_HOOP_HOOK_DEGREES = 135
+
+
+def tie_hook_row(beam: Any, spec: Any, out: Anchorage) -> None:
+    """The closed hoops' hook angle, graded — ``BarSpec.tie_hook_degrees`` on ``ties``."""
+    entry = next((b for b in getattr(spec, "bars", ()) if b.role in ("ties", "stirrups")), None)
+    if entry is None:
+        return
+    if entry.tie_hook_degrees is None:
+        out.missing.append(
+            f"`BarSpec.tie_hook_degrees` on {beam.tag}'s {entry.role}: the hoops ARE the "
+            f"torsion steel, so ACI 318-19 §25.7.1.3/§25.7.1.6 want {TORSION_HOOP_HOOK_DEGREES}"
+            f"° and an unstated angle is not a 90° claim either way")
+        return
+    out.states.append(LimitState(
+        "closed hoop hook angle", TORSION_HOOP_HOOK_DEGREES, float(entry.tie_hook_degrees),
+        "deg", f"ACI 318-19 §25.7.1.3 and §25.7.1.6 — a hoop resisting torsion is closed with "
+        f"a {TORSION_HOOP_HOOK_DEGREES}° bend; authored {entry.tie_hook_degrees}°",
+        is_detailing=True))
+
+
 def anchor_rows(ctx: Any, beam: Any, spec: Any, rows: dict[str, tuple[int, int, int]],
                 supports: tuple[Any, Any], own: Any, frame: tuple[Any, Any, Any],
                 section: tuple[float, float, float], epoxy: bool) -> Anchorage:
@@ -213,4 +245,5 @@ def anchor_rows(ctx: Any, beam: Any, spec: Any, rows: dict[str, tuple[int, int, 
                     f"{sup.z1 / _M_PER_IN:.2f}\" — raise the beam bottom or detail the end")
                 continue
             _dowel_state(ctx, beam, spec, role, row, sup, starts, solid, frame, z, epoxy, out)
+    tie_hook_row(beam, spec, out)
     return out

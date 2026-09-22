@@ -3,7 +3,8 @@
 **House:** catlin
 **Structure:** `W-SG-BRKBM` (the beam), `W-B-BRICK` (the wythe it carries), `FT-B-S2` /
 `FT-B-S3` (the footings it is isolated from), `SG_VENEER_BEAM_14` (the assembly).
-**Written:** 2026-09-05, by hand. §6e re-worked 2026-09-21 (hooks, enclosing ties, footing dowels).
+**Written:** 2026-09-05, by hand. §6e re-worked 2026-09-21 (hooks, enclosing ties, footing
+dowels); §6f added 2026-09-22 (TMS ℓ/600, end fixity, the joint rows) and §6d superseded by it.
 **Oracle for:** `engineering/veneer_beam.py` (`veneer_beam/W-SG-BRKBM`) since 2026-09-20 —
 §6 is worked at the model's own geometry and `tests/test_veneer_beam_calc.py` reproduces it;
 §3/§4 still oracle the report-side `engineering/sunken_garden/veneer_beam.py` at their literals.
@@ -390,7 +391,17 @@ The four detailing rows, the §4a steel, now graded:
 
 **Torsion detailing closes.** The hoops at 5" sit 5% inside §9.7.6.3.3's 5.25".
 
-### 6d. Deflection — the right limit, and it is close
+### ⛔ 6d. SUPERSEDED 2026-09-22 by §6f — the limit is ℓ/600 and the fixity is credited
+
+§6d graded the simple span against ACI's ℓ/480 and printed TMS's ℓ/600 as NOT GRADED. **Both
+halves of that are withdrawn**: TMS 402-22 §13.1.2.3 puts ℓ/600 on any horizontally spanning
+member supporting veneer — a concrete beam included, which is what the 2016 edition's §5.2
+placement left arguable — and the end restraint §6e designed is now credited, for
+serviceability only. §6f is the record's deflection basis. The arithmetic below is unchanged
+and still correct **at α = 0**, which is the row §6f's table opens with, and is kept because
+every cracked-section term in §6f (Ec, Ig, Mcr, kd, Icr, λΔ) is worked here and not repeated.
+
+### 6d. Deflection at α = 0 — the right limit, and it is close
 
 `check_veneer_beam` compared a gross-section, ×3 deflection against **ℓ/240**. That is ACI's
 limit for a floor NOT supporting anything a deflection damages, and a brick wythe is the
@@ -414,16 +425,12 @@ after attachment  1.5908 × 0.1993 + (0.1993 − 0.0320)                = 0.4844
 limit  234 / 480                                                     = 0.4875 in   d/c 0.994
 ```
 
-**0.994 is a pass on the code's own row, and it is not comfortable.** Every simplification is
-the conservative one (the wythe's two arched openings are not deducted; the whole of the beam's
-own creep is counted after the brick goes on; no end fixity is credited), so the true number
-is lower — but a reviewer will see a 0.99. And the masonry industry's number is stricter:
-TMS 402-16 §5.2.1.4.2 holds a beam supporting unreinforced masonry to **ℓ/600 = 0.39 in**,
-which this simple span misses at 1.24. The record grades the ACI row and prints the TMS
-comparison as NOT GRADED rather than choose between them silently: TMS §5.2 is written for
-masonry beams, and whether a reviewer applies it to a concrete one is a judgement. What would
-close both is the end restraint §6e is about — even partial fixity at the side walls roughly
-halves this — which is the strongest reason yet to design that joint.
+**0.994 is a pass on ACI's row, and it is not comfortable — and the governing limit is
+stricter still.** Every simplification is the conservative one (the wythe's two arched
+openings are not deducted; the whole of the beam's own creep is counted after the brick goes
+on), so the true number is lower — but a reviewer will see a 0.99. And the masonry industry's
+number is **ℓ/600 = 0.390"**, which this simple span misses at **1.242**. §6f grades that row
+with the end restraint credited, and that is what closes it.
 
 ### 6e. End restraint — closed 2026-09-21 (was INCOMPLETE)
 
@@ -462,6 +469,12 @@ available   W-SG-W1 12.0" − 3.0" far-face cover                       = 9.00 i
             (W-SG-E1 is the mirror: same 7.11 / 9.00)
 ```
 
+**Since §6f this hook is also the NEGATIVE-MOMENT anchorage.** It was authored for torsion —
+a corner bar developing fy at the support face, no §25.4.10.1 excess-steel reduction — and
+the fixity credit gives the same row 5,621 ft-lb of end moment to deliver. The requirement
+does not change (fy at the face was already the demand; a flexural anchorage asking less is
+covered by it), but the reason it may not be relaxed now has two halves instead of one.
+
 The hooks turn **up** into the wall: the top row is at −105.125" and a #5 90° hook needs
 3.75/2 + 0.625 + 7.5 = 10.0" of leg, so turned down it would end at −115.1", 5.7" into the
 footing below the wall's −109.4375" start — concrete of placement 1, which a placement-2 tail
@@ -488,9 +501,16 @@ geometric   6 − (−42) − 3 cover                                       = 45
 available   min(30.00, 45.00)                                         = 30.00 in  d/c 0.707 ✓
             (east: 66 − (234 − 198) = 30.00; 282 − 3 − 234 = 45.00 — the mirror)
 dowel steel 3 #5 = 0.93 in² against the row's 3 #5 = 0.93 in²                   d/c 1.000 ✓
-lap         class B, §25.5.2.1: 1.3 × 21.21 = 27.58" past the joint into the beam — laid
-            and billed by the rebar layout; not a graded row (no authored projection)
+lap         class B, §25.5.2.1: 1.3 × 21.21                           = 27.58 in
+projection  authored `BarSpec.projection` on the dowels                = 30.00 in  d/c 0.919 ✓
 ```
+
+**The lap is a graded row since 2026-09-22.** The dowel is 66" + 30" = a clean 8'-0" stock
+length, which is where the 30" comes from; it clears the class B lap by 2.42". Until the
+projection was authored the note printed the 27.58" and compared it with nothing. The ties'
+**135° hooks** are authored the same way (`BarSpec.tie_hook_degrees=135`) and graded against
+ACI 318-19 §25.7.1.3/§25.7.1.6 — a closed hoop resisting torsion may not be closed with 90°
+bends, and "135°" had been prose in a `note=` string that no rule could read.
 
 The bottom row itself **stops at the two joints**, u 42"…198" (156"), where the dowels take
 over; until 2026-09-21 the layout ran it on to the beam's own cover at u 2"/238", 40" into each
@@ -500,22 +520,150 @@ footing, which placement 2 cannot reach — 20.0 LF of #5 billed and unbuildable
 A hook buys nothing here: straight at 45" of room it develops with 50% to spare, and a hook
 turned in a 12" footing with the bar 3.94" off its underside has nowhere to go.
 
-### 6f. What left this record, and where it went
+### 6f. ℓ/600, and the end fixity that closes it — SERVICEABILITY ONLY (2026-09-22)
+
+**The limit.** TMS 402-22 **§13.1.2.3** holds *any* horizontally spanning member supporting
+veneer — not only a masonry beam — to ℓ/600 under allowable-stress D + L. It is the
+governing deflection limit on this beam and it is graded. ACI 318-19 Table 24.2.2's ℓ/480 is
+graded beside it as the looser of the pair, not instead of it. (The 2016 edition's
+§5.2.1.4.2 sat inside a masonry-beam clause, which is why §6d printed it as an unresolved
+judgement; the 2022 renumbering settles the scope and the judgement goes away.)
+
+**The model.** Equal rotational springs at the two monolithic joints, symmetric UDL, one
+scalar **α** — the fraction of the fully fixed end moment the joint actually delivers:
+
+```
+M_end  = α wL²/12          α = 1 is fully fixed, α = 0 is the simple span of §6d
+M_mid  = wL²/8 − M_end
+Δ      = wL⁴(5 − 4α)/(384 E Ie)
+Ie,avg = 0.70 Ie,mid + 0.30 Ie,end          ACI 318-19 §24.2.3.6, both ends continuous
+```
+
+`Ie,mid` and `Ie,end` are each Table 24.2.3.5's ⅔Mcr expression at that section's own `Ma`,
+with Ec, Ig, Mcr, kd and Icr exactly as §6d works them. **At α = 0 the average is not taken**
+— §24.2.3.6 is written for a member continuous at both ends and a simple span is neither, so
+α = 0 reads Ie,mid alone and reproduces §6d's 0.4844" to the last digit. That is a
+discontinuity in the model and it is the code's own; it is asserted in
+`tests/test_veneer_beam_calc.py` so the credit can never quietly restate the old row.
+
+**The elastic estimate, on the stingiest reading available.** Only the wall standing *above*
+the joint is counted (the wall below is `FT-SG-W1`/`-E1`'s placement and is left out), its
+far end is taken as pinned, the effective width is the beam's own 12" rather than the 36"
+`b + 2t` the moment is actually spread over, and the section is gross:
+
+```
+I_w    = 12 × 12³/12                                     = 1,728 in⁴
+h      = beam top −102.4375" to wall top 0'-0"           = 102.4375 in
+k_θ    = 3 E I_w / h = 3 × 4,030,509 × 1,728 / 102.4375  = 2.040e8 lb-in/rad
+α      = 1 / (1 + 2 E I_beam / (k_θ L))                  (equal springs, both ends)
+       = 1 / (1 + 2 × 4,030,509 × 5,592.36 / (2.040e8 × 234))
+α_elastic                                                = 0.514
+```
+
+**CLAIMED α = 0.25** — a 2:1 derate on that estimate, and the number the record is authored
+with (`EndRestraint(fixity=0.25, elastic_fixity=0.514, effective_width=36")` on
+`W-SG-BRKBM`).
+
+| α | Ie,mid | Ie,end | Ie,avg | Δ after attachment | ℓ/600 (0.390") | ℓ/480 (0.4875") |
+|---|---:|---:|---:|---:|---:|---:|
+| 0.00 (§6d, simple span) | 2,052.5 | — | 2,052.5 | 0.4844 | **1.242** | 0.994 |
+| 0.10 | 2,378.2 | 5,592.4 | 3,342.5 | 0.2623 | 0.672 | 0.538 |
+| **0.25 CLAIMED** | **3,463.1** | **5,592.4** | **4,101.9** | **0.1811** | **0.464** | 0.371 |
+| 0.344 | 5,591.9 | 5,592.4 | 5,592.0 | 0.1142 | 0.293 | 0.234 |
+| 0.514 (elastic) | 5,592.4 | 5,592.4 | 5,592.4 | 0.0927 | 0.238 | 0.190 |
+
+**The claim has 2.7× the fixity it needs**: ℓ/600 is met at α ≈ 0.092, and 0.25 is claimed.
+It also sits **below α = 0.344**, which is where M_mid falls to ⅔Mcr and the beam would read
+uncracked at service — so no part of this credit rests on the beam staying uncracked, which
+is the assumption a restraint crack would take away.
+
+**The credit is serviceability only, and that is the whole safety of it.** Midspan flexure is
+still graded at **α = 0** (Mu 33,726 against φMn 60,747, **d/c 0.555**, unchanged from §6b).
+A joint softer than claimed therefore costs deflection and nothing else — it can never buy
+strength, and the record cannot be made to pass by assuming a stiffer wall. Everything the
+fixity *adds* is graded separately below, at the claimed α and again at the full elastic α.
+
+**Shrinkage restraint is ACI's own allowance, not a new question.** Casting the beam between
+two walls restrains its shrinkage, and Eq. 24.2.3.5a's ⅔Mcr — rather than the full Mcr the
+older editions used — is exactly the code's allowance for restraint cracking in service. The
+section is also distributed: ρ = 2.26 in² / (12 × 17.75) = **1.06%** of longitudinal steel,
+so a restrained crack is shared out rather than opened at one plane.
+
+#### The rows the fixity adds
+
+**Negative flexure at the supports.** Mirror 3 #5 top is already in the section (§3), so the
+capacity is φMn 60,747 ft-lb, the same as midspan:
+
+```
+M_end,u  = α wu L²/12 = 0.25 × 709.56 × 19.5²/12        =  5,621 ft-lb   d/c 0.093
+```
+
+**The end moment into `W-SG-W1` / `W-SG-E1`, graded PLAIN.** The wall carries no steel that
+crosses this joint in the right direction (`_BRACED_STEM_STEEL` is `#6 @ 38"` VERTICAL), so
+the honest reading is structural plain concrete. **ACI 318-19 Table 14.5.2.1 in US customary
+units is `Mn = 5λ√f'c · Sm`** with f'c in psi and Sm = b h²/6 — confirmed 2026-09-22 against
+published summaries of the table (the 0.42λ√f'c form quoted elsewhere is the SI expression,
+f'c in MPa; the 5λ√f'c modulus of rupture and φ = 0.60 for plain concrete flexure are the
+inch-pound pair). Had the text read otherwise the wall would have had to go reinforced over
+b_eff and this row would be a bar schedule instead; it does not, so it is a plain section.
+The moment spreads over an effective width `b_eff = b + 2t = 12 + 2(12)` = **36"**:
+
+```
+Sm    = 36 × 12²/6                                       =    864 in³
+φMn   = 0.60 × 5 × √5,000 × 864 / 12                     = 15,273 ft-lb
+demand 5,621 (α 0.25)                                                   d/c 0.368  ×2 ends
+```
+
+**The wall receives even the full elastic end moment**: at α = 0.514 the demand is 11,557
+ft-lb, d/c **0.757**, still a pass on the plain section. **`#6 @ 38"` does not change**, and
+that invariance is the check on the derate — the claim is conservative in deflection and the
+wall is not asked to be stiffer than the claim while being graded for the moment a stiffer
+wall would send it.
+
+**End-moment shear.** The end moment arrives at the joint as a couple in the top and bottom
+rows, `T = C = M_end/d`, and the wall carries that force across b_eff as one-way shear
+(d_wall = 12" − 3" cover − #6/2 = 8.625"):
+
+```
+V      = 5,621 × 12 / 15.0625                            =  4,478 lb
+φVc    = 0.75 × 2 √5,000 × 36 × 8.625                    = 32,933 lb    d/c 0.136  ×2 ends
+```
+
+#### Prose, not rows
+
+* **The inflection point is at u = 10.19"** from each support face at α = 0.25
+  (`x = [L − √(L² − 8 M_end/w)]/2` on the factored diagram). ACI 318-19 §9.7.3.8.4 asks a
+  negative-moment bar to run d, 12 db or ℓn/16 past it — 15.06", 7.50" or 14.63" — all of
+  which the 3 #5 top clears with room, because the row runs the beam's **full length** (§6e)
+  rather than being cut off. Nothing to grade, and nothing to change.
+* **Torsion into the wall is in-plane and negligible.** The §6c twist arrives at the joint
+  about the beam's own axis, which is the wall's *strong* plan direction: it is resisted over
+  the wall's ~125" of run as in-plane bending, at a stress two orders below anything that
+  governs. Not a row.
+* **If the beam ever stops being cast monolithic with `W-SG-W1`/`W-SG-E1`, `end_restraint`
+  comes off with it** and this record goes straight back to 1.242 OVER. That is a test
+  (`test_the_fixity_credit_is_never_assumed`), not a comment.
+
+### 6g. What left this record, and where it went
 
 * **The masonry anchors** are `veneer_anchor/W-B-BRICK`, their own deferral with their own
   permit line (`structural.veneer_anchor`) — folding them in would be a record whose §9 denies
   its own scope. §5.1 is the reasoning; the deliverable is a TMS 402 anchor design for the
   ~10" reach and the supplier's confirmation of the insulation thickness.
-* **The soft joints are a MODEL GAP, not engineering.** The resolved wythe runs x 106"…330":
-  4" clear of `W-SG-W1`'s face at the west end, and **hard against `W-SG-E1`'s face (330")
-  at the east end**. §5.1's sealant joint over compressible filler is carried by nothing, and
-  no rule grades a masonry wythe's end restraint. Named in the record's NOT-GRADED note.
+* **The soft joints are a MODEL GAP, not engineering — but both ends now have ROOM for one**
+  (2026-09-22). The wythe ran x 106"…330" and stood **hard against `W-SG-E1`'s face** at the
+  east end: a sealant joint over compressible filler needs a gap to be in, and there was
+  none. `N-B-BRICK-E` moved 3/8" west, so the resolved wythe runs x 106"…329.625" and reads
+  4.00" clear of `W-SG-W1` and **0.375" clear of `W-SG-E1`** — 3/8" is BIA Technical Note 18A's
+  minimum for a vertical expansion joint, and §5.1's 0.15" of movement over 18'-8" fits it.
+  The joint FILLER is still carried by no element and graded by no rule, which is what the
+  record's NOT-GRADED note says. The wythe loses 0.3 SF (112.5 → 112.2 SF).
 
-### 6g. The record, row by row
+### 6h. The record, row by row
 
 | limit state | demand | capacity | d/c |
 |---|---:|---:|---:|
-| flexure, simple span | 33,726 ft-lb | 60,747 | 0.555 |
+| flexure, simple span (α = 0, no fixity credited) | 33,726 ft-lb | 60,747 | **0.555** |
 | minimum flexural steel (detailing) | 0.639 in² | 0.93 | 0.687 |
 | one-way shear | 6,918 lb | 19,171 | 0.361 |
 | torsion transverse steel, equilibrium | 0.002058 in²/in | 0.0220 | 0.094 |
@@ -524,13 +672,30 @@ turned in a 12" footing with the bar 3.94" off its underside has nowhere to go.
 | minimum transverse steel (detailing) | 0.0106 in²/in | 0.044 | 0.241 |
 | longitudinal steel, flexure + torsion (detailing) | 1.684 in² | 2.26 | 0.745 |
 | longitudinal perimeter spacing (detailing) | 6.19 in | 12.0 | 0.516 |
-| deflection after attachment | 0.4844 in | 0.4875 | 0.994 |
+| deflection after attachment, **TMS ℓ/600** (α 0.25) | 0.1811 in | 0.390 | 0.464 |
+| deflection after attachment, ACI ℓ/480 (α 0.25) | 0.1811 in | 0.4875 | 0.371 |
+| negative flexure at the supports (α 0.25) | 5,621 ft-lb | 60,747 | 0.093 |
+| end moment into W-SG-W1 / W-SG-E1, plain over b_eff 36" | 5,621 ft-lb | 15,273 | 0.368 |
+| end-moment shear into W-SG-W1 / W-SG-E1 | 4,478 lb | 32,933 | 0.136 |
 | hooked development of top-y into W-SG-W1 / W-SG-E1 (ψr 1.0 on Ath) | 7.11 in | 9.00 | 0.790 |
 | dowel development of bottom-y into FT-SG-W1 / FT-SG-E1 | 21.21 in | 30.00 | 0.707 |
+| dowel lap of bottom-y past each joint (detailing) | 27.58 in | 30.00 | 0.919 |
 | dowel steel against the bottom row, each end (detailing) | 0.93 in² | 0.93 | 1.000 |
+| tie hook angle (detailing) | 135 ° | 135 | 1.000 |
 
-Status on catlin: **OK** since 2026-09-21 — every row passes; deflection (0.994) governs.
-Until then INCOMPLETE on the end restraint (hooks, and a wall for the bottom row).
+Status on catlin: **OK** — every row passes. The governing row is now **§6e's hooked
+development of the top row, 0.790**; deflection has stopped governing, and the strength rows
+rank flexure 0.555, ℓ/600 deflection 0.464, dowel development 0.707, one-way shear 0.361,
+end moment into the wall 0.368. It was OK-governed-by-deflection-at-0.994 from 2026-09-21
+(ACI ℓ/480, simple span) until §6f moved the limit to ℓ/600 and credited the fixity; before
+2026-09-21 it was INCOMPLETE on the end restraint.
+
+**What governs is now an ANCHORAGE length, and that is worth saying out loud.** The beam's
+own section is comfortable everywhere (flexure 0.555, shear 0.361, torsion 0.102); the
+binding number is 7.11" of hook in 9.00" of wall. Anything that thins `W-SG-W1`/`W-SG-E1`,
+raises their cover, or loses the two #4 confining ties per end (which is worth ψr 1.6, ℓdh
+11.38" against 9.00" — an immediate FAIL) moves the governing row before it moves anything
+else here.
 
 ## Sources
 
@@ -558,5 +723,14 @@ Until then INCOMPLETE on the end restraint (hooks, and a wall for the bottom row
   (https://www.pci.org/PCI_Docs/Publications/PCI%20Journal/2024/March-April/23-0001_Feature_Ghosh_MA24.pdf);
   §25.4.3.3's wording via ideCAD's ACI 318-19 development notes
   (https://help.idecad.com/ideCAD/development-of-reinforcement).
-- TMS 402-16 §5.2.1.4.2 — ℓ/600 for a beam supporting unreinforced masonry (§6d, not graded).
+- **TMS 402-22 §13.1.2.3** — ℓ/600 (allowable-stress D + L) on any horizontally spanning
+  member supporting veneer. This is the GOVERNING deflection limit and it is graded (§6f). It
+  supersedes this note's earlier citation of TMS 402-16 §5.2.1.4.2, which sat inside a
+  masonry-beam clause and was printed NOT GRADED for that reason.
+- ACI 318-19 **§24.2.3.6** (Ie,avg = 0.70 Ie,mid + 0.30 Ie,end for a member continuous at both
+  ends) and **Table 14.5.2.1** (structural plain concrete, `Mn = 5λ√f'c · Sm` in US customary
+  units, φ 0.60 per Table 21.2.1) — §6f. The US coefficient was confirmed 2026-09-22 before
+  the wall row was printed: the 0.42λ√f'c form is the SI expression with f'c in MPa. Sources:
+  Eng-Tips "Plain (UnReinforced) Concrete Allowable Stress" and the CalcTree ACI 318-19
+  plain-concrete-wall template, both reproducing the 5√f'c modulus of rupture with φ = 0.60.
 - `notes/sunken_garden_court_free_body.md` — the court's own free body, unchanged by this.

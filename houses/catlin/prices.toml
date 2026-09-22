@@ -4458,9 +4458,11 @@
 # call-out, $2,373-3,747 + $469-1,142 = $2,842-4,889, which lands on the floor for real. If they
 # end up as two trips, it is FIREPLACE_BRICK_WYTHE that is light by the mobilisation, and that
 # row already says so.
-# ** 112.5 SF SINCE 2026-09-16 **: the wythe's top came down 8" (0' -> -8") so the porch joists
+# ** 112.2 SF SINCE 2026-09-22 **: N-B-BRICK-E moved 3/8" west for the east soft joint (BIA
+# TN 18A; notes/sunken_garden_veneer_beam.md §6g), off the 112.5 SF the wythe read from
+# 2026-09-16, when its top came down 8" (0' -> -8") so the porch joists
 # pass over it; 18'-8" x 94 7/16" = 146.9 SF gross, less the same two reveals. The rate stands;
-# $19-30 x 112.5 = $2,138-3,375, and the one-call-out argument above carries the floor.
+# $19-30 x 112.2 = $2,132-3,366, and the one-call-out argument above carries the floor.
 # The bare assembly key stays as the fallback for any brick region a future band adds without
 # its own rate, and is re-based to the same field rate — there is no glaze left to price up.
 # Ties, flashing, weeps and the shelf angle are in the rate; the concrete backup is the wall
@@ -4560,8 +4562,8 @@
 # commented for the revert, on the `glazed-green-brick` convention — going back to a white body
 # is one `material_ref` edit on FIREPLACE_BRICK_WYTHE plus un-commenting this line.
 # "FIREPLACE_BRICK_WYTHE:white-brick" = { material = { low = 8, high = 16 }, labour = { low = 15, high = 40 }, unit = "SF" }
-"BASEMENT_BRICK_VENEER" = { low = 19, high = 30, unit = "SF" }  # fallback; 112.5 SF of face
-"BASEMENT_BRICK_VENEER:brown-brick" = { low = 19, high = 30, unit = "SF" }  # 112.5 SF, the whole field
+"BASEMENT_BRICK_VENEER" = { low = 19, high = 30, unit = "SF" }  # fallback; 112.2 SF of face
+"BASEMENT_BRICK_VENEER:brown-brick" = { low = 19, high = 30, unit = "SF" }  # 112.2 SF, the whole field
 # RETIRED 2026-09-04 with the Ishtar scheme. Kept for the revert, NOT dead weight to tidy up:
 #   glazed-lapis  90.1 SF   the field. A GLAZED specialty face brick is a special order at
 #                           1.5-2x the body price, with lead time and no local substitute.
