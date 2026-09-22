@@ -197,7 +197,8 @@ should take HeadLOK.
 **And the calculation became an item.** `girt_screw/W-A-N1` grades three states — thread
 engagement, withdrawal from the stud, head pull-through of the girt — plus NDS §12.1.4.6's
 6D penetration as an input check, over all 36 `standoff="block"` walls as one design. Head
-pull-through governs at d/c 0.487. It is **register-only**, the `wall_panel` precedent: no
+pull-through governs at d/c 0.487. It is **register-only** (the `wall_panel` precedent, set
+before that item itself became a published read on 2026-09-22): no
 `engineered()` bridge, no `PermitItemSpec`, no permit ratchet, because the screw is a
 component of an assembly no prescriptive table reaches and there is no prescriptive check
 for an engineered record to answer.
@@ -258,7 +259,37 @@ BLOCKING in the same commit, so the staged count did not move — which is why
 `MAX_NON_BLOCKING_ITEMS` carries a note saying so.
 
 
+### Board & batten left the register: a manufacturer read, not a seal (2026-09-22)
+
+Owner's call, on the reviewer's second pass. The BBD75 guide's p.13 row is a document a
+reviewer opens — 58 psf outward / 43 psf inward at 2'-0", 24 ga, the maker's own named
+"#10-12 x 1" Pancake Head Wood Screw" and its "Lumber - 1x or thicker" support list — and
+reading it is the same act as reading a span table. `wall_panel/W-A-N1` is retired; the row
+is authored as `Material.published_cladding` on `board-batten-24` and graded by the new
+`structural.cladding_wind`, in **both** directions: **0.315 outward, 0.317 inward**. The
+inward number is new work — it had never been computed, because the old item graded suction
+only — hand-worked first in the note's new §5b, and it GOVERNS, by 0.7%.
+
+Footnote 2's exclusion ("does not address web crippling, fasteners, support material or load
+testing") is what had kept the panel engineered. It is now answered rather than argued away:
+the fastener is the maker's named screw at the maker's spacing into wood thicker than the
+row's own minimum — a CONDITION the read is checked against, with drift guards — and the NDS
+§12.2 withdrawal (0.334) and AISI S100 pull-through (0.118) stay as the
+`structural.cladding_fastener` ADVISORY, naming no engineering item. The footnote is printed
+on every finding.
+
+A retired kind is invisible unless somebody looks: the permit line **"Exterior wall covering
+— wind pressure"** (IRC R703.1.2, ASCE 7-16 §30.3) is new and blocking, so the question is on
+the checklist rather than nowhere. `girt_screw/W-A-N1` stays engineered and keeps this note in
+the handoff bundle — its demand IS §2-§4 of it. The C&C pressure arithmetic moved into
+`typehaus/wind.py`, which both the check and the screw now read: one suction, one number.
+
+Fifth published-read exit, after PBR, TJ-9000, TJ-4000 and `lateral_uplift`.
+
 ### Board & batten: the product got a name, and the item got a seal (2026-09-11)
+
+*Superseded 2026-09-22 by the entry above: the item is retired and the panel is a published
+read. Kept for the product and screw history.*
 
 The north and south elevations were clad in "24 ga board & batten, 20" net coverage" —
 a description, not a product. Its 58 psf allowable was borrowed from a Metal Sales table for
@@ -2470,6 +2501,56 @@ which is already two named **deferred** items (`column_support/W-SG-W1`/`E1`).
 
 
 ## Sunken garden court
+
+### The thermal break, bases 5 → 6 → 7: the board was never the problem (2026-09-22)
+
+Three revisions in two days, and each one moved the question further from the product and
+closer to the SEQUENCE. Worth keeping because the first two look like design work and the
+third is the one that closed it.
+
+**Basis 5 (2026-09-21)** deleted the 24 GFRP dowels: a pure isolation joint, four
+`IsolationBoard`s, nothing crossing. That retired five rows no board product reaches and left
+the real one standing — a 2.5" XPS board is stiff enough that the court's summer growth
+arrives at the house as a thrust the house was never designed for.
+
+**Basis 6 (same day)** answered the demand properly: a neutral point (the court cannot push
+harder than its own base friction and its retained soil), the stems' drying-shrinkage credit,
+the house's REAL lateral path through `SL-B-FLOOR` instead of one isolated 20" footing strip,
+and — the honest addition — the POUR LOCK-IN: a board that is a form face keeps its
+fresh-concrete squeeze for good, 54,105 lb of it. It came out OVER on three rows (slab edge
+4.14, global sliding 1.21, beam board 1.24) and the five findings went into `preferences.toml`
+as one numbered debt. **That debt was the last thing holding the draft permit print shut** —
+a suppression leaves a blocking line UNKNOWN, which blocks exactly as a FAIL does.
+
+**Basis 7 (2026-09-22, owner)** took the two options §11i had costed, together, and neither is
+a product change:
+
+1. **Form and strip the court's end faces.** Every board sits in a greased, pull-rodded
+   blockout that is stripped before the board goes in, so no board is a form face and nothing
+   is locked in. The veneer beam's board was 41,162 lb of that 54,105 — 76% of the prize sits
+   in one blockout, pulled up out of the bedding-stone side.
+2. **State the slab edge's grade.** `SL-B-FLOOR`'s 1" perimeter break was graded at the
+   lowest type ASTM C578 admits (Type X, 15 psi) because the model never said what it was.
+   Saying it — FOAMULAR 400, Type VI, 40 psi, modulus 1,800 published — is not a purchase
+   change at the garage (already 40 psi for wheel loads) and turns 1.966 into 0.737.
+
+Both are needed: with the boards stripped but the grade unstated the edge reads 1.966; with
+the grade stated but the boards cast against it reads 1.553. `haus print houses/catlin` opens
+here, and `test_thermal_break.py` ablates each decision so neither can be quietly undone.
+
+**What is NOT decided.** The sheet's sustained-load rule (dead load ≤ 1/3 of rating, 13.3 psi
+→ 2.21) is printed on every record and deliberately not graded: it guards a board against
+creep under a load it holds forever, and this thrust is an imposed deformation, which creep
+relieves rather than grows. **Open owner decision: FOAMULAR 1000** (100 psi, Type V, 0.885 at
+the 1/3 rule) is what closes it if a reviewing engineer reads the rule as governing — about
+21 SF of board, a few dollars a square foot, and nothing else in the model moves. Decide it
+when the PE reads §11j, not before.
+
+**The residual risk is a field one and it is carried in three places**, because the engine can
+state a sequence and cannot enforce it: `AN-SG-BLOCKOUTS` on the drawing, the `boards`
+checkpoint on the walls visit in `tasks.toml`, and the owner's `break_blockouts_stripped` hold
+in `inspections.toml`. A crew that casts one board against a pour puts the house back over,
+and nothing downstream would notice.
 
 ### The two centre pillars came back down onto concrete, and a register entry closed (2026-09-14)
 

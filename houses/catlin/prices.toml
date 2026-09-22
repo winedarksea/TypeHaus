@@ -1835,6 +1835,11 @@
 # XPS (15 psi, FOAMULAR 150 class). ** Volume billing carries the extra half inch (5.74 cf);
 # the $/cf rate is the 2" 40 psi face rate above, so it now over-reads the board a little
 # (Type X is the cheapest XPS grade) and slightly under-reads labour per SF.
+# ** 2026-09-22 (basis 7, free body §11j): NO BOARD IS CAST AGAINST ANY MORE. ** Each court
+# face is formed on a greased, pull-rodded blockout, stripped, and the board dropped into the
+# slot. The labour half of this rate was written for cutting, fitting and BRACING a board
+# against a pour; it is now pull-a-blockout-and-set-a-board, plus the blockout stock and its
+# stripping. Noted, not re-rated: the two probably net out, and nobody has quoted either.
 "thermal_break" = { low = 78, high = 183, unit = "cuft" }  # 5.74 cf — the garden closure boards
 # --- 2026-08-20: SOLIDS THAT NO OTHER TABLE BILLS ---------------------------------------
 # structural_solids is the only table that reaches these rows, and until today [concrete]
@@ -4062,8 +4067,12 @@
 # corrugated + 1,164 on the E/W PBR). Setting that flag AND leaving the screws in this $/SF
 # would double-bill them.
 #
-# ** THE ENGINEERING ITEM IS ONE ITEM, IT IS FINISHED, AND IT NOW GRADES THREE MODES. **
-# Twenty `wall_panel/*` records, all INCOMPLETE, became one grouped `wall_panel/W-A-N1`
+# ** A MANUFACTURER READ SINCE 2026-09-22 — THERE IS NO ENGINEERING ITEM ANY MORE. **
+# `structural.cladding_wind` grades the guide's own row both ways (0.315 outward against 58
+# psf, 0.317 inward against 43 — inward governs); the withdrawal and pull-through arithmetic
+# below is the `structural.cladding_fastener` ADVISORY. Nothing here re-rates: the paragraph
+# stands as the reasoning behind the same panel and the same screw. The history it describes:
+# twenty `wall_panel/*` records, all INCOMPLETE, became one grouped `wall_panel/W-A-N1`
 # covering all twenty walls: same panel, same girt spacing, same corner-zone demand, one
 # design and one seal. IRC R703.1.2 names the modes a design analysis must reach — "bending
 # rupture of siding, fastener withdrawal and fastener head pull-through" — and as of
@@ -4315,7 +4324,13 @@
 # slab's 40 psi board (vehicle wheel loads) and the basement's 25 psi board carry the same
 # rate here, and they do not carry the same rate in the yard. 40 psi runs roughly 20-35%
 # over 25 psi. Fixing it properly means a psi-bearing material tag, not another key.
-"xps:1.0" = { material = { low = 0.37, high = 0.74 }, labour = { low = 0.75, high = 1.45 } }  # 512.3 SF — garage slab (1", 40 psi) + the 24.7 SF slab-edge thermal break
+# ** 2026-09-22: the SF on this row is the GARAGE SLAB alone. ** The "24.7 SF slab-edge thermal
+# break" it used to add is stale — `Slab.perimeter_thermal_break` never reaches `takeoff/`,
+# so SL-B-FLOOR's 1" edge board (144 LF x 3.5" = ~42 SF, the ~21 SF of south and north edge
+# now stated as FOAMULAR 400, Type VI 40 psi) bills NOTHING anywhere. No row is added for it:
+# a row that bills 0 SF is a lie of a different shape. The Type VI premium over a stock 1"
+# board is ~$2-4/SF on ~21 SF — small money, recorded so nobody finds it as a surprise.
+"xps:1.0" = { material = { low = 0.37, high = 0.74 }, labour = { low = 0.75, high = 1.45 } }  # garage slab (1", 40 psi, FOAMULAR 400 — the same board as the house slab edge)
 # ** HOW THE FOUNDATION-WALL COURSES ARE HELD ON — it was written down nowhere until
 # 2026-09-04. ** Foam-compatible mastic to the liquid-applied damp-proofing, per the
 # membrane manufacturer, in vertical daubs; no plate anchors and no hardware record, because

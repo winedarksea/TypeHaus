@@ -31,7 +31,7 @@ each is kept because the *rule* it established usually outlives the design that 
 
 | Note | Oracles | Status |
 |---|---|---|
-| `board_batten_girt_span.md` | `engineering/wall_panel.py` + `engineering/wall_panel_withdrawal.py` (`tests/test_wall_panel_calcs.py`) | live |
+| `board_batten_girt_span.md` | `checks/structural/cladding.py` + `cladding_fastener.py` — a manufacturer read since 2026-09-22, no longer an engineering item (`tests/test_cladding_read.py`); §2-§4 also oracle `engineering/girt_screw.py`'s demand | live |
 | `analytical_model_basis.md` | `analytical/supports.py` + `loads.py` + `solve.py` — the fixity and load-case CLAIMS of the exported analytical model, hand-solved for the balcony bent (`tests/test_analytical_oracle.py`) | live |
 | `balcony_moment_columns.md` | `engineering/deck_post.py`; §5 is now the NDS cross-check beside a published-table read, not an oracle (`tests/test_pier_calcs.py`) | live |
 | `breezeway_piers.md` | superseded by foundation bridge | retired 2026-09-10 |
@@ -40,7 +40,7 @@ each is kept because the *rule* it established usually outlives the design that 
 | `hp3_north_relocation.md` | cabinet/stand, airflow and services | schematic |
 | `catlin_truss_engineering.md` | `typehaus/wind.py` (`tests/test_wind_loads.py`); the `rafter/RF-{GARAGE,BW-CANOPY}` deferral — the two TRUSSED roofs only | live |
 | `centre_pillar_bearing.md` | `engineering/post_bearing.py` (`tests/test_post_bearing.py`) | live |
-| `sunken_garden_court_free_body.md` | `engineering/retaining_system.py`, `retaining_basis.py` (`tests/test_retaining_court.py`) | live |
+| `sunken_garden_court_free_body.md` | `engineering/retaining_system.py`, `retaining_basis.py` (`tests/test_retaining_court.py`); §11j is the `thermal_break_transfer/*` oracle — `engineering/thermal_break*.py` (`tests/test_thermal_break.py`) | live |
 | `sunken_garden_piers.md` | `engineering/pier_basis.py`, `engineering/spread_footing.py` (`tests/test_pier_calcs.py`) | live |
 | `sunken_garden_retaining_screening.md` | `engineering/retaining_wall.py` §4 (`tests/test_retaining_wall_calc.py`) | live |
 | `sunken_garden_veneer_beam.md` | `engineering/sunken_garden/veneer_beam.py` §3 flexure and §4 torsion, and the `veneer_beam/W-SG-BRKBM` deferral (`tests/test_sunken_garden_study.py`) | live |

@@ -3,12 +3,13 @@
 **House:** catlin, Ramsey County, Minnesota (MN Residential Code 2020, adopting the 2018 IRC).
 **Structure:** the twenty north/south walls clad in `board-batten-24` over a 24" girt course.
 **Written:** by hand, from the standards, before the modules were encoded.
-**Oracle for:** `engineering/wall_panel.py` and `engineering/wall_panel_withdrawal.py`;
-reproduced by `tests/test_wall_panel_calcs.py`. A calculation that only agrees with itself
-is not verified.
-**What is asked of the reviewer:** §5, §6 and §6.2 — all three of the failure modes IRC
-R703.1.2 names are graded, and the question is whether the rational designs in §6 and §6.2
-are the right ones, not whether a number is missing.
+**Oracle for:** `checks/structural/cladding.py` (`structural.cladding_wind` and the
+`structural.cladding_fastener` advisory) and `checks/structural/cladding_fastener.py`;
+reproduced by `tests/test_cladding_read.py`. §2-§4 also oracle `engineering/girt_screw.py`'s
+demand. A calculation that only agrees with itself is not verified.
+**Since 2026-09-22 this is a manufacturer read, not an engineered item (§8).** What a
+reviewer checks is §5 and §5b — the guide's own row, both directions; §6 and §6.2 remain as
+the advisory arithmetic behind the fastener condition.
 
 Subject: `board-batten-24` — **Metal Sales BBD75-1212**, a 24 ga concealed
 **direct-fastened** steel board & batten panel, **12" net coverage**, 3/4" rib, PVDF Linen
@@ -54,7 +55,12 @@ is 6x or better at 24". That is still a table a reviewer can read, so PBR stays 
 and out of the register — but on the strength of a span table, not of an evaluation report
 that never governed it.
 
-## 1. Why this is an engineered item and not a check
+## 1. Why this was an engineered item — and why it is now a check (§8)
+
+*Kept as the 2026-09-11 reasoning. The owner's call of 2026-09-22 inverts its conclusion:
+the guide's own E330-basis row, with its named screw and accepted support, is a document a
+reviewer opens, and footnote 2's exclusion is answered by grading the fastener as a
+CONDITION of the row (§8).*
 
 Board & batten is **not a purlin-bearing profile**, and no evaluation report covers it. The
 only published capacity for it is a manufacturer's own span table; the manufacturers
@@ -203,7 +209,8 @@ only bending, and the manufacturer says so.
 Suction is what is graded, because suction is what governs a wall panel: it is the negative
 zone-5 pressure of §3 that pulls the panel off its fasteners. The inward 43 psf is recorded
 because it is the smaller of the two, and against the same 18.27 psf demand it is d/c 0.43 —
-still passing, and still not the limit state that matters.
+still passing. *(Superseded by §5b: the inward allowable answers the positive pressure,
+13.64 psf ASD, d/c 0.317 — and it governs.)*
 
 **And PBR, for comparison, at the same spacing:** Metal Sales' own PBR Condensed Technical
 Reference (1/2026) wall table publishes **318 psf** allowable negative at 2'-0" in 24 ga and
@@ -234,6 +241,29 @@ measured **along the panel's length**, not across it. For a panel run VERTICALLY
 horizontal girts — which is this wall — the fasteners land on the girts, so the table's
 2'-0" column really is this wall's 24" girt spacing. It would **not** coincide for a
 horizontally-run panel, and quoting this number for one would be wrong.
+
+## 5b. Inward pressure — hand-worked 2026-09-22, before the check reproduced it
+
+The paragraph above set the inward 43 psf against the SUCTION demand. That is the wrong
+pairing: the inward allowable answers the POSITIVE wall pressure, which has its own
+coefficient and its own internal-pressure sign.
+
+Fig. 30.3-1, walls, positive GC_p (one curve for zones 4 and 5): +1.0 at A <= 10 ft^2,
++0.7 at 500 ft^2. A = 1.3333 ft^2 (§3), on the flat part:
+
+    GC_p   = +1.0
+    GC_pi  = -0.18      (internal SUCTION is the sign that adds to an inward push)
+
+    p      = q_h (GC_p - GC_pi) = 19.2679 x (1.0 + 0.18)
+           = 19.2679 x 1.18 = 22.7361 psf    strength
+    ASD    = 0.6 x 22.7361  = **13.6417 psf**
+
+    d/c inward  = 13.6417 / 43 = **0.3172**
+    d/c outward = 18.2659 / 58 =   0.3149     (§5)
+
+**Inward governs, by 0.7%.** A lower demand against a lower allowable: 43/58 = 0.741 and
+13.64/18.27 = 0.747, so the ratios cross. Both pass with 3.1x margin, and as with §6's
+bending/withdrawal flip, which one "governs" is a label, not a finding. Both are graded.
 
 ## 6. Withdrawal of the concealed leg's screws — NDS hand pass
 
@@ -608,6 +638,8 @@ absence of published data is a finding, not a licence to interpolate one.
 
 ### 7.9 The published alternative not taken (2026-09-12, CORRECTED 2026-09-14)
 
+*2026-09-22: moot for the register — BBD75's own row now takes the item out (§8).*
+
 **This section named the wrong AEP panel, and the correction matters because the reason
 given for not taking it — "the batten line is the cost" — was false of the right one.**
 
@@ -734,7 +766,32 @@ wood in direct contact, above; (4) sealants; (5) paint appearance, recoverable b
 Kynar Aquatec field recoat at year 40-50. Painted Galvalume itself is LAST: USS warrants AZ50
 painted at 50 yr and the MCA/ZAC field study projects 60-375.
 
-## 8. What a seal has to cover
+## 8. Left the register, 2026-09-22 — a manufacturer read
+
+**Owner's call: the BBD75 row is a prescriptive read, and `wall_panel/W-A-N1` is retired.**
+The PBR / TJ-9000 / TJ-4000 / `lateral_uplift` precedent (decision #65): a demand this
+engine computes, set against an allowable a reviewer opens, mints nothing for a seal.
+
+- **The read.** `Material.published_cladding` on `board-batten-24` quotes the guide's p.13
+  row: 58 psf outward / 43 psf inward at 2'-0", 24 ga, 12" coverage, the maker's named
+  "#10-12 x 1" Pancake Head Wood Screw", "Lumber - 1x or thicker". `structural.cladding_wind`
+  grades BOTH directions (§5 and §5b): **0.315 outward, 0.317 inward**.
+- **Footnote 2 is printed, not argued away.** Every finding quotes it. The fastener is the
+  maker's named screw at the maker's spacing, into wood thicker than "1x" (the 1-1/2" KDAT
+  girt) — a CONDITION the row is checked against (drift guards), not a capacity computed.
+- **§6 and §6.2 are kept** as history and corroboration, and as the
+  `structural.cladding_fastener` advisory: withdrawal 0.334, pull-through 0.118. It names no
+  engineering item and FAILs only at WARN severity.
+- **The girt screw stays engineered** (`girt_screw/W-A-N1`), and its demand is still §2-§4
+  of this note, which is why the note stays in the handoff bundle.
+- **Permit line:** "Exterior wall covering — wind pressure" (IRC R703.1.2, ASCE 7-16 §30.3),
+  blocking.
+
+Follow-on, recorded not done: widen `cladding_wind` to PBR and the garage corrugated off
+the Metal Sales CTRs (318 / 412 psf at 2'-0"); it would newly UNKNOWN those walls until
+their rows are authored.
+
+### 8.1 What a seal had to cover (superseded 2026-09-22)
 
 **One item, twenty walls: `wall_panel/W-A-N1`.** Until 2026-09-11 the register carried
 twenty separate `wall_panel/*` items, one per wall, all INCOMPLETE. They are one panel, one

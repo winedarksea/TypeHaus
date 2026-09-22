@@ -215,8 +215,8 @@ WALLS = [
     # Every partition top in this house stands 3/4" clear of the structure over it on a
     # Simpson SDPW19600 DEFLECTOR (notes/partition_top_deflection.md), and Simpson publish
     # ONE maximum-spacing table for that screw. One table row, read once, quoted once:
-    # `structural.partition_deflection_spacing` is a GROUP item on the `wall_panel/W-A-N1`
-    # precedent, and it grades the WORST pitch in the house — 24" o.c., W-M-STOS2's run
+    # `structural.partition_deflection_spacing` is a GROUP item on the `girt_screw/W-A-N1`
+    # precedent (`wall_panel/W-A-N1`'s, before it became a published read), and it grades the WORST pitch in the house — 24" o.c., W-M-STOS2's run
     # under a parallel joist — against the row authored here. Fifty-seven separate findings
     # would be fifty-seven readings of one document.
     #

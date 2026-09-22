@@ -264,7 +264,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   without reading its thread length.** The part is authored on the girt band's `FramingSpec`
   (`standoff_fastener_*`), and the takeoff bills exactly it.
 - THE SCREW IS THE ONLY LOAD PATH per crossing, no second tier, no nail. Graded as
-  `girt_screw/W-A-N1` beside `wall_panel/W-A-N1` — three states, head pull-through governing
+  `girt_screw/W-A-N1` — the one engineered item left on this wall, the panel over it being a
+  published read since 2026-09-22 — three states, head pull-through governing
   at d/c 0.487 (Exposure B, the site's basis; 0.712 at Exposure C). Mark the stud line across
   the girt face as it's laid: the screw is blind through 6" of wood into a 1-1/2" target,
   invisible once the foam is on — inspect the pattern before the sprayer arrives. Head seats
@@ -388,19 +389,19 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     ~1,000). 12" is 3.0x PBR's panel count, which is why `prices.toml` labour sits near the
     top of its band. **Panel length maxes at 20'**, so the 31.4' gables joint at the storey
     lines with Transition Trim 55536XX; PBR and corrugated run to 45'.
-  - ENGINEERED, not prescriptive (decision #65), and **one group item covering all twenty
-    walls**: `wall_panel/W-A-N1`, keyed by the lowest member tag. **Three limit states since
-    2026-09-14, because IRC R703.1.2 names three** ("bending rupture of siding, fastener
-    withdrawal and fastener head pull-through"): bending d/c **0.315** (58 psf published at
-    24" girts); screw withdrawal d/c **0.334**, COMPUTED per NDS 2018 §12.2 because the
-    maker's table excludes fasteners by name; head pull-through d/c **0.118**, COMPUTED per
-    AISI S100. **WITHDRAWAL GOVERNS** — it was bending until 2026-09-14, flipped by the
-    coverage going 11" -> 12" and the screw 2" -> 1". Both pass wide, the two are 6% apart,
-    and a later coverage or wind change can flip them back with no physical meaning: read the
-    governing state as a label. Status OK. Oracled by `notes/board_batten_girt_span.md`.
-    `--item wall_panel/W-M-S1` resolves to the group. PBR stays prescriptive, now on Metal
-    Sales' own PBR CTR (1/2026): **318 psf** at 2'-0" in 24 ga, 236 in 26, superseding the
-    ASC PS230 / Metal Panels Inc. / Homewood citations.
+  - A MANUFACTURER READ, not an engineered item, since 2026-09-22 — `wall_panel/W-A-N1` is
+    RETIRED (DESIGN-LOG; note §8). The guide's p.13 row is authored as
+    `Material.published_cladding` on `board-batten-24` and `structural.cladding_wind` grades
+    it BOTH ways: bending d/c **0.315** outward (18.27 psf ASD vs 58) and **0.317** inward
+    (13.64 psf ASD vs 43 — **inward governs**, by 0.7%; note §5b). Footnote 2's exclusion
+    ("does not address web crippling, fasteners, support material or load testing") is
+    printed on every finding and answered by the guards: the maker's NAMED screw at the
+    maker's spacing into wood thicker than "1x". The NDS §12.2 withdrawal (**0.334**) and
+    AISI S100 pull-through (**0.118**) are the `structural.cladding_fastener` ADVISORY — no
+    item, no seal. Permit line: "Exterior wall covering — wind pressure" (blocking). The
+    drift guards refuse the row if the girts widen past 2'-0", the coverage, screw, member or
+    gauge change, or the wind basis rises. PBR stays prescriptive on Metal Sales' own PBR CTR
+    (1/2026): **318 psf** at 2'-0" in 24 ga, 236 in 26.
   - **The substrate question is closed by the CODE, not by a letter.** IRC R703.1.2 asks for
     a wind-load path by ASTM E330 test or by design analysis and says nothing about a solid
     substrate; BBD75-1212 lists an ASTM E 330 Load Test; and the allowable table is indexed
@@ -2225,27 +2226,51 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   The two coincide at a zero offset; they did not while the strips carried a 6" inboard
   offset, when a board on the axis hung 6" past one end and left 6" of bare
   footing-to-footing concrete at the other. Keep the expression, not the coincidence.
-- **One thermal-break product (ASTM C578 Type X XPS, 15 psi, `THERMAL_BREAK_PSI`), two
-  thicknesses:** `THERMAL_BREAK_IN` 2.5" on the four closure boards, `VENEER_BEAM_BREAK_IN`
-  2" on the beam's (basis 6, 2026-09-21). No Type X sheet publishes E: 525 psi is an
-  ESTIMATE (`modulus_estimated`), and every record carries a sensitivity note on it.
-  `thermal_break_transfer` grades the boards on the neutral-point demand with the pour locked
-  in, and the house's real lateral path through `SL-B-FLOOR` (free body §11i) — still OVER
-  on the slab edge's 1" perimeter XPS (4.14), global sliding (1.21) and the beam board
-  (1.24), suppressed as one debt; §11i lists the options. The thickness
-  was stated three times in two files and the rating twice, once in prose because `Layer`
-  has no compressive field. **The break cannot go on one purchase order today** — the two
-  closure blocks bill by VOLUME into concrete, the beam's board by AREA into insulation,
-  and nothing reconciles them — so `test_catlin_contract_m3` pins every site against the
-  constants. A comment is not a guard; the retaining top's spot elevations proved that.
+- **TWO thermal-break products and THREE thicknesses, and every one is stated in the model
+  (basis 7, 2026-09-22; free body §11j).** The COURT's boards are ASTM C578 Type X XPS at
+  15 psi (`THERMAL_BREAK_PSI`): `THERMAL_BREAK_IN` 2.5" on the four closure boards,
+  `VENEER_BEAM_BREAK_IN` 2" on the beam's. The HOUSE SLAB's 1" perimeter break is a second
+  product — **FOAMULAR 400, Type VI, 40 psi, E 1,800 published** — carried on
+  `SlabThermalBreak` itself (`params/foundations.SLAB_EDGE_BREAK`, spelled out again in
+  `plan/storeys/basement.py` because an editable file cannot import `params/`), and the
+  garage slab takes the same board so it is one order. No Type X sheet publishes E: the
+  court boards' 525 psi is an ESTIMATE (`modulus_estimated`) and every record carries a
+  sensitivity note on it.
+- **NO BOARD IS A FORM FACE (`IsolationBoard.formed_and_stripped`), and that is what opened
+  the draft permit print.** Each court face is cast against a greased, pull-rodded blockout
+  of the board's thickness, stripped, and the board set into the slot afterwards. What that
+  removes is the pour lock-in — 54,105 lb, of which the veneer beam's board alone was
+  **41,162 (76%)**; the beam's board is a `Layer` and names no product or sequence of its
+  own, so it INHERITS both from the authored boards on its loop. `thermal_break_transfer`
+  now grades all five items OK on the neutral-point demand and the house's lateral path
+  through `SL-B-FLOOR`: slab edge 0.737 governing, global sliding 0.558, beam board 0.541.
+  The five `preferences.toml` suppressions are deleted.
+  - The statement is a FIELD SEQUENCE the model cannot enforce: `AN-SG-BLOCKOUTS` is the
+    drawing's copy, `tasks.toml` sets the boards on the WALLS visit's `boards` checkpoint
+    (not the footings' forms), and `inspections.toml`'s owner hold
+    `break_blockouts_stripped` is the walk. Drop the flag and the edge goes 1.553 even on
+    FOAMULAR 400; leave the flag and drop the slab edge's stated grade and it reads
+    **1.966** at the C578 Type X floor. Neither decision closes the item alone.
+  - The slab-edge board's own sheet holds a SUSTAINED load to 1/3 of its rating (13.3 psi →
+    2.21). It is **printed, never graded**: the rule guards against creep under a dead load,
+    and this thrust is an imposed deformation, which creep relieves. FOAMULAR 1000 (100 psi,
+    0.885) is what closes it if a PE reads the rule as governing — an open owner decision.
+  - The unstated-grade fallback is a conservative FLOOR, never an open input: an ungraded row
+    can never read OVER, which is how the 4.14 stayed visible through basis 6.
+- **The break cannot go on one purchase order today** — the two closure blocks bill by VOLUME
+  into concrete, the beam's board by AREA into insulation, and the slab edge bills NOTHING at
+  all (`perimeter_thermal_break` never reaches `takeoff/`) — so `test_catlin_contract_m3`
+  pins every site against the constants. A comment is not a guard; the retaining top's spot
+  elevations proved that.
 - **Nothing crosses the break (2026-09-21, basis 5).** The 24 GFRP dowels are deleted; the
   closure boards are four `IsolationBoard`s (`TB-SG-*`), so a board no longer needs bars to
-  exist. With no bars nothing holds a board during its pour — adhere/pin and brace it
-  (sequencing trap 2 in `params/sunken_garden.py`).
+  exist. Nothing holds a board and nothing needs to: since basis 7 no board is in a pour at
+  all (sequencing trap 2 in `params/sunken_garden.py`).
 - **Do not merge the two closure blocks.** Per end it is already one continuous board on
   one plane; two objects only because the joint is T-shaped in elevation. Widening the
   upper one buys foam standing in backfill, and destroys the property that makes it work —
-  the narrow block lands flush with both faces of the 12" pour, so the board is a form face.
+  the narrow block lands flush with both faces of the 12" pour, which is what makes its slot
+  a blockout the form can hold and strip.
 - **`SG_VENEER_BEAM_14`'s layer order is load-bearing for a fire check.** `code.R316_4`
   reads the innermost layer as facing a room; reversed, a bare 2" of XPS fails it. The
   tuple order is now pinned as well as the faces, so a sign flip and a tuple flip cannot
@@ -2473,7 +2498,7 @@ haus analysis . --solve                     # the engineered frame, solved in Py
   (RISA), `analysis/members.csv` (ForteWEB/Sizer/Enercalc by hand) and `analysis/model.pynite.py`.
   Scope is the 36 items and their load path: 54 members, 56 nodes, 22 supports. **The ten
   lateral-system columns are FIXED and every other base is PINNED, a claim the engine makes
-  and states** (`notes/analytical_model_basis.md`); the retaining set, the wall panel, the
+  and states** (`notes/analytical_model_basis.md`); the retaining set, the girt screw, the
   trussed roofs and the uplift path are named GAPS, not members. `tests/test_analytical_oracle.py`
   solves it in PyNite: the balcony pair carries what the records say to 0.03 %, but the frame
   hands the REAR column ~10 % more than the sheet's equal split, and the record's wind lever is
@@ -2596,12 +2621,11 @@ haus analysis . --solve                     # the engineered frame, solved in Py
   Since 2026-09-21 `roof_beam_drift_width_ft = 9.8` lets `structural.truss_reactions` DERIVE
   those two (`truss-000`/`-001`) and refuse a ground-snow-only reaction row for them
   (`notes/north_entry_piers.md` §3a).
-- **The wall-panel question is closed too, as of 2026-09-11.** It was the one open
-  engineering question: the concealed-fastener panel's withdrawal allowable over 24" open
-  girts, which no manufacturer publishes. Naming the product settled the substrate on the
-  maker's own words, and the allowable is now **computed** from NDS 2018 §12.2 — the
-  rational design IAPMO UES ER-309 expressly authorises — rather than waited for. Twenty
-  INCOMPLETE items became one OK group item (`notes/board_batten_girt_span.md` §6).
+- **The wall-panel question LEFT the register on 2026-09-22.** It had been the one open
+  engineering question (the concealed panel's withdrawal over 24" open girts, published by
+  nobody), then a closed one-item design; it is now a manufacturer read — the guide's own
+  row graded both ways by `structural.cladding_wind`, with the NDS/AISI arithmetic kept as
+  the `structural.cladding_fastener` advisory (`notes/board_batten_girt_span.md` §8).
   **The other closed one:** the breezeway piers had no modelled plan area to shoelace, and
   `engineering/pier_basis.py::_roof_fields` now gives a roof-on-beams one. Their successors
   publish a real axial ratio against a real tributary (`notes/north_entry_piers.md` §6).
