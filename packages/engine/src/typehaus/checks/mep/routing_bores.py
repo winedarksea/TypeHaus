@@ -117,6 +117,7 @@ def run_through_stud(ctx: CheckContext) -> list[Finding]:
     model authors a notch, ``mep_bores.stud_notch`` is the predicate and it is reached the
     same way.
     """
+    from typehaus.quantities import M_PER_IN
     from typehaus.resolve.mep_bores import stud_bore
 
     bearing = bearing_wall_tags(ctx)
@@ -128,7 +129,9 @@ def run_through_stud(ctx: CheckContext) -> list[Finding]:
             continue
         seen += 1
         verdicts = [(cut, stud_bore(cut.profile, cut.diameter_in,
-                                    bearing=wall.tag in bearing)) for cut in studs]
+                                    bearing=wall.tag in bearing,
+                                    length_in=cut.member_height_m / M_PER_IN or None))
+                    for cut in studs]
         bad = [(cut, v) for cut, v in verdicts if v.ok is False]
         unsure = [(cut, v) for cut, v in verdicts if v.ok is None]
         where = (f"{tag} would bore {len(studs)} member(s) of {wall.tag} "

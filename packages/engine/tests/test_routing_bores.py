@@ -87,4 +87,16 @@ def test_a_penetration_wider_than_the_stud_is_not_reported_as_an_over_size_bore(
     findings = run_through_stud(catlin_ctx)
     unknowns = [f for f in findings if f.result.value == "unknown"]
     assert unknowns, "catlin runs 6\", 10\" and 18\" ducts through walls"
-    assert all("framed opening" in f.message for f in unknowns)
+    assert all("framed opening" in f.message or "a block rather than a stud" in f.message
+               for f in unknowns)
+
+
+def test_the_conduit_through_the_short_cripple_over_the_gym_door_is_unknown(
+        catlin_ctx) -> None:
+    """`PR-B-COND` crosses `W-B-CS3`'s 5.75" cripple over the header: 1.05" is well under
+    40% of a 2x6, and the depth rule alone read PASS about a hole in a block."""
+    [finding] = [f for f in run_through_stud(catlin_ctx)
+                 if f.element_tags == ("PR-B-COND", "W-B-CS3")]
+    assert finding.result.value == "unknown"
+    assert "cripple-head-0-02" in finding.message
+    assert '5.75"' in finding.message and "a block rather than a stud" in finding.message

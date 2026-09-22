@@ -72,6 +72,22 @@ def test_a_penetration_as_wide_as_the_member_is_not_a_bore_at_all() -> None:
     assert verdict.remedy
 
 
+def test_a_bore_in_a_cripple_shorter_than_two_depths_is_unknown_with_its_numbers() -> None:
+    """The note's §6 case: a 4.00" hole in D-B-FURN's 6.56" non-bearing 2x8 cripple is under
+    60% of 7.25" and would PASS on depth alone, leaving two 1.28" slivers. Never a FAIL:
+    nothing published governs a block that short."""
+    verdict = stud_bore("2x8", 4.0, bearing=False, length_in=6.5625)
+    assert verdict.unknown
+    assert '6.56"' in verdict.basis and '2.56"' in verdict.basis and '14.50"' in verdict.basis
+    assert verdict.remedy
+
+
+def test_the_length_gate_is_two_depths_and_leaves_a_full_stud_alone() -> None:
+    assert stud_bore("2x6", 1.05, bearing=True, length_in=5.75).unknown  # PR-B-COND's cripple
+    assert stud_bore("2x6", 1.05, bearing=True, length_in=11.0).ok is True
+    assert stud_bore("2x6", 1.05, bearing=True, length_in=91.5).ok is True
+
+
 def test_a_doubled_stud_gets_sixty_percent_and_the_limit_on_successive_ones_is_stated(
 ) -> None:
     verdict = stud_bore("2x6", 3.0, bearing=True, doubled=True)

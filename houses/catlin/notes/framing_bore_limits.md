@@ -1,6 +1,7 @@
 # What the trades may cut out of this house's framing — worked by hand
 
-Oracle for `typehaus/resolve/mep_bores.py`, `mep.run_through_stud`, `mep.run_through_plate`,
+Oracle for `typehaus/resolve/mep_bores.py` (and its geometry half, `mep_bore_geometry.py`),
+`mep.run_through_stud`, `mep.run_through_plate`,
 `mep.run_through_header` and the R502.8.1 half of `mep.run_member_crossing`. Reproduced by
 `packages/engine/tests/test_mep_bores.py` (§1-§5) and
 `packages/engine/tests/test_e2_header_and_plate_tie.py` (§6-§7).
@@ -234,15 +235,20 @@ Both headers are `2-2x8` (3.000" x 7.250"), 39.00" long, z −29.44"…−22.19"
 still UNKNOWN: no IRC table reaches a header and none was invented to reach one. What changed
 is that the numbers a person (or a published chart) needs are now true.
 
-**The short-cripple gap — recorded, NOT exploited.** Above `D-B-FURN`'s header there is
-**6.56"** of cripple to the plate. `stud_bore` grades a hole against the stud's DEPTH
-(a non-bearing 2x8: 60% of 7.25" = 4.35"), and says nothing at all about the member's
-LENGTH — so this engine would **PASS a 4.00" hole through a 6.56" cripple**, leaving 1.28" of
-wood above it and 1.28" below. R602.6 is written about a stud running floor to plate; a
-6.56" block with a 4" hole in it is not a bored stud, it is two 1.28" slivers. No route in
-this house may be taken through that zone on the strength of that PASS. Closing the gap
-properly means a length-aware predicate (a hole's clear wood above and below, as R502.8.1
-states for a joist's edges), and it is not attempted here.
+**The short-cripple gap — closed 2026-09-22, and it was live.** Above `D-B-FURN`'s header
+there is **6.56"** of cripple to the plate. `stud_bore` graded a hole against the stud's DEPTH
+(a non-bearing 2x8: 60% of 7.25" = 4.35") and never its LENGTH — so it would have **PASSed a
+4.00" hole through a 6.56" cripple**, leaving 1.28" of wood above it and 1.28" below. R602.6
+is written about a stud running floor to plate; a 6.56" block with a 4" hole in it is not a
+bored stud, it is two 1.28" slivers. This was called hypothetical and was not: `PR-B-COND`
+already crossed `W-B-CS3`'s **5.75"** `cripple-head-0-02` and read PASS.
+
+The gate is a **length** gate, not an edge gate: a member shorter than **2 x its depth**
+(`STUD_MIN_LENGTH_DEPTHS`) is a block, and a bore in it is **UNKNOWN with the numbers**, never
+FAIL — nothing published governs it. 5.75" < 2 x 5.50" = 11.00", so `PR-B-COND` x `W-B-CS3`
+is now the one UNKNOWN this adds on catlin; 6.56" < 2 x 7.25" = 14.50" for the 2x8. (A bare
+"clear wood above and below" edge rule was weighed and refused: it flips six findings, five
+of them noise.)
 
 ---
 

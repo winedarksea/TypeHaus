@@ -62,6 +62,9 @@ STUD_BORE_DOUBLED = 0.60
 STUD_BORE_DOUBLED_MAX_SUCCESSIVE = 2
 #: R602.6: the edge of a bore or notch stays 5/8" from the edge of the stud.
 STUD_EDGE_CLEAR_IN = 0.625
+#: Not code: R602.6 is written about a stud running floor to plate. A member shorter than
+#: twice its depth (a cripple over a header) is a block, and a bore in it is UNKNOWN.
+STUD_MIN_LENGTH_DEPTHS = 2.0
 
 #: R602.6.1: a top plate cut or notched more than 50% of its width needs a galvanized metal
 #: tie **16 ga (0.054") x 1 1/2"** across and 6" past the opening each way, fastened with
@@ -189,12 +192,16 @@ def joist_notch(profile: str, depth_of_notch_in: float, *, length_in: float | No
 
 
 def stud_bore(profile: str, diameter_in: float, *, bearing: bool = True,
-              doubled: bool = False) -> BoreVerdict:
+              doubled: bool = False, length_in: float | None = None) -> BoreVerdict:
     """IRC R602.6 on a bored hole through a stud.
 
     ``bearing`` is the wall's own property and the caller must know it: the difference
     between 40% and 60% of a 2x6 is nearly an inch of pipe, which is the whole question for
     a 2" branch.
+
+    ``length_in`` is the member's own length. Under ``STUD_MIN_LENGTH_DEPTHS`` depths it is
+    UNKNOWN, never graded: the depth rules would PASS a 4" hole in a 6.56" cripple that
+    leaves two 1.28" slivers, and nothing published governs a block that short.
     """
     from typehaus.resolve.framing.profiles import cross_section
 
@@ -221,6 +228,17 @@ def stud_bore(profile: str, diameter_in: float, *, bearing: bool = True,
             "run passes and why no table grades it",
             remedy="draw the opening and its header, or take the run through a floor bay "
                    "instead of across the wall")
+    if length_in is not None and length_in < STUD_MIN_LENGTH_DEPTHS * depth_in - 1e-9:
+        return BoreVerdict(
+            None, "bore", diameter_in, None,
+            f'a {diameter_in:.2f}" bore through a {length_in:.2f}" {profile} leaves '
+            f'{max(0.0, length_in - diameter_in):.2f}" of wood along it: the member is '
+            f'shorter than {STUD_MIN_LENGTH_DEPTHS:g} x its {depth_in:.2f}" depth = '
+            f'{STUD_MIN_LENGTH_DEPTHS * depth_in:.2f}", a block rather than a stud. IRC '
+            "R602.6 is written about a stud running floor to plate and publishes nothing "
+            "for this",
+            remedy="take the run through a full-height stud, or have the hole in this "
+                   "block designed and author it")
     fraction = (STUD_BORE_DOUBLED if doubled
                 else STUD_BORE_BEARING if bearing else STUD_BORE_NONBEARING)
     limit = depth_in * fraction

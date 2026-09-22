@@ -55,6 +55,9 @@ class MemberCut:
     #: Clear wood between the hole's edge and the NEARER of the member's two z faces. The
     #: depth half of a chart's hole zone is stated against exactly this.
     edge_clear_in: float = 0.0
+    #: The member's z band, metres: a VERTICAL member's own length (``member_length_m`` is
+    #: plan length, 0 for a stud). What tells a 5 3/4" cripple from a stud.
+    member_height_m: float = 0.0
 
 
 def leg_crossings(wall: ResolvedWall, a: tuple[float, float], b: tuple[float, float],
@@ -112,7 +115,8 @@ def leg_crossings(wall: ResolvedWall, a: tuple[float, float], b: tuple[float, fl
                              opening_tag=member.opening_tag,
                              from_end_m=from_end_m, member_length_m=length_m,
                              edge_clear_in=max(0.0, min(z - radius_m - member.z0_m,
-                                                        top - z - radius_m)) / M_PER_IN))
+                                                        top - z - radius_m)) / M_PER_IN,
+                             member_height_m=top - member.z0_m))
     return out
 
 
