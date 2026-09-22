@@ -724,6 +724,11 @@ raises their cover, or loses the two #4 confining ties per end (which is worth �
 11.38" against 9.00" — an immediate FAIL) moves the governing row before it moves anything
 else here.
 
+**Why the hook is a graded row and not detailing (owner, A4, 2026-09-22).** A development
+LENGTH is a capacity, as on every development row in the engine (`deck_post.py` agrees); a bar
+count, lap or hook angle is detailing. Reclassifying the hook would not hand the record to
+flexure anyway — the dowel development row, 0.707, would govern.
+
 ## Sources
 
 - IRC 2018 R703.8.4 — anchored masonry veneer, airspace and tie spacing.
