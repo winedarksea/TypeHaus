@@ -77,12 +77,18 @@ def test_an_engineered_header_is_the_fabricator_s_chart(profile: str) -> None:
     assert "fabricator's chart" in verdict.basis
 
 
-def test_catlin_s_six_header_crossings_are_all_reported(catlin_model_ro) -> None:
-    """Six runs meet a header in this house and every one of them was silent before."""
+def test_catlin_s_remaining_header_crossings_are_all_reported(catlin_model_ro) -> None:
+    """Four runs meet a header in this house and every one of them was silent before §6.
+
+    It was six until the 2026-09-22 reroute pass: `DU-B-ERV-R-SAUNA-SUP` took `W-B-CW`'s
+    west clear bay and `DU-B-ERV-R-GYM` rose over `D-B-GYM`'s header into the open wall
+    between it and the top plate. The four left are the three drains and the sauna's
+    extract, and each one's refusal is measured in `notes/framing_bore_limits.md` §8.5.
+    """
     from typehaus.checks.mep.routing_bores import run_through_header
 
     findings = run_through_header(_ctx(catlin_model_ro))
-    assert len(findings) == 6
+    assert len(findings) == 4
     assert {f.result.value for f in findings} == {"unknown"}
 
 
@@ -145,25 +151,45 @@ def test_a_run_wholly_inside_the_member_loses_nothing_to_the_clip() -> None:
                        through_in=cut.through_in).kind == "bore"
 
 
-def test_the_six_catlin_header_crossings_are_at_their_true_stations(
+def test_the_catlin_header_crossings_are_at_their_true_stations(
         catlin_model_ro) -> None:
-    """§6's table, from the model. Every one of these printed 57.00" before 2026-09-22."""
+    """§6's table, from the model. Every one of these printed 57.00" before 2026-09-22.
+
+    Two rows of that table are gone because their runs moved, not because the reading did:
+    `DU-B-ERV-R-SAUNA-SUP`'s 1.75" notch and `DU-B-ERV-R-GYM`'s 4.00" bore are the two the
+    station fix made legible, and both were rerouted the same day.
+    """
     from typehaus.checks.mep.routing_bores import _crossings
 
     stations = {tag: (cut.station[0] / M_PER_IN, cut.station[1] / M_PER_IN, cut.through_in)
                 for tag, _wall, cuts in _crossings(_ctx(catlin_model_ro))
                 for cut in cuts if cut.category == "header"}
     expected = {
-        "DU-B-ERV-R-SAUNA-SUP": (39.00, 216.0, 1.75),
         "DU-B-ERV-R-SAUNA-EXH": (45.00, 216.0, 3.25),
         "PR-B-KITCH-DRAIN": (54.00, 216.0, 2.375),
         "PR-M-S-BATH1-DRAIN": (54.77, 216.0, 3.50),
         "PR-B-MAIN-DRAIN": (72.00, 216.0, 4.50),
-        "DU-B-ERV-R-GYM": (216.0, 156.0, 4.00),
     }
     assert set(stations) == set(expected)
     for tag, want in expected.items():
         assert stations[tag] == pytest.approx(want, abs=0.01), tag
+
+
+def test_the_two_rerouted_runs_cut_nothing_at_all(catlin_model_ro) -> None:
+    """The reroute's own contract: not a smaller hole, NO hole.
+
+    `DU-B-ERV-R-SAUNA-SUP` crosses `W-B-CW` in its west clear bay and `DU-B-ERV-R-GYM`
+    crosses `W-B-CS3` in the 5 3/4" of open wall between `D-B-GYM`'s header and the double
+    top plate, 7.8" from the nearest cripple either way. Neither appears in any bore
+    finding — header, stud or plate.
+    """
+    from typehaus.checks.mep.routing_bores import _crossings
+
+    ctx = _ctx(catlin_model_ro)
+    walls = {"DU-B-ERV-R-SAUNA-SUP": "W-B-CW", "DU-B-ERV-R-GYM": "W-B-CS3"}
+    for tag, wall, cuts in _crossings(ctx):
+        if walls.get(tag) == wall.tag:
+            assert not cuts, (tag, wall.tag, [c.member_key for c in cuts])
 
 
 # --- §8 a header hole chart, read --------------------------------------------------------
@@ -292,7 +318,7 @@ def test_a_header_names_the_opening_it_was_framed_around(catlin_model_ro) -> Non
                 for tag, _wall, cuts in _crossings(_ctx(catlin_model_ro))
                 for cut in cuts if cut.category == "header"}
     assert openings["PR-B-KITCH-DRAIN"] == "D-B-FURN"
-    assert openings["DU-B-ERV-R-GYM"] == "D-B-GYM"
+    assert openings["PR-B-MAIN-DRAIN"] == "D-B-FURN"
     assert all(cut.child_key == "header-0"
                for wall in catlin_model_ro.walls for cut in wall.members
                if cut.opening_tag == "D-B-FURN" and cut.category == "header")
