@@ -3,7 +3,7 @@
 
 **Nothing crosses the break, and no row grades a shear across it**: the court holds its own
 thrust (``retaining_system``) and the board keeps the house out of that free body. What is
-graded is what the board and the house behind it must survive — free body §11j-§11k (basis 8),
+graded is what the board and the house behind it must survive — free body §11j-§11l (basis 9),
 hand-worked first:
 
 * the board — fresh-concrete pressure on the AUTHORED placement (ACI 347R-14, capped at wh)
@@ -34,11 +34,11 @@ KIND = "thermal_break_transfer"
 BASIS = ("ACI 347R-14 (fresh-concrete pressure); ACI 209R-92 (stem shrinkage); ACI 318-19 "
          "(house wall, slab strut); IBC 1610.1/1806.2 (house sliding, soil); IRC R404.4 loop")
 #: Bumped whenever the arithmetic below changes — it rides in the fingerprint.
-BASIS_VERSION = "8"
+BASIS_VERSION = "9"
 #: Multiples of an ESTIMATED modulus the sensitivity note re-grades at (free body §11i).
 E_SENSITIVITY = (2.0 / 3.0, 1.5, 2.0)
 
-oracled_by(KIND, Oracle(note="sunken_garden_court_free_body.md", section="§11k",
+oracled_by(KIND, Oracle(note="sunken_garden_court_free_body.md", section="§11l",
                         test="tests/test_thermal_break.py"))
 
 _NOTES = (
@@ -52,6 +52,15 @@ _NOTES = (
     "NO FLOTATION ROW: nothing restrains a board with no bars. A form-face board is held by "
     "the work (adhered or pinned to the cured house face, and braced); a stripped one is set "
     "into its slot after the pour and never meets fresh concrete (sequencing trap 2).")
+
+
+def _compliant_note(board, product) -> str:
+    cap = product.cap_psi
+    return (f"STRESS-CAPPED (free body §11l): {board.tag}'s {product.compliant.material} "
+            f"layer publishes a MAXIMUM {cap:g} psi at {product.compliant.at_strain:.0%}; the "
+            f"court's largest closure strains it less, so the board is graded AT the cap, "
+            f"{cap:g} x {board.area_in2:,.1f} in² = {cap * board.area_in2:,.0f} lb — independent "
+            f"of the foam's modulus, the neutral point and the stems' shrinkage.")
 
 
 def _boards(ctx: EngineeringContext, loops: dict) -> list[geo.Board]:
@@ -112,7 +121,11 @@ def _grade(ctx, boards, products, bodies, e_scale) -> dict:
     sigma, closure = {}, {}
     for b in boards:
         p = products.get(b.tag)
-        if p is not None and b.loop_ref in npt:
+        if p is not None and b.loop_ref in npt and p.cap_psi is not None:
+            # §11l: graded AT the compliant layer's published cap, never off E or x.
+            sigma[b.tag] = min(p.cap_psi, p.psi)
+            closure[b.tag] = sigma[b.tag] * b.t_in / (p.modulus_psi * e_scale)
+        elif p is not None and b.loop_ref in npt:
             closure[b.tag] = dem.closing_strain(ctx, b, temps) * npt[b.loop_ref][0]
             sigma[b.tag] = min(p.modulus_psi * e_scale * closure[b.tag] / b.t_in, p.psi)
     lock = {b.tag: dem.lock_in_force(ctx, b) for b in boards}
@@ -143,7 +156,9 @@ def _one(ctx, board, sh):
     inputs.append(Quantity("foam_psi", product.psi, "psi", 0.1))
     if product.estimated:
         notes.append(f"ESTIMATED MODULUS: {product.modulus_psi:,.0f} psi is not published — "
-                     f"{product.source}.")
+                     f"{product.source}." + (" No verdict reads it: the thrust is graded at "
+                                             "the compliant layer's cap." if product.compliant
+                                             else ""))
     pour = None
     if board.formed_and_stripped:
         notes.append(dem.FORMED_AND_STRIPPED_NOTE)
@@ -154,6 +169,13 @@ def _one(ctx, board, sh):
         pour = brd.pressure(ctx, board, product, states, missing, inputs)
     if temps is None:
         missing.append(brd.TEMPERATURE_MISSING)
+    elif board.tag in sh["closure"] and product.compliant is not None:
+        notes.append(_compliant_note(board, product))
+        if not board.formed_and_stripped:
+            notes.append(dem.LOCK_IN_FLAG)
+        brd.compliant_row(board, product, temps, geo.court_run_in(ctx, board), states, inputs)
+        brd.movement(board, product, temps, geo.court_run_in(ctx, board),
+                     sh["closure"][board.tag], pour, states, inputs, sh["e_scale"])
     elif board.tag in sh["closure"]:
         inputs.append(Quantity("neutral_point", sh["npt"][board.loop_ref][0], "in", 0.01))
         notes.append(dem.NEUTRAL_POINT_FLAG)

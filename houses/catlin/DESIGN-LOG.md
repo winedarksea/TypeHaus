@@ -2641,10 +2641,12 @@ here, and `test_thermal_break.py` ablates each decision so neither can be quietl
 **What is NOT decided.** The sheet's sustained-load rule (dead load ≤ 1/3 of rating, 13.3 psi
 → 2.21) is printed on every record and deliberately not graded: it guards a board against
 creep under a load it holds forever, and this thrust is an imposed deformation, which creep
-relieves rather than grows. **Open owner decision: FOAMULAR 1000** (100 psi, Type V, 0.885 at
-the 1/3 rule) is what closes it if a reviewing engineer reads the rule as governing — about
-21 SF of board, a few dollars a square foot, and nothing else in the model moves. Decide it
-when the PE reads §11j, not before.
+relieves rather than grows. ~~Open owner decision: FOAMULAR 1000~~ — **DECIDED 2026-09-22
+(basis 8, free body §11k): FOAMULAR NGX 1000**, and the rule is now GRADED at 0.885, the
+exemption retired. Two things the entry above did not know: 1000 is not made 1" (1.5" is its
+thinnest, so the board thickens and three SL-B-FLOOR detail goldens move 0.5"), and the garage
+edge therefore keeps its own 1" FOAMULAR 400. The graded row also goes over earlier in the E
+band than bearing did — at ~x1.2 of the closure boards' estimated 525 psi.
 
 **The residual risk is a field one and it is carried in three places**, because the engine can
 state a sequence and cannot enforce it: `AN-SG-BLOCKOUTS` on the drawing, the `boards`

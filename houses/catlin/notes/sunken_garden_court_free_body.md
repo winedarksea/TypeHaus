@@ -1541,10 +1541,10 @@ The length floor moved with it: `run = 62,826 × 1.50 / 1,899.6 = 49.61'`, so
 Worked by hand before `engineering/thermal_break.py` was rewritten to it;
 `tests/test_thermal_break.py` reproduces it. Oracle for `thermal_break_transfer/*`.
 
-> **The graded basis is §11k (basis 8, 2026-09-22):** §11j's demand and lateral path with
-> `SL-B-FLOOR`'s perimeter break switched to FOAMULAR 1000 and the sheet's 1/3 sustained-load
-> rule GRADED. OK on all five items, that rule governing at 0.885. §11a-§11j below are the
-> record of how it got there.
+> **The graded basis is §11l (basis 9, 2026-09-22):** §11k's slab edge (FOAMULAR 1000, the 1/3
+> rule graded) with a stress-capped EPDM sponge in series with every board, the thrust graded at
+> its published 3.5 psi maximum. OK on all five items, the stems' floor line governing at 0.786,
+> and no verdict reads the estimated modulus. §11a-§11k below are the record of how it got there.
 
 **Basis 4 is the owner's decision of 2026-09-21:** the four closure boards go back to XPS —
 **Styrofoam Highload 40 at 2.5"** (`closure_break_in` 2 → 2.5) — with **#6 Aslan 100 @ 8"**
@@ -2242,6 +2242,77 @@ less; a PE reading this row should read it beside the E band. The next board up 
 **Verdict (basis 8): OK on all five items**, the slab-edge sustained-load rule governing at 0.885.
 
 
+### 11l. Basis 9 (2026-09-22, owner) — a stress-capped layer, and no verdict reads E
+
+Hand-worked before the engine; `tests/test_thermal_break.py` reproduces it. **Supersedes §11k
+as the graded basis.** The owner's brief: a detail that does not hinge on an estimated foam
+modulus.
+
+**Why every foam swap failed.** The thrust is an imposed displacement through springs. With
+`S = Σ kᵢεᵢ` and `N = H + μwL = 162,503 lb`, `T = N·S/(S + 2μw)`; at S 246.3 against 2μw 620.3,
+T moves about 0.72 as fast as E. A stronger foam is a stiffer one, and a sheet publishes E as a
+minimum or typical, never the maximum a displacement load needs.
+
+**The owner's candidate — deepen W-SG-BRKBM into a soil key — worked and set aside.** The beam
+already sits beside the house footings: bottom −120 3/16" (7.18' below grade −34") against
+FT-B-S1..S4's −117 7/16" (6.95'), its board 4" of bedding stone from their toes. A key's passive
+force P acts on the court's moving part as the boards do, so `x = (N − P)/(S + 2μw)`.
+
+- *Rigid-plastic* (the neutral point's own idealisation), IBC Table 1806.2 lateral bearing over
+  the beam's 20'-0": `P = ½ q (d₂² − 7.18²) x 20`. P ≥ N takes the house out at **d₂ = 12.65'**
+  (class 4, 150 psf/ft; 12.88' at 130 pcf's N 171,579), **14.63'** on class 5 (100 psf/ft) —
+  a key 5.5'-7.5' below the beam. Only bounding the band (T ≤ 52,900 at 2x E, P ≥ 43,000 lb)
+  needs d₂ = 8.96', but T is still `∝ S`: E stays in the verdict.
+- *Elastic* — what the 0.053" at stake actually mobilises. Terzaghi `k_h = n_h z / B`, n_h 8.10
+  pci presumed: a 21.6" key (z 86-108") is 8.10 x 97/21.6 = 36.4 pci x 5,184 in² = **0.19 x 10⁶
+  lb/in**; the 5.5' key 0.23 x 10⁶ (4.63 pci submerged: 0.13 x 10⁶). The boards in parallel are
+  `Σ EA/t` = 2 x 141,120 + 2 x 275,730 + 1,118,250 = **1.95 x 10⁶ lb/in** at E 525. The key takes
+  ~9-11% of the closure force; the house keeps ~89%, and more at 2x E.
+- And the soil it pushes is the house's: its passive wedge rises under FT-B-S1..S4, 4-8" away.
+
+Not independent of E, not independent of the presumed soil, and it adds a torsion on the veneer
+beam below its bars (§25.4 hook row 0.790) and its α 0.25 fixity credit. The drywell (by
+W-SG-ARCH) and frost do not bind. **Rejected.**
+
+**Decision: a compliant layer with a published MAXIMUM.** 1/2" of each 2.5" closure board, and
+of the beam's 2" layer, is closed-cell EPDM sponge (Hanna Rubber 4014-E: ASTM D1056 2A0/2A1,
+**1.5-3.5 psi at 25%**), bonded house side; `CompliantLayer` on the `IsolationBoard`s, inherited
+by the beam's layer. D1056 grades a RANGE, so the sheet gives the upper bound a displacement load
+needs. Validity is kinematic — the whole run growing toward the house, no neutral point, no
+shrinkage:
+
+```
+δ_max  5.5e-6 x 30 x 322.565 = 0.05322"  / (0.25 x 0.5 = 0.125")          d/c 0.426 ✓  (beam, run 319.0: 0.421)
+```
+
+So no board stress exceeds 3.5 psi, whatever E. Graded AT the cap:
+
+```
+ΣA     2 x 672 + 2 x 1,313.25 + 4,260 = 8,230.5 in²
+T      3.5 x 8,230.5 = 28,806.75 lb                                 (was 46,183 at E 525)
+board  3.5 / 15 (Type X, in series)                                 d/c 0.233 ✓
+stem   w = 3.5 x 12 = 42 lb/in, L 96": R 2,016, M = 42 x 96²/8 = 48,384 lb-in
+       flexure 48,384 / 276,299 0.175 ✓   shear 2,016 / 72,377 0.028 ✓   house XPS 3.5/15 0.233 ✓
+       floor line 2,016 + 3.5 x 12 x 13.4375 = 2,580.4 / 3,285       d/c 0.786 ✓ GOVERNS
+line   28,806.75 − 2 x 2,580.4 = 23,646 lb
+edge   bearing 23,646 / 151,200 0.156 ✓    1/3 rule 23,646 / 50,395  d/c 0.469 ✓
+strut  23,646 / 1,512 = 15.64 psi / 2,040                           d/c 0.008 ✓
+global FS (93,667 + 30,458) / 28,806.75 = 4.309 vs 1.5              ratio 0.348 ✓
+far    52,214 + max(0, 28,807 − 93,667) = 52,214 / 130,534           d/c 0.400 ✓
+court  28,807 − 61,446 < 0: net push 0                              d/c 0.000 ✓
+```
+
+**Across E = 350-1,050 psi, no row moves** (the engine's sensitivity note reads so). The 1/3 rule
+goes 0.652 / 0.885 / 1.107 / 1.162 / 1.378 → **0.469 flat**. Two caps would not hold: a plain
+2A1 spec (5 psi max) puts the floor line at 1.122, and FOAMULAR 400 at the edge reads 1.173 even
+capped, so the spec stays ≤ 3.5 psi and the edge stays FOAMULAR 1000. The stripping still stands:
+a board cast against adds its 54,105 lb of pour back on top of the cap.
+
+**Verdict (basis 9): OK on all five items**, the stems' floor line governing at 0.786, and the
+estimated modulus read by nothing graded. D1056 values are new material at 23 °C; the joint
+closes warm, and a delivered-lot compression-deflection test is the cheap confirmation.
+
+
 ---
 
 ## Sources
@@ -2259,6 +2330,7 @@ out of it.
 - Owens Corning FOAMULAR Tech Bulletin 10015702-C (07-2025, C578 Type X); DuPont UtilityFit PIS 43-D100997; ACI 360R-92 §6.3 (subgrade drag, neutral point); ACI 207.2R-07; ACI 231R-10; ACI 318-19 Table 21.2.1, §14.5.6; ASCE 7-16 Table C3.1-1a (8 psf partitions); IBC Table 1610.1 / 1806.2 — §11i (basis 6)
 - Owens Corning FOAMULAR 400/600/1000 Product Data Sheet (PDS 07 21 13.13.OCC: ASTM C578 Type VI/VII/V, 40/60/100 psi min, minimum compressive modulus 1,800/2,500/3,700 psi by ASTM D1621, sustained load ≤ 1/3 of rating); ASTM D1621 — §11j (basis 7)
 - Owens Corning FOAMULAR NGX 400/600/1000 Product Data Sheet, Pub. No. 58307-Q (06-2025: Type V 100 psi, 1000 made 1.5"/2"/3" only); Owens Corning Canada PDS 07 21 13.13.OCC (dead load ≤ 1/3, live load ≤ 1/5 of published compressive resistance; 1000 modulus 3,700 psi) — §11k (basis 8)
+- Hanna Rubber Co. 4014-E closed-cell EPDM sponge (ASTM D1056 2A0/2A1, 1.5-3.5 psi at 25%, <https://hannarubbercompany.com/p/sponge-rubber-closed-cell-4014-e>); ASTM D1056 grade ranges (<https://www.nedc.com/sponge-gaskets-astm-d1056-types-classes-grades/>); IBC Table 1806.2; Terzaghi (1955) n_h — §11l (basis 9)
 - W. R. Meadows CERAMAR PDS #323 (07-2026) and DECK-O-FOAM PDS #325 (04-2026); Owens Corning FOAMULAR Tech Bulletin 10015703; ROCKWOOL Comfortboard 110 data sheet; ASTM D1056 grade table (nedc.com); ACI 209R-92; ASCE 7-16 Table C3.1-1a — §11h (WIP)
 - Bowles, *Foundation Analysis and Design* 5th ed. (1997) Table 9-1 — presumed k_v, §11f
 - PCA, *Design and Control of Concrete Mixtures* — α_c 5.5 × 10⁻⁶ /°F, §11c

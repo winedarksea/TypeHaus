@@ -95,6 +95,7 @@ from typehaus import (
 )
 
 from typehaus.resolve.framing.profiles import cross_section
+from typehaus.model.structure import CompliantLayer
 from params.column_heads import HETA20Z_PAIR_HEAD
 from params.roof_trim import _WALL_OUTBOARD_IN
 from params.sunken_garden_options import OPTION
@@ -3745,7 +3746,16 @@ _BOARD_PRODUCT = dict(
     # blockout, never cast against. AN-SG-PLACEMENTS / AN-SG-BLOCKOUTS say so on the drawing,
     # which is why the ref is now load-bearing: stripped without it is a named missing input.
     formed_and_stripped=True,
-    placement_sequence_ref="AN-SG-PLACEMENTS")
+    placement_sequence_ref="AN-SG-PLACEMENTS",
+    # Basis 9 (2026-09-22, owner; free body §11l): 1/2" of it is a closed-cell EPDM sponge
+    # whose sheet caps the stress, so no verdict reads the ESTIMATED modulus above. The beam's
+    # layer inherits it. 0.0532" of largest closure strains 1/2" 10.6%, inside the 25% the
+    # cap is published at. Bonded to the XPS, house side; a thicker sponge is fine, thinner not.
+    compliant=CompliantLayer(
+        material="epdm_sponge", thickness=inch(0.5), max_psi=3.5, at_strain=0.25,
+        source="Hanna Rubber 4014-E closed-cell EPDM sponge, ASTM D1056 2A0/2A1: compression "
+               "deflection 1.5-3.5 psi at 25% (hannarubbercompany.com/p/sponge-rubber-closed-"
+               "cell-4014-e); or any D1056 Type 2 sheet publishing <= 3.5 psi max at 25%"))
 
 # ** FOUR SEQUENCING TRAPS ON THIS BOARD — FIELD INSTRUCTIONS THE MODEL CANNOT EXPRESS. **
 # 1. The footing board and the stem board meet at the court floor plane (`SL-SG-FLOOR`,

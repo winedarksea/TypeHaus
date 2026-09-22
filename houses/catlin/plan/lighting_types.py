@@ -139,7 +139,7 @@ AMBIENT_LUMINAIRE_TYPES = (
                          'the two stairs — 650 lm is the circulation tier and 900 would '
                          'over-light every one of them.'),
 
-    # --- D: flat panels (kitchen, fitness, workshop, furnace) -------------------------
+    # --- D: flat panels (kitchen, fitness, workshop) ----------------------------------
     LuminaireType(tag="ED-T-LT-PANEL", name="2x4 edge-lit LED flat panel",
                   form=LuminaireForm.PANEL, type_mark="D",
                   footprint=(ft(4), ft(2)), height=inch(1.5), plan_symbol="panel-light",

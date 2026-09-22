@@ -1,13 +1,14 @@
-"""``engineering/thermal_break.py`` against ``sunken_garden_court_free_body.md`` §11j-§11k.
+"""``engineering/thermal_break.py`` against ``sunken_garden_court_free_body.md`` §11j-§11l.
 
 The note was worked by hand before the module was rewritten; this file reproduces it. Basis 7
 is basis 6's pure isolation joint — ASTM C578 Type X XPS, 15 psi, E ESTIMATED at 525, the
 neutral-point demand with the stems' shrinkage credit — with two owner decisions in the model:
 every board is set into a STRIPPED BLOCKOUT (no pour lock-in) and ``SL-B-FLOOR``'s 1" perimeter
 break states its grade. Basis 8 makes that board FOAMULAR 1000 (Type V, 100 psi) and grades the
-sheet's 1/3 sustained-load rule. Every item is OK, that rule governing at 0.885.
-Two ablations below are the proof that each decision is the lever: take either away and the
-numbers walk back to basis 6.
+sheet's 1/3 sustained-load rule. Basis 9 (§11l) puts a stress-capped EPDM sponge in series
+with every board and grades the thrust at its published 3.5 psi maximum: no verdict reads the
+estimated modulus. Every item is OK, the stems' floor line governing at 0.786. The ablations
+below are the proof that each decision is the lever: take one away and its numbers come back.
 """
 
 from __future__ import annotations
@@ -22,8 +23,33 @@ from typehaus.engineering.thermal_break import KIND
 _FOOT, _STEM, _BEAM = ("TB-SG-W1", "TB-SG-E1"), ("TB-SG-W1-STEM", "TB-SG-E1-STEM"), "W-SG-BRKBM"
 _ALL = (*_FOOT, *_STEM, _BEAM)
 
-# The lateral path is one set of links for the whole thrust (§11j-§11k), on every item.
+# Basis 9 (§11l): every board at the 3.5 psi cap, T = 3.5 x 8,230.5 in² = 28,806.75 lb.
 _PATH = {
+    "house slab-edge bearing": (23_646.0, 151_200.0, 0.1564),
+    "house slab-edge sustained load": (23_646.0, 50_394.96, 0.4692),
+    "house slab strut compression": (15.6389, 2_040.0, 0.00767),
+    "house global sliding": (1.5, 4.3089, 0.3481),
+    "house far-wall soil bearing": (52_213.6, 130_534.1, 0.4000),
+    "court sliding under break thrust": (0.0, 73_422.3, 0.0),
+}
+_CAP = {"compliant layer strain": (0.053223, 0.125, 0.4258),
+        "board strain, pour + closing": (0.016667, 0.071429, 0.2333)}
+_NOTE = {
+    "foot": {**_CAP, **_PATH},
+    "stem": {
+        **_CAP,
+        "house insulation bearing": (3.5, 15.0, 0.2333),
+        "house wall flexure": (48_384.0, 276_298.8, 0.1751),
+        "house wall shear": (2_016.0, 72_376.8, 0.0279),
+        "house floor-line reaction": (2_580.375, 3_285.0, 0.7855),
+        **_PATH,
+    },
+    "beam": {"compliant layer strain": (0.052635, 0.125, 0.4211),
+             "board strain, pour + closing": (0.013333, 0.057143, 0.2333), **_PATH},
+}
+_CAPPED_TOTAL_LB = 28_806.75
+# Basis 8 (§11j-§11k), the uncapped spring — what `compliant=None` must give back.
+_PATH_8 = {
     "house slab-edge bearing": (44_582.1, 151_200.0, 0.2949),
     "house slab-edge sustained load": (44_582.1, 50_394.96, 0.8847),
     "house slab strut compression": (29.4855, 2_040.0, 0.014454),
@@ -34,10 +60,10 @@ _PATH = {
 }
 # (demand, capacity, ratio) per row, hand-worked in §11j. No fresh-concrete pressure row on
 # any board: a blockout takes the pour and the board is set after it is stripped.
-_NOTE = {
+_NOTE_8 = {
     "foot": {
         "board strain, pour + closing": (0.0309399, 0.071429, 0.4332),
-        **_PATH,
+        **_PATH_8,
     },
     "stem": {
         "board strain, pour + closing": (0.0051739, 0.071429, 0.0724),
@@ -45,11 +71,11 @@ _NOTE = {
         "house wall flexure": (15_012.9, 276_298.8, 0.0543),
         "house wall shear": (625.54, 72_376.8, 0.0086),
         "house floor-line reaction": (800.65, 3_285.0, 0.2437),
-        **_PATH,
+        **_PATH_8,
     },
     "beam": {
         "board strain, pour + closing": (0.0309399, 0.057143, 0.5414),
-        **_PATH,
+        **_PATH_8,
     },
 }
 _NOTE_X_IN = 187.51
@@ -98,10 +124,7 @@ def test_the_kind_is_computed_and_the_beam_board_is_an_item(ctx) -> None:
     assert keys_of(KIND, ctx) == sorted(_ALL)
 
 
-@pytest.mark.parametrize("tag", _ALL)
-def test_every_row_reproduces_section_11(records, tag) -> None:
-    record = records[tag]
-    expected = _NOTE[_group(tag)]
+def _rows_match(record, expected, tag) -> None:
     assert [s.name for s in record.limit_states] == list(expected), tag
     for name, (demand, capacity, ratio) in expected.items():
         state = _state(record, name)
@@ -111,29 +134,47 @@ def test_every_row_reproduces_section_11(records, tag) -> None:
 
 
 @pytest.mark.parametrize("tag", _ALL)
-def test_basis_7_is_ok_with_nothing_open(records, tag) -> None:
+def test_every_row_reproduces_section_11l(records, tag) -> None:
+    _rows_match(records[tag], _NOTE[_group(tag)], tag)
+    assert _input(records[tag], "board_stress") == 3.5
+    assert _input(records[tag], "house_thrust") == pytest.approx(_CAPPED_TOTAL_LB, rel=1e-6)
+
+
+def test_without_the_cap_basis_8_comes_back(ctx, monkeypatch) -> None:
+    """§11j-§11k: the uncapped spring, E and the neutral point back in every row."""
+    out = _compute_with(ctx, monkeypatch, compliant=None)
+    for tag in _ALL:
+        _rows_match(out[tag], _NOTE_8[_group(tag)], tag)
+        assert "NEUTRAL POINT" in " ".join(out[tag].notes)
+        assert ("STEM SHRINKAGE" in " ".join(out[tag].notes)) == (tag in _STEM)
+    for tag, sigma in _NOTE_SIGMA_PSI.items():
+        assert _input(out[tag], "board_stress") == pytest.approx(sigma, abs=1e-3)
+        assert _input(out[tag], "board_lock_in") == _NOTE_LOCK_LB[tag]
+    for tag in _ALL:
+        assert _input(out[tag], "neutral_point") == pytest.approx(_NOTE_X_IN, abs=0.01)
+        assert _input(out[tag], "house_thrust") == pytest.approx(_NOTE_TOTAL_LB, rel=1e-4)
+    assert _input(out["TB-SG-W1"], "court_run") == pytest.approx(_NOTE_RUN_IN, abs=1e-3)
+    assert _input(out["TB-SG-W1"], "delta_T") == 30.0
+    note = next(n for n in out["TB-SG-W1-STEM"].notes if n.startswith("SENSITIVITY"))
+    assert "house floor-line reaction 0.244 -> 0.179 / 0.320 / 0.380" in note
+    assert "house slab-edge bearing 0.295 -> 0.217 / 0.387 / 0.459" in note
+    # §11k: the graded 1/3 rule goes over inside the band (x1.5) — why basis 9 exists.
+    assert "house slab-edge sustained load 0.885 -> 0.651 / 1.162 / 1.378" in note
+
+
+@pytest.mark.parametrize("tag", _ALL)
+def test_basis_9_is_ok_with_nothing_open(records, tag) -> None:
     record = records[tag]
     assert record.status is Status.OK
     assert record.missing == ()
-    assert record.basis_version == "8"
+    assert record.basis_version == "9"
     notes = " ".join(record.notes)
     for flag in ("RETIRED WITH THE BARS", "RETIRED WITH THE STRIP", "ESTIMATED MODULUS",
-                 "NEUTRAL POINT", "FORMED AND STRIPPED", "SENSITIVITY ON E"):
+                 "FORMED AND STRIPPED", "SENSITIVITY ON E", "STRESS-CAPPED"):
         assert flag in notes, (tag, flag)
-    # The lock-in flag is a statement about a form face and this joint has none.
-    assert "POUR LOCK-IN" not in notes
-    assert ("STEM SHRINKAGE" in notes) == (tag in _STEM)
-
-
-def test_the_neutral_point_the_thrust_and_the_run(records) -> None:
-    for tag, sigma in _NOTE_SIGMA_PSI.items():
-        assert _input(records[tag], "board_stress") == pytest.approx(sigma, abs=1e-3)
-        assert _input(records[tag], "board_lock_in") == _NOTE_LOCK_LB[tag]
-    for tag in _ALL:
-        assert _input(records[tag], "neutral_point") == pytest.approx(_NOTE_X_IN, abs=0.01)
-        assert _input(records[tag], "house_thrust") == pytest.approx(_NOTE_TOTAL_LB, rel=1e-4)
-    assert _input(records["TB-SG-W1"], "court_run") == pytest.approx(_NOTE_RUN_IN, abs=1e-3)
-    assert _input(records["TB-SG-W1"], "delta_T") == 30.0
+    # Nothing graded reads the neutral point, the shrinkage credit or a form face.
+    for flag in ("POUR LOCK-IN", "NEUTRAL POINT", "STEM SHRINKAGE"):
+        assert flag not in notes, (tag, flag)
 
 
 def test_the_stem_shrinkage_is_aci_209r() -> None:
@@ -142,13 +183,11 @@ def test_the_stem_shrinkage_is_aci_209r() -> None:
     assert stem_shrinkage() * 1e6 == pytest.approx(137.42, abs=0.01)
 
 
-def test_the_sensitivity_note_reads_the_higher_modulus(records) -> None:
-    note = next(n for n in records["TB-SG-W1-STEM"].notes if n.startswith("SENSITIVITY"))
-        # §11j's table: the floor line moves with E and never approaches its capacity now.
-    assert "house floor-line reaction 0.244 -> 0.179 / 0.320 / 0.380" in note
-    assert "house slab-edge bearing 0.295 -> 0.217 / 0.387 / 0.459" in note
-    # §11k: the graded 1/3 rule goes over inside the band (x1.5), unlike the bearing row.
-    assert "house slab-edge sustained load 0.885 -> 0.651 / 1.162 / 1.378" in note
+@pytest.mark.parametrize("tag", _ALL)
+def test_no_row_moves_across_the_modulus_band(records, tag) -> None:
+    """The owner's aim (§11l): the verdict does not hinge on the estimated modulus."""
+    note = next(n for n in records[tag].notes if n.startswith("SENSITIVITY"))
+    assert note.endswith("no row moves"), note
 
 
 def _compute_with(ctx, monkeypatch, **values):
@@ -207,7 +246,7 @@ def test_a_k_v_only_report_leaves_base_rotation_on_its_band(ctx) -> None:
 def test_a_formed_and_stripped_board_carries_no_pour(ctx, monkeypatch) -> None:
     """The flag is the lever, and this reads it BOTH ways: off, every board is a form face
     again and basis 6's lock-in, thrust and slab edge come straight back."""
-    out = _compute_with(ctx, monkeypatch, formed_and_stripped=False)
+    out = _compute_with(ctx, monkeypatch, formed_and_stripped=False, compliant=None)
     for tag, lock in _FORM_FACE_LOCK_LB.items():
         assert _input(out[tag], "board_lock_in") == pytest.approx(lock, rel=1e-3), tag
         assert _input(out[tag], "house_thrust") == pytest.approx(_FORM_FACE_TOTAL_LB, rel=1e-4)
@@ -218,6 +257,14 @@ def test_a_formed_and_stripped_board_carries_no_pour(ctx, monkeypatch) -> None:
         93_955.0 / 50_395.0, rel=1e-3)
     assert _state(out[_BEAM], "board strain, pour + closing").ratio > 1.0
     assert out[_BEAM].status is Status.OVER
+    # The cap does not replace the stripping: a board cast against adds its pour in full.
+    monkeypatch.undo()
+    capped = _compute_with(ctx, monkeypatch, formed_and_stripped=False)
+    locked = 2 * _FORM_FACE_LOCK_LB["TB-SG-W1"] + 2 * _FORM_FACE_LOCK_LB["TB-SG-W1-STEM"] \
+        + _FORM_FACE_LOCK_LB[_BEAM]
+    assert _input(capped["TB-SG-W1"], "house_thrust") == pytest.approx(
+        _CAPPED_TOTAL_LB + locked, rel=1e-3)
+    assert capped[_BEAM].status is Status.OVER
 
 
 def test_the_beam_board_inherits_the_stripping_statement(ctx, monkeypatch) -> None:
@@ -247,8 +294,8 @@ def _with_slab_break(ctx, **values):
 
 def test_the_slab_edge_reads_the_authored_grade(ctx, monkeypatch) -> None:
     """Strip the product off SL-B-FLOOR's break and the edge falls back to the C578 floor —
-    15 psi, an unstated grade, and 1.966 OVER. It never goes INCOMPLETE: an ungraded row can
-    never read over, which is how 4.14 stayed visible through basis 6."""
+    15 psi, an unstated grade: 1.966 OVER uncapped, still 1.043 at the cap. It never goes
+    INCOMPLETE: an ungraded row can never read over (how 4.14 stayed visible in basis 6)."""
     from typehaus.engineering import thermal_break as tb
 
     slab, path = _with_slab_break(ctx, psi=None, modulus_psi=None, source=None,
@@ -259,7 +306,7 @@ def test_the_slab_edge_reads_the_authored_grade(ctx, monkeypatch) -> None:
     record = {r.key: r for r in tb.compute(ctx)}["TB-SG-W1"]
     state = _state(record, "house slab-edge bearing")
     assert state.capacity == pytest.approx(15.0 * 3.5 * 432.0)
-    assert state.ratio == pytest.approx(1.966, rel=1e-3)
+    assert state.ratio == pytest.approx(23_646.0 / 22_680.0, rel=1e-4)
     assert "grade unstated" in state.citation
     assert record.status is Status.OVER and record.missing == ()
     assert _state(record, "house slab-edge sustained load") is None  # no sheet, no rule
@@ -267,8 +314,8 @@ def test_the_slab_edge_reads_the_authored_grade(ctx, monkeypatch) -> None:
 
 def test_the_sheets_sustained_load_rule_is_graded_and_foamular_400_fails_it(
         ctx, monkeypatch) -> None:
-    """§11k: the 1/3 rule is a limit state, and the product is the lever. On FOAMULAR 400
-    (basis 7's board) the same 44,582 lb reads 2.212 OVER; FOAMULAR 1000 reads 0.885."""
+    """§11k-§11l: the 1/3 rule is a limit state. On FOAMULAR 400 (basis 7's board) even the
+    capped 23,646 lb reads 1.173 OVER (2.212 uncapped); FOAMULAR 1000 reads 0.469."""
     from typehaus.engineering import thermal_break as tb
 
     slab, path = _with_slab_break(ctx, psi=40.0, modulus_psi=1800.0)
@@ -277,8 +324,7 @@ def test_the_sheets_sustained_load_rule_is_graded_and_foamular_400_fails_it(
                         lambda c, f: (slab, real(c, f)[1]) if real(c, f) else None)
     record = {r.key: r for r in tb.compute(ctx)}["TB-SG-W1"]
     state = _state(record, "house slab-edge sustained load")
-    assert state.ratio == pytest.approx(44_582.1 / (0.3333 * 40.0 * 1_512.0), rel=1e-3)
-    assert state.ratio == pytest.approx(2.212, abs=1e-3)
+    assert state.ratio == pytest.approx(23_646.0 / (0.3333 * 40.0 * 1_512.0), rel=1e-4)
     assert record.status is Status.OVER
 
 
@@ -310,6 +356,13 @@ def test_isolation_board_round_trips() -> None:
     assert IsolationBoard.model_validate(board.model_dump()) == board
     assert board.psi == 40.0 and board.material == "xps" and board.modulus_estimated
     assert not board.formed_and_stripped, "a form face is the conservative default"
+    assert board.compliant is None, "uncapped is the spring the foam's own E sets"
+    from typehaus.model.structure import CompliantLayer
+
+    capped = board.model_copy(update={"compliant": CompliantLayer(
+        material="epdm_sponge", thickness=inch(0.5), max_psi=3.5, at_strain=0.25,
+        source="sheet")})
+    assert IsolationBoard.model_validate(capped.model_dump()) == capped
 
 
 def test_site_inputs_carry_their_provenance() -> None:

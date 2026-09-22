@@ -672,6 +672,19 @@ class Dowel(Element):
     bar_source: str | None = None
 
 
+class CompliantLayer(HausModel):
+    """A soft layer set in series with an ``IsolationBoard`` whose sheet publishes a MAXIMUM
+    stress at a stated strain (ASTM D1056 grades a range). While the court's largest possible
+    closure strains it no further than ``at_strain``, no board stress can exceed ``max_psi``,
+    whatever the foam's modulus — the thrust is graded at that bound (free body §11l)."""
+
+    material: str
+    thickness: Length  # part of the board's ``thickness``, not added to it
+    max_psi: float
+    at_strain: float
+    source: str
+
+
 @register_element
 class IsolationBoard(Element):
     """A compressible board cast between two separately founded pours — a pure isolation
@@ -705,6 +718,8 @@ class IsolationBoard(Element):
     #: False is the conservative case (the board is a form face). True needs
     #: ``placement_sequence_ref`` — the annotation that says so on the drawing.
     formed_and_stripped: bool = False
+    #: The stress cap in series with the foam; ``None`` grades the foam's own spring.
+    compliant: CompliantLayer | None = None
 
 
 @register_element

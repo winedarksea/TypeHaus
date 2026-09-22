@@ -47,6 +47,12 @@ class Product:
     modulus_psi: float
     source: str
     estimated: bool = False
+    #: The ``CompliantLayer`` in series, if any: its published stress cap bounds the board.
+    compliant: object | None = None
+
+    @property
+    def cap_psi(self) -> float | None:
+        return self.compliant.max_psi if self.compliant is not None else None
 
     @property
     def strain_limit(self) -> float:
@@ -82,7 +88,8 @@ def product_of(element) -> Product | None:
     if element is None or element.modulus_psi is None or element.source is None:
         return None
     return Product(element.psi, element.modulus_psi, element.source,
-                   bool(getattr(element, "modulus_estimated", False)))
+                   bool(getattr(element, "modulus_estimated", False)),
+                   getattr(element, "compliant", None))
 
 
 def pour_head_in(ctx, board: Board) -> tuple[float | None, str]:
@@ -154,3 +161,19 @@ def house_insulation_row(board: Board, layers, sigma: float, pour_psi: float | N
             f"locked-in pour {pour_psi or 0:.2f} + closing {sigma:.2f} psi at the board's base "
             f"through {board.house_tag}'s `{name}`: {how}"))
         return
+
+
+def compliant_row(board: Board, product: Product, t: Temps, run: float, states,
+                  inputs) -> None:
+    """The cap's own validity (free body §11l): the court's LARGEST closure — the whole run
+    growing toward the house, no neutral point, no shrinkage credit — strains the compliant
+    layer no further than the strain its sheet publishes the maximum at."""
+    layer = product.compliant
+    delta = ALPHA_C_PER_F * t.closing * run
+    inputs += [Quantity("compliant_t", layer.thickness.inches, "in", 0.01),
+               Quantity("compliant_max_psi", layer.max_psi, "psi", 0.01)]
+    states.append(LimitState(
+        "compliant layer strain", delta, layer.at_strain * layer.thickness.inches, "in",
+        f"{ALPHA_C_PER_F:g} x {t.closing:.0f} F x the full {run:.1f}\" run = {delta:.4f}\" vs "
+        f"{layer.at_strain:.0%} of {layer.thickness.inches:g}\" {layer.material}, where its "
+        f"sheet caps the stress at {layer.max_psi:g} psi — {layer.source}"))

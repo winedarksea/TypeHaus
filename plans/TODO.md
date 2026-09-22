@@ -329,8 +329,11 @@ the future.
 - **`code.P2804_water_heater_relief`'s id still spells an IRC section** that Minnesota struck.
   The citations moved to UPC on 2026-09-20; renaming the id touches `inspections.py`,
   `profile.py` and `plan/mep_hvac.py`.
-- Several ducts like DU-B-ERV-R-GUM-RUN run across the basement stairs, the engine doesn't seem to recognize that space needs to be kept clear.
-- LED light panels in the mechanical/furnance room aren't likely to work so well, too many pipes in the way. Perhaps just two ceiling cans is enough there.
+- Several ducts like DU-B-ERV-R-GUM-RUN run across the basement stairs, the engine doesn't seem to recognize that space needs to be kept clear. Maybe we can use the soffit already in the basement bathroom.
+- If we made the sunken garden a little narrower, we might be able to switch to 2x12 12" OC joists across the full span, potentially dropping the center columns entirely.
+- Whenever I click on 'drawings' or reports in the UI, I have to refresh the page before they show up.
+- Drawings page could use a little scroll bar on the left for the different documents, separate from the scroll for the selected drawing itself
+- Dimension labels overlap on the drawings
 
 # Project Management
 

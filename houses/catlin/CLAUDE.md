@@ -242,10 +242,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   - **Two factors are the ones to watch.** Table R602.10.3(2) item 6's **x1.40** IS taken on
     the second storey's south and west lines, because the plant room's PVC liner is not
     gypsum — line `W-S-S1`/`W-S-W4` in gypsum and both lines drop from 10.37' to 7.41'.
-    Item 8's **x2.00** (horizontal blocking omitted) is NOT taken, on the argument that a
-    9'-0" wall sheathed in one 9'-0" sheet has no horizontal joint to block: **order 8-foot
-    sheathing and every required length in the house doubles**, which takes main E1 to a
-    FAIL. Item 5's x0.80 hold-down credit cannot be taken at all — it is published for the
+    Item 8's **x2.00** (horizontal blocking omitted) turns on the sheathing layer's
+    `sheet_length` against the plates: **unstated is UNKNOWN**, and at 8-foot sheets FOUR
+    lines FAIL (main E1 0.78, main S1 0.94, second S1 0.82, garage N 0.94). **The house
+    is 4x10 Structural-1 (OSB of the same size is the fallback), the garage 4x9 CDX**
+    (owner, 2026-09-22; `notes/wall_bracing_layout.md` §4). Item 5's x0.80 hold-down credit cannot be taken at all — it is published for the
     intermittent methods, so the NE corner's devices buy an end condition, never length.
   - **The NE corner carries four 800-lb devices** (owner, 2026-09-22; R602.10.7 end
     condition 5): `CN-M-BWHD-NE-N`/`-E` are STHD14RJ cast into the basement wall top, and
@@ -427,11 +428,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     (13.64 psf ASD vs 43 — **inward governs**, by 0.7%; note §5b). Footnote 2's exclusion
     ("does not address web crippling, fasteners, support material or load testing") is
     printed on every finding and answered by the guards: the maker's NAMED screw at the
-    maker's spacing into wood thicker than "1x". The NDS §12.2 withdrawal (**0.334**) and
+    maker's spacing into wood thicker than "1x". The NDS §12.2 withdrawal (**0.182**, 1-1/2" screw) and
     AISI S100 pull-through (**0.118**) are the `structural.cladding_fastener` ADVISORY — no
     item, no seal. Permit line: "Exterior wall covering — wind pressure" (blocking). The
     drift guards refuse the row if the girts widen past 2'-0", the coverage, screw, member or
-    gauge change, or the wind basis rises. PBR stays prescriptive on Metal Sales' own PBR CTR
+    gauge change, or the wind basis rises — the screw's LENGTH is increase-only. PBR stays prescriptive on Metal Sales' own PBR CTR
     (1/2026): **318 psf** at 2'-0" in 24 ga, 236 in 26.
   - **The substrate question is closed by the CODE, not by a letter.** IRC R703.1.2 asks for
     a wind-load path by ASTM E330 test or by design analysis and says nothing about a solid
@@ -449,7 +450,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     16 ga steel. Do not reintroduce it. Of eight surveyed, only Western States and Metal
     Sales permit open girts, and Western States publishes no load data at all (doc 4209-22,
     read in full) — substituting another forces a second girt course or a continuous deck.
-  - Cladding screw is the guide's own stocked **1"**, wood-point (Type 17), 316 stainless or
+  - Cladding screw is **#10-12 x 1-1/2"** since 2026-09-22 (owner, D3): withdrawal 0.334 →
+    **0.182**, tip still inside the girt. Metal Sales stocks only the 1" (8243100, plated).
+    Before that the stocked **1"**, wood-point (Type 17), 316 stainless or
     ASTM A153 Class D HDG — **REVERSED from the 2" specified 2026-09-11 to 2026-09-14.** That
     2" rested on one clause, "fasteners should extend 1/2" or more past the inside face of
     the support", and the clause does not carry it: the GIRT is the support and the tip
@@ -457,8 +460,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     thread on the guide's own 7/16" OSB row against 0.596" here; and the load table footnotes
     fasteners out by name, so NDS §12.2 governs the fastener and every length passes it.
     **2" is affirmatively rejected** — its tip stands 0.476" into a 0.500" vent gap, 0.024"
-    off the ccSPF, so ~840 tips are one thin girt or one overdrive from the foam. 1-1/2" is
-    the recorded no-cost margin; nothing longer than that, ever. A drill point would ream its
+    off the ccSPF, so ~840 tips are one thin girt or one overdrive from the foam. Nothing
+    longer than 1-1/2", ever. A drill point would ream its
     own thread out of the nailer. PBR's face screw stays 1-1/2".
   - **The EPDM washer is the 100-year limiter, not the screw** — 15-40 yr against 300-series
     stainless in painted Galvalume "matching the expected life" of the cladding (MCA 09/2025)
@@ -1217,27 +1220,20 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       and y=3'-2", south of the vent's corner.
     - **The gym radial no longer crosses the gym** and `RM-B-GYM.exposed_services` says so;
       RM-B-STAIR carries three ERV branches now instead of one.
-  - **`D-B-FURN`'s HEADER STILL HAS FOUR HOLES IN IT AND THAT IS AN OPEN OWNER DECISION**
-    (2026-09-22). Six runs bored or notched a basement door header; two moved and four did
-    not. `DU-B-ERV-R-SAUNA-SUP` is at **x=1'-0 1/2"**, in `W-B-CW`'s west clear bay
-    (x 9 1/2"..15 1/4") — not x=3'-3", which crossed dead on the west jack face — and
-    `DU-B-ERV-R-GYM` **rises 6 1/8" to -19 5/16" and crosses OVER `D-B-GYM`'s header**, in
-    the 5 3/4" of open wall between the header top and the double top plate, 7.8" from the
-    nearest cripple. Neither cuts anything now. What is left in `W-B-CW`'s 2-2x8 is
-    `DU-B-ERV-R-SAUNA-EXH`'s 3 1/4" notch off the top face, `PR-B-KITCH-DRAIN` and
-    `PR-M-S-BATH1-DRAIN` 0.77" apart near midspan, and `PR-B-MAIN-DRAIN` 4.50" three inches
-    from a jack. **No published chart reaches any of them** — the engine can hold one now
-    (`PublishedHole` on the opening, graded by `mep.run_through_header`) and TJ-9000's rows
-    refuse all four: round holes only, 8" off each bearing, the middle third of the depth,
-    and every one of these runs passes within 1 1/4" of the header's BOTTOM face. **Depth
-    is not the lever** — a deeper header moves the hole zone further from them — so neither
-    header was retyped and neither opening carries a row. The closers are a designed header
-    (13.82" is what fits over `D-B-FURN`) or a re-plumbing of the tie-in corner.
-    Every refusal is measured in `notes/framing_bore_limits.md` §8.
-    **Never take a run through the cripple zone on the strength of a `stud_bore` PASS**
-    (§6a): that predicate reads a stud's DEPTH and never its LENGTH, so a 4" hole through a
-    6 9/16" cripple reads legal and is two 1.28" slivers. The gym radial passes BETWEEN two
-    whole cripples, which is a different thing and the only thing allowed here.
+  - **`D-B-FURN` HAS A FLAT 2x8 HEADER AND NO CRIPPLES (B1, 2026-09-22).** `W-B-CW` is
+    authored `NONBEARING` — `FS-M-WEST`'s joists run parallel to it on the 208"/224" lines
+    and nothing bears on it — so the opening takes IRC R602.7.4's flat nailer
+    (`header_spec="flat 2x8 nonbearing"`, the wall's own 2x laid flat, 1 1/2" tall) and no
+    cripples above it. The 2-2x8 and its four ungraded holes are gone: `DU-B-ERV-R-SAUNA-EXH`
+    and `PR-B-MAIN-DRAIN` (4.50") pass through the open head and cut nothing, and
+    `PR-B-KITCH-DRAIN`/`PR-M-S-BATH1-DRAIN` take 0.46"/0.30" off the nailer's top, which
+    `mep.run_through_header` PASSes (a nonbearing nailer carries no load). **Do not put a
+    bearing header back here without re-reading `notes/framing_bore_limits.md` §8-§9**, and
+    do not land anything on `W-B-CW` — it stops being nonbearing, and the flat header with it.
+    `DU-B-ERV-R-SAUNA-SUP` is at **x=1'-0 1/2"** in `W-B-CW`'s west clear bay and
+    `DU-B-ERV-R-GYM` crosses OVER `D-B-GYM`'s header between two whole cripples; neither cuts
+    anything. `stud_bore` reads a member shorter than two depths as UNKNOWN (§6a), so a hole
+    in a short cripple no longer reads legal — passing BETWEEN cripples is still the thing to do.
   - **THE PLUMBING MOVED TOO (P1-P3, 2026-09-19), AND THREE NUMBERS ARE WORTH KEEPING.**
     The two basement vents stopped sharing the y=34'-6" line into the chase —
     `PR-B-BATH-VENT` drops 2 1/2" under and `PR-B-SAUNA-VENT` takes its rise EARLY, because
@@ -2004,7 +2000,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   reading available (the wall above the joint only, far end pinned, b_eff the beam's own
   12", gross section), a 2:1 derate, and it reads **0.464**.
   - **The credit is SERVICEABILITY ONLY and must stay that way.** Midspan flexure is still
-    graded at α = 0 (0.555, which now governs the beam's own section), so a joint softer
+    graded at α = 0 (0.555 — the section's worst strength row, NOT the record's governing
+    row, which is the 0.790 hook below), so a joint softer
     than claimed costs deflection and can never buy strength. What the fixity ADDS is graded:
     negative flexure 0.093, the end moment into `W-SG-W1`/`E1` as **plain concrete** over
     b_eff = b + 2t = 36" (0.368 — and **0.757 at the full elastic α**, which is why `#6 @ 38"`
@@ -2032,8 +2029,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   the east wythe inside the retaining wall, 27'-6" is that wall's clear face and left the
   brick HARD against it. The 3/8" back off the face (2026-09-22) is the east **soft joint**:
   BIA Technical Note 18A's minimum vertical expansion joint, against the ~0.15" of moisture
-  plus thermal movement an 18'-8" clay run wants. The west end has 4". The joint FILLER is
-  still carried by no element and graded by no rule — the record's MODEL GAP note says so.
+  plus thermal movement an 18'-8" clay run wants. The west end has 4". Both joints are
+  `MovementJoint`s since 2026-09-22 (`plan/masonry_joints.py`, A6): DOWSIL 790 over HBR rod
+  east (d/c 0.537), Emseal Seismic Colorseal 4" west (0.050), graded by
+  `structural.masonry_movement_joint` on BIA TN 18A Eq. 1 and billed in `[edge_trim]`.
+  Move either brick node and the check says the joint no longer fits (note §6g).
 - 2" EPS (ASTM C578 **Type II**, 15 psi — not Type I) is in the BACKUP wall's
   `_GARDEN_CURB_CORE`/`_GARDEN_FRAMED_OUTBOARD` layers, not in
   `BASEMENT_BRICK_VENEER` — blast radius is `W-B-S2`/`S3`/`S2-FR`/`S3-FR` only.
@@ -2044,8 +2044,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   elsewhere would silently inherit this rate. None exists today.
 - Do not anchor the wythe to `W-SG-W1`/`W-SG-E1` to cut anchor count:
   unreinforced brick can't span 18'-8" horizontally, and both ends want a soft
-  joint the model does not carry and the engine does not grade — both ends have
-  ROOM for one since 2026-09-22 (4" west, 3/8" east), which is not the same thing (→
+  joint — authored and graded since 2026-09-22 (4" west, 3/8" east) (→
   DESIGN-LOG.md, "Exterior colour, balcony and veneer").
 - Do not describe this beam as reinforcing `W-SG-W1`/`E1` — those walls already
   PASS `structural.foundation_unbalanced_fill` independently; the beam's only
@@ -2325,11 +2324,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **TWO thermal-break products and THREE thicknesses, and every one is stated in the model
   (basis 7, 2026-09-22; free body §11j).** The COURT's boards are ASTM C578 Type X XPS at
   15 psi (`THERMAL_BREAK_PSI`): `THERMAL_BREAK_IN` 2.5" on the four closure boards,
-  `VENEER_BEAM_BREAK_IN` 2" on the beam's. The HOUSE SLAB's 1" perimeter break is a second
-  product — **FOAMULAR 400, Type VI, 40 psi, E 1,800 published** — carried on
-  `SlabThermalBreak` itself (`params/foundations.SLAB_EDGE_BREAK`, spelled out again in
-  `plan/storeys/basement.py` because an editable file cannot import `params/`), and the
-  garage slab takes the same board so it is one order. No Type X sheet publishes E: the
+  `VENEER_BEAM_BREAK_IN` 2" on the beam's. The HOUSE SLAB's perimeter break is a second
+  product — **FOAMULAR NGX 1000, Type V, 100 psi, E 3,700 published, 1.5"** (basis 8, §11k;
+  1000 is not made 1") — carried on `SlabThermalBreak` itself
+  (`params/foundations.SLAB_EDGE_BREAK`, spelled out again in `plan/storeys/basement.py`
+  because an editable file cannot import `params/`). The garage slab's edge carries no court
+  thrust and keeps its 1" FOAMULAR 400 (`GARAGE_SLAB_EDGE_BREAK`). No Type X sheet publishes E: the
   court boards' 525 psi is an ESTIMATE (`modulus_estimated`) and every record carries a
   sensitivity note on it.
 - **NO BOARD IS A FORM FACE (`IsolationBoard.formed_and_stripped`), and that is what opened
@@ -2339,7 +2339,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   **41,162 (76%)**; the beam's board is a `Layer` and names no product or sequence of its
   own, so it INHERITS both from the authored boards on its loop. `thermal_break_transfer`
   now grades all five items OK on the neutral-point demand and the house's lateral path
-  through `SL-B-FLOOR`: slab edge 0.737 governing, global sliding 0.558, beam board 0.541.
+  through `SL-B-FLOOR`: the slab edge's 1/3 sustained-load rule 0.885 governing (bearing
+  0.295), global sliding 0.558, beam board 0.541.
   The five `preferences.toml` suppressions are deleted.
   - The statement is a FIELD SEQUENCE the model cannot enforce: `AN-SG-BLOCKOUTS` is the
     drawing's copy, `tasks.toml` sets the boards on the WALLS visit's `boards` checkpoint
@@ -2347,10 +2348,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `break_blockouts_stripped` is the walk. Drop the flag and the edge goes 1.553 even on
     FOAMULAR 400; leave the flag and drop the slab edge's stated grade and it reads
     **1.966** at the C578 Type X floor. Neither decision closes the item alone.
-  - The slab-edge board's own sheet holds a SUSTAINED load to 1/3 of its rating (13.3 psi →
-    2.21). It is **printed, never graded**: the rule guards against creep under a dead load,
-    and this thrust is an imposed deformation, which creep relieves. FOAMULAR 1000 (100 psi,
-    0.885) is what closes it if a PE reads the rule as governing — an open owner decision.
+  - The slab-edge board's own sheet holds a DEAD load to 1/3 of its rating, and since basis 8
+    that rule is a **graded row** (FOAMULAR 400 read 2.21; 1000 reads 0.885). The old
+    creep-relieves-an-imposed-deformation exemption is retired. It is the row most sensitive
+    to the court boards' ESTIMATED E: over at ~x1.2 (E ≈ 631 psi), 1.162 at x1.5.
   - The unstated-grade fallback is a conservative FLOOR, never an open input: an ungraded row
     can never read OVER, which is how the 4.14 stayed visible through basis 6.
 - **The break cannot go on one purchase order today** — the two closure blocks bill by VOLUME

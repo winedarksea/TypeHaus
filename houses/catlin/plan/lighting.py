@@ -209,17 +209,20 @@ BASEMENT_LIGHTING = [
                      circuit="CKT-LT-BACKUP", room="RM-B-GYM", rotation=deg(90),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
-    # RM-B-FURNACE: same panels. This is the room the electrician and the plumber work in.
-    ElectricalDevice(uid="QTB0008AAA", tag="ED-B-FURNACE-PANEL1", kind=DeviceKind.LIGHT,
-                     position=pt(ft(5), ft(23)), type_ref="ED-T-LT-PANEL",
+    # RM-B-FURNACE: two cans, not 2x4 panels — the ceiling is full of supply, drain and ERV
+    # runs, and each panel sat ~3" off a pipe. Re-typed in place (uids kept). Stations are the
+    # widest gaps: CAN1 ~9" off PR-B-SAUNA-VENT, over the water heater; CAN2 ~12" off
+    # everything, over the ERV and the panelboards. Open ceiling, as the gym's cans.
+    ElectricalDevice(uid="QTB0008AAA", tag="ED-B-FURNACE-CAN1", kind=DeviceKind.LIGHT,
+                     position=pt(ft(8, 3), ft(24)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-B-FURNACE",
                      controlled_by=("ED-B-FURNACE-SW",),
-                     mount=Mount(kind=MountKind.CEILING, drop=inch(1.5))),
-    ElectricalDevice(uid="QTB0009AAA", tag="ED-B-FURNACE-PANEL2", kind=DeviceKind.LIGHT,
-                     position=pt(m(1.52108), m(8.91654)), type_ref="ED-T-LT-PANEL",
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
+    ElectricalDevice(uid="QTB0009AAA", tag="ED-B-FURNACE-CAN2", kind=DeviceKind.LIGHT,
+                     position=pt(ft(3, 3), ft(32)), type_ref="ED-T-LT-CAN4",
                      circuit="CKT-LT-BACKUP", room="RM-B-FURNACE",
                      controlled_by=("ED-B-FURNACE-SW",),
-                     mount=Mount(kind=MountKind.CEILING, drop=inch(1.5))),
+                     mount=Mount(kind=MountKind.CEILING, recessed_into_host_surface=True)),
     # y=23'-0" is mid-room on the east wall face (W-B-STR3, framed 2x6), x=9'-5" to 9'-8 1/8"
     # — 1" proud of the face — which is where you reach it walking in from D-B-FURN.
     ElectricalDevice(uid="QTB000AAAA", tag="ED-B-FURNACE-SW", kind=DeviceKind.SWITCH,
