@@ -1,9 +1,10 @@
-"""``engineering/thermal_break.py`` against ``sunken_garden_court_free_body.md`` §11 (basis 5).
+"""``engineering/thermal_break.py`` against ``sunken_garden_court_free_body.md`` §11i (basis 6).
 
-The note was worked by hand before the module was rewritten; this file reproduces it. Basis 5
-is a pure isolation joint — the 24 dowels deleted, the boards Styrofoam Highload 40 (2.5"
-closure, 2" beam) — and every item is OVER on the thrust its board passes into the house,
-which the stop rule reports rather than designs away (§11h weighs the board).
+The note was worked by hand before the module was rewritten; this file reproduces it. Basis 6
+is a pure isolation joint of ASTM C578 Type X XPS (15 psi, E ESTIMATED at 525), graded on the
+neutral-point demand with the stems' shrinkage credit and the pour locked in, along the
+house's real lateral path. Every item is OVER on the slab edge and global sliding, which the
+stop rule reports rather than designs away.
 """
 
 from __future__ import annotations
@@ -18,34 +19,40 @@ from typehaus.engineering.thermal_break import KIND
 _FOOT, _STEM, _BEAM = ("TB-SG-W1", "TB-SG-E1"), ("TB-SG-W1-STEM", "TB-SG-E1-STEM"), "W-SG-BRKBM"
 _ALL = (*_FOOT, *_STEM, _BEAM)
 
-# (demand, capacity, ratio) per row, hand-worked in §11a-§11d.
+# The lateral path is one set of links for the whole thrust (§11i), on every item.
+_PATH = {
+    "house slab-edge bearing": (93_955.0, 22_680.0, 4.143),
+    "house slab strut compression": (62.14, 2_040.0, 0.0305),
+    "house global sliding": (1.5, 1.238, 1.212),
+    "house far-wall soil bearing": (58_835.0, 130_534.0, 0.451),
+    "court sliding under break thrust": (1.5, 2.644, 0.567),
+}
+# (demand, capacity, ratio) per row, hand-worked in §11i.
 _NOTE = {
     "foot": {
-        "fresh-concrete pressure": (0.6944, 40.0, 0.0174),
-        "thermal movement": (0.053223, 0.071429, 0.7451),
-        "house footing sliding": (1.5, 0.07045, 21.29),
-        "house footing bearing": (20.746, 8.253, 2.514),
-        "court sliding under break thrust": (1.5, 0.4701, 3.191),
+        "fresh-concrete pressure": (0.6944, 15.0, 0.0463),
+        "board strain, pour + closing": (0.034247, 0.071429, 0.4795),
+        **_PATH,
     },
     "stem": {
-        "fresh-concrete pressure": (9.4998, 40.0, 0.2375),
-        "thermal movement": (0.053223, 0.071429, 0.7451),
-        "house insulation bearing": (29.805, 15.0, 1.987),
-        "house wall flexure": (412_024.0, 276_299.0, 1.491),
-        "house wall shear": (17_168.0, 72_377.0, 0.2372),
-        "house floor-line reaction": (21_974.0, 3_285.0, 6.689),
-        "court sliding under break thrust": (1.5, 0.4701, 3.191),
+        "fresh-concrete pressure": (9.4998, 15.0, 0.6333),
+        "board strain, pour + closing": (0.050408, 0.071429, 0.7057),
+        "house insulation bearing": (10.586, 15.0, 0.7057),
+        "house wall flexure": (89_753.0, 276_299.0, 0.325),
+        "house wall shear": (4_497.0, 72_377.0, 0.0621),
+        "house floor-line reaction": (3_167.0, 3_285.0, 0.964),
+        **_PATH,
     },
     "beam": {
-        "fresh-concrete pressure": (10.4329, 40.0, 0.2608),
-        "thermal movement": (0.052635, 0.057143, 0.9211),
-        "house footing sliding": (1.5, 0.03339, 44.92),
-        "house footing bearing": (45.858, 8.253, 5.557),
-        "court sliding under break thrust": (1.5, 0.4701, 3.191),
+        "fresh-concrete pressure": (10.4329, 15.0, 0.6955),
+        "board strain, pour + closing": (0.070685, 0.057143, 1.237),
+        **_PATH,
     },
 }
-_NOTE_SIGMA_PSI = 29.805
-_NOTE_THRUST_LB = {"TB-SG-W1": 20_029.0, "TB-SG-W1-STEM": 39_141.4, _BEAM: 156_957.6}
+_NOTE_X_IN = 187.51
+_NOTE_SIGMA_PSI = {"TB-SG-W1": 6.497, "TB-SG-W1-STEM": 1.086, _BEAM: 8.122}
+_NOTE_LOCK_LB = {"TB-SG-W1": 233.3, "TB-SG-W1-STEM": 6_238.0, _BEAM: 41_162.0}
+_NOTE_TOTAL_LB = 100_288.0
 _NOTE_RUN_IN = 322.565
 
 
@@ -90,26 +97,46 @@ def test_every_row_reproduces_section_11(records, tag) -> None:
     assert [s.name for s in record.limit_states] == list(expected), tag
     for name, (demand, capacity, ratio) in expected.items():
         state = _state(record, name)
-        assert state.demand == pytest.approx(demand, rel=2e-4), (tag, name)
-        assert state.capacity == pytest.approx(capacity, rel=2e-4), (tag, name)
+        assert state.demand == pytest.approx(demand, rel=5e-4), (tag, name)
+        assert state.capacity == pytest.approx(capacity, rel=5e-4), (tag, name)
         assert state.ratio == pytest.approx(ratio, rel=1e-3, abs=6e-4), (tag, name)
 
 
 @pytest.mark.parametrize("tag", _ALL)
-def test_basis_5_is_over_with_nothing_open(records, tag) -> None:
+def test_basis_6_is_over_with_nothing_open(records, tag) -> None:
     record = records[tag]
     assert record.status is Status.OVER
     assert record.missing == ()
-    assert record.basis_version == "5"
-    assert any("RETIRED WITH THE BARS" in n for n in record.notes)
+    assert record.basis_version == "6"
+    notes = " ".join(record.notes)
+    for flag in ("RETIRED WITH THE BARS", "RETIRED WITH THE STRIP", "ESTIMATED MODULUS",
+                 "NEUTRAL POINT", "POUR LOCK-IN", "SENSITIVITY ON E"):
+        assert flag in notes, (tag, flag)
+    assert ("STEM SHRINKAGE" in notes) == (tag in _STEM)
 
 
-def test_the_thrust_and_the_run(records) -> None:
-    for tag, thrust in _NOTE_THRUST_LB.items():
-        assert _input(records[tag], "board_thrust") == pytest.approx(thrust, rel=1e-4)
-    assert _input(records["TB-SG-W1"], "board_stress") == pytest.approx(_NOTE_SIGMA_PSI, abs=1e-3)
+def test_the_neutral_point_the_thrust_and_the_run(records) -> None:
+    for tag, sigma in _NOTE_SIGMA_PSI.items():
+        assert _input(records[tag], "board_stress") == pytest.approx(sigma, abs=1e-3)
+        assert _input(records[tag], "board_lock_in") == pytest.approx(
+            _NOTE_LOCK_LB[tag], rel=1e-3)
+    for tag in _ALL:
+        assert _input(records[tag], "neutral_point") == pytest.approx(_NOTE_X_IN, abs=0.01)
+        assert _input(records[tag], "house_thrust") == pytest.approx(_NOTE_TOTAL_LB, rel=1e-4)
     assert _input(records["TB-SG-W1"], "court_run") == pytest.approx(_NOTE_RUN_IN, abs=1e-3)
     assert _input(records["TB-SG-W1"], "delta_T") == 30.0
+
+
+def test_the_stem_shrinkage_is_aci_209r() -> None:
+    from typehaus.engineering.thermal_break_demand import stem_shrinkage
+
+    assert stem_shrinkage() * 1e6 == pytest.approx(137.42, abs=0.01)
+
+
+def test_the_sensitivity_note_reads_the_higher_modulus(records) -> None:
+    note = next(n for n in records["TB-SG-W1-STEM"].notes if n.startswith("SENSITIVITY"))
+    # §11i's table: the floor line passes at 525 psi and fails at x1.5 and x2.
+    assert "house floor-line reaction 0.964 -> 0.900 / 1.040 / 1.100" in note
 
 
 def _compute_with(ctx, monkeypatch, **values):
@@ -133,6 +160,8 @@ def test_without_a_placement_sequence_the_pour_is_monolithic(ctx, monkeypatch) -
     out = _compute_with(ctx, monkeypatch, placement_sequence_ref=None)
     state = _state(out["TB-SG-W1"], "fresh-concrete pressure")
     assert state.demand == pytest.approx(150 * 117.4375 / 1728.0, abs=1e-4)
+    # And the locked-in pour follows it: a 117" head on the footing board, not 8".
+    assert _input(out["TB-SG-W1"], "board_lock_in") > 10 * _NOTE_LOCK_LB["TB-SG-W1"]
 
 
 def _with_site(ctx, **site_values):
@@ -167,10 +196,10 @@ def test_isolation_board_round_trips() -> None:
 
     board = IsolationBoard(uid="AAAAAAAAAA", tag="TB-RT", position=pt(ft(0), ft(0)),
                            thickness=inch(2.5), height=inch(8), length=inch(84),
-                           elevation=inch(-100), modulus_psi=1_400.0, source="sheet",
-                           placement_sequence_ref="AN-X")
+                           elevation=inch(-100), modulus_psi=525.0, source="sheet",
+                           modulus_estimated=True, placement_sequence_ref="AN-X")
     assert IsolationBoard.model_validate(board.model_dump()) == board
-    assert board.psi == 40.0 and board.material == "xps"
+    assert board.psi == 40.0 and board.material == "xps" and board.modulus_estimated
 
 
 def test_site_inputs_carry_their_provenance() -> None:
