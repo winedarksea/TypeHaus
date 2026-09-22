@@ -118,6 +118,7 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
         id="braced_wall", label="Braced wall lines and lateral bracing",
         authority="building", after=("foundation_backfill",),
         check_ids=("structural.braced_wall_line_spacing", "structural.braced_wall_panels",
+                   "structural.braced_wall_panel_rules",
                    "structural.lateral_racking"),
         on_site=("braced wall plan on site", "hold-downs installed and torqued"),
         milestone="weathertight",

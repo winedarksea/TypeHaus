@@ -337,11 +337,12 @@ def framing_sheet_findings(model: ResolvedModel, level: FramedLevel) -> list[Fin
     """Permit-set datums S-101 must show that the model does not carry."""
     findings = [Finding(
         severity=Severity.WARN, check_id="sheet.framing.braced_wall_lines",
-        message="braced-wall / shear lines are not modelled — Wall.structural_role carries "
-                "bearing intent only, with no bracing method, line spacing, or panel length",
+        message="braced wall lines and panels are drawn on S-103, not here — this sheet "
+                "shows the framing, and R602.10's designation, method and length live on "
+                "the braced wall plan",
         element_tags=(level.floor.tag,), result=Result.UNKNOWN,
-        fix_hint="add a BracedWallLine element (method, length, holdowns) so S-101 can key "
-                 "the lines and their panels",
+        fix_hint="read S-103 for the braced wall plan; structural.braced_wall_panels grades "
+                 "it",
     )]
     if not level.declared_bearing_walls and not level.beams:
         findings.append(Finding(
@@ -404,11 +405,12 @@ def storey_framing_findings(model: ResolvedModel,
         return []
     findings = [Finding(
         severity=Severity.WARN, check_id="sheet.framing.braced_wall_lines",
-        message="braced-wall / shear lines are not modelled — Wall.structural_role carries "
-                "bearing intent only, with no bracing method, line spacing, or panel length",
+        message="braced wall lines and panels are drawn on S-103, not here — this sheet "
+                "shows the framing, and R602.10's designation, method and length live on "
+                "the braced wall plan",
         element_tags=tuple(level.floor.tag for level in levels), result=Result.UNKNOWN,
-        fix_hint="add a BracedWallLine element (method, length, holdowns) so S-101 can key "
-                 "the lines and their panels",
+        fix_hint="read S-103 for the braced wall plan; structural.braced_wall_panels grades "
+                 "it",
     )]
     # Deduped on (check, message): "no blocking is generated for this deck" said six times
     # under one heading is a reader's cue to skip the block. The element tags merge, so the

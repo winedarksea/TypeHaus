@@ -71,6 +71,14 @@ MN_2020 = JurisdictionProfile(
         "covered — neither has anything in the model to grade. Source-side NEC: 705.12 "
         "busbar interconnection and 690.12 PV rapid shutdown; no other article of the NEC "
         "is claimed. "
+        "Wall bracing: R602.10 in full for the wind path — line spacing (R602.10.1.3), "
+        "the required length per line against Tables R602.10.3(1) and (2), minimum panel "
+        "length (Table R602.10.5), panel location (R602.10.2.2/.2.3), the end conditions "
+        "of a continuously sheathed line (R602.10.7) and panel support (R602.10.9). The "
+        "SEISMIC tables R602.10.3(3)/(4) are not implemented, because Minnesota is SDC A "
+        "statewide and R602.10.3 items 1-2 never reach them; R602.10.8's connection and "
+        "fastening rules are printed as conditions of the pass and are NOT graded, the "
+        "model carrying no nail schedule. "
         "Explicitly NOT covered, and not merely unimplemented: fireblocking and "
         "draftstopping (R302.11-.12), crawl spaces (R408), and chimneys and solid-fuel "
         "appliances (R1001-R1004). "
@@ -106,6 +114,10 @@ MN_2020 = JurisdictionProfile(
     # response is low enough across the whole state that IRC Table R301.2.2.1's first row
     # applies, and MN Rules 1309.0301 carries no amendment raising it. Stated here because
     # it is the jurisdiction's fact, not the house's — see JurisdictionProfile for why.
+    #
+    # It is also what takes the seismic half of R602.10 out of scope: Minn. R. 1309 adopts
+    # R602.10 with NO amendment, and R602.10.3 items 1-2 send an SDC A or B building to
+    # Table R602.10.3(1) and its wind adjustments alone (decision #79).
     seismic_design_category="A",
     # IRC Table R401.4.1 presumptive value for sandy/silty clay, the conservative default
     # where no soils report exists. A real geotechnical report supersedes it.
@@ -489,6 +501,18 @@ MN_2020 = JurisdictionProfile(
                        ("structural.deck_beam_span",),
                        ("IRC R507.5", "supplier's published deck beam span table",
                         "AWC NDS 2018 Ch. 3 and 5 (wet service)")),
+        # ** WALL BRACING IS A PERMIT LINE, AND IT IS ENGINEERED WHERE THE HOUSE SAYS SO. **
+        # R602.10 is prescriptive and Minnesota adopts it unamended (decision #79), so the
+        # three checks below are ordinary table reads — except on a line whose walls carry a
+        # `ShearPanelSpec`, where the verdict is N/A with `Authority.ENGINEERED` and the item
+        # is the lateral system's. A reviewer has to be able to see that hand-off on the
+        # checklist, which is what puts this line here rather than only on the braced-wall
+        # inspection.
+        PermitItemSpec("Wall bracing — braced wall lines, panels and end conditions",
+                       ("structural.braced_wall_line_spacing",
+                        "structural.braced_wall_panels",
+                        "structural.braced_wall_panel_rules"),
+                       ("IRC R602.10", "IRC Table R602.10.3(1)", "IRC Table R602.10.5")),
         # `structural.lateral_racking` reaches it when a freestanding deck's lateral system
         # is a cast column FIXED at its base rather than knee braces — R507 grades neither,
         # and a braceless deck at storey height is exactly the thing a reviewer should be

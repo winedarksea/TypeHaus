@@ -240,24 +240,27 @@ def window_order(model: Any) -> list[HandoffItem]:
 
 
 def braced_walls(model: Any) -> list[HandoffItem]:
-    """Braced wall lines. **The panels themselves are not modelled** and the item says so."""
-    from typehaus.emit.draw.bracedwallplan import braced_wall_lines
+    """Braced wall lines, their panels, and what R602.10.3 asks of each storey."""
+    from typehaus.emit.draw.bracedwallplan import braced_wall_summary
+    from typehaus.resolve.braced_walls import braced_wall_lines
 
     out: list[HandoffItem] = []
     for storey in getattr(getattr(model, "plan", None), "storeys", []) or []:
         try:
             lines = braced_wall_lines(model, storey.tag)
+            graded, panels, required, provided = braced_wall_summary(model, storey.tag)
         except Exception:  # noqa: BLE001
             continue
         if not lines:
             continue
         out.append(HandoffItem(
             id=f"braced_walls:{storey.tag}",
-            label=f"{len(lines)} braced wall line(s) on {storey.tag} sheathed and nailed",
-            count=len(lines), sheet_ref="S-201",
-            derived="emit/draw/bracedwallplan.braced_wall_lines — the LINES are derived; "
-                    "the PANELS on them are not modelled at all, so pick and mark them "
-                    "against R602.10 on the drawing before the sheathing goes up"))
+            label=(f"{graded} braced wall line(s) on {storey.tag}, {panels} panel(s), "
+                   f"{provided:.1f} ft provided against {required:.1f} ft required"),
+            count=panels, sheet_ref="S-103",
+            derived="resolve/braced_walls + checks/structural/bracing_eval — the LINES are "
+                    "derived and the PANELS are authored; mark each panel on the wall from "
+                    "S-103 before the sheathing goes up, and hang the hold-downs it names"))
     return out
 
 

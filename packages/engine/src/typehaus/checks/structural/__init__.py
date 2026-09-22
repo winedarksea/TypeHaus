@@ -3,6 +3,7 @@ from __future__ import annotations
 from typehaus.checks.structural import (
     bearing_seat,  # noqa: F401 - registers checks
     braced_wall,  # noqa: F401 - registers checks
+    braced_wall_panels,  # noqa: F401 - registers checks
     cantilever,  # noqa: F401 - registers checks
     checks,  # noqa: F401 - registers checks
     cladding,  # noqa: F401 - registers checks

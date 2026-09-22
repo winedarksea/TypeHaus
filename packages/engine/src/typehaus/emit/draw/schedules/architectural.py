@@ -284,7 +284,9 @@ SYMBOLS = (
     ("K1 in a circle", "keyed note, listed in the notes band on that sheet (keyed_notes.py)"),
     ("Split circle, 1 over A-501",
      "detail callout: detail 1, drawn on sheet A-501 (callouts.py)"),
-    ("Heavy red line on S-103.1", "braced wall line (bracedwallplan.py)"),
+    ("Medium red line on S-103.1", "braced wall line (bracedwallplan.py)"),
+    ("Heavy red line offset beside it",
+     "braced wall panel, tagged with its width and R602.10.4 method; drawn light where it is under Table R602.10.5's minimum and contributes nothing"),
     ("Triangle with a level name", "storey datum, on sections and elevations"),
     ("Hatched band in a wall cut", "material, named in that sheet's own legend"),
 )

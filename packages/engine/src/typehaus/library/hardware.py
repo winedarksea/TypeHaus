@@ -43,11 +43,11 @@ from typehaus.hardware.catalog import (
     ROLE_DECK_EQUIPMENT_ANCHOR,
     ROLE_EMBEDDED_BEAM_ANCHOR,
     ROLE_EMBEDDED_STRAP_HOLDOWN,
-    ROLE_FLOOR_TIE_HOLDOWN,
     ROLE_EQUIPMENT_PAD_ANCHOR,
     ROLE_EXPOSED_FASTENER_PANEL_SCREW,
     ROLE_EXTERIOR_INSULATION_SCREW,
     ROLE_FACE_MOUNT_JOIST_HANGER,
+    ROLE_FLOOR_TIE_HOLDOWN,
     ROLE_FLOOR_TRUSS_HANGER,
     ROLE_GABLE_END_TIE,
     ROLE_GABLE_TRUSS_ANCHOR,
@@ -791,6 +791,12 @@ STHD14RJ_STRAP_HOLDOWN = StructuralHardware(
     # arise here (it does for the STHD10: 4,075 -> 3,350 at a corner).
     allowable=AllowableLoads(
         uplift_lb=4410.0,
+        # ESR-2920 §4.1.1 says the tabulated loads are ASD and already include the NDS
+        # load-duration factor, and never states which. §5.8 limits the part to tension
+        # from WIND OR EARTHQUAKE only, and 1.6 is the factor those two carry — so the
+        # number is the report's own scope read back, not a choice, and it is recorded
+        # rather than left None so nothing downstream re-applies a duration increase.
+        load_duration_factor=1.6,
         species="sawn lumber SG >= 0.42 by Table 1 footnote 8 (the nail counts are set at "
                 "0.42), which is the SPF this house frames — but §3.2.3 of the same report "
                 "says SG >= 0.50. The report contradicts itself and the conflict is recorded "
@@ -809,6 +815,39 @@ STHD14RJ_STRAP_HOLDOWN = StructuralHardware(
                   "bracing the tabulated capacity must equal or exceed what R602.10 asks "
                   "for, which is 800 lbf. C_D is included per §4.1.1; the report states no "
                   "number for it"),
+    ),
+)
+
+#: The same report's 6-inch stem-wall rows, for a strap cast into an ICF-6 core rather than
+#: into an 8-inch poured wall. Separate record because the allowable belongs to the WALL the
+#: strap is cast in, not only to the part: 4,935 / 4,935 / 3,065 lbf (midwall / corner /
+#: endwall) at 6 in against 5,285 / 5,285 / 4,410 at 8 in.
+STHD14_STRAP_HOLDOWN = StructuralHardware(
+    tag="simpson-sthd14-embedded-strap-holdown",
+    name="STHD14 embedded strap-tie holdown",
+    role=ROLE_EMBEDDED_STRAP_HOLDOWN,
+    manufacturer=_SIMPSON,
+    model="STHD14",
+    source="Simpson Strong-Tie STHD14 — the 26-1/8\" strap, cast 14\" into the pour and "
+           "nailed straight up into the studs where the wall bears on the concrete with no "
+           "floor band between (catlin's garage, on its ICF stem)",
+    allowable=AllowableLoads(
+        uplift_lb=3065.0,
+        # ESR-2920 §4.1.1 says the tabulated loads are ASD and already include the NDS
+        # load-duration factor, and never states which. §5.8 limits the part to tension
+        # from WIND OR EARTHQUAKE only, and 1.6 is the factor those two carry — so the
+        # number is the report's own scope read back, not a choice, and it is recorded
+        # rather than left None so nothing downstream re-applies a duration increase.
+        load_duration_factor=1.6,
+        species="sawn lumber SG >= 0.42 by Table 1 footnote 8; see the STHD14RJ record for "
+                "the report's own contradiction with its §3.2.3",
+        fasteners="30 - 16d sinker nails into a double 2x or larger vertical member; 14 in "
+                  "embedment in a 6 in minimum stem wall with one No. 4 bar 3-5 in below "
+                  "the top of the pour (§4.2)",
+        citation=("ICC-ES ESR-2920 Table 1, 6 in minimum stem wall, STHD14/STHD14RJ row, "
+                  "Wind and SDC A&B, ENDWALL column (the lowest of the three): 3,065 lbf, "
+                  "uncracked and cracked alike; midwall and corner both read 4,935. Read "
+                  "2026-09-22"),
     ),
 )
 
@@ -2168,6 +2207,7 @@ STRUCTURAL_HARDWARE: tuple = (
 CAPACITY_ONLY_RECORDS: tuple = (
     ABU66SS_POST_BASE,
     STHD14RJ_STRAP_HOLDOWN,
+    STHD14_STRAP_HOLDOWN,
     H25ASS_HURRICANE_TIE,
     APVKB_KNEE_BRACE,
     HUCQ_CONCRETE_HANGER,

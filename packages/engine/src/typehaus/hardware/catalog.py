@@ -167,6 +167,12 @@ ROLE_THROUGH_PANEL_PIPE_STRAP = "through_panel_pipe_strap"
 # strap and the APVKB knee brace are different products for different joints even though
 # the KBS family is marketed for both.
 ROLE_BEAM_HOLD_DOWN = "beam_hold_down"
+# The pair of screw tension ties joining an upper storey's braced wall panel end to the
+# post below it, through the floor band on a threaded rod (IRC R602.10.9). Its own role and
+# not ROLE_EMBEDDED_STRAP_HOLDOWN: nothing here is cast into concrete, and the two parts
+# are selected against different reports (ESR-2330 screws into wood, ESR-2920 a strap in a
+# pour).
+ROLE_FLOOR_TIE_HOLDOWN = "floor_tie_holdown"
 # The gasketed stainless screw that holds a multiwall glazing sheet down to its framing.
 ROLE_GLAZING_PANEL_FASTENER = "glazing_panel_fastener"
 # The gasketed screw that fixes an exposed-fastener metal wall/roof panel through its face
