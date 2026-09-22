@@ -238,11 +238,36 @@ DUCTS_ERV_BASEMENT = [
     # RM-B-STAIR's ceiling polygon reaches over its west half. A lane at 17'-9" is inside
     # the pour with 5" of cover and `mep.run_in_slab` says so. 17'-0" leaves 4" between the
     # duct's east face and the concrete.
+    #
+    # ** IT RISES 6 1/8" AT x=17'-0" AND CROSSES `W-B-CS3` OVER `D-B-GYM`'s HEADER, NOT
+    # THROUGH IT (2026-09-22). ** At -25 7/16" the east leg bored that header 4.00" — over
+    # half the depth of a 2-2x8 carrying the gym door's whole tributary into two jacks, and
+    # 7 7/16" from the north jack face. `W-B-CS3` is a 46" BEARING wall with a 36" opening
+    # in it and has no clear bay at all, so there is no lane to move sideways into. What it
+    # does have is the band ABOVE the header: the header tops out at -22.19" and the double
+    # top plate starts at -16.44", which is 5 3/4" of open wall, and at y=13'-0" the nearest
+    # cripples stand at y=12'-4 3/16" and y=13'-7 7/16" — 7.8" either side of a 4" duct.
+    # Centred at -19 5/16" (90 1/8" over the slab) the duct leaves 7/8" of air to the header
+    # top and 7/8" to the plate, and **cuts nothing at all**: no bore, no notch, no header.
+    #
+    # ** THIS IS NOT THE SHORT-CRIPPLE GAP AND THE DIFFERENCE IS THE WHOLE POINT. **
+    # `notes/framing_bore_limits.md` §6a records that `stud_bore` would PASS a 4" hole
+    # through a 6 9/16" cripple, leaving two 1.28" slivers, and forbids any route taken on
+    # the strength of that PASS. That is a hole DRILLED IN a cripple. This duct passes
+    # BETWEEN two whole cripples in air the framing never occupied — the ordinary
+    # over-the-header detail — and the members it clears are graded, not exempted.
+    #
+    # The rise costs two bends on the supply side, which is not the governing one, and it
+    # buys 6" of headroom in RM-B-GYM (`exposed_services`) rather than spending any.
+    # The cast sleeve through `W-B-CS2`'s 12" pour was the other candidate and is NOT
+    # taken: `mep.sleeve_coverage` walks `pipe_runs` only, so a duct through concrete would
+    # be an ungraded penetration — a worse answer than a graded crossing of air.
     DuctRun(uid="CND5TE40W0", tag="DU-B-ERV-R-GYM", system=DuctSystem.SUPPLY,
             path=(pt(ft(7, 3), ft(30, 2)), pt(ft(7, 3), ft(29, 6)),
                   pt(ft(7, 3), ft(29, 6)), pt(ft(17), ft(29, 6)),
-                  pt(ft(17), ft(13)), pt(ft(19), ft(13))),
-            elevations=(ft(7, 6), ft(7, 6), inch(84), inch(84), inch(84), inch(84)),
+                  pt(ft(17), ft(13)), pt(ft(17), ft(13)), pt(ft(19), ft(13))),
+            elevations=(ft(7, 6), ft(7, 6), inch(84), inch(84), inch(84),
+                        inch(90.125), inch(90.125)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=18),
     # The play room's radial leaves the plenum's EAST END, 18" nearer its own register than
     # the centre it used to start from and out of the other two supply radials' way at
