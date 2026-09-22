@@ -50,8 +50,11 @@ _PANEL_2 = "ED-B-PANEL-2"
 
 CIRCUITS = (
     # --- 240V dedicated loads (electrical_notes.md line 4) ---------------------------
-    Circuit(uid="CKT001AAAA", tag="CKT-RANGE", slot=1, panel_ref=_PANEL, breaker_amps=50, poles=2,
-            nema="14-50R", load_va=12000, description="Kitchen range"),
+    # LG LSIL6336FE nameplate: 11.9 kW at 240 V, 40 A minimum circuit (LG spec sheet,
+    # plan/appliance_types.py). A 14-50R is permitted on a 40 A circuit (NEC Table
+    # 210.21(B)(3)). 220.82(B)(3) counts the nameplate, not the breaker.
+    Circuit(uid="CKT001AAAA", tag="CKT-RANGE", slot=1, panel_ref=_PANEL, breaker_amps=40, poles=2,
+            nema="14-50R", load_va=11900, description="Kitchen range"),
     # load_va is the *nameplate*, 830 W (LG DLHC5502V ventless heat-pump dryer, see
     # ED-M-LAUNDRY-DR1 in plan/electrical.py) — not the 5,000 VA the 14-30R receptacle
     # type carries. 220.82(B)(3) counts a dryer's nameplate rating; 220.54's 5,000 VA
@@ -141,8 +144,11 @@ CIRCUITS = (
     # 3.2' from the kitchen sink. E3902.10 reaches it despite being 240V (it covers 125V
     # through 250V receptacles at 50A or less), and a 2-pole GFCI breaker is the only
     # place to protect a 6-20R.
+    # load_va 3,000 is a typical 240 V kettle nameplate; replace it with the purchased unit's
+    # rating. The old 3,840 was the breaker (20 A x 240 V), not a load. Run time (~5 min/day)
+    # earns nothing in 220.82; only a 120 V kettle on a small-appliance circuit leaves the count.
     Circuit(uid="CKT011AAAA", tag="CKT-KETTLE", slot=14, panel_ref=_PANEL, breaker_amps=20, poles=2,
-            nema="6-20R", gfci=True, load_va=3840,
+            nema="6-20R", gfci=True, load_va=3000,
             description="Kitchen kettle outlet (6-20R half)"),
     # The EG4 12kPV's grid port, at the opposite end of the bus from the main (120% rule
     # headroom is why the panel is a 225A bus on a 200A main). Both PV and battery reach the
@@ -440,7 +446,7 @@ CIRCUITS = (
     # `electrical.panel_spaces` reconcile the count; do not hand-count), and it adds 0 VA to the
     # 220.82 summary because bathroom branch circuits are not in 220.82(B)(1)'s list — which
     # mattered when the margin was 7.9 A against a 200 A service, and is simply free now
-    # that the Class 320 service leaves 52.6 A (267.4 A of 320 A).
+    # that the Class 320 service leaves 54.2 A (265.8 A of 320 A).
     Circuit(tag="CKT-BATH-ATTIC", slot=41, panel_ref=_PANEL, breaker_amps=20, poles=1,
             gfci=True, afci=True, load_va=0,
             description="Attic guest bath receptacle"),
@@ -453,7 +459,7 @@ CIRCUITS = (
     # ** 15 A IS THE MANUFACTURER'S NUMBER, NOT THE LOAD. ** The heater draws 1.1 A / 65 W —
     # less than a light bulb. `load_va` is that 65, because the 220.82 summary has to see
     # what the house actually draws, and sizing it at the breaker would invent 1,735 VA of
-    # demand out of a required circuit rating. `electrical.service_load` has 52.6 A of margin
+    # demand out of a required circuit rating. `electrical.service_load` has 54.2 A of margin
     # against the 320 A service and 65 VA is 0.3 A of it.
     #
     # GFCI AT THE BREAKER, not a GFCI device, and here that is not just the house convention
@@ -506,8 +512,8 @@ CIRCUITS = (
     # that one is a fixed appliance rather than something plugged into a bathroom outlet.
     #
     # ** WHAT THE OTHER READING COSTS, MEASURED RATHER THAN ESTIMATED: ** at load_va=1400 on
-    # both, `electrical.service_load` goes 267.4 A -> 272.1 A against the 320 A service —
-    # 2 x 1,400 VA through 220.82(B)'s 40% remainder factor, 4.7 A of a 52.6 A margin.
+    # both, `electrical.service_load` goes 265.8 A -> 270.5 A against the 320 A service —
+    # 2 x 1,400 VA through 220.82(B)'s 40% remainder factor, 4.7 A of a 54.2 A margin.
     # It still PASSES. So this zero is not load-hiding to make a check go green; it is a
     # coincidence judgement, and the revert is two numbers. ** Revisit it if anything with a
     # real duty cycle ever joins these circuits ** — they are 20 A and they feed one outlet
@@ -536,9 +542,10 @@ CIRCUITS = (
 # no service constraint left to satisfy it buys nothing.)
 #
 # The answer was the service, not a $2-3k listed PCS: a Class 320 HDLB meter-main with two
-# 200 A mains. ** 267.4 A of unmanaged 220.82 demand against 320 A **, no software in the
-# calculation at all. See DESIGN-LOG.md "Electrical service" for the derivation, the three
-# options priced, and why there is no such thing as a 225 A service.
+# 200 A mains. ** 265.8 A of unmanaged 220.82 demand against 320 A **, no software in the
+# calculation at all (267.4 A before the 2026-09-22 range/kettle nameplate fix). The route
+# back to 200 A is measured in plans/cost-options.md. See DESIGN-LOG.md "Electrical service"
+# for the derivation, the three options priced, and why there is no 225 A service.
 #
 # Re-adding a group is a real decision, not a tidy-up: the engine now refuses a credit
 # whose basis does not hold (takeoff/electrical.py::_credit_refusal), so a ``pcs`` without

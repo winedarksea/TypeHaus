@@ -108,8 +108,8 @@ not instruction: when it disagrees with this file or the model, it is the one th
     reaches for a spare bay.
   - **`load_va=0` IS A COINCIDENCE JUDGEMENT, NOT AN OMISSION** (owner's call). Each seat is
     ~1,400 VA and only while its instantaneous heater runs — seconds per use. At the other
-    reading of 220.82 (nameplate under (B)(3)) `electrical.service_load` goes 267.4 A ->
-    272.1 A against the 320 A service and still passes, so this is not load-hiding to make a
+    reading of 220.82 (nameplate under (B)(3)) `electrical.service_load` goes 265.8 A ->
+    270.5 A against the 320 A service and still passes, so this is not load-hiding to make a
     check green. **Revisit it if anything with a real duty cycle joins these circuits.**
   - **THE WARM WATER IS THE ELECTRICITY.** An S5 heats from the COLD supply instantaneously.
     No WC in this house takes a hot run and none should — `needs` is `WATER_COLD` on all six
@@ -2344,8 +2344,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   gap between them is 6 1/2" wide. **Nothing grades a device-on-device overlap or NEC 110.26
   working space**; both are held by the measurements in `plan/mep_electrical.py`. Feeder 2 carries `CKT-SPA`, `CKT-SAUNA`, `CKT-EV-1450`, `CKT-EV-620` and nothing
   else. `electrical.panel_feeder_load` grades each panel's own 220.82 demand against its own
-  main (157.5 A and 117.7 A of 200 A); `electrical.service_load` grades the house against the
-  meter (267.4 A of 320 A, **52.6 A of margin**).
+  main (155.9 A and 117.7 A of 200 A); `electrical.service_load` grades the house against the
+  meter (265.8 A of 320 A, **54.2 A of margin**). `CKT-RANGE` is 40 A / 11,900 VA (the LG
+  nameplate) and `CKT-KETTLE` 3,000 VA (a typical nameplate, not the breaker) — replace the
+  kettle's with the purchased unit's. The ways back to 200 A are in `plans/cost-options.md`.
 - **Both panels state `service_amps=200` on their types, and must keep doing so.**
   `code.NEC_705_12_interconnection` reads the panel's own main first and falls back to the
   service size — drop the field and the ESS backfeed gets graded against 320 A on a 225 A

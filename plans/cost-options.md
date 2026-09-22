@@ -135,6 +135,7 @@ Every live scope or spec change, one row each. **These do not add up** — see *
 | **Engineer the garden footing base and stone bed** | $3,200–8,000 | arithmetic | no | court-shortening | Nothing, if it stamps. **Now the highest-value item in this table per dollar.** The whole sliding margin rides on μ = 0.35 from the washed-stone bed against 0.25 on the native GM, and a boring that supported 0.40 on the native soil would take the no-stone case from 1.16 to 1.86 — a gain of 0.70, four times the 0.17 the 2026-09-10 shortening spent |
 | HVAC System 3 folded into the multi-zone | $3,000–5,400 | ablation + line-set allowance | no | — | The Sapphire's true VFD soft-start is what lets that zone run off the battery |
 | Refrigerator columns → one 36" side-by-side | $3,000–4,500 | arithmetic | no | — | All-fridge/all-freezer capacity, and 21" of layout |
+| **Service Class 320 → 200 A meter-main** | $2,500–5,000 | arithmetic: `ED-T-METER` delta + `ED-T-PANEL-2` + `electrical-service-feeders-4-0-al-ser` (DESIGN-LOG 2026-09-12) | no | spa, EV, HP1 aux heat | The spa and one EV outlet, slower charging, and a ~4.5 A margin. **Not reachable by the obvious cuts alone** — see the ladder below |
 | Garage stem → frost-protected shallow foundation | $2,000–3,900 | arithmetic | no | — | The option of ever leaving the garage unheated |
 | Elm tudor posts → paint/stain-grade species | $1,300–4,500 | `[timber]` | no | — | 6-1/8" S4S elm is not a purchasable article. **Get a quote first** — the low end is only $2,006 |
 | Trimless interior door → standard cased prehung | $915–2,045 | `[openings]` | no | trim simplification | A 3-trade sequencing item; the frame is set before drywall, so it cannot be reversed later |
@@ -152,6 +153,29 @@ scaled by 0.833 / 0.917. **Not built.** It is not a cost row, it is a lot-fit ro
 house is one of four structures and only it shrinks. Not counted: 18' clear spans become
 ~14', so the 3,556 LF of 11-7/8" I-joist could drop a depth. **The garage (24' wide) and the
 sunken garden (~21' outer) already fit a 30' band** — only the house has to move.
+
+**Service Class 320 → 200 A** (measured 2026-09-22, each step a sandbox copy of catlin
+at 0 FAIL, read off `electrical.service_load`). The owner has kept Class 320, the spa and
+both EV circuits for now; this is the route back if that changes. **Dropping the spa and the
+6-20 EV outlet is not enough on its own.**
+
+| step | demand |
+|---|---|
+| today (after the 2026-09-22 range/kettle nameplate fixes) | 265.8 A |
+| − `CKT-EV-620` (EV counted at 100%) | −16.0 A |
+| − `CKT-SPA` (11.5 kVA × 40%; keep `CD-B-SPA` conduit as a pre-wire) | −19.2 A |
+| = the owner's cuts | 230.7 A: **not enough** |
+| + HP1 aux-heat `hvac_interlock` (220.82(C), no listed device; the lockout is already set) | −19.2 A → 211.5 A |
+| + `CKT-EV-1450` 50 → 30 A (24 A / 5.8 kW charging) | −16.0 A → **195.5 A** ✓ |
+| alt: `CKT-EV-1450` → 40 A, plus a 120 V kettle (drop `CKT-KETTLE`) | → 198.5 A ✓ (1.5 A margin) |
+| alt: a listed UL 3141 PCS on the EV instead of downsizing it | ~$2.1–3.5k of hardware |
+
+**Cost of the cut:** the spa becomes a future-only conduit, one EV outlet goes, charging
+slows, and the margin is ~4.5 A (7.9 A the last time this house was at 200 A). **What is left**
+is the sauna (4.2 kVA at 40%) and the heat pumps at 100%. The size of each lever comes from
+the term structure in `takeoff/electrical.service_load_summary`: a heat-pump or EV circuit
+comes off at 100%, and anything in the remainder at 40%. For the earlier four-option table
+(PCS, interlock, 220.60), see `houses/catlin/DESIGN-LOG.md` "Electrical service".
 
 **Unpriced, therefore not a row:** French doors → sliders where the swing is not needed
 (~15–25% of $7,000–15,800, needs a quote). It lives in `plans/TODO.md` until it has a number.

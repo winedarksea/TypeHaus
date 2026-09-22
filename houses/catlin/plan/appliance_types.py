@@ -111,9 +111,9 @@ LG_WASHTOWER = ApplianceType(
 # carries the cooking load. Retyping from the library's ``APPL-ELECTRIC-RANGE`` narrows an
 # allowance that covered coil, radiant and induction alike to the one that was meant.
 #
-# The 40A minimum circuit is *below* CKT-RANGE's 50A 2-pole breaker (plan/circuits.py slot
-# 1), which is the right direction: a 50A branch feeds a 40A appliance, and the 14-50R the
-# range's cord lands in is the receptacle a 50A circuit takes. No electrical change.
+# CKT-RANGE (plan/circuits.py slot 1) is a 40A 2-pole breaker at this 40A minimum, with
+# load_va at the 11.9 kW nameplate. The 14-50R the cord lands in is permitted on a 40A
+# circuit (NEC Table 210.21(B)(3)).
 LG_INDUCTION_RANGE = ApplianceType(
     tag="APPL-LG-INDUCTION-RANGE", name="LG LSIL6336FE 30\" induction slide-in range",
     product_ref="PROD-LG-LSIL6336FE",

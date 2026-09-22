@@ -3070,6 +3070,11 @@ one of them was about length.
 
 ## Electrical service
 
+**2026-09-22 — nameplate correction, 267.4 A -> 265.8 A.** `CKT-RANGE` 50 A / 12,000 VA ->
+40 A / 11,900 VA (LG LSIL6336FE: 11.9 kW, 40 A minimum circuit); `CKT-KETTLE` 3,840 -> 3,000 VA
+(3,840 was 20 A x 240 V, the breaker). Feeder 1 157.5 -> 155.9 A. Class 320, spa and both EV
+circuits kept; the measured route back to 200 A is in `plans/cost-options.md`.
+
 ### BLD-06 answered: the service went Class 320 and load management left the house (2026-09-12)
 
 **The reviewer's premise held, and their arithmetic did not.** BLD-06 said the 191.4 A
