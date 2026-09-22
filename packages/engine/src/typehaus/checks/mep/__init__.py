@@ -23,6 +23,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     fitting_pattern,
     hvac,
     hvac_sizing,
+    landscape_drainage,
     lighting,
     open_web_panel,
     plumbing,

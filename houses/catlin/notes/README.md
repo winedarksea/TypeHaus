@@ -51,6 +51,10 @@ each is kept because the *rule* it established usually outlives the design that 
 | `block_load_basis.md` | `checks/building_science/ground.py` (Latta basement wall + floor, the ASHRAE 90.1 slab F-factors), the local-grade wall split in `energy_load.py` + `resolve/site_earth.strip_grade_elevation_m`, the raked-wall area and the air side (`tests/test_energy_ground.py`, `tests/test_energy_envelope_scope.py`) | live |
 | `solar_gain_basis.md` | `checks/building_science/solar.py` — the ASHRAE clear-sky irradiance, the single house-wide peak hour, the shading planes, the AED excursion, Manual J internal gains and the latent split, and the roof's sol-air excess (`tests/test_energy_solar.py`). §6 closed 2026-09-18 when the owner stated the roof panel's colour (Linen White, SR 0.73) | live |
 | `heat_pump_turndown.md` | `checks/mep/hvac_sizing.py` (`mep.heat_pump_turndown`), the zone load decomposition in `takeoff/hvac.HvacZone.heating_load_at_outdoor_f`, and `capacity_at` (`tests/test_heat_pump_turndown.py`, `tests/test_heat_pump_ratings.py`). §7 records the owner's 2026-09-18 decisions (all findings ADVISORY, System 3 kept, System 1's cooling over-size accepted); §8 lists what stays open | live |
+| `rain_garden_sizing.md` | `resolve/roof_catchment.py`, `resolve/rain_garden.py`, `checks/mep/landscape_drainage.py` — the basin's catchment, prismoidal volume, setbacks and the two leader extensions (`tests/test_catlin_gardens.py`) | live |
+| `sidewalk_layout.md` | the sidewalk's per-leg areas, pocket stations, concrete and Class 5 quantities and the R401.3 falls (`tests/test_catlin_gardens.py`) | live |
+| `grid_garden.md` | `resolve/landscape.py::grid_cells` / `accent_type` — the bluestem grid and basin bed counts (`tests/test_catlin_gardens.py`) | live |
+| `espalier_trellis.md` | `resolve/landscape.py::trellis_post_stations`, `site.utility_clearance` (`tests/test_catlin_gardens.py`) | live |
 
 ### Published-table reads
 

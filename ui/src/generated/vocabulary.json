@@ -94,6 +94,7 @@
     "king": 11699540,
     "landing": 12094556,
     "landing_framing": 10712639,
+    "leader_extension": 15132384,
     "led_tape": 16772024,
     "lining": 15131611,
     "main_shutoff": 12096583,
@@ -113,11 +114,14 @@
     "pipe_vent": 14737627,
     "pipe_water_cold": 3368639,
     "pipe_water_hot": 13385784,
+    "plant": 7046476,
     "plate": 11041356,
     "rafter": 11370319,
     "railing": 13422548,
     "railing_glass": 9418697,
     "railing_infill": 13422548,
+    "rain_garden_media": 6048310,
+    "rain_garden_stone": 8749176,
     "raked_plate": 11041356,
     "ridge_beam": 9199928,
     "ridge_cap": 14277598,
@@ -143,6 +147,7 @@
     "sump": 5001815,
     "thermal_break": 15895590,
     "tread": 11699540,
+    "trellis": 9205852,
     "trimmer": 11041356,
     "truss_block": 11831900,
     "truss_blocking": 10712639,
@@ -248,6 +253,7 @@
     "king": 11699540,
     "landing": 12094556,
     "landing_framing": 10712639,
+    "leader_extension": 15132384,
     "led_tape": 16772024,
     "lining": 15131611,
     "main_shutoff": 12096583,
@@ -267,11 +273,14 @@
     "pipe_vent": 14737627,
     "pipe_water_cold": 3368639,
     "pipe_water_hot": 13385784,
+    "plant": 7046476,
     "plate": 11041356,
     "rafter": 11370319,
     "railing": 13422548,
     "railing_glass": 9418697,
     "railing_infill": 13422548,
+    "rain_garden_media": 6048310,
+    "rain_garden_stone": 8749176,
     "raked_plate": 11041356,
     "ridge_beam": 9199928,
     "ridge_cap": 14277598,
@@ -297,6 +306,7 @@
     "sump": 5001815,
     "thermal_break": 15895590,
     "tread": 11699540,
+    "trellis": 9205852,
     "trimmer": 11041356,
     "truss_block": 11831900,
     "truss_blocking": 10712639,
@@ -399,6 +409,9 @@
     "gutter": [
       "drainage"
     ],
+    "leader_extension": [
+      "drainage"
+    ],
     "main_shutoff": [
       "plumbing"
     ],
@@ -432,6 +445,9 @@
     "pipe_water_hot": [
       "plumbing"
     ],
+    "plant": [
+      "landscaping"
+    ],
     "railing": [
       "stairs"
     ],
@@ -440,6 +456,12 @@
     ],
     "railing_infill": [
       "stairs"
+    ],
+    "rain_garden_media": [
+      "drainage"
+    ],
+    "rain_garden_stone": [
+      "drainage"
     ],
     "ridge_cap": [
       "roofing"
@@ -470,6 +492,9 @@
     ],
     "thermal_break": [
       "concrete"
+    ],
+    "trellis": [
+      "landscaping"
     ],
     "vacuum_breaker": [
       "plumbing"
@@ -514,6 +539,7 @@
     "glazing": "openings",
     "glazing_trim": "openings",
     "gutter": "drainage",
+    "leader_extension": "drainage",
     "main_shutoff": "plumbing",
     "pad": "concrete",
     "panel_strap": "roofing",
@@ -525,9 +551,12 @@
     "pipe_vent": "plumbing",
     "pipe_water_cold": "plumbing",
     "pipe_water_hot": "plumbing",
+    "plant": "landscaping",
     "railing": "stairs",
     "railing_glass": "stairs",
     "railing_infill": "stairs",
+    "rain_garden_media": "drainage",
+    "rain_garden_stone": "drainage",
     "ridge_cap": "roofing",
     "ro_stub": "plumbing",
     "screen_slat": "siding",
@@ -538,6 +567,7 @@
     "soffit": "drywall",
     "sump": "drainage",
     "thermal_break": "concrete",
+    "trellis": "landscaping",
     "vacuum_breaker": "plumbing",
     "vent": "mechanical",
     "wall_corner": "siding",

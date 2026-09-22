@@ -43,6 +43,7 @@ MATERIAL_TRADE_PATTERNS: tuple[tuple[str, str], ...] = (
     ("geotextile*", "landscaping"),
     ("retaining-block*", "landscaping"),     # segmental retaining wall units
     ("capillary-break-stone", "earth"),
+    ("mndot-class-5-base", "earth"),         # the sidewalk's base course
     # A crushed-stone FOOTING is structure, but it is not a pour and no concrete sub places
     # it: it is the same crew, the same hole and the same plate compactor as the beddings
     # above and the capillary break beside it, and it is inspected at the same hold. Sending

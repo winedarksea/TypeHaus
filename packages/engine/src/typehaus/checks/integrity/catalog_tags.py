@@ -22,7 +22,7 @@ CATALOGS = (
     "railing_types", "fixture_types", "appliance_types", "equipment_types",
     "register_types", "duct_product_types", "electrical_device_types", "circuits",
     "load_managements",
-    "transitions", "construction_rules",
+    "transitions", "construction_rules", "plant_types",
 )
 
 

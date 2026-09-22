@@ -11,6 +11,7 @@ from typehaus import (
     AlarmKind,
     DiaphragmSpec,
     Door,
+    DischargeExtension,
     Downspout,
     EaveGutter,
     EaveTrim,
@@ -454,12 +455,19 @@ _GARAGE_LEADER_E = Downspout(
 )
 # No `uid=` on purpose: this file is `# haus: editable`, so `haus fmt` visits it and mints
 # an ABSENT uid. It skips `uid=""`, which is why the field is omitted rather than blanked.
+# Buried 4" solid PVC west into RG-W-BASIN (params/landscape_gardens.py), ending in a
+# pop-up emitter on the basin floor; notes/rain_garden_sizing.md works the fall.
 _GARAGE_LEADER_W = Downspout(
     uid="WB6YFR9QB2", tag="TR-G-LEADER-W",
     position=pt(ft(4, 8.75), ft(68, 5.875)),    # north end, clear of the west screen
     top_elevation=ft(7, 6),
     bottom_elevation=ft(-1, -6),
     diameter=inch(3), material="metal-dark-kstyle", gutter_ref="RF-GARAGE",
+    discharge_ref="RG-W-BASIN",
+    extension=DischargeExtension(
+        path=(pt(ft(4, 8.75), ft(68, 5.875)), pt(ft(-3), ft(68, 5.875))),
+        diameter=inch(4), material="pvc-sdr35",
+        inlet_invert=ft(-3, -5), outlet_invert=ft(-3, -8)),
 )
 
 ROOFS = [

@@ -59,6 +59,7 @@ from typehaus.takeoff.mep import (
 )
 from typehaus.takeoff.openings import opening_takeoff
 from typehaus.takeoff.placeables import floor_heat_takeoff, placeables_takeoff
+from typehaus.takeoff.planting import planting_takeoff
 from typehaus.takeoff.plumbing import fitting_takeoff
 from typehaus.takeoff.plumbing_specialties import (
     install_parts_takeoff,
@@ -161,6 +162,8 @@ def bill_of_materials(
         # Stormwater by the foot and the piece — gutter and leader were billed only as
         # cubic feet of aluminium, which is not how either is bought.
         "drainage": drainage_takeoff(model),
+        # Illustrative planting, counted and deliberately unpriced (→ takeoff/planting.py).
+        "planting": planting_takeoff(model),
         # The rest of the edge-run family by the foot: fascia, soffit, flashing and the
         # roof's derived formed trim. Same gap as drainage — flashing billed as cubic feet
         # of aluminium is not an order.

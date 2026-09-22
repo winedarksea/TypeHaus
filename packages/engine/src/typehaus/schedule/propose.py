@@ -83,7 +83,7 @@ FAMILY_ORDER: dict[str, tuple[str, ...]] = {
     "general": ("permits", "site"),
     "earth": ("excavation", "backfill", "grading"),
     "concrete": ("footing", "thermal_break", "wall", "column", "slab", "flatwork"),
-    "drainage": ("drain_tile", "drywell", "gutter"),
+    "drainage": ("drain_tile", "drywell", "rain_garden_media", "leader_extension", "gutter"),
     "landscaping": ("slab", "kbg-sod"),
     "framing": ("post", "beam", "wall_structure", "joist", "truss", "sheathing"),
     "masonry": ("wall", "wall_structure"),

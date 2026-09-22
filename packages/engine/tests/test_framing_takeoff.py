@@ -228,6 +228,8 @@ def test_bill_of_materials_carries_every_section(catlin_model) -> None:
                         # Stormwater by the foot and the piece: gutter, leader, trench,
                         # soakaway. Billed only as cubic feet of aluminium and stone before.
                         "drainage",
+                        # Illustrative planting, counted and unpriced (takeoff/planting.py).
+                        "planting",
                         # The supply system's protection budget and the hot-line
                         # insulation, neither of which anything could see before
                         # `PipeAccessory` and `PipeRun.insulation` existed.
@@ -355,6 +357,8 @@ _BOM_COVERAGE: dict[str, tuple[str, ...]] = {
     # The work surfaces, by the square foot a slab yard quotes. Not "hardwood": a
     # countertop is a purchased fabricated top, not stock the owner's mill saws.
     "countertops": ("countertops",),
+    # Illustrative planting, counted by type and deliberately unpriced.
+    "plants": ("planting",),
 }
 
 

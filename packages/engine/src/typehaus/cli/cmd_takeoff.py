@@ -128,6 +128,8 @@ def takeoff(
                "railings": bom["railings"],
                "bug_screens": bom["bug_screens"],
                "drainage": bom["drainage"],
+               # Counted, unpriced by design: every row lands in the estimate's `unpriced`.
+               "planting": bom["planting"],
                "edge_trim": bom["edge_trim"],
                "member_protection": bom["member_protection"]}
     # Opt-in because it is a per-RUN view, not a bill: 111 rows that group into the dozen

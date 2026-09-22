@@ -151,9 +151,17 @@ def test_the_concrete_the_steel_sits_in_is_the_note_s_volume(catlin_model) -> No
 
     # "beam" is W-SG-ARCH, the cast grade beam; wood beams fall out on structure_material.
     pour_categories = {"footing", "slab", "pad", "column", "beam"}
+    library = catlin_model.plan.library
+
+    def _flatwork(row) -> bool:
+        # The sidewalk is fibre-only flatwork: no bar sits in it, so it is no denominator.
+        assembly = library.resolve_assembly(row["assembly"]) if row.get("assembly") else None
+        return assembly is not None and assembly.role == "flatwork"
+
     concrete_cy = sum(
         row["volume_cubic_yards"] for row in structural_solids_takeoff(catlin_model)
-        if row["category"] in pour_categories and row["structure_material"] == "concrete")
+        if row["category"] in pour_categories and row["structure_material"] == "concrete"
+        and not _flatwork(row))
     walls_cy = sum(row["volume_cubic_yards"] for row in wall_structure_takeoff(catlin_model)
                    if row.get("material") == "concrete")
     total_cy = concrete_cy + walls_cy

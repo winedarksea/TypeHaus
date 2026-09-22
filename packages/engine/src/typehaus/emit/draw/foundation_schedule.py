@@ -109,13 +109,19 @@ def slabs_on_grade(model: ResolvedModel) -> list[ResolvedSolid]:
     storey_elevation = {storey.tag: storey.elevation.meters for storey in model.plan.storeys}
     out: list[ResolvedSolid] = []
     for solid in model.solids:
-        if solid.category != "slab":
+        if solid.category != "slab" or _is_flatwork(model, solid):
             continue
         if (_carried_by_deck(model, solid) or _carried_by_walls(model, solid)
                 or _room_below(model, solid, storey_elevation)):
             continue
         out.append(solid)
     return sorted(out, key=lambda s: s.tag)
+
+
+def _is_flatwork(model: ResolvedModel, slab: ResolvedSolid) -> bool:
+    """A walk bears nothing; it is drawn on the site plan, not scheduled as foundation."""
+    assembly = model.plan.library.resolve_assembly(slab.assembly) if slab.assembly else None
+    return assembly is not None and assembly.role == "flatwork"
 
 
 def _carried_by_deck(model: ResolvedModel, slab: ResolvedSolid) -> bool:

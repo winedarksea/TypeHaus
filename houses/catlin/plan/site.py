@@ -259,11 +259,13 @@ SITE = Site(
         # east lines, from y=20' (level with the house's midpoint, above which the ground
         # drains back to the street) around the bottom of the lot and up the east side to
         # match. The lines moved with the 50' x 133' parcel; the 2' offset did not.
+        # The WEST leg is 1' inside the line since 2026-09-21: 2' in, it ran down the
+        # espalier trellis line (params/landscape_gardens.py, x=-5').
         ErosionControl(
             kind="silt_fence",
-            path=(pt(ft(-5), ft(20)), pt(ft(-5), ft(-46.5)),
+            path=(pt(ft(-6), ft(20)), pt(ft(-6), ft(-46.5)),
                   pt(ft(41), ft(-46.5)), pt(ft(41), ft(20))),
-            description="silt fence, trenched 6 in, 2 ft inside the W/S/E lot lines",
+            description="silt fence, trenched 6 in, 1 ft inside the W line and 2 ft inside the S/E lines",
         ),
         # Rock construction entrance where vehicles leave the site, which is the only place
         # they can: the driveway's crossing of the north right-of-way. On the 133'-deep lot
@@ -460,15 +462,9 @@ SITE = Site(
             far_elevation=ft(-3, -0.5),  # 2% eastward; first 36in is the lower landing
             kind="walk",
         ),
-        # side patio on the east wall (x=36'), draining east toward the side-yard grade
-        ImperviousSurface(
-            label="patio",
-            outline=(pt(ft(36), ft(10)), pt(ft(42), ft(10)),
-                     pt(ft(42), ft(22)), pt(ft(36), ft(22))),
-            near_elevation=ft(-2, -11),  # -1" below grade at the foundation
-            far_elevation=ft(-3, -2),  # -4" below grade at the 6' outer edge (4.2% away)
-            kind="patio",
-        ),
+        # The east side patio (x 36'..42', y 10'..22') is RETIRED 2026-09-21: walk leg D
+        # (params/landscape_walk.py) runs the whole east side and absorbs it. The walk's
+        # surfaces are merged in by plan/manifest.py, not hand-copied here.
         # The two pads in the pocket east of the porch, both authored in
         # params/sunken_garden.py. They were one 56.9 sf pour for a day; on 2026-09-04 the
         # condenser row crossed to the house side and ST-SG-PORCH took the south half, and a

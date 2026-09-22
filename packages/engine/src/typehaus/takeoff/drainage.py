@@ -66,6 +66,7 @@ class _Rows:
 
 def drainage_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """The stormwater order: gutter and leader by the foot, trenches and wells by both."""
+    from typehaus.model.landscape import RainGarden
     from typehaus.model.structure import Drywell, FrenchDrain
     from typehaus.model.trim import Downspout, Gutter
 
@@ -83,6 +84,14 @@ def drainage_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                          element.diameter.meters / M_PER_IN, tag=element.tag,
                          length_m=max(element.top_elevation.meters
                                       - element.bottom_elevation.meters, 0.0))
+                if element.extension is not None:
+                    ext = element.extension
+                    # The buried run plus the riser from the leader's foot down to its inlet.
+                    run = _path_length_m([p.xy_m for p in ext.path])
+                    drop = max(element.bottom_elevation.meters - ext.inlet_invert.meters, 0.0)
+                    rows.add("leader_extension", ext.material,
+                             ext.diameter.meters / M_PER_IN, tag=element.tag,
+                             length_m=run + drop)
             elif isinstance(element, FrenchDrain):
                 length = _path_length_m([p.xy_m for p in element.path])
                 rows.add("french_drain", element.tile.material if element.tile else "stone",
@@ -95,6 +104,9 @@ def drainage_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                 rows.add("drywell", element.aggregate,
                          element.diameter.meters / M_PER_IN, tag=element.tag,
                          volume_m3=math.pi * radius ** 2 * element.depth.meters)
+
+            elif isinstance(element, RainGarden):
+                _add_rain_garden(rows, element)
 
     _add_derived_eave_gutters(model, rows)
     return rows.finish()
@@ -125,3 +137,15 @@ def _add_derived_eave_gutters(model: ResolvedModel, rows: _Rows) -> None:
             rows.add("gutter", str(entry["material"]),
                      float(entry.get("height_m", 0.0)) / M_PER_IN,
                      tag=f"{roof.tag}:{run_key}", length_m=length)
+
+
+def _add_rain_garden(rows: _Rows, el) -> None:
+    """Media and stone by the yard over the whole rim, like the drywell's stone."""
+    from shapely.geometry import Polygon
+
+    area = Polygon([p.xy_m for p in el.outline]).area
+    rows.add("rain_garden_media", el.media, 0.0, tag=el.tag,
+             volume_m3=area * el.media_depth.meters)
+    if el.stone_depth is not None and el.stone_depth.meters > 0.0:
+        rows.add("rain_garden_stone", el.stone or "stone", 0.0, tag=el.tag,
+                 volume_m3=area * el.stone_depth.meters)

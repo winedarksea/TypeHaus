@@ -29,6 +29,9 @@ from typehaus.resolve.model import ResolvedModel, ResolvedSolid, Ring
 EARTH_PLANE_SLAB_TOP_TOLERANCE_M = 0.02
 
 _EARTH_DISPLACING_SLAB_CATEGORY = "slab"
+# A rain garden's media sits in a dug basin; its rim ring is the depression in the sheet.
+# Deliberately NOT an excavation floor for frost cover: a planted basin is backfilled soil.
+_EARTH_DISPLACING_BASIN_CATEGORY = "rain_garden_media"
 _MINIMUM_RING_VERTICES = 3
 
 
@@ -50,7 +53,8 @@ def earth_plane_void_rings(model: ResolvedModel) -> list[Ring]:
     ceiling = grade_z + EARTH_PLANE_SLAB_TOP_TOLERANCE_M
     footprints = []
     for solid in sorted(model.solids, key=lambda item: item.uid):
-        if solid.category != _EARTH_DISPLACING_SLAB_CATEGORY:
+        if solid.category not in (_EARTH_DISPLACING_SLAB_CATEGORY,
+                                  _EARTH_DISPLACING_BASIN_CATEGORY):
             continue
         if solid.z1_m > ceiling:  # a raised deck sits *on* the earth, it does not displace it
             continue

@@ -16,6 +16,7 @@ from typehaus.checks._authoring import advisory
 from typehaus.checks._authoring import passed as _pass
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
+from typehaus.model.landscape import RainGarden
 from typehaus.model.mep import Sump
 from typehaus.model.structure import Drywell, FootingBedding, FrenchDrain
 from typehaus.model.trim import Downspout, Gutter
@@ -114,7 +115,7 @@ def discharge_consistency(ctx: CheckContext) -> list[Finding]:
     sumps = {element.tag: element for element in _elements(ctx) if isinstance(element, Sump)}
     receivers = dict(sumps)
     for element in _elements(ctx):
-        if isinstance(element, (Drywell, FrenchDrain)):
+        if isinstance(element, (Drywell, FrenchDrain, RainGarden)):
             receivers[element.tag] = element
     circuits = {circuit.tag for circuit in ctx.model.plan.library.circuits}
 
@@ -150,12 +151,17 @@ def discharge_consistency(ctx: CheckContext) -> list[Finding]:
                 out.append(_advisory_fail(
                     cid, f"sump pump at {element.tag} is on circuit {circuit_ref!r}, which "
                          f"the panel schedule does not carry", (element.tag,)))
-        elif isinstance(element, Drywell):
+        elif isinstance(element, (Drywell, RainGarden)):
+            kind = "drywell" if isinstance(element, Drywell) else "rain garden"
             for inlet in element.inlet_refs:
                 if ctx.model.plan.by_tag(inlet) is None:
                     out.append(_advisory_fail(
-                        cid, f"drywell {element.tag} is fed by {inlet!r}, which no element "
+                        cid, f"{kind} {element.tag} is fed by {inlet!r}, which no element "
                              f"declares", (element.tag,)))
+            if isinstance(element, RainGarden):
+                _check_discharge(element.tag, element.overflow_ref)
+        elif isinstance(element, Downspout):
+            _check_discharge(element.tag, element.discharge_ref)
 
     if not out:
         out.append(_pass(cid, "every authored discharge resolves"))

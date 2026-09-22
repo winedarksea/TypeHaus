@@ -10,10 +10,13 @@ that module is envelope trim and hardware; a trench across the yard is neither.
 from __future__ import annotations
 
 from typehaus.findings import Finding, element_error
+from typehaus.model.landscape import RainGarden
 from typehaus.model.structure import Drywell, FrenchDrain
+from typehaus.model.trim import Downspout
 from typehaus.resolve.drain_tile import drain_tile_solids, resolved_spec
 from typehaus.resolve.geometry import circle_outline, rect_between
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid
+from typehaus.resolve.rain_garden import floor_z_m
 
 #: A drywell is a cylinder; the solid IR extrudes a plan outline, so the bore is faceted.
 #: Matched to the vent/downspout risers so round things read alike in the viewer.
@@ -38,7 +41,67 @@ def resolve_drainage(model: ResolvedModel) -> list[Finding]:
                 findings.extend(_resolve_french_drain(model, element, storey.tag))
             elif isinstance(element, Drywell):
                 findings.extend(_resolve_drywell(model, element, storey.tag))
+            elif isinstance(element, RainGarden):
+                findings.extend(_resolve_rain_garden(model, element, storey.tag))
+            elif isinstance(element, Downspout) and element.extension is not None:
+                _resolve_leader_extension(model, element, storey.tag)
     return findings
+
+
+#: Planting soil, keyed into the drawing palette's existing ``soil`` hatch; the stone under
+#: it is the drywell's ``aggregate``.
+_MEDIA = "soil"
+
+
+def _resolve_rain_garden(model: ResolvedModel, el: RainGarden, storey: str) -> list[Finding]:
+    """Media under the whole rim (it runs up the side slopes), stone under the media."""
+    ring = [point.xy_m for point in el.outline]
+    if len(ring) < 3 or el.media_depth.meters <= 0.0:
+        return [element_error("integrity.rain_garden_geometry",
+                              f"rain garden {el.tag} needs a rim outline and media depth",
+                              el.tag)]
+    top = floor_z_m(el)
+    bottom = top - el.media_depth.meters
+    model.solids.append(ResolvedSolid(
+        uid=f"{el.uid}-00", tag=el.tag, storey=storey, category="rain_garden_media",
+        outline=ring, z0_m=bottom, z1_m=top, material=_MEDIA))
+    if el.stone_depth is not None and el.stone_depth.meters > 0.0:
+        model.solids.append(ResolvedSolid(
+            uid=f"{el.uid}-01", tag=f"{el.tag}-STONE", storey=storey,
+            category="rain_garden_stone", outline=ring,
+            z0_m=bottom - el.stone_depth.meters, z1_m=bottom, material=_AGGREGATE))
+    return []
+
+
+def _resolve_leader_extension(model: ResolvedModel, el: Downspout, storey: str) -> None:
+    """The buried pipe on its fall, plus the riser from the leader's foot down to it."""
+    ext = el.extension
+    assert ext is not None
+    path = [point.xy_m for point in ext.path]
+    if len(path) < 2:
+        return
+    diameter = ext.diameter.meters
+    path, inverts = _densified(path, ext.inlet_invert.meters, ext.outlet_invert.meters)
+    model.solids.extend(drain_tile_solids(
+        el.uid, f"{el.tag}-EXT", storey, path, ext.inlet_invert.meters, _pipe_spec(ext),
+        closed=False, segment_floor_z_m=inverts, category="leader_extension", bedding_m=0.0))
+    x, y = path[0]
+    half = diameter / 2.0
+    if el.bottom_elevation.meters > ext.inlet_invert.meters:
+        model.solids.append(ResolvedSolid(
+            uid=f"{el.uid}-RS", tag=f"{el.tag}-EXT-RISER", storey=storey,
+            category="leader_extension",
+            outline=[(x - half, y - half), (x + half, y - half), (x + half, y + half),
+                     (x - half, y + half)],
+            z0_m=ext.inlet_invert.meters, z1_m=el.bottom_elevation.meters,
+            material=ext.material))
+
+
+def _pipe_spec(ext):
+    from typehaus.resolve.model import ResolvedDrainTile
+
+    return ResolvedDrainTile(diameter_m=ext.diameter.meters, material=ext.material,
+                             sock=False, discharge=None, rock_width_m=None, rock_depth_m=None)
 
 
 def _resolve_french_drain(model: ResolvedModel, el: FrenchDrain,

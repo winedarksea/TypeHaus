@@ -86,6 +86,20 @@ class Gutter(_EdgeRun):
     downspout_ref: str | None = None
 
 
+class DischargeExtension(HausModel):
+    """Solid pipe carrying a leader's water away underground, foot to outlet.
+
+    ``path`` starts at the leader and ends at the outlet (a pop-up emitter in the basin).
+    Inverts are absolute; the pipe falls from ``inlet_invert`` to ``outlet_invert``.
+    """
+
+    path: tuple[Point2D, ...]
+    diameter: Length
+    material: str = "pvc-sdr35"
+    inlet_invert: Length
+    outlet_invert: Length
+
+
 @register_element
 class Downspout(Element):
     """The leader carrying a gutter's water down the wall to grade.
@@ -109,6 +123,11 @@ class Downspout(Element):
     material: str = ""
     gutter_ref: str | None = None    # the Gutter tag this leader drains
     clamp_refs: tuple[str, ...] = ()
+    # Where the leader lets go: a ``RainGarden``/``Drywell`` tag or "daylight". Unset keeps
+    # the leader out of the drainage network (a splash block is not a connection).
+    discharge_ref: str | None = None
+    # The buried pipe from the leader's foot to that receiver.
+    extension: DischargeExtension | None = None
 
 
 @register_element
@@ -208,6 +227,7 @@ for _name, _obj in (
     ("EaveSoffit", EaveSoffit),
     ("Gutter", Gutter),
     ("Downspout", Downspout),
+    ("DischargeExtension", DischargeExtension),
     ("Flashing", Flashing),
     ("GlazingTrim", GlazingTrim),
     ("FasciaBoard", FasciaBoard),

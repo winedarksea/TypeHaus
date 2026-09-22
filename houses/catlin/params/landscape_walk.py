@@ -1,0 +1,158 @@
+"""The sidewalk: driveway -> garage east side -> north entry landing -> house east -> porch stair.
+
+One `Slab` per leg on `yard-grade`, `SIDEWALK_FRC_CLASS5` (4" fibre-only concrete on 6" of
+MnDOT Class 5). The full section is 12 | 16 pocket | 36 walk | 16 pocket | 12 = 92"; the
+east side of the house is one-sided, 36 walk | 16 pocket | 12 = 64", because the house to
+lot line is only 6'-4". Pockets are 16" sonotube voids (`FloorOpening(purpose=PLANTING)`)
+at 4'-0" o.c. down each pocket zone; control joints fall on the same stations.
+
+Each slab is modelled flat at its high edge, 1" over the -2'-10" grade so it never cuts the
+earth sheet; the fall lives on a matching `ImperviousSurface(kind="walk")`, merged into
+the site by `plan/manifest.py`. 1/2" isolation gaps at the garage stem flashing, the
+canopy column PT-BW-RNE, the HP1 pad and the stair pad. notes/sidewalk_layout.md.
+"""
+
+from __future__ import annotations
+
+import math
+
+from typehaus import (
+    FloorOpening,
+    FloorOpeningPurpose,
+    ImperviousSurface,
+    PlantingBed,
+    PocketLayout,
+    Slab,
+    ft,
+    inch,
+    pt,
+)
+
+ASSEMBLY = "SIDEWALK_FRC_CLASS5"
+TOP = ft(-2, -9)                 # 1" over grade
+POCKET_R_IN = 8.0
+POCKET_OC_FT = 4.0
+_FACETS = 16
+_GAP = 0.5 / 12.0
+
+# Pocket-zone centres across the section, from the leg's reference edge (feet).
+FULL = (20.0 / 12.0, 72.0 / 12.0)    # 12 + 8, and 92 - 20
+ONE_SIDED = (44.0 / 12.0,)           # 36 walk + 8, measured off the house side
+
+
+def _ring(points):
+    return tuple(pt(ft(x), ft(y)) for x, y in points)
+
+
+def _rect(x0, y0, x1, y1):
+    return ((x0, y0), (x1, y0), (x1, y1), (x0, y1))
+
+
+# --- legs -------------------------------------------------------------------------------
+# A: in front of the garage, from the driveway's east edge (x=24') to past the garage NE
+#    corner, 92" deep off the garage face (stem Z-flashing at y=67'-3 1/2" plus 1/2").
+# B: down the garage east side, stem flashing at x=30'-0 7/8" plus 1/2", to clear of the
+#    canopy column PT-BW-RNE (y 41'-11 3/4"..42'-11 3/4").
+# C: the landing connector, walk only, notched round PT-BW-RNE to reach the paver landing's
+#    east edge (x=30') south of it; its south edge leaves a 3" gravel drip strip on the HP1
+#    pad's north edge, clear of the unit's defrost.
+# D: the house east side, one-sided 64", off the NE/SE corner trims (x=36'-7 7/8") plus 1/2".
+#    It absorbs the old side patio; no pockets along the patio's 12' (y 10'..22').
+# E: the walk-only joint into SL-SG-STAIRPAD (east edge x=35'-3"), at the pad's own top.
+A = _rect(24.0 + _GAP, 67.29 + _GAP, 37.78, 67.29 + _GAP + 92.0 / 12.0)
+B = _rect(30.07 + _GAP, 42.98 + _GAP, 37.78, A[0][1])
+D_X0 = 36.66 + _GAP
+D_X1 = D_X0 + 64.0 / 12.0
+C = ((30.0 + _GAP, 39.6), (D_X1, 39.6), (D_X1, B[0][1]), (30.5 + _GAP, B[0][1]),
+     (30.5 + _GAP, 41.98 - _GAP), (30.0 + _GAP, 41.98 - _GAP))
+D = _rect(D_X0, -9.0, D_X1, 39.6)
+E = _rect(35.25 + _GAP, -9.0, D_X0 - _GAP, -6.0)
+
+# The two east leaders discharge onto a pocket at their feet (x, y feet).
+LEADER_POCKETS = {"A": [(31.27, 68.49)], "D": [(37.5, 35.5)]}
+
+
+def _stations(start: float, end: float) -> list[float]:
+    """Pocket stations 2' in from each end, 4' o.c."""
+    out, s = [], start + 2.0
+    while s <= end - 2.0 + 1e-9:
+        out.append(round(s, 4))
+        s += POCKET_OC_FT
+    return out
+
+
+def _pockets(leg: str, rect, along: str, zones, ref_high: bool = False,
+             skip=lambda s: False) -> list[tuple[float, float]]:
+    (x0, y0), _, (x1, y1), _ = rect
+    centres = []
+    if along == "x":
+        for s in _stations(x0, x1):
+            for z in zones:
+                centres.append((s, y1 - z if ref_high else y0 + z))
+    else:
+        for s in _stations(y0, y1):
+            for z in zones:
+                centres.append((x1 - z if ref_high else x0 + z, s))
+    centres = [c for c in centres if not skip(c[0] if along == "x" else c[1])]
+    extra = LEADER_POCKETS.get(leg, [])
+    clear = 2 * POCKET_R_IN / 12.0 + 8.0 / 12.0       # keep an 8" web between voids
+    centres = [c for c in centres if all(math.dist(c, e) >= clear for e in extra)]
+    return [*extra, *centres]
+
+
+POCKET_CENTRES = {
+    "A": _pockets("A", A, "x", FULL),
+    "B": _pockets("B", B, "y", FULL),
+    # One-sided: the zone is measured off the HOUSE (west) edge.
+    "D": _pockets("D", D, "y", ONE_SIDED, skip=lambda y: 10.0 - 0.7 <= y <= 22.0 + 0.7),
+}
+
+
+def _circle(x: float, y: float):
+    r = POCKET_R_IN / 12.0
+    return _ring((x + r * math.cos(2 * math.pi * k / _FACETS),
+                  y + r * math.sin(2 * math.pi * k / _FACETS)) for k in range(_FACETS))
+
+
+OPENINGS: dict[str, list[FloorOpening]] = {
+    leg: [FloorOpening(uid=f"WKP{leg}{n:03d}0000"[:10], tag=f"FO-WK-{leg}{n + 1:02d}",
+                       outline=_circle(x, y), purpose=FloorOpeningPurpose.PLANTING)
+          for n, (x, y) in enumerate(centres)]
+    for leg, centres in POCKET_CENTRES.items()
+}
+
+
+def _slab(leg: str, ring, top=TOP) -> Slab:
+    return Slab(uid=f"WKSB{leg}00000", tag=f"SL-WK-{leg}", assembly=ASSEMBLY,
+                outline=_ring(ring), thickness=inch(4.0), top_elevation=top,
+                openings=tuple(o.tag for o in OPENINGS.get(leg, ())))
+
+
+SLABS = [_slab("A", A), _slab("B", B), _slab("C", C), _slab("D", D),
+         # Flush with the stair pad it runs into.
+         _slab("E", E, top=ft(-2, -8))]
+
+POCKET_BED = PlantingBed(
+    uid="GRDNPB0005", tag="PB-WK-POCKETS", type_ref="PT-CAL-NEPETA",
+    pockets=PocketLayout(slab_refs=("SL-WK-A", "SL-WK-B", "SL-WK-D"),
+                         type_refs=("PT-CAL-NEPETA", "PT-ALL-MILLENIUM", "PT-SPO-TARA",
+                                    "PT-SAL-PURP")),
+)
+
+# The fall, 2% or more, away from whatever the leg abuts. Pocket voids are NOT subtracted
+# from the impervious area, which is conservative.
+IMPERVIOUS = (
+    # R401.3 measures A and C over their long runs (10.9' and 12'), so each falls 3".
+    ImperviousSurface(label="walk A, garage north", outline=_ring(A),
+                      near_elevation=TOP, far_elevation=ft(-3), kind="walk"),
+    ImperviousSurface(label="walk B, garage east", outline=_ring(B),
+                      near_elevation=TOP, far_elevation=ft(-3), kind="walk"),
+    ImperviousSurface(label="walk C, landing connector", outline=_ring(C),
+                      near_elevation=TOP, far_elevation=ft(-3), kind="walk"),
+    ImperviousSurface(label="walk D, house east", outline=_ring(D),
+                      near_elevation=TOP, far_elevation=ft(-2, -11), kind="walk"),  # 2" over 7.2'
+    ImperviousSurface(label="walk E, into the porch stair pad", outline=_ring(E),
+                      near_elevation=ft(-2, -8), far_elevation=ft(-2, -8.75), kind="walk"),
+)
+
+MAIN_ELEMENTS = [*SLABS, *(o for leg in OPENINGS.values() for o in leg), POCKET_BED]

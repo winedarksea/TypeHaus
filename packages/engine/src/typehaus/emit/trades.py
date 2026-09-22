@@ -116,6 +116,10 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
     # exactly these into ``IfcDistributionSystem/STORMWATER``.
     "gutter": "drainage", "downspout": "drainage", "sump": "drainage",
     "drain_tile": "drainage", "french_drain": "drainage", "drywell": "drainage",
+    "rain_garden_media": "drainage", "rain_garden_stone": "drainage",
+    "leader_extension": "drainage",
+    # Illustrative planting and the espalier frame (resolve/landscape.py): derived, unpriced.
+    "plant": "landscaping", "trellis": "landscaping",
     # A dropped soffit box and a room's ceiling plane are the drywaller's overhead surfaces.
     "soffit": "drywall", "ceiling": "drywall",
     # Pours, and what is cast into them. Equal to the fallback; named so the parity test's

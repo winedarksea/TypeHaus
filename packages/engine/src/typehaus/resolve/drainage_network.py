@@ -34,8 +34,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 
+from typehaus.model.landscape import RainGarden
 from typehaus.model.mep import Sump
 from typehaus.model.structure import Drywell, FootingBedding, FrenchDrain
+from typehaus.model.trim import Downspout
 
 #: The free-text discharge that names no element. A real answer on a sloping lot and a lie
 #: on a flat one, and either way a TERMINAL: the walk ends here successfully, and whether
@@ -111,7 +113,7 @@ class DrainageNetwork:
     def sources(self) -> list[str]:
         """Nodes that produce water — everything that is not purely a receiver."""
         return sorted(tag for tag, node in self.nodes.items()
-                      if node.kind in {"french_drain", "footing_tile"})
+                      if node.kind in {"french_drain", "footing_tile", "leader"})
 
     def disposal_points(self) -> list[str]:
         """Everything that gets rid of water, daylight excepted — the things that can fail.
@@ -224,6 +226,22 @@ def build_network(plan) -> DrainageNetwork:
                 tag=element.tag, kind="sump", in_invert_m=inlet, out_invert_m=lip,
                 disposes=element.pump is not None,
                 inlet_refs=tuple(element.inlet_refs))
+        elif isinstance(element, RainGarden):
+            rim = element.rim_elevation.meters
+            lip = (element.overflow_invert.meters
+                   if element.overflow_invert is not None else rim)
+            network.nodes[element.tag] = DrainNode(
+                # Water ARRIVES anywhere up to the rim; the basin disposes by infiltration
+                # and lets the excess go over its overflow lip.
+                tag=element.tag, kind="rain_garden", in_invert_m=rim, out_invert_m=lip,
+                disposes=True, inlet_refs=tuple(element.inlet_refs))
+        elif isinstance(element, Downspout) and element.discharge_ref:
+            # Only a leader that NAMES a receiver joins the graph: a splash block is not a
+            # connection, and every leader authored before this field stays out.
+            ext = element.extension
+            network.nodes[element.tag] = DrainNode(
+                tag=element.tag, kind="leader", in_invert_m=None,
+                out_invert_m=ext.outlet_invert.meters if ext is not None else None)
         elif isinstance(element, FootingBedding) and element.drain_tile:
             spec = element.drain_tile_spec
             network.nodes[element.tag] = DrainNode(
@@ -249,8 +267,11 @@ def build_network(plan) -> DrainageNetwork:
             add(element.tag, element.overflow_ref, EdgeKind.OVERFLOW,
                 element.overflow_invert.meters
                 if element.overflow_invert is not None else node.out_invert_m)
-        elif isinstance(element, Drywell):
+        elif isinstance(element, (Drywell, RainGarden)):
             add(element.tag, element.overflow_ref, EdgeKind.OVERFLOW,
+                network.nodes[element.tag].out_invert_m)
+        elif isinstance(element, Downspout) and element.discharge_ref:
+            add(element.tag, element.discharge_ref, EdgeKind.PRIMARY,
                 network.nodes[element.tag].out_invert_m)
         elif isinstance(element, Sump):
             if element.pump is not None:

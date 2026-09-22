@@ -26,12 +26,14 @@ from library import (
     WINDOW_TYPES_16_INCH_MODULE,
 )
 
-from params import (breezeway, foundations, hp1_north_pad, hp3_pad, main_deck, raised_garden,
-                    roof_trim, second_deck, solar, sunken_garden)
+from params import (breezeway, foundations, hp1_north_pad, hp3_pad, landscape_gardens,
+                    landscape_walk, main_deck, raised_garden, roof_trim, second_deck, solar,
+                    sunken_garden)
 from plan import (appliance_types, assemblies, backing, backing_wet, circuits, countertops,
                   electrical, electrical_attic, equipment_types,
-                  fixture_types, fixtures, furniture_types, lighting, lighting_attic,
-                  lighting_types, mep, millwork, placeables, products,
+                  fixture_types, fixtures, furniture_types, landscape, lighting,
+                  lighting_attic, lighting_types, mep, millwork, placeables, plant_types,
+                  products,
                   site, transitions, views, wind_clamps)
 from plan.storeys import attic, attic_studio, basement, garage, main, second
 
@@ -42,7 +44,7 @@ requires_engine = ">=0.1,<0.2"
 PROJECT_UUID = uuid.UUID("c471a000-93b5-4e6e-8f5a-000000000002")
 
 _library = Library(
-    materials=tuple(assemblies.MATERIALS),
+    materials=(*assemblies.MATERIALS, *plant_types.FOLIAGE_MATERIALS),
     assemblies=tuple(assemblies.ASSEMBLIES),
     # Brand and model for the products this house has actually chosen — identity only,
     # never a price (#28). The types above point at these by ``product_ref``.
@@ -89,13 +91,20 @@ _library = Library(
     # block at the foot of plan/circuits.py.
     transitions=transitions.TRANSITIONS,
     construction_rules=tuple(assemblies.CONSTRUCTION_RULES),
+    # Illustrative planting — counted in the takeoff's `planting` table, never priced.
+    plant_types=plant_types.PLANT_TYPES,
 )
 
 # Survey basemap (parcel + contour topo) loaded from GeoJSON. The parcel/setbacks the user
 # edits still live in the editable ``plan/site.py``; the GeoJSON only supplies the site-plan
 # contour lines, so a real survey drops in without touching the editable source.
 _basemap = load_basemap_geojson(Path(__file__).with_name("basemap.geojson"))
-_site = site.SITE.model_copy(update={"contours": _basemap.contours})
+# The sidewalk's surfaces carry its fall (params/landscape_walk.py); merged here so the
+# editable site file never hand-copies a derived outline.
+_site = site.SITE.model_copy(update={
+    "contours": _basemap.contours,
+    "impervious_surfaces": (*site.SITE.impervious_surfaces, *landscape_walk.IMPERVIOUS),
+})
 
 # ``plan/site.py`` is ``# haus: editable`` and may hold only literals, so finished grade is
 # written there as a literal and again in ``params/foundations.py`` as the value everything
@@ -385,6 +394,8 @@ PLAN = (
     .with_elements("entry-low", [*breezeway.GARAGE_STOREY_ELEMENTS])
     .with_elements("entry", [*breezeway.MAIN_ELEMENTS])
     # --- yard (sitework) -------------------------------------------------------------------
-    .with_elements("yard-grade", [*hp3_pad.MAIN_ELEMENTS, *hp1_north_pad.MAIN_ELEMENTS])
+    .with_elements("yard-grade", [*hp3_pad.MAIN_ELEMENTS, *hp1_north_pad.MAIN_ELEMENTS,
+                                  *landscape_gardens.MAIN_ELEMENTS, *landscape.APPLES,
+                                  *landscape_walk.MAIN_ELEMENTS])
     .with_elements("yard-low", [*raised_garden.BASEMENT_ELEMENTS])
 )

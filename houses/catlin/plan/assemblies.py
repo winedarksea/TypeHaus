@@ -2418,6 +2418,21 @@ HP_PAD_ON_GRADE = Assembly(
     source="catlin-house equipment/stair pads, FOUR POURS ON ONE SPECIFICATION — SL-SG-HPPAD, the pocket equipment pad, 8.96 SF (x 29'-0\"..32'-7\", y -3'-4\"..-0'-10\") = 0.11 CY, and SL-SG-STAIRPAD, the porch stair's pad and its R311.7.6 bottom landing, 20.3 SF (x 28'-6\"..35'-3\", y -9'-0\"..-6'-0\") = 0.25 CY; 29.2 SF and 0.36 CY together; SL-M-HP3PAD, added 2026-09-04, the north-side pad under EQ-M-HP3-OD, 6.9 SF (x 9'-9\"..13'-1\", y 36'-10 1/4\"..38'-11\") = 0.08 CY, in the 4'-0 1/2\" slot between the house and the garage — that cabinet had stood at grade since it was authored with no pad, no stand and no mount elevation at all; and SL-M-HP1PAD, added the same day, the north-face pad under EQ-M-HP1-OD, 9.27 SF (x 26'-3 1/4\"..29'-11 3/4\", y 36'-10\"..39'-4\") = 0.11 CY, east of the garage where a 24k unit's 40\" discharge has open front yard in front of it. 45.4 SF and 0.56 CY over the four. All four are 4\" thick on a 4\" open-graded stone base, all topped at -2'-8\", 2\" proud of grade, each falling at least 2% away from the house. No below-slab XPS and no vapour retarder: nothing over either is conditioned and nothing under them has to stay dry. The 2\" freeboard is Gree's outdoor-unit instruction (\"install 2 in above the expected snow line\"), which the 18\" stands on top of the equipment pad then clear by an order of magnitude. HISTORY, because the quantity moved twice in two days: 29.4 SF / 0.36 CY until 2026-09-03, when the cabinets turned to face SOUTH and one 56.9 SF pour carried both them and the new flight; then split on 2026-09-04, when the row and the flight swapped halves of the pocket (PT-SG-BR3 stands on the wall top the flight springs from, and left no walkable threshold in the south half). Two pours rather than one L: they are 2'-8\" apart in y, and a rectangle spanning both would be 94 SF of concrete to serve 40 — at this size the second form is cheaper than the 54 SF it saves. SL-SG-HPPAD lost 10.6 SF on 2026-09-04 when EQ-M-HP1-OD crossed to the north face and SL-M-HP1PAD was poured for it. Isolation joint where SL-SG-STAIRPAD meets W-SG-E1; SL-SG-HPPAD, SL-M-HP3PAD and SL-M-HP1PAD each touch nothing, stopping about 3\" short of the house cladding so there is no joint to detail and the wall's runoff lands in gravel"
 )
 
+# The sidewalk, params/landscape_walk.py: 4" of fibre-only concrete (macro-synthetic, no mesh)
+# on 6" of compacted MnDOT Class 5. Exterior mix, sonotube planting pockets at 4' o.c. with
+# control joints on the same stations. notes/sidewalk_layout.md works the quantities.
+SIDEWALK_FRC_CLASS5 = Assembly(
+    tag="SIDEWALK_FRC_CLASS5",
+    role="flatwork",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(4.0),
+              function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
+        Layer(name="base", material_ref="mndot-class-5-base", thickness=inch(6.0),
+              function=LayerFunction.SHEATHING),
+    ),
+    source="catlin-house sidewalk: 4 in fibre-reinforced (macro-synthetic 4 pcy, no mesh) exterior concrete on 6 in of MnDOT 3138 Class 5 aggregate base compacted to 100% standard Proctor; 16 in sonotube planting pockets at 4 ft o.c. with control joints on the pocket stations",
+)
+
 # The garage service step-down, SL-G-STEP-1..4, is a real `Stair` (ST-G-SERVICE in
 # plan/storeys/garage.py) in pressure-treated KDAT. SL-G-STEP-0 survives as the 3'-0"
 # landing at the threshold, pours with the slab, and names no assembly of its own.
@@ -3285,6 +3300,17 @@ STAIRWELL_PARTITION_4H = Assembly(
 
 MATERIALS = [
     *ALL_MATERIALS,
+    # The sidewalk's base course (SIDEWALK_FRC_CLASS5): dense-graded, WITH fines, compacted —
+    # the opposite of the capillary-break stone, and the right base for a walk.
+    Material(
+        tag="mndot-class-5-base",
+        name="MnDOT Class 5 aggregate base, compacted",
+        r_per_inch=0.0,
+        density=2100.0,
+        hatch="concrete",
+        color="#9a958a",
+        source="MnDOT Spec 3138 Class 5 aggregate base",
+    ),
     # --- THE 2026-09-06 INTERIOR SELECTIONS PASS -----------------------------------------
     #
     # ** THE FIRST MATERIALS IN THIS REPO TO CARRY A ``product_ref``. ** The field has existed
@@ -4772,6 +4798,7 @@ ASSEMBLIES = [
     GARAGE_WALL_2X6,
     GARAGE_SLAB_ON_GRADE,
     HP_PAD_ON_GRADE,
+    SIDEWALK_FRC_CLASS5,
     SG_FROST_WING_XPS1,
     SG_FROST_WING_XPS2,
     FOOTING_FPSF_20,

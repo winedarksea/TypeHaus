@@ -112,6 +112,12 @@ export const SECTION_GROUPS: readonly BomSectionGroup[] = [
     // legible. The boxes bill as carcasses in `placeables`; the slab over them bills here.
     sections: ["placeables", "countertops"],
   },
+  {
+    id: "planting",
+    note: "Plants by type, trellis posts and wire — illustrative, counted and never priced.",
+    title: "Planting",
+    sections: ["planting"],
+  },
 ];
 
 /** Section keys the groups above claim — everything else falls through to "Other". */

@@ -1539,6 +1539,12 @@
 # WORTH DOING: have the driver spot the drywell stone off the 97 cy #57 order and this drops
 # to about $275 for the aggregate.
 "drywell" = { low = 150, high = 350 }  # 4.71 cy — was $70-180
+# The west rain garden RG-W-BASIN (params/landscape_gardens.py). Media and stone bill here
+# by the yard, like the drywell's stone; the excavation is in the earthwork allowance.
+"rain_garden_media" = { material = { low = 50, high = 90 }, labour = { low = 40, high = 110 } }  # 6.48 cy, MnDOT 3877.2 Type G mix, placed by hand
+"rain_garden_stone" = { material = { low = 40, high = 70 }, labour = { low = 30, high = 90 } }  # 3.24 cy, washed filter aggregate under the media
+# ZERO on purpose: the pipe is billed by the foot in [drainage] `leader_extension:pvc-sdr35`.
+"leader_extension" = { low = 0, high = 0 }  # 0.12 cy — bills in [drainage]
 # The four sunken-garden trenches, 2026-09-05: FD-SG-FIELD and FD-SG-OVERFLOW in the field,
 # plus FD-SG-LEAD-W/E, the two 3'-0" leads that carry the footing beds' tile into
 # DRW-SG-MAIN. Same washed stone as the drywell and the same $88-110/cy at the pit, but half
@@ -1670,6 +1676,10 @@
 # in April has done nothing a line set cannot absorb — see
 # plan/assemblies.py::HP_PAD_ON_GRADE. The rate is unchanged; only the quantity moved.
 "slab:HP_PAD_ON_GRADE" = { material = { low = 250, high = 450 }, labour = { low = 685, high = 1463 } }  # 0.56 cy over FOUR pours (SL-SG-HPPAD 0.11 + SL-SG-STAIRPAD 0.25 + SL-M-HP3PAD 0.08 + SL-M-HP1PAD 0.11). ** THE LABOUR BAND ROSE AGAIN LATER ON 2026-09-04 AND THE MATERIAL BAND STILL DID NOT. ** EQ-M-HP1-OD crossed to the north face, SL-SG-HPPAD shrank from 0.24 cy to 0.11 and SL-M-HP1PAD was poured for it: the VOLUME is essentially unchanged (0.58 -> 0.56) but there is a fourth form, in a fourth part of the site. The band is re-solved so the fourth pour adds about $105-210 of labour over the three-pour total, the same increment the third one took — 685-1463 $/cy x 0.56 cy is $384-819 against $278-609. Left alone, a per-cy rate would have priced a whole extra form at nothing, because no concrete came with it. Superseded text: 480-1050 $/cy. ** THE LABOUR BAND ROSE 2026-09-04, THE MATERIAL BAND DID NOT. ** SL-M-HP3PAD is 6.9 sf — 0.08 cy of concrete and a whole third form, in a different part of the site from the other two, and a $/cy lump that only followed the volume would have priced that form at $30-70. The band is set so three pours cost about $105-210 more in labour than two, which is one more small form and one more trowel visit; the concrete still costs what short-load concrete costs. Superseded text, for the record: 0.49 cy over TWO pours (SL-SG-HPPAD 0.24 + SL-SG-STAIRPAD 0.25) — short-load or bagged; NOT the bulk slab-on-grade rate. It was 0.70 in one pour for a day; the row and the flight swapped halves of the pocket on 2026-09-04 and they are now 2'-8" apart, so a rectangle covering both would be 94 sf to serve 40. The rate carries the second form: at this size two 20 sf forms and one short load cost about what one 57 sf form did, and the concrete saved is real
+# The sidewalk, five legs (params/landscape_walk.py): 4" fibre-only EXPOSED_MIX. The labour
+# band carries the 28 sonotube pocket forms and the control joints on their 4' stations,
+# which is why it sits over the plain slab-on-grade rate. 2026-09-21.
+"slab:SIDEWALK_FRC_CLASS5" = { material = { low = 220, high = 320 }, labour = { low = 500, high = 950 } }  # 6.88 cy, 557 SF over five pours
 # The FPSF wings under the sunken-garden slab (IRC R403.3) are `Slab` elements because a
 # horizontal band of rigid foam has no other element kind to be — see
 # params/sunken_garden.FROST_WINGS. They are 1" and 2" XPS and nothing else, so pricing them
@@ -3521,6 +3531,9 @@
 # the ends. Compaction is nominal by design: an open-graded stone is placed, not compacted
 # to a proctor, and the absence of fines IS the capillary break.
 "capillary-break-stone" = { material = { low = 0.55, high = 0.95 }, labour = { low = 0.35, high = 0.8 } }  # 1829.0 SF — 4" #57, screeded (-160.3 SF 2026-09-05: GARDEN_PUTTING_GREEN's drainage bed is now USGA bridging gravel, not #57 — #57 cannot meet USGA Table 1 or Table 2 at any gradation)
+# The sidewalk's base (SIDEWALK_FRC_CLASS5): 6" of MnDOT 3138 Class 5, placed and plate-
+# compacted in two lifts under all five legs. Dense-graded, not the #57 above. 2026-09-21.
+"mndot-class-5-base" = { material = { low = 0.45, high = 0.80 }, labour = { low = 0.40, high = 0.90 } }  # 557.4 SF
 # The sunken-garden court's USGA field build-up (plan/assemblies.GARDEN_PUTTING_GREEN).
 # 160.3 SF each; every course is reached 9' down by conveyor or crane bucket, which is what
 # puts all five at the top of their labour bands. A minted material with no row here is
@@ -5839,6 +5852,10 @@
 # down a two-storey walk-out and are formed to match the box gutter, so the foot is the right
 # unit and $30-75 a drop would understate them by 4x.
 "downspout:metal-dark-exterior" = { material = { low = 10, high = 20 }, labour = { low = 4, high = 8 } }  # 38.6 LF / 2 drops
+# The two west leader extensions (params/roof_trim.py, plan/storeys/garage.py): 4" solid PVC
+# buried at 6-10", hand-trenched, with the pop-up emitter at the basin and the boot at the
+# leader. The LF includes each riser from the leader foot down to the inlet. 2026-09-21.
+"leader_extension:pvc-sdr35" = { material = { low = 4, high = 8 }, labour = { low = 8, high = 16 } }  # 28.5 LF / 2 runs
 
 [construction_returns]
 # NEW SECTION 2026-08-18 — [low, high] $/LF of return, material only, keyed on the rule's

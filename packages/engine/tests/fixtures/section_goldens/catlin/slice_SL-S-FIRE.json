@@ -1399,6 +1399,62 @@
       "node": "polyline",
       "points": [
         [
+          440.41999999999996,
+          -37.00000000000001
+        ],
+        [
+          456.0,
+          -37.00000000000001
+        ],
+        [
+          456.0,
+          -33.0
+        ],
+        [
+          440.41999999999996,
+          -33.0
+        ]
+      ],
+      "layer": "A-SLAB",
+      "lineweight": 0.18,
+      "linetype": "CONTINUOUS",
+      "closed": true,
+      "uid": "WKSBD00000",
+      "tag": "SL-WK-D"
+    },
+    {
+      "space": "model",
+      "node": "hatch",
+      "boundary": [
+        [
+          440.41999999999996,
+          -37.00000000000001
+        ],
+        [
+          456.0,
+          -37.00000000000001
+        ],
+        [
+          456.0,
+          -33.0
+        ],
+        [
+          440.41999999999996,
+          -33.0
+        ]
+      ],
+      "pattern": "concrete",
+      "scale": 1.0,
+      "angle": 0.0,
+      "layer": "A-WALL-PATT",
+      "uid": null,
+      "material": "concrete"
+    },
+    {
+      "space": "model",
+      "node": "polyline",
+      "points": [
+        [
           436.09250000000003,
           -123.4375
         ],

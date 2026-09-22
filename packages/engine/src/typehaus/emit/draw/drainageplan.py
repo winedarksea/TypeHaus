@@ -31,6 +31,9 @@ _CATEGORY_STYLE = {
     "french_drain": ("P-STRM-TILE", "DASHED"),
     "sump": ("P-STRM-PIT", "CONTINUOUS"),
     "drywell": ("P-STRM-PIT", "DASHED"),
+    "leader_extension": ("P-STRM-TILE", "DASHED"),
+    "rain_garden_media": ("P-STRM-PIT", "CONTINUOUS"),
+    "rain_garden_stone": ("P-STRM-PIT", "DASHED"),
 }
 
 

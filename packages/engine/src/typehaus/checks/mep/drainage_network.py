@@ -33,6 +33,8 @@ from typehaus.model.mep import Sump
 from typehaus.model.structure import Drywell, FrenchDrain
 from typehaus.resolve.drainage_network import DAYLIGHT, EdgeKind, build_network
 
+from typehaus.checks.mep.landscape_drainage import leader_arrivals  # isort: skip
+
 from typehaus.checks.registry import CheckContext, Tier, check  # isort: skip
 
 #: How far above a receiver's own inlet a discharging invert may sit and still be read as
@@ -149,7 +151,8 @@ def outfall_connection(ctx: CheckContext) -> list[Finding]:
     cid = "drainage.outfall_connection"
     network = _network(ctx)
     runs = {e.tag: e for e in _elements(ctx) if isinstance(e, FrenchDrain)}
-    if not runs:
+    leader_count, leader_findings = leader_arrivals(ctx, network)
+    if not runs and not leader_count:
         return [not_applicable(cid, "this plan authors no french drain")]
 
     # A drywell's diameter is its shaft and a sump's is its pit; both are the footprint a
@@ -200,9 +203,10 @@ def outfall_connection(ctx: CheckContext) -> list[Finding]:
                          f"trench touches no stone that reaches it — the run stops short of "
                          f"the thing it discharges to",
                     (run.tag, edge.target), Result.FAIL))
+    out.extend(leader_findings)
     if not out:
         out.append(_pass(cid, f"every french drain arrives in what it discharges to "
-                              f"({len(runs)} runs)"))
+                              f"({len(runs)} runs, {leader_count} leader extensions)"))
     return out
 
 
@@ -261,7 +265,7 @@ def inlet_reciprocity(ctx: CheckContext) -> list[Finding]:
 
     for target, feeders in sorted(claimed.items()):
         node = network.nodes.get(target)
-        if node is None or node.kind not in {"drywell", "sump"}:
+        if node is None or node.kind not in {"drywell", "sump", "rain_garden"}:
             continue
         if not node.inlet_refs:
             out.append(advisory(

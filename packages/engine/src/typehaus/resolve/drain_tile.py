@@ -46,7 +46,9 @@ def resolved_spec(spec) -> ResolvedDrainTile | None:
 def drain_tile_solids(uid: str, tag: str, storey: str, path, floor_z_m: float,
                       spec: ResolvedDrainTile | None,
                       closed: bool = True,
-                      segment_floor_z_m: list[float] | None = None) -> list[ResolvedSolid]:
+                      segment_floor_z_m: list[float] | None = None,
+                      category: str = SOLID_CATEGORY,
+                      bedding_m: float = PIPE_BEDDING_M) -> list[ResolvedSolid]:
     """One band per run segment, from the excavation floor up one pipe diameter.
 
     ``path`` is a plan polyline; ``closed`` runs the segment back to the start, which is what
@@ -74,10 +76,10 @@ def drain_tile_solids(uid: str, tag: str, storey: str, path, floor_z_m: float,
         floor = floor_z_m
         if segment_floor_z_m is not None and index + 1 < len(segment_floor_z_m):
             floor = min(segment_floor_z_m[index], segment_floor_z_m[index + 1])
-        z0 = floor + PIPE_BEDDING_M
+        z0 = floor + bedding_m
         solids.append(ResolvedSolid(
             uid=f"{uid}-DT-{index:02d}", tag=f"{tag}-DT-{index + 1}", storey=storey,
-            category=SOLID_CATEGORY, outline=rect_between(start, end, -half, half),
+            category=category, outline=rect_between(start, end, -half, half),
             z0_m=z0, z1_m=z0 + diameter,
         ))
     return solids

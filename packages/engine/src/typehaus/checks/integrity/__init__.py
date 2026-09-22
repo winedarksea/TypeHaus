@@ -7,6 +7,7 @@ from typehaus.checks.integrity import (  # noqa: F401 - registers checks
     edge_run_host,
     head_connector,
     member_profile,
+    plant_refs,
     reinforcement_layout,
     reveal_alignment,
     roof_clearance,

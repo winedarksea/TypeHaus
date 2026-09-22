@@ -82,7 +82,7 @@ from __future__ import annotations
 
 import math
 
-from typehaus import Downspout, Flashing, Gutter, TrimKind, ft, inch, pt
+from typehaus import DischargeExtension, Downspout, Flashing, Gutter, TrimKind, ft, inch, pt
 
 _HOUSE_FT = 36.0
 # Wall layers outboard of the sheathing-ext datum -> the cladding outer face, which is
@@ -271,7 +271,21 @@ def _leader(side: str, index: int, eave_x, outward: float):
         bottom_elevation=_LEADER_BOTTOM, diameter=inch(_LEADER_DIA_IN),
         material=_CHAIN_MATERIAL, gutter_ref=f"TR-RF-GUTTER-{side}",
         # Four clamps at roughly 6' o.c. down the ~24' run (plan/mep.py::LEADER_CLAMPS).
-        clamp_refs=tuple(f"CN-A-LEADER-{side}{n}" for n in (1, 2, 3, 4)))
+        clamp_refs=tuple(f"CN-A-LEADER-{side}{n}" for n in (1, 2, 3, 4)),
+        **_WEST_DISCHARGE if side == "W" else {})
+
+
+# The WEST leader alone goes somewhere: 4" solid PVC buried north, west of SL-M-HP3PAD, to a
+# pop-up emitter in RG-W-BASIN (params/landscape_gardens.py). _LEADER_BOTTOM stays: the riser
+# from +1'-0" down to the inlet bills with the extension. notes/rain_garden_sizing.md.
+_WEST_DISCHARGE = dict(
+    discharge_ref="RG-W-BASIN",
+    extension=DischargeExtension(
+        path=(pt(-inch(8.77), _LEADER_Y), pt(ft(-1, -6), ft(36, 2)),
+              pt(ft(-1, -6), ft(46, 6)), pt(ft(-3, -6), ft(49))),
+        diameter=inch(4), material="pvc-sdr35",
+        inlet_invert=ft(-3, -4), outlet_invert=ft(-3, -8)),
+)
 
 
 # --- Rake drip edge (FORTIFIED Roof §4.5 wants one at every eave AND every rake) -----------

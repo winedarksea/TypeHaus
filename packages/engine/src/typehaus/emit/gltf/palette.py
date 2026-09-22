@@ -217,6 +217,12 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "drain_tile": (0.16, 0.15, 0.13, 1.0),   # corrugated HDPE tile
     "french_drain": (0.62, 0.60, 0.56, 1.0),  # washed-rock trench
     "drywell": (0.52, 0.50, 0.47, 1.0),      # soakaway aggregate, darker than the trench
+    "rain_garden_media": (0.36, 0.29, 0.21, 1.0),  # planting soil in the basin
+    "rain_garden_stone": (0.52, 0.50, 0.47, 1.0),  # the drywell's washed rock
+    "leader_extension": (0.90, 0.90, 0.88, 1.0),   # white solid PVC
+    # Foliage takes its PlantType's material colour; this is only the fallback.
+    "plant": (0.42, 0.52, 0.30, 1.0),
+    "trellis": (0.55, 0.47, 0.36, 1.0),            # KDAT post, weathered
     "ridge_cap": (0.85, 0.86, 0.87, 1.0),  # vented standing-seam ridge cap
     "corner_trim": (0.85, 0.86, 0.87, 1.0),  # eave corner trim (continuous skin)
     "flashing": (0.75, 0.77, 0.80, 1.0),   # metal flashing

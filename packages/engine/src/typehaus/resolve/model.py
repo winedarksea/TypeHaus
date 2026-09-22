@@ -1266,6 +1266,21 @@ class ResolvedCanvasObject:
     mount: Mount | None = None
 
 
+@dataclass(frozen=True)
+class ResolvedPlant:
+    """One plant a bed or a specimen resolved to (``resolve/landscape.py``)."""
+
+    tag: str
+    type_ref: str
+    position: tuple[float, float]
+    ground_z_m: float
+    height_m: float
+    spread_m: float
+    source_ref: str  # the Plant or PlantingBed tag
+    accent: bool = False
+    training: str = "free"
+
+
 @dataclass
 class ResolvedModel:
     plan: PlanModel
@@ -1281,6 +1296,7 @@ class ResolvedModel:
         default_factory=list
     )
     soffits: list[ResolvedSoffit] = field(default_factory=list)
+    plants: list[ResolvedPlant] = field(default_factory=list)
     braces: list[ResolvedBrace] = field(default_factory=list)
     floor_heat: list[ResolvedFloorHeat] = field(default_factory=list)
     rooms: list[ResolvedRoom] = field(default_factory=list)

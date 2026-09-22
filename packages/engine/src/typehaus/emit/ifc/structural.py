@@ -113,11 +113,15 @@ _SOLID_IFC_CLASS: dict[str, tuple[str, str | None]] = {
     "sump": ("IfcDistributionChamberElement", "SUMP"),
     "french_drain": ("IfcDistributionChamberElement", "TRENCH"),
     "drywell": ("IfcDistributionChamberElement", "USERDEFINED"),
+    "leader_extension": ("IfcPipeSegment", "RIGIDSEGMENT"),
+    "rain_garden_media": ("IfcDistributionChamberElement", "USERDEFINED"),
+    "rain_garden_stone": ("IfcDistributionChamberElement", "USERDEFINED"),
 }
 
 
 #: Where the IFC4 enum has no member for what the thing is, ``ObjectType`` carries the name.
-_SOLID_OBJECT_TYPE = {"drywell": "SOAKAWAY"}
+_SOLID_OBJECT_TYPE = {"drywell": "SOAKAWAY", "rain_garden_media": "BIORETENTION",
+                      "rain_garden_stone": "BIORETENTION"}
 
 
 def _emit_solid(f: Any, body: Any, solid: Any, storeys: dict[str, Any], project_uuid: Any,

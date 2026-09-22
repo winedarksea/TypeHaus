@@ -696,7 +696,8 @@ def test_catlin_house_roof_eave_trim_closes_the_eave(catlin_model) -> None:
         # The drip's turn-down ends inside the trough, below the rim it empties over.
         assert min(s.z0_m for s in drip) < gutter_top
     # Each eave drains to a leader, so the gutters' slope notes point somewhere real.
-    leaders = [s for s in catlin_model.solids if s.tag.startswith("TR-RF-LEADER-")]
+    leaders = [s for s in catlin_model.solids if s.tag.startswith("TR-RF-LEADER-")
+               and s.category == "downspout"]
     assert {s.tag for s in leaders} == {"TR-RF-LEADER-W", "TR-RF-LEADER-E"}
     assert not [s for s in catlin_model.solids if s.tag.startswith("TR-RF-")
                 and "GARAGE" in s.tag]

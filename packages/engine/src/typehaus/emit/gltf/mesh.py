@@ -4,7 +4,7 @@ by colour so each object becomes one mesh of a few primitives."""
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from typehaus.emit.gltf.geometry import (
     Vec3,
@@ -16,6 +16,7 @@ from typehaus.emit.gltf.geometry import (
     _to_gltf,
     arch_soffit_circle,
 )
+from typehaus.emit.gltf.triangulate import HAS_CDT, fan_is_exact, polygon_parts, triangles
 
 if TYPE_CHECKING:  # the IR types are annotations only — importing them at runtime would
     # make the glTF emitter depend on the resolver package it is fed from.
@@ -89,6 +90,11 @@ class _MeshBuilder:
         # per-face normals derived from them — point outward, which single-sided import needs.
         if _ring_signed_area(ring) < 0:
             ring = list(reversed(ring))
+        if HAS_CDT and not fan_is_exact(ring):  # concave: a fan would spill outside it
+            parts = polygon_parts(ring)
+            if parts:
+                self.add_polygon_prism(parts, z0, z1, color)
+                return
         positions, indices = self._bucket(color)
         base = len(positions)
         n = len(ring)
@@ -101,7 +107,7 @@ class _MeshBuilder:
             j = (i + 1) % n
             b0, b1, t0, t1 = base + i, base + j, base + n + i, base + n + j
             indices += [b0, b1, t1, b0, t1, t0]
-        # caps via fan triangulation (rings are convex-ish quads in practice)
+        # caps via fan triangulation (exact: checked above)
         for i in range(1, n - 1):
             indices += [base, base + i + 1, base + i]                 # bottom (down)
             indices += [base + n, base + n + i, base + n + i + 1]     # top (up)
@@ -143,31 +149,65 @@ class _MeshBuilder:
                                          voids: tuple[tuple[tuple[float, float], ...], ...],
                                          z0: float, z1: float,
                                          color: tuple[float, float, float, float]) -> None:
-        """Emit a rectangular slab as strips around rectangular voids.
+        """Extrude ``ring`` with every void cut through it.
 
-        The floor-opening framing contract currently accepts orthogonal rectangles, so
-        this produces a true hole without introducing a second polygon triangulator.
-        Irregular solids intentionally retain their outer prism until they gain a general
-        mesh path.
-
-        Any number of holes is subtracted, one after another, because the site earth sheet
-        is one outline cut by *every* excavated slab — not the single stair well a floor
-        slab has. One hole reduces to exactly four bands.
+        An axis-aligned rectangle cut only by axis-aligned rectangles keeps the strip path (its
+        output is unchanged): holes are subtracted one after another — the earth sheet is cut
+        by every excavated slab — and one hole reduces to exactly four bands. Any other shape
+        (a round planting void, a polygon earth sheet) goes through ``add_polygon_prism``.
         """
-        xs, ys = {p[0] for p in ring}, {p[1] for p in ring}
-        if len(xs) != 2 or len(ys) != 2 or not voids:
+        if not voids:
             self.add_prism(ring, z0, z1, color)
             return
-        rects = [(min(xs), max(xs), min(ys), max(ys))]
+        xs, ys = {p[0] for p in ring}, {p[1] for p in ring}
+        boxes = []
         for hole in voids:
             hx, hy = {p[0] for p in hole}, {p[1] for p in hole}
-            if len(hx) != 2 or len(hy) != 2:  # not an orthogonal rectangle: no hole path
-                self.add_prism(ring, z0, z1, color)
-                return
-            box = (min(hx), max(hx), min(hy), max(hy))
-            rects = [piece for rect in rects for piece in _subtract_rect(rect, box)]
-        for x0, x1, y0, y1 in rects:
-            self.add_prism([(x0, y0), (x1, y0), (x1, y1), (x0, y1)], z0, z1, color)
+            if len(hx) != 2 or len(hy) != 2:
+                break
+            boxes.append((min(hx), max(hx), min(hy), max(hy)))
+        if len(xs) == 2 and len(ys) == 2 and len(boxes) == len(voids):
+            rects = [(min(xs), max(xs), min(ys), max(ys))]
+            for box in boxes:
+                rects = [piece for rect in rects for piece in _subtract_rect(rect, box)]
+            for x0, x1, y0, y1 in rects:
+                self.add_prism([(x0, y0), (x1, y0), (x1, y1), (x0, y1)], z0, z1, color)
+            return
+        parts = polygon_parts(ring, voids) if HAS_CDT else []
+        if parts:
+            self.add_polygon_prism(parts, z0, z1, color)
+        else:  # no CDT (Pyodide's Shapely 2.0) or an unusable ring: the uncut prism
+            self.add_prism(ring, z0, z1, color)
+
+    def add_polygon_prism(self, parts: list[Any], z0: float, z1: float,
+                          color: tuple[float, float, float, float]) -> None:
+        """Extrude oriented polygons (``triangulate.polygon_parts``), holes and all.
+
+        Same conventions as ``add_prism``: bottom loop then top loop, side quads wound so a
+        CCW shell faces out — and a CW hole ring, by the same formula, faces into the hole.
+        """
+        positions, indices = self._bucket(color)
+        for polygon in parts:
+            rings = [list(polygon.exterior.coords)[:-1]]
+            rings += [list(hole.coords)[:-1] for hole in polygon.interiors]
+            flat = [pt for r in rings for pt in r]
+            n, base = len(flat), len(positions)
+            where: dict[tuple[float, float], int] = {}
+            for i, (x, y) in enumerate(flat):
+                where.setdefault((x, y), i)
+            positions.extend(_to_gltf(x, y, z0) for (x, y) in flat)
+            positions.extend(_to_gltf(x, y, z1) for (x, y) in flat)
+            start = 0
+            for r in rings:
+                m = len(r)
+                for i in range(m):
+                    b0, b1 = base + start + i, base + start + (i + 1) % m
+                    indices += [b0, b1, b1 + n, b0, b1 + n, b0 + n]
+                start += m
+            for tri in triangles(polygon):
+                a, b, c = (base + where[pt] for pt in tri)
+                indices += [a, c, b]              # bottom (down)
+                indices += [a + n, b + n, c + n]  # top (up)
 
     def add_member_box(self, p0: Vec3, p1: Vec3, half_width: float,
                        color: tuple[float, float, float, float],

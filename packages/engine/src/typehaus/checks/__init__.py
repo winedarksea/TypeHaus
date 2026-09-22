@@ -16,6 +16,7 @@ from typehaus.checks.code import (  # noqa: F401 - register
     mn_energy,
     mn_residential,
     site,
+    site_utilities,
     unvented_roof,
 )
 from typehaus.checks.permit import PermitChecklist, PermitChecklistItem, evaluate_permit_checklist

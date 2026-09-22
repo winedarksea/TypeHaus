@@ -69,6 +69,16 @@ from typehaus.model.floors import (
     Soffit,
     SoffitOpening,
 )
+from typehaus.model.landscape import (
+    AccentRule,
+    GridLayout,
+    Plant,
+    PlantingBed,
+    PlantType,
+    PocketLayout,
+    RainGarden,
+    Trellis,
+)
 from typehaus.model.materials import Material
 from typehaus.model.mep import (
     ConduitRun,
@@ -194,6 +204,7 @@ from typehaus.model.structure import (
     Wedge,
 )
 from typehaus.model.trim import (
+    DischargeExtension,
     Downspout,
     EaveGutter,
     EaveSoffit,
@@ -298,7 +309,9 @@ __all__ = [
     "Fascia", "Gutter",
     "Flashing",
     "EaveSoffit", "FasciaBoard", "EaveGutter", "EaveTrim", "GlazingPanel", "GlazingTrim",
-    "Downspout",
+    "Downspout", "DischargeExtension",
+    "PlantType", "Plant", "PlantingBed", "GridLayout", "PocketLayout", "AccentRule",
+    "Trellis", "RainGarden",
     "SolarPanel",
     "Assembly", "Layer", "LayerBound", "LayerExtent", "CavityFill", "FramingSpec",
     "MasonrySpec", "AssemblyInterface",

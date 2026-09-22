@@ -2401,6 +2401,34 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **MAXIMERA is a product, not a geometry** (`PROD-IKEA-MAXIMERA`). The model has no drawer
   vocabulary; which boxes are drawer stacks is prose in `prices.toml` and `plan/placeables.py`.
 
+### Gardens (2026-09-21)
+
+- **Plants are illustrative and never priced**; they count in the takeoff's `planting` table
+  and every row lands in `unpriced` on purpose. Catalog: `plan/plant_types.py` (NOT editable,
+  with the foliage colours). Only concrete, Class 5, basin media/stone and the leader
+  extensions price.
+- **Rain garden `RG-W-BASIN`** (`params/landscape_gardens.py`): x -6'..-1', y 47'..82', 9"
+  ponding at 2:1, 12" media over 6" stone, fed by `TR-G-LEADER-W` and `TR-RF-LEADER-W` through
+  buried 4" PVC (`Downspout.discharge_ref` + `extension`), overflowing north to daylight.
+  88.5 cf against 85.9 cf — a 2.6 cf margin, so **any roof added to the west leaders grows
+  the basin first**. The canopy's west half (80 sf) reaches `TR-G-LEADER-W` in the field
+  but is counted nowhere, because `RF-BW-CANOPY` names only the east leader. The lot-line
+  (1') and garage (6.5') setbacks are owner-accepted advisory UNKNOWNs; drawdown is UNKNOWN
+  until a soil test authors `infiltration_in_per_hr`. `notes/rain_garden_sizing.md`.
+- **Sidewalk** (`params/landscape_walk.py`): five `SIDEWALK_FRC_CLASS5` slabs, 92" full
+  section, 64" one-sided down the house's east side (the side patio is retired into it),
+  28 sonotube pockets as `FloorOpening(purpose=PLANTING)`. Slabs are FLAT at -2'-9"; the
+  fall is on the `walk *` impervious surfaces, merged into the site by `plan/manifest.py`
+  — never hand-copy them into `plan/site.py`. Leg C is notched round `PT-BW-RNE`.
+  `notes/sidewalk_layout.md`.
+- **Bluestem grid `PB-S-GRID`** south of `W-RG-BLOCK`: 198 cells at 15", 24 accents on the
+  `(i + 3j) mod 9` lattice. The basin reuses the same grid code for its slope and floor
+  beds. `notes/grid_garden.md`.
+- **Espaliers**: three dwarf apples in `plan/landscape.py` (editable) on `TRL-W-S`/`-N` at
+  x=-5', split round the power service at y=18'. `site.utility_clearance` grades every post,
+  tree hole and basin against the 24" locate tolerance. The silt fence's west leg moved to
+  x=-6' to clear the trellis line. `notes/espalier_trellis.md`.
+
 ## The engineering workflow
 
 Catlin carries ~36 engineered items across nine kinds — the requirements outside the

@@ -9,6 +9,7 @@ from pydantic import Field
 from typehaus.model.assembly import Assembly, ConstructionRule
 from typehaus.model.base import Element, HausModel
 from typehaus.model.electrical import Circuit, LoadManagement
+from typehaus.model.landscape import PlantType
 from typehaus.model.materials import Material
 from typehaus.model.product import Product
 from typehaus.model.project import Building, Project, Storey
@@ -52,6 +53,8 @@ class Library(HausModel):
     load_managements: tuple[LoadManagement, ...] = ()
     transitions: tuple[Transition, ...] = ()
     construction_rules: tuple[ConstructionRule, ...] = ()
+    # Illustrative planting (``model/landscape.py``); counted, never priced.
+    plant_types: tuple[PlantType, ...] = ()
 
     def assembly(self, tag: str) -> Assembly | None:
         return next((a for a in self.assemblies if a.tag == tag), None)

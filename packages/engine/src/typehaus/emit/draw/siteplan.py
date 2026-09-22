@@ -26,6 +26,7 @@ from typehaus.emit.draw.scene import (
 )
 from typehaus.emit.draw.siteplan_annotate import emit_site_annotations
 from typehaus.emit.draw.siteplan_labels import add_point_label
+from typehaus.emit.draw.siteplan_planting import emit_site_planting
 from typehaus.emit.draw.typography import DIM_TEXT_PT, TEXT_PT
 from typehaus.resolve.model import ResolvedModel
 
@@ -45,6 +46,7 @@ def build_site_plan(model: ResolvedModel) -> Scene:
     _emit_roofs_or_wall_footprints(builder, model)
     _emit_foundation_and_post_supports(builder, model)
     _emit_drainage_overlay(builder, model)
+    emit_site_planting(builder, model)
     emit_site_annotations(builder, model, site)
     _emit_utilities(builder, site)
     _emit_spot_elevations_and_drainage(builder, site)
@@ -195,7 +197,8 @@ def _emit_foundation_and_post_supports(builder: SceneBuilder, model: ResolvedMod
 
 #: Buried stormwater draws dashed; the hung/surface family (gutter, leader, pit cover)
 #: draws solid — the convention the P-2xx drainage plans use, carried onto the site sheet.
-_BURIED_DRAINAGE = frozenset({"drain_tile", "french_drain", "drywell"})
+_BURIED_DRAINAGE = frozenset({"drain_tile", "french_drain", "drywell", "leader_extension",
+                              "rain_garden_stone"})
 
 
 def _emit_drainage_overlay(builder: SceneBuilder, model: ResolvedModel) -> None:

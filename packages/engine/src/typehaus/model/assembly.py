@@ -500,7 +500,9 @@ class Assembly(HausModel):
     # Authored rather than inferred, because the natural inference — "no STRUCTURE layer" —
     # is precisely the mistake ``integrity.assembly_layers`` exists to catch, and a rule
     # cannot both catch a thing and treat it as a declaration.
-    role: Literal["enclosure", "band"] = "enclosure"
+    # "flatwork" is a slab on grade that only people walk on (a sidewalk): it bears nothing,
+    # so the foundation sheet's slab schedule leaves it to the site plan.
+    role: Literal["enclosure", "band", "flatwork"] = "enclosure"
     source: str | None = None
 
     def depth_layers(self) -> tuple[Layer, ...]:

@@ -145,6 +145,10 @@ def resolve(plan: PlanModel) -> tuple[ResolvedModel, list[Finding]]:
         # Authored site drainage, beside the accessories for the same reason: it reads the
         # slabs and footings the earlier stages produced and adds only solids.
         findings.extend(resolve_drainage(model))
+        # Plants read the walk slabs their pockets are cut in; derived display solids only.
+        from typehaus.resolve.landscape import resolve_landscape
+
+        findings.extend(resolve_landscape(model))
     with _stage("rooms"):
         findings.extend(resolve_rooms(plan, model))
         # After resolve_rooms: needs each room's clear face to hang a ceiling under.

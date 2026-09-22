@@ -260,6 +260,8 @@ class FloorOpeningPurpose(Enum):
     STAIR = "stair"
     CHASE = "chase"
     HATCH = "hatch"
+    # A planting pocket in a walk slab (a sonotube void). Not framed, not a hole to fall in.
+    PLANTING = "planting"
 
 
 class RadiantSystem(Enum):
