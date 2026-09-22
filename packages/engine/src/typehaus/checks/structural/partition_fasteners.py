@@ -9,7 +9,8 @@ schedule's own pitch against a ``PublishedSpan`` authored on a wall, through
 ``checks/structural/published.py``, exactly as ``structural.slab_published_span`` does.
 
 **It is ONE group item, keyed by the lowest partition tag**, on the ``girt_screw/W-A-N1``
-precedent (``wall_panel/W-A-N1``'s, until that item became a published read): one table row governs every partition top in the house, the row is authored
+precedent (``wall_panel/W-A-N1``'s, until that item became a published read): one table
+row governs every partition top in the house, the row is authored
 once, and the check grades the WORST case of the population against it. Fifty-odd separate
 findings would be fifty readings of one document.
 

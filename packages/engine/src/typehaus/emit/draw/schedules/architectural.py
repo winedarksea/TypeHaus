@@ -286,7 +286,8 @@ SYMBOLS = (
      "detail callout: detail 1, drawn on sheet A-501 (callouts.py)"),
     ("Medium red line on S-103.1", "braced wall line (bracedwallplan.py)"),
     ("Heavy red line offset beside it",
-     "braced wall panel, tagged with its width and R602.10.4 method; drawn light where it is under Table R602.10.5's minimum and contributes nothing"),
+     "braced wall panel, tagged with its width and R602.10.4 method; drawn light where it "
+     "is under Table R602.10.5's minimum and contributes nothing"),
     ("Triangle with a level name", "storey datum, on sections and elevations"),
     ("Hatched band in a wall cut", "material, named in that sheet's own legend"),
 )

@@ -1,7 +1,8 @@
 """Screw withdrawal from a wood support — NDS 2018 §12.2, for a concealed panel leg.
 
 Pure arithmetic, no model types. It exists as its own module because it is the one part of
-``structural.cladding_fastener`` (``cladding.py``) a reviewer checks line by line against the standard, and because the
+``structural.cladding_fastener`` (``cladding.py``) a reviewer checks line by line against
+the standard, and because the
 answer is a *rational design*: no manufacturer publishes a pull-out value for a concealed
 board-and-batten leg screwed into wood, and IAPMO UES ER-309 expressly permits a design
 professional to extend published data by engineering mechanics rather than wait for a row

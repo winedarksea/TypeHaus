@@ -21,8 +21,8 @@ from typehaus.model.assembly import (
     Substitution,
 )
 from typehaus.model.backing import WallBacking
-from typehaus.model.braced_wall import BracedWallPanel
 from typehaus.model.base import Element, HausModel
+from typehaus.model.braced_wall import BracedWallPanel
 from typehaus.model.electrical import Circuit, LoadManagement
 from typehaus.model.elements import Door, Node, RoughOpening, Wall, Window
 from typehaus.model.enums import (
