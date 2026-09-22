@@ -330,8 +330,13 @@ def top_plate_cut(profile: str, cut_in: float, *,
 _CUTTABLE_CATEGORIES = ("stud", "king", "jack", "cripple", "plate", "sill", "header")
 
 
-def header_bore(profile: str, diameter_in: float) -> BoreVerdict:
+def header_bore(profile: str, diameter_in: float, *,
+                through_in: float | None = None) -> BoreVerdict:
     """A hole a run would take through a header over an opening.
+
+    ``through_in`` is how much of the diameter the member actually loses (→ ``MemberCut``);
+    below the diameter the run only clips the member and the cut is a **notch**. ``None``
+    keeps the whole diameter, which is what an unqualified caller means.
 
     **There is no prescriptive table for this and none is invented here.** R502.8.1 governs
     floor JOISTS, R602.6 governs STUDS, and neither reaches a header: a header is a bending
@@ -351,15 +356,20 @@ def header_bore(profile: str, diameter_in: float) -> BoreVerdict:
     """
     from typehaus.resolve.framing.profiles import cross_section
 
+    cut_in = diameter_in if through_in is None else through_in
+    notch = cut_in < diameter_in - 1e-6
+    what = "notch" if notch else "bore"
+    aside = (f' (the run\'s {diameter_in:.2f}" outside only clips the member: a notch off a '
+             "face, not a full-diameter bore)" if notch else "")
     section = cross_section(profile)
-    engineered = _engineered(section, profile, "bore")
+    engineered = _engineered(section, profile, what)
     if engineered is not None:
         return engineered
     depth_in = section.depth_m / M_PER_IN
-    if diameter_in >= depth_in - 1e-9:
+    if cut_in >= depth_in - 1e-9:
         return BoreVerdict(
-            False, "bore", diameter_in, depth_in,
-            f'a {diameter_in:.2f}" penetration through a {profile} header is as deep as the '
+            False, "bore", cut_in, depth_in,
+            f'a {cut_in:.2f}" penetration through a {profile} header is as deep as the '
             f'{depth_in:.2f}" member itself: that is not a hole drilled in a member that '
             "stays whole, it is the header's removal, and a severed header does not carry "
             "the opening under it",
@@ -367,8 +377,8 @@ def header_bore(profile: str, diameter_in: float) -> BoreVerdict:
                    "or through a floor bay — or frame a second opening and header it")
     joist_scale = depth_in * JOIST_HOLE_FRACTION
     return BoreVerdict(
-        None, "bore", diameter_in, None,
-        f'{diameter_in:.2f}" through a {profile} header ({depth_in:.2f}" deep): NO IRC '
+        None, what, cut_in, None,
+        f'{cut_in:.2f}" through a {profile} header ({depth_in:.2f}" deep){aside}: NO IRC '
         "table publishes a bore or notch limit for a header. R502.8.1 governs floor joists "
         "and R602.6 studs; a header collects an opening's whole tributary load over a span "
         "and what a hole costs it depends on where along that span it sits. For scale only, "
@@ -381,17 +391,22 @@ def header_bore(profile: str, diameter_in: float) -> BoreVerdict:
 class MemberCut:
     """One place a run's leg meets one wall member, and what it would have to cut.
 
-    ``through`` is the dimension the run has to get through — a stud's depth for a bore
-    across the wall, a plate's thickness for a riser — and ``diameter_in`` is the hole the
-    run's own outside needs.
+    ``diameter_in`` is the hole the run's outside needs; ``through_in`` is how much of it
+    the member gives up here — a 4" duct 0.25" above a header's top takes a 1.75" NOTCH, not
+    a 4" bore. Equal wherever the run passes wholly inside the z band, the ordinary case.
+
+    ``station`` is where the run MEETS the member, never the member's own centroid: a
+    header's centroid is its midspan, and a hole's cost to a bending member is a question
+    about where along the span it sits.
     """
 
     member_key: str
-    category: str  # "stud" | "plate" | "king" | "jack" | "cripple" | "sill"
+    category: str  # "stud" | "plate" | "king" | "jack" | "cripple" | "sill" | "header"
     profile: str
     station: tuple[float, float]
     z_m: float
     diameter_in: float
+    through_in: float
 
 
 def leg_crossings(wall: ResolvedWall, a: tuple[float, float], b: tuple[float, float],
@@ -408,29 +423,58 @@ def leg_crossings(wall: ResolvedWall, a: tuple[float, float], b: tuple[float, fl
     A member is crossed when the run's inflated plan line meets the member's own plan
     rectangle AND the run's elevation there is inside the member's z band. Both, for the
     same reason ``mep_crossings.leg_crossings`` needs both: a run passing over a wall's
-    plate is not boring it.
+    plate is not boring it. **The station is the meeting, not the member** — the run's axis
+    where it lies inside it. A stud's centroid IS that point, so nothing moved there; a
+    header's is its midspan, which was a wrong z and a station no hole chart can be read at.
     """
     from shapely.geometry import LineString, Point
 
     from typehaus.resolve.framing.profiles import cross_section
 
-    swept = (Point(a) if a == b else LineString([a, b])).buffer(radius_m)
+    axis = Point(a) if a == b else LineString([a, b])
+    swept = axis.buffer(radius_m)
     out: list[MemberCut] = []
     for member in wall.members:
         if member.category not in _CUTTABLE_CATEGORIES:
             continue
         shape = _member_plan_shape(member, cross_section(member.profile))
-        if shape is None or not swept.intersects(shape):
+        if shape is None:
             continue
-        centre = shape.centroid
+        overlap = swept.intersection(shape)
+        if overlap.is_empty:
+            continue
+        # The axis, falling back to the envelope where only the envelope grazes: an
+        # envelope clipped by the member's END drags its own centroid inward.
+        axis_in = axis.intersection(shape)
+        centre = (overlap if axis_in.is_empty else axis_in).centroid
         z = _z_at(a, b, za, zb, (centre.x, centre.y))
         top = member.z1_m if member.z1_m is not None else wall.z1_m
         if not (member.z0_m - radius_m <= z <= top + radius_m):
             continue
         out.append(MemberCut(member_key=member.child_key, category=member.category,
                              profile=member.profile, station=(centre.x, centre.y),
-                             z_m=z, diameter_in=2.0 * radius_m / M_PER_IN))
+                             z_m=z, diameter_in=2.0 * radius_m / M_PER_IN,
+                             through_in=_through_in(a, b, za, zb, z, radius_m,
+                                                    member.z0_m, top)))
     return out
+
+
+def _through_in(a: tuple[float, float], b: tuple[float, float], za: float, zb: float,
+                z: float, radius_m: float, z0_m: float, top_m: float) -> float:
+    """How deep into the member's z band the run's own envelope reaches (→ ``MemberCut``).
+
+    A RISER — a leg whose rise beats its plan travel — crosses the member the long way and
+    takes its whole diameter out of it. A level leg takes only the part of its OD band
+    inside the member, which clipped at the top is a notch off the top face.
+    """
+    diameter_in = 2.0 * radius_m / M_PER_IN
+    plan_m = ((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2) ** 0.5
+    if abs(zb - za) > plan_m:
+        return diameter_in
+    inside = min(z + radius_m, top_m) - max(z - radius_m, z0_m)
+    if inside >= 2.0 * radius_m - 1e-9:  # contained: snap, or ulps read as a notch
+        return diameter_in
+    return max(0.0, inside) / M_PER_IN
 
 
 def _member_plan_shape(member: FramedMember, section: Any) -> Any:

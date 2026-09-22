@@ -200,6 +200,50 @@ Six UNKNOWNs where there were none is not a regression — it is six holes throu
 that nobody had looked at. Four of the six are over half the header's depth, which is the
 kind of number a person wants in front of them whether or not a table grades it.
 
+### 6a. Where along the header, and how much of it (2026-09-22)
+
+**Every one of those six printed dead midspan until today, and the station was a bug.**
+`leg_crossings` read `shape.centroid` for both the station and the elevation it sampled the
+run at. For a STUD that is where the run meets it, and nothing moved. For a HORIZONTAL
+member — a plate, a sill, a header — the centroid is the member's own midpoint, so all six
+crossings of `header-0` reported x = 57.00" (the middle of a 37.50"–76.50" member) and were
+graded at the elevation the run happens to have there. A hole's cost to a bending member is
+a question about WHERE ALONG THE SPAN it sits, so a midspan station is not a detail: it is
+the single fact a hole chart is indexed on. The station is now the centroid of the run's own
+AXIS where it lies inside the member, falling back to the swept envelope where the axis
+misses and only the envelope grazes. (The axis, not the envelope: an envelope clipped by the
+member's END drags its own centroid inward, which put the 39.00" crossing at 39.25".)
+
+**And a partial overlap is a NOTCH, not a bore.** `MemberCut.through_in` is how much of the
+run's outside diameter the member actually loses at that station — the run's OD band clipped
+against the member's own z band. `DU-B-ERV-R-SAUNA-SUP` runs at −21.94", 0.25" above the
+header's −22.19" top, so a 4" duct takes **1.75" off the top face** and not a 4" bore; it
+was only ever admitted by `leg_crossings`' ±radius slop and now says why. The rest sit
+wholly inside the member and their `through_in` equals their diameter.
+
+| run | member | station (x, y) | z | OD | cut | reading |
+|---|---|---|---|---|---|---|
+| `DU-B-ERV-R-SAUNA-SUP` | `W-B-CW` `header-0` | **39.00", 216"** | −21.94" | 4.00" | **1.75"** | notch off the top, **dead on the west jack face** (RO is x 39"-75") |
+| `DU-B-ERV-R-SAUNA-EXH` | `W-B-CW` `header-0` | **45.00", 216"** | −23.44" | 4.00" | **3.25"** | notch off the top, 7.50" in from the member end (6.00" from the west jack face) |
+| `PR-B-KITCH-DRAIN` | `W-B-CW` `header-0` | **54.00", 216"** | −27.21" | 2.38" | 2.38" | bore, 3.00" west of midspan, low in the section |
+| `PR-M-S-BATH1-DRAIN` | `W-B-CW` `header-0` | **54.77", 216"** | −26.48" | 3.50" | 3.50" | bore, near midspan |
+| `PR-B-MAIN-DRAIN` | `W-B-CW` `header-0` | **72.00", 216"** | −25.04" | 4.50" | 4.50" | bore, **3.00" from the east jack face** (RO ends x=75") |
+| `DU-B-ERV-R-GYM` | `W-B-CS3` `header-0` | **216", 156.00"** | −25.44" | 4.00" | 4.00" | bore, 8.94" from the member's north end (7.44" from the north jack face) |
+
+Both headers are `2-2x8` (3.000" x 7.250"), 39.00" long, z −29.44"…−22.19". Every verdict is
+still UNKNOWN: no IRC table reaches a header and none was invented to reach one. What changed
+is that the numbers a person (or a published chart) needs are now true.
+
+**The short-cripple gap — recorded, NOT exploited.** Above `D-B-FURN`'s header there is
+**6.56"** of cripple to the plate. `stud_bore` grades a hole against the stud's DEPTH
+(a non-bearing 2x8: 60% of 7.25" = 4.35"), and says nothing at all about the member's
+LENGTH — so this engine would **PASS a 4.00" hole through a 6.56" cripple**, leaving 1.28" of
+wood above it and 1.28" below. R602.6 is written about a stud running floor to plate; a
+6.56" block with a 4" hole in it is not a bored stud, it is two 1.28" slivers. No route in
+this house may be taken through that zone on the strength of that PASS. Closing the gap
+properly means a length-aware predicate (a hole's clear wood above and below, as R502.8.1
+states for a joist's edges), and it is not attempted here.
+
 ---
 
 ## 7. `PlateTie` — the word the model was missing

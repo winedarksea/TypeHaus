@@ -15,7 +15,14 @@ from typehaus.checks.code.mn_residential.profile import MN_2020
 from typehaus.checks.registry import CheckContext, Preferences
 from typehaus.model.registry import constructor_names, element_kinds
 from typehaus.model.structure import PlateTie
-from typehaus.resolve.mep_bores import _CUTTABLE_CATEGORIES, header_bore, top_plate_cut
+from typehaus.quantities import M_PER_IN
+from typehaus.resolve.mep_bores import (
+    _CUTTABLE_CATEGORIES,
+    header_bore,
+    leg_crossings,
+    top_plate_cut,
+)
+from typehaus.resolve.model import FramedMember, ResolvedWall
 
 
 def _ctx(model) -> CheckContext:
@@ -76,6 +83,86 @@ def test_catlin_s_six_header_crossings_are_all_reported(catlin_model_ro) -> None
     findings = run_through_header(_ctx(catlin_model_ro))
     assert len(findings) == 6
     assert {f.result.value for f in findings} == {"unknown"}
+
+
+# --- §6 where along the header, and how much of it ------------------------------------
+
+#: catlin's own basement header, in inches: 39" long, 7.25" deep, its top at -22.19.
+_H_X0, _H_X1 = 37.50, 76.50
+_H_Z0, _H_Z1 = -29.44, -22.19
+
+
+def _header_wall() -> ResolvedWall:
+    member = FramedMember(
+        parent_uid="W-TEST", child_key="header-0", category="header", profile=HEADER,
+        p0=(_H_X0 * M_PER_IN, 0.0), p1=(_H_X1 * M_PER_IN, 0.0),
+        z0_m=_H_Z0 * M_PER_IN, z1_m=_H_Z1 * M_PER_IN,
+        length_m=(_H_X1 - _H_X0) * M_PER_IN)
+    return ResolvedWall(uid="W-TEST", tag="W-TEST", storey="basement", assembly="INT",
+                        axis=((_H_X0 * M_PER_IN, 0.0), (_H_X1 * M_PER_IN, 0.0)),
+                        layers=(), z0_m=-96.0 * M_PER_IN, z1_m=_H_Z1 * M_PER_IN,
+                        members=(member,))
+
+
+def _cross(x_in: float, z_in: float, diameter_in: float):
+    """One level leg crossing the header square on, at ``x_in``, centred at ``z_in``."""
+    radius = diameter_in / 2.0 * M_PER_IN
+    cuts = leg_crossings(_header_wall(), (x_in * M_PER_IN, -12.0 * M_PER_IN),
+                         (x_in * M_PER_IN, 12.0 * M_PER_IN),
+                         z_in * M_PER_IN, z_in * M_PER_IN, radius)
+    assert len(cuts) == 1
+    return cuts[0]
+
+
+def test_a_crossing_of_a_horizontal_member_reports_the_crossing_not_the_midpoint() -> None:
+    """The station is where the run MEETS the header, not the header's own centroid.
+
+    Reading a header's centroid put every one of catlin's six crossings at dead midspan
+    (57.00" on this member), which is a wrong z as well as a station no hole chart can be
+    read against: a hole's cost to a bending member is a question about where along the span.
+    """
+    cut = _cross(39.25, -21.94, 4.0)
+    midspan = (_H_X0 + _H_X1) / 2.0
+    assert cut.station[0] / M_PER_IN == pytest.approx(39.25)
+    assert abs(cut.station[0] / M_PER_IN - midspan) > 17.0
+
+
+def test_a_partial_overlap_is_a_notch_depth_and_not_a_full_diameter_bore() -> None:
+    """DU-B-ERV-R-SAUNA-SUP: a 4" duct 0.25" over the header top takes 1.75" off it."""
+    cut = _cross(39.25, _H_Z1 + 0.25, 4.0)
+    assert cut.diameter_in == pytest.approx(4.0)
+    assert cut.through_in == pytest.approx(1.75)
+    verdict = header_bore(cut.profile, cut.diameter_in, through_in=cut.through_in)
+    assert verdict.kind == "notch"
+    assert "notch off a face" in verdict.basis
+
+
+def test_a_run_wholly_inside_the_member_loses_nothing_to_the_clip() -> None:
+    cut = _cross(54.0, -27.21, 2.375)
+    assert cut.through_in == pytest.approx(cut.diameter_in)
+    assert header_bore(cut.profile, cut.diameter_in,
+                       through_in=cut.through_in).kind == "bore"
+
+
+def test_the_six_catlin_header_crossings_are_at_their_true_stations(
+        catlin_model_ro) -> None:
+    """§6's table, from the model. Every one of these printed 57.00" before 2026-09-22."""
+    from typehaus.checks.mep.routing_bores import _crossings
+
+    stations = {tag: (cut.station[0] / M_PER_IN, cut.station[1] / M_PER_IN, cut.through_in)
+                for tag, _wall, cuts in _crossings(_ctx(catlin_model_ro))
+                for cut in cuts if cut.category == "header"}
+    expected = {
+        "DU-B-ERV-R-SAUNA-SUP": (39.00, 216.0, 1.75),
+        "DU-B-ERV-R-SAUNA-EXH": (45.00, 216.0, 3.25),
+        "PR-B-KITCH-DRAIN": (54.00, 216.0, 2.375),
+        "PR-M-S-BATH1-DRAIN": (54.77, 216.0, 3.50),
+        "PR-B-MAIN-DRAIN": (72.00, 216.0, 4.50),
+        "DU-B-ERV-R-GYM": (216.0, 156.0, 4.00),
+    }
+    assert set(stations) == set(expected)
+    for tag, want in expected.items():
+        assert stations[tag] == pytest.approx(want, abs=0.01), tag
 
 
 # --- §7 the plate tie --------------------------------------------------------------------

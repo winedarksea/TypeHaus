@@ -243,7 +243,17 @@ def run_through_header(ctx: CheckContext) -> list[Finding]:
     determinate case is a penetration as deep as the member — a severed header — and that
     is a FAIL that needs no table.
     """
+    from typehaus.quantities import M_PER_IN
     from typehaus.resolve.mep_bores import header_bore
+
+    def _at(cut) -> str:
+        """Where the run meets THIS header, which is not the header's midspan.
+
+        A hole in a bending member is a question about a station along the span, so the
+        station is half the finding: "somewhere in header-0" is not actionable.
+        """
+        return (f'{cut.member_key} at ({cut.station[0] / M_PER_IN:.2f}", '
+                f'{cut.station[1] / M_PER_IN:.2f}")')
 
     out: list[Finding] = []
     seen = 0
@@ -252,21 +262,23 @@ def run_through_header(ctx: CheckContext) -> list[Finding]:
         if not headers:
             continue
         seen += 1
-        verdicts = [(cut, header_bore(cut.profile, cut.diameter_in)) for cut in headers]
+        verdicts = [(cut, header_bore(cut.profile, cut.diameter_in,
+                                      through_in=cut.through_in)) for cut in headers]
         bad = [(cut, v) for cut, v in verdicts if v.ok is False]
         unsure = [(cut, v) for cut, v in verdicts if v.ok is None]
         where = f"{tag} would bore {len(headers)} header(s) of {wall.tag}"
         if bad:
             cut, verdict = bad[0]
-            out.append(_fail(_HEADER, f"{where}: {cut.member_key} — {verdict.basis}",
+            out.append(_fail(_HEADER, f"{where}: {_at(cut)} — {verdict.basis}",
                              (tag, wall.tag), fix=verdict.remedy or ""))
         elif unsure:
             cut, verdict = unsure[0]
-            out.append(_unknown(_HEADER, f"{where}: {cut.member_key} is not graded — "
+            out.append(_unknown(_HEADER, f"{where}: {_at(cut)} is not graded — "
                                          f"{verdict.basis}", (tag, wall.tag)))
         else:  # pragma: no cover - header_bore publishes no PASS today
             cut, verdict = verdicts[0]
-            out.append(_pass(_HEADER, f"{where}: {verdict.basis}", (tag, wall.tag)))
+            out.append(_pass(_HEADER, f"{where}: {_at(cut)} — {verdict.basis}",
+                             (tag, wall.tag)))
     if not seen:
         return [_na(_HEADER, "no run's leg meets a header of any resolved wall", ())]
     return out
