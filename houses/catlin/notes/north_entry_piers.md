@@ -854,8 +854,9 @@ conservative bound; that axial pair is not graded (a few hundred pounds against 
 
 The joint's demand is the force the beam hands the head. Deck columns: the per-column storey
 shear, or IRC R301.5's 200 lb guard. Canopy columns: each column's share of the diaphragm's
-shear (`lateral_system.column_head_reactions`), **not netted** against the column's own drag
-reaction pushing the other way.
+shear (`lateral_system.column_head_reactions`) **with its torsional increment**
+(`north_entry_canopy_lateral.md` §8h, a relief never credited), **not netted** against the
+column's own drag reaction pushing the other way.
 
 Capacity (2026-09-21): a cast-in **HETA20Z pair**, FL11473 Table 3, double HETA in
 concrete on a 2- or 3-ply member, SP: F1 1,350 / F2 1,430 lb for the PAIR — the lower,
@@ -867,7 +868,7 @@ against 1,350, and a GUARD demand (occupancy live, NDS Table 2.3.2 C_D = 1.0) ag
 
 | column | wind, ASD | vs 1,350 | guard | vs 843.75 |
 |---|---|---|---|---|
-| `PT-BW-RE` / `-RNE` | 0.5 × 821.31 = **410.66** (E-W) | **0.304** | — | — |
+| `PT-BW-RE` / `-RNE` | 0.5 × 821.31 = **410.66** / +0.40 torsion = 411.06 (E-W) | **0.304** | — | — |
 | `PT-BW-E` / `-GE` | 311 / 4 = 77.75 | 0.058 | 200 | **0.237** |
 | `PT-SG-B*` | 615 / 4 = 153.75 | 0.114 | 200 | **0.237** |
 | `PT-BW-W` / `-GW` | 77.75 | — | 200 | — |
@@ -886,6 +887,7 @@ report's own rule for every product in it, the embedded truss anchors of Tables 
 included: `(Design Uplift / Allowable Uplift) + (Lateral Parallel / Allowable) + (Lateral
 Perpendicular / Allowable) < 1.0`. It was missed in the footnotes because it sits in the
 Limitations. The canopy columns: `433.3 / 2,560 + 410.66 / 1,350 = 0.169 + 0.304 = 0.473`
+(`-RNE` 411.06: 0.4737)
 — the pair's uplift is the set's, so it is not halved, and the lateral is taken at the lower
 of F1/F2 so its direction need not be known. (The retired HGAM10 pair read 1.263 here.)
 The report's alternate (each direction <= 0.75 x its allowable) also holds: 0.169, 0.304.
@@ -909,7 +911,7 @@ Circular: `b_w = D = 12"`, `d = 0.8D = 9.6"`. Table 22.5.5.1(a), N_u taken as ze
 `A_v,min = max(0.75 × 70.711 × 12 × 10 / 60,000, 50 × 12 × 10 / 60,000) = 0.1061 in²` —
 detailing row **0.482**.
 
-Demand, strength level: canopy `496.17 / 0.6 = 827.0 lb` (**0.068**); guard columns
+Demand, strength level: canopy `496.17 / 0.6 = 827.0 lb` (`-RNE` 496.58 / 0.6 = 827.6, both **0.068**); guard columns
 `max(wind/0.6, 1.6 × 200) = 320 lb` (**0.026**).
 
 ### 9e. Torsion — §22.7.4.1, and the headline that was wrong
@@ -929,12 +931,13 @@ force is taken in any direction, `lever = |r|`.
 
 | column | F_u | lever | T_u | / φT_th |
 |---|---|---|---|---|
-| `PT-BW-RE` / `-RNE` | N-S along the header, 142.27 / 0.6 = 237.1 lb (E-W has lever 0: every entry point is on y = 0) | 2.25" | **44.5 lb-ft** | **0.030** |
+| `PT-BW-RE` / `-RNE` | N-S along the header, 342.52 / 0.6 = 570.9 lb (E-W has lever 0: every entry point is on y = 0) | 2.25" | **107.0 lb-ft** | **0.071** |
 | `PT-SG-B*` | 320 lb | 1.75" | 46.7 lb-ft | 0.031 |
 | `PT-BW-E` / `-GE` / `-W` / `-GW` | 320 lb | 1.50" | 40.0 lb-ft | 0.027 |
 
-(`PT-BW-RE`'s y force: 0.11962 × 1,189.41 = 142.27 lb ASD.) Every column is **under 1/30 of
-threshold**; §9.6.4's closed hoops are not owed and the #3 ties' geometry is not tested.
+(`PT-BW-RE`'s y force: 0.11962 × 1,189.41 = 142.27 lb direct + 200.31 lb torsion =
+342.52 lb ASD, `north_entry_canopy_lateral.md` §8g; the k/Σk-only 142.27 read 44.5 lb-ft.)
+Every column is **under 1/14 of threshold**; §9.6.4's closed hoops are not owed and the #3 ties' geometry is not tested.
 
 Seat eccentricity is still printed, as the bending it is: the pack (3.5" square, centred on
 the column) ∩ the beam's footprint. Where the beam ENDS at the column centre (`PT-BW-E/-GE/

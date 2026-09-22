@@ -672,6 +672,12 @@ both        top 0.500 x 821.3 = 410.6 lb   M = 410.6(16.563) + 552.6 = 7,354 lb-
 The N-S case, for completeness: top 142.2 lb, `M` = 2,908 lb-ft, base shear 227.7 lb at an
 arm of 12.77' — 0.66 on the same embedment, and it does not govern on either column.
 
+> **Superseded 2026-09-22 (register A7):** that N-S split is not in moment equilibrium.
+> With torsion (`north_entry_canopy_lateral.md` §8g/§8h) each column takes 342.5 lb, `M` =
+> 6,225.7 lb-ft, base shear 428.0 lb at 14.55' — still under E-W on both columns. E-W itself
+> gains +0.40 lb on `PT-BW-RNE` (411.06 top, 496.58 base shear, 7,360.9 lb-ft); `PT-BW-RE`'s
+> -0.40 relief is not credited, so the 496.1 above is still its demand.
+
 ### 7f. What the deck and the panel owe for it
 
 ```

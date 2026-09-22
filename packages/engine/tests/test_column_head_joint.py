@@ -66,18 +66,21 @@ def test_the_head_is_asked_for_no_moment_and_says_so(catlin_ctx):
 
 
 def test_canopy_columns_reproduce_9b_9c_9e(catlin_ctx):
-    for tag in ("PT-BW-RE", "PT-BW-RNE"):
+    # E-W with torsion (§9b): RNE takes the +0.40 lb increment, RE's -0.40 relief is not
+    # credited. Column shear is the base shear / 0.6 (§9d).
+    for tag, e_w, shear in (("PT-BW-RE", 410.66, 826.95), ("PT-BW-RNE", 411.06, 827.63)):
         record = _record(catlin_ctx, tag)
         assert record.status == Status.OK
         lateral = _state(record, "connector lateral, wind")
-        assert lateral.demand == pytest.approx(410.66, abs=0.05)
+        assert lateral.demand == pytest.approx(e_w, abs=0.05)
         assert lateral.capacity == 1350.0 and lateral.ratio == pytest.approx(0.304, abs=1e-3)
         assert _state(record, "connector uplift").demand == pytest.approx(433.25, abs=0.1)
         assert _state(record, "connector uplift").capacity == 2560.0
         assert "the rated set" in _state(record, "connector uplift").citation
-        assert _state(record, "column shear").demand == pytest.approx(826.95, abs=0.1)
+        assert _state(record, "column shear").demand == pytest.approx(shear, abs=0.1)
+        # N-S head force 342.52 lb ASD with torsion, not the 142.27 k/Σk share (§9e).
         torsion = _state(record, "column torsion")
-        assert torsion.demand == pytest.approx(44.46, abs=0.01)
+        assert torsion.demand == pytest.approx(107.04, abs=0.01)
         assert _input(record, "torsion_lever") == pytest.approx(2.25)
         combined = _state(record, "connector combined")
         assert combined.ratio == pytest.approx(0.473, abs=1e-3)
@@ -110,13 +113,16 @@ def test_bearing_demand_is_the_head_reaction(catlin_ctx):
 
 
 def test_the_prop_reaction_is_exported_not_back_solved(catlin_ctx):
+    """The torsion-corrected force ``roof_moment`` grades the base on, never below k/Σk."""
     from typehaus.engineering.lateral_system import column_head_reactions
     from typehaus.engineering.roof_moment import frame_cases_of
 
     heads = column_head_reactions(catlin_ctx.engineering.context)
     for case in frame_cases_of("RF-BW-CANOPY"):
-        share = case.columns_governing.shares["PT-BW-RE"]
-        assert heads["PT-BW-RE"][case.axis] == pytest.approx(share * case.diaphragm_shear_lb)
+        for tag in ("PT-BW-RE", "PT-BW-RNE"):
+            direct = case.columns_governing.shares[tag] * case.diaphragm_shear_lb
+            assert heads[tag][case.axis] == pytest.approx(case.column_forces_lb[tag])
+            assert heads[tag][case.axis] >= direct - 1e-9
 
 
 # --- geometry, independent of the house ---------------------------------------------------

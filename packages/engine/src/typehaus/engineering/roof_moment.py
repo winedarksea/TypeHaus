@@ -24,32 +24,24 @@ conservatism is a number in the record rather than a claim.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 from typehaus.engineering.diaphragm_basis import Distribution, distribute
 from typehaus.engineering.lateral_lines import column_lines, panel_line, panels_under
 from typehaus.engineering.registry import EngineeringContext
+from typehaus.engineering.torsion import column_forces_lb
 
 _M_PER_FT = 0.3048
 
 #: ``column tag -> (ASD storey shear lb, its effective arm above the column base, ft)``,
-#: filled by :func:`roof_base_moments` as it goes.
-#:
-#: ** WHY A SIDE CHANNEL AND NOT A WIDER RETURN TUPLE. ** ``(moment, guard, basis)`` is read
-#: by ``pier_basis.cast_piers`` and by the deck path's own ``_base_moments``, which has no
-#: shear to offer; widening the shape would make the deck side carry a field it cannot fill.
-#: ``engineering/column_base.py`` is the one reader, and it asks for the pair by tag.
+#: filled by :func:`roof_base_moments`. A side channel because the deck path shares the
+#: ``(moment, guard, basis)`` return shape and has no shear to offer.
 _SHEARS: dict[str, tuple[float, float]] = {}
 
-#: ``column tag -> the plan axis the governing base moment acts ALONG``, i.e. the direction
-#: the bearing pressure under its base varies in. Filled beside ``_SHEARS``.
-#:
-#: ** WHY THIS IS WORTH CARRYING. ** ``column_base`` used to take the LEAST plan dimension of
-#: a base, "because the base moment is free to act about either plan axis and nothing in this
-#: model says which way the wind blows". Something does now: both axes are computed and the
-#: worse one is kept, so a rectangular pad set out 30" east-west to resist an east-west
-#: moment can be graded on the 30" rather than on the 18" it happens to measure the other way.
+#: ``column tag -> the plan axis the governing base moment acts ALONG`` — the direction the
+#: bearing pressure under its base varies in, so ``column_base`` can grade a rectangular pad
+#: on the dimension that resists it rather than its least one. Filled beside ``_SHEARS``.
 _AXES: dict[str, str] = {}
 
 
@@ -93,6 +85,10 @@ class FrameCase:
     #: ``column tag -> head reaction the propped shaft hands the deck``, lb. Torsion needs
     #: WHERE the deck's load is applied, and a prop is applied at its own column's station.
     head_reactions: dict[str, float] = field(default_factory=dict)
+    #: ``column tag -> lb`` at the roof plane: the rigidity share PLUS the torsional increment
+    #: (``torsion.column_forces_lb``). ``k/Σk`` alone is not in moment equilibrium, so this,
+    #: not ``columns_governing.shares``, is what every column reader grades.
+    column_forces_lb: dict[str, float] = field(default_factory=dict)
 
 
 #: How many passes the panel share/stiffness fixed point gets, and how still it has to be.
@@ -127,60 +123,24 @@ def base_shear_of(tag: str) -> tuple[float, float] | None:
 def roof_base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, str]]:
     """The same answer for a column carrying a ROOF instead of a deck.
 
-    ** THE HOUSE'S OWN RECORD CLAIMED THIS EXISTED FOR A DAY BEFORE IT DID. **
-    ``notes/north_entry_structure.md`` §1a names ``PT-BW-RE`` and ``PT-BW-RNE`` the north
-    canopy's east lateral system and asserted that ``deck_post`` published a real d/c for
-    both. It did not: every path into the moment machinery was gated on
-    ``FloorSystem.service == "deck"``, a canopy column carries a roof header, and the two
-    records read ``SCREENING: axial only, no moment and no lateral case.`` A column the
-    house calls its lateral system, graded axially, is the worst kind of wrong answer —
-    confident, specific, and about the wrong limit state.
+    ** THE WALK IS :func:`_roof_fields`'s. ** A ``Roof`` names its bearing ``Beam``s, each
+    beam its posts; the concrete ones are the frame (``notes/north_entry_structure.md`` §1a).
 
-    ** THE WALK IS :func:`_roof_fields`'s, NOT A NEW ONE. ** A ``Roof`` names its bearing
-    ``Beam``s and each beam names its posts; the concrete ones among those are the frame.
-    Reusing the walk is what keeps the tributary this module already computes and the
-    moment it now computes talking about the same members.
+    ** THE DEMAND IS THE §29.3 SOLID-SIGN SURROGATE ** at ``MAX_VERIFIED_CASE_AB``, for the
+    reason the module docstring gives; ``notes/north_entry_piers.md`` §8 records the ratio.
 
-    ** THE DEMAND IS THE §29.3 SOLID-SIGN SURROGATE, DELIBERATELY AND CONSERVATIVELY. **
-    The literal provision for this structure is ASCE 7-16 §27.3.2, a pitched free roof, and
-    its ``C_N`` comes out of Fig. 27.3-4 — another copyrighted grid this repository does not
-    hold, exactly like Fig. 29.3-1. Rather than transcribe or curve-fit one, the roof's own
-    vertical projection is taken as a **solid sign** at ``MAX_VERIFIED_CASE_AB``, which
-    bounds the real answer twice over: a thin inclined plate open on every side is a far
-    less obstructive body than a solid sign, and every published free-roof ``C_N`` is
-    smaller in magnitude than the 1.80 spent here. ``notes/north_entry_piers.md`` §8 works
-    the §27.3.2 case by hand alongside this one and records the ratio between them, so the
-    size of the conservatism is a number in the record rather than a claim.
+    ** THE SHEAR IS SHARED BY RIGIDITY ONLY WHERE A DIAPHRAGM IS DECLARED ** (IBC 2018
+    §1604.4). ``Roof.diaphragm`` plus ``Wall.shear_panel`` lines let
+    ``engineering/diaphragm_basis`` run ASCE 7-16 §26.2's flexible/rigid test and split; with
+    neither, the columns take everything, which is what a frame with no diaphragm does. The
+    rigid split is then corrected for TORSION (``engineering/torsion``): ``k/Σk`` alone is not
+    in moment equilibrium unless the load passes through the centre of rigidity.
 
-    ** THE SHEAR IS SHARED BY RELATIVE RIGIDITY, AND ONLY WHERE A DIAPHRAGM IS DECLARED. **
-    This function used to put the whole frame shear on the cast columns and claim nothing
-    for the sheathed panel on the other line, on the ground that the split was "a
-    relative-rigidity judgement this engine has no standing to make". Half of that was
-    right and half of it was hiding: refusing to GUESS a panel's stiffness is correct, and
-    distributing by rigidity once the fastener schedule is stated is IBC 2018 §1604.4 in as
-    many words — "the total lateral force shall be distributed to the various vertical
-    elements ... in proportion to their rigidities, considering the rigidity of the
-    horizontal bracing system or diaphragm".
+    ** A HELD HEAD MAKES THE SHAFT A PROPPED CANTILEVER. ** Its own drag then makes a base
+    moment three to four times smaller, the balance going up into the diaphragm, where it is
+    distributed with everything else.
 
-    So the split now turns on two authored claims and refuses without them. ``Roof.diaphragm``
-    says the deck is a diaphragm, with the chords and collector that makes it one;
-    ``Wall.shear_panel`` says a wall is a line, with the SDPWS row behind it. With neither,
-    the old policy stands unchanged and the columns take everything — which is what a frame
-    with no diaphragm actually does, not a conservatism. With both,
-    ``engineering/diaphragm_basis`` runs ASCE 7-16 §26.2's own flexible/rigid test on the
-    deck and splits the shear the way the answer dictates.
-
-    ** AND THE COLUMN DRAG STOPS BEING A CANTILEVER LOAD AT THE SAME MOMENT. ** Wind on the
-    shaft between grade and the roof is carried to the base alone only while the head is
-    free. Once a diaphragm holds the head, the shaft is a PROPPED cantilever and the same
-    load makes a base moment three to four times smaller, with the difference going into the
-    diaphragm where it is distributed with everything else. That is not a discount applied
-    to the old free body; it is the free body the declaration creates, and it is why the
-    declaration is a design decision with parts in it rather than a switch.
-
-    ** NO GUARD CASE. ** A roof header is not a guard and nothing stands on this frame that
-    R301.5 governs, so the guard moment is 0.0 rather than a 200 lb load invented to fill
-    the slot. A canopy that later grows a guard gets one the same way a deck does.
+    ** NO GUARD CASE. ** A roof header is not a guard, so the guard moment is 0.0.
     """
     from typehaus.engineering.balcony_wind import Demand, ground_below_ft, solid_bands
     from typehaus.engineering.pier_basis import knee_braced
@@ -242,13 +202,15 @@ def roof_base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, 
         # would roughly double its arm, and on this canopy the columns are about a third of
         # the projected area — too large a share to overstate and call it rounding.
         #
-        # ** AND THE WORST AXIS IS NOW CHOSEN PER COLUMN, NOT ONCE FOR THE FRAME. ** While
-        # every column took an equal share of one frame shear, the axis with the larger
-        # total was the worse one for all of them and picking it once was the same answer.
-        # Under a rigidity split it is not: a stiff short column can govern on the axis
-        # with the SMALLER total because its share of it is larger. Both axes are computed
-        # and each column keeps its own worse one.
-        per_axis: dict[str, dict[str, _Case]] = {}
+        # ** AND THE WORST AXIS IS CHOSEN PER COLUMN, NOT ONCE FOR THE FRAME. ** Under a
+        # rigidity split a stiff short column can govern on the axis with the SMALLER total.
+        shafts = {tag: posts[tag].height.inches / 12.0 for tag in columns
+                  if posts[tag].height is not None}
+        if not shafts:
+            continue
+        arms = {tag: max(h - exposed_ft / 2.0, 0.0) for tag, h in shafts.items()}
+        loads: dict[str, tuple[float, float]] = {}
+        frames: dict[str, FrameCase] = {}
         for axis in ("x", "y"):
             top_bands = (*_roof_projection_bands(roof, axis, rise_ft),
                          *solid_bands(ctx.plan, axis, member_tags, None))
@@ -259,9 +221,22 @@ def roof_base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, 
                                 ).storey_shear_lb(MAX_VERIFIED_CASE_AB)
             if top_shear + drag_shear <= 0.0:
                 continue
-            per_axis[axis] = _axis_case(
-                ctx, element, roof, posts, columns, axis, top_shear, drag_shear,
-                exposed_ft, q_h, top_ft - ground_ft, basis.describe())
+            loads[axis] = (top_shear, drag_shear)
+            frame = _split(ctx, element, roof, posts, columns, axis, top_shear,
+                           drag_shear / len(columns), shafts, arms
+                           ) if getattr(element, "diaphragm", None) is not None else None
+            if frame is not None:
+                frames[axis] = frame
+        # ** TORSION NEEDS BOTH AXES' LINES IN ``J``, so it is applied once both exist. **
+        # Notes/north_entry_canopy_lateral.md §8g/§8h: k/Σk alone left M_t = V e unbalanced.
+        forces = column_forces_lb(ctx, roof, list(frames.values()))
+        for axis, frame in frames.items():
+            frames[axis] = replace(frame, column_forces_lb=forces.get(axis, {}))
+            _FRAMES.setdefault(roof.tag, []).append(frames[axis])
+        per_axis = {axis: _axis_case(roof, len(columns), shafts, arms, axis, top, drag,
+                                     frames.get(axis), exposed_ft, q_h, top_ft - ground_ft,
+                                     basis.describe())
+                    for axis, (top, drag) in loads.items()}
         if not per_axis:
             continue
 
@@ -278,23 +253,15 @@ def roof_base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, 
     return out
 
 
-def _axis_case(ctx: EngineeringContext, element: Any, roof: Any, posts: dict[str, Any],
-               columns: list[str], axis: str, top_shear: float, drag_shear: float,
-               exposed_ft: float, q_h: float, height_ft: float,
+def _axis_case(roof: Any, column_count: int, shafts: dict[str, float],
+               arms: dict[str, float], axis: str, top_shear: float, drag_shear: float,
+               split: FrameCase | None, exposed_ft: float, q_h: float, height_ft: float,
                basis_text: str) -> dict[str, _Case]:
     """Every column's base demand on ONE axis, shared out if a diaphragm says it may be."""
     from typehaus.wind_tables import MAX_VERIFIED_CASE_AB
 
-    per_drag = drag_shear / len(columns) if columns else 0.0
-    shafts = {tag: posts[tag].height.inches / 12.0 for tag in columns
-              if posts[tag].height is not None}
-    if not shafts:
-        return {}
-    arms = {tag: max(h - exposed_ft / 2.0, 0.0) for tag, h in shafts.items()}
+    per_drag = drag_shear / column_count if column_count else 0.0
     head = _CANTILEVER
-    diaphragm = getattr(element, "diaphragm", None)
-    split = _split(ctx, element, roof, posts, columns, axis,
-                   top_shear, per_drag, shafts, arms) if diaphragm is not None else None
 
     out: dict[str, _Case] = {}
     for tag, shaft_ft in shafts.items():
@@ -308,12 +275,15 @@ def _axis_case(ctx: EngineeringContext, element: Any, roof: Any, posts: dict[str
                    f"through and the shaft is a free cantilever for its own drag")
         else:
             share = split.columns_governing.shares.get(tag, 0.0)
-            per_top = share * split.diaphragm_shear_lb
+            direct = share * split.diaphragm_shear_lb
+            per_top = split.column_forces_lb.get(tag, direct)
             drag_moment, _, drag_base = _propped(per_drag, arms[tag], shaft_ft)
             moment = per_top * shaft_ft + drag_moment
             shear = per_top + drag_base
-            how = (f"{split.columns_governing.basis}. This column takes "
-                   f"{share * 100.0:.1f}% of it ({per_top:,.0f} lb) plus {drag_base:,.0f} lb "
+            how = (f"{split.columns_governing.basis}. This column's rigidity share is "
+                   f"{share * 100.0:.1f}% ({direct:,.0f} lb); with the torsional increment "
+                   f"that split leaves unbalanced (M_t = V e by k d / J, a relief never "
+                   f"credited) it takes {per_top:,.0f} lb, plus {drag_base:,.0f} lb "
                    f"of its own drag at the base — the shaft is a PROPPED cantilever now "
                    f"that the diaphragm holds its head, so {per_drag:,.0f} lb applied at "
                    f"{arms[tag]:.2f}' makes {drag_moment:,.0f} lb-ft here rather than "
@@ -433,7 +403,6 @@ def _split(ctx: EngineeringContext, element: Any, roof: Any, posts: dict[str, An
         panel_tags=tuple(sorted(w.tag for w in panels)),
         column_tags=tuple(sorted(shafts)),
         top_shear_lb=top_shear, head_reactions=dict(head_reactions))
-    _FRAMES.setdefault(roof.tag, []).append(frame)
     return frame
 
 

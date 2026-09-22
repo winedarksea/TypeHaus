@@ -1100,12 +1100,26 @@ def test_the_shear_is_shared_with_the_west_panel_and_the_split_is_stated(piers) 
 
     What the basis has to keep saying is which case is which — the panel runs north-south,
     so the E-W case is still the columns' alone, and it is now the one that governs them.
+
+    ** AND IT GOVERNS AGAINST THE EQUILIBRIUM-CONSISTENT N-S CASE, NOT THE k/Σk ONE. ** The
+    rigidity split gave each column 142.3 lb N-S (2,908 lb-ft), which left M_t = V e
+    unbalanced. With torsion (canopy_lateral §8g/§8h) each takes 342.5 lb, 6,225 lb-ft — still
+    under E-W's 7,354, so E-W governs by 15%, not by 2.5x.
     """
+    from typehaus.engineering.roof_moment import frame_cases_of
+
+    north_south = next(c for c in frame_cases_of("RF-BW-CANOPY") if c.axis == "y")
     for tag in _CANOPY_COLUMNS:
         basis = piers[tag].moment_basis
         assert "shared by relative rigidity (IBC 2018 §1604.4)" in basis
         assert "E-W wind on RF-BW-CANOPY" in basis, "the unshared case governs"
         assert "W-BW-SCREEN" not in basis, "the panel resists N-S and takes no E-W share"
+        want = _CANOPY_ORACLE[tag]
+        force = north_south.column_forces_lb[tag]
+        assert force == pytest.approx(342.5, rel=0.005)
+        ns_moment = force * want["height_ft"] + want["drag_moment_lb_ft"]
+        assert ns_moment == pytest.approx(6_225.0, rel=0.005)
+        assert piers[tag].wind_base_moment_lb_ft > 1.1 * ns_moment
     # And the west line's own columns are wood, so they never reach this module at all.
     assert "PT-BW-CW" not in piers and "PT-BW-CNW" not in piers
 

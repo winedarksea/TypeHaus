@@ -47,11 +47,11 @@ from typehaus.engineering.item import (
     Status,
     item_id,
 )
-from typehaus.engineering.lateral_collectors import collector_rows, torsion_for, torsion_rows
+from typehaus.engineering.lateral_collectors import collector_rows, torsion_rows
 from typehaus.engineering.lateral_lines import panel_geometry_ft
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
 from typehaus.engineering.roof_moment import FrameCase, frame_cases_of, roof_base_moments
-from typehaus.engineering.torsion import Torsion
+from typehaus.engineering.torsion import Torsion, torsion_for
 
 KIND = "lateral_system"
 
@@ -346,20 +346,17 @@ def column_head_reactions(ctx: EngineeringContext) -> dict[str, dict[str, float]
 
     The prop reaction ``column_head_joint`` grades the head connector against, exported
     rather than back-solved (the ``roof_moment.base_shear_of`` doctrine). It is the column's
-    ``columns_governing`` share of the deck's shear, the same number ``roof_moment`` puts at
-    the roof plane; netting off the column's own drag reaction would reduce it, and is not
-    done. Runs the moment pass once, as :func:`compute` does.
+    torsion-corrected share of the deck's shear (``FrameCase.column_forces_lb``), the same
+    number ``roof_moment`` puts at the roof plane; netting off the column's own drag reaction
+    would reduce it, and is not done. Runs the moment pass once, as :func:`compute` does.
     """
     roof_base_moments(ctx)
     out: dict[str, dict[str, float]] = {}
     for roof_tag in _declared(ctx):
         for case in frame_cases_of(roof_tag):
-            for column, share in case.columns_governing.shares.items():
-                if column not in case.column_tags:
-                    continue
+            for column, force in case.column_forces_lb.items():
                 here = out.setdefault(column, {})
-                here[case.axis] = max(here.get(case.axis, 0.0),
-                                      share * case.diaphragm_shear_lb)
+                here[case.axis] = max(here.get(case.axis, 0.0), force)
     return out
 
 

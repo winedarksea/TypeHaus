@@ -19,60 +19,11 @@ from __future__ import annotations
 
 from typing import Any
 
-from typehaus.engineering.diaphragm_basis import Line
 from typehaus.engineering.item import LimitState, Quantity
 from typehaus.engineering.roof_moment import FrameCase
-from typehaus.engineering.torsion import Torsion, load_resultant_ft, torsional_distribution
+from typehaus.engineering.torsion import Torsion, line_force_lb
 
 _M_PER_FT = 0.3048
-
-
-def _lines(ctx: Any, case: FrameCase) -> list[Line]:
-    """This case's lines, at the GROSS-column distribution the case's shares came from."""
-    from typehaus.engineering.lateral_lines import column_lines, panel_line
-
-    posts = {tag: ctx.plan.by_tag(tag) for tag in case.column_tags}
-    lines: list[Line] = column_lines(ctx, posts, list(case.column_tags), case.axis, cracked=False)
-    for wall_tag in case.panel_tags:
-        wall = ctx.plan.by_tag(wall_tag)
-        share = case.columns_governing.shares.get(wall_tag)
-        if wall is None or share is None:
-            continue
-        line = panel_line(ctx, wall, case.axis, share * case.diaphragm_shear_lb)
-        if line is not None:
-            lines.append(line)
-    return lines
-
-
-def _footprint_centre_ft(roof: Any, axis: str) -> float | None:
-    index = 0 if axis == "y" else 1
-    values = [p[index] / _M_PER_FT for p in roof.footprint]
-    return (min(values) + max(values)) / 2.0 if values else None
-
-
-def torsion_for(ctx: Any, roof: Any, case: FrameCase,
-                cases: list[FrameCase]) -> Torsion | None:
-    """One case's torsional distribution, with the OTHER axis's lines in ``J``."""
-    along = _lines(ctx, case)
-    across = [line for other in cases if other.axis != case.axis
-              for line in _lines(ctx, other)]
-    centre = _footprint_centre_ft(roof, case.axis)
-    if centre is None:
-        return None
-    stations = {line.tag: value for line in along
-                if (value := (line.x_ft if case.axis == "y" else line.y_ft)) is not None}
-    resultant = load_resultant_ft(case.top_shear_lb, centre, case.head_reactions, stations)
-    if resultant is None:
-        return None
-    return torsional_distribution(case.axis, case.diaphragm_shear_lb, resultant,
-                                  along, across)
-
-
-def line_force_lb(torsion: Torsion | None, tag: str, fallback: float) -> float:
-    """The line's graded force: its direct share plus a torsional INCREMENT, never a relief."""
-    if torsion is None or tag not in torsion.direct_lb:
-        return fallback
-    return torsion.direct_lb[tag] + max(torsion.torsional_lb.get(tag, 0.0), 0.0)
 
 
 def torsion_rows(torsions: dict[str, Torsion]) -> tuple[list[LimitState], list[Quantity],

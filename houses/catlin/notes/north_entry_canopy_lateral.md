@@ -299,20 +299,54 @@ at **4.00 / 4.00 = 1.00** (§7f), and every row added here is well under it:
 | hold-down anchorage, shear (breakout) | 0.223 |
 | hold-down anchorage, interaction §17.8.3 | 0.506 |
 
-**One thing does move and it is recorded rather than propagated.** The columns' N-S share
-goes from 142.3 lb to 342.5 lb once torsion is in. `engineering/roof_moment.py` still
-distributes the columns' own base demands by rigidity WITHOUT the torsional term, so its N-S
-base moment for each column is 2,908 lb-ft where the corrected one is
+**Propagated into `roof_moment` 2026-09-22 (register A7).** The columns' N-S share goes from
+142.3 lb to 342.5 lb once torsion is in, and until today `engineering/roof_moment.py` graded
+the bases on the bare `k/Σk` split — 2,908 lb-ft N-S — while this note's collector rows used
+342.5 lb for the same column. Both now read ONE function, `torsion.column_forces_lb` (direct
+share + `max(torsion, 0)`), and `lateral_system.column_head_reactions` reads the same number.
+
+*Equilibrium check, N-S, signed forces (the torsion row's own values):*
 
 ```
-M = 342.5 x 16.563 + 552.6 = 6,225 lb-ft      base shear 342.5 + 85.5 = 428 lb at 14.5'
+                    k/Σk alone                      with torsion
+panel  W-BW-SCREEN  904.98                          904.98 - 400.61 = 504.37 lb
+each column         142.22                          142.22 + 200.31 = 342.52 lb
+ΣF_y                904.98 + 2(142.22) = 1,189.41   504.37 + 2(342.52) = 1,189.41   ✓ both
+
+ΣM about the column line x = 30.000' (vertical axis):
+load                1,189.41 x (30.000 - 19.937) = 11,968.8 lb-ft
+panel               904.98 x 24.000 = 21,719.5      504.37 x 24.000 = 12,104.9
+E-W couple          —                               27.31 x (42.479 - 37.500) = 136.0 (opposing)
+residual            21,719.5 - 11,968.8 = 9,750.7   12,104.9 - 136.0 - 11,968.8 = 0.1   ✓
 ```
 
-against the **E-W** case's 7,354 lb-ft at 496 lb, which governs both columns on both records
-(`column_base`, `pier_basis`) either way. `column_head_joint` takes the worse axis and that is
-E-W's 410.7 lb, above the corrected N-S 342.5 lb. So no verdict anywhere moves, and feeding
-torsion back into `roof_moment` would change no printed d/c — which is the only reason it is
-left alone and said out loud here rather than done quietly.
+The k/Σk residual is exactly M_t = 1,189.41 x 8.198 = 9,750.7 lb-ft (§8g). With torsion it
+closes to rounding. The graded column demand then floors the relief: E-W gives `PT-BW-RE`
+-0.40 lb and `PT-BW-RNE` +0.40 lb, so RE keeps 410.66 and RNE takes 411.06 — ΣF over by
+0.40 lb, the price of never crediting a relief, not an equilibrium error.
+
+```
+per column          N-S (was)                 N-S (now)                  E-W (governs)
+roof-plane force    142.3 lb                  342.5 lb                   410.66 / 411.06 lb
+base moment         142.3 x 16.563 + 552.6    342.5 x 16.563 + 552.6     7,354.2 / 7,360.9
+                    = 2,908 lb-ft             = 6,225.7 lb-ft            lb-ft (RE / RNE)
+base shear          227.8 lb                  428.0 lb at 14.55'         496.17 / 496.58 lb
+```
+
+E-W still governs both columns, now by 15% rather than 2.5x. **Measured, not assumed**, every
+record before/after:
+
+| record | before | after |
+|---|---|---|
+| `column_base/PT-BW-RE` embedment | 0.8467 | 0.8467 (governs; unchanged) |
+| `column_base/PT-BW-RNE` embedment | 0.8447 | 0.8450 |
+| `base_rotation/PT-BW-RE`/`-RNE` second-order increment | 0.8116 | 0.8116 |
+| `deck_post/PT-BW-RE`/`-RNE` dowel anchorage | 0.7589 | 0.7589 |
+| `column_head_joint/PT-BW-RNE` HETA interaction | 0.4734 | 0.4737 |
+| `column_head_joint/*` column torsion T_u | 44.46 lb-ft | 107.04 lb-ft (0.071 of φT_th) |
+
+No printed two-figure d/c moves. The torsion row moves because `north_entry_piers.md` §9e
+takes the N-S head force as its lever's load: 342.52 / 0.6 x 2.25" / 12 = 107.04 lb-ft.
 
 **And the panel's rows stay where §7f put them.** Torsion relieves the panel by nearly half,
 and crediting that relief would take a graded member's demand down on the strength of an
