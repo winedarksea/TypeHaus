@@ -2306,7 +2306,10 @@ court  28,807 − 61,446 < 0: net push 0                              d/c 0.000 
 goes 0.652 / 0.885 / 1.107 / 1.162 / 1.378 → **0.469 flat**. Two caps would not hold: a plain
 2A1 spec (5 psi max) puts the floor line at 1.122, and FOAMULAR 400 at the edge reads 1.173 even
 capped, so the spec stays ≤ 3.5 psi and the edge stays FOAMULAR 1000. The stripping still stands:
-a board cast against adds its 54,105 lb of pour back on top of the cap.
+all five boards cast against add 54,105 lb of pour back on top of the cap (41,162 + 2 x 6,238 +
+2 x 233; T 82,911, 1/3 rule 1.449, floor line 1.506, global 1.002), and **one is enough**: the
+beam's alone gives T = 28,807 + 41,162 = 69,969, line 69,969 − 2 x 2,580.4 = 64,808, 1/3 rule
+64,808 / 50,395 = **1.286**; one stem's 6,238 puts its own floor line at 4,946 / 3,285 = 1.506.
 
 **Verdict (basis 9): OK on all five items**, the stems' floor line governing at 0.786, and the
 estimated modulus read by nothing graded. D1056 values are new material at 23 °C; the joint

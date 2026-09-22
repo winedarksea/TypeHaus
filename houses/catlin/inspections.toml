@@ -136,6 +136,7 @@ on_site = [
   "all five blockouts pulled: TB-SG-W1/E1, TB-SG-W1/E1-STEM and W-SG-BRKBM's",
   "every slot clean to the house face — no fins, no grout, no form oil pooled",
   "each board cut to its slot and set, full height and full length, none cast against",
+  "understood: ONE board cast against a pour undoes the cap: the beam board alone takes the house thrust from 28,807 to 69,969 lb and the slab edge to 1.29 of its sustained-load limit, and one stem board puts its floor line at 1.51 (free body 11l). Nothing downstream would notice",
   "the footing and stem boards lapped at the court floor plane (trap 1)",
 ]
 milestone = "foundation"
