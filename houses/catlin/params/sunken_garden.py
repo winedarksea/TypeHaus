@@ -530,7 +530,7 @@ _y_in_n = _y_out_n  # porch deck north edge (back beams + column sit a SPEC offs
 #
 # Both nodes keep `open_end=True`: the closure must NOT share a node with a house wall. A
 # shared node is a junction, and the whole point is that these two structures are separately
-# founded and only ever meet through foam — see DW-SG-*-STEM at the bottom of this file.
+# founded and only ever meet through foam — see ISOLATION_BOARDS (TB-SG-*) below.
 #
 # The hosted footings FT-SG-W1/E1 follow the wall (``Footing.under``), so their north ends
 # come with it. FT-B-S1/FT-B-S4 give them the room: those two strips carry a 6" south-toe
@@ -1628,7 +1628,7 @@ FOOTINGS.append(
 # there is no joint to dowel and no bridge to break, because the separation itself is the
 # break. Leaving the flag on would cast a foam block into aggregate with nothing on the far
 # side of it. The two side walls are unchanged and keep theirs; their footings never moved.
-# See ISOLATION_BOARDS below, where DW-SG-COL is recorded as retired for the same reason.
+# See ISOLATION_BOARDS below: a separated pier IS a break, and needs no board.
 _HOUSE_ADJACENT = {"FT-SG-W1", "FT-SG-E1"}
 # The two bells reach frost depth on their own, so their beds are levelling courses. A
 # footing bearing where it is meant to bear still wants a few inches of clean stone under
@@ -3681,7 +3681,7 @@ BALCONY_JOISTS = FloorSystem(
 # closure wherever the court meets it: each footing joint (84" x 8") and each wall end
 # (12" x the stem height), one plane, one product. The veneer beam's board is a Layer.
 #
-# DW-SG-COL was retired earlier with its bell (a separated pier IS a break). The board
+# The front column's pier needs no board: a separated pier IS a break. The board
 # uids are hand-minted (`haus fmt` does not visit params/) and must stay unique by hand.
 # ============================================================================
 # The two footings share a face from the house strip's underside up to the plane both top

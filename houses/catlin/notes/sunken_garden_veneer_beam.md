@@ -302,7 +302,7 @@ corner continuity into the side walls (§5.2) is still the engineer's.
    beam's 3 #5 top and bottom have to develop into the side walls' vertical steel, and this
    note does not design that lap.
 3. **The thermal path itself.** §1 says the old detail was wrong and the new one routes the
-   load into structure that is already broken from the house at `DW-SG-W1/E1-FOAM`. It does
+   load into structure that is already broken from the house at the `TB-SG-*` isolation boards. It does
    **not** compute a frost isotherm. A 2" XPS board at R-10 across 12.7 SF replaces a
    contact that had 16.0 SF of assumed-but-unplaced foam over 16.0 SF of placed stone; that
    is unambiguously better and it is not a number.

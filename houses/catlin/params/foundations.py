@@ -163,8 +163,8 @@ _TOE_TRIMMED: set[str] = set()
 # accident of where W-B-S1 stops (x = 8'-10"), and no thermal detail should turn on that.
 #
 # 6", not the beam's 2", because the board has to be a board at footing level as well as at
-# stem level: -4" leaves the full 2" between the strips, so DW-SG-W1/E1-FOAM and the stem
-# blocks above them are one continuous plane instead of a nominal one buried in a pour.
+# stem level: -4" leaves the full 2" between the strips, so TB-SG-W1/E1 and the stem
+# boards above them are one continuous plane instead of a nominal one buried in a pour.
 #
 # It is free structurally, and in the same direction the 2" trim already argued for: these
 # two carry an 8" wall standing at y = 0..8", so a strip centred on y = 0 threw a 10" toe

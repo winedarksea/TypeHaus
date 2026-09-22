@@ -1821,9 +1821,10 @@
 # rate has whenever the things it counts are not interchangeable. It also could not survive a
 # change of size: the stem board is as tall as the wall it closes, so re-levelling the court
 # re-prices it, and under `ea` it would not have moved by a cent.
-# ** 2026-09-21 (free body §11 basis 4): the four closure boards are 2.5" Highload 40 XPS. **
-# Volume billing carries the extra half inch (5.74 cf); the $/cf rate is the 2" face rate
-# above, so at 2.5" it slightly under-reads labour per SF and over-reads nothing.
+# ** 2026-09-21 (free body §11i basis 6): the four closure boards are 2.5" ASTM C578 Type X
+# XPS (15 psi, FOAMULAR 150 class). ** Volume billing carries the extra half inch (5.74 cf);
+# the $/cf rate is the 2" 40 psi face rate above, so it now over-reads the board a little
+# (Type X is the cheapest XPS grade) and slightly under-reads labour per SF.
 "thermal_break" = { low = 78, high = 183, unit = "cuft" }  # 5.74 cf — the garden closure boards
 # --- 2026-08-20: SOLIDS THAT NO OTHER TABLE BILLS ---------------------------------------
 # structural_solids is the only table that reaches these rows, and until today [concrete]

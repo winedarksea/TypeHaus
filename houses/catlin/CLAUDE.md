@@ -2223,11 +2223,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   The two coincide at a zero offset; they did not while the strips carried a 6" inboard
   offset, when a board on the axis hung 6" past one end and left 6" of bare
   footing-to-footing concrete at the other. Keep the expression, not the coincidence.
-- **One thermal-break product (Highload 40 XPS, `THERMAL_BREAK_PSI`), two thicknesses:**
-  `THERMAL_BREAK_IN` 2.5" on the four closure boards, `VENEER_BEAM_BREAK_IN` 2" on the
-  beam's (basis 4, 2026-09-21). `thermal_break_transfer` grades all five boards, their
-  thrust into the house (free body §11) — OVER, suppressed as one debt. The board
-  product is OPEN: §11h weighs the alternatives (Toprock DD rejected). The thickness
+- **One thermal-break product (ASTM C578 Type X XPS, 15 psi, `THERMAL_BREAK_PSI`), two
+  thicknesses:** `THERMAL_BREAK_IN` 2.5" on the four closure boards, `VENEER_BEAM_BREAK_IN`
+  2" on the beam's (basis 6, 2026-09-21). No Type X sheet publishes E: 525 psi is an
+  ESTIMATE (`modulus_estimated`), and every record carries a sensitivity note on it.
+  `thermal_break_transfer` grades the boards on the neutral-point demand with the pour locked
+  in, and the house's real lateral path through `SL-B-FLOOR` (free body §11i) — still OVER
+  on the slab edge's 1" perimeter XPS (4.14), global sliding (1.21) and the beam board
+  (1.24), suppressed as one debt; §11i lists the options. The thickness
   was stated three times in two files and the rating twice, once in prose because `Layer`
   has no compressive field. **The break cannot go on one purchase order today** — the two
   closure blocks bill by VOLUME into concrete, the beam's board by AREA into insulation,
@@ -2269,7 +2272,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     north is exactly how a frost check buys a false pass.
   - `test_the_veneer_beam_isolates_the_house_footing` pins the 84" board, full 8" depth, and
     zero plan lap against every house strip.
-  - `prices.toml`'s `thermal_break` row bills the four closure boards (2.5" XPS) — the
+  - `prices.toml`'s `thermal_break` row bills the four closure boards (2.5" Type X XPS) — the
     four boards are not the same size, so check totals against SF, never against
     count. (The two footing boards went 84" → 96" → 84" on 2026-09-10, with the strips.)
   - **FLAGGED FOR THE ENGINEER, NOT TAKEN: trimming the wall beddings' surplus stone.**

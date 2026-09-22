@@ -994,7 +994,7 @@ WALLS = [
     # drawn never (see SG_VENEER_BEAM_14 in plan/assemblies.py for both spellings and why
     # neither existed). It now bears on a grade beam spanning to W-SG-W1 and W-SG-E1, so
     # its whole load and heat path goes into the court's own structure, which is already
-    # broken from the house at DW-SG-W1/E1-FOAM.
+    # broken from the house at the TB-SG-* isolation boards.
     #
     # Bottom stays at -8'-9", now because that is the beam's top rather than a plinth's: it
     # still has to clear D-B-PATIO's raised threshold, and a base course should not sit in
