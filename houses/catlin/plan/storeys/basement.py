@@ -749,8 +749,14 @@ WALLS = [
     # the corridor face ~7/8" south, on a wall whose two neighbours down this line
     # (W-B-CW2/W-B-CW3) stay 2x6 — a 7/8" jog at N-B-CW-E, which is a wall end, not a face a
     # room polygonizes along.
+    #
+    # ** NONBEARING, stated (2026-09-22). ** FS-M-WEST's I-joists run east-west, parallel to
+    # this wall, on the y=208"/224" lines either side of it; no floor names it in
+    # `bearing_refs`, nothing `stacks_on` it, and its plate stops 3/4" under the bay's
+    # blocking. Saying so is what lets D-B-FURN take R602.7.4's flat header.
     Wall(uid="CBW114AAAA", tag="W-B-CW", start_node="N-B-W1",
-         end_node="N-B-CW-E", assembly="INT_2X8_PLUMBING", top=ft(8)),
+         end_node="N-B-CW-E", assembly="INT_2X8_PLUMBING", top=ft(8),
+         structural_role=StructuralRole.NONBEARING),
     # This was the ESS closet's south wall until the closet moved to the NE corner; it is
     # now simply W-B-CW continued: same INT_2X6_PLUMBING, one wall type down the whole
     # furnace-room south line.
@@ -1058,8 +1064,11 @@ OPENINGS = [
     # water heater or an air handler passes through. The position does NOT move: the near
     # jamb is pinned west by PR-B-ERV-COND exactly as the paragraph above derives it, and
     # the far jamb only walks 5'-11" -> 6'-3", still 6" clear of N-B-CW-E.
+    #
+    # ** A FLAT 2x8 HEADER, NO CRIPPLES (IRC R602.7.4, 2026-09-22). ** The 2-2x8 it replaces
+    # carried nothing and had four runs through it; notes/framing_bore_limits.md §9.
     Door(uid="CBD201AAAA", tag="D-B-FURN", host="W-B-CW", type_ref="DT-INT-SWING36",
-         position=from_node("N-B-W1", ft(3, 3))),
+         position=from_node("N-B-W1", ft(3, 3)), header_spec="flat 2x8 nonbearing"),
     # Solid-core pair: the play room keeps the 5'-0" double opening, with flush solid
     # leaves instead of full glazing.
     Door(uid="CBD202AAAA", tag="D-B-PLAY", host="W-B-CE", type_ref="DT-INT-DOUBLE60",

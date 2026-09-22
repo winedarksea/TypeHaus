@@ -18,7 +18,7 @@ from typehaus.model.registry import constructor_names, element_kinds
 from typehaus.model.structure import PlateTie
 from typehaus.quantities import M_PER_IN, inch
 from typehaus.resolve.mep_bore_geometry import _CUTTABLE_CATEGORIES, leg_crossings
-from typehaus.resolve.mep_bores import header_bore, top_plate_cut
+from typehaus.resolve.mep_bores import flat_header_cut, header_bore, top_plate_cut
 from typehaus.resolve.model import FramedMember, ResolvedWall
 
 
@@ -74,18 +74,19 @@ def test_an_engineered_header_is_the_fabricator_s_chart(profile: str) -> None:
 
 
 def test_catlin_s_remaining_header_crossings_are_all_reported(catlin_model_ro) -> None:
-    """Four runs meet a header in this house and every one of them was silent before §6.
+    """Two runs meet a header in this house, and both only clip R602.7.4's flat nailer.
 
-    It was six until the 2026-09-22 reroute pass: `DU-B-ERV-R-SAUNA-SUP` took `W-B-CW`'s
-    west clear bay and `DU-B-ERV-R-GYM` rose over `D-B-GYM`'s header into the open wall
-    between it and the top plate. The four left are the three drains and the sauna's
-    extract, and each one's refusal is measured in `notes/framing_bore_limits.md` §8.5.
+    Six until the 2026-09-22 reroute pass, four until B1 the same day: `D-B-FURN`'s 2-2x8
+    became a flat 2x8 in a wall authored NONBEARING, so the extract duct and the main
+    drain pass over it through an open head, and the two drains that still clip its top
+    face notch a member that carries nothing (`notes/framing_bore_limits.md` §9).
     """
     from typehaus.checks.mep.routing_bores import run_through_header
 
     findings = run_through_header(_ctx(catlin_model_ro))
-    assert len(findings) == 4
-    assert {f.result.value for f in findings} == {"unknown"}
+    assert len(findings) == 2
+    assert {f.result.value for f in findings} == {"pass"}
+    assert all("R602.7.4" in f.message for f in findings)
 
 
 # --- §6 where along the header, and how much of it ------------------------------------
@@ -160,11 +161,11 @@ def test_the_catlin_header_crossings_are_at_their_true_stations(
     stations = {tag: (cut.station[0] / M_PER_IN, cut.station[1] / M_PER_IN, cut.through_in)
                 for tag, _wall, cuts in _crossings(_ctx(catlin_model_ro))
                 for cut in cuts if cut.category == "header"}
+    # Since B1 the member is a flat 2x8, z -29.44..-27.94, and the cut is the notch the
+    # drain's OD takes off its top face (§9); the extract and the main drain meet nothing.
     expected = {
-        "DU-B-ERV-R-SAUNA-EXH": (45.00, 216.0, 3.25),
-        "PR-B-KITCH-DRAIN": (54.00, 216.0, 2.375),
-        "PR-M-S-BATH1-DRAIN": (54.77, 216.0, 3.50),
-        "PR-B-MAIN-DRAIN": (72.00, 216.0, 4.50),
+        "PR-B-KITCH-DRAIN": (54.00, 216.0, 0.46),
+        "PR-M-S-BATH1-DRAIN": (54.77, 216.0, 0.30),
     }
     assert set(stations) == set(expected)
     for tag, want in expected.items():
@@ -314,28 +315,55 @@ def test_a_header_names_the_opening_it_was_framed_around(catlin_model_ro) -> Non
                 for tag, _wall, cuts in _crossings(_ctx(catlin_model_ro))
                 for cut in cuts if cut.category == "header"}
     assert openings["PR-B-KITCH-DRAIN"] == "D-B-FURN"
-    assert openings["PR-B-MAIN-DRAIN"] == "D-B-FURN"
+    assert openings["PR-M-S-BATH1-DRAIN"] == "D-B-FURN"
     assert all(cut.child_key == "header-0"
                for wall in catlin_model_ro.walls for cut in wall.members
                if cut.opening_tag == "D-B-FURN" and cut.category == "header")
 
 
 def test_the_bearing_is_the_jack_face_and_not_the_member_end(catlin_model_ro) -> None:
-    """A header runs OVER its jacks, so its ends are not its bearings: PR-B-MAIN-DRAIN is
-    4.50" from the member end and 3.00" from the bearing the chart measures from."""
+    """A header runs OVER its jacks, so its ends are not its bearings: PR-B-KITCH-DRAIN is
+    16.50" from the member end and 15.00" from the bearing the chart measures from (§8.3)."""
     from typehaus.checks.mep.routing_bores import _crossings, _from_bearing_in
 
     ctx = _ctx(catlin_model_ro)
     for tag, _wall, cuts in _crossings(ctx):
-        if tag != "PR-B-MAIN-DRAIN":
+        if tag != "PR-B-KITCH-DRAIN":
             continue
         cut = next(c for c in cuts if c.category == "header")
-        assert cut.from_end_m / M_PER_IN == pytest.approx(4.50, abs=0.01)
-        assert _from_bearing_in(ctx, cut) == pytest.approx(3.00, abs=0.01)
-        assert cut.edge_clear_in == pytest.approx(0.60, abs=0.01)
+        assert cut.from_end_m / M_PER_IN == pytest.approx(16.50, abs=0.01)
+        assert _from_bearing_in(ctx, cut) == pytest.approx(15.00, abs=0.01)
         break
     else:  # pragma: no cover - the crossing is pinned above
-        pytest.fail("PR-B-MAIN-DRAIN no longer crosses a header")
+        pytest.fail("PR-B-KITCH-DRAIN no longer crosses a header")
+
+
+# --- §9 B1: D-B-FURN's flat nonbearing header ---------------------------------------------
+
+def test_a_notch_in_a_flat_nonbearing_header_passes_while_wood_is_left() -> None:
+    """R602.7.4: the flat 2x carries nothing, so the only question is the head nailing."""
+    verdict = flat_header_cut("2x8", 0.46)
+    assert verdict.ok is True
+    assert 'leaves 1.04" of the 1.50" nailer' in verdict.basis
+    severed = flat_header_cut("2x8", 1.5)
+    assert severed.ok is None and severed.remedy
+    assert "severed" in severed.basis
+
+
+def test_the_flat_header_opens_d_b_furn_s_head(catlin_model_ro) -> None:
+    """B1's contract: no cripple over the flat 2x8, and the extract duct and the 4.50"
+    main drain cross `W-B-CW` through the open head without cutting anything."""
+    from typehaus.checks.mep.routing_bores import _crossings
+
+    wall = catlin_model_ro.wall("W-B-CW")
+    header = next(m for m in wall.members if m.opening_tag == "D-B-FURN")
+    assert header.profile == "2x8"
+    assert (header.z1_m - header.z0_m) / M_PER_IN == pytest.approx(1.5)
+    assert not [m for m in wall.members if m.category == "cripple"]
+    open_head = {"PR-B-MAIN-DRAIN", "DU-B-ERV-R-SAUNA-EXH"}
+    for tag, found, cuts in _crossings(_ctx(catlin_model_ro)):
+        if tag in open_head and found.tag == "W-B-CW":
+            assert not cuts, (tag, [c.member_key for c in cuts])
 
 
 # --- §7 the plate tie --------------------------------------------------------------------

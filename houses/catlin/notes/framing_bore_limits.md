@@ -4,7 +4,7 @@ Oracle for `typehaus/resolve/mep_bores.py` (and its geometry half, `mep_bore_geo
 `mep.run_through_stud`, `mep.run_through_plate`,
 `mep.run_through_header` and the R502.8.1 half of `mep.run_member_crossing`. Reproduced by
 `packages/engine/tests/test_mep_bores.py` (§1-§5) and
-`packages/engine/tests/test_e2_header_and_plate_tie.py` (§6-§7).
+`packages/engine/tests/test_e2_header_and_plate_tie.py` (§6-§9).
 
 IRC R502.8.1 (joists) and R602.6 / R602.6.1 (studs and plates) were on `mn_residential`'s
 **not-covered** list from the day the profile was written until 2026-09-17. Everything below
@@ -454,10 +454,47 @@ A 4.50" run needs the full 5 1/4" of free bay, which is the same slot the two dr
 cannot reach either; and §8.3 has already shown no TJ-9000 row covers 4.50" at a depth that
 fits, at 3.00" from a bearing, in the bottom third of the section.
 
-**So the open question is a designed header over `D-B-FURN`, and it is the owner's.** Four
+**Closed by §9 (B1): the header is gone, not designed.** Kept as the record of why. Four
 holes remain in one 2-2x8: a 3 1/4" notch off the top face, two bores 0.77" apart near
 midspan, and a 4.50" bore three inches from a jack. No published chart reaches any of them
-and the engine says so in four UNKNOWNs rather than inventing a fraction. What closes it is a
-header designed for the holes that are actually in it — an `engineered()` item with its own
-oracle note — or a re-plumbing of the basement's tie-in corner, which is a design pass and
-not a routing one. §8.2's 13.82" of available depth is the number either starts from.
+and the engine said so in four UNKNOWNs rather than inventing a fraction.
+
+---
+
+## 9. B1: `W-B-CW` is nonbearing, so `D-B-FURN` takes R602.7.4's flat header (2026-09-22)
+
+**The wall carries nothing, measured.** `FS-M-WEST`'s I-joists span x, parallel to `W-B-CW`
+(axis y = 216"), on the y = 208" and 224" lines; the wall's 8.52" footprint (y 211.74"-220.26")
+sits wholly between them. No floor names it in `bearing_refs`, no wall `stacks_on` it, no
+post or beam lands on it, and its top plate (-12.63") stops 3/4" under the only framing in
+that bay — the tub's blocking and the derived partition block, both at -11.88". It was
+already graded as non-bearing by R602.6; it is now *authored* `NONBEARING`.
+
+**R602.7.4**: "Load-bearing headers are not required in interior or exterior nonbearing
+walls. A single flat 2-inch by 4-inch member shall be permitted to be used as a header ...
+for openings up to 8 feet in width if the vertical distance to the parallel nailing surface
+above is not more than 24 inches. For such nonbearing headers, cripples or blocking are not
+required above the header." Three things follow in the engine:
+
+* **The member is the wall's own 2x, laid flat** — `flat 2x8 nonbearing`. 2x4 is the code's
+  minimum; a flat 2x4 in a 7.25" wall leaves one face's head finish with nothing to nail to.
+  It resolves 1.50" tall (z -29.44"..-27.94"), not on edge. Nailing surface above: the plate
+  underside at -15.63", 12.31" up, inside the 24".
+* **No cripples.** The two 6.56" cripples are gone, so §6a's short-cripple gate has nothing
+  here to govern: no run crosses a cripple.
+* **A cut in the nailer is not a header bore.** It carries no tributary load, so
+  `header_bore`'s question is not asked; `mep_bores.flat_header_cut` PASSes while wood is left
+  and is UNKNOWN only where a run takes its whole 1.50" (the head nailing is severed).
+
+**The four crossings, re-measured** (station, run z, OD band; the nailer top is -27.94"):
+
+| run | before (2-2x8) | after (flat 2x8) |
+|---|---|---|
+| `DU-B-ERV-R-SAUNA-EXH` | 3.25" notch, UNKNOWN | x 45.00", band -25.44"..-21.44": **cuts nothing**, 2.50" over the nailer, 5.50" off the west king |
+| `PR-B-KITCH-DRAIN` | 2.38" bore, UNKNOWN | x 54.00", band -28.40"..-26.02": **0.46" notch** off the top, 1.04" left — PASS |
+| `PR-M-S-BATH1-DRAIN` | 3.50" bore, UNKNOWN | x 54.77", band -28.23"..-24.73": **0.30" notch** off the top, 1.20" left — PASS |
+| `PR-B-MAIN-DRAIN` | 4.50" bore, UNKNOWN | x 72.00", band -27.29"..-22.79": **cuts nothing**, 0.65" over the nailer, 2.25" off the east king |
+
+`PR-B-MAIN-DRAIN` never meets R602.6 at all: with no cripple in the head there is no stud
+to measure its 4.50" against (a non-bearing 2x8's limit is 60% x 7.25" = 4.35", and it
+would have been 0.15" over). No lane shift; `mep.run_through_header`: four UNKNOWNs -> two PASSes.

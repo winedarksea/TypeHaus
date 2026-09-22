@@ -259,6 +259,31 @@ def _hole_charts(ctx: CheckContext) -> dict[str, object]:
     return out
 
 
+def flat_nonbearing_openings(ctx: CheckContext) -> frozenset[str]:
+    """Openings headed by an R602.7.4 flat nailer in a wall authored NONBEARING.
+
+    Both halves, the ``structural.flat_2x4_nonbearing_header`` preconditions: a flat spec
+    in a wall nobody has called nonbearing is a FAIL there, and stays a header here.
+    """
+    from typehaus.model import Door
+    from typehaus.model.enums import StructuralRole
+    from typehaus.resolve.framing.tables import flat_header_member
+
+    plan = ctx.model.plan
+    types = {door_type.tag: door_type for door_type in plan.library.door_types}
+    out = set()
+    for element in plan.all_elements():
+        if not isinstance(element, Door):
+            continue
+        door_type = types.get(element.type_ref)
+        spec = element.header_spec or getattr(door_type, "header_spec", None)
+        host = plan.by_tag(element.host)
+        if (flat_header_member(spec) is not None
+                and getattr(host, "structural_role", None) is StructuralRole.NONBEARING):
+            out.add(element.tag)
+    return frozenset(out)
+
+
 def _bearing_inset_m(ctx: CheckContext, cut) -> float | None:
     """How much of a header's length is bearing rather than clear span, per end.
 
@@ -351,7 +376,7 @@ def run_through_header(ctx: CheckContext) -> list[Finding]:
     is a FAIL that needs no table.
     """
     from typehaus.quantities import M_PER_IN
-    from typehaus.resolve.mep_bores import header_bore
+    from typehaus.resolve.mep_bores import flat_header_cut, header_bore
 
     def _at(cut) -> str:
         """Where the run meets THIS header, which is not the header's midspan.
@@ -363,6 +388,7 @@ def run_through_header(ctx: CheckContext) -> list[Finding]:
                 f'{cut.station[1] / M_PER_IN:.2f}")')
 
     charts = _hole_charts(ctx)
+    flat = flat_nonbearing_openings(ctx)
     crossings = list(_crossings(ctx))
     holes = _holes_per_member(crossings)
     out: list[Finding] = []
@@ -372,7 +398,8 @@ def run_through_header(ctx: CheckContext) -> list[Finding]:
         if not headers:
             continue
         seen += 1
-        verdicts = [(cut, header_bore(
+        verdicts = [(cut, flat_header_cut(cut.profile, cut.through_in)
+                     if cut.opening_tag in flat else header_bore(
             cut.profile, cut.diameter_in, through_in=cut.through_in,
             chart=charts.get(cut.opening_tag or ""),
             from_bearing_in=_from_bearing_in(ctx, cut),

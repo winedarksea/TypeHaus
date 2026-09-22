@@ -73,9 +73,9 @@ def test_a_penetration_as_wide_as_the_member_is_not_a_bore_at_all() -> None:
 
 
 def test_a_bore_in_a_cripple_shorter_than_two_depths_is_unknown_with_its_numbers() -> None:
-    """The note's §6 case: a 4.00" hole in D-B-FURN's 6.56" non-bearing 2x8 cripple is under
-    60% of 7.25" and would PASS on depth alone, leaving two 1.28" slivers. Never a FAIL:
-    nothing published governs a block that short."""
+    """The note's §6a case (pre-B1): a 4.00" hole in D-B-FURN's 6.56" non-bearing 2x8
+    cripple is under 60% of 7.25" and would PASS on depth alone, leaving two 1.28" slivers.
+    Never a FAIL: nothing published governs a block that short."""
     verdict = stud_bore("2x8", 4.0, bearing=False, length_in=6.5625)
     assert verdict.unknown
     assert '6.56"' in verdict.basis and '2.56"' in verdict.basis and '14.50"' in verdict.basis

@@ -22,6 +22,7 @@ from typehaus.resolve.framing.tables import (
     OVERHEAD_TRACK_MEMBER,
     POCKET_SPLIT_STUD_MEMBER,
     POCKET_SPLIT_STUD_SPACING,
+    flat_header_member,
     header_depth,
     header_profile_from_spec,
     header_size,
@@ -394,9 +395,12 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
     # than silently sizing a header off a typo.
     engineered = (header_profile_from_spec(opening.header_spec)
                   if opening.header_spec is not None else None)
+    flat = flat_header_member(opening.header_spec) is not None
     if engineered is not None:
         size = engineered
-        depth = cross_section(engineered).depth_m
+        section = cross_section(engineered)
+        # R602.7.4's nailer is laid FLAT: its z extent is the 1 1/2" face, not the depth.
+        depth = section.width_m if flat else section.depth_m
     else:
         size = header_size(_m(opening.width_m), bearing=pattern.header_is_structural)
         depth = header_depth(size, _m(opening.width_m)).meters
@@ -434,7 +438,10 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
                               member, cripples_at)
     # Head cripples depend only on the gap between the header (or its nailer) and the
     # plate underside — a door has no rough sill, but it has the same head condition a
-    # window does.
+    # window does. R602.7.4: over a flat nonbearing header "cripples or blocking are not
+    # required", and none are framed — that open head is the exception's point.
+    if flat:
+        return out
     _append_head_cripples(out, rw.uid, opening_index, direction, wall_start, center,
                           half, cripple_bottom, top_at, member, cripples_at)
     return out

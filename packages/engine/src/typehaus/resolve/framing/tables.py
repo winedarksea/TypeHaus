@@ -60,7 +60,17 @@ def header_size(opening_width: Length, bearing: bool = True) -> str:
 ENGINEERED_LVL = "engineered-LVL"
 # R602.7.4 permits a flat 2x4 nailer at a nonbearing opening.  It is an explicit authored
 # option, not an inference from a short opening; the structural check validates the limits.
+# ``flat 2xN nonbearing`` spells the same member at the wall's own depth: 2x4 is the code's
+# minimum, and a flat 2x4 in a 2x6/2x8 wall leaves one face's finish with no head nailing.
 FLAT_2X4_NONBEARING_HEADER = "flat 2x4 nonbearing"
+_RE_FLAT_HEADER = re.compile(r"^\s*flat\s+(?P<member>2x(?:4|6|8|10|12))\s+nonbearing\s*$",
+                             re.IGNORECASE)
+
+
+def flat_header_member(spec: str | None) -> str | None:
+    """The 2x an authored R602.7.4 flat nonbearing header lays flat, or ``None``."""
+    match = _RE_FLAT_HEADER.match(spec or "")
+    return match["member"].lower() if match else None
 
 # Stocked LVL depths (inches). Beyond the prescriptive table ``header_size`` names an
 # engineered member with no nominal lumber depth to look up, but the solver still has to
@@ -91,8 +101,9 @@ def header_profile_from_spec(spec: str) -> str | None:
     A spec this function cannot parse yields ``None`` and the caller falls back to the
     prescriptive table: a typo must never silently size a header.
     """
-    if spec.strip().lower() == FLAT_2X4_NONBEARING_HEADER:
-        return "2x4"
+    flat = flat_header_member(spec)
+    if flat is not None:
+        return flat
     match = _RE_HEADER_SPEC.match(spec)
     if match is None:
         return None

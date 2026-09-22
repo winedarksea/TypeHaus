@@ -56,7 +56,7 @@ def flat_2x4_nonbearing_header(ctx: CheckContext) -> list[Finding]:
     """
     if ctx.plan is None:
         return []
-    from typehaus.resolve.framing.tables import FLAT_2X4_NONBEARING_HEADER
+    from typehaus.resolve.framing.tables import flat_header_member
 
     out: list[Finding] = []
     authored_by_tag = {element.tag: element for element in ctx.plan.all_elements()}
@@ -68,7 +68,7 @@ def flat_2x4_nonbearing_header(ctx: CheckContext) -> list[Finding]:
         spec = getattr(authored, "header_spec", None)
         if spec is None:
             spec = getattr(types.get(opening.type_ref), "header_spec", None)
-        if (spec or "").strip().lower() != FLAT_2X4_NONBEARING_HEADER:
+        if flat_header_member(spec) is None:
             continue
         host = authored_by_tag.get(opening.host_wall)
         wall = ctx.model.wall(opening.host_wall)
@@ -84,7 +84,11 @@ def flat_2x4_nonbearing_header(ctx: CheckContext) -> list[Finding]:
             # are the standard stack, so this is the plate *underside* the header can
             # nail against rather than a roof/load-path inference.
             plate_underside = plate_top - 3.0 * 0.0254
-            header_top = wall.base_ref_z_m + opening.sill_m + opening.height_m + 3.5 * 0.0254
+            # The resolved nailer's own top: it is laid flat, 1 1/2" and not its depth.
+            header_top = next(
+                (member.z1_m for member in wall.members
+                 if member.category == "header" and member.opening_tag == opening.tag),
+                wall.base_ref_z_m + opening.sill_m + opening.height_m + 1.5 * 0.0254)
             gap = plate_underside - header_top
             if gap < -1e-9 or gap > 24.0 * 0.0254 + 1e-9:
                 violations.append(

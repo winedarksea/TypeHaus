@@ -392,6 +392,9 @@ suppress = [
   # A 2" vent through a 2x4 plate is over 50% at ANY station, so there is no move that fixes
   # it: the alternatives are that strap or a 2x6 wall. The strap is the ordinary answer and
   # it is the one taken. **Accepted on the drawings, not routed away.**
+  # The key is the RUN, so it also hides an UNKNOWN (2026-09-22, B2): at `W-B-ESS-W` the
+  # vent runs level through `plate-top-1`, all 1.50" of its thickness across its whole 5.50"
+  # width — a SEVERED plate, which no tie answers (notes/framing_bore_limits.md §7).
   "mep.run_through_plate:PR-B-SAUNA-VENT",
   #
   # ** THE NINE UNKNOWNs ARE A DIFFERENT CONDITION FROM THE ONE ABOVE, AND THE OLD ENTRY

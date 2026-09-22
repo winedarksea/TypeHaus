@@ -54,6 +54,10 @@ def test_unrecognized_header_spec_parses_to_none():
 def test_explicit_flat_2x4_nonbearing_header_has_a_real_profile():
     """The exception is a framing member, while its applicability is check-validated."""
     assert header_profile_from_spec(FLAT_2X4_NONBEARING_HEADER) == "2x4"
+    # The same exception at the wall's own depth, so both faces get head nailing.
+    assert header_profile_from_spec("flat 2x6 nonbearing") == "2x6"
+    assert header_profile_from_spec("Flat 2x8 Nonbearing") == "2x8"
+    assert header_profile_from_spec("flat 2x5 nonbearing") is None
 
 
 # ------------------------------------------------------------------ solver unit level
@@ -82,6 +86,19 @@ def test_header_spec_replaces_the_table_sized_header():
     assert header.profile == "2-1.75x14 LVL"
     assert header.z1_m - header.z0_m == pytest.approx(inch(14).meters)
     assert cross_section(header.profile).plies == 2
+
+
+def test_a_flat_nonbearing_header_is_laid_flat_with_no_cripples_over_it():
+    """R602.7.4: the flat 2x is its 1 1/2" face tall, and "cripples or blocking are not
+    required above the header" — none are framed, which is what opens the head."""
+    plan, rw = _wall_and_plan()
+    members = frame_wall(plan, rw, openings=[_door("flat 2x6 nonbearing")])
+    header = next(m for m in members if m.category == "header")
+    assert header.profile == "2x6"
+    assert header.z1_m - header.z0_m == pytest.approx(inch(1.5).meters)
+    assert not [m for m in members if m.category == "cripple"]
+    tabled = frame_wall(plan, rw, openings=[_door(None)])
+    assert [m for m in tabled if m.category == "cripple"]
 
 
 def test_without_a_spec_the_prescriptive_table_still_sizes_the_header():

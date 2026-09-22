@@ -251,9 +251,9 @@ DUCTS_ERV_BASEMENT = [
     # top and 7/8" to the plate, and **cuts nothing at all**: no bore, no notch, no header.
     #
     # ** THIS IS NOT THE SHORT-CRIPPLE GAP AND THE DIFFERENCE IS THE WHOLE POINT. **
-    # `notes/framing_bore_limits.md` §6a records that `stud_bore` would PASS a 4" hole
-    # through a 6 9/16" cripple, leaving two 1.28" slivers, and forbids any route taken on
-    # the strength of that PASS. That is a hole DRILLED IN a cripple. This duct passes
+    # `notes/framing_bore_limits.md` §6a: a 4" hole through a 6 9/16" cripple leaves two
+    # 1.28" slivers, and `stud_bore` now reads such a hole UNKNOWN (a member shorter than
+    # two depths is a block, not a stud). That is a hole DRILLED IN a cripple. This duct passes
     # BETWEEN two whole cripples in air the framing never occupied — the ordinary
     # over-the-header detail — and the members it clears are graded, not exempted.
     #
