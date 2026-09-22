@@ -138,14 +138,14 @@ def _in_a_stud(model: ResolvedModel, wall_ref: str | None,
                point: tuple[float, float]) -> bool:
     """Whether a drain dropped here would land in framing rather than a bay.
 
-    Read off the wall's own resolved members through ``resolve/mep_bores``' plan shapes —
-    the same geometry ``mep.run_through_stud`` grades a bore against, so a station this
-    offers cannot be one that check then refuses.
+    Read off the wall's own resolved members through ``resolve/mep_bore_geometry``'s
+    plan shapes — the same geometry ``mep.run_through_stud`` grades a bore against, so a
+    station this offers cannot be one that check then refuses.
     """
     from shapely.geometry import Point
 
     from typehaus.resolve.framing.profiles import cross_section
-    from typehaus.resolve.mep_bores import _member_plan_shape
+    from typehaus.resolve.mep_bore_geometry import member_plan_shape
 
     wall = next((w for w in model.walls if w.tag == wall_ref), None)
     if wall is None:
@@ -154,7 +154,7 @@ def _in_a_stud(model: ResolvedModel, wall_ref: str | None,
     for member in getattr(wall, "members", ()) or ():
         if member.category not in ("stud", "king", "jack", "post"):
             continue
-        shape = _member_plan_shape(member, cross_section(member.profile))
+        shape = member_plan_shape(member, cross_section(member.profile))
         if shape is not None and shape.covers(probe):
             return True
     return False

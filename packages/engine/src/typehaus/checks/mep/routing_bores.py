@@ -75,7 +75,7 @@ def _crossings(ctx: CheckContext):
     from shapely import STRtree
     from shapely.geometry import LineString, Point
 
-    from typehaus.resolve.mep_bores import leg_crossings
+    from typehaus.resolve.mep_bore_geometry import leg_crossings
     from typehaus.resolve.mep_envelopes import run_polylines, run_radii
 
     walls = [wall for wall in ctx.model.walls if wall.members]

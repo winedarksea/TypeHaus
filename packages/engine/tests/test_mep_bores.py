@@ -8,11 +8,11 @@ from __future__ import annotations
 
 import pytest
 
+from typehaus.resolve.mep_bore_geometry import leg_crossings
 from typehaus.resolve.mep_bores import (
     STUD_BORE_DOUBLED_MAX_SUCCESSIVE,
     joist_bore,
     joist_notch,
-    leg_crossings,
     stud_bore,
     stud_notch,
     top_plate_cut,

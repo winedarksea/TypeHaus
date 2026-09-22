@@ -17,12 +17,8 @@ from typehaus.model.refs import PublishedHole
 from typehaus.model.registry import constructor_names, element_kinds
 from typehaus.model.structure import PlateTie
 from typehaus.quantities import M_PER_IN, inch
-from typehaus.resolve.mep_bores import (
-    _CUTTABLE_CATEGORIES,
-    header_bore,
-    leg_crossings,
-    top_plate_cut,
-)
+from typehaus.resolve.mep_bore_geometry import _CUTTABLE_CATEGORIES, leg_crossings
+from typehaus.resolve.mep_bores import header_bore, top_plate_cut
 from typehaus.resolve.model import FramedMember, ResolvedWall
 
 
