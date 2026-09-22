@@ -87,6 +87,8 @@ KEY_GLOSSARY: dict[tuple[str, str], str] = {
     ("edge_trim", "edge_cladding"): "Roof edge cladding", ("edge_trim", "fascia"): "Fascia",
     ("edge_trim", "ridge_cap"): "Ridge cap", ("edge_trim", "soffit"): "Eave soffit",
     ("edge_trim", "wall_corner"): "Wall corner closure",
+    ("edge_trim", "movement_joint"): "Masonry movement joint",
+    ("concrete", "movement_joint"): "Masonry movement joint",
     ("edge_trim", "wrb_counterflashing"): "WRB counterflashing",
     ("drainage", "downspout"): "Downspout", ("drainage", "gutter"): "Gutter",
     ("drainage", "drywell"): "Drywell", ("drainage", "drain_tile"): "Drain tile",

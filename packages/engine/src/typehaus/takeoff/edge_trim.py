@@ -90,12 +90,12 @@ def _section_profile(depth_m: float, thickness_m: float) -> str:
 
 def edge_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """Lineal feet of edge trim, grouped by category, material and cross-section."""
-    from typehaus.model.trim import EaveSoffit, Fascia, Flashing
+    from typehaus.model.trim import EaveSoffit, Fascia, Flashing, MovementJoint
 
     rows = _Rows()
     for storey in model.plan.storeys:
         for element in model.plan.storey_elements(storey.tag):
-            if not isinstance(element, (Fascia, EaveSoffit, Flashing)):
+            if not isinstance(element, (Fascia, EaveSoffit, Flashing, MovementJoint)):
                 continue
             # A vertical run stands up the wall, so its length is its depth and its plan
             # path spans only the material's thickness. Billing the path either way would
@@ -110,9 +110,12 @@ def edge_trim_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
                 length_m, face_m = element.depth.meters, path_m
             else:
                 length_m, face_m = path_m, element.depth.meters
+            material = element.material or ""
+            if isinstance(element, MovementJoint) and element.backer:
+                material = f"{material} over {element.backer}"  # one installed joint per LF
             rows.add(element.kind.value,
                      _section_profile(face_m, element.thickness.meters),
-                     element.material or "", tag=element.tag,
+                     material, tag=element.tag,
                      length_m=length_m,
                      mirror="structural_solids")
     _add_derived_roof_trim(model, rows)

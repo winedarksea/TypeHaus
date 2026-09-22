@@ -33,7 +33,8 @@ from plan import (appliance_types, assemblies, backing, backing_wet, braced_wall
                   circuits, countertops,
                   electrical, electrical_attic, equipment_types,
                   fixture_types, fixtures, furniture_types, landscape, lighting,
-                  lighting_attic, lighting_types, mep, millwork, placeables, plant_types,
+                  lighting_attic, lighting_types, masonry_joints, mep, millwork, placeables,
+                  plant_types,
                   products,
                   site, transitions, views, wind_clamps)
 from plan.storeys import attic, attic_studio, basement, garage, main, second
@@ -320,6 +321,7 @@ PLAN = (
         [*basement.ELEMENTS, *fixtures.BASEMENT_FIXTURES,
          *foundations.HOUSE_FOOTINGS, *foundations.HOUSE_FOOTING_BEDDING,
          *foundations.VENEER_PLINTH, *foundations.VENEER_PLINTH_BEDDING,
+         *masonry_joints.JOINTS,
          *mep.BASEMENT_ELEMENTS, *electrical.BASEMENT_ELEMENTS,
          *lighting.BASEMENT_LIGHTING,
          *placeables.BASEMENT_PLACEABLES, *millwork.BASEMENT_SHELVES,

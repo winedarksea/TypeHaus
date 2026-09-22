@@ -385,10 +385,9 @@ def _one(ctx: EngineeringContext, beam: Any, carried: tuple[Any, ...]) -> Engine
             "side walls; the masonry "
             "anchors over the insulated standoff, which are `veneer_anchor/<wythe>`, their own "
             "deferral.",
-            f"MODEL GAP — THE SOFT JOINTS: a movement joint at each end of the wythe is carried "
-            f"by no element and graded by no rule. As drawn the wythe ends "
-            f"{_end_gaps(wythe_bands, w_sup, e_sup)}; a sealant joint over compressible filler "
-            f"belongs at both (BIA Technical Note 18A; notes §5.1).",
+            f"SOFT JOINTS: the wythe ends {_end_gaps(wythe_bands, w_sup, e_sup)}; each end's "
+            f"seal over compressible filler is a MovementJoint, billed by the foot and graded "
+            f"by structural.masonry_movement_joint (BIA Technical Note 18A; notes §6g).",
             "LITERALS: fy = fyt 60,000 psi; Es 29,000,000 psi; Ec 57,000√f'c; ξ 2.0; "
             f"{CONCRETE_UNIT_WEIGHT_PCF:.0f} pcf concrete.",
         ),

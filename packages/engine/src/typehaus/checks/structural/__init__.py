@@ -18,6 +18,7 @@ from typehaus.checks.structural import (
     guards,  # noqa: F401 - registers checks
     interference,  # noqa: F401 - registers checks
     lateral_racking,  # noqa: F401 - registers checks
+    masonry_joint,  # noqa: F401 - registers checks
     partition_fasteners,  # noqa: F401 - registers checks
     rake_overhang,  # noqa: F401 - registers checks
     ridge,  # noqa: F401 - registers checks

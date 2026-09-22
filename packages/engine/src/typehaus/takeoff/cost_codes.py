@@ -87,6 +87,7 @@ _SECTION_TRADE_CODES: dict[tuple[str, str], CostCode] = {
     ("hardware", "mechanical"): CostCode("3200", "23 05 29", "mechanical"),
     ("edge_trim", "roofing"): CostCode("2500", "07 62 00", "roofing"),
     ("edge_trim", "siding"): CostCode("2100", "07 62 00", "siding"),
+    ("edge_trim", "masonry"): CostCode("1200", "07 92 00", "masonry"),
     ("install_parts", "electrical"): CostCode("3300", "26 05 33", "electrical"),
     ("install_parts", "plumbing"): CostCode("3100", "22 05 00", "plumbing"),
     ("construction_returns", "insulation"): CostCode("2100", "07 21 00", "insulation"),
@@ -265,6 +266,7 @@ _SOLID_TRADE_CODES: dict[str, CostCode] = {
     "drywall": CostCode("4300", "09 29 00", "drywall"),        # dropped soffits, ceilings
     "insulation": CostCode("2100", "07 21 00", "insulation"),  # an XPS frost wing
     "landscaping": CostCode("1100", "32 90 00", "landscaping"),  # the putting green
+    "masonry": CostCode("1200", "07 92 00", "masonry"),        # a wythe's sealant joints
 }
 
 
@@ -362,6 +364,8 @@ def _fact_code(section: str, row: Mapping[str, Any]) -> CostCode | None:
         category = str(row.get("category") or "")
         if category in _SIDING_EDGE_TRIM:
             trade = "siding"
+        elif category == "movement_joint":
+            trade = "masonry"          # the mason seals the wythe's own end joints
         elif category:
             trade = "roofing"
     elif section == "install_parts":

@@ -103,6 +103,7 @@ _SOLID_IFC_CLASS: dict[str, tuple[str, str | None]] = {
     "vent": ("IfcBuildingElementProxy", None),
     "fascia": ("IfcCovering", None), "soffit": ("IfcCovering", None),
     "flashing": ("IfcCovering", None), "wall_corner": ("IfcCovering", None),
+    "movement_joint": ("IfcCovering", None),
     "beam_cap": ("IfcCovering", None),
     "eave_soffit": ("IfcCovering", None),
     "thermal_break": ("IfcBuildingElementProxy", None),

@@ -580,6 +580,9 @@ class TrimKind(Enum):
     # turn-down, ``_BANDED_SECTIONS`` in resolve/accessories.py), which is not the section a
     # corner closure has. Authored with ``Flashing(vertical=True)``.
     WALL_CORNER = "wall_corner"
+    # A sealant-over-compressible-filler joint where a masonry wythe ends against something
+    # it must not push on (BIA TN 18A). Authored as ``MovementJoint``; the mason's order.
+    MOVEMENT_JOINT = "movement_joint"
 
 
 class UtilityKind(Enum):

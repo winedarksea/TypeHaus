@@ -41,7 +41,7 @@ this catches is a run pointed at the wrong element, which is feet away, not inch
 
 from __future__ import annotations
 
-from shapely.geometry import Point, Polygon
+from shapely.geometry import MultiPoint, Point, Polygon
 
 from typehaus.checks._authoring import failed, not_applicable, passed, unknown
 from typehaus.checks.registry import CheckContext, Tier, check
@@ -53,7 +53,7 @@ _CHECK_ID = "integrity.edge_run_host"
 #: Every ``_EdgeRun`` subclass. Named rather than discovered so a new trim family is a
 #: deliberate decision to cover; ``test_edge_run_host`` lints the list against the model
 #: registry.
-_RUN_KINDS = ("Fascia", "EaveSoffit", "Gutter", "Flashing", "GlazingTrim")
+_RUN_KINDS = ("Fascia", "EaveSoffit", "Gutter", "Flashing", "GlazingTrim", "MovementJoint")
 
 #: How far off its host's plan a run may sit. A gutter hangs 3.33" outboard of the roof it
 #: drains and that is correct; a run naming the wrong element is not inches away.
@@ -80,6 +80,17 @@ def _top_range(solid) -> tuple[float, float]:
     if not zs:
         return (solid.z1_m, solid.z1_m)
     return (solid.z1_m - (max(zs) - min(zs)), solid.z1_m)
+
+
+class _WallHost:
+    """A resolved wall seen as a solid: the hull of its layer polygons, level at its top."""
+
+    def __init__(self, wall) -> None:
+        points = [p for layer in wall.layers for p in layer.polygon]
+        hull = MultiPoint(points).convex_hull if len(points) >= 3 else None
+        self.outline = (list(hull.exterior.coords)[:-1]
+                        if hull is not None and hull.geom_type == "Polygon" else None)
+        self.z1_m = wall.z1_m
 
 
 def _plan_gap(path, boundary) -> float | None:
@@ -109,6 +120,8 @@ def edge_run_host(ctx: CheckContext) -> list[Finding]:
 
     solids = {solid.tag: solid for solid in model.solids}
     roofs = {roof.tag: roof for roof in model.roofs}
+    # A wall host (a masonry wythe's MovementJoint) reads as its layers' plan hull and top.
+    walls = {wall.tag: _WallHost(wall) for wall in model.walls}
     run_paths = {element.tag: element
                  for kind in _RUN_KINDS
                  for element in model.plan.elements_of_kind(kind)}
@@ -127,7 +140,7 @@ def edge_run_host(ctx: CheckContext) -> list[Finding]:
                 fix="point host_ref at a live tag, or drop it if the run trims nothing"))
             continue
 
-        solid = solids.get(host_tag)
+        solid = solids.get(host_tag) or walls.get(host_tag)
         if solid is not None:
             gap = _plan_gap(run.path, getattr(solid, "outline", None))
             low, high = _top_range(solid)

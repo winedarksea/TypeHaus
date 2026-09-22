@@ -239,7 +239,7 @@ def test_hooked_anchorage_reproduces_section_6e() -> None:
 
 def test_the_soft_joint_gap_is_named_with_its_geometry(record) -> None:
     _, rec = record
-    note = next(n for n in rec.notes if n.startswith("MODEL GAP"))
+    note = next(n for n in rec.notes if n.startswith("SOFT JOINTS"))
     # 3/8" at the east end since 2026-09-22 — N-B-BRICK-E moved west so BIA TN 18A's
     # sealant joint over compressible filler has somewhere to go at BOTH ends.
     assert "4.00\" clear of W-SG-W1" in note and "0.38\" clear of W-SG-E1" in note

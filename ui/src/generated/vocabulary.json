@@ -99,6 +99,7 @@
     "lining": 15131611,
     "main_shutoff": 12096583,
     "membrane": 5010316,
+    "movement_joint": 7561556,
     "newel": 10054466,
     "opening_frame": 11765071,
     "outlooker": 12094556,
@@ -258,6 +259,7 @@
     "lining": 15131611,
     "main_shutoff": 12096583,
     "membrane": 5010316,
+    "movement_joint": 7561556,
     "newel": 10054466,
     "opening_frame": 11765071,
     "outlooker": 12094556,
@@ -415,6 +417,9 @@
     "main_shutoff": [
       "plumbing"
     ],
+    "movement_joint": [
+      "masonry"
+    ],
     "pad": [
       "concrete"
     ],
@@ -541,6 +546,7 @@
     "gutter": "drainage",
     "leader_extension": "drainage",
     "main_shutoff": "plumbing",
+    "movement_joint": "masonry",
     "pad": "concrete",
     "panel_strap": "roofing",
     "penetration_seal": "plumbing",

@@ -349,6 +349,7 @@ _KIND_FAMILY = {
     "roof": "roof", "solar_panel": "roof",
     "fascia": "trim", "gutter": "trim", "downspout": "trim", "flashing": "trim",
     "wall_corner": "trim", "eave_soffit": "trim", "beam_cap": "trim",
+    "movement_joint": "trim",
     "snow_guard": "trim", "vent": "trim",
     "railing": "rail", "railing_infill": "rail",
     "glazing": "glaz", "glazing_trim": "sash",

@@ -5,7 +5,8 @@
 `FT-B-S3` (the footings it is isolated from), `SG_VENEER_BEAM_14` (the assembly).
 **Written:** 2026-09-05, by hand. §6e re-worked 2026-09-21 (hooks, enclosing ties, footing
 dowels); §6f added 2026-09-22 (TMS ℓ/600, end fixity, the joint rows) and §6d superseded by it.
-**Oracle for:** `engineering/veneer_beam.py` (`veneer_beam/W-SG-BRKBM`) since 2026-09-20 —
+**Oracle for:** `checks/structural/masonry_joint.py` (§6g, `tests/test_masonry_joint.py`), and
+`engineering/veneer_beam.py` (`veneer_beam/W-SG-BRKBM`) since 2026-09-20 —
 §6 is worked at the model's own geometry and `tests/test_veneer_beam_calc.py` reproduces it;
 §3/§4 still oracle the report-side `engineering/sunken_garden/veneer_beam.py` at their literals.
 The masonry anchors (§5.1) are NOT computed: they are `veneer_anchor/W-B-BRICK`, a deferral.
@@ -276,8 +277,8 @@ corner continuity into the side walls (§5.2) is still the engineer's.
    brick grows irreversibly and concrete shrinks, so over 18'-8" the run wants roughly 0.15"
    of moisture plus thermal movement (BIA TN 18). Those two ends need a **soft joint**, not
    an anchor. Restraining a long wythe between two rigid concrete returns is how you crack
-   it. The end condition is a sealant joint over compressible filler; **the model does not
-   carry one and nothing in the engine grades it.**
+   it. The end condition is a sealant joint over compressible filler — authored and graded
+   since 2026-09-22 (§6g).
 2. **The end condition: CAST MONOLITHIC, settled 2026-09-14.** This note contradicted
    itself for as long as it existed — §4's torsion argument rested on the beam being "cast
    into both side walls", and this bullet described it as "chipped and doweled into an
@@ -650,14 +651,40 @@ V      = 5,621 × 12 / 15.0625                            =  4,478 lb
   permit line (`structural.veneer_anchor`) — folding them in would be a record whose §9 denies
   its own scope. §5.1 is the reasoning; the deliverable is a TMS 402 anchor design for the
   ~10" reach and the supplier's confirmation of the insulation thickness.
-* **The soft joints are a MODEL GAP, not engineering — but both ends now have ROOM for one**
-  (2026-09-22). The wythe ran x 106"…330" and stood **hard against `W-SG-E1`'s face** at the
-  east end: a sealant joint over compressible filler needs a gap to be in, and there was
-  none. `N-B-BRICK-E` moved 3/8" west, so the resolved wythe runs x 106"…329.625" and reads
-  4.00" clear of `W-SG-W1` and **0.375" clear of `W-SG-E1`** — 3/8" is BIA Technical Note 18A's
-  minimum for a vertical expansion joint, and §5.1's 0.15" of movement over 18'-8" fits it.
-  The joint FILLER is still carried by no element and graded by no rule, which is what the
-  record's NOT-GRADED note says. The wythe loses 0.3 SF (112.5 → 112.2 SF).
+* **The soft joints are AUTHORED and GRADED since 2026-09-22 (owner, A6)** — not engineering,
+  a published guide read. The wythe runs x 106"…329.625" (N-B-BRICK-E moved 3/8" west the same
+  day so the east end had room), and each end is a `MovementJoint` in `plan/masonry_joints.py`,
+  billed by the foot in `[edge_trim]` and graded by `structural.masonry_movement_joint`
+  (`tests/test_masonry_joint.py` reproduces the arithmetic below). The wythe loses 0.3 SF
+  (112.5 → 112.2 SF).
+
+  **The rule — BIA Technical Note 18A (May 2019), Eq. 1**, `S_e = w_j e_j / 0.09`: unrestrained
+  clay brickwork moves `0.0009 x length` (TN 18's moisture + freezing + thermal), and a joint
+  of width `w` whose least compressible part takes `e` percent absorbs `w e / 100`. In a series
+  each joint takes half a panel from either side; a wythe jointed at BOTH ends gives each end
+  half its run. The concrete returns shrink, which opens the joints — it adds no demand.
+
+      run            329.625 − 106.000                       = 223.625"
+      per joint      0.0009 x 223.625 / 2                    = 0.1006"
+      EAST  3/8"     DOWSIL 790, ASTM C920 Class 100/50 → 50% in compression
+                     0.375 x 0.50 = 0.1875"      d/c 0.1006 / 0.1875 = 0.537
+                     seal 1/4" deep over 1/2" Nomaco HBR closed-cell rod (C1330 Type C);
+                     TN 18A: depth ≈ w/2, never under 1/4", rod ~25% over the width
+      WEST  4"       Sika Emseal Seismic Colorseal 4", ±50% of nominal
+                     4.000 x 0.50 = 2.000"       d/c 0.1006 / 2.000   = 0.050
+                     4 1/2" deep (its size table) — the back 7/8" stands in the cavity
+
+  **Sensitivity, and the one number to watch.** If the wythe does not grow symmetrically —
+  friction on the beam's flashing, an anchor that binds — one joint can take more than half.
+  The east joint taking the WHOLE run reads 0.2013 / 0.1875 = **1.073**; so does a Class 25
+  sealant in it at the half-run. The margin is in the west joint's 4", not the east's 3/8".
+  Widening the east end to 1/2" (another 1/8" off N-B-BRICK-E) would take the whole-run case to
+  0.81; recorded, not taken.
+
+  **Why a precompressed seal at the west**: a 4" gun-grade bead is far outside the 3/8"–1/2"
+  TN 18A calls typical, and Seismic Colorseal is published from 1/2" to 10" and names brick and
+  masonry cavity walls. The check measures each joint's drawn width against the gap it stands
+  in (1/16"), so moving either node stales it loudly.
 
 ### 6h. The record, row by row
 
@@ -713,6 +740,15 @@ else here.
   paywalled. The 1" minimum is confirmed; the 4-1/2" ceiling rests on TMS 402, not on a
   quoted IRC row.
 - BIA Technical Note 18 — clay masonry movement; the basis for the end soft joints in §5.1.
+- BIA Technical Note 18A, *Accommodating Expansion of Brickwork* (May 2019), Eq. 1, sealant
+  and backer-rod guidance — §6g.
+  https://www.gobrick.com/content/userfiles/files/tn18a-Accommodating-Expansion-of-Brickwork.pdf
+- Dow, DOWSIL 790 Silicone Building Sealant TDS, form 61-884-01 (C920 Type S, NS, Class
+  100/50; +100/−50). https://www.dow.com/en-us/pdp.dowsil-790-silicone-building-sealant.01397737z.html
+- Nomaco HBR closed-cell backer rod, ASTM C1330 Type C.
+  https://www.nomaco.com/wp-content/uploads/2016/09/cp_0032_hbr_0916.pdf
+- Sika Emseal Seismic Colorseal product data sheet (±50%; 4" size, 4 1/2" depth; brick and
+  masonry cavity walls). https://www.emseal.com/product/seismic-colorseal-wall-expansion-joint-3/
 - ACI 318-19 §22.7.6.1, §22.7.7.1, §9.6.4, §9.7.5, §9.7.6.3.3 (torsion, §6c); §24.2.3.5,
   §24.2.4.1 and Table 24.2.2 (deflection, §6d); §25.4.2.3 and §25.4.3.1 (anchorage, §6e).
 - ACI 318-19 Table 25.4.3.2 (ψr 1.0 for #11 and smaller with Ath ≥ 0.4 Ahs or s ≥ 6db,

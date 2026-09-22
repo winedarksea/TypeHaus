@@ -5690,6 +5690,12 @@
 # four are 22'-4" tall each, so they are a staging job rather than a ladder job, which is where
 # the high end goes.
 "wall_corner" = { material = { low = 3, high = 7 }, labour = { low = 2.5, high = 5 } }  # 89.5 LF — 4 pieces, 22.37' each, at the four house corners. The PBR<->board & batten transition
+# RESEARCHED 2026-09-22 (A6). W-B-BRICK's two soft end joints, 15.7 LF, one BLEND: the east
+# 3/8" is DOWSIL 790 over 1/2" HBR rod (~$1-3/LF of material); the west 4" is Sika Emseal
+# Seismic Colorseal at $904.65-977 per 6.56' stick (Sunshine Supply, 2026-09) — ~$138-149/LF,
+# and 7.9 LF buys TWO sticks, which is what the high end carries. Labour is a mason's small
+# lump, not a per-foot rate. notes/sunken_garden_veneer_beam.md §6g.
+"movement_joint" = { material = { low = 70, high = 125 }, labour = { low = 6, high = 15 } }  # 15.7 LF — MJ-B-BRICK-E/-W
 "drip_flashing" = { material = { low = 1, high = 3 }, labour = { low = 1, high = 2 } }  # 176.4 LF — $1-2/LF on a NEW roof (retrofit is $3-7). Material is high for mill aluminium and right for the prefinished dark Kynar this house uses. Commonly inside the roofer's price — check for a double count against any roofing bid
 "edge_cladding" = { material = { low = 3, high = 8 }, labour = { low = 3.5, high = 7 } }  # 243.9 LF — add $2-4/LF if it is site-brake-formed rather than shop stock
 "fascia" = { material = { low = 3, high = 9 }, labour = { low = 4, high = 8 } }  # 251.5 LF — material low raised from $2.50, which only buys primed pine or coil-wrap; this run is PVC (sunken garden) and formed solid-colour PVDF (garage near-black since 2026-09-08, metal since 2026-08-26) over SPF

@@ -38,6 +38,7 @@ ACCESSORY_KEYS = frozenset({
     "railing", "railing_infill", "railing_glass",
     "dowel", "thermal_break", "connector", "snow_guard", "seam_clamp", "panel_strap",
     "sump", "vent", "fascia", "soffit", "eave_soffit", "wall_corner", "beam_cap",
+    "movement_joint",
     "gutter", "ridge_cap", "corner_trim", "flashing",
     # Stormwater (→ emit/trades.py DRAINAGE_CATEGORIES). The leader is the gutter's own
     # aluminium; the buried three read as what they are made of — perforated HDPE tile and

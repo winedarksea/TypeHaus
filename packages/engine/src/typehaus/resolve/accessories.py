@@ -23,7 +23,15 @@ from typehaus.model.structure import (
     Railing,
     Wedge,
 )
-from typehaus.model.trim import Downspout, EaveSoffit, Fascia, Flashing, GlazingTrim, Gutter
+from typehaus.model.trim import (
+    Downspout,
+    EaveSoffit,
+    Fascia,
+    Flashing,
+    GlazingTrim,
+    Gutter,
+    MovementJoint,
+)
 from typehaus.quantities import inch
 from typehaus.resolve.assembly_material import assembly_structure_material
 from typehaus.resolve.framing.profiles import cross_section
@@ -79,6 +87,7 @@ _TRIM_CATEGORY = {
     # A wall corner closure is formed metal like the flashing family but it is the siding
     # contractor's, not the roofer's, so it keeps its own label and rides the siding trade.
     "wall_corner": "wall_corner",
+    "movement_joint": "movement_joint",  # the mason's sealant joint, not formed metal
     # The glazing extrusions share the edge-run shape but not the flashing category: they
     # are an aluminium order billed by the lineal foot, and the take-off groups on this.
     "glazing_channel": "glazing_trim",
@@ -125,7 +134,8 @@ def resolve_accessories(model: ResolvedModel) -> list[Finding]:
                 findings.extend(_resolve_vent(model, el, storey.tag))
             elif isinstance(el, Downspout):
                 _resolve_downspout(model, el, storey.tag)
-            elif isinstance(el, (EaveSoffit, Fascia, Gutter, Flashing, GlazingTrim)):
+            elif isinstance(el, (EaveSoffit, Fascia, Gutter, Flashing, GlazingTrim,
+                                 MovementJoint)):
                 _resolve_edge_run(model, el, storey.tag)
     _resolve_bug_screens(model)
     return findings

@@ -112,6 +112,7 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
     # stop showing under Roof; ``takeoff/cost_codes._SIDING_EDGE_TRIM`` already billed it here.
     "fascia": "siding", "eave_soffit": "siding", "wall_corner": "siding",
     "beam_cap": "siding", "bug_screen": "siding", "screen_slat": "siding",
+    "movement_joint": "masonry",  # a brick wythe's sealant end joint
     # Stormwater: one run from the gutter to daylight, one toggle. The IFC emitter groups
     # exactly these into ``IfcDistributionSystem/STORMWATER``.
     "gutter": "drainage", "downspout": "drainage", "sump": "drainage",

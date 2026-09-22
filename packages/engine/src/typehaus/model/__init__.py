@@ -219,6 +219,7 @@ from typehaus.model.trim import (
     Flashing,
     GlazingTrim,
     Gutter,
+    MovementJoint,
 )
 from typehaus.model.types import (
     ApplianceType,
@@ -314,7 +315,7 @@ __all__ = [
     "FrenchDrain", "Drywell",
     "Dowel", "IsolationBoard", "Connector", "PlateTie", "KneeBrace", "Wedge", "Railing",
     "Fascia", "Gutter",
-    "Flashing",
+    "Flashing", "MovementJoint",
     "EaveSoffit", "FasciaBoard", "EaveGutter", "EaveTrim", "GlazingPanel", "GlazingTrim",
     "Downspout", "DischargeExtension",
     "PlantType", "Plant", "PlantingBed", "GridLayout", "PocketLayout", "AccentRule",

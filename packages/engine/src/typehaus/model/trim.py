@@ -201,6 +201,26 @@ class GlazingTrim(_EdgeRun):
     glazing_ref: str | None = None  # the GlazingPanel tag this edge belongs to
 
 
+@register_element
+class MovementJoint(_EdgeRun):
+    """A masonry wythe's soft end joint: a seal over a compressible backer or filler.
+
+    Vertical by construction: ``path`` spans the joint WIDTH across the gap in plan (wythe end
+    face to the face it stands off), ``depth`` is the run up the wythe, ``thickness`` the
+    seal's depth. ``host_ref`` is the wythe, ``abuts`` the rigid element beyond the gap.
+    ``compression_pct`` is TN 18A's e_j — the published compression capability of the least
+    compressible part (ASTM C920 Class 100/50 -> 50). ``structural.masonry_movement_joint``
+    grades it; ``takeoff/edge_trim.py`` bills it by the foot.
+    """
+
+    kind: TrimKind = TrimKind.MOVEMENT_JOINT
+    vertical: bool = True
+    abuts: str | None = None
+    compression_pct: float | None = None
+    backer: str = ""  # the backer rod or filler, named
+    source: str | None = None  # the product sheets the seal and backer are read off
+
+
 class EaveTrim(HausModel):
     """A roof's edge closure, declared once and derived along every eave and rake.
 
@@ -230,6 +250,7 @@ for _name, _obj in (
     ("DischargeExtension", DischargeExtension),
     ("Flashing", Flashing),
     ("GlazingTrim", GlazingTrim),
+    ("MovementJoint", MovementJoint),
     ("FasciaBoard", FasciaBoard),
     ("EaveGutter", EaveGutter),
     ("EaveTrim", EaveTrim),
