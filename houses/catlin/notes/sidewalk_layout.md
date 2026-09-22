@@ -25,35 +25,59 @@ to lot line is 6'-4", so 92" does not fit east of the house anywhere; it does no
 of it either, where the court and the porch stair own the ground. C and E are walk only.
 
 Pockets are 16" sonotube voids, drawn as 16-gons (1.3605 sf each), centred 20" in from
-each edge (44" off the house on D), 2'-0" in from each leg end and 4'-0" o.c.; control
+each edge (44" off the house on D). Along the run they are 4'-0" o.c., **centred in the
+leg**: the slack left over is split evenly between the two ends, never less than 2'-0" at
+either. **Leg A is the exception — it is anchored to the corner it turns** (§3). Control
 joints fall on the same stations.
 
 ## 2. Legs (feet, plan frame)
 
 | leg | outline | gross sf | pockets | net sf |
 |---|---|---|---|---|
-| A garage north | x 24.04..37.78 × y 67.33..75.00 | 13.74 × 7.67 = 105.3 | 6 | 97.2 |
+| A garage north | x 24.04..37.78 × y 67.33..75.00 | 13.74 × 7.67 = 105.3 | 6 | 97.1 |
 | B garage east | x 30.11..37.78 × y 43.02..67.33 | 7.67 × 24.31 = 186.4 | 12 | 170.1 |
 | C landing connector | x 30.04..42.04 × y 39.60..43.02, less the 0.50 × 1.08 notch at PT-BW-RNE | 41.04 − 0.54 = 40.5 | 0 | 40.5 |
-| D house east | x 36.70..42.04 × y −9.00..39.60 | 5.33 × 48.60 = 259.2 | 10 | 245.6 |
+| D house east | x 36.70..42.04 × y −9.00..39.60 | 5.33 × 48.60 = 259.2 | 9 | 247.0 |
 | E stair joint | x 35.29..36.66 × y −9.00..−6.00 | 1.37 × 3.00 = 4.1 | 0 | 4.1 |
-| **total** | | **595.5** | **28** | **557.4** |
+| **total** | | **595.5** | **27** | **558.8** |
 
-Concrete at 4": 557.4 / 3 / 27 = **6.88 cy**. Class 5 at 6" bills by the net slab area,
-**557.4 sf**. Impervious area counts the GROSS 595.5 sf — the pockets are not subtracted,
+Concrete at 4": 558.8 / 3 / 27 = **6.90 cy**. Class 5 at 6" bills by the net slab area,
+**558.8 sf**. Impervious area counts the GROSS 595.5 sf — the pockets are not subtracted,
 which is conservative for the coverage table.
 
 ## 3. Pocket stations
 
-- **A** (along x, rows y=69.00 and 73.33): x = 26.04, 30.04, 34.04 → 6, less (30.04, 69.00),
-  which sits 1.30' from the leader pocket at TR-G-LEADER-E's foot (31.27, 68.49) against a
-  2.0' clear (two radii + 8" web) → 5, plus the leader pocket = **6**.
-- **B** (along y, columns x=31.78 and 36.11): y = 45.02 … 65.02 → 6 stations × 2 = **12**.
-- **D** (along y, column x=40.37): y = −7, −3, 1, 5, 9, 13, 17, 21, 25, 29, 33, 37 → 12,
-  less 13, 17, 21 inside the retired patio's y 10'..22' (± 8") → 9, plus the leader pocket
-  at TR-RF-LEADER-E's foot (37.50, 35.50) = **10**.
+Inset = (run − (n−1) × 4'-0") / 2, with n the most stations the run holds at 2'-0" clear
+of each end.
 
-28 pockets cycle Calamintha, Allium, Sporobolus, Salvia in A-B-D order: **7 of each**.
+- **A is anchored to the corner, not centred.** Its two rows (y = 69.00 and 73.33) run
+  across the whole width of leg B, so its stations ARE leg B's pocket columns — x = 36.11
+  (the outer corner, 20" in from the shared east edge), 31.78 (the inner corner), and
+  27.45, one more 52" step west, the section's own row pitch. → **6**. West inset 3.40',
+  east inset 1.67" × 12 = 20", the section inset, so 12" of concrete at the end like every
+  side band.
+  **This is what keeps the L walkable.** Leg B's 36" walk runs x 32.445..35.445; the two
+  eastern pockets in A's south row stop at 32.445 and start again at 35.445, tangent to
+  both lane edges, so the turn out of A into B crosses **36.0" of open concrete**. Centred
+  at 4'-0" the row put a void at x = 34.91, squarely in that turn.
+- **B** (run 24.31', n = 6, inset 2.16'): y = 45.18, 49.18, 53.18, 57.18, 61.18, 65.18 on
+  both columns (x = 31.78 and 36.11) → **12**.
+- **D** (run 48.60', n = 12, inset 2.30', column x = 40.37): y = −6.7, −2.7, 1.3, 5.3, 9.3,
+  13.3, 17.3, 21.3, 25.3, 29.3, 33.3, 37.3 → 12, less the three whose centres fall in the
+  retired patio's y 10'..22' (13.3, 17.3, 21.3) → **9**.
+
+**NO POCKET SITS AT A LEADER'S FOOT, and neither east leader can have one.**
+`TR-RF-LEADER-E` stands at x = 36'-10 9/16", over leg D's 36" walking band: a 16" void
+centred there leaves **1.6"** of concrete at the slab's house-side edge, against the 12"
+every grid pocket keeps, and it is 2.9' off the pocket column. `TR-G-LEADER-E` at
+(31.27, 68.49) is 6" off leg A's near row and 1.2' off cadence, and takes a grid pocket
+with it. Both leaders drop onto the walk instead (§5).
+
+The D pocket at y = 9.3 stands **0.40"** north of the retired patio's north edge. That is
+a measurement, not a constraint — the skip is a centre test over y 10'..22', so the count
+does not turn on it — but it is the one station that would move if leg D's ends did.
+
+27 pockets cycle Calamintha, Allium, Sporobolus, Salvia in A-B-D order: **7 · 7 · 7 · 6**.
 
 ## 4. Fall (R401.3: 2% within 10' of the foundation)
 
@@ -69,6 +93,12 @@ which is conservative for the coverage table.
 
 Joint layout beyond the pocket stations, the pour sequence, the concrete's fibre dosage
 (EXPOSED_MIX's 4 pcy macro-synthetic), and the two non-flush joints in the warning above.
+
+Also: **the two east leaders discharge onto the walk with no modelled conveyance.**
+`TR-RF-LEADER-E` and `TR-G-LEADER-E` both end 6" over their slab (−2'-3" against a −2'-9"
+top) on a splash block, carry no `discharge_ref`, and are therefore outside the drainage
+graph entirely — so no check grades where that water goes. The walk's own 2% fall runs
+away from the building at both (§4). Their buried extensions are a later detail.
 
 ## Sources
 

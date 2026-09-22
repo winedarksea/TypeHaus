@@ -12,12 +12,16 @@ import {
   type PlanCenter,
 } from "../planGeometry";
 import { makeSurfaceMesh, NORDIC_ROUGHNESS, standardMaterial } from "../surfaces";
-import { DEFAULT_EARTH_OPACITY } from "../../state/vocabulary";
+import {
+  DEFAULT_EARTH_OPACITY, DEFAULT_EARTH_TONE, EARTH_TONE_HEX, type EarthTone,
+} from "../../state/vocabulary";
 
 /** The default translucency of the site sheet (→ state/vocabulary DEFAULT_EARTH_OPACITY, which
  * owns the number so the store can default to it without importing three). The Views panel can
  * drive it anywhere from here to fully opaque (→ `applyEarthOpacity`). */
 export const EARTH_PLANE_OPACITY = DEFAULT_EARTH_OPACITY;
+/** And its default colour (→ state/vocabulary EARTH_TONE_HEX), driven the same way. */
+export const EARTH_PLANE_TONE = DEFAULT_EARTH_TONE;
 export const EARTH_PLANE_THICKNESS_M = 0.01;
 export const EARTH_FALLBACK_HALF_SIZE_M = 50;
 
@@ -53,6 +57,7 @@ export function earthVoids(model: Model): [number, number][][] {
 export function buildEarth(
   parent: THREE.Group, model: Model, center: PlanCenter, mode: "nordic" | "schematic",
   opacity: number = EARTH_PLANE_OPACITY,
+  tone: EarthTone = EARTH_PLANE_TONE,
 ) {
   const outline = earthOutline(model, center);
   const grade = earthElevation(model);
@@ -61,7 +66,7 @@ export function buildEarth(
     earthVoids(model), center,
   );
   if (!geometry) return;
-  const material = standardMaterial(0x806040, mode, {
+  const material = standardMaterial(EARTH_TONE_HEX[tone], mode, {
     side: THREE.DoubleSide,
     roughness: mode === "nordic" ? NORDIC_ROUGHNESS.ground : 1,
   });
@@ -86,6 +91,18 @@ export function applyEarthOpacity(material: THREE.Material, opacity: number): vo
   material.opacity = clamped;
   material.transparent = !solid;
   material.depthWrite = solid;
+  material.needsUpdate = true;
+}
+
+/**
+ * The same live retarget for the sheet's colour (→ Panel3D setEarthTone). Only a
+ * `MeshStandardMaterial`-shaped material has a `color`, so anything else is left alone rather
+ * than cast — the sheet is the only mesh this is ever handed, and a silent no-op beats a throw.
+ */
+export function applyEarthTone(material: THREE.Material, tone: EarthTone): void {
+  const colored = material as THREE.Material & { color?: THREE.Color };
+  if (!colored.color) return;
+  colored.color.setHex(EARTH_TONE_HEX[tone]);
   material.needsUpdate = true;
 }
 

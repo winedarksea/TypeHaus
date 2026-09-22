@@ -2545,7 +2545,16 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   until a soil test authors `infiltration_in_per_hr`. `notes/rain_garden_sizing.md`.
 - **Sidewalk** (`params/landscape_walk.py`): five `SIDEWALK_FRC_CLASS5` slabs, 92" full
   section, 64" one-sided down the house's east side (the side patio is retired into it),
-  28 sonotube pockets as `FloorOpening(purpose=PLANTING)`. Slabs are FLAT at -2'-9"; the
+  27 sonotube pockets as `FloorOpening(purpose=PLANTING)` — 4'-0" o.c. **centred in each
+  leg**, on the section's own pocket line, always 12" clear of a slab edge. **Leg A is
+  anchored to the L instead: its stations ARE leg B's pocket columns** (52" apart, the
+  section's own row pitch), so both bands turn the corner in line and leg B's 36" walk
+  arrives under 36.0" of open concrete. Centred at 4'-0" it dropped a void in that turn. **No pocket
+  sits at a leader's foot and neither east leader can have one**: `TR-RF-LEADER-E` stands
+  over leg D's 36" walking band, where a 16" void leaves 1.6" of concrete at the edge. Both
+  east leaders drop onto the walk (bottom -2'-3", 6" over the slab) with **no
+  `discharge_ref` and no extension**, so both are outside the drainage graph and nothing
+  grades where that water goes — the extensions are a later detail. Slabs are FLAT at -2'-9"; the
   fall is on the `walk *` impervious surfaces, merged into the site by `plan/manifest.py`
   — never hand-copy them into `plan/site.py`. Leg C is notched round `PT-BW-RNE`.
   `notes/sidewalk_layout.md`.

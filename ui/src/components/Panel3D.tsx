@@ -2,7 +2,10 @@ import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { useStore } from "../state/store";
-import { ALL_TRADES, DEFAULT_EARTH_OPACITY, type SelectionKind, type Trade } from "../state/vocabulary";
+import {
+  ALL_TRADES, DEFAULT_EARTH_OPACITY, DEFAULT_EARTH_TONE,
+  type EarthTone, type SelectionKind, type Trade,
+} from "../state/vocabulary";
 import { defaultVisibleTrades, type VisibleTrades } from "../model/tradeVisibility";
 import { levelsOf } from "../model/levels";
 import type { Model } from "../model/types";
@@ -25,7 +28,7 @@ import { WHOLE_HOUSE_GLB_PRIMARY } from "../three/wholeHouseGlb";
 import { applyWholeHouseGlb, loadWholeHouseGlb } from "../three/wholeHouseGlbScene";
 import { applyVisibility, isRenderedInScene, objectVisible } from "../three/builders/registry";
 import { planCenterOf, populateScene, type SceneRegistry } from "../three/builders/scene";
-import { applyEarthOpacity } from "../three/builders/site";
+import { applyEarthOpacity, applyEarthTone } from "../three/builders/site";
 import {
   geographicBearingToSceneDirection,
   geographicSoutheastSceneAzimuthRadians,
@@ -74,6 +77,7 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
     .filter((l) => hiddenLevels.includes(l.key)).flatMap((l) => l.storeys) : []),
   [model, hiddenLevels]);
   const earthOpacity = useStore((s) => s.earthOpacity);
+  const earthTone = useStore((s) => s.earthTone);
   const client = useStore((s) => s.client);
   const rebarOn = visibleTrades["concrete:rebar"];
   const setRebarSets = useStore((s) => s.setRebarSets);
@@ -161,6 +165,11 @@ export function Panel3D({ compact = false }: { compact?: boolean }) {
     api.current?.setEarthOpacity(earthOpacity);
   }, [earthOpacity]);
 
+  // Same contract for the colour: retarget the one material, never rebuild.
+  useEffect(() => {
+    api.current?.setEarthTone(earthTone);
+  }, [earthTone]);
+
   return (
     <div style={{ position: "absolute", inset: 0 }}>
       <div
@@ -229,6 +238,7 @@ interface SceneApi {
   highlight: (uid: string | null) => void;
   setVisibility: (visible: VisibleTrades, hiddenStoreys: ReadonlySet<string>) => void;
   setEarthOpacity: (opacity: number) => void;
+  setEarthTone: (tone: EarthTone) => void;
   dispose: () => void;
 }
 
@@ -331,6 +341,7 @@ function createScene(
   // Ground opacity is remembered here for the same reason: the sheet is one of the meshes a
   // rebuild throws away, so populateScene reads this rather than the default.
   let earthOpacity = DEFAULT_EARTH_OPACITY;
+  let earthTone: EarthTone = DEFAULT_EARTH_TONE;
 
   // Lighting: soft neutral environment (Nordic). Hemisphere + a key light.
   //
@@ -728,7 +739,7 @@ function createScene(
     highlightSourceModel = m;
     highlightPlanCenter = center;
     populateScene({
-      tradeGroups, model: m, center, mode, palette, earthOpacity, registry,
+      tradeGroups, model: m, center, mode, palette, earthOpacity, earthTone, registry,
       generation: sceneGeneration, currentGeneration: () => sceneGeneration, requestRender,
       tradeVisible: (trades, storey) => objectVisible({ trades, storey }, visibleTrades, hiddenStoreys),
       rebar: { layer: rebarLayer, sets: rebar?.sets ?? null },
@@ -827,15 +838,24 @@ function createScene(
   // Retarget the live material rather than rebuilding: a drag is many events a second, and the
   // remembered value above means a rebuild mid-drag (an edit, a theme flip) does not snap the
   // ground back to the default.
-  const setEarthOpacity = (opacity: number) => {
-    earthOpacity = Math.min(1, Math.max(0, opacity));
+  const eachEarthMaterial = (visit: (material: THREE.Material) => void) => {
     tradeGroups.earth.traverse((object) => {
       if (!(object instanceof THREE.Mesh) || !object.userData.earthSheet) return;
       for (const material of Array.isArray(object.material) ? object.material : [object.material]) {
-        applyEarthOpacity(material, earthOpacity);
+        visit(material);
       }
     });
     requestRender();
+  };
+
+  const setEarthOpacity = (opacity: number) => {
+    earthOpacity = Math.min(1, Math.max(0, opacity));
+    eachEarthMaterial((material) => applyEarthOpacity(material, earthOpacity));
+  };
+
+  const setEarthTone = (tone: EarthTone) => {
+    earthTone = tone;
+    eachEarthMaterial((material) => applyEarthTone(material, earthTone));
   };
 
   return {
@@ -849,6 +869,7 @@ function createScene(
     highlight,
     setVisibility,
     setEarthOpacity,
+    setEarthTone,
     dispose: () => {
       cancelAnimationFrame(raf);
       stopTween();

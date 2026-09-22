@@ -20,7 +20,7 @@ import {
 import {
   projectPlanRotationToSceneRadians, projectPointToScene, type PlanCenter,
 } from "../planGeometry";
-import { ALL_TRADES, type Trade } from "../../state/vocabulary";
+import { ALL_TRADES, type EarthTone, type Trade } from "../../state/vocabulary";
 import { buildLightRun } from "./lightRun";
 import { buildPlants, instancedPlantUids } from "./plants";
 import type { RebarLayer } from "./rebar";
@@ -47,6 +47,8 @@ export interface PopulateSceneOptions {
   palette: ResolvedNordicPalette;
   /** Site-sheet opacity at build time; the panel slider retargets it live afterwards. */
   earthOpacity: number;
+  /** Its colour at build time, retargeted live the same way (→ Panel3D setEarthTone). */
+  earthTone: EarthTone;
   registry: SceneRegistry;
   /** The scene generation at call time; an async glb that resolves after a rebuild is dropped. */
   generation: number;
@@ -164,7 +166,7 @@ function instantiatePlaceableAsset(prototype: THREE.Object3D): THREE.Object3D {
 
 export function populateScene(options: PopulateSceneOptions) {
   const {
-    tradeGroups, model, center, mode, palette, earthOpacity, registry, generation,
+    tradeGroups, model, center, mode, palette, earthOpacity, earthTone, registry, generation,
     currentGeneration, requestRender, tradeVisible, rebar,
   } = options;
   const build = (trades: readonly VisibilityKey[], storey: string | null | undefined,
@@ -190,7 +192,7 @@ export function populateScene(options: PopulateSceneOptions) {
   }
   // The site sheet is context, not an element: it has no uid in model.json, so it stays out
   // of the raycast set and a click through it falls to whatever building geometry is behind.
-  build(family("earth"), null, () => buildEarth(tradeGroups.earth, model, center, mode, earthOpacity));
+  build(family("earth"), null, () => buildEarth(tradeGroups.earth, model, center, mode, earthOpacity, earthTone));
   // A solid is not automatically concrete: a standalone beam or post is framing, a routed pipe
   // run is plumbing, a cast column is concrete. The set is stamped by the engine
   // (model.json `trades`) and falls back to the generated category map.

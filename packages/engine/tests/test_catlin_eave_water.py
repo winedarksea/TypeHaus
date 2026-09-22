@@ -216,7 +216,11 @@ def test_each_eave_drains_to_a_leader_that_reaches_grade(catlin_model, eave) -> 
     trough_floor = eave.solid("TR-RF-GUTTER-E-1-BOTTOM")
     assert eave._up(leader.z1_m) == pytest.approx(trough_floor[2]), \
         "the leader takes the outlet straight out of the trough floor"
-    assert 0.0 < leader.z0_m < 0.5, "and runs down to a splash block just above grade"
+    # It used to stop at +1'-0" — 3'-10" ABOVE grade, not "just above" it, and 3'-9" over
+    # the walk that now runs under it. It reaches the thing it discharges onto.
+    walk = next(s for s in catlin_model.solids if s.tag == "SL-WK-D")
+    assert leader.z0_m - walk.z1_m == pytest.approx(0.5 * 0.3048), \
+        "and runs down to a splash block 6in over walk D, the slab it discharges onto"
     # It hangs on the trough's centre line, which is also about where a strapped 4" round
     # leader's centre lands off this wall — so it clears the cladding without an offset.
     xs = [p[0] for p in leader.outline]

@@ -65,13 +65,65 @@ def test_sidewalk_quantities(catlin_model_ro) -> None:
     bom = bill_of_materials(catlin_model_ro)
     walk = next(r for r in bom["structural_solids"] if r.get("assembly") == "SIDEWALK_FRC_CLASS5")
     assert walk["count"] == 5
-    assert walk["plan_area_sqft"] == pytest.approx(557.4, abs=0.2)
-    assert walk["volume_cubic_yards"] == pytest.approx(6.88, abs=0.01)
+    assert walk["plan_area_sqft"] == pytest.approx(558.8, abs=0.2)
+    assert walk["volume_cubic_yards"] == pytest.approx(6.90, abs=0.01)
     base = next(r for r in bom["envelope_layers"] if r["material"] == "mndot-class-5-base")
-    assert base["net_area_sqft"] == pytest.approx(557.4, abs=0.2)
+    assert base["net_area_sqft"] == pytest.approx(558.8, abs=0.2)
     pockets = Counter(e.tag.split("-")[2][0] for e in catlin_model_ro.plan.all_elements()
                       if e.tag.startswith("FO-WK-"))
-    assert pockets == {"A": 6, "B": 12, "D": 10}
+    assert pockets == {"A": 6, "B": 12, "D": 9}
+
+
+def test_every_pocket_is_on_the_grid(catlin_model_ro) -> None:
+    """No hand-placed void: every pocket is on its leg's pocket line, clear of the edges.
+
+    A leader-foot pocket used to be appended off-grid; on leg D it sat in the 36" walking
+    band with 1.6" of concrete to the slab edge (notes/sidewalk_layout.md §3).
+    """
+    from shapely.geometry import Point, Polygon
+
+    plan = catlin_model_ro.plan
+    # Each leg's pocket line(s): the coordinate every pocket on that slab must share.
+    lines = {"SL-WK-A": ("y", (68.9983, 73.3317)), "SL-WK-B": ("x", (31.7783, 36.1117)),
+             "SL-WK-D": ("x", (40.3683,))}
+    for slab_tag, (axis, values) in lines.items():
+        slab = plan.by_tag(slab_tag)
+        ring = Polygon([p.xy_m for p in slab.outline])
+        centres = []
+        for tag in slab.openings:
+            opening = plan.by_tag(tag)
+            c = Polygon([p.xy_m for p in opening.outline]).centroid
+            centres.append(c)
+            on = (c.y if axis == "y" else c.x) / 0.3048
+            assert min(abs(on - v) for v in values) < 1e-3, f"{tag} is off {slab_tag}'s line"
+            edge = ring.exterior.distance(Point(c.x, c.y)) / 0.3048 * 12 - 8.0
+            assert edge >= 11.9, f"{tag} leaves {edge:.2f}in of concrete to {slab_tag}'s edge"
+        for i, a in enumerate(centres):
+            for b in centres[i + 1:]:
+                assert a.distance(b) / 0.3048 >= 2.0, f"two {slab_tag} pockets are under 2' apart"
+
+
+def test_the_walk_turns_the_corner_under_open_concrete(catlin_model_ro) -> None:
+    """Leg A's pocket rows cross leg B's whole width; nothing may stand in B's walk.
+
+    Leg A is anchored to the corner for this (notes/sidewalk_layout.md §3) — its stations
+    are leg B's own pocket columns. Centred at 4'-0" it put a void in the turn.
+    """
+    from shapely.geometry import Polygon
+
+    plan = catlin_model_ro.plan
+    a, b = plan.by_tag("SL-WK-A"), plan.by_tag("SL-WK-B")
+    bx0 = min(p.xy_m[0] for p in b.outline) / 0.3048
+    lane = (bx0 + 1.0 + 16.0 / 12, bx0 + 1.0 + 16.0 / 12 + 3.0)      # B's 36" walk, in x
+    stations = set()
+    for tag in a.openings:
+        c = Polygon([p.xy_m for p in plan.by_tag(tag).outline]).centroid
+        x = c.x / 0.3048
+        stations.add(round(x, 3))
+        assert x + 8.0 / 12 <= lane[0] + 1e-6 or x - 8.0 / 12 >= lane[1] - 1e-6, (
+            f"{tag} stands in leg B's walking lane")
+    columns = {round(bx0 + 20.0 / 12, 3), round(bx0 + 72.0 / 12, 3)}
+    assert columns <= stations, "leg A's stations must carry leg B's pocket columns"
 
 
 def test_planting_counts(catlin_model_ro) -> None:
@@ -79,8 +131,8 @@ def test_planting_counts(catlin_model_ro) -> None:
     assert rows == {
         "PT-SCH-JAZZ": 230, "PT-COR-MOONBEAM": 18, "PT-SED-ANGELINA": 3,
         "PT-HEU-CARAMEL": 3, "PT-CAR-VULP": 20, "PT-IRI-VERS": 3, "PT-ASC-INCA": 2,
-        "PT-CAL-NEPETA": 7, "PT-ALL-MILLENIUM": 7, "PT-SPO-TARA": 7, "PT-SAL-PURP": 7,
+        "PT-CAL-NEPETA": 7, "PT-ALL-MILLENIUM": 7, "PT-SPO-TARA": 7, "PT-SAL-PURP": 6,
         "PT-MAL-HONEYCRISP": 1, "PT-MAL-ZESTAR": 1, "PT-MAL-HARALSON": 1,
         "trellis-post:4x4:kdat": 5, "trellis-wire:12.5 ga high-tensile galvanized": 76.0,
     }
-    assert len(catlin_model_ro.plants) == 310
+    assert len(catlin_model_ro.plants) == 309

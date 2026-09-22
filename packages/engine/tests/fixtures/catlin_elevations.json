@@ -12884,10 +12884,10 @@
 "f59eacaf4cac"
 ],
 "geometry/CGDS01AAAA-00/body": [
--0.4572,
+-0.6858,
 2.286,
 2,
-"d18f7731590d"
+"bc33f8b3816e"
 ],
 "geometry/CGF101AAAA/layer:coil-ext": [
 -0.9144,
@@ -42679,12 +42679,6 @@
 2,
 "a21aca134c29"
 ],
-"geometry/GRDNPB0005-P027/body": [
--0.8382,
--0.381,
-2,
-"23b3f5862585"
-],
 "geometry/GRDNRG0000-00/body": [
 -1.4732,
 -1.1684,
@@ -44474,10 +44468,10 @@
 "3348b67085e4"
 ],
 "geometry/RTDS02AAAA-00/body": [
-0.3048,
+-0.6858,
 6.1879097,
 2,
-"055431c0843b"
+"47d766ef1f5f"
 ],
 "geometry/RTFF01AAAA-00-drip/body": [
 6.2756738,
@@ -81058,7 +81052,6 @@
 "plants/PB-WK-POCKETS-FO-WK-D07/ground_z_m": -0.8382,
 "plants/PB-WK-POCKETS-FO-WK-D08/ground_z_m": -0.8382,
 "plants/PB-WK-POCKETS-FO-WK-D09/ground_z_m": -0.8382,
-"plants/PB-WK-POCKETS-FO-WK-D10/ground_z_m": -0.8382,
 "plants/PL-W-APPLE-1/ground_z_m": -0.8636,
 "plants/PL-W-APPLE-2/ground_z_m": -0.8636,
 "plants/PL-W-APPLE-3/ground_z_m": -0.8636,
@@ -83644,8 +83637,6 @@
 "solids/PB-WK-POCKETS-FO-WK-D08/z1_m": -0.381,
 "solids/PB-WK-POCKETS-FO-WK-D09/z0_m": -0.8382,
 "solids/PB-WK-POCKETS-FO-WK-D09/z1_m": -0.2286,
-"solids/PB-WK-POCKETS-FO-WK-D10/z0_m": -0.8382,
-"solids/PB-WK-POCKETS-FO-WK-D10/z1_m": -0.381,
 "solids/PD-BW-E/z0_m": -3.0337125,
 "solids/PD-BW-E/z1_m": -2.7289125,
 "solids/PD-BW-GE/z0_m": -2.2352,
@@ -84918,7 +84909,7 @@
 "solids/TB-SG-W1-STEM/z1_m": 0.0,
 "solids/TB-SG-W1/z0_m": -2.9829125,
 "solids/TB-SG-W1/z1_m": -2.7797125,
-"solids/TR-G-LEADER-E/z0_m": -0.4572,
+"solids/TR-G-LEADER-E/z0_m": -0.6858,
 "solids/TR-G-LEADER-E/z1_m": 2.286,
 "solids/TR-G-LEADER-W-EXT-DT-1/z0_m": -1.06045,
 "solids/TR-G-LEADER-W-EXT-DT-1/z1_m": -0.95885,
@@ -85004,7 +84995,7 @@
 "solids/TR-RF-GUTTER-W-1-BOTTOM/z1_m": 6.2006097,
 "solids/TR-RF-GUTTER-W-1-FRONT/z0_m": 6.1879097,
 "solids/TR-RF-GUTTER-W-1-FRONT/z1_m": 6.3149097,
-"solids/TR-RF-LEADER-E/z0_m": 0.3048,
+"solids/TR-RF-LEADER-E/z0_m": -0.6858,
 "solids/TR-RF-LEADER-E/z1_m": 6.1879097,
 "solids/TR-RF-LEADER-W-EXT-DT-1/z0_m": -1.0231063,
 "solids/TR-RF-LEADER-W-EXT-DT-1/z1_m": -0.9215063,

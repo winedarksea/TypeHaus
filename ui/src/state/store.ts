@@ -31,8 +31,9 @@ import { createPendingSlice, type PendingSlice } from "./pending";
 import { createPlacementSlice, type PlacementSlice } from "./placement";
 import { emptySessionEdits, type SessionEdits } from "./sessionEdits";
 import {
-  DEFAULT_EARTH_OPACITY,
-  type Conflict, type DetailView, type DocumentsTab, type LabelMode, type Lens, type Selection,
+  DEFAULT_EARTH_OPACITY, DEFAULT_EARTH_TONE,
+  type Conflict, type DetailView, type DocumentsTab, type EarthTone, type LabelMode, type Lens,
+  type Selection,
   type RoomMode, type ThreeMode, type Toast, type Tool,
   type ViewMode, type ViewTransform, type Workspace,
 } from "./vocabulary";
@@ -85,6 +86,9 @@ export interface StoreState extends MutationActions, SiteSlice, PendingSlice, Pl
   // is still what turns the ground off entirely: this only says how much of the basement the
   // ground you *are* showing lets through, from the translucent default up to real dirt.
   earthOpacity: number;
+  // And what colour it is drawn in — bare-dirt brown by default, sod green when the site
+  // rather than the building is the subject. Orthogonal to the opacity above.
+  earthTone: EarthTone;
   detailView: DetailView; // assembly-details / BOM reader over the canvas
   // The Documents hub's own state. `readerOrigin` is why it is three fields and not one:
   // a reader opened FROM the hub has to go back to the hub, and a reader opened from the
@@ -137,6 +141,7 @@ export interface StoreState extends MutationActions, SiteSlice, PendingSlice, Pl
   setHiddenLevels: (keys: readonly string[]) => void;
   showAllLevels: () => void;
   setEarthOpacity: (opacity: number) => void;
+  setEarthTone: (tone: EarthTone) => void;
   showEverything: () => void; // one-tap escape from an over-filtered view
   setDetailView: (v: DetailView) => void;
   // Open the Documents hub, optionally straight onto a tab and a selection (a note's "on
@@ -215,6 +220,7 @@ export const useStore = create<StoreState>((set, get, store) => ({
   rebarSets: null,
   setRebarSets: (rebarSets) => set({ rebarSets }),
   earthOpacity: DEFAULT_EARTH_OPACITY,
+  earthTone: DEFAULT_EARTH_TONE,
   detailView: "none",
   documentsTab: "drawings",
   documentsSelection: { sheet: null, note: null },
@@ -360,6 +366,7 @@ export const useStore = create<StoreState>((set, get, store) => ({
   setHiddenLevels: (keys) => set({ hiddenLevels: [...new Set(keys)] }),
   showAllLevels: () => set({ hiddenLevels: [] }),
   setEarthOpacity: (opacity) => set({ earthOpacity: Math.min(1, Math.max(0, opacity)) }),
+  setEarthTone: (earthTone) => set({ earthTone }),
   showEverything: () => set({ visibleTrades: allVisibleTrades() }),
   // Leaving for the canvas always clears the origin: whatever opened the reader, the user
   // is now back at the plan, and a stale "came from Documents" would send the *next* Back

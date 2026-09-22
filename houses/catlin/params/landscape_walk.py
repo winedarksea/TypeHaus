@@ -4,7 +4,9 @@ One `Slab` per leg on `yard-grade`, `SIDEWALK_FRC_CLASS5` (4" fibre-only concret
 MnDOT Class 5). The full section is 12 | 16 pocket | 36 walk | 16 pocket | 12 = 92"; the
 east side of the house is one-sided, 36 walk | 16 pocket | 12 = 64", because the house to
 lot line is only 6'-4". Pockets are 16" sonotube voids (`FloorOpening(purpose=PLANTING)`)
-at 4'-0" o.c. down each pocket zone; control joints fall on the same stations.
+at 4'-0" o.c. down each pocket zone, the run's slack split evenly between its two ends —
+except leg A, which is anchored to the corner it turns into leg B (see `_A_STATIONS`).
+Control joints fall on the same stations.
 
 Each slab is modelled flat at its high edge, 1" over the -2'-10" grade so it never cuts the
 earth sheet; the fall lives on a matching `ImperviousSurface(kind="walk")`, merged into
@@ -32,6 +34,7 @@ ASSEMBLY = "SIDEWALK_FRC_CLASS5"
 TOP = ft(-2, -9)                 # 1" over grade
 POCKET_R_IN = 8.0
 POCKET_OC_FT = 4.0
+_END_INSET_FT = 2.0              # the minimum; the run's slack is split between both ends
 _FACETS = 16
 _GAP = 0.5 / 12.0
 
@@ -68,43 +71,60 @@ C = ((30.0 + _GAP, 39.6), (D_X1, 39.6), (D_X1, B[0][1]), (30.5 + _GAP, B[0][1]),
 D = _rect(D_X0, -9.0, D_X1, 39.6)
 E = _rect(35.25 + _GAP, -9.0, D_X0 - _GAP, -6.0)
 
-# The two east leaders discharge onto a pocket at their feet (x, y feet).
-LEADER_POCKETS = {"A": [(31.27, 68.49)], "D": [(37.5, 35.5)]}
+# NO POCKET SITS AT A LEADER'S FOOT, and neither east leader can have one: TR-RF-LEADER-E
+# stands at x=36'-10 9/16", over leg D's 36" walking band, where a 16" void would leave
+# 1.6" of concrete at the slab edge. Both east leaders drop onto the walk; their extensions
+# are a later detail (notes/sidewalk_layout.md §3, §5).
 
 
 def _stations(start: float, end: float) -> list[float]:
-    """Pocket stations 2' in from each end, 4' o.c."""
-    out, s = [], start + 2.0
-    while s <= end - 2.0 + 1e-9:
-        out.append(round(s, 4))
-        s += POCKET_OC_FT
-    return out
+    """Pocket stations, 4'-0" o.c., CENTRED in the run, never inside `_END_INSET_FT`."""
+    run = end - start
+    n = int((run - 2 * _END_INSET_FT) // POCKET_OC_FT) + 1
+    if n < 1:
+        return []
+    inset = (run - (n - 1) * POCKET_OC_FT) / 2
+    return [round(start + inset + k * POCKET_OC_FT, 4) for k in range(n)]
 
 
-def _pockets(leg: str, rect, along: str, zones, ref_high: bool = False,
-             skip=lambda s: False) -> list[tuple[float, float]]:
+def _pockets(rect, along: str, zones, ref_high: bool = False,
+             skip=lambda s: False, stations=None) -> list[tuple[float, float]]:
     (x0, y0), _, (x1, y1), _ = rect
     centres = []
     if along == "x":
-        for s in _stations(x0, x1):
+        for s in stations or _stations(x0, x1):
             for z in zones:
                 centres.append((s, y1 - z if ref_high else y0 + z))
     else:
-        for s in _stations(y0, y1):
+        for s in stations or _stations(y0, y1):
             for z in zones:
                 centres.append((x1 - z if ref_high else x0 + z, s))
-    centres = [c for c in centres if not skip(c[0] if along == "x" else c[1])]
-    extra = LEADER_POCKETS.get(leg, [])
-    clear = 2 * POCKET_R_IN / 12.0 + 8.0 / 12.0       # keep an 8" web between voids
-    centres = [c for c in centres if all(math.dist(c, e) >= clear for e in extra)]
-    return [*extra, *centres]
+    return [c for c in centres if not skip(c[0] if along == "x" else c[1])]
+
+
+# LEG A IS ANCHORED TO THE CORNER IT TURNS, NOT CENTRED IN ITS OWN RUN. Its two pocket rows
+# cross leg B's whole width, so its stations have to BE leg B's pocket columns: the pocket
+# band then turns the L in line — the inner corner at B's west column, the outer at its east
+# — and leg B's 36" walk arrives under open concrete instead of under a void. Anything else
+# drops a pocket into the turn. Spacing is the section's own 52" row pitch, marched west
+# while 12" of concrete is left at the end; B and D end at joints with no band to meet and
+# centre in their runs.
+_A_OC = FULL[1] - FULL[0]
+_A_STATIONS: list[float] = []
+_s = B[0][0] + FULL[1]
+while _s - POCKET_R_IN / 12.0 >= A[0][0] + 1.0:
+    _A_STATIONS.append(round(_s, 4))
+    _s -= _A_OC
+_A_STATIONS.reverse()
 
 
 POCKET_CENTRES = {
-    "A": _pockets("A", A, "x", FULL),
-    "B": _pockets("B", B, "y", FULL),
-    # One-sided: the zone is measured off the HOUSE (west) edge.
-    "D": _pockets("D", D, "y", ONE_SIDED, skip=lambda y: 10.0 - 0.7 <= y <= 22.0 + 0.7),
+    "A": _pockets(A, "x", FULL, stations=_A_STATIONS),
+    "B": _pockets(B, "y", FULL),
+    # One-sided: the zone is measured off the HOUSE (west) edge. The skip is a CENTRE test
+    # over the retired patio's own 12' — padded by a radius it lands within 0.4" of a
+    # station and the count turns on floating-point noise.
+    "D": _pockets(D, "y", ONE_SIDED, skip=lambda y: 10.0 <= y <= 22.0),
 }
 
 
@@ -115,7 +135,7 @@ def _circle(x: float, y: float):
 
 
 OPENINGS: dict[str, list[FloorOpening]] = {
-    leg: [FloorOpening(uid=f"WKP{leg}{n:03d}0000"[:10], tag=f"FO-WK-{leg}{n + 1:02d}",
+    leg: [FloorOpening(uid=f"WKP{leg}{n:03d}000", tag=f"FO-WK-{leg}{n + 1:02d}",
                        outline=_circle(x, y), purpose=FloorOpeningPurpose.PLANTING)
           for n, (x, y) in enumerate(centres)]
     for leg, centres in POCKET_CENTRES.items()

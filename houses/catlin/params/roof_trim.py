@@ -253,13 +253,19 @@ def _eave_water(side: str, index: int, eave_x, outward: float):
 #
 # Both go to the NORTH end, discharging into the 4' gap toward the garage rather than onto
 # the freestanding sunken-garden structure 5" off the south face. Each hangs on the trough's
-# centre line, so it takes the outlet straight down out of the gutter floor, and runs to a
-# splash block a foot above grade (main storey elevation 0). The S-5! CanDuit clamps that
+# centre line, so it takes the outlet straight down out of the gutter floor. The two ends
+# differ: WEST runs to its buried extension's riser, EAST to a splash block on the walk
+# (see `_LEADER_BOTTOM` / `_EAST_WALK_FOOT`). The S-5! CanDuit clamps that
 # hold it to the standing-seam siding are in plan/mep.py; per the reference they steady the
 # leader and are explicitly not its primary support.
 _LEADER_DIA_IN = 4.0
 _LEADER_Y = ft(_HOUSE_FT) - inch(6.0)
 _LEADER_BOTTOM = ft(1)
+# The EAST leader has no extension, so it must reach the ground it lets go over itself:
+# 6" above walk D's -2'-9" top (params/landscape_walk.py). Held at _LEADER_BOTTOM it stopped
+# 3'-9" in the air over the new walk. The WEST one keeps +1'-0" — its riser down to the
+# basin inlet bills with the extension below.
+_EAST_WALK_FOOT = ft(-2, -3)
 
 
 def _leader(side: str, index: int, eave_x, outward: float):
@@ -268,7 +274,8 @@ def _leader(side: str, index: int, eave_x, outward: float):
         uid=f"RTDS0{index}AAAA", tag=f"TR-RF-LEADER-{side}",
         position=pt(eave_x + offset if outward > 0 else eave_x - offset, _LEADER_Y),
         top_elevation=_above_deck(_GUTTER_RIM_IN) - _GUTTER_DEPTH,
-        bottom_elevation=_LEADER_BOTTOM, diameter=inch(_LEADER_DIA_IN),
+        bottom_elevation=_LEADER_BOTTOM if side == "W" else _EAST_WALK_FOOT,
+        diameter=inch(_LEADER_DIA_IN),
         material=_CHAIN_MATERIAL, gutter_ref=f"TR-RF-GUTTER-{side}",
         # Four clamps at roughly 6' o.c. down the ~24' run (plan/mep.py::LEADER_CLAMPS).
         clamp_refs=tuple(f"CN-A-LEADER-{side}{n}" for n in (1, 2, 3, 4)),

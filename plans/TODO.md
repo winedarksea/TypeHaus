@@ -329,6 +329,8 @@ the future.
 - **`code.P2804_water_heater_relief`'s id still spells an IRC section** that Minnesota struck.
   The citations moved to UPC on 2026-09-20; renaming the id touches `inspections.py`,
   `profile.py` and `plan/mep_hvac.py`.
+- Several ducts like DU-B-ERV-R-GUM-RUN run across the basement stairs, the engine doesn't seem to recognize that space needs to be kept clear.
+- LED light panels in the mechanical/furnance room aren't likely to work so well, too many pipes in the way. Perhaps just two ceiling cans is enough there.
 
 # Project Management
 

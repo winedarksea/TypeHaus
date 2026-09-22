@@ -1,7 +1,10 @@
 import { useCallback, useRef, useState, type CSSProperties } from "react";
 import { useStore } from "../state/store";
 import { activeLevelKey, levelsOf } from "../model/levels";
-import { DEFAULT_EARTH_OPACITY, type LabelMode, type ViewMode, type ThreeMode, type ViewTransform, type Workspace } from "../state/vocabulary";
+import {
+  DEFAULT_EARTH_OPACITY, DEFAULT_EARTH_TONE,
+  type EarthTone, type LabelMode, type ViewMode, type ThreeMode, type ViewTransform, type Workspace,
+} from "../state/vocabulary";
 import { viewParamsFor } from "../state/viewUrl";
 import { migrateSavedVisibility, type VisibleTrades } from "../model/tradeVisibility";
 import { DisciplinesGrid } from "./views/DisciplinesGrid";
@@ -19,6 +22,12 @@ const WORKSPACE_HINT: Record<Workspace, string> = {
   design: "Authoring tools; detail markers hidden.",
   analyze: "Same canvas, emphasis on checks and dashboards.",
   document: "Adds D-tag detail markers at documented junctions.",
+};
+
+const EARTH_TONE_LABEL: Record<EarthTone, string> = { green: "Green", brown: "Brown" };
+const EARTH_TONE_HINT: Record<EarthTone, string> = {
+  green: "Planted: the same sod green as the sunken-garden field (SL-SG-FIELD).",
+  brown: "Bare dirt: what the sheet was always drawn at, for excavation and foundation work.",
 };
 
 const LABEL_MODE_HINT: Record<LabelMode, string> = {
@@ -49,6 +58,9 @@ interface SavedView {
   // Optional for the same reason again: a recipe saved before the ground slider existed
   // restores the translucent default it was captured at.
   earthOpacity?: number;
+  // Optional again, and for the same reason: a recipe saved before the tone control existed
+  // was captured at the brown default, which is what it restores.
+  earthTone?: EarthTone;
   workspace?: Workspace;
   view: ViewTransform;
 }
@@ -85,6 +97,8 @@ export function ViewsPanel() {
   const setLabelMode = useStore((s) => s.setLabelMode);
   const earthOpacity = useStore((s) => s.earthOpacity);
   const setEarthOpacity = useStore((s) => s.setEarthOpacity);
+  const earthTone = useStore((s) => s.earthTone);
+  const setEarthTone = useStore((s) => s.setEarthTone);
   const workspace = useStore((s) => s.activeWorkspace);
   const setWorkspace = useStore((s) => s.setActiveWorkspace);
   const viewMode = useStore((s) => s.viewMode);
@@ -112,6 +126,7 @@ export function ViewsPanel() {
       hiddenLevels: [...s.hiddenLevels],
       visibleTrades: { ...s.visibleTrades },
       earthOpacity: s.earthOpacity,
+      earthTone: s.earthTone,
       labelMode: s.labelMode,
       workspace: s.activeWorkspace,
       view: { ...s.view },
@@ -132,6 +147,7 @@ export function ViewsPanel() {
     s.showOnlyTrades(Object.entries(migrated).flatMap(([trade, on]) => (on ? [trade] : [])) as
       Parameters<typeof s.showOnlyTrades>[0]);
     s.setEarthOpacity(v.earthOpacity ?? DEFAULT_EARTH_OPACITY);
+    s.setEarthTone(v.earthTone ?? DEFAULT_EARTH_TONE);
     // Backward compat: a pre-labelMode recipe only knew "space labels on/off".
     s.setLabelMode(v.labelMode ?? (v.showSpaceLabels === false ? "off" : "all"));
     s.setActiveWorkspace(v.workspace ?? "design");
@@ -243,6 +259,20 @@ export function ViewsPanel() {
           ? "Site sheet only, in 3D. At 100% the earth is solid and hides everything below grade."
           : "Site is hidden — turn it on under Disciplines to use this."}
       </div>
+
+      {/* Colour is the other half of the same question, and two choices rather than a picker:
+          the sheet is either the lawn the finished house sits in or the dirt it is dug out of,
+          and nothing in between says anything true about the site. */}
+      <div className="seg-row" style={{ marginTop: 8 }}>
+        {(["brown", "green"] as EarthTone[]).map((t) => (
+          <button key={t} className={`seg-btn${earthTone === t ? " active" : ""}`}
+            disabled={!visibleTrades.earth}
+            onClick={() => setEarthTone(t)} title={EARTH_TONE_HINT[t]}>
+            {EARTH_TONE_LABEL[t]}
+          </button>
+        ))}
+      </div>
+      <div className="muted views-hint">{EARTH_TONE_HINT[earthTone]}</div>
 
       <h3>Labels</h3>
       <div className="seg-row">

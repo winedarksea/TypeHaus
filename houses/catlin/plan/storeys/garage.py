@@ -450,7 +450,7 @@ _GARAGE_LEADER_E = Downspout(
     # Both absolute. The trough they bracket is derived from the roof plane, so it moves on
     # its own if the roof does; these are the two numbers that have to follow it by hand.
     top_elevation=ft(7, 6),             # inside the trough floor
-    bottom_elevation=ft(-1, -6),        # splash block, a foot above the apron
+    bottom_elevation=ft(-2, -3),        # splash block, 6" over walk A's -2'-9" top
     diameter=inch(3), material="metal-dark-kstyle", gutter_ref="RF-GARAGE",
 )
 # No `uid=` on purpose: this file is `# haus: editable`, so `haus fmt` visits it and mints

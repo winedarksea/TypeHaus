@@ -56,6 +56,22 @@ export const ALL_TRADES: Trade[] = vocabulary.trades as Trade[];
 // checkbox still turns the sheet off outright, which is a different question.
 export const DEFAULT_EARTH_OPACITY = 0.7;
 
+// What colour that sheet is drawn in. Two choices, not a picker: the ground is either the
+// planted field the sunken-garden court actually is (kbg-sod's own #5f7a4a, so the court
+// reads continuous with the lot around it) or the bare-dirt brown the sheet has always been
+// drawn at. Brown stays the default: it is the neutral one, it does not claim the whole lot
+// is lawn, and green read loud enough under the translucent default to compete with the
+// building — green is there for the moment the site, not the house, is the subject.
+//
+// The hexes live here beside the opacity for the same bundle reason — the store defaults to
+// one without importing three.
+export type EarthTone = "green" | "brown";
+export const EARTH_TONE_HEX: Record<EarthTone, number> = {
+  green: 0x5f7a4a, // library/materials.py kbg-sod, the SL-SG-FIELD turf
+  brown: 0x806040,
+};
+export const DEFAULT_EARTH_TONE: EarthTone = "brown";
+
 // The work surfaces: the assembly / transition reader, the whole-model bill of parts, the
 // panel schedule, and the luminaire schedule. Only one is up at a time — they are full-width
 // readers, not inspectors, so stacking them would just hide the model. "circuits" and
