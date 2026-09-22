@@ -41,7 +41,6 @@ pass; ``tests/test_wall_panel_calcs.py`` reproduces it.
 
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
 
 from typehaus import wind
@@ -64,6 +63,7 @@ from typehaus.engineering.wall_panel_withdrawal import (
     tributary_area_ft2,
     withdrawal_allowable_lb,
 )
+from typehaus.wind import GC_PI, effective_wind_area_ft2, external_pressure_coefficient
 
 KIND = "wall_panel"
 
@@ -72,19 +72,6 @@ BASIS_VERSION = "3"
 BASIS = ("ASCE 7-16 §30.3 (C&C, walls) with §2.4.1 0.6W; manufacturer span table; "
          "AWC NDS 2018 §12.2 (wood screw withdrawal); AISI S100 fastener head "
          "pull-through — the three failure modes IRC R703.1.2 names")
-
-#: ASCE 7-16 Table 26.13-1, enclosed building. Applied with the sign that makes suction
-#: worse, which is the case a cladding panel is ordered against.
-GC_PI = 0.18
-
-#: ASCE 7-16 Fig. 30.3-1, walls of an enclosed low-rise building: negative GC_p at the two
-#: ends of the figure's log axis, for the CORNER zone (Zone 5) and the FIELD zone (Zone 4).
-#: A panel is one product running through both, so Zone 5 governs what gets ordered.
-_GCP_NEGATIVE = {
-    "5": ((10.0, -1.4), (500.0, -0.8)),
-    "4": ((10.0, -1.1), (500.0, -0.8)),
-}
-
 
 #: The panel flange the screw passes through before it reaches wood, deducted from the
 #: length. 24 ga sheet — the thickest cladding steel on this house, so the deduction is the
@@ -103,35 +90,6 @@ PULL_THROUGH_OMEGA = 3.0
 #: linear in it, so reading a commercial-quality 52 ksi as this would be unconservative by
 #: 25% — it is a constant with a standard behind it, not a guess.
 SHEET_FU_PSI = 65_000.0
-
-
-def external_pressure_coefficient(area_ft2: float, zone: str = "5") -> float:
-    """GC_p for a wall, log-interpolated across Fig. 30.3-1's own axis.
-
-    Held flat outside 10-500 ft2 because the figure is: below 10 ft2 the curve is drawn
-    horizontal, and a cladding panel's effective wind area is always down there.
-    """
-    (small_area, small), (large_area, large) = _GCP_NEGATIVE[zone]
-    if area_ft2 <= small_area:
-        return small
-    if area_ft2 >= large_area:
-        return large
-    fraction = (math.log10(area_ft2) - math.log10(small_area)) / (
-        math.log10(large_area) - math.log10(small_area))
-    return small + fraction * (large - small)
-
-
-def effective_wind_area_ft2(span_in: float) -> float:
-    """ASCE 7-16 §26.2: span x effective width, where the width is not less than span/3.
-
-    A wall panel's real coverage (20", 32", 36") is wider than ``span/3`` at any of this
-    house's girt spacings, so taking ``span/3`` is the SMALLER area and therefore the more
-    negative GC_p — the conservative side, and the side that needs no product dimension the
-    model may not carry. At every spacing a girt wall uses it lands well under 10 ft2, where
-    the figure is flat, so the choice changes no coefficient here.
-    """
-    span_ft = span_in / 12.0
-    return span_ft * (span_ft / 3.0)
 
 
 @dataclass(frozen=True)
@@ -159,20 +117,6 @@ class _Panel:
     support_specific_gravity: float | None
 
 
-def mean_roof_height_ft(ctx: EngineeringContext) -> float | None:
-    """h for q_h — the mean of eave and ridge over the tallest roof in the model.
-
-    Per-building would be better and this model has no building grouping to ask; the tallest
-    roof is the conservative reading, and on a site whose outbuilding is 10 ft shorter it is
-    the house's own.
-    """
-    heights = [(roof.eave_z_m + roof.ridge_z_m) / 2.0 for roof in ctx.model.roofs
-               if roof.eave_z_m is not None and roof.ridge_z_m is not None]
-    if not heights:
-        return None
-    return max(heights) / 0.3048
-
-
 def _panels(ctx: EngineeringContext) -> list[_Panel]:
     """Every wall whose outermost skin is a CONCEALED metal panel on open framing.
 
@@ -184,7 +128,7 @@ def _panels(ctx: EngineeringContext) -> list[_Panel]:
     continuous deck).
     """
     catalog = {material.tag: material for material in ctx.plan.library.materials}
-    height = mean_roof_height_ft(ctx)
+    height = wind.mean_roof_height_ft(ctx.model)
     out: list[_Panel] = []
     for wall in ctx.model.walls:
         body = wall.body_layers()

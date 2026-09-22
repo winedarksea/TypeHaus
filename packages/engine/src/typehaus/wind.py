@@ -19,6 +19,7 @@ of this code and are the reference this file must reproduce.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 #: ASCE 7-16 Table 26.6-1, directionality factor for buildings' MWFRS and C&C, and for
@@ -118,3 +119,72 @@ def velocity_pressure_psf(basis: WindBasis, height_ft: float, *,
     """
     k_z = velocity_pressure_coefficient(height_ft, basis.exposure)
     return 0.00256 * k_z * k_zt * k_d * basis.speed_mph ** 2
+
+
+# --- ASCE 7-16 Chapter 30 Part 1: C&C wall pressures -------------------------------------
+# Shared by ``engineering/girt_screw.py`` and ``checks/structural/cladding.py``: the panel
+# and the screw behind it carry ONE suction, and two numbers for it would mean one is wrong.
+
+#: ASCE 7-16 Table 26.13-1, enclosed building, applied with the sign that worsens the case.
+GC_PI = 0.18
+
+#: ASCE 7-16 Fig. 30.3-1, walls of an enclosed low-rise building, GC_p at the two ends of
+#: the figure's log axis (10 and 500 ft2). Zone 5 = corner, Zone 4 = field.
+_GCP_WALL_NEGATIVE = {
+    "5": ((10.0, -1.4), (500.0, -0.8)),
+    "4": ((10.0, -1.1), (500.0, -0.8)),
+}
+#: Fig. 30.3-1 positive (inward) GC_p: one curve for both zones.
+_GCP_WALL_POSITIVE = {
+    "5": ((10.0, 1.0), (500.0, 0.7)),
+    "4": ((10.0, 1.0), (500.0, 0.7)),
+}
+
+
+def external_pressure_coefficient(area_ft2: float, zone: str = "5", *,
+                                  sign: str = "negative") -> float:
+    """Wall GC_p, log-interpolated across Fig. 30.3-1, held flat outside 10-500 ft2."""
+    table = _GCP_WALL_POSITIVE if sign == "positive" else _GCP_WALL_NEGATIVE
+    (small_area, small), (large_area, large) = table[zone]
+    if area_ft2 <= small_area:
+        return small
+    if area_ft2 >= large_area:
+        return large
+    fraction = (math.log10(area_ft2) - math.log10(small_area)) / (
+        math.log10(large_area) - math.log10(small_area))
+    return small + fraction * (large - small)
+
+
+def effective_wind_area_ft2(span_in: float) -> float:
+    """ASCE 7-16 §26.2: span x effective width, the width not less than span/3.
+
+    ``span/3`` is the SMALLER area and so the more severe GC_p; at every girt spacing on
+    this house it lands under 10 ft2, where the figure is flat.
+    """
+    span_ft = span_in / 12.0
+    return span_ft * (span_ft / 3.0)
+
+
+def mean_roof_height_ft(model) -> float | None:
+    """h for q_h — the mean of eave and ridge over the tallest roof in the resolved model.
+
+    The model has no building grouping to ask, so the tallest roof is the conservative
+    reading.
+    """
+    heights = [(roof.eave_z_m + roof.ridge_z_m) / 2.0 for roof in model.roofs
+               if roof.eave_z_m is not None and roof.ridge_z_m is not None]
+    if not heights:
+        return None
+    return max(heights) / 0.3048
+
+
+def cladding_pressure_asd_psf(q_h: float, area_ft2: float, zone: str = "5", *,
+                              sign: str = "negative") -> tuple[float, float]:
+    """(strength, ASD) wall C&C pressure magnitude, ``|q_h (GC_p -/+ GC_pi)|`` and 0.6x.
+
+    GC_pi takes the sign that adds to the external coefficient: suction with internal
+    pressure, inward push with internal suction.
+    """
+    gcp = external_pressure_coefficient(area_ft2, zone, sign=sign)
+    strength = q_h * (abs(gcp) + GC_PI)
+    return strength, ASD_WIND_FACTOR * strength

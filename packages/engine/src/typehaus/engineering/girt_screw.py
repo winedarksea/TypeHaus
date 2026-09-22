@@ -71,14 +71,9 @@ from typehaus.engineering.item import (
     item_id,
 )
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
-from typehaus.engineering.wall_panel import (
-    GC_PI,
-    effective_wind_area_ft2,
-    external_pressure_coefficient,
-    mean_roof_height_ft,
-)
 from typehaus.model.enums import LayerFunction
 from typehaus.resolve.framing.truss_girts import truss_girt_bands
+from typehaus.wind import GC_PI, effective_wind_area_ft2, external_pressure_coefficient
 
 KIND = "girt_screw"
 
@@ -137,7 +132,7 @@ def _crossings(ctx: EngineeringContext) -> list[_Crossing]:
     block's depth is a property of the stack rather than of any one resolved wall.
     """
     catalog = {material.tag: material for material in ctx.plan.library.materials}
-    height = mean_roof_height_ft(ctx) or 0.0
+    height = wind.mean_roof_height_ft(ctx.model) or 0.0
     seen: set[str] = set()
     out: list[_Crossing] = []
     for wall in ctx.model.walls:
