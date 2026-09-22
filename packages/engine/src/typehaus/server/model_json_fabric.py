@@ -21,6 +21,7 @@ from typehaus.model.floors import FloorOpening, FloorSystem
 from typehaus.model.spatial import Stair
 from typehaus.resolve.assembly_material import solid_material_ref
 from typehaus.resolve.geometry_build import wall_trades
+from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedModel
 from typehaus.server.model_json_shared import (
     _enum_value,
@@ -39,6 +40,20 @@ def _layout_axis(model: ResolvedModel, wall_tag: str) -> list[list[float]] | Non
         return None
     (ox, oy), (dx, dy) = line.origin, line.direction
     return [[ox, oy], [ox + dx, oy + dy]]
+
+
+def _cut_layers(model: ResolvedModel, opening) -> list[str] | None:
+    """The host layers a BLIND opening cuts, or ``None`` for a through hole (every layer).
+
+    The viewer cannot re-derive this without the layer depth frame, so it takes the
+    engine's ``cuts_layer`` answer rather than a second copy of the rule.
+    """
+    if not opening.is_blind:
+        return None
+    wall = next((w for w in model.walls if w.tag == opening.host_wall), None)
+    if wall is None:
+        return None
+    return [ly.name for ly in wall.layers if cuts_layer(wall, ly.name, opening)]
 
 
 def _wall_scope(wall) -> str:
@@ -122,6 +137,7 @@ def wall_graph_json(
              "type_ref": o.type_ref,
              "width_m": o.width_m, "height_m": o.height_m, "sill_m": o.sill_m,
              "center_along_m": o.center_along_m, "arch_rise_m": o.arch_rise_m,
+             "cut_layers": _cut_layers(model, o),
              "swing_clearance": [list(point) for point in o.swing_clearance],
              "framing_bumper": [list(point) for point in o.framing_bumper],
              # Handing is authored data, rather than resolved geometry, but it changes the

@@ -174,10 +174,12 @@ export function buildWall(
     // case was the sunken garden's five-region Ishtar wall, whose arched door and window put
     // it on the swept path in the first place; that wall is one flat field since 2026-09-04,
     // so the clamp has no live subject and the rule stays because `Layer.slot` does.
-    const smoothArchGeometry = createSmoothArchedWallLayerGeometry(w, ly.polygon, openings, center, ly);
+    // A blind recess cuts only the layers the engine says its depth reaches.
+    const layerOpenings = openings.filter((op) => !op.cut_layers || op.cut_layers.includes(ly.name));
+    const smoothArchGeometry = createSmoothArchedWallLayerGeometry(w, ly.polygon, layerOpenings, center, ly);
     const geometries: (THREE.BufferGeometry | null)[] = smoothArchGeometry
       ? [smoothArchGeometry]
-      : clampPiecesToBand(wallLayerPieces(w, ly.polygon, openings), ly).map((piece) => piece.topIsRaked
+      : clampPiecesToBand(wallLayerPieces(w, ly.polygon, layerOpenings), ly).map((piece) => piece.topIsRaked
         ? createRakedPlanPrismGeometry(piece.polygon, piece.z0_m,
           (point) => rakedTopAt(w, point[0], point[1]), center)
         : createPlanPrismGeometry(piece.polygon, piece.z0_m, piece.z1_m, [], center));
@@ -230,7 +232,7 @@ export function buildWall(
     // wythe. The layer's own material does the rest —
     // the ring carries polar UVs into the very same tile, so `mat` is reused as it stands.
     if (masonryStyle) {
-      for (const opening of openings) {
+      for (const opening of layerOpenings) {
         if ((opening.arch_rise_m ?? 0) <= 1e-9) continue;
         const springline = baseRefZ(w) + opening.sill_m
           + Math.max(0, opening.height_m - (opening.arch_rise_m ?? 0));

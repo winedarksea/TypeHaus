@@ -286,6 +286,9 @@ export interface Opening {
   center_along_m: number;
   // A nonzero rise turns the rectangular head into a semicircular arch soffit.
   arch_rise_m: number;
+  // A BLIND opening (RoughOpening.depth) names the host layers it cuts; the rest stay whole
+  // behind the recess. null/absent = a through hole that cuts every layer.
+  cut_layers?: string[] | null;
   swing_clearance?: Vec2[];
   framing_bumper?: Vec2[];
   flip_hinge: boolean;

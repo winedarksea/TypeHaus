@@ -135,3 +135,20 @@ def test_the_hydrant_penetration_reaches_the_elevation(catlin_model, opening_tag
     assert _hole_at(silhouette) is None, (
         f"{opening_tag} punches {wall_tag}'s silhouette — it is a blind bore, so the board "
         "behind it should close the projection")
+
+
+def test_model_json_tells_the_viewer_which_layers_a_blind_opening_cuts(catlin_model):
+    """The React viewer cuts wall layers itself, so a blind opening must carry its layers.
+
+    Without ``cut_layers`` it cut the firebox pocket through W-M-E1's sheathing, foam, girt
+    and cladding to the east yard.
+    """
+    from typehaus.server.model_json import model_to_dict
+
+    payload = {o["tag"]: o for o in model_to_dict(catlin_model)["openings"]}
+    wall = catlin_model.wall("W-M-E1")
+    niche = _opening(catlin_model, "AO-M-FIRE-NICHE")
+    cut = payload["AO-M-FIRE-NICHE"]["cut_layers"]
+    assert cut == [ly.name for ly in wall.layers if cuts_layer(wall, ly.name, niche)]
+    assert {"sheathing", "outer-girt", "cladding"}.isdisjoint(cut)
+    assert payload["WIN-M-LIV-E1"]["cut_layers"] is None  # a through hole cuts everything
