@@ -1,15 +1,16 @@
 """The girt crossing screw — ``girt_screw/<lowest Wall tag in the group>``.
 
 **Why this item exists.** The catlin truss wall hangs everything outboard of the sheathing
-on one screw per crossing, and nothing graded it. ``engineering/wall_panel.py`` grades the
-panel and says so in its own "NOT CHECKED" note; ``notes/catlin_truss_engineering.md`` §3
+on one screw per crossing, and nothing graded it. The panel is graded separately
+(``structural.cladding_wind``, a published read since 2026-09-22);
+``notes/catlin_truss_engineering.md`` §3
 hand-worked the withdrawal and stopped there — it never stated the screw's THREAD length,
 never checked whether that thread could clamp the stack, and never checked the head. The
 wall's entire load path was resting on a number nobody had finished.
 
 It is decision #65's case and not an UNKNOWN: a demand that can be computed, capacities
-that are published, and a design a seal can confirm. It is **register-only**, the
-``wall_panel`` precedent — no ``engineered()`` bridge, no ``PermitItemSpec``, no ratchet.
+that are published, and a design a seal can confirm. It is **register-only** — no
+``engineered()`` bridge, no ``PermitItemSpec``, no ratchet.
 The screw is a component of an assembly no prescriptive table reaches, so there is no
 prescriptive check for an engineered record to answer.
 
@@ -34,9 +35,9 @@ the house, because ``engineering/`` may not import the hardware catalog
 (``library/hardware.py`` reaches ``takeoff``). NDS §12.2's ``W = 2850 G^2 D`` is computed
 alongside as a cross-check only, never as the grade.
 
-The demand is ``wall_panel``'s, term for term: the same q_h at mean roof height, the same
-Zone 5 GC_p and GC_pi, the same 0.6W. It has to be — the panel and the screw carry one
-suction, and two numbers for it would mean one of them was wrong.
+The demand is ``typehaus.wind``'s, term for term with ``structural.cladding_wind``: the same
+q_h at mean roof height, the same Zone 5 GC_p and GC_pi, the same 0.6W. It has to be — the
+panel and the screw carry one suction, and two numbers for it would mean one was wrong.
 
 **One item per geometry, not per wall**, keyed by the lowest member tag. Every
 ``standoff="block"`` wall on this house resolves to one stack and one module, so
@@ -127,7 +128,7 @@ class _Crossing:
 def _crossings(ctx: EngineeringContext) -> list[_Crossing]:
     """Every wall whose outer band is a block-standoff girt.
 
-    Read off the AUTHORED assembly, like ``wall_panel._framing_spacing_in``: a
+    Read off the AUTHORED assembly, as ``checks/structural/cladding.py`` does: a
     ``layer_materials`` override swaps a material and never a ``FramingSpec``, and the
     block's depth is a property of the stack rather than of any one resolved wall.
     """
@@ -217,6 +218,9 @@ def _groups(ctx: EngineeringContext) -> dict[str, list[_Crossing]]:
 oracled_by(
     KIND,
     Oracle(note="catlin_truss_engineering.md", section="§3",
+           test="tests/test_girt_screw_calcs.py"),
+    # Its demand IS that note's §2-§4: the panel above this screw carries one suction.
+    Oracle(note="board_batten_girt_span.md", section="§2-§4",
            test="tests/test_girt_screw_calcs.py"),
 )
 
@@ -385,8 +389,8 @@ def _notes(crossing: _Crossing, demand_psf: float, strength_psf: float, demand_l
         f"Zone 5 (corner) governs: one screw pattern runs through both zones.",
         f"Wind basis: {basis.describe()}, K_zt {wind.K_ZT_FLAT:g}, K_d "
         f"{wind.K_D_BUILDINGS:g}, K_e taken as 1.0 (ASCE 7-16 §26.9). The panel above this "
-        f"screw (wall_panel) is computed from the same q_h and the same coefficients; two "
-        f"numbers for one suction would mean one of them was wrong.",
+        f"screw (structural.cladding_wind) is graded from the same q_h and the same "
+        f"coefficients; two numbers for one suction would mean one was wrong.",
         f"One seal covers {count} wall(s) — one stack, one block module, one course module "
         f"and one screw are one design. Membership is in the fingerprint as "
         f"`crossing_count`, so adding or removing a wall stales the stamp.",
@@ -436,5 +440,5 @@ def _notes(crossing: _Crossing, demand_psf: float, strength_psf: float, demand_l
         "NOT CHECKED, and no seal should read this as covering them: the girt itself in "
         "bending between blocks, the block plies in compression and their bearing on the "
         "sheathing, the sheathing-to-stud nailing this screw's thread relies on, and the "
-        "cladding panel, which is graded separately as `wall_panel`.")
+        "cladding panel, which is a published read (structural.cladding_wind).")
     return notes

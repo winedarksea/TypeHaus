@@ -5,6 +5,7 @@ from typehaus.checks.structural import (
     braced_wall,  # noqa: F401 - registers checks
     cantilever,  # noqa: F401 - registers checks
     checks,  # noqa: F401 - registers checks
+    cladding,  # noqa: F401 - registers checks
     concrete_cover,  # noqa: F401 - registers checks
     concrete_durability,  # noqa: F401 - registers checks
     concrete_interference,  # noqa: F401 - registers checks

@@ -154,11 +154,10 @@ class PublishedSpan(HausModel):
     ``published._drift``: a row that states a condition the check passed nothing for used to
     be indistinguishable from a row that matched.
 
-    Not to be confused with ``Material.panel_allowable_psf`` / ``panel_allowable_span_in``,
-    which are a load-form input to a *computed* kind (`engineering/wall_panel.py` grades a
-    demand against them and computes a second limit state besides). Those stay where they
-    are: the shape is different, and folding them in here would suggest the panel item is a
-    table read, which is exactly what it is not.
+    Not to be confused with ``Material.published_cladding`` (``PublishedCladdingLoad``,
+    ``model/published_cladding.py``): a cladding row is a PRESSURE in two directions at a
+    fastener spacing, not a span, so it is a sibling type — the ``PublishedCapacity``
+    argument.
     """
 
     #: The document, edition, page and table title — enough for a reviewer to open it.

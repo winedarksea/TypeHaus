@@ -9,7 +9,7 @@ something that carries it to the ground, plus the path UP to what stands on it.
 The walk **terminates at a wall or a footing**, which become support nodes rather than
 members: a beam bearing in a foundation wall is a pinned support, a post on its bell is a
 support, and a wall is not a curve member. Where an item is a wall or a panel —
-``retaining_system``, ``wall_panel``, ``girt_screw`` — the whole item is a gap, named in
+``retaining_system``, ``girt_screw`` — the whole item is a gap, named in
 words in :attr:`AnalyticalModel.gaps` rather than silently absent.
 
 ``retaining_wall`` is the exception and no longer reaches :func:`gap_line`:
@@ -25,8 +25,7 @@ from typing import Any
 
 #: Items whose element is a surface, not a curve member — so the walk terminates there.
 #: ``retaining_wall`` is meshed by ``shells.py``; the rest are gaps in words.
-SURFACE_KINDS = frozenset({"girt_screw", "retaining_wall", "retaining_system",
-                           "wall_panel"})
+SURFACE_KINDS = frozenset({"girt_screw", "retaining_wall", "retaining_system"})
 
 #: How deep a bearing_refs chain may be walked. Four levels is past any real framing chain
 #: and is the same guard ``engineering/pier_basis._delivered_to_posts`` uses.

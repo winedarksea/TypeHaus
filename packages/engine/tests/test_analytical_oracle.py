@@ -141,10 +141,11 @@ def test_the_gaps_name_what_the_note_says_is_not_modelled(solved):
     # retired: RF-HOUSE's uplift is a published read now and raises no item, so there is no
     # id left for a gap line to name. ``rafter/RF-GARAGE`` takes its place — the trussed
     # roof the uplift question folded INTO, which the graph still cannot draw.
-    for item in ("retaining_system/W-SG-ARCH", "wall_panel/W-A-N1", "girt_screw/W-A-N1",
-                 "rafter/RF-GARAGE"):
+    # ``wall_panel/W-A-N1`` left on 2026-09-22 the same way: a published cladding read.
+    for item in ("retaining_system/W-SG-ARCH", "girt_screw/W-A-N1", "rafter/RF-GARAGE"):
         assert item in joined
     assert "lateral_uplift/" not in joined
+    assert "wall_panel/" not in joined
 
 
 def test_the_landing_ties_are_springs_on_their_members(solved):

@@ -19,6 +19,7 @@ from typehaus import (
     LayerFunction,
     MasonrySpec,
     Material,
+    PublishedCladdingLoad,
     Substitution,
     inch,
     inside_of,
@@ -3896,17 +3897,17 @@ MATERIALS = [
     # 12/2024 single-sheet CTR was split in two and the row copied verbatim onto both. No
     # Tech Services letter is needed.
     #
-    # Against the -18.3 psf ASD corner-zone demand the guide's own 58 psf outward at 2'-0"
-    # is d/c 0.315 in bending. The limit state that actually GOVERNS is withdrawal of the
-    # concealed leg's screws — d/c 0.334 — which the same table excludes by name ("does not
-    # address web crippling, fasteners, support material"), so it is COMPUTED per NDS 2018
-    # section 12.2 from the girt's own G and the screw's penetration. Head pull-through,
-    # the third mode R703.1.2 names, is computed per AISI S100 and is 0.12. See
-    # houses/catlin/notes/board_batten_girt_span.md and the single grouped
-    # `wall_panel/W-A-N1` engineering item covering all twenty walls: this panel is
-    # ENGINEERED where PBR is PRESCRIPTIVE, and it is stampable rather than open.
+    # ** A MANUFACTURER READ SINCE 2026-09-22, AND `wall_panel/W-A-N1` LEFT THE REGISTER. **
+    # `structural.cladding_wind` grades the zone-5 demand against the guide's own row in
+    # BOTH directions: 18.27 psf ASD suction vs 58 outward (d/c 0.315) and 13.64 psf ASD
+    # push vs 43 inward (d/c 0.317 — inward governs, by a hair). The fastener is the
+    # guide's own named screw at its own spacing, a CONDITION of the read; the NDS 2018
+    # section 12.2 withdrawal (0.334) and AISI S100 pull-through (0.118) the retired item
+    # graded stay as the `structural.cladding_fastener` advisory. See
+    # houses/catlin/notes/board_batten_girt_span.md §8.
     #
-    # ** `panel_allowable_psf` stays 58 even though a newer sheet publishes 75. ** The
+    # ** The row stays 58 even though a newer sheet publishes 75; a switch to 75 is a
+    # re-author with a new source, not an edit to a number. ** The
     # Condensed Technical Reference 07/2026 re-publishes this panel at 42 psf inward /
     # 75 outward at 2'-0", off a LOWER section (Ixx 0.0156-0.0181 against the guide's
     # 0.0442). A lower section modulus with a higher allowable is not reconcilable in
@@ -3990,7 +3991,26 @@ MATERIALS = [
              r_per_inch=0.0, density=7800.0, vapor_permeance_perms=0.0, hatch="metal",
              color="#6b7076", finish="board-and-batten",
              skin_family="standing-seam",
-             panel_allowable_psf=58.0, panel_allowable_span_in=24.0,
+             published_cladding=PublishedCladdingLoad(
+                 source="Metal Sales BBD75 Install Guide 10/2025 p.13",
+                 table="Allowable uniform loads, 24 ga, 12\" coverage, 2'-0\" fastener spacing",
+                 member="BBD75-1212",
+                 allowable_outward_psf=58.0,
+                 allowable_inward_psf=43.0,
+                 fastener_spacing=inch(24),
+                 condition="AISI 2016, three or more equal spans, L/180, no 1/3 stress increase, ASTM E330; the spacing is measured along the panel, so on this vertically-run panel it is the girt course",
+                 gauge=24,
+                 coverage=inch(12),
+                 panel_fastener="#10-12 x 1\" Pancake Head Wood Screw",
+                 support_material="Lumber - 1x or thicker",
+                 min_support_thickness=inch(0.75),
+                 deflection_limit="L/180",
+                 stress_increase=False,
+                 span_condition="3 or more equal spans",
+                 excludes="note 2: the allowable \"does not address web crippling, fasteners, support material or load testing\"",
+                 demand_psf=18.27,
+                 wind_speed_mph=115.0,
+                 exposure="B"),
              open_framing_source="Metal Sales BBD75 Board & Batten (Concealed Direct-Fastened) install guide, 2025-10-16, p.7: the panel is \"designed to be installed over open framing and/or directly over a wood substrate\", and p.12's Support Materials list reads \"Lumber - 1x or thicker\" and \"Steel Framing - 18 gauge or thicker\" (neither is a solid substrate). The Spec Data Sheet says the same in its own words: \"Designed for application over solid sheathing or open framing\", typical assembly \"Wood framing with moisture barrier\"",
              panel_fastener="#10-12 x 1\" pancake head wood screw, Type 17 point, 316 stainless or ASTM A153 Class D HDG",
              panel_fastener_diameter_in=0.190,

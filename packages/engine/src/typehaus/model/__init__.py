@@ -21,6 +21,7 @@ from typehaus.model.assembly import (
     Substitution,
 )
 from typehaus.model.backing import WallBacking
+from typehaus.model.braced_wall import BracedWallPanel
 from typehaus.model.base import Element, HausModel
 from typehaus.model.electrical import Circuit, LoadManagement
 from typehaus.model.elements import Door, Node, RoughOpening, Wall, Window
@@ -119,6 +120,7 @@ from typehaus.model.placeables import (
 from typehaus.model.plan import Library, PlanModel
 from typehaus.model.product import Product
 from typehaus.model.project import Building, Project, Site, Storey
+from typehaus.model.published_cladding import PublishedCladdingLoad
 from typehaus.model.rebar import BarSpec, HookConfinement, ReinforcementSpec, RibLayout
 from typehaus.model.refs import (
     Arch,
@@ -279,7 +281,7 @@ for _name, _obj in (
     ("in_slab", in_slab), ("under_subfloor", under_subfloor),
     ("ToRoof", ToRoof), ("FollowRoof", FollowRoof), ("Arch", Arch),
     ("PublishedSpan", PublishedSpan), ("PublishedCapacity", PublishedCapacity),
-    ("PublishedReaction", PublishedReaction),
+    ("PublishedReaction", PublishedReaction), ("PublishedCladdingLoad", PublishedCladdingLoad),
     ("SegmentalWallSpec", SegmentalWallSpec), ("SrwDrainageZone", SrwDrainageZone),
     ("ShearPanelSpec", ShearPanelSpec), ("DiaphragmSpec", DiaphragmSpec),
     ("HeadConnector", HeadConnector), ("InServiceMoisture", InServiceMoisture),
@@ -327,7 +329,7 @@ __all__ = [
     "Slab", "SlabThermalBreak",
     "Soffit", "SoffitOpening",
     "FloorHeat", "FinishZone",
-    "PanelingSpan", "WallPaneling", "WallBacking",
+    "PanelingSpan", "WallPaneling", "WallBacking", "BracedWallPanel",
     "Countertop", "MillworkStandard", "ShelfBank", "ShelfBay", "WindowStool",
     "Room", "Stair", "Roof", "GridAxis", "Annotation", "Fixture", "Furniture", "Appliance",
     "Alarm",
@@ -336,6 +338,7 @@ __all__ = [
     "DetailAnnotation", "LayerJoin",
     "FaceRef", "face", "LayerMaterial", "ToRoof", "FollowRoof", "Arch", "LayerSpan",
     "OpeningPosition", "PublishedSpan", "PublishedCapacity", "PublishedReaction",
+    "PublishedCladdingLoad",
     "ShearPanelSpec", "DiaphragmSpec", "HeadConnector", "InServiceMoisture",
     "Embed", "outside_of", "inside_of", "layers", "from_node", "centered",
     "in_slab", "under_subfloor",

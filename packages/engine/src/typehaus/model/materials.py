@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Literal
 
 from typehaus.model.base import HausModel
+from typehaus.model.published_cladding import PublishedCladdingLoad
 from typehaus.model.registry import register_constructor
 
 
@@ -96,25 +97,16 @@ class Material(HausModel):
     # default is False and only a panel that really is face-fastened opts in — the flag is
     # the double-billing guard, not a description of the profile.
     exposed_fastener: bool = False
-    # The published ALLOWABLE (ASD) uniform negative load this cladding panel carries, and
-    # the support spacing the manufacturer published it at. Both or neither: a psf with no
-    # span is not a capacity, it is a number, and `engineering/wall_panel.py` reports
-    # INCOMPLETE rather than guessing which row of a span table it came from. The engine
-    # ships no such value for any material — it is a product fact a house declares beside
-    # its own panel, with the source, exactly as `prices.toml` holds its own dollars.
-    #
-    # There is nothing to declare for a panel whose span is covered by an evaluation report
-    # the prescriptive path already reads (ICC-ES ESR-4729 covers PBR at these spacings);
-    # this exists for the concealed-fastener profiles that appear in no report, where the
-    # only published table is the manufacturer's own.
-    panel_allowable_psf: float | None = None
-    panel_allowable_span_in: float | None = None
+    # The panel maker's published allowable-load row (outward and inward, at a fastener
+    # spacing), quoted with its drift guards. ``structural.cladding_wind`` grades the C&C
+    # wind demand against it as a prescriptive read. A product fact the house declares —
+    # the engine ships none.
+    published_cladding: PublishedCladdingLoad | None = None
     # What the manufacturer's own literature says about the support this panel may be
     # fastened to, quoted rather than summarised. A panel over open girts is on-label or it
     # is not, and that turns on one sentence in one guide; a boolean would lose which guide
-    # and which words. ``engineering/wall_panel.py`` reports INCOMPLETE without it, because
-    # an open-framing installation nobody's literature permits is not a calculation
-    # problem — it is the wrong product.
+    # and which words. ``structural.cladding_wind`` is UNKNOWN without it: a panel no
+    # literature puts on girts is the wrong product, not a table to read.
     open_framing_source: str | None = None
     # The panel fastener, as the order spells it, and the two dimensions a withdrawal
     # calculation needs from it. Prose plus numbers for the same reason: the prose is what
@@ -134,8 +126,8 @@ class Material(HausModel):
     # PANEL, so it reads the head and the sheet, not the shank and the wood. A pancake
     # head is the whole point of a concealed-leg screw (it has to sit under the batten),
     # and it is also the smallest head in the catalogue — which is exactly why the mode is
-    # graded rather than assumed. Absent, `engineering/wall_panel.py` omits the state
-    # rather than guessing a head size.
+    # graded rather than assumed. Absent, ``structural.cladding_fastener`` omits the
+    # state rather than guessing a head size.
     panel_fastener_head_dia_in: float | None = None
     # Net coverage of one panel, in inches — the width one run of fasteners is responsible
     # for. It is the tributary width in the withdrawal demand, so it moves the answer

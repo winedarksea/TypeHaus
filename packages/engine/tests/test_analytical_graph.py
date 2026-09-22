@@ -156,7 +156,7 @@ def test_no_two_nodes_are_the_same_point(analytical) -> None:
 def test_the_surface_items_are_named_as_gaps(analytical) -> None:
     """A surface this version cannot draw is listed in words, never left silent."""
     surface = {item for item in analytical.scope
-               if item.split("/", 1)[0] in ("retaining_system", "wall_panel", "girt_screw")}
+               if item.split("/", 1)[0] in ("retaining_system", "girt_screw")}
     assert surface, "catlin has no surface-member item — the fixture has drifted"
     for item in sorted(surface):
         assert any(line.startswith(f"{item}:") for line in analytical.gaps), (

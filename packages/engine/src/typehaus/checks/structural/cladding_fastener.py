@@ -1,7 +1,7 @@
 """Screw withdrawal from a wood support — NDS 2018 §12.2, for a concealed panel leg.
 
 Pure arithmetic, no model types. It exists as its own module because it is the one part of
-``wall_panel.py`` a reviewer checks line by line against the standard, and because the
+``structural.cladding_fastener`` (``cladding.py``) a reviewer checks line by line against the standard, and because the
 answer is a *rational design*: no manufacturer publishes a pull-out value for a concealed
 board-and-batten leg screwed into wood, and IAPMO UES ER-309 expressly permits a design
 professional to extend published data by engineering mechanics rather than wait for a row
@@ -100,3 +100,22 @@ def fastener_demand_lb(pressure_psf: float, spacing_in: float, coverage_in: floa
 
 def tributary_area_ft2(spacing_in: float, coverage_in: float) -> float:
     return (spacing_in / 12.0) * (coverage_in / 12.0)
+
+
+# --- head pull-through, AISI S100 --------------------------------------------------------
+
+#: The 24 ga panel flange the screw passes before it reaches wood, deducted from the length.
+#: The thickest cladding steel on this house, so the conservative deduction; ~1 lb either way.
+SHEET_FLANGE_IN = 0.0239
+
+#: AISI S100 §J4.4.2 head pull-over, ``Pnov = 1.5 t d'w Fu``, at the standard's ASD Omega.
+PULL_THROUGH_OMEGA = 3.0
+
+#: ASTM A792 Grade 50 (the Galvalume substrate) minimum tensile strength. Linear in the
+#: equation, so reading commercial-quality 52 ksi as this would be 25% unconservative.
+SHEET_FU_PSI = 65_000.0
+
+
+def pull_through_allowable_lb(head_dia_in: float, flange_in: float = SHEET_FLANGE_IN) -> float:
+    """AISI S100 ``Pnov / Omega`` — the head pulling a slug of sheet through the panel."""
+    return 1.5 * flange_in * head_dia_in * SHEET_FU_PSI / PULL_THROUGH_OMEGA

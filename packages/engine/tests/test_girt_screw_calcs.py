@@ -28,7 +28,7 @@ import pytest
 from typehaus.engineering.item import Status
 
 #: §3 of the note, hand-worked before the module existed. The wind half is shared term for
-#: term with ``board_batten_girt_span.md`` and ``test_wall_panel_calcs.py``: the panel and
+#: term with ``board_batten_girt_span.md`` and ``test_cladding_read.py``: the panel and
 #: the screw carry ONE suction, and two numbers for it would mean one of them was wrong.
 _ORACLE = {
     "mean_roof_height_ft": 25.5990,
@@ -151,7 +151,7 @@ def test_membership_is_in_the_fingerprint(record):
 # --- the demand --------------------------------------------------------------------------
 
 def test_the_wind_demand_is_the_panels_own(record):
-    """Same q_h, same coefficients, same 0.6W as ``wall_panel`` — one suction, one number."""
+    """Same q_h, same coefficients, same 0.6W as ``structural.cladding_wind`` — one suction."""
     inputs = _inputs(record)
     assert inputs["design_wind_speed"] == 115.0
     assert inputs["mean_roof_height"] == pytest.approx(_ORACLE["mean_roof_height_ft"], abs=1e-3)

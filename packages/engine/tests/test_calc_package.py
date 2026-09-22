@@ -190,8 +190,10 @@ def test_the_four_deferred_items_name_a_designer_of_record(catlin_engineering):
     #    2026-09-20 (`engineering/veneer_beam.py`); the masonry anchors it carried unnamed
     #    left with it as `veneer_anchor/W-B-BRICK`, their own deferral.
     #  - `thermal_break_transfer/*`: left 2026-09-20 — computed in
-    #    `engineering/thermal_break.py`; OVER at basis 5 (free body §11f: the thrust into the
-    #    house; the dowels are deleted), since OVER outranks INCOMPLETE there as on the other kinds.
+    #    `engineering/thermal_break.py`; OVER from basis 5 to basis 6 (the thrust into the
+    #    house), since OVER outranks INCOMPLETE there as on the other kinds, and **OK since
+    #    basis 7** (2026-09-22, free body §11j: no board is a form face and the slab edge
+    #    states its grade).
     #  - `tiered_retaining/W-RG-*`: the apron. `foundation_unbalanced_fill` reads PASS on it
     #    and that verdict is CORRECT — IRC R404.1.1 does not engage at 3'-4" — so the PASS is
     #    deliberately left alone. The defect was that nothing else then looked at a tiered
@@ -329,17 +331,16 @@ def test_unfinished_items_reach_the_open_register_with_their_missing_text(
             assert text in page, item
 
 
-def test_the_manufacturers_own_exclusion_survives_into_the_package(package):
-    """The most load-bearing sentence behind the cladding item is the panel maker's own.
+def test_the_cladding_read_is_not_in_the_package_at_all(package):
+    """2026-09-22: the board & batten became a MANUFACTURER READ and left the register.
 
-    Metal Sales publishes a bending allowable and says in the same note that it "does not
-    address web crippling, fasteners, support material" — which is why withdrawal is
-    computed here from NDS rather than read from a table, and why a reviewer has to see
-    that exclusion rather than take the 58 psf as the whole answer. A package that dropped
-    it would read as though the published number covered the governing limit state."""
+    There is no calc sheet for a published row — that is the whole point of the move. Metal
+    Sales' own exclusion ("does not address web crippling, fasteners, support material or
+    load testing") is printed on every `structural.cladding_wind` finding instead, which is
+    pinned in `tests/test_cladding_read.py`. A sheet here would re-assert a seal nobody owes."""
     everything = "\n".join(package.values())
-    assert "board-batten-24" in everything
-    assert "does not address web crippling, fasteners, support material" in everything
+    assert "wall_panel/" not in everything
+    assert "board-batten-24" not in everything
 
 
 def test_the_design_criteria_are_derived_and_not_typed(package):
@@ -434,11 +435,12 @@ def test_the_two_gates_are_separate_and_catlin_reaches_neither(catlin_engineerin
     nothing to do with any calculation — catlin carries no `engineering.toml` at all — so it
     stays false with every draft line green, and it would have stayed false with them red.
 
-    ** AND MISSES DRAFT AGAIN SINCE 2026-09-20, ON NAMED LINES. ** Every deferred kind
-    became a registered calculation and its line blocks; the lines below are what those
-    calculations found open on catlin (`haus engineering`). The set is pinned exactly, so a
-    new line going red, or one of these closing unnoticed, fails here. The veneer beam closed
-    2026-09-21 (hook ties and footing dowels, `notes/sunken_garden_veneer_beam.md` §6e).
+    ** IT MISSED DRAFT FROM 2026-09-20 ON NAMED LINES, AND REACHES IT AGAIN ON 2026-09-22. **
+    Every deferred kind became a registered calculation and its line blocks; the last of them
+    to close was the thermal break (basis 7). The list is pinned exactly and asserted EMPTY,
+    so a new line going red, or one of these closing unnoticed, fails here. The veneer beam
+    closed 2026-09-21 (hook ties and footing dowels, `notes/sunken_garden_veneer_beam.md`
+    §6e); the thermal break on 2026-09-22 (`notes/sunken_garden_court_free_body.md` §11j).
     """
     _ctx, _items, checklist = catlin_engineering
     blocked = [item.label for item in checklist.items
@@ -448,12 +450,12 @@ def test_the_two_gates_are_separate_and_catlin_reaches_neither(catlin_engineerin
     # own (deck_tie/FS-BW-FLOOR at 0.966, north_entry_piers.md §10); base rotation CLOSED as
     # draft on the presumed n_h (column_base_rotation.md §10), and the SRW apron CLOSED on AB
     # Stones (raised_garden_srw.md §3b).
-    assert sorted(blocked) == sorted([
-        "Structural ties across a thermal break",
-    ]), blocked
-    assert not checklist.ok
+    # ** EMPTY SINCE 2026-09-22 (basis 7, free body §11j). ** The thermal break was the last
+    # blocking line short of PASS, so the draft gate is open; `haus print` succeeds.
+    assert blocked == [], blocked
+    assert checklist.ok
     assert not checklist.sealed
     assert checklist.unsealed
     # Shut for its own reason: every engineered item is unsealed because the house carries
-    # no register at all, which is true of the passing items as much as the failing one.
+    # no register at all, which is true of every passing item.
     assert len(checklist.unsealed) > 1

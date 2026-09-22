@@ -42,7 +42,6 @@ from typehaus.engineering import (
     spread_footing,  # noqa: F401  (registration)
     thermal_break,  # noqa: F401  (registration)
     veneer_beam,  # noqa: F401  (registration)
-    wall_panel,  # noqa: F401  (registration)
 )
 from typehaus.engineering.deferred import DEFERRALS, Deferral
 from typehaus.engineering.fingerprint import (
@@ -92,5 +91,4 @@ __all__ = [
     "registered_kinds",
     "retaining_system",
     "retaining_wall", "segmental_wall", "spread_footing", "thermal_break", "veneer_beam",
-    "wall_panel",
 ]

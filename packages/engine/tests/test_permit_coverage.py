@@ -219,7 +219,13 @@ MAX_NON_BLOCKING_ITEMS = {"mn-2020": 24}
 # and the landing tie (HL35HDG, shifted) now PASS at draft, so their suppressions came off
 # and both lines carry engineered findings again: nothing became less designed, two items
 # now await only a seal. The thermal break's line stays suppressed, UNKNOWN and blocking.
-MAX_UNSEALED_ITEMS = {"mn-2020": 15}
+#
+# RAISED 15 -> 16 on 2026-09-22, the same shape of move again: the thermal-break line's five
+# suppressions came off because basis 7 grades OK (formed-and-stripped boards, a stated
+# slab-edge grade — free body §11j), so its line carries engineered findings instead of
+# reading UNKNOWN. Nothing became less designed; one more item awaits only a seal — and this
+# was the last BLOCKING line that was not PASS, so the draft permit print opens here.
+MAX_UNSEALED_ITEMS = {"mn-2020": 16}
 
 
 def _engineered_labels(profile) -> set[str]:
@@ -419,10 +425,17 @@ def test_a_prescriptive_failure_is_not_sealed_either() -> None:
 # item is invisible to the permit gate — which is how 26 deferred items sat outside it.
 _REGISTER_ONLY = {
     "girt_screw": "a component of the truss wall; no prescriptive check for it to answer",
-    "wall_panel": "the same assembly as girt_screw — the `wall_panel` precedent itself",
     "roof_beam": "graded against the authored snow; its roof's lines carry the frame",
     "retaining_system": "the court's closed loop; its walls' own line carries each member",
 }
+
+
+def test_every_register_only_kind_is_registered() -> None:
+    """A retired kind left here would excuse nothing and hide the retirement."""
+    from typehaus.engineering import registered_kinds
+
+    assert set(_REGISTER_ONLY) <= set(registered_kinds()), (
+        sorted(set(_REGISTER_ONLY) - set(registered_kinds())))
 
 
 def test_every_engineering_kind_reaches_a_permit_item(catlin_plan) -> None:

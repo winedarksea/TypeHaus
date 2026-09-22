@@ -47,7 +47,7 @@ def _criteria(inputs: PackageInputs) -> str:
 #:
 #: Every entry is read off the calculation module that applies it — ``pier_basis``'s
 #: ``DEAD_LOAD_FACTOR``/``LIVE_LOAD_FACTOR``, ``retaining_basis``'s
-#: ``EARTH_PRESSURE_LOAD_FACTOR``, ``wall_panel``'s 0.6W — not chosen here. A kind absent
+#: ``EARTH_PRESSURE_LOAD_FACTOR``, ``girt_screw``'s 0.6W — not chosen here. A kind absent
 #: from this table prints "not stated", which is the honest answer for a kind whose
 #: arithmetic combines nothing: a numbered combination beside a demand that was never
 #: combined is a claim the arithmetic does not support (see ``LimitState.combination``).
@@ -70,7 +70,6 @@ DESIGN_METHOD: dict[str, str] = {
                       "loads). The two are different questions on one wall and the sheet "
                       "labels each state.",
     "retaining_system": "ASD (IBC §1807.2.3 safety factors on service loads)",
-    "wall_panel": "ASD (a published panel allowable against a 0.6W demand)",
     "girt_screw": "ASD (published withdrawal and pull-through allowables)",
     "post_bearing": "ASD (AWC NDS 2018 reference design values)",
     "glulam_beam": "ASD (AWC NDS 2018 reference design values x C_M, C_D, C_V)",
@@ -86,7 +85,6 @@ LOAD_COMBINATIONS: dict[str, tuple[str, str]] = {
     "retaining_wall": ("1.6H (flexure and shear); service loads, FS >= 1.5 (stability)",
                        "ASCE 7-16 §2.3.1(6) / IBC 2018 §1605.2; IBC §1807.2.3"),
     "retaining_system": ("service loads, FS >= 1.5", "IBC 2018 §1807.2.3"),
-    "wall_panel": ("0.6W", "ASCE 7-16 §2.4.1(7), C&C pressures per §30.3"),
     "girt_screw": ("0.6W", "ASCE 7-16 §2.4.1(7), C&C pressures per §30.3"),
     "post_bearing": ("D + L, allowable stress design",
                      "AWC NDS 2018 §3.10; IRC R507.1 loads"),

@@ -1,8 +1,8 @@
 """The girt crossing screw's arithmetic — thread bookkeeping, withdrawal, pull-through.
 
-Pure numbers, no model types, for the same reason ``wall_panel_withdrawal.py`` is: this is
-the part a reviewer checks line by line against a report, and it should be readable without
-a house in hand.
+Pure numbers, no model types, for the same reason ``checks/structural/cladding_fastener.py``
+is: this is the part a reviewer checks line by line against a report, and it should be
+readable without a house in hand.
 
 **The thing this module exists to say is that a screw has two lengths.** Overall length is
 what the box prints; THREAD length is what decides whether the screw works, and the two are
