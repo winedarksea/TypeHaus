@@ -556,7 +556,7 @@ ROOFS = [
              # `chord_splice_slip`, a plated joint and not a continuous member. E-W wind:
              # BM-BW-RW and BM-BW-RE themselves, 3-2x12 each, six times this section;
              # quoting the 2x4 for both axes is the conservative half of that pair.
-             chords="N-S: the end trusses' 2x4 top chords, continuous 24ft with one plated splice at the peak. E-W: the 3-2x12 headers BM-BW-RW/-RE. The 2x4 is quoted for both.",
+             chords="N-S: the end trusses' 2x4 top chords, continuous 24ft with one plated splice at the peak. E-W: the 3-2x12 headers BM-BW-RW/-RE. The 2x4 is quoted for both. TRUSS ORDER: the design assumes the peak splice slips 0.03in at most, 30% of the deck's N-S deflection and the rigid/flexible call at 0.68x of the 2.0 threshold; the fabricator confirms 0.03in or supplies its value",
              chord_member="2x4", chord_plies=1,
              chord_splice_slip=inch(0.03),
              collector_refs=("BM-BW-RW", "BM-BW-RE"),

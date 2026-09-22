@@ -51,6 +51,13 @@ source:
 ### Spec 07 21 00
 - Spray the foam in one application; the blocks are the only thing crossing it.
 
+### Spec 06 17 53
+- RF-BW-CANOPY end truss top chords are the deck's N-S diaphragm chords.
+- Peak chord splice: 595 lb tension, on top of the gravity and drift case.
+- Design assumes splice slip of 0.03" max: 30% of the deck's N-S deflection.
+- That slip sets the rigid/flexible call, at 0.68x of the 2.0 threshold.
+- Fabricator to confirm 0.03" max or state its value before fabrication.
+
 ## What the wall is
 
 `EXT_2X6` is a **catlin truss wall**, ONE girt tier.

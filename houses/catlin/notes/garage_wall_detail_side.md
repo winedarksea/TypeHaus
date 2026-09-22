@@ -40,6 +40,12 @@ source:
 ### Spec 03 11 00
 - Install ICF forms conforming to ASTM E2634, per the manufacturer's instructions.
 
+### Spec 03 15 19
+- Canopy hold-down bolts AB-058-10-SS, 5/8" x 10", under CN-BW-BASE-W/-NW.
+- Graded at f_uta 57 ksi: unspecified 304 stainless, ACI 318-19 17.6.1.2 cap.
+- An ASTM F593 CW1 bolt is 100 ksi; rely on 57 ksi unless the bolt is F593 CW1.
+- 980.7 lb base shear split over two bases; on one anchor, interaction 0.692 < 1.0.
+
 ### Spec 07 42 13
 - Keep aluminium off concrete and fresh mortar: alkali strips the oxide film.
 - Rip stem-band metal from 48" x 120" architectural sheet, two 24" bands per sheet.
