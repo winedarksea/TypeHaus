@@ -42,6 +42,10 @@ def handoff(
     models: bool = typer.Option(
         True, "--models/--no-models",
         help="Include model.ifc and model.glb. --no-models skips the slowest step."),
+    full: bool = typer.Option(
+        False, "--full",
+        help="Print the per-family appendix tables in calcs.pdf too. The markdown is "
+             "always in the bundle; this only changes what the PDF carries."),
 ) -> None:
     """Assemble the engineering handoff bundle: calcs, notes, models and a seal form."""
     from typehaus._meta import engine_version
@@ -85,7 +89,8 @@ def handoff(
             content_hash=load.loaded.content_hash,
             code_edition=load.ctx.profile.edition,
             scope=f"Structural calculations for {len(load.item_ids)} engineered "
-                  f"requirement(s) outside the prescriptive tables."))
+                  f"requirement(s) outside the prescriptive tables.",
+            include_appendix=full))
         written.append("calcs.pdf")
 
     # --- only the notes these records are actually checked against -----------------------

@@ -127,8 +127,12 @@ an item id `<kind>/<element-tag>` that a professional seal can cover (decision #
   stamped it *and* the pinned fingerprint still matches the model. `haus print --sealed` is
   the second gate and it really does refuse.
 - `haus calcs` writes `out/calcs/` — cover, derived design criteria, item register, gap
-  register, and one nine-section sheet per item, byte-deterministic and regenerated rather
-  than maintained (`docs/calc-package-format.md`). Each kind declares its oracle note with
+  register, collapsed assumptions, one calculation per design FAMILY, and an appendix:
+  `appendix/<kind>.md` (the per-member data as a table) over one nine-section sheet per
+  item. **The PDF prints the calculations, not the appendix** — `--appendix` (or
+  `haus handoff --full`) prints it, and the divider page always says where it is.
+  Byte-deterministic and regenerated rather than maintained
+  (`docs/calc-package-format.md`). Each kind declares its oracle note with
   `oracled_by(KIND, Oracle(...))`, and a test lints that every kind names one that exists.
 - **`haus handoff` is the whole handover in one command**: `out/handoff/` carries the calc
   package, its PDF, only the notes those records cite, the models, a manifest of sha256s and

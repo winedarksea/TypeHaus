@@ -13,6 +13,10 @@ governing member with its substitutions and units beside it, and the family's ex
 said once instead of sixty-five times. The per-item sheets keep every field they had and
 move to ``appendix/`` — nothing is lost, and the machine data stops being the document.
 
+**Said once, not once per family** (2026-09-22): the standing exclusions, the ratio
+conventions and the "bold row governs" key repeated 52-55 times in a 307-page PDF. They
+live in :func:`render_conventions` (``06-conventions.md``) and a family sheet points there.
+
 **It invents nothing.** Every number, citation and assumption here is read off the same
 ``EngineeringRecord`` the per-item sheet reads; this module chooses a grouping.
 """
@@ -25,17 +29,29 @@ from typehaus.emit.md_writer import bullets, callout, document, heading, kv_bloc
 from typehaus.engineering.fingerprint import fingerprint
 from typehaus.engineering.item import EngineeringRecord, Status
 from typehaus.engineering.register import EngineeringRegister
+from typehaus.takeoff.calc_collapse import collapse
 from typehaus.takeoff.calc_sheet import (
     SCOPE_LABEL,
     SEAL_LABEL,
     STATUS_LABEL,
-    sheet_filename,
 )
 
 #: Worst first, so a family's verdict is the first row of its own schedule.
 _STATUS_RANK: Mapping[Status, int] = {
     Status.OVER: 0, Status.INCOMPLETE: 1, Status.NO_CALC: 2, Status.OK: 3,
 }
+
+
+#: The one page the hoisted boilerplate lives on; front matter, printed just before S-2.
+CONVENTIONS_FILE = "06-conventions.md"
+
+#: Where every record's assumptions are printed, grouped by kind and collapsed.
+ASSUMPTIONS_FILE = "04-assumptions.md"
+
+
+def appendix_filename(kind: str) -> str:
+    """``deck_post`` -> ``appendix/deck_post.md``: the family's per-member data table."""
+    return f"appendix/{kind}.md"
 
 
 def family_filename(kind: str) -> str:
@@ -76,7 +92,13 @@ def _deduped(values: Sequence[str]) -> list[str]:
     return seen
 
 
-def _references(records: Sequence[EngineeringRecord]) -> list[str]:
+def references(records: Sequence[EngineeringRecord]) -> list[str]:
+    """Every citation the family rests on, deduped in first-appearance order.
+
+    Numbered R1, R2 … on the sheet and cited by number from the appendix's limit-state
+    tables, which is how a per-member state keeps its citation without printing 400
+    characters of it in every column.
+    """
     return _deduped([record.basis for record in records]
                     + [state.citation for record in records
                        for state in record.limit_states])
@@ -105,10 +127,11 @@ def _schedule(records: Sequence[EngineeringRecord],
             STATUS_LABEL[record.status].split(" — ")[0],
             SCOPE_LABEL[record.scope].split(" — ")[0],
             SEAL_LABEL[freshness].split(" — ")[0],
-            f"`appendix/{sheet_filename(record.item_id)}`",
         ])
+    kind = records[0].kind
     return table(["Member", "Elements", "Governing limit state", "Demand", "Capacity",
-                  "Unit", "d/c", "Status", "Coverage", "Seal", "Per-member data"], rows)
+                  "Unit", "d/c", "Status", "Coverage", "Seal"], rows) + (
+        f"\n\nPer-member data: `{appendix_filename(kind)}`.")
 
 
 def _worked(record: EngineeringRecord) -> str:
@@ -119,9 +142,7 @@ def _worked(record: EngineeringRecord) -> str:
     are printed as ``name = value unit`` immediately above the states that consumed them,
     which is how a hand calculation is laid out and why a hand calculation can be marked up.
     """
-    blocks = [f"Worked at **`{record.item_id}`** — the member this family's verdict comes "
-              f"from. Every other member in the schedule above is the same calculation at "
-              f"its own dimensions; its own numbers are in its appendix sheet."]
+    blocks = [f"Worked at **`{record.item_id}`**, the member the verdict comes from."]
     if record.inputs:
         blocks.append(table(
             ["Symbol", "Value", "Unit"],
@@ -147,11 +168,6 @@ def _worked(record: EngineeringRecord) -> str:
                      state.combination or "—", state.citation])
     blocks.append(table(["Limit state", "Substitution", "= d/c", "Load combination",
                          "Citation"], rows))
-    if record.governing is not None:
-        blocks.append("The **bold** row governs: the worst ratio among the states that "
-                      "carry load. A *detailing* row reads 1.000 when the design sits on "
-                      "the code minimum, which is compliant, so it is graded but never "
-                      "named as governing.")
     return "\n\n".join(blocks)
 
 
@@ -170,8 +186,7 @@ def _verdict(records: Sequence[EngineeringRecord]) -> str:
                  f"{governing.ratio:.2f} on {governing.name} "
                  f"({governing.citation}) — {verdict}.")
     else:
-        line += (f"\n\n`{worst.item_id}` leads the family and carries no computed "
-                 f"load-bearing state; see its open inputs below.")
+        line += f"\n\n`{worst.item_id}` leads it; no load-bearing state — see §7."
     return line
 
 
@@ -179,8 +194,7 @@ def _open_inputs(records: Sequence[EngineeringRecord]) -> str:
     rows = [[f"`{record.item_id}`", "\n\n".join(record.missing)]
             for record in records if record.missing]
     if not rows:
-        return ("_None — every input every member of this family needs was available in "
-                "the model._")
+        return "_None._"
     return callout(
         table(["Member", "What is missing"], rows),
         marker=f"**{len(rows)} of {len(records)} members are not finished**")
@@ -201,30 +215,18 @@ def _oracle(records: Sequence[EngineeringRecord]) -> str:
             if row not in rows:
                 rows.append(row)
     return table(["Note (houses/<house>/notes/)", "Section", "Test that reproduces it"],
-                 rows) + (
-        "\n\nEach note is an independent hand pass, worked without reference to this "
-        "engine's code. Where a test is named it re-derives the note's own numbers, so a "
-        "change to the calculation that drifts from the note fails the suite.")
+                 rows)
 
 
-def _exclusions(records: Sequence[EngineeringRecord], kind: str) -> str:
-    scopes = {record.scope for record in records}
-    coverage = ("every member of this family is "
-                + SCOPE_LABEL[next(iter(scopes))].split(" — ")[0]
-                if len(scopes) == 1 else
-                "the members of this family do not share one coverage — the schedule's "
-                "*Coverage* column says which is which")
-    return bullets([
-        f"**Coverage: {coverage}.** Only the limit states in §4 are graded. A failure mode "
-        f"this engine does not enumerate for `{kind}` is not evaluated here and is not "
-        f"implied to pass.",
-        "Load cases are those the records' inputs state. No combination beyond them is "
-        "searched.",
-        "This engine computing a PASS is the **draft** gate. It is not a professional "
-        "seal, and it does not become one by being printed.",
-        f"The schedule is the whole family: {len(records)} member(s). A member not in it "
-        f"is a member this engine does not know about, not a member that passed.",
-    ])
+def _coverage(records: Sequence[EngineeringRecord]) -> str:
+    """The family's one coverage word, or ``mixed`` — the header prints it, §9 points on."""
+    scopes = sorted({SCOPE_LABEL[record.scope].split(" — ")[0] for record in records})
+    return scopes[0] if len(scopes) == 1 else "mixed (see the schedule)"
+
+
+def _exclusions(records: Sequence[EngineeringRecord]) -> str:
+    """One line. The standing exclusions are said once, in :data:`CONVENTIONS_FILE`."""
+    return f"**{_coverage(records)}** — §4's states only; see `{CONVENTIONS_FILE}`."
 
 
 def render_family(kind: str, records: Sequence[EngineeringRecord],
@@ -242,23 +244,30 @@ def render_family(kind: str, records: Sequence[EngineeringRecord],
          "; ".join(bases) or "—"),
         ("Basis version", ", ".join(versions)),
         ("Design method", design_method or "not declared"),
+        ("Coverage", _coverage(records)),
         ("Governed by", f"`{worst.item_id}`"),
         ("House", house),
         ("Generated", generated),
     ])
     summaries = _deduped([record.summary for record in records])
     scope = (summaries[0] if len(summaries) == 1
-             else f"{worst.summary}\n\nThe other members of this family are the same "
-                  f"calculation at their own dimensions; each states its own result in "
-                  f"the schedule below and in full in its appendix sheet.")
-    assumptions = _deduped([note for record in records for note in record.notes])
+             else f"{worst.summary}\n\nThe other members' summaries: "
+                  f"`{appendix_filename(kind)}`.")
+    assumptions = collapse((record.item_id, note) for record in records
+                           for note in record.notes)
+    # Said once, on the assumptions page, rather than here AND there: the same rows under
+    # the same heading were 20 pages of a 108-page PDF.
+    assumption_pointer = (
+        f"`{ASSUMPTIONS_FILE}`, under `{kind}` — {len(assumptions)} distinct."
+        if assumptions else "_None beyond the citations above._")
     return document(
         heading(f"{kind} — {len(records)} member(s)"),
         header,
         heading("1. Scope", 2),
         scope or "_The records carry no summary._",
         heading("2. References", 2),
-        bullets(_references(records)) or "_No citation is recorded._",
+        bullets(f"**R{n}** — {text}" for n, text in enumerate(references(records), start=1))
+        or "_No citation is recorded._",
         heading("3. Member schedule", 2),
         _schedule(records, register),
         heading("4. The calculation, worked at the governing member", 2),
@@ -266,14 +275,13 @@ def render_family(kind: str, records: Sequence[EngineeringRecord],
         heading("5. Result", 2),
         _verdict(records),
         heading("6. Assumptions and exclusions", 2),
-        bullets(assumptions) if assumptions else
-        "_The records record no assumption beyond the citations above._",
+        assumption_pointer,
         heading("7. Open inputs", 2),
         _open_inputs(records),
         heading("8. Independent check", 2),
         _oracle(records),
         heading("9. What this calculation does not cover", 2),
-        _exclusions(records, kind),
+        _exclusions(records),
         heading("10. Per-member fingerprints", 2),
         _fingerprints(records),
     )
@@ -291,3 +299,56 @@ def _fingerprints(records: Sequence[EngineeringRecord]) -> str:
                  else "— (no inputs to fingerprint; a seal can be recorded, never pinned)")
         rows.append([f"`{record.item_id}`", record.basis_version, value])
     return table(["Member", "Basis version", "Fingerprint"], rows)
+
+
+def render_conventions(*, house: str) -> str:
+    """How every family calculation reads, and what none of them covers — said once."""
+    return document(
+        heading(f"Reading the calculations — {house}"),
+        "Each calculation that follows is one design family: the family's references "
+        "once, a member schedule, the arithmetic worked at the governing member, and the "
+        "family's assumptions. Everything on this page holds for every one of them and is "
+        "not repeated on each.",
+        heading("Layout", 2),
+        bullets([
+            "**The governing member** is picked by status first and ratio second: an "
+            "INCOMPLETE member has no ratio to lose with and is a bigger fact about the "
+            "family than an OK member at 0.98.",
+            "**Every other member** in a schedule is the same calculation at its own "
+            "dimensions. Its own inputs and limit states are in the family's appendix "
+            "table, `appendix/<kind>.md`, one column per member; each member's full "
+            "nine-section sheet is written beside it as `appendix/<kind>__<tag>.md`, "
+            "machine data that is not printed.",
+            "**A schedule is the whole family.** A member not in it is a member this "
+            "engine does not know about, not a member that passed.",
+            "**Assumptions** that differ only in their numbers are printed once, with the "
+            "numbers that vary as [1], [2] … and a table of what each member put there. "
+            "Nothing is dropped.",
+        ]),
+        heading("Reading a limit-state table", 2),
+        bullets([
+            "The **bold** row governs: the worst ratio among the states that carry load, "
+            "and the one an engineer would name if asked what controls the member.",
+            "A ratio is `demand / capacity`, or `required / achieved` for a factor of "
+            "safety, so that over 1.0 is always bad.",
+            "A _detailing_ row (`required / provided`) reads 1.000 when the design sits on "
+            "the code minimum, which is compliant. It is graded and would fail the member "
+            "over 1.0, but it is never named as governing.",
+        ]),
+        heading("What no calculation here covers", 2),
+        bullets([
+            "**Coverage.** Each calculation's header says SCREENING, COMPLETE or EXTERNAL. "
+            "SCREENING means only the limit states in its §4 are graded: a failure mode "
+            "this engine does not enumerate for that kind is not evaluated and is not "
+            "implied to pass.",
+            "Load cases are those the records' inputs state. No combination beyond them "
+            "is searched.",
+            "This engine computing a PASS is the **draft** gate. It is not a professional "
+            "seal, and it does not become one by being printed.",
+        ]),
+        heading("Independent checks", 2),
+        "Each note a calculation's §8 names is an independent hand pass, worked without "
+        "reference to this engine's code. Where a test is named it re-derives the note's "
+        "own numbers, so a change to the calculation that drifts from the note fails the "
+        "suite.",
+    )

@@ -21,17 +21,24 @@ out/calcs/
   01-design-criteria.md   wind / snow / ground / materials / bases
   02-item-register.md     every item, its governing limit state, its seal, its oracle note
   03-open-items.md        the gap register — what is not finished, and who owns each one
-  04-assumptions.md       every distinct record note, deduped, grouped by kind
+  04-assumptions.md       every distinct record note, grouped by kind and COLLAPSED:
+                          rows that differ only in their numbers print once, with the
+                          numbers as [1], [2] … and a table of what each member put there
   05-scope-of-review.md   what a stamp on this package would and would not cover —
                           the computed items by id, the deferred ones somebody else
                           seals, and what is answered prescriptively and is not here
+  06-conventions.md       how every calculation reads and what none of them covers,
+                          said ONCE — the boilerplate that used to repeat 52-55 times
   calcs/
     retaining_wall.md       THE CALCULATIONS — one per design family, with a member
     deck_post.md            schedule. This is what a reviewer reads.
     ...
   appendix/
-    retaining_wall__W-SG-E2.md      the per-member data behind the schedules, one
-    ...                             sheet per item
+    retaining_wall.md               the per-member data behind one family's schedule:
+    deck_post.md                    one column per member. THIS is what the PDF prints
+    ...                             when asked for the appendix
+    retaining_wall__W-SG-E2.md      one nine-section sheet per item — diffable machine
+    ...                             data, on disk, never printed
 ```
 
 A family calculation is named for its `kind`. An appendix sheet's filename is the item id
@@ -48,18 +55,24 @@ once, and a **schedule** saying which member is which and which one governs.
 So `calcs/<kind>.md` carries:
 
 1. **Scope** — what this family is
-2. **References** — every citation the whole family rests on, deduped, printed once
+2. **References** — every citation the whole family rests on, deduped, printed once and
+   numbered `R1`, `R2` …, which is how the appendix's limit-state tables cite one without
+   reprinting 400 characters of it per member
 3. **Member schedule** — one row per member: elements, governing limit state, demand,
-   capacity, d/c, status, coverage, seal, and a pointer to its appendix sheet
+   capacity, d/c, status, coverage, seal — and under it, the pointer to
+   `appendix/<kind>.md`
 4. **The calculation, worked at the governing member** — the inputs as
    `symbol = value unit`, then each limit state as its own substitution beside its ratio
    and citation. Substitutions with units, because a row reading `9,461 / 7,150 = 1.32` is
    checkable only by somebody who already knows what went into the 9,461
 5. **Result** — the family's counts, and the member the verdict comes from
-6. **Assumptions and exclusions** — every distinct record note across the family
+6. **Assumptions and exclusions** — a pointer to `04-assumptions.md` under this kind,
+   where the family's notes are printed collapsed with the items each reaches. Printed
+   there and here was 20 pages of one 108-page PDF
 7. **Open inputs** — per member, only the members that have any
 8. **Independent check** — the family's oracle notes and the tests that reproduce them
-9. **What this calculation does not cover** — said once, not once per member
+9. **What this calculation does not cover** — this family's coverage word, over the
+   standing exclusions on `06-conventions.md`
 10. **Per-member fingerprints** — what a seal on any one member would be pinned against
 
 The governing member is picked by status first and ratio second: an INCOMPLETE member has
@@ -67,6 +80,30 @@ no ratio to lose with and is a bigger fact about the family than an OK member at
 
 `appendix/` keeps every field the per-item sheet ever carried, in the nine-section order
 below. Nothing was dropped in the restructure; the machine data stopped being the document.
+
+## The appendix is a table per family, not a sheet per member (2026-09-22)
+
+The per-item sheets were **192 of a 307-page PDF** — 63% of the package — and each repeated
+its family's references, its exclusions and its table keys. So the PDF stopped printing
+them, and `appendix/<kind>.md` prints the numbers instead: the members' summaries, then the
+inputs as rows and the members as columns, then every limit state as
+`demand / capacity = d/c` with the citation's number (`R4`) in the family calculation's §2.
+The per-member sheets are still written, still hold every field, and are still what a diff
+between two runs is taken over — they are machine data rather than the document.
+
+`haus calcs --pdf` leaves the appendix out and says so on its divider page, which names the
+folder the data is in: **a silent omission is exactly the defect `sheet_order`'s docstring
+exists to prevent.** `haus calcs --pdf --appendix` and `haus handoff --full` print the
+per-family tables (X-33 on catlin against the old X-192).
+
+**The boilerplate is said once.** Five strings — the draft-gate sentence, the load-case
+sentence, the "bold row governs" key, the limit-state table key and the coverage
+statement — appeared on 52 to 73 sheets. They are on `06-conventions.md` now, the S-1 page
+in front of the calculations, and a family sheet points at it.
+`tests/test_calc_pdf.py::test_no_boilerplate_line_is_printed_twice` masks the kind name and
+the numbers out of every long line the emitter writes and fails if one reaches two printed
+files; record-derived text is exempt, because two kinds may legitimately state the same
+assumption and that is the register's word, not the emitter's.
 
 ## The nine sections (the appendix sheets)
 
@@ -159,9 +196,12 @@ check that the member's own supplier has not already answered the question.
 
 ## The PDF
 
-`haus calcs --pdf` flattens the same sheets through `takeoff/calc_pdf.py` and writes
-`out/calcs.pdf`: a cover, then the markdown paginated at a fixed measure, page-anchored so
-a reviewer's note on page 14 stays on page 14. It exists because no jurisdiction accepts
+`haus calcs --pdf` flattens the same sheets through `takeoff/calc_pdf.py` (page furniture in
+`calc_pdf_layout.py`) and writes `out/calcs.pdf`: a cover, then the markdown paginated at a
+fixed measure, page-anchored so a reviewer's note on page 14 stays on page 14. The cover's
+index and every item tag in the register are **internal links**, and a file named in a code
+span links to its first page and prints its label (`X-3`) beside it — which is why the
+renderer iterates to a fixed point over both the index and those labels. It exists because no jurisdiction accepts
 Markdown and a seal has to bind to a flattened file.
 
 Markdown stays the source of truth. The PDF is derived on every run and never edited

@@ -226,6 +226,39 @@ Keep the comprehensive machine data and historical notes as appendices.
 Evidence: [rendered S-22](../out/engineering-review-2026-09-18/catlin-pe-review-page34.png)
 and [calc_pdf.py](../../../packages/engine/src/typehaus/takeoff/calc_pdf.py).
 
+### 8a. Measured again on 2026-09-22, and closed
+
+Hand measurement of `houses/catlin/out/calcs.pdf` as generated at commit `34d3273e`
+(`pdfinfo`, and the per-page title-block labels read out of `pdftotext -layout`):
+
+| | |
+|---|---|
+| Files in `out/calcs/` | 80 |
+| Pages | **307** |
+| Per section | C-4 D-4 R-4 O-2 A-22 SR-1 S-79 **X-192** |
+
+The 55 per-member appendix sheets were **X-192, 63% of the package**, and `04-assumptions.md`
+alone was 22 pages. Five strings, counted with `grep -rF` over the generated markdown
+(73 files fed the PDF: 55 appendix sheets + 18 family calculations):
+
+| String | Files it appeared in |
+|---|---|
+| "This engine computing a PASS is the **draft** gate. It is not a professional seal…" | 73 |
+| "Load cases are those the record's inputs state. No combination beyond them is searched." | 73 |
+| "The **bold** row governs — it is the worst ratio among the states that carry load…" | 68 |
+| The limit-state table header (`\| Limit state \| … \|`) | 68 |
+| "**This sheet is SCREENING.** Only the limit states listed in §4 are graded…" | 52 |
+
+**Closed the same day.** The appendix is now one data table per design family
+(`appendix/<kind>.md`, one column per member) and the per-member sheets stay on disk as
+machine data without feeding the PDF; the five strings are hoisted to one front-matter page
+(`06-conventions.md`); assumptions that differ only in their numbers collapse to one row
+plus a values table (nothing is dropped — `test_collapsing_an_assumption_drops_nothing`
+reconstructs every original); the index and every item tag are internal links. Measured
+after, on the same house: **89 pages** (C-3 D-4 R-4 O-2 A-20 SR-1 S-54 **X-1**, the divider
+page that says where the data is), and **121** with `haus calcs --pdf --appendix`
+(**X-33**, one table per family). `docs/calc-package-format.md` carries the format.
+
 ### 9. “Computed” and “ready for review” are conflated
 
 **Confirmed reporting defect.** The handoff README calls the 18 computed items checked

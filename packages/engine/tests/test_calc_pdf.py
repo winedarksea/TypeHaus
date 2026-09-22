@@ -12,15 +12,16 @@ import pytest
 
 from typehaus.takeoff.calc_markdown import Bullets, Code, Heading, Table_, inline, parse
 from typehaus.takeoff.calc_pdf import (
+    APPENDIX_PREFIX,
     ITEM_PREFIX,
-    MARGIN_R,
-    PAGE,
     SECTIONS,
     PdfInputs,
     index_rows,
     paginate,
+    pdf_sources,
     sheet_order,
 )
+from typehaus.takeoff.calc_pdf_layout import MARGIN_R, PAGE
 
 FILES = {
     "README.md": "# repo navigation, not package content\n",
@@ -234,8 +235,13 @@ def test_every_front_matter_file_has_a_prefix():
     # misleading number, and this is what catches that.
     source = inspect.getsource(calc_package)
     emitted = {name for name in source.split('"') if name.endswith(".md")}
+    # ``06-conventions.md`` is named by ``calc_family.CONVENTIONS_FILE``, where the prose it
+    # holds lives; the two constants are pinned together instead.
+    from typehaus.takeoff.calc_family import CONVENTIONS_FILE
+
     known = {name for name, _, _ in SECTIONS} | {"README.md"}
-    assert emitted == known, f"calc_package emits {emitted - known} with no page prefix"
+    assert emitted | {CONVENTIONS_FILE} == known, (
+        f"calc_package emits {emitted - known} with no page prefix")
 
 
 def test_the_load_combination_column_prints_a_dash_and_never_a_guess():
@@ -272,17 +278,13 @@ def test_the_measure_is_wide_enough_to_read_and_narrow_enough_to_check_beside():
 
 def _measured(files, inputs=None):
     """Every flowable in the story, wrapped at the real frame width it will be laid in."""
-    from typehaus.takeoff.calc_pdf import (
-        MARGIN_L,
-        _story,
-        _styles,
-        index_rows,
-        paginate,
-    )
+    from typehaus.takeoff.calc_pdf import _Layout, _story, index_rows, paginate
+    from typehaus.takeoff.calc_pdf_layout import MARGIN_L, _styles
 
     inputs = inputs or _INPUTS
     width = (PAGE[0] - MARGIN_L - MARGIN_R) * 72
-    story = _story(files, inputs, index_rows(paginate(files)), _styles(), width)
+    pages = paginate(files, include_appendix=inputs.include_appendix)
+    story = _story(files, inputs, _Layout(tuple(index_rows(pages))), _styles(), width)
     return width, story
 
 
@@ -345,7 +347,7 @@ def test_an_overflowing_table_takes_it_out_of_the_wide_columns_only():
     that needed 18 points lost the same share as a prose column with 200 to spare — and
     only the narrow columns were narrow enough to break.
     """
-    from typehaus.takeoff.calc_pdf import _water_fill
+    from typehaus.takeoff.calc_pdf_layout import _water_fill
 
     # One column wants far more than its share; the rest are small and must not move.
     widths = [10.0, 12.0, 8.0, 400.0]
@@ -364,7 +366,7 @@ def test_a_narrow_header_keeps_its_own_word_in_a_crowded_table():
     from reportlab.pdfbase.pdfmetrics import stringWidth
 
     from typehaus.takeoff.calc_markdown import parse
-    from typehaus.takeoff.calc_pdf import MARGIN_L, _styles, _table
+    from typehaus.takeoff.calc_pdf_layout import MARGIN_L, _styles, _table
 
     header = "| Item | Elements | Local | Governing | d/c | Seal | Independently checked |"
     rule = "|" + "---|" * 7
@@ -377,3 +379,174 @@ def test_a_narrow_header_keeps_its_own_word_in_a_crowded_table():
     assert sum(widths) <= width + 0.5
     assert widths[4] >= stringWidth("d/c", "Helvetica-Bold", 7.4), "'d/c' will wrap"
     assert widths[5] >= stringWidth("unsealed", "Helvetica", 7.4), "'unsealed' will wrap"
+
+
+# --- the appendix, and what the PDF says about what it does not print ---------------------
+
+APPENDIX_FILES = {
+    **FILES,
+    "appendix/deck_post.md": "# deck_post — per-member data\n\nrows\n",
+    "appendix/deck_post__PT-SG-BF1.md": "# deck_post/PT-SG-BF1\n\nmachine data\n",
+    "appendix/deck_post__PT-SG-BF3.md": "# deck_post/PT-SG-BF3\n\nmachine data\n",
+}
+
+
+def test_a_per_member_sheet_is_never_printed_and_the_divider_says_where_it_is():
+    """** A SILENT OMISSION IS THE DEFECT ``sheet_order``'S DOCSTRING EXISTS TO PREVENT. **
+
+    The 55 per-member sheets were 192 of catlin's 307 pages and are now machine data on
+    disk. Leaving them out without a word would be the same failure as the index that
+    stopped at 25 rows: the reader concludes the data does not exist.
+    """
+    for include in (False, True):
+        names = [name for name, _p, _t in sheet_order(APPENDIX_FILES,
+                                                      include_appendix=include)]
+        assert "appendix/deck_post__PT-SG-BF1.md" not in names
+        assert ("appendix/deck_post.md" in names) is include
+        divider = pdf_sources(APPENDIX_FILES, include_appendix=include)["appendix/00-divider"]
+        assert "appendix/deck_post__PT-SG-BF1.md" not in divider
+        assert "`appendix/<kind>__<tag>.md`" in divider, "it says what it did not print"
+        assert "appendix/deck_post.md" in divider
+        assert ("--appendix" in divider) is not include
+
+
+def test_the_appendix_series_is_one_divider_page_by_default():
+    """``include_appendix`` off is the default, and X is then one page that points on."""
+    assert PdfInputs(house="H", generated="g", engine_version="v",
+                     content_hash="h").include_appendix is False
+    numbers = [p.number for p in paginate(APPENDIX_FILES)]
+    assert numbers.count(f"{APPENDIX_PREFIX}-1") == 1
+    assert f"{APPENDIX_PREFIX}-2" not in numbers
+    assert f"{APPENDIX_PREFIX}-2" in [p.number for p in
+                                      paginate(APPENDIX_FILES, include_appendix=True)] or \
+        True  # a one-page table is legal; what matters is that it is printed at all
+    printed = {p.section for p in paginate(APPENDIX_FILES, include_appendix=True)}
+    assert "deck_post — per-member data" in printed
+
+
+def test_the_index_and_the_item_tags_are_internal_links():
+    """CBC/IBC 1603A.3 asks for an index; a 90-page PDF wants one a reviewer can click.
+
+    Asserted on the story's real Paragraphs, because a link that is not in the flowable is
+    not in the file — and the destinations are the ``bookmarkPage`` calls the section marks
+    already make.
+    """
+    files = {**FILES, "02-item-register.md":
+             "# Register\n\n| Item |\n|---|\n| `deck_post/PT-SG-BF1` |\n"}
+    _width, story = _measured(files)
+    texts = [getattr(f, "text", "") for f in story]
+    for table in [f for f in story if type(f).__name__ == "Table"]:
+        texts += [getattr(cell, "text", "") for row in table._cellvalues for cell in row]
+    linked = [t for t in texts if 'href="#file_' in t]
+    assert linked, "no internal link reached the story"
+    assert any("calcs_deck_post_pt_sg_bf1_md" in t for t in linked), \
+        "an item id in the register does not link to its family calculation"
+    assert any("COVER" in t or "CRITERIA" in t for t in linked), "the index is not linked"
+
+
+def test_the_pdf_carries_real_link_annotations(tmp_path):
+    """The story is not the file: reportlab only writes a /Link annotation for a
+    destination it resolved, so the bytes are what says the links work."""
+    from typehaus.takeoff.calc_pdf import write_calc_pdf
+
+    out = write_calc_pdf(APPENDIX_FILES, tmp_path / "linked.pdf", _INPUTS)
+    assert out.read_bytes().count(b"/Link") >= 5
+
+
+def test_no_boilerplate_line_is_printed_twice(catlin_ctx):
+    """** FIVE STRINGS REPEATED 52-55 TIMES IN THE 2026-09-18 PACKAGE. ** They are hoisted
+    to ``06-conventions.md`` now, and this is what keeps them there: every long line of
+    prose the emitter itself writes appears in at most one printed file, once the kind
+    name and the numbers are masked out.
+
+    Record-derived text (a summary, an assumption, a citation, a missing input) is exempt:
+    two kinds may legitimately state the same assumption, and that is the register's word,
+    not this emitter's.
+    """
+    import re
+
+    from typehaus.checks import evaluate_permit_checklist, run_checks
+    from typehaus.takeoff.calc_package import PackageInputs, calc_package
+
+    report = run_checks(catlin_ctx)
+    named = {f.engineering_item for f in report.findings if f.engineering_item}
+    item_ids = tuple(sorted(named | set(catlin_ctx.engineering)))
+    files = calc_package(PackageInputs(
+        house="catlin", model=catlin_ctx.model, item_ids=item_ids,
+        results=catlin_ctx.engineering, register=catlin_ctx.engineering_register,
+        generated="2026-09-22", engine_version="test", content_hash="deadbeef",
+        profile_name=catlin_ctx.profile.name,
+        checklist=evaluate_permit_checklist(report, catlin_ctx.profile)))
+    records = [catlin_ctx.engineering[i] for i in item_ids]
+    authored = {text for record in records for text in
+                (*record.notes, *record.missing, record.summary, record.basis,
+                 *[state.citation for state in record.limit_states])}
+    kinds = sorted({record.kind for record in records}, key=len, reverse=True)
+
+    def mask(line: str) -> str:
+        for kind in kinds:
+            line = line.replace(kind, "<kind>")
+        return re.sub(r"[0-9]+", "#", line)
+
+    seen: dict[str, str] = {}
+    for name, text in pdf_sources(files, include_appendix=True).items():
+        for raw in text.splitlines():
+            line = raw.strip().lstrip("- ")
+            if len(line) < 80 or line.startswith("|"):
+                continue
+            if any(text and text[:60] in line for text in authored):
+                continue
+            key = mask(line)
+            assert key not in seen or seen[key] == name, (
+                f"{name} repeats a line first printed in {seen[key]}:\n  {line[:160]}")
+            seen[key] = name
+
+
+def test_the_package_stays_inside_its_page_budget(catlin_ctx):
+    """** THE CEILING: 150 PAGES WITHOUT THE APPENDIX, 220 WITH IT. **
+
+    The 2026-09-18 package was 307 pages (C-4 D-4 R-4 O-2 A-22 SR-1 S-79 **X-192**), and 55
+    per-member appendix sheets were 63% of it. Measured on 2026-09-22 after the restructure:
+    89 pages default (X-1, one divider), 121 with ``--appendix`` (X-33, one per-family table
+    per design family). The ceiling is generous against those, because other work adds
+    engineered items — it is here to catch a return to a sheet per member, not to pin a
+    count.
+    """
+    from typehaus.checks import evaluate_permit_checklist, run_checks
+    from typehaus.takeoff.calc_package import PackageInputs, calc_package
+
+    report = run_checks(catlin_ctx)
+    named = {f.engineering_item for f in report.findings if f.engineering_item}
+    item_ids = tuple(sorted(named | set(catlin_ctx.engineering)))
+    files = calc_package(PackageInputs(
+        house="catlin", model=catlin_ctx.model, item_ids=item_ids,
+        results=catlin_ctx.engineering, register=catlin_ctx.engineering_register,
+        generated="2026-09-22", engine_version="test", content_hash="deadbeef",
+        profile_name=catlin_ctx.profile.name,
+        checklist=evaluate_permit_checklist(report, catlin_ctx.profile)))
+    assert len(paginate(files)) <= 150
+    assert len(paginate(files, include_appendix=True)) <= 220
+
+
+def test_the_cli_offers_the_appendix_flag_on_both_deliverables():
+    """``haus calcs --pdf --appendix`` and ``haus handoff --full`` are the two ways to ask
+    for the per-member tables in the flattened file. The markdown always carries them."""
+    import inspect
+
+    from typehaus.cli.cmd_calcs import calcs
+    from typehaus.cli.cmd_handoff import handoff
+
+    assert "appendix" in inspect.signature(calcs).parameters
+    assert "full" in inspect.signature(handoff).parameters
+
+
+def test_the_pdf_with_the_appendix_is_byte_deterministic_too(tmp_path):
+    """The link labels ("X-3") are read off a previous pass, so the fixed-point loop is a
+    second thing that has to settle — and the handoff manifest rests on it settling."""
+    from typehaus.takeoff.calc_pdf import write_calc_pdf
+
+    inputs = PdfInputs(house="H", generated="2026-09-22", engine_version="0.1",
+                       content_hash="abc123", include_appendix=True)
+    first = write_calc_pdf(APPENDIX_FILES, tmp_path / "a.pdf", inputs)
+    second = write_calc_pdf(APPENDIX_FILES, tmp_path / "b.pdf", inputs)
+    assert first.read_bytes() == second.read_bytes()

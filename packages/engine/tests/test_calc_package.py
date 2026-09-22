@@ -30,9 +30,9 @@ from typehaus.engineering.fingerprint import fingerprint
 from typehaus.engineering.item import Status
 from typehaus.engineering.registry import oracles_for
 from typehaus.findings import Result
-from typehaus.takeoff.calc_family import family_filename
+from typehaus.takeoff.calc_family import CONVENTIONS_FILE, appendix_filename, family_filename
 from typehaus.takeoff.calc_package import PackageInputs, calc_package
-from typehaus.takeoff.calc_sheet import sheet_filename
+from typehaus.takeoff.calc_sheet import is_member_sheet, sheet_filename
 
 #: Every section a finished sheet carries, in order. A sheet missing one of these is not a
 #: calculation sheet — it is a table with a title.
@@ -246,13 +246,18 @@ def test_every_item_gets_exactly_one_sheet_and_the_index_lists_it(package, catli
     indexes.
     """
     ctx, item_ids, _ = catlin_engineering
-    sheets = {name for name in package if name.startswith("appendix/")}
+    sheets = {name for name in package if is_member_sheet(name)}
     assert sheets == {f"appendix/{sheet_filename(i)}" for i in item_ids}
     assert len(sheets) == len(item_ids)
 
     kinds = {ctx.engineering[i].kind for i in item_ids}
     calculations = {name for name in package if name.startswith("calcs/")}
     assert calculations == {f"calcs/{family_filename(kind)}" for kind in kinds}
+    # And one per-member DATA TABLE per family beside them — what the PDF prints instead
+    # of 55 sheets (2026-09-22).
+    tables = {name for name in package
+              if name.startswith("appendix/") and not is_member_sheet(name)}
+    assert tables == {appendix_filename(kind) for kind in kinds}
     readme = package["README.md"]
     for name in sorted(calculations):
         assert f"`{name}`" in readme, f"{name} is not listed in the index"
@@ -269,7 +274,7 @@ def test_the_front_matter_is_complete(package):
 
 def test_every_sheet_carries_all_nine_sections(package):
     for name, text in package.items():
-        if not name.startswith("appendix/"):
+        if not is_member_sheet(name):
             continue
         for section in SECTIONS:
             assert section in text, f"{name} is missing {section}"
@@ -372,8 +377,10 @@ def test_one_item_still_gets_the_front_matter(catlin_engineering):
         house="catlin", model=ctx.model, item_ids=item_ids, results=ctx.engineering,
         register=ctx.engineering_register, generated="2026-01-01",
         profile_name=ctx.profile.name, checklist=checklist), only=only)
-    assert ([n for n in files if n.startswith("appendix/")]
+    assert ([n for n in files if is_member_sheet(n)]
             == [f"appendix/{sheet_filename(only)}"])
+    assert ([n for n in files if n.startswith("appendix/") and not is_member_sheet(n)]
+            == [appendix_filename("retaining_wall")])
     assert ([n for n in files if n.startswith("calcs/")]
             == [f"calcs/{family_filename('retaining_wall')}"]), \
         "narrowing to one item narrows its family calculation to that one member too"
@@ -459,3 +466,55 @@ def test_the_two_gates_are_separate_and_catlin_reaches_neither(catlin_engineerin
     # Shut for its own reason: every engineered item is unsealed because the house carries
     # no register at all, which is true of every passing item.
     assert len(checklist.unsealed) > 1
+
+
+# --- collapsing near-identical record text (2026-09-22) -----------------------------------
+
+def test_collapsing_an_assumption_drops_nothing(package, catlin_engineering):
+    """** THE ONE PROPERTY THE COLLAPSE MUST HAVE. ** ``04-assumptions.md`` prints one row
+    for every sentence a family states with its own numbers, and the numbers become [1],
+    [2] … with a table of what each member put there. If a single original note cannot be
+    reconstructed from its template and its values, the page is a summary rather than the
+    record, and no reviewer could disagree with it usefully.
+    """
+    from typehaus.takeoff.calc_collapse import collapse, expand
+
+    ctx, item_ids, _ = catlin_engineering
+    by_kind: dict[str, list[tuple[str, str]]] = {}
+    for item in item_ids:
+        record = ctx.engineering[item]
+        for note in record.notes:
+            by_kind.setdefault(record.kind, []).append((item, note))
+    assert by_kind, "no record carries an assumption"
+    for kind, entries in sorted(by_kind.items()):
+        rows = collapse(entries)
+        assert {text for row in rows for text in expand(row)} == {t for _i, t in entries}, kind
+        # And every member a row claims to reach really said it.
+        for row in rows:
+            assert set(row.members) <= {item for item, _ in entries}
+
+
+def test_the_assumptions_page_names_every_item_a_row_reaches(package, catlin_engineering):
+    """A collapsed row is only usable if the reader can get back to the members. Every
+    item with an assumption appears on the page, and every varying number is printed
+    against the member that produced it."""
+    ctx, item_ids, _ = catlin_engineering
+    page = package["04-assumptions.md"]
+    for item in item_ids:
+        if ctx.engineering[item].notes:
+            assert f"`{item}`" in page, item
+
+
+def test_a_family_calculation_points_at_the_pages_that_carry_the_rest(package):
+    """The restructure's one risk is a pointer that goes nowhere: §6 sends the reader to
+    the assumptions page and §9 to the conventions page, and both must be in the package
+    under exactly those names."""
+    for name, text in package.items():
+        if not name.startswith("calcs/"):
+            continue
+        assumptions = text.split("## 6.")[1].split("## 7.")[0]
+        assert ("04-assumptions.md" in assumptions
+                or "None beyond the citations" in assumptions), name
+        assert CONVENTIONS_FILE in text.split("## 9.")[1], name
+    assert CONVENTIONS_FILE in package
+    assert "draft" in package[CONVENTIONS_FILE]

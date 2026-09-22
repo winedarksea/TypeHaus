@@ -26,8 +26,17 @@ from typehaus.emit.md_writer import bullets, callout, document, heading, kv_bloc
 from typehaus.engineering.deferred import DEFERRALS
 from typehaus.engineering.item import EngineeringRecord, Status
 from typehaus.engineering.register import EngineeringRegister
+from typehaus.takeoff.calc_appendix import render_appendix
+from typehaus.takeoff.calc_collapse import collapse, collapsed_tables
 from typehaus.takeoff.calc_criteria import DESIGN_METHOD, _criteria
-from typehaus.takeoff.calc_family import families, family_filename, render_family
+from typehaus.takeoff.calc_family import (
+    CONVENTIONS_FILE,
+    appendix_filename,
+    families,
+    family_filename,
+    render_conventions,
+    render_family,
+)
 from typehaus.takeoff.calc_sheet import STATUS_LABEL, render_sheet, sheet_filename
 
 #: Printed on the cover, and meant to be read. A draft package is a working document; a set
@@ -87,6 +96,7 @@ def calc_package(inputs: PackageInputs, *, only: str | None = None) -> dict[str,
         "03-open-items.md": _open_items(inputs),
         "04-assumptions.md": _assumptions(inputs),
         "05-scope-of-review.md": _scope_of_review(inputs),
+        CONVENTIONS_FILE: render_conventions(house=inputs.house),
     }
     kept = [record for record in inputs.records
             if only is None or record.item_id == only]
@@ -95,11 +105,14 @@ def calc_package(inputs: PackageInputs, *, only: str | None = None) -> dict[str,
     # columns, and eleven of them added an element tag and four numbers to the first. A
     # reviewer wants the clause once, the arithmetic once, and a schedule saying which
     # member governs. Nothing is dropped: every field the per-item sheet ever carried is
-    # still on it, in `appendix/`, behind the calculation that reads it.
+    # still on it, in `appendix/`, behind the calculation that reads it. The PDF prints
+    # the per-KIND tables and not the per-member sheets (2026-09-22: those were 192 pages).
     for kind, records in families(kept).items():
         files[f"calcs/{family_filename(kind)}"] = render_family(
             kind, records, inputs.register, generated=inputs.generated,
             house=inputs.house, design_method=DESIGN_METHOD.get(kind, ""))
+        files[appendix_filename(kind)] = render_appendix(
+            kind, records, house=inputs.house)
     for record in kept:
         files[f"appendix/{sheet_filename(record.item_id)}"] = render_sheet(
             record, inputs.register, generated=inputs.generated, house=inputs.house)
@@ -128,9 +141,13 @@ def _readme(inputs: PackageInputs) -> str:
             f"`calcs/` — **the calculations**, one per design family with a member "
             f"schedule: {len(families(list(inputs.records)))} of them, in the standard "
             f"nine-section order.",
-            f"`appendix/` — the per-member data behind those schedules, one sheet per "
-            f"item, {len(inputs.records)} of them. Nothing in it is a second calculation; "
-            f"it is what the schedule rows are read off.",
+            f"`{CONVENTIONS_FILE}` — how every calculation reads, and what none of them "
+            f"covers, said once.",
+            f"`appendix/<kind>.md` — the per-member data behind those schedules, one table "
+            f"per family with a column per member. Beside it, one nine-section sheet per "
+            f"item (`appendix/<kind>__<tag>.md`, {len(inputs.records)} of them) as diffable "
+            f"machine data; the PDF prints neither unless asked (`--appendix`). Nothing in "
+            f"it is a second calculation; it is what the schedule rows are read off.",
         ]),
         heading("Regenerating it", 2),
         "This package is generated, not maintained. Re-run `haus calcs "
@@ -363,28 +380,28 @@ def _presumed_inputs(record) -> list[str]:  # type: ignore[no-untyped-def]
 
 
 def _assumptions(inputs: PackageInputs) -> str:
-    """Every distinct assumption any record made, deduped, grouped by the kind that made it.
+    """Every distinct assumption any record made, grouped by the kind that made it.
 
-    Deduped because twenty wall panels making the same five assumptions is five
-    assumptions; grouped by kind because an assumption is a property of the calculation,
-    and a reviewer disagreeing with one wants to know every item it reaches.
+    Collapsed rather than merely deduped: twelve columns stating one sentence with their
+    own numbers is one assumption and a table of numbers (2026-09-22: this page was 22 of
+    them). :mod:`typehaus.takeoff.calc_collapse` drops nothing — every original expands
+    back out of its template and values.
     """
-    by_kind: dict[str, dict[str, list[str]]] = {}
+    by_kind: dict[str, list[tuple[str, str]]] = {}
     for record in inputs.records:
         for note in record.notes:
-            by_kind.setdefault(record.kind, {}).setdefault(note, []).append(record.item_id)
+            by_kind.setdefault(record.kind, []).append((record.item_id, note))
     blocks = [
         heading(f"Assumptions and exclusions — {inputs.house}"),
-        "Every assumption any calculation in this package made, verbatim, deduped, and "
-        "grouped by the kind of calculation that made it. These are the statements a "
-        "reviewer is entitled to disagree with; each one names the items it reaches.",
+        "Every assumption any calculation in this package made, verbatim, grouped by the "
+        "kind of calculation that made it. These are the statements a reviewer is "
+        "entitled to disagree with; each one names the items it reaches. Where members "
+        "state one sentence with their own numbers, it is printed once with the numbers "
+        "as [1], [2] … and a table of what each member put there.",
     ]
     if not by_kind:
         blocks.append("_No record carries an assumption._")
     for kind in sorted(by_kind):
-        rows = [[note, len(items),
-                 ", ".join(f"`{i}`" for i in sorted(items)[:3])
-                 + (f", … ({len(items)} items)" if len(items) > 3 else "")]
-                for note, items in sorted(by_kind[kind].items())]
-        blocks += [heading(f"`{kind}`", 2), table(["Assumption", "Items", "Reaching"], rows)]
+        blocks += [heading(f"`{kind}`", 2),
+                   collapsed_tables(collapse(by_kind[kind]), label="Assumption")]
     return document(*blocks)

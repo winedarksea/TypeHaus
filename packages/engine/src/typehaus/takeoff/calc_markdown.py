@@ -19,6 +19,7 @@ rather than being guessed at.
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 
 _HEADING = re.compile(r"^(#{1,6})\s+(.*)$")
@@ -163,6 +164,12 @@ def parse(markdown: str, *, source: str = "") -> list[Block]:
         if bullets:
             flush()
         para.append(stripped)
+        # A markdown hard break ends the paragraph here: ``kv_block`` writes one
+        # ``**Key:** value`` per line that way, and joining them made the header of every
+        # sheet one run-on sentence.
+        if raw.endswith("  "):
+            blocks.append(Paragraph_(" ".join(para).strip()))
+            para = []
         i += 1
 
     flush()
@@ -173,15 +180,23 @@ def _cells(row: str) -> tuple[str, ...]:
     return tuple(cell.strip() for cell in row.strip().strip("|").split("|"))
 
 
-def inline(text: str) -> str:
+def inline(text: str, link: Callable[[str], str | None] | None = None) -> str:
     """Markdown inline emphasis to Platypus' mini-HTML, XML-escaped first.
 
     Escaping first and marking up second is the order that matters: a calc sheet is full of
     ``<=`` and ``&`` and a bare ``<`` would otherwise take Platypus' parser down or, worse,
     silently eat the rest of the line.
+
+    ``link`` maps a code span's (escaped) text to a wrapper with ``{}`` where the span
+    goes, or ``None`` — how a file or item named in the text becomes an internal link.
     """
     out = (text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
     out = _BOLD.sub(r"<b>\1</b>", out)
     out = _ITALIC.sub(r"<i>\1</i>", out)
-    out = _CODE.sub(r'<font face="Courier" size="8.2">\1</font>', out)
-    return out
+
+    def code(match: re.Match[str]) -> str:
+        html = f'<font face="Courier" size="8.2">{match.group(1)}</font>'
+        wrapper = link(match.group(1)) if link is not None else None
+        return wrapper.replace("{}", html) if wrapper else html
+
+    return _CODE.sub(code, out)

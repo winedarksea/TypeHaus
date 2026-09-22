@@ -38,6 +38,10 @@ def calcs(
         False, "--pdf",
         help="Also write a flattened, page-anchored PDF beside the markdown. No "
              "jurisdiction accepts Markdown, and a seal has to bind to a flattened file."),
+    appendix: bool = typer.Option(
+        False, "--appendix",
+        help="With --pdf, also print the per-family appendix tables. Off by default: the "
+             "divider page says the data is in out/calcs/appendix/."),
 ) -> None:
     """Emit the engineering calculation package: cover, criteria, register, and one sheet
     per engineered item.
@@ -102,8 +106,12 @@ def calcs(
             code_edition=ctx.profile.edition,
             scope=f"Structural calculations for {len(item_ids)} engineered requirement(s) "
                   f"outside the prescriptive tables.",
+            include_appendix=appendix,
         ))
-        console.print(f"wrote {pages} ({len(paginate(files)) + 1} pages)", soft_wrap=True)
+        count = len(paginate(files, include_appendix=appendix)) + 1
+        console.print(f"wrote {pages} ({count} pages)", soft_wrap=True)
+    elif appendix:
+        console.print("[yellow]--appendix only changes the PDF; add --pdf[/yellow]")
     unresolved = [i for i in item_ids if ctx.engineering[i].status.value != "ok"]
     if unresolved:
         console.print(f"[yellow]{len(unresolved)} item(s) are not finished — see "

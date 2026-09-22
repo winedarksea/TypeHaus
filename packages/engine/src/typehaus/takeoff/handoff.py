@@ -218,9 +218,12 @@ def pe_readme(*, house: str, generated: str, engine_version: str, content_hash: 
         "2. **`calcs/02-item-register.md`** — every item, its governing limit state and its",
         "   demand/capacity ratio, on one page.",
         "3. **`calcs/03-open-items.md`** — what is *not* finished, and who owns each one.",
-        "4. **`calcs/<kind>__<tag>.md`** — one nine-section sheet per item: scope,",
-        "   references, given, analysis, result, assumptions, open inputs, independent",
-        "   check, and what the sheet does not cover.",
+        "4. **`calcs/calcs/<kind>.md`** — the calculations, one per design family: scope,",
+        "   references, a member schedule, the arithmetic worked at the governing member,",
+        "   result, open inputs, independent check, and what it does not cover.",
+        "   `calcs/06-conventions.md` says once what holds for all of them.",
+        "   `calcs/appendix/<kind>.md` is the per-member data behind each schedule, and",
+        "   `calcs/appendix/<kind>__<tag>.md` each member's own nine-section sheet.",
         f"5. **`notes/`** — {len(notes)} hand-worked note(s). Each calculation in this engine",
         "   is checked against an independent hand pass, and section 8 of every sheet names",
         "   the note that checks it. A calculation that only agrees with itself is not",
@@ -229,7 +232,9 @@ def pe_readme(*, house: str, generated: str, engine_version: str, content_hash: 
     ]
     if has_pdf:
         out += ["`calcs.pdf` is the same content flattened and page-anchored — the file to",
-                "mark up and stamp, because no jurisdiction accepts Markdown.", ""]
+                "mark up and stamp, because no jurisdiction accepts Markdown. It carries the",
+                "calculations; the per-member appendix tables are in the markdown above, and",
+                "`haus handoff --full` prints them into the PDF too.", ""]
 
     out += [
         "## Where the permit gate stands",

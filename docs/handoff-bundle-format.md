@@ -10,7 +10,9 @@ out/handoff/
   MANIFEST.json             every file, with its sha256
   engineering.toml.draft    the seal register as a FORM (see docs/engineering-toml-format.md)
   calcs/                    the calculation package, verbatim from `haus calcs`
-  calcs.pdf                 the same, flattened and page-anchored — what a seal binds to
+  calcs.pdf                 the same, flattened and page-anchored — what a seal binds to.
+                            The calculations; the per-member appendix tables are in
+                            calcs/appendix/ and print into the PDF with `--full`
   notes/                    ONLY the hand-worked notes these records are checked against
   model.ifc                 IFC4, framed LOD, with sections, records, a bar schedule AND the
                             structural analysis view (see below)

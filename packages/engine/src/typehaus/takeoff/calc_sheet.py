@@ -69,6 +69,11 @@ def sheet_filename(item_id: str) -> str:
     return item_id.replace("/", "__") + ".md"
 
 
+def is_member_sheet(name: str) -> bool:
+    """``appendix/<kind>__<tag>.md`` — a per-member sheet, never printed in the PDF."""
+    return name.startswith("appendix/") and "__" in name.rsplit("/", 1)[-1]
+
+
 def _seal_line(record: EngineeringRecord,
                register: EngineeringRegister) -> tuple[str, Signoff | None]:
     state, signoff = register.freshness(record)
