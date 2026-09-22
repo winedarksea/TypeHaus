@@ -393,3 +393,56 @@ Four outcomes and no fifth, the `checks/structural/published.py` discipline:
 the pair is what no chart allows. `mep.run_through_header` therefore collects every header
 cut in the house keyed by member before it grades any of them — the R502.8.1 `nearest_cut_in`
 idiom of §4, one member family along.
+
+### 8.5 What moved, what refused, and what the refusals rest on (2026-09-22)
+
+Two of the six left the header. Four did not, and each refusal is a measurement rather than
+a shrug.
+
+| run | outcome |
+|---|---|
+| `DU-B-ERV-R-SAUNA-SUP` | **moved.** x=3'-3" -> **x=1'-0 1/2"**, crossing `W-B-CW` in its west clear bay (x 9 1/2"..15 1/4"). Nothing cut. |
+| `DU-B-ERV-R-GYM` | **moved.** Rises 6 1/8" to -19 5/16" and crosses **over** `D-B-GYM`'s header, in the 5 3/4" of open wall between the header top and the double top plate, 7.8" from the nearest cripple either way. Nothing cut. |
+| `DU-B-ERV-R-SAUNA-EXH` | **refused.** |
+| `PR-M-S-BATH1-DRAIN` | **refused.** |
+| `PR-B-KITCH-DRAIN` | **refused.** |
+| `PR-B-MAIN-DRAIN` | **refused.** |
+
+**`W-B-CW` has exactly two bays a 4" run fits**, x 9 1/2"..15 1/4" (5 3/4") and
+x 16 3/4"..31 1/4" (14 1/2"), and the wide one is already three lanes deep:
+`DU-B-ERV-R-BENCH` at x=2'-0"/-27.94", `PR-B-WC2-DRAIN` at x 28 1/4"..31 3/4", and whatever
+takes the 5 1/4" of free bay at x 16 3/4"..22". Everything below turns on that.
+
+**`DU-B-ERV-R-SAUNA-EXH`** (3 1/4" notch). Its own tier, -23.44", is inside
+`PR-B-SINK2-DRAIN`'s rake: measured clearance 0.43" at x=1'-8", 0.00" at x=1'-9", negative
+east of that, and x=2'-4" lands 1.6"-3.2" inside SINK2, SH2 and WC2 at once. Jogging east at
+**any** station between y=16'-2" and the wall crosses `PR-B-WC2-DRAIN`'s x=2'-6" lane at the
+same elevation. Under the drains is BENCH; over them is the deck. The supply took the west
+bay and only one 4" duct fits it.
+
+**`PR-M-S-BATH1-DRAIN`** (3.50" bore) and **`PR-B-KITCH-DRAIN`** (2.38" bore, 0.77" from it).
+The squared route the reroute pass tried — west at y=26'-6", south down x=1'-7", east to the
+(3'-0", 16'-6") tie — puts the crossing in the free 5 1/4" of the wide bay and **costs no
+developed length at all** (178" either way: an L and its diagonal differ only in the corner).
+It still fails, and the reason is structural rather than incidental: **the bay is west of
+x=2'-0" and the tie is at x=3'-0"**, so any route reaching it crosses `DU-B-ERV-R-BENCH`'s
+x=2'-0" lane and `PR-B-WC2-DRAIN`'s x=2'-6" lane **twice**, in the four feet where every
+basement service converges on one tie point. Measured, it adds four `mep.run_interference`
+FAILs. Clearing them would want the drain above -22" (it is already under the deck) or below
+-31" (it ties in at -28"), and a gravity drain cannot do either. The diagonal is clean
+precisely because it never goes west of x=3'-0".
+
+**`PR-B-MAIN-DRAIN`** (4.50" bore, 3.00" from the east jack face). `haus route --run
+PR-B-MAIN-DRAIN --alternatives 3 --evaluate` returns **no proposal at all**: *"nothing
+downstream of it is derivable, so there is no root to route to"* — it IS the building drain.
+A 4.50" run needs the full 5 1/4" of free bay, which is the same slot the two drains above
+cannot reach either; and §8.3 has already shown no TJ-9000 row covers 4.50" at a depth that
+fits, at 3.00" from a bearing, in the bottom third of the section.
+
+**So the open question is a designed header over `D-B-FURN`, and it is the owner's.** Four
+holes remain in one 2-2x8: a 3 1/4" notch off the top face, two bores 0.77" apart near
+midspan, and a 4.50" bore three inches from a jack. No published chart reaches any of them
+and the engine says so in four UNKNOWNs rather than inventing a fraction. What closes it is a
+header designed for the holes that are actually in it — an `engineered()` item with its own
+oracle note — or a re-plumbing of the basement's tie-in corner, which is a design pass and
+not a routing one. §8.2's 13.82" of available depth is the number either starts from.

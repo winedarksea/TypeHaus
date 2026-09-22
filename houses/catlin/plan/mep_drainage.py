@@ -38,6 +38,18 @@ DRAINS = [
     # The collector STARTS at the tie (6'-0", 22'-7"); nothing drops through the deck here.
     # Both BATH1 branches (PR-B-WC1-DRAIN 3", PR-B-LAV1-DRAIN 1 1/2") come into it there: one
     # combination wye at the head of the 4" line.
+    # ** IT BORES `W-B-CW`'s HEADER 4.50", 3.00" FROM THE EAST JACK FACE, AND NOTHING IN
+    # THIS ENGINE OR IN ANY CHART CLOSES THAT (2026-09-22). ** `haus route --run
+    # PR-B-MAIN-DRAIN --alternatives 3 --evaluate` returns no proposal at all — "nothing
+    # downstream of it is derivable, so there is no root to route to", because this IS the
+    # building drain — and TJ-9000's ALLOWABLE HOLES page publishes 3 5/8" at the deepest
+    # member that fits over `D-B-FURN` (11 7/8" in the 13.82" available), allows no hole
+    # within 8" of a bearing, and wants the middle third of the depth where this pipe runs
+    # 0.60" off the bottom face. Three misses, any one of them fatal
+    # (notes/framing_bore_limits.md §8.3). The 5 1/4" of free clear bay at x 16 3/4"..22"
+    # is the only slot a 4.50" run fits, and it is west of the tie-in corner every basement
+    # drain converges on. **This one wants a designed header over D-B-FURN, and that is an
+    # owner's decision and an engineer's item, not a route.**
     PipeRun(uid="CMP905AAAA", tag="PR-B-MAIN-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(6), ft(22, 7)), pt(ft(6), ft(16, 6)),
                   pt(ft(3), ft(16, 6)), pt(ft(3), ft(15, 6)), pt(ft(3), ft(15, 6)),
@@ -103,6 +115,16 @@ DRAINS = [
     # editable-dialect and cannot import the constant, but nothing here can drift quietly:
     # `mep.sleeve_coverage` fails the build the moment this run stops passing through its
     # sleeve.
+    # ** ITS 2.38" BORE OF `W-B-CW`'s HEADER IS ALSO A RECORDED REFUSAL (2026-09-22). **
+    # 2.38" is inside a joist's D/3 and a joist rule decides nothing about a header; against
+    # TJ-9000 the hole is 15" from the bearing (fine) and 1.04" off the header's bottom face
+    # against a middle-third zone wanting 3.96", and it stands 0.77" from
+    # `PR-M-S-BATH1-DRAIN`'s 3.50" hole against a 7.00" minimum spacing — a rule about the
+    # PAIR that neither run can satisfy alone (notes/framing_bore_limits.md §8.3). This is
+    # the tail of a 43'-4" run landing 1/16" over PR-B-MAIN-DRAIN inside `drain_tie_ins`'
+    # 1" window, so it is the least movable of the three and every router proposal for it
+    # trades the header for a slope, burial or footing-clearance FAIL. It travels with the
+    # designed header, not away from it.
     PipeRun(uid="S0Y00EZNNG", tag="PR-B-KITCH-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(29, 4), ft(35)), pt(ft(29, 4), ft(35)),
                   pt(ft(18), ft(35)), pt(ft(10), ft(35)),
@@ -292,6 +314,21 @@ DRAINS = [
 # so the elevations read as heights on the storey the pipe is actually visible from:
 # +9'-9" is the second floor's underside, the negative inverts are the basement ceiling.
 SECOND_DRAINS = [
+    # ** THE DIAGONAL CROSSES `W-B-CW`'s HEADER, AND THAT IS A RECORDED REFUSAL (2026-09-22).
+    # ** This leg bores `D-B-FURN`'s 2-2x8 header 3.50" at x=4'-6 3/4", 0.77" from
+    # `PR-B-KITCH-DRAIN`'s own 2.38" hole. No published chart reaches either — TJ-9000 wants
+    # 2 x the larger diameter between two holes (7.00") and the middle third of the depth,
+    # and both sit within 1 1/4" of the header's bottom face (notes/framing_bore_limits.md
+    # §8). The squared alternative — west at y=26'-6", south down x=1'-7", east to the tie —
+    # reaches the wall's one free 5 1/4" of clear bay and **costs no developed length at all**
+    # (178" either way; an L and its diagonal differ only in the corner). It was tried and it
+    # fails, structurally rather than incidentally: **the bay is west of x=2'-0" and this tie
+    # is at x=3'-0"**, so any route reaching it crosses `DU-B-ERV-R-BENCH`'s x=2'-0" lane and
+    # `PR-B-WC2-DRAIN`'s x=2'-6" lane TWICE, in the four feet where every basement service
+    # converges — four new `mep.run_interference` FAILs, measured. Clearing them wants the
+    # drain above -22" (it is already under the deck) or below -31" (it ties in at -28"), and
+    # a gravity drain does neither. **The diagonal is clean exactly because it never goes
+    # west of x=3'-0".** What closes the header is a designed header, not a lane.
     PipeRun(uid="CMPD07AAAA", tag="PR-M-S-BATH1-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(5), ft(26, 6)), pt(ft(5), ft(26, 6)),
                   pt(ft(4, 6.4), ft(17, 4.8)), pt(ft(3), ft(16, 6))),
