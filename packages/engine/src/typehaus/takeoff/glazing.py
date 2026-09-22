@@ -85,7 +85,8 @@ def glazing_panel_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
             "assembly": row["assembly"],
             "panels": int(row["panels"]),
             "net_area_sqft": round(area_ft2, 1),
-            "sheets_4x8": math.ceil(area_ft2 / _SHEET_AREA_FT2 - 1e-9),
+            "sheet": "4x8",
+            "sheets": math.ceil(area_ft2 / _SHEET_AREA_FT2 - 1e-9),
             "tags": sorted(row["tags"]),
         })
     return rows

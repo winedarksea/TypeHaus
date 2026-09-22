@@ -83,7 +83,7 @@ def test_estimate_costs_prices_what_it_can_and_confesses_the_rest(tmp_path: Path
             {"profile": "2x6", "order_length_ft": 10},
             {"profile": "11.875 I-joist", "order_length_ft": 50},  # unpriced
         ],
-        "sheet_goods": [{"material": "osb", "sheets_4x8": 4}],
+        "sheet_goods": [{"material": "osb", "sheets": 4}],
         "hardware": [{"part_number": "LUS210", "count": 10}],
         "structural_solids": [{"category": "slab", "volume_cubic_yards": 2.0}],
         "floor_heat": [{"system": "electric", "wire_length_ft": 10.0}],

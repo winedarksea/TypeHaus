@@ -296,7 +296,8 @@ EXT_2X6 = Assembly(
               # is the correct 2x6 SKU and not a downgrade to a lofted R-19.
               cavity=CavityFill(material_ref="fiberglass")),
         Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
-              function=LayerFunction.SHEATHING),
+              function=LayerFunction.SHEATHING,
+              sheet_length=inch(120.0)),  # 4x10: wall + rim above, one sheet
         # BAND A, 0 - 4" off the sheathing. ONE application of continuous ccSPF, crossed
         # only by the BLOCK: three loose 3-1/2" x 3-1/2" x 1-1/2" KDAT offcuts stacked flat
         # on the sheathing over every other stud at every 24" course, 4-1/2" tall so the
@@ -2318,7 +2319,8 @@ GARAGE_WALL_2X6 = Assembly(
         # vented closure at the base and a solid one at the head, which is what makes the
         # profile self-draining rather than a trough.
         Layer(name="cdx", material_ref="cdx-plywood", thickness=inch(0.625),
-              function=LayerFunction.SHEATHING),
+              function=LayerFunction.SHEATHING,
+              sheet_length=inch(108.0)),  # 4x9 on the 100" wall
         # NO RAINSCREEN FURRING, and that is a decision rather than an omission
         # (owner). Corrugated is face-fastened
         # through its crowns straight into the studs, and the corrugation itself IS the
@@ -4454,7 +4456,8 @@ PLANT_EXT_2X6_HUMID = Assembly(
                                   layout_origin="line", corner_style="4-stud"),
               cavity=CavityFill(material_ref="mineral-wool")),
         Layer(name="sheathing", material_ref="struct-1-plywood", thickness=inch(0.5),
-              function=LayerFunction.SHEATHING),
+              function=LayerFunction.SHEATHING,
+              sheet_length=inch(120.0)),  # 4x10: see EXT_2X6
         # BAND A, 0 - 4" off the sheathing. ONE application of continuous ccSPF, crossed
         # only by the BLOCK: three loose 3-1/2" x 3-1/2" x 1-1/2" KDAT offcuts stacked flat
         # on the sheathing over every other stud at every 24" course, 4-1/2" tall so the

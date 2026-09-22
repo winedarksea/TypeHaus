@@ -101,10 +101,10 @@ def test_catlin_panels_bill_once_and_by_the_sheet(catlin_model_ro) -> None:
     # The two the pass was written for: 156 window bucks and 76 pairs of web stiffener.
     buck = rips[("buck rip", "struct-1-plywood")]
     assert buck["thickness_in"] == pytest.approx(0.375)
-    assert int(buck["sheets_4x8"]) == 9
+    assert int(buck["sheets"]) == 9
     stiff = rips[("bearing stiffener rip", "struct-1-plywood")]
     assert stiff["thickness_in"] == pytest.approx(0.719, abs=1e-3)
-    assert int(stiff["sheets_4x8"]) == 2
+    assert int(stiff["sheets"]) == 2
 
     # ...and neither is also billed as lineal feet of an 8-ft stick.
     assert not [row for row in framing if row["category"] in ("buck", "bearing_stiffener")]
@@ -119,4 +119,4 @@ def test_catlin_panels_bill_once_and_by_the_sheet(catlin_model_ro) -> None:
         "struct-1-plywood", "cdx-plywood"}
     # The 5/8" CDX rip is the one that was silently UNPRICED before: it had no `[framing]`
     # row of its own, so 96 LF of it billed at zero.
-    assert int(rips[("sheathing rip", "cdx-plywood")]["sheets_4x8"]) == 1
+    assert int(rips[("sheathing rip", "cdx-plywood")]["sheets"]) == 1

@@ -101,12 +101,41 @@ penalty is taken. Line up the plant room in gypsum and both lines drop to 7.41'.
   intermittent methods (DWB, WSP, SFB, PBS, PCP, HPS) and for the top story only. A
   continuously sheathed line cannot have it, which is why the four devices at the NE corner
   buy an END CONDITION and never a shorter required length.
-- **Item 8, ×2.00 where horizontal blocking is omitted.** It applies to WSP and CS-WSP, and
-  it would double every number in the table above. It is not taken because a 9'-0" wall
-  sheathed in one 9'-0" sheet has no horizontal joint to block. **If the sheathing is ever
-  ordered in 8-foot sheets, this factor arrives** and main E1 goes from 1.56× to 0.78 — a
-  FAIL. That is the single most expensive thing anybody could change about this wall.
+- **Item 8, ×2.00 where horizontal blocking is omitted** (companion: R602.10.4.4 exception
+  1). It applies to WSP and CS-WSP, and it would double every number in the table above.
+  Whether a panel HAS a horizontal joint is read off each sheathing layer's own
+  `sheet_length` against its wall's plates (108" house, 100" garage) — the same number the
+  sheet order bills — and an unstated length is UNKNOWN, not a pass. **At 8-foot sheets
+  FOUR lines fail**, not one: main E1 0.78, main S1 0.94, second S1 0.82 and garage N 0.94
+  (a 96" sheet joints the 100" garage wall too). At 4x9 or 4x10 no panel has a joint and
+  none of them is close. That is the single most expensive thing anybody could change about
+  this wall.
 - **Item 7, ×0.70 for gypsum fastened 4" o.c.** — Method GB only.
+
+### The sheet sizes (owner, 2026-09-22)
+
+**4x10 on the house (`EXT_2X6`, `PLANT_EXT_2X6_HUMID`), 4x9 on the garage
+(`GARAGE_WALL_2X6`)**, stated as `Layer.sheet_length`. The check and the order both read it.
+
+| Line | Wall, plate to plate | Band above | 8' | 9' | 10' |
+|---|---|---|---|---|---|
+| main E1 / N1 / S1 / W1 | 108.0" | 11-7/8" rim (to 120") | **0.78** / 1.12 / **0.94** / 1.07 | 1.56 / 2.24 / 1.87 / 2.14 | same |
+| second E1 / N1 / S1 / W1 | 108.0" | 11-7/8" attic rim | 1.80 / 1.95 / **0.82** / 1.30 | 3.60 / 3.90 / 1.63 / 2.60 | same |
+| garage N / E / W / S | 100.0" | none (trusses) | **0.94** / 2.81 / 2.53 / 2.39 | 1.87 / 5.61 / 5.07 / 4.78 | same |
+
+- **Not 4x9 on the house.** A "4x9" is sized for spacing, 107-7/8" actual (Menards 7/16
+  OSB), against a 108.0" plate height: zero tolerance. A shimmed plate or a tall stud turns
+  the last 1/8" into a sliver, which is a horizontal joint in the panel, and item 8 returns.
+- **4x10 laps the rim exactly.** 108" + 11-7/8" + 1/8" = 120": one sheet runs from the sole
+  plate to the top of the rim above on both storeys, so the upper band needs no rip. The
+  main floor's lower band (sill + rim, 13-7/16") still takes its own strip.
+- **The lap is not code-required.** R602.10.8.2 is *Connections to Roof Framing*; the
+  wall-to-floor figures are R602.10.8(1)/(2), and those tie by plate nailing per Table
+  R602.3(1). Uplift across the bands rides the CS16 straps, not the sheet. 4x10 is chosen
+  for tolerance and one fewer strip, not for compliance.
+- **Grade: Structural-1 plywood; rated OSB of the same size is the fallback if 4x10
+  Structural-1 cannot be sourced** (Method CS-WSP asks only for wood structural panel).
+- **The garage stays 5/8" CDX** at 4x9: 8" spare on a 100" wall, where a 4x10 would waste 20".
 
 ## 5. The panels
 

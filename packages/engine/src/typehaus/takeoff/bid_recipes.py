@@ -25,9 +25,14 @@ def _lumber(row: Row) -> str:
 
 
 def _sheets(row: Row) -> str:
-    sheets = row.get("sheets_4x8")
+    sheets = row.get("sheets")
     area = row.get("net_area_sqft")
-    return f"{sheets} sheets 4x8 over {area} SF net" if sheets is not None else ""
+    size = row.get("sheet") or "4x8"
+    return f"{sheets} sheets {size} over {area} SF net" if sheets is not None else ""
+
+
+def _sheet_unit(row: Row) -> str:
+    return f"sheets {row.get('sheet') or '4x8'}"
 
 
 def _solid(row: Row) -> str:
@@ -74,11 +79,12 @@ class Shape:
     heading: str
     detail: Callable[[Row], str] | None = None
     unit: str | None = None  # override the estimate unit's spelling
+    unit_of: Callable[[Row], str] | None = None  # ...or spell it per row
 
 
 SHAPES: dict[str, Shape] = {
     "framing": Shape("Lumber and engineered wood, by size", _lumber, "LF ordered"),
-    "sheet_goods": Shape("Sheet goods, by the sheet", _sheets, "sheets 4x8"),
+    "sheet_goods": Shape("Sheet goods, by the sheet", _sheets, unit_of=_sheet_unit),
     "hardware": Shape("Connectors and fasteners, by part"),
     "concrete": Shape("Pours and structural solids", _solid),
     "reinforcement": Shape("Reinforcing steel, by bar", _bar, "lb"),

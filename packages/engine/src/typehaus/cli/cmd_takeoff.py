@@ -203,9 +203,9 @@ def takeoff(
         for zone in radiant:
             console.print(f"  {zone['tag']} ({zone['system']}): {zone['wire_length_ft']:.1f} LF")
     if payload["sheet_goods"]:
-        console.print("[bold]Sheet goods (4x8 panels)[/bold]")
+        console.print("[bold]Sheet goods (panels)[/bold]")
         for item in payload["sheet_goods"]:
-            console.print(f"  {item['scope']}: {item['sheets_4x8']} sheets of "
+            console.print(f"  {item['scope']}: {item['sheets']} sheets {item['sheet']} of "
                           f"{item['thickness_in']}\" {item['material']} "
                           f"({item['net_area_sqft']} sf net)")
     if payload["structural_solids"]:
@@ -246,7 +246,7 @@ def takeoff(
     if payload["glazing_panels"]:
         console.print("[bold]Glazing panels (4x8 sheets)[/bold]")
         for item in payload["glazing_panels"]:
-            console.print(f"  {item['assembly']}: {item['sheets_4x8']} sheets / "
+            console.print(f"  {item['assembly']}: {item['sheets']} sheets / "
                           f"{item['panels']} panel(s) ({item['net_area_sqft']} sf net)")
     if payload["glazing_trim"]:
         console.print("[bold]Glazing trim (aluminium extrusion)[/bold]")

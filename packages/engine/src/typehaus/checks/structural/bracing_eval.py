@@ -16,7 +16,8 @@ the parallel lines beside it; the number of lines is counted per plan direction.
 intermittent-method credit and a continuously sheathed line cannot have it; the 1.40 gypsum
 penalty IS taken where the panels on a line carry no gypsum inside (catlin's plant room);
 the 2.00 no-blocking penalty applies only where the sheathing has a horizontal joint to
-block, which a 9'-0" wall sheathed in one 9'-0" sheet does not.
+block, read off each sheathing layer's own ``sheet_length`` against its wall's plates. An
+unstated sheet length is UNKNOWN naming the wall: it is the premise, not a detail.
 """
 
 from __future__ import annotations
@@ -49,13 +50,8 @@ from typehaus.resolve.braced_walls import (
     braced_wall_lines,
     resolved_braced_wall_panels,
 )
+from typehaus.resolve.sheet_stock import sheet_label, wall_sheathing
 from typehaus.wind import wind_basis
-
-#: A sheet reaches the plate without a horizontal joint up to this wall height (10'-0"
-#: sheathing is a stocked length). Above it, R602.10.3(2) item 8's blocking question is
-#: real; at or below it there is no horizontal joint to block. Not a code number — the
-#: code says "where horizontal blocking is omitted" and says nothing about sheet stock.
-SINGLE_SHEET_WALL_HEIGHT_IN = 120.0
 
 _GYPSUM_MATERIALS = frozenset({"gwb", "gypsum", "gypsum-board", "type-x-gwb", "gwb-type-x"})
 
@@ -218,16 +214,7 @@ def _factors(model, line, panels, basis, row, eave_ft, wall_height_in, count, me
             not_taken.append("item 6 (x1.40, gypsum omitted) is NOT taken: every panel on "
                              "this line carries gypsum board on its inside face")
     if method in NO_BLOCKING_METHODS:
-        if wall_height_in <= SINGLE_SHEET_WALL_HEIGHT_IN:
-            not_taken.append(
-                f"item 8 (x2.00, horizontal blocking omitted) is NOT taken: the wall is "
-                f"{wall_height_in:.1f} in and a single sheet reaches the plate, so there is "
-                f"no horizontal sheathing joint to block")
-        else:
-            factors.append(TableRead(NO_BLOCKING_FACTOR, (
-                f"Table R602.10.3(2) item 8, horizontal blocking at the sheathing joint in "
-                f"a {wall_height_in:.1f} in wall is not modelled: "
-                f"x{NO_BLOCKING_FACTOR:.2f}")))
+        _blocking(model, line, factors, not_taken, gaps)
     if method in HOLD_DOWN_FACTOR_METHODS:
         not_taken.append(f"item 5 (x{HOLD_DOWN_FACTOR:.2f}, an additional 800-lb hold-down "
                          f"at each panel end) is NOT taken: it is a top-story credit and "
@@ -237,6 +224,43 @@ def _factors(model, line, panels, basis, row, eave_ft, wall_height_in, count, me
                          f"at each panel end) does not reach method {method}: it is "
                          f"published for the intermittent methods only")
     return factors
+
+
+def _blocking(model, line, factors: list[TableRead], not_taken: list[str],
+              gaps: list[str]) -> None:
+    """Item 8: does every sheathing sheet on the line reach its wall's plate in one piece?
+
+    A sheet set vertically at least as long as the plate-to-plate height leaves no
+    horizontal joint inside a panel; a band strip below or above it is outside the panel.
+    """
+    unstated, jointed, whole = [], [], []
+    for wall in model.walls:
+        if wall.tag not in line.wall_tags:
+            continue
+        height = _one_wall_height_in(wall)
+        for name, length in wall_sheathing(model.plan, wall):
+            if length is None:
+                unstated.append(f"{wall.tag} ({name})")
+            elif length + 1e-6 < height:
+                jointed.append(f"{wall.tag} ({sheet_label(length)} on {height:.1f} in)")
+            else:
+                whole.append(f"{sheet_label(length)} on {height:.1f} in")
+    if unstated:
+        gaps.append(f"Table R602.10.3(2) item 8 cannot be read: the sheathing on "
+                    f"{', '.join(unstated)} states no sheet_length, so whether a panel has "
+                    f"a horizontal joint to block is unknown")
+    elif jointed:
+        factors.append(TableRead(NO_BLOCKING_FACTOR, (
+            f"Table R602.10.3(2) item 8, horizontal blocking omitted at the sheathing joint "
+            f"on {', '.join(jointed)} (R602.10.4.4 exception 1): x{NO_BLOCKING_FACTOR:.2f}")))
+    elif whole:
+        not_taken.append(f"item 8 (x{NO_BLOCKING_FACTOR:.2f}, horizontal blocking omitted) is "
+                         f"NOT taken: every sheet reaches the plate in one piece "
+                         f"({', '.join(sorted(set(whole)))}), so there is no horizontal joint "
+                         f"to block")
+    else:
+        not_taken.append(f"item 8 (x{NO_BLOCKING_FACTOR:.2f}) is NOT taken: no wall on this "
+                         f"line carries a sheathing layer")
 
 
 def _panels_without_gypsum(model, line, panels) -> list[str]:
@@ -269,16 +293,15 @@ def _grade_panel(panel: ResolvedPanel, wall_height_in: float) -> PanelGrade:
 
 def _wall_height_in(model, line: BracedWallLine) -> float:
     """The line's wall height: top of top plate to bottom of bottom plate, tallest wall."""
-    heights = []
-    for wall in model.walls:
-        if wall.tag not in line.wall_tags:
-            continue
-        plates = [m for m in wall.members if m.category == "plate"]
-        if plates:
-            heights.append(max(m.z1_m for m in plates) - min(m.z0_m for m in plates))
-        else:
-            heights.append(wall.z1_m - wall.z0_m)
-    return (max(heights) if heights else 0.0) / M_PER_IN
+    heights = [_one_wall_height_in(w) for w in model.walls if w.tag in line.wall_tags]
+    return max(heights) if heights else 0.0
+
+
+def _one_wall_height_in(wall) -> float:
+    plates = [m for m in wall.members if m.category == "plate"]
+    if plates:
+        return (max(m.z1_m for m in plates) - min(m.z0_m for m in plates)) / M_PER_IN
+    return (wall.z1_m - wall.z0_m) / M_PER_IN
 
 
 def _line_spacing_ft(line: BracedWallLine, lines: list[BracedWallLine]) -> float | None:

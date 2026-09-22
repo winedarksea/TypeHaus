@@ -173,7 +173,7 @@ def rip_sheet_rows(
     are the same product as the wall sheathing and the labour is nothing like it.
 
     Rows carry exactly the field set ``sheet_goods_takeoff`` emits, so the price join
-    (``cli/prices.ESTIMATE_PLANS``: key ``material``, quantity ``sheets_4x8``) reads them
+    (``cli/prices.ESTIMATE_PLANS``: key ``material``, quantity ``sheets``) reads them
     with no change. Sheets are summed as FRACTIONS across the rip widths inside one row and
     rounded up once — a framer ripping a 6" buck strip and a 4" stiffener strip off the same
     3/8" sheet is what actually happens, and rounding each width up on its own would order a
@@ -202,10 +202,11 @@ def rip_sheet_rows(
             "material": material,
             "thickness_in": round(thickness_in, 3),
             # The area of STRIP the cuts actually consume, not the sheet it came off. The
-            # gap between this and ``sheets_4x8`` x 32 is the rip waste, and on a narrow
+            # gap between this and ``sheets`` x 32 is the rip waste, and on a narrow
             # strip out of a wide sheet that gap is most of the sheet — which is the honest
             # reading, because the offcut is a pile of plywood ribbons nobody re-uses.
             "net_area_sqft": round(area_sqft, 1),
-            "sheets_4x8": math.ceil(sheets - 1e-9),
+            "sheet": "4x8",
+            "sheets": math.ceil(sheets - 1e-9),
         })
     return rows

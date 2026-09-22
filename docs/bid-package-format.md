@@ -24,7 +24,7 @@ happens in the builder), so two runs over one model produce identical bytes and 
    quantities are net of waste; this is a request for quote.
 3. **One table per section** in the recipe's `section_order`, remaining sections in estimate
    order. Columns: `item` (a readable label with the id kept, → `takeoff/labels.describe`),
-   `quantity`, `unit` (the shape's spelling: `LF ordered`, `sheets 4x8`, `cy`), `detail`
+   `quantity`, `unit` (the shape's spelling: `LF ordered`, `sheets 4x9` (per row: the layer's sheet size), `cy`), `detail`
    (piece counts, cut lengths, run counts — the shape's per-row builder), `storeys`.
    `--priced` appends `unit low/high` and `total low/high`.
 4. **Appendix A** — element tags per line (omitted for recipes that say `tags_appendix=False`).

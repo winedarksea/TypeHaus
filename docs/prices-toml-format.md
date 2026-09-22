@@ -13,7 +13,7 @@ yards):
 "2x4" = 0.72
 "2x6" = { low = 0.95, high = 1.35 }
 
-[sheet_goods]    # $ per 4x8 sheet, keyed by material tag
+[sheet_goods]    # $ per sheet (the row's `sheet` size, 4x8 unless the layer states `sheet_length`), keyed by material tag
 osb = 22.50
 zip-r = { low = 42.0, high = 55.0 }
 

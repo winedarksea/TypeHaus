@@ -71,7 +71,7 @@ def _sum(ranges: Iterable[PriceRange]) -> PriceRange:
 #: sixth tuple element: one list, one place to be wrong.
 ESTIMATE_PLANS = (
     ("framing", "framing_by_size", "profile", "order_length_ft", "LF"),
-    ("sheet_goods", "sheet_goods", "material", "sheets_4x8", "sheets"),
+    ("sheet_goods", "sheet_goods", "material", "sheets", "sheets"),
     ("hardware", "hardware", "part_number", "count", "ea"),
     ("concrete", "structural_solids", "category", "volume_cubic_yards", "cy"),
     ("floor_heat", "floor_heat", "system", "wire_length_ft", "LF"),

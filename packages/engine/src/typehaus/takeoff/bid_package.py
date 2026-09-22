@@ -195,8 +195,9 @@ def _line(item: BomRow, trade: str, storey_of: Mapping[str, str], labels: LabelI
           prices: Mapping[tuple[str, str], Mapping[str, Any]], priced: bool) -> BidLine:
     shape = shape_for(item.section)
     detail = shape.detail(item.row) if shape.detail else ""
-    quantity, unit = _shaped_quantity(item, trade, shape.unit or item.unit)
-    if unit != (shape.unit or item.unit) and item.quantity:
+    spelled = shape.unit_of(item.row) if shape.unit_of else (shape.unit or item.unit)
+    quantity, unit = _shaped_quantity(item, trade, spelled)
+    if unit != spelled and item.quantity:
         detail = f"{detail}; {item.quantity} {item.unit} in the takeoff".strip("; ")
     unit_price = total = None
     if priced:

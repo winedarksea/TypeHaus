@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import model_validator
+from pydantic import field_validator, model_validator
 
 from typehaus.model.base import HausModel
 from typehaus.model.enums import (
@@ -399,6 +399,18 @@ class Layer(HausModel):
     # siblings), and no two members' bands overlap. Elevations not claimed by any member
     # are simply not built — a row may have a gap, and that is what a reveal is.
     slot: str | None = None
+    # The NOMINAL long dimension of the panel this layer is bought in (4x9 -> ft(9)); the
+    # width is 48". Read through ``resolve/sheet_stock.py`` by both the bracing check (does
+    # a sheet reach the plate, Table R602.10.3(2) item 8) and the sheet order. Unstated, the
+    # check is UNKNOWN and the order bills 4x8.
+    sheet_length: Length | None = None
+
+    @field_validator("sheet_length")
+    @classmethod
+    def _sheet_length_positive(cls, value: Length | None) -> Length | None:
+        if value is not None and value.meters <= 0:
+            raise ValueError("sheet_length must be positive")
+        return value
 
     @property
     def cavity_fills(self) -> tuple[CavityFill, ...]:

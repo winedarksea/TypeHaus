@@ -753,7 +753,7 @@ def load_prices(house_dir: Path) -> Prices | None:
 #: set over there". ``load_prices`` raises with this name attached.
 WASTE_IN_QUANTITY = {
     "framing": "takeoff/framing.py::_order_length_ft (stock-length rounding)",
-    "sheet_goods": "takeoff/framing.py + takeoff/glazing.py (`sheets_4x8` ceiling)",
+    "sheet_goods": "takeoff/sheet_goods.py + takeoff/glazing.py (`sheets` ceiling)",
     "floor_finishes": "takeoff/finishes.py::_WASTE",
     "wood_surfaces": "takeoff/wood_surfaces.py::_WASTE",
     "reinforcement": "resolve/rebar (cut length = placed + laps + hooks, by counted piece)",

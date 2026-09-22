@@ -162,7 +162,7 @@ def test_an_explicit_qualified_key_prices_a_non_concrete_solid(tmp_path) -> None
 
 @pytest.mark.parametrize("section, module_hint", [
     ("framing", "takeoff/framing.py"),
-    ("sheet_goods", "sheets_4x8"),
+    ("sheet_goods", "sheets"),
     ("floor_finishes", "takeoff/finishes.py"),
     ("wood_surfaces", "takeoff/wood_surfaces.py"),
 ])
