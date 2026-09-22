@@ -8,9 +8,10 @@ Three assumptions, each flagged in every record that reads them:
   ``x = (H + μwL) / (Σ k_i ε_i + 2μw)``, ``k_i = E A_i / t_i``;
 * **the stems' drying shrinkage** (ACI 209R-92), credited against their closure only — the
   footings and the beam are in wet soil;
-* **the pour lock-in** — a board is a form face and keeps its fresh-concrete squeeze after the
-  court sets; added in full to every force (early-age cooling is reversible about the set
-  position, so nothing relieves it — §11i).
+* **the pour lock-in** — a board that is a form face keeps its fresh-concrete squeeze after
+  the court sets; added in full to every force (early-age cooling is reversible about the set
+  position, so nothing relieves it — §11i). A board set into a stripped blockout carries none
+  (§11j, basis 7).
 """
 
 from __future__ import annotations
@@ -85,8 +86,18 @@ def neutral_point(ctx, boards: list[Board], products: dict, temps, free_bodies: 
     return out
 
 
+FORMED_AND_STRIPPED_NOTE = (
+    "FORMED AND STRIPPED (free body §11j): the court face was cast against a stripped "
+    "blockout of the board's thickness and the board set into the slot afterwards — no "
+    "fresh-concrete pressure reaches it and nothing is locked in. A field sequence the model "
+    "states and cannot enforce: the placement annotation carries it to site.")
+
+
 def pressure_at(ctx, board: Board):
-    """``p(z)`` psi, the locked-in fresh pressure at elevation ``z`` in, and the base value."""
+    """``p(z)`` psi, the locked-in fresh pressure at elevation ``z`` in — zero for a board set
+    into a stripped blockout, ``None`` where no head can be read."""
+    if board.formed_and_stripped:
+        return lambda _z: 0.0
     head, _how = pour_head_in(ctx, board)
     if head is None:
         return None
@@ -104,5 +115,7 @@ def integrate(p, lo: float, hi: float, n: int = 400) -> tuple[float, float]:
 
 
 def lock_in_force(ctx, board: Board) -> float:
+    if board.formed_and_stripped:
+        return 0.0
     p = pressure_at(ctx, board)
     return 0.0 if p is None else integrate(p, board.bottom_in, board.top_in)[0] * board.length_in

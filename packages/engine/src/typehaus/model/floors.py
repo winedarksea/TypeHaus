@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Literal
 
+from pydantic import model_validator
+
 from typehaus.model.assembly import Layer
 from typehaus.model.base import Element, HausModel
 from typehaus.model.enums import FloorOpeningPurpose, RadiantSystem
@@ -257,6 +259,23 @@ class SlabThermalBreak(HausModel):
     material_ref: str
     thickness: Length  # horizontal insulation thickness in the edge joint
     depth: Length | None = None  # vertical extent down the slab edge; None = full slab
+    #: The board's published compressive rating and the sheet it is read off — the
+    #: ``IsolationBoard`` vocabulary. Unstated, a thrust through the edge is graded at the
+    #: lowest ASTM C578 type of ``material_ref`` (``thermal_break_board.rated``).
+    psi: float | None = None
+    modulus_psi: float | None = None
+    modulus_estimated: bool = False
+    source: str | None = None
+    #: The sheet's sustained-load rule as a fraction of ``psi`` (Owens Corning: 1/3). Printed
+    #: beside a thrust row, never graded: it governs a dead load, not an imposed deformation.
+    sustained_load_fraction: float | None = None
+
+    @model_validator(mode="after")
+    def _rating_names_its_sheet(self) -> SlabThermalBreak:
+        if (self.psi is not None or self.modulus_psi is not None) and not self.source:
+            raise ValueError("SlabThermalBreak: a psi or modulus_psi needs the `source` it "
+                             "is read off")
+        return self
 
 
 @register_element

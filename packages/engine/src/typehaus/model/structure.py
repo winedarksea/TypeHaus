@@ -674,6 +674,11 @@ class IsolationBoard(Element):
     #: The ``Annotation`` that sequences the pours either side. Set, the fresh-concrete row
     #: reads the head off the court element's OWN top; ``None`` grades a monolithic pour.
     placement_sequence_ref: str | None = None
+    #: True where the court face is cast against a stripped blockout and the board is set
+    #: into the slot afterwards: no pour presses on it, so nothing is locked in. Default
+    #: False is the conservative case (the board is a form face). True needs
+    #: ``placement_sequence_ref`` — the annotation that says so on the drawing.
+    formed_and_stripped: bool = False
 
 
 @register_element

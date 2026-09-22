@@ -152,18 +152,29 @@ def _floor_line(ctx, board: Board, patch: dict, states, missing) -> None:
 
 
 def court_sliding(ctx, ref: str, total: float, free_bodies: dict, states, missing) -> None:
-    """The thrust's reaction pushes the court away from the house, against its soil."""
+    """The thrust's reaction pushes the court away from the house, against its soil.
+
+    Where the thrust overcomes the retained soil it is an FS on base friction; where it does
+    not, nothing pushes the court away and an FS has no meaning (it printed as infinite), so
+    the row is graded as a FORCE — net push against friction / 1.5, the same ratio the FS row
+    reads whenever the net is positive (free body §11j)."""
     body = free_bodies.get(ref)
     if not body:
         missing.append(f"loop {ref}'s free body — the court's resistance to the thrust")
         return
     rows = [(float(pcf), soil_push, friction, total - soil_push)
             for pcf, (soil_push, friction) in body.items()]
-    pcf, soil_push, friction, net = min(
-        rows, key=lambda r: r[2] / r[3] if r[3] > 0 else float("inf"))
-    fs = friction / net if net > 0 else float("inf")
+    # The worst unit weight is the largest net against friction; ties break on the lower pcf.
+    pcf, soil_push, friction, net = max(rows, key=lambda r: (r[3] / r[2], -r[0]))
+    basis = (f"sum of every board's thrust on loop {ref} {total:,.0f} lb less the retained "
+             f"soil's {soil_push:,.0f} lb at {pcf:.0f} pcf, against base friction "
+             f"{friction:,.0f} lb; passive not credited")
+    if net > 0:
+        states.append(LimitState("court sliding under break thrust", REQUIRED_FS,
+                                 friction / net, "", basis, is_safety_factor=True))
+        return
     states.append(LimitState(
-        "court sliding under break thrust", REQUIRED_FS, fs, "",
-        f"sum of every board's thrust on loop {ref} {total:,.0f} lb less the retained soil's "
-        f"{soil_push:,.0f} lb at {pcf:.0f} pcf, against base friction {friction:,.0f} lb; "
-        f"passive not credited", is_safety_factor=True))
+        "court sliding under break thrust", 0.0, friction / REQUIRED_FS, "lb",
+        f"{basis}. The net is {net:,.0f} lb — the thrust never overcomes the soil, so nothing "
+        f"pushes the court away: graded as a force, net push 0 against friction / "
+        f"{REQUIRED_FS}"))

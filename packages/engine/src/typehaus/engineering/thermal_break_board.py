@@ -19,6 +19,23 @@ ALPHA_C_PER_F = 5.5e-6
 #: the model never states (Atlas, "ASTM C578 Comparison (EPS vs. XPS)", Table 1).
 C578_FLOOR_PSI = {"xps": (15.0, "ASTM C578 Type X"), "eps": (10.0, "ASTM C578 Type I")}
 
+
+
+def rated(material_ref: str | None, psi: float | None = None,
+          source: str | None = None) -> tuple[float, str] | None:
+    """``(psi, how)`` a bearing board is graded at: the AUTHORED rating with its sheet, else
+    the lowest ASTM C578 type of its material — a conservative floor, never an open input
+    (an ungraded row can never read OVER, and an unstated grade must still be visible).
+    ``None`` for a material the standard does not cover."""
+    if psi is not None and source:
+        return psi, f"as authored: {psi:.0f} psi — {source}"
+    floor = C578_FLOOR_PSI.get(material_ref or "")
+    if floor is None:
+        return None
+    return floor[0], f"grade unstated, graded at {floor[1]} {floor[0]:.0f} psi, the lowest " \
+                     f"the standard admits"
+
+
 TEMPERATURE_MISSING = (
     "`Site.concrete_service_temperature` with `placement_min_f` — the concrete's service "
     "range and the specified set floor the movement, thrust, opening and racking rows read")
@@ -125,17 +142,15 @@ def house_insulation_row(board: Board, layers, sigma: float, pour_psi: float | N
                          states, missing) -> None:
     """The house foam the board bears on, at the weakest ASTM C578 type of its material."""
     for name, material, _thick in layers:
-        floor = C578_FLOOR_PSI.get(material)
-        if floor is None:
+        grade = rated(material)     # a Layer carries no compressive field
+        if grade is None:
             missing.append(f"a compressive rating for {board.house_tag}'s `{name}` "
                            f"({material}), which the board bears on")
             continue
-        psi, label = floor
+        psi, how = grade
         demand = sigma + (pour_psi or 0.0)
         states.append(LimitState(
             "house insulation bearing", demand, psi, "psi",
             f"locked-in pour {pour_psi or 0:.2f} + closing {sigma:.2f} psi at the board's base "
-            f"through {board.house_tag}'s "
-            f"`{name}`, whose grade the model does not state: graded at {label}, "
-            f"{psi:.0f} psi, the lowest the standard admits"))
+            f"through {board.house_tag}'s `{name}`: {how}"))
         return

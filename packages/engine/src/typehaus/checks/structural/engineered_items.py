@@ -84,12 +84,12 @@ def veneer_anchor(ctx: CheckContext) -> list[Finding]:
 
 @check(Tier.STRUCTURAL, "structural.thermal_break")
 def thermal_break(ctx: CheckContext) -> list[Finding]:
-    """Bars tying two pours across an insulating break."""
+    """An isolation joint between two separately founded pours — the board and its thrust."""
     return _items(ctx, "structural.thermal_break", "thermal_break_transfer",
-                  "the dowel row across a thermal break — shear reserve, movement and "
-                  "the board's integrity during the pour",
-                  "ACI 318-19 §22.9; ACI 347R-14 §2.2",
-                  "no dowel in this plan crosses an insulating break")
+                  "an isolation board between separately founded pours — the board's "
+                  "strain and the thrust it passes along the house's lateral path",
+                  "ACI 347R-14; ACI 318-19 §22.3; ASTM C578",
+                  "no isolation board in this plan separates two pours")
 
 
 @check(Tier.STRUCTURAL, "structural.tiered_retaining")

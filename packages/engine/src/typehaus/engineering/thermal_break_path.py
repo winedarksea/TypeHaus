@@ -5,9 +5,10 @@ goes into the basement slab as a compression strut, through its perimeter break,
 footing line. It is resisted by friction under the WHOLE house and by the far wall's soil.
 Every link is graded on every break item, because every board's thrust feeds it:
 
-* slab-edge bearing on the slab's ``perimeter_thermal_break`` (grade unstated → the lowest
-  ASTM C578 type of its material, as the house foam is graded), the near line's own
-  friction not credited;
+* slab-edge bearing on the slab's ``perimeter_thermal_break`` at its AUTHORED rating (grade
+  unstated → the lowest ASTM C578 type of its material, as the house foam is graded), the
+  near line's own friction not credited; the sheet's sustained-load rule is printed beside
+  it, never graded (§11j: it governs a dead load, and this is an imposed deformation);
 * slab strut compression, plain concrete — **buckling of a slab on grade is not credible**
   (braced continuously by its subgrade), so no slenderness row;
 * global sliding at FS 1.5: μ × the house's dead load (a stated lower bound) plus the
@@ -19,7 +20,7 @@ Every link is graded on every break item, because every board's thrust feeds it:
 from __future__ import annotations
 
 from typehaus.engineering.item import LimitState
-from typehaus.engineering.thermal_break_board import C578_FLOOR_PSI, CONCRETE_PCF
+from typehaus.engineering.thermal_break_board import CONCRETE_PCF, rated
 
 REQUIRED_FS = 1.5
 #: ACI 318-19 Table 21.2.1, plain concrete; §14.5.6 bearing 0.85 f'c.
@@ -110,8 +111,42 @@ def court_opening_in(ctx, boards) -> float:
     return max(s[1] for s in spans) - min(s[0] for s in spans) if spans else 0.0
 
 
-def path_rows(ctx, boards, total_lb: float, floor_line_lb: float, states, missing) -> None:
+def _slab_edge(slab, total_lb, floor_line_lb, edge_len, t, states, missing, notes) -> None:
+    brk = slab.perimeter_thermal_break
+    grade = rated(brk.material_ref, brk.psi, brk.source)
+    if grade is None:
+        missing.append(f"a compressive rating for {slab.tag}'s perimeter break "
+                       f"({brk.material_ref})")
+        return
+    psi, how = grade
+    depth = brk.depth.inches if brk.depth is not None else t
+    area, line = depth * edge_len, total_lb - floor_line_lb
+    modulus = ""
+    if brk.modulus_psi is not None and brk.psi is not None:
+        modulus = f", E {brk.modulus_psi:,.0f} " + (
+            "ESTIMATED" if brk.modulus_estimated else "published")
+    states.append(LimitState(
+        "house slab-edge bearing", line, psi * area, "lb",
+        f"{total_lb:,.0f} lb of thrust less the floor line's {floor_line_lb:,.0f} into "
+        f"{slab.tag}'s {brk.thickness.inches:g}\" {brk.material_ref} perimeter break, "
+        f"{depth:.2f}\" x {edge_len:.0f}\"; {how}{modulus}; the near line's own friction not "
+        f"credited"))
+    frac = brk.sustained_load_fraction
+    if frac and brk.psi is not None:
+        need = line / (frac * area)
+        notes.append(
+            f"NOT GRADED — THE SHEET'S SUSTAINED-LOAD RULE (free body §11j): dead load <= "
+            f"{frac:.3g} x {brk.psi:.0f} = {frac * brk.psi:.1f} psi reads {line:,.0f} / "
+            f"{frac * brk.psi * area:,.0f} = {line / (frac * brk.psi * area):.3f}. The rule "
+            f"guards a board against creep under a load it must hold forever; this thrust is "
+            f"an imposed deformation, which creep relieves rather than grows. A board rated "
+            f">= {need:.1f} psi satisfies it if a reviewer reads it as governing.")
+
+
+def path_rows(ctx, boards, total_lb: float, floor_line_lb: float, states, missing,
+              notes=None) -> None:
     """The four lateral-path links, graded for the whole thrust ``total_lb``."""
+    notes = [] if notes is None else notes
     from typehaus.engineering.soil import presumptive
     from typehaus.engineering.thermal_break_geometry import facing_footings
     from typehaus.resolve.concrete import concrete_spec_for, fc_psi
@@ -128,20 +163,8 @@ def path_rows(ctx, boards, total_lb: float, floor_line_lb: float, states, missin
     lo, hi = _span(solid.outline, 1 - ax)
     edge_len, t = hi - lo, slab.thickness.inches
     line = total_lb - floor_line_lb
-    brk = slab.perimeter_thermal_break
-    if brk is not None:
-        floor = C578_FLOOR_PSI.get(brk.material_ref)
-        depth = brk.depth.inches if brk.depth is not None else t
-        if floor is None:
-            missing.append(f"a compressive rating for {slab.tag}'s perimeter break "
-                           f"({brk.material_ref})")
-        else:
-            states.append(LimitState(
-                "house slab-edge bearing", line, floor[0] * depth * edge_len, "lb",
-                f"{total_lb:,.0f} lb of thrust less the floor line's {floor_line_lb:,.0f} into "
-                f"{slab.tag}'s {brk.thickness.inches:g}\" {brk.material_ref} perimeter break, "
-                f"{depth:.2f}\" x {edge_len:.0f}\"; grade unstated, graded at {floor[1]} "
-                f"{floor[0]:.0f} psi; the near line's own friction not credited"))
+    if slab.perimeter_thermal_break is not None:
+        _slab_edge(slab, total_lb, floor_line_lb, edge_len, t, states, missing, notes)
     fc = fc_psi(concrete_spec_for(ctx.plan, slab))
     if fc is None:
         missing.append(f"{slab.tag}'s mix f'c — the slab strut")

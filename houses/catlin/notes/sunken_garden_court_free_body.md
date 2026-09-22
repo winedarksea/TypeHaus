@@ -1536,15 +1536,15 @@ The length floor moved with it: `run = 62,826 × 1.50 / 1,899.6 = 49.61'`, so
 
 ---
 
-## 11. The thermal break — a pure isolation joint, and what it is still short of (basis 6, 2026-09-21)
+## 11. The thermal break — a pure isolation joint (basis 7, 2026-09-22)
 
 Worked by hand before `engineering/thermal_break.py` was rewritten to it;
 `tests/test_thermal_break.py` reproduces it. Oracle for `thermal_break_transfer/*`.
 
-> **The graded basis is §11i (basis 6):** 2.5" ASTM C578 Type X XPS (15 psi, E estimated),
-> the neutral-point demand with the stem shrinkage credit and the pour lock-in, and the house's
-> real lateral path through `SL-B-FLOOR`. It is still OVER on three rows. §11a-§11h below are
-> the record of how it got there.
+> **The graded basis is §11j (basis 7, 2026-09-22):** §11i's demand and lateral path with
+> every board formed-and-stripped (no pour lock-in) and `SL-B-FLOOR`'s perimeter break stated
+> as FOAMULAR 400. OK on all five items, slab edge governing at 0.737. §11a-§11i below are the
+> record of how it got there.
 
 **Basis 4 is the owner's decision of 2026-09-21:** the four closure boards go back to XPS —
 **Styrofoam Highload 40 at 2.5"** (`closure_break_in` 2 → 2.5) — with **#6 Aslan 100 @ 8"**
@@ -2104,6 +2104,104 @@ The options, costed only in ratios:
   floors and roof (not yet taken down) or the passive at the north wall (needs ~0.4" of motion
   against ~0.08" at stake).
 
+> **Decided 2026-09-22 — see §11j (basis 7).** The owner took the first two options together.
+
+### 11j. Basis 7 (2026-09-22, owner) — formed and stripped, and a stated slab-edge board
+
+Hand-worked before the engine; `tests/test_thermal_break.py` reproduces it. **Supersedes §11i
+as the graded basis** (§11i stays as basis 6's record). Two decisions, both in the model:
+
+1. **No board is a form face.** Every court face that met a board is cast against a greased,
+   pull-rodded blockout of the board's own thickness, stripped, and the board is set into the
+   slot afterwards (`IsolationBoard.formed_and_stripped`). Sizes: `TB-SG-W1`/`-E1` 2.5" x 8" x
+   84"; `TB-SG-*-STEM` 2.5" x 12" x 109 7/16"; `W-SG-BRKBM`'s 2.0" x 17 3/4" x 19'-0", pulled
+   up out of the bedding-stone side. The beam's board is a `Layer` and names no product or
+   sequence of its own; it **inherits** the statement from the authored boards on its loop, as
+   it already inherits their product. **The lock-in is gone: 54,105 lb, of which the beam's
+   41,162 (76%), the two stems' 12,476 (23%) and the footings' 467** — the beam blockout is
+   the prize.
+2. **`SL-B-FLOOR`'s 1" perimeter break is FOAMULAR 400** (Owens Corning, ASTM C578 Type VI,
+   40 psi min, ASTM D1621; minimum compressive modulus 1,800 psi published; PDS 07 21 13.13.OCC),
+   stated on the `SlabThermalBreak` itself. The garage slab's 1" board is the same product
+   (it was already specified at 40 psi), so the order is one line.
+
+**The neutral point does not move.** `x` reads stiffness, soil and friction, never the lock-in:
+
+```
+x = (H + μwL) / (Σ k_i ε_i + 2μw) = 162,503 / (246.30 + 620.32) = 187.51"      (unchanged)
+σ_foot 6.497   σ_stem 1.086   σ_beam 8.122 psi                                   (unchanged)
+T = Σ σ_i A_i = 2 x 4,366 + 2 x 1,426 + 34,599 = 46,183 lb  = 62,456 − 16,273   ✓ (§11i's identity)
+```
+
+**The board rows** — closing only; the ratio is `σ/σ_y` (the fresh-concrete pressure row is
+retired: a blockout, not the board, takes the pour):
+
+```
+footing   6.497/15 = 0.433 ✓     stem   1.086/15 = 0.072 ✓     beam   8.122/15 = 0.541 ✓
+```
+
+**The stems — the house wall.** Uniform 1.086 psi on the 12" strip over W-B-S1's whole 96" span:
+
+```
+w = 1.086 x 12 = 13.03 lb/in;  W = 1,251 lb;  R = 625.6 lb;  M = wL²/8 = 15,013 lb-in
+flexure   15,013 / 276,299                                                   d/c 0.054 ✓
+shear     625.6 / 72,377                                                     d/c 0.009 ✓
+floor     R 625.6 + band 1.086 x 12 x 13.4375 = 175.1 → 800.7 / 3,285        d/c 0.244 ✓
+house XPS 1.086 psi vs Type X 15 (grade unstated)                            d/c 0.072 ✓
+```
+
+**The lateral path.** The two stems' floor lines take 2 x 800.7 = 1,601 lb; the rest crosses the slab.
+
+```
+slab edge 46,183 − 1,601 = 44,582 lb / (40 psi x 3.5" x 432" = 60,480)       d/c 0.737 ✓ GOVERNS
+          (at an unstated grade, Type X 15 psi: 44,582 / 22,680 = 1.966 OVER — the statement
+          is load-bearing, not decoration)
+strut     44,582 / (3.5 x 432) = 29.49 psi vs 2,040                          d/c 0.0145 ✓
+global    FS = (0.25 x 374,668 + 30,458) / 46,183 = 2.688 vs 1.5             ratio 0.558 ✓
+far wall  52,214 + max(0, 46,183 − 93,667) = 52,214 / 130,534                d/c 0.400 ✓
+```
+
+**The court.** 46,183 − 62,456 = **−16,273 lb** at 110 pcf (46,183 − 61,446 = −15,263 at 130):
+the thrust never overcomes the retained soil, so nothing pushes the court away from the house and
+an FS (friction / net) has no meaning — it was printing as infinite. Graded as a FORCE: net push
+`max(0, T − H) = 0` against what friction holds at FS 1.5. The governing unit weight is the one
+with the larger net against its friction — 130 pcf, −15,263 / 110,133 against −16,273 / 100,047 —
+so the capacity is `110,133 / 1.5 = 73,422 lb`, **d/c 0.000 ✓**; ties break on the lower pcf so
+the record is deterministic. The form is the same ratio the FS row printed whenever the net is
+positive (`1.5·net/friction`), so nothing else moves. At 2× E the net turns positive:
+71,927 − 61,446 = 10,481 → 0.143.
+
+**The slab-edge product's own sustained-load rule — printed, NOT graded.** Owens Corning's
+design guidance holds a *sustained* load to 1/3 of the compressive rating (13.3 psi for
+FOAMULAR 400): `44,582 / (13.33 x 1,512) = 2.21`. Not graded, and deliberately: the rule guards
+a board against creep under a dead load it must hold forever. This thrust is an **imposed
+deformation** (a court growing by 0.03" each summer), and under an imposed deformation creep
+shows up as relaxation — the stress falls, the strain does not grow. A row would re-shut the
+permit print on a rule written for the other loading. If a PE reads it as governing,
+**FOAMULAR 1000** (100 psi, Type V) closes it: `44,582 / (33.3 x 1,512) = 0.885`; the board needed
+is ≥ 88.5 psi rated. That is an open owner decision (DESIGN-LOG), not this note's.
+
+**Sensitivity on E** (the closure boards' 525 psi is still an estimate; the slab edge's E does
+not enter — the house is taken rigid):
+
+| E | x | T | slab edge | global | beam board | floor line |
+|---|---|---|---|---|---|---|
+| 350 (×0.67) | 207.1" | 34,012 | 0.543 | 0.411 | 0.399 | 0.179 |
+| **525 (graded)** | 187.5" | 46,183 | **0.737** | 0.558 | 0.541 | 0.244 |
+| 730 (ρ², ×1.39) | 168.8" | 57,804 | 0.923 | 0.699 | 0.678 | 0.305 |
+| 788 (×1.5) | 164.2" | 60,657 | 0.968 | 0.733 | 0.711 | 0.320 |
+| 1,050 (×2) | 146.0" | 71,927 | **1.148** | 0.869 | 0.843 | 0.380 |
+
+The slab edge is the only row that goes over anywhere in the band, and only at 2×. Without the
+stripping (the flag off) T returns to 100,288 lb and the edge reads 93,955 / 60,480 = **1.553**
+even on FOAMULAR 400 — neither decision closes the item alone.
+
+**Verdict (basis 7): OK on all five items**, slab edge governing at 0.737. What stands between
+it and a seal: E (estimated), the neutral-point idealisation, the presumed soil, and the 1/3 rule's
+reading. The stripping is a field sequence the model states and cannot enforce —
+`AN-SG-BLOCKOUTS`, `tasks.toml`'s `boards` checkpoints and the `break_blockouts_stripped`
+inspection carry it to site.
+
 
 ---
 
@@ -2120,6 +2218,7 @@ out of it.
 - ACI 347R-14 §4.2.2 (wall formula, C_c; capped at wh), ACI CODE-440.11-22 (§20.2.2.3 C_E 0.85, §24.6.2 0.30 f_fu sustained, §25.4.2.1/§25.4.2.4 development, Table 21.2.1 φ, Ch. 17 not addressed), ACI 318-19 §5.3.6 / ASCE 7-16 §2.3.4 (T at 1.0), ACI 318-19 §22.3, §22.5.5.1, ASTM C578 (types), ASTM D7957, ACI 306R-16 Table 3.1 (50 °F minimum as-placed, 12"-36"), AASHTO LRFD Table 3.12.2.1.1-1 (concrete, cold climate, 0-80 °F), MnDOT LRFD Bridge Design Manual §3.10.1, ICC-ES ESR-2555 Table 1 (MASA F2), IBC Table 1806.2, Baker & Swan (1966) *Climate of Minnesota Part IV*, Kusuda & Achenbach (1965) — §11
 - Owens Corning Aslan 100 GFRP rebar data sheet (OC Pub. 10022295; basis 4, bars deleted at basis 5); DuPont Styrofoam Highload 40 PIS 43-D100079-enNA; ROCKWOOL Toprock DD TDS (09-2026, §11g) and Comfortboard 80 TDS (07-2025); Hussain & Nanni, ACI SJ 120-S74 (2023) — §11
 - Owens Corning FOAMULAR Tech Bulletin 10015702-C (07-2025, C578 Type X); DuPont UtilityFit PIS 43-D100997; ACI 360R-92 §6.3 (subgrade drag, neutral point); ACI 207.2R-07; ACI 231R-10; ACI 318-19 Table 21.2.1, §14.5.6; ASCE 7-16 Table C3.1-1a (8 psf partitions); IBC Table 1610.1 / 1806.2 — §11i (basis 6)
+- Owens Corning FOAMULAR 400/600/1000 Product Data Sheet (PDS 07 21 13.13.OCC: ASTM C578 Type VI/VII/V, 40/60/100 psi min, minimum compressive modulus 1,800/2,500/3,700 psi by ASTM D1621, sustained load ≤ 1/3 of rating); ASTM D1621 — §11j (basis 7)
 - W. R. Meadows CERAMAR PDS #323 (07-2026) and DECK-O-FOAM PDS #325 (04-2026); Owens Corning FOAMULAR Tech Bulletin 10015703; ROCKWOOL Comfortboard 110 data sheet; ASTM D1056 grade table (nedc.com); ACI 209R-92; ASCE 7-16 Table C3.1-1a — §11h (WIP)
 - Bowles, *Foundation Analysis and Design* 5th ed. (1997) Table 9-1 — presumed k_v, §11f
 - PCA, *Design and Control of Concrete Mixtures* — α_c 5.5 × 10⁻⁶ /°F, §11c

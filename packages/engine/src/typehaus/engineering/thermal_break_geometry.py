@@ -33,6 +33,9 @@ class Board:
     structure: set[str] = field(default_factory=set)
     court_tag: str | None = None  # the court element the board is cast against
     house_tag: str | None = None  # the house element named in ``connects``
+    #: Cast against a stripped blockout, the board set after: no pour locks anything in.
+    #: A layer board inherits it from the authored boards on its loop (``thermal_break``).
+    formed_and_stripped: bool = False
 
     @property
     def mid_in(self) -> float:
@@ -139,7 +142,8 @@ def authored_board(ctx, element, loops: dict) -> Board | None:
     board = Board(element.tag, element, ax, hi - lo, (solid.z1_m - solid.z0_m) * _IN,
                   along[1] - along[0], solid.z0_m * _IN, solid.z1_m * _IN, along,
                   court_face_in=lo, house_face_in=hi, loop_ref=ref, structure=structure,
-                  court_tag=court_tag, house_tag=house_tag)
+                  court_tag=court_tag, house_tag=house_tag,
+                  formed_and_stripped=bool(getattr(element, "formed_and_stripped", False)))
     house = concrete_extent(ctx, house_tag, ax) if house_tag else None
     if house is not None and abs(house[0] - lo) < abs(house[0] - hi) and abs(
             house[1] - lo) < abs(house[1] - hi):

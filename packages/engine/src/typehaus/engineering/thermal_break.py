@@ -3,12 +3,13 @@
 
 **Nothing crosses the break, and no row grades a shear across it**: the court holds its own
 thrust (``retaining_system``) and the board keeps the house out of that free body. What is
-graded is what the board and the house behind it must survive — free body §11i (basis 6),
+graded is what the board and the house behind it must survive — free body §11j (basis 7),
 hand-worked first:
 
-* the board — fresh-concrete pressure on the AUTHORED placement (ACI 347R-14, capped at wh),
-  and its summer strain, the locked-in pour plus the closing at the neutral point;
-* the thrust, ``k_i ε_i x`` at the neutral point plus the locked-in pour
+* the board — fresh-concrete pressure on the AUTHORED placement (ACI 347R-14, capped at wh)
+  where it is a form face, and its summer strain, any locked-in pour plus the closing at the
+  neutral point; a board set into a stripped blockout (``formed_and_stripped``) takes no pour;
+* the thrust, ``k_i ε_i x`` at the neutral point plus any locked-in pour
   (:mod:`thermal_break_demand`), into the house wall (flexure, shear, the floor line, the
   house's own insulation), along the house's lateral path (:mod:`thermal_break_path`), and
   back into the court.
@@ -33,11 +34,11 @@ KIND = "thermal_break_transfer"
 BASIS = ("ACI 347R-14 (fresh-concrete pressure); ACI 209R-92 (stem shrinkage); ACI 318-19 "
          "(house wall, slab strut); IBC 1610.1/1806.2 (house sliding, soil); IRC R404.4 loop")
 #: Bumped whenever the arithmetic below changes — it rides in the fingerprint.
-BASIS_VERSION = "6"
+BASIS_VERSION = "7"
 #: Multiples of an ESTIMATED modulus the sensitivity note re-grades at (free body §11i).
 E_SENSITIVITY = (2.0 / 3.0, 1.5, 2.0)
 
-oracled_by(KIND, Oracle(note="sunken_garden_court_free_body.md", section="§11i",
+oracled_by(KIND, Oracle(note="sunken_garden_court_free_body.md", section="§11j",
                         test="tests/test_thermal_break.py"))
 
 _NOTES = (
@@ -48,8 +49,9 @@ _NOTES = (
     "drift, joint opening and development — there is no tie to grade.",
     "RETIRED WITH THE STRIP (free body §11i): sliding and bearing of one isolated house strip "
     "— replaced by the house's lateral path through its slab on grade.",
-    "NO FLOTATION ROW: nothing restrains a board with no bars, so it is held by the work — "
-    "adhered or pinned to the cured house face and braced (sequencing trap 2).")
+    "NO FLOTATION ROW: nothing restrains a board with no bars. A form-face board is held by "
+    "the work (adhered or pinned to the cured house face, and braced); a stripped one is set "
+    "into its slot after the pour and never meets fresh concrete (sequencing trap 2).")
 
 
 def _boards(ctx: EngineeringContext, loops: dict) -> list[geo.Board]:
@@ -72,12 +74,14 @@ def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
     loops = footing_shortfalls(ctx)
     boards = _boards(ctx, loops)
     products = {b.tag: brd.product_of(b.element) for b in boards if b.element is not None}
-    # A layer board names no product of its own (a Layer has no compressive field); it is the
-    # product the same court's authored boards name — `test_catlin_contract_m3` pins that.
+    # A layer board names no product and no sequence of its own (a Layer has neither field);
+    # it is the product the same court's authored boards name — `test_catlin_contract_m3` pins
+    # that — and it is stripped when they all are (free body §11j: the beam's blockout).
     for b in boards:
         if b.element is None:
-            products[b.tag] = next((products[o.tag] for o in boards if o.element is not None
-                                    and o.loop_ref == b.loop_ref and products[o.tag]), None)
+            mine = [o for o in boards if o.element is not None and o.loop_ref == b.loop_ref]
+            products[b.tag] = next((products[o.tag] for o in mine if products[o.tag]), None)
+            b.formed_and_stripped = bool(mine) and all(o.formed_and_stripped for o in mine)
     bodies = loop_free_bodies(ctx)
     graded = _grade(ctx, boards, products, bodies, 1.0)
     if any(p is not None and p.estimated for p in products.values()):
@@ -140,22 +144,31 @@ def _one(ctx, board, sh):
     if product.estimated:
         notes.append(f"ESTIMATED MODULUS: {product.modulus_psi:,.0f} psi is not published — "
                      f"{product.source}.")
-    pour = brd.pressure(ctx, board, product, states, missing, inputs)
+    pour = None
+    if board.formed_and_stripped:
+        notes.append(dem.FORMED_AND_STRIPPED_NOTE)
+        if board.element is not None and not board.element.placement_sequence_ref:
+            missing.append(f"IsolationBoard.placement_sequence_ref for {board.tag} — the "
+                           f"annotation that puts the stripped blockout on the drawing")
+    else:
+        pour = brd.pressure(ctx, board, product, states, missing, inputs)
     if temps is None:
         missing.append(brd.TEMPERATURE_MISSING)
     elif board.tag in sh["closure"]:
         inputs.append(Quantity("neutral_point", sh["npt"][board.loop_ref][0], "in", 0.01))
-        notes += [dem.NEUTRAL_POINT_FLAG, dem.LOCK_IN_FLAG]
+        notes.append(dem.NEUTRAL_POINT_FLAG)
+        if not board.formed_and_stripped:
+            notes.append(dem.LOCK_IN_FLAG)
         if dem.dries(ctx, board):
             notes.append(dem.shrinkage_flag(dem.stem_shrinkage()))
         brd.movement(board, product, temps, geo.court_run_in(ctx, board),
                      sh["closure"][board.tag], pour, states, inputs, sh["e_scale"])
     if board.tag in sh["sigma"]:
-        _thrust_rows(ctx, board, sh, pour, states, missing, inputs)
+        _thrust_rows(ctx, board, sh, pour, states, missing, inputs, notes)
     return states, missing, inputs, notes
 
 
-def _thrust_rows(ctx, board, sh, pour, states, missing, inputs) -> None:
+def _thrust_rows(ctx, board, sh, pour, states, missing, inputs, notes) -> None:
     sigma = sh["sigma"][board.tag]
     inputs += [Quantity("board_stress", sigma, "psi", 0.001),
                Quantity("board_lock_in", sh["lock"][board.tag], "lb", 1.0),
@@ -170,7 +183,7 @@ def _thrust_rows(ctx, board, sh, pour, states, missing, inputs) -> None:
     floor = sum(p["top_reaction"] + p["band"] for b in mine
                 if (p := sh["patches"].get(b.tag)) is not None)
     inputs.append(Quantity("house_thrust", total, "lb", 1.0))
-    path.path_rows(ctx, mine, total, floor, states, missing)
+    path.path_rows(ctx, mine, total, floor, states, missing, notes)
     if board.loop_ref is not None:
         house.court_sliding(ctx, board.loop_ref, total, sh["free_bodies"], states, missing)
 
