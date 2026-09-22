@@ -3708,17 +3708,27 @@ _BOARD_PRODUCT = dict(
            "deformation (Owens Corning Tech Bulletin 10015702-C, 07-2025); modulus "
            "ESTIMATED 525 psi = 35 x 15 on the Styrofoam Highload E/sigma ratio (none "
            "published)",
+    # Basis 7 (2026-09-22, owner; free body §11j): every board is set into a stripped
+    # blockout, never cast against. AN-SG-PLACEMENTS / AN-SG-BLOCKOUTS say so on the drawing,
+    # which is why the ref is now load-bearing: stripped without it is a named missing input.
+    formed_and_stripped=True,
     placement_sequence_ref="AN-SG-PLACEMENTS")
 
-# ** THREE SEQUENCING TRAPS ON THIS BOARD — FIELD INSTRUCTIONS THE MODEL CANNOT EXPRESS. **
+# ** FOUR SEQUENCING TRAPS ON THIS BOARD — FIELD INSTRUCTIONS THE MODEL CANNOT EXPRESS. **
 # 1. The footing board and the stem board meet at the court floor plane (`SL-SG-FLOOR`,
 #    -109 7/16"), the wettest, saltiest surface in the court (§6a). LAP the upper board past
 #    that joint; the model cannot draw a lap.
-# 2. With no bars, NOTHING HOLDS A BOARD DURING ITS POUR: the footing board has 4" of
-#    excavation under it and floats (146 lb at 150 pcf); every board must be adhered or
-#    pinned to the cured house face per the filler maker's instructions, and braced.
+# 2. NO BOARD IS IN A POUR ANY MORE (basis 7). Every court face that meets a board is cast
+#    against a greased, pull-rodded BLOCKOUT of the board's own thickness, stripped, and the
+#    board is set into the slot afterwards: TB-SG-W1/E1 2.5" x 8" x 84", TB-SG-*-STEM 2.5" x
+#    12" x 109 7/16", W-SG-BRKBM's 2.0" x 17 3/4" x 19'-0", pulled up out of the stone side.
+#    A board cast against locks in the pour's squeeze for good; the beam's alone was 41,162 lb,
+#    76% of the 54,105 lb that put basis 6 OVER. Nothing floats and nothing is braced.
 # 3. The beam's board depends on FT-B-S2/S3's 2" toe trim — a HOLD POINT before the house
 #    footing pour, not after.
+# 4. The boards are set on the WALLS visit (`tasks.toml` checkpoint `boards`, after `strip`),
+#    not the footings' `forms`: the footing blockouts stay in through the wall pour, and
+#    every board goes in once the walls are stripped. `AN-SG-BLOCKOUTS` is the drawing's copy.
 #
 # ** THE BOARD IS CENTRED ON THE FOOTING, NOT ON THE WALL AXIS, and is as long as the
 # footing is wide. ** They coincide at a zero offset; the expression keeps them coinciding
@@ -4235,13 +4245,17 @@ PORCH_BEAM_CAPS = BEAM_CAPS
 SEQUENCE_NOTES = [
     Annotation(
         uid="SGAN01AAAA", tag="AN-SG-PLACEMENTS", position=pt(ft(_cx), ft(-20)),
-        text="THREE PLACEMENTS, NOT FOUR — AND THE ORDER IS THE DESIGN. (1) FOOTINGS AND PIERS: the five strip footings FT-SG-W1/E1/W2/E2/S and BOTH column pads in one placement. THE PADS ARE FORMED, NOT UNDER-REAMED, SINCE 2026-09-14: 30in square by 12in thick, bearing at -12ft 7-7/16in, with the 12in round cast on top of each. There is no auger and no under-reamer on this job any more — the excavation is dug and the pad is formed in the bottom of it, which is why the levelling bed under each (FB-SG-COL/-FCOL) is still 7in of washed stone and not a 42in replacement section. Dig both pits WITH THE OPEN BASEMENT EXCAVATION: PD-SG-COL reaches to within 8in of FT-B-S2/S3 in plan and bears 34in below them, inside their 1:1 influence line, so excavating after backfill undermines the house footing. (2) WALLS AND GRADE BEAM: all five court walls, W-SG-ARCH and W-SG-BRKBM, one form height (every wall top is the porch datum 0ft 0in), one strip-and-set. W-SG-BRKBM IS CAST MONOLITHIC WITH THE TWO SIDE WALLS, NOT DOWELLED INTO THEM (settled 2026-09-14): it is a blockout inside this same form between -8ft 6-7/16in and -10ft 0-3/16in, its 3 #5 top and bottom lapping into W-SG-W1/W-SG-E1s vertical steel. It was named in NO placement until now, while notes/sunken_garden_veneer_beam.md called it cast in one section and chipped-and-dowelled in another - and there is no existing pour to chip, because this placement is where those side walls are themselves cast. THE HOUSE BASEMENT WALL MUST BE POURED, CURED AND SURVEYED FIRST — the upper thermal-break dowels are epoxied into it with about 1in of drill tolerance. (3) RIM SLAB AND COLUMNS: SL-SG-FLOOR with all six 12in cast rounds in the same placement, the four balcony corners braced off the court floor and the wall tops rather than off porch framing that does not exist yet. EVERY COURT PLACEMENT NEEDS THE BOOM PUMP and the pumping allowance is already recorded as probably short. This saves one mobilisation and one below-minimum load against the four-pour sequence it replaces"),
+        text="THREE PLACEMENTS, NOT FOUR — AND THE ORDER IS THE DESIGN. (1) FOOTINGS AND PIERS: the five strip footings FT-SG-W1/E1/W2/E2/S and BOTH column pads in one placement. THE PADS ARE FORMED, NOT UNDER-REAMED, SINCE 2026-09-14: 30in square by 12in thick, bearing at -12ft 7-7/16in, with the 12in round cast on top of each. There is no auger and no under-reamer on this job any more — the excavation is dug and the pad is formed in the bottom of it, which is why the levelling bed under each (FB-SG-COL/-FCOL) is still 7in of washed stone and not a 42in replacement section. Dig both pits WITH THE OPEN BASEMENT EXCAVATION: PD-SG-COL reaches to within 8in of FT-B-S2/S3 in plan and bears 34in below them, inside their 1:1 influence line, so excavating after backfill undermines the house footing. (2) WALLS AND GRADE BEAM: all five court walls, W-SG-ARCH and W-SG-BRKBM, one form height (every wall top is the porch datum 0ft 0in), one strip-and-set. W-SG-BRKBM IS CAST MONOLITHIC WITH THE TWO SIDE WALLS, NOT DOWELLED INTO THEM (settled 2026-09-14): it is a blockout inside this same form between -8ft 6-7/16in and -10ft 0-3/16in, its 3 #5 top and bottom lapping into W-SG-W1/W-SG-E1s vertical steel. It was named in NO placement until now, while notes/sunken_garden_veneer_beam.md called it cast in one section and chipped-and-dowelled in another - and there is no existing pour to chip, because this placement is where those side walls are themselves cast. THE HOUSE BASEMENT WALL MUST BE POURED, CURED AND SURVEYED FIRST — every thermal-break blockout is set against its face (AN-SG-BLOCKOUTS; the dowels that once needed it are deleted). (3) RIM SLAB AND COLUMNS: SL-SG-FLOOR with all six 12in cast rounds in the same placement, the four balcony corners braced off the court floor and the wall tops rather than off porch framing that does not exist yet. EVERY COURT PLACEMENT NEEDS THE BOOM PUMP and the pumping allowance is already recorded as probably short. This saves one mobilisation and one below-minimum load against the four-pour sequence it replaces"),
     Annotation(
         uid="SGAN02AAAA", tag="AN-SG-MIX", position=pt(ft(_cx), ft(-23)),
         text="MIX SUBSTITUTION, PERMITTED: the court comes off ONE ticket. PIER_BASE_12 (the two belled pier bases) specifies BURIED_MIX and everything else here specifies EXPOSED_MIX. Both are 5,000 psi at w/cm <= 0.40; EXPOSED_MIX adds class F3+C2 air entrainment and SCM caps, so it satisfies every requirement BURIED_MIX states and is the richer of the two. SUPPLY THE WHOLE COURT WITH EXPOSED_MIX. Do not read this as an assembly change — PIER_BASE_12 is shared with the north entry's pads, where the buried mix is correct and cheaper, and retyping it would move concrete that is not in this court. This note is the substitution; the schedule is not wrong"),
     Annotation(
         uid="SGAN03AAAA", tag="AN-SG-COLDWEATHER", position=pt(ft(_cx), ft(-26)),
         text="MILESTONE, HARD: the court's LAST placement (3) is before 1 NOVEMBER. Cold-weather protection is priced at zero on a summer-pour assumption and is worth $8,000-21,000 if it slips — heated enclosure, blankets, admixture and extended cure over a 9ft hole with no drainage, which is the expensive end of that range. This placement sits at the end of the longest dependency chain of any concrete in the house: house basement wall poured, cured and surveyed, then the footing trim at FT-B-S2/S3 signed off, then placements (1) and (2), then this. Pulling the six columns forward into (3) rather than leaving them to a fourth pour behind the porch carpentry is as much a schedule hedge as a saving"),
+    # Hand-minted 2026-09-22 (`haus fmt` does not visit params/); unique by grep.
+    Annotation(
+        uid="SGAN04AAAA", tag="AN-SG-BLOCKOUTS", position=pt(ft(_cx), ft(-29)),
+        text="THERMAL-BREAK BLOCKOUTS — NO BOARD IS CAST AGAINST (basis 7, free body 11j). Every court face that meets an isolation board is formed against a greased, pull-rodded blockout of the board's own thickness, stripped, and the board set into the slot afterwards: TB-SG-W1/E1 2-1/2in x 8in x 84in (placement 1, left in until the walls strip), TB-SG-W1/E1-STEM 2-1/2in x 12in x 9ft 1-7/16in and W-SG-BRKBM's 2in x 17-3/4in x 19ft 0in (placement 2, the beam's pulled up out of the bedding-stone side). Boards are set after the walls are stripped, before backfill, and the owner walks the empty slots first (inspection break_blockouts_stripped). The board is FOAMULAR-class XPS as scheduled; nothing holds it but the slot. A board cast against the pour locks in its fresh-concrete squeeze for good — the beam's alone was 41,162 lb — and puts the house's slab edge and global sliding back over"),
 ]
 
 BASEMENT_ELEMENTS = [*NODES, *WALLS, *GRADE_BEAMS, COLUMN, FRONT_COLUMN, *FOOTINGS,

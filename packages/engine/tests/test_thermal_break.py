@@ -1,10 +1,12 @@
-"""``engineering/thermal_break.py`` against ``sunken_garden_court_free_body.md`` §11i (basis 6).
+"""``engineering/thermal_break.py`` against ``sunken_garden_court_free_body.md`` §11j (basis 7).
 
-The note was worked by hand before the module was rewritten; this file reproduces it. Basis 6
-is a pure isolation joint of ASTM C578 Type X XPS (15 psi, E ESTIMATED at 525), graded on the
-neutral-point demand with the stems' shrinkage credit and the pour locked in, along the
-house's real lateral path. Every item is OVER on the slab edge and global sliding, which the
-stop rule reports rather than designs away.
+The note was worked by hand before the module was rewritten; this file reproduces it. Basis 7
+is basis 6's pure isolation joint — ASTM C578 Type X XPS, 15 psi, E ESTIMATED at 525, the
+neutral-point demand with the stems' shrinkage credit — with two owner decisions in the model:
+every board is set into a STRIPPED BLOCKOUT (no pour lock-in) and ``SL-B-FLOOR``'s 1" perimeter
+break states its grade (FOAMULAR 400, Type VI, 40 psi). Every item is OK, slab edge governing.
+Two ablations below are the proof that each decision is the lever: take either away and the
+numbers walk back to basis 6.
 """
 
 from __future__ import annotations
@@ -19,40 +21,44 @@ from typehaus.engineering.thermal_break import KIND
 _FOOT, _STEM, _BEAM = ("TB-SG-W1", "TB-SG-E1"), ("TB-SG-W1-STEM", "TB-SG-E1-STEM"), "W-SG-BRKBM"
 _ALL = (*_FOOT, *_STEM, _BEAM)
 
-# The lateral path is one set of links for the whole thrust (§11i), on every item.
+# The lateral path is one set of links for the whole thrust (§11j), on every item.
 _PATH = {
-    "house slab-edge bearing": (93_955.0, 22_680.0, 4.143),
-    "house slab strut compression": (62.14, 2_040.0, 0.0305),
-    "house global sliding": (1.5, 1.238, 1.212),
-    "house far-wall soil bearing": (58_835.0, 130_534.0, 0.451),
-    "court sliding under break thrust": (1.5, 2.644, 0.567),
+    "house slab-edge bearing": (44_582.1, 60_480.0, 0.7371),
+    "house slab strut compression": (29.4855, 2_040.0, 0.014454),
+    "house global sliding": (1.5, 2.6877, 0.5581),
+    "house far-wall soil bearing": (52_213.6, 130_534.1, 0.4000),
+    # Net thrust less the retained soil is NEGATIVE, so the row is a force, not an FS.
+    "court sliding under break thrust": (0.0, 73_422.3, 0.0),
 }
-# (demand, capacity, ratio) per row, hand-worked in §11i.
+# (demand, capacity, ratio) per row, hand-worked in §11j. No fresh-concrete pressure row on
+# any board: a blockout takes the pour and the board is set after it is stripped.
 _NOTE = {
     "foot": {
-        "fresh-concrete pressure": (0.6944, 15.0, 0.0463),
-        "board strain, pour + closing": (0.034247, 0.071429, 0.4795),
+        "board strain, pour + closing": (0.0309399, 0.071429, 0.4332),
         **_PATH,
     },
     "stem": {
-        "fresh-concrete pressure": (9.4998, 15.0, 0.6333),
-        "board strain, pour + closing": (0.050408, 0.071429, 0.7057),
-        "house insulation bearing": (10.586, 15.0, 0.7057),
-        "house wall flexure": (89_753.0, 276_299.0, 0.325),
-        "house wall shear": (4_497.0, 72_377.0, 0.0621),
-        "house floor-line reaction": (3_167.0, 3_285.0, 0.964),
+        "board strain, pour + closing": (0.0051739, 0.071429, 0.0724),
+        "house insulation bearing": (1.0860, 15.0, 0.0724),
+        "house wall flexure": (15_012.9, 276_298.8, 0.0543),
+        "house wall shear": (625.54, 72_376.8, 0.0086),
+        "house floor-line reaction": (800.65, 3_285.0, 0.2437),
         **_PATH,
     },
     "beam": {
-        "fresh-concrete pressure": (10.4329, 15.0, 0.6955),
-        "board strain, pour + closing": (0.070685, 0.057143, 1.237),
+        "board strain, pour + closing": (0.0309399, 0.057143, 0.5414),
         **_PATH,
     },
 }
 _NOTE_X_IN = 187.51
 _NOTE_SIGMA_PSI = {"TB-SG-W1": 6.497, "TB-SG-W1-STEM": 1.086, _BEAM: 8.122}
-_NOTE_LOCK_LB = {"TB-SG-W1": 233.3, "TB-SG-W1-STEM": 6_238.0, _BEAM: 41_162.0}
-_NOTE_TOTAL_LB = 100_288.0
+# Every board is formed and stripped, so nothing is locked in. The second column is what
+# each board WOULD carry as a form face (§11i) — `test_a_formed_and_stripped_board_carries_
+# no_pour` reads it back, because a flag with no measured effect is not a lever.
+_NOTE_LOCK_LB = {"TB-SG-W1": 0.0, "TB-SG-W1-STEM": 0.0, _BEAM: 0.0}
+_FORM_FACE_LOCK_LB = {"TB-SG-W1": 233.3, "TB-SG-W1-STEM": 6_238.0, _BEAM: 41_162.0}
+_NOTE_TOTAL_LB = 46_183.4
+_FORM_FACE_TOTAL_LB = 100_288.0
 _NOTE_RUN_IN = 322.565
 
 
@@ -103,23 +109,25 @@ def test_every_row_reproduces_section_11(records, tag) -> None:
 
 
 @pytest.mark.parametrize("tag", _ALL)
-def test_basis_6_is_over_with_nothing_open(records, tag) -> None:
+def test_basis_7_is_ok_with_nothing_open(records, tag) -> None:
     record = records[tag]
-    assert record.status is Status.OVER
+    assert record.status is Status.OK
     assert record.missing == ()
-    assert record.basis_version == "6"
+    assert record.basis_version == "7"
     notes = " ".join(record.notes)
     for flag in ("RETIRED WITH THE BARS", "RETIRED WITH THE STRIP", "ESTIMATED MODULUS",
-                 "NEUTRAL POINT", "POUR LOCK-IN", "SENSITIVITY ON E"):
+                 "NEUTRAL POINT", "FORMED AND STRIPPED", "SENSITIVITY ON E",
+                 "THE SHEET'S SUSTAINED-LOAD RULE"):
         assert flag in notes, (tag, flag)
+    # The lock-in flag is a statement about a form face and this joint has none.
+    assert "POUR LOCK-IN" not in notes
     assert ("STEM SHRINKAGE" in notes) == (tag in _STEM)
 
 
 def test_the_neutral_point_the_thrust_and_the_run(records) -> None:
     for tag, sigma in _NOTE_SIGMA_PSI.items():
         assert _input(records[tag], "board_stress") == pytest.approx(sigma, abs=1e-3)
-        assert _input(records[tag], "board_lock_in") == pytest.approx(
-            _NOTE_LOCK_LB[tag], rel=1e-3)
+        assert _input(records[tag], "board_lock_in") == _NOTE_LOCK_LB[tag]
     for tag in _ALL:
         assert _input(records[tag], "neutral_point") == pytest.approx(_NOTE_X_IN, abs=0.01)
         assert _input(records[tag], "house_thrust") == pytest.approx(_NOTE_TOTAL_LB, rel=1e-4)
@@ -135,8 +143,9 @@ def test_the_stem_shrinkage_is_aci_209r() -> None:
 
 def test_the_sensitivity_note_reads_the_higher_modulus(records) -> None:
     note = next(n for n in records["TB-SG-W1-STEM"].notes if n.startswith("SENSITIVITY"))
-    # §11i's table: the floor line passes at 525 psi and fails at x1.5 and x2.
-    assert "house floor-line reaction 0.964 -> 0.900 / 1.040 / 1.100" in note
+        # §11j's table: the floor line moves with E and never approaches its capacity now.
+    assert "house floor-line reaction 0.244 -> 0.179 / 0.320 / 0.380" in note
+    assert "house slab-edge bearing 0.737 -> 0.543 / 0.968 / 1.148" in note
 
 
 def _compute_with(ctx, monkeypatch, **values):
@@ -156,12 +165,13 @@ def test_an_unnamed_product_holds_every_row_open(ctx, monkeypatch) -> None:
     assert out[_BEAM].limit_states == (), "the beam's board names the closure boards' product"
 
 
-def test_without_a_placement_sequence_the_pour_is_monolithic(ctx, monkeypatch) -> None:
-    out = _compute_with(ctx, monkeypatch, placement_sequence_ref=None)
+def test_without_a_placement_sequence_a_form_face_pour_is_monolithic(ctx, monkeypatch) -> None:
+    out = _compute_with(ctx, monkeypatch, placement_sequence_ref=None,
+                        formed_and_stripped=False)
     state = _state(out["TB-SG-W1"], "fresh-concrete pressure")
     assert state.demand == pytest.approx(150 * 117.4375 / 1728.0, abs=1e-4)
     # And the locked-in pour follows it: a 117" head on the footing board, not 8".
-    assert _input(out["TB-SG-W1"], "board_lock_in") > 10 * _NOTE_LOCK_LB["TB-SG-W1"]
+    assert _input(out["TB-SG-W1"], "board_lock_in") > 10 * _FORM_FACE_LOCK_LB["TB-SG-W1"]
 
 
 def _with_site(ctx, **site_values):
@@ -178,7 +188,8 @@ def test_no_service_temperature_holds_the_thermal_rows_open(ctx) -> None:
     out = {r.key: r for r in tb.compute(_with_site(ctx, concrete_service_temperature=None))}
     record = out["TB-SG-W1"]
     assert TEMPERATURE_MISSING in record.missing
-    assert [s.name for s in record.limit_states] == ["fresh-concrete pressure"]
+    # Not even a pressure row is left: a stripped board never meets fresh concrete.
+    assert record.limit_states == ()
     assert record.status is Status.INCOMPLETE
 
 
@@ -188,6 +199,93 @@ def test_a_k_v_only_report_leaves_base_rotation_on_its_band(ctx) -> None:
     report = ctx.plan.project.site.lateral_subgrade_modulus.model_copy(update={"n_h_pci": None})
     assert measured(_with_site(ctx, lateral_subgrade_modulus=report)) is None
     assert measured(ctx) is not None, "catlin authors a presumed n_h since 2026-09-21"
+
+
+def test_a_formed_and_stripped_board_carries_no_pour(ctx, monkeypatch) -> None:
+    """The flag is the lever, and this reads it BOTH ways: off, every board is a form face
+    again and basis 6's lock-in, thrust and slab edge come straight back."""
+    out = _compute_with(ctx, monkeypatch, formed_and_stripped=False)
+    for tag, lock in _FORM_FACE_LOCK_LB.items():
+        assert _input(out[tag], "board_lock_in") == pytest.approx(lock, rel=1e-3), tag
+        assert _input(out[tag], "house_thrust") == pytest.approx(_FORM_FACE_TOTAL_LB, rel=1e-4)
+        assert _state(out[tag], "fresh-concrete pressure") is not None, tag
+    # Still OK on FOAMULAR 400 — one decision does not close the item on its own — but the
+    # edge has walked from 0.737 to 1.553 and the beam's board is over again.
+    assert _state(out["TB-SG-W1"], "house slab-edge bearing").ratio == pytest.approx(
+        93_955.0 / 60_480.0, rel=1e-3)
+    assert _state(out[_BEAM], "board strain, pour + closing").ratio > 1.0
+    assert out[_BEAM].status is Status.OVER
+
+
+def test_the_beam_board_inherits_the_stripping_statement(ctx, monkeypatch) -> None:
+    """A Layer names no sequence of its own, so the veneer beam's board reads the authored
+    boards' statement — 41,162 lb of it, 76% of the lock-in that put basis 6 over."""
+    assert _input(_compute_with(ctx, monkeypatch, formed_and_stripped=False)[_BEAM],
+                  "board_lock_in") == pytest.approx(41_162.0, rel=1e-3)
+    monkeypatch.undo()
+    from typehaus.engineering import thermal_break as tb
+
+    assert _input({r.key: r for r in tb.compute(ctx)}[_BEAM], "board_lock_in") == 0.0
+
+
+def test_a_stripped_board_must_name_its_placement_annotation(ctx, monkeypatch) -> None:
+    out = _compute_with(ctx, monkeypatch, placement_sequence_ref=None)
+    assert any("placement_sequence_ref" in m for m in out["TB-SG-W1"].missing)
+    assert out["TB-SG-W1"].status is Status.INCOMPLETE
+
+
+def _with_slab_break(ctx, **values):
+    from typehaus.engineering import thermal_break_path as path
+
+    slab = ctx.plan.by_tag("SL-B-FLOOR")
+    brk = slab.perimeter_thermal_break.model_copy(update=values)
+    return slab.model_copy(update={"perimeter_thermal_break": brk}), path
+
+
+def test_the_slab_edge_reads_the_authored_grade(ctx, monkeypatch) -> None:
+    """Strip the product off SL-B-FLOOR's break and the edge falls back to the C578 floor —
+    15 psi, an unstated grade, and 1.966 OVER. It never goes INCOMPLETE: an ungraded row can
+    never read over, which is how 4.14 stayed visible through basis 6."""
+    from typehaus.engineering import thermal_break as tb
+
+    slab, path = _with_slab_break(ctx, psi=None, modulus_psi=None, source=None,
+                                 sustained_load_fraction=None)
+    real = path.house_slab
+    monkeypatch.setattr(path, "house_slab",
+                        lambda c, f: (slab, real(c, f)[1]) if real(c, f) else None)
+    record = {r.key: r for r in tb.compute(ctx)}["TB-SG-W1"]
+    state = _state(record, "house slab-edge bearing")
+    assert state.capacity == pytest.approx(15.0 * 3.5 * 432.0)
+    assert state.ratio == pytest.approx(1.966, rel=1e-3)
+    assert "grade unstated" in state.citation
+    assert record.status is Status.OVER and record.missing == ()
+    assert not any("SUSTAINED-LOAD" in n for n in record.notes)
+
+
+def test_the_sheets_sustained_load_rule_is_printed_not_graded(records) -> None:
+    record = records["TB-SG-W1"]
+    assert not any("sustained" in s.name for s in record.limit_states)
+    note = next(n for n in record.notes if "SUSTAINED-LOAD" in n)
+    assert "NOT GRADED" in note
+    # 44,582 / (1/3 x 40 psi x 3.5" x 432") = 2.21, and >= 88.5 psi is what would satisfy it.
+    assert "2.212" in note and "88.5 psi" in note
+
+
+def test_slab_thermal_break_round_trips_and_a_rating_names_its_sheet() -> None:
+    import pytest as _pytest
+
+    from typehaus.model.floors import SlabThermalBreak
+    from typehaus.quantities import inch
+
+    brk = SlabThermalBreak(material_ref="xps", thickness=inch(1), psi=40.0,
+                           modulus_psi=1800.0, sustained_load_fraction=1 / 3,
+                           source="Owens Corning FOAMULAR 400, ASTM C578 Type VI")
+    assert SlabThermalBreak.model_validate(brk.model_dump()) == brk
+    assert not brk.modulus_estimated
+    with _pytest.raises(ValueError, match="source"):
+        SlabThermalBreak(material_ref="xps", thickness=inch(1), psi=40.0)
+    bare = SlabThermalBreak(material_ref="xps", thickness=inch(1))
+    assert bare.psi is None and bare.sustained_load_fraction is None
 
 
 def test_isolation_board_round_trips() -> None:
@@ -200,6 +298,7 @@ def test_isolation_board_round_trips() -> None:
                            modulus_estimated=True, placement_sequence_ref="AN-X")
     assert IsolationBoard.model_validate(board.model_dump()) == board
     assert board.psi == 40.0 and board.material == "xps" and board.modulus_estimated
+    assert not board.formed_and_stripped, "a form face is the conservative default"
 
 
 def test_site_inputs_carry_their_provenance() -> None:

@@ -121,6 +121,26 @@ on_site = [
 milestone = "preconstruction"
 
 [[extra]]
+# ** THE THERMAL-BREAK BLOCKOUTS (2026-09-22, basis 7; free body §11j). ** The five boards
+# pass only because none of them is a form face: each court face is cast on a stripped
+# blockout and the board set into the slot. That is a field sequence the model states and
+# cannot enforce, so the owner walks the empty slots. No `gates` and no `requires`, for the
+# reasons `truss_mep_review` gives; it binds through `task/concrete/building/slabs`'
+# `depends_on` (the rim slab closes over the footing slots) and is printed on the walls
+# visit's `boards` checkpoint.
+id = "break_blockouts_stripped"
+label = "Thermal-break slots stripped clean and the boards set, before the rim slab"
+authority = "owner"
+check_ids = ["structural.thermal_break"]
+on_site = [
+  "all five blockouts pulled: TB-SG-W1/E1, TB-SG-W1/E1-STEM and W-SG-BRKBM's",
+  "every slot clean to the house face — no fins, no grout, no form oil pooled",
+  "each board cut to its slot and set, full height and full length, none cast against",
+  "the footing and stem boards lapped at the court floor plane (trap 1)",
+]
+milestone = "foundation"
+
+[[extra]]
 id = "girt_screws"
 label = "Girt screws verified on every wall, before any foam goes on"
 authority = "owner"

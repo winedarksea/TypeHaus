@@ -1317,6 +1317,14 @@
 "SP4" = { low = 1.4, high = 3.25 }  # 6 ea — W-BW-SCREEN only
 "SS-GASKET-12" = { low = 0.35, high = 0.9 }  # 32 ea — generic 304 SS #12 screw, bonded EPDM washer
 "STHD" = { low = 18, high = 32 }  # 41 ea
+# The braced-wall end devices (IRC R602.10.7), authored 2026-09-22. The retail reads that
+# set the STHD row above are per-length: STHD14 $23.99 single-piece, and the RJ strap is the
+# same part 13 1/2" longer (about a fifth more steel). DTT2Z is a small screw hold-down and
+# its band carries the eight SDS screws it ships with, NOT the 1/2" rod or its anchorage,
+# which ESR-2330 puts outside its own scope and which nothing here bills.
+"STHD14" = { low = 20, high = 36 }  # 1 ea — the garage SW corner, cast in the ICF stem
+"STHD14RJ" = { low = 24, high = 42 }  # 2 ea — the main-floor NE corner, across the floor band
+"DTT2Z" = { low = 22, high = 38 }  # 2 ea — the second-floor NE corner, one each side of the deck
 
 [concrete]
 # RESEARCHED 2026-08-07 — [low, high] $/cy PLACED (ready-mix delivered + placement

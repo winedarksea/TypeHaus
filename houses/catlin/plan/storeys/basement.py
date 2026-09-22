@@ -26,7 +26,6 @@ from typehaus import (
     RoughOpening,
     Slab,
     SlabThermalBreak,
-    SlabThermalBreak,
     Soffit,
     StructuralRole,
     Wall,
@@ -1452,7 +1451,13 @@ SLABS = [
          outline=(pt(ft(0), ft(0)), pt(ft(36), ft(0)), pt(ft(36), ft(36)),
                   pt(ft(0), ft(36))),
          thickness=inch(3.5), assembly="SLAB_FLOOR",
-         perimeter_thermal_break=SlabThermalBreak(material_ref="xps", thickness=inch(1))),
+         # FOAMULAR 400, stated (free body §11j): the court's thrust crosses this slab to the
+         # north footings, and at an unstated grade the edge reads 1.966 OVER. Spelled out to
+         # match params/foundations.SLAB_EDGE_BREAK (test_catlin_contract_m3 pins the pair).
+         perimeter_thermal_break=SlabThermalBreak(
+             material_ref="xps", thickness=inch(1), psi=40.0, modulus_psi=1800.0,
+             sustained_load_fraction=0.3333,
+             source="Owens Corning FOAMULAR 400, ASTM C578 Type VI: 40 psi min (ASTM D1621), minimum compressive modulus 1,800 psi published; sustained load <= 1/3 of rating (PDS 07 21 13.13.OCC)")),
 ]
 
 FLOOR_OPENINGS = [

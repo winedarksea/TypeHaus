@@ -651,12 +651,26 @@ _slab_y_s = GARAGE_Y_SOUTH + _SLAB_INSET
 _slab_y_n = GARAGE_Y_NORTH - _SLAB_INSET
 _slab_x_w = GARAGE_X_WEST + _SLAB_INSET
 _slab_x_e = GARAGE_X_EAST - _SLAB_INSET
+# ** THE SLAB-EDGE BREAK IS ONE PRODUCT, STATED (2026-09-22, free body §11j basis 7). **
+# SL-B-FLOOR's south and north edges carry the court's thermal-break thrust across the house
+# to the far footing line, so its 1" board's grade is a graded input, not prose: at an
+# unstated grade it is read at C578 Type X 15 psi and the edge goes 1.966 OVER. The garage's
+# 1" board was already 40 psi (a wheel load), so both slabs take this one board, one order.
+# SL-B-FLOOR spells these kwargs out (plan/storeys/basement.py is editable and cannot import
+# params/); `test_catlin_contract_m3` pins the two to agree.
+SLAB_EDGE_BREAK = dict(
+    material_ref="xps", thickness=inch(1), psi=40.0, modulus_psi=1800.0,
+    sustained_load_fraction=0.3333,  # the sheet's 1/3; a literal so basement.py can match it
+    source="Owens Corning FOAMULAR 400, ASTM C578 Type VI: 40 psi min (ASTM D1621), minimum "
+           "compressive modulus 1,800 psi published; sustained load <= 1/3 of rating "
+           "(PDS 07 21 13.13.OCC)")
+
 GARAGE_SLAB = Slab(
     uid="CGS501AAAA", tag="SL-G-FLOOR",
     outline=(pt(_slab_x_w, _slab_y_s), pt(_slab_x_e, _slab_y_s),
              pt(_slab_x_e, _slab_y_n), pt(_slab_x_w, _slab_y_n)),
     thickness=inch(3.5), assembly="GARAGE_SLAB_ON_GRADE", top_elevation=SITE_GRADE,
-    perimeter_thermal_break=SlabThermalBreak(material_ref="xps", thickness=inch(1)),
+    perimeter_thermal_break=SlabThermalBreak(**SLAB_EDGE_BREAK),
 )
 
 # --- garage service-door landing ---------------------------------------------------

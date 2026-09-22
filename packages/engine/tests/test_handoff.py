@@ -210,14 +210,14 @@ def test_a_filled_scaffold_seals_every_computed_item(bundle, tmp_path, catlin_ct
     # A kind with any OVER item has its whole block commented out — see the docstring.
     refused = {ctx.engineering[i].kind for i in every
                if ctx.engineering[i].status is Status.OVER}
-    # ** NOT EMPTY, AND ON PURPOSE: an OVER kind's block MUST be commented out — no PE stamps
-    # `thermal_break_transfer`'s basis 5 (a pure isolation joint, 2.5" Highload 40): the house rows
-    # its thrust reaches are over (notes/sunken_garden_court_free_body.md
-    # §11f; bars deleted at basis 5). `base_rotation` left this
-    # set on 2026-09-21, and so did `tiered_retaining` (the SRW apron on AB Stones,
-    # notes/raised_garden_srw.md) and `deck_tie` (the landing's two tie lines at 0.966,
-    # notes/north_entry_piers.md §10). Every other kind stays sealable. **
-    assert refused == {"thermal_break_transfer"}, (
+    # ** EMPTY SINCE 2026-09-22, AND THAT IS THE POINT OF THE ASSERTION: an OVER kind's block
+    # MUST be commented out, so a kind in here is a kind whose sealing path this test stops
+    # exercising. `base_rotation` left this set on 2026-09-21, and so did `tiered_retaining`
+    # (the SRW apron on AB Stones, notes/raised_garden_srw.md) and `deck_tie` (the landing's
+    # two tie lines at 0.966, notes/north_entry_piers.md §10); `thermal_break_transfer` left
+    # it at basis 7 (formed-and-stripped boards and a stated slab-edge grade, free body
+    # §11j). Every kind is sealable now. **
+    assert refused == set(), (
         "a kind went over capacity — the scaffold will comment its whole block out, which is "
         "correct, but this test then stops exercising the sealing path for it", refused)
     assert register.covering("tiered_retaining/W-RG-BLOCK") is not None

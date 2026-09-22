@@ -19,18 +19,25 @@
 # row followed it. The house's own strip footings are `task/concrete/basement/*` and never
 # were in this package, which is why nothing here replaces the old key.
 [visits."task/concrete/building/footings"]
-label = "Isolated pier pads and the thermal break — house, court, breezeway"
-rows = ["concrete:pad:PIER_BASE_12", "concrete:thermal_break", "allowances:concrete-pumping"]
+label = "Isolated pier pads — house, court, breezeway"
+# ** `concrete:thermal_break` LEFT THIS ROW LIST 2026-09-22. ** Two reasons and either would
+# do: the boards are a `task/concrete/basement` row and naming them here was a validation
+# ERROR (`haus site validate`: "not in package task/concrete/building"); and under basis 7
+# no board is set on this arrival at all — the walls visit sets all five, after strip.
+rows = ["concrete:pad:PIER_BASE_12", "allowances:concrete-pumping"]
 element_tags = ["FT-*", "PD-*"]
 depends_on = ["task/earth/basement", "task/earth/building", "insp/erosion"]
 checkpoints = [
-  { id = "forms", label = "Forms, steel and the thermal-break board set" },
+  { id = "forms", label = "Forms, steel and the greased thermal-break BLOCKOUTS set — no board" },
   { id = "pour", label = "Pour", after = ["insp/footing"] },
-  { id = "strip", label = "Strip and cure", cure_days = 3 },
+  { id = "strip", label = "Strip and cure — the footing blockouts stay in until the walls strip", cure_days = 3 },
 ]
 constraints = [
   { label = "rebar fabricated, delivered and inspected — galvanized, A1094 stock or A767 after fabrication, route named on the order (includes the column cages, 12 off)" },
-  { label = "thermal-break board on site — it is cast WITH the footing, not after" },
+  # ** INVERTED 2026-09-22 (basis 7, free body §11j). ** This line used to say the board is
+  # cast WITH the footing, which is now the sentence that causes the mistake: a board cast
+  # against locks in the pour's squeeze and puts the house back over. Blockouts, then boards.
+  { label = "thermal-break BLOCKOUTS on site, greased and pull-rodded — NO board is cast against; the boards go in on the walls visit" },
   { label = "pump or chute access confirmed for the whole pour" },
   { label = "approved plan set on site and current" },
   { label = "confirmed with the sub 48 hours ahead" },
@@ -39,7 +46,17 @@ constraints = [
 [visits."task/concrete/basement/walls"]
 label = "Foundation walls — basement, garage ICF, sunken garden, curbs"
 depends_on = ["task/concrete/building/footings", "insp/footing"]
+# The five thermal-break boards go in HERE, after strip (sequencing trap 4 in
+# params/sunken_garden.py; AN-SG-BLOCKOUTS). The rim-slab placement closes over the footing
+# slots, which is why `task/concrete/building/slabs` depends on the owner's walk.
+checkpoints = [
+  { id = "forms", label = "Forms, steel, sleeves, and the stem and beam blockouts set" },
+  { id = "pour", label = "Pour" },
+  { id = "strip", label = "Strip and cure", cure_days = 3 },
+  { id = "boards", label = "Blockouts pulled, slots walked, the five thermal-break boards set", after = ["insp/break_blockouts_stripped"] },
+]
 constraints = [
+  { label = "every thermal-break board on site and cut to its slot before the blockouts come out" },
   { label = "sleeves and block-outs marked on the forms before any steel goes in" },
   { label = "P/E/M on site during forming — every sleeve is a pre-pour operation" },
   { label = "anchor bolt layout marked against the sill plan" },
@@ -83,7 +100,7 @@ element_tags = ["SL-*", "PT-SG-*", "PT-BW-*"]
 # plumbing work, and every one of them is under the slab. This is the dependency a
 # (trade x storey) package could not express.
 depends_on = ["task/concrete/basement/walls", "insp/underground_plumbing",
-              "insp/radon_rough"]
+              "insp/radon_rough", "insp/break_blockouts_stripped"]
 constraints = [
   { label = "under-slab insulation and vapour retarder placed, lapped and unpunctured" },
   { label = "in-floor tube pressurised and gauged, and it stays under pressure through the pour" },

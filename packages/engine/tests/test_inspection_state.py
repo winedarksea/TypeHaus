@@ -184,7 +184,10 @@ def test_the_catlin_file_loads() -> None:
     assert "building" in state.authorities
     # Saint Paul runs its own electrical inspections on its own number.
     assert state.authorities["electrical"].phone == "651-266-9003"
-    # Two owner holds: the girt screws under the foam, and BLD-05's truss-shop MEP review
-    # ahead of the truss order. Neither is an AHJ inspection and neither has a phone number.
-    assert sorted(x.id for x in state.extra) == ["girt_screws", "truss_mep_review"]
+    # Three owner holds: the girt screws under the foam, BLD-05's truss-shop MEP review ahead
+    # of the truss order, and (2026-09-22) the thermal-break blockouts stripped before the
+    # boards go in — the field half of free body §11j, which the model can state and not
+    # enforce. None is an AHJ inspection and none has a phone number.
+    assert sorted(x.id for x in state.extra) == [
+        "break_blockouts_stripped", "girt_screws", "truss_mep_review"]
     assert {x.authority for x in state.extra} == {"owner"}

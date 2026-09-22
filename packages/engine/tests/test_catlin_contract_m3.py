@@ -248,9 +248,11 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset(catlin_check_r
     # the SRW apron are still OVER after the owner's fixes. The tie then CLOSED at 0.966
     # (HL35HDG at the stem, the anchored hole on the core centreline, W dry; §10d), and the
     # SRW apron closed on AB Stones (notes/raised_garden_srw.md §3b).
-    OPEN: set[str] = {
-        "Structural ties across a thermal break",
-    }
+    # ** EMPTY SINCE 2026-09-22. ** The thermal break was the last blocking line that was
+    # not PASS: basis 7 grades all five items OK (free body §11j) and the five suppressions
+    # came off with it, so the DRAFT permit print opens. The sealed gate stays shut for its
+    # own reason — no `engineering.toml` exists.
+    OPEN: set[str] = set()
     gating = [item for item in checklist.items if item.blocking]
     resolved = {Result.PASS, Result.NOT_APPLICABLE}
     unresolved = [item for item in gating
@@ -2012,7 +2014,9 @@ def test_the_thermal_break_is_one_product_everywhere_it_is_stated(catlin_model):
     from params import sunken_garden
 
     # Basis 6 (2026-09-21): the four closure boards 2.5", the beam's 2" — one product
-    # (ASTM C578 Type X, 15 psi), two thicknesses (free body §11i).
+    # (ASTM C578 Type X, 15 psi), two thicknesses (free body §11i). Basis 7 (2026-09-22)
+    # adds two statements to the same sweep: no board is a form face, and the SLAB's own
+    # edge board is a second product that must not drift from the one the house orders.
     assert sunken_garden.THERMAL_BREAK_IN == pytest.approx(2.5)
     assert sunken_garden.VENEER_BEAM_BREAK_IN == pytest.approx(2.0)
     assert sunken_garden.THERMAL_BREAK_PSI == pytest.approx(15.0)
@@ -2029,6 +2033,25 @@ def test_the_thermal_break_is_one_product_everywhere_it_is_stated(catlin_model):
         board = catlin_model.plan.by_tag(block)
         assert board.psi == pytest.approx(sunken_garden.THERMAL_BREAK_PSI), block
         assert board.modulus_estimated, block  # no Type X sheet publishes E
+        # Basis 7: every board is set into a stripped blockout, and the flag is only honest
+        # while the annotation that says so on the drawing exists (AN-SG-BLOCKOUTS names it).
+        assert board.formed_and_stripped, block
+        assert catlin_model.plan.by_tag(board.placement_sequence_ref) is not None, block
+    assert catlin_model.plan.by_tag("AN-SG-BLOCKOUTS") is not None
+
+    # ** THE SLAB-EDGE BOARD IS THE OTHER PRODUCT, AND IT IS STATED TWICE. **
+    # `plan/storeys/basement.py` is `# haus: editable` and cannot import `params/`, so
+    # SL-B-FLOOR spells out what `params/foundations.SLAB_EDGE_BREAK` holds for the garage
+    # slab. One order, two spellings — the `_HOUSE_FOOTING_DEPTH_IN` pattern.
+    from params import foundations
+
+    edge = catlin_model.plan.by_tag("SL-B-FLOOR").perimeter_thermal_break
+    assert edge.psi == pytest.approx(40.0) and not edge.modulus_estimated
+    assert edge.modulus_psi == pytest.approx(1800.0)
+    assert "FOAMULAR 400" in edge.source
+    for field, value in foundations.SLAB_EDGE_BREAK.items():
+        assert getattr(edge, field) == value, field
+    assert catlin_model.plan.by_tag("SL-G-FLOOR").perimeter_thermal_break == edge
 
     # And the veneer beam's board, which is the one that bills through a different trade.
     beam = next(w for w in catlin_model.walls if w.tag == "W-SG-BRKBM")

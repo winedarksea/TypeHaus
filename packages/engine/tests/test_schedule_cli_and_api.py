@@ -43,10 +43,11 @@ def test_inspections_lists_the_profiles_own_list_plus_the_houses_extra(house: Pa
     records = payload["inspections"]
     from typehaus.checks.code.mn_residential.inspections import MN_INSPECTIONS
 
-    assert len(records) == len(MN_INSPECTIONS) + 2  # + girt_screws, truss_mep_review
+    # + girt_screws, truss_mep_review, break_blockouts_stripped
+    assert len(records) == len(MN_INSPECTIONS) + 3
     assert records[0]["id"] == "erosion"
     assert sorted(r["id"] for r in records if r["extra"]) == [
-        "girt_screws", "truss_mep_review"]
+        "break_blockouts_stripped", "girt_screws", "truss_mep_review"]
     # The engine ships no phone numbers; the house does.
     assert payload["authorities"]["building"]["phone"]
 
@@ -164,8 +165,11 @@ def test_a_bad_op_persists_nothing(client, house: Path) -> None:
 
 def test_put_tasks_set_visit_writes_the_visits_table(client, house: Path) -> None:
     slug = "task/concrete/basement/walls"
+    # No `status`: catlin's walls visit has carried four checkpoints since 2026-09-22 (the
+    # thermal-break boards go in after the strip), and a checkpointed visit derives its
+    # status — which the test below asserts. A booking is still a visit-level write.
     response = client.put("/tasks", json={"ops": [
-        {"op": "set_visit", "slug": slug, "label": "Walls", "status": "scheduled",
+        {"op": "set_visit", "slug": slug, "label": "Walls",
          "scheduled": "2027-05-04"}]})
     assert response.status_code == 200
     text = (house / "tasks.toml").read_text()
