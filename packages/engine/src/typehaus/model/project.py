@@ -17,6 +17,7 @@ from typehaus.model.site import (
     ImperviousSurface,
     MonthlyNormal,
     SetbackSpec,
+    SoilBasis,
     SpotElevation,
     StreetFrontage,
     SubgradeModulus,
@@ -89,6 +90,10 @@ class Site(HausModel):
     # allowable. Stated apart from ``soil_class`` because a report routinely gives one
     # without the other.
     soil_bearing_psf: float | None = None
+    # Where ``soil_class`` came from. Absent, every engineering record takes the class as
+    # PRESUMED and says so — saying nothing is not evidence. A ``provenance="geotechnical"``
+    # basis is what an investigation on this parcel writes, and it clears the flag.
+    soil_basis: SoilBasis | None = None
     # A geotechnical report's subgrade stiffness. Absent, ``engineering/base_rotation`` runs a
     # presumptive band anchored on IBC §1806.3.4; present, the measured value governs.
     lateral_subgrade_modulus: SubgradeModulus | None = None

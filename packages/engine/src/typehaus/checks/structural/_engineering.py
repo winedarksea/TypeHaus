@@ -23,4 +23,5 @@ def engineering_context(ctx) -> EngineeringContext:  # type: ignore[no-untyped-d
         return context
     return EngineeringContext(plan=ctx.plan, model=ctx.model,
                               preferences=getattr(ctx, "preferences", None),
-                              soil_class=getattr(ctx, "soil_class", None))
+                              soil_class=getattr(ctx, "soil_class", None),
+                              soil_basis=getattr(ctx, "soil_basis", None))

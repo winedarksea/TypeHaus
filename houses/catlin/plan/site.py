@@ -64,6 +64,7 @@ from typehaus import (
     MonthlyNormal,
     Site,
     SetbackSpec,
+    SoilBasis,
     SpotElevation,
     StreetFrontage,
     SubgradeModulus,
@@ -138,6 +139,18 @@ SITE = Site(
     # and they are the walls a real report would be commissioned for
     # (structural.foundation_unbalanced_fill).
     soil_class="GM",
+    # ** AND THE PROVENANCE OF THAT CLASS, AS A FIELD (2026-09-22). ** The paragraph above
+    # has said "it is still presumptive" since the class was authored, and a paragraph is
+    # not something an engineering record can read. `SoilBasis` is: every record that takes
+    # a code table row off this class now flags `soil_presumed` and prints the sentence, and
+    # the calc package's gap register section D lists each one as graded on a presumption.
+    # A geotechnical investigation on this parcel is what writes provenance="geotechnical"
+    # here, with its date and who did it; nothing else clears the flag.
+    soil_basis=SoilBasis(
+        provenance="presumed",
+        source="Ramsey County / Des Moines-lobe till, read regionally",
+        basis="no geotechnical investigation on this parcel",
+    ),
     # ** A PRESUMED k_v, NOT A REPORT (2026-09-21). ** Bowles (1997) Table 9-1, "silty medium
     # dense sand", 24,000-48,000 kN/m3; GM shares IBC Table 1806.2's class with SM, and the LOW
     # end is taken (softer = more settlement). 24,000 / 271.447 = 88.4 pci. Not width-corrected.

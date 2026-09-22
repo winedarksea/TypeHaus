@@ -183,7 +183,7 @@ def _thrust_rows(ctx, board, sh, pour, states, missing, inputs, notes) -> None:
     floor = sum(p["top_reaction"] + p["band"] for b in mine
                 if (p := sh["patches"].get(b.tag)) is not None)
     inputs.append(Quantity("house_thrust", total, "lb", 1.0))
-    path.path_rows(ctx, mine, total, floor, states, missing, notes)
+    path.path_rows(ctx, mine, total, floor, states, missing, notes, inputs)
     if board.loop_ref is not None:
         house.court_sliding(ctx, board.loop_ref, total, sh["free_bodies"], states, missing)
 

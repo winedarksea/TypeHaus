@@ -144,20 +144,32 @@ def _slab_edge(slab, total_lb, floor_line_lb, edge_len, t, states, missing, note
 
 
 def path_rows(ctx, boards, total_lb: float, floor_line_lb: float, states, missing,
-              notes=None) -> None:
+              notes=None, inputs=None) -> None:
     """The four lateral-path links, graded for the whole thrust ``total_lb``."""
     notes = [] if notes is None else notes
-    from typehaus.engineering.soil import presumptive
+    inputs = [] if inputs is None else inputs
+    from typehaus.engineering.item import Quantity as _Quantity
+    from typehaus.engineering.soil import (
+        presumptive,
+        soil_is_presumed,
+        soil_provenance_note,
+    )
     from typehaus.engineering.thermal_break_geometry import facing_footings
     from typehaus.resolve.concrete import concrete_spec_for, fc_psi
 
-    soil = presumptive(getattr(ctx, "soil_class", None))
+    soil = presumptive(getattr(ctx, "soil_class", None),
+                       basis=getattr(ctx, "soil_basis", None))
     footings = sorted({t for b in boards for t in facing_footings(ctx, b)})
     found = house_slab(ctx, footings) if footings else None
     if soil is None or found is None:
         missing.append("a soil class and the house slab on grade the near footing line bears "
                        "on — the house's lateral path")
         return
+    # Three of the four links below are read off the site's soil class — friction, at-rest
+    # and lateral bearing — so this record carries its provenance like every other one that
+    # reads a code table row for the ground.
+    inputs.append(_Quantity("soil_presumed", 1.0 if soil_is_presumed(soil) else 0.0, "-", 0.5))
+    notes.append(soil_provenance_note(soil))
     slab, solid = found
     ax = boards[0].ax
     lo, hi = _span(solid.outline, 1 - ax)

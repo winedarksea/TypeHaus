@@ -41,6 +41,11 @@ class EngineeringContext:
     #: clothes — ACI 318 and IBC 1806.2 do not change when the city does. ``None`` is never
     #: defaulted around; a calc that needs it reports INCOMPLETE naming it.
     soil_class: str | None = None
+    #: Where that class came from (``model/site.SoilBasis``), or ``None``. Provenance, never
+    #: arithmetic: no calculation branches on it, and every one that reads a code table row
+    #: off the class flags ``soil_presumed`` and prints the sentence. A site that has said
+    #: nothing is presumed.
+    soil_basis: object = None
 
 
 #: ``kind`` -> the function that enumerates and computes every item of that kind.

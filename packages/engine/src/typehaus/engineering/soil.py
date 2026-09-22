@@ -101,6 +101,13 @@ class PresumptiveSoil:
     allowable_bearing_psf: float
     lateral_bearing_psf_per_ft: float
     friction_coefficient: float
+    #: Where the CLASS came from — ``"presumed"`` (read regionally, off a survey or a
+    #: profile) or ``"geotechnical"`` (an investigation on this parcel). The table values
+    #: above are presumptive either way; what moves is whether the row was picked for the
+    #: right ground. ``Site.soil_basis`` is the one place a house states it.
+    provenance: str = "presumed"
+    basis_source: str | None = None
+    basis_note: str | None = None
 
     @property
     def citation(self) -> str:
@@ -108,12 +115,16 @@ class PresumptiveSoil:
                 f"(presumptive, {self.soil_class})")
 
 
-def presumptive(soil_class: str | None) -> PresumptiveSoil | None:
+def presumptive(soil_class: str | None, *, basis: object = None) -> PresumptiveSoil | None:
     """The code tables' values for a declared group, or ``None`` if it declares none.
 
     ``None`` is never defaulted around: a calculation with no soil class reports INCOMPLETE
     naming it, because guessing the ground is the one assumption a retaining wall cannot
     survive.
+
+    ``basis`` is the site's :class:`~typehaus.model.site.SoilBasis`, keyword-only because it
+    is provenance and never arithmetic: absent, the class is taken as presumed, which is the
+    honest reading of a house that has said nothing about where its soil class came from.
     """
     if not soil_class:
         return None
@@ -128,7 +139,41 @@ def presumptive(soil_class: str | None) -> PresumptiveSoil | None:
         active_efp_psf_per_ft=pressures[0], at_rest_efp_psf_per_ft=pressures[1],
         allowable_bearing_psf=bearing, lateral_bearing_psf_per_ft=lateral,
         friction_coefficient=friction,
+        provenance=str(getattr(basis, "provenance", None) or "presumed"),
+        basis_source=getattr(basis, "source", None),
+        basis_note=getattr(basis, "basis", None),
     )
+
+
+def soil_is_presumed(soil: PresumptiveSoil | None) -> bool:
+    """Whether the soil class this record was graded on is a presumption, not a finding.
+
+    ``None`` — no class at all — is presumed too: the record is INCOMPLETE for want of one,
+    and nothing about that is a measurement.
+    """
+    return soil is None or soil.provenance != "geotechnical"
+
+
+def soil_provenance_note(soil: PresumptiveSoil | None) -> str:
+    """One sentence, in ``base_rotation._stated_soil``'s voice, saying where the soil came
+    from — printed on every record that reads a table row off a soil class."""
+    if soil is None:
+        return ("THE SOIL IS PRESUMED, NOT MEASURED: no soil class is declared at all, so "
+                "nothing here rests on a measurement of this parcel.")
+    where = (f" — {soil.basis_source} ({soil.basis_note})"
+             if soil.basis_source else
+             " — no geotechnical investigation is on file for this parcel")
+    if soil_is_presumed(soil):
+        return (f"THE SOIL IS PRESUMED, NOT MEASURED: the class {soil.soil_class} is read "
+                f"regionally{where}, and every value taken from it (EFP, allowable "
+                f"bearing, lateral bearing, friction) is a published code table row for "
+                f"that presumption. It grades every record built on it as DRAFT; an "
+                f"investigation on this parcel confirms or replaces the class, and the gap "
+                f"register keeps that open until it does.")
+    return (f"THE SOIL CLASS IS ESTABLISHED: {soil.soil_class} from a geotechnical "
+            f"investigation on this parcel{where}. The table values read off it are still "
+            f"the code's presumptive ones — a report's own allowables replace them element "
+            f"by element, not here.")
 
 
 #: IBC Table 1806.2 class 3 — "sandy gravel and/or gravel (GW and GP)". A clean, open-graded

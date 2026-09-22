@@ -57,6 +57,8 @@ from typehaus.engineering.soil import (
     CONCRETE_UNIT_WEIGHT_PCF,
     SOIL_UNIT_WEIGHT_BAND_PCF,
     presumptive,
+    soil_is_presumed,
+    soil_provenance_note,
 )
 from typehaus.engineering.tier_surcharge import TierLoad, court_surcharges
 
@@ -322,7 +324,8 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
                        f"court that restraint belongs to does not check out "
                        f"(see the retaining_system record)")
 
-    soil = presumptive(getattr(ctx, "soil_class", None))
+    soil = presumptive(getattr(ctx, "soil_class", None),
+                       basis=getattr(ctx, "soil_basis", None))
     if soil is None:
         missing.append("a declared soil class (Site/profile soil_class)")
 
@@ -364,6 +367,7 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
         Quantity("heel", geometry.heel_ft, "ft", 0.01),
         Quantity("toe_embedment", geometry.toe_embedment_ft, "ft", 0.01),
         Quantity("active_efp", soil.active_efp_psf_per_ft, "psf/ft", 1.0),
+        Quantity("soil_presumed", 1.0 if soil_is_presumed(soil) else 0.0, "-", 0.5),
         Quantity("friction_coefficient", base.friction_coefficient, "", 0.01),
         Quantity("allowable_bearing", base.allowable_bearing_psf, "psf", 1.0),
         Quantity("concrete_unit_weight", CONCRETE_UNIT_WEIGHT_PCF, "pcf", 1.0),
@@ -389,7 +393,8 @@ def _one(ctx: EngineeringContext, wall,  # type: ignore[no-untyped-def]
     ) if surcharge is not None else ()) + (tier_low.inputs if tier_low is not None else ())
     notes = (
         "SCREENING on presumptive code values, not a design: "
-        f"{soil.citation}. No geotechnical report is on file for this site.",
+        f"{soil.citation}.",
+        soil_provenance_note(soil),
         f"Retained soil: {soil.soil_class}. Base bears on: {base.soil_class} "
         f"(friction {base.friction_coefficient:.2f}, allowable "
         f"{base.allowable_bearing_psf:,.0f} psf).",

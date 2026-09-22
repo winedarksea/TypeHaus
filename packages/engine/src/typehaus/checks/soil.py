@@ -27,6 +27,20 @@ def site_soil_class(plan: Any, profile: Any) -> str | None:
             or (getattr(profile, "soil_class", None) if profile is not None else None))
 
 
+def site_soil_basis(plan: Any, profile: Any) -> Any:
+    """Where the governing soil class came from, or ``None`` if nobody has said.
+
+    Only the SITE can carry this: a profile's class is regional by construction, so a house
+    falling back on one is graded on a presumption no matter what it says about itself —
+    which is why the profile fallback is not read here at all. ``None`` reads as presumed
+    downstream (``engineering/soil.soil_is_presumed``).
+    """
+    site = _site(plan)
+    if getattr(site, "soil_class", None) is None:
+        return None  # the profile's class is governing, and a profile's class is regional
+    return getattr(site, "soil_basis", None)
+
+
 def site_soil_bearing_psf(plan: Any, profile: Any) -> float | None:
     """The presumptive bearing value: the site's, else the profile's, else None."""
     site = _site(plan)

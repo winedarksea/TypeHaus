@@ -55,6 +55,28 @@ class SubgradeModulus(HausModel):
     provenance: Literal["measured", "presumed"] = "measured"
 
 
+class SoilBasis(HausModel):
+    """Where the site's soil CLASS came from — the provenance beside ``Site.soil_class``.
+
+    The mirror of :class:`SubgradeModulus`'s ``provenance``, and it exists for the same
+    reason: a number and the fact of where it came from are two different things, and an
+    engineering record that cannot tell them apart prints a screening as if it were a
+    design. ``"presumed"`` is a class read regionally — a county soil survey, a
+    jurisdiction profile, the till everyone around here stands on. ``"geotechnical"`` is an
+    investigation on THIS parcel, and it earns ``report_date`` and ``investigated_by``.
+
+    ``source`` names where the reading comes from and ``basis`` says what kind of reading it
+    is, exactly as on :class:`SubgradeModulus`. Absent altogether, every calculation takes
+    the class as presumed: saying nothing is not evidence.
+    """
+
+    provenance: Literal["presumed", "geotechnical"] = "presumed"
+    source: str | None = None
+    basis: str | None = None
+    report_date: str | None = None
+    investigated_by: str | None = None
+
+
 class ConcreteServiceTemperature(HausModel):
     """The temperature range a site's exposed concrete moves through, and its set floor.
 
@@ -284,6 +306,7 @@ def _ring_to_points(ring: list, to_length) -> tuple[Point2D, ...]:
 for _name, _obj in (
     ("MonthlyNormal", MonthlyNormal),
     ("SubgradeModulus", SubgradeModulus),
+    ("SoilBasis", SoilBasis),
     ("ConcreteServiceTemperature", ConcreteServiceTemperature),
     ("SetbackSpec", SetbackSpec),
     ("SpotElevation", SpotElevation),

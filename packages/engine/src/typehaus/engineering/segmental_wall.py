@@ -44,7 +44,12 @@ from typehaus.engineering.item import (
 )
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
 from typehaus.engineering.retaining_basis import REQUIRED_FS, _base_interface
-from typehaus.engineering.soil import SOIL_UNIT_WEIGHT_BAND_PCF, presumptive
+from typehaus.engineering.soil import (
+    SOIL_UNIT_WEIGHT_BAND_PCF,
+    presumptive,
+    soil_is_presumed,
+    soil_provenance_note,
+)
 from typehaus.engineering.srw_backfill import confined_note, drainage_zone, zone_note
 from typehaus.engineering.srw_gravity import (
     WALL_FRICTION_RATIO,
@@ -215,7 +220,8 @@ def reading(ctx: EngineeringContext, wall) -> tuple[Reading | None, list[str]]: 
     tag = wall.tag
     spec = getattr(wall, "srw", None)
     missing: list[str] = []
-    soil = presumptive(getattr(ctx, "soil_class", None))
+    soil = presumptive(getattr(ctx, "soil_class", None),
+                       basis=getattr(ctx, "soil_basis", None))
     if soil is None:
         missing.append("a declared soil class (Site/profile soil_class)")
     if wall.top_elevation is None or wall.bottom_elevation is None:
@@ -347,6 +353,7 @@ def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no
         Quantity("batter", section.batter_deg, "deg", 0.1),
         Quantity("course_height", section.course_ft, "ft", 0.01),
         Quantity("active_efp", soil.active_efp_psf_per_ft, "psf/ft", 1.0),
+        Quantity("soil_presumed", 1.0 if soil_is_presumed(soil) else 0.0, "-", 0.5),
         Quantity("wall_friction_ratio", WALL_FRICTION_RATIO, "", 0.01),
         Quantity("pad_friction_angle", read.pad_phi_deg if read.pad_phi_deg is not None
                  else -1.0, "deg", 0.1),
@@ -412,8 +419,8 @@ def _notes(ctx, wall, read, ends, tiers, refusal) -> tuple[str, ...]:  # type: i
         f"{e.soil_pcf:.0f} pcf: φ {e.body.soil_phi_deg:.1f}°, K_a {e.body.ka:.3f}, sliding "
         f"{e.body.fs_sliding:.2f}, overturning {e.body.fs_overturning:.2f}" for e in ends)
     out = [
-        f"SCREENING on presumptive code values, not a design: {soil.citation}. No "
-        "geotechnical report is on file for this site.",
+        f"SCREENING on presumptive code values, not a design: {soil.citation}.",
+        soil_provenance_note(soil),
         f"Free body {section.height_ft:.2f}' = {section.retained_ft:.2f}' retained "
         f"(authored unbalanced_fill) + {section.embedment_ft * 12:.1f}\" embedded (to "
         f"{read.grade_from}). NO passive is credited on the embedment: it is trench backfill.",

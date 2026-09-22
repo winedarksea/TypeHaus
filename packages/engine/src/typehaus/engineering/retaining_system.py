@@ -57,7 +57,12 @@ from typehaus.engineering.retaining_basis import (
     _structure_thickness_in,
     analyse,
 )
-from typehaus.engineering.soil import SOIL_UNIT_WEIGHT_BAND_PCF, presumptive
+from typehaus.engineering.soil import (
+    SOIL_UNIT_WEIGHT_BAND_PCF,
+    presumptive,
+    soil_is_presumed,
+    soil_provenance_note,
+)
 from typehaus.engineering.tier_surcharge import court_surcharges
 
 KIND = "retaining_system"
@@ -595,7 +600,8 @@ def system_factors(ctx: EngineeringContext, ref: str, members: list
     member's fingerprint, which is what makes moving the cross-member, or moving one wall,
     stale all of the group's seals together.
     """
-    soil = presumptive(getattr(ctx, "soil_class", None))
+    soil = presumptive(getattr(ctx, "soil_class", None),
+                       basis=getattr(ctx, "soil_basis", None))
     if soil is None or _verify(ctx, ref, members):
         return None
     out: dict[str, tuple[float, float]] = {}
@@ -624,7 +630,8 @@ def footing_shortfalls(ctx: EngineeringContext
     """``{loop ref: {soil_pcf: {member tag: shortfall lb}}}`` — each member's own thrust
     less its own base friction, the PER FOOTING figures ``_one`` prints. A loop that does
     not verify is omitted; ``thermal_break`` reads its reserve demand here."""
-    soil = presumptive(getattr(ctx, "soil_class", None))
+    soil = presumptive(getattr(ctx, "soil_class", None),
+                       basis=getattr(ctx, "soil_basis", None))
     if soil is None:
         return {}
     out: dict[str, dict[float, dict[str, float]]] = {}
@@ -660,7 +667,8 @@ def _surcharge_notes(ctx: EngineeringContext, built: list[_Member], pcf: float
 
 def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
     tags = tuple(sorted({ref, *(w.tag for w in members)}))
-    soil = presumptive(getattr(ctx, "soil_class", None))
+    soil = presumptive(getattr(ctx, "soil_class", None),
+                       basis=getattr(ctx, "soil_basis", None))
     missing: list[str] = []
     if soil is None:
         missing.append("a declared soil class (Site/profile soil_class)")
@@ -713,6 +721,7 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
     ) + (
         Quantity("cross_thickness", _cross_section_in(ctx, cross)[0], "in", 0.5),
         Quantity("cross_height", _cross_section_in(ctx, cross)[1], "in", 0.01),
+        Quantity("soil_presumed", 1.0 if soil_is_presumed(soil) else 0.0, "-", 0.5),
     )
     notes = (
         f"ONE free body, not {len(members)}: the members are cast into a closed loop through "
@@ -727,6 +736,7 @@ def _one(ctx: EngineeringContext, ref: str, members: list) -> EngineeringRecord:
         "the loop being CAST — corner bar development is ordinary practice and is not "
         "something this engine has looked at, though `corner shear transfer` now puts a "
         "force on what it would have to develop.",
+        soil_provenance_note(soil),
         "PER FOOTING, against its OWN thrust and its OWN friction — the check the group "
         "resultant does not make: " + "; ".join(
             f"{m.tag} {m.demand_lb:,.0f} lb vs {m.capacity_lb:,.0f} lb"

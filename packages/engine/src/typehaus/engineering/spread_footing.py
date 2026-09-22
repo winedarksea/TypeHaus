@@ -45,6 +45,8 @@ from typehaus.engineering.soil import (
     CONCRETE_UNIT_WEIGHT_PCF,
     displaced_soil_credit_lb,
     presumptive,
+    soil_is_presumed,
+    soil_provenance_note,
 )
 
 KIND = "spread_footing"
@@ -110,7 +112,8 @@ def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
 
 def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
     tags = tuple(t for t in (pier.tag, pier.footing_tag) if t)
-    soil = presumptive(getattr(ctx, "soil_class", None))
+    soil = presumptive(getattr(ctx, "soil_class", None),
+                       basis=getattr(ctx, "soil_basis", None))
     if soil is None:
         return EngineeringRecord(
             item_id=item_id(KIND, pier.tag), kind=KIND, key=pier.tag,
@@ -151,12 +154,13 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
         Quantity("dead_load", pier.dead_lb, "lb", 1.0),
         Quantity("live_load", pier.live_lb, "lb", 1.0),
         Quantity("allowable_bearing", soil.allowable_bearing_psf, "psf", 1.0),
+        Quantity("soil_presumed", 1.0 if soil_is_presumed(soil) else 0.0, "-", 0.5),
         Quantity("concrete_unit_weight", CONCRETE_UNIT_WEIGHT_PCF, "pcf", 1.0),
         Quantity("displaced_soil", displaced, "lb", 1.0),
     )
     notes = (
-        f"SCREENING on presumptive code values, not a design: {soil.citation}. No "
-        f"geotechnical report is on file for this site.",
+        f"SCREENING on presumptive code values, not a design: {soil.citation}.",
+        soil_provenance_note(soil),
         f"Service load {pier.service_lb:,.0f} lb + {pier.footing_weight_lb:,.0f} lb of bell "
         f"less {displaced:,.0f} lb of soil the bell displaced, "
         f"over {pier.bearing_area_ft2:.2f} ft2. Tributary {pier.tributary_ft2:.1f} ft2 at "

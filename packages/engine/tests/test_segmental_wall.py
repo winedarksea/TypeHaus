@@ -8,11 +8,20 @@ section off the resolved model and check the record lands where the note says.
 
 from __future__ import annotations
 
+import dataclasses
 import math
 
 import pytest
 
-from typehaus import FoundationWall, PublishedSpan, SegmentalWallSpec, SrwDrainageZone, ft, inch
+from typehaus import (
+    FoundationWall,
+    PublishedSpan,
+    SegmentalWallSpec,
+    SoilBasis,
+    SrwDrainageZone,
+    ft,
+    inch,
+)
 from typehaus.engineering import DEFERRALS, EngineeringContext, EngineeringResults, Status
 from typehaus.engineering.item import Scope
 from typehaus.engineering.retaining_wall import enumerate_walls
@@ -237,6 +246,46 @@ def test_an_overtopping_wall_is_incomplete_and_names_both_inputs(ctx) -> None:
     missing = " ".join(record.missing)
     assert "unbalanced_fill" in missing and "grade station 0" in missing
     # The graded numbers are the capped section's, unchanged.
+    assert record.governing.ratio == pytest.approx(0.975, abs=0.001)
+
+
+def test_the_soil_is_flagged_as_presumed(records) -> None:
+    """The class every ground number here is read off is a regional presumption, and the
+    record says so as an input a reader can sort on (``base_rotation``'s ``n_h_presumed``
+    is the precedent; ``takeoff/calc_package`` reads the suffix into gap register D)."""
+    for tag, record in records.items():
+        inputs = {q.name: q.value for q in record.inputs}
+        assert inputs["soil_presumed"] == 1.0, tag
+        note = next(n for n in record.notes if n.startswith("THE SOIL IS PRESUMED"))
+        assert "GM" in note and "DRAFT" in note
+
+
+def test_the_houses_own_basis_reaches_the_record(ctx) -> None:
+    """``houses/catlin/plan/site.py`` authors the provenance; ``checks/run`` threads it. The
+    record quotes it rather than falling back on "nobody has said"."""
+    authored = ctx.plan.project.site.soil_basis
+    assert authored is not None and authored.provenance == "presumed"
+    record = _one(dataclasses.replace(ctx, soil_basis=authored),
+                  ctx.plan.by_tag("W-RG-BLOCK"))
+    note = next(n for n in record.notes if n.startswith("THE SOIL IS PRESUMED"))
+    assert "Ramsey County" in note and "no geotechnical investigation on this parcel" in note
+
+
+def test_a_geotechnical_basis_clears_the_flag_and_moves_nothing(ctx) -> None:
+    """Provenance is not arithmetic: an investigation on this parcel flips the flag and the
+    sentence, and every graded ratio is the same number it was."""
+    basis = SoilBasis(provenance="geotechnical",
+                      source="Test Geotechnical Inc., borings B-1..B-3",
+                      basis="split-spoon sampling, USCS classification",
+                      report_date="2026-09-22", investigated_by="A. Tester, PE")
+    record = _one(dataclasses.replace(ctx, soil_basis=basis),
+                  ctx.plan.by_tag("W-RG-BLOCK"))
+    inputs = {q.name: q.value for q in record.inputs}
+    assert inputs["soil_presumed"] == 0.0
+    assert not any(n.startswith("THE SOIL IS PRESUMED") for n in record.notes)
+    assert any(n.startswith("THE SOIL CLASS IS ESTABLISHED") for n in record.notes)
+    assert record.status is Status.OK
+    assert record.governing.name == "sliding"
     assert record.governing.ratio == pytest.approx(0.975, abs=0.001)
 
 

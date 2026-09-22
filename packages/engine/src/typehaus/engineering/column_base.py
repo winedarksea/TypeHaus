@@ -90,7 +90,7 @@ from typehaus.engineering.pole_embedment import (
     verdict,
 )
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
-from typehaus.engineering.soil import presumptive
+from typehaus.engineering.soil import presumptive, soil_is_presumed, soil_provenance_note
 from typehaus.engineering.spread_base import (
     REQUIRED_FS_OVERTURNING,
     SpreadResult,
@@ -248,7 +248,8 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
     ident = item_id(KIND, pier.tag)
     pad = _pad_of(ctx, pier)
     tags = tuple(t for t in (pier.tag, getattr(pad, "tag", None)) if t)
-    soil = presumptive(getattr(ctx, "soil_class", None))
+    soil = presumptive(getattr(ctx, "soil_class", None),
+                       basis=getattr(ctx, "soil_basis", None))
     grade_ft = _grade_ft(ctx)
     shear = base_shear_of(pier.tag)
     plan = _pad_plan_ft(ctx, pad) if pad is not None else None
@@ -398,8 +399,8 @@ def _one(ctx: EngineeringContext, pier: _Pier) -> EngineeringRecord:
                 f"says so with.")
 
     notes.extend((
-        f"SCREENING on presumptive code values, not a design: {soil.citation}. No "
-        f"geotechnical report is on file for this site.",
+        f"SCREENING on presumptive code values, not a design: {soil.citation}.",
+        soil_provenance_note(soil),
         f"THE DEMAND IS THE ONE `deck_post` GRADES THE SECTION ON, at its own basis. "
         f"`engineering/roof_moment` derives {shear_lb:,.0f} lb of ASD storey shear at an "
         f"effective {arm_ft:.2f}' above this column's base; IBC §1807.3.2.1 wants that "
@@ -554,6 +555,7 @@ def _inputs(pier: _Pier, shear_lb: float, height_ft: float, shaft_ft: float | No
         Quantity("isolated_pole_doubling", 1.0 if pole_claimed else 0.0, "-", 0.5),
         Quantity("lateral_bearing", soil.lateral_bearing_psf_per_ft, "psf/ft", 1.0),
         Quantity("allowable_bearing", soil.allowable_bearing_psf, "psf", 1.0),
+        Quantity("soil_presumed", 1.0 if soil_is_presumed(soil) else 0.0, "-", 0.5),
     ) if q is not None)
 
 

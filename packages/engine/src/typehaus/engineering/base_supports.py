@@ -17,7 +17,11 @@ from typehaus.engineering import base_spring as spring
 from typehaus.engineering.item import Quantity
 from typehaus.engineering.pier_basis import _Pier
 from typehaus.engineering.registry import EngineeringContext
-from typehaus.engineering.soil import MOTION_AT_ALLOWABLE_BAND_IN, presumptive
+from typehaus.engineering.soil import (
+    MOTION_AT_ALLOWABLE_BAND_IN,
+    presumptive,
+    soil_is_presumed,
+)
 
 if TYPE_CHECKING:
     from typehaus.engineering.base_rotation import _Column
@@ -48,6 +52,9 @@ class PoleBase:
     shear: tuple[float, float] | None  # (P lb ASD, h above grade ft)
     missing: tuple[str, ...]
     notes: tuple[str, ...]
+    #: 1.0 where the soil CLASS behind s1/q_allow is a presumption (``engineering/soil``).
+    #: Last, with a default, so every positional construction above keeps working.
+    soil_presumed: float = 1.0
 
     @classmethod
     def build(cls, ctx: EngineeringContext, pier: _Pier) -> PoleBase:
@@ -56,7 +63,8 @@ class PoleBase:
 
         post = ctx.plan.by_tag(pier.tag)
         pad = ctx.plan.by_tag(getattr(post, "supported_by", "") or "")
-        soil = presumptive(getattr(ctx, "soil_class", None))
+        soil = presumptive(getattr(ctx, "soil_class", None),
+                           basis=getattr(ctx, "soil_basis", None))
         grade = getattr(getattr(ctx.plan.project, "site", None), "grade", None)
         bottom = getattr(pad, "bottom_elevation", None)
         thick = getattr(pad, "thickness", None) or getattr(pad, "depth", None)
@@ -106,7 +114,7 @@ class PoleBase:
         return cls(tags, profile, motion, pier.height_in / 12.0 - shaft,
                    soil.lateral_bearing_psf_per_ft,
                    None if shear is None else (shear[0], shear[1] - shaft),
-                   (), tuple(notes))
+                   (), tuple(notes), 1.0 if soil_is_presumed(soil) else 0.0)
 
     def n_h(self, ctx: EngineeringContext, delta_in: float | None) -> float:
         """lb/ft⁴ per foot of width."""
@@ -137,7 +145,8 @@ class PoleBase:
     def inputs(self) -> tuple[Quantity, ...]:
         return (Quantity("pole_depth", self.profile[-1][1], "ft", 0.01),
                 Quantity("pole_toe_width", self.profile[-1][2], "ft", 0.01),
-                Quantity("head_above_grade", self.head_above_grade_ft, "ft", 0.01))
+                Quantity("head_above_grade", self.head_above_grade_ft, "ft", 0.01),
+                Quantity("soil_presumed", self.soil_presumed, "-", 0.5))
 
     not_graded = (
         "NOT GRADED, and each is a real question. (1) HOW THE BASE MOMENT SPLITS between "
@@ -194,6 +203,8 @@ class WallBase:
     q_allow: float
     missing: tuple[str, ...]
     notes: tuple[str, ...]
+    #: As :class:`PoleBase`'s — the provenance of the class q_allow is read off.
+    soil_presumed: float = 1.0
 
     @classmethod
     def build(cls, ctx: EngineeringContext, pier: _Pier) -> WallBase:
@@ -204,7 +215,8 @@ class WallBase:
         post = ctx.plan.by_tag(pier.tag)
         wall = ctx.plan.by_tag(getattr(post, "supported_by", "") or "")
         footing = ctx.plan.by_tag(pier.footing_tag or "")
-        soil = presumptive(getattr(ctx, "soil_class", None))
+        soil = presumptive(getattr(ctx, "soil_class", None),
+                           basis=getattr(ctx, "soil_basis", None))
         assembly = ctx.plan.library.resolve_assembly(getattr(wall, "assembly", "") or "")
         thick = next((ly.thickness.inches for ly in getattr(assembly, "layers", ())
                       if ly.function is LayerFunction.STRUCTURE), None)
@@ -236,7 +248,8 @@ class WallBase:
             f"credited, which is the lower bound. {pier.footing_tag} "
             f"({float(width.inches):g}\") rocks on the subgrade as a rigid strip.",)
         return cls(tags, ei, height, strip_in / 12.0, float(width.inches) / 12.0,
-                   soil.allowable_bearing_psf, (), notes)
+                   soil.allowable_bearing_psf, (), notes,
+                   1.0 if soil_is_presumed(soil) else 0.0)
 
     def k_v(self, ctx: EngineeringContext, delta_in: float | None) -> float:
         """lb/ft³."""
@@ -262,7 +275,8 @@ class WallBase:
     def inputs(self) -> tuple[Quantity, ...]:
         return (Quantity("wall_EI_strip", self.ei_lb_in2, "lb-in2", 1e6),
                 Quantity("wall_height", self.height_in, "in", 0.125),
-                Quantity("footing_width", self.footing_ft, "ft", 0.01))
+                Quantity("footing_width", self.footing_ft, "ft", 0.01),
+                Quantity("soil_presumed", self.soil_presumed, "-", 0.5))
 
     not_graded = (
         "NOT GRADED, and each is a real question. (1) The wall top's own CAPACITY to receive "

@@ -25,7 +25,7 @@ from typehaus.checks.registry import (
     Tier,
     run_checks,
 )
-from typehaus.checks.soil import site_soil_class
+from typehaus.checks.soil import site_soil_basis, site_soil_class
 from typehaus.engineering import (
     EngineeringContext,
     EngineeringRegister,
@@ -134,8 +134,9 @@ def resolve_profile(preferences: Preferences,
 
 
 def build_engineering(model: ResolvedModel, prefs: Preferences, house_dir: Path | None,
-                      soil_class: str | None = None) -> tuple[EngineeringResults,
-                                                              EngineeringRegister]:
+                      soil_class: str | None = None,
+                      soil_basis: object = None) -> tuple[EngineeringResults,
+                                                          EngineeringRegister]:
     """The suite's result map and the house's seal register, for one CheckContext.
 
     One construction point, called from both context builders below, so ``haus check``,
@@ -146,7 +147,7 @@ def build_engineering(model: ResolvedModel, prefs: Preferences, house_dir: Path 
     """
     results = EngineeringResults(
         EngineeringContext(plan=model.plan, model=model, preferences=prefs,
-                           soil_class=soil_class))
+                           soil_class=soil_class, soil_basis=soil_basis))
     return results, load_register(house_dir)
 
 
@@ -160,7 +161,8 @@ def build_context(plan: PlanModel, house_dir: Path | None = None,
     # same order the checks do or a wall could be screened against one class and graded
     # against another.
     engineering, register = build_engineering(model, prefs, house_dir,
-                                              site_soil_class(plan, jurisdiction))
+                                              site_soil_class(plan, jurisdiction),
+                                              site_soil_basis(plan, jurisdiction))
     ctx = CheckContext(
         plan=plan, model=model, preferences=prefs,
         profile=jurisdiction, resolve_findings=resolve_findings,
@@ -200,7 +202,8 @@ def run_from_model(model: ResolvedModel, resolve_findings: list[Finding],
     prefs = preferences or (load_preferences(house_dir) if house_dir else Preferences())
     jurisdiction = resolve_profile(prefs, profile)
     engineering, register = build_engineering(model, prefs, house_dir,
-                                              site_soil_class(model.plan, jurisdiction))
+                                              site_soil_class(model.plan, jurisdiction),
+                                              site_soil_basis(model.plan, jurisdiction))
     ctx = CheckContext(plan=model.plan, model=model, preferences=prefs,
                        profile=jurisdiction,
                        resolve_findings=resolve_findings,

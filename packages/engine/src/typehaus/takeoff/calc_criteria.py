@@ -219,7 +219,8 @@ def _snow_block(site: Any, inputs: PackageInputs) -> str:
 
 def _soil_block(soil_module: Any, site: Any) -> str:
     soil_class = getattr(site, "soil_class", None) if site is not None else None
-    presumptive = soil_module.presumptive(soil_class)
+    basis = getattr(site, "soil_basis", None) if site is not None else None
+    presumptive = soil_module.presumptive(soil_class, basis=basis)
     if presumptive is None:
         return (f"This model declares no usable soil group (`soil_class` = "
                 f"{soil_class!r}). No lateral pressure, bearing value or base friction is "
@@ -248,8 +249,13 @@ def _soil_block(soil_module: Any, site: Any) -> str:
          "not a code value — loose-to-medium silty gravel through well compacted"],
         ["Concrete unit weight", soil_module.CONCRETE_UNIT_WEIGHT_PCF, "pcf",
          "conventional, and not in dispute"],
+        ["Provenance of the declared group", presumptive.provenance, "",
+         (f"{presumptive.basis_source} ({presumptive.basis_note})"
+          if presumptive.basis_source else
+          "`Site.soil_basis` states none, so the class is taken as presumed")],
     ]
-    return table(["Quantity", "Value", "Unit", "Source"], rows)
+    return (table(["Quantity", "Value", "Unit", "Source"], rows) + "\n\n"
+            + soil_module.soil_provenance_note(presumptive))
 
 
 #: Input names that describe a *material*, and the row each becomes. Derived from what the

@@ -251,6 +251,22 @@ crushed-stone rock read at the bottom of Table 3.1's "34° +" band would not cle
 110 pcf. Either the rock is the clean 0.25–1.5 in aggregate AB specifies, or a measured soil
 closes it (at 130 pcf it passes at 34°).
 
+**THE SOIL IS PRESUMED, NOT MEASURED, AND IT IS THE LARGEST SINGLE ASSUMPTION ON THIS PAGE
+(2026-09-22).** Every ground number above is read off a code table for a class nobody has
+dug for: `Site.soil_class="GM"` is the Des Moines-lobe till read regionally off the Ramsey
+County survey, and `Site.soil_basis` now says so as a field
+(`provenance="presumed"`) rather than as a paragraph. φ of the ground comes back out of IBC
+Table 1610.1's 40 psf/ft at each end of the 110–130 pcf band; μ at the base is
+tan(min φ_pad, φ_ground), the NCMA/Allan Block method, which is what gives 0.5276 at the
+loose end and sliding 1.538. **The sensitivity that shows what is at stake is already
+below** (§3c's pinned list): drop the NCMA reading and take IBC 1806.2's no-pad coefficient
+`μ = 0.25` instead and sliding falls to **0.575** — a wall that does not stand. The graded
+case is not that one, and the reason it is not is a *method* argument, not a measurement.
+So every `tiered_retaining` record now carries a `soil_presumed` input and prints the
+sentence, and the calc package's gap register section D lists all five legs as graded on a
+presumption until an investigation on this parcel confirms the class. A report that lands
+here replaces §3b's φ and γ outright, and the rows above are re-run, not re-argued.
+
 ### 3c. Superseded — AB Classic (6°), kept as history
 
 Arms `0.695208'` / `1.110139'`, `M_rW` 350.66. `tests/test_segmental_wall.py` still pins it.
