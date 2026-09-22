@@ -212,9 +212,10 @@ SECOND_BRACED_WALLS = [
 ]
 
 # The second-floor pair. A DTT2Z each side of the floor on one 1/2" rod, tying the panel end
-# above to the corner post below (R602.10.9) — there is no concrete up here to cast a strap
-# into. ESR-2330 Table 4 publishes 1,825 lb at a 1 1/2" member against the 800 lb asked for,
-# and it publishes it for SG 0.50 lumber, which is why these two posts are specified DF-L.
+# above to the corner post below (Figure R602.10.7 end condition 5) — there is no concrete
+# up here to cast a strap into. ESR-2330 Table 4 publishes 1,825 lb at a 1 1/2" member
+# against the 800 lb asked for, and it publishes it for SG 0.50 lumber, which is why these
+# two posts are specified DF-L.
 SECOND_BRACED_CONNECTORS = [
     Connector(uid="YE8NE66A0N", tag="CN-S-BWHD-NE-E", kind=ConnectorKind.HOLD_DOWN,
               position=pt(_NE_INBOARD, _NE_PANEL_END), elevation=_SECOND_HD_Z,

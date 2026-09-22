@@ -862,7 +862,7 @@ DTT2Z_FLOOR_TIE = StructuralHardware(
     model="DTT2Z",
     source="Simpson Strong-Tie DTT2Z tension tie (strongtie.com/dtt) — one each side of a "
            "floor, joined by a 1/2 in threaded rod through the band, to carry a braced wall "
-           "panel's end tension from an upper storey into the post below it (R602.10.9)",
+           "panel's end tension from an upper storey into the post below it (R602.10.7)",
     # The 1.5 in row is recorded, not the 3.0 in one: it is the lower number and it applies
     # to any member from a single 2x up, so a pack cannot be credited with a thickness the
     # model does not state. ESR-2330 §2.0 lists R602.10.7 among the report's prescriptive

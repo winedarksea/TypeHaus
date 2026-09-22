@@ -115,7 +115,7 @@ def window_framing_module(ctx: CheckContext) -> list[Finding]:
                     f"just the nonbearing one ({nonbearing_in:.0f}\") less a jack each "
                     f"side, because a BEARING header lands "
                     f"on a jack at each end (R602.7.5) where a NONBEARING one need not "
-                    f"(R602.7.4 allows a flat 2x4 nailed to the stud each side). If this "
+                    f"(R602.7.4: no load-bearing header, a single flat 2x4 is permitted). If this "
                     f"width is carrying a glazing-AREA requirement, buy the area back in "
                     f"HEIGHT rather than raising the cap"),
             ))

@@ -355,9 +355,9 @@ def _merge(runs):
 
     Merging exists for one reason — a panel that crosses a wall butt has to be authored per
     wall — and it stops there. Two panels authored on one wall are two designations, and
-    R602.10.2.3 ("a braced wall line over 16 feet shall have not less than two braced wall
-    panels") is a rule about designations: a 24-foot blind wall is drawn as two panels, and
-    collapsing them here would make the drawing and the rule disagree.
+    R602.10.2.3 ("Braced wall lines greater than 16 feet ... shall have not less than two
+    braced wall panels") is a rule about designations: a 24-foot blind wall is drawn as two
+    panels, and collapsing them here would make the drawing and the rule disagree.
     """
     groups: list[list] = []
     for run in runs:

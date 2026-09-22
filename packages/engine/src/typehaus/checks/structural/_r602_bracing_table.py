@@ -213,9 +213,10 @@ GYPSUM_OMITTED_METHODS: tuple[str, ...] = ("DWB", "WSP", "SFB", "PBS", "PCP", "H
 GYPSUM_FASTENING_FACTOR = 0.70
 GYPSUM_FASTENING_METHODS: tuple[str, ...] = ("GB",)
 
-#: Item 8 — horizontal blocking omitted at a horizontal sheathing joint. 2018 names WSP and
-#: CS-WSP; 2021 adds PBS. Doubling the required length is the largest single factor in the
-#: table, and it applies only where there IS a horizontal joint to block.
+#: Item 8 — horizontal blocking omitted at a horizontal sheathing joint (R602.10.4.4
+#: exception 1 is the companion text). 2018 names WSP and CS-WSP; 2021 adds PBS. Doubling
+#: the required length is the largest single factor in the table, and it applies only where
+#: there IS a horizontal joint to block.
 NO_BLOCKING_FACTOR = 2.00
 NO_BLOCKING_METHODS: tuple[str, ...] = ("WSP", "CS-WSP")
 
@@ -282,7 +283,8 @@ MAX_PANEL_END_DISTANCE_FT = 10.0
 #: R602.10.2.2 — "The distance between adjacent edges of braced wall panels ... not greater
 #: than 20 feet."
 MAX_BETWEEN_PANELS_FT = 20.0
-#: R602.10.2.3 — a line over 16 feet long carries not less than two panels.
+#: R602.10.2.3 — "Braced wall lines greater than 16 feet ... shall have not less than two
+#: braced wall panels."
 MIN_TWO_PANELS_OVER_FT = 16.0
 #: Figure R602.10.7 — the corner return, for a line sheathed with wood structural panels
 #: (32" where it is sheathed with structural fiberboard).

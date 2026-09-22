@@ -16,7 +16,7 @@ battens that phase-lock to it) and "where does this line start and stop vertical
 (``base_z_m``/``top_z_m``, for ``LayerDatum.LINE_BASE``/``LINE_TOP``).
 
 Named ``LayoutLine`` rather than ``WallLine`` deliberately: *braced wall line* is an IRC term
-of art (R602.10.1.4) and it admits up to 4 ft of in-plane offset, where this is strictly
+of art (R202) and it admits up to 4 ft of offset (R602.10.1.2), where this is strictly
 collinear. Conflating the two would bite, and ``WallLine``/``BracedWallLine`` stays free for
 a bracing check.
 
