@@ -2463,8 +2463,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
 ## The engineering workflow
 
-Catlin carries ~36 engineered items across nine kinds — the requirements outside the
-prescriptive tables. The workflow lives in the root `CLAUDE.md`; what belongs here is where
+Catlin carries ~54 engineered items across 17 kinds (measured 2026-09-22; `haus
+engineering houses/catlin` is the source of truth) — the requirements outside the
+prescriptive tables. `wall_panel` left on 2026-09-22, the fifth published-read exit. The workflow lives in the root `CLAUDE.md`; what belongs here is where
 this house keeps its half of it.
 
 ```
@@ -2496,7 +2497,8 @@ haus analysis . --solve                     # the engineered frame, solved in Py
 - **The bundle carries the analytical model four ways** (2026-09-12, decision #73): the IFC4
   structural analysis view inside `model.ifc` (SAP2000/ETABS/Bonsai), `analysis/centreline.dxf`
   (RISA), `analysis/members.csv` (ForteWEB/Sizer/Enercalc by hand) and `analysis/model.pynite.py`.
-  Scope is the 36 items and their load path: 54 members, 56 nodes, 22 supports. **The ten
+  Scope is every item and its load path — 54 items, 60 members, 58 nodes, 22 supports at
+  2026-09-22; `haus analysis` prints the counts. **The ten
   lateral-system columns are FIXED and every other base is PINNED, a claim the engine makes
   and states** (`notes/analytical_model_basis.md`); the retaining set, the girt screw, the
   trussed roofs and the uplift path are named GAPS, not members. `tests/test_analytical_oracle.py`
