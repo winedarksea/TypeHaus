@@ -46,15 +46,15 @@ def test_the_file_is_byte_deterministic(tmp_path: Path):
 
 
 @pytest.mark.slow
-def test_haus_print_refuses_catlin_on_the_open_engineering_lines(tmp_path: Path):
-    """The draft gate, end to end — and since 2026-09-20 it REFUSES catlin again.
+def test_haus_print_opens_for_catlin(tmp_path: Path):
+    """The draft gate, end to end — and since 2026-09-22 it lets catlin through.
 
-    It opened on 2026-09-20 when the column bases closed, and shut the same day when every
-    deferred engineering kind became a registered calculation whose line blocks: base
-    rotation on PT-BW-GW, two column heads, the veneer beam, the thermal breaks and the SRW
-    apron are open (`haus engineering`). The day they close this test fails and tells
-    somebody to invert it back; a permit set that silently became printable is exactly as
-    bad as one that silently stopped.
+    It shut on 2026-09-20 when every deferred engineering kind became a registered
+    calculation whose line blocks, and opened again when the last of those closed: thermal
+    break basis 7 (the five `thermal_break_transfer` lines), the veneer beam at TMS ℓ/600
+    with the joint's fixity credited, and the SRW apron. The day one of them reopens this
+    test fails and tells somebody to invert it back; a permit set that silently stopped
+    printing is exactly as bad as one that silently became printable.
     """
     from typer.testing import CliRunner
 
@@ -63,9 +63,9 @@ def test_haus_print_refuses_catlin_on_the_open_engineering_lines(tmp_path: Path)
     house = tmp_path / "catlin"
     copy_house(CATLIN, house)
     result = CliRunner().invoke(app, ["print", str(house), "--fmt", "pdf"])
-    assert result.exit_code == 1, result.output
-    assert "permit print blocked" in result.output
-    assert not (house / "out" / "permit_set.pdf").is_file()
+    assert result.exit_code == 0, result.output
+    assert "permit print blocked" not in result.output
+    assert (house / "out" / "permit_set.pdf").is_file()
 
 
 @pytest.mark.slow

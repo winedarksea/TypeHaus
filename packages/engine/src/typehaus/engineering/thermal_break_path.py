@@ -181,6 +181,9 @@ def path_rows(ctx, boards, total_lb: float, floor_line_lb: float, states, missin
     if fc is None:
         missing.append(f"{slab.tag}'s mix f'c — the slab strut")
     else:
+        # In the fingerprint because the strut's capacity is 0.85 f'c: a mix change has to
+        # stale a seal pinned over this record.
+        inputs.append(_Quantity("slab_fc", fc, "psi", 1.0))
         states.append(LimitState(
             "house slab strut compression", line / (t * edge_len), PHI_PLAIN * 0.85 * fc, "psi",
             f"{line:,.0f} lb over {t:.2f}\" x {edge_len:.0f}\" of {slab.tag}; phi 0.60 x 0.85 "

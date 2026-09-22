@@ -94,8 +94,13 @@ def house_wall_rows(ctx, board: Board, patch: dict, states, missing, inputs) -> 
     area = section.area_in2 * length / spacing
     a = area * REINFORCEMENT_FY_PSI / (0.85 * fc * length)
     phi_mn = PHI_FLEXURE * area * REINFORCEMENT_FY_PSI * (d - a / 2.0)
+    # f'c, the steel and the effective depth are in the fingerprint because both rows below
+    # are computed from them: a weaker mix or a smaller bar has to stale a pinned seal.
     inputs += [Quantity("wall_thrust", patch["on_wall"], "lb", 1.0),
-               Quantity("wall_span", patch["span"], "in", 0.01)]
+               Quantity("wall_span", patch["span"], "in", 0.01),
+               Quantity("wall_fc", fc, "psi", 1.0),
+               Quantity("wall_steel_area", area, "in2", 0.0001),
+               Quantity("wall_effective_depth", d, "in", 0.01)]
     states.append(LimitState(
         "house wall flexure", patch["moment"], phi_mn, "lb-in",
         f"1.0T: {patch['on_wall']:,.0f} lb (closing + locked-in pour) on {tag}'s "

@@ -111,7 +111,7 @@ def _door_wall(sill_m: float):
     """A 4 m wall with a 3 ft door centred at 2 m, whose sill sits at ``sill_m``."""
     rw = _mitred_wall(4.0, 0.0, at_start=True)
     opening = SimpleNamespace(center_m=2.0, width_m=ft(3).meters, height_m=ft(6, 8).meters,
-                              sill_m=sill_m, is_door=True, operation=None,
+                              sill_m=sill_m, is_door=True, operation=None, tag=None,
                               header_spec=None, pocket_run_m=0.0, pocket_sign=0)
     return opening, frame_wall(_plan_double(), rw, openings=[opening])
 
@@ -208,7 +208,7 @@ def _fourteen_inch_window_wall():
     center = 4.5 * _MODULE
     opening = SimpleNamespace(center_m=center, width_m=inch(14).meters,
                               height_m=inch(36).meters, sill_m=inch(24).meters,
-                              is_door=False, operation=None)
+                              is_door=False, operation=None, tag=None)
     members = frame_wall(_plan_double(), rw, openings=[opening])
     return center, members
 
@@ -241,7 +241,7 @@ def _thirty_inch_window_wall():
     center = 4 * _MODULE
     opening = SimpleNamespace(center_m=center, width_m=inch(30).meters,
                               height_m=inch(36).meters, sill_m=inch(24).meters,
-                              is_door=False, operation=None, header_spec=None,
+                              is_door=False, operation=None, header_spec=None, tag=None,
                               pocket_run_m=0.0, pocket_sign=0)
     return rw, frame_wall(_plan_double(), rw, openings=[opening])
 
@@ -293,13 +293,13 @@ def test_a_header_free_opening_bears_on_its_neighbours_jamb_pack_not_through_it(
     rw = _mitred_wall(6.0, 0.0, at_start=True)
     wide = WallOpening(center_m=inch(108).meters, width_m=inch(30).meters,
                        height_m=inch(48).meters, sill_m=inch(36).meters,
-                       is_door=False, operation=None)
+                       is_door=False, operation=None, tag=None)
     # Wholly inside the bay west of that pack, so it takes the header-free path: its RO runs
     # 81 7/8"..88 7/8", clear of the module stud at 80" and of the pack's outer king.
     narrow_center = inch(85.375).meters
     narrow = WallOpening(center_m=narrow_center, width_m=inch(7).meters,
                          height_m=inch(7).meters, sill_m=inch(24).meters,
-                         is_door=False, operation=None)
+                         is_door=False, operation=None, tag=None)
     members = frame_wall(_plan_double(), rw, openings=[wide, narrow])
 
     half_stud = inch(0.75).meters
@@ -344,7 +344,7 @@ def test_an_opening_that_reaches_the_floor_gets_no_rough_sill():
     rw = _mitred_wall(4.0, 0.0, at_start=True)
     opening = SimpleNamespace(center_m=2.5 * _MODULE, width_m=inch(30).meters,
                               height_m=inch(80).meters, sill_m=0.0,
-                              is_door=False, operation=None, header_spec=None,
+                              is_door=False, operation=None, header_spec=None, tag=None,
                               pocket_run_m=0.0, pocket_sign=0)
     members = frame_wall(_plan_double(), rw, openings=[opening])
     assert not [m for m in members if m.category == "sill"]
@@ -359,7 +359,7 @@ def test_header_free_opening_with_no_bounding_studs_adds_its_own_pair():
     rw = _mitred_wall(4.0, 0.0, at_start=True)
     opening = SimpleNamespace(center_m=2.5 * _MODULE, width_m=inch(14).meters,
                               height_m=inch(36).meters, sill_m=inch(24).meters,
-                              is_door=False, operation=None)
+                              is_door=False, operation=None, tag=None)
     out = frame_opening(rw, (1.0, 0.0), (0.0, 0.0), opening, "2x4", 0.0,
                         lambda _station: 2.4, 0, _MODULE, stud_stations=())
     flanking = [m for m in out if m.child_key.startswith("flank-")]

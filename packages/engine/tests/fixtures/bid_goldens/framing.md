@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** dfbd4acf2830ae5d  
-**Lines:** 139
+**Model hash:** ba63ece9dc63332f  
+**Lines:** 140
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -77,6 +77,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | ABU66SS standoff post base (6x6), 316L stainless | 4 | ea |  | building |
 | CCQ46SDS2.5 column cap (4x beam on 6x6 post) | 4 | ea |  | building |
 | CS16 coiled strap, 16 ga | 2 | ea |  | building |
+| DTT2Z screw hold-down / tension tie | 2 | ea |  | building |
 | KDAT 4x4 filler, 26-1/2" long, nailed into a stud pack (FILLER-4X4-KDAT) | 1 | ea |  | building |
 | H2.5A hurricane/seismic tie | 38 | ea |  | building |
 | H2.5A hurricane/seismic tie | 4 | ea |  | building |
@@ -261,6 +262,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | ABU66SS standoff post base (6x6), 316L stainless | — |
 | CCQ46SDS2.5 column cap (4x beam on 6x6 post) | — |
 | CS16 coiled strap, 16 ga | — |
+| DTT2Z screw hold-down / tension tie | — |
 | KDAT 4x4 filler, 26-1/2" long, nailed into a stud pack (FILLER-4X4-KDAT) | — |
 | H2.5A hurricane/seismic tie | — |
 | H2.5A hurricane/seismic tie | — |
