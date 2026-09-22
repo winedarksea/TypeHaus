@@ -2648,6 +2648,16 @@ thinnest, so the board thickens and three SL-B-FLOOR detail goldens move 0.5"), 
 edge therefore keeps its own 1" FOAMULAR 400. The graded row also goes over earlier in the E
 band than bearing did — at ~x1.2 of the closure boards' estimated 525 psi.
 
+**Then designed out (basis 9, §11l, owner 2026-09-22):** "this has been a constant problem that
+swapping materials hasn't been able to solve." It couldn't: the thrust is an imposed
+displacement through springs, and a stronger foam is a stiffer one. Every board now carries 1/2"
+of closed-cell EPDM sponge whose ASTM D1056 sheet publishes a MAXIMUM (3.5 psi at 25%), and the
+court's largest closure strains it 10.6%. Graded at that cap: 28,807 lb, floor line 0.786
+governing, the 1/3 rule 0.469, and no row moves across E 350-1,050. The owner's own candidate —
+deepen W-SG-BRKBM into a soil key — was worked first and set aside: rigid-plastic it needs a key
+to 12.65' below grade (14.6' on class 5), and elastically the presumed soil (n_h 8.10 pci) is ~8x
+softer than the boards, so the house keeps ~89% of the thrust and E stays in the verdict.
+
 **The residual risk is a field one and it is carried in three places**, because the engine can
 state a sequence and cannot enforce it: `AN-SG-BLOCKOUTS` on the drawing, the `boards`
 checkpoint on the walls visit in `tasks.toml`, and the owner's `break_blockouts_stripped` hold

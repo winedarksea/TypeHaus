@@ -2338,9 +2338,13 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   removes is the pour lock-in — 54,105 lb, of which the veneer beam's board alone was
   **41,162 (76%)**; the beam's board is a `Layer` and names no product or sequence of its
   own, so it INHERITS both from the authored boards on its loop. `thermal_break_transfer`
-  now grades all five items OK on the neutral-point demand and the house's lateral path
-  through `SL-B-FLOOR`: the slab edge's 1/3 sustained-load rule 0.885 governing (bearing
-  0.295), global sliding 0.558, beam board 0.541.
+  grades all five items OK through the house's lateral path in `SL-B-FLOOR`. Since basis 9
+  (§11l) every board carries 1/2" of closed-cell EPDM sponge (`CompliantLayer`, D1056, 3.5 psi
+  MAX at 25%; the beam's layer inherits it) and is graded AT that cap: T 28,807 lb, stems'
+  floor line 0.786 governing, slab-edge 1/3 rule 0.469, global sliding 0.348 — and no row moves
+  across the estimated E band. The spec must stay <= 3.5 psi (a 5 psi 2A1 puts the floor line
+  at 1.12). Deepening W-SG-BRKBM into a soil key was weighed and rejected (§11l: soil ~8x softer
+  than the boards at 0.05", its wedge is the house's own bearing soil).
   The five `preferences.toml` suppressions are deleted.
   - The statement is a FIELD SEQUENCE the model cannot enforce: `AN-SG-BLOCKOUTS` is the
     drawing's copy, `tasks.toml` sets the boards on the WALLS visit's `boards` checkpoint
@@ -2350,8 +2354,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     **1.966** at the C578 Type X floor. Neither decision closes the item alone.
   - The slab-edge board's own sheet holds a DEAD load to 1/3 of its rating, and since basis 8
     that rule is a **graded row** (FOAMULAR 400 read 2.21; 1000 reads 0.885). The old
-    creep-relieves-an-imposed-deformation exemption is retired. It is the row most sensitive
-    to the court boards' ESTIMATED E: over at ~x1.2 (E ≈ 631 psi), 1.162 at x1.5.
+    creep-relieves-an-imposed-deformation exemption is retired. Uncapped it went over at ~x1.2
+    of the ESTIMATED E; capped (basis 9) it is 0.469 flat, and FOAMULAR 400 would read 1.173.
   - The unstated-grade fallback is a conservative FLOOR, never an open input: an ungraded row
     can never read OVER, which is how the 4.14 stayed visible through basis 6.
 - **The break cannot go on one purchase order today** — the two closure blocks bill by VOLUME
