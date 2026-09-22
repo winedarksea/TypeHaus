@@ -225,7 +225,15 @@ MAX_NON_BLOCKING_ITEMS = {"mn-2020": 24}
 # slab-edge grade — free body §11j), so its line carries engineered findings instead of
 # reading UNKNOWN. Nothing became less designed; one more item awaits only a seal — and this
 # was the last BLOCKING line that was not PASS, so the draft permit print opens here.
-MAX_UNSEALED_ITEMS = {"mn-2020": 16}
+# RAISED 16 -> 17 on 2026-09-22 for "Wall bracing — braced wall lines, panels and end
+# conditions", and this one is NOT a house awaiting a seal. R602.10 is prescriptive and
+# twelve of catlin's thirteen graded lines are ordinary table reads that PASS; the line that
+# lands in this lane is `BWL-W-BW-SCREEN`, whose walls carry a `ShearPanelSpec`, so the
+# braced-wall rule answers N/A with `Authority.ENGINEERED` and hands the verdict to
+# `lateral_system/RF-BW-CANOPY` — an item that is already on the checklist under its own
+# line. The permit item BLOCKS and is green, so no gate moved; what rose is the count of
+# lines a reviewer can follow to an engineer's work.
+MAX_UNSEALED_ITEMS = {"mn-2020": 17}
 
 
 def _engineered_labels(profile) -> set[str]:

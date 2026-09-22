@@ -76,11 +76,15 @@ def test_nothing_penetrates_catlins_roof_and_the_evidence_says_why(catlin_model_
     assert "stop" in item[0].label
 
 
-def test_the_braced_wall_item_says_the_panels_are_not_modelled(catlin_model_ro) -> None:
+def test_the_braced_wall_item_carries_the_lengths_s103_prints(catlin_model_ro) -> None:
+    """The framer's list and S-103 quote one number — the panels are modelled now, so the
+    item states what R602.10.3 asks of each storey and what stands on it."""
     items = [i for i in handoff_items(catlin_model_ro, _visit("framing"))
              if i.id.startswith("braced_walls:")]
     assert items, "catlin has braced wall lines"
-    assert all("not modelled at all" in item.derived for item in items)
+    assert all("provided against" in item.label for item in items)
+    assert all(item.sheet_ref == "S-103" for item in items)
+    assert all("hold-downs it names" in item.derived for item in items)
 
 
 def test_each_trade_only_sees_its_own_items(catlin_model_ro) -> None:

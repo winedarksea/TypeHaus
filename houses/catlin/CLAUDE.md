@@ -229,6 +229,36 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 
 ### Shell: framing module and envelope
 
+- **Wall bracing is prescriptive IRC R602.10, Method CS-WSP on every line** (2026-09-22,
+  decision #79; `plan/braced_walls.py`, `notes/wall_bracing_layout.md`). 67 panels — 27
+  main, 31 second, 9 garage — each one a full-height run between openings, measured off the
+  resolved model. **The dwelling is TWO STORIES and the count is derived**: the basement is
+  an R404 concrete box and the attic is an R325.6 habitable attic whose east and west sides
+  are rafter plates, so neither carries a braced wall line. **The attic still costs
+  something** — the eave-to-ridge factor is measured from the second storey's top plate to
+  the ridge (11'-3", the 15-foot row at x1.15 / x1.30), not from the roof's own 9'-4" eave.
+  Worst line is main E1 at 19'-7" provided against 12'-7" required; every line clears.
+  - **Two factors are the ones to watch.** Table R602.10.3(2) item 6's **x1.40** IS taken on
+    the second storey's south and west lines, because the plant room's PVC liner is not
+    gypsum — line `W-S-S1`/`W-S-W4` in gypsum and both lines drop from 10.37' to 7.41'.
+    Item 8's **x2.00** (horizontal blocking omitted) is NOT taken, on the argument that a
+    9'-0" wall sheathed in one 9'-0" sheet has no horizontal joint to block: **order 8-foot
+    sheathing and every required length in the house doubles**, which takes main E1 to a
+    FAIL. Item 5's x0.80 hold-down credit cannot be taken at all — it is published for the
+    intermittent methods, so the NE corner's devices buy an end condition, never length.
+  - **The NE corner carries four 800-lb devices** (owner, 2026-09-22; R602.10.7 end
+    condition 5): `CN-M-BWHD-NE-N`/`-E` are STHD14RJ cast into the basement wall top, and
+    `CN-S-BWHD-NE-N`/`-E` are DTT2Z pairs on a rod through the floor into the main corner
+    post. All four exist because WIN-M-KIT-E, WIN-M-KITCH-N, WIN-S-BED3 and WIN-S-BED3-N sit
+    2'-7" off the corner and leave a 17" sliver instead of a 24" return. **The standing
+    alternative is to move those four windows 16" INBOARD**, which buys the returns and
+    deletes all four devices at the cost of their facade column. **Never move them toward
+    the corner** — that is the one direction with no answer.
+  - The two second-floor corner posts are specified **DF-L**: ESR-2330 publishes the DTT2Z
+    for SG >= 0.50 only, and this house otherwise frames SPF.
+  - A `RoughOpening` no larger than **24" x 24"** is a service penetration and does not
+    split a panel. No code section states that threshold; AO-M-ERV-OA, AO-S-ERV-EA and
+    AO-M-PORCH-HYD depend on it.
 - 36'x36' at sheathing; everything on the 16" o.c. module; exterior walls carry
   `alignment=face("sheathing-ext")` as the vertical datum (#43). Side-wall stack is 2x6
   throughout — one `EXT_2X6` on main, second and attic. Main-storey studs are LSL, upper
@@ -1717,6 +1747,21 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     the landing. `ED-G-LT3` is at the landing's centre, x=8'-3".
   - `notes/garage_orientation_lot.md` is the revert recipe; a south-lot revert must also flip
     `SetbackSpec` edges 0 and 2 (deliberately untouched here).
+- **The 16' overhead door needs no portal frame, and `OVERHEAD_DOOR_OFFSET` is a GRADED
+  fact now** (2026-09-22). Its two 4'-0" piers are 48" against Table R602.10.5's **35"**
+  (CS-WSP, 84" adjacent clear opening, read at the more onerous of the 8' and 9' columns for
+  an 8'-4" wall). At 3'-0" the piers would still clear by 1"; below that the garage adopts
+  Method CS-PF (R602.10.6.4) and its portal-frame straps and anchorage. The door's
+  suppression of `structural.door_framing_module` is untouched and unrelated.
+  - **The SW corner takes a fifth hold-down.** `D-G-SERVICE` sits 7" off it, so `W-G-S` has
+    no 24" return to give `W-G-W`'s 29" end panel and that end meets R602.10.7's end
+    condition **2** instead: `CN-G-BWHD-SW`, an STHD14 cast into the ICF-6 core (ESR-2920's
+    6" stem row, 3,065 lb). The alternative is moving the service door 17" east, which drags
+    the landing, both carriers, two backing bands, three lighting stations and a section cut
+    with it. The same 29" panel IS the return the SOUTH line's end uses — the corner is
+    short in one direction only.
+  - `W-G-E` and `W-G-S` are each drawn as **two** panels: R602.10.2.3 asks a line over 16'
+    for not less than two, and the sheathing is continuous either way.
 - **The garage has no wainscot; its base skin is a uniform 24" band on the ICF stem, all
   four walls (2026-09-03 deletion).** `GARAGE_BRICK_WAINSCOT`, `GARAGE_ICF_6_BRICKLEDGE`,
   `off-white-brick`, and both `_BRICKLEDGE` dicts in `params/foundations.py` are deleted
