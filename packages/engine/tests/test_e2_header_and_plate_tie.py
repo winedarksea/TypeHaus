@@ -13,9 +13,10 @@ import pytest
 
 from typehaus.checks.code.mn_residential.profile import MN_2020
 from typehaus.checks.registry import CheckContext, Preferences
+from typehaus.model.refs import PublishedHole
 from typehaus.model.registry import constructor_names, element_kinds
 from typehaus.model.structure import PlateTie
-from typehaus.quantities import M_PER_IN
+from typehaus.quantities import M_PER_IN, inch
 from typehaus.resolve.mep_bores import (
     _CUTTABLE_CATEGORIES,
     header_bore,
@@ -163,6 +164,156 @@ def test_the_six_catlin_header_crossings_are_at_their_true_stations(
     assert set(stations) == set(expected)
     for tag, want in expected.items():
         assert stations[tag] == pytest.approx(want, abs=0.01), tag
+
+
+# --- §8 a header hole chart, read --------------------------------------------------------
+
+#: Weyerhaeuser TJ-9000 (April 2021) p.26, ALLOWABLE HOLES, 1.55E TimberStrand LSL, the
+#: 11 7/8" row — the chart §8 of the note transcribes. Round holes only; 8" off each
+#: bearing; the middle 1/3 of the depth; two holes 2 x the larger diameter apart.
+_LSL = "2-1.75x11.875 LSL"
+_LSL_DEPTH_IN = 11.875
+
+
+def _tj9000(**overrides) -> PublishedHole:
+    row = dict(
+        source="Weyerhaeuser TJ-9000 Trus Joist Beam, Header and Column Specifier's "
+               "Guide (April 2021) p.26",
+        table="ALLOWABLE HOLES — 1.55E TimberStrand LSL, 11 7/8\" row",
+        member=_LSL, max_diameter=inch(3.625), zone_from_bearing=inch(8.0),
+        depth_fraction=1.0 / 3.0, min_spacing_diameters=2.0, round_holes_only=True,
+        load_basis="uniform and/or concentrated loads anywhere along the member",
+        condition="round holes only; no holes in a header in plank orientation")
+    row.update(overrides)
+    return PublishedHole(**row)
+
+
+def _charted(diameter_in: float, *, from_bearing_in: float = 12.0,
+             edge_clear_in: float = 4.0, nearest_cut_in: float | None = None,
+             through_in: float | None = None, chart: PublishedHole | None = None,
+             profile: str = _LSL):
+    return header_bore(profile, diameter_in, through_in=through_in,
+                       chart=chart if chart is not None else _tj9000(),
+                       from_bearing_in=from_bearing_in, span_in=36.0,
+                       edge_clear_in=edge_clear_in, nearest_cut_in=nearest_cut_in)
+
+
+def test_without_a_chart_an_engineered_header_is_still_the_fabricator_s_chart() -> None:
+    """The refusal stands word for word; only a chart in hand reaches past it."""
+    assert header_bore(_LSL, 2.0).ok is None
+    assert "fabricator's chart" in header_bore(_LSL, 2.0).basis
+
+
+def test_the_chart_is_read_before_the_engineered_refusal_and_publishes_a_pass() -> None:
+    verdict = _charted(3.5)
+    assert verdict.ok is True
+    assert "3.62\"" in verdict.basis and "TJ-9000" in verdict.basis
+    assert "round holes only" in verdict.basis  # the condition, printed
+
+
+def test_a_hole_over_the_published_diameter_is_a_fail_with_the_margin() -> None:
+    verdict = _charted(4.5)
+    assert verdict.ok is False
+    assert verdict.limit_in == pytest.approx(3.625)
+    assert "by 0.88\"" in verdict.basis
+
+
+def test_a_legal_hole_in_the_bearing_zone_is_still_a_fail() -> None:
+    """PR-B-MAIN-DRAIN's case, and the reason a chart is a SHAPE and not one number."""
+    verdict = _charted(3.0, from_bearing_in=3.0)
+    assert verdict.ok is False
+    assert "3.00\" from the nearest bearing" in verdict.basis
+
+
+def test_a_hole_outside_the_depth_band_is_a_fail() -> None:
+    """Every one of catlin's six sits within 1 1/4" of the header's bottom face."""
+    verdict = _charted(3.0, edge_clear_in=1.04)
+    assert verdict.ok is False
+    assert "clear wood to the nearer face" in verdict.basis
+    assert f'{_LSL_DEPTH_IN / 3.0:.2f}"' in verdict.basis
+
+
+def test_two_holes_closer_than_the_chart_allows_fail_on_the_pair() -> None:
+    """A per-run pass cannot see this: each hole is legal and the pair is not."""
+    assert _charted(3.5, nearest_cut_in=7.5).ok is True
+    verdict = _charted(3.5, nearest_cut_in=0.77)
+    assert verdict.ok is False
+    assert "nearest other hole" in verdict.basis
+
+
+def test_the_spacing_is_two_diameters_of_the_LARGER_of_the_pair() -> None:
+    """catlin's case: a 2.38" and a 3.50" hole 0.77" apart. Graded on the 2.38" alone the
+    smaller hole would be asked for 4.75" and the larger for 7.00" — one pair, two answers.
+    """
+    verdict = header_bore(_LSL, 2.375, chart=_tj9000(), from_bearing_in=15.0, span_in=36.0,
+                          edge_clear_in=4.0, nearest_cut_in=6.0, nearest_diameter_in=3.5)
+    assert verdict.ok is False
+    assert '7.00"' in verdict.basis
+
+
+def test_a_notch_is_not_a_round_hole_and_the_chart_refuses_it() -> None:
+    """The two sauna radials clip the header's top; no row of a round-hole chart reaches
+    a notch, whatever its depth."""
+    verdict = _charted(4.0, through_in=1.75)
+    assert verdict.ok is False
+    assert "ROUND HOLES ONLY" in verdict.basis
+
+
+def test_a_retyped_header_drifts_off_the_row_and_grades_nothing() -> None:
+    verdict = _charted(2.0, profile=HEADER)
+    assert verdict.ok is None
+    assert "does not describe this header" in verdict.basis
+    assert HEADER in verdict.basis
+
+
+def test_a_guard_the_crossing_cannot_answer_is_a_mismatch_not_agreement() -> None:
+    verdict = _charted(2.0, from_bearing_in=None)
+    assert verdict.ok is None
+    assert "passed nothing to compare it against" in verdict.basis
+
+
+def test_a_span_longer_than_the_row_was_read_at_drifts() -> None:
+    verdict = header_bore(_LSL, 2.0, chart=_tj9000(span=inch(36.0)),
+                          from_bearing_in=12.0, span_in=48.0, edge_clear_in=4.0)
+    assert verdict.ok is None
+    assert "this header spans" in verdict.basis
+
+
+def test_published_hole_is_a_registered_dialect_constructor() -> None:
+    assert "PublishedHole" in constructor_names()
+
+
+def test_a_header_names_the_opening_it_was_framed_around(catlin_model_ro) -> None:
+    """``child_key`` stays ``header-0`` — every section golden is keyed on it — so the
+    door's tag rides beside it. Without it no chart can be found for a header at all."""
+    from typehaus.checks.mep.routing_bores import _crossings
+
+    openings = {tag: cut.opening_tag
+                for tag, _wall, cuts in _crossings(_ctx(catlin_model_ro))
+                for cut in cuts if cut.category == "header"}
+    assert openings["PR-B-KITCH-DRAIN"] == "D-B-FURN"
+    assert openings["DU-B-ERV-R-GYM"] == "D-B-GYM"
+    assert all(cut.child_key == "header-0"
+               for wall in catlin_model_ro.walls for cut in wall.members
+               if cut.opening_tag == "D-B-FURN" and cut.category == "header")
+
+
+def test_the_bearing_is_the_jack_face_and_not_the_member_end(catlin_model_ro) -> None:
+    """A header runs OVER its jacks, so its ends are not its bearings: PR-B-MAIN-DRAIN is
+    4.50" from the member end and 3.00" from the bearing the chart measures from."""
+    from typehaus.checks.mep.routing_bores import _crossings, _from_bearing_in
+
+    ctx = _ctx(catlin_model_ro)
+    for tag, _wall, cuts in _crossings(ctx):
+        if tag != "PR-B-MAIN-DRAIN":
+            continue
+        cut = next(c for c in cuts if c.category == "header")
+        assert cut.from_end_m / M_PER_IN == pytest.approx(4.50, abs=0.01)
+        assert _from_bearing_in(ctx, cut) == pytest.approx(3.00, abs=0.01)
+        assert cut.edge_clear_in == pytest.approx(0.60, abs=0.01)
+        break
+    else:  # pragma: no cover - the crossing is pinned above
+        pytest.fail("PR-B-MAIN-DRAIN no longer crosses a header")
 
 
 # --- §7 the plate tie --------------------------------------------------------------------

@@ -116,6 +116,10 @@ class WallOpening:
     height_m: float
     sill_m: float
     is_door: bool
+    #: The authored opening's own tag, carried so the members framed around it can name it
+    #: (``FramedMember.opening_tag``). ``child_key`` deliberately does NOT change: it is an
+    #: index into a wall and every golden is keyed on it.
+    tag: str | None = None
     operation: DoorOperation | None = None
     header_spec: str | None = None
     pocket_run_m: float = 0.0
@@ -398,7 +402,8 @@ def frame_opening(rw, direction, wall_start, opening: WallOpening, member: str,
         depth = header_depth(size, _m(opening.width_m)).meters
     out.append(FramedMember(rw.uid, f"header-{opening_index}", "header", size,
                             header_left, header_right, header_bottom,
-                            header_bottom + depth, header_span))
+                            header_bottom + depth, header_span,
+                            opening_tag=opening.tag))
 
     if pattern.needs_track_jamb_legs:
         _append_track_jamb_legs(out, rw, direction, wall_start, opening, opening_index,

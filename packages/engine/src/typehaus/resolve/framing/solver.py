@@ -691,7 +691,7 @@ def frame_model(plan: PlanModel, model: ResolvedModel) -> list[Finding]:
             continue  # a bore is drilled through the framing, not framed around
         by_host.setdefault(op.host_wall, []).append(WallOpening(
             center_m=op.center_along_m, width_m=op.width_m, height_m=op.height_m,
-            sill_m=op.sill_m, is_door=op.is_door,
+            sill_m=op.sill_m, is_door=op.is_door, tag=op.tag,
             operation=door_operations.get(op.type_ref) if op.is_door else None,
             header_spec=(door_header_specs.get(op.tag)
                          or type_header_specs.get(op.type_ref))

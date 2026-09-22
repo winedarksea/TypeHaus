@@ -238,6 +238,11 @@ class FramedMember:
     # The truss inside the envelope, on a ``roof_truss`` member and nothing else. Read by the
     # viewer, which draws chords/webs the model does not resolve; ``None`` everywhere else.
     truss: TrussShape | None = None
+    # The authored opening this member was framed around — a header naming its door, so a
+    # consumer can reach the opening's own ``published_hole`` chart. ``child_key`` stays
+    # ``header-0``: it is a per-wall index and every section golden is keyed on it, which is
+    # why the tag rides beside it rather than inside it.
+    opening_tag: str | None = None
 
 
 @dataclass(frozen=True)

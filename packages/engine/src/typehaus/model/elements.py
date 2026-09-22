@@ -11,6 +11,7 @@ from typehaus.model.refs import (
     FaceRef,
     LayerMaterial,
     OpeningPosition,
+    PublishedHole,
     PublishedSpan,
     ShearPanelSpec,
     ToRoof,
@@ -132,6 +133,12 @@ class Door(Element):
     # engineering register rather than into it. See ``model/refs.PublishedSpan``, which
     # carries the drift guards that stop a quotation outliving the model it was read for.
     published_span: PublishedSpan | None = None
+    # The maker's ALLOWABLE HOLES chart for the header over this opening, where one is
+    # published. No IRC table reaches a header (``resolve/mep_bores.header_bore``), so
+    # ``mep.run_through_header`` is UNKNOWN until this row is quoted; with it, every run
+    # crossing this header is graded — diameter, zone along the span, band of the depth and
+    # spacing. Falls back to the DoorType's ``published_hole`` when unset here.
+    published_hole: PublishedHole | None = None
 
 
 @register_element
@@ -193,6 +200,10 @@ class RoughOpening(Element):
     #: at its seat inside the cavity without ever piercing the board. Ignored while
     #: ``depth`` is ``None``.
     depth_from: Literal["interior", "exterior"] = "interior"
+    #: The maker's ALLOWABLE HOLES chart for this opening's header, where one is published
+    #: — the ``Door.published_hole`` field, on the opening kind that carries neither a
+    #: ``header_spec`` nor a ``published_span``. ``mep.run_through_header`` reads it.
+    published_hole: PublishedHole | None = None
 
 
 for _name, _obj in (

@@ -23,6 +23,7 @@ from typehaus.model.placeables import (
     PlanRepresentation,
     ServicePort,
 )
+from typehaus.model.refs_holes import PublishedHole
 from typehaus.model.registry import register_constructor
 from typehaus.quantities import Length, UFactor, m
 
@@ -73,6 +74,10 @@ class DoorType(HausModel):
     # that the solver's dimensional-lumber header tables don't apply; a Door instance's
     # own header_spec wins over this.
     header_spec: str | None = None
+    # Type-level ALLOWABLE HOLES chart for the header this type's openings get, where the
+    # header product is a property of the type rather than of one door. A Door instance's
+    # own published_hole wins over this. See ``model/refs.PublishedHole``.
+    published_hole: PublishedHole | None = None
     # A purchased bookshelf/Murphy door.  Its closed cabinet, face frame and casing are
     # real product geometry; its clearance is published installation information only.
     bookcase_door: BookcaseDoorSpec | None = None

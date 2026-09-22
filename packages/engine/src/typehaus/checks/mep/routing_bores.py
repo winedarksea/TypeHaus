@@ -229,6 +229,107 @@ def run_through_plate(ctx: CheckContext) -> list[Finding]:
     return out
 
 
+def _hole_charts(ctx: CheckContext) -> dict[str, object]:
+    """``{opening tag: PublishedHole}`` — the maker's chart, where the house quoted one.
+
+    The Door instance's own row wins over its DoorType's, the ``header_spec`` precedence
+    exactly; a ``RoughOpening`` carries its own and has no type to fall back to.
+    """
+    from typehaus.model import Door, RoughOpening
+
+    by_type = {door_type.tag: door_type.published_hole
+               for door_type in ctx.model.plan.library.door_types
+               if door_type.published_hole is not None}
+    out: dict[str, object] = {}
+    for element in ctx.model.plan.all_elements():
+        if isinstance(element, Door):
+            chart = element.published_hole or by_type.get(element.type_ref)
+        elif isinstance(element, RoughOpening):
+            chart = element.published_hole
+        else:
+            continue
+        if chart is not None:
+            out[element.tag] = chart
+    return out
+
+
+def _bearing_inset_m(ctx: CheckContext, cut) -> float | None:
+    """How much of a header's length is bearing rather than clear span, per end.
+
+    A header runs over its jack stacks and lands on the king inner faces, so its ends are
+    NOT its bearings: the chart's "8 inches from the bearing" is measured from the jack's
+    inner face, which is the rough opening's own edge. The inset is therefore half the
+    difference between the member and the opening it spans — one reading, no jack count.
+    """
+    opening = _opening(ctx, cut)
+    if opening is None or cut.member_length_m <= 0.0:
+        return None
+    framed = opening.width_m + opening.pocket_run_m
+    return max(0.0, (cut.member_length_m - framed) / 2.0)
+
+
+def _opening(ctx: CheckContext, cut):
+    if not cut.opening_tag:
+        return None
+    for opening in ctx.model.openings:
+        if opening.tag == cut.opening_tag:
+            return opening
+    return None
+
+
+def _from_bearing_in(ctx: CheckContext, cut) -> float | None:
+    from typehaus.quantities import M_PER_IN
+
+    inset = _bearing_inset_m(ctx, cut)
+    if inset is None:
+        return None
+    return (cut.from_end_m - inset) / M_PER_IN
+
+
+def _span_in(ctx: CheckContext, cut) -> float | None:
+    from typehaus.quantities import M_PER_IN
+
+    opening = _opening(ctx, cut)
+    if opening is None:
+        return None
+    return (opening.width_m + opening.pocket_run_m) / M_PER_IN
+
+
+def _holes_per_member(crossings) -> dict[tuple[str, str], list]:
+    """Every header cut in this house, keyed by the member it is in.
+
+    A chart's minimum spacing is a fact about the MEMBER, not about one run: two runs that
+    each drill a legal hole an inch apart have between them a cut no chart allows, and a
+    per-run pass cannot see it. The R502.8.1 ``nearest_cut_in`` precedent, one member along.
+    """
+    out: dict[tuple[str, str], list] = {}
+    for _tag, wall, cuts in crossings:
+        for cut in cuts:
+            if cut.category == "header":
+                out.setdefault((wall.tag, cut.member_key), []).append(cut)
+    return out
+
+
+def _nearest(holes, wall_tag: str, cut) -> dict[str, float | None]:
+    """The nearest other hole in this member: how far, and how big.
+
+    Both, because the chart's rule is "2 x the diameter of the LARGEST hole" — a fact about
+    the PAIR, so grading it on this hole's own diameter would publish the smaller number on
+    whichever of the two is smaller.
+    """
+    from typehaus.quantities import M_PER_IN
+
+    others = [other for other in holes.get((wall_tag, cut.member_key), ())
+              if other is not cut]
+    if not others:
+        return {"nearest_cut_in": None, "nearest_diameter_in": None}
+    away, other = min(
+        ((((o.station[0] - cut.station[0]) ** 2
+           + (o.station[1] - cut.station[1]) ** 2) ** 0.5, o) for o in others),
+        key=lambda pair: pair[0])
+    return {"nearest_cut_in": away / M_PER_IN, "nearest_diameter_in": other.through_in}
+
+
 @check(Tier.STRUCTURAL, _HEADER)
 def run_through_header(ctx: CheckContext) -> list[Finding]:
     """Every header a run would have to bore — and the admission that nothing grades it.
@@ -255,15 +356,22 @@ def run_through_header(ctx: CheckContext) -> list[Finding]:
         return (f'{cut.member_key} at ({cut.station[0] / M_PER_IN:.2f}", '
                 f'{cut.station[1] / M_PER_IN:.2f}")')
 
+    charts = _hole_charts(ctx)
+    crossings = list(_crossings(ctx))
+    holes = _holes_per_member(crossings)
     out: list[Finding] = []
     seen = 0
-    for tag, wall, cuts in _crossings(ctx):
+    for tag, wall, cuts in crossings:
         headers = [cut for cut in cuts if cut.category == "header"]
         if not headers:
             continue
         seen += 1
-        verdicts = [(cut, header_bore(cut.profile, cut.diameter_in,
-                                      through_in=cut.through_in)) for cut in headers]
+        verdicts = [(cut, header_bore(
+            cut.profile, cut.diameter_in, through_in=cut.through_in,
+            chart=charts.get(cut.opening_tag or ""),
+            from_bearing_in=_from_bearing_in(ctx, cut),
+            span_in=_span_in(ctx, cut), edge_clear_in=cut.edge_clear_in,
+            **_nearest(holes, wall.tag, cut))) for cut in headers]
         bad = [(cut, v) for cut, v in verdicts if v.ok is False]
         unsure = [(cut, v) for cut, v in verdicts if v.ok is None]
         where = f"{tag} would bore {len(headers)} header(s) of {wall.tag}"
@@ -275,7 +383,7 @@ def run_through_header(ctx: CheckContext) -> list[Finding]:
             cut, verdict = unsure[0]
             out.append(_unknown(_HEADER, f"{where}: {_at(cut)} is not graded — "
                                          f"{verdict.basis}", (tag, wall.tag)))
-        else:  # pragma: no cover - header_bore publishes no PASS today
+        else:
             cut, verdict = verdicts[0]
             out.append(_pass(_HEADER, f"{where}: {_at(cut)} — {verdict.basis}",
                              (tag, wall.tag)))

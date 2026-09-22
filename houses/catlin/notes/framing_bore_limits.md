@@ -290,3 +290,106 @@ PlateTie(uid="", tag="PTIE-W-B-SA-N2", wall="W-B-SA-N2", product="Simpson PSPN58
 ties every cut in that wall. Where a wall's plate is cut in two places far apart, author two
 ties with explicit `covers` instead — the strap is a real 12"-long part at a real station, and
 a single blanket entry would be claiming one part does two jobs.)
+
+---
+
+## 8. A header hole chart, read — and why no row of it reaches these six (2026-09-22)
+
+§6 said the verdict is UNKNOWN because no **IRC** table publishes a bore limit for a header.
+The remedy it named was "the header designer's own allowable", and for a Trus Joist header
+that allowable is published: Weyerhaeuser **TJ-9000** *Trus Joist Beam, Header and Column
+Specifier's Guide*, April 2021, **p.26, ALLOWABLE HOLES**. The engine can hold it now —
+`PublishedHole` on `Door`/`DoorType`/`RoughOpening`, graded by
+`resolve/mep_hole_chart.py` through `header_bore(..., chart=...)`. What follows is the chart
+as read, then the chart worked against this house.
+
+### 8.1 The chart, transcribed
+
+**1.55E TimberStrand® LSL headers and beams.** Allowed hole zone suitable for headers and
+beams with uniform and/or concentrated loads anywhere along the member. **Round holes only.
+No holes in headers or beams in plank orientation.** The zone is drawn as **8" off each
+bearing**, the middle **1/3 of the depth**, and two holes no closer than **2 x the diameter
+of the largest hole**.
+
+| header or beam depth | maximum round hole |
+|---|---|
+| 9 1/2" | 3" |
+| 11 7/8" | 3 5/8" |
+| 14"–16" | 4 5/8" |
+
+**Other Trus Joist® headers and beams** (1.3E TimberStrand LSL, Microllam® LVL, Parallam®
+PSL). **Uniform loads only**; no holes in cantilevers; round holes only; none in plank
+orientation. Microllam LVL and Parallam PSL take the **middle 1/3 of the SPAN** as their
+zone, which is a stricter shape than the LSL page's 8".
+
+| header or beam depth | maximum round hole |
+|---|---|
+| 4 3/8" | 1" |
+| 5 1/2" | 1 3/4" |
+| 7 1/4"–20" | **2"** |
+
+Note the shape of the first table: every maximum is a shade under a third of its own depth
+(11.875/3 = 3.96 against 3.625). The diameter limit and the depth band are one rule stated
+twice, which is why a chart transcribed as a diameter alone is not the chart.
+
+### 8.2 What depth actually fits
+
+Neither of these headers can simply grow. Above `D-B-FURN`'s head there is **13.82"** to the
+top plate (the 7 1/4" header plus 6 9/16" of cripple) and above `D-B-GYM`'s **13.00"**. So
+**11 7/8" is the deepest Trus Joist member either opening can take**, and 11 7/8" caps the
+LSL page at **3 5/8"** and the LVL/PSL page at **2"**. A 14" member — the row that publishes
+4 5/8" and would be the only one reaching `PR-B-MAIN-DRAIN`'s 4.50" — does not fit in either
+wall.
+
+### 8.3 The six, each against the row that would be best for it
+
+Read at the deepest member that fits, **1.55E TimberStrand LSL, 11 7/8"**: 3.625" maximum,
+8" off each bearing, hole zone 3.958"–7.917" up from the bottom face (so **3.958" of clear
+wood** to the nearer face), holes 2 x diameter apart. The bearing is the **jack face** and
+not the member end — a header runs over its jacks, so `D-B-FURN`'s 39.00" member bears on a
+36.00" clear span with 1.50" of jack at each end.
+
+| run | cut | from bearing | clear to nearer face | to the next hole | verdict |
+|---|---|---|---|---|---|
+| `DU-B-ERV-R-SAUNA-SUP` | 1.75" **notch** | 0.00" | 0.00" | 6.00" | **refused: round holes only** |
+| `DU-B-ERV-R-SAUNA-EXH` | 3.25" **notch** | 6.00" | 0.00" | 6.00" | **refused: round holes only** |
+| `PR-B-KITCH-DRAIN` | 2.38" bore | 15.00" ✓ | **1.04"** vs 3.96" | **0.77"** vs 7.00" | over the zone, twice |
+| `PR-M-S-BATH1-DRAIN` | 3.50" bore ✓ | 15.77" ✓ | **1.20"** vs 3.96" | **0.77"** vs 7.00" | over the zone, twice |
+| `PR-B-MAIN-DRAIN` | **4.50"** vs 3.625" | **3.00"** vs 8" | 0.60" vs 3.96" | 17.23" ✓ | over on every term |
+| `DU-B-ERV-R-GYM` | **4.00"** vs 3.625" | **7.44"** vs 8" | 1.25" vs 3.96" | — | over on size and zone |
+
+**One fact governs all six and it is not the diameter.** Every one of these runs passes
+within **1 1/4" of the header's bottom face**, because every one of them is a service under
+a floor deck crossing a wall just above a 6'-8" door head. The chart's hole zone is the
+middle third of the depth, so **a deeper header moves the zone UP and further from every one
+of them**: 11 7/8" wants 3.96" of clear wood where 7 1/4" wants 2.42", and not one of the six
+has even 1.30". **Depth is not the lever here, and retyping either header to LSL buys
+nothing** — which is why neither was retyped and neither opening carries a `PublishedHole`
+row. Authoring one would turn six honest UNKNOWNs into six FAILs and state a design that is
+not built.
+
+`PR-B-MAIN-DRAIN` is the one that does not even get to that argument: 4.50" is over the
+3 5/8" of the only depth that fits, and 3.00" from the east jack face is inside the 8" no row
+of this chart allows a hole in. **No published chart closes it**; it is a rerouted run or an
+engineered header, and §8.2's 13.82" is the number any such design starts from.
+
+### 8.4 What the engine now does with a chart it is given
+
+Four outcomes and no fifth, the `checks/structural/published.py` discipline:
+
+* **drift** — the row was read for a member the model no longer has, a ply count nothing
+  states, or a span longer than the row's. UNKNOWN naming the mismatch, never a PASS off a
+  stale row. A guard the crossing cannot answer (no span, no bearings) is a *mismatch*, not
+  agreement.
+* **refused** — a notch against a round-hole chart, a diameter over the row, a hole inside
+  the bearing zone or outside the depth band, or two holes closer than the chart allows.
+* **PASS** — with the zone printed term by term and the chart's own `condition` after it.
+* **no chart** — exactly §6's answer, word for word. The `_engineered` refusal ("cut to the
+  fabricator's chart") now sits BELOW the chart lookup, which is the whole feature: handing
+  the engine that very chart has to be reachable, and without one nothing moved.
+
+**Minimum spacing is a fact about the MEMBER, not about one run.** `PR-B-KITCH-DRAIN` and
+`PR-M-S-BATH1-DRAIN` are 0.77" apart in one header and each is a legal diameter on its own;
+the pair is what no chart allows. `mep.run_through_header` therefore collects every header
+cut in the house keyed by member before it grades any of them — the R502.8.1 `nearest_cut_in`
+idiom of §4, one member family along.

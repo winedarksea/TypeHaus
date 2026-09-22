@@ -13,6 +13,12 @@ from typing import Literal
 from pydantic import model_validator
 
 from typehaus.model.base import HausModel
+
+# Re-exported, not defined here: refs.py is at the 500-line limit, so ``PublishedHole``
+# lives in ``refs_holes.py`` and every reader still imports it from the one place the
+# sibling published-read types are. The redundant alias is the explicit-re-export spelling
+# ruff keeps (a bare import here has been autofixed away before).
+from typehaus.model.refs_holes import PublishedHole as PublishedHole
 from typehaus.quantities import Length
 
 

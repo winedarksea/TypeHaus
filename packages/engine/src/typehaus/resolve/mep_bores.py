@@ -331,8 +331,21 @@ _CUTTABLE_CATEGORIES = ("stud", "king", "jack", "cripple", "plate", "sill", "hea
 
 
 def header_bore(profile: str, diameter_in: float, *,
-                through_in: float | None = None) -> BoreVerdict:
+                through_in: float | None = None, chart: Any = None,
+                from_bearing_in: float | None = None, span_in: float | None = None,
+                edge_clear_in: float | None = None, nearest_cut_in: float | None = None,
+                nearest_diameter_in: float | None = None,
+                plies: int | None = None) -> BoreVerdict:
     """A hole a run would take through a header over an opening.
+
+    ``chart`` is an authored :class:`~typehaus.model.refs_holes.PublishedHole` — the maker's
+    own ALLOWABLE HOLES row — and it is the ONLY thing that turns this verdict into a
+    PASS or a FAIL. Absent, the answer is what it has always been: UNKNOWN with the numbers.
+
+    **The engineered early return moves BELOW the chart lookup, and that is the whole
+    feature.** A Trus Joist header trips ``ENGINEERED_MARKERS`` on ``lvl``/``lsl``, and
+    "cut to the fabricator's chart" was the refusal — so handing the engine that very chart
+    has to be reachable. With no chart the refusal stands, word for word.
 
     ``through_in`` is how much of the diameter the member actually loses (→ ``MemberCut``);
     below the diameter the run only clips the member and the cut is a **notch**. ``None``
@@ -362,10 +375,30 @@ def header_bore(profile: str, diameter_in: float, *,
     aside = (f' (the run\'s {diameter_in:.2f}" outside only clips the member: a notch off a '
              "face, not a full-diameter bore)" if notch else "")
     section = cross_section(profile)
+    if section is None:
+        return BoreVerdict(None, what, cut_in, None,
+                           f"{profile!r} resolves no cross-section, so nothing can be "
+                           "measured against it")
+    depth_in = section.depth_m / M_PER_IN
+    if chart is not None:
+        from typehaus.resolve.mep_hole_chart import chart_verdict, hole_chart_drift
+
+        drift = hole_chart_drift(chart, profile, span_in=span_in, plies=plies)
+        if drift is not None:
+            return BoreVerdict(
+                None, what, cut_in, None,
+                f"a published hole chart is authored on this opening but it does not "
+                f"describe this header: {drift} — so it grades nothing here",
+                remedy="re-read the chart for the member that is actually in the model, or "
+                       "put the member the chart was read for back")
+        return chart_verdict(chart, profile, depth_in, cut_in, diameter_in, notch,
+                             from_bearing_in=from_bearing_in, span_in=span_in,
+                             edge_clear_in=edge_clear_in,
+                             nearest_cut_in=nearest_cut_in,
+                             nearest_diameter_in=nearest_diameter_in)
     engineered = _engineered(section, profile, what)
     if engineered is not None:
         return engineered
-    depth_in = section.depth_m / M_PER_IN
     if cut_in >= depth_in - 1e-9:
         return BoreVerdict(
             False, "bore", cut_in, depth_in,
@@ -407,6 +440,18 @@ class MemberCut:
     z_m: float
     diameter_in: float
     through_in: float
+    #: The authored opening this member was framed around, where it has one — a header
+    #: naming its door, so a consumer can reach that opening's own hole chart.
+    opening_tag: str | None = None
+    #: Distance along a HORIZONTAL member from the crossing to its nearer END, metres. A
+    #: hole chart is indexed on distance from the BEARING, which is this less the bearing
+    #: inset; the inset belongs to whoever knows the opening's width, not to this reading.
+    from_end_m: float = 0.0
+    #: The member's own length, metres — the other half of that arithmetic.
+    member_length_m: float = 0.0
+    #: Clear wood between the hole's edge and the NEARER of the member's two z faces. The
+    #: depth half of a chart's hole zone is stated against exactly this.
+    edge_clear_in: float = 0.0
 
 
 def leg_crossings(wall: ResolvedWall, a: tuple[float, float], b: tuple[float, float],
@@ -451,11 +496,20 @@ def leg_crossings(wall: ResolvedWall, a: tuple[float, float], b: tuple[float, fl
         top = member.z1_m if member.z1_m is not None else wall.z1_m
         if not (member.z0_m - radius_m <= z <= top + radius_m):
             continue
+        length_m = ((member.p1[0] - member.p0[0]) ** 2
+                    + (member.p1[1] - member.p0[1]) ** 2) ** 0.5
+        from_end_m = min(
+            ((centre.x - member.p0[0]) ** 2 + (centre.y - member.p0[1]) ** 2) ** 0.5,
+            ((centre.x - member.p1[0]) ** 2 + (centre.y - member.p1[1]) ** 2) ** 0.5)
         out.append(MemberCut(member_key=member.child_key, category=member.category,
                              profile=member.profile, station=(centre.x, centre.y),
                              z_m=z, diameter_in=2.0 * radius_m / M_PER_IN,
                              through_in=_through_in(a, b, za, zb, z, radius_m,
-                                                    member.z0_m, top)))
+                                                    member.z0_m, top),
+                             opening_tag=member.opening_tag,
+                             from_end_m=from_end_m, member_length_m=length_m,
+                             edge_clear_in=max(0.0, min(z - radius_m - member.z0_m,
+                                                        top - z - radius_m)) / M_PER_IN))
     return out
 
 
