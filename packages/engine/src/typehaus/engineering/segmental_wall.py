@@ -370,7 +370,21 @@ def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no
                f"wants {REQUIRED_FS:g})")
     over = [e.over for e in ends]
     missing_out: tuple[str, ...] = ()
-    if all(over):
+    # Retained fill above the wall top: the capped free body is a section neither authored
+    # input describes, so it cannot PASS (an OVER at both ends still stands).
+    overtopped = retained + embedment - read.wall_ft
+    if overtopped > 0.01:
+        notes += (f"MISMATCH: {read.grade_from} puts the ground {embedment * 12:.0f}\" above "
+                  f"the base, and the authored {retained:.2f}' retained on top of that is "
+                  f"{overtopped * 12:.0f}\" above the wall top. The free body is capped at the "
+                  f"wall's own {read.wall_ft:.2f}'; the two authored inputs disagree here.",)
+    if overtopped > 0.01 and not all(over):
+        status = Status.INCOMPLETE
+        missing_out = (f"agreement between {tag}'s unbalanced_fill ({retained:.2f}') and "
+                       f"{read.grade_from}: together they put fill {overtopped * 12:.0f}\" "
+                       f"above the wall top, and the free body is capped at a section "
+                       f"neither describes", *open_inputs)
+    elif all(over):
         # A FAIL at both ends stands whatever the open inputs say.
         status = Status.OVER
         notes += tuple(f"Open input: {text}." for text in open_inputs)
@@ -383,12 +397,6 @@ def _one(ctx: EngineeringContext, wall) -> EngineeringRecord:  # type: ignore[no
     else:
         status = Status.INCOMPLETE if open_inputs else Status.OK
         missing_out = tuple(open_inputs)
-    overtopped = retained + embedment - read.wall_ft
-    if overtopped > 0.01:
-        notes += (f"MISMATCH: {read.grade_from} puts the ground {embedment * 12:.0f}\" above "
-                  f"the base, and the authored {retained:.2f}' retained on top of that is "
-                  f"{overtopped * 12:.0f}\" above the wall top. The free body is capped at the "
-                  f"wall's own {read.wall_ft:.2f}'; the two authored inputs disagree here.",)
     return EngineeringRecord(
         item_id=item_id(KIND, tag), kind=KIND, key=tag, basis_version=BASIS_VERSION,
         basis=BASIS, status=status, summary=summary, inputs=inputs,

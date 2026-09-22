@@ -359,6 +359,15 @@ _WASH_AXIS_SHIFT = face("center", offset=inch(0.0625))
 _APRON_WASHED = dict(_APRON, assembly="RETAINING_BLOCK_12_WASHED",
                      alignment=_WASH_AXIS_SHIFT)
 
+# ** THE RETURNS RETAIN TO THE NORTH YARD, NOT THE SOUTH ONE (2026-09-22). ** `_APRON`'s
+# differential is the south yard's at -3'-4"; each return's yard face looks at the north bench
+# stations — (12,-2) at -3'-0" and (26,-3) at -3'-1" — so its differential is 36" / 37". The
+# old 40" overtopped the 4'-0" wall by 4"/3" (a MISMATCH the free body capped). No graded
+# number moves: H = 4.00' before (capped) and after. Not taken: two SpotElevations on the
+# bench at -3'-4" (site-wide blast radius); raised_garden_srw.md §4.
+_APRON_RETURN_W = dict(_APRON, unbalanced_fill=inch(36))
+_APRON_RETURN_E = dict(_APRON, unbalanced_fill=inch(37))
+
 WALLS = [
     # The south leg keeps W-RG-BLOCK's tag *and* its uid: the tag is what the energy and
     # grading exemptions match on by "W-RG-" prefix, and the uid is what its IFC GlobalId is
@@ -371,9 +380,9 @@ WALLS = [
     FoundationWall(uid="RGW104AAAA", tag="W-RG-EAST",
                    start_node="N-RG-SE", end_node="N-RG-NE", **_APRON_WASHED),
     FoundationWall(uid="RGW105AAAA", tag="W-RG-WEST-BALCONY",
-                   start_node="N-RG-NW", end_node="N-RG-WEST-BALCONY", **_APRON),
+                   start_node="N-RG-NW", end_node="N-RG-WEST-BALCONY", **_APRON_RETURN_W),
     FoundationWall(uid="RGW106AAAA", tag="W-RG-EAST-BALCONY",
-                   start_node="N-RG-EAST-BALCONY", end_node="N-RG-NE", **_APRON),
+                   start_node="N-RG-EAST-BALCONY", end_node="N-RG-NE", **_APRON_RETURN_E),
 ]
 
 # The levelling pad under every leg. Hosted on the wall, not on a footing: there is no

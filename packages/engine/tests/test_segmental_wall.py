@@ -33,6 +33,8 @@ from typehaus.engineering.srw_gravity import (
 )
 
 _APRON = ("W-RG-BLOCK", "W-RG-WEST", "W-RG-EAST", "W-RG-WEST-BALCONY", "W-RG-EAST-BALCONY")
+_RETAINED_FT = {"W-RG-BLOCK": 40 / 12, "W-RG-WEST": 40 / 12, "W-RG-EAST": 40 / 12,
+                "W-RG-WEST-BALCONY": 36 / 12, "W-RG-EAST-BALCONY": 37 / 12}
 #: The note's §1 section: AB Stones, 3'-4" retained over one 8" course, 0.97' deep, 130 pcf,
 #: 12° setback. ``_CLASSIC`` is §3c's superseded 6° unit, otherwise identical.
 _STONE = Section(retained_ft=10.0 / 3.0, embedment_ft=8.0 / 12.0, unit_depth_ft=0.97,
@@ -200,8 +202,9 @@ def test_every_leg_passes_at_the_notes_numbers(records) -> None:
         assert record.governing.name == "sliding"
         assert record.governing.ratio == pytest.approx(0.975, abs=0.001)
         inputs = {q.name: q.value for q in record.inputs}
-        # Retained height is the authored fill, never drop_ft.
-        assert inputs["retained_height"] == pytest.approx(10 / 3, abs=1e-3)
+        # Retained height is the authored fill, never drop_ft: 3'-4" to the south yard on
+        # the three legs, 3'-0" / 3'-1" to the north bench on the returns (§1).
+        assert inputs["retained_height"] == pytest.approx(_RETAINED_FT[tag], abs=1e-3), tag
         assert inputs["batter"] == pytest.approx(12.0)
         assert inputs["course_height"] == pytest.approx(8 / 12, abs=1e-6)
         assert inputs["pad_friction_angle"] == pytest.approx(36.0)
@@ -219,8 +222,22 @@ def test_embedment_reads_the_nearest_station(records) -> None:
     assert ratios["W-RG-EAST"] == pytest.approx(0.75, abs=1e-3)
     assert ratios["W-RG-WEST-BALCONY"] == pytest.approx(0.50, abs=1e-3)
     assert ratios["W-RG-EAST-BALCONY"] == pytest.approx(6 / 11, abs=1e-3)
-    for tag in ("W-RG-WEST-BALCONY", "W-RG-EAST-BALCONY"):
-        assert any(n.startswith("MISMATCH") for n in records[tag].notes), tag
+    # The returns' fill is the north bench's differential, so neither overtops its wall.
+    for record in records.values():
+        assert not any(n.startswith("MISMATCH") for n in record.notes), record.key
+
+
+def test_an_overtopping_wall_is_incomplete_and_names_both_inputs(ctx) -> None:
+    """The south yard's 40" on a return puts fill 4" over the wall top: the capped free body
+    describes neither input, so the record cannot be OK (§4)."""
+    wall = ctx.plan.by_tag("W-RG-WEST-BALCONY")
+    record = _one(ctx, wall.model_copy(update={"unbalanced_fill": inch(40)}))
+    assert record.status is Status.INCOMPLETE
+    assert any(n.startswith("MISMATCH") for n in record.notes)
+    missing = " ".join(record.missing)
+    assert "unbalanced_fill" in missing and "grade station 0" in missing
+    # The graded numbers are the capped section's, unchanged.
+    assert record.governing.ratio == pytest.approx(0.975, abs=0.001)
 
 
 @pytest.mark.parametrize(("tag", "lower"), [

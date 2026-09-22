@@ -2155,7 +2155,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     yard and below the yard both faces are in the same ground. Writing the 4'-0" run there
     hits IRC R404.1.1's 48" threshold exactly and sends five segmental landscape walls into
     an R404.4 cantilever analysis they have no footing for — five UNKNOWNs, and the wrong
-    model of the wall.
+    model of the wall. It is the differential at THAT leg: the two balcony returns face the
+    north bench (−3'-0"/−3'-1"), so they author 36"/37", not 40". Fill that overtops the wall
+    makes the record INCOMPLETE (`notes/raised_garden_srw.md` §4).
   - **The unit is Allan Block AB Stones, 12° setback, on 12" of AB wall rock (owner,
     2026-09-21), and all five `tiered_retaining/W-RG-*` pass**: sliding 1.54 / 1.81,
     overturning 2.02 at both ends of the soil band (`notes/raised_garden_srw.md` §3b). AB

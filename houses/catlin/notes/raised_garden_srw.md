@@ -38,6 +38,7 @@ which is also the direction the retained soil pushes the wall:
 | `W-RG-BLOCK` | y −31.333, x 4 → 32 | 0'-0" / −4'-0" | 3'-4" terrace | **south** (yard) | no closed loop: authored direction, the yard station 15 at (18, −38) is south ✓ |
 | `W-RG-WEST` | x 4, y −10.5 → −31.333 | 0'-0" / −4'-0" | 3'-4" | **west** | station 13 at (−6, −22) ✓ |
 | `W-RG-EAST` | x 32, y −31.333 → −10.5 | 0'-0" / −4'-0" | 3'-4" | **east** | station 14 at (41, −18) ✓ |
+| `W-RG-WEST-BALCONY` / `-EAST-BALCONY` | y −10.5 | 0'-0" / −4'-0" | 3'-0" / 3'-1" | north bench | stations (12, −2) −3'-0" and (26, −3) −3'-1" (§4) |
 | `W-SG-S` | y −27.333, x 8 → 28 | 0'-0" / −9'-1 7/16" | 9.12' | **north** (into the court) | closed loop through `W-SG-ARCH` |
 | `W-SG-W2` | x 8, y −11 → −27.333 | same | 9.12' | **east** | closed loop |
 | `W-SG-E2` | x 28, y −27.333 → −11 | same | 9.12' | **west** | closed loop |
@@ -286,8 +287,25 @@ station (`resolve/site_earth.nearest_grade_station`):
 | `-WEST-BALCONY` | (5.75, -10.5) | (12, -2), 10.6' | -3'-0" | 12" → d/c 0.50 |
 | `-EAST-BALCONY` | (30.25, -10.5) | (26, -3), 8.6' | -3'-1" | 11" → d/c 0.545 |
 
-On the returns the free body is capped at the wall's own 4'-0" and the record prints the
-disagreement. §3/§3b hold on all five legs. Unchanged by the unit.
+**The returns retain to the north bench, not the south yard (2026-09-22).** Each return's
+yard face reads the stations above, so its differential is 3'-0" (west) / 3'-1" (east), and
+that is what `unbalanced_fill` now says (`params/raised_garden._APRON_RETURN_W/_E`). The old
+3'-4" was the south yard's, transcribed onto both returns; on top of 12"/11" of yard → base it
+put fill 4"/3" above the wall top, and the free body was capped at 4'-0" with a MISMATCH note.
+Nothing graded moves with the fix: `H = H_r + min(yard→base, wall − H_r)` is 3.00 + 1.00 =
+3.08 + 0.92 = **4.00'** both ways, so sliding 1.538/1.806, overturning 2.020, bearing
+604/606 psf and d/c 0.975 stand, and the embedment row stays 12"/11". That invariance is the
+check on the transcription.
+
+* **Since 2026-09-22 an overtopping wall is INCOMPLETE**, not OK: the capped section is one
+  neither authored input describes. OVER at both soil ends still stands.
+* **Not taken: a seventh course.** `overtopped = retained + grade − top`; the base cancels,
+  so a course with the base down fixes nothing, and a course with the top up takes H to
+  4.33' and loose-end sliding to ≈1.42 — OVER.
+* **Not taken: two `SpotElevation`s on the north bench at −3'-4".** That would make 3'-4"
+  true, with a site-wide blast radius (R401.3, drainage arrows, grade profiles).
+
+§3/§3b hold on all five legs. Unchanged by the unit.
 
 ## 5. Course interface shear
 
