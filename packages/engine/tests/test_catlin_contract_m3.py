@@ -2011,11 +2011,11 @@ def test_the_thermal_break_is_one_product_everywhere_it_is_stated(catlin_model):
     """
     from params import sunken_garden
 
-    # Basis 4 (2026-09-21): the four closure boards 2.5", the beam's 2" — one product
-    # (Highload 40), two thicknesses (free body §11).
+    # Basis 6 (2026-09-21): the four closure boards 2.5", the beam's 2" — one product
+    # (ASTM C578 Type X, 15 psi), two thicknesses (free body §11i).
     assert sunken_garden.THERMAL_BREAK_IN == pytest.approx(2.5)
     assert sunken_garden.VENEER_BEAM_BREAK_IN == pytest.approx(2.0)
-    assert sunken_garden.THERMAL_BREAK_PSI == pytest.approx(40.0)
+    assert sunken_garden.THERMAL_BREAK_PSI == pytest.approx(15.0)
     # The constant the court's geometry actually reads.
     assert sunken_garden.SPEC.closure_break_in == pytest.approx(
         sunken_garden.THERMAL_BREAK_IN)
@@ -2028,6 +2028,7 @@ def test_the_thermal_break_is_one_product_everywhere_it_is_stated(catlin_model):
             sunken_garden.THERMAL_BREAK_IN, abs=1e-6), block
         board = catlin_model.plan.by_tag(block)
         assert board.psi == pytest.approx(sunken_garden.THERMAL_BREAK_PSI), block
+        assert board.modulus_estimated, block  # no Type X sheet publishes E
 
     # And the veneer beam's board, which is the one that bills through a different trade.
     beam = next(w for w in catlin_model.walls if w.tag == "W-SG-BRKBM")

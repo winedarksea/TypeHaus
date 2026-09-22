@@ -3,39 +3,53 @@
 
 **Nothing crosses the break, and no row grades a shear across it**: the court holds its own
 thrust (``retaining_system``) and the board keeps the house out of that free body. What is
-graded is what the board and the house behind it must survive — free body §11 (basis 5),
+graded is what the board and the house behind it must survive — free body §11i (basis 6),
 hand-worked first:
 
-* the board — fresh-concrete pressure on the AUTHORED placement (ACI 347R-14, capped at wh)
-  and closing movement against its recoverable strain ``σ_y / E``;
-* the thrust it then passes, ``min(E·δ/t, σ_y) × A`` — into the house wall (flexure, shear,
-  the floor line, the house's own insulation) or the house strip (sliding, bearing), and
-  back into the court (sliding under the sum of every board on the loop).
+* the board — fresh-concrete pressure on the AUTHORED placement (ACI 347R-14, capped at wh),
+  and its summer strain, the locked-in pour plus the closing at the neutral point;
+* the thrust, ``k_i ε_i x`` at the neutral point plus the locked-in pour
+  (:mod:`thermal_break_demand`), into the house wall (flexure, shear, the floor line, the
+  house's own insulation), along the house's lateral path (:mod:`thermal_break_path`), and
+  back into the court.
 
 Temperatures come from ``Site.concrete_service_temperature`` (a cited concrete range and a
-specified set floor), never design air. Boards are ``IsolationBoard`` elements and cast walls
-or beams in a retaining loop whose assembly carries an insulating layer facing a house
-footing. A row over its capacity makes the item OVER even while an input is still missing.
+specified set floor), never design air. A row over its capacity makes the item OVER even
+while an input is still missing. An ESTIMATED modulus adds a sensitivity note on E.
 """
 
 from __future__ import annotations
 
 from typehaus.engineering import thermal_break_board as brd
+from typehaus.engineering import thermal_break_demand as dem
 from typehaus.engineering import thermal_break_geometry as geo
 from typehaus.engineering import thermal_break_house as house
+from typehaus.engineering import thermal_break_path as path
 from typehaus.engineering.item import EngineeringRecord, Oracle, Quantity, Status, item_id
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
 from typehaus.engineering.retaining_system import footing_shortfalls, loop_free_bodies
-from typehaus.engineering.thermal_break_board import ALPHA_C_PER_F
 
 KIND = "thermal_break_transfer"
-BASIS = ("ACI 347R-14 (fresh-concrete pressure); ACI 318-19 (house wall); IBC 1806.2 "
-         "(sliding); IRC R404.4 loop")
+BASIS = ("ACI 347R-14 (fresh-concrete pressure); ACI 209R-92 (stem shrinkage); ACI 318-19 "
+         "(house wall, slab strut); IBC 1610.1/1806.2 (house sliding, soil); IRC R404.4 loop")
 #: Bumped whenever the arithmetic below changes — it rides in the fingerprint.
-BASIS_VERSION = "5"
+BASIS_VERSION = "6"
+#: Multiples of an ESTIMATED modulus the sensitivity note re-grades at (free body §11i).
+E_SENSITIVITY = (2.0 / 3.0, 1.5, 2.0)
 
-oracled_by(KIND, Oracle(note="sunken_garden_court_free_body.md", section="§11",
+oracled_by(KIND, Oracle(note="sunken_garden_court_free_body.md", section="§11i",
                         test="tests/test_thermal_break.py"))
+
+_NOTES = (
+    "A PURE ISOLATION JOINT: nothing crosses it and no row grades a shear across it. The "
+    "court closes its own free body (`retaining_system`); every row below is the board's own "
+    "survival or the thrust it passes.",
+    "RETIRED WITH THE BARS (free body §11e): shear reserve, differential settlement, racking "
+    "drift, joint opening and development — there is no tie to grade.",
+    "RETIRED WITH THE STRIP (free body §11i): sliding and bearing of one isolated house strip "
+    "— replaced by the house's lateral path through its slab on grade.",
+    "NO FLOTATION ROW: nothing restrains a board with no bars, so it is held by the work — "
+    "adhered or pinned to the cured house face and braced (sequencing trap 2).")
 
 
 def _boards(ctx: EngineeringContext, loops: dict) -> list[geo.Board]:
@@ -57,7 +71,6 @@ def enumerate_breaks(ctx: EngineeringContext) -> list[str]:
 def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
     loops = footing_shortfalls(ctx)
     boards = _boards(ctx, loops)
-    temps = brd.temps(ctx)
     products = {b.tag: brd.product_of(b.element) for b in boards if b.element is not None}
     # A layer board names no product of its own (a Layer has no compressive field); it is the
     # product the same court's authored boards name — `test_catlin_contract_m3` pins that.
@@ -65,32 +78,56 @@ def compute(ctx: EngineeringContext) -> list[EngineeringRecord]:
         if b.element is None:
             products[b.tag] = next((products[o.tag] for o in boards if o.element is not None
                                     and o.loop_ref == b.loop_ref and products[o.tag]), None)
-    sigma = {}
+    bodies = loop_free_bodies(ctx)
+    graded = _grade(ctx, boards, products, bodies, 1.0)
+    if any(p is not None and p.estimated for p in products.values()):
+        sens = {k: _grade(ctx, boards, products, bodies, k) for k in E_SENSITIVITY}
+        for tag, (states, _missing, _inputs, notes) in graded.items():
+            if states:
+                notes.append(_sensitivity(tag, states, sens))
+    return [_record(b, *graded[b.tag]) for b in sorted(boards, key=lambda b: b.tag)]
+
+
+def _sensitivity(tag, states, sens) -> str:
+    rows = []
+    for state in states:
+        alt = [next((s.ratio for s in sens[k][tag][0] if s.name == state.name), None)
+               for k in E_SENSITIVITY]
+        if any(a is not None and abs(a - state.ratio) > 0.005 for a in alt):
+            rows.append(f"{state.name} {state.ratio:.3f} -> "
+                        + " / ".join("-" if a is None else f"{a:.3f}" for a in alt))
+    scales = " / ".join(f"x{k:.2f}" for k in E_SENSITIVITY)
+    return (f"SENSITIVITY ON E (the modulus is ESTIMATED; ratio at {scales}): "
+            + ("; ".join(rows) or "no row moves"))
+
+
+def _grade(ctx, boards, products, bodies, e_scale) -> dict:
+    """``{tag: (states, missing, inputs, notes)}`` at ``e_scale`` x each product's modulus."""
+    temps = brd.temps(ctx)
+    npt = dem.neutral_point(ctx, boards, products, temps, bodies, e_scale) if temps else {}
+    sigma, closure = {}, {}
     for b in boards:
-        p = products[b.tag]
-        if p is not None and temps is not None:
-            delta = ALPHA_C_PER_F * temps.closing * geo.court_run_in(ctx, b)
-            sigma[b.tag] = min(p.modulus_psi * delta / b.t_in, p.psi)
-    thrust = {b.tag: sigma[b.tag] * b.area_in2 for b in boards if b.tag in sigma}
-    patches = {b.tag: house.wall_patch(ctx, b, sigma[b.tag]) for b in boards
-               if b.tag in sigma and b.element is not None and b.house_tag
-               and ctx.plan.by_tag(b.house_tag).__class__.__name__ == "FoundationWall"}
-    shared = dict(boards=boards, temps=temps, products=products, sigma=sigma, thrust=thrust,
-                  patches=patches, free_bodies=loop_free_bodies(ctx))
-    return [_one(ctx, b, shared) for b in sorted(boards, key=lambda b: b.tag)]
+        p = products.get(b.tag)
+        if p is not None and b.loop_ref in npt:
+            closure[b.tag] = dem.closing_strain(ctx, b, temps) * npt[b.loop_ref][0]
+            sigma[b.tag] = min(p.modulus_psi * e_scale * closure[b.tag] / b.t_in, p.psi)
+    lock = {b.tag: dem.lock_in_force(ctx, b) for b in boards}
+    thrust = {b.tag: sigma[b.tag] * b.area_in2 + lock[b.tag] for b in boards if b.tag in sigma}
+    patches = {}
+    for b in boards:
+        if b.tag in sigma and b.element is not None and b.house_tag and \
+                ctx.plan.by_tag(b.house_tag).__class__.__name__ == "FoundationWall":
+            pour = dem.pressure_at(ctx, b) or (lambda _z: 0.0)
+            patches[b.tag] = house.wall_patch(
+                ctx, b, lambda z, s=sigma[b.tag], f=pour: s + f(z))
+    sh = dict(boards=boards, temps=temps, products=products, sigma=sigma, thrust=thrust,
+              closure=closure, npt=npt, patches=patches, free_bodies=bodies, e_scale=e_scale,
+              lock=lock)
+    return {b.tag: _one(ctx, b, sh) for b in boards}
 
 
-def _one(ctx, board, sh) -> EngineeringRecord:
-    element = board.element
-    tags = tuple(dict.fromkeys((board.tag, *(element.connects if element else ()))))
-    states, missing = [], []
-    notes = ["A PURE ISOLATION JOINT: nothing crosses it and no row grades a shear across it. "
-             "The court closes its own free body (`retaining_system`); every row below is the "
-             "board's own survival or the thrust it passes.",
-             "RETIRED WITH THE BARS (free body §11e): shear reserve, differential settlement, "
-             "racking drift, joint opening and development — there is no tie to grade.",
-             "NO FLOTATION ROW: nothing restrains a board with no bars, so it is held by the "
-             "work — adhered or pinned to the cured house face and braced (sequencing trap 2)."]
+def _one(ctx, board, sh):
+    states, missing, notes = [], [], list(_NOTES)
     inputs = [Quantity("board_t", board.t_in, "in", 0.01),
               Quantity("board_h", board.h_in, "in", 0.01),
               Quantity("board_L", board.length_in, "in", 0.01)]
@@ -98,49 +135,49 @@ def _one(ctx, board, sh) -> EngineeringRecord:
     if product is None:
         missing.append(f"IsolationBoard.psi, modulus_psi and source for {board.tag} — the "
                        f"rating, modulus and datasheet every board row reads")
-        return _record(board, tags, states, missing, notes, inputs)
+        return states, missing, inputs, notes
     inputs.append(Quantity("foam_psi", product.psi, "psi", 0.1))
+    if product.estimated:
+        notes.append(f"ESTIMATED MODULUS: {product.modulus_psi:,.0f} psi is not published — "
+                     f"{product.source}.")
     pour = brd.pressure(ctx, board, product, states, missing, inputs)
     if temps is None:
         missing.append(brd.TEMPERATURE_MISSING)
-    else:
-        brd.movement(ctx, board, product, temps, states, inputs)
+    elif board.tag in sh["closure"]:
+        inputs.append(Quantity("neutral_point", sh["npt"][board.loop_ref][0], "in", 0.01))
+        notes += [dem.NEUTRAL_POINT_FLAG, dem.LOCK_IN_FLAG]
+        if dem.dries(ctx, board):
+            notes.append(dem.shrinkage_flag(dem.stem_shrinkage()))
+        brd.movement(board, product, temps, geo.court_run_in(ctx, board),
+                     sh["closure"][board.tag], pour, states, inputs, sh["e_scale"])
     if board.tag in sh["sigma"]:
         _thrust_rows(ctx, board, sh, pour, states, missing, inputs)
-    return _record(board, tags, states, missing, notes, inputs)
+    return states, missing, inputs, notes
 
 
 def _thrust_rows(ctx, board, sh, pour, states, missing, inputs) -> None:
     sigma = sh["sigma"][board.tag]
-    inputs += [Quantity("board_stress", sigma, "psi", 0.01),
+    inputs += [Quantity("board_stress", sigma, "psi", 0.001),
+               Quantity("board_lock_in", sh["lock"][board.tag], "lb", 1.0),
                Quantity("board_thrust", sh["thrust"][board.tag], "lb", 1.0)]
     patch = sh["patches"].get(board.tag)
     if patch is not None:
         brd.house_insulation_row(board, geo.house_insulation(ctx, board), sigma, pour,
                                  states, missing)
         house.house_wall_rows(ctx, board, patch, states, missing, inputs)
-    else:
-        facing = geo.facing_footings(ctx, board)
-        base = min((geo.z_extent(ctx, t)[0] for t in facing), default=board.bottom_in)
-        loads = [(sh["thrust"][board.tag], (board.bottom_in + board.top_in) / 2 - base,
-                  f"{board.tag} board")]
-        # The wall-end board above an authored footing board lands its wall's base reaction
-        # on the same strip.
-        for other in sh["boards"]:
-            p = sh["patches"].get(other.tag)
-            if p is None or board.element is None:
-                continue
-            if {t for t in facing if ctx.plan.by_tag(t).under == other.house_tag}:
-                loads.append((p["bottom_reaction"], geo.z_extent(ctx, other.house_tag)[0] - base,
-                              f"{other.house_tag} base under {other.tag}"))
-        house.footing_rows(ctx, board, facing, loads, states, missing, inputs)
+    mine = [b for b in sh["boards"] if b.loop_ref == board.loop_ref]
+    total = sum(sh["thrust"].get(b.tag, 0.0) for b in mine)
+    floor = sum(p["top_reaction"] + p["band"] for b in mine
+                if (p := sh["patches"].get(b.tag)) is not None)
+    inputs.append(Quantity("house_thrust", total, "lb", 1.0))
+    path.path_rows(ctx, mine, total, floor, states, missing)
     if board.loop_ref is not None:
-        total = sum(sh["thrust"].get(b.tag, 0.0) for b in sh["boards"]
-                    if b.loop_ref == board.loop_ref)
         house.court_sliding(ctx, board.loop_ref, total, sh["free_bodies"], states, missing)
 
 
-def _record(board, tags, states, missing, notes, inputs) -> EngineeringRecord:
+def _record(board, states, missing, inputs, notes) -> EngineeringRecord:
+    element = board.element
+    tags = tuple(dict.fromkeys((board.tag, *(element.connects if element else ()))))
     # OVER outranks INCOMPLETE, as on the other kinds: a graded shortfall is the finding.
     over = [s for s in states if not s.ok]
     status = Status.OVER if over else (Status.INCOMPLETE if missing else Status.OK)

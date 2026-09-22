@@ -167,7 +167,7 @@ class SunkenGardenSpec:
     # wall meets the foundation.
     house_below_grade_face_in: float = 4.185
     # The XPS isolation board between the court's side walls and the house — the same
-    # 40 psi product as SG_VENEER_BEAM_14's `xps-break` (2"), at 2.5" since basis 4.
+    # Type X 15 psi product as SG_VENEER_BEAM_14's `xps-break` (2"), at 2.5" (basis 6).
     #
     # ** IT IS `THERMAL_BREAK_IN` NOW. ** The 2" was stated three independent times in two
     # files and the 40 psi twice, once outright and once only in prose, because `Layer` has
@@ -3692,21 +3692,22 @@ _board_z = _wall_bottom - inch(_HOUSE_FOOTING_DEPTH_IN / 2.0)
 # ** THE BREAK IS ONE PRODUCT, AND THESE CONSTANTS ARE THE ONLY PLACE IT IS STATED. ** The
 # closure boards bill by VOLUME (thermal_break solids) and the beam's by AREA (a Layer), and
 # nothing reconciles them, so `test_catlin_contract_m3` pins every site to these numbers.
-# `Layer` has no compressive field: the beam's 40 psi lives in SG_VENEER_BEAM_14's prose.
-# 40 psi (ASTM C578 Type VI): the board is a FORM FACE against a fresh 9' head.
+# `Layer` has no compressive field: the beam's 15 psi lives in SG_VENEER_BEAM_14's prose.
+# Basis 6 (2026-09-21, owner): ASTM C578 Type X, 15 psi (FOAMULAR 150 class) on all five
+# boards — the closure boards at 2.5", the veneer beam's at 2" (on FT-B-S2/S3's toe trim).
 THERMAL_BREAK_IN = SPEC.closure_break_in
-THERMAL_BREAK_PSI = 40.0
-# Basis 4 (2026-09-21): Highload 40 on all five boards — the closure boards at 2.5", the
-# veneer beam's at 2" (on FT-B-S2/S3's toe trim). The product is OPEN (free body §11h).
+THERMAL_BREAK_PSI = 15.0
 VENEER_BEAM_BREAK_IN = 2.0
-#: DuPont Styrofoam Highload 40 PIS 43-D100079-enNA: "Compressive Modulus (typical), ASTM
-#: D 1621, psi — 1,400". Its strength is read "at 5 percent deformation or at yield".
-THERMAL_BREAK_MODULUS_PSI = 1_400.0
+#: ESTIMATED — no Type X sheet publishes a modulus. DuPont's Highload family holds
+#: E/sigma ~ 35 (1,400/40, 2,200/60, 3,700/100), so 35 x 15 = 525 (free body §11i).
+THERMAL_BREAK_MODULUS_PSI = 525.0
 _BOARD_PRODUCT = dict(
     material="xps", psi=THERMAL_BREAK_PSI, modulus_psi=THERMAL_BREAK_MODULUS_PSI,
-    source="DuPont Styrofoam Brand Highload 40 product information sheet 43-D100079-enNA: "
-           "compressive strength 40 psi min (ASTM D1621, at 5% or yield), compressive "
-           "modulus 1,400 psi typical",
+    modulus_estimated=True,
+    source="XPS, ASTM C578 Type X (FOAMULAR 150 class): 15.0 psi min at yield or 10% "
+           "deformation (Owens Corning Tech Bulletin 10015702-C, 07-2025); modulus "
+           "ESTIMATED 525 psi = 35 x 15 on the Styrofoam Highload E/sigma ratio (none "
+           "published)",
     placement_sequence_ref="AN-SG-PLACEMENTS")
 
 # ** THREE SEQUENCING TRAPS ON THIS BOARD — FIELD INSTRUCTIONS THE MODEL CANNOT EXPRESS. **

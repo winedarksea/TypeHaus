@@ -1069,8 +1069,9 @@ SUNKEN_GARDEN_GRADE_BEAM_12 = Assembly(
 # A WALL's layers do resolve to real polygons, on real faces, in a stated order. That is why
 # the break moved here: it can now be pointed at, measured, and pinned by a test.
 #
-# 40 psi, as everywhere else in this court: the board is a form face and a bond breaker
-# here, not a bearing layer — the beam spans to W-SG-W1/E1 and delivers nothing to it.
+# 15 psi (ASTM C578 Type X, basis 6), as everywhere else in this court: the board is a form
+# face and a bond breaker here, not a bearing layer — the beam spans to W-SG-W1/E1 and
+# delivers nothing to it, so `engineering/veneer_beam.py` never reads its grade.
 SG_VENEER_BEAM_14 = Assembly(
     tag="SG_VENEER_BEAM_14",
     layers=(
@@ -1086,7 +1087,7 @@ SG_VENEER_BEAM_14 = Assembly(
               function=LayerFunction.INSULATION, control={ControlLayer.THERMAL}),
     ),
     interfaces=(_CONCRETE_BEARING,),
-    source="sunken-garden veneer grade beam (2026-09-05): the court's own 12\" exposed pour, spanning W-SG-W1 to W-SG-E1 to carry W-B-BRICK clear of the house footing, with a 2\" 40 psi XPS isolation board on its north face against FT-B-S2/S3's trimmed toe — the same thermal cut DW-SG-W1/E1-FOAM makes at the porch footings, expressed as a layer so it resolves, bills and draws",
+    source="sunken-garden veneer grade beam (2026-09-05): the court's own 12\" exposed pour, spanning W-SG-W1 to W-SG-E1 to carry W-B-BRICK clear of the house footing, with a 2\" 15 psi XPS isolation board (ASTM C578 Type X) on its north face against FT-B-S2/S3's trimmed toe — the same product as the court's IsolationBoards TB-SG-*, expressed as a layer so it resolves, bills and draws",
 )
 
 # The FIVE 12" round cast columns of the garden frame: PT-SG-FCOL (carrying the porch's

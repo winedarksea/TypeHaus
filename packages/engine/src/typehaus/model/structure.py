@@ -667,6 +667,9 @@ class IsolationBoard(Element):
     material: str = "xps"
     psi: float = 40.0
     modulus_psi: float | None = None
+    #: True where no sheet publishes a modulus and ``modulus_psi`` is an estimate whose basis
+    #: ``source`` states — the record flags it and adds a sensitivity row on E.
+    modulus_estimated: bool = False
     source: str | None = None
     #: The ``Annotation`` that sequences the pours either side. Set, the fresh-concrete row
     #: reads the head off the court element's OWN top; ``None`` grades a monolithic pour.
