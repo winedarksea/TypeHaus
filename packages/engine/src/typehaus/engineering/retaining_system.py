@@ -608,6 +608,17 @@ def system_factors(ctx: EngineeringContext, ref: str, members: list
     return out
 
 
+def loop_free_bodies(ctx: EngineeringContext) -> dict[str, dict[str, tuple[float, float]]]:
+    """``{loop ref: {soil_pcf: (soil resultant lb, base friction lb)}}`` for every verified
+    loop — what ``thermal_break`` pushes the court against."""
+    out = {}
+    for ref, members in _loops(ctx).items():
+        factors = system_factors(ctx, ref, members)
+        if factors:
+            out[ref] = factors
+    return out
+
+
 def footing_shortfalls(ctx: EngineeringContext
                        ) -> dict[str, dict[float, dict[str, float]]]:
     """``{loop ref: {soil_pcf: {member tag: shortfall lb}}}`` — each member's own thrust

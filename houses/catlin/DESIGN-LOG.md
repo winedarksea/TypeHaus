@@ -2637,7 +2637,7 @@ and none could have been.
 
 **Third pass — the closure's thermal break was 21" long in an 84" joint (2026-09-05).** The
 two porch side walls meet the house only through a 2" XPS board on -6 3/16"..-4 3/16", and
-the intent written at `DW-SG-*-STEM` was one continuous board from the house footing's
+the intent written at `DW-SG-*-STEM` (now the `TB-SG-*` isolation boards) was one continuous board from the house footing's
 underside to the top of the porch wall. It was not continuous, in two independent ways that
 hid each other, and nothing in the engine grades a thermal break for continuity, so it had
 read as a designed detail at 0 FAIL.

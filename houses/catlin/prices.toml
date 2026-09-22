@@ -1795,8 +1795,8 @@
 # — plain 2" XPS at 40 psi, not a proprietary structural break — and they are much bigger
 # than the pads the old rate was written for:
 #
-#     DW-SG-W1/E1-FOAM        84" x  8"   =  4.67 SF each   (the footing joint)
-#     DW-SG-W1/E1-STEM-FOAM   12" x 109"  =  9.12 SF each   (the wall's end face)
+#     TB-SG-W1/E1             84" x  8"   =  4.67 SF each   (the footing joint)
+#     TB-SG-W1/E1-STEM        12" x 109"  =  9.12 SF each   (the wall's end face)
 #                                            27.6 SF total, 0.17 cy
 #
 # 2" 40 psi XPS is $3.00-5.50/SF, so $83-152 of board; the rest is cutting, fitting and
@@ -1821,10 +1821,11 @@
 # rate has whenever the things it counts are not interchangeable. It also could not survive a
 # change of size: the stem board is as tall as the wall it closes, so re-levelling the court
 # re-prices it, and under `ea` it would not have moved by a cent.
-# ** 2026-09-21: THE FOUR CLOSURE BOARDS ARE NOW 2" ROCKWOOL TOPROCK DD, NOT XPS ** (only the
-# veneer beam's board stays XPS). The rate below is still the XPS basis; labour dominates it,
-# so it stands until a stone-wool quote replaces it.
-"thermal_break" = { low = 78, high = 183, unit = "cuft" }  # 4.59 cf — the garden closure boards
+# ** 2026-09-21 (free body §11i basis 6): the four closure boards are 2.5" ASTM C578 Type X
+# XPS (15 psi, FOAMULAR 150 class). ** Volume billing carries the extra half inch (5.74 cf);
+# the $/cf rate is the 2" 40 psi face rate above, so it now over-reads the board a little
+# (Type X is the cheapest XPS grade) and slightly under-reads labour per SF.
+"thermal_break" = { low = 78, high = 183, unit = "cuft" }  # 5.74 cf — the garden closure boards
 # --- 2026-08-20: SOLIDS THAT NO OTHER TABLE BILLS ---------------------------------------
 # structural_solids is the only table that reaches these rows, and until today [concrete]
 # refused them because their structure_material is not "concrete" (cli/prices.MATERIAL_ONLY —

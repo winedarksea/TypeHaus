@@ -175,7 +175,7 @@ These are not all new discoveries; several already have good deferral descriptio
 | Scope | Current gap | Shortest credible closure |
 |---|---|---|
 | `W-SG-BRKBM` veneer beam | Registered as NO_CALC although a separate screening exists; end restraint/development, torsion detailing, insulated-standoff masonry anchorage and movement joints unresolved | Connect the actual beam calculation to the register; complete joint/torsion/anchor details |
-| Four `DW-SG-*` thermal-break transfers | Demand, differential movement, GFRP stiffness/development and pour support unresolved | State what force/movement the break must transmit, then select/detail a qualified system |
+| Four `DW-SG-*` (now `TB-SG-*`, dowels deleted) thermal-break transfers | Demand, differential movement, GFRP stiffness/development and pour support unresolved | State what force/movement the break must transmit, then select/detail a qualified system |
 | Five `W-RG-*` upper-tier walls | Upper wall and coupled/global stability deferred | Geotechnical basis plus applicable supplier engineering; height alone does not close the tiered condition |
 | `PT-BW-W/GW` | INCOMPLETE because `BM-BW-SCSILL` load is unaccounted for | Model the screen/sill dead and lateral load; remove the irrelevant legacy shelter-roof wording from the missing-input explanation |
 | `PT-BW-IC/IE` on garage slab | Footing check says N/A and explicitly says slab bending, punching and subgrade bearing are ungraded | Verify and detail the noted 2-ft-square, 10-in thickening and its reinforcement/anchorage |

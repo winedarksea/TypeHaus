@@ -1,9 +1,10 @@
-"""``engineering/thermal_break.py`` against ``sunken_garden_court_free_body.md`` §11.
+"""``engineering/thermal_break.py`` against ``sunken_garden_court_free_body.md`` §11i (basis 6).
 
-The note was worked by hand before the module existed; this file reproduces it. Values are
-read off the resolved catlin model rather than pinned where another pass could move them.
-Basis 3 names Aslan 100 #6 and ROCKWOOL Toprock DD (§11f) and a PRESUMED k_v (§11e), so
-every catlin row is graded; movement and settlement are OVER, and OVER outranks INCOMPLETE.
+The note was worked by hand before the module was rewritten; this file reproduces it. Basis 6
+is a pure isolation joint of ASTM C578 Type X XPS (15 psi, E ESTIMATED at 525), graded on the
+neutral-point demand with the stems' shrinkage credit and the pour locked in, along the
+house's real lateral path. Every item is OVER on the slab edge and global sliding, which the
+stop rule reports rather than designs away.
 """
 
 from __future__ import annotations
@@ -13,27 +14,50 @@ import dataclasses
 import pytest
 
 from typehaus.engineering.item import Status
-from typehaus.engineering.thermal_break import KIND, SETTLEMENT_MISSING
+from typehaus.engineering.thermal_break import KIND
 
-# §11a/§11b — hand-worked.
-_NOTE_PRESSURE_PSI = {"DW-SG-W1": 10.194, "DW-SG-E1": 10.194,
-                      "DW-SG-W1-STEM": 9.500, "DW-SG-E1-STEM": 9.500}
-_NOTE_BOARD_PSI = 10.878          # Toprock DD, 75 kPa at 10%
-_NOTE_BUOYANCY_LB = 116.67
-_NOTE_FLOTATION_RESTRAINT_LB = 163.17   # 10 x 10.878 x 0.75 x 2
-# §11c/§11d.
-_NOTE_RUN_IN = 322.815
-_NOTE_MOVEMENT_IN = 0.07102      # 5.5e-6 x (90 - 50) x 322.815; was 0.1864 at basis 1
-_NOTE_MOVEMENT_CAP_IN = 0.066667   # 2 x (10.878/3) / 108.78; 0.019048 on XPS at basis 2
-_NOTE_BAR_LB = 2_279.06            # 0.55 x 44,200 x 0.75 / (4 x 2); #5 read 1,385.31
-# §11e — presumed k_v.
-_NOTE_K_V_PCI = 88.4
-_NOTE_STEM_PSF = 195.42            # 150 x 1.0 x 109.4375/12 / 7
-_NOTE_SETTLEMENT_IN = 0.015352
-_NOTE_DRIFT_CAP_IN = 0.014601
-_NOTE_SHORTFALL_LB = 24_464.0   # §4d (AB Classic apron); §4c 24,834; §4 23,454
-_NOTE_RESERVE_LB = {"DW-SG-W1": 16_309.0, "DW-SG-E1": 16_309.0,
-                    "DW-SG-W1-STEM": 3_262.0, "DW-SG-E1-STEM": 3_262.0}
+_FOOT, _STEM, _BEAM = ("TB-SG-W1", "TB-SG-E1"), ("TB-SG-W1-STEM", "TB-SG-E1-STEM"), "W-SG-BRKBM"
+_ALL = (*_FOOT, *_STEM, _BEAM)
+
+# The lateral path is one set of links for the whole thrust (§11i), on every item.
+_PATH = {
+    "house slab-edge bearing": (93_955.0, 22_680.0, 4.143),
+    "house slab strut compression": (62.14, 2_040.0, 0.0305),
+    "house global sliding": (1.5, 1.238, 1.212),
+    "house far-wall soil bearing": (58_835.0, 130_534.0, 0.451),
+    "court sliding under break thrust": (1.5, 2.644, 0.567),
+}
+# (demand, capacity, ratio) per row, hand-worked in §11i.
+_NOTE = {
+    "foot": {
+        "fresh-concrete pressure": (0.6944, 15.0, 0.0463),
+        "board strain, pour + closing": (0.034247, 0.071429, 0.4795),
+        **_PATH,
+    },
+    "stem": {
+        "fresh-concrete pressure": (9.4998, 15.0, 0.6333),
+        "board strain, pour + closing": (0.050408, 0.071429, 0.7057),
+        "house insulation bearing": (10.586, 15.0, 0.7057),
+        "house wall flexure": (89_753.0, 276_299.0, 0.325),
+        "house wall shear": (4_497.0, 72_377.0, 0.0621),
+        "house floor-line reaction": (3_167.0, 3_285.0, 0.964),
+        **_PATH,
+    },
+    "beam": {
+        "fresh-concrete pressure": (10.4329, 15.0, 0.6955),
+        "board strain, pour + closing": (0.070685, 0.057143, 1.237),
+        **_PATH,
+    },
+}
+_NOTE_X_IN = 187.51
+_NOTE_SIGMA_PSI = {"TB-SG-W1": 6.497, "TB-SG-W1-STEM": 1.086, _BEAM: 8.122}
+_NOTE_LOCK_LB = {"TB-SG-W1": 233.3, "TB-SG-W1-STEM": 6_238.0, _BEAM: 41_162.0}
+_NOTE_TOTAL_LB = 100_288.0
+_NOTE_RUN_IN = 322.565
+
+
+def _group(tag):
+    return "beam" if tag == _BEAM else ("stem" if tag in _STEM else "foot")
 
 
 @pytest.fixture(scope="module")
@@ -48,7 +72,7 @@ def records(ctx):
     from typehaus.engineering import EngineeringResults
 
     results = EngineeringResults(ctx)
-    return {tag: results[f"{KIND}/{tag}"] for tag in _NOTE_PRESSURE_PSI}
+    return {tag: results[f"{KIND}/{tag}"] for tag in _ALL}
 
 
 def _state(record, name):
@@ -59,158 +83,132 @@ def _input(record, name):
     return next(q.value for q in record.inputs if q.name == name)
 
 
-def test_the_kind_is_computed_not_deferred(ctx) -> None:
+def test_the_kind_is_computed_and_the_beam_board_is_an_item(ctx) -> None:
     from typehaus.engineering import DEFERRALS, keys_of
 
     assert KIND not in DEFERRALS
-    assert keys_of(KIND, ctx) == sorted(_NOTE_PRESSURE_PSI)
+    assert keys_of(KIND, ctx) == sorted(_ALL)
 
 
-@pytest.mark.parametrize("tag", sorted(_NOTE_PRESSURE_PSI))
-def test_the_pressure_row_reproduces_section_11a(records, tag) -> None:
-    state = _state(records[tag], "fresh-concrete pressure")
-    assert state.demand == pytest.approx(_NOTE_PRESSURE_PSI[tag], abs=0.001)
-    assert state.capacity == pytest.approx(_NOTE_BOARD_PSI, abs=0.001)
-
-
-def test_flotation_is_graded_on_the_footing_boards_and_omitted_on_the_stems(records) -> None:
-    for tag in ("DW-SG-W1", "DW-SG-E1"):
-        state = _state(records[tag], "board flotation")
-        assert state.demand == pytest.approx(_NOTE_BUOYANCY_LB, abs=0.01)
-        assert state.capacity == pytest.approx(_NOTE_FLOTATION_RESTRAINT_LB, abs=0.01)
-    for tag in ("DW-SG-W1-STEM", "DW-SG-E1-STEM"):
-        assert _state(records[tag], "board flotation") is None
-        assert any("NO FLOTATION ROW" in note for note in records[tag].notes)
-
-
-@pytest.mark.parametrize("tag", sorted(_NOTE_PRESSURE_PSI))
-def test_movement_and_reserve_demands_reproduce_section_11c_d(records, tag) -> None:
-    from typehaus.engineering.thermal_break import ALPHA_C_PER_F
-
+@pytest.mark.parametrize("tag", _ALL)
+def test_every_row_reproduces_section_11(records, tag) -> None:
     record = records[tag]
-    run = _input(record, "court_run")
-    assert run == pytest.approx(_NOTE_RUN_IN, abs=0.01)
-    assert ALPHA_C_PER_F * _input(record, "delta_T") * run == pytest.approx(
-        _NOTE_MOVEMENT_IN, abs=1e-4)
-    shortfall = _input(record, "loop_shortfall")
-    assert shortfall == pytest.approx(_NOTE_SHORTFALL_LB, abs=1.0)
-    assert 1.6 * shortfall * _input(record, "bar_share") == pytest.approx(
-        _NOTE_RESERVE_LB[tag], abs=1.0)
+    expected = _NOTE[_group(tag)]
+    assert [s.name for s in record.limit_states] == list(expected), tag
+    for name, (demand, capacity, ratio) in expected.items():
+        state = _state(record, name)
+        assert state.demand == pytest.approx(demand, rel=5e-4), (tag, name)
+        assert state.capacity == pytest.approx(capacity, rel=5e-4), (tag, name)
+        assert state.ratio == pytest.approx(ratio, rel=1e-3, abs=6e-4), (tag, name)
 
 
-@pytest.mark.parametrize("tag", sorted(_NOTE_PRESSURE_PSI))
-def test_catlin_grades_every_row_on_the_named_products(records, tag) -> None:
-    record = records[tag]
-    movement = _state(record, "thermal movement")
-    assert movement.demand == pytest.approx(_NOTE_MOVEMENT_IN, abs=1e-5)
-    assert movement.capacity == pytest.approx(_NOTE_MOVEMENT_CAP_IN, abs=1e-6)
-    assert movement.ratio == pytest.approx(1.065, abs=0.001)
-    reserve = _state(record, "dowel shear reserve")
-    bars = 10 if "STEM" not in tag else 2
-    assert reserve.capacity == pytest.approx(bars * _NOTE_BAR_LB, abs=0.1)
-    assert reserve.ratio == pytest.approx(0.716, abs=0.001)
-    assert reserve.combination == "1.6H"
-    settlement = _state(record, "differential settlement")
-    assert _input(record, "k_v") == _NOTE_K_V_PCI
-    assert _input(record, "k_v_presumed") == 1.0
-    assert _input(record, "stem_bearing") == pytest.approx(_NOTE_STEM_PSF, abs=0.01)
-    assert settlement.demand == pytest.approx(_NOTE_SETTLEMENT_IN, abs=1e-6)
-    assert settlement.capacity == pytest.approx(_NOTE_DRIFT_CAP_IN, abs=1e-6)
-    assert settlement.ratio == pytest.approx(1.051, abs=0.001)
-
-
-@pytest.mark.parametrize("tag", sorted(_NOTE_PRESSURE_PSI))
-def test_over_outranks_incomplete_and_the_k_v_is_marked_presumed(records, tag) -> None:
+@pytest.mark.parametrize("tag", _ALL)
+def test_basis_6_is_over_with_nothing_open(records, tag) -> None:
     record = records[tag]
     assert record.status is Status.OVER
     assert record.missing == ()
-    assert "OVER on thermal movement, differential settlement" in record.summary
-    assert any("k_v IS PRESUMED" in note for note in record.notes)
+    assert record.basis_version == "6"
+    notes = " ".join(record.notes)
+    for flag in ("RETIRED WITH THE BARS", "RETIRED WITH THE STRIP", "ESTIMATED MODULUS",
+                 "NEUTRAL POINT", "POUR LOCK-IN", "SENSITIVITY ON E"):
+        assert flag in notes, (tag, flag)
+    assert ("STEM SHRINKAGE" in notes) == (tag in _STEM)
 
 
-def _authored(ctx, tag, **values):
-    """``_one`` on a copy of the dowel with some fields replaced."""
+def test_the_neutral_point_the_thrust_and_the_run(records) -> None:
+    for tag, sigma in _NOTE_SIGMA_PSI.items():
+        assert _input(records[tag], "board_stress") == pytest.approx(sigma, abs=1e-3)
+        assert _input(records[tag], "board_lock_in") == pytest.approx(
+            _NOTE_LOCK_LB[tag], rel=1e-3)
+    for tag in _ALL:
+        assert _input(records[tag], "neutral_point") == pytest.approx(_NOTE_X_IN, abs=0.01)
+        assert _input(records[tag], "house_thrust") == pytest.approx(_NOTE_TOTAL_LB, rel=1e-4)
+    assert _input(records["TB-SG-W1"], "court_run") == pytest.approx(_NOTE_RUN_IN, abs=1e-3)
+    assert _input(records["TB-SG-W1"], "delta_T") == 30.0
+
+
+def test_the_stem_shrinkage_is_aci_209r() -> None:
+    from typehaus.engineering.thermal_break_demand import stem_shrinkage
+
+    assert stem_shrinkage() * 1e6 == pytest.approx(137.42, abs=0.01)
+
+
+def test_the_sensitivity_note_reads_the_higher_modulus(records) -> None:
+    note = next(n for n in records["TB-SG-W1-STEM"].notes if n.startswith("SENSITIVITY"))
+    # §11i's table: the floor line passes at 525 psi and fails at x1.5 and x2.
+    assert "house floor-line reaction 0.964 -> 0.900 / 1.040 / 1.100" in note
+
+
+def _compute_with(ctx, monkeypatch, **values):
     from typehaus.engineering import thermal_break as tb
+    from typehaus.engineering import thermal_break_geometry as geo
 
-    loops = tb.footing_shortfalls(ctx)
-    breaks = tb._dowels(ctx)
-    bars = {}
-    for d in breaks:
-        side = tb._court_side(ctx, d, loops)
-        bars[side[0]] = bars.get(side[0], 0) + d.count
-    dowel = ctx.plan.by_tag(tag).model_copy(update=values)
-    return tb._one(ctx, dowel, loops, tb._court_side(ctx, dowel, loops), bars)
+    real = geo.isolation_boards(ctx)
+    monkeypatch.setattr(geo, "isolation_boards",
+                        lambda _ctx: [b.model_copy(update=values) for b in real])
+    return {r.key: r for r in tb.compute(ctx)}
 
 
-def test_unnamed_products_hold_the_rows_open(ctx) -> None:
-    record = _authored(ctx, "DW-SG-W1", foam_source=None, bar_source=None)
-    missing = " ".join(record.missing)
-    assert "Dowel.foam_source" in missing and "Dowel.bar_source" in missing
-    assert _state(record, "thermal movement") is None
-    assert _state(record, "dowel shear reserve") is None
+def test_an_unnamed_product_holds_every_row_open(ctx, monkeypatch) -> None:
+    out = _compute_with(ctx, monkeypatch, source=None)
+    assert out["TB-SG-W1"].limit_states == ()
+    assert "IsolationBoard.psi" in " ".join(out["TB-SG-W1"].missing)
+    assert out[_BEAM].limit_states == (), "the beam's board names the closure boards' product"
 
 
-def test_the_shear_branch_governs_when_the_bar_is_weak_in_shear(ctx) -> None:
-    record = _authored(ctx, "DW-SG-W1-STEM", bar_shear_lb=1_000.0)
-    assert _state(record, "dowel shear reserve").capacity == pytest.approx(2 * 0.75 * 1_000.0)
+def test_without_a_placement_sequence_the_pour_is_monolithic(ctx, monkeypatch) -> None:
+    out = _compute_with(ctx, monkeypatch, placement_sequence_ref=None)
+    state = _state(out["TB-SG-W1"], "fresh-concrete pressure")
+    assert state.demand == pytest.approx(150 * 117.4375 / 1728.0, abs=1e-4)
+    # And the locked-in pour follows it: a 117" head on the footing board, not 8".
+    assert _input(out["TB-SG-W1"], "board_lock_in") > 10 * _NOTE_LOCK_LB["TB-SG-W1"]
 
 
-def test_no_k_v_holds_the_settlement_row_open_but_not_an_over_row(ctx) -> None:
-    from typehaus.model import Site
+def _with_site(ctx, **site_values):
+    project = ctx.plan.project
+    site = project.site.model_copy(update=site_values)
+    plan = ctx.plan.model_copy(update={"project": project.model_copy(update={"site": site})})
+    return dataclasses.replace(ctx, plan=plan)
 
-    site = ctx.plan.project.site.model_copy(update={"lateral_subgrade_modulus": None})
-    plan = ctx.plan.model_copy(update={"project": ctx.plan.project.model_copy(
-        update={"site": site})})
-    from typehaus.engineering import EngineeringContext
+
+def test_no_service_temperature_holds_the_thermal_rows_open(ctx) -> None:
     from typehaus.engineering import thermal_break as tb
+    from typehaus.engineering.thermal_break_board import TEMPERATURE_MISSING
 
-    bare = EngineeringContext(plan=plan, model=ctx.model, soil_class="GM")
-    loops = tb.footing_shortfalls(bare)
-    bars = {}
-    for d in tb._dowels(bare):
-        side = tb._court_side(bare, d, loops)
-        bars[side[0]] = bars.get(side[0], 0) + d.count
-    dowel = plan.by_tag("DW-SG-W1")
-    record = tb._one(bare, dowel, loops, tb._court_side(bare, dowel, loops), bars)
-    assert SETTLEMENT_MISSING in record.missing
-    assert _state(record, "differential settlement") is None
-    assert record.status is Status.OVER, "movement is still over; OVER outranks INCOMPLETE"
-    assert Site.model_fields["lateral_subgrade_modulus"].default is None
+    out = {r.key: r for r in tb.compute(_with_site(ctx, concrete_service_temperature=None))}
+    record = out["TB-SG-W1"]
+    assert TEMPERATURE_MISSING in record.missing
+    assert [s.name for s in record.limit_states] == ["fresh-concrete pressure"]
+    assert record.status is Status.INCOMPLETE
 
 
 def test_a_k_v_only_report_leaves_base_rotation_on_its_band(ctx) -> None:
     from typehaus.engineering.base_supports import measured
 
-    project = ctx.plan.project
-    report = project.site.lateral_subgrade_modulus.model_copy(update={"n_h_pci": None})
-    site = project.site.model_copy(update={"lateral_subgrade_modulus": report})
-    plan = ctx.plan.model_copy(update={"project": project.model_copy(update={"site": site})})
-    assert measured(dataclasses.replace(ctx, plan=plan)) is None
+    report = ctx.plan.project.site.lateral_subgrade_modulus.model_copy(update={"n_h_pci": None})
+    assert measured(_with_site(ctx, lateral_subgrade_modulus=report)) is None
     assert measured(ctx) is not None, "catlin authors a presumed n_h since 2026-09-21"
 
 
-def test_dowel_product_fields_round_trip() -> None:
-    from typehaus.model.structure import Dowel
+def test_isolation_board_round_trips() -> None:
+    from typehaus.model.structure import IsolationBoard
     from typehaus.quantities import ft, inch, pt
 
-    dowel = Dowel(uid="AAAAAAAAAA", tag="DW-RT", position=pt(ft(0), ft(0)),
-                  length=inch(24), diameter=inch(0.625), elevation=inch(-100),
-                  foam_thickness=inch(2), foam_modulus_psi=400.0, bar_shear_lb=6_000.0,
-                  bar_tensile_lb=27_000.0, bar_modulus_psi=6.5e6, bar_source="datasheet")
-    back = Dowel.model_validate(dowel.model_dump())
-    assert back == dowel
-    assert back.bar_source == "datasheet" and back.foam_modulus_psi == 400.0
-    bare = Dowel(uid="AAAAAAAAAB", tag="DW-RT2", position=pt(ft(0), ft(0)),
-                 length=inch(24), diameter=inch(0.625), elevation=inch(-100))
-    assert bare.bar_shear_lb is None and bare.foam_modulus_psi is None
+    board = IsolationBoard(uid="AAAAAAAAAA", tag="TB-RT", position=pt(ft(0), ft(0)),
+                           thickness=inch(2.5), height=inch(8), length=inch(84),
+                           elevation=inch(-100), modulus_psi=525.0, source="sheet",
+                           modulus_estimated=True, placement_sequence_ref="AN-X")
+    assert IsolationBoard.model_validate(board.model_dump()) == board
+    assert board.psi == 40.0 and board.material == "xps" and board.modulus_estimated
 
 
-def test_subgrade_modulus_carries_its_provenance() -> None:
-    from typehaus.model import SubgradeModulus
+def test_site_inputs_carry_their_provenance() -> None:
+    from typehaus.model import ConcreteServiceTemperature, SubgradeModulus
 
     presumed = SubgradeModulus(k_v_pci=88.4, provenance="presumed", source="Bowles T9-1",
                                basis="table row")
     assert SubgradeModulus.model_validate(presumed.model_dump()) == presumed
-    assert presumed.n_h_pci is None
-    assert SubgradeModulus(n_h_pci=20.0, source="GEO-1", basis="pressuremeter"
-                           ).provenance == "measured"
+    temps = ConcreteServiceTemperature(max_f=80.0, min_f=0.0, source="AASHTO T3.12.2.1.1-1",
+                                       basis="published row", placement_min_f=50.0)
+    assert ConcreteServiceTemperature.model_validate(temps.model_dump()) == temps
+    assert temps.provenance == "published"

@@ -635,7 +635,7 @@ class Dowel(Element):
     #: XPS compressive modulus, psi, off the board's datasheet. None -> the thermal-movement
     #: row of ``thermal_break_transfer`` is INCOMPLETE naming it.
     foam_modulus_psi: float | None = None
-    #: The board's datasheet, named — the modulus and its creep factor come off it.
+    #: The board's datasheet, named — the rating and modulus come off it.
     foam_source: str | None = None
     #: The GFRP bar's published values, per bar at ``diameter`` (ASTM D7957 datasheet):
     #: transverse shear (ASTM D7617) and guaranteed tensile load, lb, and tensile modulus,
@@ -644,6 +644,36 @@ class Dowel(Element):
     bar_tensile_lb: float | None = None
     bar_modulus_psi: float | None = None
     bar_source: str | None = None
+
+
+@register_element
+class IsolationBoard(Element):
+    """A compressible board cast between two separately founded pours — a pure isolation
+    joint with nothing crossing it. Resolves as one ``thermal_break`` solid tagged as itself.
+
+    ``axis`` is the direction the THICKNESS runs (across the joint); ``length`` runs along
+    it. ``connects`` names the pour cast against it first and the element it bears on.
+    ``psi`` / ``modulus_psi`` / ``source`` are the product's published rating, modulus and
+    sheet — ``thermal_break_transfer`` grades the board and its thrust off them.
+    """
+
+    position: Point2D  # plan centre of the board, mid-thickness
+    axis: str = "y"
+    thickness: Length
+    height: Length
+    length: Length
+    elevation: Length  # board centre, project-frame absolute (as ``Dowel.elevation``)
+    connects: tuple[str, ...] = ()
+    material: str = "xps"
+    psi: float = 40.0
+    modulus_psi: float | None = None
+    #: True where no sheet publishes a modulus and ``modulus_psi`` is an estimate whose basis
+    #: ``source`` states — the record flags it and adds a sensitivity row on E.
+    modulus_estimated: bool = False
+    source: str | None = None
+    #: The ``Annotation`` that sequences the pours either side. Set, the fresh-concrete row
+    #: reads the head off the court element's OWN top; ``None`` grades a monolithic pour.
+    placement_sequence_ref: str | None = None
 
 
 @register_element
@@ -983,6 +1013,7 @@ for _name, _obj in (
     ("Post", Post),
     ("Beam", Beam),
     ("Dowel", Dowel),
+    ("IsolationBoard", IsolationBoard),
     ("Connector", Connector),
     ("PlateTie", PlateTie),
     ("KneeBrace", KneeBrace),

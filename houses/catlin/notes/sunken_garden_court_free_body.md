@@ -1536,252 +1536,574 @@ The length floor moved with it: `run = 62,826 × 1.50 / 1,899.6 = 49.61'`, so
 
 ---
 
-## 11. The thermal break — a reserve, not a design shear (2026-09-20)
+## 11. The thermal break — a pure isolation joint, and what it is still short of (basis 6, 2026-09-21)
 
-Worked by hand before `engineering/thermal_break.py` was written; `tests/test_thermal_break.py`
-reproduces it. Oracle for `thermal_break_transfer/DW-SG-*`. **Basis 3 (2026-09-21)** takes
-the owner's two decisions — **#6 Aslan 100 @ 8"** and **mineral wool as the compressible
-board** — grades §11e on a **presumed** `k_v`, and lets OVER outrank INCOMPLETE as on the
-other kinds. Two rows stay over (movement 1.07, settlement 1.05); §11f gives the options in
-numbers and picks none.
+Worked by hand before `engineering/thermal_break.py` was rewritten to it;
+`tests/test_thermal_break.py` reproduces it. Oracle for `thermal_break_transfer/*`.
 
-> Basis 2 (earlier 2026-09-21): #5 Aslan 100 on 2" Styrofoam Highload 40; movement 3.73 and
-> bending 1.177 OVER, settlement open. Basis 1 (2026-09-20): movement `δ 0.186"`, reserve
-> open.
+> **The graded basis is §11i (basis 6):** 2.5" ASTM C578 Type X XPS (15 psi, E estimated),
+> the neutral-point demand with the stem shrinkage credit and the pour lock-in, and the house's
+> real lateral path through `SL-B-FLOOR`. It is still OVER on three rows. §11a-§11h below are
+> the record of how it got there.
 
-**The design shear across the break is zero by construction.** The court is a closed loop
-that holds its own thrust (§4); the house footing is not in that free body and the board is
-there to keep it out. A limit state with `demand = 0` prints d/c 0.00 and reads as a design,
-so the independence argument is prose, and what is graded is a **reserve**: what the tie and
-the board could take if the assumption were wrong, and what the board itself has to survive.
+**Basis 4 is the owner's decision of 2026-09-21:** the four closure boards go back to XPS —
+**Styrofoam Highload 40 at 2.5"** (`closure_break_in` 2 → 2.5) — with **#6 Aslan 100 @ 8"**
+unchanged, and **every row graded**: nothing left "not graded" or open for an engineer. The
+veneer beam's own board stays 2" of the same product (`VENEER_BEAM_BREAK_IN`).
 
-### The four boards, as authored
+**Basis 5 (later 2026-09-21), the owner's second decision: a pure isolation joint.** All 24
+GFRP dowels are DELETED. The court stands on its own closed loop (§4, system FS 1.60) and
+nothing is designed to cross the break. The four closure boards are now `IsolationBoard`
+elements, `TB-SG-W1`/`-E1` (footing joints) and `TB-SG-W1-STEM`/`-E1-STEM` (wall ends), and
+the items are re-keyed to them. The bar rows are retired (§11e), the board and thrust rows
+stand unchanged, and **the board product is open** — §11h weighs the alternatives the owner
+named and picks none. Basis 4's result is kept below as the record of why the bars went.
 
-```
-                      bars          board t x h x L          board bottom     garden top
-DW-SG-W1 / -E1        10 #6 GFRP    2" x 8" x 84"           -117 7/16"        0'-0"
-DW-SG-W1/E1-STEM       2 #6 GFRP    2" x 109 7/16" x 12"    -109 7/16"        0'-0"
-```
+**Basis 4 result: it did not clear.** The board rows pass. The bars failed five rows that
+no board product reaches (now retired, §11e), and the new rows §11d finds are the larger story: a 2.5"
+XPS board is stiff enough that the court's summer growth arrives at the house as a thrust the
+house was never designed for. Per the stop rule nothing here picks a design; §11h weighs the
+board.
 
-Bottom = `elevation − foam_height/2`. The stem boards stand directly on the footing boards
-(-109 7/16" is both). Break mid-plane at y = −5.185"; the court's far wall (`W-SG-S`) axis at
-y = −27'-4" = −328.0". **All four boards are one product** (§11f): they are one plane and
-the court closes all four by one `δ`, so a stem-only swap would leave the footing rows on
-XPS at 3.73.
+> Superseded: basis 3 (earlier 2026-09-21, 2" Toprock DD) movement 1.065, settlement 1.051;
+> basis 2 (2" XPS, #5) movement 3.73, bending 1.177; basis 1 (2026-09-20) movement 0.186" open.
 
-### 11a. Fresh-concrete pressure on the board — ACI 347R-14, capped at wh
+**Why the thrust matters now and did not before.** The design shear across the break is still
+zero by construction (§4: the court is a closed loop that holds its own thrust). What basis 1-3
+never graded is that the break is a *compression* member between two structures: whatever the
+board will not squash, it passes. Basis 3's wool passed almost nothing (E 109 psi); XPS at
+E 1,400 psi passes thirteen times as much.
 
-ACI 347R's rate-and-temperature formula needs a placement rate and a concrete temperature the
-model does not hold; it can only lower the pressure, and it is capped at full liquid head
-`p = w·h`. So the cap is graded. `w` = 150 pcf, `h` from the top of the court (0'-0", both
-halves placed monolithically — the conservative sequence) to the board's bottom. The board's
-rating is Toprock DD's **75 kPa = 10.878 psi at 10% deformation** (ASTM C165; the sheet's
-"11 psi" is the same figure rounded up, so the kPa is taken):
+### The five boards, as authored (basis 5 — nothing crosses any of them)
 
 ```
-footing board   h = 117.4375" = 9.7865'   p = 150 × 9.7865 = 1,468.0 psf = 10.194 psi
-                vs 10.878 psi                                        d/c 0.937   ✓
-stem board      h = 109.4375" = 9.1198'   p = 150 × 9.1198 = 1,368.0 psf =  9.500 psi
-                vs 10.878 psi                                        d/c 0.873   ✓
+                   board t x h x L        board face (y)     faces, house side
+TB-SG-W1 / -E1     2.5" x 8" x 84"        -6.685..-4.185"    FT-B-S1/S2 (-S3/S4), bare concrete at -4.000"
+TB-SG-*-STEM       2.5" x 109 7/16" x 12" -6.685..-4.185"    W-B-S1/S4's 4.185" of XPS + membrane, concrete at 0
+W-SG-BRKBM         2" x 17.75" x 240"     -10..-8"           4" of bedding stone, then FT-B-S1..S4 at -4"
 ```
 
-At the head the board is squeezed to ~9% for as long as the concrete is fluid. It passes,
-thinly. **Comfortboard 80 does not:** 416 psf = 2.889 psi, d/c 3.53 — which is why it is
-not the product (§11f).
+Break mid-plane y = −5.435"; `W-SG-S`'s axis y = −328.0"; **run = 328.0 − 5.435 = 322.565"**
+(the court's south end does not move; only `N-SG-NW`/`-NE` follow `_y_wall_end`). **Clear gap
+between concretes** — what a bar spans — is 2.685" at the footing (board + the 3/16" the house
+strip's -4" toe leaves) and **6.685" at the stem**, where the bars also cross the house's own
+4.185" of foundation insulation. Basis 1-3 bent the stem bars over the board alone.
 
-### 11b. Board flotation — buoyancy against the bars' bearing on the board
+### The inputs, each cited
 
-The footing board's bottom edge sits in the garden footing's excavation, which runs 4" below
-the house strip, so the pour can reach under it. Archimedes on the board's own volume, board
-self-weight neglected (10-13.75 pcf stone wool would help):
-
-```
-V   = 2 × 8 × 84 = 1,344 in³ = 0.7778 ft³      F_b = 150 × 0.7778 = 116.7 lb
-restraint per bar = board bearing on the bar = 10.878 psi × 0.75" × 2" = 16.32 lb
-10 bars                                          = 163.2 lb          d/c 0.715   ✓
-```
-
-**The stem boards have no flotation row** — each stands on the footing board, so no face of
-it is under the pour; the row is omitted rather than graded at zero.
-
-### 11c. Thermal movement the board must take
-
-**Which board closes, and over what run** — unchanged from basis 2. The bars run north-south,
-so the boards are the north end faces of `W-SG-W1`/`E1` and their footings. The court closes
-them when it GROWS north, restrained at its south end by the soil `W-SG-S` retains, so it
-grows toward the board over its full run (bound: break to `W-SG-S`'s axis, `run = 328.0 −
-5.185 = 322.815"`). Contraction opens them (not graded). Weight-centroid sensitivity: run
-203.7", `δ` 0.0448", d/c 0.67 at basis 3 — **this row does flip on that choice now**, and
-the full run is kept because the retained soil is the stiffer restraint.
-
-**Temperature** — also unchanged: set at ACI 306R-16 Table 3.1's 50 °F minimum as-placed
-(12"-36" section), up to the 90 °F cooling design temperature:
-
-```
-ΔT_close = 90 − max(−15, 50) = 40 °F
-δ        = 5.5e-6 × 40 × 322.815 = 0.07102"
-```
-
-**What strain the board takes.** Toprock DD publishes one stiffness point, 75 kPa at 10%, so
-`E` is that secant: `10.878 / 0.10 = 108.78 psi`. **No creep figure is published** for it (or
-for Comfortboard 80), so the 3:1 sustained-stress factor basis 2 read off the XPS sheet is
-kept as the engine's own conservatism, not the maker's — the allowable strain is 10%/3:
-
-```
-capacity = t × (f / 3) / E = 2.00 × 3.626 / 108.78 = 0.06667"
-d/c      = 0.07102 / 0.06667 = 1.065      OVER
-```
-
-Mineral wool took the row from 3.73 to 1.07: `f/E` is 10% against XPS's 2.9%. Without the
-borrowed 3:1 (an imposed displacement relaxes by creep rather than accumulating — an
-engineer's judgement this note does not make) it reads **0.355**.
-
-### 11d. Dowel shear reserve — the loop's per-footing shortfall
-
-The demand is §5a's governing shortfall, the force the south wall's own base cannot hold,
-at 110 pcf, from §4d (AB Classic apron): `S = 24,464 lb` (the engine carries 24,463.3),
-`Vu = 1.6 × 24,463.3 = 39,141 lb`. **When §4d moves, this row moves with it.**
+- **Board: DuPont Styrofoam Brand Highload 40**, product information sheet 43-D100079-enNA
+  (<https://www.dupont.com/products/styrofoam-brand-highload-40.html>; the PIS as reprinted at
+  <https://jandssupply.com/wp-content/uploads/2024/06/styrofoam-brand-highload-40-60-and-100-pis-43-D100079-enNA.pdf>):
+  compressive strength **40 psi min** (ASTM D1621, "measured at 5 percent deformation or at yield,
+  whichever occurs first"), **compressive modulus 1,400 psi typical**, ASTM C578 Type VI.
+- **Board strain limit — replaces the 3:1.** The sheet's "3:1 is suggested" is for *static
+  loads*: a sustained stress creeps a board shut. Here the load is an **imposed, cyclic
+  displacement**, and under an imposed displacement creep shows up as relaxation — the stress
+  falls, the strain does not grow. What must hold is that the board stays in its recoverable
+  range so it comes back every winter: **ε_lim = σ_y / E = 40 / 1,400 = 2.857%**, the strain at
+  which the sheet's own linear modulus reaches its own yield (below the 5% the strength is read
+  at). A yielded board does not recover, and next summer's closure starts from a thinner board.
+- **Concrete service temperature, authored** (`Site.concrete_service_temperature`, not design
+  AIR): **AASHTO LRFD Table 3.12.2.1.1-1, Procedure A, cold climate, concrete 0-80 °F** — the
+  same 80 °F range MnDOT's LRFD Bridge Design Manual §3.10.1 uses
+  (<https://www.dot.state.mn.us/bridge/pdf/lrfdmanual/section03.pdf>). **Set floor 50 °F,
+  SPECIFIED**: ACI 306R-16 Table 3.1, minimum as-placed, 12"-36" section. That is the lever authored
+  here: the set temperature is a job specification, and the warmest set is bounded by
+  the range's own 80 °F. So the joint **closes by 80 − 50 = 30 °F** and **opens by 80 − 0 =
+  80 °F**. Basis 3's 90 °F − 50 °F = 40 °F took the 1% cooling AIR temperature, which a buried,
+  lagging mass never reaches.
+  *Realistic, not graded:* the footing sits 9.8' down, where Kusuda's model on the site's own
+  `soil_temp_f` 47 °F and `ground_surface_amplitude_f` 22 °F (soil diffusivity 0.6 ft²/day,
+  damping depth √(365·0.6/π) = 8.35') swings 22·e^(−9.8/8.35) = ±6.8 °F; the University of
+  Minnesota's St Paul campus records find deep soil "nearly constant at 48 °F" (Baker & Swan,
+  *Climate of Minnesota Part IV*, 1966,
+  <https://files.dnr.state.mn.us/natural_resources/climate/summaries_and_publications/comIV.pdf>);
+  MSP's TMYx weather file (<https://climate.onebuilding.org>) gives the surface series. The stem's
+  inner face sees court air. A realistic closing ΔT is ≈ 25 °F; the graded 30 is the published
+  bound.
+- **Bar (basis 4, deleted at basis 5): Owens Corning Aslan 100 #6** (OC Pub. 10022295): 0.442 in², guaranteed 44,200 lb,
+  E 6.7 × 10⁶ psi, transverse shear > 22,000 psi. **ACI CODE-440.11-22 §20.2.2.3: C_E = 0.85
+  "for concrete both exposed and not exposed to earth or weather"** — not the 0.7 of ACI 440.1R-15
+  for earth contact, which the Code superseded (Hussain & Nanni, ACI Structural Journal 120-S74,
+  2023, <https://par.nsf.gov/servlets/purl/10451919>; the Code,
+  <https://www.concrete.org/store/productdetail.aspx?ItemID=44011U22>). Design rupture load
+  `T_d = 0.85 × 44,200 = 37,570 lb`. At 0.7 every bar row below would be 21% worse.
+- **House concrete**: 5,000 psi (`BASEMENT_8` / `FOOTING_FPSF_20` mixes); `W-B-S1`/`-S4` 8",
+  **#5 @ 41" vertical at the interior face**, cover 1.25", Grade 60.
 
 ```
-bars reaching the court = 10 + 10 + 2 + 2 = 24, identical #6 across one 2" gap,
-so the reserve shares by count:
-  footing row   39,141 × 10/24 = 16,309 lb
-  stem row      39,141 ×  2/24 =  3,262 lb
+δ_close = 5.5e-6 × 30 × 322.565 = 0.053223"         δ_open = 5.5e-6 × 80 × 322.565 = 0.141929"
+σ_board = min(E·δ_close/t, σ_y) = min(1,400 × 0.053223 / 2.5, 40) = 29.805 psi
 ```
 
-Per bar the capacity is `min(0.75 V_bar, 0.55 T_u·d/(4t))` — transverse shear, or the bar
-rupturing in double curvature over the 2" gap (`M = V·t/2`, `M_u = T_u·d/8`).
+### 11a. Fresh-concrete pressure — the AUTHORED placements
 
-**Capacity, basis 3: Owens Corning Aslan 100 #6** (§11f). `T_u` 44,200 lb (guaranteed 100 ksi
-on 0.442 in²), `E` 6.7 × 10⁶ psi, transverse shear > 22,000 psi (ASTM D7617):
-
-```
-shear    0.75 × 22,000 × 0.442               = 7,293.0 lb
-bending  0.55 × 44,200 × 0.75 / (4 × 2)       = 2,279.1 lb     governs
-footing row  10 × 2,279.1 = 22,791 lb   vs 16,309 lb      d/c 0.716   ✓
-stem row      2 × 2,279.1 =  4,558 lb   vs  3,262 lb      d/c 0.716   ✓
-```
-
-Basis 2's #5 read 1,385.3 lb per bar and d/c 1.177. Slip across the gap at the service share,
-fixed-fixed: `I = π·0.75⁴/64 = 0.015532 in⁴`, `EI = 104,061 lb-in²`,
-`(24,463.3/24) × 2³ / (12 × 104,061)` = **0.0065"**.
-
-### 11e. Differential settlement — on a PRESUMED k_v (2026-09-21)
-
-**The input.** `Site.lateral_subgrade_modulus = SubgradeModulus(k_v_pci=88.4,
-provenance="presumed", ...)`. Bowles, *Foundation Analysis and Design* 5th ed. (1997)
-**Table 9-1, "silty medium dense sand", 24,000-48,000 kN/m³**, as reproduced by Strand7
-(<https://www.strand7.com/strand7r3help/Content/Topics/SpecialTopics/SpecialModulusSubgradeReaction.htm>).
-GM has no row of its own; IBC Table 1806.2 puts it in one class with SM, so the silty-sand row
-is its class-mate, and the **low end** is taken (softer means more settlement):
-`24,000 / 271.447 = 88.4 pci`. It is **not** width-corrected — Terzaghi's `((B+1)/2B)²` would
-soften it about 3x for a 7' strip and raise the ratio below. `n_h` (base rotation's) is not
-stated here.
-
-**The demand, as a bound with both halves stated.** The bars are cast in the footings
-(placement 1). The court STEM is placement 2, cast on a set footing, so its whole weight
-settles the court side after the bars engage; the house footing and basement wall were cast,
-cured and surveyed first (`AN-SG-PLACEMENTS`) and are credited no further settlement. The stem
-is a LOWER bound on the court's added bearing (the porch, the soil over the heel and snow add
-to it); crediting no house settlement is the conservative half.
+`AN-SG-PLACEMENTS` (named on each board as `placement_sequence_ref`): (1) footings and pads,
+(2) walls and grade beams, (3) rim slab and columns, conventional forms. So each board sees the
+head of the ONE placement it is cast against, not a monolithic pour. ACI 347R-14's wall formula
+`p = C_w C_c [150 + 9000R/T]` (R < 7 ft/h, h ≤ 14', internal vibration; C_c = 1.2 for a blend
+under 40% fly ash — `EXPOSED_MIX` carries 25% Class F) would give 1,260 psf at R = 5 ft/h and
+T = 50 °F, but R is not authored, so the **cap w·h** is graded
+(<https://idoc.pub/documents/aci-347-giude-to-formwork-for-concretepdf-en5kj3g6ypno>). The boom
+places from the top, so no pump-from-base surge allowance applies.
 
 ```
-stem   150 × 1.0' × 109.4375/12 = 1,367.97 plf      over the 7.00' strip = 195.42 psf
-                                                    = 1.3571 psi
-Δ      = q / k_v = 1.3571 / 88.4                   = 0.015352"
+footing board  placement (1), head = court footing top − board bottom = −109.4375 − (−117.4375) = 8"
+               p = 150 × 0.6667 = 100.0 psf = 0.694 psi   vs 40      d/c 0.017   ✓
+stem board     placement (2), head = 0 − (−109.4375) = 9.1198'
+               p = 1,367.97 psf = 9.500 psi                vs 40      d/c 0.237   ✓
+beam board     placement (2) with the walls (a Layer names no sequence — monolithic to 0'-0"),
+               head 120.1875" = 1,502.3 psf = 10.433 psi   vs 40      d/c 0.261   ✓
 ```
 
-**The capacity: the drift a bar survives fixed-fixed over the gap.** A bar forced through a
-relative end offset `Δ` over `t` carries `M = 6EIΔ/t²`; rupture is `φ M_u = 0.55 × T_u·d/8`.
-The bar cannot be offset more than the free differential (the soil springs only pull the two
-footings back toward each other), so this is conservative on the bar's side too:
+### 11b. Board flotation — retired with the bars (basis 5)
+
+Basis 4 graded the footing board's 145.83 lb of buoyancy against 10 bars' bearing (750 lb,
+0.194). With no bars nothing in the model restrains a board, so there is no capacity to grade:
+every board is held by the work — adhered or pinned to the cured house face and braced, as the
+joint-filler makers themselves instruct (W. R. Meadows: CERAMAR "will float and must be held in
+place") — sequencing trap 2 in `params/sunken_garden.py`.
+
+### 11c. Thermal movement the board takes (closing)
+
+The court grows north toward the break from its south end, where the retained soil is the
+stiffer restraint (basis 2's argument, kept):
 
 ```
-φ M_u  = 0.55 × 44,200 × 0.75 / 8               = 2,279.1 lb-in
-Δ_cap  = φ M_u × t² / (6 EI) = 2,279.1 × 4 / (6 × 104,061) = 0.014601"
-d/c    = 0.015352 / 0.014601                     = 1.051      OVER (all four boards)
+closure boards   δ 0.053223" vs t·ε_lim = 2.5 × 0.028571 = 0.071429"      d/c 0.745   ✓
+beam board       run 328 − 9 = 319.0"  δ = 5.5e-6 × 30 × 319 = 0.052635"
+                 vs 2.0 × 0.028571 = 0.057143"  (the 4" of stone taken rigid)  d/c 0.921   ✓
 ```
 
-Put the other way: at this `k_v` the bars tolerate **186 psf** of bearing mismatch across the
-break, and the stem alone is 195. The shear branch (`0.75 V_bar t³/12EI` = 0.0467") does not
-govern. **This is a presumed-soil verdict**: a report's `k_v`, a house load take-down (which
-this engine does not have for `FT-B-S1`/`-S4`) and the real placement sequence all move it.
+### 11d. The thrust the board passes into the house — graded
 
-### 11f. The products, and the rows they leave over (2026-09-21, basis 3)
+`F = min(E·δ/t, σ_y) × A`, the house taken rigid (the upper bound on force, which is the
+conservative side for every row below). **Load factor 1.0 on T** (ACI 318-19 §5.3.6; ASCE 7-16
+§2.3.4: "not less than 1.0"). Soil on the house wall is left OUT of the flexure demand, and every
+capacity is the most generous the model supports, so each OVER below is a lower bound on the
+real ratio.
 
-**Bar — Owens Corning Aslan 100 GFRP, #6.** Product data sheet as reprinted in OC Pub.
-10022295 (June 2017; table "representative of current production … as of July 2011",
-tensile per ASTM D7205), <https://dcpd6wotaa0mb.cloudfront.net/mdms/dms/CSB/10022295/10022295-%E2%80%93-Aslan%E2%84%A2-100-GFRP-Soft-Eye-Openings-product-sheet.pdf>,
-and the same table in ACI's 2019 FRP competition guide,
-<https://www.concrete.org/Portals/0/Files/PDF/ReinIDGuideandProductDatasheets-2019.pdf>.
-#6: 3/4", 0.442 in², f*fu 100 ksi, guaranteed load 44.20 kips, E 6.7 × 10⁶ psi, ultimate
-strain 1.49%; transverse shear > 22,000 psi (ASTM D7617). OC's product page now 404s;
-**confirm this sheet is still current with the supplier before ordering.**
+```
+σ = 29.805 psi
+footing board   84 × 8        =   672 in²    F = 20,029 lb
+stem board      12 × 109.4375 = 1,313 in²    F = 39,141 lb  = 34,335 on W-B-S1's concrete (−109.44..−13.44)
+                                                            +  4,806 on the framed band above it (−13.44..0)
+beam board      240 × 17.75   = 4,260 in²    σ = 1,400 × 0.052635/2 = 36.845 psi   F = 156,958 lb
+```
 
-**Board — ROCKWOOL Toprock DD, 2" stone wool** (dual density, 13.75 / 10 pcf), technical data
-sheet issued 09-2026 (supersedes 11-2025),
-<https://www.rockwool.com/siteassets/o2-rockwool/documentation/technical-data-sheets/commercial-roofing/toprock-dd-flat-roof-insulation-techdata.pdf>:
-compressive resistance **75 kPa (11 psi) at 10%, 105 kPa (15 psi) at 25%** (ASTM C165);
-water absorption ≤ 1.0 vol% (ASTM C209); 41 perm at 2"; R-3.8/in at 75 °F, 4.2 at 40 °F;
-2"-6" in 1/2" steps. **What the PDS does NOT give, stated as the brief asked:**
-- *Modulus:* none. `E` is the 10% secant (108.8 psi); the 10-25% tangent is only 26.7 psi, so
-  past 10% the board is softer still.
-- *Long-term creep:* none — nor on Comfortboard 80's sheet. The 3:1 is carried over from XPS.
-- *Below grade:* **not listed for it.** It is a low-slope ROOF board (ASTM C726, FM 4470); the
-  C209 figure is short-term immersion. Here both faces are cast against and only the edges see
-  backfill, and the footing joint is below the 42" frost line, but a saturated stone-wool board
-  loses R and nobody publishes what it does over decades in wet ground. A question for
-  ROCKWOOL Technical Services before ordering.
+**Stem items — the house wall at the patch.** `W-B-S1` spans 96" vertically, footing to floor
+(`lateral_support = top_and_bottom`), and the stem patch covers that whole span 4" from the
+wall's free east end. Credited: **the whole 106" wall** acting (an upper bound; the patch is 12").
 
-**Rejected: ROCKWOOL Comfortboard 80** (TDS issued 07-2025,
-<https://www.rockwool.com/syssiteassets/o2-rockwool/documentation/technical-data-sheets/residential/comfortboard-80-non-structural-sheathing-continuous-insulation-techdata.pdf>).
-It IS listed below grade — ICC-ES ESR-3773 accepts it as "exterior perimeter insulation around
-foundation" and "under flat concrete slab"; water vapour sorption 0.2 vol% (ASTM C1104) — but
-its **416 psf (2.889 psi) at 10%** fails §11a at **3.53** on the footing board. The below-grade
-product fails the pour; the product that survives the pour is not listed below grade.
-Comfortboard 110 (584 psf, 4.06 psi) fails §11a at 2.51.
+```
+flexure   M_u = 34,335 × 96 / 8 = 412,024 lb-in
+          #5 @ 41" over 106": As = 0.31 × 106/41 = 0.8015 in²; d = 8 − 1.25 − 0.3125 = 6.4375"
+          a = 0.8015 × 60,000 / (0.85 × 5,000 × 106) = 0.1067"
+          φMn = 0.9 × 0.8015 × 60,000 × (6.4375 − 0.0534) = 276,299 lb-in    d/c 1.491   OVER
+shear     V_u = 34,335 / 2 = 17,168 lb; φVc = 0.75 × 2 √5,000 × 106 × 6.4375 = 72,377 lb
+                                                                           d/c 0.237   ✓
+          (on the patch + 2d = 24.9" alone: φVc 16,985 lb, d/c 1.011 — the width matters)
+punching  retired: the loaded area runs support to support (96" of a 96" span), so no
+          punching perimeter closes inside the panel; one-way shear at the supports is the check.
+floor line  top reaction 17,168 + the band's 4,806 = 21,974 lb into the sill line; W-B-S1's
+          sill anchors are three MASA (ESR-2555 Table 1, F2 perpendicular to the plate 1,095 lb,
+          at C_D 1.6 and SG 0.50 — generous twice over for an SPF sill under a seasonal load)
+          = 3,285 lb                                                        d/c 6.689   OVER
+house XPS   the board bears on W-B-S1's 4" of foundation XPS, whose grade is stated nowhere
+          (`xps` carries no compressive field); ASTM C578's weakest XPS, Type X, is 15 psi
+          (<https://www.buildsite.com/pdf/atlas_eps/Atlas-Molded-Products-ASTM-C578-Comparison-EPS-vs.-XPS-1780327.pdf>)
+          max(29.805 thermal, 9.500 pour) = 29.805 psi vs 15              d/c 1.987   OVER
+```
 
-**Where XPS stays.** `THERMAL_BREAK_PSI` (40) and the 2" thickness now name only
-`SG_VENEER_BEAM_14`'s `xps-break` Layer on `W-SG-BRKBM`: its R and its bearing are unchanged.
-The four closure boards lose R: 2" × 3.8 = R-7.6 against XPS's R-10 (nothing in the engine
-grades a closure board's R). **Not graded, and worth knowing:** the beam's XPS board is
-between the court and the house footing's toe too, across 4" of bedding stone, so the court's
-growth reaches it in series with that stone.
+**Footing items — the house strip.** The footing board bears on bare `FT-B-S1` (x 54..106) and
+`FT-B-S2` (x 106..138); the stem's bottom reaction arrives on the same strip. **Dead-load
+take-down, concrete only** — every framed wall, floor and roof reaction is left off, because
+`wall_line_plf` cannot weigh this house's walls (materials without a density) and a lower bound
+is the safe side for sliding:
 
-**Design options, with numbers — none is chosen here** (`δ` 0.07102", `S` 24,463 lb):
+```
+FT-B-S1   20 × 8" footing 166.67 plf + W-B-S1 8" × 96" 800.0 plf = 966.67 plf × 8.833' = 8,538.9 lb
+FT-B-S2   166.67 plf + W-B-S2 6" × 7.25" curb 45.31 plf           = 211.98 plf × 9.167' = 1,943.1 lb
+D = 10,482.0 lb;  H = 20,029 + 17,168 = 37,197 lb;  μ = 0.25 (IBC Table 1806.2, class 4 — GM)
+sliding   FS = 0.25 × 10,482.0 / 37,197 = 0.0705   vs 1.5                  ratio 21.29  OVER
+bearing   M = 20,029 × 4" (board centroid) + 17,168 × 8" (footing top) = 217,457 lb-in
+          e = 217,457 / 10,482 = 20.75"; Meyerhof: B' ≥ D/(q_a L) = 10,482/(2,000/144 × 216)
+          = 3.494" → e_max = (20 − 3.494)/2 = 8.253"                        d/c 2.514   OVER
+```
 
-| option | 11a | 11c movement | 11d bending | 11e settlement | side effects |
+`FT-B-S1` bears on 2" of XPS (`FOOTING_FPSF_20`); 0.25 is the soil's, and nothing publishes an
+XPS interface value. **The slab strut is not credited**: `SL-B-FLOOR` abuts the wall through a
+1" XPS perimeter break (`perimeter_thermal_break`), 3.5" × 106" of it at ≤ 25 psi is ≤ 9.3 kip,
+which would not close the row either.
+
+**The beam item.** Its board faces `FT-B-S1`..`S4` across 4" of stone. Same take-down, all four
+strips: D = 2 × 8,538.9 + 2 × 1,943.1 = 20,964 lb; bearing length 432".
+
+```
+sliding   FS = 0.25 × 20,964 / 156,958 = 0.0334                            ratio 44.92  OVER
+bearing   board centroid 6.125" above the bearing plane: e = 156,958 × 6.125 / 20,964 = 45.86"
+          e_max = (20 − 20,964/(13.889 × 432))/2 = 8.253"                   d/c 5.557   OVER
+```
+
+**The court side — the same force back into the court.** It pushes the court SOUTH, against the
+retained soil's northward resultant (§4d: 62,456 lb at 110 pcf, 61,446 at 130) and the loop's
+base friction (100,047 / 110,133 lb). It opposes §5a's shortfall while it acts, so it cannot
+increase §5a; it is seasonal, so it is not credited against §5a either. Graded as sliding of the
+court, passive resistance not credited (it needs ~0.5% of H ≈ 0.6" of movement):
+
+```
+ΣF = 2 × (20,029 + 39,141) + 156,958 = 275,298 lb
+110 pcf   net = 275,298 − 62,456 = 212,843;  FS = 100,047 / 212,843 = 0.470   ratio 3.191  OVER
+130 pcf   net = 213,852;                     FS = 0.515                        ratio 2.913
+without the beam's board: net 55,885, FS 1.790, ratio 0.838 ✓
+```
+
+FS < 1 says the thrusts above are not all attainable at once: the court would walk south each
+summer until passive pressure holds it. That caps the total near 162.5 kip at FS 1.0, and even
+then the house wall reads 0.880 but the floor line (3.95), the strip's sliding (12.6) and
+the house XPS (1.17) stay over — **a court that ratchets
+south is itself this row's failure**, not a relief.
+
+### 11e. The bar rows — retired with the bars (basis 5)
+
+Each was graded at basis 4 (the numbers stay in git and in §11f's superseded table); with no
+bar crossing the joint there is nothing for any of them to grade:
+
+- **Shear reserve** (1.130 footing / 2.814 stem): the reserve was a what-if on the loop; the
+  loop is the design (§4, §5a), and a joint with no tie reserves nothing.
+- **Differential settlement** (0.686 / 0.111): the two sides settle independently; the board
+  shears, and XPS takes a transverse offset of 0.015" across 2.5" (0.6%) without distress.
+- **Racking drift** (2.458 / 0.397): as settlement — an E-W offset slides the board face.
+- **Joint opening** (10.36 / 4.588): the joint simply opens; nothing is in tension.
+- **Development** (1.420 / 2.285): no bar to develop, and no post-installed GFRP anchorage
+  (which ACI 440.11-22 Ch. 17 does not address) to justify.
+
+### 11f. The rows as graded (basis 5)
+
+| item | 11a | 11c | house rows (11d) | court (11d) |
+|---|---|---|---|---|
+| TB-SG-W1 / -E1 | 0.017 | 0.745 | sliding **21.29**, bearing **2.514** | **3.191** |
+| TB-SG-W1/E1-STEM | 0.237 | 0.745 | flexure **1.491**, shear 0.237, floor line **6.689**, house XPS **1.987** | **3.191** |
+| W-SG-BRKBM | 0.261 | 0.921 | sliding **44.92**, bearing **5.557** | **3.191** |
+
+> Superseded, basis 4 (the dowels, deleted): reserve 1.130 / 2.814, settlement 0.686 / 0.111,
+> racking 2.458 / 0.397, opening 10.36 / 4.588, development 1.420 / 2.285, flotation 0.194.
+
+**Verdict:** OVER on all five items, on the thrust alone. `preferences.toml` carries the five
+`structural.thermal_break:TB-SG-*` / `:W-SG-BRKBM` suppressions as one numbered debt; the permit
+line stays shut. §11h is the work that would close it.
+
+### 11g. ROCKWOOL Toprock DD — rejected by the owner (2026-09-21)
+
+Stone wool, 75 kPa (10.878 psi) at 10% (TDS 09-2026,
+<https://www.rockwool.com/siteassets/o2-rockwool/documentation/technical-data-sheets/commercial-roofing/toprock-dd-flat-roof-insulation-techdata.pdf>).
+It passed the board and house rows (thrust ×0.078), but it is not listed below grade (a roof
+board, ASTM C726) and is hard to source. **Comfortboard 80** stays rejected: 416 psf at 10%
+fails the stem's pour head and flotation.
+
+### 11h. WIP — the board is open: the demand re-examined and the owner's candidates weighed
+
+> **Decided 2026-09-21 — see §11i (basis 6).** The owner took Type X XPS and demand B; §11i
+> builds the lateral path this section named as the next model.
+
+**Not a design, and not graded by the engine.** Hand-worked 2026-09-21 for the owner's choice;
+nothing here is picked. Two demands are carried side by side:
+
+- **A — as graded (§11c/§11d):** the court grows toward the house over its full run, the
+  house is rigid, the house strips carry their concrete only, and nothing is locked in by
+  the pour.
+- **B — re-examined**, three changes and one addition:
+  1. **Neutral point.** The court cannot push harder than what holds it: its base friction
+     and the retained soil. With friction rigid-plastic (fully mobilized), the soil at rest
+     (§4d, H = 62,456 lb pushing it north) and passive resistance not credited, the part
+     north of a neutral point x slides north and the rest south:
+     `F = H + μw(L − 2x)` against the boards' `F = K·αΔT·x`, `μw = 100,047/322.565 =
+     310.2 lb/in`. So `x = (H + μwL)/(K·αΔT + 2μw)`. For five Highload 40 boards
+     `K = Σ EA/t = 5.21 × 10⁶ lb/in`, which gives x = 109.9", `δ_N = 0.0181"`,
+     σ = 10.15 psi (stem) — against 29.81 on the full run. Mobilizing friction usually takes
+     0.1-0.2" of slip, more than the 0.02-0.05" at stake, and a geotechnical report's passive
+     stiffness would move x back north. **B is an estimate with those two caveats, not a
+     bound.**
+  2. **Drying shrinkage** (ACI 209R-92,
+     <https://www.concrete.org/store/productdetail.aspx?ItemID=20992>): the walls are cast in
+     autumn (placement 2) and moist-cured 7 days; the first summer comes t = 270 days later.
+     The court face dries at RH 70% and the soil face does not dry, so v/s = 12". That gives
+     `ε_sh = 780 × 270/305 × (1.40 − 0.010 × 70) × 1.2e^(−0.12 × 12) = 137 με` against the
+     165 με of the 30 °F closing: **the stem's net closure is 17% of the thermal one** in its
+     first summer, and less every year after. The footings and the beam are in wet soil and
+     get no credit.
+  3. **A proper take-down.** The model has every floor on this line spanning E-W, parallel
+     to the south wall, and all three south walls NONBEARING (`W-M-S1`, `W-S-S1`,
+     `W-A-S1`). So the only addition is the framed walls' own weight. ASCE 7-16 Table
+     C3.1-1a gives 12 psf for 2×6 @ 16", insulated, gypsum, siding
+     (<https://amplify.asce.org/asce-lookup/tab-link/tc3.1-1a/19231>):
+     - above FT-B-S1: 26.7' of wall = 320 plf × 8.83' = 2,830 lb;
+     - above FT-B-S2: 21.1' = 253 plf × 9.17' = 2,323 lb.
+
+     D is 15,635 lb for the footing items (was 10,482) and 31,270 lb for the beam's four
+     strips (was 20,964).
+  4. **Added — the pour pressure is locked in.** Every board is a form face. When the
+     court concrete hardens against a compressed board, the board keeps pushing back.
+     - At the stem base that is the full 9.500 psi head. Over the house wall it is a
+       trapezoid, 1.17 → 9.50 psi on the 12" strip: 6,144 lb, M 74,936 lb-in (0.271),
+       top reaction 2,272 + 94 (the band) lb, bottom reaction 3,872 lb.
+     - At the beam it averages 9.66 psi over 4,260 in², or 41,162 lb.
+
+     Early shrinkage relieves a stiff board a little (XPS is squeezed only 0.017" by it).
+     It relieves a soft one by nothing, because a soft one is squeezed by inches. Basis 4
+     and A leave this out, which is not conservative.
+
+**The candidates (products verified; values quoted):**
+
+- **(a) Closed-cell polyethylene joint filler.**
+  - W. R. Meadows **CERAMAR**, PDS #323, July 2026 (<https://www.wrmeadows.com/data/323.pdf>):
+    cross-linked closed-cell PE, 13 psi at 50% (ASTM D545; spec 10-25 psi), recovery 99.21%,
+    0.246% water by volume, meets ASTM D7174-05. Sold 1/4"-1" thick, so 2.5" is three
+    layers. The sheet says it "will float and must be held in place".
+  - **DECK-O-FOAM**, PDS #325, April 2026 (<https://www.wrmeadows.com/data/325.pdf>): PE,
+    ASTM D4819 Type II, 10 psi max at 10% and 125 psi max at 80% (ASTM D3575). It is too
+    stiff early to help.
+  - Neither sheet publishes the curve below 50%. The stem head (9.5 psi) is taken on the
+    50% secant (26 psi): the board compresses **~37% (0.9") at the stem base** during the
+    pour.
+- **(b) Lower-strength XPS** — Owens Corning FOAMULAR 150/250, 15/25 psi min (Tech Bulletin
+  10015703,
+  <https://dcpd6wotaa0mb.cloudfront.net/mdms/dms/EIS/10015703/10015703-FOAMULAR-SI-and-I-P-Units-for-Selected-Properties-Tech.-Bulletin.pdf>).
+  **No modulus is published for either grade.** E is ESTIMATED on DuPont's Highload ratio,
+  E/σ ≈ 35 (1,400/40, 2,200/60, 3,700/100): 875 psi for 25 psi and 525 psi for 15 psi.
+- **(c) Hybrid, 1" Comfortboard 110 + 1.5" Highload 40.** CB110 is 584 psf (4.06 psi) at 10%
+  and 1,566 psf (10.9 psi) at 25% (ASTM C165,
+  <https://assets-38aef284d1.cdn.insitecloud.net/21c30551b28d89f/ROCKWOOLInternationalAS_00019_1_2_DATA.pdf>).
+  - At the stem head the wool crushes **~22% (0.22")** during the pour.
+  - **ROCKWOOL publishes no recovery figure.** Crushed stone wool does not spring back, so
+    the premise that "it re-expands in cooler weather" has no published basis, and the
+    graded residual is 0.78".
+  - In series the pair is soft (wool tangent 45.6 psi over the 10-25% band).
+- **(d) Beam: 2" Highload 40 + 1" closed-cell EPDM sponge, ASTM D1056 grade 2A2** (5-9 psi
+  at 25% deflection; grade table
+  <https://www.nedc.com/sponge-gaskets-astm-d1056-types-classes-grades/>). Secant ≈ 28 psi.
+  The beam's 9.7 psi average head crushes it about 35%. EPDM sponge is sold in 2A1-2A4 sheet
+  from gasket houses; no EPDM product sold as a "sill gasket" was found with a published
+  deflection spec.
+
+**The table** (B demand; closure boards 2.5", the beam as authored unless its row says so; `+sh`
+adds the stems' shrinkage credit). Ratios are demand/capacity, sliding as 1.5/FS:
+
+| option | stem σ (B) | stem base (pour + σ) | wall flexure | floor line | house XPS | strip sliding | beam strip sliding |
+|---|---|---|---|---|---|---|---|
+| A, as graded: Highload 40 | 29.81 | 29.81 (no pour) | **1.49** | **6.69** | **1.99** | **21.29** | **44.92** |
+| Highload 40 | 10.15 | 19.65 | 0.78 | **3.00** | **1.31** | **6.44** | **18.27** |
+| Highload 40 +sh | 1.70 | 11.20 | 0.36 | **1.10** | 0.75 | **4.57** | **18.27** |
+| XPS 25 psi (E est.) | 6.99 | 16.49 | 0.62 | **2.29** | **1.10** | **4.93** | **19.33** |
+| XPS 25 psi +sh | 1.17 | 10.67 | 0.33 | 0.98 | 0.71 | **3.64** | **19.33** |
+| XPS 15 psi (E est.) | 4.50 | 14.00 | 0.50 | **1.73** | 0.93 | **3.73** | **20.17** |
+| XPS 15 psi +sh | 0.75 | 10.25 | 0.31 | 0.89 | 0.68 | **2.90** | **20.17** |
+| CERAMAR PE | 0.39 | 9.89 | 0.29 | 0.81 | 0.66 | **1.76** | **21.56** |
+| 1" CB110 + 1.5" XPS 40 | 1.28 | 10.78 | 0.34 | **1.01** | 0.72 | **2.19** | **21.26** |
+| beam + 1" EPDM 2A2 (closures XPS 40) | 14.78 | 24.28 | **1.01** | **4.04** | **1.62** | **8.66** | **8.77** |
+| CERAMAR + beam EPDM | 0.67 | 10.17 | 0.30 | 0.87 | 0.68 | **1.89** | **9.25** |
+| CERAMAR + beam EPDM, **formed and stripped** (no pour on the house) | 0.43 | 0.43 | 0.02 | 0.10 | 0.03 | 0.20 | **1.36** |
+
+Board survival, pour + thermal against each board's limit:
+- Highload 40: 19.65/40 = 0.49, or 0.28 with the shrinkage credit.
+- XPS 25: 0.66. XPS 15: 0.93.
+- CERAMAR: 9.9 psi is on the plateau, ~38% compressed, and it recovers 99% by its sheet.
+- Hybrid: the wool is at the end of its published curve, 10.78 against 10.9 psi at 25%.
+
+The court row in B is moot: the neutral point IS the court sliding, and B's total stays below
+friction plus soil.
+
+**What this says — the owner's choice, not this note's:**
+
+1. **No candidate closes every row, and the board is not what stops it.** The house strips'
+   sliding fails on the **pour pressure alone**, whatever the board:
+   - the stem's locked-in 3,872 lb plus the footing board's 233 lb gives FS 0.95 even on
+     the proper take-down (1.58);
+   - the beam's 41,162 lb gives 7.90.
+
+   The strip-alone model — one 20" strip on 2" of XPS at μ 0.25, no slab, no rest of the
+   house — is the row's real weakness. The house's actual lateral path is through
+   `SL-B-FLOOR`, with a 1" perimeter XPS break, and the whole house's friction. That is the
+   model that must be built next. **No board can answer it.**
+2. **The thrust is the beam's.** Its 2" of XPS over 4,260 in² is the stiffest thing in the
+   loop (57% of K). Softening only the closure boards moves thrust ONTO the beam, and
+   softening only the beam moves it onto the stems (the EPDM row: stem σ 14.78).
+3. **With shrinkage credited, even Highload 40 clears** the wall, house XPS and (nearly) the
+   floor line (1.10). The shrinkage credit is real, but it is a first-summer, RH-70%
+   estimate, not a guarantee.
+4. **Soft boards pay at the pour.** CERAMAR is squeezed ~0.9" at the stem base and the
+   hybrid's wool ~0.22", with no published recovery for the wool. A form face that dishes is
+   a detailing question a sealed design has to own.
+5. **Forming and stripping the court's end faces** (a gap formed, the board inserted after)
+   removes the locked-in pour pressure from the house altogether. With CERAMAR and an EPDM
+   beam it leaves only the beam's strip sliding over (1.36). It is a construction question —
+   whether a 2.5" gap 9' deep can be formed and stripped — not a product one.
+
+### 11i. Basis 6 (2026-09-21, owner) — Type X XPS, the refined demand, the house's real lateral path
+
+Hand-worked before the engine; `tests/test_thermal_break.py` reproduces it. **Supersedes §11c,
+§11d and §11f as the graded basis** (they stay as basis 5's record). The owner's decisions:
+
+1. **Board: 2.5" XPS, ASTM C578 Type X, 15 psi (FOAMULAR 150 class)** on all four closure boards.
+   Owens Corning Tech Bulletin Pub. No. 10015702-C, July 2025
+   (<https://dcpd6wotaa0mb.cloudfront.net/mdms/dms/EIS/10015702/10015702-ASTM-C578-Types-and-Physical-Properties-for-FOAMULAR-Tech.-Bulletin.pdf>):
+   FOAMULAR/FOAMULAR NGX 150 is Type X, **15.0 psi min "at yield or 10% deformation, whichever
+   occurs first"** (ASTM C578-23). DuPont UtilityFit (PIS 43-D100997-enUS, 2024,
+   <https://www.dupont.com/content/dam/dupont/amer/us/en/performance-building-solutions/public/documents/en/styrofoam-brand-utilityfit-xps-15-psi-insulation-pis-43-D100089-enUS.pdf>)
+   is the same Type X row.
+2. **The veneer beam's board is the same product**, kept at 2". `veneer_beam.py` does **not**
+   read the board: it grades the 12" concrete only, spanning W-SG-W1 to W-SG-E1, and the board
+   carries nothing to it (`SG_VENEER_BEAM_14`: "the beam spans ... and delivers nothing to
+   it"). The 40 psi was prose; there is no beam bearing row to regrade.
+3. **The house's real lateral path** replaces the isolated strip (below).
+4. **The pour lock-in** is checked for early-age relief (below).
+5. **The refined demand of §11h B** is the graded basis, each assumption flagged.
+
+**No modulus is published for any Type X board** (neither sheet above gives one). **E = 525 psi,
+ESTIMATED**: DuPont's Highload family holds E/σ ≈ 35 (1,400/40, 2,200/60, 3,700/100 psi), and
+35 × 15 = 525. Gibson-Ashby's E ∝ ρ² on C578's minimum densities (1.30 against Type VI's 1.80
+pcf) gives 1,400 × (1.30/1.80)² = **730 psi** — carried as a sensitivity row, with ×0.67, ×1.5 and ×2.
+The record flags E as an estimate. ε_lim = σ_y/E = 15/525 = 2.857%, as before. (Highload's
+strength is read at 5%, Type X's at 10%; the ratio does not see that difference.)
+
+**The demand, three assumptions, each flagged in the record:**
+
+- **Neutral point.** The court is held by its own base friction, fully mobilised
+  (rigid-plastic), and by the at-rest soil (§4d: H = 62,456 lb at 110 pcf, friction 100,047
+  lb). The part north of x slides north and the rest slides south. This is the subgrade-drag
+  idealisation of ACI 360R-92 §6.3
+  (<https://blog.twinsprings.com/wp-content/uploads/2016/03/Design-of-Slabs-on-Grade-360r_92.pdf>),
+  which ACI 360R-10 dropped for slab design. Flagged: mobilising friction needs 0.1-0.2" of
+  slip against the ~0.03" at stake, and passive stiffness would move x north.
+  ```
+  k_i = E·A_i/t_i        foot 525 x 672/2.5 = 141,120   stem 525 x 1,313.25/2.5 = 275,782
+                         beam 525 x 4,260/2.0 = 1,118,250 lb/in
+  x = (H + μwL) / (Σ k_i ε_i + 2μw),  μw = 100,047/322.565 = 310.16 lb/in
+  ```
+- **Stem drying shrinkage** (ACI 209R-92,
+  <https://www.concrete.org/store/productdetail.aspx?ItemID=20992>). Moist-cured, t = 270 d to
+  the first summer, RH 70%, v/s 12" (the court face dries, the soil face does not):
+  `ε_sh = 780 × 270/305 × 0.70 × 1.2e^(−1.44) = 137.42 με`. So the stems close at
+  165 − 137.42 = **27.58 με**, and the footings and the beam, in wet soil, at 165. Flagged: this
+  is a first-summer estimate, and the wall's base restraint by its footing (placement 1)
+  shortens less than a free end does.
+  ```
+  Σ k ε = 2 x 141,120 x 165e-6 + 2 x 275,782 x 27.58e-6 + 1,118,250 x 165e-6 = 246.30
+  x = 162,503 / (246.30 + 620.32) = 187.51"     (130 pcf: 184.66", so 110 governs)
+  σ_foot = 525 x 165e-6 x 187.51/2.5 = 6.497 psi    F = 4,366 lb
+  σ_stem = 525 x 27.58e-6 x 187.51/2.5 = 1.086 psi  F = 1,426 lb
+  σ_beam = 525 x 165e-6 x 187.51/2.0 = 8.122 psi    F = 34,599 lb
+  Σ = 46,183 lb = H + μw(L − 2x) = 62,456 − 16,273   ✓
+  ```
+- **A proper take-down** replaces the concrete-only strip (method below).
+
+**The pour lock-in (added to every row).** Each board is a form face. Once the court concrete
+sets against it, the board keeps its fresh-pressure squeeze (§11a heads). The lock-in forces are
+the footing's 233 lb (triangle to 0.694 psi), the stem's 6,144 lb on the wall plus 94 lb on the
+band, and the beam's 41,162 lb (9.66 psi average). **Total 54,105 lb**, on top of the thermal
+thrust. Conservative: a south-pushed court would move x south and shed some of the thermal part.
+
+**Does early-age cooling relieve it? No — nothing is credited.** A 12" wall heats after final
+set and cools back over days (ACI 207.2R-07,
+<https://www.concrete.org/store/productdetail.aspx?ItemID=207207>; ACI 231R-10,
+<https://www.concrete.org/store/productdetail.aspx?ItemID=23110>). Thermal strain is
+reversible, so the wall end comes back to its set position whatever the peak. The only
+permanent early-age shortening is creep of young concrete relaxing a **restrained** heating
+strain. ACI 231R's "zero-stress temperature" rises above the set temperature only where there
+is restraint, and at the wall end the only restraint is a soft board. Autogenous shrinkage is
+small at the normal w/cm here, and ACI 209R's measured shrinkage already contains it. The
+fresh-pressure decay that form-pressure studies record at set is measured on stiff forms, and no
+source gives it for a board squeezed 0.045". The lock-in is graded **in full**. The stems'
+shrinkage credit (137 με of the 165) is already in their closure, and it relieves nothing more.
+
+**The board rows** — locked-in pour + closing, which is what the board carries in summer.
+Graded as strain `p·t/E + δ` against `t·σ_y/E`; the ratio is `(p + σ)/σ_y`:
+
+```
+footing  pour 0.694/15 = 0.046   δ = 165e-6 x 187.51 = 0.03094"   (0.694+6.497)/15 = 0.479 ✓
+stem     pour 9.500/15 = 0.633   δ = 27.58e-6 x 187.51 = 0.00517" (9.500+1.086)/15 = 0.706 ✓
+beam     pour 10.433/15 = 0.696  δ = 0.03094"                    (10.433+8.122)/15 = 1.237 OVER
+         (at 2.5": σ 6.786, x 195.85" -> 1.148 OVER — a thicker beam board does not close it)
+```
+
+**The stems — the house wall.** Uniform 1.086 psi plus the pour trapezoid (1.17 → 9.50 psi), on
+the 12" patch over W-B-S1's 96" span, simply supported:
+
+```
+W on the wall 7,395 lb; R_top 2,897, R_bot 4,497; M_max 89,753 lb-in (numeric)
+flexure   89,753 / 276,299 (§11d's whole-panel φMn)                      d/c 0.325 ✓
+shear     4,497 / 72,377                                                 d/c 0.062 ✓
+floor     R_top 2,897 + band 269 = 3,167 lb vs 3 x MASA F2 3,285 lb       d/c 0.964 ✓
+house XPS (9.500 + 1.086) = 10.586 psi vs Type X 15 (grade unstated)     d/c 0.706 ✓
+```
+
+**The house's real lateral path** (replaces §11d's strip sliding and bearing, now retired).
+The total thrust is T = 46,183 + 54,105 = **100,288 lb**. It enters W-B-S1/S4 and the south
+footing line. The stems' top reactions (2 × 3,167 = 6,333 lb) go to the floor line and are
+graded above. **93,955 lb** goes into the south footing line FT-B-S1..S4, then into
+`SL-B-FLOOR` as a compression strut 432" wide, then into the north footings FT-B-N*. It is
+resisted by friction under the whole house and by the north wall's soil.
+
+- **Slab-edge bearing — the binding link.** `SL-B-FLOOR` is 3.5" thick, with its top flush with
+  the footing top (−109.44"). It meets each footing line only through its 1" XPS
+  `perimeter_thermal_break` (depth = the full slab), whose grade the model never states.
+  Graded at Type X 15 psi, as the house foundation XPS is, over the whole 432" edge. The south
+  line's own friction is not credited (its concrete, 20.4 kip × 0.25 = 5.1 kip, would give 3.92):
+  `93,955 / (15 × 3.5 × 432 = 22,680) → d/c 4.143 OVER`. The north edge carries the same load
+  through the same break.
+- **Slab strut compression.** 93,955 / (3.5 × 432) = 62.1 psi vs φ0.60 × 0.85 × 4,000 = 2,040 psi
+  (plain concrete; ACI 318-19 Table 21.2.1, §14.5.6): **d/c 0.030 ✓**. **Buckling of a slab on
+  grade is not credible.** The subgrade braces it continuously, and it is pressed down by its
+  own weight over its whole length. No slenderness row is graded.
+- **Take-down** — the whole house from the resolved model, a stated lower bound. Every
+  `Footing` and `Slab` solid inside `SL-B-FLOOR`'s outline + 12": footings 31,731 lb, slabs
+  131,675 lb (SL-B-FLOOR 56,700 and the 14.3" SL-M-DECK 74,391). Every concrete wall's
+  STRUCTURE layer: 138,764 lb. Every framed wall at **8 psf** (ASCE 7-16 Table C3.1-1a, "wood or
+  steel studs, 1/2-in. gypsum board each side", the lightest row with gypsum): 9,062 sf =
+  72,498 lb. **Floors, roof, finishes and contents are left off.** D = **374,668 lb**. Material
+  densities are not used: all but 8 of the framed walls carry a material with no density
+  (`dead_load_plf` returns None).
+- **Far wall's soil.** Grade −2'-10" to the footing bottom −117.44" is d = 6.953'. At rest, GM is
+  60 psf/ft (IBC Table 1610.1): 1,450.4 plf. It acts on the north wall's 36', and only on
+  (432 − 252)/12 = 15' of the south face, because the court's 252" opening (W-SG-W1 west face to
+  W-SG-E1 east face) retains nothing. **Net southward at rest: 1,450.4 × 21 = 30,458 lb**, present
+  without any motion. Passive is not credited (as in §11d).
+- **Global house sliding.** `FS = (0.25 × 374,668 + 30,458) / 100,288 = 1.238` against 1.5:
+  **ratio 1.212 OVER**. With no lock-in it is 2.688 (0.558).
+- **Far-wall bearing on soil.** The at-rest 52,214 lb plus what friction does not take,
+  max(0, 100,288 − 93,667) = 6,621, gives 58,835 lb. Against IBC Table 1806.2's lateral bearing,
+  150 psf/ft, `0.5 × 150 × 6.953² × 36 = 130,534 lb`: **d/c 0.451 ✓**.
+
+**The court** (the reaction). 100,288 − 62,456 = 37,832 lb net, against friction 100,047:
+FS 2.644, **ratio 0.567 ✓**.
+
+**Sensitivity on E** (the rows that move; flexure, shear and house XPS move by < 0.05 and stay passing):
+
+| E | x | beam board | floor line | slab edge | global sliding |
 |---|---|---|---|---|---|
-| **as authored**: 2" Toprock DD, #6 @ 8" | 0.937 | **1.065** | 0.716 | **1.051** | — |
-| 2.5" Toprock DD, #6 @ 8" | 0.937 | 0.852 | 0.894 | 0.673 | `closure_break_in` 2 → 2.5 moves the court's north face 1/2" (every court dimension off `_y_wall_end`) |
-| 2" Toprock DD, #5 @ 8" | 0.937 | 1.065 | 1.177 | 0.834 | bending back over |
-| engineer's call: no 3:1 on an imposed displacement | 0.937 | 0.355 | 0.716 | 1.051 | a judgement, not a sheet value |
-| settlement: a report `k_v` or a load take-down on `FT-B-S1`/`-S4` | — | — | — | moves either way | the bound's two halves are what a real number replaces |
-| settlement: detail the bars to slide vertically (sleeved or slotted on the house side) | — | — | — | row leaves | a different detail; the reserve row must then be re-argued |
-| hybrid: 1" XPS + 1" wool in series | 0.937 (the wool sees the full head) | 1.657 (XPS adds only 0.0095"/in) | 0.716 | 1.051 | two products per joint; worse |
+| 350 (×0.67) | 207.1" | **1.094** | 0.900 | **3.625** | **1.065** |
+| **525 (graded)** | 187.5" | **1.237** | 0.964 | **4.143** | **1.212** |
+| 730 (ρ², ×1.39) | 168.8" | **1.373** | **1.025** | **4.637** | **1.352** |
+| 788 (×1.5) | 164.2" | **1.407** | **1.040** | **4.759** | **1.387** |
+| 1,050 (×2) | 146.0" | **1.539** | **1.100** | **5.238** | **1.523** |
 
-Board thickness is the only product-side lever that closes 11c and 11e together at `#6`, and it is the one that
-opens bending again (`∝ 1/t`) — 2.5" is where all four still clear.
+**Verdict (basis 6): still OVER on three rows, on every item.** Slab edge **4.14**, global
+sliding **1.21** and the beam board **1.24** are over. The floor line passes at the estimate
+(0.964) but fails at any E above about 640 psi. By the stop rule nothing here picks a design.
+The options, costed only in ratios:
 
-| item | 11a pressure | 11b flotation | 11c movement | 11d reserve | 11e settlement |
-|---|---|---|---|---|---|
-| DW-SG-W1 / -E1 | 0.937 | 0.715 | 0.0710" / 0.0667" = **1.065** | 16,309 / 22,791 = 0.716 | 0.01535" / 0.01460" = **1.051** |
-| DW-SG-W1/E1-STEM | 0.873 | — | **1.065** | 3,262 / 4,558 = 0.716 | **1.051** |
+- **Form and strip the court's end faces** (no lock-in): T = 46,183. Global 0.558 ✓, beam
+  board 0.54 ✓, floor line 0.24 ✓, but the **slab edge is still 1.966** (44,581 / 22,680).
+- **Upgrade the slab's south and north perimeter breaks** (1" Highload 60 or 100, stated in the
+  model). With the lock-in the edge is 1.036 / 0.621. Without it, Highload 40 gives 0.737.
+- **Drop the perimeter break at those two edges** (concrete-to-concrete bearing): the edge
+  closes, and the basement slab loses its thermal cut there.
+- **Beam board:** only a stiffer grade clears pour + closing at its base, and a stiffer grade
+  moves thrust back onto the edge and the global row. A 2.5" board is not enough (1.148).
+- **Global sliding** without removing the lock-in needs D ≈ 480 kip. That means crediting the
+  floors and roof (not yet taken down) or the passive at the north wall (needs ~0.4" of motion
+  against ~0.08" at stake).
 
-> Superseded tables: basis 2 (2026-09-21) pressure 0.255/0.237, flotation 0.233, movement
-> 3.73, reserve 1.177, settlement open; basis 1 (2026-09-20) movement `δ 0.186", open`,
-> reserve `15,636 / 3,127 lb, open`.
-
-**Verdict:** OVER on all four items (movement and settlement), and OVER now outranks the
-missing-input INCOMPLETE the items used to carry. `preferences.toml` suppresses the four
-`structural.thermal_break` FAILs as a numbered debt; the permit line stays shut.
-
-**Not graded:** joint opening under contraction (from a 50 °F set to −15 °F the court
-shortens 5.5e-6 × 65 × 322.815 = 0.115", which bonded bars cannot stretch over 2" — they
-debond, rupture, or drag the court); racking of the board by the court's E-W growth (~0.02"
-each side over the 20'-0" width); placement impact and racking of the board; friction on the
-cured face, which would help; ACI 440.11's environmental reduction on the bar values;
-development of the bars into either pour; the beam's XPS board in series with 4" of stone.
 
 ---
 
@@ -1795,9 +2117,11 @@ out of it.
 - **ACI 318-19** — Table 20.5.1.3.1, Table 22.2.2.4.3, §11.6.1, §13.2.7.1, §14.5.2.1, §14.5.4
 - **ASCE 7-16** — §2.3.1
 - ASTM A767, ASTM A780, ASTM C33, ASTM D422
-- ACI 347R-14 (lateral pressure of fresh concrete, capped at wh), ACI 440.11-22 (φ 0.75 shear, 0.55 FRP rupture), ASTM C578, ASTM D7957, ACI 306R-16 Table 3.1 (50 °F minimum as-placed, 12"-36"), AASHTO LRFD Table 3.12.2.1.1-1 (concrete, cold climate, 0-80 °F) — §11
-- Owens Corning Aslan 100 GFRP rebar data sheet (OC Pub. 10022295, 2017; table as of 2011); ROCKWOOL Toprock DD TDS (09-2026); ROCKWOOL Comfortboard 80 TDS (07-2025) and ICC-ES ESR-3773; superseded at basis 3: DuPont Styrofoam Highload 40 PIS 43-D100079-enNA-0322 — §11f
-- Bowles, *Foundation Analysis and Design* 5th ed. (1997) Table 9-1 — presumed k_v, §11e
+- ACI 347R-14 §4.2.2 (wall formula, C_c; capped at wh), ACI CODE-440.11-22 (§20.2.2.3 C_E 0.85, §24.6.2 0.30 f_fu sustained, §25.4.2.1/§25.4.2.4 development, Table 21.2.1 φ, Ch. 17 not addressed), ACI 318-19 §5.3.6 / ASCE 7-16 §2.3.4 (T at 1.0), ACI 318-19 §22.3, §22.5.5.1, ASTM C578 (types), ASTM D7957, ACI 306R-16 Table 3.1 (50 °F minimum as-placed, 12"-36"), AASHTO LRFD Table 3.12.2.1.1-1 (concrete, cold climate, 0-80 °F), MnDOT LRFD Bridge Design Manual §3.10.1, ICC-ES ESR-2555 Table 1 (MASA F2), IBC Table 1806.2, Baker & Swan (1966) *Climate of Minnesota Part IV*, Kusuda & Achenbach (1965) — §11
+- Owens Corning Aslan 100 GFRP rebar data sheet (OC Pub. 10022295; basis 4, bars deleted at basis 5); DuPont Styrofoam Highload 40 PIS 43-D100079-enNA; ROCKWOOL Toprock DD TDS (09-2026, §11g) and Comfortboard 80 TDS (07-2025); Hussain & Nanni, ACI SJ 120-S74 (2023) — §11
+- Owens Corning FOAMULAR Tech Bulletin 10015702-C (07-2025, C578 Type X); DuPont UtilityFit PIS 43-D100997; ACI 360R-92 §6.3 (subgrade drag, neutral point); ACI 207.2R-07; ACI 231R-10; ACI 318-19 Table 21.2.1, §14.5.6; ASCE 7-16 Table C3.1-1a (8 psf partitions); IBC Table 1610.1 / 1806.2 — §11i (basis 6)
+- W. R. Meadows CERAMAR PDS #323 (07-2026) and DECK-O-FOAM PDS #325 (04-2026); Owens Corning FOAMULAR Tech Bulletin 10015703; ROCKWOOL Comfortboard 110 data sheet; ASTM D1056 grade table (nedc.com); ACI 209R-92; ASCE 7-16 Table C3.1-1a — §11h (WIP)
+- Bowles, *Foundation Analysis and Design* 5th ed. (1997) Table 9-1 — presumed k_v, §11f
 - PCA, *Design and Control of Concrete Mixtures* — α_c 5.5 × 10⁻⁶ /°F, §11c
 - IBC Table 1610.1, IBC §1610.1 (surcharge added to earth pressure), IBC Table 1806.2
 - Terzaghi (1954), "Anchored bulkheads" — the doubled (rigid-wall) Boussinesq strip; NAVFAC
