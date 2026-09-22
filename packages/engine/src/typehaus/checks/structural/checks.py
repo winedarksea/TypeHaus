@@ -53,6 +53,10 @@ def flat_2x4_nonbearing_header(ctx: CheckContext) -> list[Finding]:
     A flat 2x4 is not a small bearing header.  It is permitted only for a nonbearing
     partition, a modest opening, and where the plate is near enough to nail the wall
     above the opening together.
+
+    R602.7.4 reads "a single flat 2-inch by 4-inch member". A ``flat 2xN`` spec (a flat 2x8
+    in a 2x8 wall, so both faces have a nailer) is this engine's reading of that rule, not
+    its text: a wider flat member of the same thickness is conservative, not code-named.
     """
     if ctx.plan is None:
         return []
