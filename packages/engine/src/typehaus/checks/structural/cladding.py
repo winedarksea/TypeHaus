@@ -232,7 +232,7 @@ def _fastener(ctx: CheckContext, key: str, members: list[_Panel]) -> Finding:
         f"{withdrawal.capacity_lb:.1f} lb, d/c {w_ratio:.3f}. Head pull-through, AISI S100 "
         f"Pnov = 1.5 t d'w Fu at t {SHEET_FLANGE_IN:g}\", d'w {head:g}\", Omega 3: "
         f"{pull:.1f} lb, d/c {p_ratio:.3f}. Screw ladder: {ladder}. An advisory: the maker's "
-        f"table excludes fasteners and names this screw; the arithmetic is kept so a "
+        f"table excludes fasteners and names the shortest screw; the arithmetic is kept so a "
         f"reviewer can see the screw is not the weak link",
         tags, Result.FAIL if over else Result.PASS, code="AWC NDS 2018 §12.2 / AISI S100",
         fix_hint="a longer screw or a tighter girt course" if over else None)

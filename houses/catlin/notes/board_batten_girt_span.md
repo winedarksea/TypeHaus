@@ -45,6 +45,10 @@ new work.**
    apart, so a later coverage or wind change can flip them back with no physical meaning
    whatever. Read the governing state as a label, not as a finding.
 
+**Revised 2026-09-22 (owner, D3): the screw is the #10-12 x 1-1/2", and the no-cost margin is
+taken.** Withdrawal goes 0.334 → **0.182** (§6) and stops governing; the published read accepts
+the longer screw because its length guard is increase-only (§8). The 1" is history below.
+
 The east and west walls keep PBR — `pbr-panel-24` since 2026-09-14 — and are **not**
 subjects here. **ESR-4729 does
 not cover this wall at all.** It is Western States' report, it covers ROOF panels only, and
@@ -274,11 +278,12 @@ equation, and IAPMO UES ER-309 states in as many words that *"the structural des
 professional may rationally design other fastener and substrate combinations based on
 engineering mechanics"*. NDS 2018 §12.2 is that mechanics.
 
-**The fastener.** #10-12 x **1"** pancake head **wood screw**, Type 17 point, 316 stainless
-or ASTM A153 Class D HDG. D = **0.190"** (the #10 shank). This is the guide's own
-"Attaching to Wood" screw, the one a panel order ships with; the length is argued at the end
-of this section, and it is a reversal of what this note said between 2026-09-11 and
-2026-09-14.
+**The fastener.** #10-12 x **1-1/2"** pancake head **wood screw**, Type 17 point, 316
+stainless or ASTM A153 Class D HDG. D = **0.190"** (the #10 shank). This is the guide's own
+"Attaching to Wood" screw made longer: Metal Sales stocks only the 1" (product no. 8243100,
+plated, guide p.20), so the 1-1/2" is bought where the 316 / A153-D coating is bought
+anyway. The length is argued at the end of this section (owner, 2026-09-22; the 1" was
+specified 2026-09-14 → 09-22, the 2" 2026-09-11 → 09-14).
 
 **The support.** The 24" girt course: KDAT 2x4 laid flat, so **1-1/2"** of southern yellow
 pine, G = **0.55** (NDS 2018 Table 12.3.3A, "Southern Pine"). There is no sheathing behind
@@ -310,13 +315,16 @@ The panel's own flange is not the support, and the tapered tip carries no thread
 App. L puts a wood screw's tip at 2D).
 
     p = length − flange − 2D
-      = 1.000 − 0.0239 − 0.380 = **0.5961"**
+      = 1.500 − 0.0239 − 0.380 = **1.0961"**
 
-    capacity  Z = W' p = 183.46 x 0.5961 = **109.4 lb**
+    capacity  Z = W' p = 183.46 x 1.0961 = **201.1 lb**
+
+(At the stocked 1": p = 0.5961", Z = 109.4 lb — the value graded 2026-09-14 → 09-22.)
 
 There is also a cap at the support's own thickness — a screw that runs out the back of a
-1-1/2" girt is not holding 2" of wood, whatever the box says — and at 1" **it does not
-bind**. The cap describes the 2" this note rejects below, whose 1.596" of shank would be
+1-1/2" girt is not holding 2" of wood, whatever the box says — and at 1-1/2" **it does not
+bind**: the screw is 1.476" into the girt past the flange, so the tip stays 0.024" inside
+its back face. The cap describes the 2" this note rejects below, whose 1.596" of shank would be
 cut back to 1.500".
 
 ### The demand
@@ -327,10 +335,11 @@ The tributary area is the girt spacing by the panel's **12" net coverage**:
     A = (24/12) x (12/12) = **2.0000 ft²**
     P = 18.2659 x 2.0000 = **36.53 lb**
 
-    d/c = 36.53 / 109.4 = **0.334**
+    d/c = 36.53 / 201.1 = **0.182**
 
-**This is the governing limit state, ahead of bending's 0.315 — and it became so on
-2026-09-14, for the first time.** At the old 11" coverage with the rejected 2" screw it was
+**No longer the governing state (2026-09-22).** The panel's own row governs again (0.317
+inward, 0.315 outward). History: at the 1" it read 36.53 / 109.4 = **0.334** and governed,
+ahead of bending's 0.315 — the first time, on 2026-09-14. At the old 11" coverage with the rejected 2" screw it was
 0.12. Nothing about the building got worse: the demand rose 9% with the real coverage and
 the capacity fell to what the stocked screw actually holds, and both remain a long way from
 1.0. The two states are **6% apart**, so a later coverage change, a wind-basis change or a
@@ -344,8 +353,8 @@ All d/c below are against the 36.53 lb demand at 12" coverage.
 
 | Screw | Penetration | Capacity | d/c | |
 |---|---|---|---|---|
-| **1" — the guide's own stocked screw** | **0.596"** | **109 lb** | **0.334** | **SPECIFIED (owner decision 2026-09-14)** |
-| 1-1/2" | 1.096" | 201 lb | 0.182 | available margin at no cost, recorded and not taken |
+| 1" — the guide's own stocked screw | 0.596" | 109 lb | 0.334 | specified 2026-09-14 → 09-22, superseded |
+| **1-1/2"** | **1.096"** | **201 lb** | **0.182** | **SPECIFIED (owner decision D3, 2026-09-22)** |
 | 2" | 1.500" (capped) | 275 lb | 0.133 | **REJECTED** — see the ccSPF clearance below |
 
 **Every length passes, so length is not chosen on capacity. It is chosen on thread
@@ -440,8 +449,9 @@ sheet through the panel. So this section shares §6's demand and none of its cap
 
     d/c = 36.53 / 310.7 = **0.118**
 
-**Passes at 8.5x, and it is the least of the three states.** Withdrawal governs at 0.334,
-bending is 0.315, pull-through is 0.118. The ordering is the one a reader should expect: a
+**Passes at 8.5x, and it is the least of the three states.** Bending governs at 0.315
+(0.317 inward), withdrawal is 0.182 at the 1-1/2" (0.334 at the old 1"), pull-through is
+0.118. The ordering is the one a reader should expect: a
 single screw carries only one panel width of suction, and 24 ga sheet at a 0.40" head is a
 lot of bearing for 36 lb.
 
@@ -774,13 +784,17 @@ engine computes, set against an allowable a reviewer opens, mints nothing for a 
 
 - **The read.** `Material.published_cladding` on `board-batten-24` quotes the guide's p.13
   row: 58 psf outward / 43 psf inward at 2'-0", 24 ga, 12" coverage, the maker's named
-  "#10-12 x 1" Pancake Head Wood Screw", "Lumber - 1x or thicker". `structural.cladding_wind`
+  "#10-12 x 1" Pancake Head Wood Screw", "Lumber - 1x or thicker". The screw guard is
+  **increase-only in length** (`published._fastener_drift`): the row excludes fasteners by
+  footnote, so the named screw is a floor, and the specified 1-1/2" of the same kind reads.
+  Shorter, or another gauge, head or point, still drifts to UNKNOWN. `structural.cladding_wind`
   grades BOTH directions (§5 and §5b): **0.315 outward, 0.317 inward**.
 - **Footnote 2 is printed, not argued away.** Every finding quotes it. The fastener is the
   maker's named screw at the maker's spacing, into wood thicker than "1x" (the 1-1/2" KDAT
   girt) — a CONDITION the row is checked against (drift guards), not a capacity computed.
 - **§6 and §6.2 are kept** as history and corroboration, and as the
-  `structural.cladding_fastener` advisory: withdrawal 0.334, pull-through 0.118. It names no
+  `structural.cladding_fastener` advisory: withdrawal 0.182 (0.334 before D3), pull-through
+  0.118. It names no
   engineering item and FAILs only at WARN severity.
 - **The girt screw stays engineered** (`girt_screw/W-A-N1`), and its demand is still §2-§4
   of this note, which is why the note stays in the handoff bundle.

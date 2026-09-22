@@ -37,13 +37,13 @@ _ORACLE = {
     "strength_inward_psf": 22.7361,
     "asd_inward_psf": 13.6417,
     "inward_ratio": 0.3172,
-    # §6: NDS 2018 §12.2 at G 0.55, D 0.190", C_D 1.6, C_M 0.7, the stocked 1" screw.
+    # §6: NDS 2018 §12.2 at G 0.55, D 0.190", C_D 1.6, C_M 0.7, the 1-1/2" screw (D3).
     "w": 163.80,
     "w_adjusted": 183.46,
-    "thread_penetration_in": 0.5961,
-    "capacity_lb": 109.36,
+    "thread_penetration_in": 1.0961,
+    "capacity_lb": 201.09,
     "demand_lb": 36.5318,
-    "withdrawal_ratio": 0.3341,
+    "withdrawal_ratio": 0.1817,
     # §6.2: AISI S100 Pnov = 1.5 t d'w Fu / 3.0.
     "pull_through_capacity_lb": 310.7,
     "pull_through_ratio": 0.1176,
@@ -204,9 +204,17 @@ def test_a_tighter_girt_spacing_is_still_covered(tmp_path):
 
 def test_another_screw_drifts(tmp_path):
     ctx = _variant(tmp_path, _replace(
-        'panel_fastener="#10-12 x 1\\" pancake head wood screw,',
-        'panel_fastener="#12-14 x 1\\" hex washer head screw,'))
+        'panel_fastener="#10-12 x 1-1/2\\" pancake head wood screw,',
+        'panel_fastener="#12-14 x 1-1/2\\" hex washer head screw,'))
     _all_unknown(ctx, "the maker names")
+
+
+def test_a_screw_shorter_than_the_named_one_drifts(tmp_path):
+    """Length is increase-only: the named 1" is a floor (D3 takes the 1-1/2")."""
+    ctx = _variant(tmp_path, _replace(
+        'panel_fastener="#10-12 x 1-1/2\\" pancake',
+        'panel_fastener="#10-12 x 3/4\\" pancake'))
+    _all_unknown(ctx, 'a shorter 3/4" screw')
 
 
 def test_another_coverage_drifts(tmp_path):
@@ -254,7 +262,7 @@ def test_withdrawal_is_computed_from_the_standard(catlin_ctx):
     """NDS 2018 §12.2, term by term against §6 of the note."""
     from typehaus.checks.structural.cladding_fastener import withdrawal_allowable_lb
 
-    hand = withdrawal_allowable_lb(0.55, 0.190, 1.0, 1.5, 0.0239)
+    hand = withdrawal_allowable_lb(0.55, 0.190, 1.5, 1.5, 0.0239)
     assert hand.w_per_in == pytest.approx(_ORACLE["w"], abs=0.01)
     assert hand.w_adjusted_per_in == pytest.approx(_ORACLE["w_adjusted"], abs=0.01)
     assert hand.thread_penetration_in == pytest.approx(_ORACLE["thread_penetration_in"], abs=1e-3)
@@ -283,11 +291,13 @@ def test_the_whole_screw_ladder_is_printed_once_each(catlin_ctx):
         assert finding.message.count(rung) == 1, rung
 
 
-def test_a_longer_screw_moves_withdrawal_and_nothing_else(tmp_path):
-    ctx = _variant(tmp_path, _replace(
-        "panel_fastener_length_in=1.0,", "panel_fastener_length_in=1.5,"))
+def test_the_stocked_1in_screw_moves_withdrawal_and_nothing_else(tmp_path):
+    """The pre-D3 spec: the maker's own named 1" still reads, at the note's history 0.334."""
+    ctx = _variant(tmp_path, lambda text: _replace(
+        "panel_fastener_length_in=1.5,", "panel_fastener_length_in=1.0,")(_replace(
+            'panel_fastener="#10-12 x 1-1/2\\"', 'panel_fastener="#10-12 x 1\\"')(text)))
     [finding] = _fastener(ctx)
-    assert "d/c 0.182" in finding.message
+    assert "d/c 0.334" in finding.message
     assert f"d/c {_ORACLE['pull_through_ratio']:.3f}" in finding.message
     assert all(f.result is Result.PASS for f in _wind(ctx))
 

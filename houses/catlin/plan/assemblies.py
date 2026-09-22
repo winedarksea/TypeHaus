@@ -3902,7 +3902,7 @@ MATERIALS = [
     # BOTH directions: 18.27 psf ASD suction vs 58 outward (d/c 0.315) and 13.64 psf ASD
     # push vs 43 inward (d/c 0.317 — inward governs, by a hair). The fastener is the
     # guide's own named screw at its own spacing, a CONDITION of the read; the NDS 2018
-    # section 12.2 withdrawal (0.334) and AISI S100 pull-through (0.118) the retired item
+    # section 12.2 withdrawal (0.182) and AISI S100 pull-through (0.118) the retired item
     # graded stay as the `structural.cladding_fastener` advisory. See
     # houses/catlin/notes/board_batten_girt_span.md §8.
     #
@@ -3915,8 +3915,11 @@ MATERIALS = [
     # one of the two tables is wrong and 58 is the conservative half. Recorded, not
     # adopted; it is a question for the Rogers branch when quoting, not a gate.
     #
-    # ** The screw is the guide's own stocked 1", and that is a REVERSAL of 2026-09-11. **
-    # This row carried a #10-12 x 2" for three days, on one argument: Metal Sales' detail
+    # ** The screw is a #10-12 x 1-1/2" (owner, 2026-09-22): the guide's named 1", longer. **
+    # The published read accepts it — its length guard is increase-only, because the row
+    # excludes fasteners by footnote. Metal Sales stocks only the 1" (8243100, plated); the
+    # 1-1/2" is bought with the 316 SS / A153-D coating the KDAT needs, as the 1" had to be.
+    # History: this row carried a #10-12 x 2" for three days on one argument: Metal Sales' detail
     # asks that "fasteners should extend 1/2" or more past the inside face of the support",
     # and in a 1-1/2" girt nothing shorter than 2" can. That argument does not hold, for
     # three reasons, and the note's §6 now works all three:
@@ -3932,8 +3935,8 @@ MATERIALS = [
     #     support material out BY NAME, which is exactly why `wall_panel` is an ENGINEERED
     #     record; IRC R703.1.2's design-analysis path is the one this wall is on, and NDS
     #     2018 §12.2 is the analysis. Every candidate length passes it, the 1" included.
-    # At 1" the thread engagement is 0.596" and d/c is 0.334 on an allowable that already
-    # carries NDS's own 5:1. 1-1/2" is recorded as the available no-cost margin upgrade.
+    # At 1-1/2" the thread engagement is 1.096" and d/c is 0.182 (0.334 at the stocked 1")
+    # on an allowable that already carries NDS's own 5:1; the tip stays inside the girt.
     # ** 2" is affirmatively REJECTED: ** its tip stands 0.476" into a 0.500" vent gap,
     # 0.024" off the ccSPF face, so a thin girt or one overdriven screw puts ~840 tips in
     # the foam. Nothing longer than 1-1/2" should ever be specified here.
@@ -3951,10 +3954,9 @@ MATERIALS = [
     # it is not cosmetic — panel count and the labour band both move with it (see the
     # `board-batten-24` row in prices.toml), and fastener tributary area moves with it in
     # the withdrawal calculation above, which is how the governing limit state came to
-    # FLIP: at 11" coverage with the rejected 2" screw withdrawal was 0.12 against
-    # bending's 0.315, and at 12" with the 1" screw it is 0.334 and governs. Both pass
-    # wide, and the two are only 6% apart, so a later coverage or wind change can flip them
-    # back with no physical meaning whatever.
+    # FLIP twice: at 11" coverage with the rejected 2" screw withdrawal was 0.12 against
+    # bending's 0.315; at 12" with the 1" screw it was 0.334 and governed; with the 1-1/2"
+    # it is 0.182 and the panel's own row (0.317 inward) governs again.
     #
     # ** PVDF Linen White and not the wood-grain print: ** "white wood" is CERAM-A-STAR
     # SMP, a different coating system and warranty from the PVDF on the rest of the
@@ -4012,9 +4014,9 @@ MATERIALS = [
                  wind_speed_mph=115.0,
                  exposure="B"),
              open_framing_source="Metal Sales BBD75 Board & Batten (Concealed Direct-Fastened) install guide, 2025-10-16, p.7: the panel is \"designed to be installed over open framing and/or directly over a wood substrate\", and p.12's Support Materials list reads \"Lumber - 1x or thicker\" and \"Steel Framing - 18 gauge or thicker\" (neither is a solid substrate). The Spec Data Sheet says the same in its own words: \"Designed for application over solid sheathing or open framing\", typical assembly \"Wood framing with moisture barrier\"",
-             panel_fastener="#10-12 x 1\" pancake head wood screw, Type 17 point, 316 stainless or ASTM A153 Class D HDG",
+             panel_fastener="#10-12 x 1-1/2\" pancake head wood screw, Type 17 point, 316 stainless or ASTM A153 Class D HDG",
              panel_fastener_diameter_in=0.190,
-             panel_fastener_length_in=1.0,
+             panel_fastener_length_in=1.5,
              panel_fastener_head_dia_in=0.40,
              fastener_coverage_in=12.0,
              source="Metal Sales BBD75-1212 (product nos. 2520741 ACG / 25207XX PVDF): 24 ga. PVDF-coated steel board & batten wall panel, 12\" net coverage, 3/4\" rib, concealed DIRECT-fastened at the nail strip over open framing; allowable 58 psf outward / 43 psf inward at 2'-0\" fastener spacing (AISI 2016, 3+ equal spans, L/180, no 1/3 stress increase, and by its own note 2 it does not address web crippling, fasteners, support material); PVDF Linen White (81), SR 0.73 / TE 0.86 / SRI 89 per ASTM C1549 / C1371 / E1980, CRRC-listed steep and low slope, 45-yr film / 35-yr chalk-fade warranty; same vapour-impermeable sheet steel as the five skins above"),

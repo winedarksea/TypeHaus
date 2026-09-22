@@ -411,6 +411,9 @@ demand = 26.7 psf x (12" x 24" = 2.00 ft²) = 53 lb          ->  25 % utilised
 Closing the courses from 32" to 24" took this from 33 % to 25 %, and it took the panel's own
 span question with it (below).
 
+> **Superseded:** the screw went to the 1" on 2026-09-14 and to **#10-12 x 1-1/2"** on
+> 2026-09-22 (owner, D3); `notes/board_batten_girt_span.md` §6 is current. History follows.
+
 **THE CLADDING SCREW IS 2", TYPE 17 WOOD POINT, STAINLESS OR ASTM A153 CLASS D HDG**
 (2026-09-11). Not the 1" "plated" stock pancake screw a panel order ships with, and not the
 1-1/2" this note specified before, and this is a specification line:

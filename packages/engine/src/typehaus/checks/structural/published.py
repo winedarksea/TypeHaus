@@ -34,6 +34,8 @@ on a single deck beam in the reference house.
 
 from __future__ import annotations
 
+import re
+
 from typehaus.checks._authoring import structural_advisory
 from typehaus.findings import Finding, Result
 from typehaus.model.published_cladding import PublishedCladdingLoad
@@ -290,9 +292,9 @@ def _cladding_drift(published: PublishedCladdingLoad, material_name: str,
     if published.panel_fastener is not None:
         if panel_fastener is None:
             return _unanswered("a panel fastener", published.panel_fastener)
-        if not _normalise(panel_fastener).startswith(_normalise(published.panel_fastener)):
-            return (f"the maker names {published.panel_fastener!r} and the material "
-                    f"specifies {panel_fastener!r}")
+        screw = _fastener_drift(published.panel_fastener, panel_fastener)
+        if screw is not None:
+            return screw
     if published.min_support_thickness is not None:
         least = published.min_support_thickness.inches
         if not support_is_wood:
@@ -413,6 +415,39 @@ def _unanswered(what: str, row_value: str) -> str:
     """The row states a guard and the check had nothing to compare it with."""
     return (f"the row states {what} ({row_value}) and this check passes nothing for it, so "
             f"the condition is unverified — which is not the same as met")
+
+
+#: ``#10-12 x 1-1/2" Pancake Head ...`` -> designation, length, the rest.
+_SCREW = re.compile(r'^(#\s*\d+\s*-\s*\d+\s*x\s*)(\d+-\d+/\d+|\d+/\d+|\d*\.?\d+)\s*"(.*)$',
+                    re.IGNORECASE)
+
+
+def _fastener_drift(named: str, specified: str) -> str | None:
+    """The maker's named screw must lead the material's — except in LENGTH, increase-only.
+
+    The row excludes fasteners by its own footnote, so the named screw is a floor on thread
+    in the support, not a panel condition: the same gauge, head and point made longer is
+    still that screw (catlin's #10-12 x 1-1/2", D3). Shorter, or anything else, drifts.
+    """
+    if _normalise(specified).startswith(_normalise(named)):
+        return None
+    n, s = _SCREW.match(named.strip()), _SCREW.match(specified.strip())
+    if (n and s and _normalise(n[1]) == _normalise(s[1])
+            and _normalise(s[3]).startswith(_normalise(n[3]))):
+        if _inches(s[2]) + 1e-6 >= _inches(n[2]):
+            return None
+        return (f"the maker names {named!r} and the material specifies a shorter "
+                f"{s[2]}\" screw")
+    return f"the maker names {named!r} and the material specifies {specified!r}"
+
+
+def _inches(token: str) -> float:
+    """``1``, ``1.5``, ``3/4`` or ``1-1/2``."""
+    whole, _, frac = token.rpartition("-")
+    if "/" not in frac:
+        return float(frac)
+    num, den = frac.split("/")
+    return float(whole or 0) + float(num) / float(den)
 
 
 def _normalise(member: str) -> str:
