@@ -266,8 +266,8 @@ class SlabThermalBreak(HausModel):
     modulus_psi: float | None = None
     modulus_estimated: bool = False
     source: str | None = None
-    #: The sheet's sustained-load rule as a fraction of ``psi`` (Owens Corning: 1/3). Printed
-    #: beside a thrust row, never graded: it governs a dead load, not an imposed deformation.
+    #: The sheet's sustained-load rule as a fraction of ``psi`` (Owens Corning: dead load
+    #: <= 1/3). Graded beside a thrust row as its own limit state (free body §11k).
     sustained_load_fraction: float | None = None
 
     @model_validator(mode="after")

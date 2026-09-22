@@ -3,7 +3,7 @@
 
 **Nothing crosses the break, and no row grades a shear across it**: the court holds its own
 thrust (``retaining_system``) and the board keeps the house out of that free body. What is
-graded is what the board and the house behind it must survive — free body §11j (basis 7),
+graded is what the board and the house behind it must survive — free body §11j-§11k (basis 8),
 hand-worked first:
 
 * the board — fresh-concrete pressure on the AUTHORED placement (ACI 347R-14, capped at wh)
@@ -34,11 +34,11 @@ KIND = "thermal_break_transfer"
 BASIS = ("ACI 347R-14 (fresh-concrete pressure); ACI 209R-92 (stem shrinkage); ACI 318-19 "
          "(house wall, slab strut); IBC 1610.1/1806.2 (house sliding, soil); IRC R404.4 loop")
 #: Bumped whenever the arithmetic below changes — it rides in the fingerprint.
-BASIS_VERSION = "7"
+BASIS_VERSION = "8"
 #: Multiples of an ESTIMATED modulus the sensitivity note re-grades at (free body §11i).
 E_SENSITIVITY = (2.0 / 3.0, 1.5, 2.0)
 
-oracled_by(KIND, Oracle(note="sunken_garden_court_free_body.md", section="§11j",
+oracled_by(KIND, Oracle(note="sunken_garden_court_free_body.md", section="§11k",
                         test="tests/test_thermal_break.py"))
 
 _NOTES = (

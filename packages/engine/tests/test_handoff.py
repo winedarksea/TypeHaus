@@ -215,8 +215,8 @@ def test_a_filled_scaffold_seals_every_computed_item(bundle, tmp_path, catlin_ct
     # exercising. `base_rotation` left this set on 2026-09-21, and so did `tiered_retaining`
     # (the SRW apron on AB Stones, notes/raised_garden_srw.md) and `deck_tie` (the landing's
     # two tie lines at 0.966, notes/north_entry_piers.md §10); `thermal_break_transfer` left
-    # it at basis 7 (formed-and-stripped boards and a stated slab-edge grade, free body
-    # §11j). Every kind is sealable now. **
+    # it at basis 7 (formed-and-stripped boards and a stated slab-edge grade, free body §11j;
+    # basis 8's FOAMULAR 1000 keeps it out, §11k). Every kind is sealable now. **
     assert refused == set(), (
         "a kind went over capacity — the scaffold will comment its whole block out, which is "
         "correct, but this test then stops exercising the sealing path for it", refused)

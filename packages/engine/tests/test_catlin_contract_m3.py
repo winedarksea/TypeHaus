@@ -2041,17 +2041,22 @@ def test_the_thermal_break_is_one_product_everywhere_it_is_stated(catlin_model):
 
     # ** THE SLAB-EDGE BOARD IS THE OTHER PRODUCT, AND IT IS STATED TWICE. **
     # `plan/storeys/basement.py` is `# haus: editable` and cannot import `params/`, so
-    # SL-B-FLOOR spells out what `params/foundations.SLAB_EDGE_BREAK` holds for the garage
-    # slab. One order, two spellings — the `_HOUSE_FOOTING_DEPTH_IN` pattern.
+    # SL-B-FLOOR spells out what `params/foundations.SLAB_EDGE_BREAK` holds. One board, two
+    # spellings — the `_HOUSE_FOOTING_DEPTH_IN` pattern.
     from params import foundations
 
     edge = catlin_model.plan.by_tag("SL-B-FLOOR").perimeter_thermal_break
-    assert edge.psi == pytest.approx(40.0) and not edge.modulus_estimated
-    assert edge.modulus_psi == pytest.approx(1800.0)
-    assert "FOAMULAR 400" in edge.source
+    assert edge.psi == pytest.approx(100.0) and not edge.modulus_estimated
+    assert edge.modulus_psi == pytest.approx(3700.0)
+    assert "FOAMULAR NGX 1000" in edge.source  # free body §11k: 1000 is made 1.5" and up
+    assert edge.thickness.inches == pytest.approx(1.5)
     for field, value in foundations.SLAB_EDGE_BREAK.items():
         assert getattr(edge, field) == value, field
-    assert catlin_model.plan.by_tag("SL-G-FLOOR").perimeter_thermal_break == edge
+    # The garage edge carries no court thrust and keeps its underslab board, FOAMULAR 400.
+    garage = catlin_model.plan.by_tag("SL-G-FLOOR").perimeter_thermal_break
+    assert garage.psi == pytest.approx(40.0) and "FOAMULAR 400" in garage.source
+    for field, value in foundations.GARAGE_SLAB_EDGE_BREAK.items():
+        assert getattr(garage, field) == value, field
 
     # And the veneer beam's board, which is the one that bills through a different trade.
     beam = next(w for w in catlin_model.walls if w.tag == "W-SG-BRKBM")

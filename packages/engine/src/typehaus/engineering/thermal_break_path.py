@@ -7,8 +7,8 @@ Every link is graded on every break item, because every board's thrust feeds it:
 
 * slab-edge bearing on the slab's ``perimeter_thermal_break`` at its AUTHORED rating (grade
   unstated → the lowest ASTM C578 type of its material, as the house foam is graded), the
-  near line's own friction not credited; the sheet's sustained-load rule is printed beside
-  it, never graded (§11j: it governs a dead load, and this is an imposed deformation);
+  near line's own friction not credited; and the sheet's sustained-load rule (a fraction of
+  that rating) graded beside it (§11k — the "imposed deformation" exemption is retired);
 * slab strut compression, plain concrete — **buckling of a slab on grade is not credible**
   (braced continuously by its subgrade), so no slenderness row;
 * global sliding at FS 1.5: μ × the house's dead load (a stated lower bound) plus the
@@ -111,7 +111,7 @@ def court_opening_in(ctx, boards) -> float:
     return max(s[1] for s in spans) - min(s[0] for s in spans) if spans else 0.0
 
 
-def _slab_edge(slab, total_lb, floor_line_lb, edge_len, t, states, missing, notes) -> None:
+def _slab_edge(slab, total_lb, floor_line_lb, edge_len, t, states, missing) -> None:
     brk = slab.perimeter_thermal_break
     grade = rated(brk.material_ref, brk.psi, brk.source)
     if grade is None:
@@ -133,14 +133,12 @@ def _slab_edge(slab, total_lb, floor_line_lb, edge_len, t, states, missing, note
         f"credited"))
     frac = brk.sustained_load_fraction
     if frac and brk.psi is not None:
-        need = line / (frac * area)
-        notes.append(
-            f"NOT GRADED — THE SHEET'S SUSTAINED-LOAD RULE (free body §11j): dead load <= "
-            f"{frac:.3g} x {brk.psi:.0f} = {frac * brk.psi:.1f} psi reads {line:,.0f} / "
-            f"{frac * brk.psi * area:,.0f} = {line / (frac * brk.psi * area):.3f}. The rule "
-            f"guards a board against creep under a load it must hold forever; this thrust is "
-            f"an imposed deformation, which creep relieves rather than grows. A board rated "
-            f">= {need:.1f} psi satisfies it if a reviewer reads it as governing.")
+        states.append(LimitState(
+            "house slab-edge sustained load", line, frac * brk.psi * area, "lb",
+            f"the same {line:,.0f} lb against the sheet's sustained-load rule, "
+            f"{frac:.3g} x {brk.psi:.0f} = {frac * brk.psi:.1f} psi over {depth:.2f}\" x "
+            f"{edge_len:.0f}\" (free body §11k: graded as a dead load; no creep-relaxation "
+            f"credit for an imposed deformation)"))
 
 
 def path_rows(ctx, boards, total_lb: float, floor_line_lb: float, states, missing,
@@ -176,7 +174,7 @@ def path_rows(ctx, boards, total_lb: float, floor_line_lb: float, states, missin
     edge_len, t = hi - lo, slab.thickness.inches
     line = total_lb - floor_line_lb
     if slab.perimeter_thermal_break is not None:
-        _slab_edge(slab, total_lb, floor_line_lb, edge_len, t, states, missing, notes)
+        _slab_edge(slab, total_lb, floor_line_lb, edge_len, t, states, missing)
     fc = fc_psi(concrete_spec_for(ctx.plan, slab))
     if fc is None:
         missing.append(f"{slab.tag}'s mix f'c — the slab strut")

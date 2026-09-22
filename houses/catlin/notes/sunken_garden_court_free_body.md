@@ -1541,9 +1541,9 @@ The length floor moved with it: `run = 62,826 × 1.50 / 1,899.6 = 49.61'`, so
 Worked by hand before `engineering/thermal_break.py` was rewritten to it;
 `tests/test_thermal_break.py` reproduces it. Oracle for `thermal_break_transfer/*`.
 
-> **The graded basis is §11j (basis 7, 2026-09-22):** §11i's demand and lateral path with
-> every board formed-and-stripped (no pour lock-in) and `SL-B-FLOOR`'s perimeter break stated
-> as FOAMULAR 400. OK on all five items, slab edge governing at 0.737. §11a-§11i below are the
+> **The graded basis is §11k (basis 8, 2026-09-22):** §11j's demand and lateral path with
+> `SL-B-FLOOR`'s perimeter break switched to FOAMULAR 1000 and the sheet's 1/3 sustained-load
+> rule GRADED. OK on all five items, that rule governing at 0.885. §11a-§11j below are the
 > record of how it got there.
 
 **Basis 4 is the owner's decision of 2026-09-21:** the four closure boards go back to XPS —
@@ -2171,7 +2171,7 @@ the record is deterministic. The form is the same ratio the FS row printed whene
 positive (`1.5·net/friction`), so nothing else moves. At 2× E the net turns positive:
 71,927 − 61,446 = 10,481 → 0.143.
 
-**The slab-edge product's own sustained-load rule — printed, NOT graded.** Owens Corning's
+**The slab-edge product's own sustained-load rule — printed, NOT graded** (retired by §11k). Owens Corning's
 design guidance holds a *sustained* load to 1/3 of the compressive rating (13.3 psi for
 FOAMULAR 400): `44,582 / (13.33 x 1,512) = 2.21`. Not graded, and deliberately: the rule guards
 a board against creep under a dead load it must hold forever. This thrust is an **imposed
@@ -2202,6 +2202,45 @@ reading. The stripping is a field sequence the model states and cannot enforce �
 `AN-SG-BLOCKOUTS`, `tasks.toml`'s `boards` checkpoints and the `break_blockouts_stripped`
 inspection carry it to site.
 
+### 11k. Basis 8 (2026-09-22, owner) — FOAMULAR 1000 at the slab edge, the 1/3 rule graded
+
+Hand-worked before the engine; `tests/test_thermal_break.py` reproduces it. **Supersedes §11j
+as the graded basis**; §11j's demand, neutral point, stems and lateral path are unchanged. One
+decision: `SL-B-FLOOR`'s perimeter break is **Owens Corning FOAMULAR NGX 1000**, ASTM C578
+Type V, 100 psi min (ASTM D1621, at yield or 5%), minimum compressive modulus 3,700 psi
+(PDS 07 21 13.13.OCC), "dead load shall not exceed 1/3 ... of the published compressive
+resistance" (same PDS). It is made 1.5" and up, never 1" (Pub. 58307-Q, 06-2025), so the board
+goes **1" → 1.5"**; no row reads thickness. The garage slab's edge carries no court thrust and
+keeps its 1" FOAMULAR 400.
+
+The creep-relaxation argument (§11j) is **retired**: the 1/3 rule is now a graded row, on the
+reading a reviewer is most likely to take.
+
+```
+edge area  3.5" x 432" = 1,512 in²;   line  46,183 − 1,601 = 44,582 lb           (§11j)
+bearing    44,582 / (100 x 1,512 = 151,200)                        d/c 0.295 ✓
+sustained  44,582 / (0.3333 x 100 x 1,512 = 50,395)                d/c 0.885 ✓ GOVERNS
+```
+
+The modulus input changes (1,800 → 3,700) and moves nothing: the house is taken rigid, so the
+slab edge's E is printed, never read. **Sensitivity on the closure boards' E** (still 525,
+estimated — A2), line = T − 2 x floor line:
+
+| E | line | bearing | sustained |
+|---|---|---|---|
+| 350 (×0.67) | 32,836 | 0.217 | 0.652 |
+| **525 (graded)** | 44,582 | 0.295 | **0.885** |
+| 730 (ρ², ×1.39) | 55,800 | 0.369 | **1.107** |
+| 788 (×1.5) | 58,555 | 0.387 | **1.162** |
+| 1,050 (×2) | 69,430 | 0.459 | **1.378** |
+
+**The sustained row goes over at E ≈ 631 psi (×1.20)** — earlier in the band than §11j's
+bearing row (×2). Grading the rule made the edge more sensitive to the one estimated input, not
+less; a PE reading this row should read it beside the E band. The next board up does not exist
+(100 psi is the top of the FOAMULAR line); the levers are E itself, or a thickened slab edge (more bearing depth).
+
+**Verdict (basis 8): OK on all five items**, the slab-edge sustained-load rule governing at 0.885.
+
 
 ---
 
@@ -2219,6 +2258,7 @@ out of it.
 - Owens Corning Aslan 100 GFRP rebar data sheet (OC Pub. 10022295; basis 4, bars deleted at basis 5); DuPont Styrofoam Highload 40 PIS 43-D100079-enNA; ROCKWOOL Toprock DD TDS (09-2026, §11g) and Comfortboard 80 TDS (07-2025); Hussain & Nanni, ACI SJ 120-S74 (2023) — §11
 - Owens Corning FOAMULAR Tech Bulletin 10015702-C (07-2025, C578 Type X); DuPont UtilityFit PIS 43-D100997; ACI 360R-92 §6.3 (subgrade drag, neutral point); ACI 207.2R-07; ACI 231R-10; ACI 318-19 Table 21.2.1, §14.5.6; ASCE 7-16 Table C3.1-1a (8 psf partitions); IBC Table 1610.1 / 1806.2 — §11i (basis 6)
 - Owens Corning FOAMULAR 400/600/1000 Product Data Sheet (PDS 07 21 13.13.OCC: ASTM C578 Type VI/VII/V, 40/60/100 psi min, minimum compressive modulus 1,800/2,500/3,700 psi by ASTM D1621, sustained load ≤ 1/3 of rating); ASTM D1621 — §11j (basis 7)
+- Owens Corning FOAMULAR NGX 400/600/1000 Product Data Sheet, Pub. No. 58307-Q (06-2025: Type V 100 psi, 1000 made 1.5"/2"/3" only); Owens Corning Canada PDS 07 21 13.13.OCC (dead load ≤ 1/3, live load ≤ 1/5 of published compressive resistance; 1000 modulus 3,700 psi) — §11k (basis 8)
 - W. R. Meadows CERAMAR PDS #323 (07-2026) and DECK-O-FOAM PDS #325 (04-2026); Owens Corning FOAMULAR Tech Bulletin 10015703; ROCKWOOL Comfortboard 110 data sheet; ASTM D1056 grade table (nedc.com); ACI 209R-92; ASCE 7-16 Table C3.1-1a — §11h (WIP)
 - Bowles, *Foundation Analysis and Design* 5th ed. (1997) Table 9-1 — presumed k_v, §11f
 - PCA, *Design and Control of Concrete Mixtures* — α_c 5.5 × 10⁻⁶ /°F, §11c

@@ -4334,11 +4334,11 @@
 # over 25 psi. Fixing it properly means a psi-bearing material tag, not another key.
 # ** 2026-09-22: the SF on this row is the GARAGE SLAB alone. ** The "24.7 SF slab-edge thermal
 # break" it used to add is stale — `Slab.perimeter_thermal_break` never reaches `takeoff/`,
-# so SL-B-FLOOR's 1" edge board (144 LF x 3.5" = ~42 SF, the ~21 SF of south and north edge
-# now stated as FOAMULAR 400, Type VI 40 psi) bills NOTHING anywhere. No row is added for it:
-# a row that bills 0 SF is a lie of a different shape. The Type VI premium over a stock 1"
-# board is ~$2-4/SF on ~21 SF — small money, recorded so nobody finds it as a surprise.
-"xps:1.0" = { material = { low = 0.37, high = 0.74 }, labour = { low = 0.75, high = 1.45 } }  # garage slab (1", 40 psi, FOAMULAR 400 — the same board as the house slab edge)
+# so SL-B-FLOOR's edge board (144 LF x 3.5" = ~42 SF, the ~21 SF of south and north edge now
+# stated as FOAMULAR NGX 1000, Type V 100 psi, 1.5" — free body §11k) bills NOTHING anywhere.
+# No row is added for it: a row that bills 0 SF is a lie of a different shape. 1000 ships in
+# 1,024 SF half units (Pub. 58307-Q): all 144 LF is 3 sheets ripped to 3.5"; buy loose.
+"xps:1.0" = { material = { low = 0.37, high = 0.74 }, labour = { low = 0.75, high = 1.45 } }  # garage slab (1", 40 psi, FOAMULAR 400 — the garage slab edge's board too)
 # ** HOW THE FOUNDATION-WALL COURSES ARE HELD ON — it was written down nowhere until
 # 2026-09-04. ** Foam-compatible mastic to the liquid-applied damp-proofing, per the
 # membrane manufacturer, in vertical daubs; no plate anchors and no hardware record, because
@@ -6425,7 +6425,7 @@ site-survey-staking-and-erosion-control = { low = 2000, high = 6000 }
 # PDS, both install guides and the FAQ say 20 F. Confirm before scheduling a cold deck.
 # Below 20 F no canister works at all — PL 400 All-Weather (1.4 F) or Titebond solvent (0 F)
 # in cartridges on those days, at the cartridge prices above.
-framing-subfloor-adhesive = { low = 1.34, high = 2.38, unit = "ea", driver = "sheet_goods.sheets_4x8[scope=subfloor,material=plywood-subfloor]" }
+framing-subfloor-adhesive = { low = 1.34, high = 2.38, unit = "ea", driver = "sheet_goods.sheets[scope=subfloor,material=plywood-subfloor]" }
 
 # --- envelope -------------------------------------------------------------------------------
 # 2026-08-20: `roof-underlayment-full-field` was REMOVED from this section, not

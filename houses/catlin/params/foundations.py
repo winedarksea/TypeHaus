@@ -651,16 +651,23 @@ _slab_y_s = GARAGE_Y_SOUTH + _SLAB_INSET
 _slab_y_n = GARAGE_Y_NORTH - _SLAB_INSET
 _slab_x_w = GARAGE_X_WEST + _SLAB_INSET
 _slab_x_e = GARAGE_X_EAST - _SLAB_INSET
-# ** THE SLAB-EDGE BREAK IS ONE PRODUCT, STATED (2026-09-22, free body §11j basis 7). **
-# SL-B-FLOOR's south and north edges carry the court's thermal-break thrust across the house
-# to the far footing line, so its 1" board's grade is a graded input, not prose: at an
-# unstated grade it is read at C578 Type X 15 psi and the edge goes 1.966 OVER. The garage's
-# 1" board was already 40 psi (a wheel load), so both slabs take this one board, one order.
-# SL-B-FLOOR spells these kwargs out (plan/storeys/basement.py is editable and cannot import
-# params/); `test_catlin_contract_m3` pins the two to agree.
+# ** THE HOUSE SLAB-EDGE BREAK, STATED (free body §11j-§11k, basis 8). ** SL-B-FLOOR's south and
+# north edges carry the court's thermal-break thrust to the far footing line, so the board's
+# grade is a graded input: FOAMULAR 1000 (100 psi) holds the sheet's 1/3 sustained-load rule
+# at 0.885; FOAMULAR 400 read 2.21. 1000 is not made in 1" — 1.5" is its thinnest (the
+# bearing rows read depth x length, never thickness). SL-B-FLOOR spells these kwargs out
+# (basement.py is editable and cannot import params/); `test_catlin_contract_m3` pins the pair.
 SLAB_EDGE_BREAK = dict(
-    material_ref="xps", thickness=inch(1), psi=40.0, modulus_psi=1800.0,
+    material_ref="xps", thickness=inch(1.5), psi=100.0, modulus_psi=3700.0,
     sustained_load_fraction=0.3333,  # the sheet's 1/3; a literal so basement.py can match it
+    source="Owens Corning FOAMULAR NGX 1000, ASTM C578 Type V: 100 psi min (ASTM D1621), "
+           "minimum compressive modulus 3,700 psi published (PDS 07 21 13.13.OCC); dead load "
+           "<= 1/3 of rating; 1.5\" min thickness (Pub. 58307-Q, 06-2025)")
+# The garage's edge carries no court thrust: it stays the 1" 40 psi board its underslab
+# layer already orders (a wheel load).
+GARAGE_SLAB_EDGE_BREAK = dict(
+    material_ref="xps", thickness=inch(1), psi=40.0, modulus_psi=1800.0,
+    sustained_load_fraction=0.3333,
     source="Owens Corning FOAMULAR 400, ASTM C578 Type VI: 40 psi min (ASTM D1621), minimum "
            "compressive modulus 1,800 psi published; sustained load <= 1/3 of rating "
            "(PDS 07 21 13.13.OCC)")
@@ -670,7 +677,7 @@ GARAGE_SLAB = Slab(
     outline=(pt(_slab_x_w, _slab_y_s), pt(_slab_x_e, _slab_y_s),
              pt(_slab_x_e, _slab_y_n), pt(_slab_x_w, _slab_y_n)),
     thickness=inch(3.5), assembly="GARAGE_SLAB_ON_GRADE", top_elevation=SITE_GRADE,
-    perimeter_thermal_break=SlabThermalBreak(**SLAB_EDGE_BREAK),
+    perimeter_thermal_break=SlabThermalBreak(**GARAGE_SLAB_EDGE_BREAK),
 )
 
 # --- garage service-door landing ---------------------------------------------------

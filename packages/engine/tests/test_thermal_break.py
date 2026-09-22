@@ -1,10 +1,11 @@
-"""``engineering/thermal_break.py`` against ``sunken_garden_court_free_body.md`` §11j (basis 7).
+"""``engineering/thermal_break.py`` against ``sunken_garden_court_free_body.md`` §11j-§11k.
 
 The note was worked by hand before the module was rewritten; this file reproduces it. Basis 7
 is basis 6's pure isolation joint — ASTM C578 Type X XPS, 15 psi, E ESTIMATED at 525, the
 neutral-point demand with the stems' shrinkage credit — with two owner decisions in the model:
 every board is set into a STRIPPED BLOCKOUT (no pour lock-in) and ``SL-B-FLOOR``'s 1" perimeter
-break states its grade (FOAMULAR 400, Type VI, 40 psi). Every item is OK, slab edge governing.
+break states its grade. Basis 8 makes that board FOAMULAR 1000 (Type V, 100 psi) and grades the
+sheet's 1/3 sustained-load rule. Every item is OK, that rule governing at 0.885.
 Two ablations below are the proof that each decision is the lever: take either away and the
 numbers walk back to basis 6.
 """
@@ -21,9 +22,10 @@ from typehaus.engineering.thermal_break import KIND
 _FOOT, _STEM, _BEAM = ("TB-SG-W1", "TB-SG-E1"), ("TB-SG-W1-STEM", "TB-SG-E1-STEM"), "W-SG-BRKBM"
 _ALL = (*_FOOT, *_STEM, _BEAM)
 
-# The lateral path is one set of links for the whole thrust (§11j), on every item.
+# The lateral path is one set of links for the whole thrust (§11j-§11k), on every item.
 _PATH = {
-    "house slab-edge bearing": (44_582.1, 60_480.0, 0.7371),
+    "house slab-edge bearing": (44_582.1, 151_200.0, 0.2949),
+    "house slab-edge sustained load": (44_582.1, 50_394.96, 0.8847),
     "house slab strut compression": (29.4855, 2_040.0, 0.014454),
     "house global sliding": (1.5, 2.6877, 0.5581),
     "house far-wall soil bearing": (52_213.6, 130_534.1, 0.4000),
@@ -113,11 +115,10 @@ def test_basis_7_is_ok_with_nothing_open(records, tag) -> None:
     record = records[tag]
     assert record.status is Status.OK
     assert record.missing == ()
-    assert record.basis_version == "7"
+    assert record.basis_version == "8"
     notes = " ".join(record.notes)
     for flag in ("RETIRED WITH THE BARS", "RETIRED WITH THE STRIP", "ESTIMATED MODULUS",
-                 "NEUTRAL POINT", "FORMED AND STRIPPED", "SENSITIVITY ON E",
-                 "THE SHEET'S SUSTAINED-LOAD RULE"):
+                 "NEUTRAL POINT", "FORMED AND STRIPPED", "SENSITIVITY ON E"):
         assert flag in notes, (tag, flag)
     # The lock-in flag is a statement about a form face and this joint has none.
     assert "POUR LOCK-IN" not in notes
@@ -145,7 +146,9 @@ def test_the_sensitivity_note_reads_the_higher_modulus(records) -> None:
     note = next(n for n in records["TB-SG-W1-STEM"].notes if n.startswith("SENSITIVITY"))
         # §11j's table: the floor line moves with E and never approaches its capacity now.
     assert "house floor-line reaction 0.244 -> 0.179 / 0.320 / 0.380" in note
-    assert "house slab-edge bearing 0.737 -> 0.543 / 0.968 / 1.148" in note
+    assert "house slab-edge bearing 0.295 -> 0.217 / 0.387 / 0.459" in note
+    # §11k: the graded 1/3 rule goes over inside the band (x1.5), unlike the bearing row.
+    assert "house slab-edge sustained load 0.885 -> 0.651 / 1.162 / 1.378" in note
 
 
 def _compute_with(ctx, monkeypatch, **values):
@@ -209,10 +212,10 @@ def test_a_formed_and_stripped_board_carries_no_pour(ctx, monkeypatch) -> None:
         assert _input(out[tag], "board_lock_in") == pytest.approx(lock, rel=1e-3), tag
         assert _input(out[tag], "house_thrust") == pytest.approx(_FORM_FACE_TOTAL_LB, rel=1e-4)
         assert _state(out[tag], "fresh-concrete pressure") is not None, tag
-    # Still OK on FOAMULAR 400 — one decision does not close the item on its own — but the
-    # edge has walked from 0.737 to 1.553 and the beam's board is over again.
-    assert _state(out["TB-SG-W1"], "house slab-edge bearing").ratio == pytest.approx(
-        93_955.0 / 60_480.0, rel=1e-3)
+    # FOAMULAR 1000 does not close the item on its own: the thrust more than doubles, the
+    # sustained rule reads 1.864 and the beam's board is over again.
+    assert _state(out["TB-SG-W1"], "house slab-edge sustained load").ratio == pytest.approx(
+        93_955.0 / 50_395.0, rel=1e-3)
     assert _state(out[_BEAM], "board strain, pour + closing").ratio > 1.0
     assert out[_BEAM].status is Status.OVER
 
@@ -259,16 +262,24 @@ def test_the_slab_edge_reads_the_authored_grade(ctx, monkeypatch) -> None:
     assert state.ratio == pytest.approx(1.966, rel=1e-3)
     assert "grade unstated" in state.citation
     assert record.status is Status.OVER and record.missing == ()
-    assert not any("SUSTAINED-LOAD" in n for n in record.notes)
+    assert _state(record, "house slab-edge sustained load") is None  # no sheet, no rule
 
 
-def test_the_sheets_sustained_load_rule_is_printed_not_graded(records) -> None:
-    record = records["TB-SG-W1"]
-    assert not any("sustained" in s.name for s in record.limit_states)
-    note = next(n for n in record.notes if "SUSTAINED-LOAD" in n)
-    assert "NOT GRADED" in note
-    # 44,582 / (1/3 x 40 psi x 3.5" x 432") = 2.21, and >= 88.5 psi is what would satisfy it.
-    assert "2.212" in note and "88.5 psi" in note
+def test_the_sheets_sustained_load_rule_is_graded_and_foamular_400_fails_it(
+        ctx, monkeypatch) -> None:
+    """§11k: the 1/3 rule is a limit state, and the product is the lever. On FOAMULAR 400
+    (basis 7's board) the same 44,582 lb reads 2.212 OVER; FOAMULAR 1000 reads 0.885."""
+    from typehaus.engineering import thermal_break as tb
+
+    slab, path = _with_slab_break(ctx, psi=40.0, modulus_psi=1800.0)
+    real = path.house_slab
+    monkeypatch.setattr(path, "house_slab",
+                        lambda c, f: (slab, real(c, f)[1]) if real(c, f) else None)
+    record = {r.key: r for r in tb.compute(ctx)}["TB-SG-W1"]
+    state = _state(record, "house slab-edge sustained load")
+    assert state.ratio == pytest.approx(44_582.1 / (0.3333 * 40.0 * 1_512.0), rel=1e-3)
+    assert state.ratio == pytest.approx(2.212, abs=1e-3)
+    assert record.status is Status.OVER
 
 
 def test_slab_thermal_break_round_trips_and_a_rating_names_its_sheet() -> None:
