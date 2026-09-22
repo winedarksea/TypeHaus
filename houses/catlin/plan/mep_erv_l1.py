@@ -263,12 +263,27 @@ DUCTS_ERV_BASEMENT = [
                   pt(ft(19), ft(26))),
             start_elevation=ft(7, 6), end_elevation=ft(7, 6),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=30),
-    # The sauna's supply goes west, down the x=3'-3" corridor, and comes east along
-    # y=1'-8 1/2" — the southernmost foot of the house, where nothing else is drawn at all.
-    # Sixteen inches of detour past the straight line and the only pair it makes is none.
+    # The sauna's supply comes west and runs south to the sauna along the west side of the
+    # basement, then east along y=1'-8 1/2" — the southernmost foot of the house, where
+    # nothing else is drawn at all.
+    #
+    # ** IT IS AT x=1'-8" AND NOT x=3'-3", AND THE REASON IS ONE MEMBER: W-B-CW's HEADER. **
+    # The x=3'-3" corridor crosses W-B-CW at y=18'-0" dead on `D-B-FURN`'s west jack face,
+    # 1/4" above the header's top — so this duct took a 1 3/4" NOTCH off the top of the one
+    # member carrying that opening's whole tributary load into two jacks. No published chart
+    # reaches it: Weyerhaeuser TJ-9000's ALLOWABLE HOLES page is ROUND HOLES ONLY, and a
+    # notch is not a round hole at any depth (notes/framing_bore_limits.md §8).
+    #
+    # x=1'-8" crosses the same wall in its widest CLEAR bay, x 16 3/4"..31 1/4" between
+    # `stud-001` and `stud-002` — the bay `DU-B-ERV-R-BENCH` already uses at x=2'-0". The
+    # duct spans 18"..22" there, 1 1/4" clear of one stud and 9 1/4" of the other, and
+    # NOTHING IS BORED, NOTCHED OR HEADED. It stands 4" west of BENCH's lane and 6" above
+    # it, which is the same separation `DU-B-ERV-R-GYM` and `-PLAY` hold in the east chase.
+    # The detour costs about 40" of 4" duct, worth 0.0005 in. w.g. on a side that is not the
+    # governing one.
     DuctRun(uid="VXGA0P0V72", tag="DU-B-ERV-R-SAUNA-SUP", system=DuctSystem.SUPPLY,
             path=(pt(ft(5, 3), ft(30, 2)), pt(ft(5, 3), ft(30, 2)),
-                  pt(ft(3, 3), ft(30, 2)), pt(ft(3, 3), ft(1, 8.5)),
+                  pt(ft(1, 8), ft(30, 2)), pt(ft(1, 8), ft(1, 8.5)),
                   pt(inch(199.75), ft(1, 8.5)), pt(inch(199.75), ft(1, 8.5))),
             elevations=(ft(7, 6), inch(87.5), inch(87.5), inch(87.5), inch(87.5), ft(7)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=12),
