@@ -16,6 +16,7 @@ import { loadRebar, rebarKeyOf } from "../engine/rebarCache";
 import { createRebarLayer } from "../three/builders/rebar";
 import { buildRebarHighlight } from "../three/rebar";
 import { buildMemberHighlight, resolveMemberPickUid } from "../three/memberPicking";
+import { buildPlantHighlight, resolvePlantPickUid } from "../three/builders/plants";
 import {
   clampDollyRadius, frameRadiusForBounds, normalizedWheelDeltaPx, pinchDollyRadius,
   VIEW_FIT_POLAR_ANGLE, VIEW_PAN_STEP_FRACTION, WHEEL_DOLLY_SENSITIVITY, type PanDirection,
@@ -542,6 +543,12 @@ function createScene(
       if (!hit) return;
       // A framing bucket resolves the hit's instanceId / faceIndex back to the one member it
       // drew there; anything else carries its element identity on the mesh itself.
+      // A plant is one instance of a shared prototype mesh; it selects as its bounding solid.
+      const plantPick = resolvePlantPickUid(hit.object, hit.instanceId);
+      if (plantPick) {
+        onPick("solid", plantPick);
+        return;
+      }
       const memberPick = resolveMemberPickUid(hit.object, hit.instanceId, hit.faceIndex);
       if (memberPick) {
         onPick("member", memberPick);
@@ -791,6 +798,14 @@ function createScene(
         (mat as THREE.MeshStandardMaterial).emissive?.set(activePalette.highlight);
     // A member uid names one stick inside a shared bucket; outline it rather than tinting the
     // bucket's material, which would light every stud in the wall.
+    // A plant's instances share their materials with every other plant of its type, so it is
+    // outlined by its bounding solid rather than tinted.
+    const plantSolid = uid && highlightSourceModel?.plants?.some((plant) => plant.uid === uid)
+      ? highlightSourceModel.solids?.find((solid) => solid.uid === uid) : undefined;
+    if (plantSolid) {
+      const outline = buildPlantHighlight(plantSolid, highlightPlanCenter, activePalette.highlight);
+      if (outline) memberHighlightGroup.add(outline);
+    }
     const located = uid && highlightSourceModel
       ? locateMember(highlightSourceModel, uid, rebar?.sets) : null;
     if (located?.bar) {

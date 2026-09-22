@@ -2407,6 +2407,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   and every row lands in `unpriced` on purpose. Catalog: `plan/plant_types.py` (NOT editable,
   with the foliage colours). Only concrete, Class 5, basin media/stone and the leader
   extensions price.
+- **3D models are procedural per `form`** (`resolve/plant_models.py`), three seeded variants
+  per type, coloured by the type's foliage/bloom/stem/fruit materials: a form or type swap
+  changes the model. Basin beds stand on the basin's own slope (`rain_garden.surface_z_m`).
 - **Rain garden `RG-W-BASIN`** (`params/landscape_gardens.py`): x -6'..-1', y 47'..82', 9"
   ponding at 2:1, 12" media over 6" stone, fed by `TR-G-LEADER-W` and `TR-RF-LEADER-W` through
   buried 4" PVC (`Downspout.discharge_ref` + `extension`), overflowing north to daylight.

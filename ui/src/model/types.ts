@@ -1373,6 +1373,43 @@ export interface Paneling {
 
 // Slabs, pads, and footings — a resolved horizontal or below-grade solid with a plan
 // outline (→ resolve/model.py ResolvedSolid).
+// A procedural plant prototype (→ server/model_json_plants.py). Unit space for a catalog
+// type (spread 1, height 1), metres for an espalier; positions are integers of `quantum`,
+// flat [x, y, z, ...] in the plan frame, z up; `indices` are flat triangles.
+export interface PlantModelPart {
+  role: "foliage" | "bloom" | "stem" | "fruit";
+  two_sided: boolean;
+  positions: number[];
+  indices: number[];
+}
+
+export interface PlantModel {
+  ref: string;
+  type_ref: string;
+  form: string;
+  height: number;
+  quantum: number;
+  colors: Record<string, string>; // hex by role, resolved by the engine
+  parts: PlantModelPart[];
+}
+
+// One plant: its prototype turned about plan z and scaled (spread, spread, height). `uid` is
+// the uid of its `plant` solid, which is what a click on it selects.
+export interface PlantInstance {
+  uid: string;
+  tag: string;
+  storey: string;
+  type_ref: string;
+  model: string;
+  x: number;
+  y: number;
+  z: number;
+  rotation: number;
+  scale: [number, number, number];
+  source: string;
+  accent: boolean;
+}
+
 export interface Solid {
   uid: string;
   tag: string;
@@ -1615,6 +1652,8 @@ export interface Model {
   openings: Opening[];
   roofs?: Roof[];
   solids?: Solid[];
+  plant_models?: PlantModel[]; // absent on older model.json: plants draw as their prisms
+  plants?: PlantInstance[];
   panelings?: Paneling[];
   construction_returns?: ConstructionReturn[];
   footing_beddings?: FootingBedding[];

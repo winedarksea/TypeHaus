@@ -9,7 +9,7 @@ All coordinates are canonical SI meters. These are plain frozen dataclasses (not
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from typehaus.model.assembly import Layer
 from typehaus.model.enums import ConditionKind
@@ -1279,6 +1279,15 @@ class ResolvedPlant:
     source_ref: str  # the Plant or PlantingBed tag
     accent: bool = False
     training: str = "free"
+    # The drawn model (``resolve/plant_models.py``): which prototype in
+    # ``ResolvedModel.plant_models``, turned and scaled into place. ``uid`` is the uid of the
+    # plant's bounding solid, which is what a click on the model selects.
+    uid: str = ""
+    storey: str = ""
+    model_ref: str = ""
+    rotation_rad: float = 0.0
+    scale: tuple[float, float, float] = (1.0, 1.0, 1.0)
+    material_by_role: tuple[tuple[str, str], ...] = ()
 
 
 @dataclass
@@ -1297,6 +1306,8 @@ class ResolvedModel:
     )
     soffits: list[ResolvedSoffit] = field(default_factory=list)
     plants: list[ResolvedPlant] = field(default_factory=list)
+    # Plant prototypes by ref (``resolve/plant_models.PlantPrototype``), instanced by plants.
+    plant_models: dict[str, Any] = field(default_factory=dict)
     braces: list[ResolvedBrace] = field(default_factory=list)
     floor_heat: list[ResolvedFloorHeat] = field(default_factory=list)
     rooms: list[ResolvedRoom] = field(default_factory=list)

@@ -22,6 +22,7 @@ import {
 } from "../planGeometry";
 import { ALL_TRADES, type Trade } from "../../state/vocabulary";
 import { buildLightRun } from "./lightRun";
+import { buildPlants, instancedPlantUids } from "./plants";
 import type { RebarLayer } from "./rebar";
 import { tagStorey as tagStoreyChildren, tagTrades } from "./registry";
 import { buildCanvasObject, buildEarth } from "./site";
@@ -193,7 +194,10 @@ export function populateScene(options: PopulateSceneOptions) {
   // A solid is not automatically concrete: a standalone beam or post is framing, a routed pipe
   // run is plumbing, a cast column is concrete. The set is stamped by the engine
   // (model.json `trades`) and falls back to the generated category map.
+  // A plant with a procedural model draws as an instance below, not as its bounding prism.
+  const instancedPlants = instancedPlantUids(model.plants, model.plant_models);
   for (const solid of model.solids ?? []) {
+    if (solid.category === "plant" && instancedPlants.has(solid.uid)) continue;
     // Two answers, deliberately. `solidTrades` decides the CONTAINER (a connector's is
     // framing, and `primaryTrade` maps its facet back to framing anyway); the keys decide
     // what it is TAGGED with, which is what its own toggle reaches.
@@ -201,6 +205,22 @@ export function populateScene(options: PopulateSceneOptions) {
     build(solidVisibilityKeys(solid), solid.storey, () => buildSolid(container(trades), solid, center,
       mode, palette, model.catalog, registry.picks, registry.byUid,
       model.catalog?.materials));
+  }
+  // Plants, instanced per storey; each takes its solid's trade set (landscaping).
+  const solidsByUid = new Map((model.solids ?? []).map((solid) => [solid.uid, solid]));
+  const plantMaterials = new Map<string, THREE.Material>();
+  const plantsByStorey = new Map<string, NonNullable<Model["plants"]>>();
+  for (const plant of model.plants ?? []) {
+    if (!instancedPlants.has(plant.uid)) continue;
+    const list = plantsByStorey.get(plant.storey) ?? [];
+    list.push(plant);
+    plantsByStorey.set(plant.storey, list);
+  }
+  for (const [storey, plants] of plantsByStorey) {
+    const solid = solidsByUid.get(plants[0].uid);
+    const trades = solid ? solidTrades(solid) : family("plant");
+    build(solid ? solidVisibilityKeys(solid) : trades, storey, () => buildPlants(container(trades),
+      plants, model.plant_models ?? [], center, mode, registry.picks, plantMaterials));
   }
   // A paneling band is the millworker's applied surface on a wall.
   for (const band of model.panelings ?? []) {

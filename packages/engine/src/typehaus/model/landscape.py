@@ -31,6 +31,11 @@ class PlantType(HausModel):
     mature_spread: Length
     # A ``Material`` tag carrying the render colour (``Material.color``).
     foliage_material: str
+    # Optional render colours for the model's other parts (``resolve/plant_models.py``);
+    # an absent one falls back to the foliage material, darkened for a stem.
+    bloom_material: str = ""
+    stem_material: str = ""
+    fruit_material: str = ""
     bloom: str = ""        # colour and season, prose
     rootstock: str = ""    # grafted stock (a dwarf apple's M9 / Bud 9)
     source: str = ""       # the published description the sizes were read from

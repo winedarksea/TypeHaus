@@ -297,6 +297,8 @@ _BOM_WAIVED_COLLECTIONS: dict[str, str] = {
     "floor_opening_pocket_closures": "validated guard evidence over already-billed walls; "
                                      "the relation adds no physical material",
     "timings": "resolve instrumentation",
+    "plant_models": "procedural render meshes the plants instance; the plants themselves "
+                    "bill as `planting`",
     "_tag_index": "a derived lookup cache over the collections above, not a collection of "
                   "its own material — every element it points to is billed under its own "
                   "collection's entry",

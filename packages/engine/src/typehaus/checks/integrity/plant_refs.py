@@ -20,9 +20,11 @@ def plant_type_ref(ctx: CheckContext) -> list[Finding]:
     materials = {m.tag for m in plan.library.materials}
     out: list[Finding] = []
     for ptype in plan.library.plant_types:
-        if ptype.foliage_material not in materials:
-            out.append(_error(f"plant type {ptype.tag} names foliage material "
-                              f"{ptype.foliage_material!r}, which the library lacks", ptype.tag))
+        for role in ("foliage", "bloom", "stem", "fruit"):
+            ref = getattr(ptype, f"{role}_material")
+            if ref and ref not in materials:
+                out.append(_error(f"plant type {ptype.tag} names {role} material {ref!r}, "
+                                  f"which the library lacks", ptype.tag))
     for element in plan.all_elements():
         if isinstance(element, Plant):
             refs = [element.type_ref]

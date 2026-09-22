@@ -6,6 +6,8 @@ from __future__ import annotations
 import base64
 
 from typehaus.emit.gltf.buffers import (
+    _append_colors,
+    _append_indices,
     _append_normals,
     _append_positions,
     _deindex_with_normals,
@@ -46,6 +48,7 @@ class _SceneBuilder:
         self._material_index: dict[tuple[float, float, float, float], int] = {}
         self._meshes: list[dict] = []
         self._nodes: list[dict] = []
+        self._shared: dict[str, int] = {}
 
     def _material(self, color: tuple[float, float, float, float]) -> int:
         index = self._material_index.get(color)
@@ -128,6 +131,50 @@ class _SceneBuilder:
         # A "<trade>|<kind|>|<uid|>" name is a belt-and-suspenders fallback; extras is primary.
         name = "|".join((trade, kind or "", uid or ""))
         self._nodes.append({"mesh": mesh_index, "name": name, "extras": extras})
+
+    def has_shared_mesh(self, key: str) -> bool:
+        return key in self._shared
+
+    def add_shared_mesh(self, key: str, primitives) -> bool:
+        """One glTF mesh many nodes reuse — native glTF instancing (the plant prototypes).
+
+        ``primitives`` is ``(color, positions, normals, colors, indices)`` per primitive, in
+        glTF frame. Unlike :meth:`add_object` it stays INDEXED with the normals it is given:
+        smooth, not de-indexed flat. Returns whether the mesh exists (``key`` already added
+        counts). An empty mesh is not emitted.
+        """
+        if key in self._shared:
+            return True
+        out = []
+        for color, positions, normals, colors, indices in primitives:
+            if not indices:
+                continue
+            args = (self._blob, self._buffer_views, self._accessors)
+            attributes = {"POSITION": _append_positions(*args, positions),
+                          "NORMAL": _append_normals(*args, normals)}
+            if colors:
+                attributes["COLOR_0"] = _append_colors(*args, colors)
+            out.append({"attributes": attributes, "indices": _append_indices(*args, indices),
+                        "material": self._material(color)})
+        if not out:
+            return False
+        self._shared[key] = len(self._meshes)
+        self._meshes.append({"primitives": out, "name": key})
+        return True
+
+    def add_instance(self, mesh_key: str, translation, rotation, scale,
+                     trades: tuple[str, ...], kind: str, uid: str) -> None:
+        """A node placing a shared mesh with a TRS, carrying the usual extras."""
+        if kind not in _SELECTION_KINDS:
+            raise ValueError(f"unknown selection kind {kind!r}")
+        if not trades or any(trade not in TRADES for trade in trades):
+            raise ValueError(f"unknown trade in {trades!r}; expected {sorted(TRADES)}")
+        self._nodes.append({
+            "mesh": self._shared[mesh_key], "name": "|".join((trades[0], kind, uid)),
+            "translation": list(translation), "rotation": list(rotation),
+            "scale": list(scale),
+            "extras": {"trade": trades[0], "trades": list(trades), "kind": kind, "uid": uid},
+        })
 
     def is_empty(self) -> bool:
         return not self._nodes

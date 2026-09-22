@@ -2,7 +2,8 @@
 
 Mature sizes are the published ones where a source is named; the rest are typical and
 marked so. The owner swaps entries here; a swap moves no geometry but a plant's spread.
-Foliage materials carry the render colour (``Material.color``) the 3D plants take.
+Foliage, bloom, bark and fruit materials carry the render colours (``Material.color``) of
+the procedural 3D models, which are built per ``form``: a form swap changes the model.
 """
 
 from __future__ import annotations
@@ -27,6 +28,15 @@ FOLIAGE_MATERIALS = (
     _foliage("foliage-milkweed", "Swamp milkweed, dark green with pink bloom", "#6d7f4a"),
     _foliage("foliage-perennial", "Mixed perennial foliage", "#6f8c4a"),
     _foliage("foliage-apple", "Apple foliage, deep green", "#4f7a3a"),
+    # Bloom, bark and fruit: the models' other parts (a type without one uses its foliage).
+    _foliage("bloom-moonbeam", "Coreopsis 'Moonbeam' bloom, pale yellow", "#efe08a"),
+    _foliage("bloom-allium", "Allium 'Millenium' bloom, rose-purple", "#b0609e"),
+    _foliage("bloom-calamint", "Calamint bloom, white", "#eeeef0"),
+    _foliage("bloom-iris", "Blue flag iris bloom, blue-violet", "#6c5fb0"),
+    _foliage("bloom-milkweed", "Swamp milkweed bloom, pink", "#d77fa0"),
+    _foliage("seed-bluestem", "Little bluestem seed heads, bronze", "#a8744a"),
+    _foliage("bark-apple", "Apple bark, grey-brown", "#6b5a4a"),
+    _foliage("fruit-apple", "Apple fruit, red", "#b3262a"),
 )
 
 PLANT_TYPES = (
@@ -34,6 +44,7 @@ PLANT_TYPES = (
     PlantType(tag="PT-SCH-JAZZ", botanical_name="Schizachyrium scoparium", cultivar="Jazz",
               common_name="little bluestem", form="grass", mature_height=inch(30),
               mature_spread=inch(18), foliage_material="foliage-bluestem",
+              bloom_material="seed-bluestem",
               bloom="blue-green summer, burgundy-bronze autumn",
               source=("https://www.missouribotanicalgarden.org/PlantFinder/"
                       "PlantFinderDetails.aspx?taxonid=299967&isprofile=0&pt=11 "
@@ -41,7 +52,9 @@ PLANT_TYPES = (
     PlantType(tag="PT-COR-MOONBEAM", botanical_name="Coreopsis verticillata",
               cultivar="Moonbeam", common_name="threadleaf coreopsis", form="perennial",
               mature_height=inch(18), mature_spread=inch(24),
-              foliage_material="foliage-moonbeam", bloom="pale yellow, June-September",
+              foliage_material="foliage-moonbeam",
+              bloom_material="bloom-moonbeam",
+              bloom="pale yellow, June-September",
               source=("https://www.northcreeknurseries.com/plant-name/"
                       "Coreopsis-verticillata-Moonbeam (18 in mound, rhizomatous to ~24 in: "
                       "divide every 3-4 years to hold the grid)")),
@@ -61,19 +74,23 @@ PLANT_TYPES = (
     PlantType(tag="PT-IRI-VERS", botanical_name="Iris versicolor",
               common_name="blue flag iris", form="perennial", mature_height=inch(30),
               mature_spread=inch(18), foliage_material="foliage-iris",
+              bloom_material="bloom-iris",
               bloom="blue-violet, May-June", source=_TYPICAL),
     PlantType(tag="PT-ASC-INCA", botanical_name="Asclepias incarnata",
               common_name="swamp milkweed", form="perennial", mature_height=inch(48),
               mature_spread=inch(24), foliage_material="foliage-milkweed",
+              bloom_material="bloom-milkweed",
               bloom="pink, July-August", source=_TYPICAL),
     # --- the walk pockets (a cycled palette, 16 in sonotube voids) -------------------------
     PlantType(tag="PT-ALL-MILLENIUM", botanical_name="Allium", cultivar="Millenium",
               common_name="ornamental onion", form="perennial", mature_height=inch(18),
               mature_spread=inch(15), foliage_material="foliage-perennial",
+              bloom_material="bloom-allium",
               bloom="rose-purple, July-August", source=_TYPICAL),
     PlantType(tag="PT-CAL-NEPETA", botanical_name="Calamintha nepeta",
               common_name="lesser calamint", form="perennial", mature_height=inch(15),
               mature_spread=inch(18), foliage_material="foliage-perennial",
+              bloom_material="bloom-calamint",
               bloom="white, July-October", source=_TYPICAL),
     PlantType(tag="PT-SPO-TARA", botanical_name="Sporobolus heterolepis", cultivar="Tara",
               common_name="prairie dropseed", form="grass", mature_height=inch(24),
@@ -86,14 +103,20 @@ PLANT_TYPES = (
     # --- the espaliers: three Minnesota cultivars that pollinate one another --------------
     PlantType(tag="PT-MAL-HONEYCRISP", botanical_name="Malus domestica", cultivar="Honeycrisp",
               common_name="apple", form="tree", mature_height=ft(8), mature_spread=ft(6),
-              foliage_material="foliage-apple", bloom="white, May", rootstock="Bud 9",
+              foliage_material="foliage-apple",
+              stem_material="bark-apple", fruit_material="fruit-apple",
+              bloom="white, May", rootstock="Bud 9",
               source="dwarf rootstock held at the trellis height by pruning"),
     PlantType(tag="PT-MAL-ZESTAR", botanical_name="Malus domestica", cultivar="Zestar!",
               common_name="apple", form="tree", mature_height=ft(8), mature_spread=ft(6),
-              foliage_material="foliage-apple", bloom="white, May", rootstock="M9",
+              foliage_material="foliage-apple",
+              stem_material="bark-apple", fruit_material="fruit-apple",
+              bloom="white, May", rootstock="M9",
               source="dwarf rootstock held at the trellis height by pruning"),
     PlantType(tag="PT-MAL-HARALSON", botanical_name="Malus domestica", cultivar="Haralson",
               common_name="apple", form="tree", mature_height=ft(8), mature_spread=ft(6),
-              foliage_material="foliage-apple", bloom="white, May", rootstock="Bud 9",
+              foliage_material="foliage-apple",
+              stem_material="bark-apple", fruit_material="fruit-apple",
+              bloom="white, May", rootstock="Bud 9",
               source="dwarf rootstock held at the trellis height by pruning"),
 )

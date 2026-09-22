@@ -42,6 +42,38 @@ def _append_normals(blob: bytearray, views: list[dict], accessors: list[dict],
     return len(accessors) - 1
 
 
+def _append_colors(blob: bytearray, views: list[dict], accessors: list[dict],
+                   colors: list[Vec3]) -> int:
+    """``COLOR_0`` as float RGB — multiplied into the material's base colour."""
+    _align(blob)
+    offset = len(blob)
+    for (r, g, b) in colors:
+        blob += struct.pack("<fff", r, g, b)
+    views.append({"buffer": 0, "byteOffset": offset,
+                  "byteLength": len(colors) * 12, "target": 34962})
+    accessors.append({
+        "bufferView": len(views) - 1, "componentType": 5126, "count": len(colors),
+        "type": "VEC3",
+    })
+    return len(accessors) - 1
+
+
+def _append_indices(blob: bytearray, views: list[dict], accessors: list[dict],
+                    indices: list[int]) -> int:
+    """An element-array accessor: uint16 while the vertices fit, else uint32."""
+    _align(blob)
+    offset = len(blob)
+    wide = max(indices, default=0) > 65535
+    blob += struct.pack(f"<{len(indices)}{'I' if wide else 'H'}", *indices)
+    views.append({"buffer": 0, "byteOffset": offset,
+                  "byteLength": len(indices) * (4 if wide else 2), "target": 34963})
+    accessors.append({
+        "bufferView": len(views) - 1, "componentType": 5125 if wide else 5123,
+        "count": len(indices), "type": "SCALAR",
+    })
+    return len(accessors) - 1
+
+
 def _face_normal(a: Vec3, b: Vec3, c: Vec3) -> Vec3 | None:
     """Unit outward normal of triangle a→b→c (right-hand rule), or ``None`` if degenerate."""
     ux, uy, uz = b[0] - a[0], b[1] - a[1], b[2] - a[2]

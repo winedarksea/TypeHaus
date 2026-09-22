@@ -63,6 +63,7 @@ from typehaus.emit.gltf.palette import (  # noqa: F401
     _solid_color,
     authored_colors,
 )
+from typehaus.emit.gltf.plants import add_plants, plant_instance_uids
 from typehaus.emit.gltf.rebar import add_rebar
 from typehaus.emit.gltf.roofs import _add_roof
 from typehaus.emit.gltf.scene import _SceneBuilder
@@ -169,7 +170,11 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
                 scene.add_object(zb, ("flooring",), kind="room", uid=room.uid)
             scene.add_object(mb, ("flooring",), kind="room", uid=room.uid)
 
+    # A plant with a procedural model draws as an instance (→ plants.py), not its prism.
+    instanced = plant_instance_uids(model)
     for solid in sorted(model.solids, key=lambda item: item.uid):
+        if solid.uid in instanced:
+            continue
         # A run — handrail, drain, raceway — is one mitred tube per leg rather than a plan
         # prism (→ resolve/sweep.py). One ``add_object`` either way.
         legs = sweep_legs(solid.sweep) if solid.sweep is not None else []
@@ -281,6 +286,7 @@ def emit_gltf_dict(model: ResolvedModel, lod: str = "core") -> tuple[dict, bytes
             _add_member(mb, member)
         scene.add_object(mb, ("framing",), kind="solid", uid=soffit.uid)
 
+    add_plants(scene, model)
     _add_canvas_objects(scene, model)
     add_rebar(scene, model)
 

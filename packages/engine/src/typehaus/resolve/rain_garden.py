@@ -7,7 +7,7 @@ a basin whose sides are planes at one slope.
 
 from __future__ import annotations
 
-from shapely.geometry import Polygon
+from shapely.geometry import Point, Polygon
 
 from typehaus.model.landscape import RainGarden
 
@@ -56,3 +56,16 @@ def ponding_volume_m3(el: RainGarden) -> float:
     top = _inset(rim, run * (full - depth)).area
     mid = _inset(rim, run * (full - depth / 2.0)).area
     return depth / 6.0 * (top + 4.0 * mid + bottom)
+
+
+def surface_z_m(el: RainGarden, x: float, y: float) -> float | None:
+    """The basin's finished surface at (x, y): the floor inside the floor ring, the side
+    slope (rim less distance-in-from-rim over ``side_slope``) between it and the rim, and
+    ``None`` outside the rim."""
+    rim = _polygon(el)
+    point = Point(x, y)
+    if not rim.is_valid or not rim.covers(point):
+        return None
+    floor = floor_z_m(el)
+    run = el.rim_elevation.meters - rim.exterior.distance(point) / max(el.side_slope, 1e-9)
+    return max(floor, min(run, el.rim_elevation.meters))

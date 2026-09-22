@@ -110,9 +110,8 @@ PART_COLORS: dict[str, tuple[float, float, float, float]] = {
     # hue the viewer already spends on UI state — selection, hover and the measure overlay all
     # sit in that band — so a vivid plant reads as "this object is highlighted" rather than as
     # a plant. Pulling the chroma down to a mid olive-green keeps it unmistakably foliage while
-    # staying inert. It also cannot collide with the glTF export's palette
-    # (``emit/gltf/palette._PALETTE``), which carries no green at all — the site sheet is soil
-    # brown, not lawn — so this is the only green either renderer draws.
+    # staying inert. The garden plants draw in their catalog materials' own colours
+    # (``resolve/plant_models.py``), not in this palette.
     "foliage": (0.34, 0.45, 0.29, 1.0),
     # Fired pot clay. Warmer and darker than ``wood`` so a pot beside a casegood is still a
     # pot, and far enough off ``earth``/``structure`` brown to read as glazed rather than dirt.

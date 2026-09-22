@@ -23,6 +23,7 @@ from typehaus.resolve.assembly_material import solid_material_ref
 from typehaus.resolve.geometry_build import wall_trades
 from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedModel
+from typehaus.server.model_json_plants import plants_json
 from typehaus.server.model_json_shared import (
     _enum_value,
     _layer_json,
@@ -252,6 +253,8 @@ def shell_json(model: ResolvedModel, provenance: Provenance | None) -> dict[str,
              "provenance": _provenance(provenance, roof.tag)}
             for roof in sorted(model.roofs, key=lambda item: item.uid)
         ],
+        # Plant prototypes + instances (→ server/model_json_plants.py).
+        **plants_json(model),
     }
 
 
