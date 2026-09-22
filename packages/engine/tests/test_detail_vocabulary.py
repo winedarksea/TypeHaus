@@ -878,7 +878,7 @@ def test_sill_gasket_prefers_the_authored_framing_spec():
 
 def test_thermal_break_spec_reads_the_slab_source(catlin_model):
     """``Slab.perimeter_thermal_break`` is read off the cut slab's plan source. The two
-    slabs-on-grade (basement + garage) author the 1" XPS edge break; a slab that authors
+    slabs-on-grade (basement + garage) author an XPS edge break; a slab that authors
     none keeps the pinned fallback.
 
     The negative case, "a slab with no authored edge break", is the garden slab — cast
@@ -888,10 +888,11 @@ def test_thermal_break_spec_reads_the_slab_source(catlin_model):
 
     slabs = {s.tag: s for s in catlin_model.solids if s.category == "slab"}
     assert slabs
-    for tag in ("SL-B-FLOOR", "SL-G-FLOOR"):
+    # FOAMULAR 1000 starts at 1.5"; the garage edge carries no court thrust and keeps 1".
+    for tag, thickness in (("SL-B-FLOOR", 1.5), ("SL-G-FLOOR", 1.0)):
         spec = thermal_break_spec(catlin_model, slabs[tag])
         assert spec is not None and spec.material_ref == "xps"
-        assert spec.thickness == inch(1)
+        assert spec.thickness == inch(thickness)
     assert thermal_break_spec(catlin_model, slabs["SL-SG-FLOOR"]) is None
 
 
