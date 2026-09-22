@@ -29,7 +29,8 @@ from library import (
 from params import (breezeway, foundations, hp1_north_pad, hp3_pad, landscape_gardens,
                     landscape_walk, main_deck, raised_garden, roof_trim, second_deck, solar,
                     sunken_garden)
-from plan import (appliance_types, assemblies, backing, backing_wet, circuits, countertops,
+from plan import (appliance_types, assemblies, backing, backing_wet, braced_walls,
+                  circuits, countertops,
                   electrical, electrical_attic, equipment_types,
                   fixture_types, fixtures, furniture_types, landscape, lighting,
                   lighting_attic, lighting_types, mep, millwork, placeables, plant_types,
@@ -340,7 +341,8 @@ PLAN = (
          *placeables.MAIN_PLACEABLES, *views.DETAIL_SLICES,
          *millwork.MILLWORK, *millwork.MAIN_SHELVES,
          *countertops.MAIN_COUNTERTOPS,
-         *backing.MAIN_BACKING, *backing_wet.MAIN_WET_BACKING],
+         *backing.MAIN_BACKING, *backing_wet.MAIN_WET_BACKING,
+         *braced_walls.MAIN_BRACED_WALLS, *braced_walls.MAIN_BRACED_CONNECTORS],
     )
     .with_elements("second", [*second.ELEMENTS, *attic_studio.SECOND_ELEMENTS,
                                 *fixtures.SECOND_FIXTURES,
@@ -352,7 +354,9 @@ PLAN = (
                                 *millwork.SECOND_SHELVES,
                                 *countertops.SECOND_COUNTERTOPS,
                                 *backing.SECOND_BACKING,
-                                *backing_wet.SECOND_WET_BACKING])
+                                *backing_wet.SECOND_WET_BACKING,
+                                *braced_walls.SECOND_BRACED_WALLS,
+                                *braced_walls.SECOND_BRACED_CONNECTORS])
     .with_elements("attic", [*attic.ELEMENTS, *attic_studio.ATTIC_ELEMENTS,
                              *fixtures.ATTIC_FIXTURES,
                              *roof_trim.ATTIC_ELEMENTS,
@@ -375,7 +379,9 @@ PLAN = (
                               *lighting.GARAGE_LIGHTING,
                               *placeables.GARAGE_PLACEABLES,
                               *wind_clamps.GARAGE_WALL_WIND_CLAMPS,
-                              *wind_clamps.GARAGE_ROOF_WIND_CLAMPS])
+                              *wind_clamps.GARAGE_ROOF_WIND_CLAMPS,
+                              *braced_walls.GARAGE_BRACED_WALLS,
+                              *braced_walls.GARAGE_BRACED_CONNECTORS])
     .with_elements("g-deck", [*mep.GARAGE_DECK_ELEMENTS])
     # --- court (sunken garden / porch / balcony) --------------------------------------------
     .with_elements("court-low", [*sunken_garden.BASEMENT_ELEMENTS])
