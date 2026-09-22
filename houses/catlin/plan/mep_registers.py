@@ -568,12 +568,13 @@ REGISTERS_BASEMENT = [
     # adjacent room's grille doesn't satisfy it. **Deleting this terminal is a hard
     # code.R303_1_light_and_ventilation FAIL.**
     #
-    # (19', 26'): the entire play-room ceiling is SL-M-DECK's 14 3/8" solid concrete with NO
+    # (19', 25'): the entire play-room ceiling is SL-M-DECK's 14 3/8" solid concrete with NO
     # cavity at all, so every foot of that run is surface-mounted; entering at the room's
     # west edge and stopping just inside cuts about eight feet of exposed duct. It still
-    # throws away from FURN-B-PLAY-TV on the east wall.
+    # throws away from FURN-B-PLAY-TV on the east wall. It moved 1'-0" south with the duct
+    # on 2026-09-22, so the duct reaches W-B-CN without passing over ST-B2M's first riser.
     Register(uid="CBRV02AAAA", tag="REG-B-SUP2", kind=DuctSystem.SUPPLY, room="RM-B-PLAY-N",
-            position=pt(ft(19), ft(26)), duct_ref="DU-B-ERV-R-PLAY",
+            position=pt(ft(19), ft(25)), duct_ref="DU-B-ERV-R-PLAY",
             type_ref="REG-T-ERV-SUP", design_cfm=30,
             mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
     # THE WORKSHOP TERMINAL IS A BENCH HOOD, NOT A CEILING DIFFUSER: a diffuser eight feet
@@ -615,12 +616,14 @@ REGISTERS_BASEMENT = [
             mount=Mount(kind=MountKind.CEILING, elevation=ft(7))),
     # RM-B-BATH. Filed as EXHAUST rather than RETURN, like RM-S-BATH1's terminal and unlike
     # the basement's other two stale pickups: a bathroom's air is pulled and not
-    # recirculated. It sits over the water closet at the room's west end, the far corner from
-    # the door, so the room's makeup air crosses it on the way through.
+    # recirculated. It is a SIDEWALL grille high on W-B-STR3B, the west wall, far from the
+    # door, so the room's makeup air crosses it. Since 2026-09-22: the ceiling grille at
+    # (12', 24'-1 5/8") was fed through ST-B2M's stringer. x is the bath-side paint face plus
+    # 1"; the base at 7'-1 1/4" centres the 7" face on the duct.
     Register(uid="CBRV05AAAA", tag="REG-B-EXH1", kind=DuctSystem.EXHAUST, room="RM-B-BATH",
-            position=pt(ft(12), inch(289.625)), duct_ref="DU-B-ERV-R-BATH",
-            type_ref="REG-T-ERV-EXH", design_cfm=20,
-            mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+            position=pt(ft(10, 4), ft(24)), duct_ref="DU-B-ERV-R-BATH",
+            type_ref="REG-T-ERV-EXH-WALL", design_cfm=20,
+            mount=Mount(kind=MountKind.WALL, elevation=inch(85.25)), rotation=deg(90)),
 ]
 
 # The attic ERV terminals: extract only. Fresh air is off System 1 (REG-A-HP-WEST, the

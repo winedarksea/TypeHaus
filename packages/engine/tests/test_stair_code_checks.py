@@ -22,7 +22,9 @@ from typehaus.checks.code.mn_residential.stairs import (
 )
 from typehaus.findings import Result
 from typehaus.quantities import inch
-from typehaus.resolve.model import FramedMember, ResolvedFloor, ResolvedStair
+from typehaus.resolve.model import FramedMember, ResolvedDuct, ResolvedFloor, ResolvedStair
+from typehaus.routing.diagnostics import Mobility, mobility_of
+from typehaus.routing.obstacles import hard_prisms
 
 
 _RISER = 0.19
@@ -55,9 +57,14 @@ def _deck_at(z: float) -> ResolvedFloor:
                          deck_voids=(), deck_z0_m=z, deck_z1_m=z + 0.018)
 
 
-def _ctx(stair, floors=()):
-    return SimpleNamespace(model=SimpleNamespace(stairs=[stair], floors=list(floors),
-                                                 roofs=[], soffits=[]))
+def _model(stairs, floors=(), roofs=(), ducts=()):
+    return SimpleNamespace(stairs=list(stairs), floors=list(floors), roofs=list(roofs),
+                           soffits=[], pipe_runs=[], ducts=list(ducts), conduits=[],
+                           plan=SimpleNamespace(all_elements=lambda: []))
+
+
+def _ctx(stair, floors=(), ducts=()):
+    return SimpleNamespace(model=_model([stair], floors, ducts=ducts))
 
 
 # ------------------------------------------------------------------- headroom
@@ -84,8 +91,7 @@ def test_headroom_is_not_applicable_to_a_flight_under_open_sky():
     grade. That is a verdict, not a gap, and it is what ST-SG-PORCH gets in catlin."""
     roof = SimpleNamespace(tag="RF", footprint=[(20.0, 20.0), (30.0, 20.0),
                                                 (30.0, 30.0), (20.0, 30.0)])
-    ctx = SimpleNamespace(model=SimpleNamespace(stairs=[_flight()], floors=[],
-                                                roofs=[roof], soffits=[]))
+    ctx = SimpleNamespace(model=_model([_flight()], roofs=[roof]))
     findings = stair_headroom(ctx)
     assert [f.result for f in findings] == [Result.NOT_APPLICABLE]
     assert "open to the sky" in findings[0].message
@@ -96,8 +102,7 @@ def test_headroom_stays_unknown_when_something_covers_the_flight_from_below():
     established, so the verdict stays UNKNOWN rather than sliding into N/A."""
     roof = SimpleNamespace(tag="RF", footprint=[(20.0, 20.0), (30.0, 20.0),
                                                (30.0, 30.0), (20.0, 30.0)])
-    ctx = SimpleNamespace(model=SimpleNamespace(stairs=[_flight()], floors=[_deck_at(-0.5)],
-                                                roofs=[roof], soffits=[]))
+    ctx = SimpleNamespace(model=_model([_flight()], [_deck_at(-0.5)], [roof]))
     assert [f.result for f in stair_headroom(ctx)] == [Result.UNKNOWN]
 
 
@@ -105,6 +110,71 @@ def test_headroom_ignores_structure_below_the_walk():
     """A deck under the flight (the floor it springs from) is not overhead."""
     findings = stair_headroom(_ctx(_flight(), [_deck_at(-0.5), _deck_at(3.5)]))
     assert [f.result for f in findings] == [Result.PASS]
+
+
+_DUCT_R = inch(3).meters  # a 6" round
+
+
+def _duct(tag: str, y: float, z: float) -> ResolvedDuct:
+    """A 6" round crossing the flight along x at plan ``y``, centreline ``z``."""
+    return ResolvedDuct(uid=tag, tag=tag, storey="main", system="supply",
+                        path=((-1.0, y), (2.0, y)), width_m=2 * _DUCT_R, depth_m=2 * _DUCT_R,
+                        routing="exposed", floor_ref=None, crossings=(), conflicts=(),
+                        depth_ok=True, diameter_m=2 * _DUCT_R, z_m=(z, z))
+
+
+def _nosing_z_at(y: float) -> float:
+    """The synthetic flight's sloped nosing line at plan ``y`` (station i: y=i*going)."""
+    return _RISER * (1 + y / _GOING)
+
+
+def test_headroom_fails_on_a_duct_60_inches_over_the_nosings():
+    y = 0.4
+    high = _nosing_z_at(y + _DUCT_R)  # the worst point under the duct's plan width
+    ctx = _ctx(_flight(), [_deck_at(3.5)],
+               [_duct("DU-LOW", y, high + inch(60).meters + _DUCT_R)])
+    findings = stair_headroom(ctx)
+    assert [f.result for f in findings] == [Result.FAIL]
+    assert "DU-LOW" in findings[0].element_tags
+    assert "DU-LOW 60.0\"" in findings[0].message
+
+
+def test_headroom_passes_a_duct_82_inches_over_the_nosings():
+    y = 0.4
+    high = _nosing_z_at(y + _DUCT_R)
+    ctx = _ctx(_flight(), [_deck_at(3.5)],
+               [_duct("DU-HIGH", y, high + inch(82).meters + _DUCT_R)])
+    assert [f.result for f in stair_headroom(ctx)] == [Result.PASS]
+
+
+def test_headroom_ignores_a_run_under_the_flight():
+    """Under-stair storage: a duct below the treads is not overhead of anybody."""
+    ctx = _ctx(_flight(), [_deck_at(3.5)], [_duct("DU-UNDER", 0.4, 0.1)])
+    findings = stair_headroom(ctx)
+    assert [f.result for f in findings] == [Result.PASS]
+    assert "DU-UNDER" not in findings[0].message
+
+
+def test_headroom_names_every_run_below_the_line():
+    ctx = _ctx(_flight(), [_deck_at(3.5)],
+               [_duct("DU-A", 0.3, 1.9), _duct("DU-B", 0.6, 2.2)])
+    findings = stair_headroom(ctx)
+    assert [f.result for f in findings] == [Result.FAIL]
+    assert {"DU-A", "DU-B"} <= set(findings[0].element_tags)
+    assert "DU-A" in findings[0].message and "DU-B" in findings[0].message
+
+
+def test_the_router_refuses_a_flights_headroom(catlin_ctx):
+    """``kind="stair"`` blocks a point over a tread at 60" and not at 100", and is FIXED."""
+    from typehaus.resolve.stair_headroom import headroom_prisms
+
+    going = next(p for p in headroom_prisms(catlin_ctx.model) if p.stair_tag == "ST-B2M")
+    centre = going.footprint.centroid.coords[0]
+    stair = [p for p in hard_prisms(catlin_ctx.model, 0.0762)
+             if p.kind == "stair" and p.tag == "ST-B2M"]  # ST-M2S stands right over it
+    assert any(p.blocks(centre, going.walk_z_m + inch(60).meters) for p in stair)
+    assert not any(p.blocks(centre, going.walk_z_m + inch(100).meters) for p in stair)
+    assert mobility_of("stair") is Mobility.FIXED
 
 
 def test_catlin_stair_headroom_is_measured_and_passes(catlin_ctx):

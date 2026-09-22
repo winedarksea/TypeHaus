@@ -115,10 +115,15 @@ Every radial is 4" galvanized. `Δp_duct` is §2's formula; `Δp_terminal` is §
 | run | Q (cfm) | developed (ft) | elbows | L_eff (ft) | V (fpm) | P_v (in.) | Re | f | Δp_duct (in.) |
 |---|---|---|---|---|---|---|---|---|---|
 | `DU-B-ERV-R-SAUNA-EXH` | 20 | 39.08 | 5 | 51.58 | 229 | 0.00327 | 7,811 | 0.0342 | **0.0173** |
-| `DU-B-ERV-R-PLAY` | 30 | 15.50 | 2 | 20.50 | 344 | 0.00737 | 11,717 | 0.0311 | **0.0141** |
+| `DU-B-ERV-R-PLAY` | 30 | 30.48 | 8 | 50.48 | 344 | 0.00737 | 11,717 | 0.0311 | **0.0347** |
 | `DU-M-ERV-R-LIVING` | 20 | 44.93 | 5 | 57.43 | 229 | 0.00327 | 7,812 | 0.0342 | 0.0193 |
 | `DU-M-ERV-R-PLANT` | 5 | 23.32 | 1 | 25.82 | 57 | 0.00020 | 1,953 | — | ~0.0005 |
 | `DU-A-ERV-R-BED3` | 5 | 54.05 | 6 | 69.05 | 57 | 0.00020 | 1,953 | — | ~0.001 |
+
+`DU-B-ERV-R-PLAY` was 15.50 ft on 2 elbows (0.0141) until 2026-09-22, when it came off
+`ST-B2M` (R311.7.2 headroom) and went round through `SF-B-BATH`: 0.5 + 10.90 + 0.60 ft of
+drop, lane and rise, 1.50 + 2.75 + 1.04 + 4.50 + 6.44 + 2.25 ft of level legs, and 8 turns.
+0.0311 x (50.48 / 0.3333) x 0.00737 = 0.0347.
 
 The last two rows are the point worth writing down: **`DU-A-ERV-R-BED3` is the LONGEST
 radial in the house at 54'-1", and it is nowhere near the worst.** Static goes as Q², and at
@@ -285,14 +290,14 @@ because "at y=35'-6" an 8" envelope would stand 4 5/8" inside the stud cavity".
 
 | term | working | Δp (in. w.g.) |
 |---|---|---|
-| `DU-B-ERV-R-PLAY` | §3 | 0.0141 |
+| `DU-B-ERV-R-PLAY` | §3 | 0.0347 |
 | terminal `REG-T-ERV-SUP` | linear at 30 cfm = the curve's own point, 9.00 Pa / 249.089 | 0.0361 |
 | plenum `EQ-B-ERV-MAN-SUP` at 60 cfm | the curve's own point, 0.50 Pa / 249.089 | 0.0020 |
 | `DU-ERV-OA` | 210 cfm in **8"**, 13.74 ft + 4 x **6.5**, f 0.0234, P_v 0.02256 | 0.0315 |
 | `DU-B-ERV-SUP-TRUNK` | 210 cfm, 3.03 ft + **2** x 4.5 | 0.0387 |
 | `DU-ERV-RISER-SUP` | 210 cfm, 28.43 ft + 3 x 4.5 | 0.1348 |
 | `DU-S-ERV-HP-FEED` | 100 cfm, 44.20 ft + 7 x 4.5 | 0.0630 |
-| | | **0.3200** |
+| | | **0.3406** |
 
 **This column barely moved and the chase re-pack is why it barely moved.** All four risers
 were re-stationed onto the shaft's own clear width — `DU-ERV-RISER-SUP` 0'-5" -> 9 5/8",
@@ -302,10 +307,12 @@ it, its basement leg shrank by it, and its developed length is identical to the 
 `DU-ERV-RISER-SUP`'s basement leg shrank 4 5/8" (-0.0015) and `DU-S-ERV-HP-FEED`'s attic jog
 shrank from 7" to 2 3/8" (-0.0003) because the riser head came out to meet it.
 
-**EXTRACT GOVERNS, at 0.3379 in. w.g. against supply's 0.3200 — by eighteen
-thousandths.** Off the authored fan curve, between (0.3, 208) and (0.4, 206):
+**SUPPLY GOVERNS SINCE 2026-09-22, at 0.3406 in. w.g. against extract's 0.3379 — by
+three thousandths.** It was extract by eighteen (supply 0.3200) until `DU-B-ERV-R-PLAY`
+came off the basement stair (§3). Off the authored fan curve, between (0.3, 208) and
+(0.4, 206):
 
-> 208 − (0.0379 / 0.1) x 2 = **207.2 cfm delivered**
+> 208 − (0.0406 / 0.1) x 2 = **207.2 cfm delivered** (207.19; extract's 0.3379 gave 207.24)
 
 against 205 cfm required by MN 1322 R403.5 and 210 cfm of design intent. **The system clears
 the code rate by 1.1 % and falls 1.3 % short of the intent.**
@@ -336,7 +343,7 @@ the code rate by 1.1 % and falls 1.3 % short of the intent.**
 > **The code margin is 1.1 %**, which is 2.2 cfm. It was 0.2 cfm before the rebalance and
 > 0.7 cfm before the hoods moved. That is a real improvement and it is still a commissioning
 > measurement rather than a calculation: §8's instruction to measure with a low-flow hood
-> stands, and it is now the EXTRACT side to hood.
+> stands, and since 2026-09-22 it is the SUPPLY side (`DU-B-ERV-R-PLAY`) to hood.
 
 **The rejected build, for the record.** Insulated flex is what a Twin Cities contractor
 reaches for on a 6" ERV leg. The same two outdoor runs, worked at flex's roughness and bend
@@ -399,7 +406,8 @@ the static budget, end to end: **0.2985 -> 0.0752 in. w.g.**, and the delivered 
 five thousandths behind. **The extract elbow audit this list used to name is spent** — D3
 took the sixth turn off the extract riser and the third off the return trunk — and the gap
 it could work in is 0.0051 in., so the two columns must now come down together. None of them
-is a purchase; all of them are geometry.
+is a purchase; all of them are geometry. (Since 2026-09-22 supply leads by 0.0027 in.: the
+play radial's detour round the basement stair, §3, is the newest term on that side.)
 
 ## 8. Commissioning — and the real risk is the measurement
 
@@ -447,8 +455,9 @@ measured one.
   polyline from the tap station.
 
   Run that through §6's extract column in place of the 0.1886 and it falls
-  **0.3379 -> 0.2240 in.**, at which point EXTRACT NO LONGER GOVERNS: supply's 0.3200 does,
-  and the delivered figure off the fan curve is **207.6 cfm** rather than 207.2. That is a
+  **0.3379 -> 0.2240 in.**, at which point extract is further behind: supply's 0.3406 governs
+  (it was 0.3200, and 207.6 cfm, before `DU-B-ERV-R-PLAY` left the stair), and the delivered
+  figure off the fan curve is **207.2 cfm** either way. That is a
   reading and not a revision — §6 stays as it is, because §6 grades what the model types and
   the model types one flow per run. What this bullet now says is how much the honest number
   differs, and the answer is **about a tenth of an inch, all of it on the side that appeared

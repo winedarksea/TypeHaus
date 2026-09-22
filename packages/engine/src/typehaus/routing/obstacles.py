@@ -49,7 +49,7 @@ class HardPrism:
     """A plan footprint and a z band the route may not enter. Already inflated."""
 
     tag: str
-    kind: str  # "opening" | "void" | "concrete" | "run" | "avoid"
+    kind: str  # "opening" | "void" | "stair" | "member" | "concrete" | "run" | "avoid"
     footprint: Any  # shapely Polygon
     z0_m: float
     z1_m: float
@@ -162,6 +162,23 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
                                  z0_m=low - inflate,
                                  z1_m=floor.deck_z1_m + inflate))
 
+    # A flight's R311.7.2 headroom and its own structure (``resolve/stair_headroom``, the
+    # volume the check grades). Fixed: nobody moves a stair to make room for a duct. Goings
+    # are PAIRED here (z band the pair's envelope): every riser was a lattice line, and one
+    # per going took DU-B-ERV-R-SAUNA-SUP over MAX_LATTICE_NODES. The check stays exact.
+    from itertools import groupby
+
+    from typehaus.resolve.stair_headroom import headroom_prisms
+
+    for _key, flight in groupby(headroom_prisms(model), key=lambda p: (p.stair_tag, p.flight)):
+        goings = list(flight)
+        for start in range(0, len(goings), _GOINGS_PER_PRISM):
+            pair = goings[start:start + _GOINGS_PER_PRISM]
+            out.append(HardPrism(tag=pair[0].stair_tag, kind="stair",
+                                 footprint=_going_footprint(pair, inflate),
+                                 z0_m=min(g.z0_m for g in pair) - inflate,
+                                 z1_m=max(g.z1_m for g in pair) + inflate))
+
     # Open-web truss WEBS, where the deck states its fabricator's panel layout. An
     # open-web member hands a service its 8 7/8" chord-to-chord space and nothing narrowed
     # it ALONG the span, so the router read a floor truss as a continuous chase and would
@@ -249,6 +266,48 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
             out.append(HardPrism(tag=tag, kind="avoid", footprint=poly.buffer(inflate),
                                  z0_m=float("-inf"), z1_m=float("inf")))
     return out
+
+
+_GOINGS_PER_PRISM = 2
+
+
+def _going_footprint(goings: list[Any], inflate: float) -> Any:
+    """Consecutive goings, inflated across the flight and past its ends but NOT at a riser.
+
+    Every prism's bounds are lattice lines, so a going grown on all four sides put two lines
+    at each riser; adjacent goings meeting on the shared station line put one. Both keep the
+    same clearance around the flight as a whole. Mitred, because arc vertices are lines too.
+    """
+    from shapely.geometry import Polygon
+
+    from typehaus.resolve.overlay import intersection
+
+    def across(edge: Any, reach: float) -> tuple[Any, Any]:
+        (ax, ay), (bx, by) = edge
+        length = ((bx - ax) ** 2 + (by - ay) ** 2) ** 0.5 or 1.0
+        ux, uy = (bx - ax) / length, (by - ay) / length
+        return (ax - ux * reach, ay - uy * reach), (bx + ux * reach, by + uy * reach)
+
+    def along(edge: Any, other: Any, reach: float) -> tuple[Any, Any]:
+        mid = ((edge[0][0] + edge[1][0]) / 2.0, (edge[0][1] + edge[1][1]) / 2.0)
+        far = ((other[0][0] + other[1][0]) / 2.0, (other[0][1] + other[1][1]) / 2.0)
+        length = ((mid[0] - far[0]) ** 2 + (mid[1] - far[1]) ** 2) ** 0.5 or 1.0
+        dx, dy = (mid[0] - far[0]) / length * reach, (mid[1] - far[1]) / length * reach
+        return tuple((x + dx, y + dy) for x, y in edge)
+
+    from typehaus.resolve.overlay import union_all
+
+    head, tail = goings[0], goings[-1]
+    grown = union_all([g.footprint for g in goings]).buffer(inflate, join_style="mitre")
+    near = along(head.near, head.far, inflate) if head.first else head.near
+    far = along(tail.far, tail.near, inflate) if tail.last else tail.far
+    big = 10.0 * (inflate + 1.0)
+    (n0, n1), (f0, f1) = across(near, big), across(far, big)
+    strip = Polygon([n0, n1, f1, f0])
+    if not strip.is_valid:
+        return grown
+    clipped = intersection(grown, strip)
+    return grown if clipped.is_empty else clipped
 
 
 def soft_prisms(model: ResolvedModel) -> list[SoftPrism]:

@@ -1301,13 +1301,12 @@ ROOMS = [
     # call the gym made, one wall west. `mep.run_in_finished_volume` quotes it and still
     # holds both runs to the 6'-8" headroom line — see the retirement note above SOFFITS.
     #
-    # ** IT CARRIES FOUR RUNS SINCE D3 (2026-09-19), NOT TWO, AND THAT IS THE TRADE. ** The
-    # x=17'-0" strip between the stair and W-B-CN is the only north-south corridor in the
-    # east half of this basement that is neither inside the pour nor inside a finished
-    # room's air, so `DU-B-ERV-R-GYM` and `DU-B-ERV-R-PLAY` now ride it stacked — at -23 15/16"
-    # and -19 7/16" — and `DU-B-ERV-R-BATH` crosses the hall's north end. The gym stopped
-    # carrying its own radial in the same move. This room is where the basement's ductwork
-    # is visible, and it is visible here because the owner said it could be.
+    # ** NOTHING CROSSES THE FLIGHT (2026-09-22). ** D3 laid GYM and PLAY stacked down
+    # x=17'-0" from y=29'-6" and BATH across the north end — i.e. over ST-B2M, 1" to 17" into
+    # the 6'-8" over its nosings. `code.R311_7_2_stair_headroom` counts runs now, so the
+    # radials and both conduits reach the hall SOUTH of the stair foot (GYM through the
+    # workshop, the rest through SF-B-BATH). The declaration below still carries the hall;
+    # the flight is graded on its own sloped line, not the flat 6'-8" this room is held to.
     Room(uid="CBR406AAAA", tag="RM-B-STAIR", seed=pt(inch(186), ft(22)),
          occupancy=Occupancy.STAIR, floor_finish="sealed-concrete",
          exposed_services="owner accepts exposed services in the basement: three ERV branches and the sauna vent cross the hall in the open, painted out with the joists, the same as the gym next door"),
@@ -1500,7 +1499,7 @@ PANELING = [
 
 # --- RM-B-BATH's wet-wall bulkhead --------------------------------------------------
 #
-# Three runs cross this bathroom, and they cross it in ONE 12" band at the north end:
+# Three runs cross this bathroom, and they cross it in ONE 12" band at the SOUTH end:
 # `PR-B-LSINK-DRAIN` at y=18'-9", `PR-B-BATH-VENT` at 19'-3" and `PR-B-HW-BATH` at 19'-9".
 # `mep.run_in_finished_volume` called all three, at 5.8", 8.2" and 3.8" below the finished
 # ceiling. They are not reroutable as a group — the drain has to fall west to the stack and
@@ -1533,8 +1532,15 @@ PANELING = [
 # below the slab and `code.R305_ceiling_height` errored at -2'-3" clear, which is the useful
 # way to find out. This file is editable-dialect and cannot import the constant, so the
 # arithmetic is stated here and `integrity.basement_bearing_seat` is what guards the datum
-# it rests on. 88 7/16" leaves 7'-4 7/16" clear under the box, against R305.1's 6'-8" for a
-# bathroom, and the ceiling either side of it is untouched.
+# it rests on. 88 7/16" left 7'-4 7/16" clear under the box, and the ceiling either side of
+# it is untouched.
+#
+# ** IT CARRIES DU-B-ERV-R-PLAY SINCE 2026-09-22, AND IS 1 1/2" DEEPER FOR IT. ** The play
+# radial used to cross ST-B2M in the headroom; it now crosses W-B-STR2 under the top plate
+# (-15 5/8"), so its underside rides at -20 3/16" and the cavity floor had to come down to
+# meet it: 86 15/16" face, 7'-2 7/8" clear per `code.R305_ceiling_height`. It leaves east
+# through W-B-BA-E south of the bath's three risers; `mep.duct_soffit_occupancy` is the
+# judge. PR-B-BATH-VENT now sits inside the box rather than 1" under its face.
 # --- SF-B-HALL IS RETIRED (2026-09-13) ------------------------------------------------
 #
 # ** THE HALL INHERITED THE WORKSHOP'S SERVICE CEILING (2026-09-07). ** Two runs cross the
@@ -1574,7 +1580,9 @@ SOFFITS = [
     Soffit(uid="CEWX9GPQMQ", tag="SF-B-BATH",
            outline=(pt(inch(123.375), inch(218.375)), pt(inch(163.303), inch(218.375)),
                     pt(inch(163.303), inch(243)), pt(inch(123.375), inch(243))),
-           underside_elevation=inch(88.4375),
+           # 7'-2 15/16" since 2026-09-22 (was 7'-4 7/16"): DU-B-ERV-R-PLAY crosses W-B-STR2
+           # under its top plate at 7'-7 1/4" and needs the cavity floor below 7'-5 1/4".
+           underside_elevation=inch(86.9375),
            framing=FramingSpec(member="2x2", spacing=inch(16))),
     # --- SF-B-GYM IS RETIRED (2026-09-13) ---------------------------------------------
     #

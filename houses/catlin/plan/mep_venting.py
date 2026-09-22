@@ -410,7 +410,12 @@ VENT_BRANCHES_BASEMENT = [
             # y=20'-0" is what clears PR-B-TUB2-DRAIN and PR-B-WASH-DRAIN, which fall west
             # across this lane on their way to the stack — 1 1/3" and 1/3" of air now, where
             # both were interpenetrating.
-            elevations=(ft(1, 3.4375), ft(7, 4.4375), ft(7, 4.9375), ft(7, 7.4375),
+            #
+            # ** THE EAST LEG DROPPED 1 1/2" ON 2026-09-22 ** so DU-B-ERV-R-PLAY can cross it
+            # flat inside SF-B-BATH (1 1/4" of air) instead of hopping over it on four
+            # elbows; the north leg's grade steepens to 4" over 15'-3". GYM passes under it at
+            # x=9' with 3/8" to spare, and the two drains above get 1 1/2" more air.
+            elevations=(ft(1, 3.4375), ft(7, 2.9375), ft(7, 3.4375), ft(7, 7.4375),
                         ft(7, 7.9375)),
             serves=("FX-B-BATH-WC", "FX-B-BATH-LAV")),
     # RM-B-SAUNA's shower group. 2" for 4 DFU, rising at (17'-4", 8'-2 3/16") — inside

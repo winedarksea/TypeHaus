@@ -1597,62 +1597,6 @@
       "node": "hatch",
       "boundary": [
         [
-          202.00000000000003,
-          206.9862
-        ],
-        [
-          206.00000000000003,
-          206.9862
-        ],
-        [
-          206.00000000000003,
-          210.9862
-        ],
-        [
-          202.00000000000003,
-          210.9862
-        ]
-      ],
-      "pattern": "metal",
-      "scale": 1.0,
-      "angle": 0.0,
-      "layer": "A-DETL-CMPT",
-      "uid": null,
-      "material": "metal"
-    },
-    {
-      "space": "model",
-      "node": "polyline",
-      "points": [
-        [
-          202.00000000000003,
-          206.9862
-        ],
-        [
-          206.00000000000003,
-          206.9862
-        ],
-        [
-          206.00000000000003,
-          210.9862
-        ],
-        [
-          202.00000000000003,
-          210.9862
-        ]
-      ],
-      "layer": "A-DETL-CMPT",
-      "lineweight": 0.35,
-      "linetype": "CONTINUOUS",
-      "closed": true,
-      "uid": null,
-      "tag": "detail-component:shower-hrv-duct"
-    },
-    {
-      "space": "model",
-      "node": "hatch",
-      "boundary": [
-        [
           171.0,
           206.9862
         ],

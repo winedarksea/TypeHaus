@@ -1178,8 +1178,19 @@ CONDUIT_TRUNKS = [
                from_ref="ED-B-PANEL", to_ref="ED-G-EV-1450"),
     # Across the basement ceiling to the kitchen's east counter wall, where KGF3 (the device
     # this feeds) is.
+    #
+    # ** AROUND ST-B2M, NOT OVER IT (2026-09-22). ** The y=29' line crossed the upper flight
+    # 8.4" into its 6'-8" headroom. It now goes south down the furnace room's east strip
+    # (x=9'-6 5/8", over the GYM/PLAY ducts), east through W-B-STR2 and SF-B-BATH beside
+    # DU-B-ERV-R-PLAY, out through W-B-BA-E in the 3" gap between its staggered stud at
+    # y=18'-10" and the bath vent's riser, north up the hall at x=16'-5 1/2", and through
+    # W-B-CN at y=25'-6" (SP-B-CN-CD-KITCH), 6" south of the stair's first riser.
     ConduitRun(uid="CDT003AAAA", tag="CD-B-KITCHEN", trade_size=inch(0.75),
-               path=(pt(ft(2), ft(29)), pt(ft(35), ft(29)), pt(ft(35), ft(28, 11)),
+               path=(pt(ft(2), ft(29)), pt(ft(9, 6.625), ft(29)),
+                     pt(ft(9, 6.625), ft(19, 11)), pt(ft(13, 3.5), ft(19, 11)),
+                     pt(ft(13, 3.5), ft(18, 11.75)), pt(ft(16, 5.5), ft(18, 11.75)),
+                     pt(ft(16, 5.5), ft(25, 6)), pt(ft(19, 9), ft(25, 6)),
+                     pt(ft(19, 9), ft(29)), pt(ft(35), ft(29)), pt(ft(35), ft(28, 11)),
                      pt(ft(35), ft(28, 11))),
                # ** -1'-4", RAISED 2" ON 2026-09-09, AND THE OLD PROSE WAS THE TELL. ** This
                # block claimed 1 15/16" of clear under the deck board while the run was
@@ -1189,8 +1200,12 @@ CONDUIT_TRUNKS = [
                # the deck framing with room for the ceiling, which is what was always meant.
                # This is the tightest raceway in the basement. Its two wall crossings go with
                # it. Do not put it back — a 16'-6" bulkhead to box a 3/4" pipe is not the fix.
-               start_elevation=ft(-1, -4), end_elevation=ft(3, 6),
-               elevations=(ft(-1, -4), ft(-1, -4), ft(-1, -4), ft(3, 6)),
+               # -1'-4 1/4" since 2026-09-22: its framed-wall crossings pass under the double
+               # top plate (-15 5/8"), and it still hangs only 2 5/8" into RM-B-PLAY-N.
+               start_elevation=ft(-1, -4.25), end_elevation=ft(3, 6),
+               elevations=(ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25),
+                           ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25),
+                           ft(-1, -4.25), ft(3, 6)),
                from_ref="ED-B-PANEL", to_ref="ED-M-LIVING-KGF3"),
     # South out of the basement to the hot tub disconnect under the porch. The east leg runs
     # 1' north of the y=0 sheathing line, so it crosses W-B-S1 once rather than running
@@ -1408,9 +1423,21 @@ BASEMENT_DATA_TRUNKS = [
     # -1'-4" for the same reason CD-B-KITCHEN is (2026-09-09): at -1'-6" it hung 4.3" into
     # RM-B-PLAY-N, whose finished ceiling IS the deck board at -14 1/16". Both raceways
     # cross that room, and both had to come up the same 2".
+    #
+    # ** AROUND ST-B2M ON CD-B-KITCHEN'S LANES (2026-09-22) **, one step east/north of it
+    # at every turn so the two never cross, at the same -1'-4 1/4". Through W-B-CN at
+    # y=25'-10 1/2" (SP-B-CN-CD-DATA), 2" short of the first riser's headroom.
     ConduitRun(uid="D606MFGTEG", tag="CD-B-DATA-MEDIA", trade_size=inch(0.75), service=Service.DATA,
-               path=(pt(inch(10), ft(31)), pt(ft(2), ft(30)), pt(ft(27, 9), ft(30)), pt(ft(27, 9), ft(35, 3)), pt(ft(27, 9), ft(35, 3))),
-               start_elevation=ft(-1, -4), end_elevation=ft(-6, -10), elevations=(ft(-1, -4), ft(-1, -4), ft(-1, -4), ft(-1, -4), ft(-6, -10)),
+               path=(pt(inch(10), ft(31)), pt(ft(2), ft(30)), pt(ft(9, 7.75), ft(30)),
+                     pt(ft(9, 7.75), ft(20, 0.5)), pt(ft(13, 4.75), ft(20, 0.5)),
+                     pt(ft(13, 4.75), ft(19, 1.25)), pt(ft(16, 4.25), ft(19, 1.25)),
+                     pt(ft(16, 4.25), ft(25, 10.5)), pt(ft(19, 6), ft(25, 10.5)),
+                     pt(ft(19, 6), ft(30)), pt(ft(27, 9), ft(30)), pt(ft(27, 9), ft(35, 3)),
+                     pt(ft(27, 9), ft(35, 3))),
+               start_elevation=ft(-1, -4.25), end_elevation=ft(-6, -10),
+               elevations=(ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25),
+                           ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25), ft(-1, -4.25),
+                           ft(-1, -4.25), ft(-1, -4.25), ft(-6, -10)),
                from_ref="ED-B-NET-PATCH", to_ref="ED-B-PLAY-N-DATA1"),
     # Study: south and east strapped to the basement ceiling at -1'-0 1/2", then up the
     # study's south wall to the jack.
@@ -1443,9 +1470,9 @@ DATA_SLEEVES = [
     # bored hole on the day, not a sleeve set before a pour — the raceway still crosses the
     # wall at that station, there is simply no pour to cast into.
     SleevePenetration(uid="V44DS76X6J", tag="SP-B-CN-CD-DATA", host_ref="W-B-CN",
-                      position=pt(ft(18), ft(30)), pipe_diameter=inch(0.75),
+                      position=pt(ft(18), ft(25, 10.5)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.DATA,
-                      axis="horizontal", center_elevation=ft(-1, -6)),
+                      axis="horizontal", center_elevation=ft(-1, -4.25)),
 ]
 
 ATTIC_DATA_DEVICES = [
@@ -1518,9 +1545,9 @@ CONDUIT_SLEEVES = [
     # now, so it has no sleeve here; its partner in W-B-CN stays, since that wall is still
     # concrete.
     SleevePenetration(uid="CNS012AAAA", tag="SP-B-CN-CD-KITCH", host_ref="W-B-CN",
-                      position=pt(ft(18), ft(29)), pipe_diameter=inch(0.75),
+                      position=pt(ft(18), ft(25, 6)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.POWER_120,
-                      axis="horizontal", center_elevation=ft(-1, -6)),
+                      axis="horizontal", center_elevation=ft(-1, -4.25)),
     SleevePenetration(uid="CNS013AAAA", tag="SP-B-E2-CD-KITCH", host_ref="W-B-E2",
                       position=pt(ft(35), ft(28, 11.5)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.POWER_120,

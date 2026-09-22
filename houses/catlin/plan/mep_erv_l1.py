@@ -176,10 +176,9 @@ EQUIPMENT_ERV_BASEMENT = [
 #        * **x=2'-0", -27 15/16"** — under everything, over PR-B-SINK2-DRAIN's -25.4"
 #          at y=15'-9". 79 1/2" of headroom under it, in the workshop, where the ceiling is
 #          open by design and the bench hood it feeds hangs at 5'-6" anyway.
-#        * **y=29'-6" then x=17'-9", -20 7/16"** — the east chase: the belt between the two
-#          plenums, then RM-B-STAIR's x 17'-6"..18'-0" strip, which is continuous from
-#          y=36'-0" to y=10'-0" and is one of the two basement rooms whose ceiling the
-#          owner leaves open.
+#        * **x=9'-0", x=9'-6" and x=8'-0"** — the furnace room's east strip, for GYM, PLAY
+#          and BATH, stacked by elevation (see each run). The old "east chase" over ST-B2M
+#          is gone (2026-09-22): nothing crosses the stair.
 #
 # PR-B-SAUNA-VENT is the wall that shapes all of this. It runs the x=9'-0" line from
 # y=10'-6" to y=34'-6", rising -20" to -15 1/2" as it goes, so every east-west lane in the
@@ -223,71 +222,54 @@ DUCTS_ERV_BASEMENT = [
             elevations=(ft(7, 2), inch(75.6), inch(75.6), inch(75.6)),
             diameter=inch(6), routing=DuctRouting.CHASE, material="galvanized",
             design_cfm=210),
-    # THE GYM RADIAL TAKES THE EAST CHASE. Its register is at (19'-0", 13'-0") and the
-    # straight line to it crosses the drain field; the belt at y=29'-6" and the x=17'-0"
-    # lane miss it entirely and add four feet to a 4" duct carrying 18 cfm.
-    # It drops 6" off its collar and stays there. Two things want that depth: PR-B-SAUNA-VENT
-    # is at -16 7/16" where the belt crosses it at x=9'-0", and DU-B-ERV-R-PLAY shares the
-    # x=17'-0" lane on the tier above for the four feet the two overlap. -25 7/16" leaves
-    # 6'-10" of headroom under it in RM-B-STAIR, over the 6'-8" this house holds an exposed
-    # service to.
+    # ** NEITHER RADIAL CROSSES ST-B2M ANY MORE (2026-09-22). ** Both used to ride the
+    # y=29'-6"/30'-6" belt east over the stair, 1" (GYM) and 15 5/8" (PLAY) into the 6'-8"
+    # headroom over the upper flight's nosings — `code.R311_7_2_stair_headroom` counts runs
+    # now. The x=17'-0" "east chase" was only continuous by walking over the lower flight.
+    #
+    # THE GYM RADIAL GOES THROUGH THE WORKSHOP. South at -25 7/16" on x=9'-0", directly
+    # under PR-B-SAUNA-VENT (which never comes below -21 7/8" here) and under the bath vent,
+    # HW-BATH and LSINK legs it crosses; through W-B-CW3 in its 8'-1"..9'-5" stud bay, over
+    # the 2x8 backing (top 6'-7 1/4"); east on y=17'-4 3/4", 2 1/4" clear of
+    # PR-M-S-SUITE-DRAIN's riser, through W-B-HALL-W's 16'-8"..18'-0" bay; then the hall's
+    # x=17'-0" lane south of the stair to y=13'-0" as before. Nothing is bored or headed.
     #
     # ** x=17'-0" AND NOT 17'-9", BECAUSE THE STRIP BESIDE THE STAIR IS THE POUR. **
-    # W-B-CN / -CN2 / W-B-CS2 are one 12" cast wall on the x=18'-0" axis from the slab to
-    # -13 7/16", so x 17'-6"..18'-6" is concrete for the whole depth of the house, and
-    # RM-B-STAIR's ceiling polygon reaches over its west half. A lane at 17'-9" is inside
-    # the pour with 5" of cover and `mep.run_in_slab` says so. 17'-0" leaves 4" between the
-    # duct's east face and the concrete.
+    # W-B-CN / -CN2 / W-B-CS2 are one 12" cast wall on the x=18'-0" axis, so x 17'-6"..18'-6"
+    # is concrete; 17'-0" leaves 4" between the duct's east face and it.
     #
-    # ** IT RISES 6 1/8" AT x=17'-0" AND CROSSES `W-B-CS3` OVER `D-B-GYM`'s HEADER, NOT
-    # THROUGH IT (2026-09-22). ** At -25 7/16" the east leg bored that header 4.00" — over
-    # half the depth of a 2-2x8 carrying the gym door's whole tributary into two jacks, and
-    # 7 7/16" from the north jack face. `W-B-CS3` is a 46" BEARING wall with a 36" opening
-    # in it and has no clear bay at all, so there is no lane to move sideways into. What it
-    # does have is the band ABOVE the header: the header tops out at -22.19" and the double
-    # top plate starts at -16.44", which is 5 3/4" of open wall, and at y=13'-0" the nearest
-    # cripples stand at y=12'-4 3/16" and y=13'-7 7/16" — 7.8" either side of a 4" duct.
-    # Centred at -19 5/16" (90 1/8" over the slab) the duct leaves 7/8" of air to the header
-    # top and 7/8" to the plate, and **cuts nothing at all**: no bore, no notch, no header.
-    #
-    # ** THIS IS NOT THE SHORT-CRIPPLE GAP AND THE DIFFERENCE IS THE WHOLE POINT. **
-    # `notes/framing_bore_limits.md` §6a: a 4" hole through a 6 9/16" cripple leaves two
-    # 1.28" slivers, and `stud_bore` now reads such a hole UNKNOWN (a member shorter than
-    # two depths is a block, not a stud). That is a hole DRILLED IN a cripple. This duct passes
-    # BETWEEN two whole cripples in air the framing never occupied — the ordinary
-    # over-the-header detail — and the members it clears are graded, not exempted.
-    #
-    # The rise costs two bends on the supply side, which is not the governing one, and it
-    # buys 6" of headroom in RM-B-GYM (`exposed_services`) rather than spending any.
-    # The cast sleeve through `W-B-CS2`'s 12" pour was the other candidate and is NOT
-    # taken: a crossing of air cuts nothing, where a sleeve is a pre-pour commitment
-    # (`mep.sleeve_coverage` grades duct sleeves since 2026-09-22 — SP-B-CN-ERV-PLAY).
+    # ** IT RISES 6 1/8" AT x=17'-0" AND CROSSES `W-B-CS3` OVER `D-B-GYM`'s HEADER. ** The
+    # header tops out at -22.19" and the double top plate starts at -16.44"; centred at
+    # -19 5/16" the duct passes between the cripples at y=12'-4 3/16" and 13'-7 7/16" with
+    # 7/8" to header and plate, and cuts nothing (`notes/framing_bore_limits.md` §6a is a
+    # hole drilled IN a cripple; this is air between two). The cast sleeve through
+    # `W-B-CS2` was the alternative and is not taken: a sleeve is a pre-pour commitment.
     DuctRun(uid="CND5TE40W0", tag="DU-B-ERV-R-GYM", system=DuctSystem.SUPPLY,
             path=(pt(ft(7, 3), ft(30, 2)), pt(ft(7, 3), ft(29, 6)),
-                  pt(ft(7, 3), ft(29, 6)), pt(ft(17), ft(29, 6)),
+                  pt(ft(7, 3), ft(29, 6)), pt(ft(9), ft(29, 6)),
+                  pt(ft(9), ft(17, 4.75)), pt(ft(17), ft(17, 4.75)),
                   pt(ft(17), ft(13)), pt(ft(17), ft(13)), pt(ft(19), ft(13))),
-            elevations=(ft(7, 6), ft(7, 6), inch(84), inch(84), inch(84),
+            elevations=(ft(7, 6), ft(7, 6), inch(84), inch(84), inch(84), inch(84), inch(84),
                         inch(90.125), inch(90.125)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=18),
-    # The play room's radial leaves the plenum's EAST END, 18" nearer its own register than
-    # the centre it used to start from and out of the other two supply radials' way at
-    # birth. It now turns south at x=17'-0" — the same lane DU-B-ERV-R-GYM rides, 4 1/2"
-    # above it — and enters RM-B-PLAY-N only on its last leg.
-    #
-    # ** ENTERING ONLY ON THE LAST LEG IS THE POINT, AND IT IS WORTH TWO FITTINGS. ** The
-    # straight east run crossed the room boundary at x=18'-6" (W-B-CN's east face) and then
-    # ran half a foot inside RM-B-PLAY-N before turning — and half a foot is exactly
-    # `min_ceiling_exposure_ft`, so whether `mep.run_in_finished_volume` reported it came
-    # down to the last bit of a float. The room has no ceiling cavity to hide it in either:
-    # SL-M-DECK's soffit is 14 3/8" of solid concrete at -13 7/16" and the finished plane is
-    # 5/8" under that, so there is nothing to lift into. A run that reaches its register on
-    # its terminal leg is the connection rather than a transit, which is a fact about the
-    # layout and not a threshold.
+    # THE PLAY RADIAL GOES THROUGH SF-B-BATH. From the plenum's east end it drops to -25 7/16"
+    # on x=9'-6" (east of the sauna vent, under everything), rises to -18 3/16" at y=19'-7 1/4"
+    # and crosses W-B-STR2 in its 19'-4"..20'-8" bay under the top plate (-15 5/8"). In the
+    # soffit it jogs south over PR-B-BATH-VENT at x=12'-3" (east of LSINK's riser; the vent
+    # dropped 1 1/2" for it), and leaves through W-B-BA-E at y=18'-6 3/4" — the one gap in that
+    # staggered wall south of the bath's three risers (y 19'-3"..19'-10") wide enough for a
+    # 4" duct. Then north up the hall at x=16'-9" and east through W-B-CN at y=25'-0", a foot
+    # south of the stair's first riser, into REG-B-SUP2 on its last leg (the room's ceiling
+    # is SL-M-DECK's solid concrete; see the register).
     DuctRun(uid="DMEQ946YAX", tag="DU-B-ERV-R-PLAY", system=DuctSystem.SUPPLY,
-            path=(pt(ft(8), ft(30, 6)), pt(ft(17), ft(30, 6)), pt(ft(17), ft(26)),
-                  pt(ft(19), ft(26))),
-            start_elevation=ft(7, 6), end_elevation=ft(7, 6),
-            diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=30),
+            path=(pt(ft(8), ft(30, 6)), pt(ft(9, 6), ft(30, 6)), pt(ft(9, 6), ft(30, 6)),
+                  pt(ft(9, 6), ft(19, 7.25)), pt(ft(9, 6), ft(19, 7.25)),
+                  pt(ft(12, 3), ft(19, 7.25)), pt(ft(12, 3), ft(18, 6.75)),
+                  pt(ft(16, 9), ft(18, 6.75)), pt(ft(16, 9), ft(25)), pt(ft(19), ft(25))),
+            elevations=(ft(7, 6), ft(7, 6), inch(84), inch(84), inch(91.25), inch(91.25),
+                        inch(91.25), inch(91.25), inch(91.25), inch(91.25)),
+            diameter=inch(4), routing=DuctRouting.SOFFIT, soffit_ref="SF-B-BATH",
+            material="galvanized", design_cfm=30),
     # The sauna's supply comes west and runs south to the sauna along the west side of the
     # basement, then east along y=1'-8 1/2" — the southernmost foot of the house, where
     # nothing else is drawn at all.
@@ -329,26 +311,18 @@ DUCTS_ERV_BASEMENT = [
                   pt(ft(2), ft(27)), pt(ft(2), ft(8, 6)), pt(ft(2), ft(8, 6))),
             elevations=(ft(7, 6), ft(7, 6), inch(81.5), inch(81.5), inch(81.5), ft(6, 2)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=6),
-    # The basement bath's extract leaves the plenum's EAST end, which is the one exit from
-    # this box that no 6" port and no vent stands in, and drops 2" off the collar so it
-    # passes under PR-B-SAUNA-VENT at x=9'-0" where the vent is still at -16 5/8" on its way
-    # north.
+    # The basement bath's extract leaves the plenum's EAST end and drops 1 1/4" off its
+    # collar, then south on x=8'-0" and east on y=24'-0" to a sidewall grille in W-B-STR3B
+    # (REG-B-EXH1). At -20 11/16" it crosses OVER the GYM and PLAY lanes (3/4" each) and
+    # under PR-B-SAUNA-VENT (1 7/16"), and passes W-B-STR3B in its 23'-4"..24'-8" bay.
     #
-    # ** IT STEPS SOUTH TO y=27'-9" BEFORE IT GOES EAST, AND THAT STEP IS THE WHOLE BEARING
-    # WALL. ** W-B-STR3 is the basement's centre BEARING partition and R602.6 allows a bore
-    # of 40% of 5 1/2" in one of its studs — 2.20" against this duct's 4.00". On the plenum's
-    # own y=28'-6" line the duct landed on king-0-l0 at y=28'-6 1/4" and stud-001 at
-    # y=28'-8", which is two bearing studs cut for one branch. y=27'-9" is the middle of the
-    # cripple space over the door head: 9 1/4" clear to the king on one side and 9" to
-    # cripple-head-0-01 at y=27'-0" on the other, and the header itself is 8 3/4" below the
-    # duct's underside. **Nothing is bored, nothing is headed, and the wall is untouched** —
-    # which is the answer this campaign wanted and a `RoughOpening` would only have been the
-    # second-best version of.
+    # ** IT USED TO GO THROUGH THE STAIR (until 2026-09-22). ** Its old leg ran south under
+    # the upper flight to (12', 24'-1 5/8") through `stringer-upper-0`, `tread-upper-003` and
+    # W-B-STR3's ledger. The flight's own structure is now inside the volume a router refuses.
     DuctRun(uid="03883CKF0H", tag="DU-B-ERV-R-BATH", system=DuctSystem.EXHAUST,
             path=(pt(ft(8), ft(28, 6)), pt(ft(8), ft(28, 6)),
-                  pt(ft(8), ft(27, 9)), pt(ft(12), ft(27, 9)),
-                  pt(ft(12), inch(289.625))),
-            elevations=(ft(7, 6), inch(88), inch(88), inch(88), inch(88)),
+                  pt(ft(8), ft(24)), pt(inch(119.875), ft(24))),
+            elevations=(ft(7, 6), inch(88.75), inch(88.75), inch(88.75)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=20),
     # The sauna's low pickup is 4" off the floor on the WEST liner (the south face went to
     # EQ-B-SAUNA-HTR when the room rotated), so this radial runs the length of the house in

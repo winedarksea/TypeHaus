@@ -1208,9 +1208,18 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       the joists' underside and the top of the drain zone is 2 3/4".
     - **The four corridors that ARE clear**, measured: x=3'-3" and x=3'-9" at -21 15/16" and
       -23 7/16" (between PR-B-KITCH-DRAIN's x=4'-6" fall line and the SH2/SINK2 pair);
-      x=2'-0" at -27 15/16" (under everything, over PR-B-SINK2-DRAIN); and the east chase —
-      the belt at y=29'-6" then RM-B-STAIR's x=17'-0" lane, which carries DU-B-ERV-R-GYM and
-      DU-B-ERV-R-PLAY stacked 6" apart.
+      x=2'-0" at -27 15/16" (under everything, over PR-B-SINK2-DRAIN); and the furnace
+      room's east strip — GYM on x=9'-0" and PLAY on x=9'-6" at -25 7/16", BATH across both
+      at -20 11/16".
+    - **Nothing crosses `ST-B2M` (2026-09-22).** The old "east chase" (belt at y=29'-6",
+      then x=17'-0") was continuous only by passing over the flight, 1"-17" into R311.7.2's
+      6'-8". `code.R311_7_2_stair_headroom` counts runs now and the router refuses the
+      flight (`resolve/stair_headroom.py`). GYM goes through the workshop (W-B-CW3, y=17'-4
+      3/4", W-B-HALL-W) to the hall's x=17'-0" lane; PLAY, `CD-B-KITCHEN` and
+      `CD-B-DATA-MEDIA` go through `SF-B-BATH`, out of `W-B-BA-E` south of the bath's three
+      risers, and through `W-B-CN` at y 25'-0"..25'-10 1/2"; BATH ends at a sidewall grille
+      in `W-B-STR3B`. Every framed-wall crossing is in a clear stud bay under the -15 5/8"
+      top plate: nothing is bored or headed.
     - **x=17'-0" and NOT 17'-9":** W-B-CN/-CN2/W-B-CS2 are one 12" pour on the x=18'-0" axis
       and RM-B-STAIR's ceiling polygon reaches over its west half. A lane in that strip is
       inside the concrete and `mep.run_in_slab` says so.
@@ -1218,8 +1227,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       -20" to -15 1/2", so every east-west lane in the west half crosses it and the crossing
       elevation depends on where. That is why both sauna radials come east along y=1'-8 1/2"
       and y=3'-2", south of the vent's corner.
-    - **The gym radial no longer crosses the gym** and `RM-B-GYM.exposed_services` says so;
-      RM-B-STAIR carries three ERV branches now instead of one.
+    - **The gym radial no longer crosses the gym** and `RM-B-GYM.exposed_services` says so.
   - **`D-B-FURN` HAS A FLAT 2x8 HEADER AND NO CRIPPLES (B1, 2026-09-22).** `W-B-CW` is
     authored `NONBEARING` — `FS-M-WEST`'s joists run parallel to it on the 208"/224" lines
     and nothing bears on it — so the opening takes IRC R602.7.4's flat nailer
@@ -1324,13 +1332,11 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   **Three soffits were retired on 2026-09-13** — `SF-B-HALL`, `SF-B-GYM` and `SF-S-SUITE` —
   each one built only to satisfy `mep.run_in_finished_volume`, each replaced by a
   `Room.exposed_services` sentence on `RM-B-STAIR`, `RM-B-GYM` and `RM-S-SUITE`. Two soffits
-  and `SF-B-BATH` remain. **`SF-B-BATH` would survive the same treatment on the numbers and
-  has NOT been retired**: measured with the box deleted, its three runs (`PR-B-BATH-VENT`
-  8.4", `PR-B-HW-BATH` 3.8", `PR-B-LSINK-DRAIN` 6.0" under the ceiling) all clear the 6'-8"
-  headroom line with ~7 1/2" to spare, so a declaration on `RM-B-BATH` would pass. The
-  reason not to is not arithmetic — it is that a 92 SF lined bathroom is not a gym or a
-  service hall, and no owner has said its ceiling should be open. That is a design decision,
-  not a takeoff one.
+  and `SF-B-BATH` remain. **`SF-B-BATH` is load-bearing since 2026-09-22**: it carries
+  `DU-B-ERV-R-PLAY` and both basement conduits off the stair, and dropped 1 1/2" to 86 15/16"
+  (7'-2 7/8" clear) so PLAY can cross `W-B-STR2` under its top plate. It was never a
+  candidate for an `exposed_services` declaration anyway: a 92 SF lined bathroom is not a
+  gym or a service hall, and no owner has said its ceiling should be open.
   `DU-S-HP-SUITE` lost its `soffit_ref` with `SF-S-SUITE` and is `DuctRouting.EXPOSED` with
   an AUTHORED centreline (100 1/8" storey-relative): without it `_derived_base_z` falls back
   to the storey datum and lays a supply duct on the floor.
@@ -1591,8 +1597,8 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `_WEST_FLOOR_REINFORCEMENT`.
   - `RM-B-STAIR` (not a `EXPOSED_SERVICE_OCCUPANCIES` room, unlike the workshop) covers the
     hall's ceiling, so `mep.run_in_finished_volume` (3" tolerance) grades pipes there.
-    `DU-B-ERV-R-GYM` and `PR-B-SAUNA-VENT` cannot be rerouted around it — any route between
-    the sauna and the ERV crosses this space. **They were boxed out by `SF-B-HALL` until
+    Any route between the sauna and the ERV crosses this space (`DU-B-ERV-R-GYM` does so at
+    its south end, on x=17'-0"; `PR-B-SAUNA-VENT` at y=10'-6"). **They were boxed out by `SF-B-HALL` until
     2026-09-13; that bulkhead is RETIRED and `RM-B-STAIR.exposed_services` carries the room
     instead** — the owner accepts exposed services down here, the same call `RM-B-GYM` makes.
     Both runs are still held to the 6'-8" headroom line (duct bottom 87 1/8", vent 85 1/4"),

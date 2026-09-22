@@ -162,7 +162,7 @@ def test_the_broan_carries_the_whole_published_curve(catlin_plan) -> None:
     assert broan.fan_curve_max_static_in_wg == pytest.approx(1.3)
 
 
-def test_the_governing_side_is_extract_again(catlin_model_ro) -> None:
+def test_the_governing_side_is_supply_via_the_play_radial(catlin_model_ro) -> None:
     """Note §6, and the governing SIDE swapped THREE times on 2026-09-15.
 
     The machine's curve is an external static PER SIDE, so what governs is the worse of two
@@ -183,10 +183,14 @@ def test_the_governing_side_is_extract_again(catlin_model_ro) -> None:
     elbow audit, and grew ``DU-B-ERV-SUP-TRUNK`` by one turn at the same time. Extract still
     leads, but by 0.0051 in. rather than 0.0409: there is no cheap one-sided move left, and
     the next real one has to take both columns down together. §6 says so.
+
+    ** 2026-09-22: supply leads again, by 0.0027 in. ** ``DU-B-ERV-R-PLAY`` came off the
+    basement stair (R311.7.2) and went round through SF-B-BATH: 15.50 ft on 2 elbows became
+    30.48 on 8, 0.0141 -> 0.0347 (note §3). Delivered flow is 207.2 cfm either way.
     """
     message = _machine_finding(catlin_model_ro).message
-    assert "extract side via DU-B-ERV-R-SAUNA-EXH" in message
-    assert "supply side" not in message
+    assert "supply side via DU-B-ERV-R-PLAY" in message
+    assert "extract side" not in message
 
 
 def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> None:
@@ -228,10 +232,14 @@ def test_the_static_and_the_delivered_flow_are_the_notes(catlin_model_ro) -> Non
     ** THE CODE MARGIN IS 2.2 cfm. ** 207.2 against MN 1322 R403.5's 205. It was 203.0 —
     BELOW the rate — at the start of that day, then 205.7, 207.0, 207.1, 207.5. It is still
     thin enough that §8's "measure it at commissioning with a low-flow hood" is the operative
-    sentence, and it is the EXTRACT side to hood.
+    sentence.
+
+    ** 2026-09-22: SUPPLY now, 0.3406. ** ``DU-B-ERV-R-PLAY`` 0.0141 -> 0.0347 (§3) puts the
+    supply column at 0.3200 - 0.0141 + 0.0347 = 0.3406, ahead of extract's 0.3379.
+    Delivered: 208 - 0.406 x 2 = 207.2 cfm, and it is the SUPPLY side to hood.
     """
     message = _machine_finding(catlin_model_ro).message
-    assert "0.338 in. w.g." in message
+    assert "0.341 in. w.g." in message
     assert "delivering 207 cfm" in message
 
 

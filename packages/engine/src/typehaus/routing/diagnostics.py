@@ -73,6 +73,8 @@ _KIND_MOBILITY = {
     # notched or moved by anybody, and lifting one in a counterfactual would be pricing a
     # truss nobody will build.
     "member": Mobility.FIXED,
+    # A flight's R311.7.2 headroom and its stringers: the stair does not move for a duct.
+    "stair": Mobility.FIXED,
     "run": Mobility.MOVABLE,
     "avoid": Mobility.UNKNOWN,
 }

@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** ba63ece9dc63332f  
-**Lines:** 140
+**Model hash:** 4be310056ed6fe3f  
+**Lines:** 141
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -33,18 +33,18 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2-1x4 — stud (2-1x4) | 24 | LF ordered | 3 pcs, 19.6 LF cut | building |
 | 2-2x10 — header (2-2x10) | 40 | LF ordered | 5 pcs, 26.2 LF cut | building |
 | 2-2x6 — header (2-2x6) | 18 | LF ordered | 2 pcs, 13.2 LF cut | building |
-| 2-2x8 — header (2-2x8) | 192 | LF ordered | 57 pcs, 155.0 LF cut | building |
+| 2-2x8 — header (2-2x8) | 184 | LF ordered | 56 pcs, 151.8 LF cut | building |
 | 24 gable roof truss — roof truss (24 gable roof truss) | 2 | ea | 2 pcs, 48.0 LF cut; 48.0 LF in the takeoff | building |
 | 24 roof truss — roof truss (24 roof truss) | 14 | ea | 14 pcs, 336.0 LF cut; 336.0 LF in the takeoff | building |
 | 25 ga. resilient channel 1/2" resilient channel — girt strapping (25 ga. resilient channel:resilient-channel) | 632 | LF ordered | 94 pcs, 511.5 LF cut | building |
 | 2x10 — hanger board (2x10) | 58 | LF ordered | 12 pcs, 45.9 LF cut | building |
 | 2x10 SPF framing lumber — blocking (2x10:spf) | 114 | LF ordered | 23 pcs, 85.8 LF cut | building |
-| 2x2 — blocking, plate, stud (2x2) | 288 | LF ordered | 100 pcs, 264.6 LF cut | building |
-| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,672 | LF ordered | 634 pcs, 3944.8 LF cut | building |
+| 2x2 — blocking, plate, stud (2x2) | 288 | LF ordered | 100 pcs, 265.6 LF cut | building |
+| 2x4 — blocking, corner stud, cripple stud, header, jack stud, king stud, outlooker, partition backer, plate, raked top plate, stud (2x4) | 4,672 | LF ordered | 633 pcs, 3944.0 LF cut | building |
 | 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,830 | LF ordered | 462 pcs, 2441.4 LF cut | building |
 | 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | 8,876 | LF ordered | 1369 pcs, 7705.8 LF cut | building |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — girt strapping (2x6:kdat) | 88 | LF ordered | 9 pcs, 72.0 LF cut | building |
-| 2x8 — blocking, cripple stud, header, jack stud, joist, king stud, landing framing, plate, stud, trimmer (2x8) | 674 | LF ordered | 111 pcs, 584.4 LF cut | building |
+| 2x8 — blocking, header, jack stud, joist, king stud, landing framing, plate, stud, trimmer (2x8) | 666 | LF ordered | 110 pcs, 586.5 LF cut | building |
 | 2x8 SPF framing lumber — blocking (2x8:spf) | 430 | LF ordered | 76 pcs, 357.3 LF cut | building |
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | 8 | LF ordered | 1 pcs, 3.2 LF cut | building |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 352 | LF ordered | 1130 pcs, 329.6 LF cut | building |
@@ -55,7 +55,8 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 
 | item | quantity | unit | detail | storeys |
 |---|---|---|---|---|
-| 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 22 | sheets 4x8 | 22 sheets 4x8 over 690.2 SF net | building |
+| 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 1 | sheets 4x8 | 1 sheets 4x8 over 26.8 SF net | building |
+| 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | 19 | sheets 4x9 | 19 sheets 4x9 over 663.3 SF net | building |
 | 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 5.0 SF net | building |
 | 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | 100 | sheets 4x8 | 100 sheets 4x8 over 3184.6 SF net | building |
 | SPF framing lumber, 3/4" ceiling (spf:ceiling) | 5 | sheets 4x8 | 5 sheets 4x8 over 159.2 SF net | building |
@@ -63,7 +64,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | Structural 1 plywood, 5/7" bearing stiffener rip (struct-1-plywood:bearing stiffener rip) | 2 | sheets 4x8 | 2 sheets 4x8 over 50.1 SF net | building |
 | Structural 1 plywood, 3/8" buck rip (struct-1-plywood:buck rip) | 9 | sheets 4x8 | 9 sheets 4x8 over 229.8 SF net | building |
 | Structural 1 plywood, 1/2" ceiling (struct-1-plywood:ceiling) | 3 | sheets 4x8 | 3 sheets 4x8 over 91.7 SF net | building |
-| Structural 1 plywood, 1/2" exterior wall (struct-1-plywood:exterior wall) | 98 | sheets 4x8 | 98 sheets 4x8 over 3113.2 SF net | building |
+| Structural 1 plywood, 1/2" exterior wall (struct-1-plywood:exterior wall) | 78 | sheets 4x10 | 78 sheets 4x10 over 3113.2 SF net | building |
 | Structural 1 plywood, 5/8" roof (struct-1-plywood:roof) | 49 | sheets 4x8 | 49 sheets 4x8 over 1547.9 SF net | building |
 | Structural 1 plywood, 3/4" roof (struct-1-plywood:roof) | 28 | sheets 4x8 | 28 sheets 4x8 over 882.8 SF net | building |
 | Structural 1 plywood, 1/2" sheathing rip (struct-1-plywood:sheathing rip) | 1 | sheets 4x8 | 1 sheets 4x8 over 3.3 SF net | building |
@@ -239,12 +240,13 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | — |
 | 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | — |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — girt strapping (2x6:kdat) | — |
-| 2x8 — blocking, cripple stud, header, jack stud, joist, king stud, landing framing, plate, stud, trimmer (2x8) | — |
+| 2x8 — blocking, header, jack stud, joist, king stud, landing framing, plate, stud, trimmer (2x8) | — |
 | 2x8 SPF framing lumber — blocking (2x8:spf) | — |
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | — |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | — |
 | 3-2x6 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x6:kdat) | — |
 | hanger — hanger board (hanger) | — |
+| 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | — |
 | 5/8" CDX sheathing plywood, 5/8" exterior wall (cdx-plywood:exterior wall) | — |
 | 5/8" CDX sheathing plywood, 5/8" sheathing rip (cdx-plywood:sheathing rip) | — |
 | 3/4" plywood subfloor, 3/4" subfloor (plywood-subfloor:subfloor) | — |

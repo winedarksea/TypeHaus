@@ -1114,6 +1114,39 @@ bearing wall, matching every other bearing wall in the house.
 
 ## Ventilation, ducts and soffits
 
+### Nothing crosses the basement stair any more (2026-09-22)
+
+The D3 lanes put four runs over `ST-B2M`: GYM and PLAY on the y=29'-6"/30'-6" belt then the
+hall's x=17'-0" lane, and both basement conduits on y=29'/30'. No check saw it. R311.7.2
+probed floors, roofs and soffits only, and `mep.run_in_finished_volume` graded
+`RM-B-STAIR` against a flat 6'-8" that never reads the sloped nosings. The engine now does:
+`resolve/stair_headroom.py` derives the flight's clear volume once. The check grades runs
+against it exactly, since a 1" raceway is narrower than the sampling step, and the router
+refuses it as a FIXED `stair` prism. Measured clearance over the nosing line, 80" required:
+
+| Run | Before | After |
+|---|---|---|
+| `DU-B-ERV-R-GYM` | 0.7" | off the flight |
+| `CD-B-KITCHEN` | 8.4" | off the flight |
+| `DU-B-ERV-R-PLAY` | 15.6" | off the flight |
+| `CD-B-DATA-MEDIA` | 17.3" | off the flight |
+
+`DU-B-ERV-R-BATH` was not a headroom problem. It ran through `stringer-upper-0`,
+`tread-upper-003` and `W-B-STR3`'s ledger, which the new prism also covers.
+
+The plan was to put all three ducts through a deepened `SF-B-BATH`. That box cannot pass two
+4" ducts east: `W-B-BA-E` holds the bath's vent, HW and CW risers at y 19'-3"..19'-10" and
+`D-B-BATH` north of them, which leaves one staggered-stud gap of about 6 1/2". The owner's
+call was **GYM through the workshop, PLAY through the soffit** (1 1/2" deeper, 86 15/16",
+7'-2 7/8" clear), with both conduits beside PLAY. BATH now ends at a sidewall grille in
+`W-B-STR3B`. `REG-B-SUP2` and `SP-B-CN-ERV-PLAY` moved 1' south, to y=25'. The router's own
+proposals all went up into FS-M joist bays, across the joists, and failed
+`mep.duct_joist_bay`, so the lanes were hand-drawn and judged by the checks. Every
+framed-wall crossing is in a clear stud bay under the -15 5/8" top plate. With suppression
+lifted, `mep.run_interference` and `mep.run_through_stud` report nothing new. The
+`mep.erv_static_budget` worst path moved to the supply side through PLAY (0.344" vs the
+old extract 0.338"), still delivering 207 cfm.
+
 ### The ERV hoods went to the north wall, and the chase was the wrong question (2026-09-15)
 
 `DU-ERV-OA` had been stuck at 6" for weeks. `notes/erv_static_budget.md` §7 priced the 8"

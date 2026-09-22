@@ -20,14 +20,15 @@ from typehaus.checks.code.mn_residential.handrail_geometry import (
 )
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, not_applicable
-from typehaus.quantities import ft, inch
+from typehaus.quantities import inch
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.roof_geometry import roof_underside_at
+from typehaus.resolve.stair_headroom import STAIR_HEADROOM, run_clearances
 from typehaus.resolve.stairs.walkline import flight_stations
 
 _MAX_STAIR_RISER = inch(7.75)
 _MIN_STAIR_GOING = inch(10)
-_MIN_STAIR_HEADROOM = ft(6, 8)
+_MIN_STAIR_HEADROOM = STAIR_HEADROOM
 _MIN_STAIR_WIDTH = inch(36)  # R311.7.1, above the handrail / between finished walls
 _MIN_STAIR_LANDING_DEPTH = inch(36)  # R311.7.6, in the direction of travel
 _MIN_HANDRAIL_RISERS = 4  # R311.7.8: required on flights with four or more risers
@@ -130,10 +131,12 @@ def stair_headroom(ctx: CheckContext) -> list[Finding]:
     ``code.R311_7_stair_geometry`` does not answer this. Here every flight's nosing line is
     sampled and probed plumb against the resolved
     overhead structure: floor decks (outside their stair-well voids) down to their
-    deepest framing, roof planes at their structural underside, and soffit faces.
-    Structure only — ceiling finishes, freestanding beams and ducts are not modeled
-    against the walk — and never PASS by absence: a stair with something over it that this
-    engine did not resolve reports UNKNOWN.
+    deepest framing, roof planes at their structural underside, soffit faces, and every
+    MEP run envelope (``resolve/stair_headroom.run_clearances``, graded exactly rather than
+    sampled — a raceway is narrower than the step). A run wholly under the walking surface
+    is under-stair storage and ignored; one through a tread reads negative. Ceiling
+    finishes and freestanding beams are not modelled, and it never PASSes by absence: a
+    stair with something over it that this engine did not resolve reports UNKNOWN.
 
     The one case that is not a gap is a flight with nothing over it *in plan at all*: no
     floor deck, no roof footprint and no soffit outline covers a single sample of its
@@ -200,6 +203,11 @@ def stair_headroom(ctx: CheckContext) -> list[Finding]:
                 clearance = lowest[0] - z
                 if worst is None or clearance < worst[0]:
                     worst = (clearance, (x, y), lowest[1])
+        # Runs feed the measurement but never ``covered``: a duct is not a sky.
+        runs = run_clearances(ctx.model, stair)
+        for run_tag, (clearance, xy) in runs.items():
+            if worst is None or clearance < worst[0]:
+                worst = (clearance, xy, run_tag)
         if worst is None:
             if not covered and roofs:
                 out.append(not_applicable(
@@ -216,10 +224,16 @@ def stair_headroom(ctx: CheckContext) -> list[Finding]:
                  f"({x / .3048:.1f}', {y / .3048:.1f}')")
         if clearance >= _MIN_STAIR_HEADROOM.meters - 1e-9:
             out.append(_pass(cid, f"{stair.tag} headroom {where} (>= 6'-8\"; structure "
-                             "only, finishes unmodeled)", code))
-        else:
-            out.append(_fail(cid, f"{stair.tag} headroom {where} < 6'-8\"",
-                             (stair.tag, tag), code))
+                             "and MEP runs; finishes unmodeled)", code))
+            continue
+        # Every run below the line, not only the worst: a re-route fixes them one by one.
+        low_runs = sorted((c, t) for t, (c, _) in runs.items()
+                          if c < _MIN_STAIR_HEADROOM.meters - 1e-9)
+        named = "; ".join(f"{t} {c / .0254:.1f}\"" for c, t in low_runs)
+        extra = f" — runs below the line: {named}" if low_runs else ""
+        elements = tuple(dict.fromkeys((stair.tag, tag, *(t for _, t in low_runs))))
+        out.append(_fail(cid, f"{stair.tag} headroom {where} < 6'-8\"{extra}",
+                         elements, code))
     return out
 
 

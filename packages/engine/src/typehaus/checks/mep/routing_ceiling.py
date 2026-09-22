@@ -334,6 +334,8 @@ def run_in_finished_volume(ctx: CheckContext) -> list[Finding]:
                 # rather than a finding — and the run is then measured again against the
                 # headroom line, with no intrusion allowance, because a pipe somebody walks
                 # into is a different defect and this is the only check that can see it.
+                # Over a flight the flat line is the wrong datum: code.R311_7_2 grades the
+                # sloped nosing line there.
                 if rows:
                     crossings[ceiling.room_ref].add(tag)
                 head = min(plane, floor + headroom_m)

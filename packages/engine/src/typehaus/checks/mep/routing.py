@@ -50,7 +50,8 @@ basement ceiling carries four runs at -1'-6" to -1'-7 3/8" that cross the stairw
 ``CD-B-KITCHEN``, ``CD-B-DATA-MEDIA``, ``DU-B-ERV-R-PLAY``, ``DU-B-ERV-R-BATH``.
 ``FS-M-STAIR``'s joists stop at -0'-11 7/8", so those runs are *below* the floor, hanging in
 the room. Whether a duct at that height fouls the stair's headroom is a real question and a
-different one, and ``mep.run_in_finished_volume`` is where it is now asked — a band generous
+different one, and ``code.R311_7_2_stair_headroom`` asks it off the sloped nosing line (the
+runs were moved off the flight on 2026-09-22) — a band generous
 enough to catch them here answers it badly, by calling every basement-ceiling run a
 void-spanner. The joist line is where "in this floor" honestly stops.
 
