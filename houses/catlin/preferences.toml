@@ -447,6 +447,9 @@ suppress = [
   # PR-B-HW-KITCH step back to the old bands at x=17'-6", so nothing lies in SL-M-DECK.
   # What it found instead is two things nothing else in the engine could see.
   #
+  #   * ** CLOSED 2026-09-22 (B5): `concrete_crossings` walks ducts now and SP-B-CN-ERV-PLAY
+  #     (plan/mep_sleeves.py) is the cast sleeve; `mep.sleeve_coverage` PASSes it and the
+  #     suppression below is gone. ** The record as it stood:
   #   * DU-B-ERV-R-PLAY crosses W-B-CN, the 12" cast centre wall, with 4" of concrete over
   #     it and NO void of any kind — no sleeve, no rough opening. `mep.sleeve_coverage`
   #     never saw it because `concrete_crossings` walks pipe and raceway and not duct, so a
@@ -485,7 +488,6 @@ suppress = [
   # them somebody else's decision: a 2x8 wet wall, a furred chase, or a 1/2" sleeve — and the
   # sleeve is R403.5.3's question, not this check's.
   "mep.run_interference:PR-A-HW-STUBATH",
-  "mep.run_in_slab:DU-B-ERV-R-PLAY",
   "mep.run_in_slab:PR-SG-ARCH-OVERFLOW",
 
   # ** mep.riser_through_deck: 47 RISERS THROUGH A DECK WITH NO HOLE DRAWN. NEW CHECK,

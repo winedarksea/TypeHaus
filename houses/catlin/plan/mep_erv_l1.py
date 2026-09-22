@@ -260,8 +260,8 @@ DUCTS_ERV_BASEMENT = [
     # The rise costs two bends on the supply side, which is not the governing one, and it
     # buys 6" of headroom in RM-B-GYM (`exposed_services`) rather than spending any.
     # The cast sleeve through `W-B-CS2`'s 12" pour was the other candidate and is NOT
-    # taken: `mep.sleeve_coverage` walks `pipe_runs` only, so a duct through concrete would
-    # be an ungraded penetration — a worse answer than a graded crossing of air.
+    # taken: a crossing of air cuts nothing, where a sleeve is a pre-pour commitment
+    # (`mep.sleeve_coverage` grades duct sleeves since 2026-09-22 — SP-B-CN-ERV-PLAY).
     DuctRun(uid="CND5TE40W0", tag="DU-B-ERV-R-GYM", system=DuctSystem.SUPPLY,
             path=(pt(ft(7, 3), ft(30, 2)), pt(ft(7, 3), ft(29, 6)),
                   pt(ft(7, 3), ft(29, 6)), pt(ft(17), ft(29, 6)),

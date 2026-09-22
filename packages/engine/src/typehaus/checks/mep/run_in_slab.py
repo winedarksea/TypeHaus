@@ -15,10 +15,9 @@ act on.
 
 What survives the dedupe is therefore two shapes, and the finding states the measurement
 rather than guessing which: a run lying ALONG a band (nothing else in the engine sees it),
-and a run passing THROUGH one that ``concrete_crossings`` never walked. The second is real
-and is not a duplicate — that walk covers pipe and raceway, so a **duct** through a
-foundation wall is graded by nothing at all. ``DU-B-ERV-R-PLAY`` crosses catlin's 12" centre
-wall with 4" of concrete over it and no void of any kind.
+and a run passing THROUGH one that ``concrete_crossings`` never walked. The second was how
+``DU-B-ERV-R-PLAY`` was found through catlin's 12" centre wall, back when that walk covered
+pipe and raceway only; it walks ducts too now, so the case is a residue, not a gap.
 
 Three more things are not this defect:
 

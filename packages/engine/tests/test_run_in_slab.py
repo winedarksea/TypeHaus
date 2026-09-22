@@ -74,18 +74,11 @@ def test_clipped_band_interpolates_z_at_the_clip() -> None:
     assert high == pytest.approx(4.0 + 0.5)
 
 
-def test_a_duct_through_a_concrete_wall_is_graded_by_nothing_else(catlin_ctx) -> None:
-    """``concrete_crossings`` walks pipe and raceway, not duct, so a 4" branch through
-    catlin's 12" centre bearing wall had no verdict anywhere. It has one now, and it names
-    the cover left over it."""
-    finding = next(f for f in _fails(catlin_ctx) if "DU-B-ERV-R-PLAY" in f.element_tags)
-    assert "W-B-CN" in finding.element_tags
-    # leg 3 since D3 (2026-09-19): the run turns south at x=17'-0" and crosses the pour on
-    # its last leg into REG-B-SUP2 instead of on its first one across the house. Same wall,
-    # same foot of it, same 4" of cover — which is the point of pinning the crossing and not
-    # the index alone.
-    assert "1.0 ft of leg 3" in finding.message
-    assert '4.0" of concrete between it and the nearer face' in finding.message
+def test_a_duct_through_a_concrete_wall_is_now_a_crossing(catlin_ctx) -> None:
+    """This check found ``DU-B-ERV-R-PLAY`` through catlin's 12" centre wall while
+    ``concrete_crossings`` walked no duct (1.0 ft of leg 3, 4.0" of cover). It walks ducts
+    since B5, so the crossing is ``mep.sleeve_coverage``'s and the dedupe drops it here."""
+    assert all("DU-B-ERV-R-PLAY" not in f.element_tags for f in _fails(catlin_ctx))
 
 
 def test_a_clip_is_not_a_length_of_pipe_in_a_pour() -> None:
@@ -93,9 +86,8 @@ def test_a_clip_is_not_a_length_of_pipe_in_a_pour() -> None:
     assert MIN_EMBEDDED_M / M_PER_IN == pytest.approx(6.0)
 
 
-def test_catlin_reports_exactly_the_two_it_has(catlin_ctx) -> None:
+def test_catlin_reports_exactly_the_one_it_has(catlin_ctx) -> None:
     """Pinned so a campaign that fixes one, or a geometry move that adds one, is visible."""
     assert sorted(tuple(f.element_tags) for f in _fails(catlin_ctx)) == [
-        ("DU-B-ERV-R-PLAY", "W-B-CN"),
         ("PR-SG-ARCH-OVERFLOW", "SL-SG-FIELD"),
     ]

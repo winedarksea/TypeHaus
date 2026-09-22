@@ -20,6 +20,7 @@ Like ``mep_queries``, this is a query API and not a resolver: nothing here appen
 
 from __future__ import annotations
 
+from typehaus.model.enums import AIR_SERVICE_DUCT_SYSTEM
 from typehaus.resolve.assembly_material import is_cast_beam
 from typehaus.resolve.geometry import length, sub
 from typehaus.resolve.model import ResolvedModel, Ring
@@ -130,7 +131,7 @@ def concrete_hosts(model: ResolvedModel) -> list[tuple[str, str, object, float, 
 
 
 def concrete_crossings(model: ResolvedModel) -> list[dict]:
-    """Every point where a routed pipe or raceway passes through concrete — the pour-day list.
+    """Every point where a routed pipe, raceway or duct passes through concrete — the pour-day list.
 
     Walks each resolved run with vertical information against every concrete solid
     (slab/footing/cast beam) and foundation wall. A solid is walked band by band rather than as one
@@ -165,6 +166,15 @@ def concrete_crossings(model: ResolvedModel) -> list[dict]:
         path, z = profile
         walkable.append((conduit.tag, conduit.service or "spare",
                          conduit.trade_size_m, path, z))
+    # Ducts, labelled by the ``Service`` their air is so a sleeve's ``purpose`` can name it.
+    # A duct's hole is cast just like a pipe's; walking pipe only left one ungraded.
+    for duct in model.ducts:
+        service = _DUCT_SLEEVE_SERVICE.get(duct.system)
+        if service is None or len(duct.z_m) != len(duct.path):
+            continue
+        walkable.append((duct.tag, service,
+                         duct.diameter_m or max(duct.width_m, duct.depth_m),
+                         duct.path, list(duct.z_m)))
 
     crossings: list[dict] = []
     for tag, system, diameter_m, path, z_m in walkable:
@@ -240,6 +250,16 @@ _SLEEVE_PURPOSES_BY_SYSTEM = {
     # in the electrician's rough-in, whatever eventually goes through it.
     "power_120": {"power_120", "power_240"}, "power_240": {"power_120", "power_240"},
     "data": {"data"}, "spare": {"power_120", "power_240", "data"},
+    # Air shares a sleeve with nothing else: one duct, one hole, sealed round it.
+    **{service: {service} for service in
+       ("supply_air", "return_air", "exhaust_air", "outdoor_air")},
+}
+
+#: ``DuctSystem`` value -> the ``Service`` a sleeve for it names. A dryer is exhaust air;
+#: a transfer grille is not a duct and casts nothing.
+_DUCT_SLEEVE_SERVICE = {
+    **{system.value: service.value for service, system in AIR_SERVICE_DUCT_SYSTEM.items()},
+    "dryer": "exhaust_air",
 }
 
 

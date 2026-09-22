@@ -152,6 +152,14 @@ WALL_SLEEVES = [
                       position=pt(ft(11), ft(35, 6)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), axis="horizontal",
                       purpose=Service.WATER_COLD, center_elevation=ft(-8, -10)),
+    # DU-B-ERV-R-PLAY's last leg into REG-B-SUP2, square through the 12" centre wall. Every
+    # route to that register crosses this pour (preferences.toml, D3), so the hole is cast.
+    # A 4" galvanized duct in a 6" sleeve: 1" annulus all round for the foam/sealant air
+    # seal. Centred on the duct at 7'-6" over the basement datum (-1'-7 7/16" project).
+    SleevePenetration(uid="72XHRECGF2", tag="SP-B-CN-ERV-PLAY", host_ref="W-B-CN",
+                      position=pt(ft(18), ft(26)), pipe_diameter=inch(4),
+                      sleeve_diameter=inch(6), axis="horizontal",
+                      purpose=Service.SUPPLY_AIR, center_elevation=inch(-19.4375)),
 ]
 
 # The hydrant line's garage-foundation protection (UPC 314.1 — Minn. R. 1309.0010 subp. 3.D

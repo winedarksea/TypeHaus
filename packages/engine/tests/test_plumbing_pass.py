@@ -82,6 +82,15 @@ def test_every_concrete_crossing_is_sleeved(catlin_model):
     assert not unsleeved, unsleeved
 
 
+def test_a_duct_through_concrete_is_walked_and_sleeved(catlin_model):
+    """B5: ducts are walked too, and an air sleeve is claimed only by air."""
+    from typehaus.resolve.mep import concrete_crossings
+
+    rows = [(c["host"], c["system"], c["sleeve"]) for c in concrete_crossings(catlin_model)
+            if c["run"] == "DU-B-ERV-R-PLAY"]
+    assert rows == [("W-B-CN", "supply_air", "SP-B-CN-ERV-PLAY")]
+
+
 def test_sleeve_coverage_and_alignment_are_clean(code_report):
     for check_id in ("mep.sleeve_coverage", "mep.sleeve_alignment",
                      "mep.drain_slope", "mep.footing_clearance",
