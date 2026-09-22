@@ -399,10 +399,13 @@ def test_catlin_s_one_real_plate_cut_fails_for_want_of_a_tie(catlin_model_ro) ->
     it went 1.75" -> 2.75" and the sauna vent's two cuts and the kitchen drain's one fell
     under it. What is left is `PR-B-SAUNA-VENT` through `W-B-ESS-S`, the one wall in that
     group nothing bores hard enough to have been retyped.
+
+    Ten UNKNOWNs since 2026-09-22: the tenth is that same vent SEVERING `W-B-ESS-W`'s 2x6
+    plate — under the width line, but across the plate through its whole 1.50" thickness.
     """
     from typehaus.checks.mep.routing_bores import run_through_plate
 
     findings = run_through_plate(_ctx(catlin_model_ro))
     results = [f.result.value for f in findings]
     assert results.count("fail") == 1
-    assert results.count("unknown") == 9
+    assert results.count("unknown") == 10

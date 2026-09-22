@@ -190,7 +190,8 @@ def run_through_plate(ctx: CheckContext) -> list[Finding]:
 
     A penetration **as wide as the plate** is not a plate cut at all — it interrupts the
     plate, which is a framed opening with a header over it. Those are UNKNOWN here and are
-    graded, as far as anything grades them, by ``mep.run_through_header``.
+    graded, as far as anything grades them, by ``mep.run_through_header``. So is a run laid
+    across the plate through its whole thickness: the plate is severed whatever the width.
     """
     from typehaus.resolve.mep_bores import top_plate_cut
 
@@ -208,7 +209,9 @@ def run_through_plate(ctx: CheckContext) -> list[Finding]:
         seen += 1
         covered = ties.get(wall.tag, frozenset())
         tied = "*" in covered or tag in covered
-        verdicts = [(cut, top_plate_cut(cut.profile, cut.diameter_in, tie=tied))
+        verdicts = [(cut, top_plate_cut(cut.profile, cut.diameter_in, tie=tied,
+                                        through_in=cut.through_in,
+                                        spans_width=cut.spans_width))
                     for cut in plates]
         bad = [(cut, v) for cut, v in verdicts if v.ok is False]
         unsure = [(cut, v) for cut, v in verdicts if v.ok is None]

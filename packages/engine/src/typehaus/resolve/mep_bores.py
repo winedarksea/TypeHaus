@@ -288,8 +288,9 @@ def stud_notch(profile: str, depth_of_notch_in: float, *,
         remedy=None if ok else "bore rather than notch, or take the run to a clear bay")
 
 
-def top_plate_cut(profile: str, cut_in: float, *,
-                  tie: bool | None = None) -> BoreVerdict:
+def top_plate_cut(profile: str, cut_in: float, *, tie: bool | None = None,
+                  through_in: float | None = None,
+                  spans_width: bool = False) -> BoreVerdict:
     """IRC R602.6.1 on a cut or notched top plate.
 
     **Over 50% is not illegal, it is conditional**, and that distinction is the whole value
@@ -305,6 +306,10 @@ def top_plate_cut(profile: str, cut_in: float, *,
     side of a notch — has nothing to say about it. Nine of catlin's thirteen were that
     case, reported as "18.00\" out of a 3.50\" plate", which is arithmetic about a notch
     nobody would cut. ``header_bore`` is the question those actually ask.
+
+    **Nor is a run that takes the plate's whole thickness across its whole width**
+    (``through_in``, ``spans_width`` → ``MemberCut``): a 2.38" vent laid through a 1.50"
+    plate leaves nothing of it at that station, whatever fraction of the width it measures.
     """
     from typehaus.resolve.framing.profiles import cross_section
 
@@ -321,6 +326,16 @@ def top_plate_cut(profile: str, cut_in: float, *,
             f"{profile} top plate, so the plate is interrupted rather than notched: this is "
             "a framed opening with a header over it, and IRC R602.6.1 governs a plate that "
             "stays continuous either side of a cut",
+            remedy="draw the opening and its header — `mep.run_through_header` grades what "
+                   "the run then passes")
+    thickness_in = min(section.depth_m, section.width_m) / M_PER_IN
+    if spans_width and through_in is not None and through_in >= thickness_in - 1e-6:
+        return BoreVerdict(
+            None, "plate_cut", cut_in, None,
+            f'a {cut_in:.2f}" run crosses the full {width_in:.2f}" width of a {profile} top '
+            f'plate and takes all {thickness_in:.2f}" of its thickness, so the plate is '
+            "severed rather than notched: this is a framed opening with a header over it, "
+            "and IRC R602.6.1 governs a plate that stays continuous either side of a cut",
             remedy="draw the opening and its header — `mep.run_through_header` grades what "
                    "the run then passes")
     if cut_in <= limit + 1e-9:

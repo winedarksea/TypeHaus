@@ -100,3 +100,12 @@ def test_the_conduit_through_the_short_cripple_over_the_gym_door_is_unknown(
     assert finding.result.value == "unknown"
     assert "cripple-head-0-02" in finding.message
     assert '5.75"' in finding.message and "a block rather than a stud" in finding.message
+
+
+def test_the_sauna_vent_severs_W_B_ESS_W_s_top_plate_and_says_so(catlin_ctx) -> None:
+    """It crosses the 2x6 plate and takes its whole 1.50" thickness; under the 50% width line
+    it used to read PASS. Suppressed by name in preferences.toml with the run's other cuts."""
+    [finding] = [f for f in run_through_plate(catlin_ctx)
+                 if f.element_tags == ("PR-B-SAUNA-VENT", "W-B-ESS-W")]
+    assert finding.result.value == "unknown"
+    assert "severed" in finding.message and '1.50"' in finding.message

@@ -58,6 +58,9 @@ class MemberCut:
     #: The member's z band, metres: a VERTICAL member's own length (``member_length_m`` is
     #: plan length, 0 for a stud). What tells a 5 3/4" cripple from a stud.
     member_height_m: float = 0.0
+    #: A HORIZONTAL member whose both long faces the run's envelope meets: it crosses the
+    #: plate's whole width, so full thickness there severs it (``top_plate_cut``).
+    spans_width: bool = False
 
 
 def leg_crossings(wall: ResolvedWall, a: tuple[float, float], b: tuple[float, float],
@@ -88,7 +91,8 @@ def leg_crossings(wall: ResolvedWall, a: tuple[float, float], b: tuple[float, fl
     for member in wall.members:
         if member.category not in _CUTTABLE_CATEGORIES:
             continue
-        shape = member_plan_shape(member, cross_section(member.profile))
+        section = cross_section(member.profile)
+        shape = member_plan_shape(member, section)
         if shape is None:
             continue
         overlap = swept.intersection(shape)
@@ -116,8 +120,24 @@ def leg_crossings(wall: ResolvedWall, a: tuple[float, float], b: tuple[float, fl
                              from_end_m=from_end_m, member_length_m=length_m,
                              edge_clear_in=max(0.0, min(z - radius_m - member.z0_m,
                                                         top - z - radius_m)) / M_PER_IN,
-                             member_height_m=top - member.z0_m))
+                             member_height_m=top - member.z0_m,
+                             spans_width=_spans_width(swept, member, section)))
     return out
+
+
+def _spans_width(swept: Any, member: FramedMember, section: Any) -> bool:
+    """Whether ``swept`` meets both long faces of a horizontal member's plan rectangle."""
+    from shapely.geometry import LineString
+
+    if member.p0 == member.p1:
+        return False
+    (x0, y0), (x1, y1) = member.p0, member.p1
+    length = ((x1 - x0) ** 2 + (y1 - y0) ** 2) ** 0.5
+    half = max(section.width_m, section.depth_m) / 2.0
+    nx, ny = -(y1 - y0) / length * half, (x1 - x0) / length * half
+    return all(swept.intersects(LineString([(x0 + s * nx, y0 + s * ny),
+                                            (x1 + s * nx, y1 + s * ny)]))
+               for s in (1.0, -1.0))
 
 
 def _through_in(a: tuple[float, float], b: tuple[float, float], za: float, zb: float,

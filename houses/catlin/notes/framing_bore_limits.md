@@ -276,6 +276,15 @@ that is a framed opening with a header over it, and R602.6.1 is about a plate th
 continuous either side of a cut. Reporting `18.00" out of a 3.50" plate` was arithmetic about
 a notch nobody would cut.
 
+**Width is not the only way to sever a plate (2026-09-22).** `PR-B-SAUNA-VENT` crosses
+`W-B-ESS-W`'s 2x6 `plate-top-1` level, at -15.31", and its 2.38" outside takes the plate's
+**whole 1.50" thickness** across its whole 5.50" width. 2.38 / 5.50 = 43%, under the 2.75"
+line, so the width rule read PASS about a plate with nothing left at that station. The prior
+question is now asked first: full thickness **and** both long faces met ⇒ severed, UNKNOWN
+with the header remedy. A vertical bore through a plate meets neither face and stays an
+R602.6.1 cut. On catlin it moves that one PASS to UNKNOWN and nothing else; the existing
+`mep.run_through_plate:PR-B-SAUNA-VENT` suppression already covers it.
+
 **Catlin's thirteen, split by that guard** (it was fifteen when §3 was written; D3 moved two
 ducts):
 

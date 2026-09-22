@@ -146,6 +146,17 @@ def test_a_small_supply_through_either_plate_needs_nothing() -> None:
     assert top_plate_cut("2x4", 1.375).remedy is None
 
 
+def test_a_run_across_the_plate_through_its_whole_thickness_severs_it() -> None:
+    """PR-B-SAUNA-VENT x W-B-ESS-W: 2.38" is 43% of a 2x6's width, which alone reads PASS,
+    but laid across the plate it takes all 1.50" of thickness. Both halves are needed."""
+    severed = top_plate_cut("2x6", VENT_IN, through_in=1.5, spans_width=True)
+    assert severed.unknown
+    assert "severed" in severed.basis and "framed opening" in severed.basis
+    assert "header" in severed.remedy
+    assert top_plate_cut("2x6", VENT_IN, through_in=1.30, spans_width=True).ok is True
+    assert top_plate_cut("2x6", VENT_IN, through_in=1.5, spans_width=False).ok is True
+
+
 # --- §4 joists -------------------------------------------------------------------------
 
 def test_a_hole_that_fits_the_window_can_still_be_over_D_over_3() -> None:
