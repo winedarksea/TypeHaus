@@ -1217,6 +1217,27 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
       and y=3'-2", south of the vent's corner.
     - **The gym radial no longer crosses the gym** and `RM-B-GYM.exposed_services` says so;
       RM-B-STAIR carries three ERV branches now instead of one.
+  - **`D-B-FURN`'s HEADER STILL HAS FOUR HOLES IN IT AND THAT IS AN OPEN OWNER DECISION**
+    (2026-09-22). Six runs bored or notched a basement door header; two moved and four did
+    not. `DU-B-ERV-R-SAUNA-SUP` is at **x=1'-0 1/2"**, in `W-B-CW`'s west clear bay
+    (x 9 1/2"..15 1/4") — not x=3'-3", which crossed dead on the west jack face — and
+    `DU-B-ERV-R-GYM` **rises 6 1/8" to -19 5/16" and crosses OVER `D-B-GYM`'s header**, in
+    the 5 3/4" of open wall between the header top and the double top plate, 7.8" from the
+    nearest cripple. Neither cuts anything now. What is left in `W-B-CW`'s 2-2x8 is
+    `DU-B-ERV-R-SAUNA-EXH`'s 3 1/4" notch off the top face, `PR-B-KITCH-DRAIN` and
+    `PR-M-S-BATH1-DRAIN` 0.77" apart near midspan, and `PR-B-MAIN-DRAIN` 4.50" three inches
+    from a jack. **No published chart reaches any of them** — the engine can hold one now
+    (`PublishedHole` on the opening, graded by `mep.run_through_header`) and TJ-9000's rows
+    refuse all four: round holes only, 8" off each bearing, the middle third of the depth,
+    and every one of these runs passes within 1 1/4" of the header's BOTTOM face. **Depth
+    is not the lever** — a deeper header moves the hole zone further from them — so neither
+    header was retyped and neither opening carries a row. The closers are a designed header
+    (13.82" is what fits over `D-B-FURN`) or a re-plumbing of the tie-in corner.
+    Every refusal is measured in `notes/framing_bore_limits.md` §8.
+    **Never take a run through the cripple zone on the strength of a `stud_bore` PASS**
+    (§6a): that predicate reads a stud's DEPTH and never its LENGTH, so a 4" hole through a
+    6 9/16" cripple reads legal and is two 1.28" slivers. The gym radial passes BETWEEN two
+    whole cripples, which is a different thing and the only thing allowed here.
   - **THE PLUMBING MOVED TOO (P1-P3, 2026-09-19), AND THREE NUMBERS ARE WORTH KEEPING.**
     The two basement vents stopped sharing the y=34'-6" line into the chase —
     `PR-B-BATH-VENT` drops 2 1/2" under and `PR-B-SAUNA-VENT` takes its rise EARLY, because
