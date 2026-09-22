@@ -19,6 +19,7 @@ import { Inspector } from "./components/Inspector";
 import { ConflictBanner, EngineStaleBanner, LoadErrorBanner } from "./components/ConflictBanner";
 import { ExtentsHUD } from "./components/ExtentsHUD";
 import { Toasts } from "./components/Toasts";
+import { ReaderErrorBoundary } from "./components/ReaderErrorBoundary";
 
 // The readers are full-screen, opened one at a time from a menu, and none of them is on the
 // first paint — so each ships as its own chunk rather than as dead weight in the entry bundle
@@ -223,17 +224,19 @@ export function App() {
 
       {/* Nothing to show while a reader's chunk arrives: the canvas behind it is still the
           screen, and a spinner over it would read as the canvas breaking. */}
-      <Suspense fallback={null}>
-        {detailView === "assembly" && <AssemblyDetailsView />}
-        {detailView === "bom" && <BomView />}
-        {detailView === "circuits" && <CircuitsView />}
-        {detailView === "lighting" && <LightingView />}
-        {detailView === "hvac" && <HvacView />}
-        {detailView === "plumbing" && <PlumbingView />}
-        {detailView === "data" && <DataView />}
-        {detailView === "estimate" && <EstimateView />}
-        {detailView === "documents" && <DocumentsView />}
-      </Suspense>
+      <ReaderErrorBoundary key={detailView} onClose={() => setDetailView("none")}>
+        <Suspense fallback={null}>
+          {detailView === "assembly" && <AssemblyDetailsView />}
+          {detailView === "bom" && <BomView />}
+          {detailView === "circuits" && <CircuitsView />}
+          {detailView === "lighting" && <LightingView />}
+          {detailView === "hvac" && <HvacView />}
+          {detailView === "plumbing" && <PlumbingView />}
+          {detailView === "data" && <DataView />}
+          {detailView === "estimate" && <EstimateView />}
+          {detailView === "documents" && <DocumentsView />}
+        </Suspense>
+      </ReaderErrorBoundary>
       <Workbench />
       <CommandPalette />
       <Toasts />

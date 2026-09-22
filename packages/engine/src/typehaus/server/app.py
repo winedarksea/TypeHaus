@@ -575,8 +575,10 @@ def _mount_spa(app: Any, ui_dist: Path) -> None:
     """Serve the compiled UI at ``/`` with a single-page-app fallback (V6).
 
     Real files under ``ui_dist`` (``index.html``, hashed ``assets/*``, the PWA tarballs, the
-    service worker) are returned directly; any other GET path falls back to ``index.html`` so
-    client-side routes deep-link. Paths that escape ``ui_dist`` (``..`` traversal) 404.
+    service worker) are returned directly; an extensionless GET path falls back to
+    ``index.html`` so client-side routes deep-link. A missing FILE (``assets/*`` or a dotted
+    name) 404s: answering a stale chunk with 200 + HTML let the service worker cache the page
+    under the chunk's URL. Paths that escape ``ui_dist`` (``..`` traversal) 404.
     """
     from fastapi.responses import FileResponse, JSONResponse
 
@@ -589,8 +591,12 @@ def _mount_spa(app: Any, ui_dist: Path) -> None:
             candidate = (root / full_path).resolve()
             if candidate.is_file() and (candidate == root or root in candidate.parents):
                 return FileResponse(candidate)
+            if full_path.startswith("assets/") or "." in full_path.rsplit("/", 1)[-1]:
+                return JSONResponse({"error": f"not found: {full_path}"}, status_code=404)
         if index.is_file():
-            return FileResponse(index, media_type="text/html")
+            # Revalidated every time, so an open tab's next navigation gets current chunk names.
+            return FileResponse(index, media_type="text/html",
+                                headers={"Cache-Control": "no-cache"})
         return JSONResponse(
             {"error": "UI not built — run `npm run build` in ui/ to produce ui/dist"},
             status_code=404,

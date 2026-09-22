@@ -28,9 +28,9 @@
  * Correctness comes from the per-request strategies above; bump it by hand only to force-evict
  * every cache after a breaking change.
  */
-// v4: evicts every v3 entry, including the stale engine/house pairs the old
-// stale-while-revalidate rule left behind, and the now-renamed .tar.
-const CACHE_VERSION = "typehaus-v4";
+// v5: evicts index.html cached under a stale chunk's URL (the old SPA fallback answered a
+// missing /assets/*.js with 200 + HTML, and cacheFirst stored it).
+const CACHE_VERSION = "typehaus-v5";
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 
@@ -49,7 +49,9 @@ const SHELL_ASSETS = [
 // which is what the manifest's content hash on the PDF's query string is there to make visible.
 const API_PREFIXES = [
   "/model", "/checks", "/details", "/detail", "/plan", "/preview", "/macro",
-  "/build", "/undo", "/redo", "/events", "/underlays", "/sheets", "/notes",
+  "/build", "/undo", "/redo", "/events", "/underlay", "/underlays", "/sheets", "/notes",
+  "/renders", "/bom", "/costs", "/tasks", "/schedule", "/inspections", "/asset", "/project",
+  "/storeys", "/model.glb", "/model.ifc",
 ];
 
 self.addEventListener("install", (event) => {
@@ -85,8 +87,11 @@ async function cacheFirst(request, cacheName) {
   const cached = await cache.match(request);
   if (cached) return cached;
   const response = await fetch(request);
-  // Cache successful and opaque (cross-origin CDN) responses for offline reuse.
-  if (response && (response.ok || response.type === "opaque")) {
+  // Cache successful and opaque (cross-origin CDN) responses for offline reuse — but never a
+  // same-origin HTML page: that is an SPA fallback answering a missing chunk, not the chunk.
+  const isHtml = response?.type === "basic" &&
+    (response.headers.get("content-type") ?? "").startsWith("text/html");
+  if (response && !isHtml && (response.ok || response.type === "opaque")) {
     cache.put(request, response.clone());
   }
   return response;

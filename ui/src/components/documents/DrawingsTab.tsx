@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "../../state/store";
 import { Icon } from "../../icons/Icon";
 import { findSheet, groupSheets, nextSheet, prevSheet } from "../../model/sheets";
@@ -52,6 +52,19 @@ export function DrawingsTab() {
   // The cover until something is picked: a set opens at page one.
   const active = findSheet(sheets, selection.sheet) ?? sheets[0] ?? null;
 
+  // Keep the highlighted row in the index's own scroll when Previous/Next pages past it. Only
+  // the list scrolls: scrollIntoView would also move the body, jumping a phone to the index.
+  const listRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const list = listRef.current;
+    const row = list?.querySelector<HTMLElement>('[aria-current="true"]');
+    if (!list || !row || list.scrollHeight <= list.clientHeight) return;
+    const top = row.getBoundingClientRect().top - list.getBoundingClientRect().top + list.scrollTop;
+    if (top < list.scrollTop) list.scrollTop = top;
+    else if (top + row.offsetHeight > list.scrollTop + list.clientHeight)
+      list.scrollTop = top + row.offsetHeight - list.clientHeight;
+  }, [active?.number]);
+
   const pick = (number: string) => openDocuments("drawings", { sheet: number,
     note: selection.note ?? undefined });
 
@@ -72,7 +85,7 @@ export function DrawingsTab() {
 
   return (
     <div className="doc-split">
-      <nav className="doc-list" aria-label="Sheet index">
+      <nav className="doc-list" aria-label="Sheet index" ref={listRef}>
         {groups.map((group) => (
           <div key={group.series}>
             <h4 className="doc-list-group-title">{group.label}</h4>

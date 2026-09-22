@@ -83,13 +83,22 @@
   .doc-split { grid-template-columns: 1fr; }
 }
 
+/* Its own scroll, so paging the drawing does not scroll the index out from under you. Sticky
+   in the workbench body (the one scroller every reader shares) and bounded by the viewport:
+   186px is the top bar + bread + body padding + status rail, measured. */
 .doc-list {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  /* Its own scroll, so paging the drawing does not scroll the index out from under you. */
-  max-height: 100%;
+  position: sticky;
+  top: 0;
+  align-self: start;
+  max-height: calc(100dvh - var(--doc-list-chrome, 186px));
   overflow-y: auto;
+  overscroll-behavior: contain;
+}
+@media (max-width: 599px) {
+  .doc-list { position: static; max-height: none; overflow-y: visible; }
 }
 .doc-list-group-title {
   margin: 0 0 4px;

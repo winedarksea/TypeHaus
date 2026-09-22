@@ -37,9 +37,12 @@ export default defineConfig({
       "/schedule": ENGINE,
       "/inspections": ENGINE,
       "/preview": ENGINE,
-      // The Documents hub's two reads (server/documents_api.py).
+      // The Documents hub's reads (server/documents_api.py).
       "/sheets": ENGINE,
       "/notes": ENGINE,
+      "/renders": ENGINE,
+      "/project": ENGINE,
+      "/storeys": ENGINE,
       "/asset": ENGINE,
       "/underlay": ENGINE,
       "/events": { target: ENGINE, ws: true },
