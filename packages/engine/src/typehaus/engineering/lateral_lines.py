@@ -82,7 +82,7 @@ def column_lines(ctx, posts: dict, columns: list[str], axis: str,
         out.append(Line(
             tag=tag, kind="cast column",
             station_ft=x_ft if axis == "y" else y_ft,
-            stiffness_lb_per_in=stiffness, element_tags=(tag,),
+            stiffness_lb_per_in=stiffness, element_tags=(tag,), x_ft=x_ft, y_ft=y_ft,
             how=(f"cantilever 3EI/h³ on a {size[0]:.0f}\" round, f'c {strength:,.0f} psi, "
                  f"{post.height.inches / 12.0:.2f}' base to head"
                  + (" at ACI 318-19 §6.6.3.1.1 0.70 I_g" if cracked
@@ -171,6 +171,7 @@ def panel_line(ctx, wall, axis: str, shear_lb: float) -> Line | None:
     station = (x0 + x1) / 2.0 if axis == "y" else (y0 + y1) / 2.0
     return Line(
         tag=wall.tag, kind="shear panel", station_ft=station,
+        x_ft=(x0 + x1) / 2.0, y_ft=(y0 + y1) / 2.0,
         stiffness_lb_per_in=shear_lb / delta, element_tags=(wall.tag,),
         how=(f"SDPWS 4.3.2 on {length_ft:.2f}' x {height_ft:.2f}' of {spec.fastening}: "
              f"G_a {spec.apparent_stiffness_kips_per_in:.0f} kips/in, d_a {slip:.3f}\", "

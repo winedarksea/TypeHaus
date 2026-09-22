@@ -96,6 +96,9 @@ _EXCUSED: dict[str, set[str]] = {
     # leaf reaching a leaf — the same shape ``joints`` and ``schedule`` already have, and it
     # cannot become a cycle.
     "engineering/lateral_system.py": {"hardware"},
+    # Its other half: the strap line collecting a support line with no member on it is graded
+    # against that strap's own published tension (ESR-2105), for the same reason.
+    "engineering/lateral_collectors.py": {"hardware"},
     # The same excuse for the same reason: a deck tie grades against the tie part's own
     # published F1/F2, which live in the catalog and nowhere else.
     "engineering/deck_tie.py": {"hardware"},

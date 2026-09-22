@@ -700,6 +700,16 @@ fixed by the passage and whose span is fixed by the columns — geometry, which 
 base does not reach. Unblocked the limit is 3.0 and this is a FAIL. There is nothing to
 trade, and it is now the governing row on the whole canopy at d/c 1.00.
 
+**The rest of the load path is §8 of `notes/north_entry_canopy_lateral.md`** (2026-09-22):
+the chord force this section prints and does not grade, delegated to the truss fabricator;
+the three collectors (west drag zero, the east headers' `HETA20Z` end connections, the north
+line's `LSTA24` strap line); the `AB-058-10-SS`'s ACI 318-19 Ch. 17 anchorage in its pier; and
+the TORSION this section's rigid split leaves over. That last one matters here: with the
+moment term in, the N-S case is nearly the lever rule — the panel takes about 42% rather than
+76%, and each column **342 lb rather than 142 lb**. Nothing in §7e's governing E-W case moves
+(N-S with torsion is 6,225 lb-ft against E-W's 7,354), which is why `roof_moment` still
+distributes the columns' own demands without the term and says so.
+
 ## 8. The spread base, worked — and why neither column uses it
 
 `engineering/spread_base.py` grades a base as a rigid body on soil: eccentricity against the

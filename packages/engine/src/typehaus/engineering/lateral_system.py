@@ -47,9 +47,11 @@ from typehaus.engineering.item import (
     Status,
     item_id,
 )
+from typehaus.engineering.lateral_collectors import collector_rows, torsion_for, torsion_rows
 from typehaus.engineering.lateral_lines import panel_geometry_ft
 from typehaus.engineering.registry import EngineeringContext, calc, keys, oracled_by
 from typehaus.engineering.roof_moment import FrameCase, frame_cases_of, roof_base_moments
+from typehaus.engineering.torsion import Torsion
 
 KIND = "lateral_system"
 
@@ -61,7 +63,11 @@ BASIS_VERSION = "1"
 
 oracled_by(
     KIND,
-    Oracle(note="entry_column_base_fixity.md",
+    Oracle(note="entry_column_base_fixity.md", section="§7",
+           test="tests/test_lateral_system_calcs.py"),
+    # §8 is the other half — collectors, hold-down anchorage and torsion — hand-worked in
+    # its own file because `north_entry_structure.md` was already 429 lines.
+    Oracle(note="north_entry_canopy_lateral.md", section="§8",
            test="tests/test_lateral_system_calcs.py"),
 )
 
@@ -136,6 +142,23 @@ def _one(ctx: EngineeringContext, tag: str) -> EngineeringRecord:
     for wall_tag in sorted({t for case in cases for t in case.panel_tags}):
         _panel(ctx, wall_tag, cases, states, notes, missing, inputs)
 
+    # ** THE LOAD PATH BETWEEN THE DECK AND THE LINES, AND THE MOMENT THE SPLIT LEFT OVER. **
+    resolved_roof = next((r for r in ctx.model.roofs if r.tag == tag), None)
+    torsions: dict[str, Torsion] = {}
+    if resolved_roof is not None:
+        for case in cases:
+            result = torsion_for(ctx, resolved_roof, case, cases)
+            if result is not None:
+                torsions[case.axis] = result
+        collector_rows(ctx, resolved_roof, cases, torsions, states, notes, inputs)
+        torsion_states, torsion_inputs, torsion_notes = torsion_rows(torsions)
+        states.extend(torsion_states)
+        inputs.extend(torsion_inputs)
+        notes.extend(torsion_notes)
+    else:
+        missing.append(f"a resolved roof for {tag}: the collector and torsion rows read its "
+                       "plan footprint to place the load resultant")
+
     # ** A COLLECTOR THAT IS NOT IN THE MODEL IS A LOAD PATH THAT IS NOT DRAWN. ** The whole
     # reduction this declaration buys rests on the deck's shear reaching each resisting
     # line, and what carries it there is a real member with a real connection at each end.
@@ -152,20 +175,21 @@ def _one(ctx: EngineeringContext, tag: str) -> EngineeringRecord:
             "to reach each resisting line through a member somebody builds")
 
     notes.extend((
-        "THE CHORD FORCE IS PRINTED AND NOT GRADED. A diaphragm chord is a wood member in "
-        "tension with a splice in it, and this engine holds no NDS reference design values "
-        f"for one. What the drawings owe is a continuous chord at each end of the deck and "
-        f"a splice that carries the force above: {spec.chords or 'no chord is described'}.",
+        "THE CHORD FORCE IS PRINTED HERE AND DESIGNED BY THE FABRICATOR. A diaphragm chord "
+        "is a wood member in tension with a splice in it; where the chord is a TRUSS's own "
+        "top chord it is the component designer's chart, because the axial force has to be "
+        "combined with the gravity case at that section — so it is delegated on the truss "
+        f"order through `rafter/{tag}` rather than graded here. What the drawings owe is a "
+        f"continuous chord at each end of the deck and a splice that carries the force "
+        f"above: {spec.chords or 'no chord is described'}. The assumed splice slip "
+        f"({spec.chord_splice_slip.inches if spec.chord_splice_slip else 0.0:.3f}\") is the "
+        f"third term of SDPWS 4.2.2 and it decides the rigid/flexible call — a fabricator's "
+        f"splice detail that slips materially more moves every share on this record.",
         "THE COLLECTOR IS A CLAIM WITH TAGS ON IT: "
         + (", ".join(spec.collector_refs) or "none named")
         + ". Those members drag the deck's shear into each resisting line; the check that "
-        "they resolve is `structural.lateral_racking`'s, and what neither grades is the "
-        "CONNECTION at each end of them, which is the joint a collector actually fails at.",
-        "NO TORSIONAL DISTRIBUTION. Two parallel lines cannot resist a torsional moment at "
-        "all — the pair is a mechanism about any axis normal to them — so the rigid split "
-        "here assumes the load resultant passes through the stiffness centroid. With three "
-        "or more lines that assumption stops being free and nothing here computes the "
-        "correction.",
+        "they resolve is `structural.lateral_racking`'s, and the CONNECTION at each end of "
+        "them — the joint a collector actually fails at — is the rows above.",
         "SCREENING, not a stamped design. Every row above is this engine's own arithmetic "
         "against a published table, and the seal is what turns it into a design.",
     ))
@@ -249,10 +273,72 @@ def _panel(ctx: EngineeringContext, wall_tag: str, cases: list[FrameCase],
         f"{spec.holdown} published uplift; the overturning couple {worst:,.0f} lb x "
         f"{height_ft:.2f}' over {length_ft:.2f}', with NO dead load credited against it"))
     notes.append(
-        f"{wall_tag}'s hold-down is {spec.holdown} and the CONCRETE ANCHORAGE under it is "
-        f"not graded here: ICC-ES ESR-1622 §5.6 puts the anchor bolt and its footing outside "
-        f"the report's own scope, so that link is an ACI 318 Ch. 17 breakout-and-pullout "
-        f"design and not a product rating. {allowable.citation.split(':')[0]}.")
+        f"{wall_tag}'s hold-down is {spec.holdown}, whose own report puts the anchor under it "
+        f"out of scope (ICC-ES ESR-1622 §5.6) — so the CONCRETE ANCHORAGE is graded here as "
+        f"an ACI 318-19 Ch. 17 design instead of a product rating. "
+        f"{allowable.citation.split(':')[0]}. The row above is the overturning couple ALONE, "
+        f"because that is the panel's own limit state; the anchor rows add the column's net "
+        f"roof uplift, which crosses the same bolt in the same gust.")
+    _anchorage(ctx, wall, tension, worst, states, notes)
+
+
+def _anchorage(ctx: EngineeringContext, wall: object, tension_lb: float, shear_lb: float,
+               states: list[LimitState], notes: list[str]) -> None:
+    """The cast-in anchor under each end of a panel, graded in the pier it stands in.
+
+    ** THE PANEL'S END POST NAMES ITS OWN PIER BY STANDING ON IT. ** A post framed into the
+    panel (``Post.within_wall``) bears on the cast pier at its own plan position, and that
+    pier's diameter and f'c are what the anchor lives in. Nothing is assumed: a post with no
+    pier under it raises no row, because there is then no concrete to design.
+    """
+    from typehaus.engineering.column_head_joint import _net_uplift
+    from typehaus.engineering.holdown_anchor import round_pier_anchor
+    from typehaus.engineering.holdown_anchor import states as anchor_states
+    from typehaus.engineering.pier_basis import _round_size, cast_piers
+
+    posts = [e for e in ctx.plan.all_elements()
+             if getattr(e, "within_wall", None) == getattr(wall, "tag", None)]
+    if not posts:
+        return
+    piers = [p for p in cast_piers(ctx)
+             for post in posts
+             if _same_station(ctx.plan.by_tag(p.tag), post)]
+    # ** THE WORST PIER IS GRADED, ONCE. ** The bases are identical parts carrying the two
+    # ends of one couple, so a row per base would be the same row twice; the smallest pier
+    # at the lowest f'c is the one that answers for the pair.
+    candidates = [(pier, _round_size(getattr(ctx.plan.by_tag(pier.tag), "size", "") or ""))
+                  for pier in piers]
+    ranked = sorted(((pier, size) for pier, size in candidates if size is not None),
+                    key=lambda row: (row[1][0], row[0].specified_fc_psi or 0.0))
+    if ranked:
+        pier, size = ranked[0]
+        uplift = _net_uplift(ctx, pier, notes=[]) or 0.0
+        anchor = round_pier_anchor(pier.tag, size[0], pier.specified_fc_psi or 3000.0)
+        states.extend(anchor_states(
+            anchor, tension_lb + uplift, shear_lb / max(len(piers), 1),
+            f"the panel's overturning couple {tension_lb:,.0f} lb plus the column's net "
+            f"roof uplift {uplift:,.0f} lb (0.6D + 0.6W), no dead load credited against "
+            f"either",
+            f"the panel's base shear {shear_lb:,.0f} lb shared by its {len(piers)} bases — "
+            f"put ALL of it on one and the shear row doubles and the interaction still "
+            f"clears"))
+        notes.append(
+            f"THE HOLD-DOWN'S ANCHOR IS GRADED IN ITS PIER, NOT AS A PART: one cast-in "
+            f"5/8in x 10in bolt per base in a round pier, ACI 318-19 Ch. 17, cracked, "
+            f"condition B, with h_ef derived from the bolt's own length and the edge distance "
+            f"the pier's radius gives it on every side. The two bases are identical, so one "
+            f"is graded ({pier.tag}). What is NOT credited: supplementary reinforcement "
+            f"(the cage is not developed as anchor reinforcement), uncracked concrete, and "
+            f"any bearing or friction under the base plate.")
+
+
+def _same_station(pier_element: object, post: object) -> bool:
+    """Same plan position to a tenth of an inch — a post standing on a pier, not near one."""
+    a = getattr(pier_element, "position", None)
+    b = getattr(post, "position", None)
+    if a is None or b is None:
+        return False
+    return all(abs(x - y) < 0.0025 for x, y in zip(a.xy_m, b.xy_m, strict=False))
 
 
 def column_head_reactions(ctx: EngineeringContext) -> dict[str, dict[str, float]]:

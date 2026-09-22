@@ -24,7 +24,7 @@ conservatism is a number in the record rather than a claim.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from typehaus.engineering.diaphragm_basis import Distribution, distribute
@@ -88,6 +88,11 @@ class FrameCase:
     panels_governing: Distribution
     panel_tags: tuple[str, ...]
     column_tags: tuple[str, ...]
+    #: The shear the ROOF and its headers deliver, before the columns' propped heads join it.
+    top_shear_lb: float = 0.0
+    #: ``column tag -> head reaction the propped shaft hands the deck``, lb. Torsion needs
+    #: WHERE the deck's load is applied, and a prop is applied at its own column's station.
+    head_reactions: dict[str, float] = field(default_factory=dict)
 
 
 #: How many passes the panel share/stiffness fixed point gets, and how still it has to be.
@@ -372,8 +377,8 @@ def _split(ctx: EngineeringContext, element: Any, roof: Any, posts: dict[str, An
     # Every column's drag now splits between its base and the deck, so the shear the deck
     # has to carry is larger than the roof's own — and it is the deck's number that gets
     # distributed, this column's head reaction included.
-    heads = sum(_propped(per_drag, arms[tag], shafts[tag])[1] for tag in shafts)
-    diaphragm_shear = top_shear + heads
+    head_reactions = {tag: _propped(per_drag, arms[tag], shafts[tag])[1] for tag in shafts}
+    diaphragm_shear = top_shear + sum(head_reactions.values())
     if diaphragm_shear <= 0.0:
         return None
 
@@ -426,7 +431,8 @@ def _split(ctx: EngineeringContext, element: Any, roof: Any, posts: dict[str, An
         span_ft=span_ft, depth_ft=depth_ft,
         columns_governing=cases[0][2], panels_governing=cases[1][2],
         panel_tags=tuple(sorted(w.tag for w in panels)),
-        column_tags=tuple(sorted(shafts)))
+        column_tags=tuple(sorted(shafts)),
+        top_shear_lb=top_shear, head_reactions=dict(head_reactions))
     _FRAMES.setdefault(roof.tag, []).append(frame)
     return frame
 

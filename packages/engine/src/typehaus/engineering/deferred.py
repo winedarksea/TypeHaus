@@ -80,7 +80,16 @@ _declare(Deferral(
              "(`Roof.published_reactions`, 2026-09-20)",
     deliverable="a sealed component design and placement plan for the roof, covering the "
                 "profile, the web stiffener and hanger schedule, and the ground-snow AND "
-                "drift case this site carries. Its bearing and uplift reaction schedule is "
+                "drift case this site carries. **Where the roof declares a diaphragm, the "
+                "end trusses' TOP CHORDS are its chords** and carry the axial force "
+                "`lateral_system/<roof>` prints as `chord_force_*` IN ADDITION TO the "
+                "gravity case — combined axial and bending at that section is the "
+                "fabricator's own chart, and the plated splice has to carry the full force "
+                "in tension. The splice SLIP the engine assumed "
+                "(`DiaphragmSpec.chord_splice_slip`) is the third term of SDPWS 4.2.2 and "
+                "decides the rigid/flexible call, so a detail that slips materially more "
+                "moves the shear split: confirm it or state the real value. Its bearing and "
+                "uplift reaction schedule is "
                 "the intake half: quote each row into `Roof.published_reactions` and the "
                 "chain below the heel is graded as a published read, not sealed here",
     unblocks="Roof framing — the S-105 rafter/truss line and the roof-load permit item; "

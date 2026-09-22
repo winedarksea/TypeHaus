@@ -83,6 +83,14 @@ class Line:
     #: The members this line is made of, for the record's element tags.
     element_tags: tuple[str, ...] = ()
     how: str = ""
+    #: The line's plan position, feet — BOTH coordinates, where ``station_ft`` is only the
+    #: one across the span. Torsion needs the other one: the lever a line has about the
+    #: centre of rigidity is its distance in its OWN direction of resistance, and a set of
+    #: lines read per axis cannot be assembled into one ``J`` without it. ``None`` where the
+    #: caller did not place the line (the pure-arithmetic tests), and
+    #: :mod:`typehaus.engineering.torsion` refuses rather than assuming a position.
+    x_ft: float | None = None
+    y_ft: float | None = None
 
 
 @dataclass(frozen=True)

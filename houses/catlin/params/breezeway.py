@@ -681,8 +681,12 @@ TRUSS_TIES = [
 # roof load goes to its own two headers, four columns and six piers, and `bearing_refs` names
 # no garage element anywhere in this assembly. LSTA24 is the house's own strap (ESR-2105
 # Table 3, already stocked for the ridge) at 4'-0" o.c. over the 24'-0" joint -- seven of them
-# against a computed collector demand near 18 plf, which is nominal continuity rather than a
-# governing number, and is deliberately sized that way.
+# against a collector demand that is GRADED now rather than estimated near 18 plf: the E-W
+# case's 411 lb line reaction over the 24'-0" strap line is 17.1 plf, 58.7 lb per strap
+# against ESR-2105 Table 3's 1,235 lb, d/c 0.048 (`lateral_system/RF-BW-CANOPY`;
+# notes/north_entry_canopy_lateral.md §8e). Nominal continuity, exactly as it was sized to be
+# -- but it is the collector for the north line now, because no canopy member stands on that
+# line, which is the one direction in which this roof is not freestanding.
 JOINT_TIE_COUNT = 7
 JOINT_TIES = [
     Connector(uid=f"BWJT{_i:02d}AAAA"[:10], tag=f"CN-BW-JOINT-{_i + 1}",

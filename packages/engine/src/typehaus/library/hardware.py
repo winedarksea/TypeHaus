@@ -43,6 +43,7 @@ from typehaus.hardware.catalog import (
     ROLE_DECK_EQUIPMENT_ANCHOR,
     ROLE_EMBEDDED_BEAM_ANCHOR,
     ROLE_EMBEDDED_STRAP_HOLDOWN,
+    ROLE_FLOOR_TIE_HOLDOWN,
     ROLE_EQUIPMENT_PAD_ANCHOR,
     ROLE_EXPOSED_FASTENER_PANEL_SCREW,
     ROLE_EXTERIOR_INSULATION_SCREW,
@@ -305,6 +306,27 @@ LSTA24_RIDGE_STRAP = StructuralHardware(
            "(0.148\" x 1-1/2\") nails\", 2-3/8\" minimum end distance; APA EWS D710 detail "
            "10c calls for the same strap from 1/4:12 to 12:12. The sloped hanger carries the "
            "rafter's weight into the beam; this carries its tension across the peak.",
+    # ** THE FULL 18 NAILS, OR THIS NUMBER IS NOT THE PART'S. ** Table 3's row is tabulated
+    # through 18-10d, nine into each member (footnote 1), and the detail that specifies this
+    # strap over a ridge names only twelve. Twelve nails is a DIFFERENT connection; the
+    # tabulated 1,235 lbf is the STEEL value (footnote 5) and the nail group behind it is
+    # what has to be installed for the steel to be what governs.
+    allowable=AllowableLoads(
+        uplift_lb=1235.0,
+        load_duration_factor=1.6,
+        species="wood of assigned or equivalent SG >= 0.50 (Table 3 footnote 2) — southern "
+                "pine and DF-L qualify; SPF (0.42) does not, and nothing here lands in it",
+        fasteners="18 - 10d x 2-1/2 in common nails, 9 into each member (Table 3 footnote 1)",
+        citation=("ICC-ES ESR-2105 (Simpson Strong-Tie straps), reissued January 2026, "
+                  "Table 3, LSTA24 row — read 2026-09-22: 20 ga, 24 in, allowable TENSION "
+                  "1,235 lbf. Footnote 5: the value is governed by STEEL strength and "
+                  "carries neither the one-third stress increase nor C_D, so the C_D 1.6 "
+                  "recorded here is the table's column heading and not an increase applied "
+                  "to this row. Footnote 4's connection strength (18 nails x the NDS yield "
+                  "mode value) is higher, which is why the steel governs — and is why a "
+                  "demand ALONG the joint rather than across it is no weaker: NDS dowel "
+                  "bearing is independent of the angle to grain for a fastener under 1/4 in"),
+    ),
 )
 
 LUS_FACE_MOUNT_HANGER = StructuralHardware(
@@ -739,6 +761,91 @@ STHD_STRAP_HOLDOWN = StructuralHardware(
     model="STHD",
     source="Simpson Strong-Tie STHD embedded strap-tie holdown (strongtie.com/sthd) — "
            "cast into concrete and nailed to the framing at the end of a braced sill run",
+    # NO ALLOWABLE ON THE FAMILY RECORD, DELIBERATELY. The family spans STHD8/10/14 and the
+    # report tabulates each separately (STHD10 endwall cracked 2,480 lbf against STHD14's
+    # 4,410), so one number here would be right for one member of the family and wrong for
+    # the rest. The size a house actually specifies carries the row — see STHD14RJ below.
+)
+
+#: ICC-ES ESR-2920, "Cast-in-Place Strap-Style Hold-Downs and Purlin Anchors", reissued
+#: February 2026, Table 1 — read 2026-09-22 from the ICC-ES PDF. **NOT ESR-2611**, which
+#: evaluates the SSTB/SB/SABR anchor bolts and carries no STHD row at all.
+STHD14RJ_STRAP_HOLDOWN = StructuralHardware(
+    tag="simpson-sthd14rj-embedded-strap-holdown",
+    name="STHD14RJ embedded strap-tie holdown (rim-joist length)",
+    role=ROLE_EMBEDDED_STRAP_HOLDOWN,
+    manufacturer=_SIMPSON,
+    model="STHD14RJ",
+    source="Simpson Strong-Tie STHD14RJ — the 39-5/8\" strap of the STHD14 (26-1/8\"), cast "
+           "14\" into the concrete and nailed up PAST the floor band into the studs above. "
+           "The RJ length is the whole reason this part is here: catlin's main-floor braced "
+           "wall panels stand on a floor deck over the basement wall, and the standard strap "
+           "does not reach them",
+    # Table 1 publishes ONE set of wood-side values per model, shared by STHD14 and
+    # STHD14RJ (the rows are paired "STHD14/STHD14RJ"); only the strap length differs.
+    # The 8" stem-wall rows are the ones read: catlin's basement wall is 8" nominal.
+    # ENDWALL is recorded — the lowest of the three installation columns — because the
+    # geometry at a braced-wall-line end is what this part is authored for and a corner
+    # value would flatter a strap that turns out to sit at an end. Wind / SDC A&B, and
+    # uncracked and cracked read the SAME for this model, so the crack question does not
+    # arise here (it does for the STHD10: 4,075 -> 3,350 at a corner).
+    allowable=AllowableLoads(
+        uplift_lb=4410.0,
+        species="sawn lumber SG >= 0.42 by Table 1 footnote 8 (the nail counts are set at "
+                "0.42), which is the SPF this house frames — but §3.2.3 of the same report "
+                "says SG >= 0.50. The report contradicts itself and the conflict is recorded "
+                "rather than resolved; at 4,410 lbf against an 800 lbf requirement the "
+                "margin swallows any species derate either reading would impose",
+        fasteners="30 - 16d sinker nails into a double 2x or larger vertical member "
+                  "(footnote 2: 10d common may be substituted with no reduction); strap cast "
+                  "14 in into the pour with one No. 4 bar 3-5 in below the top of the "
+                  "foundation (§4.2, and it may be the foundation's own rebar); 17 in maximum "
+                  "unnailed clear span across the rim, plate and sill",
+        citation=("ICC-ES ESR-2920 (cast-in-place strap-style hold-downs), Table 1, "
+                  "\"installed on wood vertical members - 2,500 psi concrete\", 8 in minimum "
+                  "stem wall, STHD14/STHD14RJ row, Wind and SDC A&B: midwall 5,285, corner "
+                  "5,285, endwall 4,410 lbf, uncracked and cracked alike, 30 nails, "
+                  "l_e = 14 in. Read 2026-09-22. §2.0 qualifies the IRC use: for wall "
+                  "bracing the tabulated capacity must equal or exceed what R602.10 asks "
+                  "for, which is 800 lbf. C_D is included per §4.1.1; the report states no "
+                  "number for it"),
+    ),
+)
+
+#: ICC-ES ESR-2330, "Screw Hold-Down Connectors", reissued May 2026, Table 4 — read
+#: 2026-09-22. The report spells the model "DTT2"; §3.2.1 says the -Z (G185) suffix is
+#: covered by the same values.
+DTT2Z_FLOOR_TIE = StructuralHardware(
+    tag="simpson-dtt2z-tension-tie",
+    name="DTT2Z screw hold-down / tension tie",
+    role=ROLE_FLOOR_TIE_HOLDOWN,
+    manufacturer=_SIMPSON,
+    model="DTT2Z",
+    source="Simpson Strong-Tie DTT2Z tension tie (strongtie.com/dtt) — one each side of a "
+           "floor, joined by a 1/2 in threaded rod through the band, to carry a braced wall "
+           "panel's end tension from an upper storey into the post below it (R602.10.9)",
+    # The 1.5 in row is recorded, not the 3.0 in one: it is the lower number and it applies
+    # to any member from a single 2x up, so a pack cannot be credited with a thickness the
+    # model does not state. ESR-2330 §2.0 lists R602.10.7 among the report's prescriptive
+    # IRC uses, which is precisely the clause this part is authored under.
+    allowable=AllowableLoads(
+        uplift_lb=1825.0,
+        load_duration_factor=1.6,
+        species="sawn or engineered lumber, SG >= 0.50 (§3.2.2) — DF-L or SP. ESR-2330 "
+                "publishes NO SPF column, and this house frames SPF (SG 0.42): the two "
+                "corner posts this part lands on are specified DF-L for that reason",
+        fasteners="8 - SDS 1/4 x 1-1/2 in screws into a member at least 1-1/2 in thick and "
+                  "3-1/2 in wide (footnote 6), plus the supplied F844 plate washer under the "
+                  "nut (footnote 1). The 1/2 in ASTM A307/A36/F1554 rod and its anchorage are "
+                  "OUTSIDE the report: §4.1.3 hands embedment, edge and end distance to a "
+                  "registered design professional",
+        citation=("ICC-ES ESR-2330 (Simpson Strong-Tie screw hold-down connectors), Table 4, "
+                  "DTT2 series, 1.5 in wood member row: 1,825 lbf at both C_D 1.0 and 1.6 "
+                  "(the 3.0 in row reads 2,000 / 2,145). Read 2026-09-22. Footnote 3: the "
+                  "duration factors are already in the tabulated values and no further "
+                  "increase is allowed. §4.1: the values are for continuously dry interior "
+                  "service; treated or fire-retardant lumber is outside the report's scope"),
+    ),
 )
 
 SP4_STUD_PLATE_TIE = StructuralHardware(
@@ -2006,6 +2113,7 @@ STRUCTURAL_HARDWARE: tuple = (
     APVB_BRACE_BOLT,
     MASA_MUDSILL_ANCHOR,
     STHD_STRAP_HOLDOWN,
+    DTT2Z_FLOOR_TIE,
     SP4_STUD_PLATE_TIE,
     SP6_STUD_PLATE_TIE,
     CS16_COIL_STRAP,
@@ -2059,6 +2167,7 @@ STRUCTURAL_HARDWARE: tuple = (
 #: lookup and price row exactly where it was.
 CAPACITY_ONLY_RECORDS: tuple = (
     ABU66SS_POST_BASE,
+    STHD14RJ_STRAP_HOLDOWN,
     H25ASS_HURRICANE_TIE,
     APVKB_KNEE_BRACE,
     HUCQ_CONCRETE_HANGER,

@@ -304,12 +304,14 @@ def test_the_canopy_record_reproduces_section_7f(catlin_ctx) -> None:
 def test_the_chord_force_is_printed_and_not_graded(catlin_ctx) -> None:
     """A chord is a wood member in tension with a splice in it and this engine holds no NDS
     reference design values for one. Printed as an input and named in the notes — not put in
-    ``missing``, because the calculation ran; this is a state it does not reach."""
+    ``missing``, because the calculation ran; this is a state it does not reach. Since
+    2026-09-22 the note also says WHO designs it (§8b, and the test below)."""
     record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
     inputs = {q.name: q.value for q in record.inputs}
     assert inputs["chord_force_y"] == pytest.approx(594.7, rel=0.01)
     assert not record.missing
-    assert any("PRINTED AND NOT GRADED" in note for note in record.notes)
+    assert any("PRINTED HERE AND DESIGNED BY THE FABRICATOR" in note
+               for note in record.notes)
     assert not [s for s in record.limit_states if "chord" in s.name]
 
 
@@ -335,3 +337,220 @@ def test_a_roof_with_no_declared_diaphragm_raises_no_item(catlin_ctx) -> None:
     carries none, and inventing one for it would report a defect in an ordinary roof."""
     keys = {k for k in catlin_ctx.engineering if k.startswith(f"{KIND}/")}
     assert keys == {f"{KIND}/RF-BW-CANOPY"}
+
+
+# --- §8b: the chord is delegated, not graded ---------------------------------------------
+
+
+def test_the_chord_force_goes_on_the_truss_order(catlin_ctx) -> None:
+    """§8b. A truss's own top chord is the chord, so the axial force is the FABRICATOR's.
+
+    Combined axial and bending at a plated section is the component designer's chart, and
+    this engine holds no NDS reference design values for a chord anyway — so the 595 lb rides
+    the existing ``rafter/<roof>`` deferral rather than becoming a limit state here. What the
+    record must still do is print the number and name where it went.
+    """
+    from typehaus.engineering.deferred import DEFERRALS
+
+    record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
+    inputs = {q.name: q.value for q in record.inputs}
+    assert inputs["chord_force_y"] == pytest.approx(594.7, rel=0.01)
+    assert not [s for s in record.limit_states if "chord" in s.name.lower()]
+    delegated = [n for n in record.notes if "DESIGNED BY THE FABRICATOR" in n]
+    assert delegated and "rafter/RF-BW-CANOPY" in delegated[0]
+    assert "0.030" in delegated[0], "the splice slip the rigid/flexible call rests on"
+    deliverable = DEFERRALS["rafter"].deliverable
+    assert "TOP CHORDS" in deliverable and "chord_splice_slip" in deliverable
+
+
+# --- §8c-§8e: the three collectors --------------------------------------------------------
+
+
+def test_the_west_line_needs_no_drag_strut(catlin_ctx) -> None:
+    """§8c. The panel is LONGER than the deck's depth, so the drag length is zero."""
+    record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
+    row = next(s for s in record.limit_states
+               if s.name.startswith("W-BW-SCREEN collector"))
+    assert row.demand == pytest.approx(6.0, abs=0.01), "the deck's depth on that line"
+    assert row.capacity >= row.demand - 1e-9, "the panel runs the whole of it"
+    assert "0.000' and the drag force" in row.citation
+    assert row.is_detailing, "a zero force is not a governing state"
+
+
+def test_the_east_collector_grades_the_connection_not_the_member(catlin_ctx) -> None:
+    """§8d. The HETA20Z pair's three-term interaction at the head, N-S, torsion included."""
+    record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
+    row = next(s for s in record.limit_states
+               if s.name == "PT-BW-RE collector end connection, N-S")
+    assert row.demand == pytest.approx(0.443, abs=0.01)
+    assert row.capacity == pytest.approx(1.0, abs=1e-9)
+    assert "FL11473" in row.citation and "2,560" in row.citation
+    # The in-plane force is the DIRECT share with the torsional increment on it, not either
+    # on its own: 142.3 + 200.2 = 342.5 lb.
+    inputs = {q.name: q.value for q in record.inputs}
+    assert inputs["collector_reaction_PT-BW-RE_y"] == pytest.approx(342.5, rel=0.01)
+
+
+def test_the_north_line_collector_is_the_strap_line(catlin_ctx) -> None:
+    """§8e. No canopy member stands on the north line, so seven LSTA24s collect it.
+
+    17.1 plf and 58.7 lb per strap against ESR-2105 Table 3's 1,235 lb — the "near 18 plf"
+    the authoring comment estimated, computed. The record must also SAY that this path
+    crosses into the neighbouring roof, because it is the one direction in which the canopy
+    is not freestanding.
+    """
+    from typehaus.hardware.catalog import allowable_for_model
+
+    record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
+    row = next(s for s in record.limit_states if s.name.startswith("LSTA24 strap line"))
+    assert row.demand == pytest.approx(58.7, abs=0.5)
+    assert row.capacity == pytest.approx(allowable_for_model("LSTA24").uplift_lb, abs=1.0)
+    assert row.capacity == pytest.approx(1_235.0, abs=1.0), "ESR-2105 Table 3, LSTA24 row"
+    assert "17.1 plf" in row.citation
+    assert any("CROSSES INTO RF-GARAGE" in note for note in record.notes)
+
+
+# --- §8f: the concrete under the hold-down ------------------------------------------------
+
+
+def test_the_holdown_anchor_is_edge_limited_and_that_is_the_calculation() -> None:
+    """§8f. A 5/8" x 10" bolt at the centre of a 12" round pier, ACI 318-19 Ch. 17.
+
+    ``c_a`` is 6" on every side at once, so the projected area is the pier's own section and
+    ``A_Nc/A_Nco`` is 0.20 — the whole of the answer. Both readings of §17.6.2 are computed
+    and the LOWER is graded, which is the unreduced one here.
+    """
+    from typehaus.engineering.holdown_anchor import (
+        breakout_shear,
+        breakout_tension,
+        pullout_tension,
+        round_pier_anchor,
+        side_face_blowout_applies,
+        steel_tension,
+    )
+
+    anchor = round_pier_anchor("PT-BW-GW", 12.0, 5_000.0)
+    assert anchor.h_ef_in == pytest.approx(7.89, abs=0.02), "derived, not assumed"
+    assert anchor.c_a_in == pytest.approx(6.0, abs=1e-9)
+    capacity, ratio, how = breakout_tension(anchor)
+    assert ratio == pytest.approx(0.202, abs=0.005)
+    assert capacity == pytest.approx(4_528.0, rel=0.01)
+    assert "§17.6.2.1.2 h_ef' would give 7,464" in how, "the code reading, printed beside it"
+    assert pullout_tension(anchor) == pytest.approx(18_784.0, rel=0.01)
+    assert steel_tension(anchor) == pytest.approx(9_662.0, rel=0.01)
+    assert breakout_shear(anchor)[0] == pytest.approx(3_661.0, rel=0.01)
+    assert not side_face_blowout_applies(anchor), "§17.6.4 wants h_ef > 2.5 c_a1"
+
+
+def test_the_anchor_rows_land_on_the_record(catlin_ctx) -> None:
+    """§8f's demands: the overturning couple PLUS the column's net roof uplift, at 0.6W."""
+    record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
+    tension = next(s for s in record.limit_states if "anchor tension" in s.name)
+    shear = next(s for s in record.limit_states if "anchor shear" in s.name)
+    both = next(s for s in record.limit_states if "interaction" in s.name)
+    assert tension.demand == pytest.approx((609.3 + 433.2) / 0.6, rel=0.01)
+    assert shear.demand == pytest.approx(980.7 / 2 / 0.6, rel=0.01)
+    assert tension.ratio == pytest.approx(0.384, abs=0.01)
+    assert shear.ratio == pytest.approx(0.223, abs=0.01)
+    assert both.demand == pytest.approx((tension.ratio + shear.ratio) / 1.2, abs=0.005)
+    assert both.ratio < 1.0
+    assert any("ESR-1622 §5.6" in note or "out of scope" in note for note in record.notes)
+
+
+# --- §8g: torsion --------------------------------------------------------------------------
+
+
+def test_the_centre_of_rigidity_is_not_under_the_load(catlin_ctx) -> None:
+    """§8g. e = 8.20', M_t = 9,751 lb-ft — the moment the rigidity split left over."""
+    record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
+    inputs = {q.name: q.value for q in record.inputs}
+    assert inputs["torsion_eccentricity_y"] == pytest.approx(8.20, abs=0.05)
+    assert inputs["torsion_moment_y"] == pytest.approx(9_751.0, rel=0.01)
+    # E-W is nearly centred, and that is a fact about the geometry rather than an omission.
+    assert abs(inputs["torsion_eccentricity_x"]) < 0.25
+
+
+def test_torsion_is_carried_by_the_pair_itself_and_takes_the_split_back_to_statics() -> None:
+    """§8g's arithmetic on the note's own lines, not on the house.
+
+    Two N-S lines at 6' and 30' and two E-W lines 4.98' apart: 98.6% of ``J`` is the N-S
+    pair's own couple, and once the term is in, the panel lands within a hair of the lever
+    rule the deck's statics demanded all along.
+    """
+    from typehaus.engineering.torsion import torsional_distribution
+
+    along = [
+        Line(tag="panel", kind="shear panel", station_ft=6.0, stiffness_lb_per_in=9_970.5,
+             x_ft=6.0, y_ft=39.93),
+        Line(tag="RE", kind="cast column", station_ft=30.0, stiffness_lb_per_in=1_567.7,
+             x_ft=30.0, y_ft=37.5),
+        Line(tag="RNE", kind="cast column", station_ft=30.0, stiffness_lb_per_in=1_567.7,
+             x_ft=30.0, y_ft=42.479),
+    ]
+    across = [line for line in along if line.kind == "cast column"]
+    result = torsional_distribution("y", 1_189.41, 19.937, along, across)
+    assert result is not None and result.stable
+    assert result.centre_ft == pytest.approx(11.742, abs=0.01)
+    assert result.moment_lb_ft == pytest.approx(9_748.0, rel=0.01)
+    assert result.along_fraction == pytest.approx(0.986, abs=0.003)
+    total = {tag: result.direct_lb[tag] + result.torsional_lb[tag] for tag in result.direct_lb}
+    assert sum(total.values()) == pytest.approx(1_189.41, rel=1e-6), "equilibrium"
+    assert total["panel"] == pytest.approx(504.4, rel=0.01)
+    assert total["RE"] == pytest.approx(342.5, rel=0.01)
+    # The lever rule for a load at 19.937' between lines at 6' and 30' is the sanity check.
+    assert total["panel"] / 1_189.41 == pytest.approx((30.0 - 19.937) / 24.0, abs=0.01)
+
+
+def test_a_relief_is_not_credited_and_an_increment_is() -> None:
+    """The panel is relieved by nearly half and is still graded at its direct share."""
+    from typehaus.engineering.torsion import torsional_distribution
+
+    along = [
+        Line(tag="panel", kind="shear panel", station_ft=6.0, stiffness_lb_per_in=9_970.5,
+             x_ft=6.0, y_ft=39.93),
+        Line(tag="RE", kind="cast column", station_ft=30.0, stiffness_lb_per_in=1_567.7,
+             x_ft=30.0, y_ft=37.5),
+        Line(tag="RNE", kind="cast column", station_ft=30.0, stiffness_lb_per_in=1_567.7,
+             x_ft=30.0, y_ft=42.479),
+    ]
+    result = torsional_distribution("y", 1_189.41, 19.937, along,
+                                    [line for line in along if line.kind == "cast column"])
+    assert result is not None
+    assert result.torsional_lb["panel"] < 0.0
+    assert result.multipliers["panel"] == pytest.approx(1.0, abs=1e-9)
+    assert result.multipliers["RE"] == pytest.approx(2.41, abs=0.02)
+
+
+def test_two_lines_on_one_station_with_nothing_across_are_a_mechanism() -> None:
+    """The stability half of the row: torsion is a stability statement before it is a number.
+
+    A pair of lines on ONE station and nothing perpendicular cannot react a torsional moment
+    at all, and the row says so rather than dividing by a J of zero.
+    """
+    from typehaus.engineering.torsion import torsional_distribution
+
+    along = [
+        Line(tag="A", kind="cast column", station_ft=30.0, stiffness_lb_per_in=1_567.7,
+             x_ft=30.0, y_ft=37.5),
+        Line(tag="B", kind="cast column", station_ft=30.0, stiffness_lb_per_in=1_567.7,
+             x_ft=30.0, y_ft=42.479),
+    ]
+    result = torsional_distribution("y", 1_000.0, 18.0, along, [])
+    assert result is not None and not result.stable
+    assert "NO TORSIONAL RESISTANCE" in result.how
+    assert all(value == 0.0 for value in result.torsional_lb.values())
+    # The same lines, with the OTHER axis's pair supplying the couple, are stable — which is
+    # exactly what the canopy has and is why its torsion row is a number rather than a red.
+    stable = torsional_distribution("y", 1_000.0, 18.0, along, along)
+    assert stable is not None and stable.stable
+
+
+def test_the_canopy_record_still_passes_with_every_new_row_on_it(catlin_ctx) -> None:
+    """The verdict, stated: nothing added here governs, and span-to-depth still does."""
+    record = catlin_ctx.engineering[f"{KIND}/RF-BW-CANOPY"]
+    assert record.status is Status.OK, record.summary
+    governing = record.governing
+    assert governing is not None and governing.name == "diaphragm span-to-depth"
+    assert governing.ratio == pytest.approx(1.0, abs=0.01)
+    graded = [s for s in record.limit_states if not s.is_detailing]
+    assert all(s.ratio <= 1.0 for s in graded), [s.name for s in graded if s.ratio > 1.0]

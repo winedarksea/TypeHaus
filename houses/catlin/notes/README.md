@@ -36,6 +36,7 @@ each is kept because the *rule* it established usually outlives the design that 
 | `balcony_moment_columns.md` | `engineering/deck_post.py`; §5 is now the NDS cross-check beside a published-table read, not an oracle (`tests/test_pier_calcs.py`) | live |
 | `breezeway_piers.md` | superseded by foundation bridge | retired 2026-09-10 |
 | `north_entry_structure.md` | the north entry bearing map and what carries what | live |
+| `north_entry_canopy_lateral.md` | `engineering/lateral_system.py` §8 (collectors, hold-down anchorage, torsion) with `engineering/holdown_anchor.py` and `engineering/torsion.py` (`tests/test_lateral_system_calcs.py`) | live |
 | `north_entry_piers.md` | `engineering/roof_beam.py` §5, `engineering/pier_basis.py` / `deck_post.py` / `spread_footing.py` §6 (`tests/test_north_entry_piers.py`) | live |
 | `hp3_north_relocation.md` | cabinet/stand, airflow and services | schematic |
 | `catlin_truss_engineering.md` | `typehaus/wind.py` (`tests/test_wind_loads.py`); the `rafter/RF-{GARAGE,BW-CANOPY}` deferral — the two TRUSSED roofs only | live |

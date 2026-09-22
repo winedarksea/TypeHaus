@@ -427,3 +427,16 @@ Still external deliverables, not model checks: the survey and zoning determinati
 complete roof projection, an actual soils report (2,000 psf is presumptive and no boring log
 exists), and the truss fabricator's design — **quoted against the drift case, not the ground
 snow**. See `notes/north_entry_piers.md` §7 for what the calculations themselves exclude.
+
+## 8. The rest of the canopy's lateral path — SPLIT OUT
+
+§8 (the chord's delegation, the three collectors, the hold-down's concrete anchorage and the
+torsional term) is in **`notes/north_entry_canopy_lateral.md`**, because this file was already
+429 lines against `AGENTS.md`'s 500. It is the oracle for the collector, anchorage and torsion
+rows of `engineering/lateral_system.py`, and it starts from §7 of
+`notes/entry_column_base_fixity.md`, which is the other half.
+
+The one sentence of it that changes what §1a says: **"freestanding" holds for gravity and for
+the N-S case.** The E-W reaction at the north line has no canopy member to land on, so the
+seven `LSTA24` straps collect it into `RF-GARAGE`'s gable truss — 17.1 plf, 58.7 lb per strap
+against 1,235 lb, and now a graded row rather than the "near 18 plf" §1a estimated.
