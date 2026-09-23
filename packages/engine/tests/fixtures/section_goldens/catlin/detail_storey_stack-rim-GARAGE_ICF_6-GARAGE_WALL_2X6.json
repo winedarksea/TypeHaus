@@ -2040,9 +2040,10 @@
         1.9999999999999947
       ],
       "offset": 3.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
       "text": "5.5\" stud",
+      "text_along": 0.0,
       "uid": null
     },
     {
@@ -2076,9 +2077,10 @@
         -44.00000000000001
       ],
       "offset": 3.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
       "text": "5\" XPS (2 layers)",
+      "text_along": 0.0,
       "uid": null
     },
     {

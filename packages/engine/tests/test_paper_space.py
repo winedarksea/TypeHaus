@@ -16,7 +16,7 @@ from pydantic import ValidationError
 
 from typehaus.emit.draw.pdf_writer import _scene_bounds, geometry_bounds
 from typehaus.emit.draw.scene import ArchDimension, Frame, Leader, NamedPoint, Polyline, Scene, Text
-from typehaus.emit.draw.typography import DIM_TEXT_PT
+from typehaus.emit.draw.typography import DIM_STRING_PT
 
 
 def _square(size: float = 10.0) -> Polyline:
@@ -95,7 +95,7 @@ def test_a_dimension_is_always_annotative():
     """
     ends = (NamedPoint(xy=(0.0, 0.0)), NamedPoint(xy=(10.0, 0.0)))
     dim = ArchDimension(ends=ends, p0=(0.0, 0.0), p1=(10.0, 0.0), offset=3.0)
-    assert dim.height_pt == DIM_TEXT_PT
+    assert dim.height_pt == DIM_STRING_PT
     assert not hasattr(dim, "height")
     # And it takes no `space`: a measured point that moved to paper would measure paper.
     assert dim.space == "model"

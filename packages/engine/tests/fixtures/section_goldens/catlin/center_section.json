@@ -16258,9 +16258,10 @@
         -34.0
       ],
       "offset": 6.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
       "text": null,
+      "text_along": 0.0,
       "uid": null
     },
     {
@@ -16294,9 +16295,10 @@
         0.0
       ],
       "offset": 6.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
       "text": null,
+      "text_along": 0.0,
       "uid": null
     },
     {
@@ -16330,9 +16332,10 @@
         120.0
       ],
       "offset": 6.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
       "text": null,
+      "text_along": 0.0,
       "uid": null
     },
     {
@@ -16366,9 +16369,10 @@
         240.0
       ],
       "offset": 6.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
       "text": null,
+      "text_along": 0.0,
       "uid": null
     },
     {
@@ -16402,9 +16406,10 @@
         363.0
       ],
       "offset": 6.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
       "text": null,
+      "text_along": 0.0,
       "uid": null
     },
     {

@@ -98,8 +98,7 @@ _NOTES_PT = NOTES_PT  # fixed notes lettering size, points (monospace)
 # linework and its lettering clear the border instead of touching it.
 _FIT_PAD = 1.04
 
-#: Paper inches ``(west, east, south, north)`` a drawing's annotation needs outside it —
-#: fixed, or as a function of the scale (``frame_for_scene``).
+#: Paper inches (west, east, south, north) outside a drawing, or a function of the scale.
 Reserve = tuple[float, float, float, float] | Callable[[float], tuple[float, float, float, float]]
 
 #: The paper the *set currently being written* is on. A schedule page composes its own
@@ -158,11 +157,8 @@ def frame_for_scene(scene: Scene, size: tuple[float, float] = LEDGER, *,
     honoured and overflows — that is what asking for it means, and the alternative
     (silently substituting a smaller one) is the lie the truth rule exists to prevent.
 
-    ``reserve`` is ``(west, east, south, north)`` PAPER inches outside the drawing that its
-    annotation needs — a floor plan's dimension tiers — or a function of the scale giving
-    them, because a tier struck off a wall face needs less paper past a drawing that
-    already reaches beyond that face, and how much less depends on the scale. The largest
-    rung whose drawing plus reserve fits wins; the frame is centred on the two together.
+    ``reserve`` is paper the annotation needs outside the drawing — fixed, or per scale for a
+    plan that already overhangs its tiers' wall faces. The largest rung that fits wins.
 
     ``None`` when the scene has no measurable geometry: there is nothing to place, so the
     frameless fit stays the right answer and the caller keeps it.
@@ -171,8 +167,7 @@ def frame_for_scene(scene: Scene, size: tuple[float, float] = LEDGER, *,
     if bounds is None:
         return None
     view = viewport_box(size, notes_panel=bool(_scene_note_lines(scene)))
-    fixed = reserve or (0.0, 0.0, 0.0, 0.0)
-    reserve_at = reserve if callable(reserve) else (lambda _scale: fixed)
+    reserve_at = reserve if callable(reserve) else lambda _s: reserve or (0.0, 0.0, 0.0, 0.0)
     u0, z0, u1, z1 = bounds
     span_u, span_z = max(u1 - u0, 1e-6), max(z1 - z0, 1e-6)
 
@@ -198,8 +193,7 @@ def frame_for_scene(scene: Scene, size: tuple[float, float] = LEDGER, *,
                              f"{FIT_LABEL!r}")
         scale, label = entry
     if scale is None:
-        smallest = ENG_SCALES[-1][0]
-        scale, label = fit_scale(span_u, span_z, *room(smallest), _FIT_PAD), NTS_LABEL
+        scale, label = fit_scale(span_u, span_z, *room(ENG_SCALES[-1][0]), _FIT_PAD), NTS_LABEL
     west, east, south, north = reserve_at(scale)
     model_per_paper = 12.0 / scale
     center = ((u0 + u1 + (east - west) * model_per_paper) / 2.0,

@@ -3171,9 +3171,10 @@
         224.75
       ],
       "offset": 4.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
       "text": "4\" CI",
+      "text_along": 0.0,
       "uid": null
     },
     {
@@ -3207,9 +3208,10 @@
         232.75
       ],
       "offset": 3.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
       "text": "5.5\" stud",
+      "text_along": 0.0,
       "uid": null
     },
     {

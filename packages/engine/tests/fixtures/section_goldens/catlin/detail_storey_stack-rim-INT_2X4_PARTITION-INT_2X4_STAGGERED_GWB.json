@@ -1307,9 +1307,10 @@
         2.0
       ],
       "offset": 3.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
       "text": "3.5\" stud",
+      "text_along": 0.0,
       "uid": null
     },
     {

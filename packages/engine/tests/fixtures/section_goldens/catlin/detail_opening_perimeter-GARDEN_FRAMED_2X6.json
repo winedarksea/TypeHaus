@@ -3334,9 +3334,10 @@
         -22.1875
       ],
       "offset": 3.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
       "text": "80\" R.O.",
+      "text_along": 0.0,
       "uid": null
     },
     {

@@ -2530,9 +2530,10 @@
         200.00000000000003
       ],
       "offset": 3.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
       "text": "48\" R.O.",
+      "text_along": 0.0,
       "uid": null
     },
     {

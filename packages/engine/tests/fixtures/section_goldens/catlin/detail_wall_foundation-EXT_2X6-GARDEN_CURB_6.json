@@ -1794,9 +1794,10 @@
         -7.437499999999998
       ],
       "offset": 4.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
       "text": "4\" CI",
+      "text_along": 0.0,
       "uid": null
     },
     {
@@ -1830,9 +1831,10 @@
         0.5625000000000018
       ],
       "offset": 3.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
       "text": "5.5\" stud",
+      "text_along": 0.0,
       "uid": null
     },
     {
@@ -1866,9 +1868,10 @@
         -105.81250000000001
       ],
       "offset": 3.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
       "text": "6\" XPS (3 layers)",
+      "text_along": 0.0,
       "uid": null
     },
     {
@@ -1902,9 +1905,10 @@
         -120.4375
       ],
       "offset": 3.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
       "text": "20\" ftg width",
+      "text_along": 0.0,
       "uid": null
     },
     {
@@ -1938,9 +1942,10 @@
         -109.4375
       ],
       "offset": 3.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "layer": "A-ANNO-DIMS",
       "text": "8\" ftg depth",
+      "text_along": 0.0,
       "uid": null
     },
     {
