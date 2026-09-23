@@ -459,10 +459,10 @@ _half = _t / 2.0
 # E-W: garden centered on the house centerline. Side-wall axes land 20' apart (19' clear
 # + 2x 6" half-walls) so the balcony pillars sit on a clean 10' o.c. E-W grid.
 _cx = SPEC.house_size_ft / 2.0  # 18.0
-_x_in_w = _cx - SPEC.clear_width_ft / 2.0  # 8.5
-_x_in_e = _cx + SPEC.clear_width_ft / 2.0  # 27.5
-_x_ax_w = _x_in_w - _half  # 8.0
-_x_ax_e = _x_in_e + _half  # 28.0
+_x_in_w = _cx - SPEC.clear_width_ft / 2.0  # 9.5
+_x_in_e = _cx + SPEC.clear_width_ft / 2.0  # 26.5
+_x_ax_w = _x_in_w - _half  # 9.0
+_x_ax_e = _x_in_e + _half  # 27.0
 
 # N-S: the whole structure's north face sits gap_to_house south of the house cladding face
 # (a 5" insulation gap). With the north wall removed there is no wall thickness to inset —
@@ -676,9 +676,9 @@ _veneer_beam_top = inch(-102.4375)          # = W-B-BRICK.bottom_elevation
 # ** THE BOTTOM IS HELD, NOT DERIVED, SINCE THE COURT CAME BACK UP (2026-09-05). ** It used
 # to read `_court_top - rim_thickness_in`, which was the garden slab's underside; with the
 # court flush again that expression gives -112 15/16" and a 10 1/2" beam. This beam spans
-# 19'-0" and ACI 318-19 Table 9.3.1.1 wants L/16 = 14 1/4" minimum depth on a simple span
-# before deflection has to be computed, so 10 1/2" is not a shallower beam, it is a
-# different design. 17 3/4" is what notes/sunken_garden_veneer_beam.md Sec. 3 actually
+# 17'-0" (19'-0" until 2026-09-22) and ACI 318-19 Table 9.3.1.1 wants L/16 minimum depth on
+# a simple span before deflection has to be computed, so 10 1/2" is not a shallower beam, it
+# is a different design. 17 3/4" is what notes/sunken_garden_veneer_beam.md Sec. 3 actually
 # grades. The beam is now buried 7 1/4" below the court rather than forming its north edge.
 _veneer_beam_bottom = inch(-120.1875)
 # Vertical steel on the three retaining walls' stems, on the RETAINED face — that is
@@ -873,7 +873,7 @@ NODES = [
     Node(uid="SGN006AAAA", tag="N-SG-SE", position=pt(ft(_x_ax_e), ft(_y_ax_s))),
     # The veneer grade beam's ends, landing on the two side-wall AXES so the beam is cast
     # into W-SG-W1 and W-SG-E1 rather than butted against them. Clear span is therefore the
-    # court's own 19'-0", not the 20'-0" axis distance.
+    # court's own 17'-0", not the 18'-0" axis distance.
     # `open_end` for the same reason N-SG-NW/-NE carry it: the beam dies INTO the side
     # walls 6" past their inside faces rather than meeting them at a shared node, so this
     # run terminates here and closes no loop.
@@ -1072,9 +1072,9 @@ WALLS = [
     #
     # Graded as three ISOLATED cantilevers, each resisting by its own base friction, they
     # reach FS 0.73 against 1.5 — the arithmetic of a wall nobody built. W-SG-W2
-    # (axis x=8'-0") and W-SG-E2 (axis x=28'-0") face each other across a 19'-0" court, same
+    # (axis x=9'-0") and W-SG-E2 (axis x=27'-0") face each other across a 17'-0" court, same
     # height, same 16'-4" length, cast into W-SG-S at their south ends through monolithic
-    # corners — **their thrusts cancel through the concrete between them.** Only the 20'-0"
+    # corners — **their thrusts cancel through the concrete between them.** Only the 18'-0"
     # south wall is unopposed. The U was open at its NORTH end and that was the real defect;
     # W-SG-ARCH above closes it, and `engineering/retaining_system.py` sums the whole court
     # as ONE free body.
@@ -1569,7 +1569,7 @@ _field_x_mid = (_field_x_w + _field_x_e) / 2.0       # 18.0
 # strip narrowing took it to 13'-0" x 12'-4", so the run is now on the shorter one. The
 # check that matters is the REACH (half the perpendicular width) against the 15'-0" cap, and
 # it went 5'-6" -> 6'-6", still well inside. A second lateral would be owed only past
-# 15'-0" of E-W width, which this field cannot reach inside a 19'-0" court.
+# 15'-0" of E-W width, which this field cannot reach inside a 17'-0" court.
 #
 # ** NO PERIMETER "SMILE" DRAIN, DELIBERATELY. ** USGA's trench is 6" wide x 8" deep cut
 # INTO the subgrade, which here bottoms at -135 7/16" — 5" below W-SG-ARCH's underside. Run
@@ -1736,7 +1736,7 @@ GARDEN_SLAB = Slab(
 
 # `FloorOpeningPurpose.CHASE` on all five, and it is load-bearing rather than descriptive:
 # CHASE is the one purpose `checks/mep/electrical._floor_opening_intervals` opts OUT of, and
-# any other purpose would subtract the field's 11'-0", the beam's 19'-0" and the three toes'
+# any other purpose would subtract the field's width, the beam's 17'-0" and the three toes'
 # runs from the NEC 210.52 wall space a court still has its full perimeter to serve.
 GARDEN_FLOOR_OPENINGS = [
     # The open centre.
@@ -1750,7 +1750,7 @@ GARDEN_FLOOR_OPENINGS = [
     # With the court flush again, `_grade_beam_top` (-112 15/16") IS `_rim_underside_in`
     # exactly — the same expression on both sides — so the beam is fully buried and the rim
     # pours straight over it and bears on it. There is nothing left to cut around, and a
-    # chase here would open a 19'-0" slot in the court floor over a solid beam.
+    # chase here would open a 17'-0" slot in the court floor over a solid beam.
     # And the same cut around W-SG-BRKBM at the north end. The beam drops through the rim's
     # full 3 1/2" (its underside IS the rim's), so the slab cannot pour through it either —
     # it dies into the beam's south face and the beam becomes the court floor's north edge.
@@ -2086,7 +2086,9 @@ HP_STAND_ANCHORS = [
 # (IRC Table R507.6, 18'-0") reaches from W-SG-W1 to W-SG-E1, so the porch has no beam, no
 # centre column and no pillar standing in it. Each wall carries a treated 2x12 LEDGER bolted
 # flat to its court face (`Beam.ledger_on`), its top flush with the joist tops so the joists
-# hang in ZMAX face-mount hangers (LUS210Z, derived) — 16'-9" face to face.
+# hang in stainless LUS210SS face-mount hangers (owner; two JOIST_HANGER spec connectors,
+# 20 ea) — 16'-9" face to face. Both joist fields are inset 3/4" at the carriers so the end
+# joists sit flush with the ledger ends; each ledger runs 2" past its end joists.
 #
 # The ledger's back face is on the WASH, not the pour: the 1/8" silicate film is layer 0 of
 # SUNKEN_GARDEN_WALL and `structural.deck_ledger` measures to the wall's whole body.
@@ -2232,11 +2234,10 @@ _PORCH_JOIST_OUTLINE = (pt(ft(_x_in_w), ft(_porch_y0)), pt(ft(_x_in_e), ft(_porc
 # fascia-mounted because its deck is a WATERPROOF PLANE over occupied space; see its own
 # block for that.
 #
-# The SOUTH leg has no wall under it: it runs over BM-SG-FRW/FRE, whose tops carry
-# TR-SG-CAP-FRW/FRE and their butyl tape. Anchoring through a cap is the one thing this
-# house does not do — it pits the aluminium and pierces the dielectric — so those posts
-# bolt through the composite plank into solid blocking set in the joist bay just NORTH of
-# the beam (the plank bears nothing; Trex's own specification), authored in
+# The SOUTH leg has no wall under it: it stands over the porch's south EDGE JOIST (the
+# front beams BM-SG-FRW/FRE and their caps retired 2026-09-22), so those posts bolt through
+# the composite plank into solid blocking set just inside that joist (the plank bears
+# nothing; Trex's own specification), authored in
 # ``FS-SG-PORCH.reinforcements`` below at the stations ``_guard_post_stations`` reports.
 # The baseplates are set that 3" inboard of the deck edge onto the blocks; the guard's
 # authored path stays on the edge, which is what the code clearances and the drawings are
@@ -2487,8 +2488,9 @@ PORCH_STAIR_THRESHOLD_RAILS = [
 ]
 
 # ============================================================================
-# Second (balcony, ~10'): four 12" cast columns + two 6x6 pillars, three 3-1/2" x
-# 11-7/8" treated glulam beams, aluminum deck.
+# Second (balcony, ~10'): four 12" cast corner columns, two 3-1/2" x 11-7/8" treated glulam
+# beams, aluminum deck. (The two 6x6 pillars and BM-SG-BLC retired 2026-09-22; the history
+# below still names them.)
 # ============================================================================
 # Six pillars. Four land on the two porch side walls at 0'-0"; PT-SG-BF2 lands on the front
 # column's top at -1'-6 1/2"; only PT-SG-BR2 stands on the porch decking. The pillar *tops*
@@ -2593,9 +2595,8 @@ _FRONT_COLUMN_CANTILEVER_IN = 2.0
 #     column   = -10'-4" .. -9'-4"
 #     beam end = -10'-6"  ->  2" of glulam cantilevered past the column's south face
 #
-# ** ONLY PT-SG-BF1 AND BF3 READ THIS. ** PT-SG-BF2 is a wood 6x6 and takes `_y_bf2` below.
-# Its beam BM-SG-BLC has cantilevered 15" past it since BF2 moved onto the porch deck, so
-# the centre bay has never had this problem.
+# ** ONLY PT-SG-BF1 AND BF3 READ THIS ** — the only front columns since PT-SG-BF2 and
+# BM-SG-BLC retired (2026-09-22).
 #
 # ** WHAT IT COSTS, AND IT IS NOT THE STAIR. ** PORCH_STAIR's south side is -9'-0", so the
 # column's north face keeps 4" — tight, and the reason `_PORCH_STAIR_Y1` is a shared
@@ -2757,7 +2758,7 @@ SECOND_NODES = [
 # The datum at the south NODE is the deck's own walking surface. For the outer pair it stays
 # derived and lands at the south NODE, which is 8" south of the front
 # bearing (`_FRONT_COLUMN_CANTILEVER_IN` + the round's radius). At 0.0227 in/in that is
-# **0.18" of seat gap, identical at all six columns** — the slope between the bearings is
+# **0.18" of seat gap, identical at all four columns** — the slope between the bearings is
 # exact, and the uniform 3/16" is taken up in the 1/2"-1" SS316-SHIM-35 standoff pack that is
 # already at every one of these seats and exists for precisely this tolerance. Before this
 # change the rear three columns ran **2" INSIDE** their beams. See
@@ -2887,8 +2888,9 @@ _bal_oc_ft = SPEC.balcony_joist_oc_in / 12.0
 _ENCLOSURE_FRONT_Y = _bal_y0 + 1.5 * _bal_oc_ft
 # ** ONE BLOCK PER BAY NORTH OF THE FRONT TRACK. ** An entry blocks the bay on each side of
 # its line, so every second line covers each bay once. The spare joist is a line too, so the
-# set is -9'-0" (whose SOUTH bay, outside the curtain, is the one idle block per flank) and
-# -7'-6", -5'-6", -3'-6", -1'-6". Every `at` sits strictly inside the joist field.
+# set is -8'-11 1/4" (whose SOUTH bay, outside the curtain, is the one idle block per flank)
+# and -7'-5 1/4", -5'-5 1/4", -3'-5 1/4", -1'-5 1/4". Every `at` sits strictly inside the
+# joist field.
 _ENCLOSURE_BLOCK_LINES = [_ENCLOSURE_FRONT_Y] + [_bal_y0 + _k * _bal_oc_ft for _k in (3, 5, 7, 9)]
 
 # Balcony: 2x12 @ 12" o.c. running E-W across the two N-S beams, 18'-0" apart.
@@ -3063,7 +3065,7 @@ _BOARD_PRODUCT = dict(
 # 2. NO BOARD IS IN A POUR ANY MORE (basis 7). Every court face that meets a board is cast
 #    against a greased, pull-rodded BLOCKOUT of the board's own thickness, stripped, and the
 #    board is set into the slot afterwards: TB-SG-W1/E1 2.5" x 8" x 84", TB-SG-*-STEM 2.5" x
-#    12" x 109 7/16", W-SG-BRKBM's 2.0" x 17 3/4" x 19'-0", pulled up out of the stone side.
+#    12" x 109 7/16", W-SG-BRKBM's 2.0" x 17 3/4" x 18'-0", pulled up out of the stone side.
 #    A board cast against locks in the pour's squeeze for good; the beam's alone was 41,162 lb,
 #    76% of the 54,105 lb that put basis 6 OVER. Nothing floats and nothing is braced.
 # 3. The beam's board depends on FT-B-S2/S3's 2" toe trim — a HOLD POINT before the house

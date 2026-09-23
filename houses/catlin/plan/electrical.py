@@ -38,7 +38,7 @@
 #   basement — shortest run from the underground POWER entry at (0', 18').
 # - Garage south wall W-G-S at y=40'-6 7/8", service door at x=5'-8'; both EV receptacles east
 #   of it, clear of the door swing.
-# - Sunken-garden porch: west wall W-SG-W1 axis x=8', inner face x=8.5', north end
+# - Sunken-garden porch: west wall W-SG-W1 axis x=9', inner face x=9.5', north end
 #   y=-0.833'. Hot tub disconnect 7' south of that, under the deck — basement storey, so
 #   Mount elevation 5' is -4' absolute.
 # - PV junction box on the north gable (W-A-N2B) beside the radon riser
@@ -258,9 +258,10 @@ BASEMENT_DEVICES = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(18))),
     # Hot tub in the sunken garden: disconnect on the west porch wall, 7' from its north
     # end, under the porch deck (see header). NEC 680.22 convenience receptacle beside it.
-    # x is 1 5/8" off W-SG-W1's east face (x=9'-6" since the court narrowed, 2026-09-22), not 2": the can is 3 1/4" deep, and the
-    # 2" standoff the four DISCONNECT-3R boxes were authored with dates from when the type
-    # carried a placeholder 4" depth. Its back now sits on the concrete.
+    # x is 1 5/8" off W-SG-W1's east face (x=9'-6" since the court narrowed, 2026-09-22), not
+    # 2": the can is 3 1/4" deep, and the 2" standoff the four DISCONNECT-3R boxes were
+    # authored with dates from when the type carried a placeholder 4" depth. Its back now sits
+    # on the concrete.
     ElectricalDevice(uid="CEE010AAAA", tag="ED-B-SPA-DISC", kind=DeviceKind.DISCONNECT,
                      position=pt(ft(9, 7.625), ft(-7, -10)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-SPA",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5)), rotation=deg(90)),
@@ -412,17 +413,18 @@ MAIN_DEVICES = [
     #     because the mount elevation is storey-relative. 3'-6" reads 6'-4" from grade.
     #
     # ** AND THEY LEFT THE HOUSE ALTOGETHER ON 2026-09-04. ** They went to W-SG-E1's EAST
-    # face, at (28'-7 5/8", -3'-6") and (28'-7 5/8", -4'-6"), 1 5/8" off the concrete for
+    # face, at (28'-7 5/8", -3'-6") and (28'-7 5/8", -4'-6") — HP2's is at (27'-7 5/8", -4'-6")
+    # since the court narrowed (2026-09-22) — 1 5/8" off the concrete for
     # the can's 3 1/4" depth and turned `deg(90)` so the depth runs in x against an east face
     # (the ED-M-LIVING-KFZ1 convention). HP1's can then followed its unit to the north face
     # later the same day (see its own block below); ED-M-HP2-DISC is the one that stayed,
     # and everything argued here is now argued for it alone.
     #
     # **The row is what evicted them, and 110.26(A)(3) is why there was no appeal.** With the
-    # condensers tucked against the house from x 29'-0" to 36'-7" — the owner's call on
+    # condensers tucked against the house (HP2 from x 28'-0" today) — the owner's call on
     # 2026-09-04, buying a quieter east side yard at the price of a louder living room —
     # W-M-S2's exterior face is cabinet from the porch wall to past the corner, and the 6"
-    # left at x 28'-6"..29'-0" is not the 30" 110.26(A)(2) wants. Height does not rescue it:
+    # left at x 27'-6"..28'-0" is not the 30" 110.26(A)(2) wants. Height does not rescue it:
     # (A)(3) measures the clear space **from the grade up**, so a 3'-4" cabinet standing 6"
     # off the wall consumes the whole working space however high the handle is hung.
     #
@@ -430,7 +432,7 @@ MAIN_DEVICES = [
     # W-SG-E1's east face is clear from HP2's south face at y -2'-6" to ST-SG-PORCH's north
     # side at -6'-0". Two 12" cans at -3'-6" and -4'-6" are 24" of equipment; the 30" space
     # they share spans y -3'-0"..-5'-6", which leaves 6" to the cabinets and 6" to the stair,
-    # over 36" of depth (x 28'-6"..31'-6") with nothing in it. Within sight of both units,
+    # over 36" of depth (x 27'-6"..30'-6") with nothing in it. Within sight of both units,
     # 1'-9" away — 440.14 asks for sight, and here it is nearly reach as well.
     #
     # ** THE MOUNT DROPS TO -0'-8", AND ACCESS IS FINE. ** This wall tops out at 0'-0", so
@@ -578,7 +580,7 @@ MAIN_EQUIPMENT = [
     # "never soffit this deck" constraint, all of it over the master bedroom's south
     # windows and reachable for replacement only by a French door or a crane.
     #
-    # The pocket east of the porch is the site: bounded west by W-SG-E1 (face x=28'-6"),
+    # The pocket east of the porch is the site: bounded west by W-SG-E1 (face x=27'-6"),
     # north by the house, south by the W-RG-EAST-BALCONY apron, and open east to the yard.
     #
     # ** THEY FACE SOUTH, SIDE BY SIDE, ALONG THE HOUSE (2026-09-04). ** They stood in a
@@ -1088,7 +1090,7 @@ PV_JBOX_CLAMP = []
 # storeys). Each run travels its plan polyline flat at start_elevation and rises
 # vertically at its last point to end_elevation; the takeoff bills the developed length.
 # The spa feed's southward leg station, shared by the run and BOTH of its sleeves — see the
-# comment on CD-B-SPA below for why it is 8'-5 7/8" and not the 8'-6" it was authored at.
+# comment on CD-B-SPA below for why it is 1/8" inside W-SG-W1's court face (9'-5 7/8" vs 9'-6").
 _SPA_CHASE_X = ft(9, 5.875)
 
 CONDUIT_TRUNKS = [
@@ -1211,6 +1213,8 @@ CONDUIT_TRUNKS = [
     # 1' north of the y=0 sheathing line, so it crosses W-B-S1 once rather than running
     # 6'-6" inside it.
     #
+    # (The court narrowed 1'-0" on 2026-09-22 and the leg moved with it: 9'-5 7/8" against a
+    # 9'-6" court face, pour 102"..114". The history below is at the old 8'-6" face.)
     # ** THE SOUTHWARD LEG IS 8'-5 7/8", NOT 8'-6", AND IT HAD NO CONCRETE COVER BEFORE
     # 2026-09-13. ** 8'-6" is exactly where W-SG-W1's 12" pour used to FACE — x 90"..102" about
     # a centreline at 96" — so this leg and both of its sleeves ran tangent to the court face
@@ -1555,8 +1559,8 @@ CONDUIT_SLEEVES = [
     SleevePenetration(uid="CNS014AAAA", tag="SP-M-CD-KITCH", host_ref="SL-M-DECK",
                       position=pt(ft(35), ft(28, 11)), pipe_diameter=inch(0.75),
                       sleeve_diameter=inch(1.5), purpose=Service.POWER_120),
-    # Host is W-B-S1 again since the sauna shrink undid the 2026-09-05 pour split: x=8'-6"
-    # is back in the one south segment. Same hole, same station.
+    # Host is W-B-S1 again since the sauna shrink undid the 2026-09-05 pour split: the leg's
+    # x (9'-5 7/8") is in the one south segment. Same hole, same station.
     SleevePenetration(uid="CNS015AAAA", tag="SP-B-S1-CD-SPA", host_ref="W-B-S1",
                       position=pt(_SPA_CHASE_X, ft(0, 6)), pipe_diameter=inch(1),
                       sleeve_diameter=inch(1.75), purpose=Service.POWER_240,

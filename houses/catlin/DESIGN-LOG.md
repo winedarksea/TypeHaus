@@ -2666,6 +2666,24 @@ retired: both cast columns and their pads, the four porch beams, both wood pilla
 - **Revert:** this pass is one house commit; `git revert` it. The engine commits before it
   (species rows, the snow gate, edge-beam tributary, ledgers, extra joist lines) stay.
 
+**Follow-up (2026-09-22, late) — the ledger is closed and the permit print opens.**
+
+- **Anchors:** 9 Type 316 Titen HD `THD50600H6SS` per ledger (18), graded PASS on Simpson
+  letter L-A-THDSSLDGR23 through `Beam.published_span` (19" allowed, widest gap 1.08'). Rows
+  alternate 3 1/8" / 8 1/8" down, 5" apart (the letter's fn 2 wants 3"-5"). Each ledger runs
+  2" past its end joists.
+- **Hangers (owner):** stainless `LUS210SS`, 20, authored as two JOIST_HANGER spec connectors
+  (`CN-SG-LUS-LDGW`/`-LDGE`) instead of derived `LUS210Z`.
+- **End joists (owner):** both joist fields inset 3/4" at the carrier ends so the end joists sit
+  flush with the ledger/beam ends; the plank keeps its outline via `subfloor_outline` (the
+  porch's stops at the wall wash faces, 1/8" inside the pour).
+- **H10ASS** carries allowables (1,040/565/285 lb with SCNR ring-shank nails, C-C-2026 p.300
+  fn 10).
+- **Analytical export:** a column top under a continuous beam hinges in the beam's plane.
+- **Snow:** the review's ground-snow objection does not apply in MN. MN Rule 1309.0507 rewrites
+  R507.6's footnotes to "Live load = 40 psf", dropping the IRC's ground-snow gate, so the
+  site's 50 psf ground snow is not the test; the owner's 35 psf is.
+
 ### The thermal break, bases 5 → 6 → 7: the board was never the problem (2026-09-22)
 
 Three revisions in two days, and each one moved the question further from the product and

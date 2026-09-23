@@ -1505,7 +1505,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     subp. 2 reaches only walls that also enclose below-grade interior space, and none of
     them does. They get drained backfill instead, which relieves the thrust that a coat
     would not. It does not change their R404.4 case either way — sliding is graded on the
-    closed court loop at FS 1.59 (`retaining_system/W-SG-ARCH`), not on these walls
+    closed court loop at FS 1.71 (`retaining_system/W-SG-ARCH`), not on these walls
     individually (→ "Sunken garden court").
   - Skin: `BASEMENT_12`/`_8` cover the XPS with a 1/8" `foundation-coating-acrylic` (troweled
     over mesh) banded from 6" below grade to the wall top, `Layer.extent` off the `GRADE`
@@ -1898,8 +1898,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `H10ASS` at every crossing, `H2.5ASS` on each beam's two end joists — plus one spare joist
   at -9'-0" (`JoistSpec.extra_lines`) for the enclosure's front track. **Porch:** two treated
   2x12 LEDGERS `BM-SG-LDGW`/`-LDGE` (`Beam.ledger_on`) on the side walls' court faces, joists
-  hung on derived `LUS210Z`, 16'-9" face to face, 14 316 adhesive anchors. `structural.deck_ledger`
-  reads UNKNOWN until the anchor maker's ledger spacing is quoted: DCA6 defers it. The
+  hung on stainless `LUS210SS` (20, two JOIST_HANGER spec connectors), 16'-9" face to face. Each
+  ledger runs 2" past its end joists and takes 9 Type 316 Titen HD `THD50600H6SS` (18), rows 5"
+  apart mid-bay; `structural.deck_ledger` PASSes on Simpson letter L-A-THDSSLDGR23 via
+  `Beam.published_span` (widest gap 1.08' vs 19"). Both joist fields are inset 3/4" at the
+  carrier ends so the end joists sit flush; the plank keeps its outline (`subfloor_outline`,
+  porch to the wash faces). The permit print opens (2026-09-22). The
   centre columns, their pads, the four porch beams, both centre pillars, `BM-SG-BLC`, the
   pillar chases and the beam caps are retired (spent uids in `params/sunken_garden.py`).
 - Four CORNER pillars: 12" round reinforced concrete, FIXED at the base,
@@ -1925,12 +1929,12 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **The cage is a part, not a field-bent detail.** 8" out-to-out of ties — a
   6-5/8" bar circle + 0.625" (one #5 dia.) + 2 × 0.375" (a #3 ring each side) =
   8.0", which is also 12" less 2 × 2" cover — (4) #5 verticals, #3 rings @ 10"
-  o.c., 2" cover, in a 12" round. **TWELVE identical sections house-wide**: six
+  o.c., 2" cover, in a 12" round. **TEN identical sections house-wide**: the four
   court columns and the six north-entry pours (`params/north_entry_frame.py`
   `ENTRY_PIER_CAGE`), lengths per pour, **tied not welded**. It is NOT the
   catalog stock 8" cage (4 #4, #3 @ 12"): 0.80 in² is under §10.6.1.1's 1.131 in²
   floor, and 12" ties exceed §25.7.2.1's 16d_b = 8" for #4. The authored #3 @ 10"
-  is exactly 16d_b for #5. Quote it by name, twelve off — Rebarfab (720 First St
+  is exactly 16d_b for #5. Quote it by name, ten off — Rebarfab (720 First St
   SW, New Brighton MN, 651-633-3337) or a Bolsinger custom against their PASC
   stock format.
 - 12", not 10": 2" cover on a #5 cage inside #3 ties needs a 6-5/8" bar circle,
@@ -1941,11 +1945,14 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   pair as the tie. `PIER_CONCRETE_12` says NO GROUT ISLAND too
   since 2026-09-12; retyping `PT-SG-COL` did not close that follow-up, it rode
   the island over to the north entry's own seats.
+- **Field fit at each rear column (y = -2'-6")**: the joist's `H10ASS` sits beside the
+  `HETA20Z` seat straps on the beam face (straps ±5/8" of the joist centre, tie leg from
+  ±3/4") — they clear by ~1/8". Install the straps first.
 - **A post is the WOOD, not the clear span between its bearings** (2026-09-14).
   `resolve/envelope.py::_post_connector_insets` takes the `ABU66SS`'s 1-3/16"
   standoff (Simpson's 1" over the stirrup's own 7 ga plate) off the bottom and
-  the `CCQ46SDS2.5`'s 7 ga seat off the top, from the catalog record. Without it
-  `PT-SG-BR2` reads 121-3/8" against IRC Table R507.4's 120".
+  the `CCQ46SDS2.5`'s 7 ga seat off the top, from the catalog record. Without it the
+  retired `PT-SG-BR2` read 121-3/8" against IRC Table R507.4's 120".
 - **`SPEC.balcony_fall_in_per_ft` = 1/4 in/ft** — authored; the rise is derived.
 - `structural.deck_post_bearing` is now NOT_APPLICABLE house-wide and
   `post_bearing/*` has left the engineering register — no post in catlin stands
@@ -1974,23 +1981,21 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `FS-SG-PORCH`'s 2x12s pass over it with 2 1/12" of air — nothing grades that gap) stands on
   `W-SG-BRKBM`, a 12" x 17-3/4" grade beam spanning 17'-0" between `W-SG-W1`/`W-SG-E1` — not on
   the house footing (`FT-B-BRICK`, retired). Basis: `notes/sunken_garden_veneer_beam.md`.
-- **THE BEAM'S DEFLECTION IS GRADED AT TMS 402-22 §13.1.2.3's ℓ/600 = 0.390", AND THE ONLY
-  THING THAT CLOSES IT IS THE MONOLITHIC END JOINT** (2026-09-22, note §6f). As a simple
-  span it reads **1.242 OVER**. `W-SG-BRKBM.end_restraint` CLAIMS α = 0.25 — the fraction of
-  `wL²/12` the joint delivers — against an elastic estimate of 0.514 on the stingiest
-  reading available (the wall above the joint only, far end pinned, b_eff the beam's own
-  12", gross section), a 2:1 derate, and it reads **0.464**.
-  - **The credit is SERVICEABILITY ONLY and must stay that way.** Midspan flexure is still
-    graded at α = 0 (0.555 — the section's worst strength row, NOT the record's governing
-    row, which is the 0.790 hook below), so a joint softer
-    than claimed costs deflection and can never buy strength. What the fixity ADDS is graded:
-    negative flexure 0.093, the end moment into `W-SG-W1`/`E1` as **plain concrete** over
-    b_eff = b + 2t = 36" (0.368 — and **0.757 at the full elastic α**, which is why `#6 @ 38"`
-    does not change), and end-moment shear 0.136. ACI 318-19 Table 14.5.2.1's US coefficient
-    is `Mn = 5λ√f'c·Sm` (the 0.42λ√f'c form is SI), confirmed before that row was printed.
+- **THE BEAM'S DEFLECTION IS GRADED AT TMS 402-22 §13.1.2.3's ℓ/600 = 0.350" (17.5' design
+  span), AND AT THE 17'-0" COURT IT CLOSES WITHOUT THE END JOINT** (note §6i). It needed the
+  monolithic joint at 19'-0" (§6f: 1.242 OVER as a simple span). Now: **0.315** as a simple span,
+  **0.225** at the claimed α = 0.25 (elastic estimate 0.487, a 2:1 derate).
+  `W-SG-BRKBM.end_restraint` stays authored because the beam is still cast monolithic and its
+  added rows pass; keeping the claim is the engineer's call, and nothing depends on it.
+  - **The credit is SERVICEABILITY ONLY and must stay that way.** Midspan flexure is graded at
+    α = 0 (0.433). What the fixity ADDS is graded: negative flexure 0.072, the end moment into
+    `W-SG-W1`/`E1` as **plain concrete** over b_eff = b + 2t = 36" (0.287; ~0.56 at the full
+    elastic α, which is why `#6 @ 38"` does not change), and end-moment shear 0.106. ACI 318-19
+    Table 14.5.2.1's US coefficient is `Mn = 5λ√f'c·Sm` (the 0.42λ√f'c form is SI).
   - **If this beam ever stops being cast monolithic with `W-SG-W1`/`W-SG-E1`, `end_restraint`
     comes off with it** — `AN-SG-PLACEMENTS` placement 2 is the statement the field rests on,
-    and `test_the_fixity_credit_is_never_assumed` takes the record back to 1.242.
+    and `test_the_fixity_credit_is_never_assumed` takes the record to its simple-span
+    reading (0.315).
   - **What governs the record is now an ANCHORAGE length, 0.790** — §6e's 7.11" of top-row
     hook in 9.00" of wall, held there by the two #4 confining ties per end (without them
     ψr goes 1.6 and ℓdh 11.38" against 9.00", an immediate FAIL). Thinning either side wall
@@ -2180,16 +2185,16 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **Three placements, not four**, and the order is on the drawing (`AN-SG-PLACEMENTS`):
   footings + both belled piers monolithic; then all five walls + the grade beam at one form
   height (house basement wall poured, cured and surveyed FIRST, for the epoxied break
-  dowels); then the rim slab with all six columns. `AN-SG-MIX` permits EXPOSED_MIX for the
+  dowels); then the rim slab with the four corner columns. `AN-SG-MIX` permits EXPOSED_MIX for the
   whole court so it comes off one ticket — **do not retype PIER_BASE_12**, it is shared with
   the north entry. `AN-SG-COLDWEATHER` puts a hard 1 November milestone on placement 3.
 - **`_veneer_beam_bottom` stays held** at -120 3/16", not flush with the slab underside.
   **The binding number is the computed ℓ/600 row, not Table 9.3.1.1's L/16** (2026-09-22): a
-  member whose deflection is computed is outside that table's scope anyway, and the 17 3/4"
-  section reads 0.464 against TMS ℓ/600 WITH the 0.25 end-fixity credit. A flush 10 1/2"
-  beam is 3.4x less stiff (Ig ∝ h³) and no plausible α saves it, so the answer is unchanged
-  and the reason is now a calculation instead of a table row. Held, the beam is buried but
-  its 17 3/4" section survives.
+  member whose deflection is computed is outside that table's scope anyway. At the 17'-0" court
+  the 17 3/4" section reads 0.225 against TMS ℓ/600 at α 0.25 and 0.315 with no fixity at all
+  (veneer note §6i), so the end-fixity credit is no longer needed. A flush 10 1/2" beam is 3.4x
+  less stiff (Ig ∝ h³) and would lean on the fixity again. Held, the beam is buried but its
+  17 3/4" section survives.
 - `FT-B-S2`/`S3` cover below `SL-SG-FLOOR` is 8".
 - `plan/site.py`'s two garden spot elevations are -9'-1 7/16"; they are a structural input,
   not drafting annotation — `engineering/balcony_wind.ground_below_ft` takes the site's
@@ -2247,19 +2252,21 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - `Dowel` z is derived off the shared 8" footing-to-footing joint face (mid-way through it);
   the foam block matches that 8". **Nothing in the engine grades a `Dowel` against the two
   footings it names** — check both footing tops/bottoms by hand after any elevation change.
-- **The court is 26'-0" x 17'-0" clear (19'-0" until 2026-09-22) and there is a structural floor at 24'-6".**
+- **The court is 26'-0" x 17'-0" clear (19'-0" until 2026-09-22) and there is a structural floor at 22'-10".**
   Shortening it removes base friction from the capacity and **nothing** from the demand: the
   E-W thrusts cancel identically, so the resultant is the south wall's alone and the south
   wall is the court's WIDTH. Court length is not the cheap lever it looks like — about $700
-  to $1,300 a foot, against 0.09 of system FS per foot, and only **1'-6"** of it is left.
-  **Re-derive that floor, never quote it**: it is `run = 62,826 x 1.50 / F` with
-  `run = 2(L - 9.6667) + 20`, so it moves with the strip width and the apron's surcharge.
-  It was 23'-3" at 8'-0", and 23'-11" before the surcharge (2026-09-20).
-- Current stem/toe state: system FS **1.59** (d/c 0.942), stem flexure **0.62**, toe
+  to $1,300 a foot, against ~0.07 of system FS per foot, and **3'-2"** of it is left.
+  **Re-derive that floor, never quote it**: it is `run = 56,210 x 1.50 / F` with
+  `run = 2(L - 9.6667) + 18` (free body §12), so it moves with the strip width, the apron's
+  surcharge and the court's width. It was 24'-6" at the 19'-0" court, 23'-3" at 8'-0", and
+  23'-11" before the surcharge (2026-09-20).
+- Current stem/toe state: system FS **1.712** (d/c 0.876), stem flexure **0.61**, toe
   flexure **0.72**, heel flexure **0.70**, stem length **9.1198'**. **The raised-garden
   apron's bearing is in every one of those** (2026-09-20, `engineering/tier_surcharge.py`,
   free body §4c): +69 plf of thrust per wall, NET of the soil the block displaces — taken
-  gross the loop reads **1.46 and does not clear**, so netting is a load-bearing argument.
+  gross the loop read **1.46 and did not clear** at the 19'-0" court, so netting is a
+  load-bearing argument.
   Every schedule in the stem bar table clears, `#6 @ 16"` included at 0.98; the 0.53 in²/ft
   is held on that 2% margin and on §5's stone-bed dependence. **It is `#5 @ 7"`, not `#6 @ 10"` (2026-09-17)**:
   the vertical runs continuous on a 90° foot on the footing mat, 7.875" is available, and

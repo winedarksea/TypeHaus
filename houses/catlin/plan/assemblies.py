@@ -1142,7 +1142,9 @@ SG_VENEER_BEAM_14 = Assembly(
 # sonotube's rate. That split stays, and since 2026-09-10 it runs between the COURT and the
 # NORTH ENTRY — PIER_CONCRETE_12 is the six north-entry piers and nothing else.
 #
-# ** ALL SIX OF THE COURT'S 12" ROUNDS ARE ON THIS TYPE. ** PT-SG-COL, the back-beam
+# ** ALL FOUR OF THE COURT'S 12" ROUNDS (the balcony corners) ARE ON THIS TYPE. ** PT-SG-COL and
+# PT-SG-FCOL retired with the centre line (2026-09-22); the history below is theirs.
+# PT-SG-COL, the back-beam
 # column, was on PIER_CONCRETE_12 while PT-SG-FCOL — the same 12" round, the same
 # 120 15/16" height over the same z range, four feet away, holding up the other end of the
 # same frame — was on this one. One tube order, one cage, one row.
@@ -1462,6 +1464,8 @@ BALCONY_DECK_ALUMINUM = Assembly(
 
 # Finish-only assembly for the balcony 6x6 pillars so they render (glTF) and read (IFC) as
 # white-painted rather than the default bare-wood post colour. Single 5.5" layer = the 6x6.
+# No balcony pillar is wood any more (the last two retired 2026-09-22); today this carries only
+# the four interior stairwell posts. The notes below are kept for the record.
 #
 # **The pillar TOP is the detail this assembly exists to carry.** These six
 # pillars are the most expensive-per-LF elements in the whole frame — 51.4 LF of them costs
@@ -1478,7 +1482,8 @@ BALCONY_DECK_ALUMINUM = Assembly(
 #    notes/beam_water_protection.md covers beam tops exhaustively and never mentions these.
 #    Chamfer or bevel the exposed rim, or form a small drip under the beam seat, and seal
 #    the cut before the pillar is stood. Highest durability-per-dollar item in the porch.
-# 2. PLANK CUT-OUT AT THE TWO CENTRE PILLARS. PT-SG-BR2 and PT-SG-BF2 bear on FS-SG-PORCH.
+# 2. PLANK CUT-OUT AT THE TWO CENTRE PILLARS — MOOT since 2026-09-22 (both pillars retired).
+#    PT-SG-BR2 and PT-SG-BF2 bore on FS-SG-PORCH.
 #    Cut a ~9" square through the composite plank at each so the POST ITSELF lands on the
 #    3-ply joist pack: Trex's own spec says composite decking "cannot be used as structural
 #    material". 9", not the 4" this note said until 2026-09-03 — the post is 5-1/2" square,
@@ -1523,6 +1528,7 @@ EQUIP_STAND_ALUM = Assembly(
 # POST_WHITE_PAINT stays on the two interior stairwell posts (P-M-STRWELL-N/S), which carry
 # no rated connector and have no reason to change stock. Same 5.5" body, same white, same
 # section — only the lumber under the paint differs. See post-df-paint-white above.
+# UNREFERENCED since 2026-09-22: kept as the named revert of the centre-pillar trial.
 POST_WHITE_PAINT_DF = Assembly(
     tag="POST_WHITE_PAINT_DF",
     layers=(
@@ -1612,6 +1618,7 @@ BEAM_KDAT = Assembly(
 # 6x6 body, and `[timber]` prices it per cubic yard off a 6x6's lineal-foot rate. A beam's
 # real section is `Beam.size`, so the layer here is one 1 1/2" ply exactly as BEAM_KDAT's is,
 # and the price row below it in `houses/catlin/prices.toml` is the KDAT beam rate plus paint.
+# UNREFERENCED since 2026-09-22: kept as the named revert of the centre-pillar trial.
 BEAM_WHITE_PAINT = Assembly(
     tag="BEAM_WHITE_PAINT",
     layers=(

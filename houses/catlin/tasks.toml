@@ -95,7 +95,8 @@ constraints = [
 [visits."task/concrete/building/slabs"]
 label = "Slabs on grade — basement, garage, heat-pump pad, interior decks"
 # `hardware:AB-058-10-SS` left this list 2026-09-22: with the garden's two centre-pillar bases
-# retired, the four bolts left are all on `main`'s package and ride its own visit.
+# retired, the five bolts left (P-M-STRWELL-N/S/SS, PT-BW-CNW/CW) are all on `main`'s package
+# and ride its own visit.
 rows = ["concrete:slab", "concrete:slab:DECK_EPS_INT", "concrete:slab:HP_PAD_ON_GRADE",
         "concrete:column:PIER_CONCRETE_12", "concrete:column:SUNKEN_GARDEN_COLUMN_12",
         "allowances:radon-passive-pipe-and-stack",
@@ -218,10 +219,10 @@ constraints = [
 # which composes with a cold, wet, still-being-poured court.
 #
 # ** ALL FOUR SURFACES ARE IN ONE VISIT BECAUSE OF A JOB-SIZE MINIMUM, NOT FOR TIDINESS. ** The
-# binding Twin Cities number is a $2,000 EXTERIOR JOB-SIZE minimum. The six columns alone are
-# ~181 SF and price at $750-1,900, which is under it at any rate in the range — let separately
-# they would cost $2,000 regardless. Combined with 953 SF of wall face the scope is ~$3,500-6,700
-# and the minimum is absorbed. Do not split this visit to "sequence the columns".
+# binding Twin Cities number is a $2,000 EXTERIOR JOB-SIZE minimum. The four columns alone are
+# ~102 SF and price at $424-1,075, which is under it at any rate in the range — let separately
+# they would cost $2,000 regardless. Combined with ~897 SF of wall, block and fireplace face the
+# scope is ~$3,800-7,400 and the minimum is absorbed. Do not split this visit to "sequence the columns".
 #
 # `depends_on` the masonry visit: the fireplace panel is laid BARE in the court blend and reads
 # white from this coat. The wash's BOM rows are owned HERE and are deliberately not also listed on

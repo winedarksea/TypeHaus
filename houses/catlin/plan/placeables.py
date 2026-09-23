@@ -1033,8 +1033,8 @@ MAIN_PLACEABLES = [
     # ON the soffit. Filed on `main`, whose datum (0") is what the height reads off. Editable
     # files cannot import params: this is `_balcony_beam_soffit` + the 2x12 depth by hand.
     #
-    # ** FRONT LINE y = -9'-0", ON THE SPARE JOIST. ** At 12" o.c. the balcony joists sit at
-    # -9'-6" and -8'-6", so FS-SG-DECK carries one extra 2x12 line at -9'-0"
+    # ** FRONT LINE y = -8'-11 1/4", ON THE SPARE JOIST. ** At 12" o.c. the balcony joists sit
+    # at -9'-5 1/4" and -8'-5 1/4", so FS-SG-DECK carries one extra 2x12 line at -8'-11 1/4"
     # (`JoistSpec.extra_lines`) and the front run screws up into it for its whole length. One
     # continuous run: nothing splits the curtain plane now the centre beam and pillar are
     # gone. Two 90-degree curves at (10'-0", -9'-0") and (26'-0", -9'-0") turn the corners,
@@ -1068,16 +1068,17 @@ MAIN_PLACEABLES = [
     # --- the porch's two lounge chairs (2026-09-06) ---------------------------------------
     #
     # `plans/TODO.md` 241: the porch is roofed, fanned, lit, wired and curtained and has
-    # NOTHING on it — 19'-0" x 8'-8" of deck reading as empty in the 3D. Two real chairs, a
-    # named product at its real size (`FT-PORCH-LOUNGE-27` in plan/furniture_types.py).
+    # NOTHING on it — 17'-0" x 8'-8" of deck (19'-0" until 2026-09-22) reading as empty in
+    # the 3D. Two real chairs, a named product at its real size (`FT-PORCH-LOUNGE-27` in
+    # plan/furniture_types.py).
     #
-    # ** THE WEST BAY. ** (A centre pillar split this porch until 2026-09-22; the reasoning
-    # below still holds without it.) The east half is circulation: D-M-BALC lands at x 21'-4" and the porch's only route to grade is
-    # RL-SG-PORCH's 3'-0" guard opening at x 27'-6", y -6'-0"..-9'-0", so the door-to-stair
+    # ** THE WEST BAY. ** (A centre pillar split this porch until 2026-09-22.) The east half is
+    # circulation: D-M-BALC lands at x 21'-4" and the porch's only route to grade is
+    # RL-SG-PORCH's 3'-0" guard opening at x 26'-6", y -6'-0"..-9'-0", so the door-to-stair
     # diagonal owns the east bay. West of it is a dead end, and that is where seating goes.
-    # The pair is centred on x=13'-0" in the 9'-0 3/4" between the west guard (x 8'-6") and
-    # that pillar's connector face (x 17'-6 3/4"): 19 1/2" of margin west, 20 1/4" east,
-    # 15" between the two chairs — a gap a Lollygagger side table (18") would NOT fit, which
+    # The pair is centred on x=13'-0": 7 1/2" of margin to the west guard (x 9'-6", W-SG-W1's
+    # inner face), 15" between the two chairs, and the east chair's arm at 15'-10 1/2", 5'-5 1/2"
+    # short of the door. The 15" is a gap a Lollygagger side table (18") would NOT fit, which
     # is deliberate; the arms are the table until the owner buys one and the chairs slide.
     #
     # ** y = -3'-6" IS SET BY THE HOSE BIB, NOT BY THE VIEW. ** FX-M-PORCH-HYD is on W-M-S1

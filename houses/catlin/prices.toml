@@ -388,14 +388,13 @@
 "2-2x6" = { material = { low = 1.7, high = 2.3 }, labour = { low = 0.9, high = 1.8 } }  # 16 LF
 "2-2x8" = { material = { low = 2.2, high = 3.1 }, labour = { low = 1, high = 2 } }  # 440 LF
 "2x10" = { material = { low = 1.5, high = 2 }, labour = { low = 1.3, high = 2.4 } }  # 172 LF — 58 hanger + 114 wet-wall -MID courses (2026-09-12)
-# 2026-09-03: this row now has a KDAT half. ST-SG-PORCH's two stringers are 2x12:kdat and
-# group separately in the BOM (32 LF ordered beside the 92 LF of spf); the [framing] rate is
-# per profile, not per treatment, so both halves bill here. The 3.7 LF plan run of each
-# stringer is 4.6 LF of stick on the rake, which the cut list already accounts for.
-"2x12" = { material = { low = 1.85, high = 2.6 }, labour = { low = 1.4, high = 2.6 } }  # 92 LF spf + 32 LF kdat (ST-G-SERVICE and ST-SG-PORCH stringers)
-# KDAT southern pine 2x12, the garden's two deck fields (12" o.c.) and the porch ledgers. Treated
-# 2x12 runs ~25-40% over the SPF stick above, and 20' lengths carry a further premium.
-"2x12:kdat" = { material = { low = 2.4, high = 3.6 }, labour = { low = 1.4, high = 2.6 } }  # 464 LF ordered (joists, spare joist, blocks) + 2 ledgers
+# ST-SG-PORCH's stringers are 2x12:kdat and bill on the "2x12:kdat" row below (32 LF ordered),
+# not here. The 3.7 LF plan run of each is 4.6 LF of stick on the rake; the cut list has it.
+"2x12" = { material = { low = 1.85, high = 2.6 }, labour = { low = 1.4, high = 2.6 } }  # 92 LF spf — ST-G-SERVICE's stringers
+# KDAT southern pine 2x12, the garden's two deck fields (12" o.c.) and ST-SG-PORCH's stringers.
+# The porch ledgers are Beams and bill in [timber] "beam:BEAM_KDAT". Treated 2x12 runs ~25-40%
+# over the SPF stick above, and 20' lengths carry a further premium.
+"2x12:kdat" = { material = { low = 2.4, high = 3.6 }, labour = { low = 1.4, high = 2.6 } }  # 496 LF ordered — 464 (joists, spare joist, blocks) + 32 (ST-SG-PORCH stringers)
 "2x2" = { material = { low = 0.35, high = 0.6 }, labour = { low = 0.5, high = 1 } }  # 816 LF
 # 2"x2" rigid-insulation strip: 1/6 SF of 2" board per LF, at the [envelope_layers]
 # polyiso rate of $1.20-2.20/SF.
@@ -851,12 +850,12 @@
 # The garage's two gable ends take no LS30 since 2026-09-16: the gable-end truss carries the
 # gable's lateral load in its design; one LTP4 ties each truss to W-G-S/N's plate (billed
 # under "LTP4" below, was an HGA10) and the H2.5A at each heel takes uplift.
-# ** THE SAME TIE IN ZMAX (G185), AND THE COATING IS THE WHOLE ROW. ** Twenty-eight derived
-# bearing joints land on preservative-treated wood: BM-SG-BLC (treated SYP glulam) x8,
-# BM-SG-FRW/FRE (3-ply KDAT 2x12) x16, BM-BW-GARAGE-SEAT (KDAT) x4. IRC R317.3.1 requires a
+# ** THE SAME TIE IN ZMAX (G185), AND THE COATING IS THE WHOLE ROW. ** Eight derived bearing
+# joints land on preservative-treated wood: BM-BW-GARAGE-SEAT and BM-BW-HOUSE-SEAT (KDAT), x4
+# each (BM-SG-BLC and BM-SG-FRW/FRE retired 2026-09-22). IRC R317.3.1 requires a
 # connector in contact with treated wood to be hot-dip galvanized, stainless, silicon bronze
 # or copper — the copper in a modern ACQ/CA preservative corrodes plain G90 zinc — and until
-# 2026-09-12 all twenty-eight billed as G90 at 0 FAIL, because `hardware_for_role` held one
+# 2026-09-12 all of them billed as G90 at 0 FAIL, because `hardware_for_role` held one
 # product per role and had no second question to ask.
 #
 # ZMAX runs roughly 1.4-1.6x the G90 tie in single-piece retail listings ($1.20-$2.50 against
@@ -870,7 +869,7 @@
 # ** WHERE THIS SITS AGAINST "STAINLESS AT EVERY KDAT JOINT" (owner, 2026-09-10, recorded on
 # the H2.5ASS row below). ** ZMAX is the DERIVED floor — "outdoor connectors ZMAX or better"
 # — and stainless is authored per joint, the way RF-BW-CANOPY's eight already are. Any of
-# these twenty-eight the owner wants in stainless becomes a `Connector` in
+# these eight the owner wants in stainless becomes a `Connector` in
 # params/sunken_garden.py at ~$3.00-$6.50 each, which stands the derived rule down at that
 # joint and puts the part number in the plan source where it can be read.
 "H2.5AZ" = { low = 1.2, high = 2.5 }  # 8 ea — all derived, PRESERVATIVE-TREATED bearings. 57 until 2026-09-22, when the balcony's joist ties went to authored stainless (H10ASS / H2.5ASS)
@@ -1058,7 +1057,7 @@
 # Simpson THD50600H6SS, 1/2" x 6" Type 316 Titen HD: the porch ledgers into W-SG-W1/E1 at the
 # spacing of engineering letter L-A-THDSSLDGR23.
 "THD50600H6SS" = { material = { low = 7, high = 14 }, labour = { low = 4, high = 8 } }  # 18 ea — CN-SG-LDGW-1..9 / -LDGE-1..9; Type 316 Titen HD, no cure
-"AB-058-10-SS" = { low = 12, high = 28 }  # 4 ea — one cast-in bolt per POST BASE that lands on concrete AND takes one: 2 canopy ABU66SS + the 2 basement ABU44 under P-M-STRWELL-N/S. The 2 garage-slab ABU44 under PT-BW-IC/-IE are authored `anchored=False` (2026-09-11): a 5/8x10in bolt needs ~8in of embedment and SL-G-FLOOR is 3-1/2in on foam, so the bolt dragged a slab thickening along to house itself and both went. Those bases are bearing-only — download through the plate, no uplift and no lateral claimed. `takeoff/uplift_joints.py::post_base_anchor_rows` gates on `bears_on_concrete`, so a base on framing never took one, and it unions the AUTHORED and DERIVED base populations. Was 10 before the balcony corner bases went (2026-09-03), 6 while the canopy had four wood columns, 4 since the east pair became cast
+"AB-058-10-SS" = { low = 12, high = 28 }  # 5 ea — one cast-in bolt per POST BASE that lands on concrete AND takes one: 2 canopy ABU66SS (PT-BW-CNW/CW) + the 3 basement ABU44 under P-M-STRWELL-N/S/SS. The 2 garage-slab ABU44 under PT-BW-IC/-IE are authored `anchored=False` (2026-09-11): a 5/8x10in bolt needs ~8in of embedment and SL-G-FLOOR is 3-1/2in on foam, so the bolt dragged a slab thickening along to house itself and both went. Those bases are bearing-only — download through the plate, no uplift and no lateral claimed. `takeoff/uplift_joints.py::post_base_anchor_rows` gates on `bears_on_concrete`, so a base on framing never took one, and it unions the AUTHORED and DERIVED base populations. Was 10 before the balcony corner bases went (2026-09-03), 6 while the canopy had four wood columns, 4 since the east pair became cast, 5 since P-M-STRWELL-SS took an ABU44
 # 6 ea, all of them CARRIED under the ColorGard rail (`requires_role`) — none directly
 # modeled any more. It was 19: two wall-mounted enclosure clamps (CN-A-NEMA-CLAMP,
 # CN-A-PV-CLAMP) plus 11 carried under the CanDuit rings, and all thirteen went on
@@ -1390,7 +1389,7 @@
 # and the 20" round front column", which had been wrong since 2026-09-03 (the 20" column
 # was retired) and wrong twice over since 2026-09-10 (PT-SG-COL moved to the garden-column
 # row, and the north entry went from five piers to six). It is two keys now and neither
-# matches that description: `column:SUNKEN_GARDEN_COLUMN_12`, six 12" round garden columns
+# matches that description: `column:SUNKEN_GARDEN_COLUMN_12`, four 12" round garden columns (six until 2026-09-22)
 # on the F3+C2 mix, and `column:PIER_CONCRETE_12`, six 12" round north-entry piers of which
 # two run on up as full-height canopy columns.
 #
@@ -1411,6 +1410,8 @@
 # against and reads as an omission. The cast columns of this structure are one product
 # now — see the row below.
 #
+# ** FOUR SINCE 2026-09-22: PT-SG-FCOL and PT-SG-COL retired with the centre line. ** The
+# paragraph below is the six-column record, kept for the rate argument.
 # ** SIX COLUMNS SINCE 2026-09-10, NOT FIVE. ** PT-SG-COL, the back-beam column, moved here
 # off the sonotube row below. It is the same 12" round at the same 120 15/16" height over
 # the same z range as PT-SG-FCOL, four feet away, holding up the other end of the same
@@ -1421,13 +1422,12 @@
 # bullet — it is a tube in a hole — so if this row is ever re-quoted, ask for the forming
 # line separately rather than assuming six columns of saddle-collar work.
 #
-# PT-SG-FCOL and PT-SG-COL (10.68 LF each) plus the four balcony corner columns
-# PT-SG-BR1/BR3 (9.18 LF) and PT-SG-BF1/BF3 (9.01 LF) — 57.7 LF over six, all 12" round on
-# SUNKEN_GARDEN_COLUMN_12. **This is NOT the sonotube rate below**, and the difference is
+# The four balcony corner columns PT-SG-BR1/BR3 (8.23 LF) and PT-SG-BF1/BF3 (8.07 LF) — 32.6 LF,
+# all 12" round on SUNKEN_GARDEN_COLUMN_12 (57.7 LF over six until 2026-09-22). **This is NOT the sonotube rate below**, and the difference is
 # the whole reason it is a separate key:
 #   * the CAGE IS A PURCHASED PART — quote it by name. 8" out-to-out of ties, (4) #5
 #     verticals + #3 rings @ 10" o.c. at 2" cover, class B dowels lapped in, **one
-#     cross-section and TWELVE OFF house-wide** (these six plus the six north-entry pours on
+#     cross-section and TEN OFF house-wide** (these four plus the six north-entry pours on
 #     the row below), lengths per pour, TIED not welded. Fabricators: Rebarfab Inc, New
 #     Brighton MN (651-633-3337), or a Bolsinger custom against their PASC stock format. The
 #     catalog STOCK 8" cage is (4) #4 at #3 @ 12" — $49-77 each black, 3-8 ft, 15-20 business
@@ -1444,13 +1444,13 @@
 #     `notes/north_entry_piers.md` §6 (splash at a shovelled, salted walk). The coating
 #     itself is an OWNER decision recorded as one in `plan/assemblies.py`, not a code
 #     requirement: the 5,000 psi / w/cm 0.40 / 6% air mix satisfies F3 and C2 on its own;
-#   * FREE-STANDING FORMING on FOUR of the six. The balcony corner columns are seated in a
+#   * FREE-STANDING FORMING on all four (four of six before 2026-09-22). The balcony corner columns are seated in a
 #     plywood saddle collar screwed to a wall face and kicked to the porch framing, which
 #     is a two-person day of forming for four columns. PT-SG-FCOL and PT-SG-COL are tubes
 #     in a hole and get none of it;
 #   * a waterstop strip at the wall-top cold joint on those same four. ** THE SILANE THAT
 #     USED TO SIT IN THIS BULLET IS GONE (2026-09-13) AND IT IS NOT A SAVING HERE. ** All
-#     six columns are washed white with a mineral silicate instead, which cannot bond to a
+#     four columns are washed white with a mineral silicate instead, which cannot bond to a
 #     hydrophobic substrate, so the repellent and the wash are alternatives. The wash is
 #     priced as its own [allowances] lump — a different trade on a different arrival — so
 #     this $/cy rate loses the silane and gains nothing, and the ~10-yearly recoat
@@ -1478,12 +1478,12 @@
 # rate above absorbs its own steel. The corner columns' dowels are AUTHORED now (role
 # `dowels`, decision #75) and the reinforcement takeoff bills them as L-bars — hooked into
 # the wall top, lapped class B above. Their dollars stay in this rate until the back-out.
-"column:SUNKEN_GARDEN_COLUMN_12" = { material = { low = 1150, high = 2100 }, labour = { low = 920, high = 1700 } }  # 1.53 cy = 57.7 LF over six columns (PT-SG-FCOL, PT-SG-COL and the four balcony corners); $/cy, so the line scales
+"column:SUNKEN_GARDEN_COLUMN_12" = { material = { low = 1150, high = 2100 }, labour = { low = 920, high = 1700 } }  # 0.92 cy = 32.6 LF over the four balcony corners (PT-SG-BR1/BR3/BF1/BF3); $/cy, so the line scales. 1.53 cy over six until the centre line retired, 2026-09-22
 # W-SG-ARCH, the buried grade beam / strut on the MW-ME line. A concrete Beam since 2026-09-16, so
 # it bills here by the yard rather than under [wall_structure]. Same 12" court pour off the same
 # ticket as SUNKEN_GARDEN_WALL, so the SAME RATE: re-rate both together. An unpriced key drops
 # from the takeoff silently.
-"beam:SUNKEN_GARDEN_GRADE_BEAM_12" = { material = { low = 215, high = 280 }, labour = { low = 285, high = 620 } }  # 1.08 CY — no wash, nothing of it shows
+"beam:SUNKEN_GARDEN_GRADE_BEAM_12" = { material = { low = 215, high = 280 }, labour = { low = 285, high = 620 } }  # 0.97 CY — no wash, nothing of it shows
 # The six 12" round shafts of the NORTH ENTRY: PT-BW-W/E/RE bottoming at -9'-9 7/16" and
 # PT-BW-GW/GE/RNE at -7'-0". **Two of the six are not piers** — PT-BW-RE (15.35 LF) and
 # PT-BW-RNE (12.73 LF) do not stop at the bearing plane, they run on to the canopy header
@@ -1637,7 +1637,7 @@
 #
 # Rebar: NONE authored, and that is the same open item `notes/rebar_backout.md` §5 records
 # for the belled piers. The rate carries no steel and the note says so.
-"pad:PIER_BASE_12" = { material = { low = 195, high = 240 }, labour = { low = 115, high = 280 } }  # 0.35 cy — PD-BW-W / -E / -RE
+"pad:PIER_BASE_12" = { material = { low = 195, high = 240 }, labour = { low = 115, high = 280 } }  # 0.80 cy — all six north-entry pads, PD-BW-W / -E / -RE / -GW / -GE / -RNE
 # ** SECOND-LARGEST ERROR. ** $175-280/cy is $2.16-3.46/SF at 4" — bare ready-mix with no
 # labour in it. Minnesota installed slab is $6.60-13.20/SF (CalcShed by-state, Aug 2026);
 # plain slab material+labour $6.50-10.50/SF (Concrete Network, Jul 2026); Midwest $7-11/SF.
@@ -1931,7 +1931,7 @@
 # screws $3-9/LF (hardware can exceed the post lumber on an elevated deck), setting $8-18/LF,
 # and primer + 2 coats at $2.00-4.50/SF over 1.833 SF of face per LF. Painting a 6x6 is ~85%
 # labour — four narrow faces with cut-in at cap and base.
-"column:POST_WHITE_PAINT" = { material = { low = 1130, high = 2830 }, labour = { low = 1700, high = 4240 } }  # 0.06 cy — the interior stairwell posts ONLY. Was 0.40 cy / 51.4 LF while all six pillars were wood, then 0.19 cy when four went to cast concrete, then 0.06 when the two centre pillars left for POST_WHITE_PAINT_DF below (all 2026-09-03)
+"column:POST_WHITE_PAINT" = { material = { low = 1130, high = 2830 }, labour = { low = 1700, high = 4240 } }  # 0.09 cy — the four interior stairwell posts (P-M-STRWELL-N/S/SS, P-M-STRLAND-SE) ONLY. Was 0.40 cy / 51.4 LF while all six pillars were wood, then 0.19 cy when four went to cast concrete, then 0.06 when the two centre pillars left for POST_WHITE_PAINT_DF below (all 2026-09-03)
 # The two CENTRE balcony pillars, split out of the row above when they were specified DF-L.
 # Same rate structure, same paint, same labour — it is the identical stick to hang and coat.
 # Material carries a 25% species premium over the SPF above: a DF-L 6x6 runs roughly a fifth
@@ -1939,7 +1939,7 @@
 # ESR-2604 §3.2.2 publishes no value below SG 0.50 — at SPF 0.42 neither the CCQ46SDS2.5 cap
 # over these two posts nor the inverted CCQ4.62-5.50SDS under them had a rating at all.
 # ~$180-450 of lumber to put a number behind two connectors that already cost $370.
-"column:POST_WHITE_PAINT_DF" = { material = { low = 1415, high = 3540 }, labour = { low = 1700, high = 4240 } }  # 0.13 cy = ~16 LF — PT-SG-BR2 and PT-SG-BF2
+"column:POST_WHITE_PAINT_DF" = { material = { low = 1415, high = 3540 }, labour = { low = 1700, high = 4240 } }  # 0 cy — PT-SG-BR2/BF2 retired with the centre line, 2026-09-22; kept as that trial's revert
 # RESEARCHED 2026-08-28, RE-BASED 2026-09-02 for the move to grade — the two heat-pump ground
 # stands' legs, 8 of them, 0.01 cy. THE YARD IS A NONSENSE UNIT HERE AND THE RATE SAYS SO:
 # eight 2" square aluminium legs 18" long is a third of a cubic foot, so any $/cy that lands on a real number for this row is
@@ -1981,7 +1981,7 @@
 # -> material $315-537 and labour $199-433, i.e. $514-970 over 0.49 cy. The paint is still
 # most of the labour and roughly a tenth of the material: a finish line item wearing a
 # beam's clothes, now over four members instead of six.
-"beam:BEAM_WHITE_PAINT" = { material = { low = 648, high = 1105 }, labour = { low = 410, high = 891 } }  # 0.26 cy = ~20 LF — the porch front pair BM-SG-FRW/FRE only. The balcony's west and east beams left this row on 2026-09-03 for BEAM_GLULAM_TREATED, clear-finished
+"beam:BEAM_WHITE_PAINT" = { material = { low = 648, high = 1105 }, labour = { low = 410, high = 891 } }  # 0 cy — BM-SG-FRW/FRE retired with the centre line, 2026-09-22; kept as that trial's revert. The balcony's west and east beams left this row on 2026-09-03 for BEAM_GLULAM_TREATED, clear-finished
 #
 # FRAMED DUCT SOFFITS — THREE of them, and the basis moved from LF to SF of board on
 # 2026-08-31 because a cubic-yard rate calibrated on one section shape stops meaning anything
@@ -3753,7 +3753,7 @@
 # rejected on chemistry rather than price: its binder is a D-SILICATE modified with an organic
 # dispersion, and its own apply-guide REQUIRES MicroGrip primer on concrete and concrete block —
 # which fails the owner's binding constraint of a raw, untreated, unprimed substrate.
-"silicate-wash-white" = { material = { low = 0.89, high = 1.3 }, labour = { low = 2.45, high = 5.06 } }  # 691.1 SF — 671.5 on the five court walls' court face (full height) + 19.6 on the fireplace surround's room face; 2 coats, NO primer on raw mineral substrate
+"silicate-wash-white" = { material = { low = 0.89, high = 1.3 }, labour = { low = 2.45, high = 5.06 } }  # 671.4 SF — 652.5 on the five court walls' court face (full height) + 18.9 on the fireplace surround's room face; 2 coats, NO primer on raw mineral substrate
 # The SRW legs: worse coverage on a split-face-textured unit PLUS the whole-face Quartz Filler or
 # Bonding Coat pretreatment the TDS requires on block. Same pail, same crew, same arrival —
 # a different substrate, and the rate says so.
@@ -3763,7 +3763,7 @@
 # (silica-sol modified, $158.95/gal, $464.95/3 gal), which is $1.55-2.12/SF of material against
 # $1.22-1.73 — about +$0.33-0.39/SF, plus the same filler coat. Whether these units are IWR-dosed
 # is the ONE spec to confirm with the block manufacturer before ordering, and it is unknown today.
-"silicate-wash-white-block" = { material = { low = 1.74, high = 2.7 }, labour = { low = 3.15, high = 6.56 } }  # 232.2 SF — the three raised-garden perimeter legs' yard face, banded to the exposed 3'-4"
+"silicate-wash-white-block" = { material = { low = 1.74, high = 2.7 }, labour = { low = 3.15, high = 6.56 } }  # 225.6 SF — the three raised-garden perimeter legs' yard face, banded to the exposed 3'-4"
 # ** UNREFERENCED SINCE 2026-09-04 — the named alternate to the coating above, kept live on
 # the `glazed-green-brick` convention so the revert is one `material_ref` edit. ** A 1/2"
 # aluminium-faced rigid protection board, sold in 4' x 8' sheets and fastened into the XPS
@@ -4777,7 +4777,7 @@
 # SPLIT 2026-08-27: same ready-mix anchor, and the widest labour half in the section — two
 # exposed architectural faces, its own footing and constrained site access are all wage.
 # 30.20 CY since 2026-08-30, from 28.91: W-SG-ARCH is back on the sunken garden's retired
-# node pair as a BURIED 12" x 17 1/2" grade beam (~1.08 cy). Not the 16" arched cross-wall
+# node pair as a BURIED 12" x 17 1/2" grade beam (~0.97 cy). Not the 16" arched cross-wall
 # and not the 42" masonry parapet over it — neither returns, and the $5,395-$11,257 that
 # retiring them saved is not being given back. (That measurement is in git history; the
 # 2026-08-31 rewrite of plans/cost-options.md keeps live options only.)
@@ -4793,7 +4793,7 @@
 # the same pour, the same day, off the same ticket — but the labour half is materially
 # CHEAPER, and both directions of that are real. Cheaper: it is buried its whole life, so it
 # has no architectural face to rub, patch or match; the excavation is the court's, already
-# open; and it is one straight 19'-0" run with no corners and no returns. Dearer than nothing:
+# open; and it is one straight 17'-0" run with no corners and no returns. Dearer than nothing:
 # it is formed on four sides in a 6'-6" hole, it is cast into two existing walls at pockets
 # that have to be chipped and doweled, and the 2" XPS board is set as a form face on the
 # north side rather than stripped, which is a slower pour than a plain wall.
@@ -4895,8 +4895,8 @@
 # PLACEHOLDER pending a lumber quote. Ask for it by combination (24F-V5M1/SP) and by
 # treatment, not by "4x12 glulam" — the untreated price is a third less and the two get
 # quoted against each other constantly.
-"beam:BEAM_GLULAM_TREATED" = { material = { low = 2800, high = 3800 }, labour = { low = 1120, high = 1870 } }  # 0.31 cy = ~29 LF over BM-SG-BLW/BLC/BLE = $30-41/LF material, $12-20/LF to set
-"beam:BEAM_KDAT" = { material = { low = 580, high = 958 }, labour = { low = 203, high = 388 } }  # 0.37 cy = ~60 LF. Was 0.59 cy / 94.9 LF: the balcony's centre beam went to glulam and its two E-W brace rails were deleted outright, both on 2026-09-03
+"beam:BEAM_GLULAM_TREATED" = { material = { low = 2800, high = 3800 }, labour = { low = 1120, high = 1870 } }  # 0.25 cy = ~23 LF over BM-SG-BLW/BLE = $30-41/LF material, $12-20/LF to set (BM-SG-BLC retired 2026-09-22)
+"beam:BEAM_KDAT" = { material = { low = 580, high = 958 }, labour = { low = 203, high = 388 } }  # 0.40 cy, 9 members — since 2026-09-22 including the porch ledgers BM-SG-LDGW/LDGE. Was 0.59 cy / 94.9 LF: the balcony's centre beam went to glulam and its two E-W brace rails were deleted outright, both on 2026-09-03
 #
 # COLUMN, KDAT — 19.7 LF, 0.13 cy, in TWO sections. [framing] "6x6" is $5-8.50 mat +
 # $2.50-5 lab; these are GROUND-CONTACT rated (the brief) and stand on standoff bases over
@@ -5685,10 +5685,10 @@
 # is an authored `_EdgeRun` billed by the foot, in a different table, with no overlap.
 # Material is above `drip_flashing`'s because the girth is wider and the brush/foam lip is a
 # purchased strip in its own right; the LABOUR is the wrb_counterflashing story again —
-# 19 feet is below any sub's minimum, so this is a $200-350 half-day LUMP spread over the
+# 17 feet is below any sub's minimum, so this is a $200-350 half-day LUMP spread over the
 # run, and the fitting is real: the lip has to bear evenly on a cladding line the closure is
 # scribed to, or the gap it exists to close is still open.
-"bug_screen" = { material = { low = 3, high = 7 }, labour = { low = 10.50, high = 18.50 } }  # 19.0 LF — TR-SG-SLOT, the porch enclosure's north deck-slot closure. 1 piece, 19'-0"
+"bug_screen" = { material = { low = 3, high = 7 }, labour = { low = 10.50, high = 18.50 } }  # 17.0 LF — TR-SG-SLOT, the porch enclosure's north deck-slot closure. 1 piece, 17'-0"
 "corner_trim" = { material = { low = 3, high = 8 }, labour = { low = 2.5, high = 5 } }  # 147.8 LF — corner boards are the easy trim. MAY NOT BE A LINE AT ALL if the siding sub carries them in their $/SF
 # NEW 2026-08-31, and a category the engine could not measure before. `corner_trim` above is
 # exclusively the ROOF-edge piece derived from the ROOF's cladding; `wall_corner` is the
@@ -6930,36 +6930,41 @@ finish-interior-trim-and-baseboard = { material = { low = 4200, high = 7000 }, l
 # but painting a bifold is not painting a slab). See the note on that row.
 paint-trim-and-doors = { material = { low = 1600, high = 3600 }, labour = { low = 6400, high = 14400 } }
 # --- the court columns' mineral silicate wash, NEW 2026-09-13 --------------------------------
-# The six 12" round cast columns (PT-SG-FCOL, PT-SG-COL, PT-SG-BR1/BR3/BF1/BF3), washed white
-# with the same Beeckosil as the court walls. 57.7 LF x pi x 1.0 ft = ~181 SF of cylindrical face.
+# The four 12" round cast columns (PT-SG-BR1/BR3/BF1/BF3), washed white with the same Beeckosil
+# as the court walls. Heights off the resolved solids: 2 x 8.226' + 2 x 8.073' = 32.6 LF, and
+# 32.6 LF x pi x 1.0 ft = ~102 SF of cylindrical face. (Six columns, 57.7 LF, 181 SF until the
+# centre line retired, 2026-09-22.)
 #
 # ** IT IS A LUMP BECAUSE `envelope_layers` STRUCTURALLY CANNOT BILL IT, NOT BECAUSE NOBODY
 # MEASURED. ** Two independent reasons, and the second is why "just add a scope" does not work:
 #   1. `takeoff/envelope.py::_LAYERED_SOLID_SCOPES = ("slab", "footing", "pad")` does not include
 #      a column, so a Layer added to SUNKEN_GARDEN_COLUMN_12 bills NOTHING — silently.
 #   2. Even with "column" added, `envelope.py` measures a solid's layer area as its PLAN OUTLINE
-#      area, which for a 12" round is a 0.79 SF footprint — not the 30 SF of cylinder the wash
-#      actually covers. It would under-bill by ~38x and report a number.
+#      area, which for a 12" round is a 0.79 SF footprint — not the ~26 SF of cylinder the wash
+#      actually covers. It would under-bill by ~33x and report a number.
 # No [allowances] `driver` can reach a cylinder's surface area either, so this stays a flat lump
-# rather than a driven rate. The 181 SF behind it is hand-computed and is stated here so the
+# rather than a driven rate. The 102 SF behind it is hand-computed and is stated here so the
 # arithmetic can be checked without re-deriving it.
 #
-# MATERIAL: 181 SF x $0.89-1.30/SF (the [envelope_layers] silicate-wash-white rate, average-
-# texture cast concrete) = $161-235.
-# LABOUR: the flat-wall $2.00-4.50/SF x 1.5-2.0 = $3.00-9.00/SF x 181 SF = $543-1,629.
+# RE-SIZED 2026-09-22 to four columns: every figure below scales by 102.4/181 = 0.566 from the
+# six-column lump ($750-1,900 -> $424-1,075, the same $4.14-10.50/SF of face).
+# MATERIAL: 102 SF x $0.89-1.30/SF (the [envelope_layers] silicate-wash-white rate, average-
+# texture cast concrete) = $91-133.
+# LABOUR: the flat-wall $2.00-4.50/SF x 1.5-2.0 = $3.00-9.00/SF x 102 SF; the six-column
+# $589-1,665 (after rounding) x 0.566 = $333-942.
 # ** THE 1.5-2.0x IS JUDGEMENT AND IS NOT SOURCED. ** No published round-column painting
 # multiplier was locatable (RSMeans has column line items and is paywalled). The argument for it:
 # at 12" diameter there is 3.14 SF of face per LF and no roller run longer than 12", so it is all
-# cut-in and continuous rotation, with masking at head and base and access set up at SIX separate
-# locations rather than one continuous wall run. The six setups are the real penalty, not the
-# curvature. Rounded to $750-1,900, i.e. $4.15-10.50/SF of cylindrical face.
+# cut-in and continuous rotation, with masking at head and base and access set up at FOUR separate
+# locations rather than one continuous wall run. The setups are the real penalty, not the
+# curvature. $424-1,075, i.e. $4.14-10.50/SF of cylindrical face.
 #
 # ** DO NOT LET THIS BE BID AS ITS OWN VISIT. ** The binding Twin Cities number is an exterior
 # JOB-SIZE minimum, not an hourly one: a Minneapolis painter states a $2,000 exterior minimum. At
-# 181 SF this lump is below it at any rate in the range, so let separately the columns cost $2,000
-# regardless of the arithmetic above. Folded in with the 953 SF of wall face the combined scope is
-# ~$3,500-6,700 and the minimum is absorbed. `tasks.toml` puts them in one visit for this reason.
-paint-court-mineral-wash-columns = { material = { low = 161, high = 235 }, labour = { low = 589, high = 1665 } }
+# 102 SF this lump is below it at any rate in the range, so let separately the columns cost $2,000
+# regardless of the arithmetic above. Folded in with ~897 SF of wall, block and fireplace face
+# (652.5 + 225.6 + 18.9) the combined scope is ~$3,800-7,400 and the minimum is absorbed. `tasks.toml` puts them in one visit for this reason.
+paint-court-mineral-wash-columns = { material = { low = 91, high = 133 }, labour = { low = 333, high = 942 } }
 # ** LANE PICKED 2026-08-20: WIRE. ** Ventilated wire shelving on standards, set by the trim
 # carpenter. The alternative was a semi-custom laminate system at $12-40k, and dropping it took
 # $35,000 straight off the estimate's high end — the largest single narrowing of the range that

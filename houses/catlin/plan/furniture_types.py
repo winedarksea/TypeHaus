@@ -788,7 +788,7 @@ MANTEL_WALNUT_46 = FurnitureType(
 #
 # `plans/TODO.md` line 241: the porch "is roofed, fanned, lit, wired and curtained, and has
 # nothing on it". A named product, not a generic FURN-ARMCHAIR-35, because the whole point
-# is to read the real scale of two people lounging inside a 19'-0" x 8'-8" enclosure.
+# is to read the real scale of two people lounging inside a 17'-0" x 8'-8" enclosure.
 #
 # ** THE PRODUCT: Loll Designs Lollygagger Lounge Chair, LL-LC-LL-CG (Charcoal Grey). **
 # Recycled-HDPE, made in Duluth. Chosen over the two obvious alternates for the one thing

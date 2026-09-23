@@ -4,6 +4,11 @@
 were replaced by four runs of snap-carrier aluminium curtain track carrying two seasonal
 panel sets. This note is the part of that decision the model has no field for.
 
+**2026-09-22 update.** Three runs now, all at `elevation=inch(107.75)` under the 2x12 balcony
+joists: one front run `FURN-M-PORCH-TRACK-F` (`FT-PORCH-TRACK-176`, x 10'-8" → 25'-4") on the
+spare joist at y −8'-11 1/4", and the flanks `-W`/`-E` at x 10'-0" / 26'-0". The court is
+17'-0" clear. Where a table below disagrees, `plan/placeables.py`'s comments are current.
+
 ## Why the rods could not work
 
 A rod at 8'-6" under a joist soffit at 9'-4 3/4" leaves a ~10" open band across the whole
@@ -43,11 +48,10 @@ groove — **5 screws per 8', the vinyl spacing, not mesh's 3**, because one set
 carries both panel sets and the winter set is the heavy one. Snap carriers push into the
 panel header; panels slide back and stack.
 
-**Two front runs, not one.** `BM-SG-BLC` occupies z 8'-4 7/8"…9'-4 3/4" right across the
-curtain plane at x 17'-10 1/4"…18'-1 3/4". A continuous front track would have to drop to
-the beam soffit at 8'-4 7/8" — *lower than the rods it replaces* — and hang 9'-8" of track
-on drop brackets with no backing. Two runs dying 1/4" off the beam faces put the seam on
-`PT-SG-BF2`, which is where a seam belongs.
+**One front run (2026-09-22).** With `BM-SG-BLC` and `PT-SG-BF2` retired nothing crosses the
+curtain plane, so the two front runs that died 1/4" off the centre beam became one
+`FT-PORCH-TRACK-176` screwed up into the spare joist (`JoistSpec.extra_lines`) at
+y −8'-11 1/4" for its whole length.
 
 ## The two panel sets
 
@@ -79,7 +83,7 @@ Construction, both sets:
 ## The north end, and the honest limit
 
 `_y_out_n` (−0'-10") is the porch deck edge; the house cladding face is at −0'-5". The 5"
-between them is a deliberate insulation gap, open down to grade for the full 19'. **No
+between them is a deliberate insulation gap, open down to grade for the full 17'. **No
 fastener in this whole assembly touches the house wall.** Two closures, both landing on the
 garden structure:
 
@@ -88,7 +92,7 @@ garden structure:
    are *not* lengthened — 4" of unsupported aluminium track under a curtain header is
    nothing, and moving a beam re-opens `cantilever.py` and its tests for no gain. Extending
    the beam is the fallback only if the outrigger will not land.
-2. **`TR-SG-SLOT`**, ~19 lf of formed closure screwed to the porch deck's north rim,
+2. **`TR-SG-SLOT`**, ~17 lf of formed closure screwed to the porch deck's north rim,
    cantilevering 4" toward the cladding, sloped south to drain, with a compressible foam or
    brush lip bearing on the cladding without penetrating it. This kills the vertical bug
    path from the garden below.
@@ -106,17 +110,14 @@ gravity — a sweep, not a fastened seal.
 `structural.member_interference` never sees a placeable. A track buried in a beam or a
 column reports 0 FAIL. These numbers exist here and in the source comments and nowhere else.
 
-Front runs (y −9'-2", z 111.75"…112.75"):
+Front run (y −8'-11 1/4", x 10'-8" → 25'-4", z 107.75"…108.75"):
 
-- `PT-SG-BF1`/`BF3`, 12" rounds, north face −9'-4" → **2" in y**, 6" in x.
-- `PT-SG-BF2`, north face −9'-3 1/4" → 1 1/4" in y, and **no z overlap at all** — its top is
-  the beam soffit, 11 7/8" below the track.
-- `BM-SG-BLC` faces at x 17'-10 1/4" / 18'-1 3/4"; the runs end 17'-10" / 18'-2" → 1/4" each.
+- `PT-SG-BF1`/`BF3`, 12" rounds at x 9'-0" / 27'-0", north face −9'-4" → **4 3/4" in y**, and
+  the run ends 14" short of them in x.
 - `RL-SG-PORCH`'s south leg is on −9'-6", z 1"…43" → no z overlap, and the panel plane falls
-  4" inboard of the 42" guard.
-- `TR-SG-CAP-FRW/FRE` and their butyl sit on the front beams at −9'-6". The bottom-hem snaps
-  at −9'-2" are 4" north of that cap. **Do not drift south** — anchoring through that cap is
-  the one thing this house does not do.
+  6 3/4" inboard of the 42" guard.
+- The front beams and `TR-SG-CAP-FRW/FRE` retired on 2026-09-22; the guard's south-leg posts
+  now bolt through the plank into blocks inside the porch's south edge joist.
 
 Flank runs (x 9'-0" / 27'-0"): 6" clear of the rounds and of `RL-SG-PORCH`'s side legs,
 9 7/8" clear of `BM-SG-BLW`/`BLE`, well inside the deck edge at 7'-3"/28'-9".
@@ -154,7 +155,7 @@ overhang south of the front track — one per flank, doing nothing for the enclo
 | track sticks, curves, splices, end caps, ~72 snap carriers, ~30 SS screws | `[placeables]` `FT-PORCH-TRACK-106` / `-104`, 2 ea each |
 | mesh panel set + 32 snap studs, corner snaps, 8 magnets, hem rods, cords | `[allowances]` `porch-enclosure-panels-mesh` |
 | 30-ga marine clear vinyl set + YKK corner zips | `[allowances]` `porch-enclosure-panels-vinyl` |
-| `TR-SG-SLOT`, 19 lf | `[edge_trim]` `bug_screen` |
+| `TR-SG-SLOT`, 17 lf | `[edge_trim]` `bug_screen` |
 | 2x8 flank blocking, 17.3 lf | `[framing]` `2x8` (524 → 548 LF ordered) |
 | butyl over those blocks | `[member_protection]` `butyl-tape` (403.5 → 420.8 LF) |
 
