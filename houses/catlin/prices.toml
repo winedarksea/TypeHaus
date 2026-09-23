@@ -5655,9 +5655,9 @@
 # homewyse.com aluminum fascia, homeguide.com drip edge cost 2026.
 # $/LF, by trim category (fascia, soffit, flashings, formed roof trim)
 "beam_cap" = { material = { low = 1.50, high = 4 }, labour = { low = 2, high = 4.50 } }  # 0 LF since 2026-09-22 — the four porch beams it capped are retired (the porch hangs on ledgers); kept priced
-# NEW 2026-09-03 with the porch enclosure. TR-SG-SLOT, the closure over the 5" insulation
+# NEW 2026-09-03 with the porch enclosure. TR-SG-SLOT, the closure over the 2 3/4" insulation
 # gap between the porch deck's north edge and the house cladding (params/sunken_garden.py) —
-# a formed 4" aluminium band screwed to the deck's north rim, sloped south to drain, with a
+# a formed 2 1/2" aluminium band screwed to the deck's north rim, sloped south to drain, with a
 # compressible foam or brush lip that BEARS on the cladding without penetrating it. It is
 # the vertical bug path the curtain itself cannot close.
 # ** NOT THE SAME `bug_screen` AS [openings]'s. ** Those rows (`bug_screen:EXT_2X6`)

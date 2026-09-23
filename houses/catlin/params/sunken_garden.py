@@ -3157,20 +3157,22 @@ BASEMENT_ELEMENTS = [*NODES, *WALLS, *GRADE_BEAMS, *FOOTINGS,
                      GARDEN_FIELD, *FROST_WINGS, *ISOLATION_BOARDS]
 # --- the porch enclosure's north deck-slot closure (2026-09-03) -----------------------
 # ** THE VERTICAL BUG PATH, AND THE ONE THE CURTAIN CANNOT CLOSE. ** `_y_out_n` (-0'-10")
-# is the porch deck edge; the house cladding face is at -0'-5". The 5" between them
-# (`SPEC.gap_to_house_in`) is a deliberate insulation gap and it is open down to grade for
-# the whole 19' — an insect route from the garden straight up into the enclosure, past a
-# curtain that seals perfectly. The enclosure's flank panels stop at the deck; this closes
-# the slot they stop over.
+# is the porch deck edge; the house cladding face is at -0'-7 1/4" (`_WALL_OUTBOARD_IN`).
+# The 2 3/4" between them (`SPEC.gap_to_house_in`) is a deliberate insulation gap and it is
+# open down to grade for the whole 17' — an insect route from the garden straight up into
+# the enclosure, past a curtain that seals perfectly. The enclosure's flank panels stop at
+# the deck; this closes the slot they stop over.
 #
 # ** IT FASTENS TO THE GARDEN AND NOTHING ELSE. ** Screws into the porch deck's north rim
-# only; the piece cantilevers 4" north and dies on the cladding through a compressible foam
-# or brush lip that BEARS on it without penetrating it. Sloped south to drain back over the
-# deck. That lip, and the weighted flap on the flank panels' north vertical edge, are what
-# the north end is: **high bug reduction, not hermetic.** With a designed 5" gap and no
-# permission to fasten into the house wall assembly, a contact sweep is the ceiling of what
-# is achievable — and it is also the right wind-chill answer, since a compressible seal
-# tolerates the differential movement a rigid one would tear itself apart on.
+# only; the piece cantilevers 2 1/2" north, stopping 1/4" off the cladding face at
+# -0'-7 1/2" like the curtain tracks (4" stood 1 1/4" inside the panel, measured
+# 2026-09-23), and a compressible foam or brush lip BEARS on the cladding without
+# penetrating it. Sloped south to drain back over the deck. That lip, and the weighted flap
+# on the flank panels' north vertical edge, are what the north end is: **high bug
+# reduction, not hermetic.** With a designed 2 3/4" gap and no permission to fasten into
+# the house wall assembly, a contact sweep is the ceiling of what is achievable — and it
+# is also the right wind-chill answer, since a compressible seal tolerates the
+# differential movement a rigid one would tear itself apart on.
 #
 # `TrimKind.BUG_SCREEN` rather than a new kind: the enum is "vented insect closure", which
 # is exactly this piece's job, and minting a kind that means the same thing would split one
@@ -3181,7 +3183,7 @@ BASEMENT_ELEMENTS = [*NODES, *WALLS, *GRADE_BEAMS, *FOOTINGS,
 #
 # `top_elevation=_porch_top` is the top of the JOISTS, which is where a piece screwed to the
 # rim lands: the composite plank's north edge laps over it.
-_SLOT_CLOSURE_REACH_IN = 4.0
+_SLOT_CLOSURE_REACH_IN = 2.5
 _slot_closure_y = _y_out_n + (_SLOT_CLOSURE_REACH_IN / 2.0) / 12.0  # band centre
 PORCH_SLOT_CLOSURE = Flashing(
     uid="SGFF03AAAA", tag="TR-SG-SLOT", kind=TrimKind.BUG_SCREEN,

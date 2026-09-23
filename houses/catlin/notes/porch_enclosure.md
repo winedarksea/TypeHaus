@@ -94,7 +94,8 @@ garden structure:
    nothing, and moving a beam re-opens `cantilever.py` and its tests for no gain. Extending
    the beam is the fallback only if the outrigger will not land.
 2. **`TR-SG-SLOT`**, ~17 lf of formed closure screwed to the porch deck's north rim,
-   cantilevering 4" toward the cladding, sloped south to drain, with a compressible foam or
+   cantilevering 2 1/2" toward the cladding to y −0'-7 1/2" (1/4" off it, like the tracks;
+   4" stood 1 1/4" inside the panel), sloped south to drain, with a compressible foam or
    brush lip bearing on the cladding without penetrating it. This kills the vertical bug
    path from the garden below.
 
