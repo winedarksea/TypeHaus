@@ -2355,6 +2355,18 @@ friction; uncapped x 184.89", T 42,124.6 lb, the beam's lock-in 37,046 lb. The u
 slab edge now reads OK capped (0.977) and still OVER uncapped (1.788).
 `tests/test_thermal_break.py` carries these.
 
+**D after the ridge walls stopped at the beam soffit (2026-09-23).** W-A-C1/C1B/C2/C2M/C2B no
+longer rake through the ridge beam; they top out flat at its soffit, 123" → 107". The take-down
+counts framed walls at 8 psf over axis x height, so D loses 432" x 16" / 144 x 8 = 384 lb:
+
+```
+D          = 375,794 − 384                                        = 375,410 lb
+friction   = 0.25 × 375,410                                       =  93,852.6
+net at rest (unchanged)                                           =  27,557.2
+global FS, capped   = 121,409.8 / 27,315.75                       = 4.4447   ratio 0.3375
+global FS, uncapped = 121,409.8 / 42,074.2                        = 2.8856   ratio 0.5198
+```
+
 ### 12a. FT-SG-S's toe grows 1'-4" (2026-09-22) — the south strip row
 
 The owner squared the planted field (11'-0" x 11'-0") by paving its shaded south 16" with
