@@ -22,6 +22,9 @@ class JoistSpec(HausModel):
     spacing: Length | None = None  # o.c.; defaults to 16" at the solver
     direction: str = "x"  # "x" | "y" — joist span direction in the plan frame
     bearing_refs: tuple[str, ...] = ()
+    # Species group, for a deck: IRC Table R507.6 is species-split, and None reads its most
+    # restrictive (redwood/cedar) row.
+    species: Literal["southern_pine", "df_hf_spf", "redwood_cedar"] | None = None
     # Overhang past the two outermost bearing lines (a balcony/porch deck cantilevers its
     # joist tips beyond the beam so the decking covers them). None = flush ends.
     cantilever: Length | None = None

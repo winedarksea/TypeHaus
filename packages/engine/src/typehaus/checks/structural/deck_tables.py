@@ -10,40 +10,66 @@ most jurisdictions (Minnesota included) point a deck permit at. Both are prescri
 are lookup tables for the 40 psf live + 10 psf dead residential deck load case, No. 2 grade
 or better, wet-service (exterior) conditions, with no cantilever beyond the tabulated span.
 
-**What they are not.** They are not an engineered design, and the values transcribed here
-are deliberately the *most restrictive* species group in each table rather than the row for
-any one species. A PASS is therefore valid whichever of the common deck species is actually
-supplied; a FAIL means "look up the species-specific row before you conclude anything", not
-"this member is undersized". Every finding built on this module carries the engine's
+**What they are not.** They are not an engineered design. The joist table carries its species
+rows and reads one only where the deck authors ``JoistSpec.species``; otherwise it reads the
+*most restrictive* row, as the beam table always does. A PASS on the restrictive row is valid
+whichever common species is supplied; a FAIL there means "author the species", not "this
+member is undersized". Every finding built on this module carries the engine's
 ``[advisory, not engineering]`` prefix for the same reason. Confirm against the edition the
 AHJ has actually adopted before a permit set relies on it.
 """
 
 from __future__ import annotations
 
-# --- AWC DCA6 Table 3A — deck joist spans ---------------------------------------------
-# Maximum joist span (feet) for the 40 psf live + 10 psf dead deck load case, joists with
-# no cantilever, by nominal size and o.c. spacing. Values are the redwood / western-cedar /
-# ponderosa-pine group — the lowest row of the table — so any of Southern Pine, Douglas
-# Fir-Larch, Hem-Fir or SPF spans at least this far.
-DECK_JOIST_SPAN_FT: dict[str, dict[float, float]] = {
-    #          12" o.c.  16" o.c.  24" o.c.
-    "2x6": {12.0: 8.83, 16.0: 8.00, 24.0: 7.00},
-    "2x8": {12.0: 11.67, 16.0: 10.58, 24.0: 8.67},
-    "2x10": {12.0: 14.92, 16.0: 13.00, 24.0: 10.58},
-    "2x12": {12.0: 17.42, 16.0: 15.08, 24.0: 12.33},
+# --- IRC 2018 Table R507.6 / AWC DCA6 Table 2 — deck joist spans ------------------
+# Maximum joist span (feet) for the 40 psf live + 10 psf dead deck load case, No. 2 wet
+# service, joists with no cantilever, by species group, nominal size and o.c. spacing.
+# Checked against the published R507.6 2026-09-22.
+_SP = "southern_pine"
+_DF = "df_hf_spf"
+_RW = "redwood_cedar"
+DECK_JOIST_SPECIES: tuple[str, ...] = (_SP, _DF, _RW)
+DECK_JOIST_SPAN_FT: dict[str, dict[str, dict[float, float]]] = {
+    #                12" o.c.  16" o.c.  24" o.c.
+    _SP: {"2x6": {12.0: 9.92, 16.0: 9.00, 24.0: 7.58},
+          "2x8": {12.0: 13.08, 16.0: 11.83, 24.0: 9.67},
+          "2x10": {12.0: 16.17, 16.0: 14.00, 24.0: 11.42},
+          "2x12": {12.0: 18.00, 16.0: 16.50, 24.0: 13.50}},
+    _DF: {"2x6": {12.0: 9.50, 16.0: 8.67, 24.0: 7.17},
+          "2x8": {12.0: 12.50, 16.0: 11.08, 24.0: 9.08},
+          "2x10": {12.0: 15.67, 16.0: 13.58, 24.0: 11.08},
+          "2x12": {12.0: 18.00, 16.0: 15.75, 24.0: 12.83}},
+    # redwood / western cedars / ponderosa / red pine — the lowest row of the table
+    _RW: {"2x6": {12.0: 8.83, 16.0: 8.00, 24.0: 7.00},
+          "2x8": {12.0: 11.67, 16.0: 10.58, 24.0: 8.67},
+          "2x10": {12.0: 14.92, 16.0: 13.00, 24.0: 10.58},
+          "2x12": {12.0: 17.42, 16.0: 15.08, 24.0: 12.33}},
+}
+SPECIES_LABEL: dict[str, str] = {
+    _SP: "Southern pine", _DF: "DF-L/HF/SPF", _RW: "redwood/cedar (most restrictive)",
 }
 
 # Spacings the table is published at. A deck framed at some other o.c. is looked up at the
 # next *wider* tabulated spacing (the conservative direction), and anything wider than the
 # widest published row has no answer at all.
 DECK_JOIST_SPACINGS_IN: tuple[float, ...] = (12.0, 16.0, 24.0)
+# R507.6 is 40 psf live, and snow is not concurrent with it: a design snow at or under
+# this is covered by the table, one over it is not.
+DECK_TABLE_LIVE_PSF = 40.0
 
 
-def deck_joist_span_limit(member: str, spacing_in: float) -> tuple[float, float] | None:
+def _nominal(member: str) -> str:
+    """The table key: a treatment suffix (``"2x12:kdat"``) says nothing about span."""
+    return member.strip().split(":", 1)[0].strip()
+
+
+def deck_joist_span_limit(member: str, spacing_in: float,
+                          species: str | None = None) -> tuple[float, float] | None:
     """Allowable deck joist span (ft) for ``member`` at ``spacing_in``, with the tabulated
-    spacing actually used. ``None`` when the size or the spacing is off the table."""
-    row = DECK_JOIST_SPAN_FT.get(member)
+    spacing actually used. ``species=None`` reads the most restrictive row. ``None`` when
+    the size, species or spacing is off the table."""
+    rows = DECK_JOIST_SPAN_FT.get(species or _RW)
+    row = rows.get(_nominal(member)) if rows is not None else None
     if row is None:
         return None
     wider = [s for s in DECK_JOIST_SPACINGS_IN if s >= spacing_in - 1e-9]
@@ -87,7 +113,7 @@ def deck_beam_span_limit(size: str, joist_span_ft: float) -> tuple[float, float]
     """Allowable beam span (ft) for ``size`` carrying joists of ``joist_span_ft``, with the
     tabulated joist span used. A joist span between rows reads the next *longer* row (the
     conservative direction). ``None`` when the beam size or the joist span is off the table."""
-    row = DECK_BEAM_SPAN_FT.get(size)
+    row = DECK_BEAM_SPAN_FT.get(_nominal(size))
     if row is None:
         return None
     longer = [s for s in DECK_BEAM_JOIST_SPANS_FT if s >= joist_span_ft - 1e-9]

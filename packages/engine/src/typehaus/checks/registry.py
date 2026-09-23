@@ -191,6 +191,10 @@ class StructuralPreferences:
     roof_beam_snow_psf: float | None = None
     #: Dead load, psf, on the same beam: roofing, deck, framing and its own weight.
     roof_beam_dead_psf: float = 10.0
+    #: Design snow, psf, on an exterior DECK (not a roof). R507's tables are 40 psf live with
+    #: snow not concurrent, so this only decides whether they cover the deck at all.
+    #: ``None``: snow is not examined, and ``structural.deck_joist_span`` says so.
+    deck_snow_psf: float | None = None
     #: Width of that roof-step drift, ft (ASCE 7 §7.7.1, w = 4 h_d), measured from the far
     #: edge of the roof the beams carry. Where it outruns that roof, the trusses of the roof
     #: beyond it inside the width are drift trusses too (``structural.truss_reactions``).

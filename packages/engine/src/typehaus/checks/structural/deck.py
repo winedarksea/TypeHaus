@@ -28,6 +28,7 @@ from typehaus.checks.guard_lines import guard_lines
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.checks.structural.deck_tables import (
     DECK_DEAD_LOAD_PSF,
+    DECK_TABLE_LIVE_PSF,
     DECK_TOTAL_LOAD_PSF,
     GUARD_MIN_HEIGHT_IN,
     GUARD_REQUIRED_ABOVE_IN,
@@ -36,6 +37,7 @@ from typehaus.checks.structural.deck_tables import (
     MIN_DECK_FOOTING_SIDE_IN,
     MIN_DECK_FOOTING_THICKNESS_IN,
     MIN_DECK_POST_NOMINAL,
+    SPECIES_LABEL,
     deck_beam_span_limit,
     deck_joist_span_limit,
     deck_post_height_limit,
@@ -56,6 +58,9 @@ _DEFAULT_SPACING_IN = 16.0
 # built by adding the authored cantilever to a bearing coordinate, so they agree to
 # floating-point noise; a micron is far tighter than any real framing dimension.
 _TOL_M = 1e-6
+# Half a sixteenth: R507.6 is published in feet-inches, so a span that measures at a
+# tabulated value is at it, not a hair past.
+_SPAN_TOL_FT = 1.0 / 384.0
 
 
 
@@ -163,33 +168,48 @@ def _decks(ctx: CheckContext) -> list[_Deck]:
 
 @check(Tier.STRUCTURAL, "structural.deck_joist_span")
 def deck_joist_span(ctx: CheckContext) -> list[Finding]:
-    """Deck joist span vs. AWC DCA6 Table 3A, at the deck's own o.c. spacing."""
+    """Deck joist span vs. IRC Table R507.6 (DCA6 Table 2), at the deck's own o.c. spacing
+    and authored species row, gated on the house's design snow where it authors one."""
     decks = _decks(ctx)
     if not decks:
         return []  # no exterior deck — R507 does not apply; not an unknown
+    prefs = getattr(ctx, "preferences", None)
+    snow = getattr(getattr(prefs, "structural", None), "deck_snow_psf", None)
     out: list[Finding] = []
     for deck in decks:
         member = deck.authored.joists.member
+        species = deck.authored.joists.species
+        row = SPECIES_LABEL[species or "redwood_cedar"]
         span_ft = deck.joist_span_ft
         if span_ft is None:
             out.append(_unknown("structural.deck_joist_span",
                                 f"deck {deck.tag} resolved no joists to measure",
                                 (deck.tag,)))
             continue
-        limit = deck_joist_span_limit(member, deck.spacing_in)
+        limit = deck_joist_span_limit(member, deck.spacing_in, species)
         if limit is None:
             out.append(_unknown("structural.deck_joist_span",
-                                f"no DCA6 Table 3A row for {member} at "
+                                f"no IRC Table R507.6 {row} row for {member} at "
                                 f"{deck.spacing_in:.0f}\" o.c.", (deck.tag,)))
+            continue
+        if snow is not None and snow > DECK_TABLE_LIVE_PSF:
+            out.append(_unknown("structural.deck_joist_span",
+                                f"deck {deck.tag}: IRC Table R507.6 is "
+                                f"{DECK_TABLE_LIVE_PSF:.0f}+{DECK_DEAD_LOAD_PSF:.0f} psf; "
+                                f"design snow {snow:g} psf is past it", (deck.tag,)))
             continue
         allowable, tabulated = limit
         at = (f"{tabulated:.0f}\" o.c." if abs(tabulated - deck.spacing_in) < 1e-9
               else f"the {tabulated:.0f}\" o.c. row (framed at {deck.spacing_in:.0f}\")")
-        if span_ft > allowable + 1e-6:
+        load = (f"{DECK_TABLE_LIVE_PSF:.0f} psf live governs over {snow:g} psf snow"
+                if snow is not None else "snow not examined")
+        # The limit is published to the inch; a span measured at it is at it.
+        if span_ft > allowable + _SPAN_TOL_FT:
             out.append(_advisory(
                 "structural.deck_joist_span",
                 f"deck {deck.tag} {member} joists span {span_ft:.2f}', past the "
-                f"{allowable:.2f}' DCA6 Table 3A limit at {at}", (deck.tag,), Result.FAIL,
+                f"{allowable:.2f}' IRC Table R507.6 {row} limit at {at} ({load})",
+                (deck.tag,), Result.FAIL,
                 fix_hint=("deepen the joist, tighten the spacing, or add a beam line to "
                           "shorten the span"),
             ))
@@ -197,7 +217,8 @@ def deck_joist_span(ctx: CheckContext) -> list[Finding]:
             out.append(_advisory(
                 "structural.deck_joist_span",
                 f"deck {deck.tag} {member} joists span {span_ft:.2f}', within the "
-                f"{allowable:.2f}' DCA6 Table 3A limit at {at}", (deck.tag,), Result.PASS,
+                f"{allowable:.2f}' IRC Table R507.6 {row} limit at {at} ({load})",
+                (deck.tag,), Result.PASS,
             ))
     return out
 
