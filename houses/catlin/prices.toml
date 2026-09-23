@@ -2888,7 +2888,7 @@
 # north 4" of each flank run is a small aluminium outrigger screwed to the side of the rear
 # beam (see params/sunken_garden.py), which is the fiddly part of that hour.
 "FT-PORCH-TRACK-176" = { material = { low = 165, high = 305 }, labour = { low = 105, high = 270 } }  # 1 ea — the front run, one piece since 2026-09-22 (was two 106" runs split by the centre pillar)
-"FT-PORCH-TRACK-102" = { material = { low = 80, high = 145 }, labour = { low = 55, high = 140 } }  # 2 ea — the flanks, 2" shorter than the 104" they were
+"FT-PORCH-TRACK-102" = { material = { low = 80, high = 145 }, labour = { low = 55, high = 140 } }  # 2 ea — the flanks, now 100 1/2" long, ending 1/4" off the cladding (tag kept for the row)
 # The eight fitted FURN-* rows that stay in the build number. The loose ones are in
 # [furnishings] at the bottom of the file.
 "FURN-BESTA-2358" = { material = { low = 90, high = 260 }, labour = { low = 60, high = 160 } }  # 8 ea
@@ -4954,7 +4954,9 @@
 # runs about $8-12/SF installed-goods, cast solid surface $12-20, acrylic $5-9, and the
 # delta over a builder-kit surround is what is left after the kit's own value comes out.
 # One owner selection collapses this range; until then the spread is honest.
-"marble-look-panel" = { low = 4, high = 11 }  # 47 SF
+"marble-look-panel" = { low = 4, high = 11 }  # 93 SF ordered: WP-M-BATH2-SURR + WP-A-STUBATH-SURR (2026-09-23)
+# ** OPEN: the delta basis above holds for BATH2 only. FX-SHOWER-36-NEO-COMBO (STUBATH) buys the
+# pan and glass, not the walls, so its 42 SF bills as a delta over a kit it never had. **
 
 [countertops]
 # ** THE ~63 SF WAS A HAND FIGURE AND IS NOW A DERIVED QUANTITY (2026-09-11). ** Until this
@@ -5582,7 +5584,7 @@
 "backflow_preventer" = { material = { low = 60, high = 300 }, labour = { low = 25, high = 70 } }  # 2 ea
 "main_shutoff" = { material = { low = 25, high = 70 }, labour = { low = 25, high = 70 } }  # 1 ea
 "penetration_seal" = { material = { low = 25, high = 90 }, labour = { low = 25, high = 70 } }  # 2 ea
-"ro_stub" = { material = { low = 15, high = 45 }, labour = { low = 25, high = 70 } }  # 1 ea
+"ro_stub" = { material = { low = 15, high = 45 }, labour = { low = 25, high = 70 } }  # 3 ea
 "shutoff" = { material = { low = 8, high = 25 }, labour = { low = 25, high = 70 } }  # 4 ea
 "vacuum_breaker" = { material = { low = 10, high = 35 }, labour = { low = 25, high = 70 } }  # 1 ea
 "water_hammer_arrestor" = { material = { low = 12, high = 35 }, labour = { low = 25, high = 70 } }  # 3 ea
