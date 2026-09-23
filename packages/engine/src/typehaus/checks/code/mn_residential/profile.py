@@ -322,6 +322,8 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Envelope air-leakage target", ("code.N1102_4_air_leakage",),
                        ("IRC N1102.4.1.2", "MN Rules 1322")),
         PermitItemSpec("Foundation frost depth", ("structural.frost_depth",), ("IRC R403.1.4",)),
+        PermitItemSpec("Footings under framed bearing walls",
+                       ("structural.bearing_wall_footing",), ("IRC R403.1", "IRC R403.1.1")),
         PermitItemSpec("Sill-plate anchorage", ("code.R403_1_6_foundation_anchorage",),
                        ("IRC R403.1.6",)),
         # Drainage and waterproofing are one sheet's worth of review — "how does water get

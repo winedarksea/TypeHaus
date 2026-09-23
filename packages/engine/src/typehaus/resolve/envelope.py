@@ -13,6 +13,7 @@ from typehaus.model.floors import FloorOpening, FloorSystem, Slab, Soffit
 from typehaus.model.refs import ToRoof
 from typehaus.model.spatial import Roof, Stair
 from typehaus.model.structure import Beam, Footing, FootingBedding, GlazingPanel, Pad, Post
+from typehaus.quantities import Length
 from typehaus.quantities.length import M_PER_IN
 from typehaus.resolve.bedding_soakaway import soakaway_findings
 from typehaus.resolve.ceiling_over import (
@@ -393,6 +394,18 @@ def _roof_wall_conditions(model: ResolvedModel, authored_roof: Roof,
         )
 
 
+def _extend_axis(axis, start: Length | None, end: Length | None):
+    """``axis`` lengthened past its start/end by ``Footing.start_extension``/``end_extension``."""
+    (x0, y0), (x1, y1) = axis
+    run = math.hypot(x1 - x0, y1 - y0)
+    if run <= 1e-9 or (start is None and end is None):
+        return axis
+    ux, uy = (x1 - x0) / run, (y1 - y0) / run
+    a = start.meters if start is not None else 0.0
+    b = end.meters if end is not None else 0.0
+    return (x0 - ux * a, y0 - uy * a), (x1 + ux * b, y1 + uy * b)
+
+
 def _resolve_footing(model: ResolvedModel, footing: Footing, storey: str) -> ResolvedSolid | None:
     wall = model.wall(footing.under)
     if wall is not None:
@@ -406,6 +419,7 @@ def _resolve_footing(model: ResolvedModel, footing: Footing, storey: str) -> Res
         # Both edges move together, so an offset changes where the strip sits and never
         # how wide it is.
         off = footing.offset.meters if footing.offset is not None else 0.0
+        axis = _extend_axis(axis, footing.start_extension, footing.end_extension)
         outline = rect_between(axis[0], axis[1], off - footing.width.meters / 2,
                                off + footing.width.meters / 2)
         z1 = wall.z0_m

@@ -1546,6 +1546,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     on `W-B-CS3`'s 4'-5" framed run beside `D-B-GYM`'s rough opening (starts y=10'-11 7/16").
     Do not move `D-B-GYM` south or this wall north of 10'-0" — past 10'-6" the wall and the
     opening overlap outright and no `haus check` rule tests a tee wall beside an opening.
+  - **`W-B-CS3` has no footing of its own**: `FT-B-CS` runs north to y=11'-3 7/16" and
+    `FT-B-CS2` south to 12'-11 7/16" (`Footing.start_extension`, `params/foundations.py`),
+    8" past `D-B-GYM`'s jamb packs; the 20" under the opening is slab. Move the door or
+    its packs and `structural.bearing_wall_footing` FAILs.
   - Heater `EQ-T-SAUNA-HEATER` (9 kW) is on the **east liner**: `rotation=deg(270)`, 18" face
     to wall, 16" deep, 2" off both liners.
   - Benches: `FURN-SAUNA-BENCH-2T-60` (two-tier), `FURN-B-SAUNA-BENCH-E`, and the south-liner
