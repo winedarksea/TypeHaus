@@ -41,13 +41,14 @@ Types `(M, M, M, A, M, M, M, C)[(i + j) mod 8]`:
 | PB-RG-FLOOR | x −4.5..−2.5 × y 48.5..80.5 | 1 × ⌊30.75/1.25⌋+1 = 25 | 25 |
 
 Floor accents: (i + 2j) mod 5 = 0 with i = 0 → j = 0, 5, 10, 15, 20; type
-`(IRIS, MILKWEED)[j mod 2]` → iris at 0, 10, 20 (**3**), milkweed at 5, 15 (**2**), fox
-sedge **20**.
+`(IRIS, MILKWEED)[j mod 2]` → iris at 0, 10, 20 (**3**), milkweed at 5, 15 (**2**). The
+other 20 cells take the field mix `(OCTOBER SKY, NORTHWIND)[j mod 2]`: even j (2, 4, 6, 8,
+12, 14, 16, 18, 22, 24) 'October Sky' **10**, odd j 'Northwind' **10**.
 
 ## 4. Totals
 
-'Jazz' 174 + 56 = **230**; Moonbeam 18; Angelina 3; Caramel 3; fox sedge 20; iris 3;
-milkweed 2. With 28 pockets and 3 apples: **310 plants**.
+'Jazz' 174 + 56 = **230**; Moonbeam 18; Angelina 3; Caramel 3; 'October Sky' 10;
+'Northwind' 10; iris 3; milkweed 2. With 28 pockets and 3 apples: **310 plants**.
 
 ## 5. What is NOT graded here
 

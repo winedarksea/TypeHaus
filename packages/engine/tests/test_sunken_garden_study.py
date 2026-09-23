@@ -295,10 +295,10 @@ def test_the_study_reads_the_authored_court_and_not_a_literal() -> None:
     it exists to answer — ran on a wall nine inches short.
 
     Each expectation below is the authored model measured independently: the stem is
-    ``W-SG-S``'s own top-to-bottom dimension, the footing is ``FT-SG-S``, the clear width is
-    the E/W wall axes 18 ft apart less one 12-inch stem (20 ft until the court narrowed to
-    17'-0" on 2026-09-22), and the ordinary height is the
-    authored -3'-4" south yard above the -9'-1 7/16" footing top.
+    ``W-SG-S``'s own top-to-bottom dimension, the footing is ``FT-SG-W2``'s (``FT-SG-S``
+    adds 16" of toe), the clear width is the E/W wall axes 18 ft apart less one 12-inch
+    stem (20 ft until the court narrowed to 17'-0" on 2026-09-22), and the ordinary height
+    is the authored -3'-4" south yard above the -9'-1 7/16" footing top.
     """
     from typehaus.engineering.sunken_garden.model_inputs import design_input_from_model
 
@@ -311,6 +311,8 @@ def test_the_study_reads_the_authored_court_and_not_a_literal() -> None:
     assert geometry.footing_depth_ft == pytest.approx(1.0, abs=1e-6)
     assert geometry.toe_ft == pytest.approx(3.0, abs=1e-6)
     assert geometry.heel_ft == pytest.approx(3.0, abs=1e-6)
+    # FT-SG-S alone carries 16" more toe; the legs set the common section.
+    assert geometry.end_toe_extension_ft == pytest.approx(16.0 / 12.0, abs=1e-6)
     assert geometry.clear_width_ft == pytest.approx(17.0, abs=1e-6)
     assert geometry.retained_side_length_ft == pytest.approx(16.0 + 4.0 / 12.0, abs=1e-6)
     height = design.soil.ordinary_retained_height_ft
@@ -334,7 +336,8 @@ def test_the_literal_basis_agrees_with_the_model_it_stands_in_for() -> None:
     literal = default_design_input()
     derived, _ = design_input_from_model(_catlin_context())
     for field in ("clear_width_ft", "retained_side_length_ft", "footing_depth_ft",
-                  "stem_thickness_in", "footing_width_ft", "toe_ft"):
+                  "stem_thickness_in", "footing_width_ft", "toe_ft",
+                  "end_toe_extension_ft"):
         assert getattr(literal.geometry, field) == pytest.approx(
             getattr(derived.geometry, field), abs=1e-3), field
     assert literal.geometry.concrete_stem_height_ft == pytest.approx(

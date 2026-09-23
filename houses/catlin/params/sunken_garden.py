@@ -188,10 +188,14 @@ class SunkenGardenSpec:
     balcony_front_overhang_ft: float = 1.0
     # ** THE ONE WIDTH, AND `_RETAINING_FOOTING_WIDTH_IN` READS IT. ** There were two 84s
     # here for two revisions meaning different things — this one retired, and the live
-    # strip at 96" — which is exactly the shape a stale number takes. All five court strips
-    # are this, centred on the wall axis with a zero offset. See the banner above
+    # strip at 96" — which is exactly the shape a stale number takes. Four court strips are
+    # this, centred on the wall axis; FT-SG-S adds `south_toe_extension_in`. See the banner above
     # `_RETAINING` for why the 96" was a fossil of a taller wall.
     footing_width_in: float = OPTION.footing_width_in
+    # FT-SG-S alone grows this much on its TOE (2026-09-22): it squares the field to
+    # 11'-0" and paves the strip W-SG-S shades. Inboard only, so the outboard edge the
+    # raised garden measures from does not move.
+    south_toe_extension_in: float = 16.0
     footing_thickness_in: float = 12.0
     # The MN profile's design frost depth (``checks/code/mn_residential/profile.py``:
     # ``frost_depth_in=42.0``), transcribed here because this module has to derive two
@@ -1217,7 +1221,8 @@ _WALL_FOOTING_UID = {"W-SG-W1": "SGF102AAAA", "W-SG-E1": "SGF103AAAA",
 # bearing on `_wall_bottom` like everything else there is no trimmed inch to give back, and
 # a one-off thickness on two of five footings is a dimension a detailer has to notice.
 # ============================================================================
-# ALL FIVE COURT STRIPS ARE 7'-0" CENTRED: THE 8'-0" WAS A FOSSIL (2026-09-10).
+# FOUR COURT STRIPS ARE 7'-0" CENTRED: THE 8'-0" WAS A FOSSIL (2026-09-10).
+# FT-SG-S IS 8'-4": its toe is 16" longer (2026-09-22, `_SOUTH_FOOTING` below).
 # ============================================================================
 # The strip went 7'-0" -> 8'-0" because the resultant fell outside the middle third — e
 # 1.30' against a kern of 1.17'. That was true, at a retained height of 11.3698'. Three
@@ -1261,8 +1266,8 @@ _WALL_FOOTING_UID = {"W-SG-W1": "SGF102AAAA", "W-SG-E1": "SGF103AAAA",
 # geometry and soil alone and does not move with the bracing credit. It is the row that
 # settles this.)
 #
-# All five strips are 7'-0" x 1'-0" centred on the wall axis, zero offset, so the outboard
-# edge runs unbroken at x = 4.500 / 31.500 and the inboard at 11.500 / 24.500.
+# The four side strips are 7'-0" x 1'-0" centred on the wall axis, so the outboard edge
+# runs unbroken at x = 5.500 / 30.500. FT-SG-S's outboard edge is on the same 3'-6" reach.
 _RETAINING = ("W-SG-W2", "W-SG-E2", "W-SG-S")
 _RETAINING_FOOTING_WIDTH_IN = SPEC.footing_width_in  # 84.0
 # Zero since 2026-09-10, with the strip back at 7'-0": the offset existed only to keep the
@@ -1311,18 +1316,31 @@ _RETAINING_FOOTING_MAT = ReinforcementSpec(
     source="sized in notes/sunken_garden_court_free_body.md §7, at-rest 110 pcf",
 )
 
+# FT-SG-S's 4'-4" toe: at #5 @ 12" it reads 0.98 in flexure; #5 @ 9" holds it at 0.74,
+# the ~0.7 the court is designed to, on the same bar size (free body §7, south row).
+_SOUTH_FOOTING_MAT = _RETAINING_FOOTING_MAT.model_copy(update={"bars": (
+    BarSpec(role="bottom-x", bar=5, spacing=inch(9.0),
+            note="transverse, resists the 4'-4\" toe cantilever; hook the toe end"),
+    *_RETAINING_FOOTING_MAT.bars[1:],
+)})
+
+# Width, offset and mat per strip. Four share one; FT-SG-S grows its toe only, so its
+# offset (positive = into the court, see above) is half the extension.
+_SOUTH_EXT_IN = SPEC.south_toe_extension_in
+_STRIP = (_RETAINING_FOOTING_WIDTH_IN, _RETAINING_FOOTING_OFFSET_IN, _RETAINING_FOOTING_MAT)
+_STRIP_BY_WALL = {
+    "W-SG-S": (_RETAINING_FOOTING_WIDTH_IN + _SOUTH_EXT_IN,
+               _RETAINING_FOOTING_OFFSET_IN + _SOUTH_EXT_IN / 2.0, _SOUTH_FOOTING_MAT),
+}
+
 FOOTINGS = [
     Footing(uid=_WALL_FOOTING_UID[w.tag], tag=f"FT-{w.tag[2:]}", under=w.tag,
-            # ONE WIDTH, ONE OFFSET, ONE MAT, ALL FIVE STRIPS (2026-09-10). The
-            # `_RETAINING` branch that used to decide all three is gone: the porch strips
-            # took the mat, because their plain 3'-0" heel is 2.35 times over as plain
-            # concrete and nothing was grading it. See the block above
-            # `_RETAINING` for the arithmetic. `_RETAINING` itself survives and still
-            # matters — it is what `lateral_support` and the R404.4 engineered analysis key
-            # on, and those two walls are still braced and still not cantilevers.
-            width=inch(_RETAINING_FOOTING_WIDTH_IN),
-            offset=inch(_RETAINING_FOOTING_OFFSET_IN),
-            reinforcement=_RETAINING_FOOTING_MAT,
+            # The porch strips took the retaining mat on 2026-09-10: their plain 3'-0" heel
+            # is 2.35x over as plain concrete. `_RETAINING` still keys `lateral_support` and
+            # the R404.4 engineered analysis.
+            width=inch(_STRIP_BY_WALL.get(w.tag, _STRIP)[0]),
+            offset=inch(_STRIP_BY_WALL.get(w.tag, _STRIP)[1]),
+            reinforcement=_STRIP_BY_WALL.get(w.tag, _STRIP)[2],
             # One type for all five strips since 2026-09-10: the two cards were identical
             # (12" of EXPOSED_MIX) and the porch one declared 13", an inch no footing here
             # has been built at for revisions. Width is plan geometry, not an assembly.
@@ -1522,17 +1540,14 @@ GARDEN_DRYWELL = Drywell(
 # governing surface in a dozen messages. If a frost message ever says SL-SG-FIELD, the two
 # `top_elevation`s have drifted apart — that is an elevation bug, not a test bug.
 #
-# The rim is what the toes and the porch bay leave: the retaining strips project 3'-6"
-# inboard on three sides and the porch roofs the north bay, so the open field is
-# ~160 sf of the court's 494. (It was 147 of 532 while the strips reached 4'-6" and the
-# court ran 28'-0": shortening the court and narrowing the strips on 2026-09-10 moved those
-# two the OPPOSITE way, and the field grew as the court shrank.)
+# The rim is what the toes and the porch bay leave: the side strips project 3'-6" inboard,
+# the south strip 4'-10", and the porch roofs the north bay, so the open field is 11'-0"
+# square, 121 sf of the court's 494.
 #
 # The court-side edge of every strip, derived so it cannot drift from the footing: wall
-# axis, half the 7'-0" strip, plus whatever the strip is offset INTO the court (zero now).
+# axis, half the strip, plus whatever the strip is offset INTO the court.
 #
-# ** ONE REACH FOR ALL FIVE, AND IT IS BACK TO 3'-6". ** It was 3'-6" while all five strips
-# were 84" centred, went to 4'-6" for the 96"-plus-6"-offset day, and is 3'-6" again. The
+# ** ONE REACH FOR THE FOUR SIDE STRIPS (3'-6"), PLUS THE SOUTH TOE'S 16". ** The
 # expression is what matters, not the figure: `FO-SG-TOE-N-W/N-E` void the rim over the
 # porch strips and read this number, so a reach that disagrees with the strip by 12" laps
 # 12" of rim slab over 12" of footing in whichever direction it disagrees. The invariant is
@@ -1543,7 +1558,8 @@ GARDEN_DRYWELL = Drywell(
 _ret_toe_reach_ft = _RETAINING_FOOTING_WIDTH_IN / 24.0 + _RETAINING_FOOTING_OFFSET_IN / 12.0
 _field_x_w = (_x_in_w - _half) + _ret_toe_reach_ft   # 12.5
 _field_x_e = (_x_in_e + _half) - _ret_toe_reach_ft   # 23.5
-_field_y_s = (_y_in_s - _half) + _ret_toe_reach_ft   # -23.833
+_south_toe_reach_ft = _ret_toe_reach_ft + _SOUTH_EXT_IN / 12.0
+_field_y_s = (_y_in_s - _half) + _south_toe_reach_ft  # -22.5
 # The grade beam's south face. North of it is the porch bay, which stays paved.
 _field_y_n = _y_ax_mid - _half                       # -11.5
 _field_x_mid = (_field_x_w + _field_x_e) / 2.0       # 18.0
@@ -1559,17 +1575,10 @@ _field_x_mid = (_field_x_w + _field_x_e) / 2.0       # 18.0
 # excavation under a footing, while this is "a run somebody put where the water goes".
 #
 # ** ONE LATERAL, AND THAT IS THE CHEAPEST ANSWER THAT IS ALSO THE RIGHT ONE. ** USGA caps
-# lateral spacing at 15'-0". The field is 13'-0" wide E-W, so a single centre lateral leaves
-# 6'-6" of reach each side — an effective spacing of 13'-0", inside the cap with room over.
-# USGA wants >=0.5% fall, which over the lateral's 12'-4" is 0.74" — trivial against the
-# drop into the well.
-#
-# ** THE FIELD'S PROPORTIONS FLIPPED ON 2026-09-10 AND THE LATERAL DID NOT MOVE. ** It was
-# 11'-0" E-W x 13'-4" N-S, and this run was on the LONG axis; the court shortening and the
-# strip narrowing took it to 13'-0" x 12'-4", so the run is now on the shorter one. The
-# check that matters is the REACH (half the perpendicular width) against the 15'-0" cap, and
-# it went 5'-6" -> 6'-6", still well inside. A second lateral would be owed only past
-# 15'-0" of E-W width, which this field cannot reach inside a 17'-0" court.
+# lateral spacing at 15'-0". The field is 11'-0" square, so a single centre lateral leaves
+# 5'-6" of reach each side, well inside the cap. USGA's >=0.5% fall over the lateral is
+# trivial against the drop into the well. A second lateral would be owed only past 15'-0"
+# of E-W width, which this field cannot reach inside a 17'-0" court.
 #
 # ** NO PERIMETER "SMILE" DRAIN, DELIBERATELY. ** USGA's trench is 6" wide x 8" deep cut
 # INTO the subgrade, which here bottoms at -135 7/16" — 5" below W-SG-ARCH's underside. Run

@@ -29,6 +29,7 @@ from pathlib import Path
 
 from typehaus.emit.draw.datum import model_at_level
 from typehaus.emit.draw.floorplan import build_floorplan
+from typehaus.emit.draw.floorplan_sheet import framed_floorplan
 from typehaus.emit.draw.paper import suffix_for_size
 from typehaus.emit.draw.pdf_writer import Underlay, write_raster
 from typehaus.resolve.model import ResolvedModel
@@ -105,7 +106,9 @@ def render_plan(model: ResolvedModel, storey: str, path: Path, dpi: int | None =
     dpi, long_edge = resolve_size(dpi, long_edge)
     # A plan is a level, not a storey: the garage, entry and porch draw with ``main``, as
     # they do on A-1xx and in the UI (-> ``emit/draw/datum``).
-    scene = build_floorplan(model_at_level(model, storey), storey)
+    # On paper the tiers are spaced for the scale the sheet chooses, as on A-1xx.
+    scene = (build_floorplan(model_at_level(model, storey), storey) if paper is None
+             else framed_floorplan(model, storey, paper, scale_label=scale))
     return _write_view(model, scene, path,
                        _SheetId("PLAN", f"{storey.title()} floor plan",
                                 f"plan · {storey}", north_arrow=True),
@@ -131,7 +134,8 @@ def _write_view(model: ResolvedModel, scene, path: Path, sheet: _SheetId, *,
     from typehaus.emit.draw.sheet_writer import compose_sheet, frame_for_scene
     from typehaus.emit.draw.sheets import SheetSpec
 
-    frame = frame_for_scene(scene, paper, scale_label=scale)
+    # A plan brings its own frame (``floorplan_sheet``): its scale reserved its tiers.
+    frame = scene.frame or frame_for_scene(scene, paper, scale_label=scale)
     if frame is not None:
         scene = scene.model_copy(update={"frame": frame})
     spec = SheetSpec(sheet.number, sheet.title, paper=paper,

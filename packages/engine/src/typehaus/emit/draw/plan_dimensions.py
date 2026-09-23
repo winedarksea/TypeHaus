@@ -21,9 +21,9 @@ exterior tiers, because a chain struck *through* the plan would cross every room
 block and every fixture on the way.
 
 **Crowding is answered by staggering, then by MERGING stations — never by dropping one.**
-``_shared.dimension_offsets`` steps a segment too short to hold its own string onto an
-outer tier, via ``annotate.dodge``. Where two rows are still not enough the chain is
-re-struck at a coarser station gap, which merges neighbouring stations into one segment.
+``dimension_rows.dimension_offsets`` steps a segment too short to hold its own string onto
+an outer row. Past ``MAX_INTERIOR_SEGMENTS`` the chain is re-struck at a coarser station
+gap, which merges neighbouring stations into one segment.
 Both are safe; *dropping* a station is not, because the chain would then stop summing to
 the overall dimension, which is the one property a dimension chain has to have.
 """
@@ -32,13 +32,14 @@ from __future__ import annotations
 
 from typehaus.emit.draw._shared import (
     DIMENSION_FACE_FUNCTIONS,
-    dimension_offsets,
+    PLAN_RESERVATION_SCALE,
     to_in,
     wall_face_bounds,
 )
 from typehaus.emit.draw._shared import (
     _dimension_label as _label,
 )
+from typehaus.emit.draw.dimension_rows import dimension_offsets
 from typehaus.emit.draw.scene import ArchDimension, NamedPoint, SceneBuilder
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedWall
@@ -115,7 +116,8 @@ def _chain(stations: list[float], lo: float, hi: float) -> list[float]:
 
 
 def emit_interior_dimension_chains(b: SceneBuilder, walls: list[ResolvedWall],
-                                   offset: float = 44.0) -> None:
+                                   offset: float = 44.0,
+                                   scale: float = PLAN_RESERVATION_SCALE) -> None:
     """Two face-to-face partition chains, stacked outside the per-facade strings.
 
     ``offset`` is the distance outside the sheathing face at which the primary tier sits;
@@ -138,8 +140,9 @@ def emit_interior_dimension_chains(b: SceneBuilder, walls: list[ResolvedWall],
             continue  # nothing inside the envelope to say — the overall chain covers it
         spans = [(stations[i + 1] - stations[i]) / M_PER_IN
                  for i in range(len(stations) - 1)]
-        offsets = dimension_offsets(spans, [_label(span) for span in spans], sign * offset)
-        for index, span_offset in enumerate(offsets):
+        offsets = dimension_offsets(spans, [_label(span) for span in spans], sign * offset,
+                                    scale)
+        for index, (span_offset, text_along) in enumerate(offsets):
             s0, s1 = stations[index], stations[index + 1]
             p0 = (s0, coordinate) if axis == 0 else (coordinate, s0)
             p1 = (s1, coordinate) if axis == 0 else (coordinate, s1)
@@ -147,5 +150,5 @@ def emit_interior_dimension_chains(b: SceneBuilder, walls: list[ResolvedWall],
                 kind="linear",
                 ends=(NamedPoint(xy=to_in(p0), name=f"I{axis}-{index}"),
                       NamedPoint(xy=to_in(p1), name=f"I{axis}-{index + 1}")),
-                p0=to_in(p0), p1=to_in(p1), offset=span_offset,
+                p0=to_in(p0), p1=to_in(p1), offset=span_offset, text_along=text_along,
             ))

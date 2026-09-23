@@ -2,9 +2,14 @@
 
 from __future__ import annotations
 
-from typehaus.model import AccentRule, GridLayout, Trellis
+from typehaus.model import AccentRule, GridLayout, PlantingBed, Trellis
 from typehaus.quantities import ft, inch, pt
-from typehaus.resolve.landscape import accent_type, grid_cells, trellis_post_stations
+from typehaus.resolve.landscape import (
+    accent_type,
+    field_ref,
+    grid_cells,
+    trellis_post_stations,
+)
 from typehaus.resolve.site_earth import earth_plane_void_rings
 
 _M = 0.3048
@@ -36,6 +41,15 @@ def test_the_accent_lattice_is_countable() -> None:
         (0, 0), (3, 0), (2, 1), (5, 1), (1, 2), (4, 2)}
     assert picks[(0, 0)] == "A" and picks[(2, 1)] == "B" and picks[(4, 2)] == "A"
     assert accent_type(None, 0, 0) is None
+
+
+def test_a_grid_mix_checkerboards_the_field() -> None:
+    mix = GridLayout(spacing=inch(15), type_refs=("A", "B"))
+    bed = PlantingBed(uid="TESTPB0001", tag="PB-T", type_ref="F", outline=_rect(5, 5), grid=mix)
+    assert [field_ref(bed, i, j) for i, j in ((0, 0), (1, 0), (0, 1), (1, 1))] == [
+        "A", "B", "B", "A"]
+    plain = bed.model_copy(update={"grid": GridLayout(spacing=inch(15))})
+    assert field_ref(plain, 1, 0) == "F"
 
 
 def test_trellis_posts_never_span_more_than_the_spacing() -> None:

@@ -1,8 +1,9 @@
 """Auto-dimensioner v2/v3 — plan dimension tiers + annotated roof plan.
 
 Permit reviewers must be able to locate every opening and wall from the plan sheet, so the
-floorplan carries a dimension LADDER, inner to outer: the per-facade opening strings at
-14", the face-to-face interior partition chains at 44", and the overall bbox chain at 76".
+floorplan carries a dimension LADDER, inner to outer: the per-facade opening strings, the
+face-to-face interior partition chains, and the overall bbox chain — spaced in PAPER inches
+(``dimension_rows.tier_offsets``), so their model offsets depend on the drawn scale.
 The roof plan carries slope arrows, pitch notes, dashed ridges, and eave-overhang
 dimensions.
 
@@ -22,19 +23,19 @@ import pytest
 from typehaus.emit.draw._shared import (
     _FACADE_TOL_M,
     _MIN_STATION_GAP_IN,
+    PLAN_RESERVATION_SCALE,
     wall_face_bounds,
 )
+from typehaus.emit.draw.dimension_rows import STAGGER_ROWS, row_pitch_in, tier_offsets
 from typehaus.emit.draw.floorplan import build_floorplan
 from typehaus.emit.draw.roofplan import build_roof_plan
 from typehaus.emit.draw.scene import ArchDimension, Polyline, Symbol, Text
 from typehaus.quantities import M_PER_IN
 
-STRING_OFFSET = 14.0
-INTERIOR_OFFSET = 44.0
-OVERALL_OFFSET = 76.0
-# A staggered string sits up to two rows outside its tier's base offset; the tiers are 30"
-# apart so a row can never be mistaken for the next tier down.
-TIER_BAND = 25.0
+STRING_OFFSET, INTERIOR_OFFSET, OVERALL_OFFSET = tier_offsets(PLAN_RESERVATION_SCALE)
+# A staggered string sits up to two rows outside its tier's base offset; the tiers are 3/8"
+# of paper further apart than that, so a row can never be mistaken for the next tier.
+TIER_BAND = ((STAGGER_ROWS - 1) * row_pitch_in() * 12.0 / PLAN_RESERVATION_SCALE) + 1e-6
 
 
 @pytest.fixture(scope="module")

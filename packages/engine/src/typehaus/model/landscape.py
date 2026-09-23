@@ -46,12 +46,14 @@ class GridLayout(HausModel):
 
     Cell (i, j) sits at ``bbox_min + edge_inset + (i, j) * spacing``; odd rows shift by half
     a spacing when ``stagger``. A cell is kept when it lies at least ``edge_inset`` inside
-    the outline.
+    the outline. ``type_refs`` mixes the field: cell (i, j) takes ``type_refs[(i + j) % n]``;
+    empty means the bed's own ``type_ref``. Accents still override.
     """
 
     spacing: Length
     stagger: bool = False
     edge_inset: Length | None = None  # None = half a spacing
+    type_refs: tuple[str, ...] = ()
 
 
 class PocketLayout(HausModel):

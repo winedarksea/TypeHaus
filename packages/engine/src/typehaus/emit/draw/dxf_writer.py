@@ -311,14 +311,19 @@ def _add_text(msp: object, node: Text, scene: Scene) -> None:
 
 def _add_dimension(msp: object, node: ArchDimension, scene: Scene) -> None:
     dx, dy = node.p1[0] - node.p0[0], node.p1[1] - node.p0[1]
+    location = None
     if abs(dx) < abs(dy):  # vertical dimension (→ elevation vertical dim string)
         base = (node.p0[0] + node.offset, node.p0[1])
         angle = 90.0
+        if node.text_along:  # a string slid outside its extension lines
+            location = (base[0], (node.p0[1] + node.p1[1]) / 2 + node.text_along)
     else:
         base = (node.p0[0], node.p0[1] + node.offset)
         angle = 0.0
+        if node.text_along:
+            location = ((node.p0[0] + node.p1[0]) / 2 + node.text_along, base[1])
     dim = msp.add_linear_dim(  # type: ignore[attr-defined]
-        base=base, p1=node.p0, p2=node.p1, angle=angle,
+        base=base, p1=node.p0, p2=node.p1, angle=angle, location=location,
         dimstyle="ARCH",
         override={"dimtxt": model_text_height(3.0, node.height_pt, scene)},
         dxfattribs={"layer": node.layer},

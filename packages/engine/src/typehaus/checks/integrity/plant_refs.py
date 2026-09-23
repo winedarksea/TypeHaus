@@ -38,6 +38,8 @@ def plant_type_ref(ctx: CheckContext) -> list[Finding]:
             if (element.grid is None) == (element.pockets is None):
                 out.append(_error(f"bed {element.tag} needs exactly one of grid or pockets",
                                   element.tag))
+            if element.grid is not None:
+                refs.extend(element.grid.type_refs)
             if element.pockets is not None:
                 refs.extend(element.pockets.type_refs)
                 for slab in element.pockets.slab_refs:

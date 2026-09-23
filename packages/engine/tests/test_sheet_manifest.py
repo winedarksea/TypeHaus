@@ -94,8 +94,10 @@ def test_haus_print_writes_the_manifest_beside_the_pdf(tmp_path: Path, monkeypat
     assert numbers[0] == "G-001", "the cover is page 1"
     assert any(n.startswith("A-1") for n in numbers), "a floor plan is in the set"
     # catlin authors `[print] issue`, and the house has the last word on the wording of
-    # its own submittal — the engine's "NOT FOR CONSTRUCTION" is only the fallback.
-    assert manifest["issue"] == "ISSUED FOR PERMIT", "the house's [print] issue is stamped"
+    # its own submittal — the engine's "NOT FOR CONSTRUCTION" is only the fallback. The
+    # default ledger paper is the reduced set, and it says so after the house's words.
+    assert manifest["issue"] == "ISSUED FOR PERMIT · REDUCED CHECK PRINT", (
+        "the house's [print] issue is stamped, qualified on the 11x17 set")
     assert manifest["content_hash"], "the manifest names the model it was printed from"
     assert [s["page"] for s in manifest["sheets"]] == list(
         range(1, len(manifest["sheets"]) + 1))

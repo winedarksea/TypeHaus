@@ -43,6 +43,9 @@ class CourtGeometry:
     stem_thickness_in: float
     footing_width_ft: float
     toe_ft: float
+    #: The end wall's footing is the legs' section plus this much more TOE (court side);
+    #: heel, stem and depth are shared. Catlin's FT-SG-S carries 16" to square the field.
+    end_toe_extension_ft: float = 0.0
 
     @property
     def heel_ft(self) -> float:
@@ -115,7 +118,8 @@ CATLIN_ORDINARY_RETAINED_HEIGHT_FT = 5.786458333333333
 
 def default_design_input(*, stem_thickness_in: float = 12.0,
                          footing_width_ft: float = 7.0,
-                         toe_ft: float = 3.0) -> SunkenGardenDesignInput:
+                         toe_ft: float = 3.0,
+                         end_toe_extension_ft: float = 16.0 / 12.0) -> SunkenGardenDesignInput:
     """Catlin study basis. Site-dependent values stay explicitly unresolved."""
 
     return SunkenGardenDesignInput(
@@ -124,6 +128,7 @@ def default_design_input(*, stem_thickness_in: float = 12.0,
             concrete_stem_height_ft=9.1198, concrete_top_elevation_ft=0.0,
             footing_depth_ft=1.0, stem_thickness_in=stem_thickness_in,
             footing_width_ft=footing_width_ft, toe_ft=toe_ft,
+            end_toe_extension_ft=end_toe_extension_ft,
         ),
         soil=SoilProfile(
             ordinary_retained_height_ft=BasedValue(

@@ -29,6 +29,7 @@ from typehaus.emit.draw.drainageplan import build_drainage_plan, has_drainage_co
 from typehaus.emit.draw.electricalplan import build_electrical_plan, has_electrical_content
 from typehaus.emit.draw.elevation import build_elevation
 from typehaus.emit.draw.floorplan import build_floorplan
+from typehaus.emit.draw.floorplan_sheet import floorplan_sheet
 from typehaus.emit.draw.foundationplan import build_foundation_plan, has_foundation_content
 from typehaus.emit.draw.framingplan import build_framing_plan
 from typehaus.emit.draw.hvacplan import build_hvac_plan, has_hvac_content
@@ -312,7 +313,7 @@ def build_sheet_index(model: ResolvedModel,
                    if any(wall.storey == tag for wall in at[tag].walls)]
     for number, storey in floor_pages:
         sheets.append(SheetSpec(number, f"{storey.title()} floor plan",
-                                scene=at_level(build_floorplan, storey),
+                                scene=floorplan_sheet(storey),
                                 north_arrow=True))
 
     sheets.append(SheetSpec(f"A-{101 + len(floor_pages):03d}", "Roof plan",

@@ -39,7 +39,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from typehaus.emit.draw.typography import DIM_TEXT_PT
+from typehaus.emit.draw.typography import DIM_STRING_PT
 
 Pt = tuple[float, float]
 
@@ -120,10 +120,13 @@ class ArchDimension(_Node):
     offset: float  # perpendicular offset of the dimension line, inches
     # A dimension is always annotative: p0/p1 are *measured* points and must stay on the
     # geometry, but the string reads at one printed size whatever the drawing's scale is.
-    # This is the literal every writer used to hardcode.
-    height_pt: float = DIM_TEXT_PT
+    # 3/32" caps, the NCS minimum plotted text height.
+    height_pt: float = DIM_STRING_PT
     layer: str = "A-ANNO-DIMS"
     text: str | None = None  # override; None → writer formats the measured distance
+    # Label shift along the line from the segment midpoint, model inches. Non-zero only when
+    # no stagger row had room: the string sits outside its extension lines on a leader.
+    text_along: float = 0.0
     uid: str | None = None  # DetailAnnotation uid for hit-testing (→ detail editor)
 
 

@@ -82,6 +82,12 @@ def accent_type(rule: AccentRule | None, i: int, j: int) -> str | None:
     return rule.type_refs[(i + j) % len(rule.type_refs)]
 
 
+def field_ref(bed: PlantingBed, i: int, j: int) -> str:
+    """The field type for cell (i, j): the grid's mix on the lattice, else the bed's own."""
+    refs = bed.grid.type_refs if bed.grid is not None else ()
+    return refs[(i + j) % len(refs)] if refs else bed.type_ref
+
+
 def pocket_centres(model: ResolvedModel, slab_refs) -> list[tuple[str, float, float, float]]:
     """``(opening tag, x, y, slab top z)`` for every PLANTING opening in the named slabs."""
     plan = model.plan
@@ -193,13 +199,12 @@ def _basin_under(bed: PlantingBed, basins) -> RainGarden | None:
 
 
 def _resolve_bed(model, bed: PlantingBed, storey: str, types, grade: float, basins) -> None:
-    field_type = types.get(bed.type_ref)
     if bed.grid is not None:
         ground = bed.ground_elevation.meters if bed.ground_elevation is not None else grade
         basin = _basin_under(bed, basins)
         for i, j, x, y in grid_cells(bed.outline, bed.grid):
             accent = accent_type(bed.accents, i, j)
-            ptype = types.get(accent) if accent else field_type
+            ptype = types.get(accent or field_ref(bed, i, j))
             if ptype is None:
                 continue
             # Inside a basin a plant stands on the basin's own surface, slope or floor.

@@ -175,6 +175,7 @@ def print_sheets(
     from typehaus.emit.draw.sheet_manifest import sheet_manifest, write_sheet_manifest
     from typehaus.emit.draw.sheet_writer import (
         FOR_PLAN_CHECK,
+        LEDGER,
         NOT_FOR_CONSTRUCTION,
         PAPER_SUFFIX,
         resolve_paper,
@@ -249,6 +250,10 @@ def print_sheets(
             FOR_PLAN_CHECK if sealed else NOT_FOR_CONSTRUCTION)
         if sealed:
             issue += " · SEALED"
+        # 11x17 plans print at 3/32" and smaller, below every permit checklist's floor-plan
+        # scale; the submittal is the 24x36 set, and the reduced set says what it is.
+        if size == LEDGER:
+            issue += " · REDUCED CHECK PRINT"
         # The full set writes its OWN file rather than overwriting the submittal. The two
         # are different documents — one is what was handed in — and a set already sent out
         # must never be silently replaced by a different one.

@@ -13,6 +13,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
+from typehaus.emit.draw.annotate import DODGE_GAP_PT
 from typehaus.emit.draw.artist_tags import ArtistTagger, NullTagger
 from typehaus.emit.draw.door_symbols import DOOR_SYMBOL_NAMES, door_symbol_geometry
 from typehaus.emit.draw.palette import detail_fill
@@ -957,7 +958,16 @@ def _render_nodes(ax: object, scene: Scene, tagger: ArtistTagger | None = None) 
     return scaled_text
 
 
+_DIM_COLOR = "#204070"
+
+
 def _draw_dimension(ax: object, node: ArchDimension) -> None:
+    """Dimension line, arrows and string: text ABOVE a horizontal line, LEFT of a vertical one.
+
+    That is the aligned-text convention — every string reads from the bottom or the right
+    of the sheet. The gap is in points, so it is the same on paper at every scale. A string
+    with ``text_along`` sits outside its extension lines, and the line runs out to it.
+    """
     dx, dy = node.p1[0] - node.p0[0], node.p1[1] - node.p0[1]
     dist_in = math.hypot(dx, dy)
     label = node.text or _feet_inches(dist_in)
@@ -965,18 +975,31 @@ def _draw_dimension(ax: object, node: ArchDimension) -> None:
     # Dimensions land on the geometry they measure, which in a detail is solid hatch —
     # a translucent backing keeps the figure legible without masking the linework.
     backing = dict(facecolor="white", edgecolor="none", alpha=0.75, pad=0.6)
-    if abs(dx) < abs(dy):  # vertical dimension (→ elevation vertical dim string)
+    style = dict(fontsize=size, family="monospace", color=_DIM_COLOR, bbox=backing,
+                 textcoords="offset points")
+    vertical = abs(dx) < abs(dy)
+    if vertical:
         x = node.p0[0] + node.offset
+        lo, hi = sorted((node.p0[1], node.p1[1]))
         ax.annotate("", xy=(x, node.p1[1]), xytext=(x, node.p0[1]),
-                    arrowprops=dict(arrowstyle="<->", color="#204070", lw=0.6))
-        ax.text(x + 2, (node.p0[1] + node.p1[1]) / 2, label, fontsize=size, va="center",
-                family="monospace", color="#204070", rotation=90, bbox=backing)
+                    arrowprops=dict(arrowstyle="<->", color=_DIM_COLOR, lw=0.6))
+        at = (x, (lo + hi) / 2 + node.text_along)
+        ax.annotate(label, xy=at, xytext=(-DODGE_GAP_PT, 0), rotation=90,
+                    ha="right", va="center", **style)
+        if node.text_along:
+            ax.plot((x, x), (hi if node.text_along > 0 else lo, at[1]),
+                    color=_DIM_COLOR, lw=0.4)
     else:
         y = node.p0[1] + node.offset
+        lo, hi = sorted((node.p0[0], node.p1[0]))
         ax.annotate("", xy=(node.p1[0], y), xytext=(node.p0[0], y),
-                    arrowprops=dict(arrowstyle="<->", color="#204070", lw=0.6))
-        ax.text((node.p0[0] + node.p1[0]) / 2, y + 2, label, fontsize=size, ha="center",
-                family="monospace", color="#204070", bbox=backing)
+                    arrowprops=dict(arrowstyle="<->", color=_DIM_COLOR, lw=0.6))
+        at = ((lo + hi) / 2 + node.text_along, y)
+        ax.annotate(label, xy=at, xytext=(0, DODGE_GAP_PT), ha="center", va="bottom",
+                    **style)
+        if node.text_along:
+            ax.plot((hi if node.text_along > 0 else lo, at[0]), (y, y),
+                    color=_DIM_COLOR, lw=0.4)
 
 
 # Door glyph stroke weights: the closed panel/leaf reads heavier than its swept path.

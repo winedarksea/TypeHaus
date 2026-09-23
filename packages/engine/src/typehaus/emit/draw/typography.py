@@ -39,7 +39,10 @@ MIN_PT = 4.0
 #: Default printed sizes, points.
 TEXT_PT = 7.0          #: general annotation (layer ladders, seed callouts, eave labels)
 LEADER_TEXT_PT = 7.0   #: leader notes
-DIM_TEXT_PT = 6.5      #: dimension strings — the literal `_draw_dimension` hardcoded
+DIM_TEXT_PT = 6.5      #: tags, bubbles and callout sizing (once the dimension literal)
+#: Dimension strings. NCS / the A/E/C CAD Standard set 3/32" as the minimum plotted text
+#: height; the monospace face's caps are ~0.71 em, so 3/32" caps need ~9.5 pt.
+DIM_STRING_PT = 9.5
 NOTES_PT = 9.0         #: the paper-space notes column
 #: Subordinate lines under a primary label — a room block's area and ceiling under its
 #: name, and the placeable caption on a trade plan. The ladder above has no genuine

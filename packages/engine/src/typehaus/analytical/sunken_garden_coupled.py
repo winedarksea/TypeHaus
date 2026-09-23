@@ -180,6 +180,7 @@ def build_coupled_model(design: SunkenGardenDesignInput, planting: PlantingProfi
 
     stem_half = design.geometry.stem_thickness_in / 24.0
     toe, heel = design.geometry.toe_ft, design.geometry.heel_ft
+    end_ext = design.geometry.end_toe_extension_ft
     mesh.footing(tag="FT-SG-W1/W2", x0_ft=-stem_half - heel, x1_ft=stem_half + toe,
                  y0_ft=north, y1_ft=south, depth_ft=design.geometry.footing_depth_ft,
                  mesh_ft=mesh_ft)
@@ -187,7 +188,7 @@ def build_coupled_model(design: SunkenGardenDesignInput, planting: PlantingProfi
                  x1_ft=width + stem_half + heel, y0_ft=north, y1_ft=south,
                  depth_ft=design.geometry.footing_depth_ft, mesh_ft=mesh_ft)
     mesh.footing(tag="FT-SG-S", x0_ft=-stem_half - heel, x1_ft=width + stem_half + heel,
-                 y0_ft=south - stem_half - toe, y1_ft=south + stem_half + heel,
+                 y0_ft=south - stem_half - toe - end_ext, y1_ft=south + stem_half + heel,
                  depth_ft=design.geometry.footing_depth_ft, mesh_ft=mesh_ft)
 
     beam_section = CrossSection("rect", design.geometry.stem_thickness_in * IN_TO_M,
@@ -210,7 +211,10 @@ def build_coupled_model(design: SunkenGardenDesignInput, planting: PlantingProfi
     base_nodes = [node for node in mesh.nodes.values() if abs(node.z_m) < 1e-9]
     footing_area_ft2 = (2.0 * (south - north) * design.geometry.footing_width_ft
                         + (width + 2.0 * (stem_half + heel)) * design.geometry.footing_width_ft
-                        - 2.0 * design.geometry.footing_width_ft ** 2)
+                        - 2.0 * design.geometry.footing_width_ft ** 2
+                        # the end toe's extra strip, less its laps onto the two legs
+                        + end_ext * (width + 2.0 * (stem_half + heel)
+                                     - 2.0 * design.geometry.footing_width_ft))
     tributary_area_m2 = footing_area_ft2 * FT_TO_M ** 2 / len(base_nodes)
     springs: list[SupportSpring] = []
     for node in base_nodes:

@@ -161,14 +161,6 @@ def court_geometry(ctx: EngineeringContext) -> tuple[CourtGeometry | None, list[
     if missing:
         return None, missing
 
-    first = next(iter(sections.values()))
-    for tag, geometry in sections.items():
-        for field in ("stem_thickness_ft", "stem_height_ft", "footing_width_ft",
-                      "footing_depth_ft", "toe_ft"):
-            if abs(getattr(geometry, field) - getattr(first, field)) > _SECTION_TOLERANCE_FT:
-                return None, [f"one common court section — {tag} differs from "
-                              f"{first.tag} in {field}"]
-
     axes = {wall.tag: _axis_ft(ctx, wall.tag) for wall in walls}
     if any(axis is None for axis in axes.values()):
         return None, [f"a resolved axis for {tag}" for tag, axis in axes.items()
@@ -178,6 +170,28 @@ def court_geometry(ctx: EngineeringContext) -> tuple[CourtGeometry | None, list[
     if pair is None:
         return None, ["two parallel retaining legs whose separation is the court's width"]
     (left, right) = pair
+
+    # The legs share one section exactly. The end wall may differ only by a longer TOE
+    # (its footing wider by the same amount); a different heel, stem or depth is a second
+    # section this single-section study cannot describe.
+    first = sections[left]
+    fields = ("stem_thickness_ft", "stem_height_ft", "footing_width_ft",
+              "footing_depth_ft", "toe_ft")
+    end_extensions = []
+    for tag, geometry in sections.items():
+        extension = geometry.toe_ft - first.toe_ft if tag not in pair else 0.0
+        for field in fields:
+            expected = getattr(first, field)
+            if field in ("footing_width_ft", "toe_ft"):
+                expected += extension
+            if abs(getattr(geometry, field) - expected) > _SECTION_TOLERANCE_FT:
+                return None, [f"one common court section — {tag} differs from "
+                              f"{first.tag} in {field}"]
+        if extension < -_SECTION_TOLERANCE_FT:
+            return None, [f"an end wall toe no shorter than the legs' — {tag} is "
+                          f"{-extension:.2f}' shorter"]
+        if tag not in pair:
+            end_extensions.append(extension)
     (ax, ay), (bx, by) = axes[left]
     run = math.hypot(bx - ax, by - ay)
     ux, uy = (bx - ax) / run, (by - ay) / run
@@ -195,6 +209,7 @@ def court_geometry(ctx: EngineeringContext) -> tuple[CourtGeometry | None, list[
         stem_thickness_in=first.stem_thickness_ft * 12.0,
         footing_width_ft=first.footing_width_ft,
         toe_ft=first.toe_ft,
+        end_toe_extension_ft=max(end_extensions, default=0.0),
     ), []
 
 

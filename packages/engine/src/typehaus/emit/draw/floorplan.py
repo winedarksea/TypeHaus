@@ -21,6 +21,7 @@ from typehaus.emit.draw._shared import (
 from typehaus.emit.draw._shared import (
     to_in as _in,
 )
+from typehaus.emit.draw.dimension_rows import tier_offsets
 from typehaus.emit.draw.door_symbols import (
     door_symbol_params,
     symbol_is_centre_anchored,
@@ -60,8 +61,14 @@ from typehaus.resolve.model import ResolvedModel
 ARCHITECTURAL_DOMAINS = frozenset({"plumbing", "appliance", "furniture"})
 
 
-def build_floorplan(model: ResolvedModel, storey: str) -> Scene:
-    """Build the plan-slice IR scene for one storey tag."""
+def build_floorplan(model: ResolvedModel, storey: str, *,
+                    dimension_scale: float = PLAN_RESERVATION_SCALE) -> Scene:
+    """Build the plan-slice IR scene for one storey tag.
+
+    ``dimension_scale`` is the scale the dimension tiers are spaced for; a permit sheet
+    passes the one it chose (``floorplan_sheet``), so the tiers print at the same
+    paper distances whatever the plot scale.
+    """
     b = SceneBuilder(name=f"plan-{storey}", units="in")
     walls = [w for w in model.walls if w.storey == storey]
 
@@ -93,15 +100,14 @@ def build_floorplan(model: ResolvedModel, storey: str) -> Scene:
     # for them and ``code.R314``/``R315`` reconcile against the same elements.
     _emit_alarms(b, model, storey, room_boxes)
     emit_fixtures(b, model, storey, domains=ARCHITECTURAL_DOMAINS, labels=False)
-    # Three dimension tiers, inner to outer: per-facade opening strings at 14", the
-    # face-to-face interior partition chains at 44", the overall bbox chain at 76". Each
-    # sits outside the last so a reader walks from the detail to the extent, and the two
-    # exterior tiers now measure to the sheathing face rather than to a wall centreline.
-    # The 30" of pitch between tiers is what ``_shared.STAGGER_ROWS`` costs: a crowded
-    # string steps out up to two rows (~20") and must not land on the tier outside it.
-    emit_facade_dimension_strings(b, model, walls, offset=14.0)
-    emit_interior_dimension_chains(b, walls, offset=44.0)
-    emit_bbox_dimension_chain(b, walls, offset=-76.0, reference="face")
+    # Three dimension tiers, inner to outer: per-facade opening strings, the face-to-face
+    # interior partition chains, the overall bbox chain. Each sits outside the last so a
+    # reader walks from the detail to the extent. Spacing is PAPER-constant (NCS: 9/16" to
+    # the first line, 3/8" between), with room for the stagger rows (``dimension_rows``).
+    facade, interior, overall = tier_offsets(dimension_scale)
+    emit_facade_dimension_strings(b, model, walls, offset=facade, scale=dimension_scale)
+    emit_interior_dimension_chains(b, walls, offset=interior, scale=dimension_scale)
+    emit_bbox_dimension_chain(b, walls, offset=-overall, reference="face")
     return b.build()
 
 

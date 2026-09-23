@@ -7,8 +7,7 @@ per → 20's original scope).
 
 from __future__ import annotations
 
-from typehaus.emit.draw.annotate import DODGE_GAP_PT, LabelSpec, PlacedLabel, dodge, label_box
-from typehaus.emit.draw.annotate import model_in_per_pt as annotate_model_in_per_pt
+from typehaus.emit.draw.dimension_rows import dimension_offsets
 from typehaus.emit.draw.lineweights import CUT, FAINT, LIGHT, PROFILE, REFERENCE
 from typehaus.emit.draw.scene import (
     ArchDimension,
@@ -19,7 +18,7 @@ from typehaus.emit.draw.scene import (
     SceneBuilder,
     Text,
 )
-from typehaus.emit.draw.typography import DIM_TEXT_PT, LINE_SPACING, TEXT_PT
+from typehaus.emit.draw.typography import DIM_TEXT_PT, TEXT_PT
 from typehaus.model.canvas import canvas_object_types
 from typehaus.model.placeable_symbols import place_local
 from typehaus.quantities import M_PER_IN
@@ -39,15 +38,9 @@ from typehaus.resolve.model import ResolvedModel, ResolvedWall
 #: what makes a crowded dimension string step out onto its own tier — both of which fail
 #: *toward* legibility when the sheet turns out bigger than this, and neither of which the
 #: frameless ``annotate.LEGACY_IN_PER_PT`` convention (a 4x under-reservation at plan scale)
-#: could ever trigger.
+#: could ever trigger. Dimension tiers only default to it: a permit sheet rebuilds them at
+#: the scale it chose (``dimension_rows``), because at 3/32" they overprinted.
 PLAN_RESERVATION_SCALE = 0.1875
-
-#: Rows a staggered dimension string may use before it starts reusing them. Three is what
-#: catlin's basement plan needs — its bbox spans the house, the freestanding garage and the
-#: sunken garden, and the run of short segments where the three meet does not clear on two.
-#: It also sets the vertical air a caller has to leave between two dimension tiers: three
-#: rows is about 20 model inches at ``PLAN_RESERVATION_SCALE``.
-STAGGER_ROWS = 3
 
 #: Wall layer functions that make up the face a builder pulls a tape to. Cladding, furring
 #: and finish stand outboard of it and move whenever the rainscreen does (catlin's face has
@@ -250,50 +243,6 @@ def wall_face_bounds(walls: list[ResolvedWall]) -> tuple[float, float, float, fl
     return min(xs), max(xs), min(ys), max(ys)
 
 
-def dimension_offsets(spans: list[float], labels: list[str], base_offset: float,
-                      height_pt: float = DIM_TEXT_PT,
-                      scale: float = PLAN_RESERVATION_SCALE) -> list[float]:
-    """Per-segment dimension-line offsets, staggered onto outer tiers where text collides.
-
-    The writers centre a dimension string on the segment it measures, so a 6" segment in a
-    chain is handed a 4'-3 1/2"-wide string and prints it straight through both neighbours —
-    which is the overprinted mush the plan's two exterior tiers show today. The IR cannot
-    move a string off its own dimension line, so the only lever left here is the *tier*: a
-    segment too short to hold its own label steps out onto a second line, which is the
-    staggered dimension string every hand-drafted plan uses for the same reason.
-
-    Placement runs through ``annotate.dodge`` in a local (along-chain, outward) frame — the
-    same one-pass, deterministic resolver the detail path uses — so the plan and the details
-    settle collisions the same way instead of each growing its own. Returns offsets with
-    ``base_offset``'s sign; ``spans`` are segment lengths and ``labels`` their strings, both
-    in the chain's own order.
-
-    ``dodge`` CASCADES and a dimension chain cannot afford to: it pushes each colliding box
-    below every box already settled, so a run of six 6" segments marches six rows out and
-    the tier below it has to be moved to make room for a chain that may or may not use it.
-    The settled rows are therefore folded back onto ``STAGGER_ROWS`` lines — the ordinary
-    staggered dimension string — which bounds the tier's depth and still separates every
-    pair ``dodge`` found touching, because a segment three rows down the cascade is far
-    enough along the chain that it never overlapped the one three rows above it.
-    """
-    sign = -1.0 if base_offset < 0 else 1.0
-    magnitude = abs(base_offset)
-    per_pt = annotate_model_in_per_pt(scale)
-    row_pitch = (height_pt * LINE_SPACING + DODGE_GAP_PT) * per_pt
-    placed: list[PlacedLabel] = []
-    along = 0.0
-    for span, label in zip(spans, labels, strict=True):
-        # ``z`` runs INWARD in this frame, so ``dodge``'s downward push is outward on paper.
-        at = (along + span / 2.0, 0.0)
-        placed.append(PlacedLabel(spec=LabelSpec(text=label), at=at, align="center",
-                                  height_pt=height_pt,
-                                  box=label_box(at, label, height_pt, "center", scale)))
-        along += span
-    settled = dodge(placed, scale=scale)
-    rows = [round(-item.at[1] / row_pitch) % STAGGER_ROWS for item in settled]
-    return [sign * (magnitude + row * row_pitch) for row in rows]
-
-
 def emit_bbox_dimension_chain(b: SceneBuilder, walls: list[ResolvedWall],
                               offset: float = -18.0, *,
                               reference: str = "axis") -> None:
@@ -399,7 +348,8 @@ def _facade_stations(walls: list[ResolvedWall], model: ResolvedModel,
 
 def emit_facade_dimension_strings(b: SceneBuilder, model: ResolvedModel,
                                   walls: list[ResolvedWall],
-                                  offset: float = 14.0) -> None:
+                                  offset: float = 14.0,
+                                  scale: float = PLAN_RESERVATION_SCALE) -> None:
     """Per-facade second-tier dimension strings (auto-dimensioner v2).
 
     For each of the four facades (outer edges of the wall-axis bbox) emit a cumulative
@@ -413,7 +363,8 @@ def emit_facade_dimension_strings(b: SceneBuilder, model: ResolvedModel,
     states; the stations between them stay axis measurements, because an opening's
     centreline and a partition's centreline *are* centrelines and dimensioning them to a
     face would be a different number, not a better one. Crowded strings stagger onto an
-    outer tier through :func:`dimension_offsets` rather than printing through each other.
+    outer row through :func:`dimension_offsets` rather than printing through each other;
+    ``offset`` and ``scale`` come from ``dimension_rows.tier_offsets`` on a real sheet.
     """
     pts = [p for w in walls for p in (w.axis[0], w.axis[1])]
     if not pts:
@@ -448,7 +399,7 @@ def emit_facade_dimension_strings(b: SceneBuilder, model: ResolvedModel,
         spans = [(stations[i + 1] - stations[i]) / M_PER_IN
                  for i in range(len(stations) - 1)]
         offsets = dimension_offsets(spans, [_dimension_label(span) for span in spans],
-                                    sign * offset)
+                                    sign * offset, scale)
         for index in range(len(stations) - 1):
             s0, s1 = stations[index], stations[index + 1]
             if along == 0:
@@ -459,5 +410,6 @@ def emit_facade_dimension_strings(b: SceneBuilder, model: ResolvedModel,
                 kind="linear",
                 ends=(NamedPoint(xy=to_in(p0), name=f"{name}{index}"),
                       NamedPoint(xy=to_in(p1), name=f"{name}{index + 1}")),
-                p0=to_in(p0), p1=to_in(p1), offset=offsets[index],
+                p0=to_in(p0), p1=to_in(p1), offset=offsets[index][0],
+                text_along=offsets[index][1],
             ))

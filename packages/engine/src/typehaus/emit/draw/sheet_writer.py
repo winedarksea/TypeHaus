@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import math
 import textwrap
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from contextvars import ContextVar
 from typing import TYPE_CHECKING
@@ -80,6 +80,7 @@ if TYPE_CHECKING:  # pragma: no cover — SheetSpec lives in sheets.py (which im
 __all__ = [
     "ARCH_D", "ARCH_SCALES", "ENG_SCALES", "FIT_LABEL", "LEDGER", "NTS_LABEL", "PAPERS",
     "PAPER_SUFFIX", "PORTRAIT_LEDGER", "SealBlock", "compose_sheet", "content_box",
+    "current_paper",
     "fit_scale", "frame_for_scene", "paper_for", "resolve_paper", "scale_for_label",
     "schedule_sheet", "section", "select_scale", "set_issue_status", "set_paper",
     "set_seal_block", "sheet_chrome", "title_height", "viewport_box",
@@ -97,6 +98,10 @@ _NOTES_PT = NOTES_PT  # fixed notes lettering size, points (monospace)
 # linework and its lettering clear the border instead of touching it.
 _FIT_PAD = 1.04
 
+#: Paper inches ``(west, east, south, north)`` a drawing's annotation needs outside it —
+#: fixed, or as a function of the scale (``frame_for_scene``).
+Reserve = tuple[float, float, float, float] | Callable[[float], tuple[float, float, float, float]]
+
 #: The paper the *set currently being written* is on. A schedule page composes its own
 #: matplotlib figure inside ``schedules/`` and names a preset there, which is the right
 #: place for "this sheet is portrait" and the wrong place for "this set is 24x36". The set
@@ -113,6 +118,11 @@ def set_paper(paper: tuple[float, float]) -> Iterator[None]:
         yield
     finally:
         _SET_PAPER.reset(token)
+
+
+def current_paper() -> tuple[float, float]:
+    """The landscape paper the set being written is on (``LEDGER`` outside ``set_paper``)."""
+    return _SET_PAPER.get()
 
 
 def viewport_box(size: tuple[float, float], notes_panel: bool = False,
@@ -136,7 +146,9 @@ def viewport_box(size: tuple[float, float], notes_panel: bool = False,
 
 
 def frame_for_scene(scene: Scene, size: tuple[float, float] = LEDGER, *,
-                    scale_label: str | None = None) -> Frame | None:
+                    scale_label: str | None = None,
+                    reserve: Reserve | None = None,
+                    ) -> Frame | None:
     """The paper a plan/elevation/section lands on, decided before anything is drawn.
 
     ``compose_sheet`` already made this decision internally for the permit set. Pulling it
@@ -146,6 +158,12 @@ def frame_for_scene(scene: Scene, size: tuple[float, float] = LEDGER, *,
     honoured and overflows — that is what asking for it means, and the alternative
     (silently substituting a smaller one) is the lie the truth rule exists to prevent.
 
+    ``reserve`` is ``(west, east, south, north)`` PAPER inches outside the drawing that its
+    annotation needs — a floor plan's dimension tiers — or a function of the scale giving
+    them, because a tier struck off a wall face needs less paper past a drawing that
+    already reaches beyond that face, and how much less depends on the scale. The largest
+    rung whose drawing plus reserve fits wins; the frame is centred on the two together.
+
     ``None`` when the scene has no measurable geometry: there is nothing to place, so the
     frameless fit stays the right answer and the caller keeps it.
     """
@@ -153,10 +171,22 @@ def frame_for_scene(scene: Scene, size: tuple[float, float] = LEDGER, *,
     if bounds is None:
         return None
     view = viewport_box(size, notes_panel=bool(_scene_note_lines(scene)))
+    fixed = reserve or (0.0, 0.0, 0.0, 0.0)
+    reserve_at = reserve if callable(reserve) else (lambda _scale: fixed)
     u0, z0, u1, z1 = bounds
     span_u, span_z = max(u1 - u0, 1e-6), max(z1 - z0, 1e-6)
+
+    def room(at_scale: float) -> tuple[float, float]:
+        west, east, south, north = reserve_at(at_scale)
+        return view[2] - west - east, view[3] - south - north
+
+    def fits(at_scale: float) -> bool:
+        width, height = room(at_scale)
+        return span_u / 12.0 * at_scale <= width and span_z / 12.0 * at_scale <= height
+
     if scale_label is None:
-        scale, label = select_scale(span_u, span_z, view[2], view[3])
+        scale, label = next(((s, name) for s, name in (*ARCH_SCALES, *ENG_SCALES)
+                             if fits(s)), (None, NTS_LABEL))
     elif "".join(scale_label.split()).lower() == FIT_LABEL:
         scale, label = None, NTS_LABEL
     else:
@@ -168,9 +198,13 @@ def frame_for_scene(scene: Scene, size: tuple[float, float] = LEDGER, *,
                              f"{FIT_LABEL!r}")
         scale, label = entry
     if scale is None:
-        scale, label = fit_scale(span_u, span_z, view[2], view[3], _FIT_PAD), NTS_LABEL
-    return Frame(paper=size, viewport=view, center=((u0 + u1) / 2.0, (z0 + z1) / 2.0),
-                 scale=scale, scale_label=label)
+        smallest = ENG_SCALES[-1][0]
+        scale, label = fit_scale(span_u, span_z, *room(smallest), _FIT_PAD), NTS_LABEL
+    west, east, south, north = reserve_at(scale)
+    model_per_paper = 12.0 / scale
+    center = ((u0 + u1 + (east - west) * model_per_paper) / 2.0,
+              (z0 + z1 + (north - south) * model_per_paper) / 2.0)
+    return Frame(paper=size, viewport=view, center=center, scale=scale, scale_label=label)
 
 
 def compose_sheet(scene: Scene, spec: object, model: ResolvedModel,

@@ -338,7 +338,10 @@ the future.
 - If we made the sunken garden a little narrower, we might be able to switch to 2x12 12" OC joists across the full span, potentially dropping the center columns entirely.
 - ~~Whenever I click on 'drawings' or reports in the UI, I have to refresh the page before they show up.~~ **CLOSED 2026-09-22.** A tab outliving a rebuild asked for a renamed chunk; the SPA fallback answered 200 + HTML and the service worker cached it, and with no error boundary the app unmounted. Missing assets now 404, the SW never caches HTML (v5), `vite:preloadError` reloads once, and `ReaderErrorBoundary` catches the rest.
 - ~~Drawings page could use a little scroll bar on the left for the different documents, separate from the scroll for the selected drawing itself~~ **CLOSED 2026-09-22.** `.doc-list` is sticky and viewport-bounded with its own scroll; paging keeps the active row in view.
-- Dimension labels overlap on the drawings
+- ~~Dimension labels overlap on the drawings~~ **CLOSED 2026-09-22.** The plan tiers were model inches spaced for 3/16", and the ledger A-101/A-102 print at 3/32". Tiers are now PAPER-constant to NCS (9/16" to the first line, 3/8" between; `emit/draw/dimension_rows.py`), respaced at the scale each sheet picks with the band reserved (`floorplan_sheet.py`). Dimension text is 9.5 pt (3/32" caps), vertical strings read from the right, and an overflowing string slides outside its extension lines instead of reusing a row. The 24x36 set is the submittal and holds its scales; the 11x17 set is stamped REDUCED CHECK PRINT.
+- Plan lettering other than dimensions (room blocks at 7/5.5 pt, tags and bubbles at 6.5 pt) is still below the NCS 3/32" minimum.
+- Openings in the basement's concrete walls are dimensioned to centrelines; masonry/concrete convention is to the opening edges.
+- The "OPEN TO BELOW" terrace labels on A-102 pile up on one another along the east side.
 
 # Project Management
 

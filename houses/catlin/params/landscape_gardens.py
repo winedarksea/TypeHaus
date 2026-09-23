@@ -52,8 +52,10 @@ RAIN_GARDEN = RainGarden(
 )
 
 # Zone 3 (rim and side slopes): 'Jazz' on the house bluestem grid; zone 1 (the floor):
-# fox sedge with iris and milkweed. Same layout code, same rendering.
+# switchgrass, 'October Sky' and 'Northwind' alternating, with iris and milkweed. Same
+# layout code, same rendering.
 _GRID = GridLayout(spacing=inch(15))
+_FLOOR_GRID = GridLayout(spacing=inch(15), type_refs=("PT-PAN-OCTSKY", "PT-PAN-NORTHWIND"))
 _MID_SLOPE = ft(RG_RIM.feet - RG_PONDING.feet / 2.0)
 RG_BEDS = [
     PlantingBed(uid="GRDNPB0001", tag="PB-RG-SLOPE-W", type_ref="PT-SCH-JAZZ",
@@ -62,10 +64,10 @@ RG_BEDS = [
     PlantingBed(uid="GRDNPB0002", tag="PB-RG-SLOPE-E", type_ref="PT-SCH-JAZZ",
                 outline=_rect(RG_X_E - _SLOPE_FT, RG_Y_S, RG_X_E, RG_Y_N),
                 grid=_GRID, ground_elevation=_MID_SLOPE),
-    PlantingBed(uid="GRDNPB0003", tag="PB-RG-FLOOR", type_ref="PT-CAR-VULP",
+    PlantingBed(uid="GRDNPB0003", tag="PB-RG-FLOOR", type_ref="PT-PAN-OCTSKY",
                 outline=_rect(RG_X_W + _SLOPE_FT, RG_Y_S + _SLOPE_FT,
                               RG_X_E - _SLOPE_FT, RG_Y_N - _SLOPE_FT),
-                grid=_GRID, ground_elevation=ft(RG_RIM.feet - RG_PONDING.feet),
+                grid=_FLOOR_GRID, ground_elevation=ft(RG_RIM.feet - RG_PONDING.feet),
                 accents=AccentRule(type_refs=("PT-IRI-VERS", "PT-ASC-INCA"), every=5,
                                    a=1, b=2)),
 ]
