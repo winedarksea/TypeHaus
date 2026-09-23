@@ -96,3 +96,28 @@ def test_the_profile_carries_the_list() -> None:
 def test_every_inspection_says_something_actionable(spec: object) -> None:
     """An inspection with neither a check nor an on-site item is a row nobody can close."""
     assert spec.check_ids or spec.on_site, f"{spec.id} has nothing to satisfy"
+
+
+def _on_inspection(check_id: str) -> set[str]:
+    return {spec.id for spec in MN_INSPECTIONS if check_id in spec.check_ids}
+
+
+def test_member_bore_checks_ride_the_plumbing_rough() -> None:
+    """The holes are cut and visible at the plumbing rough, and not after the ceiling."""
+    for cid in ("mep.run_member_crossing", "mep.run_through_floor_member",
+                "mep.run_in_joist_flange"):
+        assert "rough_plumbing" in _on_inspection(cid), cid
+    assert "rough_mechanical" in _on_inspection("mep.erv_blower_interlock")
+
+
+def test_concrete_materials_are_a_permit_line_not_an_inspection() -> None:
+    """A mix's chloride, SCM, sulfate and ASR statements are reviewed on the schedule at
+    permit; nobody inspects them at the pour (decision 2026-09-23)."""
+    materials = ("structural.concrete_chloride_limit", "structural.concrete_scm_caps",
+                 "structural.concrete_sulfate_cement", "structural.concrete_asr")
+    covered = MN_2020.permit_check_ids()
+    for cid in (*materials, "structural.concrete_interference",
+                "structural.concrete_mix_matches_exposure"):
+        assert cid in covered, cid
+    for cid in (*materials, "structural.concrete_interference"):
+        assert not _on_inspection(cid), cid

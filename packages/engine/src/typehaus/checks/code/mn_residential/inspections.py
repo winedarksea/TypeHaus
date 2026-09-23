@@ -137,7 +137,10 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
                    # — but the plumbing rough is when a person is standing under that floor
                    # with the holes already cut, and it is the last moment the answer is
                    # cheap.
-                   "mep.run_member_crossing"),
+                   "mep.run_member_crossing",
+                   # The same moment for what run_member_crossing leaves: trimmers,
+                   # headers and blocking, and the I-joist flanges.
+                   "mep.run_through_floor_member", "mep.run_in_joist_flange"),
         on_site=("DWV under test", "water piping under test", "no insulation in the walls"),
         milestone="rough_ins",
         code_refs=("IRC P2503", "MN Rules 4714"),
@@ -148,7 +151,7 @@ MN_INSPECTIONS: tuple[InspectionSpec, ...] = (
         check_ids=("mep.duct_connectivity", "mep.duct_joist_bay_occupancy",
                    "mep.duct_soffit_occupancy", "mep.ventilation_distribution",
                    "code.N1103_6_whole_house_ventilation", "code.M1502_dryer_exhaust",
-                   "mep.erv_outdoor_terminals"),
+                   "mep.erv_outdoor_terminals", "mep.erv_blower_interlock"),
         on_site=("duct runs complete and supported", "equipment set and level",
                  "combustion and exhaust terminations set"),
         milestone="rough_ins",

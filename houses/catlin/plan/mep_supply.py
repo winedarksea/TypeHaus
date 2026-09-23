@@ -161,17 +161,30 @@ SUPPLY = [
     # stood in joist-0-012 (the y=16' band is that joist's plane). The west leg rides
     # y=34'-10", and the east drop is at (17'-5", 16'-2 1/4"), in the bay north of 012,
     # clear of W-B-CS2's pour and PR-B-HW-KITCH's drop.
+    #
+    # ** IT DIPS UNDER FO-M-ERV-OA's TRIMMER PACKS (2026-09-23). ** Both 2-ply 1.75x11.875
+    # LVL packs run full bay (x 6"..10'-0"), so any x=4'-9" crossing bores four plies. The
+    # maker's chart does not allow it: Weyerhaeuser TJ-9015 "Allowable Holes for Trus Joist
+    # Products" (Sept 2018), "Other Trus Joist Headers and Beams" — Microllam LVL, 7 1/4"-20"
+    # deep: 2" max round hole, middle 1/3 span AND middle 1/3 depth, UNIFORM LOADS ONLY.
+    # These trimmers carry header-FO-M-ERV-OA-1's reaction at x=3'-11" (a point load), and
+    # the band sits 3.07" off the bottom face (zone starts 3.96"). So the leg drops to
+    # 8'-0 1/4" at y=34'-10", runs under both packs (top 5/8" below the joists) in
+    # RM-B-FURNACE's open service ceiling, and climbs back at y=33'-0", mid-bay south of the
+    # packs. Four copper 90s; nothing bored.
     PipeRun(uid="CBPW30AAAA", tag="PR-B-CW-TRUNK", system=PipeSystem.WATER_COLD,
             path=(pt(ft(11), ft(35, 6)), pt(ft(11), ft(35, 6)), pt(ft(11), ft(34, 10)),
                   pt(ft(9, 6), ft(34, 10)), pt(ft(9, 6), ft(34, 10)),
-                  pt(ft(4, 9), ft(34, 10)), pt(ft(4, 9), ft(16)),
+                  pt(ft(4, 9), ft(34, 10)), pt(ft(4, 9), ft(34, 10)),
+                  pt(ft(4, 9), ft(33)), pt(ft(4, 9), ft(33)), pt(ft(4, 9), ft(16)),
                   pt(ft(8), ft(16)), pt(ft(17, 5), ft(16)), pt(ft(17, 5), ft(16, 2.25)),
                   pt(ft(17, 5), ft(16, 2.25)), pt(ft(17, 5), ft(16)),
                   pt(ft(29, 9.6), ft(16)),
                   pt(ft(29, 9.6), ft(34, 1.2)), pt(ft(29, 9.6), ft(34, 1.2))),
             diameter=inch(1.25), material="copper", finish="lacquered",
             elevations=(inch(2), ft(7, 10.6375), ft(7, 10.6375), ft(7, 10.6375),
-                        ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
+                        ft(8, 4.6375), ft(8, 4.6375), ft(8, 0.25), ft(8, 0.25),
+                        ft(8, 4.6375), ft(8, 4.6375), ft(8, 4.6375),
                         ft(8, 4.6375), ft(8, 4.6375), ft(7, 10.6375), ft(7, 10.6375),
                         ft(7, 10.6375), ft(7, 10.6375), ft(12, 7.4375)),
             serves=("FX-M-BATH1-WC", "FX-M-BATH1-LAV", "FX-M-BATH2-WC",
