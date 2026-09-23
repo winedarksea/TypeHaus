@@ -20,7 +20,6 @@ import json
 from typing import Any
 
 from shapely.geometry import Polygon
-from shapely.ops import unary_union
 
 from typehaus._meta import PSET_SOURCE
 from typehaus.emit.ifc import lowlevel as ll
@@ -31,6 +30,7 @@ from typehaus.resolve.geometry import rect_between
 from typehaus.resolve.geometry_walls import layer_solids
 from typehaus.resolve.layer_bands import at_body_band, wall_body_band
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
+from typehaus.resolve.overlay import intersection, union_all
 from typehaus.resolve.room_floor import room_finished_floor_elevation
 from typehaus.resolve.topology import _added_thicknesses
 
@@ -309,11 +309,13 @@ def _opening_profile(rw: ResolvedWall, opening: Any) -> list[tuple[float, float]
         point(start, -transverse_extent), point(end, -transverse_extent),
         point(end, transverse_extent), point(start, transverse_extent),
     ])
-    host_footprint = unary_union([
+    # On the overlay grid: a lapped sheathing band is snapped to it, so a bare union
+    # leaves a 1-ulp seam against its neighbour and max() below keeps only one half.
+    host_footprint = union_all(
         Polygon(layer.polygon) for layer in rw.depth_layers()
         if len(layer.polygon) >= 3
-    ])
-    clipped = host_footprint.intersection(station_strip)
+    )
+    clipped = intersection(host_footprint, station_strip)
     polygons = [clipped] if isinstance(clipped, Polygon) else [
         item for item in getattr(clipped, "geoms", ()) if isinstance(item, Polygon)
     ]
