@@ -230,7 +230,10 @@ _CORNER_ORACLE = {
 #: ** 24,700 -> 25,470 ON 2026-09-22 (note §12c). ** P_u rose 4,947 -> 7,886 lb when the
 #: balcony went wall-to-wall on two beams, and below balance more axial is more moment
 #: capacity: c 2.752" -> 2.809", C_c 60,473 -> 62,268 lb. The rear row reads 25,476.
-_CORNER_PHI_MN_LB_FT = 25_470.0
+#:
+#: ** 25,470 -> 24,678 ON 2026-09-23 (note §13). ** Each edge beam carries its own 9.75'
+#: strip, not the 18' joist span: P_u 7,886 -> 4,855 lb, c 2.809" -> 2.750". Rear 24,684.
+_CORNER_PHI_MN_LB_FT = 24_678.0
 #: §7: ld = (60,000 / (25 sqrt(5,000))) x 0.625 = 21.2", x 1.3 for a class B splice.
 #: 35.6" at the presumptive 3,000 psi — development length goes as 1/sqrt(f'c), so reading
 #: the real mix SHORTENS the required lap. The assembly's own source text still specifies
@@ -643,13 +646,11 @@ def test_both_piers_are_columns_and_not_pedestals(catlin_retired_columns) -> Non
 
 
 def test_the_deck_tributary_rule_is_single_sourced(catlin_plan) -> None:
-    """``checks`` reads ``pier_basis``' rule; there is no second copy to hold together.
+    """Every reader of the deck rule gets ``engineering/deck_tributary``'s half-bay strip.
 
-    This replaced ``test_the_two_tributary_rules_agree``, whose only job was pinning two
-    hand-copies of one rule to each other. ``checks`` may import ``engineering`` and not the
-    reverse, so the deck rule stayed one function with two readers and the ROOF rule — which
-    really was copied, and really had drifted — was deleted on the check side on 2026-09-18.
-    What is left to assert is the number itself.
+    Since 2026-09-23 ``pier_basis``, ``post_bearing``, ``analytical/loads`` and the check
+    all call it, where four of them used to hand every beam the whole joist span. What is
+    left to assert is that they agree, and the number itself.
     """
     from _helpers import check_context
 
@@ -668,12 +669,25 @@ def test_the_deck_tributary_rule_is_single_sourced(catlin_plan) -> None:
             theirs[tag] = theirs.get(tag, 0.0) + share
 
     assert set(mine) == set(theirs)
-    # And it is the BEAM-WEIGHTED answer both are giving: since 2026-09-22 each balcony
-    # glulam carries the whole 18'-0" joist span as its strip (the rule's conservative
-    # overlap) over its 9.667' length, halved between its two corner columns.
-    assert mine["PT-SG-BR1"] == pytest.approx(18.0 * 9.667 / 2.0, abs=0.02)
+    # Each balcony glulam carries 18'/2 + 9" = 9.75' (glulam_beam's own strip) over its
+    # 9.667' length, halved between its two corner columns: the 188.5 ft2 deck, once.
+    assert mine["PT-SG-BR1"] == pytest.approx(9.75 * 9.667 / 2.0, abs=0.02)
+    assert sum(mine[t] for t in ("PT-SG-BR1", "PT-SG-BF1", "PT-SG-BR3", "PT-SG-BF3")) \
+        == pytest.approx(19.5 * 9.667, abs=0.1)
     for tag, value in theirs.items():
         assert mine[tag] == pytest.approx(value, rel=1e-9), tag
+
+    # post_bearing's beam load is the same strip at 50 psf; BR1 sits 7.333' behind BF1,
+    # which is 0.667' in from the front of the 9.667' beam (analytical_model_basis §3c).
+    from typehaus.engineering.glulam_beam import DECK_TOTAL_LOAD_PSF
+    from typehaus.engineering.post_bearing import _reaction_lb
+
+    ectx = EngineeringContext(plan=catlin_plan, model=model)
+    reaction, beams = _reaction_lb(ectx, catlin_plan.by_tag("PT-SG-BR1"))
+    assert beams == ("BM-SG-BLW",)
+    assert reaction is not None
+    total = DECK_TOTAL_LOAD_PSF * 9.75 * 9.667
+    assert reaction == pytest.approx(total * (9.667 / 2 - 0.667) / 7.333, rel=0.01)
 
 
 def _deck_posts_everywhere(plan):
@@ -1033,7 +1047,7 @@ def test_an_edge_glulam_carries_its_own_strip_not_the_whole_span() -> None:
 def test_the_tributary_rule(lines_ft, beam_ft, expected) -> None:
     from types import SimpleNamespace
 
-    from typehaus.engineering.glulam_beam import _beam_tributary_ft
+    from typehaus.engineering.deck_tributary import beam_tributary_ft as _beam_tributary_ft
     from typehaus.quantities import inch
 
     m = 0.3048

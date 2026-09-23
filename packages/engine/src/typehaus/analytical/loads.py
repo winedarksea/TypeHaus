@@ -9,7 +9,8 @@ column's own height. A load case that disagreed with the sheet beside it in the 
 handover would be worse than no load case at all.
 
 The one load derived rather than read back is the deck's own gravity, and it is derived the
-way ``engineering/pier_basis`` derives it — the same joist-span strip, the same IRC Table
+way ``engineering/pier_basis`` derives it — the same per-beam strip
+(``engineering/deck_tributary``), the same IRC Table
 R301.5 numbers — because the pier record holds a total in pounds and a graph needs it as a
 line load on the beams. A solve's column reaction then reproduces the record's
 ``dead_load + live_load``, which is what makes the two checkable against each other.
@@ -93,8 +94,8 @@ def _roof_beam_loads(ctx: Any, scope: Any, graph: Any, loads: LoadSet) -> None:
 
 
 def _deck_gravity(ctx: Any, scope: Any, graph: Any, loads: LoadSet) -> None:
-    """A deck as a line load on each beam under it, on ``pier_basis``'s own strip rule."""
-    from typehaus.engineering.glulam_beam import _joist_span_ft
+    """A deck as a line load on each beam under it, on ``deck_tributary``'s strip rule."""
+    from typehaus.engineering.deck_tributary import beam_tributary_ft
     from typehaus.engineering.pier_basis import DECK_DEAD_LOAD_PSF, DECK_LIVE_LOAD_PSF
     from typehaus.model.floors import FloorSystem
 
@@ -102,31 +103,34 @@ def _deck_gravity(ctx: Any, scope: Any, graph: Any, loads: LoadSet) -> None:
         deck = ctx.plan.by_tag(tag)
         if not isinstance(deck, FloorSystem) or deck.service != "deck":
             continue
-        strip_ft = _joist_span_ft(ctx, deck)
         beams = sorted(set(deck.joists.bearing_refs or ()) & set(graph.beam_spans))
-        if not beams:
+        strips: dict[str, float] = {}
+        for beam in beams:
+            width = beam_tributary_ft(ctx, deck, ctx.plan.by_tag(beam))
+            if width is None:
+                loads.assumptions.append(
+                    f"{tag}: no tributary strip resolves for {beam}, so this deck puts no "
+                    f"line load on it — that member is unloaded in this graph")
+            else:
+                strips[beam] = width
+        if not strips:
             continue
-        if strip_ft is None:
-            loads.assumptions.append(
-                f"{tag}: no joist span resolves, so this deck contributes no line load — "
-                f"the members under it are unloaded in this graph")
-            continue
+        widths = ", ".join(f"{beam} {width:.2f} ft" for beam, width in strips.items())
         loads.assumptions.append(
-            f"{tag}: carried as a line load on {', '.join(beams)} rather than as its "
-            f"joists, on engineering/pier_basis's own rule — each beam takes the deck's "
-            f"full {strip_ft:.2f} ft joist span, so overlapping strips are counted twice "
-            f"and the columns' reactions are the conservative side of the split")
+            f"{tag}: carried as a line load on each beam rather than as its joists — half "
+            f"of each adjacent joist bay plus any overhang ({widths}), the strip "
+            f"engineering/glulam_beam and pier_basis load it with")
         for kind, psf, citation in (
                 (LoadCaseKind.DEAD, DECK_DEAD_LOAD_PSF, "pier_basis.DECK_DEAD_LOAD_PSF"),
                 (LoadCaseKind.LIVE, DECK_LIVE_LOAD_PSF, "IRC Table R301.5 deck live")):
-            w_n_m = -strip_ft * psf * PLF_TO_N_M
             loads.case(kind, _CASE_TEXT[kind])
-            for beam in beams:
+            for beam, strip_ft in strips.items():
+                w_n_m = -strip_ft * psf * PLF_TO_N_M
                 for member in graph.beam_spans[beam]:
                     loads.member_loads.append(MemberLoad(
                         case=kind, member=member, direction="GZ", w0_n_m=w_n_m,
                         w1_n_m=w_n_m,
-                        source=(f"{tag} {psf:.0f} psf x {strip_ft:.2f} ft joist span "
+                        source=(f"{tag} {psf:.0f} psf x {strip_ft:.2f} ft tributary strip "
                                 f"({citation})")))
 
 

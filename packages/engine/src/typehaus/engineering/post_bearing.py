@@ -51,7 +51,8 @@ from typehaus.engineering.registry import (
 KIND = "post_bearing"
 
 #: Bumped whenever the arithmetic below changes — it rides in the fingerprint.
-BASIS_VERSION = "1"
+#: 2: 2026-09-23, each beam under its own half-bay strip, not the full joist span.
+BASIS_VERSION = "2"
 BASIS = "AWC NDS 2018 §3.10 (compression perpendicular to grain), IRC R507.1 loads"
 
 #: AWC NDS 2018 Supplement Table 4A, Fc-perp for spruce-pine-fir — the softest of the
@@ -190,13 +191,14 @@ def _beam_reaction_lb(ctx: EngineeringContext, beam: Any, post: Any,
 def _reaction_lb(ctx: EngineeringContext, post: Any) -> tuple[float | None, tuple[str, ...]]:
     """The total load this post carries, and the beams it came from.
 
-    Every beam that names the post in ``bearing_refs`` and belongs to a deck, under that
-    deck's own ``50 psf x joist span`` line load — the same strip ``glulam_beam.py`` puts
-    under its own record, so the post's demand and the beam's are the same number seen from
-    two ends. A beam that belongs to no deck is a load this module cannot size, and it makes
-    the record INCOMPLETE rather than quietly under-reporting.
+    Every beam that names the post in ``bearing_refs`` and belongs to a deck, under
+    ``50 psf x`` that beam's own strip (``deck_tributary.beam_tributary_ft``) — the load
+    ``glulam_beam.py`` puts under its own record, so the post's demand and the beam's are
+    the same number seen from two ends. A beam that belongs to no deck is a load this module
+    cannot size, and it makes the record INCOMPLETE rather than quietly under-reporting.
     """
-    from typehaus.engineering.glulam_beam import DECK_TOTAL_LOAD_PSF, _joist_span_ft
+    from typehaus.engineering.deck_tributary import beam_tributary_ft
+    from typehaus.engineering.glulam_beam import DECK_TOTAL_LOAD_PSF
     from typehaus.model.floors import FloorSystem
     from typehaus.model.structure import Beam
 
@@ -204,12 +206,12 @@ def _reaction_lb(ctx: EngineeringContext, post: Any) -> tuple[float | None, tupl
     for deck in sorted((e for e in ctx.plan.all_elements()
                         if isinstance(e, FloorSystem) and e.service == "deck"),
                        key=lambda d: d.tag):
-        strip_ft = _joist_span_ft(ctx, deck)
-        if strip_ft is None:
-            continue
         for ref in sorted(deck.joists.bearing_refs or ()):
             beam = ctx.plan.by_tag(ref)
-            if isinstance(beam, Beam) and post.tag in (beam.bearing_refs or ()):
+            if not isinstance(beam, Beam) or post.tag not in (beam.bearing_refs or ()):
+                continue
+            strip_ft = beam_tributary_ft(ctx, deck, beam)
+            if strip_ft is not None:
                 carried.append((beam, DECK_TOTAL_LOAD_PSF * strip_ft))
     if not carried:
         return None, ()
@@ -365,7 +367,7 @@ def _one(ctx: EngineeringContext, post: Any, deck: Any) -> EngineeringRecord:
     if reaction_lb is None:
         incomplete.append(
             f"the load {post.tag} carries. No deck beam names it in `bearing_refs` under a "
-            f"resolvable joist span, or one that does bears partly on a WALL and has no "
+            f"resolvable tributary strip, or one that does bears partly on a WALL and has no "
             f"station to take moments about — author the beam's supports, or seal the item")
     if on_field is None:
         incomplete.append(

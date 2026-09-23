@@ -708,6 +708,9 @@ sound section, and nobody had to re-check it after the fact.
   so where two beams' strips overlap the deck is counted twice. **That leaves these numbers
   conservative**, which is worth saying rather than quietly banking. A real analysis would
   distribute by continuous-beam reactions at the joist level; nothing here does.
+  **Superseded 2026-09-23**: every beam now carries half of each adjacent bay plus its
+  overhang (`engineering/deck_tributary.py`), so the double count is gone. The numbers above
+  are this note's history; the live balcony is `balcony_moment_columns.md` §13.
 - **No development, splice or dowel detail.** §4 sizes a cage; it does not lap it into the
   bell, hook it, or check the tie hooks and the bar's clear cover against §20.5.1.3. That is
   drawing work and it is not here.

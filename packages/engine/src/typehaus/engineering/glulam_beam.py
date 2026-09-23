@@ -40,6 +40,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from typehaus.engineering.deck_tributary import beam_tributary_ft as _beam_tributary_ft
+from typehaus.engineering.deck_tributary import joist_span_ft as _joist_span_ft
 from typehaus.engineering.item import (
     EngineeringRecord,
     LimitState,
@@ -113,95 +115,6 @@ _M_PER_FT = 0.3048
 _BEARING_TOL_M = 0.1524
 
 
-
-
-def _joist_span_ft(ctx: Any, deck: Any) -> float | None:
-    """The deck's joist SPAN, from the resolved joist members — bearing line to bearing line.
-
-    A joist's drawn length includes its cantilevers and the span is what it bears over, so
-    the overhang comes back off the two outer bays. ``resolve/floors.py`` adds it to those
-    bays only, one end each, so a member is carrying a cantilever exactly when one of its
-    tips sits on the joist field's outer extent.
-
-    A restatement of ``checks/structural/deck.py::_Deck.joist_span_ft``, for the leaf-package
-    import rule and on the same terms ``pier_basis`` states its tributary rule: if one moves,
-    move the other. It stays here, and not in the check, because ``pier_basis`` and
-    ``post_bearing`` both read it and neither may import ``checks``.
-    """
-    resolved = next((f for f in ctx.model.floors if f.tag == deck.tag), None)
-    if resolved is None:
-        return None
-    joists = [m for m in resolved.members if m.category == "joist"]
-    if not joists:
-        return None
-    axis = 0 if (deck.joists.direction or "x") == "x" else 1
-    spec = deck.joists
-    base = spec.cantilever.meters if spec.cantilever is not None else 0.0
-    start_ft = (spec.cantilever_start.meters
-                if spec.cantilever_start is not None else base) / _M_PER_FT
-    end_ft = (spec.cantilever_end.meters
-              if spec.cantilever_end is not None else base) / _M_PER_FT
-
-    ends = [sorted((m.p0[axis], m.p1[axis])) for m in joists]
-    low = min(a for a, _ in ends)
-    high = max(b for _, b in ends)
-    spans = []
-    for (a, b), member in zip(ends, joists, strict=True):
-        span_ft = member.length_m / _M_PER_FT
-        if abs(a - low) < 1e-6:
-            span_ft -= start_ft
-        if abs(b - high) < 1e-6:
-            span_ft -= end_ft
-        spans.append(span_ft)
-    return max(spans)
-
-
-def _beam_tributary_ft(ctx: Any, deck: Any, beam: Any) -> float | None:
-    """Width of deck ``beam`` carries: half of each adjacent bay, plus the joists' overhang
-    on whichever side it is the outermost bearing.
-
-    Bearing lines are the deck's ``bearing_refs`` beams, at their nodes' coordinate along
-    the joist axis, and the joist field's two outer bearings (its extent less the
-    cantilevers, read as :func:`_joist_span_ft` reads them). ``None`` when the beam or the
-    joist field does not place.
-    """
-    resolved = next((f for f in ctx.model.floors if f.tag == deck.tag), None)
-    joists = [m for m in resolved.members if m.category == "joist"] if resolved else []
-    if not joists:
-        return None
-    axis = 0 if (deck.joists.direction or "x") == "x" else 1
-
-    def line_of(element: Any) -> float | None:
-        nodes = [ctx.plan.by_tag(getattr(element, name, None) or "")
-                 for name in ("start_node", "end_node")]
-        if any(n is None or getattr(n, "position", None) is None for n in nodes):
-            return None
-        return sum(n.position.xy_m[axis] for n in nodes) / 2.0
-
-    here = line_of(beam)
-    if here is None:
-        return None
-    spec = deck.joists
-    base = spec.cantilever.meters if spec.cantilever is not None else 0.0
-    start = spec.cantilever_start.meters if spec.cantilever_start is not None else base
-    end = spec.cantilever_end.meters if spec.cantilever_end is not None else base
-    low = min(min(m.p0[axis], m.p1[axis]) for m in joists)
-    high = max(max(m.p0[axis], m.p1[axis]) for m in joists)
-    lines = [low + start, high - end]
-    for ref in spec.bearing_refs or ():
-        element = ctx.plan.by_tag(ref)
-        if element is not None and (c := line_of(element)) is not None:
-            lines.append(c)
-    # one line per bearing, however many ways it was found (3" is well inside a beam width)
-    merged: list[float] = []
-    for c in sorted(lines):
-        if not merged or c - merged[-1] > 0.0762:
-            merged.append(c)
-    i = min(range(len(merged)), key=lambda k: abs(merged[k] - here))
-    width = 0.0
-    width += (merged[i] - merged[i - 1]) / 2.0 if i > 0 else start
-    width += (merged[i + 1] - merged[i]) / 2.0 if i < len(merged) - 1 else end
-    return width / _M_PER_FT
 
 
 def _section(beam: Any) -> tuple[float, float] | None:

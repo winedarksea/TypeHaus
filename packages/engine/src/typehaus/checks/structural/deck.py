@@ -510,37 +510,12 @@ def deck_beam_span(ctx: CheckContext) -> list[Finding]:
     return out
 
 
-def _delivered_to_posts(ctx: CheckContext, supports: tuple[str, ...],
-                        depth: int = 0) -> dict[str, float]:
-    """``post tag -> fraction of one beam's load`` that actually reaches a Post.
+def _delivered_to_posts(ctx: CheckContext, supports: tuple[str, ...]) -> dict[str, float]:
+    """``post tag -> fraction of one beam's load`` reaching a Post, down the beam chain.
+    ``engineering/deck_tributary.delivered_to_posts``, the one copy."""
+    from typehaus.engineering.deck_tributary import delivered_to_posts
 
-    ** A LOAD PATH CAN BE MORE THAN ONE BEAM DEEP. ** The north entry landing's joists bear
-    on three floor beams, those bear on two SEAT beams, and only the seats bear on piers.
-    Stopping one level down and keeping whatever happened to be a Post handed the whole
-    landing to the two posts under the interior cantilever and gave the four piers carrying
-    it nothing. A support that is itself a Beam passes its share on to ITS supports.
-
-    A support that is neither (a bearing wall, a pier direct) keeps its share and falls out
-    here, so the fractions deliberately need not sum to 1.
-
-    **The twin of ``engineering/pier_basis.py::_delivered_to_posts``**, and deliberately a
-    restatement rather than an import: ``engineering`` may not import ``checks``. If one
-    moves, MOVE THE OTHER — ``test_pier_calcs.py::test_the_two_tributary_rules_agree`` is
-    what notices when they drift, and it has.
-    """
-    out: dict[str, float] = {}
-    if not supports or depth > 4:
-        return out
-    each = 1.0 / len(supports)
-    for tag in supports:
-        element = ctx.plan.by_tag(tag)
-        if isinstance(element, Post):
-            out[tag] = out.get(tag, 0.0) + each
-        elif isinstance(element, Beam):
-            for post, fraction in _delivered_to_posts(
-                    ctx, tuple(element.bearing_refs or ()), depth + 1).items():
-                out[post] = out.get(post, 0.0) + each * fraction
-    return out
+    return delivered_to_posts(ctx, supports)
 
 
 def _deck_posts(ctx: CheckContext, deck: _Deck) -> list[Post]:
@@ -555,67 +530,17 @@ def _deck_posts(ctx: CheckContext, deck: _Deck) -> list[Post]:
     return list(seen.values())
 
 
-def _beam_length_ft(ctx: CheckContext, beam: Beam) -> float | None:
-    """A beam's full node-to-node length, cantilever tips included.
-
-    Not ``_beam_span_ft``: what a beam delivers to its posts is everything standing on it,
-    and an overhang past the end bearing is part of that load even though it is not span.
-    """
-    nodes = {e.tag: e.position.xy_m  # type: ignore[attr-defined]
-             for e in ctx.plan.all_elements() if e.element_kind == "Node"}
-    p0, p1 = nodes.get(beam.start_node), nodes.get(beam.end_node)
-    if p0 is None or p1 is None:
-        return None
-    return math.dist(p0, p1) / _M_PER_FT
-
-
 def _tributaries_ft2(ctx: CheckContext, deck: _Deck) -> dict[str, float] | None:
-    """``post tag -> tributary ft2``, weighted by the strip of deck each BEAM carries.
+    """``post tag -> tributary ft2``: ``engineering/deck_tributary.deck_post_tributaries``.
 
-    An equal ``area / len(posts)`` split is right only on a regular grid with one post per
-    bay corner, and catlin's balcony is not that: its centre beam runs the full depth of the
-    deck onto two posts while the two edge beams share four, so the even split under-reported
-    the centre pair by about a half. That mattered — those two are the pillars whose bearing
-    ``engineering/post_bearing.py`` now grades, and a tributary that is 2/3 of the truth is a
-    demand that is 2/3 of the truth.
-
-    The weighting reuses the strip that already exists rather than opening a fourth opinion
-    about deck loads: ``joist_span_ft`` is the width of deck a beam carries — the same figure
-    ``engineering/glulam_beam.py`` puts under its 500 plf — so a beam's share of the deck is
-    that strip times its own length, divided among the supports it names and kept where
-    that support is a post. Each beam takes the
-    FULL joist span, which double-counts where two beams' strips overlap; that is the
-    conservative direction and it is the same over-count ``glulam_beam``'s record prints and
-    invites a reviewer to disagree with.
-
-    The even split survives as the fallback for a deck with no resolvable strip or a beam
-    with no resolvable length, so nothing that graded before stops grading.
+    Each beam carries half of each adjacent joist bay plus any overhang, times its own
+    length, shared among the posts it reaches — the rule ``glulam_beam``, ``post_bearing``
+    and ``pier_basis`` load the same beams with. There is no second copy here.
     """
-    posts = _deck_posts(ctx, deck)
-    area = deck.area_ft2
-    if not posts:
-        return None
-    fallback = ({p.tag: area / len(posts) for p in posts}
-                if area is not None else None)
-    strip_ft = deck.joist_span_ft
-    if strip_ft is None:
-        return fallback
-    out: dict[str, float] = {p.tag: 0.0 for p in posts}
-    for beam in _deck_beams(ctx, deck):
-        length_ft = _beam_length_ft(ctx, beam)
-        if length_ft is None:
-            return fallback
-        # Divided among ALL the beam's supports and then kept only where a support is a
-        # POST. A porch beam that runs from a column to a bearing WALL delivers half its
-        # load to each, and a split that counted only the posts would hand the column the
-        # wall's half as well.
-        supports = tuple(beam.bearing_refs or ())
-        if not supports:
-            return fallback
-        share = strip_ft * length_ft
-        for tag, fraction in _delivered_to_posts(ctx, supports).items():
-            out[tag] = out.get(tag, 0.0) + share * fraction
-    return out
+    from typehaus.checks.structural._engineering import engineering_context
+    from typehaus.engineering.deck_tributary import deck_post_tributaries
+
+    return deck_post_tributaries(engineering_context(ctx), deck.authored)
 
 
 @check(Tier.STRUCTURAL, "structural.deck_post_size")

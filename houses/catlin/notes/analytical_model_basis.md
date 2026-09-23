@@ -35,7 +35,7 @@ solves to the numbers the calc sheets already carry.
 
 | Case | Content | Source |
 |---|---|---|
-| `dead` | deck dead 10 psf as a line load on each deck beam over the deck's joist span; roof beams' `design_dead` share of `uniform_load` | `engineering/pier_basis.DECK_DEAD_LOAD_PSF`; `roof_beam` record inputs |
+| `dead` | deck dead 10 psf as a line load on each deck beam over its own strip (half of each adjacent bay plus overhang, `engineering/deck_tributary`, since 2026-09-23); roof beams' `design_dead` share of `uniform_load` | `engineering/pier_basis.DECK_DEAD_LOAD_PSF`; `roof_beam` record inputs |
 | `live` | IRC Table R301.5 deck live 40 psf, likewise | `pier_basis` |
 | `snow` | roof beams' `design_snow` share of `uniform_load` | `roof_beam` record inputs |
 | `wind` | each fixed column's ASD storey shear at the deck plane, so that V × h = the record's ASD wind base moment | `_Pier.wind_base_moment_lb_ft`, `balcony_moment_columns.md` §2b |
@@ -142,7 +142,8 @@ bolt per part, equal at every joint, because equal stiffness is what `deck_tie` 
 by; its nodes moved 1-1/4" north with the angles (43.677 → 43.781).
 
 **Finding:** under gravity the graph hands the stem ties a horizontal thrust the building
-does not have — **~95 lb live, ~24 lb dead at `BM-BW-FC`** (~110 / 28 before that move) —
+does not have — **~53 lb live, ~13 lb dead at `BM-BW-FC`** since 2026-09-23 (~95 / 24 on the
+whole-span strip, ~110 / 28 before that move) —
 because the seat beams' end
 pieces run from the carriers (−0.385') DOWN to the column-top work points (−0.99') over
 1.125', an incline the rigid-link convention invents. It is small beside the 588-1,084 lb
@@ -232,3 +233,26 @@ restrained only by the beam's torsion. PT-SG-BR1: 126.6 lb × 8.68' = **1,099 lb
 the beam centreline) = **7,561 lb-ft** (solve 7,564) against the record's ASD 7,354 on its
 16.56' lever — the model runs to the header's centreline, not its soffit, so here it errs
 long by 2.9 %. Nothing on the breezeway is asserted beyond the zero gravity moment.
+
+## Addendum 2026-09-23 — each deck beam on its own strip
+
+The deck line loads now come from `engineering/deck_tributary.beam_tributary_ft`, the rule
+`glulam_beam` already used: `BM-SG-BLW`/`-BLE` 9.75' (was 18.0'), the landing's seat beams
+3.28' / 3.09' (was 4.98'), `BM-BW-FC`/`-FE` 1.17' (was 2.33').
+
+**§3c at BR1**, both tops hinged, the same statics as addendum 2026-09-22b:
+
+| term | working | value |
+|---|---|---|
+| live, BR1 | 40 × 9.75 = 390 plf × 9.667 × 4.167 / 7.333 | **2,142 lb** (solve 2,142.5) |
+| live, BF1 | 3,770 − 2,142 | **1,628 lb** (solve 1,628.3) |
+| dead (deck), BR1 / BF1 | 97.5 plf × 9.667 = 942.5 × 4.167 / 7.333 | **536 / 407 lb** (solve 535.6 / 407.1) |
+| record, each | 40 × 47.13 ft² | 1,885 lb live, 471 lb deck dead |
+
+The pair still sums to the records (3,770 / 942.5); each column stays 14% off the equal split.
+The test now pins BR1's live to this statics line as well as the pair.
+
+**§3e's thrust** is a solve reading, not a hand check: 52.8 lb live, 13.2 dead at the FC tie.
+It fell by 0.55 against the whole-span graph, between the carriers' strip ratio (0.50) and
+the seat beams' (0.62–0.66) that feed it, which is the bound a hand reading can give.
+

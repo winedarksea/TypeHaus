@@ -338,3 +338,23 @@ The balcony joists span 18'-0" on two beams, so each corner column's P_u is 7,88
 7,907 lb (BR) where §4 worked a smaller load. By §4's own method the magnifier δ at the band
 ends is **1.0686 / 1.0701 (BF1/BF3)** and **1.0710 / 1.0725 (BR1/BR3)**, up from 1.044–1.046.
 No verdict moves; `tests/test_base_rotation_calcs.py` carries the re-derived figures.
+
+## Addendum 2026-09-23 — every deck beam on its own half-bay strip
+
+`engineering/deck_tributary.py` gives each deck beam half of each adjacent bay plus its
+overhang, where `pier_basis` gave it the whole joist span. §3/§4's arithmetic, k_θ unchanged:
+
+| column | D | P_u | β | EI | R 0.25" / 1.0" | δ 0.25" | δ 1.0" |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `PT-SG-BF1`/`BF3` | 1,532.7 | 4,855.4 | 0.3788 | 1.1902e9 | 6.616 / 6.242 | **1.0431** | **1.0439** |
+| `PT-SG-BR1`/`BR3` | 1,550.8 | 4,877.0 | 0.3816 | 1.1878e9 | 6.742 / 6.360 | **1.0446** | **1.0455** |
+| `PT-BW-W` | 1,556.8 | 7,220.7 | 0.2587 | 1.3037e9 | 1.299 / 0.325 | 1.1017 | 1.3997 |
+| `PT-BW-E` | 1,001.9 | 1,838.1 | 0.6541 | 9.9209e8 | 1.707 / 0.427 | 1.0264 | 1.0810 |
+| `PT-BW-GW` | 1,244.8 | 6,824.8 | 0.2189 | 1.3464e9 | 0.119 / 0.030 | 1.4074 | mechanism |
+| `PT-BW-GE` | 689.9 | 1,442.2 | 0.5741 | 1.0425e9 | 0.146 / 0.036 | 1.0697 | 1.3363 |
+
+The balcony is back within 2% of §4's own P_u and δ. The landing rows stay history (withdrawn
+2026-09-21); `PT-BW-GW` is still over 1.4 at the stiff end. Worked, `PT-BW-E` at 0.25":
+`R = 1.8421e7 × 91.94 / 9.9209e8 = 1.707`, `Pc,rigid = π² × 9.9209e8 / (2.1 × 91.94)² =
+262,665`, `Pc,flex = 262,665 / (1 + 3/1.707) = 95,261`, `δ = 1 / (1 − 1,838.1 / 71,446) =
+1.0264`.

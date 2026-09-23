@@ -530,7 +530,8 @@ guessed. **Against `haus analysis --solve`:** PT-SG-BR1 live 3,955 lb, BF1 3,006
 0.568 / 0.432 — exactly 2,678 / 4,712.5 — so the solve's distribution agrees. Its magnitude
 is 18/9.75 = 1.85× this record's because the analytical loads (`pier_basis`) still give each
 edge beam the whole 18' joist span (§5a's rule is `glulam_beam`'s alone): 3,955 × 9.75/18 =
-2,142 lb live + 989 × 9.75/18 = 536 lb dead = 2,678 lb. Conservative there, not reconciled.
+2,142 lb live + 989 × 9.75/18 = 536 lb dead = 2,678 lb. Reconciled 2026-09-23: every reader
+now takes §5a's strip (§13).
 
 Black locust for the two centre pillars remains an option (IRC R202 naturally durable; mill
 order; engineered values) and is **not** taken here.
@@ -1010,7 +1011,7 @@ V_u = 1,160/9.163'/0.6 + 200 = 210.9 + 200         = 410.9 lb  (both rows)
 development                                          21.2" / 24"   0.884 — still governs
 ```
 
-Unroughened (μ 0.6): 0.6 × 51,527 = 30,916 lb.
+Unroughened (μ 0.6): 0.6 × 51,527 = 30,916 lb (§13c: 0.6 × 50,168 = 30,101 lb).
 
 ### 12e. Balcony gravity through the frame (`analytical_model_basis.md` §3c)
 
@@ -1018,6 +1019,81 @@ The solve hands the two columns under a beam 3,119 lb (front) and 3,842 lb (rear
 load against the record's equal 3,480 — the pair sum agrees (6,961 vs 6,960) and the split
 follows the unequal cantilevers. See that note for the dead case and the base moment the
 continuous frame puts on these columns under gravity, which no record grades.
+
+---
+
+## 13. Each edge beam on its own strip (2026-09-23) — §12 re-worked
+
+`pier_basis`, `post_bearing`, `analytical/loads` and `structural.deck_*` now read §5a's rule
+through `engineering/deck_tributary.py`: a beam carries half of each adjacent bay plus the
+overhang past it, **9.75'** here, not the whole 18'. §12's gravity was 1.85× the deck.
+Wind (§12b) and the guard do not move. Worked with a calculator from §3/§4's formulas.
+
+### 13a. Gravity
+
+```
+per column   9.75' × 9.667' / 2                   = 47.13 ft²   (4 × 47.13 = 188.5 = 19.5' × 9.667')
+live         40 × 47.13                           = 1,885 lb
+dead         10 × 47.13 + 1,061.5                 = 1,532.8 lb front;  + 1,079.5 = 1,550.8 rear
+P_u          1.2 × 1,532.8 + 1.6 × 1,885          = 4,855.3 lb front;  4,876.9 rear
+```
+
+### 13b. Slenderness and the section
+
+```
+β_dns = 1.2 × 1,532.8 / 4,855.3 = 0.3788      EI = 0.4 × 4.0305e6 × 1,017.9 / 1.3788 = 1.1902e9
+P_c = π² × 1.1902e9 / (2.1 × 108.125)²          = 227,834 lb   (rear 219,862)
+δ = 1 / (1 − 4,855.3 / (0.75 × 227,834))       = 1.0292       (rear 1.0305)
+M_u guard = 1.6 × 2,502.1 × 1.0292              = 4,120 lb-ft  (rear 4,176)
+```
+
+Strain compatibility at P_u 4,855.3, bars at ±45° (2.342"), β₁ 0.80:
+
+```
+c = 2.750"   a = 2.200"   chord offset 3.800"
+A_seg = 14.21 in²   ȳ = 4.696"          C_c = 0.85 × 5,000 × 14.21 = 60,403 lb
+tension pair   ε −0.00610, yielded      F = −37,200 lb at −2.342"
+compr.-side    ε −0.000990              F = −29e6 × 0.000990 × 0.62 = −17,808 lb at +2.342"
+P_n = 60,403 − 37,200 − 17,808 = 5,395 lb     φP_n = 0.90 × 5,395 = 4,855 = P_u ✓
+M_n = 60,403 × 4.696 + 37,200 × 2.342 − 17,808 × 2.342 = 27,421 lb-ft (unrounded c)
+φM_n = 0.90 × 27,421 = 24,678 lb-ft front      (rear, P_u 4,877: 24,684)
+```
+
+Less axial is less moment capacity below balance: φM_n 25,470 → 24,678, back beside §4's
+24,702 at a P_u (4,947) within 2% of this one.
+
+| case (front row) | demand | capacity | d/c |
+|---|---:|---:|---:|
+| wind, 1.0W | 1,901 lb-ft | 24,678 | 0.077 |
+| guard, 1.6L | 4,003 lb-ft | 24,678 | 0.162 |
+| guard magnified, δ 1.029 | 4,120 lb-ft | 24,678 | 0.167 |
+| §2.3.1 envelope, 1.2D + 1.0W + L (P_u 3,724, δ 1.022) | 4,501 lb-ft | 24,382 | **0.185** |
+| axial | 4,855 lb | 285,893 lb | 0.017 |
+
+Rear row, the envelope: P_u 3,746, M_u 4,569 (δ 1.023) against 24,388 — 0.187.
+
+### 13c. The wall-top joint (§11), at 1.2D + 1.0W + L
+
+```
+                         BR1                         BF1
+P_u, M_u (magnified)     3,746 lb, 4,569 lb-ft        3,724 lb, 4,501 lb-ft
+c, a                     2.729", 2.183"               2.728", 2.182"
+A₁, ȳ                    14.05 in², 4.706"            14.05 in², 4.706"
+C (±45°)                 9,378 lb                     9,247 lb
+φB_n                     38,825 lb   d/c 0.242        38,817 lb   d/c 0.238
+T, one bar on-axis       5,032 lb    d/c 0.301        4,935 lb    d/c 0.295   (vs 16,740)
+φV_n = 55,800 − (C − P_u)  50,168 lb                  50,277 lb   (V_u 410.9, d/c 0.008)
+development              21.2" / 24"   0.884 — still governs
+```
+
+**The dowel tension ROSE, 0.228 → 0.301**: less axial leaves more of the moment to the bar.
+A lighter column is not the safe side of every state, which is why each is re-worked.
+
+### 13d. Through the frame (`analytical_model_basis.md` addendum 2026-09-23)
+
+390 plf live over the 9.667' beam, 4.167' of the 7.333' bearing span toward the rear:
+**2,142 lb at BR1, 1,628 at BF1** (solve 2,142.5 / 1,628.3); dead 97.5 plf → 536 / 407 lb.
+The pair sums to the records' 2 × 1,885 = 3,770; each column is 14% off the equal split.
 
 ---
 
