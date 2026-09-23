@@ -20,6 +20,7 @@ from typehaus.model import (
     Node,
     PlanModel,
     Project,
+    PublishedSpan,
     Site,
     Storey,
     Wall,
@@ -72,7 +73,8 @@ def anchors(tag: str, x_ft: float, spacing_in: float, wall: str,
 
 def plan(*, gap_in: float = 0.0, assembly: str = "BEAM_KDAT", spacing_in: float | None = 16.0,
          ledger_on_w: str = "W-W", wood: bool = False,
-         fastener: str = "1/2 adhesive anchor", ledger: str = LEDGER) -> PlanModel:
+         fastener: str = "1/2 adhesive anchor", ledger: str = LEDGER,
+         published: PublishedSpan | None = None) -> PlanModel:
     library = Library(materials=(_CONCRETE, _KDAT, _SPF),
                       assemblies=(_WALL, _WOOD, _BEAM_KDAT, _BEAM_SPF))
     project = Project(name="LDG", project_uuid="00000000-0000-4000-8000-0000000000d7",
@@ -111,10 +113,10 @@ def plan(*, gap_in: float = 0.0, assembly: str = "BEAM_KDAT", spacing_in: float 
     ledgers = (
         Beam(uid="B000000d01", tag="BM-LW", start_node="N-LWS", end_node="N-LWN",
              size=ledger, assembly=assembly, top_elevation=ft(DECK_TOP_FT),
-             ledger_on=ledger_on_w),
+             ledger_on=ledger_on_w, published_span=published),
         Beam(uid="B000000d02", tag="BM-LE", start_node="N-LES", end_node="N-LEN",
              size=ledger, assembly=assembly, top_elevation=ft(DECK_TOP_FT),
-             ledger_on="W-E"),
+             ledger_on="W-E", published_span=published),
     )
     deck = FloorSystem(
         uid="FS000000d7", tag="FS-D",

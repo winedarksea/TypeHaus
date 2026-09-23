@@ -76,6 +76,7 @@ from typehaus import (
     PipeSystem,
     Post,
     pt,
+    PublishedSpan,
     Railing,
     RailingKind,
     ReinforcementSpec,
@@ -2090,53 +2091,89 @@ HP_STAND_ANCHORS = [
 # The ledger's back face is on the WASH, not the pour: the 1/8" silicate film is layer 0 of
 # SUNKEN_GARDEN_WALL and `structural.deck_ledger` measures to the wall's whole body.
 #
-# ** THE ANCHORS: 1/2" x 5" 316 STAINLESS ADHESIVE ANCHORS, STAGGERED, 16" O.C. ** AWC DCA6
-# requires 1/2" expansion or adhesive anchors with washers into concrete and leaves spacing
-# and embedment to the anchor maker, so `structural.deck_ledger` reads UNKNOWN until that
-# table is quoted onto the drawing. Rows 2" in from the ledger's top and bottom edges, first
-# and last anchors 4" from its ends. Stainless for the reason every other fastener in this
-# court is: it sits in a wet, salted pit. Clear of the guard's ESR-3485 baseplate anchors,
-# which go DOWN into the wall top 6" from this face.
+# ** THE ANCHORS: 1/2" x 6" TYPE 316 TITEN HD (THD50600H6SS), STAGGERED, 16" O.C. ** AWC DCA6
+# leaves spacing into concrete to the anchor maker; Simpson's L-A-THDSSLDGR23 publishes it
+# (19" o.c. up to an 18' joist span), authored on each ledger below (owner, 2026-09-22).
+# Rows 2" in from the ledger's edges, end anchors 4" in — the letter's own figure. Stainless:
+# a wet, salted pit. Clear of the guard's ESR-3485 baseplate anchors, which go DOWN into the
+# wall top 6" from this face.
 #
-# The four nodes are the porch's corners on the ledger lines. They keep the uids of the
-# retired beam-end nodes (SGNM01/02/04/05), which named the same four corners.
+# The four nodes are the ledger ends, 2" past the end joists so the end hangers' flanges land
+# on wood. They keep the uids of the retired beam-end nodes (SGNM01/02/04/05).
 _LEDGER_FACE_IN = _WASH_FILM_IN + cross_section(SPEC.porch_joist).width_m / 0.0254 / 2.0
 _x_ldg_w = _x_in_w + _LEDGER_FACE_IN / 12.0
 _x_ldg_e = _x_in_e - _LEDGER_FACE_IN / 12.0
+_LEDGER_ANCHOR = "THD50600H6SS"
+_LEDGER_ROW = PublishedSpan(
+    source="Simpson Strong-Tie engineering letter L-A-THDSSLDGR23 (1 Jan 2023, valid to "
+           "12/31/2024; re-pull the 2025 revision for the submittal)",
+    table="THDSS On-Center Spacing for 2x Deck Ledger Connection to Concrete Walls (40 psf "
+          "Live Load, 10 psf Dead Load): THD50600H6SS, 1/2x6, single 2x8 min., joist span "
+          "up to 18 ft: 19 in",
+    member=_LEDGER_ANCHOR,
+    span=inch(19),
+    carried_span=ft(18),
+    load_psf=50.0,
+    treatment="treated",
+    condition="ledger Hem-Fir, DF-L or southern pine, min. 2x8 (fn 1); anchors 2\" from "
+              "the ledger's top and bottom, 4-8\" from its ends, rows 3-5\" apart (fn 2); "
+              "wall at least 6-1/4\" thick and anchors 2\" below its top; no f'c stated")
+# ** END JOISTS FLUSH WITH THEIR CARRIERS (owner, 2026-09-22). ** The resolver centres an edge
+# joist on its outline, so each joist field is inset half a joist at the carrier ends and the
+# plank keeps the full outline (`subfloor_outline`).
+_END_JOIST_INSET_FT = cross_section(SPEC.porch_joist).width_m / 0.0254 / 2.0 / 12.0
+_LEDGER_OVERRUN_FT = 2.0 / 12.0
+_y_ldg_s = _y_ax_front - _LEDGER_OVERRUN_FT
+_y_ldg_n = _y_porch_deck_n + _LEDGER_OVERRUN_FT
 MAIN_NODES = [
-    Node(uid="SGNM01AAAA", tag="N-SGM-NW", position=pt(ft(_x_ldg_w), ft(_y_porch_deck_n)),
+    Node(uid="SGNM01AAAA", tag="N-SGM-NW", position=pt(ft(_x_ldg_w), ft(_y_ldg_n)),
          open_end=True),
-    Node(uid="SGNM02AAAA", tag="N-SGM-NE", position=pt(ft(_x_ldg_e), ft(_y_porch_deck_n)),
+    Node(uid="SGNM02AAAA", tag="N-SGM-NE", position=pt(ft(_x_ldg_e), ft(_y_ldg_n)),
          open_end=True),
-    Node(uid="SGNM04AAAA", tag="N-SGM-FW", position=pt(ft(_x_ldg_w), ft(_y_ax_front)),
+    Node(uid="SGNM04AAAA", tag="N-SGM-FW", position=pt(ft(_x_ldg_w), ft(_y_ldg_s)),
          open_end=True),
-    Node(uid="SGNM05AAAA", tag="N-SGM-FE", position=pt(ft(_x_ldg_e), ft(_y_ax_front)),
+    Node(uid="SGNM05AAAA", tag="N-SGM-FE", position=pt(ft(_x_ldg_e), ft(_y_ldg_s)),
          open_end=True),
 ]
 LEDGERS = [
     Beam(uid="SGLD01AAAA", tag="BM-SG-LDGW", start_node="N-SGM-FW", end_node="N-SGM-NW",
          size=SPEC.porch_joist, assembly="BEAM_KDAT", top_elevation=_porch_top,
-         top_protection=_BEAM_TAPE, ledger_on="W-SG-W1"),
+         top_protection=_BEAM_TAPE, ledger_on="W-SG-W1", published_span=_LEDGER_ROW),
     Beam(uid="SGLD02AAAA", tag="BM-SG-LDGE", start_node="N-SGM-FE", end_node="N-SGM-NE",
          size=SPEC.porch_joist, assembly="BEAM_KDAT", top_elevation=_porch_top,
-         top_protection=_BEAM_TAPE, ledger_on="W-SG-E1"),
+         top_protection=_BEAM_TAPE, ledger_on="W-SG-E1", published_span=_LEDGER_ROW),
 ]
-_LEDGER_ANCHOR = "SS316-ADH-12x5"
-_LEDGER_ANCHOR_END_IN = 4.0
-_LEDGER_ANCHOR_OC_IN = 16.0
-_LEDGER_ANCHOR_ROWS_IN = (2.0, cross_section(SPEC.porch_joist).depth_m / 0.0254 - 2.0)
-_ledger_len_in = (_y_porch_deck_n - _y_ax_front) * 12.0
-_ledger_stations_in = [_LEDGER_ANCHOR_END_IN + _k * _LEDGER_ANCHOR_OC_IN
-                       for _k in range(int((_ledger_len_in - 2 * _LEDGER_ANCHOR_END_IN)
-                                           // _LEDGER_ANCHOR_OC_IN) + 1)]
+# The porch's joist lines, as `resolve/floors.py` lays them: 12" o.c. from the inset south
+# edge, plus the inset north edge.
+_porch_y0 = _y_ax_front + _END_JOIST_INSET_FT
+_porch_y1 = _y_porch_deck_n - _END_JOIST_INSET_FT
+_porch_oc_ft = SPEC.porch_joist_oc_in / 12.0
+_porch_lines = [_porch_y0 + _k * _porch_oc_ft
+                for _k in range(int((_porch_y1 - _porch_y0) / _porch_oc_ft + 1e-9) + 1)]
+_porch_lines += [_porch_y1] if _porch_lines[-1] < _porch_y1 - 1e-6 else []
+# One anchor mid-bay (never behind a hanger), the end two pulled to the letter's 8" max from
+# the ledger ends; rows alternate 3-1/8" and 8-1/8" down, 5" apart (fn 2's 3"-5").
+_LEDGER_ANCHOR_END_MAX_FT = 7.75 / 12.0
+_LEDGER_ANCHOR_ROWS_IN = (3.125, 8.125)
+_ledger_stations = [(_a + _b) / 2.0 for _a, _b in zip(_porch_lines, _porch_lines[1:])]
+_ledger_stations[0] = min(_ledger_stations[0], _y_ldg_s + _LEDGER_ANCHOR_END_MAX_FT)
+_ledger_stations[-1] = max(_ledger_stations[-1], _y_ldg_n - _LEDGER_ANCHOR_END_MAX_FT)
 LEDGER_ANCHORS = [
     Connector(uid=f"SGLA{_side}{_k}AAAA", tag=f"CN-SG-LDG{_side}-{_k}",
               kind=ConnectorKind.ANCHOR_BOLT, size=_LEDGER_ANCHOR,
-              position=pt(ft(_lx), ft(_y_ax_front) + inch(_st)),
+              position=pt(ft(_lx), ft(_st)),
               elevation=_porch_top - inch(_LEDGER_ANCHOR_ROWS_IN[_k % 2]),
               connects=(f"BM-SG-LDG{_side}", _wall))
     for _side, _lx, _wall in (("W", _x_ldg_w, "W-SG-W1"), ("E", _x_ldg_e, "W-SG-E1"))
-    for _k, _st in enumerate(_ledger_stations_in, start=1)
+    for _k, _st in enumerate(_ledger_stations, start=1)
+]
+# Stainless hangers (owner, 2026-09-22): one spec per ledger sets every hung end on it.
+LEDGER_HANGERS = [
+    Connector(uid=f"SGLH{_side}1AAAA", tag=f"CN-SG-HGR-LDG{_side}",
+              kind=ConnectorKind.JOIST_HANGER, size="LUS210SS",
+              position=pt(ft(_lx), ft(_porch_y0)), elevation=_porch_top,
+              connects=(f"BM-SG-LDG{_side}", "FS-SG-PORCH"))
+    for _side, _lx in (("W", _x_ldg_w), ("E", _x_ldg_e))
 ]
 
 # The porch floor's footprint. The floor system is the floor — no separate slab standing in
@@ -2166,6 +2203,8 @@ def _guard_post_stations(path_ft, spacing_ft):
 
 _PORCH_OUTLINE = (pt(ft(_x_in_w), ft(_y_ax_front)), pt(ft(_x_in_e), ft(_y_ax_front)),
                   pt(ft(_x_in_e), ft(_y_porch_deck_n)), pt(ft(_x_in_w), ft(_y_porch_deck_n)))
+_PORCH_JOIST_OUTLINE = (pt(ft(_x_in_w), ft(_porch_y0)), pt(ft(_x_in_e), ft(_porch_y0)),
+                        pt(ft(_x_in_e), ft(_porch_y1)), pt(ft(_x_in_w), ft(_porch_y1)))
 
 # The porch guard: the same product as RL-SG-BALCONY one storey up, SURFACE-mounted where
 # the balcony's is fascia-mounted. A pair of LVL beams cannot carry the ~420 plf a masonry
@@ -2754,6 +2793,11 @@ _deck_x_e = _x_ax_e + _cant_ft
 _DECK_OUTLINE = (pt(ft(_deck_x_w), ft(_y_balcony_front)),
                  pt(ft(_deck_x_e), ft(_y_balcony_front)),
                  pt(ft(_deck_x_e), ft(_y_in_n)), pt(ft(_deck_x_w), ft(_y_in_n)))
+# The joist field, inset half a joist at the beam ends (see `_END_JOIST_INSET_FT`).
+_bal_y0 = _y_balcony_front + _END_JOIST_INSET_FT
+_bal_y1 = _y_in_n - _END_JOIST_INSET_FT
+_DECK_JOIST_OUTLINE = (pt(ft(_deck_x_w), ft(_bal_y0)), pt(ft(_deck_x_e), ft(_bal_y0)),
+                       pt(ft(_deck_x_e), ft(_bal_y1)), pt(ft(_deck_x_w), ft(_bal_y1)))
 # Guard the three open edges (west, front/south, east); the north edge abuts the house.
 # Defined here rather than beside BALCONY_GUARD below because FS-SG-DECK's rim blocking is
 # authored at this path's own post stations — the blocks and the posts cannot be allowed to
@@ -2805,7 +2849,8 @@ PORCH_JOISTS = FloorSystem(
     ),
     # ``outline`` scopes the PERPENDICULAR (y) extent: the porch's south edge (the guard line)
     # to the deck's north edge over the brick. Along the span it is ledger face to face.
-    outline=_PORCH_OUTLINE,
+    outline=_PORCH_JOIST_OUTLINE,
+    subfloor_outline=_PORCH_OUTLINE,
     subfloor=DeckLayer(material_ref="composite-deck",
                        thickness=inch(SPEC.porch_deck_thickness_in)),
     # Butyl over every joist and block top: the composite plank above is GAPPED.
@@ -2829,16 +2874,16 @@ PORCH_JOISTS = FloorSystem(
 # soffit the track screws to, and inherit FS-SG-DECK's ``top_protection`` butyl.
 # 6" inside the side walls' court faces, as they have always been.
 _ENCLOSURE_TRACK_X = (_x_in_w + 0.5, _x_in_e - 0.5)   # 10'-0" / 26'-0"
-# The front track's line, and the spare joist it screws to (BALCONY_JOISTS.extra_lines): at
-# 12" o.c. the joists sit at -9'-6" and -8'-6", so one extra line at -9'-0" gives the front
-# run 1 1/2" of continuous KDAT, 6" off both neighbours so each keeps its own tie.
-_ENCLOSURE_FRONT_Y = -9.0
+# The front track's line, and the spare joist it screws to (BALCONY_JOISTS.extra_lines):
+# midway between the second and third joist lines (-9'-5 1/4" / -8'-5 1/4"), so -8'-11 1/4",
+# 6" off both neighbours so each keeps its own tie. FURN-M-PORCH-TRACK-F sits on it.
+_bal_oc_ft = SPEC.balcony_joist_oc_in / 12.0
+_ENCLOSURE_FRONT_Y = _bal_y0 + 1.5 * _bal_oc_ft
 # ** ONE BLOCK PER BAY NORTH OF THE FRONT TRACK. ** An entry blocks the bay on each side of
 # its line, so every second line covers each bay once. The spare joist is a line too, so the
 # set is -9'-0" (whose SOUTH bay, outside the curtain, is the one idle block per flank) and
 # -7'-6", -5'-6", -3'-6", -1'-6". Every `at` sits strictly inside the joist field.
-_ENCLOSURE_BLOCK_LINES = [_ENCLOSURE_FRONT_Y] + [
-    _y_balcony_front + _k * SPEC.balcony_joist_oc_in / 12.0 for _k in (3, 5, 7, 9)]
+_ENCLOSURE_BLOCK_LINES = [_ENCLOSURE_FRONT_Y] + [_bal_y0 + _k * _bal_oc_ft for _k in (3, 5, 7, 9)]
 
 # Balcony: 2x12 @ 12" o.c. running E-W across the two N-S beams, 18'-0" apart.
 #
@@ -2872,7 +2917,7 @@ BALCONY_JOISTS = FloorSystem(
     # and guard consumers read, so the model's 10'-0" walking surface is this deck's SOUTH
     # (low) edge and the built north edge stands 2 5/8" above it.
     # notes/balcony_differential_movement.md §2.
-    top_rise=_balcony_beam_rise,
+    top_rise=_balcony_rise_at(_bal_y1) - _balcony_rise_at(_bal_y0),
     joists=JoistSpec(member=SPEC.balcony_joist, spacing=inch(SPEC.balcony_joist_oc_in),
                      direction="x", species="southern_pine",
                      cantilever=inch(SPEC.joist_cantilever_in),
@@ -2918,7 +2963,8 @@ BALCONY_JOISTS = FloorSystem(
                    "curtain plane crosses this bay perpendicular, so without the block "
                    "the bay is open inside<->outside above a sealed curtain")
           for _ex in _ENCLOSURE_TRACK_X for _ey in _ENCLOSURE_BLOCK_LINES)),
-    outline=_DECK_OUTLINE,
+    outline=_DECK_JOIST_OUTLINE,
+    subfloor_outline=_DECK_OUTLINE,
     subfloor=DeckLayer(material_ref="aluminum-deck",
                        thickness=inch(SPEC.balcony_deck_thickness_in)),
     # Butyl here is doing the SECOND job in ``FloorSystem.top_protection``'s docstring more
@@ -2939,9 +2985,8 @@ BALCONY_JOISTS = FloorSystem(
 # this deck (`joints/bearing.py`, a tie naming the assembly owns its uplift). The lines are
 # the field's own: 12" o.c. from the front edge, the north edge, and the spare joist.
 _balcony_tie_lines = sorted(
-    [_y_balcony_front + _k * SPEC.balcony_joist_oc_in / 12.0
-     for _k in range(int((_y_in_n - _y_balcony_front) * 12.0 // SPEC.balcony_joist_oc_in) + 1)]
-    + [_y_in_n, _ENCLOSURE_FRONT_Y])
+    [_bal_y0 + _k * _bal_oc_ft for _k in range(int((_bal_y1 - _bal_y0) / _bal_oc_ft + 1e-9) + 1)]
+    + [_bal_y1, _ENCLOSURE_FRONT_Y])
 _balcony_beam_top = _balcony_beam_soffit + ft(_balcony_beam_depth_ft)
 BALCONY_TIES = [
     Connector(uid=f"SGTB{_bs}{_k:02d}AAA", tag=f"CN-SG-TIE-{_bs}{_k:02d}",
@@ -3344,7 +3389,7 @@ PORCH_SLOT_CLOSURE = Flashing(
 # Every remaining connector is porch hardware at the deck (post bases, hangers, the column
 # ties and the four corner beam-seat ties), so main takes them whole. With the knee
 # braces retired there is no second-storey hardware at all.
-MAIN_ELEMENTS = [*MAIN_NODES, *LEDGERS, *LEDGER_ANCHORS, PORCH_JOISTS,
+MAIN_ELEMENTS = [*MAIN_NODES, *LEDGERS, *LEDGER_ANCHORS, *LEDGER_HANGERS, PORCH_JOISTS,
                  PORCH_SLOT_CLOSURE,
                  PORCH_GUARD, PORCH_GUARD_NE, *RAISED_BED_GUARDS,
                  *CONNECTORS,

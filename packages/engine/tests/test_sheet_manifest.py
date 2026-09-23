@@ -46,15 +46,12 @@ def test_the_file_is_byte_deterministic(tmp_path: Path):
 
 
 @pytest.mark.slow
-def test_haus_print_refuses_catlin_on_the_deck_ledger_anchors(tmp_path: Path):
-    """The draft gate, end to end — and since 2026-09-22 (evening) it REFUSES catlin again.
+def test_haus_print_opens_for_catlin(tmp_path: Path):
+    """The draft gate, end to end — open for catlin again since 2026-09-22 (late).
 
-    It opened earlier that day when the last engineering line closed, and shut when the
-    porch went onto two wall ledgers: `structural.deck_ledger` reads UNKNOWN because DCA6
-    leaves adhesive-anchor spacing and embedment to the anchor maker, and that table is not
-    yet quoted. That is the ONLY blocking line, and it is asserted by name. The day it closes
-    this test fails and tells somebody to invert it back; a permit set that silently became
-    printable is exactly as bad as one that silently stopped.
+    It shut that evening when the porch went onto concrete ledgers, and opened when their
+    anchors were graded against Simpson's L-A-THDSSLDGR23 row. The day a line reopens this
+    test fails and tells somebody to invert it back.
     """
     from typer.testing import CliRunner
 
@@ -63,13 +60,9 @@ def test_haus_print_refuses_catlin_on_the_deck_ledger_anchors(tmp_path: Path):
     house = tmp_path / "catlin"
     copy_house(CATLIN, house)
     result = CliRunner().invoke(app, ["print", str(house), "--fmt", "pdf"])
-    assert result.exit_code == 1, result.output
-    assert "permit print blocked" in result.output
-    blocking = [line for line in result.output.splitlines()
-                if ": UNKNOWN" in line or ": FAIL" in line]
-    assert len(blocking) == 1 and "Deck ledgers and their attachment: UNKNOWN" in blocking[0], \
-        result.output
-    assert not (house / "out" / "permit_set.pdf").is_file()
+    assert result.exit_code == 0, result.output
+    assert "permit print blocked" not in result.output
+    assert (house / "out" / "permit_set.pdf").is_file()
 
 
 @pytest.mark.slow

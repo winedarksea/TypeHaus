@@ -1006,6 +1006,32 @@ _L_F_SSNAILS = ("Simpson Strong-Tie engineering letter L-F-SSNAILS23 (1 Jan 2023
                 "316 ring-shank nails. **The letter states it is valid until 12/31/2024** "
                 "and no later revision could be retrieved — re-pull it for a submittal")
 
+#: The LUS210 in stainless: catlin's porch ledgers (owner, 2026-09-22). Its own record so the
+#: BOM does not caption it as the LUS210Z.
+LUS210SS_FACE_MOUNT_HANGER = StructuralHardware(
+    tag="simpson-lus210ss-face-mount-hanger",
+    name="LUS210SS face-mount hanger, 2x10/2x12 (stainless)",
+    role=ROLE_FACE_MOUNT_JOIST_HANGER,
+    manufacturer=_SIMPSON,
+    model="LUS210SS",
+    exposure=EXPOSURE_TREATED,
+    fits_nominal=("2x10", "2x12"),
+    source="Simpson Strong-Tie LUS210 in stainless steel — 18 ga, W 1-9/16\", "
+           "H 7-13/16\", B 1-3/4\"; a treated ledger in a wet, salted court",
+    allowable=AllowableLoads(
+        uplift_lb=1165.0,
+        download_lb=1335.0,
+        load_duration_factor=1.0,
+        species="DF/SP — the southern pine joists and ledger it is used on",
+        fasteners="(8) SCNR Type 316 ring-shank into the header, (4) into the joist, for the "
+                  "catalog's 0.148 x 3 (double-shear)",
+        citation=("Simpson Strong-Tie C-C-2026 pp. 114-118, \"Face-Mount Hangers - Solid "
+                  "Sawn Lumber (DF/SP)\", 2x12, LUS210 row, read 2026-09-22: uplift (160) "
+                  "1,165, floor (100) 1,335, snow (115) 1,530, roof (125) 1,640 lb; "
+                  + _L_F_SSNAILS),
+    ),
+)
+
 ABU_POST_BASE = StructuralHardware(
     tag="simpson-abu66-standoff-post-base",
     name="ABU66 standoff post base (6x6)",
@@ -2135,20 +2161,18 @@ EQUIPMENT_PAD_ANCHOR = StructuralHardware(
 )
 
 # A deck ledger into a cast wall: the porch ledgers on catlin's court walls (2026-09-22).
-# Generic like the wedge above; spacing and embedment are the adhesive system's own table
-# (AWC DCA6), which is why ``structural.deck_ledger`` reads UNKNOWN until one is quoted.
-SS316_ADHESIVE_LEDGER_ANCHOR = StructuralHardware(
-    tag="generic-ss316-adhesive-ledger-anchor",
-    name="1/2 in x 5 in 316 stainless adhesive anchor with washer, deck ledger to concrete",
+# Spacing is graded off the Simpson letter authored on the ledger (``Beam.published_span``).
+THDSS_LEDGER_ANCHOR = StructuralHardware(
+    tag="simpson-thd50600h6ss-ledger-anchor",
+    name="Titen HD 1/2 in x 6 in Type 316 stainless screw anchor, deck ledger to concrete",
     role=ROLE_LEDGER_ANCHOR,
-    manufacturer="generic",
-    model="SS316-ADH-12x5",
-    source="generic 1/2 in 316 stainless threaded rod, nut and washer set in a code-listed "
-           "adhesive system (e.g. Simpson SET-3G, Hilti HIT-HY 200) — AWC DCA6 \"Expansion "
-           "and Adhesive Anchors\": 1/2 in diameter, washers, minimum spacing and embedment "
-           "per the manufacturer's recommendations. INSTALLATION: drill, brush and blow the "
-           "hole clean, fill from the bottom, set the rod and do not load it before the "
-           "system's cure time; stagger top and bottom rows along the ledger",
+    manufacturer=_SIMPSON,
+    model="THD50600H6SS",
+    source="Simpson Strong-Tie stainless Titen HD (THDSS), Type 316, 1/2 in x 6 in — a 1:1 "
+           "replacement for a 1/2 in ledger bolt per engineering letter L-A-THDSSLDGR23. "
+           "INSTALLATION: 1/2 in bit, hole 1/2 in deeper than the embedment, blow clean, "
+           "drive once (never reinstall); rows 2 in in from the ledger's edges and 3-5 in "
+           "apart, staggered; 4-8 in from the ledger's ends; wall at least 6-1/4 in thick",
 )
 
 # PV module mounting on the standing seam: the S-5! PVKIT clamp+bracket assembly grips a
@@ -2283,11 +2307,12 @@ CAPACITY_ONLY_RECORDS: tuple = (
     STHD14_STRAP_HOLDOWN,
     H25ASS_HURRICANE_TIE,
     H10ASS_HURRICANE_TIE,
-    SS316_ADHESIVE_LEDGER_ANCHOR,
+    THDSS_LEDGER_ANCHOR,
     APVKB_KNEE_BRACE,
     HUCQ_CONCRETE_HANGER,
     HUC212_3_CONCRETE_HANGER,
     HU212_3_FACE_MOUNT_HANGER,
     HU28_2Z_FACE_MOUNT_HANGER,
     LUS210Z_FACE_MOUNT_HANGER,
+    LUS210SS_FACE_MOUNT_HANGER,
 )

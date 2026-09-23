@@ -458,13 +458,10 @@ def test_the_two_gates_are_separate_and_catlin_reaches_neither(catlin_engineerin
     # own (deck_tie/FS-BW-FLOOR at 0.966, north_entry_piers.md §10); base rotation CLOSED as
     # draft on the presumed n_h (column_base_rotation.md §10), and the SRW apron CLOSED on AB
     # Stones (raised_garden_srw.md §3b).
-    # ** EMPTY ON 2026-09-22 (basis 7, free body §11j) — AND ONE LINE AGAIN THE SAME DAY. **
-    # The 17'-0" court hangs the porch deck on two concrete ledgers, and the new
-    # `structural.deck_ledger` is UNKNOWN until the anchor maker's spacing and embedment are
-    # read (DCA6 defers to them on concrete). That is the trial's intended state, and the gate
-    # is shut on exactly that line and nothing else.
-    assert blocked == ["Deck ledgers and their attachment"], blocked
-    assert not checklist.ok
+    # ** EMPTY SINCE 2026-09-22 (basis 7, free body §11j). ** The porch ledgers shut it for an
+    # evening and reopened it once their Titen HDs were graded on Simpson's published row.
+    assert blocked == [], blocked
+    assert checklist.ok
     assert not checklist.sealed
     assert checklist.unsealed
     # Shut for its own reason: every engineered item is unsealed because the house carries

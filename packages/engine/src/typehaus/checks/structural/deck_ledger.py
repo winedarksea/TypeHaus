@@ -13,6 +13,9 @@ into a wood band joist only, and DCA6 ("Expansion and Adhesive Anchors") require
 anchors with washers and leaves "minimum spacing and embedment length ... per the
 manufacturer's recommendations". So a ledger on concrete with its anchors authored reports
 UNKNOWN naming that gap; it is never graded against a number the code does not publish.
+A manufacturer's ledger table authored as ``Beam.published_span`` (``span`` = the maximum
+anchor o.c., ``member`` = the anchor model, ``carried_span`` = the joist span its column is
+for) closes it through ``published.graded_against_published`` and its drift guards.
 """
 
 from __future__ import annotations
@@ -21,6 +24,8 @@ import math
 
 from typehaus.checks._authoring import structural_advisory as _advisory
 from typehaus.checks.registry import CheckContext, Tier, check
+from typehaus.checks.structural.deck_tables import DECK_DEAD_LOAD_PSF, DECK_TABLE_LIVE_PSF
+from typehaus.checks.structural.published import graded_against_published
 from typehaus.findings import Finding, Result, not_applicable, unknown
 from typehaus.model.elements import Wall
 from typehaus.model.enums import ConnectorKind
@@ -168,6 +173,8 @@ def _one(ctx: CheckContext, beam: Beam) -> Finding:
     widest_in = max(b - a for a, b in zip(stations, stations[1:], strict=False)) / M_PER_IN
     what = (f"ledger {beam.tag} ({beam.size}) sits {gap_in:.2f}\" off {wall.tag} with "
             f"{len(fasteners)} anchors, widest gap {widest_in:.1f}\"")
+    if _cast(ctx, wall) and beam.published_span is not None:
+        return _published(ctx, beam, fasteners, widest_in, tags)
     if _cast(ctx, wall):
         return unknown(_CID, f"{what}. On concrete DCA6 requires 1/2\" expansion or adhesive "
                        f"anchors with washers and sets spacing and embedment by the anchor "
@@ -184,3 +191,18 @@ def _one(ctx: CheckContext, beam: Beam) -> Finding:
                      f"(DCA6 Table 5, {row})", tags, Result.PASS if ok else Result.FAIL,
                      code="IRC Table R507.9.1.3(1)",
                      fix_hint=None if ok else "add anchors to close the widest gap")
+
+
+def _published(ctx: CheckContext, beam: Beam, fasteners: list[Connector], widest_in: float,
+               tags: tuple[str, ...]) -> Finding:
+    """The widest anchor gap against the manufacturer's row authored on the ledger."""
+    models = sorted({c.size for c in fasteners})
+    prefs = getattr(ctx, "preferences", None)
+    snow = getattr(getattr(prefs, "structural", None), "deck_snow_psf", None) or 0.0
+    demand_psf = max(DECK_TABLE_LIVE_PSF, snow) + DECK_DEAD_LOAD_PSF
+    return graded_against_published(
+        _CID, f"ledger {beam.tag}'s widest anchor gap ({len(fasteners)} anchors)", tags,
+        widest_in / 12.0, beam.published_span, " + ".join(models),
+        carried_span_ft=_carried_span_ft(ctx, beam), demand_psf=demand_psf,
+        treatment="treated" if _treated(ctx, beam) else "untreated",
+        fix="close the widest gap to the row's spacing, or read the anchor's own row")

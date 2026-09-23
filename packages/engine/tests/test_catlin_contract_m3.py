@@ -249,12 +249,9 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset(catlin_check_r
     # came off with it, so the DRAFT permit print opens. The sealed gate stays shut for its
     # own reason — no `engineering.toml` exists.
     #
-    # ** ONE OPEN SINCE 2026-09-22: the porch LEDGERS. ** The 17'-0" court hung FS-SG-PORCH on
-    # BM-SG-LDGW/-LDGE (`Beam.ledger_on`), and `structural.deck_ledger` reads UNKNOWN on them
-    # by design: a ledger on CONCRETE through adhesive anchors takes its spacing and embedment
-    # from the anchor maker, and R507.9 publishes no row for it. It closes on the anchor's
-    # evaluation report, not on a change to the model.
-    OPEN: set[str] = {"Deck ledgers and their attachment"}
+    # The porch LEDGERS were open for an evening; their Titen HDs grade on Simpson's
+    # L-A-THDSSLDGR23 row now.
+    OPEN: set[str] = set()
     gating = [item for item in checklist.items if item.blocking]
     resolved = {Result.PASS, Result.NOT_APPLICABLE}
     unresolved = [item for item in gating

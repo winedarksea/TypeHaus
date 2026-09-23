@@ -24,6 +24,8 @@ from typehaus.hardware.catalog import allowable_for_model, hardware_by_model
 from typehaus.hardware.config import HangerDetectionRules
 from typehaus.joints.authored import hanger_part, hanger_specs
 from typehaus.joints.hung import hung_connections
+from typehaus.model.refs import PublishedSpan
+from typehaus.quantities import ft, inch
 
 
 @pytest.fixture(scope="module")
@@ -105,15 +107,36 @@ def test_a_ledger_naming_no_wall_fails():
     assert "not a wall" in finding.message
 
 
-def test_catlin_porch_ledgers_wait_on_the_anchor_maker(catlin_ctx):
-    """Both porch ledgers sit on the court walls' faces, treated and anchored; on concrete the
-    spacing is the anchor maker's, so the verdict is UNKNOWN naming that, never a FAIL."""
+def _row(member="THD50600H6SS"):
+    return PublishedSpan(source="Simpson L-A-THDSSLDGR23", table="up to 18 ft: 19 in",
+                         member=member, span=inch(19), carried_span=ft(18), load_psf=50.0,
+                         treatment="treated", condition="fn 1-4")
+
+
+def test_on_concrete_a_manufacturers_row_grades_the_spacing():
+    ok = deck_ledger(check_context(plan(fastener="THD50600H6SS", published=_row()),
+                                   profile=None))
+    assert all(f.result is Result.PASS for f in ok), [f.message for f in ok]
+    wide = deck_ledger(check_context(plan(fastener="THD50600H6SS", spacing_in=24.0,
+                                          published=_row()), profile=None))
+    assert all(f.result is Result.FAIL for f in wide), [f.message for f in wide]
+
+
+def test_a_row_for_another_anchor_is_refused():
+    findings = deck_ledger(check_context(plan(fastener="1/2 adhesive anchor",
+                                              published=_row()), profile=None))
+    assert all(f.result is Result.UNKNOWN for f in findings)
+    assert "THD50600H6SS" in findings[0].message
+
+
+def test_catlin_porch_ledgers_pass_on_simpsons_thdss_row(catlin_ctx):
+    """Both porch ledgers sit on the court walls' faces, treated, with Type 316 Titen HDs at
+    16" o.c. against L-A-THDSSLDGR23's 19" row for joists up to 18'."""
     findings = {f.element_tags[0]: f for f in deck_ledger(catlin_ctx)}
     assert set(findings) == {"BM-SG-LDGW", "BM-SG-LDGE"}
     for finding in findings.values():
-        assert finding.result is Result.UNKNOWN, finding.message
-        assert "manufacturer's recommendations" in finding.message
-        assert "anchors" in finding.message and "off W-SG-" in finding.message
+        assert finding.result is Result.PASS, finding.message
+        assert "L-A-THDSSLDGR23" in finding.message and "1.33' <= 1.58'" in finding.message
 
 
 def test_a_plan_with_no_ledger_is_not_applicable():

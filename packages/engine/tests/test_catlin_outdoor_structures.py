@@ -183,8 +183,8 @@ def test_the_porch_hangs_on_two_ledgers_off_the_side_walls(catlin_model) -> None
 
     ``Beam.ledger_on`` names the wall each ledger is fastened to, and the joists run east-west
     ledger face to ledger face, so the porch has no beam of its own and nothing on the court
-    floor. The ledger is graded by ``structural.deck_ledger`` (UNKNOWN on the anchor maker's
-    spacing — see ``test_deck_ledger.py``); what is pinned here is the geometry.
+    floor. The ledger is graded by ``structural.deck_ledger`` (on Simpson's THDSS
+    row — see ``test_deck_ledger.py``); what is pinned here is the geometry.
     """
     for ledger, wall in (("BM-SG-LDGW", "W-SG-W1"), ("BM-SG-LDGE", "W-SG-E1")):
         assert catlin_model.plan.by_tag(ledger).ledger_on == wall, ledger

@@ -1032,9 +1032,9 @@
 # ZMAX (G185) LUS where the carrier is preservative-treated (IRC R317.3.1): the breezeway's
 # treated beams, and the balcony centre glulam. Sized by the engine off the joist; ~25% over G90.
 "LUS28Z" = { low = 2.5, high = 7.5 }  # 14 ea — the breezeway beams (the 18 at BM-SG-BLC retired with it, 2026-09-22)
-# The single-2x12 ZMAX face-mount: Simpson publishes no LUS212, and its 2x12 rows list the LUS210
-# (C-C-2017 p. 127, H 7-13/16"). The porch joists hang on it at both ledgers. ~$3-6 retail.
-"LUS210Z" = { low = 3.0, high = 8.0 }  # 20 ea — FS-SG-PORCH's 10 joists, both ends, on BM-SG-LDGW/LDGE
+# The single-2x12 face-mount in stainless (owner, 2026-09-22): Simpson publishes no LUS212, and
+# its 2x12 rows list the LUS210 (H 7-13/16"). The porch joists hang on it at both ledgers.
+"LUS210SS" = { low = 6.0, high = 12.0 }  # 20 ea — FS-SG-PORCH's 10 joists, both ends, on BM-SG-LDGW/LDGE
 "LUSZ" = { low = 2.5, high = 7.5 }  # 6 ea — rim boards hung in the same treated beams
 # "LUS210" retired 2026-08-23. It priced the two back-beam hangers until the 2026-08-22
 # retype moved them onto HUCQ410-SDS, after which nothing in the house authored a LUS210 and
@@ -1055,9 +1055,9 @@
 # bolt at $3-7; that is a ~$25 purchasing swap, noted with the MiTek ones in
 # notes/uplift_load_path.md rather than split into a second product for one role.
 # Files under CSI 03 15 00 like its "AB-" sibling above: the concrete sub sets it.
-# 1/2" x 5" 316 stainless adhesive anchor with washer, the porch ledgers into W-SG-W1/E1 (DCA6:
-# expansion or adhesive, spacing by the anchor maker). Epoxy cartridge share included.
-"SS316-ADH-12x5" = { material = { low = 9, high = 18 }, labour = { low = 8, high = 16 } }  # 14 ea — CN-SG-LDGW-1..7 / -LDGE-1..7
+# Simpson THD50600H6SS, 1/2" x 6" Type 316 Titen HD: the porch ledgers into W-SG-W1/E1 at the
+# spacing of engineering letter L-A-THDSSLDGR23.
+"THD50600H6SS" = { material = { low = 7, high = 14 }, labour = { low = 4, high = 8 } }  # 18 ea — CN-SG-LDGW-1..9 / -LDGE-1..9; Type 316 Titen HD, no cure
 "AB-058-10-SS" = { low = 12, high = 28 }  # 4 ea — one cast-in bolt per POST BASE that lands on concrete AND takes one: 2 canopy ABU66SS + the 2 basement ABU44 under P-M-STRWELL-N/S. The 2 garage-slab ABU44 under PT-BW-IC/-IE are authored `anchored=False` (2026-09-11): a 5/8x10in bolt needs ~8in of embedment and SL-G-FLOOR is 3-1/2in on foam, so the bolt dragged a slab thickening along to house itself and both went. Those bases are bearing-only — download through the plate, no uplift and no lateral claimed. `takeoff/uplift_joints.py::post_base_anchor_rows` gates on `bears_on_concrete`, so a base on framing never took one, and it unions the AUTHORED and DERIVED base populations. Was 10 before the balcony corner bases went (2026-09-03), 6 while the canopy had four wood columns, 4 since the east pair became cast
 # 6 ea, all of them CARRIED under the ColorGard rail (`requires_role`) — none directly
 # modeled any more. It was 19: two wall-mounted enclosure clamps (CN-A-NEMA-CLAMP,

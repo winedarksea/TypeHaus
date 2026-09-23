@@ -1042,7 +1042,7 @@ MAIN_PLACEABLES = [
     #
     # No `room=`: the porch isn't a Room.
     Furniture(uid="XH1JW70E8D", tag="FURN-M-PORCH-TRACK-F", type_ref="FT-PORCH-TRACK-176",
-              position=pt(ft(18), ft(-9)),
+              position=pt(ft(18), ft(-8, -11.25)),
               mount=Mount(kind=MountKind.CEILING, elevation=inch(107.75))),
     # The two FLANKS, x = 10'-0" and 26'-0": 6" inside the side walls' court faces and the
     # guard's side legs, which is where they have always stood relative to the court. Each
