@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typehaus.checks.mep import (  # noqa: F401 - register
     bay_packing,
+    conduit_bends,
     data,
     deck_equipment,
     drain_geometry,
