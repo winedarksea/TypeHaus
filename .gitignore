@@ -227,3 +227,6 @@ __pycache__/
 
 # Screenshot harness output (scripts/shoot.mjs). shots-baseline/ IS committed.
 .shots/
+
+# Personal documents (property purchase agreements) dropped into the checkout — never commit.
+*[Pp]urchase*[Aa]greement*
