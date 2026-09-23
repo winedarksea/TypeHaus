@@ -36,9 +36,9 @@ from typehaus.emit.draw._shared import to_in as _in
 from typehaus.emit.draw.scene import SceneBuilder, Text
 from typehaus.emit.draw.typography import (
     CHAR_ASPECT,
-    DIM_TEXT_PT,
     LINE_SPACING,
-    TEXT_PT,
+    ROOM_NAME_PT,
+    TAG_PT,
     model_in_per_pt,
 )
 from typehaus.quantities import M_PER_IN
@@ -48,10 +48,11 @@ from typehaus.resolve.room_floor import room_finished_floor_elevation
 SF_PER_M2 = 10.7639
 ROOM_LAYER = "A-AREA-IDEN"
 
-#: Vertical pitch of a label block's lines, model inches. The lines are a fixed printed
-#: size and the block is model-space geometry, so the pitch has to be reserved at some
-#: assumed scale — the same one every other plan annotation reserves at.
-BLOCK_LINE_PITCH_IN = LINE_SPACING * TEXT_PT * model_in_per_pt(PLAN_RESERVATION_SCALE)
+def block_pitch_m(scale: float = PLAN_RESERVATION_SCALE) -> float:
+    """Vertical pitch of a label block's lines, metres. The lines are a fixed printed size
+    and the block is model geometry, so it is reserved at the scale the sheet prints at
+    (``floorplan_sheet`` passes it; a frameless plan uses the reservation scale)."""
+    return LINE_SPACING * ROOM_NAME_PT * model_in_per_pt(scale) * M_PER_IN
 
 #: Two ceiling records land on the same plane when their soffits agree within this. Well
 #: under the 1 9/16" step the basement's mixed deck makes and well over resolver noise.
@@ -106,8 +107,8 @@ def room_display_name(tag: str) -> str:
     return " ".join(parts) if parts else tag
 
 
-def _fitted_lines(lines: list[tuple[str, float]],
-                  ring: Ring) -> list[tuple[str, float]]:
+def _fitted_lines(lines: list[tuple[str, float]], ring: Ring,
+                  scale: float = PLAN_RESERVATION_SCALE) -> list[tuple[str, float]]:
     """Trim the block to what its room can actually hold, dropping the least useful line first.
 
     The three lines are already in priority order — a room that cannot hold its ceiling
@@ -117,14 +118,14 @@ def _fitted_lines(lines: list[tuple[str, float]],
     19 SF study is the case that forces it, at 4'-1" wide against a ``CLG 8'-11 1/2"``
     caption that wants 5'-3".
     """
-    per_pt = model_in_per_pt(PLAN_RESERVATION_SCALE)
+    per_pt = model_in_per_pt(scale)
     width_m = (max(p[0] for p in ring) - min(p[0] for p in ring)) * BLOCK_FIT_FRACTION
     height_m = (max(p[1] for p in ring) - min(p[1] for p in ring)) * BLOCK_FIT_FRACTION
     kept = list(lines)
     while len(kept) > 1:
         widest = max(len(text) * height_pt * CHAR_ASPECT * per_pt * M_PER_IN
                      for text, height_pt in kept)
-        stack = (len(kept) - 1) * BLOCK_LINE_PITCH_IN * M_PER_IN
+        stack = (len(kept) - 1) * block_pitch_m(scale)
         if widest <= width_m and stack <= height_m:
             break
         kept.pop()
@@ -145,7 +146,7 @@ def _inside_point(ring: Ring) -> tuple[float, float]:
 
 
 def _clamped_anchor(at: tuple[float, float], lines: list[tuple[str, float]],
-                    ring: Ring) -> tuple[float, float]:
+                    ring: Ring, scale: float = PLAN_RESERVATION_SCALE) -> tuple[float, float]:
     """Pull the block's anchor in until the block itself sits inside the room's bbox.
 
     :func:`_fitted_lines` guarantees the block *fits*; it does not guarantee it is centred
@@ -160,11 +161,9 @@ def _clamped_anchor(at: tuple[float, float], lines: list[tuple[str, float]],
     the mechanical room, the mudroom and both baths did. Half a line at each end is the
     room the glyphs themselves take.
     """
-    per_pt = model_in_per_pt(PLAN_RESERVATION_SCALE)
-    half_width = max(len(text) * height_pt * CHAR_ASPECT for text, height_pt in lines) \
-        * per_pt * M_PER_IN / 2.0
-    stack = (len(lines) - 1) * BLOCK_LINE_PITCH_IN * M_PER_IN
-    half_line = BLOCK_LINE_PITCH_IN * M_PER_IN / 2.0
+    half_width = _block_half_width(lines, scale)
+    stack = (len(lines) - 1) * block_pitch_m(scale)
+    half_line = block_pitch_m(scale) / 2.0
     minx, maxx = min(p[0] for p in ring), max(p[0] for p in ring)
     miny, maxy = min(p[1] for p in ring), max(p[1] for p in ring)
     x = at[0]
@@ -206,17 +205,18 @@ def _ceiling_planes(model: ResolvedModel, room: ResolvedRoom,
     return out
 
 
-def _block_half_width(lines: list[tuple[str, float]]) -> float:
-    """Half the printed width of the widest line, in metres at the reservation scale."""
-    per_pt = model_in_per_pt(PLAN_RESERVATION_SCALE)
+def _block_half_width(lines: list[tuple[str, float]],
+                      scale: float = PLAN_RESERVATION_SCALE) -> float:
+    """Half the printed width of the widest line, in metres at ``scale``."""
+    per_pt = model_in_per_pt(scale)
     return max(len(t) * pt * CHAR_ASPECT for t, pt in lines) * per_pt * M_PER_IN / 2.0
 
 
-def _block_box(at: tuple[float, float],
-               lines: list[tuple[str, float]]) -> tuple[float, float, float, float]:
+def _block_box(at: tuple[float, float], lines: list[tuple[str, float]],
+               scale: float = PLAN_RESERVATION_SCALE) -> tuple[float, float, float, float]:
     """The ``(minx, miny, maxx, maxy)`` box, in metres, a block of ``lines`` anchored at ``at``."""
-    half_w = _block_half_width(lines)
-    pitch = BLOCK_LINE_PITCH_IN * M_PER_IN
+    half_w = _block_half_width(lines, scale)
+    pitch = block_pitch_m(scale)
     return (at[0] - half_w, at[1] - (len(lines) - 1) * pitch - pitch / 2.0,
             at[0] + half_w, at[1] + pitch / 2.0)
 
@@ -241,6 +241,7 @@ _DODGE_STEPS = sorted(
 def _place_block(at: tuple[float, float], lines: list[tuple[str, float]], ring: Ring,
                  avoid: list[tuple[float, float, float, float]],
                  prefer: list[tuple[float, float, float, float]] = (),
+                 scale: float = PLAN_RESERVATION_SCALE,
                  ) -> tuple[tuple[float, float], list[tuple[str, float]]]:
     """Where the block goes and which of its lines survive: inside the room, clear of ``avoid``.
 
@@ -261,7 +262,7 @@ def _place_block(at: tuple[float, float], lines: list[tuple[str, float]], ring: 
     dropping the last one is the same concession that function makes for the same reason.
 
     Nothing is ever dropped to zero and no room goes unnamed: the last resort is the clamped
-    anchor with whatever ``_fitted_lines`` allowed, overlap and all.
+    anchor with the name alone, overlap and all.
 
     **``prefer`` is dodged for free and never paid for.** The drawn fixtures and furniture
     are worth stepping around when there is somewhere to step — but they are not worth a
@@ -273,22 +274,24 @@ def _place_block(at: tuple[float, float], lines: list[tuple[str, float]], ring: 
     count, and only then shortens. Preference never causes shedding.
     """
     poly = Polygon(ring)
-    step_y = BLOCK_LINE_PITCH_IN * M_PER_IN / 2.0
+    step_y = block_pitch_m(scale) / 2.0
     for trial in (lines[:count] for count in range(len(lines), 0, -1)):
-        step_x = _block_half_width(trial)
+        step_x = _block_half_width(trial, scale)
         for obstacles in ([*avoid, *prefer], avoid) if prefer else (avoid,):
             for dx, dy in _DODGE_STEPS:
                 anchor = _clamped_anchor((at[0] + dx * step_x, at[1] + dy * step_y),
-                                         trial, ring)
-                extents = _block_box(anchor, trial)
+                                         trial, ring, scale)
+                extents = _block_box(anchor, trial, scale)
                 if poly.contains(shapely_box(*extents)) and not _overlaps(extents, obstacles):
                     return anchor, trial
-    return _clamped_anchor(at, lines, ring), lines
+    # Nowhere clear: the name alone, so the overprint is one line, not the whole stack.
+    return _clamped_anchor(at, lines[:1], ring, scale), lines[:1]
 
 
 def emit_room_blocks(b: SceneBuilder, model: ResolvedModel, storey: str,
                      avoid: list[tuple[float, float, float, float]] = (),
                      prefer: list[tuple[float, float, float, float]] = (),
+                     scale: float = PLAN_RESERVATION_SCALE,
                      ) -> list[tuple[float, float, float, float]]:
     """Name / area / ceiling height, stacked at a point inside each room on ``storey``.
 
@@ -302,7 +305,7 @@ def emit_room_blocks(b: SceneBuilder, model: ResolvedModel, storey: str,
     boxes: list[tuple[float, float, float, float]] = []
 
     def _record(at: tuple[float, float], lines: list[tuple[str, float]]) -> None:
-        boxes.append(_block_box(at, lines))
+        boxes.append(_block_box(at, lines, scale))
 
     for room in model.rooms:
         if room.storey != storey or len(room.clear_face) < 3:
@@ -313,8 +316,8 @@ def emit_room_blocks(b: SceneBuilder, model: ResolvedModel, storey: str,
         # ``code.R305_ceiling_height`` grades against.
         planes = _ceiling_planes(model, room,
                                  room_finished_floor_elevation(model, room))
-        lines = [(room_display_name(room.tag), TEXT_PT),
-                 (f"{room.area_m2 * SF_PER_M2:.0f} SF", DIM_TEXT_PT)]
+        lines = [(room_display_name(room.tag), ROOM_NAME_PT),
+                 (f"{room.area_m2 * SF_PER_M2:.0f} SF", TAG_PT)]
         # A room a roof rakes into is two areas, and a plan that prints only the first one
         # sells the attic pocket as 134 SF of room when 6 SF of it has 5'-0" over it. The
         # floor area stays the headline — it is what gets built — and the qualifying area
@@ -322,16 +325,17 @@ def emit_room_blocks(b: SceneBuilder, model: ResolvedModel, storey: str,
         head_sf = ((room.head_limited_area_m2 or 0.0) * SF_PER_M2
                    if room.head_limited_area_m2 is not None else None)
         if head_sf is not None and room.area_m2 * SF_PER_M2 - head_sf > LOW_HEAD_NOTE_SF:
-            lines.append((f"{head_sf:.0f} SF OVER 5'-0\"", DIM_TEXT_PT))
+            lines.append((f"{head_sf:.0f} SF OVER 5'-0\"", TAG_PT))
         # One plane (or none worth splitting) folds its caption into the block; two or more
         # get their own caption over their own region, because the *where* is the finding.
         noted = [item for item in planes if item[1] >= MIN_NOTED_CEILING_SF]
         if len(noted) == 1:
-            lines.append((noted[0][0], DIM_TEXT_PT))
-        lines = _fitted_lines(lines, room.clear_face)
-        (cx, cy), lines = _place_block((cx, cy), lines, room.clear_face, avoid, prefer)
+            lines.append((noted[0][0], TAG_PT))
+        lines = _fitted_lines(lines, room.clear_face, scale)
+        (cx, cy), lines = _place_block((cx, cy), lines, room.clear_face, avoid, prefer, scale)
+        pitch = block_pitch_m(scale)
         for index, (content, height_pt) in enumerate(lines):
-            b.add(Text(anchor=_in((cx, cy - index * BLOCK_LINE_PITCH_IN * M_PER_IN)),
+            b.add(Text(anchor=_in((cx, cy - index * pitch)),
                        content=content, height_pt=height_pt, layer=ROOM_LAYER,
                        align="center"))
         _record((cx, cy), lines)
@@ -341,15 +345,14 @@ def emit_room_blocks(b: SceneBuilder, model: ResolvedModel, storey: str,
             # the block's stack drops below it. ``RM-B-GYM`` is the case: its 234 SF region
             # and the room share a centroid, so ``CLG 8'-0 15/16" / 234 SF`` printed
             # straight through ``GYM / 324 SF``.
-            block_bottom = cy - (len(lines) - 1) * BLOCK_LINE_PITCH_IN * M_PER_IN
+            block_bottom = cy - (len(lines) - 1) * pitch
             for caption, area_sf, regions in noted:
                 largest = max(regions, key=lambda item: Polygon(item.outline).area)
                 rx, ry = _inside_point(largest.outline)
-                if block_bottom - BLOCK_LINE_PITCH_IN * M_PER_IN <= ry <= cy + \
-                        BLOCK_LINE_PITCH_IN * M_PER_IN:
-                    ry = block_bottom - BLOCK_LINE_PITCH_IN * M_PER_IN
-                line = [(f"{caption} / {area_sf:.0f} SF", DIM_TEXT_PT)]
+                if block_bottom - pitch <= ry <= cy + pitch:
+                    ry = block_bottom - pitch
+                line = [(f"{caption} / {area_sf:.0f} SF", TAG_PT)]
                 b.add(Text(anchor=_in((rx, ry)), content=line[0][0],
-                           height_pt=DIM_TEXT_PT, layer=ROOM_LAYER, align="center"))
+                           height_pt=TAG_PT, layer=ROOM_LAYER, align="center"))
                 _record((rx, ry), line)
     return boxes

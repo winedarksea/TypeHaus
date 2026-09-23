@@ -29,7 +29,7 @@ from typehaus.emit.draw.door_symbols import (
 )
 from typehaus.emit.draw.lineweights import LIGHT, PROFILE
 from typehaus.emit.draw.plan_dimensions import emit_interior_dimension_chains
-from typehaus.emit.draw.plan_labels import emit_room_blocks
+from typehaus.emit.draw.plan_labels import _block_box, emit_room_blocks
 from typehaus.emit.draw.plan_marks import (
     emit_opening_mark,
     opening_type_marks,
@@ -43,7 +43,7 @@ from typehaus.emit.draw.scene import Polyline, Scene, SceneBuilder, Symbol, Text
 from typehaus.emit.draw.stair_symbol import emit_stairs
 from typehaus.emit.draw.typography import (
     CHAR_ASPECT,
-    DIM_TEXT_PT,
+    TAG_PT,
     TEXT_PT,
     model_in_per_pt,
 )
@@ -74,7 +74,7 @@ def build_floorplan(model: ResolvedModel, storey: str, *,
 
     for wall in walls:
         emit_wall(b, wall)
-    _emit_slabs(b, model, storey)
+    slab_boxes = _emit_slabs(b, model, storey, dimension_scale)
     _emit_grade_beams(b, model, storey)
     mark_boxes = _emit_openings(b, model, {w.tag for w in walls}, storey)
     # The floor opening's RING before the stair and its NOTE after, for two different
@@ -85,7 +85,8 @@ def build_floorplan(model: ResolvedModel, storey: str, *,
     opening_segments = emit_floor_opening_rings(b, model, storey)
     stair_boxes = emit_stairs(b, model, storey, opening_segments)
     _emit_railings(b, model, storey)
-    void_boxes = emit_floor_opening_notes(b, model, storey, avoid=stair_boxes)
+    void_boxes = emit_floor_opening_notes(b, model, storey, avoid=stair_boxes + slab_boxes,
+                                          scale=dimension_scale)
     # Order is the whole argument here. A mark bubble is pinned to its opening and an alarm
     # glyph to its device — neither can move — so the room block, which is the one thing on
     # the plan free to sit anywhere inside its own room, is placed last among the three and
@@ -94,7 +95,8 @@ def build_floorplan(model: ResolvedModel, storey: str, *,
     room_boxes = emit_room_blocks(b, model, storey,
                                   avoid=mark_boxes + void_boxes
                                   + _alarm_glyph_boxes(model, storey),
-                                  prefer=_placeable_boxes(model, storey))
+                                  prefer=_placeable_boxes(model, storey),
+                                  scale=dimension_scale)
     # Floor heat is MECHANICAL and now lives in ``_shared.emit_floor_heat`` for the HVAC
     # plan to adopt; the smoke/CO alarms stay, because A-1xx is where a plan reviewer looks
     # for them and ``code.R314``/``R315`` reconcile against the same elements.
@@ -210,8 +212,9 @@ def _emit_door_symbol(b: SceneBuilder, model: ResolvedModel, op, center: tuple[f
     ))
 
 
-def _emit_slabs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
-    """Draw every walking surface's outline on its storey's plan.
+def _emit_slabs(b: SceneBuilder, model: ResolvedModel, storey: str,
+                scale: float) -> list[tuple[float, float, float, float]]:
+    """Draw every walking surface's outline on its storey's plan; returns its label boxes.
 
     The plan slice showed no slabs at all, so a surface with no enclosing walls — the
     porch's composite deck on main, the balcony's aluminum deck on second — was invisible
@@ -225,6 +228,7 @@ def _emit_slabs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
     modelling change rather than a silent regression in the 2D set.
     """
     seen_outlines: set[tuple[tuple[float, float], ...]] = set()
+    boxes: list[tuple[float, float, float, float]] = []
     rooms = [Polygon(room.clear_face) for room in model.rooms
              if room.storey == storey and len(room.clear_face) >= 3]
 
@@ -246,6 +250,7 @@ def _emit_slabs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
             return
         b.add(Text(anchor=_in((cx, cy)), content=_surface_name(tag), height_pt=TEXT_PT,
                    layer="A-SLAB", align="center"))
+        boxes.append(_block_box((cx, cy), [(_surface_name(tag), TEXT_PT)], scale))
 
     for slab in sorted((s for s in model.solids
                         if s.category == "slab" and s.storey == storey),
@@ -262,6 +267,7 @@ def _emit_slabs(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
         if not rooms and floor.storey in walled and _has_enclosing_walls(model, floor):
             continue
         _draw(floor.deck_outline, floor.uid, floor.tag)
+    return boxes
 
 
 def _emit_grade_beams(b: SceneBuilder, model: ResolvedModel, storey: str) -> None:
@@ -454,14 +460,14 @@ def _emit_alarms(b: SceneBuilder, model: ResolvedModel, storey: str,
         at = alarm.position.xy_m if alarm.position is not None else room.seed.xy_m
         b.add(Symbol(name="alarm", insert=_in(at), layer="A-ANNO-SYMB"))
         b.add(Text(anchor=_in(_alarm_label_anchor(at, label, avoid)),
-                   content=label, height_pt=DIM_TEXT_PT, layer="A-ANNO-TEXT"))
+                   content=label, height_pt=TAG_PT, layer="A-ANNO-TEXT"))
 
 
 def _alarm_label_anchor(at: tuple[float, float], label: str,
                         avoid: list[tuple[float, float, float, float]]
                         ) -> tuple[float, float]:
     """The first side of the glyph whose caption clears every room block, else the right."""
-    half_w = (len(label) * DIM_TEXT_PT * CHAR_ASPECT
+    half_w = (len(label) * TAG_PT * CHAR_ASPECT
               * model_in_per_pt(PLAN_RESERVATION_SCALE) * M_PER_IN / 2.0)
     half_h = _ALARM_LABEL_GAP_M / 2.0
     for dx, dy in _ALARM_LABEL_SIDES:

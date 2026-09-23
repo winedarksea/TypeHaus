@@ -348,5 +348,6 @@ def test_a_floor_opening_says_what_is_over_it(catlin_model):
     # A chase says so, and nothing says "OPEN TO ABOVE" on the storey below.
     main = [node.content for node in build_floorplan(catlin_model, "main").nodes
             if isinstance(node, Text) and node.layer == "A-ANNO-TEXT"]
-    assert "CHASE — OPEN TO BELOW" in main
+    # Too narrow for the full caption, a chase shortens to CHASE rather than spill next door.
+    assert "CHASE" in main
     assert not [caption for caption in main + captions if "ABOVE" in caption]

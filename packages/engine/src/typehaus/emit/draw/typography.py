@@ -43,7 +43,12 @@ DIM_TEXT_PT = 6.5      #: tags, bubbles and callout sizing (once the dimension l
 #: Dimension strings. NCS / the A/E/C CAD Standard set 3/32" as the minimum plotted text
 #: height; the monospace face's caps are ~0.71 em, so 3/32" caps need ~9.5 pt.
 DIM_STRING_PT = 9.5
-NOTES_PT = 9.0         #: the paper-space notes column
+#: Opening marks, callout / keyed-note / title bubbles and a room block's secondary lines:
+#: the same NCS 3/32" floor. ``DIM_TEXT_PT`` stays for the lettering not yet brought up.
+TAG_PT = DIM_STRING_PT
+#: A room's name, over its area and ceiling: ~1/8" caps, one clear step above ``TAG_PT``.
+ROOM_NAME_PT = 12.0
+NOTES_PT = 9.0        #: the paper-space notes column
 #: Subordinate lines under a primary label — a room block's area and ceiling under its
 #: name, and the placeable caption on a trade plan. The ladder above has no genuine
 #: *secondary* step: 9 / 7 / 6.5 / 4-floor puts a room's area at 6.5 pt against a 7.0 pt

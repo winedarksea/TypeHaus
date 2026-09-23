@@ -31,7 +31,7 @@ import math
 from typehaus.emit.draw._shared import PLAN_RESERVATION_SCALE
 from typehaus.emit.draw.lineweights import REFERENCE
 from typehaus.emit.draw.scene import Polyline, Text
-from typehaus.emit.draw.typography import CHAR_ASPECT, DIM_TEXT_PT, model_in_per_pt
+from typehaus.emit.draw.typography import CHAR_ASPECT, ROOM_NAME_PT, TAG_PT, model_in_per_pt
 
 CALLOUT_LAYER = "A-ANNO-REFR"
 
@@ -44,7 +44,7 @@ _SEGMENTS = 20
 
 def bubble_radius_in(scale: float | None = None) -> float:
     """Radius in model inches — five characters wide, because ``A-502`` is five."""
-    return 2.6 * DIM_TEXT_PT * CHAR_ASPECT * model_in_per_pt(scale or PLAN_RESERVATION_SCALE)
+    return 2.6 * TAG_PT * CHAR_ASPECT * model_in_per_pt(scale or PLAN_RESERVATION_SCALE)
 
 
 def detail_sheet_numbers(model) -> dict[str, str]:
@@ -90,9 +90,9 @@ def callout_nodes(at: tuple[float, float], number: str, sheet: str,
         # it at a glance to know which half is the sheet.
         Polyline(points=((ux - radius, uz), (ux + radius, uz)),
                  layer=CALLOUT_LAYER, lineweight=REFERENCE),
-        Text(anchor=(ux, uz + radius * 0.38), content=number, height_pt=DIM_TEXT_PT,
+        Text(anchor=(ux, uz + radius * 0.38), content=number, height_pt=TAG_PT,
              layer=CALLOUT_LAYER, align="center"),
-        Text(anchor=(ux, uz - radius * 0.62), content=sheet, height_pt=DIM_TEXT_PT,
+        Text(anchor=(ux, uz - radius * 0.62), content=sheet, height_pt=TAG_PT,
              layer=CALLOUT_LAYER, align="center"),
     ]
 
@@ -115,19 +115,19 @@ def title_bubble_nodes(at: tuple[float, float], number: str, title: str,
     )
     nodes: list = [
         Polyline(points=ring, layer=CALLOUT_LAYER, closed=True, lineweight=REFERENCE),
-        Text(anchor=(ux, uz), content=number, height_pt=DIM_TEXT_PT,
+        Text(anchor=(ux, uz), content=number, height_pt=TAG_PT,
              layer=CALLOUT_LAYER, align="center"),
         # The rule under the title, which is what separates a drawing's own name from the
         # drawing above it when two share a sheet.
         Polyline(points=((ux + radius, uz - radius), (ux + radius * 9.0, uz - radius)),
                  layer=CALLOUT_LAYER, lineweight=REFERENCE),
         Text(anchor=(ux + radius * 1.4, uz + radius * 0.25), content=title.upper(),
-             height_pt=DIM_TEXT_PT, layer=CALLOUT_LAYER, align="left"),
+             height_pt=ROOM_NAME_PT, layer=CALLOUT_LAYER, align="left"),
         Text(anchor=(ux + radius * 1.4, uz - radius * 0.9), content=f"SCALE: {scale_label}",
-             height_pt=DIM_TEXT_PT * 0.85, layer=CALLOUT_LAYER, align="left"),
+             height_pt=TAG_PT, layer=CALLOUT_LAYER, align="left"),
     ]
     if sheet:
         nodes.append(Text(anchor=(ux + radius * 5.2, uz - radius * 0.9),
-                          content=f"CALLED FROM {sheet}", height_pt=DIM_TEXT_PT * 0.85,
+                          content=f"CALLED FROM {sheet}", height_pt=TAG_PT,
                           layer=CALLOUT_LAYER, align="left"))
     return nodes

@@ -2252,7 +2252,7 @@
         7.0,
         -53.43749999999999
       ],
-      "text": "vapor continuity — foil-polyiso → foil-\npolyiso",
+      "text": "vapor continuity \u2014 foil-polyiso \u2192 foil-\npolyiso",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2277,7 +2277,7 @@
         7.0,
         -53.43749999999999
       ],
-      "text": "air continuity — foil-polyiso → foil-\npolyiso",
+      "text": "air continuity \u2014 foil-polyiso \u2192 foil-\npolyiso",
       "height": 1.6,
       "height_pt": 7.0,
       "layer": "A-ANNO-TEXT",
@@ -2290,7 +2290,7 @@
         -15.90251968503937,
         -87.15403543307086
       ],
-      "content": "TR-CATLIN-SAUNA-OPENING  ·  sauna-liner-opening",
+      "content": "TR-CATLIN-SAUNA-OPENING  \u00b7  sauna-liner-opening",
       "height": 3.0,
       "height_pt": 7.0,
       "rotation": 0.0,
@@ -2304,68 +2304,68 @@
       "node": "polyline",
       "points": [
         [
-          16.84733333333333,
+          20.81533333333333,
           -51.09375
         ],
         [
-          16.64282301068032,
-          -50.065607178379125
+          20.516433630994317,
+          -49.59107972224641
         ],
         [
-          16.060426885454522,
-          -49.193989781212146
+          19.665239294125843,
+          -48.317177372540826
         ],
         [
-          15.18880948828754,
-          -48.61159365598634
+          18.391336944420253,
+          -47.46598303567235
         ],
         [
-          14.160666666666664,
-          -48.40708333333333
+          16.888666666666666,
+          -47.16708333333334
         ],
         [
-          13.132523845045789,
-          -48.61159365598634
+          15.38599638891308,
+          -47.46598303567235
         ],
         [
-          12.260906447878806,
-          -49.19398978121214
+          14.11209403920749,
+          -48.317177372540826
         ],
         [
-          11.678510322653008,
-          -50.065607178379125
+          13.260899702339014,
+          -49.59107972224641
         ],
         [
-          11.473999999999997,
+          12.962,
           -51.09375
         ],
         [
-          11.678510322653008,
-          -52.121892821620875
+          13.260899702339014,
+          -52.59642027775359
         ],
         [
-          12.260906447878806,
-          -52.993510218787854
+          14.112094039207488,
+          -53.870322627459174
         ],
         [
-          13.132523845045789,
-          -53.57590634401366
+          15.385996388913078,
+          -54.72151696432765
         ],
         [
-          14.160666666666664,
-          -53.78041666666667
+          16.888666666666666,
+          -55.02041666666666
         ],
         [
-          15.18880948828754,
-          -53.57590634401366
+          18.391336944420253,
+          -54.72151696432765
         ],
         [
-          16.060426885454522,
-          -52.99351021878786
+          19.66523929412584,
+          -53.870322627459174
         ],
         [
-          16.64282301068032,
-          -52.121892821620875
+          20.516433630994317,
+          -52.59642027775359
         ]
       ],
       "layer": "A-ANNO-KEYN",
@@ -2379,12 +2379,12 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        14.160666666666664,
+        16.888666666666666,
         -51.09375
       ],
       "content": "K1",
       "height": 3.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-KEYN",
@@ -2403,7 +2403,7 @@
         "name": ""
       },
       "at": [
-        14.160666666666664,
+        16.888666666666666,
         -51.09375
       ],
       "to": [
@@ -2421,68 +2421,68 @@
       "node": "polyline",
       "points": [
         [
-          15.597333333333335,
-          -56.73575
+          19.56533333333333,
+          -59.339749999999995
         ],
         [
-          15.392823010680324,
-          -55.70760717837913
+          19.266433630994317,
+          -57.83707972224641
         ],
         [
-          14.810426885454525,
-          -54.83598978121215
+          18.415239294125843,
+          -56.56317737254082
         ],
         [
-          13.938809488287543,
-          -54.25359365598634
+          17.141336944420253,
+          -55.71198303567235
         ],
         [
-          12.910666666666668,
-          -54.049083333333336
+          15.638666666666666,
+          -55.41308333333333
         ],
         [
-          11.882523845045792,
-          -54.25359365598634
+          14.13599638891308,
+          -55.71198303567235
         ],
         [
-          11.01090644787881,
-          -54.83598978121215
+          12.86209403920749,
+          -56.56317737254082
         ],
         [
-          10.428510322653011,
-          -55.70760717837913
+          12.010899702339014,
+          -57.83707972224641
         ],
         [
-          10.224,
-          -56.73575
+          11.712,
+          -59.339749999999995
         ],
         [
-          10.428510322653011,
-          -57.76389282162088
+          12.010899702339014,
+          -60.84242027775358
         ],
         [
-          11.01090644787881,
-          -58.63551021878786
+          12.862094039207488,
+          -62.11632262745917
         ],
         [
-          11.882523845045792,
-          -59.217906344013656
+          14.135996388913078,
+          -62.96751696432764
         ],
         [
-          12.910666666666668,
-          -59.42241666666667
+          15.638666666666666,
+          -63.26641666666666
         ],
         [
-          13.938809488287543,
-          -59.217906344013656
+          17.141336944420253,
+          -62.96751696432764
         ],
         [
-          14.810426885454525,
-          -58.635510218787864
+          18.41523929412584,
+          -62.11632262745917
         ],
         [
-          15.392823010680324,
-          -57.76389282162088
+          19.266433630994317,
+          -60.84242027775358
         ]
       ],
       "layer": "A-ANNO-KEYN",
@@ -2496,12 +2496,12 @@
       "space": "model",
       "node": "text",
       "anchor": [
-        12.910666666666668,
-        -56.73575
+        15.638666666666666,
+        -59.339749999999995
       ],
       "content": "K3",
       "height": 3.0,
-      "height_pt": 6.5,
+      "height_pt": 9.5,
       "rotation": 0.0,
       "style": "ARCH",
       "layer": "A-ANNO-KEYN",
@@ -2520,8 +2520,8 @@
         "name": ""
       },
       "at": [
-        12.910666666666668,
-        -56.73575
+        15.638666666666666,
+        -59.339749999999995
       ],
       "to": [
         7.0,
@@ -2593,7 +2593,7 @@
         0.5,
         7.597222222222222
       ],
-      "content": "TR-CATLIN-SAUNA-OPENING  ·  sauna-liner-opening",
+      "content": "TR-CATLIN-SAUNA-OPENING  \u00b7  sauna-liner-opening",
       "height": 3.0,
       "height_pt": 8.0,
       "rotation": 0.0,
@@ -2625,7 +2625,7 @@
         0.5,
         7.298611111111112
       ],
-      "content": "Type:Haus — derived transition detail",
+      "content": "Type:Haus \u2014 derived transition detail",
       "height": 3.0,
       "height_pt": 6.5,
       "rotation": 0.0,
@@ -3229,14 +3229,14 @@
   ],
   "notes": [
     "NOTES:",
-    "• Sauna liner: 2\" foil-faced polyiso, taped seams, over the wall and the ceiling.",
-    "• Liner furring: 1/2\" plywood strips. Fasten to framing per IRC Table R703.15.2.",
-    "• Liner finish: 5/4 shiplap, 5-1/2\" face over 5\". Basswood, poplar or aspen.",
-    "• Liner stops at the 7'-6\" ceiling; the wall behind it runs 9'-4\".",
-    "• Sauna floor: 4\" slab on R-10 XPS at 25 psi on 10 mil polyethylene.",
-    "• Slab perimeter isolation joint: 1\" XPS with 1/2\" polyurethane sealant.",
-    "• Base: 6\" fiber cement replaces shiplap and furring, membrane lapped up it.",
-    "• Foundation: 8\" wall, #6 at 48\" o.c., on a 20\"x8\" footing over washed stone.",
+    "\u2022 Sauna liner: 2\" foil-faced polyiso, taped seams, over the wall and the ceiling.",
+    "\u2022 Liner furring: 1/2\" plywood strips. Fasten to framing per IRC Table R703.15.2.",
+    "\u2022 Liner finish: 5/4 shiplap, 5-1/2\" face over 5\". Basswood, poplar or aspen.",
+    "\u2022 Liner stops at the 7'-6\" ceiling; the wall behind it runs 9'-4\".",
+    "\u2022 Sauna floor: 4\" slab on R-10 XPS at 25 psi on 10 mil polyethylene.",
+    "\u2022 Slab perimeter isolation joint: 1\" XPS with 1/2\" polyurethane sealant.",
+    "\u2022 Base: 6\" fiber cement replaces shiplap and furring, membrane lapped up it.",
+    "\u2022 Foundation: 8\" wall, #6 at 48\" o.c., on a 20\"x8\" footing over washed stone.",
     "",
     "KEYED NOTES:",
     "K1  Furring to the pour: masonry anchors, embedment verified for the substrate.",

@@ -298,6 +298,17 @@ _FACADE_TOL_M = 0.02
 _MIN_STATION_GAP_IN = 1.0
 
 
+#: Structure materials that make a wall "masonry" for dimensioning: opening edges, not centres.
+_MASONRY_MATERIAL_WORDS = ("concrete", "brick", "block", "cmu", "stone")
+
+
+def is_masonry_host(wall: ResolvedWall) -> bool:
+    """A cast-concrete or unit-masonry wall: its STRUCTURE layer is not framing."""
+    return any(layer.function == "structure" and not layer.is_cavity
+               and any(word in layer.material_ref for word in _MASONRY_MATERIAL_WORDS)
+               for layer in wall.layers)
+
+
 def _facade_stations(walls: list[ResolvedWall], model: ResolvedModel,
                      along: int, perp: int, coord: float,
                      lo: float, hi: float) -> list[float]:
@@ -305,7 +316,8 @@ def _facade_stations(walls: list[ResolvedWall], model: ResolvedModel,
 
     Stations: the two facade corners, every wall axis endpoint touching the facade line
     (a perpendicular exterior wall or a partition dying into the facade), and the
-    centerline of every opening hosted in a wall that *lies on* the facade.
+    centerline of every opening hosted in a wall that *lies on* the facade — or, in a
+    concrete/masonry wall, both rough-opening edges.
     """
     stations = [lo, hi]
     facade_wall_tags: set[str] = set()
@@ -325,7 +337,12 @@ def _facade_stations(walls: list[ResolvedWall], model: ResolvedModel,
         if wall is None:
             continue
         center = opening_center(wall, op) or wall.axis[0]
-        stations.append(center[along])
+        if is_masonry_host(wall):
+            # Masonry/concrete convention: dimension the opening's edges, not its centre.
+            half = op.width_m / 2.0
+            stations.extend((center[along] - half, center[along] + half))
+        else:
+            stations.append(center[along])
     stations.sort()
     min_gap_m = _MIN_STATION_GAP_IN * M_PER_IN
     deduped: list[float] = []
@@ -362,7 +379,9 @@ def emit_facade_dimension_strings(b: SceneBuilder, model: ResolvedModel,
     corners (:func:`wall_face_bounds`), so it closes the same extent the overall chain
     states; the stations between them stay axis measurements, because an opening's
     centreline and a partition's centreline *are* centrelines and dimensioning them to a
-    face would be a different number, not a better one. Crowded strings stagger onto an
+    face would be a different number, not a better one. A concrete or masonry opening is
+    the exception: the form or the coursing is laid out to its edges, so those are its
+    stations (:func:`is_masonry_host`). Crowded strings stagger onto an
     outer row through :func:`dimension_offsets` rather than printing through each other;
     ``offset`` and ``scale`` come from ``dimension_rows.tier_offsets`` on a real sheet.
     """
