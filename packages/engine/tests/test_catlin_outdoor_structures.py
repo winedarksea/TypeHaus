@@ -894,7 +894,7 @@ def test_each_stand_leg_stands_under_a_published_foot_hole_and_on_the_pad(catlin
 # ---------------------------------------------------------------------------------------
 _PAD_X = (28.0, 31.583333)
 _PAD_Y = (-3.333333, -0.833333)
-_STAIR_PAD_X = (27.5, 34.25)
+_STAIR_PAD_X = (27.5, 36.66)
 _STAIR_PAD_Y = (-9.0, -6.0)
 
 
@@ -927,11 +927,12 @@ def test_the_pad_carries_the_row_and_nothing_else(catlin_model) -> None:
 
 
 def test_the_flight_has_its_own_pad_with_a_code_landing_on_it(catlin_model) -> None:
-    """SL-SG-STAIRPAD, 20.3 sf / 0.25 cy, x 27'-6"..34'-3" by y -9'-0"..-6'-0".
+    """SL-SG-STAIRPAD, 27.5 sf / 0.34 cy, x 27'-6"..36'-7 7/8" by y -9'-0"..-6'-0".
 
     Its west edge is W-SG-E1's east face where the stringers foot; the flight covers x
     27'-6"..31'-2"; and what is left east of that is R311.7.6's bottom landing, which wants
-    36" in the direction of travel. The two pads must not touch — a single pour spanning the
+    36" in the direction of travel. The east edge is walk leg D's, less the 1/2" joint: the
+    pad is the walk's south end. The two pads must not touch — a single pour spanning the
     2'-8" between them is 94 sf to serve 40 — and they must share a top, or the flight's
     authored base is not the surface it lands on.
     """
@@ -942,8 +943,8 @@ def test_the_flight_has_its_own_pad_with_a_code_landing_on_it(catlin_model) -> N
     assert (x0 / FT, x1 / FT) == pytest.approx(_STAIR_PAD_X)
     assert (y0 / FT, y1 / FT) == pytest.approx(_STAIR_PAD_Y)
     area_sf = pad.area / (FT * FT)
-    assert area_sf == pytest.approx(20.25, abs=0.05)
-    # 37" of landing east of the bottom riser, against R311.7.6's 36".
+    assert area_sf == pytest.approx(27.48, abs=0.05)
+    # 5'-6" of landing east of the bottom riser, against R311.7.6's 36".
     assert (_STAIR_PAD_X[1] - (_STAIR_PAD_X[0] + 4 * 11.0 / 12.0)) * 12.0 >= 36.0
     # Separate pours, and the gap is the point.
     equipment = Polygon(_solid(catlin_model, "SL-SG-HPPAD").outline)
@@ -952,6 +953,8 @@ def test_the_flight_has_its_own_pad_with_a_code_landing_on_it(catlin_model) -> N
     slabs = {e.tag: e for st in catlin_model.plan.storeys
              for e in catlin_model.plan.storey_elements(st.tag)
              if getattr(e, "tag", "") in ("SL-SG-STAIRPAD", "SL-SG-HPPAD")}
+    walk = Polygon(_solid(catlin_model, "SL-WK-D").outline)
+    assert walk.distance(pad) / INCH == pytest.approx(0.5, abs=0.01)
     assert (slabs["SL-SG-STAIRPAD"].top_elevation.meters
             == slabs["SL-SG-HPPAD"].top_elevation.meters)
 

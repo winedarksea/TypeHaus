@@ -49162,12 +49162,6 @@
 2,
 "7c90174f96b7"
 ],
-"geometry/WKSBE00000/body": [
--0.9144,
--0.8128,
-2,
-"4b64cafaaa94"
-],
 "geometry/WM8EB2TX38-bugscreen/body": [
 -0.3413125,
 -0.3032125,
@@ -85386,8 +85380,6 @@
 "solids/SL-WK-C/z1_m": -0.8382,
 "solids/SL-WK-D/z0_m": -0.9398,
 "solids/SL-WK-D/z1_m": -0.8382,
-"solids/SL-WK-E/z0_m": -0.9144,
-"solids/SL-WK-E/z1_m": -0.8128,
 "solids/SM-B-RADON/z0_m": -3.4782125,
 "solids/SM-B-RADON/z1_m": -2.7797125,
 "solids/SP-B-BATH-LAV/z0_m": -2.8686125,

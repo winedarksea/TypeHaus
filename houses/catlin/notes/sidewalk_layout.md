@@ -1,16 +1,17 @@
 # The sidewalk and its planting pockets — hand-worked basis
 
 **House:** catlin
-**Structure:** `SL-WK-A`..`-E` (`params/landscape_walk.py`), their `FO-WK-*` pockets,
-`PB-WK-POCKETS`, and the five `walk *` impervious surfaces.
+**Structure:** `SL-WK-A`..`-D` (`params/landscape_walk.py`), their `FO-WK-*` pockets,
+`PB-WK-POCKETS`, and the four `walk *` impervious surfaces.
 **Written:** 2026-09-21, by hand from the leg rectangles.
 **Oracle for:** the `slab:SIDEWALK_FRC_CLASS5` and `mndot-class-5-base` takeoff rows and
-`code.R401_3_impervious` on the five walk surfaces; reproduced by
+`code.R401_3_impervious` on the four walk surfaces; reproduced by
 `tests/test_catlin_gardens.py`.
 **What is asked of the reviewer:** §2's areas and §3's pocket count.
 
-> ⚠ Every slab is modelled FLAT at its high edge, -2'-9" (E: -2'-8", flush with
-> SL-SG-STAIRPAD). The fall is on the impervious surfaces only. Two joints are therefore
+> ⚠ Every slab is modelled FLAT at its high edge, -2'-9". Leg D's south end meets
+> SL-SG-STAIRPAD (-2'-8") at a 1/2" isolation joint, 1" low; the stair pad, not a walk
+> leg, carries the walk from D to the porch flight. The fall is on the impervious surfaces only. Two joints are therefore
 > not flush in the field and are set by the finisher: walk A's far edge meets the driveway
 > about 2" high, and walk C meets the paver approach's -3'-0 1/2" east edge about 3" high.
 > Grade both by hand at the pour; neither is modelled.
@@ -22,7 +23,7 @@
 Full: 12 band | 16 pocket | 36 walk | 16 pocket | 12 band = 92" (legs A, B).
 One-sided: 36 walk | 16 pocket | 12 band = 64", walk against the house (leg D) — the house
 to lot line is 6'-4", so 92" does not fit east of the house anywhere; it does not fit south
-of it either, where the court and the porch stair own the ground. C and E are walk only.
+of it either, where the court and the porch stair own the ground. C is walk only.
 
 Pockets are 16" sonotube voids, drawn as 16-gons (1.3605 sf each), centred 20" in from
 each edge (44" off the house on D). Along the run they are 4'-0" o.c., **centred in the
@@ -38,11 +39,10 @@ joints fall on the same stations.
 | B garage east | x 30.11..37.78 × y 43.02..67.33 | 7.67 × 24.31 = 186.4 | 12 | 170.1 |
 | C landing connector | x 30.04..42.04 × y 39.60..43.02, less the 0.50 × 1.08 notch at PT-BW-RNE | 41.04 − 0.54 = 40.5 | 0 | 40.5 |
 | D house east | x 36.70..42.04 × y −9.00..39.60 | 5.33 × 48.60 = 259.2 | 9 | 247.0 |
-| E stair joint | x 35.29..36.66 × y −9.00..−6.00 | 1.37 × 3.00 = 4.1 | 0 | 4.1 |
-| **total** | | **595.5** | **27** | **558.8** |
+| **total** | | **591.4** | **27** | **554.7** |
 
-Concrete at 4": 558.8 / 3 / 27 = **6.90 cy**. Class 5 at 6" bills by the net slab area,
-**558.8 sf**. Impervious area counts the GROSS 595.5 sf — the pockets are not subtracted,
+Concrete at 4": 554.7 / 3 / 27 = **6.85 cy**. Class 5 at 6" bills by the net slab area,
+**554.7 sf**. Impervious area counts the GROSS 591.4 sf — the pockets are not subtracted,
 which is conservative for the coverage table.
 
 ## 3. Pocket stations
@@ -87,7 +87,6 @@ does not turn on it — but it is the one station that would move if leg D's end
 | walk B | −33" → −36" | outside the 10' band | — |
 | walk C | −33" → −36" | 12.0' | 2.1% |
 | walk D | −33" → −35" | 7.2' | 2.3% |
-| walk E | −32" → −32.75" | 3.0' | 2.1% |
 
 ## 5. What is NOT graded here
 
