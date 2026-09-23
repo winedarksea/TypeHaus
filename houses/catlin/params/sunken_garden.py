@@ -2722,24 +2722,12 @@ _ENCLOSURE_BLOCK_LINES = [_ENCLOSURE_FRONT_Y] + [_bal_y0 + _k * _bal_oc_ft for _
 # balcony's front plane to _y_in_n.
 BALCONY_JOISTS = FloorSystem(
     uid="SGFS02AAAA", tag="FS-SG-DECK",
-    # ** THE FIELD FOLLOWS THE BEAMS. ** The three balcony beams tilt (`_balcony_beam_rise`),
-    # and a flat joist field on tilted beams is the model disagreeing with itself about where
-    # the bearing is — the beam tops come up THROUGH the joists they carry, which
-    # `structural.member_interference` reports and which is not a drafting complaint. The two
-    # rises are the same number over the same run, and they are the same expression here so
-    # they cannot drift apart: this field's perpendicular extent is `_y_balcony_front` to
-    # `_y_in_n`, which is exactly the beams' node-to-node span.
-    #
-    # Each joist stays LEVEL at its own height — a staircase of ~1/4" steps across the 16"
-    # o.c. field, which is how a sloped deck frames. The two rim bands run along the fall and
-    # rake; the resolver gives them their far-end elevations.
-    #
-    # **The deck PLANE does not tilt**, and the divergence is deliberate:
-    # `ResolvedFloor.deck_z0_m`/`deck_z1_m` are single values that the room, energy, section
-    # and guard consumers read, so the model's 10'-0" walking surface is this deck's SOUTH
-    # (low) edge and the built north edge stands 2 5/8" above it.
-    # notes/balcony_differential_movement.md §2.
-    top_rise=_balcony_rise_at(_bal_y1) - _balcony_rise_at(_bal_y0),
+    # ** THE FIELD FOLLOWS THE BEAMS, AND SO DOES THE DECK. ** BM-SG-BLW/BLE tilt
+    # (`_balcony_beam_rise`); `resolve/floor_tilt.py` seats each joist on them at its own
+    # station — level E-W, a ~1/4" step per 12" line — and the plank is the plane over those
+    # tops, falling 1/4" per foot to the south. The storey datum (10'-0" joist top) is where
+    # the beams START, at the deck's south edge; the north edge at the house wall stands
+    # 2.42" higher (116" at 1/48). notes/balcony_differential_movement.md §2.
     joists=JoistSpec(member=SPEC.balcony_joist, spacing=inch(SPEC.balcony_joist_oc_in),
                      direction="x", species="southern_pine",
                      cantilever=inch(SPEC.joist_cantilever_in),

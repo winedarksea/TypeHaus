@@ -97,8 +97,8 @@ def riser_through_deck(ctx: CheckContext) -> list[Finding]:
             for deck in decks:
                 if (tag, deck.tag) in seen:
                     continue
-                band_low = min(deck.deck_z0_m, _members_low(deck))
-                band_high = deck.deck_z1_m
+                band_low = min(deck.deck_bottom_at(*path[leg][:2]), _members_low(deck))
+                band_high = deck.deck_top_at(*path[leg][:2])  # at the riser, on a tilted deck
                 depth = band_high - band_low
                 if depth <= 0:
                     continue

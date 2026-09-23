@@ -14,8 +14,8 @@ pack under `PT-SG-BR2`/`BF2` and says nothing about its shrinkage — §6 is the
 **What is asked of the reviewer:** three things, in order of consequence. (1) §5's aluminium
 expansion gap — the number has to come from Wahoo's installation guide and could not be
 retrieved; the arithmetic beside it says how large the movement is. (2) §3's lapped-shim
-taper, as a detail a carpenter can actually build. (3) §2's residual divergence — that the
-model's deck plane is the deck's LOW edge, deliberately.
+taper, as a detail a carpenter can actually build. (3) §2's door: the tilted deck now meets
+`D-S-DECK-E` 2.42" ABOVE the study's finished floor.
 
 > ## ⚠ THE THERMAL QUESTION THAT PROMPTED THIS NOTE IS A NON-ISSUE, AND SAYING SO IS THE
 > ## POINT — BECAUSE TWO OTHER MOVEMENTS ARE NOT.
@@ -26,12 +26,11 @@ model's deck plane is the deck's LOW edge, deliberately.
 > centre pillars (§6, 0.1–0.2", permanent). Do not spend a detail on the first and skip
 > the other two.
 
-> ## ⚠ THE MODEL'S DECK IS THE DECK'S SOUTH EDGE, NOT ITS AVERAGE.
-> The beams tilt; `FloorSystem.top_elevation` is a single value, so `FS-SG-DECK`'s joists
-> resolve as a flat plane. §2 states the residual: the real deck stands up to **2.45"**
-> higher at its north edge than the model draws it, and the model's 10'-0" is the low
-> (south) edge. Anything measured off the deck — the guard height, the plank, the head
-> clearance beneath — is being measured at the low end.
+> ## ⚠ THE DECK IS A PLANE NOW, AND ITS HIGH EDGE IS AT THE STUDY DOOR.
+> Since 2026-09-23 `resolve/floor_tilt.py` seats each `FS-SG-DECK` joist on the tilted beams
+> at its own station and resolves the plank as the plane over them (§2). The 10'-0" datum is
+> the beams' south node; the north edge, at `D-S-DECK-E`, stands **2.42"** higher — above
+> the study's finished floor, which R311.3 now reports.
 
 ---
 
@@ -96,25 +95,31 @@ the rear. Re-measured after:
 | front bearing, y = −9.833' | 100.8750" | 100.8750" | **0** |
 | rear bearing, y = −2.500' | 102.8750" | 102.8750" | **0** |
 
-**The residual, stated rather than hidden — and it is now one thing, not two.** The joists
-followed. `FS-SG-DECK` carries `top_rise=_balcony_beam_rise`, the same expression the beams
-use over the same run so the two cannot drift apart, and each joist is level at its own
-height: a staircase of ~1/4" steps across the 16" o.c. field, which is how a sloped deck is
-actually framed. The beam tops no longer come up through the joists they carry, and
-`structural.member_interference` no longer has anything to say about them.
+**The joists and the deck follow the beams (2026-09-23).** `resolve/floor_tilt.py` reads
+each joist end's z off its own bearing — the beam's top at that joist's station — so
+nothing is authored twice (`FloorSystem.top_rise`, which restated the beams' rise, is
+gone). Both beams rise alike, so each joist is level E-W: a staircase of 1/4" steps across
+the 12" o.c. field. The plank is the plane over those tops. Worked by hand at 1/4 in/ft
+(1/48 in/in), datum at the beams' SOUTH node, y = −10'-6" (the plank's south edge):
 
-What is still flat is the deck **plane**. `ResolvedFloor.deck_z0_m`/`deck_z1_m` are single
-values read by the room, energy, section and guard consumers, so the model's 10'-0" walking
-surface is this deck's SOUTH (low) edge and the built north edge stands 2 5/8" above it.
-Tilting that plane is a far larger surface than the 2" the columns carried, and it is
-deliberately not attempted here; `params/sunken_garden.py` says the same thing at the
-`top_rise` it sets, so the two records agree.
+| station | y | rise over datum | joist seat (beam top) | plank top |
+|---|---|---|---|---|
+| plank south edge, beam start | −126" | 0 | 108.750" | **121.500"** |
+| first joist line | −125.25" | 0.75/48 = 0.0156" | **108.766"** | — |
+| last joist line | −10.75" | 115.25/48 = 2.401" | 111.151" | — |
+| plank north edge, beam end | −10" | 116/48 = **2.417"** | 111.167" | **123.917"** |
 
-*(Until 2026-09-15 this paragraph claimed the joists were "still a single flat plane at the
-storey datum" and that closing it "was not done here". That was written before the
-`top_rise` landed and was never revised — it read as though the beams had been tilted and
-the field left behind them, which is the one condition this whole note exists to say was
-fixed.)*
+Until this change the datum sat at the first joist line, so every joist hung **1/64"** inside
+its beam (`joints/bearing.py` carried the slack for it); now the seat is exact.
+
+**What it found — `D-S-DECK-E`.** The door is in `W-S-S2` (axis y = 0, exterior face
+−6.94"), over the deck's HIGH edge. Model threshold = wall framing base 120.000" + sill 0;
+`RM-S-STUDY2`'s finished floor (oak) 121.500". The deck there is 123.917": **3.92" above the
+model threshold and 2.42" above the finished floor** — it was flush (121.500") while the
+plane was flat. `code.R311_3_exterior_landing` now FAILs: its landing band reaches 0.05 m
+(1.97") above a threshold, and a deck standing a step UP at an in-swinging door is also a
+water question. Closing it is a design decision (lower the balcony datum ~2 3/8", or step
+the deck at the door), not an engine one.
 
 ## 3. A tilted beam needs a tapered bearing, and the part is already at every seat
 

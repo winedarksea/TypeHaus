@@ -235,12 +235,13 @@ def _ceiling_above(ctx: CheckContext, point: tuple[float, float],
         if best is None or solid.z0_m < best[0]:
             best = (solid.z0_m, solid.tag, _is_concrete_assembly(ctx, solid.assembly))
     for floor in ctx.model.floors:
-        if floor.deck_z0_m <= z + 1e-6 or len(floor.deck_outline) < 3:
+        underside = floor.deck_bottom_at(*point)  # at the probe, on a tilted deck
+        if underside <= z + 1e-6 or len(floor.deck_outline) < 3:
             continue
         if not Polygon(floor.deck_outline).contains(probe):
             continue
-        if best is None or floor.deck_z0_m < best[0]:
-            best = (floor.deck_z0_m, floor.tag, False)  # a framed deck is never concrete
+        if best is None or underside < best[0]:
+            best = (underside, floor.tag, False)  # a framed deck is never concrete
     return (best[1], best[2]) if best is not None else None
 
 

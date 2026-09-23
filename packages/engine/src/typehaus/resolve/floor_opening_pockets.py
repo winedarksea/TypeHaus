@@ -271,7 +271,7 @@ def resolve_floor_opening_pockets(plan, model: ResolvedModel) -> list[Finding]:
                 _failure(closure, f"named pocket walls contain opening(s): {', '.join(openings)}")
             )
             continue
-        surface = floor.deck_z1_m
+        surface = floor.deck_top_range()[1]  # a tilted deck's high edge governs
         if any(not _wall_or_roof_closes_locally(model, wall, surface)
                for _tag, wall, _polygon in walls):
             findings.append(

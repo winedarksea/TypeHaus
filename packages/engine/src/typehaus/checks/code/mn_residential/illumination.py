@@ -242,7 +242,9 @@ def _landing_region(ctx: CheckContext, stair, polygon, elevation_m: float | None
     for floor in ctx.model.floors:
         if floor.deck_z1_m is None or len(floor.deck_outline) < 3:
             continue
-        if abs(floor.deck_z1_m - elevation_m) > _LANDING_ELEVATION_TOLERANCE_M:
+        low, high = floor.deck_top_range()  # a tilted deck matches anywhere on its fall
+        if not (low - _LANDING_ELEVATION_TOLERANCE_M <= elevation_m
+                <= high + _LANDING_ELEVATION_TOLERANCE_M):
             continue
         deck = Polygon([p.xy_m if hasattr(p, "xy_m") else p for p in floor.deck_outline])
         if not deck.is_valid or deck.area <= 1e-9:

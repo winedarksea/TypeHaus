@@ -497,6 +497,14 @@ def test_a_floor_with_a_subfloor_gains_a_deck(model, geometry) -> None:
     for floor in decked:
         deck = next(p for p in geometry.by_uid(floor.uid).parts if p.key == "deck")
         prism = deck.solids[0]
+        if floor.deck_plane is not None:
+            # A deck on tilted bearings is its plane: every corner on the deck's own reading.
+            for box in deck.solids:
+                for x, y, z in box.corners_bottom:
+                    assert z == pytest.approx(floor.deck_bottom_at(x, y), abs=TOL)
+                for x, y, z in box.corners_top:
+                    assert z == pytest.approx(floor.deck_top_at(x, y), abs=TOL)
+            continue
         assert isinstance(prism, GPrism)
         # The deck rides *on* the storey datum — the joists top out there.
         assert prism.z0_m == pytest.approx(floor.deck_z0_m, abs=TOL)

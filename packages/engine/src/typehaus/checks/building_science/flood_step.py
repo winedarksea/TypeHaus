@@ -26,7 +26,7 @@ from __future__ import annotations
 
 from typehaus.checks._authoring import advisory, not_applicable, passed, unknown
 from typehaus.checks.code.mn_residential._common import _rooms_by_storey
-from typehaus.checks.code.mn_residential.egress import _landing_surfaces
+from typehaus.checks.code.mn_residential.egress import _landing_surfaces, tilted_decks
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.quantities import inch
@@ -71,6 +71,12 @@ def _outward_band(ctx: CheckContext, wall, rooms_by_storey):
     return band if band.is_valid and band.area > 1e-9 else None
 
 
+def _ring(part) -> list[tuple[float, float]]:
+    """Every exterior vertex of a (multi)polygon — where a plane peaks over it."""
+    return [p for geom in getattr(part, "geoms", [part]) if hasattr(geom, "exterior")
+            for p in geom.exterior.coords]
+
+
 @check(Tier.BUILDING_SCIENCE, _CHECK_ID)
 def flood_step_threshold(ctx: CheckContext) -> list[Finding]:
     """A wall whose foot ponds stands its declared step above the surface outside it."""
@@ -85,6 +91,7 @@ def flood_step_threshold(ctx: CheckContext) -> list[Finding]:
     # and a merged entry is published at its LOWEST top. Merging here would invent a
     # smaller step than the court has.
     surfaces = _landing_surfaces(ctx)
+    tilted = tilted_decks(ctx)
     out: list[Finding] = []
     for tag in sorted(required):
         wall = ctx.model.wall(tag)
@@ -101,9 +108,12 @@ def flood_step_threshold(ctx: CheckContext) -> list[Finding]:
         # and is not what water stands on. Of those, the HIGHEST is what governs — water
         # rises to the level of the highest thing it can reach, so the smallest step is the
         # real one.
-        below = [(name, top) for name, poly, top in surfaces
-                 if top < wall.z1_m - 1e-6
-                 and poly.intersection(band).area >= _MIN_BAND_OVERLAP_M2]
+        reached = [(name, top, poly.intersection(band)) for name, poly, top in surfaces]
+        # A tilted deck at the highest point of it the band reaches.
+        reached = [(name, tilted[name].deck_top_range(_ring(part))[1] if name in tilted
+                    else top, part) for name, top, part in reached
+                   if part.area >= _MIN_BAND_OVERLAP_M2]
+        below = [(name, top) for name, top, _part in reached if top < wall.z1_m - 1e-6]
         if not below:
             out.append(unknown(_CHECK_ID, f"{tag} declares a flood step but the plan models "
                                "no walk, slab or deck at its foot to measure it against",

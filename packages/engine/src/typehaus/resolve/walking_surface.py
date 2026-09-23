@@ -121,7 +121,7 @@ def _covers(model: ResolvedModel, point: tuple[float, float]):
                         holes=[list(void) for void in floor.deck_voids]
                         ).buffer(-_PLAN_EPS_M)
         if not cover.is_empty and cover.contains(probe):
-            yield floor.tag, floor.storey, floor.deck_z1_m
+            yield floor.tag, floor.storey, floor.deck_top_at(*point)
     for solid in model.solids:
         if (solid.category != "slab" or len(solid.outline) < 3
                 or _bbox_misses(point, solid.outline)):
@@ -209,7 +209,14 @@ def deck_owning_opening(model: ResolvedModel, storey: str,
             continue
         for floor in model.floors:
             if floor.tag == element.tag:
-                return floor.tag, floor.deck_z1_m
+                # A tilted deck is read at the opening's own centre.
+                opening = model.plan.by_tag(opening_tag)
+                ring = [p.xy_m for p in getattr(opening, "outline", ())]
+                if floor.deck_plane is None or not ring:
+                    return floor.tag, floor.deck_z1_m
+                cx = sum(p[0] for p in ring) / len(ring)
+                cy = sum(p[1] for p in ring) / len(ring)
+                return floor.tag, floor.deck_top_at(cx, cy)
         for solid in model.solids:
             if solid.tag == element.tag and solid.category == "slab":
                 return solid.tag, solid.z1_m

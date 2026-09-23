@@ -109,7 +109,7 @@ def _voided_floors(ctx: CheckContext) -> list[tuple[Any, tuple[float, float], li
             continue
         joists = [member.z0_m for member in floor.members if member.z0_m is not None]
         low = min(joists) if joists else floor.deck_z0_m
-        out.append((floor, (low, floor.deck_z1_m + ON_DECK_FT / M_TO_FT), shrunk))
+        out.append((floor, (low, floor.deck_top_range()[1] + ON_DECK_FT / M_TO_FT), shrunk))
     return out
 
 

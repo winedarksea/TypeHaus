@@ -62,7 +62,7 @@ _SHAFT_REACH_M = inch(12).meters
 _SPHERE_M = inch(4).meters
 
 
-def _landing_below(decks: list[tuple[Any, float]], probe: Any, surface: float,
+def _landing_below(decks: list[tuple[Any, Any]], probe: Any, surface: float,
                    riser: float,
                    base: float | None) -> float | None:
     """What a fall from this nosing end would land on, or ``None`` if nothing is modeled.
@@ -75,8 +75,8 @@ def _landing_below(decks: list[tuple[Any, float]], probe: Any, surface: float,
     one riser under the floor beside it is a step across, not a drop. The riser is the
     stair's own number rather than a tolerance — it is the definition of the next level up.
     """
-    under = [z for poly, z in decks
-             if z <= surface + riser + 1e-9 and poly.covers(probe)]
+    under = [z for poly, floor in decks if poly.covers(probe)
+             and (z := floor.deck_bottom_at(probe.x, probe.y)) <= surface + riser + 1e-9]
     if base is not None:
         under.append(base)
     return max(under) if under else None
@@ -117,14 +117,14 @@ def stair_open_side_guard(ctx: CheckContext) -> list[Finding]:
     cid, code = "code.R312_1_1_stair_open_side", "R312.1.1"
     if not ctx.model.stairs:
         return [_unknown(cid, "no resolved stairs", (), code)]
-    decks = [(Polygon(floor.deck_outline), floor.deck_z0_m) for floor in ctx.model.floors
+    decks = [(Polygon(floor.deck_outline), floor) for floor in ctx.model.floors
              if floor.deck_outline and len(floor.deck_outline) >= 3]
     guards = [(LineString([p.xy_m for p in e.path]), e)
               for e in ctx.plan.all_elements()
               if isinstance(e, Railing) and len(e.path) >= 2
               and e.role in ("guard", "guard_and_handrail")]
     walls = [(LineString(w.axis), w) for w in ctx.model.walls]
-    framed = [(Polygon(floor.deck_outline), floor.deck_z1_m,
+    framed = [(Polygon(floor.deck_outline), floor.deck_top_range(),
                min(m.z0_m for m in floor.members))
               for floor in ctx.model.floors
               if floor.members and floor.deck_outline and len(floor.deck_outline) >= 3]
@@ -211,7 +211,7 @@ def stair_open_side_guard(ctx: CheckContext) -> list[Finding]:
 def _deck_closes_band(framed, line, guard, closed_to: float) -> bool:
     """The deck ``guard`` stands on reaches down to within a sphere of ``closed_to``."""
     base = guard.base_elevation.meters
-    return any(abs(top - base) <= _RAIL_PLANE_TOL_M
+    return any(top[0] - _RAIL_PLANE_TOL_M <= base <= top[1] + _RAIL_PLANE_TOL_M
                and poly.distance(line) <= _RAIL_PLANE_TOL_M
                and bottom - closed_to <= _SPHERE_M + 1e-9
                for poly, top, bottom in framed)
@@ -356,9 +356,11 @@ def wall_top_landing_width(ctx: CheckContext) -> list[Finding]:
     cid, code = "code.R311_7_1_wall_top_landing", "R311.7.1"
     if not ctx.model.stairs:
         return [_unknown(cid, "no resolved stairs", (), code)]
-    modelled = [(Polygon(floor.deck_outline), floor.deck_z1_m) for floor in ctx.model.floors
+    modelled = [(Polygon(floor.deck_outline), floor.deck_top_at)
+                for floor in ctx.model.floors
                 if floor.deck_outline and len(floor.deck_outline) >= 3]
-    modelled += [(Polygon(solid.outline), solid.z1_m) for solid in ctx.model.solids
+    modelled += [(Polygon(solid.outline), lambda _x, _y, z=solid.z1_m: z)
+                 for solid in ctx.model.solids
                  if solid.category == "slab" and len(solid.outline) >= 3]
     out: list[Finding] = []
     for stair in ctx.model.stairs:
@@ -371,8 +373,8 @@ def wall_top_landing_width(ctx: CheckContext) -> list[Finding]:
         step = ((a[0] + b[0]) / 2.0 + travel[0] * _STANDS_PROUD_M,
                 (a[1] + b[1]) / 2.0 + travel[1] * _STANDS_PROUD_M)
         probe = Point(step)
-        if any(abs(top - z) <= _WALL_TOP_ARRIVAL_TOL_M and poly.covers(probe)
-               for poly, top in modelled):
+        if any(poly.covers(probe) and abs(top_at(*step) - z) <= _WALL_TOP_ARRIVAL_TOL_M
+               for poly, top_at in modelled):
             continue  # it arrives on a modeled walking surface; other rules measure that
         tops = ((w, unary_union([Polygon(layer.polygon) for layer in w.layers]))
                 for w in ctx.model.walls

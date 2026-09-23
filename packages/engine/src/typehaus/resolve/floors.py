@@ -14,6 +14,7 @@ from typehaus.model.structure import Beam
 from typehaus.quantities import inch
 from typehaus.resolve.floor_ends import floor_ends
 from typehaus.resolve.floor_openings import _shift, opening_frames, opening_members
+from typehaus.resolve.floor_tilt import joist_lift, twisted
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember, ResolvedFloor, ResolvedModel, Ring
 from typehaus.resolve.through_deck import through_deck_cuts, through_deck_walls
@@ -90,19 +91,16 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     z1 = (system.top_elevation.meters if system.top_elevation is not None
           else storey.elevation.meters)
     z0 = z1 - depth
-    # A field that follows tilted bearings (``FloorSystem.top_rise``). The datum above is
-    # taken at ``perp0``, the LOW perpendicular edge, and the field rises linearly from there
-    # to ``perp1`` — so each joist is level at its own height, a staircase of small steps,
-    # which is how a sloped deck actually frames. The rim bands run ALONG the slope and rake;
-    # they carry their far end on ``z0_end_m``/``z1_end_m``.
-    rise_m = system.top_rise.meters if system.top_rise is not None else 0.0
-    perp_span = perp1 - perp0
+    # A field on TILTED bearings (``Beam.top_rise_end``): each joist end sits on its own
+    # bearing's top at the joist's station, so ``lift`` is read off the bearings and the datum
+    # above is the joist top where the first bearing starts (``resolve/floor_tilt.py``).
+    tilt = joist_lift(model.plan, [(tag, _axis_coord(axis)) for tag, axis
+                                   in zip(spec.bearing_refs, bearing_axes, strict=True)
+                                   if axis is not None], boundaries, along_x)
 
-    def lift(perp: float) -> float:
-        """How far the field has risen at perpendicular coordinate ``perp``."""
-        if abs(rise_m) < 1e-12 or abs(perp_span) < 1e-12:
-            return 0.0
-        return rise_m * (perp - perp0) / perp_span
+    def lift(axis: float, perp: float) -> float:
+        """How far the field has risen at ``axis`` along a joist on line ``perp``."""
+        return 0.0 if tilt is None else tilt.at(axis, perp)
 
     cant_m = spec.cantilever.meters if spec.cantilever else 0.0
     # Per-end overrides (a deck with a flush bearing at one end and an overhang at the
@@ -159,10 +157,13 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
                     p0, p1 = (segment_a, perp), (segment_b, perp)
                 else:
                     p0, p1 = (perp, segment_a), (perp, segment_b)
-                lifted = lift(perp)
+                lift_a, lift_b = lift(segment_a, perp), lift(segment_b, perp)
+                rakes = abs(lift_b - lift_a) > 1e-9
                 members.append(FramedMember(
                     system.uid, f"joist-{span_index}-{index}-{segment_index}", "joist",
-                    spec.member, p0, p1, z0 + lifted, z1 + lifted, segment_b - segment_a,
+                    spec.member, p0, p1, z0 + lift_a, z1 + lift_a, segment_b - segment_a,
+                    z0_end_m=(z0 + lift_b) if rakes else None,
+                    z1_end_m=(z1 + lift_b) if rakes else None,
                 ))
 
     # Sistered plies + solid blocking under an authored concentrated load. This runs on the
@@ -172,7 +173,8 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     # Every laid line, extra ones included: a block cut against the regular lines alone
     # would run straight through an authored extra joist.
     members.extend(_reinforcement_members(
-        system, spec, sorted(positions + extra), along_x, ends.tip_lo, ends.tip_hi, z0, z1, lift))
+        system, spec, sorted(positions + extra), along_x, ends.tip_lo, ends.tip_hi, z0, z1,
+        lift if tilt is not None else None))
 
     # Opening framing after clipping: headers on edges with no declared bearing, trimmer
     # packs bearing to bearing (resolve/floor_openings.py).
@@ -197,11 +199,13 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
         # A rim runs from ``perp0`` to ``perp1`` — ALONG the fall — so on a tilted field it
         # is a raked member, and it says so through the end elevations rather than being
         # drawn level and left to interpenetrate the joists it closes.
+        rim_a, rim_b = lift(boundary, perp0), lift(boundary, perp1)
+        rim_rakes = abs(rim_b - rim_a) > 1e-9
         members.append(FramedMember(
-            system.uid, f"rim-{rim_index}", "rim", rim_profile, r0, r1, z0, z1,
+            system.uid, f"rim-{rim_index}", "rim", rim_profile, r0, r1, z0 + rim_a, z1 + rim_a,
             perp1 - perp0, material=spec.rim_material,
-            z0_end_m=(z0 + rise_m) if rise_m else None,
-            z1_end_m=(z1 + rise_m) if rise_m else None,
+            z0_end_m=(z0 + rim_b) if rim_rakes else None,
+            z1_end_m=(z1 + rim_b) if rim_rakes else None,
         ))
 
     # The subfloor sheet over the joist field. Its extent is the framed field itself —
@@ -212,6 +216,16 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
     deck_voids: tuple[Ring, ...] = ()
     through_walls: tuple = ()
     deck_z0_m = deck_z1_m = z1
+    deck_plane = None
+    if tilt is not None:
+        deck_plane, miss = tilt.plane(perp0, perp1)
+        if twisted(miss):
+            findings.append(Finding(
+                severity=Severity.ERROR, check_id="integrity.floor_plane",
+                message=f"floor {system.tag}: its tilted bearings miss one deck plane by "
+                        f"{miss / inch(1).meters:.2f}\"; the joists follow them, the deck "
+                        "sheet is drawn on the plane through the outer two",
+                element_tags=(system.tag,), result=Result.FAIL))
     if system.subfloor is not None:
         if system.subfloor_outline:
             # An authored sheet wins outright — a plank that oversails its rim. It replaces
@@ -234,7 +248,10 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
         # ``integrity.floor_end_bearing`` grades a deck's two ends, not a segment's. Nor is
         # it a chase: ``routing/corridors.chase_corridors`` would offer a riser lane through
         # solid brick.
-        through_walls = through_deck_walls(model, system, z0, deck_z1_m, deck_outline)
+        # The band a through-wall must clear is the tilted deck's whole range.
+        lift_lo, lift_hi = _plane_range(deck_plane, deck_outline)
+        through_walls = through_deck_walls(model, system, z0 + lift_lo, deck_z1_m + lift_hi,
+                                           deck_outline)
         deck_voids = tuple(
             [(f.minx, f.miny), (f.maxx, f.miny), (f.maxx, f.maxy), (f.minx, f.maxy)]
             for f in opening_boxes
@@ -263,10 +280,15 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
         direction=spec.direction, members=tuple(members), chases=chases,
         penetrations=penetrations,
         deck_outline=deck_outline, deck_voids=deck_voids,
-        deck_z0_m=deck_z0_m, deck_z1_m=deck_z1_m, ends=ends,
+        deck_z0_m=deck_z0_m, deck_z1_m=deck_z1_m, deck_plane=deck_plane, ends=ends,
         through_walls=tuple(w.tag for w in through_walls),
         deck_material_ref=(system.subfloor.material_ref if system.subfloor else None),
     ), findings
+
+
+def _plane_range(plane, ring) -> tuple[float, float]:
+    lifts = [plane.lift(*p) for p in ring] if plane is not None and ring else [0.0]
+    return min(lifts), max(lifts)
 
 
 #: An extra line closer than this to a regular one would share its derived tie.
@@ -365,14 +387,18 @@ def _reinforcement_members(system: FloorSystem, spec, positions: list[float], al
             p0, p1 = (axis_lo, perp), (axis_hi, perp)
         else:
             p0, p1 = (perp, axis_lo), (perp, axis_hi)
-        # A sister runs BESIDE its joist, so it is level at that joist's own height on a
-        # tilted field (``lift``) — the same staircase, one ply over.
-        raise_m = lift(perp) if lift is not None else 0.0
+        # A sister runs BESIDE its joist, so on a tilted field it takes that joist's own
+        # end heights (``lift``) — the same line, one ply over.
+        raise_a = lift(axis_lo, perp) if lift is not None else 0.0
+        raise_b = lift(axis_hi, perp) if lift is not None else 0.0
+        sister_rakes = abs(raise_b - raise_a) > 1e-9
         for ply in range(existing, plies - 1):
             s0, s1 = _shift(p0, p1, normal, (ply + 1) * ply_width)
             out.append(FramedMember(
                 system.uid, f"sister-{index}-{ply}", "sister_joist", member,
-                s0, s1, z0 + raise_m, z1 + raise_m, axis_hi - axis_lo,
+                s0, s1, z0 + raise_a, z1 + raise_a, axis_hi - axis_lo,
+                z0_end_m=(z0 + raise_b) if sister_rakes else None,
+                z1_end_m=(z1 + raise_b) if sister_rakes else None,
             ))
         # Outer faces of the finished cluster (authored joist + every ply on this line,
         # this entry's and any earlier entry's).
@@ -401,9 +427,9 @@ def _reinforcement_members(system: FloorSystem, spec, positions: list[float], al
                 q0, q1 = (a, block_axis), (b, block_axis)
             # A block spans BETWEEN two joist lines, so on a tilted field it rakes across
             # the step between them, exactly as the rim does along the whole fall.
-            block_z0 = z0 + (lift(a) if lift is not None else 0.0)
-            block_z1 = z1 + (lift(a) if lift is not None else 0.0)
-            block_end = lift(b) - lift(a) if lift is not None else 0.0
+            start = lift(block_axis, a) if lift is not None else 0.0
+            block_z0, block_z1 = z0 + start, z1 + start
+            block_end = lift(block_axis, b) - start if lift is not None else 0.0
             out.append(FramedMember(
                 system.uid, f"sister-{index}-block-{key}", "blocking", member,
                 q0, q1, block_z0, block_z1, b - a,
