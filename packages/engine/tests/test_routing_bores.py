@@ -55,7 +55,10 @@ def test_catlin_bores_no_stud_past_its_limit_any_more(catlin_ctx) -> None:
     wall whose studs were 2x4 on 2x6 plates all along. This is the assertion that keeps them
     closed — an over-bore reappearing here is a regression, not a new finding.
     """
-    assert not [f for f in run_through_stud(catlin_ctx) if f.result.value == "fail"]
+    # Per-member over-bores only: a run standing BESIDE a wall (``wall_cavity``) is a
+    # different finding, and catlin carries several since 2026-09-23.
+    assert not [f for f in run_through_stud(catlin_ctx)
+                if f.result.value == "fail" and "would bore" in f.message]
 
 
 def test_an_over_size_bore_names_the_member_the_limit_and_the_actual(catlin_ctx) -> None:
@@ -71,7 +74,8 @@ def test_an_over_size_bore_names_the_member_the_limit_and_the_actual(catlin_ctx)
     runs = [replace(r, diameter_m=0.1016) if r.tag == "PR-B-WC2-DRAIN" else r
             for r in model.pipe_runs]
     ctx = replace(catlin_ctx, model=replace(model, pipe_runs=tuple(runs)))
-    findings = [f for f in run_through_stud(ctx) if f.result.value == "fail"]
+    findings = [f for f in run_through_stud(ctx) if f.result.value == "fail"
+                and f.element_tags[0] == "PR-B-WC2-DRAIN"]
     assert findings, "a 4\" drain through a 2x8 is over R602.6"
     for finding in findings:
         assert "the worst is" in finding.message
