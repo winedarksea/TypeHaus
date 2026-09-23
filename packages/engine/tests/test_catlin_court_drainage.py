@@ -93,7 +93,7 @@ def test_the_rain_garden_still_holds_its_roofs_and_names_the_pump(ctx):
     found = _findings(rain_garden_capacity, ctx, "RG-W-BASIN")
     capacity = next(f for f in found if "ponds" in f.message)
     assert capacity.result is Result.PASS
-    assert "88.5 cf against 85.9 cf" in capacity.message
+    assert "100.3 cf against 92.6 cf" in capacity.message
     assert any(f.result is Result.UNKNOWN and "pumped water from SM-B-RADON" in f.message
                for f in found)
 

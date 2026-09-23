@@ -38,7 +38,7 @@ load(T) = ground_coupled_btuh + air_coupled_ua × (setpoint − T)
 
 | zone | air-coupled UA | ground-coupled | at −15 °F | at 5 °F | at 17 °F | at 47 °F |
 |---|---|---|---|---|---|---|
-| HP1 upstairs + attic | 181.30 | **0** | 15,410 | 11,784 | 9,609 | **4,170** |
+| HP1 upstairs + attic | 180.76 | **0** | 15,365 | 11,750 | 9,580 | **4,158** |
 | HP2 basement + main | 144.37 | **2,392** | 14,664 | 11,776 | 10,044 | **5,713** |
 | HP3 mudroom + mech + closet | 12.27 | 0 | 1,043 | 797 | 650 | **282** |
 
@@ -115,7 +115,7 @@ Two halves, and they are easy to run together:
 
 | | largest minimum, and where | design load | **sizing factor** | Manual S cap | verdict |
 |---|---|---|---|---|---|
-| HP1 | 14,000 @ **5 °F** | 15,410 | **0.91** | 12,328 Btu/h | **advisory** |
+| HP1 | 14,000 @ **5 °F** | 15,365 | **0.91** | 12,292 Btu/h | **advisory** |
 | HP2 | 8,800 @ **5 °F** | 14,664 | **0.60** | 11,731 Btu/h | pass |
 | HP3 | 2,800 @ **17 °F** | 1,043 | **2.69** | 834 Btu/h | **advisory** |
 
@@ -130,7 +130,7 @@ not the end of the story.
 
 ## 4. The crossover temperature — reported on a PASS too
 
-The sentence an owner can act on. "It modulates down to the load only below −5.9 °F" is a
+The sentence an owner can act on. "It modulates down to the load only below −6.1 °F" is a
 fact about this building's year; "minimum sizing factor 0.91" is one nobody can act on.
 
 Solved on the first sign flip of `minimum(T) − load(T)` across the rows that state a
@@ -138,18 +138,18 @@ minimum. For HP1:
 
 | odb | minimum | load | difference |
 |---|---|---|---|
-| −22 °F | 13,400 | 16,679 | **−3,279** |
-| 5 °F | 14,000 | 11,784 | **+2,216** |
-| 17 °F | 7,100 | 9,609 | −2,509 |
-| 47 °F | 10,800 | 4,170 | +6,630 |
+| −22 °F | 13,400 | 16,630 | **−3,230** |
+| 5 °F | 14,000 | 11,750 | **+2,250** |
+| 17 °F | 7,100 | 9,580 | −2,480 |
+| 47 °F | 10,800 | 4,158 | +6,642 |
 
 The first flip is between −22 and 5:
 
 ```
-T = −22 + 27 × 3,279 / (3,279 + 2,216) = −22 + 27 × 0.5967 = −5.9 °F
+T = −22 + 27 × 3,230 / (3,230 + 2,250) = −22 + 27 × 0.5894 = −22 + 15.9 = −6.1 °F
 ```
 
-**HP1 modulates continuously only below −5.9 °F.** In Minneapolis that is on the order of
+**HP1 modulates continuously only below −6.1 °F.** In Minneapolis that is on the order of
 150 hours a year; the other 5,000 heating hours it cycles.
 
 (Note the difference flips *back* negative at 17 °F, because the minimum column dips to
@@ -209,9 +209,10 @@ a mudroom and a mechanical room. Options, roughly in order:
    and that was a deliberate choice worth re-examining on its own terms.
 
 **HP1 is the hardest, and the reason is a genuine conflict between the two Manual S caps.**
-The zone wants **15,410 Btu/h of heat at −15 °F and 8,665 Btu/h of sensible cooling** — a
-1.8 : 1 ratio — and the two rules pull opposite ways: the heating side wants a big machine,
-the cooling cap (1.30) wants one rated no higher than 11,265 Btu/h.
+The zone wants **15,365 Btu/h of heat at −15 °F and 8,889 Btu/h of sensible cooling** — a
+1.7 : 1 ratio — and the two rules pull opposite ways: the heating side wants a big machine,
+the cooling cap (1.30) wants one rated no higher than 11,556 Btu/h (11,265 on the 8,665
+Btu/h load of 2026-09-18, which the search below used).
 
 Searched against NEEP's cold-climate listing on 2026-09-18: filtering for
 `cooling_capacity_rated_95 <= 11,265`, a low-temperature cut-out at or below −15 °F, and a
@@ -226,7 +227,7 @@ than shopping around indefinitely. The real answers are therefore structural:
   Costs a second outdoor unit, a second pad and a second circuit.
 * **Accept the cooling over-size and fix only the turndown.** A deeper-turndown unit of the
   same nominal size — the search space to shop, and the constraint to shop against is
-  "minimum at any published temperature under 12,328 Btu/h".
+  "minimum at any published temperature under 12,292 Btu/h".
 * **Accept both**, on the argument that the cooling season here is short. This is the
   do-nothing option and should be a decision rather than a default.
 
@@ -243,8 +244,8 @@ left alone.
 
 **None of this is a decision the engine can make**, which is why the checks FAIL rather than
 proposing. What the engine now does is state the constraint in the units an equipment
-selector shops in: *"find a unit whose minimum at 47 °F is under 12,328 Btu/h and whose
-cooling is under 11,265."*
+selector shops in: *"find a unit whose minimum at 47 °F is under 12,292 Btu/h and whose
+cooling is under 11,556."*
 
 ## 7. What the owner decided, 2026-09-18
 
@@ -278,7 +279,7 @@ changes went in with that decision:
 **System 1 keeps its cooling over-size.** *"It's perfectly fine that it is oversized for
 summer; it's unlikely we can find a unit that is perfectly balanced for both winter and
 summer needs."* §6's search bears that out — NEEP returns zero products meeting both caps —
-so the 2.67 ratio stands as a recorded decision rather than an open item.
+so the ratio (2.67 then, 2.70 at 2026-09-23) stands as a recorded decision rather than an open item.
 
 **The air handler was challenged and checked.** The concern was that Gree shows the FLEXX
 Ultra paired with a floor-standing upflow air handler rather than the low-profile ceiling
@@ -300,7 +301,7 @@ cooling load.
 ## 8. What is still open
 
 - **System 1's turndown**, at 0.91 against the 0.80 cap. The constraint to shop against, if
-  it is ever revisited: *a unit whose minimum at any published temperature is under 12,328
+  it is ever revisited: *a unit whose minimum at any published temperature is under 12,292
   Btu/h*, with the soffit-depth consequence in §6.
 - **System 3's existence.** Kept for now, explicitly reversible.
 - **`RM-B-ESS` and `RM-M-PANTRY`** belong to no zone and report UNKNOWN.
@@ -326,3 +327,12 @@ HP2's zone lost 17.0 sf of framed walkout (W-B-S2-FR/-S3-FR, −28.5 Btu/h) and 
 buried and 2.6 sf above-grade concrete (W-B-S1/-S4, +32.6 Btu/h): design load **14,668 Btu/h**
 (was 14,664), ground-coupled **2,412** (was 2,392), crossover **27.1 °F** (was 27.0). Sizing
 factor unchanged at 0.60; no verdict moves. The figures above are the pre-narrowing ones.
+
+## Addendum 2026-09-23 — System 1 after WIN-A-S2/-S3 went WT-1436 → WT-1424
+
+c3c46cff: −2.33 sf of glass (U 0.25) became wall (U 0.0228), ΔUA = −0.583 + 0.053 = −0.53,
+so HP1's air UA 181.30 → 180.76 and its design load 15,410 → **15,365** (−0.53 × 85 = −45).
+§§1, 3, 4, 6 and 8 above carry the new HP1 figures; the Manual S cap is 0.80 × 15,365 =
+**12,292**, the crossover **−6.1 °F** (was −5.9). The NEEP search in §6 is the 2026-09-18 one
+and stands. The sensible cooling 8,665 → 8,889 is drift since 2026-09-18, not this change
+(less glass can only lower it).

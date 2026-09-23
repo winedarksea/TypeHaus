@@ -30,6 +30,10 @@ def floor_z_m(el: RainGarden) -> float:
 
 
 def _inset(polygon: Polygon, distance: float) -> Polygon:
+    # The water surface's inset is `full - depth`, a float residue of ~1e-17 rather than 0,
+    # and a mitred buffer by that returns EMPTY at some coordinates: the top area vanished.
+    if abs(distance) < 1e-9:
+        return polygon
     shrunk = polygon.buffer(-distance, join_style="mitre")
     return shrunk if not shrunk.is_empty else Polygon()
 

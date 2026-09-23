@@ -205,17 +205,20 @@ _TIER_PIERS = tuple(f"PT-BW-T{_n}{_s}" for _n in (1, 2, 3, 4) for _s in ("W", "E
 # ** WIND FELL 1,385 -> 1,140 ON 2026-09-22 ** (note §12b): BM-SG-BLC's 11 7/8" band left
 # with the centre line and the 2x12 deck edge is 13", so A_s 35.94 -> 29.60 sf, 506 lb of
 # storey shear over the same four columns. The guard rows did not move.
+#
+# ** 3" LOWER ON 2026-09-23 (note §15). ** The balcony came down for R311.3 at D-S-DECK-E:
+# columns 108.125/109.958 -> 105.125/106.958", q_h 18.63 -> 18.57 psf at the lower guard top.
 _CORNER_ORACLE = {
-    "PT-SG-BF1": {"height_in": 108.125, "wind_lb_ft": 1140.4, "guard_lb_ft": 2502.1},
-    "PT-SG-BF3": {"height_in": 108.125, "wind_lb_ft": 1140.4, "guard_lb_ft": 2502.1},
+    "PT-SG-BF1": {"height_in": 105.125, "wind_lb_ft": 1105.2, "guard_lb_ft": 2452.1},
+    "PT-SG-BF3": {"height_in": 105.125, "wind_lb_ft": 1105.2, "guard_lb_ft": 2452.1},
     # The rear row runs 2" proud for the deck's drainage crown.
     # ** THE REAR PAIR LOST 1/6" ON 2026-09-14. ** ``SPEC.rear_pillar_rise_in = 2.0`` became
     # ``SPEC.balcony_fall_in_per_ft = 0.25``: the FALL is the authored number now and the rise
     # follows the run between the bearing rows, which over 7'-4" is 1.833" rather than 2.000".
     # Both base moments are ``shear x height``, so they follow it exactly and by the same
     # 0.15%. Nothing else about the rear row moved.
-    "PT-SG-BR1": {"height_in": 109.958, "wind_lb_ft": 1159.7, "guard_lb_ft": 2532.6},
-    "PT-SG-BR3": {"height_in": 109.958, "wind_lb_ft": 1159.7, "guard_lb_ft": 2532.6},
+    "PT-SG-BR1": {"height_in": 106.958, "wind_lb_ft": 1124.5, "guard_lb_ft": 2482.6},
+    "PT-SG-BR3": {"height_in": 106.958, "wind_lb_ft": 1124.5, "guard_lb_ft": 2482.6},
 }
 #: §4 of the note: phi*Mn at the column's own axial load, hand-worked term by term.
 #:
@@ -233,7 +236,9 @@ _CORNER_ORACLE = {
 #:
 #: ** 25,470 -> 24,678 ON 2026-09-23 (note §13). ** Each edge beam carries its own 9.75'
 #: strip, not the 18' joist span: P_u 7,886 -> 4,855 lb, c 2.809" -> 2.750". Rear 24,684.
-_CORNER_PHI_MN_LB_FT = 24_678.0
+#:
+#: ** 24,678 -> 24,669 ON 2026-09-23 (note §15). ** 3" of column self weight: P_u 4,820.0.
+_CORNER_PHI_MN_LB_FT = 24_669.0
 #: §7: ld = (60,000 / (25 sqrt(5,000))) x 0.625 = 21.2", x 1.3 for a class B splice.
 #: 35.6" at the presumptive 3,000 psi — development length goes as 1/sqrt(f'c), so reading
 #: the real mix SHORTENS the required lap. The assembly's own source text still specifies

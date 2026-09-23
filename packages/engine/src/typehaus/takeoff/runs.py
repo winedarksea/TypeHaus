@@ -88,7 +88,14 @@ def conduit_vertex_z(run: Any) -> tuple[float, ...]:
 
     Public because :mod:`typehaus.checks.mep.routing` needs the same reconstruction to decide
     which floor a raceway segment is *in* — one reading of the convention, not two.
+
+    The reconstruction is the FALLBACK, as in ``mep_queries.conduit_vertical_profile``: a
+    run that authors ``elevations`` (a dip under a pipe) keeps its own z, or ``rise_ft``
+    misses the dip's fall and climb that ``length_m`` bills.
     """
+    authored = getattr(run, "z_m", None)
+    if authored and len(authored) == len(run.path):
+        return tuple(authored)
     start = run.z_start_m if run.z_start_m is not None else 0.0
     end = run.z_end_m if run.z_end_m is not None else start
     return (*([start] * (len(run.path) - 1)), end)

@@ -28,8 +28,8 @@ from typehaus import (
 #     DU-S-ERV-HP-FEED    x 12"       y 33'-10 1/4"  attic standpipe off SUP's head
 #     DU-ERV-RISER-EXH    x 18 5/8"   y 33'-10 1/4"  full height
 #     DU-ERV-EA           x  2'-0"    y 35'-0"       full height, basement to +17'-0"
-#     VR-M-RADON-VENT     x  1'-0"    y 34'-6"       radon + plumbing vent together
-#     six plumbing vents  x  1'-0"    y 34'-6"       all landing on that one riser
+#     VR-M-RADON-VENT     x  1'-0"    y 35'-1.3"     radon + plumbing vent (y 34'-6" till 09-23)
+#     six plumbing vents  x  1'-0"    y 35'-1.3"     all landing on that one riser
 #     nine conduits       x 1'-6"/2'-0"/2'-6", y 34'-6" (one at y=35'-3")
 #
 # What is left is a 39" x 31" bay along the closet's east end, and that is exactly where
@@ -190,8 +190,9 @@ DUCTS_ERV_LEVEL2 = [
     # is the whole of why the level split.
     #
     # STUDY leaves straight south in the trunk's own opening, 6 1/2" east of it. LIVING and
-    # BED jog east along the 33'-8" and 34'-4" bays to the NEXT opening (64 1/2"..79 1/2")
-    # and go south from there — two 4" lanes in it, tangent, 8" of its 15".
+    # BED jog east along the 33'-8" and 34'-1" lanes to the NEXT opening (64 1/2"..79 1/2")
+    # and go south from there — two 4" lanes in it, tangent, 8" of its 15". Both lanes share
+    # the one bay since the 34'-8" truss moved to 34'-5 3/4" (2026-09-23), 1" apart.
     DuctRun(uid="2ZZ3MF5VAF", tag="DU-M-ERV-R-STUDY", system=DuctSystem.SUPPLY,
             path=(pt(ft(4, 5), ft(34)), pt(ft(4, 5), ft(34)), pt(ft(4, 5), ft(34)),
                   pt(ft(4, 5), ft(20, 6)), pt(ft(4, 5), ft(20, 6)),
@@ -208,8 +209,8 @@ DUCTS_ERV_LEVEL2 = [
             diameter=inch(4), routing=DuctRouting.JOIST_BAY, floor_ref="FS-S-WEST",
             material="galvanized", design_cfm=20),
     DuctRun(uid="83MA15Q308", tag="DU-M-ERV-R-BED", system=DuctSystem.SUPPLY,
-            path=(pt(ft(5, 1), ft(34, 4)), pt(ft(5, 1), ft(34, 4)),
-                  pt(ft(5, 11), ft(34, 4)), pt(ft(5, 11), ft(34, 4)),
+            path=(pt(ft(5, 1), ft(34, 1)), pt(ft(5, 1), ft(34, 1)),
+                  pt(ft(5, 11), ft(34, 1)), pt(ft(5, 11), ft(34, 1)),
                   pt(ft(5, 11), ft(6)), pt(ft(5, 11), ft(6)),
                   pt(ft(7), ft(6))),
             elevations=(_PORT_Z, _BAY_Z, _BAY_Z, _CROSS_Z, _CROSS_Z, _BAY_Z, _BAY_Z),

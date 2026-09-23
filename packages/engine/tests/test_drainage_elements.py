@@ -55,10 +55,9 @@ def test_the_garage_leaders_take_their_water_from_the_resolved_troughs(catlin_mo
     envelope stage. This is the tie that catches a pin drifting off the channel it drains.
 
     ** TWO LEADERS SINCE 2026-09-07. ** The ridge turned north-south with the overhead door,
-    so the eaves are EAST and WEST and both carry a trough. `EaveGutter.downspout_ref` is a
-    single string and cannot name both; what actually binds a leader to its trough is
-    `Downspout.gutter_ref`, which both carry — so this test walks the pair and matches each
-    leader to the trough on ITS OWN side, which is the tie the schema cannot express.
+    so the eaves are EAST and WEST and both carry a trough. `EaveGutter.downspout_ref` names
+    both; what binds a leader to its trough is `Downspout.gutter_ref`, which both carry — so
+    this test walks the pair and matches each leader to the trough on ITS OWN side.
     """
     roof = next(r for r in catlin_model.roofs if r.tag == "RF-GARAGE")
     floors = [m for m in roof.members
@@ -74,8 +73,8 @@ def test_the_garage_leaders_take_their_water_from_the_resolved_troughs(catlin_mo
         assert floor.z0_m <= leader.z1_m <= floor.z1_m, \
             f"{tag}'s outlet must sit in the trough floor, not above or below it"
         assert grade_m < leader.z0_m < grade_m + 0.5, \
-            "and run down to a splash block just above the apron — measured from grade, "\
-            "which the garage stands on and which is 2'-6\" below the house datum"
+            "and stop just above grade, where the riser to its rain garden takes over — "\
+            "measured from grade, which the garage stands on"
 
 
 def _x0(solid) -> float:

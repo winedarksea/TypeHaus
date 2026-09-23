@@ -267,9 +267,13 @@ def beam(number, tag, x0, y0, x1, y1, bearings, top=DECK_JOIST_TOP_FT, size="2-2
 # naming the end of that path, and it is the naming the pier_basis tributary is built on.
 # The clash is cleared by the authored hanger, not by this field -- bearing_refs is a
 # statement about load path, not about where the wood stops.
-beam(1, "BM-BW-HOUSE-SEAT", LANDING_WEST_FT, HOUSE_SEAT_Y_FT,
+# ** BOTH SEAT BEAMS START AT THE COLUMN'S EAST FACE (2026-09-23). ** Authored from the
+# column line, their west 2 3/4" sat in the ABU66SS's 1 3/16" standoff under PT-BW-CW/-CNW
+# (`structural.post_base_interference`). At the face the beam still has 3 1/4" on the 12"
+# pier (R507.5.2: 3"), the way BM-BW-SCSILL already stops.
+beam(1, "BM-BW-HOUSE-SEAT", LANDING_WEST_FT + COLUMN_HALF_FT, HOUSE_SEAT_Y_FT,
      LANDING_EAST_FT, HOUSE_SEAT_Y_FT, ("PT-BW-W", "PT-BW-E"), SEAT_TOP_FT)
-beam(2, "BM-BW-GARAGE-SEAT", LANDING_WEST_FT, GARAGE_SEAT_Y_FT,
+beam(2, "BM-BW-GARAGE-SEAT", LANDING_WEST_FT + COLUMN_HALF_FT, GARAGE_SEAT_Y_FT,
      LANDING_EAST_FT, GARAGE_SEAT_Y_FT, ("PT-BW-GW", "PT-BW-GE"), SEAT_TOP_FT)
 # The two garage-landing carriers. They start at the main landing's south framing edge so the
 # joist field has them all the way through, and run north to the interior landing's end on a

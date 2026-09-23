@@ -34,7 +34,7 @@ from plan import (appliance_types, assemblies, backing, backing_wet, braced_wall
                   electrical, electrical_attic, equipment_types,
                   fixture_types, fixtures, furniture_types, landscape, lighting,
                   lighting_attic, lighting_types, masonry_joints, mep, millwork, placeables,
-                  plant_types,
+                  plant_types, plate_ties,
                   products,
                   site, transitions, views, wind_clamps)
 from plan.storeys import attic, attic_studio, basement, garage, main, second
@@ -274,8 +274,10 @@ _storeys = (
            default_ceiling_height=main_deck.BASEMENT_CEILING_HEIGHT),
     Storey(uid="NNYT3PHSZM", tag="court-main", building="court",
            elevation=main_deck.MAIN_DATUM, default_ceiling_height=ft(9)),
-    Storey(uid="XX5J0ZSNDQ", tag="court-upper", building="court",
-           elevation=ft(10), default_ceiling_height=ft(9)),
+    # The balcony's own datum, 3" under `second` (2026-09-23, R311.3 at D-S-DECK-E); drawn
+    # on the second-floor sheets.
+    Storey(uid="XX5J0ZSNDQ", tag="court-upper", building="court", level="second",
+           elevation=ft(sunken_garden.SPEC.balcony_level_ft), default_ceiling_height=ft(9)),
     # --- entry (north bridge) --------------------------------------------------------------
     # TWO levels, because the entry really does have two. `entry-low` is the shear panel's
     # own level: `W-BW-SCREEN` and `W-BW-SCREEN-SKIRT` were filed on the `garage` STOREY
@@ -345,7 +347,8 @@ PLAN = (
          *millwork.MILLWORK, *millwork.MAIN_SHELVES,
          *countertops.MAIN_COUNTERTOPS,
          *backing.MAIN_BACKING, *backing_wet.MAIN_WET_BACKING,
-         *braced_walls.MAIN_BRACED_WALLS, *braced_walls.MAIN_BRACED_CONNECTORS],
+         *braced_walls.MAIN_BRACED_WALLS, *braced_walls.MAIN_BRACED_CONNECTORS,
+         *plate_ties.MAIN_PLATE_TIES],
     )
     .with_elements("second", [*second.ELEMENTS, *attic_studio.SECOND_ELEMENTS,
                                 *fixtures.SECOND_FIXTURES,
@@ -359,7 +362,8 @@ PLAN = (
                                 *backing.SECOND_BACKING,
                                 *backing_wet.SECOND_WET_BACKING,
                                 *braced_walls.SECOND_BRACED_WALLS,
-                                *braced_walls.SECOND_BRACED_CONNECTORS])
+                                *braced_walls.SECOND_BRACED_CONNECTORS,
+                                *plate_ties.SECOND_PLATE_TIES])
     .with_elements("attic", [*attic.ELEMENTS, *attic_studio.ATTIC_ELEMENTS,
                              *fixtures.ATTIC_FIXTURES,
                              *roof_trim.ATTIC_ELEMENTS,

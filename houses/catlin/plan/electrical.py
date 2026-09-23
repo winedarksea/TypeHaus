@@ -1168,13 +1168,16 @@ CONDUIT_TRUNKS = [
     # leg crosses rather than against the ceiling: PR-B-CW-TRUNK's x=5'-0" leg at -1'-2.8"
     # (1 1/16" on centre) and CD-B-DATA-STUDY's x=2'-0" leg at -1'-0.5" (1 1/4"), which is
     # how two raceways rack together. y moved 35'-0" -> 35'-3" for the same reason:
-    # PR-B-KITCH-DRAIN owns y=35'-0" from x=4'-6" to x=18'-0" and its crown is above this
-    # band, so the old lane is not free at ceiling height. 35'-3" puts the conduit's face
-    # 3/8" off W-B-N2's inside face (35'-4"), which is where it is strapped.
+    # PR-B-KITCH-DRAIN owns y=35'-0" west of x=9'-8", and its crown is above this band.
+    # 35'-3" puts the conduit's face 3/8" off W-B-N2's inside face (35'-4"), strapped there.
+    # East of x=9'-8" the drain hugs that same face (2026-09-23), so the conduit dips to
+    # -1'-3 5/8" at x=9'-6" and rises back to -1'-1 3/4" at x=16'-0", tracking 3/8" under
+    # the drain's falling invert, and turns into its sleeve beneath it.
     ConduitRun(uid="CDT002AAAA", tag="CD-B-GARAGE", trade_size=inch(1.25),
-               path=(pt(ft(2), ft(29)), pt(ft(2), ft(35, 3)), pt(ft(16), ft(35, 3)),
+               path=(pt(ft(2), ft(29)), pt(ft(2), ft(35, 3)), pt(ft(9, 2), ft(35, 3)),
+                     pt(ft(9, 6), ft(35, 3)), pt(ft(16), ft(35, 3)),
                      pt(ft(16), ft(35, 5)), pt(ft(16), ft(35, 5))),
-               start_elevation=ft(-1, -1.75), end_elevation=ft(-4), elevations=(ft(-1, -1.75), ft(-1, -1.75), ft(-1, -1.75), ft(-1, -1.75), ft(-4)),
+               start_elevation=ft(-1, -1.75), end_elevation=ft(-4), elevations=(ft(-1, -1.75), ft(-1, -1.75), ft(-1, -1.75), ft(-1, -3.625), ft(-1, -1.75), ft(-1, -1.75), ft(-4)),
                from_ref="ED-B-PANEL", to_ref="ED-G-EV-1450"),
     # The buried leg: out through SP-B-N2-CD-GAR2 at -4'-0", north under the house/garage
     # gap, and up through the garage slab to ED-G-EV-1450. Same station the whole feeder
@@ -1248,7 +1251,7 @@ CONDUIT_TRUNKS = [
 ]
 
 # --- Structured cabling: the head end, three access points, and the spine trunk ---------
-# Rides the existing full-height radon/plumbing chase at (1', 34'-6") in its own raceways
+# Rides the existing full-height radon/plumbing chase at (1', 35'-1.3") in its own raceways
 # (NEC 800.133/725 forbids comms sharing a raceway with power). Four risers 6" apart
 # (>=5" so mep.sleeve_coverage's matcher doesn't confuse sleeves through SL-M-DECK):
 # x=1'-0" radon/vent, x=1'-6" CD-B-ATTIC-RISER (PV DC), x=2'-0" CD-B-DATA-CHASE, x=2'-6"
@@ -1299,18 +1302,19 @@ MAIN_DATA_TRUNKS = [
     # ConduitRun carries no floor_ref, so nothing else grades it, and `duct_joist_bay`
     # only fires on JOIST_BAY routing.
     #
-    # KITCH goes NORTH instead, into the first joist bay inboard of the north wall at
-    # y=35'-6" — 6" clear of the void's north edge, strapping to the rim and the joist ends
-    # the whole way. x 2'-0"..19'-0" of that wall carries one opening, D-M-ENTRY, whose head
-    # is at 6'-8"; at +9'-2" this run is above the plate line entirely, in the floor
-    # structure, so no header is in its way. **+2 LF.** (19', 29') is unchanged: it still
-    # sits east of the FO-M-STAIR well and between the kitchen, the stair and RM-M-STUDY —
-    # one radio covering all three, which is what put it there rather than over the counter.
+    # KITCH goes SOUTH of the well instead (2026-09-23). The north bay it used at y=35'-6"
+    # is not a bay: FO-S-STAIR's truss trimmer pack fills y 35'-3 5/8"..35'-10 5/8" and the
+    # floor ends at 36'-0" (`mep.run_through_floor_member`). So it drops down x=2'-2" (2" off
+    # CD-M-DATA-PORCH's x=2'-0" lane at the same z), crosses east through the open webs in
+    # the bay at y=22'-0", between trusses 018 and 019, then north to the AP. ~+11.6 LF.
+    # y=24'-8" was tried and runs through BM-M-HALL's flush LVL. (19', 29') is unchanged:
+    # east of the FO-M-STAIR well, one radio for the kitchen, the stair and RM-M-STUDY.
     ConduitRun(uid="CDT010AAAA", tag="CD-M-DATA-KITCH", trade_size=inch(0.75),
                service=Service.DATA,
-               path=(pt(ft(2), ft(34, 2.375)), pt(ft(2), ft(35, 6)), pt(ft(19), ft(35, 6)),
-                     pt(ft(19), ft(29))),
-               start_elevation=ft(9, 2.25), end_elevation=ft(9, 2.25), elevations=(ft(9, 2.25), ft(9, 2.25), ft(9, 2.25), ft(9, 2.25)),
+               path=(pt(ft(2), ft(34, 2.375)), pt(ft(2, 2), ft(34, 2.375)),
+                     pt(ft(2, 2), ft(22)), pt(ft(19), ft(22)), pt(ft(19), ft(29))),
+               start_elevation=ft(9, 2.25), end_elevation=ft(9, 2.25),
+               elevations=(ft(9, 2.25), ft(9, 2.25), ft(9, 2.25), ft(9, 2.25), ft(9, 2.25)),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-KITCH-AP"),
     # PORCH goes SOUTH first and turns east at y=1'-0", well below the void, then out under
     # the balcony deck to the porch soffit — still sharing SP-SG-PORCH-ELEC with the ceiling

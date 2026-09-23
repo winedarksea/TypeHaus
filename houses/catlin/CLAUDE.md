@@ -1270,9 +1270,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `advisory.ess_clearance`; this station leaves 1 1/2" clear and also clears
     `ED-B-BACKUP-ENCL`'s 36" NEC 110.26 working space. Nothing downstream is anchored to the
     machine, so moving it back would cost a FAIL for no savings.
-  - **The radon/plumbing chase at (1', 34'-6") is the only riser and is full**: THREE ERV
+  - **The radon/plumbing chase at (1', 35'-1.3") is the only riser and is full**: THREE ERV
     risers (`DU-ERV-RISER-SUP` 9 5/8", `DU-S-ERV-HP-FEED` 12", `DU-ERV-RISER-EXH` 18 5/8",
-    all at y=33'-7 1/2"; `DU-ERV-EA` 8" at (2'-0", 35'-0")), six plumbing vents,
+    all at y=33'-10 1/4"; `DU-ERV-EA` 8" at (2'-0", 35'-0")), six plumbing vents,
     `VR-M-RADON-VENT` and nine conduits. The clear is **24" x 26 1/8"** measured off the wall
     LAYERS — a room-polygon reading counts 6" of exterior stud as shaft on each
     `face("sheathing-ext")` face, which is where the old "~25% fill of 30 1/8" x 32 3/8""
@@ -1366,7 +1366,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     listing except the two at −15 °F, where this site designs and NEEP publishes nothing.
     **NEEP is the only public source with a MINIMUM column**, and the minimum is what
     `mep.heat_pump_turndown` grades: **System 1 modulates down to its load only below
-    −5.9 °F and cycles above it**, which `mep.heating_capacity`'s +6,743 Btu/h margin cannot
+    −6.1 °F and cycles above it**, which `mep.heating_capacity`'s +6,789 Btu/h margin cannot
     see. All of it is ADVISORY, not FAIL (decision #77). The whole case, the three tables and
     the owner's 2026-09-18 decisions are in `notes/heat_pump_turndown.md`.
   - **`EQ-T-GREE-FLEXX-ULTRA-24-AH`/`-OD` is the live heat-pump type for
@@ -1374,9 +1374,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
     `# TODO verify datasheet` that stood here is gone because the figure was verified, not
     because it was waived: **21,000 Btu/h at -15 F, COP 1.57**, read verbatim from Gree's
     `GREE_FLEXX_ULTRA_EXTENDED RATINGS_08272024`, model FXU24, 70 F return, **"MAX OUTPUT"
-    band** (136% of the zone's 15,410 Btu/h block load, unaided — **the load figure was
-    15,164 until the block-load correction of 2026-09-18 and the percentage 137; neither the
-    unit nor the argument moved, and `notes/block_load_basis.md` says what did**). NEEP ccASHP **id 504980**
+    band** (137% of the zone's 15,365 Btu/h block load, unaided — **the load figure was
+    15,164 until the block-load correction of 2026-09-18, then 15,410 (136%) until WIN-A-S2/-S3
+    went WT-1424 on 2026-09-23; neither the unit nor the argument moved, and `notes/block_load_basis.md` says what did**). NEEP ccASHP **id 504980**
     lists the unit as ENERGY STAR Cold Climate with a -22 F maximum of 18,000 Btu/h at
     **COP 1.36** — same capacity as Gree's own -22 F row, lower COP; quote NEEP's when a
     figure must be conservative.
@@ -1963,6 +1963,10 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   the `CCQ46SDS2.5`'s 7 ga seat off the top, from the catalog record. Without it the
   retired `PT-SG-BR2` read 121-3/8" against IRC Table R507.4's 120".
 - **`SPEC.balcony_fall_in_per_ft` = 1/4 in/ft** — authored; the rise is derived.
+- **The balcony is at 9'-9", 3" under `second`** (owner, 2026-09-23): `SPEC.balcony_level_ft`
+  is the `court-upper` datum (`level="second"`), so beams, columns, trim and guard follow; the
+  porch fan and the three enclosure tracks are hand-transcribed (104.75", 7'-5"). Lands
+  `D-S-DECK-E` (R311.3, 0.58" under the study floor). `notes/balcony_moment_columns.md` §15.
 - `structural.deck_post_bearing` is now NOT_APPLICABLE house-wide and
   `post_bearing/*` has left the engineering register — no post in catlin stands
   on a floor system. `notes/centre_pillar_bearing.md` is KEPT (registered kinds
@@ -2541,26 +2545,31 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **3D models are procedural per `form`** (`resolve/plant_models.py`), three seeded variants
   per type, coloured by the type's foliage/bloom/stem/fruit materials: a form or type swap
   changes the model. Basin beds stand on the basin's own slope (`rain_garden.surface_z_m`).
-- **Rain garden `RG-W-BASIN`** (`params/landscape_gardens.py`): x -6'..-1', y 47'..82', 9"
-  ponding at 2:1, 12" media over 6" stone, fed by `TR-G-LEADER-W` and `TR-RF-LEADER-W` through
-  buried 4" PVC (`Downspout.discharge_ref` + `extension`), overflowing north to daylight.
-  88.5 cf against 85.9 cf — a 2.6 cf margin, so **any roof added to the west leaders grows
-  the basin first**. The canopy's west half (80 sf) reaches `TR-G-LEADER-W` in the field
-  but is counted nowhere, because `RF-BW-CANOPY` names only the east leader. The lot-line
-  (1') and garage (6.5') setbacks are owner-accepted advisory UNKNOWNs; drawdown is UNKNOWN
-  until a soil test authors `infiltration_in_per_hr`. `notes/rain_garden_sizing.md`.
-- **Sidewalk** (`params/landscape_walk.py`): five `SIDEWALK_FRC_CLASS5` slabs, 92" full
-  section, 64" one-sided down the house's east side (the side patio is retired into it),
-  27 sonotube pockets as `FloorOpening(purpose=PLANTING)` — 4'-0" o.c. **centred in each
+- **Two rain gardens, `RG-W-BASIN` and `RG-E-BASIN`, mirrored about the lot's centre line
+  x=18'** (owner, 2026-09-23: keep them symmetric, near the side lot lines). One factory,
+  `_basin` in `params/landscape_gardens.py`: x -6'..-1' and 37'..42', y 47'..82', 12"
+  ponding at 2:1, 12" media over 6" stone, each fed by its side's garage and house leader
+  through buried 4" PVC (`Downspout.discharge_ref` + `extension`, one `_discharge` in
+  `params/roof_trim.py`), overflowing north to daylight. Each carries 1,111 sf and holds
+  100.3 cf against 92.6 cf — **any roof added to a leader grows its basin first**.
+  `RF-BW-CANOPY`'s trough names BOTH garage leaders (`EaveGutter.downspout_ref` takes a
+  tuple), so neither canopy half is uncounted. The sump's pumped water into the west basin is
+  an owner-accepted UNKNOWN, not in the design volume. The floor is 1' wide at 12" and carries
+  one planted row. The lot-line (1') and garage (6.5') setbacks are owner-accepted advisory
+  UNKNOWNs on both; drawdown (0.25 in/hr needed) is UNKNOWN until a soil test authors
+  `infiltration_in_per_hr`. `notes/rain_garden_sizing.md`.
+- **Sidewalk** (`params/landscape_walk.py`): four `SIDEWALK_FRC_CLASS5` slabs, 92" full
+  section in front of the garage (leg A), 64" one-sided down the garage's east side (leg B,
+  since 2026-09-23 — its outer 28" is where `RG-E-BASIN` mirrors the west basin) and the
+  house's (leg D; the side patio is retired into it), 19 sonotube pockets as `FloorOpening(purpose=PLANTING)` — 4'-0" o.c. **centred in each
   leg**, on the section's own pocket line, always 12" clear of a slab edge. **Leg A is
-  anchored to the L instead: its stations ARE leg B's pocket columns** (52" apart, the
-  section's own row pitch), so both bands turn the corner in line and leg B's 36" walk
-  arrives under 36.0" of open concrete. Centred at 4'-0" it dropped a void in that turn. **No pocket
+  anchored to the L instead: its first station IS leg B's pocket column** and the next is
+  the section's 52" row pitch west, tangent to B's 36" walk, so leg B's walk arrives under
+  36.0" of open concrete. Centred at 4'-0" it dropped a void in that turn. **No pocket
   sits at a leader's foot and neither east leader can have one**: `TR-RF-LEADER-E` stands
   over leg D's 36" walking band, where a 16" void leaves 1.6" of concrete at the edge. Both
-  east leaders drop onto the walk (bottom -2'-3", 6" over the slab) with **no
-  `discharge_ref` and no extension**, so both are outside the drainage graph and nothing
-  grades where that water goes — the extensions are a later detail. Slabs are FLAT at -2'-9"; the
+  east leaders' risers pass through the walk (D and A) to their extensions — a cast-in
+  sleeve each, which no element models. Slabs are FLAT at -2'-9"; the
   fall is on the `walk *` impervious surfaces, merged into the site by `plan/manifest.py`
   — never hand-copy them into `plan/site.py`. Leg C is notched round `PT-BW-RNE`.
   `notes/sidewalk_layout.md`.

@@ -253,48 +253,54 @@ def _eave_water(side: str, index: int, eave_x, outward: float):
 #
 # Both go to the NORTH end, discharging into the 4' gap toward the garage rather than onto
 # the freestanding sunken-garden structure 5" off the south face. Each hangs on the trough's
-# centre line, so it takes the outlet straight down out of the gutter floor. The two ends
-# differ: WEST runs to its buried extension's riser, EAST to a splash block on the walk
-# (see `_LEADER_BOTTOM` / `_EAST_WALK_FOOT`). The S-5! CanDuit clamps that
+# centre line, so it takes the outlet straight down out of the gutter floor. Each runs to its
+# buried extension's riser and on to its own rain garden, mirrored about x=18'-0"
+# (`_discharge`). The S-5! CanDuit clamps that
 # hold it to the standing-seam siding are in plan/mep.py; per the reference they steady the
 # leader and are explicitly not its primary support.
 _LEADER_DIA_IN = 4.0
 _LEADER_Y = ft(_HOUSE_FT) - inch(6.0)
+# The riser from +1'-0" down to the extension's inlet bills with the extension.
 _LEADER_BOTTOM = ft(1)
-# The EAST leader has no extension, so it must reach the ground it lets go over itself:
-# 6" above walk D's -2'-9" top (params/landscape_walk.py). Held at _LEADER_BOTTOM it stopped
-# 3'-9" in the air over the new walk. The WEST one keeps +1'-0" — its riser down to the
-# basin inlet bills with the extension below.
-_EAST_WALK_FOOT = ft(-2, -3)
 
 
 def _leader(side: str, index: int, eave_x, outward: float):
     offset = inch(_TROUGH_MID_IN)
+    x = eave_x + offset if outward > 0 else eave_x - offset
     return Downspout(
         uid=f"RTDS0{index}AAAA", tag=f"TR-RF-LEADER-{side}",
-        position=pt(eave_x + offset if outward > 0 else eave_x - offset, _LEADER_Y),
+        position=pt(x, _LEADER_Y),
         top_elevation=_above_deck(_GUTTER_RIM_IN) - _GUTTER_DEPTH,
-        bottom_elevation=_LEADER_BOTTOM if side == "W" else _EAST_WALK_FOOT,
+        bottom_elevation=_LEADER_BOTTOM,
         diameter=inch(_LEADER_DIA_IN),
         material=_CHAIN_MATERIAL, gutter_ref=f"TR-RF-GUTTER-{side}",
         # Four clamps at roughly 6' o.c. down the ~24' run (plan/mep.py::LEADER_CLAMPS).
         clamp_refs=tuple(f"CN-A-LEADER-{side}{n}" for n in (1, 2, 3, 4)),
-        **_WEST_DISCHARGE if side == "W" else {})
+        **_discharge(side, x))
 
 
-# The WEST leader alone goes somewhere: 4" solid PVC buried north, west of SL-M-HP3PAD, to a
-# pop-up emitter in RG-W-BASIN (params/landscape_gardens.py). _LEADER_BOTTOM stays: the riser
-# from +1'-0" down to the inlet bills with the extension. notes/rain_garden_sizing.md.
-# The extension also carries SM-B-RADON's pumped water: PR-B-SUMP-DISCH wyes into the riser
-# at -1'-10" (plan/mep_drainage.py), so this line and the basin take groundwater too.
-_WEST_DISCHARGE = dict(
-    discharge_ref="RG-W-BASIN",
-    extension=DischargeExtension(
-        path=(pt(-inch(8.77), _LEADER_Y), pt(ft(-1, -6), ft(36, 2)),
-              pt(ft(-1, -6), ft(46, 6)), pt(ft(-3, -6), ft(49))),
-        diameter=inch(4), material="pvc-sdr35",
-        inlet_invert=ft(-3, -4), outlet_invert=ft(-3, -8)),
-)
+# 4" solid PVC buried north to a pop-up emitter in the side's basin
+# (params/landscape_gardens.py), the east run the west's mirror about x=18'-0". The WEST run
+# passes west of SL-M-HP3PAD in open yard; the EAST one passes under walks D and C, so its
+# inlet drops 8" to put the pipe's crown under their Class 5 base (-3'-7"). Both outlets
+# stand within 2" of the basin floor (-4'-1"). notes/rain_garden_sizing.md §6.
+# The WEST line also carries SM-B-RADON's pumped water: PR-B-SUMP-DISCH wyes into its riser
+# at -1'-10" (plan/mep_drainage.py), so that basin takes groundwater too.
+_INVERTS = {"W": (ft(-3, -4), ft(-3, -11)), "E": (ft(-4), ft(-4, -2))}
+
+
+def _discharge(side: str, leader_x) -> dict:
+    def mx(x_ft: float):
+        return ft(x_ft) if side == "W" else ft(_HOUSE_FT - x_ft)
+
+    inlet, outlet = _INVERTS[side]
+    return dict(
+        discharge_ref=f"RG-{side}-BASIN",
+        extension=DischargeExtension(
+            path=(pt(leader_x, _LEADER_Y), pt(mx(-1.5), ft(36, 2)),
+                  pt(mx(-1.5), ft(46, 6)), pt(mx(-3.5), ft(49))),
+            diameter=inch(4), material="pvc-sdr35",
+            inlet_invert=inlet, outlet_invert=outlet))
 
 
 # --- Rake drip edge (FORTIFIED Roof §4.5 wants one at every eave AND every rake) -----------

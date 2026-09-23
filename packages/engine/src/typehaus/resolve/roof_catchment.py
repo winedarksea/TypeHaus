@@ -7,9 +7,9 @@ carried by the leaders that claim it, shared equally:
   on its side of the ridge;
 * a leader named by an authored ``Gutter`` hosted on the roof carries the half that gutter
   runs along;
-* a roof whose ``EaveGutter.downspout_ref`` names a leader, with no leader naming the roof
-  back, sends only the half on that leader's side — the other half is UNCOUNTED, and is
-  reported as such rather than guessed onto a leader nobody named.
+* a roof whose ``EaveGutter.downspout_ref`` names leaders, with no leader naming the roof
+  back, sends each named leader the half on its side — a half no named leader stands on is
+  UNCOUNTED, and is reported as such rather than guessed onto a leader nobody named.
 
 A shed has one half: its whole footprint. A leaf: reads ``model`` and ``resolve`` only.
 """
@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 
 from shapely.geometry import Polygon, box
 
-from typehaus.model.trim import Downspout, Gutter
+from typehaus.model.trim import Downspout, Gutter, downspout_refs
 
 
 @dataclass
@@ -70,9 +70,10 @@ def roof_catchments(model) -> Catchment:
                 claims[_side_of(halves, mid)].append(leader.tag)
         element = plan.by_tag(roof.tag)
         eave = getattr(getattr(element, "eave_trim", None), "gutter", None)
-        named = getattr(eave, "downspout_ref", None)
-        if not any(claims.values()) and named in leaders:
-            claims[_side_of(halves, leaders[named].position.xy_m)].append(named)
+        if not any(claims.values()):
+            for named in downspout_refs(eave):
+                if named in leaders:
+                    claims[_side_of(halves, leaders[named].position.xy_m)].append(named)
         for side, polygon in halves.items():
             area = polygon.area
             if not claims[side]:

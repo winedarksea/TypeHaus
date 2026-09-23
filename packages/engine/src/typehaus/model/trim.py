@@ -172,7 +172,9 @@ class EaveGutter(HausModel):
     top_drop: Length   # top of the channel below the roof plane at the eave edge
     edges: tuple[str, ...] = ()  # footprint edges ("south"/"north"/...); empty = every eave
     slope: str = ""    # optional drainage note, e.g. "1/16 in/ft to the east downspout"
-    downspout_ref: str | None = None  # the leader it falls to (see Gutter.downspout_ref)
+    # The leader(s) it falls to (see Gutter.downspout_ref). A trough on both eaves of a
+    # gable may name one leader per eave: each claims the roof half on its own side.
+    downspout_ref: str | tuple[str, ...] | None = None
 
 
 @register_element
@@ -256,3 +258,11 @@ for _name, _obj in (
     ("EaveTrim", EaveTrim),
 ):
     register_constructor(_name, _obj)
+
+
+def downspout_refs(run) -> tuple[str, ...]:
+    """Every leader a gutter run (authored ``Gutter`` or derived ``EaveGutter``) names."""
+    ref = getattr(run, "downspout_ref", None)
+    if ref is None:
+        return ()
+    return (ref,) if isinstance(ref, str) else tuple(ref)

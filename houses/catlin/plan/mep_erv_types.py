@@ -166,8 +166,10 @@ EQUIPMENT_TYPES_ERV = (
                                      position=(inch(5), inch(-4), inch(4)),
                                      connection_size=inch(4),
                                      certainty=PortCertainty.EXACT),
+                         # y +1" (2026-09-23): +4" stood the riser in FS-S-WEST's
+                         # moved 34'-5 3/4" truss.
                          ServicePort(tag="collar-bed", service=Service.SUPPLY_AIR,
-                                     position=(inch(9), inch(4), inch(4)),
+                                     position=(inch(9), inch(1), inch(4)),
                                      connection_size=inch(4),
                                      certainty=PortCertainty.EXACT))),
     # ** THE EXTRACT BOX IS NOT A MANIFOLD ANY MORE. ** Level 2 went trunk-and-branch on

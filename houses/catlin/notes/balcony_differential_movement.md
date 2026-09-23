@@ -28,9 +28,9 @@ taper, as a detail a carpenter can actually build. (3) §2's door: the tilted de
 
 > ## ⚠ THE DECK IS A PLANE NOW, AND ITS HIGH EDGE IS AT THE STUDY DOOR.
 > Since 2026-09-23 `resolve/floor_tilt.py` seats each `FS-SG-DECK` joist on the tilted beams
-> at its own station and resolves the plank as the plane over them (§2). The 10'-0" datum is
-> the beams' south node; the north edge, at `D-S-DECK-E`, stands **2.42"** higher — above
-> the study's finished floor, which R311.3 now reports.
+> at its own station and resolves the plank as the plane over them (§2). The datum is the
+> beams' south node; the north edge, at `D-S-DECK-E`, stands **2.42"** higher. That put it
+> above the study's finished floor, so the datum came down 3" to 9'-9" (owner, 2026-09-23).
 
 ---
 
@@ -100,26 +100,32 @@ each joist end's z off its own bearing — the beam's top at that joist's statio
 nothing is authored twice (`FloorSystem.top_rise`, which restated the beams' rise, is
 gone). Both beams rise alike, so each joist is level E-W: a staircase of 1/4" steps across
 the 12" o.c. field. The plank is the plane over those tops. Worked by hand at 1/4 in/ft
-(1/48 in/in), datum at the beams' SOUTH node, y = −10'-6" (the plank's south edge):
+(1/48 in/in), datum at the beams' SOUTH node, y = −10'-6" (the plank's south edge), joist
+top 9'-9" = 117.000" since 2026-09-23 (`FS-SG-DECK.top_elevation`; 3" under the old 10'-0"):
 
 | station | y | rise over datum | joist seat (beam top) | plank top |
 |---|---|---|---|---|
-| plank south edge, beam start | −126" | 0 | 108.750" | **121.500"** |
-| first joist line | −125.25" | 0.75/48 = 0.0156" | **108.766"** | — |
-| last joist line | −10.75" | 115.25/48 = 2.401" | 111.151" | — |
-| plank north edge, beam end | −10" | 116/48 = **2.417"** | 111.167" | **123.917"** |
+| plank south edge, beam start | −126" | 0 | 117 − 11.25 = 105.750" | 117 + 1.5 = **118.500"** |
+| first joist line | −125.25" | 0.75/48 = 0.0156" | **105.766"** | — |
+| last joist line | −10.75" | 115.25/48 = 2.401" | 108.151" | — |
+| plank north edge, beam end | −10" | 116/48 = **2.417"** | 108.167" | **120.917"** |
 
 Until this change the datum sat at the first joist line, so every joist hung **1/64"** inside
 its beam (`joints/bearing.py` carried the slack for it); now the seat is exact.
 
 **What it found — `D-S-DECK-E`.** The door is in `W-S-S2` (axis y = 0, exterior face
 −6.94"), over the deck's HIGH edge. Model threshold = wall framing base 120.000" + sill 0;
-`RM-S-STUDY2`'s finished floor (oak) 121.500". The deck there is 123.917": **3.92" above the
-model threshold and 2.42" above the finished floor** — it was flush (121.500") while the
+`RM-S-STUDY2`'s finished floor (oak) 121.500". At the 10'-0" datum the deck there was
+123.917": **3.92" above the model threshold and 2.42" above the finished floor** — it was
+flush (121.500") while the
 plane was flat. `code.R311_3_exterior_landing` now FAILs: its landing band reaches 0.05 m
 (1.97") above a threshold, and a deck standing a step UP at an in-swinging door is also a
 water question. Closing it is a design decision (lower the balcony datum ~2 3/8", or step
 the deck at the door), not an engine one.
+
+**Closed 2026-09-23 (owner): the datum came down 3".** Deck at the door 120.917": 0.92" above
+the model threshold (inside R311.3's 1.5"), **0.58" below the finished floor**; PASS. The
+fall is unchanged, and so is every column-to-beam seat — beams and columns moved together.
 
 ## 3. A tilted beam needs a tapered bearing, and the part is already at every seat
 

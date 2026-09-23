@@ -77,16 +77,19 @@ comes out at the same grade and the check's two branches must agree on that numb
 
     A (116.4, 372) → B (60, 318)   √(56.4² + 54²) = √(3180.96 + 2916) = √6096.96 = 78.08"
     B (60, 318)    → C (12, 318)   48"
-    C (12, 318)    → D (12, 414)   96"
-    developed plan length           78.08 + 48 + 96 = 222.08" = 18.5067 ft
+    C (12, 318)    → D (12, 421.3) 103.3"
+    developed plan length           78.08 + 48 + 103.3 = 229.38" = 19.1150 ft
 
-    grade = (112 − 111) / 18.5067 = 0.05403 "/ft, on every segment
+    grade = (112 − 111) / 19.1150 = 0.05231 "/ft, on every segment
 
-**`mep.vent_grade`: PASS** (three segments, each +0.054"/ft × its own length, all positive).
-**`mep.vent_grade_margin`: PASS with `ADVISORY — `** at 0.054"/ft, under 1/8"/ft.
+2026-09-23: the chase moved from (12, 414) to (12, 421.3), so leg C→D grew 96" → 103.3"
+(was 222.08" / 0.054"/ft).
+
+**`mep.vent_grade`: PASS** (three segments, each +0.052"/ft × its own length, all positive).
+**`mep.vent_grade_margin`: PASS with `ADVISORY — `** at 0.052"/ft, under 1/8"/ft.
 
 Strip the resolved per-vertex tuple and the check's second branch reads the same run as one
-segment of 18.5067 ft rising 1.000" — **0.054"/ft, the identical number**. That is the point
+segment of 19.1150 ft rising 1.000" — **0.052"/ft, the identical number**. That is the point
 of the two branches being written from one profile: a legacy run with two inverts and a
 routed run with six must not be graded against different arithmetic.
 

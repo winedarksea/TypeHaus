@@ -31,16 +31,18 @@ _WORKED = {
     "PT-BW-RNE": (1.295, 1.868, Status.OK),
     # ** RE-WORKED 2026-09-23 (note addendum 2026-09-23) ** with each deck beam on its own
     # half-bay strip: the landing's deck share fell 17.03 -> 9.93 ft2 (W/E), 9.60 (GW/GE).
-    "PT-BW-W": (1.1017, 1.3997, Status.INCOMPLETE),
-    "PT-BW-E": (1.0264, 1.0810, Status.OK),
-    "PT-BW-GW": (1.4074, None, Status.OVER),
-    "PT-BW-GE": (1.0697, 1.3363, Status.INCOMPLETE),
+    # Seat beams from the column's east face, 2026-09-23 (addendum 2026-09-23c): 3.3542' long.
+    "PT-BW-W": (1.1013, 1.3975, Status.INCOMPLETE),
+    "PT-BW-E": (1.0260, 1.0797, Status.OK),
+    "PT-BW-GW": (1.4052, None, Status.OVER),
+    "PT-BW-GE": (1.0684, 1.3280, Status.INCOMPLETE),
     # The balcony at the same date: each edge beam carries 9.75' (not 18'), P_u 7,886 ->
     # 4,855 lb (front), 4,877 (rear); wall-top k_θ unchanged. Front R 6.616 / 6.242.
-    "PT-SG-BF1": (1.0431, 1.0439, Status.OK),
-    "PT-SG-BF3": (1.0431, 1.0439, Status.OK),
-    "PT-SG-BR1": (1.0446, 1.0455, Status.OK),
-    "PT-SG-BR3": (1.0446, 1.0455, Status.OK),
+    # 3" lower on 2026-09-23 (addendum 2026-09-23b): L 105.125", P_u 4,820.0; R 6.412 / 6.049.
+    "PT-SG-BF1": (1.0406, 1.0414, Status.OK),
+    "PT-SG-BF3": (1.0406, 1.0414, Status.OK),
+    "PT-SG-BR1": (1.0421, 1.0429, Status.OK),
+    "PT-SG-BR3": (1.0421, 1.0429, Status.OK),
 }
 _LANDING = ("PT-BW-W", "PT-BW-E", "PT-BW-GW", "PT-BW-GE")
 _ORACLE = {tag: row for tag, row in _WORKED.items() if tag not in _LANDING}

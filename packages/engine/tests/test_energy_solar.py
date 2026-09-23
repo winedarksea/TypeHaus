@@ -113,7 +113,7 @@ def test_the_house_has_one_peak_hour_not_four(catlin_model_ro) -> None:
     walls, openings = _house_glazing(catlin_model_ro)
     result = fenestration_gain(catlin_model_ro, walls, openings)
     assert result.peak_hour == pytest.approx(10.5)
-    assert result.peak_btu_per_hour == pytest.approx(12_271.0, rel=0.01)
+    assert result.peak_btu_per_hour == pytest.approx(12_154.0, rel=0.01)
     assert result.unknown_inputs == ()
     # Every facade contributes at the peak hour, and south leads it — but at 64% of the
     # total, not the 100% the weights implied by putting it at 1.00 alone.
@@ -188,7 +188,7 @@ def test_catlins_balcony_door_is_shaded_by_the_balcony_and_the_window_beside_it_
 
     ``D-M-BALC`` — 33 sf of glazed door, the largest single piece of south glass in the
     house — is shaded by ``FS-SG-DECK``, the sunken-garden balcony deck: its near edge is
-    2 3/4" clear of the wall face, its surface is 1.05 m above the door head, and it reaches
+    2 3/4" clear of the wall face, its surface is 0.98 m above the door head, and it reaches
     9.9 ft out. **No roof projects past this face at all** (``RF-HOUSE`` covers the wall in
     plan with zero overhang here), so a model that only understood eaves found no shading on
     this door. The deck is not an eave and it is not on the roof; it is a floor.
@@ -210,7 +210,8 @@ def test_catlins_balcony_door_is_shaded_by_the_balcony_and_the_window_beside_it_
     balcony = next(plane for plane in shaded if plane.tag == "FS-SG-DECK")
     assert balcony.near_ft == pytest.approx(0.23, abs=0.05)
     assert balcony.far_ft == pytest.approx(9.9, abs=0.2)
-    assert balcony.z_m - head_m == pytest.approx(1.05, abs=0.02)
+    # 1.05 m until the balcony came down 3" (2026-09-23); a lower plane only shades more.
+    assert balcony.z_m - head_m == pytest.approx(0.978, abs=0.02)
     # And the roof over it projects nothing, which is the point: the eave-only reading of
     # this door is "unshaded".
     roof = next(plane for plane in shaded if plane.tag == "RF-HOUSE")
@@ -232,7 +233,7 @@ def test_the_aed_excursion_is_the_peak_over_a_diverse_day(catlin_model_ro) -> No
     assert result.excursion_btu_per_hour == pytest.approx(
         result.peak_btu_per_hour - _AED_DIVERSITY_FACTOR * result.average_btu_per_hour,
         abs=1.0)
-    assert result.excursion_btu_per_hour == pytest.approx(894.0, rel=0.02)
+    assert result.excursion_btu_per_hour == pytest.approx(866.0, rel=0.02)
     assert result.design_btu_per_hour == pytest.approx(
         result.peak_btu_per_hour + result.excursion_btu_per_hour)
 

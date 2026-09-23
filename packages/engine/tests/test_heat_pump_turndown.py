@@ -41,7 +41,8 @@ from typehaus.takeoff.hvac import heating_zones
 # whether the advisory fires, not whether the check failed.
 _ADVISED = True
 _CATLIN = {
-    "EQ-M-HP1-OD": (15_410, 14_000, 5.0, 0.91, -5.9, _ADVISED),
+    # HP1 was 15,410 / -5.9 °F before WIN-A-S2/-S3 went WT-1436 -> WT-1424 (c3c46cff).
+    "EQ-M-HP1-OD": (15_365, 14_000, 5.0, 0.91, -6.1, _ADVISED),
     "EQ-M-HP2-OD": (14_668, 8_800, 5.0, 0.60, 27.1, not _ADVISED),
     "EQ-M-HP3-OD": (1_043, 2_800, 17.0, 2.69, None, _ADVISED),
 }
@@ -135,18 +136,18 @@ def test_the_binding_row_is_NOT_the_design_row(catlin_ctx) -> None:
 
 
 def test_the_cap_is_manual_s_and_is_stated_in_btu_per_hour_too(catlin_ctx) -> None:
-    """0.80 as a ratio is a number nobody can act on; ``12,328 Btu/h against this zone's
-    15,410`` is one an equipment selector can shop against."""
+    """0.80 as a ratio is a number nobody can act on; ``12,292 Btu/h against this zone's
+    15,365`` is one an equipment selector can shop against."""
     assert _MAX_MINIMUM_SIZING_FACTOR == 0.80
     finding = _findings(catlin_ctx)["EQ-M-HP1-OD"]
     assert "Manual S caps it at 0.80" in finding.message
-    assert f"{0.80 * 15_410:,.0f} Btu/h".replace(",", ",") in finding.message
+    assert f"{0.80 * 15_365:,.0f} Btu/h".replace(",", ",") in finding.message
 
 
 # --- §3. the crossover ------------------------------------------------------------------------
 
 def test_the_crossover_is_the_sentence_an_owner_can_act_on(catlin_ctx) -> None:
-    """§3. "It modulates down to the load only below −5.9 °F" is a fact about this
+    """§3. "It modulates down to the load only below −6.1 °F" is a fact about this
     building's year; "minimum sizing factor 0.91" is one nobody can act on.
 
     **Reported on a PASS as well**, and System 2 is why: it passes the Manual S cap at 0.60

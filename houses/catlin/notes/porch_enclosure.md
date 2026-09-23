@@ -8,6 +8,7 @@ panel sets. This note is the part of that decision the model has no field for.
 joists: one front run `FURN-M-PORCH-TRACK-F` (`FT-PORCH-TRACK-176`, x 10'-8" → 25'-4") on the
 spare joist at y −8'-11 1/4", and the flanks `-W`/`-E` at x 10'-0" / 26'-0". The court is
 17'-0" clear. Where a table below disagrees, `plan/placeables.py`'s comments are current.
+**2026-09-23:** all three at `inch(104.75)`, 3" lower with the balcony (z 104.75"…105.75").
 
 ## Why the rods could not work
 

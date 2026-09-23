@@ -1560,8 +1560,8 @@
 "drywell" = { low = 150, high = 350 }  # 0.10 cy — DRW-G-HYDRANT only
 # The west rain garden RG-W-BASIN (params/landscape_gardens.py). Media and stone bill here
 # by the yard, like the drywell's stone; the excavation is in the earthwork allowance.
-"rain_garden_media" = { material = { low = 50, high = 90 }, labour = { low = 40, high = 110 } }  # 6.48 cy, MnDOT 3877.2 Type G mix, placed by hand
-"rain_garden_stone" = { material = { low = 40, high = 70 }, labour = { low = 30, high = 90 } }  # 3.24 cy, washed filter aggregate under the media
+"rain_garden_media" = { material = { low = 50, high = 90 }, labour = { low = 40, high = 110 } }  # 12.96 cy over both basins, MnDOT 3877.2 Type G mix, placed by hand
+"rain_garden_stone" = { material = { low = 40, high = 70 }, labour = { low = 30, high = 90 } }  # 6.48 cy over both basins, washed filter aggregate under the media
 # ZERO on purpose: the pipe is billed by the foot in [drainage] `leader_extension:pvc-sdr35`.
 "leader_extension" = { low = 0, high = 0 }  # 0.12 cy — bills in [drainage]
 # ZERO on purpose, like `leader_extension`: AD-SG-COURT bills by the piece and its riser by
@@ -1700,7 +1700,7 @@
 # The sidewalk, five legs (params/landscape_walk.py): 4" fibre-only EXPOSED_MIX. The labour
 # band carries the 28 sonotube pocket forms and the control joints on their 4' stations,
 # which is why it sits over the plain slab-on-grade rate. 2026-09-21.
-"slab:SIDEWALK_FRC_CLASS5" = { material = { low = 220, high = 320 }, labour = { low = 500, high = 950 } }  # 6.82 cy, 553 SF over four pours (SL-WK-E dropped 2026-09-23; leg A notched round the drive's flare)
+"slab:SIDEWALK_FRC_CLASS5" = { material = { low = 220, high = 320 }, labour = { low = 500, high = 950 } }  # 6.04 cy, 489 SF over four pours (SL-WK-E dropped 2026-09-23; leg A notched round the drive's flare; A and B one-sided 64" beside RG-E-BASIN)
 # The driveway, SL-DW-DRIVE (params/driveway.py): the walk's mix at the walk's material rate.
 # Labour sits under the sidewalk's (no pocket forms) and carries the K8 joint at the grade
 # beam, ~16 LF of 1" 40 psi XPS under traffic-rated PU sealant. PROPOSED 2026-09-23, owner's call.
@@ -3566,7 +3566,7 @@
 "capillary-break-stone" = { material = { low = 0.55, high = 0.95 }, labour = { low = 0.35, high = 0.8 } }  # 1829.0 SF — 4" #57, screeded (-160.3 SF 2026-09-05: GARDEN_PUTTING_GREEN's drainage bed is now USGA bridging gravel, not #57 — #57 cannot meet USGA Table 1 or Table 2 at any gradation)
 # The sidewalk's base (SIDEWALK_FRC_CLASS5): 6" of MnDOT 3138 Class 5, placed and plate-
 # compacted in two lifts under all five legs. Dense-graded, not the #57 above. 2026-09-21.
-"mndot-class-5-base" = { material = { low = 0.45, high = 0.80 }, labour = { low = 0.40, high = 0.90 } }  # 552.7 SF, walks only
+"mndot-class-5-base" = { material = { low = 0.45, high = 0.80 }, labour = { low = 0.40, high = 0.90 } }  # 488.9 SF, walks only
 # The driveway's 8" (DRIVEWAY_FRC_CLASS5): the material scaled 8/6, the same two lifts.
 # PROPOSED 2026-09-23, owner's call.
 "mndot-class-5-base:8.0" = { material = { low = 0.60, high = 1.07 }, labour = { low = 0.45, high = 1.00 } }  # 210.1 SF, 5.19 cy compacted
@@ -5894,7 +5894,7 @@
 # The two west leader extensions (params/roof_trim.py, plan/storeys/garage.py): 4" solid PVC
 # buried at 6-10", hand-trenched, with the pop-up emitter at the basin and the boot at the
 # leader. The LF includes each riser from the leader foot down to the inlet. 2026-09-21.
-"leader_extension:pvc-sdr35" = { material = { low = 4, high = 8 }, labour = { low = 8, high = 16 } }  # 28.5 LF / 2 runs
+"leader_extension:pvc-sdr35" = { material = { low = 4, high = 8 }, labour = { low = 8, high = 16 } }  # 58.1 LF / 4 runs
 
 [construction_returns]
 # NEW SECTION 2026-08-18 — [low, high] $/LF of return, material only, keyed on the rule's

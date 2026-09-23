@@ -21,10 +21,12 @@
 
 ## 1. Section
 
-Full: 12 band | 16 pocket | 36 walk | 16 pocket | 12 band = 92" (legs A, B).
-One-sided: 36 walk | 16 pocket | 12 band = 64", walk against the house (leg D) — the house
-to lot line is 6'-4", so 92" does not fit east of the house anywhere; it does not fit south
-of it either, where the court and the porch stair own the ground. C is walk only.
+Full: 12 band | 16 pocket | 36 walk | 16 pocket | 12 band = 92" (leg A).
+One-sided: 36 walk | 16 pocket | 12 band = 64", walk against the building (legs B and D) —
+the house to lot line is 6'-4", so 92" does not fit east of the house anywhere, nor south of
+it, where the court and the porch stair own the ground; and east of the garage the strip
+beyond 64" is RG-E-BASIN's, the west basin's mirror (2026-09-23; B was 92" until then). C is
+walk only.
 
 Pockets are 16" sonotube voids, drawn as 16-gons (1.3605 sf each), centred 20" in from
 each edge (44" off the house on D). Along the run they are 4'-0" o.c., **centred in the
@@ -36,14 +38,14 @@ joints fall on the same stations.
 
 | leg | outline | gross sf | pockets | net sf |
 |---|---|---|---|---|
-| A garage north | x 24.04..37.78 × y 67.33..75.00, less the 2.0 sf flare notch (§2a) | 105.3 − 2.0 = 103.3 | 6 | 95.1 |
-| B garage east | x 30.11..37.78 × y 43.02..67.33 | 7.67 × 24.31 = 186.4 | 12 | 170.1 |
+| A garage north | x 24.04..35.45 × y 67.33..75.00, less the 2.0 sf flare notch (§2a) | 11.40 × 7.67 = 87.4 − 2.0 = 85.4 | 4 | 80.0 |
+| B garage east | x 30.11..35.45 × y 43.02..67.33 | 5.33 × 24.31 = 129.7 | 6 | 121.5 |
 | C landing connector | x 30.04..42.04 × y 39.60..43.02, less the 0.50 × 1.08 notch at PT-BW-RNE | 41.04 − 0.54 = 40.5 | 0 | 40.5 |
 | D house east | x 36.70..42.04 × y −9.00..39.60 | 5.33 × 48.60 = 259.2 | 9 | 247.0 |
-| **total** | | **589.4** | **27** | **552.7** |
+| **total** | | **514.8** | **19** | **488.9** |
 
-Concrete at 4": 552.7 / 3 / 27 = **6.82 cy**. Class 5 at 6" bills by the net slab area,
-**552.7 sf**. Impervious area counts the GROSS 589.4 sf — the pockets are not subtracted,
+Concrete at 4": 488.9 / 3 / 27 = **6.04 cy**. Class 5 at 6" bills by the net slab area,
+**488.9 sf**. Impervious area counts the GROSS 514.8 sf — the pockets are not subtracted,
 which is conservative for the coverage table.
 
 ### 2a. Leg A against the driveway (2026-09-23)
@@ -53,7 +55,7 @@ south edge to x = 24' two feet north. A's SW corner is cut on that line offset 1
 to it: the line x + y = 26 + Y0 + 0.5/12·√2 = 93.386, so A's south edge starts at
 x = 93.386 − 67.332 = **26.054** and its west edge at y = 93.386 − 24.042 = **69.344**. The
 notch is ½ · (26.054 − 24.042) · (69.344 − 67.332) = ½ · 2.012 · 2.012 = **2.02 sf**.
-A's westmost pocket, (27.445, 69.00), is 2.16' from that line, past the 2'-0" end inset, so
+A's westmost pocket, (29.445, 69.00), is 3.58' from that line, past the 2'-0" end inset, so
 `_A_STATIONS` does not move.
 
 **The step is kept.** Along x = 24' the drive's fall reaches −35.5" at y = 69.34 and −37.0"
@@ -67,17 +69,15 @@ Inset = (run − (n−1) × 4'-0") / 2, with n the most stations the run holds a
 of each end.
 
 - **A is anchored to the corner, not centred.** Its two rows (y = 69.00 and 73.33) run
-  across the whole width of leg B, so its stations ARE leg B's pocket columns — x = 36.11
-  (the outer corner, 20" in from the shared east edge), 31.78 (the inner corner), and
-  27.45, one more 52" step west, the section's own row pitch. → **6**. West inset 3.40',
-  east inset 1.67" × 12 = 20", the section inset, so 12" of concrete at the end like every
-  side band.
-  **This is what keeps the L walkable.** Leg B's 36" walk runs x 32.445..35.445; the two
-  eastern pockets in A's south row stop at 32.445 and start again at 35.445, tangent to
-  both lane edges, so the turn out of A into B crosses **36.0" of open concrete**. Centred
-  at 4'-0" the row put a void at x = 34.91, squarely in that turn.
+  across the whole width of leg B, so its first station IS leg B's pocket column — x = 33.78
+  (44" off the stem, 20" in from the shared east edge) — and the next is 29.45, one 52" step
+  west, the full section's own row pitch. → **4**. West inset 5.40', east inset
+  1.67' × 12 = 20", the section inset, so 12" of concrete at the end like every side band.
+  **This is what keeps the L walkable.** Leg B's 36" walk runs x 30.11..33.11 against the
+  stem; A's south-row pockets stop at 30.11 and start again at 33.11, tangent to both lane
+  edges, so the turn out of A into B crosses **36.0" of open concrete**.
 - **B** (run 24.31', n = 6, inset 2.16'): y = 45.18, 49.18, 53.18, 57.18, 61.18, 65.18 on
-  both columns (x = 31.78 and 36.11) → **12**.
+  its one column (x = 33.78) → **6**.
 - **D** (run 48.60', n = 12, inset 2.30', column x = 40.37): y = −6.7, −2.7, 1.3, 5.3, 9.3,
   13.3, 17.3, 21.3, 25.3, 29.3, 33.3, 37.3 → 12, less the three whose centres fall in the
   retired patio's y 10'..22' (13.3, 17.3, 21.3) → **9**.
@@ -86,14 +86,14 @@ of each end.
 `TR-RF-LEADER-E` stands at x = 36'-10 9/16", over leg D's 36" walking band: a 16" void
 centred there leaves **1.6"** of concrete at the slab's house-side edge, against the 12"
 every grid pocket keeps, and it is 2.9' off the pocket column. `TR-G-LEADER-E` at
-(31.27, 68.49) is 6" off leg A's near row and 1.2' off cadence, and takes a grid pocket
-with it. Both leaders drop onto the walk instead (§5).
+(31.27, 68.49) is 6" off leg A's near row. Both leaders' risers pass down through the walk
+to buried extensions into RG-E-BASIN (§5).
 
 The D pocket at y = 9.3 stands **0.40"** north of the retired patio's north edge. That is
 a measurement, not a constraint — the skip is a centre test over y 10'..22', so the count
 does not turn on it — but it is the one station that would move if leg D's ends did.
 
-27 pockets cycle Calamintha, Allium, Sporobolus, Salvia in A-B-D order: **7 · 7 · 7 · 6**.
+19 pockets cycle Calamintha, Allium, Sporobolus, Salvia in A-B-D order: **5 · 5 · 5 · 4**.
 
 ## 4. Fall (R401.3: 2% within 10' of the foundation)
 
@@ -109,11 +109,12 @@ does not turn on it — but it is the one station that would move if leg D's end
 Joint layout beyond the pocket stations, the pour sequence, the concrete's fibre dosage
 (EXPOSED_MIX's 4 pcy macro-synthetic), and the two non-flush joints in the warning above.
 
-Also: **the two east leaders discharge onto the walk with no modelled conveyance.**
-`TR-RF-LEADER-E` and `TR-G-LEADER-E` both end 6" over their slab (−2'-3" against a −2'-9"
-top) on a splash block, carry no `discharge_ref`, and are therefore outside the drainage
-graph entirely — so no check grades where that water goes. The walk's own 2% fall runs
-away from the building at both (§4). Their buried extensions are a later detail.
+Also: **the east leaders' risers pass through the slab, and nothing models the hole.**
+Since 2026-09-23 `TR-RF-LEADER-E` and `TR-G-LEADER-E` stop at +1'-0" / −1'-6" and run on as
+4" PVC risers through legs D and A to buried extensions (notes/rain_garden_sizing.md §6);
+each crossing wants a sleeve cast in, and no `FloorOpening` is authored for it. The
+extensions pass under the walks' Class 5 base with their crowns at about −3'-8", and nothing
+grades a buried pipe against a slab's base either.
 
 ## Sources
 

@@ -1970,16 +1970,17 @@ FLOOR_HEAT = [
 # closet face could carry Type X instead of stair plywood (R302.7), and 5/8" board finishes
 # 1/8" shy of where 3/4" ply did. `structural.floor_opening_header` FAILed with a 9'-0" LVL
 # within the same build, as promised. North
-# is y=35'-0" — it *was* W-B-N2's inside face, and the 12" -> 8" thinning moved
-# that face to 35'-4". The opening deliberately stays at 35'-0": a 4" strip of deck against
-# the wall is ordinary framing, and chasing the face would perturb a stair tuned to
-# 11 15/16" treads and R311.7.6's landing for no gain. South (26'-0 3/8") is fixed by FO-S-STAIR's south edge one storey up — ST-M2S's
+# is y=35'-4 7/8" (2026-09-23): W-B-N2's concrete face is 35'-4", and the edge sits one half
+# trimmer ply past it so the 2-ply LVL pack (35'-4"..35'-7 1/2") bears on the wall's sill,
+# flush with the pour. At 35'-0" the pack hung in the basement air, and PR-B-KITCH-DRAIN ran
+# inside it for 8 ft; that lane is now open well air, the drain clamped tight to the pack.
+# The landing (to 34'-0 3/8") and the flights do not move. South (26'-0 3/8") is fixed by FO-S-STAIR's south edge one storey up — ST-M2S's
 # springing point — so both wells share that same south edge. Run here is 8'-11 5/8": IRC
 # R311.7.6's 36" landing plus six 11 15/16" treads, well inside R311.7.5.2's 10" minimum.
 FLOOR_OPENINGS = [
     FloorOpening(uid="CMF601AAAA", tag="FO-M-STAIR",
                  outline=(pt(ft(10, 3.25), ft(26, 0.375)), pt(ft(17, 6), ft(26, 0.375)),
-                          pt(ft(17, 6), ft(35)), pt(ft(10, 3.25), ft(35))),
+                          pt(ft(17, 6), ft(35, 4.875)), pt(ft(10, 3.25), ft(35, 4.875))),
                  # The basement walls *under* the two long edges, not the main-storey walls
                  # that stand on them. W-M-STRW/W-M-STRW2 were named here while this hole
                  # was cut in a concrete pour and nothing framed it, so the wrong tags were
@@ -2106,7 +2107,8 @@ FLOOR_OPENINGS = [
     # it straddles FS-M-MECH's 35'-1 3/8" joist line, 5 3/8" south of it and 2 5/8" north.
     #
     # ** THAT STATION IS PINNED FROM BOTH SIDES AND THE JOIST IS IN THE MIDDLE OF WHAT IS
-    # LEFT. ** South, the six-vent bundle crosses at y=34'-6": an 8" riser must keep its
+    # LEFT. ** South, the six-vent bundle crossed at y=34'-6" (the chase is at 35'-1.3" now,
+    # inside this hole — see below): an 8" riser must keep its
     # face north of 34'-5", so y >= 34'-11". North, W-S-N3B's stud cavity starts at
     # 35'-5 3/8" one storey up, so y <= 35'-1 3/8". The whole legal band is 2 3/8" wide and
     # the joist line sits inside it — there is no station that avoids the cut.
@@ -2115,9 +2117,13 @@ FLOOR_OPENINGS = [
     # 35'-5 1/4" leave 1 1/4" of air round an 8" duct once the header's 1 3/4" and the
     # trimmer's 1 1/4" are allowed for. The north trimmer lands 1/8" inside W-M-N3B's
     # interior face, which is where a joist under a wall belongs.
+    # ** GROWN WEST AND 1" NORTH TO TAKE THE RADON CHASE TOO (2026-09-23). ** VR-M-RADON-VENT
+    # moved to (1'-0", 35'-1.3") and stood in FO-M-ERV-OA's trimmers; x from 6" and y to
+    # 35'-6 1/4" put its 3" riser inside this hole, bearing on W-B-W1 like FO-M-ERV-OA.
     FloorOpening(uid="YXTAPJ7WFE", tag="FO-M-ERV-EA", purpose=FloorOpeningPurpose.CHASE,
-                 outline=(pt(ft(1, 5), ft(34, 6.5)), pt(ft(2, 7), ft(34, 6.5)),
-                          pt(ft(2, 7), ft(35, 5.25)), pt(ft(1, 5), ft(35, 5.25)))),
+                 outline=(pt(inch(6), ft(34, 6.5)), pt(ft(2, 7), ft(34, 6.5)),
+                          pt(ft(2, 7), ft(35, 6.25)), pt(inch(6), ft(35, 6.25))),
+                 bearing_refs=("W-B-W1",)),
 ]
 
 # The tub deck's cap: 3/4" exterior-grade plywood over W-M-TUBDK-W/-S and the two room walls
@@ -2194,13 +2200,16 @@ SLABS = [
 # treads AND both landing decks — one flight, one stock — and it is a takeoff fact only:
 # `_notch_z` drops each board by exactly this much, so no riser moves and the end risers
 # `code.R311_7_5_1_stair_end_risers` measures are the ones above.
+# `width` is stringer-centre to stringer-centre (u_split centres a stringer on each lane
+# edge), so 3'-4 5/16" starting at 10'-4 1/8" lands both outer stringers FLUSH on the wall
+# faces (2026-09-23); 3/4" wider put half of each into W-B-CN's pour and W-B-STR3's studs.
 STAIRS = [
     Stair(uid="CST701AAAA", tag="ST-B2M", floor_opening="FO-M-STAIR",
-          from_storey="basement", to_storey="main", width=ft(3, 5.0625),
+          from_storey="basement", to_storey="main", width=ft(3, 4.3125),
           base_elevation=inch(-109.4375), top_elevation=inch(0.9862),
           tread_thickness=inch(1),
           layout="u_split_landing", run_direction="y", turn_direction="left",
-          start=pt(ft(10, 3.375), ft(26, 0.375)), landing_depth=ft(3)),
+          start=pt(ft(10, 4.125), ft(26, 0.375)), landing_depth=ft(3)),
 ]
 
 # ST-B2M handrails (R311.7.8): one wall-mounted rail per flight, `serves_stair` rakes each

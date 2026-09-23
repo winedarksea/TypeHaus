@@ -108,6 +108,14 @@ _WEB_PANEL_PITCH = inch(24)
 _WEB_OPENING = inch(15)
 _WEB_PANEL_OFFSET = inch(12)
 
+# ** TWO TRUSS LINES MOVED OFF THE 16" MODULE, AND THEY ARE AS PROVISIONAL AS THE WEBS. **
+# (laid station, new station) in y (owner, 2026-09-23). The fabricator's layout replaces
+# the whole field; these say only where a line must NOT stand.
+#   * 26'-8" -> 26'-10": clears PR-B-HW-SBATH and PR-M-S-BATH1-DRAIN's risers.
+#   * 34'-8" -> 34'-5 3/4": clears the radon/plumbing chase (VR-M-RADON-VENT, now at
+#     y=35'-1.3") and the ERV exhaust risers in FO-M-ERV-EA.
+_LINE_MOVES = ((inch(320), inch(322)), (inch(416), inch(413.75)))
+
 # West half: open-web trusses, so every second-floor plumbing stack, supply riser and the
 # radon/plumbing chase can cross the deck through the webs instead of a soffit or chase.
 WEST_FLOOR = FloorSystem(
@@ -117,6 +125,7 @@ WEST_FLOOR = FloorSystem(
                      web_panel_pitch=_WEB_PANEL_PITCH,
                      web_opening_width=_WEB_OPENING,
                      web_panel_offset=_WEB_PANEL_OFFSET,
+                     line_overrides=_LINE_MOVES,
                      end_bearing=(("W-M-C2", _TRUSS_BEARING),)),
     subfloor=DeckLayer(material_ref="plywood-subfloor", thickness=_SUBFLOOR),
     ceiling_below=_CEILING_GWB,

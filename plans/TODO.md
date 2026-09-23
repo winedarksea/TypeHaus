@@ -32,13 +32,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   - `code.R311_3_exterior_landing`: `FS-SG-DECK` now resolves tilted and stands 3.92" above
     `D-S-DECK-E`'s threshold (2.42" above `RM-S-STUDY2`'s floor). Lower the balcony datum
     ~2 3/8" or step the deck at the door.
-  - `VR-M-RADON-VENT` (4): the radon/vent pair spreads 2.4" either side of its chase point and
-    no station fits between `FO-M-ERV-OA`'s north trimmer pack, the 34'-8" truss and the ERV
-    risers. Reframe the chase (one big opening), or give the engine a spread-direction option.
-  - Floor-truss conflicts in `FS-S-WEST` (fabricator): `PR-M-S-BATH1-DRAIN` and `PR-B-HW-SBATH`
-    on the 26'-8" truss; `DU-ERV-EA` and `DU-M-ERV-EXH-TRUNK` on the 34'-8" truss.
-    `PR-B-HW-SBATH` has no station in `W-M-STOS2`'s 2x4 cavity (retype 2x6 or move the truss).
-  - `PR-B-KITCH-DRAIN` runs inside `FO-M-STAIR`'s north trimmer; its lane is that opening's edge.
   - `CD-M-DATA-KITCH` runs inside `FO-S-STAIR`'s truss trimmer; no routable bay north of the well.
   - `mep.run_through_plate`: `PR-A-STUBATH-DRAIN` (W-S-DC2) and `DU-M-ERV-R-LAUNDRY` (W-M-CLN2)
     each want an owner-authored `PlateTie` (R602.6.1).
@@ -47,11 +40,6 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   chloride per ASTM C1218, the aggregate's C1293/C1260 result plus a C1778 structure class, and
   a soil sulfate test (ASTM C1580). Galvashield XPX anodes for the salt-splash court walls are
   undecided. Curing, cold-weather placement and slab joint layout exist only in prose.
-
-- **Column cover is 2", not the 3" wanted.** 2 1/2" and 3" pull the north-entry pad dowels
-  under ACI 25.4.3.2's 6db spacing (ψ_r 1.6, ℓdh 11.38" in a 12" pad): 6 FAILs. The way back
-  to 3" is 15" moment-pier pads, or hook ties through the pad (`BarSpec.hook_ties` can't sit
-  on a `dowels` row yet). `balcony_moment_columns.md` §14.
 
 - **No bar crosses the court's W1|W2 / E1|E2 joint at y −132".** Winter tension (§11m.2,
   0.571 on 6 #4) holds only if it is one pour; a construction joint there needs bars lapped
@@ -120,7 +108,8 @@ pairs while the house said 67. Re-open the campaign with
   layout rather than read off a submittal. Until 2026-09-19 nothing narrowed an open-web
   member ALONG its span, so the engine read the truss as a continuous 8 7/8" chase and
   thirteen ducts crossing one 41" band all passed. Ask the truss fabricator for the panel
-  drawing, replace all three numbers, and re-measure `mep.open_web_panel` and
+  drawing, replace all three numbers and the two moved lines (`_LINE_MOVES`: 26'-8" -> 26'-10",
+  34'-8" -> 34'-5 3/4", clearing risers), and re-measure `mep.open_web_panel` and
   `mep.run_member_crossing` that day — both entries in `preferences.toml` say so.
 - **`REG-S-HP-PLANT` throw is 11'-7" across an 18'x9' room** (deliberate — see
   `plan/mep_registers.py`), leaving the west 14' unswept by the room's only moisture-removal
@@ -129,9 +118,9 @@ pairs while the house said 67. Re-open the campaign with
   extract twin got `DU-M-ERV-EXH-FEED` on 2026-09-20. RM-M-MECH's true inside faces are
   **63"x23"** (the prose's "39"x31"" reads off wall AXES), the supply riser sits west of the
   exhaust riser, and every gate to it measures 3 7/8" or less against a 6" duct — proved by
-  eroding the free plan at four elevations and by `haus route`, not asserted. **The fix is to
-  move `VR-M-RADON-VENT` ~2 1/2" north**, which opens the gate to 6 1/8" and still clears
-  W-M-N3B. That is a drainage decision. A flat 3"x8" section threads, but
+  eroding the free plan at four elevations and by `haus route`, not asserted. The chase moved
+  7.3" north on 2026-09-23 (to 35'-1.3"), and that opened the gate only to 4 3/4": the
+  conduit risers and `DU-ERV-EA` bind now, not the radon pair. A flat 3"x8" section threads, but
   `mep.erv_static_budget` matches on `nominal_diameter` and would go blind — a feed that
   blinds the budget it exists to sharpen is not a trade.
 - **`mep.run_through_header` reports 6 UNKNOWNs and `haus print` gates on UNKNOWN.** New
@@ -145,7 +134,7 @@ pairs while the house said 67. Re-open the campaign with
   IRC R404.4 makes a retaining excavation an engineered design, same as
   `structural.foundation_unbalanced_fill`. Permit checklist's "Foundation frost depth" is
   UNKNOWN because of it; pinned by `test_catlin_contract_m3.py`.
-- **French drains could be a form-a-drain product** (doubles as footing form); we probably also have more drains than needed.
+- **French drains could be a form-a-drain product** (doubles as footing form)
 - **Four matchers share one arithmetic but still answer at three tolerances.**
   `platform._collinear_overlap`, `stacking._axis_match`, `construction_geometry._stack_overlap`
   and `layout_lines._collinear` all route through `layout_lines.collinear_overlap` since

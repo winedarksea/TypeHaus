@@ -433,9 +433,10 @@ SCREEN = SlatScreen(
 # and a beam simply resting on a pier is a break in the chain.
 SEAT_BEARINGS = []
 for _i, (_t, _x, _y, _beam) in enumerate((
-    ("W", LANDING_WEST_FT, HOUSE_SEAT_Y_FT, "BM-BW-HOUSE-SEAT"),
+    # W/GW centre on the beam's 3 1/4" of pier bearing east of the column face.
+    ("W", LANDING_WEST_FT + (2.75 + 1.625) / 12, HOUSE_SEAT_Y_FT, "BM-BW-HOUSE-SEAT"),
     ("E", LANDING_EAST_FT, HOUSE_SEAT_Y_FT, "BM-BW-HOUSE-SEAT"),
-    ("GW", LANDING_WEST_FT, GARAGE_SEAT_Y_FT, "BM-BW-GARAGE-SEAT"),
+    ("GW", LANDING_WEST_FT + (2.75 + 1.625) / 12, GARAGE_SEAT_Y_FT, "BM-BW-GARAGE-SEAT"),
     ("GE", LANDING_EAST_FT, GARAGE_SEAT_Y_FT, "BM-BW-GARAGE-SEAT"),
 )):
     SEAT_BEARINGS.append(Connector(

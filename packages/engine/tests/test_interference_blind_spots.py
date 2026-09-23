@@ -257,20 +257,14 @@ def test_catlin_has_no_roof_seat_fails(catlin_ctx):
     assert [f.element_tags[:2] for f in seats] == []
 
 
-def test_catlin_framing_in_concrete_is_one_stair(catlin_ctx):
-    """ST-B2M's lower stringer and landing rim sit in W-B-CN (the stair-to-wall-axis offset,
-    TODO D3). W-B-S2-FR/-S3-FR's open-end studs now sit flush inside their plates, clear
-    of W-B-S1/-S4. The brick fireplace lintel, the backing blocks at concrete tees and every
-    pier are cleared."""
-    fails = _fails(member_in_masonry(catlin_ctx))
-    assert sorted(f.element_tags[:2] for f in fails) == [
-        ("ST-B2M", "W-B-CN"), ("ST-B2M", "W-B-CN")]
+def test_catlin_has_no_framing_in_concrete(catlin_ctx):
+    """ST-B2M's outer stringers sat half in W-B-CN until its width became stringer centre to
+    centre (2026-09-23). W-B-S2-FR/-S3-FR's open-end studs sit flush inside their plates, and
+    the fireplace lintel, the backing blocks at concrete tees and every pier are cleared."""
+    assert _fails(member_in_masonry(catlin_ctx)) == []
 
 
-def test_catlin_post_base_clash_is_the_two_west_seat_beams(catlin_ctx):
-    """PT-BW-W/-GW: each seat beam's end sits on the pier top inside the footprint of the
-    6x6 the ABU66SS stands, over the full 1 3/16" standoff. The owner's design call."""
-    findings = post_base_interference(catlin_ctx)
-    assert sorted(f.element_tags for f in _fails(findings)) == [
-        ("BM-BW-GARAGE-SEAT", "CN-BW-BASE-NW", "PT-BW-CNW"),
-        ("BM-BW-HOUSE-SEAT", "CN-BW-BASE-W", "PT-BW-CW")]
+def test_catlin_has_no_post_base_clash(catlin_ctx):
+    """PT-BW-W/-GW's seat beams stopped at the column's east face (2026-09-23); they used to
+    run under the 6x6 inside the ABU66SS's 1 3/16" standoff."""
+    assert _fails(post_base_interference(catlin_ctx)) == []

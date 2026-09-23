@@ -91,9 +91,16 @@ def _subfloor(catlin_model, stair) -> float:
 
 
 def _landing_zone(stair) -> tuple[float, float]:
-    """ST-B2M's landing zone in the run direction: the last landing_depth of the run."""
+    """ST-B2M's landing zone in the run direction: past the lower flight's end, inside the well.
+
+    Derived from the flight, not from the opening's far edge: FO-M-STAIR's north edge moved
+    4 7/8" past the landing to bear its trimmer on W-B-N2 (2026-09-23), which the landing
+    does not follow. Assumes +y run from the outline's south edge (ST-B2M's start).
+    """
+    assert stair.run_direction == "y" and not stair.run_reversed
     ys = [point[1] for point in stair.outline]
-    return max(ys) - ft(4).meters, max(ys)
+    lower_treads = (stair.riser_count - 3 + 1) // 2
+    return min(ys) + stair.going_depth_m * lower_treads, max(ys)
 
 
 # ------------------------------------------------------------------ 1. no coincidences

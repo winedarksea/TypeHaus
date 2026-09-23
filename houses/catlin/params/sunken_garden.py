@@ -458,7 +458,10 @@ class SunkenGardenSpec:
     # 4.5' is R507.6.1's limit here (a quarter of the 18'-0" back span between beams), so
     # the joist is nowhere near governing. The plank module is.
     joist_cantilever_in: float = 9.0  # deck joist tips overhang the outer beams
-    balcony_level_ft: float = 10.0  # second storey
+    # Joist top at the deck's low south edge, and the court-upper storey's datum
+    # (plan/manifest.py reads it). 3" under the second storey (owner, 2026-09-23) so the north
+    # edge, 2.42" up the 1/4"/ft fall, lands under D-S-DECK-E's threshold (R311.3).
+    balcony_level_ft: float = 10.0 - 3.0 / 12.0
 
 
 SPEC = SunkenGardenSpec()
@@ -2731,7 +2734,7 @@ BALCONY_JOISTS = FloorSystem(
     # ** THE FIELD FOLLOWS THE BEAMS, AND SO DOES THE DECK. ** BM-SG-BLW/BLE tilt
     # (`_balcony_beam_rise`); `resolve/floor_tilt.py` seats each joist on them at its own
     # station — level E-W, a ~1/4" step per 12" line — and the plank is the plane over those
-    # tops, falling 1/4" per foot to the south. The storey datum (10'-0" joist top) is where
+    # tops, falling 1/4" per foot to the south. The court-upper datum (9'-9" joist top) is where
     # the beams START, at the deck's south edge; the north edge at the house wall stands
     # 2.42" higher (116" at 1/48). notes/balcony_differential_movement.md §2.
     joists=JoistSpec(member=SPEC.balcony_joist, spacing=inch(SPEC.balcony_joist_oc_in),
@@ -3008,7 +3011,7 @@ for _row, _y, _rise in _PILLAR_ROWS:
 # draining deck via a front-edge drip flashing; the rear (house) edge gets a counter-
 # flashing tucked up into the house WRB. Deck drains SOUTH (rear pillars 2" taller).
 # ============================================================================
-_deck_top = ft(SPEC.balcony_level_ft)  # 10' — storey datum = top of joist
+_deck_top = ft(SPEC.balcony_level_ft)  # 9'-9" joist top at the south edge
 # Guard height is measured from the surface a person stands on, which is the top of the
 # aluminum boards, not the joists they sit on. Basing the guard on _deck_top instead would
 # make the authored 42" measure 40.5" in the field and fail the guard-height rule.

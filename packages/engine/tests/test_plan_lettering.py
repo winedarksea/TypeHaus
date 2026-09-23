@@ -38,7 +38,7 @@ def test_tags_bubbles_and_room_blocks_are_at_least_3_32(catlin_model):
 
 def test_flatwork_and_its_pockets_draw_on_the_site_plan_not_the_floor_plan(catlin_model):
     """Walks and the drive are site work. On A-101 the drive set the sheet extent and
-    dropped it to 3/16"; on C-101 every slab and all 27 pockets are drawn."""
+    dropped it to 3/16"; on C-101 every slab and all 19 pockets are drawn."""
     from typehaus.emit.draw.siteplan import build_site_plan
 
     flatwork = {"SL-WK-A", "SL-WK-B", "SL-WK-C", "SL-WK-D", "SL-DW-DRIVE"}
@@ -49,7 +49,7 @@ def test_flatwork_and_its_pockets_draw_on_the_site_plan_not_the_floor_plan(catli
     assert "PLANTER" not in [t.content for t in _texts(plan, "A-ANNO-TEXT")]
     site_tags = [getattr(n, "tag", None) for n in build_site_plan(catlin_model).nodes]
     assert flatwork <= set(site_tags)
-    assert sum(1 for t in site_tags if t and t.startswith("FO-WK-")) == 27
+    assert sum(1 for t in site_tags if t and t.startswith("FO-WK-")) == 19
 
 
 def _wall(material: str) -> ResolvedWall:

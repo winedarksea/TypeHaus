@@ -30,6 +30,11 @@ class JoistSpec(HausModel):
     # Not a sister (``JoistReinforcement``). Must stand at least 6" off every regular line,
     # or it would share that joist's derived tie (``joints/bearing.py``'s 6" grid).
     extra_lines: tuple[Length, ...] = ()
+    # Regular lines moved off the module, as (laid station, new station) pairs in the same
+    # perpendicular coordinate: a truss nudged clear of a riser. The line keeps its index,
+    # so its child key and ties follow it. A station matching no laid line, or a move out
+    # of the field or within 6" of another line, is refused (``integrity.floor_line_move``).
+    line_overrides: tuple[tuple[Length, Length], ...] = ()
     # Overhang past the two outermost bearing lines (a balcony/porch deck cantilevers its
     # joist tips beyond the beam so the decking covers them). None = flush ends.
     cantilever: Length | None = None

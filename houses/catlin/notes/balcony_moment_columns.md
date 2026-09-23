@@ -2,7 +2,8 @@
 
 **House:** catlin, Ramsey County, Minnesota (Minnesota Residential Code 2020, adopting the
 2018 IRC).
-**Structure:** the sunken garden's balcony — a 21'-6" × 9'-8" deck at +10'-0", carried on
+**Structure:** the sunken garden's balcony — a 21'-6" × 9'-8" deck at +10'-0" (+9'-9" since
+2026-09-23, §15), carried on
 **four 12" round reinforced-concrete columns fixed at the base** (PT-SG-BR1, PT-SG-BR3,
 PT-SG-BF1, PT-SG-BF3) and two 6x6 wood centre pillars bearing on the porch framing under
 pinned strap-and-angle base ties, under three treated structural-glulam beams.
@@ -52,6 +53,8 @@ the old note made about them, and the same one that stays unproven here.
 ## 1. Geometry, and where every dimension comes from
 
 Read off `params/sunken_garden.py` rather than restated:
+
+(Figures as of 2026-09-03; the deck is 3" lower since 2026-09-23 — §15.)
 
 ```
 deck walking surface            +10'-1 1/2"  (balcony_level_ft + 1 1/2" plank)
@@ -1194,6 +1197,80 @@ chosen for it. No catalog 6" cage was found.
 
 `tests/test_balcony_column_cover.py` reproduces §14a, the envelope and §14b's bearing and
 tension rows at all three covers.
+
+---
+
+## 15. The balcony 3" lower (2026-09-23) — §13 re-worked
+
+Owner's call, to land `D-S-DECK-E` (R311.3): `balcony_level_ft` 10.0 → 9.75', and the
+`court-upper` storey datum reads it. The fall and every seat are unchanged; the whole balcony
+drops 3". The record's lever is still the AUTHORED `Post.height`, now **105.125"** front
+(9.75' − 11 7/8" glulam) and **106.958"** rear (+ 1.833" rise) — still 11 1/4" (the joist
+depth the resolver drops) longer than the built column, so it errs long, as before.
+
+### 15a. Loads
+
+```
+h_app  = guard top 13.375' + court 9.120'          = 22.495'   (was 22.745')
+q_h    = 18.631 × (22.495/22.745)^(2/7)            = 18.572 psf  (Exposure B, K_z ∝ z^(2/7))
+F      = 0.6 × 18.572 × 0.85 × 1.80 × 29.60        = 504.6 lb  / 4 = 126.16 lb per column
+M_w    = 126.16 × 8.760'                           = 1,105 lb-ft front;  × 8.913' = 1,125 rear
+M_g    = 200 × (8.760' + 3.5')                     = 2,452 lb-ft front;  2,483 rear
+self   0.7854 × 8.760' × 150                       = 1,032.1 lb front;   1,050.1 rear
+D      471.3 + self                                = 1,503.3 lb front;   1,521.3 rear
+P_u    1.2 × 1,503.3 + 1.6 × 1,885                 = 4,820.0 lb front;   4,841.6 rear
+```
+
+### 15b. Slenderness and the section
+
+```
+β_dns = 1.2 × 1,503.3 / 4,820.0 = 0.3743      EI = 0.4 × 4.0305e6 × 1,017.9 / 1.3743 = 1.1941e9
+P_c = π² × 1.1941e9 / (2.1 × 105.125)²          = 241,820 lb   (rear 233,129)
+δ = 1 / (1 − 4,820.0 / (0.75 × 241,820))       = 1.0273       (rear 1.0285)
+M_u guard = 1.6 × 2,452.1 × 1.0273              = 4,030 lb-ft  (rear 4,085)
+```
+
+Strain compatibility at P_u 4,820.0 (2" cover, bars at ±2.342"): c = 2.749", a = 2.199",
+A_seg 14.21 in², ȳ 4.696" — **φM_n = 24,669 lb-ft** front (rear 24,675), 9 lb-ft under §13.
+
+| case (front row) | demand | capacity | d/c |
+|---|---:|---:|---:|
+| wind, 1.0W | 1,842 lb-ft | 24,669 | 0.075 |
+| guard, 1.6L | 3,923 lb-ft | 24,669 | 0.159 |
+| guard magnified, δ 1.027 | 4,030 lb-ft | 24,669 | 0.163 |
+| §2.3.1 envelope, 1.2D + 1.0W + L (P_u 3,689, δ 1.021) | 4,383 lb-ft | 24,373 | **0.180** |
+| axial | 4,820 lb | 285,893 lb | 0.017 |
+
+Rear row, the envelope: P_u 3,711, M_u 4,451 (δ 1.022) against 24,379 — 0.183.
+
+### 15c. The wall-top joint (§11), at 1.2D + 1.0W + L
+
+```
+                         BR1                         BF1
+P_u, M_u (magnified)     3,711 lb, 4,451 lb-ft        3,689 lb, 4,383 lb-ft
+c, a                     2.728", 2.182"               2.727", 2.182"
+A₁, ȳ                    14.05 in², 4.706"            14.05 in², 4.706"
+C (±45°)                 9,153 lb                     9,023 lb
+φB_n                     38,811 lb   d/c 0.236        38,803 lb   d/c 0.233
+T, one bar on-axis       4,863 lb    d/c 0.291        4,766 lb    d/c 0.285   (vs 16,740)
+V_u = 126.16/0.6 + 200   410.3 lb
+φV_n = 55,800 − (C − P_u)  50,358 lb                  50,466 lb   (d/c 0.008)
+development              21.2" / 24"   0.884 — still governs
+```
+
+Unroughened (μ 0.6): 0.6 × 50,358 = 30,215 lb.
+
+### 15d. §14 at the new loads
+
+```
+cover   c (P_u 4,820.0)  phi     φM_n     envelope φM_n (P_u 3,689)   BR1 joint C / φB_n / T
+2"      2.749"           0.900   24,669   24,373                      9,153 / 38,811 / 4,863
+2 1/2"  2.866"           0.900   24,649   24,372                      9,545 / 41,230 / 5,287
+3"      2.981"           0.868   23,935   23,805                      9,988 / 43,608 / 5,784
+```
+
+Same shape as §14 — the dowel's tension rises 19% at 3" — and the pad-dowel row still decides
+it: **2" stays.**
 
 ---
 

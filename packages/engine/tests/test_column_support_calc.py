@@ -18,11 +18,12 @@ CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 #: §11a-§11d as re-worked in §13c (2026-09-23, each edge beam on its own 9.75' strip):
 #: (bearing C, φBn), (T per bar, φAs fy), (Vu, φVn), (ld, embedment). P_u fell, so the
 #: couple needs MORE dowel and the block is a little shallower.
+#: §15c (2026-09-23): the balcony 3" lower — shorter columns, a little less axial and moment.
 _ORACLE = {
-    "PT-SG-BR1": {"bearing": (9_378, 38_825), "tension": (5_032, 16_740),
-                  "shear": (410.9, 50_168), "development": (21.2, 24.0)},
-    "PT-SG-BF1": {"bearing": (9_247, 38_817), "tension": (4_935, 16_740),
-                  "shear": (410.9, 50_277), "development": (21.2, 24.0)},
+    "PT-SG-BR1": {"bearing": (9_153, 38_811), "tension": (4_863, 16_740),
+                  "shear": (410.3, 50_358), "development": (21.2, 24.0)},
+    "PT-SG-BF1": {"bearing": (9_023, 38_803), "tension": (4_766, 16_740),
+                  "shear": (410.3, 50_466), "development": (21.2, 24.0)},
 }
 _LABELS = {"bearing": "bearing on the wall top", "tension": "dowel tension across the joint",
            "shear": "shear friction across the cold joint",
@@ -115,7 +116,7 @@ def test_no_roughening_is_graded_at_0_6(tmp_path) -> None:
     mu = next(q for q in record.inputs if q.name == "PT-SG-BR1.shear_friction_mu")
     assert mu.value == 0.6
     state = _state(record, "PT-SG-BR1", "shear")
-    assert state.capacity == pytest.approx(0.6 * 50_168, rel=0.003)
+    assert state.capacity == pytest.approx(0.6 * 50_358, rel=0.003)
 
 
 def test_no_embedment_is_incomplete_naming_the_field(tmp_path) -> None:

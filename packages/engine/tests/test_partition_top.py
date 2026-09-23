@@ -194,10 +194,11 @@ def test_the_three_count_rules_are_three_rows(sdpw_rows) -> None:
     would call for blocking in the bays that already have a joist in them.
     """
     counts = {row["scope"]: row["count"] for row in sdpw_rows}
+    # 2026-09-23: FS-S-WEST's 26'-8" truss moved to 26'-10", off W-M-STOS2 (2 -> 3 blocked).
     assert counts == {
         "partition top plate, perpendicular framing above": 101,
-        "partition top plate, under a parallel member": 12,
-        "partition top plate, blocking between parallel members": 74,
+        "partition top plate, under a parallel member": 10,
+        "partition top plate, blocking between parallel members": 77,
     }
 
 

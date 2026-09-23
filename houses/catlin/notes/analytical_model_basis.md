@@ -256,3 +256,17 @@ The test now pins BR1's live to this statics line as well as the pair.
 It fell by 0.55 against the whole-span graph, between the carriers' strip ratio (0.50) and
 the seat beams' (0.62–0.66) that feed it, which is the bound a hand reading can give.
 
+## Addendum 2026-09-23b — the balcony 3" lower
+
+`balcony_level_ft` 10.0 → 9.75' (R311.3 at `D-S-DECK-E`); the frame, the record and the
+load move together. Record levers are the authored heights, 105.125" / 106.958" (8.760' /
+8.913'); q_h 18.63 → 18.57 psf at the lower guard top (balcony note §15a), so 126.16 lb per
+column:
+
+| | record (front / rear) | model lever | solve | record long by |
+|---|---|---|---|---|
+| wind | 126.16 × 8.760 = **1,105** / 126.16 × 8.913 = **1,125** lb-ft | 8.38' / 8.43' | 1,058 / 1,064 | 4.5 % / 5.7 % |
+| guard | 200 × 12.260 = **2,452** / 200 × 12.413 = **2,483** lb-ft | — | 2,377 / 2,386 | 3.2 % / 4.0 % |
+
+Both still inside the test's 6 %, and on the safe side. Gravity (§3c) does not move: the deck
+line loads and the beam's bearings are the same; only the column self weight fell 29 lb.

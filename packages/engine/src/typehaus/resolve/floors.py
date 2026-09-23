@@ -13,6 +13,7 @@ from typehaus.model.floors import FloorSystem
 from typehaus.model.structure import Beam
 from typehaus.quantities import inch
 from typehaus.resolve.floor_ends import floor_ends
+from typehaus.resolve.floor_lines import extra_lines, move_lines
 from typehaus.resolve.floor_openings import _shift, opening_frames, opening_members
 from typehaus.resolve.floor_tilt import joist_lift, twisted
 from typehaus.resolve.framing.profiles import cross_section
@@ -129,7 +130,9 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
         position += spacing
     if positions and positions[-1] < perp1 - 1e-6:
         positions.append(perp1)
-    extra, findings = _extra_lines(system, positions, perp0, perp1)
+    findings = move_lines(system, positions, perp0, perp1)
+    extra, extra_findings = extra_lines(system, positions, perp0, perp1)
+    findings += extra_findings
 
     # Anything shorter than the joist's own depth is bearing seat, not span. An opening
     # drawn to a bearing wall's *near face* stops short of the bearing line the span is cut
@@ -289,37 +292,6 @@ def _resolve_floor(model: ResolvedModel, system: FloorSystem, storey):
 def _plane_range(plane, ring) -> tuple[float, float]:
     lifts = [plane.lift(*p) for p in ring] if plane is not None and ring else [0.0]
     return min(lifts), max(lifts)
-
-
-#: An extra line closer than this to a regular one would share its derived tie.
-_EXTRA_LINE_MIN_M = inch(6).meters
-
-
-def _extra_lines(system: FloorSystem, positions: list[float], perp0: float,
-                 perp1: float) -> tuple[list[float], list[Finding]]:
-    """``JoistSpec.extra_lines`` inside the field and clear of every regular line."""
-    kept: list[float] = []
-    findings: list[Finding] = []
-    for length in system.joists.extra_lines:
-        perp = length.meters
-        nearest = min((abs(perp - p) for p in positions), default=float("inf"))
-        # Against the extra lines already laid too: two that coincide share one tie.
-        sibling = min((abs(perp - p) for p in kept), default=float("inf"))
-        why = ("lies outside the joist field" if not perp0 < perp < perp1
-               else f"is {nearest / inch(1).meters:.2f}\" from a regular joist line, under "
-                    f"the 6\" that keeps its own tie" if nearest < _EXTRA_LINE_MIN_M - 1e-9
-               else f"is {sibling / inch(1).meters:.2f}\" from another extra line, under "
-                    f"the 6\" that keeps its own tie" if sibling < _EXTRA_LINE_MIN_M - 1e-9
-               else None)
-        if why is None:
-            kept.append(perp)
-            continue
-        findings.append(Finding(
-            severity=Severity.ERROR, check_id="integrity.floor_extra_line",
-            message=f"floor {system.tag}: extra joist line at "
-                    f"{perp / inch(12).meters:.3f}' {why}; it is not laid",
-            element_tags=(system.tag,), result=Result.FAIL))
-    return sorted(kept), findings
 
 
 # --- concentrated-load reinforcement --------------------------------------------------

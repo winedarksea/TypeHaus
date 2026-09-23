@@ -99,7 +99,7 @@ WALL_SLEEVES = [
     # ** SP-B-CS2-KITCH IS GONE (2026-09-07). ** It was the kitchen drain's crossing of the
     # x=18' centre line at y=16'-6", back when that run went south through the theater and
     # west through the gym. PR-B-KITCH-DRAIN now leaves the sink northward and runs the
-    # whole width of the house at y=35'-0", so it never touches W-B-CS2 — and a cast-in
+    # whole width of the house along y=35', so it never touches W-B-CS2 — and a cast-in
     # sleeve with no run through it is a void somebody forms and pays for and then patches.
     # `mep.sleeve_coverage` reported it UNKNOWN ("no routed run to check against yet") the
     # moment the reroute landed, which is the check doing its second job.

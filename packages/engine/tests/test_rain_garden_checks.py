@@ -58,10 +58,25 @@ def test_prismoidal_volume_by_hand() -> None:
 def test_a_leader_that_names_a_receiver_joins_the_network(catlin_model_ro) -> None:
     network = build_network(catlin_model_ro.plan)
     assert network.nodes["TR-G-LEADER-W"].kind == "leader"
-    assert "TR-RF-LEADER-E" not in network.nodes     # a splash block is not a connection
     edges = {(e.source, e.target, e.kind) for e in network.edges}
-    assert ("TR-RF-LEADER-W", "RG-W-BASIN", EdgeKind.PRIMARY) in edges
-    assert ("RG-W-BASIN", DAYLIGHT, EdgeKind.OVERFLOW) in edges
+    for side in ("W", "E"):
+        for leader in (f"TR-RF-LEADER-{side}", f"TR-G-LEADER-{side}"):
+            assert (leader, f"RG-{side}-BASIN", EdgeKind.PRIMARY) in edges
+        assert (f"RG-{side}-BASIN", DAYLIGHT, EdgeKind.OVERFLOW) in edges
+
+
+def test_ponding_volume_does_not_depend_on_where_the_basin_is() -> None:
+    # The water surface's inset is a float residue (~1e-17), and a mitred buffer by that
+    # returned EMPTY at x ≈ 12 m: the mirrored east basin read 71.2 cf against the west's 100.3.
+    def basin(x0: float) -> RainGarden:
+        return RainGarden(uid="TSTRG00002", tag="RG-T",
+                          outline=(pt(ft(x0), ft(47)), pt(ft(x0 + 5), ft(47)),
+                                   pt(ft(x0 + 5), ft(82)), pt(ft(x0), ft(82))),
+                          rim_elevation=ft(-3, -1), ponding_depth=inch(12), side_slope=2.0,
+                          media_depth=inch(12))
+    # top 175, mid 3 x 33 = 99, floor 1 x 31 = 31: V = 1/6 x (175 + 396 + 31) = 100.33 cf.
+    for x0 in (-6.0, 37.0):
+        assert ponding_volume_m3(basin(x0)) * _CF == pytest.approx(100.33, abs=0.05)
 
 
 def test_capacity_fails_when_the_basin_shrinks(catlin_model_ro) -> None:

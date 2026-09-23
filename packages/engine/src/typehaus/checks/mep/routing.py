@@ -30,6 +30,10 @@ the void's edge, and an unbuffered test reads that as unsupported when the trimm
 the thing it straps to. An inch is smaller than any framing member and larger than any
 coordinate noise.
 
+**A face beside the run supports it too.** A pipe clamped along a wall or the trimmer pack
+is hung, whichever side of the edge its centreline falls; the reach is measured from the
+run's outside surface (:data:`SIDE_STRAP_REACH_M`).
+
 **A run is matched to a floor by ELEVATION, not by storey.** ``resolve/mep.py``'s
 ``_containing_floor`` matches a duct to a floor on its own storey, which is right for asking
 which joist bay it occupies and wrong here. A ``main``-storey run in the ceiling plane at
@@ -68,7 +72,7 @@ from typing import Any
 from shapely.geometry import MultiLineString, Polygon
 
 from typehaus.checks._authoring import advisory, passed, unknown
-from typehaus.checks.mep.routing_geometry import M_TO_FT, run_polylines, wall_cover
+from typehaus.checks.mep.routing_geometry import M_TO_FT, run_polylines, run_radii, wall_cover
 from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 
@@ -89,6 +93,12 @@ MIN_SPAN_FT = 0.5
 #: (``CD-A-DATA-NE`` rides 6" above the attic floor), and a run more than a foot up is in the
 #: room above, not on the deck.
 ON_DECK_FT = 1.0
+
+#: How far a run's OUTSIDE surface may stand off a face and still be clamped to it: a
+#: standoff pipe clamp or strut channel on the wall or rim face (IPC 308 / UPC 313 hangers
+#: need a supporting surface, not one overhead). ``PR-B-KITCH-DRAIN`` needs 1/16"; 1" is
+#: the allowance.
+SIDE_STRAP_REACH_M = 0.0254  # 1 inch
 
 
 def _voided_floors(ctx: CheckContext) -> list[tuple[Any, tuple[float, float], list[Any]]]:
@@ -128,9 +138,32 @@ def _segments_in_band(path: tuple[tuple[float, float], ...], z: tuple[float, ...
     return out
 
 
+def _side_cover(ctx: CheckContext, floor: Any, cover: Any, radius: float,
+                cache: dict[tuple[str, float], Any]) -> Any:
+    """Faces a run BESIDE them can be clamped to: the storey's walls and this floor's own
+    members (the trimmer pack framing the void), grown by the run's radius plus
+    :data:`SIDE_STRAP_REACH_M`. Only the run's centreline is tested, so the growth is what
+    puts the reach on its outside surface."""
+    from shapely.geometry import Polygon as _Polygon
+
+    from typehaus.resolve.framing.footprint import member_footprint
+    from typehaus.resolve.overlay import union_all
+
+    key = (floor.tag, round(radius, 5))
+    if key not in cache:
+        faces = [_Polygon(member_footprint(member)[0]) for member in floor.members]
+        faces = [poly for poly in faces if poly.is_valid and not poly.is_empty]
+        if cover is not None:
+            faces.append(cover)
+        cache[key] = (union_all(faces).buffer(radius + SIDE_STRAP_REACH_M)
+                      if faces else None)
+    return cache[key]
+
+
 @check(Tier.ADVISORY, "mep.run_over_void")
 def run_over_void(ctx: CheckContext) -> list[Finding]:
-    """A run may not span a floor opening except where a wall runs under it."""
+    """A run may not span a floor opening except where a wall runs under it, or it runs
+    beside a wall or this floor's own framing within :data:`SIDE_STRAP_REACH_M`."""
     cid = "mep.run_over_void"
     runs = run_polylines(ctx)
     if not runs:
@@ -146,6 +179,8 @@ def run_over_void(ctx: CheckContext) -> list[Finding]:
     # The wall union is the expensive half and there are a handful of storeys against a
     # hundred runs, so it is built once per storey and kept.
     covers: dict[str, Any] = {}
+    sides: dict[tuple[str, float], Any] = {}
+    radii = run_radii(ctx)
 
     for kind, tag, path, z in sorted(runs, key=lambda item: item[1]):
         if len(path) < 2:
@@ -169,6 +204,10 @@ def run_over_void(ctx: CheckContext) -> list[Finding]:
                     continue
                 if cover is not None:
                     spanning = spanning.difference(cover)
+                if not spanning.is_empty:
+                    side = _side_cover(ctx, floor, cover, radii.get(tag, 0.0), sides)
+                    if side is not None:
+                        spanning = spanning.difference(side)
                 span_ft = spanning.length * M_TO_FT
                 if span_ft < MIN_SPAN_FT:
                     continue

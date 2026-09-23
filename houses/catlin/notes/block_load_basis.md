@@ -262,16 +262,18 @@ q_vent = 1.08 × 0.9704 × 73.5 × 85          =  6,547 Btu/h
 
 | component | area | UA | heating ΔT | Btu/h |
 |---|---|---|---|---|
-| `walls` | 3,233.7 ft² | 73.66 | 85 | 6,261 |
-| `foundation_walls` | 763.3 ft² | 28.16 | 45.14 | 1,271 |
-| `foundation_walls_above_grade` | 253.1 ft² | 11.53 | 85 | 980 |
+| `walls` | 3,219.1 ft² | 73.38 | 85 | 6,237 |
+| `foundation_walls` | 775.5 ft² | 28.60 | 45.14 | 1,291 |
+| `foundation_walls_above_grade` | 255.7 ft² | 11.68 | 85 | 992 |
 | `roof` | 1,547.9 ft² | 29.10 | 85 | 2,474 |
 | `slab` | 1,296.0 ft² | 25.47 | 45.14 | 1,150 |
-| `windows` | 261.0 ft² | 61.21 | 85 | 5,203 |
+| `windows` | 258.7 ft² | 60.62 | 85 | 5,153 |
 | `doors` | 120.0 ft² | 24.00 | 85 | 2,040 |
 | infiltration | — | — | 85 | 5,788 |
 | ERV ventilation air | — | — | 85 | 6,547 |
-| | | | | **31,714** |
+| | | | | **31,672** |
+
+The table is current to 2026-09-23 (revision below); the prose after it is the 2026-09-18 pass.
 
 Cooling: **22,154 Btu/h, 1.846 tons**, of which 17,435 is the window-and-door solar term —
 and that term is the one §0's warning is about.
@@ -302,3 +304,13 @@ which is the same lesson again.
   rule of thumb this package forbids. catlin emits zero such lines: its garage is detached.
 - **Duct losses.** System 1's trunk runs in a conditioned soffit, so the omission is small
   here and would not be in a house with attic duct.
+
+## Revisions
+
+- **2026-09-22, court narrowed to 17'-0".** W-B-S2-FR/-S3-FR lost 17.0 sf of framed wall
+  (UA −0.335, −28.5 Btu/h); W-B-S1/-S4 gained 12.2 sf buried and 2.6 sf above grade
+  (+32.6 Btu/h). 31,714 → 31,718.
+- **2026-09-23, WIN-A-S2/-S3 WT-1436 → WT-1424 (c3c46cff).** −2.33 sf of U-0.25 glass
+  (UA −0.583) became wall (+2.33 sf × 0.0228 = UA +0.053): net UA −0.530 × 85 = −45 Btu/h.
+  31,718 → **31,672**. Sensible cooling is `solar_gain_basis.md`'s, now 20,868 (1.856 tons).
+

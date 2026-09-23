@@ -64,7 +64,7 @@ def test_void_rings_are_disjoint(catlin_model) -> None:
     """Stacked slabs (basement + main deck share a footprint) merge into one ring: an
     IfcArbitraryProfileDefWithVoids and a three.js Shape both need non-overlapping holes."""
     polygons = [Polygon(ring) for ring in earth_plane_void_rings(catlin_model)]
-    assert len(polygons) == 5  # house, garage, sunken garden, the west rain garden, the drive
+    assert len(polygons) == 6  # house, garage, sunken garden, both rain gardens, the drive
     for index, first in enumerate(polygons):
         for second in polygons[index + 1:]:
             assert not first.intersects(second)
@@ -77,7 +77,7 @@ def test_model_json_publishes_the_same_rings(catlin_model) -> None:
 
     serialized = model_to_dict(catlin_model)["site"]["earth_voids"]
     derived = earth_plane_void_rings(catlin_model)
-    assert len(serialized) == len(derived) == 5
+    assert len(serialized) == len(derived) == 6
     assert [[tuple(point) for point in ring] for ring in serialized] == derived
 
 

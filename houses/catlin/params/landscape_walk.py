@@ -1,9 +1,10 @@
 """The sidewalk: driveway -> garage east side -> north entry landing -> house east -> porch stair.
 
 One `Slab` per leg on `yard-grade`, `SIDEWALK_FRC_CLASS5` (4" fibre-only concrete on 6" of
-MnDOT Class 5). The full section is 12 | 16 pocket | 36 walk | 16 pocket | 12 = 92"; the
-east side of the house is one-sided, 36 walk | 16 pocket | 12 = 64", because the house to
-lot line is only 6'-4". Pockets are 16" sonotube voids (`FloorOpening(purpose=PLANTING)`)
+MnDOT Class 5). Leg A in front of the garage is the full section,
+12 | 16 pocket | 36 walk | 16 pocket | 12 = 92"; legs B and D are one-sided,
+36 walk | 16 pocket | 12 = 64", walk against the building: the house to lot line is only
+6'-4", and east of the garage RG-E-BASIN owns the strip beyond. Pockets are 16" sonotube voids (`FloorOpening(purpose=PLANTING)`)
 at 4'-0" o.c. down each pocket zone, the run's slack split evenly between its two ends —
 except leg A, which is anchored to the corner it turns into leg B (see `_A_STATIONS`).
 Control joints fall on the same stations.
@@ -54,11 +55,13 @@ def _rect(x0, y0, x1, y1):
 
 
 # --- legs -------------------------------------------------------------------------------
-# A: in front of the garage, from the driveway's east edge (x=24') to past the garage NE
-#    corner, 92" deep off the garage face (stem Z-flashing at y=67'-3 1/2" plus 1/2").
+# A: in front of the garage, from the driveway's east edge (x=24') to leg B's east edge,
+#    92" deep off the garage face (stem Z-flashing at y=67'-3 1/2" plus 1/2").
 #    Its SW corner is notched round the drive's 45° flare, 1/2" off it (`A_RING`).
-# B: down the garage east side, stem flashing at x=30'-0 7/8" plus 1/2", to clear of the
-#    canopy column PT-BW-RNE (y 41'-11 3/4"..42'-11 3/4").
+# B: down the garage east side, one-sided 64" off the stem flashing at x=30'-0 7/8" plus
+#    1/2", to clear of the canopy column PT-BW-RNE (y 41'-11 3/4"..42'-11 3/4"). It was the
+#    full 92" until 2026-09-23; its east 28" is where RG-E-BASIN (x 37'..42') mirrors the
+#    west basin, 1'-7" of lawn off the slab.
 # C: the landing connector, walk only, notched round PT-BW-RNE to reach the paver landing's
 #    east edge (x=30') south of it; its south edge leaves a 3" gravel drip strip on the HP1
 #    pad's north edge, clear of the unit's defrost.
@@ -66,8 +69,10 @@ def _rect(x0, y0, x1, y1):
 #    It absorbs the old side patio; no pockets along the patio's 12' (y 10'..22').
 # No leg E: SL-SG-STAIRPAD (params/sunken_garden.py) runs east to D's west edge, less the
 #    1/2" joint, and is the walk's south end.
-A = _rect(24.0 + GAP_FT, 67.29 + GAP_FT, 37.78, 67.29 + GAP_FT + 92.0 / 12.0)
-B = _rect(30.07 + GAP_FT, 42.98 + GAP_FT, 37.78, A[0][1])
+B_X0 = 30.07 + GAP_FT
+B_X1 = B_X0 + 64.0 / 12.0
+A = _rect(24.0 + GAP_FT, 67.29 + GAP_FT, B_X1, 67.29 + GAP_FT + 92.0 / 12.0)
+B = _rect(B_X0, 42.98 + GAP_FT, B_X1, A[0][1])
 D_X0 = 36.66 + GAP_FT
 D_X1 = D_X0 + 64.0 / 12.0
 C = ((30.0 + GAP_FT, 39.6), (D_X1, 39.6), (D_X1, B[0][1]), (30.5 + GAP_FT, B[0][1]),
@@ -80,8 +85,8 @@ A_RING = ((_K - A[0][1], A[0][1]), A[1], A[2], A[3], (A[0][0], _K - A[0][0]))
 
 # NO POCKET SITS AT A LEADER'S FOOT, and neither east leader can have one: TR-RF-LEADER-E
 # stands at x=36'-10 9/16", over leg D's 36" walking band, where a 16" void would leave
-# 1.6" of concrete at the slab edge. Both east leaders drop onto the walk; their extensions
-# are a later detail (notes/sidewalk_layout.md §3, §5).
+# 1.6" of concrete at the slab edge. Both east leaders' risers pass down through the walk to
+# their buried extensions into RG-E-BASIN (notes/rain_garden_sizing.md §6).
 
 
 def _stations(start: float, end: float) -> list[float]:
@@ -110,15 +115,14 @@ def _pockets(rect, along: str, zones, ref_high: bool = False,
 
 
 # LEG A IS ANCHORED TO THE CORNER IT TURNS, NOT CENTRED IN ITS OWN RUN. Its two pocket rows
-# cross leg B's whole width, so its stations have to BE leg B's pocket columns: the pocket
-# band then turns the L in line — the inner corner at B's west column, the outer at its east
-# — and leg B's 36" walk arrives under open concrete instead of under a void. Anything else
-# drops a pocket into the turn. Spacing is the section's own 52" row pitch, marched west
-# while 12" of concrete is left at the end; B and D end at joints with no band to meet and
-# centre in their runs.
+# cross leg B's whole width, so its first station has to BE leg B's pocket column, and the
+# next one the section's own 52" row pitch west of it — which lands tangent to B's 36" walk
+# on its west side: leg B's walk arrives under open concrete instead of under a void.
+# Anything else drops a pocket into the turn. Marched west while 12" of concrete is left at
+# the end; B and D end at joints with no band to meet and centre in their runs.
 _A_OC = FULL[1] - FULL[0]
 _A_STATIONS: list[float] = []
-_s = B[0][0] + FULL[1]
+_s = B[0][0] + ONE_SIDED[0]
 while _s - POCKET_R_IN / 12.0 >= A[0][0] + 1.0:
     _A_STATIONS.append(round(_s, 4))
     _s -= _A_OC
@@ -127,7 +131,7 @@ _A_STATIONS.reverse()
 
 POCKET_CENTRES = {
     "A": _pockets(A, "x", FULL, stations=_A_STATIONS),
-    "B": _pockets(B, "y", FULL),
+    "B": _pockets(B, "y", ONE_SIDED),
     # One-sided: the zone is measured off the HOUSE (west) edge. The skip is a CENTRE test
     # over the retired patio's own 12' — padded by a radius it lands within 0.4" of a
     # station and the count turns on floating-point noise.

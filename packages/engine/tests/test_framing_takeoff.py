@@ -527,4 +527,5 @@ def test_stair_finish_flags_the_stairs_a_nosing_allowance_cannot_reach(catlin_mo
 
     billed = sum(float(row["tread_lf"]) for row in rows.values()
                  if row["conditioned"] and row["has_nosing"])
-    assert billed == pytest.approx(131.4)
+    # 130.6 since 2026-09-23: ST-B2M's 12 treads each 3/4" shorter (41.1 -> 40.3 LF).
+    assert billed == pytest.approx(130.6)

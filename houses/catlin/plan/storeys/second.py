@@ -1345,9 +1345,8 @@ SOFFITS = [
 # thinner than the 12" concrete they stack on — each flight sizes to its own storey's well.
 # Run north to south: north is W-M-N2's inside gwb face (y=35'-5 3/8"), 9'-5"
 # back to the R311.7.6 landing plus seven 11" treads gives the south edge at 26'-0 3/8".
-# This head runs 5 3/8" further north than FO-M-STAIR's (which stops on the concrete at
-# 35'-0") because only the wall's outer 6" is under anything — the inner half of the 12"
-# concrete is free plan area up here. Deliberately NOT moved onto the source: it's drawn to
+# This head runs 1/2" further north than FO-M-STAIR's (35'-4 7/8", its trimmer pack on
+# W-B-N2's sill): only the wall's outer 6" is under anything up here. Deliberately NOT moved onto the source: it's drawn to
 # the *main* storey's finished faces, so moving it means moving main.py.
 FLOOR_OPENINGS = [
     FloorOpening(uid="CSF602AAAA", tag="FO-S-STAIR",

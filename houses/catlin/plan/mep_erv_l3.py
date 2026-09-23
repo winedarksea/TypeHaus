@@ -17,7 +17,7 @@ from typehaus import (
     inch,
     pt,
 )
-# LEVEL 3 — sitting ON the FS-ATTIC deck beside the chase head at (1', 34'-6"), fully
+# LEVEL 3 — sitting ON the FS-ATTIC deck beside the chase head at (1', 35'-1.3"), fully
 # accessible in RM-A-POCKET.
 #
 # ** THE MANIFOLD IS AT x=5'-0", AND M1305.1.3 IS WHY. ** At 6:12 off a rafter plate the

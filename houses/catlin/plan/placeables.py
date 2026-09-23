@@ -1027,8 +1027,8 @@ MAIN_PLACEABLES = [
     # FOUR TRACK RUNS became THREE on 2026-09-22: one front run and two flanks. See
     # `FT-PORCH-TRACK-176` in plan/furniture_types.py and notes/porch_enclosure.md.
     #
-    # ** ELEVATION: 107.75", THE BALCONY JOIST SOFFIT. ** The balcony joists are 2x12s now,
-    # 4" deeper than the 2x8s, so the soffit the track fastens to came down 4" from 111.75".
+    # ** ELEVATION: 104.75", THE BALCONY JOIST SOFFIT. ** 107.75" until the balcony came down
+    # 3" (2026-09-23); 111.75" before the 2x12s.
     # `Mount.elevation` is the body BOTTOM and the extrusion is 1" tall, so the track's top is
     # ON the soffit. Filed on `main`, whose datum (0") is what the height reads off. Editable
     # files cannot import params: this is `_balcony_beam_soffit` + the 2x12 depth by hand.
@@ -1043,7 +1043,7 @@ MAIN_PLACEABLES = [
     # No `room=`: the porch isn't a Room.
     Furniture(uid="XH1JW70E8D", tag="FURN-M-PORCH-TRACK-F", type_ref="FT-PORCH-TRACK-176",
               position=pt(ft(18), ft(-8, -11.25)),
-              mount=Mount(kind=MountKind.CEILING, elevation=inch(107.75))),
+              mount=Mount(kind=MountKind.CEILING, elevation=inch(104.75))),
     # The two FLANKS, x = 10'-0" and 26'-0": 6" inside the side walls' court faces and the
     # guard's side legs, which is where they have always stood relative to the court. Each
     # crosses every joist bay perpendicular; the bay closures are FS-SG-DECK's blocks.
@@ -1060,10 +1060,10 @@ MAIN_PLACEABLES = [
     # 3'-0" guard opening onto ST-SG-PORCH.
     Furniture(uid="K6G71PKS4C", tag="FURN-M-PORCH-TRACK-W", type_ref="FT-PORCH-TRACK-102",
               position=pt(ft(10), ft(-4, -9.75)), rotation=deg(90),
-              mount=Mount(kind=MountKind.CEILING, elevation=inch(107.75))),
+              mount=Mount(kind=MountKind.CEILING, elevation=inch(104.75))),
     Furniture(uid="D9X6HWW4DZ", tag="FURN-M-PORCH-TRACK-E", type_ref="FT-PORCH-TRACK-102",
               position=pt(ft(26), ft(-4, -9.75)), rotation=deg(90),
-              mount=Mount(kind=MountKind.CEILING, elevation=inch(107.75))),
+              mount=Mount(kind=MountKind.CEILING, elevation=inch(104.75))),
     # FURN-M-PORCH-TRACK-FE (uid 90BCAAC74M) is retired with the split: spent, do not reuse.
 
     # --- the porch's two lounge chairs (2026-09-06) ---------------------------------------

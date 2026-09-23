@@ -8,6 +8,7 @@ conduits through its joist field **undrawn**", made into a verdict. A horizontal
 from __future__ import annotations
 
 import pytest
+from _helpers import CATLIN
 
 from typehaus.checks.mep.riser_through_deck import MIN_SPAN_FRACTION, riser_through_deck
 from typehaus.findings import Result, Severity
@@ -55,13 +56,26 @@ def test_a_riser_the_deck_was_opened_FOR_is_silent() -> None:
     assert _is_authorised(deck, "DU-MINE", Point(5.0, 5.0), Polygon) is False
 
 
-def test_a_riser_ON_A_JOIST_fails_naming_the_member_and_the_station(catlin_ctx) -> None:
+def test_a_riser_ON_A_JOIST_fails_naming_the_member_and_the_station(catlin_plan) -> None:
     """The unambiguous half. That member is cut and nothing headed it.
 
-    PR-B-SH2-DRAIN was the example until 2026-09-23, when it moved off joist-0-013. DU-ERV-EA
-    through FS-S-WEST's y=34'-8" truss is one no run move fixes (it wants a truss opening)."""
-    finding = next(f for f in _by_result(catlin_ctx, Result.FAIL)
-                   if "DU-ERV-EA" in f.element_tags)
+    Catlin has no example left since 2026-09-23, when FS-S-WEST's 34'-8" truss moved to
+    34'-5 3/4" (``JoistSpec.line_overrides``). Undo that one move and DU-ERV-EA lands on it."""
+    from typehaus.checks.run import build_context
+    from typehaus.model.floors import FloorSystem
+
+    storey, items = next((s, items) for s, items in catlin_plan.elements.items()
+                         if any(getattr(e, "tag", None) == "FS-S-WEST" for e in items))
+
+    def unmoved(e):
+        if not (isinstance(e, FloorSystem) and e.tag == "FS-S-WEST"):
+            return e
+        moves = tuple(m for m in e.joists.line_overrides if abs(m[0].inches - 416) > 1e-6)
+        return e.model_copy(update={"joists": e.joists.model_copy(
+            update={"line_overrides": moves})})
+
+    ctx, _ = build_context(catlin_plan.with_elements(storey, map(unmoved, items)), CATLIN)
+    finding = next(f for f in _by_result(ctx, Result.FAIL) if "DU-ERV-EA" in f.element_tags)
     assert "FS-S-WEST" in finding.element_tags
     assert "on joist joist-" in finding.message
     assert "at (2'-0.0\", 35'-0.0\")" in finding.message
@@ -109,10 +123,13 @@ def test_catlin_is_pinned_so_a_campaign_can_see_itself(catlin_ctx) -> None:
     6/29 on 2026-09-23: streams G and J stepped risers off their joists and flanges (the chase
     risers, drains, and PR-B-CW-SBATH / PR-B-HW-WASH). Every one that moved into a clear bay
     changed column rather than vanishing, which is the DOCUMENTATION half again — a hole over
-    2" still wants drawing."""
+    2" still wants drawing.
+
+    0/34 later that day: two FS-S-WEST trusses moved off five risers (each now undrawn in a
+    clear bay), and the radon riser's FS-M-MECH hole became FO-M-ERV-EA, a CHASE."""
     fails = _by_result(catlin_ctx, Result.FAIL)
     on_member = [f for f in fails if "lands on the member" in f.message]
     undrawn = [f for f in fails if "FRAMED, NOT DRILLED" in f.message]
-    assert len(on_member) == 6
-    assert len(undrawn) == 29
+    assert len(on_member) == 0
+    assert len(undrawn) == 34
     assert len(fails) == len(on_member) + len(undrawn)

@@ -15,7 +15,12 @@ from __future__ import annotations
 import pytest
 
 from typehaus.checks import run_from_model
-from typehaus.checks.mep.routing import MIN_SPAN_FT, ON_DECK_FT, VOID_BUFFER_M
+from typehaus.checks.mep.routing import (
+    MIN_SPAN_FT,
+    ON_DECK_FT,
+    SIDE_STRAP_REACH_M,
+    VOID_BUFFER_M,
+)
 from typehaus.checks.registry import Tier, registered
 from typehaus.findings import Result
 
@@ -49,7 +54,9 @@ def test_it_catches_a_run_drawn_across_the_stairwell(catlin_model):
 
     ``CD-M-DATA-KITCH`` ran east at y=34'-6" and +9'-2" from the chase to x=19'-0". At that
     height it is inside FS-S-WEST, whose opening is x 10'-3 3/8"..17'-8 5/8", so 7'-5 1/4" of
-    that leg was over a two-storey shaft; buffered inward 1" it measures **7.27 ft**.
+    that leg was over a two-storey shaft; buffered inward 1" it measures 7.27 ft, and
+    **7.19 ft** since the ends within a clamp's reach of the trimmers count as supported
+    (``SIDE_STRAP_REACH_M``).
 
     Note which floor it is measured against. ``FS-M-STAIR``, directly underneath, has an
     opening 2 5/8" narrower, and the same leg read against that one measures 7.05 — which is
@@ -74,7 +81,7 @@ def test_it_catches_a_run_drawn_across_the_stairwell(catlin_model):
     fails = [f for f in findings if f.result is Result.FAIL]
     assert len(fails) == 1, [f.message for f in fails]
     assert "CD-M-DATA-KITCH" in fails[0].element_tags
-    assert "7.27 ft" in fails[0].message
+    assert "7.19 ft" in fails[0].message
     assert "FS-S-WEST" in fails[0].message
 
 
@@ -142,6 +149,31 @@ def test_a_wall_over_the_void_is_the_exemption(catlin_model):
     ys = [point[1] for point in stud.polygon]
     run = next(r for r in catlin_model.conduits if r.tag == "CD-A-PV-EAST")
     assert min(ys) <= run.path[-1][1] <= max(ys)
+
+
+def test_a_run_beside_a_face_is_clamped_to_it_and_one_away_is_not(catlin_model):
+    """The side exemption, both ways, on ``PR-B-KITCH-DRAIN``'s stair-well leg: its OD runs
+    1/16" off FS-M-STAIR's north trimmer pack (on W-B-N2's sill), clamped to it. Pull the
+    leg 1 1/2" south, out of :data:`SIDE_STRAP_REACH_M`, and it is a span again."""
+    import dataclasses
+
+    run = next(r for r in catlin_model.pipe_runs if r.tag == "PR-B-KITCH-DRAIN")
+    assert pytest.approx(0.0254) == SIDE_STRAP_REACH_M
+
+    def fails_for(path):
+        moved = dataclasses.replace(run, path=path)
+        model = dataclasses.replace(catlin_model, pipe_runs=tuple(
+            moved if r.tag == run.tag else r for r in catlin_model.pipe_runs))
+        return [f for f in run_from_model(model, [], tier=Tier.ADVISORY).findings
+                if f.check_id == "mep.run_over_void" and f.result is Result.FAIL
+                and run.tag in f.element_tags]
+
+    assert not fails_for(tuple(run.path))
+    shift = 1.5 * 0.0254
+    lane = run.path[3][1]
+    away = tuple((x, y - shift) if abs(y - lane) < 1e-6 else (x, y) for x, y in run.path)
+    fails = fails_for(away)
+    assert len(fails) == 1 and "FS-M-STAIR" in fails[0].message, [f.message for f in fails]
 
 
 def test_a_clipped_corner_is_below_the_reporting_floor():

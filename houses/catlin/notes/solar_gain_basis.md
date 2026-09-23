@@ -1,7 +1,7 @@
 # Fenestration solar gain, hour by hour
 
 **House:** catlin
-**Structure:** all 41 pieces of glass in the thermal envelope — 209.6 sf south, 58.7 east,
+**Structure:** all 41 pieces of glass in the thermal envelope — 207.3 sf south, 58.7 east,
 49.8 west, 42.9 north — plus the roof, which is the other solar-dominated surface.
 **Written:** 2026-09-18, by hand, after `notes/block_load_basis.md` established that the
 solar term was the one thing that pass deliberately did **not** touch.
@@ -73,15 +73,15 @@ Evaluated every half hour from 08:00 to 20:00, catlin's house-wide total peaks a
 
 | facade | Btu/h at 10:30 | its own peak, and when |
 |---|---|---|
-| S | 7,853 | 8,695 (at 12:00) |
+| S | 7,735 | 8,563 (at 12:00) |
 | E | 2,938 | 4,725 (at 08:00) |
 | W | 796 | 4,014 (at 16:00) |
 | N | 685 | 715 (at 12:00) |
-| **total** | **12,271** | **18,149** if all four peaked at once |
+| **total** | **12,154** | **18,017** if all four peaked at once |
 
-The 18,149 column is the one to look at: it is within 4% of the 17,435 the weighted sum
+The 18,017 column is the one to look at: it is within 4% of the 17,435 the weighted sum
 reported. So the weights, wrong as §1 shows them to be, were wrong in a way that roughly
-**cancelled across four facades** — and essentially the *whole* 1.42× overstatement is the
+**cancelled across four facades** — and essentially the *whole* 1.43× overstatement is the
 hour-coincidence error. That is worth stating plainly because it is the opposite of what a
 reviewer would guess from §1's table: fixing the weights alone, as `block_load_basis.md` §8
 warned, would have changed almost nothing while looking like a fix.
@@ -99,8 +99,8 @@ south glass in this house* — including on `D-M-BALC`, 33 sf of glazed door and
 single piece of south glass there is.
 
 What actually shades it is `FS-SG-DECK`, the sunken-garden **balcony deck**: a
-`FloorSystem`, 1.05 m above the door head, its near edge 2 3/4" clear of the wall face and
-its far edge 9.9 ft out.
+`FloorSystem`, 0.98 m above the door head (1.05 m until it came down 3", 2026-09-23), its
+near edge 2 3/4" clear of the wall face and its far edge 9.9 ft out.
 
 So the shading model takes **any** horizontal plane overhead — a roof's footprint, a slab's
 outline, a floor deck's outline — and a plane blocks a **band**, not a half-space:
@@ -149,12 +149,12 @@ house whose gain is concentrated in two hours cannot: the mass is still absorbin
 next hour's gain arrives. The excursion is the part of the peak the mass will not take:
 
 ```
-average over 08:00-20:00 = 8,752 Btu/h
-peak                     = 12,271 Btu/h
-excursion = 12,271 − 1.3 × 8,752 = 12,271 − 11,378 = 894 Btu/h
+average over 08:00-20:00 = 8,683 Btu/h
+peak                     = 12,154 Btu/h
+excursion = 12,154 − 1.3 × 8,683 = 12,154 − 11,288 = 866 Btu/h
 ```
 
-**894 Btu/h, which is 7% — catlin has good exposure diversity and pays almost nothing.**
+**866 Btu/h, which is 7% — catlin has good exposure diversity and pays almost nothing.**
 That is the honest answer for this house and it is worth writing down precisely because it
 is small: the term exists to catch the house that is *not* diverse (a glass wall facing one
 way), and a term that is 7% here would be 30% there.
@@ -249,17 +249,17 @@ conservative direction.
 
 | | before | after |
 |---|---|---|
-| glass solar | 17,435 Btu/h | **12,271** at solar 10:30 |
-| AED excursion | — | **894** |
+| glass solar | 17,435 Btu/h | **12,154** at solar 10:30 |
+| AED excursion | — | **866** |
 | internal sensible | — | **2,810** |
 | roof sol-air | — | **329** |
-| cooling, sensible | 22,154 Btu/h | **21,024** |
+| cooling, sensible | 22,154 Btu/h | **20,868** |
 | latent | — | **1,400** (occupants only) |
 | SHR | — | **0.94** (an upper bound) |
-| tons | 1.846 (sensible only) | **1.869** (total) |
+| tons | 1.846 (sensible only) | **1.856** (total) |
 
-The sensible cooling load falls 5.1% and the tonnage barely moves, which — as in
-`block_load_basis.md` — is five real corrections cancelling. The glass came down 5.2 kBtu/h;
+The sensible cooling load falls 5.8% and the tonnage barely moves, which — as in
+`block_load_basis.md` — is five real corrections cancelling. The glass came down 5.3 kBtu/h;
 the internal gains put 2.8 back, the roof 0.3, and the latent took the tonnage the other
 way.
 
@@ -275,3 +275,12 @@ way.
 - **Wall sol-air.** Manual J gives the *same* cooling HTM to all four wall orientations and
   so does this. That is Manual J's own simplification, not an omission of one — a wall is
   ΔT-dominated in a way a roof is not.
+
+## Revision 2026-09-23 — WIN-A-S2/-S3 WT-1436 → WT-1424 (c3c46cff)
+
+Two unshaded south windows lost 1.167 sf each; SHGC 0.35, so ΔA·SHGC = −0.817 ft². At
+10:30 south irradiance is 144.2 Btu/h·ft²: −118 off the peak (12,271 → 12,154). The 08:00–20:00
+mean south irradiance is 85.1: −69.5 off the average (8,752 → 8,683). At its own noon peak
+(161.4): −132 (8,695 → 8,563). Excursion follows, 894 → 866. Sensible cooling −153.2
+(21,021.1 → 20,867.9) = glass −118 + excursion −28 + conduction −0.53 UA × 15 °F = −8.
+

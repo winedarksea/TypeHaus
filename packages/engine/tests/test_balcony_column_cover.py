@@ -11,15 +11,16 @@ import dataclasses
 
 import pytest
 
-#: note §14 at P_u 4,855.3 (front row): (cover, c, phi, phi*Mn lb-ft).
-_AT_PU = ((2.0, 2.750, 0.900, 24_678.0), (2.5, 2.867, 0.900, 24_657.0),
-          (3.0, 2.981, 0.868, 23_941.0))
-#: note §14's envelope, 1.2D + 1.0W + L at P_u 3,724: (cover, phi*Mn).
-_ENVELOPE = ((2.0, 24_382.0), (2.5, 24_381.0), (3.0, 23_812.0))
-#: note §14's joint at 1.2D + 1.0W + L, PT-SG-BR1: (cover, bearing C, φBn, T per bar).
-#: The dowel ring shrinks with the cage, so T rises 19% at 3" — §13c at each cover.
-_JOINT = ((2.0, 9_378.0, 38_825.0, 5_032.0), (2.5, 9_782.0, 41_244.0, 5_471.0),
-          (3.0, 10_240.0, 43_622.0, 5_984.0))
+#: note §15d (§14 at the balcony 3" lower, 2026-09-23), P_u 4,820.0 (front row):
+#: (cover, c, phi, phi*Mn lb-ft).
+_AT_PU = ((2.0, 2.749, 0.900, 24_669.0), (2.5, 2.866, 0.900, 24_649.0),
+          (3.0, 2.981, 0.868, 23_935.0))
+#: §15d's envelope, 1.2D + 1.0W + L at P_u 3,689: (cover, phi*Mn).
+_ENVELOPE = ((2.0, 24_373.0), (2.5, 24_372.0), (3.0, 23_805.0))
+#: §15d's joint at 1.2D + 1.0W + L, PT-SG-BR1: (cover, bearing C, φBn, T per bar).
+#: The dowel ring shrinks with the cage, so T rises 19% at 3".
+_JOINT = ((2.0, 9_153.0, 38_811.0, 4_863.0), (2.5, 9_545.0, 41_230.0, 5_287.0),
+          (3.0, 9_988.0, 43_608.0, 5_784.0))
 
 
 @pytest.fixture(scope="module")

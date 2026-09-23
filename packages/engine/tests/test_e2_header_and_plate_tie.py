@@ -438,10 +438,12 @@ def test_catlin_s_real_plate_cuts_fail_for_want_of_a_tie(catlin_model_ro) -> Non
 
     Three since 2026-09-23: `DU-M-ERV-R-LAUNDRY`'s drop moved off `W-M-CLN2`'s face into its
     staggered cavity, so its 4" now cuts the 2x6 top plates, which wants the same tie.
+
+    One since 2026-09-23: `plan/plate_ties.py` ties W-S-DC2 and W-M-CLN2 (owner).
     """
     from typehaus.checks.mep.routing_bores import run_through_plate
 
     findings = run_through_plate(_ctx(catlin_model_ro))
     results = [f.result.value for f in findings]
-    assert results.count("fail") == 3
+    assert results.count("fail") == 1
     assert results.count("unknown") == 9

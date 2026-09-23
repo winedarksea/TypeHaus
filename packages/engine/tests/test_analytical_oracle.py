@@ -67,13 +67,14 @@ def test_every_lateral_system_column_is_fixed_and_nothing_else_is(solved):
 #: centreline. Note §3a put that 1.0-1.1 % short; since 2026-09-22 the 2x12 deck drops the
 #: beams ~4" and the model's column is 8.64' against 9.01' front, 8.68' vs 9.16' rear
 #: (3-5 %, balcony_moment_columns.md §12). The record errs LONG, so the model must be shorter.
+#: 3" lower on 2026-09-23: 8.38' vs 8.76' front, 8.43' vs 8.91' rear (3-6 %).
 LEVER_TOLERANCE = 0.06
 
 
 @pytest.mark.parametrize("tag", BALCONY)
 def test_balcony_wind_base_moment_matches_the_note(solved, tag):
-    """§3a / balcony note §12b: 126.6 lb at the deck plane x the column = 1,140 lb-ft
-    (front), 1,160 (rear)."""
+    """§3a / balcony note §15a: 126.2 lb at the deck plane x the column = 1,105 lb-ft
+    (front), 1,125 (rear), since the balcony came down 3" (2026-09-23)."""
     _, model, result, piers = solved
     reaction = result.reactions[(_support(model, tag).node, LoadCaseKind.WIND.value)]
     solved_moment = _moment_lb_ft(reaction)
@@ -81,12 +82,12 @@ def test_balcony_wind_base_moment_matches_the_note(solved, tag):
                                           rel=LEVER_TOLERANCE)
     assert solved_moment < piers[tag].wind_base_moment_lb_ft, "the record must err long"
     assert piers[tag].wind_base_moment_lb_ft == pytest.approx(
-        1140 if tag.startswith("PT-SG-BF") else 1160, abs=5)
+        1105 if tag.startswith("PT-SG-BF") else 1125, abs=5)
 
 
 @pytest.mark.parametrize("tag", BALCONY)
 def test_balcony_guard_base_moment_matches_the_note(solved, tag):
-    """§3b: 200 lb x (9.01' + 3.5') = 2,502 lb-ft at a front column."""
+    """§3b: 200 lb x (8.76' + 3.5') = 2,452 lb-ft at a front column (addendum 2026-09-23b)."""
     _, model, result, piers = solved
     reaction = result.reactions[(_support(model, tag).node, LoadCaseKind.GUARD.value)]
     assert _moment_lb_ft(reaction) == pytest.approx(piers[tag].guard_base_moment_lb_ft,

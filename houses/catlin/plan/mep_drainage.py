@@ -92,10 +92,8 @@ DRAINS = [
     # lying in the foam an unsleeved crossing of the pour.
     #
     # ** WEST OF x=18' IT IS EXPOSED, AND THAT IS THE OWNER'S CALL. ** Past the deck edge it
-    # runs in FS-M-STAIR's joist bay at y=35'-0", drops out of it about halfway across, and
-    # crosses RM-B-STAIR 1 3/8" below that room's -12 1/2" ceiling — under the 3" grazing
-    # tolerance, so `run_in_finished_volume` does not report it, and a stair is somewhere a
-    # pipe may show. It then bores W-B-STR and W-B-ESS-W (both framed: a hole on the day, no
+    # runs open in the stair well, clamped along its north face (below), where a stair is
+    # somewhere a pipe may show (`RM-B-STAIR.exposed_services`). It then bores W-B-STR and W-B-ESS-W (both framed: a hole on the day, no
     # cast sleeve) and crosses RM-B-ESS. ** THAT IS A BATTERY CLOSET BEHIND A TYPE X
     # MEMBRANE ** — the owner accepted the crossing on 2026-09-07, and both penetrations
     # need a listed firestop to keep the membrane's rating. Nothing in this engine grades
@@ -127,15 +125,16 @@ DRAINS = [
     # 1" window, so it is the least movable of the three and every router proposal for it
     # trades the header for a slope, burial or footing-clearance FAIL. It travels with the
     # designed header, not away from it.
-    # ** STILL INSIDE FO-M-STAIR'S NORTH TRIMMER FOR 8 FT, AND NO LANE HERE FIXES IT. **
-    # 35'-0" IS that opening's north edge (`mep.run_through_floor_member`, 2026-09-23). South
-    # is the stair well; north, W-B-N2's pour reaches 35'-2 5/8" at this depth — tried, and
-    # `mep.run_in_slab` said so. The fix is framing: FO-M-STAIR's north edge, not this run.
-    # West of x=10'-0" it now hangs 1/16" clear of FS-M-MECH's joists (8'-0 5/16"), where
-    # its crown used to sit 1" in joist-0-010's bottom flange.
+    # ** OVER THE STAIR WELL IT HUGS THE NORTH WALL, EXPOSED (2026-09-23). ** It ran 8 ft
+    # inside FO-M-STAIR's north trimmer pack. The pack moved onto W-B-N2's sill (plan/
+    # storeys/main.py) and this leg jogs north on two 45 pairs — over W-B-CN's top at
+    # x=17'-9 1/4", and back at x=9'-8" past W-B-STR — to y=35'-2 3/4", its OD 1/16" off the
+    # pack/concrete face at 35'-4". Clamped to that face: `mep.run_over_void` counts it.
+    # West of x=9'-10 3/4" it hangs 1/16" clear of FS-M-MECH's joists.
     PipeRun(uid="S0Y00EZNNG", tag="PR-B-KITCH-DRAIN", system=PipeSystem.DRAIN,
             path=(pt(ft(29, 4), ft(35)), pt(ft(29, 4), ft(35)),
-                  pt(ft(18), ft(35)), pt(ft(10), ft(35)),
+                  pt(ft(18), ft(35)), pt(ft(17, 9.25), ft(35, 2.75)),
+                  pt(ft(9, 10.75), ft(35, 2.75)), pt(ft(9, 8), ft(35)),
                   pt(ft(6), ft(35)), pt(ft(4, 6), ft(35)),
                   pt(ft(4, 6), ft(16, 6))),
             diameter=inch(2), material="pvc",
@@ -148,7 +147,7 @@ DRAINS = [
             # over 43'-4" would allow 0.235"/ft spread evenly — under the minimum — so the
             # head is spent where it is worth something instead. The theater leg takes the
             # least it legally can (3 1/16" over 11'-4", 0.270"/ft) to keep the pipe inside
-            # the foam for its whole length; the stair leg 0.297"/ft; and the last leg, once
+            # the foam for its whole length; the stair leg 0.29"/ft; and the last leg, once
             # the run is over RM-B-FURNACE and RM-B-WORKSHOP where nothing cares how low it
             # hangs, takes 13 5/8" over 19'-0" at 0.717"/ft.
             #
@@ -158,7 +157,8 @@ DRAINS = [
             # branch wants, and inside `drain_tie_ins`' 1" tolerance so the load still rolls
             # up. It ties on the main's y=16'-6" leg rather than at its (6'-0") head, which
             # is 1'-6" of 2" PVC saved and one fitting fewer.
-            elevations=(ft(9, 2.375), ft(8, 5.9375), ft(8, 2.6875), ft(8, 0.3125),
+            elevations=(ft(9, 2.375), ft(8, 5.9375), ft(8, 2.6875), ft(8, 2.59375),
+                        ft(8, 0.3125), ft(8, 0.21875),
                         ft(7, 11.25), ft(7, 10.75), ft(6, 9.125)),
             serves=("FX-M-KITCH-SINK",)),
     # BATH2's WC, at its flange on the wet wall (→ SP-M-WC2), x 2'-6" y 20'-10 5/8" — the

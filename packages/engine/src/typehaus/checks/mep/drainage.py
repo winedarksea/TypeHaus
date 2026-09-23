@@ -20,7 +20,7 @@ from typehaus.model.landscape import RainGarden
 from typehaus.model.mep import Sump
 from typehaus.model.stormwater import AreaDrain
 from typehaus.model.structure import Drywell, FootingBedding, FrenchDrain
-from typehaus.model.trim import Downspout, Gutter
+from typehaus.model.trim import Downspout, Gutter, downspout_refs
 from typehaus.resolve.drainage_network import SOAKAWAY_KEYWORD
 
 
@@ -86,8 +86,8 @@ def downspout_ref(ctx: CheckContext) -> list[Finding]:
     hosts = _gutter_hosts(ctx)
 
     for tag, run in _gutter_runs(ctx):
-        ref = run.downspout_ref
-        if ref is None:
+        refs = downspout_refs(run)
+        if not refs:
             # The prose was the only claim, so the prose is what it is held to: a note that
             # names a downspout while the field naming one is empty is exactly the gutter
             # that sloped to a leader nobody had authored.
@@ -96,10 +96,11 @@ def downspout_ref(ctx: CheckContext) -> list[Finding]:
                     cid, f"gutter {tag} slopes to a downspout in its note ({run.slope!r}) "
                          f"but names none in downspout_ref", (tag,)))
             continue
-        if ref not in leaders:
-            out.append(_advisory_fail(
-                cid, f"gutter {tag} falls to downspout {ref!r}, which no element declares",
-                (tag,)))
+        for ref in refs:
+            if ref not in leaders:
+                out.append(_advisory_fail(
+                    cid, f"gutter {tag} falls to downspout {ref!r}, which no element declares",
+                    (tag,)))
 
     for leader in leaders.values():
         if leader.gutter_ref is not None and leader.gutter_ref not in hosts:

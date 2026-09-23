@@ -755,7 +755,9 @@ block-load correction** — the figures below it were a record of an older run (
 cooling **21,024 Btu/h sensible + 1,400 latent** (1.869 tons, SHR 0.94), of which
 **13,165 Btu/h — 63% — is fenestration gain** (12,271 at the house's own peak solar hour of
 10:30, plus an 894 Btu/h AED excursion); windows in the thermal envelope 261.0 sf at UA 61.21
-(plus 120.0 sf of glazed door at UA 24.00). WWR **N 1.29 / E 1.78 / S 4.46 / W 2.64 %** —
+(plus 120.0 sf of glazed door at UA 24.00). **Re-measured 2026-09-23** after WIN-A-S2/-S3 went
+WT-1436 → WT-1424 (c3c46cff): heating 31,672; cooling 20,868 + 1,400 (1.856 tons), fenestration
+13,020 = 12,154 + 866 excursion (62%); windows 258.7 sf at UA 60.62. WWR **N 1.29 / E 1.78 / S 4.46 / W 2.64 %** —
 unchanged, because WWR is a ratio of authored areas and none of them moved.
 
 **And the paragraph this section was about is now obsolete, which is worth saying rather

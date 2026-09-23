@@ -367,12 +367,8 @@ ROOMS = [
 # same reason as the fascia — the raised-heel truss lifts the deck plane at the envelope
 # stage, so an absolute elevation would drift off the eave.
 #
-# ** THE SCHEMA IS ASYMMETRIC AND THE TIE THAT MATTERS RUNS THE OTHER WAY. ** `EaveGutter.edges`
-# is a tuple but `downspout_ref` is ONE string (model/trim.py), so a two-eave trough cannot
-# name both leaders from here. What actually binds a leader to its trough is
-# `Downspout.gutter_ref="RF-GARAGE"`, which BOTH carry; `downspout_ref` names the east one so
-# the field is not left empty, and `slope` describes both falls. Do not read the single
-# `downspout_ref` as "the west eave drains to nothing".
+# What binds a leader to its trough is `Downspout.gutter_ref="RF-GARAGE"`, which BOTH carry,
+# so each claims the roof half on its own side of the ridge; `downspout_ref` names both.
 _GARAGE_EAVE_TRIM = EaveTrim(
     fascia=(FasciaBoard(material="spf", thickness=inch(1.5), depth=inch(5.5)),
             FasciaBoard(material="metal-dark-exterior", thickness=inch(1), depth=inch(6))),
@@ -380,7 +376,7 @@ _GARAGE_EAVE_TRIM = EaveTrim(
     gutter=EaveGutter(material="metal-dark-kstyle", depth=inch(5), thickness=inch(5),
                       top_drop=inch(0.5), edges=("east", "west"),
                       slope="1/16 in/ft north on both eaves — east to TR-G-LEADER-E, west to TR-G-LEADER-W",
-                      downspout_ref="TR-G-LEADER-E"),
+                      downspout_ref=("TR-G-LEADER-E", "TR-G-LEADER-W")),
 )
 
 # ** THE CANOPY'S OWN EDGE, AND IT IS THE GARAGE'S EDGE CONTINUED, NOT A SECOND DETAIL. **
@@ -392,10 +388,12 @@ _GARAGE_EAVE_TRIM = EaveTrim(
 #
 # ** ONE TROUGH, AND THE CANOPY DOES NOT GET A LEADER OF ITS OWN. ** The channel runs
 # continuous from the canopy's south end to the garage's north end and falls north into
-# `TR-G-LEADER-E` / `-W`, which is why `downspout_ref` names the garage's east leader
-# rather than inventing one here. A leader at the SOUTH end would discharge onto the entry
-# landing and the four cast tiers — the exact discharge the garage's own leaders were moved
-# north to avoid, and the reason that paragraph above is written the way it is.
+# `TR-G-LEADER-E` / `-W`, which is why `downspout_ref` names the garage's two leaders rather
+# than inventing one here: each takes the canopy half on its own side of the ridge
+# (resolve/roof_catchment.py), so both halves reach a rain garden. A leader at the SOUTH end
+# would discharge onto the entry landing and the four cast tiers — the exact discharge the
+# garage's own leaders were moved north to avoid, and the reason that paragraph above is
+# written the way it is.
 #
 # ** NO SOFFIT, AND THAT IS THE ONE PIECE THAT DOES NOT CONTINUE. ** `_soffit_member` closes
 # the overhang from the fascia's inner face back to a WALL face (`wall_face_inset` reads the
@@ -409,7 +407,7 @@ _GARAGE_EAVE_TRIM = EaveTrim(
 #
 # ** THE CAPACITY IS THE ONE NUMBER TO WATCH, AND IT STILL CLEARS. ** Each garage slope
 # sheds ~290 sq ft; the canopy adds ~80 (13'-4" of horizontal projection over a 6'-0" run),
-# so each 3" leader now takes ~370 sq ft against the ~425 sq ft it clears at the 8 in/hr
+# so each 3" leader takes ~419 sq ft (plan area, overhang included) against the ~425 sq ft it clears at the 8 in/hr
 # design intensity (params/roof_trim.py works the number). Under, but no longer by much:
 # lengthening the canopy, or widening the overhang, is what would force a 4" leader.
 _CANOPY_EAVE_TRIM = EaveTrim(
@@ -418,7 +416,7 @@ _CANOPY_EAVE_TRIM = EaveTrim(
     gutter=EaveGutter(material="metal-dark-kstyle", depth=inch(5), thickness=inch(5),
                       top_drop=inch(0.5), edges=("east", "west"),
                       slope="1/16 in/ft north on both eaves — CONTINUOUS with RF-GARAGE's trough, falling to TR-G-LEADER-E / -W at the garage's north end; no leader at the canopy's south end, which would discharge onto the entry landing",
-                      downspout_ref="TR-G-LEADER-E"),
+                      downspout_ref=("TR-G-LEADER-E", "TR-G-LEADER-W")),
 )
 
 # One leader per eave. 3" round, not the house's 4": each slope sheds ~290 sq ft against
@@ -450,8 +448,15 @@ _GARAGE_LEADER_E = Downspout(
     # Both absolute. The trough they bracket is derived from the roof plane, so it moves on
     # its own if the roof does; these are the two numbers that have to follow it by hand.
     top_elevation=ft(7, 6),             # inside the trough floor
-    bottom_elevation=ft(-2, -3),        # splash block, 6" over walk A's -2'-9" top
+    bottom_elevation=ft(-1, -6),
     diameter=inch(3), material="metal-dark-kstyle", gutter_ref="RF-GARAGE",
+    discharge_ref="RG-E-BASIN",
+    # The west run's mirror about x=18'-0", east into RG-E-BASIN. It passes under walk A,
+    # so the inlet sits 7" lower than the west's to keep the crown under the Class 5 base.
+    extension=DischargeExtension(
+        path=(pt(ft(31, 3.25), ft(68, 5.875)), pt(ft(39), ft(68, 5.875))),
+        diameter=inch(4), material="pvc-sdr35",
+        inlet_invert=ft(-4), outlet_invert=ft(-4, -2)),
 )
 # No `uid=` on purpose: this file is `# haus: editable`, so `haus fmt` visits it and mints
 # an ABSENT uid. It skips `uid=""`, which is why the field is omitted rather than blanked.
@@ -467,7 +472,7 @@ _GARAGE_LEADER_W = Downspout(
     extension=DischargeExtension(
         path=(pt(ft(4, 8.75), ft(68, 5.875)), pt(ft(-3), ft(68, 5.875))),
         diameter=inch(4), material="pvc-sdr35",
-        inlet_invert=ft(-3, -5), outlet_invert=ft(-3, -8)),
+        inlet_invert=ft(-3, -5), outlet_invert=ft(-3, -11)),
 )
 
 ROOFS = [

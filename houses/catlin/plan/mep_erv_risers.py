@@ -1,5 +1,5 @@
 # haus: editable
-# Catlin MEP — the ERV's four VERTICAL runs: three risers up the chase at (1', 34'-6")
+# Catlin MEP — the ERV's four VERTICAL runs: three risers up the chase at (1', 35'-1.3")
 # and the two outdoor legs that leave it for the north facade.
 #
 # One list, DUCTS_ERV_RISERS, spread whole onto the main storey by plan/mep.py. The hoods
@@ -16,7 +16,7 @@ from typehaus import (
 )
 # ====================================== RISERS =======================================
 #
-# Three round risers up the radon/plumbing chase at (1', 34'-6"), the house's one continuous
+# Three round risers up the radon/plumbing chase at (1', 35'-1.3"), the house's one continuous
 # basement-to-attic shaft: RM-M-MECH's floor on main, the 2'-9" x 2'-2 1/8" notch walled by
 # W-S-CH-W/W-S-CH-S in RM-S-BATH1's NW corner on second, out onto the attic deck.
 #
@@ -89,7 +89,7 @@ from typehaus import (
 #     elevation the model does not hold.
 #
 # The 37 pairs that remain in this column are pipe-against-pipe and pipe-against-radial, and
-# none of them is this system's to fix. The six vents converging on (1'-0", 34'-6") cross the
+# none of them is this system's to fix. The six vents converging on the chase cross the
 # thirteen main-storey radial lanes at four elevations; PR-B-BATH-VENT and PR-B-SAUNA-VENT
 # share solid with PR-B-KITCH-DRAIN. **They are recorded here because somebody measured them,
 # not because this pass touched them.**

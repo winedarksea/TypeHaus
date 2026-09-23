@@ -85,18 +85,18 @@ def test_the_kitchen_vents_flattest_leg_is_the_advisory(catlin_model_ro) -> None
 
 def test_bath1_vent_is_the_interpolated_branch_and_both_branches_agree(
         catlin_model_ro) -> None:
-    """Note §2. Two authored inverts over 222.08" of developed plan = 0.054"/ft — and the
+    """Note §2. Two authored inverts over 229.38" of developed plan = 0.052"/ft — and the
     same run read through the start/end branch has to produce the identical number."""
     index = _vent_index(catlin_model_ro, "PR-S-BATH1-VENT")
     run = catlin_model_ro.pipe_runs[index]
-    assert run.length_m * 3.280839895 == pytest.approx(222.08 / 12.0, abs=2e-3)
+    assert run.length_m * 3.280839895 == pytest.approx(229.38 / 12.0, abs=2e-3)
     resolved = _for(_margin(catlin_model_ro), "PR-S-BATH1-VENT")
-    assert '0.054"/ft' in resolved.message
+    assert '0.052"/ft' in resolved.message
 
     blind = copy.copy(run)
     object.__setattr__(blind, "z_m", None)
     legacy = _for(_margin(_with_run(catlin_model_ro, index, blind)), "PR-S-BATH1-VENT")
-    assert '0.054"/ft' in legacy.message
+    assert '0.052"/ft' in legacy.message
     assert _for(_grade(_with_run(catlin_model_ro, index, blind)),
                 "PR-S-BATH1-VENT").result is Result.PASS
 

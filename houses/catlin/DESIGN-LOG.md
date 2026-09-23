@@ -1216,12 +1216,12 @@ installed.
 **And the verified type was itself wrong — `EQ-T-GREE-FLEXX-ULTRA-24-AH`/`-OD` replaced it.**
 The DUC24/VIR24 record's own `source=` claimed 577-1030 cfm; the pair's real ceiling is 736 at
 0.8" w.c., under the 750 this duct system is sized to. Its 13,500 Btu/h at design was an
-interpolation (the read value is 14,606) and either way sat under the zone's 15,410 Btu/h
-(15,164 when this entry was written; re-measured after the 2026-09-18 block-load correction,
-which did not change this entry's conclusion)
+interpolation (the read value is 14,606) and either way sat under the zone's 15,365 Btu/h
+(15,164 when this entry was written; 15,410 after the 2026-09-18 block-load correction, 15,365
+after the 2026-09-23 WIN-A-S2/-S3 retype — neither changed this entry's conclusion)
 block load — `mep.heating_capacity` passed only by crediting a strip heater the DUC24 has no
 aux-heat terminal to interlock with. Gree's FLEXX Ultra answers all three: 760 cfm at 1.0"
-w.c., 21,000 Btu/h read at -15 F (136% of load, unaided), 24 VAC control with a factory heat
+w.c., 21,000 Btu/h read at -15 F (137% of load, unaided), 24 VAC control with a factory heat
 kit, HSPF2 9.0 → 10.0, and ENERGY STAR Cold Climate (AHRI 215213329) where the Vireo is not.
 **The 21,000 at -15 F is itself unverified to a column** (`# TODO verify datasheet`): the AHRI
 certificate number is not a capacity table, no published capacity at 5 F or -13 F was found,

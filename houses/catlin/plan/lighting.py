@@ -1193,10 +1193,11 @@ MAIN_LIGHTING = [
     # the porch's depth centre, and a base at 7'-8" tops the 18" assembly out just under its
     # soffit (~110" there). The chase and sister-block clearances above no longer apply —
     # the pillar chases are retired and the flank blocks are at x=10'-0"/26'-0".
+    # 2026-09-23: 7'-5", 3" lower with the balcony (soffit ~107" here).
     ElectricalDevice(uid="QTM0017AAA", tag="ED-M-PORCH-FAN", kind=DeviceKind.LIGHT,
                      position=pt(ft(13, 3), inch(-66)), type_ref="ED-T-LT-FAN60",
                      circuit="CKT-LT-MAIN", controlled_by=("ED-M-PORCH-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 8))),
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 5))),
     ElectricalDevice(uid="QTM0018AAA", tag="ED-M-PORCH-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(24, 10), ft(0, 7.625)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", rotation=deg(180),
