@@ -3,8 +3,8 @@
 **House:** Catlin House  
 **Trade:** Framing  
 **Engine:** 0.1.1  
-**Model hash:** 9930e02873bf3dd1  
-**Lines:** 140
+**Model hash:** f025e97af21e00b9  
+**Lines:** 141
 
 Sticks by size with piece counts, sheet goods by the sheet, the structural hardware, the decks, and the tape on every member top. Trusses and engineered wood are called out by the profile.
 
@@ -45,7 +45,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | 2x4 KDAT southern yellow pine (treated exterior framing) — girt strapping, truss ladder blocking (2x4:kdat) | 2,814 | LF ordered | 462 pcs, 2437.4 LF cut | building |
 | 2x6 — barge rafter, blocking, corner stud, cripple stud, jack stud, king stud, landing framing, plate, raked top plate, sill, stud (2x6) | 8,852 | LF ordered | 1364 pcs, 7644.3 LF cut | building |
 | 2x6 KDAT southern yellow pine (treated exterior framing) — girt strapping (2x6:kdat) | 88 | LF ordered | 9 pcs, 72.0 LF cut | building |
-| 2x8 — header, jack stud, joist, king stud, landing framing, plate, stud (2x8) | 240 | LF ordered | 45 pcs, 201.7 LF cut | building |
+| 2x8 — header, jack stud, joist, king stud, landing framing, plate, stud (2x8) | 240 | LF ordered | 45 pcs, 202.2 LF cut | building |
 | 2x8 SPF framing lumber — blocking (2x8:spf) | 430 | LF ordered | 76 pcs, 357.3 LF cut | building |
 | 3-1.75x5.5 LVL — header (3-1.75x5.5 LVL) | 8 | LF ordered | 1 pcs, 3.2 LF cut | building |
 | 3-2x4 KDAT southern yellow pine (treated exterior framing) — truss girt block (3-2x4:kdat) | 352 | LF ordered | 1130 pcs, 329.6 LF cut | building |
@@ -104,6 +104,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | IUS face-mount I-joist hanger (IUS2.56/11.88) | 7 | ea |  | building |
 | KBS1Z knee-brace / beam strap (ZMAX) | 2 | ea |  | building |
 | LS30 skewable angle, gable-end stud to rafter | 22 | ea |  | building |
+| LSSR field-adjustable slope/skew hanger | 1 | ea |  | building |
 | LSSR field-adjustable slope/skew hanger | 1 | ea |  | building |
 | LSSR field-adjustable slope/skew hanger | 38 | ea |  | building |
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | 19 | ea |  | building |
@@ -289,6 +290,7 @@ Sticks by size with piece counts, sheet goods by the sheet, the structural hardw
 | IUS face-mount I-joist hanger (IUS2.56/11.88) | — |
 | KBS1Z knee-brace / beam strap (ZMAX) | — |
 | LS30 skewable angle, gable-end stud to rafter | — |
+| LSSR field-adjustable slope/skew hanger | — |
 | LSSR field-adjustable slope/skew hanger | — |
 | LSSR field-adjustable slope/skew hanger | — |
 | LSTA24 twist-free strap tie, rafter to rafter over the ridge | — |

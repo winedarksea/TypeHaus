@@ -2439,16 +2439,17 @@ def test_stair_designer_contract_exposes_catlin_authored_inputs(catlin_model):
     # ST-SG-PORCH (2026-09-03) is the second of those: the porch's only way down to grade,
     # five risers from the heat-pump pad at -2'-8" to the composite plank at +0'-1".
     assert set(stairs) == {"ST-B2M", "ST-M2S", "ST-S2A", "ST-G-SERVICE", "ST-SG-PORCH", "ST-BW-ENTRY"}
-    # 3'-4 5/16" is stringer centre to stringer centre: 3/4" narrower than the 3'-5 1/16"
-    # lane, so both outer stringers sit flush on the wall faces, not half in them.
-    assert stairs["ST-B2M"]["width_m"] == pytest.approx(ft(3, 4.3125).meters, abs=1e-9)
+    # 3'-5 1/16" is the flight the basement's 7'-2 5/8" well leaves either side of the
+    # 4 1/2" well partition, measured to W-B-STR/W-B-STR3's stud-line plywood face. The outer
+    # stringers sit inside it (``_stringer_offsets``), flush on the wall faces.
+    assert stairs["ST-B2M"]["width_m"] == pytest.approx(ft(3, 5.0625).meters, abs=1e-9)
     assert stairs["ST-B2M"]["floor_opening"] == "FO-M-STAIR"
     assert stairs["ST-B2M"]["run_direction"] == "y"
     assert stairs["ST-B2M"]["layout"] == "u_split_landing"
-    # x=10'-4 1/8" — the framed stair wall's plywood face (FO-M-STAIR's west edge) plus half
-    # a stringer, so the west stringer's outer face lands on it.
+    # x=10'-3 3/8" — the framed stair wall's plywood face, which is where FO-M-STAIR's west
+    # edge is and where FO-S-STAIR's already was.
     assert stairs["ST-B2M"]["start"] == pytest.approx(
-        [ft(10, 4.125).meters, ft(26, 0.375).meters])
+        [ft(10, 3.375).meters, ft(26, 0.375).meters])
     assert stairs["ST-M2S"]["layout"] == "u_split_landing"
     # Both U-stairs turn left, so each springs from the east lane and arrives in the west
     # one.

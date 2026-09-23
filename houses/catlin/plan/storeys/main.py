@@ -2200,16 +2200,13 @@ SLABS = [
 # treads AND both landing decks — one flight, one stock — and it is a takeoff fact only:
 # `_notch_z` drops each board by exactly this much, so no riser moves and the end risers
 # `code.R311_7_5_1_stair_end_risers` measures are the ones above.
-# `width` is stringer-centre to stringer-centre (u_split centres a stringer on each lane
-# edge), so 3'-4 5/16" starting at 10'-4 1/8" lands both outer stringers FLUSH on the wall
-# faces (2026-09-23); 3/4" wider put half of each into W-B-CN's pour and W-B-STR3's studs.
 STAIRS = [
     Stair(uid="CST701AAAA", tag="ST-B2M", floor_opening="FO-M-STAIR",
-          from_storey="basement", to_storey="main", width=ft(3, 4.3125),
+          from_storey="basement", to_storey="main", width=ft(3, 5.0625),
           base_elevation=inch(-109.4375), top_elevation=inch(0.9862),
           tread_thickness=inch(1),
           layout="u_split_landing", run_direction="y", turn_direction="left",
-          start=pt(ft(10, 4.125), ft(26, 0.375)), landing_depth=ft(3)),
+          start=pt(ft(10, 3.375), ft(26, 0.375)), landing_depth=ft(3)),
 ]
 
 # ST-B2M handrails (R311.7.8): one wall-mounted rail per flight, `serves_stair` rakes each

@@ -107,3 +107,19 @@ def _grid_positions(span: float, spacing: float) -> list[float]:
         else:
             out.append(position)
     return out
+
+
+def _stringer_offsets(width: float, spacing: float | None,
+                      thickness: float) -> list[float]:
+    """Cross-run carriage centrelines, measured from the flight's ``0`` edge.
+
+    ``Stair.width`` is the clear tread width (IRC R311.7.1), so the two OUTER members sit
+    inside it, inset half their ``thickness``; centred on the edge they hung half a ply into
+    the wall or its finish. Interior members divide the width evenly at ``spacing``
+    (``Stair.stringer_spacing``) and do not move.
+    """
+    bays = max(1, math.ceil(width / spacing - 1e-9)) if spacing is not None else 1
+    offsets = [width * index / bays for index in range(bays + 1)]
+    offsets[0] += thickness / 2.0
+    offsets[-1] -= thickness / 2.0
+    return offsets

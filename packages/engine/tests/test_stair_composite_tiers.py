@@ -48,7 +48,8 @@ def test_maximum_stringer_spacing_and_finished_rises(direction, reversed_run):
     axis = 1 if direction == "x" else 0
     stations = sorted(m.p0[axis] for m in strings)
     assert len(strings) == 8  # ceil(73 / 12) bays + both end members
-    assert stations[-1] - stations[0] == pytest.approx(inch(73).meters)
+    # The two end members sit inside the width, inset half a ply each.
+    assert stations[-1] - stations[0] == pytest.approx(inch(73 - 1.5).meters)
     assert max(b - a for a, b in zip(stations, stations[1:])) <= inch(12).meters
     assert {m.material for m in strings} == {"kdat"}
     treads = sorted((m for m in stair.members if m.category == "tread"),

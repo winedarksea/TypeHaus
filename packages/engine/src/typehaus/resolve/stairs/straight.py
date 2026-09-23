@@ -7,7 +7,11 @@ import math
 from typehaus.model.spatial import Stair
 from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.model import FramedMember
-from typehaus.resolve.stairs.common import _tread_board_profile, _tread_thickness
+from typehaus.resolve.stairs.common import (
+    _stringer_offsets,
+    _tread_board_profile,
+    _tread_thickness,
+)
 
 # A tier rim/joist is deck framing, not a stair member: DCA 6 sizes an intermediate
 # landing off its DECK tables, and 2x8 is what the landing beside these tiers uses.
@@ -22,9 +26,10 @@ def _straight_stair_members(stair: Stair, minx: float, miny: float, z0: float,
     start_x, start_y = stair.start.xy_m if stair.start is not None else (minx, miny)
     width = stair.width.meters
     sign = -1 if stair.run_reversed else 1
-    bays = (max(1, math.ceil(width / stair.stringer_spacing.meters - 1e-9))
-            if stair.stringer_spacing is not None else 1)
-    offsets = [width * index / bays for index in range(bays + 1)]
+    # A box's joists are 2x8, a stringer 2x12: both 1 1/2" thick, so one inset serves both.
+    offsets = _stringer_offsets(
+        width, stair.stringer_spacing.meters if stair.stringer_spacing is not None else None,
+        cross_section("2x12").width_m)
     if along_x:
         end_x, end_y = start_x + sign * going * (risers - 1), start_y
         strings = [((start_x, start_y + offset), (end_x, end_y + offset))

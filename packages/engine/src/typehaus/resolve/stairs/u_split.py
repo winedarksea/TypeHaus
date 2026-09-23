@@ -13,6 +13,7 @@ from typehaus.resolve.stairs.common import (
     _WELL_PARTITION_THICKNESS_M,
     _grid_positions,
     _notch_z,
+    _stringer_offsets,
     _tread_board_profile,
     _tread_thickness,
 )
@@ -67,6 +68,7 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
         return (start + sign * s, cross) if along_x else (cross, start + sign * s)
 
     stringer_depth = cross_section("2x12").depth_m
+    stringer_ply = cross_section("2x12").width_m
     # One stock thickness for every walking surface this flight builds — treads and both
     # landing decks. See ``_notch_z``.
     thickness = _tread_thickness(stair)
@@ -96,7 +98,8 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
         # deck it bears into on the other (see ``_notch_z``).
         spring_notch = _notch_z(spring_z + riser, thickness)
         bear_notch = _notch_z(bear_z, thickness)
-        for index, cross in enumerate((lane_lo, lane_lo + width)):
+        for index, offset in enumerate(_stringer_offsets(width, None, stringer_ply)):
+            cross = lane_lo + offset
             out.append(FramedMember(
                 stair.uid, f"stringer-{prefix}-{index}", "stringer", "2x12",
                 at(s_lo, cross), at(s_hi, cross),
@@ -132,13 +135,15 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
     # Two landing platforms in the landing zone beyond the flight ends, each on its own
     # flight's side of the well partition.
     out.extend(_landing_platform(stair, "lower", at, flight_len, landing_depth_m,
-                                 *lower_half, lower_landing_z, thickness))
+                                 *lower_half, lower_landing_z, thickness,
+                                 partition_centre))
     # The two half-landings stay FLUSH at the far end of the well — that is what makes the
     # 180° crossing work and keeps the opening budget unchanged — so the upper half simply
     # gets one going deeper when the flights carry different tread counts.
     out.extend(_landing_platform(stair, "upper", at, upper_flight_len,
                                  flight_len + landing_depth_m - upper_flight_len,
-                                 *upper_half, upper_landing_z, thickness))
+                                 *upper_half, upper_landing_z, thickness,
+                                 partition_centre))
     # Well partition between the up and down flights: generated stud framing (not an
     # authored Wall) centred in the gap the two lanes leave, bearing on the subfloor the
     # stair springs from and rising to the arrival deck — never past the subfloor into the
@@ -168,7 +173,7 @@ def _u_split_landing_members(stair: Stair, minx: float, miny: float, z0: float,
 
 def _landing_platform(stair: Stair, name: str, at, s0: float, depth: float,
                       lane_lo: float, width: float, landing_z: float,
-                      thickness: float) -> list[FramedMember]:
+                      thickness: float, partition: float) -> list[FramedMember]:
     """One half-width landing platform: full-width deck + joists + perimeter rims.
 
     The deck is a single ``deck WxT`` member (a parseable profile, so it renders at the
@@ -201,7 +206,12 @@ def _landing_platform(stair: Stair, name: str, at, s0: float, depth: float,
                                 "landing_framing",
                                 _LANDING_JOIST_PROFILE, at(s0 + offset, lane_lo),
                                 at(s0 + offset, lane_lo + width), z_bot, z_top, width))
+    # The wall-side rim sits inside the lane, as a flight's outer stringer does
+    # (``_stringer_offsets``); the partition-side one stays on the bearing centreline.
+    ply = cross_section(_LANDING_JOIST_PROFILE).width_m
     for index, cross in enumerate((lane_lo, lane_lo + width)):
+        if abs(cross - partition) > 1e-9:
+            cross += ply / 2.0 if index == 0 else -ply / 2.0
         out.append(FramedMember(stair.uid, f"landing-rim-{name}-{index}", "landing_framing",
                                 _LANDING_JOIST_PROFILE, at(s0, cross),
                                 at(s0 + depth, cross), z_bot, z_top, depth))
