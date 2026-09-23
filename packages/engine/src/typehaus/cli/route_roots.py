@@ -156,9 +156,11 @@ def _supply_trunk(model: ResolvedModel, run: Any, problems: list[str]
     ``supply_tie_in_records`` already carries. Each is that record read back, which is the
     point of making it a record rather than a dict.
     """
+    from typehaus.resolve.mep_ports import placed_ports
     from typehaus.resolve.mep_tie_ins import supply_tie_in_records
 
-    records = {rec.child: rec for rec in supply_tie_in_records(model.pipe_runs)}
+    records = {rec.child: rec for rec in supply_tie_in_records(model.pipe_runs,
+                                                               placed_ports(model))}
     record = records.get(run.tag)
     ties = {tag: rec.parent for tag, rec in records.items() if rec.parent}
     if record is None or record.parent is None:
@@ -193,6 +195,9 @@ def _supply_refusal(run: Any, record: Any) -> str:
     if record is None:
         return (head + "it carries no resolved elevations, so there is no tee to derive")
     inches = None if record.z_gap_m is None else record.z_gap_m * 39.3700787
+    if record.reason == "equipment_port":
+        return (head + f"it leaves {record.port}, an equipment port, so its source is the "
+                "machine and there is no run to tee onto. Route it with --via")
     if record.reason == "cross_system":
         return (head + f"the run standing at its first vertex is {record.nearest}, which is "
                 f"a {'different' if record.nearest else 'cross-system'} system. Its source "

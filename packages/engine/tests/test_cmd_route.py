@@ -441,14 +441,9 @@ def test_a_supply_proposal_lands_on_the_trunks_LINE_not_its_endpoint(runner) -> 
     # Each real cause, asserted AS TEXT: a refusal's wording is its contract, and one
     # sentence about a vent chase was false about all of them.
     #
-    # `PR-B-HW-TRUNK` used to read "which is a different system" here. That diagnosis was
-    # the coincident-port bug talking: until 2026-09-20 the water heater declared no port
-    # layout, so the cold run ended exactly where the hot trunk started. The tank now
-    # carries two dimensioned taps 8" apart and the honest answer is that nothing feeds
-    # the hot one — the TANK does, and an equipment port is not yet a source the tie-in
-    # reader can see. The cross-system branch keeps its coverage in
-    # `test_supply_tie_in.py::test_a_cross_system_source_is_still_named_as_one`.
-    ("PR-B-HW-TRUNK", "no run of any system passes under its first vertex"),
+    # `PR-B-HW-TRUNK` read "no run of any system passes" until 2026-09-23; the tie-in
+    # reader now sees EQ-B-WH's hot tap as its source, and the refusal says so.
+    ("PR-B-HW-TRUNK", "it leaves EQ-B-WH.hot, an equipment port"),
     ("PR-M-CW-PORCH-HYD", "no run of any system passes under its first vertex"),
     ("PR-M-CW-COLDSTORE-STUB", "passes under its first vertex but 12.0\" above it"),
 ])

@@ -212,7 +212,7 @@ def test_drain_loads_roll_up_through_the_routed_geometry(catlin_model):
     assert load == 48.0
     # Every drain run discharges somewhere except the building drain itself and the runs
     # that terminate at an air gap — the two condensate lines, and the water heater's TPR
-    # relief discharge, which UPC 608.5 requires to end 6"-24" over the floor and forbids
+    # relief discharge, which Minn. R. 4714.0608 (UPC 608.5) requires to end within 18" of the floor and forbids
     # to be piped into a drain at all. A new run silently missing its tie-in would show up
     # here as an extra terminal, understating every load downstream of it.
     #

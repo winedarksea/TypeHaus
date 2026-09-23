@@ -152,7 +152,7 @@ def test_the_two_runs_that_really_connect_land_at_the_tap_elevation(catlin_model
 
 
 def test_the_relief_discharge_followed_the_tank(catlin_model, water_heater) -> None:
-    """P2804.6.1's discharge is offset from the tank, so it is checked by proximity.
+    """The UPC 608.5 relief discharge is offset from the tank, so it is checked by proximity.
 
     It is measured from the tank CENTRE and not from a port on purpose: the T&P valve is
     factory-installed and the spec sheet (HP-400-SO REV. 1) gives no station for it, so

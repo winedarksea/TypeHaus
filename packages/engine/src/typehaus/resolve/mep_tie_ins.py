@@ -160,6 +160,9 @@ class SupplyTieIn:
     ``cross_system``  no same-system candidate, but another system's run is there. A water
                       heater's hot outlet fed from a cold run is exactly this, and it is not
                       a defect — it is a parent this derivation cannot name.
+    ``equipment_port`` the first vertex stands on an exact port of the same service: a
+                      machine feeds it (the water heater's hot tap feeds PR-B-HW-TRUNK).
+                      ``accepted`` with ``parent=None`` — the source is ``port``, not a run.
     """
 
     child: str
@@ -174,6 +177,8 @@ class SupplyTieIn:
     #: The nearest candidate's tag when the tie was refused on elevation, so a refusal can
     #: name the run it would have joined.
     nearest: str | None = None
+    #: ``"EQ-B-WH.hot"`` when the source is an equipment port (reason ``equipment_port``).
+    port: str | None = None
 
 
 def _best_by_load(child_serves: frozenset, candidates: list[tuple[str, frozenset]]) -> str:
@@ -197,7 +202,32 @@ def _best_by_load(child_serves: frozenset, candidates: list[tuple[str, frozenset
                                              -len(item[1]), item[0]))[0]
 
 
-def supply_tie_in_records(pipe_runs) -> list[SupplyTieIn]:
+# Plan tolerance for a first vertex standing on a port: half an inch, the same order as
+# ``mep_ports.PORT_AMBIGUITY_M``. The z test reuses the tee tolerance.
+_PORT_PLAN_TOL_M = 0.0127
+
+
+def _source_port(child, tee, tee_z, ports) -> str | None:
+    """The exact same-service equipment port the child's FIRST vertex stands on, or None.
+
+    A supply run is authored tie-first, so a first vertex on a port means the machine
+    feeds it; an inlet (the heater's cold tap) is where a run ENDS, and is never matched.
+    """
+    best: tuple[float, str] | None = None
+    for port in ports:
+        if not port.exact or port.service != child.system:
+            continue
+        plan_off = max(abs(port.x_m - tee[0]), abs(port.y_m - tee[1]))
+        z_off = abs(port.z_m - tee_z)
+        if plan_off > _PORT_PLAN_TOL_M or z_off > _SUPPLY_TEE_TOL_M:
+            continue
+        name = f"{port.equipment_tag}.{port.port_tag}"
+        if best is None or (plan_off + z_off, name) < best:
+            best = (plan_off + z_off, name)
+    return None if best is None else best[1]
+
+
+def supply_tie_in_records(pipe_runs, ports=()) -> list[SupplyTieIn]:
     """Every supply run's tee onto its feeder, whether or not the geometry accepts it.
 
     Beside :func:`drain_tie_in_records` because it is the same question for a pressurised
@@ -208,6 +238,9 @@ def supply_tie_in_records(pipe_runs) -> list[SupplyTieIn]:
 
     **A run with no candidate gets ``parent=None`` and a reason, never a silent
     ``continue``** — that is this module's own stated lesson.
+
+    ``ports`` is ``mep_ports.placed_ports(model)``; without it no machine is a source and
+    a run leaving one reads ``no_candidate``.
     """
     from typehaus.resolve.mep_queries import pipe_elevations_at
 
@@ -260,6 +293,11 @@ def supply_tie_in_records(pipe_runs) -> list[SupplyTieIn]:
             parent_tag = _best_by_load(frozenset(child.serves or ()), same)
             out.append(SupplyTieIn(child.tag, parent_tag, True, "accepted", tee,
                                    0.0 if nearest is None else nearest[0], parent_tag))
+        elif (port := _source_port(child, tee, tee_z, ports)) is not None:
+            # Outranks every refusal below: a run 52" up is a coincidence, the tap the run
+            # starts on is its source.
+            out.append(SupplyTieIn(child.tag, None, True, "equipment_port", tee, 0.0,
+                                   port=port))
         elif cross is not None and abs(cross[0]) <= _SUPPLY_TEE_TOL_M:
             # A source that really is there and really is not a run of this system. It
             # outranks a same-system sibling further away: PR-B-HW-TRUNK leaves EQ-B-WH,

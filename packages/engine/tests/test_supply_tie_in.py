@@ -14,12 +14,14 @@ from __future__ import annotations
 from dataclasses import replace
 
 from typehaus.quantities import M_PER_IN
+from typehaus.resolve.mep_ports import placed_ports
 from typehaus.resolve.mep_queries import pipe_elevations_at, pipe_invert_at
 from typehaus.resolve.mep_tie_ins import supply_tie_in_records, supply_tie_ins
 
 
 def _records(model):
-    return {rec.child: rec for rec in supply_tie_in_records(model.pipe_runs)}
+    return {rec.child: rec for rec in supply_tie_in_records(model.pipe_runs,
+                                                            placed_ports(model))}
 
 
 def test_the_basement_branches_derive_their_trunk(catlin_model_ro) -> None:
@@ -31,31 +33,47 @@ def test_the_basement_branches_derive_their_trunk(catlin_model_ro) -> None:
 
 
 def test_every_supply_run_gets_a_record_and_most_get_a_parent(catlin_model_ro) -> None:
-    records = supply_tie_in_records(catlin_model_ro.pipe_runs)
+    records = list(_records(catlin_model_ro).values())
     assert len(records) == 29
-    assert sum(rec.accepted for rec in records) == 23
+    # 23 tee onto a run; the 24th is PR-B-HW-TRUNK, fed by the water heater's hot port.
+    assert sum(rec.accepted for rec in records) == 24
     # Every basement branch, which is what a campaign needs to re-lane supply at all.
     basement = [rec for rec in records if rec.child.startswith("PR-B-")
-                and rec.child not in ("PR-B-CW-TRUNK", "PR-B-HW-TRUNK")]
+                and rec.child != "PR-B-CW-TRUNK"]
     assert all(rec.accepted for rec in basement), \
         [rec.child for rec in basement if not rec.accepted]
 
 
-def test_the_hot_trunk_leaves_the_TANK_and_so_has_no_run_for_a_parent(catlin_model_ro):
-    """PR-B-HW-TRUNK leaves EQ-B-WH, and what feeds it is the tank, not a pipe.
+def test_the_hot_trunk_is_fed_by_the_TANKS_hot_port(catlin_model_ro) -> None:
+    """PR-B-HW-TRUNK leaves EQ-B-WH's hot tap, and that port is its source.
 
-    ** THIS USED TO READ `cross_system`, AND THAT WAS THE BUG TALKING. ** Until 2026-09-20
-    the water heater stated a position and no port layout, so cold and hot were coincident
-    and PR-B-CW-WH ended at the exact point PR-B-HW-TRUNK started — which is what put a
-    cold run under a hot run's first vertex. The tank now carries two dimensioned taps 8"
-    apart, nothing passes under the hot one, and `no_candidate` is the honest answer.
-
-    The right answer is neither: an equipment port is a legitimate source and the tie-in
-    reader cannot yet see one. Until it can, "not a run" beats a silently wrong parent.
+    Until 2026-09-23 this read `no_candidate`: the tie-in reader saw only runs. An exact
+    same-service port at a run's FIRST vertex is now a parent — accepted, with the port
+    named and no run tag, since nothing downstream may walk a machine as a pipe.
     """
     rec = _records(catlin_model_ro)["PR-B-HW-TRUNK"]
-    assert rec.parent is None and not rec.accepted
-    assert rec.reason == "no_candidate"
+    assert rec.accepted and rec.parent is None
+    assert rec.reason == "equipment_port"
+    assert rec.port == "EQ-B-WH.hot"
+    # The cold tap is an INLET: PR-B-CW-WH ends there and keeps its run parent.
+    assert _records(catlin_model_ro)["PR-B-CW-WH"].port is None
+    assert "PR-B-HW-TRUNK" not in supply_tie_ins(catlin_model_ro.pipe_runs)
+
+
+def test_without_ports_the_hot_trunk_still_says_no_candidate(catlin_model_ro) -> None:
+    """The runs-only reading is unchanged: no ports passed, no machine is a source."""
+    rec = {r.child: r for r in supply_tie_in_records(catlin_model_ro.pipe_runs)}[
+        "PR-B-HW-TRUNK"]
+    assert rec.reason == "no_candidate" and not rec.accepted
+
+
+def test_an_inexact_or_wrong_service_port_is_not_a_source(catlin_model_ro) -> None:
+    ports = placed_ports(catlin_model_ro)
+    hot = next(p for p in ports if p.equipment_tag == "EQ-B-WH" and p.port_tag == "hot")
+    for bad in (replace(hot, exact=False), replace(hot, service="water_cold")):
+        rec = {r.child: r for r in supply_tie_in_records(
+            catlin_model_ro.pipe_runs, [bad])}["PR-B-HW-TRUNK"]
+        assert rec.reason == "no_candidate", bad
 
 
 def test_a_cross_system_source_is_still_named_as_one(catlin_model_ro) -> None:

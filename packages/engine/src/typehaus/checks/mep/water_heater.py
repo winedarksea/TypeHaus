@@ -1,4 +1,4 @@
-"""UPC 608.5 water-heater relief discharge, and UPC 507.5 the pan under it.
+"""UPC 608.5 (as Minn. R. 4714.0608 amends it) relief discharge, and UPC 507.5 the pan.
 
 **Not IRC P2804 / P2801.6.** Minn. R. 1309.0010 subp. 3.D strikes IRC chapters 25-33, so
 what governs a water heater here is the UPC as incorporated at Minn. R. 4714.0050 —
@@ -10,10 +10,11 @@ discharge pipe is routinely got wrong in ways that are geometry: it rises somewh
 its length and holds water, or it was never run at all. Both are checkable once the run is
 named, which is what ``Equipment.relief_discharge_ref`` is for.
 
-One amendment this module does **not** yet read: Minn. R. 4714.0608 rewrites UPC 608.5 and
-its subsection (3) says the discharge ends "within 18 inches of the floor", where the band
-below is 6"-24". Catlin terminates at 6" and passes either way, so the numbers are left as
-they stand rather than moved in a citation sweep.
+Minn. R. 4714.0608 rewrites UPC 608.5 whole; its (3) reads "discharge independently by
+gravity through an air gap to a safe place of disposal or within 18 inches of the floor"
+(revisor.mn.gov/rules/4714.0608, verified 2026-09-23). The model UPC's 6"-24" band is
+gone: 18" is the ceiling and there is no 6" floor — only the air gap, so a termination at
+or below the floor fails.
 """
 
 from __future__ import annotations
@@ -24,11 +25,9 @@ from typehaus.findings import Finding, Result
 from typehaus.model.enums import EquipmentKind
 from typehaus.quantities import inch
 
-# UPC 608.5: the discharge terminates 6"-24" above the floor (or outdoors), and runs
-# downhill the whole way — no trap, no rise, no valve. (Minn. R. 4714.0608's amended (3)
-# says "within 18 inches"; see the module docstring.)
-_MIN_TERMINATION = inch(6)
-_MAX_TERMINATION = inch(24)
+# Minn. R. 4714.0608 (UPC 608.5)(3): within 18" of the floor, through an air gap; (5): no
+# part trapped — it runs downhill the whole way.
+_MAX_TERMINATION = inch(18)
 _RISE_TOLERANCE_M = 0.005  # 5 mm of routing noise is not a trap
 
 #: The two citations, spelled as the rest of the plumbing checks spell ch. 4714.
@@ -46,14 +45,10 @@ def _finding(cid, result, message, tags, code, fix=None) -> Finding:
     return failed(cid, message, tags, code=code, fix=fix)
 
 
-@check(Tier.CODE, "code.P2804_water_heater_relief")
+@check(Tier.CODE, "code.MN_4714_0608_water_heater_relief")
 def water_heater_relief(ctx: CheckContext) -> list[Finding]:
-    """UPC 608.5 — every water heater's relief valve discharges through an unobstructed pipe.
-
-    The check id keeps its IRC spelling: it is named in ``preferences.toml``, in the
-    permit profile and in two catlin plan files, and renaming it is a separate commit.
-    """
-    cid, code = "code.P2804_water_heater_relief", _DISCHARGE
+    """UPC 608.5 — every water heater's relief valve discharges through an unobstructed pipe."""
+    cid, code = "code.MN_4714_0608_water_heater_relief", _DISCHARGE
     heaters = [e for e in ctx.plan.all_elements()
                if e.element_kind == "Equipment" and e.kind is EquipmentKind.WATER_HEATER]
     if not heaters:
@@ -99,7 +94,7 @@ def water_heater_relief(ctx: CheckContext) -> list[Finding]:
                                 (), _DISCHARGE))
             continue
         above_floor = elevations[-1] - floor
-        if _MIN_TERMINATION.meters <= above_floor <= _MAX_TERMINATION.meters:
+        if 0.0 < above_floor <= _MAX_TERMINATION.meters:
             out.append(_finding(cid, Result.PASS,
                                 f"{heater.tag}'s relief discharge {ref} drains downhill and "
                                 f"terminates {above_floor / .0254:.0f}\" above the floor",
@@ -107,8 +102,9 @@ def water_heater_relief(ctx: CheckContext) -> list[Finding]:
         else:
             out.append(_finding(cid, Result.FAIL,
                                 f"{heater.tag}'s relief discharge {ref} terminates "
-                                f"{above_floor / .0254:.0f}\" above the floor; UPC 608.5 "
-                                "requires 6\"-24\"", (heater.tag, ref), _DISCHARGE))
+                                f"{above_floor / .0254:.0f}\" above the floor; Minn. R. "
+                                "4714.0608 (UPC 608.5(3)) requires an air gap within 18\" "
+                                "of the floor", (heater.tag, ref), _DISCHARGE))
 
         # UPC 507.5: a pan wherever a leak damages what is below. A heater standing on a slab
         # has nothing below it to damage, which is why this is conditional rather than
@@ -134,7 +130,7 @@ def _storey_of(ctx: CheckContext, tag: str) -> str | None:
 
     Elements carry no ``storey`` field — the plan files them *under* a storey — so
     ``getattr(heater, "storey", None)`` was always None and every heater reported its
-    discharge as "termination height unmeasured". UPC 608.5's 6"-24" band is the half of
+    discharge as "termination height unmeasured". UPC 608.5's 18" ceiling is the half of
     the rule most worth measuring, so the lookup walks the plan's own grouping instead.
     """
     storey_elements = getattr(ctx.plan, "storey_elements", None)

@@ -173,7 +173,7 @@ EQUIPMENT_TYPES = (
     # `backup_tier=SHED`, not a load-management credit: an unlisted software governor is not
     # a PCS (2026 NEC 130.2) and nothing in the 220.82 calculation reads it. The
     # breaker/panel/NEC 220.82 sizing goes against the nameplate 4.5 kW. See
-    # `code.P2804_water_heater_relief` for the TPR.
+    # `code.MN_4714_0608_water_heater_relief` for the TPR.
     #
     # Fallback if reverted to a 120V-only plug-in HPWH (~450W, no 240V circuit): swap
     # `type_ref` on EQ-B-WH to a 120V-only EquipmentType, retag `circuit` to a 1-pole 120V

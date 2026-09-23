@@ -725,6 +725,7 @@ def test_water_heater_relief_fails_a_discharge_that_rises():
                                outline=((0.0, 0.0), (5.0, 0.0), (5.0, 5.0), (0.0, 5.0)))
         return SimpleNamespace(
             plan=SimpleNamespace(all_elements=lambda: [heater],
+                                 storey_elements=lambda tag: [heater],
                                  storeys=[SimpleNamespace(tag="basement", elevation=ft(0))]),
             model=SimpleNamespace(pipe_runs=[run], solids=[slab], rooms=[]),
         )
@@ -738,6 +739,11 @@ def test_water_heater_relief_fails_a_discharge_that_rises():
            if f.code_ref == "MN Plumbing Code (ch. 4714) 608.5"]
     assert _results(bad) == [Result.FAIL]
     assert "rises" in bad[0].message
+    # Minn. R. 4714.0608 (UPC 608.5(3)): within 18" of the floor, no 6" minimum.
+    for z, want in ((0.508, Result.FAIL), (0.43, Result.PASS), (0.076, Result.PASS)):
+        got = [f for f in water_heater_relief(_ctx([1.0, z]))
+               if f.code_ref == "MN Plumbing Code (ch. 4714) 608.5"]
+        assert _results(got) == [want], z
 
 
 def test_water_heater_relief_is_unknown_when_no_discharge_is_named():
