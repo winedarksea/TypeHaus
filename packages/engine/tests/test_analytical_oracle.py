@@ -99,9 +99,9 @@ def test_balcony_gravity_reactions_match_the_records(solved, front, rear):
     """§3c: the PAIR carries what the records say (statics, 1 %); the cantilevers split it.
 
     The beam is continuous over two post caps with a longer rear cantilever, so the solve is
-    the simple-span statics, 3,006 / 3,955 lb live against the record's equal 3,480 (addendum
-    2026-09-22b). A finding about the record, carried in the note; each column is bounded at
-    15 % and the pair at 1 %.
+    the simple-span statics, 1,628 / 2,142 lb live against the record's equal 1,885 (addenda
+    2026-09-22b and 2026-09-23). A finding about the record, carried in the note; each column
+    is bounded at 15 % and the pair at 1 %.
     """
     load, model, result, piers = solved
     pair_model = {"dead": 0.0, "live": 0.0}
@@ -121,6 +121,9 @@ def test_balcony_gravity_reactions_match_the_records(solved, front, rear):
         pair_record["live"] += inputs["live_load"]
     for case in ("dead", "live"):
         assert pair_model[case] == pytest.approx(pair_record[case], rel=0.01)
+    # By hand: 40 psf x 9.75' strip = 390 plf over 9.667', 4.167' of 7.333' toward the rear.
+    rear_live = result.reactions[(_support(model, rear).node, LoadCaseKind.LIVE.value)].fz_n
+    assert rear_live * N_TO_LB == pytest.approx(390.0 * 9.667 * 4.167 / 7.333, rel=0.01)
 
 
 #: Post caps under a continuous beam (addendum 2026-09-22b): hinged in the beam's plane.
@@ -195,8 +198,8 @@ def test_the_ties_carry_no_gravity_but_the_graph_hands_them_a_thrust(solved):
     """§3e: the block stands 1/4" off the stem, so no VERTICAL reaction reaches a tie. The
     graph does hand them a horizontal one under gravity — the seat beams' end pieces rise
     0.6' to the carriers over 1.125' (the work-point convention), a thrust the building
-    does not have. A finding, pinned so it cannot grow unseen: ~95 lb live at a stem tie (~110
-    before the stem ties moved 1 1/4" north with their angles, §3e)."""
+    does not have. A finding, pinned so it cannot grow unseen: ~53 lb live at a stem tie (~95
+    before each deck beam took its own half-bay strip on 2026-09-23, §3e)."""
     _, model, result, _ = solved
     nodes = {s.node for s in model.support_springs if "deck_tie/" in s.basis}
     assert nodes
@@ -206,4 +209,4 @@ def test_the_ties_carry_no_gravity_but_the_graph_hands_them_a_thrust(solved):
             reaction = result.reactions[(node, case)]
             assert abs(reaction.fz_n) * N_TO_LB < 1e-6
             worst = max(worst, math.hypot(reaction.fx_n, reaction.fy_n) * N_TO_LB)
-    assert worst == pytest.approx(95.2, abs=5.0)
+    assert worst == pytest.approx(52.8, abs=3.0)

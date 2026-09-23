@@ -29,19 +29,18 @@ from typehaus.model.registry import constructor_names
 _WORKED = {
     "PT-BW-RE": (1.305, 1.953, Status.OK),
     "PT-BW-RNE": (1.295, 1.868, Status.OK),
-    "PT-BW-W": (1.110, 1.442, Status.INCOMPLETE),
-    "PT-BW-E": (1.034, 1.106, Status.OK),
-    "PT-BW-GW": (1.456, None, Status.OVER),
-    "PT-BW-GE": (1.099, 1.538, Status.INCOMPLETE),
-    # ** RE-WORKED 2026-09-22 FOR THE 17'-0" COURT ** by §4's own method at the new frame
-    # (balcony_moment_columns.md §12a/§12c): P_u 4,947 -> 7,886 lb (front), 7,907 (rear),
-    # β_dns 0.2939 / 0.2958, EI_col 1.2683e9 / 1.2664e9; the wall-top k_θ (7.283e7 at 0.25",
-    # 6.8707e7 at 1.0") did not move. Front R 6.209 / 5.858, rear 6.324 / 5.966.
-    # column_base_rotation.md §0/§4 still print the 1.044-1.046 rows.
-    "PT-SG-BF1": (1.0686, 1.0701, Status.OK),
-    "PT-SG-BF3": (1.0686, 1.0701, Status.OK),
-    "PT-SG-BR1": (1.0710, 1.0725, Status.OK),
-    "PT-SG-BR3": (1.0710, 1.0725, Status.OK),
+    # ** RE-WORKED 2026-09-23 (note addendum 2026-09-23) ** with each deck beam on its own
+    # half-bay strip: the landing's deck share fell 17.03 -> 9.93 ft2 (W/E), 9.60 (GW/GE).
+    "PT-BW-W": (1.1017, 1.3997, Status.INCOMPLETE),
+    "PT-BW-E": (1.0264, 1.0810, Status.OK),
+    "PT-BW-GW": (1.4074, None, Status.OVER),
+    "PT-BW-GE": (1.0697, 1.3363, Status.INCOMPLETE),
+    # The balcony at the same date: each edge beam carries 9.75' (not 18'), P_u 7,886 ->
+    # 4,855 lb (front), 4,877 (rear); wall-top k_θ unchanged. Front R 6.616 / 6.242.
+    "PT-SG-BF1": (1.0431, 1.0439, Status.OK),
+    "PT-SG-BF3": (1.0431, 1.0439, Status.OK),
+    "PT-SG-BR1": (1.0446, 1.0455, Status.OK),
+    "PT-SG-BR3": (1.0446, 1.0455, Status.OK),
 }
 _LANDING = ("PT-BW-W", "PT-BW-E", "PT-BW-GW", "PT-BW-GE")
 _ORACLE = {tag: row for tag, row in _WORKED.items() if tag not in _LANDING}

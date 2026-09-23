@@ -6,13 +6,10 @@ same load at two elevations and deriving it twice is how the two records start d
 about what the post is holding up.
 
 **This package may not import ``checks``** (see ``engineering/__init__``), but ``checks``
-may import it — so the tributary rules here are the ONE copy and
+may import it — so the roof tributary rules here are the ONE copy and
 ``checks/structural/deck.py`` reads them through ``checks/structural/_engineering.py``.
-They were two copies until 2026-09-18, and the copies had drifted: the check's half knew
-nothing of :func:`_rafter_fields` and graded the roof share at the ground snow while this
-side's beams were designed at the drift. Deck area is divided evenly among the posts its
-beams name — exact on a regular post grid, an approximation otherwise, and printed either
-way so a reviewer can disagree with it.
+The DECK rule lives in ``engineering/deck_tributary.py``: each beam's half-bay-plus-overhang
+strip times its length, shared among the posts it reaches.
 
 **Oracle.** ``houses/catlin/notes/sunken_garden_piers.md``, hand-worked in a separate pass.
 """
@@ -23,6 +20,8 @@ import math
 from dataclasses import dataclass
 from typing import Any
 
+from typehaus.engineering.deck_tributary import deck_post_tributaries
+from typehaus.engineering.deck_tributary import delivered_to_posts as _delivered_to_posts
 from typehaus.engineering.registry import EngineeringContext
 from typehaus.engineering.soil import CONCRETE_UNIT_WEIGHT_PCF
 
@@ -249,127 +248,23 @@ def post_section(size: str | None) -> tuple[float, bool] | None:
 
 
 def _deck_tributaries(ctx: EngineeringContext) -> dict[str, float]:
-    """``post tag -> tributary ft2``, over every ``service="deck"`` FloorSystem.
+    """``post tag -> tributary ft2``, summed over every ``service="deck"`` FloorSystem.
 
-    Weighted by each BEAM's own strip of deck rather than divided evenly among the posts.
-    An even split is right only where every post carries the same bay, and catlin's balcony
-    is the counter-example: its centre beam runs the deck's full depth onto two posts while
-    the two edge beams share four, so the even split handed the centre pair two thirds of
-    their real share.
-
-    A beam's strip is the deck's joist span — the same width ``glulam_beam.py`` puts under
-    its 500 plf — times the beam's own node-to-node length, divided among the supports it names
-    (a bearing WALL takes its half like any other) and kept where that support is a post.
-    Each beam takes the full joist span, so overlapping strips are counted twice; that is the
-    conservative direction, and ``deck_post``'s record prints the number so a reviewer can
-    disagree with it. Where the strip or a beam length will not resolve, the even split
-    stands as the fallback.
-
-    A restatement of ``checks/structural/deck.py::_tributaries_ft2``, on the same terms as
-    the joist-span rule above: ``engineering`` may not import ``checks``, so if one moves,
-    move the other.
+    Each deck's share is ``engineering/deck_tributary.deck_post_tributaries`` — each beam's
+    half-bay-plus-overhang strip times its length — the rule ``glulam_beam`` loads its beams
+    with and ``checks/structural/deck.py`` reads. There is no second copy to keep in step.
     """
     from typehaus.model.floors import FloorSystem
-    from typehaus.model.structure import Beam
 
     out: dict[str, float] = {}
     resolved = {f.tag for f in ctx.model.floors}
-    nodes = _node_positions(ctx)
     for deck in ctx.plan.all_elements():
         if not isinstance(deck, FloorSystem) or deck.service != "deck":
             continue
         if deck.tag not in resolved:
             continue
-        ring = [p.xy_m for p in deck.outline]
-        if len(ring) < 3:
-            continue
-        area = abs(_shoelace(ring)) / (_M_PER_FT ** 2)
-        beams: list[Any] = []
-        posts: list[str] = []
-        for ref in deck.joists.bearing_refs:
-            beam = ctx.plan.by_tag(ref)
-            if not isinstance(beam, Beam):
-                continue
-            beams.append(beam)
-            # Down the whole chain, not one level: on the north entry the piers that carry
-            # this deck are two beams away (joists -> floor beam -> seat beam -> pier), and a
-            # one-level walk found only the two posts under the interior cantilever.
-            for tag in _delivered_to_posts(ctx, beam.bearing_refs or ()):
-                if tag not in posts:
-                    posts.append(tag)
-        if not posts:
-            continue
-        weighted = _weighted_shares(ctx, deck, beams, nodes)
-        if weighted is None:
-            share = area / len(posts)
-            weighted = {tag: share for tag in posts}
-        for tag in posts:
-            out[tag] = out.get(tag, 0.0) + weighted.get(tag, 0.0)
-    return out
-
-
-def _weighted_shares(ctx: EngineeringContext, deck: Any, beams: list[Any],
-                     nodes: dict[str, tuple[float, float]]) -> dict[str, float] | None:
-    """``post tag -> ft2`` from one deck, by beam strip x beam length. ``None`` if it will
-    not resolve and the even split has to stand in."""
-    # Imported, not restated: ``glulam_beam`` is a sibling in this same leaf package, and a
-    # third copy of the joist-span walk is a third thing to keep in step.
-    from typehaus.engineering.glulam_beam import _joist_span_ft
-
-    strip_ft = _joist_span_ft(ctx, deck)
-    if strip_ft is None:
-        return None
-    out: dict[str, float] = {}
-    for beam in beams:
-        p0, p1 = nodes.get(beam.start_node), nodes.get(beam.end_node)
-        if p0 is None or p1 is None:
-            return None
-        length_ft = math.dist(p0, p1) / _M_PER_FT
-        # Divided among ALL the beam's supports and then kept only where a support is a
-        # POST. A porch beam that runs from a column to a bearing WALL delivers half its
-        # load to each, and a split that counted only the posts would hand the column the
-        # wall's half as well.
-        supports = beam.bearing_refs or ()
-        if not supports:
-            return None
-        share = strip_ft * length_ft
-        for tag, fraction in _delivered_to_posts(ctx, supports).items():
-            out[tag] = out.get(tag, 0.0) + share * fraction
-    return out or None
-
-
-def _delivered_to_posts(ctx: EngineeringContext, supports: Any,
-                        depth: int = 0) -> dict[str, float]:
-    """``post tag -> fraction of one beam's load`` that actually reaches a Post.
-
-    ** A LOAD PATH CAN BE MORE THAN ONE BEAM DEEP, AND THE NORTH ENTRY IS. ** The landing's
-    joists bear on three floor beams, those bear on two SEAT beams, and only the seats bear on
-    piers. Splitting one level down and keeping whatever happened to be a Post handed the whole
-    landing to the two posts under the interior cantilever and gave the four piers carrying it
-    NOTHING -- a published ratio against a demand missing the deck, which is the specific
-    failure this module exists to refuse.
-
-    So a support that is itself a Beam passes its share on to ITS supports, and so on. A
-    support that is neither (a bearing wall, a pier direct) keeps its share and falls out here,
-    exactly as before -- the fractions returned deliberately need not sum to 1.
-
-    ``depth`` guards a bearing_refs cycle; four levels is far past any real framing chain.
-    """
-    from typehaus.model.structure import Beam, Post
-
-    out: dict[str, float] = {}
-    supports = tuple(supports)
-    if not supports or depth > 4:
-        return out
-    each = 1.0 / len(supports)
-    for tag in supports:
-        element = ctx.plan.by_tag(tag)
-        if isinstance(element, Post):
-            out[tag] = out.get(tag, 0.0) + each
-        elif isinstance(element, Beam):
-            for post, fraction in _delivered_to_posts(
-                    ctx, element.bearing_refs or (), depth + 1).items():
-                out[post] = out.get(post, 0.0) + each * fraction
+        for tag, share in (deck_post_tributaries(ctx, deck) or {}).items():
+            out[tag] = out.get(tag, 0.0) + share
     return out
 
 
@@ -498,7 +393,7 @@ def _rafter_fields(ctx: EngineeringContext) -> tuple[dict[str, float], set[str]]
             continue
         # Each parent beam takes half the field, then splits its half among the supports it
         # names — a support that is not a Post (a wall, a pier direct) keeps its share and
-        # simply falls out here, exactly as in ``_weighted_shares``.
+        # simply falls out here, exactly as in ``deck_tributary.deck_post_tributaries``.
         for tag in parents:
             supports = beams[tag].bearing_refs or ()
             if not supports:
@@ -531,8 +426,8 @@ def _roof_fields(ctx: EngineeringContext) -> tuple[dict[str, float], set[str]]:
 
     Split half to each bearing line, then each bearing member's half among the supports IT
     names -- a support that is not a Post (a wall, a pier direct) keeps its share and falls
-    out, exactly as in :func:`_weighted_shares`. Roofs bearing on walls contribute nothing
-    here and are not skipped specially; they simply resolve no Posts.
+    out, as in ``deck_tributary.deck_post_tributaries``. Roofs bearing on walls contribute
+    nothing here and are not skipped specially; they simply resolve no Posts.
     """
     from typehaus.model.spatial import Roof
     from typehaus.model.structure import Beam, Post
