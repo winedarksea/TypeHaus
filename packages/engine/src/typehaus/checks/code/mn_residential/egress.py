@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import Any
 
 from shapely.geometry import Point, Polygon
+from shapely.ops import nearest_points
 
 from typehaus.checks.code.mn_residential._common import (
     _fail,
@@ -174,6 +175,7 @@ def exterior_door_landing(ctx: CheckContext) -> list[Finding]:
     door_types = {t.tag: t for t in ctx.plan.library.door_types}
     rooms_by_storey = _rooms_by_storey(ctx)
     surfaces = _landing_surfaces(ctx, union=True)
+    tilted = tilted_decks(ctx)
     storeys = {s.tag: s for s in ctx.plan.storeys}
     out: list[Finding] = []
     for opening in ctx.model.openings:
@@ -210,16 +212,22 @@ def exterior_door_landing(ctx: CheckContext) -> list[Finding]:
         # on one (``Wall.base_elevation``): reading the storey put D-B-PATIO's threshold
         # 7 1/4" low and reported its step down into the sunken garden as 0.0".
         threshold = wall.base_ref_z_m + opening.sill_m
-        covered = [(name, top) for name, poly, top in surfaces
+        # A tilted deck is read where the foot lands: its own edge nearest the door.
+        (ax, ay), (bx, by) = list(patch.exterior.coords)[:2]
+        at_door = Point((ax + bx) / 2.0, (ay + by) / 2.0)
+        in_plan = [(name, tilted[name].deck_top_at(*nearest_points(poly, at_door)[0].coords[0])
+                    if name in tilted else top)
+                   for name, poly, top in surfaces
+                   if poly.intersection(patch).area >= patch.area * _LANDING_COVERAGE]
+        covered = [(name, top) for name, top in in_plan
                    if threshold - _MAX_NONREQUIRED_STEP_DOWN.meters - 1e-6 <= top
-                   <= threshold + 0.05
-                   and poly.intersection(patch).area >= patch.area * _LANDING_COVERAGE]
+                   <= threshold + _MAX_STEP_UP_M]
         if not covered:
-            wrong_height = sorted({name for name, poly, _top in surfaces
-                                   if poly.intersection(patch).area
-                                   >= patch.area * _LANDING_COVERAGE})
-            hint = (f" ({', '.join(wrong_height)} covers the patch in plan but sits more "
-                    "than one riser below the threshold)" if wrong_height else "")
+            nearest = min(in_plan, key=lambda item: abs(item[1] - threshold), default=None)
+            hint = "" if nearest is None else (
+                f" ({nearest[0]} covers the patch in plan but stands "
+                f"{abs(nearest[1] - threshold) / .0254:.2f}\" "
+                + ("above" if nearest[1] > threshold else "below") + " the threshold)")
             out.append(_fail(cid, f"{opening.tag} has no landing: nothing at threshold height "
                              f"covers the 36\"-deep patch outside it{hint}; R311.3 requires a "
                              "floor or landing on each side of every exterior door",
@@ -252,6 +260,17 @@ def exterior_door_landing(ctx: CheckContext) -> list[Finding]:
             out.append(_pass(cid, f"{opening.tag} lands on {name}, {step / .0254:.1f}\" below "
                              "the threshold (<= 1.5\")", code))
     return out
+
+
+#: How far a landing may stand ABOVE the threshold and still be the one it serves: a board
+#: over a sill, not a step up. R311.3.1 itself bounds only the step down.
+_MAX_STEP_UP_M = 0.05
+
+
+def tilted_decks(ctx: CheckContext) -> dict:
+    """Decks on tilted bearings, by tag. ``_landing_surfaces`` lists them at their datum and
+    never merges them; a caller reads one where it stands (``deck_top_at``)."""
+    return {f.tag: f for f in ctx.model.floors if f.deck_plane is not None}
 
 
 # How much of the 36" patch a surface must cover to be its landing. Not 1.0: the patch is
@@ -328,7 +347,9 @@ def _landing_surfaces(ctx: CheckContext, *, union: bool = False):
                     out.append((f"{stair.tag}/{member.child_key}", Polygon(ring), member.z1_m))
     out = [(name, poly, top) for name, poly, top in out
            if poly.is_valid and poly.area > 1e-9]
-    return (out + _merged_landing_surfaces(out)) if union else out
+    tilted = tilted_decks(ctx)
+    flat = [item for item in out if item[0] not in tilted]
+    return (out + _merged_landing_surfaces(flat)) if union else out
 
 
 def _merged_landing_surfaces(surfaces):

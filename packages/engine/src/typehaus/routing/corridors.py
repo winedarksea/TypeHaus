@@ -306,7 +306,7 @@ def chase_corridors(model: ResolvedModel) -> list[Corridor]:
             out.append(Corridor(
                 tag=tag, kind="chase", axis=axis,
                 station=(miny + maxy) / 2.0 if wide else (minx + maxx) / 2.0,
-                z0_m=_floor_low(floor), z1_m=floor.deck_z0_m,
+                z0_m=_floor_low(floor), z1_m=floor.deck_bottom_range(ring)[1],
                 clear_width_m=max(across - _chase_taken(model, tag), 0.0),
                 lo_m=lo, hi_m=hi))
     return out

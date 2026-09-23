@@ -38,9 +38,9 @@ from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.sweep import interpolate_along, straight_sweep_band
 
 _M_TO_FT = 3.280839895013123
-#: How far below a support's top a member underside may read and still sit on it. A level
-#: joist on a TILTED beam is seated ~1/64" under the interpolated top (catlin's balcony); a
-#: hung end is a full carrier depth below, so 1/8" cannot admit one.
+#: How far below a support's top a member underside may read and still sit on it — float
+#: and rounding slack (a joist on a tilted beam is seated exactly, ``resolve/floor_tilt.py``);
+#: a hung end is a full carrier depth below, so 1/8" cannot admit one.
 _SEAT_SLACK_M = 0.125 * M_PER_IN
 
 @dataclass(frozen=True)

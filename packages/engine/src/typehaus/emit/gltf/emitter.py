@@ -379,6 +379,9 @@ def _add_deck(mb: _MeshBuilder, model: ResolvedModel, floor) -> None:
         return
     color = _material_finish_color(getattr(floor, "deck_material_ref", None), "sheathing")
     for prism in part.solids:
+        if isinstance(prism, GBox):  # a tilted deck's plane
+            mb.add_gbox(prism, color)
+            continue
         mb.add_prism_with_rectangular_voids(list(prism.ring), prism.voids,
                                             prism.z0_m, prism.z1_m, color)
 

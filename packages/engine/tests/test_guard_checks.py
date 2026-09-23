@@ -105,7 +105,7 @@ def _ctx(guard_layers, *, floor_outline=None, support_wall=None, allowance=50.0)
     floors = []
     if floor_outline is not None:
         floors.append(SimpleNamespace(tag="FS-DECK", deck_outline=floor_outline,
-                                      deck_z1_m=0.0))
+                                      deck_z1_m=0.0, deck_top_at=lambda _x, _y: 0.0))
     # ``masonry_guard_bearing`` censuses ``isinstance(e, Wall) and e.guard``, so the element
     # side has to be a real Wall — the marker is what makes this rule apply at all.
     element = _WallElement(uid="WG00000001", tag="W-GUARD", start_node="N-A", end_node="N-B",

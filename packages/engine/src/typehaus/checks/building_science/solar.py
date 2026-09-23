@@ -334,18 +334,19 @@ def _shade_planes(model: ResolvedModel, wall: ResolvedWall, opening,
     ray = LineString([(face.x, face.y),
                       (face.x + outward[0] * _SHADE_REACH_M,
                        face.y + outward[1] * _SHADE_REACH_M)])
-    candidates: list[tuple[str, float, object]] = []
+    candidates: list[tuple[str, float, object, object]] = []
     for roof in model.roofs:
         if len(roof.footprint) >= 3:
-            candidates.append((roof.tag, roof.eave_z_m, Polygon(roof.footprint)))
+            candidates.append((roof.tag, roof.eave_z_m, Polygon(roof.footprint), None))
     for solid in model.solids:
         if solid.category == "slab" and len(solid.outline) >= 3:
-            candidates.append((solid.tag, solid.z1_m, Polygon(solid.outline)))
+            candidates.append((solid.tag, solid.z1_m, Polygon(solid.outline), None))
     for floor in model.floors:
         if len(floor.deck_outline) >= 3:
-            candidates.append((floor.tag, floor.deck_z1_m, Polygon(floor.deck_outline)))
+            candidates.append((floor.tag, floor.deck_z1_m, Polygon(floor.deck_outline),
+                               floor if floor.deck_plane is not None else None))
     planes: list[_ShadePlane] = []
-    for tag, z_m, polygon in candidates:
+    for tag, z_m, polygon, tilted in candidates:
         # Strictly above the window head, and not the deck the window's own storey sits on.
         if z_m <= head_m + 1e-6 or not polygon.is_valid:
             continue
@@ -353,10 +354,13 @@ def _shade_planes(model: ResolvedModel, wall: ResolvedWall, opening,
         if crossed.is_empty:
             continue
         # The near and far edges of what this plane covers, measured out along the normal.
+        points = _line_points(crossed)
         distances = [((x - face.x) ** 2 + (y - face.y) ** 2) ** 0.5 / 0.3048
-                     for x, y in _line_points(crossed)]
+                     for x, y in points]
         if not distances:
             continue
+        if tilted is not None:  # the OUTER edge casts the shadow line, so read it there
+            z_m = tilted.deck_top_at(*points[distances.index(max(distances))])
         planes.append(_ShadePlane(tag, z_m, min(distances), max(distances)))
     return tuple(planes)
 

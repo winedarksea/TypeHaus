@@ -22,6 +22,7 @@ from typehaus.emit.ifc.roof import member_class, member_representation
 from typehaus.model.ids import derive_child_guid, derive_guid
 from typehaus.resolve.framing.profiles import cross_section, plan_cross_section_m
 from typehaus.resolve.geometry import rect_between
+from typehaus.resolve.geometry_ir import GBox
 from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.sweep import (
     clean_path,
@@ -244,15 +245,20 @@ def _emit_floor(f: Any, body: Any, floor: Any, storeys: dict[str, Any],
         # The prism below is z1-z0 tall, so its plan half-width is the face that is not
         # standing up — see ``plan_cross_section_m``. Floor members are all on edge today,
         # but reading the rule keeps this from drifting if a flat one ever lands here.
-        half = plan_cross_section_m(cross_section(member.profile),
-                                    member.z1_m - member.z0_m) / 2.0
-        profile = rect_between(member.p0, member.p1, -half, half)
         beam = ll.create_entity(f, "IfcBeam", name=f"{floor.tag}/{member.child_key}")
         beam.GlobalId = derive_child_guid(project_uuid, floor.uid, member.child_key)
         beam.PredefinedType = _BEAM_PREDEFINED_TYPE.get(member.category, "BEAM")
-        ll.assign_representation(f, beam, ll.add_prism_from_profile(
-            f, body, profile, max(member.z1_m - member.z0_m, 1e-4), member.z0_m,
-        ))
+        if member.z0_end_m is not None or member.z1_end_m is not None:
+            # A raked rim/joist on a tilted field: a vertical prism would flatten it.
+            representation = _member_body(f, body, member)
+        else:
+            half = plan_cross_section_m(cross_section(member.profile),
+                                        member.z1_m - member.z0_m) / 2.0
+            representation = ll.add_prism_from_profile(
+                f, body, rect_between(member.p0, member.p1, -half, half),
+                max(member.z1_m - member.z0_m, 1e-4), member.z0_m)
+        if representation is not None:
+            ll.assign_representation(f, beam, representation)
         ll.ensure_pset(f, beam, PSET_SOURCE, {
             "uid": floor.uid, "tag": f"{floor.tag}/{member.child_key}",
             "category": member.category, "profile": member.profile,
@@ -278,13 +284,27 @@ def _emit_deck(f: Any, body: Any, floor: Any, container: Any, project_uuid: Any,
     slab = ll.create_entity(f, "IfcSlab", name=f"{floor.tag}/deck")
     slab.GlobalId = derive_child_guid(project_uuid, floor.uid, "deck")
     slab.PredefinedType = "FLOOR"
-    ll.assign_representation(f, slab, ll.add_prism_from_profile(
-        f, body, list(prism.ring), prism.z1_m - prism.z0_m, prism.z0_m, prism.voids))
+    if isinstance(prism, GBox):  # a tilted deck: its plane, as closed shells
+        representation = ll.add_faceted_solids(f, body, [_box_faces(b) for b in part.solids])
+    else:
+        representation = ll.add_prism_from_profile(
+            f, body, list(prism.ring), prism.z1_m - prism.z0_m, prism.z0_m, prism.voids)
+    ll.assign_representation(f, slab, representation)
     ll.ensure_pset(f, slab, PSET_SOURCE, {
         "uid": floor.uid, "tag": f"{floor.tag}/deck",
         "material": getattr(floor, "deck_material_ref", None) or "",
     })
     ll.assign_container(f, slab, container)
+
+
+def _box_faces(box: GBox) -> list[list[tuple[float, ...]]]:
+    """A ``GBox`` as outward-wound faces — the solar-panel shell contract."""
+    bottom, top = [tuple(p) for p in box.corners_bottom], [tuple(p) for p in box.corners_top]
+    faces = [list(reversed(bottom)), list(top)]
+    for i in range(len(bottom)):
+        j = (i + 1) % len(bottom)
+        faces.append([bottom[i], bottom[j], top[j], top[i]])
+    return faces
 
 
 def _emit_brace(f: Any, body: Any, brace: Any, storeys: dict[str, Any],

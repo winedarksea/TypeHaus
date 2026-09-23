@@ -82,7 +82,7 @@ def stairwell_guard(ctx: CheckContext) -> list[Finding]:
                                 "rectangle", (opening.tag,), code))
             continue
         minx, maxx, miny, maxy = box
-        surface = floor.deck_z1_m
+        surface = floor.deck_top_at((minx + maxx) / 2.0, (miny + maxy) / 2.0)
         closures = [[point for layer in w.layers for point in layer.polygon]
                     for w in ctx.model.walls
                     if w.storey == floor.storey
@@ -219,10 +219,12 @@ def raised_surface_guard_height(ctx: CheckContext) -> list[Finding]:
     from shapely.geometry import LineString, Point, Polygon
 
     cid, code = "code.R312_1_guard_height", "R312.1.1"
-    surfaces = [(floor.tag, list(floor.deck_outline), floor.deck_z1_m)
+    # (tag, ring, datum, top at a plan point): a tilted deck's drop is read where it is.
+    surfaces = [(floor.tag, list(floor.deck_outline), floor.deck_z1_m, floor.deck_top_at)
                 for floor in ctx.model.floors
                 if floor.deck_outline and len(floor.deck_outline) >= 3]
-    surfaces += [(solid.tag, list(solid.outline), solid.z1_m)
+    surfaces += [(solid.tag, list(solid.outline), solid.z1_m,
+                  lambda _x, _y, z=solid.z1_m: z)
                  for solid in ctx.model.solids
                  if solid.category == "slab" and len(solid.outline) >= 3]
     if not surfaces:
@@ -231,9 +233,9 @@ def raised_surface_guard_height(ctx: CheckContext) -> list[Finding]:
     grade = ctx.plan.project.site.grade
     railings = guard_lines(ctx.plan)
     out: list[Finding] = []
-    for tag, ring, surface in surfaces:
-        neighbours = [(Polygon(other_ring), other_z)
-                      for other_tag, other_ring, other_z in surfaces if other_tag != tag]
+    for tag, ring, surface, top_at in surfaces:
+        neighbours = [(Polygon(other_ring), other_at)
+                      for other_tag, other_ring, _z, other_at in surfaces if other_tag != tag]
         outward = _outward_normals(ring)
         closures = _closures_at(ctx, surface)
         near_railings = [(r, r.height.meters + 1e-9 >= _GUARD_MIN_HEIGHT.meters)
@@ -257,25 +259,27 @@ def raised_surface_guard_height(ctx: CheckContext) -> list[Finding]:
             for station0, station1 in runs:
                 start, stop = seg.interpolate(station0), seg.interpolate(station1)
                 mx, my = (start.x + stop.x) / 2.0, (start.y + stop.y) / 2.0
-                beside = [z for step in _EDGE_NEIGHBOUR_PROBE_M for poly, z in neighbours
+                here = top_at(mx, my)
+                beside = [z_at(mx + nx * step, my + ny * step)
+                          for step in _EDGE_NEIGHBOUR_PROBE_M for poly, z_at in neighbours
                           if poly.covers(Point(mx + nx * step, my + ny * step))]
                 below = max(beside) if beside else None
-                if below is not None and below >= surface - _GUARD_TRIGGER_DROP.meters:
+                if below is not None and below >= here - _GUARD_TRIGGER_DROP.meters:
                     continue  # the walking surface carries on across this edge
                 if below is None:
                     if grade is None:
                         unknown_edges.append(f"({mx / .3048:.0f}', {my / .3048:.0f}')")
                         continue
                     below = grade.meters
-                if surface - below <= _GUARD_TRIGGER_DROP.meters + 1e-9:
+                if here - below <= _GUARD_TRIGGER_DROP.meters + 1e-9:
                     continue  # under 30" — no guard required
-                if _roof_closed_run(ctx, (start.x, start.y), (stop.x, stop.y), surface):
+                if _roof_closed_run(ctx, (start.x, start.y), (stop.x, stop.y), here):
                     continue  # roofed under 30" — no walking surface on either side of it
                 unguarded.append(
                     f"({start.x / .3048:.1f}', {start.y / .3048:.1f}')..."
                     f"({stop.x / .3048:.1f}', {stop.y / .3048:.1f}') "
                     f"{(station1 - station0) / .3048:.1f}' of open side over a "
-                    f"{(surface - below) / .3048:.1f}' drop")
+                    f"{(here - below) / .3048:.1f}' drop")
         if unguarded:
             out.append(_advisory_fail(cid, f'{tag}: unguarded edge(s) over a 30" drop — '
                                       f"{'; '.join(unguarded)}", (tag,), code))

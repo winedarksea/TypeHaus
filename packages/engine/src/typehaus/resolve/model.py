@@ -20,6 +20,7 @@ from typehaus.resolve.rebar.records import ResolvedRebarSet
 if TYPE_CHECKING:  # the IR imports this module, so the reference stays type-only
     from typehaus.model.placeables import Mount
     from typehaus.resolve.floor_ends import FloorEnds
+    from typehaus.resolve.floor_tilt import DeckPlane
     from typehaus.resolve.geometry_ir import GeometryModel
 
 # A polygon ring: list of (x, y) in meters. Layer polygons are simple rings.
@@ -678,8 +679,13 @@ class ResolvedFloor:
     # openings (stair wells), which the deck is cut by and the joists were already clipped to.
     deck_outline: Ring = ()
     deck_voids: tuple[Ring, ...] = ()
-    deck_z0_m: float = 0.0   # = the storey datum: joists top out there, decking rides on it
+    # Bottom/top of the deck sheet at the datum — the storey (or ``top_elevation``) joist top.
+    deck_z0_m: float = 0.0
     deck_z1_m: float = 0.0
+    #: A deck on TILTED bearings is a plane, not a level (``resolve/floor_tilt.py``): its
+    #: lift above ``deck_z0_m``/``deck_z1_m`` at a plan point. ``None`` is level. Read it
+    #: through ``deck_top_at``/``deck_top_range``, never the two scalars alone.
+    deck_plane: DeckPlane | None = None
     deck_material_ref: str | None = None
     # Where the joists stop and what they are seated on at the two outermost bearing lines
     # (``resolve/floor_ends.py``). Carried on the resolved record rather than re-derived by
@@ -714,6 +720,33 @@ class ResolvedFloor:
     #: the plan because ``checks``, ``resolve/mep_crossings`` and ``routing/obstacles`` all
     #: need it and only one of the three may reach a ``PlanModel``.
     web_panels: tuple[float, float, float] | None = None
+
+    def deck_lift_at(self, x: float, y: float) -> float:
+        return 0.0 if self.deck_plane is None else self.deck_plane.lift(x, y)
+
+    def deck_top_at(self, x: float, y: float) -> float:
+        """Top of the deck sheet at plan ``(x, y)``."""
+        return self.deck_z1_m + self.deck_lift_at(x, y)
+
+    def deck_bottom_at(self, x: float, y: float) -> float:
+        return self.deck_z0_m + self.deck_lift_at(x, y)
+
+    def deck_lift_range(self, points=None) -> tuple[float, float]:
+        """(min, max) lift over ``points`` (default: the deck outline). A plane's extremes
+        over a polygon are at its vertices, so a region's ring is enough."""
+        if self.deck_plane is None:
+            return 0.0, 0.0
+        ring = list(points) if points is not None else list(self.deck_outline)
+        lifts = [self.deck_plane.lift(p[0], p[1]) for p in ring] or [0.0]
+        return min(lifts), max(lifts)
+
+    def deck_top_range(self, points=None) -> tuple[float, float]:
+        lo, hi = self.deck_lift_range(points)
+        return self.deck_z1_m + lo, self.deck_z1_m + hi
+
+    def deck_bottom_range(self, points=None) -> tuple[float, float]:
+        lo, hi = self.deck_lift_range(points)
+        return self.deck_z0_m + lo, self.deck_z0_m + hi
 
 
 @dataclass(frozen=True)

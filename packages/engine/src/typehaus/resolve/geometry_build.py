@@ -196,18 +196,38 @@ def _floor_deck_geometry(floor: ResolvedFloor) -> ElementGeometry | None:
     """
     if len(floor.deck_outline) < 3 or floor.deck_z1_m <= floor.deck_z0_m:
         return None
-    prism = GPrism(ring=tuple(tuple(p) for p in floor.deck_outline),
-                   z0_m=floor.deck_z0_m, z1_m=floor.deck_z1_m,
-                   voids=tuple(tuple(tuple(p) for p in ring) for ring in floor.deck_voids))
+    solids = (_tilted_deck_solids(floor) if floor.deck_plane is not None else (GPrism(
+        ring=tuple(tuple(p) for p in floor.deck_outline),
+        z0_m=floor.deck_z0_m, z1_m=floor.deck_z1_m,
+        voids=tuple(tuple(tuple(p) for p in ring) for ring in floor.deck_voids)),))
     return ElementGeometry(
         uid=floor.uid, kind="floor", trades=("framing",),
-        parts=(GPart(key="deck", solids=(prism,),
+        parts=(GPart(key="deck", solids=solids,
                      material_key=layer_material_key(floor.deck_material_ref, "sheathing"),
                      layer_group="sheathing",
                      catalog=PartCatalogRef(material_ref=floor.deck_material_ref,
                                             role="sheathing", name="deck",
                                             thickness_m=floor.deck_z1_m - floor.deck_z0_m)),),
     )
+
+
+def _tilted_deck_solids(floor: ResolvedFloor) -> tuple[GBox, ...]:
+    """A deck on tilted bearings as its plane: one box for a convex sheet with no voids,
+    else one per triangle of the cut sheet — a ``GPrism`` has a flat bottom and cannot tilt."""
+    import shapely
+    from shapely.geometry import Polygon
+
+    sheet = Polygon(floor.deck_outline, holes=[list(v) for v in floor.deck_voids])
+    if not floor.deck_voids and abs(sheet.convex_hull.area - sheet.area) <= 1e-9:
+        rings = [list(floor.deck_outline)]
+    else:
+        rings = [list(t.exterior.coords)[:-1]
+                 for t in shapely.constrained_delaunay_triangles(sheet).geoms]
+
+    def box(ring) -> GBox:
+        return GBox(corners_bottom=tuple((x, y, floor.deck_bottom_at(x, y)) for x, y in ring),
+                    corners_top=tuple((x, y, floor.deck_top_at(x, y)) for x, y in ring))
+    return tuple(box(ring) for ring in rings)
 
 
 def _earth_geometry(model: ResolvedModel) -> ElementGeometry | None:

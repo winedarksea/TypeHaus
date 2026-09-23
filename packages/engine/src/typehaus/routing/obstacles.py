@@ -160,7 +160,7 @@ def hard_prisms(model: ResolvedModel, radius_m: float, *, avoid: frozenset[str] 
                 continue
             out.append(HardPrism(tag=floor.tag, kind="void", footprint=poly,
                                  z0_m=low - inflate,
-                                 z1_m=floor.deck_z1_m + inflate))
+                                 z1_m=floor.deck_top_range(ring)[1] + inflate))
 
     # A flight's R311.7.2 headroom and its own structure (``resolve/stair_headroom``, the
     # volume the check grades). Fixed: nobody moves a stair to make room for a duct. Goings

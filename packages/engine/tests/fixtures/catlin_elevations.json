@@ -45120,231 +45120,231 @@
 ],
 "geometry/SGFS02AAAA/deck": [
 3.048,
-3.0861,
-2,
-"b6da518d5173"
+3.1474833,
+8,
+"bd757d5d2625"
 ],
 "geometry/SGFS02AAAA::framing/member:joist-0-000-0": [
-2.76225,
-3.048,
+2.7626469,
+3.0483969,
 8,
-"5568a307e8a6"
+"e49c65ce8673"
 ],
 "geometry/SGFS02AAAA::framing/member:joist-0-001-0": [
-2.7686,
-3.05435,
+2.7689969,
+3.0547469,
 8,
-"0380c797ca1e"
+"a31f6defccb1"
 ],
 "geometry/SGFS02AAAA::framing/member:joist-0-002-0": [
-2.77495,
-3.0607,
+2.7753469,
+3.0610969,
 8,
-"857d05a28a30"
+"a92e8704b198"
 ],
 "geometry/SGFS02AAAA::framing/member:joist-0-003-0": [
-2.7813,
-3.06705,
+2.7816969,
+3.0674469,
 8,
-"f6d1cecaaae6"
+"5f2ed75c9c1f"
 ],
 "geometry/SGFS02AAAA::framing/member:joist-0-004-0": [
-2.78765,
-3.0734,
+2.7880469,
+3.0737969,
 8,
-"cacd7ace8cb9"
+"08626c483986"
 ],
 "geometry/SGFS02AAAA::framing/member:joist-0-005-0": [
-2.794,
-3.07975,
+2.7943969,
+3.0801469,
 8,
-"1f429f88cda7"
+"cc6c9ff65264"
 ],
 "geometry/SGFS02AAAA::framing/member:joist-0-006-0": [
-2.80035,
-3.0861,
+2.8007469,
+3.0864969,
 8,
-"68252c1fc54a"
+"330bf17db030"
 ],
 "geometry/SGFS02AAAA::framing/member:joist-0-007-0": [
-2.8067,
-3.09245,
+2.8070969,
+3.0928469,
 8,
-"c3fa894ea55f"
+"b0011b126475"
 ],
 "geometry/SGFS02AAAA::framing/member:joist-0-008-0": [
-2.81305,
-3.0988,
+2.8134469,
+3.0991969,
 8,
-"aaba824a6f0e"
+"0d2556df4605"
 ],
 "geometry/SGFS02AAAA::framing/member:joist-0-009-0": [
-2.8194,
-3.10515,
+2.8197969,
+3.1055469,
 8,
-"653c4c4186af"
+"c3b92910bad8"
 ],
 "geometry/SGFS02AAAA::framing/member:joist-0-010-0": [
-2.8228396,
-3.1085896,
+2.8232365,
+3.1089865,
 8,
-"480225b5ff29"
+"515f9f306a2a"
 ],
 "geometry/SGFS02AAAA::framing/member:joist-0-x00-0": [
-2.771775,
-3.057525,
+2.7721719,
+3.0579219,
 8,
-"70e7a88a1203"
+"8afc9b7cb6dd"
 ],
 "geometry/SGFS02AAAA::framing/member:rim-0": [
-2.76225,
-3.1085896,
+2.7626469,
+3.1089865,
 8,
-"e65030dc721f"
+"01542d5a117a"
 ],
 "geometry/SGFS02AAAA::framing/member:rim-1": [
-2.76225,
-3.1085896,
+2.7626469,
+3.1089865,
 8,
-"e65030dc721f"
+"01542d5a117a"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-0-block-hi": [
-2.7626469,
-3.0539531,
+2.7630438,
+3.05435,
 8,
-"ebf61fffe2b0"
+"a5f79aec4b8c"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-1-block-hi": [
-2.7626469,
-3.0539531,
+2.7630438,
+3.05435,
 8,
-"ebf61fffe2b0"
+"a5f79aec4b8c"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-10-block-hi": [
-2.7943969,
-3.0857031,
+2.7947937,
+3.0861,
 8,
-"a794ebbdb6d4"
+"09ea5202ff26"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-10-block-lo": [
-2.7880469,
-3.0793531,
+2.7884437,
+3.07975,
 8,
-"4136c1304113"
+"c348a4ac2948"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-11-block-hi": [
-2.8070969,
-3.0984031,
+2.8074937,
+3.0988,
 8,
-"74dc191b4be9"
+"673c169f4d7e"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-11-block-lo": [
-2.8007469,
-3.0920531,
+2.8011438,
+3.09245,
 8,
-"1416291e508d"
+"69907643127a"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-12-block-hi": [
-2.8197969,
-3.1081927,
+2.8201938,
+3.1085896,
 8,
-"36ff57c9c369"
+"fb86e4eaa9c1"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-12-block-lo": [
-2.8134469,
-3.1047531,
+2.8138437,
+3.10515,
 8,
-"a9463d23be78"
+"2ab5577c1479"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-2-block-hi": [
-2.7626469,
-3.0539531,
+2.7630438,
+3.05435,
 8,
-"ebf61fffe2b0"
+"a5f79aec4b8c"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-3-block-hi": [
-2.7721719,
-3.0603031,
+2.7725688,
+3.0607,
 8,
-"5230522e1c0e"
+"249482aea2f9"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-3-block-lo": [
-2.7689969,
-3.0571281,
+2.7693937,
+3.057525,
 8,
-"07b7a539b849"
+"b77a66a3f02f"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-4-block-hi": [
-2.7816969,
-3.0730031,
+2.7820938,
+3.0734,
 8,
-"5ec979b3fc62"
+"285d20dec199"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-4-block-lo": [
-2.7753469,
-3.0666531,
+2.7757437,
+3.06705,
 8,
-"4851aee69d4f"
+"cb4f0351aee9"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-5-block-hi": [
-2.7943969,
-3.0857031,
+2.7947937,
+3.0861,
 8,
-"a794ebbdb6d4"
+"09ea5202ff26"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-5-block-lo": [
-2.7880469,
-3.0793531,
+2.7884437,
+3.07975,
 8,
-"4136c1304113"
+"c348a4ac2948"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-6-block-hi": [
-2.8070969,
-3.0984031,
+2.8074937,
+3.0988,
 8,
-"74dc191b4be9"
+"673c169f4d7e"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-6-block-lo": [
-2.8007469,
-3.0920531,
+2.8011438,
+3.09245,
 8,
-"1416291e508d"
+"69907643127a"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-7-block-hi": [
-2.8197969,
-3.1081927,
+2.8201938,
+3.1085896,
 8,
-"36ff57c9c369"
+"fb86e4eaa9c1"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-7-block-lo": [
-2.8134469,
-3.1047531,
+2.8138437,
+3.10515,
 8,
-"a9463d23be78"
+"2ab5577c1479"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-8-block-hi": [
-2.7721719,
-3.0603031,
+2.7725688,
+3.0607,
 8,
-"5230522e1c0e"
+"249482aea2f9"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-8-block-lo": [
-2.7689969,
-3.0571281,
+2.7693937,
+3.057525,
 8,
-"07b7a539b849"
+"b77a66a3f02f"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-9-block-hi": [
-2.7816969,
-3.0730031,
+2.7820938,
+3.0734,
 8,
-"5ec979b3fc62"
+"285d20dec199"
 ],
 "geometry/SGFS02AAAA::framing/member:sister-9-block-lo": [
-2.7753469,
-3.0666531,
+2.7757437,
+3.06705,
 8,
-"4851aee69d4f"
+"cb4f0351aee9"
 ],
 "geometry/SGFW01AAAA/body": [
 -2.9194125,
@@ -78497,226 +78497,226 @@
 "2b632caa33a1"
 ],
 "member/SGFS02AAAA/joist-0-000-0": [
-2.76225,
-3.048,
+2.7626469,
+3.0483969,
 2,
-"e11b707b8505"
+"4c9fb3f73368"
 ],
 "member/SGFS02AAAA/joist-0-001-0": [
-2.7686,
-3.05435,
+2.7689969,
+3.0547469,
 2,
-"d43285279657"
+"42c64728eea6"
 ],
 "member/SGFS02AAAA/joist-0-002-0": [
-2.77495,
-3.0607,
+2.7753469,
+3.0610969,
 2,
-"331c2023d083"
+"cfd5164e3ee1"
 ],
 "member/SGFS02AAAA/joist-0-003-0": [
-2.7813,
-3.06705,
+2.7816969,
+3.0674469,
 2,
-"2c5be11e3212"
+"16cbd19510d1"
 ],
 "member/SGFS02AAAA/joist-0-004-0": [
-2.78765,
-3.0734,
+2.7880469,
+3.0737969,
 2,
-"c083b23a16b2"
+"364b41ab9318"
 ],
 "member/SGFS02AAAA/joist-0-005-0": [
-2.794,
-3.07975,
+2.7943969,
+3.0801469,
 2,
-"57f51c217e32"
+"85ac7d994901"
 ],
 "member/SGFS02AAAA/joist-0-006-0": [
-2.80035,
-3.0861,
+2.8007469,
+3.0864969,
 2,
-"7d1d685ed7e8"
+"d78cdda643ee"
 ],
 "member/SGFS02AAAA/joist-0-007-0": [
-2.8067,
-3.09245,
+2.8070969,
+3.0928469,
 2,
-"4fd3eb3206b3"
+"bd16762abd25"
 ],
 "member/SGFS02AAAA/joist-0-008-0": [
-2.81305,
-3.0988,
+2.8134469,
+3.0991969,
 2,
-"4e444676d0fe"
+"7318cb1fc62e"
 ],
 "member/SGFS02AAAA/joist-0-009-0": [
-2.8194,
-3.10515,
+2.8197969,
+3.1055469,
 2,
-"feb48b3dfe8b"
+"5ef0c23e7c87"
 ],
 "member/SGFS02AAAA/joist-0-010-0": [
-2.8228396,
-3.1085896,
+2.8232365,
+3.1089865,
 2,
-"32d04249db1d"
+"4fa0f272d6f3"
 ],
 "member/SGFS02AAAA/joist-0-x00-0": [
-2.771775,
-3.057525,
+2.7721719,
+3.0579219,
 2,
-"6bcf4c65b90d"
+"091278740fca"
 ],
 "member/SGFS02AAAA/rim-0": [
-2.76225,
-3.1085896,
+2.7626469,
+3.1089865,
 4,
-"efba633d12e8"
+"d21ae93bb100"
 ],
 "member/SGFS02AAAA/rim-1": [
-2.76225,
-3.1085896,
+2.7626469,
+3.1089865,
 4,
-"efba633d12e8"
+"d21ae93bb100"
 ],
 "member/SGFS02AAAA/sister-0-block-hi": [
-2.7626469,
-3.0539531,
+2.7630438,
+3.05435,
 4,
-"166f686de528"
+"7c9591a916a9"
 ],
 "member/SGFS02AAAA/sister-1-block-hi": [
-2.7626469,
-3.0539531,
+2.7630438,
+3.05435,
 4,
-"166f686de528"
+"7c9591a916a9"
 ],
 "member/SGFS02AAAA/sister-10-block-hi": [
-2.7943969,
-3.0857031,
+2.7947937,
+3.0861,
 4,
-"dbd5277829e7"
+"8437e732c1ac"
 ],
 "member/SGFS02AAAA/sister-10-block-lo": [
-2.7880469,
-3.0793531,
+2.7884437,
+3.07975,
 4,
-"944283b5051e"
+"e3d27f0f6f6e"
 ],
 "member/SGFS02AAAA/sister-11-block-hi": [
-2.8070969,
-3.0984031,
+2.8074937,
+3.0988,
 4,
-"5ebcb164c98c"
+"c6bd683340ca"
 ],
 "member/SGFS02AAAA/sister-11-block-lo": [
-2.8007469,
-3.0920531,
+2.8011438,
+3.09245,
 4,
-"d6890b8ad216"
+"e3cf727e7b0f"
 ],
 "member/SGFS02AAAA/sister-12-block-hi": [
-2.8197969,
-3.1081927,
+2.8201938,
+3.1085896,
 4,
-"026da920046e"
+"440c3e7fdb5d"
 ],
 "member/SGFS02AAAA/sister-12-block-lo": [
-2.8134469,
-3.1047531,
+2.8138437,
+3.10515,
 4,
-"94451f1c3dcf"
+"c566a7cbb1d9"
 ],
 "member/SGFS02AAAA/sister-2-block-hi": [
-2.7626469,
-3.0539531,
+2.7630438,
+3.05435,
 4,
-"166f686de528"
+"7c9591a916a9"
 ],
 "member/SGFS02AAAA/sister-3-block-hi": [
-2.7721719,
-3.0603031,
+2.7725688,
+3.0607,
 4,
-"5cc125c3971a"
+"109164edae7d"
 ],
 "member/SGFS02AAAA/sister-3-block-lo": [
-2.7689969,
-3.0571281,
+2.7693937,
+3.057525,
 4,
-"49670183c082"
+"3c24cdd9a198"
 ],
 "member/SGFS02AAAA/sister-4-block-hi": [
-2.7816969,
-3.0730031,
+2.7820938,
+3.0734,
 4,
-"9695a2f7a235"
+"4e473301ea33"
 ],
 "member/SGFS02AAAA/sister-4-block-lo": [
-2.7753469,
-3.0666531,
+2.7757437,
+3.06705,
 4,
-"9aed9510dc50"
+"be0e31849937"
 ],
 "member/SGFS02AAAA/sister-5-block-hi": [
-2.7943969,
-3.0857031,
+2.7947937,
+3.0861,
 4,
-"dbd5277829e7"
+"8437e732c1ac"
 ],
 "member/SGFS02AAAA/sister-5-block-lo": [
-2.7880469,
-3.0793531,
+2.7884437,
+3.07975,
 4,
-"944283b5051e"
+"e3d27f0f6f6e"
 ],
 "member/SGFS02AAAA/sister-6-block-hi": [
-2.8070969,
-3.0984031,
+2.8074937,
+3.0988,
 4,
-"5ebcb164c98c"
+"c6bd683340ca"
 ],
 "member/SGFS02AAAA/sister-6-block-lo": [
-2.8007469,
-3.0920531,
+2.8011438,
+3.09245,
 4,
-"d6890b8ad216"
+"e3cf727e7b0f"
 ],
 "member/SGFS02AAAA/sister-7-block-hi": [
-2.8197969,
-3.1081927,
+2.8201938,
+3.1085896,
 4,
-"026da920046e"
+"440c3e7fdb5d"
 ],
 "member/SGFS02AAAA/sister-7-block-lo": [
-2.8134469,
-3.1047531,
+2.8138437,
+3.10515,
 4,
-"94451f1c3dcf"
+"c566a7cbb1d9"
 ],
 "member/SGFS02AAAA/sister-8-block-hi": [
-2.7721719,
-3.0603031,
+2.7725688,
+3.0607,
 4,
-"5cc125c3971a"
+"109164edae7d"
 ],
 "member/SGFS02AAAA/sister-8-block-lo": [
-2.7689969,
-3.0571281,
+2.7693937,
+3.057525,
 4,
-"49670183c082"
+"3c24cdd9a198"
 ],
 "member/SGFS02AAAA/sister-9-block-hi": [
-2.7816969,
-3.0730031,
+2.7820938,
+3.0734,
 4,
-"9695a2f7a235"
+"4e473301ea33"
 ],
 "member/SGFS02AAAA/sister-9-block-lo": [
-2.7753469,
-3.0666531,
+2.7757437,
+3.06705,
 4,
-"9aed9510dc50"
+"be0e31849937"
 ],
 "member/SGST01AAAA/stringer-0": [
 -0.8128,

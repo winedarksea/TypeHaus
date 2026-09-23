@@ -65,7 +65,8 @@ def support_at(ctx: Any, wall: Any, point: tuple[float, float]) -> tuple[str | N
         if Polygon(solid.outline).covers(probe):
             return ("hard", solid.tag)
     for floor in ctx.model.floors:
-        if not floor.deck_outline or abs(floor.deck_z1_m - base) > BEARING_Z_TOL_M:
+        if (not floor.deck_outline
+                or abs(floor.deck_top_at(probe.x, probe.y) - base) > BEARING_Z_TOL_M):
             continue
         if Polygon(floor.deck_outline).covers(probe):
             return ("wood", floor.tag)
