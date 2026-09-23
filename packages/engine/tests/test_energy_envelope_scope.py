@@ -300,7 +300,9 @@ def test_the_walkout_wall_is_graded_at_the_court_floor_not_the_site_plane(
 
     geometry = envelope_geometry(catlin_model_ro)
     floors = open_excavation_floors(catlin_model_ro)
-    assert [tag for tag, _, _ in floors] == ["SL-SG-FLOOR"]
+    # SL-DW-DRIVE is 1" under the site plane at the garage door: real ground, 31' north of
+    # the house, so no strip here reaches it.
+    assert [tag for tag, _, _ in floors] == ["SL-DW-DRIVE", "SL-SG-FLOOR"]
     site_grade = site_grade_elevation_m(catlin_model_ro)
     assert site_grade == pytest.approx(-0.8636, abs=0.001)
 

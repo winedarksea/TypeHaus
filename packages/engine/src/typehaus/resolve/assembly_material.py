@@ -65,3 +65,13 @@ def is_cast_beam(plan, element) -> bool:
     return (getattr(element, "element_kind", None) == "Beam"
             and assembly_structure_material(plan, getattr(element, "assembly", None))
             == "concrete")
+
+
+def is_flatwork(plan, element) -> bool:
+    """A slab whose assembly declares ``role="flatwork"`` — a walk, patio or drive.
+
+    It bears nothing, so the site plan draws it and neither a floor plan nor the foundation
+    schedule does."""
+    tag = getattr(element, "assembly", None)
+    assembly = plan.library.resolve_assembly(tag) if tag else None
+    return assembly is not None and assembly.role == "flatwork"

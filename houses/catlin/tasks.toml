@@ -121,8 +121,8 @@ label = "Flatwork — driveway apron and walks"
 # insp/foundation_backfill` — so the membrane that has to be on the wall BEFORE the backfill
 # inspection was scheduled after it. The allowance is deleted and the membrane is a modelled
 # layer on the concrete trade now, which puts it in the wall package where it belongs.
-rows = ["allowances:concrete-driveway-apron-and-walks"]
-element_tags = ["DW-*"]
+rows = ["concrete:slab:DRIVEWAY_FRC_CLASS5", "allowances:concrete-driveway-apron-and-walks"]
+element_tags = ["SL-DW-*"]
 # Last, and deliberately after backfill: a new apron under a loaded truck is a repair.
 # And `blocks_successors = false` because of the other half of that sentence: framing's
 # package-level predecessor is the concrete package, and expanded to every concrete arrival

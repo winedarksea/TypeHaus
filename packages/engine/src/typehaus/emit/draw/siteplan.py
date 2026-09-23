@@ -28,6 +28,7 @@ from typehaus.emit.draw.siteplan_annotate import emit_site_annotations
 from typehaus.emit.draw.siteplan_labels import add_point_label
 from typehaus.emit.draw.siteplan_planting import emit_site_planting
 from typehaus.emit.draw.typography import DIM_TEXT_PT, TEXT_PT
+from typehaus.resolve.assembly_material import is_flatwork
 from typehaus.resolve.model import ResolvedModel
 
 _DRAINAGE_RADIUS_FT = 40.0
@@ -45,6 +46,7 @@ def build_site_plan(model: ResolvedModel) -> Scene:
     _emit_contours(builder, site)  # survey topo basemap, drawn under everything else
     _emit_roofs_or_wall_footprints(builder, model)
     _emit_foundation_and_post_supports(builder, model)
+    _emit_flatwork(builder, model)
     _emit_drainage_overlay(builder, model)
     emit_site_planting(builder, model)
     emit_site_annotations(builder, model, site)
@@ -193,6 +195,20 @@ def _emit_foundation_and_post_supports(builder: SceneBuilder, model: ResolvedMod
         builder.add(Polyline(points=tuple(_in(point) for point in solid.outline),
                              closed=True, layer="A-SITE-FOUND", lineweight=PROFILE,
                              uid=solid.uid, tag=solid.tag))
+
+
+def _emit_flatwork(builder: SceneBuilder, model: ResolvedModel) -> None:
+    """Walks and drives, with their planting voids: site work, drawn here and on no floor plan."""
+    for solid in sorted(model.solids, key=lambda s: s.uid):
+        if solid.category != "slab" or not is_flatwork(model.plan, solid):
+            continue
+        builder.add(Polyline(points=tuple(_in(p) for p in solid.outline), closed=True,
+                             layer="A-SLAB", lineweight=PROFILE, uid=solid.uid, tag=solid.tag))
+        for tag in getattr(model.plan.by_tag(solid.tag), "openings", ()):
+            ring = getattr(model.plan.by_tag(tag), "outline", ())
+            if len(ring) >= 3:
+                builder.add(Polyline(points=tuple(_in(p.xy_m) for p in ring), closed=True,
+                                     layer="A-SLAB", lineweight=LIGHT, tag=tag))
 
 
 #: Buried stormwater draws dashed; the hung/surface family (gutter, leader, pit cover)

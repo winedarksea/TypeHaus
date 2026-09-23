@@ -55,6 +55,7 @@ each is kept because the *rule* it established usually outlives the design that 
 | `court_soakaway_storage.md` | `checks/mep/soakaway_storage.py` (`drainage.soakaway_storage`) — the court's 12" soakaway course (388 sf, 155 cf of voids + 93 cf of 48 h presumed infiltration) against 222 cf of design snowmelt off `AD-SG-COURT`'s catchment, and the relief lip inside the drained section (`tests/test_catlin_court_drainage.py`) | live |
 | `rain_garden_sizing.md` | `resolve/roof_catchment.py`, `resolve/rain_garden.py`, `checks/mep/landscape_drainage.py` — the basin's catchment, prismoidal volume, setbacks and the two leader extensions (`tests/test_catlin_gardens.py`) | live |
 | `sidewalk_layout.md` | the sidewalk's per-leg areas, pocket stations, concrete and Class 5 quantities and the R401.3 falls (`tests/test_catlin_gardens.py`) | live |
+| `driveway_layout.md` | the driveway's flared outline, concrete and 8" Class 5 quantities, fall, joint layout and the paving cap (`tests/test_catlin_gardens.py`) | live |
 | `grid_garden.md` | `resolve/landscape.py::grid_cells` / `accent_type` — the bluestem grid and basin bed counts (`tests/test_catlin_gardens.py`) | live |
 | `espalier_trellis.md` | `resolve/landscape.py::trellis_post_stations`, `site.utility_clearance` (`tests/test_catlin_gardens.py`) | live |
 

@@ -32,7 +32,7 @@ source:
 - [K5 @ host#layer:gwb-int:in] Curb cap: up-turned flashing behind the drywall, sloped in, drip inboard.
 - [K6] Sill: PT plate on gasket and capillary break. Anchors per IRC R403.1.6.
 - [K7] Overhead door header: 2-ply 14" LVL on packs sized from the 16'-0" opening.
-- [K8] Slab-to-driveway joint: 1" XPS, 1/2" traffic-rated polyurethane sealant.
+- [K8] Joint to SL-DW-DRIVE: 1" 40 psi XPS, 1/2" traffic-rated polyurethane sealant.
 
 ### Spec 07 27 00
 - Seal the top plate to the sheathing and the drywall, continuous.

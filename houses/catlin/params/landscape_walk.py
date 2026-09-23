@@ -30,6 +30,8 @@ from typehaus import (
     pt,
 )
 
+from params.driveway import DRIVE_X, FLARE, Y0 as DRIVE_Y0
+
 ASSEMBLY = "SIDEWALK_FRC_CLASS5"
 TOP = ft(-2, -9)                 # 1" over grade
 POCKET_R_IN = 8.0
@@ -54,6 +56,7 @@ def _rect(x0, y0, x1, y1):
 # --- legs -------------------------------------------------------------------------------
 # A: in front of the garage, from the driveway's east edge (x=24') to past the garage NE
 #    corner, 92" deep off the garage face (stem Z-flashing at y=67'-3 1/2" plus 1/2").
+#    Its SW corner is notched round the drive's 45° flare, 1/2" off it (`A_RING`).
 # B: down the garage east side, stem flashing at x=30'-0 7/8" plus 1/2", to clear of the
 #    canopy column PT-BW-RNE (y 41'-11 3/4"..42'-11 3/4").
 # C: the landing connector, walk only, notched round PT-BW-RNE to reach the paver landing's
@@ -70,6 +73,10 @@ D_X1 = D_X0 + 64.0 / 12.0
 C = ((30.0 + GAP_FT, 39.6), (D_X1, 39.6), (D_X1, B[0][1]), (30.5 + GAP_FT, B[0][1]),
      (30.5 + GAP_FT, 41.98 - GAP_FT), (30.0 + GAP_FT, 41.98 - GAP_FT))
 D = _rect(D_X0, -9.0, D_X1, 39.6)
+
+# The flare's east edge is the line x + y = K; offset 1/2" square to it, K grows by GAP*√2.
+_K = DRIVE_X[1] + FLARE + DRIVE_Y0 + GAP_FT * math.sqrt(2.0)
+A_RING = ((_K - A[0][1], A[0][1]), A[1], A[2], A[3], (A[0][0], _K - A[0][0]))
 
 # NO POCKET SITS AT A LEADER'S FOOT, and neither east leader can have one: TR-RF-LEADER-E
 # stands at x=36'-10 9/16", over leg D's 36" walking band, where a 16" void would leave
@@ -148,7 +155,7 @@ def _slab(leg: str, ring, top=TOP) -> Slab:
                 openings=tuple(o.tag for o in OPENINGS.get(leg, ())))
 
 
-SLABS = [_slab("A", A), _slab("B", B), _slab("C", C), _slab("D", D)]
+SLABS = [_slab("A", A_RING), _slab("B", B), _slab("C", C), _slab("D", D)]
 
 POCKET_BED = PlantingBed(
     uid="GRDNPB0005", tag="PB-WK-POCKETS", type_ref="PT-CAL-NEPETA",
@@ -161,7 +168,7 @@ POCKET_BED = PlantingBed(
 # from the impervious area, which is conservative.
 IMPERVIOUS = (
     # R401.3 measures A and C over their long runs (10.9' and 12'), so each falls 3".
-    ImperviousSurface(label="walk A, garage north", outline=_ring(A),
+    ImperviousSurface(label="walk A, garage north", outline=_ring(A_RING),
                       near_elevation=TOP, far_elevation=ft(-3), kind="walk"),
     ImperviousSurface(label="walk B, garage east", outline=_ring(B),
                       near_elevation=TOP, far_elevation=ft(-3), kind="walk"),

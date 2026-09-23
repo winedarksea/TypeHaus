@@ -39,6 +39,7 @@ from typehaus.emit.draw.plan_labels import (
 from typehaus.emit.draw.scene import Polyline, SceneBuilder, Text
 from typehaus.emit.draw.typography import TAG_PT
 from typehaus.model.enums import FloorOpeningPurpose
+from typehaus.resolve.assembly_material import is_flatwork
 from typehaus.resolve.model import ResolvedModel
 
 Pt = tuple[float, float]
@@ -83,8 +84,10 @@ def _deck_openings(model: ResolvedModel, storey: str):
     """
     seen: set[str] = set()
     decks = [floor.tag for floor in model.floors if floor.storey == storey]
+    # A flatwork slab is not drawn on a floor plan (→ floorplan._emit_slabs); nor are its voids.
     decks += [solid.tag for solid in model.solids
-              if solid.category == "slab" and solid.storey == storey]
+              if solid.category == "slab" and solid.storey == storey
+              and not is_flatwork(model.plan, solid)]
     for deck in sorted(set(decks)):
         system = model.plan.by_tag(deck)
         for tag in getattr(system, "openings", ()):

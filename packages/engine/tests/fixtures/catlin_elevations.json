@@ -3526,6 +3526,12 @@
 24,
 "0abc3efc5ec6"
 ],
+"geometry/BQB250N77B/body": [
+-0.9906,
+-0.889,
+2,
+"ba045e9f25dc"
+],
 "geometry/BVEVY6KVW8/layer:brick": [
 0.6334125,
 1.2430125,
@@ -85348,6 +85354,8 @@
 "solids/SL-BW-TIER3/z1_m": -0.34544,
 "solids/SL-BW-TIER4/z0_m": -0.34544,
 "solids/SL-BW-TIER4/z1_m": -0.17272,
+"solids/SL-DW-DRIVE/z0_m": -0.9906,
+"solids/SL-DW-DRIVE/z1_m": -0.889,
 "solids/SL-G-FLOOR/z0_m": -0.9525,
 "solids/SL-G-FLOOR/z1_m": -0.8636,
 "solids/SL-M-DECK/z0_m": -0.3413125,

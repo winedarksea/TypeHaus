@@ -36,12 +36,20 @@ def test_tags_bubbles_and_room_blocks_are_at_least_3_32(catlin_model):
     assert all(t.height_pt >= DIM_STRING_PT for t in bubbles)
 
 
-def test_planting_pockets_are_captioned_once_per_walk_not_open_to_below(catlin_model):
-    scene = build_floorplan(model_at_level(catlin_model, "main"), "main", dimension_scale=0.25)
-    captions = [t.content for t in _texts(scene, "A-ANNO-TEXT")]
-    assert "OPEN TO BELOW" not in captions
-    # Three walks (A, B, D), 27 pockets: one caption each, not one per pocket.
-    assert captions.count("PLANTER") == 3
+def test_flatwork_and_its_pockets_draw_on_the_site_plan_not_the_floor_plan(catlin_model):
+    """Walks and the drive are site work. On A-101 the drive set the sheet extent and
+    dropped it to 3/16"; on C-101 every slab and all 27 pockets are drawn."""
+    from typehaus.emit.draw.siteplan import build_site_plan
+
+    flatwork = {"SL-WK-A", "SL-WK-B", "SL-WK-C", "SL-WK-D", "SL-DW-DRIVE"}
+    plan = build_floorplan(model_at_level(catlin_model, "main"), "main", dimension_scale=0.25)
+    plan_tags = {getattr(n, "tag", None) for n in plan.nodes}
+    assert not plan_tags & flatwork
+    assert not {t for t in plan_tags if t and t.startswith("FO-WK-")}
+    assert "PLANTER" not in [t.content for t in _texts(plan, "A-ANNO-TEXT")]
+    site_tags = [getattr(n, "tag", None) for n in build_site_plan(catlin_model).nodes]
+    assert flatwork <= set(site_tags)
+    assert sum(1 for t in site_tags if t and t.startswith("FO-WK-")) == 27
 
 
 def _wall(material: str) -> ResolvedWall:

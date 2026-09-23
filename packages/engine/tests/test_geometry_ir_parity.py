@@ -644,16 +644,18 @@ def test_the_earth_sheet_is_holed_rather_than_drawn_over_the_excavation(model) -
     voids = prism[0].parts[0].solids[0].voids
     if not voids:
         pytest.skip("house excavates nothing")
+    from shapely.geometry import Point, Polygon
+
     builder = _MeshBuilder()
     _add_earth(builder, model)
+    # True containment, not a bounding box: a void need not be a rectangle (the driveway's
+    # flare puts a vertex on its own edge, inside its box).
+    cores = [Polygon(ring).buffer(-TOL) for ring in voids]
     for positions, _indices in builder._buckets.values():
         for (px, _py, pz) in positions:
             x, y = px, -pz
-            for ring in voids:
-                xs = [p[0] for p in ring]
-                ys = [p[1] for p in ring]
-                inside = (min(xs) + TOL < x < max(xs) - TOL
-                          and min(ys) + TOL < y < max(ys) - TOL)
+            for core in cores:
+                inside = core.contains(Point(x, y))
                 assert not inside, f"earth vertex ({x}, {y}) sits inside an excavation"
 
 

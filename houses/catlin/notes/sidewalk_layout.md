@@ -12,8 +12,9 @@
 > ⚠ Every slab is modelled FLAT at its high edge, -2'-9". Leg D's south end meets
 > SL-SG-STAIRPAD (-2'-8") at a 1/2" isolation joint, 1" low; the stair pad, not a walk
 > leg, carries the walk from D to the porch flight. The fall is on the impervious surfaces only. Two joints are therefore
-> not flush in the field and are set by the finisher: walk A's far edge meets the driveway
-> about 2" high, and walk C meets the paver approach's -3'-0 1/2" east edge about 3" high.
+> not flush in the field and are set by the finisher: walk A's west edge stands 1 3/4" over
+> the driveway at the flare, falling to 1" at its north end (on the two impervious falls;
+> 2" in the flat model), a curb at the drive's edge that is ACCEPTED (§2a), and walk C meets the paver approach's -3'-0 1/2" east edge about 3" high.
 > Grade both by hand at the pour; neither is modelled.
 
 ---
@@ -35,15 +36,30 @@ joints fall on the same stations.
 
 | leg | outline | gross sf | pockets | net sf |
 |---|---|---|---|---|
-| A garage north | x 24.04..37.78 × y 67.33..75.00 | 13.74 × 7.67 = 105.3 | 6 | 97.1 |
+| A garage north | x 24.04..37.78 × y 67.33..75.00, less the 2.0 sf flare notch (§2a) | 105.3 − 2.0 = 103.3 | 6 | 95.1 |
 | B garage east | x 30.11..37.78 × y 43.02..67.33 | 7.67 × 24.31 = 186.4 | 12 | 170.1 |
 | C landing connector | x 30.04..42.04 × y 39.60..43.02, less the 0.50 × 1.08 notch at PT-BW-RNE | 41.04 − 0.54 = 40.5 | 0 | 40.5 |
 | D house east | x 36.70..42.04 × y −9.00..39.60 | 5.33 × 48.60 = 259.2 | 9 | 247.0 |
-| **total** | | **591.4** | **27** | **554.7** |
+| **total** | | **589.4** | **27** | **552.7** |
 
-Concrete at 4": 554.7 / 3 / 27 = **6.85 cy**. Class 5 at 6" bills by the net slab area,
-**554.7 sf**. Impervious area counts the GROSS 591.4 sf — the pockets are not subtracted,
+Concrete at 4": 552.7 / 3 / 27 = **6.82 cy**. Class 5 at 6" bills by the net slab area,
+**552.7 sf**. Impervious area counts the GROSS 589.4 sf — the pockets are not subtracted,
 which is conservative for the coverage table.
+
+### 2a. Leg A against the driveway (2026-09-23)
+
+The drive (`params/driveway.py`, notes/driveway_layout.md) flares 45° from x = 26' at its
+south edge to x = 24' two feet north. A's SW corner is cut on that line offset 1/2" square
+to it: the line x + y = 26 + Y0 + 0.5/12·√2 = 93.386, so A's south edge starts at
+x = 93.386 − 67.332 = **26.054** and its west edge at y = 93.386 − 24.042 = **69.344**. The
+notch is ½ · (26.054 − 24.042) · (69.344 − 67.332) = ½ · 2.012 · 2.012 = **2.02 sf**.
+A's westmost pocket, (27.445, 69.00), is 2.16' from that line, past the 2'-0" end inset, so
+`_A_STATIONS` does not move.
+
+**The step is kept.** Along x = 24' the drive's fall reaches −35.5" at y = 69.34 and −37.0"
+at y = 75.00; A's reaches −33.8" and −36.0". That is 1 3/4" to 1" with the walk high. A flush
+A at −2'-11" would open a 2" lip where A meets leg B, on the walking line, and the flare puts
+a tyre leaving the door's east 2' on drive, not on A.
 
 ## 3. Pocket stations
 

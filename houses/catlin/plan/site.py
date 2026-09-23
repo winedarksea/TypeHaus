@@ -356,9 +356,9 @@ SITE = Site(
         # rings encode, against R401.3's 5%. The yard plane they fall to is -3'-4".
         SpotElevation(position=pt(ft(1, 6), ft(55)), elevation=ft(-3, -1)),
         SpotElevation(position=pt(ft(34, 6), ft(55)), elevation=ft(-3, -1)),
-        # North of the garage the driveway is the graded surface (`code.R401_3_impervious`
-        # reads it at 2.21% now that it has an enclosure within 10' to be measured against),
-        # so these two sit WEST of it — the drive is x 12'..24' — in open front yard, and
+        # North of the garage the driveway is the graded surface (params/driveway.py; outside
+        # `code.R401_3_impervious`'s reach, which measures off the house footprint only),
+        # so these two sit WEST of it — the drive is x 10'..26' at the door — in open yard, and
         # they are the one side with room for both rings: 4'-6" and 9'-0" off y=67'-2 5/8".
         SpotElevation(position=pt(ft(9), ft(71, 8.625)), elevation=ft(-3, -1)),
         SpotElevation(position=pt(ft(9), ft(76, 2.625)), elevation=ft(-3, -4)),
@@ -591,46 +591,7 @@ SITE = Site(
             far_elevation=ft(-2, -11),
             kind="stair",
         ),
-        # ** THE DRIVEWAY, NEW 2026-09-09. ** The garage's overhead door faced a lot with no
-        # approach to it: notes/garage_orientation_lot.md records that the drive premise was
-        # retired in the rotation, and it was retired one structure too far. Saint Paul DSI
-        # will not review a garage a car cannot reach, and the drive is also the only place
-        # a vehicle can leave the site, which is what the rock construction entrance above
-        # is sited on.
-        #
-        # Geometry: 12'-0" wide, centred on D-G-OVERHEAD (the door spans x 10'..26' on
-        # W-G-N, so its centreline is x=18'), from the garage face at y=67'-2 5/8" north to
-        # the front lot line at y=84'-6". 12' is the ORDINANCE width, not the door width:
-        # Ord. 23-43 caps a driveway in the front yard at 12'-0" and the 16' door gets its
-        # flare in the apron, off this rectangle. It ran to y=105' against the retired
-        # 100' x 165' ring and now stops at the real one, 17'-3 3/8" long, ~207 sf.
-        #
-        # ** THE PAVING CAP INVERTED WITH THE LOT. ** Ord. 23-43 caps driveway and parking
-        # paving at the LESSER of 15% of the lot or 1,000 sf. On the retired 16,500 sf
-        # placeholder, 15% was 2,475 sf and the flat 1,000 sf governed. On the real 6,650 sf
-        # lot, **15% is 997.5 sf and the percentage governs instead** — barely, but it is the
-        # binding number now, and it shrinks with any further correction to the lot area.
-        # The drive plus the three `kind="pad"` surfaces come to 232 sf against it — 3.5%
-        # of the lot, under a quarter of the cap — so the inversion moves no verdict today;
-        # it is the arithmetic that has to be re-done first if any paving is added.
-        # (`emit/draw/site_metrics.py` computes this cap for the C-101 coverage table; no
-        # check grades it, so the table is where a reviewer sees it.)
-        #
-        # ** IT IS OUTSIDE code.R401_3_impervious's REACH AND THE ELEVATIONS ARE STILL REAL. **
-        # That check measures against the PRIMARY foundation footprint (the house, y<=36')
-        # and skips any surface whose nearest vertex is past 10'; this one starts 28'-9"
-        # north of the house. The near/far pair below is the drive's own fall to the street,
-        # 4 1/2" over 17'-3 3/8" (2.17%, the same bench slope it carried at its old length),
-        # starting 1" below the -2'-10" garage threshold so the apron sheds away from the
-        # slab rather than into it.
-        ImperviousSurface(
-            label="driveway",
-            outline=(pt(ft(12), ft(67, 2.625)), pt(ft(24), ft(67, 2.625)),
-                     pt(ft(24), ft(84.5)), pt(ft(12), ft(84.5))),
-            near_elevation=ft(-2, -11),
-            far_elevation=ft(-3, -3.5),
-            kind="driveway",
-        ),
+        # The driveway and its surface live in params/driveway.py (merged by plan/manifest.py).
     ),
     # ``UtilityLine.depth`` is a bury depth *below finished grade* (emit/ifc/site.py reads
     # it as ``grade_z - depth``), so these three follow grade down on their own and want no

@@ -218,11 +218,11 @@ STEM_TOP_Z_FLASHING = [
 # door (it would be a curb the car has to climb), so the stem drops to a grade beam there.
 #
 # ** MEASURED FROM N-G-NE SINCE 2026-09-07, AND THE NUMBER IS UNCHANGED. ** The door hangs
-# off W-G-N, which runs NE->NW, so 4'-0" puts the 16'-0" opening at x 4'-0"..20'-0" and its
-# centre on x=12'-0" — the wall's exact midpoint, the same relationship it had to W-G-E.
+# off W-G-N, which runs NE->NW from x=30', so 4'-0" puts the 16'-0" opening at x 10'..26' and
+# its centre on x=18'-0" — the wall's exact midpoint, the same relationship it had to W-G-E.
 #
-# ** 4'-0" IS NOT DEFENDED BY A WAINSCOT, AND THAT IS AN OPEN QUESTION. ** The centre at
-# 12'-0" is 12" off the 24" module and cuts 9 stud lines where 8 would do —
+# ** 4'-0" IS NOT DEFENDED BY A WAINSCOT, AND THAT IS AN OPEN QUESTION. ** The centre, 12'-0"
+# along the wall, is 12" off the 24" module and cuts 9 stud lines where 8 would do —
 # `structural.door_framing_module` reports it and names 11'-0"/13'-0" as the nearest legal
 # centres. The advisory is suppressed in preferences.toml's `[checks] suppress`, keyed on
 # the DOOR tag (`structural.door_framing_module:D-G-OVERHEAD`), so the suppression followed

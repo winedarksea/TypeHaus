@@ -2564,6 +2564,17 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   fall is on the `walk *` impervious surfaces, merged into the site by `plan/manifest.py`
   — never hand-copy them into `plan/site.py`. Leg C is notched round `PT-BW-RNE`.
   `notes/sidewalk_layout.md`.
+- **Driveway `SL-DW-DRIVE`** (`params/driveway.py`, 2026-09-23): `DRIVEWAY_FRC_CLASS5`, 4"
+  fibre-only concrete on 8" Class 5, no foam. 16' at the door (x 10'..26'), a 45° flare to the
+  12' ordinance width 2' out, to the lot line: 210 SF, 2.59 cy. It starts 1" off the grade
+  beam's coil face; that gap IS the K8 joint (1" 40 psi XPS + PU sealant), deliberately not an
+  `IsolationBoard`, which would open a `thermal_break_transfer` item. Flat at -2'-11"; the 2.18%
+  fall is on its impervious surface. Walk A is notched 1/2" off the flare and stands
+  1"-1 3/4" proud of it, accepted (`notes/sidewalk_layout.md` §2a). Its uid was minted by
+  `typehaus.model.ids.new_uid()`, because fmt never visits `params/`. **Flatwork draws on
+  C-101 only**: floor plans skip `role="flatwork"` slabs and their pockets, or the drive would
+  drop A-101 to 3/16". The on-lot drive is priced as a slab; the
+  `concrete-driveway-apron-and-walks` allowance is the off-lot ROW apron alone.
 - **Bluestem grid `PB-S-GRID`** south of `W-RG-BLOCK`, 1' inside the W/E/rear lot lines: 380 cells at 15", 44 accents on the
   `(i + 3j) mod 9` lattice. The basin reuses the same grid code for its slope and floor
   beds. `notes/grid_garden.md`.

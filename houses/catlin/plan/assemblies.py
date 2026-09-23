@@ -2453,6 +2453,19 @@ SIDEWALK_FRC_CLASS5 = Assembly(
     source="catlin-house sidewalk: 4 in fibre-reinforced (macro-synthetic 4 pcy, no mesh) exterior concrete on 6 in of MnDOT 3138 Class 5 aggregate base compacted to 100% standard Proctor; 16 in sonotube planting pockets at 4 ft o.c. with control joints on the pocket stations",
 )
 
+# The driveway (params/driveway.py): the walk's section, on a deeper base for wheel loads.
+DRIVEWAY_FRC_CLASS5 = Assembly(
+    tag="DRIVEWAY_FRC_CLASS5",
+    role="flatwork",
+    layers=(
+        Layer(name="concrete", material_ref="concrete", thickness=inch(4.0),
+              function=LayerFunction.STRUCTURE, concrete=EXPOSED_MIX),
+        Layer(name="base", material_ref="mndot-class-5-base", thickness=inch(8.0),
+              function=LayerFunction.SHEATHING),
+    ),
+    source="catlin-house driveway: vehicle flatwork, 4 in fibre-reinforced (macro-synthetic 4 pcy, no mesh) exterior concrete, the ACI 332 residential driveway minimum; on 8 in of MnDOT 3138 Class 5 aggregate base compacted to 100% standard Proctor; no foam under the slab; K8 joint at the garage grade beam is 1 in 40 psi XPS (ASTM C578 Type VI) under 1/2 in traffic-rated polyurethane sealant; one longitudinal control joint on the centreline and transverse sawcuts at 10 ft o.c. max",
+)
+
 # The garage service step-down, SL-G-STEP-1..4, is a real `Stair` (ST-G-SERVICE in
 # plan/storeys/garage.py) in pressure-treated KDAT. SL-G-STEP-0 survives as the 3'-0"
 # landing at the threshold, pours with the slab, and names no assembly of its own.
@@ -4841,6 +4854,7 @@ ASSEMBLIES = [
     GARAGE_SLAB_ON_GRADE,
     HP_PAD_ON_GRADE,
     SIDEWALK_FRC_CLASS5,
+    DRIVEWAY_FRC_CLASS5,
     SG_FROST_WING_XPS1,
     SG_FROST_WING_XPS2,
     FOOTING_FPSF_20,

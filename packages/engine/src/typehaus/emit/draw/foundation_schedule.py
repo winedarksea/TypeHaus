@@ -34,6 +34,7 @@ from typehaus.emit.draw.structural_common import (
     wall_length_m,
 )
 from typehaus.hardware.config import FT_TO_M
+from typehaus.resolve.assembly_material import is_flatwork
 from typehaus.resolve.model import ResolvedModel, ResolvedSolid, ResolvedWall
 
 if TYPE_CHECKING:
@@ -109,19 +110,13 @@ def slabs_on_grade(model: ResolvedModel) -> list[ResolvedSolid]:
     storey_elevation = {storey.tag: storey.elevation.meters for storey in model.plan.storeys}
     out: list[ResolvedSolid] = []
     for solid in model.solids:
-        if solid.category != "slab" or _is_flatwork(model, solid):
+        if solid.category != "slab" or is_flatwork(model.plan, solid):
             continue
         if (_carried_by_deck(model, solid) or _carried_by_walls(model, solid)
                 or _room_below(model, solid, storey_elevation)):
             continue
         out.append(solid)
     return sorted(out, key=lambda s: s.tag)
-
-
-def _is_flatwork(model: ResolvedModel, slab: ResolvedSolid) -> bool:
-    """A walk bears nothing; it is drawn on the site plan, not scheduled as foundation."""
-    assembly = model.plan.library.resolve_assembly(slab.assembly) if slab.assembly else None
-    return assembly is not None and assembly.role == "flatwork"
 
 
 def _carried_by_deck(model: ResolvedModel, slab: ResolvedSolid) -> bool:

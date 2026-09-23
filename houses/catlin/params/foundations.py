@@ -352,8 +352,8 @@ GARAGE_STEM_NODES = [
     Node(uid="CGF003AAAA", tag="N-GF-NE", position=pt(GARAGE_X_EAST, GARAGE_Y_NORTH)),
     Node(uid="CGF004AAAA", tag="N-GF-NW", position=pt(GARAGE_X_WEST, GARAGE_Y_NORTH)),
     # Overhead-door gap in the NORTH stem. D-G-OVERHEAD hangs off N-G-NE and W-G-N runs
-    # east->west, so OVERHEAD_DOOR_OFFSET is measured back from x=24': the jambs land at
-    # x=20' and x=4'. Flush with the opening, no margin — the ±3" `_SERVICE_GAP_MARGIN`
+    # east->west, so OVERHEAD_DOOR_OFFSET is measured back from x=30': the jambs land at
+    # x=26' and x=10'. Flush with the opening, no margin — the ±3" `_SERVICE_GAP_MARGIN`
     # below is the service door's rule, forced by a buried water line, and nothing crosses
     # here. CGF005 is the uid the retired east gap's south node carried.
     Node(uid="CGF005AAAA", tag="N-GF-N-DRW",

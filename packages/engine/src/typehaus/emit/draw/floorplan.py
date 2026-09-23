@@ -49,7 +49,7 @@ from typehaus.emit.draw.typography import (
 )
 from typehaus.model.enums import DoorOperation
 from typehaus.quantities import M_PER_IN
-from typehaus.resolve.assembly_material import is_cast_beam
+from typehaus.resolve.assembly_material import is_cast_beam, is_flatwork
 from typehaus.resolve.geometry import opening_center, wall_frame
 from typehaus.resolve.model import ResolvedModel
 
@@ -252,8 +252,11 @@ def _emit_slabs(b: SceneBuilder, model: ResolvedModel, storey: str,
                    layer="A-SLAB", align="center"))
         boxes.append(_block_box((cx, cy), [(_surface_name(tag), TEXT_PT)], scale))
 
+    # Flatwork (walks, drives) is site work: C-101 draws it, and a drive running to the lot
+    # line would otherwise set this sheet's extent and drop its scale.
     for slab in sorted((s for s in model.solids
-                        if s.category == "slab" and s.storey == storey),
+                        if s.category == "slab" and s.storey == storey
+                        and not is_flatwork(model.plan, s)),
                        key=lambda s: s.uid):
         _draw(slab.outline, slab.uid, slab.tag)
     # Only a deck no rooms sit on: an interior floor's subfloor covers the whole storey and

@@ -1700,7 +1700,11 @@
 # The sidewalk, five legs (params/landscape_walk.py): 4" fibre-only EXPOSED_MIX. The labour
 # band carries the 28 sonotube pocket forms and the control joints on their 4' stations,
 # which is why it sits over the plain slab-on-grade rate. 2026-09-21.
-"slab:SIDEWALK_FRC_CLASS5" = { material = { low = 220, high = 320 }, labour = { low = 500, high = 950 } }  # 6.85 cy, 555 SF over four pours (SL-WK-E dropped 2026-09-23; the stair pad reaches leg D)
+"slab:SIDEWALK_FRC_CLASS5" = { material = { low = 220, high = 320 }, labour = { low = 500, high = 950 } }  # 6.82 cy, 553 SF over four pours (SL-WK-E dropped 2026-09-23; leg A notched round the drive's flare)
+# The driveway, SL-DW-DRIVE (params/driveway.py): the walk's mix at the walk's material rate.
+# Labour sits under the sidewalk's (no pocket forms) and carries the K8 joint at the grade
+# beam, ~16 LF of 1" 40 psi XPS under traffic-rated PU sealant. PROPOSED 2026-09-23, owner's call.
+"slab:DRIVEWAY_FRC_CLASS5" = { material = { low = 220, high = 320 }, labour = { low = 450, high = 850 } }  # 2.59 cy, 210 SF, one pour
 # The FPSF wings under the sunken-garden slab (IRC R403.3) are `Slab` elements because a
 # horizontal band of rigid foam has no other element kind to be — see
 # params/sunken_garden.FROST_WINGS. They are 1" and 2" XPS and nothing else, so pricing them
@@ -3562,7 +3566,10 @@
 "capillary-break-stone" = { material = { low = 0.55, high = 0.95 }, labour = { low = 0.35, high = 0.8 } }  # 1829.0 SF — 4" #57, screeded (-160.3 SF 2026-09-05: GARDEN_PUTTING_GREEN's drainage bed is now USGA bridging gravel, not #57 — #57 cannot meet USGA Table 1 or Table 2 at any gradation)
 # The sidewalk's base (SIDEWALK_FRC_CLASS5): 6" of MnDOT 3138 Class 5, placed and plate-
 # compacted in two lifts under all five legs. Dense-graded, not the #57 above. 2026-09-21.
-"mndot-class-5-base" = { material = { low = 0.45, high = 0.80 }, labour = { low = 0.40, high = 0.90 } }  # 557.4 SF
+"mndot-class-5-base" = { material = { low = 0.45, high = 0.80 }, labour = { low = 0.40, high = 0.90 } }  # 552.7 SF, walks only
+# The driveway's 8" (DRIVEWAY_FRC_CLASS5): the material scaled 8/6, the same two lifts.
+# PROPOSED 2026-09-23, owner's call.
+"mndot-class-5-base:8.0" = { material = { low = 0.60, high = 1.07 }, labour = { low = 0.45, high = 1.00 } }  # 210.1 SF, 5.19 cy compacted
 # The sunken-garden court's USGA field build-up (plan/assemblies.GARDEN_PUTTING_GREEN).
 # 160.3 SF each; every course is reached 9' down by conveyor or crane bucket, which is what
 # puts all five at the top of their labour bands. A minted material with no row here is
@@ -6211,9 +6218,12 @@ corner_connector = { unit = "EA", material = { low = 3, high = 7 }, labour = { l
 # it is overwhelmingly machine time and operator, not purchased material — imported granular
 # fill and rock is the taxable part and runs 10-20% of the number.
 site-excavation-backfill-grading = { material = { low = 3600, high = 11000 }, labour = { low = 20400, high = 44000 } }
-# Driveway and the city walk are usually a separate contract let months after closing.
-# Split: ready-mix and base course against placing and finishing.
-concrete-driveway-apron-and-walks = { material = { low = 7200, high = 17600 }, labour = { low = 10800, high = 26400 } }
+# OFF-LOT ONLY since 2026-09-23: the right-of-way apron from the lot line to the curb, the
+# curb cut, and the public-walk panels it crosses, poured to the city's spec under the
+# `site/row-permit`. The on-lot drive and walks are modelled and priced as slabs
+# (params/driveway.py, params/landscape_walk.py); the key is kept to avoid a rename.
+# Re-banded for ~12' x 12-15' of 6" apron plus the curb cut. PROPOSED, owner's call.
+concrete-driveway-apron-and-walks = { material = { low = 1500, high = 3500 }, labour = { low = 2500, high = 6000 } }
 # ** REDUCED 2026-08-30. Three of the four items it named are priced elsewhere. ** The old
 # scope was "the rock envelope beyond the footing bedding, the trench labour, the sump pit and
 # the daylight outlet", and:

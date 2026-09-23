@@ -26,7 +26,7 @@ from library import (
     WINDOW_TYPES_16_INCH_MODULE,
 )
 
-from params import (breezeway, foundations, hp1_north_pad, hp3_pad, landscape_gardens,
+from params import (breezeway, driveway, foundations, hp1_north_pad, hp3_pad, landscape_gardens,
                     landscape_walk, main_deck, raised_garden, roof_trim, second_deck, solar,
                     sunken_garden, sunken_garden_drainage)
 from plan import (appliance_types, assemblies, backing, backing_wet, braced_walls,
@@ -101,11 +101,12 @@ _library = Library(
 # edits still live in the editable ``plan/site.py``; the GeoJSON only supplies the site-plan
 # contour lines, so a real survey drops in without touching the editable source.
 _basemap = load_basemap_geojson(Path(__file__).with_name("basemap.geojson"))
-# The sidewalk's surfaces carry its fall (params/landscape_walk.py); merged here so the
-# editable site file never hand-copies a derived outline.
+# The sidewalk's and the driveway's surfaces carry their fall (params/landscape_walk.py,
+# params/driveway.py); merged here so the editable site file never hand-copies an outline.
 _site = site.SITE.model_copy(update={
     "contours": _basemap.contours,
-    "impervious_surfaces": (*site.SITE.impervious_surfaces, *landscape_walk.IMPERVIOUS),
+    "impervious_surfaces": (*site.SITE.impervious_surfaces, *landscape_walk.IMPERVIOUS,
+                            *driveway.IMPERVIOUS),
 })
 
 # ``plan/site.py`` is ``# haus: editable`` and may hold only literals, so finished grade is
@@ -405,6 +406,6 @@ PLAN = (
     # --- yard (sitework) -------------------------------------------------------------------
     .with_elements("yard-grade", [*hp3_pad.MAIN_ELEMENTS, *hp1_north_pad.MAIN_ELEMENTS,
                                   *landscape_gardens.MAIN_ELEMENTS, *landscape.APPLES,
-                                  *landscape_walk.MAIN_ELEMENTS])
+                                  *landscape_walk.MAIN_ELEMENTS, *driveway.MAIN_ELEMENTS])
     .with_elements("yard-low", [*raised_garden.BASEMENT_ELEMENTS])
 )

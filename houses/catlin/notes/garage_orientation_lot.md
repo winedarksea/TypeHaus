@@ -17,7 +17,7 @@ By 2026-09-07 that premise survived in exactly two prose comments and nowhere el
 - `plan/storeys/garage.py:4` — *"Overhead door faces east (driveway side)"*
 - `plan/site.py` (the front-walk `ImperviousSurface`) — *"drains east to the driveway"*
 
-**There is no `Driveway` element anywhere in the model, and there never was.** Nothing in
+**There was no `Driveway` element anywhere in the model at the rotation** (there is one now, `SL-DW-DRIVE`, `params/driveway.py`, since 2026-09-23). Nothing in
 `plan/`, `params/` or `library/` describes a drive, an apron beyond the 4'-deep front walk,
 or an approach. The east-facing door was carried entirely by those two sentences.
 
