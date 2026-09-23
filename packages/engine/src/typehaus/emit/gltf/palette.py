@@ -220,6 +220,8 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "rain_garden_media": (0.36, 0.29, 0.21, 1.0),  # planting soil in the basin
     "rain_garden_stone": (0.52, 0.50, 0.47, 1.0),  # the drywell's washed rock
     "leader_extension": (0.90, 0.90, 0.88, 1.0),   # white solid PVC
+    "area_drain": (0.20, 0.20, 0.21, 1.0),         # black PE basin and grate
+    "area_drain_riser": (0.90, 0.90, 0.88, 1.0),   # white solid PVC
     # Foliage takes its PlantType's material colour; this is only the fallback.
     "plant": (0.42, 0.52, 0.30, 1.0),
     "trellis": (0.55, 0.47, 0.36, 1.0),            # KDAT post, weathered

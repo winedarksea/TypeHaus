@@ -121,7 +121,8 @@ def test_the_whole_stormwater_run_is_one_trade(catlin_model) -> None:
         assert solid_trade(category) == "drainage"
     assert {"gutter", "downspout", "sump",
             "drain_tile", "french_drain", "drywell",
-            "rain_garden_media", "rain_garden_stone", "leader_extension"} == DRAINAGE_CATEGORIES
+            "rain_garden_media", "rain_garden_stone", "leader_extension",
+            "area_drain", "area_drain_riser"} == DRAINAGE_CATEGORIES
     leaders = [s for s in catlin_model.solids if s.category == "downspout"]
     assert leaders, "fixture regression: the Catlin house lost its downspouts"
 

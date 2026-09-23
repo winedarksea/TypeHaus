@@ -36,6 +36,7 @@ from enum import Enum
 
 from typehaus.model.landscape import RainGarden
 from typehaus.model.mep import Sump
+from typehaus.model.stormwater import AreaDrain
 from typehaus.model.structure import Drywell, FootingBedding, FrenchDrain
 from typehaus.model.trim import Downspout
 
@@ -118,7 +119,7 @@ class DrainageNetwork:
     def sources(self) -> list[str]:
         """Nodes that produce water — everything that is not purely a receiver."""
         return sorted(tag for tag, node in self.nodes.items()
-                      if node.kind in {"french_drain", "footing_tile", "leader"})
+                      if node.kind in {"french_drain", "footing_tile", "leader", "area_drain"})
 
     def disposal_points(self) -> list[str]:
         """Everything that gets rid of water, daylight excepted — the things that can fail.
@@ -243,6 +244,11 @@ def build_network(plan) -> DrainageNetwork:
                 # and lets the excess go over its overflow lip.
                 tag=element.tag, kind="rain_garden", in_invert_m=rim, out_invert_m=lip,
                 disposes=True, inlet_refs=tuple(element.inlet_refs))
+        elif isinstance(element, AreaDrain):
+            # A surface inlet: a SOURCE, letting go at its riser's open end.
+            network.nodes[element.tag] = DrainNode(
+                tag=element.tag, kind="area_drain", in_invert_m=None,
+                out_invert_m=element.outlet_invert.meters)
         elif isinstance(element, Downspout) and element.discharge_ref:
             # Only a leader that NAMES a receiver joins the graph: a splash block is not a
             # connection, and every leader authored before this field stays out.
@@ -285,6 +291,9 @@ def build_network(plan) -> DrainageNetwork:
         elif isinstance(element, (Drywell, RainGarden)):
             add(element.tag, element.overflow_ref, EdgeKind.OVERFLOW,
                 network.nodes[element.tag].out_invert_m)
+        elif isinstance(element, AreaDrain):
+            add(element.tag, element.discharge_ref, EdgeKind.PRIMARY,
+                element.outlet_invert.meters)
         elif isinstance(element, Downspout) and element.discharge_ref:
             add(element.tag, element.discharge_ref, EdgeKind.PRIMARY,
                 network.nodes[element.tag].out_invert_m)

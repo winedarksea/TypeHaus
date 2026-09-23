@@ -44,6 +44,8 @@
   "memberColors": {
     "air_gap": 13425126,
     "airgap": 13425126,
+    "area_drain": 3355446,
+    "area_drain_riser": 15132384,
     "backflow_preventer": 12096583,
     "barge_rafter": 9200184,
     "beam": 10384711,
@@ -204,6 +206,8 @@
   "solidColors": {
     "air_gap": 13425126,
     "airgap": 13425126,
+    "area_drain": 3355446,
+    "area_drain_riser": 15132384,
     "backflow_preventer": 12096583,
     "barge_rafter": 9200184,
     "beam": 10384711,
@@ -324,6 +328,12 @@
   },
   "solidTradeFallback": "concrete",
   "solidTradeSets": {
+    "area_drain": [
+      "drainage"
+    ],
+    "area_drain_riser": [
+      "drainage"
+    ],
     "backflow_preventer": [
       "plumbing"
     ],
@@ -515,6 +525,8 @@
     ]
   },
   "solidTrades": {
+    "area_drain": "drainage",
+    "area_drain_riser": "drainage",
     "backflow_preventer": "plumbing",
     "beam": "framing",
     "beam_cap": "siding",

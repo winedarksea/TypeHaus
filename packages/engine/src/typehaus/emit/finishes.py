@@ -44,7 +44,8 @@ ACCESSORY_KEYS = frozenset({
     # aluminium; the buried three read as what they are made of — perforated HDPE tile and
     # the washed rock around a trench or a soakaway — so a drainage view is not one grey.
     "downspout", "drain_tile", "french_drain", "drywell",
-    "rain_garden_media", "rain_garden_stone", "leader_extension", "plant", "trellis",
+    "rain_garden_media", "rain_garden_stone", "leader_extension", "area_drain",
+    "area_drain_riser", "plant", "trellis",
     # Resolved solid categories the glTF palette never had an entry for, so they take its
     # neutral-grey fallback today. Naming them here keeps the IR honest about what they are
     # — a glazing panel is not "structure" — and leaves picking their tones to the emitter

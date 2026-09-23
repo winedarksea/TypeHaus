@@ -67,6 +67,7 @@ class _Rows:
 def drainage_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
     """The stormwater order: gutter and leader by the foot, trenches and wells by both."""
     from typehaus.model.landscape import RainGarden
+    from typehaus.model.stormwater import AreaDrain
     from typehaus.model.structure import Drywell, FrenchDrain
     from typehaus.model.trim import Downspout, Gutter
 
@@ -107,6 +108,8 @@ def drainage_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
 
             elif isinstance(element, RainGarden):
                 _add_rain_garden(rows, element)
+            elif isinstance(element, AreaDrain):
+                _add_area_drain(model, rows, element)
 
     _add_derived_eave_gutters(model, rows)
     return rows.finish()
@@ -137,6 +140,16 @@ def _add_derived_eave_gutters(model: ResolvedModel, rows: _Rows) -> None:
             rows.add("gutter", str(entry["material"]),
                      float(entry.get("height_m", 0.0)) / M_PER_IN,
                      tag=f"{roof.tag}:{run_key}", length_m=length)
+
+
+def _add_area_drain(model: ResolvedModel, rows: _Rows, el) -> None:
+    """The basin by the piece, the riser by the foot off its RESOLVED solid."""
+    rows.add("area_drain", el.product or "area drain", el.grate_size.meters / M_PER_IN,
+             tag=el.tag)
+    riser = next((s for s in model.solids if s.tag == f"{el.tag}-RISER"), None)
+    if riser is not None:
+        rows.add("area_drain_riser", el.outlet_material, el.outlet_diameter.meters / M_PER_IN,
+                 tag=el.tag, length_m=riser.z1_m - riser.z0_m)
 
 
 def _add_rain_garden(rows: _Rows, el) -> None:

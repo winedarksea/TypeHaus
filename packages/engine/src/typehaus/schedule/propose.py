@@ -83,7 +83,8 @@ FAMILY_ORDER: dict[str, tuple[str, ...]] = {
     "general": ("permits", "site"),
     "earth": ("excavation", "backfill", "grading"),
     "concrete": ("footing", "thermal_break", "wall", "column", "slab", "flatwork"),
-    "drainage": ("drain_tile", "drywell", "rain_garden_media", "leader_extension", "gutter"),
+    "drainage": ("drain_tile", "drywell", "area_drain", "rain_garden_media",
+                 "leader_extension", "gutter"),
     "landscaping": ("slab", "kbg-sod"),
     "framing": ("post", "beam", "wall_structure", "joist", "truss", "sheathing"),
     "masonry": ("wall", "wall_structure"),
@@ -113,7 +114,7 @@ TAG_FAMILY: dict[str, str] = {
     "WIN": "window", "D": "door", "PR": "pipe_runs", "FX": "fixtures",
     "DU": "ducts", "REG": "registers", "EQ": "equipment", "ED": "devices",
     "CD": "conduit", "ST": "stairs", "RL": "railings", "FURN": "placeables",
-    "APPL": "appliances", "DRW": "drywell", "FD": "drain_tile",
+    "APPL": "appliances", "DRW": "drywell", "FD": "drain_tile", "AD": "area_drain",
 }
 
 

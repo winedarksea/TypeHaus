@@ -36,6 +36,7 @@ from typehaus.resolve.drainage_network import DAYLIGHT, EdgeKind, build_network
 from typehaus.checks.mep.drainage_receivers import (  # isort: skip
     ARRIVAL_TOLERANCE_M,
     PLAN_ARRIVAL_SLACK_M,
+    area_drain_arrivals,
     body_touches,
     reaches_through_stone,
     receiver_footprints,
@@ -179,7 +180,8 @@ def outfall_connection(ctx: CheckContext) -> list[Finding]:
     network = _network(ctx)
     runs = {e.tag: e for e in _elements(ctx) if isinstance(e, FrenchDrain)}
     leader_count, leader_findings = leader_arrivals(ctx, network)
-    if not runs and not leader_count:
+    drain_count, drain_findings = area_drain_arrivals(ctx, network)
+    if not runs and not leader_count and not drain_count:
         return [not_applicable(cid, "this plan authors no french drain")]
 
     # A drywell's diameter is its shaft and a sump's is its pit; both are the footprint a
@@ -237,9 +239,11 @@ def outfall_connection(ctx: CheckContext) -> list[Finding]:
                          f"the thing it discharges to",
                     (run.tag, edge.target), Result.FAIL))
     out.extend(leader_findings)
+    out.extend(drain_findings)
     if not out:
         out.append(_pass(cid, f"every french drain arrives in what it discharges to "
-                              f"({len(runs)} runs, {leader_count} leader extensions)"))
+                              f"({len(runs)} runs, {leader_count} leader extensions, "
+                              f"{drain_count} area drains)"))
     return out
 
 

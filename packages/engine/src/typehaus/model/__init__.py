@@ -184,6 +184,7 @@ from typehaus.model.spatial import (
     Stair,
     WallLiningException,
 )
+from typehaus.model.stormwater import AreaDrain
 from typehaus.model.structure import (
     Beam,
     Connector,
@@ -312,7 +313,7 @@ __all__ = [
     "FoundationWall", "Footing", "CrushedStoneSpec", "Pad", "FootingBedding", "DrainTile",
     "SegmentalWallSpec", "SrwDrainageZone", "EndRestraint",
     "Post", "Beam", "SlatScreen",
-    "FrenchDrain", "Drywell",
+    "FrenchDrain", "Drywell", "AreaDrain",
     "Dowel", "IsolationBoard", "Connector", "PlateTie", "KneeBrace", "Wedge", "Railing",
     "Fascia", "Gutter",
     "Flashing", "MovementJoint",

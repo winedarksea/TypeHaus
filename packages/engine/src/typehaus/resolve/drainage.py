@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from typehaus.findings import Finding, element_error
 from typehaus.model.landscape import RainGarden
+from typehaus.model.stormwater import AreaDrain
 from typehaus.model.structure import Drywell, FrenchDrain
 from typehaus.model.trim import Downspout
 from typehaus.resolve.drain_tile import drain_tile_solids, resolved_spec
@@ -45,7 +46,41 @@ def resolve_drainage(model: ResolvedModel) -> list[Finding]:
                 findings.extend(_resolve_rain_garden(model, element, storey.tag))
             elif isinstance(element, Downspout) and element.extension is not None:
                 _resolve_leader_extension(model, element, storey.tag)
+            elif isinstance(element, AreaDrain):
+                findings.extend(_resolve_area_drain(model, element, storey.tag))
     return findings
+
+
+def _resolve_area_drain(model: ResolvedModel, el: AreaDrain, storey: str) -> list[Finding]:
+    """The basin in its slab, and the solid riser from the basin floor to the outlet."""
+    host = next((s for s in model.solids
+                 if s.tag == el.host_ref and s.category == "slab"), None)
+    if host is None:
+        return [element_error("integrity.area_drain_host",
+                              f"area drain {el.tag} is set in {el.host_ref!r}, which is not "
+                              f"a resolved slab", el.tag)]
+    rim = el.rim_elevation.meters if el.rim_elevation is not None else host.z1_m
+    floor = rim - el.basin_depth.meters
+    sizes = (el.grate_size.meters, el.basin_depth.meters, el.outlet_diameter.meters)
+    if min(sizes) <= 0.0 or el.outlet_invert.meters > floor + 1e-9:
+        return [element_error("integrity.area_drain_geometry",
+                              f"area drain {el.tag} needs a positive grate, basin and "
+                              f"outlet, and an outlet invert at or below its basin floor",
+                              el.tag)]
+    x, y = el.position.xy_m
+    half = el.grate_size.meters / 2.0
+    model.solids.append(ResolvedSolid(
+        uid=f"{el.uid}-00", tag=el.tag, storey=storey, category="area_drain",
+        outline=rect_between((x - half, y), (x + half, y), -half, half),
+        z0_m=floor, z1_m=rim, material="polyethylene"))
+    if floor > el.outlet_invert.meters:
+        r = el.outlet_diameter.meters / 2.0
+        model.solids.append(ResolvedSolid(
+            uid=f"{el.uid}-RS", tag=f"{el.tag}-RISER", storey=storey,
+            category="area_drain_riser",
+            outline=rect_between((x - r, y), (x + r, y), -r, r),
+            z0_m=el.outlet_invert.meters, z1_m=floor, material=el.outlet_material))
+    return []
 
 
 #: Planting soil, keyed into the drawing palette's existing ``soil`` hatch; the stone under

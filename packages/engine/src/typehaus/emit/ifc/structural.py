@@ -115,6 +115,8 @@ _SOLID_IFC_CLASS: dict[str, tuple[str, str | None]] = {
     "french_drain": ("IfcDistributionChamberElement", "TRENCH"),
     "drywell": ("IfcDistributionChamberElement", "USERDEFINED"),
     "leader_extension": ("IfcPipeSegment", "RIGIDSEGMENT"),
+    "area_drain": ("IfcWasteTerminal", "GULLYSUMP"),
+    "area_drain_riser": ("IfcPipeSegment", "RIGIDSEGMENT"),
     "rain_garden_media": ("IfcDistributionChamberElement", "USERDEFINED"),
     "rain_garden_stone": ("IfcDistributionChamberElement", "USERDEFINED"),
 }

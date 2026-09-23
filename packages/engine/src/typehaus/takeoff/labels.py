@@ -94,6 +94,7 @@ KEY_GLOSSARY: dict[tuple[str, str], str] = {
     ("drainage", "drywell"): "Drywell", ("drainage", "drain_tile"): "Drain tile",
     ("drainage", "french_drain"): "French drain", ("drainage", "sump"): "Sump",
     ("drainage", "leader_extension"): "Leader extension",
+    ("drainage", "area_drain"): "Area drain", ("drainage", "area_drain_riser"): "Area drain riser",
     ("drainage", "rain_garden_media"): "Rain garden media",
     ("drainage", "rain_garden_stone"): "Rain garden stone",
     ("concrete", "rain_garden_media"): "Rain garden media",

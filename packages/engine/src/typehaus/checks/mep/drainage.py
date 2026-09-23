@@ -18,6 +18,7 @@ from typehaus.checks.registry import CheckContext, Tier, check
 from typehaus.findings import Finding, Result
 from typehaus.model.landscape import RainGarden
 from typehaus.model.mep import Sump
+from typehaus.model.stormwater import AreaDrain
 from typehaus.model.structure import Drywell, FootingBedding, FrenchDrain
 from typehaus.model.trim import Downspout, Gutter
 from typehaus.resolve.drainage_network import SOAKAWAY_KEYWORD
@@ -29,7 +30,7 @@ def _is_receiver(element) -> bool:
         return element.soakaway_depth is not None
     if isinstance(element, Downspout):
         return bool(element.discharge_ref)
-    return type(element).__name__ == "AreaDrain"
+    return isinstance(element, AreaDrain)
 
 
 def _advisory_fail(cid: str, msg: str, tags: tuple[str, ...]) -> Finding:
@@ -185,7 +186,7 @@ def discharge_consistency(ctx: CheckContext) -> list[Finding]:
                              f"declares", (element.tag,)))
             if isinstance(element, RainGarden):
                 _check_discharge(element.tag, element.overflow_ref)
-        elif isinstance(element, Downspout):
+        elif isinstance(element, (Downspout, AreaDrain)):
             _check_discharge(element.tag, element.discharge_ref)
 
     if not out:

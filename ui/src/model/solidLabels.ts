@@ -49,6 +49,8 @@ const SOLID_CATEGORY_LABEL: Record<string, string> = {
   rain_garden_media: "Rain garden media",
   rain_garden_stone: "Rain garden stone",
   leader_extension: "Leader extension",
+  area_drain: "Area drain",
+  area_drain_riser: "Area drain riser",
   plant: "Plant",
   trellis: "Trellis",
   downspout: "Downspout",

@@ -198,7 +198,7 @@ def _emit_foundation_and_post_supports(builder: SceneBuilder, model: ResolvedMod
 #: Buried stormwater draws dashed; the hung/surface family (gutter, leader, pit cover)
 #: draws solid — the convention the P-2xx drainage plans use, carried onto the site sheet.
 _BURIED_DRAINAGE = frozenset({"drain_tile", "french_drain", "drywell", "leader_extension",
-                              "rain_garden_stone"})
+                              "rain_garden_stone", "area_drain_riser"})
 
 
 def _emit_drainage_overlay(builder: SceneBuilder, model: ResolvedModel) -> None:
@@ -227,7 +227,7 @@ def _emit_drainage_overlay(builder: SceneBuilder, model: ResolvedModel) -> None:
         # Pits and wells get a name — they are the destinations the arrows on this sheet
         # point toward; labelling every gutter band would bury the basemap instead.
         base = (solid.tag or "").rstrip("0123456789").rstrip("-")
-        if category in {"sump", "drywell"} and base and base not in labelled:
+        if category in {"sump", "drywell", "area_drain"} and base and base not in labelled:
             labelled.add(base)
             x = sum(p[0] for p in points) / len(points)
             y = max(p[1] for p in points)

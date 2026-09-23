@@ -117,6 +117,46 @@ def reaches_through_stone(ctx: CheckContext, run: FrenchDrain, target: str) -> b
     return False
 
 
+def area_drain_arrivals(ctx: CheckContext, network) -> tuple[int, list]:
+    """``(area drains graded, problems)`` for ``drainage.outfall_connection``.
+
+    The riser's open end must land in what the drain names: inside a soakaway's stone band,
+    or no higher than a well's or pit's inlet and inside its footprint.
+    """
+    from typehaus.checks._authoring import advisory
+    from typehaus.findings import Result
+    from typehaus.model.stormwater import AreaDrain
+    from typehaus.resolve.drainage_network import EdgeKind
+
+    cid = "drainage.outfall_connection"
+    drains = {e.tag: e for e in _elements(ctx) if isinstance(e, AreaDrain)}
+    footprints = receiver_footprints(ctx)
+    out = []
+    for edge in network.edges:
+        drain = drains.get(edge.source)
+        if drain is None or edge.kind is not EdgeKind.PRIMARY:
+            continue
+        node = network.nodes.get(edge.target)
+        why = None
+        if node is not None and node.kind == "soakaway":
+            why = soakaway_arrival(ctx, edge.target, drain.position.xy_m, edge.out_invert_m)
+        elif node is not None and node.in_invert_m is not None:
+            above = edge.out_invert_m - node.in_invert_m
+            if above > ARRIVAL_TOLERANCE_M:
+                why = f"its riser lets go {above / 0.0254:.0f}\" above {edge.target}'s inlet"
+        if (why is None and edge.target in footprints and node is not None
+                and node.kind != "soakaway"):
+            from shapely.geometry import Point as ShapelyPoint
+
+            shape = footprints[edge.target][0]
+            if shape.distance(ShapelyPoint(*drain.position.xy_m)) > PLAN_ARRIVAL_SLACK_M:
+                why = f"its riser stands outside {edge.target} in plan"
+        if why is not None:
+            out.append(advisory(cid, f"{drain.tag} does not arrive in {edge.target}: {why}",
+                                (drain.tag, edge.target), Result.FAIL))
+    return len(drains), out
+
+
 def soakaway_arrival(ctx: CheckContext, target: str, end_xy: tuple[float, float],
                      invert_m: float | None) -> str | None:
     """``None`` when an outlet lands in ``target``'s body of stone, else why it does not.
