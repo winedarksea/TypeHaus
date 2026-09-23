@@ -100,6 +100,8 @@ class RouteProposal:
     #: Free-form lines the caller wants printed with the proposal — a legalisation notice,
     #: a head-budget shortfall, a firestop somebody has to detail. Never silent.
     notes: list[str] = field(default_factory=list)
+    #: What pasting this obliges next, printed after the source whether or not ``--explain``.
+    after: tuple[str, ...] = ()
 
     def snapped(self) -> RouteProposal:
         """The same proposal on the 1/16" grid, with collinear vertices already collapsed.
@@ -119,7 +121,7 @@ class RouteProposal:
             serves=self.serves, system=self.system, cost=self.cost, bends=self.bends,
             terms=dict(self.terms), notes=list(self.notes), width_m=self.width_m,
             depth_m=self.depth_m, routing=self.routing, floor_ref=self.floor_ref,
-            soffit_ref=self.soffit_ref, echo=dict(self.echo))
+            soffit_ref=self.soffit_ref, echo=dict(self.echo), after=self.after)
 
     def developed_ft(self) -> float:
         total = 0.0
@@ -230,6 +232,7 @@ class RouteProposal:
             "cost_in_equivalent": round(self.cost, 4),
             "terms_in": {k: round(v, 4) for k, v in sorted(self.terms.items())},
             "notes": list(self.notes),
+            "after_paste": list(self.after),
             # Contract 2 names the parts as well as the line: an agent choosing between two
             # alternatives needs to know one of them needs a fitting nobody stocks.
             "fittings": [
@@ -343,6 +346,7 @@ def render(proposals: Sequence[RouteProposal], *, storey_datum_m: float = 0.0,
             # not a cost breakdown, it is something the person pasting has to decide about.
             lines.extend(f"# {line}" for line in proposal.fitting_lines())
         lines.append(proposal.source(storey_datum_m=storey_datum_m))
+        lines.extend(f"# AFTER PASTING: {line}" for line in proposal.after)
         lines.append("")
     return "\n".join(lines)
 

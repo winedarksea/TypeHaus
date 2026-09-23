@@ -438,13 +438,63 @@ def test_a_supply_proposal_lands_on_the_trunks_LINE_not_its_endpoint(runner) -> 
     assert _plan_digest() == before
 
 
+def test_a_trunk_leaving_an_equipment_port_roots_on_the_port() -> None:
+    """`PR-B-HW-TRUNK` leaves EQ-B-WH's hot tap: its root is that port, and the branches
+    teeing off it may be touched (their tees ride on its line) and are named after."""
+    from typehaus.resolve.mep_ports import placed_ports
+
+    ends, problems, model = _endpoints("PR-B-HW-TRUNK", "run")
+    assert ends is not None, problems
+    port = next(p for p in placed_ports(model)
+                if (p.equipment_tag, p.port_tag) == ("EQ-B-WH", "hot"))
+    assert ends.root == port.point
+    assert ends.root_paths == ()
+    assert {"PR-B-HW-TRUNK", "PR-B-HW-BATH2", "PR-B-HW-KITCH"} <= ends.touch
+    assert ends.after_paste and "PR-B-HW-KITCH" in ends.after_paste[0]
+
+
+def test_an_unplaceable_equipment_port_still_refuses(monkeypatch) -> None:
+    """A record naming a port `placed_ports` cannot find has no point to root on."""
+    from typehaus.cli.route_roots import _supply_trunk
+    from typehaus.resolve import mep_tie_ins
+    from typehaus.resolve.mep_tie_ins import SupplyTieIn
+
+    _ends, _problems, model = _endpoints("PR-B-HW-TRUNK", "run")
+    run = next(r for r in model.pipe_runs if r.tag == "PR-B-HW-TRUNK")
+    fake = SupplyTieIn(run.tag, None, True, "equipment_port", run.path[0], 0.0,
+                       port="EQ-NOWHERE.hot")
+    monkeypatch.setattr(mep_tie_ins, "supply_tie_in_records", lambda *_a: [fake])
+    problems: list[str] = []
+    assert _supply_trunk(model, run, problems) is None
+    assert "EQ-NOWHERE.hot, an equipment port that could not be placed" in problems[0]
+
+
+def test_a_port_rooted_trunk_proposal_starts_on_the_port(runner) -> None:
+    import json
+
+    from typehaus.resolve import resolve
+    from typehaus.resolve.mep_ports import placed_ports
+    from typehaus.source import load_plan
+
+    before = _plan_digest()
+    result = runner.invoke(app, ["route", str(_CATLIN), "--run", "PR-B-HW-TRUNK", "--json"])
+    assert result.exit_code == 0, result.output
+    # Problem lines (the trunk's riser end stands inside a duct) print ahead of the JSON.
+    proposal = json.loads(result.output[result.output.index("\n{") + 1:])["proposals"][0]
+    assert proposal["tag"] == "PR-B-HW-TRUNK-PROPOSED"
+    model, _ = resolve(load_plan(_CATLIN).plan)
+    port = next(p for p in placed_ports(model)
+                if (p.equipment_tag, p.port_tag) == ("EQ-B-WH", "hot"))
+    # `points_m` is project-frame; the source is what carries the storey datum.
+    first = proposal["points_m"][0]
+    assert max(abs(a - b) for a, b in zip(first, port.point, strict=True)) <= 0.0254 / 16
+    assert "PR-B-HW-KITCH" in " ".join(proposal["after_paste"])
+    assert _plan_digest() == before
+
+
 @pytest.mark.parametrize("tag,fragment", [
     # Each real cause, asserted AS TEXT: a refusal's wording is its contract, and one
     # sentence about a vent chase was false about all of them.
-    #
-    # `PR-B-HW-TRUNK` read "no run of any system passes" until 2026-09-23; the tie-in
-    # reader now sees EQ-B-WH's hot tap as its source, and the refusal says so.
-    ("PR-B-HW-TRUNK", "it leaves EQ-B-WH.hot, an equipment port"),
     ("PR-M-CW-PORCH-HYD", "no run of any system passes under its first vertex"),
     ("PR-M-CW-COLDSTORE-STUB", "passes under its first vertex but 12.0\" above it"),
 ])

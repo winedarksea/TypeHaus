@@ -428,7 +428,8 @@ def _propose(model: ResolvedModel, targets: list[str], *, mode: str,
                 goals |= _line_nodes(graph, path,
                                      z_tolerance=None if ends.falls else 0.05)
             if not goals:
-                goals = _root_nodes(graph, ends.root, with_z=not ends.falls)
+                goals = _root_nodes(graph, ends.root, with_z=not ends.falls,
+                                    exact=ends.tie_is_the_goal)
             if start is None or not goals:
                 problems.append(
                     f"{target}: no lattice node at "
@@ -600,4 +601,5 @@ def _one_proposal(model: ResolvedModel, ends: Endpoints, found: Any, target: str
         diameter_m=ends.diameter_m, width_m=ends.width_m, depth_m=ends.depth_m,
         serves=ends.serves, system=ends.system, cost=found.cost, bends=found.bends,
         terms=dict(found.terms) if explain else {}, notes=notes, routing=routing,
-        floor_ref=floor_ref, soffit_ref=soffit_ref, echo=dict(ends.echo)).snapped()
+        floor_ref=floor_ref, soffit_ref=soffit_ref, echo=dict(ends.echo),
+        after=ends.after_paste).snapped()

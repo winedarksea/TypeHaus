@@ -141,7 +141,8 @@ def _nearest_main(model: ResolvedModel, point: tuple[float, float], floor_m: flo
 def _supply_trunk(model: ResolvedModel, run: Any, problems: list[str]
                   ) -> tuple[tuple[float, float, float], list[str],
                              tuple[tuple[tuple[float, float, float], ...], ...]] | None:
-    """``(a point on the feeder, the whole chain to the source, its plan polyline with z)``.
+    """``(a point on the feeder, the whole chain to the source, its plan polyline with z)``,
+    or ``(the port, [], ())`` for a trunk that leaves an equipment port.
 
     The chain rather than the parent alone, for ``_discharge``'s reason: a branch's tee sits
     ON its parent and its parent's tee sits on the GRANDparent, so leaving the rest of the
@@ -159,10 +160,20 @@ def _supply_trunk(model: ResolvedModel, run: Any, problems: list[str]
     from typehaus.resolve.mep_ports import placed_ports
     from typehaus.resolve.mep_tie_ins import supply_tie_in_records
 
-    records = {rec.child: rec for rec in supply_tie_in_records(model.pipe_runs,
-                                                               placed_ports(model))}
+    ports = placed_ports(model)
+    records = {rec.child: rec for rec in supply_tie_in_records(model.pipe_runs, ports)}
     record = records.get(run.tag)
     ties = {tag: rec.parent for tag, rec in records.items() if rec.parent}
+    if record is not None and record.reason == "equipment_port":
+        # A trunk leaving a machine roots ON the port: one exact point, no line to tee onto.
+        port = next((p for p in ports
+                     if f"{p.equipment_tag}.{p.port_tag}" == record.port), None)
+        if port is not None:
+            return port.point, [], ()
+        problems.append(f"{run.tag}: it leaves {record.port}, an equipment port that could "
+                        "not be placed, so there is no point to root it on. Route it with "
+                        "--via")
+        return None
     if record is None or record.parent is None:
         problems.append(_supply_refusal(run, record))
         return None
@@ -185,6 +196,16 @@ def _supply_trunk(model: ResolvedModel, run: Any, problems: list[str]
     return root, chain, (line,)
 
 
+def _supply_children(model: ResolvedModel, run: Any) -> tuple[str, ...]:
+    """The runs that tee off ``run`` — their tie points ride on its line."""
+    from typehaus.resolve.mep_ports import placed_ports
+    from typehaus.resolve.mep_tie_ins import supply_tie_in_records
+
+    return tuple(rec.child for rec in supply_tie_in_records(model.pipe_runs,
+                                                            placed_ports(model))
+                 if rec.parent == run.tag)
+
+
 def _supply_refusal(run: Any, record: Any) -> str:
     """The sentence a parentless supply run gets, naming which cause applies.
 
@@ -195,9 +216,6 @@ def _supply_refusal(run: Any, record: Any) -> str:
     if record is None:
         return (head + "it carries no resolved elevations, so there is no tee to derive")
     inches = None if record.z_gap_m is None else record.z_gap_m * 39.3700787
-    if record.reason == "equipment_port":
-        return (head + f"it leaves {record.port}, an equipment port, so its source is the "
-                "machine and there is no run to tee onto. Route it with --via")
     if record.reason == "cross_system":
         return (head + f"the run standing at its first vertex is {record.nearest}, which is "
                 f"a {'different' if record.nearest else 'cross-system'} system. Its source "

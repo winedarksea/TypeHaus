@@ -267,6 +267,7 @@ def _replaced_tags(model: ResolvedModel, proposal: RouteProposal) -> set[str]:
     # the proposal for it.
     runs = {r.tag for r in (*model.pipe_runs, *model.ducts, *model.conduits)}
     out = {base} & runs
+    descendants = _descendants(model, base, proposal.system)
     for run in model.pipe_runs:
         # **Same system, and that is not a refinement.** A fixture is served by a drain AND
         # a hot AND a cold run, all three naming it in ``serves``; without this test a drain
@@ -274,10 +275,34 @@ def _replaced_tags(model: ResolvedModel, proposal: RouteProposal) -> set[str]:
         # house's valves and fixtures then pointed at a run that no longer resolved. It is
         # invisible on a single ``--evaluate`` of one branch and unmissable the moment a
         # campaign evaluates seventeen at once.
-        if run.system != proposal.system:
+        if run.system != proposal.system or run.tag in descendants:
             continue
         if proposal.serves and any(tag in run.serves for tag in proposal.serves):
             out.add(run.tag)
+    return out
+
+
+def _descendants(model: ResolvedModel, base: str, system: str) -> set[str]:
+    """Runs that tie in (transitively) to ``base``. A trunk serves its branches' fixtures,
+    but a branch hung off the trunk is downstream of the proposal, not replaced by it."""
+    from typehaus.resolve.mep_ports import placed_ports
+    from typehaus.resolve.mep_queries import drain_tie_ins
+    from typehaus.resolve.mep_tie_ins import supply_tie_in_records
+
+    runs = [r for r in model.pipe_runs if r.system == system]
+    if not any(r.tag == base for r in runs):
+        return set()
+    if system == "drain":
+        parents = drain_tie_ins(runs)
+    else:
+        parents = {rec.child: rec.parent
+                   for rec in supply_tie_in_records(runs, placed_ports(model)) if rec.parent}
+    out: set[str] = set()
+    grew = True
+    while grew:
+        found = {c for c, p in parents.items() if (p == base or p in out) and c != base}
+        grew = not found <= out
+        out |= found
     return out
 
 
