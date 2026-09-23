@@ -7,6 +7,7 @@ from typing import Literal
 from pydantic import field_validator, model_validator
 
 from typehaus.model.base import HausModel
+from typehaus.model.concrete_materials import AsrSpec, CementSpec, ScmFractions
 from typehaus.model.enums import (
     ControlLayer,
     JunctionPolicy,
@@ -292,6 +293,18 @@ class ConcreteSpec(HausModel):
     #: Prose: the substitution rate interacts with cold-weather set times and early
     #: strength in ways nothing here grades.
     scm: str | None = None
+    #: The rest are graded by ``checks/structural/concrete_materials.py``; see
+    #: ``model/concrete_materials.py``. Water-soluble Cl-, % by mass of cementitious (ASTM
+    #: C1218), against ACI 318-19 Table 19.3.2.1's C-class limit.
+    chloride_ion_max_pct: float | None = None
+    cement: CementSpec | None = None
+    #: Measured SCM fractions, graded against Table 26.4.2.2(b) on an F3 pour. ``scm``
+    #: above stays the prose for the ticket.
+    scm_fractions: ScmFractions | None = None
+    asr: AsrSpec | None = None
+    #: ASTM A767/A1094 require the zinc chromate-passivated unless the purchaser waives it.
+    #: Only meaningful on a galvanized ``bar_coating``.
+    chromate_treatment: Literal["passivated", "waived"] | None = None
     #: Nominal maximum aggregate size. Bounds bar clear spacing at (4/3) x this
     #: (ACI 318-19 §25.2.1) and is what makes a small column core a placement question.
     max_aggregate: Length | None = None

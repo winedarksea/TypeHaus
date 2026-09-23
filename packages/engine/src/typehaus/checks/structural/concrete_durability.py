@@ -47,7 +47,9 @@ from typehaus.resolve.concrete import concrete_spec_for
 _TABLE_19_3_2_1: dict[str, tuple[float | None, float]] = {
     "F0": (None, 2500.0), "F1": (0.55, 3500.0), "F2": (0.45, 4500.0), "F3": (0.40, 5000.0),
     "S0": (None, 2500.0), "S1": (0.50, 4000.0), "S2": (0.45, 4500.0), "S3": (0.45, 4500.0),
-    "W0": (None, 2500.0), "W1": (0.50, 4000.0), "W2": (0.45, 4500.0),
+    # 318-19 moved W: W1 has no w/cm limit, W2 is 0.50/4,000 (318-14's W1 row). This read
+    # 0.50/4,000 and 0.45/4,500 until 2026-09-23; no catlin verdict turned on it.
+    "W0": (None, 2500.0), "W1": (None, 2500.0), "W2": (0.50, 4000.0),
     "C0": (None, 2500.0), "C1": (None, 2500.0), "C2": (0.40, 5000.0),
 }
 
@@ -66,13 +68,18 @@ _AIR_AGGREGATE_IN = 0.75
 _POUR_KINDS = ("FoundationWall", "Footing", "Pad", "Slab", "Post")
 
 
+def pour_specs(plan: Any) -> list[tuple[Any, Any]]:
+    """Every assembly-bearing pour and its ``ConcreteSpec`` (``None`` where it states none)."""
+    pours = [el for el in plan.all_elements()
+             if (el.element_kind in _POUR_KINDS or is_cast_beam(plan, el))
+             and getattr(el, "assembly", None)]
+    return [(el, concrete_spec_for(plan, el)) for el in pours]
+
+
 @check(Tier.STRUCTURAL, "structural.concrete_mix_matches_exposure")
 def concrete_mix_matches_exposure(ctx: CheckContext) -> list[Finding]:
     """Every authored exposure class, against the mix ACI 318-19 Table 19.3.2.1 requires."""
-    pours = [el for el in ctx.plan.all_elements()
-             if (el.element_kind in _POUR_KINDS or is_cast_beam(ctx.plan, el))
-             and getattr(el, "assembly", None)]
-    specs = [(el, concrete_spec_for(ctx.plan, el)) for el in pours]
+    specs = pour_specs(ctx.plan)
     with_spec = [(el, spec) for el, spec in specs if spec is not None]
 
     if not specs:
