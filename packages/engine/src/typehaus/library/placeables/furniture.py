@@ -239,6 +239,14 @@ SAUNA_BENCH_TIERED_60 = FurnitureType(
     source=("Law of Löyly two-tier bench: upper 36\", lower 18\" "
             "(notes/sauna_shower_basement_detail.md)"),
 )
+# The 4'-0" sibling, added 2026-09-22: the same room 1'-0" narrower leaves the north wall
+# 4'-3 15/16" of face beside the shower pan.
+SAUNA_BENCH_TIERED_48 = FurnitureType(
+    tag="FURN-SAUNA-BENCH-2T-48", name="Two-tier sauna bench, 4'-0\"",
+    footprint=(ft(4), ft(3, 6)), height=ft(3), plan_symbol="sauna-bench-tiered",
+    source=("Law of Löyly two-tier bench: upper 36\", lower 18\" "
+            "(notes/sauna_shower_basement_detail.md)"),
+)
 SAUNA_BENCH_54 = FurnitureType(
     tag="FURN-SAUNA-BENCH-54", name='Sauna foot bench, 4\'-6"',
     footprint=(ft(4, 6), ft(1, 8)), height=ft(1, 6), plan_symbol="sauna-bench",
@@ -251,6 +259,14 @@ SAUNA_BENCH_54 = FurnitureType(
 SAUNA_BENCH_48 = FurnitureType(
     tag="FURN-SAUNA-BENCH-48", name='Sauna foot bench, 4\'-0"',
     footprint=(ft(4), ft(1, 8)), height=ft(1, 6), plan_symbol="sauna-bench",
+    source="Law of Löyly lower bench, 18\" (notes/sauna_shower_basement_detail.md)",
+)
+
+# The 3'-0" sibling, added 2026-09-22: the south liner run between the west foot bench and
+# the heater's junction box shrank to 3'-7 7/8" with the room.
+SAUNA_BENCH_36 = FurnitureType(
+    tag="FURN-SAUNA-BENCH-36", name='Sauna foot bench, 3\'-0"',
+    footprint=(ft(3), ft(1, 8)), height=ft(1, 6), plan_symbol="sauna-bench",
     source="Law of Löyly lower bench, 18\" (notes/sauna_shower_basement_detail.md)",
 )
 
@@ -285,6 +301,7 @@ STARTER_FURNITURE_TYPES = (
     SIX_SEAT_DINING_TABLE, EIGHT_SEAT_DINING_TABLE, ROUND_DINING_TABLE,
     TWO_PERSON_DINING_TABLE, DINING_CHAIR,
     WRITING_DESK, OFFICE_CHAIR, DESK_CHAIR, BOOKCASE,
-    SAUNA_BENCH_TIERED_102, SAUNA_BENCH_TIERED_60, SAUNA_BENCH_54, SAUNA_BENCH_48,
+    SAUNA_BENCH_TIERED_102, SAUNA_BENCH_TIERED_60, SAUNA_BENCH_TIERED_48,
+    SAUNA_BENCH_54, SAUNA_BENCH_48, SAUNA_BENCH_36,
     WORKBENCH_60, MUDROOM_BENCH_36,
 )
