@@ -454,6 +454,9 @@ class ConduitRun(Element):
     #: check exist at all (``plans/TODO.md``: "a duct cannot be proven clear of something
     #: the model does not place in z").
     elevations: tuple[Length, ...] | None = None
+    #: Interior ``path`` indices that are pull boxes / conduit bodies, ascending. NEC
+    #: 358.26 et al. count bends between pull points (→ resolve/conduit_pulls.py).
+    pull_points: tuple[int, ...] = ()
     from_ref: str | None = None  # feeding device, e.g. "ED-B-PANEL"
     to_ref: str | None = None  # served device/area, e.g. "ED-A-PV-JB"
     # What this raceway carries. One service per run, never a set: NEC 800.133/725 forbids

@@ -1132,6 +1132,8 @@ class ResolvedConduitRun:
     #: ``mep_queries.conduit_vertical_profile`` will still reconstruct and which a check
     #: must report as a coverage gap rather than grade as placed.
     z_m: tuple[float, ...] | None = None
+    #: Interior ``path`` indices authored as pull boxes (→ model/mep.py ConduitRun).
+    pull_points: tuple[int, ...] = ()
 
 
 @dataclass(frozen=True)

@@ -355,7 +355,12 @@ class Turn:
 
 def sweep_turns(sweep: SolidSweep) -> list[Turn]:
     """Every interior vertex that actually turns — the fitting take-off's input."""
-    path = clean_path(sweep.path)
+    return path_turns(sweep.path)
+
+
+def path_turns(points: tuple[Vec3, ...] | list[Vec3]) -> list[Turn]:
+    """:func:`sweep_turns` on a bare 3D polyline; ``index`` is into the CLEANED path."""
+    path = clean_path(points)
     turns: list[Turn] = []
     for i in range(1, len(path) - 1):
         before = _unit3(_sub3(path[i], path[i - 1]))

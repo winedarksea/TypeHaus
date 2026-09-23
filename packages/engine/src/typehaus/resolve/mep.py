@@ -181,12 +181,21 @@ def _resolve_conduit_run(model: ResolvedModel, run: ConduitRun, storey_tag: str)
         # that steps twice pulls further than a run that steps once, and the endpoint pair
         # cannot tell the two apart.
         rise = sum(abs(b - a) for a, b in zip(z_m, z_m[1:], strict=False))
+    pulls = tuple(run.pull_points)
+    if any(not 0 < i < len(path) - 1 for i in pulls) or any(
+            b <= a for a, b in zip(pulls, pulls[1:], strict=False)):
+        return [Finding(
+            severity=Severity.ERROR, check_id="integrity.conduit_run_path",
+            message=(f"conduit run {run.tag} pull_points {list(pulls)} must be ascending, "
+                     f"unique interior vertex indices (1..{len(path) - 2}) — a run's ends "
+                     "are pull points already"),
+            element_tags=(run.tag,), result=Result.FAIL)]
     resolved = ResolvedConduitRun(
         uid=run.uid, tag=run.tag, storey=storey_tag, path=path,
         trade_size_m=run.trade_size.meters, z_start_m=z0, z_end_m=z1,
         length_m=plan_len + rise, from_ref=run.from_ref, to_ref=run.to_ref,
         service=run.service.value if run.service is not None else None,
-        z_m=z_m,
+        z_m=z_m, pull_points=pulls,
     )
     model.conduits.append(resolved)
     # Geometry from the same profile ``concrete_crossings`` walks, so the raceway a reader
