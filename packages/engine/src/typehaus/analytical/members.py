@@ -17,7 +17,8 @@ end is free to rotate over it; a beam running CONTINUOUS over an interior bearin
 and releasing there would leave the cantilever beyond it a mechanism rather than a
 cantilever. At a SUPPORT node nothing is released at all — ``supports.py`` says which
 rotations that node is free in, and a released end on a pinned support is a member spinning
-on its own axis.
+on its own axis. A column top under a continuous beam is a post cap, hinged in the beam's
+plane by ``post_caps.py``.
 
 Nodes are merged incrementally within :data:`NODE_SNAP_M` and identified by *what meets
 there* — never by an ordinal, which would renumber the whole model when one member moved.

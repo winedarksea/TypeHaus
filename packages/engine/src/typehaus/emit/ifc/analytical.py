@@ -195,9 +195,31 @@ def _curve_member(f: Any, member: Member, model: AnalyticalModel, project_uuid: 
 
 
 def _release_text(member: Member) -> str:
-    ends = [name for name, released in (("i", member.releases.i_moment),
-                                        ("j", member.releases.j_moment)) if released]
-    return ("moment released at " + " and ".join(ends)) if ends else "rigidly joined"
+    r = member.releases
+    ends = [name for name, released in (("i", r.i_moment), ("j", r.j_moment)) if released]
+    parts = ["moment released at " + " and ".join(ends)] if ends else []
+    parts += [f"{end}: {r.end_text(end)}" for end, hinge in (("i", r.i_hinge), ("j", r.j_hinge))
+              if hinge and not (r.i_moment if end == "i" else r.j_moment)]
+    text = "; ".join(parts) if parts else "rigidly joined"
+    return f"{text} ({r.basis})" if r.basis else text
+
+
+def _end_rotations(member: Member, end: str) -> tuple[bool, bool, bool] | None:
+    """Local (Rx, Ry, Rz) held at a released end, or ``None`` where it is rigid. A moment
+    release writes all three free, as it always has (PyNite holds its torsion).
+
+    The condition sits in the member's LOCAL frame (IFC4 ``ConditionCoordinateSystem``
+    unset): x along the member, z = ``Axis``, y = z × x. A vertical member's Axis is
+    global X (``_set_axis``), so local z = X and y = −Y: a hinge about X frees Rz, about
+    Y frees Ry.
+    """
+    r = member.releases
+    moment, hinge = (r.i_moment, r.i_hinge) if end == "i" else (r.j_moment, r.j_hinge)
+    if moment:
+        return (False, False, False)
+    if hinge and member.is_vertical:
+        return (True, hinge != "Y", hinge != "X")
+    return None
 
 
 def _set_axis(f: Any, entity: Any, member: Member) -> None:
@@ -255,18 +277,18 @@ def _connect_ends(f: Any, entity: Any, member: Member, connections: dict[str, An
     """
     import ifcopenshell.api.structural
 
-    for end, node_id, released in (("i", member.n0, member.releases.i_moment),
-                                   ("j", member.n1, member.releases.j_moment)):
+    for end, node_id in (("i", member.n0), ("j", member.n1)):
         connection = connections.get(node_id)
         if connection is None:
             continue
         rel = ifcopenshell.api.structural.add_structural_member_connection(
             f, relating_structural_member=entity, related_structural_connection=connection)
         rel.Name = f"{member.id}:{end}"
-        if released:
+        rotations = _end_rotations(member, end)
+        if rotations is not None:
             rel.AppliedCondition = _boundary_condition(
-                f, f"{member.id} end {end}: moment released",
-                (True, True, True, False, False, False))
+                f, f"{member.id} end {end}: {member.releases.end_text(end)}",
+                (True, True, True, *rotations))
 
 
 def _assign_section(f: Any, entity: Any, member: Member,

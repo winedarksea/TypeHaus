@@ -6,7 +6,7 @@ columns (PT-SG-BF1/BF3, PT-SG-BR1/BR3), the two pinned pillars between them (PT-
 PT-SG-BR2), the sunken-garden columns PT-SG-COL/FCOL, the breezeway posts PT-BW-*, and
 the beams they carry.
 **Written:** 2026-09-12, by hand, before `typehaus/analytical/` was oracled against it.
-**Oracle for:** `analytical/supports.py`, `analytical/loads.py`, `analytical/solve.py`, `analytical/ties.py`;
+**Oracle for:** `analytical/supports.py`, `analytical/post_caps.py`, `analytical/loads.py`, `analytical/solve.py`, `analytical/ties.py`;
 reproduced by `tests/test_analytical_oracle.py`.
 **Companions:** `balcony_moment_columns.md` — the column *capacity* and the wind arithmetic
 this note re-uses; `north_entry_piers.md` — the breezeway piers' tributaries.
@@ -189,3 +189,46 @@ frame solve's lever is now shorter than the record's by more than §3's 3%: the 
 authored column height (9.01') while the resolved column is 8.64', 4" shorter with the 2x12
 joist drop. The oracle allows 6% and requires the solved moment to sit BELOW the record's, so
 the record errs long, the safe side.
+
+## Addendum 2026-09-22b — post caps: the rigid knee is gone
+
+**Claim.** A column top under a beam that runs CONTINUOUS over it is a post cap: hinged
+about the horizontal axis across the beam, held about the beam's own axis (the cap's side
+plates stop the beam rolling — §1's wall-bearing claim, one joint up). This is the joint
+`column_head_joint` and `deck_post` already assume (k = 2.1, fixed base / free top).
+Releasing both axes left the beam's roll held by nothing, and the solve was unstable.
+Capped in catlin: PT-SG-BF1/BF3/BR1/BR3 and PT-BW-RNE, hinged about global X, plus
+PT-BW-CNW, whose in-plane rotation is held by the GW pier it stands on. A beam that ENDS
+on a post top is still released at its own end. Left rigid, and named in the gaps: a cap
+under two continuous beams running different ways, a beam oblique to the global axes,
+or a column whose base is free about the hinge axis (pin-pin in the frame's plane).
+None of these occur in catlin.
+
+**§3c again: BR1 gravity.** With both tops hinged in the YZ plane, BM-SG-BLW (9.667' long,
+BF1 0.667' from its front end, BR1 7.333' behind BF1) is determinate on two vertical
+supports, and the beam's centroid is 4.833 − 0.667 = 4.167' behind BF1:
+
+| term | working | value |
+|---|---|---|
+| live, BR1 | 720 plf × 9.667 × 4.167 / 7.333 | **3,955 lb** (solve 3,955) |
+| live, BF1 | 6,960 − 3,955 | **3,006 lb** (solve 3,006) |
+| dead (deck), BR1 / BF1 | 180 plf × 9.667 = 1,740 × 4.167 / 7.333 | **989 / 752 lb** (solve 989 / 752) |
+| base moment, gravity | no horizontal load, and a hinged top passes no moment | **0** (solve 0; was 421 D / 1,684 L) |
+
+The §3c "Finding" of a gravity base moment on the fixed columns was the rigid knee and is
+withdrawn. The pair still sums to the records' 6,960 / 1,740; each column is now 14 % off
+the record's equal split, inside the test's 15 %.
+
+**Breezeway canopy.** BM-BW-RE runs from a 0.740' cantilever over RNE to its end on RE
+(4.979' span); its snow load is ~1,031 plf. By statics R_RE = w × 5.719 × 2.120 / 4.979 =
+w × 2.435 = **2,510 lb**, R_RNE = w × 3.284 = **3,386 lb**, and both base moments **0**
+(solve identical). Before the cap RNE was a knee: it swayed, pushed RE through the beam,
+and gave RE 58 lb of shear and **995 lb-ft** of base moment under snow.
+
+**Wind is unchanged, and was already the record's cantilever.** Both lines of wind are
+E-W (X), OUT of the capped beams' plane, and the cap holds that axis; the column top is
+restrained only by the beam's torsion. PT-SG-BR1: 126.6 lb × 8.68' = **1,099 lb-ft**
+(solve 1,099; record 1,160 on its authored 9.16'). PT-BW-RE: 444 lb × 17.03' (footing top to
+the beam centreline) = **7,561 lb-ft** (solve 7,564) against the record's ASD 7,354 on its
+16.56' lever — the model runs to the header's centreline, not its soffit, so here it errs
+long by 2.9 %. Nothing on the breezeway is asserted beyond the zero gravity moment.

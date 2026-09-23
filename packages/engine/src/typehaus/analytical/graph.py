@@ -70,10 +70,29 @@ class Node:
 class Releases:
     """Moment releases at the two ends (i = ``n0``, j = ``n1``). A beam bearing on a post
     top is released at that end; a rafter in a hanger likewise. Axial and shear are never
-    released here — a release that would drop a member is not a modelling choice."""
+    released here — a release that would drop a member is not a modelling choice.
+
+    A **hinge** frees bending about ONE global axis ("X" | "Y") and holds the other: a
+    column top under a post cap, free in the carried beam's plane and held against the
+    beam's roll. ``*_moment`` frees both bending axes; ``basis`` says why."""
 
     i_moment: bool = False
     j_moment: bool = False
+    i_hinge: str | None = None
+    j_hinge: str | None = None
+    basis: str = ""
+
+    @property
+    def any(self) -> bool:
+        return bool(self.i_moment or self.j_moment or self.i_hinge or self.j_hinge)
+
+    def end_text(self, end: str) -> str:
+        """One end in words, the one spelling every reader prints."""
+        moment, hinge = ((self.i_moment, self.i_hinge) if end == "i"
+                         else (self.j_moment, self.j_hinge))
+        if moment:
+            return "moment released"
+        return f"hinge about global {hinge}" if hinge else "continuous"
 
 
 @dataclass(frozen=True)

@@ -3,7 +3,8 @@
 Five stages, in this order and each a module of its own: what is in scope
 (:mod:`~typehaus.analytical.scope`), where its centrelines are
 (:mod:`~typehaus.analytical.members`), what holds it up
-(:mod:`~typehaus.analytical.supports`), what pushes on it
+(:mod:`~typehaus.analytical.supports`, then :mod:`~typehaus.analytical.post_caps`, which
+needs the supports to know a cap may hinge), what pushes on it
 (:mod:`~typehaus.analytical.loads`) and which of the walls are surfaces rather than curves
 (:mod:`~typehaus.analytical.shells`). The gap register is assembled last, because "nothing
 in this graph carries this item's demand" is a fact about the finished graph and not about
@@ -20,6 +21,7 @@ from typing import Any
 
 from typehaus.analytical import loads as _loads
 from typehaus.analytical import members as _members
+from typehaus.analytical import post_caps as _post_caps
 from typehaus.analytical import scope as _scope
 from typehaus.analytical import shells as _shells
 from typehaus.analytical import supports as _supports
@@ -36,6 +38,7 @@ def build_analytical_model(ctx: Any) -> AnalyticalModel:
     scope = _scope.build_scope(ctx)
     graph = _members.build_members(ctx, scope)
     supports = _supports.derive_supports(ctx, scope, graph)
+    cap_gaps = _post_caps.apply_post_caps(graph, supports)
     load_set = _loads.derive_loads(ctx, scope, graph)
     shell_set = _shells.derive_shells(ctx, scope)
 
@@ -57,7 +60,8 @@ def build_analytical_model(ctx: Any) -> AnalyticalModel:
         scope=scope.item_ids,
         assumptions=tuple(assumptions),
         gaps=(_gaps(ctx, scope, graph, shell_set) + tuple(load_set.gaps)
-              + tuple(shell_set.gaps) + _ties.unplaced(ctx, scope, graph.tie_node)),
+              + tuple(shell_set.gaps) + _ties.unplaced(ctx, scope, graph.tie_node)
+              + cap_gaps),
     )
 
 

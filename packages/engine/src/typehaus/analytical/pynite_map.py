@@ -270,8 +270,7 @@ def build_inputs(model: AnalyticalModel) -> PyniteInputs:
         (s.node, True, True, True, *s.restrained_rotations()) for s in model.supports
     ))
     releases = tuple(sorted(
-        (m.id, _release_flags(m)) for m in model.members
-        if m.releases.i_moment or m.releases.j_moment
+        (m.id, _release_flags(m, model)) for m in model.members if m.releases.any
     ))
 
     dist_loads = tuple(sorted(
@@ -362,17 +361,33 @@ def _combos(model: AnalyticalModel) -> tuple[tuple[str, tuple[tuple[str, float],
 #: moment-released beam between two pins as a mechanism.
 
 
-def _release_flags(member: Member) -> tuple[bool, ...]:
+def _release_flags(member: Member, model: AnalyticalModel) -> tuple[bool, ...]:
     """``def_releases``'s twelve flags: Dxi Dyi Dzi Rxi Ryi Rzi Dxj Dyj Dzj Rxj Ryj Rzj.
 
     A moment release frees bending about **both** local axes (Ry and Rz) and not torsion:
     a beam bearing on a post top is free to rotate either way over the bearing, but a
     torsional release on top of it would leave a member spinning on its own axis when the
     other end is released too, and PyNite would report the frame unstable rather than the
-    modelling mistake it is.
+    modelling mistake it is. A hinge frees the ONE local axis parallel to its global axis.
     """
-    i, j = member.releases.i_moment, member.releases.j_moment
-    return (False, False, False, False, i, i, False, False, False, False, j, j)
+    r = member.releases
+    i_y, i_z = (True, True) if r.i_moment else _hinge_flags(member, model, r.i_hinge)
+    j_y, j_z = (True, True) if r.j_moment else _hinge_flags(member, model, r.j_hinge)
+    return (False, False, False, False, i_y, i_z, False, False, False, False, j_y, j_z)
+
+
+def _hinge_flags(member: Member, model: AnalyticalModel,
+                 axis: str | None) -> tuple[bool, bool]:
+    """``(Ry, Rz)`` for a hinge about global ``axis``. Mapped on an unrolled Z-vertical
+    member only: PyNite takes its local y = global Y and local z = x × Y = ∓global X
+    (``Member3D.T``'s equal-end-Y branch), so X → Rz and Y → Ry."""
+    if axis is None:
+        return (False, False)
+    a, b = model.node(member.n0), model.node(member.n1)
+    if member.roll_deg or not (math.isclose(a.x_m, b.x_m, abs_tol=1e-9)
+                               and math.isclose(a.y_m, b.y_m, abs_tol=1e-9)):
+        raise ValueError(f"{member.id}: a hinge maps only onto an unrolled vertical member")
+    return (axis == "Y", axis == "X")
 
 
 def _family(material: str) -> tuple[str, float, float]:

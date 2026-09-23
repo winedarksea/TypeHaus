@@ -96,12 +96,11 @@ def test_balcony_guard_base_moment_matches_the_note(solved, tag):
 
 @pytest.mark.parametrize("front,rear", (("PT-SG-BF1", "PT-SG-BR1"), ("PT-SG-BF3", "PT-SG-BR3")))
 def test_balcony_gravity_reactions_match_the_records(solved, front, rear):
-    """§3c: the PAIR carries what the records say (statics, 1 %); the frame redistributes it.
+    """§3c: the PAIR carries what the records say (statics, 1 %); the cantilevers split it.
 
-    The beam is continuous over both columns with a longer rear cantilever, so the solve
-    hands the rear column ~10 % more than the record's equal split (3,842 / 3,119 lb live
-    against 3,480 each since 2026-09-22). That is a finding about
-    the record, not a solver error, and the note carries it; here each column is bounded at
+    The beam is continuous over two post caps with a longer rear cantilever, so the solve is
+    the simple-span statics, 3,006 / 3,955 lb live against the record's equal 3,480 (addendum
+    2026-09-22b). A finding about the record, carried in the note; each column is bounded at
     15 % and the pair at 1 %.
     """
     load, model, result, piers = solved
@@ -122,6 +121,23 @@ def test_balcony_gravity_reactions_match_the_records(solved, front, rear):
         pair_record["live"] += inputs["live_load"]
     for case in ("dead", "live"):
         assert pair_model[case] == pytest.approx(pair_record[case], rel=0.01)
+
+
+#: Post caps under a continuous beam (addendum 2026-09-22b): hinged in the beam's plane.
+CAPPED = (*BALCONY, "PT-BW-RNE")
+
+
+@pytest.mark.parametrize("tag", CAPPED)
+def test_a_post_cap_carries_no_gravity_base_moment(solved, tag):
+    """The rigid knee handed BR1 1,684 lb-ft live and RE 995 snow; a cap transmits none."""
+    _, model, result, _ = solved
+    top = max((m for m in model.members if m.tag == tag),
+              key=lambda m: model.node(m.n1).z_m)
+    assert top.releases.j_hinge == "X", top.releases
+    for node_tag in (tag, "PT-BW-RE"):
+        for case in ("dead", "live", "snow"):
+            reaction = result.reactions[(_support(model, node_tag).node, case)]
+            assert _moment_lb_ft(reaction) < 1.0, (node_tag, case)
 
 
 def test_roof_beam_line_loads_sum_to_the_records_uniform_load(solved):
