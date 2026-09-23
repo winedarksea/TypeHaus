@@ -376,12 +376,16 @@ def hardware_for_role(role: str, *, exposure: str | None = None) -> StructuralHa
 def sized_hanger_model(item: StructuralHardware, profile: str) -> str:
     """The orderable size of a face-mount hanger family for one member: LUS + 2x8 -> LUS28,
     and the ZMAX record's trailing ``Z`` kept (LUS28Z). A profile that is not a single
-    dimensional-lumber ply (an I-joist, a 3-ply) stays the family name — no guessed size."""
-    match = re.fullmatch(r"2x(4|6|8|10)", profile.split(":")[0].strip())
+    dimensional-lumber ply (an I-joist, a 3-ply) stays the family name — no guessed size.
+
+    A 2x12 takes the 2x10 part: Simpson C-C-2017 p. 127 lists LUS210 under the 2x12 joist
+    size (H 7-13/16", over the 60% of depth a face-mount wants) and there is no LUS212."""
+    match = re.fullmatch(r"2x(4|6|8|10|12)", profile.split(":")[0].strip())
     if match is None:
         return item.model
+    size = "10" if match.group(1) == "12" else match.group(1)
     family, coated = item.model.removesuffix("Z"), item.model.endswith("Z")
-    return f"{family}2{match.group(1)}{'Z' if coated else ''}"
+    return f"{family}2{size}{'Z' if coated else ''}"
 
 
 def hardware_for_role_and_nominal(role: str, nominal: str) -> StructuralHardware:

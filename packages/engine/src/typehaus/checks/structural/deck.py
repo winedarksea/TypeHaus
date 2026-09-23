@@ -46,7 +46,7 @@ from typehaus.checks.structural.deck_tables import (
 from typehaus.engineering import item_id
 from typehaus.findings import Finding, Result
 from typehaus.model.floors import FloorSystem, Slab
-from typehaus.model.structure import Beam, GlazingPanel, Pad, Post
+from typehaus.model.structure import Beam, GlazingPanel, Pad, Post, is_ledger
 from typehaus.quantities import M_PER_IN
 from typehaus.resolve.model import ResolvedFloor
 
@@ -331,9 +331,27 @@ def _deck_beams(ctx: CheckContext, deck: _Deck) -> list[Beam]:
     beams: list[Beam] = []
     for ref in deck.authored.joists.bearing_refs:
         element = ctx.plan.by_tag(ref)
-        if isinstance(element, Beam):
+        if isinstance(element, Beam) and not is_ledger(element):
             beams.append(element)
     return beams
+
+
+def _hung_on_ledgers(ctx: CheckContext, deck: _Deck) -> tuple[str, ...]:
+    """The ledgers a deck hangs on, when EVERY bearing ref is one — the positive evidence
+    that it has no beam, post or footing of its own. Empty otherwise."""
+    refs = deck.authored.joists.bearing_refs or ()
+    if refs and all(is_ledger(ctx.plan.by_tag(ref)) for ref in refs):
+        return tuple(refs)
+    return ()
+
+
+def _ledger_na(ctx: CheckContext, deck: _Deck, check_id: str, what: str) -> Finding | None:
+    ledgers = _hung_on_ledgers(ctx, deck)
+    if not ledgers:
+        return None
+    return not_applicable(check_id, f"deck {deck.tag} hangs on ledgers "
+                          f"({', '.join(ledgers)}) and has no {what}; structural.deck_ledger "
+                          f"grades the attachment", (deck.tag, *ledgers))
 
 
 def _beam_axis_m(ctx: CheckContext, beam: Beam) -> tuple[tuple[float, float],
@@ -440,6 +458,10 @@ def deck_beam_span(ctx: CheckContext) -> list[Finding]:
     for deck in decks:
         joist_span_ft = deck.joist_span_ft
         beams = _deck_beams(ctx, deck)
+        if not beams and (na := _ledger_na(ctx, deck, "structural.deck_beam_span",
+                                           "beam")) is not None:
+            out.append(na)
+            continue
         if not beams:
             out.append(_unknown("structural.deck_beam_span",
                                 f"deck {deck.tag} names no Beam in its joist bearing_refs",
@@ -605,6 +627,10 @@ def deck_post_size(ctx: CheckContext) -> list[Finding]:
     out: list[Finding] = []
     for deck in decks:
         posts = _deck_posts(ctx, deck)
+        if not posts and (na := _ledger_na(ctx, deck, "structural.deck_post_size",
+                                           "post")) is not None:
+            out.append(na)
+            continue
         if not posts:
             out.append(_unknown("structural.deck_post_size",
                                 f"deck {deck.tag} resolves to no supporting posts",
@@ -987,6 +1013,10 @@ def deck_footing_size(ctx: CheckContext) -> list[Finding]:
     carried: dict[str, set[str]] = {}
     for deck in decks:
         tributaries = _tributaries_ft2(ctx, deck)
+        if tributaries is None and (na := _ledger_na(ctx, deck, "structural.deck_footing_size",
+                                                     "footing")) is not None:
+            out.append(na)
+            continue
         if tributaries is None:
             out.append(_unknown("structural.deck_footing_size",
                                 f"deck {deck.tag} has no tributary area to size footings from",

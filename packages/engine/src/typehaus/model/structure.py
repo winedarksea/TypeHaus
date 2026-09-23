@@ -568,6 +568,11 @@ class Beam(Element):
     end_node: str
     size: str = "3.5x11.875 LVL"
     bearing_refs: tuple[str, ...] = ()
+    # A LEDGER: the tag of the wall this beam is bolted flat against. It is continuously
+    # supported, so beam span, post and tributary checks skip it and
+    # ``structural.deck_ledger`` grades the attachment. Author ``top_elevation`` flush with
+    # the joist tops so the joists hang on it (``joints/hung.py``).
+    ledger_on: str | None = None
     # Explicit non-prescriptive design scope, not an engineer's approval or capacity.
     # Keeps a custom bridge/cantilever on the engineering register instead of applying
     # a simple-span table to a load path the table does not describe.
@@ -626,6 +631,11 @@ class Beam(Element):
     #: The steel of a CAST beam (``resolve/assembly_material.is_cast_beam``); a wood beam
     #: carrying one is an integrity finding. Top/bottom roles run along the beam (``-y``).
     reinforcement: ReinforcementSpec | None = None
+
+
+def is_ledger(element: object) -> bool:
+    """A Beam bolted to a wall face (``Beam.ledger_on``): continuously supported, not spanning."""
+    return isinstance(element, Beam) and bool(element.ledger_on)
 
 
 @register_element

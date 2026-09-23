@@ -1,0 +1,110 @@
+"""A deck hung on ledgers bolted to two walls (``Beam.ledger_on``, ``structural.deck_ledger``).
+
+The ledger is a Beam authored flush with the joist tops, so ``joints/hung.py`` derives the
+hangers with no new logic. It is continuously supported: no beam span, post or footing
+applies, and the attachment is graded by its own check.
+"""
+
+from __future__ import annotations
+
+import pytest
+from _helpers import check_context
+from _ledger_fixture import plan
+
+from typehaus.checks.structural.deck import (
+    deck_beam_cantilever,
+    deck_beam_span,
+    deck_footing_size,
+    deck_joist_span,
+    deck_post_size,
+)
+from typehaus.checks.structural.deck_ledger import deck_ledger
+from typehaus.findings import Result
+from typehaus.hardware.catalog import allowable_for_model, hardware_by_model
+from typehaus.hardware.config import HangerDetectionRules
+from typehaus.joints.authored import hanger_part, hanger_specs
+from typehaus.joints.hung import hung_connections
+
+
+@pytest.fixture(scope="module")
+def ctx():
+    return check_context(plan())
+
+
+def _by_tag(findings, tag):
+    return next(f for f in findings if tag in f.element_tags)
+
+
+def test_every_joist_hangs_on_a_ledger_in_a_zmax_2x12_hanger(ctx):
+    hung = hung_connections(ctx.model, HangerDetectionRules())
+    assert {h.carrier_tag for h in hung} == {"BM-LW", "BM-LE"}
+    assert len(hung) == 22  # 11 joists at 12" over 10', both ends
+    assert all(h.carrier_treated for h in hung)
+    parts = {hanger_part(h, hanger_specs(ctx.model))[2] for h in hung}
+    assert parts == {"LUS210Z"}
+    record = hardware_by_model("LUS210Z")
+    assert record is not None and record.model == "LUS210Z"
+    assert allowable_for_model("LUS210Z").download_lb == 1340.0
+
+
+def test_the_joist_is_cut_to_the_ledger_face_and_spans_face_to_face(ctx):
+    finding = deck_joist_span(ctx)[0]
+    assert finding.result is Result.PASS
+    # 18'-6" between wall axes, less two 6" half-walls and two 1 1/2" ledgers
+    assert "span 17.25'" in finding.message
+
+
+def test_a_ledger_is_not_a_beam_post_or_footing(ctx):
+    assert not deck_beam_cantilever(ctx)
+    for check in (deck_beam_span, deck_post_size, deck_footing_size):
+        (finding,) = check(ctx)
+        assert finding.result is Result.NOT_APPLICABLE, finding.message
+        assert "hangs on ledgers" in finding.message
+
+
+def test_on_concrete_the_spacing_is_the_anchor_makers_and_says_so(ctx):
+    findings = deck_ledger(ctx)
+    assert len(findings) == 2
+    assert all(f.result is Result.UNKNOWN for f in findings)
+    assert "manufacturer's recommendations" in findings[0].message
+
+
+def test_on_a_wood_band_the_dca6_table_grades_the_spacing():
+    ok = deck_ledger(check_context(plan(wood=True, fastener="1/2 through-bolt",
+                                        spacing_in=16.0), profile=None))
+    assert all(f.result is Result.PASS for f in ok), [f.message for f in ok]
+    assert "19\" o.c." in ok[0].message  # through-bolts, 18' row
+    lag = deck_ledger(check_context(plan(wood=True, fastener="1/2 lag", spacing_in=16.0),
+                                    profile=None))
+    assert all(f.result is Result.FAIL for f in lag)  # 18" gap vs 10" for lags
+
+
+def test_no_anchors_fails():
+    finding = _by_tag(deck_ledger(check_context(plan(spacing_in=None), profile=None)), "BM-LW")
+    assert finding.result is Result.FAIL
+    assert "no anchors" in finding.message
+
+
+def test_an_untreated_ledger_fails():
+    untreated = plan(assembly="BEAM_SPF", ledger="2x12")
+    finding = _by_tag(deck_ledger(check_context(untreated, profile=None)), "BM-LW")
+    assert finding.result is Result.FAIL
+    assert "not preservative-treated" in finding.message
+
+
+def test_a_ledger_off_the_face_fails():
+    finding = _by_tag(deck_ledger(check_context(plan(gap_in=1.0), profile=None)), "BM-LW")
+    assert finding.result is Result.FAIL
+    assert "off W-W's face" in finding.message
+
+
+def test_a_ledger_naming_no_wall_fails():
+    finding = _by_tag(deck_ledger(check_context(plan(ledger_on_w="BM-LE"), profile=None)),
+                      "BM-LW")
+    assert finding.result is Result.FAIL
+    assert "not a wall" in finding.message
+
+
+def test_no_ledger_is_earned_not_applicable(catlin_ctx):
+    (finding,) = deck_ledger(catlin_ctx)
+    assert finding.result is Result.NOT_APPLICABLE

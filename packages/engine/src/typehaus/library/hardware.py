@@ -546,6 +546,33 @@ HU28_2Z_FACE_MOUNT_HANGER = StructuralHardware(
 )
 
 
+#: The single-2x12 face-mount on a treated ledger. Simpson publishes no LUS212: the 2x12
+#: rows of the DF/SP face-mount table list LUS210, whose 7-13/16" is 70% of an 11-1/4" joist.
+#: Its own record so ``hardware_by_model`` does not caption it as the LUS family.
+LUS210Z_FACE_MOUNT_HANGER = StructuralHardware(
+    tag="simpson-lus210z-face-mount-hanger",
+    name="LUS210Z face-mount hanger, 2x10/2x12 (ZMAX)",
+    role=ROLE_FACE_MOUNT_JOIST_HANGER,
+    manufacturer=_SIMPSON,
+    model="LUS210Z",
+    exposure=EXPOSURE_TREATED,
+    fits_nominal=("2x10", "2x12"),
+    source="Simpson Strong-Tie LUS210 in ZMAX (G185) — 18 ga, W 1-9/16\", H 7-13/16\", "
+           "B 1-3/4\"; ZMAX per IRC R317.3.1 on a preservative-treated carrier",
+    allowable=AllowableLoads(
+        uplift_lb=1165.0,
+        download_lb=1340.0,
+        load_duration_factor=1.0,
+        species="DF/SP — the southern pine joists and ledger it is used on",
+        fasteners="(8) 10d into the header, (4) 10d into the joist (double-shear)",
+        citation=("Simpson Strong-Tie Wood Construction Connectors C-C-2017 p. 127, "
+                  "\"Face-Mount Hangers - Solid Sawn Lumber (DF/SP)\", 2x12 joist size, "
+                  "LUS210 row, read 2026-09-22: uplift (160) 1,165, floor (100) 1,340, "
+                  "snow (115) 1,525, roof (125) 1,650 lb. download_lb is the floor column"),
+    ),
+)
+
+
 HU212_3_FACE_MOUNT_HANGER = StructuralHardware(
     tag="simpson-hu212-3-face-mount-hanger",
     name="HU212-3 face-mount hanger, triple 2x12",
@@ -2214,4 +2241,5 @@ CAPACITY_ONLY_RECORDS: tuple = (
     HUC212_3_CONCRETE_HANGER,
     HU212_3_FACE_MOUNT_HANGER,
     HU28_2Z_FACE_MOUNT_HANGER,
+    LUS210Z_FACE_MOUNT_HANGER,
 )

@@ -18,6 +18,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from typehaus.model.floors import FloorSystem, JoistSpec
+from typehaus.model.structure import is_ledger
 from typehaus.resolve.model import ResolvedModel
 
 _TOL_M = 1e-6
@@ -147,9 +148,11 @@ def floor_ends(model: ResolvedModel, system: FloorSystem, storey_tag: str,
     Four cases, in the order they are tested: a **shared** line, where the tip is this
     deck's authored share of the plate (``JoistSpec.end_bearing``) or half of it, and no rim
     fits; a **cantilever**, where the tip is the authored fascia line and nothing is seated;
-    a **beam-borne** end, unchanged from the span line because a beam's section straddles
-    its own axis; and a **free end on a wall plate**, where the rim goes flush with the
-    framing face and the joists stop against its inboard face.
+    a **ledger** end, where the joist stops at the ledger's inboard face in a hanger (no
+    seat, no rim: the ledger is the band); a **beam-borne** end, unchanged from the span
+    line because a beam's section straddles its own axis; and a **free end on a wall
+    plate**, where the rim goes flush with the framing face and the joists stop against
+    its inboard face.
     """
     lines = {line.coord: line for line in bearing_lines(model, system.joists, boundaries, across)}
     authored = {ref: length.meters for ref, length in system.joists.end_bearing}
@@ -175,6 +178,12 @@ def floor_ends(model: ResolvedModel, system: FloorSystem, storey_tag: str,
             # its axis on it, which is where every deck in the model already draws its band.
             tip = coord - sign * cantilever
             ends.append((tip, tip, tip, None, shared))
+        elif (line is not None and structure is not None and line.refs
+              and all(is_ledger(model.plan.by_tag(ref)) for ref in line.refs)):
+            # Hung on a ledger: the joist is cut to the ledger's inboard face and the
+            # hanger carries it, so nothing is seated; the decking runs on to the wall face.
+            far = structure[0] if low_end else structure[1]
+            ends.append((near, None, far, None, shared))
         elif structure is None or not (line and line.has_wall):
             # A beam-borne end: the joists land on the beam, whose own section straddles its
             # axis. There is no plate face to run out to, so the span line stands unchanged.

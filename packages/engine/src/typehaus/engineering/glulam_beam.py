@@ -326,7 +326,7 @@ def _glulam_deck_beams(ctx: EngineeringContext) -> dict[str, tuple[Any, Any]]:
             continue
         for ref in deck.joists.bearing_refs or ():
             beam = ctx.plan.by_tag(ref)
-            if not isinstance(beam, Beam):
+            if not isinstance(beam, Beam) or beam.ledger_on:
                 continue
             material = assembly_structure_material(ctx.plan, beam.assembly) or ""
             if material.startswith("glulam"):

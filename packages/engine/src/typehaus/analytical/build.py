@@ -70,5 +70,10 @@ def _gaps(ctx: Any, scope: Any, graph: Any, shell_set: Any = None) -> tuple[str,
     """
     graded = {item for member in graph.members for item in member.item_ids}
     graded |= set(getattr(shell_set, "spoken_for", set()))
+    ledgers = tuple(
+        f"{tag}: a ledger on {beam.ledger_on}, continuously supported, so it is not a "
+        f"member here; its deck's load goes to the wall through the anchors"
+        for tag in scope.terminals
+        if (beam := ctx.plan.by_tag(tag)) is not None and getattr(beam, "ledger_on", None))
     return tuple(sorted(_scope.gap_line(item, ctx.engineering[item].kind)
-                        for item in scope.item_ids if item not in graded))
+                        for item in scope.item_ids if item not in graded)) + ledgers

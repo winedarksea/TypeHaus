@@ -133,6 +133,9 @@ def _absorb(plan: Any, tag: str, posts: set[str], beams: set[str], decks: set[st
             if below:
                 _absorb(plan, below, posts, beams, decks, terminals, depth + 1)
         return
+    if isinstance(element, Beam) and element.ledger_on:
+        terminals.add(tag)  # a ledger is a line support on its wall, not a member
+        return
     if isinstance(element, Beam):
         if tag in beams:
             return
@@ -190,6 +193,8 @@ def _walk_up(plan: Any, posts: set[str], beams: set[str], decks: set[str],
             continue
         if isinstance(element, Post):
             wants = tag not in posts and element.supported_by in carried
+        elif isinstance(element, Beam) and element.ledger_on:
+            continue
         elif isinstance(element, Beam):
             wants = tag not in beams and any(ref in carried
                                              for ref in element.bearing_refs or ())

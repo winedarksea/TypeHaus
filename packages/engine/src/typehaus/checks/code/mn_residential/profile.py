@@ -470,6 +470,11 @@ MN_2020 = JurisdictionProfile(
         PermitItemSpec("Headers over wide openings (published table)",
                        ("structural.header_prescriptive",),
                        ("IRC R602.7", "manufacturer's published header table")),
+        # A deck hung off a wall: the ledger, its anchors and the wall face. On concrete the
+        # anchor spacing is the anchor maker's, so the verdict there is UNKNOWN until read.
+        PermitItemSpec("Deck ledgers and their attachment",
+                       ("structural.deck_ledger",),
+                       ("IRC R507.9", "AWC DCA6 ledger attachment")),
         PermitItemSpec("Deck and porch posts and their footings",
                        ("structural.deck_post_size", "structural.deck_footing_size"),
                        ("IRC R507.3", "IRC R507.4"), blocking=False),
