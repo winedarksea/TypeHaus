@@ -46,6 +46,7 @@ from typehaus.emit.ifc.mep import (
     _ACCESSORY_IFC_CLASS,
     _PIPE_SYSTEM_OBJECT_TYPES,
     _PIPE_SYSTEM_TYPES,
+    STORMWATER_PIPE_SYSTEM,
     _emit_data_system,
     _emit_duct_run,
     _emit_pipe_accessories,
@@ -196,7 +197,7 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
         if (solid.category or "").lower() in DRAINAGE_CATEGORIES:
             drainage_elements.append(element)
     drainage_elements.extend(_emit_sump_pumps(f, model, storeys, project_uuid))
-    _emit_stormwater_system(f, building, drainage_elements)
+    stormwater = _emit_stormwater_system(f, building, drainage_elements)
 
     for ret in sorted(model.construction_returns, key=lambda item: item.uid):
         _emit_construction_return(f, body, ret, storeys, project_uuid)
@@ -232,6 +233,8 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
     # system (``accessory.system`` empty) stays ungrouped deliberately: inventing a system
     # for it would file a device under plumbing that nobody authored onto a run.
     system_elements: dict[str, list] = {key: [] for key in _PIPE_SYSTEM_TYPES}
+    # A pumped sump's discharge is stormwater: it joins that system, never a second one.
+    system_elements[STORMWATER_PIPE_SYSTEM] = []
     for run in sorted(model.pipe_runs, key=lambda item: item.uid):
         segments = _emit_pipe_run(f, body, run, storeys, project_uuid)
         system_elements[run.system].extend(segments)
@@ -246,6 +249,11 @@ def emit_ifc(model: ResolvedModel, out_path: Path, lod: str = "framed",
             system_elements[accessory.system].append(entity)
     for system_key in _PIPE_SYSTEM_TYPES:
         _emit_pipe_system(f, building, system_key, system_elements[system_key])
+    pumped = system_elements[STORMWATER_PIPE_SYSTEM]
+    if pumped and stormwater is not None:
+        ll.assign_to_group(f, stormwater, pumped)
+    elif pumped:
+        _emit_stormwater_system(f, building, pumped)
 
     for sleeve in sorted(model.sleeves, key=lambda item: item.uid):
         _emit_sleeve(f, body, sleeve, storeys, project_uuid)

@@ -68,6 +68,7 @@ KEY_GLOSSARY: dict[tuple[str, str], str] = {
     ("pipe_runs", "drain"): "Drain", ("pipe_runs", "vent"): "Vent",
     ("pipe_runs", "water_hot"): "Hot water", ("pipe_runs", "water_cold"): "Cold water",
     ("pipe_runs", "gas"): "Gas", ("pipe_runs", "radon"): "Radon",
+    ("pipe_runs", "sump_discharge"): "Sump discharge",
     ("ducts", "supply"): "Supply", ("ducts", "return"): "Return", ("ducts", "exhaust"): "Exhaust",
     ("ducts", "outdoor_air"): "Outdoor air", ("ducts", "dryer"): "Dryer exhaust",
     ("ducts", "transfer"): "Transfer",

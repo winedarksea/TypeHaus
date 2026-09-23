@@ -42,6 +42,7 @@ _SUBJECT_PREFIXES = ("duct_", "conduit_")
 _SUBJECT_CATEGORIES = frozenset({
     "railing", "railing_infill",          # R312.1 guards and their infill
     "pipe_drain", "pipe_vent",            # DWV
+    "pipe_sump_discharge",                # a pump's pressure line
     "pipe_water_cold", "pipe_water_hot",  # supply
     "vent",                               # vent risers and terminations
     "backflow_preventer", "shutoff", "main_shutoff", "vacuum_breaker",

@@ -166,6 +166,7 @@ _PALETTE: dict[str, tuple[float, float, float, float]] = {
     "pipe_water_cold": (0.20, 0.40, 0.75, 1.0),  # blue PEX
     "pipe_gas": (0.85, 0.75, 0.20, 1.0),         # yellow CSST
     "pipe_radon": (0.55, 0.58, 0.60, 1.0),       # bare gray
+    "pipe_sump_discharge": (0.90, 0.90, 0.88, 1.0),  # white PVC, the leader extension's
     # In-line supply devices, one category per PipeAccessoryKind (→ emit/trades.py). Brass
     # for anything with a body you turn or that holds pressure, so hardware reads as hardware
     # against the PEX it interrupts; the two that are not valves get their own tone.

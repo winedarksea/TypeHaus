@@ -34,6 +34,7 @@ const SOLID_CATEGORY_LABEL: Record<string, string> = {
   pipe_water_cold: "Cold water pipe",
   pipe_gas: "Gas pipe",
   pipe_radon: "Radon pipe",
+  pipe_sump_discharge: "Sump discharge",
   pipe_sleeve: "Cast-in sleeve",
   conduit_power: "Power conduit",
   conduit_data: "Data conduit",

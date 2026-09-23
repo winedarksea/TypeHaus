@@ -139,6 +139,7 @@ KEY_PATTERNS: tuple[tuple[str, str, CostCode], ...] = (
     ("pipe_runs", "water_*", CostCode("3100", "22 11 00", "plumbing")),
     ("pipe_runs", "gas", CostCode("3300", "22 11 00", "plumbing")),
     ("pipe_runs", "radon", CostCode("3200", "23 05 00", "mechanical")),
+    ("pipe_runs", "sump_discharge", CostCode("3100", "22 14 00", "plumbing")),
     ("pipe_fittings", "*", CostCode("3100", "22 13 00", "plumbing")),
     # Allowances. ** THE KEY PREFIX IS THE TRADE DECLARATION. ** Leading segments, never
     # substrings: "waterproofing" contains "roof" and "egress-window-wells" contains "well".

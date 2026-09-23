@@ -89,7 +89,8 @@ def build_plumbing_plan(model: ResolvedModel, storey: str) -> Scene:
     for run in model.pipe_runs:
         if run.storey != storey:
             continue
-        layer = "P-SANR-PIPE" if run.system in _DRAIN_VENT else "P-DOMW-PIPE"
+        layer = ("P-SANR-PIPE" if run.system in _DRAIN_VENT
+                 else "P-STRM-LEDR" if run.system == "sump_discharge" else "P-DOMW-PIPE")
         linetype = "DASHED" if run.system in _DRAIN_VENT else "CONTINUOUS"
         b.add(Polyline(points=tuple(_in(p) for p in run.path), layer=layer,
                        lineweight=PROFILE, linetype=linetype, uid=run.uid, tag=run.tag))

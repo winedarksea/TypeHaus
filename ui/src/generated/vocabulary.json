@@ -114,6 +114,7 @@
     "pipe_gas": 14270259,
     "pipe_radon": 9213081,
     "pipe_sleeve": 14272931,
+    "pipe_sump_discharge": 15132384,
     "pipe_vent": 14737627,
     "pipe_water_cold": 3368639,
     "pipe_water_hot": 13385784,
@@ -276,6 +277,7 @@
     "pipe_gas": 14270259,
     "pipe_radon": 9213081,
     "pipe_sleeve": 14272931,
+    "pipe_sump_discharge": 15132384,
     "pipe_vent": 14737627,
     "pipe_water_cold": 3368639,
     "pipe_water_hot": 13385784,
@@ -451,6 +453,9 @@
     "pipe_sleeve": [
       "plumbing"
     ],
+    "pipe_sump_discharge": [
+      "plumbing"
+    ],
     "pipe_vent": [
       "plumbing"
     ],
@@ -566,6 +571,7 @@
     "pipe_gas": "plumbing",
     "pipe_radon": "plumbing",
     "pipe_sleeve": "plumbing",
+    "pipe_sump_discharge": "plumbing",
     "pipe_vent": "plumbing",
     "pipe_water_cold": "plumbing",
     "pipe_water_hot": "plumbing",

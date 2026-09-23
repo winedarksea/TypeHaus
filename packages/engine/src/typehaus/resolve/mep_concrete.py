@@ -245,6 +245,7 @@ _SLEEVE_MATCH_TOL_M = 0.1  # a cast-in sleeve within 4" of the crossing claims i
 _SLEEVE_PURPOSES_BY_SYSTEM = {
     "water_cold": {"water_cold"}, "water_hot": {"water_hot"},
     "drain": {"drain"}, "vent": {"vent"}, "radon": {"vent", "drain"}, "gas": {"gas"},
+    "sump_discharge": {"drain"},
     # A raceway may share a sleeve with another raceway of any voltage — they are all
     # electrical work — but never with a plumbing one. A spare pipe is electrical too: it is
     # in the electrician's rough-in, whatever eventually goes through it.

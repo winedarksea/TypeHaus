@@ -81,7 +81,7 @@ SOLID_CATEGORY_TRADE: dict[str, str] = {
     # Routed plumbing, one category per ``PipeSystem`` (``resolve/mep.py``).
     "pipe_drain": "plumbing", "pipe_vent": "plumbing",
     "pipe_water_hot": "plumbing", "pipe_water_cold": "plumbing",
-    "pipe_gas": "plumbing", "pipe_radon": "plumbing",
+    "pipe_gas": "plumbing", "pipe_radon": "plumbing", "pipe_sump_discharge": "plumbing",
     # In-line supply devices, one category per ``PipeAccessoryKind`` so the inspector can
     # label a shutoff as a shutoff.
     "main_shutoff": "plumbing", "shutoff": "plumbing", "backflow_preventer": "plumbing",

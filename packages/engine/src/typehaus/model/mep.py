@@ -332,6 +332,12 @@ class SumpPump(HausModel):
     horsepower: float = 0.0
     discharge: str | None = None
     circuit_ref: str | None = None
+    #: The ``PipeRun`` (system ``sump_discharge``) that carries the water to ``discharge``.
+    discharge_line_ref: str | None = None
+    #: A check valve on the line, so the column does not fall back into the pit.
+    check_valve: bool = False
+    #: An ice guard / freeze relief that spills at the foundation when the receiver freezes.
+    freeze_relief: bool = False
 
 
 @register_element

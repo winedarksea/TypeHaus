@@ -291,6 +291,9 @@ class PipeSystem(Enum):
     WATER_COLD = "water_cold"
     GAS = "gas"
     RADON = "radon"  # passive soil-gas vent, routed alongside the plumbing vent
+    # A sump pump's pressure line. Stormwater, not DWV: every DWV rule filters on "drain",
+    # so this is excluded from them by construction, and IFC files it under Stormwater.
+    SUMP_DISCHARGE = "sump_discharge"
 
 
 class PipeAccessoryKind(Enum):

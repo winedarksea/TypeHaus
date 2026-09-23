@@ -42,6 +42,7 @@ from typehaus.checks.mep import (  # noqa: F401 - register
     run_in_slab,
     run_interference,
     soakaway_storage,
+    sump_discharge,
     supply_protection,
     vent_geometry,
     water_heater,

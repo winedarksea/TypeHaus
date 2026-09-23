@@ -119,6 +119,7 @@ def rain_garden_capacity(ctx: CheckContext) -> list[Finding]:
                f"({DESIGN_RAIN_DEPTH_IN:g}\" off {area / _M_PER_FT ** 2:.0f} sf of roof)")
         result = Result.PASS if held >= need - 1e-9 else Result.FAIL
         out.append(advisory(cid, msg, (garden.tag,), result, code=_MANUAL))
+        out.extend(_non_roof_inflow(ctx, garden))
         if garden.infiltration_in_per_hr is None:
             out.append(advisory(
                 cid, f"UNKNOWN — {garden.tag} drawdown is ungraded: no infiltration rate is "
@@ -130,6 +131,24 @@ def rain_garden_capacity(ctx: CheckContext) -> list[Finding]:
                 cid, f"{garden.tag} drains in {hours:.1f} h", (garden.tag,),
                 Result.PASS if hours <= DRAWDOWN_HOURS else Result.FAIL, code=_MANUAL))
     return out
+
+
+def _non_roof_inflow(ctx: CheckContext, garden: RainGarden) -> list[Finding]:
+    """UNKNOWN for water that reaches a feeding leader from something that is not a roof."""
+    from typehaus.resolve.drainage_network import build_network
+
+    feeders = {e.tag for e in _leaders(ctx) if e.discharge_ref == garden.tag}
+    network = build_network(ctx.model.plan)
+    extra = sorted({(e.source, e.target) for e in network.edges
+                    if e.kind is EdgeKind.PRIMARY and e.target in feeders
+                    and network.nodes[e.source].kind != "leader"})
+    return [advisory(
+        "drainage.rain_garden_capacity",
+        f"UNKNOWN — {garden.tag} also takes "
+        f"{'pumped ' if network.nodes[source].kind == 'sump' else ''}water from {source} "
+        f"(via {leader}); it is not in the design volume",
+        (garden.tag, source), Result.UNKNOWN, code=_MANUAL)
+        for source, leader in extra]
 
 
 def _foundations(ctx: CheckContext) -> list[tuple[str, LineString, float, bool]]:

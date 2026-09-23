@@ -31,6 +31,8 @@ from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.placeables import resolved_mount_elevation
 
 STORMWATER_SYSTEM_NAME = "Stormwater"
+#: The one ``PipeSystem`` that is stormwater: it files under ``_emit_stormwater_system``.
+STORMWATER_PIPE_SYSTEM = "sump_discharge"
 
 
 def _emit_sump_pumps(f: Any, model: ResolvedModel, storeys: dict[str, Any],
@@ -55,7 +57,9 @@ def _emit_sump_pumps(f: Any, model: ResolvedModel, storeys: dict[str, Any],
                 "uid": element.uid, "tag": element.tag, "category": "sump_pump"})
             ll.ensure_pset(f, entity, "TypeHaus_SumpPump", {
                 "model": pump.model, "horsepower": pump.horsepower,
-                "discharge": pump.discharge or "", "circuit_ref": pump.circuit_ref or ""})
+                "discharge": pump.discharge or "", "circuit_ref": pump.circuit_ref or "",
+                "discharge_line_ref": pump.discharge_line_ref or "",
+                "check_valve": pump.check_valve, "freeze_relief": pump.freeze_relief})
             ll.assign_container(f, entity, storeys[storey.tag])
             pumps.append(entity)
     return pumps
