@@ -106,7 +106,10 @@ def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_r
     # spans axis to axis of the court's side walls, 20'-0" -> 18'-0" with the 17'-0" court.
     # At a 4' pitch, fencepost: floor(20/4)+1 = 6 became floor(18/4)+1 = 5.
     assert joints["mudsill_anchor"] == 136
-    assert joints["sloped_joist_hanger"] == 39
+    # 39 -> 40 on 2026-09-23: ST-G-SERVICE's stringer-1 moved 3/4" in with the outer-stringer
+    # inset and its head now lands inside BM-BW-FE's 6" end gap, matching stringer-0 on
+    # BM-BW-FC. Both carriers run PARALLEL to the stringers (plans/TODO.md: hung.py axis test).
+    assert joints["sloped_joist_hanger"] == 40
     assert joints["ridge_tie_strap"] == 19
     assert joints["embedded_strap_holdown"] == 40
     # The leg that had nothing until 2026-09-14: six attic gable-end walls, 22 ties, plus one

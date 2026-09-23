@@ -1290,11 +1290,32 @@ envelope (1,842 + 2,675) × 1.021 = 4,612 lb-ft / 24,373 = 0.189 front
          (1,874 + 2,675) × 1.022 = 4,649 lb-ft / 24,379 = 0.191 rear
 ```
 
-P_u, δ and φM_n do not move: the axial load is the same. §15c's joint takes the larger M_u
-and the engine now reads, front / rear: bearing C 9,436 / 9,510 lb against φB_n 38,803 /
-38,811 (0.243 / 0.245), one-bar dowel tension 5,136 / 5,182 lb against 16,740 (0.307 /
-0.310). Those two are engine readings, not re-hand-worked; development (0.884) still
-governs and is untouched by M_u.
+P_u, δ and φM_n do not move: the axial load is the same.
+
+**§15c's joint at the new M_u.** P_u, c, the block (A₁ 14.05 in², ȳ 4.706") and φB_n are
+unchanged; δ is §15c's own (4,383 / 4,294.1 = 1.0207 front, 4,451 / 4,356.8 = 1.0216 rear):
+
+```
+                         BR1                          BF1
+M_u (magnified)          1.0216 × 4,549.2 = 4,648     1.0207 × 4,517.0 = 4,611 lb-ft
+C (±45°)                 (55,771 + 3,711 × 1.900)/6.606 = 9,510 lb     9,436 lb
+φB_n                     38,811 lb   d/c 0.245        38,803 lb   d/c 0.243
+T, one bar on-axis       5,182 lb    d/c 0.310        5,135 lb    d/c 0.307   (vs 16,740)
+φV_n = 55,800 − (C − P_u)  50,001 lb                  50,053 lb   (d/c 0.008)
+development              21.2" / 24"   0.884 — still governs
+```
+
+Unroughened (μ 0.6): 0.6 × 50,001 = 30,001 lb. §15d's BR1 joint at each cover, ȳ backed out
+of §15d's own C (dowel ring 2.6875 / 2.1875 / 1.6875"):
+
+```
+cover   C / φB_n / T
+2"      9,510 / 38,811 / 5,182
+2 1/2"  9,926 / 41,230 / 5,633
+3"      10,395 / 43,608 / 6,159
+```
+
+Still the pad-dowel row decides cover: **2" stays.**
 
 ---
 
