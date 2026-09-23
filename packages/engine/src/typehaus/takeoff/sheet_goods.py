@@ -22,6 +22,7 @@ from typehaus.resolve.framing.profiles import cross_section
 from typehaus.resolve.geometry import length, polygon_area, sub
 from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedModel
+from typehaus.resolve.sheathing_lap import layer_run_m
 from typehaus.resolve.sheet_stock import (
     layer_sheet_length_in,
     order_sheet_length_in,
@@ -57,13 +58,15 @@ def sheet_goods_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         exterior = any(layer.function == "cladding" for layer in wall.layers)
         if not exterior:
             continue
-        gross = length(sub(wall.axis[1], wall.axis[0])) * (
-            ((wall.top_z0_m or wall.z1_m) + (wall.top_z1_m or wall.z1_m)) / 2 - wall.z0_m
-        )
+        axis_run = length(sub(wall.axis[1], wall.axis[0]))
+        height = ((wall.top_z0_m or wall.z1_m) + (wall.top_z1_m or wall.z1_m)) / 2 - wall.z0_m
         stated = dict(wall_sheathing(model.plan, wall))
         for layer in wall.layers:
             if layer.function != "sheathing":
                 continue
+            # Run off the layer's own polygon, not the node axis: a lapping corner panel is
+            # longer than the axis, a butting one shorter (``resolve/sheathing_lap.py``).
+            gross = layer_run_m(layer, axis_run) * height
             # A BLIND recess deducts a sheet only where it reaches the sheathing: a hydrant
             # bore from the yard does, a firebox pocket from the living room does not.
             wall_area = gross - sum(

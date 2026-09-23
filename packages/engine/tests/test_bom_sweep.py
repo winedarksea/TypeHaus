@@ -478,6 +478,12 @@ def test_openings_bill_by_type_and_cover_every_opening(catlin_model, bom):
     assert {tag for row in rows for tag in row["tags"]} == {
         opening.tag for opening in catlin_model.openings}
     assert {"door", "window"} <= {row["kind"] for row in rows}
+    # DoorType.function rides on the row so an [allowances] driver can filter on it.
+    types = {t.tag: t for t in catlin_model.plan.library.door_types}
+    for row in rows:
+        want = types[row["type"]].function if row["kind"] == "door" and row["type"] else None
+        assert row["function"] == want
+    assert any(row["function"] == "closet" for row in rows)
 
 
 def test_envelope_bills_more_than_the_sheathing(bom):

@@ -37,6 +37,7 @@ from typehaus.resolve.geometry import length, polygon_area, sub
 from typehaus.resolve.geometry_walls import cuts_layer
 from typehaus.resolve.model import ResolvedLayer, ResolvedModel, ResolvedWall
 from typehaus.resolve.roof_geometry import roof_ceiling_area_m2
+from typehaus.resolve.sheathing_lap import layer_run_m
 
 _M2_TO_FT2 = 10.7639104
 _M_TO_FT = 3.280839895
@@ -118,14 +119,18 @@ def wall_layer_net_area_m2(model: ResolvedModel, wall: ResolvedWall,
     out of, so the drawing and the bill agree about where the pocket stops.
     """
     blind = _blind_deduction_m2(model, wall, layer)
-    if not getattr(layer, "is_banded", False):
-        return max(0.0, wall_net_m2 - blind)
-    band_z0, band_z1 = layer.band(wall)
+    axis_run: float = length(sub(wall.axis[1], wall.axis[0]))
     mean_top = ((wall.top_z0_m or wall.z1_m) + (wall.top_z1_m or wall.z1_m)) / 2.0
+    # Sheathing runs off its own polygon (a lapping corner panel is longer than the axis);
+    # ``sheet_goods_takeoff`` measures the same run, so the two sections agree.
+    run = (layer_run_m(layer, axis_run)
+           if layer.function == LayerFunction.SHEATHING.value else axis_run)
+    if not getattr(layer, "is_banded", False):
+        return max(0.0, wall_net_m2 + (run - axis_run) * (mean_top - wall.z0_m) - blind)
+    band_z0, band_z1 = layer.band(wall)
     band_z1 = min(band_z1, mean_top)
     if band_z1 - band_z0 <= 0.0:
         return 0.0
-    run: float = length(sub(wall.axis[1], wall.axis[0]))
     area = run * (band_z1 - band_z0)
     for opening in model.openings:
         if opening.host_wall != wall.tag:
