@@ -43,13 +43,13 @@ from typehaus.engineering.item import Status
 _COL_CAGE = '(4) #5 vertical, #3 ties @ 10" o.c.'
 _FCOL_CAGE = ('(4) #5 vertical, #3 ties @ 10" o.c., 2" cover, '
               'galvanized (ASTM A767 after fabrication, or A1094)')
-# PT-SG-COL's two cage lines, at its own 14-space indent — the ONE column the strip tests
-# break, and the reason they anchor on both lines together rather than on the shared struct
-# name, which now appears on PT-SG-FCOL as well.
-_COL_CAGE_SOURCE = ("              vertical_reinforcement=SPEC.corner_column_cage,\n"
-                    "              reinforcement=_CAST_COLUMN_CAGE,\n")
-_UNREADABLE_CAGE_SOURCE = "              vertical_reinforcement='rebar per engineer',\n"
-# The SPEC field the five 12" columns share. Mutating it moves all five at once, which is
+# The corner columns' two cage lines in the PILLARS loop, at its 28-space indent. Since
+# PT-SG-COL retired (2026-09-22) the four corners are the only court columns left, so the
+# strip tests break all four at once and take a north-entry pier as the control.
+_COL_CAGE_SOURCE = ("                            vertical_reinforcement=SPEC.corner_column_cage,\n"
+                    "                            reinforcement=_MOMENT_COLUMN_CAGE,\n")
+_UNREADABLE_CAGE_SOURCE = (" " * 28) + "vertical_reinforcement='rebar per engineer',\n"
+# The SPEC field the four 12" corner columns share. Mutating it moves all four at once, which is
 # what `test_an_under_minimum_cage_is_over_not_ok` wants.
 _SPEC_CAGE_SOURCE = "corner_column_cage: str = ('(4) #5 vertical, #3 ties @ 10\" o.c., 2\" cover, '"
 _SPEC_SHORT_CAGE_SOURCE = "corner_column_cage: str = ('(3) #4 vertical, #3 ties @ 10\" o.c., 2\" cover, '"
@@ -201,17 +201,21 @@ _TIER_PIERS = tuple(f"PT-BW-T{_n}{_s}" for _n in (1, 2, 3, 4) for _s in ("W", "E
 # sunken garden fell 4 11/16" (the court's flood step, plus 1 7/16" of stale annotation).
 # A lower floor is a taller structure: z 23.0' -> 23.3', q_h 18.7 -> 18.8 psf. The guard case
 # still governs both rows, so no capacity comparison changes.
+#
+# ** WIND FELL 1,385 -> 1,140 ON 2026-09-22 ** (note §12b): BM-SG-BLC's 11 7/8" band left
+# with the centre line and the 2x12 deck edge is 13", so A_s 35.94 -> 29.60 sf, 506 lb of
+# storey shear over the same four columns. The guard rows did not move.
 _CORNER_ORACLE = {
-    "PT-SG-BF1": {"height_in": 108.125, "wind_lb_ft": 1384.7, "guard_lb_ft": 2502.1},
-    "PT-SG-BF3": {"height_in": 108.125, "wind_lb_ft": 1384.7, "guard_lb_ft": 2502.1},
+    "PT-SG-BF1": {"height_in": 108.125, "wind_lb_ft": 1140.4, "guard_lb_ft": 2502.1},
+    "PT-SG-BF3": {"height_in": 108.125, "wind_lb_ft": 1140.4, "guard_lb_ft": 2502.1},
     # The rear row runs 2" proud for the deck's drainage crown.
     # ** THE REAR PAIR LOST 1/6" ON 2026-09-14. ** ``SPEC.rear_pillar_rise_in = 2.0`` became
     # ``SPEC.balcony_fall_in_per_ft = 0.25``: the FALL is the authored number now and the rise
     # follows the run between the bearing rows, which over 7'-4" is 1.833" rather than 2.000".
     # Both base moments are ``shear x height``, so they follow it exactly and by the same
     # 0.15%. Nothing else about the rear row moved.
-    "PT-SG-BR1": {"height_in": 109.958, "wind_lb_ft": 1408.2, "guard_lb_ft": 2532.6},
-    "PT-SG-BR3": {"height_in": 109.958, "wind_lb_ft": 1408.2, "guard_lb_ft": 2532.6},
+    "PT-SG-BR1": {"height_in": 109.958, "wind_lb_ft": 1159.7, "guard_lb_ft": 2532.6},
+    "PT-SG-BR3": {"height_in": 109.958, "wind_lb_ft": 1159.7, "guard_lb_ft": 2532.6},
 }
 #: §4 of the note: phi*Mn at the column's own axial load, hand-worked term by term.
 #:
@@ -222,7 +226,11 @@ _CORNER_ORACLE = {
 #: only about half of that is the concrete: beta1 steps 0.85 -> 0.80, `c` falls to 2.752",
 #: the concrete resultant moves out to +4.695", and the extreme tension strain rises past
 #: Table 21.2.2's transition band so phi goes 0.872 -> 0.900.
-_CORNER_PHI_MN_LB_FT = 24_700.0
+#:
+#: ** 24,700 -> 25,470 ON 2026-09-22 (note §12c). ** P_u rose 4,947 -> 7,886 lb when the
+#: balcony went wall-to-wall on two beams, and below balance more axial is more moment
+#: capacity: c 2.752" -> 2.809", C_c 60,473 -> 62,268 lb. The rear row reads 25,476.
+_CORNER_PHI_MN_LB_FT = 25_470.0
 #: §7: ld = (60,000 / (25 sqrt(5,000))) x 0.625 = 21.2", x 1.3 for a class B splice.
 #: 35.6" at the presumptive 3,000 psi — development length goes as 1/sqrt(f'c), so reading
 #: the real mix SHORTENS the required lap. The assembly's own source text still specifies
@@ -298,8 +306,13 @@ def test_every_cast_concrete_pier_on_its_own_base_is_in_scope(piers) -> None:
     of a flight that runs WEST, so all eight stood under open ground carrying nothing, and
     the terrace they were meant to hold up is four cast pours on a compacted base now.
     ``PT-BW-RNE`` arrived in the same pass as the canopy's fourth column.
+
+    ``PT-SG-COL`` / ``PT-SG-FCOL`` left on 2026-09-22 with the 17'-0" court: both decks span
+    wall to wall and there is no centre support line. Their oracle rows live on in
+    conftest's ``catlin_retired_columns``.
     """
-    assert set(piers) == {"PT-SG-COL", "PT-SG-FCOL", *_CORNER_PIERS, *_ENTRY_PIERS}
+    assert set(piers) == {*_CORNER_PIERS, *_ENTRY_PIERS}
+    assert not {"PT-SG-COL", "PT-SG-FCOL"} & set(piers)
     assert not set(_BREEZEWAY_PIERS) & set(piers)
     assert not set(_TIER_PIERS) & set(piers)
     assert not {"PT-BW-CW", "PT-BW-CE", "PT-BW-CNW", "PT-BW-CNE",
@@ -342,10 +355,14 @@ def test_a_pad_borne_pier_gets_no_engineered_bearing_record(results, piers) -> N
 
 
 @pytest.mark.parametrize("tag", sorted(_ORACLE))
-def test_the_load_path_reproduces_the_note(tag, piers) -> None:
-    """§2's table, term by term. Two errors can cancel inside a d/c ratio."""
+def test_the_load_path_reproduces_the_note(tag, catlin_retired_columns) -> None:
+    """§2's table, term by term. Two errors can cancel inside a d/c ratio.
+
+    On conftest's rebuilt columns since 2026-09-22: the tributary is the note's input, so
+    what is checked is ``_Pier``'s D / L / P_u arithmetic against the note's own table.
+    """
     want = _ORACLE[tag]
-    pier = piers[tag]
+    pier = catlin_retired_columns[tag]
     assert pier.tributary_ft2 == pytest.approx(want["tributary_ft2"], abs=0.02)
     assert pier.dead_lb == pytest.approx(want["dead_lb"], abs=3.0)
     assert pier.live_lb == pytest.approx(want["live_lb"], abs=2.0)
@@ -354,31 +371,25 @@ def test_the_load_path_reproduces_the_note(tag, piers) -> None:
     assert pier.gross_area_in2 == pytest.approx(want["gross_in2"], rel=0.001)
 
 
-def test_both_columns_carry_the_centre_pillar_that_lands_beside_them(piers) -> None:
-    """`structural.deck_footing_size` reports N/A on both centre pillars and says their share
-    is picked up here. **That sentence is a promise, and this is the only thing keeping it.**
+def test_no_deck_borne_pillar_is_left_handing_a_share_to_nobody(catlin_plan, piers) -> None:
+    """`structural.deck_footing_size` reported N/A on a pillar standing on a deck and said
+    its share was picked up by the pier below. **That sentence was a promise** (§2).
 
-    PT-SG-BR2 and PT-SG-BF2 each stand on the porch DECK and each carries the middle of the
-    balcony. Until 2026-09-03 ``pier_basis`` handed load down only post-to-post, so a pillar
-    on a FloorSystem handed nothing and PT-SG-COL was graded on 82.33 ft2 with a third of a
-    balcony landing on it uncounted. Both now hand their share through the deck's beams to
-    the column under them.
-
-    And the share itself is the BEAM's, not a fraction of the deck: BM-SG-BLC runs the
-    balcony's full depth onto these two pillars alone while the two edge beams share four
-    posts, so a sixth of the deck was never what either pillar carried.
+    ** THE PILLARS ARE GONE SINCE 2026-09-22. ** PT-SG-BR2/BF2 retired with the centre
+    support line, so no catlin post stands on a ``FloorSystem`` any more and no pier carries
+    a pillar's dead load. What is kept is the promise's other half: nothing in the court
+    names a floor as its bearing, so there is no share to lose. The retired columns' own
+    48.33 ft2 pillar share is in ``catlin_retired_columns`` (note §2).
     """
-    # 70.84, not the 72.50 this read until 2026-09-14: each porch beam is 9.77' rather than
-    # 10.00' now that it stops at the centre pillar's face instead of running to the column
-    # axis. The deck it collects did not change — the 2 3/4" at each end reaches the same beam
-    # through the pillar chase's header — so this is a 1.4% UNDER-count, recorded at the head
-    # of ``_ORACLE`` and in notes/sunken_garden_piers.md §2 rather than silently absorbed.
-    own_porch_share = 70.84          # 2 porch beams x 7.25' strip x 9.77' over 2 supports
-    balcony_share = 48.33            # BM-SG-BLC, 10.00' strip x 9.67' over its 2 posts
-    for tag in ("PT-SG-COL", "PT-SG-FCOL"):
-        pier = piers[tag]
-        assert pier.tributary_ft2 == pytest.approx(own_porch_share + balcony_share, abs=0.02)
-        assert pier.carried_dead_lb > 0.0, "the pillar's own 6x6 rides down with its share"
+    from typehaus.model import FloorSystem, Post
+
+    for post in catlin_plan.all_elements():
+        if isinstance(post, Post) and post.tag.startswith("PT-SG-"):
+            assert not isinstance(catlin_plan.by_tag(post.supported_by or ""), FloorSystem), (
+                f"{post.tag} stands on a deck again — restore the hand-down assertion")
+    assert not {"PT-SG-BR2", "PT-SG-BF2"} & {e.tag for e in catlin_plan.all_elements()}
+    for tag in _CORNER_PIERS:
+        assert piers[tag].carried_dead_lb == 0.0, tag
 
 
 def test_the_bell_is_read_as_a_circle_not_the_resolved_square(catlin_retired_bells) -> None:
@@ -437,13 +448,22 @@ def test_bearing_checks_out_on_the_sites_own_soil(tag, records) -> None:
     assert state.ok
 
 
-@pytest.mark.parametrize("tag", sorted(_ORACLE))
-def test_the_cage_reproduces_the_hand_worked_design(tag, results, piers) -> None:
-    """§4c and §4d — the cage the house authors, and the capacity it buys."""
-    want = _ORACLE[tag]
-    assert piers[tag].vertical_reinforcement == want["cage"]
+@pytest.fixture(scope="module")
+def retired_posts(catlin_retired_columns):
+    """``deck_post`` on the two columns conftest rebuilds from the note (retired 2026-09-22)."""
+    from typehaus.engineering.deck_post import _one
 
-    record = results[f"deck_post/{tag}"]
+    return {f"deck_post/{tag}": _one(pier) for tag, pier in catlin_retired_columns.items()}
+
+
+@pytest.mark.parametrize("tag", sorted(_ORACLE))
+def test_the_cage_reproduces_the_hand_worked_design(tag, retired_posts,
+                                                    catlin_retired_columns) -> None:
+    """§4c and §4d — the cage the house authored, and the capacity it buys."""
+    want = _ORACLE[tag]
+    assert catlin_retired_columns[tag].vertical_reinforcement == want["cage"]
+
+    record = retired_posts[f"deck_post/{tag}"]
     assert record.status is Status.OK, record.summary
     assert not record.missing
 
@@ -455,7 +475,7 @@ def test_the_cage_reproduces_the_hand_worked_design(tag, results, piers) -> None
 
 
 @pytest.mark.parametrize("tag", sorted(_ORACLE))
-def test_the_cage_sits_at_the_code_minimum_and_not_below_it(tag, results) -> None:
+def test_the_cage_sits_at_the_code_minimum_and_not_below_it(tag, retired_posts) -> None:
     """§4b/§4c — the 1% floor is what sizes these cages, and both clear it by ~10%.
 
     **This is the assertion that stops a well-meant "save concrete" edit.** The columns run
@@ -463,7 +483,7 @@ def test_the_cage_sits_at_the_code_minimum_and_not_below_it(tag, results) -> Non
     floor covers creep, shrinkage and the accidental moment and is indifferent to loading.
     """
     want = _ORACLE[tag]
-    record = results[f"deck_post/{tag}"]
+    record = retired_posts[f"deck_post/{tag}"]
 
     steel = next(s for s in record.limit_states if s.name == "longitudinal steel")
     assert steel.demand == pytest.approx(want["min_steel_in2"], abs=0.002)  # 0.01 Ag
@@ -482,10 +502,10 @@ def test_the_cage_sits_at_the_code_minimum_and_not_below_it(tag, results) -> Non
 
 
 @pytest.mark.parametrize("tag", sorted(_ORACLE))
-def test_the_ties_are_at_the_25_7_2_2_maximum(tag, results) -> None:
+def test_the_ties_are_at_the_25_7_2_2_maximum(tag, retired_posts) -> None:
     """§4b — least of 16db, 48dt and the column's own least dimension."""
     want = _ORACLE[tag]
-    record = results[f"deck_post/{tag}"]
+    record = retired_posts[f"deck_post/{tag}"]
     spacing = next(s for s in record.limit_states if s.name == "tie spacing")
     assert spacing.demand == pytest.approx(want["tie_spacing_in"])
     assert spacing.capacity == pytest.approx(want["tie_spacing_in"]), (
@@ -496,7 +516,8 @@ def test_the_ties_are_at_the_25_7_2_2_maximum(tag, results) -> None:
 
 
 @pytest.mark.parametrize("tag", sorted(_ORACLE))
-def test_slenderness_is_carried_and_the_minimum_eccentricity_is_covered(tag, results) -> None:
+def test_slenderness_is_carried_and_the_minimum_eccentricity_is_covered(tag,
+                                                                       retired_posts) -> None:
     """§4e — the argument that lets one axial comparison be the whole check.
 
     Both are past §6.2.5's non-sway floor of 34 (PT-SG-FCOL was at 25.6 and neglectable
@@ -506,7 +527,7 @@ def test_slenderness_is_carried_and_the_minimum_eccentricity_is_covered(tag, res
     interaction diagram is needed.
     """
     want = _ORACLE[tag]
-    record = results[f"deck_post/{tag}"]
+    record = retired_posts[f"deck_post/{tag}"]
     state = next(s for s in record.limit_states if s.name == "minimum eccentricity")
     assert state.demand == pytest.approx(want["e_magnified_in"], abs=0.005)
     assert state.capacity == pytest.approx(want["e_capped_in"], abs=0.005)
@@ -532,12 +553,13 @@ def test_a_column_with_no_cage_is_incomplete_and_names_the_field(tmp_path) -> No
     model, _ = resolve(plan)
     results = EngineeringResults(EngineeringContext(plan=plan, model=model, soil_class="GM"))
 
-    record = results["deck_post/PT-SG-COL"]
-    assert record.status is Status.INCOMPLETE, record.summary
-    assert any("vertical_reinforcement" in m for m in record.missing), record.missing
-    assert any("14.1.5" in m for m in record.missing), record.missing
-    # The other pier still has its cage, so this is the field and not a global break.
-    assert results["deck_post/PT-SG-FCOL"].status is Status.OK
+    for tag in _CORNER_PIERS:
+        record = results[f"deck_post/{tag}"]
+        assert record.status is Status.INCOMPLETE, record.summary
+        assert any("vertical_reinforcement" in m for m in record.missing), record.missing
+        assert any("14.1.5" in m for m in record.missing), record.missing
+    # A north-entry pier still has its cage, so this is the field and not a global break.
+    assert results["deck_post/PT-BW-W"].status is Status.OK
 
 
 def test_a_cage_that_does_not_parse_reads_as_no_steel(tmp_path) -> None:
@@ -548,7 +570,8 @@ def test_a_cage_that_does_not_parse_reads_as_no_steel(tmp_path) -> None:
     plan = _mutated(tmp_path, [(_COL_CAGE_SOURCE, _UNREADABLE_CAGE_SOURCE)])
     model, _ = resolve(plan)
     results = EngineeringResults(EngineeringContext(plan=plan, model=model, soil_class="GM"))
-    assert results["deck_post/PT-SG-COL"].status is Status.INCOMPLETE
+    for tag in _CORNER_PIERS:
+        assert results[f"deck_post/{tag}"].status is Status.INCOMPLETE, tag
 
 
 def test_an_under_minimum_cage_is_over_not_ok(tmp_path) -> None:
@@ -567,14 +590,14 @@ def test_an_under_minimum_cage_is_over_not_ok(tmp_path) -> None:
     model, _ = resolve(plan)
     results = EngineeringResults(EngineeringContext(plan=plan, model=model, soil_class="GM"))
 
-    record = results["deck_post/PT-SG-FCOL"]
+    record = results["deck_post/PT-SG-BF1"]
     assert record.status is Status.OVER, record.summary
     steel = next(s for s in record.limit_states if s.name == "longitudinal steel")
     assert not steel.ok
     assert steel.capacity == pytest.approx(0.60, abs=0.005)
     count = next(s for s in record.limit_states if s.name == "bar count")
     assert not count.ok
-    # And it takes the four corner columns with it — one SPEC field feeds all six.
+    # And it takes all four corner columns with it — one SPEC field feeds them.
     for tag in _CORNER_PIERS:
         assert results[f"deck_post/{tag}"].status is Status.OVER
 
@@ -606,14 +629,14 @@ def test_parse_cage(spec, expected) -> None:
     assert (cage.count, cage.bar, cage.tie_bar, cage.tie_spacing_in) == expected
 
 
-def test_both_piers_are_columns_and_not_pedestals(piers) -> None:
+def test_both_piers_are_columns_and_not_pedestals(catlin_retired_columns) -> None:
     """The ratio that decides which ACI chapter applies. A pedestal may be plain; a column
     may not, and that single fact is the whole reason the records above are INCOMPLETE."""
     from typehaus.engineering.deck_post import PEDESTAL_HEIGHT_RATIO
 
     assert PEDESTAL_HEIGHT_RATIO == 3.0
     for tag in _ORACLE:
-        pier = piers[tag]
+        pier = catlin_retired_columns[tag]
         ratio = pier.height_in / pier.diameter_in
         assert ratio == pytest.approx(_ORACLE[tag]["h_over_d"], abs=0.05)
         assert ratio > PEDESTAL_HEIGHT_RATIO
@@ -645,10 +668,10 @@ def test_the_deck_tributary_rule_is_single_sourced(catlin_plan) -> None:
             theirs[tag] = theirs.get(tag, 0.0) + share
 
     assert set(mine) == set(theirs)
-    # And it is the BEAM-WEIGHTED answer both are giving, not the even split they used to
-    # agree on: BM-SG-BLC hands its two pillars half its own strip each, which is half again
-    # what a sixth of the balcony would have been.
-    assert mine["PT-SG-BR2"] == pytest.approx(48.33, abs=0.02)
+    # And it is the BEAM-WEIGHTED answer both are giving: since 2026-09-22 each balcony
+    # glulam carries the whole 18'-0" joist span as its strip (the rule's conservative
+    # overlap) over its 9.667' length, halved between its two corner columns.
+    assert mine["PT-SG-BR1"] == pytest.approx(18.0 * 9.667 / 2.0, abs=0.02)
     for tag, value in theirs.items():
         assert mine[tag] == pytest.approx(value, rel=1e-9), tag
 
@@ -751,7 +774,9 @@ def test_a_column_on_a_wall_top_takes_that_walls_strip_footing(piers) -> None:
         pier = piers[tag]
         assert pier.footing_tag in {"FT-SG-W1", "FT-SG-E1"}
         assert pier.shared_wall_footing is True
-    for tag in ("PT-SG-COL", "PT-SG-FCOL"):
+    # The control: a pad-borne entry pier is NOT on a shared footing (the two centre-court
+    # columns that used to be the control retired 2026-09-22).
+    for tag in ("PT-BW-W", "PT-BW-E"):
         assert piers[tag].shared_wall_footing is False
 
 
@@ -768,9 +793,9 @@ def test_the_corner_columns_are_the_decks_lateral_system(tag, piers) -> None:
     pier = piers[tag]
     assert pier.lateral_system is True
     assert pier.height_in == pytest.approx(_CORNER_ORACLE[tag]["height_in"], abs=0.01)
-    # The two porch columns land their beams in W-SG-W1/E1 — braced by shear walls, no
-    # column moment, and the finding that claimed otherwise is the regression this pins.
-    for other in ("PT-SG-COL", "PT-SG-FCOL"):
+    # The control: a pier under a deck TIED to a concrete wall leans — no column moment.
+    # (The two porch columns that used to be it retired 2026-09-22.)
+    for other in ("PT-BW-W", "PT-BW-E"):
         assert piers[other].lateral_system is False
 
 
@@ -895,17 +920,22 @@ def test_the_cover_is_read_off_the_authored_cage_not_the_code_minimum(results) -
 #:
 #: The R507.5.1 cantilever limit moves the right way with it: the north overhang falls
 #: 20" -> 17" against a limit that rises 22" -> 22.75".
-_BALCONY_SPANS = {"BM-SG-BLW": 7.333, "BM-SG-BLC": 7.25, "BM-SG-BLE": 7.333}
-_BALCONY_JOIST_SPAN_FT = 10.0
+#:
+#: ** SINCE 2026-09-22 TWO BEAMS, NODE TO NODE 9.667', EACH CARRYING 9.75' ** (note §5a):
+#: BM-SG-BLC retired with the centre line and the 2x12 deck spans 18'-0" wall to wall, so
+#: an edge beam carries half of it plus the 9" overhang. Bearing governs at 0.57.
+_BALCONY_SPANS = {"BM-SG-BLW": 9.667, "BM-SG-BLE": 9.667}
+_BALCONY_JOIST_SPAN_FT = 9.75
 
 
 @pytest.mark.parametrize("tag,span_ft", sorted(_BALCONY_SPANS.items()))
 def test_the_nds_pass_on_a_balcony_glulam(tag, span_ft) -> None:
     """§5 of the note, against the pure module rather than a record.
 
-    Bearing governs — 3" on concrete against a wet-service F_c-perp of 392 psi — and it
-    governs at under half. Nothing here is span-driven: 11-7/8" over the slimmer 9-1/2"
-    option is the owner's planter margin, which is a decision and not a calculation.
+    Bearing governs — 3" on concrete against a wet-service F_c-perp of 392 psi — at 0.57
+    since the deck went wall to wall (it was under half on the three-beam frame). 11-7/8"
+    over the slimmer 9-1/2" option is the owner's planter margin, a decision and not a
+    calculation.
     """
     from typehaus.engineering.glulam_beam import nds_states
 
@@ -920,7 +950,7 @@ def test_the_nds_pass_on_a_balcony_glulam(tag, span_ft) -> None:
                                                                                   abs=0.5)
     worst = max(states.values(), key=lambda s: s.demand / s.capacity)
     assert worst.name == "bearing, compression perpendicular"
-    assert worst.demand / worst.capacity < 0.5
+    assert worst.demand / worst.capacity == pytest.approx(0.572, abs=0.005)
 
 
 def test_wet_service_is_applied_to_the_glulam() -> None:
@@ -987,7 +1017,7 @@ def test_no_deck_beam_is_an_engineering_item_any_more(results) -> None:
     assert "deck_beam" not in registered_kinds()
 
 
-def test_the_balcony_beams_are_graded_by_the_record_the_dry_row_cannot_cover(
+def test_the_balcony_beams_are_graded_by_the_engineered_record(
         catlin_ctx) -> None:
     """ONE finding per beam, and it is the ENGINEERED one.
 
@@ -1010,16 +1040,17 @@ def test_the_balcony_beams_are_graded_by_the_record_the_dry_row_cannot_cover(
 
     findings = [f for f in deck_beam_span(catlin_ctx)
                 if any(tag in _BALCONY_SPANS for tag in f.element_tags)]
-    assert len(findings) == 3, [f.message for f in findings]
+    assert len(findings) == 2, [f.message for f in findings]
     assert all(f.result is Result.PASS for f in findings), [f.message for f in findings]
     assert all(f.authority is Authority.ENGINEERED for f in findings)
     assert {f.engineering_item for f in findings} == {
         f"glulam_beam/{tag}" for tag in _BALCONY_SPANS}
 
     for finding in findings:
-        # The engine DID read the supplier's table, and says why it is not using it. A
-        # record silent about an authored PublishedSpan looks like one that never looked.
-        assert "service condition of 'dry' and this member is 'wet'" in finding.message
+        # Since 2026-09-22 no supplier row is authored at all (the deck guide's row was read
+        # at a 10' joist span and is DRY-use; neither describes these beams now). The finding
+        # still says why no table carries the verdict — silence would read as never looking.
+        assert "no supplier row is authored for it either" in finding.message
         assert "bearing, compression perpendicular" in finding.message
 
 
@@ -1034,7 +1065,7 @@ def test_the_glulam_record_carries_its_wet_service_factors_in_the_fingerprint(
     """
     from typehaus.engineering.glulam_beam import WET_FB, WET_FV
 
-    record = catlin_ctx.engineering["glulam_beam/BM-SG-BLC"]
+    record = catlin_ctx.engineering["glulam_beam/BM-SG-BLW"]
     names = {q.name: q.value for q in record.inputs}
     assert names["C_M_bending"] == pytest.approx(WET_FB)
     assert names["C_M_shear"] == pytest.approx(WET_FV)

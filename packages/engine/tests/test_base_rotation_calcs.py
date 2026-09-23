@@ -33,10 +33,15 @@ _WORKED = {
     "PT-BW-E": (1.034, 1.106, Status.OK),
     "PT-BW-GW": (1.456, None, Status.OVER),
     "PT-BW-GE": (1.099, 1.538, Status.INCOMPLETE),
-    "PT-SG-BF1": (1.0438, 1.0447, Status.OK),
-    "PT-SG-BF3": (1.0438, 1.0447, Status.OK),
-    "PT-SG-BR1": (1.0454, 1.0463, Status.OK),
-    "PT-SG-BR3": (1.0454, 1.0463, Status.OK),
+    # ** RE-WORKED 2026-09-22 FOR THE 17'-0" COURT ** by §4's own method at the new frame
+    # (balcony_moment_columns.md §12a/§12c): P_u 4,947 -> 7,886 lb (front), 7,907 (rear),
+    # β_dns 0.2939 / 0.2958, EI_col 1.2683e9 / 1.2664e9; the wall-top k_θ (7.283e7 at 0.25",
+    # 6.8707e7 at 1.0") did not move. Front R 6.209 / 5.858, rear 6.324 / 5.966.
+    # column_base_rotation.md §0/§4 still print the 1.044-1.046 rows.
+    "PT-SG-BF1": (1.0686, 1.0701, Status.OK),
+    "PT-SG-BF3": (1.0686, 1.0701, Status.OK),
+    "PT-SG-BR1": (1.0710, 1.0725, Status.OK),
+    "PT-SG-BR3": (1.0710, 1.0725, Status.OK),
 }
 _LANDING = ("PT-BW-W", "PT-BW-E", "PT-BW-GW", "PT-BW-GE")
 _ORACLE = {tag: row for tag, row in _WORKED.items() if tag not in _LANDING}

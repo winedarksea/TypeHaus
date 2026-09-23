@@ -54,11 +54,12 @@ def test_an_i_joist_field_is_not_a_truss_field(catlin_model_ro) -> None:
 
 
 def test_solid_sawn_takes_r502_8_1(catlin_model_ro) -> None:
-    """A 2x8 deck: depth less 2" at each edge, and the citation is a code section."""
+    """A 2x12 deck (the porch since 2026-09): depth less 2" at each edge, and the citation
+    is a code section."""
     window = member_window(_floor(catlin_model_ro, "FS-SG-PORCH"))
     assert window is not None
     assert window.kind == "solid_sawn"
-    assert window.height_m / M_PER_IN == pytest.approx(7.25 - 2 * 2.0)
+    assert window.height_m / M_PER_IN == pytest.approx(11.25 - 2 * 2.0)
     assert "R502.8.1" in window.basis
     assert pytest.approx(2.0) == SOLID_SAWN_EDGE_CLEARANCE_M / M_PER_IN
 

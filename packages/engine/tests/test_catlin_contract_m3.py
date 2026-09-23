@@ -128,9 +128,9 @@ def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables(
     # toward the frost depth under ASCE 32 (IRC R403.1.4.1). Pinning the citation, not just
     # the verdict, is what keeps this from going green off a check that stopped measuring.
     #
-    # The garden's other two — spread bells under the freestanding porch columns — are
-    # augered to frost depth and pass on plain cover, so they are asserted separately and
-    # must NOT carry the citation.
+    # The garden's other two — pads under the freestanding porch columns, augered to frost
+    # depth and passing on plain cover — retired with the court's centre line on 2026-09-22;
+    # that case is kept on a fixture in test_frost_depth_excavation.py.
     assert not [f for f in findings if f.result is Result.FAIL]
     assert not [f for f in findings if f.result is Result.UNKNOWN], \
         [f.message for f in findings if f.result is Result.UNKNOWN]
@@ -138,12 +138,8 @@ def test_catlin_i_joists_and_frost_supports_pass_the_declared_structural_tables(
     for tag in ("FT-SG-W1", "FT-SG-W2", "FT-SG-E1", "FT-SG-E2", "FT-SG-S"):
         assert by_tag[tag].result is Result.PASS, tag
         assert "ASCE 32" in by_tag[tag].message, tag
-    # The two column bases, `PD-SG-*` since 2026-09-14 (30" square pads, not 36" bells).
-    # They still PASS and still must NOT carry the ASCE 32 citation: they reach frost depth
-    # on their own cover, where the five wall strips lean on a declared 42" section.
-    for tag in ("PD-SG-COL", "PD-SG-FCOL"):
-        assert by_tag[tag].result is Result.PASS, tag
-        assert "ASCE 32" not in by_tag[tag].message, tag
+    # No court pad is left to grade.
+    assert not [tag for tag in by_tag if tag.startswith("PD-SG-")]
 
 
 def test_catlin_sunken_garden_decks_are_graded_and_the_guard_rule_resolves(
@@ -203,11 +199,11 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset(catlin_check_r
     # rather than merely counted, because `structural.frost_depth` derives a LOCAL grade per
     # footing rather than comparing to one global plane. The house's four footings under the
     # sunken garden (one with negative cover) are answered by the R403.3 wings under the
-    # garden slab. The garden's own seven footings bear on a 42" compacted washed-stone
+    # garden slab. The garden's own five footings bear on a 42" compacted washed-stone
     # section, declared non-frost-susceptible and drained by a sock-wrapped tile, whose
     # thickness counts toward the design frost depth under ASCE 32 (IRC R403.1.4.1, kept by
-    # MN Rules 1309.0403); two of the seven are spread bells under freestanding porch columns
-    # and retain nothing. The gradation and drainage are the assembly's authored claim; the
+    # MN Rules 1309.0403). (Seven until 2026-09-22: two were pads under freestanding porch
+    # columns, retired with the court's centre line.) The gradation and drainage are the assembly's authored claim; the
     # check measures that the excavation reaches the depth.
     #
     # Pinned tightly on purpose: any OTHER gating item regressing still fails the empty
@@ -252,7 +248,13 @@ def test_catlin_permit_checklist_passes_declared_minnesota_subset(catlin_check_r
     # not PASS: basis 7 grades all five items OK (free body §11j) and the five suppressions
     # came off with it, so the DRAFT permit print opens. The sealed gate stays shut for its
     # own reason — no `engineering.toml` exists.
-    OPEN: set[str] = set()
+    #
+    # ** ONE OPEN SINCE 2026-09-22: the porch LEDGERS. ** The 17'-0" court hung FS-SG-PORCH on
+    # BM-SG-LDGW/-LDGE (`Beam.ledger_on`), and `structural.deck_ledger` reads UNKNOWN on them
+    # by design: a ledger on CONCRETE through adhesive anchors takes its spacing and embedment
+    # from the anchor maker, and R507.9 publishes no row for it. It closes on the anchor's
+    # evaluation report, not on a change to the model.
+    OPEN: set[str] = {"Deck ledgers and their attachment"}
     gating = [item for item in checklist.items if item.blocking]
     resolved = {Result.PASS, Result.NOT_APPLICABLE}
     unresolved = [item for item in gating
@@ -1836,16 +1838,13 @@ def test_garage_wood_framing_uses_its_structure_layer_centerline(catlin_model):
 
 def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     """Freestanding porch/balcony redesign: no north or front wall, two 12" side walls, a
-    column + two beams on each open porch edge, a metal porch guard, six balcony pillars +
-    three balcony beams, and a 19x28 garden.
+    porch hung on two ledgers, a metal porch guard, four balcony columns + two balcony
+    beams, and a 17x26 garden (19x26 until 2026-09-22).
 
-    The porch's south edge is a 12" round cast column and two DROPPED beams — the same
-    detail the north edge has carried all along — with RL-SG-PORCH in place of a parapet.
-
-    **The balcony's six pillars are no longer six of a kind** (2026-09-03): the four corners
-    are 12" cast concrete columns fixed at their bases and the two centres stay wood 6x6.
-    The eight knee braces and two E-W brace rails they replaced are gone. See
-    ``houses/catlin/notes/balcony_moment_columns.md``.
+    **The balcony's pillars are four of a kind again** (2026-09-22): the four corners are
+    12" cast concrete columns fixed at their bases (since 2026-09-03, replacing eight knee
+    braces and two E-W brace rails), and the two wood centre 6x6s retired with the court's
+    centre line. See ``houses/catlin/notes/balcony_moment_columns.md``.
     """
     walls = [w for w in catlin_model.walls if w.tag.startswith("W-SG-")]
     # 6 concrete walls: two porch side walls (W1/E1), the retaining U (W2/E2/S), and the
@@ -1912,31 +1911,15 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     assert beam.assembly == "SUNKEN_GARDEN_GRADE_BEAM_12"
     assert not any(w.tag.startswith("W-SG-RAIL-") for w in walls)
 
-    # Both open porch edges are a column at midspan carrying two beams into the side walls.
-    # The front column is a round fibre tube, cheaper than built panels for the same height.
-    # It was 20" while PT-SG-BF2 stood on its top and one pour had to span from the beams'
-    # north face to that pillar's south face; BF2 moved north onto the porch deck on
-    # 2026-09-03, so it seats two collinear beam ends and is 12" — the same tube, mix and
-    # cage as the four balcony corner columns. The width assertions below track the diameter
-    # because the bounding box is the diameter on both axes; they are here to catch a
-    # nominal spelling like "12x12" silently resolving to a 1.5x5.5 stud through
-    # ``_RE_NOMINAL``.
-    front = next(s for s in catlin_model.solids if s.tag == "PT-SG-FCOL")
-    assert front.category == "column" and front.assembly == "SUNKEN_GARDEN_COLUMN_12"
-    xs = [p[0] for p in front.outline]
-    ys = [p[1] for p in front.outline]
-    assert max(xs) - min(xs) == pytest.approx(inch(12).meters, rel=1e-3)
-    assert max(ys) - min(ys) == pytest.approx(inch(12).meters, rel=1e-3)
-    assert len(front.outline) > 8, "a round column is a polygonised circle, not a rectangle"
-    front_beams = {b.tag: b for b in catlin_model.solids
-                   if b.tag in ("BM-SG-FRW", "BM-SG-FRE")}
-    assert len(front_beams) == 2
-    # DROPPED, not flush: the joists bear on top, so these two top out a porch-joist depth
-    # (7 1/4") below the 0' datum exactly as the back pair do, and the column stops at their
-    # soffit — which keeps the pour clear of the 16"-o.c. joist band above it.
-    assert all(b.z1_m == pytest.approx(inch(-7.25).meters) for b in front_beams.values())
-    assert front.z1_m == pytest.approx(min(b.z0_m for b in front_beams.values()))
-    assert front.z1_m == pytest.approx(inch(-18.5).meters)
+    # ** NO COLUMN AND NO PORCH BEAM SINCE 2026-09-22. ** Both open porch edges were a 12"
+    # round cast column at midspan carrying two DROPPED KDAT beams into the side walls. The
+    # 17'-0" court hangs the porch's east-west joists on two ledgers instead, one on each side
+    # wall's inner face (`Beam.ledger_on`), so nothing stands on the court floor.
+    assert not [s for s in catlin_model.solids
+                if s.tag in ("PT-SG-COL", "PT-SG-FCOL", "BM-SG-FRW", "BM-SG-FRE",
+                             "BM-SG-BKW", "BM-SG-BKE")]
+    for ledger, wall in (("BM-SG-LDGW", "W-SG-W1"), ("BM-SG-LDGE", "W-SG-E1")):
+        assert catlin_model.plan.by_tag(ledger).ledger_on == wall, ledger
 
     # The porch guard is a Railing now, matching RL-SG-BALCONY one storey up.
     # SURFACE-mounted since 2026-09-03, on its own house-local type: its west and east legs
@@ -1953,7 +1936,8 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
     garden = next(s for s in catlin_model.solids if s.tag == "SL-SG-FLOOR")
     xs = [p[0] for p in garden.outline]
     ys = [p[1] for p in garden.outline]
-    assert max(xs) - min(xs) == pytest.approx(ft(19).meters)
+    # 19'-0" until the court narrowed on 2026-09-22.
+    assert max(xs) - min(xs) == pytest.approx(ft(17).meters)
     # 28'-0" until 2026-09-10: the court was shortened to the smallest length that still
     # holds the porch, the balcony and a yoga-sized field. See the free-body note's §4 for
     # what the 2'-0" costs in sliding, and for the 23'-11" structural floor below it.
@@ -1967,18 +1951,14 @@ def test_sunken_garden_structure_matches_redesign_spec(catlin_model):
                 for el in catlin_model.plan.storey_elements(tag)]
     posts = {el.tag for el in elements if el.element_kind == "Post" and el.tag.startswith("PT-SG-")}
     beams = {el.tag for el in elements if el.element_kind == "Beam" and el.tag.startswith("BM-SG-")}
-    assert {"PT-SG-COL", "PT-SG-FCOL"} <= posts  # the two porch columns, both 12" round
+    assert not {"PT-SG-COL", "PT-SG-FCOL"} & posts  # the two porch columns retired
     pillars = {t for t in posts if t.startswith("PT-SG-B") and not t.startswith("PT-SG-HP")}
-    assert len(pillars) == 6
-    # 2 KDAT back beams + 2 KDAT front beams + 3 treated-glulam N-S balcony beams. **Nine
-    # until 2026-09-03**: the two continuous E-W brace rails were the freestanding balcony's
-    # second-direction lateral member and went with the knee braces when four fixed cast
-    # columns took over that job.
-    assert len(beams) == 7
-    assert {"BM-SG-BKW", "BM-SG-BKE", "BM-SG-FRW", "BM-SG-FRE"} <= beams
-    assert not [t for t in beams if t.startswith("BM-SG-RAIL-")]
-    assert {"BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE"} <= beams
-    for tag in ("BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE"):
+    assert pillars == {"PT-SG-BR1", "PT-SG-BR3", "PT-SG-BF1", "PT-SG-BF3"}
+    # 2 KDAT porch ledgers + 2 treated-glulam N-S balcony beams. **Nine until 2026-09-03**
+    # (the two E-W brace rails went with the knee braces), **seven until 2026-09-22** (four
+    # KDAT porch beams and the centre glulam BM-SG-BLC went with the centre line).
+    assert beams == {"BM-SG-LDGW", "BM-SG-LDGE", "BM-SG-BLW", "BM-SG-BLE"}
+    for tag in ("BM-SG-BLW", "BM-SG-BLE"):
         beam = catlin_model.plan.by_tag(tag)
         # The DECIMAL spelling is the parser's tell: a nominal-looking "4x12" matches
         # ``_RE_NOMINAL`` and silently becomes 3 1/2" x 11 1/4".
@@ -2826,14 +2806,15 @@ def test_each_facade_block_grid_is_one_grid_on_every_storey(catlin_model, wall_t
 #: Facade stations, in inches from the wall line's origin, where a framed run legitimately
 #: starts or stops partway along a facade and must plant an end stud off the module. One
 #: run, both of its ends: the sunken garden's framed walkout, whose west end is the
-#: excavation edge at 8'-10".
+#: excavation edge at 9'-10" (8'-10" until the court narrowed to 17'-0" on 2026-09-22).
 #:
 #: Its east end used to be 28'-0" and landed on the module by luck. That luck was the tell:
 #: 28'-0" is the retaining wall's AXIS, so the framed run's last 6" of studs, sheathing and
 #: outboard foam stood inside the soil column beside the court. It moved to 27'-2" on
 #: 2026-09-05 — 4" clear of the court's 27'-6" face, mirroring the west end's 4" lap — and
-#: 326" is off the module, which is the honest answer for an end set by grade.
-_FRAMED_RUN_ENDS = {"W-M-S1": (106.0, 326.0)}
+#: 326" is off the module, which is the honest answer for an end set by grade. Both ends
+#: came 1'-0" in with the court walls on 2026-09-22 (face 26'-6", end 26'-2" = 314").
+_FRAMED_RUN_ENDS = {"W-M-S1": (118.0, 314.0)}
 
 
 @pytest.mark.parametrize("wall_tag", FACADE_WALLS)
@@ -2847,9 +2828,9 @@ def test_no_facade_stud_stands_off_the_module_except_at_a_corner(catlin_model, w
     jamb pack is deliberately off-module, sitting where its rough opening puts it.)
 
     ``_FRAMED_RUN_ENDS`` is the second allowance. The basement's south facade is not one
-    wall: it is buried pour, then 19'-2" of 2x6 framing standing inside
+    wall: it is buried pour, then 16'-4" of 2x6 framing standing inside
     the sunken garden on a curb, then buried pour again. The framed run has to put a stud at
-    each of its own ends, and its west end is x=8'-10" — the excavation edge, which is where
+    each of its own ends, and its west end is x=9'-10" — the excavation edge, which is where
     grade says it is and not where the module does. That is a real building corner in every
     sense but the plan one, so it is named here rather than allowed by a tolerance.
     """

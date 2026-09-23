@@ -130,7 +130,7 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
     Graded as three ISOLATED free cantilevers, each resisting by its own base friction,
     these walls reach FS 0.73 against the 1.5 IRC R404.4 requires. ``W-SG-ARCH``, a buried
     12" x 17 1/2" grade beam, closes the court's north end, so ``W-SG-W2`` and ``W-SG-E2``
-    face each other across 19'-0" of cast concrete and their thrusts cancel —
+    face each other across 17'-0" of cast concrete and their thrusts cancel —
     ``engineering/retaining_system`` sums all three as one rigid body instead.
 
     Two things keep this from being the check being talked out of its finding:
@@ -160,8 +160,10 @@ def test_catlin_grades_the_three_court_walls_through_their_base_restraint(
         # 28'-0" -> 26'-0" and the strips narrowed 8'-0" -> 7'-0" (2026-09-10). That is a
         # deliberate purchase, not a regression: notes/sunken_garden_court_free_body.md §4.
         # 1.59 since 2026-09-20: the raised-garden apron's surcharge joined the thrust (§4c);
-        # 1.60 since 2026-09-21, the apron on AB Classic's 130 pcf (§4d).
-        assert record.ratio == pytest.approx(1.5 / 1.60, abs=0.005)
+        # 1.60 since 2026-09-21, the apron on AB Classic's 130 pcf (§4d); 1.712 since
+        # 2026-09-22, when the court narrowed to 17'-0" and the south wall — which IS the
+        # resultant — shortened 20'-0" -> 18'-0" on axes (§12, d/c 0.876).
+        assert record.ratio == pytest.approx(1.5 / 1.712, abs=0.005)
         by_name = {state.name: state for state in record.limit_states}
         # Per-wall sliding is not a meaningful number once the free body is wrong, so it is
         # gone rather than reported alongside a contradicting one.

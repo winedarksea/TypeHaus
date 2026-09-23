@@ -882,6 +882,108 @@ restraint (`base_rotation/PT-SG-*`) and the stem's own flexure under the moment 
 
 ---
 
+## 12. The 17'-0" court frame (2026-09-22) — §2-§4 and §11 re-worked
+
+The court went to 17'-0" clear and the centre support line retired (`PT-SG-BR2/BF2`,
+`BM-SG-BLC`). `FS-SG-DECK` is 2x12 SP @ 12" spanning **18'-0"** between `BM-SG-BLW`/`-BLE`
+with a 9" cantilever each side; the four corner columns are the only posts. Everything
+below supersedes the matching figure above; the method is unchanged. The record's lever is
+still the AUTHORED `Post.height` (108.125" front, 109.958" rear) although the resolved
+column now stops ~4" lower under the deeper joists — the record errs long, i.e. safe.
+
+### 12a. Gravity (§2a)
+
+`pier_basis` gives each beam the WHOLE joist span as its strip (the rule's deliberate
+overlap — the glulam's own record carries 9.75', §5a):
+
+```
+per column   18.00' × 9.667' / 2                  = 87.00 ft²
+live         40 × 87.00                           = 3,480 lb
+dead         10 × 87.00 + self weight              = 870 + 1,061.5 = 1,931.5 lb  (front)
+             self weight 0.7854 ft² × 9.010' × 150 = 1,061.5; rear 9.163' → 1,079.5 → 1,949.5 lb
+P_u          1.2 × 1,931.5 + 1.6 × 3,480           = 7,885.8 lb front; 7,907.4 rear
+```
+
+The strip rule makes the two columns under one beam carry 348 ft² of a 188.5 ft²
+(19.5' × 9.667') deck — 1.85x. Conservative, printed on the record, and it is what drives
+every axial below.
+
+### 12b. Wind (§2b)
+
+```
+E-W bands:  TR-SG-FASCIA + deck edge 13" × 9.667'   = 10.47 sf
+            BM-SG-BLW, -BLE  11 7/8" × 9.667' × 2   = 19.13 sf      A_s = 29.60 sf
+N-S band:   13" × 19.50'                           = 21.13 sf      (361 lb; E-W governs)
+F = 0.6 × 18.63 × 0.85 × 1.80 × 29.60              = 506 lb   / 4 = 126.6 lb per column
+M_w = 126.6 × 9.010'                               = 1,140 lb-ft front
+      126.6 × 9.163'                               = 1,160 lb-ft rear
+```
+
+The third beam's band left with `BM-SG-BLC`. The guard (§2c) is unchanged: **2,502 /
+2,533 lb-ft**, and still governs.
+
+### 12c. Slenderness and the section (§3, §4)
+
+```
+β_dns = 1.2 × 1,931.5 / 7,885.8 = 0.2939      EI = 0.4 × 4.0305e6 × 1,017.9 / 1.2939 = 1.2683e9
+P_c = π² × 1.2683e9 / (2.1 × 108.125)²          = 242,781 lb   (rear 234,404)
+δ = 1 / (1 − 7,885.8 / (0.75 × 242,781))       = 1.0453       (rear 1.0471)
+M_u guard = 1.6 × 2,502.1 × 1.0453              = 4,185 lb-ft  (rear 4,243)
+```
+
+Strain compatibility at P_u 7,885.8, same bars at ±45°, β₁ 0.80:
+
+```
+c = 2.809"   a = 2.247"   chord offset 3.753"
+A_seg = 14.65 in²   ȳ = 4.668"          C_c = 0.85 × 5,000 × 14.65 = 62,268 lb
+tension pair   ε −0.00591, yielded      F = −37,200 lb at −2.342"
+compr.-side    ε −0.000907              F = −29e6 × 0.000907 × 0.62 = −16,306 lb at +2.342"
+P_n = 62,268 − 37,200 − 16,306 = 8,762 lb     φP_n = 0.90 × 8,762 = 7,886 = P_u ✓
+M_n = 62,268 × 4.668 + 37,200 × 2.342 − 16,306 × 2.342 = 339,600 lb-in = 28,300 lb-ft
+φM_n = 0.90 × 28,300 = 25,470 lb-ft front      (rear, P_u 7,907: 25,476)
+```
+
+More axial is more moment capacity below balance, so φM_n ROSE 24,700 → 25,470.
+
+| case (front row) | demand | capacity | d/c |
+|---|---:|---:|---:|
+| wind, 1.0W | 1,901 lb-ft | 25,470 | 0.075 |
+| guard, 1.6L | 4,003 lb-ft | 25,470 | 0.157 |
+| guard magnified, δ 1.045 | 4,185 lb-ft | 25,470 | 0.164 |
+| §2.3.1 envelope, 1.2D + 1.0W + L (P_u 5,798, δ 1.033) | 4,547 lb-ft | 24,925 | **0.182** |
+| axial | 7,886 lb | 285,893 lb | 0.028 |
+
+Rear row, the envelope: P_u 5,819, M_u 4,618 (δ 1.034) against 24,931 — 0.185.
+
+### 12d. The wall-top joint (§11), at the governing 1.2D + 1.0W + L
+
+```
+                         BR1                         BF1
+P_u, M_u (magnified)     5,819 lb, 4,618 lb-ft        5,798 lb, 4,547 lb-ft
+c, a                     2.768", 2.215"               2.768", 2.214"
+A₁, ȳ                    14.35 in², 4.687"            14.35 in², 4.687"
+C (±45°) = (M_u + P_u × 1.900)/(ȳ + 1.900)
+                         10,092 lb                    9,957 lb
+φB_n = 0.65 × 0.85 × 5,000 × A₁                     39,644 lb / 39,636 lb   d/c 0.255 / 0.251
+T, one bar on-axis = (M_u + P_u × 2.6875)/(ȳ + 2.6875) − P_u
+                         3,817 lb                     3,715 lb    vs 16,740   d/c 0.228 / 0.222
+V_u = 1,160/9.163'/0.6 + 200 = 210.9 + 200         = 410.9 lb  (both rows)
+φV_n = 0.75 × 1.24 × 60,000 − T(±45°, C − P_u)     = 55,800 − 4,273 = 51,527 lb (BR1)
+                                                     55,800 − 4,159 = 51,641 lb (BF1)   d/c 0.008
+development                                          21.2" / 24"   0.884 — still governs
+```
+
+Unroughened (μ 0.6): 0.6 × 51,527 = 30,916 lb.
+
+### 12e. Balcony gravity through the frame (`analytical_model_basis.md` §3c)
+
+The solve hands the two columns under a beam 3,119 lb (front) and 3,842 lb (rear) of live
+load against the record's equal 3,480 — the pair sum agrees (6,961 vs 6,960) and the split
+follows the unequal cantilevers. See that note for the dead case and the base moment the
+continuous frame puts on these columns under gravity, which no record grades.
+
+---
+
 ## Sources
 
 Every standard and document this note rests on, collected from the citations above.

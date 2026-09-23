@@ -101,6 +101,29 @@ this changes no verdict; on a heavier deck it would, and it is the reason a solv
 running beside the sheet. The test asserts each pair sum within 1 % and each column within
 15 %.
 
+**2026-09-22 — the 17'-0" court.** `BF2`/`BR2`, `COL`/`FCOL` and `BM-SG-BLC` retired;
+`BM-SG-BLW` now carries the deck's whole **18.0'** joist span (same `pier_basis` rule,
+`balcony_moment_columns.md` §12a) and lands on two corner columns only:
+
+| term | working | value |
+|---|---|---|
+| live line load | 40 psf × 18.0' | 720 plf |
+| live at BF1, equal split | 720 × 9.667 / 2 | **3,480 lb** = record `live_load` |
+| dead | 10 × 18.0 × 9.667 / 2 + self weight 1,061.5 | **1,931.5 lb** = record `dead_load` (870 + 1,062) |
+| simple-span statics instead | BF1 0.667' from the front end, BR1 7.333' behind it, beam centroid 4.833' | 6,960 × 3.167 / 7.333 = 3,006 front, 3,954 rear |
+
+The frame solve gives **3,119 lb live at BF1 and 3,842 at BR1** (pair 6,961 vs the
+records' 6,960), between the equal split and the pinned statics because the fixed bases
+and the continuous beam share the unequal cantilevers. Dead: 780 + 1,061.5 = 1,841.5 at
+BF1, 961 + 1,079.5 = 2,040.5 at BR1 (pair 3,882 vs 3,881). Each column now sits 10-11 %
+off the record's split — inside the test's 15 %, and the pair inside 1 %.
+
+**Finding:** the same continuity puts a base moment on the fixed columns under GRAVITY —
+854 lb-ft (live) + 214 (dead) at BF1, **1,684 + 421 at BR1**, ASD — which `deck_post`
+does not grade (its moments are wind and guard only). At 1.2D + 1.6L that is ~3,200 lb-ft
+at BR1 beside the 4,243 guard; the sum stays near 0.3 of φM_n 25,476, so no verdict turns
+on it, but it is a real term the sheet does not see.
+
 ### 3d. Roof beams
 
 `roof_beam/BM-BW-RE` and `BM-BW-RW`: `uniform_load` 1,170.9 plf, split by the record's own
@@ -158,3 +181,11 @@ distribution, not this graph (the deck plane is a line load here, not a diaphrag
 - AWC NDS 2018 Supplement Table 4A — SPF No.2 E, the assumed framing modulus
 - CSI, *IFC4 Import and Export* Technical Note (Oct 2013) — the entities SAP2000/ETABS read
 - RISA-3D help, *DXF Files* — LINE → member, POINT → node, layer → section set
+
+## Addendum 2026-09-22 — §3a/§3b at the 17'-0" court
+
+The record's wind base moments are **1,140 lb-ft (BF) / 1,160 (BR)** (were 1,385 / 1,410), and the
+frame solve's lever is now shorter than the record's by more than §3's 3%: the record reads the
+authored column height (9.01') while the resolved column is 8.64', 4" shorter with the 2x12
+joist drop. The oracle allows 6% and requires the solved moment to sit BELOW the record's, so
+the record errs long, the safe side.

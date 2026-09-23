@@ -686,6 +686,14 @@ V      = 5,621 × 12 / 15.0625                            =  4,478 lb
   masonry cavity walls. The check measures each joint's drawn width against the gap it stands
   in (1/16"), so moving either node stales it loudly.
 
+### 6g′. The joints at the 17'-0" court (2026-09-22)
+
+The wythe runs 118" .. 317.625" now, **199.625"** (it was 223.625"). TN 18A Eq. 1 at 0.0009 in/in
+gives 0.0009 × 199.625 / 2 = **0.0898"** per joint: east d/c 0.0898 / 0.1875 (3/8" at 50%) =
+**0.479**, west **0.045**. The whole run on the east joint alone is 0.1797 / 0.1875 = **0.958** — it
+now passes by itself, so "the margin is in the west joint's 4\"" no longer holds; both joints
+stay authored because TN 18A wants a soft joint at each end regardless.
+
 ### 6h. The record, row by row
 
 | limit state | demand | capacity | d/c |
@@ -728,6 +736,39 @@ else here.
 LENGTH is a capacity, as on every development row in the engine (`deck_post.py` agrees); a bar
 count, lap or hook angle is detailing. Reclassifying the hook would not hand the record to
 flexure anyway — the dowel development row, 0.707, would govern.
+
+### 6i. The court narrowed to 17'-0" (2026-09-22)
+
+The side walls came 1'-0" in each (DESIGN-LOG.md, "Sunken garden court"), so the clear span is
+**17.0'** and the design span `L = min(17.0 + 15.0625/12, 17.0 + 6/12)` = **17.5' = 210"**. The
+wythe also got shorter: its top dropped to −13 1/3" so the porch's 2x12s clear it, 89.104" tall
+where it was 94.4375".
+
+```
+wythe  119.86 × (3.625/12) × (89.104/12)                =  268.86 plf
+w      268.86 + 221.875                                 =  490.735 plf     wu = 687.03 plf
+Mu     687.03 × 17.5² / 8                               = 26,300 ft-lb    d/c 0.433
+M_end,u  0.25 × 687.03 × 17.5² / 12                     =  4,383 ft-lb   (−) d/c 0.072
+                                                         wall, plain, 36": d/c 0.287
+```
+
+**Deflection at the claimed α = 0.25.** Service Ma,mid = 490.735 × 17.5²/8 − 0.25 × 490.735 ×
+17.5²/12 = 18,786 − 3,131 = 15,655 ft-lb, under ⅔Mcr (18,565), so Ie = Ig at both sections:
+
+```
+Δ all dead   40.895 × 210⁴ × (5 − 1) / (384 × 4,030,509 × 5,592.36)   = 0.03676 in
+Δ beam only  18.490 × 210⁴ × 4 / (same)                               = 0.01662 in
+after attachment  1.5908 × 0.03676 + (0.03676 − 0.01662)              = 0.0786 in
+ℓ/600 = 210/600 = 0.350 in                                                d/c 0.225
+```
+
+**⚠ THE FIXITY IS NO LONGER NEEDED, AND IT IS REPORTED RATHER THAN REMOVED.** At α = 0 the
+simple span's Ma = 18,786 ft-lb just clears ⅔Mcr, Ie,mid = 5,087 in⁴, Δ all dead 0.0505",
+beam only 0.0208", after attachment **0.110" against 0.350" — d/c 0.315**. The shorter span
+closes ℓ/600 on its own. The elastic estimate at the new span is α = 1/(1 + 2 × 4,030,509 ×
+5,592.36/(2.040e8 × 210)) = **0.487**. `end_restraint` stays authored because the beam is still
+cast monolithic with the walls (placement 2) and its added rows all pass; whether to keep
+claiming it is the engineer's call, and nothing now depends on it.
 
 ## Sources
 

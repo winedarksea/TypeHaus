@@ -22,8 +22,9 @@ DETAIL_SLICES = [
          cut_origin=pt(ft(0), ft(18)), cut_direction="x",
          crop=(pt(ft(15), ft(-2)), pt(ft(21), ft(1, 6))),
          exaggeration=ExaggerationSpec(min_draw_thickness=inch(2))),
-    # Typical exterior wall section — south wall, full height (cut x=9', away from the
-    # sunken garden's x-extent). Since the sauna rotated it passes W-B-SA-N (y=10'-0")
+    # Typical exterior wall section — south wall, full height (cut x=10', through
+    # WIN-S-PLANT2; it was x=9' until the court narrowed on 2026-09-22, which put that line on W-SG-W1's axis and west of the brick
+    # and the framed walkout, both of which now start at 9'-10"). Since the sauna rotated it passes W-B-SA-N (y=10'-0")
     # rather than W-B-SA-W; the section goldens moved with it.
     # The crop's south edge was -6" until 2026-09-05 and now reaches -2'-0". W-B-BRICK moved
     # 4 1/2" south that day (its cavity grew to 6" to meet the grade beam W-SG-BRKBM), which
@@ -33,7 +34,7 @@ DETAIL_SLICES = [
     # isolation board between the beam and FT-B-S2/S3, with room to spare.
     Slice(uid="CVD903AAAA", tag="SL-D-WALLTYP", kind=SliceKind.DETAIL,
          title="Typical exterior wall section",
-         cut_origin=pt(ft(9), ft(0)), cut_direction="y",
+         cut_origin=pt(ft(10), ft(0)), cut_direction="y",
          crop=(pt(ft(-2), ft(-10)), pt(ft(6), ft(30)))),
     # Ridge beam connection — cut perpendicular to the N-S ridge (direction="x" at
     # y=18') so the section shows the ridge's peak, cropped past the beam band at

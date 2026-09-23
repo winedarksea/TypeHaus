@@ -1,4 +1,4 @@
-"""``engineering/column_support.py`` against ``notes/balcony_moment_columns.md`` §11.
+"""``engineering/column_support.py`` against ``notes/balcony_moment_columns.md`` §11 / §12d.
 
 The note is hand-worked in a separate pass; the numbers below are ITS, and the engine is what
 is being checked. Two refusals are pinned too, because a limit state nobody can break on
@@ -15,12 +15,14 @@ from typehaus.engineering.item import Status
 
 CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 
-#: §11a-§11d: (bearing C, φBn), (T per bar, φAs fy), (Vu, φVn), (ld, embedment).
+#: §11a-§11d as re-worked in §12d for the 17'-0" court (2026-09-22): (bearing C, φBn),
+#: (T per bar, φAs fy), (Vu, φVn), (ld, embedment). P_u rose and the wind fell, so the
+#: couple needs less dowel and the block is a little deeper.
 _ORACLE = {
-    "PT-SG-BR1": {"bearing": (10_170, 38_850), "tension": (5_684, 16_740),
-                  "shear": (456.1, 49_439), "development": (21.2, 24.0)},
-    "PT-SG-BF1": {"bearing": (10_025, 38_841), "tension": (5_574, 16_740),
-                  "shear": (456.1, 49_562), "development": (21.2, 24.0)},
+    "PT-SG-BR1": {"bearing": (10_092, 39_644), "tension": (3_817, 16_740),
+                  "shear": (410.9, 51_527), "development": (21.2, 24.0)},
+    "PT-SG-BF1": {"bearing": (9_957, 39_636), "tension": (3_715, 16_740),
+                  "shear": (410.9, 51_641), "development": (21.2, 24.0)},
 }
 _LABELS = {"bearing": "bearing on the wall top", "tension": "dowel tension across the joint",
            "shear": "shear friction across the cold joint",
@@ -113,7 +115,7 @@ def test_no_roughening_is_graded_at_0_6(tmp_path) -> None:
     mu = next(q for q in record.inputs if q.name == "PT-SG-BR1.shear_friction_mu")
     assert mu.value == 0.6
     state = _state(record, "PT-SG-BR1", "shear")
-    assert state.capacity == pytest.approx(0.6 * 49_439, rel=0.003)
+    assert state.capacity == pytest.approx(0.6 * 51_527, rel=0.003)
 
 
 def test_no_embedment_is_incomplete_naming_the_field(tmp_path) -> None:

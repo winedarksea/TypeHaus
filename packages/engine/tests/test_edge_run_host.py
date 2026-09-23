@@ -73,18 +73,48 @@ def test_a_tilted_beam_is_graded_over_its_range_not_its_box(catlin_model_ro) -> 
     assert (high - low) / M_PER_IN == pytest.approx(2.42, abs=0.05)
 
 
-def test_a_level_beam_still_gets_a_tight_test(catlin_model_ro) -> None:
+def _catlin_with_a_cap_on(catlin_plan, host: str, top_in: float):
+    """Catlin plus one cap flashing laid along ``host``'s axis at ``top_in`` inches.
+
+    Built rather than read: the porch beams whose caps this test used to grade were
+    retired with the centre support line (2026-09), and no level beam in the house carries
+    a hosted run any more. The ledger BM-SG-LDGW is level and still there.
+    """
+    from typehaus.model import inch
+    from typehaus.model.trim import Flashing
+
+    beam = catlin_plan.by_tag(host)
+    storey = next(tag for tag, items in catlin_plan.elements.items()
+                  if any(getattr(e, "tag", None) == host for e in items))
+    start, end = (catlin_plan.by_tag(beam.start_node), catlin_plan.by_tag(beam.end_node))
+    cap = Flashing(uid="TRCAPTEST1", tag="TR-TEST-CAP", host_ref=host,
+                   path=(start.position, end.position),
+                   top_elevation=inch(top_in), depth=inch(4), thickness=inch(1))
+    return catlin_plan.with_elements(storey, (*catlin_plan.elements[storey], cap))
+
+
+def test_a_level_beam_still_gets_a_tight_test(catlin_plan, catlin_model_ro) -> None:
     """The range only opens by however far the host is out of level.
 
-    BM-SG-BKW is level, so its range collapses to a single value and the cap on it has to
-    match exactly — the tilt allowance is not a blanket loosening.
+    BM-SG-LDGW is level, so its range collapses to a single value and a cap on it has to
+    match exactly — the tilt allowance is not a blanket loosening. A cap at the ledger top
+    passes; the same cap 2" up (past the 1" drafting slop) FAILs.
     """
-    beam = next(s for s in catlin_model_ro.solids if s.tag == "BM-SG-BKW")
+    from typehaus.resolve import resolve
+
+    beam = next(s for s in catlin_model_ro.solids if s.tag == "BM-SG-LDGW")
     low, high = _top_range(beam)
     assert low == pytest.approx(high)
-    cap = next(e for e in catlin_model_ro.plan.elements_of_kind("Flashing")
-               if e.tag == "TR-SG-CAP-BKW")
-    assert cap.top_elevation.meters == pytest.approx(high, abs=1e-6)
+
+    def verdicts(top_in: float):
+        model, resolve_findings = resolve(_catlin_with_a_cap_on(
+            catlin_plan, "BM-SG-LDGW", top_in))
+        return [f.result for f in run_from_model(model, resolve_findings).findings
+                if f.check_id == _CHECK_ID and "TR-TEST-CAP" in f.element_tags]
+
+    on_top = high / M_PER_IN
+    assert Result.FAIL not in verdicts(on_top)
+    assert verdicts(on_top + 2.0) == [Result.FAIL]
 
 
 def test_the_gutter_hangs_below_its_fascia_and_that_is_not_a_defect(findings) -> None:

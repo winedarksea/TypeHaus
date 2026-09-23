@@ -78,32 +78,8 @@ def catlin_model_ro(catlin_plan):
 
 
 class _PlanWithTheBells:
-    """``catlin_plan`` with ``FT-SG-COL`` / ``FT-SG-FCOL`` put back on it.
-
-    ** CATLIN HAS NO BELLED PIER ANY MORE, AS OF 2026-09-14. ** Both of these came off their
-    augered bells and onto flat pads (``PD-SG-COL`` / ``PD-SG-FCOL``), which is an IRC Table
-    R507.3.1 row and needs no engineered record — that was the whole point of the change, and
-    ``spread_footing`` now computes nothing on this house.
-
-    **The calculation did not stop being true, and deleting its tests with the geometry would
-    have retired it.** ``engineering/spread_footing.py`` still ships, is still the only
-    derivation in the engine for a bell, and the next house to auger one gets these states.
-    So this reconstructs the two piers as they stood — same tributary, same loads, same
-    36" x 12" bell on the same ``PIER_BASE_12`` mix — and every oracle number in
-    ``test_pier_section_calcs.py`` and ``test_pier_calcs.py`` reproduces unchanged against
-    ``notes/sunken_garden_piers.md`` §§3, 5. It is the same move the degenerate-section test
-    already made for the 30" bell nobody has either.
-
-    Only ``all_elements`` is overridden, and that is enough: ``cast_piers`` finds the
-    ``Footing`` through it and wires the bell back onto the pier itself, so no dimension is
-    hand-set here. ``_section_states`` reaches the same element to read the mix — a bell
-    whose assembly is not found falls back to the 3,000 psi presumptive, which is 29% low on
-    every capacity, quietly and in the safe direction, so it would pass a sloppier assertion.
-
-    What it does NOT restore is the resolved SOLID: ``catlin_model`` has no ``FT-SG-*`` any
-    more, because resolve ran on the real plan. A test that needs the square the resolver
-    would have drawn computes it from ``width`` rather than reading a geometry that is gone.
-    """
+    """``catlin_plan`` plus the two retired bell ``Footing``s, so ``spread_footing`` can find
+    their mix (``PIER_BASE_12``, still an assembly on catlin's pads). Nothing else is read."""
 
     def __init__(self, plan, footings):
         self._plan = plan
@@ -116,44 +92,75 @@ class _PlanWithTheBells:
         return getattr(self._plan, name)
 
 
+def _retired_centre_column(tag: str, carried_dead_lb: float):
+    """One of ``PT-SG-COL`` / ``PT-SG-FCOL`` as a ``_Pier``, from the note's own inputs.
+
+    ** RETIRED FROM CATLIN 2026-09-22 ** (17'-0" court; both decks span wall to wall). The
+    columns are rebuilt from ``notes/sunken_garden_piers.md`` §1-§2 so ``deck_post`` and
+    ``spread_footing`` keep an oracle: 12" round, 128.1875" shaft, 119.17 ft² tributary
+    (70.84 porch + 48.33 handed down by a centre pillar), the pillar's own 6x6 carried as
+    dead load, (4) #5 + #3 @ 10" at 2" cover, 5,000 psi, on a 12" ``PIER_BASE_12`` pad.
+    """
+    from typehaus import inch
+    from typehaus.engineering.pier_basis import _Pier
+    from typehaus.model.rebar import BarSpec, ReinforcementSpec
+
+    cage = ReinforcementSpec(
+        bars=(BarSpec(role="vertical", bar=5, count=4),
+              BarSpec(role="ties", bar=3, spacing=inch(10.0))),
+        cover=inch(2.0), lap_class="B")
+    return _Pier(
+        tag=tag, diameter_in=12.0, round_section=True, height_in=128.1875,
+        tributary_ft2=70.84 + 48.33, carried_dead_lb=carried_dead_lb,
+        footing_tag=None, shared_wall_footing=False, lateral_system=False,
+        wind_base_moment_lb_ft=0.0, guard_base_moment_lb_ft=0.0, moment_basis="",
+        footing_width_in=0.0, footing_depth_in=0.0,
+        base_thickness_in=12.0, base_kind="pad",
+        vertical_reinforcement=('(4) #5 vertical, #3 ties @ 10" o.c., 2" cover, '
+                                'galvanized (ASTM A767 after fabrication, or A1094)'),
+        reinforcement=cage, specified_fc_psi=5000.0, specified_cover_in=2.0,
+        base_fc_psi=5000.0, base_cover_in=3.0)
+
+
 @pytest.fixture(scope="session")
-def catlin_retired_bells(catlin_plan):
-    """The context and the two piers, bells restored. See :class:`_PlanWithTheBells`."""
+def catlin_retired_columns():
+    """The two retired centre columns on their pads, keyed by tag. §2: the rear pillar's
+    6x6 is 79 lb, the front one's 78 (the rear row stands 1 27/32" proud)."""
+    return {"PT-SG-COL": _retired_centre_column("PT-SG-COL", 78.71),
+            "PT-SG-FCOL": _retired_centre_column("PT-SG-FCOL", 77.58)}
+
+
+@pytest.fixture(scope="session")
+def catlin_retired_bells(catlin_plan, catlin_retired_columns):
+    """The same two columns on the 36" x 12" bells they carried until 2026-09-14.
+
+    ``spread_footing`` is the only derivation in the engine for a bell, so its oracle
+    (``notes/sunken_garden_piers.md`` §§3, 5) is kept alive on this reconstruction. The
+    ``Footing``s ride on ``catlin_plan`` only so ``_section_states`` can read the mix.
+    """
+    import dataclasses
+
     from typehaus import Footing, ft, inch
-    from typehaus.engineering.pier_basis import cast_piers
     from typehaus.engineering.registry import EngineeringContext
+    from typehaus.model.structure import Post
     from typehaus.resolve import resolve
 
-    model, _ = resolve(catlin_plan)
-    # Transcribed from params/sunken_garden.py at a042cb28~1, the last commit that had them.
-    # The uids are stand-ins and reach nothing: uniqueness is a load-time rule and this plan
-    # is never loaded. `bottom_elevation` does not enter any state in this module.
-    footings = [
-        Footing(uid="ZZZF199AAA", tag="FT-SG-COL", under="PT-SG-COL", width=inch(36.0),
-                depth=inch(12.0), assembly="PIER_BASE_12", bottom_elevation=ft(-12.0)),
-        Footing(uid="ZZZF198AAA", tag="FT-SG-FCOL", under="PT-SG-FCOL", width=inch(36.0),
-                depth=inch(12.0), assembly="PIER_BASE_12", bottom_elevation=ft(-12.0)),
-    ]
-    # The guard, on the REAL plan: the day catlin bells one of these again, this module
-    # should read it off the house rather than keep reconstructing a fossil beside it.
-    live = EngineeringContext(plan=catlin_plan, model=model, soil_class="GM")
-    for pier in cast_piers(live):
-        if pier.tag in ("PT-SG-COL", "PT-SG-FCOL"):
-            assert pier.footing_tag is None, (
-                f"{pier.tag} is on a footing again — delete _PlanWithTheBells and read the "
-                f"record off the house")
+    # The guard: the day catlin grows either column back, read it off the house instead.
+    assert not {e.tag for e in catlin_plan.all_elements() if isinstance(e, Post)} & set(
+        catlin_retired_columns), "a retired centre column is back in catlin"
 
+    model, _ = resolve(catlin_plan)
+    footings = [
+        Footing(uid=f"ZZZF19{i}AAA", tag=f"FT-{tag[3:]}", under=tag, width=inch(36.0),
+                depth=inch(12.0), assembly="PIER_BASE_12", bottom_elevation=ft(-12.0))
+        for i, tag in enumerate(sorted(catlin_retired_columns))]
     ctx = EngineeringContext(plan=_PlanWithTheBells(catlin_plan, footings),
                              model=model, soil_class="GM")
-    piers = {pier.tag: pier for pier in cast_piers(ctx)
-             if pier.tag in ("PT-SG-COL", "PT-SG-FCOL")}
-    assert len(piers) == 2, "both centre-garden piers must still exist as posts"
-    for tag, pier in sorted(piers.items()):
-        # `cast_piers` wires the bell back on by itself once the Footing is reachable, and
-        # that is the point: nothing here hand-sets a dimension the engine derives.
-        assert pier.footing_tag == f"FT-{tag[3:]}", tag
-        assert pier.footing_width_in == pytest.approx(36.0), tag
-        assert pier.footing_depth_in == pytest.approx(12.0), tag
+    piers = {tag: dataclasses.replace(pier, footing_tag=f"FT-{tag[3:]}",
+                                      footing_width_in=36.0, footing_depth_in=12.0,
+                                      base_kind="footing", base_fc_psi=None,
+                                      base_cover_in=None)
+             for tag, pier in catlin_retired_columns.items()}
     return ctx, piers
 
 

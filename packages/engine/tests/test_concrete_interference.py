@@ -67,6 +67,9 @@ def test_it_reports_the_pours_it_cleared_by_name(catlin_ctx):
     whose ``Footing.material`` is not concrete before it picks bodies, so those laps are not
     findings to declare away: a pad set in a stone bed has no formwork to share. The declared
     branch is still live code and still tested below, on a fixture rather than on catlin.
+
+    ``PD-SG-COL``/``-FCOL`` left the aggregate on 2026-09-22, retired with the court's whole
+    centre support line when it narrowed to 17'-0".
     """
     ctx = catlin_ctx
     passes = [f for f in _findings(ctx) if f.result is Result.PASS]
@@ -75,7 +78,7 @@ def test_it_reports_the_pours_it_cleared_by_name(catlin_ctx):
 
     assert len(clear) == 1, [f.message for f in clear]
     assert set(clear[0].element_tags) == {
-        "PD-BW-W", "PD-BW-E", "PD-BW-RE", "PD-SG-COL", "PD-SG-FCOL",
+        "PD-BW-W", "PD-BW-E", "PD-BW-RE",
         "PD-BW-GW", "PD-BW-GE", "PD-BW-RNE"}
 
     # No declared pour survives on catlin: the garage strips are stone, so the three pier

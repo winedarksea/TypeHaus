@@ -87,10 +87,12 @@ def test_the_readme_states_where_the_permit_gate_stands(catlin_engineering) -> N
     read nowhere, so the page a reviewer opens first was silent on the one fact that says
     whether this review unblocks anything.
 
-    catlin's gate is OPEN again since 2026-09-22 — thermal break basis 7 closed the five
-    lines that shut it on 2026-09-20 — so the house exercises that branch and the SHUT one
-    is exercised below on a stub. Both are asserted, because a bundle whose README said the
-    wrong one would mislead the reviewer about the only fact they opened it for.
+    catlin's gate opened on 2026-09-22 (thermal break basis 7) and SHUT again later the same
+    day on one line: the porch deck now hangs on two concrete ledgers and
+    `structural.deck_ledger` is UNKNOWN until the anchor maker's spacing is read (the trial's
+    intended state). So the house exercises the SHUT branch, naming that line, and the OPEN
+    one is exercised below on a stub. Both are asserted, because a bundle whose README said
+    the wrong one would mislead the reviewer about the only fact they opened it for.
     """
     from typehaus.takeoff.handoff import pe_readme
 
@@ -99,8 +101,9 @@ def test_the_readme_states_where_the_permit_gate_stands(catlin_engineering) -> N
                        content_hash="abc", records=[ctx.engineering[i] for i in item_ids],
                        notes=[], checklist=checklist, has_pdf=False)
     assert "## Where the permit gate stands" in readme
-    assert "The draft gate is OPEN" in readme
-    assert "The draft gate is SHUT" not in readme
+    assert "The draft gate is SHUT" in readme
+    assert "The draft gate is OPEN" not in readme
+    assert "Deck ledgers and their attachment" in readme
 
 
 def test_the_readme_names_every_open_blocking_item_when_the_gate_is_shut() -> None:
@@ -129,7 +132,7 @@ def test_the_readme_names_every_open_blocking_item_when_the_gate_is_shut() -> No
     assert "Advisory" not in block, "the staging lane is the engine's coverage, not the house's"
     assert "a stamp on this bundle does not open them" in block
 
-    # And the OPEN branch, which catlin does not reach since 2026-09-20.
+    # And the OPEN branch, which catlin does not reach while its deck ledger is UNKNOWN.
     passing = [SimpleNamespace(blocking=True, result=Result.PASS, label="Fine", detail="—")]
     opened = "\n".join(_gate_block(SimpleNamespace(items=passing, profile_name="mn-2020")))
     assert "**The draft gate is OPEN.**" in opened

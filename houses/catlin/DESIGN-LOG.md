@@ -2635,6 +2635,37 @@ contradicts the note. It costs 0.3 SF of brick.
 
 ## Sunken garden court
 
+### The court went 17'-0" so both decks span wall to wall, and the centre line went (2026-09-22)
+
+The court was 19'-0" clear only so the balcony's centre pillars could sit on a 10' grid. At
+17'-0" the side-wall axes are 18'-0" apart, which is exactly what IRC Table R507.6 lets a
+southern pine 2x12 at 12" o.c. span (the engine read only the redwood row, 17'-5", until
+this pass; `JoistSpec.species` picks the row). So the whole centre support line is
+retired: both cast columns and their pads, the four porch beams, both wood pillars,
+`BM-SG-BLC`, the pillar chases and the beam caps. Spent uids are listed in
+`params/sunken_garden.py`.
+
+- **Balcony:** joists on top of `BM-SG-BLW`/`-BLE` at 18'-0" axis to axis — 18.00' against
+  18.00', at the limit and not past it. 9" overhang each side, 19'-6" of deck = 39 AridDek
+  boards. Ties authored (owner): `H10ASS` at every crossing, `H2.5ASS` on each beam's end
+  joists. The edge glulams now carry their own strip (half the bay plus the overhang,
+  9.75'), d/c 0.57, where the old rule would have loaded them with the full 18'.
+- **Porch:** two treated 2x12 ledgers on the side walls' court faces, joists hung on derived
+  `LUS210Z` (Simpson publishes no LUS212; the 2x12 rows list the LUS210), 16'-9" face to face.
+  On concrete DCA6 leaves ledger anchor spacing to the anchor maker, so `structural.deck_ledger`
+  is UNKNOWN until that table is quoted — an open item, not a failure.
+- **Snow:** the owner states 35 psf on these decks (MN roof snow). R507.6 is 40 psf live with
+  snow not concurrent, so the table governs (`preferences.toml [structural] deck_snow_psf`).
+- **What moved with the walls:** the basement's N-B-S1/S3 split nodes 1'-0" in, the sauna
+  1'-0" narrower from the west (owner: shrink, not shift — its east wall is the x=18'
+  bearing line and D-B-PATIO starts at 18'-10"), the brick's ends and soft joints, the
+  spa feed and disconnects, the HP2 pad and stand, the stair pad, the two court spots, and
+  `W-B-BRICK`'s top (-8" -> -13 1/3", under the 2x12 soffit). The balcony hydrant did NOT
+  move: its only free bay on W-S-S1 is 7'-4", 11" outside the new deck edge, because
+  WIN-S-PLANT2 starts at 8'-1".
+- **Revert:** this pass is one house commit; `git revert` it. The engine commits before it
+  (species rows, the snow gate, edge-beam tributary, ledgers, extra joist lines) stay.
+
 ### The thermal break, bases 5 → 6 → 7: the board was never the problem (2026-09-22)
 
 Three revisions in two days, and each one moved the question further from the product and

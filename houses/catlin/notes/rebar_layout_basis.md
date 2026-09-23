@@ -149,3 +149,11 @@ Horizontal role: 3,734.0 + 1,056.0 = 4,790.0" = 399.17' = **266.64 lb**, **32 pi
 * ASTM A615/A615M Table 1 (bar mass).
 * `notes/sunken_garden_court_free_body.md` §6–§7 (the stem and mat schedules),
   `notes/sunken_garden_piers.md` §4 (the cage).
+
+## Addendum 2026-09-22 — the court narrowed to 17'-0"
+
+§2/§3 were worked at a 240" south wall; it is **216"** now, and the layout re-derives by the same
+steps: FT-SG-S 19 + 19 #5 at 78" (128.81 lb a face) and 6 #4 at 210" (70.14 lb); W-SG-S 32
+verticals (340.54 lb), horizontals 214.25"/204.5" totalling 4,406" (245.27 lb). §4's PT-SG-COL
+is RETIRED from the model; its cage stays the oracle for `lay_column`, rebuilt in the test from
+this note's own inputs.

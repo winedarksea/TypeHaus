@@ -18,19 +18,20 @@ import pytest
 
 from typehaus.takeoff.member_protection import member_protection_takeoff
 
-#: The porch's four 3-ply 2x12s — 4 1/2" across, and the members this section was written
-#: for: a site-built beam with two open ply seams running its whole length.
-PLY_BEAMS = {"BM-SG-BKW", "BM-SG-BKE", "BM-SG-FRW", "BM-SG-FRE"}
-#: The balcony's three beams, treated structural glulam at 3 1/2" since 2026-09-03. They
+#: The balcony's two edge beams, treated structural glulam at 3 1/2" since 2026-09-03. They
 #: have NO ply seam — a glulam arrives as one member — but they still take the wide roll,
 #: because the common "double joist" roll is 3 1/8" and would leave a 3 1/2" top uncovered
-#: at both arrises. Same SKU, different width, and the BOM's width column is what says so.
-GLULAM_BEAMS = {"BM-SG-BLW", "BM-SG-BLC", "BM-SG-BLE"}
+#: at both arrises. (The centre beam BM-SG-BLC left with the centre support line, 2026-09.)
+GLULAM_BEAMS = {"BM-SG-BLW", "BM-SG-BLE"}
 #: The north entry canopy's two headers, added with RF-BW-CANOPY on 2026-09-10: 3-ply 2x12
-#: KDAT, so 4 1/2" across and two open ply seams each, exactly the PLY_BEAMS case outdoors.
-CANOPY_HEADERS = {"BM-BW-RW", "BM-BW-RE"}
+#: KDAT, so 4 1/2" across and two open ply seams each — the site-built beam this section
+#: was written for. Since the porch's four 3-ply beams were retired (2026-09) they are the
+#: only ply beams left.
+PLY_BEAMS = {"BM-BW-RW", "BM-BW-RE"}
+#: The porch's two single-2x12 ledgers (2026-09), on the COMMON roll at 1 1/2": no seam.
+LEDGERS = {"BM-SG-LDGW", "BM-SG-LDGE"}
 #: Every beam on the wide roll, whatever its width.
-BUILT_UP_BEAMS = PLY_BEAMS | GLULAM_BEAMS | CANOPY_HEADERS
+BUILT_UP_BEAMS = PLY_BEAMS | GLULAM_BEAMS
 
 
 @pytest.fixture(scope="module")
@@ -44,7 +45,7 @@ def test_only_authored_members_are_taped(rows):
     # BM-BW-FW left on 2026-09-10 with the north entry's middle tier of beams; BM-BW-SCSILL
     # arrived in the same pass — the west screen panel's sill, which doubles as the deck's
     # west rim, and which is an exposed treated top like every other member in this set.
-    assert taped == BUILT_UP_BEAMS | {
+    assert taped == BUILT_UP_BEAMS | LEDGERS | {
         "FS-SG-PORCH", "FS-SG-DECK", "FS-BW-FLOOR", "FS-BW-GARAGE",
         "BM-BW-SCSILL", "BM-BW-FC", "BM-BW-FE",
         "BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT"}
@@ -53,17 +54,20 @@ def test_only_authored_members_are_taped(rows):
 def test_the_beams_take_the_wide_roll_at_their_own_widths(rows):
     """Two widths on the wide SKU, and they must not collapse onto one row, or one order.
 
-    The width is read off each member's own section, so the porch's 4 1/2" ply beams and the
+    The width is read off each member's own section, so the canopy's 4 1/2" ply beams and the
     balcony's 3 1/2" glulams land on two rows of the same material. A single row would buy
     one roll width for both and leave whichever is wider under-covered.
     """
     by_tag = {tag: row for row in rows for tag in row["tags"]}
-    for tag in PLY_BEAMS | CANOPY_HEADERS:
+    for tag in PLY_BEAMS:
         assert by_tag[tag]["material"] == "butyl-tape-beam", tag
         assert by_tag[tag]["width_in"] == pytest.approx(4.5), tag
     for tag in GLULAM_BEAMS:
         assert by_tag[tag]["material"] == "butyl-tape-beam", tag
         assert by_tag[tag]["width_in"] == pytest.approx(3.5), tag
+    for tag in LEDGERS:
+        assert by_tag[tag]["material"] == "butyl-tape", tag
+        assert by_tag[tag]["width_in"] == pytest.approx(1.5), tag
 
 
 def test_beam_length_is_the_axis_length(rows):
@@ -73,24 +77,24 @@ def test_beam_length_is_the_axis_length(rows):
     """
     wide = [r for r in rows if r["scope"] == "beam" and r["width_in"] == 4.5]
     assert len(wide) == 1
-    # 2 back beams + 2 front beams, plus (2026-09-10) the canopy's two 3-2x12 headers at
-    # 5'-8 5/8" each — PIER_LINE_Y_FT 37'-6" to GARAGE_Y_SOUTH 43'-2 5/8" — for 11.4'. Same
-    # 4 1/2" width, same roll, one row: 50.5' over 6 members.
-    #
-    # **50.5' and not 51.4' since 2026-09-14.** Each of the four porch beams lost 2 3/4" —
-    # 11" over the four — when its inner end came off the cast column's axis and onto
-    # PT-SG-BF2 / PT-SG-BR2's face, where an HU212-3 carries it. The two centre pillars stand
-    # on those column tops now, and a 12" round cannot seat a beam end and a pillar at once.
-    # A beam's billed length is its AXIS, so the tape follows the node move exactly, which is
-    # the property this test is really about.
-    assert wide[0]["length_ft"] == pytest.approx(50.5, abs=0.1)
-    assert wide[0]["count"] == 6
+    # The canopy's two 3-2x12 headers at 5'-8 5/8" each — PIER_LINE_Y_FT 37'-6" to
+    # GARAGE_Y_SOUTH 43'-2 5/8" — for 11.4'. The porch's four ply beams (50.5' with the
+    # headers) left with the centre support line in 2026-09; a beam's billed length is its
+    # AXIS, so the tape followed the retirement exactly, which is the property pinned here.
+    assert wide[0]["length_ft"] == pytest.approx(11.4, abs=0.1)
+    assert wide[0]["count"] == 2
 
     glulam = [r for r in rows if r["scope"] == "beam" and r["width_in"] == 3.5]
     assert len(glulam) == 1
-    # 3 balcony beams at 9'-8" node to node = 29.0'
-    assert glulam[0]["length_ft"] == pytest.approx(29.0, abs=0.1)
-    assert glulam[0]["count"] == 3
+    # 2 balcony edge beams at 9'-8" node to node = 19.3'
+    assert glulam[0]["length_ft"] == pytest.approx(19.3, abs=0.1)
+    assert glulam[0]["count"] == 2
+
+    ledgers = [r for r in rows if r["scope"] == "beam" and r["material"] == "butyl-tape"]
+    assert len(ledgers) == 1
+    # Two porch ledgers, N-SGM-FW..NW at 8'-8" each (y -9'-6" to -10") = 17.3'
+    assert ledgers[0]["length_ft"] == pytest.approx(17.3, abs=0.1)
+    assert ledgers[0]["count"] == 2
 
 
 def test_deck_rows_follow_the_joist_field(rows):
@@ -103,13 +107,11 @@ def test_deck_rows_follow_the_joist_field(rows):
     deck_rows = [r for r in rows if r["scope"] == "deck"]
     assert {r["width_in"] for r in deck_rows} == {1.25, 1.5}
     porch_and_deck_ft = sum(r["length_ft"] for r in deck_rows)
-    # Two decks of 2x8s at 16" o.c.; well past the ~180 SF the plank sheet-count sees.
-    # The upper bound was 420.0 and the real figure was 419.7 — a 0.3 lf pass, which is a
-    # coincidence and not a test. The porch enclosure's sixteen flank blocks (2026-09-03)
-    # added 17.3 lf and tripped it. Widened to a bound that brackets the ORDER OF MAGNITUDE,
-    # which is all this assertion was ever entitled to claim: two joist fields at 16" o.c.
-    # under ~380 SF of deck cannot be 200 feet of stick and cannot be 600.
-    assert 300.0 < porch_and_deck_ft < 500.0
+    # A bound on the ORDER OF MAGNITUDE, which is all this assertion is entitled to claim
+    # (a tight bound once tripped on 17.3 lf of flank blocks). Since 2026-09 both garden
+    # decks are 2x12 at 12" o.c. — about one lf of stick per SF — and the north entry's two
+    # floors share these rows: ~490 lf measured. Cannot be 300 and cannot be 700.
+    assert 350.0 < porch_and_deck_ft < 700.0
 
 
 def test_untaped_model_reports_nothing(swinburne_model):

@@ -258,14 +258,14 @@ BASEMENT_DEVICES = [
                      mount=Mount(kind=MountKind.WALL, elevation=inch(18))),
     # Hot tub in the sunken garden: disconnect on the west porch wall, 7' from its north
     # end, under the porch deck (see header). NEC 680.22 convenience receptacle beside it.
-    # x is 1 5/8" off W-SG-W1's east face (x=8'-6"), not 2": the can is 3 1/4" deep, and the
+    # x is 1 5/8" off W-SG-W1's east face (x=9'-6" since the court narrowed, 2026-09-22), not 2": the can is 3 1/4" deep, and the
     # 2" standoff the four DISCONNECT-3R boxes were authored with dates from when the type
     # carried a placeholder 4" depth. Its back now sits on the concrete.
     ElectricalDevice(uid="CEE010AAAA", tag="ED-B-SPA-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(8, 7.625), ft(-7, -10)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-SPA",
+                     position=pt(ft(9, 7.625), ft(-7, -10)), type_ref="ED-T-DISCONNECT-3R", circuit="CKT-SPA",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(5)), rotation=deg(90)),
     ElectricalDevice(uid="CEE011AAAA", tag="ED-B-SPA-RC", kind=DeviceKind.RECEPTACLE_GFCI,
-                     position=pt(ft(8, 7), ft(-5, -6)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-RC-BSMT",
+                     position=pt(ft(9, 7), ft(-5, -6)), type_ref="ED-T-RECEPTACLE-GFCI", circuit="CKT-RC-BSMT",
                      mount=Mount(kind=MountKind.WALL, elevation=ft(4)), rotation=deg(90)),
     # RM-B-BATH's NEC 210.52(D) receptacle: GFCI within 3'-0" of the basin's edge (1'-9"
     # here), on W-B-STR2's bath face at x=10'-3 3/8" — beside the vanity across the room's
@@ -480,7 +480,7 @@ MAIN_DEVICES = [
                      type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP1", room=None,
                      mount=Mount(kind=MountKind.WALL, elevation=ft(3, 6))),
     ElectricalDevice(uid="CEE013AAAA", tag="ED-M-HP2-DISC", kind=DeviceKind.DISCONNECT,
-                     position=pt(ft(28, 7.625), ft(-4, -6)), rotation=deg(90),
+                     position=pt(ft(27, 7.625), ft(-4, -6)), rotation=deg(90),
                      type_ref="ED-T-DISCONNECT-3R", circuit="CKT-HP2", room=None,
                      mount=Mount(kind=MountKind.WALL, elevation=ft(0, -8))),
     # HP3's west-yard position puts this disconnect beside the cabinet, with a 30" clear
@@ -657,7 +657,7 @@ MAIN_EQUIPMENT = [
               rotation=deg(180), mount=Mount(kind=MountKind.FLOOR, elevation=inch(-14)),
               type_ref="EQ-T-GREE-FLEXX-ULTRA-24-OD", circuit="CKT-HP1", room=None),
     Equipment(uid="CEE018AAAA", tag="EQ-M-HP2-OD", kind=EquipmentKind.HEAT_PUMP,
-              position=pt(ft(30, 8.08), ft(-1, -9.655)), footprint=(inch(40.16), inch(16.81)),
+              position=pt(ft(29, 8.08), ft(-1, -9.655)), footprint=(inch(40.16), inch(16.81)),
               rotation=deg(0), mount=Mount(kind=MountKind.FLOOR, elevation=inch(-14)),
               type_ref="EQ-T-GREE-MULTI-U30", circuit="CKT-HP2", room=None),
     # HP3 is west of the connector roof/screen, discharging NORTH into open yard.
@@ -1089,7 +1089,7 @@ PV_JBOX_CLAMP = []
 # vertically at its last point to end_elevation; the takeoff bills the developed length.
 # The spa feed's southward leg station, shared by the run and BOTH of its sleeves — see the
 # comment on CD-B-SPA below for why it is 8'-5 7/8" and not the 8'-6" it was authored at.
-_SPA_CHASE_X = ft(8, 5.875)
+_SPA_CHASE_X = ft(9, 5.875)
 
 CONDUIT_TRUNKS = [
     # Up the mechanical chase beside the radon vent to the PV junction box, at
@@ -1325,8 +1325,8 @@ MAIN_DATA_TRUNKS = [
     # it gets built.
     ConduitRun(uid="CDT011AAAA", tag="CD-M-DATA-PORCH", trade_size=inch(0.75),
                service=Service.DATA,
-               path=(pt(ft(2), ft(34, 6)), pt(ft(2), ft(1)), pt(ft(17, 6), ft(1)), pt(ft(17, 6), inch(-2)), pt(ft(17, 6), ft(-4.833)), pt(ft(17, 6), ft(-4.833))),
-               start_elevation=ft(9, 2.25), end_elevation=ft(8, 8), elevations=(ft(9, 2.25), ft(9, 2.25), ft(9, 2.25), ft(9, 2.25), ft(9, 2.25), ft(8, 8)),
+               path=(pt(ft(2), ft(34, 6)), pt(ft(2), ft(1)), pt(ft(17, 6), ft(1)), pt(ft(17, 6), inch(-2)), pt(ft(17, 6), inch(-6)), pt(ft(17, 6), inch(-6)), pt(ft(17, 6), ft(-4.833)), pt(ft(17, 6), ft(-4.833))),
+               start_elevation=ft(9, 2.25), end_elevation=ft(8, 8), elevations=(ft(9, 2.25), ft(9, 2.25), ft(9, 2.25), ft(9, 2.25), ft(9, 2.25), ft(8, 10.25), ft(8, 10.25), ft(8, 8)),
                from_ref="ED-B-NET-PATCH", to_ref="ED-M-PORCH-AP"),
 ]
 

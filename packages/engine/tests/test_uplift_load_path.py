@@ -168,13 +168,14 @@ def test_a_cast_column_is_not_evaluable_rather_than_broken(findings) -> None:
     Grading it against a wood post base reported a break at a joint that has none — and
     handed the reader an ABU that does not fit a 12" round pour.
 
-    There are SIX of these, not the two the sunken garden's columns make: the four breezeway
-    sonotube piers are the same joint. The message has to say two things and the assertions
-    pin both — that the connection is a doweled lap, and that the steel making it is inside
-    the column's own $/cy rate rather than missing from the order. A reader who takes
-    "carries no rebar" as "unpriced scope" goes looking for money that is already there.
+    The sunken garden's four balcony corner columns (on the court walls since the centre
+    line was retired, 2026-09) and the breezeway sonotube piers are all the same joint. The
+    message has to say two things and the assertions pin both — that the connection is a
+    doweled lap, and that the steel making it is inside the column's own $/cy rate rather
+    than missing from the order. A reader who takes "carries no rebar" as "unpriced scope"
+    goes looking for money that is already there.
     """
-    for column in ("PT-SG-COL", "PT-SG-FCOL"):
+    for column in ("PT-SG-BF1", "PT-SG-BR3", "PT-BW-W"):
         finding = next(f for f in findings
                        if f.element_tags[:1] == (column,)
                        and "outside what a connector-coverage rule governs" in f.message)
@@ -248,18 +249,18 @@ def test_an_undeclared_bearing_is_still_reported_as_un_gradeable(ctx) -> None:
 
 
 def test_a_beam_hung_off_the_post_on_its_seat_is_connected(findings) -> None:
-    """The porch beams name the cast columns as their seat but hang off the pillar on top.
+    """A beam names the cast column as its seat but hangs off the post standing on top.
 
-    No gusset at the column top since 2026-09-16: the HU212-3 into PT-SG-B*2 is the joint,
-    and that pillar's ABU66SS carries it on down. Without the rule all four read as breaks.
+    The north entry's two seat beams do: each names its sonotube pier and is carried by an
+    authored hanger off the timber column above it, which that column's base carries on down.
+    Without the rule both read as breaks. (The porch beams that were this test's first
+    witnesses left with the sunken garden's centre support line, 2026-09.)
     """
-    for beam, column, pillar in (("BM-SG-BKW", "PT-SG-COL", "PT-SG-BR2"),
-                                 ("BM-SG-BKE", "PT-SG-COL", "PT-SG-BR2"),
-                                 ("BM-SG-FRW", "PT-SG-FCOL", "PT-SG-BF2"),
-                                 ("BM-SG-FRE", "PT-SG-FCOL", "PT-SG-BF2")):
+    for beam, column, post in (("BM-BW-HOUSE-SEAT", "PT-BW-W", "PT-BW-CW"),
+                               ("BM-BW-GARAGE-SEAT", "PT-BW-GW", "PT-BW-CNW")):
         finding = next(f for f in findings if f.element_tags == (beam, column))
         assert finding.result is Result.PASS
-        assert f"an authored hanger off {pillar}" in finding.message
+        assert f"an authored hanger off {post}" in finding.message
 
 
 def test_the_canopy_headers_are_covered_at_both_of_their_joints(findings):

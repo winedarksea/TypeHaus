@@ -50,12 +50,18 @@ _M_PER_FT = 0.3048
 #
 # ** THE SIXTH PASS (2026-09-21), §4d: the apron is Allan Block AB Classic at 130 pcf in
 # place, so its net bearing is 80.0 psf (0 at 130 pcf) and every §4c term falls a little. **
-_NOTE_RESULTANT_LB = 62_456.0          # §4c 62,826; §4 61,446
-_NOTE_CAPACITY_LB = 100_047.0
+#
+# ** THE SEVENTH PASS (2026-09-22), §12: the court is 17'-0" clear, axes 18'-0". ** Only the
+# SOUTH wall's length moved (20.0' -> 18.0'), and the resultant IS that wall: 3,122.79 plf x
+# 18.0'. The side legs, the thrust per foot and the weight per foot are untouched, so the
+# cancelled share, the strut's Pu and the side-wall shortfalls do not move.
+_NOTE_RESULTANT_LB = 56_210.0          # §12; §4d 62,456
+_NOTE_CAPACITY_LB = 96_248.0           # §12, 0.35 x 5,427.5 x 50.667'; §4d 100,047
 _NOTE_CANCELLED_LB = 102_011.0         # §4c 102,617; §4 100,362
-_NOTE_SYSTEM_FS = 1.60                 # §4c 1.59; §4 1.63
+_NOTE_SYSTEM_FS = 1.712                # §12; §4d 1.60
 # §8: the **derived reaction** at the strut, factored, against phi-Pn on a 12" x 17.5"
-# section over a 20'-0" clear span. phi-Pn does not move with the wall height; Pu does.
+# section over an 18'-0" span (20'-0" until §12). phi-Pn moves with the span, not the
+# wall height; Pu does.
 #
 # ** THIS WAS 49,157 lb UNTIL 2026-09-14, AND THAT NUMBER WAS NOT A BOUND. ** It was
 # `0.5 * max(member thrust)` — half the largest thrust in the loop, which on this court is
@@ -73,7 +79,9 @@ _NOTE_SYSTEM_FS = 1.60                 # §4c 1.59; §4 1.63
 # than they did at the old one. What holds 17.5" is the sequencing argument and the absence
 # of redundancy, not the ratio; §8's three-reason block is where that lives.
 _NOTE_STRUT_PU_LB = 40_804.0           # §4d, w 3,122.8 plf (§4c 41,047; §4 40,145)
-_NOTE_STRUT_PHI_PN_LB = 103_655.0
+#: §8's formula on the 18'-0" member (§12): λ = 1 − (216 / (32 × 12))² = 0.6836, so
+#: 0.60 × 0.45 × 3,000 × 210 × 0.6836 = 116,279 lb (103,655 on the 20'-0" one).
+_NOTE_STRUT_PHI_PN_LB = 116_279.0
 #: The other end of the corner-fixity family, hand-worked in §8 beside the graded one.
 #: Asserted so the record cannot quietly stop publishing the range.
 _NOTE_STRUT_FIXED_CORNER_P_LB = 19_127.0      # §4c 19,241; §4 18,818
@@ -83,16 +91,17 @@ _NOTE_STRUT_PINNED_CORNER_P_LB = 25_503.0     # §4c 25,654; §4 25,090
 # WALL — every one is short against its own thrust, and the shortfall travels through the
 # corners as in-plane shear. The south wall governs at 23,454 lb service; graded as one-way
 # shear on its own 12" x 0.8-lw section, concrete alone, it clears by better than two to one.
-_NOTE_CORNER_SHORTFALL_LB = 24_464.0   # §4c 24,834; §4 23,454
-_NOTE_CORNER_VU_LB = 39_142.0          # §4c 39,734; §4 37,526
+#: §12: the south wall's own 56,210 less its own 0.35 x 5,427.5 x 18.0' = 34,193.
+_NOTE_CORNER_SHORTFALL_LB = 22_017.0   # §4d 24,464; §4c 24,834; §4 23,454
+_NOTE_CORNER_VU_LB = 35_227.0          # 1.6 x 22,017 (§4d 39,142)
 _NOTE_CORNER_PHI_VN_LB = 86_322.0
 #: Every member's own-thrust-less-own-friction, §5a's table. Asserted in full because the
 #: headline of that subsection is that the list has NO zero in it.
 _NOTE_SHORTFALL_BY_TAG = {
-    "W-SG-W2": 19_979.0, "W-SG-E2": 19_979.0, "W-SG-S": 24_464.0,   # §4d
+    "W-SG-W2": 19_979.0, "W-SG-E2": 19_979.0, "W-SG-S": 22_017.0,   # §12 (S was 24,464)
 }
-#: §5, with §4d's surcharge in the demand: 71,462 / 62,456.
-_NOTE_NO_STONE_FS = 1.14               # §4 1.16
+#: §5 at §12's court: 0.25 x 5,427.5 x 50.667' = 68,748 against 56,210.
+_NOTE_NO_STONE_FS = 1.22               # §4d 1.14; §4 1.16
 # §4c/§4d, by hand: the apron as a doubled Boussinesq strip, a = 0, b = 1.0', 4.0' down, at
 # AB Classic's 520 psf gross. At 130 pcf the unit weighs no more than the soil it displaces.
 _NOTE_APRON_NET_PSF = {110.0: 80.0, 130.0: 0.0}
@@ -233,7 +242,7 @@ def test_the_east_west_thrusts_cancel_identically(catlin_plan) -> None:
 
 
 def test_the_no_stone_sensitivity_is_the_designs_real_dependency(catlin_plan) -> None:
-    """§5: at the site's own silty gravel (mu 0.25) the court reaches 1.14 and does NOT check.
+    """§5: at the site's own silty gravel (mu 0.25) the court reaches 1.22 and does NOT check.
 
     **This assertion pins a failure and that is the point.** The whole margin between 1.14
     and 1.59 is the washed-stone bed, and the bed is an authored claim
@@ -242,7 +251,8 @@ def test_the_no_stone_sensitivity_is_the_designs_real_dependency(catlin_plan) ->
 
     Five passes have moved this row — 1.13 to 1.22 when the footings rose, to 1.26 at the
     36" cap, to 1.29 with the flush tops, to 1.16 when the court shortened and the strip
-    narrowed, to 1.14 when the apron's surcharge joined the demand (§4c) — and none changed
+    narrowed, to 1.14 when the apron's surcharge joined the demand (§4c), to 1.22 when the
+    court narrowed to 17'-0" and the south wall shortened (§12) — and none changed
     the argument: it is still short of 1.50, and 0.35 versus 0.25 is still the difference
     between a court that stands and one that does not. Only the bed can close it.
     """
@@ -336,22 +346,19 @@ def test_the_stem_is_reinforced_and_a_plain_one_would_not_be_covered_at_all(
     assert plain_demand / stem_flexure(thin, case)[1] > 0.97
 
 
-def test_the_footings_narrowed_inboard_only_and_the_apron_did_not_move(catlin_model) -> None:
-    """§3. The east and west edges are the invariant; the toe is what moves under them.
+def test_the_footings_narrowed_inboard_only_and_the_outboard_reach_held(catlin_model) -> None:
+    """§3. The outboard reach is the invariant; the toe is what moves under it.
 
-    The raised garden's apron measures its 3'-0" clear off these footings' OUTBOARD edges —
-    the owner's figure, from the brief — so those edges may not move. **The premise of this
-    test inverted on 2026-09-10 and its assertions did not, which is exactly what it is
-    for.** The strip went 7'-0" -> 8'-0" offset 6" into the court, and has now come back to
-    7'-0" CENTRED; the two spellings put the outboard reach in the same place
-    (``96/24 - 6/12 == 84/24 == 3.5'``), so the x figures below survived a widening AND a
-    narrowing unchanged. The toe edges moved both times, by the full 12", into the court
-    where nothing is.
+    The raised garden's apron measures its 3'-0" clear off these walls' OUTBOARD faces — the
+    owner's figure, from the brief — so the strip's outboard reach off the wall axis may not
+    move. At 96" with a 6" inboard offset it was 96/24 - 6/12 = 3.5'; at 84" centred it is
+    84/24 = 3.5'. The toe took both changes, into the court where nothing is.
 
-    ``FT-SG-S``'s y edges are the exception and move for a different reason: the court's
-    clear length went 28'-0" -> 26'-0", so that whole wall walked 2'-0" north with its
-    footing. Its own toe reach narrowed by the same 12" every other strip did.
+    ** THE AXES MOVED 1'-0" IN ON 2026-09-22 ** (17'-0" court, §12): W2 at x = 9'-0", E2 at
+    27'-0". The edges went with them and the apron, which is read off the same walls, went
+    too — so the reach is asserted off the axis, not as an absolute x.
     """
+    x_w, x_e = 9.0, 27.0
     edges = {}
     for solid in catlin_model.solids:
         if solid.tag in ("FT-SG-W2", "FT-SG-E2", "FT-SG-S"):
@@ -359,15 +366,14 @@ def test_the_footings_narrowed_inboard_only_and_the_apron_did_not_move(catlin_mo
             ys = [y / _M_PER_FT for _, y in solid.outline]
             edges[solid.tag] = (min(xs), max(xs), min(ys), max(ys))
 
-    # Outboard edges. The two x figures are the point of the test and have not moved through
-    # either the widening or the narrowing.
-    assert edges["FT-SG-W2"][0] == pytest.approx(4.5, abs=1e-6)
-    assert edges["FT-SG-E2"][1] == pytest.approx(31.5, abs=1e-6)
+    # Outboard edges: 3.5' off each axis (5.5 / 30.5; 4.5 / 31.5 before the court narrowed).
+    assert x_w - edges["FT-SG-W2"][0] == pytest.approx(3.5, abs=1e-6)
+    assert edges["FT-SG-E2"][1] - x_e == pytest.approx(3.5, abs=1e-6)
     # -32.8333 until the court shortened: wall axis -27.3333 less half the 7'-0" strip.
     assert edges["FT-SG-S"][2] == pytest.approx(-30.8333, abs=1e-3)
-    # Inboard edges, 12" back OUT of the court from where the 8'-0" strip put them.
-    assert edges["FT-SG-W2"][1] == pytest.approx(11.5, abs=1e-6)
-    assert edges["FT-SG-E2"][0] == pytest.approx(24.5, abs=1e-6)
+    # Inboard edges, 3.5' into the court.
+    assert edges["FT-SG-W2"][1] - x_w == pytest.approx(3.5, abs=1e-6)
+    assert x_e - edges["FT-SG-E2"][0] == pytest.approx(3.5, abs=1e-6)
     assert edges["FT-SG-S"][3] == pytest.approx(-23.8333, abs=1e-3)
     # 7'-0" overall on all three, and the heel still 3'-0".
     for tag, (x0, x1, y0, y1) in edges.items():
@@ -463,24 +469,28 @@ def test_the_grade_beam_holds_its_section_and_carries_the_court_floor(
     assert curb.top_elevation.inches - curb.bottom_elevation.inches == pytest.approx(7.25)
 
 
-def test_the_front_columns_bell_does_not_reach_the_beam(catlin_model) -> None:
-    """§7. Their plan outlines touch and their sections are 9" apart — so no shared bearing.
+def test_nothing_bears_under_the_strut_between_its_ends(catlin_model) -> None:
+    """§7. The strut spans its full length with no intermediate bearing.
 
-    An earlier scheme merged the two into one pour and gave the beam an intermediate bearing
-    at midspan, halving its span. It is worth pinning that this is NOT what is built, because
-    the strut's slenderness in §7 is computed on the full 20'-0" because of it.
+    An earlier scheme merged a column pour with the strut and gave it a bearing at midspan,
+    halving its span. Until 2026-09-22 this pinned that ``PD-SG-FCOL`` stopped 9" below the
+    beam; that pad left with the centre support line (17'-0" court, §12), so what is asserted
+    now is the claim itself: under the strut's plan footprint there is no concrete, only its
+    drain tile, so §8's λ is rightly taken on the whole 18'-0" member.
     """
-    bell = next(s for s in catlin_model.solids if s.tag == "PD-SG-FCOL")
-    beam = next(s for s in catlin_model.solids if s.tag == "W-SG-ARCH")
-    # 9", and back to 9" the long way round. It was 9" while the bell bore 42" under a flush
-    # court; 16.25" while the bell followed the court's 7 1/4" flood step down and the beam
-    # did not; and 9" again now that the court is flush and the pour is derived from the
-    # 42" rule instead of pinned to where it happened to be. The bell became a 30" square
-    # `Pad` on 2026-09-14 and this gap did not move with it: only the plan shape changed,
-    # and `bottom_elevation` and the 12" thickness are both what they were. The span §7 grades is the full
-    # 20'-0" in every one of those states, which is the point of pinning the gap at all.
-    gap_in = (beam.z0_m - bell.z1_m) / _M_PER_FT * 12
-    assert gap_in == pytest.approx(9.0, abs=0.01), "the bell and the beam must not touch"
+    from shapely.geometry import Polygon
+
+    solids = {s.tag: s for s in catlin_model.solids}
+    assert not {"PD-SG-FCOL", "PD-SG-COL"} & set(solids)
+    beam = solids["W-SG-ARCH"]
+    footprint = Polygon(list(beam.outline))
+    xs = [x / _M_PER_FT for x, _ in beam.outline]
+    assert max(xs) - min(xs) == pytest.approx(18.0, abs=1e-6)
+    under = [s.tag for s in catlin_model.solids
+             if s.tag != beam.tag and s.outline and s.z1_m <= beam.z0_m + 1e-6
+             and s.category != "drain_tile"
+             and Polygon(list(s.outline)).intersects(footprint)]
+    assert under == [], under
 
 
 # --------------------------------------------------------------------------------------

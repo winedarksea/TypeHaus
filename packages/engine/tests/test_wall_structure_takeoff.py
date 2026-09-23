@@ -220,7 +220,12 @@ def test_the_sunken_garden_brick_wythe_is_billed(catlin_model) -> None:
     # the court's clear face at 27'-6" now, so this bound drops with it.
     #
     # 112.5 since 2026-09-16: the head came down to -8" so the porch joists pass over it.
-    assert 110 < float(row["net_area_sqft"]) < 115
+    #
+    # 89.1 since the 17'-0" court (2026-09): both nodes came 1' inward with the court's
+    # side walls (N-B-BRICK-W 9'-10", -E 26'-5 5/8" = 199.625" long) and the head dropped
+    # to -13.333" under the porch's 2x12 ledger field, so 89.104" tall.
+    # 199.625 x 89.104 / 144 = 123.5 SF gross, less the reveals (32.5 + 1.9) = 89.1.
+    assert 87 < float(row["net_area_sqft"]) < 91
 
 
 def test_the_garden_walls_are_distinguishable_from_house_concrete(catlin_model) -> None:

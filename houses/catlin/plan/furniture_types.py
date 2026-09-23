@@ -93,19 +93,19 @@ _TRACK_SOURCE = ("notes/porch_enclosure.md — snap-carrier aluminium curtain tr
                  "up through the centre groove into the balcony joists/rim above; 5 screws "
                  "per 8' stick (the VINYL spacing, so one set of hardware carries both "
                  "panel sets).")
-# The two FRONT bays, split by PT-SG-BF2 at x = 18'-0": 8'-10" of run each, less ~8" at the
-# outboard end where a 90-degree curve substitutes for the last of the stick.
-PORCH_TRACK_106 = FurnitureType(
-    tag="FT-PORCH-TRACK-106", name='Porch enclosure track, 106"',
-    footprint=(inch(106), inch(2)), height=inch(1),
+# The FRONT run, one piece since 2026-09-22: x 10'-0"..26'-0" on the -9'-0" spare joist,
+# less ~8" at each end where a 90-degree curve substitutes for the last of the stick.
+PORCH_TRACK_176 = FurnitureType(
+    tag="FT-PORCH-TRACK-176", name='Porch enclosure track, 176"',
+    footprint=(inch(176), inch(2)), height=inch(1),
     plan_symbol=None, mount=Mount(kind=MountKind.CEILING), source=_TRACK_SOURCE,
 )
-# The two FLANK runs, x = 9'-0" and 27'-0", y -9'-2" to -0'-6". Same extrusion, cut shorter:
-# the north end runs 4" past the porch deck edge on an outrigger screwed to the side of the
-# rear beam, so the panel's north edge is over the 5" insulation gap rather than short of it.
-PORCH_TRACK_104 = FurnitureType(
-    tag="FT-PORCH-TRACK-104", name='Porch enclosure track, 104"',
-    footprint=(inch(104), inch(2)), height=inch(1),
+# The two FLANK runs, x = 10'-0" and 26'-0", y -9'-0" to -0'-6". The north end runs 4" past
+# the porch deck edge on an outrigger off the balcony's north edge joist, so the panel's north
+# edge is over the house gap rather than short of it.
+PORCH_TRACK_102 = FurnitureType(
+    tag="FT-PORCH-TRACK-102", name='Porch enclosure track, 102"',
+    footprint=(inch(102), inch(2)), height=inch(1),
     plan_symbol=None, mount=Mount(kind=MountKind.CEILING), source=_TRACK_SOURCE,
 )
 
@@ -824,8 +824,8 @@ PORCH_LOUNGE_27 = FurnitureType(
 
 
 FURNITURE_TYPES = (STUDY_BUILT_IN_BOOKCASE,
-                   CURTAIN_ROD_48, CURTAIN_ROD_84, PORCH_TRACK_106,
-                   PORCH_TRACK_104,
+                   CURTAIN_ROD_48, CURTAIN_ROD_84, PORCH_TRACK_176,
+                   PORCH_TRACK_102,
                    ACCESS_PANEL_1414, ACCESS_PANEL_1429, ACCESS_PANEL_CLG_3029,
                    BATH1_SHELF_2030,
                    MEDIA_SECTIONAL_U, THEATER_BOOKCASE, SUITEBATH_RETURN_3011,

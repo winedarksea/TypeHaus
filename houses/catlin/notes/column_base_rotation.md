@@ -331,3 +331,10 @@ groundwater within the pole's depth moves the row to the submerged column.
 - Matlock & Reese (1960), rigid/flexible pile classification by `T = (EI/n_h)^(1/5)`.
 - Tan et al. (2009), Table 2 (Terzaghi 1955 n_h, dry/submerged sand): https://gnpgroup.com.my/wp-content/uploads/Publication/2009_11.pdf
 - Timoshenko & Gere, *Theory of Elastic Stability* — the cantilever on an elastic base.
+
+## Addendum 2026-09-22 — the balcony columns at the 17'-0" court
+
+The balcony joists span 18'-0" on two beams, so each corner column's P_u is 7,886 lb (BF) and
+7,907 lb (BR) where §4 worked a smaller load. By §4's own method the magnifier δ at the band
+ends is **1.0686 / 1.0701 (BF1/BF3)** and **1.0710 / 1.0725 (BR1/BR3)**, up from 1.044–1.046.
+No verdict moves; `tests/test_base_rotation_calcs.py` carries the re-derived figures.

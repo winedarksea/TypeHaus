@@ -42,7 +42,7 @@ from typehaus.takeoff.hvac import heating_zones
 _ADVISED = True
 _CATLIN = {
     "EQ-M-HP1-OD": (15_410, 14_000, 5.0, 0.91, -5.9, _ADVISED),
-    "EQ-M-HP2-OD": (14_664, 8_800, 5.0, 0.60, 27.0, not _ADVISED),
+    "EQ-M-HP2-OD": (14_668, 8_800, 5.0, 0.60, 27.1, not _ADVISED),
     "EQ-M-HP3-OD": (1_043, 2_800, 17.0, 2.69, None, _ADVISED),
 }
 
@@ -77,14 +77,14 @@ def test_the_design_point_is_reproduced_EXACTLY(catlin_ctx) -> None:
 
 def test_the_load_falls_as_it_warms_and_the_ground_term_does_not_move(catlin_ctx) -> None:
     """The decomposition's shape: a ground-coupled component's ΔT is to the soil, which does
-    not know what the air is doing. System 2's zone carries 2,392 Btu/h of it (a basement);
+    not know what the air is doing. System 2's zone carries 2,412 Btu/h of it (a basement);
     System 1's carries none (second storey and attic), so its load is pure air."""
     zones = {z.equipment_tag: z for z in heating_zones(
         catlin_ctx.model, catlin_ctx.preferences)[0]}
     upstairs = zones["EQ-M-HP1-OD"]
     basement = zones["EQ-M-HP2-OD"]
     assert upstairs.ground_coupled_btuh == pytest.approx(0.0)
-    assert basement.ground_coupled_btuh == pytest.approx(2_392, rel=0.01)
+    assert basement.ground_coupled_btuh == pytest.approx(2_412, rel=0.01)
     for zone in (upstairs, basement):
         assert (zone.heating_load_at_outdoor_f(47.0)
                 < zone.heating_load_at_outdoor_f(5.0)
@@ -150,7 +150,7 @@ def test_the_crossover_is_the_sentence_an_owner_can_act_on(catlin_ctx) -> None:
     building's year; "minimum sizing factor 0.91" is one nobody can act on.
 
     **Reported on a PASS as well**, and System 2 is why: it passes the Manual S cap at 0.60
-    and still cycles above 27.0 °F, which is most of a Minnesota heating season. The rule
+    and still cycles above 27.1 °F, which is most of a Minnesota heating season. The rule
     catches gross over-size; the crossover describes the year.
     """
     zones = {z.equipment_tag: z for z in heating_zones(

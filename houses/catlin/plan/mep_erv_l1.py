@@ -376,7 +376,7 @@ DUCTS_ERV_BASEMENT = [
     DuctRun(uid="1Y457X9DMH", tag="DU-B-ERV-R-SAUNA-EXH", system=DuctSystem.EXHAUST,
             path=(pt(ft(5, 3), ft(28, 2)), pt(ft(5, 3), ft(28)), pt(ft(5, 3), ft(28)),
                   pt(ft(3, 9), ft(28)), pt(ft(3, 9), ft(3, 2)),
-                  pt(ft(9, 2), ft(3, 2)), pt(ft(9, 2), ft(3, 2))),
+                  pt(ft(10, 2), ft(3, 2)), pt(ft(10, 2), ft(3, 2))),
             elevations=(ft(7, 6), ft(7, 6), ft(7, 2), ft(7, 2), ft(7, 2), ft(7, 2),
                         inch(4)),
             diameter=inch(4), routing=DuctRouting.CHASE, material="galvanized", design_cfm=20),

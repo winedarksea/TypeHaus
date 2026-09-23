@@ -214,7 +214,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - **A pad carries its own weight and the shaft on it, net of displaced soil** (2026-09-18). `deck_footing_size` adds both as equivalent R507.3.1 tributary; `engineering/soil.displaced_soil_credit_lb` credits back the soil the pad replaced at the low end of the 110–130 pcf band, because a presumptive allowable is a **net** pressure. Gross was what put `PD-BW-RE` 1.5% over an allowable it is not over. Every house-side pad passes at one size, so S-100's FOUNDATION SCHEDULE stays one row.
 - **The soil class is PRESUMED and every record now says so** (2026-09-22). `Site.soil_basis=SoilBasis(provenance="presumed", …)` in `plan/site.py` is the provenance of `soil_class="GM"` as a field, the mirror of `SubgradeModulus.provenance`; `checks/soil.site_soil_basis` reads it (**no profile fallback** — a profile's class is regional by construction) and `checks/run` threads it to `EngineeringContext.soil_basis`. Every calc that reads an IBC 1610.1/1806.2 row off the class carries `Quantity("soil_presumed", 1.0)` and prints "THE SOIL IS PRESUMED, NOT MEASURED", so the calc package's gap register section D lists all 22 (was 6, the `n_h` rows alone). **Provenance is never arithmetic**: no `BASIS_VERSION` moved and no graded ratio moves when the flag flips (pinned in `test_segmental_wall.py`). A geotechnical investigation on this parcel is the only thing that clears it. (→ DESIGN-LOG.md, "Site and the four structures")
 - **`BM-BW-RW`/`-RE` stay 3-ply 2x12 KDAT; the exterior glulam is REFUSED** (owner, 2026-09-12), and the engine is the reason rather than capacity. These are the only two `roof_beam` items in the house, and `engineering/roof_beam.py`'s `_SECTION` matches a sawn `N-2xM` and nothing else — a `"3.5x11.875"` makes both records INCOMPLETE, and nothing picks them up (`engineering/glulam_beam.py` left the registered-kind tuple on 2026-09-11 and is deck-only besides, 40 psf live at `C_D` 1.0, which cannot carry this 73.7 psf drift case). Retyping trades a d/c of **0.71** for a gap in the register. **The ply seam does not reach these two**: both headers ARE the eave bearing lines, the trusses land on their TOPS, so both seams sit inside the roof assembly under the deck, 1'-4" inboard of the drip line — which is the FPInnovations carve-out for appressed treated plies, and **not** the porch's 2026-09-06 refusal, which rested on tape plus a formed cap. No cap here, and its absence is not a gap. Cost confirms rather than drives: ~$325-450 over 11.4 LF. (→ DESIGN-LOG.md, "Site and the four structures")
-- **Every wood-on-concrete beam seat is a drained STANDOFF, never a sill gasket** (owner, 2026-09-12) — twelve of them, six at the north entry (`CN-BW-STDF-*`) and six in the garden (`CN-SG-STDF-*`), all `SS316-SHIM-35` packs holding a 1/2"-1" gap, and **not one grout island** (`PIER_CONCRETE_12` carried one until 2026-09-12; retyping `PT-SG-COL` on 2026-09-10 rode it over to `PT-BW-RE`/`-RNE` rather than closing it). The cast-in `HETA20Z` pair beside the pack is the **TIE**, never the bearing — two parts, two jobs. **Every column-head tie is a cast-in `HETA20Z` pair since 2026-09-21, never an `HGAM10`**: Simpson requires the HGAM's Titen Turbo screws kept out of the exterior environment, and all eight joints are exterior. Backups, ranked, with the open pour-day items: `notes/column_head_connector_options.md`. `BM-BW-RW` never touches concrete at all: 6x6 KDAT posts through `CCQ46SDS2.5` caps on `ABU66SS` bases. **No IRC provision requires a barrier or a standoff at this joint** — R317.1 item (2) needs a foundation wall AND under 8" to grade, R317.1.2 is embedment, and R317.1.4 governs wood COLUMNS with 1"/6"/8" projections that *relieve* the treatment requirement rather than impose a clearance; a treated beam on a concrete column top satisfies R317 with nothing added. A closed-cell gasket would be the wrong part: it is a capillary break for a plate bolted tight to a slab, and at an exposed joint it becomes the water-holding layer. Wicking is not the mechanism that governs either — capillary rise is bounded by evaporation at 100-480 mm, and nothing here is within reach of it: the north entry's pier tops stand 18 1/2" above grade, its canopy columns 9'-2 3/4", and the garden's porch columns rise 10'-0 15/16" out of the court floor. What wets a seat is rain standing on the pour and end-grain uptake where a beam END lands there, which is `BM-BW-RE`'s south end; the wash, the drip lip and the gap are aimed at that. (→ DESIGN-LOG.md, "Site and the four structures")
+- **Every wood-on-concrete beam seat is a drained STANDOFF, never a sill gasket** (owner, 2026-09-12) — ten of them, six at the north entry (`CN-BW-STDF-*`) and four in the garden (`CN-SG-STDF-*`, the balcony corners), all `SS316-SHIM-35` packs holding a 1/2"-1" gap, and **not one grout island** (`PIER_CONCRETE_12` carried one until 2026-09-12; retyping `PT-SG-COL` on 2026-09-10 rode it over to `PT-BW-RE`/`-RNE` rather than closing it). The cast-in `HETA20Z` pair beside the pack is the **TIE**, never the bearing — two parts, two jobs. **Every column-head tie is a cast-in `HETA20Z` pair since 2026-09-21, never an `HGAM10`**: Simpson requires the HGAM's Titen Turbo screws kept out of the exterior environment, and all eight joints are exterior. Backups, ranked, with the open pour-day items: `notes/column_head_connector_options.md`. `BM-BW-RW` never touches concrete at all: 6x6 KDAT posts through `CCQ46SDS2.5` caps on `ABU66SS` bases. **No IRC provision requires a barrier or a standoff at this joint** — R317.1 item (2) needs a foundation wall AND under 8" to grade, R317.1.2 is embedment, and R317.1.4 governs wood COLUMNS with 1"/6"/8" projections that *relieve* the treatment requirement rather than impose a clearance; a treated beam on a concrete column top satisfies R317 with nothing added. A closed-cell gasket would be the wrong part: it is a capillary break for a plate bolted tight to a slab, and at an exposed joint it becomes the water-holding layer. Wicking is not the mechanism that governs either — capillary rise is bounded by evaporation at 100-480 mm, and nothing here is within reach of it: the north entry's pier tops stand 18 1/2" above grade, its canopy columns 9'-2 3/4", and the garden's porch columns rise 10'-0 15/16" out of the court floor. What wets a seat is rain standing on the pour and end-grain uptake where a beam END lands there, which is `BM-BW-RE`'s south end; the wash, the drip lip and the gap are aimed at that. (→ DESIGN-LOG.md, "Site and the four structures")
 - **Grade is 2'-10" below the main floor.** **Datum is the TOP OF JOISTS, not the finished floor** — main-floor FFE is +3/4", so a slab landing there needs an explicit `top_elevation` (`params/main_deck.py`).
 - Basement storey is at -9'-1 7/16", independent of grade. Pour is exactly 8'-0"; clear height 8'-0 15/16" under joists / 7'-10 7/8" under the EPS band. `code.R305_ceiling_height` DERIVES this, not `Storey.default_ceiling_height` (still a fictional 9'-0") (→ DESIGN-LOG.md, "Site and the four structures").
 - Grade-dependent: garage + foundation, bridge's frost pads/piers, hydrant bury, sunken garden floor, nine perimeter spot elevations, both impervious surfaces. `SITE_GRADE` lives in `params/foundations.py`, repeated as a literal in `plan/site.py`; `plan/manifest.py` asserts the two agree.
@@ -1887,12 +1887,21 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - Author colours under the tone wanted on screen, not the tone typed: the
   viewer's lighting (0.8 hemisphere + 0.9 key + 0.6 IBL) lifts a dark albedo
   well above itself (→ DESIGN-LOG.md, "Exterior colour, balcony and veneer").
-- Guards are `RAILING_DARK_METAL`, split off `POST_WHITE_PAINT`. The balcony's
-  two remaining 6x6 centre pillars and the stairwell posts still use
-  `POST_WHITE_PAINT` and must stay white.
-- Balcony structure (2026-09-03, `notes/balcony_moment_columns.md`, supersedes
-  `superseded/balcony_lateral_bracing_design.md`): four cast concrete corners,
-  two wood centre posts, three glulam beams. No knee braces exist any more.
+- Guards are `RAILING_DARK_METAL`, split off `POST_WHITE_PAINT`. The stairwell
+  posts still use `POST_WHITE_PAINT` and must stay white (the balcony's centre
+  pillars that shared it retired on 2026-09-22).
+- **The court is 17'-0" clear and has no centre support line** (2026-09-22). Both decks
+  span wall to wall on 2x12 KDAT southern pine at 12" o.c. (IRC Table R507.6, 18'-0"; the
+  house states 35 psf deck snow, under the table's 40 live — `preferences.toml [structural]
+  deck_snow_psf`). **Balcony:** four cast corners, two glulams `BM-SG-BLW`/`-BLE` 18'-0"
+  apart, joists on top with the 9" drip cantilever (39 AridDek boards), ties authored —
+  `H10ASS` at every crossing, `H2.5ASS` on each beam's two end joists — plus one spare joist
+  at -9'-0" (`JoistSpec.extra_lines`) for the enclosure's front track. **Porch:** two treated
+  2x12 LEDGERS `BM-SG-LDGW`/`-LDGE` (`Beam.ledger_on`) on the side walls' court faces, joists
+  hung on derived `LUS210Z`, 16'-9" face to face, 14 316 adhesive anchors. `structural.deck_ledger`
+  reads UNKNOWN until the anchor maker's ledger spacing is quoted: DCA6 defers it. The
+  centre columns, their pads, the four porch beams, both centre pillars, `BM-SG-BLC`, the
+  pillar chases and the beam caps are retired (spent uids in `params/sunken_garden.py`).
 - Four CORNER pillars: 12" round reinforced concrete, FIXED at the base,
   doweled into the 12" wall tops of `W-SG-W1`/`E1` — the balcony's entire
   lateral system in both plan directions.
@@ -1925,59 +1934,27 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   SW, New Brighton MN, 651-633-3337) or a Bolsinger custom against their PASC
   stock format.
 - 12", not 10": 2" cover on a #5 cage inside #3 ties needs a 6-5/8" bar circle,
-  flush with both wall faces. `SUNKEN_GARDEN_COLUMN_12` serves all SIX cast
-  columns in the court (`PT-SG-COL` joined them on 2026-09-10); `_COLUMN_20` is
-  retired.
+  flush with both wall faces. `SUNKEN_GARDEN_COLUMN_12` serves the court's four
+  cast columns; `_COLUMN_20` is retired.
 - Beam seat is CAST TO LINE, no grout island: screed the wash/drip lip, take
   tolerance in the `SS316-SHIM-35` shim pack (`CN-SG-STDF-*`), a cast-in HETA20Z
   pair as the tie. `PIER_CONCRETE_12` says NO GROUT ISLAND too
   since 2026-09-12; retyping `PT-SG-COL` did not close that follow-up, it rode
   the island over to the north entry's own seats.
-- Two CENTRE pillars are wood 6x6 and **bear on the two cast columns** since
-  2026-09-14 — `PT-SG-BF2` on `PT-SG-FCOL`, `PT-SG-BR2` on `PT-SG-COL`, both on
-  `ABU66SS` standoff bases (`anchored=True`, cast-in 5/8"). **All six pillars are
-  on concrete**; the 3-ply pack, its squash blocks and the five-part
-  `MSTA12Z`+`L50Z` tie are retired, kept as `_DECK_BORNE_*` revert records in
-  `params/sunken_garden.py`. `CCQ46SDS2.5` cap still closes uplift at each.
-- **The four porch beams HANG off the centre pillars** — `BM-SG-FRW`/`-FRE` and
-  `BM-SG-BKW`/`-BKE` end at the pillar faces (`N-SGM-FCOLW/E`, `N-SGM-COLW/E`)
-  on `HU212-3` face-mount hangers, not `HUC212-3` (that is the concrete part,
-  and a 5-1/2" post cannot host a concealed flange). That is what lets both
-  columns stay 12" round rather than growing to span beam face to pillar face.
-  `PT-SG-BR2` moved 3" north onto the column axis with it.
-- Each centre pillar passes through a framed 9" chase in `FS-SG-PORCH`
-  (`FO-SG-BF2`/`-BR2`), 1 3/4" clear on all four sides; the joist at x=17'-10"
-  (the module's nearest line, wholly inside the pillar) is cut and headed. **The
-  trimmers stand on the OPENING's own edges and bear on the beam** — each of the
-  four takes its beam's full 4 1/2" — not on the joist lines 16" either side,
-  which is what this line claimed until 2026-09-15; widening the opening to make
-  that true would cut two sound joists for a longer header off the beam.
-  **No hanger on the post's N/S faces** — four will not fit on a 5-1/2" face.
-- Porch joists CROSS both beams (`JoistSpec.cantilever_start = 4-1/4"`, was
-  2-3/4" — the extra 1-1/2" is what takes the front rim band clear of
-  `PT-SG-BF2`). The composite sheet ends 4-1/4" outboard of `RL-SG-PORCH`'s
-  guard line by design.
 - **A post is the WOOD, not the clear span between its bearings** (2026-09-14).
   `resolve/envelope.py::_post_connector_insets` takes the `ABU66SS`'s 1-3/16"
   standoff (Simpson's 1" over the stirrup's own 7 ga plate) off the bottom and
   the `CCQ46SDS2.5`'s 7 ga seat off the top, from the catalog record. Without it
   `PT-SG-BR2` reads 121-3/8" against IRC Table R507.4's 120".
 - **`SPEC.balcony_fall_in_per_ft` = 1/4 in/ft** — authored; the rise is derived.
-- **`BM-SG-BLC` is flush-framed** (2026-09-16): the joists hang in it on LUS28Z and bear
-  on top of BLW/BLE, keeping the 9" drip cantilever and the corner columns unchanged. BR2/BF2
-  stand 10.59'/10.44' against 2018 IRC Table R507.4's flat 14' for a 6x6 (the engine's old
-  area-stepped 10' row was a table bug).
 - `structural.deck_post_bearing` is now NOT_APPLICABLE house-wide and
   `post_bearing/*` has left the engineering register — no post in catlin stands
   on a floor system. `notes/centre_pillar_bearing.md` is KEPT (registered kinds
   must name a live note) and carries a dated section saying so.
-- Centre pillars are DF-L, not SPF — connector requirement
-  (ESR-2604/2330/2105/3096, all SG >= 0.50 at MC <= 19%); see
-  `POST_WHITE_PAINT_DF`. C_M 0.70 wet-service is already in the 658/375 lbf in
-  `library/hardware.py` — do not derate again.
-- Three beams: treated SYP glulam, `"3.5x11.875"` (24F-V5M1/SP),
-  clear-finished. Author DECIMALLY — `_RE_NOMINAL` silently resolves a
-  nominal-looking string 1-1/4" short. Engineered items `deck_beam/BM-SG-BL*`.
+- Two beams: treated SYP glulam, `"3.5x11.875"` (24F-V5M1/SP), clear-finished. Author
+  DECIMALLY — `_RE_NOMINAL` silently resolves a nominal-looking string 1-1/4" short.
+  Engineered items `glulam_beam/BM-SG-BLW`/`-BLE`, each loaded with its own strip (half the
+  18' bay plus the overhang, `glulam_beam` basis 3). No supplier row is authored.
 - Front-row beam/column line did NOT move with the corner change; its 12"
   column top runs 3-1/4" past the beam end. Re-solving it moves the deck edge,
   fascia, drip, gutter and `BALCONY_FRONT_AXIS_Y_FT` together.
@@ -1986,19 +1963,17 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - Both guards: Williams Architectural Products, ICC-ES ESR-3485, 42" black
   (Menards; Eagan MN); alternate Fortress Al13 Home.
 - `RL-SG-PORCH` is surface-mounted (`RAILING-EXT-ALUMINUM-SURFACE`): west/east
-  legs on 12" concrete wall tops take ESR-3485's baseplate anchors directly.
-  The south leg bolts through the plank into joist-bay blocking north of the
-  beam — never through `TR-SG-CAP-FRW/FRE`, its butyl is the dielectric between
-  aluminium cap and copper-treated framing.
+  legs on 12" concrete wall tops take ESR-3485's baseplate anchors directly. The south leg
+  stands over the porch's south EDGE JOIST (the joists run with it now) and bolts through the
+  plank into a block 2" inside it at each post — the balcony's inset pattern.
 - `RL-SG-BALCONY` stays fascia-mounted (through-bolted PVC fascia + 2x8 rim)
   because `FS-SG-DECK`'s aluminium plank is the porch roof and carries no other
   penetrations — do not switch to surface mounting. Needs rim blocking in
   `FS-SG-DECK.reinforcements`.
-- Veneer `W-B-BRICK` (112.2 SF, both faces exposed; top at -8" so `FS-SG-PORCH`'s joists
-  pass over it with 3/4" of air — nothing grades that gap) stands on `W-SG-BRKBM`, a 12"
-  x 17-3/4" grade beam spanning 19'-0" between `W-SG-W1`/`W-SG-E1` — not on the
-  house footing (`FT-B-BRICK`, retired). Basis:
-  `notes/sunken_garden_veneer_beam.md` (2026-09-05).
+- Veneer `W-B-BRICK` (both faces exposed; top at -13 1/3" since 2026-09-22 so
+  `FS-SG-PORCH`'s 2x12s pass over it with 2 1/12" of air — nothing grades that gap) stands on
+  `W-SG-BRKBM`, a 12" x 17-3/4" grade beam spanning 17'-0" between `W-SG-W1`/`W-SG-E1` — not on
+  the house footing (`FT-B-BRICK`, retired). Basis: `notes/sunken_garden_veneer_beam.md`.
 - **THE BEAM'S DEFLECTION IS GRADED AT TMS 402-22 §13.1.2.3's ℓ/600 = 0.390", AND THE ONLY
   THING THAT CLOSES IT IS THE MONOLITHIC END JOINT** (2026-09-22, note §6f). As a simple
   span it reads **1.242 OVER**. `W-SG-BRKBM.end_restraint` CLAIMS α = 0.25 — the fraction of
@@ -2187,16 +2162,6 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `notes/sunken_garden_court_free_body.md` §8's three-reason block before shrinking it. Its
   top and `_rim_underside_in` are the same expression. `FO-SG-ARCH` is retired with the stoop.
   `W-SG-BRKBM` carries no structural load — it is the veneer's thermal foundation only.
-- `_pier_bell_bottom_ft` is **derived**, not pinned: `(_court_top_in - frost_depth_in) / 12`
-  — do not pin it again, a pinned literal silently drifts the next time the court moves (→
-  DESIGN-LOG.md, "Sunken garden court"). Both bells carry 42" cover; shafts are 128.1875".
-- **Both pier bells are 36" (2026-09-10).** The 36" was a fossil sized for a 20" column
-  that shrank to 12"; PT-SG-COL's 30" was set by nothing. One diameter, one under-reamer
-  setting, one schedule row, ~$27-43, and the tightest pier in the house goes d/c 0.83 →
-  0.60. **What the extra 3" per side spends is the gap to FT-B-S2/S3: 8" → 5" in plan.**
-  They still never meet — the bell's top is 22" below the house strip's bottom — so the
-  live constraint is SEQUENCING, not clearance: auger both shafts with the open basement
-  excavation or they undermine the house footing. `AN-SG-PLACEMENTS` says so on the drawing.
 - **`W-SG-W1`+`W2` are ONE pour, and so are `E1`+`E2`** — one 12" section, one form height,
   placement 2. They are two elements because the restraint condition changes at `N-SG-MW` /
   `N-SG-ME`: braced top-and-bottom north, R404.4 base-restrained south. So does the steel —
@@ -2205,14 +2170,9 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
   `PORCH_FOOTING_84`). Identical stacks — 12" of EXPOSED_MIX — split on a width an Assembly
   does not carry, and the porch card declared **13"** where every strip is built at 12". The
   merge removed the lie and a row off the S-100 FOUNDATION SCHEDULE.
-- **All six of the court's 12" cast rounds are `SUNKEN_GARDEN_COLUMN_12`** (PT-SG-COL moved
-  off `PIER_CONCRETE_12`, which is now the north-entry piers and nothing else), and that
-  assembly finally names `concrete=EXPOSED_MIX`. It stated 5,000 psi in prose only, so the
-  register printed **the front column as the weaker of the two identical columns** holding
-  the ends of one frame. Consequences: corner φM_n 20,900 → 24,700 lb-ft (re-derived by
-  hand in notes/balcony_moment_columns.md §4 — β1 steps to 0.80 and φ reaches 0.900, which
-  is half the gain), class B dowel lap 35.6" → 27.6", PT-SG-COL's axial capacity 187k →
-  286k. No demand moved. The retype also drops the grout island PIER_CONCRETE_12 carries.
+- **The court's four 12" cast rounds (the balcony corners) are `SUNKEN_GARDEN_COLUMN_12`**,
+  which names `concrete=EXPOSED_MIX` (corner φM_n 24,700 lb-ft, notes/balcony_moment_columns.md
+  §4). The two porch centre columns that also used it retired on 2026-09-22.
 - **One excavation plane again**: `FB-SG-ARCH`'s undercut derives to 33", not the footings'
   42", so all six beds bottom on `_SG_WALL_BED_BOTTOM` with the drywell's top. The 42" was
   copied and is not required — the beam has no `Footing`, so it is not in the frost
@@ -2287,7 +2247,7 @@ alternatives that were rejected, and the engine bugs these rules dodge live in
 - `Dowel` z is derived off the shared 8" footing-to-footing joint face (mid-way through it);
   the foam block matches that 8". **Nothing in the engine grades a `Dowel` against the two
   footings it names** — check both footing tops/bottoms by hand after any elevation change.
-- **The court is 26'-0" x 19'-0" clear and there is a structural floor at 24'-6".**
+- **The court is 26'-0" x 17'-0" clear (19'-0" until 2026-09-22) and there is a structural floor at 24'-6".**
   Shortening it removes base friction from the capacity and **nothing** from the demand: the
   E-W thrusts cancel identically, so the resultant is the south wall's alone and the south
   wall is the court's WIDTH. Court length is not the cheap lever it looks like — about $700

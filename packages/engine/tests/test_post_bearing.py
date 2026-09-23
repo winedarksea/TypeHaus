@@ -24,6 +24,9 @@ the joists cross BOTH beams — the right framing, and it takes ``PT-SG-BF2`` fr
 0.35 — which left the END branch of ``_beam_bearing_in`` and ``_post_on_field_in`` with no
 subject in this house. Deleting the assertions would have deleted the coverage with the
 subject, so the old porch geometry lives on below as a fixture instead.
+
+Since 2026-09-22 the whole joint is a fixture: the court went to 17'-0" and the pillars,
+the centre glulam and the porch beams it stood on are gone from catlin.
 """
 
 from __future__ import annotations
@@ -65,88 +68,90 @@ _BLC_LOAD_PLF = 500.0
 _BLC_LENGTH_FT = 9.667
 
 
-def _deck_borne_pillars(plan):
-    """catlin with its two centre pillars put back on the porch framing.
+def _deck_borne_pillars():
+    """The joint the note was worked for, rebuilt from the note's own §1-§3 inputs.
 
-    ** WHY THIS FIXTURE EXISTS (2026-09-14). ** Both pillars came off ``FS-SG-PORCH`` and
-    onto the cast column tops that day, which retired ``post_bearing/PT-SG-BF2`` and
-    ``post_bearing/PT-SG-BR2`` from the engineering register — the whole point of the change,
-    since ``_posts_on_framing`` enumerates on exactly one predicate and neither post satisfies
-    it any more. ``compute(ctx)`` on the real house now returns nothing.
+    ** STANDALONE SINCE 2026-09-22. ** This used to put the two pillars back on catlin's
+    live porch framing, reading ``PT-SG-COL``/``FCOL``'s positions and the porch beams off the
+    house. The 17'-0" court retired all of it — both columns, both pillars, ``BM-SG-BLC`` and
+    the porch beam pairs — so there is no house left to revert, and the arrangement is built
+    here from ``notes/centre_pillar_bearing.md`` alone:
 
-    **The oracle cannot move with it.** ``notes/centre_pillar_bearing.md`` was hand-worked for
-    a specific geometry, and a calc reproduced against SOME OTHER geometry is a calc agreeing
-    with itself — which this package's own rule says is not verification. A synthetic deck
-    would have been exactly that. So the test reconstructs the arrangement the note was
-    written for, the way ``swinburne_model`` reconstructs the retired truss wall: a live test
-    of the documented revert rather than of a copy.
+    * ``BM-SG-BLC``, 3-1/2" x 11-7/8", node to node y = -0'-10" .. -10'-6" at x = 18'-0",
+      bearing on ``PT-SG-BR2`` (y = -2'-6") and ``PT-SG-BF2`` (y = -9'-6"), both 5-1/2"
+      square (§1, §2);
+    * ``FS-SG-DECK``, a deck on that beam with a 10'-0" joist span and 9" cantilevers — the
+      500 plf strip §2 takes (two resolved bays of 10'-0" either side of x = 18');
+    * ``FS-SG-PORCH``, 2x8 running N-S, the field from y = -116.75" (the 2-3/4"
+      ``cantilever_start``) to 17" north of the back beam, with a 3-ply pack on x = 18'
+      (§3a); back beam ``BM-SG-BKW`` at y = -2'-3" and front beam ``BM-SG-FRW`` at
+      y = -9'-6", both 4-1/2" wide (§3b).
 
-    Every value here is DERIVED from the house rather than restated, so the reconstruction
-    cannot drift into fiction:
-
-    * the pillars go back to ``supported_by="FS-SG-PORCH"``, which is
-      ``_DECK_BORNE_PILLAR_BEARINGS`` in ``params/sunken_garden.py``;
-    * ``PT-SG-BR2`` goes back 3" south of ``PT-SG-COL``'s axis (``_REAR_PILLAR_SOUTH_OF_COL_IN``),
-      read off that column's own position — it moved onto the axis when it came down onto
-      concrete, and the reaction the note works depends on where it stands;
-    * the two 3-ply packs come back at the two beam axes, which are the two cast columns'
-      own positions — ``_DECK_BORNE_PILLAR_REINFORCEMENTS``;
-    * the 9" pillar chases go away and the joists' south oversail goes back to 2-3/4"
-      (it is 4-1/4" now, to clear the front rim band of a pillar that passes through it);
-    * the four porch beams go back to dying on the column axes rather than at the pillar
-      faces they hang off now.
-
-    Post HEIGHT is deliberately not reverted: ``post_bearing`` reads bearing areas and a beam
-    reaction and never a post's length, so restating a height here would be a number the test
-    does not use and could quietly get wrong.
+    Model classes are ``model_construct``-ed so ``post_bearing``'s isinstance gates see real
+    types; the resolved floors are namespaces carrying only what the module reads.
     """
-    from typehaus.model.floors import FloorSystem, JoistReinforcement
+    from types import SimpleNamespace
+
+    from typehaus.model.elements import Node
+    from typehaus.model.floors import FloorSystem, JoistSpec
     from typehaus.model.structure import Beam, Post
-    from typehaus.quantities import inch, pt
+    from typehaus.quantities import ft, inch, pt
 
-    columns = {e.tag: e for storey in plan.elements.values() for e in storey
-               if isinstance(e, Post) and e.tag in ("PT-SG-COL", "PT-SG-FCOL")}
-    assert set(columns) == {"PT-SG-COL", "PT-SG-FCOL"}, sorted(columns)
-    back, front = columns["PT-SG-COL"].position, columns["PT-SG-FCOL"].position
-    # 3" south of the back column's axis — ``_REAR_PILLAR_SOUTH_OF_COL_IN``.
-    br2_at = pt(back.x, back.y - inch(3.0))
-    under = {"PT-SG-BR2": br2_at, "PT-SG-BF2": front}
-    # The packs sit ON the beam centrelines, which are the two columns' own axes.
-    packs = tuple(
-        JoistReinforcement(at=at, plies=3, blocking=True,
-                           source="the retired centre-pillar bearing pack, reconstructed")
-        for at in (back, front))
-    beam_home = {"BM-SG-BKW": "N-SGM-COL", "BM-SG-BKE": "N-SGM-COL",
-                 "BM-SG-FRW": "N-SGM-FCOL", "BM-SG-FRE": "N-SGM-FCOL"}
+    x = 18.0
 
-    def revert(element):
-        if isinstance(element, Post) and element.tag in under:
-            return element.model_copy(update={"supported_by": "FS-SG-PORCH",
-                                              "position": under[element.tag]})
-        if isinstance(element, Beam) and element.tag in beam_home:
-            return element.model_copy(update={"start_node": beam_home[element.tag]})
-        if isinstance(element, FloorSystem) and element.tag == "FS-SG-PORCH":
-            joists = element.joists.model_copy(update={"cantilever_start": inch(2.75)})
-            return element.model_copy(update={
-                "joists": joists, "openings": (),
-                "reinforcements": packs + element.reinforcements})
-        return element
+    def node(tag, x_ft, y_ft):
+        return Node(uid=f"TST{tag[-6:].replace('-', '')}AAA"[:10], tag=tag,
+                    position=pt(ft(x_ft), ft(y_ft)))
 
-    return plan.model_copy(update={
-        "elements": {storey: tuple(revert(e) for e in elements)
-                     for storey, elements in plan.elements.items()}})
+    nodes = [node("N-SGB-NC", x, -10.0 / 12.0), node("N-SGB-SC", x, -10.5),
+             node("N-BKW-W", 9.0, -2.25), node("N-BKW-E", x, -2.25),
+             node("N-FRW-W", 9.0, -9.5), node("N-FRW-E", x, -9.5)]
+    pillars = [Post.model_construct(tag=tag, size="5.5x5.5", position=pt(ft(x), ft(y)),
+                                    supported_by="FS-SG-PORCH", within_wall=False)
+               for tag, y in (("PT-SG-BR2", -2.5), ("PT-SG-BF2", -9.5))]
+    beams = [
+        Beam.model_construct(tag="BM-SG-BLC", start_node="N-SGB-NC", end_node="N-SGB-SC",
+                             size="3.5x11.875", bearing_refs=("PT-SG-BR2", "PT-SG-BF2")),
+        Beam.model_construct(tag="BM-SG-BKW", start_node="N-BKW-W", end_node="N-BKW-E",
+                             size="4.5x7.25", bearing_refs=()),
+        Beam.model_construct(tag="BM-SG-FRW", start_node="N-FRW-W", end_node="N-FRW-E",
+                             size="4.5x7.25", bearing_refs=()),
+    ]
+    balcony = FloorSystem.model_construct(
+        tag="FS-SG-DECK", service="deck",
+        joists=JoistSpec(member="2x10", direction="x", bearing_refs=("BM-SG-BLC",),
+                         cantilever=inch(9.0)))
+    porch = FloorSystem.model_construct(
+        tag="FS-SG-PORCH", service="deck",
+        joists=JoistSpec(member="2x8", direction="y",
+                         bearing_refs=("BM-SG-BKW", "BM-SG-FRW"),
+                         cantilever_start=inch(2.75), cantilever_end=inch(17.0)))
+    by_tag = {e.tag: e for e in (*nodes, *pillars, *beams, balcony, porch)}
+
+    m = 0.3048
+    south, north = -116.75 / 12.0 * m, (-2.25 + 17.0 / 12.0) * m
+
+    def member(category, p0, p1, profile="2x8"):
+        return SimpleNamespace(category=category, p0=p0, p1=p1, profile=profile,
+                               length_m=abs(p1[0] - p0[0]) + abs(p1[1] - p0[1]))
+
+    # The pack: the authored joist on x = 18' and a sister each side, 1-1/2" apart, so the
+    # 5-1/2" pillar sits on 4-1/2" of stock (§3a).
+    pack = [member("joist" if dx == 0.0 else "sister_joist", ((x * 12 + dx) / 12 * m, south),
+                   ((x * 12 + dx) / 12 * m, north)) for dx in (-1.5, 0.0, 1.5)]
+    bays = [member("joist", (x0 * m, -5.0 * m), (x1 * m, -5.0 * m), "2x10")
+            for x0, x1 in ((7.25, x), (x, 28.75))]
+    model = SimpleNamespace(floors=[SimpleNamespace(tag="FS-SG-PORCH", members=pack),
+                                    SimpleNamespace(tag="FS-SG-DECK", members=bays)])
+    plan = SimpleNamespace(by_tag=by_tag.get, all_elements=lambda: list(by_tag.values()))
+    return SimpleNamespace(plan=plan, model=model, soil_class="GM")
 
 
 @pytest.fixture(scope="module")
-def records(catlin_plan):
+def records():
     from typehaus.engineering.post_bearing import compute
-    from typehaus.engineering.registry import EngineeringContext
-    from typehaus.resolve import resolve
 
-    plan = _deck_borne_pillars(catlin_plan)
-    model, _ = resolve(plan)
-    ctx = EngineeringContext(plan=plan, model=model, soil_class="GM")
-    return {record.key: record for record in compute(ctx)}
+    return {record.key: record for record in compute(_deck_borne_pillars())}
 
 
 def test_the_house_itself_no_longer_poses_this_question(catlin_plan) -> None:
@@ -158,8 +163,9 @@ def test_the_house_itself_no_longer_poses_this_question(catlin_plan) -> None:
     enumerates a ``Post`` whose ``supported_by`` names a ``FloorSystem`` and nothing else, so
     the population is empty and the two records have left the register.
 
-    Everything below this test runs on :func:`_deck_borne_pillars`, which puts the
-    arrangement back so the note can still be reproduced. This test is what says the house
+    On 2026-09-22 the pillars retired outright with the centre support line. Everything
+    below this test runs on :func:`_deck_borne_pillars`, which rebuilds the arrangement from
+    the note so it can still be reproduced. This test is what says the house
     does not stand that way any more — without it, a reader could take the whole file for a
     description of the current building.
     """

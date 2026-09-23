@@ -82,7 +82,7 @@ def test_standalone_beams_and_posts_are_framing(catlin_model) -> None:
     """The regression this table was written for: BM-M-HALL and BM-S-HALL rendered under
     Concrete while RB-HOUSE — the same authored element kind — rendered under Framing."""
     by_tag = {solid.tag: solid for solid in catlin_model.solids}
-    for tag in ("BM-M-HALL", "BM-S-HALL", "BM-SG-BKW"):
+    for tag in ("BM-M-HALL", "BM-S-HALL", "BM-SG-LDGW"):
         assert tag in by_tag, f"fixture regression: the Catlin house lost {tag}"
         assert solid_trade(by_tag[tag].category) == "framing"
     posts = [s for s in catlin_model.solids if s.category == "column"]

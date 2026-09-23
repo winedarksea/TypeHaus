@@ -1,7 +1,8 @@
 """``structural.masonry_movement_joint`` against notes/sunken_garden_veneer_beam.md §6g.
 
 The oracle is the note's hand pass: BIA TN 18A Eq. 1 at W-B-BRICK's two ends, both
-jointed, each taking half the 223.625" run.
+jointed, each taking half the run. The court narrowed to 17'-0" on 2026-09-22 and the
+wythe with it: x 118"..317.625", a 199.625" run (§6g still prints the 223.625" one).
 """
 
 from __future__ import annotations
@@ -17,11 +18,11 @@ _JOINTS = "plan/masonry_joints.py"
 
 #: §6g, by hand.
 _ORACLE = {
-    "run_in": 223.625,
-    "movement_in": 0.100631,  # 0.0009 x 223.625 / 2
-    "east_ratio": 0.537,      # / (0.375 x 0.50)
-    "west_ratio": 0.050,      # / (4.000 x 0.50)
-    "east_alone_ratio": 1.073,  # 0.0009 x 223.625 / 0.1875 — §6g's sensitivity
+    "run_in": 199.625,          # 317.625 - 118.000
+    "movement_in": 0.089831,    # 0.0009 x 199.625 / 2
+    "east_ratio": 0.479,        # / (0.375 x 0.50)
+    "west_ratio": 0.045,        # / (4.000 x 0.50)
+    "east_alone_ratio": 0.958,  # 0.0009 x 199.625 / 0.1875 — §6g's sensitivity
 }
 
 
@@ -77,23 +78,29 @@ def test_a_missing_joint_is_a_fail_naming_the_end(tmp_path) -> None:
     got = _run(_variant(tmp_path, drop_east))
     miss = next(f for f in got if "no MovementJoint" in f.message)
     assert miss.result is Result.FAIL and "N-B-BRICK-E end" in miss.message
-    # One joint left: it takes the whole run, 0.0009 x 223.625 / 2.0 = 0.101.
-    assert "d/c 0.101" in _joint(got, "MJ-B-BRICK-W").message
+    # One joint left: it takes the whole run, 0.0009 x 199.625 / 2.0 = 0.090.
+    assert "d/c 0.090" in _joint(got, "MJ-B-BRICK-W").message
 
 
 def test_a_joint_drawn_off_the_gap_fails(tmp_path) -> None:
-    ctx = _variant(tmp_path, lambda t: t.replace("pt(inch(329.625), inch(-13.56))",
-                                                 "pt(inch(329.5), inch(-13.56))"))
+    ctx = _variant(tmp_path, lambda t: t.replace("pt(inch(317.625), inch(-13.56))",
+                                                 "pt(inch(317.5), inch(-13.56))"))
     east = _joint(_run(ctx), "MJ-B-BRICK-E")
     assert east.result is Result.FAIL and "no longer fits" in east.message
 
 
-def test_a_less_compressible_seal_is_graded_not_assumed(tmp_path) -> None:
-    """Class 25 at 3/8" in the east end: 0.1006 / 0.09375 = 1.073 — OVER."""
+@pytest.mark.parametrize(("pct", "result", "ratio"), [
+    # Class 25 at 3/8": 0.0898 / 0.09375 = 0.958 — the shorter run now clears it
+    # (it read 1.073 at the 223.625" run), and equals §6g's whole-run sensitivity.
+    ("25.0", Result.PASS, _ORACLE["east_alone_ratio"]),
+    # Class 12.5 at 3/8": 0.0898 / 0.046875 = 1.916 — OVER.
+    ("12.5", Result.FAIL, 1.916),
+])
+def test_a_less_compressible_seal_is_graded_not_assumed(tmp_path, pct, result, ratio) -> None:
     ctx = _variant(tmp_path, lambda t: t.replace('abuts="W-SG-E1", compression_pct=50.0',
-                                                 'abuts="W-SG-E1", compression_pct=25.0'))
+                                                 f'abuts="W-SG-E1", compression_pct={pct}'))
     east = _joint(_run(ctx), "MJ-B-BRICK-E")
-    assert east.result is Result.FAIL and "d/c 1.073" in east.message
+    assert east.result is result and f"d/c {ratio:.3f}" in east.message
 
 
 def test_an_unstated_capability_is_unknown(tmp_path) -> None:
@@ -108,6 +115,6 @@ def test_the_joints_bill_by_the_foot(catlin_model_ro) -> None:
 
     rows = [r for r in edge_trim_takeoff(catlin_model_ro) if r["category"] == "movement_joint"]
     assert sorted(r["tags"][0] for r in rows) == ["MJ-B-BRICK-E", "MJ-B-BRICK-W"]
-    assert all(r["length_ft"] == pytest.approx(7.9, abs=0.05) for r in rows)
+    assert all(r["length_ft"] == pytest.approx(89.104 / 12, abs=0.05) for r in rows)
     east = next(r for r in rows if r["tags"] == ["MJ-B-BRICK-E"])
     assert "over 1/2\" Nomaco HBR" in east["material"]

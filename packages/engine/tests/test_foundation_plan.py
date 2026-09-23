@@ -90,9 +90,9 @@ def test_footing_bedding_undercut_and_insulation(catlin_model):
     assert "#57" in bedding.aggregate
 
 
-#: The two porch piers. Their pours go to frost depth, so they bear on undisturbed soil and
-#: take a levelling course rather than the wall footings' 42" replacement section — see
-#: test_catlin_outdoor_structures.py::test_the_two_porch_piers_are_belled_to_frost_depth...
+#: The two porch piers — RETIRED 2026-09-22 with the court's centre line (the porch hangs on
+#: two wall ledgers); see test_catlin_outdoor_structures.py::
+#: test_every_court_bed_is_a_wall_bed_on_the_soakaway.
 #:
 #: ** EMPTY SINCE 2026-09-14, AND DELIBERATELY KEPT. ** Both became 30" square `Pad`s that
 #: day, so neither is an `FT-SG-*` any longer and the exclusion below has nothing left to

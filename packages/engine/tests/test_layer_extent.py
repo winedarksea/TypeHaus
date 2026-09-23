@@ -169,7 +169,7 @@ def test_the_solid_is_cut_to_the_band_not_to_the_wall(catlin_model):
 
 
 def test_the_takeoff_bills_the_band_and_not_the_wall(catlin_model):
-    """278 SF: the perimeter's banded run x 2'-2 9/16". Billing the wall's face instead
+    """283 SF: the perimeter's banded run x 2'-2 9/16". Billing the wall's face instead
     would order the coating for every buried foot of foam it never reaches — which is exactly
     what the parge coat it replaced was doing, over 1,394 SF house-wide.
 
@@ -179,12 +179,15 @@ def test_the_takeoff_bills_the_band_and_not_the_wall(catlin_model):
 
     276.3 -> 278.2 on 2026-09-05: W-B-S4 grew 10" west when the south wall's split moved off
     the retaining wall's axis and onto 27'-2" (storeys/basement.py N-B-S3). That 10" is a
-    banded 8" pour where it used to be an unbanded 7 1/4" curb, so it buys coating."""
+    banded 8" pour where it used to be an unbanded 7 1/4" curb, so it buys coating.
+
+    278.2 -> 282.6 on 2026-09-22: the court narrowed to 17'-0" and W-B-S1/-S4 grew 1' each
+    toward it, 2' more banded run x 2.214' = 4.4 SF."""
     from typehaus.takeoff.envelope import envelope_layer_takeoff
 
     rows = {row["material"]: row for row in envelope_layer_takeoff(catlin_model)}
     panel = rows["foundation-coating-acrylic"]
-    assert panel["net_area_sqft"] == pytest.approx(278.2, abs=1.0)
+    assert panel["net_area_sqft"] == pytest.approx(282.6, abs=1.0)
     # The parge survives nowhere: `Material(tag="stucco")` is still in library/materials.py
     # — this house simply has no instance of it. Nor does the protection board, which is
     # kept as the named alternate in plan/assemblies.py and priced in prices.toml but is

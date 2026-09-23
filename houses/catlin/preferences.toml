@@ -58,6 +58,10 @@ max_window_ro_nonbearing_in = 30
 max_window_ro_bearing_in = 27
 
 [structural]
+# Design snow on the two garden decks (owner, 2026-09-22): the MN roof snow, 35 psf. IRC
+# Table R507.6 is 40 psf live with snow not concurrent, so the live load governs and the
+# table covers both decks (structural.deck_joist_span). Over 40 and it would not.
+deck_snow_psf = 35.0
 # The dead load a guard may put on ordinary wood framing (structural.masonry_guard_bearing).
 # A guard's own weight is derived from its assembly's layers and their material densities, so
 # this is the only authored number in that rule: roughly a heavy wood guard with 6x6 posts,

@@ -609,3 +609,9 @@ out of it.
 - **ACI 318-19** — §11.6.1, §14.1.4
 - **ACI 544.4R**
 - IRC Table R403.1
+
+## Addendum 2026-09-22 — the court narrowed to 17'-0"
+
+Total **6,475.8 lb / 1,165 pieces** (was 6,717.9 / 1,216). The −241.7 lb, host by host: the two
+retired porch columns −113.2; the four corner columns 4" shorter −10.5; FT-SG-S −35.1; W-SG-S
+−63.9; W-SG-BRKBM 2' shorter −23.2; W-B-S1/-S4 1' longer each +4.0.

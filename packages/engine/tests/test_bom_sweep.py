@@ -84,8 +84,12 @@ def test_railing_rows_still_bill_every_guard_by_its_run(bom):
     # 40.8, not 40.3, since 2026-09-03: RL-SG-BALCONY follows the deck edge, and
     # `joist_cantilever_in` went 6" -> 9" so the plank drips clear of the 12" columns
     # instead of onto them. The U gained 3" on each of its two side legs.
-    assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(40.8, abs=0.1)
-    assert by_type["RAILING-EXT-ALUMINUM-SURFACE"] == pytest.approx(42.7, abs=0.1)
+    #
+    # 38.8 / 40.7 since the 17'-0" court (2026-09): both front legs lost exactly the 2'-0"
+    # the court did — RL-SG-BALCONY 21'-6" -> 19'-6" (8'-3" to 27'-9", sides 9'-8" each),
+    # RL-SG-PORCH's south leg 19'-0" -> 17'-0" (9'-6" to 26'-6"). No side leg moved.
+    assert by_type["RAILING-EXT-ALUMINUM-FASCIA"] == pytest.approx(38.8, abs=0.1)
+    assert by_type["RAILING-EXT-ALUMINUM-SURFACE"] == pytest.approx(40.7, abs=0.1)
     # 27.3 for RAILING-INT-STAIR-GUARD: RL-M-STAIRHEAD's 4 1/2" and RL-A-STAIR's run join the
     # group, but the well's east leg is inside the roof past x=29'-4 1/2" (a 42" guard's top
     # at 282" meets the roof underside there) and carries nothing — a raked ToRoof partition,

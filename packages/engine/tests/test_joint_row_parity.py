@@ -95,8 +95,17 @@ def test_the_joint_counts_are_the_ones_the_house_is_known_to_have(catlin_model_r
     # -8 the same day: BM-SG-BLC went flush, and its joists hang rather than bear.
     # 361 -> 131, also 2026-09-16: floor joists on WALL plates take no tie (owner) — the
     # I-joists and floor trusses on W-B/W-M/W-S (-230). Joists on deck beams still do.
-    assert joints["hurricane_tie"] == 131
-    assert joints["mudsill_anchor"] == 137
+    #
+    # 131 -> 82 in 2026-09 (the 17'-0" court): the sunken garden derives NO tie any more
+    # (-49). The balcony's joist-to-beam ties are authored stainless (CN-SG-TIE-W/E01..12,
+    # naming FS-SG-DECK), which stands the derivation down, and the porch hangs ledger to
+    # ledger on LUS210Z with no beam to bear on. What is left: 64 rafter-to-plate ties on
+    # RF-HOUSE / RF-GARAGE, 10 along the ridge, and FS-BW-FLOOR's 4 + 4 on its two seats.
+    assert joints["hurricane_tie"] == 82
+    # 137 -> 136 in 2026-09: the main-storey sill run over the sunken garden (y = -11 3/4")
+    # spans axis to axis of the court's side walls, 20'-0" -> 18'-0" with the 17'-0" court.
+    # At a 4' pitch, fencepost: floor(20/4)+1 = 6 became floor(18/4)+1 = 5.
+    assert joints["mudsill_anchor"] == 136
     assert joints["sloped_joist_hanger"] == 39
     assert joints["ridge_tie_strap"] == 19
     assert joints["embedded_strap_holdown"] == 40

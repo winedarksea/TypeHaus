@@ -319,3 +319,10 @@ cooling load.
 - **The lockout is checked but not the defrost band.** `mep.heating_capacity` FAILs a unit
   whose `min_operating_temp_f` is warmer than the site design temperature. All three of
   these are rated to −22 °F against a −15 °F design, so none trips it.
+
+## Addendum 2026-09-22 — System 2 after the court narrowed
+
+HP2's zone lost 17.0 sf of framed walkout (W-B-S2-FR/-S3-FR, −28.5 Btu/h) and gained 12.2 sf
+buried and 2.6 sf above-grade concrete (W-B-S1/-S4, +32.6 Btu/h): design load **14,668 Btu/h**
+(was 14,664), ground-coupled **2,412** (was 2,392), crossover **27.1 °F** (was 27.0). Sizing
+factor unchanged at 0.60; no verdict moves. The figures above are the pre-narrowing ones.

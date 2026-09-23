@@ -14,6 +14,9 @@ from typehaus.checks.integrity.reinforcement_layout import reinforcement_layout
 from typehaus.findings import Result, Severity
 
 _ID = "integrity.reinforcement_layout"
+#: A cast-concrete Post with a cage: a balcony corner column. PT-SG-COL was the subject until
+#: it retired with the court's centre line (2026-09-22).
+_COLUMN = "PT-SG-BR1"
 
 
 def _with_spec(plan, tag: str, spec):
@@ -46,8 +49,8 @@ def test_catlin_is_clean(catlin_model_ro) -> None:
     ((BarSpec(role="vertical", bar=5, count=4, zone=inch(48)),), "cannot take a zone"),
 ])
 def test_a_schedule_the_layout_cannot_honour_is_an_error(catlin_plan, bars, needle) -> None:
-    plan = _with_spec(catlin_plan, "PT-SG-COL", ReinforcementSpec(bars=bars, cover=inch(2)))
-    found = _findings(plan, "PT-SG-COL")
+    plan = _with_spec(catlin_plan, _COLUMN, ReinforcementSpec(bars=bars, cover=inch(2)))
+    found = _findings(plan, _COLUMN)
     errors = [f for f in found if f.severity is Severity.ERROR]
     assert errors and any(needle in f.message for f in errors), [f.message for f in found]
 
@@ -59,15 +62,16 @@ def test_a_rib_role_without_ribs_is_an_error(catlin_plan) -> None:
 
 
 def test_a_role_that_places_nothing_warns(catlin_plan) -> None:
-    """PT-SG-COL stands on its bell pad — but a pier with no ``supported_by`` has no base."""
+    """A corner column stands on its wall top — but a pier with no ``supported_by`` has no
+    base."""
     spec = ReinforcementSpec(bars=(BarSpec(role="vertical", bar=5, count=4),
                                    BarSpec(role="dowels", bar=5)), cover=inch(2))
-    plan = _with_spec(catlin_plan, "PT-SG-COL", spec)
+    plan = _with_spec(catlin_plan, _COLUMN, spec)
     storey, items = next((s, i) for s, i in plan.elements.items()
-                         if any(e.tag == "PT-SG-COL" for e in i))
+                         if any(e.tag == _COLUMN for e in i))
     plan = plan.with_elements(storey, [e.model_copy(update={"supported_by": None})
-                                       if e.tag == "PT-SG-COL" else e for e in items])
-    found = _findings(plan, "PT-SG-COL")
+                                       if e.tag == _COLUMN else e for e in items])
+    found = _findings(plan, _COLUMN)
     warn = [f for f in found if f.result is Result.FAIL and f.severity is Severity.WARN]
     assert warn and "dowels" in warn[0].message
 

@@ -43,8 +43,9 @@ def test_open_ground_keeps_its_earth(catlin_model) -> None:
 def test_raised_walking_surfaces_do_not_displace_soil(catlin_model) -> None:
     """The balcony deck (10') sits *on* the site, so it must not punch a hole in it.
 
-    Its joists cantilever 6" past the garden walls, so the strip under that overhang is
-    covered by the balcony deck and by nothing at grade — earth belongs there.
+    Its joists cantilever 9" past the edge beams, so the deck reaches x 8'-3" where the court's
+    void starts at the west wall's inner face, 9'-6": the strip between is covered by the
+    balcony deck and by nothing at grade — earth belongs there.
 
     Read off FS-SG-DECK's deck sheet, not a SL-SG-DECK solid: the aluminium plank is the
     floor system's ``subfloor`` — there is no deck Slab.
@@ -53,7 +54,7 @@ def test_raised_walking_surfaces_do_not_displace_soil(catlin_model) -> None:
     deck = next(f for f in catlin_model.floors if f.tag == "FS-SG-DECK")
     balcony = Polygon(deck.deck_outline)
     assert deck.deck_z1_m > grade
-    under_the_overhang = Point(7.75 * FT, -2.0 * FT)
+    under_the_overhang = Point(8.75 * FT, -2.0 * FT)
     assert balcony.contains(under_the_overhang)
     rings = earth_plane_void_rings(catlin_model)
     assert not any(Polygon(ring).contains(under_the_overhang) for ring in rings)

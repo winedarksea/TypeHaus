@@ -2318,6 +2318,41 @@ closes warm, and a delivered-lot compression-deflection test is the cheap confir
 
 ---
 
+## 12. The court narrowed to 17'-0" clear (2026-09-22)
+
+The side walls came 1'-0" in each so both decks span wall to wall (DESIGN-LOG.md, "Sunken
+garden court"). **Every width-driven number above that reads 20'-0" (axis) or 19'-0" (clear)
+is now 18'-0" / 17'-0"**; the side walls, the stem, the strip and the at-rest thrust per foot
+are untouched. The record at the model's geometry, reproduced:
+
+```
+thrust per foot (at-rest + apron surcharge, §4c)          = 3,122.79 plf, each wall
+weight per foot (stem + strip + heel soil, §4)            = 5,427.5 plf,  each wall
+resultant   = the south wall alone, its E-W pair cancels  = 3,122.79 × 18.0'  = 56,210 lb
+friction    = μ Σ W L = 0.35 × 5,427.5 × (16.333 × 2 + 18.0)           = 96,248 lb
+FS          = 96,248 / 56,210                                           = 1.712
+                                                         vs 1.50  →  d/c 0.876
+```
+
+**The narrower court is safer, for the reason §4 gives**: the resultant IS the south wall's
+width, so taking 2'-0" off it removes 6,246 lb of demand while the base it loses is 2'-0" of
+one strip (3,799 lb of friction). FS 1.59 → 1.71.
+
+**The structural floor on court LENGTH moves with it** (never quote it, re-derive it):
+`run = 56,210 × 1.50 / (0.35 × 5,427.5) = 44.39'` with `run = 2(L − 9.6667) + 18`, so
+**L ≥ 22'-10"** against the court's 26'-0".
+
+The strut (`W-SG-ARCH`, now 18'-0" clear) reads 40,800 lb factored against 116,300 lb, d/c
+0.351, and the corner shear 0.408; both follow the same arithmetic as §8 on the shorter
+member and the smaller south-wall share.
+
+**§11l's figures are the 19'-0" court's.** Re-worked at 17'-0" by §11l's own lines: board area
+7,804.5 in² (the beam board is 216" now), T 27,315.75 lb, floor line 22,155 lb, the house wall
+capacity ×118/106 (W-B-S1/-S4 are longer panels), global FS 4.448 on 70,634 lb of court
+friction; uncapped x 184.89", T 42,124.6 lb, the beam's lock-in 37,046 lb. The unstated-grade
+slab edge now reads OK capped (0.977) and still OVER uncapped (1.788).
+`tests/test_thermal_break.py` carries these.
+
 ## Sources
 
 Every standard and document this note rests on, collected from the citations above.

@@ -232,55 +232,38 @@ def test_no_deck_sisters_a_joist_and_one_floor_does(catlin_model):
 def test_both_garden_decks_block_only_where_something_is_bolted_down(catlin_model):
     """Every block on these two decks answers a named joint, and nothing else does.
 
-    ``FS-SG-DECK`` carries TWENTY, and they answer two different joints.
+    ``FS-SG-DECK`` carries TWENTY-THREE, and they answer two different joints.
 
-    FOUR are structural: one under each of RL-SG-BALCONY's south-leg guard posts. That guard
-    stays fascia-mounted precisely because this plank is the porch roof and carries no
-    penetrations, and a fascia bracket through-bolts the rim, which then needs something
-    behind it so it cannot roll under R301.5's 200 lb at 42". **The west and east legs get
-    none** — the joists run E-W, so those legs stand over the joist TIPS and bolt into the
-    joists themselves. (It hosted sixteen more under two heat-pump stands until 2026-09-02,
-    when both units moved to a ground pad east of the porch —
-    ``houses/catlin/notes/heat_pump_ground_pad.md``.)
+    THREE are structural: one under each of RL-SG-BALCONY's south-leg guard posts (19'-6"
+    of front edge at <= 60" o.c. is four bays, three interior posts; the 21'-6" deck before
+    the 17'-0" court had four). That guard stays fascia-mounted because this plank is the
+    porch roof and carries no penetrations, and a fascia bracket through-bolts the rim,
+    which then needs something behind it so it cannot roll under R301.5's 200 lb at 42".
+    **The west and east legs get none** — the joists run E-W, so those legs stand over the
+    joist TIPS and bolt into the joists themselves.
 
-    SIXTEEN answer an **envelope** joint, and they are the only reinforcement on either deck
-    that does. The porch enclosure's two flank tracks run N-S at x = 9'-0"/27'-0", i.e.
-    PERPENDICULAR to these joists, so the curtain plane crosses every 16" bay and each bay is
-    an open 7 1/4" x 16" hole inside<->outside above a sealed curtain
-    (``houses/catlin/notes/porch_enclosure.md``). Eight entries — every SECOND joist line,
-    because one entry blocks the bay on EACH side of its line and authoring all eight lines
-    would put two blocks in every bay, which is a real ``structural.member_interference``
-    FAIL. The two FRONT track runs need none of this: they lie ALONG a joist line.
+    TWENTY answer an **envelope** joint. The porch enclosure's two flank tracks run N-S at
+    x = 10'-0"/26'-0", PERPENDICULAR to these joists, so the curtain plane crosses every bay
+    (``houses/catlin/notes/porch_enclosure.md``). Five entries per flank — the front track's
+    spare joist at -9'-0" and every second line north of it (-7'-6" .. -1'-6"), since one
+    entry blocks the bay on EACH side of its line — for ten blocks a flank. Authoring every
+    line would put two blocks in every bay, a real ``structural.member_interference`` FAIL.
 
-    ``FS-SG-PORCH`` carries FOUR: a pair under each of RL-SG-PORCH's south-leg guard posts.
-    It was TEN, then EIGHT, and the whole of that history is about the two centre pillars.
-    TEN until 2026-09-03, when PT-SG-BF2 came onto the front beam axis at x = 18'-0" and
-    **became** the guard post at that station, collapsing two entries 3" apart on one joist
-    line into one. EIGHT until **2026-09-14, when both centre pillars came off this deck
-    altogether** and onto the cast column tops (PT-SG-BF2 on PT-SG-FCOL, PT-SG-BR2 on
-    PT-SG-COL, ABU66SS bases, the four porch beams hung off their faces). A pillar that does
-    not bear here needs no bearing pack and no squash blocks, so both ``plies=3`` entries
-    went with it — kept as ``_DECK_BORNE_PILLAR_REINFORCEMENTS`` in
-    ``params/sunken_garden.py``.
+    ``FS-SG-PORCH`` carries THREE: one 2" inside the south edge joist under each of
+    RL-SG-PORCH's three south-leg guard posts (17'-0" at <= 60" o.c.), the balcony's inset
+    pattern, since the porch joists run E-W with that leg too. (The centre pillars' packs,
+    and the station they collapsed into a guard post, retired with the centre line, 2026-09.)
 
-    **And x = 18'-0" gets nothing to replace them, which is the part worth stating.** The
-    guard post at that station is still PT-SG-BF2, and R301.5's 200 lb at 42" now runs
-    6x6 -> ABU66SS -> PT-SG-FCOL -> FT-SG-FCOL without touching a joist. There is nothing
-    for a block to take it into. That station is also inside ``FO-SG-BF2``, the 9" chase the
-    pillar passes down through, where the joist has been cut and headed — a reinforcement
-    authored there would be laying plies under a hole.
-
-    Every remaining entry on both decks is ``plies=1``: blocks and plies answer different
-    limit states — rollover and cross-grain bearing — and with the pillars gone **nothing in
-    this house has the second one** (see ``test_only_the_porch_sisters_a_deck_joist``). A
-    stray ``plies=3`` anywhere here would silently sister a joist and buy its lumber; the
-    assertion below is what catches it.
+    Every entry on both decks is ``plies=1``: blocks and plies answer different limit
+    states — rollover and cross-grain bearing — and nothing in this house has the second one
+    (see ``test_no_catlin_deck_sisters_a_joist``). A stray ``plies=3`` anywhere here would
+    silently sister a joist and buy its lumber; the assertion below is what catches it.
     """
     by_tag = {floor.tag: floor for floor in catlin_model.floors}
     deck_blocks = [m for m in by_tag["FS-SG-DECK"].members if m.category == "blocking"]
-    assert len(deck_blocks) == 20, len(deck_blocks)
+    assert len(deck_blocks) == 23, len(deck_blocks)
     porch_blocks = [m for m in by_tag["FS-SG-PORCH"].members if m.category == "blocking"]
-    assert len(porch_blocks) == 4, len(porch_blocks)
+    assert len(porch_blocks) == 3, len(porch_blocks)
     for tag in ("FS-SG-DECK", "FS-SG-PORCH"):
         assert [m for m in by_tag[tag].members
                 if m.category == "sister_joist"] == [], f"plies=1 must sister nothing ({tag})"

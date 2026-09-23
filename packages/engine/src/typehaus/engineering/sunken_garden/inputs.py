@@ -120,7 +120,7 @@ def default_design_input(*, stem_thickness_in: float = 12.0,
 
     return SunkenGardenDesignInput(
         geometry=CourtGeometry(
-            clear_width_ft=19.0, retained_side_length_ft=16.0 + 4.0 / 12.0,
+            clear_width_ft=17.0, retained_side_length_ft=16.0 + 4.0 / 12.0,
             concrete_stem_height_ft=9.1198, concrete_top_elevation_ft=0.0,
             footing_depth_ft=1.0, stem_thickness_in=stem_thickness_in,
             footing_width_ft=footing_width_ft, toe_ft=toe_ft,

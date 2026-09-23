@@ -11,15 +11,18 @@
 # One sub, one mobilisation, three stops — which is exactly what checkpoints are for. The
 # footing inspection sits BETWEEN the first and the second, and before checkpoints existed
 # the only way to say so was to invent two visits for one arrival.
+# ** SIX PADS, NOT EIGHT, SINCE 2026-09-22. ** The two centre-garden pads retired with the
+# porch's centre line (the court is 17'-0" and the porch hangs on two wall ledgers), so this
+# visit places the north entry's six alone and no longer goes into the court.
 # ** THE ROW IS `pad:PIER_BASE_12`, NOT `footing`, SINCE 2026-09-14. ** The eight isolated
-# pours this visit places — the north entry's six piers and the two centre-garden ones —
+# pours this visit placed — the north entry's six piers and the two centre-garden ones —
 # became `Pad`s that day, which is what took their `spread_footing/` items out of the
 # engineering register (a flat pad is the shape IRC Table R507.3.1 publishes; a 36" bell is
 # not). Same eight pours, same arrival, same 1.06 cy; the BOM key moved under them and this
 # row followed it. The house's own strip footings are `task/concrete/basement/*` and never
 # were in this package, which is why nothing here replaces the old key.
 [visits."task/concrete/building/footings"]
-label = "Isolated pier pads — house, court, breezeway"
+label = "Isolated pier pads — house, breezeway"
 # ** `concrete:thermal_break` LEFT THIS ROW LIST 2026-09-22. ** Two reasons and either would
 # do: the boards are a `task/concrete/basement` row and naming them here was a validation
 # ERROR (`haus site validate`: "not in package task/concrete/building"); and under basis 7
@@ -91,9 +94,11 @@ constraints = [
 
 [visits."task/concrete/building/slabs"]
 label = "Slabs on grade — basement, garage, heat-pump pad, interior decks"
+# `hardware:AB-058-10-SS` left this list 2026-09-22: with the garden's two centre-pillar bases
+# retired, the four bolts left are all on `main`'s package and ride its own visit.
 rows = ["concrete:slab", "concrete:slab:DECK_EPS_INT", "concrete:slab:HP_PAD_ON_GRADE",
         "concrete:column:PIER_CONCRETE_12", "concrete:column:SUNKEN_GARDEN_COLUMN_12",
-        "hardware:AB-058-10-SS", "allowances:radon-passive-pipe-and-stack",
+        "allowances:radon-passive-pipe-and-stack",
         "allowances:concrete-cold-weather-protection"]
 element_tags = ["SL-*", "PT-SG-*", "PT-BW-*"]
 # Not the trade order: the sleeves, the radon collection point and the in-floor tube are all

@@ -136,7 +136,10 @@ def test_the_garden_drywell_sits_below_the_bearing_bed_it_is_not_part_of(catlin_
 
     Five inches is the real margin and it is worth reading as one: the pier beds and the
     soakaway very nearly swap places, and ``_SG_DRYWELL_TOP = _SG_WALL_BED_BOTTOM`` is what
-    holds them apart. See ``params/sunken_garden.py`` around ``_SG_DRYWELL_TOP``."""
+    holds them apart. See ``params/sunken_garden.py`` around ``_SG_DRYWELL_TOP``.
+
+    (History since 2026-09-22: the pier beds retired with the court's centre columns, so only
+    the wall beds remain and the 5" margin above is moot.)"""
     well = next(s for s in catlin_model.solids if s.tag == "DRW-SG-MAIN")
     assert well.category == "drywell"
     beds = [b for b in catlin_model.footing_beddings if b.host.startswith("FT-SG-")]
@@ -454,7 +457,10 @@ def test_every_bedding_that_names_a_receiver_has_a_way_to_reach_it(catlin_model)
     body, and that body abuts the radon pit. So the connection is real, and it is real in
     the same way the court's own authoring argues ``FB-SG-ARCH`` feeds the well through its
     side. What was genuinely orphaned was ``FB-SG-COL``, alone in a body of one, 8'-10" from
-    the well with nothing between — which is why ``FD-SG-COL-LEAD`` now exists.
+    the well with nothing between — which is why ``FD-SG-COL-LEAD`` existed.
+
+    Both retired on 2026-09-22 with the court's centre support line (17'-0" court), so there
+    is no orphan left: every bed in the house is in one of exactly two bodies.
     """
     from typehaus.resolve.drainage_network import stone_bodies
 
@@ -462,8 +468,10 @@ def test_every_bedding_that_names_a_receiver_has_a_way_to_reach_it(catlin_model)
     house = bodies["FB-B-W1"]
     assert len(house) == 19, sorted(house)
     court = bodies["FB-SG-W1"]
-    assert "FB-SG-COL" not in court, "the rear pier bed is not part of the court body"
-    assert catlin_model.plan.by_tag("FD-SG-COL-LEAD") is not None
+    assert court == {"FB-SG-ARCH", "FB-SG-E1", "FB-SG-E2", "FB-SG-S", "FB-SG-W1", "FB-SG-W2"}
+    assert set(bodies) == set(house) | set(court), "a bed in a body of its own is orphaned"
+    assert catlin_model.plan.by_tag("FB-SG-COL") is None
+    assert catlin_model.plan.by_tag("FD-SG-COL-LEAD") is None
 
 
 def test_the_sump_names_what_feeds_it(catlin_model):

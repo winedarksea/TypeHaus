@@ -34,25 +34,27 @@ from typehaus.energy import estimate_block_load
 
 # --- the pinned result ---------------------------------------------------------------------
 
-_HEATING_BTUH = 31_713.5
+_HEATING_BTUH = 31_717.5
 # SENSIBLE, and the tonnage is the TOTAL over 12,000. The Manual-J-shaped cooling pass
 # (hourly glass at one house-wide peak hour + AED excursion, internal gains, occupant
 # latent) moved this from 22,154.4 and the tonnage from 1.8462: the hourly walk took 5.2
 # kBtu/h off the glass, the internal gains put 2.8 back, the latent 1.4, and the roof's
 # sol-air term — live once the owner stated the panel colour — put 329 back on top.
-_COOLING_SENSIBLE_BTUH = 21_024.0
+_COOLING_SENSIBLE_BTUH = 21_021.1
 _LATENT_BTUH = 1_400.0
-_COOLING_TONS = 1.8687
+_COOLING_TONS = 1.8684
 _SOLAR_PEAK_BTUH = 12_271.0
 _SOLAR_PEAK_HOUR = 10.5
 _AED_EXCURSION_BTUH = 894.0
 _INTERNAL_SENSIBLE_BTUH = 2_810.0
 
 # ``(kind, area_ft2, ua_btu_per_hour_f)`` in the order the report emits them.
+# The 17'-0" court (2026-09-22): W-B-S2-FR/-S3-FR lost 1' each (2 x 8.52' = -17.0 sf), the
+# concrete W-B-S1/-S4 gained 1' each (+12.2 sf buried, +2.6 sf proud).
 _COMPONENTS = (
-    ("walls", 3233.7, 73.658),
-    ("foundation_walls", 763.3, 28.155),
-    ("foundation_walls_above_grade", 253.1, 11.532),
+    ("walls", 3216.7, 73.325),
+    ("foundation_walls", 775.5, 28.604),
+    ("foundation_walls_above_grade", 255.7, 11.676),
     ("roof", 1547.9, 29.103),
     ("slab", 1296.0, 25.468),
     ("windows", 261.0, 61.207),
@@ -319,7 +321,7 @@ def test_the_walkout_wall_is_graded_at_the_court_floor_not_the_site_plane(
 
 
 def test_the_above_grade_band_sees_air(catlin_model_ro) -> None:
-    """The split emits THREE wall components, not two, and the third is 253 sf of catlin's
+    """The split emits THREE wall components, not two, and the third is 256 sf of catlin's
     walkout: cast concrete standing proud of its own local grade, at the 85 °F air ΔT.
 
     Folded into ``foundation_walls`` it is charged a soil ΔT. Folded into ``walls`` it claims
@@ -330,11 +332,11 @@ def test_the_above_grade_band_sees_air(catlin_model_ro) -> None:
     by_kind = {c.kind: c for c in report.components}
     proud = by_kind["foundation_walls_above_grade"]
     buried = by_kind["foundation_walls"]
-    assert proud.area_ft2 == pytest.approx(253.1, rel=0.005)
-    assert proud.ua_btu_per_hour_f == pytest.approx(11.532, rel=0.005)
+    assert proud.area_ft2 == pytest.approx(255.7, rel=0.005)
+    assert proud.ua_btu_per_hour_f == pytest.approx(11.676, rel=0.005)
     assert proud.heating_delta_f == pytest.approx(85.0)
-    assert buried.area_ft2 == pytest.approx(763.3, rel=0.005)
-    assert buried.ua_btu_per_hour_f == pytest.approx(28.155, rel=0.005)
+    assert buried.area_ft2 == pytest.approx(775.5, rel=0.005)
+    assert buried.ua_btu_per_hour_f == pytest.approx(28.604, rel=0.005)
     # The buried band's U is the soil-path average, so it is BELOW the bare assembly's even
     # though both bands are the same walls at the same R.
     assert (buried.ua_btu_per_hour_f / buried.area_ft2) < (

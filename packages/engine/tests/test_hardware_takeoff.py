@@ -354,10 +354,9 @@ def test_catlin_hangs_every_rafter_off_the_ridge_beam(catlin_model) -> None:
     #    second-storey centre wall, and BM-M-HALL, which replaced 4'-2" of the main-storey
     #    one under it. Both are flush so their storey keeps its 9' ceiling, which is exactly
     #    what makes the joists hang rather than bear;
-    #  - the porch deck's joists at their *south* end, where BM-SG-FRW/FRE replaced the
-    #    16" arched cross-wall. Those two are flush so PT-SG-FCOL can top out at
-    #    their soffit and stay clear of the 16"-o.c. joist band — a column reaching the deck
-    #    datum cannot miss it. The same joists still bear on BM-SG-BKW/BKE at their north end;
+    #  - the porch deck's joists at BOTH ends since 2026-09: FS-SG-PORCH runs east-west,
+    #    hung ledger to ledger on BM-SG-LDGW/-LDGE (`Beam.ledger_on` the court walls), with
+    #    no beam under it at all — twenty LUS210Z, ten per ledger;
     #  - the four FS-ATTIC joists over BM-S-BATH-E, which is the same case as
     #    BM-S-HALL one line up. It carries FO-A-HALL's west edge across the 4'-0" hall stub
     #    by the vanity, where the x=10'-0" bearing line has no wall under it and can never
@@ -397,11 +396,10 @@ def test_catlin_hangs_every_rafter_off_the_ridge_beam(catlin_model) -> None:
                     if m.category == "rim"} & hung_keys
     assert len(landing_hung) == 5, sorted(landing_hung)
     assert len(landing_rims) == 2, sorted(landing_rims)
-    # BM-SG-FRW/FRE are not flush-framed: dropping them put PT-SG-FCOL's top, and
-    # PT-SG-BF2 with it, on concrete. Those 18 hangers are 32 derived uplift ties now; the
-    # joists bear on top.
-    # BM-SG-BLC since 2026-09-16: the balcony joists hang in it and bear on the outer pair.
-    flush_beams = ("BM-S-HALL", "BM-M-HALL", "BM-S-BATH-E", "BM-SG-BLC")
+    # BM-SG-BLC (the balcony's hung centre line) retired with the centre support line in
+    # 2026-09; the balcony joists bear on its two outer beams and hang in nothing. The porch
+    # ledgers took its place in this list.
+    flush_beams = ("BM-S-HALL", "BM-M-HALL", "BM-S-BATH-E", "BM-SG-LDGW", "BM-SG-LDGE")
     flush_beam_keys = {item.member_key for item in connections
                        if item.carrier_tag in flush_beams}
     for beam in flush_beams:
@@ -553,9 +551,8 @@ def test_the_balcony_is_braced_by_four_fixed_columns_and_no_braces(catlin_model)
     base at those four posts, and no cast-in anchor under them: what a connector schedule
     can say about a doweled lap is nothing, and billing one would be a fiction.
 
-    The two centre pillars stay wood on pinned ABU66SS bases and keep their hardware —
-    including the CCQ46SDS2.5 column caps that close the post-to-beam uplift leg where
-    there is no pour to hold the beam down.
+    The two wood centre pillars (pinned ABU66SS bases, CCQ46SDS2.5 caps) retired with the
+    centre support line in 2026-09: the four corners are the whole system now.
     """
     from typehaus.model.structure import KneeBrace, Post
     from typehaus.resolve.assembly_material import assembly_structure_material
@@ -567,16 +564,12 @@ def test_the_balcony_is_braced_by_four_fixed_columns_and_no_braces(catlin_model)
     pillars = {e.tag: e for e in elements
                if isinstance(e, Post) and e.tag.startswith("PT-SG-B")}
     corners = {"PT-SG-BR1", "PT-SG-BR3", "PT-SG-BF1", "PT-SG-BF3"}
-    centres = {"PT-SG-BR2", "PT-SG-BF2"}
-    assert set(pillars) == corners | centres
+    assert set(pillars) == corners
     for tag in corners:
         assert assembly_structure_material(
             catlin_model.plan, pillars[tag].assembly) == "concrete"
         assert pillars[tag].size == "12 round"
         assert pillars[tag].vertical_reinforcement
-    for tag in centres:
-        assert pillars[tag].size == "6x6"
-        assert pillars[tag].vertical_reinforcement is None
 
 
 def test_stud_plate_ties_are_sized_to_the_stud_they_tie(catlin_model) -> None:

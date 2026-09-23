@@ -25,6 +25,12 @@ from typehaus.model import DeviceKind, deg, ft, inch, m, pt
 # (notes/sauna_shower_basement_detail.md) — x 14'-5 3/4"..17'-5 3/4". That pan is what sizes
 # the benches now, not the room: it eats the east 3'-0" of the only unbroken face, leaving
 # 5'-3 15/16" of north wall, so the 8'-6" two-tier carcass comes down to the 5'-0" sibling.
+# ** 2026-09-22: THE ROOM IS 1'-0" NARROWER, FROM THE WEST. ** The court narrowed to 17'-0"
+# and N-B-S1 came 1'-0" east with it, taking the west wall along (the east wall is the
+# x=18' bearing line and cannot follow). The benches followed the west liner: the two-tier
+# run is the 4'-0" sibling (x 10'-3 1/4"..14'-3 1/4"), the west foot bench moved 1'-0"
+# east, and the south foot bench is the 3'-0" sibling so it still stops 7 15/16" short of
+# ED-B-SAUNA-JB. The figures in the comments below are the pre-narrowing ones.
 BASEMENT_PLACEABLES = [
     # The two-tier run still takes the NORTH wall: it is the only face with no opening in it
     # — the south wall has WIN-B-SAUNA, the east wall D-B-SAUNA, the west wall is the new
@@ -42,15 +48,15 @@ BASEMENT_PLACEABLES = [
     # is the constraint that kept this bench on the north wall rather than moving it to the
     # west one, where a 96" carcass would have fitted and left the air gaps standing in the
     # open.
-    Furniture(uid="CBF601AAAA", tag="FURN-B-SAUNA-BENCH-E", type_ref="FURN-SAUNA-BENCH-2T-60",
-              room="RM-B-SAUNA", position=pt(inch(141.25), inch(95.1875)), rotation=deg(0)),
+    Furniture(uid="CBF601AAAA", tag="FURN-B-SAUNA-BENCH-E", type_ref="FURN-SAUNA-BENCH-2T-48",
+              room="RM-B-SAUNA", position=pt(inch(147.25), inch(95.1875)), rotation=deg(0)),
     # The foot bench returns along the WEST liner, back to it (rotation 90 turns the 54"
     # carcass into the y direction), running y 1'-0"..5'-6" with a 2 1/2" scribe at the south
     # liner and 1 3/16" clear of the two-tier bench's south face. Its top is 18";
     # REG-B-EXH2's low stale pickup sits 4" off the floor behind it, which is the convection
     # loop the sauna's two dampered terminals drive. It moved 3'-10" east with the liner.
     Furniture(uid="CBF602AAAA", tag="FURN-B-SAUNA-BENCH-S", type_ref="FURN-SAUNA-BENCH-54",
-              room="RM-B-SAUNA", position=pt(inch(119.8125), inch(39)), rotation=deg(90)),
+              room="RM-B-SAUNA", position=pt(inch(131.8125), inch(39)), rotation=deg(90)),
     # ** THE SOUTH LINER'S OWN FOOT BENCH, NEW 2026-09-05. ** The third bench, and the one
     # that closes the L: it butts the west foot bench's east face at x=10'-9 13/16" and runs
     # 4'-0" east to x=14'-9 13/16", scribed to the south liner at y=0'-9 1/2". `rotation=180`
@@ -74,8 +80,8 @@ BASEMENT_PLACEABLES = [
     # an 18" foot bench and not a tier: the top clears the sill by 1'-6 3/4" and the glass
     # stays glass. The 2 1/2" of liner showing at the west end is the neighbouring bench's
     # own scribe, not a gap in this one.
-    Furniture(uid="V218FXRSH2", tag="FURN-B-SAUNA-BENCH-SW", type_ref="FURN-SAUNA-BENCH-48",
-              room="RM-B-SAUNA", position=pt(inch(153.8125), inch(19.5)), rotation=deg(180)),
+    Furniture(uid="V218FXRSH2", tag="FURN-B-SAUNA-BENCH-SW", type_ref="FURN-SAUNA-BENCH-36",
+              room="RM-B-SAUNA", position=pt(inch(159.8125), inch(19.5)), rotation=deg(180)),
 
     # RM-B-WORKSHOP's two benches. The room is still L-shaped, with the legs redrawn twice
     # on 2026-09-05: a west bay **7'-10 3/16" clear (x 0'-8"..8'-6 3/16")** running from the
@@ -1018,78 +1024,46 @@ MAIN_PLACEABLES = [
               mount=Mount(kind=MountKind.WALL, elevation=inch(48))),
 
     # --- porch enclosure track ------------------------------------
-    # FOUR TRACK RUNS, NOT FOUR CURTAIN RODS (2026-09-03). The rods are gone; see
-    # `FT-PORCH-TRACK-106` in plan/furniture_types.py for why the product changed, and
-    # notes/porch_enclosure.md for the two seasonal panel sets they carry.
+    # FOUR TRACK RUNS became THREE on 2026-09-22: one front run and two flanks. See
+    # `FT-PORCH-TRACK-176` in plan/furniture_types.py and notes/porch_enclosure.md.
     #
-    # ** ELEVATION: 111.75", THE BALCONY JOIST SOFFIT, AND THE OLD 8'-6" WAS WRONG TWICE. **
-    # `_balcony_beam_soffit` (params/sunken_garden.py) = 10.0 - 7.25/12 - 11.875/12 = 8'-4 7/8"
-    # since the 2026-09-03 glulam swap; the joists bear on TOP of those beams, so the joist
-    # soffit is 11 7/8" higher, at 9'-4 3/4" = 112.75". The rods' comment claimed 8'-6" hung
-    # "1 1/2" under the balcony beam soffit (8'-7 1/2")" — that soffit number was the old
-    # 3-2x12 beams', and after the swap 8'-6" sat 1 1/8" ABOVE the beam plane it claimed to
-    # hang under, i.e. inside BM-SG-BLW with 7/8" to spare. Nothing graded it: a placeable
-    # against a beam is as ungraded as a placeable against a column.
-    # `Mount.elevation` is the body BOTTOM and the extrusion is 1" tall, so 111.75" puts the
-    # track's top ON the soffit. Still filed on `main`: elevation reads off the storey it is
-    # filed on and only the main datum (RM-M-BED's floor, 0") gives the right height.
+    # ** ELEVATION: 107.75", THE BALCONY JOIST SOFFIT. ** The balcony joists are 2x12s now,
+    # 4" deeper than the 2x8s, so the soffit the track fastens to came down 4" from 111.75".
+    # `Mount.elevation` is the body BOTTOM and the extrusion is 1" tall, so the track's top is
+    # ON the soffit. Filed on `main`, whose datum (0") is what the height reads off. Editable
+    # files cannot import params: this is `_balcony_beam_soffit` + the 2x12 depth by hand.
     #
-    # ** FRONT LINE y = -9'-2", not the rods' -9'-1". ** -110" is the CENTRELINE of the first
-    # balcony joist behind the front rim (`_y_balcony_front` -10'-6" + 16"), so the front
-    # runs screw straight up into 1 1/2" of continuous KDAT for their whole length and need
-    # no blocking. It still clears everything: PT-SG-BF1/BF3's 12" rounds (north face -9'-4")
-    # by 2" in y and 6" in x; PT-SG-BF2 by 1 1/4" in y and by 11 7/8" in z (its top IS the
-    # beam soffit, below the track); BM-SG-BLC's faces at x 17'-10 1/4"/18'-1 3/4" by 1/4"
-    # at each run end. RL-SG-PORCH's south leg is 4" further south at -9'-6" and tops out at
-    # 43", so the panel plane falls 4" inboard of the 42" guard rather than over it.
-    # ** DO NOT DRIFT SOUTH. ** TR-SG-CAP-FRW/FRE and their butyl sit on the front beams at
-    # -9'-6"; the bottom-hem snaps at -9'-2" are 4" clear of that cap, and anchoring through
-    # it is the one thing this house does not do.
+    # ** FRONT LINE y = -9'-0", ON THE SPARE JOIST. ** At 12" o.c. the balcony joists sit at
+    # -9'-6" and -8'-6", so FS-SG-DECK carries one extra 2x12 line at -9'-0"
+    # (`JoistSpec.extra_lines`) and the front run screws up into it for its whole length. One
+    # continuous run: nothing splits the curtain plane now the centre beam and pillar are
+    # gone. Two 90-degree curves at (10'-0", -9'-0") and (26'-0", -9'-0") turn the corners,
+    # each standing in for ~8" of both legs. RL-SG-PORCH's south leg is 6" south at -9'-6".
     #
-    # ** TWO FRONT RUNS, NOT ONE — DECIDED. ** BM-SG-BLC occupies z 8'-4 7/8"..9'-4 3/4"
-    # across the curtain plane at x 17'-10 1/4"..18'-1 3/4". A continuous front track would
-    # have to drop to the BEAM soffit at 8'-4 7/8", which is 1 1/8" LOWER than the rods it
-    # replaces — the improvement would make the porch shorter than it is — and it would hang
-    # 9'-8" of track on drop brackets with no backing. Two runs dying 1/4" off the beam faces
-    # put the seam on PT-SG-BF2, which is where a seam belongs. Two 90-degree curves at
-    # (9'-0", -9'-2") and (27'-0", -9'-2") turn the corners; each substitutes for the last
-    # ~8" of both legs. ~35 lf of track in all.
+    # No `room=`: the porch isn't a Room.
+    Furniture(uid="XH1JW70E8D", tag="FURN-M-PORCH-TRACK-F", type_ref="FT-PORCH-TRACK-176",
+              position=pt(ft(18), ft(-9)),
+              mount=Mount(kind=MountKind.CEILING, elevation=inch(107.75))),
+    # The two FLANKS, x = 10'-0" and 26'-0": 6" inside the side walls' court faces and the
+    # guard's side legs, which is where they have always stood relative to the court. Each
+    # crosses every joist bay perpendicular; the bay closures are FS-SG-DECK's blocks.
     #
-    # No `room=`: the porch isn't a Room, and naming the room behind the wall buys only an
-    # `integrity.placeable_room_mismatch` advisory.
-    Furniture(uid="XH1JW70E8D", tag="FURN-M-PORCH-TRACK-FW", type_ref="FT-PORCH-TRACK-106",
-              position=pt(ft(13, 5), ft(-9, -2)),
-              mount=Mount(kind=MountKind.CEILING, elevation=inch(111.75))),
-    Furniture(uid="90BCAAC74M", tag="FURN-M-PORCH-TRACK-FE", type_ref="FT-PORCH-TRACK-106",
-              position=pt(ft(22, 7), ft(-9, -2)),
-              mount=Mount(kind=MountKind.CEILING, elevation=inch(111.75))),
-    # The two FLANKS, x = 9'-0" and 27'-0" — not the 8'-6"/27'-6" guard line and not the
-    # 8'-0"/28'-0" pillar line, which is 6" OUTBOARD of the guard and would hang the panel
-    # outside the porch. 9'-0"/27'-0" clears the rounds and RL-SG-PORCH's side legs by 6",
-    # BM-SG-BLW/BLE by 9 7/8", and sits well inside the deck edge at 7'-3"/28'-9".
+    # ** THE NORTH END RUNS PAST THE DECK EDGE, AND NO FASTENER TOUCHES THE HOUSE. ** The
+    # porch deck edge is -0'-10" and the cladding face -0'-5". The track runs to -0'-6", the
+    # last 4" cantilevered on a small aluminium outrigger screwed to the side of the
+    # balcony's north edge joist (y -0'-10"); the rear porch beam it used to hang off is
+    # retired. The panel's north edge is a weighted flap lying on the cladding: high bug
+    # reduction, not hermetic. TR-SG-SLOT closes the vertical slot below.
     #
-    # ** THE NORTH END RUNS PAST THE DECK EDGE, AND NO FASTENER TOUCHES THE HOUSE. **
-    # `_y_out_n` = -0'-10" is the porch deck edge and the house cladding face is at -0'-5";
-    # the 5" between them (`SPEC.gap_to_house_in`) is a deliberate insulation gap, open to
-    # grade for the full 19'. The track runs to y = -0'-6", the last 4" cantilevered on a
-    # small aluminium outrigger screwed to the SIDE of the rear beam — not by lengthening
-    # the beam, which would re-open cantilever.py and its tests for nothing. The panel's
-    # north vertical edge is a weighted flap that lies on the cladding by gravity: a sweep,
-    # not a fastened seal. High bug reduction, NOT hermetic, and that is the ceiling of what
-    # a designed 5" gap with no permission to touch the wall allows. The vertical bug path
-    # up that slot is closed separately by TR-SG-SLOT (params/sunken_garden.py).
-    #
-    # ** THE WALK-THROUGH IS IN THE EAST FLANK at y ~ -7'-6". ** That is the centre of
-    # RL-SG-PORCH's 3'-0" guard opening (-6'-0" to -9'-0"), which is the porch's only route
-    # to grade via ST-SG-PORCH. A magnetic seam anywhere else and the enclosure's one opening
-    # does not line up with the porch's one exit. Nothing in the engine will ask —
-    # `code.R312_1_guard_height` PASSes across that gap either way.
-    Furniture(uid="K6G71PKS4C", tag="FURN-M-PORCH-TRACK-W", type_ref="FT-PORCH-TRACK-104",
-              position=pt(ft(9), ft(-4, -10)), rotation=deg(90),
-              mount=Mount(kind=MountKind.CEILING, elevation=inch(111.75))),
-    Furniture(uid="D9X6HWW4DZ", tag="FURN-M-PORCH-TRACK-E", type_ref="FT-PORCH-TRACK-104",
-              position=pt(ft(27), ft(-4, -10)), rotation=deg(90),
-              mount=Mount(kind=MountKind.CEILING, elevation=inch(111.75))),
+    # ** THE WALK-THROUGH IS IN THE EAST FLANK at y ~ -7'-6"**, the centre of RL-SG-PORCH's
+    # 3'-0" guard opening onto ST-SG-PORCH.
+    Furniture(uid="K6G71PKS4C", tag="FURN-M-PORCH-TRACK-W", type_ref="FT-PORCH-TRACK-102",
+              position=pt(ft(10), ft(-4, -9)), rotation=deg(90),
+              mount=Mount(kind=MountKind.CEILING, elevation=inch(107.75))),
+    Furniture(uid="D9X6HWW4DZ", tag="FURN-M-PORCH-TRACK-E", type_ref="FT-PORCH-TRACK-102",
+              position=pt(ft(26), ft(-4, -9)), rotation=deg(90),
+              mount=Mount(kind=MountKind.CEILING, elevation=inch(107.75))),
+    # FURN-M-PORCH-TRACK-FE (uid 90BCAAC74M) is retired with the split: spent, do not reuse.
 
     # --- the porch's two lounge chairs (2026-09-06) ---------------------------------------
     #
@@ -1097,9 +1071,8 @@ MAIN_PLACEABLES = [
     # NOTHING on it — 19'-0" x 8'-8" of deck reading as empty in the 3D. Two real chairs, a
     # named product at its real size (`FT-PORCH-LOUNGE-27` in plan/furniture_types.py).
     #
-    # ** THE WEST BAY, BECAUSE PT-SG-BR2 ALREADY SPLITS THIS PORCH IN TWO. ** The centre
-    # rear pillar stands at x 17'-9 1/4"..18'-2 3/4", y -2'-8 3/4"..-2'-3 1/4". East of it is
-    # circulation: D-M-BALC lands at x 21'-4" and the porch's only route to grade is
+    # ** THE WEST BAY. ** (A centre pillar split this porch until 2026-09-22; the reasoning
+    # below still holds without it.) The east half is circulation: D-M-BALC lands at x 21'-4" and the porch's only route to grade is
     # RL-SG-PORCH's 3'-0" guard opening at x 27'-6", y -6'-0"..-9'-0", so the door-to-stair
     # diagonal owns the east bay. West of it is a dead end, and that is where seating goes.
     # The pair is centred on x=13'-0" in the 9'-0 3/4" between the west guard (x 8'-6") and

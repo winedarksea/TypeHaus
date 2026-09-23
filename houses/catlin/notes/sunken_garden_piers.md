@@ -1,5 +1,11 @@
 # Sunken-garden piers — the two cast columns and their belled footings
 
+> ## ⛔ RETIRED FROM THE MODEL, 2026-09-22 — KEPT AS AN ORACLE.
+> The court went to 17'-0" clear and both decks span wall to wall, so `PT-SG-COL`, `PT-SG-FCOL`
+> and their pads no longer exist (DESIGN-LOG.md, "Sunken garden court"). The arithmetic below
+> is unchanged and still checks the `deck_post` and `spread_footing` kinds: the tests rebuild
+> these two columns from this note's own inputs rather than from the live plan.
+
 > ## ⚠ A SCREENING — AND IT NOW REACHES BOTH ENDS OF THE PIER.
 > `PT-SG-COL` and `PT-SG-FCOL`, **both 12" round**, carry the porch's two beam lines onto
 > augered, belled piers. **The ground checks out** — 1,603 and 1,159 psf against the 2,000 psf

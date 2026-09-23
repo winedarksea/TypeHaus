@@ -159,13 +159,13 @@ BASEMENT_LIGHTING = [
     # tier derives at half its declared 36" (library/placeables/furniture.py). Clears
     # REG-B-EXH2's 4" AFF stale pickup behind the west bench.
     LightRun(uid="0Y2Z97Y7TY", tag="LR-B-SAUNA-BENCH-L", type_ref="ED-T-LT-STRIP24-SAUNA",
-             path=(pt(inch(129.8125), inch(66)), pt(inch(129.8125), inch(29.5)),
+             path=(pt(inch(141.8125), inch(66)), pt(inch(141.8125), inch(29.5)),
                    pt(inch(177.8125), inch(29.5))),
              room="RM-B-SAUNA", psu_ref="ED-B-SAUNA-LT-PSU",
              controlled_by=("ED-B-SAUNA-SW",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
     LightRun(uid="CH9EBHV9B6", tag="LR-B-SAUNA-BENCH-N", type_ref="ED-T-LT-STRIP24-SAUNA",
-             path=(pt(inch(111.25), inch(74.1875)), pt(inch(171.25), inch(74.1875))),
+             path=(pt(inch(123.25), inch(74.1875)), pt(inch(171.25), inch(74.1875))),
              room="RM-B-SAUNA", psu_ref="ED-B-SAUNA-LT-PSU",
              controlled_by=("ED-B-SAUNA-SW",),
              mount=Mount(kind=MountKind.WALL, elevation=inch(16))),
@@ -1188,22 +1188,28 @@ MAIN_LIGHTING = [
     #
     # x=13'-3" is mid-span of a west-bay joist that runs x 7'-3"..18'-0", so the box wants a
     # LISTED fan brace between that joist and its neighbour — a fan is not a luminaire load.
+    # ** 2026-09-22: 4" LOWER AND ON A 12" LINE. ** The balcony joists are 2x12 KDAT at 12"
+    # o.c. now, so the soffit came down 4" and the lines moved: y=-5'-6" is the joist nearest
+    # the porch's depth centre, and a base at 7'-8" tops the 18" assembly out just under its
+    # soffit (~110" there). The chase and sister-block clearances above no longer apply —
+    # the pillar chases are retired and the flank blocks are at x=10'-0"/26'-0".
     ElectricalDevice(uid="QTM0017AAA", tag="ED-M-PORCH-FAN", kind=DeviceKind.LIGHT,
-                     position=pt(ft(13, 3), inch(-62)), type_ref="ED-T-LT-FAN60",
+                     position=pt(ft(13, 3), inch(-66)), type_ref="ED-T-LT-FAN60",
                      circuit="CKT-LT-MAIN", controlled_by=("ED-M-PORCH-SW",),
-                     mount=Mount(kind=MountKind.CEILING, elevation=ft(8))),
+                     mount=Mount(kind=MountKind.CEILING, elevation=ft(7, 8))),
     ElectricalDevice(uid="QTM0018AAA", tag="ED-M-PORCH-SW", kind=DeviceKind.SWITCH,
                      position=pt(ft(24, 10), ft(0, 7.625)), type_ref="ED-T-SWITCH",
                      circuit="CKT-LT-MAIN", rotation=deg(180),
                      mount=Mount(kind=MountKind.WALL, elevation=inch(46))),
 
-    # The porch flood (2026-08-02): mark S, narrow-throw full-cutoff spot, on the balcony's
-    # centre rear pillar PT-SG-BR2 (a post, not a Wall, so this is free-positioned).
+    # The porch flood (2026-08-02): mark S, narrow-throw full-cutoff spot. It hung on the
+    # balcony's centre rear pillar PT-SG-BR2 until 2026-09-22; with that pillar retired it is
+    # on the house cladding face (y -0'-5") at the same x, free-positioned as before.
     # rotation 0 throws south down the deck; 8'-0" up the 10' pillar clears eye line and
     # deck edge. NO `room=`: like the porch fan, it must read as exterior to the wet-
     # location and dark-sky checks.
     ElectricalDevice(uid="QTM001EAAA", tag="ED-M-PORCH-FLOOD", kind=DeviceKind.LIGHT,
-                     position=pt(ft(18), ft(-0.8333)), type_ref="ED-T-LT-FLOOD-NARROW",
+                     position=pt(ft(18), inch(-5)), type_ref="ED-T-LT-FLOOD-NARROW",
                      circuit="CKT-LT-MAIN", rotation=deg(0),
                      controlled_by=("ED-M-PORCH-FLOOD-SW",),
                      mount=Mount(kind=MountKind.WALL, elevation=ft(8))),

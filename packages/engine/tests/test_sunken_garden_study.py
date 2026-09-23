@@ -221,27 +221,33 @@ def test_coupled_plate_model_equilibrates_and_converges() -> None:
     Measured sweep, max translation in inches:
     4.0 -> 0.009627, 3.0 -> 0.008739, 2.0 -> 0.007898, 1.5 -> 0.007622, 1.0 -> 0.007806.
 
-    So the honest claims are the two asserted here: **2 ft is converged** (within 5% of a
-    1 ft mesh), and 4 ft is a screening mesh that runs high — bounded, but not a result to
+    ** RE-MEASURED 2026-09-22 AT THE 17'-0" COURT ** (the literal basis now matches it):
+    4.0 -> 0.009503, 3.0 -> 0.008675, 2.0 -> 0.008067, 1.5 -> 0.007576, 1.0 -> 0.007307,
+    0.75 -> 0.007655. **2 ft is no longer within 5% of 1 ft** (10.4%); 1.5 ft is (3.7%), and
+    below that the sweep scatters about ±5% rather than settling. So the claims asserted now
+    are: 1.5 ft is converged to the 1 ft mesh, 2 ft (the default) runs high by about a
+    tenth, and 4 ft is a screening mesh that runs higher still — bounded, but not a result to
     quote. Equilibrium holds to machine precision at every mesh, which is the separate and
     stronger statement.
     """
     design = _solvable_design()
     coarse = analyse_coupled(design, COURTYARD_LAYOUTS[0], mesh_ft=4.0)
-    fine = analyse_coupled(design, COURTYARD_LAYOUTS[0], mesh_ft=2.0)
+    default = analyse_coupled(design, COURTYARD_LAYOUTS[0], mesh_ft=2.0)
+    fine = analyse_coupled(design, COURTYARD_LAYOUTS[0], mesh_ft=1.5)
     finest = analyse_coupled(design, COURTYARD_LAYOUTS[0], mesh_ft=1.0)
-    assert coarse.successful, coarse.unresolved
-    assert fine.successful, fine.unresolved
-    assert finest.successful, finest.unresolved
-    for result in (coarse, fine, finest):
+    for result in (coarse, default, fine, finest):
+        assert result.successful, result.unresolved
         assert result.equilibrium_error is not None and result.equilibrium_error < 0.01
     assert fine.maximum_translation_in == pytest.approx(
         finest.maximum_translation_in, rel=0.05)
-    assert coarse.maximum_translation_in > fine.maximum_translation_in
+    assert default.maximum_translation_in > fine.maximum_translation_in
+    assert default.maximum_translation_in == pytest.approx(
+        finest.maximum_translation_in, rel=0.12)
+    assert coarse.maximum_translation_in > default.maximum_translation_in
     assert coarse.maximum_translation_in == pytest.approx(
-        fine.maximum_translation_in, rel=0.25)
-    assert fine.model is not None
-    assert {plate.tag for plate in fine.model.plates} >= {
+        default.maximum_translation_in, rel=0.25)
+    assert default.model is not None
+    assert {plate.tag for plate in default.model.plates} >= {
         "W-SG-W1", "W-SG-W2", "W-SG-E1", "W-SG-E2", "W-SG-S",
         "FT-SG-W1/W2", "FT-SG-E1/E2", "FT-SG-S",
     }
@@ -290,7 +296,8 @@ def test_the_study_reads_the_authored_court_and_not_a_literal() -> None:
 
     Each expectation below is the authored model measured independently: the stem is
     ``W-SG-S``'s own top-to-bottom dimension, the footing is ``FT-SG-S``, the clear width is
-    the E/W wall axes 20 ft apart less one 12-inch stem, and the ordinary height is the
+    the E/W wall axes 18 ft apart less one 12-inch stem (20 ft until the court narrowed to
+    17'-0" on 2026-09-22), and the ordinary height is the
     authored -3'-4" south yard above the -9'-1 7/16" footing top.
     """
     from typehaus.engineering.sunken_garden.model_inputs import design_input_from_model
@@ -304,7 +311,7 @@ def test_the_study_reads_the_authored_court_and_not_a_literal() -> None:
     assert geometry.footing_depth_ft == pytest.approx(1.0, abs=1e-6)
     assert geometry.toe_ft == pytest.approx(3.0, abs=1e-6)
     assert geometry.heel_ft == pytest.approx(3.0, abs=1e-6)
-    assert geometry.clear_width_ft == pytest.approx(19.0, abs=1e-6)
+    assert geometry.clear_width_ft == pytest.approx(17.0, abs=1e-6)
     assert geometry.retained_side_length_ft == pytest.approx(16.0 + 4.0 / 12.0, abs=1e-6)
     height = design.soil.ordinary_retained_height_ft
     assert height.value == pytest.approx(5.786458333, abs=1e-6)

@@ -27,33 +27,10 @@ _EXPECTED = {
     "PT-SG-BF1": (Result.NOT_APPLICABLE, "W-SG-W1"),
     "PT-SG-BR3": (Result.NOT_APPLICABLE, "W-SG-E1"),
     "PT-SG-BF3": (Result.NOT_APPLICABLE, "W-SG-E1"),
-    # A post on another post is not a post on the ground. **BOTH centre pillars bear on the
-    # cast columns again since 2026-09-14** — PT-SG-BF2 on PT-SG-FCOL, PT-SG-BR2 on
-    # PT-SG-COL — which is where BF2 stood until 2026-09-03 and where neither stood in
-    # between. The verdict did NOT move with them, and that is the interesting part: it was
-    # N/A when they stood on `FS-SG-PORCH` and it is N/A now, because the rule is "this post
-    # has no footing of its own to size" and a deck and a column answer it the same way.
-    # What changed is the EVIDENCE, and the evidence is the whole content of an N/A: minting
-    # `spread_footing/PT-SG-BF2` would name a footing that does not exist either way, and
-    # `engineering/pier_basis._piers_below` is what hands the load to the item that does.
-    "PT-SG-BR2": (Result.NOT_APPLICABLE, "PT-SG-COL"),
-    "PT-SG-BF2": (Result.NOT_APPLICABLE, "PT-SG-FCOL"),
-    # ** PT-SG-COL AND PT-SG-FCOL LEFT THIS TABLE ON 2026-09-14, AND THEIR ABSENCE IS THE
-    # WHOLE POINT OF THE CHANGE. ** They were `(Result.UNKNOWN, "FT-SG-COL")` and
-    # `(Result.UNKNOWN, "FT-SG-FCOL")` — the last two engineered piers in the house, on the
-    # honest reasoning that "R507.3 has no row for a 30\"/36\" bell". It does not. So the
-    # bells went: both are flat `Pad`s now, which is exactly the shape R507.3.1 publishes,
-    # and they are graded PASS against it like any other pad.
-    #
-    # ** AND THEY CAME BACK ON 2026-09-18, WITH A PASS INSTEAD OF AN UNKNOWN. ** They did
-    # not return to being engineered; what changed is that `structural.deck_footing_size`
-    # now grades one finding per POST rather than one per (deck, post), so the SUBJECT of
-    # every finding it emits is the post and `element_tags` reads `(pad, post)` throughout.
-    # It used to read `(deck, pad)` on a graded pad and `(deck, post, evidence)` on an N/A,
-    # which is why these two were invisible to a rule keyed on index 1. The pad is still
-    # named — as the evidence, where a footing verdict's evidence belongs.
-    "PT-SG-COL": (Result.PASS, "PD-SG-COL"),
-    "PT-SG-FCOL": (Result.PASS, "PD-SG-FCOL"),
+    # ** THE CENTRE SUPPORT LINE RETIRED ON 2026-09-22 ** with the 17'-0" court: PT-SG-BR2 /
+    # BF2 (N/A, standing on the cast columns) and PT-SG-COL / FCOL (PASS on their pads) are
+    # gone, so the four wall-borne corners are the whole population. The post-on-post N/A
+    # and the pad PASS are still exercised by the north entry (PT-BW-CW on PT-BW-W; PD-BW-*).
 }
 
 
@@ -160,9 +137,8 @@ def test_no_post_is_reported_as_unsupported_when_the_model_says_otherwise(findin
     assert pads == {"PD-BW-W", "PD-BW-E", "PD-BW-RE",
                     # The three GARAGE-side pads, which declare `cast_with` against the
                     # garage strip footing rather than being pulled clear of it.
-                    "PD-BW-GW", "PD-BW-GE", "PD-BW-RNE",
-                    # And the two centre-garden pads, the retired bells.
-                    "PD-SG-COL", "PD-SG-FCOL"}
+                    "PD-BW-GW", "PD-BW-GE", "PD-BW-RNE"}
+    # The two centre-garden pads left with their columns on 2026-09-22.
 
 
 def test_a_post_that_declares_no_bearing_is_unknown_not_na(catlin_plan) -> None:
@@ -175,7 +151,7 @@ def test_a_post_that_declares_no_bearing_is_unknown_not_na(catlin_plan) -> None:
     from typehaus.checks.structural.deck import _not_a_pad
 
     post = next(e for e in catlin_plan.all_elements()
-                if getattr(e, "tag", None) == "PT-SG-COL")
+                if getattr(e, "tag", None) == "PT-SG-BF1")
 
     class _Ctx:
         plan = catlin_plan

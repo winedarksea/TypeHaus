@@ -50,8 +50,7 @@ RULES = CONFIG.uplift
 #: They were covered by an authored TENSION_TIE until then, and the kind moved with the joint
 #: rather than with the part: ``model/enums.py`` reads TENSION_TIE as "a post on FRAMING" and
 #: POST_BASE as "a stirrup on CONCRETE", so a pillar that now stands on a pour takes a base.
-AUTHORED_POST_BASES = {"PT-BW-CW", "PT-BW-CNW", "PT-BW-IC", "PT-BW-IE",
-                       "PT-SG-BR2", "PT-SG-BF2"}
+AUTHORED_POST_BASES = {"PT-BW-CW", "PT-BW-CNW", "PT-BW-IC", "PT-BW-IE"}
 
 #: **Empty since 2026-09-14, and kept rather than deleted.** ``post_base_rows`` reads BOTH
 #: kinds — a post whose joint is already made must not be bought a base — and while the two
@@ -288,17 +287,17 @@ def test_authored_post_bases_are_not_derived_a_second_time(catlin_model_ro) -> N
     # hole (P-M-STRWELL-SS, houses/catlin/notes/u_stair_split_landing.md).
     #
     # An ABU66 row reappearing is the failure now, and it means an authored base stopped
-    # matching. An ABU66SS row would be a different failure — that is the balcony centre
-    # pillars' part, and it means TENSION_TIE fell out of the covered set.
+    # matching. (The balcony centre pillars' ABU66SS bases retired with them, 2026-09.)
     assert [row["part_number"] for row in rows] == ["ABU44"]
     counts = {row["part_number"]: row["count"] for row in rows}
     assert counts == {"ABU44": 3}
     for row in rows:
         for tag in AUTHORED_POST_BASES | AUTHORED_TENSION_TIES:
             assert tag not in row["basis"]
-    # And the nine really are all of them, so what is NOT in the rows above is coverage
-    # rather than silence: four authored bases, two authored ties, two derived, one squash
-    # block. The four balcony corner columns are absent because they are no longer WOOD —
+    # And the eight really are all of them, so what is NOT in the rows above is coverage
+    # rather than silence: four authored bases, three derived, one squash block (the centre
+    # pillars' two authored bases retired in 2026-09). The four balcony corner columns are
+    # absent because they are no longer WOOD —
     # the filter below is on section, and a "12 round" is not a 6x6. PT-BW-IC / PT-BW-IE
     # were squash blocks for one day (2026-09-10: 1'-6 1/2" of 6x6 stopping 7 1/4" SHORT of
     # the carriers they were meant to hold, sized off the pier top); since 2026-09-11 they
@@ -341,11 +340,10 @@ def test_a_squash_block_is_not_bought_a_post_base(catlin_model_ro) -> None:
 def test_every_post_base_on_concrete_is_bought_its_anchor(catlin_model_ro) -> None:
     """Simpson ship the ABU without the 5/8" bolt its published capacity is taken through.
 
-    Four of catlin's bases land on concrete AND take a bolt — the canopy's two west columns on
-    their 12" piers, and the two stairwell 4x4s on the basement slab. **Both** sunken-garden
-    bases are on framing: PT-SG-BF2 joined PT-SG-BR2 on the porch deck on 2026-09-03 when it
-    came off PT-SG-FCOL's top, and the four wall-top bases went away entirely with the pillars
-    that became cast columns.
+    Five of catlin's bases land on concrete AND take a bolt — the canopy's two west columns on
+    their 12" piers, and the three stairwell 4x4s on the basement slab. The sunken garden has
+    none left: its four balcony corners are cast columns, and its two wood centre pillars
+    retired with the centre support line (2026-09).
 
     ** AND TWO BASES LAND ON CONCRETE AND TAKE NO BOLT, WHICH IS THE INTERESTING HALF. **
     PT-BW-IC / PT-BW-IE stand on the garage slab under the interior landing. Their bases are
@@ -381,16 +379,18 @@ def test_every_post_base_on_concrete_is_bought_its_anchor(catlin_model_ro) -> No
     # concrete and says it is anchored buys its bolt; nothing about the rule changed.
     #
     # 6 -> 7 on 2026-09-15: P-M-STRWELL-SS, the third stairwell post, on the same slab.
-    assert row["count"] == 7
+    #
+    # 7 -> 5 in 2026-09: the centre pillars and their anchored CN-SG-BASE-R2 / -F2 retired.
+    assert row["count"] == 5
     # The population is the union of DERIVED and AUTHORED bases, stated as that sum rather
     # than as one number, because the two halves move independently: the derived rows are the
-    # 3 ABU44 ladder rungs, and the authored-and-anchored-on-concrete half is 4 — the
-    # canopy's CN-BW-BASE-W / -NW plus the garden's CN-SG-BASE-R2 / -F2. (The other two
+    # 3 ABU44 ladder rungs, and the authored-and-anchored-on-concrete half is 2 — the
+    # canopy's CN-BW-BASE-W / -NW. (The other two
     # authored bases, CN-BW-IBASE-C / -E, are on concrete and ``anchored=False``, so they are
     # in neither half; that is the interesting case above.)
     derived = sum(r["count"] for r in post_base_rows(catlin_model_ro, RULES))
     assert derived == 3
-    assert row["count"] == derived + 4
+    assert row["count"] == derived + 2
     assert "PT-BW-IC" not in row["basis"] and "PT-BW-IE" not in row["basis"], \
         "a bearing-only base must not be billed a cast-in anchor"
 
@@ -401,12 +401,10 @@ def test_a_base_on_a_pour_is_bought_its_cast_in_bolt_and_a_bare_pier_is_not(
 
     It is not a ``StructuralHardware.requires_role`` on the base, because that field is a
     flat property of the PART: it would bill a cast-in bolt wherever the part appears,
-    including into porch decking. **PT-SG-BR2 and PT-SG-BF2 are the case that proves it, and
-    they have now been on both sides of it.** Until 2026-09-14 they stood on FS-SG-PORCH — a
-    deck, not a pour — and this test asserted they bought no bolt; a base on framing is
-    bolted or screwed to it and those fixings are inside the framing rate. Since that date
-    they stand on PT-SG-FCOL / PT-SG-COL, on anchored ABU66SS, and they buy one each. Same
-    rule, same posts, opposite answer, because what they stand on changed.
+    including into decking. The balcony centre pillars proved it from both sides (on the porch
+    deck, no bolt; on the cast columns, one each) until they retired in 2026-09. The canopy's
+    PT-BW-CW / -CNW are the positive witness now: authored ABU66SS on their 12" piers,
+    anchored, one bolt each.
 
     The four sonotube piers are the same trap from the other side. ``CN-BW-BASE-*`` names
     both members of its joint, so ``tags_covered_by`` returns PR-BW-1..4 as well as the
@@ -420,8 +418,8 @@ def test_a_base_on_a_pour_is_bought_its_cast_in_bolt_and_a_bare_pier_is_not(
     from typehaus.takeoff.uplift_joints import post_base_anchor_rows
 
     basis = post_base_anchor_rows(catlin_model_ro, RULES)[0]["basis"]
-    for tag in ("PT-SG-BR2", "PT-SG-BF2"):
-        assert tag in basis, f"{tag} stands on a cast column and its base is anchored"
+    for tag in ("PT-BW-CW", "PT-BW-CNW"):
+        assert tag in basis, f"{tag} stands on a cast pier and its base is anchored"
     for pier in ("PR-BW-1", "PR-BW-2", "PR-BW-3", "PR-BW-4"):
         assert pier not in basis, f"{pier} is a cast pier, not a based post"
     for bearing_only in ("PT-BW-IC", "PT-BW-IE"):
@@ -455,22 +453,34 @@ def test_a_tie_at_a_beam_s_own_bearing_does_not_stand_down_the_joists_above_it(
         catlin_model_ro, connections) -> None:
     """The authored-connector hand-off is PAIRWISE at a support, not tag-wide (2026-08-29).
 
-    ``CN-SG-TIE-COL`` and ``CN-SG-TIE-FCOL`` (retired 2026-09-16) held the porch's four beams
-    down to the two cast columns UNDER them. That said nothing about the 32 joists bearing on top, and until this
-    was fixed a tag-wide reading stood the derived rule down at all four supports — so the
-    porch bought no uplift hardware at all and ``structural.uplift_path_coverage`` reported a
-    break in the load path with the hardware for a different joint as its reason. It was
-    latent only because the front pair was flush-framed and ``hangers.py`` billed those ends.
+    ``CN-BW-TIE-EA`` / ``-EB`` (HETA20Z) hold BM-BW-HOUSE-SEAT down to PT-BW-E UNDER it, and
+    ``-GEA`` / ``-GEB`` do the same for BM-BW-GARAGE-SEAT on PT-BW-GE. That says nothing about
+    FS-BW-FLOOR's joists bearing on TOP of those beams, and a tag-wide reading would stand the
+    derived rule down at both seats — the deck would buy no uplift hardware and
+    ``structural.uplift_path_coverage`` would report a break with the hardware for a different
+    joint as its reason. (The porch's four beams and their CN-SG-TIE-COL/-FCOL were the first
+    witness; they retired, and the porch now hangs on ledgers, 2026-09.)
 
     The coarse reading is still right one level up: a tie naming the FLOOR is the plan saying
-    it owns that deck's uplift, and nothing here changes that.
+    it owns that deck's uplift (FS-SG-DECK's authored CN-SG-TIE-*), and nothing here changes
+    that.
     """
-    porch = next(f for f in catlin_model_ro.floors if f.tag == "FS-SG-PORCH")
-    porch_supports = {"BM-SG-FRW", "BM-SG-FRE", "BM-SG-BKW", "BM-SG-BKE"}
-    assert [m for m in porch.members if m.category == "joist"]
-    tied = [c for c in connections if c.support_tag in porch_supports]
-    assert tied, "the porch joists bear on their beams and must be tied"
-    assert {c.assembly_tag for c in tied} == {"FS-SG-PORCH"}
+    from typehaus.model.enums import ConnectorKind
+
+    tagged = {e.tag for e in catlin_model_ro.plan.all_elements()
+              if getattr(e, "connects", None)
+              and getattr(e, "kind", None) is ConnectorKind.HURRICANE_TIE
+              and {"BM-BW-HOUSE-SEAT", "PT-BW-E"} <= set(e.connects)}
+    assert tagged, "the fixture's beam-to-column tie moved"
+    floor = next(f for f in catlin_model_ro.floors if f.tag == "FS-BW-FLOOR")
+    seats = {"BM-BW-HOUSE-SEAT", "BM-BW-GARAGE-SEAT"}
+    assert [m for m in floor.members if m.category == "joist"]
+    tied = [c for c in connections if c.support_tag in seats]
+    assert {c.support_tag for c in tied} == seats, \
+        "the entry joists bear on both seats and must be tied at each"
+    assert {c.assembly_tag for c in tied} == {"FS-BW-FLOOR"}
+    assert not [c for c in connections if c.assembly_tag == "FS-SG-DECK"], \
+        "FS-SG-DECK's ties are authored against the floor, so none is derived"
 
 
 # --- rule 4: lateral tie plates -------------------------------------------------------

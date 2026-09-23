@@ -92,10 +92,11 @@ def test_a_graded_column_carries_its_record_and_the_live_fingerprint(enriched):
     from typehaus.engineering.fingerprint import fingerprint
 
     f, _model, ctx = enriched
-    column = next(e for e in f.by_type("IfcColumn") if e.Name == "PT-SG-COL")
+    # PT-SG-BF1, a balcony corner column; PT-SG-COL left with the centre line (2026-09).
+    column = next(e for e in f.by_type("IfcColumn") if e.Name == "PT-SG-BF1")
     pset = ue.get_psets(column)["Pset_TH_Engineering_deck_post"]
-    record = ctx.engineering["deck_post/PT-SG-COL"]
-    assert pset["ItemId"] == "deck_post/PT-SG-COL"
+    record = ctx.engineering["deck_post/PT-SG-BF1"]
+    assert pset["ItemId"] == "deck_post/PT-SG-BF1"
     assert pset["Status"] == record.status.value
     assert pset["GoverningLimitState"] == record.governing.name
     assert pset["DemandCapacityRatio"] == pytest.approx(record.governing.ratio)

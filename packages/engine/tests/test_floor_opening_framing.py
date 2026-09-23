@@ -47,14 +47,12 @@ def test_trimmer_plies_lie_face_to_face_outboard_of_the_opening(catlin_model):
     exactly one ply thickness *away* from the hole, which is where the second trimmer of
     a doubled pair goes.
 
-    **Only the DOUBLED edges are in scope, and since 2026-09-14 that is a real filter rather
-    than a formality.** ``_trimmer_plies`` lays one ply, not two, on an edge inside
-    R502.10.1's 4' short-opening allowance, and catlin now has two such openings: the 9"
-    pillar chases ``FO-SG-BF2``/``-BR2``, where ``PT-SG-BF2``/``PT-SG-BR2`` pass through
-    ``FS-SG-PORCH`` on their way down to the cast columns. An edge with no ply 1 is that
-    rule working, so this asserts the GEOMETRY of a pair wherever there is a pair, and
-    :func:`test_a_short_opening_is_framed_in_single_plies` asserts that the singles are
-    single.
+    **Only the DOUBLED edges are in scope.** ``_trimmer_plies`` lays one ply, not two, on an
+    edge inside R502.10.1's 4' short-opening allowance on a sawn deck (catlin's porch had
+    two such chases until the centre support line was retired, 2026-09). An edge with no
+    ply 1 is that rule working, so this asserts the GEOMETRY of a pair wherever there is a
+    pair, and :func:`test_a_short_sawn_opening_is_headed_in_single_joist_sized_members`
+    asserts that the singles are single.
     """
     trimmers = {member.child_key: member for member in _members(catlin_model, "trimmer")}
     pairs = {key[: -len("-0")] for key in trimmers
@@ -80,9 +78,10 @@ def test_opening_headers_are_multi_ply_and_deck_deep(catlin_model):
 
     The PLY half is conditional, and the condition is the code's. ``opening_header_profile``
     emits a single member the size of the floor joist for an opening inside R502.10.1's 4'
-    allowance on a sawn-lumber deck, and doubles up past it. Until 2026-09-14 catlin had no
-    short opening at all, so "always >= 2" and "doubled unless short" were the same
-    assertion; the 9" pillar chases in ``FS-SG-PORCH`` separated them.
+    allowance on a sawn-lumber deck, and doubles up past it. Catlin has no short SAWN
+    opening since its porch pillar chases were retired (2026-09), so the single-member half
+    is exercised on a synthetic 2x10 deck in
+    :func:`test_a_short_sawn_opening_is_headed_in_single_joist_sized_members`.
     """
     from typehaus.resolve.floor_openings import (
         _SINGLE_MEMBER_SPAN_M,
@@ -123,17 +122,9 @@ def test_opening_headers_are_multi_ply_and_deck_deep(catlin_model):
                 assert section.plies >= 2, header.child_key
             # Flush in the joist band, so the cut joists hang off it at their own depth.
             assert section.depth_m == pytest.approx(band_depth), header.child_key
-    # The two pillar chases, both edges of each. Named rather than merely tolerated, so
-    # deleting them would fail here instead of quietly relaxing the rule above back to
-    # "always doubled".
-    #
-    # **Four and not two.** Neither chase has a declared bearing under either edge: the four
-    # porch beams stop at the pillar's east and west faces now, so along the chase's own x
-    # band there is no beam axis for ``_opening_edge_has_declared_bearing`` to find, and both
-    # edges get a member. At ``FO-SG-BF2`` the south one lands in the 1 1/2" between the
-    # front rim band and ``PT-SG-BF2``'s south face, which is exactly the block that closes
-    # that chase at the deck edge — a real member, not a drafting artifact.
-    assert short == 4, "expected both headed edges of each 9\" pillar chase"
+    # No short sawn opening is left in catlin (the porch's two 9" pillar chases went with
+    # the centre support line, 2026-09); the single-member branch is pinned synthetically.
+    assert short == 0
     # The sawn-lumber gate, promoted from the comment above to an assertion. Both ERV riser
     # chases sit far inside R502.10.1's span allowance and are doubled anyway because their
     # deck is I-joist; drop the ``is_sawn_lumber`` half of ``_prescriptive_short_opening``
@@ -369,6 +360,24 @@ def test_tails_hang_on_the_header_and_the_header_hangs_on_the_trimmers():
         ("header-FO-1-1", "trimmer-FO-1-0-0"), ("header-FO-1-1", "trimmer-FO-1-1-0")}
     assert not any(carrier.startswith("trimmer-") and member.startswith("joist-")
                    for member, carrier in hung)
+
+
+def test_a_short_sawn_opening_is_headed_in_single_joist_sized_members():
+    """R502.10.1 on a sawn deck: a 3'-4" opening in 2x10s takes a single 2x10 header at each
+    headed edge and single trimmers. The witness catlin carried until 2026-09 (the porch's
+    two 9" pillar chases); named, so removing the allowance fails here loudly."""
+    from typehaus.resolve.floor_openings import _prescriptive_short_opening
+
+    _model, members = _deck(member="2x10")
+    headers = [m for m in members.values() if m.category == "header"]
+    assert len(headers) == 2, "both headed edges of the opening"
+    for header in headers:
+        assert _prescriptive_short_opening(header.length_m, "2x10"), header.child_key
+        assert cross_section(header.profile).plies == 1, header.child_key
+        assert header.profile == "2x10", header.child_key
+    trimmers = {m.child_key for m in members.values() if m.category == "trimmer"}
+    assert trimmers
+    assert not {key for key in trimmers if key.endswith("-1")}, "single trimmers"
 
 
 def test_a_short_sawn_opening_is_end_nailed_not_hung():

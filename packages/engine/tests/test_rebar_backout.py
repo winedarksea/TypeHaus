@@ -35,13 +35,13 @@ _CATLIN = Path(__file__).resolve().parents[3] / "houses" / "catlin"
 #: W-SG-BRKBM's cage, SL-M-DECK's BuildDeck schedule, dowels), and the deck cap is the one
 #: BLACK pour because DECK_CAP_MIX says so — a new scope, not a second coating in an old one.
 _SCHEDULE = {
-    ("column", "#3", "hdg-a767"): (144, 176.6),
-    ("column", "#5", "hdg-a767"): (88, 636.3),
-    ("footing", "#4", "hdg-a767"): (30, 272.1),
-    ("footing", "#5", "hdg-a767"): (154, 989.8),
-    ("foundation wall", "#3", "hdg-a767"): (49, 78.6),
-    ("foundation wall", "#4", "hdg-a767"): (311, 1735.4),
-    ("foundation wall", "#5", "hdg-a767"): (145, 1475.3),
+    ("column", "#3", "hdg-a767"): (114, 139.8),
+    ("column", "#5", "hdg-a767"): (80, 549.5),
+    ("footing", "#4", "hdg-a767"): (30, 263.7),
+    ("footing", "#5", "hdg-a767"): (150, 962.7),
+    ("foundation wall", "#3", "hdg-a767"): (44, 70.6),
+    ("foundation wall", "#4", "hdg-a767"): (311, 1715.4),
+    ("foundation wall", "#5", "hdg-a767"): (141, 1420.3),
     ("foundation wall", "#6", "hdg-a767"): (10, 129.5),
     ("slab", "#3", "black"): (220, 237.3),
     ("slab", "#4", "black"): (43, 576.9),
@@ -64,8 +64,13 @@ _SCHEDULE = {
 # +64.8 lb, 10 pieces on 2026-09-21: W-SG-BRKBM's hook ties and footing dowels (note §1).
 # −18.3 lb the same day: its bottom row stops at the dowelled footing faces (−20.9) and its
 # hooked top row reaches the support walls' far-face cover (+2.6).
-_TOTAL_LB = 6717.9
-_TOTAL_PIECES = 1216
+# −241.7 lb, −51 pieces on 2026-09-22, the 17'-0" court (note §1 NOT yet re-worked):
+# PT-SG-COL/-FCOL retired (−26 ties, −8 #5, −113.2 lb); the four corner columns 4" shorter
+# (−1 tie and 4 x 4" of #5 each, −10.5); FT-SG-S 216" not 240" (−4 #5 x 78", 6 #4 x −24",
+# −35.1); W-SG-S the same (−4 verticals, 16 rows x −24", −63.9); W-SG-BRKBM 2' shorter
+# (−5 ties, 8 bars x −24", −23.2); W-B-S1/-S4 1' longer each (+4.0).
+_TOTAL_LB = 6475.8
+_TOTAL_PIECES = 1165
 
 #: §3, decision #75 D14. The back-out gate is CLOSED BY DECISION, not by a dollar comparison:
 #: authoring steel may lift the tonnage into the register's band without opening it. Opening

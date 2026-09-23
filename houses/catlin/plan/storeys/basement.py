@@ -111,7 +111,7 @@ from typehaus import (
 NODES = [
     # Perimeter (split at grid lines + partition tees)
     Node(uid="CBN001AAAA", tag="N-B-SW", position=pt(ft(0), ft(0))),
-    Node(uid="CBN002AAAA", tag="N-B-S1", position=pt(ft(8, 10), ft(0))),
+    Node(uid="CBN002AAAA", tag="N-B-S1", position=pt(ft(9, 10), ft(0))),
     Node(uid="CBN003AAAA", tag="N-B-S2", position=pt(ft(18), ft(0))),
     # ** 27'-2", NOT 28'-0", SINCE 2026-09-05. AND 28'-0" WAS NEVER THE EXCAVATION EDGE. **
     # This said "x=28'-0" is the excavation edge" for as long as it existed and it was not:
@@ -131,7 +131,7 @@ NODES = [
     #
     # The split is still at the one place on this line where the backfill condition changes,
     # which is what it is for; it is now at the place where that change actually happens.
-    Node(uid="NW1W09NAD2", tag="N-B-S3", position=pt(ft(27, 2), ft(0))),
+    Node(uid="NW1W09NAD2", tag="N-B-S3", position=pt(ft(26, 2), ft(0))),
     # **The framed walkout's own node chain (2026-08-28).** W-B-S2-FR and W-B-S3-FR stand
     # ON W-B-S2/W-B-S3, which are 7 1/4" curbs now, so they are a second run of wall over
     # the same three stations. They cannot share those nodes: two wall edges between one
@@ -147,9 +147,9 @@ NODES = [
     # A component with no closed loop resolves at outward sign +1 rather than the
     # perimeter's -1 (resolve/orientation.py), which is exactly why both framed walls
     # author `interior_room` explicitly instead of trusting the winding.
-    Node(uid="QEDBCR7NYR", tag="N-B-S1F", position=pt(ft(8, 10), ft(0)), open_end=True),
+    Node(uid="QEDBCR7NYR", tag="N-B-S1F", position=pt(ft(9, 10), ft(0)), open_end=True),
     Node(uid="PGQVHV2VRH", tag="N-B-S2F", position=pt(ft(18), ft(0))),
-    Node(uid="Z44TJSW6JJ", tag="N-B-S3F", position=pt(ft(27, 2), ft(0)), open_end=True),
+    Node(uid="Z44TJSW6JJ", tag="N-B-S3F", position=pt(ft(26, 2), ft(0)), open_end=True),
     Node(uid="CBN004AAAA", tag="N-B-SE", position=pt(ft(36), ft(0))),
     Node(uid="CBN005AAAA", tag="N-B-E1", position=pt(ft(36), ft(18))),
     Node(uid="CBN006AAAA", tag="N-B-NE", position=pt(ft(36), ft(36))),
@@ -192,7 +192,7 @@ NODES = [
     # SAUNA_LINER_ON_BASEMENT_8 with it, returns FT-B-S1 to one unsplit strip, and hands the
     # workshop's west bay the four feet it gives up. The room is ~8'-3 7/8" x 8'-2" clear,
     # which is what EQ-T-SAUNA-HEATER's 9 kW was always sized for (see electrical.py).
-    Node(uid="XTVNH0A54T", tag="N-B-SA-NW", position=pt(ft(8, 10), ft(10))),
+    Node(uid="XTVNH0A54T", tag="N-B-SA-NW", position=pt(ft(9, 10), ft(10))),
     Node(uid="HN7GXN3ZM8", tag="N-B-SA-NE", position=pt(ft(18), ft(10))),
     # Stair-foot bathroom's north partition (2026-07-30), spanning the shaft's full 7'-0"
     # clear width so it tees into both concrete walls' node lines (x=10', x=18"). y=21'-9 3/8"
@@ -305,7 +305,7 @@ NODES = [
     # The two edits cancel at the air gap's outboard face: the wythe stays at -5.55..-9.175",
     # so the two arched reveals, the veneer's own footing and every garage-relative literal
     # downstream are all untouched. Only the 0.5" of nothing becomes something.
-    Node(uid="CBN019AAAA", tag="N-B-BRICK-W", position=pt(ft(8, 10), inch(-6.06)),
+    Node(uid="CBN019AAAA", tag="N-B-BRICK-W", position=pt(ft(9, 10), inch(-6.06)),
          open_end=True),
     # ** 27'-6", NOT 28'-0", SINCE 2026-09-05. ** 28'-0" is W-SG-E1's AXIS, and while the
     # wythe stood at y -5.55..-9.175" that was harmless: it ended north of the retaining
@@ -328,7 +328,7 @@ NODES = [
     # expansion joint and comfortably over the ~0.15" of moisture-plus-thermal movement the
     # 18'-8" run wants. The FILLER is still carried by no element and graded by no rule; the
     # record's MODEL GAP note says so. Costs 0.3 SF of brick (112.5 -> 112.2).
-    Node(uid="CBN020AAAA", tag="N-B-BRICK-E", position=pt(ft(27, 5.625), inch(-6.06)),
+    Node(uid="CBN020AAAA", tag="N-B-BRICK-E", position=pt(ft(26, 5.625), inch(-6.06)),
          open_end=True),
 ]
 
@@ -1027,15 +1027,16 @@ WALLS = [
     # The reveals below still measure from N-B-BRICK-W: ``from_node`` counts back from the
     # far end, so naming the west node still works when it's where the run finishes.
     #
-    # ** TOP AT -8", UNDER THE PORCH JOISTS (2026-09-16). ** FS-SG-PORCH's 2x8s (soffit
-    # -7 1/4") run north over the wythe to the cladding line, so D-M-BALC keeps its R311.3
-    # landing; 3 courses down leaves 3/4" of air and the two structures never touch.
+    # ** TOP AT -13 1/3", UNDER THE PORCH JOISTS (2026-09-22). ** FS-SG-PORCH's 2x12s
+    # (soffit -11 1/4") run over the wythe to the cladding line, so D-M-BALC keeps its
+    # R311.3 landing. Two modular courses under the old -8" top leaves 2 1/12" of air.
+    # Nothing grades that gap: hold the two numbers together.
     FoundationWall(uid="CBW126AAAA", tag="W-B-BRICK", start_node="N-B-BRICK-E",
                    end_node="N-B-BRICK-W",
                    assembly="BASEMENT_BRICK_VENEER",
                    alignment=face("air-gap-int"),
                    unbalanced_fill=ft(0),
-                   top_elevation=inch(-8), bottom_elevation=inch(-102.4375)),
+                   top_elevation=inch(-13.333), bottom_elevation=inch(-102.4375)),
 ]
 
 OPENINGS = [
@@ -1231,15 +1232,15 @@ OPENINGS = [
     # the slab this sill used to be measured from, so ft(3, 8) becomes inch(36.75). The
     # glass does not move — the head stays where AO-B-BRICK-WIN's arched reveal in front of
     # it expects it, and that reveal is datumed off W-B-BRICK's own base and needed no edit.
-    # It sits 3'-3" off the corner: a hole in a pour lands where you form it,
+    # It sits 3'-7" off the corner (3'-3" until the court narrowed, 2026-09-22): a hole in a pour lands where you form it,
     # while a 14" RO in a stud wall wants a BAY CENTRE, where the bay's own two studs carry
     # the rough sill and head nailer and it needs no header, no jacks and no kings at all
     # (preferences.toml's `max_window_ro_unbroken_in`). W-B-S2-FR lays out from layout line
     # LL-W-A-S1 and reaches the module 6" along itself, so its bay centres are 14" + n x 16"
-    # and 3'-3" puts the 14" opening on the 46" one. `structural.window_framing_module`
+    # and 3'-7" puts the 14" opening on a bay centre again now N-B-S1F is at 9'-10". `structural.window_framing_module`
     # said so, at 7" off, the moment the wall stopped being concrete.
     Window(uid="CBX301AAAA", tag="WIN-B-SAUNA", host="W-B-S2-FR",
-           type_ref="WT-1424-T", position=from_node("N-B-S1F", ft(3, 3)),
+           type_ref="WT-1424-T", position=from_node("N-B-S1F", ft(3, 7)),
            sill_height=inch(36.75)),
     # --- reveals through the brick veneer -------------------------------------------
     # WIN-B-SAUNA and D-B-PATIO stay on the concrete walls; these are RoughOpenings for the
@@ -1249,12 +1250,12 @@ OPENINGS = [
     # rise is ~1/7 of clear width, and ``height`` includes it, so the springline is
     # ``height - rise``. ``sill_height`` is re-datumed off W-B-BRICK's own base
     # (-8'-5", not -9'): the window's 3'-8" becomes 3'-1", the door's 7" threshold becomes 0.
-    # 3'-3" follows WIN-B-SAUNA onto its stud bay centre. The reveal and the window it
+    # 3'-7" follows WIN-B-SAUNA onto its stud bay centre. The reveal and the window it
     # reveals must stay concentric — `integrity.reveal_concentric` FAILs if they are more
     # than 1" apart — and only the offset moved; the elevations did not (both sills still
     # land at -65 7/16").
     RoughOpening(uid="CBO601AAAA", tag="AO-B-BRICK-WIN", host="W-B-BRICK",
-                 position=from_node("N-B-BRICK-W", ft(3, 3)),
+                 position=from_node("N-B-BRICK-W", ft(3, 7)),
                  width=inch(14), height=inch(20), sill_height=inch(37),
                  arch=Arch(rise=inch(2))),
     # 78" is a HEIGHT WITH NO CONSTRAINT LEFT ON IT, and that is worth saying plainly. It
@@ -1277,7 +1278,7 @@ OPENINGS = [
     # on its own wall and nothing carried the reveal with it. `integrity.reveal_concentric`
     # grades that now, and test_catlin_contract_m3 pins both pairs. Edit the two together.
     RoughOpening(uid="CBO602AAAA", tag="AO-B-BRICK-DOOR", host="W-B-BRICK",
-                 position=from_node("N-B-BRICK-W", ft(10)),
+                 position=from_node("N-B-BRICK-W", ft(9)),
                  width=ft(5), height=inch(78), sill_height=ft(0),
                  arch=Arch(rise=inch(8))),
 ]

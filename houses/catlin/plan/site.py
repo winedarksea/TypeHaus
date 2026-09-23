@@ -431,9 +431,9 @@ SITE = Site(
         # reason the columns need no re-sizing. Do not restore that comment: a station here
         # is a structural input, and the stale-annotation trap it warned about is exactly
         # the one it was itself an instance of.
-        SpotElevation(position=pt(ft(8), ft(-20)), elevation=ft(-9, -1.4375),
+        SpotElevation(position=pt(ft(9), ft(-20)), elevation=ft(-9, -1.4375),
                       kind="structure"),
-        SpotElevation(position=pt(ft(28), ft(-20)), elevation=ft(-9, -1.4375),
+        SpotElevation(position=pt(ft(27), ft(-20)), elevation=ft(-9, -1.4375),
                       kind="structure"),
         SpotElevation(position=pt(ft(10), ft(-27, -4)), elevation=ft(0), kind="structure"),
         SpotElevation(position=pt(ft(26), ft(-27, -4)), elevation=ft(0), kind="structure"),
@@ -487,14 +487,14 @@ SITE = Site(
         # their high edge; the fall is a finishing fact and lives here, where
         # code.R401_3_impervious can read it.
         #
-        # SL-SG-HPPAD, x 29'-0"..32'-7" by y -3'-4"..-0'-10" — 8.96 sf, shrunk from 19.6
+        # SL-SG-HPPAD, x 28'-0"..31'-7" by y -3'-4"..-0'-10" — 8.96 sf, shrunk from 19.6
         # on 2026-09-04 when EQ-M-HP1-OD crossed to the north face. It falls 3/4" south
         # over 2'-6", 2.5% against R401.3's 2%, and its far edge lands 1/2" below grade so
         # the sheet leaves onto gravel rather than ponding at a lip.
         ImperviousSurface(
             label="hp pad",
-            outline=(pt(ft(29), ft(-3, -4)), pt(ft(32, 7), ft(-3, -4)),
-                     pt(ft(32, 7), ft(0, -10)), pt(ft(29), ft(0, -10))),
+            outline=(pt(ft(28), ft(-3, -4)), pt(ft(31, 7), ft(-3, -4)),
+                     pt(ft(31, 7), ft(0, -10)), pt(ft(28), ft(0, -10))),
             near_elevation=ft(-2, -8),
             far_elevation=ft(-2, -8.75),
             kind="pad",
@@ -579,14 +579,14 @@ SITE = Site(
             far_elevation=ft(-2, -8.75),
             kind="pad",
         ),
-        # SL-SG-STAIRPAD, x 28'-6"..35'-3" by y -9'-0"..-6'-0" — 20.3 sf, the flight and its
+        # SL-SG-STAIRPAD, x 27'-6"..34'-3" by y -9'-0"..-6'-0" — 20.3 sf, the flight and its
         # bottom landing. It is 5'-2" clear of the house so R401.3's within-10-feet rule is
         # the only thing that reaches it at all; it falls 2" EAST over its 6'-9" run, 2.5%,
         # carrying meltwater off the treads away from the porch wall rather than along it.
         ImperviousSurface(
             label="porch stair pad",
-            outline=(pt(ft(28, 6), ft(-9)), pt(ft(35, 3), ft(-9)),
-                     pt(ft(35, 3), ft(-6)), pt(ft(28, 6), ft(-6))),
+            outline=(pt(ft(27, 6), ft(-9)), pt(ft(34, 3), ft(-9)),
+                     pt(ft(34, 3), ft(-6)), pt(ft(27, 6), ft(-6))),
             near_elevation=ft(-2, -8),
             far_elevation=ft(-2, -10),
             kind="stair",

@@ -1,5 +1,9 @@
 """``veneer_beam/W-SG-BRKBM`` against ``notes/sunken_garden_veneer_beam.md`` §6.
 
+Since 2026-09-22 the record reads the 17'-0" court (§6i): design span 17.5', wythe 268.86
+plf, wu 687.03 plf. The pure-arithmetic test at the end still runs the old 19.5' inputs,
+which is a function check and not a house one.
+
 Every number below was worked by hand in the note, at the model's own geometry, before this
 file existed. Inputs are read off the resolved model where the test asserts on them, so a
 geometry move fails here loudly rather than silently re-basing the oracle.
@@ -48,34 +52,37 @@ def test_the_relation_finds_the_beam_and_the_wythe(record) -> None:
 
 
 def test_inputs_are_the_concrete_layer_and_the_drawn_wythe(record) -> None:
-    """§6a: 12" of concrete (not the 14" assembly), 19'-0" clear, 6" bearing, 284.95 plf."""
+    """§6a / §6i: 12" of concrete (not the 14" assembly), 17'-0" clear, 6" bearing, and the
+    shorter wythe (top at −13 1/3", 89.104" tall): 268.86 plf."""
     _, rec = record
     inputs = {q.name: q.value for q in rec.inputs}
     assert inputs["section_width"] == pytest.approx(12.0)
     assert inputs["section_depth"] == pytest.approx(17.75)
-    assert inputs["clear_span"] == pytest.approx(19.0)
+    assert inputs["clear_span"] == pytest.approx(17.0)
     assert inputs["bearing"] == pytest.approx(6.0)
-    assert inputs["wythe_load"] == pytest.approx(284.95, abs=0.01)
+    assert inputs["wythe_load"] == pytest.approx(268.86, abs=0.01)
     assert inputs["self_weight"] == pytest.approx(221.875)
     assert inputs["eccentricity"] == pytest.approx(4.1275, abs=1e-3)
     assert rec.scope is Scope.SCREENING
 
 
 def test_strength_rows_reproduce_the_hand_pass(record) -> None:
-    """§6b and §6c at U = 1.4D."""
+    """§6b and §6c at U = 1.4D, at §6i's 17.5' span: Mu 687.03 × 17.5²/8 = 26,300;
+    Vu 687.03 × 17.5/2 = 6,011.5; Tu 1.4 × 268.86 × (4.1275/12) × 8.75 = 1,132.9 ft-lb, so
+    At/s and the torsion term scale by 1,132.9/1,337.85 from §6c."""
     _, rec = record
     flex = _state(rec, "flexure")
-    assert flex.demand == pytest.approx(33726, abs=1)
+    assert flex.demand == pytest.approx(26300, abs=1)
     assert flex.capacity == pytest.approx(60747, abs=1)
     assert _state(rec, "minimum flexural steel").demand == pytest.approx(0.639, abs=1e-3)
     shear = _state(rec, "one-way shear")
-    assert shear.demand == pytest.approx(6918, abs=1)
+    assert shear.demand == pytest.approx(6011.5, abs=1)
     assert shear.capacity == pytest.approx(19171, abs=1)
     tt = _state(rec, "torsion transverse")
-    assert tt.demand == pytest.approx(0.002058, abs=2e-6)
+    assert tt.demand == pytest.approx(0.001743, abs=2e-6)
     assert tt.capacity == pytest.approx(0.0220)
     limit = _state(rec, "torsion section limit")
-    assert limit.demand == pytest.approx(54.03, abs=0.01)
+    assert limit.demand == pytest.approx(46.36, abs=0.01)
     assert limit.capacity == pytest.approx(530.3, abs=0.1)
 
 
@@ -93,16 +100,17 @@ def test_torsion_detailing_closes(record) -> None:
 
 
 def test_deflection_is_two_rows_and_tms_l_over_600_is_the_strict_one(record) -> None:
-    """§6f: after-attachment 0.1811" at the claimed α 0.25 — ℓ/600 0.464, ℓ/480 0.371."""
+    """§6i: after-attachment 0.0786" at the claimed α 0.25 on 210" — ℓ/600 0.225,
+    ℓ/480 0.180."""
     _, rec = record
     tms = _state(rec, "deflection after the wythe is attached, TMS")
-    assert tms.demand == pytest.approx(0.18109, abs=1e-5)
-    assert tms.capacity == pytest.approx(0.390)
-    assert tms.ratio == pytest.approx(0.464, abs=1e-3)
+    assert tms.demand == pytest.approx(0.07861, abs=1e-5)
+    assert tms.capacity == pytest.approx(0.350)
+    assert tms.ratio == pytest.approx(0.225, abs=1e-3)
     assert "TMS 402-22 §13.1.2.3" in tms.citation
     aci = _state(rec, "deflection after the wythe is attached, ACI")
-    assert aci.demand == pytest.approx(0.18109, abs=1e-5)
-    assert (aci.capacity, aci.ratio) == (pytest.approx(0.4875), pytest.approx(0.371, abs=1e-3))
+    assert aci.demand == pytest.approx(0.07861, abs=1e-5)
+    assert (aci.capacity, aci.ratio) == (pytest.approx(0.4375), pytest.approx(0.180, abs=1e-3))
     # The old NOT-GRADED note is gone; the credit says what it is instead.
     assert not any("NOT GRADED: TMS" in note for note in rec.notes)
     assert any("SERVICEABILITY ONLY" in note and "α 0.25 is CLAIMED" in note
@@ -117,14 +125,17 @@ def _stripped(record):
 
 
 def test_the_fixity_credit_is_never_assumed(record) -> None:
-    """Strip `end_restraint` and the beam is a simple span: ℓ/600 back to 1.242, OVER."""
+    """Strip `end_restraint` and the beam is a simple span again: ℓ/600 goes back to the
+    uncredited 0.110" (§6i). It was 1.242 and OVER at 19'-0"; at 17'-0" the simple span
+    closes on its own, so the credit is reported rather than needed — and still never
+    assumed: the stripped record carries the simple-span number, not the credited one."""
     stripped = _stripped(record)
     tms = _state(stripped, "deflection after the wythe is attached, TMS")
-    assert tms.demand == pytest.approx(0.4844, abs=1e-4)
-    assert tms.ratio == pytest.approx(1.242, abs=1e-3)
-    assert not tms.ok and stripped.status is Status.OVER
+    assert tms.demand == pytest.approx(0.1101, abs=1e-4)
+    assert tms.ratio == pytest.approx(0.315, abs=1e-3)
+    assert tms.ok and stripped.status is Status.OK
     assert _state(stripped, "deflection after the wythe is attached, ACI").ratio == (
-        pytest.approx(0.994, abs=1e-3))
+        pytest.approx(0.252, abs=1e-3))
     # No joint rows and no credit note without the authored claim.
     assert not [s for s in stripped.limit_states if "end moment into" in s.name]
     assert not any("SERVICEABILITY ONLY" in note for note in stripped.notes)
@@ -139,30 +150,33 @@ def test_the_fixity_credit_buys_no_strength(record) -> None:
                  "longitudinal steel, flexure + torsion"):
         credited, bare = _state(rec, name), _state(stripped, name)
         assert (credited.demand, credited.capacity) == (bare.demand, bare.capacity), name
-    assert _state(rec, "flexure, simple span").ratio == pytest.approx(0.555, abs=1e-3)
+    assert _state(rec, "flexure, simple span").ratio == pytest.approx(0.433, abs=1e-3)
     assert "no end fixity credited" in _state(rec, "flexure, simple span").citation
 
 
 def test_the_joint_receives_the_end_moment(record) -> None:
-    """§6f: M_end 5,621 ft-lb — 0.093 in the beam, 0.368 into each wall as PLAIN concrete
-    over b_eff 36", and 0.136 of end-moment shear. The elastic bound is printed too."""
+    """§6f / §6i: M_end 4,383 ft-lb — 0.072 in the beam, 0.287 into each wall as PLAIN
+    concrete over b_eff 36", and V = 12 M/d = 3,492 lb of end-moment shear (0.106). The
+    elastic bound is printed too, at the AUTHORED ``elastic_fixity`` 0.487 (§6i)."""
     _, rec = record
     negative = _state(rec, "negative flexure at the supports")
-    assert negative.demand == pytest.approx(5621, abs=1)
+    assert negative.demand == pytest.approx(4383, abs=1)
     assert (negative.capacity, negative.ratio) == (pytest.approx(60747, abs=1),
-                                                   pytest.approx(0.093, abs=1e-3))
+                                                   pytest.approx(0.072, abs=1e-3))
     for wall in ("W-SG-W1", "W-SG-E1"):
         moment = _state(rec, f"end moment into {wall}")
-        assert moment.demand == pytest.approx(5621, abs=1)
+        assert moment.demand == pytest.approx(4383, abs=1)
         assert moment.capacity == pytest.approx(15273.5, abs=1)
-        assert moment.ratio == pytest.approx(0.368, abs=1e-3)
+        assert moment.ratio == pytest.approx(0.287, abs=1e-3)
         assert "Table 14.5.2.1" in moment.citation and "b_eff 36\"" in moment.citation
-        # Graded at the elastic bound as well, so the derate spends nobody else's capacity.
-        assert "11,557 ft-lb, d/c 0.757" in moment.citation
+        # Graded at the elastic bound as well, so the derate spends nobody else's capacity:
+        # 0.487 × 687.03 × 17.5²/12 = 8,539 ft-lb against 15,273: §6i's elastic α at 17.5'.
+        assert "α 0.487" in moment.citation
+        assert "8,539 ft-lb, d/c 0.559" in moment.citation
         shear = _state(rec, f"end-moment shear into {wall}")
-        assert shear.demand == pytest.approx(4478, abs=1)
+        assert shear.demand == pytest.approx(3492, abs=1)
         assert shear.capacity == pytest.approx(32933.5, abs=1)
-        assert shear.ratio == pytest.approx(0.136, abs=1e-3)
+        assert shear.ratio == pytest.approx(0.106, abs=1e-3)
 
 
 def test_end_restraint_round_trips() -> None:
@@ -203,7 +217,7 @@ def test_end_restraint_closes_on_ties_and_footing_dowels(record) -> None:
     hook = _state(rec, "closed hoop hook angle")
     assert (hook.demand, hook.capacity) == (135.0, 135.0)
     assert hook.is_detailing and hook.ok
-    # Deflection has stopped governing; the hooked development does (0.790 > 0.555).
+    # Deflection has stopped governing; the hooked development does (0.790 > 0.433).
     assert _state(rec, "hooked development of top-y into W-SG-W1").ratio == max(
         s.ratio for s in rec.limit_states if not s.is_detailing)
 

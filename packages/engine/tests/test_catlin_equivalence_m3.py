@@ -193,6 +193,13 @@ DECLARED_DIVERGENCES = {
         "overhead door on 2026-09-07; a placeholder prism has neither a ridge to turn nor "
         "6'-0\" to travel, and RF-GARAGE is a resolved gable rather than a block"
     ),
+    # Paired (divergent on placement alone, 0.797 m, the 2026-09-10 shortening) until
+    # 2026-09-22; the 2'-0" off its length on top of that moved it past the matcher's score.
+    "Sunken Garden South Wall Footing": (
+        "FT-SG-S is 18'-0\" long, not 20'-0\": the court narrowed to 17'-0\" clear on "
+        "2026-09-22 (side-wall axes 8'/28' -> 9'/27'), on top of the 2'-0\" it had already "
+        "moved north when the court shortened on 2026-09-10"
+    ),
     "Garage Floor Slab": _GARAGE_MOVED,
     "Garage ICF Concrete Core 3": _GARAGE_MOVED,
     "Garage Stud Wall 1": _GARAGE_MOVED,
@@ -213,9 +220,12 @@ MAX_PAIRED_PLAN_EXTENT_DELTA_M = 0.75   # ~2'-6"
 #
 # Keyed on the *reference* name — the current tag is the thing that may be renamed.
 DECLARED_WALL_EXTENT_CHANGES: dict[str, tuple[float, str]] = {
-    # Empty: the mechanism stays even with nothing in it — a wall whose plan extent changes
-    # by decision is pinned to the size of the change here, so a further silent stretch
-    # still fails.
+    # Paired with W-B-BRICK at -0.416 m of x extent until 2026-09-22; the wythe then lost
+    # 1'-0" at each end with the court walls (x 106"..329.625" -> 118"..317.625"), which is
+    # -0.610 m more: -1.026 m.
+    "Sunken Garden Porch North Arch Wall (Lower)": (
+        1.05, "the 17'-0\" court (2026-09-22) shortened W-B-BRICK 2'-0\" between the side "
+              "walls"),
 }
 
 HOUSE_SIZE_FT = 36.0

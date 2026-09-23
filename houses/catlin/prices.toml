@@ -393,6 +393,9 @@
 # per profile, not per treatment, so both halves bill here. The 3.7 LF plan run of each
 # stringer is 4.6 LF of stick on the rake, which the cut list already accounts for.
 "2x12" = { material = { low = 1.85, high = 2.6 }, labour = { low = 1.4, high = 2.6 } }  # 92 LF spf + 32 LF kdat (ST-G-SERVICE and ST-SG-PORCH stringers)
+# KDAT southern pine 2x12, the garden's two deck fields (12" o.c.) and the porch ledgers. Treated
+# 2x12 runs ~25-40% over the SPF stick above, and 20' lengths carry a further premium.
+"2x12:kdat" = { material = { low = 2.4, high = 3.6 }, labour = { low = 1.4, high = 2.6 } }  # 464 LF ordered (joists, spare joist, blocks) + 2 ledgers
 "2x2" = { material = { low = 0.35, high = 0.6 }, labour = { low = 0.5, high = 1 } }  # 816 LF
 # 2"x2" rigid-insulation strip: 1/6 SF of 2" board per LF, at the [envelope_layers]
 # polyiso rate of $1.20-2.20/SF.
@@ -739,7 +742,7 @@
 # which stands the derived rule down and puts the real part number on both. The ABU66 row
 # stays at the galvanized rate, at 0 ea, as the revert.
 "ABU66" = { low = 40, high = 70 }  # 0 ea — the DERIVED galvanized row, stood down by CN-BW-BASE-*. Kept priced (the glazed-green-brick convention) so deleting an authored base does not silently drop the part
-"ABU66SS" = { low = 150, high = 230 }  # 4 ea authored — CN-BW-BASE-W / -NW, the canopy's two WEST columns, plus CN-SG-BASE-R2 / -F2 since 2026-09-14, when both centre balcony pillars came off the porch framing onto the cast column tops and the strap-and-angle tie below gave way to the part the joint is published for. It was 10 until 2026-09-03 (the four balcony corner pillars became cast concrete and a doweled lap replaced their bases), 6 later that day (the two CENTRE pillars went to the MSTA12Z/L50Z base tie below), 0 until 2026-09-10 when these stopped billing on the galvanized ABU66 row above, and 4 -> 2 the same day when PT-BW-RE/-RNE became full-height cast columns and the two EAST wood columns went with them
+"ABU66SS" = { low = 150, high = 230 }  # 2 ea authored — CN-BW-BASE-W / -NW, the canopy's two WEST columns. CN-SG-BASE-R2 / -F2 retired with the balcony's centre pillars, 2026-09-22
 # What replaced two of those, at PT-SG-BR2 and PT-SG-BF2: a base TIE built from stock
 # sheet-metal parts — one 12" strap on the flush west face of each pillar, plus an L angle
 # on every face that has joist pack beside it (BR2 north and south, BF2 north alone).
@@ -791,7 +794,7 @@
 # a pack is inside the framing rate either way. A custom tapered stainless shim would be a
 # rate change and is deliberately not what this specifies — see
 # notes/balcony_differential_movement.md §3.
-"SS316-SHIM-35" = { low = 9, high = 22 }  # 12 ea — 4 balcony/porch column tops, 4 north entry seat-beam bearings, 2 under the east canopy header on its cast columns, 2 porch
+"SS316-SHIM-35" = { low = 9, high = 22 }  # 10 ea — 4 balcony column tops, 4 north entry seat-beam bearings, 2 under the east canopy header on its cast columns. The 2 porch-column packs retired with the centre line, 2026-09-22
 # 16 ea -> 8 on 2026-08-30 (second pass). The four E-W braces' feet became FACE LAPS rather
 # than butt joints — see the KneeBrace.foot_lap block in params/sunken_garden.py — and a
 # lapped foot is bolted through the 1 1/2" brace and the whole 5 1/2" pillar behind it. That
@@ -870,7 +873,7 @@
 # these twenty-eight the owner wants in stainless becomes a `Connector` in
 # params/sunken_garden.py at ~$3.00-$6.50 each, which stands the derived rule down at that
 # joint and puts the part number in the plan source where it can be read.
-"H2.5AZ" = { low = 1.2, high = 2.5 }  # 57 ea — all derived, PRESERVATIVE-TREATED bearings
+"H2.5AZ" = { low = 1.2, high = 2.5 }  # 8 ea — all derived, PRESERVATIVE-TREATED bearings. 57 until 2026-09-22, when the balcony's joist ties went to authored stainless (H10ASS / H2.5ASS)
 # ** THE STAINLESS TWIN, AND IT IS A SEPARATE PART AND A SEPARATE PRICE FOR TWO REASONS. **
 # RF-BW-CANOPY's three trusses land on 3-ply KDAT headers at an entry that is salted every
 # winter, and the house buys stainless at every KDAT joint (owner, 2026-09-10). Unlike the
@@ -887,7 +890,10 @@
 # same shape as the ABU66 -> ABU66SS jump ($55 -> $202) recorded above. Retail listings for
 # the H2.5ASS sit around $3.50-$5.50 each in small quantities; this band is that, widened,
 # and it is a LIST BAND rather than a quote.
-"H2.5ASS" = { low = 3.0, high = 6.5 }  # 6 ea — all authored (CN-BW-TRTIE-W1..3 / -E1..3), two per truss and there are three
+# H10A geometry in 316 stainless, joist to glulam at every interior balcony crossing (owner,
+# 2026-09-22). Stainless H10A-class ties run ~2-3x the G90 part.
+"H10ASS" = { low = 6.0, high = 14.0 }  # 20 ea — CN-SG-TIE-W02..W11 / -E02..E11
+"H2.5ASS" = { low = 3.0, high = 6.5 }  # 10 ea — all authored: CN-BW-TRTIE-W1..3 / -E1..3 (canopy), and CN-SG-TIE-W01/-W12/-E01/-E12, the balcony's END joists on BM-SG-BLW/BLE (owner, 2026-09-22)
 # The beam tie at the eight cast-column seats: a PAIR of cast-in HETA20Z embedded anchors per
 # joint (ZMAX, G185), 16 ea — the four balcony corners (CN-SG-SEAT-R1/R3/F1/F3, A and B), the
 # north entry's E/GE seat beams and the canopy's east header on PT-BW-RE/-RNE (CN-BW-TIE-*).
@@ -925,7 +931,7 @@
 # than ZMAX because it stands in the weather over a sunken garden with no enclosure above
 # it. ~$168 ea is the Simpson list band for the SDS-screw CCQ at this size, screws included
 # (they ship with the connector, which is why there is no separate fastener row).
-"CCQ46SDS2.5" = { low = 140, high = 200 }  # 4 ea — CN-SG-CAP-R2/-F2 and CN-BW-CAP-W/-NW. The canopy's EAST header takes no cap: it lands on cast concrete, where the joint is an SS316-SHIM-35 pack and a cast-in HETA20Z pair
+"CCQ46SDS2.5" = { low = 140, high = 200 }  # 2 ea — CN-BW-CAP-W/-NW. CN-SG-CAP-R2/-F2 retired with the balcony's centre pillars, 2026-09-22
 # ** THE HUCQ ROWS ARE RETIRED, 2026-09-12, AND THE COMMENT BELOW IS WHY IT TOOK SO LONG. **
 # Both rows priced a part that could not be installed at the joint it was billed into, and
 # this file's own note argued the wrong way round: "HUCQ410 takes a 4x seat, and 3 x 1 1/2"
@@ -967,7 +973,7 @@
 # fastener upgraded, because a stainless Titen is an unpublished substitution here and
 # Simpson's stainless-parity letter covers connector nails, not concrete screws. See
 # notes/beam_water_protection.md.
-"HUC212-3" = { material = { low = 55, high = 95 }, labour = { low = 60, high = 150 } }  # 4 ea
+"HUC212-3" = { material = { low = 55, high = 95 }, labour = { low = 60, high = 150 } }  # 0 ea since 2026-09-22 — the four porch beam pockets retired with the beams; kept priced
 # ** THE WOOD TWIN OF THE ROW ABOVE, AND IT IS THE CHEAPER HALF OF THE SAME JOINT. **
 # The same four porch beams have two ends each. The OUTER ends sit in the cast pockets and
 # take the HUC above; the INNER ends stopped dying on the cast columns' axes on 2026-09-14
@@ -985,7 +991,7 @@
 # [basis] note: hardware is material only because setting a hanger is inside the framing
 # labour rate. The HUC is the exception BECAUSE of its concrete side: rotary-hammering 22
 # holes in a cured pocket is not framing labour. Nailing a face-mount hanger to a post is.
-"HU212-3" = { low = 45, high = 70 }  # 4 ea — CN-SG-HGR-CR2-W/E, CN-SG-HGR-CF2-W/E
+"HU212-3" = { low = 45, high = 70 }  # 0 ea since 2026-09-22 — the four porch-beam hangers off the centre pillars retired with them; kept priced
 # The north entry's two seat-beam hangers (CN-BW-HGR-CW/-CNW, 2026-09-15). A double-2x8
 # face-mount hanger is a fraction of the triple-2x12 above it — one third the seat width and
 # two thirds the height — and ZMAX (G185) carries the usual small premium over plain G90.
@@ -1025,7 +1031,10 @@
 "HHUS410" = { low = 14, high = 24 }  # 10 ea
 # ZMAX (G185) LUS where the carrier is preservative-treated (IRC R317.3.1): the breezeway's
 # treated beams, and the balcony centre glulam. Sized by the engine off the joist; ~25% over G90.
-"LUS28Z" = { low = 2.5, high = 7.5 }  # 32 ea — 18 at BM-SG-BLC, 14 in the breezeway beams
+"LUS28Z" = { low = 2.5, high = 7.5 }  # 14 ea — the breezeway beams (the 18 at BM-SG-BLC retired with it, 2026-09-22)
+# The single-2x12 ZMAX face-mount: Simpson publishes no LUS212, and its 2x12 rows list the LUS210
+# (C-C-2017 p. 127, H 7-13/16"). The porch joists hang on it at both ledgers. ~$3-6 retail.
+"LUS210Z" = { low = 3.0, high = 8.0 }  # 20 ea — FS-SG-PORCH's 10 joists, both ends, on BM-SG-LDGW/LDGE
 "LUSZ" = { low = 2.5, high = 7.5 }  # 6 ea — rim boards hung in the same treated beams
 # "LUS210" retired 2026-08-23. It priced the two back-beam hangers until the 2026-08-22
 # retype moved them onto HUCQ410-SDS, after which nothing in the house authored a LUS210 and
@@ -1046,6 +1055,9 @@
 # bolt at $3-7; that is a ~$25 purchasing swap, noted with the MiTek ones in
 # notes/uplift_load_path.md rather than split into a second product for one role.
 # Files under CSI 03 15 00 like its "AB-" sibling above: the concrete sub sets it.
+# 1/2" x 5" 316 stainless adhesive anchor with washer, the porch ledgers into W-SG-W1/E1 (DCA6:
+# expansion or adhesive, spacing by the anchor maker). Epoxy cartridge share included.
+"SS316-ADH-12x5" = { material = { low = 9, high = 18 }, labour = { low = 8, high = 16 } }  # 14 ea — CN-SG-LDGW-1..7 / -LDGE-1..7
 "AB-058-10-SS" = { low = 12, high = 28 }  # 4 ea — one cast-in bolt per POST BASE that lands on concrete AND takes one: 2 canopy ABU66SS + the 2 basement ABU44 under P-M-STRWELL-N/S. The 2 garage-slab ABU44 under PT-BW-IC/-IE are authored `anchored=False` (2026-09-11): a 5/8x10in bolt needs ~8in of embedment and SL-G-FLOOR is 3-1/2in on foam, so the bolt dragged a slab thickening along to house itself and both went. Those bases are bearing-only — download through the plate, no uplift and no lateral claimed. `takeoff/uplift_joints.py::post_base_anchor_rows` gates on `bears_on_concrete`, so a base on framing never took one, and it unions the AUTHORED and DERIVED base populations. Was 10 before the balcony corner bases went (2026-09-03), 6 while the canopy had four wood columns, 4 since the east pair became cast
 # 6 ea, all of them CARRIED under the ColorGard rail (`requires_role`) — none directly
 # modeled any more. It was 19: two wall-mounted enclosure clamps (CN-A-NEMA-CLAMP,
@@ -2873,8 +2885,8 @@
 # ~8 screws, land the curve square with the flank. About 1 to 1 1/2 hours a run, and the
 # north 4" of each flank run is a small aluminium outrigger screwed to the side of the rear
 # beam (see params/sunken_garden.py), which is the fiddly part of that hour.
-"FT-PORCH-TRACK-106" = { material = { low = 100, high = 185 }, labour = { low = 65, high = 165 } }  # 2 ea
-"FT-PORCH-TRACK-104" = { material = { low = 80, high = 145 }, labour = { low = 55, high = 140 } }  # 2 ea
+"FT-PORCH-TRACK-176" = { material = { low = 165, high = 305 }, labour = { low = 105, high = 270 } }  # 1 ea — the front run, one piece since 2026-09-22 (was two 106" runs split by the centre pillar)
+"FT-PORCH-TRACK-102" = { material = { low = 80, high = 145 }, labour = { low = 55, high = 140 } }  # 2 ea — the flanks, 2" shorter than the 104" they were
 # The eight fitted FURN-* rows that stay in the build number. The loose ones are in
 # [furnishings] at the bottom of the file.
 "FURN-BESTA-2358" = { material = { low = 90, high = 260 }, labour = { low = 60, high = 160 } }  # 8 ea
@@ -2887,13 +2899,15 @@
 # length (60/102 = 0.59) on the material and held near-flat on the labour: a two-tier bench
 # is mostly setting-out, scribing and two cleat runs whatever its length, so the joiner's
 # day does not shrink with the lumber.
-"FURN-SAUNA-BENCH-2T-60" = { material = { low = 235, high = 885 }, labour = { low = 130, high = 430 } }  # 1 ea
+"FURN-SAUNA-BENCH-2T-60" = { material = { low = 235, high = 885 }, labour = { low = 130, high = 430 } }  # 0 ea since 2026-09-22 (the sauna lost 1'-0")
+"FURN-SAUNA-BENCH-2T-48" = { material = { low = 190, high = 710 }, labour = { low = 110, high = 360 } }  # 1 ea — the 2T-60 cut 1'-0" shorter
 "FURN-SAUNA-BENCH-54" = { material = { low = 200, high = 800 }, labour = { low = 80, high = 300 } }  # 1 ea
 # The 4'-0" sibling on the south liner (2026-09-05). Material scales off the 54" row by
 # carcass length (48/54 = 0.89); labour is held level with it, for the reason the 2T-60 row
 # gives above — scribing a bench between a bench and a junction box is setting-out time, and
 # setting-out does not shrink with the lumber.
-"FURN-SAUNA-BENCH-48" = { material = { low = 180, high = 710 }, labour = { low = 80, high = 300 } }  # 1 ea
+"FURN-SAUNA-BENCH-48" = { material = { low = 180, high = 710 }, labour = { low = 80, high = 300 } }  # 0 ea since 2026-09-22
+"FURN-SAUNA-BENCH-36" = { material = { low = 135, high = 530 }, labour = { low = 70, high = 250 } }  # 1 ea — the 48 cut 1'-0" shorter
 "FURN-WALL-RACK-24" = { material = { low = 30, high = 150 }, labour = { low = 30, high = 90 } }  # 1 ea
 "FURN-WARDROBE-48" = { material = { low = 250, high = 1200 }, labour = { low = 100, high = 300 } }  # 3 ea
 # One fixed stepped study run. Oak horizontal boards remain in [hardwood]; this row carries
@@ -5660,7 +5674,7 @@
 # Sources: homeguide.com 2026 soffit and fascia replacement, angi.com aluminum soffit cost,
 # homewyse.com aluminum fascia, homeguide.com drip edge cost 2026.
 # $/LF, by trim category (fascia, soffit, flashings, formed roof trim)
-"beam_cap" = { material = { low = 1.50, high = 4 }, labour = { low = 2, high = 4.50 } }  # 40.0 LF — formed aluminium cap over the four porch beams (the balcony glulams are butyl only). ~8" of coil girth: a 5.5" top plus two 1.5" turn-downs, so material sits just above `drip_flashing`'s narrower bend. Labour is the dear half and it is a SEQUENCING cost, not a fabrication one — all four carry joists on top, so their caps go on before the deck frames and a cap missed at that moment costs a torn-out joist field, not a return trip. See params/sunken_garden.py::_BEAM_CAP_AT
+"beam_cap" = { material = { low = 1.50, high = 4 }, labour = { low = 2, high = 4.50 } }  # 0 LF since 2026-09-22 — the four porch beams it capped are retired (the porch hangs on ledgers); kept priced
 # NEW 2026-09-03 with the porch enclosure. TR-SG-SLOT, the closure over the 5" insulation
 # gap between the porch deck's north edge and the house cladding (params/sunken_garden.py) —
 # a formed 4" aluminium band screwed to the deck's north rim, sloped south to drain, with a
@@ -5698,6 +5712,9 @@
 "movement_joint" = { material = { low = 70, high = 125 }, labour = { low = 6, high = 15 } }  # 15.7 LF — MJ-B-BRICK-E/-W
 "drip_flashing" = { material = { low = 1, high = 3 }, labour = { low = 1, high = 2 } }  # 176.4 LF — $1-2/LF on a NEW roof (retrofit is $3-7). Material is high for mill aluminium and right for the prefinished dark Kynar this house uses. Commonly inside the roofer's price — check for a double count against any roofing bid
 "edge_cladding" = { material = { low = 3, high = 8 }, labour = { low = 3.5, high = 7 } }  # 243.9 LF — add $2-4/LF if it is site-brake-formed rather than shop stock
+# ** TR-SG-FASCIA IS 13" SINCE 2026-09-22 ** — the balcony rim is a 2x12, so the board is ripped
+# from cellular PVC SHEET (trim board stops at 11 1/4"), ~$9-15/LF material for that 38.8 LF, over
+# this row's band. Edge trim is keyed by category alone, so it cannot take its own row.
 "fascia" = { material = { low = 3, high = 9 }, labour = { low = 4, high = 8 } }  # 251.5 LF — material low raised from $2.50, which only buys primed pine or coil-wrap; this run is PVC (sunken garden) and formed solid-colour PVDF (garage near-black since 2026-09-08, metal since 2026-08-26) over SPF
 "ridge_cap" = { material = { low = 4, high = 10 }, labour = { low = 4, high = 8 } }  # 63.5 LF — metal cap (a shingle ridge would be $1.50-3.50 to lay). Also commonly in the roofer's scope
 "soffit" = { material = { low = 3.5, high = 9 }, labour = { low = 3, high = 5.5 } }  # 101.1 LF — the depth question is SETTLED by the model: the profile is 13.625" wide, so this is the 12-16" overhang band at $3-5.50/LF. Every published $/LF silently assumes a depth; at 24" it would be $5-9 and at 36" $8-13, and the material rate would be understated ~2x

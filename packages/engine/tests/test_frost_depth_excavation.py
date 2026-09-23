@@ -177,16 +177,51 @@ _THE_RETAINING_WALL_FOOTINGS = ("FT-SG-W1", "FT-SG-W2", "FT-SG-E1", "FT-SG-E2", 
 #: The two that stand under a ``Post``, not a ``FoundationWall``. Taken to frost depth
 #: (→ houses/catlin/params/sunken_garden.py), so unlike the five above they
 #: pass on plain cover and lean on no section at all.
-#:
-#: ** ``PD-``, NOT ``FT-``, SINCE 2026-09-14. ** These were 36" belled piers and are 30"
-#: square `Pad`s now — the conversion that retired the last two `spread_footing` items from
-#: the register, a flat pad being exactly the shape IRC Table R507.3.1 publishes. Nothing in
-#: THIS module's subject changed: the underside is still the derived `_pier_bell_bottom_ft`,
-#: so the cover these pass on is the same cover, measured the same way.
-_THE_FREESTANDING_COLUMN_PADS = ("PD-SG-COL", "PD-SG-FCOL")
+#: ** THE COURT HAS NO FREESTANDING COLUMN SINCE 2026-09-22. ** `PD-SG-COL`/`-FCOL` retired
+#: with the whole centre support line when the court narrowed to 17'-0". The two tests that
+#: were pinned on them keep a subject through a fixture at their last geometry: a 30"
+#: square, 12" `PIER_BASE_12` pad at (18', -2'-3"), bottom at -12.6198' — the court floor
+#: less 42", the derived `_pier_bell_bottom_ft` those pads carried.
+_PAD_BOTTOM_FT = -12.6198
+_FROST_IN = 42.0
 
-#: The garden's own seven.
-_THE_GARDENS_OWN = _THE_RETAINING_WALL_FOOTINGS + _THE_FREESTANDING_COLUMN_PADS
+
+def _court_pad(tag: str, uid: str, y_ft: float, bottom_ft: float):
+    from typehaus.model.structure import Pad
+    from typehaus.quantities import ft, inch, pt
+
+    half = 15.0 / 12.0
+    return Pad(uid=uid, tag=tag, thickness=inch(12), assembly="PIER_BASE_12",
+               bottom_elevation=ft(bottom_ft),
+               outline=(pt(ft(18 - half), ft(y_ft - half)), pt(ft(18 + half), ft(y_ft - half)),
+                        pt(ft(18 + half), ft(y_ft + half)), pt(ft(18 - half), ft(y_ft + half))))
+
+
+@pytest.fixture(scope="module")
+def court_pads(catlin_plan):
+    """Two freestanding pads dropped into the open court, graded by the frost rule alone.
+
+    ``PD-TEST-DEEP`` is the old augered bell (42" of its own cover); ``PD-TEST-SHALLOW``
+    stands 12" under the court floor at the old front column's station — far enough from
+    every R403.3 wing to have no shelter — so the retaining branch is exercised on a pad
+    that does NOT reach frost depth, where it would matter.
+    """
+    from typehaus.checks import build_context
+    from typehaus.checks.structural.checks import footing_frost_depth
+
+    deep = _court_pad("PD-TEST-DEEP", "TESTFROST1", -2.25, _PAD_BOTTOM_FT)
+    shallow = _court_pad("PD-TEST-SHALLOW", "TESTFROST2", -9.5,
+                         _PAD_BOTTOM_FT + (_FROST_IN - 12.0) / 12.0)
+    plan = catlin_plan.model_copy(update={"elements": {
+        **catlin_plan.elements,
+        "court-low": (*catlin_plan.elements["court-low"], deep, shallow),
+    }})
+    ctx, _ = build_context(plan, CATLIN)
+    out: dict[str, object] = {}
+    for finding in footing_frost_depth(ctx):
+        for tag in finding.element_tags:
+            out.setdefault(tag, finding)
+    return out
 
 
 def test_the_retaining_wall_footings_pass_on_the_aggregate_section(frost_by_tag):
@@ -212,34 +247,39 @@ def test_the_retaining_wall_footings_pass_on_the_aggregate_section(frost_by_tag)
         assert any(name.startswith("FB-SG-") for name in finding.element_tags), tag
 
 
-def test_the_belled_column_piers_pass_on_cover_and_not_on_the_section(frost_by_tag):
-    """The two pads are the case that stopped needing the argument.
+def test_a_pier_augered_to_frost_depth_passes_on_cover_and_not_on_the_section(court_pads):
+    """The case that stopped needing the argument.
 
-    They were 12"-deep spread bells passing on 54" of stone under them. The owner chose to
-    auger them to frost depth instead — the bell moved down, the sonotube
-    above it grew, and each now has a full 42" of cover in its own right. So they must land
-    in the plain "at least 42 inches below their lowest adjacent grade" bucket and must NOT
-    cite the soil-replacement branch: a pier that reaches frost depth does not need ASCE 32,
-    and printing the citation anyway would overstate what the drawing is relying on.
+    The court's two column pads were 12"-deep spread bells passing on 54" of stone under
+    them. The owner chose to auger them to frost depth instead — the bell moved down, the
+    sonotube above it grew, and each had a full 42" of cover in its own right. Such a pad
+    must land in the plain "at least 42 inches below their lowest adjacent grade" bucket and
+    must NOT cite the soil-replacement branch: a pier that reaches frost depth does not need
+    ASCE 32, and printing the citation anyway would overstate what the drawing relies on.
     """
-    for tag in _THE_FREESTANDING_COLUMN_PADS:
-        finding = frost_by_tag[tag]
-        assert finding.result is Result.PASS, (tag, finding.message)
-        assert "ASCE 32" not in finding.message, tag
-        assert "at least" in finding.message, (tag, finding.message)
+    finding = court_pads["PD-TEST-DEEP"]
+    assert finding.result is Result.PASS, finding.message
+    assert "ASCE 32" not in finding.message
+    assert "at least" in finding.message, finding.message
 
 
-def test_a_freestanding_column_pad_is_not_called_a_retaining_structure(frost_by_tag):
-    """R404.4 is about a structure holding up the hole it sits in. A spread bell under a
-    freestanding porch column sits in the open court at 100% overlap and holds nothing
-    back — the geometric "stands inside the excavation" test could not tell the two apart,
-    and called both retaining. What the footing is authored to be *under* can: these two
-    name ``Post`` elements, the other five name ``FoundationWall``s.
+def test_a_freestanding_column_pad_is_not_called_a_retaining_structure(court_pads):
+    """R404.4 is about a structure holding up the hole it sits in. A pad under a
+    freestanding column sits in the open court at 100% overlap and holds nothing back — the
+    geometric "stands inside the excavation" test could not tell the two apart, and called
+    both retaining. What the footing is authored to be *under* can: only a ``Footing`` under
+    a ``FoundationWall`` retains.
+
+    The shallow pad is the one with teeth: short of frost depth and unsheltered, it FAILs
+    on cover, and the FAIL must be the depth branch's, not the engineered-retaining one.
     """
-    for tag in _THE_FREESTANDING_COLUMN_PADS:
-        message = frost_by_tag[tag].message
+    for tag in ("PD-TEST-DEEP", "PD-TEST-SHALLOW"):
+        message = court_pads[tag].message
         assert "R404.4" not in message, tag
         assert "retaining" not in message, tag
+    shallow = court_pads["PD-TEST-SHALLOW"]
+    assert shallow.result is Result.FAIL, shallow.message
+    assert "SL-SG-FLOOR" in shallow.message, shallow.message
 
 
 def test_footings_away_from_the_excavation_are_unmoved(frost_by_tag):

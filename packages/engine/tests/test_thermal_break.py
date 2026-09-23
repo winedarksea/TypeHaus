@@ -23,14 +23,23 @@ from typehaus.engineering.thermal_break import KIND
 _FOOT, _STEM, _BEAM = ("TB-SG-W1", "TB-SG-E1"), ("TB-SG-W1-STEM", "TB-SG-E1-STEM"), "W-SG-BRKBM"
 _ALL = (*_FOOT, *_STEM, _BEAM)
 
-# Basis 9 (§11l): every board at the 3.5 psi cap, T = 3.5 x 8,230.5 in² = 28,806.75 lb.
+# Basis 9 (§11l) at the 17'-0" court (§12, 2026-09-22) — RE-WORKED HERE by §11l's own lines;
+# §11l itself still prints the 19'-0" figures. What moved, and why:
+#   * the beam's board is 17.75" x 216" (the veneer beam, axis to axis), not x 240":
+#     ΣA = 2 x 672 + 2 x 1,313.25 + 3,834 = 7,804.5 in², T = 3.5 x 7,804.5 = 27,315.75 lb;
+#   * line = 27,315.75 − 2 x 2,580.375 = 22,155 lb; strut 22,155 / 1,512 = 14.65 psi;
+#   * global (μ 0.25 x D 375,794 + at-rest 1,450.4 plf x (36.00' − 17.00' opening)) = 93,948.5
+#     + 27,557 = 121,506 / 27,315.75 = 4.448 (the court retains nothing over 17', not 19');
+#   * court friction at 130 pcf, 0.35 x 5,974.8 plf x 50.667' = 105,951, / 1.5 = 70,634;
+#   * W-B-S1/S4 are 118" panels (N-B-S1 at 9'-10", was 8'-10", 106"): φMn and φVc go with
+#     the panel, x 118/106 — 307,578 and 80,570.
 _PATH = {
-    "house slab-edge bearing": (23_646.0, 151_200.0, 0.1564),
-    "house slab-edge sustained load": (23_646.0, 50_394.96, 0.4692),
-    "house slab strut compression": (15.6389, 2_040.0, 0.00767),
-    "house global sliding": (1.5, 4.3089, 0.3481),
+    "house slab-edge bearing": (22_155.0, 151_200.0, 0.1465),
+    "house slab-edge sustained load": (22_155.0, 50_394.96, 0.4396),
+    "house slab strut compression": (14.6528, 2_040.0, 0.00718),
+    "house global sliding": (1.5, 4.4482, 0.3372),
     "house far-wall soil bearing": (52_213.6, 130_534.1, 0.4000),
-    "court sliding under break thrust": (0.0, 73_422.3, 0.0),
+    "court sliding under break thrust": (0.0, 70_634.1, 0.0),
 }
 _CAP = {"compliant layer strain": (0.053223, 0.125, 0.4258),
         "board strain, pour + closing": (0.016667, 0.071429, 0.2333)}
@@ -39,54 +48,61 @@ _NOTE = {
     "stem": {
         **_CAP,
         "house insulation bearing": (3.5, 15.0, 0.2333),
-        "house wall flexure": (48_384.0, 276_298.8, 0.1751),
-        "house wall shear": (2_016.0, 72_376.8, 0.0279),
+        "house wall flexure": (48_384.0, 307_578.0, 0.1573),
+        "house wall shear": (2_016.0, 80_570.4, 0.0250),
         "house floor-line reaction": (2_580.375, 3_285.0, 0.7855),
         **_PATH,
     },
     "beam": {"compliant layer strain": (0.052635, 0.125, 0.4211),
              "board strain, pour + closing": (0.013333, 0.057143, 0.2333), **_PATH},
 }
-_CAPPED_TOTAL_LB = 28_806.75
-# Basis 8 (§11j-§11k), the uncapped spring — what `compliant=None` must give back.
+_CAPPED_TOTAL_LB = 27_315.75
+# Basis 8 (§11j-§11k), the uncapped spring — what `compliant=None` must give back. At §12's
+# court: S = Σ E A/t ε = 2 x 141,120 x 1.65e-4 + 2 x 275,782.5 x 2.758e-5 + 1,006,425 x
+# 1.65e-4 = 227.84 lb/in; at 110 pcf H 56,210, μwL 96,248 over L 322.565" (μw 298.38), so
+# x = 152,458 / (227.84 + 596.76) = 184.89" and T = 227.84 x 184.89 = 42,124.6 lb.
 _PATH_8 = {
-    "house slab-edge bearing": (44_582.1, 151_200.0, 0.2949),
-    "house slab-edge sustained load": (44_582.1, 50_394.96, 0.8847),
-    "house slab strut compression": (29.4855, 2_040.0, 0.014454),
-    "house global sliding": (1.5, 2.6877, 0.5581),
+    "house slab-edge bearing": (40_545.7, 151_200.0, 0.2682),
+    "house slab-edge sustained load": (40_545.7, 50_394.96, 0.8046),
+    "house slab strut compression": (26.816, 2_040.0, 0.013145),
+    "house global sliding": (1.5, 2.8844, 0.5200),
     "house far-wall soil bearing": (52_213.6, 130_534.1, 0.4000),
     # Net thrust less the retained soil is NEGATIVE, so the row is a force, not an FS.
-    "court sliding under break thrust": (0.0, 73_422.3, 0.0),
+    "court sliding under break thrust": (0.0, 70_634.1, 0.0),
 }
 # (demand, capacity, ratio) per row, hand-worked in §11j. No fresh-concrete pressure row on
 # any board: a blockout takes the pour and the board is set after it is stripped.
 _NOTE_8 = {
+    # Closure 5.5e-6 x 30 x 184.89 = 0.030506"; the stem's (1.65e-4 − 1.3742e-4) x 184.89 =
+    # 0.005099", σ 525 x 0.005099 / 2.5 = 1.0708 psi, w 12.849 lb/in: M 14,802, R 616.8,
+    # floor line 616.8 + 12.849 x 13.4375 = 789.4 lb; line 42,124.6 − 2 x 789.4 = 40,545.7.
     "foot": {
-        "board strain, pour + closing": (0.0309399, 0.071429, 0.4332),
+        "board strain, pour + closing": (0.0305062, 0.071429, 0.4271),
         **_PATH_8,
     },
     "stem": {
-        "board strain, pour + closing": (0.0051739, 0.071429, 0.0724),
-        "house insulation bearing": (1.0860, 15.0, 0.0724),
-        "house wall flexure": (15_012.9, 276_298.8, 0.0543),
-        "house wall shear": (625.54, 72_376.8, 0.0086),
-        "house floor-line reaction": (800.65, 3_285.0, 0.2437),
+        "board strain, pour + closing": (0.0050989, 0.071429, 0.0714),
+        "house insulation bearing": (1.07077, 15.0, 0.0714),
+        "house wall flexure": (14_802.4, 307_578.0, 0.04813),
+        "house wall shear": (616.77, 80_570.4, 0.00765),
+        "house floor-line reaction": (789.43, 3_285.0, 0.2403),
         **_PATH_8,
     },
     "beam": {
-        "board strain, pour + closing": (0.0309399, 0.057143, 0.5414),
+        "board strain, pour + closing": (0.0305062, 0.057143, 0.5339),
         **_PATH_8,
     },
 }
-_NOTE_X_IN = 187.51
-_NOTE_SIGMA_PSI = {"TB-SG-W1": 6.497, "TB-SG-W1-STEM": 1.086, _BEAM: 8.122}
+_NOTE_X_IN = 184.89
+_NOTE_SIGMA_PSI = {"TB-SG-W1": 6.406, "TB-SG-W1-STEM": 1.0708, _BEAM: 8.008}
 # Every board is formed and stripped, so nothing is locked in. The second column is what
 # each board WOULD carry as a form face (§11i) — `test_a_formed_and_stripped_board_carries_
 # no_pour` reads it back, because a flag with no measured effect is not a lever.
 _NOTE_LOCK_LB = {"TB-SG-W1": 0.0, "TB-SG-W1-STEM": 0.0, _BEAM: 0.0}
-_FORM_FACE_LOCK_LB = {"TB-SG-W1": 233.3, "TB-SG-W1-STEM": 6_238.0, _BEAM: 41_162.0}
-_NOTE_TOTAL_LB = 46_183.4
-_FORM_FACE_TOTAL_LB = 100_288.0
+# The beam's lock-in follows its board: 41,162 x 216/240 = 37,046 lb at the 17'-0" court.
+_FORM_FACE_LOCK_LB = {"TB-SG-W1": 233.3, "TB-SG-W1-STEM": 6_238.0, _BEAM: 37_046.0}
+_NOTE_TOTAL_LB = 42_124.6
+_FORM_FACE_TOTAL_LB = 92_113.0             # 42,124.6 + 2 x 233.3 + 2 x 6,237.8 + 37,046.2
 _NOTE_RUN_IN = 322.565
 
 
@@ -156,10 +172,12 @@ def test_without_the_cap_basis_8_comes_back(ctx, monkeypatch) -> None:
     assert _input(out["TB-SG-W1"], "court_run") == pytest.approx(_NOTE_RUN_IN, abs=1e-3)
     assert _input(out["TB-SG-W1"], "delta_T") == 30.0
     note = next(n for n in out["TB-SG-W1-STEM"].notes if n.startswith("SENSITIVITY"))
-    assert "house floor-line reaction 0.244 -> 0.179 / 0.320 / 0.380" in note
-    assert "house slab-edge bearing 0.295 -> 0.217 / 0.387 / 0.459" in note
+    # x1.5 by hand: S 341.76, x = 152,458 / 938.52 = 162.44", T 55,516; the stem's floor
+    # line 1.4113 psi x 12 x 61.4375" = 1,040.5 (0.317); line 53,435 (0.353, 1.060).
+    assert "house floor-line reaction 0.240 -> 0.176 / 0.317 / 0.377" in note
+    assert "house slab-edge bearing 0.268 -> 0.197 / 0.353 / 0.420" in note
     # §11k: the graded 1/3 rule goes over inside the band (x1.5) — why basis 9 exists.
-    assert "house slab-edge sustained load 0.885 -> 0.651 / 1.162 / 1.378" in note
+    assert "house slab-edge sustained load 0.805 -> 0.591 / 1.060 / 1.261" in note
 
 
 @pytest.mark.parametrize("tag", _ALL)
@@ -252,9 +270,9 @@ def test_a_formed_and_stripped_board_carries_no_pour(ctx, monkeypatch) -> None:
         assert _input(out[tag], "house_thrust") == pytest.approx(_FORM_FACE_TOTAL_LB, rel=1e-4)
         assert _state(out[tag], "fresh-concrete pressure") is not None, tag
     # FOAMULAR 1000 does not close the item on its own: the thrust more than doubles, the
-    # sustained rule reads 1.864 and the beam's board is over again.
+    # sustained rule reads 1.703 (1.864 at 19'-0") and the beam's board is over again.
     assert _state(out["TB-SG-W1"], "house slab-edge sustained load").ratio == pytest.approx(
-        93_955.0 / 50_395.0, rel=1e-3)
+        85_802.3 / 50_395.0, rel=1e-3)
     assert _state(out[_BEAM], "board strain, pour + closing").ratio > 1.0
     assert out[_BEAM].status is Status.OVER
     # The cap does not replace the stripping: a board cast against adds its pour in full.
@@ -269,9 +287,10 @@ def test_a_formed_and_stripped_board_carries_no_pour(ctx, monkeypatch) -> None:
 
 def test_the_beam_board_inherits_the_stripping_statement(ctx, monkeypatch) -> None:
     """A Layer names no sequence of its own, so the veneer beam's board reads the authored
-    boards' statement — 41,162 lb of it, 76% of the lock-in that put basis 6 over."""
+    boards' statement — 37,046 lb of it at the 17'-0" court (41,162 on the 240" board), 74%
+    of the lock-in that would put the record over."""
     assert _input(_compute_with(ctx, monkeypatch, formed_and_stripped=False)[_BEAM],
-                  "board_lock_in") == pytest.approx(41_162.0, rel=1e-3)
+                  "board_lock_in") == pytest.approx(_FORM_FACE_LOCK_LB[_BEAM], rel=1e-3)
     monkeypatch.undo()
     from typehaus.engineering import thermal_break as tb
 
@@ -294,8 +313,9 @@ def _with_slab_break(ctx, **values):
 
 def test_the_slab_edge_reads_the_authored_grade(ctx, monkeypatch) -> None:
     """Strip the product off SL-B-FLOOR's break and the edge falls back to the C578 floor —
-    15 psi, an unstated grade: 1.966 OVER uncapped, still 1.043 at the cap. It never goes
-    INCOMPLETE: an ungraded row can never read over (how 4.14 stayed visible in basis 6)."""
+    15 psi, an unstated grade: 1.788 OVER uncapped, 0.977 at the cap since the 17'-0" court
+    (1.966 / 1.043 at 19'-0"). It never goes INCOMPLETE: an ungraded row can never read
+    over (how 4.14 stayed visible in basis 6)."""
     from typehaus.engineering import thermal_break as tb
 
     slab, path = _with_slab_break(ctx, psi=None, modulus_psi=None, source=None,
@@ -306,16 +326,22 @@ def test_the_slab_edge_reads_the_authored_grade(ctx, monkeypatch) -> None:
     record = {r.key: r for r in tb.compute(ctx)}["TB-SG-W1"]
     state = _state(record, "house slab-edge bearing")
     assert state.capacity == pytest.approx(15.0 * 3.5 * 432.0)
-    assert state.ratio == pytest.approx(23_646.0 / 22_680.0, rel=1e-4)
+    assert state.ratio == pytest.approx(22_155.0 / 22_680.0, rel=1e-4)
     assert "grade unstated" in state.citation
-    assert record.status is Status.OVER and record.missing == ()
+    assert record.status is Status.OK and record.missing == ()
     assert _state(record, "house slab-edge sustained load") is None  # no sheet, no rule
+    # Uncapped, the same fallback reads OVER — the row is graded, not silently dropped.
+    uncapped = _compute_with(ctx, monkeypatch, compliant=None)["TB-SG-W1"]
+    edge = _state(uncapped, "house slab-edge bearing")
+    assert edge.ratio == pytest.approx(40_545.7 / 22_680.0, rel=1e-3)
+    assert uncapped.status is Status.OVER and uncapped.missing == ()
 
 
 def test_the_sheets_sustained_load_rule_is_graded_and_foamular_400_fails_it(
         ctx, monkeypatch) -> None:
     """§11k-§11l: the 1/3 rule is a limit state. On FOAMULAR 400 (basis 7's board) even the
-    capped 23,646 lb reads 1.173 OVER (2.212 uncapped); FOAMULAR 1000 reads 0.469."""
+    capped 22,155 lb reads 1.099 OVER at the 17'-0" court (1.173 at 19'-0"); FOAMULAR 1000
+    reads 0.440."""
     from typehaus.engineering import thermal_break as tb
 
     slab, path = _with_slab_break(ctx, psi=40.0, modulus_psi=1800.0)
@@ -324,7 +350,7 @@ def test_the_sheets_sustained_load_rule_is_graded_and_foamular_400_fails_it(
                         lambda c, f: (slab, real(c, f)[1]) if real(c, f) else None)
     record = {r.key: r for r in tb.compute(ctx)}["TB-SG-W1"]
     state = _state(record, "house slab-edge sustained load")
-    assert state.ratio == pytest.approx(23_646.0 / (0.3333 * 40.0 * 1_512.0), rel=1e-4)
+    assert state.ratio == pytest.approx(22_155.0 / (0.3333 * 40.0 * 1_512.0), rel=1e-4)
     assert record.status is Status.OVER
 
 

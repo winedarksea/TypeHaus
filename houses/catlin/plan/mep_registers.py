@@ -602,7 +602,7 @@ REGISTERS_BASEMENT = [
     # the room is Occupancy.BATHROOM and its window's openable area (1.2 sf) falls short of
     # R303.3's 1.5 sf, so mechanical exhaust governs.
     Register(uid="CBRV04AAAA", tag="REG-B-EXH2", kind=DuctSystem.EXHAUST, room="RM-B-SAUNA",
-            position=pt(inch(110), ft(3, 2)), duct_ref="DU-B-ERV-R-SAUNA-EXH",
+            position=pt(inch(122), ft(3, 2)), duct_ref="DU-B-ERV-R-SAUNA-EXH",
             type_ref="REG-T-ERV-SAUNA-EXH", design_cfm=20,
             mount=Mount(kind=MountKind.WALL, elevation=inch(4))),
     # Fresh air in high, over the stones, directly above EQ-B-SAUNA-HTR (the EAST liner
