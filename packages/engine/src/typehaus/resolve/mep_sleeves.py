@@ -15,6 +15,7 @@ the same round section.
 from __future__ import annotations
 
 import math
+from dataclasses import replace
 
 from typehaus.findings import Finding, Result, Severity
 from typehaus.model.enums import Service
@@ -49,10 +50,48 @@ def _sleeve_host(model: ResolvedModel, host_ref: str):
     wall = model.wall(host_ref)
     if wall is not None:
         structure = next((ly for ly in wall.layers if ly.function == "structure"), None)
+        if structure is not None and structure.material_ref != "concrete":
+            outline = _framed_envelope_band(wall, structure)
+            if len(outline) >= 3:
+                return outline, wall.z0_m, wall.z1_m, "framed_wall", wall.tag
+            return None
         outline = structure.polygon if structure is not None else ()
         if len(outline) >= 3:
             return outline, wall.z0_m, wall.z1_m, "wall", wall.tag
     return None
+
+
+def _framed_envelope_band(wall, structure) -> Ring:
+    """A framed wall's sleeve band: its sheathing and every layer outboard of it.
+
+    That is what a sleeve set at rough-in passes through; the studs, the cavity and the
+    room-side finish are not sleeved (a wall hydrant's bore stops in the cavity). Sides are
+    read off each layer's offset along the wall normal, so layer order does not matter.
+    ``()`` when the wall has no sheathing to say which side is outboard.
+    """
+    from shapely.geometry import Polygon
+    from shapely.ops import unary_union
+
+    sheathing = next((ly for ly in wall.layers if ly.function == "sheathing"), None)
+    (x0, y0), (x1, y1) = wall.axis
+    norm = math.hypot(x1 - x0, y1 - y0)
+    if sheathing is None or norm < 1e-9:
+        return ()
+    nx, ny = -(y1 - y0) / norm, (x1 - x0) / norm
+
+    def offset(layer) -> float:
+        c = Polygon(layer.polygon).centroid
+        return c.x * nx + c.y * ny
+
+    base = offset(structure)
+    reach = offset(sheathing) - base
+    parts = [Polygon(ly.polygon) for ly in wall.layers
+             if not ly.is_cavity and ly.function != "structure" and len(ly.polygon) >= 3
+             and (offset(ly) - base) * reach >= reach * reach - 1e-9]
+    band = unary_union(parts) if parts else None
+    if band is None or band.is_empty or band.geom_type != "Polygon":
+        return ()
+    return tuple(band.exterior.coords)[:-1]
 
 
 def _resolve_sleeve(model: ResolvedModel, sleeve: SleevePenetration,
@@ -63,7 +102,7 @@ def _resolve_sleeve(model: ResolvedModel, sleeve: SleevePenetration,
         return [Finding(
             severity=Severity.ERROR, check_id="integrity.sleeve_host",
             message=(f"sleeve {sleeve.tag} references {sleeve.host_ref}, which is no "
-                     "slab, footing, cast beam or concrete wall"),
+                     "slab, footing, cast beam, concrete wall or sheathed framed wall"),
             element_tags=(sleeve.tag,), result=Result.FAIL,
         )]
     outline, z0, z1, category, host_tag = host
@@ -110,6 +149,7 @@ def _resolve_sleeve(model: ResolvedModel, sleeve: SleevePenetration,
 
     expected = _expected_sleeve_point(model, sleeve)
     offset = length(sub(center, expected)) if expected is not None else None
+    framed = category == "framed_wall"
     resolved = ResolvedSleeve(
         uid=sleeve.uid, tag=sleeve.tag, storey=storey_tag, host_slab=host_tag,
         center=center, pipe_d_m=sleeve.pipe_diameter.meters,
@@ -119,7 +159,13 @@ def _resolve_sleeve(model: ResolvedModel, sleeve: SleevePenetration,
         center_z_m=(sleeve.center_elevation.meters
                     if sleeve.center_elevation is not None else None),
         purpose=sleeve.purpose.value,
+        seal=sleeve.seal if framed else None,
+        insulation=sleeve.insulation if framed else None,
     )
+    if framed and sleeve.axis == "horizontal":
+        bore = _sleeve_bore(model, resolved, outline)
+        if bore is not None:
+            resolved = replace(resolved, length_m=length(sub(bore[1], bore[0])))
     model.sleeves.append(resolved)
     _emit_sleeve_solid(model, resolved, outline, storey_tag)
     return findings
@@ -193,7 +239,7 @@ def _sleeve_bore(model: ResolvedModel, sleeve: ResolvedSleeve,
 
     footprint = Polygon(outline)
     direction = None
-    if sleeve.host_category == "wall":
+    if sleeve.host_category in ("wall", "framed_wall"):
         wall = model.wall(sleeve.host_slab)
         if wall is not None:
             (x0, y0), (x1, y1) = wall.axis

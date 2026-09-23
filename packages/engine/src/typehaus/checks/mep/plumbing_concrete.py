@@ -171,6 +171,10 @@ def sleeve_coverage(ctx: CheckContext) -> list[Finding]:
     for sleeve in ctx.model.sleeves:
         if sleeve.tag in claimed:
             continue
+        if sleeve.host_category == "framed_wall":
+            # Set at rough-in, not cast: nothing is cored after a pour, and
+            # `mep.exterior_hydrant_protection` owns the envelope crossing.
+            continue
         if (sleeve.host_category == "footing" and sleeve.center_z_m is not None
                 and sleeve.center_z_m < sleeve.z0_m - 1e-6):
             # An under-footing protection sleeve (UPC 314.1): the pipe passes *below* the

@@ -168,6 +168,11 @@ class SleevePenetration(Element):
     the common slab drop; "horizontal" for a foundation-wall or rim crossing (sewer
     exit, water-service entry), where ``position`` is the plan point on the host and
     ``center_elevation`` is the project-frame elevation of the sleeve centerline.
+
+    A horizontal sleeve may also name a FRAMED exterior wall: set at rough-in through the
+    sheathing and everything outboard of it (a wall hydrant's barrel). That sleeve is an
+    envelope crossing, so it states how it is ``seal``-ed to the air/water control layer and
+    what ``insulation`` fills its annulus; ``mep.exterior_hydrant_protection`` reads both.
     """
 
     host_ref: str  # Slab/Footing/Wall tag, e.g. "SL-M-DECK"
@@ -178,6 +183,8 @@ class SleevePenetration(Element):
     purpose: Service = Service.DRAIN
     axis: str = "vertical"  # "vertical" | "horizontal"
     center_elevation: Length | None = None  # horizontal sleeves: project-frame center z
+    seal: str | None = None  # framed-wall sleeve: how it is sealed to the control layer
+    insulation: str | None = None  # framed-wall sleeve: what fills the annulus
 
 
 @register_element

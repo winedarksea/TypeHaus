@@ -1132,7 +1132,8 @@ class ResolvedSleeve:
     """A cast-in-place sleeve, plus how far it sits from the fixture's expected drain point.
 
     ``host_slab`` keeps its historical name but may now be any concrete host —
-    ``host_category`` says which ("slab" | "footing" | "wall"). ``axis`` is "vertical"
+    ``host_category`` says which ("slab" | "footing" | "wall"), or "framed_wall" for a
+    sleeve set through a framed wall's sheathing and outboard layers. ``axis`` is "vertical"
     for a through-slab drop, "horizontal" for a foundation-wall/rim crossing whose
     centerline sits at ``center_z_m``."""
 
@@ -1152,6 +1153,11 @@ class ResolvedSleeve:
     host_category: str = "slab"
     center_z_m: float | None = None  # horizontal sleeves: absolute centerline elevation
     purpose: str = "drain"
+    # A framed-wall sleeve ("framed_wall" host): its own bore length, and the seal and
+    # annulus insulation it states. Cast sleeves leave all three None.
+    length_m: float | None = None
+    seal: str | None = None
+    insulation: str | None = None
 
 
 @dataclass(frozen=True)

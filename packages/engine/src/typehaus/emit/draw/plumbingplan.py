@@ -73,7 +73,9 @@ def storey_above(model: ResolvedModel, storey_tag: str) -> str | None:
 
 def _sleeves_for(model: ResolvedModel, storey_tag: str):
     above = storey_above(model, storey_tag)
-    return [s for s in model.sleeves if s.storey in {storey_tag, above}]
+    # A framed-wall sleeve is a hole in a wall upstairs, not a pour seen from below.
+    return [s for s in model.sleeves if s.storey == storey_tag
+            or (s.storey == above and s.host_category != "framed_wall")]
 
 
 def has_plumbing_content(model: ResolvedModel, storey_tag: str) -> bool:

@@ -217,7 +217,8 @@ def sleeve_takeoff(model: ResolvedModel) -> list[dict[str, object]]:
         key = round(sleeve.sleeve_d_m / M_PER_IN, 2)
         entry = sleeves.setdefault(key, {"count": 0, "length_m": 0.0, "tags": []})
         entry["count"] += 1
-        entry["length_m"] += max(sleeve.z1_m - sleeve.z0_m, 0.0)
+        entry["length_m"] += (sleeve.length_m if sleeve.length_m is not None
+                              else max(sleeve.z1_m - sleeve.z0_m, 0.0))
         entry["tags"].append(sleeve.tag)
     return [
         {"sleeve_diameter_in": diameter, "count": int(entry["count"]),

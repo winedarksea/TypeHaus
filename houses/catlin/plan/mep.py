@@ -7,6 +7,7 @@ The 2,515-line original was split by system (AGENTS.md §1.1 keeps files under 5
 - ``plan/mep_venting.py``        — vent branches, the shared riser and its clamps
 - ``plan/mep_supply.py``         — house entry, hot/cold distribution, hydrant branches
 - ``plan/mep_supply_devices.py`` — in-line valves, stops and arrestors
+- ``plan/mep_supply_plant.py``   — RM-S-PLANT's watering stub and the balcony hydrant sleeve
 - ``plan/mep_hvac.py``           — System 1's conditioned-air chase, equipment, terminal types
 - ``plan/mep_erv_l1.py``         — the ERV system header (the machine, the home-run
   argument, the routing declarations), the basement plenums and their six radials
@@ -32,7 +33,8 @@ from __future__ import annotations
 
 from plan import (mep_drainage, mep_electrical, mep_erv_l1, mep_erv_l2, mep_erv_l3,
                   mep_erv_outdoor, mep_erv_risers, mep_erv_types, mep_hvac, mep_registers,
-                  mep_sleeves, mep_supply, mep_supply_devices, mep_venting)
+                  mep_sleeves, mep_supply, mep_supply_devices, mep_supply_plant,
+                  mep_venting)
 
 # Catalogs, re-exported so ``manifest.py``'s Library(...) call is untouched by the split.
 REGISTER_TYPES = (*mep_hvac.REGISTER_TYPES, *mep_erv_types.REGISTER_TYPES_ERV)
@@ -56,6 +58,7 @@ MAIN_ELEMENTS = [*mep_sleeves.SLEEVES,
                  *mep_supply.WATER_SUPPLY,
                  *mep_supply.HYDRANT_BRANCH_MAIN,
                  *mep_supply.KITCHEN_STUB_MAIN,
+                 *mep_supply_plant.PLANT_STUB_MAIN,
                  # The hole FX-M-PORCH-HYD's barrel goes through. A PipeAccessory
                  # bills the escutcheon but resolves no void, so the wall carried
                  # none — the same gap AO-M-ERV-OA answers for the ERV hood.
@@ -125,7 +128,9 @@ SECOND_ELEMENTS = [*mep_hvac.DUCTS,
                    *mep_electrical.SECOND_DEVICES,
                    *mep_supply.HYDRANT_BRANCH_SECOND,
                    *mep_supply.PENETRATIONS_HYDRANT_SECOND,
-                   *mep_supply_devices.SUPPLY_DEVICES_SECOND]
+                   *mep_supply_devices.SUPPLY_DEVICES_SECOND,
+                   *mep_supply_plant.PLANT_STUB_DEVICES_SECOND,
+                   *mep_supply_plant.HYDRANT_SLEEVE_SECOND]
 ATTIC_ELEMENTS = [*mep_venting.VENT_BRANCHES_ATTIC,
                   # STUDIO_SUPPLY and STUDIO_DRAINS are NOT here — both are filed on `main`
                   # with the rest of the project-frame plumbing (see MAIN_ELEMENTS). Only the

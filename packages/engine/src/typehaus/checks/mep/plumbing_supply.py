@@ -351,10 +351,26 @@ def exterior_hydrant_protection(ctx: CheckContext) -> list[Finding]:
                      "penetration airtight, and each is bought separately",
                 (hydrant,)))
             continue
+        # A framed-wall sleeve is optional; one that is authored must say how it is sealed
+        # to the control layer and what fills its annulus, or it is a hole with a liner.
+        sleeves = sorted((s for s in ctx.model.sleeves
+                          if s.serves_fixture == hydrant and s.host_category == "framed_wall"),
+                         key=lambda s: s.tag)
+        bare = next((s for s in sleeves if not (s.seal and s.insulation)), None)
+        if bare is not None:
+            missing = "seal" if not bare.seal else "insulation"
+            out.append(_advisory_fail(
+                cid, f"wall hydrant {hydrant}'s sleeve {bare.tag} states no {missing} — a "
+                     "sleeve through the envelope is sealed to its air/water control layer "
+                     "and insulated in its annulus, or it is a cold, leaky hole",
+                (hydrant, bare.tag)))
+            continue
+        sleeved = "".join(f"; sleeved by {s.tag} ({s.seal}; {s.insulation})"
+                          for s in sleeves)
         out.append(_pass(
             cid, f"wall hydrant {hydrant} is envelope-protected: insulated on "
-                 f"{', '.join(sorted(insulated))}, sealed with {', '.join(kit)}",
-            (hydrant, *sorted(s.tag for s in seals))))
+                 f"{', '.join(sorted(insulated))}, sealed with {', '.join(kit)}{sleeved}",
+            (hydrant, *sorted(s.tag for s in seals), *(s.tag for s in sleeves))))
     return out
 
 

@@ -708,7 +708,9 @@ HYDRANT_BRANCH_MAIN = [
             path=(pt(ft(7, 4), ft(0, 9)), pt(ft(7, 4), ft(0, 3.25)),
                   pt(ft(7, 4), ft(0, 3.25)), pt(ft(7, 4), ft(0, 3.25))),
             diameter=inch(0.75), material="pex",
-            elevations=(ft(9, 3), ft(9, 3), ft(10), ft(12)),
+            # 12'-0.829": the seat is 24" over RM-S-PLANT's finished floor, 0.829" over the
+            # deck, and so are AO-S-BALC-HYD and SP-S-BALC-HYD — one centreline.
+            elevations=(ft(9, 3), ft(9, 3), ft(10), inch(144.829)),
             wall_refs=(None, None, "W-S-S1"),
             serves=("FX-S-BALC-HYD",)),
     # The barrel: the hydrant's own metal tube + sleeve, modelled as a run so the insulation
@@ -784,7 +786,7 @@ HYDRANT_BRANCH_SECOND = [
             path=(pt(ft(7, 4), ft(0, 3.25)), pt(ft(7, 4), inch(-5))),
             diameter=inch(0.75), material="copper",
             insulation='1/2" closed-cell elastomeric sleeve, foil-faced, over the barrel',
-            elevations=(ft(2), ft(2)),
+            elevations=(inch(24.829), inch(24.829)),
             serves=("FX-S-BALC-HYD",)),
 ]
 
