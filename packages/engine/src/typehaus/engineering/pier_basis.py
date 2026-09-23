@@ -807,9 +807,9 @@ def _base_moments(ctx: EngineeringContext) -> dict[str, tuple[float, float, str]
 
     **GUARD** is IRC R301.5 / Table R301.5 note f: a 200 lb concentrated load in any
     direction at the top of the guard. Its lever runs from the guard top down to the
-    column's RESOLVED base: column, beam, joists, plank and guard. It is taken WHOLLY on one column — the two columns at a guard's end
-    bay would share it in any real distribution, and halving it is a diaphragm claim this
-    module has no standing to make.
+    column's RESOLVED base: column, beam, joists, plank and guard. It is taken WHOLLY on one
+    column — the two columns at a guard's end bay would share it in any real distribution,
+    and halving it is a diaphragm claim this module has no standing to make.
 
     The two are reported separately and NOT summed: ASCE 7-16 §2.4.1 pairs W with L at 0.75
     and a guard load is not a storey live load in the first place. ``deck_post`` grades the
