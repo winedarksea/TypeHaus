@@ -1590,6 +1590,23 @@ LTP4_GABLE_TRUSS_ANCHOR = StructuralHardware(
            "Replaced the HGA10 on 2026-09-16 (owner).",
 )
 
+#: The heavier stainless tie on a joist crossing a beam: H10A geometry in Type 316 (owner,
+#: 2026-09-22, catlin's balcony joists on their glulams). Identity only, like HU28-2Z: its
+#: own record so ``hardware_by_model`` does not caption it as the H10A, and ALLOWABLES NOT
+#: TRANSCRIBED — the stainless row and its nail condition (see ``_L_F_SSNAILS`` on the
+#: H2.5ASS) are to be read before this joint is graded.
+H10ASS_HURRICANE_TIE = StructuralHardware(
+    tag="simpson-h10ass-hurricane-tie",
+    name="H10ASS stainless hurricane tie",
+    role=ROLE_HURRICANE_TIE,
+    manufacturer=_SIMPSON,
+    model="H10ASS",
+    source="Simpson Strong-Tie H10A in Type 316 stainless — joist to beam where the joist "
+           "crosses a treated glulam. DIMENSIONS AND ALLOWABLES NOT YET TRANSCRIBED: read the "
+           "stainless row (and whether it needs ring-shank SSA nails for the carbon values) "
+           "before this joint is graded",
+)
+
 H25ASS_HURRICANE_TIE = StructuralHardware(
     tag="simpson-h2-5ass-hurricane-tie",
     name="H2.5ASS stainless hurricane/seismic tie",
@@ -2236,6 +2253,7 @@ CAPACITY_ONLY_RECORDS: tuple = (
     STHD14RJ_STRAP_HOLDOWN,
     STHD14_STRAP_HOLDOWN,
     H25ASS_HURRICANE_TIE,
+    H10ASS_HURRICANE_TIE,
     APVKB_KNEE_BRACE,
     HUCQ_CONCRETE_HANGER,
     HUC212_3_CONCRETE_HANGER,
