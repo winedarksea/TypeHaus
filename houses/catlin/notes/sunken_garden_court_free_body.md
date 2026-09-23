@@ -2496,6 +2496,14 @@ global FS, capped   = 121,409.8 / 27,315.75                       = 4.4447   rat
 global FS, uncapped = 121,409.8 / 42,074.2                        = 2.8856   ratio 0.5198
 ```
 
+Later the same day `FT-B-CS`/`-CS2` grew to `W-B-CS3`'s jamb packs, 15 7/16" + 10 9/16" = 26" of
+20" x 8" strip: + 26 x 160 / 1,728 x 150 = 361.1 lb.
+
+```
+D = 375,771.1;  friction 93,942.8;  capped 121,500.0 / 27,315.75 = 4.4480  ratio 0.3372
+                                    uncapped 121,500.0 / 42,074.2 = 2.8878  ratio 0.5194
+```
+
 ### 12a. FT-SG-S's toe grows 1'-4" (2026-09-22) — the south strip row
 
 The owner squared the planted field (11'-0" x 11'-0") by paving its shaded south 16" with
