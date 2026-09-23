@@ -58,7 +58,9 @@ BASIS = "AWC NDS 2018 Ch. 3 and 5, ANSI 117 combination values, wet service"
 #:
 #: 1: the kind as it stood before 2026-09-11.
 #: 2: re-registered 2026-09-18, with ``C_D`` a parameter rather than a frozen 1.0.
-BASIS_VERSION = "2"
+#: 3: 2026-09-22, each beam loaded with its own tributary (``_beam_tributary_ft``), not the
+#:    full joist span.
+BASIS_VERSION = "3"
 
 #: IRC R507.1 / Table R301.5 — 40 psf live plus 10 psf dead, re-exported from
 #: ``typehaus/loads.py``. One definition since 2026-09-18; there were three.
@@ -150,6 +152,54 @@ def _joist_span_ft(ctx: Any, deck: Any) -> float | None:
     return max(spans)
 
 
+def _beam_tributary_ft(ctx: Any, deck: Any, beam: Any) -> float | None:
+    """Width of deck ``beam`` carries: half of each adjacent bay, plus the joists' overhang
+    on whichever side it is the outermost bearing.
+
+    Bearing lines are the deck's ``bearing_refs`` beams, at their nodes' coordinate along
+    the joist axis, and the joist field's two outer bearings (its extent less the
+    cantilevers, read as :func:`_joist_span_ft` reads them). ``None`` when the beam or the
+    joist field does not place.
+    """
+    resolved = next((f for f in ctx.model.floors if f.tag == deck.tag), None)
+    joists = [m for m in resolved.members if m.category == "joist"] if resolved else []
+    if not joists:
+        return None
+    axis = 0 if (deck.joists.direction or "x") == "x" else 1
+
+    def line_of(element: Any) -> float | None:
+        nodes = [ctx.plan.by_tag(getattr(element, name, None) or "")
+                 for name in ("start_node", "end_node")]
+        if any(n is None or getattr(n, "position", None) is None for n in nodes):
+            return None
+        return sum(n.position.xy_m[axis] for n in nodes) / 2.0
+
+    here = line_of(beam)
+    if here is None:
+        return None
+    spec = deck.joists
+    base = spec.cantilever.meters if spec.cantilever is not None else 0.0
+    start = spec.cantilever_start.meters if spec.cantilever_start is not None else base
+    end = spec.cantilever_end.meters if spec.cantilever_end is not None else base
+    low = min(min(m.p0[axis], m.p1[axis]) for m in joists)
+    high = max(max(m.p0[axis], m.p1[axis]) for m in joists)
+    lines = [low + start, high - end]
+    for ref in spec.bearing_refs or ():
+        element = ctx.plan.by_tag(ref)
+        if element is not None and (c := line_of(element)) is not None:
+            lines.append(c)
+    # one line per bearing, however many ways it was found (3" is well inside a beam width)
+    merged: list[float] = []
+    for c in sorted(lines):
+        if not merged or c - merged[-1] > 0.0762:
+            merged.append(c)
+    i = min(range(len(merged)), key=lambda k: abs(merged[k] - here))
+    width = 0.0
+    width += (merged[i] - merged[i - 1]) / 2.0 if i > 0 else start
+    width += (merged[i + 1] - merged[i]) / 2.0 if i < len(merged) - 1 else end
+    return width / _M_PER_FT
+
+
 def _section(beam: Any) -> tuple[float, float] | None:
     """``(width in, depth in)`` of the beam's true section."""
     from typehaus.resolve.framing.profiles import cross_section
@@ -177,7 +227,7 @@ def _volume_factor(width_in: float, depth_in: float, span_ft: float) -> float:
 
 
 def nds_states(width_in: float, depth_in: float, span_ft: float,
-               joist_span_ft: float, *,
+               tributary_ft: float, *,
                load_duration_factor: float = LOAD_DURATION_FACTOR,
                live_psf: float = DECK_LIVE_LOAD_PSF,
                dead_psf: float = DECK_DEAD_LOAD_PSF) -> tuple[LimitState, ...]:
@@ -188,9 +238,7 @@ def nds_states(width_in: float, depth_in: float, span_ft: float,
     glulam carrying a roof is graded at snow and Table 2.3.2's 1.15, and while ``C_D`` was a
     module constant read inside this function there was no way to express that at all.
     """
-    # Half the joist span each side is this beam's strip of deck. Exact for an interior beam
-    # of a regular grid and an over-count for an edge one, which is the safe direction.
-    tributary_ft = joist_span_ft
+    # ``tributary_ft`` is this beam's strip of deck (``_beam_tributary_ft``).
     load_plf = (live_psf + dead_psf) * tributary_ft
     live_plf = live_psf * tributary_ft
 
@@ -312,10 +360,12 @@ def _one(ctx: EngineeringContext, tag: str, beam: Any, deck: Any) -> Engineering
     section = _section(beam)
     span_ft = _span_ft(ctx, beam)
     joist_span_ft = _joist_span_ft(ctx, deck)
+    tributary_ft = _beam_tributary_ft(ctx, deck, beam)
     missing = [name for name, value in (
         (f"a resolvable cross-section for Beam.size {beam.size!r}", section),
         ("two placed nodes to take the beam's span between", span_ft),
         (f"resolved joists on {deck.tag} to take the carried span from", joist_span_ft),
+        (f"a placed bearing line for {tag} among {deck.tag}'s joists", tributary_ft),
     ) if value is None]
     if missing:
         return EngineeringRecord(
@@ -325,7 +375,7 @@ def _one(ctx: EngineeringContext, tag: str, beam: Any, deck: Any) -> Engineering
             missing=tuple(missing), element_tags=tags)
 
     width_in, depth_in = section
-    states = nds_states(width_in, depth_in, span_ft, joist_span_ft)
+    states = nds_states(width_in, depth_in, span_ft, tributary_ft)
     volume = _volume_factor(width_in, depth_in, span_ft)
     worst = max(states, key=lambda s: s.demand / s.capacity if s.capacity else 0.0)
     over = any(not state.ok for state in states)
@@ -334,7 +384,7 @@ def _one(ctx: EngineeringContext, tag: str, beam: Any, deck: Any) -> Engineering
         Quantity("width", width_in, "in", 0.001),
         Quantity("depth", depth_in, "in", 0.001),
         Quantity("span", span_ft, "ft", 0.01),
-        Quantity("carried_joist_span", joist_span_ft, "ft", 0.01),
+        Quantity("tributary", tributary_ft, "ft", 0.01),
         Quantity("live_load", DECK_LIVE_LOAD_PSF, "psf", 0.1),
         Quantity("dead_load", DECK_DEAD_LOAD_PSF, "psf", 0.1),
         # ** THE REFERENCE VALUES AND EVERY ADJUSTMENT, IN THE FINGERPRINT. ** These are
@@ -364,9 +414,8 @@ def _one(ctx: EngineeringContext, tag: str, beam: Any, deck: Any) -> Engineering
         f"C_V {volume:.3f} (NDS §5.3.6, x = 20) and C_L are NOT cumulative — §5.3.6 takes "
         f"the LESSER — and the joist field holds the compression edge every 16\", so C_L is "
         f"1.0 and C_V governs. Leaving C_V out is the commonest error in a hand check here.",
-        f"Tributary is the FULL joist span ({joist_span_ft:.2f}'), not half of it: exact for "
-        f"an interior beam of a regular grid and an over-count for an edge one, which is the "
-        f"safe direction.",
+        f"Tributary {tributary_ft:.2f}' of a {joist_span_ft:.2f}' joist span: half of each "
+        f"adjacent bay, plus the joist overhang where this is the outermost bearing.",
         "Not graded: lateral-torsional buckling at an unsheathed stage, connection design at "
         "either end, the cantilever beyond the columns (IRC R507.5.1 grades that), and "
         "long-term creep deflection.",
@@ -379,6 +428,7 @@ def _one(ctx: EngineeringContext, tag: str, beam: Any, deck: Any) -> Engineering
         basis_version=BASIS_VERSION, basis=BASIS,
         status=Status.OVER if over else Status.OK,
         summary=(f"{tag}: a {width_in:g}\" x {depth_in:g}\" glulam spanning "
-                 f"{span_ft:.2f}' over a {joist_span_ft:.2f}' joist span, WET service — "
+                 f"{span_ft:.2f}' carrying {tributary_ft:.2f}' of a {joist_span_ft:.2f}' "
+                 f"joist span, WET service — "
                  f"{describe_states(states)}"),
         inputs=inputs, limit_states=states, notes=notes, element_tags=tags)

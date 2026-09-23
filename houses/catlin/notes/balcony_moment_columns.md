@@ -471,6 +471,30 @@ BM-SG-BLC, L = 6.75'  — every ratio lower; bearing governs at d/c 0.41
 planter margin — 9-1/2" would run about 41% in bending against 26% here — and is a decision,
 not a calculation. Recorded so nobody "optimises" the depth back out.
 
+### 5a. Edge beams carry their own strip (2026-09-22)
+
+The block above loads every beam with the FULL joist span. That is exact for BM-SG-BLC and
+an over-count for the two edge beams, which carry half a bay plus the joist overhang past
+them. `glulam_beam` (basis 3) now loads each beam with its own tributary: half of each
+adjacent bay, plus the overhang where it is the outermost bearing.
+
+```
+BM-SG-BLW / BLE: bays 10.00', overhang 0.75'   tributary = 10.00/2 + 0.75 = 5.75'
+w = 50 psf × 5.75'                                = 287.5 plf
+L = 9.667' node to node (the engine's beam span)
+  M   = 287.5 × 9.667²/8 = 3,358 lb-ft = 40,300 lb-in
+  f_b = 40,300 / 82.24 = 490 psi       vs 1,920 psi     d/c 0.26
+  V at d: 287.5 (9.667/2 − 0.99) = 1,105 lb
+  f_v = 1.5 × 1,105 / 41.56 = 39.9 psi vs 262.5 psi     d/c 0.15
+  bearing: R = 287.5 × 9.667/2 = 1,390 lb / 10.5 in² = 132.3 psi
+                                       vs 392.2 psi     d/c 0.34   governs
+  Δ_live = 5 (230/12) 116.0⁴ / (384 × 1.499e6 × 488.4) = 0.062"
+                                       vs L/360 = 0.322" d/c 0.19
+```
+
+The same rule on an 18'-0" wall-to-wall deck with a 9" overhang gives 9.00 + 0.75 =
+**9.75'** per edge beam, not 18'. `tests/test_pier_calcs.py` reproduces both.
+
 Black locust for the two centre pillars remains an option (IRC R202 naturally durable; mill
 order; engineered values) and is **not** taken here.
 

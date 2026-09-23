@@ -938,6 +938,47 @@ def test_wet_service_is_applied_to_the_glulam() -> None:
     assert wet < dry
 
 
+def test_an_edge_glulam_carries_its_own_strip_not_the_whole_span() -> None:
+    """§5a of the note: half a bay plus the overhang, 5.75' on a 10' bay with 9" over."""
+    from typehaus.engineering.glulam_beam import nds_states
+
+    states = {s.name: s for s in nds_states(3.5, 11.875, 9.667, 5.75)}
+    assert states["bending"].demand == pytest.approx(490.0, abs=1.0)
+    assert states["shear parallel to grain"].demand == pytest.approx(39.9, abs=0.2)
+    bearing = states["bearing, compression perpendicular"]
+    assert bearing.demand == pytest.approx(132.3, abs=0.2)
+    assert bearing.demand / bearing.capacity == pytest.approx(0.34, abs=0.005)
+    assert states["live-load deflection"].demand == pytest.approx(0.062, abs=0.001)
+
+
+@pytest.mark.parametrize(("lines_ft", "beam_ft", "expected"), [
+    ((0.75, 10.75, 20.75), 0.75, 5.75),    # an edge beam: half a bay plus the overhang
+    ((0.75, 10.75, 20.75), 10.75, 10.0),   # the interior beam: half of each bay
+    ((0.75, 18.75), 0.75, 9.75),           # 18' wall to wall, 9" over
+])
+def test_the_tributary_rule(lines_ft, beam_ft, expected) -> None:
+    from types import SimpleNamespace
+
+    from typehaus.engineering.glulam_beam import _beam_tributary_ft
+    from typehaus.quantities import inch
+
+    m = 0.3048
+    node = {f"N{i}": SimpleNamespace(position=SimpleNamespace(xy_m=(x * m, 0.0)))
+            for i, x in enumerate(lines_ft)}
+    beams = {f"B{i}": SimpleNamespace(start_node=f"N{i}", end_node=f"N{i}")
+             for i in range(len(lines_ft))}
+    lo, hi = lines_ft[0] - 0.75, lines_ft[-1] + 0.75
+    joist = SimpleNamespace(category="joist", p0=(lo * m, 0.0), p1=(hi * m, 0.0))
+    deck = SimpleNamespace(tag="FS", joists=SimpleNamespace(
+        direction="x", bearing_refs=tuple(beams), cantilever=inch(9),
+        cantilever_start=None, cantilever_end=None))
+    ctx = SimpleNamespace(
+        model=SimpleNamespace(floors=[SimpleNamespace(tag="FS", members=[joist])]),
+        plan=SimpleNamespace(by_tag=lambda t: node.get(t) or beams.get(t)))
+    beam = beams[f"B{lines_ft.index(beam_ft)}"]
+    assert _beam_tributary_ft(ctx, deck, beam) == pytest.approx(expected, abs=1e-6)
+
+
 def test_no_deck_beam_is_an_engineering_item_any_more(results) -> None:
     """The kind is deregistered. A published table read is not something a seal adds to."""
     assert not [key for key in results if key.startswith("deck_beam/")]

@@ -18,6 +18,12 @@ Reminder: all items should design around clean export to Revit/Sketchup/IFC (fol
   retypes through a centre-holding macro. Re-affirmed deferred 2026-08-07.
 ## Remaining Work
 
+- **Deck beam tributary is still the full joist span outside `glulam_beam`** (2026-09-22).
+  `engineering/glulam_beam._beam_tributary_ft` loads an edge beam with half a bay plus the
+  overhang; `pier_basis`, `post_bearing`, `analytical/loads.py` and `checks/structural/deck.py
+  _tributaries_ft2` still take the whole span. Safe-side, and `test_the_two_tributary_rules_agree`
+  pins them to each other, so move them together.
+
 - **~220 sf of gypsum is still billed through the joist band** on every storey-line partition.
   `resolve/partition_top.py` deliberately moves only the FRAMING top: cutting the body at the
   joist soffit as well costs four FAILs (`code.R312_1_1_stair_open_side` on `ST-S2A`,
