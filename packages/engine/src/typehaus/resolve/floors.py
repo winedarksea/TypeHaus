@@ -281,9 +281,13 @@ def _extra_lines(system: FloorSystem, positions: list[float], perp0: float,
     for length in system.joists.extra_lines:
         perp = length.meters
         nearest = min((abs(perp - p) for p in positions), default=float("inf"))
+        # Against the extra lines already laid too: two that coincide share one tie.
+        sibling = min((abs(perp - p) for p in kept), default=float("inf"))
         why = ("lies outside the joist field" if not perp0 < perp < perp1
                else f"is {nearest / inch(1).meters:.2f}\" from a regular joist line, under "
                     f"the 6\" that keeps its own tie" if nearest < _EXTRA_LINE_MIN_M - 1e-9
+               else f"is {sibling / inch(1).meters:.2f}\" from another extra line, under "
+                    f"the 6\" that keeps its own tie" if sibling < _EXTRA_LINE_MIN_M - 1e-9
                else None)
         if why is None:
             kept.append(perp)

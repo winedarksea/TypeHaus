@@ -334,3 +334,35 @@ def test_a_broken_joint_really_does_fail(ctx) -> None:
     failed = [f for f in uplift_path_coverage(broken_ctx) if f.result is Result.FAIL]
     assert [f for f in failed if "RF-HOUSE" in f.element_tags], \
         "a roof that declares no bearing has no derivable tie and must FAIL"
+
+
+# --- authored ties are checked crossing by crossing --------------------------------------
+
+
+def _without_connector(plan, tag: str):
+    from typehaus.model.structure import Connector
+
+    for storey in plan.storeys:
+        elements = plan.storey_elements(storey.tag)
+        kept = [e for e in elements if not (isinstance(e, Connector) and e.tag == tag)]
+        if len(kept) != len(elements):
+            return plan.with_elements(storey.tag, kept)
+    raise AssertionError(f"fixture regression: catlin has no connector {tag}")
+
+
+def test_the_balcony_ties_cover_every_crossing(findings) -> None:
+    """24 authored ties (H10ASS x 20, H2.5ASS x 4), one per joist line per beam."""
+    deck = [f for f in findings if f.element_tags and f.element_tags[0] == "FS-SG-DECK"]
+    assert deck and all(f.result is Result.PASS for f in deck), [f.message for f in deck]
+    assert any("at every derived bearing" in f.message for f in deck)
+
+
+def test_a_missing_authored_tie_is_named_at_its_crossing(catlin_plan) -> None:
+    """One tie naming the deck no longer vouches for all 24 crossings."""
+    plan = _without_connector(catlin_plan, "CN-SG-TIE-W05")
+    fails = [f for f in uplift_path_coverage(check_context(plan, profile=None))
+             if f.result is Result.FAIL]
+    assert len(fails) == 1, [f.message for f in fails]
+    assert fails[0].element_tags == ("FS-SG-DECK", "BM-SG-BLW")
+    assert "no authored tie within 3\"" in fails[0].message
+    assert "(9.00'," in fails[0].message

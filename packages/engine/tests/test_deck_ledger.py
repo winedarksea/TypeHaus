@@ -81,6 +81,24 @@ def test_on_a_wood_band_the_dca6_table_grades_the_spacing():
     assert all(f.result is Result.FAIL for f in lag)  # 18" gap vs 10" for lags
 
 
+@pytest.mark.parametrize(("size", "expected"), [
+    ("1/2 through-bolt", "through-bolt"), ('1/2" THRU BOLT', "through-bolt"),
+    ("1/2x5 LAG", "lag screw"), ("1/2 lag screw", "lag screw"),
+    ("1/2 bolt", None), ("LedgerLOK 5", None), ("", None),
+])
+def test_the_dca6_row_is_read_off_an_explicit_spelling(size, expected):
+    from typehaus.checks.structural.deck_ledger import wood_fastener
+
+    assert wood_fastener(size) == expected
+
+
+def test_an_unnamed_wood_fastener_is_unknown_not_the_through_bolt_row():
+    findings = deck_ledger(check_context(plan(wood=True, fastener="1/2 bolt", spacing_in=16.0),
+                                         profile=None))
+    assert all(f.result is Result.UNKNOWN for f in findings), [f.message for f in findings]
+    assert "'1/2 bolt' names neither" in findings[0].message
+
+
 def test_no_anchors_fails():
     finding = _by_tag(deck_ledger(check_context(plan(spacing_in=None), profile=None)), "BM-LW")
     assert finding.result is Result.FAIL

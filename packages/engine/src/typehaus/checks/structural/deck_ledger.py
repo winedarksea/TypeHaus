@@ -118,9 +118,22 @@ def _carried_span_ft(ctx: CheckContext, beam: Beam) -> float | None:
     return max(spans) if spans else None
 
 
-def _wood_limit_in(size: str, span_ft: float) -> tuple[float, str] | None:
-    row, label = ((THROUGH_BOLT_SPACING_IN, "through-bolt") if "bolt" in size.lower()
-                  else (LAG_SPACING_IN, "lag screw"))
+def wood_fastener(size: str) -> str | None:
+    """``"lag screw"`` / ``"through-bolt"`` read off an authored size, or ``None``.
+
+    Only an explicit spelling picks a row: a bare "bolt", a structural screw or a blank would
+    otherwise fall to one by accident, and the through-bolt row is the permissive one.
+    """
+    text = size.lower().replace("-", " ")
+    if "lag" in text:
+        return "lag screw"
+    if "bolt" in text and ("through" in text or "thru" in text):
+        return "through-bolt"
+    return None
+
+
+def _wood_limit_in(label: str, span_ft: float) -> tuple[float, str] | None:
+    row = THROUGH_BOLT_SPACING_IN if label == "through-bolt" else LAG_SPACING_IN
     for tabulated, spacing in zip(_JOIST_SPANS_FT, row, strict=True):
         if span_ft <= tabulated + 1e-6:
             return spacing, f"the {label} row at a {tabulated:.0f}' joist span"
@@ -180,8 +193,17 @@ def _one(ctx: CheckContext, beam: Beam) -> Finding:
                        f"anchors with washers and sets spacing and embedment by the anchor "
                        f"manufacturer's recommendations; no prescriptive row covers it",
                        tags, code="AWC DCA6 (Expansion and Adhesive Anchors)")
+    kinds = {c.size: wood_fastener(c.size) for c in fasteners}
+    unread = sorted(size or "(blank)" for size, kind in kinds.items() if kind is None)
+    if unread:
+        return unknown(_CID, f"{what}; DCA6 Table 5 has a lag row and a through-bolt row, and "
+                       f"{', '.join(repr(u) for u in unread)} names neither (spell 'lag' or "
+                       f"'through-bolt' in Connector.size)", tags,
+                       code="IRC Table R507.9.1.3(1)")
+    # Mixed fasteners take the tighter (lag) row.
+    label = "lag screw" if "lag screw" in kinds.values() else "through-bolt"
     span_ft = _carried_span_ft(ctx, beam)
-    limit = None if span_ft is None else _wood_limit_in(fasteners[0].size, span_ft)
+    limit = None if span_ft is None else _wood_limit_in(label, span_ft)
     if limit is None:
         return unknown(_CID, f"{what}; no DCA6 Table 5 row for the joist span it carries",
                        tags, code="IRC Table R507.9.1.3(1)")

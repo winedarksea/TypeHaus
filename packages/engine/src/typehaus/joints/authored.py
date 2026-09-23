@@ -19,7 +19,8 @@ from typehaus.model.structure import Connector
 from typehaus.resolve.model import ResolvedModel
 
 
-def _authored_connectors(model: ResolvedModel) -> list:
+def authored_connectors(model: ResolvedModel) -> list:
+    """Every authored ``Connector`` in the plan."""
     return [element for storey in model.plan.storeys
             for element in model.plan.storey_elements(storey.tag)
             if isinstance(element, Connector)]
@@ -34,7 +35,7 @@ def tags_covered_by(model: ResolvedModel, kinds: frozenset) -> set:
     being re-resolved at a slightly different coordinate.
     """
     covered: set = set()
-    for element in _authored_connectors(model):
+    for element in authored_connectors(model):
         if element.kind in kinds:
             covered.update(element.connects)
     return covered
@@ -48,7 +49,7 @@ def unanchored_post_tags(model: ResolvedModel) -> set:
     bill one. See ``Connector.anchored`` for what the plan is claiming when it sets this.
     """
     unanchored: set = set()
-    for element in _authored_connectors(model):
+    for element in authored_connectors(model):
         if element.kind is ConnectorKind.POST_BASE and not getattr(element, "anchored", True):
             unanchored.update(element.connects)
     return unanchored
@@ -62,7 +63,7 @@ def authored_joints(model: ResolvedModel, kinds: frozenset) -> set:
     beam/post joint (a post carries several beams, and they are not all strapped).
     """
     joints: set = set()
-    for element in _authored_connectors(model):
+    for element in authored_connectors(model):
         if element.kind not in kinds:
             continue
         tags = list(element.connects)
@@ -75,7 +76,7 @@ def authored_joints(model: ResolvedModel, kinds: frozenset) -> set:
 def hanger_specs(model: ResolvedModel) -> dict[tuple[str, str], str]:
     """Authored part per ``(carrier tag, floor tag)`` — see ``Connector.hanger_spec_pair``."""
     specs: dict[tuple[str, str], str] = {}
-    for element in _authored_connectors(model):
+    for element in authored_connectors(model):
         pair = element.hanger_spec_pair(model.plan)
         if pair is not None and element.size:
             specs[pair] = element.size

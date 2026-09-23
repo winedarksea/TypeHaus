@@ -495,6 +495,43 @@ L = 9.667' node to node (the engine's beam span)
 The same rule on an 18'-0" wall-to-wall deck with a 9" overhang gives 9.00 + 0.75 =
 **9.75'** per edge beam, not 18'. `tests/test_pier_calcs.py` reproduces both.
 
+### 5b. The beam's own bearings, by statics (2026-09-22, basis 4)
+
+§5a took `wL/2` over the node-to-node 9.667'. The beams do not bear at their nodes: BM-SG-BLW
+runs y = −10.50' to −0.833' over PT-SG-BF1 (y = −9.833') and PT-SG-BR1 (y = −2.50'), so
+a = 0.667' south overhang, s = 7.333' back span, b = 1.667' north overhang (BLE the same on
+BF3/BR3). The rear reaction was under-reported; bending and shear were over-stated.
+Dead on all three segments, live on each of the 8 subsets of them (ASCE 7-16 §4.3.3).
+
+```
+w_D = 10 × 9.75 = 97.5 plf   w_L = 40 × 9.75 = 390 plf   w = 487.5 plf
+S = 82.26 in³  I = 488.4 in⁴  E' = 1.8e6 × 0.833 = 1.499e6 psi  EI = 7.323e8 lb-in²
+
+Full load:  W = 487.5 × 9.667 = 4,712.5 lb at 4.833' from the south tip
+  R_BR1 = 4,712.5 × (4.833 − 0.667) / 7.333 = 2,678 lb   R_BF1 = 2,035 lb
+Bearing — live on span + north overhang, south overhang dead only (Σ M about BF1):
+  −65.0 × 0.333 + 3,575 × 3.667 + 812.5 × 8.167 = 19,722 lb-ft
+  R_BR1 = 19,722 / 7.333 = 2,689 lb → 2,689 / 10.5 = 256.1 psi vs 392.2   d/c 0.65  governs
+Bending — live on the span only (Σ M about BR1):
+  R_BF1 = (3,575 × 3.667 + 65.0 × 7.667 − 162.5 × 0.833) / 7.333 = 1,837 lb
+  V = 0 at 1,772 / 487.5 = 3.635' into the span
+  M = −21.7 + 1,772 × 3.635 − 487.5 × 3.635²/2 = 3,199 lb-ft
+  f_b = 3,199 × 12 / 82.26 = 466.6 psi vs 1,920                           d/c 0.24
+Shear at d — the bearing pattern: 2,689 − 812.5 − 487.5 × 0.990 = 1,394 lb
+  f_v = 1.5 × 1,394 / 41.56 = 50.3 psi vs 262.5                           d/c 0.19
+Deflection, live alone — span only: 5 (32.5) 88.0⁴ / (384 EI) = 0.0347"
+                                    vs 88.0/360 = 0.244"                  d/c 0.14
+  north tip, live on both overhangs: 32.5·20⁴/8EI + (6,500·88/3EI)·20 + (1,040·88/6EI)·20
+    = 0.00089 + 0.00521 + 0.00042 = 0.0065" vs 2 × 20/360 = 0.111" (R301.7 note b)
+```
+
+A single bearing (a cantilever) or three (continuous) is INCOMPLETE naming why, never
+guessed. **Against `haus analysis --solve`:** PT-SG-BR1 live 3,955 lb, BF1 3,006 lb split
+0.568 / 0.432 — exactly 2,678 / 4,712.5 — so the solve's distribution agrees. Its magnitude
+is 18/9.75 = 1.85× this record's because the analytical loads (`pier_basis`) still give each
+edge beam the whole 18' joist span (§5a's rule is `glulam_beam`'s alone): 3,955 × 9.75/18 =
+2,142 lb live + 989 × 9.75/18 = 536 lb dead = 2,678 lb. Conservative there, not reconciled.
+
 Black locust for the two centre pillars remains an option (IRC R202 naturally durable; mill
 order; engineered values) and is **not** taken here.
 

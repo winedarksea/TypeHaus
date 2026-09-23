@@ -121,3 +121,12 @@ def test_a_block_beside_an_extra_line_stops_at_it():
         lo, hi = sorted((m.p0[0], m.p1[0]))
         assert hi <= inch(102).meters - inch(0.75).meters + 1e-9 or \
             lo >= inch(102).meters + inch(0.75).meters - 1e-9
+
+
+def test_two_extra_lines_within_6_inches_of_each_other_are_refused():
+    """A duplicate, and a near-sibling 4" off, each lay one line only."""
+    for extra in ([inch(102), inch(102)], [inch(102), inch(106)]):
+        model, findings = _model(extra)
+        errors = [f for f in findings if f.check_id == "integrity.floor_extra_line"]
+        assert len(errors) == 1 and "from another extra line" in errors[0].message, extra
+        assert len([m for m in _joists(model) if "-x" in m.child_key]) == 1

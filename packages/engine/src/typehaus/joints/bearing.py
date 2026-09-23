@@ -24,7 +24,11 @@ from typehaus.hardware.plan_geometry import (
     distance_point_to_segment,
     segment_crossing,
 )
-from typehaus.joints.authored import authored_joints, tags_covered_by
+from typehaus.joints.authored import (
+    authored_connectors,
+    authored_joints,
+    tags_covered_by,
+)
 from typehaus.joints.hosts import member_storeys
 from typehaus.joints.model import axis_of
 from typehaus.model.enums import ConnectorKind
@@ -34,6 +38,10 @@ from typehaus.resolve.model import ResolvedModel
 from typehaus.resolve.sweep import interpolate_along, straight_sweep_band
 
 _M_TO_FT = 3.280839895013123
+#: How far below a support's top a member underside may read and still sit on it. A level
+#: joist on a TILTED beam is seated ~1/64" under the interpolated top (catlin's balcony); a
+#: hung end is a full carrier depth below, so 1/8" cannot admit one.
+_SEAT_SLACK_M = 0.125 * M_PER_IN
 
 @dataclass(frozen=True)
 class BearingSupport:
@@ -197,7 +205,7 @@ def _bears_on(point: tuple, bottom_z_m: float, support: BearingSupport,
         top_z_m = interpolate_along((support.p0, support.p1), point,
                                     support.top_z_m, support.top_z_end_m)
     rise_m = bottom_z_m - top_z_m
-    return -1e-9 <= rise_m <= rules.bearing_seat_tolerance_in * M_PER_IN
+    return -_SEAT_SLACK_M <= rise_m <= rules.bearing_seat_tolerance_in * M_PER_IN
 
 
 def _seat_z(point: tuple, support: BearingSupport) -> float:
@@ -277,24 +285,64 @@ def bearing_line_tags(model: ResolvedModel, refs: tuple, rules: UpliftTieRules) 
 
 def bearing_connections(model: ResolvedModel, rules: UpliftTieRules) -> list:
     """Every rafter/truss-heel/joist end that bears on a declared support."""
+    found = {(c.support_tag, c.key_point): c
+             for c, _support in _derive(model, rules, authored=False)}
+    return sorted(found.values(), key=lambda c: (c.support_tag, c.key_point))
+
+
+def authored_tie_gaps(model: ResolvedModel, rules: UpliftTieRules,
+                      tolerance_in: float = 3.0) -> list:
+    """Bearings of an assembly whose ties are AUTHORED that no authored tie sits at.
+
+    A tie naming a roof or floor stands the derived rule down for the whole assembly, so the
+    coverage has to be checked crossing by crossing: a derived bearing with no authored
+    tie (naming that assembly) within ``tolerance_in`` along its support is a gap.
+    """
+    ties: dict = {}
+    for element in authored_connectors(model):
+        if element.kind in _SEATED_KINDS:
+            for tag in element.connects:
+                ties.setdefault(tag, []).append(element.position.xy_m)
+    tol_m = tolerance_in * M_PER_IN
+    gaps: dict = {}
+    for connection, support in _derive(model, rules, authored=True):
+        (ax, ay), (bx, by) = support.p0[:2], support.p1[:2]
+        length = math.hypot(bx - ax, by - ay) or 1.0
+        ux, uy = (bx - ax) / length, (by - ay) / length
+        reach_m = max(support.half_width_m, rules.bearing_plan_tolerance_in * M_PER_IN)
+        px, py = connection.point_m
+
+        if not any(abs((tx - px) * ux + (ty - py) * uy) <= tol_m
+                   and abs((tx - ax) * uy - (ty - ay) * ux) <= reach_m
+                   for tx, ty in ties.get(connection.assembly_tag, ())):
+            gaps[(connection.support_tag, connection.key_point)] = connection
+    return sorted(gaps.values(), key=lambda c: (c.assembly_tag, c.support_tag, c.key_point))
+
+
+_SEATED_KINDS = frozenset({ConnectorKind.HURRICANE_TIE, ConnectorKind.HOLD_DOWN})
+
+
+def _derive(model: ResolvedModel, rules: UpliftTieRules, *, authored: bool):
+    """``(connection, support)`` per seated end or crossing.
+
+    ``authored=False`` is the take-off: assemblies an authored tie names are skipped, and so
+    is a support named together with its assembly by one. ``authored=True`` derives ONLY
+    those assemblies, ignoring the hand-off, so their ties can be checked point by point.
+    """
     fallback_m = rules.bearing_plan_tolerance_in * M_PER_IN
     grid_m = max(rules.coincident_bearing_tolerance_in, 1e-6) * M_PER_IN
-    kinds = frozenset({ConnectorKind.HURRICANE_TIE, ConnectorKind.HOLD_DOWN})
-    # The ASSEMBLY hand-off is coarse and should be: a tie naming a roof or a floor is the
-    # plan saying "I own this deck's uplift", and there is nothing to disambiguate.
-    covered = tags_covered_by(model, kinds)
-    # The SUPPORT hand-off must not be this coarse: a connector naming a support stands the
-    # rule down only for the specific member bearing on it, never for every member that
-    # support carries. ``authored_joints`` is the pairwise answer — a support stands the rule
-    # down only when one connector names the support and the thing bearing on it TOGETHER.
-    joints = authored_joints(model, kinds)
+    # The ASSEMBLY hand-off is coarse: a tie naming a roof or a floor is the plan saying "I
+    # own this deck's uplift"; ``authored_tie_gaps`` checks the claim tie by tie.
+    covered = tags_covered_by(model, _SEATED_KINDS)
+    # The SUPPORT hand-off is pairwise: a connector naming a support stands the rule down
+    # only for the member bearing on it (``authored_joints``).
+    joints = set() if authored else authored_joints(model, _SEATED_KINDS)
     elements_by_tag = {element.tag: element
                        for storey in model.plan.storeys
                        for element in model.plan.storey_elements(storey.tag)}
 
-    found: dict = {}
     for resolved, refs, categories, on_walls in _tied_assemblies(model, elements_by_tag, rules):
-        if resolved.tag in covered:
+        if (resolved.tag in covered) is not authored:
             continue
         supports: list = []
         seen: set = set()
@@ -332,14 +380,13 @@ def bearing_connections(model: ResolvedModel, rules: UpliftTieRules) -> list:
                     ties.append((crossing[0], support))
             for point, support in ties:
                 key_point = (round(point[0] / grid_m), round(point[1] / grid_m))
-                found[(support.tag, key_point)] = BearingConnection(
+                yield BearingConnection(
                     support_tag=support.tag, storey=resolved.storey,
                     assembly_tag=resolved.tag, member_profile=member.profile,
                     member_category=member.category, key_point=key_point,
                     support_treated=support.treated,
                     point_m=(point[0], point[1]), z_m=_seat_z(point, support),
-                    axis=axis_of(support.p0, support.p1))
-    return sorted(found.values(), key=lambda c: (c.support_tag, c.key_point))
+                    axis=axis_of(support.p0, support.p1)), support
 
 
 @dataclass(frozen=True)

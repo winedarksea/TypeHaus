@@ -921,26 +921,22 @@ def test_the_cover_is_read_off_the_authored_cage_not_the_code_minimum(results) -
 #: The R507.5.1 cantilever limit moves the right way with it: the north overhang falls
 #: 20" -> 17" against a limit that rises 22" -> 22.75".
 #:
-#: ** SINCE 2026-09-22 TWO BEAMS, NODE TO NODE 9.667', EACH CARRYING 9.75' ** (note §5a):
-#: BM-SG-BLC retired with the centre line and the 2x12 deck spans 18'-0" wall to wall, so
-#: an edge beam carries half of it plus the 9" overhang. Bearing governs at 0.57.
-_BALCONY_SPANS = {"BM-SG-BLW": 9.667, "BM-SG-BLE": 9.667}
+#: ** SINCE 2026-09-22 TWO BEAMS, EACH CARRYING 9.75' ** (note §5a): BM-SG-BLC retired and the
+#: 2x12 deck spans 18'-0" wall to wall. Graded between their own posts (note §5b, basis 4):
+#: 0.667' south overhang, 7.333' back span, 1.667' north. Bearing governs at 0.65.
+_BALCONY_SPANS = {"BM-SG-BLW": (0.667, 7.333, 1.667), "BM-SG-BLE": (0.667, 7.333, 1.667)}
 _BALCONY_JOIST_SPAN_FT = 9.75
 
 
-@pytest.mark.parametrize("tag,span_ft", sorted(_BALCONY_SPANS.items()))
-def test_the_nds_pass_on_a_balcony_glulam(tag, span_ft) -> None:
-    """§5 of the note, against the pure module rather than a record.
-
-    Bearing governs — 3" on concrete against a wet-service F_c-perp of 392 psi — at 0.57
-    since the deck went wall to wall (it was under half on the three-beam frame). 11-7/8"
-    over the slimmer 9-1/2" option is the owner's planter margin, a decision and not a
-    calculation.
-    """
+@pytest.mark.parametrize("tag,bearings", sorted(_BALCONY_SPANS.items()))
+def test_the_nds_pass_on_a_balcony_glulam(tag, bearings) -> None:
+    """§5b of the note, against the pure module rather than a record."""
     from typehaus.engineering.glulam_beam import nds_states
 
+    a, span, b = bearings
     states = {state.name: state
-              for state in nds_states(3.5, 11.875, span_ft, _BALCONY_JOIST_SPAN_FT)}
+              for state in nds_states(3.5, 11.875, span, _BALCONY_JOIST_SPAN_FT,
+                                      overhangs_ft=(a, b))}
     assert set(states) == {"bending", "shear parallel to grain",
                            "bearing, compression perpendicular", "live-load deflection"}
     assert all(state.ok for state in states.values())
@@ -948,9 +944,57 @@ def test_the_nds_pass_on_a_balcony_glulam(tag, span_ft) -> None:
     assert states["shear parallel to grain"].capacity == pytest.approx(262.5, abs=0.5)
     assert states["bearing, compression perpendicular"].capacity == pytest.approx(392.2,
                                                                                   abs=0.5)
+    assert states["bending"].demand == pytest.approx(466.6, abs=0.5)
+    assert states["shear parallel to grain"].demand == pytest.approx(50.3, abs=0.1)
+    assert states["bearing, compression perpendicular"].demand == pytest.approx(256.1, abs=0.3)
+    assert states["live-load deflection"].demand == pytest.approx(0.0347, abs=0.0003)
     worst = max(states.values(), key=lambda s: s.demand / s.capacity)
     assert worst.name == "bearing, compression perpendicular"
-    assert worst.demand / worst.capacity == pytest.approx(0.572, abs=0.005)
+    assert worst.demand / worst.capacity == pytest.approx(0.653, abs=0.005)
+
+
+def test_the_overhang_envelope_against_the_hand_pass() -> None:
+    """§5b: reactions by statics, and the north tip under live on both overhangs."""
+    from typehaus.engineering.overhang_beam import envelope
+
+    ei = 1.8e6 * 0.833 * 3.5 * 11.875 ** 3 / 12.0
+    env = envelope(0.6667, 7.3333, 1.6667, 97.5, 390.0, ei, 11.875 / 12.0)
+    assert env.reactions_lb[1] == pytest.approx(2689.0, abs=2.0)
+    assert env.moment_lb_ft == pytest.approx(3199.0, abs=2.0)
+    assert env.shear_at_d_lb == pytest.approx(1394.0, abs=2.0)
+    assert env.tip_deflection_in[1] == pytest.approx(0.0065, abs=0.0001)
+    # no overhang: the simple-span closed forms
+    simple = envelope(0.0, 9.667, 0.0, 97.5, 390.0, ei, 11.875 / 12.0)
+    assert simple.reactions_lb[0] == pytest.approx(487.5 * 9.667 / 2.0, rel=1e-9)
+    assert simple.moment_lb_ft == pytest.approx(487.5 * 9.667 ** 2 / 8.0, rel=1e-6)
+    assert simple.span_deflection_in == pytest.approx(
+        5.0 * 32.5 * (9.667 * 12.0) ** 4 / (384.0 * ei), rel=1e-5)
+
+
+@pytest.mark.parametrize(("posts", "fragment"), [
+    ((("P1", 3.0),), "a single bearing is a cantilever"),
+    ((("P1", 1.0), ("P2", 5.0), ("P3", 9.0)), "3 bearings make a continuous beam"),
+    ((), "no bearing_refs"),
+])
+def test_a_glulam_not_on_two_bearings_names_why(posts, fragment) -> None:
+    from types import SimpleNamespace
+
+    from typehaus.engineering.glulam_beam import _bearings
+
+    m = 0.3048
+    at = {"N0": 0.0, "N1": 10.0, **dict(posts)}
+    elements = {k: SimpleNamespace(position=SimpleNamespace(xy_m=(x * m, 0.0)))
+                for k, x in at.items()}
+    beam = SimpleNamespace(tag="B", start_node="N0", end_node="N1",
+                           bearing_refs=tuple(tag for tag, _ in posts))
+    ctx = SimpleNamespace(plan=SimpleNamespace(by_tag=elements.get))
+    why = _bearings(ctx, beam)
+    assert isinstance(why, str) and fragment in why
+    elements["P1"] = SimpleNamespace(position=SimpleNamespace(xy_m=(2 * m, 0.0)))
+    elements["P2"] = SimpleNamespace(position=SimpleNamespace(xy_m=(8 * m, 0.0)))
+    beam2 = SimpleNamespace(tag="B", start_node="N0", end_node="N1",
+                            bearing_refs=("P1", "P2"))
+    assert _bearings(ctx, beam2) == pytest.approx((2.0, 6.0, 2.0))
 
 
 def test_wet_service_is_applied_to_the_glulam() -> None:

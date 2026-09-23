@@ -53,7 +53,11 @@ from typehaus.joints.authored import (
     tags_covered_by,
     unanchored_post_tags,
 )
-from typehaus.joints.bearing import bearing_connections, bearing_line_tags
+from typehaus.joints.bearing import (
+    authored_tie_gaps,
+    bearing_connections,
+    bearing_line_tags,
+)
 from typehaus.joints.gable import gable_end_ties
 from typehaus.joints.hung import hung_connections
 from typehaus.joints.posts import catalogued_post_sizes, is_squash_block
@@ -205,14 +209,29 @@ def _seated_links(ctx: CheckContext) -> list:
         carrier = hung.carrier_tag.split(":")[-1]
         hangers_by_carrier[carrier] = hangers_by_carrier.get(carrier, 0) + 1
 
+    # An authored assembly is checked crossing by crossing: one tie naming the deck no longer
+    # vouches for every joist line on it.
+    gaps: dict = {}
+    for gap in authored_tie_gaps(ctx.model, _RULES):
+        gaps.setdefault(gap.assembly_tag, []).append(gap)
+
     links: list = []
     for resolved, refs, categories, noun in _bearing_assemblies(ctx):
         seated = [m for m in resolved.members if m.category in categories]
         if not seated:
             continue  # nothing of this kind bears here — a slab deck, a roof with no rafters
         if resolved.tag in authored:
+            for gap in gaps.get(resolved.tag, ()):
+                x_ft, y_ft = (v / _M_PER_FT for v in gap.point_m)
+                links.append(Link(
+                    f"{noun} {resolved.tag}'s {gap.member_category} on {gap.support_tag} at "
+                    f"({x_ft:.2f}', {y_ft:.2f}') — no authored tie within 3\"",
+                    (resolved.tag, gap.support_tag), None))
             links.append(Link(f"{noun} {resolved.tag} to its bearings", (resolved.tag, *refs),
-                              "an authored Connector naming it"))
+                              "an authored Connector naming it"
+                              + (f" (short {len(gaps[resolved.tag])} crossings, each "
+                                 f"reported)" if resolved.tag in gaps else ", at every "
+                                 "derived bearing")))
             continue
         if not refs:
             links.append(Link(
